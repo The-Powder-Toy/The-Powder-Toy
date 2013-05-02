@@ -558,40 +558,47 @@ bool LoadWindowPosition()
 		int windowW = rcWindow.right - rcWindow.left - 1;
 		int windowH = rcWindow.bottom - rcWindow.top - 1;
 
-		int windowX = Client::Ref().GetPrefInteger("WindowX", INT_MAX);
-		int windowY = Client::Ref().GetPrefInteger("WindowY", INT_MAX);
+		int savedWindowX = Client::Ref().GetPrefInteger("WindowX", INT_MAX);
+		int savedWindowY = Client::Ref().GetPrefInteger("WindowY", INT_MAX);
+		
+				// Center the window on the primary desktop by default
+		int newWindowX = (desktopWidth - windowW) / 2;
+		int newWindowY = (desktopHeight - windowH) / 2;
 
-		bool setDefaultPos = true;
+		bool success = false;
 
-		if (windowX != INT_MAX && windowY != INT_MAX)
+		if (savedWindowX != INT_MAX && savedWindowY != INT_MAX)
 		{
 			POINT windowPoints[] = {
-				{windowX, windowY},						// Top-left
-				{windowX + windowW, windowY + windowH}	// Bottom-right
+				{savedWindowX, savedWindowY},                       // Top-left
+				{savedWindowX + windowW, savedWindowY + windowH}    // Bottom-right
 			};
 
 			MONITORINFO monitor;
 			monitor.cbSize = sizeof(monitor);
-			if (GetMonitorInfo(MonitorFromPoint(windowPoints[0], MONITOR_DEFAULTTOPRIMARY), &monitor) != 0)
+			if (GetMonitorInfo(MonitorFromPoint(windowPoints[0], MONITOR_DEFAULTTONEAREST), &monitor) != 0)
 			{
 					// Only use the saved window position if it lies inside the visible screen
 				if (PtInRect(&monitor.rcMonitor, windowPoints[0]) && PtInRect(&monitor.rcMonitor, windowPoints[1]))
 				{
-					SetWindowPos(sysInfo.window, 0, windowX, windowY, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER);
+					newWindowX = savedWindowX;
+					newWindowY = savedWindowY;
 
-					setDefaultPos = false;
+					success = true;
+				}
+				else
+				{
+						// Center the window on the nearest monitor
+					newWindowX = monitor.rcMonitor.left + (monitor.rcMonitor.right - monitor.rcMonitor.left - windowW) / 2;
+					newWindowY = monitor.rcMonitor.top + (monitor.rcMonitor.bottom - monitor.rcMonitor.top - windowH) / 2;
 				}
 			}
 		}
 		
-		if (setDefaultPos)
-		{
-				// Center the window on the primary desktop by default
-			SetWindowPos(sysInfo.window, 0, (desktopWidth - windowW) / 2, (desktopHeight - windowH) / 2, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER);
-		}
+		SetWindowPos(sysInfo.window, 0, newWindowX, newWindowY, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER);
 
 			// True if we didn't use the default, i.e. the position was valid
-		return !setDefaultPos;
+		return success;
 	}
 
 	return false;
