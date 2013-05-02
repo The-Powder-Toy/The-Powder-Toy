@@ -46,7 +46,9 @@ extern "C"
 #include <sys/stat.h>
 #include <dirent.h>
 #include <time.h>
+#include "socket/luasocket.h"
 }
+#include "socket/socket.lua.h"
 
 GameModel * luacon_model;
 GameController * luacon_controller;
@@ -91,6 +93,8 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	l = lua_open();
 	luaL_openlibs(l);
 	luaopen_bit(l);
+	luaopen_socket_core(l);
+	luaopen_socket(l);
 
 	lua_pushstring(l, "Luacon_ci");
 	lua_pushlightuserdata(l, this);
