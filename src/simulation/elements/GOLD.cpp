@@ -32,7 +32,7 @@ Element_GOLD::Element_GOLD()
 	Description = "Corrosion resistant metal, will reverse corrosion of iron";
 
 	State = ST_SOLID;
-	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_HOT_GLOW|PROP_LIFE_DEC;
+	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_HOT_GLOW|PROP_LIFE_DEC|PROP_NEUTPASS;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
@@ -44,7 +44,7 @@ Element_GOLD::Element_GOLD()
 	HighTemperatureTransition = PT_LAVA;
 
 	Update = &Element_GOLD::update;
-	
+	Graphics = &Element_GOLD::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_GOLD static int update(UPDATE_FUNC_ARGS)
@@ -85,8 +85,23 @@ int Element_GOLD::update(UPDATE_FUNC_ARGS)
 			}
 		}
 	}
+	if ((sim->photons[y][x]&0xFF) == PT_NEUT)
+	{
+		if (!(rand()%7))
+		{
+			sim->kill_part(sim->photons[y][x]>>8);
+		}
+	}
 	return 0;
 }
 
+//#TPT-Directive ElementHeader Element_GOLD static int graphics(GRAPHICS_FUNC_ARGS)
+int Element_GOLD::graphics(GRAPHICS_FUNC_ARGS)
+{
+	*colr += rand()%10-5;
+	*colg += rand()%10-5;
+	*colb += rand()%10-5;
+	return 0;
+}
 
 Element_GOLD::~Element_GOLD() {}
