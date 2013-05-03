@@ -546,22 +546,19 @@ int GetModifiers()
 
 // Returns true if the loaded position was set
 // Returns false if something went wrong: SDL_GetWMInfo failed or the loaded position was invalid
-bool LoadWindowPosition()
+bool LoadWindowPosition(int scale)
 {
 	SDL_SysWMinfo sysInfo;
 	SDL_VERSION(&sysInfo.version);
 	if (SDL_GetWMInfo(&sysInfo) > 0)
 	{
-		RECT rcWindow;
-		GetWindowRect(sysInfo.window, &rcWindow);
-
-		int windowW = rcWindow.right - rcWindow.left - 1;
-		int windowH = rcWindow.bottom - rcWindow.top - 1;
+		int windowW = (XRES + BARSIZE) * scale;
+		int windowH = (YRES + MENUSIZE) * scale;
 
 		int savedWindowX = Client::Ref().GetPrefInteger("WindowX", INT_MAX);
 		int savedWindowY = Client::Ref().GetPrefInteger("WindowY", INT_MAX);
 		
-				// Center the window on the primary desktop by default
+		// Center the window on the primary desktop by default
 		int newWindowX = (desktopWidth - windowW) / 2;
 		int newWindowY = (desktopHeight - windowH) / 2;
 
@@ -578,7 +575,7 @@ bool LoadWindowPosition()
 			monitor.cbSize = sizeof(monitor);
 			if (GetMonitorInfo(MonitorFromPoint(windowPoints[0], MONITOR_DEFAULTTONEAREST), &monitor) != 0)
 			{
-					// Only use the saved window position if it lies inside the visible screen
+				// Only use the saved window position if it lies inside the visible screen
 				if (PtInRect(&monitor.rcMonitor, windowPoints[0]) && PtInRect(&monitor.rcMonitor, windowPoints[1]))
 				{
 					newWindowX = savedWindowX;
@@ -588,7 +585,7 @@ bool LoadWindowPosition()
 				}
 				else
 				{
-						// Center the window on the nearest monitor
+					// Center the window on the nearest monitor
 					newWindowX = monitor.rcMonitor.left + (monitor.rcMonitor.right - monitor.rcMonitor.left - windowW) / 2;
 					newWindowY = monitor.rcMonitor.top + (monitor.rcMonitor.bottom - monitor.rcMonitor.top - windowH) / 2;
 				}
@@ -597,7 +594,7 @@ bool LoadWindowPosition()
 		
 		SetWindowPos(sysInfo.window, 0, newWindowX, newWindowY, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER);
 
-			// True if we didn't use the default, i.e. the position was valid
+		// True if we didn't use the default, i.e. the position was valid
 		return success;
 	}
 
@@ -685,12 +682,10 @@ int main(int argc, char * argv[])
 		tempScale = 1;
 
 	int sdlStatus = SDLOpen();
-	sdl_scrn = SDLSetScreen(tempScale, tempFullscreen);
-
 #ifdef WIN
-		// Must be after SDLSetScreen to account for scale
-	LoadWindowPosition();
+	LoadWindowPosition(tempScale);
 #endif
+	sdl_scrn = SDLSetScreen(tempScale, tempFullscreen);
 
 #ifdef OGLI
 	SDL_GL_SetAttribute (SDL_GL_DOUBLEBUFFER, 1);
