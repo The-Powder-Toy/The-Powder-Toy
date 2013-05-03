@@ -53,10 +53,6 @@ Atom XA_CLIPBOARD, XA_TARGETS;
 
 char *clipboardText = NULL;
 
-#ifdef WIN
-extern "C" IMAGE_DOS_HEADER __ImageBase;
-#endif
-
 int desktopWidth = 1280, desktopHeight = 1024;
 
 SDL_Surface * sdl_scrn;
@@ -276,8 +272,11 @@ int SDLOpen()
 	    exit(-1);
 	}
 	HWND WindowHandle = SysInfo.window;
-	HICON hIconSmall = (HICON)LoadImage(reinterpret_cast<HMODULE>(&__ImageBase), MAKEINTRESOURCE(101), IMAGE_ICON, 16, 16, LR_SHARED);
-	HICON hIconBig = (HICON)LoadImage(reinterpret_cast<HMODULE>(&__ImageBase), MAKEINTRESOURCE(101), IMAGE_ICON, 32, 32, LR_SHARED);
+
+	// Use GetModuleHandle to get the Exe HMODULE/HINSTANCE
+	HMODULE hModExe = GetModuleHandle(NULL);
+	HICON hIconSmall = (HICON)LoadImage(hModExe, MAKEINTRESOURCE(101), IMAGE_ICON, 16, 16, LR_SHARED);
+	HICON hIconBig = (HICON)LoadImage(hModExe, MAKEINTRESOURCE(101), IMAGE_ICON, 32, 32, LR_SHARED);
 	SendMessage(WindowHandle, WM_SETICON, ICON_SMALL, (LPARAM)hIconSmall);
 	SendMessage(WindowHandle, WM_SETICON, ICON_BIG, (LPARAM)hIconBig);
 #elif defined(LIN)
@@ -543,6 +542,90 @@ int GetModifiers()
 	return SDL_GetModState();
 }
 
+#ifdef WIN
+
+// Returns true if the loaded position was set
+// Returns false if something went wrong: SDL_GetWMInfo failed or the loaded position was invalid
+bool LoadWindowPosition()
+{
+	SDL_SysWMinfo sysInfo;
+	SDL_VERSION(&sysInfo.version);
+	if (SDL_GetWMInfo(&sysInfo) > 0)
+	{
+		RECT rcWindow;
+		GetWindowRect(sysInfo.window, &rcWindow);
+
+		int windowW = rcWindow.right - rcWindow.left - 1;
+		int windowH = rcWindow.bottom - rcWindow.top - 1;
+
+		int savedWindowX = Client::Ref().GetPrefInteger("WindowX", INT_MAX);
+		int savedWindowY = Client::Ref().GetPrefInteger("WindowY", INT_MAX);
+		
+				// Center the window on the primary desktop by default
+		int newWindowX = (desktopWidth - windowW) / 2;
+		int newWindowY = (desktopHeight - windowH) / 2;
+
+		bool success = false;
+
+		if (savedWindowX != INT_MAX && savedWindowY != INT_MAX)
+		{
+			POINT windowPoints[] = {
+				{savedWindowX, savedWindowY},                       // Top-left
+				{savedWindowX + windowW, savedWindowY + windowH}    // Bottom-right
+			};
+
+			MONITORINFO monitor;
+			monitor.cbSize = sizeof(monitor);
+			if (GetMonitorInfo(MonitorFromPoint(windowPoints[0], MONITOR_DEFAULTTONEAREST), &monitor) != 0)
+			{
+					// Only use the saved window position if it lies inside the visible screen
+				if (PtInRect(&monitor.rcMonitor, windowPoints[0]) && PtInRect(&monitor.rcMonitor, windowPoints[1]))
+				{
+					newWindowX = savedWindowX;
+					newWindowY = savedWindowY;
+
+					success = true;
+				}
+				else
+				{
+						// Center the window on the nearest monitor
+					newWindowX = monitor.rcMonitor.left + (monitor.rcMonitor.right - monitor.rcMonitor.left - windowW) / 2;
+					newWindowY = monitor.rcMonitor.top + (monitor.rcMonitor.bottom - monitor.rcMonitor.top - windowH) / 2;
+				}
+			}
+		}
+		
+		SetWindowPos(sysInfo.window, 0, newWindowX, newWindowY, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER);
+
+			// True if we didn't use the default, i.e. the position was valid
+		return success;
+	}
+
+	return false;
+}
+
+// Returns true if the window position was saved
+bool SaveWindowPosition()
+{
+	SDL_SysWMinfo sysInfo;
+	SDL_VERSION(&sysInfo.version);
+	if (SDL_GetWMInfo(&sysInfo) > 0)
+	{
+		WINDOWPLACEMENT placement;
+		placement.length = sizeof(placement);
+		GetWindowPlacement(sysInfo.window, &placement);
+
+		Client::Ref().SetPref("WindowX", placement.rcNormalPosition.left);
+		Client::Ref().SetPref("WindowY", placement.rcNormalPosition.top);
+
+		return true;
+	}
+
+	return false;
+}
+
+#endif
+
 int main(int argc, char * argv[])
 {
 	currentWidth = XRES+BARSIZE; 
@@ -603,6 +686,12 @@ int main(int argc, char * argv[])
 
 	int sdlStatus = SDLOpen();
 	sdl_scrn = SDLSetScreen(tempScale, tempFullscreen);
+
+#ifdef WIN
+		// Must be after SDLSetScreen to account for scale
+	LoadWindowPosition();
+#endif
+
 #ifdef OGLI
 	SDL_GL_SetAttribute (SDL_GL_DOUBLEBUFFER, 1);
 	//glScaled(2.0f, 2.0f, 1.0f);
@@ -733,6 +822,10 @@ int main(int argc, char * argv[])
 	}
 
 	EngineProcess();
+	
+#ifdef WIN
+	SaveWindowPosition();
+#endif
 	
 	ui::Engine::Ref().CloseWindow();
 	delete gameController;
