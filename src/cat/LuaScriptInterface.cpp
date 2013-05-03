@@ -57,6 +57,7 @@ Renderer * luacon_ren;
 
 bool *luacon_currentCommand;
 std::string *luacon_lastError;
+std::string lastCode;
 
 int *lua_el_func, *lua_el_mode, *lua_gr_func;
 
@@ -177,6 +178,8 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 
 	luacon_currentCommand = &currentCommand;
 	luacon_lastError = &lastError;
+
+	lastCode = "";
 
 	//Replace print function with our screen logging thingy
 	lua_pushcfunction(l, luatpt_log);
@@ -2123,18 +2126,28 @@ int LuaScriptInterface::Command(std::string command)
 		std::string text = "";
 		lastError = "";
 		currentCommand = true;
-		std::string tmp = "return " + command;
+		if(lastCode.length())
+			lastCode += "\n";
+		lastCode += command;
+		std::string tmp = "return " + lastCode;
 		ui::Engine::Ref().LastTick(clock());
 		luaL_loadbuffer(l, tmp.c_str(), tmp.length(), "@console");
 		if(lua_type(l, -1) != LUA_TFUNCTION)
 		{
 			lua_pop(l, 1);
-			luaL_loadbuffer(l, command.c_str(), command.length(), "@console");
+			luaL_loadbuffer(l, lastCode.c_str(), lastCode.length(), "@console");
 		}
 		if(lua_type(l, -1) != LUA_TFUNCTION)
+		{
 			lastError = luacon_geterror();
+			if(std::string(lastError).find("near '<eof>'")!=-1) //the idea stolen from lua-5.1.5/lua.c
+				lastError = ">";
+			else
+				lastCode = "";
+		}
 		else
 		{
+			lastCode = "";
 			ret = lua_pcall(l, 0, LUA_MULTRET, 0);
 			if(ret)
 				lastError = luacon_geterror();
