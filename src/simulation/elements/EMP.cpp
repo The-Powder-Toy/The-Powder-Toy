@@ -28,7 +28,7 @@ Element_EMP::Element_EMP()
 	
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 121;
-	Description = "Breaks activated electronics.";
+	Description = "Electromagnetic pulse. Breaks activated electronics.";
 	
 	State = ST_SOLID;
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;

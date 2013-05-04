@@ -28,7 +28,7 @@ Element_WOOD::Element_WOOD()
 	
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 164;
-	Description = "Solid. Flammable.";
+	Description = "Wood, flammable.";
 	
 	State = ST_SOLID;
 	Properties = TYPE_SOLID | PROP_NEUTPENETRATE;

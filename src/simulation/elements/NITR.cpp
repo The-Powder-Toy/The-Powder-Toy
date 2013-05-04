@@ -28,7 +28,7 @@ Element_NITR::Element_NITR()
 	
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 50;
-	Description = "Liquid. Pressure sensitive explosive.";
+	Description = "Nitroglycerin. Pressure sensitive explosive. Mix with CLST to make TNT.";
 	
 	State = ST_LIQUID;
 	Properties = TYPE_LIQUID;

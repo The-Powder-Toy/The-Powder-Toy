@@ -28,7 +28,7 @@ Element_PVOD::Element_PVOD()
 	
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "Solid. When activated, destroys entering particles";
+	Description = "Powered VOID. When activated, destroys entering particles.";
 	
 	State = ST_NONE;
 	Properties = TYPE_SOLID;

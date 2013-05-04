@@ -28,7 +28,7 @@ Element_INVIS::Element_INVIS()
 	
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 164;
-	Description = "Invisible to everything while under pressure.";
+	Description = "Invisible to particles while under pressure.";
 	
 	State = ST_SOLID;
 	Properties = TYPE_SOLID | PROP_NEUTPASS;

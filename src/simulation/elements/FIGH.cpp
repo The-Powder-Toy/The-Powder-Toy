@@ -28,7 +28,7 @@ Element_FIGH::Element_FIGH()
 	
 	Temperature = R_TEMP+14.6f+273.15f;
 	HeatConduct = 0;
-	Description = "Fighter. Tries to kill stickmen.";
+	Description = "Fighter. Tries to kill stickmen. You must first give it an element to kill him with.";
 	
 	State = ST_NONE;
 	Properties = 0;

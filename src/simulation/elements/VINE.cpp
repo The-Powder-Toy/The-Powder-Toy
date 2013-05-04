@@ -28,7 +28,7 @@ Element_VINE::Element_VINE()
 	
 	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 65;
-	Description = "Vine, grows";
+	Description = "Vine, can grow along WOOD.";
 	
 	State = ST_SOLID;
 	Properties = TYPE_SOLID;

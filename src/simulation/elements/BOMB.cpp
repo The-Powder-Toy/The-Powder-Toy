@@ -28,7 +28,7 @@ Element_BOMB::Element_BOMB()
 	
 	Temperature = R_TEMP-2.0f	+273.15f;
 	HeatConduct = 29;
-	Description = "Bomb.";
+	Description = "Bomb. Explodes and destroys all surrounding particles when it touches something.";
 	
 	State = ST_NONE;
 	Properties = TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC|PROP_SPARKSETTLE;

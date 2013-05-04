@@ -28,7 +28,7 @@ Element_FRAY::Element_FRAY()
 	
 	Temperature = 20.0f+0.0f +273.15f;
 	HeatConduct = 0;
-	Description = "Force Emitter. Push or pull objects based on temp value, use like ARAY";
+	Description = "Force Emitter. Pushes or pulls objects based on it's temp value, use like ARAY.";
 	
 	State = ST_SOLID;
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;

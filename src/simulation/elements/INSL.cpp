@@ -28,7 +28,7 @@ Element_INSL::Element_INSL()
 	
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 0;
-	Description = "Insulator, does not conduct heat or electricity.";
+	Description = "Insulator, does not conduct heat and blocks electricity.";
 	
 	State = ST_SOLID;
 	Properties = TYPE_SOLID;

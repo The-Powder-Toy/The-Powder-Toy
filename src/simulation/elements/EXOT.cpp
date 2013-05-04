@@ -28,7 +28,7 @@ Element_EXOT::Element_EXOT()
 	
 	Temperature = R_TEMP-2.0f	+273.15f;
 	HeatConduct = 250;
-	Description = "Exotic matter. Explodes with excess exposure to electrons.";
+	Description = "Exotic matter. Explodes with excess exposure to electrons. Has many other odd reactions.";
 	
 	State = ST_LIQUID;
 	Properties = TYPE_LIQUID|PROP_NEUTPASS;

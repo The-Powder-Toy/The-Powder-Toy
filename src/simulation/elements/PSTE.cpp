@@ -28,7 +28,7 @@ Element_PSTE::Element_PSTE()
 	
 	Temperature = R_TEMP-2.0f	+273.15f;
 	HeatConduct = 29;
-	Description = "Colloid, Hardens under pressure";
+	Description = "Colloid, Hardens under pressure.";
 	
 	State = ST_LIQUID;
 	Properties = TYPE_LIQUID;

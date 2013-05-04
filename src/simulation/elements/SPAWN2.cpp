@@ -28,7 +28,7 @@ Element_SPAWN2::Element_SPAWN2()
 	
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 0;
-	Description = "STK2 spawn point";
+	Description = "STK2 spawn point.";
 	
 	State = ST_SOLID;
 	Properties = TYPE_SOLID;

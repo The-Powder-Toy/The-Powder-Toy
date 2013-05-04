@@ -28,7 +28,7 @@ Element_IGNT::Element_IGNT()
 	
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 88;
-	Description = "Ignition cord.";
+	Description = "Ignition cord. Burns slowly with fire and sparks.";
 	
 	State = ST_SOLID;
 	Properties = TYPE_SOLID | PROP_NEUTPENETRATE | PROP_SPARKSETTLE | PROP_LIFE_KILL;

@@ -28,7 +28,7 @@ Element_GEL::Element_GEL()
 	
 	Temperature = R_TEMP-2.0f  +273.15f;
 	HeatConduct = 29;
-	Description = "Gel. A liquid with variable viscosity and heat conductivity";
+	Description = "Gel. A liquid with variable viscosity and heat conductivity.";
 	
 	State = ST_LIQUID;
 	Properties = TYPE_LIQUID|PROP_LIFE_DEC|PROP_NEUTPENETRATE;

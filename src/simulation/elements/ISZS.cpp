@@ -28,7 +28,7 @@ Element_ISZS::Element_ISZS()
 	
 	Temperature = 140.00f;
 	HeatConduct = 251;
-	Description = "Solid form of ISOZ, slowly decays.";
+	Description = "Solid form of ISOZ, slowly decays into PHOT.";
 	
 	State = ST_SOLID;
 	Properties = TYPE_SOLID;

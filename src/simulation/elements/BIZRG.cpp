@@ -28,7 +28,7 @@ Element_BIZRG::Element_BIZRG()
 	
 	Temperature = R_TEMP-200.0f+273.15f;
 	HeatConduct = 42;
-	Description = "Bizarre gas";
+	Description = "Bizarre gas.";
 	
 	State = ST_GAS;
 	Properties = TYPE_GAS;

@@ -28,7 +28,7 @@ Element_ICEI::Element_ICEI()
 	
 	Temperature = R_TEMP-50.0f+273.15f;
 	HeatConduct = 46;
-	Description = "Solid. Freezes water. Crushes under pressure. Cools down air.";
+	Description = "Crushes under pressure. Cools down air.";
 	
 	State = ST_SOLID;
 	Properties = TYPE_SOLID|PROP_LIFE_DEC|PROP_NEUTPASS;

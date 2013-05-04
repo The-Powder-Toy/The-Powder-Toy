@@ -28,7 +28,7 @@ Element_H2::Element_H2()
 	
 	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 251;
-	Description = "Combines with O2 to make WATR";
+	Description = "Hydrogen. Combines with OXYG to make WATR. Undergoes fusion at high temperature and pressure";
 	
 	State = ST_GAS;
 	Properties = TYPE_GAS;

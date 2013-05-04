@@ -28,7 +28,7 @@ Element_GLOW::Element_GLOW()
 	
 	Temperature = R_TEMP+20.0f+273.15f;
 	HeatConduct = 44;
-	Description = "Glow, Glows under pressure";
+	Description = "Glow, Glows under pressure.";
 	
 	State = ST_LIQUID;
 	Properties = TYPE_LIQUID|PROP_LIFE_DEC;
