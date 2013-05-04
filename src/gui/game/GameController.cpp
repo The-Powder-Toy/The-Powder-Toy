@@ -734,7 +734,7 @@ void GameController::ResetAir()
 	sim->air->Clear();
 	for (int i = 0; i < NPART; i++)
 	{
-		if (sim->parts[i].type == PT_QRTZ || sim->parts[i].type == PT_GLAS)
+		if (sim->parts[i].type == PT_QRTZ || sim->parts[i].type == PT_GLAS || sim->parts[i].type == PT_TUGN)
 		{
 			sim->parts[i].pavg[0] = sim->parts[i].pavg[1] = 0;
 		}
