@@ -7,7 +7,7 @@ Element_LIGH::Element_LIGH()
 	Name = "LIGH";
 	Colour = PIXPACK(0xFFFFC0);
 	MenuVisible = 1;
-	MenuSection = SC_ELEC;
+	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;
 	
 	Advection = 0.0f;

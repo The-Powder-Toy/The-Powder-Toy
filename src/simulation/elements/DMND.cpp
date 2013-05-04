@@ -6,7 +6,7 @@ Element_DMND::Element_DMND()
 	Name = "DMND";
 	Colour = PIXPACK(0xCCFFFF);
 	MenuVisible = 1;
-	MenuSection = SC_SOLIDS;
+	MenuSection = SC_SPECIAL;
 	Enabled = 1;
 	
 	Advection = 0.0f;

@@ -6,7 +6,7 @@ Element_PIPE::Element_PIPE()
 	Name = "PIPE";
 	Colour = PIXPACK(0x444444);
 	MenuVisible = 1;
-	MenuSection = SC_SOLIDS;
+	MenuSection = SC_FORCE;
 	Enabled = 1;
 	
 	Advection = 0.0f;

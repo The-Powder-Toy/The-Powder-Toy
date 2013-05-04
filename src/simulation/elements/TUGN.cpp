@@ -7,7 +7,7 @@ Element_TUGN::Element_TUGN()
 	Name = "TUGN";
 	Colour = PIXPACK(0x505050);
 	MenuVisible = 1;
-	MenuSection = SC_SOLIDS;
+	MenuSection = SC_ELEC;
 	Enabled = 1;
 
 	Advection = 0.0f;

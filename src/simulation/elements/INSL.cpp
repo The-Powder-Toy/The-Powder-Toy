@@ -6,7 +6,7 @@ Element_INSL::Element_INSL()
 	Name = "INSL";
 	Colour = PIXPACK(0x9EA3B6);
 	MenuVisible = 1;
-	MenuSection = SC_SPECIAL;
+	MenuSection = SC_ELEC;
 	Enabled = 1;
 	
 	Advection = 0.0f;
