@@ -4001,6 +4001,9 @@ void Simulation::update_particles_i(int start, int inc)
 							if (parts[i].ctype>0 && parts[i].ctype<PT_NUM && parts[i].ctype!=PT_LAVA) {
 								if (parts[i].ctype==PT_THRM&&pt>=elements[PT_BMTL].HighTemperature) s = 0;
 								else if ((parts[i].ctype==PT_VIBR || parts[i].ctype==PT_BVBR) && pt>=273.15f) s = 0;
+								else if (parts[i].ctype==PT_TUGN) {
+									if (pt>3695.0) s = 0;
+								}
 								else if (elements[parts[i].ctype].HighTemperatureTransition==PT_LAVA) {
 									if (pt>=elements[parts[i].ctype].HighTemperature) s = 0;
 								}

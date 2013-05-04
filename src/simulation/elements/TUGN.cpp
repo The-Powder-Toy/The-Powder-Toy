@@ -40,7 +40,7 @@ Element_TUGN::Element_TUGN()
 	HighPressureTransition = NT;
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
-	HighTemperature = ITL;
+	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 	/*HighTemperature = 3895.0f;
 	HighTemperatureTransition = PT_LAVA;*/

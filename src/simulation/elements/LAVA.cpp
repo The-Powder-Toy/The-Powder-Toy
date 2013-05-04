@@ -37,7 +37,7 @@ Element_LAVA::Element_LAVA()
 	LowPressureTransition = NT;
 	HighPressure = IPH;
 	HighPressureTransition = NT;
-	LowTemperature = 2573.15f;
+	LowTemperature = 3695.0f;// Highest temperature at which any type of lava can solidify
 	LowTemperatureTransition = ST;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
