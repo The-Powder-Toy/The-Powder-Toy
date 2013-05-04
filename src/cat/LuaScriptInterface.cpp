@@ -2141,7 +2141,7 @@ int LuaScriptInterface::Command(std::string command)
 		{
 			lastError = luacon_geterror();
 			if(std::string(lastError).find("near '<eof>'")!=-1) //the idea stolen from lua-5.1.5/lua.c
-				lastError = ">";
+				lastError = "...";
 			else
 				lastCode = "";
 		}
