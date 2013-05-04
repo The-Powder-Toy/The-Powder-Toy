@@ -788,8 +788,8 @@ int main(int argc, char * argv[])
 
 #endif
 
-#ifndef DEBUG
 	GameController * gameController = NULL;
+#ifndef DEBUG
 	try {
 #endif
 
