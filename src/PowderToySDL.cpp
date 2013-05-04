@@ -5,6 +5,7 @@
 #include <time.h>
 #include "SDL.h"
 #ifdef WIN
+#define _WIN32_WINNT 0x0501	//Necessary for some macros and functions
 #include "SDL_syswm.h"
 #include <direct.h>
 #endif
@@ -612,8 +613,8 @@ bool SaveWindowPosition()
 		placement.length = sizeof(placement);
 		GetWindowPlacement(sysInfo.window, &placement);
 
-		Client::Ref().SetPref("WindowX", placement.rcNormalPosition.left);
-		Client::Ref().SetPref("WindowY", placement.rcNormalPosition.top);
+		Client::Ref().SetPref("WindowX", (int)placement.rcNormalPosition.left);
+		Client::Ref().SetPref("WindowY", (int)placement.rcNormalPosition.top);
 
 		return true;
 	}
