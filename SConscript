@@ -267,6 +267,12 @@ sources+=Glob("src/gui/*/*.cpp")
 sources+=Glob("src/simulation/elements/*.cpp")
 sources+=Glob("src/simulation/tools/*.cpp")
 sources+=Glob("src/client/requestbroker/*.cpp")
+sources+=["src/socket/auxiliar.c","src/socket/buffer.c","src/socket/except.c","src/socket/inet.c","src/socket/io.c","src/socket/luasocket.c","src/socket/options.c","src/socket/select.c","src/socket/tcp.c","src/socket/timeout.c","src/socket/udp.c"]
+# looks better than lambdaing files out later
+if(GetOption('win')):
+	sources+=["src/socket/wsocket.c"]
+else:
+	sources+=["src/socket/usocket.c","src/socket/unix.c"]
 
 #for source in sources:
 #	print str(source)
