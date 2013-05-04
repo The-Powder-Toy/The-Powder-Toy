@@ -28,7 +28,7 @@ Element_PTCT::Element_PTCT()
 	
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "Semi-conductor. Only conducts electricity when cold (Less than 100C)";
+	Description = "Semi-conductor. Only conducts electricity when cold. (Less than 100C)";
 	
 	State = ST_SOLID;
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC;

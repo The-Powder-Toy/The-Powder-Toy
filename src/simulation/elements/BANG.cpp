@@ -28,7 +28,7 @@ Element_BANG::Element_BANG()
 	
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 88;
-	Description = "Explosive.";
+	Description = "TNT, explodes all at once.";
 	
 	State = ST_SOLID;
 	Properties = TYPE_SOLID | PROP_NEUTPENETRATE;

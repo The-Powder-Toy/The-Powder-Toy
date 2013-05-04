@@ -9,6 +9,7 @@ extern Graphics * luacon_g;
 extern Renderer * luacon_ren;
 
 extern bool *luacon_currentCommand;
+extern int luaL_tostring(lua_State* l, int n);
 extern std::string *luacon_lastError;
 
 extern int *lua_el_func, *lua_el_mode, *lua_gr_func;

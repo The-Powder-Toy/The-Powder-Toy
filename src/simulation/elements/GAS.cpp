@@ -28,7 +28,7 @@ Element_GAS::Element_GAS()
 	
 	Temperature = R_TEMP+2.0f	+273.15f;
 	HeatConduct = 42;
-	Description = "Gas. Diffuses. Flammable. Liquefies under pressure.";
+	Description = "Diffuses quickly and flammable. Liquefies into OIL under pressure.";
 	
 	State = ST_GAS;
 	Properties = TYPE_GAS | PROP_NEUTPASS;

@@ -28,7 +28,7 @@ Element_SHLD2::Element_SHLD2()
 	
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 0;
-	Description = "Shield lvl 2";
+	Description = "Shield lvl 2.";
 	
 	State = ST_SOLID;
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;

@@ -28,7 +28,7 @@ Element_PUMP::Element_PUMP()
 	
 	Temperature = 273.15f;
 	HeatConduct = 0;
-	Description = "Changes pressure to its temp when activated. (use HEAT/COOL).";
+	Description = "Pressure pump. Changes pressure to its temp when activated. (use HEAT/COOL).";
 	
 	State = ST_SOLID;
 	Properties = TYPE_SOLID;

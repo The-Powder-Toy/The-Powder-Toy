@@ -28,7 +28,7 @@ Element_PBCN::Element_PBCN()
 	
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "Powered breakable clone";
+	Description = "Powered breakable clone.";
 	
 	State = ST_NONE;
 	Properties = TYPE_SOLID;

@@ -28,7 +28,7 @@ Element_HSWC::Element_HSWC()
 	
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "Heat switch. Conducts Heat only when activated";
+	Description = "Heat switch. Conducts heat only when activated.";
 	
 	State = ST_NONE;
 	Properties = TYPE_SOLID;

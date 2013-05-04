@@ -28,7 +28,7 @@ Element_BRAY::Element_BRAY()
 	
 	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 251;
-	Description = "Ray Point. Rays create points when they collide";
+	Description = "Ray Point. Rays create points when they collide.";
 	
 	State = ST_SOLID;
 	Properties = TYPE_SOLID|PROP_LIFE_DEC|PROP_LIFE_KILL;

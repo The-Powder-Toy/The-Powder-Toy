@@ -28,7 +28,7 @@ Element_BGLA::Element_BGLA()
 	
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 150;
-	Description = "Broken Glass, Heavy particles. Meltable. Bagels.";
+	Description = "Broken Glass, heavy particles formed when glass breaks under pressure. Meltable. Bagels.";
 	
 	State = ST_SOLID;
 	Properties = TYPE_PART | PROP_HOT_GLOW;

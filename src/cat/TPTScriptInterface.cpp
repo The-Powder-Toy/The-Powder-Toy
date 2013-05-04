@@ -137,7 +137,7 @@ int TPTScriptInterface::parseNumber(char * stringData)
 			if(cc >= '0' && cc <= '9')
 				currentNumber += cc - '0';
 			else if(cc >= 'a' && cc <= 'f')
-				currentNumber += (cc - 'A') + 10;
+				currentNumber += (cc - 'a') + 10;
 			else if(cc >= 'A' && cc <= 'F')
 				currentNumber += (cc - 'A') + 10;
 			else

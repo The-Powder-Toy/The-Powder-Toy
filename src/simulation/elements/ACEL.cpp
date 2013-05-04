@@ -28,7 +28,7 @@ Element_ACEL::Element_ACEL()
 	
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "Accelerator";
+	Description = "Accelerator, speeds up nearby elements.";
 	
 	State = ST_NONE;
 	Properties = TYPE_SOLID;

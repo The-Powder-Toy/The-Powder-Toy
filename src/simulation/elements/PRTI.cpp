@@ -28,7 +28,7 @@ Element_PRTI::Element_PRTI()
 	
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 0;
-	Description = "Portal IN.  Things go in here, now with channels (same as WIFI)";
+	Description = "Portal IN. Things go in here, now with temperature dependent channels (same as WIFI)";
 	
 	State = ST_SOLID;
 	Properties = TYPE_SOLID;

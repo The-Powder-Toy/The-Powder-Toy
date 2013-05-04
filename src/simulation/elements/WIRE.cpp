@@ -28,7 +28,7 @@ Element_WIRE::Element_WIRE()
 	
 	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 250;
-	Description = "WireWorld wires, probably not what you want. For normal wires, use METL";
+	Description = "WireWorld wires, conducts based on a set of GOL-like rules";
 	
 	State = ST_SOLID;
 	Properties = TYPE_SOLID;

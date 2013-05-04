@@ -28,7 +28,7 @@ Element_GPMP::Element_GPMP()
 	
 	Temperature = 0.0f		+273.15f;
 	HeatConduct = 0;
-	Description = "Changes gravity to its temp when activated. (use HEAT/COOL).";
+	Description = "Gravity pump. Changes gravity to its temp when activated. (use HEAT/COOL)";
 	
 	State = ST_NONE;
 	Properties = TYPE_SOLID;

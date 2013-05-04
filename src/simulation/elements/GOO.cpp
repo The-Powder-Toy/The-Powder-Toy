@@ -28,7 +28,7 @@ Element_GOO::Element_GOO()
 	
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 75;
-	Description = "Solid. Deforms and disappears under pressure.";
+	Description = "Deforms and disappears under pressure.";
 	
 	State = ST_SOLID;
 	Properties = TYPE_SOLID | PROP_NEUTPENETRATE|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;

@@ -514,7 +514,7 @@ int luacon_keyevent(int key, int modifier, int event)
 		callret = lua_pcall(l, 4, 1, 0);
 		if (callret)
 		{
-			if (!strcmp(luaL_optstring(l, -1, ""), "Error: Script not responding"))
+			if (!strcmp(luacon_geterror(), "Error: Script not responding"))
 			{
 				ui::Engine::Ref().LastTick(clock());
 				for(j=i;j<=c-1;j++)
@@ -566,7 +566,7 @@ int luacon_mouseevent(int mx, int my, int mb, int event, int mouse_wheel)
 		callret = lua_pcall(l, 5, 1, 0);
 		if (callret)
 		{
-			if (!strcmp(luaL_optstring(l, -1, ""), "Error: Script not responding"))
+			if (!strcmp(luacon_geterror(), "Error: Script not responding"))
 			{
 				ui::Engine::Ref().LastTick(clock());
 				for(j=i;j<=c-1;j++)
@@ -579,7 +579,7 @@ int luacon_mouseevent(int mx, int my, int mb, int event, int mouse_wheel)
 				c--;
 				i--;
 			}
-			luacon_ci->Log(CommandInterface::LogError, luaL_optstring(l, -1, ""));
+			luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
 			lua_pop(l, 1);
 		}
 		else
@@ -627,7 +627,7 @@ int luacon_step(int mx, int my, std::string selectl, std::string selectr, std::s
 		callret = lua_pcall(l, 0, 0, 0);
 		if (callret)
 		{
-			if (!strcmp(luaL_optstring(l, -1, ""), "Error: Script not responding"))
+			if (!strcmp(luacon_geterror(), "Error: Script not responding"))
 			{
 				ui::Engine::Ref().LastTick(clock());
 				for(j=i;j<=c-1;j++)
@@ -640,7 +640,7 @@ int luacon_step(int mx, int my, std::string selectl, std::string selectr, std::s
 				c--;
 				i--;
 			}
-			luacon_ci->Log(CommandInterface::LogError, luaL_optstring(l, -1, ""));
+			luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
 			lua_pop(l, 1);
 		}
 	}
@@ -664,12 +664,32 @@ void luacon_hook(lua_State * l, lua_Debug * ar)
 	}
 }
 
-char *luacon_geterror(){
-	char *error = (char*)lua_tostring(luacon_ci->l, -1);
-	if(error==NULL || !error[0]){
-		error = "failed to execute";
+int luaL_tostring (lua_State *L, int n) {
+	luaL_checkany(L, n);
+	switch (lua_type(L, n)) {
+		case LUA_TNUMBER:
+			lua_pushstring(L, lua_tostring(L, n));
+			break;
+		case LUA_TSTRING:
+			lua_pushvalue(L, n);
+			break;
+		case LUA_TBOOLEAN:
+			lua_pushstring(L, (lua_toboolean(L, n) ? "true" : "false"));
+			break;
+		case LUA_TNIL:
+			lua_pushliteral(L, "nil");
+			break;
+		default:
+			lua_pushfstring(L, "%s: %p", luaL_typename(L, n), lua_topointer(L, n));
+			break;
 	}
-	return error;
+	return 1;
+}
+char *luacon_geterror(){
+	luaL_tostring(luacon_ci->l, -1);
+	char* err = (char*)luaL_optstring(luacon_ci->l, -1, "failed to execute");
+	lua_pop(luacon_ci->l, 1);
+	return err;
 }
 /*void luacon_close(){
 	lua_close(l);
@@ -776,7 +796,7 @@ int luacon_graphicsReplacement(GRAPHICS_FUNC_ARGS, int i)
 	callret = lua_pcall(luacon_ci->l, 4, 10, 0);
 	if (callret)
 	{
-		luacon_ci->Log(CommandInterface::LogError, luaL_optstring(luacon_ci->l, -1, ""));
+		luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
 		lua_pop(luacon_ci->l, 1);
 	}
 	else
@@ -923,27 +943,6 @@ int luatpt_setconsole(lua_State* l)
 		luacon_controller->HideConsole();
 	return 0;
 }
-static int luaL_tostring (lua_State *L, int n) {
-	luaL_checkany(L, n);
-	switch (lua_type(L, n)) {
-		case LUA_TNUMBER:
-			lua_pushstring(L, lua_tostring(L, n));
-			break;
-		case LUA_TSTRING:
-			lua_pushvalue(L, n);
-			break;
-		case LUA_TBOOLEAN:
-			lua_pushstring(L, (lua_toboolean(L, n) ? "true" : "false"));
-			break;
-		case LUA_TNIL:
-			lua_pushliteral(L, "nil");
-			break;
-		default:
-			lua_pushfstring(L, "%s: %p", luaL_typename(L, n), lua_topointer(L, n));
-			break;
-	}
-	return 1;
-}
 int luatpt_log(lua_State* l)
 {
 	int args = lua_gettop(l);
@@ -958,7 +957,11 @@ int luatpt_log(lua_State* l)
 		lua_pop(l, 2);
 	}
 	if((*luacon_currentCommand))
-		(*luacon_lastError) = text;
+	{
+		if(luacon_lastError->length())
+			*luacon_lastError += "; ";
+		*luacon_lastError += text;
+	}
 	else
 		luacon_ci->Log(CommandInterface::LogNotice, text.c_str());
 	return 0;

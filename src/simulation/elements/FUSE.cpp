@@ -28,7 +28,7 @@ Element_FUSE::Element_FUSE()
 	
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 200;
-	Description = "Solid. Burns slowly. Ignites at somewhat high temperatures and electricity.";
+	Description = "Burns slowly. Ignites at somewhat high temperatures or with electricity.";
 	
 	State = ST_SOLID;
 	Properties = TYPE_SOLID;

@@ -28,7 +28,7 @@ Element_PRTO::Element_PRTO()
 	
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 0;
-	Description = "Portal OUT.  Things come out here, now with channels (same as WIFI)";
+	Description = "Portal OUT. Things come out here, now with temperature dependent channels (same as WIFI)";
 	
 	State = ST_SOLID;
 	Properties = TYPE_SOLID;
