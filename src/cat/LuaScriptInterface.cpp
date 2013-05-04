@@ -95,6 +95,15 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	luaL_openlibs(l);
 	luaopen_bit(l);
 	luaopen_socket_core(l);
+	lua_getglobal(l, "package");
+	lua_pushstring(l, "loaded");
+	lua_rawget(l, -2);
+	lua_pushstring(l, "socket");
+	lua_rawget(l, -2);
+	lua_pushstring(l, "socket.core");
+	lua_pushvalue(l, -2);
+	lua_rawset(l, -4);
+	lua_pop(l, 3);
 	luaopen_socket(l);
 
 	lua_pushstring(l, "Luacon_ci");
