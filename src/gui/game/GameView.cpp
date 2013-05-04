@@ -1312,7 +1312,10 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		screenshot();
 		break;
 	case 'r':
-		record();
+		if (ctrl)
+			c->ReloadSim();
+		else
+			record();
 		break;
 	case 'e':
 		c->OpenElementSearch();
@@ -1442,11 +1445,11 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 
 void GameView::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
-	if(ctrl && shift)
+	if(ctrl && shift && drawMode != DrawPoints)
 		drawMode = DrawFill;
-	else if (ctrl)
+	else if (ctrl && drawMode != DrawPoints)
 		drawMode = DrawRect;
-	else if (shift)
+	else if (shift && drawMode != DrawPoints)
 		drawMode = DrawLine;
 	else if(!isMouseDown)
 		drawMode = DrawPoints;
@@ -1878,7 +1881,7 @@ void GameView::OnDraw()
 
 					ren->draw_image(placeSaveThumb, thumbPos.X, thumbPos.Y, 128);
 
-					ren->xor_rect(thumbPos.X, thumbPos.Y, placeSaveThumb->Width, placeSaveThumb->Width);
+					ren->xor_rect(thumbPos.X, thumbPos.Y, placeSaveThumb->Width, placeSaveThumb->Height);
 				}
 			}
 			else
@@ -1949,7 +1952,7 @@ void GameView::OnDraw()
 			for(iter = logEntries.begin(); iter != logEntries.end() && startAlpha>0; iter++)
 			{
 				string message = (*iter);
-				startY -= 13;
+				startY -= 14;
 				g->fillrect(startX-3, startY-3, Graphics::textwidth((char*)message.c_str())+6, 14, 0, 0, 0, 100);
 				g->drawtext(startX, startY, message.c_str(), 255, 255, 255, startAlpha);
 				startAlpha-=14;
