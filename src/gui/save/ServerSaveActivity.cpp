@@ -249,23 +249,26 @@ void ServerSaveActivity::Exit()
 void ServerSaveActivity::ShowRules()
 {
 	const char *rules =
-		"These are the rules you should follow when uploading saves. They may change at any time as new problems arise, and how each rule is handled changes depending on the situation.\n"
+		"These are the rules you should follow when uploading saves to avoid having them deleted or otherwise hidden from public view. If you fail to follow them, don't be surprised if your saves get lousy votes, unpublished, or removed from the front page should they make it there. They may change at any time as new problems arise, and how each rule is handled changes depending on the situation.\n"
 		"\n"
-		"\bt1. No image plotting.\bw If you use a program to draw out pixels from an image outside of TPT without drawing it by hand, then don't be surprised when it gets deleted and you get banned.\n"
-		"\bt2. No self voting.\bw This means making more than one account, and then using that account to vote on any save multiple times. We can see this stuff, and people get banned for doing this. Don't do it.\n"
-		"\bt3. No hate saves.\bw This means things like shooting Jews or killing Beiber, these will not be allowed.\n"
-		"\bt4. No penis drawings.\bw Or any other explicit or non-explicit sex please. We like to think this is a game that kids can play, don't post anything too inappropriate for children.\n"
-		"\bt5. Don't ask people to vote.\bw If your stuff is awesome, you shouldn't have to beg for popularity to make it so. People tend to downvote when they see a lot of vote begging anyway.\n"
+		"\bt1. No image plotting.\bw If you use a program to draw out pixels from an image outside of TPT without drawing it by hand, don't be surprised when it gets deleted and you get banned.\n"
+		"\bt2. No self voting.\bw This means making more than one account, and then using that account to vote on any save multiple times. We can see this stuff, and people get banned for doing it. Don't do it.\n"
+		"\bt3. No hate saves.\bw This means things like shooting Jews or killing Beiber; these will not be allowed.\n"
+		"\bt4. No penis drawings.\bw Or any other explicit or non-explicit sex please. We like to think this is a game that kids can play with their family around, don't post anything too inappropriate.\n"
+		"\bt5. Don't ask people to vote.\bw If your stuff is awesome, you shouldn't have to beg for popularity to get votes. People tend to downvote when they see vote begging anyway.\n"
 		   "- This includes vote signs in the game, drawings of vote arrows, and comments on the save telling people to vote up.\n"
 		   "- Gimmicks for getting votes like '100 votes and I'll make a better version' are similarly frowned upon.\n"
-		"\bt6. Keep the number of logos and signs to a minimum.\bw They not only slow the game down, but it makes saves unappealing for people to use. \n"
+		"\bt6. Keep the number of logos and signs to a minimum.\bw They not only slow the game down, but it can also make saves unappealing for people to use. \n"
+		   "- Please do not make fake update or similar update signs either.\n"
 		"\bt7. Please don't swear excessively.\bw Saves containing excessive swearing or rude language will be unpublished. Don't make rude or offensive comments either.\n"
-		"\bt8. Don't make text only saves.\bw Saves are much better when they actually use some of the features in the game. Text only saves will be removed from the front page if they should get there.\n"
-		   "- This also relates to art on the front page. Art saves that rely only on the deco layer are generally removed. Other art using elements may stay longer if they are more impressive.\n"
-		"\bt9. Don't claim other's work as your own.\bw If you didn't make it, don't resave it for yourself. You can fav. a save if you want to see it later instead of publishing a copy.\n"
-		   "- This doesn't mean you can't modify or improve saves, building on the works of others in encouraged. If you give credit to the original author, it is usually ok to do resave unless the author specifically prohibits it.\n"
+		"\bt8. Don't make text only saves.\bw Saves are much better when they actually use some of the features in the game. Text only saves will be removed from the front page should they ever get there.\n"
+		   "- Also, element suggestion saves will be removed from the front page. It's recommended you make a thread on the forum instead so you can get actual criticism from other users and devs.\n"
+		   "- This is also related to art on the front page. Art saves that only rely on the deco layer are generally removed. Art using elements may stay longer if it's more impressive.\n"
+		"\bt9. Don't claim others' work as your own.\bw If you didn't make it, don't resave it for yourself. You can fav. a save instead of publishing a copy if you want to see it later.\n"
+		   "- This doesn't mean you can't modify or improve saves; building on the works of others in encouraged. If you give credit to the original author, it is usually OK to resave unless the author specifically prohibits it.\n"
+		"\bt10. Do not make laggy saves.\bw If a save is so laggy that it crashes the game for some people, it's just really annoying. Saves that do make it to the front page that purposely lag the game will be demoted.\n"
 		"\n"
-		"You can report a save breaking any one of these rules, the moderators are busy in real life too and don't always have the time to search through all the saves for these kinds of things. If reporting a copied save, just give the id of the original, but if not an id isn't needed.";
+		"You can report a save breaking any one of these rules, as the moderators are busy in real life too and don't always have the time to search through all saves for these kinds of things. If reporting a copied save, just give the ID of the original, but if not an ID isn't needed.";
 
 	new InformationMessage("Save Uploading Rules", rules, true);
 }
