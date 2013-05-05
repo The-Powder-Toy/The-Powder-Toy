@@ -193,10 +193,6 @@ GameController::~GameController()
 	{
 		delete options;
 	}
-	if(ui::Engine::Ref().GetWindow() == gameView)
-	{
-		ui::Engine::Ref().CloseWindow();
-	}
 	//deleted here because it refuses to be deleted when deleted from gameModel even with the same code
 	std::deque<Snapshot*> history = gameModel->GetHistory();
 	for(std::deque<Snapshot*>::iterator iter = history.begin(), end = history.end(); iter != end; ++iter)
@@ -214,7 +210,11 @@ GameController::~GameController()
 		delete *iter;
 	}
 	delete gameModel;
-	delete gameView;
+	if(ui::Engine::Ref().GetWindow() == gameView)
+	{
+		ui::Engine::Ref().CloseWindow();
+		delete gameView;
+	}
 }
 
 void GameController::HistoryRestore()
