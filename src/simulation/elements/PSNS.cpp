@@ -1,10 +1,10 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_TSNS PT_TSNS 164
-Element_TSNS::Element_TSNS()
+//#TPT-Directive ElementClass Element_PSNS PT_TSNS 172
+Element_PSNS::Element_PSNS()
 {
-	Identifier = "DEFAULT_PT_TSNS";
-	Name = "TSNS";
-	Colour = PIXPACK(0xFD00D5);
+	Identifier = "DEFAULT_PT_PSNS";
+	Name = "PSNS";
+	Colour = PIXPACK(0xDB2020);
 	MenuVisible = 1;
 	MenuSection = SC_SENSOR;
 	Enabled = 1;
@@ -26,9 +26,9 @@ Element_TSNS::Element_TSNS()
 	
 	Weight = 100;
 	
-	Temperature = R_TEMP+0.0f	+273.15f;
+	Temperature = 277.15f;
 	HeatConduct = 0;
-	Description = "Temperature sensor, creates a spark when there's a nearby particle with a greater temperature.";
+	Description = "Pressure sensor, creates spark when the pressure is greater than its temperature.";
 	
 	State = ST_SOLID;
 	Properties = TYPE_SOLID;
@@ -42,16 +42,15 @@ Element_TSNS::Element_TSNS()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 	
-	Update = &Element_TSNS::update;
+	Update = &Element_PSNS::update;
 	
 }
 
-//#TPT-Directive ElementHeader Element_TSNS static int update(UPDATE_FUNC_ARGS)
-int Element_TSNS::update(UPDATE_FUNC_ARGS)
+//#TPT-Directive ElementHeader Element_PSNS static int update(UPDATE_FUNC_ARGS)
+int Element_PSNS::update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry, rt, rd = parts[i].tmp2;
-	if (rd > 25) parts[i].tmp2 = rd = 25;
-	if (parts[i].life)
+	int r, rx, ry, rt;
+	if (sim->pv[y/CELL][x/CELL] > parts[i].temp-273.15f)
 	{
 		parts[i].life = 0;
 		for (rx=-2; rx<3; rx++)
@@ -73,21 +72,9 @@ int Element_TSNS::update(UPDATE_FUNC_ARGS)
 					}
 				}
 	}
-	for (rx=-rd; rx<rd+1; rx++)
-		for (ry=-rd; ry<rd+1; ry++)
-			if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES && (rx || ry))
-			{
-				r = pmap[y+ry][x+rx];
-				if(!r)
-					r = sim->photons[y+ry][x+rx];
-				if(!r)
-					continue;
-				if ((r&0xFF)!=PT_TSNS && (r&0xFF)!=PT_METL && parts[r>>8].temp > parts[i].temp)
-					parts[i].life = 1;
-			}
 	return 0;
 }
 
 
 
-Element_TSNS::~Element_TSNS() {}
+Element_PSNS::~Element_PSNS() {}
