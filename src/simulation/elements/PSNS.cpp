@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_PSNS PT_TSNS 172
+//#TPT-Directive ElementClass Element_PSNS PT_PSNS 172
 Element_PSNS::Element_PSNS()
 {
 	Identifier = "DEFAULT_PT_PSNS";
