@@ -1562,8 +1562,8 @@ void GameView::DoMouseMove(int x, int y, int dx, int dy)
 			int mouseX = x;
 			if(mouseX > XRES)
 				mouseX = XRES;
-			if (mouseX < BARSIZE+2)
-				mouseX = BARSIZE+2;
+			if (mouseX < 15)
+				mouseX = 15;
 
 			scrollBar->Position.X = (int)(((float)mouseX/((float)XRES))*(float)(XRES-scrollSize));
 
