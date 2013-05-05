@@ -16,6 +16,7 @@
 #include "graphics/Graphics.h"
 #if defined(LIN)
 #include "icon.h"
+#include <signal.h>
 #endif
 
 #ifndef WIN
