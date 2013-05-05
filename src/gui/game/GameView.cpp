@@ -1150,8 +1150,12 @@ void GameView::ToolTip(ui::Component * sender, ui::Point mousePosition, std::str
 {
 	if(sender->Position.Y > Size.Y-17)
 	{
-		buttonTip = toolTip;
-		buttonTipShow = 120;
+		if (selectMode == PlaceSave || selectMode == SelectNone)
+		{
+			buttonTip = toolTip;
+			if (buttonTipShow < 120)
+				buttonTipShow += 3;
+		}
 	}
 	else if(sender->Position.X > Size.X-BARSIZE)// < Size.Y-(quickOptionButtons.size()+1)*16)
 	{
@@ -1159,13 +1163,15 @@ void GameView::ToolTip(ui::Component * sender, ui::Point mousePosition, std::str
 		toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((char*)toolTip.c_str()), sender->Position.Y+3);
 		if(toolTipPosition.Y+10 > Size.Y-MENUSIZE)
 			toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((char*)toolTip.c_str()), Size.Y-MENUSIZE-10);
-		toolTipPresence = 120;
+		if (toolTipPresence < 120)
+			toolTipPresence += 3;
 	}
 	else
 	{
 		this->toolTip = toolTip;
 		toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((char*)toolTip.c_str()), Size.Y-MENUSIZE-10);
-		toolTipPresence = 160;
+		if (toolTipPresence < 160)
+			toolTipPresence += 3;
 	}
 }
 
@@ -1202,8 +1208,8 @@ void GameView::BeginStampSelection()
 {
 	selectMode = SelectStamp;
 	selectPoint1 = ui::Point(-1, -1);
-	infoTip = "\x0F\xEF\xEF\x10Select an area to create a stamp";
-	infoTipPresence = 120;
+	buttonTip = "\x0F\xEF\xEF\x10Click-and-drag to specify an area to create a stamp (right click = cancel)";
+	buttonTipShow = 120;
 }
 
 void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
@@ -1382,8 +1388,8 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		{
 			selectMode = SelectCopy;
 			selectPoint1 = ui::Point(-1, -1);
-			infoTip = "\x0F\xEF\xEF\x10Select an area to copy";
-			infoTipPresence = 120;
+			buttonTip = "\x0F\xEF\xEF\x10Click-and-drag to specify an area to copy (right click = cancel)";
+			buttonTipShow = 120;
 		}
 		break;
 	case 'x':
@@ -1391,8 +1397,8 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		{
 			selectMode = SelectCut;
 			selectPoint1 = ui::Point(-1, -1);
-			infoTip = "\x0F\xEF\xEF\x10Select an area to cut";
-			infoTipPresence = 120;
+			buttonTip = "\x0F\xEF\xEF\x10Click-and-drag to specify an area to copy then cut (right click = cancel)";
+			buttonTipShow = 120;
 		}
 		break;
 	case 'v':
@@ -1519,7 +1525,9 @@ void GameView::OnTick(float dt)
 		if(infoTipPresence<0)
 			infoTipPresence = 0;
 	}
-	if(buttonTipShow>0)
+	if (selectMode != PlaceSave && selectMode != SelectNone && buttonTipShow < 120)
+		buttonTipShow += 2;
+	else if(buttonTipShow>0)
 	{
 		buttonTipShow -= int(dt)>0?int(dt):1;
 		if(buttonTipShow<0)
@@ -2110,7 +2118,7 @@ void GameView::OnDraw()
 	if(infoTipPresence)
 	{
 		int infoTipAlpha = (infoTipPresence>50?50:infoTipPresence)*5;
-		g->drawtext((XRES-Graphics::textwidth((char*)infoTip.c_str()))/2, (YRES/2)-2, (char*)infoTip.c_str(), 255, 255, 255, infoTipAlpha);
+		g->drawtext_outline((XRES-Graphics::textwidth((char*)infoTip.c_str()))/2, (YRES/2)-2, (char*)infoTip.c_str(), 255, 255, 255, infoTipAlpha);
 	}
 
 	if(toolTipPresence && toolTipPosition.X!=-1 && toolTipPosition.Y!=-1 && toolTip.length())
@@ -2120,7 +2128,7 @@ void GameView::OnDraw()
 
 	if(buttonTipShow > 0)
 	{
-		g->drawtext(6, Size.Y-MENUSIZE-10, (char*)buttonTip.c_str(), 255, 255, 255, buttonTipShow>51?255:buttonTipShow*5);
+		g->drawtext(16, Size.Y-MENUSIZE-24, (char*)buttonTip.c_str(), 255, 255, 255, buttonTipShow>51?255:buttonTipShow*5);
 	}
 
 	//Introduction text

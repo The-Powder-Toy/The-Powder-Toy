@@ -225,6 +225,7 @@ public:
 	void Clear();
 	void Finalise();
 	//
+	int drawtext_outline(int x, int y, const char *s, int r, int g, int b, int a);
 	int drawtext(int x, int y, const char *s, int r, int g, int b, int a);
 	int drawtext(int x, int y, std::string s, int r, int g, int b, int a);
 	int drawchar(int x, int y, int c, int r, int g, int b, int a);

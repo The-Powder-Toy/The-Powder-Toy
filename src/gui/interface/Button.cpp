@@ -192,12 +192,15 @@ void Button::OnMouseEnter(int x, int y)
 		return;
 	if(actionCallback)
 		actionCallback->MouseEnterCallback(this);
+}
+
+void Button::OnMouseHover(int x, int y)
+{
 	if(toolTip.length()>0 && GetParentWindow())
 	{
 		GetParentWindow()->ToolTip(this, ui::Point(x, y), toolTip);
 	}
 }
-
 
 void Button::OnMouseLeave(int x, int y)
 {
