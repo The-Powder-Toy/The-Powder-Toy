@@ -2913,11 +2913,7 @@ int Simulation::create_part(int p, int x, int y, int tv)
 
 	parts[i].dcolour = 0;
 	parts[i].flags = 0;
-	if (t==PT_GLAS)
-	{
-		parts[i].pavg[1] = pv[y/CELL][x/CELL];
-	}
-	else if (t==PT_QRTZ)
+	if (t == PT_GLAS || t == PT_QRTZ || t == PT_TUGN)
 	{
 		parts[i].pavg[1] = pv[y/CELL][x/CELL];
 	}
@@ -2983,8 +2979,6 @@ int Simulation::create_part(int p, int x, int y, int tv)
 				parts[i].life = rand()%50+60;
 				break;
 			case PT_QRTZ:
-				parts[i].tmp = (rand()%11);
-				break;
 			case PT_PQRT:
 				parts[i].tmp = (rand()%11);
 				break;

@@ -92,6 +92,8 @@ int Element_DMG::update(UPDATE_FUNC_ARGS)
 											sim->part_change_type(rr>>8, x+nxi, y+nxj, PT_BCOL);
 										else if(t == PT_QRTZ)
 											sim->part_change_type(rr>>8, x+nxi, y+nxj, PT_PQRT);
+										else if(t == PT_TUGN)
+											sim->part_change_type(rr>>8, x+nxi, y+nxj, PT_BRMT);
 									}
 								}
 							}
