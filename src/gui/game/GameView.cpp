@@ -207,7 +207,8 @@ GameView::GameView():
 	};
 
 	scrollBar = new ui::Button(ui::Point(0,YRES+21), ui::Point(XRES, 2), "");
-	scrollBar->Appearance.BackgroundInactive = ui::Colour(255, 255, 255);
+	scrollBar->Appearance.BorderHover = ui::Colour(200, 200, 200);
+	scrollBar->Appearance.BorderActive = ui::Colour(200, 200, 200);
 	scrollBar->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	scrollBar->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(scrollBar);
@@ -1208,7 +1209,7 @@ void GameView::BeginStampSelection()
 {
 	selectMode = SelectStamp;
 	selectPoint1 = ui::Point(-1, -1);
-	buttonTip = "\x0F\xEF\xEF\x10Click-and-drag to specify an area to create a stamp (right click = cancel)";
+	buttonTip = "\x0F\xEF\xEF\x10\Click-and-drag to specify an area to create a stamp (right click = cancel)";
 	buttonTipShow = 120;
 }
 
@@ -1388,7 +1389,7 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		{
 			selectMode = SelectCopy;
 			selectPoint1 = ui::Point(-1, -1);
-			buttonTip = "\x0F\xEF\xEF\x10Click-and-drag to specify an area to copy (right click = cancel)";
+			buttonTip = "\x0F\xEF\xEF\x10\Click-and-drag to specify an area to copy (right click = cancel)";
 			buttonTipShow = 120;
 		}
 		break;
@@ -1397,7 +1398,7 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		{
 			selectMode = SelectCut;
 			selectPoint1 = ui::Point(-1, -1);
-			buttonTip = "\x0F\xEF\xEF\x10Click-and-drag to specify an area to copy then cut (right click = cancel)";
+			buttonTip = "\x0F\xEF\xEF\x10\Click-and-drag to specify an area to copy then cut (right click = cancel)";
 			buttonTipShow = 120;
 		}
 		break;
@@ -1553,21 +1554,23 @@ void GameView::DoMouseMove(int x, int y, int dx, int dy)
 	if(toolButtons.size())
 	{
 		int totalWidth = (toolButtons[0]->Size.X+1)*toolButtons.size();
-		int scrollSize = (int)(((float)(XRES-15))/((float)totalWidth) * ((float)XRES-15));
-		if (scrollSize>XRES)
-			scrollSize = XRES;
+		int scrollSize = (int)(((float)(XRES-BARSIZE))/((float)totalWidth) * ((float)XRES-BARSIZE));
+		if (scrollSize>XRES-1)
+			scrollSize = XRES-1;
 		if(totalWidth > XRES-15)
 		{
 			int mouseX = x;
 			if(mouseX > XRES)
 				mouseX = XRES;
+			if (mouseX < BARSIZE+2)
+				mouseX = BARSIZE+2;
 
-			scrollBar->Position.X = (int)(((float)mouseX/((float)XRES-15))*(float)(XRES-scrollSize));
+			scrollBar->Position.X = (int)(((float)mouseX/((float)XRES))*(float)(XRES-scrollSize));
 
-			float overflow = totalWidth-(XRES-15), mouseLocation = float(XRES)/float(mouseX-(XRES));
+			float overflow = totalWidth-(XRES-BARSIZE), mouseLocation = float(XRES)/float(mouseX-(XRES));
 			setToolButtonOffset(overflow/mouseLocation);
 
-			//Ensure that mouseLeave events are make their way to the buttons should they move from underneith the mouse pointer
+			//Ensure that mouseLeave events are make their way to the buttons should they move from underneath the mouse pointer
 			if(toolButtons[0]->Position.Y < y && toolButtons[0]->Position.Y+toolButtons[0]->Size.Y > y)
 			{
 				for(vector<ToolButton*>::iterator iter = toolButtons.begin(), end = toolButtons.end(); iter!=end; ++iter)
@@ -1582,7 +1585,7 @@ void GameView::DoMouseMove(int x, int y, int dx, int dy)
 		}
 		else
 		{
-			scrollBar->Position.X = 0;
+			scrollBar->Position.X = 1;
 		}
 		scrollBar->Size.X=scrollSize;
 	}
@@ -1978,7 +1981,7 @@ void GameView::OnDraw()
 		g->fillrect(XRES-20-textWidth, 12, textWidth+8, 15, 0, 0, 0, 255*0.5);
 		g->drawtext(XRES-16-textWidth, 16, (const char*)sampleInfo.str().c_str(), 255, 50, 20, 255);
 	}
-	else if(showHud && !introText)
+	else if(showHud)
 	{
 		//Draw info about simulation under cursor
 		int wavelengthGfx = 0;
@@ -2090,8 +2093,10 @@ void GameView::OnDraw()
 			g->fillrect(XRES-20-textWidth, 26, textWidth+8, 15, 0, 0, 0, 255*0.5);
 			g->drawtext(XRES-16-textWidth, 30, (const char*)sampleInfo.str().c_str(), 255, 255, 255, 255*0.75);
 		}
+	}
 
-
+	if(showHud && introText < 51)
+	{
 		//FPS and some version info
 #ifndef DEBUG //In debug mode, the Engine will draw FPS and other info instead
 		std::stringstream fpsInfo;
@@ -2108,9 +2113,10 @@ void GameView::OnDraw()
 		if (ren->GetGridSize())
 			fpsInfo << " [GRID: " << ren->GetGridSize() << "]";
 
-		textWidth = Graphics::textwidth((char*)fpsInfo.str().c_str());
-		g->fillrect(12, 12, textWidth+8, 15, 0, 0, 0, 255*0.5);
-		g->drawtext(16, 16, (const char*)fpsInfo.str().c_str(), 32, 216, 255, 255*0.75);
+		int textWidth = Graphics::textwidth((char*)fpsInfo.str().c_str());
+		int alpha = 255-introText*5;
+		g->fillrect(12, 12, textWidth+8, 15, 0, 0, 0, alpha*0.5);
+		g->drawtext(16, 16, (const char*)fpsInfo.str().c_str(), 32, 216, 255, alpha*0.75);
 #endif
 	}
 
