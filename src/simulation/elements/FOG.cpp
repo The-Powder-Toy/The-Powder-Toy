@@ -28,7 +28,7 @@ Element_FOG::Element_FOG()
 	
 	Temperature = 243.15f;
 	HeatConduct = 100;
-	Description = "Not quite Steam";
+	Description = "Fog, created when an electric current is passed through RIME.";
 	
 	State = ST_GAS;
 	Properties = TYPE_GAS|PROP_LIFE_DEC;

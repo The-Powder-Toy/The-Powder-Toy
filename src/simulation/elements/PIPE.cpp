@@ -6,7 +6,7 @@ Element_PIPE::Element_PIPE()
 	Name = "PIPE";
 	Colour = PIXPACK(0x444444);
 	MenuVisible = 1;
-	MenuSection = SC_SOLIDS;
+	MenuSection = SC_FORCE;
 	Enabled = 1;
 	
 	Advection = 0.0f;
@@ -28,7 +28,7 @@ Element_PIPE::Element_PIPE()
 	
 	Temperature = 273.15f;
 	HeatConduct = 0;
-	Description = "Moves elements around, read FAQ on website for help.";
+	Description = "PIPE, moves particles around. Once the BRCK generates, erase some for the exit. Then the PIPE generates and is useable.";
 	
 	State = ST_SOLID;
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;

@@ -207,7 +207,8 @@ GameView::GameView():
 	};
 
 	scrollBar = new ui::Button(ui::Point(0,YRES+21), ui::Point(XRES, 2), "");
-	scrollBar->Appearance.BackgroundInactive = ui::Colour(255, 255, 255);
+	scrollBar->Appearance.BorderHover = ui::Colour(200, 200, 200);
+	scrollBar->Appearance.BorderActive = ui::Colour(200, 200, 200);
 	scrollBar->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	scrollBar->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(scrollBar);
@@ -1145,8 +1146,12 @@ void GameView::ToolTip(ui::Component * sender, ui::Point mousePosition, std::str
 {
 	if(sender->Position.Y > Size.Y-17)
 	{
-		buttonTip = toolTip;
-		buttonTipShow = 120;
+		if (selectMode == PlaceSave || selectMode == SelectNone)
+		{
+			buttonTip = toolTip;
+			if (buttonTipShow < 120)
+				buttonTipShow += 3;
+		}
 	}
 	else if(sender->Position.X > Size.X-BARSIZE)// < Size.Y-(quickOptionButtons.size()+1)*16)
 	{
@@ -1154,13 +1159,15 @@ void GameView::ToolTip(ui::Component * sender, ui::Point mousePosition, std::str
 		toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((char*)toolTip.c_str()), sender->Position.Y+3);
 		if(toolTipPosition.Y+10 > Size.Y-MENUSIZE)
 			toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((char*)toolTip.c_str()), Size.Y-MENUSIZE-10);
-		toolTipPresence = 120;
+		if (toolTipPresence < 120)
+			toolTipPresence += 3;
 	}
 	else
 	{
 		this->toolTip = toolTip;
 		toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((char*)toolTip.c_str()), Size.Y-MENUSIZE-10);
-		toolTipPresence = 160;
+		if (toolTipPresence < 160)
+			toolTipPresence += 3;
 	}
 }
 
@@ -1197,8 +1204,8 @@ void GameView::BeginStampSelection()
 {
 	selectMode = SelectStamp;
 	selectPoint1 = ui::Point(-1, -1);
-	infoTip = "\x0F\xEF\xEF\x10Select an area to create a stamp";
-	infoTipPresence = 120;
+	buttonTip = "\x0F\xEF\xEF\x10\Click-and-drag to specify an area to create a stamp (right click = cancel)";
+	buttonTipShow = 120;
 }
 
 void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
@@ -1307,7 +1314,10 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		screenshot();
 		break;
 	case 'r':
-		record();
+		if (ctrl)
+			c->ReloadSim();
+		else
+			record();
 		break;
 	case 'e':
 		c->OpenElementSearch();
@@ -1374,8 +1384,8 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		{
 			selectMode = SelectCopy;
 			selectPoint1 = ui::Point(-1, -1);
-			infoTip = "\x0F\xEF\xEF\x10Select an area to copy";
-			infoTipPresence = 120;
+			buttonTip = "\x0F\xEF\xEF\x10\Click-and-drag to specify an area to copy (right click = cancel)";
+			buttonTipShow = 120;
 		}
 		break;
 	case 'x':
@@ -1383,8 +1393,8 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		{
 			selectMode = SelectCut;
 			selectPoint1 = ui::Point(-1, -1);
-			infoTip = "\x0F\xEF\xEF\x10Select an area to cut";
-			infoTipPresence = 120;
+			buttonTip = "\x0F\xEF\xEF\x10\Click-and-drag to specify an area to copy then cut (right click = cancel)";
+			buttonTipShow = 120;
 		}
 		break;
 	case 'v':
@@ -1437,11 +1447,11 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 
 void GameView::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
-	if(ctrl && shift)
+	if(ctrl && shift && drawMode != DrawPoints)
 		drawMode = DrawFill;
-	else if (ctrl)
+	else if (ctrl && drawMode != DrawPoints)
 		drawMode = DrawRect;
-	else if (shift)
+	else if (shift && drawMode != DrawPoints)
 		drawMode = DrawLine;
 	else if(!isMouseDown)
 		drawMode = DrawPoints;
@@ -1511,7 +1521,9 @@ void GameView::OnTick(float dt)
 		if(infoTipPresence<0)
 			infoTipPresence = 0;
 	}
-	if(buttonTipShow>0)
+	if (selectMode != PlaceSave && selectMode != SelectNone && buttonTipShow < 120)
+		buttonTipShow += 2;
+	else if(buttonTipShow>0)
 	{
 		buttonTipShow -= int(dt)>0?int(dt):1;
 		if(buttonTipShow<0)
@@ -1537,21 +1549,23 @@ void GameView::DoMouseMove(int x, int y, int dx, int dy)
 	if(toolButtons.size())
 	{
 		int totalWidth = (toolButtons[0]->Size.X+1)*toolButtons.size();
-		int scrollSize = (int)(((float)(XRES-15))/((float)totalWidth) * ((float)XRES-15));
-		if (scrollSize>XRES)
-			scrollSize = XRES;
+		int scrollSize = (int)(((float)(XRES-BARSIZE))/((float)totalWidth) * ((float)XRES-BARSIZE));
+		if (scrollSize>XRES-1)
+			scrollSize = XRES-1;
 		if(totalWidth > XRES-15)
 		{
 			int mouseX = x;
 			if(mouseX > XRES)
 				mouseX = XRES;
+			if (mouseX < 15)
+				mouseX = 15;
 
-			scrollBar->Position.X = (int)(((float)mouseX/((float)XRES-15))*(float)(XRES-scrollSize));
+			scrollBar->Position.X = (int)(((float)mouseX/((float)XRES))*(float)(XRES-scrollSize));
 
-			float overflow = totalWidth-(XRES-15), mouseLocation = float(XRES)/float(mouseX-(XRES));
+			float overflow = totalWidth-(XRES-BARSIZE), mouseLocation = float(XRES)/float(mouseX-(XRES));
 			setToolButtonOffset(overflow/mouseLocation);
 
-			//Ensure that mouseLeave events are make their way to the buttons should they move from underneith the mouse pointer
+			//Ensure that mouseLeave events are make their way to the buttons should they move from underneath the mouse pointer
 			if(toolButtons[0]->Position.Y < y && toolButtons[0]->Position.Y+toolButtons[0]->Size.Y > y)
 			{
 				for(vector<ToolButton*>::iterator iter = toolButtons.begin(), end = toolButtons.end(); iter!=end; ++iter)
@@ -1566,7 +1580,7 @@ void GameView::DoMouseMove(int x, int y, int dx, int dy)
 		}
 		else
 		{
-			scrollBar->Position.X = 0;
+			scrollBar->Position.X = 1;
 		}
 		scrollBar->Size.X=scrollSize;
 	}
@@ -1873,7 +1887,7 @@ void GameView::OnDraw()
 
 					ren->draw_image(placeSaveThumb, thumbPos.X, thumbPos.Y, 128);
 
-					ren->xor_rect(thumbPos.X, thumbPos.Y, placeSaveThumb->Width, placeSaveThumb->Width);
+					ren->xor_rect(thumbPos.X, thumbPos.Y, placeSaveThumb->Width, placeSaveThumb->Height);
 				}
 			}
 			else
@@ -1944,7 +1958,7 @@ void GameView::OnDraw()
 			for(iter = logEntries.begin(); iter != logEntries.end() && startAlpha>0; iter++)
 			{
 				string message = (*iter);
-				startY -= 13;
+				startY -= 14;
 				g->fillrect(startX-3, startY-3, Graphics::textwidth((char*)message.c_str())+6, 14, 0, 0, 0, 100);
 				g->drawtext(startX, startY, message.c_str(), 255, 255, 255, startAlpha);
 				startAlpha-=14;
@@ -1962,7 +1976,7 @@ void GameView::OnDraw()
 		g->fillrect(XRES-20-textWidth, 12, textWidth+8, 15, 0, 0, 0, 255*0.5);
 		g->drawtext(XRES-16-textWidth, 16, (const char*)sampleInfo.str().c_str(), 255, 50, 20, 255);
 	}
-	else if(showHud && !introText)
+	else if(showHud)
 	{
 		//Draw info about simulation under cursor
 		int wavelengthGfx = 0;
@@ -2074,8 +2088,10 @@ void GameView::OnDraw()
 			g->fillrect(XRES-20-textWidth, 26, textWidth+8, 15, 0, 0, 0, 255*0.5);
 			g->drawtext(XRES-16-textWidth, 30, (const char*)sampleInfo.str().c_str(), 255, 255, 255, 255*0.75);
 		}
+	}
 
-
+	if(showHud && introText < 51)
+	{
 		//FPS and some version info
 #ifndef DEBUG //In debug mode, the Engine will draw FPS and other info instead
 		std::stringstream fpsInfo;
@@ -2092,9 +2108,10 @@ void GameView::OnDraw()
 		if (ren->GetGridSize())
 			fpsInfo << " [GRID: " << ren->GetGridSize() << "]";
 
-		textWidth = Graphics::textwidth((char*)fpsInfo.str().c_str());
-		g->fillrect(12, 12, textWidth+8, 15, 0, 0, 0, 255*0.5);
-		g->drawtext(16, 16, (const char*)fpsInfo.str().c_str(), 32, 216, 255, 255*0.75);
+		int textWidth = Graphics::textwidth((char*)fpsInfo.str().c_str());
+		int alpha = 255-introText*5;
+		g->fillrect(12, 12, textWidth+8, 15, 0, 0, 0, alpha*0.5);
+		g->drawtext(16, 16, (const char*)fpsInfo.str().c_str(), 32, 216, 255, alpha*0.75);
 #endif
 	}
 
@@ -2102,7 +2119,7 @@ void GameView::OnDraw()
 	if(infoTipPresence)
 	{
 		int infoTipAlpha = (infoTipPresence>50?50:infoTipPresence)*5;
-		g->drawtext((XRES-Graphics::textwidth((char*)infoTip.c_str()))/2, (YRES/2)-2, (char*)infoTip.c_str(), 255, 255, 255, infoTipAlpha);
+		g->drawtext_outline((XRES-Graphics::textwidth((char*)infoTip.c_str()))/2, (YRES/2)-2, (char*)infoTip.c_str(), 255, 255, 255, infoTipAlpha);
 	}
 
 	if(toolTipPresence && toolTipPosition.X!=-1 && toolTipPosition.Y!=-1 && toolTip.length())
@@ -2112,7 +2129,7 @@ void GameView::OnDraw()
 
 	if(buttonTipShow > 0)
 	{
-		g->drawtext(6, Size.Y-MENUSIZE-10, (char*)buttonTip.c_str(), 255, 255, 255, buttonTipShow>51?255:buttonTipShow*5);
+		g->drawtext(16, Size.Y-MENUSIZE-24, (char*)buttonTip.c_str(), 255, 255, 255, buttonTipShow>51?255:buttonTipShow*5);
 	}
 
 	//Introduction text

@@ -12,7 +12,7 @@
 #include "client/requestbroker/RequestListener.h"
 
 ProfileActivity::ProfileActivity(std::string username) :
-	WindowActivity(ui::Point(-1, -1), ui::Point(236, 200)),
+	WindowActivity(ui::Point(-1, -1), ui::Point(236, 300)),
 	loading(false),
 	saving(false)
 {
@@ -151,7 +151,7 @@ void ProfileActivity::setUserInfo(UserInfo newInfo)
 		currentY += 10+bio->Size.Y;
 		if(currentY > Size.Y - 20)
 		{
-			ui::ScrollPanel * scrollPanel = new ui::ScrollPanel(bio->Position, ui::Point(Size.X, Size.Y-30-bio->Position.Y));
+			ui::ScrollPanel * scrollPanel = new ui::ScrollPanel(ui::Point(1, bio->Position.Y), ui::Point(Size.X-2, Size.Y-30-bio->Position.Y));
 			AddComponent(scrollPanel);
 			bio->Position = ui::Point(4, 4);
 			scrollPanel->AddChild(bio);

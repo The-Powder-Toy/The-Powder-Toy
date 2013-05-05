@@ -28,7 +28,7 @@ Element_IRON::Element_IRON()
 	
 	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 251;
-	Description = "Rusts with salt, can be used for electrolysis of WATR";
+	Description = "Rusts with salt, can be used for electrolysis of WATR.";
 	
 	State = ST_SOLID;
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_HOT_GLOW;

@@ -28,7 +28,7 @@ Element_PSTN::Element_PSTN()
 	
 	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 0;
-	Description = "Piston, extends and pushes particles";
+	Description = "Piston, extends and pushes particles.";
 	
 	State = ST_SOLID;
 	Properties = TYPE_SOLID;
@@ -185,7 +185,7 @@ int Element_PSTN::CanMoveStack(Simulation * sim, int stackX, int stackY, int dir
 			if(spaces >= amount)
 				break;
 		} else {
-			if(currentPos < maxSize && !retract)
+			if(spaces < maxSize && !retract)
 				tempParts[currentPos++] = r>>8;
 			else
 				return spaces;

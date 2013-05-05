@@ -28,7 +28,7 @@ Element_LO2::Element_LO2()
 	
 	Temperature = 80.0f;
 	HeatConduct = 70;
-	Description = "Liquid Oxygen. Very cold. Reacts with fire";
+	Description = "Liquid Oxygen. Very cold. Reacts with fire.";
 	
 	State = ST_LIQUID;
 	Properties = TYPE_LIQUID;

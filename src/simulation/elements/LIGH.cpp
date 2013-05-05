@@ -7,7 +7,7 @@ Element_LIGH::Element_LIGH()
 	Name = "LIGH";
 	Colour = PIXPACK(0xFFFFC0);
 	MenuVisible = 1;
-	MenuSection = SC_ELEC;
+	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;
 	
 	Advection = 0.0f;
@@ -29,7 +29,7 @@ Element_LIGH::Element_LIGH()
 	
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 0;
-	Description = "More realistic lightning. Set pen size to set the size of the lightning.";
+	Description = "Lightning. Change the brush size to set the size of the lightning.";
 	
 	State = ST_SOLID;
 	Properties = TYPE_SOLID;

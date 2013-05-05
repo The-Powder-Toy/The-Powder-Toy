@@ -600,9 +600,9 @@ int Simulation::FloodINST(int x, int y, int fullc, int cm)
 			{
 				if ((pmap[y-1][x]&0xFF)==cm && !parts[pmap[y-1][x]>>8].life)
 				{
-					if (x==x1 || x==x2 || y>=YRES-CELL-1 || !PMAP_CMP_CONDUCTIVE(pmap[y+1][x], cm))
+					if (x==x1 || x==x2 || y>=YRES-CELL-1 || !PMAP_CMP_CONDUCTIVE(pmap[y+1][x], cm) || PMAP_CMP_CONDUCTIVE(pmap[y+1][x+1], cm) || PMAP_CMP_CONDUCTIVE(pmap[y+1][x-1], cm))
 					{
-						// if at the end of a horizontal section, or if it's a T junction
+						// if at the end of a horizontal section, or if it's a T junction or not a 1px wire crossing
 						coord_stack[coord_stack_size][0] = x;
 						coord_stack[coord_stack_size][1] = y-1;
 						coord_stack_size++;
@@ -639,9 +639,9 @@ int Simulation::FloodINST(int x, int y, int fullc, int cm)
 			{
 				if ((pmap[y+1][x]&0xFF)==cm && !parts[pmap[y+1][x]>>8].life)
 				{
-					if (x==x1 || x==x2 || y<0 || !PMAP_CMP_CONDUCTIVE(pmap[y-1][x], cm))
+					if (x==x1 || x==x2 || y<0 || !PMAP_CMP_CONDUCTIVE(pmap[y-1][x], cm) || PMAP_CMP_CONDUCTIVE(pmap[y-1][x+1], cm) || PMAP_CMP_CONDUCTIVE(pmap[y-1][x-1], cm))
 					{
-						// if at the end of a horizontal section, or if it's a T junction
+						// if at the end of a horizontal section, or if it's a T junction or not a 1px wire crossing
 						coord_stack[coord_stack_size][0] = x;
 						coord_stack[coord_stack_size][1] = y+1;
 						coord_stack_size++;
@@ -2912,11 +2912,7 @@ int Simulation::create_part(int p, int x, int y, int tv)
 
 	parts[i].dcolour = 0;
 	parts[i].flags = 0;
-	if (t==PT_GLAS)
-	{
-		parts[i].pavg[1] = pv[y/CELL][x/CELL];
-	}
-	else if (t==PT_QRTZ)
+	if (t == PT_GLAS || t == PT_QRTZ || t == PT_TUGN)
 	{
 		parts[i].pavg[1] = pv[y/CELL][x/CELL];
 	}
@@ -2982,8 +2978,6 @@ int Simulation::create_part(int p, int x, int y, int tv)
 				parts[i].life = rand()%50+60;
 				break;
 			case PT_QRTZ:
-				parts[i].tmp = (rand()%11);
-				break;
 			case PT_PQRT:
 				parts[i].tmp = (rand()%11);
 				break;
@@ -4000,6 +3994,9 @@ void Simulation::update_particles_i(int start, int inc)
 							if (parts[i].ctype>0 && parts[i].ctype<PT_NUM && parts[i].ctype!=PT_LAVA) {
 								if (parts[i].ctype==PT_THRM&&pt>=elements[PT_BMTL].HighTemperature) s = 0;
 								else if ((parts[i].ctype==PT_VIBR || parts[i].ctype==PT_BVBR) && pt>=273.15f) s = 0;
+								else if (parts[i].ctype==PT_TUGN) {
+									if (pt>3695.0) s = 0;
+								}
 								else if (elements[parts[i].ctype].HighTemperatureTransition==PT_LAVA) {
 									if (pt>=elements[parts[i].ctype].HighTemperature) s = 0;
 								}

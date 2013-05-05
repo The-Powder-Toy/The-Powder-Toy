@@ -28,7 +28,7 @@ Element_FRME::Element_FRME()
 	
 	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 0;
-	Description = "Frame, can be used with pistons to push many particles";
+	Description = "Frame, can be used with pistons to push many particles.";
 	
 	State = ST_SOLID;
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;

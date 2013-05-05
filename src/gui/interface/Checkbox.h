@@ -25,6 +25,7 @@ public:
 	void SetIcon(Icon icon);
 	void Draw(const Point& screenPos);
 	virtual void OnMouseEnter(int x, int y);
+	virtual void OnMouseHover(int x, int y);
 	virtual void OnMouseLeave(int x, int y);
 	virtual void OnMouseClick(int x, int y, unsigned int button);
 	virtual void OnMouseUp(int x, int y, unsigned int button);

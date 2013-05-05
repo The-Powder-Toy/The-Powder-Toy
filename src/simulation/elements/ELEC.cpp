@@ -28,7 +28,7 @@ Element_ELEC::Element_ELEC()
 	
 	Temperature = R_TEMP+200.0f+273.15f;
 	HeatConduct = 251;
-	Description = "Electrons";
+	Description = "Electrons. Sparks electronics, reacts with NEUT and WATR.";
 	
 	State = ST_GAS;
 	Properties = TYPE_ENERGY|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;

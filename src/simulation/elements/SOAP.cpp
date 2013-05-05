@@ -28,7 +28,7 @@ Element_SOAP::Element_SOAP()
 	
 	Temperature = R_TEMP-2.0f	+273.15f;
 	HeatConduct = 29;
-	Description = "Soap. Creates bubbles.";
+	Description = "Soap. Creates bubbles. Washes off deco color.";
 	
 	State = ST_LIQUID;
 	Properties = TYPE_LIQUID|PROP_NEUTPENETRATE|PROP_LIFE_DEC;

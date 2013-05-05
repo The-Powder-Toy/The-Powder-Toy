@@ -28,7 +28,7 @@ Element_CAUS::Element_CAUS()
 	
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
-	Description = "Caustic Gas, acts like Acid";
+	Description = "Caustic Gas, acts like ACID.";
 	
 	State = ST_GAS;
 	Properties = TYPE_GAS|PROP_DEADLY;

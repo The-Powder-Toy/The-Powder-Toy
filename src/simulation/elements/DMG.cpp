@@ -28,7 +28,7 @@ Element_DMG::Element_DMG()
 	
 	Temperature = R_TEMP-2.0f	+273.15f;
 	HeatConduct = 29;
-	Description = "DMG.";
+	Description = "Generates damaging pressure and breaks elements it hits.";
 	
 	State = ST_NONE;
 	Properties = TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC|PROP_SPARKSETTLE;
@@ -92,6 +92,8 @@ int Element_DMG::update(UPDATE_FUNC_ARGS)
 											sim->part_change_type(rr>>8, x+nxi, y+nxj, PT_BCOL);
 										else if(t == PT_QRTZ)
 											sim->part_change_type(rr>>8, x+nxi, y+nxj, PT_PQRT);
+										else if(t == PT_TUGN)
+											sim->part_change_type(rr>>8, x+nxi, y+nxj, PT_BRMT);
 									}
 								}
 							}

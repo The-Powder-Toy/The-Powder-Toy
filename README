@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 The Powder Toy - boxmein's mod v3
 Up to date: version 86.1
 Features: 
@@ -35,6 +34,9 @@ Using ERAY
 
 Edit modes can be painted on with a brush (it is determined by ctype), also you can use the console (`!set ctype eray BIZR`)  
 Here are all the various edit modes: 
+
+
+The Powder Toy - May 2013
 
 	  CLNE => ctype
 	  BIZR => dcolour
@@ -93,11 +95,13 @@ Catelite
 Bryan Hoyle
 Nathan Cousins
 jacksonmj
+Felix Wallin
 Lieuwe Mosch
 Anthony Boot
 Matthew Miller
 MaksProg
 jacob1
+mniip
 
 
 Instructions:

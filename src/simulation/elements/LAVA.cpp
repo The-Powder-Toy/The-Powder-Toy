@@ -28,7 +28,7 @@ Element_LAVA::Element_LAVA()
 	
 	Temperature = R_TEMP+1500.0f+273.15f;
 	HeatConduct = 60;
-	Description = "Heavy liquid. Ignites flammable materials. Solidifies when cold.";
+	Description = "Molten lava. Ignites flammable materials. Generated when metals and other materials melt, solidifies when cold.";
 	
 	State = ST_LIQUID;
 	Properties = TYPE_LIQUID|PROP_LIFE_DEC;
@@ -37,7 +37,7 @@ Element_LAVA::Element_LAVA()
 	LowPressureTransition = NT;
 	HighPressure = IPH;
 	HighPressureTransition = NT;
-	LowTemperature = 2573.15f;
+	LowTemperature = 3695.0f;// Highest temperature at which any type of lava can solidify
 	LowTemperatureTransition = ST;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;

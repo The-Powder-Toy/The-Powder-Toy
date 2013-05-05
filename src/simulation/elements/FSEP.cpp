@@ -28,7 +28,7 @@ Element_FSEP::Element_FSEP()
 	
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
-	Description = "Fuse Powder. See FUSE.";
+	Description = "Fuse Powder. Burns slowly like FUSE.";
 	
 	State = ST_SOLID;
 	Properties = TYPE_PART;

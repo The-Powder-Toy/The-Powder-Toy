@@ -28,7 +28,7 @@ Element_EXOT::Element_EXOT()
 	
 	Temperature = R_TEMP-2.0f	+273.15f;
 	HeatConduct = 250;
-	Description = "Exotic matter. Explodes with excess exposure to electrons.";
+	Description = "Exotic matter. Explodes with excess exposure to electrons. Has many other odd reactions.";
 	
 	State = ST_LIQUID;
 	Properties = TYPE_LIQUID|PROP_NEUTPASS;
@@ -70,7 +70,7 @@ int Element_EXOT::update(UPDATE_FUNC_ARGS) {
 				}
 				else if (rt == PT_LAVA)
 				{
-					if (parts[r>>8].ctype == PT_TTAN && !(rand()%10))
+					if ((parts[r>>8].ctype == PT_TTAN || parts[r>>8].ctype == PT_GOLD) && !(rand()%10))
 					{
 						parts[r>>8].ctype = PT_VIBR;
 						sim->kill_part(i);

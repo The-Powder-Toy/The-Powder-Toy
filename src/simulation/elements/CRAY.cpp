@@ -28,7 +28,7 @@ Element_CRAY::Element_CRAY()
 	
 	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 0;
-	Description = "Particle Ray Emitter. Creates a beam of particles set by ctype, range is set by tmp";
+	Description = "Particle Ray Emitter. Creates a beam of particles set by its ctype, range is set by tmp.";
 	
 	State = ST_SOLID;
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;

@@ -28,7 +28,7 @@ Element_SPRK::Element_SPRK()
 	
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "Electricity. Conducted by metal and water.";
+	Description = "Electricity. The basis of all electronics in TPT, travels along wires and other conductive elements.";
 	
 	State = ST_SOLID;
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
@@ -158,6 +158,10 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 					}
 				}
 		break;
+	case PT_TUGN:
+		if(parts[i].temp < 3595.0){
+			parts[i].temp += (rand()%20)-4;
+		}
 	default:
 		break;
 	}

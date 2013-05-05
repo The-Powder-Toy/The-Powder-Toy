@@ -139,7 +139,7 @@ int TPTScriptInterface::parseNumber(char * stringData)
 			if(cc >= '0' && cc <= '9')
 				currentNumber += cc - '0';
 			else if(cc >= 'a' && cc <= 'f')
-				currentNumber += (cc - 'A') + 10;
+				currentNumber += (cc - 'a') + 10;
 			else if(cc >= 'A' && cc <= 'F')
 				currentNumber += (cc - 'A') + 10;
 			else
@@ -311,10 +311,7 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 		newValue = GetParticleType(((StringType)value).Value());
 		if (newValue < 0 || newValue >= PT_NUM)
 		{
-			if (((StringType)value).Value() == "GOLD" || ((StringType)value).Value() == "gold")
-				throw GeneralException("No, GOLD will not be an element");
-			else
-				throw GeneralException("Invalid element");
+			throw GeneralException("Invalid element");
 		}
 	}
 	else
@@ -384,6 +381,8 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 
 		if(type<0 || type>=PT_NUM)
 			throw GeneralException("Invalid particle type");
+		if(type==0)
+			throw GeneralException("Cannot set properties of particles that do not exist");
 		std::cout << propertyOffset << std::endl;
 		switch(propertyFormat)
 		{

@@ -28,7 +28,7 @@ Element_GLAS::Element_GLAS()
 	
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 150;
-	Description = "Solid. Meltable. Shatters under pressure";
+	Description = "Glass. Meltable. Shatters under pressure, and refracts photons.";
 	
 	State = ST_SOLID;
 	Properties = TYPE_SOLID | PROP_NEUTPASS | PROP_HOT_GLOW | PROP_SPARKSETTLE;

@@ -28,7 +28,7 @@ Element_PLEX::Element_PLEX()
 	
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 88;
-	Description = "Solid. Pressure sensitive explosive.";
+	Description = "Solid pressure sensitive explosive.";
 	
 	State = ST_SOLID;
 	Properties = TYPE_SOLID | PROP_NEUTPENETRATE;

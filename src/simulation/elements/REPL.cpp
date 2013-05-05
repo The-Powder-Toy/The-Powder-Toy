@@ -28,7 +28,7 @@ Element_REPL::Element_REPL()
 	
 	Temperature = 20.0f+0.0f  +273.15f;
 	HeatConduct = 0;
-	Description = "Repel or attract particles based on temp value.";
+	Description = "Repels or attracts particles based on its temp value.";
 	
 	State = ST_NONE;
 	Properties = TYPE_SOLID;

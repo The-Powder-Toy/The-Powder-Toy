@@ -28,7 +28,7 @@ Element_SAND::Element_SAND()
 	
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 150;
-	Description = "Sand, Heavy particles. Meltable.";
+	Description = "Sand, Heavy particles. Melts into glass.";
 	
 	State = ST_SOLID;
 	Properties = TYPE_PART;

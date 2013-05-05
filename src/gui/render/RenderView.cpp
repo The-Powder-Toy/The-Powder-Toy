@@ -394,7 +394,8 @@ void RenderView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bo
 void RenderView::ToolTip(ui::Component * sender, ui::Point mousePosition, std::string toolTip)
 {
 	this->toolTip = toolTip;
-	toolTipPresence = 500;
+	if (toolTipPresence < 120)
+		toolTipPresence += 3;
 }
 
 RenderView::~RenderView() {

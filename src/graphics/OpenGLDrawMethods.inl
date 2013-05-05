@@ -1,4 +1,16 @@
 #include "../data/font.h" 
+
+int PIXELMETHODS_CLASS::drawtext_outline(int x, int y, const char *s, int r, int g, int b, int a)
+{
+	drawtext(x-1, y-1, s, 0, 0, 0, 120);
+	drawtext(x+1, y+1, s, 0, 0, 0, 120);
+	
+	drawtext(x-1, y+1, s, 0, 0, 0, 120);
+	drawtext(x+1, y-1, s, 0, 0, 0, 120);
+	
+	return drawtext(x, y, s, r, g, b, a);
+}
+
 int PIXELMETHODS_CLASS::drawtext(int x, int y, const char *s, int r, int g, int b, int a)
 {
 	bool invert = false;

@@ -6,7 +6,7 @@ Element_INSL::Element_INSL()
 	Name = "INSL";
 	Colour = PIXPACK(0x9EA3B6);
 	MenuVisible = 1;
-	MenuSection = SC_SPECIAL;
+	MenuSection = SC_ELEC;
 	Enabled = 1;
 	
 	Advection = 0.0f;
@@ -28,7 +28,7 @@ Element_INSL::Element_INSL()
 	
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 0;
-	Description = "Insulator, does not conduct heat or electricity.";
+	Description = "Insulator, does not conduct heat and blocks electricity.";
 	
 	State = ST_SOLID;
 	Properties = TYPE_SOLID;

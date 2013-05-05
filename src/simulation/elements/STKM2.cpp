@@ -28,7 +28,7 @@ Element_STKM2::Element_STKM2()
 	
 	Temperature = R_TEMP+14.6f+273.15f;
 	HeatConduct = 0;
-	Description = "Stickman. Don't kill him!";
+	Description = "Second stickman. Don't kill him! Control with wasd.";
 	
 	State = ST_NONE;
 	Properties = 0;

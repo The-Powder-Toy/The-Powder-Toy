@@ -6,7 +6,7 @@ Element_BVBR::Element_BVBR()
 	Name = "BVBR";
 	Colour = PIXPACK(0x005000);
 	MenuVisible = 1;
-	MenuSection = SC_POWDERS;
+	MenuSection = SC_NUCLEAR;
 	Enabled = 1;
 	
 	Advection = 0.3f;

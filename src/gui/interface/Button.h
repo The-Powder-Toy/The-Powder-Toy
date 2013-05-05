@@ -32,6 +32,7 @@ public:
 	//virtual void OnMouseUp(int x, int y, unsigned int button);
 
 	virtual void OnMouseEnter(int x, int y);
+	virtual void OnMouseHover(int x, int y);
 	virtual void OnMouseLeave(int x, int y);
 
 	virtual void Draw(const Point& screenPos);
