@@ -1,0 +1,26 @@
+# Find some extra libraries needed when linking SDL statically on Windows
+#
+#  SDL_STATIC_EXTRA_LIBRARIES   - List of libraries to link
+#  SDL_STATIC_EXTRA_FOUND       - True if all the necessary libraries were found
+
+if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+	find_library(SDL_STATIC_EXTRA_LIBRARY_DXGUID NAMES dxguid
+		HINTS
+		C:/MinGW/lib/)
+	find_library(SDL_STATIC_EXTRA_LIBRARY_WINMM NAMES winmm
+		HINTS
+		C:/MinGW/lib/)
+	if(SDL_STATIC_EXTRA_LIBRARY_DXGUID AND SDL_STATIC_EXTRA_LIBRARY_WINMM)
+		set(SDL_STATIC_EXTRA_LIBRARIES "${SDL_STATIC_EXTRA_LIBRARY_DXGUID};${SDL_STATIC_EXTRA_LIBRARY_WINMM}")
+	endif()
+else(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+	# Do nothing if not on Windows
+	set(SDL_STATIC_EXTRA_LIBRARY_DXGUID TRUE)
+	set(SDL_STATIC_EXTRA_LIBRARY_WINMM TRUE)
+	set(SDL_STATIC_EXTRA_LIBRARIES TRUE)
+endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args (SDL_static_extra DEFAULT_MSG SDL_STATIC_EXTRA_LIBRARY_DXGUID SDL_STATIC_EXTRA_LIBRARY_WINMM SDL_STATIC_EXTRA_LIBRARIES)
+
+mark_as_advanced(SDL_STATIC_EXTRA_LIBRARY_DXGUID SDL_STATIC_EXTRA_LIBRARY_WINMM SDL_STATIC_EXTRA_LIBRARIES)

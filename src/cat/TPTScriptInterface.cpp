@@ -77,6 +77,8 @@ ValueType TPTScriptInterface::testType(std::string word)
 		return TypeFunction;
 	else if(word == "quit")
 		return TypeFunction;
+	else if(word == "bf")  // TODO: Fix this here as well. FIX ALL OF IT FOR GOD'S SAKE THE CODE IS BLASPHEMY
+		return TypeFunction;
 	//Basic type
 	parseNumber:
 			for(i = 0; i < word.length(); i++)
@@ -175,6 +177,8 @@ AnyType TPTScriptInterface::eval(std::deque<std::string> * words)
 			return tptS_bubble(words);
 		else if(word == "quit")
 			return tptS_quit(words);
+		else if(word == "bf") // TODO: Make this work! 
+			return boxS_brainfuck(words);
 		break;
 	case TypeNumber:
 		return NumberType(parseNumber(rawWord));
@@ -233,7 +237,53 @@ std::string TPTScriptInterface::FormatCommand(std::string command)
 	}
 	return outputData;
 }
+AnyType TPTScriptInterface::boxS_brainfuck(std::deque<std::string> *words) {
+	if((*words).empty())
+		return NumberType(0); // words CAN'T be empty
+	string code = (*words)[0];
+	Simulation *sim = m->GetSimulation(); 
 
+	const char *k = code.c_str();
+	unsigned int x = 0;
+	stack<const char *> loops;
+	while(*k) {
+		if(*k == '+') {
+			if (sim->parts[x].type < 256) { // 256 is max particles!
+				sim->parts[x].type = sim->parts[x].type + 1; 
+			}
+		}
+		else if(*k == '-') {
+			if(sim->parts[x].type > 0) { // Prevents ------ breakage. Loops with - will work anyways.
+				sim->parts[x].type = sim->parts[x].type - 1; 
+			}
+		}
+		else if(*k == '>') {
+			if(x < sim->NUM_PARTS - 1) { // Prevents bad data access.
+				x++; 
+			}
+		}
+		else if(*k == '<') {
+			if(x > 0) { // Prevents bad data access.
+				x--; 
+			}
+		}
+		else if(*k == '[') {
+			loops.push(k); 
+		}
+		else if(*k == ']') {
+			if(sim->parts[x].type && (sim->parts[x].type < 256) ) {
+				k = loops.top(); 
+				// continue;
+			}
+			else {
+				loops.pop();
+			}
+		}
+		k++;
+	}
+	
+	return NumberType(1);
+};
 AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 {
 	//Arguments from stack

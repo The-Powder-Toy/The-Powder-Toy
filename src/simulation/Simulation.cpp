@@ -296,7 +296,6 @@ Snapshot * Simulation::CreateSnapshot()
 	snap->stickmen.push_back(player2);
 	snap->stickmen.push_back(player);
 	snap->stickmen.insert(snap->stickmen.begin(), &fighters[0], &fighters[255]);
-	snap->signs = signs;
 	return snap;
 }
 
@@ -321,7 +320,6 @@ void Simulation::Restore(const Snapshot & snap)
 	std::copy(snap.stickmen.begin(), snap.stickmen.end()-2, &fighters[0]);
 	player = snap.stickmen[snap.stickmen.size()-1];
 	player2 = snap.stickmen[snap.stickmen.size()-2];
-	signs = snap.signs;
 }
 
 /*int Simulation::Load(unsigned char * data, int dataLength)
@@ -2838,11 +2836,12 @@ int Simulation::create_part(int p, int x, int y, int tv)
 		{
 			int drawOn = pmap[y][x]&0xFF;
 			if ((
-				(drawOn == PT_STOR && !(elements[t].Properties&TYPE_SOLID)) ||
+				(drawOn == PT_STOR && !(elements[t].Properties&TYPE_SOLID)) || // Brush on elements
 				drawOn==PT_CLNE ||
 				drawOn==PT_BCLN ||
 				drawOn==PT_CONV ||
 				(drawOn==PT_PCLN&&t!=PT_PSCN&&t!=PT_NSCN) ||
+				drawOn==PT_ERAY ||
 				(drawOn==PT_PBCN&&t!=PT_PSCN&&t!=PT_NSCN)
 			)&&(
 				t != PT_CLNE && t != PT_PCLN && t != PT_BCLN && t != PT_STKM && t != PT_STKM2 && t != PT_PBCN && t != PT_STOR && t != PT_FIGH && t != PT_CONV)

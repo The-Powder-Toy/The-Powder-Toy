@@ -147,8 +147,6 @@ GameController::GameController():
 
 	commandInterface = new LuaScriptInterface(this, gameModel);//new TPTScriptInterface();
 	((LuaScriptInterface*)commandInterface)->SetWindow(gameView);
-
-	commandInterface->OnBrushChanged(gameModel->GetBrushID(), gameModel->GetBrush()->GetRadius().X, gameModel->GetBrush()->GetRadius().X);
 	ActiveToolChanged(0, gameModel->GetActiveTool(0));
 	ActiveToolChanged(1, gameModel->GetActiveTool(1));
 	ActiveToolChanged(2, gameModel->GetActiveTool(2));
@@ -913,11 +911,6 @@ void GameController::ShowGravityGrid()
 	gameModel->UpdateQuickOptions();
 }
 
-void GameController::SetHudEnable(bool hudState)
-{
-	gameView->SetHudEnable(hudState);
-}
-
 void GameController::SetActiveColourPreset(int preset)
 {
 	gameModel->SetActiveColourPreset(preset);
@@ -951,10 +944,7 @@ std::vector<Menu*> GameController::GetMenuList()
 	return gameModel->GetMenuList();
 }
 
-void GameController::ActiveToolChanged(int toolSelection, Tool *tool)
-{
-	commandInterface->OnActiveToolChanged(toolSelection, tool);
-}
+void GameController::ActiveToolChanged(int toolSelection, Tool *tool) {}
 
 void GameController::SetActiveTool(int toolSelection, Tool * tool)
 {
@@ -1155,16 +1145,7 @@ void GameController::ShowConsole()
 {
 	if(!console)
 		console = new ConsoleController(NULL, commandInterface);
-	if (console->GetView() != ui::Engine::Ref().GetWindow())
-		ui::Engine::Ref().ShowWindow(console->GetView());
-}
-
-void GameController::HideConsole()
-{
-	if(!console)
-		return;
-	if (console->GetView() == ui::Engine::Ref().GetWindow())
-		ui::Engine::Ref().CloseWindow();
+	ui::Engine::Ref().ShowWindow(console->GetView());
 }
 
 void GameController::OpenRenderOptions()

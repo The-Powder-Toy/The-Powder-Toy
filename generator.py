@@ -1,9 +1,7 @@
-import re, os, shutil, string, sys
-
-def generateElements(elementFiles, outputCpp, outputH):
-
-	elementClasses = {}
-	baseClasses = {}
+import re, os, shutil, string
+def generateElements():
+	elementClasses = dict()
+	baseClasses = dict()
 
 	elementHeader = """#ifndef ELEMENTCLASSES_H
 #define ELEMENTCLASSES_H
@@ -17,12 +15,9 @@ def generateElements(elementFiles, outputCpp, outputH):
 
 	directives = []
 
+	elementFiles = os.listdir("src/simulation/elements")
 	for elementFile in elementFiles:
-		try:
-			f = open(elementFile, "r")
-		except:
-			f = open("src/simulation/elements/"+elementFile, "r")
-            
+		f = open("src/simulation/elements/"+elementFile, "r")
 		fileData = f.read()
 		f.close()
 
@@ -123,21 +118,15 @@ std::vector<Element> GetElements()
 	elementContent += """return elements;
 }
 	""";
-
-	outputPath, outputFile = os.path.split(outputH)
-	if not os.path.exists(outputPath):
-		os.makedirs(outputPath)
-
-	f = open(outputH, "w")
+	f = open("generated/ElementClasses.h", "w")
 	f.write(elementHeader)
 	f.close()
 
-	f = open(outputCpp, "w")
+	f = open("generated/ElementClasses.cpp", "w")
 	f.write(elementContent)
 	f.close()
-
-def generateTools(toolFiles, outputCpp, outputH):
-	toolClasses = {}
+def generateTools():
+	toolClasses = dict()
 	
 	toolHeader = """#ifndef TOOLCLASSES_H
 		#define TOOLCLASSES_H
@@ -148,11 +137,9 @@ def generateTools(toolFiles, outputCpp, outputH):
 	
 	directives = []
 
+	toolFiles = os.listdir("src/simulation/tools")
 	for toolFile in toolFiles:
-		try:
-			f = open(toolFile, "r")
-		except:
-			f = open("src/simulation/tools/"+toolFile, "r")
+		f = open("src/simulation/tools/"+toolFile, "r")
 		fileData = f.read()
 		f.close()
 		
@@ -201,27 +188,15 @@ def generateTools(toolFiles, outputCpp, outputH):
 		toolContent += """	tools.push_back(new %s());
 			""" % (d[1])
 	
-	toolContent += """	return tools;
+	toolContent += """return tools;
 		}
 		""";
-
-	outputPath, outputFile = os.path.split(outputH)
-	if not os.path.exists(outputPath):
-		os.makedirs(outputPath)
-
-	f = open(outputH, "w")
+	f = open("generated/ToolClasses.h", "w")
 	f.write(toolHeader)
 	f.close()
 	
-	f = open(outputCpp, "w")
+	f = open("generated/ToolClasses.cpp", "w")
 	f.write(toolContent)
 	f.close()
-
-if(len(sys.argv) > 3):
-    if(sys.argv[1] == "elements"):
-    	generateElements(sys.argv[4:], sys.argv[2], sys.argv[3])
-    elif(sys.argv[1] == "tools"):
-    	generateTools(sys.argv[4:], sys.argv[2], sys.argv[3])
-else:
-	generateElements(os.listdir("src/simulation/elements"), "generated/ElementClasses.cpp", "generated/ElementClasses.h")
-	generateTools(os.listdir("src/simulation/tools"), "generated/ToolClasses.cpp", "generated/ToolClasses.h")
+generateElements()
+generateTools()

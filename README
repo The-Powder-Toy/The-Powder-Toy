@@ -1,5 +1,77 @@
+The Powder Toy - boxmein's mod v3
+Up to date: version 86.1
+Features: 
+ * A brainfuck interpreter running on the parts[] array
+ * A new element ERAY to do what EDIT was supposed to do. Helps around with automation.
+
+= = = = = = = = = = = = =
+Using Brainfuck
+
+Notes: 
+* Commands go into the console.
+* There is no standard input and output, ., won't do anything.
+* The memory buffer is parts[], so if you loop, make sure your particle indexes go up from 0
+	without any gaps.
+Basic syntax: !bf [[-]>]
+Examples: 
+  Delete all particles: [[-]>]
+  Up every particle: [+>]
+  Down every particle: [->]
+  Up every fifth particle twice: [>>>>>++]
+
+Read about Brainfuck itself here: http://esolangs.org/wiki/Brainfuck
+
+= = = = = = = = = = = = = 
+Using ERAY
+
+## Values it uses: ##
+
+1. ctype => Determines what kind of element variable (ctype, temperature, velocity, TMP2) gets edited. 
+2. tmp => Used for the value of property you're setting. (e.g the element that will be ctype, or the number that'll be the life value)
+3. dcolour => Special! Used only in deco editing mode, this will be the "receiving" deco colour. So it'll kinda work like BIZR, passing around its own colour.
+
+## Setting edit modes: ##
+
+Edit modes can be painted on with a brush (it is determined by ctype), also you can use the console (`!set ctype eray BIZR`)  
+Here are all the various edit modes: 
+
+
 The Powder Toy - May 2013
 
+	  CLNE => ctype
+	  BIZR => dcolour
+	  LIFE => life
+	  FIRE => temp
+	  ACEL => tmp
+	  DCEL => tmp2
+	  PSCN => vx
+	  NSCN => vy
+	  CONV => type
+	  NONE => destroys the particle you fired at.
+
+Edit mode #1: Deco colours
+  2. Paint ERAY with any dcolour you want. That will be used to pass on the colour.
+
+Edit mode #3: Type
+	1. Set ERAY's tmp to the desired value. (Old console automatically converts names to ID numbers, 
+	   new console needs `tpt.element("name")`)
+	2. Using values larger than ~170 will make it loop around and start from 0.
+
+Edit mode #4: Ctype
+	1. Set ERAY's tmp to the desired value. (Old console automatically converts names to ID numbers, 
+	   new console needs `tpt.element("name")`)
+	2. Using values larger than ~170 will make it loop around and start from 0.
+
+Other edit modes: Temp, tmp, tmp2, vx, vy, life
+  1. Set ERAY's tmp to the desired value. (Old console automatically converts names to ID numbers, 
+	   new console needs `tpt.element("name")`)
+
+
+
+Old TPT readme below
+== == == == == == == == == == ==
+
+The Powder Toy - March 2013
 Get the latest version here:  http://powdertoy.co.uk/Download.html
 
 To use online features such as saving, you need to register at: http://powdertoy.co.uk/Register.html
@@ -7,9 +79,9 @@ To use online features such as saving, you need to register at: http://powdertoy
 
 Have you ever wanted to blow something up? Or maybe you always dreamt of operating an atomic power plant? Do you have a will to develop your own CPU? The Powder Toy lets you to do all of these, and even more!
 
-The Powder Toy is a free physics sandbox game, which simulates air pressure and velocity, heat, gravity and a countless number of interactions between different substances! The game provides you with various building materials, liquids, gases and electronic components which can be used to construct complex machines, guns, bombs, realistic terrains and almost anything else. You can then mine them and watch cool explosions, add intricate wirings, play with little stickmen or operate your machine. You can browse and play thousands of different saves made by the community or upload your own – we welcome your creations!
+The Powder Toy is a free physics sandbox game, which simulates air pressure and velocity, heat, gravity and a countless number of interactions between different substances! The game provides you with various building materials, liquids, gases and electronic components which can be used to construct complex machines, guns, bombs, realistic terrains and almost anything else. You can then mine them and watch cool explosions, add intricate wirings, play with little stickmen or operate your machine. You can browse and play thousands of different saves made by the community or upload your own ï¿½ we welcome your creations!
 
-There is a Lua API – you can automate your work or even make plugins for the game. The Powder Toy is free and the source code is distributed under the GNU General Public License, so you can modify the game yourself or help with development. Tpt is compiled using scons.
+There is a Lua API ï¿½ you can automate your work or even make plugins for the game. The Powder Toy is free and the source code is distributed under the GNU General Public License, so you can modify the game yourself or help with development. Tpt is compiled using scons.
 
 
 Thanks:

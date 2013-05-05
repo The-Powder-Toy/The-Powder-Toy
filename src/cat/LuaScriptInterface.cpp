@@ -51,7 +51,6 @@ extern "C"
 #include "socket/socket.lua.h"
 
 GameModel * luacon_model;
-GameController * luacon_controller;
 Simulation * luacon_sim;
 LuaScriptInterface * luacon_ci;
 Graphics * luacon_g;
@@ -72,19 +71,9 @@ int tptParts, tptPartsMeta, tptElementTransitions, tptPartsCData, tptPartMeta, t
 LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	CommandInterface(c, m),
 	currentCommand(false),
-	legacy(new TPTScriptInterface(c, m)),
-	luacon_mousex(0),
-	luacon_mousey(0),
-	luacon_mousebutton(0),
-	luacon_brushx(0),
-	luacon_brushy(0),
-	luacon_selectedl(""),
-	luacon_selectedr(""),
-	luacon_selectedalt(""),
-	luacon_mousedown(false)
+	legacy(new TPTScriptInterface(c, m))
 {
 	luacon_model = m;
-	luacon_controller = c;
 	luacon_sim = m->GetSimulation();
 	luacon_g = ui::Engine::Ref().g;
 	luacon_ren = m->GetRenderer();
@@ -207,12 +196,10 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	lua_setfield(l, tptProperties, "mousex");
 	lua_pushinteger(l, 0);
 	lua_setfield(l, tptProperties, "mousey");
-	lua_pushstring(l, "");
+	lua_pushinteger(l, 0);
 	lua_setfield(l, tptProperties, "selectedl");
-	lua_pushstring(l, "");
+	lua_pushinteger(l, 0);
 	lua_setfield(l, tptProperties, "selectedr");
-	lua_pushstring(l, "");
-	lua_setfield(l, tptProperties, "selecteda");
 
 	lua_newtable(l);
 	tptPropertiesVersion = lua_gettop(l);
@@ -2059,17 +2046,6 @@ bool LuaScriptInterface::OnBrushChanged(int brushType, int rx, int ry)
 	return true;
 }
 
-bool LuaScriptInterface::OnActiveToolChanged(int toolSelection, Tool * tool)
-{
-	if (toolSelection == 0)
-		luacon_selectedl = tool->GetIdentifier();
-	else if (toolSelection == 1)
-		luacon_selectedr = tool->GetIdentifier();
-	else if (toolSelection == 2)
-		luacon_selectedalt = tool->GetIdentifier();
-	return true;
-}
-
 bool LuaScriptInterface::OnMouseMove(int x, int y, int dx, int dy)
 {
 	luacon_mousex = x;
@@ -2079,8 +2055,6 @@ bool LuaScriptInterface::OnMouseMove(int x, int y, int dx, int dy)
 
 bool LuaScriptInterface::OnMouseDown(int x, int y, unsigned button)
 {
-	if (button == 3)
-		button = 4;
 	luacon_mousedown = true;
 	luacon_mousebutton = button;
 	return luacon_mouseevent(x, y, button, LUACON_MDOWN, 0);
@@ -2088,8 +2062,6 @@ bool LuaScriptInterface::OnMouseDown(int x, int y, unsigned button)
 
 bool LuaScriptInterface::OnMouseUp(int x, int y, unsigned button)
 {
-	if (button == 3)
-		button = 4;
 	luacon_mousedown = false;
 	return luacon_mouseevent(x, y, button, LUACON_MUP, 0);
 }
@@ -2121,7 +2093,7 @@ void LuaScriptInterface::OnTick()
 	ui::Engine::Ref().LastTick(clock());
 	if(luacon_mousedown)
 		luacon_mouseevent(luacon_mousex, luacon_mousey, luacon_mousebutton, LUACON_MPRESS, 0);
-	luacon_step(luacon_mousex, luacon_mousey, luacon_selectedl, luacon_selectedr, luacon_selectedalt, luacon_brushx, luacon_brushy);
+	luacon_step(luacon_mousex, luacon_mousey, luacon_selectedl, luacon_selectedr, luacon_brushx, luacon_brushy);
 }
 
 int LuaScriptInterface::Command(std::string command)
