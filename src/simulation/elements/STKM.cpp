@@ -227,7 +227,10 @@ int Element_STKM::run_stickman(playerst* playerp, UPDATE_FUNC_ARGS) {
 	if (((int)(playerp->comm)&0x04) == 0x04 && 
 			(!sim->eval_move(t, playerp->legs[4], playerp->legs[5], NULL) || !sim->eval_move(t, playerp->legs[12], playerp->legs[13], NULL)))
 	{
+		parts[i].vx -= 4*gvx;
 		parts[i].vy -= 4*gvy;
+		playerp->accs[2] -= gvx;
+		playerp->accs[6] -= gvx;
 		playerp->accs[3] -= gvy;
 		playerp->accs[7] -= gvy;
 	}
