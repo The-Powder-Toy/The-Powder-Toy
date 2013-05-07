@@ -1483,6 +1483,27 @@ void Renderer::render_parts()
 					draw_line(cplayer->legs[0], cplayer->legs[1], cplayer->legs[4], cplayer->legs[5], legr, legg, legb, 255);
 					draw_line(nx, ny+3, cplayer->legs[8], cplayer->legs[9], legr, legg, legb, 255);
 					draw_line(cplayer->legs[8], cplayer->legs[9], cplayer->legs[12], cplayer->legs[13], legr, legg, legb, 255);
+					if (cplayer->rocketBoots)
+					{
+						for (int leg=0; leg<2; leg++)
+						{
+							int nx = cplayer->legs[leg*8+4], ny = cplayer->legs[leg*8+5];
+							int colr = 255, colg = 0, colb = 255;
+							if (((int)(cplayer->comm)&0x04) == 0x04 || (((int)(cplayer->comm)&0x01) == 0x01 && leg==0) || (((int)(cplayer->comm)&0x02) == 0x02 && leg==1))
+								blendpixel(nx, ny, 0, 255, 0, 255);
+							else
+								blendpixel(nx, ny, 255, 0, 0, 255);
+							blendpixel(nx+1, ny, colr, colg, colb, 223);
+							blendpixel(nx-1, ny, colr, colg, colb, 223);
+							blendpixel(nx, ny+1, colr, colg, colb, 223);
+							blendpixel(nx, ny-1, colr, colg, colb, 223);
+
+							blendpixel(nx+1, ny-1, colr, colg, colb, 112);
+							blendpixel(nx-1, ny-1, colr, colg, colb, 112);
+							blendpixel(nx+1, ny+1, colr, colg, colb, 112);
+							blendpixel(nx-1, ny+1, colr, colg, colb, 112);
+						}
+					}
 #endif
 				}
 				if(pixel_mode & PMODE_FLAT)

@@ -112,12 +112,14 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 			Element_STKM::STKM_init_legs(this, &player, i);
 			player.spwn = 1;
 			player.elem = PT_DUST;
+			player.rocketBoots = false;
 		}
 		else if (parts[i].type == PT_STKM2)
 		{
 			Element_STKM::STKM_init_legs(this, &player2, i);
 			player2.spwn = 1;
 			player2.elem = PT_DUST;
+			player2.rocketBoots = false;
 		}
 		else if (parts[i].type == PT_FIGH)
 		{
@@ -3052,6 +3054,7 @@ int Simulation::create_part(int p, int x, int y, int tv)
 					Element_STKM::STKM_init_legs(this, &player, i);
 					player.spwn = 1;
 					player.elem = PT_DUST;
+					player.rocketBoots = false;
 				}
 				else
 				{
@@ -3073,6 +3076,7 @@ int Simulation::create_part(int p, int x, int y, int tv)
 					Element_STKM::STKM_init_legs(this, &player2, i);
 					player2.spwn = 1;
 					player2.elem = PT_DUST;
+					player2.rocketBoots = false;
 				}
 				else
 				{
@@ -3108,6 +3112,7 @@ int Simulation::create_part(int p, int x, int y, int tv)
 						Element_STKM::STKM_init_legs(this, &fighters[fcount], i);
 						fighters[fcount].spwn = 1;
 						fighters[fcount].elem = PT_DUST;
+						fighters[fcount].rocketBoots = false;
 						fighcount++;
 
 						return i;
