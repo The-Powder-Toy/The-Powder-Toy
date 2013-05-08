@@ -392,10 +392,9 @@ int Element_STKM::run_stickman(playerst* playerp, UPDATE_FUNC_ARGS) {
 					sim->kill_part(r>>8);
 				}
 				if (sim->bmap[(ry+y)/CELL][(rx+x)/CELL]==WL_FAN)
-				{
-					playerp->rocketBoots = false;
 					playerp->elem = SPC_AIR;
-				}
+				else if (sim->bmap[(ry+y)/CELL][(rx+x)/CELL]==WL_EHOLE)
+					playerp->rocketBoots = false;
 				else if (sim->bmap[(ry+y)/CELL][(rx+x)/CELL]==WL_GRAV && parts[i].type!=PT_FIGH)
 					playerp->rocketBoots = true;
 				if ((r&0xFF)==PT_PRTI)

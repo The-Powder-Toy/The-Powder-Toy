@@ -1389,9 +1389,18 @@ void Renderer::render_parts()
 					{
 						if (cplayer->elem<PT_NUM && cplayer->elem > 0)
 						{
-							colr = PIXR(elements[cplayer->elem].Colour);
-							colg = PIXG(elements[cplayer->elem].Colour);
-							colb = PIXB(elements[cplayer->elem].Colour);
+							if (cplayer->elem == SPC_AIR)
+							{
+								colr = PIXR(0x8080FF);
+								colg = PIXG(0x8080FF);
+								colb = PIXB(0x8080FF);
+							}
+							else
+							{
+								colr = PIXR(elements[cplayer->elem].Colour);
+								colg = PIXG(elements[cplayer->elem].Colour);
+								colb = PIXB(elements[cplayer->elem].Colour);
+							}
 						}
 						else
 						{

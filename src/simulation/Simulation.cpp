@@ -2709,7 +2709,7 @@ int Simulation::create_part(int p, int x, int y, int tv)
 
 	if (x<0 || y<0 || x>=XRES || y>=YRES || ((t<=0 || t>=PT_NUM)&&t!=SPC_HEAT&&t!=SPC_COOL&&t!=SPC_AIR&&t!=SPC_VACUUM&&t!=SPC_PGRV&&t!=SPC_NGRV))
 		return -1;
-	if (t>=0 && t<PT_NUM && !elements[t].Enabled)
+	if (t>=0 && t<PT_NUM && !elements[t].Enabled && t!=SPC_AIR)
 		return -1;
 	if(t==SPC_PROP) {
 		return -1;	//Prop tool works on a mouse click basic, make sure it doesn't do anything here
