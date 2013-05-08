@@ -78,17 +78,25 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 									parts[nr].temp = parts[i].temp;
 								}
 							} else if (!destroy) {
-								if ((r&0xFF)==PT_BRAY&&parts[r>>8].tmp==0) {//if it hits another BRAY that isn't red
-									if (nyy!=0 || nxx!=0) {
-										parts[r>>8].life = 1020;//makes it last a while
-										parts[r>>8].tmp = 1;
-										if (!parts[r>>8].ctype)//and colors it if it isn't already
-											parts[r>>8].ctype = colored;
+								if ((r&0xFF)==PT_BRAY) {
+									//cases for hitting different BRAY modes
+									switch(parts[r>>8].tmp) {
+									case 0://normal white
+										if (nyy!=0 || nxx!=0) {
+											parts[r>>8].life = 1020;//makes it last a while
+											parts[r>>8].tmp = 1;
+											if (!parts[r>>8].ctype)//and colors it if it isn't already
+												parts[r>>8].ctype = colored;
+										}
+									case 2://red bray, stop
+									default://stop any other random tmp mode
+										docontinue = 0;//then stop it
+										break;
+									case 1://long life, reset it
+										parts[r>>8].life = 1020;
+										//docontinue = 1;
+										break;
 									}
-									docontinue = 0;//then stop it
-								} else if ((r&0xFF)==PT_BRAY&&parts[r>>8].tmp==1) {//if it hits one that already was a long life, reset it
-									parts[r>>8].life = 1020;
-									//docontinue = 1;
 								} else if ((r&0xFF)==PT_FILT) {//get color if passed through FILT
 									colored = parts[r>>8].ctype;
 									//this if prevents BRAY from stopping on certain materials
@@ -96,7 +104,7 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 									if (nyy!=0 || nxx!=0) {
 										sim->create_part(-1, x+nxi+nxx, y+nyi+nyy, PT_SPRK);
 									}
-									 if (!(nostop && parts[r>>8].type==PT_SPRK && parts[r>>8].ctype >= 0 && parts[r>>8].ctype < PT_NUM && (sim->elements[parts[r>>8].ctype].Properties&PROP_CONDUCTS))) {
+									if (!(nostop && parts[r>>8].type==PT_SPRK && parts[r>>8].ctype >= 0 && parts[r>>8].ctype < PT_NUM && (sim->elements[parts[r>>8].ctype].Properties&PROP_CONDUCTS))) {
 										docontinue = 0;
 									} else {
 										docontinue = 1;
