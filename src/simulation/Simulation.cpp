@@ -112,12 +112,14 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 			Element_STKM::STKM_init_legs(this, &player, i);
 			player.spwn = 1;
 			player.elem = PT_DUST;
+			player.rocketBoots = false;
 		}
 		else if (parts[i].type == PT_STKM2)
 		{
 			Element_STKM::STKM_init_legs(this, &player2, i);
 			player2.spwn = 1;
 			player2.elem = PT_DUST;
+			player2.rocketBoots = false;
 		}
 		else if (parts[i].type == PT_FIGH)
 		{
@@ -3052,6 +3054,7 @@ int Simulation::create_part(int p, int x, int y, int tv)
 					Element_STKM::STKM_init_legs(this, &player, i);
 					player.spwn = 1;
 					player.elem = PT_DUST;
+					player.rocketBoots = false;
 				}
 				else
 				{
@@ -3073,6 +3076,7 @@ int Simulation::create_part(int p, int x, int y, int tv)
 					Element_STKM::STKM_init_legs(this, &player2, i);
 					player2.spwn = 1;
 					player2.elem = PT_DUST;
+					player2.rocketBoots = false;
 				}
 				else
 				{
@@ -3108,6 +3112,7 @@ int Simulation::create_part(int p, int x, int y, int tv)
 						Element_STKM::STKM_init_legs(this, &fighters[fcount], i);
 						fighters[fcount].spwn = 1;
 						fighters[fcount].elem = PT_DUST;
+						fighters[fcount].rocketBoots = false;
 						fighcount++;
 
 						return i;
@@ -3560,8 +3565,22 @@ void Simulation::update_particles_i(int start, int inc)
 								rt = pmap[ady][adx];
 								if (!rt || (rt&0xFF)==PT_LIFE)
 								{
-									gol2[ady][adx][golnum] ++;
+									//the total neighbor count is in 0
 									gol2[ady][adx][0] ++;
+									//insert golnum into neighbor table
+									for ( i=1; i<9; i++)
+									{
+										if (!gol2[ady][adx][i])
+										{
+											gol2[ady][adx][i] = (golnum<<4)+1;
+											break;
+										}
+										else if((gol2[ady][adx][i]>>4)==golnum)
+										{
+											gol2[ady][adx][i]++;
+											break;
+										}
+									}
 								}
 							}
 						}
@@ -3585,21 +3604,25 @@ void Simulation::update_particles_i(int start, int inc)
 					if (!r)
 					{
 						//Find which type we can try and create
-						for (golnum = 1; golnum<=NGOL; golnum++)
+						int creategol = 0xFF;
+						for ( i=1; i<9; i++)
 						{
-							if (grule[golnum][neighbors]>=2 && gol2[ny][nx][golnum]>=(neighbors%2)+neighbors/2)
+							if (!gol2[ny][nx][i]) break;
+							golnum = (gol2[ny][nx][i]>>4);
+							if (grule[golnum][neighbors]>=2 && (gol2[ny][nx][i]&0xF)>=(neighbors%2)+neighbors/2)
 							{
-								create_part(-1, nx, ny, PT_LIFE|((golnum-1)<<8));
-								break;
+								if (golnum<creategol) creategol=golnum;
 							}
 						}
+						if (creategol<0xFF)
+							create_part(-1, nx, ny, PT_LIFE|((creategol-1)<<8));
 					}
 					else if (grule[golnum][neighbors-1]==0 || grule[golnum][neighbors-1]==2)//subtract 1 because it counted itself
 					{
 						if (parts[r>>8].tmp==grule[golnum][9]-1)
 							parts[r>>8].tmp --;
 					}
-					for ( z = 0; z<=NGOL; z++)
+					for ( z = 0; z<9; z++)
 						gol2[ny][nx][z] = 0;//this improves performance A LOT compared to the memset, i was getting ~23 more fps with this.
 				}
 				//we still need to kill things with 0 neighbors (higher state life)

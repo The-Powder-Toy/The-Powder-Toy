@@ -74,10 +74,9 @@ public:
 	int emp_decor;
 	//Gol sim
 	int CGOL;
-	int ISGOL;
 	int GSPEED;
 	unsigned char gol[YRES][XRES];
-	unsigned char gol2[YRES][XRES][NGOL+1];
+	unsigned short gol2[YRES][XRES][9];
 	//Air sim
 	float (*vx)[XRES/CELL];
 	float (*vy)[XRES/CELL];
