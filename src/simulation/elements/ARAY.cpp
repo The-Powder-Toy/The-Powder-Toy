@@ -78,20 +78,17 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 									parts[nr].temp = parts[i].temp;
 								}
 							} else if (!destroy) {
-								if ((r&0xFF)==PT_BRAY) {
-									if (parts[r>>8].tmp==0){//if it hits another BRAY that isn't red
-										if (nyy!=0 || nxx!=0) {
-											parts[r>>8].life = 1020;//makes it last a while
-											parts[r>>8].tmp = 1;
-											if (!parts[r>>8].ctype)//and colors it if it isn't already
-												parts[r>>8].ctype = colored;
-										}
-										docontinue = 0;//then stop it
+								if ((r&0xFF)==PT_BRAY&&parts[r>>8].tmp==0) {//if it hits another BRAY that isn't red
+									if (nyy!=0 || nxx!=0) {
+										parts[r>>8].life = 1020;//makes it last a while
+										parts[r>>8].tmp = 1;
+										if (!parts[r>>8].ctype)//and colors it if it isn't already
+											parts[r>>8].ctype = colored;
 									}
-									else if (parts[r>>8].tmp==1) {//if it hits one that already was a long life, reset it
-										parts[r>>8].life = 1020;
-										//docontinue = 1;
-									}
+									docontinue = 0;//then stop it
+								} else if ((r&0xFF)==PT_BRAY&&parts[r>>8].tmp==1) {//if it hits one that already was a long life, reset it
+									parts[r>>8].life = 1020;
+									//docontinue = 1;
 								} else if ((r&0xFF)==PT_FILT) {//get color if passed through FILT
 									colored = parts[r>>8].ctype;
 									//this if prevents BRAY from stopping on certain materials

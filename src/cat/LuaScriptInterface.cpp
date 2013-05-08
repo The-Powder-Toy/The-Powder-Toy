@@ -2135,7 +2135,7 @@ int LuaScriptInterface::Command(std::string command)
 	}
 	else
 	{
-		int level = lua_gettop(l), ret;
+		int level = lua_gettop(l), ret = -1;
 		std::string text = "";
 		lastError = "";
 		currentCommand = true;

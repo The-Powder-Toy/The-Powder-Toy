@@ -28,7 +28,7 @@ Element_BTRY::Element_BTRY()
 	
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "Solid. Generates infinite electricity.";
+	Description = "Generates infinite electricity.";
 	
 	State = ST_SOLID;
 	Properties = TYPE_SOLID;

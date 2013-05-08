@@ -29,7 +29,7 @@ Element_GOLD::Element_GOLD()
 
 	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 251;
-	Description = "Corrosion resistant metal, will reverse corrosion of iron";
+	Description = "Corrosion resistant metal, will reverse corrosion of iron.";
 
 	State = ST_SOLID;
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_HOT_GLOW|PROP_LIFE_DEC|PROP_NEUTPASS;
