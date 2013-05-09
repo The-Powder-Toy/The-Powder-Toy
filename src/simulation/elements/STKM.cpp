@@ -130,13 +130,13 @@ int Element_STKM::run_stickman(playerst* playerp, UPDATE_FUNC_ARGS) {
 	float rbx = gvx;
 	float rby = gvy;
 	bool rbLowGrav = false;
-	float tmp = fmaxf(fabsf(rbx), fabsf(rby));
+	float tmp = fabsf(rbx) > fabsf(rby)?fabsf(rbx):fabsf(rby);
 	if (tmp < 0.001f)
 	{
 		rbLowGrav = true;
 		rbx = -parts[i].vx;
 		rby = -parts[i].vy;
-		tmp = fmaxf(fabsf(rbx), fabsf(rby));
+		tmp = fabsf(rbx) > fabsf(rby)?fabsf(rbx):fabsf(rby);
 	}
 	if (tmp < 0.001f)
 	{
