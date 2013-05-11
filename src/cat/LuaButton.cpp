@@ -1,3 +1,4 @@
+#ifdef LUACONSOLE
 extern "C"
 {
 #include "lua.h"
@@ -112,3 +113,4 @@ void LuaButton::triggerAction()
 LuaButton::~LuaButton()
 {
 }
+#endif

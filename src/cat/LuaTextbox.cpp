@@ -1,3 +1,4 @@
+#ifdef LUACONSOLE
 extern "C"
 {
 #include "lua.h"
@@ -113,3 +114,4 @@ int LuaTextbox::text(lua_State * l)
 LuaTextbox::~LuaTextbox()
 {
 }
+#endif

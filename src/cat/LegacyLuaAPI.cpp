@@ -1,3 +1,4 @@
+#ifdef LUACONSOLE
 #include <string>
 #include <iomanip>
 #include <vector>
@@ -1983,4 +1984,4 @@ int luatpt_screenshot(lua_State* l)
 	Client::Ref().WriteFile(data, filename.str());
 	return 0;
 }
-
+#endif

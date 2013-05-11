@@ -1,3 +1,4 @@
+#ifdef LUACONSOLE
 extern "C"
 {
 #include "lua.h"
@@ -69,3 +70,4 @@ int LuaProgressBar::status(lua_State * l)
 LuaProgressBar::~LuaProgressBar()
 {
 }
+#endif

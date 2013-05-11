@@ -1,3 +1,4 @@
+#ifdef LUACONSOLE
 extern "C"
 {
 #include "lua.h"
@@ -53,3 +54,4 @@ int LuaLabel::text(lua_State * l)
 LuaLabel::~LuaLabel()
 {
 }
+#endif

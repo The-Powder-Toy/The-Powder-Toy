@@ -1,3 +1,4 @@
+#ifdef LUACONSOLE
 #include <string>
 #include <iomanip>
 #include <vector>
@@ -2201,3 +2202,4 @@ std::string LuaScriptInterface::FormatCommand(std::string command)
 LuaScriptInterface::~LuaScriptInterface() {
 	delete legacy;
 }
+#endif
