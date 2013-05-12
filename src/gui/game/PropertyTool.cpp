@@ -139,7 +139,7 @@ void PropertyWindow::SetProperty()
 								buffer.exceptions(std::stringstream::failbit | std::stringstream::badbit);
 								buffer >> tempInt;
 							}
-							if (property->GetOption().first == "type" && (tempInt < 0 || tempInt >= PT_NUM))
+							if (property->GetOption().first == "type" && (tempInt < 0 || tempInt >= PT_NUM || !sim->elements[tempInt].Enabled))
 							{
 								new ErrorMessage("Could not set property", "Invalid Particle Type");
 								return;
