@@ -171,6 +171,8 @@ GameView::GameView():
 	infoTip(""),
 	infoTipPresence(0),
 	buttonTipShow(0),
+	isToolTipFadingIn(false),
+	isButtonTipFadingIn(false),
 	toolTipPosition(-1, -1),
 	shiftBehaviour(false),
 	ctrlBehaviour(false),
@@ -1154,8 +1156,7 @@ void GameView::ToolTip(ui::Component * sender, ui::Point mousePosition, std::str
 		if (selectMode == PlaceSave || selectMode == SelectNone)
 		{
 			buttonTip = toolTip;
-			if (buttonTipShow < 120)
-				buttonTipShow += 3;
+			isButtonTipFadingIn = true;
 		}
 	}
 	else if(sender->Position.X > Size.X-BARSIZE)// < Size.Y-(quickOptionButtons.size()+1)*16)
@@ -1164,15 +1165,13 @@ void GameView::ToolTip(ui::Component * sender, ui::Point mousePosition, std::str
 		toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((char*)toolTip.c_str()), sender->Position.Y+3);
 		if(toolTipPosition.Y+10 > Size.Y-MENUSIZE)
 			toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((char*)toolTip.c_str()), Size.Y-MENUSIZE-10);
-		if (toolTipPresence < 120)
-			toolTipPresence += 3;
+		isToolTipFadingIn = true;
 	}
 	else
 	{
 		this->toolTip = toolTip;
 		toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((char*)toolTip.c_str()), Size.Y-MENUSIZE-10);
-		if (toolTipPresence < 160)
-			toolTipPresence += 3;
+		isToolTipFadingIn = true;
 	}
 }
 
@@ -1526,15 +1525,33 @@ void GameView::OnTick(float dt)
 		if(infoTipPresence<0)
 			infoTipPresence = 0;
 	}
-	if (selectMode != PlaceSave && selectMode != SelectNone && buttonTipShow < 120)
-		buttonTipShow += 2;
+	if (isButtonTipFadingIn || (selectMode != PlaceSave && selectMode != SelectNone))
+	{
+		isButtonTipFadingIn = false;
+		if(buttonTipShow < 120)
+		{
+			buttonTipShow += int(dt*2)>0?int(dt*2):1;
+			if(buttonTipShow>120)
+				buttonTipShow = 120;
+		}
+	}
 	else if(buttonTipShow>0)
 	{
 		buttonTipShow -= int(dt)>0?int(dt):1;
 		if(buttonTipShow<0)
 			buttonTipShow = 0;
 	}
-	if(toolTipPresence>0)
+	if (isToolTipFadingIn)
+	{
+		isToolTipFadingIn = false;
+		if(toolTipPresence < 120)
+		{
+			toolTipPresence += int(dt*2)>0?int(dt*2):1;
+			if(toolTipPresence>120)
+				toolTipPresence = 120;
+		}
+	}
+	else if(toolTipPresence>0)
 	{
 		toolTipPresence -= int(dt)>0?int(dt):1;
 		if(toolTipPresence<0)

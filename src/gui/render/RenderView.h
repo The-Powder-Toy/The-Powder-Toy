@@ -20,6 +20,7 @@ class RenderView: public ui::Window {
 	std::vector<ui::Checkbox*> colourModes;
 	std::string toolTip;
 	int toolTipPresence;
+	bool isToolTipFadingIn;
 	int line1, line2, line3, line4;
 public:
 	class RenderModeAction;

@@ -51,18 +51,20 @@ private:
 	bool showDebug;
 	bool wallBrush;
 	int introText;
-	int buttonTipShow;
-	std::string buttonTip;
 	std::string introTextMessage;
 	int toolIndex;
 	int currentSaveType;
 	Menu * lastMenu;
 
-	int infoTipPresence;
-	std::string toolTip;
-	ui::Point toolTipPosition;
-	std::string infoTip;
 	int toolTipPresence;
+	std::string toolTip;
+	bool isToolTipFadingIn;
+	ui::Point toolTipPosition;
+	int infoTipPresence;
+	std::string infoTip;
+	int buttonTipShow;
+	std::string buttonTip;
+	bool isButtonTipFadingIn;
 
 	queue<ui::Point> pointQueue;
 	GameController * c;

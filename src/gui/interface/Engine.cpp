@@ -247,7 +247,7 @@ void Engine::SetFps(float fps)
 {
 	this->fps = fps;
 	if(FpsLimit > 2.0f)
-		this->dt = FpsLimit/fps;
+		this->dt = 60/fps;
 	else
 		this->dt = 1.0f;
 }

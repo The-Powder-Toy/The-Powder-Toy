@@ -80,6 +80,7 @@ RenderView::RenderView():
 	ui::Window(ui::Point(0, 0), ui::Point(XRES, YRES+MENUSIZE)),
 	toolTip(""),
 	toolTipPresence(0),
+	isToolTipFadingIn(false),
 	ren(NULL)
 {
 	ui::Button * presetButton;
@@ -373,6 +374,16 @@ void RenderView::OnDraw()
 
 void RenderView::OnTick(float dt)
 {
+	if (isToolTipFadingIn)
+	{
+		isToolTipFadingIn = false;
+		if(toolTipPresence < 120)
+		{
+			toolTipPresence += int(dt*2)>0?int(dt*2):1;
+			if(toolTipPresence > 120)
+				toolTipPresence = 0;
+		}
+	}
 	if(toolTipPresence>0)
 	{
 		toolTipPresence -= int(dt)>0?int(dt):1;
@@ -394,8 +405,7 @@ void RenderView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bo
 void RenderView::ToolTip(ui::Component * sender, ui::Point mousePosition, std::string toolTip)
 {
 	this->toolTip = toolTip;
-	if (toolTipPresence < 120)
-		toolTipPresence += 3;
+	this->isToolTipFadingIn = true;
 }
 
 RenderView::~RenderView() {
