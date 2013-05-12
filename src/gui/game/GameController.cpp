@@ -145,8 +145,12 @@ GameController::GameController():
 	gameView->AttachController(this);
 	gameModel->AddObserver(gameView);
 
-	commandInterface = new LuaScriptInterface(this, gameModel);//new TPTScriptInterface();
+#ifdef LUACONSOLE
+	commandInterface = new LuaScriptInterface(this, gameModel);
 	((LuaScriptInterface*)commandInterface)->SetWindow(gameView);
+#else
+	commandInterface = new TPTScriptInterface(this, gameModel);
+#endif
 
 	commandInterface->OnBrushChanged(gameModel->GetBrushID(), gameModel->GetBrush()->GetRadius().X, gameModel->GetBrush()->GetRadius().X);
 	ActiveToolChanged(0, gameModel->GetActiveTool(0));
@@ -706,7 +710,9 @@ void GameController::Tick()
 {
 	if(firstTick)
 	{
+#ifdef LUACONSOLE
 		((LuaScriptInterface*)commandInterface)->Init();
+#endif
 		if(!Client::Ref().GetPrefBool("InstallCheck", false))
 		{
 			Client::Ref().SetPref("InstallCheck", true);

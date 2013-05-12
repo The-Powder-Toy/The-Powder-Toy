@@ -1,3 +1,4 @@
+#ifdef LUACONSOLE
 #include <string>
 #include <iomanip>
 #include <vector>
@@ -1739,7 +1740,7 @@ int luatpt_message_box(lua_State* l)
 {
 	std::string title = std::string(luaL_optstring(l, 1, "Title"));
 	std::string message = std::string(luaL_optstring(l, 2, "Message"));
-	int large = luaL_optint(l, 3, 0);
+	int large = lua_toboolean(l, 3);
 	new InformationMessage(title, message, large);
 	return 0;
 }
@@ -1983,4 +1984,4 @@ int luatpt_screenshot(lua_State* l)
 	Client::Ref().WriteFile(data, filename.str());
 	return 0;
 }
-
+#endif

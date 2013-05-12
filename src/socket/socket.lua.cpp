@@ -1,3 +1,4 @@
+#ifdef LUACONSOLE
 // socket.lua from luasocket compiled into a cpp file
 extern "C" {
 	#include "lua.h"
@@ -10,3 +11,4 @@ void luaopen_socket(lua_State *l){
 	luaL_loadbuffer(l, socket_luac, socket_luac_sz, "@builtin socket.lua");
 	lua_call(l, 0, 0);
 }
+#endif
