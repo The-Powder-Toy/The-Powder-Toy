@@ -29,10 +29,10 @@ public:
 		}
 		else
 		{
-			int yTop = ry, yBottom, i, j;
+			int yTop = ry+1, yBottom, i, j;
 			for (i = 0; i <= rx; i++)
 			{
-				while (pow(i-rx,2.0f)*pow(ry,2.0f) + pow(yTop-ry,2.0f)*pow(rx,2.0f) <= pow(rx,2.0f)*pow(ry,2.0f))
+				while (pow(i-rx,2.0)*pow(ry,2.0) + pow(yTop-ry,2.0)*pow(rx,2.0) <= pow(rx,2.0)*pow(ry,2.0))
 					yTop++;
 				yBottom = 2*ry - yTop;
 				for (int j = 0; j <= ry*2; j++)
