@@ -141,7 +141,7 @@ env.Append(CPPDEFINES=["_GNU_SOURCE", "USE_STDINT", "_POSIX_C_SOURCE=200112L"])
 if not GetOption('nofft'):
 	env.Append(CPPDEFINES=["GRAVFFT"])
 if not GetOption('nolua'):
-	env.Append(CPPDEFINED=["LUACONSOLE"])
+	env.Append(CPPDEFINES=["LUACONSOLE"])
 if GetOption("ptw32-static"):
 	env.Append(CPPDEFINES=['PTW32_STATIC_LIB']);
 
