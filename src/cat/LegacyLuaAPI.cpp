@@ -1838,6 +1838,8 @@ int luatpt_heat(lua_State* l)
 int luatpt_cmode_set(lua_State* l)
 {
 	int cmode = luaL_optint(l, 1, 0)+1;
+	if (cmode == 11)
+		cmode = 0;
 	if (cmode >= 0 && cmode <= 10)
 		luacon_controller->LoadRenderPreset(cmode);
 	else

@@ -1017,9 +1017,9 @@ int LuaScriptInterface::simulation_createWalls(lua_State * l)
 {
 	int x = luaL_optint(l,1,-1);
 	int y = luaL_optint(l,2,-1);
-	int rx = luaL_optint(l,3,5);
-	int ry = luaL_optint(l,4,5);
-	int c = luaL_optint(l,5,-1);
+	int rx = luaL_optint(l,3,0);
+	int ry = luaL_optint(l,4,0);
+	int c = luaL_optint(l,5,8);
 	//int flags = luaL_optint(l,6,get_brush_flags());
 	if (x < 0 || x > XRES || y < 0 || y > YRES)
 		return luaL_error(l, "Coordinates out of range (%d,%d)", x, y);
@@ -1037,9 +1037,9 @@ int LuaScriptInterface::simulation_createWallLine(lua_State * l)
 	int y1 = luaL_optint(l,2,-1);
 	int x2 = luaL_optint(l,3,-1);
 	int y2 = luaL_optint(l,4,-1);
-	int rx = luaL_optint(l,5,5);
-	int ry = luaL_optint(l,6,5);
-	int c = luaL_optint(l,7,-1);
+	int rx = luaL_optint(l,5,0);
+	int ry = luaL_optint(l,6,0);
+	int c = luaL_optint(l,7,8);
 	//int flags = luaL_optint(l,8,get_brush_flags());
 	if (x1 < 0 || x1 > XRES || y1 < 0 || y1 > YRES)
 		return luaL_error(l, "Starting coordinates out of range (%d,%d)", x1, y1);
@@ -1058,7 +1058,7 @@ int LuaScriptInterface::simulation_createWallBox(lua_State * l)
 	int y1 = luaL_optint(l,2,-1);
 	int x2 = luaL_optint(l,3,-1);
 	int y2 = luaL_optint(l,4,-1);
-	int c = luaL_optint(l,5,luacon_model->GetActiveTool(0)->GetToolID());
+	int c = luaL_optint(l,5,8);
 	//int flags = luaL_optint(l,6,get_brush_flags());
 	if (x1 < 0 || x1 > XRES || y1 < 0 || y1 > YRES)
 		return luaL_error(l, "Starting coordinates out of range (%d,%d)", x1, y1);
@@ -1075,7 +1075,7 @@ int LuaScriptInterface::simulation_floodWalls(lua_State * l)
 {
 	int x = luaL_optint(l,1,-1);
 	int y = luaL_optint(l,2,-1);
-	int c = luaL_optint(l,3,luacon_model->GetActiveTool(0)->GetToolID());
+	int c = luaL_optint(l,3,8);
 	int cm = luaL_optint(l,4,-1);
 	int bm = luaL_optint(l,5,-1);
 	//int flags = luaL_optint(l,6,0);
