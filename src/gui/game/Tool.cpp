@@ -117,16 +117,16 @@ GolTool::GolTool(int id, string name, string description, int r, int g, int b, s
 }
 GolTool::~GolTool() {}
 void GolTool::Draw(Simulation * sim, Brush * brush, ui::Point position){
-	sim->CreateParts(position.X, position.Y, PT_LIFE|(toolID<<8), brush);
+	sim->CreateParts(position.X, position.Y, toolID, brush);
 }
 void GolTool::DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging) {
-	sim->CreateLine(position1.X, position1.Y, position2.X, position2.Y, PT_LIFE|(toolID<<8), brush);
+	sim->CreateLine(position1.X, position1.Y, position2.X, position2.Y, toolID, brush);
 }
 void GolTool::DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) {
-	sim->CreateBox(position1.X, position1.Y, position2.X, position2.Y, PT_LIFE|(toolID<<8), 0);
+	sim->CreateBox(position1.X, position1.Y, position2.X, position2.Y, toolID, 0);
 }
 void GolTool::DrawFill(Simulation * sim, Brush * brush, ui::Point position) {
-	sim->FloodParts(position.X, position.Y, PT_LIFE|(toolID<<8), -1, -1, 0);
+	sim->FloodParts(position.X, position.Y, toolID, -1, -1, 0);
 }
 
 

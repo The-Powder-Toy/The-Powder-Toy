@@ -1306,7 +1306,7 @@ void GameController::Vote(int direction)
 
 void GameController::ChangeBrush()
 {
-	gameModel->SetBrush(gameModel->GetBrushID()+1);
+	gameModel->SetBrushID(gameModel->GetBrushID()+1);
 	BrushChanged(gameModel->GetBrushID(), gameModel->GetBrush()->GetRadius().X, gameModel->GetBrush()->GetRadius().Y);
 }
 

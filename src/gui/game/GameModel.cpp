@@ -292,7 +292,7 @@ void GameModel::BuildMenus()
 	//Build menu for GOL types
 	for(int i = 0; i < NGOL; i++)
 	{
-		Tool * tempTool = new GolTool(i, sim->gmenu[i].name, std::string(sim->gmenu[i].description), PIXR(sim->gmenu[i].colour), PIXG(sim->gmenu[i].colour), PIXB(sim->gmenu[i].colour), "DEFAULT_PT_LIFE_"+std::string(sim->gmenu[i].name));
+		Tool * tempTool = new GolTool(PT_LIFE|(i<<8), sim->gmenu[i].name, std::string(sim->gmenu[i].description), PIXR(sim->gmenu[i].colour), PIXG(sim->gmenu[i].colour), PIXB(sim->gmenu[i].colour), "DEFAULT_PT_LIFE_"+std::string(sim->gmenu[i].name));
 		menuList[SC_LIFE]->AddTool(tempTool);
 	}
 
@@ -424,12 +424,17 @@ Brush * GameModel::GetBrush()
 	return brushList[currentBrush];
 }
 
+vector<Brush*> GameModel::GetBrushList()
+{
+	return brushList;
+}
+
 int GameModel::GetBrushID()
 {
 	return currentBrush;
 }
 
-void GameModel::SetBrush(int i)
+void GameModel::SetBrushID(int i)
 {
 	currentBrush = i%brushList.size();
 	notifyBrushChanged();
@@ -511,6 +516,7 @@ Menu * GameModel::GetActiveMenu()
 	return activeMenu;
 }
 
+//Get an element tool from an element ID
 Tool * GameModel::GetElementTool(int elementID)
 {
 #ifdef DEBUG

@@ -64,6 +64,15 @@ class LuaScriptInterface: public CommandInterface
 	static int simulation_velocityY(lua_State * l);
 	static int simulation_gravMap(lua_State * l);
 	static int simulation_ambientHeat(lua_State * l);
+	static int simulation_createParts(lua_State * l);
+	static int simulation_createLine(lua_State * l);
+	static int simulation_createBox(lua_State * l);
+	static int simulation_floodParts(lua_State * l);
+	static int simulation_createWalls(lua_State * l);
+	static int simulation_createWallLine(lua_State * l);
+	static int simulation_createWallBox(lua_State * l);
+	static int simulation_floodWalls(lua_State * l);
+	static int simulation_clearSim(lua_State * l);
 
 	//Renderer
 	void initRendererAPI();
