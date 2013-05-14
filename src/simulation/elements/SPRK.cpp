@@ -158,7 +158,7 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 					}
 				}
 		break;
-	case PT_TUGN:
+	case PT_TUNG:
 		if(parts[i].temp < 3595.0){
 			parts[i].temp += (rand()%20)-4;
 		}

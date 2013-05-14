@@ -40,7 +40,7 @@ Element_BRMT::Element_BRMT()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 1273.0f;
-	HighTemperatureTransition = PT_LAVA;
+	HighTemperatureTransition = ST;
 	
 	Update = &Element_BRMT::update;
 	
