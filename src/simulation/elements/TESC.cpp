@@ -28,7 +28,7 @@ Element_TESC::Element_TESC()
 	
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "Tesla coil!";
+	Description = "Tesla coil! Creates lightning when sparked.";
 	
 	State = ST_SOLID;
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_HOT_GLOW;

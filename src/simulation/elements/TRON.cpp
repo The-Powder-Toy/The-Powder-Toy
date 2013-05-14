@@ -28,7 +28,7 @@ Element_TRON::Element_TRON()
 	
 	Temperature = 0.0f;
 	HeatConduct = 40;
-	Description = "Smart particles, Travels in straight lines and avoids obstacles.  Grows with time.";
+	Description = "Smart particles, Travels in straight lines and avoids obstacles. Grows with time.";
 	
 	State = ST_NONE;
 	Properties = TYPE_SOLID|PROP_LIFE_DEC|PROP_LIFE_KILL;

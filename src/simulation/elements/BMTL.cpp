@@ -28,7 +28,7 @@ Element_BMTL::Element_BMTL()
 	
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "Breakable metal.";
+	Description = "Breakable metal. Common conductive building material, can melt and break under pressure.";
 	
 	State = ST_SOLID;
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_HOT_GLOW;
