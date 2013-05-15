@@ -31,7 +31,7 @@ GameModel::GameModel():
 	colour(255, 0, 0, 255),
 	toolStrength(1.0f),
 	activeColourPreset(-1),
-	activeMenu(NULL),
+	activeMenu(-1),
 	edgeMode(0)
 {
 	sim = new Simulation();
@@ -221,9 +221,9 @@ void GameModel::BuildQuickOptionMenu(GameController * controller)
 
 void GameModel::BuildMenus()
 {
-	char lastMenu = 0;
-	if(activeMenu)
-		lastMenu = activeMenu->GetIcon();
+	int lastMenu = -1;
+	if(activeMenu != -1)
+		lastMenu = activeMenu;
 
 	std::string activeToolIdentifiers[3];
 	if(regularToolset[0])
@@ -346,19 +346,15 @@ void GameModel::BuildMenus()
 	lastTool = activeTools[0];
 
 	//Set default menu
-	activeMenu = menuList[SC_POWDERS];
+	activeMenu = SC_POWDERS;
 
-	if(lastMenu)
+	if(lastMenu != -1) //What is this? ...
 	{
-		for(std::vector<Menu*>::iterator iter = menuList.begin(), end = menuList.end(); iter != end; ++iter)
-		{
-			if((*iter)->GetIcon() == lastMenu)
-				activeMenu = *iter;
-		}
+		activeMenu = lastMenu;
 	}
 
-	if(activeMenu)
-		toolList = activeMenu->GetToolList();
+	if(activeMenu != -1)
+		toolList = menuList[activeMenu]->GetToolList();
 	else
 		toolList = std::vector<Tool*>();
 
@@ -471,32 +467,26 @@ float GameModel::GetToolStrength()
 	return toolStrength;
 }
 
-void GameModel::SetActiveMenu(Menu * menu)
+void GameModel::SetActiveMenu(int menuID)
 {
-	for(int i = 0; i < menuList.size(); i++)
-	{
-		if(menuList[i]==menu)
-		{
-			activeMenu = menu;
-			toolList = menu->GetToolList();
-			notifyToolListChanged();
+	activeMenu = menuID;
+	toolList = menuList[menuID]->GetToolList();
+	notifyToolListChanged();
 
-			if(menu == menuList[SC_DECO])
-			{
-				if(activeTools != decoToolset)
-				{
-					activeTools = decoToolset;
-					notifyActiveToolsChanged();
-				}
-			}
-			else
-			{
-				if(activeTools != regularToolset)
-				{
-					activeTools = regularToolset;
-					notifyActiveToolsChanged();
-				}
-			}
+	if(menuID == SC_DECO)
+	{
+		if(activeTools != decoToolset)
+		{
+			activeTools = decoToolset;
+			notifyActiveToolsChanged();
+		}
+	}
+	else
+	{
+		if(activeTools != regularToolset)
+		{
+			activeTools = regularToolset;
+			notifyActiveToolsChanged();
 		}
 	}
 }
@@ -511,7 +501,7 @@ vector<Tool*> GameModel::GetToolList()
 	return toolList;
 }
 
-Menu * GameModel::GetActiveMenu()
+int GameModel::GetActiveMenu()
 {
 	return activeMenu;
 }

@@ -692,14 +692,11 @@ char *luacon_geterror(){
 	lua_pop(luacon_ci->l, 1);
 	return err;
 }
-/*void luacon_close(){
-	lua_close(l);
-}*/
 
 //TPT Interface methods
 int luatpt_test(lua_State* l)
 {
-    int testint = 0;
+	int testint = 0;
 	testint = luaL_optint(l, 1, 0);
 	printf("Test successful, got %d\n", testint);
 	return 0;
@@ -863,7 +860,7 @@ int luatpt_error(lua_State* l)
 }
 int luatpt_drawtext(lua_State* l)
 {
-    char *string;
+	char *string;
 	int textx, texty, textred, textgreen, textblue, textalpha;
 	textx = luaL_optint(l, 1, 0);
 	texty = luaL_optint(l, 2, 0);
@@ -916,7 +913,12 @@ int luatpt_create(lua_State* l)
 int luatpt_setpause(lua_State* l)
 {
 	int pausestate;
-	pausestate = luaL_optint(l, 1, 0);
+	pausestate = luaL_optint(l, 1, -1);
+	if (pausestate == -1)
+	{
+		lua_pushnumber(l, luacon_model->GetPaused());
+		return 1;
+	}
 	luacon_model->SetPaused(pausestate==0?0:1);
 	return 0;
 }
@@ -924,21 +926,27 @@ int luatpt_setpause(lua_State* l)
 int luatpt_togglepause(lua_State* l)
 {
 	luacon_model->SetPaused(!luacon_model->GetPaused());
-	//sys_pause=!sys_pause;
-	return 0;
+	lua_pushnumber(l, luacon_model->GetPaused()); 
+	return 1;
 }
 
 int luatpt_togglewater(lua_State* l)
 {
 	luacon_sim->water_equal_test=!luacon_sim->water_equal_test;
-	return 0;
+	lua_pushnumber(l, luacon_sim->water_equal_test); 
+	return 1;
 }
 
 int luatpt_setconsole(lua_State* l)
 {
 	int consolestate;
-	consolestate = luaL_optint(l, 1, 0);
-	if (consolestate)
+	consolestate = luaL_optint(l, 1, -1);
+	if (consolestate == -1)
+	{
+		lua_pushnumber(l, luacon_ci->Window != ui::Engine::Ref().GetWindow());
+		return 1;
+	}
+	else if (consolestate)
 		luacon_controller->ShowConsole();
 	else
 		luacon_controller->HideConsole();
@@ -1542,11 +1550,13 @@ int luatpt_get_name(lua_State* l)
 
 int luatpt_set_shortcuts(lua_State* l)
 {
-	int shortcut = luaL_optint(l, 1, 0);
-	if (shortcut)
-		shortcuts = true;
-	else
-		shortcuts = false;
+	int shortcut = luaL_optint(l, 1, -1);
+	if (shortcut == -1)
+	{
+		lua_pushnumber(l, shortcuts);
+		return 1;
+	}
+	shortcuts = shortcut?true:false;
 	return 0;
 }
 
@@ -1746,84 +1756,107 @@ int luatpt_message_box(lua_State* l)
 }
 int luatpt_get_numOfParts(lua_State* l)
 {
-    lua_pushinteger(l, luacon_sim->parts_lastActiveIndex);
-    return 1;
+	lua_pushinteger(l, luacon_sim->parts_lastActiveIndex);
+	return 1;
 }
 int luatpt_start_getPartIndex(lua_State* l)
 {
-    getPartIndex_curIdx = -1;
-    return 1;
+	getPartIndex_curIdx = -1;
+	return 1;
 }
 int luatpt_next_getPartIndex(lua_State* l)
 {
-    while(1)
-    {
-        getPartIndex_curIdx++;
-        if(getPartIndex_curIdx >= NPART)
-        {
-            getPartIndex_curIdx = 0;
-            lua_pushboolean(l, 0);
-            return 1;
-        }
-        if(luacon_sim->parts[getPartIndex_curIdx].type)
-            break;
+	while(1)
+	{
+		getPartIndex_curIdx++;
+		if(getPartIndex_curIdx >= NPART)
+		{
+			getPartIndex_curIdx = 0;
+			lua_pushboolean(l, 0);
+			return 1;
+		}
+		if(luacon_sim->parts[getPartIndex_curIdx].type)
+			break;
 
-    }
+	}
 
-    lua_pushboolean(l, 1);
-    return 1;
+	lua_pushboolean(l, 1);
+	return 1;
 }
 int luatpt_getPartIndex(lua_State* l)
 {
-    if(getPartIndex_curIdx < 0)
-    {
-        lua_pushinteger(l, 0);
-        return 1;
-    }
-    lua_pushinteger(l, getPartIndex_curIdx);
-    return 1;
+	if(getPartIndex_curIdx < 0)
+	{
+		lua_pushinteger(l, 0);
+		return 1;
+	}
+	lua_pushinteger(l, getPartIndex_curIdx);
+	return 1;
 }
 int luatpt_hud(lua_State* l)
 {
-    int hudstate = luaL_optint(l, 1, 0);
-	if (hudstate)
+	int hudstate = luaL_optint(l, 1, -1);
+	if (hudstate == -1)
+	{
+		lua_pushinteger(l, luacon_controller->GetHudEnable());
+		return 1;
+	}
+	else if (hudstate)
 		luacon_controller->SetHudEnable(1);
 	else
 		luacon_controller->SetHudEnable(0);
-    return 0;
+	return 0;
 }
 int luatpt_gravity(lua_State* l)
 {
-    int gravstate;
-    gravstate = luaL_optint(l, 1, 0);
-    if(gravstate)
-        luacon_sim->grav->start_grav_async();
-    else
-        luacon_sim->grav->stop_grav_async();
-    return 0;
+	int gravstate;
+	gravstate = luaL_optint(l, 1, -1);
+	if (gravstate == -1)
+	{
+		lua_pushinteger(l, luacon_sim->grav->ngrav_enable);
+		return 1;
+	}
+	else if(gravstate)
+		luacon_sim->grav->start_grav_async();
+	else
+		luacon_sim->grav->stop_grav_async();
+	luacon_model->UpdateQuickOptions();
+	return 0;
 }
 int luatpt_airheat(lua_State* l)
 {
-    int aheatstate;
-    aheatstate = luaL_optint(l, 1, 0);
-    luacon_sim->aheat_enable = (aheatstate==0?0:1);
-    return 0;
+	int aheatstate;
+	aheatstate = luaL_optint(l, 1, -1);
+	if (aheatstate == -1)
+	{
+		lua_pushinteger(l, luacon_sim->aheat_enable);
+		return 1;
+	}
+	luacon_sim->aheat_enable = (aheatstate==0?0:1);
+	luacon_model->UpdateQuickOptions();
+	return 0;
 }
 int luatpt_active_menu(lua_State* l)
 {
-    int menuid;
-    menuid = luaL_optint(l, 1, -1);
-    if (menuid < SC_TOTAL && menuid >= 0)
-    	luacon_model->SetActiveMenu(luacon_model->GetMenuList()[menuid]);
-    else
-        return luaL_error(l, "Invalid menu");
-    return 0;
+	int menuid;
+	menuid = luaL_optint(l, 1, -1);
+	if (menuid == -1)
+	{
+		lua_pushinteger(l, luacon_model->GetActiveMenu());
+		return 1;
+	}
+	if (menuid >= 0 && menuid < SC_TOTAL)
+		luacon_controller->SetActiveMenu(menuid);
+	else
+		return luaL_error(l, "Invalid menu");
+	return 0;
 }
 int luatpt_decorations_enable(lua_State* l)
 {
 	int decostate;
 	decostate = luaL_optint(l, 1, 0);
 	luacon_model->SetDecoration(decostate==0?false:true);
+	luacon_model->UpdateQuickOptions();
 	return 0;
 }
 
@@ -1940,7 +1973,7 @@ int luatpt_getscript(lua_State* l)
 		luacommand = new char[strlen(filename)+20];
 		sprintf(luacommand,"dofile(\"%s\")",filename);
 		luaL_dostring (l, luacommand);
-    }
+	}
 
 fin:
 	if(filedata) free(filedata);

@@ -2431,6 +2431,7 @@ std::string LuaScriptInterface::FormatCommand(std::string command)
 }
 
 LuaScriptInterface::~LuaScriptInterface() {
+	lua_close(l);
 	delete legacy;
 }
 #endif

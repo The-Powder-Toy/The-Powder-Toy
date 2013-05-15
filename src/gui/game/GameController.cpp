@@ -924,6 +924,11 @@ void GameController::SetHudEnable(bool hudState)
 	gameView->SetHudEnable(hudState);
 }
 
+bool GameController::GetHudEnable()
+{
+	return gameView->GetHudEnable();
+}
+
 void GameController::SetActiveColourPreset(int preset)
 {
 	gameModel->SetActiveColourPreset(preset);
@@ -935,18 +940,15 @@ void GameController::SetColour(ui::Colour colour)
 	gameModel->SetPresetColour(colour);
 }
 
-void GameController::SetActiveMenu(Menu * menu)
+void GameController::SetActiveMenu(int menuID)
 {
-	gameModel->SetActiveMenu(menu);
+	gameModel->SetActiveMenu(menuID);
 	vector<Menu*> menuList = gameModel->GetMenuList();
 	bool set = false;
-	for(int i = 0; i < menuList.size(); i++)
+	if(menuID == SC_DECO)
 	{
-		if(menuList[i]==menu && i == SC_DECO)
-		{
-			gameModel->SetColourSelectorVisibility(true);
-			set = true;
-		}
+		gameModel->SetColourSelectorVisibility(true);
+		set = true;
 	}
 	if(!set)
 		gameModel->SetColourSelectorVisibility(false);

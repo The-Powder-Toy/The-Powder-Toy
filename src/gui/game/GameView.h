@@ -54,7 +54,7 @@ private:
 	std::string introTextMessage;
 	int toolIndex;
 	int currentSaveType;
-	Menu * lastMenu;
+	int lastMenu;
 
 	int toolTipPresence;
 	std::string toolTip;
@@ -130,6 +130,7 @@ public:
     ui::Point GetMousePosition();
     void SetSample(SimulationSample sample);
 	void SetHudEnable(bool hudState);
+	bool GetHudEnable();
     bool CtrlBehaviour(){ return ctrlBehaviour; }
     bool ShiftBehaviour(){ return shiftBehaviour; }
 	void ExitPrompt();

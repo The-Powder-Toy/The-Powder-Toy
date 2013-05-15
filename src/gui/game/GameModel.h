@@ -53,7 +53,7 @@ private:
 
 	vector<Menu*> menuList;
 	vector<QuickOption*> quickOptions;
-	Menu * activeMenu;
+	int activeMenu;
 	int currentBrush;
 	vector<Brush *> brushList;
 	SaveInfo * currentSave;
@@ -168,8 +168,8 @@ public:
 	void ClearSimulation();
 	vector<Menu*> GetMenuList();
 	vector<QuickOption*> GetQuickOptions();
-	void SetActiveMenu(Menu * menu);
-	Menu * GetActiveMenu();
+	void SetActiveMenu(int menuID);
+	int GetActiveMenu();
 	void FrameStep(int frames);
 	User GetUser();
 	void SetUser(User user);

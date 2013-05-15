@@ -100,7 +100,8 @@ public:
 	void SetDecoration();
 	void ShowGravityGrid();
 	void SetHudEnable(bool hudState);
-	void SetActiveMenu(Menu * menu);
+	bool GetHudEnable();
+	void SetActiveMenu(int menuID);
 	std::vector<Menu*> GetMenuList();
 	void SetActiveTool(int toolSelection, Tool * tool);
 	void ActiveToolChanged(int toolSelection, Tool *tool);
