@@ -1854,7 +1854,12 @@ int luatpt_active_menu(lua_State* l)
 int luatpt_decorations_enable(lua_State* l)
 {
 	int decostate;
-	decostate = luaL_optint(l, 1, 0);
+	decostate = luaL_optint(l, 1, -1);
+	if (decostate == -1)
+	{
+		lua_pushinteger(l, luacon_model->GetDecoration());
+		return 1;
+	}
 	luacon_model->SetDecoration(decostate==0?false:true);
 	luacon_model->UpdateQuickOptions();
 	return 0;
@@ -1863,14 +1868,19 @@ int luatpt_decorations_enable(lua_State* l)
 int luatpt_heat(lua_State* l)
 {
 	int heatstate;
-	heatstate = luaL_optint(l, 1, 0);
+	heatstate = luaL_optint(l, 1, -1);
+	if (heatstate == -1)
+	{
+		lua_pushinteger(l, luacon_sim->legacy_enable);
+		return 1;
+	}
 	luacon_sim->legacy_enable = (heatstate==1?0:1);
 	return 0;
 }
 
 int luatpt_cmode_set(lua_State* l)
 {
-	int cmode = luaL_optint(l, 1, 0)+1;
+	int cmode = luaL_optint(l, 1, 3)+1;
 	if (cmode == 11)
 		cmode = 0;
 	if (cmode >= 0 && cmode <= 10)
@@ -1893,8 +1903,13 @@ int luatpt_setdebug(lua_State* l)
 }
 int luatpt_setfpscap(lua_State* l)
 {
-	int fpscap = luaL_optint(l, 1, 0);
-	if (fpscap < 2)
+	int fpscap = luaL_optint(l, 1, -1);
+	if (fpscap == -1)
+	{
+		lua_pushinteger(l, ui::Engine::Ref().FpsLimit);
+		return 1;
+	}
+	else if (fpscap < 2)
 		return luaL_error(l, "fps cap too small");
 	ui::Engine::Ref().FpsLimit = fpscap;
 	return 0;

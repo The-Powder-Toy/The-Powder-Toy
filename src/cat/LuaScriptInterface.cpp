@@ -456,6 +456,8 @@ void LuaScriptInterface::initSimulationAPI()
 		{"createWallBox", simulation_createWallBox},
 		{"floodWalls", simulation_floodWalls},
 		{"clearSim", simulation_clearSim},
+		{"saveStamp", simulation_saveStamp},
+		{"loadStamp", simulation_loadStamp},
 		{NULL, NULL}
 	};
 	luaL_register(l, "simulation", simulationAPIMethods);
@@ -1092,6 +1094,47 @@ int LuaScriptInterface::simulation_clearSim(lua_State * l)
 {
 	luacon_sim->clear_sim();
 	return 0;
+}
+
+int LuaScriptInterface::simulation_saveStamp(lua_State * l)
+{
+	int x = luaL_optint(l,1,0);
+	int y = luaL_optint(l,2,0);
+	int w = luaL_optint(l,3,XRES);
+	int h = luaL_optint(l,4,YRES);
+	std::string name = luacon_controller->StampRegion(ui::Point(x, y), ui::Point(x+w, y+h));
+	lua_pushstring(l, name.c_str());
+	return 1;
+}
+
+int LuaScriptInterface::simulation_loadStamp(lua_State * l)
+{
+	int stamp_size, i = -1, j, x, y, ret;
+	SaveFile * tempfile;
+	x = luaL_optint(l,2,0);
+	y = luaL_optint(l,3,0);
+	if (lua_isnumber(l, 1)) //Load from stamp ID
+	{
+		i = luaL_optint(l, 1, 0);
+		int stampCount = Client::Ref().GetStampsCount();
+		if (i < 0 || i >= stampCount)
+			return luaL_error(l, "Invalid stamp ID: %d", i);
+		tempfile = Client::Ref().GetStamp(Client::Ref().GetStamps(0, stampCount)[i]);
+	}
+	else //Load from 10 char name, or full filename
+	{
+		char * filename = (char*)luaL_optstring(l, 1, "");
+		tempfile = Client::Ref().GetStamp(filename);
+	}
+	if (tempfile)
+	{
+		luacon_sim->Load(x, y, tempfile->GetGameSave());
+		//luacon_sim->sys_pause = (tempfile->GetGameSave()->paused | luacon_model->GetPaused())?1:0;
+		lua_pushinteger(l, 1);
+	}
+	else
+		lua_pushnil(l);
+	return 1;
 }
 
 

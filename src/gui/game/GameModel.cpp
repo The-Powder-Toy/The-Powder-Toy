@@ -348,10 +348,8 @@ void GameModel::BuildMenus()
 	//Set default menu
 	activeMenu = SC_POWDERS;
 
-	if(lastMenu != -1) //What is this? ...
-	{
+	if(lastMenu != -1)
 		activeMenu = lastMenu;
-	}
 
 	if(activeMenu != -1)
 		toolList = menuList[activeMenu]->GetToolList();
@@ -882,12 +880,12 @@ void GameModel::SetPlaceSave(GameSave * save)
 	notifyPlaceSaveChanged();
 }
 
-void GameModel::AddStamp(GameSave * save)
+std::string GameModel::AddStamp(GameSave * save)
 {
 	if(stamp)
 		delete stamp;
 	stamp = save;
-	Client::Ref().AddStamp(save);
+	return Client::Ref().AddStamp(save);
 }
 
 void GameModel::SetClipboard(GameSave * save)

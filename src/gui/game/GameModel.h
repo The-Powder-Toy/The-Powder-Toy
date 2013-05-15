@@ -186,7 +186,7 @@ public:
 	void SetZoomWindowPosition(ui::Point position);
 	ui::Point GetZoomWindowPosition();
 	void SetStamp(GameSave * newStamp);
-	void AddStamp(GameSave * save);
+	std::string AddStamp(GameSave * save);
 	void SetClipboard(GameSave * save);
 	void SetPlaceSave(GameSave * save);
 	void Log(string message);

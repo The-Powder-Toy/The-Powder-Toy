@@ -509,17 +509,20 @@ void GameController::ToolClick(int toolSelection, ui::Point point)
 	activeTool->Click(sim, cBrush, point);
 }
 
-void GameController::StampRegion(ui::Point point1, ui::Point point2)
+std::string GameController::StampRegion(ui::Point point1, ui::Point point2)
 {
 	GameSave * newSave;
 	newSave = gameModel->GetSimulation()->Save(point1.X, point1.Y, point2.X, point2.Y);
 	if(newSave)
 	{
 		newSave->paused = gameModel->GetPaused();
-		gameModel->AddStamp(newSave);
+		return gameModel->AddStamp(newSave);
 	}
 	else
+	{
 		new ErrorMessage("Could not create stamp", "Error generating save file");
+		return "";
+	}
 }
 
 void GameController::CopyRegion(ui::Point point1, ui::Point point2)

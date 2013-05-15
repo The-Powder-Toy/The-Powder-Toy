@@ -90,7 +90,7 @@ public:
 	void DrawRect(int toolSelection, ui::Point point1, ui::Point point2);
 	void DrawLine(int toolSelection, ui::Point point1, ui::Point point2);
 	void DrawFill(int toolSelection, ui::Point point);
-	void StampRegion(ui::Point point1, ui::Point point2);
+	std::string StampRegion(ui::Point point1, ui::Point point2);
 	void CopyRegion(ui::Point point1, ui::Point point2);
 	void CutRegion(ui::Point point1, ui::Point point2);
 	void Update();
