@@ -117,6 +117,7 @@ int Element_BIZR::graphics(GRAPHICS_FUNC_ARGS)
 		*firer = *colr/5 * fabs(cpart->vx)+fabs(cpart->vy);
 		*pixel_mode |= FIRE_ADD;
 	}
+	*pixel_mode |= PMODE_BLUR;
 	return 0;
 }
 
