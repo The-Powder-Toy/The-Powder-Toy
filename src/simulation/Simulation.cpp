@@ -375,8 +375,6 @@ void Simulation::clear_area(int area_x, int area_y, int area_w, int area_h)
 void Simulation::CreateBox(int x1, int y1, int x2, int y2, int c, int flags)
 {
 	int i, j;
-	if (c==SPC_PROP)
-		return;
 	if (x1>x2)
 	{
 		i = x2;
@@ -677,8 +675,6 @@ int Simulation::FloodParts(int x, int y, int fullc, int cm, int bm, int flags)
 	int coord_stack_size = 0;
 	int created_something = 0;
 
-	if (c==SPC_PROP)
-		return 0;
 	if (cm==-1)
 	{
 		if (c==0)
@@ -886,19 +882,6 @@ int Simulation::flood_water(int x, int y, int i, int originaly, int check)
 	return 1;
 }
 
-//wrapper around create_part to create TESC with correct tmp value
-int Simulation::create_part_add_props(int p, int x, int y, int tv, int rx, int ry)
-{
-	p=create_part(p, x, y, tv);
-	if (tv==PT_TESC)
-	{
-		parts[p].tmp=rx*4+ry*4+7;
-		if (parts[p].tmp>300)
-			parts[p].tmp=300;
-	}
-	return p;
-}
-
 void Simulation::SetEdgeMode(int newEdgeMode)
 {
 	edgeMode = newEdgeMode;
@@ -1050,15 +1033,9 @@ void Simulation::ApplyDecorationPoint(int positionX, int positionY, int colR, in
 
 	if(cBrush)
 	{
-		int radiusX, radiusY, sizeX, sizeY;
-		
-		radiusX = cBrush->GetRadius().X;
-		radiusY = cBrush->GetRadius().Y;
-		
-		sizeX = cBrush->GetSize().X;
-		sizeY = cBrush->GetSize().Y;
-
+		int radiusX = cBrush->GetRadius().X, radiusY = cBrush->GetRadius().Y, sizeX = cBrush->GetSize().X, sizeY = cBrush->GetSize().Y;
 		unsigned char *bitmap = cBrush->GetBitmap();
+
 		for(int y = 0; y < sizeY; y++)
 		{
 			for(int x = 0; x < sizeX; x++)
@@ -1095,7 +1072,8 @@ void Simulation::ApplyDecorationBox(int x1, int y1, int x2, int y2, int colR, in
 
 void Simulation::ApplyDecorationLine(int x1, int y1, int x2, int y2, int colR, int colG, int colB, int colA, int mode, Brush * cBrush)
 {
-	int cp=abs(y2-y1)>abs(x2-x1), x, y, dx, dy, sy, rx, ry;
+	bool reverseXY = abs(y2-y1) > abs(x2-x1);
+	int x, y, dx, dy, sy, rx, ry;
 	float e, de;
 
 	if(cBrush)
@@ -1104,7 +1082,7 @@ void Simulation::ApplyDecorationLine(int x1, int y1, int x2, int y2, int colR, i
 		ry = cBrush->GetRadius().Y;
 	}
 
-	if (cp)
+	if (reverseXY)
 	{
 		y = x1;
 		x1 = y1;
@@ -1133,7 +1111,7 @@ void Simulation::ApplyDecorationLine(int x1, int y1, int x2, int y2, int colR, i
 	sy = (y1<y2) ? 1 : -1;
 	for (x=x1; x<=x2; x++)
 	{
-		if (cp)
+		if (reverseXY)
 			ApplyDecorationPoint(y, x, colR, colG, colB, colA, mode, cBrush);
 		else
 			ApplyDecorationPoint(x, y, colR, colG, colB, colA, mode, cBrush);
@@ -1143,7 +1121,7 @@ void Simulation::ApplyDecorationLine(int x1, int y1, int x2, int y2, int colR, i
 			y += sy;
 			if (!(rx+ry))
 			{
-				if (cp)
+				if (reverseXY)
 					ApplyDecorationPoint(y, x, colR, colG, colB, colA, mode, cBrush);
 				else
 					ApplyDecorationPoint(x, y, colR, colG, colB, colA, mode, cBrush);
@@ -1172,13 +1150,7 @@ int Simulation::ToolBrush(int positionX, int positionY, int tool, Brush * cBrush
 {
 	if(cBrush)
 	{
-		int radiusX, radiusY, sizeX, sizeY;
-		
-		radiusX = cBrush->GetRadius().X;
-		radiusY = cBrush->GetRadius().Y;
-		
-		sizeX = cBrush->GetSize().X;
-		sizeY = cBrush->GetSize().Y;
+		int radiusX = cBrush->GetRadius().X, radiusY = cBrush->GetRadius().Y, sizeX = cBrush->GetSize().X, sizeY = cBrush->GetSize().Y;
 		unsigned char *bitmap = cBrush->GetBitmap();
 		for(int y = 0; y < sizeY; y++)
 			for(int x = 0; x < sizeX; x++)
@@ -1190,11 +1162,10 @@ int Simulation::ToolBrush(int positionX, int positionY, int tool, Brush * cBrush
 
 void Simulation::ToolLine(int x1, int y1, int x2, int y2, int tool, Brush * cBrush, float strength)
 {
-	int cp=abs(y2-y1)>abs(x2-x1), x, y, dx, dy, sy, rx, ry;
+	bool reverseXY = abs(y2-y1) > abs(x2-x1);
+	int x, y, dx, dy, sy, rx = cBrush->GetRadius().X, ry = cBrush->GetRadius().Y;
 	float e, de;
-	rx = cBrush->GetRadius().X;
-	ry = cBrush->GetRadius().Y;
-	if (cp)
+	if (reverseXY)
 	{
 		y = x1;
 		x1 = y1;
@@ -1223,7 +1194,7 @@ void Simulation::ToolLine(int x1, int y1, int x2, int y2, int tool, Brush * cBru
 	sy = (y1<y2) ? 1 : -1;
 	for (x=x1; x<=x2; x++)
 	{
-		if (cp)
+		if (reverseXY)
 			ToolBrush(y, x, tool, cBrush, strength);
 		else
 			ToolBrush(x, y, tool, cBrush, strength);
@@ -1231,9 +1202,9 @@ void Simulation::ToolLine(int x1, int y1, int x2, int y2, int tool, Brush * cBru
 		if (e >= 0.5f)
 		{
 			y += sy;
-			if ((!(rx+ry)) && ((y1<y2) ? (y<=y2) : (y>=y2)))
+			if (!(rx+ry) && ((y1<y2) ? (y<=y2) : (y>=y2)))
 			{
-				if (cp)
+				if (reverseXY)
 					ToolBrush(y, x, tool, cBrush, strength);
 				else
 					ToolBrush(x, y, tool, cBrush, strength);
@@ -1266,39 +1237,25 @@ int Simulation::CreateParts(int positionX, int positionY, int c, Brush * cBrush)
 {
 	if(cBrush)
 	{
-		int radiusX, radiusY, sizeX, sizeY;
-		
-		radiusX = cBrush->GetRadius().X;
-		radiusY = cBrush->GetRadius().Y;
-		
-		sizeX = cBrush->GetSize().X;
-		sizeY = cBrush->GetSize().Y;
-		
+		int radiusX = cBrush->GetRadius().X, radiusY = cBrush->GetRadius().Y, sizeX = cBrush->GetSize().X, sizeY = cBrush->GetSize().Y, fn;
 		unsigned char *bitmap = cBrush->GetBitmap();
 		
-		if(c == PT_NONE)
+		if (c == 0)// && !(flags&BRUSH_REPLACEMODE))							// delete
+			fn = 0;
+		//else if ((flags&BRUSH_SPECIFIC_DELETE) && !(flags&BRUSH_REPLACEMODE))	// specific delete
+		//	fn = 1;
+		//else if (flags&BRUSH_REPLACEMODE)										// replace
+		//	fn = 2;
+		else																	// normal draw
+			fn = 3;
+
+		for(int y = 0; y < sizeY; y++)
 		{
-			for(int y = 0; y < sizeY; y++)
+			for(int x = 0; x < sizeX; x++)
 			{
-				for(int x = 0; x < sizeX; x++)
+				if(bitmap[(y*sizeX)+x] && (positionX+(x-radiusX) >= 0 && positionY+(y-radiusY) >= 0 && positionX+(x-radiusX) < XRES && positionY+(y-radiusY) < YRES))
 				{
-					if(bitmap[(y*sizeX)+x] && (positionX+(x-radiusX) >= 0 && positionY+(y-radiusY) >= 0 && positionX+(x-radiusX) < XRES && positionY+(y-radiusY) < YRES))
-					{
-						delete_part(positionX+(x-radiusX), positionY+(y-radiusY), 0);
-					}
-				}
-			}
-		}
-		else
-		{
-			for(int y = 0; y < sizeY; y++)
-			{
-				for(int x = 0; x < sizeX; x++)
-				{
-					if(bitmap[(y*sizeX)+x] && (positionX+(x-radiusX) >= 0 && positionY+(y-radiusY) >= 0 && positionX+(x-radiusX) < XRES && positionY+(y-radiusY) < YRES))
-					{
-						create_part(-2, positionX+(x-radiusX), positionY+(y-radiusY), c);
-					}
+					CreatePartFlags(positionX+(x-radiusX), positionY+(y-radiusY), c, fn, 0);
 				}
 			}
 		}
@@ -1308,77 +1265,47 @@ int Simulation::CreateParts(int positionX, int positionY, int c, Brush * cBrush)
 
 int Simulation::CreateParts(int x, int y, int rx, int ry, int c, int flags)
 {
-	int i, j, r, f = 0, u, v, oy, ox, b = 0, dw = 0, stemp = 0, p;
-	int wall = c - 100;
-	if (c==SPC_WIND || c==PT_FIGH)
-		return 0;
-	
-	if (c==PT_LIGH)
+	int i, j, f = 0, fn;
+
+	if (c == 0)// && !(flags&BRUSH_REPLACEMODE))							// delete
+		fn = 0;
+	//else if ((flags&BRUSH_SPECIFIC_DELETE) && !(flags&BRUSH_REPLACEMODE))	// specific delete
+	//	fn = 1;
+	//else if (flags&BRUSH_REPLACEMODE)										// replace
+	//	fn = 2;
+	else																	// normal draw
+		fn = 3;
+
+	for (j=-ry; j<=ry; j++)
+		for (i=-rx; i<=rx; i++)
+			if (CreatePartFlags(x+i, y+j, c, fn, flags))
+				f = 1;
+	return !f;
+}
+
+int Simulation::CreatePartFlags(int x, int y, int c, int fn, int flags)
+{
+	if (fn == 0)      //delete
+		delete_part(x, y, 0);
+	else if (fn == 1) //specific delete
+		delete_part(x, y, flags);
+	else if (fn == 2) //replace mode
 	{
-		if (lighting_recreate>0 && rx+ry>0)
+		if (x<0 || y<0 || x>=XRES || y>=YRES)
 			return 0;
-		p=create_part(-2, x, y, c);
-		if (p!=-1)
-		{
-			parts[p].life=rx+ry;
-			if (parts[p].life>55)
-				parts[p].life=55;
-			parts[p].temp=parts[p].life*150; // temperature of the lighting shows the power of the lighting
-			lighting_recreate+=parts[p].life/2+1;
-			return 1;
-		}
-		else return 0;
-	}
-	
-	//eraser
-	if (c == 0)
-	{
-		if (rx==0&&ry==0)
+		//if ((pmap[y][x]&0xFF)!=SLALT&&SLALT!=0)
+		//	return 0;
+		if ((pmap[y][x]))
 		{
 			delete_part(x, y, 0);
+			if (c!=0)
+				create_part(-2, x, y, c);
 		}
-		else
-		{
-			for (j=-ry; j<=ry; j++)
-				for (i=-rx; i<=rx; i++)
-					delete_part(x+i, y+j, 0);
-		}
-		return 1;
 	}
-	
-	if (c == SPC_AIR || c == SPC_HEAT || c == SPC_COOL || c == SPC_VACUUM || c == SPC_PGRV || c == SPC_NGRV)
-	{
-		if (rx==0&&ry==0)
-		{
-			create_part(-2, x, y, c);
-		}
-		else
-		{
-			for (j=-ry; j<=ry; j++)
-				for (i=-rx; i<=rx; i++)
-				{
-					if ( x+i<0 || y+j<0 || x+i>=XRES || y+j>=YRES)
-						continue;
-					create_part(-2, x+i, y+j, c);
-				}
-		}
-		return 1;
-	}
-	
-	//else, no special modes, draw element like normal.
-	if (rx==0&&ry==0)//workaround for 1pixel brush/floodfill crashing. todo: find a better fix later.
-	{
-		if (create_part_add_props(-2, x, y, c, rx, ry)==-1)
-			f = 1;
-	}
-	else
-	{
-		for (j=-ry; j<=ry; j++)
-			for (i=-rx; i<=rx; i++)
-				if (create_part_add_props(-2, x+i, y+j, c, rx, ry)==-1)
-					f = 1;
-	}
-	return !f;
+	else if (fn == 3) //normal draw
+		if (create_part(-2, x, y, c) == -1)
+			return 1;
+	return 0;
 }
 
 int Simulation::CreateWalls(int x, int y, int rx, int ry, int c, int flags, Brush * cBrush)
@@ -1443,13 +1370,10 @@ int Simulation::CreateWalls(int x, int y, int rx, int ry, int c, int flags, Brus
 
 void Simulation::CreateLine(int x1, int y1, int x2, int y2, int c, Brush * cBrush)
 {
-	int cp=abs(y2-y1)>abs(x2-x1), x, y, dx, dy, sy, rx, ry;
-	rx = cBrush->GetRadius().X;
-	ry = cBrush->GetRadius().Y;
+	int x, y, dx, dy, sy, rx = cBrush->GetRadius().X, ry = cBrush->GetRadius().Y;
+	bool reverseXY = abs(y2-y1) > abs(x2-x1);
 	float e, de;
-	if (c==SPC_PROP)
-		return;
-	if (cp)
+	if (reverseXY)
 	{
 		y = x1;
 		x1 = y1;
@@ -1478,7 +1402,7 @@ void Simulation::CreateLine(int x1, int y1, int x2, int y2, int c, Brush * cBrus
 	sy = (y1<y2) ? 1 : -1;
 	for (x=x1; x<=x2; x++)
 	{
-		if (cp)
+		if (reverseXY)
 			CreateParts(y, x, c, cBrush);
 		else
 			CreateParts(x, y, c, cBrush);
@@ -1486,10 +1410,9 @@ void Simulation::CreateLine(int x1, int y1, int x2, int y2, int c, Brush * cBrus
 		if (e >= 0.5f)
 		{
 			y += sy;
-			if ((c==WL_EHOLE+100 || c==WL_ALLOWGAS+100 || c==WL_ALLOWENERGY+100 || c==WL_ALLOWALLELEC+100 || c==WL_ALLOWSOLID+100 || c==WL_ALLOWAIR+100 || c==WL_WALL+100 || c==WL_DESTROYALL+100 || c==WL_ALLOWLIQUID+100 || c==WL_FAN+100 || c==WL_STREAM+100 || c==WL_DETECT+100 || c==WL_EWALL+100 || c==WL_WALLELEC+100 || !(rx+ry))
-				&& ((y1<y2) ? (y<=y2) : (y>=y2)))
+			if (!(rx+ry) && ((y1<y2) ? (y<=y2) : (y>=y2)))
 			{
-				if (cp)
+				if (reverseXY)
 					CreateParts(y, x, c, cBrush);
 				else
 					CreateParts(x, y, c, cBrush);
@@ -1499,13 +1422,13 @@ void Simulation::CreateLine(int x1, int y1, int x2, int y2, int c, Brush * cBrus
 	}
 }
 
-void Simulation::CreateLine(int x1, int y1, int x2, int y2, int rx, int ry, int c, int flags)
+//Now simply creates a 0 pixel radius line without all the complicated flags / other checks
+void Simulation::CreateLine(int x1, int y1, int x2, int y2, int c)
 {
-	int cp=abs(y2-y1)>abs(x2-x1), x, y, dx, dy, sy;
+	bool reverseXY = abs(y2-y1) > abs(x2-x1);
+	int x, y, dx, dy, sy;
 	float e, de;
-	if (c==SPC_PROP)
-		return;
-	if (cp)
+	if (reverseXY)
 	{
 		y = x1;
 		x1 = y1;
@@ -1534,21 +1457,20 @@ void Simulation::CreateLine(int x1, int y1, int x2, int y2, int rx, int ry, int 
 	sy = (y1<y2) ? 1 : -1;
 	for (x=x1; x<=x2; x++)
 	{
-		if (cp)
-			CreateParts(y, x, rx, ry, c, flags);
+		if (reverseXY)
+			create_part(-2, y, x, c);
 		else
-			CreateParts(x, y, rx, ry, c, flags);
+			create_part(-2, x, y, c);
 		e += de;
 		if (e >= 0.5f)
 		{
 			y += sy;
-			if ((c==WL_EHOLE+100 || c==WL_ALLOWGAS+100 || c==WL_ALLOWENERGY+100 || c==WL_ALLOWALLELEC+100 || c==WL_ALLOWSOLID+100 || c==WL_ALLOWAIR+100 || c==WL_WALL+100 || c==WL_DESTROYALL+100 || c==WL_ALLOWLIQUID+100 || c==WL_FAN+100 || c==WL_STREAM+100 || c==WL_DETECT+100 || c==WL_EWALL+100 || c==WL_WALLELEC+100 || !(rx+ry))
-				&& ((y1<y2) ? (y<=y2) : (y>=y2)))
+			if ((y1<y2) ? (y<=y2) : (y>=y2))
 			{
-				if (cp)
-					CreateParts(y, x, rx, ry, c, flags);
+				if (reverseXY)
+					create_part(-2, y, x, c);
 				else
-					CreateParts(x, y, rx, ry, c, flags);
+					create_part(-2, x, y, c);
 			}
 			e -= 1.0f;
 		}
@@ -1953,7 +1875,7 @@ void Simulation::create_arc(int sx, int sy, int dx, int dy, int midpoints, int v
 			xmid[i+1] += (rand()%variance)-voffset;
 			ymid[i+1] += (rand()%variance)-voffset;
 		}
-		CreateLine(xmid[i], ymid[i], xmid[i+1], ymid[i+1], 0, 0, type, flags);
+		CreateLine(xmid[i], ymid[i], xmid[i+1], ymid[i+1], type);
 	}
 	free(xmid);
 	free(ymid);
@@ -2713,9 +2635,6 @@ int Simulation::create_part(int p, int x, int y, int tv)
 		return -1;
 	if (t>=0 && t<PT_NUM && !elements[t].Enabled && t!=SPC_AIR)
 		return -1;
-	if(t==SPC_PROP) {
-		return -1;	//Prop tool works on a mouse click basic, make sure it doesn't do anything here
-	}
 
 	/*if (t==SPC_HEAT||t==SPC_COOL)
 	{

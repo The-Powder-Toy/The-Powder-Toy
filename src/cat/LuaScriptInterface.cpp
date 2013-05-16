@@ -976,6 +976,7 @@ int LuaScriptInterface::simulation_createLine(lua_State * l)
 	brushList[brush]->SetRadius(ui::Point(rx, ry));
 
 	luacon_sim->CreateLine(x1, y1, x2, y2, c, brushList[brush]);
+	brushList[brush]->SetRadius(tempRadius);
 	return 0;
 }
 
