@@ -934,10 +934,10 @@ int LuaScriptInterface::simulation_createParts(lua_State * l)
 	int c = luaL_optint(l,5,luacon_model->GetActiveTool(0)->GetToolID());
 	int brush = luaL_optint(l,6,CIRCLE_BRUSH);
 	//int flags = luaL_optint(l,7,get_brush_flags());
-	if (x < 0 || x > XRES || y < 0 || y > YRES)
+	/*if (x < 0 || x > XRES || y < 0 || y > YRES)
 		return luaL_error(l, "Coordinates out of range (%d,%d)", x, y);
 	if (c < 0 || c >= PT_NUM || !luacon_sim->elements[c].Enabled)
-		return luaL_error(l, "Unrecognised element number '%d'", c);
+		return luaL_error(l, "Unrecognised element number '%d'", c);*/
 
 	vector<Brush*> brushList = luacon_model->GetBrushList();
 	if (brush < 0 || brush > brushList.size())
@@ -962,12 +962,12 @@ int LuaScriptInterface::simulation_createLine(lua_State * l)
 	int c = luaL_optint(l,7,luacon_model->GetActiveTool(0)->GetToolID());
 	int brush = luaL_optint(l,8,CIRCLE_BRUSH);
 	//int flags = luaL_optint(l,9,get_brush_flags());
-	if (x1 < 0 || x1 > XRES || y1 < 0 || y1 > YRES)
+	/* (x1 < 0 || x1 > XRES || y1 < 0 || y1 > YRES)
 		return luaL_error(l, "Starting coordinates out of range (%d,%d)", x1, y1);
 	if (x2 < 0 || x2 > XRES || y2 < 0 || y2 > YRES)
 		return luaL_error(l, "Ending Coordinates out of range (%d,%d)", x2, y2);
 	if (c < 0 || c >= PT_NUM || !luacon_sim->elements[c].Enabled)
-		return luaL_error(l, "Unrecognised element number '%d'", c);
+		return luaL_error(l, "Unrecognised element number '%d'", c);*/
 
 	vector<Brush*> brushList = luacon_model->GetBrushList();
 	if (brush < 0 || brush > brushList.size())
@@ -987,12 +987,12 @@ int LuaScriptInterface::simulation_createBox(lua_State * l)
 	int y2 = luaL_optint(l,4,-1);
 	int c = luaL_optint(l,5,luacon_model->GetActiveTool(0)->GetToolID());
 	//int flags = luaL_optint(l,6,get_brush_flags());
-	if (x1 < 0 || x1 > XRES || y1 < 0 || y1 > YRES)
+	/*if (x1 < 0 || x1 > XRES || y1 < 0 || y1 > YRES)
 		return luaL_error(l, "Starting coordinates out of range (%d,%d)", x1, y1);
 	if (x2 < 0 || x2 > XRES || y2 < 0 || y2 > YRES)
 		return luaL_error(l, "Ending Coordinates out of range (%d,%d)", x2, y2);
 	if (c < 0 || c >= PT_NUM || !luacon_sim->elements[c].Enabled)
-		return luaL_error(l, "Unrecognised element number '%d'", c);
+		return luaL_error(l, "Unrecognised element number '%d'", c);*/
 
 	luacon_sim->CreateBox(x1, y1, x2, y2, c, 0);
 	return 0;
@@ -1006,10 +1006,10 @@ int LuaScriptInterface::simulation_floodParts(lua_State * l)
 	int cm = luaL_optint(l,4,-1);
 	int bm = luaL_optint(l,5,-1);
 	//int flags = luaL_optint(l,6,0);
-	if (x < 0 || x > XRES || y < 0 || y > YRES)
+	/*if (x < 0 || x > XRES || y < 0 || y > YRES)
 		return luaL_error(l, "coordinates out of range (%d,%d)", x, y);
-	if (c < 0 || c >= PT_NUM || !luacon_sim->elements[c].Enabled)
-		return luaL_error(l, "Unrecognised element number '%d'", c);
+	if ((c >= 0 && c < PT_NUM && !luacon_sim->elements[c].Enabled) || c < 0)
+		return luaL_error(l, "Unrecognised element number '%d'", c);*/
 	int ret = luacon_sim->FloodParts(x, y, c, cm, bm, 0);
 	lua_pushinteger(l, ret);
 	return 1;
@@ -1949,24 +1949,22 @@ int LuaScriptInterface::graphics_textSize(lua_State * l)
 
 int LuaScriptInterface::graphics_drawText(lua_State * l)
 {
-	char * text;
-	int x, y, r, g, b, a;
-	x = lua_tointeger(l, 1);
-	y = lua_tointeger(l, 2);
-	text = (char*)lua_tostring(l, 3);
-	r = luaL_optint(l, 4, 255);
-	g = luaL_optint(l, 5, 255);
-	b = luaL_optint(l, 6, 255);
-	a = luaL_optint(l, 7, 255);
+	int x = lua_tointeger(l, 1);
+	int y = lua_tointeger(l, 2);
+	char * text = (char*)lua_tostring(l, 3);
+	int r = luaL_optint(l, 4, 255);
+	int g = luaL_optint(l, 5, 255);
+	int b = luaL_optint(l, 6, 255);
+	int a = luaL_optint(l, 7, 255);
 	
 	if (r<0) r = 0;
-	if (r>255) r = 255;
+	else if (r>255) r = 255;
 	if (g<0) g = 0;
-	if (g>255) g = 255;
+	else if (g>255) g = 255;
 	if (b<0) b = 0;
-	if (b>255) b = 255;
+	else if (b>255) b = 255;
 	if (a<0) a = 0;
-	if (a>255) a = 255;
+	else if (a>255) a = 255;
 
 	luacon_g->drawtext(x, y, text, r, g, b, a);
 	return 0;
@@ -1974,121 +1972,121 @@ int LuaScriptInterface::graphics_drawText(lua_State * l)
 
 int LuaScriptInterface::graphics_drawLine(lua_State * l)
 {
-	int x1, y1, x2, y2, r, g, b, a;
-	x1 = lua_tointeger(l, 1);
-	y1 = lua_tointeger(l, 2);
-	x2 = lua_tointeger(l, 3);
-	y2 = lua_tointeger(l, 4);
-	r = luaL_optint(l, 5, 255);
-	g = luaL_optint(l, 6, 255);
-	b = luaL_optint(l, 7, 255);
-	a = luaL_optint(l, 8, 255);
+	int x1 = lua_tointeger(l, 1);
+	int y1 = lua_tointeger(l, 2);
+	int x2 = lua_tointeger(l, 3);
+	int y2 = lua_tointeger(l, 4);
+	int r = luaL_optint(l, 5, 255);
+	int g = luaL_optint(l, 6, 255);
+	int b = luaL_optint(l, 7, 255);
+	int a = luaL_optint(l, 8, 255);
 
 	if (r<0) r = 0;
-	if (r>255) r = 255;
+	else if (r>255) r = 255;
 	if (g<0) g = 0;
-	if (g>255) g = 255;
+	else if (g>255) g = 255;
 	if (b<0) b = 0;
-	if (b>255) b = 255;
+	else if (b>255) b = 255;
 	if (a<0) a = 0;
-	if (a>255) a = 255;
+	else if (a>255) a = 255;
+
 	luacon_g->draw_line(x1, y1, x2, y2, r, g, b, a);
 	return 0;
 }
 
 int LuaScriptInterface::graphics_drawRect(lua_State * l)
 {
-	int x, y, rx, ry, r, g, b, a;
-	x = lua_tointeger(l, 1);
-	y = lua_tointeger(l, 2);
-	rx = lua_tointeger(l, 3);
-	ry = lua_tointeger(l, 4);
-	r = luaL_optint(l, 5, 255);
-	g = luaL_optint(l, 6, 255);
-	b = luaL_optint(l, 7, 255);
-	a = luaL_optint(l, 8, 255);
+	int x = lua_tointeger(l, 1);
+	int y = lua_tointeger(l, 2);
+	int width = lua_tointeger(l, 3);
+	int height = lua_tointeger(l, 4);
+	int r = luaL_optint(l, 5, 255);
+	int g = luaL_optint(l, 6, 255);
+	int b = luaL_optint(l, 7, 255);
+	int a = luaL_optint(l, 8, 255);
 
 	if (r<0) r = 0;
-	if (r>255) r = 255;
+	else if (r>255) r = 255;
 	if (g<0) g = 0;
-	if (g>255) g = 255;
+	else if (g>255) g = 255;
 	if (b<0) b = 0;
-	if (b>255) b = 255;
+	else if (b>255) b = 255;
 	if (a<0) a = 0;
-	if (a>255) a = 255;
-	luacon_g->drawrect(x, y, rx, ry, r, g, b, a);
+	else if (a>255) a = 255;
+
+	luacon_g->drawrect(x, y, width, height, r, g, b, a);
 	return 0;
 }
 
 int LuaScriptInterface::graphics_fillRect(lua_State * l)
 {
-	int x, y, rx, ry, r, g, b, a;
-	x = lua_tointeger(l, 1);
-	y = lua_tointeger(l, 2);
-	rx = lua_tointeger(l, 3);
-	ry = lua_tointeger(l, 4);
-	r = luaL_optint(l, 5, 255);
-	g = luaL_optint(l, 6, 255);
-	b = luaL_optint(l, 7, 255);
-	a = luaL_optint(l, 8, 255);
+	int x = lua_tointeger(l, 1);
+	int y = lua_tointeger(l, 2);
+	int width = lua_tointeger(l, 3);
+	int height = lua_tointeger(l, 4);
+	int r = luaL_optint(l, 5, 255);
+	int g = luaL_optint(l, 6, 255);
+	int b = luaL_optint(l, 7, 255);
+	int a = luaL_optint(l, 8, 255);
 
 	if (r<0) r = 0;
-	if (r>255) r = 255;
+	else if (r>255) r = 255;
 	if (g<0) g = 0;
-	if (g>255) g = 255;
+	else if (g>255) g = 255;
 	if (b<0) b = 0;
-	if (b>255) b = 255;
+	else if (b>255) b = 255;
 	if (a<0) a = 0;
-	if (a>255) a = 255;
-	luacon_g->fillrect(x, y, rx, ry, r, g, b, a);
+	else if (a>255) a = 255;
+
+	luacon_g->fillrect(x, y, width, height, r, g, b, a);
 	return 0;
 }
 
 int LuaScriptInterface::graphics_drawCircle(lua_State * l)
 {
-	int x, y, w, h, r, g, b, a;
-	x = lua_tointeger(l, 1);
-	y = lua_tointeger(l, 2);
-	w = lua_tointeger(l, 3);
-	h = lua_tointeger(l, 4);
-	r = luaL_optint(l, 5, 255);
-	g = luaL_optint(l, 6, 255);
-	b = luaL_optint(l, 7, 255);
-	a = luaL_optint(l, 8, 255);
+	int x = lua_tointeger(l, 1);
+	int y = lua_tointeger(l, 2);
+	int rx = lua_tointeger(l, 3);
+	int ry = lua_tointeger(l, 4);
+	int r = luaL_optint(l, 5, 255);
+	int g = luaL_optint(l, 6, 255);
+	int b = luaL_optint(l, 7, 255);
+	int a = luaL_optint(l, 8, 255);
 
 	if (r<0) r = 0;
-	if (r>255) r = 255;
+	else if (r>255) r = 255;
 	if (g<0) g = 0;
-	if (g>255) g = 255;
+	else if (g>255) g = 255;
 	if (b<0) b = 0;
-	if (b>255) b = 255;
+	else if (b>255) b = 255;
 	if (a<0) a = 0;
-	if (a>255) a = 255;
-	luacon_g->drawcircle(x, y, w, h, r, g, b, a);
+	else if (a>255) a = 255;
+
+	luacon_g->drawcircle(x, y, abs(rx), abs(ry), r, g, b, a);
 	return 0;
 }
 
 int LuaScriptInterface::graphics_fillCircle(lua_State * l)
 {
-	int x, y, w, h, r, g, b, a;
-	x = lua_tointeger(l, 1);
-	y = lua_tointeger(l, 2);
-	w = lua_tointeger(l, 3);
-	h = lua_tointeger(l, 4);
-	r = luaL_optint(l, 5, 255);
-	g = luaL_optint(l, 6, 255);
-	b = luaL_optint(l, 7, 255);
-	a = luaL_optint(l, 8, 255);
+	int x = lua_tointeger(l, 1);
+	int y = lua_tointeger(l, 2);
+	int rx = lua_tointeger(l, 3);
+	int ry = lua_tointeger(l, 4);
+	int r = luaL_optint(l, 5, 255);
+	int g = luaL_optint(l, 6, 255);
+	int b = luaL_optint(l, 7, 255);
+	int a = luaL_optint(l, 8, 255);
 
 	if (r<0) r = 0;
-	if (r>255) r = 255;
+	else if (r>255) r = 255;
 	if (g<0) g = 0;
-	if (g>255) g = 255;
+	else if (g>255) g = 255;
 	if (b<0) b = 0;
-	if (b>255) b = 255;
+	else if (b>255) b = 255;
 	if (a<0) a = 0;
-	if (a>255) a = 255;
-	luacon_g->fillcircle(x, y, w, h, r, g, b, a);
+	else if (a>255) a = 255;
+
+	luacon_g->fillcircle(x, y, abs(rx), abs(ry), r, g, b, a);
 	return 0;
 }
 
