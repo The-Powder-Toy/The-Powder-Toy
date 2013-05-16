@@ -2631,43 +2631,12 @@ int Simulation::create_part(int p, int x, int y, int tv)
 	int t = tv & 0xFF;
 	int v = (tv >> 8) & 0xFFFFFF;
 
-	if (x<0 || y<0 || x>=XRES || y>=YRES || ((t<=0 || t>=PT_NUM)&&t!=SPC_HEAT&&t!=SPC_COOL&&t!=SPC_AIR&&t!=SPC_VACUUM&&t!=SPC_PGRV&&t!=SPC_NGRV))
+	if (x<0 || y<0 || x>=XRES || y>=YRES)
 		return -1;
-	if (t>=0 && t<PT_NUM && !elements[t].Enabled && t!=SPC_AIR)
+	if (t>=0 && t<PT_NUM && !elements[t].Enabled)
 		return -1;
 
-	/*if (t==SPC_HEAT||t==SPC_COOL)
-	{
-		if ((pmap[y][x]&0xFF)!=PT_NONE&&(pmap[y][x]&0xFF)<PT_NUM)
-		{
-			if (t==SPC_HEAT&&parts[pmap[y][x]>>8].temp<MAX_TEMP)
-			{
-				if ((pmap[y][x]&0xFF)==PT_PUMP || (pmap[y][x]&0xFF)==PT_GPMP) {
-					parts[pmap[y][x]>>8].temp = restrict_flt(parts[pmap[y][x]>>8].temp + 0.1f, MIN_TEMP, MAX_TEMP);
-				} else if ((sdl_mod & (KMOD_SHIFT)) && (sdl_mod & (KMOD_CTRL))) {
-					parts[pmap[y][x]>>8].temp = restrict_flt(parts[pmap[y][x]>>8].temp + 50.0f, MIN_TEMP, MAX_TEMP);
-				} else {
-					parts[pmap[y][x]>>8].temp = restrict_flt(parts[pmap[y][x]>>8].temp + 4.0f, MIN_TEMP, MAX_TEMP);
-				}
-			}
-			if (t==SPC_COOL&&parts[pmap[y][x]>>8].temp>MIN_TEMP)
-			{
-				if ((pmap[y][x]&0xFF)==PT_PUMP || (pmap[y][x]&0xFF)==PT_GPMP) {
-					parts[pmap[y][x]>>8].temp = restrict_flt(parts[pmap[y][x]>>8].temp - 0.1f, MIN_TEMP, MAX_TEMP);
-				} else if ((sdl_mod & (KMOD_SHIFT)) && (sdl_mod & (KMOD_CTRL))) {
-					parts[pmap[y][x]>>8].temp = restrict_flt(parts[pmap[y][x]>>8].temp - 50.0f, MIN_TEMP, MAX_TEMP);
-				} else {
-					parts[pmap[y][x]>>8].temp = restrict_flt(parts[pmap[y][x]>>8].temp - 4.0f, MIN_TEMP, MAX_TEMP);
-				}
-			}
-			return pmap[y][x]>>8;
-		}
-		else
-		{
-			return -1;
-		}
-	}*/
-	if (t==SPC_AIR)
+	if (tv == SPC_AIR)
 	{
 		pv[y/CELL][x/CELL] += 0.03f;
 		if (y+CELL<YRES)
@@ -2680,30 +2649,6 @@ int Simulation::create_part(int p, int x, int y, int tv)
 		}
 		return -1;
 	}
-	if (t==SPC_VACUUM)
-	{
-		pv[y/CELL][x/CELL] -= 0.03f;
-		if (y+CELL<YRES)
-			pv[y/CELL+1][x/CELL] -= 0.03f;
-		if (x+CELL<XRES)
-		{
-			pv[y/CELL][x/CELL+1] -= 0.03f;
-			if (y+CELL<YRES)
-				pv[y/CELL+1][x/CELL+1] -= 0.03f;
-		}
-		return -1;
-	}
-	if (t==SPC_PGRV)
-	{
-		gravmap[(y/CELL)*(XRES/CELL)+(x/CELL)] = 5;
-		return -1;
-	}
-	if (t==SPC_NGRV)
-	{
-		gravmap[(y/CELL)*(XRES/CELL)+(x/CELL)] = -5;
-		return -1;
-	}
-
 
 	if (t==PT_SPRK)
 	{
@@ -2712,10 +2657,9 @@ int Simulation::create_part(int p, int x, int y, int tv)
 		if(type == PT_WIRE)
 		{
 			parts[index].ctype = PT_DUST;
+			return index;
 		}
-		if (!(type == PT_INST || (elements[type].Properties&PROP_CONDUCTS)))
-			return -1;
-		if (parts[index].life!=0)
+		if (!(type == PT_INST || (elements[type].Properties&PROP_CONDUCTS)) || parts[index].life!=0)
 			return -1;
 		if (p == -2 && type == PT_INST)
 		{
@@ -2834,10 +2778,21 @@ int Simulation::create_part(int p, int x, int y, int tv)
 
 	if (i>parts_lastActiveIndex) parts_lastActiveIndex = i;
 
+	parts[i].x = (float)x;
+	parts[i].y = (float)y;
+	parts[i].type = t;
+	parts[i].vx = 0;
+	parts[i].vy = 0;
+	parts[i].life = 0;
+	parts[i].ctype = 0;
+	parts[i].temp = elements[t].Temperature;
+	parts[i].tmp = 0;
+	parts[i].tmp2 = 0;
 	parts[i].dcolour = 0;
 	parts[i].flags = 0;
 	if (t == PT_GLAS || t == PT_QRTZ || t == PT_TUNG)
 	{
+		parts[i].pavg[0] = 0.0f;
 		parts[i].pavg[1] = pv[y/CELL][x/CELL];
 	}
 	else
@@ -2845,19 +2800,7 @@ int Simulation::create_part(int p, int x, int y, int tv)
 		parts[i].pavg[0] = 0.0f;
 		parts[i].pavg[1] = 0.0f;
 	}
-	if (t!=PT_STKM&&t!=PT_STKM2&&t!=PT_FIGH)//set everything to default values first, except for stickman.
-	{
-		parts[i].x = (float)x;
-		parts[i].y = (float)y;
-		parts[i].type = t;
-		parts[i].vx = 0;
-		parts[i].vy = 0;
-		parts[i].life = 0;
-		parts[i].ctype = 0;
-		parts[i].temp = elements[t].Temperature;
-		parts[i].tmp = 0;
-		parts[i].tmp2 = 0;
-	}
+
 	switch (t)
 		{
 			case PT_SOAP:
@@ -2964,14 +2907,7 @@ int Simulation::create_part(int p, int x, int y, int tv)
 			case PT_STKM:
 				if (player.spwn==0)
 				{
-					parts[i].x = (float)x;
-					parts[i].y = (float)y;
-					parts[i].type = PT_STKM;
-					parts[i].vx = 0;
-					parts[i].vy = 0;
 					parts[i].life = 100;
-					parts[i].ctype = 0;
-					parts[i].temp = elements[t].Temperature;
 					Element_STKM::STKM_init_legs(this, &player, i);
 					player.spwn = 1;
 					player.elem = PT_DUST;
@@ -2986,14 +2922,7 @@ int Simulation::create_part(int p, int x, int y, int tv)
 			case PT_STKM2:
 				if (player2.spwn==0)
 				{
-					parts[i].x = (float)x;
-					parts[i].y = (float)y;
-					parts[i].type = PT_STKM2;
-					parts[i].vx = 0;
-					parts[i].vy = 0;
 					parts[i].life = 100;
-					parts[i].ctype = 0;
-					parts[i].temp = elements[t].Temperature;
 					Element_STKM::STKM_init_legs(this, &player2, i);
 					player2.spwn = 1;
 					player2.elem = PT_DUST;
