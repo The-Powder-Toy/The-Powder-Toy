@@ -72,6 +72,12 @@ class LuaScriptInterface: public CommandInterface
 	static int simulation_createWallLine(lua_State * l);
 	static int simulation_createWallBox(lua_State * l);
 	static int simulation_floodWalls(lua_State * l);
+	static int simulation_toolBrush(lua_State * l);
+	static int simulation_toolLine(lua_State * l);
+	static int simulation_toolBox(lua_State * l);
+	static int simulation_decoBrush(lua_State * l);
+	static int simulation_decoLine(lua_State * l);
+	static int simulation_decoBox(lua_State * l);
 	static int simulation_clearSim(lua_State * l);
 	static int simulation_saveStamp(lua_State * l);
 	static int simulation_loadStamp(lua_State * l);

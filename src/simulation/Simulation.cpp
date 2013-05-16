@@ -1213,7 +1213,7 @@ void Simulation::ToolLine(int x1, int y1, int x2, int y2, int tool, Brush * cBru
 		}
 	}
 }
-void Simulation::ToolBox(int x1, int y1, int x2, int y2, int tool, Brush * cBrush, float strength)
+void Simulation::ToolBox(int x1, int y1, int x2, int y2, int tool, float strength)
 {
 	int i, j;
 	if (x1>x2)

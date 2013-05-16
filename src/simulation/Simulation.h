@@ -160,7 +160,7 @@ public:
 	int Tool(int x, int y, int tool, float strength = 1.0f);
 	int ToolBrush(int x, int y, int tool, Brush * cBrush, float strength = 1.0f);
 	void ToolLine(int x1, int y1, int x2, int y2, int tool, Brush * cBrush, float strength = 1.0f);
-	void ToolBox(int x1, int y1, int x2, int y2, int tool, Brush * cBrush, float strength = 1.0f);
+	void ToolBox(int x1, int y1, int x2, int y2, int tool, float strength = 1.0f);
 	
 	void CreateBox(int x1, int y1, int x2, int y2, int c, int flags);
 	int FloodINST(int x, int y, int fullc, int cm);
