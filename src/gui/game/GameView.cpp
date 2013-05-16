@@ -403,6 +403,7 @@ GameView::GameView():
 	};
 	pauseButton = new ui::Button(ui::Point(Size.X-16, Size.Y-16), ui::Point(15, 15), "", "Pause/Resume the simulation");  //Pause
 	pauseButton->SetIcon(IconPause);
+	pauseButton->SetTogglable(true); 
 	pauseButton->SetActionCallback(new PauseAction(this));
 	AddComponent(pauseButton);
 
