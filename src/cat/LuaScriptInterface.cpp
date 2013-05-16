@@ -1155,8 +1155,6 @@ int LuaScriptInterface::simulation_decoBrush(lua_State * l)
 	int a = luaL_optint(l,8,255);
 	int tool = luaL_optint(l,9,DECO_DRAW);
 	int brush = luaL_optint(l,10,CIRCLE_BRUSH);
-	if (tool < 0 || tool >= luacon_sim->tools.size())
-		return luaL_error(l, "Invalid tool id '%d'", tool);
 
 	vector<Brush*> brushList = luacon_model->GetBrushList();
 	if (brush < 0 || brush >= brushList.size())
@@ -1183,8 +1181,6 @@ int LuaScriptInterface::simulation_decoLine(lua_State * l)
 	int a = luaL_optint(l,10,255);
 	int tool = luaL_optint(l,11,DECO_DRAW);
 	int brush = luaL_optint(l,12,CIRCLE_BRUSH);
-	if (tool < 0 || tool >= luacon_sim->tools.size())
-		return luaL_error(l, "Invalid tool id '%d'", tool);
 
 	vector<Brush*> brushList = luacon_model->GetBrushList();
 	if (brush < 0 || brush >= brushList.size())
@@ -1210,8 +1206,6 @@ int LuaScriptInterface::simulation_decoBox(lua_State * l)
 	int b = luaL_optint(l,9,255);
 	int a = luaL_optint(l,10,255);
 	int tool = luaL_optint(l,11,0);
-	if (tool < 0 || tool >= luacon_sim->tools.size())
-		return luaL_error(l, "Invalid tool id '%d'", tool);
 
 	luacon_sim->ApplyDecorationBox(x1, y1, x2, y2, r, g, b, a, tool);
 	return 0;
