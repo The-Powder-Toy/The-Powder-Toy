@@ -979,7 +979,7 @@ int LuaScriptInterface::simulation_createBox(lua_State * l)
 	int c = luaL_optint(l,5,luacon_model->GetActiveTool(0)->GetToolID());
 	int flags = luaL_optint(l,6,0);
 
-	luacon_sim->CreateBox(x1, y1, x2, y2, c, 0);
+	luacon_sim->CreateBox(x1, y1, x2, y2, c, flags);
 	return 0;
 }
 
@@ -991,7 +991,7 @@ int LuaScriptInterface::simulation_floodParts(lua_State * l)
 	int cm = luaL_optint(l,4,-1);
 	int bm = luaL_optint(l,5,-1);
 	int flags = luaL_optint(l,6,0);
-	int ret = luacon_sim->FloodParts(x, y, c, cm, bm, 0);
+	int ret = luacon_sim->FloodParts(x, y, c, cm, bm, flags);
 	lua_pushinteger(l, ret);
 	return 1;
 }
@@ -1007,7 +1007,7 @@ int LuaScriptInterface::simulation_createWalls(lua_State * l)
 	if (c < 0 || c >= UI_WALLCOUNT)
 		return luaL_error(l, "Unrecognised wall id '%d'", c);
 
-	int ret = luacon_sim->CreateWalls(x, y, rx, ry, c, 0);
+	int ret = luacon_sim->CreateWalls(x, y, rx, ry, c, flags);
 	lua_pushinteger(l, ret);
 	return 1;
 }
@@ -1025,7 +1025,7 @@ int LuaScriptInterface::simulation_createWallLine(lua_State * l)
 	if (c < 0 || c >= UI_WALLCOUNT)
 		return luaL_error(l, "Unrecognised wall id '%d'", c);
 
-	luacon_sim->CreateWallLine(x1, y1, x2, y2, rx, ry, c, 0);
+	luacon_sim->CreateWallLine(x1, y1, x2, y2, rx, ry, c, flags);
 	return 0;
 }
 
@@ -1040,7 +1040,7 @@ int LuaScriptInterface::simulation_createWallBox(lua_State * l)
 	if (c < 0 || c >= UI_WALLCOUNT)
 		return luaL_error(l, "Unrecognised wall id '%d'", c);
 
-	luacon_sim->CreateWallBox(x1, y1, x2, y2, c, 0);
+	luacon_sim->CreateWallBox(x1, y1, x2, y2, c, flags);
 	return 0;
 }
 
@@ -1054,7 +1054,7 @@ int LuaScriptInterface::simulation_floodWalls(lua_State * l)
 	int flags = luaL_optint(l,6,0);
 	if (c < 0 || c >= UI_WALLCOUNT)
 		return luaL_error(l, "Unrecognised wall id '%d'", c);
-	int ret = luacon_sim->FloodWalls(x, y, c, cm, bm, 0);
+	int ret = luacon_sim->FloodWalls(x, y, c, cm, bm, flags);
 	lua_pushinteger(l, ret);
 	return 1;
 }
@@ -1069,8 +1069,8 @@ int LuaScriptInterface::simulation_saveStamp(lua_State * l)
 {
 	int x = luaL_optint(l,1,0);
 	int y = luaL_optint(l,2,0);
-	int w = luaL_optint(l,3,XRES);
-	int h = luaL_optint(l,4,YRES);
+	int w = luaL_optint(l,3,XRES-1);
+	int h = luaL_optint(l,4,YRES-1);
 	std::string name = luacon_controller->StampRegion(ui::Point(x, y), ui::Point(x+w, y+h));
 	lua_pushstring(l, name.c_str());
 	return 1;
@@ -1097,9 +1097,13 @@ int LuaScriptInterface::simulation_loadStamp(lua_State * l)
 	}
 	if (tempfile)
 	{
-		luacon_sim->Load(x, y, tempfile->GetGameSave());
-		//luacon_sim->sys_pause = (tempfile->GetGameSave()->paused | luacon_model->GetPaused())?1:0;
-		lua_pushinteger(l, 1);
+		if (luacon_sim->Load(x, y, tempfile->GetGameSave()))
+		{
+			//luacon_sim->sys_pause = (tempfile->GetGameSave()->paused | luacon_model->GetPaused())?1:0;
+			lua_pushinteger(l, 1);
+		}
+		else
+			lua_pushnil(l);
 	}
 	else
 		lua_pushnil(l);
