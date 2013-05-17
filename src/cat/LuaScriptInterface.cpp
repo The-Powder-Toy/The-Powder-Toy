@@ -15,6 +15,7 @@
 #include "gui/dialogues/TextPrompt.h"
 #include "gui/dialogues/ConfirmPrompt.h" 
 #include "simulation/Simulation.h"
+#include "ToolClasses.h"
 #include "gui/game/GameModel.h"
 #include "gui/game/Tool.h"
 #include "LuaScriptHelper.h"
@@ -482,12 +483,12 @@ void LuaScriptInterface::initSimulationAPI()
 	lua_pushinteger(l, MAX_TEMP); lua_setfield(l, simulationAPI, "MAX_TEMP");
 	lua_pushinteger(l, MIN_TEMP); lua_setfield(l, simulationAPI, "MIN_TEMP");
 
-	lua_pushinteger(l, 0); lua_setfield(l, simulationAPI, "TOOL_HEAT");
-	lua_pushinteger(l, 1); lua_setfield(l, simulationAPI, "TOOL_COOL");
-	lua_pushinteger(l, 2); lua_setfield(l, simulationAPI, "TOOL_VAC");
-	lua_pushinteger(l, 3); lua_setfield(l, simulationAPI, "TOOL_AIR");
-	lua_pushinteger(l, 4); lua_setfield(l, simulationAPI, "TOOL_PGRV");
-	lua_pushinteger(l, 5); lua_setfield(l, simulationAPI, "TOOL_NGRV");
+	lua_pushinteger(l, TOOL_HEAT); lua_setfield(l, simulationAPI, "TOOL_HEAT");
+	lua_pushinteger(l, TOOL_COOL); lua_setfield(l, simulationAPI, "TOOL_COOL");
+	lua_pushinteger(l, TOOL_VAC); lua_setfield(l, simulationAPI, "TOOL_VAC");
+	lua_pushinteger(l, TOOL_AIR); lua_setfield(l, simulationAPI, "TOOL_AIR");
+	lua_pushinteger(l, TOOL_PGRV); lua_setfield(l, simulationAPI, "TOOL_PGRV");
+	lua_pushinteger(l, TOOL_NGRV); lua_setfield(l, simulationAPI, "TOOL_NGRV");
 	lua_pushinteger(l, DECO_DRAW); lua_setfield(l, simulationAPI, "DECO_DRAW");
 	lua_pushinteger(l, DECO_CLEAR); lua_setfield(l, simulationAPI, "DECO_CLEAR");
 	lua_pushinteger(l, DECO_ADD); lua_setfield(l, simulationAPI, "DECO_ADD");

@@ -92,13 +92,13 @@ public:
 	virtual ~{0}();
 	{2}
 }};
-	""".format(className, elementBase, string.join(classMembers, "\n\t"))
+""".format(className, elementBase, string.join(classMembers, "\n\t"))
 
 	elementHeader += """
 std::vector<Element> GetElements();
 
 #endif
-	"""
+"""
 
 	elementContent = """#include "ElementClasses.h"
 
@@ -122,7 +122,7 @@ std::vector<Element> GetElements()
 
 	elementContent += """return elements;
 }
-	""";
+""";
 
 	outputPath, outputFile = os.path.split(outputH)
 	if not os.path.exists(outputPath):
@@ -140,11 +140,13 @@ def generateTools(toolFiles, outputCpp, outputH):
 	toolClasses = {}
 	
 	toolHeader = """#ifndef TOOLCLASSES_H
-		#define TOOLCLASSES_H
-		#include <vector>
-		#include "simulation/Tools.h"
-		#include "simulation/tools/SimTool.h"
-		"""
+#define TOOLCLASSES_H
+
+#include <vector>
+
+#include "simulation/tools/SimTool.h"
+
+"""
 	
 	directives = []
 
@@ -176,34 +178,36 @@ def generateTools(toolFiles, outputCpp, outputH):
 			toolClasses[d[1]].append(string.join(d[2:], " ")+";")
 	
 	for className, classMembers in toolClasses.items():
-		toolHeader += """class {0}: public SimTool
-			{{
-			public:
-			{0}();
-			virtual ~{0}();
-			virtual int Perform(Simulation * sim, Particle * cpart, int x, int y, float strength);
-			{1}
-			}};
-			""".format(className, string.join(classMembers, "\n"))
+		toolHeader += """
+class {0}: public SimTool
+{{
+public:
+	{0}();
+	virtual ~{0}();
+	virtual int Perform(Simulation * sim, Particle * cpart, int x, int y, float strength);
+}};
+""".format(className, string.join(classMembers, "\n"))
 	
-	toolHeader += """std::vector<SimTool*> GetTools();
-		#endif
-		"""
+	toolHeader += """
+std::vector<SimTool*> GetTools();
+
+#endif
+"""
 	
 	toolContent = """#include "ToolClasses.h"
-		std::vector<SimTool*> GetTools()
-		{
-		std::vector<SimTool*> tools;
-		""";
+std::vector<SimTool*> GetTools()
+{
+	std::vector<SimTool*> tools;
+""";
 	
 	toolIDs = sorted(classDirectives, key=lambda directive: directive[3])
 	for d in toolIDs:
 		toolContent += """	tools.push_back(new %s());
-			""" % (d[1])
+""" % (d[1])
 	
 	toolContent += """	return tools;
-		}
-		""";
+}
+""";
 
 	outputPath, outputFile = os.path.split(outputH)
 	if not os.path.exists(outputPath):

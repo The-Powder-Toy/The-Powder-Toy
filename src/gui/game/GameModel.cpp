@@ -3,7 +3,7 @@
 #include "GameView.h"
 #include "simulation/Simulation.h"
 #include "simulation/Air.h"
-#include "simulation/Tools.h"
+#include "ToolClasses.h"
 #include "graphics/Renderer.h"
 #include "gui/interface/Point.h"
 #include "Brush.h"

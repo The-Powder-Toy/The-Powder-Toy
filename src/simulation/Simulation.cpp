@@ -17,7 +17,7 @@
 //#include "graphics/Renderer.h"
 //#include "graphics/Graphics.h"
 #include "Misc.h"
-#include "Tools.h"
+#include "ToolClasses.h"
 #include "gui/game/Brush.h"
 #include "client/GameSave.h"
 #include "Sample.h"
