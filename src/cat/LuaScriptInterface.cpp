@@ -462,9 +462,13 @@ void LuaScriptInterface::initSimulationAPI()
 		{"decoBrush", simulation_decoBrush},
 		{"decoLine", simulation_decoLine},
 		{"decoBox", simulation_decoBox},
+		{"decoColor", simulation_decoColor},
+		{"decoColour", simulation_decoColor},
 		{"clearSim", simulation_clearSim},
 		{"saveStamp", simulation_saveStamp},
 		{"loadStamp", simulation_loadStamp},
+		{"loadSave", simulation_loadSave},
+		{"adjustCoords", simulation_adjustCoords},
 		{NULL, NULL}
 	};
 	luaL_register(l, "simulation", simulationAPIMethods);
@@ -1212,6 +1216,38 @@ int LuaScriptInterface::simulation_decoBox(lua_State * l)
 	return 0;
 }
 
+int LuaScriptInterface::simulation_decoColor(lua_State * l)
+{
+	int acount = lua_gettop(l);
+	unsigned int color;
+	if (acount == 0)
+	{
+		ui::Colour tempColor = luacon_model->GetColourSelectorColour();
+		unsigned int color = (tempColor.Alpha << 24) | PIXRGB(tempColor.Red, tempColor.Green, tempColor.Blue);
+		lua_pushnumber(l, color);
+		return 1;
+	}
+	else if (acount == 1)
+		color = (unsigned int)luaL_optnumber(l, 1, 0xFFFF0000);
+	else
+	{
+		int r, g, b, a;
+		r = luaL_optint(l, 1, 255);
+		g = luaL_optint(l, 2, 255);
+		b = luaL_optint(l, 3, 255);
+		a = luaL_optint(l, 4, 255);
+
+		if (r < 0) r = 0; if (r > 255) r = 255;
+		if (g < 0) g = 0; if (g > 255) g = 255;
+		if (b < 0) b = 0; if (b > 255) b = 255;
+		if (a < 0) a = 0; if (a > 255) a = 255;
+
+		color = (a << 24) + PIXRGB(r, g, b);
+	}
+	luacon_model->SetColourSelectorColour(ui::Colour(PIXR(color), PIXG(color), PIXB(color), color >> 24));
+	return 0;
+}
+
 int LuaScriptInterface::simulation_clearSim(lua_State * l)
 {
 	luacon_sim->clear_sim();
@@ -1261,6 +1297,24 @@ int LuaScriptInterface::simulation_loadStamp(lua_State * l)
 	else
 		lua_pushnil(l);
 	return 1;
+}
+
+int LuaScriptInterface::simulation_loadSave(lua_State * l)
+{
+	int saveID = luaL_optint(l,1,0);
+	int history = luaL_optint(l,2,0); //Exact second a previous save was saved
+	luacon_controller->OpenSavePreview(saveID, history);
+	return 0;
+}
+
+int LuaScriptInterface::simulation_adjustCoords(lua_State * l)
+{
+	int x = luaL_optint(l,1,0);
+	int y = luaL_optint(l,2,0);
+	ui::Point Coords = luacon_controller->PointTranslate(ui::Point(x, y));
+	lua_pushinteger(l, Coords.X);
+	lua_pushinteger(l, Coords.Y);
+	return 2;
 }
 
 

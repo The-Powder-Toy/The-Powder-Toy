@@ -1048,7 +1048,7 @@ void GameController::LoadSave(SaveInfo * save)
 
 void GameController::OpenSavePreview(int saveID, int saveDate)
 {
-	activePreview = new PreviewController(saveID, new SaveOpenCallback(this));
+	activePreview = new PreviewController(saveID, saveDate, new SaveOpenCallback(this));
 	ui::Engine::Ref().ShowWindow(activePreview->GetView());
 }
 

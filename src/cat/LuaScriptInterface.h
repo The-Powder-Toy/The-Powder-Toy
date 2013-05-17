@@ -78,9 +78,12 @@ class LuaScriptInterface: public CommandInterface
 	static int simulation_decoBrush(lua_State * l);
 	static int simulation_decoLine(lua_State * l);
 	static int simulation_decoBox(lua_State * l);
+	static int simulation_decoColor(lua_State * l);
 	static int simulation_clearSim(lua_State * l);
 	static int simulation_saveStamp(lua_State * l);
 	static int simulation_loadStamp(lua_State * l);
+	static int simulation_loadSave(lua_State * l);
+	static int simulation_adjustCoords(lua_State * l);
 
 	//Renderer
 	void initRendererAPI();
