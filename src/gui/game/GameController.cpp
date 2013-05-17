@@ -947,14 +947,15 @@ void GameController::SetActiveMenu(int menuID)
 {
 	gameModel->SetActiveMenu(menuID);
 	vector<Menu*> menuList = gameModel->GetMenuList();
-	bool set = false;
 	if(menuID == SC_DECO)
-	{
 		gameModel->SetColourSelectorVisibility(true);
-		set = true;
-	}
-	if(!set)
+	else
+	{
 		gameModel->SetColourSelectorVisibility(false);
+		ActiveToolChanged(0, gameModel->GetActiveTool(0));
+		ActiveToolChanged(1, gameModel->GetActiveTool(1));
+		ActiveToolChanged(2, gameModel->GetActiveTool(2));
+	}
 }
 
 std::vector<Menu*> GameController::GetMenuList()
