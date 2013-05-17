@@ -48,6 +48,10 @@ Makefile.me
 *.settings
 *.cbp
 *.layout
+*.config
+*.creator
+*.files
+*.includes
 config.log
 *.sconsign.dblite
 *.sconf_temp
