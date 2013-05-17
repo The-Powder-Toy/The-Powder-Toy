@@ -90,7 +90,7 @@ int Element_STKM::run_stickman(playerst* playerp, UPDATE_FUNC_ARGS) {
 		parts[i].temp += 1;
 
 	//Death
-	if (parts[i].life<1 || (sim->pv[y/CELL][x/CELL]>=4.5f && playerp->elem != SPC_AIR) ) //If his HP is less that 0 or there is very big wind...
+	if (parts[i].life<1 || (sim->pv[y/CELL][x/CELL]>=4.5f && playerp->elem != SPC_AIR) ) //If his HP is less than 0 or there is very big wind...
 	{
 		for (r=-2; r<=1; r++)
 		{
@@ -130,13 +130,13 @@ int Element_STKM::run_stickman(playerst* playerp, UPDATE_FUNC_ARGS) {
 	float rbx = gvx;
 	float rby = gvy;
 	bool rbLowGrav = false;
-	float tmp = fmaxf(fabsf(rbx), fabsf(rby));
+	float tmp = fabsf(rbx) > fabsf(rby)?fabsf(rbx):fabsf(rby);
 	if (tmp < 0.001f)
 	{
 		rbLowGrav = true;
 		rbx = -parts[i].vx;
 		rby = -parts[i].vy;
-		tmp = fmaxf(fabsf(rbx), fabsf(rby));
+		tmp = fabsf(rbx) > fabsf(rby)?fabsf(rbx):fabsf(rby);
 	}
 	if (tmp < 0.001f)
 	{
@@ -421,7 +421,11 @@ int Element_STKM::run_stickman(playerst* playerp, UPDATE_FUNC_ARGS) {
 		{
 			int np = -1;
 			if (playerp->elem == SPC_AIR)
-				sim->CreateParts(rx + 3*((((int)playerp->pcomm)&0x02) == 0x02) - 3*((((int)playerp->pcomm)&0x01) == 0x01), ry, 4, 4, SPC_AIR, 0);
+			{
+				for(int j = -4; j < 5; j++)
+					for (int k = -4; k < 5; k++)
+						sim->create_part(-2, rx + 3*((((int)playerp->pcomm)&0x02) == 0x02) - 3*((((int)playerp->pcomm)&0x01) == 0x01)+j, ry+k, SPC_AIR);
+			}
 			else if (playerp->elem==PT_LIGH && playerp->frames<30)//limit lightning creation rate
 				np = -1;
 			else

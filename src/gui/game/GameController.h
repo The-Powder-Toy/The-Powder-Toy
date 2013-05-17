@@ -14,8 +14,11 @@
 #include "gui/console/ConsoleController.h"
 #include "gui/localbrowser/LocalBrowserController.h"
 #include "gui/options/OptionsController.h"
-//#include "cat/TPTScriptInterface.h"
+#ifdef LUACONSOLE
 #include "cat/LuaScriptInterface.h"
+#else
+#include "cat/TPTScriptInterface.h"
+#endif
 #include "client/ClientListener.h"
 #include "RenderPreset.h"
 #include "Menu.h"
@@ -87,7 +90,7 @@ public:
 	void DrawRect(int toolSelection, ui::Point point1, ui::Point point2);
 	void DrawLine(int toolSelection, ui::Point point1, ui::Point point2);
 	void DrawFill(int toolSelection, ui::Point point);
-	void StampRegion(ui::Point point1, ui::Point point2);
+	std::string StampRegion(ui::Point point1, ui::Point point2);
 	void CopyRegion(ui::Point point1, ui::Point point2);
 	void CutRegion(ui::Point point1, ui::Point point2);
 	void Update();
@@ -97,7 +100,8 @@ public:
 	void SetDecoration();
 	void ShowGravityGrid();
 	void SetHudEnable(bool hudState);
-	void SetActiveMenu(Menu * menu);
+	bool GetHudEnable();
+	void SetActiveMenu(int menuID);
 	std::vector<Menu*> GetMenuList();
 	void SetActiveTool(int toolSelection, Tool * tool);
 	void ActiveToolChanged(int toolSelection, Tool *tool);

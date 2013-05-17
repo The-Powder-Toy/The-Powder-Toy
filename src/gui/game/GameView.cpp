@@ -171,6 +171,8 @@ GameView::GameView():
 	infoTip(""),
 	infoTipPresence(0),
 	buttonTipShow(0),
+	isToolTipFadingIn(false),
+	isButtonTipFadingIn(false),
 	toolTipPosition(-1, -1),
 	shiftBehaviour(false),
 	ctrlBehaviour(false),
@@ -187,7 +189,7 @@ GameView::GameView():
 	toolTipPresence(0),
 	currentSaveType(0),
 	lastLogEntry(0.0f),
-	lastMenu(NULL)
+	lastMenu(-1)
 {
 
 	int currentX = 1;
@@ -401,7 +403,7 @@ GameView::GameView():
 	};
 	pauseButton = new ui::Button(ui::Point(Size.X-16, Size.Y-16), ui::Point(15, 15), "", "Pause/Resume the simulation");  //Pause
 	pauseButton->SetIcon(IconPause);
-	pauseButton->SetTogglable(true);
+	pauseButton->SetTogglable(true); 
 	pauseButton->SetActionCallback(new PauseAction(this));
 	AddComponent(pauseButton);
 
@@ -457,13 +459,13 @@ class GameView::MenuAction: public ui::ButtonAction
 {
 	GameView * v;
 public:
-	Menu * menu;
+	int menuID;
 	bool needsClick;
-	MenuAction(GameView * _v, Menu * menu_)
+	MenuAction(GameView * _v, int menuID_)
 	{ 
 		v = _v;
-		menu = menu_; 
-		if (v->c->GetMenuList()[SC_DECO] == menu)
+		menuID = menuID_; 
+		if (menuID == SC_DECO)
 			needsClick = true;
 		else
 			needsClick = false;
@@ -471,12 +473,12 @@ public:
 	void MouseEnterCallback(ui::Button * sender)
 	{
 		if(!needsClick && !ui::Engine::Ref().GetMouseButton())
-			v->c->SetActiveMenu(menu);
+			v->c->SetActiveMenu(menuID);
 	}
 	void ActionCallback(ui::Button * sender)
 	{
 		if (needsClick)
-			v->c->SetActiveMenu(menu);
+			v->c->SetActiveMenu(menuID);
 		else
 			MouseEnterCallback(sender);
 	}
@@ -564,15 +566,14 @@ void GameView::NotifyMenuListChanged(GameModel * sender)
 	}
 	toolButtons.clear();
 	vector<Menu*> menuList = sender->GetMenuList();
-	for(vector<Menu*>::reverse_iterator iter = menuList.rbegin(), end = menuList.rend(); iter != end; ++iter)
+	for (int i = menuList.size()-1; i >= 0; i--)
 	{
 		std::string tempString = "";
-		Menu * item = *iter;
-		tempString += item->GetIcon();
-		ui::Button * tempButton = new ui::Button(ui::Point(XRES+BARSIZE-16, currentY), ui::Point(15, 15), tempString, item->GetDescription());
+		tempString += menuList[i]->GetIcon();
+		ui::Button * tempButton = new ui::Button(ui::Point(XRES+BARSIZE-16, currentY), ui::Point(15, 15), tempString, menuList[i]->GetDescription());
 		tempButton->Appearance.Margin = ui::Border(0, 2, 3, 2);
 		tempButton->SetTogglable(true);
-		tempButton->SetActionCallback(new MenuAction(this, item));
+		tempButton->SetActionCallback(new MenuAction(this, i));
 		currentY-=16;
 		AddComponent(tempButton);
 		menuButtons.push_back(tempButton);
@@ -587,6 +588,11 @@ void GameView::SetSample(SimulationSample sample)
 void GameView::SetHudEnable(bool hudState)
 {
 	showHud = hudState;
+}
+
+bool GameView::GetHudEnable()
+{
+	return showHud;
 }
 
 ui::Point GameView::GetMousePosition()
@@ -641,7 +647,7 @@ void GameView::NotifyToolListChanged(GameModel * sender)
 	int totalColour;
 	for(int i = 0; i < menuButtons.size(); i++)
 	{
-		if(((MenuAction*)menuButtons[i]->GetActionCallback())->menu==sender->GetActiveMenu())
+		if(((MenuAction*)menuButtons[i]->GetActionCallback())->menuID==sender->GetActiveMenu())
 		{
 			menuButtons[i]->SetToggleState(true);
 		}
@@ -696,7 +702,7 @@ void GameView::NotifyToolListChanged(GameModel * sender)
 		AddComponent(tempButton);
 		toolButtons.push_back(tempButton);
 	}
-	if (sender->GetActiveMenu() != sender->GetMenuList()[SC_DECO])
+	if (sender->GetActiveMenu() != SC_DECO)
 		lastMenu = sender->GetActiveMenu();
 }
 
@@ -926,7 +932,7 @@ void GameView::NotifySaveChanged(GameModel * sender)
 		upVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 0, 0));
 		upVoteButton->Appearance.BorderDisabled = ui::Colour(100, 100, 100),
 		downVoteButton->Enabled = false;
-		upVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 0, 0));
+		downVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 0, 0));
 		downVoteButton->Appearance.BorderDisabled = ui::Colour(100, 100, 100),
 		tagSimulationButton->Enabled = false;
 		tagSimulationButton->SetText("[no tags set]");
@@ -1154,8 +1160,7 @@ void GameView::ToolTip(ui::Component * sender, ui::Point mousePosition, std::str
 		if (selectMode == PlaceSave || selectMode == SelectNone)
 		{
 			buttonTip = toolTip;
-			if (buttonTipShow < 120)
-				buttonTipShow += 3;
+			isButtonTipFadingIn = true;
 		}
 	}
 	else if(sender->Position.X > Size.X-BARSIZE)// < Size.Y-(quickOptionButtons.size()+1)*16)
@@ -1164,15 +1169,13 @@ void GameView::ToolTip(ui::Component * sender, ui::Point mousePosition, std::str
 		toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((char*)toolTip.c_str()), sender->Position.Y+3);
 		if(toolTipPosition.Y+10 > Size.Y-MENUSIZE)
 			toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((char*)toolTip.c_str()), Size.Y-MENUSIZE-10);
-		if (toolTipPresence < 120)
-			toolTipPresence += 3;
+		isToolTipFadingIn = true;
 	}
 	else
 	{
 		this->toolTip = toolTip;
 		toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((char*)toolTip.c_str()), Size.Y-MENUSIZE-10);
-		if (toolTipPresence < 160)
-			toolTipPresence += 3;
+		isToolTipFadingIn = true;
 	}
 }
 
@@ -1365,7 +1368,7 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 			{
 				c->SetDecoration(true);
 				c->SetPaused(true);
-				c->SetActiveMenu(c->GetMenuList()[SC_DECO]);
+				c->SetActiveMenu(SC_DECO);
 			}
 		break;
 	case 'y':
@@ -1526,15 +1529,33 @@ void GameView::OnTick(float dt)
 		if(infoTipPresence<0)
 			infoTipPresence = 0;
 	}
-	if (selectMode != PlaceSave && selectMode != SelectNone && buttonTipShow < 120)
-		buttonTipShow += 2;
+	if (isButtonTipFadingIn || (selectMode != PlaceSave && selectMode != SelectNone))
+	{
+		isButtonTipFadingIn = false;
+		if(buttonTipShow < 120)
+		{
+			buttonTipShow += int(dt*2)>0?int(dt*2):1;
+			if(buttonTipShow>120)
+				buttonTipShow = 120;
+		}
+	}
 	else if(buttonTipShow>0)
 	{
 		buttonTipShow -= int(dt)>0?int(dt):1;
 		if(buttonTipShow<0)
 			buttonTipShow = 0;
 	}
-	if(toolTipPresence>0)
+	if (isToolTipFadingIn)
+	{
+		isToolTipFadingIn = false;
+		if(toolTipPresence < 120)
+		{
+			toolTipPresence += int(dt*2)>0?int(dt*2):1;
+			if(toolTipPresence>120)
+				toolTipPresence = 120;
+		}
+	}
+	else if(toolTipPresence>0)
 	{
 		toolTipPresence -= int(dt)>0?int(dt):1;
 		if(toolTipPresence<0)

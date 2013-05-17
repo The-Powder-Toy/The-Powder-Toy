@@ -1,3 +1,4 @@
+#ifdef LUACONSOLE
 extern "C"
 {
 #include "lua.h"
@@ -110,3 +111,4 @@ void LuaCheckbox::triggerAction()
 LuaCheckbox::~LuaCheckbox()
 {
 }
+#endif

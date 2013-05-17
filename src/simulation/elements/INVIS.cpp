@@ -6,7 +6,7 @@ Element_INVIS::Element_INVIS()
 	Name = "INVS";
 	Colour = PIXPACK(0x00CCCC);
 	MenuVisible = 1;
-	MenuSection = SC_SOLIDS;
+	MenuSection = SC_SENSOR;
 	Enabled = 1;
 	
 	Advection = 0.0f;

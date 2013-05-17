@@ -158,6 +158,7 @@ int Element_GEL::graphics(GRAPHICS_FUNC_ARGS)
 	*colr = q*(32-255)/120+255;
 	*colg = q*(48-186)/120+186;
 	*colb = q*208/120;
+	*pixel_mode |= PMODE_BLUR;
 	return 0;
 }
 

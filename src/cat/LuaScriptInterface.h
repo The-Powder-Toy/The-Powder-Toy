@@ -64,6 +64,26 @@ class LuaScriptInterface: public CommandInterface
 	static int simulation_velocityY(lua_State * l);
 	static int simulation_gravMap(lua_State * l);
 	static int simulation_ambientHeat(lua_State * l);
+	static int simulation_createParts(lua_State * l);
+	static int simulation_createLine(lua_State * l);
+	static int simulation_createBox(lua_State * l);
+	static int simulation_floodParts(lua_State * l);
+	static int simulation_createWalls(lua_State * l);
+	static int simulation_createWallLine(lua_State * l);
+	static int simulation_createWallBox(lua_State * l);
+	static int simulation_floodWalls(lua_State * l);
+	static int simulation_toolBrush(lua_State * l);
+	static int simulation_toolLine(lua_State * l);
+	static int simulation_toolBox(lua_State * l);
+	static int simulation_decoBrush(lua_State * l);
+	static int simulation_decoLine(lua_State * l);
+	static int simulation_decoBox(lua_State * l);
+	static int simulation_decoColor(lua_State * l);
+	static int simulation_clearSim(lua_State * l);
+	static int simulation_saveStamp(lua_State * l);
+	static int simulation_loadStamp(lua_State * l);
+	static int simulation_loadSave(lua_State * l);
+	static int simulation_adjustCoords(lua_State * l);
 
 	//Renderer
 	void initRendererAPI();
@@ -100,6 +120,8 @@ class LuaScriptInterface: public CommandInterface
 	static int graphics_drawLine(lua_State * l);
 	static int graphics_drawRect(lua_State * l);
 	static int graphics_fillRect(lua_State * l);
+	static int graphics_drawCircle(lua_State * l);
+	static int graphics_fillCircle(lua_State * l);
 
 	void initFileSystemAPI();
 	static int fileSystem_list(lua_State * l);

@@ -158,17 +158,6 @@ public:
 	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position);
 };
 
-class GolTool: public Tool
-{
-public:
-	GolTool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int) = NULL);
-	virtual ~GolTool();
-	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position);
-	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false);
-	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2);
-	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position);
-};
-
 class WindTool: public Tool
 {
 public:

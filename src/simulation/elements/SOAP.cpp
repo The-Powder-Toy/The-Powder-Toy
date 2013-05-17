@@ -246,7 +246,7 @@ int Element_SOAP::update(UPDATE_FUNC_ARGS)
 int Element_SOAP::graphics(GRAPHICS_FUNC_ARGS)
 
 {
-	*pixel_mode |= EFFECT_LINES;
+	*pixel_mode |= EFFECT_LINES|PMODE_BLUR;
 	return 1;
 }
 

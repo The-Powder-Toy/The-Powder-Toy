@@ -53,7 +53,7 @@ private:
 
 	vector<Menu*> menuList;
 	vector<QuickOption*> quickOptions;
-	Menu * activeMenu;
+	int activeMenu;
 	int currentBrush;
 	vector<Brush *> brushList;
 	SaveInfo * currentSave;
@@ -105,8 +105,6 @@ public:
 	GameModel();
 	~GameModel();
 
-	Tool * GetToolFromIdentifier(std::string identifier);
-
 	void SetEdgeMode(int edgeMode);
 	int GetEdgeMode();
 
@@ -136,25 +134,28 @@ public:
 
 	void UpdateQuickOptions();
 
+	Tool * GetActiveTool(int selection);
+	void SetActiveTool(int selection, Tool * tool);
 	void SetToolStrength(float value);
 	float GetToolStrength();
-
 	Tool * GetLastTool();
 	void SetLastTool(Tool * newTool);
+	Tool * GetToolFromIdentifier(std::string identifier);
+	Tool * GetElementTool(int elementID);
+	vector<Tool*> GetToolList();
+	vector<Tool*> GetUnlistedTools();
+
+	Brush * GetBrush();
+	vector<Brush*> GetBrushList();
+	int GetBrushID();
+	void SetBrushID(int i);
 
 	void SetVote(int direction);
 	SaveInfo * GetSave();
 	SaveFile * GetSaveFile();
-	Brush * GetBrush();
 	void SetSave(SaveInfo * newSave);
 	void SetSaveFile(SaveFile * newSave);
 	void AddObserver(GameView * observer);
-
-	//Get an element tool from an element ID
-	Tool * GetElementTool(int elementID);
-
-	Tool * GetActiveTool(int selection);
-	void SetActiveTool(int selection, Tool * tool);
 
 	bool GetPaused();
 	void SetPaused(bool pauseState);
@@ -166,16 +167,12 @@ public:
 	void ShowGravityGrid(bool showGrid);
 	void ClearSimulation();
 	vector<Menu*> GetMenuList();
-	vector<Tool*> GetUnlistedTools();
-	vector<Tool*> GetToolList();
 	vector<QuickOption*> GetQuickOptions();
-	void SetActiveMenu(Menu * menu);
-	Menu * GetActiveMenu();
+	void SetActiveMenu(int menuID);
+	int GetActiveMenu();
 	void FrameStep(int frames);
 	User GetUser();
 	void SetUser(User user);
-	void SetBrush(int i);
-	int GetBrushID();
 	Simulation * GetSimulation();
 	Renderer * GetRenderer();
 	void SetZoomEnabled(bool enabled);
@@ -189,7 +186,7 @@ public:
 	void SetZoomWindowPosition(ui::Point position);
 	ui::Point GetZoomWindowPosition();
 	void SetStamp(GameSave * newStamp);
-	void AddStamp(GameSave * save);
+	std::string AddStamp(GameSave * save);
 	void SetClipboard(GameSave * save);
 	void SetPlaceSave(GameSave * save);
 	void Log(string message);

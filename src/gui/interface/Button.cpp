@@ -153,6 +153,10 @@ void Button::OnMouseUnclick(int x, int y, unsigned int button)
 	{
 		if(isButtonDown)
 		{
+			if(isTogglable)
+			{
+				toggle = !toggle;
+			}
 			isButtonDown = false;
 			DoAction();
 		}
@@ -173,10 +177,6 @@ void Button::OnMouseClick(int x, int y, unsigned int button)
 		return;
 	if(button == 1)
 	{
-		if(isTogglable)
-		{
-			toggle = !toggle;
-		}
 		isButtonDown = true;
 	}
 	else if(button == 3)

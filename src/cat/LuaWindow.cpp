@@ -1,3 +1,4 @@
+#ifdef LUACONSOLE
 extern "C"
 {
 #include "lua.h"
@@ -591,3 +592,4 @@ LuaWindow::~LuaWindow()
 		ui::Engine::Ref().CloseWindow();
 	delete window;
 }
+#endif

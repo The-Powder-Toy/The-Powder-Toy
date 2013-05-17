@@ -19,8 +19,6 @@
 #define SC_CRACKER2 16
 #define SC_TOTAL 15
 
-#define UI_WALLSTART 222
-#define UI_ACTUALSTART 122
 #define UI_WALLCOUNT 16
 
 #define O_WL_WALLELEC	122
@@ -61,14 +59,8 @@
 #define WL_ALLOWENERGY	15
 #define WL_FLOODHELPER	255
 
-#define SPC_AIR 236
-#define SPC_HEAT 237
-#define SPC_COOL 238
-#define SPC_VACUUM 239
-#define SPC_WIND 241
-#define SPC_PGRV 243
-#define SPC_NGRV 244
-#define SPC_PROP 246
+#define OLD_SPC_AIR 236
+#define SPC_AIR 256
 
 #define DECO_DRAW	0
 #define DECO_ADD	1

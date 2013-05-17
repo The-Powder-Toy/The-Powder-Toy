@@ -3,7 +3,7 @@
 #include "GameView.h"
 #include "simulation/Simulation.h"
 #include "simulation/Air.h"
-#include "simulation/Tools.h"
+#include "ToolClasses.h"
 #include "graphics/Renderer.h"
 #include "gui/interface/Point.h"
 #include "Brush.h"
@@ -31,7 +31,7 @@ GameModel::GameModel():
 	colour(255, 0, 0, 255),
 	toolStrength(1.0f),
 	activeColourPreset(-1),
-	activeMenu(NULL),
+	activeMenu(-1),
 	edgeMode(0)
 {
 	sim = new Simulation();
@@ -221,9 +221,9 @@ void GameModel::BuildQuickOptionMenu(GameController * controller)
 
 void GameModel::BuildMenus()
 {
-	char lastMenu = 0;
-	if(activeMenu)
-		lastMenu = activeMenu->GetIcon();
+	int lastMenu = -1;
+	if(activeMenu != -1)
+		lastMenu = activeMenu;
 
 	std::string activeToolIdentifiers[3];
 	if(regularToolset[0])
@@ -292,7 +292,7 @@ void GameModel::BuildMenus()
 	//Build menu for GOL types
 	for(int i = 0; i < NGOL; i++)
 	{
-		Tool * tempTool = new GolTool(i, sim->gmenu[i].name, std::string(sim->gmenu[i].description), PIXR(sim->gmenu[i].colour), PIXG(sim->gmenu[i].colour), PIXB(sim->gmenu[i].colour), "DEFAULT_PT_LIFE_"+std::string(sim->gmenu[i].name));
+		Tool * tempTool = new ElementTool(PT_LIFE|(i<<8), sim->gmenu[i].name, std::string(sim->gmenu[i].description), PIXR(sim->gmenu[i].colour), PIXG(sim->gmenu[i].colour), PIXB(sim->gmenu[i].colour), "DEFAULT_PT_LIFE_"+std::string(sim->gmenu[i].name));
 		menuList[SC_LIFE]->AddTool(tempTool);
 	}
 
@@ -346,19 +346,13 @@ void GameModel::BuildMenus()
 	lastTool = activeTools[0];
 
 	//Set default menu
-	activeMenu = menuList[SC_POWDERS];
+	activeMenu = SC_POWDERS;
 
-	if(lastMenu)
-	{
-		for(std::vector<Menu*>::iterator iter = menuList.begin(), end = menuList.end(); iter != end; ++iter)
-		{
-			if((*iter)->GetIcon() == lastMenu)
-				activeMenu = *iter;
-		}
-	}
+	if(lastMenu != -1)
+		activeMenu = lastMenu;
 
-	if(activeMenu)
-		toolList = activeMenu->GetToolList();
+	if(activeMenu != -1)
+		toolList = menuList[activeMenu]->GetToolList();
 	else
 		toolList = std::vector<Tool*>();
 
@@ -424,12 +418,17 @@ Brush * GameModel::GetBrush()
 	return brushList[currentBrush];
 }
 
+vector<Brush*> GameModel::GetBrushList()
+{
+	return brushList;
+}
+
 int GameModel::GetBrushID()
 {
 	return currentBrush;
 }
 
-void GameModel::SetBrush(int i)
+void GameModel::SetBrushID(int i)
 {
 	currentBrush = i%brushList.size();
 	notifyBrushChanged();
@@ -466,32 +465,26 @@ float GameModel::GetToolStrength()
 	return toolStrength;
 }
 
-void GameModel::SetActiveMenu(Menu * menu)
+void GameModel::SetActiveMenu(int menuID)
 {
-	for(int i = 0; i < menuList.size(); i++)
-	{
-		if(menuList[i]==menu)
-		{
-			activeMenu = menu;
-			toolList = menu->GetToolList();
-			notifyToolListChanged();
+	activeMenu = menuID;
+	toolList = menuList[menuID]->GetToolList();
+	notifyToolListChanged();
 
-			if(menu == menuList[SC_DECO])
-			{
-				if(activeTools != decoToolset)
-				{
-					activeTools = decoToolset;
-					notifyActiveToolsChanged();
-				}
-			}
-			else
-			{
-				if(activeTools != regularToolset)
-				{
-					activeTools = regularToolset;
-					notifyActiveToolsChanged();
-				}
-			}
+	if(menuID == SC_DECO)
+	{
+		if(activeTools != decoToolset)
+		{
+			activeTools = decoToolset;
+			notifyActiveToolsChanged();
+		}
+	}
+	else
+	{
+		if(activeTools != regularToolset)
+		{
+			activeTools = regularToolset;
+			notifyActiveToolsChanged();
 		}
 	}
 }
@@ -506,11 +499,12 @@ vector<Tool*> GameModel::GetToolList()
 	return toolList;
 }
 
-Menu * GameModel::GetActiveMenu()
+int GameModel::GetActiveMenu()
 {
 	return activeMenu;
 }
 
+//Get an element tool from an element ID
 Tool * GameModel::GetElementTool(int elementID)
 {
 #ifdef DEBUG
@@ -886,12 +880,12 @@ void GameModel::SetPlaceSave(GameSave * save)
 	notifyPlaceSaveChanged();
 }
 
-void GameModel::AddStamp(GameSave * save)
+std::string GameModel::AddStamp(GameSave * save)
 {
 	if(stamp)
 		delete stamp;
 	stamp = save;
-	Client::Ref().AddStamp(save);
+	return Client::Ref().AddStamp(save);
 }
 
 void GameModel::SetClipboard(GameSave * save)

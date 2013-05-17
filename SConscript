@@ -44,6 +44,7 @@ AddOption('--sse2',dest="sse2",action='store_true',default=False,help="Enable SS
 AddOption('--sse3',dest="sse3",action='store_true',default=False,help="Enable SSE3 optimisations")
 AddOption('--x86',dest="x86",action='store_true',default=True,help="Target Intel x86 platform")
 AddOption('--nofft',dest="nofft", action='store_true',default=False,help="Do not use fftw3f for gravity.")
+AddOption('--nolua',dest="nolua", action='store_true',default=False,help="Disable all lua scripting features.")
 
 AddOption('--debugging', dest="debug", action="store_true", default=False, help="Enable debug options")
 AddOption('--beta',dest="beta",action='store_true',default=False,help="Beta build.")
@@ -90,15 +91,16 @@ if not GetOption("macosx"):
 				env.Append(CPPPATH=[GetOption("sdl-dir")])
 
 	#Find correct lua include dir
-	try:
-		env.ParseConfig('pkg-config --cflags lua5.1')
-	except:
-		if(GetOption("lua-dir")):
-			if not conf.CheckCHeader(GetOption("lua-dir") + '/lua.h'):
-				print "lua5.1 headers not found or not installed"
-				raise SystemExit(1)
-			else:
-				env.Append(CPPPATH=[GetOption("lua-dir")])
+	if not GetOption("nolua"):
+		try:
+			env.ParseConfig('pkg-config --cflags lua5.1')
+		except:
+			if(GetOption("lua-dir")):
+				if not conf.CheckCHeader(GetOption("lua-dir") + '/lua.h'):
+					print "lua5.1 headers not found or not installed"
+					raise SystemExit(1)
+				else:
+					env.Append(CPPPATH=[GetOption("lua-dir")])
 
 	if not GetOption('nofft'):
 		#Check for FFT lib
@@ -121,7 +123,7 @@ if not GetOption("macosx"):
 		raise SystemExit(1)
 
 	#Check for Lua lib
-	if not GetOption("macosx"):
+	if not GetOption("macosx") and not GetOption("nolua"):
 		if not conf.CheckLib('lua5.1') and not conf.CheckLib('lua-5.1') and not conf.CheckLib('lua51') and not conf.CheckLib('lua'):
 			print "liblua not found or not installed"
 			raise SystemExit(1)
@@ -135,9 +137,11 @@ else:
 env.Append(CPPPATH=['src/', 'data/', 'generated/'])
 env.Append(CCFLAGS=['-w', '-std=c++98', '-fkeep-inline-functions'])
 env.Append(LIBS=['pthread', 'm'])
-env.Append(CPPDEFINES=["LUACONSOLE", "_GNU_SOURCE", "USE_STDINT", "_POSIX_C_SOURCE=200112L"])
+env.Append(CPPDEFINES=["_GNU_SOURCE", "USE_STDINT", "_POSIX_C_SOURCE=200112L"])
 if not GetOption('nofft'):
 	env.Append(CPPDEFINES=["GRAVFFT"])
+if not GetOption('nolua'):
+	env.Append(CPPDEFINES=["LUACONSOLE"])
 if GetOption("ptw32-static"):
 	env.Append(CPPDEFINES=['PTW32_STATIC_LIB']);
 
@@ -267,7 +271,8 @@ sources+=Glob("src/gui/*/*.cpp")
 sources+=Glob("src/simulation/elements/*.cpp")
 sources+=Glob("src/simulation/tools/*.cpp")
 sources+=Glob("src/client/requestbroker/*.cpp")
-sources+=Glob("src/socket/*.c")
+if not GetOption('nolua'):
+	sources+=Glob("src/socket/*.c")
 
 #for source in sources:
 #	print str(source)

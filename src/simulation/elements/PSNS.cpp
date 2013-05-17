@@ -28,7 +28,7 @@ Element_PSNS::Element_PSNS()
 	
 	Temperature = 277.15f;
 	HeatConduct = 0;
-	Description = "Pressure sensor, creates spark when the pressure is greater than its temperature.";
+	Description = "Pressure sensor, creates a spark when the pressure is greater than its temperature.";
 	
 	State = ST_SOLID;
 	Properties = TYPE_SOLID;

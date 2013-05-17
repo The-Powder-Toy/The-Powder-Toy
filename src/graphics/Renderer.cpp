@@ -9,8 +9,10 @@
 #include "simulation/Elements.h"
 #include "simulation/ElementGraphics.h"
 #include "simulation/Air.h"
+#ifdef LUACONSOLE
 #include "cat/LuaScriptInterface.h"
 #include "cat/LuaScriptHelper.h"
+#endif
 extern "C"
 {
 #include "hmap.h"
@@ -1212,7 +1214,7 @@ void Renderer::render_parts()
 				{
 					if (elements[t].Graphics)
 					{
-#ifndef RENDERER
+#if !defined(RENDERER) && defined(LUACONSOLE)
 						if (lua_gr_func[t])
 						{
 							luacon_graphicsReplacement(this, &(sim->parts[i]), nx, ny, &pixel_mode, &cola, &colr, &colg, &colb, &firea, &firer, &fireg, &fireb, i);

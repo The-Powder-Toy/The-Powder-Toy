@@ -139,7 +139,6 @@ public:
 	int flood_water(int x, int y, int i, int originaly, int check);
 	TPT_NO_INLINE void detach(int i);
 	TPT_NO_INLINE void part_change_type(int i, int x, int y, int t);
-	TPT_NO_INLINE int create_part_add_props(int p, int x, int y, int tv, int rx, int ry);
 	//int InCurrentBrush(int i, int j, int rx, int ry);
 	//int get_brush_flags();
 	TPT_NO_INLINE int create_part(int p, int x, int y, int t);
@@ -161,7 +160,7 @@ public:
 	int Tool(int x, int y, int tool, float strength = 1.0f);
 	int ToolBrush(int x, int y, int tool, Brush * cBrush, float strength = 1.0f);
 	void ToolLine(int x1, int y1, int x2, int y2, int tool, Brush * cBrush, float strength = 1.0f);
-	void ToolBox(int x1, int y1, int x2, int y2, int tool, Brush * cBrush, float strength = 1.0f);
+	void ToolBox(int x1, int y1, int x2, int y2, int tool, float strength = 1.0f);
 	
 	void CreateBox(int x1, int y1, int x2, int y2, int c, int flags);
 	int FloodINST(int x, int y, int fullc, int cm);
@@ -170,8 +169,9 @@ public:
 	int CreateParts(int positionX, int positionY, int c, Brush * cBrush);
 	//Old particle creation, will create a crappy square, do not use
 	int CreateParts(int x, int y, int rx, int ry, int c, int flags);
+	int CreatePartFlags(int x, int y, int c, int fn, int flags);
 	void CreateLine(int x1, int y1, int x2, int y2, int c, Brush * cBrush);
-	void CreateLine(int x1, int y1, int x2, int y2, int rx, int ry, int c, int flags);
+	void CreateLine(int x1, int y1, int x2, int y2, int c);
 	
 	void CreateWallBox(int x1, int y1, int x2, int y2, int c, int flags);
 	int FloodWalls(int x, int y, int c, int cm, int bm, int flags);

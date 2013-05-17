@@ -1,10 +1,10 @@
 #include "simulation/Elements.h"
 #include "simulation/Air.h"
-//#TPT-Directive ElementClass Element_TUGN PT_TUGN 171
-Element_TUGN::Element_TUGN()
+//#TPT-Directive ElementClass Element_TUNG PT_TUNG 171
+Element_TUNG::Element_TUNG()
 {
-	Identifier = "DEFAULT_PT_TUGN";
-	Name = "TUGN";
+	Identifier = "DEFAULT_PT_TUNG";
+	Name = "TUNG";
 	Colour = PIXPACK(0x505050);
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
@@ -29,7 +29,7 @@ Element_TUGN::Element_TUGN()
 
 	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 251;
-	Description = "Brittle metal with a very high melting point.";
+	Description = "Tungsten. Brittle metal with a very high melting point.";
 
 	State = ST_SOLID;
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC;
@@ -45,15 +45,15 @@ Element_TUGN::Element_TUGN()
 	/*HighTemperature = 3895.0f;
 	HighTemperatureTransition = PT_LAVA;*/
 
-	Update = &Element_TUGN::update;
-	Graphics = &Element_TUGN::graphics;
+	Update = &Element_TUNG::update;
+	Graphics = &Element_TUNG::graphics;
 	
 }
 
 #define MELTING_POINT	3695.0
 
-//#TPT-Directive ElementHeader Element_TUGN static int update(UPDATE_FUNC_ARGS)
-int Element_TUGN::update(UPDATE_FUNC_ARGS)
+//#TPT-Directive ElementHeader Element_TUNG static int update(UPDATE_FUNC_ARGS)
+int Element_TUNG::update(UPDATE_FUNC_ARGS)
 {
 	bool splode = false;
 	if(parts[i].temp > 2400.0)
@@ -85,7 +85,7 @@ int Element_TUGN::update(UPDATE_FUNC_ARGS)
 		else
 		{
 			sim->part_change_type(i, x, y, PT_LAVA);
-			parts[i].ctype = PT_TUGN;
+			parts[i].ctype = PT_TUNG;
 			return 1;
 		}
 		if(splode)
@@ -101,13 +101,14 @@ int Element_TUGN::update(UPDATE_FUNC_ARGS)
 	if (parts[i].pavg[1]-parts[i].pavg[0] > 0.50f || parts[i].pavg[1]-parts[i].pavg[0] < -0.50f)
 	{
 		sim->part_change_type(i,x,y,PT_BRMT);
+		parts[i].ctype = PT_TUNG;
 	}
 	return 0;
 }
 
 
-//#TPT-Directive ElementHeader Element_TUGN static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_TUGN::graphics(GRAPHICS_FUNC_ARGS)
+//#TPT-Directive ElementHeader Element_TUNG static int graphics(GRAPHICS_FUNC_ARGS)
+int Element_TUNG::graphics(GRAPHICS_FUNC_ARGS)
 {
 	double startTemp = (MELTING_POINT - 1500.0);
 	double tempOver = (((cpart->temp - startTemp)/1500.0)*M_PI) - (M_PI/2.0);
@@ -129,4 +130,4 @@ int Element_TUGN::graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
-Element_TUGN::~Element_TUGN() {}
+Element_TUNG::~Element_TUNG() {}

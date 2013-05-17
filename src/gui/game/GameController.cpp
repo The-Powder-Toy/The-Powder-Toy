@@ -145,8 +145,12 @@ GameController::GameController():
 	gameView->AttachController(this);
 	gameModel->AddObserver(gameView);
 
-	commandInterface = new LuaScriptInterface(this, gameModel);//new TPTScriptInterface();
+#ifdef LUACONSOLE
+	commandInterface = new LuaScriptInterface(this, gameModel);
 	((LuaScriptInterface*)commandInterface)->SetWindow(gameView);
+#else
+	commandInterface = new TPTScriptInterface(this, gameModel);
+#endif
 
 	commandInterface->OnBrushChanged(gameModel->GetBrushID(), gameModel->GetBrush()->GetRadius().X, gameModel->GetBrush()->GetRadius().X);
 	ActiveToolChanged(0, gameModel->GetActiveTool(0));
@@ -505,17 +509,20 @@ void GameController::ToolClick(int toolSelection, ui::Point point)
 	activeTool->Click(sim, cBrush, point);
 }
 
-void GameController::StampRegion(ui::Point point1, ui::Point point2)
+std::string GameController::StampRegion(ui::Point point1, ui::Point point2)
 {
 	GameSave * newSave;
 	newSave = gameModel->GetSimulation()->Save(point1.X, point1.Y, point2.X, point2.Y);
 	if(newSave)
 	{
 		newSave->paused = gameModel->GetPaused();
-		gameModel->AddStamp(newSave);
+		return gameModel->AddStamp(newSave);
 	}
 	else
+	{
 		new ErrorMessage("Could not create stamp", "Error generating save file");
+		return "";
+	}
 }
 
 void GameController::CopyRegion(ui::Point point1, ui::Point point2)
@@ -706,7 +713,9 @@ void GameController::Tick()
 {
 	if(firstTick)
 	{
+#ifdef LUACONSOLE
 		((LuaScriptInterface*)commandInterface)->Init();
+#endif
 		if(!Client::Ref().GetPrefBool("InstallCheck", false))
 		{
 			Client::Ref().SetPref("InstallCheck", true);
@@ -734,7 +743,7 @@ void GameController::ResetAir()
 	sim->air->Clear();
 	for (int i = 0; i < NPART; i++)
 	{
-		if (sim->parts[i].type == PT_QRTZ || sim->parts[i].type == PT_GLAS || sim->parts[i].type == PT_TUGN)
+		if (sim->parts[i].type == PT_QRTZ || sim->parts[i].type == PT_GLAS || sim->parts[i].type == PT_TUNG)
 		{
 			sim->parts[i].pavg[0] = sim->parts[i].pavg[1] = 0;
 		}
@@ -918,6 +927,11 @@ void GameController::SetHudEnable(bool hudState)
 	gameView->SetHudEnable(hudState);
 }
 
+bool GameController::GetHudEnable()
+{
+	return gameView->GetHudEnable();
+}
+
 void GameController::SetActiveColourPreset(int preset)
 {
 	gameModel->SetActiveColourPreset(preset);
@@ -929,21 +943,19 @@ void GameController::SetColour(ui::Colour colour)
 	gameModel->SetPresetColour(colour);
 }
 
-void GameController::SetActiveMenu(Menu * menu)
+void GameController::SetActiveMenu(int menuID)
 {
-	gameModel->SetActiveMenu(menu);
+	gameModel->SetActiveMenu(menuID);
 	vector<Menu*> menuList = gameModel->GetMenuList();
-	bool set = false;
-	for(int i = 0; i < menuList.size(); i++)
+	if(menuID == SC_DECO)
+		gameModel->SetColourSelectorVisibility(true);
+	else
 	{
-		if(menuList[i]==menu && i == SC_DECO)
-		{
-			gameModel->SetColourSelectorVisibility(true);
-			set = true;
-		}
-	}
-	if(!set)
 		gameModel->SetColourSelectorVisibility(false);
+		ActiveToolChanged(0, gameModel->GetActiveTool(0));
+		ActiveToolChanged(1, gameModel->GetActiveTool(1));
+		ActiveToolChanged(2, gameModel->GetActiveTool(2));
+	}
 }
 
 std::vector<Menu*> GameController::GetMenuList()
@@ -1036,7 +1048,7 @@ void GameController::LoadSave(SaveInfo * save)
 
 void GameController::OpenSavePreview(int saveID, int saveDate)
 {
-	activePreview = new PreviewController(saveID, new SaveOpenCallback(this));
+	activePreview = new PreviewController(saveID, saveDate, new SaveOpenCallback(this));
 	ui::Engine::Ref().ShowWindow(activePreview->GetView());
 }
 
@@ -1300,7 +1312,7 @@ void GameController::Vote(int direction)
 
 void GameController::ChangeBrush()
 {
-	gameModel->SetBrush(gameModel->GetBrushID()+1);
+	gameModel->SetBrushID(gameModel->GetBrushID()+1);
 	BrushChanged(gameModel->GetBrushID(), gameModel->GetBrush()->GetRadius().X, gameModel->GetBrush()->GetRadius().Y);
 }
 

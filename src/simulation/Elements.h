@@ -48,41 +48,6 @@
 
 #define BOUNDS_CHECK true
 
-#define SPC_AIR 236
-#define SPC_HEAT 237
-#define SPC_COOL 238
-#define SPC_VACUUM 239
-#define SPC_WIND 241
-#define SPC_PGRV 243
-#define SPC_NGRV 244
-#define SPC_PROP 246
-
-
-#define NGT_GOL 0
-#define NGT_HLIF 1
-#define NGT_ASIM 2
-#define NGT_2x2 3
-#define NGT_DANI 4
-#define NGT_AMOE 5
-#define NGT_MOVE 6
-#define NGT_PGOL 7
-#define NGT_DMOE 8
-#define NGT_34 9
-#define NGT_LLIF 10
-#define NGT_STAN 11
-#define NGT_SEED 12
-#define NGT_MAZE 13
-#define NGT_COAG 14
-#define NGT_WALL 15
-#define NGT_GNAR 16
-#define NGT_REPL 17
-#define NGT_MYST 18
-#define NGT_LOTE 19
-#define NGT_FRG2 20
-#define NGT_STAR 21
-#define NGT_FROG 22
-#define NGT_BRAN 23
-
 #define OLD_PT_WIND 147
 
 //#define PT_NUM  161

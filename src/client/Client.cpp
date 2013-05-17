@@ -949,6 +949,8 @@ void Client::MoveStampToFront(std::string stampID)
 SaveFile * Client::GetStamp(std::string stampID)
 {
 	std::string stampFile = std::string(STAMPS_DIR PATH_SEP + stampID + ".stm");
+	if (!FileExists(stampFile))
+		stampFile = stampID;
 	if(FileExists(stampFile))
 	{
 		SaveFile * file = new SaveFile(stampID);

@@ -17,15 +17,17 @@
 //#include "graphics/Renderer.h"
 //#include "graphics/Graphics.h"
 #include "Misc.h"
-#include "Tools.h"
+#include "ToolClasses.h"
 #include "gui/game/Brush.h"
 #include "client/GameSave.h"
 #include "Sample.h"
 #include "Snapshot.h"
 //#include "StorageClasses.h"
 
+#ifdef LUACONSOLE
 #include "cat/LuaScriptInterface.h"
 #include "cat/LuaScriptHelper.h"
+#endif
 
 int Simulation::Load(GameSave * save)
 {
@@ -373,8 +375,6 @@ void Simulation::clear_area(int area_x, int area_y, int area_w, int area_h)
 void Simulation::CreateBox(int x1, int y1, int x2, int y2, int c, int flags)
 {
 	int i, j;
-	if (c==SPC_PROP)
-		return;
 	if (x1>x2)
 	{
 		i = x2;
@@ -675,8 +675,6 @@ int Simulation::FloodParts(int x, int y, int fullc, int cm, int bm, int flags)
 	int coord_stack_size = 0;
 	int created_something = 0;
 
-	if (c==SPC_PROP)
-		return 0;
 	if (cm==-1)
 	{
 		if (c==0)
@@ -884,19 +882,6 @@ int Simulation::flood_water(int x, int y, int i, int originaly, int check)
 	return 1;
 }
 
-//wrapper around create_part to create TESC with correct tmp value
-int Simulation::create_part_add_props(int p, int x, int y, int tv, int rx, int ry)
-{
-	p=create_part(p, x, y, tv);
-	if (tv==PT_TESC)
-	{
-		parts[p].tmp=rx*4+ry*4+7;
-		if (parts[p].tmp>300)
-			parts[p].tmp=300;
-	}
-	return p;
-}
-
 void Simulation::SetEdgeMode(int newEdgeMode)
 {
 	edgeMode = newEdgeMode;
@@ -1048,15 +1033,9 @@ void Simulation::ApplyDecorationPoint(int positionX, int positionY, int colR, in
 
 	if(cBrush)
 	{
-		int radiusX, radiusY, sizeX, sizeY;
-		
-		radiusX = cBrush->GetRadius().X;
-		radiusY = cBrush->GetRadius().Y;
-		
-		sizeX = cBrush->GetSize().X;
-		sizeY = cBrush->GetSize().Y;
-
+		int radiusX = cBrush->GetRadius().X, radiusY = cBrush->GetRadius().Y, sizeX = cBrush->GetSize().X, sizeY = cBrush->GetSize().Y;
 		unsigned char *bitmap = cBrush->GetBitmap();
+
 		for(int y = 0; y < sizeY; y++)
 		{
 			for(int x = 0; x < sizeX; x++)
@@ -1093,7 +1072,8 @@ void Simulation::ApplyDecorationBox(int x1, int y1, int x2, int y2, int colR, in
 
 void Simulation::ApplyDecorationLine(int x1, int y1, int x2, int y2, int colR, int colG, int colB, int colA, int mode, Brush * cBrush)
 {
-	int cp=abs(y2-y1)>abs(x2-x1), x, y, dx, dy, sy, rx, ry;
+	bool reverseXY = abs(y2-y1) > abs(x2-x1);
+	int x, y, dx, dy, sy, rx, ry;
 	float e, de;
 
 	if(cBrush)
@@ -1102,7 +1082,7 @@ void Simulation::ApplyDecorationLine(int x1, int y1, int x2, int y2, int colR, i
 		ry = cBrush->GetRadius().Y;
 	}
 
-	if (cp)
+	if (reverseXY)
 	{
 		y = x1;
 		x1 = y1;
@@ -1131,7 +1111,7 @@ void Simulation::ApplyDecorationLine(int x1, int y1, int x2, int y2, int colR, i
 	sy = (y1<y2) ? 1 : -1;
 	for (x=x1; x<=x2; x++)
 	{
-		if (cp)
+		if (reverseXY)
 			ApplyDecorationPoint(y, x, colR, colG, colB, colA, mode, cBrush);
 		else
 			ApplyDecorationPoint(x, y, colR, colG, colB, colA, mode, cBrush);
@@ -1141,7 +1121,7 @@ void Simulation::ApplyDecorationLine(int x1, int y1, int x2, int y2, int colR, i
 			y += sy;
 			if (!(rx+ry))
 			{
-				if (cp)
+				if (reverseXY)
 					ApplyDecorationPoint(y, x, colR, colG, colB, colA, mode, cBrush);
 				else
 					ApplyDecorationPoint(x, y, colR, colG, colB, colA, mode, cBrush);
@@ -1170,13 +1150,7 @@ int Simulation::ToolBrush(int positionX, int positionY, int tool, Brush * cBrush
 {
 	if(cBrush)
 	{
-		int radiusX, radiusY, sizeX, sizeY;
-		
-		radiusX = cBrush->GetRadius().X;
-		radiusY = cBrush->GetRadius().Y;
-		
-		sizeX = cBrush->GetSize().X;
-		sizeY = cBrush->GetSize().Y;
+		int radiusX = cBrush->GetRadius().X, radiusY = cBrush->GetRadius().Y, sizeX = cBrush->GetSize().X, sizeY = cBrush->GetSize().Y;
 		unsigned char *bitmap = cBrush->GetBitmap();
 		for(int y = 0; y < sizeY; y++)
 			for(int x = 0; x < sizeX; x++)
@@ -1188,11 +1162,10 @@ int Simulation::ToolBrush(int positionX, int positionY, int tool, Brush * cBrush
 
 void Simulation::ToolLine(int x1, int y1, int x2, int y2, int tool, Brush * cBrush, float strength)
 {
-	int cp=abs(y2-y1)>abs(x2-x1), x, y, dx, dy, sy, rx, ry;
+	bool reverseXY = abs(y2-y1) > abs(x2-x1);
+	int x, y, dx, dy, sy, rx = cBrush->GetRadius().X, ry = cBrush->GetRadius().Y;
 	float e, de;
-	rx = cBrush->GetRadius().X;
-	ry = cBrush->GetRadius().Y;
-	if (cp)
+	if (reverseXY)
 	{
 		y = x1;
 		x1 = y1;
@@ -1221,7 +1194,7 @@ void Simulation::ToolLine(int x1, int y1, int x2, int y2, int tool, Brush * cBru
 	sy = (y1<y2) ? 1 : -1;
 	for (x=x1; x<=x2; x++)
 	{
-		if (cp)
+		if (reverseXY)
 			ToolBrush(y, x, tool, cBrush, strength);
 		else
 			ToolBrush(x, y, tool, cBrush, strength);
@@ -1229,9 +1202,9 @@ void Simulation::ToolLine(int x1, int y1, int x2, int y2, int tool, Brush * cBru
 		if (e >= 0.5f)
 		{
 			y += sy;
-			if ((!(rx+ry)) && ((y1<y2) ? (y<=y2) : (y>=y2)))
+			if (!(rx+ry) && ((y1<y2) ? (y<=y2) : (y>=y2)))
 			{
-				if (cp)
+				if (reverseXY)
 					ToolBrush(y, x, tool, cBrush, strength);
 				else
 					ToolBrush(x, y, tool, cBrush, strength);
@@ -1240,7 +1213,7 @@ void Simulation::ToolLine(int x1, int y1, int x2, int y2, int tool, Brush * cBru
 		}
 	}
 }
-void Simulation::ToolBox(int x1, int y1, int x2, int y2, int tool, Brush * cBrush, float strength)
+void Simulation::ToolBox(int x1, int y1, int x2, int y2, int tool, float strength)
 {
 	int i, j;
 	if (x1>x2)
@@ -1264,39 +1237,25 @@ int Simulation::CreateParts(int positionX, int positionY, int c, Brush * cBrush)
 {
 	if(cBrush)
 	{
-		int radiusX, radiusY, sizeX, sizeY;
-		
-		radiusX = cBrush->GetRadius().X;
-		radiusY = cBrush->GetRadius().Y;
-		
-		sizeX = cBrush->GetSize().X;
-		sizeY = cBrush->GetSize().Y;
-		
+		int radiusX = cBrush->GetRadius().X, radiusY = cBrush->GetRadius().Y, sizeX = cBrush->GetSize().X, sizeY = cBrush->GetSize().Y, fn;
 		unsigned char *bitmap = cBrush->GetBitmap();
 		
-		if(c == PT_NONE)
+		if (c == 0)// && !(flags&BRUSH_REPLACEMODE))							// delete
+			fn = 0;
+		//else if ((flags&BRUSH_SPECIFIC_DELETE) && !(flags&BRUSH_REPLACEMODE))	// specific delete
+		//	fn = 1;
+		//else if (flags&BRUSH_REPLACEMODE)										// replace
+		//	fn = 2;
+		else																	// normal draw
+			fn = 3;
+
+		for(int y = 0; y < sizeY; y++)
 		{
-			for(int y = 0; y < sizeY; y++)
+			for(int x = 0; x < sizeX; x++)
 			{
-				for(int x = 0; x < sizeX; x++)
+				if(bitmap[(y*sizeX)+x] && (positionX+(x-radiusX) >= 0 && positionY+(y-radiusY) >= 0 && positionX+(x-radiusX) < XRES && positionY+(y-radiusY) < YRES))
 				{
-					if(bitmap[(y*sizeX)+x] && (positionX+(x-radiusX) >= 0 && positionY+(y-radiusY) >= 0 && positionX+(x-radiusX) < XRES && positionY+(y-radiusY) < YRES))
-					{
-						delete_part(positionX+(x-radiusX), positionY+(y-radiusY), 0);
-					}
-				}
-			}
-		}
-		else
-		{
-			for(int y = 0; y < sizeY; y++)
-			{
-				for(int x = 0; x < sizeX; x++)
-				{
-					if(bitmap[(y*sizeX)+x] && (positionX+(x-radiusX) >= 0 && positionY+(y-radiusY) >= 0 && positionX+(x-radiusX) < XRES && positionY+(y-radiusY) < YRES))
-					{
-						create_part(-2, positionX+(x-radiusX), positionY+(y-radiusY), c);
-					}
+					CreatePartFlags(positionX+(x-radiusX), positionY+(y-radiusY), c, fn, 0);
 				}
 			}
 		}
@@ -1306,77 +1265,47 @@ int Simulation::CreateParts(int positionX, int positionY, int c, Brush * cBrush)
 
 int Simulation::CreateParts(int x, int y, int rx, int ry, int c, int flags)
 {
-	int i, j, r, f = 0, u, v, oy, ox, b = 0, dw = 0, stemp = 0, p;
-	int wall = c - 100;
-	if (c==SPC_WIND || c==PT_FIGH)
-		return 0;
-	
-	if (c==PT_LIGH)
+	int i, j, f = 0, fn;
+
+	if (c == 0)// && !(flags&BRUSH_REPLACEMODE))							// delete
+		fn = 0;
+	//else if ((flags&BRUSH_SPECIFIC_DELETE) && !(flags&BRUSH_REPLACEMODE))	// specific delete
+	//	fn = 1;
+	//else if (flags&BRUSH_REPLACEMODE)										// replace
+	//	fn = 2;
+	else																	// normal draw
+		fn = 3;
+
+	for (j=-ry; j<=ry; j++)
+		for (i=-rx; i<=rx; i++)
+			if (CreatePartFlags(x+i, y+j, c, fn, flags))
+				f = 1;
+	return !f;
+}
+
+int Simulation::CreatePartFlags(int x, int y, int c, int fn, int flags)
+{
+	if (fn == 0)      //delete
+		delete_part(x, y, 0);
+	else if (fn == 1) //specific delete
+		delete_part(x, y, flags);
+	else if (fn == 2) //replace mode
 	{
-		if (lighting_recreate>0 && rx+ry>0)
+		if (x<0 || y<0 || x>=XRES || y>=YRES)
 			return 0;
-		p=create_part(-2, x, y, c);
-		if (p!=-1)
-		{
-			parts[p].life=rx+ry;
-			if (parts[p].life>55)
-				parts[p].life=55;
-			parts[p].temp=parts[p].life*150; // temperature of the lighting shows the power of the lighting
-			lighting_recreate+=parts[p].life/2+1;
-			return 1;
-		}
-		else return 0;
-	}
-	
-	//eraser
-	if (c == 0)
-	{
-		if (rx==0&&ry==0)
+		//if ((pmap[y][x]&0xFF)!=SLALT&&SLALT!=0)
+		//	return 0;
+		if ((pmap[y][x]))
 		{
 			delete_part(x, y, 0);
+			if (c!=0)
+				create_part(-2, x, y, c);
 		}
-		else
-		{
-			for (j=-ry; j<=ry; j++)
-				for (i=-rx; i<=rx; i++)
-					delete_part(x+i, y+j, 0);
-		}
-		return 1;
 	}
-	
-	if (c == SPC_AIR || c == SPC_HEAT || c == SPC_COOL || c == SPC_VACUUM || c == SPC_PGRV || c == SPC_NGRV)
-	{
-		if (rx==0&&ry==0)
-		{
-			create_part(-2, x, y, c);
-		}
-		else
-		{
-			for (j=-ry; j<=ry; j++)
-				for (i=-rx; i<=rx; i++)
-				{
-					if ( x+i<0 || y+j<0 || x+i>=XRES || y+j>=YRES)
-						continue;
-					create_part(-2, x+i, y+j, c);
-				}
-		}
-		return 1;
-	}
-	
-	//else, no special modes, draw element like normal.
-	if (rx==0&&ry==0)//workaround for 1pixel brush/floodfill crashing. todo: find a better fix later.
-	{
-		if (create_part_add_props(-2, x, y, c, rx, ry)==-1)
-			f = 1;
-	}
-	else
-	{
-		for (j=-ry; j<=ry; j++)
-			for (i=-rx; i<=rx; i++)
-				if (create_part_add_props(-2, x+i, y+j, c, rx, ry)==-1)
-					f = 1;
-	}
-	return !f;
+	else if (fn == 3) //normal draw
+		if (create_part(-2, x, y, c) == -1)
+			return 1;
+	return 0;
 }
 
 int Simulation::CreateWalls(int x, int y, int rx, int ry, int c, int flags, Brush * cBrush)
@@ -1441,13 +1370,10 @@ int Simulation::CreateWalls(int x, int y, int rx, int ry, int c, int flags, Brus
 
 void Simulation::CreateLine(int x1, int y1, int x2, int y2, int c, Brush * cBrush)
 {
-	int cp=abs(y2-y1)>abs(x2-x1), x, y, dx, dy, sy, rx, ry;
-	rx = cBrush->GetRadius().X;
-	ry = cBrush->GetRadius().Y;
+	int x, y, dx, dy, sy, rx = cBrush->GetRadius().X, ry = cBrush->GetRadius().Y;
+	bool reverseXY = abs(y2-y1) > abs(x2-x1);
 	float e, de;
-	if (c==SPC_PROP)
-		return;
-	if (cp)
+	if (reverseXY)
 	{
 		y = x1;
 		x1 = y1;
@@ -1476,7 +1402,7 @@ void Simulation::CreateLine(int x1, int y1, int x2, int y2, int c, Brush * cBrus
 	sy = (y1<y2) ? 1 : -1;
 	for (x=x1; x<=x2; x++)
 	{
-		if (cp)
+		if (reverseXY)
 			CreateParts(y, x, c, cBrush);
 		else
 			CreateParts(x, y, c, cBrush);
@@ -1484,10 +1410,9 @@ void Simulation::CreateLine(int x1, int y1, int x2, int y2, int c, Brush * cBrus
 		if (e >= 0.5f)
 		{
 			y += sy;
-			if ((c==WL_EHOLE+100 || c==WL_ALLOWGAS+100 || c==WL_ALLOWENERGY+100 || c==WL_ALLOWALLELEC+100 || c==WL_ALLOWSOLID+100 || c==WL_ALLOWAIR+100 || c==WL_WALL+100 || c==WL_DESTROYALL+100 || c==WL_ALLOWLIQUID+100 || c==WL_FAN+100 || c==WL_STREAM+100 || c==WL_DETECT+100 || c==WL_EWALL+100 || c==WL_WALLELEC+100 || !(rx+ry))
-				&& ((y1<y2) ? (y<=y2) : (y>=y2)))
+			if (!(rx+ry) && ((y1<y2) ? (y<=y2) : (y>=y2)))
 			{
-				if (cp)
+				if (reverseXY)
 					CreateParts(y, x, c, cBrush);
 				else
 					CreateParts(x, y, c, cBrush);
@@ -1497,13 +1422,13 @@ void Simulation::CreateLine(int x1, int y1, int x2, int y2, int c, Brush * cBrus
 	}
 }
 
-void Simulation::CreateLine(int x1, int y1, int x2, int y2, int rx, int ry, int c, int flags)
+//Now simply creates a 0 pixel radius line without all the complicated flags / other checks
+void Simulation::CreateLine(int x1, int y1, int x2, int y2, int c)
 {
-	int cp=abs(y2-y1)>abs(x2-x1), x, y, dx, dy, sy;
+	bool reverseXY = abs(y2-y1) > abs(x2-x1);
+	int x, y, dx, dy, sy;
 	float e, de;
-	if (c==SPC_PROP)
-		return;
-	if (cp)
+	if (reverseXY)
 	{
 		y = x1;
 		x1 = y1;
@@ -1532,21 +1457,20 @@ void Simulation::CreateLine(int x1, int y1, int x2, int y2, int rx, int ry, int 
 	sy = (y1<y2) ? 1 : -1;
 	for (x=x1; x<=x2; x++)
 	{
-		if (cp)
-			CreateParts(y, x, rx, ry, c, flags);
+		if (reverseXY)
+			create_part(-2, y, x, c);
 		else
-			CreateParts(x, y, rx, ry, c, flags);
+			create_part(-2, x, y, c);
 		e += de;
 		if (e >= 0.5f)
 		{
 			y += sy;
-			if ((c==WL_EHOLE+100 || c==WL_ALLOWGAS+100 || c==WL_ALLOWENERGY+100 || c==WL_ALLOWALLELEC+100 || c==WL_ALLOWSOLID+100 || c==WL_ALLOWAIR+100 || c==WL_WALL+100 || c==WL_DESTROYALL+100 || c==WL_ALLOWLIQUID+100 || c==WL_FAN+100 || c==WL_STREAM+100 || c==WL_DETECT+100 || c==WL_EWALL+100 || c==WL_WALLELEC+100 || !(rx+ry))
-				&& ((y1<y2) ? (y<=y2) : (y>=y2)))
+			if ((y1<y2) ? (y<=y2) : (y>=y2))
 			{
-				if (cp)
-					CreateParts(y, x, rx, ry, c, flags);
+				if (reverseXY)
+					create_part(-2, y, x, c);
 				else
-					CreateParts(x, y, rx, ry, c, flags);
+					create_part(-2, x, y, c);
 			}
 			e -= 1.0f;
 		}
@@ -1951,7 +1875,7 @@ void Simulation::create_arc(int sx, int sy, int dx, int dy, int midpoints, int v
 			xmid[i+1] += (rand()%variance)-voffset;
 			ymid[i+1] += (rand()%variance)-voffset;
 		}
-		CreateLine(xmid[i], ymid[i], xmid[i+1], ymid[i+1], 0, 0, type, flags);
+		CreateLine(xmid[i], ymid[i], xmid[i+1], ymid[i+1], type);
 	}
 	free(xmid);
 	free(ymid);
@@ -2707,46 +2631,12 @@ int Simulation::create_part(int p, int x, int y, int tv)
 	int t = tv & 0xFF;
 	int v = (tv >> 8) & 0xFFFFFF;
 
-	if (x<0 || y<0 || x>=XRES || y>=YRES || ((t<=0 || t>=PT_NUM)&&t!=SPC_HEAT&&t!=SPC_COOL&&t!=SPC_AIR&&t!=SPC_VACUUM&&t!=SPC_PGRV&&t!=SPC_NGRV))
+	if (x<0 || y<0 || x>=XRES || y>=YRES)
 		return -1;
-	if (t>=0 && t<PT_NUM && !elements[t].Enabled && t!=SPC_AIR)
+	if (t>=0 && t<PT_NUM && !elements[t].Enabled)
 		return -1;
-	if(t==SPC_PROP) {
-		return -1;	//Prop tool works on a mouse click basic, make sure it doesn't do anything here
-	}
 
-	/*if (t==SPC_HEAT||t==SPC_COOL)
-	{
-		if ((pmap[y][x]&0xFF)!=PT_NONE&&(pmap[y][x]&0xFF)<PT_NUM)
-		{
-			if (t==SPC_HEAT&&parts[pmap[y][x]>>8].temp<MAX_TEMP)
-			{
-				if ((pmap[y][x]&0xFF)==PT_PUMP || (pmap[y][x]&0xFF)==PT_GPMP) {
-					parts[pmap[y][x]>>8].temp = restrict_flt(parts[pmap[y][x]>>8].temp + 0.1f, MIN_TEMP, MAX_TEMP);
-				} else if ((sdl_mod & (KMOD_SHIFT)) && (sdl_mod & (KMOD_CTRL))) {
-					parts[pmap[y][x]>>8].temp = restrict_flt(parts[pmap[y][x]>>8].temp + 50.0f, MIN_TEMP, MAX_TEMP);
-				} else {
-					parts[pmap[y][x]>>8].temp = restrict_flt(parts[pmap[y][x]>>8].temp + 4.0f, MIN_TEMP, MAX_TEMP);
-				}
-			}
-			if (t==SPC_COOL&&parts[pmap[y][x]>>8].temp>MIN_TEMP)
-			{
-				if ((pmap[y][x]&0xFF)==PT_PUMP || (pmap[y][x]&0xFF)==PT_GPMP) {
-					parts[pmap[y][x]>>8].temp = restrict_flt(parts[pmap[y][x]>>8].temp - 0.1f, MIN_TEMP, MAX_TEMP);
-				} else if ((sdl_mod & (KMOD_SHIFT)) && (sdl_mod & (KMOD_CTRL))) {
-					parts[pmap[y][x]>>8].temp = restrict_flt(parts[pmap[y][x]>>8].temp - 50.0f, MIN_TEMP, MAX_TEMP);
-				} else {
-					parts[pmap[y][x]>>8].temp = restrict_flt(parts[pmap[y][x]>>8].temp - 4.0f, MIN_TEMP, MAX_TEMP);
-				}
-			}
-			return pmap[y][x]>>8;
-		}
-		else
-		{
-			return -1;
-		}
-	}*/
-	if (t==SPC_AIR)
+	if (tv == SPC_AIR)
 	{
 		pv[y/CELL][x/CELL] += 0.03f;
 		if (y+CELL<YRES)
@@ -2759,30 +2649,6 @@ int Simulation::create_part(int p, int x, int y, int tv)
 		}
 		return -1;
 	}
-	if (t==SPC_VACUUM)
-	{
-		pv[y/CELL][x/CELL] -= 0.03f;
-		if (y+CELL<YRES)
-			pv[y/CELL+1][x/CELL] -= 0.03f;
-		if (x+CELL<XRES)
-		{
-			pv[y/CELL][x/CELL+1] -= 0.03f;
-			if (y+CELL<YRES)
-				pv[y/CELL+1][x/CELL+1] -= 0.03f;
-		}
-		return -1;
-	}
-	if (t==SPC_PGRV)
-	{
-		gravmap[(y/CELL)*(XRES/CELL)+(x/CELL)] = 5;
-		return -1;
-	}
-	if (t==SPC_NGRV)
-	{
-		gravmap[(y/CELL)*(XRES/CELL)+(x/CELL)] = -5;
-		return -1;
-	}
-
 
 	if (t==PT_SPRK)
 	{
@@ -2791,10 +2657,9 @@ int Simulation::create_part(int p, int x, int y, int tv)
 		if(type == PT_WIRE)
 		{
 			parts[index].ctype = PT_DUST;
+			return index;
 		}
-		if (!(type == PT_INST || (elements[type].Properties&PROP_CONDUCTS)))
-			return -1;
-		if (parts[index].life!=0)
+		if (!(type == PT_INST || (elements[type].Properties&PROP_CONDUCTS)) || parts[index].life!=0)
 			return -1;
 		if (p == -2 && type == PT_INST)
 		{
@@ -2913,10 +2778,21 @@ int Simulation::create_part(int p, int x, int y, int tv)
 
 	if (i>parts_lastActiveIndex) parts_lastActiveIndex = i;
 
+	parts[i].x = (float)x;
+	parts[i].y = (float)y;
+	parts[i].type = t;
+	parts[i].vx = 0;
+	parts[i].vy = 0;
+	parts[i].life = 0;
+	parts[i].ctype = 0;
+	parts[i].temp = elements[t].Temperature;
+	parts[i].tmp = 0;
+	parts[i].tmp2 = 0;
 	parts[i].dcolour = 0;
 	parts[i].flags = 0;
-	if (t == PT_GLAS || t == PT_QRTZ || t == PT_TUGN)
+	if (t == PT_GLAS || t == PT_QRTZ || t == PT_TUNG)
 	{
+		parts[i].pavg[0] = 0.0f;
 		parts[i].pavg[1] = pv[y/CELL][x/CELL];
 	}
 	else
@@ -2924,19 +2800,7 @@ int Simulation::create_part(int p, int x, int y, int tv)
 		parts[i].pavg[0] = 0.0f;
 		parts[i].pavg[1] = 0.0f;
 	}
-	if (t!=PT_STKM&&t!=PT_STKM2&&t!=PT_FIGH)//set everything to default values first, except for stickman.
-	{
-		parts[i].x = (float)x;
-		parts[i].y = (float)y;
-		parts[i].type = t;
-		parts[i].vx = 0;
-		parts[i].vy = 0;
-		parts[i].life = 0;
-		parts[i].ctype = 0;
-		parts[i].temp = elements[t].Temperature;
-		parts[i].tmp = 0;
-		parts[i].tmp2 = 0;
-	}
+
 	switch (t)
 		{
 			case PT_SOAP:
@@ -3043,14 +2907,7 @@ int Simulation::create_part(int p, int x, int y, int tv)
 			case PT_STKM:
 				if (player.spwn==0)
 				{
-					parts[i].x = (float)x;
-					parts[i].y = (float)y;
-					parts[i].type = PT_STKM;
-					parts[i].vx = 0;
-					parts[i].vy = 0;
 					parts[i].life = 100;
-					parts[i].ctype = 0;
-					parts[i].temp = elements[t].Temperature;
 					Element_STKM::STKM_init_legs(this, &player, i);
 					player.spwn = 1;
 					player.elem = PT_DUST;
@@ -3065,14 +2922,7 @@ int Simulation::create_part(int p, int x, int y, int tv)
 			case PT_STKM2:
 				if (player2.spwn==0)
 				{
-					parts[i].x = (float)x;
-					parts[i].y = (float)y;
-					parts[i].type = PT_STKM2;
-					parts[i].vx = 0;
-					parts[i].vy = 0;
 					parts[i].life = 100;
-					parts[i].ctype = 0;
-					parts[i].temp = elements[t].Temperature;
 					Element_STKM::STKM_init_legs(this, &player2, i);
 					player2.spwn = 1;
 					player2.elem = PT_DUST;
@@ -3791,7 +3641,7 @@ void Simulation::update_particles_i(int start, int inc)
 			if (elements[t].Diffusion)//the random diffusion that gasses have
 			{
 #ifdef REALISTIC
-				//The magic number controlls diffusion speed
+				//The magic number controls diffusion speed
 				parts[i].vx += 0.05*sqrtf(parts[i].temp)*elements[t].Diffusion*(rand()/(0.5f*RAND_MAX)-1.0f);
 				parts[i].vy += 0.05*sqrtf(parts[i].temp)*elements[t].Diffusion*(rand()/(0.5f*RAND_MAX)-1.0f);
 #else
@@ -3834,13 +3684,11 @@ void Simulation::update_particles_i(int start, int inc)
 				h_count = 0;
 #ifdef REALISTIC
 				if (t&&(t!=PT_HSWC||parts[i].life==10)&&(elements[t].HeatConduct*gel_scale))
-				{
-					float c_Cm = 0.0f;
 #else
 				if (t&&(t!=PT_HSWC||parts[i].life==10)&&(elements[t].HeatConduct*gel_scale)>(rand()%250))
+#endif
 				{
 					float c_Cm = 0.0f;
-#endif
 					if (aheat_enable && !(elements[t].Properties&PROP_NOAMBHEAT))
 					{
 #ifdef REALISTIC
@@ -3924,11 +3772,12 @@ void Simulation::update_particles_i(int start, int inc)
 					if ((t==PT_ICEI || t==PT_SNOW) && (parts[i].ctype==0 || parts[i].ctype>=PT_NUM || parts[i].ctype==PT_ICEI || parts[i].ctype==PT_SNOW))
 						parts[i].ctype = PT_WATR;
 
-					if (ctemph>elements[t].HighTemperature&&elements[t].HighTemperatureTransition>-1) {
+					if (ctemph>elements[t].HighTemperature && elements[t].HighTemperatureTransition>-1)
+					{
 						// particle type change due to high temperature
 #ifdef REALISTIC
 						float dbt = ctempl - pt;
-						if (elements[t].HighTemperatureTransition!=PT_NUM)
+						if (elements[t].HighTemperatureTransition != PT_NUM)
 						{
 							if (platent[t] <= (c_heat - (elements[t].HighTemperature - dbt)*c_Cm))
 							{
@@ -3941,14 +3790,18 @@ void Simulation::update_particles_i(int start, int inc)
 								s = 0;
 							}
 						}
-						 	 #else
-						if (elements[t].HighTemperatureTransition!=PT_NUM)
+#else
+						if (elements[t].HighTemperatureTransition != PT_NUM)
 							t = elements[t].HighTemperatureTransition;
 #endif
-						else if (t==PT_ICEI || t==PT_SNOW) {
-							if (parts[i].ctype<PT_NUM&&parts[i].ctype!=t) {
-								if (elements[parts[i].ctype].LowTemperatureTransition==t&&pt<=elements[parts[i].ctype].LowTemperature) s = 0;
-								else {
+						else if (t == PT_ICEI || t == PT_SNOW)
+						{
+							if (parts[i].ctype < PT_NUM && parts[i].ctype != t)
+							{
+								if (elements[parts[i].ctype].LowTemperatureTransition==t && pt<=elements[parts[i].ctype].LowTemperature)
+									s = 0;
+								else
+								{
 #ifdef REALISTIC
 									//One ice table value for all it's kinds
 									if (platent[t] <= (c_heat - (elements[parts[i].ctype].LowTemperature - dbt)*c_Cm))
@@ -3963,16 +3816,18 @@ void Simulation::update_particles_i(int start, int inc)
 										parts[i].temp = restrict_flt(elements[parts[i].ctype].LowTemperature - dbt, MIN_TEMP, MAX_TEMP);
 									 	 s = 0;
 									}
-									#else
+#else
 									t = parts[i].ctype;
 									parts[i].ctype = PT_NONE;
 									parts[i].life = 0;
 #endif
 								}
 							}
-							else s = 0;
+							else
+								s = 0;
 						}
-						else if (t==PT_SLTW) {
+						else if (t == PT_SLTW)
+						{
 #ifdef REALISTIC
 							if (platent[t] <= (c_heat - (elements[t].HighTemperature - dbt)*c_Cm))
 							{
@@ -3987,16 +3842,31 @@ void Simulation::update_particles_i(int start, int inc)
 								s = 0;
 							}
 #else
-							if (rand()%4==0) t = PT_SALT;
-							else t = PT_WTRV;
+							if (rand()%4 == 0)
+								t = PT_SALT;
+							else
+								t = PT_WTRV;
 #endif
 						}
-						else s = 0;
-					} else if (ctempl<elements[t].LowTemperature&&elements[t].LowTemperatureTransition>-1) {
+						else if (t == PT_BRMT)
+						{
+							if (parts[i].ctype == PT_TUNG && ctemph <= 3695.0)
+								s = 0;
+							else
+							{
+								t = PT_LAVA;
+								parts[i].type = PT_TUNG;
+							}
+						}
+						else
+							s = 0;
+					}
+					else if (ctempl<elements[t].LowTemperature && elements[t].LowTemperatureTransition > -1)
+					{
 						// particle type change due to low temperature
 #ifdef REALISTIC
 						float dbt = ctempl - pt;
-						if (elements[t].LowTemperatureTransition!=PT_NUM)
+						if (elements[t].LowTemperatureTransition != PT_NUM)
 						{
 							if (platent[elements[t].LowTemperatureTransition] >= (c_heat - (elements[t].LowTemperature - dbt)*c_Cm))
 							{
@@ -4010,44 +3880,62 @@ void Simulation::update_particles_i(int start, int inc)
 							}
 						}
 #else
-						 if (elements[t].LowTemperatureTransition!=PT_NUM)
-						   t = elements[t].LowTemperatureTransition;
+						if (elements[t].LowTemperatureTransition != PT_NUM)
+							t = elements[t].LowTemperatureTransition;
 #endif
-						else if (t==PT_WTRV) {
-							if (pt<273.0f) t = PT_RIME;
-							else t = PT_DSTW;
+						else if (t == PT_WTRV)
+						{
+							if (pt < 273.0f)
+								t = PT_RIME;
+							else
+								t = PT_DSTW;
 						}
-						else if (t==PT_LAVA) {
-							if (parts[i].ctype>0 && parts[i].ctype<PT_NUM && parts[i].ctype!=PT_LAVA) {
-								if (parts[i].ctype==PT_THRM&&pt>=elements[PT_BMTL].HighTemperature) s = 0;
-								else if ((parts[i].ctype==PT_VIBR || parts[i].ctype==PT_BVBR) && pt>=273.15f) s = 0;
-								else if (parts[i].ctype==PT_TUGN) {
-									if (pt>3695.0) s = 0;
+						else if (t == PT_LAVA)
+						{
+							if (parts[i].ctype>0 && parts[i].ctype<PT_NUM && parts[i].ctype!=PT_LAVA)
+							{
+								if (parts[i].ctype==PT_THRM&&pt>=elements[PT_BMTL].HighTemperature)
+									s = 0;
+								else if ((parts[i].ctype==PT_VIBR || parts[i].ctype==PT_BVBR) && pt>=273.15f)
+									s = 0;
+								else if (parts[i].ctype==PT_TUNG)
+								{
+									if (pt>3695.0)
+										s = 0;
 								}
-								else if (elements[parts[i].ctype].HighTemperatureTransition==PT_LAVA) {
-									if (pt>=elements[parts[i].ctype].HighTemperature) s = 0;
+								else if (elements[parts[i].ctype].HighTemperatureTransition == PT_LAVA)
+								{
+									if (pt >= elements[parts[i].ctype].HighTemperature)
+										s = 0;
 								}
-								else if (pt>=973.0f) s = 0; // freezing point for lava with any other (not listed in ptransitions as turning into lava) ctype
-								if (s) {
+								else if (pt>=973.0f)
+									s = 0; // freezing point for lava with any other (not listed in ptransitions as turning into lava) ctype
+								if (s)
+								{
 									t = parts[i].ctype;
 									parts[i].ctype = PT_NONE;
-									if (t==PT_THRM) {
+									if (t == PT_THRM)
+									{
 										parts[i].tmp = 0;
 										t = PT_BMTL;
 									}
-									if (t==PT_PLUT)
+									if (t == PT_PLUT)
 									{
 										parts[i].tmp = 0;
 										t = PT_LAVA;
 									}
 								}
 							}
-							else if (pt<973.0f) t = PT_STNE;
-							else s = 0;
+							else if (pt<973.0f)
+								t = PT_STNE;
+							else
+								s = 0;
 						}
-						else s = 0;
+						else
+							s = 0;
 					}
-					else s = 0;
+					else
+						s = 0;
 #ifdef REALISTIC
 					pt = restrict_flt(pt, MIN_TEMP, MAX_TEMP);
 					for (j=0; j<8; j++)
@@ -4055,30 +3943,37 @@ void Simulation::update_particles_i(int start, int inc)
 						parts[surround_hconduct[j]].temp = pt;
 					}
 #endif
-					if (s) { // particle type change occurred
-						if (t==PT_ICEI||t==PT_LAVA||t==PT_SNOW)
+					if (s) // particle type change occurred
+					{
+						if (t==PT_ICEI || t==PT_LAVA || t==PT_SNOW)
 							parts[i].ctype = parts[i].type;
-						if (!(t==PT_ICEI&&parts[i].ctype==PT_FRZW)) parts[i].life = 0;
-						if (elements[t].State==ST_GAS&&elements[parts[i].type].State!=ST_GAS)
+						if (!(t==PT_ICEI && parts[i].ctype==PT_FRZW))
+							parts[i].life = 0;
+						if (elements[t].State==ST_GAS && elements[parts[i].type].State!=ST_GAS)
 							pv[y/CELL][x/CELL] += 0.50f;
+
 						part_change_type(i,x,y,t);
-						if (t==PT_FIRE||t==PT_PLSM||t==PT_CFLM)
+
+						if (t==PT_FIRE || t==PT_PLSM || t==PT_CFLM)
 							parts[i].life = rand()%50+120;
-						if (t==PT_LAVA) {
-							if (parts[i].ctype==PT_BRMT) parts[i].ctype = PT_BMTL;
-							else if (parts[i].ctype==PT_SAND) parts[i].ctype = PT_GLAS;
-							else if (parts[i].ctype==PT_BGLA) parts[i].ctype = PT_GLAS;
-							else if (parts[i].ctype==PT_PQRT) parts[i].ctype = PT_QRTZ;
+						if (t == PT_LAVA)
+						{
+							if (parts[i].ctype == PT_BRMT) parts[i].ctype = PT_BMTL;
+							else if (parts[i].ctype == PT_SAND) parts[i].ctype = PT_GLAS;
+							else if (parts[i].ctype == PT_BGLA) parts[i].ctype = PT_GLAS;
+							else if (parts[i].ctype == PT_PQRT) parts[i].ctype = PT_QRTZ;
 							parts[i].life = rand()%120+240;
 						}
-						if (t==PT_NONE) {
+						if (t == PT_NONE)
+						{
 							kill_part(i);
 							goto killed;
 						}
 					}
 
 					pt = parts[i].temp = restrict_flt(parts[i].temp, MIN_TEMP, MAX_TEMP);
-					if (t==PT_LAVA) {
+					if (t == PT_LAVA)
+					{
 						parts[i].life = restrict_flt((parts[i].temp-700)/7, 0.0f, 400.0f);
 						if (parts[i].ctype==PT_THRM&&parts[i].tmp>0)
 						{
@@ -4091,11 +3986,7 @@ void Simulation::update_particles_i(int start, int inc)
 							parts[i].temp = MAX_TEMP;
 						}
 					}
-#ifdef REALISTIC //needed to fix update_particles_i parsing
 				}
-#else
-				}
-#endif
 				else parts[i].temp = restrict_flt(parts[i].temp, MIN_TEMP, MAX_TEMP);
 			}
 
@@ -4196,7 +4087,11 @@ void Simulation::update_particles_i(int start, int inc)
 			}
 
 			//call the particle update function, if there is one
+#if !defined(RENDERER) && defined(LUACONSOLE)
 			if (elements[t].Update && lua_el_mode[t] != 2)
+#else
+			if (elements[t].Update)
+#endif
 			{
 				if ((*(elements[t].Update))(this, i, x, y, surround_space, nt, parts, pmap))
 					continue;
@@ -4207,6 +4102,7 @@ void Simulation::update_particles_i(int start, int inc)
 					y = (int)(parts[i].y+0.5f);
 				}
 			}
+#if !defined(RENDERER) && defined(LUACONSOLE)
 			if(lua_el_mode[t])
 			{
 				if(luacon_elementReplacement(this, i, x, y, surround_space, nt, parts, pmap))
@@ -4215,6 +4111,7 @@ void Simulation::update_particles_i(int start, int inc)
 				x = (int)(parts[i].x+0.5f);
 				y = (int)(parts[i].y+0.5f);
 			}
+#endif
 
 			if(legacy_enable)//if heat sim is off
 				Element::legacyUpdate(this, i,x,y,surround_space,nt, parts, pmap);

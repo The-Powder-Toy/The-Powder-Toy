@@ -47,7 +47,7 @@ void VideoBuffer::Resize(float factor, bool resample)
 {
 	int newWidth = ((float)Width)*factor;
 	int newHeight = ((float)Height)*factor;
-	Resize(newWidth, newHeight);
+	Resize(newWidth, newHeight, resample);
 }
 
 void VideoBuffer::Resize(int width, int height, bool resample, bool fixedRatio)

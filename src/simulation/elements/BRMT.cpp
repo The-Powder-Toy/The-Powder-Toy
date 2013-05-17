@@ -28,7 +28,7 @@ Element_BRMT::Element_BRMT()
 	
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 211;
-	Description = "Broken metal.";
+	Description = "Broken metal. Created when iron rusts or when when metals break from pressure.";
 	
 	State = ST_SOLID;
 	Properties = TYPE_PART|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_HOT_GLOW;
@@ -40,7 +40,7 @@ Element_BRMT::Element_BRMT()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 1273.0f;
-	HighTemperatureTransition = PT_LAVA;
+	HighTemperatureTransition = ST;
 	
 	Update = &Element_BRMT::update;
 	

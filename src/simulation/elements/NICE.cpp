@@ -28,7 +28,7 @@ Element_NICE::Element_NICE()
 	
 	Temperature = 35.0f;
 	HeatConduct = 46;
-	Description = "Nitrogen Ice.";
+	Description = "Nitrogen Ice. Very cold, will melt into LN2 when heated only slightly.";
 	
 	State = ST_SOLID;
 	Properties = TYPE_SOLID;

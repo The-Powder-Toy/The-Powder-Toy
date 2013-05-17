@@ -1,4 +1,5 @@
-#include "../data/font.h" 
+#include "../data/font.h"
+#include <math.h>
 
 int PIXELMETHODS_CLASS::drawtext_outline(int x, int y, const char *s, int r, int g, int b, int a)
 {
@@ -312,6 +313,59 @@ void PIXELMETHODS_CLASS::fillrect(int x, int y, int width, int height, int r, in
 	glVertex2i(x+width, y+height);
 	glVertex2i(x, y+height);
 	glEnd();
+}
+
+void PIXELMETHODS_CLASS::drawcircle(int x, int y, int rx, int ry, int r, int g, int b, int a)
+{
+	int yTop = ry, yBottom, i, j;
+	if (!rx)
+	{
+		for (j = -ry; j <= ry; j++)
+			blendpixel(x, y+j, r, g, b, a);
+		return;
+	}
+	for (i = 0; i <= rx; i++) {
+		yBottom = yTop;
+		while (pow(i-rx,2.0)*pow(ry,2.0) + pow(yTop-ry,2.0)*pow(rx,2.0) <= pow(rx,2.0)*pow(ry,2.0))
+			yTop++;
+		if (yBottom != yTop)
+			yTop--;
+		for (int j = yBottom; j <= yTop; j++)
+		{
+			blendpixel(x+i-rx, y+j-ry, r, g, b, a);
+			if (i != rx)
+				blendpixel(x-i+rx, y+j-ry, r, g, b, a);
+			if (j != ry)
+			{
+				blendpixel(x+i-rx, y-j+ry, r, g, b, a);
+				if (i != rx)
+					blendpixel(x-i+rx, y-j+ry, r, g, b, a);
+			}
+		}
+	}
+}
+
+void PIXELMETHODS_CLASS::fillcircle(int x, int y, int rx, int ry, int r, int g, int b, int a)
+{
+	int yTop = ry+1, yBottom, i, j;
+	if (!rx)
+	{
+		for (j = -ry; j <= ry; j++)
+			blendpixel(x, y+j, r, g, b, a);
+		return;
+	}
+	for (i = 0; i <= rx; i++)
+	{
+		while (pow(i-rx,2.0)*pow(ry,2.0) + pow(yTop-ry,2.0)*pow(rx,2.0) <= pow(rx,2.0)*pow(ry,2.0))
+			yTop++;
+		yBottom = 2*ry - yTop;
+		for (int j = yBottom+1; j < yTop; j++)
+		{
+			blendpixel(x+i-rx, y+j-ry, r, g, b, a);
+			if (i != rx)
+				blendpixel(x-i+rx, y+j-ry, r, g, b, a);
+		}
+	}
 }
 
 void PIXELMETHODS_CLASS::gradientrect(int x, int y, int width, int height, int r, int g, int b, int a, int r2, int g2, int b2, int a2)
