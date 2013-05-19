@@ -16,8 +16,8 @@
 #include "graphics/Graphics.h"
 #if defined(LIN)
 #include "icon.h"
-#include <signal.h>
 #endif
+#include <signal.h>
 
 #ifndef WIN
 #include <unistd.h>
@@ -667,7 +667,6 @@ void BlueScreen(char * detailMessage){
 	}
 }
 
-#ifndef WIN
 void SigHandler(int signal)
 {
 	switch(signal){
@@ -685,7 +684,6 @@ void SigHandler(int signal)
 		break;
 	}
 }
-#endif
 
 int main(int argc, char * argv[])
 {
@@ -783,13 +781,11 @@ int main(int argc, char * argv[])
 	engine->SetFastQuit(Client::Ref().GetPrefBool("FastQuit", true));
 
 #ifndef DEBUG
-#ifndef WIN
 	//Get ready to catch any dodgy errors
 	signal(SIGSEGV, SigHandler);
 	signal(SIGFPE, SigHandler);
 	signal(SIGILL, SigHandler);
 	signal(SIGABRT, SigHandler);
-#endif
 #endif
 
 	GameController * gameController = NULL;
