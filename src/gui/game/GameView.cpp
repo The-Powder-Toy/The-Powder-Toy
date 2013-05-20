@@ -1212,7 +1212,7 @@ void GameView::BeginStampSelection()
 {
 	selectMode = SelectStamp;
 	selectPoint1 = ui::Point(-1, -1);
-	buttonTip = "\x0F\xEF\xEF\x10\Click-and-drag to specify an area to create a stamp (right click = cancel)";
+	buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to create a stamp (right click = cancel)";
 	buttonTipShow = 120;
 }
 
@@ -1392,7 +1392,7 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		{
 			selectMode = SelectCopy;
 			selectPoint1 = ui::Point(-1, -1);
-			buttonTip = "\x0F\xEF\xEF\x10\Click-and-drag to specify an area to copy (right click = cancel)";
+			buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to copy (right click = cancel)";
 			buttonTipShow = 120;
 		}
 		break;
@@ -1401,7 +1401,7 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		{
 			selectMode = SelectCut;
 			selectPoint1 = ui::Point(-1, -1);
-			buttonTip = "\x0F\xEF\xEF\x10\Click-and-drag to specify an area to copy then cut (right click = cancel)";
+			buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to copy then cut (right click = cancel)";
 			buttonTipShow = 120;
 		}
 		break;

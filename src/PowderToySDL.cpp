@@ -16,8 +16,8 @@
 #include "graphics/Graphics.h"
 #if defined(LIN)
 #include "icon.h"
-#include <signal.h>
 #endif
+#include <signal.h>
 
 #ifndef WIN
 #include <unistd.h>
@@ -786,7 +786,6 @@ int main(int argc, char * argv[])
 	signal(SIGFPE, SigHandler);
 	signal(SIGILL, SigHandler);
 	signal(SIGABRT, SigHandler);
-
 #endif
 
 	GameController * gameController = NULL;
