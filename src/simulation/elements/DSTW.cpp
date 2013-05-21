@@ -67,10 +67,6 @@ int Element_DSTW::update(UPDATE_FUNC_ARGS)
 					}
 					break;
 				case PT_SLTW:
-					if (!(rand()%100))
-					{
-						sim->part_change_type(i,x,y,PT_WATR);
-					}
 					if (!(rand()%2000))
 					{
 						sim->part_change_type(i,x,y,PT_SLTW);
