@@ -2915,6 +2915,7 @@ int Simulation::create_part(int p, int x, int y, int tv)
 				}
 				else
 				{
+					parts[i].type=0;
 					return -1;
 				}
 				create_part(-3,x,y,PT_SPAWN);
@@ -2930,6 +2931,7 @@ int Simulation::create_part(int p, int x, int y, int tv)
 				}
 				else
 				{
+					parts[i].type=0;
 					return -1;
 				}
 				create_part(-3,x,y,PT_SPAWN2);
@@ -2943,84 +2945,70 @@ int Simulation::create_part(int p, int x, int y, int tv)
 			case PT_TSNS:
 				parts[i].tmp2 = 2;
 				break;
+			case PT_FIGH:{
+				unsigned char fcount = 0;
+				while (fcount < 100 && fcount < (fighcount+1) && fighters[fcount].spwn==1) fcount++;
+				if (fcount < 100 && fighters[fcount].spwn==0)
+				{
+					parts[i].life = 100;
+					parts[i].tmp = fcount;
+					Element_STKM::STKM_init_legs(this, &fighters[fcount], i);
+					fighters[fcount].spwn = 1;
+					fighters[fcount].elem = PT_DUST;
+					fighters[fcount].rocketBoots = false;
+					fighcount++;
+					return i;
+				}
+				parts[i].type=0;
+				return -1;}
+			case PT_PHOT:{
+				float a = (rand()%8) * 0.78540f;
+				parts[i].life = 680;
+				parts[i].ctype = 0x3FFFFFFF;
+				parts[i].vx = 3.0f*cosf(a);
+				parts[i].vy = 3.0f*sinf(a);
+				break;}
+			case PT_ELEC:{
+				float a = (rand()%360)*3.14159f/180.0f;
+				parts[i].life = 680;
+				parts[i].vx = 2.0f*cosf(a);
+				parts[i].vy = 2.0f*sinf(a);
+				break;}
+			case PT_NEUT:{
+				float r = (rand()%128+128)/127.0f;
+				float a = (rand()%360)*3.14159f/180.0f;
+				parts[i].life = rand()%480+480;
+				parts[i].vx = r*cosf(a);
+				parts[i].vy = r*sinf(a);
+				break;}
+			case PT_TRON:{
+				int randhue = rand()%360;
+				int randomdir = rand()%4;
+				parts[i].tmp = 1|(randomdir<<5)|(randhue<<7);//set as a head and a direction
+				parts[i].tmp2 = 4;//tail
+				parts[i].life = 5;
+				break;}
+			case PT_LIGH:{
+				float gx, gy, gsize;
+				if (p!=-2)
+				{
+					parts[i].life=30;
+					parts[i].temp=parts[i].life*150.0f; // temperature of the lighting shows the power of the lighting
+				}
+				GetGravityField(x, y, 1.0f, 1.0f, gx, gy);
+				gsize = gx*gx+gy*gy;
+				if (gsize<0.0016f)
+				{
+					float angle = (rand()%6284)*0.001f;//(in radians, between 0 and 2*pi)
+					gsize = sqrtf(gsize);
+					// randomness in weak gravity fields (more randomness with weaker fields)
+					gx += cosf(angle)*(0.04f-gsize);
+					gy += sinf(angle)*(0.04f-gsize);
+				}
+				parts[i].tmp = (((int)(atan2f(-gy, gx)*(180.0f/M_PI)))+rand()%40-20+360)%360;
+				parts[i].tmp2 = 4;
+				break;}
 			default:
-				if (t==PT_FIGH)
-				{
-					unsigned char fcount = 0;
-					while (fcount < 100 && fcount < (fighcount+1) && fighters[fcount].spwn==1) fcount++;
-					if (fcount < 100 && fighters[fcount].spwn==0)
-					{
-						parts[i].x = (float)x;
-						parts[i].y = (float)y;
-						parts[i].type = PT_FIGH;
-						parts[i].vx = 0;
-						parts[i].vy = 0;
-						parts[i].life = 100;
-						parts[i].ctype = 0;
-						parts[i].tmp = fcount;
-						parts[i].temp = elements[t].Temperature;
-						Element_STKM::STKM_init_legs(this, &fighters[fcount], i);
-						fighters[fcount].spwn = 1;
-						fighters[fcount].elem = PT_DUST;
-						fighters[fcount].rocketBoots = false;
-						fighcount++;
-
-						return i;
-					}
-					return -1;
-				}
-				if (t==PT_PHOT)
-				{
-					float a = (rand()%8) * 0.78540f;
-					parts[i].life = 680;
-					parts[i].ctype = 0x3FFFFFFF;
-					parts[i].vx = 3.0f*cosf(a);
-					parts[i].vy = 3.0f*sinf(a);
-				}
-				if (t==PT_ELEC)
-				{
-					float a = (rand()%360)*3.14159f/180.0f;
-					parts[i].life = 680;
-					parts[i].vx = 2.0f*cosf(a);
-					parts[i].vy = 2.0f*sinf(a);
-				}
-				if (t==PT_NEUT)
-				{
-					float r = (rand()%128+128)/127.0f;
-					float a = (rand()%360)*3.14159f/180.0f;
-					parts[i].life = rand()%480+480;
-					parts[i].vx = r*cosf(a);
-					parts[i].vy = r*sinf(a);
-				}
-				if (t==PT_TRON)
-				{
-					int randhue = rand()%360;
-					int randomdir = rand()%4;
-					parts[i].tmp = 1|(randomdir<<5)|(randhue<<7);//set as a head and a direction
-					parts[i].tmp2 = 4;//tail
-					parts[i].life = 5;
-				}
-				if (t==PT_LIGH)
-				{
-					float gx, gy, gsize;
-					if (p!=-2)
-					{
-						parts[i].life=30;
-						parts[i].temp=parts[i].life*150.0f; // temperature of the lighting shows the power of the lighting
-					}
-					GetGravityField(x, y, 1.0f, 1.0f, gx, gy);
-					gsize = gx*gx+gy*gy;
-					if (gsize<0.0016f)
-					{
-						float angle = (rand()%6284)*0.001f;//(in radians, between 0 and 2*pi)
-						gsize = sqrtf(gsize);
-						// randomness in weak gravity fields (more randomness with weaker fields)
-						gx += cosf(angle)*(0.04f-gsize);
-						gy += sinf(angle)*(0.04f-gsize);
-					}
-					parts[i].tmp = (((int)(atan2f(-gy, gx)*(180.0f/M_PI)))+rand()%40-20+360)%360;
-					parts[i].tmp2 = 4;
-				}
 				break;
 		}
 	//and finally set the pmap/photon maps to the newly created particle
