@@ -495,30 +495,7 @@ void EngineProcess()
 		frameStart = SDL_GetTicks();
 		engine->Tick();
 		engine->Draw();
-		frameTime = SDL_GetTicks() - frameStart;
 		
-		frameTimeAvg = (frameTimeAvg*(1.0f-0.2f)) + (0.2f*frameTime);
-		if(ui::Engine::Ref().FpsLimit > 2.0f)
-		{
-			float targetFrameTime = 1000.0f/((float)ui::Engine::Ref().FpsLimit);
-			if(targetFrameTime - frameTimeAvg > 0)
-			{
-				SDL_Delay((targetFrameTime - frameTimeAvg) + 0.5f);
-				frameTime = SDL_GetTicks() - frameStart;//+= (int)(targetFrameTime - frameTimeAvg);
-			}
-		}
-
-		correctedFrameTimeAvg = (correctedFrameTimeAvg*(1.0f-0.05f)) + (0.05f*frameTime);
-		fps = 1000.0f/correctedFrameTimeAvg;
-		engine->SetFps(fps);
-
-		if(frameStart-lastTick>250)
-		{
-			//Run client tick every second
-			lastTick = frameStart;
-			Client::Ref().Tick();
-		}
-
 		if(scale != engine->Scale || fullscreen != engine->Fullscreen)
 		{
 			sdl_scrn = SDLSetScreen(engine->Scale, engine->Fullscreen);
@@ -533,6 +510,28 @@ void EngineProcess()
 		else
 			blit(engine->g->vid);
 #endif
+
+		frameTime = SDL_GetTicks() - frameStart;
+		frameTimeAvg = (frameTimeAvg*(1.0f-0.2f)) + (0.2f*frameTime);
+		if(ui::Engine::Ref().FpsLimit > 2.0f)
+		{
+			float targetFrameTime = 1000.0f/((float)ui::Engine::Ref().FpsLimit);
+			if(targetFrameTime - frameTimeAvg > 0)
+			{
+				SDL_Delay((targetFrameTime - frameTimeAvg) + 0.5f);
+				frameTime = SDL_GetTicks() - frameStart;//+= (int)(targetFrameTime - frameTimeAvg);
+			}
+		}
+		correctedFrameTimeAvg = (correctedFrameTimeAvg*(1.0f-0.05f)) + (0.05f*frameTime);
+		fps = 1000.0f/correctedFrameTimeAvg;
+		engine->SetFps(fps);
+
+		if(frameStart-lastTick>250)
+		{
+			//Run client tick every second
+			lastTick = frameStart;
+			Client::Ref().Tick();
+		}
 	}
 #ifdef DEBUG
 	std::cout << "Breaking out of EngineProcess" << std::endl;
