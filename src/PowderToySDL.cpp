@@ -377,7 +377,7 @@ ui::Engine * engine = NULL;
 float currentWidth, currentHeight;
 void EngineProcess()
 {
-	int frameStart;
+	int frameStart = SDL_GetTicks();
 	float frameTime;
 	float frameTimeAvg = 0.0f, correctedFrameTimeAvg = 0.0f;
 	SDL_Event event;
@@ -492,7 +492,6 @@ void EngineProcess()
 		}
 		if(engine->Broken()) { engine->UnBreak(); break; }
 
-		frameStart = SDL_GetTicks();
 		engine->Tick();
 		engine->Draw();
 		
@@ -525,6 +524,7 @@ void EngineProcess()
 		correctedFrameTimeAvg = (correctedFrameTimeAvg*(1.0f-0.05f)) + (0.05f*frameTime);
 		fps = 1000.0f/correctedFrameTimeAvg;
 		engine->SetFps(fps);
+		frameStart = SDL_GetTicks();
 
 		if(frameStart-lastTick>250)
 		{
