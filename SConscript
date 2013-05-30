@@ -64,8 +64,6 @@ def SetupSpawn( env ):
 AddOption('--opengl',dest="opengl",action='store_true',default=False,help="Build with OpenGL interface support.")
 AddOption('--opengl-renderer',dest="opengl-renderer",action='store_true',default=False,help="Build with OpenGL renderer support. (requires --opengl)")
 AddOption('--renderer',dest="renderer",action='store_true',default=False,help="Save renderer")
-AddOption('--macosx',dest="macosx",action='store_true',default=False,help="Mac OS X platform target")
-AddOption('--rpi',dest="rpi",action='store_true',default=False,help="Raspbain platform target")
 AddOption('--64bit',dest="_64bit",action='store_true',default=False,help="64-bit platform target")
 AddOption('--static',dest="static",action="store_true",default=False,help="Static linking, reduces external library dependancies but increased file size")
 AddOption('--pthreadw32-static',dest="ptw32-static",action="store_true",default=False,help="Use PTW32_STATIC_LIB for pthreadw32 headers")
@@ -91,10 +89,12 @@ AddOption('--snapshot-id',dest="snapshot-id",default=False,help="Snapshot build 
 AddOption('--stable',dest="stable",default=True,help="Non snapshot build")
 AddOption('--aao', dest="everythingAtOnce", action='store_true', default=False, help="Compile the whole game without generating intermediate objects (very slow), enable this when using compilers like clang or mscc that don't support -fkeep-inline-functions")
 
-# using either of these commandline options is compulsory
+# using one of these commandline options is compulsory
 
 AddOption('--win',dest="win",action='store_true',default=False,help="Windows platform target.")
 AddOption('--lin',dest="lin",action='store_true',default=False,help="Linux platform target")
+AddOption('--macosx',dest="macosx",action='store_true',default=False,help="Mac OS X platform target")
+AddOption('--rpi',dest="rpi",action='store_true',default=False,help="Raspbain platform target")
 
 # ============
 # main program
@@ -114,15 +114,6 @@ AddOption('--lin',dest="lin",action='store_true',default=False,help="Linux platf
 if((not GetOption('lin')) and (not GetOption('win')) and (not GetOption('rpi')) and (not GetOption('macosx'))):
 	print "You must specify a platform to target"
 	raise SystemExit(1)
-
-# check if a tool prefix is set, and if it is select the propper tools for building.
-# .. : TODO someone explain wtf this actually does
-
-if GetOption("toolprefix"):
-	env['CC'] = GetOption("toolprefix")+env['CC']
-	env['CXX'] = GetOption("toolprefix")+env['CXX']
-	if GetOption('win'):
-		env['RC'] = GetOption("toolprefix")+env['RC']
 
 # windows specific platform settings
 # ++++++++++++++++++++++++++++++++++
@@ -226,6 +217,15 @@ else:
 
 # generic enviroment settings
 # +++++++++++++++++++++++++++
+
+# check if a tool prefix is set, and if it is select the propper tools for building.
+# .. : TODO someone explain wtf this actually does
+
+if GetOption("toolprefix"):
+	env['CC'] = GetOption("toolprefix")+env['CC']
+	env['CXX'] = GetOption("toolprefix")+env['CXX']
+	if GetOption('win'):
+		env['RC'] = GetOption("toolprefix")+env['RC']
 
 # make sure the compiler can find the source data and generated files. enable warnings, set C++ flavor, and keep inline functions
 
