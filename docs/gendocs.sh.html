@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.10: http://docutils.sourceforge.net/" />
+<title></title>
+<style type="text/css">
+
+/*
+:Authors: Ian Bicking, Michael Foord
+:Contact: fuzzyman@voidspace.org.uk
+:Date: 2005/08/26 
+:Version: 0.1.0
+:Copyright: This stylesheet has been placed in the public domain.
+
+Stylesheet for Docutils.
+Based on ``blue_box.css`` by Ian Bicking
+and ``html4css1.css`` revision 1.46.
+*/
+
+@import url(file:///usr/local/lib/python2.7/dist-packages/docutils/writers/html4css1/html4css1.css);
+
+body {
+  font-family: Arial, sans-serif;
+}
+
+em, i {
+  /* Typically serif fonts have much nicer italics */
+  font-family: Times New Roman, Times, serif;
+}
+
+a.target {
+  color: blue;
+}
+
+a.target {
+  color: blue;
+}
+
+a.toc-backref {
+  text-decoration: none;
+  color: black;
+}
+
+a.toc-backref:hover {
+  background-color: inherit;
+}
+
+a:hover {
+  background-color: #cccccc;
+}
+
+div.attention, div.caution, div.danger, div.error, div.hint,
+div.important, div.note, div.tip, div.warning {
+  background-color: #cccccc;
+  padding: 3px;
+  width: 80%;
+}
+
+div.admonition p.admonition-title, div.hint p.admonition-title,
+div.important p.admonition-title, div.note p.admonition-title,
+div.tip p.admonition-title  {
+  text-align: center;
+  background-color: #999999;
+  display: block;
+  margin: 0;
+}
+
+div.attention p.admonition-title, div.caution p.admonition-title,
+div.danger p.admonition-title, div.error p.admonition-title,
+div.warning p.admonition-title {
+  color: #cc0000;
+  font-family: sans-serif;
+  text-align: center;
+  background-color: #999999;
+  display: block;
+  margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: Helvetica, Arial, sans-serif;
+  border: thin solid black;
+  /* This makes the borders rounded on Mozilla, which pleases me */
+  -moz-border-radius: 8px;
+  padding: 4px;
+}
+
+h1 {
+  background-color: #444499;
+  color: #ffffff;
+  border: medium solid black;
+}
+
+h1 a.toc-backref, h2 a.toc-backref { 
+  color: #ffffff;
+}
+
+h2 {
+  background-color: #666666;
+  color: #ffffff;
+  border: medium solid black;
+}
+
+h3, h4, h5, h6 {
+  background-color: #cccccc;
+  color: #000000;
+}
+
+h3 a.toc-backref, h4 a.toc-backref, h5 a.toc-backref, 
+h6 a.toc-backref { 
+  color: #000000;
+}
+
+h1.title {
+  text-align: center;
+  background-color: #444499;
+  color: #eeeeee;
+  border: thick solid black;
+  -moz-border-radius: 20px;
+}
+
+table.footnote {
+  padding-left: 0.5ex;
+}
+
+table.citation {
+  padding-left: 0.5ex
+}
+
+pre.literal-block, pre.doctest-block {
+  border: thin black solid;
+  padding: 5px;
+}
+
+.image img { border-style : solid;
+            border-width : 2px;
+}
+
+h1 tt, h2 tt, h3 tt, h4 tt, h5 tt, h6 tt {
+  font-size: 100%;
+}
+
+code, tt {
+  color: #000066;
+}
+
+</style>
+</head>
+<body>
+<div class="document">
+
+
+<!-- #!/bin/bash -->
+<div class="section" id="documentation-generator">
+<h1>Documentation generator</h1>
+<p>the purpose of this script is to generate html documentation from the source code of specified files.</p>
+</div>
+<div class="section" id="requirements">
+<h1>requirements</h1>
+<p>this script requires pylit to be installed and the rst2html command to be available</p>
+</div>
+<div class="section" id="pre-generation">
+<h1>pre generation</h1>
+<p>make sure the script terminates on errors</p>
+<pre class="literal-block">
+set -e
+</pre>
+<p>skip pregeneration if we get any commandline parameters</p>
+<pre class="literal-block">
+if [ $# == 0 ]
+then
+</pre>
+<p>list of files to generate documentation for. the format is always:</p>
+<pre class="literal-block">
+&quot;$0 filename language&quot;
+</pre>
+<p>the following languages are available:
+- c
+- c++
+- css
+- python
+- shell
+- slang
+- latex</p>
+<pre class="literal-block">
+$0 SConscript python
+$0 gendocs.sh shell
+</pre>
+<p>exit program after running all the generation steps</p>
+<pre class="literal-block">
+    exit
+fi
+</pre>
+</div>
+<div class="section" id="generation">
+<h1>generation</h1>
+<p>inform the user of which file we're processing</p>
+<pre class="literal-block">
+echo &quot;--- generating docs for $1&quot;
+</pre>
+<p>run pylit to convert source code to restructured text</p>
+<pre class="literal-block">
+pylit $1 --language $2 $1.txt
+</pre>
+<p>run rst2html to convert restructured text to html</p>
+<pre class="literal-block">
+rst2html.py $1.txt --stylesheet docs/style.css &gt; docs/$1.html
+</pre>
+<p>clean up the restructured text file</p>
+<pre class="literal-block">
+rm $1.txt
+</pre>
+</div>
+</div>
+</body>
+</html>
