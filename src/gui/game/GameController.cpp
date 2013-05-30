@@ -661,7 +661,7 @@ bool GameController::KeyPress(int key, Uint16 character, bool shift, bool ctrl, 
 				SwitchGravity();
 				break;
 			case 'd':
-				gameView->ToggleDebug();
+				gameView->SetDebugHUD(!gameView->GetDebugHUD());
 				break;
 			case 's':
 				gameView->BeginStampSelection();
@@ -930,6 +930,16 @@ void GameController::SetHudEnable(bool hudState)
 bool GameController::GetHudEnable()
 {
 	return gameView->GetHudEnable();
+}
+
+void GameController::SetDebugHUD(bool hudState)
+{
+	gameView->SetDebugHUD(hudState);
+}
+
+bool GameController::GetDebugHUD()
+{
+	return gameView->GetDebugHUD();
 }
 
 void GameController::SetActiveColourPreset(int preset)

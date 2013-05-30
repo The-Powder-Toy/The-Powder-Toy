@@ -595,6 +595,18 @@ bool GameView::GetHudEnable()
 	return showHud;
 }
 
+void GameView::SetDebugHUD(bool mode)
+{
+	showDebug = mode;
+	if (ren)
+		ren->debugLines = showDebug;
+}
+
+bool GameView::GetDebugHUD()
+{
+	return showDebug;
+}
+
 ui::Point GameView::GetMousePosition()
 {
 	return mousePosition;
@@ -1199,13 +1211,6 @@ void GameView::OnMouseWheel(int x, int y, int d)
 			pointQueue.push(ui::Point(c->PointTranslate(ui::Point(x, y))));
 		}
 	}
-}
-
-void GameView::ToggleDebug()
-{
-	showDebug = !showDebug;
-	if (ren)
-		ren->debugLines = showDebug;
 }
 
 void GameView::BeginStampSelection()

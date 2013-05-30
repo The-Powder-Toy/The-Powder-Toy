@@ -84,6 +84,12 @@ class LuaScriptInterface: public CommandInterface
 	static int simulation_loadStamp(lua_State * l);
 	static int simulation_loadSave(lua_State * l);
 	static int simulation_adjustCoords(lua_State * l);
+	static int simulation_prettyPowders(lua_State * l);
+	static int simulation_gravityGrid(lua_State * l);
+	static int simulation_edgeMode(lua_State * l);
+	static int simulation_gravityMode(lua_State * l);
+	static int simulation_airMode(lua_State * l);
+	static int simulation_waterEqualisation(lua_State * l);
 
 	//Renderer
 	void initRendererAPI();
@@ -91,6 +97,8 @@ class LuaScriptInterface: public CommandInterface
 	static int renderer_displayModes(lua_State * l);
 	static int renderer_colourMode(lua_State * l);
 	static int renderer_decorations(lua_State * l);
+	static int renderer_grid(lua_State * l);
+	static int renderer_debugHUD(lua_State * l);
 
 	//Elements
 	static pim::VirtualMachine * updateVirtualMachines[PT_NUM];

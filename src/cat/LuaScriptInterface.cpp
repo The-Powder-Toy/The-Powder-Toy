@@ -15,6 +15,7 @@
 #include "gui/dialogues/TextPrompt.h"
 #include "gui/dialogues/ConfirmPrompt.h" 
 #include "simulation/Simulation.h"
+#include "simulation/Air.h"
 #include "ToolClasses.h"
 #include "gui/game/GameModel.h"
 #include "gui/game/Tool.h"
@@ -469,6 +470,13 @@ void LuaScriptInterface::initSimulationAPI()
 		{"loadStamp", simulation_loadStamp},
 		{"loadSave", simulation_loadSave},
 		{"adjustCoords", simulation_adjustCoords},
+		{"prettyPowders", simulation_prettyPowders},
+		{"gravityGrid", simulation_gravityGrid},
+		{"edgeMode", simulation_edgeMode},
+		{"gravityMode", simulation_gravityMode},
+		{"airMode", simulation_airMode},
+		{"waterEqualisation", simulation_waterEqualisation},
+		{"waterEqualization", simulation_waterEqualisation},
 		{NULL, NULL}
 	};
 	luaL_register(l, "simulation", simulationAPIMethods);
@@ -1317,6 +1325,86 @@ int LuaScriptInterface::simulation_adjustCoords(lua_State * l)
 	return 2;
 }
 
+int LuaScriptInterface::simulation_prettyPowders(lua_State * l)
+{
+	int acount = lua_gettop(l);
+	if (acount == 0)
+	{
+		lua_pushnumber(l, luacon_sim->pretty_powder);
+		return 1;
+	}
+	int prettyPowder = luaL_optint(l, 1, 0);
+	luacon_sim->pretty_powder = prettyPowder;
+	luacon_model->UpdateQuickOptions();
+	return 0;
+}
+
+int LuaScriptInterface::simulation_gravityGrid(lua_State * l)
+{
+	int acount = lua_gettop(l);
+	if (acount == 0)
+	{
+		lua_pushnumber(l, luacon_model->GetGravityGrid());
+		return 1;
+	}
+	int gravityGrid = luaL_optint(l, 1, -1);
+	luacon_model->ShowGravityGrid(gravityGrid);
+	luacon_model->UpdateQuickOptions();
+	return 0;
+}
+
+int LuaScriptInterface::simulation_edgeMode(lua_State * l)
+{
+	int acount = lua_gettop(l);
+	if (acount == 0)
+	{
+		lua_pushnumber(l, luacon_model->GetEdgeMode());
+		return 1;
+	}
+	int edgeMode = luaL_optint(l, 1, -1);
+	luacon_model->SetEdgeMode(edgeMode);
+	return 0;
+}
+
+int LuaScriptInterface::simulation_gravityMode(lua_State * l)
+{
+	int acount = lua_gettop(l);
+	if (acount == 0)
+	{
+		lua_pushnumber(l, luacon_sim->gravityMode);
+		return 1;
+	}
+	int gravityMode = luaL_optint(l, 1, -1);
+	luacon_sim->gravityMode = gravityMode;
+	return 0;
+}
+
+int LuaScriptInterface::simulation_airMode(lua_State * l)
+{
+	int acount = lua_gettop(l);
+	if (acount == 0)
+	{
+		lua_pushnumber(l, luacon_sim->air->airMode);
+		return 1;
+	}
+	int airMode = luaL_optint(l, 1, -1);
+	luacon_sim->air->airMode = airMode;
+	return 0;
+}
+
+int LuaScriptInterface::simulation_waterEqualisation(lua_State * l)
+{
+	int acount = lua_gettop(l);
+	if (acount == 0)
+	{
+		lua_pushnumber(l, luacon_sim->water_equal_test);
+		return 1;
+	}
+	int waterMode = luaL_optint(l, 1, -1);
+	luacon_sim->water_equal_test = waterMode;
+	return 0;
+}
+
 
 //// Begin Renderer API
 
@@ -1328,7 +1416,9 @@ void LuaScriptInterface::initRendererAPI()
 		{"displayModes", renderer_displayModes},
 		{"colourMode", renderer_colourMode},
 		{"colorMode", renderer_colourMode}, //Duplicate of above to make Americans happy
-		{"decorations", renderer_decorations},
+		{"decorations", renderer_decorations}, //renderer_debugHUD
+		{"grid", renderer_grid},
+		{"debugHUD", renderer_debugHUD},
 		{NULL, NULL}
 	};
 	luaL_register(l, "renderer", rendererAPIMethods);
@@ -1484,6 +1574,32 @@ int LuaScriptInterface::renderer_decorations(lua_State * l)
 		lua_pushboolean(l, luacon_ren->decorations_enable);
 		return 1;
 	}
+}
+
+int LuaScriptInterface::renderer_grid(lua_State * l)
+{
+	int acount = lua_gettop(l);
+	if (acount == 0)
+	{
+		lua_pushnumber(l, luacon_ren->GetGridSize());
+		return 1;
+	}
+	int grid = luaL_optint(l, 1, -1);
+	luacon_ren->SetGridSize(grid);
+	return 0;
+}
+
+int LuaScriptInterface::renderer_debugHUD(lua_State * l)
+{
+	int acount = lua_gettop(l);
+	if (acount == 0)
+	{
+		lua_pushnumber(l, luacon_controller->GetDebugHUD());
+		return 1;
+	}
+	int debug = luaL_optint(l, 1, -1);
+	luacon_controller->SetDebugHUD(debug);
+	return 0;
 }
 
 void LuaScriptInterface::initElementsAPI()

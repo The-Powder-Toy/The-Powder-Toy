@@ -131,10 +131,11 @@ public:
     void SetSample(SimulationSample sample);
 	void SetHudEnable(bool hudState);
 	bool GetHudEnable();
+	void SetDebugHUD(bool mode);
+	bool GetDebugHUD();
     bool CtrlBehaviour(){ return ctrlBehaviour; }
     bool ShiftBehaviour(){ return shiftBehaviour; }
 	void ExitPrompt();
-	void ToggleDebug();
 	SelectMode GetSelectMode() { return selectMode; }
 	void BeginStampSelection();
 
