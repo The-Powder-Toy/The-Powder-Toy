@@ -74,21 +74,21 @@ if GetOption("toolprefix"):
 #Check for headers and libraries
 if not GetOption("macosx"):
 	conf = Configure(env)
-
-	try:
-		env.ParseConfig('sdl-config --cflags')
-		env.ParseConfig('sdl-config --libs')
-	except:
-		if not conf.CheckLib("SDL"):
-			print "libSDL not found or not installed"
+	if(GetOption("sdl-dir")):
+		if not conf.CheckCHeader(GetOption("sdl-dir") + '/SDL.h'):
+			print "sdl headers not found or not installed"
 			raise SystemExit(1)
-			
-		if(GetOption("sdl-dir")):
-			if not conf.CheckCHeader(GetOption("sdl-dir") + '/SDL.h'):
-				print "sdl headers not found or not installed"
+		else:
+			env.Append(CPPPATH=[GetOption("sdl-dir")])
+	else:
+		try:
+			env.ParseConfig('sdl-config --cflags')
+			env.ParseConfig('sdl-config --libs')
+		except:
+			if not conf.CheckLib("SDL"):
+				print "libSDL not found or not installed"
 				raise SystemExit(1)
-			else:
-				env.Append(CPPPATH=[GetOption("sdl-dir")])
+			
 
 	#Find correct lua include dir
 	if not GetOption("nolua"):

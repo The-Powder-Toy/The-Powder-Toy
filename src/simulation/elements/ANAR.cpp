@@ -60,7 +60,7 @@ int Element_ANAR::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if ((r&0xFF)==PT_CFLM && !(rand()%7))
+				if ((r&0xFF)==PT_CFLM && !(rand()%4))
 				{
 					sim->part_change_type(i,x,y,PT_CFLM);
 					parts[i].life = rand()%150+50;
