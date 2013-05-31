@@ -304,19 +304,18 @@ void GameModel::BuildMenus()
 		//sim->wtypes[i]
 	}
 	
-	//Add special sign and prop tools
-	menuList[SC_TOOL]->AddTool(new SampleTool(this));
-	menuList[SC_TOOL]->AddTool(new SignTool());
-	menuList[SC_TOOL]->AddTool(new PropertyTool());
-	menuList[SC_TOOL]->AddTool(new WindTool(0, "WIND", "Create air movement", 64, 64, 64, "DEFAULT_UI_WIND"));
-	
-	//Build menu for simtools
+	//Build menu for tools
 	for(int i = 0; i < sim->tools.size(); i++)
 	{
 		Tool * tempTool;
 		tempTool = new Tool(i, sim->tools[i]->Name, sim->tools[i]->Description, PIXR(sim->tools[i]->Colour), PIXG(sim->tools[i]->Colour), PIXB(sim->tools[i]->Colour), sim->tools[i]->Identifier);
 		menuList[SC_TOOL]->AddTool(tempTool);
 	}
+	//Add special sign and prop tools
+	menuList[SC_TOOL]->AddTool(new WindTool(0, "WIND", "Create air movement", 64, 64, 64, "DEFAULT_UI_WIND"));
+	menuList[SC_TOOL]->AddTool(new PropertyTool());
+	menuList[SC_TOOL]->AddTool(new SignTool());
+	menuList[SC_TOOL]->AddTool(new SampleTool(this));
 
 	//Add decoration tools to menu
 	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::BlendAdd, "ADD", "Colour blending: Add", 0, 0, 0, "DEFAULT_DECOR_ADD"));

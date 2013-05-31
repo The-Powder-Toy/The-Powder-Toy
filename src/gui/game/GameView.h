@@ -50,6 +50,7 @@ private:
 	bool showHud;
 	bool showDebug;
 	bool wallBrush;
+	bool toolBrush;
 	int introText;
 	std::string introTextMessage;
 	int toolIndex;

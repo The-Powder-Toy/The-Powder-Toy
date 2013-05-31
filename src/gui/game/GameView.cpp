@@ -182,6 +182,7 @@ GameView::GameView():
 	introText(2048),
 	introTextMessage(introTextData),
 	wallBrush(false),
+	toolBrush(false),
 	doScreenshot(false),
 	recording(false),
 	screenshotIndex(0),
@@ -642,13 +643,14 @@ void GameView::NotifyActiveToolsChanged(GameModel * sender)
 void GameView::NotifyLastToolChanged(GameModel * sender)
 {
 	if(sender->GetLastTool() && sender->GetLastTool()->GetResolution() == CELL)
-	{
 		wallBrush = true;
-	}
 	else
-	{
 		wallBrush = false;
-	}
+
+	if (sender->GetLastTool() && sender->GetLastTool()->GetIdentifier().find("DEFAULT_TOOL_") != sender->GetLastTool()->GetIdentifier().npos)
+		toolBrush = true;
+	else
+		toolBrush = false;
 }
 
 void GameView::NotifyToolListChanged(GameModel * sender)
@@ -1280,10 +1282,13 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 				drawModeReset = false;
 			else
 				drawPoint1 = currentMouse;
-			if(shift)
-				drawMode = DrawFill;
-			else
-				drawMode = DrawRect;
+			if (!toolBrush)
+			{
+				if(shift)
+					drawMode = DrawFill;
+				else
+					drawMode = DrawRect;
+			}
 		}
 		enableCtrlBehaviour();
 		break;
@@ -1294,10 +1299,13 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 				drawModeReset = false;
 			else
 				drawPoint1 = currentMouse;
-			if(ctrl)
-				drawMode = DrawFill;
-			else
-				drawMode = DrawLine;
+			if (!toolBrush)
+			{
+				if(ctrl)
+					drawMode = DrawFill;
+				else
+					drawMode = DrawLine;
+			}
 		}
 		enableShiftBehaviour();
 		break;
@@ -1758,10 +1766,7 @@ void GameView::enableShiftBehaviour()
 	if(!shiftBehaviour)
 	{
 		shiftBehaviour = true;
-		if(isMouseDown)
-		{
-			c->SetToolStrength(10.0f);
-		}
+		c->SetToolStrength(10.0f);
 	}
 }
 
@@ -1806,13 +1811,10 @@ void GameView::enableCtrlBehaviour()
 		searchButton->Appearance.TextInactive = searchButton->Appearance.TextHover = ui::Colour(0, 0, 0);
 		if (currentSaveType == 2)
 			((SplitButton*)saveSimulationButton)->SetShowSplit(true);
-		if(isMouseDown)
-		{
-			if(!shiftBehaviour)
-				c->SetToolStrength(.1f);
-			else
-				c->SetToolStrength(10.0f);
-		}
+		if(!shiftBehaviour)
+			c->SetToolStrength(.1f);
+		else
+			c->SetToolStrength(10.0f);
 	}
 }
 
