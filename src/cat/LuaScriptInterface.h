@@ -80,9 +80,12 @@ class LuaScriptInterface: public CommandInterface
 	static int simulation_decoBox(lua_State * l);
 	static int simulation_decoColor(lua_State * l);
 	static int simulation_clearSim(lua_State * l);
+	static int simulation_resetTemp(lua_State * l);
+	static int simulation_resetPressure(lua_State * l);
 	static int simulation_saveStamp(lua_State * l);
 	static int simulation_loadStamp(lua_State * l);
 	static int simulation_loadSave(lua_State * l);
+	static int simulation_getSaveID(lua_State * l);
 	static int simulation_adjustCoords(lua_State * l);
 	static int simulation_prettyPowders(lua_State * l);
 	static int simulation_gravityGrid(lua_State * l);
@@ -90,6 +93,8 @@ class LuaScriptInterface: public CommandInterface
 	static int simulation_gravityMode(lua_State * l);
 	static int simulation_airMode(lua_State * l);
 	static int simulation_waterEqualisation(lua_State * l);
+	static int simulation_ambientAirTemp(lua_State * l);
+	static int simulation_elementCount(lua_State * l);
 
 	//Renderer
 	void initRendererAPI();

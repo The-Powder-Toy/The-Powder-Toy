@@ -466,9 +466,12 @@ void LuaScriptInterface::initSimulationAPI()
 		{"decoColor", simulation_decoColor},
 		{"decoColour", simulation_decoColor},
 		{"clearSim", simulation_clearSim},
+		{"resetTemp", simulation_resetTemp},
+		{"resetPressure", simulation_resetPressure},
 		{"saveStamp", simulation_saveStamp},
 		{"loadStamp", simulation_loadStamp},
 		{"loadSave", simulation_loadSave},
+		{"getSaveID", simulation_getSaveID},
 		{"adjustCoords", simulation_adjustCoords},
 		{"prettyPowders", simulation_prettyPowders},
 		{"gravityGrid", simulation_gravityGrid},
@@ -477,6 +480,8 @@ void LuaScriptInterface::initSimulationAPI()
 		{"airMode", simulation_airMode},
 		{"waterEqualisation", simulation_waterEqualisation},
 		{"waterEqualization", simulation_waterEqualisation},
+		{"ambientAirTemp", simulation_ambientAirTemp},
+		{"elementCount", simulation_elementCount},
 		{NULL, NULL}
 	};
 	luaL_register(l, "simulation", simulationAPIMethods);
@@ -1262,6 +1267,50 @@ int LuaScriptInterface::simulation_clearSim(lua_State * l)
 	return 0;
 }
 
+int LuaScriptInterface::simulation_resetTemp(lua_State * l)
+{
+	bool onlyConductors = luaL_optint(l, 1, 0);
+	for (int i = 0; i < luacon_sim->parts_lastActiveIndex; i++)
+	{
+		if (luacon_sim->parts[i].type && (luacon_sim->elements[luacon_sim->parts[i].type].HeatConduct || !onlyConductors))
+		{
+			luacon_sim->parts[i].temp = luacon_sim->elements[luacon_sim->parts[i].type].Temperature;
+		}
+	}
+	return 0;
+}
+
+int LuaScriptInterface::simulation_resetPressure(lua_State * l)
+{
+	int aCount = lua_gettop(l), width = XRES/CELL, height = YRES/CELL;
+	int x1 = abs(luaL_optint(l, 1, 0));
+	int y1 = abs(luaL_optint(l, 2, 0));
+	if (aCount > 2)
+	{
+		width = abs(luaL_optint(l, 3, XRES/CELL));
+		height = abs(luaL_optint(l, 4, YRES/CELL));
+	}
+	else if (aCount)
+	{
+		width = 1;
+		height = 1;
+	}
+	if(x1 > (XRES/CELL)-1)
+		x1 = (XRES/CELL)-1;
+	if(y1 > (YRES/CELL)-1)
+		y1 = (YRES/CELL)-1;
+	if(x1+width > (XRES/CELL)-1)
+		width = (XRES/CELL)-x1;
+	if(y1+height > (YRES/CELL)-1)
+		height = (YRES/CELL)-y1;
+	for (int nx = x1; nx<x1+width; nx++)
+		for (int ny = y1; ny<y1+height; ny++)
+		{
+			luacon_sim->air->pv[ny][nx] = 0;
+		}
+	return 0;
+}
+
 int LuaScriptInterface::simulation_saveStamp(lua_State * l)
 {
 	int x = luaL_optint(l,1,0);
@@ -1315,6 +1364,17 @@ int LuaScriptInterface::simulation_loadSave(lua_State * l)
 	return 0;
 }
 
+int LuaScriptInterface::simulation_getSaveID(lua_State *l)
+{
+	SaveInfo *tempSave = luacon_model->GetSave();
+	if (tempSave)
+	{
+		lua_pushinteger(l, tempSave->GetID());
+		return 1;
+	}
+	return 0;
+}
+
 int LuaScriptInterface::simulation_adjustCoords(lua_State * l)
 {
 	int x = luaL_optint(l,1,0);
@@ -1347,7 +1407,7 @@ int LuaScriptInterface::simulation_gravityGrid(lua_State * l)
 		lua_pushnumber(l, luacon_model->GetGravityGrid());
 		return 1;
 	}
-	int gravityGrid = luaL_optint(l, 1, -1);
+	int gravityGrid = luaL_optint(l, 1, 0);
 	luacon_model->ShowGravityGrid(gravityGrid);
 	luacon_model->UpdateQuickOptions();
 	return 0;
@@ -1361,7 +1421,7 @@ int LuaScriptInterface::simulation_edgeMode(lua_State * l)
 		lua_pushnumber(l, luacon_model->GetEdgeMode());
 		return 1;
 	}
-	int edgeMode = luaL_optint(l, 1, -1);
+	int edgeMode = luaL_optint(l, 1, 0);
 	luacon_model->SetEdgeMode(edgeMode);
 	return 0;
 }
@@ -1374,7 +1434,7 @@ int LuaScriptInterface::simulation_gravityMode(lua_State * l)
 		lua_pushnumber(l, luacon_sim->gravityMode);
 		return 1;
 	}
-	int gravityMode = luaL_optint(l, 1, -1);
+	int gravityMode = luaL_optint(l, 1, 0);
 	luacon_sim->gravityMode = gravityMode;
 	return 0;
 }
@@ -1387,7 +1447,7 @@ int LuaScriptInterface::simulation_airMode(lua_State * l)
 		lua_pushnumber(l, luacon_sim->air->airMode);
 		return 1;
 	}
-	int airMode = luaL_optint(l, 1, -1);
+	int airMode = luaL_optint(l, 1, 0);
 	luacon_sim->air->airMode = airMode;
 	return 0;
 }
@@ -1400,11 +1460,33 @@ int LuaScriptInterface::simulation_waterEqualisation(lua_State * l)
 		lua_pushnumber(l, luacon_sim->water_equal_test);
 		return 1;
 	}
-	int waterMode = luaL_optint(l, 1, -1);
+	int waterMode = luaL_optint(l, 1, 0);
 	luacon_sim->water_equal_test = waterMode;
 	return 0;
 }
 
+int LuaScriptInterface::simulation_ambientAirTemp(lua_State * l)
+{
+	int acount = lua_gettop(l);
+	if (acount == 0)
+	{
+		lua_pushnumber(l, luacon_sim->air->ambientAirTemp);
+		return 1;
+	}
+	int ambientAirTemp = luaL_optint(l, 1, -1);
+	luacon_sim->air->ambientAirTemp = ambientAirTemp;
+	return 0;
+}
+
+int LuaScriptInterface::simulation_elementCount(lua_State * l)
+{
+	int element = luaL_optint(l, 1, 0);
+	if (element < 0 || element >= PT_NUM)
+		return luaL_error(l, "Invalid element ID (%d)", element);
+
+	lua_pushnumber(l, luacon_sim->elementCount[element]);
+	return 1;
+}
 
 //// Begin Renderer API
 
