@@ -286,7 +286,7 @@ if(GetOption('rpi')):
 
 if(GetOption('win')):
 	openGLLibs = ['opengl32', 'glew32']
-	env.Prepend(LIBS=['mingw32', 'ws2_32', 'SDLmain', 'regex'])
+	env.Prepend(LIBS=['mingw32', 'ws2_32', 'SDLmain', 'SDL', 'regex'])
 	env.Append(CCFLAGS=['-std=gnu++98'])
 	env.Append(LIBS=['winmm', 'gdi32'])
 	env.Append(CPPDEFINES=["WIN"])
@@ -488,7 +488,8 @@ else:
 # But we need 16 byte alignment so that SSE instructions in FFTW work without crashing
 if(GetOption('win')):
    envCopy = env.Clone()
-   envCopy.Append(CCFLAGS=['-mincoming-stack-boundary=2'])
+   envCopy.Append(CCFLAGS=['-mstackrealign'])
+   #envCopy.Append(CCFLAGS=['-mincoming-stack-boundary=2'])
    sources+=envCopy.Object('src/simulation/Gravity.cpp')
 
 # run generator commands
