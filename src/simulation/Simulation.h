@@ -52,17 +52,6 @@ public:
 
 	int currentTick;
 
-	playerst player;
-	playerst player2;
-	playerst fighters[256]; //255 is the maximum number of fighters
-	unsigned char fighcount; //Contains the number of fighters
-	int lighting_recreate;
-	bool gravWallChanged;
-	Particle portalp[CHANNELS][8][80];
-	Particle emptyparticle;
-	int portal_rx[8];
-	int portal_ry[8];
-	int wireless[CHANNELS][2];
 	char can_move[PT_NUM][PT_NUM];
 	int parts_lastActiveIndex;// = NPART-1;
 	int pfree;
@@ -72,6 +61,23 @@ public:
 	int ISWIRE;
 	int force_stacking_check;
 	int emp_decor;
+	//Stickman
+	playerst player;
+	playerst player2;
+	playerst fighters[256]; //255 is the maximum number of fighters
+	unsigned char fighcount; //Contains the number of fighters
+	int lighting_recreate;
+	bool gravWallChanged;
+	//Portals and Wifi
+	Particle portalp[CHANNELS][8][80];
+	Particle emptyparticle;
+	int portal_rx[8];
+	int portal_ry[8];
+	int wireless[CHANNELS][2];
+	//PROP tool property to draw (TODO)
+	//void *prop_value;
+	//StructProperty::PropertyType proptype;
+	//size_t prop_offset;
 	//Gol sim
 	int CGOL;
 	int GSPEED;
@@ -97,10 +103,9 @@ public:
 	int pmap[YRES][XRES];
 	int photons[YRES][XRES];
 	int pmap_count[YRES][XRES];
-	//
+	//Simulation Settings
 	int edgeMode;
 	int gravityMode;
-	//int airMode;
 	int legacy_enable;
 	int aheat_enable;
 	int VINE_MODE;

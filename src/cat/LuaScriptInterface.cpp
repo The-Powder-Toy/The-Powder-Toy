@@ -506,6 +506,7 @@ void LuaScriptInterface::initSimulationAPI()
 	lua_pushinteger(l, TOOL_AIR); lua_setfield(l, simulationAPI, "TOOL_AIR");
 	lua_pushinteger(l, TOOL_PGRV); lua_setfield(l, simulationAPI, "TOOL_PGRV");
 	lua_pushinteger(l, TOOL_NGRV); lua_setfield(l, simulationAPI, "TOOL_NGRV");
+	lua_pushinteger(l, luacon_sim->tools.size()); lua_setfield(l, simulationAPI, "TOOL_WIND");
 	lua_pushinteger(l, DECO_DRAW); lua_setfield(l, simulationAPI, "DECO_DRAW");
 	lua_pushinteger(l, DECO_CLEAR); lua_setfield(l, simulationAPI, "DECO_CLEAR");
 	lua_pushinteger(l, DECO_ADD); lua_setfield(l, simulationAPI, "DECO_ADD");
@@ -1106,7 +1107,12 @@ int LuaScriptInterface::simulation_toolBrush(lua_State * l)
 	int tool = luaL_optint(l,5,0);
 	int brush = luaL_optint(l,6,CIRCLE_BRUSH);
 	float strength = luaL_optnumber(l,7,1.0f);
-	if (tool < 0 || tool >= luacon_sim->tools.size())
+	if (tool == luacon_sim->tools.size())
+	{
+		lua_pushinteger(l, 0);
+		return 1;
+	}
+	else if (tool < 0 || tool >= luacon_sim->tools.size())
 		return luaL_error(l, "Invalid tool id '%d'", tool);
 
 	vector<Brush*> brushList = luacon_model->GetBrushList();
@@ -1132,7 +1138,7 @@ int LuaScriptInterface::simulation_toolLine(lua_State * l)
 	int tool = luaL_optint(l,7,0);
 	int brush = luaL_optint(l,8,CIRCLE_BRUSH);
 	float strength = luaL_optnumber(l,9,1.0f);
-	if (tool < 0 || tool >= luacon_sim->tools.size())
+	if (tool < 0 || tool >= luacon_sim->tools.size()+1)
 		return luaL_error(l, "Invalid tool id '%d'", tool);
 
 	vector<Brush*> brushList = luacon_model->GetBrushList();
@@ -1141,7 +1147,14 @@ int LuaScriptInterface::simulation_toolLine(lua_State * l)
 	ui::Point tempRadius = brushList[brush]->GetRadius();
 	brushList[brush]->SetRadius(ui::Point(rx, ry));
 
-	luacon_sim->ToolLine(x1, y1, x2, y2, tool, brushList[brush], strength);
+	if (tool == luacon_sim->tools.size())
+	{
+		Tool *WindTool = luacon_model->GetToolFromIdentifier("DEFAULT_UI_WIND");
+		WindTool->DrawLine(luacon_sim, brushList[brush], ui::Point(x1, y1), ui::Point(x2, y2));
+		return 1;
+	}
+	else
+		luacon_sim->ToolLine(x1, y1, x2, y2, tool, brushList[brush], strength);
 	brushList[brush]->SetRadius(tempRadius);
 	return 0;
 }
@@ -1154,7 +1167,12 @@ int LuaScriptInterface::simulation_toolBox(lua_State * l)
 	int y2 = luaL_optint(l,4,-1);
 	int tool = luaL_optint(l,5,0);
 	float strength = luaL_optnumber(l,6,1.0f);
-	if (tool < 0 || tool >= luacon_sim->tools.size())
+	if (tool == luacon_sim->tools.size())
+	{
+		lua_pushinteger(l, 0);
+		return 1;
+	}
+	else if (tool < 0 || tool >= luacon_sim->tools.size())
 		return luaL_error(l, "Invalid tool id '%d'", tool);
 
 	luacon_sim->ToolBox(x1, y1, x2, y2, tool, strength);

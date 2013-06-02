@@ -129,7 +129,7 @@ void PropertyWindow::SetProperty()
 							if(type != -1)
 							{
 #ifdef DEBUG
-					std::cout << "Got type from particle name" << std::endl;
+								std::cout << "Got type from particle name" << std::endl;
 #endif
 								tempInt = type;
 							}

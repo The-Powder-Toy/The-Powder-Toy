@@ -47,7 +47,7 @@ void Tool::DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Po
 void Tool::DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) {
 	sim->ToolBox(position1.X, position1.Y, position2.X, position2.Y, toolID, strength);
 }
-void Tool::DrawFill(Simulation * sim, Brush * brush, ui::Point position) {};
+void Tool::DrawFill(Simulation * sim, Brush * brush, ui::Point position) {}
 
 
 ElementTool::ElementTool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int)):
