@@ -1282,13 +1282,15 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 				drawModeReset = false;
 			else
 				drawPoint1 = currentMouse;
-			if (!toolBrush)
+			if(shift)
 			{
-				if(shift)
+				if (!toolBrush)
 					drawMode = DrawFill;
 				else
-					drawMode = DrawRect;
+					drawMode = DrawPoints;
 			}
+			else
+				drawMode = DrawRect;
 		}
 		enableCtrlBehaviour();
 		break;
@@ -1299,13 +1301,15 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 				drawModeReset = false;
 			else
 				drawPoint1 = currentMouse;
-			if (!toolBrush)
+			if(ctrl)
 			{
-				if(ctrl)
+				if (!toolBrush)
 					drawMode = DrawFill;
 				else
-					drawMode = DrawLine;
+					drawMode = DrawPoints;
 			}
+			else
+				drawMode = DrawLine;
 		}
 		enableShiftBehaviour();
 		break;
@@ -1766,7 +1770,8 @@ void GameView::enableShiftBehaviour()
 	if(!shiftBehaviour)
 	{
 		shiftBehaviour = true;
-		c->SetToolStrength(10.0f);
+		if(isMouseDown || (toolBrush && drawMode == DrawPoints))
+			c->SetToolStrength(10.0f);
 	}
 }
 
@@ -1811,10 +1816,13 @@ void GameView::enableCtrlBehaviour()
 		searchButton->Appearance.TextInactive = searchButton->Appearance.TextHover = ui::Colour(0, 0, 0);
 		if (currentSaveType == 2)
 			((SplitButton*)saveSimulationButton)->SetShowSplit(true);
-		if(!shiftBehaviour)
-			c->SetToolStrength(.1f);
-		else
-			c->SetToolStrength(10.0f);
+		if(isMouseDown || (toolBrush && drawMode == DrawPoints))
+		{
+			if(!shiftBehaviour)
+				c->SetToolStrength(.1f);
+			else
+				c->SetToolStrength(10.0f);
+		}
 	}
 }
 
