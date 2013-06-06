@@ -40,7 +40,7 @@ class Tool;
 // idea from mniip, makes things much simpler
 #define SETCONST(L, NAME)\
 	lua_pushinteger(L, NAME);\
-	lua_setfield(L, -2, #NAME);
+	lua_setfield(L, -2, #NAME)
 
 class TPTScriptInterface;
 class LuaScriptInterface: public CommandInterface

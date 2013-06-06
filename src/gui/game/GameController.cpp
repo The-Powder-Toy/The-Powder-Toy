@@ -27,6 +27,11 @@
 #include "gui/interface/Keys.h"
 #include "simulation/Snapshot.h"
 #include "debug/DebugInfo.h"
+#ifdef LUACONSOLE
+#include "cat/LuaScriptInterface.h"
+#else
+#include "cat/TPTScriptInterface.h"
+#endif
 //#include "debug/ElementPopulation.h"
 
 using namespace std;

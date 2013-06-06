@@ -14,11 +14,6 @@
 #include "gui/console/ConsoleController.h"
 #include "gui/localbrowser/LocalBrowserController.h"
 #include "gui/options/OptionsController.h"
-#ifdef LUACONSOLE
-#include "cat/LuaScriptInterface.h"
-#else
-#include "cat/TPTScriptInterface.h"
-#endif
 #include "client/ClientListener.h"
 #include "RenderPreset.h"
 #include "Menu.h"

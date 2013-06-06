@@ -485,7 +485,6 @@ void LuaScriptInterface::initSimulationAPI()
 		{NULL, NULL}
 	};
 	luaL_register(l, "simulation", simulationAPIMethods);
-	int simulationAPI = lua_gettop(l);
 
 	//Sim shortcut
 	lua_getglobal(l, "simulation");
@@ -495,7 +494,6 @@ void LuaScriptInterface::initSimulationAPI()
 	SETCONST(l, XRES);
 	SETCONST(l, YRES);
 	SETCONST(l, PT_NUM);
-	lua_pushinteger(l, luacon_sim->NUM_PARTS); lua_setfield(l, simulationAPI, "NUM_PARTS");
 	SETCONST(l, R_TEMP);
 	SETCONST(l, MAX_TEMP);
 	SETCONST(l, MIN_TEMP);
@@ -506,7 +504,7 @@ void LuaScriptInterface::initSimulationAPI()
 	SETCONST(l, TOOL_AIR);
 	SETCONST(l, TOOL_PGRV);
 	SETCONST(l, TOOL_NGRV);
-	lua_pushinteger(l, luacon_sim->tools.size()); lua_setfield(l, simulationAPI, "TOOL_WIND");
+	lua_pushinteger(l, luacon_sim->tools.size()); lua_setfield(l, -2, "TOOL_WIND");
 	SETCONST(l, DECO_DRAW);
 	SETCONST(l, DECO_CLEAR);
 	SETCONST(l, DECO_ADD);
@@ -524,7 +522,7 @@ void LuaScriptInterface::initSimulationAPI()
 		std::string propertyName = (*iter).Name;
 		std::transform(propertyName.begin(), propertyName.end(), propertyName.begin(), ::toupper);
 		lua_pushinteger(l, particlePropertiesCount);
-		lua_setfield(l, simulationAPI, ("FIELD_"+propertyName).c_str());
+		lua_setfield(l, -2, ("FIELD_"+propertyName).c_str());
 		particleProperties[particlePropertiesCount++] = *iter;
 	}
 }
@@ -1717,8 +1715,6 @@ void LuaScriptInterface::initElementsAPI()
 	lua_getglobal(l, "elements");
 	lua_setglobal(l, "elem");
 
-	int elementsAPI = lua_gettop(l);
-
 	//Static values
 	//Element types/properties/states
 	SETCONST(l, TYPE_PART);
@@ -1770,13 +1766,13 @@ void LuaScriptInterface::initElementsAPI()
 		if(luacon_sim->elements[i].Enabled)
 		{
 			lua_pushinteger(l, i);
-			lua_setfield(l, elementsAPI, luacon_sim->elements[i].Identifier);
+			lua_setfield(l, -2, luacon_sim->elements[i].Identifier);
 			char realIdentifier[20];
 			sprintf(realIdentifier, "DEFAULT_PT_%s", luacon_sim->elements[i].Name);
 			if (i != 0 && i != PT_NBHL && i != PT_NWHL && strcmp(luacon_sim->elements[i].Identifier, realIdentifier))
 			{
 				lua_pushinteger(l, i);
-				lua_setfield(l, elementsAPI, realIdentifier);
+				lua_setfield(l, -2, realIdentifier);
 			}
 		}
 	}
@@ -2321,10 +2317,8 @@ void LuaScriptInterface::initGraphicsAPI()
 	lua_getglobal(l, "graphics");
 	lua_setglobal(l, "gfx");
 
-	int graphicsAPI = lua_gettop(l);
-
-	lua_pushinteger(l, XRES+BARSIZE);	lua_setfield(l, graphicsAPI, "WIDTH");
-	lua_pushinteger(l, YRES+MENUSIZE);	lua_setfield(l, graphicsAPI, "HEIGHT");
+	lua_pushinteger(l, XRES+BARSIZE);	lua_setfield(l, -2, "WIDTH");
+	lua_pushinteger(l, YRES+MENUSIZE);	lua_setfield(l, -2, "HEIGHT");
 }
 
 int LuaScriptInterface::graphics_textSize(lua_State * l)
@@ -2781,6 +2775,8 @@ bool LuaScriptInterface::OnKeyRelease(int key, Uint16 character, bool shift, boo
 
 void LuaScriptInterface::OnTick()
 {
+	lua_getglobal(l, "simulation");
+	lua_pushinteger(l, luacon_sim->NUM_PARTS); lua_setfield(l, -2, "NUM_PARTS");
 	ui::Engine::Ref().LastTick(clock());
 	if(luacon_mousedown)
 		luacon_mouseevent(luacon_mousex, luacon_mousey, luacon_mousebutton, LUACON_MPRESS, 0);
