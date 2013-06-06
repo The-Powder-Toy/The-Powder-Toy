@@ -183,6 +183,7 @@ GameView::GameView():
 	introTextMessage(introTextData),
 	wallBrush(false),
 	toolBrush(false),
+	windTool(false),
 	doScreenshot(false),
 	recording(false),
 	screenshotIndex(0),
@@ -622,6 +623,10 @@ void GameView::NotifyActiveToolsChanged(GameModel * sender)
 		{
 			toolButtons[i]->SetSelectionState(0);	//Primary
 			c->ActiveToolChanged(0, tool);
+			if (tool->GetIdentifier().find("DEFAULT_UI_WIND") != tool->GetIdentifier().npos)
+				windTool = true;
+			else
+				windTool = false;
 		}
 		else if(sender->GetActiveTool(1) == tool)
 		{
@@ -1326,7 +1331,7 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		}
 		else
 		{
-			if (drawMode != DrawLine)
+			if (drawMode != DrawLine && !windTool)
 				isMouseDown = false;
 			zoomCursorFixed = false;
 			c->SetZoomEnabled(true);
@@ -1530,9 +1535,13 @@ void GameView::OnTick(float dt)
 			c->DrawPoints(toolIndex, pointQueue);
 		}
 	}
-	if(drawMode == DrawFill && isMouseDown)
+	else if(drawMode == DrawFill && isMouseDown)
 	{
 		c->DrawFill(toolIndex, c->PointTranslate(currentMouse));
+	}
+	else if (windTool && isMouseDown && drawMode == DrawLine)
+	{
+		c->DrawLine(toolIndex, c->PointTranslate(drawPoint1), lineSnapCoords(c->PointTranslate(drawPoint1), currentMouse));
 	}
 	if(introText)
 	{

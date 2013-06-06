@@ -51,6 +51,7 @@ private:
 	bool showDebug;
 	bool wallBrush;
 	bool toolBrush;
+	bool windTool;
 	int introText;
 	std::string introTextMessage;
 	int toolIndex;
