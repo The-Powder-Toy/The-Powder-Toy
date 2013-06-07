@@ -219,7 +219,7 @@ GameController::~GameController()
 		delete *iter;
 	}
 	delete gameModel;
-	if(ui::Engine::Ref().GetWindow() == gameView)
+	if (ui::Engine::Ref().GetWindow() == gameView)
 	{
 		ui::Engine::Ref().CloseWindow();
 		delete gameView;

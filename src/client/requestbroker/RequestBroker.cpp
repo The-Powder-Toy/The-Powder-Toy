@@ -271,6 +271,9 @@ ListenerHandle RequestBroker::AttachRequestListener(RequestListener * tListener)
 
 void RequestBroker::DetachRequestListener(RequestListener * tListener)
 {
+	if (!validListeners.size())
+		return;
+
 	pthread_mutex_lock(&listenersMutex);
 
 	std::vector<ListenerHandle>::iterator iter = validListeners.begin();

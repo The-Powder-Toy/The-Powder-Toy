@@ -34,6 +34,17 @@ public:
 	}
 };
 
+class ServerSaveActivity::PublishingAction: public ui::ButtonAction
+{
+	ServerSaveActivity * a;
+public:
+	PublishingAction(ServerSaveActivity * a) : a(a) {}
+	virtual void ActionCallback(ui::Button * sender)
+	{
+		a->ShowPublishingInfo();
+	}
+};
+
 class ServerSaveActivity::RulesAction: public ui::ButtonAction
 {
 	ServerSaveActivity * a;
@@ -142,7 +153,14 @@ ServerSaveActivity::ServerSaveActivity(SaveInfo save, ServerSaveActivity::SaveUp
 	AddComponent(okayButton);
 	SetOkayButton(okayButton);
 
-	ui::Button * RulesButton = new ui::Button(ui::Point((Size.X*3/4)-75, Size.Y-20), ui::Point(150, 16), "Save Uploading Rules");
+	ui::Button * PublishingInfoButton = new ui::Button(ui::Point((Size.X*3/4)-75, Size.Y-42), ui::Point(150, 16), "Publishing Info");
+	PublishingInfoButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
+	PublishingInfoButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	PublishingInfoButton->Appearance.TextInactive = style::Colour::InformationTitle;
+	PublishingInfoButton->SetActionCallback(new PublishingAction(this));
+	AddComponent(PublishingInfoButton);
+
+	ui::Button * RulesButton = new ui::Button(ui::Point((Size.X*3/4)-75, Size.Y-22), ui::Point(150, 16), "Save Uploading Rules");
 	RulesButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	RulesButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	RulesButton->Appearance.TextInactive = style::Colour::InformationTitle;
@@ -244,6 +262,23 @@ void ServerSaveActivity::saveUpload()
 void ServerSaveActivity::Exit()
 {
 	WindowActivity::Exit();
+}
+
+void ServerSaveActivity::ShowPublishingInfo()
+{
+	const char *info =
+		"In The Powder Toy, one can save simulations to their account in two privacy levels: Published and unpublished. You can choose which one by checking or unchecking the 'publish' checkbox. Saves are unpublished by default, so if you do not check publish nobody will be able to see your saves.\n"
+		"\n"
+		"\btPublished saves\bw will appear on the 'By Date' feed and will be seen by many people. These saves also contribute to your Average Score, which is displayed publicly on your profile page on the website. Publish saves that you want people to see so they can comment and vote on.\n"
+		"\btUnpublished saves\bw will not be shown on the 'By Date' feed. These will not contribute to your Average Score. They are not completely private though, as anyone who knows the save id will be able to view it. You can give the save id out to show specific people the save but not allow just everyone to see it.\n"
+		"\n"
+		"To quickly resave a save, open it and click the left side of the split resave button to \bt'save as current name'\bw. If you want to change the description or change the published status, you can click the right side to \bt'save as new name'\bw. Note that you can't change the name of saves; this will create an entirely new save with no comments, votes, or tags; separate from the original.\n"
+		"You may want to publish an unpublished save after it is finished, or to unpublish some currently published ones. You can do this by opening the save, selecting the 'save game as new name' button, and changing the published status there. You can also \btunpublish or delete saves\bw by selecting them in the 'my own' section of the browser and clicking either one of the buttons that appear on bottom.\n"
+		"If a save is under a week old and gains popularity fast, it will be automatically placed on the \btfront page\bw. Only published saves will be able to get here. Moderators can also choose to promote any save onto the front page, but this happens rarely. They can also demote any save from the front page that breaks a rule or they feel doesn't belong.\n"
+		"Once you make a save, you can resave it as many times as you want. A short previous \btsave history\bw is saved, just right click any save in the save browser and select 'View History' to view it. This is useful for when you accidentally save something you didn't mean to and want to go back to the old version.\n"
+		;
+
+	new InformationMessage("Publishing Info", info, true);
 }
 
 void ServerSaveActivity::ShowRules()
