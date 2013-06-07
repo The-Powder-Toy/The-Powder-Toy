@@ -2,26 +2,62 @@
 #include "GameSave.h"
 #include "Client.h"
 
-SaveInfo::SaveInfo(SaveInfo & save) :
-		userName(save.userName), name(save.name), Description(save.Description), date(
-				save.date), Published(save.Published), id(save.id), votesUp(
-				save.votesUp), votesDown(save.votesDown), gameSave(NULL), vote(save.vote), tags(save.tags), Comments(save.Comments), Views(save.Views), Version(save.Version) {
+SaveInfo::SaveInfo(SaveInfo & save):
+		userName(save.userName),
+		name(save.name),
+		Description(save.Description),
+		date(save.date),
+		Published(save.Published),
+		id(save.id),
+		votesUp(save.votesUp),
+		votesDown(save.votesDown),
+		gameSave(NULL),
+		vote(save.vote),
+		tags(save.tags),
+		Comments(save.Comments),
+		Views(save.Views),
+		Version(save.Version)
+{
 	if(save.gameSave)
 		gameSave = new GameSave(*save.gameSave);
 }
 
-SaveInfo::SaveInfo(int _id, int _date, int _votesUp, int _votesDown, std::string _userName,
-		std::string _name) :
-		id(_id), votesUp(_votesUp), votesDown(_votesDown), userName(_userName), name(
-				_name), Description(""), date(_date), Published(
-				true), gameSave(NULL), vote(0), tags(), Comments(0), Views(0), Version(0) {
+SaveInfo::SaveInfo(int _id, int _date, int _votesUp, int _votesDown, std::string _userName, std::string _name):
+		id(_id),
+		votesUp(_votesUp),
+		votesDown(_votesDown),
+		userName(_userName),
+		name(_name),
+		Description(""),
+		date(_date),
+		Published(false),
+		gameSave(NULL),
+		vote(0),
+		tags(),
+		Comments(0),
+		Views(0),
+		Version(0)
+{
+
 }
 
-SaveInfo::SaveInfo(int _id, int date_, int _votesUp, int _votesDown, int _vote, std::string _userName,
-		std::string _name, std::string description_, bool published_, std::vector<std::string> tags_) :
-		id(_id), votesUp(_votesUp), votesDown(_votesDown), userName(_userName), name(
-				_name), Description(description_), date(date_), Published(
-				published_), gameSave(NULL), vote(_vote), tags(tags_), Views(0), Comments(0), Version(0) {
+SaveInfo::SaveInfo(int _id, int date_, int _votesUp, int _votesDown, int _vote, std::string _userName, std::string _name, std::string description_, bool published_, std::vector<std::string> tags_):
+		id(_id),
+		votesUp(_votesUp),
+		votesDown(_votesDown),
+		userName(_userName),
+		name(_name),
+		Description(description_),
+		date(date_),
+		Published(published_),
+		gameSave(NULL),
+		vote(_vote),
+		tags(tags_),
+		Comments(0),
+		Views(0),
+		Version(0)
+{
+
 }
 
 SaveInfo::~SaveInfo()
@@ -32,25 +68,30 @@ SaveInfo::~SaveInfo()
 	}
 }
 
-void SaveInfo::SetName(std::string name) {
+void SaveInfo::SetName(std::string name)
+{
 	this->name = name;
 }
-std::string SaveInfo::GetName() {
+std::string SaveInfo::GetName()
+{
 	return name;
 }
 
-void SaveInfo::SetDescription(std::string description) {
+void SaveInfo::SetDescription(std::string description)
+{
 	Description = description;
 }
-std::string SaveInfo::GetDescription() {
+std::string SaveInfo::GetDescription()
+{
 	return Description;
 }
 
-void SaveInfo::SetPublished(bool published) {
+void SaveInfo::SetPublished(bool published)
+{
 	Published = published;
 }
-
-bool SaveInfo::GetPublished() {
+bool SaveInfo::GetPublished()
+{
 	return Published;
 }
 
@@ -63,39 +104,49 @@ int SaveInfo::GetVote()
 	return vote;
 }
 
-void SaveInfo::SetUserName(std::string userName) {
+void SaveInfo::SetUserName(std::string userName)
+{
 	this->userName = userName;
 }
 
-std::string SaveInfo::GetUserName() {
+std::string SaveInfo::GetUserName()
+{
 	return userName;
 }
 
-void SaveInfo::SetID(int id) {
+void SaveInfo::SetID(int id)
+{
 	this->id = id;
 }
-int SaveInfo::GetID() {
+int SaveInfo::GetID()
+{
 	return id;
 }
 
-void SaveInfo::SetVotesUp(int votesUp) {
+void SaveInfo::SetVotesUp(int votesUp)
+{
 	this->votesUp = votesUp;
 }
-int SaveInfo::GetVotesUp() {
+int SaveInfo::GetVotesUp()
+{
 	return votesUp;
 }
 
-void SaveInfo::SetVotesDown(int votesDown) {
+void SaveInfo::SetVotesDown(int votesDown)
+{
 	this->votesDown = votesDown;
 }
-int SaveInfo::GetVotesDown() {
+int SaveInfo::GetVotesDown()
+{
 	return votesDown;
 }
 
-void SaveInfo::SetVersion(int version) {
+void SaveInfo::SetVersion(int version)
+{
 	this->Version = version;
 }
-int SaveInfo::GetVersion() {
+int SaveInfo::GetVersion()
+{
 	return Version;
 }
 
