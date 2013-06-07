@@ -1948,93 +1948,109 @@ bool Simulation::IsWallBlocking(int x, int y, int type)
 
 void Simulation::init_can_move()
 {
+	int movingType, destinationType;
 	// can_move[moving type][type at destination]
 	//  0 = No move/Bounce
 	//  1 = Swap
 	//  2 = Both particles occupy the same space.
 	//  3 = Varies, go run some extra checks
-	int t, rt, stkm_move;
-	for (rt=0;rt<PT_NUM;rt++)
-		can_move[0][rt] = 0; // particles that don't exist shouldn't move...
-	for (t=1;t<PT_NUM;t++)
-		for (rt=0;rt<PT_NUM;rt++)
-			can_move[t][rt] = 1;
-	for (rt=1;rt<PT_NUM;rt++)
+	
+	//particles that don't exist shouldn't move...
+	for (destinationType = 0; destinationType < PT_NUM; destinationType++)
+		can_move[0][destinationType] = 0;
+
+	//initialize everything else to swapping by default
+	for (movingType = 1; movingType < PT_NUM; movingType++)
+		for (destinationType = 0; destinationType < PT_NUM; destinationType++)
+			can_move[movingType][destinationType] = 1;
+
+	//photons go through everything by default
+	for (destinationType = 1; destinationType < PT_NUM; destinationType++)
+		can_move[PT_PHOT][destinationType] = 2;
+
+	for (movingType = 1; movingType < PT_NUM; movingType++)
 	{
-		can_move[PT_PHOT][rt] = 2;
-	}
-	for (t=1;t<PT_NUM;t++)
-	{
-		for (rt=1;rt<PT_NUM;rt++)
+		for (destinationType = 1; destinationType < PT_NUM; destinationType++)
 		{
-			// weight check, also prevents particles of same type displacing each other
-			if (elements[t].Weight <= elements[rt].Weight || rt==PT_GEL) can_move[t][rt] = 0;
-			if (t==PT_NEUT && (elements[rt].Properties&PROP_NEUTPASS))
-				can_move[t][rt] = 2;
-			if (t==PT_NEUT && (elements[rt].Properties&PROP_NEUTABSORB))
-				can_move[t][rt] = 1;
-			if (t==PT_NEUT && (elements[rt].Properties&PROP_NEUTPENETRATE))
-				can_move[t][rt] = 1;
-			if ((elements[t].Properties&PROP_NEUTPENETRATE) && rt==PT_NEUT)
-				can_move[t][rt] = 0;
-			if ((elements[t].Properties&TYPE_ENERGY) && (elements[rt].Properties&TYPE_ENERGY))
-				can_move[t][rt] = 2;
+			//weight check, also prevents particles of same type displacing each other
+			if (elements[movingType].Weight <= elements[destinationType].Weight || destinationType == PT_GEL)
+				can_move[movingType][destinationType] = 0;
+
+			//other checks for NEUT and energy particles
+			if (movingType == PT_NEUT && (elements[destinationType].Properties&PROP_NEUTPASS))
+				can_move[movingType][destinationType] = 2;
+			if (movingType == PT_NEUT && (elements[destinationType].Properties&PROP_NEUTABSORB))
+				can_move[movingType][destinationType] = 1;
+			if (movingType == PT_NEUT && (elements[destinationType].Properties&PROP_NEUTPENETRATE))
+				can_move[movingType][destinationType] = 1;
+			if (destinationType == PT_NEUT && (elements[movingType].Properties&PROP_NEUTPENETRATE))
+				can_move[movingType][destinationType] = 0;
+			if ((elements[movingType].Properties&TYPE_ENERGY) && (elements[destinationType].Properties&TYPE_ENERGY))
+				can_move[movingType][destinationType] = 2;
 		}
 	}
+	for (destinationType = 0; destinationType < PT_NUM; destinationType++)
+	{
+		//set what stickmen can move through
+		int stkm_move = 0;
+		if (elements[destinationType].Properties & (TYPE_LIQUID | TYPE_GAS))
+			stkm_move = 2;
+		if (!destinationType || destinationType == PT_PRTO || destinationType == PT_SPAWN || destinationType == PT_SPAWN2)
+			stkm_move = 2;
+		can_move[PT_STKM][destinationType] = stkm_move;
+		can_move[PT_STKM2][destinationType] = stkm_move;
+		can_move[PT_FIGH][destinationType] = stkm_move;
+
+		//spark shouldn't move
+		can_move[PT_SPRK][destinationType] = 0;
+	}
+	for (movingType = 1; movingType < PT_NUM; movingType++)
+	{
+		// everything "swaps" with VACU and BHOL to make them eat things
+		can_move[movingType][PT_BHOL] = 1;
+		can_move[movingType][PT_NBHL] = 1;
+		//nothing goes through stickmen
+		can_move[movingType][PT_STKM] = 0;
+		can_move[movingType][PT_STKM2] = 0;
+		can_move[movingType][PT_FIGH] = 0;
+		//INVS behaviour varies with pressure
+		can_move[movingType][PT_INVIS] = 3;
+		//stop CNCT being displaced by other particles
+		can_move[movingType][PT_CNCT] = 0;
+		//VOID and PVOD behaviour varies with powered state and ctype
+		can_move[movingType][PT_PVOD] = 3;
+		can_move[movingType][PT_VOID] = 3;
+		//nothing moves through EMBR (not sure why, but it's killed when it touches anything)
+		can_move[movingType][PT_EMBR] = 0;
+		can_move[PT_EMBR][movingType] = 0;
+		//Energy particles move through VIBR and BVBR, so it can absorb them
+		if (elements[movingType].Properties & TYPE_ENERGY)
+		{
+			can_move[movingType][PT_VIBR] = 1;
+			can_move[movingType][PT_BVBR] = 1;
+		}
+	}
+	//a list of lots of things PHOT can move through
+	for (movingType = 0; movingType < PT_NUM; movingType++)
+	{
+		if (movingType == PT_GLAS || movingType == PT_PHOT || movingType == PT_FILT || movingType == PT_INVIS
+		 || movingType == PT_CLNE || movingType == PT_PCLN || movingType == PT_BCLN || movingType == PT_PBCN
+		 || movingType == PT_WATR || movingType == PT_DSTW || movingType == PT_SLTW || movingType == PT_GLOW
+		 || movingType == PT_ISOZ || movingType == PT_ISZS || movingType == PT_QRTZ || movingType == PT_PQRT)
+			can_move[PT_PHOT][movingType] = 2;
+	}
+
+	//other special cases that weren't covered above
 	can_move[PT_DEST][PT_DMND] = 0;
 	can_move[PT_DEST][PT_CLNE] = 0;
 	can_move[PT_DEST][PT_PCLN] = 0;
 	can_move[PT_DEST][PT_BCLN] = 0;
 	can_move[PT_DEST][PT_PBCN] = 0;
-	can_move[PT_BIZR][PT_FILT] = 2;
-	can_move[PT_BIZRG][PT_FILT] = 2;
-	for (t=0;t<PT_NUM;t++)
-	{
-		//spark shouldn't move
-		can_move[PT_SPRK][t] = 0;
-		stkm_move = 0;
-		if (elements[t].Properties & (TYPE_LIQUID | TYPE_GAS))
-			stkm_move = 2;
-		if (!t || t==PT_PRTO || t==PT_SPAWN || t==PT_SPAWN2)
-			stkm_move = 2;
-		can_move[PT_STKM][t] = stkm_move;
-		can_move[PT_STKM2][t] = stkm_move;
-		can_move[PT_FIGH][t] = stkm_move;
-	}
-	for (t=1;t<PT_NUM;t++)
-	{
-		// make them eat things
-		can_move[t][PT_BHOL] = 1;
-		can_move[t][PT_NBHL] = 1;
-		can_move[t][PT_STKM] = 0;
-		can_move[t][PT_STKM2] = 0;
-		can_move[t][PT_FIGH] = 0;
-		//INVIS behaviour varies with pressure
-		can_move[t][PT_INVIS] = 3;
-		//stop CNCT being displaced by other particles
-		can_move[t][PT_CNCT] = 0;
-		//void behaviour varies with powered state and ctype
-		can_move[t][PT_PVOD] = 3;
-		can_move[t][PT_VOID] = 3;
-		can_move[t][PT_EMBR] = 0;
-		can_move[PT_EMBR][t] = 0;
-		if (elements[t].Properties&TYPE_ENERGY)
-		{
-			can_move[t][PT_VIBR] = 1;
-			can_move[t][PT_BVBR] = 1;
-		}
-	}
-	for (t=0;t<PT_NUM;t++)
-	{
-		if (t==PT_GLAS || t==PT_PHOT || t==PT_CLNE || t==PT_PCLN
-			|| t==PT_GLOW || t==PT_WATR || t==PT_DSTW || t==PT_SLTW
-			|| t==PT_ISOZ || t==PT_ISZS || t==PT_FILT || t==PT_INVIS
-			|| t==PT_QRTZ || t==PT_PQRT)
-			can_move[PT_PHOT][t] = 2;
-	}
+
+	can_move[PT_NEUT][PT_INVIS] = 2;
 	can_move[PT_ELEC][PT_LCRY] = 2;
 	can_move[PT_ELEC][PT_EXOT] = 2;
-	can_move[PT_PHOT][PT_LCRY] = 3;//varies according to LCRY life
+	can_move[PT_PHOT][PT_LCRY] = 3; //varies according to LCRY life
 
 	can_move[PT_PHOT][PT_BIZR] = 2;
 	can_move[PT_ELEC][PT_BIZR] = 2;
@@ -2042,10 +2058,10 @@ void Simulation::init_can_move()
 	can_move[PT_ELEC][PT_BIZRG] = 2;
 	can_move[PT_PHOT][PT_BIZRS] = 2;
 	can_move[PT_ELEC][PT_BIZRS] = 2;
-	can_move[PT_NEUT][PT_INVIS] = 2;
+	can_move[PT_BIZR][PT_FILT] = 2;
+	can_move[PT_BIZRG][PT_FILT] = 2;
 
-	//whol eats anar
-	can_move[PT_ANAR][PT_WHOL] = 1;
+	can_move[PT_ANAR][PT_WHOL] = 1; //WHOL eats ANAR
 	can_move[PT_ANAR][PT_NWHL] = 1;
 	can_move[PT_ELEC][PT_DEUT] = 1;
 	can_move[PT_THDR][PT_THDR] = 2;
@@ -2054,7 +2070,7 @@ void Simulation::init_can_move()
 }
 
 /*
-   RETURN-value explenation
+   RETURN-value explanation
 1 = Swap
 0 = No move/Bounce
 2 = Both particles occupy the same space.
