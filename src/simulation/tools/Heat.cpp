@@ -13,9 +13,9 @@ int Tool_Heat::Perform(Simulation * sim, Particle * cpart, int x, int y, float s
 	if(!cpart)
 		return 0;
 	if (cpart->type == PT_PUMP || cpart->type == PT_GPMP)
-		cpart->temp += .1f*strength;
+		cpart->temp += strength*.1f;
 	else
-		cpart->temp += strength;
+		cpart->temp += strength*2.0f;
 	if(cpart->temp > MAX_TEMP)
 		cpart->temp = MAX_TEMP;
 	if(cpart->temp < 0)

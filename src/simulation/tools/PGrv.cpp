@@ -11,7 +11,7 @@ Tool_PGrv::Tool_PGrv()
 
 int Tool_PGrv::Perform(Simulation * sim, Particle * cpart, int x, int y, float strength)
 {
-	sim->gravmap[((y/CELL)*(XRES/CELL))+(x/CELL)] += 0.03f*strength;
+	sim->gravmap[((y/CELL)*(XRES/CELL))+(x/CELL)] = strength*5.0f;
 	return 1;
 }
 
