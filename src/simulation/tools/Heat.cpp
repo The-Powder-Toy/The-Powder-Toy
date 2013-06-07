@@ -5,7 +5,7 @@ Tool_Heat::Tool_Heat()
 	Identifier = "DEFAULT_TOOL_HEAT";
 	Name = "HEAT";
 	Colour = PIXPACK(0xFFDD00);
-	Description = "Heats particles";
+	Description = "Heats the targeted element.";
 }
 
 int Tool_Heat::Perform(Simulation * sim, Particle * cpart, int x, int y, float strength)
@@ -16,9 +16,10 @@ int Tool_Heat::Perform(Simulation * sim, Particle * cpart, int x, int y, float s
 		cpart->temp += strength*.1f;
 	else
 		cpart->temp += strength*2.0f;
-	if(cpart->temp > MAX_TEMP)
+
+	if (cpart->temp > MAX_TEMP)
 		cpart->temp = MAX_TEMP;
-	if(cpart->temp < 0)
+	else if (cpart->temp < 0)
 		cpart->temp = 0;
 	return 1;
 }

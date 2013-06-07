@@ -45,7 +45,7 @@ class SignTool: public Tool
 {
 public:
 	SignTool():
-	Tool(0, "SIGN", "Sign. Click a sign to edit or anywhere else to create a new one", 0, 0, 0, "DEFAULT_UI_SIGN", SignTool::GetIcon)
+	Tool(0, "SIGN", "Sign. Click a sign to edit or anywhere else to create a new one.", 0, 0, 0, "DEFAULT_UI_SIGN", SignTool::GetIcon)
 	{
 	}
 	static VideoBuffer * GetIcon(int toolID, int width, int height);
@@ -64,7 +64,7 @@ class SampleTool: public Tool
 	GameModel * gameModel;
 public:
 	SampleTool(GameModel * model):
-	Tool(0, "SMPL", "Sample an element on the screen", 0, 0, 0, "DEFAULT_UI_SAMPLE", SampleTool::GetIcon),
+	Tool(0, "SMPL", "Sample an element on the screen.", 0, 0, 0, "DEFAULT_UI_SAMPLE", SampleTool::GetIcon),
 	gameModel(model)
 	{
 	}
@@ -81,7 +81,7 @@ class PropertyTool: public Tool
 {
 public:
 	PropertyTool():
-	Tool(0, "PROP", "Property Edit. Click to alter the properties of elements in the field", 0xfe, 0xa9, 0x00, "DEFAULT_UI_PROPERTY", NULL)
+	Tool(0, "PROP", "Property Edit. Click to alter the properties of elements in the field.", 0xfe, 0xa9, 0x00, "DEFAULT_UI_PROPERTY", NULL)
 	{
 	}
 	virtual ~PropertyTool() {}
