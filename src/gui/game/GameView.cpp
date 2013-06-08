@@ -51,6 +51,23 @@ public:
 	void SetShowSplit(bool split) { showSplit = split; }
 	SplitButtonAction * GetSplitActionCallback() { return splitActionCallback; }
 	void SetSplitActionCallback(SplitButtonAction * newAction) { splitActionCallback = newAction; }
+	void SetToolTip(int x, int y)
+	{
+		if(x >= splitPosition || !showSplit)
+		{
+			if(toolTip2.length()>0 && GetParentWindow())
+			{
+				GetParentWindow()->ToolTip(this, ui::Point(x, y), toolTip2);
+			}
+		}
+		else if(x < splitPosition)
+		{
+			if(toolTip.length()>0 && GetParentWindow())
+			{
+				GetParentWindow()->ToolTip(this, ui::Point(x, y), toolTip);
+			}
+		}
+	}
 	virtual void OnMouseUnclick(int x, int y, unsigned int button)
 	{
 		if(isButtonDown)
@@ -63,42 +80,20 @@ public:
 		ui::Button::OnMouseUnclick(x, y, button);
 
 	}
-	virtual void OnMouseMovedInside(int x, int y, int dx, int dy)
+	virtual void OnMouseHover(int x, int y, int dx, int dy)
 	{
-		if(x >= splitPosition || !showSplit)
-		{
-			if(toolTip.length()>0 && GetParentWindow())
-			{
-				GetParentWindow()->ToolTip(this, ui::Point(x, y), toolTip2);
-			}
-		}
-		else if(x < splitPosition)
-		{
-			if(toolTip2.length()>0 && GetParentWindow())
-			{
-				GetParentWindow()->ToolTip(this, ui::Point(x, y), toolTip);
-			}
-		}
+		SetToolTip(x, y);
+	}
+	virtual void OnMouseHover(int x, int y)
+	{
+		SetToolTip(x, y);
 	}
 	virtual void OnMouseEnter(int x, int y)
 	{
 		isMouseInside = true;
 		if(!Enabled)
 			return;
-		if(x >= splitPosition || !showSplit)
-		{
-			if(toolTip.length()>0 && GetParentWindow())
-			{
-				GetParentWindow()->ToolTip(this, ui::Point(x, y), toolTip2);
-			}
-		}
-		else if(x < splitPosition)
-		{
-			if(toolTip2.length()>0 && GetParentWindow())
-			{
-				GetParentWindow()->ToolTip(this, ui::Point(x, y), toolTip);
-			}
-		}
+		SetToolTip(x, y);
 	}
 	virtual void TextPosition()
 	{
