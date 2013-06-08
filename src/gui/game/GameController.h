@@ -100,6 +100,7 @@ public:
 	bool GetDebugHUD();
 	void SetActiveMenu(int menuID);
 	std::vector<Menu*> GetMenuList();
+	Tool * GetActiveTool(int selection);
 	void SetActiveTool(int toolSelection, Tool * tool);
 	void ActiveToolChanged(int toolSelection, Tool *tool);
 	void SetActiveColourPreset(int preset);

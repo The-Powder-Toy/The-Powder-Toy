@@ -617,7 +617,6 @@ void GameView::NotifyActiveToolsChanged(GameModel * sender)
 		if(sender->GetActiveTool(0) == tool)
 		{
 			toolButtons[i]->SetSelectionState(0);	//Primary
-			c->ActiveToolChanged(0, tool);
 			if (tool->GetIdentifier().find("DEFAULT_UI_WIND") != tool->GetIdentifier().npos)
 				windTool = true;
 			else
@@ -626,18 +625,20 @@ void GameView::NotifyActiveToolsChanged(GameModel * sender)
 		else if(sender->GetActiveTool(1) == tool)
 		{
 			toolButtons[i]->SetSelectionState(1);	//Secondary
-			c->ActiveToolChanged(1, tool);
 		}
 		else if(sender->GetActiveTool(2) == tool)
 		{
 			toolButtons[i]->SetSelectionState(2);	//Tertiary
-			c->ActiveToolChanged(2, tool);
 		}
 		else
 		{
 			toolButtons[i]->SetSelectionState(-1);
 		}
 	}
+	//need to do this for all tools every time just in case it wasn't caught if you weren't in the menu a tool was changed to
+	c->ActiveToolChanged(0, sender->GetActiveTool(0));
+	c->ActiveToolChanged(1, sender->GetActiveTool(1));
+	c->ActiveToolChanged(2, sender->GetActiveTool(2));
 }
 
 void GameView::NotifyLastToolChanged(GameModel * sender)

@@ -10,11 +10,11 @@
 
 class Tool;
 
-class GameModel;
+class GameController;
 
 class ElementSearchActivity: public WindowActivity {
 	Tool * firstResult;
-	GameModel * gameModel;
+	GameController * gameController;
 	std::vector<Tool*> tools;
 	ui::Textbox * searchField;
 	std::vector<ToolButton*> toolButtons;
@@ -22,7 +22,7 @@ class ElementSearchActivity: public WindowActivity {
 public:
 	class ToolAction;
 	Tool * GetFirstResult() { return firstResult; }
-	ElementSearchActivity(GameModel * gameModel, std::vector<Tool*> tools);
+	ElementSearchActivity(GameController * gameController, std::vector<Tool*> tools);
 	void SetActiveTool(int selectionState, Tool * tool);
 	virtual ~ElementSearchActivity();
 	virtual void OnDraw();

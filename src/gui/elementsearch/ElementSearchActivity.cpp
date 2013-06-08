@@ -5,7 +5,7 @@
 #include "gui/interface/Keys.h"
 #include "gui/game/Tool.h"
 #include "gui/Style.h"
-#include "gui/game/GameModel.h"
+#include "gui/game/GameController.h"
 
 class ElementSearchActivity::ToolAction: public ui::ButtonAction
 {
@@ -21,9 +21,9 @@ public:
 	}
 };
 
-ElementSearchActivity::ElementSearchActivity(GameModel * gameModel, std::vector<Tool*> tools) :
+ElementSearchActivity::ElementSearchActivity(GameController * gameController, std::vector<Tool*> tools) :
 	WindowActivity(ui::Point(-1, -1), ui::Point(236, 302)),
-	gameModel(gameModel),
+	gameController(gameController),
 	tools(tools),
 	firstResult(NULL)
 {
@@ -121,15 +121,15 @@ void ElementSearchActivity::searchTools(std::string query)
 			tempButton->Appearance.BackgroundInactive = ui::Colour(tool->colRed, tool->colGreen, tool->colBlue);
 			tempButton->SetActionCallback(new ToolAction(this, tool));
 
-			if(gameModel->GetActiveTool(0) == tool)
+			if(gameController->GetActiveTool(0) == tool)
 			{
 				tempButton->SetSelectionState(0);	//Primary
 			}
-			else if(gameModel->GetActiveTool(1) == tool)
+			else if(gameController->GetActiveTool(1) == tool)
 			{
 				tempButton->SetSelectionState(1);	//Secondary
 			}
-			else if(gameModel->GetActiveTool(2) == tool)
+			else if(gameController->GetActiveTool(2) == tool)
 			{
 				tempButton->SetSelectionState(2);	//Tertiary
 			}
@@ -152,7 +152,7 @@ void ElementSearchActivity::searchTools(std::string query)
 
 void ElementSearchActivity::SetActiveTool(int selectionState, Tool * tool)
 {
-	gameModel->SetActiveTool(selectionState, tool);
+	gameController->SetActiveTool(selectionState, tool);
 	Exit();
 }
 
@@ -170,7 +170,7 @@ void ElementSearchActivity::OnKeyPress(int key, Uint16 character, bool shift, bo
 	if(key == KEY_ENTER || key == KEY_RETURN)
 	{
 		if(firstResult)
-			gameModel->SetActiveTool(0, firstResult);
+			gameController->SetActiveTool(0, firstResult);
 		Exit();
 	}
 	if(key == KEY_ESCAPE)

@@ -965,12 +965,7 @@ void GameController::SetActiveMenu(int menuID)
 	if(menuID == SC_DECO)
 		gameModel->SetColourSelectorVisibility(true);
 	else
-	{
 		gameModel->SetColourSelectorVisibility(false);
-		ActiveToolChanged(0, gameModel->GetActiveTool(0));
-		ActiveToolChanged(1, gameModel->GetActiveTool(1));
-		ActiveToolChanged(2, gameModel->GetActiveTool(2));
-	}
 }
 
 std::vector<Menu*> GameController::GetMenuList()
@@ -981,6 +976,11 @@ std::vector<Menu*> GameController::GetMenuList()
 void GameController::ActiveToolChanged(int toolSelection, Tool *tool)
 {
 	commandInterface->OnActiveToolChanged(toolSelection, tool);
+}
+
+Tool * GameController::GetActiveTool(int selection)
+{
+	return gameModel->GetActiveTool(selection);
 }
 
 void GameController::SetActiveTool(int toolSelection, Tool * tool)
@@ -1126,7 +1126,7 @@ void GameController::OpenElementSearch()
 	}
 	vector<Tool*> hiddenTools = gameModel->GetUnlistedTools();
 	toolList.insert(toolList.end(), hiddenTools.begin(), hiddenTools.end());
-	new ElementSearchActivity(gameModel, toolList);
+	new ElementSearchActivity(this, toolList);
 }
 
 void GameController::OpenColourPicker()
@@ -1210,6 +1210,8 @@ void GameController::OpenSaveWindow()
 		virtual  ~SaveUploadedCallback() {};
 		virtual void SaveUploaded(SaveInfo save)
 		{
+			save.SetVote(1);
+			save.SetVotesUp(1);
 			c->LoadSave(&save);
 		}
 	};
