@@ -2778,6 +2778,7 @@ void LuaScriptInterface::OnTick()
 {
 	lua_getglobal(l, "simulation");
 	lua_pushinteger(l, luacon_sim->NUM_PARTS); lua_setfield(l, -2, "NUM_PARTS");
+	lua_pop(l, 1);
 	ui::Engine::Ref().LastTick(clock());
 	if(luacon_mousedown)
 		luacon_mouseevent(luacon_mousex, luacon_mousey, luacon_mousebutton, LUACON_MPRESS, 0);
