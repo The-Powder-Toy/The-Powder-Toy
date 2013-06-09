@@ -28,9 +28,6 @@ public:
 		Appearance.TextHover = ui::Colour(180, 230, 180);
 		Appearance.BorderInactive = ui::Colour(180, 230, 180);
 		Appearance.BorderHover = ui::Colour(180, 230, 180);
-
-		//Appearance.TextActive = ui::Colour(230, 255, 230);
-		//Appearance.BorderActive = ui::Colour(230, 255, 230);
 	}
 
 	virtual void OnMouseEnter(int x, int y)

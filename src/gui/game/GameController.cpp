@@ -465,14 +465,12 @@ void GameController::DrawPoints(int toolSelection, queue<ui::Point> & pointQueue
 				if (!first)
 				{
 					activeTool->DrawLine(sim, cBrush, sPoint, fPoint, true);
-					printf("From (%d, %d) To (%d, %d)\n", sPoint.X, sPoint.Y, fPoint.X, fPoint.Y);
 				}
 				first = false;
 			}
 			else
 			{
 				activeTool->Draw(sim, cBrush, fPoint);
-				printf("(%d, %d)\n", fPoint.X, fPoint.Y); 
 			}
 			sPoint = fPoint;
 		}
