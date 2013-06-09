@@ -15,11 +15,13 @@ ConsoleController::ConsoleController(ControllerCallback * callback, CommandInter
 
 void ConsoleController::EvaluateCommand(std::string command)
 {
-	if (command.substr(0, 6) == "!load ")
-		CloseConsole();
-	int returnCode = commandInterface->Command(command);
 	if(command.length())
+	{
+		if (command.substr(0, 6) == "!load ")
+			CloseConsole();
+		int returnCode = commandInterface->Command(command);
 		consoleModel->AddLastCommand(ConsoleCommand(command, returnCode, commandInterface->GetLastError()));
+	}
 	else
 		CloseConsole();
 }
