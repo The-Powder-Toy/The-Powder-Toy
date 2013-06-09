@@ -781,7 +781,7 @@ int main(int argc, char * argv[])
 
 #ifndef DEBUG
 	//Get ready to catch any dodgy errors
-	signal(SIGSEGV, SigHandler);
+	//signal(SIGSEGV, SigHandler);
 	signal(SIGFPE, SigHandler);
 	signal(SIGILL, SigHandler);
 	signal(SIGABRT, SigHandler);
