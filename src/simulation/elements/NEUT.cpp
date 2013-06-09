@@ -92,7 +92,7 @@ int Element_NEUT::update(UPDATE_FUNC_ARGS)
 				case PT_DEUT:
 					if ((pressureFactor+1+(parts[r>>8].life/100))>(rand()%1000))
 					{
-						create_n_parts(sim, parts[r>>8].life, x+rx, y+ry, parts[i].vx, parts[i].vy, restrict_flt(parts[r>>8].temp + parts[r>>8].life*500, MIN_TEMP, MAX_TEMP), PT_NEUT);
+						DeutExplosion(sim, parts[r>>8].life, x+rx, y+ry, restrict_flt(parts[r>>8].temp + parts[r>>8].life*500, MIN_TEMP, MAX_TEMP), PT_NEUT);
 						sim->kill_part(r>>8);
 					}
 					break;
@@ -187,8 +187,8 @@ int Element_NEUT::graphics(GRAPHICS_FUNC_ARGS)
 	return 1;
 }
 
-//#TPT-Directive ElementHeader Element_NEUT static int create_n_parts(Simulation * sim, int n, int x, int y, float vx, float vy, float temp, int t)
-int Element_NEUT::create_n_parts(Simulation * sim, int n, int x, int y, float vx, float vy, float temp, int t)//testing a new deut create part
+//#TPT-Directive ElementHeader Element_NEUT static int DeutExplosion(Simulation * sim, int n, int x, int y, float temp, int t)
+int Element_NEUT::DeutExplosion(Simulation * sim, int n, int x, int y, float temp, int t)//testing a new deut create part
 {
 	int i, c;
 	n = (n/50);
@@ -198,31 +198,11 @@ int Element_NEUT::create_n_parts(Simulation * sim, int n, int x, int y, float vx
 	if (n>340) {
 		n = 340;
 	}
-	if (x<0 || y<0 || x>=XRES || y>=YRES || t<0 || t>=PT_NUM || !sim->elements[t].Enabled)
-		return -1;
 	
 	for (c=0; c<n; c++) {
-		float r = (rand()%128+128)/127.0f;
-		float a = (rand()%360)*M_PI/180.0f;
-		if (sim->pfree == -1)
-			return -1;
-		i = sim->pfree;
-		sim->pfree = sim->parts[i].life;
-		if (i>sim->parts_lastActiveIndex) sim->parts_lastActiveIndex = i;
-		
-		sim->parts[i].x = (float)x;
-		sim->parts[i].y = (float)y;
-		sim->parts[i].type = t;
-		sim->parts[i].life = rand()%480+480;
-		sim->parts[i].vx = r*cosf(a);
-		sim->parts[i].vy = r*sinf(a);
-		sim->parts[i].ctype = 0;
-		sim->parts[i].temp = temp;
-		sim->parts[i].tmp = 0;
-		if (t!=PT_STKM&&t!=PT_STKM2 && t!=PT_PHOT && t!=PT_NEUT && !sim->pmap[y][x])
-			sim->pmap[y][x] = t|(i<<8);
-		else if ((t==PT_PHOT||t==PT_NEUT) && !sim->photons[y][x])
-			sim->photons[y][x] = t|(i<<8);
+		i = sim->create_part(-3, x, y, t);
+		if (i > -1)
+			sim->parts[i].temp = temp;
 		
 		sim->pv[y/CELL][x/CELL] += 6.0f * CFDS;
 	}

@@ -924,6 +924,8 @@ void Simulation::ApplyDecoration(int x, int y, int colR_, int colG_, int colB_, 
 	float strength = 0.01f;
 	rp = pmap[y][x];
 	if (!rp)
+		rp = photons[y][x];
+	if (!rp)
 		return;
 
 	ta = (parts[rp>>8].dcolour>>24)&0xFF;
