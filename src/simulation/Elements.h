@@ -30,6 +30,9 @@
 #define PROP_SPARKSETTLE	0x20000	//2^17 Allow Sparks/Embers to settle
 #define PROP_NOAMBHEAT		0x40000 //2^18 Don't transfer or receive heat from ambient heat.
 
+#define PROP_DRAWONCTYPE    0x80000 //2^19 Set its ctype to another element if the element is drawn upon it (like what CLNE does)
+#define PROP_NODRAWONCTYPE  0x100000 // 2^20 When this element is drawn upon with, do not set ctype (like BCLN for CLNE)
+
 #define FLAG_STAGNANT	0x1
 #define FLAG_SKIPMOVE  0x2 // skip movement for one frame, only implemented for PHOT
 #define FLAG_WATEREQUAL 0x4 //if a liquid was already checked during equalization

@@ -2033,6 +2033,7 @@ void Simulation::init_can_move()
 		}
 	}
 	//a list of lots of things PHOT can move through
+	// TODO: replace with property
 	for (movingType = 0; movingType < PT_NUM; movingType++)
 	{
 		if (movingType == PT_GLAS || movingType == PT_PHOT || movingType == PT_FILT || movingType == PT_INVIS
@@ -2724,14 +2725,11 @@ int Simulation::create_part(int p, int x, int y, int tv)
 			int drawOn = pmap[y][x]&0xFF;
 			if ((
 				(drawOn == PT_STOR && !(elements[t].Properties&TYPE_SOLID)) ||
-				drawOn==PT_CLNE ||
-				drawOn==PT_BCLN ||
-				drawOn==PT_CONV ||
+				// keep special cases though. 
+				elements[drawOn].Properties & PROP_DRAWONCTYPE ||
 				(drawOn==PT_PCLN&&t!=PT_PSCN&&t!=PT_NSCN) ||
 				(drawOn==PT_PBCN&&t!=PT_PSCN&&t!=PT_NSCN)
-			)&&(
-				t != PT_CLNE && t != PT_PCLN && t != PT_BCLN && t != PT_STKM && t != PT_STKM2 && t != PT_PBCN && t != PT_STOR && t != PT_FIGH && t != PT_CONV)
-			)
+			)&&(!(elements[t].Properties & PROP_NODRAWONCTYPE)))
 			{
 				parts[pmap[y][x]>>8].ctype = t;
 				if (t == PT_LIFE && v < NGOL && drawOn != PT_STOR) parts[pmap[y][x]>>8].tmp = v;
