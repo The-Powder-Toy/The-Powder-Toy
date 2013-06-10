@@ -1820,7 +1820,7 @@ char * GameSave::serialiseOPS(int & dataLength)
 				{
 					fieldDesc |= 1 << 1;
 					partsData[partsDataLen++] = particles[i].life;
-					if(particles[i].life > 255)
+					if(particles[i].life & 0xFF00)
 					{
 						fieldDesc |= 1 << 2;
 						partsData[partsDataLen++] = particles[i].life >> 8;
@@ -1832,11 +1832,11 @@ char * GameSave::serialiseOPS(int & dataLength)
 				{
 					fieldDesc |= 1 << 3;
 					partsData[partsDataLen++] = particles[i].tmp;
-					if(particles[i].tmp > 255)
+					if(particles[i].tmp & 0xFFFFFF00)
 					{
 						fieldDesc |= 1 << 4;
 						partsData[partsDataLen++] = particles[i].tmp >> 8;
-						if(particles[i].tmp > 65535)
+						if(particles[i].tmp & 0xFFFF0000)
 						{
 							fieldDesc |= 1 << 12;
 							partsData[partsDataLen++] = (particles[i].tmp&0xFF000000)>>24;
@@ -1850,7 +1850,7 @@ char * GameSave::serialiseOPS(int & dataLength)
 				{
 					fieldDesc |= 1 << 5;
 					partsData[partsDataLen++] = particles[i].ctype;
-					if(particles[i].ctype > 255)
+					if(particles[i].ctype & 0xFFFFFF00)
 					{
 						fieldDesc |= 1 << 9;
 						partsData[partsDataLen++] = (particles[i].ctype&0xFF000000)>>24;
@@ -1894,7 +1894,7 @@ char * GameSave::serialiseOPS(int & dataLength)
 				{
 					fieldDesc |= 1 << 10;
 					partsData[partsDataLen++] = particles[i].tmp2;
-					if(particles[i].tmp2 > 255)
+					if(particles[i].tmp2 & 0xFF00)
 					{
 						fieldDesc |= 1 << 11;
 						partsData[partsDataLen++] = particles[i].tmp2 >> 8;
