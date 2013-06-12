@@ -479,9 +479,9 @@ void LuaScriptInterface::initSimulationAPI()
 		{"gravityMode", simulation_gravityMode},
 		{"airMode", simulation_airMode},
 		{"waterEqualisation", simulation_waterEqualisation},
-		{"waterEqualization", simulation_waterEqualisation},
 		{"ambientAirTemp", simulation_ambientAirTemp},
 		{"elementCount", simulation_elementCount},
+		{"parts", simulation_parts},
 		{NULL, NULL}
 	};
 	luaL_register(l, "simulation", simulationAPIMethods);
@@ -1502,6 +1502,28 @@ int LuaScriptInterface::simulation_elementCount(lua_State * l)
 		return luaL_error(l, "Invalid element ID (%d)", element);
 
 	lua_pushnumber(l, luacon_sim->elementCount[element]);
+	return 1;
+}
+
+int PartsClosure(lua_State * l)
+{
+	int i = lua_tointeger(l, lua_upvalueindex(1));
+	i++;
+	while(!luacon_sim->parts[i].type)
+		if(i>=NPART)
+			return 0;
+		else
+			i++;
+	lua_pushnumber(l, i);
+	lua_replace(l, lua_upvalueindex(1));
+	lua_pushnumber(l, i);
+	return 1;
+}
+
+int LuaScriptInterface::simulation_parts(lua_State *l)
+{
+	lua_pushnumber(l, -1);
+	lua_pushcclosure(l, PartsClosure, 1);
 	return 1;
 }
 
