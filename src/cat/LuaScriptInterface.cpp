@@ -482,6 +482,7 @@ void LuaScriptInterface::initSimulationAPI()
 		{"ambientAirTemp", simulation_ambientAirTemp},
 		{"elementCount", simulation_elementCount},
 		{"parts", simulation_parts},
+		{"pmap", simulation_pmap},
 		{NULL, NULL}
 	};
 	luaL_register(l, "simulation", simulationAPIMethods);
@@ -1535,10 +1536,24 @@ int PartsClosure(lua_State * l)
 	return 1;
 }
 
-int LuaScriptInterface::simulation_parts(lua_State *l)
+int LuaScriptInterface::simulation_parts(lua_State * l)
 {
 	lua_pushnumber(l, -1);
 	lua_pushcclosure(l, PartsClosure, 1);
+	return 1;
+}
+
+int LuaScriptInterface::simulation_pmap(lua_State * l)
+{
+	int x=luaL_checkint(l, 1);
+	int y=luaL_checkint(l, 2);
+	int r;
+	if(x < 0 || x >= XRES || y < 0 || y >= YRES)
+		return luaL_error(l, "coordinates out of range (%d,%d)", x, y);
+	r=luacon_sim->pmap[y][x];
+	if(!r&0xFF)
+		return 0;
+	lua_pushnumber(l, r>>8);
 	return 1;
 }
 
