@@ -105,16 +105,16 @@ int Element_BIZR::graphics(GRAPHICS_FUNC_ARGS)
 	}
 	for (x=0; x<12; x++)
 		*colg += (cpart->ctype >> (x+9))  & 1;
-	x = 624/(*colr+*colg+*colb+1);
-	*colr *= x;
-	*colg *= x;
-	*colb *= x;
+	x = *colr+*colg+*colb+1;
+	*colr = *colr*624/x;
+	*colg = *colg*624/x;
+	*colb = *colb*624/x;
 	if(fabs(cpart->vx)+fabs(cpart->vy)>0)
 	{
 		*firea = 255;
-		*fireg = *colg/5 * fabs(cpart->vx)+fabs(cpart->vy);
-		*fireb = *colb/5 * fabs(cpart->vx)+fabs(cpart->vy);
-		*firer = *colr/5 * fabs(cpart->vx)+fabs(cpart->vy);
+		*fireg = *colg/5 * (fabs(cpart->vx)+fabs(cpart->vy));
+		*fireb = *colb/5 * (fabs(cpart->vx)+fabs(cpart->vy));
+		*firer = *colr/5 * (fabs(cpart->vx)+fabs(cpart->vy));
 		*pixel_mode |= FIRE_ADD;
 	}
 	*pixel_mode |= PMODE_BLUR;
