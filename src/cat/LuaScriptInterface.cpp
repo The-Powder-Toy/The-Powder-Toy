@@ -479,9 +479,10 @@ void LuaScriptInterface::initSimulationAPI()
 		{"gravityMode", simulation_gravityMode},
 		{"airMode", simulation_airMode},
 		{"waterEqualisation", simulation_waterEqualisation},
-		{"waterEqualization", simulation_waterEqualisation},
 		{"ambientAirTemp", simulation_ambientAirTemp},
 		{"elementCount", simulation_elementCount},
+		{"parts", simulation_parts},
+		{"pmap", simulation_pmap},
 		{NULL, NULL}
 	};
 	luaL_register(l, "simulation", simulationAPIMethods);
@@ -555,41 +556,55 @@ void LuaScriptInterface::set_map(int x, int y, int width, int height, float valu
 		}
 }
 
+int NeighboursClosure(lua_State * l)
+{
+	int rx=lua_tointeger(l, lua_upvalueindex(1));
+	int ry=lua_tointeger(l, lua_upvalueindex(2));
+	int sx=lua_tointeger(l, lua_upvalueindex(3));
+	int sy=lua_tointeger(l, lua_upvalueindex(4));
+	int x=lua_tointeger(l, lua_upvalueindex(5));
+	int y=lua_tointeger(l, lua_upvalueindex(6));
+	int i;
+	do
+	{
+		x++;
+		if(x>rx)
+		{
+			x=-rx;
+			y++;
+			if(y>ry)
+				return 0;
+		}
+		if(sx+x<0 || sy+y<0 || sx+x>=XRES*CELL || sy+y>=YRES*CELL)
+		{
+			continue;
+		}
+		i=luacon_sim->pmap[y+sx][x+sx];
+	} while(!i&0xFF);
+	lua_pushnumber(l, x);
+	lua_replace(l, lua_upvalueindex(5));
+	lua_pushnumber(l, y);
+	lua_replace(l, lua_upvalueindex(6));
+	lua_pushnumber(l, i>>8);
+	lua_pushnumber(l, x+sx);
+	lua_pushnumber(l, y+sy);
+	return 3;
+}
+
 int LuaScriptInterface::simulation_partNeighbours(lua_State * l)
 {
-	int ids = 0;
-	if(lua_gettop(l) == 4)
-	{
-		int x = lua_tointeger(l, 1), y = lua_tointeger(l, 2), r = lua_tointeger(l, 3), t = lua_tointeger(l, 4), rx, ry, n;
-		for (rx = -r; rx <= r; rx++)
-			for (ry = -r; ry <= r; ry++)
-				if (x+rx >= 0 && y+ry >= 0 && x+rx < XRES && y+ry < YRES && (rx || ry))
-				{
-					n = luacon_sim->pmap[y+ry][x+rx];
-					if(n && (n&0xFF) == t)
-					{
-						ids++;
-						lua_pushinteger(l, n>>8);
-					}
-				}
-
-	}
-	else
-	{
-		int x = lua_tointeger(l, 1), y = lua_tointeger(l, 2), r = lua_tointeger(l, 3), rx, ry, n;
-		for (rx = -r; rx <= r; rx++)
-			for (ry = -r; ry <= r; ry++)
-				if (x+rx >= 0 && y+ry >= 0 && x+rx < XRES && y+ry < YRES && (rx || ry))
-				{
-					n = luacon_sim->pmap[y+ry][x+rx];
-					if(n)
-					{
-						ids++;
-						lua_pushinteger(l, n>>8);
-					}
-				}
-	}
-	return ids;
+	int x=luaL_checkint(l, 1);
+	int y=luaL_checkint(l, 2);
+	int rx=luaL_optint(l, 3, 2);
+	int ry=luaL_optint(l, 4, 2);
+	lua_pushnumber(l, rx);
+	lua_pushnumber(l, ry);
+	lua_pushnumber(l, x);
+	lua_pushnumber(l, y);
+	lua_pushnumber(l, -rx-1);
+	lua_pushnumber(l, -ry);
+	lua_pushcclosure(l, NeighboursClosure, 6);
+	return 1;
 }
 
 int LuaScriptInterface::simulation_partChangeType(lua_State * l)
@@ -1502,6 +1517,43 @@ int LuaScriptInterface::simulation_elementCount(lua_State * l)
 		return luaL_error(l, "Invalid element ID (%d)", element);
 
 	lua_pushnumber(l, luacon_sim->elementCount[element]);
+	return 1;
+}
+
+int PartsClosure(lua_State * l)
+{
+	int i = lua_tointeger(l, lua_upvalueindex(1));
+	do
+	{
+		if(i>=NPART)
+			return 0;
+		else
+			i++;
+	} while(!luacon_sim->parts[i].type);
+	lua_pushnumber(l, i);
+	lua_replace(l, lua_upvalueindex(1));
+	lua_pushnumber(l, i);
+	return 1;
+}
+
+int LuaScriptInterface::simulation_parts(lua_State * l)
+{
+	lua_pushnumber(l, -1);
+	lua_pushcclosure(l, PartsClosure, 1);
+	return 1;
+}
+
+int LuaScriptInterface::simulation_pmap(lua_State * l)
+{
+	int x=luaL_checkint(l, 1);
+	int y=luaL_checkint(l, 2);
+	int r;
+	if(x < 0 || x >= XRES || y < 0 || y >= YRES)
+		return luaL_error(l, "coordinates out of range (%d,%d)", x, y);
+	r=luacon_sim->pmap[y][x];
+	if(!r&0xFF)
+		return 0;
+	lua_pushnumber(l, r>>8);
 	return 1;
 }
 
