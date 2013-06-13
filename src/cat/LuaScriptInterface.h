@@ -101,6 +101,9 @@ class LuaScriptInterface: public CommandInterface
 	static int simulation_waterEqualisation(lua_State * l);
 	static int simulation_ambientAirTemp(lua_State * l);
 	static int simulation_elementCount(lua_State * l);
+	static int simulation_parts(lua_State * l);
+	static int simulation_pmap(lua_State * l);
+	static int simulation_neighbours(lua_State * l);
 
 	//Renderer
 	void initRendererAPI();

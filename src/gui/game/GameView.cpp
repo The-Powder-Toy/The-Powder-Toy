@@ -1141,7 +1141,6 @@ void GameView::OnMouseUp(int x, int y, unsigned button)
 			if(drawMode == DrawPoints)
 			{
 				c->ToolClick(toolIndex, c->PointTranslate(ui::Point(x, y)));
-				//pointQueue.push(ui::Point(x, y));
 			}
 			if(drawModeReset)
 			{
@@ -1209,10 +1208,6 @@ void GameView::OnMouseWheel(int x, int y, int d)
 	else
 	{
 		c->AdjustBrushSize(d, false, shiftBehaviour, ctrlBehaviour);
-		if(isMouseDown)
-		{
-			pointQueue.push(ui::Point(c->PointTranslate(ui::Point(x, y))));
-		}
 	}
 }
 
@@ -1522,7 +1517,7 @@ void GameView::OnTick(float dt)
 		c->SetZoomPosition(currentMouse);
 	if(drawMode == DrawPoints)
 	{
-		if(isMouseDown)
+		if(isMouseDown && pointQueue.empty())
 		{
 			pointQueue.push(ui::Point(c->PointTranslate(currentMouse)));
 		}

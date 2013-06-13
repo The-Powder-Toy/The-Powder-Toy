@@ -5,6 +5,7 @@
 #include "gui/interface/Checkbox.h"
 #include "client/requestbroker/RequestBroker.h"
 #include "gui/dialogues/ErrorMessage.h"
+#include "gui/dialogues/SaveIDMessage.h"
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/dialogues/InformationMessage.h"
 #include "client/Client.h"
@@ -255,6 +256,7 @@ void ServerSaveActivity::saveUpload()
 	}
 	else if(callback)
 	{
+		new SaveIDMessage(save.GetID());
 		callback->SaveUploaded(save);
 	}
 }

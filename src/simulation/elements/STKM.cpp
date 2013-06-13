@@ -31,7 +31,7 @@ Element_STKM::Element_STKM()
 	Description = "Stickman. Don't kill him! Control with the arrow keys.";
 	
 	State = ST_NONE;
-	Properties = 0;
+	Properties = PROP_NOCTYPEDRAW;
 	
 	LowPressure = IPL;
 	LowPressureTransition = NT;

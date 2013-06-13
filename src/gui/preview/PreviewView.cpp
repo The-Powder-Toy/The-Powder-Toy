@@ -189,44 +189,31 @@ PreviewView::PreviewView():
 	viewsLabel->Appearance.HorizontalAlign = ui::Appearance::AlignRight;
 	viewsLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(viewsLabel);
-
-
-	pageInfo = new ui::Label(ui::Point((XRES/2) + 5, Size.Y+1), ui::Point(Size.X-((XRES/2) + 10), 15), "Page 1 of 1");
-	pageInfo->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;	authorDateLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-
-	saveIDTextbox = new ui::Textbox(ui::Point((XRES/2)-55, Size.Y-40), ui::Point(50, 16), "0000000");
-	saveIDTextbox->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
-	saveIDTextbox->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-	saveIDTextbox->ReadOnly = true;
-	AddComponent(saveIDTextbox);
-
-	class CopyIDAction: public ui::ButtonAction
-	{
-		PreviewView * v;
-	public:
-		CopyIDAction(PreviewView * v_){ v = v_; }
-		virtual void ActionCallback(ui::Button * sender)
-		{
-			ClipboardPush((char*)v->saveIDTextbox->GetText().c_str());
-		}
-	};
-
-	ui::Button * tempButton = new ui::Button(ui::Point((XRES/2)-130, Size.Y-40), ui::Point(70, 16), "Copy Save ID");
-	tempButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
-	tempButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-	tempButton->SetActionCallback(new CopyIDAction(this));
-	AddComponent(tempButton);
+	
+	pageInfo = new ui::Label(ui::Point((XRES/2) + 85, Size.Y+1), ui::Point(70, 16), "Page 1 of 1");
+	pageInfo->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
+	AddComponent(pageInfo);
 
 	commentsPanel = new ui::ScrollPanel(ui::Point((XRES/2)+1, 1), ui::Point((Size.X-(XRES/2))-2, Size.Y-commentBoxHeight));
 	AddComponent(commentsPanel);
-
-	AddComponent(pageInfo);
 }
 
 void PreviewView::AttachController(PreviewController * controller)
 {
 	c = controller;
-	saveIDTextbox->SetText(format::NumberToString<int>(c->SaveID()));
+
+	int textWidth = Graphics::textwidth("Click the box below to copy the save ID");
+	saveIDLabel = new ui::Label(ui::Point((Size.X-textWidth-20)/2, Size.Y+5), ui::Point(textWidth+20, 16), "Click the box below to copy the save ID");
+	saveIDLabel->SetTextColour(ui::Colour(150, 150, 150));
+	saveIDLabel->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
+	AddComponent(saveIDLabel);
+
+	textWidth = Graphics::textwidth(format::NumberToString<int>(c->SaveID()).c_str());
+	saveIDLabel2 = new ui::Label(ui::Point((Size.X-textWidth-20)/2-37, Size.Y+22), ui::Point(40, 16), "Save ID:");
+	AddComponent(saveIDLabel2);
+	
+	saveIDButton = new ui::CopyTextButton(ui::Point((Size.X-textWidth-10)/2, Size.Y+20), ui::Point(textWidth+10, 18), format::NumberToString<int>(c->SaveID()), saveIDLabel);
+	AddComponent(saveIDButton);
 }
 
 void PreviewView::commentBoxAutoHeight()

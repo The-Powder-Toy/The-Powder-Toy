@@ -444,7 +444,6 @@ void GameController::DrawPoints(int toolSelection, queue<ui::Point> & pointQueue
 		{
 			while(!pointQueue.empty())
 			{
-				//delete pointQueue.front();
 				pointQueue.pop();
 			}
 		}
@@ -455,19 +454,22 @@ void GameController::DrawPoints(int toolSelection, queue<ui::Point> & pointQueue
 	if(!pointQueue.empty())
 	{
 		ui::Point sPoint(0, 0);
+		int size = pointQueue.size();
 		bool first = true;
 		while(!pointQueue.empty())
 		{
 			ui::Point fPoint = pointQueue.front();
-			//delete pointQueue.front();
 			pointQueue.pop();
-			if(!first)
+			if(size > 1)
 			{
-				activeTool->DrawLine(sim, cBrush, sPoint, fPoint, true);
+				if (!first)
+				{
+					activeTool->DrawLine(sim, cBrush, sPoint, fPoint, true);
+				}
+				first = false;
 			}
 			else
 			{
-				first = false;
 				activeTool->Draw(sim, cBrush, fPoint);
 			}
 			sPoint = fPoint;

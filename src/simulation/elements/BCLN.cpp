@@ -31,7 +31,7 @@ Element_BCLN::Element_BCLN()
 	Description = "Breakable Clone.";
 	
 	State = ST_NONE;
-	Properties = TYPE_SOLID|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
+	Properties = TYPE_SOLID|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC|PROP_DRAWONCTYPE|PROP_NOCTYPEDRAW;
 	
 	LowPressure = IPL;
 	LowPressureTransition = NT;

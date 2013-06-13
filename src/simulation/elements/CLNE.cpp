@@ -31,7 +31,7 @@ Element_CLNE::Element_CLNE()
 	Description = "Solid. Duplicates any particles it touches.";
 	
 	State = ST_SOLID;
-	Properties = TYPE_SOLID;
+	Properties = TYPE_SOLID|PROP_DRAWONCTYPE|PROP_NOCTYPEDRAW;
 	
 	LowPressure = IPL;
 	LowPressureTransition = NT;

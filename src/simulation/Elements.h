@@ -10,25 +10,27 @@
 #define O_MAX_TEMP 3500
 #define O_MIN_TEMP -273
 
-#define TYPE_PART			0x00001 //1 Powders
-#define TYPE_LIQUID			0x00002 //2 Liquids
-#define TYPE_SOLID			0x00004 //4 Solids
-#define TYPE_GAS			0x00008 //8 Gasses (Includes plasma)
-#define TYPE_ENERGY			0x00010 //16 Energy (Thunder, Light, Neutrons etc.)
-#define PROP_CONDUCTS		0x00020 //32 Conducts electricity
-#define PROP_BLACK			0x00040 //64 Absorbs Photons (not currently implemented or used, a photwl attribute might be better)
-#define PROP_NEUTPENETRATE	0x00080 //128 Penetrated by neutrons
-#define PROP_NEUTABSORB		0x00100 //256 Absorbs neutrons, reflect is default
-#define PROP_NEUTPASS		0x00200 //512 Neutrons pass through, such as with glass
-#define PROP_DEADLY			0x00400 //1024 Is deadly for stickman
-#define PROP_HOT_GLOW		0x00800 //2048 Hot Metal Glow
-#define PROP_LIFE			0x01000 //4096 Is a GoL type
-#define PROP_RADIOACTIVE	0x02000 //8192 Radioactive
-#define PROP_LIFE_DEC		0x04000 //2^14 Life decreases by one every frame if > zero
-#define PROP_LIFE_KILL		0x08000 //2^15 Kill when life value is <= zero
-#define PROP_LIFE_KILL_DEC	0x10000 //2^16 Kill when life value is decremented to <= zero
-#define PROP_SPARKSETTLE	0x20000	//2^17 Allow Sparks/Embers to settle
-#define PROP_NOAMBHEAT		0x40000 //2^18 Don't transfer or receive heat from ambient heat.
+#define TYPE_PART			0x00001  //1 Powders
+#define TYPE_LIQUID			0x00002  //2 Liquids
+#define TYPE_SOLID			0x00004  //4 Solids
+#define TYPE_GAS			0x00008  //8 Gasses (Includes plasma)
+#define TYPE_ENERGY			0x00010  //16 Energy (Thunder, Light, Neutrons etc.)
+#define PROP_CONDUCTS		0x00020  //32 Conducts electricity
+#define PROP_BLACK			0x00040  //64 Absorbs Photons (not currently implemented or used, a photwl attribute might be better)
+#define PROP_NEUTPENETRATE	0x00080  //128 Penetrated by neutrons
+#define PROP_NEUTABSORB		0x00100  //256 Absorbs neutrons, reflect is default
+#define PROP_NEUTPASS		0x00200  //512 Neutrons pass through, such as with glass
+#define PROP_DEADLY			0x00400  //1024 Is deadly for stickman
+#define PROP_HOT_GLOW		0x00800  //2048 Hot Metal Glow
+#define PROP_LIFE			0x01000  //4096 Is a GoL type
+#define PROP_RADIOACTIVE	0x02000  //8192 Radioactive
+#define PROP_LIFE_DEC		0x04000  //2^14 Life decreases by one every frame if > zero
+#define PROP_LIFE_KILL		0x08000  //2^15 Kill when life value is <= zero
+#define PROP_LIFE_KILL_DEC	0x10000  //2^16 Kill when life value is decremented to <= zero
+#define PROP_SPARKSETTLE	0x20000  //2^17 Allow Sparks/Embers to settle
+#define PROP_NOAMBHEAT		0x40000  //2^18 Don't transfer or receive heat from ambient heat.
+#define PROP_DRAWONCTYPE	0x80000  //2^19 Set its ctype to another element if the element is drawn upon it (like what CLNE does)
+#define PROP_NOCTYPEDRAW	0x100000 // 2^20 When this element is drawn upon with, do not set ctype (like BCLN for CLNE)
 
 #define FLAG_STAGNANT	0x1
 #define FLAG_SKIPMOVE  0x2 // skip movement for one frame, only implemented for PHOT
