@@ -3854,13 +3854,20 @@ void Simulation::update_particles_i(int start, int inc)
 						}
 						else if (t == PT_BRMT)
 						{
-							if (parts[i].ctype == PT_TUNG && ctemph <= 3695.0)
-								s = 0;
-							else
+							if (parts[i].ctype == PT_TUNG)
 							{
-								t = PT_LAVA;
-								parts[i].type = PT_TUNG;
+								if (ctemph <= 3695.0)
+									s = 0;
+								else
+								{
+									t = PT_LAVA;
+									parts[i].type = PT_TUNG;
+								}
 							}
+							else if (ctemph >= elements[t].HighTemperature)
+								t = PT_LAVA;
+							else
+								s = 0;
 						}
 						else
 							s = 0;

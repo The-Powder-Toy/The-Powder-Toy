@@ -11,7 +11,7 @@
 *.lua
 stdout.txt
 stderr.txt
-build/*
+build*/*
 stamps/*
 Saves/*
 generated/*
