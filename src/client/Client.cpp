@@ -1356,7 +1356,6 @@ LoginStatus Client::Login(std::string username, std::string password, User & use
 RequestStatus Client::DeleteSave(int saveID)
 {
 	lastError = "";
-	std::vector<std::string> * tags = NULL;
 	std::stringstream urlStream;
 	char * data = NULL;
 	int dataStatus, dataLength;
@@ -1408,11 +1407,10 @@ failure:
 RequestStatus Client::AddComment(int saveID, std::string comment)
 {
 	lastError = "";
-	std::vector<std::string> * tags = NULL;
 	std::stringstream urlStream;
 	char * data = NULL;
 	int dataStatus, dataLength;
-	urlStream << "http://" << SERVER << "/Browse/Comments.json?ID=" << saveID << "&Key=" << authUser.SessionKey;
+	urlStream << "http://" << SERVER << "/Browse/Comments.json?ID=" << saveID;
 	if(authUser.ID)
 	{
 		std::stringstream userIDStream;
@@ -1469,7 +1467,6 @@ failure:
 RequestStatus Client::FavouriteSave(int saveID, bool favourite)
 {
 	lastError = "";
-	std::vector<std::string> * tags = NULL;
 	std::stringstream urlStream;
 	char * data = NULL;
 	int dataStatus, dataLength;
@@ -1526,7 +1523,6 @@ failure:
 RequestStatus Client::ReportSave(int saveID, std::string message)
 {
 	lastError = "";
-	std::vector<std::string> * tags = NULL;
 	std::stringstream urlStream;
 	char * data = NULL;
 	int dataStatus, dataLength;
@@ -1585,7 +1581,6 @@ failure:
 RequestStatus Client::UnpublishSave(int saveID)
 {
 	lastError = "";
-	std::vector<std::string> * tags = NULL;
 	std::stringstream urlStream;
 	char * data = NULL;
 	int dataStatus, dataLength;

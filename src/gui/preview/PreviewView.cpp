@@ -427,7 +427,6 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 
 			if(savePreview && savePreview->Buffer && !(savePreview->Width == XRES/2 && savePreview->Width == YRES/2))
 			{
-				int newSizeX, newSizeY;
 				pixel * oldData = savePreview->Buffer;
 				float factorX = ((float)XRES/2)/((float)savePreview->Width);
 				float factorY = ((float)YRES/2)/((float)savePreview->Height);

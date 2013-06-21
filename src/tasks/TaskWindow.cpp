@@ -40,12 +40,14 @@ void TaskWindow::NotifyStatus(Task * task)
 void TaskWindow::NotifyError(Task * task)
 {
 	new ErrorMessage("Error", task->GetError());
+	done = true;
 }
 
 void TaskWindow::NotifyDone(Task * task)
 {
 	if(closeOnDone)
 		Exit();
+	done = true;
 }
 
 void TaskWindow::Exit()
@@ -78,6 +80,8 @@ void TaskWindow::OnTick(float dt)
 	if(intermediatePos>100.0f)
 		intermediatePos = 0.0f;
 	task->Poll();
+	if (done)
+		Exit();
 }
 
 void TaskWindow::OnDraw()

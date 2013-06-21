@@ -141,10 +141,17 @@ void PreviewController::FavouriteSave()
 {
 	if(previewModel->GetSave() && Client::Ref().GetAuthUser().ID)
 	{
-		if(previewModel->GetSave()->Favourite)
-			previewModel->SetFavourite(false);
-		else
-			previewModel->SetFavourite(true);
+		try
+		{
+			if(previewModel->GetSave()->Favourite)
+				previewModel->SetFavourite(false);
+			else
+				previewModel->SetFavourite(true);
+		}
+		catch (PreviewModelException & e)
+		{
+			new ErrorMessage("Error", e.what());
+		}
 	}
 }
 

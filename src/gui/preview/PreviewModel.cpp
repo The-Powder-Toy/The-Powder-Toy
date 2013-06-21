@@ -99,8 +99,12 @@ void PreviewModel::SetFavourite(bool favourite)
 {
 	if(save)
 	{
-		Client::Ref().FavouriteSave(save->id, favourite);
-		save->Favourite = favourite;
+		if (Client::Ref().FavouriteSave(save->id, favourite) == RequestOkay)
+			save->Favourite = favourite;
+		else if (favourite)
+			throw PreviewModelException("Error, could not fav. the save, are you logged in?");
+		else
+			throw PreviewModelException("Error, could not unfav. the save, are you logged in?");
 		notifySaveChanged();
 	}
 }
