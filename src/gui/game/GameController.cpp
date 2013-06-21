@@ -271,6 +271,7 @@ void GameController::PlaceSave(ui::Point position)
 	{
 		gameModel->GetSimulation()->Load(position.X, position.Y, gameModel->GetPlaceSave());
 		gameModel->SetPaused(gameModel->GetPlaceSave()->paused | gameModel->GetPaused());
+		HistorySnapshot();
 	}
 }
 

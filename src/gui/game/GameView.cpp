@@ -953,6 +953,7 @@ void GameView::NotifySaveChanged(GameModel * sender)
 		tagSimulationButton->SetText("[no tags set]");
 		currentSaveType = 0;
 	}
+	c->HistorySnapshot();
 }
 
 void GameView::NotifyBrushChanged(GameModel * sender)
