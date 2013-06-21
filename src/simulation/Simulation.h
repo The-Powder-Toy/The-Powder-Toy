@@ -120,7 +120,7 @@ public:
 	int Load(int x, int y, GameSave * save);
 	GameSave * Save();
 	GameSave * Save(int x1, int y1, int x2, int y2);
-	SimulationSample Get(int x, int y);
+	SimulationSample GetSample(int x, int y);
 
 	Snapshot * CreateSnapshot();
 	void Restore(const Snapshot & snap);

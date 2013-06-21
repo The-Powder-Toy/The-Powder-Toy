@@ -478,36 +478,41 @@ int Simulation::flood_prop(int x, int y, size_t propoffset, void * propvalue, St
 	return 0;
 }
 
-SimulationSample Simulation::Get(int x, int y)
+SimulationSample Simulation::GetSample(int x, int y)
 {
 	SimulationSample sample;
 	sample.PositionX = x;
 	sample.PositionY = y;
-	if (photons[y][x])
+	if (x >= 0 && x < XRES && y >= 0 && y < YRES)
 	{
-		sample.particle = parts[photons[y][x]>>8];
-		sample.ParticleID = photons[y][x]>>8;
-	}
-	else if (pmap[y][x])
-	{
-		sample.particle = parts[pmap[y][x]>>8];
-		sample.ParticleID = pmap[y][x]>>8;
-	}
-	if (bmap[y/CELL][x/CELL])
-	{
-		sample.WallType = bmap[y/CELL][x/CELL];
-	}
-	sample.AirPressure = pv[y/CELL][x/CELL];
-	sample.AirTemperature = hv[y/CELL][x/CELL];
-	sample.AirVelocityX = vx[y/CELL][x/CELL];
-	sample.AirVelocityY = vy[y/CELL][x/CELL];
+		if (photons[y][x])
+		{
+			sample.particle = parts[photons[y][x]>>8];
+			sample.ParticleID = photons[y][x]>>8;
+		}
+		else if (pmap[y][x])
+		{
+			sample.particle = parts[pmap[y][x]>>8];
+			sample.ParticleID = pmap[y][x]>>8;
+		}
+		if (bmap[y/CELL][x/CELL])
+		{
+			sample.WallType = bmap[y/CELL][x/CELL];
+		}
+		sample.AirPressure = pv[y/CELL][x/CELL];
+		sample.AirTemperature = hv[y/CELL][x/CELL];
+		sample.AirVelocityX = vx[y/CELL][x/CELL];
+		sample.AirVelocityY = vy[y/CELL][x/CELL];
 
-	if(grav->ngrav_enable)
-	{
-		sample.Gravity = gravp[(y/CELL)*(XRES/CELL)+(x/CELL)];
-		sample.GravityVelocityX = gravx[(y/CELL)*(XRES/CELL)+(x/CELL)];
-		sample.GravityVelocityY = gravy[(y/CELL)*(XRES/CELL)+(x/CELL)];
+		if(grav->ngrav_enable)
+		{
+			sample.Gravity = gravp[(y/CELL)*(XRES/CELL)+(x/CELL)];
+			sample.GravityVelocityX = gravx[(y/CELL)*(XRES/CELL)+(x/CELL)];
+			sample.GravityVelocityY = gravy[(y/CELL)*(XRES/CELL)+(x/CELL)];
+		}
 	}
+	else
+		sample.isMouseInSim = false;
 
 	sample.NumParts = NUM_PARTS;
 	return sample;

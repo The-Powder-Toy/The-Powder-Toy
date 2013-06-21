@@ -834,12 +834,11 @@ void GameController::LoadRenderPreset(int presetNum)
 void GameController::Update()
 {
 	ui::Point pos = gameView->GetMousePosition();
-	if(pos.X >= 0 && pos.Y >= 0 && pos.X < XRES && pos.Y < YRES)
-	{
-		gameModel->GetRenderer()->mousePosX = pos.X;
-		gameModel->GetRenderer()->mousePosY = pos.Y;
-		gameView->SetSample(gameModel->GetSimulation()->Get(pos.X, pos.Y));
-	}
+	gameModel->GetRenderer()->mousePos = PointTranslate(pos);
+	if (pos.X < XRES && pos.Y < YRES)
+		gameView->SetSample(gameModel->GetSimulation()->GetSample(PointTranslate(pos).X, PointTranslate(pos).Y));
+	else
+		gameView->SetSample(gameModel->GetSimulation()->GetSample(pos.X, pos.Y));
 
 	gameModel->GetSimulation()->update_particles();
 	if(renderOptions && renderOptions->HasExited)
@@ -1353,10 +1352,15 @@ void GameController::ReloadSim()
 	}
 }
 
-std::string GameController::ElementResolve(int type)
+std::string GameController::ElementResolve(int type, int ctype)
 {
-	if(gameModel && gameModel->GetSimulation() && gameModel->GetSimulation()->elements && type >= 0 && type < PT_NUM)
-		return std::string(gameModel->GetSimulation()->elements[type].Name);
+	if(gameModel && gameModel->GetSimulation())
+	{
+		if (type == PT_LIFE && ctype >= 0 && ctype < NGOL && gameModel->GetSimulation()->gmenu)
+			return gameModel->GetSimulation()->gmenu[ctype].name;
+		else if (type >= 0 && type < PT_NUM && gameModel->GetSimulation()->elements)
+			return std::string(gameModel->GetSimulation()->elements[type].Name);
+	}
 	else
 		return "";
 }

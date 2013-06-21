@@ -135,7 +135,7 @@ public:
 	void TransformSave(matrix2d transform);
 	ui::Point PointTranslate(ui::Point point);
 	ui::Point NormaliseBlockCoord(ui::Point point);
-	std::string ElementResolve(int type);
+	std::string ElementResolve(int type, int ctype);
 	std::string WallName(int type);
 
 	void ResetAir();

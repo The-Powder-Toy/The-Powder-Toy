@@ -1381,10 +1381,10 @@ void Renderer::render_parts()
 					else
 						continue;
 
-					if (mousePosX>(nx-3) && mousePosX<(nx+3) && mousePosY<(ny+3) && mousePosY>(ny-3)) //If mouse is in the head
+					if (mousePos.X>(nx-3) && mousePos.X<(nx+3) && mousePos.Y<(ny+3) && mousePos.Y>(ny-3)) //If mouse is in the head
 					{
 						sprintf(buff, "%3d", sim->parts[i].life);  //Show HP
-						drawtext(mousePosX-8-2*(sim->parts[i].life<100)-2*(sim->parts[i].life<10), mousePosY-12, buff, 255, 255, 255, 255);
+						drawtext(mousePos.X-8-2*(sim->parts[i].life<100)-2*(sim->parts[i].life<10), mousePos.Y-12, buff, 255, 255, 255, 255);
 					}
 
 					if (colour_mode!=COLOUR_HEAT)
@@ -1890,7 +1890,7 @@ void Renderer::render_parts()
 				}
 				if (pixel_mode & EFFECT_DBGLINES)
 				{
-					if (mousePosX == nx && mousePosY == ny && debugLines)//draw lines connecting wifi/portal channels
+					if (mousePos.X == nx && mousePos.Y == ny && debugLines)//draw lines connecting wifi/portal channels
 					{
 						int z;
 						int type = parts[i].type;
@@ -2407,8 +2407,7 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 	decorations_enable(1),
 	gravityFieldEnabled(false),
 	gravityZonesEnabled(false),
-	mousePosX(-1),
-	mousePosY(-1),
+	mousePos(0, 0),
 	display_mode(0),
 	render_mode(0),
 	colour_mode(0),

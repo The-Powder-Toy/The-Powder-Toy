@@ -22,8 +22,9 @@ public:
 	float GravityVelocityY;
 
 	int NumParts;
+	bool isMouseInSim;
 
-	SimulationSample() : PositionX(0), PositionY(0), ParticleID(0), particle(), AirPressure(0), AirVelocityX(0), AirVelocityY(0), WallType(0), Gravity(0), GravityVelocityX(0), GravityVelocityY(0), AirTemperature(0), NumParts(0) {}
+	SimulationSample() : PositionX(0), PositionY(0), ParticleID(0), particle(), AirPressure(0), AirVelocityX(0), AirVelocityY(0), WallType(0), Gravity(0), GravityVelocityX(0), GravityVelocityY(0), AirTemperature(0), NumParts(0), isMouseInSim(true) {}
 };
 
 #endif
