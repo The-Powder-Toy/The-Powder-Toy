@@ -5,7 +5,7 @@
 #include <time.h>
 #include "SDL.h"
 #ifdef WIN
-#define _WIN32_WINNT 0x0501	//Necessary for some macros and functions
+#define _WIN32_WINNT 0x0501	//Necessary for some macros and functions, tells windows.h to include functions only available in Windows XP or later
 #include "SDL_syswm.h"
 #include <direct.h>
 #endif

@@ -1,6 +1,6 @@
 
 #if defined(USE_SDL)
-#include "SDL/SDL.h"
+#include "SDL.h"
 #define KEY_UP SDLK_UP
 #define KEY_DOWN SDLK_DOWN
 #define KEY_RIGHT SDLK_RIGHT
