@@ -136,7 +136,7 @@ if not GetOption("macosx"):
 # if sdl-dir is set check if we can find the sdl header there, if we can't just pass the header path to the compiler.
 
 	if(GetOption("sdl-dir")):
-		if not conf.CheckCHeader(GetOption("sdl-dir") + '/SDL.h'):
+		if not conf.CheckCHeader(GetOption("sdl-dir") + '\\SDL.h'):
 			print "sdl headers not found or not installed"
 			raise SystemExit(1)
 		else:

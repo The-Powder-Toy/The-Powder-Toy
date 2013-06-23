@@ -35,9 +35,9 @@ Element_BTRY::Element_BTRY()
 	
 	LowPressure = IPL;
 	LowPressureTransition = NT;
-	HighPressure = IPH;
-	HighPressureTransition = NT;
-	LowTemperature = ITL;
+	HighPressure = 256;
+	HighPressureTransition = PT_PLSM;
+	LowTemperature = IPL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 2273.0f;
 	HighTemperatureTransition = PT_PLSM;
