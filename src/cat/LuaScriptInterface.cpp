@@ -782,7 +782,7 @@ int LuaScriptInterface::simulation_partProperty(lua_State * l)
 int LuaScriptInterface::simulation_partKill(lua_State * l)
 {
 	if(lua_gettop(l)==2)
-		luacon_sim->delete_part(lua_tointeger(l, 1), lua_tointeger(l, 2), 0);
+		luacon_sim->delete_part(lua_tointeger(l, 1), lua_tointeger(l, 2));
 	else
 		luacon_sim->kill_part(lua_tointeger(l, 1));
 	return 0;
@@ -977,7 +977,7 @@ int LuaScriptInterface::simulation_createParts(lua_State * l)
 	int ry = luaL_optint(l,4,5);
 	int c = luaL_optint(l,5,luacon_model->GetActiveTool(0)->GetToolID());
 	int brush = luaL_optint(l,6,CIRCLE_BRUSH);
-	int flags = luaL_optint(l,7,0);
+	int flags = luaL_optint(l,7,luacon_sim->replaceModeFlags);
 
 	vector<Brush*> brushList = luacon_model->GetBrushList();
 	if (brush < 0 || brush >= brushList.size())
@@ -985,7 +985,7 @@ int LuaScriptInterface::simulation_createParts(lua_State * l)
 	ui::Point tempRadius = brushList[brush]->GetRadius();
 	brushList[brush]->SetRadius(ui::Point(rx, ry));
 
-	int ret = luacon_sim->CreateParts(x, y, c, brushList[brush]);
+	int ret = luacon_sim->CreateParts(x, y, c, brushList[brush], flags);
 	brushList[brush]->SetRadius(tempRadius);
 	lua_pushinteger(l, ret);
 	return 1;
@@ -1001,7 +1001,7 @@ int LuaScriptInterface::simulation_createLine(lua_State * l)
 	int ry = luaL_optint(l,6,5);
 	int c = luaL_optint(l,7,luacon_model->GetActiveTool(0)->GetToolID());
 	int brush = luaL_optint(l,8,CIRCLE_BRUSH);
-	int flags = luaL_optint(l,9,0);
+	int flags = luaL_optint(l,9,luacon_sim->replaceModeFlags);
 
 	vector<Brush*> brushList = luacon_model->GetBrushList();
 	if (brush < 0 || brush >= brushList.size())
@@ -1009,7 +1009,7 @@ int LuaScriptInterface::simulation_createLine(lua_State * l)
 	ui::Point tempRadius = brushList[brush]->GetRadius();
 	brushList[brush]->SetRadius(ui::Point(rx, ry));
 
-	luacon_sim->CreateLine(x1, y1, x2, y2, c, brushList[brush]);
+	luacon_sim->CreateLine(x1, y1, x2, y2, c, brushList[brush], flags);
 	brushList[brush]->SetRadius(tempRadius);
 	return 0;
 }
@@ -1021,7 +1021,7 @@ int LuaScriptInterface::simulation_createBox(lua_State * l)
 	int x2 = luaL_optint(l,3,-1);
 	int y2 = luaL_optint(l,4,-1);
 	int c = luaL_optint(l,5,luacon_model->GetActiveTool(0)->GetToolID());
-	int flags = luaL_optint(l,6,0);
+	int flags = luaL_optint(l,6,luacon_sim->replaceModeFlags);
 
 	luacon_sim->CreateBox(x1, y1, x2, y2, c, flags);
 	return 0;
@@ -1034,7 +1034,7 @@ int LuaScriptInterface::simulation_floodParts(lua_State * l)
 	int c = luaL_optint(l,3,luacon_model->GetActiveTool(0)->GetToolID());
 	int cm = luaL_optint(l,4,-1);
 	int bm = luaL_optint(l,5,-1);
-	int flags = luaL_optint(l,6,0);
+	int flags = luaL_optint(l,6,luacon_sim->replaceModeFlags);
 	int ret = luacon_sim->FloodParts(x, y, c, cm, bm, flags);
 	lua_pushinteger(l, ret);
 	return 1;
@@ -1047,11 +1047,11 @@ int LuaScriptInterface::simulation_createWalls(lua_State * l)
 	int rx = luaL_optint(l,3,0);
 	int ry = luaL_optint(l,4,0);
 	int c = luaL_optint(l,5,8);
-	int flags = luaL_optint(l,6,0);
+	int flags = luaL_optint(l,6,luacon_sim->replaceModeFlags);
 	if (c < 0 || c >= UI_WALLCOUNT)
 		return luaL_error(l, "Unrecognised wall id '%d'", c);
 
-	int ret = luacon_sim->CreateWalls(x, y, rx, ry, c, flags);
+	int ret = luacon_sim->CreateWalls(x, y, rx, ry, c, NULL, flags);
 	lua_pushinteger(l, ret);
 	return 1;
 }
@@ -1065,11 +1065,11 @@ int LuaScriptInterface::simulation_createWallLine(lua_State * l)
 	int rx = luaL_optint(l,5,0);
 	int ry = luaL_optint(l,6,0);
 	int c = luaL_optint(l,7,8);
-	int flags = luaL_optint(l,8,0);
+	int flags = luaL_optint(l,8,luacon_sim->replaceModeFlags);
 	if (c < 0 || c >= UI_WALLCOUNT)
 		return luaL_error(l, "Unrecognised wall id '%d'", c);
 
-	luacon_sim->CreateWallLine(x1, y1, x2, y2, rx, ry, c, flags);
+	luacon_sim->CreateWallLine(x1, y1, x2, y2, rx, ry, c, NULL, flags);
 	return 0;
 }
 
@@ -1080,7 +1080,7 @@ int LuaScriptInterface::simulation_createWallBox(lua_State * l)
 	int x2 = luaL_optint(l,3,-1);
 	int y2 = luaL_optint(l,4,-1);
 	int c = luaL_optint(l,5,8);
-	int flags = luaL_optint(l,6,0);
+	int flags = luaL_optint(l,6,luacon_sim->replaceModeFlags);
 	if (c < 0 || c >= UI_WALLCOUNT)
 		return luaL_error(l, "Unrecognised wall id '%d'", c);
 
@@ -1095,7 +1095,7 @@ int LuaScriptInterface::simulation_floodWalls(lua_State * l)
 	int c = luaL_optint(l,3,8);
 	int cm = luaL_optint(l,4,-1);
 	int bm = luaL_optint(l,5,-1);
-	int flags = luaL_optint(l,6,0);
+	int flags = luaL_optint(l,6,luacon_sim->replaceModeFlags);
 	if (c < 0 || c >= UI_WALLCOUNT)
 		return luaL_error(l, "Unrecognised wall id '%d'", c);
 	int ret = luacon_sim->FloodWalls(x, y, c, cm, bm, flags);
