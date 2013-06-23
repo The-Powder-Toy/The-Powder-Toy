@@ -26,11 +26,11 @@ Hardness = 0;
 
 Weight = 1;
 
-Temperature = 10000.0f +273.15f;
+Temperature = R_TEMP 10000.0f +273.15f;
 HeatConduct = 5;
 Description = "Negative plasma.";
 
-State = ST_NONE;
+State = ST_GAS;
 Properties = TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL;
 
 LowPressure = IPL;
@@ -41,9 +41,11 @@ LowTemperature = ITL;
 LowTemperatureTransition = NT;
 HighTemperature = ITH;
 HighTemperatureTransition = NT;
+
+Update = NULL;
 Graphics = &Element_NEGP::graphics;
 }
-//#TPT-Directive ElementHeader Element_POSP static int graphics(GRAPHICS_FUNC_ARGS)
+//#TPT-Directive ElementHeader Element_NEGP static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_NEGP::graphics(GRAPHICS_FUNC_ARGS)
 {
 int caddress = restrict_flt(restrict_flt((float)cpart->life, 0.0f, 200.0f)*3, 0.0f, (200.0f*3)-3);
