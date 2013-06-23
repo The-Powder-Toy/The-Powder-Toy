@@ -58,6 +58,14 @@ int Element_NEUT::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				switch (r&0xFF)
 				{
+				case PT_H2:
+					parts[r>>8].type = PT_DTRM;
+					parts[i].type = PT_NONE;
+					break;
+				case PT_DTRM:
+					parts[r>>8].type = PT_TRIT;
+					parts[i].type = PT_NONE;
+					break;
 				case PT_WATR:
 					if (3>(rand()%20))
 						sim->part_change_type(r>>8,x+rx,y+ry,PT_DSTW);
@@ -96,8 +104,27 @@ int Element_NEUT::update(UPDATE_FUNC_ARGS)
 						sim->kill_part(r>>8);
 					}
 					break;
+					case PT_3H2O:
+					if ((pressureFactor+1+(parts[r>>8].life/100))>(rand()%1000))
+					{
+						create_n_parts(sim, parts[r>>8].life, x+rx, y+ry, parts[i].vx, parts[i].vy, restrict_flt(parts[r>>8].temp + parts[r>>8].life*500, MIN_TEMP, MAX_TEMP), PT_NEUT);
+						sim->kill_part(r>>8);
+					}
+					break;
 #else
 				case PT_DEUT:
+					if ((pressureFactor+1)>(rand()%1000))
+					{
+						create_part(r>>8, x+rx, y+ry, PT_NEUT);
+						parts[r>>8].vx = 0.25f*parts[r>>8].vx + parts[i].vx;
+						parts[r>>8].vy = 0.25f*parts[r>>8].vy + parts[i].vy;
+						parts[r>>8].life --;
+						parts[r>>8].temp = restrict_flt(parts[r>>8].temp + parts[r>>8].life*17, MIN_TEMP, MAX_TEMP);
+						pv[y/CELL][x/CELL] += 6.0f * CFDS;
+
+					}
+					break;
+					case PT_3H2O:
 					if ((pressureFactor+1)>(rand()%1000))
 					{
 						create_part(r>>8, x+rx, y+ry, PT_NEUT);

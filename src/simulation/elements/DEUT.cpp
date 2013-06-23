@@ -3,7 +3,7 @@
 Element_DEUT::Element_DEUT()
 {
 	Identifier = "DEFAULT_PT_DEUT";
-	Name = "DEUT";
+	Name = "2H2O";
 	Colour = PIXPACK(0x00153F);
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;

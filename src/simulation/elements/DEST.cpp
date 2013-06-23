@@ -56,7 +56,7 @@ int Element_DEST::update(UPDATE_FUNC_ARGS)
 		return 1;
 
 	r = pmap[y+ry][x+rx];
-	if (!r || (r&0xFF)==PT_DEST || (r&0xFF)==PT_DMND || (r&0xFF)==PT_BCLN  || (r&0xFF)==PT_CLNE  || (r&0xFF)==PT_PCLN  || (r&0xFF)==PT_PBCN)
+	if (!r || (r&0xFF)==PT_DEST || (r&0xFF)==PT_DMND || (r&0xFF)==PT_BCLN  || (r&0xFF)==PT_CLNE  || (r&0xFF)==PT_PCLN || (r&0xFF)==PT_LRVS || (r&0xFF)==PT_RVRS  || (r&0xFF)==PT_PBCN)
 		return 0;
 
 	if (parts[i].life<=0 || parts[i].life>37)

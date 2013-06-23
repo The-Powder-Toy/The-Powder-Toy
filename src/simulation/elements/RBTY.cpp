@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_RBTY PT_RBTY 179
+//#TPT-Directive ElementClass Element_RBTY PT_RBTY 173
 Element_RBTY::Element_RBTY()
 {
 	Identifier = "DEFAULT_PT_RBTY";
@@ -26,7 +26,7 @@ Element_RBTY::Element_RBTY()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f  +25.15f;
+	Temperature = R_TEMP+0.0f  +273.15f;
 	HeatConduct = 251;
 	Description = "Rechargeable battery.";
 
@@ -35,7 +35,7 @@ Element_RBTY::Element_RBTY()
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
-	HighPressure = 256.0;
+	HighPressure = 1000;
 	HighPressureTransition = PT_PLSM;
 	LowTemperature = IPL;
 	LowTemperatureTransition = NT;

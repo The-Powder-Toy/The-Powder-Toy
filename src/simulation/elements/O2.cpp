@@ -57,7 +57,6 @@ int Element_O2::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-
 				if ((r&0xFF)==PT_FIRE)
 				{
 					parts[r>>8].temp+=(rand()%100);

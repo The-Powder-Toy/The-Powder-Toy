@@ -58,6 +58,10 @@ int Element_H2::update(UPDATE_FUNC_ARGS)
 				if (!r)
 					continue;
 				rt = (r&0xFF);
+				if(parts[i].temp >= (MAX_TEMP/2)){
+					sim->create_part(i,x,y,PT_PROT);
+					parts[i].type = PT_ELEC;
+				}
 				if (sim->pv[y/CELL][x/CELL] > 8.0f && rt == PT_DESL) // This will not work. DESL turns to fire above 5.0 pressure
 				{
 					sim->part_change_type(r>>8,x+rx,y+ry,PT_WATR);

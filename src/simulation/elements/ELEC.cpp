@@ -78,6 +78,10 @@ int Element_ELEC::update(UPDATE_FUNC_ARGS)
 							}
 					sim->kill_part(i);
 					return 1;
+				case PT_PTRN:
+					parts[i].type = PT_PHOT;
+					parts[r>>8].type = PT_PHOT;
+					break;
 				case PT_LCRY:
 					parts[r>>8].tmp2 = 5+rand()%5;
 					break;
@@ -90,11 +94,6 @@ int Element_ELEC::update(UPDATE_FUNC_ARGS)
 					else
 						sim->create_part(r>>8, x+rx, y+ry, PT_H2);
 					return 1;
-				case PT_NEUT:
-					sim->part_change_type(r>>8, x+rx, y+ry, PT_H2);
-					parts[r>>8].life = 0;
-					parts[r>>8].ctype = 0;
-					break;
 				case PT_DEUT:
 					if(parts[r>>8].life < 6000)
 						parts[r>>8].life += 1;
