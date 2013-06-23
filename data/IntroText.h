@@ -1,5 +1,5 @@
 static const char *introTextData =
-	"\blThe Powder Toy - Version " MTOS(SAVE_VERSION) "." MTOS(MINOR_VERSION) " - http://powdertoy.co.uk, irc.freenode.net #powder\n"
+	"\blPowder Sim 2 - Version " MTOS(SAVE_VERSION) "." MTOS(MINOR_VERSION) " - http://powdertoy.co.uk, irc.freenode.net #powdersim2\n"
 	"\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\n"
 	"\n"
 	"\bgControl+C/V/X are Copy, Paste and cut respectively.\n"
@@ -18,9 +18,8 @@ static const char *introTextData =
 	"'L' will load the most recent stamp, 'K' shows a library of stamps you saved.\n"
 	"'P' will take a screenshot and save it into the current directory.\n"
 	"\n"
-	"Contributors: \bgStanislaw K Skowronek (Designed the original Powder Toy),\n"
-	"\bgSimon Robertshaw, Skresanov Savely, cracker64, Catelite, Bryan Hoyle, Nathan Cousins, jacksonmj,\n"
-	"\bgFelix Wallin, Lieuwe Mosch, Anthony Boot, Matthew \"me4502\", MaksProg, jacob1, mniip\n"
+	"Contributors: \bgwolfy1339 (Leadear),\n"
+	"\firefreak11, cyberdragon, greymatter, tommig, Kikinicij, mniip\n"
 	"\n"
 	"\bgTo use online features such as saving, you need to register at: \brhttp://powdertoy.co.uk/Register.html\n"
 	"\n"
