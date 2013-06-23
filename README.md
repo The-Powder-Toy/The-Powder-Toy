@@ -9,8 +9,11 @@ Mythical Mod (cyberdragon)
 
 [Powder Sim 2 Development Team] 
 
-wolfy1339 (leader)
-firefreak11 (lead programmer)
+wolfy1339 (Leader)
+firefreak11 (Lead Programmer)
+tommig (Programmer)
+greymatter (Programmer)
+Kikinicij (Programmer)
 cyberdragon (github staff)
 
 [Original Powder Sim Team] 
