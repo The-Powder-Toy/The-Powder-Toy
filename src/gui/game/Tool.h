@@ -45,7 +45,7 @@ class SignTool: public Tool
 {
 public:
 	SignTool():
-	Tool(0, "SIGN", "Sign. Click a sign to edit or anywhere else to create a new one.", 0, 0, 0, "DEFAULT_UI_SIGN", SignTool::GetIcon)
+	Tool(0, "SIGN", "Sign. Displays text. Click on a sign to edit it or anywhere else to place a new one.", 0, 0, 0, "DEFAULT_UI_SIGN", SignTool::GetIcon)
 	{
 	}
 	static VideoBuffer * GetIcon(int toolID, int width, int height);

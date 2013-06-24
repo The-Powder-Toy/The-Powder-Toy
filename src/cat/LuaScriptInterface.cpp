@@ -1845,6 +1845,7 @@ void LuaScriptInterface::initElementsAPI()
 	SETCONST(l, SC_WALL);
 	SETCONST(l, SC_ELEC);
 	SETCONST(l, SC_POWERED);
+	SETCONST(l, SC_SENSOR);
 	SETCONST(l, SC_FORCE);
 	SETCONST(l, SC_EXPLOSIVE);
 	SETCONST(l, SC_GAS);
@@ -1856,7 +1857,6 @@ void LuaScriptInterface::initElementsAPI()
 	SETCONST(l, SC_LIFE);
 	SETCONST(l, SC_TOOL);
 	SETCONST(l, SC_DECO);
-	SETCONST(l, SC_SENSOR);
 
 	//Element identifiers
 	for(int i = 0; i < PT_NUM; i++)
