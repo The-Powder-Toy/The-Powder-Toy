@@ -6,6 +6,8 @@ Realistic Science Mod (firefreak11)<br />
 Mythical Mod (cyberdragon)<br />
 
 ##Thanks to:
+-----------------------------------------
+
 ###[Powder Sim 2 Development Team] 
 wolfy1339 (Leader)<br />
 firefreak11 (Lead Programmer)<br />
@@ -43,10 +45,12 @@ mniip<br />
 
 
 ##Instructions:
+--------------------------------------------------
 
 Click on the elements with the mouse and draw in the field, like in MS Paint. The rest of the game is learning what happens next.
 
-Controls:
+##Controls:
+--------------------------------------------------
 
 **TAB** Switch between circle/square/triangle brush 
 **Space** Pause 
@@ -91,6 +95,7 @@ Controls:
 Only the left Ctrl, Shift, and Alt buttons are enabled to work, not the ones on the right
 
 ##Command Line:
+--------------------------------------
 
 scale:1 - Normal window resolution 
 scale:2 - Doubled window resolution 
