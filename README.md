@@ -56,48 +56,48 @@ Controls:
 ---------------------------------------------------------------------------
 
 
-**TAB** 			Switch between circle/square/triangle brush<br />
+**TAB** 			  Switch between circle/square/triangle brush<br />
 **Space** 			Pause<br />
-**Q** 				Quit<br />
-**Esc** 			Quit<br />
-**Z** 				Zoom<br />
-**S** 				Save stamp (+ Ctrl when STK2 is out)<br />
-**L** 				Load last saved stamp<br />
-**K** 				Stamp library<br />
-**1-9** 			Set view mode<br />
-**P** 				Save screenshot to .png<br />
-**F** 				Pause and go to next frame<br />
-**G** 				Increase grid size<br />
+**Q** 				  Quit<br />
+**Esc** 			  Quit<br />
+**Z** 				  Zoom<br />
+**S** 				  Save stamp (+ Ctrl when STK2 is out)<br />
+**L** 				  Load last saved stamp<br />
+**K** 				  Stamp library<br />
+**1-9** 			  Set view mode<br />
+**P** 				  Save screenshot to .png<br />
+**F** 				  Pause and go to next frame<br />
+**G** 				  Increase grid size<br />
 **Shift + G**		Decrease grid size<br />
-**H** 				Show/Hide HUD<br />
+**H** 			    Show/Hide HUD<br />
 **Ctrl + H**		Show intro text<br />
-**F1**				Show intro text<br />
-**D** 				Debug mode (+ Ctrl when STK2 is out)<br />
-**I** 				Invert Pressure and Velocity map<br />
-**W** 				Toggle gravity modes (+ Ctrl when STK2 is out)<br />
-**Y**				Toggle air modes<br />
+**F1**				  Show intro text<br />
+**D** 				  Debug mode (+ Ctrl when STK2 is out)<br />
+**I** 				  Invert Pressure and Velocity map<br />
+**W** 				  Toggle gravity modes (+ Ctrl when STK2 is out)<br />
+**Y**				    Toggle air modes<br />
 **Ctrl + B**		Toggle decorations on/off<br />
-**U**				Toggle ambient heat on/off<br />
+**U**				    Toggle ambient heat on/off<br />
 **Ctrl + I**		Install powder toy, for loading saves/stamps by double clicking<br />
-**~** 				Console<br />
-**=** 				Reset pressure and velocity map<br />
+**~** 				  Console<br />
+**=** 				  Reset pressure and velocity map<br />
 **Ctrl + =** 		Reset Electricity<br />
-**[** 				Decrease brush size<br />
-**]** 				Increase brush size<br />
+**[** 				  Decrease brush size<br />
+**]** 				  Increase brush size<br />
 **Alt + [**			Decrease brush size by 1<br />
 **Alt + ]**			Increase brush size by 1<br />
 
-**Ctrl + C/V/X** 			Copy/Paste/Cut<br />
-**Ctrl + Z** 				Undo<br />
-**Ctrl + Cursor drag** 		Rectangle<br />
-**Shift + Cursor drag** 		Line<br />
-**Middle click**			Sample element<br />
-**Alt + Left click** 		Sample element<br />
-**Mouse scroll** 			Change brush size<br />
+**Ctrl + C/V/X** 			      Copy/Paste/Cut<br />
+**Ctrl + Z** 				        Undo<br />
+**Ctrl + Cursor drag** 		  Rectangle<br />
+**Shift + Cursor drag** 	  Line<br />
+**Middle click**			      Sample element<br />
+**Alt + Left click** 		    Sample element<br />
+**Mouse scroll** 			      Change brush size<br />
 **Ctrl + Mouse scroll** 		Change vertical brush size<br />
 **Shift + Mouse scroll**		Change horizontal brush size<br />
-**Shift + Ctrl + R** 		Horizontal mirror for selected area<br />
-**Ctrl + R**				Rotate selected area counterclockwise<br />
+**Shift + Ctrl + R** 		    Horizontal mirror for selected area<br />
+**Ctrl + R**				        Rotate selected area counterclockwise<br />
 
 Only the left Ctrl, Shift, and Alt buttons are enabled to work, not the ones on the right<br />
 
