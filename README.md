@@ -1,6 +1,6 @@
 #Powder Sim 2 v. 1.0
-##Powder Sim 2 is a free mod to The Powder Toy and is the efforts of today's best modders comes together as we try to resurrect Powder Sim.
-###It combines three of todays best Powder Toy mods:
+####Powder Sim 2 is a free mod to The Powder Toy and is the efforts of today's best modders comes together as we try to resurrect Powder Sim.
+####It combines three of todays best Powder Toy mods:
 ####Powder Sim<br />
 ####Realistic Science Mod (firefreak11)<br />
 ####Mythical Mod (cyberdragon)<br />
