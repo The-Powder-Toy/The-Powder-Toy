@@ -88,7 +88,7 @@ int Element_SING::update(UPDATE_FUNC_ARGS)
 		spawncount = spawncount*spawncount*M_PI;
 		for (j=0;j<spawncount;j++)
 		{
-			switch(rand()%13)
+			switch(rand()%3)
 			{
 				case 0:
 					nb = sim->create_part(-3, x, y, PT_PHOT);
@@ -98,36 +98,6 @@ int Element_SING::update(UPDATE_FUNC_ARGS)
 					break;
 				case 2:
 					nb = sim->create_part(-3, x, y, PT_ELEC);
-					break;
-				case 3:
-					nb = sim->create_part(-3, x, y, PT_UQRK);
-					break;
-				case 4:
-					nb = sim->create_part(-3, x, y, PT_DQRK);
-					break;
-				case 5:
-					nb = sim->create_part(-3, x, y, PT_PLSM);
-					break;
-				case 6:
-					nb = sim->create_part(-3, x, y, PT_STAR);
-					break;
-				case 7:
-					nb = sim->create_part(-3, x, y, PT_STAR);
-					break;
-				case 8:
-					nb = sim->create_part(-3, x, y, PT_STAR);
-					break;
-				case 9:
-					nb = sim->create_part(-3, x, y, PT_STAR);
-					break;
-				case 10:
-					nb = sim->create_part(-3, x, y, PT_STAR);
-					break;
-				case 11:
-					nb = sim->create_part(-3, x, y, PT_DMTR);
-					break;
-				case 12:
-					nb = sim->create_part(-3, x, y, PT_GVTN);
 					break;
 			}
 			if (nb!=-1) {

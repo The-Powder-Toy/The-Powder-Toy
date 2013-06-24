@@ -11,4 +11,4 @@ public:
 	virtual ~SaveIDMessage();
 };
 
-#endif /* ERRORMESSAGE_H_ */
+#endif /* SAVEIDMESSAGE_H */

@@ -22,7 +22,7 @@ Element_CFLM::Element_CFLM()
 	Gravity = -0.1f;
 	Diffusion = 0.00f;
 	HotAir = 0.0005f	* CFDS;
-	Falldown = 1;
+	Falldown = 0;
 	
 	Flammable = 0;
 	Explosive = 0;
@@ -35,7 +35,7 @@ Element_CFLM::Element_CFLM()
 	HeatConduct = 88;
 	Description = "Sub-zero flame.";
 	
-	State = ST_LIQUID;
+	State = ST_GAS;
 	Properties = TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL;
 	
 	LowPressure = IPL;

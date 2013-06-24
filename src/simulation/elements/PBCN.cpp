@@ -31,7 +31,7 @@ Element_PBCN::Element_PBCN()
 	Description = "Powered breakable clone.";
 	
 	State = ST_NONE;
-	Properties = TYPE_SOLID;
+	Properties = TYPE_SOLID|PROP_NOCTYPEDRAW;
 	
 	LowPressure = IPL;
 	LowPressureTransition = NT;

@@ -28,7 +28,7 @@ Element_ACID::Element_ACID()
 	
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 34;
-	Description = "Dissolves almost everything and hardens liquid reversium.";
+	Description = "Dissolves almost everything.";
 	
 	State = ST_LIQUID;
 	Properties = TYPE_LIQUID|PROP_DEADLY;

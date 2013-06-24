@@ -406,7 +406,7 @@ AnyType TPTScriptInterface::tptS_delete(std::deque<std::string> * words)
 		ui::Point deletePoint = ((PointType)partRef).Value();
 		if(deletePoint.X<0 || deletePoint.Y<0 || deletePoint.Y >= YRES || deletePoint.X >= XRES)
 			throw GeneralException("Invalid position");
-		sim->delete_part(deletePoint.X, deletePoint.Y, 0);
+		sim->delete_part(deletePoint.X, deletePoint.Y);
 	}
 	else if(partRef.GetType() == TypeNumber)
 	{

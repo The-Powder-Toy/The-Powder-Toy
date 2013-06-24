@@ -49,13 +49,8 @@ Element_WOOD::Element_WOOD()
 //#TPT-Directive ElementHeader Element_WOOD static int update(UPDATE_FUNC_ARGS)
 int Element_WOOD::update(UPDATE_FUNC_ARGS)
 {
-	int flags;
-	if (parts[i].temp > 450 && parts[i].temp > parts[i].tmp){
+	if (parts[i].temp > 450 && parts[i].temp > parts[i].tmp)
 		parts[i].tmp = (int)parts[i].temp;
-	}
-	if(parts[i].ctype == PT_SEED){
-		sim->CreateBox(x+1,y+1,x-1,y-2,PT_WOOD,flags);
-	}
 	return 0;
 }
 //#TPT-Directive ElementHeader Element_WOOD static int graphics(GRAPHICS_FUNC_ARGS)

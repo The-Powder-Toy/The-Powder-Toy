@@ -360,7 +360,7 @@ void Simulation::clear_area(int area_x, int area_y, int area_w, int area_h)
 				gravWallChanged = true;
 			bmap[(cy+area_y)/CELL][(cx+area_x)/CELL] = 0;
 			emap[(cy+area_y)/CELL][(cx+area_x)/CELL] = 0;
-			delete_part(cx+area_x, cy+area_y, 0);
+			delete_part(cx+area_x, cy+area_y);
 		}
 	}
 	for(int i = 0; i < MAXSIGNS && i < signs.size(); i++)
@@ -370,46 +370,6 @@ void Simulation::clear_area(int area_x, int area_y, int area_w, int area_h)
 			signs.erase(signs.begin()+i);
 		}
 	}
-}
-
-void Simulation::CreateBox(int x1, int y1, int x2, int y2, int c, int flags)
-{
-	int i, j;
-	if (x1>x2)
-	{
-		i = x2;
-		x2 = x1;
-		x1 = i;
-	}
-	if (y1>y2)
-	{
-		j = y2;
-		y2 = y1;
-		y1 = j;
-	}
-	for (j=y1; j<=y2; j++)
-		for (i=x1; i<=x2; i++)
-			CreateParts(i, j, 0, 0, c, flags);
-}
-
-void Simulation::CreateWallBox(int x1, int y1, int x2, int y2, int c, int flags)
-{
-	int i, j;
-	if (x1>x2)
-	{
-		i = x2;
-		x2 = x1;
-		x1 = i;
-	}
-	if (y1>y2)
-	{
-		j = y2;
-		y2 = y1;
-		y1 = j;
-	}
-	for (j=y1; j<=y2; j++)
-		for (i=x1; i<=x2; i++)
-			CreateWalls(i, j, 0, 0, c, flags);
 }
 
 int Simulation::flood_prop_2(int x, int y, size_t propoffset, void * propvalue, StructProperty::PropertyType proptype, int parttype, char * bitmap)
@@ -478,36 +438,41 @@ int Simulation::flood_prop(int x, int y, size_t propoffset, void * propvalue, St
 	return 0;
 }
 
-SimulationSample Simulation::Get(int x, int y)
+SimulationSample Simulation::GetSample(int x, int y)
 {
 	SimulationSample sample;
 	sample.PositionX = x;
 	sample.PositionY = y;
-	if (photons[y][x])
+	if (x >= 0 && x < XRES && y >= 0 && y < YRES)
 	{
-		sample.particle = parts[photons[y][x]>>8];
-		sample.ParticleID = photons[y][x]>>8;
-	}
-	else if (pmap[y][x])
-	{
-		sample.particle = parts[pmap[y][x]>>8];
-		sample.ParticleID = pmap[y][x]>>8;
-	}
-	if (bmap[y/CELL][x/CELL])
-	{
-		sample.WallType = bmap[y/CELL][x/CELL];
-	}
-	sample.AirPressure = pv[y/CELL][x/CELL];
-	sample.AirTemperature = hv[y/CELL][x/CELL];
-	sample.AirVelocityX = vx[y/CELL][x/CELL];
-	sample.AirVelocityY = vy[y/CELL][x/CELL];
+		if (photons[y][x])
+		{
+			sample.particle = parts[photons[y][x]>>8];
+			sample.ParticleID = photons[y][x]>>8;
+		}
+		else if (pmap[y][x])
+		{
+			sample.particle = parts[pmap[y][x]>>8];
+			sample.ParticleID = pmap[y][x]>>8;
+		}
+		if (bmap[y/CELL][x/CELL])
+		{
+			sample.WallType = bmap[y/CELL][x/CELL];
+		}
+		sample.AirPressure = pv[y/CELL][x/CELL];
+		sample.AirTemperature = hv[y/CELL][x/CELL];
+		sample.AirVelocityX = vx[y/CELL][x/CELL];
+		sample.AirVelocityY = vy[y/CELL][x/CELL];
 
-	if(grav->ngrav_enable)
-	{
-		sample.Gravity = gravp[(y/CELL)*(XRES/CELL)+(x/CELL)];
-		sample.GravityVelocityX = gravx[(y/CELL)*(XRES/CELL)+(x/CELL)];
-		sample.GravityVelocityY = gravy[(y/CELL)*(XRES/CELL)+(x/CELL)];
+		if(grav->ngrav_enable)
+		{
+			sample.Gravity = gravp[(y/CELL)*(XRES/CELL)+(x/CELL)];
+			sample.GravityVelocityX = gravx[(y/CELL)*(XRES/CELL)+(x/CELL)];
+			sample.GravityVelocityY = gravy[(y/CELL)*(XRES/CELL)+(x/CELL)];
+		}
 	}
+	else
+		sample.isMouseInSim = false;
 
 	sample.NumParts = NUM_PARTS;
 	return sample;
@@ -664,165 +629,6 @@ int Simulation::FloodINST(int x, int y, int fullc, int cm)
 	return created_something;
 }
 
-
-int Simulation::FloodParts(int x, int y, int fullc, int cm, int bm, int flags)
-{
-	int c = fullc&0xFF;
-	int x1, x2, dy = (c<PT_NUM)?1:CELL;
-	int co = c;
-	int coord_stack_limit = XRES*YRES;
-	unsigned short (*coord_stack)[2];
-	int coord_stack_size = 0;
-	int created_something = 0;
-
-	if (cm==-1)
-	{
-		if (c==0)
-		{
-			cm = pmap[y][x]&0xFF;
-			if (!cm)
-				return 0;
-		}
-		else
-			cm = 0;
-	}
-	if (bm==-1)
-	{
-		bm = bmap[y/CELL][x/CELL];
-	}
-
-	if (((pmap[y][x]&0xFF)!=cm || bmap[y/CELL][x/CELL]!=bm ))
-		return 1;
-
-	coord_stack = (short unsigned int (*)[2])malloc(sizeof(unsigned short)*2*coord_stack_limit);
-	coord_stack[coord_stack_size][0] = x;
-	coord_stack[coord_stack_size][1] = y;
-	coord_stack_size++;
-
-	do
-	{
-		coord_stack_size--;
-		x = coord_stack[coord_stack_size][0];
-		y = coord_stack[coord_stack_size][1];
-		x1 = x2 = x;
-		// go left as far as possible
-		while (x1>=CELL)
-		{
-			if ((pmap[y][x1-1]&0xFF)!=cm || bmap[y/CELL][(x1-1)/CELL]!=bm)
-			{
-				break;
-			}
-			x1--;
-		}
-		// go right as far as possible
-		while (x2<XRES-CELL)
-		{
-			if ((pmap[y][x2+1]&0xFF)!=cm || bmap[y/CELL][(x2+1)/CELL]!=bm)
-			{
-				break;
-			}
-			x2++;
-		}
-		// fill span
-		for (x=x1; x<=x2; x++)
-		{
-			if (CreateParts(x, y, 0, 0, fullc, flags))
-				created_something = 1;
-		}
-
-		if (y>=CELL+dy)
-			for (x=x1; x<=x2; x++)
-				if ((pmap[y-dy][x]&0xFF)==cm && bmap[(y-dy)/CELL][x/CELL]==bm)
-				{
-					coord_stack[coord_stack_size][0] = x;
-					coord_stack[coord_stack_size][1] = y-dy;
-					coord_stack_size++;
-					if (coord_stack_size>=coord_stack_limit)
-					{
-						free(coord_stack);
-						return -1;
-					}
-				}
-
-		if (y<YRES-CELL-dy)
-			for (x=x1; x<=x2; x++)
-				if ((pmap[y+dy][x]&0xFF)==cm && bmap[(y+dy)/CELL][x/CELL]==bm)
-				{
-					coord_stack[coord_stack_size][0] = x;
-					coord_stack[coord_stack_size][1] = y+dy;
-					coord_stack_size++;
-					if (coord_stack_size>=coord_stack_limit)
-					{
-						free(coord_stack);
-						return -1;
-					}
-				}
-	} while (coord_stack_size>0);
-	free(coord_stack);
-	return created_something;
-}
-
-int Simulation::FloodWalls(int x, int y, int c, int cm, int bm, int flags)
-{
-	int x1, x2, dy = CELL;
-	int co = c;
-	if (cm==-1)
-	{
-		cm = pmap[y][x]&0xFF;
-	}
-	if (bm==-1)
-	{
-		if (c==WL_ERASE)
-		{
-			bm = bmap[y/CELL][x/CELL];
-			if (!bm)
-				return 0;
-		}
-		else
-			bm = 0;
-	}
-	
-	if (((pmap[y][x]&0xFF)!=cm || bmap[y/CELL][x/CELL]!=bm )/*||( (flags&BRUSH_SPECIFIC_DELETE) && cm!=SLALT)*/)
-		return 1;
-	
-	// go left as far as possible
-	x1 = x2 = x;
-	while (x1>=CELL)
-	{
-		if ((pmap[y][x1-1]&0xFF)!=cm || bmap[y/CELL][(x1-1)/CELL]!=bm)
-		{
-			break;
-		}
-		x1--;
-	}
-	while (x2<XRES-CELL)
-	{
-		if ((pmap[y][x2+1]&0xFF)!=cm || bmap[y/CELL][(x2+1)/CELL]!=bm)
-		{
-			break;
-		}
-		x2++;
-	}
-	
-	// fill span
-	for (x=x1; x<=x2; x++)
-	{
-		if (!CreateWalls(x, y, 0, 0, c, flags))
-			return 0;
-	}
-	// fill children
-	if (y>=CELL+dy)
-		for (x=x1; x<=x2; x++)
-			if ((pmap[y-dy][x]&0xFF)==cm && bmap[(y-dy)/CELL][x/CELL]==bm)
-				if (!FloodWalls(x, y-dy, c, cm, bm, flags))
-					return 0;
-	if (y<YRES-CELL-dy)
-		for (x=x1; x<=x2; x++)
-			if ((pmap[y+dy][x]&0xFF)==cm && bmap[(y+dy)/CELL][x/CELL]==bm)
-				if (!FloodWalls(x, y+dy, c, cm, bm, flags))
-					return 0;
-	return 1;
-}
 int Simulation::flood_water(int x, int y, int i, int originaly, int check)
 {
 	int x1 = 0,x2 = 0;
@@ -1031,8 +837,6 @@ void Simulation::ApplyDecoration(int x, int y, int colR_, int colG_, int colB_, 
 
 void Simulation::ApplyDecorationPoint(int positionX, int positionY, int colR, int colG, int colB, int colA, int mode, Brush * cBrush)
 {
-	int i, j;
-
 	if(cBrush)
 	{
 		int radiusX = cBrush->GetRadius().X, radiusY = cBrush->GetRadius().Y, sizeX = cBrush->GetSize().X, sizeY = cBrush->GetSize().Y;
@@ -1051,32 +855,11 @@ void Simulation::ApplyDecorationPoint(int positionX, int positionY, int colR, in
 	}
 }
 
-void Simulation::ApplyDecorationBox(int x1, int y1, int x2, int y2, int colR, int colG, int colB, int colA, int mode)
-{
-	int i, j;
-
-	if (x1>x2)
-	{
-		i = x2;
-		x2 = x1;
-		x1 = i;
-	}
-	if (y1>y2)
-	{
-		j = y2;
-		y2 = y1;
-		y1 = j;
-	}
-	for (j=y1; j<=y2; j++)
-		for (i=x1; i<=x2; i++)
-			ApplyDecoration(i, j, colR, colG, colB, colA, mode);
-}
-
 void Simulation::ApplyDecorationLine(int x1, int y1, int x2, int y2, int colR, int colG, int colB, int colA, int mode, Brush * cBrush)
 {
 	bool reverseXY = abs(y2-y1) > abs(x2-x1);
 	int x, y, dx, dy, sy, rx, ry;
-	float e, de;
+	float e = 0.0f, de;
 
 	if(cBrush)
 	{
@@ -1104,7 +887,6 @@ void Simulation::ApplyDecorationLine(int x1, int y1, int x2, int y2, int colR, i
 	}
 	dx = x2 - x1;
 	dy = abs(y2 - y1);
-	e = 0.0f;
 	if (dx)
 		de = dy/(float)dx;
 	else
@@ -1131,6 +913,27 @@ void Simulation::ApplyDecorationLine(int x1, int y1, int x2, int y2, int colR, i
 			e -= 1.0f;
 		}
 	}
+}
+
+void Simulation::ApplyDecorationBox(int x1, int y1, int x2, int y2, int colR, int colG, int colB, int colA, int mode)
+{
+	int i, j;
+
+	if (x1>x2)
+	{
+		i = x2;
+		x2 = x1;
+		x1 = i;
+	}
+	if (y1>y2)
+	{
+		j = y2;
+		y2 = y1;
+		y1 = j;
+	}
+	for (j=y1; j<=y2; j++)
+		for (i=x1; i<=x2; i++)
+			ApplyDecoration(i, j, colR, colG, colB, colA, mode);
 }
 
 int Simulation::Tool(int x, int y, int tool, float strength)
@@ -1166,7 +969,7 @@ void Simulation::ToolLine(int x1, int y1, int x2, int y2, int tool, Brush * cBru
 {
 	bool reverseXY = abs(y2-y1) > abs(x2-x1);
 	int x, y, dx, dy, sy, rx = cBrush->GetRadius().X, ry = cBrush->GetRadius().Y;
-	float e, de;
+	float e = 0.0f, de;
 	if (reverseXY)
 	{
 		y = x1;
@@ -1187,7 +990,6 @@ void Simulation::ToolLine(int x1, int y1, int x2, int y2, int tool, Brush * cBru
 	}
 	dx = x2 - x1;
 	dy = abs(y2 - y1);
-	e = 0.0f;
 	if (dx)
 		de = dy/(float)dx;
 	else
@@ -1235,146 +1037,64 @@ void Simulation::ToolBox(int x1, int y1, int x2, int y2, int tool, float strengt
 			Tool(i, j, tool, strength);
 }
 
-int Simulation::CreateParts(int positionX, int positionY, int c, Brush * cBrush)
+int Simulation::CreateWalls(int x, int y, int rx, int ry, int wall, Brush * cBrush, int flags)
 {
-	if(cBrush)
-	{
-		int radiusX = cBrush->GetRadius().X, radiusY = cBrush->GetRadius().Y, sizeX = cBrush->GetSize().X, sizeY = cBrush->GetSize().Y, fn;
-		unsigned char *bitmap = cBrush->GetBitmap();
-		
-		if (c == 0)// && !(flags&BRUSH_REPLACEMODE))							// delete
-			fn = 0;
-		//else if ((flags&BRUSH_SPECIFIC_DELETE) && !(flags&BRUSH_REPLACEMODE))	// specific delete
-		//	fn = 1;
-		//else if (flags&BRUSH_REPLACEMODE)										// replace
-		//	fn = 2;
-		else																	// normal draw
-			fn = 3;
-
-		for(int y = 0; y < sizeY; y++)
-		{
-			for(int x = 0; x < sizeX; x++)
-			{
-				if(bitmap[(y*sizeX)+x] && (positionX+(x-radiusX) >= 0 && positionY+(y-radiusY) >= 0 && positionX+(x-radiusX) < XRES && positionY+(y-radiusY) < YRES))
-				{
-					CreatePartFlags(positionX+(x-radiusX), positionY+(y-radiusY), c, fn, 0);
-				}
-			}
-		}
-	}
-	return 0;
-}
-
-int Simulation::CreateParts(int x, int y, int rx, int ry, int c, int flags)
-{
-	int i, j, f = 0, fn;
-
-	if (c == 0)// && !(flags&BRUSH_REPLACEMODE))							// delete
-		fn = 0;
-	//else if ((flags&BRUSH_SPECIFIC_DELETE) && !(flags&BRUSH_REPLACEMODE))	// specific delete
-	//	fn = 1;
-	//else if (flags&BRUSH_REPLACEMODE)										// replace
-	//	fn = 2;
-	else																	// normal draw
-		fn = 3;
-
-	for (j=-ry; j<=ry; j++)
-		for (i=-rx; i<=rx; i++)
-			if (CreatePartFlags(x+i, y+j, c, fn, flags))
-				f = 1;
-	return !f;
-}
-
-int Simulation::CreatePartFlags(int x, int y, int c, int fn, int flags)
-{
-	if (fn == 0)      //delete
-		delete_part(x, y, 0);
-	else if (fn == 1) //specific delete
-		delete_part(x, y, flags);
-	else if (fn == 2) //replace mode
-	{
-		if (x<0 || y<0 || x>=XRES || y>=YRES)
-			return 0;
-		//if ((pmap[y][x]&0xFF)!=SLALT&&SLALT!=0)
-		//	return 0;
-		if ((pmap[y][x]))
-		{
-			delete_part(x, y, 0);
-			if (c!=0)
-				create_part(-2, x, y, c);
-		}
-	}
-	else if (fn == 3) //normal draw
-		if (create_part(-2, x, y, c) == -1)
-			return 1;
-	return 0;
-}
-
-int Simulation::CreateWalls(int x, int y, int rx, int ry, int c, int flags, Brush * cBrush)
-{
-	int i, j, r, f = 0, u, v, oy, ox, b = 0, dw = 0, stemp = 0, p;//n;
-	
 	if(cBrush)
 	{
 		rx = cBrush->GetRadius().X;
 		ry = cBrush->GetRadius().Y;
 	}
-	
-	int wall = c;
-	
 	if (wall == WL_ERASE)
-		b = 0;
-	else
-		b = wall;
+		wall = 0;
+	if (flags == -1)
+		flags = replaceModeFlags;
 	
 	ry = ry/CELL;
 	rx = rx/CELL;
 	x = x/CELL;
 	y = y/CELL;
-	x -= rx;///2;
-	y -= ry;///2;
-	for (ox=x; ox<=x+rx+rx; ox++)
+	x -= rx;
+	y -= ry;
+	for (int wallX = x; wallX <= x+rx+rx; wallX++)
 	{
-		for (oy=y; oy<=y+ry+ry; oy++)
+		for (int wallY = y; wallY <= y+ry+ry; wallY++)
 		{
-			if (ox>=0&&ox<XRES/CELL&&oy>=0&&oy<YRES/CELL)
+			if (wallX >= 0 && wallX < XRES/CELL && wallY >= 0 && wallY < YRES/CELL)
 			{
-				i = ox;
-				j = oy;
-				if (b==WL_FAN)
+				if ((flags&SPECIFIC_DELETE) && wall != WL_FLOODHELPER && wall == replaceModeSelected)
+					wall = 0;
+
+				if (wall == WL_FAN)
 				{
-					fvx[j][i] = 0.0f;
-					fvy[j][i] = 0.0f;
+					fvx[wallY][wallX] = 0.0f;
+					fvy[wallY][wallX] = 0.0f;
 				}
-				if (b==WL_GRAV || bmap[j][i]==WL_GRAV)
+				else if (wall == WL_STREAM)
 				{
-					gravWallChanged = true;
-				}
-				if (b==WL_STREAM)
-				{
-					i = x + rx;///2;
-					j = y + ry;///2;
-					for (v=-1; v<2; v++)
-						for (u=-1; u<2; u++)
-							if (i+u>=0 && i+u<XRES/CELL &&
-								j+v>=0 && j+v<YRES/CELL &&
-								bmap[j+v][i+u] == WL_STREAM)
+					wallX = x + rx;
+					wallY = y + ry;
+					//streamlines can't be drawn next to each other
+					for (int tempY = wallY-1; tempY < wallY+2; tempY++)
+						for (int tempX = wallX-1; tempX < wallX+2; tempX++)
+						{
+							if (tempX >= 0 && tempX < XRES/CELL && tempY >= 0 && tempY < YRES/CELL && bmap[tempY][tempX] == WL_STREAM)
 								return 1;
-					bmap[j][i] = WL_STREAM;
-					continue;
+						}
 				}
-				bmap[j][i] = b;
+				if (wall == WL_GRAV || bmap[wallY][wallX] == WL_GRAV)
+					gravWallChanged = true;
+				bmap[wallY][wallX] = wall;
 			}
 		}
 	}
 	return 1;
 }
 
-void Simulation::CreateLine(int x1, int y1, int x2, int y2, int c, Brush * cBrush)
+void Simulation::CreateWallLine(int x1, int y1, int x2, int y2, int rx, int ry, int wall, Brush * cBrush, int flags)
 {
-	int x, y, dx, dy, sy, rx = cBrush->GetRadius().X, ry = cBrush->GetRadius().Y;
+	int x, y, dx, dy, sy;
 	bool reverseXY = abs(y2-y1) > abs(x2-x1);
-	float e, de;
+	float e = 0.0f, de;
 	if (reverseXY)
 	{
 		y = x1;
@@ -1395,7 +1115,6 @@ void Simulation::CreateLine(int x1, int y1, int x2, int y2, int c, Brush * cBrus
 	}
 	dx = x2 - x1;
 	dy = abs(y2 - y1);
-	e = 0.0f;
 	if (dx)
 		de = dy/(float)dx;
 	else
@@ -1405,9 +1124,9 @@ void Simulation::CreateLine(int x1, int y1, int x2, int y2, int c, Brush * cBrus
 	for (x=x1; x<=x2; x++)
 	{
 		if (reverseXY)
-			CreateParts(y, x, c, cBrush);
+			CreateWalls(y, x, rx, ry, wall, cBrush, flags);
 		else
-			CreateParts(x, y, c, cBrush);
+			CreateWalls(x, y, rx, ry, wall, cBrush, flags);
 		e += de;
 		if (e >= 0.5f)
 		{
@@ -1415,9 +1134,214 @@ void Simulation::CreateLine(int x1, int y1, int x2, int y2, int c, Brush * cBrus
 			if (!(rx+ry) && ((y1<y2) ? (y<=y2) : (y>=y2)))
 			{
 				if (reverseXY)
-					CreateParts(y, x, c, cBrush);
+					CreateWalls(y, x, rx, ry, wall, cBrush, flags);
 				else
-					CreateParts(x, y, c, cBrush);
+					CreateWalls(x, y, rx, ry, wall, cBrush, flags);
+			}
+			e -= 1.0f;
+		}
+	}
+}
+
+void Simulation::CreateWallBox(int x1, int y1, int x2, int y2, int wall, int flags)
+{
+	int i, j;
+	if (x1>x2)
+	{
+		i = x2;
+		x2 = x1;
+		x1 = i;
+	}
+	if (y1>y2)
+	{
+		j = y2;
+		y2 = y1;
+		y1 = j;
+	}
+	for (j=y1; j<=y2; j++)
+		for (i=x1; i<=x2; i++)
+			CreateWalls(i, j, 0, 0, wall, NULL, flags);
+}
+
+int Simulation::FloodWalls(int x, int y, int wall, int cm, int bm, int flags)
+{
+	int x1, x2, dy = CELL;
+	if (cm==-1)
+	{
+		cm = pmap[y][x]&0xFF;
+	}
+	if (bm==-1)
+	{
+		if (wall==WL_ERASE)
+		{
+			bm = bmap[y/CELL][x/CELL];
+			if (!bm)
+				return 0;
+		}
+		else
+			bm = 0;
+		if (flags == -1)
+			flags = replaceModeFlags;
+	}
+	
+	if ((pmap[y][x]&0xFF)!=cm || bmap[y/CELL][x/CELL]!=bm || ((flags&SPECIFIC_DELETE) && cm != replaceModeSelected))
+		return 1;
+	
+	// go left as far as possible
+	x1 = x2 = x;
+	while (x1>=CELL)
+	{
+		if ((pmap[y][x1-1]&0xFF)!=cm || bmap[y/CELL][(x1-1)/CELL]!=bm)
+		{
+			break;
+		}
+		x1--;
+	}
+	while (x2<XRES-CELL)
+	{
+		if ((pmap[y][x2+1]&0xFF)!=cm || bmap[y/CELL][(x2+1)/CELL]!=bm)
+		{
+			break;
+		}
+		x2++;
+	}
+	
+	// fill span
+	for (x=x1; x<=x2; x++)
+	{
+		if (!CreateWalls(x, y, 0, 0, wall, NULL, flags))
+			return 0;
+	}
+	// fill children
+	if (y>=CELL+dy)
+		for (x=x1; x<=x2; x++)
+			if ((pmap[y-dy][x]&0xFF)==cm && bmap[(y-dy)/CELL][x/CELL]==bm)
+				if (!FloodWalls(x, y-dy, wall, cm, bm, flags))
+					return 0;
+	if (y<YRES-CELL-dy)
+		for (x=x1; x<=x2; x++)
+			if ((pmap[y+dy][x]&0xFF)==cm && bmap[(y+dy)/CELL][x/CELL]==bm)
+				if (!FloodWalls(x, y+dy, wall, cm, bm, flags))
+					return 0;
+	return 1;
+}
+
+int Simulation::CreateParts(int positionX, int positionY, int c, Brush * cBrush, int flags)
+{
+	if (flags == -1)
+		flags = replaceModeFlags;
+	if(cBrush)
+	{
+		int radiusX = cBrush->GetRadius().X, radiusY = cBrush->GetRadius().Y, sizeX = cBrush->GetSize().X, sizeY = cBrush->GetSize().Y;
+		unsigned char *bitmap = cBrush->GetBitmap();
+		
+		for(int y = 0; y < sizeY; y++)
+		{
+			for(int x = 0; x < sizeX; x++)
+			{
+				if(bitmap[(y*sizeX)+x] && (positionX+(x-radiusX) >= 0 && positionY+(y-radiusY) >= 0 && positionX+(x-radiusX) < XRES && positionY+(y-radiusY) < YRES))
+				{
+					CreatePartFlags(positionX+(x-radiusX), positionY+(y-radiusY), c, flags);
+				}
+			}
+		}
+	}
+	return 0;
+}
+
+int Simulation::CreateParts(int x, int y, int rx, int ry, int c, int flags)
+{
+	int i, j, f = 0;
+
+	if (flags == -1)
+		flags = replaceModeFlags;
+
+	for (j=-ry; j<=ry; j++)
+		for (i=-rx; i<=rx; i++)
+			if (CreatePartFlags(x+i, y+j, c, flags))
+				f = 1;
+	return !f;
+}
+
+int Simulation::CreatePartFlags(int x, int y, int c, int flags)
+{
+	//delete
+	if (c == 0 && !(flags&REPLACE_MODE))
+		delete_part(x, y);
+	//specific delete
+	else if ((flags&SPECIFIC_DELETE) && !(flags&REPLACE_MODE))
+	{
+		if (!replaceModeSelected || (pmap[y][x]&0xFF) == replaceModeSelected || (photons[y][x]&0xFF) == replaceModeSelected)
+			delete_part(x, y);
+	}
+	//replace mode
+	else if (flags&REPLACE_MODE)
+	{
+		if (x<0 || y<0 || x>=XRES || y>=YRES)
+			return 0;
+		if (replaceModeSelected && (pmap[y][x]&0xFF) != replaceModeSelected && (photons[y][x]&0xFF) != replaceModeSelected)
+			return 0;
+		if ((pmap[y][x]))
+		{
+			delete_part(x, y);
+			if (c!=0)
+				create_part(-2, x, y, c);
+		}
+	}
+	//normal draw
+	else
+		if (create_part(-2, x, y, c) == -1)
+			return 1;
+	return 0;
+}
+
+void Simulation::CreateLine(int x1, int y1, int x2, int y2, int c, Brush * cBrush, int flags)
+{
+	int x, y, dx, dy, sy, rx = cBrush->GetRadius().X, ry = cBrush->GetRadius().Y;
+	bool reverseXY = abs(y2-y1) > abs(x2-x1);
+	float e = 0.0f, de;
+	if (reverseXY)
+	{
+		y = x1;
+		x1 = y1;
+		y1 = y;
+		y = x2;
+		x2 = y2;
+		y2 = y;
+	}
+	if (x1 > x2)
+	{
+		y = x1;
+		x1 = x2;
+		x2 = y;
+		y = y1;
+		y1 = y2;
+		y2 = y;
+	}
+	dx = x2 - x1;
+	dy = abs(y2 - y1);
+	if (dx)
+		de = dy/(float)dx;
+	else
+		de = 0.0f;
+	y = y1;
+	sy = (y1<y2) ? 1 : -1;
+	for (x=x1; x<=x2; x++)
+	{
+		if (reverseXY)
+			CreateParts(y, x, c, cBrush, flags);
+		else
+			CreateParts(x, y, c, cBrush, flags);
+		e += de;
+		if (e >= 0.5f)
+		{
+			y += sy;
+			if (!(rx+ry) && ((y1<y2) ? (y<=y2) : (y>=y2)))
+			{
+				if (reverseXY)
+					CreateParts(y, x, c, cBrush, flags);
+				else
+					CreateParts(x, y, c, cBrush, flags);
 			}
 			e -= 1.0f;
 		}
@@ -1479,57 +1403,121 @@ void Simulation::CreateLine(int x1, int y1, int x2, int y2, int c)
 	}
 }
 
-void Simulation::CreateWallLine(int x1, int y1, int x2, int y2, int rx, int ry, int c, int flags, Brush * cBrush)
+void Simulation::CreateBox(int x1, int y1, int x2, int y2, int c, int flags)
 {
-	int cp=abs(y2-y1)>abs(x2-x1), x, y, dx, dy, sy;
-	float e, de;
-	if (cp)
+	int i, j;
+	if (x1>x2)
 	{
-		y = x1;
-		x1 = y1;
-		y1 = y;
-		y = x2;
-		x2 = y2;
-		y2 = y;
+		i = x2;
+		x2 = x1;
+		x1 = i;
 	}
-	if (x1 > x2)
+	if (y1>y2)
 	{
-		y = x1;
-		x1 = x2;
-		x2 = y;
-		y = y1;
-		y1 = y2;
-		y2 = y;
+		j = y2;
+		y2 = y1;
+		y1 = j;
 	}
-	dx = x2 - x1;
-	dy = abs(y2 - y1);
-	e = 0.0f;
-	if (dx)
-		de = dy/(float)dx;
-	else
-		de = 0.0f;
-	y = y1;
-	sy = (y1<y2) ? 1 : -1;
-	for (x=x1; x<=x2; x++)
+	for (j=y1; j<=y2; j++)
+		for (i=x1; i<=x2; i++)
+			CreateParts(i, j, 0, 0, c, flags);
+}
+
+int Simulation::FloodParts(int x, int y, int fullc, int cm, int bm, int flags)
+{
+	int c = fullc&0xFF;
+	int x1, x2, dy = (c<PT_NUM)?1:CELL;
+	int co = c;
+	int coord_stack_limit = XRES*YRES;
+	unsigned short (*coord_stack)[2];
+	int coord_stack_size = 0;
+	int created_something = 0;
+
+	if (cm==-1)
 	{
-		if (cp)
-			CreateWalls(y, x, rx, ry, c, flags, cBrush);
-		else
-			CreateWalls(x, y, rx, ry, c, flags, cBrush);
-		e += de;
-		if (e >= 0.5f)
+		if (c==0)
 		{
-			y += sy;
-			if (!(rx+ry) && ((y1<y2) ? (y<=y2) : (y>=y2)))
-			{
-				if (cp)
-					CreateWalls(y, x, rx, ry, c, flags, cBrush);
-				else
-					CreateWalls(x, y, rx, ry, c, flags, cBrush);
-			}
-			e -= 1.0f;
+			cm = pmap[y][x]&0xFF;
+			if (!cm)
+				return 0;
 		}
+		else
+			cm = 0;
 	}
+	if (bm==-1)
+	{
+		bm = bmap[y/CELL][x/CELL];
+	}
+
+	if (((pmap[y][x]&0xFF)!=cm || bmap[y/CELL][x/CELL]!=bm ))
+		return 1;
+
+	coord_stack = (short unsigned int (*)[2])malloc(sizeof(unsigned short)*2*coord_stack_limit);
+	coord_stack[coord_stack_size][0] = x;
+	coord_stack[coord_stack_size][1] = y;
+	coord_stack_size++;
+
+	do
+	{
+		coord_stack_size--;
+		x = coord_stack[coord_stack_size][0];
+		y = coord_stack[coord_stack_size][1];
+		x1 = x2 = x;
+		// go left as far as possible
+		while (x1>=CELL)
+		{
+			if ((pmap[y][x1-1]&0xFF)!=cm || bmap[y/CELL][(x1-1)/CELL]!=bm)
+			{
+				break;
+			}
+			x1--;
+		}
+		// go right as far as possible
+		while (x2<XRES-CELL)
+		{
+			if ((pmap[y][x2+1]&0xFF)!=cm || bmap[y/CELL][(x2+1)/CELL]!=bm)
+			{
+				break;
+			}
+			x2++;
+		}
+		// fill span
+		for (x=x1; x<=x2; x++)
+		{
+			if (CreateParts(x, y, 0, 0, fullc, flags))
+				created_something = 1;
+		}
+
+		if (y>=CELL+dy)
+			for (x=x1; x<=x2; x++)
+				if ((pmap[y-dy][x]&0xFF)==cm && bmap[(y-dy)/CELL][x/CELL]==bm)
+				{
+					coord_stack[coord_stack_size][0] = x;
+					coord_stack[coord_stack_size][1] = y-dy;
+					coord_stack_size++;
+					if (coord_stack_size>=coord_stack_limit)
+					{
+						free(coord_stack);
+						return -1;
+					}
+				}
+
+		if (y<YRES-CELL-dy)
+			for (x=x1; x<=x2; x++)
+				if ((pmap[y+dy][x]&0xFF)==cm && bmap[(y+dy)/CELL][x/CELL]==bm)
+				{
+					coord_stack[coord_stack_size][0] = x;
+					coord_stack[coord_stack_size][1] = y+dy;
+					coord_stack_size++;
+					if (coord_stack_size>=coord_stack_limit)
+					{
+						free(coord_stack);
+						return -1;
+					}
+				}
+	} while (coord_stack_size>0);
+	free(coord_stack);
+	return created_something;
 }
 
 void *Simulation::transform_save(void *odata, int *size, matrix2d transform, vector2d translate)
@@ -2033,6 +2021,7 @@ void Simulation::init_can_move()
 		}
 	}
 	//a list of lots of things PHOT can move through
+	// TODO: replace with property
 	for (movingType = 0; movingType < PT_NUM; movingType++)
 	{
 		if (movingType == PT_GLAS || movingType == PT_PHOT || movingType == PT_FILT || movingType == PT_INVIS
@@ -2721,20 +2710,17 @@ int Simulation::create_part(int p, int x, int y, int tv)
 	{
 		if (pmap[y][x])
 		{
+			//If an element has the PROP_DRAWONCTYPE property, and the element being drawn to it does not have PROP_NOCTYPEDRAW (Also some special cases), set the element's ctype
 			int drawOn = pmap[y][x]&0xFF;
-			if ((
-				(drawOn == PT_STOR && !(elements[t].Properties&TYPE_SOLID)) ||
-				drawOn==PT_CLNE ||
-				drawOn==PT_BCLN ||
-				drawOn==PT_CONV ||
-				(drawOn==PT_PCLN&&t!=PT_PSCN&&t!=PT_NSCN) ||
-				(drawOn==PT_PBCN&&t!=PT_PSCN&&t!=PT_NSCN)
-			)&&(
-				t != PT_CLNE && t != PT_PCLN && t != PT_BCLN && t != PT_STKM && t != PT_STKM2 && t != PT_PBCN && t != PT_STOR && t != PT_FIGH && t != PT_CONV)
-			)
+			if (((elements[drawOn].Properties & PROP_DRAWONCTYPE) ||
+				 (drawOn == PT_STOR && !(elements[t].Properties & TYPE_SOLID)) ||
+				 (drawOn == PT_PCLN && t != PT_PSCN && t != PT_NSCN) ||
+				 (drawOn == PT_PBCN && t != PT_PSCN && t != PT_NSCN))
+				&& (!(elements[t].Properties & PROP_NOCTYPEDRAW)))
 			{
 				parts[pmap[y][x]>>8].ctype = t;
-				if (t == PT_LIFE && v < NGOL && drawOn != PT_STOR) parts[pmap[y][x]>>8].tmp = v;
+				if (t == PT_LIFE && v < NGOL && drawOn != PT_STOR)
+					parts[pmap[y][x]>>8].tmp = v;
 			}
 			else if ((drawOn == PT_DTEC || (drawOn == PT_PSTN && t != PT_FRME)) && drawOn != t)
 			{
@@ -3168,7 +3154,7 @@ void Simulation::create_cherenkov_photon(int pp)//photons from NEUT going throug
 	parts[i].vy *= r;
 }
 
-void Simulation::delete_part(int x, int y, int flags)//calls kill_part with the particle located at x,y
+void Simulation::delete_part(int x, int y)//calls kill_part with the particle located at x,y
 {
 	unsigned i;
 
@@ -3856,13 +3842,20 @@ void Simulation::update_particles_i(int start, int inc)
 						}
 						else if (t == PT_BRMT)
 						{
-							if (parts[i].ctype == PT_TUNG && ctemph <= 3695.0)
-								s = 0;
-							else
+							if (parts[i].ctype == PT_TUNG)
 							{
-								t = PT_LAVA;
-								parts[i].type = PT_TUNG;
+								if (ctemph <= 3695.0)
+									s = 0;
+								else
+								{
+									t = PT_LAVA;
+									parts[i].type = PT_TUNG;
+								}
 							}
+							else if (ctemph >= elements[t].HighTemperature)
+								t = PT_LAVA;
+							else
+								s = 0;
 						}
 						else
 							s = 0;
@@ -4766,7 +4759,9 @@ Simulation::Simulation():
 	force_stacking_check(0),
 	ISWIRE(0),
 	VINE_MODE(0),
-	gravWallChanged(false)
+	gravWallChanged(false),
+	replaceModeSelected(0),
+	replaceModeFlags(0)
 {
     int tportal_rx[] = {-1, 0, 1, 1, 1, 0,-1,-1};
     int tportal_ry[] = {-1,-1,-1, 0, 1, 1, 1, 0};

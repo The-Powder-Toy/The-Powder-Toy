@@ -606,7 +606,7 @@ bool GameView::GetDebugHUD()
 
 ui::Point GameView::GetMousePosition()
 {
-	return mousePosition;
+	return currentMouse;
 }
 
 void GameView::NotifyActiveToolsChanged(GameModel * sender)
@@ -953,6 +953,7 @@ void GameView::NotifySaveChanged(GameModel * sender)
 		tagSimulationButton->SetText("[no tags set]");
 		currentSaveType = 0;
 	}
+	c->HistorySnapshot();
 }
 
 void GameView::NotifyBrushChanged(GameModel * sender)
@@ -2025,21 +2026,22 @@ void GameView::OnDraw()
 		sampleInfo.precision(2);
 		if(sample.particle.type)
 		{
+			int ctype = sample.particle.ctype;
+			if (sample.particle.type == PT_PIPE || sample.particle.type == PT_PPIP)
+				ctype = sample.particle.tmp&0xFF;
 			if(showDebug)
 			{
-				int ctype = sample.particle.ctype;
-				if (sample.particle.type == PT_PIPE || sample.particle.type == PT_PPIP)
-					ctype = sample.particle.tmp;
-
 				if (sample.particle.type == PT_LAVA && ctype > 0 && ctype < PT_NUM)
-					sampleInfo << "Molten " << c->ElementResolve(ctype);
-				else if((sample.particle.type == PT_PIPE || sample.particle.type == PT_PPIP) && ctype > 0 && ctype < PT_NUM)
-					sampleInfo << c->ElementResolve(sample.particle.type) << " with " << c->ElementResolve(ctype);
+					sampleInfo << "Molten " << c->ElementResolve(ctype, -1);
+				else if ((sample.particle.type == PT_PIPE || sample.particle.type == PT_PPIP) && ctype > 0 && ctype < PT_NUM)
+					sampleInfo << c->ElementResolve(sample.particle.type, -1) << " with " << c->ElementResolve(ctype, (int)sample.particle.pavg[1]);
+				else if (sample.particle.type == PT_LIFE)
+					sampleInfo << c->ElementResolve(sample.particle.type, sample.particle.ctype);
 				else
 				{
-					sampleInfo << c->ElementResolve(sample.particle.type);
+					sampleInfo << c->ElementResolve(sample.particle.type, sample.particle.ctype);
 					if(ctype > 0 && ctype < PT_NUM)
-						sampleInfo << " (" << c->ElementResolve(ctype) << ")";
+						sampleInfo << " (" << c->ElementResolve(ctype, -1) << ")";
 					else
 						sampleInfo << " ()";
 				}
@@ -2051,11 +2053,13 @@ void GameView::OnDraw()
 			else
 			{
 				if (sample.particle.type == PT_LAVA && sample.particle.ctype > 0 && sample.particle.ctype < PT_NUM)
-					sampleInfo << "Molten " << c->ElementResolve(sample.particle.ctype);
-				else if((sample.particle.type == PT_PIPE || sample.particle.type == PT_PPIP) && sample.particle.tmp > 0 && sample.particle.tmp < PT_NUM)
-					sampleInfo << c->ElementResolve(sample.particle.type) << " with " << c->ElementResolve(sample.particle.tmp);
+					sampleInfo << "Molten " << c->ElementResolve(sample.particle.ctype, -1);
+				else if ((sample.particle.type == PT_PIPE || sample.particle.type == PT_PPIP) && ctype > 0 && ctype < PT_NUM)
+					sampleInfo << c->ElementResolve(sample.particle.type, -1) << " with " << c->ElementResolve(ctype, (int)sample.particle.pavg[1]);
+				else if (sample.particle.type == PT_LIFE)
+					sampleInfo << c->ElementResolve(sample.particle.type, sample.particle.ctype);
 				else
-					sampleInfo << c->ElementResolve(sample.particle.type);
+					sampleInfo << c->ElementResolve(sample.particle.type, sample.particle.ctype);
 				sampleInfo << ", Temp: " << std::fixed << sample.particle.temp -273.15f;
 				sampleInfo << ", Pressure: " << std::fixed << sample.AirPressure;
 			}
@@ -2067,9 +2071,13 @@ void GameView::OnDraw()
 			sampleInfo << c->WallName(sample.WallType);
 			sampleInfo << ", Pressure: " << std::fixed << sample.AirPressure;
 		}
-		else
+		else if (sample.isMouseInSim)
 		{
 			sampleInfo << "Empty, Pressure: " << std::fixed << sample.AirPressure;
+		}
+		else
+		{
+			sampleInfo << "Empty";
 		}
 
 		int textWidth = Graphics::textwidth((char*)sampleInfo.str().c_str());

@@ -66,7 +66,7 @@ public:
 	pixel sampleColor;
 
 	//Mouse position for debug information
-	int mousePosX, mousePosY;
+	ui::Point mousePos;
 
 	//Zoom window
 	ui::Point zoomWindowPosition;

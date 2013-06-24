@@ -49,7 +49,7 @@ Element_COAL::Element_COAL()
 //#TPT-Directive ElementHeader Element_COAL static int update(UPDATE_FUNC_ARGS)
 int Element_COAL::update(UPDATE_FUNC_ARGS)
  {
-	int r, rx, ry, trade, temp;
+	int r, rx, ry, trade, temp, t = parts[i].type;
 	if (parts[i].life<=0) {
 		sim->create_part(i, x, y, PT_FIRE);
 		return 1;
@@ -57,13 +57,16 @@ int Element_COAL::update(UPDATE_FUNC_ARGS)
 		parts[i].life--;
 		sim->create_part(-1, x+rand()%3-1, y+rand()%3-1, PT_FIRE);
 	}
-	if ((sim->pv[y/CELL][x/CELL] > 4.3f)&&parts[i].tmp>40)
-		parts[i].tmp=39;
-	else if (parts[i].tmp<40&&parts[i].tmp>0)
-		parts[i].tmp--;
-	else if (parts[i].tmp<=0) {
-		sim->create_part(i, x, y, PT_BCOL);
-		return 1;
+	if (t == PT_COAL)
+	{
+		if ((sim->pv[y/CELL][x/CELL] > 4.3f)&&parts[i].tmp>40)
+			parts[i].tmp=39;
+		else if (parts[i].tmp<40&&parts[i].tmp>0)
+			parts[i].tmp--;
+		else if (parts[i].tmp<=0) {
+			sim->create_part(i, x, y, PT_BCOL);
+			return 1;
+		}
 	}
 	/*if(100-parts[i].life > parts[i].tmp2)
 		parts[i].tmp2 = 100-parts[i].life;

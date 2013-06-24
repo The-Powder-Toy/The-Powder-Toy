@@ -1,47 +1,9 @@
 #include "gui/Style.h"
 #include "SaveIDMessage.h"
 #include "gui/interface/Button.h"
+#include "gui/interface/CopyTextButton.h"
 #include "gui/interface/Label.h"
-#include "PowderToy.h"
-
-class CopyTextButton : public ui::Button
-{
-	ui::Label *copyTextLabel;
-public:
-	CopyTextButton(ui::Point position, ui::Point size, std::string buttonText, ui::Label *copyTextLabel_):
-		Button(position, size, buttonText)
-	{
-		copyTextLabel = copyTextLabel_;
-	}
-
-	virtual void OnMouseClick(int x, int y, unsigned int button)
-	{
-		ui::Button::OnMouseClick(x, y, button);
-		ClipboardPush((char*)ButtonText.c_str());
-
-		int textWidth = Graphics::textwidth("Copied!");
-		copyTextLabel->SetText("Copied!");
-		copyTextLabel->Position = ui::Point(Position.X+(Size.X-textWidth)/2-4, copyTextLabel->Position.Y);
-		copyTextLabel->Size = ui::Point(textWidth+20, 16);
-
-		Appearance.TextInactive = ui::Colour(180, 230, 180);
-		Appearance.TextHover = ui::Colour(180, 230, 180);
-		Appearance.BorderInactive = ui::Colour(180, 230, 180);
-		Appearance.BorderHover = ui::Colour(180, 230, 180);
-	}
-
-	virtual void OnMouseEnter(int x, int y)
-	{
-		ui::Button::OnMouseEnter(x, y);
-		copyTextLabel->SetTextColour(ui::Colour(230, 230, 230));
-	}
-
-	virtual void OnMouseLeave(int x, int y)
-	{
-		ui::Button::OnMouseLeave(x, y);
-		copyTextLabel->SetTextColour(ui::Colour(150, 150, 150));
-	}
-};
+#include "Format.h"
 
 SaveIDMessage::SaveIDMessage(int id):
 	ui::Window(ui::Point((XRES-244)/2, (YRES-90)/2), ui::Point(244, 90))
@@ -62,20 +24,11 @@ SaveIDMessage::SaveIDMessage(int id):
 	textWidth = Graphics::textwidth("Click the box below to copy the save ID");
 	ui::Label * copyTextLabel = new ui::Label(ui::Point((Size.X-textWidth-20)/2, 35), ui::Point(textWidth+20, 16), "Click the box below to copy the save id");
 	copyTextLabel->SetTextColour(ui::Colour(150, 150, 150));
-	copyTextLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
-	copyTextLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	copyTextLabel->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	AddComponent(copyTextLabel);
 
-	std::stringstream saveID;
-	saveID << id;
-	textWidth = Graphics::textwidth(saveID.str().c_str());
-	CopyTextButton * copyTextButton = new CopyTextButton(ui::Point((Size.X-textWidth-10)/2, 50), ui::Point(textWidth+8, 18), saveID.str(), copyTextLabel);
-	copyTextButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
-	copyTextButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-	copyTextButton->Appearance.TextInactive = ui::Colour(150, 150, 150);
-	copyTextButton->Appearance.TextActive = ui::Colour(230, 255, 230);
-	copyTextButton->Appearance.BorderActive = ui::Colour(230, 255, 230);
-	copyTextButton->Appearance.BackgroundActive = style::Colour::InactiveBackground;
+	textWidth = Graphics::textwidth(format::NumberToString<int>(id).c_str());
+	ui::CopyTextButton * copyTextButton = new ui::CopyTextButton(ui::Point((Size.X-textWidth-10)/2, 50), ui::Point(textWidth+10, 18), format::NumberToString<int>(id), copyTextLabel);
 	AddComponent(copyTextButton);
 
 	class DismissAction: public ui::ButtonAction

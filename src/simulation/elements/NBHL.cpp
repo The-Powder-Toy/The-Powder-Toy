@@ -5,7 +5,7 @@ Element_NBHL::Element_NBHL()
 	Identifier = "DEFAULT_PT_NBHL";
 	Name = "BHOL";
 	Colour = PIXPACK(0x202020);
-	MenuVisible = 0;
+	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;
 	Enabled = 1;
 	
@@ -49,21 +49,11 @@ Element_NBHL::Element_NBHL()
 //#TPT-Directive ElementHeader Element_NBHL static int update(UPDATE_FUNC_ARGS)
 int Element_NBHL::update(UPDATE_FUNC_ARGS)
  {
-	int r, rx, ry;
-    for(rx=-1; rx<2; rx++)
-        for(ry=-1; ry<2; ry++)
-            if(x+rx>=0 && y+ry>0 && x+rx<XRES && y+ry<YRES &&
-                pmap[y+ry][x+rx] &&
-                (pmap[y+ry][x+rx]&0xFF)!=PT_SDST&&
-                (pmap[y+ry][x+rx]&0xFF)!=0xFF)
-    {
-        r = pmap[y+ry][x+rx];
-        if(r&0xFF){
-			sim->pv[x/CELL][y/CELL] = 256;
-			sim->part_change_type(i,x,y,PT_STAR);
-    }
-    return 0;
- }
+	if (parts[i].tmp)
+		sim->gravmap[(y/CELL)*(XRES/CELL)+(x/CELL)] += restrict_flt(0.001f*parts[i].tmp, 0.1f, 51.2f);
+	else
+		sim->gravmap[(y/CELL)*(XRES/CELL)+(x/CELL)] += 0.1f;
+	return 0;
 }
 
 

@@ -57,7 +57,7 @@ int Element_CO2::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 				{
-					if (parts[i].ctype==5 && !(rand()%27))
+					if (parts[i].ctype==5 && !(rand()%2000))
 					{
 						if (sim->create_part(-1, x+rx, y+ry, PT_WATR)>=0)
 							parts[i].ctype = 0;
@@ -66,12 +66,12 @@ int Element_CO2::update(UPDATE_FUNC_ARGS)
 				}
 				if ((r&0xFF)==PT_FIRE){
 					sim->kill_part(r>>8);
-					if(!(rand()%50)){
+					if(!(rand()%30)){
 						sim->kill_part(i);
 						return 1;
 					}
 				}
-				else if (((r&0xFF)==PT_WATR || (r&0xFF)==PT_DSTW) && !(rand()%83))
+				else if (((r&0xFF)==PT_WATR || (r&0xFF)==PT_DSTW) && !(rand()%50))
 				{
 					sim->part_change_type(r>>8, x+rx, y+ry, PT_CBNW);
 					if (parts[i].ctype==5) //conserve number of water particles - ctype=5 means this CO2 hasn't released the water particle from BUBW yet

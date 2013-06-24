@@ -41,7 +41,9 @@ LoginView::LoginView():
 	targetSize = Size;
 	FocusComponent(usernameField);
 	
-	infoLabel->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;	infoLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	infoLabel->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
+	infoLabel->Appearance.VerticalAlign = ui::Appearance::AlignTop;
+	infoLabel->SetMultiline(true);
 	infoLabel->Visible = false;
 	AddComponent(infoLabel);
 	
@@ -56,14 +58,17 @@ LoginView::LoginView():
 	cancelButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	cancelButton->SetActionCallback(new CancelAction(this));
 	AddComponent(titleLabel);
-	titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	titleLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	titleLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	
 	AddComponent(usernameField);
 	usernameField->Appearance.icon = IconUsername;
-	usernameField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	usernameField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	usernameField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	usernameField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(passwordField);
 	passwordField->Appearance.icon = IconPassword;
-	passwordField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	passwordField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	passwordField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	passwordField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	passwordField->SetHidden(true);
 }
 
@@ -87,12 +92,15 @@ void LoginView::OnTryExit(ExitMethod method)
 
 void LoginView::NotifyStatusChanged(LoginModel * sender)
 {
-	if(!infoLabel->GetText().length() && sender->GetStatusText().length())
+	if (infoLabel->Visible)
+		targetSize.Y -= infoLabel->Size.Y+2;
+	infoLabel->SetText(sender->GetStatusText());
+	infoLabel->AutoHeight();
+	if (sender->GetStatusText().length())
 	{
-		targetSize = Size+ui::Point(0, 18);
+		targetSize.Y += infoLabel->Size.Y+2;
 		infoLabel->Visible = true;
 	}
-	infoLabel->SetText(sender->GetStatusText());
 	if(sender->GetStatus())
 	{
 		c->Exit();

@@ -87,7 +87,7 @@ namespace vm
 
 	TRAPDEF(deletePart)
 	{
-		sim->delete_part(ARG(0).int4, ARG(1).int4, ARG(2).int4);
+		sim->delete_part(ARG(0).int4, ARG(1).int4);
 		return 0;
 	}
 

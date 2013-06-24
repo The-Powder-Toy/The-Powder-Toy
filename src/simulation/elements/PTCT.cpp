@@ -39,7 +39,7 @@ Element_PTCT::Element_PTCT()
 	HighPressureTransition = NT;
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
-	HighTemperature = 1414.0f;
+	HighTemperature = 1687.0f;
 	HighTemperatureTransition = PT_LAVA;
 	
 	Update = &Element_PTCT::update;

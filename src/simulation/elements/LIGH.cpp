@@ -29,7 +29,7 @@ Element_LIGH::Element_LIGH()
 	
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 0;
-	Description = "Lightning. Brush size=LIGH size. Creates N2 in the ground it hits. Use sparingly.";
+	Description = "Lightning. Change the brush size to set the size of the lightning.";
 	
 	State = ST_SOLID;
 	Properties = TYPE_SOLID;
@@ -71,7 +71,6 @@ int Element_LIGH::update(UPDATE_FUNC_ARGS)
 	int r,rx,ry,rt, multipler, powderful;
 	float angle, angle2=-1;
 	int pNear = 0;
-	int flags;
 	powderful = powderful = parts[i].temp*(1+parts[i].life/40)*LIGHTING_POWER;
 	//Element_FIRE::update(UPDATE_FUNC_SUBCALL_ARGS);
 	if (sim->aheat_enable)
@@ -89,10 +88,6 @@ int Element_LIGH::update(UPDATE_FUNC_ARGS)
 				if (!r)
 					continue;
 				rt = r&0xFF;
-				if((r&0xFF)&&((r&0xFF)!=PT_LIGH)){
-					parts[r>>8].type=PT_N2;
-					parts[r>>8].y+=3;
-				}
 				if ((surround_space || sim->elements[rt].Explosive) &&
 				    (rt!=PT_SPNG || parts[r>>8].life==0) &&
 					sim->elements[rt].Flammable && (sim->elements[rt].Flammable + (int)(sim->pv[(y+ry)/CELL][(x+rx)/CELL]*10.0f))>(rand()%1000))
@@ -126,9 +121,6 @@ int Element_LIGH::update(UPDATE_FUNC_ARGS)
 						parts[r>>8].vx=rand()%10-5;
 						parts[r>>8].vy=rand()%10-5;
 					}
-					break;
-				case PT_PLNT:
-					sim->CreateBox(x+2,y+2,x-2,y-2,PT_N2,flags);
 					break;
 				case PT_COAL:
 				case PT_BCOL:

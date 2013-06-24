@@ -42,82 +42,8 @@ Element_BCOL::Element_BCOL()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 	
-	Update = &Element_BCOL::update;
-	Graphics = &Element_BCOL::graphics;
+	Update = &Element_COAL::update;
+	Graphics = &Element_COAL::graphics;
 }
-
-//#TPT-Directive ElementHeader Element_BCOL static int update(UPDATE_FUNC_ARGS)
-int Element_BCOL::update(UPDATE_FUNC_ARGS)
- {
-	int r, rx, ry, trade, temp;
-	if (parts[i].life<=0) {
-		sim->create_part(i, x, y, PT_FIRE);
-		return 1;
-	} else if (parts[i].life < 100) {
-		parts[i].life--;
-		sim->create_part(-1, x+rand()%3-1, y+rand()%3-1, PT_FIRE);
-	}
-	/*if(100-parts[i].life > parts[i].tmp2)
-		parts[i].tmp2 = 100-parts[i].life;
-	if(parts[i].tmp2 < 0) parts[i].tmp2 = 0;
-	for ( trade = 0; trade<4; trade ++)
-	{
-		rx = rand()%5-2;
-		ry = rand()%5-2;
-		if (BOUNDS_CHECK && (rx || ry))
-		{
-			r = pmap[y+ry][x+rx];
-			if (!r)
-				continue;
-			if (((r&0xFF)==PT_COAL || (r&0xFF)==PT_BCOL)&&(parts[i].tmp2>parts[r>>8].tmp2)&&parts[i].tmp2>0)//diffusion
-			{
-				int temp = parts[i].tmp2 - parts[r>>8].tmp2;
-				if(temp < 10)
-					continue;
-				if (temp ==1)
-				{
-					parts[r>>8].tmp2 ++;
-					parts[i].tmp2 --;
-				}
-				else if (temp>0)
-				{
-					parts[r>>8].tmp2 += temp/2;
-					parts[i].tmp2 -= temp/2;
-				}
-			}
-		}
-	}*/
-	if(parts[i].temp > parts[i].tmp2)
-		parts[i].tmp2 = parts[i].temp;
-	return 0;
-}
-
-
-//#TPT-Directive ElementHeader Element_BCOL static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_BCOL::graphics(GRAPHICS_FUNC_ARGS)
- //Both COAL and Broken Coal
-{
-	*colr += (cpart->tmp2-295.15f)/3;
-	
-	if (*colr > 170)
-		*colr = 170;
-	if (*colr < *colg)
-		*colr = *colg;
-		
-	*colg = *colb = *colr;
-
-	if((cpart->temp-295.15f) > 300.0f-200.0f)
-	{
-		float frequency = 3.1415/(2*300.0f-(300.0f-200.0f));
-		int q = ((cpart->temp-295.15f)>300.0f)?300.0f-(300.0f-200.0f):(cpart->temp-295.15f)-(300.0f-200.0f);
-
-		*colr += sin(frequency*q) * 226;
-		*colg += sin(frequency*q*4.55 +3.14) * 34;
-		*colb += sin(frequency*q*2.22 +3.14) * 64;
-	}
-	return 0;
-}
-
-
 
 Element_BCOL::~Element_BCOL() {}
