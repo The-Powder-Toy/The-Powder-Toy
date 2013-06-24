@@ -12,6 +12,8 @@ All
  
  
 User element suggestions:
-<iamaway> element that absorbs colour from photons
+<iamaway> element that absorbs colour from photons<br />
  
-One Time Wire
+-One Time Wire (done)<br />
+-Virus (done)<br />
+
