@@ -16,4 +16,5 @@ User element suggestions:<br />
  
 -One Time Wire (done)<br />
 -Virus (done)<br />
+-Cure(Turns virus into whatever it was before) <br />
 
