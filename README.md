@@ -15,6 +15,7 @@ tommig (Programmer)<br />
 greymatter (Programmer)<br />
 Kikinicij (Programmer)<br />
 cyberdragon (github staff)<br />
+xetalim (Programmer)<br />
 
 ###[Original Powder Sim Team] 
 Matthew Miller<br />
