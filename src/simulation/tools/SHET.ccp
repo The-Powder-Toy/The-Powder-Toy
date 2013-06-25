@@ -13,7 +13,7 @@ int Tool_Shet::Perform(Simulation * sim, Particle * cpart, int x, int y, float s
 	if(!cpart)
 		return 0;
 	if (cpart->type == PT_PUMP || cpart->type == PT_GPMP)
-		cpart->temp += strength*.1f;
+		cpart->temp += strength*.5f;
 	else
 		cpart->temp += strength*10.0f;
 
