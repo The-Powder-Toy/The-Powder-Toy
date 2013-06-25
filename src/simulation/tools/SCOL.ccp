@@ -5,7 +5,7 @@ Tool_Scol::Tool_Scol()
   Identifier = "DEFAULT_TOOL_Scol";
 	Name = "SCOL";
 	Colour = PIXPACK(0x00DDFF);
-	Description = "Cools the targeted element superfast.";
+	Description = "Superfast Cool. Cools the targeted element.";
 }
 
 int Tool_Scol::Perform(Simulation * sim, Particle * cpart, int x, int y, float strength)
