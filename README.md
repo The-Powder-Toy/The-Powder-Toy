@@ -52,10 +52,6 @@ Click on the elements with the mouse and draw in the field, like in MS Paint. Th
 ##Controls:
 --------------------------------------------------
 
-Controls:
----------------------------------------------------------------------------
-
-
 **TAB** 			  Switch between circle/square/triangle brush<br />
 **Space** 			Pause<br />
 **Q** 				  Quit<br />
