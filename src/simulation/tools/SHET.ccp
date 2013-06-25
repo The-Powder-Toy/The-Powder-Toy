@@ -5,7 +5,7 @@ Tool_Shet::Tool_Shet()
   Identifier = "DEFAULT_TOOL_SHET";
 	Name = "SHET";
 	Colour = PIXPACK(0xFFDD00);
-	Description = "Heats the targeted element superfast.";
+	Description = "Superfast Heater. Heats the targeted element.";
 }
 
 int Tool_Shet::Perform(Simulation * sim, Particle * cpart, int x, int y, float strength)
