@@ -18,7 +18,7 @@ static const char *introTextData =
 	"'L' will load the most recent stamp, 'K' shows a library of stamps you saved.\n"
 	"'P' will take a screenshot and save it into the current directory.\n"
 	"\n"
-	"Contributors: \bgwolfy1339 (leader),\n"
+	"Contributors: \bgwolfy1339 (Leader),\n"
 	"\bgfirefreak11(Leed Programmer), cyberdragon (Github staff), tommig, kikinicij, greymatter, GreenFireDragon," 
 	"\bgTPT:Stanislaw K Skowronek (Designed the original Powder Toy), Simon Robertshaw, Skresanov Savely, cracker64," 
 	"\bgCatelite, Bryan Hoyle, Nathan Cousins, jacksonmj, Felix Wallin, Lieuwe Mosch, Anthony Boot, Matthew \"me4502\", MaksProg, jacob1, mniip\n"
