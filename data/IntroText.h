@@ -19,7 +19,7 @@ static const char *introTextData =
 	"'P' will take a screenshot and save it into the current directory.\n"
 	"\n"
 	"Contributors: \bgwolfy1339 (Leader),\n"
-	"\bgfirefreak11(Leed Programmer), cyberdragon (Github staff), tommig, kikinicij, greymatter, GreenFireDragon," 
+	"\bgfirefreak11(Leed Programmer), cyberdragon (Github staff), tommig, kikinicij, greymatter, Xetalim, GreenFireDragon"
 	"\bgTPT:Stanislaw K Skowronek (Designed the original Powder Toy), Simon Robertshaw, Skresanov Savely, cracker64," 
 	"\bgCatelite, Bryan Hoyle, Nathan Cousins, jacksonmj, Felix Wallin, Lieuwe Mosch, Anthony Boot, Matthew \"me4502\", MaksProg, jacob1, mniip\n"
 	"\bgTo use online features such as saving, you need to register at: \brhttp://powdertoy.co.uk/Register.html\n"
