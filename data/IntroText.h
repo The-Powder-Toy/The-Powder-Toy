@@ -19,7 +19,7 @@ static const char *introTextData =
 	"'P' will take a screenshot and save it into the current directory.\n"
 	"\n"
 	"Contributors: \bgwolfy1339 (leader),\n"
-	"\bgfirefreak11(Leed Programmer), cyberdragon (Github staff), tommig, kikinicij, greymatter" 
+	"\bgfirefreak11(Leed Programmer), cyberdragon (Github staff), tommig, kikinicij, greymatter, GreenFireDragon" 
 	"\n"
 	"\bgTo use online features such as saving, you need to register at: \brhttp://powdertoy.co.uk/Register.html\n"
 	"\n"
