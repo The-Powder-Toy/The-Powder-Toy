@@ -6,7 +6,7 @@ Features from Powder Sim:<br />
 reinitialize the pmap array and update the particle limit and make it iron sure that XRES%CELL and YRES%CELL are both 0)
  
 Elements from The Realistic Science Mod:<br />
-All
+Done
  
 Elements from Mythical Mod:<br />
 Done
