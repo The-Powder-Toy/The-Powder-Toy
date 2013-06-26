@@ -9,40 +9,43 @@
 -----------------------------------------
 
 ###[Powder Sim 2 Development Team] 
-wolfy1339 (Leader)<br />
-firefreak11 (Lead Programmer)<br />
-tommig (Programmer)<br />
-greymatter (Programmer)<br />
-Kikinicij (Programmer)<br />
-cyberdragon (github staff)<br />
-xetalim (Programmer)<br />
+-  wolfy1339 (Leader)<br />
+-  firefreak11 (Lead Programmer)<br />
+-  tommig (Programmer)<br />
+-  greymatter (Programmer)<br />
+-  Kikinicij (Programmer)<br />
+-  xetalim (Programmer)<br />
+-  cyberdragon (github staff)<br />
+  
+###[IRC Client]
+-  mniip
 
 ###[Original Powder Sim Team] 
-Matthew Miller<br />
-EyesIsMine<br />
-PizzaPlatypus<br />
-vanquish349<br />
-randalserrano<br />
-Anthony Boot<br />
-Matthew Miller<br />
-Antonvrg<br />
+-  Matthew Miller//me4502//<br />
+-  EyesIsMine<br />
+-  PizzaPlatypus<br />
+-  vanquish349<br />
+-  randalserrano<br />
+-  Anthony Boot<br />
+-  Antonvrg<br />
 
 ###[The Powder Toy Team]
-Stanislaw K Skowronek - Designed the original<br />
-Simon Robertshaw<br />
-Skresanov Savely<br />
-cracker64<br />
-Catelite<br />
-Bryan Hoyle<br />
-Nathan Cousins<br />
-jacksonmj<br />
-Felix Wallin<br />
-Lieuwe Mosch<br />
-Anthony Boot<br />
-Matthew Miller<br />
-MaksProg<br />
-jacob1<br />
-mniip<br />
+-  Stanislaw K Skowronek - Designed the original<br />
+-  Simon Robertshaw<br />
+-  Skresanov Savely<br />
+-  cracker64<br />
+-  Catelite<br />
+-  Bryan Hoyle<br />
+-  Nathan Cousins<br />
+-  jacksonmj<br />
+-  Felix Wallin<br />
+-  Lieuwe Mosch<br />
+-  Anthony Boot<br />
+-  Matthew Miller//me4502//<br />
+-  MaksProg<br />
+-  jacob1<br />
+-  mniip<br />
+
 
 
 ##Instructions:
@@ -54,15 +57,15 @@ Click on the elements with the mouse and draw in the field, like in MS Paint. Th
 --------------------------------------------------
 
 **TAB** 			  Switch between circle/square/triangle brush<br />
-**Space** 			Pause<br />
+**Space** 		  Pause<br />
 **Q** 				  Quit<br />
 **Esc** 			  Quit<br />
 **Z** 				  Zoom<br />
 **S** 				  Save stamp (+ Ctrl when STK2 is out)<br />
 **L** 				  Load last saved stamp<br />
-**K** 				  Stamp library<br />
+**K** 			    Stamp library<br />
 **1-9** 			  Set view mode<br />
-**P** 				  Save screenshot to .png<br />
+**P** 			    Save screenshot to .png<br />
 **F** 				  Pause and go to next frame<br />
 **G** 				  Increase grid size<br />
 **Shift + G**		Decrease grid size<br />
