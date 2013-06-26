@@ -10,7 +10,6 @@ stdout.txt
 stderr.txt
 stamps/*
 Saves/*
-generated/*
 includes/*
 generate
 Makefile.me
