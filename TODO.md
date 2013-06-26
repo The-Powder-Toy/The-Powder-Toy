@@ -18,3 +18,7 @@ User element suggestions:<br />
 -Virus (done)<br />
 -Cure(Turns virus into whatever it was before) <br />
 
+
+
+Fix WSTE, it creates a pressure of nan.<br />
+
