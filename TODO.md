@@ -17,13 +17,14 @@ User element suggestions:<br />
  
 
 Elements:
--Cure (Turns virus into whatever it was before) Credit to: jacob1 for the element <br />
--Fix Nuclear Waste (WSTE) (it creates a pressure of nan) <br />
+- Cure (Turns virus into whatever it was before) Credit to: jacob1 for the element <br />
+- Fix Nuclear Waste (WSTE) (it creates a pressure of nan) <br />
 
 FINISHED:
--One Time Wire (done)<br />
--Virus (done)<br />
-
-
+- One Time Wire (done)<br />
+- Virus (done)<br />
+- Alcohol (done)
+- BARI (Done)
+- VBMB (Done)
 
 
