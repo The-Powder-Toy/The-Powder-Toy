@@ -31,7 +31,7 @@ Element_RBTY::Element_RBTY()
 	Description = "Rechargeable battery.";
 
 	State = ST_SOLID;
-	Properties = TYPE_SOLID;
+	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
