@@ -9,7 +9,7 @@ Elements from The Realistic Science Mod:<br />
 All
  
 Elements from Mythical Mod:<br />
-All
+Done
  
  
 User element suggestions:<br />
@@ -30,5 +30,6 @@ FINISHED:
  - Alcohol (done)
  - BARI (Done)
  - VBMB (Done)
-
+ - Mythical Mod (Done)
+ - Realistic Science Mod (done)
 
