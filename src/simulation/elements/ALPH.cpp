@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-
+//#TPT-Directive ElementClass Element_ALPH PT_ALPH 200
 Element_ALPH::Element_ALPH()
 {
 	Identifier = "DEFAULT_PT_ALPH";
@@ -46,7 +46,7 @@ Element_ALPH::Element_ALPH()
 	Graphics = &Element_ALPH::graphics;
 }
 
-
+//#TPT-Directive ElementHeader Element_ALPH static int update(UPDATE_FUNC_ARGS)
 int Element_ALPH::update(UPDATE_FUNC_ARGS)
  {
 	int r, rt, rx, ry, nb, rrx, rry;
