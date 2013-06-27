@@ -69,7 +69,7 @@ int Element_NTNO::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-
+//#TPT-Directive ElementHeader Element_NTNO static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_NTNO::graphics(GRAPHICS_FUNC_ARGS)
 
 {

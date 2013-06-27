@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-
+//#TPT-Directive ElementClass Element_DMTR PT_DMTR 203
 Element_DMTR::Element_DMTR()
 {
 	Identifier = "DEFAULT_PT_DMTR";
@@ -46,7 +46,7 @@ Element_DMTR::Element_DMTR()
 	Graphics = &Element_DMTR::graphics;
 }
 
-
+//#TPT-Directive ElementHeader Element_DMTR static int update(UPDATE_FUNC_ARGS)
 int Element_DMTR::update(UPDATE_FUNC_ARGS)
  {
 	int r, rt, rx, ry, nb, rrx, rry;
@@ -69,7 +69,7 @@ int Element_DMTR::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-
+//#TPT-Directive ElementHeader Element_DMTR static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_DMTR::graphics(GRAPHICS_FUNC_ARGS)
 
 {

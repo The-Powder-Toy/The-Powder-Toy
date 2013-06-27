@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-
+//#TPT-Directive ElementClass Element_HDRN PT_HDRN 207
 Element_HDRN::Element_HDRN()
 {
 	Identifier = "DEFAULT_PT_HDRN";
@@ -46,7 +46,7 @@ Element_HDRN::Element_HDRN()
 	Graphics = &Element_HDRN::graphics;
 }
 
-
+//#TPT-Directive ElementHeader Element_HDRN static int update(UPDATE_FUNC_ARGS)
 int Element_HDRN::update(UPDATE_FUNC_ARGS)
  {
 	int r, rt, rx, ry, nb, rrx, rry;
@@ -72,7 +72,7 @@ int Element_HDRN::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-
+//#TPT-Directive ElementHeader Element_HDRN static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_HDRN::graphics(GRAPHICS_FUNC_ARGS)
 
 {

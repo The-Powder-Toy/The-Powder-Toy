@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-
+//#TPT-Directive ElementClass Element_GLUON PT_GLUON 205
 Element_GLUON::Element_GLUON()
 {
 	Identifier = "DEFAULT_PT_GLUON";
@@ -46,7 +46,7 @@ Element_GLUON::Element_GLUON()
 	Graphics = &Element_GLUON::graphics;
 }
 
-
+//#TPT-Directive ElementHeader Element_GLUON static int update(UPDATE_FUNC_ARGS)
 int Element_GLUON::update(UPDATE_FUNC_ARGS)
  {
 	int r, rt, rx, ry, nb, rrx, rry;
@@ -70,7 +70,7 @@ int Element_GLUON::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-
+//#TPT-Directive ElementHeader Element_GLUON static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_GLUON::graphics(GRAPHICS_FUNC_ARGS)
 
 {

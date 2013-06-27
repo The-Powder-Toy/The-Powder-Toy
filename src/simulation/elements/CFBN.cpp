@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-
+//#TPT-Directive ElementClass Element_CFBN PT_CFBN 202
 Element_CFBN::Element_CFBN()
 {
 	Identifier = "DEFAULT_PT_CFBN";
@@ -45,7 +45,7 @@ Element_CFBN::Element_CFBN()
 	Update = &Element_CFBN::update;
 }
 
-
+//#TPT-Directive ElementHeader Element_CFBN static int update(UPDATE_FUNC_ARGS)
 int Element_CFBN::update(UPDATE_FUNC_ARGS)
  {
     int r, rx, ry;

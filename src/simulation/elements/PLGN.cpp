@@ -45,7 +45,7 @@ Element_PLGN::Element_PLGN()
 	Update = &Element_PLGN::update;
 }
 
-
+//#TPT-Directive ElementHeader Element_PLGN static int update(UPDATE_FUNC_ARGS)
 int Element_PLGN::update(UPDATE_FUNC_ARGS)
 {
 	int r,rx,ry;

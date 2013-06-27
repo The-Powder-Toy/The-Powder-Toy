@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-
+//#TPT-Directive ElementClass Element_STAR PT_STAR 210
 Element_STAR::Element_STAR()
 {
 	Identifier = "DEFAULT_PT_STAR";
@@ -46,7 +46,7 @@ Element_STAR::Element_STAR()
 	Graphics = &Element_STAR::graphics;
 }
 
-
+//#TPT-Directive ElementHeader Element_STAR static int update(UPDATE_FUNC_ARGS)
 int Element_STAR::update(UPDATE_FUNC_ARGS)
   {
 	int r, rt, rx, ry, nb, rrx, rry;
@@ -80,7 +80,7 @@ int Element_STAR::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-
+//#TPT-Directive ElementHeader Element_STAR static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_STAR::graphics(GRAPHICS_FUNC_ARGS)
 
 {

@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-
+//#TPT-Directive ElementClass Element_METR PT_METR 208
 Element_METR::Element_METR()
 {
 	Identifier = "DEFAULT_PT_METR";
@@ -46,7 +46,7 @@ Element_METR::Element_METR()
 	Graphics = &Element_METR::graphics;
 }
 
-
+//#TPT-Directive ElementHeader Element_METR static int update(UPDATE_FUNC_ARGS)
 int Element_METR::update(UPDATE_FUNC_ARGS)
   {
 	int r, rt, rx, ry, nb, rrx, rry;
@@ -88,7 +88,7 @@ int Element_METR::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-
+//#TPT-Directive ElementHeader Element_METR static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_METR::graphics(GRAPHICS_FUNC_ARGS)
 
 {

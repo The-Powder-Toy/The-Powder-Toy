@@ -44,7 +44,7 @@ Element_COFF::Element_COFF()
 	
 	Update = &Element_COFF::update;
 }
-
+//#TPT-Directive ElementHeader Element_COFF static int update(UPDATE_FUNC_ARGS)
 int Element_COFF::update(UPDATE_FUNC_ARGS)
  {
 	int r, rx, ry, np;

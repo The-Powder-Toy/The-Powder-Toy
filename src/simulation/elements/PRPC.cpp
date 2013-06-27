@@ -45,7 +45,7 @@ Element_PRPC::Element_PRPC()
 	Update = &Element_PRPC::update;
 	
 }
-
+//#TPT-Directive ElementHeader Element_PRPC static int update(UPDATE_FUNC_ARGS)
 int Element_PRPC::update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry, rt;

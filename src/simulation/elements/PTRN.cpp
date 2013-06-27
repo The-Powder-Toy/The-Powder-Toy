@@ -80,7 +80,7 @@ int Element_PTRN::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-
+//#TPT-Directive ElementHeader Element_PTRN static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_PTRN::graphics(GRAPHICS_FUNC_ARGS)
 
 {

@@ -45,7 +45,7 @@ Element_NTGN::Element_NTGN()
 	Update = &Element_NTGN::update;
 }
 
-
+//#TPT-Directive ElementHeader Element_NTGN static int update(UPDATE_FUNC_ARGS)
 int Element_NTGN::update(UPDATE_FUNC_ARGS)
 {
 	int r,rx,ry;

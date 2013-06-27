@@ -45,7 +45,7 @@ Element_COFE::Element_COFE()
 	Update = &Element_COFE::update;
 	
 }
-
+//#TPT-Directive ElementHeader Element_COFE static int update(UPDATE_FUNC_ARGS)
 int Element_COFE::update(UPDATE_FUNC_ARGS)
  {
 	int r, rx, ry;

@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-
+//#TPT-Directive ElementClass Element_DIZN PT_DIZN 202
 Element_DIZN::Element_DIZN()
 {
 	Identifier = "DEFAULT_PT_DIZN";
@@ -45,7 +45,7 @@ Element_DIZN::Element_DIZN()
 	Update = &Element_DIZN::update;
 }
 
-
+//#TPT-Directive ElementHeader Element_DIZN static int update(UPDATE_FUNC_ARGS)
 int Element_DIZN::update(UPDATE_FUNC_ARGS)
  {
     int r, rx, ry;

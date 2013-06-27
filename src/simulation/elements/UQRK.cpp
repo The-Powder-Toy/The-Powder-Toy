@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-
+//#TPT-Directive ElementClass Element_UQRK PT_UQRK 211
 Element_UQRK::Element_UQRK()
 {
 	Identifier = "DEFAULT_PT_UQRK";
@@ -46,7 +46,7 @@ Element_UQRK::Element_UQRK()
 	Graphics = &Element_UQRK::graphics;
 }
 
-
+//#TPT-Directive ElementHeader Element_UQRK static int update(UPDATE_FUNC_ARGS)
 int Element_UQRK::update(UPDATE_FUNC_ARGS)
  {
 	int r, rt, rx, ry, nb, rrx, rry;
@@ -74,7 +74,7 @@ int Element_UQRK::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-
+//#TPT-Directive ElementHeader Element_UQRK static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_UQRK::graphics(GRAPHICS_FUNC_ARGS)
 
 {

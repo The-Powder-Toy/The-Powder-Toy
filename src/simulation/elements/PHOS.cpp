@@ -44,7 +44,7 @@ Element_PHOS::Element_PHOS()
 	
 	Update = &Element_PHOS::update;
 }
-
+//#TPT-Directive ElementHeader Element_PHOS static int update(UPDATE_FUNC_ARGS)
 int Element_PHOS::update(UPDATE_FUNC_ARGS)
  {
 	int r, rx, ry, np;

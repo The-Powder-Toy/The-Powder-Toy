@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-
+//#TPT-Directive ElementClass Element_GVTN PT_GVTN 206
 Element_GVTN::Element_GVTN()
 {
 	Identifier = "DEFAULT_PT_GVTN";
@@ -46,7 +46,7 @@ Element_GVTN::Element_GVTN()
 	Graphics = &Element_GVTN::graphics;
 }
 
-
+//#TPT-Directive ElementHeader Element_GVTN static int update(UPDATE_FUNC_ARGS)
 int Element_GVTN::update(UPDATE_FUNC_ARGS)
  {
 	int r, rt, rx, ry, nb, rrx, rry;
@@ -69,7 +69,7 @@ int Element_GVTN::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-
+//#TPT-Directive ElementHeader Element_GVTN static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_GVTN::graphics(GRAPHICS_FUNC_ARGS)
 
 {

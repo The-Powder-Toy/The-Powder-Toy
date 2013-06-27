@@ -45,7 +45,7 @@ Element_RVRS::Element_RVRS()
 	Update = &Element_RVRS::update;;
 	
 }
-
+//#TPT-Directive ElementHeader Element_RVRS static int update(UPDATE_FUNC_ARGS)
 int Element_RVRS::update(UPDATE_FUNC_ARGS)
   {
 	int r, rt, rx, ry, nb, rrx, rry;
