@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-
+//#TPT-Directive ElementClass Element_NTNO PT_NTNO 198
 Element_NTNO::Element_NTNO()
 {
 	Identifier = "DEFAULT_PT_NTNO";
@@ -46,7 +46,7 @@ Element_NTNO::Element_NTNO()
 	Graphics = &Element_NTNO::graphics;
 }
 
-
+//#TPT-Directive ElementHeader Element_NTNO static int update(UPDATE_FUNC_ARGS)
 int Element_NTNO::update(UPDATE_FUNC_ARGS)
  {
 	int r, rt, rx, ry, nb, rrx, rry;
