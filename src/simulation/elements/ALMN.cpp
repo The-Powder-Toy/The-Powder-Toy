@@ -45,7 +45,7 @@ Element_ALMN::Element_ALMN()
 	Update = &Element_ALMN::update;;
 	
 }
-//#TPT-Directive ElementHeader Element_RBTY static int update(UPDATE_FUNC_ARGS)
+//#TPT-Directive ElementHeader Element_ALMN static int update(UPDATE_FUNC_ARGS)
 int Element_ALMN::update(UPDATE_FUNC_ARGS)
   {
 	int r, rt, rx, ry, nb, rrx, rry;
