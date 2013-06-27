@@ -26,7 +26,7 @@ Hardness = 0;
 
 Weight = 1;
 
-Temperature = R_TEMP 10000.0f +273.15f;
+Temperature = 10000.0f;
 HeatConduct = 5;
 Description = "Negative plasma.";
 
@@ -49,9 +49,9 @@ Graphics = &Element_NEGP::graphics;
 int Element_NEGP::graphics(GRAPHICS_FUNC_ARGS)
 {
 int caddress = restrict_flt(restrict_flt((float)cpart->life, 0.0f, 200.0f)*3, 0.0f, (200.0f*3)-3);
-*colr = (unsigned char)ren->nplasma_data[caddress];
-*colg = (unsigned char)ren->nplasma_data[caddress+1];
-*colb = (unsigned char)ren->nplasma_data[caddress+2];
+*colr = (unsigned char)ren->plasma_data[caddress];
+*colg = (unsigned char)ren->plasma_data[caddress+1];
+*colb = (unsigned char)ren->plasma_data[caddress+2];
 
 *firea = 255;
 *firer = *colr;

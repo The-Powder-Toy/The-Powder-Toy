@@ -44,7 +44,7 @@ Element_SEED::Element_SEED()
 	
 	Update = &Element_SEED::update;
 }
-
+//#TPT-Directive ElementHeader Element_SEED static int update(UPDATE_FUNC_ARGS)
 int Element_SEED::update(UPDATE_FUNC_ARGS)
  {
 	int r, rx, ry, np;

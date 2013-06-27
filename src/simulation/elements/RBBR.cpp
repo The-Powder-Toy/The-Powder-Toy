@@ -44,7 +44,7 @@ Element_RBBR::Element_RBBR()
 	
 	Update = &Element_RBBR::update;
 }
-
+//#TPT-Directive ElementHeader Element_RBBR static int update(UPDATE_FUNC_ARGS)
 int Element_RBBR::update(UPDATE_FUNC_ARGS)
 {
 	int r,rx,ry;
