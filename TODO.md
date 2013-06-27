@@ -1,4 +1,3 @@
-
 Elements from Powder Sim:<br />
 DONE: ALCO, BARI, VBMB, VIRS,
  
@@ -22,7 +21,7 @@ Elements:
 - Fix Nuclear Waste (WSTE) (it creates a pressure of nan) <br />
 
 Features:
-- IRC client (Credit to mniip)(for code see irc_client_mniip.lua) Change: Make so you do not have to be logged in to use.
+- IRC client (Credit to mniip)(for code see irc_client_mniip.lua)
 - Add colour wheel for "fancy display" from Powder Sim
 
 FINISHED:
