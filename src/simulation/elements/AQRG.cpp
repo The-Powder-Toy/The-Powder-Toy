@@ -116,7 +116,7 @@ int Element_AQRG::update(UPDATE_FUNC_ARGS)
   }
 		return 0;
 }
-
+//#TPT-Directive ElementHeader Element_AQRG static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_AQRG::graphics(GRAPHICS_FUNC_ARGS)
 {
 	int s = cpart->life;
