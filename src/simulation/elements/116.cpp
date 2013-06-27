@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_116 PT_117 1
+//#TPT-Directive ElementClass Element_116 PT_116 116
 Element_116::Element_116()
 {
 	Identifier = "DEFAULT_PT_116";
