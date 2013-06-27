@@ -44,7 +44,7 @@ Element_BOX::Element_BOX()
 	Update = &Element_BOX::update;;
 	
 }
-
+//#TPT-Directive ElementHeader Element_BOX static int RuleTable[9][9]
 int Element_BOX::RuleTable[9][9] =
 {
 	{1,1,1,1,1,1,1,1,1},
@@ -57,9 +57,9 @@ int Element_BOX::RuleTable[9][9] =
 	{1,0,0,0,0,0,0,0,1},
 	{1,1,1,1,1,1,1,1,1},
 };
-
+//#TPT-Directive ElementHeader Element_LOLZ static int lolz[XRES/9][YRES/9];
 int Element_BOX::box[XRES/9][YRES/9];
-
+//#TPT-Directive ElementHeader Element_BOX static int update(UPDATE_FUNC_ARGS)
 int Element_BOX::update(UPDATE_FUNC_ARGS)
   {
 	int r, rt, rx, ry, nb, rrx, rry;

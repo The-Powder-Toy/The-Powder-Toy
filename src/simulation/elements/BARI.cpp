@@ -45,7 +45,7 @@ Element_BARI::Element_BARI()
 	Update = &Element_BARI::update;;
 	
 }
-
+//#TPT-Directive ElementHeader Element_BARI static int update(UPDATE_FUNC_ARGS)
 int Element_BARI::update(UPDATE_FUNC_ARGS)
   {
 	int r, rt, rx, ry, nb, rrx, rry;
