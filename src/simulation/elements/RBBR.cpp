@@ -7,7 +7,7 @@ Element_RBBR::Element_RBBR()
 	Colour = PIXPACK(0xFF99FF);
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
-	Enabled = 0;
+	Enabled = 1;
 	
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
