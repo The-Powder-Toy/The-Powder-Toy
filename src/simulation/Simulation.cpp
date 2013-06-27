@@ -38,7 +38,7 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 {
 	int blockX, blockY, x, y, r;
 
-	if(!save) return 0;
+	if(!save) return 1;
 	save->Expand();
 
 	//Align to blockMap
@@ -4758,7 +4758,6 @@ Simulation::Simulation():
 	lighting_recreate(0),
 	force_stacking_check(0),
 	ISWIRE(0),
-	VINE_MODE(0),
 	gravWallChanged(false),
 	replaceModeSelected(0),
 	replaceModeFlags(0)
