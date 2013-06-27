@@ -5,7 +5,7 @@ Element_116::Element_116()
 	Identifier = "DEFAULT_PT_116";
 	Name = "EQVE";
 	Colour = PIXPACK(0xFFE0A0);
-	MenuVisible = 0;
+	MenuVisible = 1;
 	MenuSection = SC_CRACKER2;
 	Enabled = 1;
 	
