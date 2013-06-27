@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-
+//#TPT-Directive ElementClass Element_SDST PT_SDST 201
 Element_SDST::Element_SDST()
 {
 	Identifier = "DEFAULT_PT_SDST";
@@ -46,7 +46,7 @@ Element_SDST::Element_SDST()
 	Graphics = &Element_SDST::graphics;
 }
 
-
+//#TPT-Directive ElementHeader Element_SDST static int update(UPDATE_FUNC_ARGS)
 int Element_SDST::update(UPDATE_FUNC_ARGS)
  {
     int r, rx, ry;
@@ -59,7 +59,7 @@ int Element_SDST::update(UPDATE_FUNC_ARGS)
     return 0;
  }
 
-
+//#TPT-Directive ElementHeader Element_SDST static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_SDST::graphics(GRAPHICS_FUNC_ARGS)
 
 {
