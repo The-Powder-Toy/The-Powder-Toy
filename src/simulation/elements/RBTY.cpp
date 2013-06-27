@@ -45,34 +45,106 @@ Element_RBTY::Element_RBTY()
 	Update = &Element_RBTY::update;
 
 }
+
 //#TPT-Directive ElementHeader Element_RBTY static int update(UPDATE_FUNC_ARGS)
 int Element_RBTY::update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry;
 	// Okay so just a looparound
-	for (rx=-2; rx<3; rx++)
-		for (ry=-2; ry<3; ry++)
+	for (rx=-1; rx<2; rx++)
+		for (ry=-1; ry<2; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if( sim->pv[x/CELL][y/CELL] >= 200.0f || parts[i].temp >= 373.15f)
+				if( sim->pv[x/CELL][y/CELL] >= 200.0f)
 					sim->part_change_type(i, x, y, PT_PLEX);  
-				if(parts[i].temp<=173.15)
-					parts[i].tmp=1;
-				if((r&0xFF)==PT_SPRK)
+				/*if(parts[i].temp<=173.15)
+					parts[i].tmp=1;*/
+				while((r&0xFF)==PT_SPRK && parts[r>>8].ctype==PT_PSCN)
 				{
-					int t=parts[r>>8].ctype;
-					if(t==PT_PSCN)
-						parts[i].life++;
+					parts[i].life++;
+					parts[i].tmp2=1;
+					parts[i].tmp=1;
+					parts[i].ctype=PT_BTRY;
+					break;
 				}
-				else if((r&0xFF)!=PT_PSCN && parts[i].life>0 && (sim->elements[r&0xFF].Properties&PROP_CONDUCTS) && parts[r>>8].life<=0)
+				while((r&0xFF)==PT_PSCN && parts[r>>8].life<=0 && (r&0xFF)!=PT_SPRK)
+				{
+					parts[i].tmp=0;
+					parts[i].tmp2=0;
+					break;
+				}
+				/*if(parts[i].ctype==PT_LIFE && parts[i].tmp2==0 && (r&0xFF)==PT_RBTY)
+				{
+					parts[r>>8].tmp2=0;
+					if(parts[r>>8].life!=0) parts[i].life=parts[r>>8].life;
+				}*/
+				if((r&0xFF)!=PT_PSCN && parts[i].life>0 && (sim->elements[r&0xFF].Properties&PROP_CONDUCTS) && parts[r>>8].life<=0 && parts[i].tmp2!=1)
 				{
 					parts[r>>8].life = 4;
 					parts[r>>8].ctype = r&0xFF;
 					sim->part_change_type(r>>8,x+rx,y+ry,PT_SPRK);
 					parts[i].life--;
+					if(parts[i].ctype!=PT_BTRY) parts[i].ctype=PT_SPRK;
+				}
+				if((r&0xFF)!=PT_PSCN && (sim->elements[r&0xFF].Properties&PROP_CONDUCTS) && parts[r>>8].life<=0 && parts[i].ctype!=PT_BTRY)
+				{
+					parts[i].ctype=PT_SPRK;
+				}
+				if((r&0xFF)==PT_RBTY && parts[i].life>=parts[r>>8].life && parts[i].ctype==PT_METL)
+				{
+					if(parts[i].life>parts[r>>8].life && parts[r>>8].ctype==PT_METL && parts[i].tmp==1) 
+					{
+							parts[r>>8].tmp=1;
+							if(parts[i].life>parts[r>>8].life) parts[r>>8].life=parts[i].life;
+							parts[i].tmp=0;
+					}
+					if(parts[i].life>parts[r>>8].life && parts[r>>8].ctype==PT_SPRK && parts[i].tmp==1)
+					{
+							if(parts[i].life>parts[r>>8].life) parts[r>>8].life=parts[i].life;
+							parts[i].tmp=0;
+					}
+					if(parts[i].life==parts[r>>8].life && parts[r>>8].life>0 && parts[i].tmp==1 && parts[i].life>0 && parts[r>>8].ctype==PT_SPRK)
+					{
+						parts[i].tmp=0;
+					}
+					if(parts[i].life>parts[r>>8].life && parts[i].tmp==0 && parts[r>>8].tmp==0)
+					{
+						parts[i].life=parts[r>>8].life;
+					}
+				}
+				if((r&0xFF)==PT_RBTY && parts[i].ctype==PT_SPRK && parts[r>>8].ctype==PT_METL)
+				{
+					if(parts[r>>8].tmp==1) parts[i].tmp2=1;
+					if(parts[r>>8].tmp==0) parts[i].tmp2=0;
+				}
+				if((r&0xFF)==PT_RBTY && parts[i].life>=parts[r>>8].life && parts[r>>8].ctype==PT_NONE && parts[i].ctype==PT_METL)
+				{
+					parts[r>>8].tmp2=parts[i].tmp2;
+					if(parts[i].life>parts[r>>8].life) parts[r>>8].life=parts[i].life;
+					parts[r>>8].ctype=PT_METL;
+				}
+				if((r&0xFF)==PT_RBTY && parts[r>>8].ctype==PT_SPRK && parts[i].ctype!=PT_BTRY)
+				{
+					if(parts[r>>8].life<parts[i].life && parts[i].tmp!=1) parts[i].life=parts[r>>8].life;
+					parts[i].ctype=PT_METL;
+				}
+				if((r&0xFF)==PT_RBTY && parts[i].ctype==PT_BTRY)
+				{
+					if(parts[i].life>parts[r>>8].life && parts[i].tmp==1)
+					{
+							parts[r>>8].life=parts[i].life;
+					}
+					if(parts[r>>8].ctype==PT_METL) parts[r>>8].tmp=1;
+					parts[r>>8].tmp2=parts[i].tmp2;
+					if(parts[r>>8].ctype==PT_NONE) parts[r>>8].ctype=PT_METL;
+					if(parts[i].tmp==0)
+					{
+						if(parts[i].life>parts[r>>8].life) parts[i].life=parts[r>>8].life;
+						parts[r>>8].tmp=0;
+					}
 				}
 			}
 	return 0;
