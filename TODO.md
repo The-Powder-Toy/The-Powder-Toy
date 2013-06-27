@@ -1,11 +1,3 @@
-<pre>
-_____         _       
-|_   _|__   __| | ___  
-  | |/ _ \ / _` |/ _ \ 
-  | | (_) | (_| | (_) |
-  |_|\___/ \__,_|\___/ 
-
---------------------------------------
 
 Elements from Powder Sim:<br />
 DONE: ALCO, BARI, VBMB, VIRS,
@@ -44,4 +36,4 @@ FINISHED:
  - Realistic Science Mod (done)
 
 DELETE LOVE!
-<pre>
+
