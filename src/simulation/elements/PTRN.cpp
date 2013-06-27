@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-
+//#TPT-Directive ElementClass Element_PTRN PT_PTRN 199
 Element_PTRN::Element_PTRN()
 {
 	Identifier = "DEFAULT_PT_PTRN";
@@ -46,7 +46,7 @@ Element_PTRN::Element_PTRN()
 	Graphics = &Element_PTRN::graphics;
 }
 
-
+//#TPT-Directive ElementHeader Element_PTRN static int update(UPDATE_FUNC_ARGS)
 int Element_PTRN::update(UPDATE_FUNC_ARGS)
  {
 	int r, rt, rx, ry, nb, rrx, rry;
