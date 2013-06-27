@@ -1,10 +1,10 @@
-<pre>
-
- _____         _       
+_____         _       
 |_   _|__   __| | ___  
   | |/ _ \ / _` |/ _ \ 
   | | (_) | (_| | (_) |
   |_|\___/ \__,_|\___/ 
+
+--------------------------------------
 
 Elements from Powder Sim:<br />
 DONE: ALCO, BARI, VBMB, VIRS,
@@ -30,6 +30,7 @@ Elements:
 
 Features:
 - IRC client (Credit to mniip)(for code see irc_client_mniip.lua) Change: Make so you do not have to be logged in to use.
+- Add colour wheel for "fancy display" from Powder Sim
 
 FINISHED:
 - Elements: 
@@ -42,4 +43,3 @@ FINISHED:
  - Realistic Science Mod (done)
 
 DELETE LOVE!
-</pre>
