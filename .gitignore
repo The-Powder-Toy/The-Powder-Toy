@@ -11,8 +11,6 @@ stderr.txt
 stamps/*
 Saves/*
 includes/*
-build/*
-generated/*
 Makefile.me
 *.xcodeproj
 .DS_Store
