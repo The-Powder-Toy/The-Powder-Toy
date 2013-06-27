@@ -85,7 +85,7 @@ int Element_ALPH::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-
+//#TPT-Directive ElementHeader Element_ALPH static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_ALPH::graphics(GRAPHICS_FUNC_ARGS)
 
 {
