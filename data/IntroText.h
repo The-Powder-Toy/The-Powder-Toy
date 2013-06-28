@@ -1,5 +1,5 @@
 static const char *introTextData =
-	"\blPowder Sim 2 - Version " MTOS(SAVE_VERSION) "." MTOS(MINOR_VERSION) " - http://powdertoy.co.uk, irc.freenode.net #powdersim2\n"
+	"\blPowder Sim 2 - Version 0.1 Beta - http://powdertoy.co.uk, irc.freenode.net #powdersim2\n"
 	"\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\x7F\n"
 	"\n"
 	"\bgControl+C/V/X are Copy, Paste and cut respectively.\n"
