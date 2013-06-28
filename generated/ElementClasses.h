@@ -8,7 +8,6 @@
 
 #define PT_NONE 0
 #define PT_DUST 1
-#define PT_COFE 2
 #define PT_WATR 2
 #define PT_OIL 3
 #define PT_FIRE 4
@@ -21,26 +20,15 @@
 #define PT_PLEX 11
 #define PT_GOO 12
 #define PT_ICEI 13
-#define PT_ALMN 14
-#define PT_BARI 14
-#define PT_BOX 14
-#define PT_LRVS 14
 #define PT_METL 14
-#define PT_RVRS 14
 #define PT_SPRK 15
 #define PT_SNOW 16
 #define PT_WOOD 17
 #define PT_NEUT 18
 #define PT_PLUT 19
-#define PT_COFF 20
-#define PT_coffee 20
-#define PT_PHOS 20
 #define PT_PLNT 20
-#define PT_SEED 20
 #define PT_ACID 21
 #define PT_VOID 22
-#define PT_DTRM 23
-#define PT_TRIT 23
 #define PT_WTRV 23
 #define PT_CNCT 24
 #define PT_DSTW 25
@@ -99,9 +87,6 @@
 #define PT_LIFE 78
 #define PT_DLAY 79
 #define PT_CO2 80
-#define PT_HELI 80
-#define PT_HLM3 80
-#define PT_N2 80
 #define PT_DRIC 81
 #define PT_CBNW 82
 #define PT_STOR 83
@@ -116,7 +101,6 @@
 #define PT_FOG 92
 #define PT_BCLN 93
 #define PT_LOVE 94
-#define PT_3H2O 95
 #define PT_DEUT 95
 #define PT_WARP 96
 #define PT_PUMP 97
@@ -136,7 +120,6 @@
 #define PT_PSTE 111
 #define PT_PSTS 112
 #define PT_ANAR 113
-#define PT_STALK 114
 #define PT_VINE 114
 #define PT_INVIS 115
 #define PT_116 116
@@ -154,7 +137,6 @@
 #define PT_STKM2 128
 #define PT_BOMB 129
 #define PT_C5 130
-#define PT_REXP 131
 #define PT_SING 131
 #define PT_QRTZ 132
 #define PT_PQRT 133
@@ -195,23 +177,59 @@
 #define PT_PSTN 168
 #define PT_FRME 169
 #define PT_GOLD 170
-#define PT_NEGP 170
 #define PT_TUGN 171
 #define PT_TUNG 171
 #define PT_PSNS 172
-#define PT_NTGN 173
-#define PT_PLGN 173
 #define PT_RBTY 173
-#define PT_FELE 174
-#define PT_PRPC 175
-#define PT_GRID 177
-#define PT_ASPK 178
-#define PT_BEEP 179
-#define PT_MCLX 186
-#define PT_RBBR 187
-#define PT_AQRG 190
-#define PT_LIND 192
-#define PT_PIND 193
+#define PT_3H2O 174
+#define PT_ALCO 175
+#define PT_ALMN 176
+#define PT_ALPH 177
+#define PT_AQRG 178
+#define PT_ASPK 179
+#define PT_BARI 179
+#define PT_BEEP 180
+#define PT_BOX 181
+#define PT_CFBN 182
+#define PT_COFE 183
+#define PT_COFF 184
+#define PT_coffee 185
+#define PT_STALK 186
+#define PT_DIZN 187
+#define PT_DMTR 188
+#define PT_DQRK 189
+#define PT_DTRM 190
+#define PT_FELE 191
+#define PT_GIND 192
+#define PT_GLUON 193
+#define PT_GRID 194
+#define PT_GVTN 195
+#define PT_HDRN 196
+#define PT_HELI 197
+#define PT_HLM3 198
+#define PT_LIND 199
+#define PT_LRVS 200
+#define PT_MCLX 201
+#define PT_METR 202
+#define PT_N2 203
+#define PT_NEGP 204
+#define PT_NTGN 205
+#define PT_NTNO 206
+#define PT_OTWI 207
+#define PT_PHOS 208
+#define PT_PIND 209
+#define PT_PLGN 210
+#define PT_PROT 211
+#define PT_PRPC 212
+#define PT_PTRN 213
+#define PT_RBBR 214
+#define PT_REXP 215
+#define PT_RVRS 216
+#define PT_SDST 217
+#define PT_SEED 218
+#define PT_STAR 219
+#define PT_TRIT 220
+#define PT_UQRK 221
 
 class Element_NONE: public Element
 {
@@ -226,14 +244,6 @@ class Element_DUST: public Element
 public:
 	Element_DUST();
 	virtual ~Element_DUST();
-	
-};
-
-class Element_COFE: public Element
-{
-public:
-	Element_COFE();
-	virtual ~Element_COFE();
 	
 };
 
@@ -335,51 +345,11 @@ public:
 	static int update(UPDATE_FUNC_ARGS);
 };
 
-class Element_ALMN: public Element
-{
-public:
-	Element_ALMN();
-	virtual ~Element_ALMN();
-	
-};
-
-class Element_BARI: public Element
-{
-public:
-	Element_BARI();
-	virtual ~Element_BARI();
-	
-};
-
-class Element_BOX: public Element
-{
-public:
-	Element_BOX();
-	virtual ~Element_BOX();
-	
-};
-
-class Element_LRVS: public Element
-{
-public:
-	Element_LRVS();
-	virtual ~Element_LRVS();
-	
-};
-
 class Element_METL: public Element
 {
 public:
 	Element_METL();
 	virtual ~Element_METL();
-	
-};
-
-class Element_RVRS: public Element
-{
-public:
-	Element_RVRS();
-	virtual ~Element_RVRS();
 	
 };
 
@@ -427,30 +397,6 @@ public:
 	static int update(UPDATE_FUNC_ARGS);
 };
 
-class Element_COFF: public Element
-{
-public:
-	Element_COFF();
-	virtual ~Element_COFF();
-	
-};
-
-class Element_coffee: public Element
-{
-public:
-	Element_coffee();
-	virtual ~Element_coffee();
-	static int update(UPDATE_FUNC_ARGS);
-};
-
-class Element_PHOS: public Element
-{
-public:
-	Element_PHOS();
-	virtual ~Element_PHOS();
-	
-};
-
 class Element_PLNT: public Element
 {
 public:
@@ -458,14 +404,6 @@ public:
 	virtual ~Element_PLNT();
 	static int update(UPDATE_FUNC_ARGS);
 	static int graphics(GRAPHICS_FUNC_ARGS);
-};
-
-class Element_SEED: public Element
-{
-public:
-	Element_SEED();
-	virtual ~Element_SEED();
-	
 };
 
 class Element_ACID: public Element
@@ -483,22 +421,6 @@ public:
 	Element_VOID();
 	virtual ~Element_VOID();
 	
-};
-
-class Element_DTRM: public Element
-{
-public:
-	Element_DTRM();
-	virtual ~Element_DTRM();
-	static int update(UPDATE_FUNC_ARGS);
-};
-
-class Element_TRIT: public Element
-{
-public:
-	Element_TRIT();
-	virtual ~Element_TRIT();
-	static int update(UPDATE_FUNC_ARGS);
 };
 
 class Element_WTRV: public Element
@@ -980,30 +902,6 @@ public:
 	static int update(UPDATE_FUNC_ARGS);
 };
 
-class Element_HELI: public Element
-{
-public:
-	Element_HELI();
-	virtual ~Element_HELI();
-	static int update(UPDATE_FUNC_ARGS);
-};
-
-class Element_HLM3: public Element
-{
-public:
-	Element_HLM3();
-	virtual ~Element_HLM3();
-	static int update(UPDATE_FUNC_ARGS);
-};
-
-class Element_N2: public Element
-{
-public:
-	Element_N2();
-	virtual ~Element_N2();
-	static int update(UPDATE_FUNC_ARGS);
-};
-
 class Element_DRIC: public Element
 {
 public:
@@ -1125,15 +1023,6 @@ public:
 	virtual ~Element_LOVE();
 	static int RuleTable[9][9];
 	static int love[XRES/9][YRES/9];;
-};
-
-class Element_3H2O: public Element
-{
-public:
-	Element_3H2O();
-	virtual ~Element_3H2O();
-	static int update(UPDATE_FUNC_ARGS);
-	static int graphics(GRAPHICS_FUNC_ARGS);
 };
 
 class Element_DEUT: public Element
@@ -1299,14 +1188,6 @@ public:
 	static int update(UPDATE_FUNC_ARGS);
 };
 
-class Element_STALK: public Element
-{
-public:
-	Element_STALK();
-	virtual ~Element_STALK();
-	static int update(UPDATE_FUNC_ARGS);
-};
-
 class Element_VINE: public Element
 {
 public:
@@ -1445,14 +1326,6 @@ class Element_C5: public Element
 public:
 	Element_C5();
 	virtual ~Element_C5();
-	static int update(UPDATE_FUNC_ARGS);
-};
-
-class Element_REXP: public Element
-{
-public:
-	Element_REXP();
-	virtual ~Element_REXP();
 	static int update(UPDATE_FUNC_ARGS);
 };
 
@@ -1805,14 +1678,6 @@ public:
 	static int graphics(GRAPHICS_FUNC_ARGS);
 };
 
-class Element_NEGP: public Element
-{
-public:
-	Element_NEGP();
-	virtual ~Element_NEGP();
-	static int graphics(GRAPHICS_FUNC_ARGS);
-};
-
 class Element_TUGN: public Element
 {
 public:
@@ -1839,28 +1704,163 @@ public:
 	static int update(UPDATE_FUNC_ARGS);
 };
 
-class Element_NTGN: public Element
-{
-public:
-	Element_NTGN();
-	virtual ~Element_NTGN();
-	
-};
-
-class Element_PLGN: public Element
-{
-public:
-	Element_PLGN();
-	virtual ~Element_PLGN();
-	
-};
-
 class Element_RBTY: public Element
 {
 public:
 	Element_RBTY();
 	virtual ~Element_RBTY();
 	static int update(UPDATE_FUNC_ARGS);
+};
+
+class Element_3H2O: public Element
+{
+public:
+	Element_3H2O();
+	virtual ~Element_3H2O();
+	static int update(UPDATE_FUNC_ARGS);
+	static int graphics(GRAPHICS_FUNC_ARGS);
+};
+
+class Element_ALCO: public Element
+{
+public:
+	Element_ALCO();
+	virtual ~Element_ALCO();
+	static int update(UPDATE_FUNC_ARGS);
+	static int graphics(GRAPHICS_FUNC_ARGS);
+};
+
+class Element_ALMN: public Element
+{
+public:
+	Element_ALMN();
+	virtual ~Element_ALMN();
+	static int update(UPDATE_FUNC_ARGS);
+};
+
+class Element_ALPH: public Element
+{
+public:
+	Element_ALPH();
+	virtual ~Element_ALPH();
+	static int update(UPDATE_FUNC_ARGS);
+	static int graphics(GRAPHICS_FUNC_ARGS);
+};
+
+class Element_AQRG: public Element
+{
+public:
+	Element_AQRG();
+	virtual ~Element_AQRG();
+	static int update(UPDATE_FUNC_ARGS);
+	static int graphics(GRAPHICS_FUNC_ARGS);
+};
+
+class Element_ASPK: public Element
+{
+public:
+	Element_ASPK();
+	virtual ~Element_ASPK();
+	static int update(UPDATE_FUNC_ARGS);
+};
+
+class Element_BARI: public Element
+{
+public:
+	Element_BARI();
+	virtual ~Element_BARI();
+	static int update(UPDATE_FUNC_ARGS);
+};
+
+class Element_BEEP: public Element
+{
+public:
+	Element_BEEP();
+	virtual ~Element_BEEP();
+	static int update(UPDATE_FUNC_ARGS);
+};
+
+class Element_BOX: public Element
+{
+public:
+	Element_BOX();
+	virtual ~Element_BOX();
+	static int RuleTable[9][9];
+	static int box[XRES/9][YRES/9];;
+	static int update(UPDATE_FUNC_ARGS);
+};
+
+class Element_CFBN: public Element
+{
+public:
+	Element_CFBN();
+	virtual ~Element_CFBN();
+	static int update(UPDATE_FUNC_ARGS);
+};
+
+class Element_COFE: public Element
+{
+public:
+	Element_COFE();
+	virtual ~Element_COFE();
+	static int update(UPDATE_FUNC_ARGS);
+};
+
+class Element_COFF: public Element
+{
+public:
+	Element_COFF();
+	virtual ~Element_COFF();
+	static int update(UPDATE_FUNC_ARGS);
+};
+
+class Element_coffee: public Element
+{
+public:
+	Element_coffee();
+	virtual ~Element_coffee();
+	static int update(UPDATE_FUNC_ARGS);
+};
+
+class Element_STALK: public Element
+{
+public:
+	Element_STALK();
+	virtual ~Element_STALK();
+	static int update(UPDATE_FUNC_ARGS);
+};
+
+class Element_DIZN: public Element
+{
+public:
+	Element_DIZN();
+	virtual ~Element_DIZN();
+	static int update(UPDATE_FUNC_ARGS);
+};
+
+class Element_DMTR: public Element
+{
+public:
+	Element_DMTR();
+	virtual ~Element_DMTR();
+	static int update(UPDATE_FUNC_ARGS);
+	static int graphics(GRAPHICS_FUNC_ARGS);
+};
+
+class Element_DQRK: public Element
+{
+public:
+	Element_DQRK();
+	virtual ~Element_DQRK();
+	static int update(UPDATE_FUNC_ARGS);
+	static int graphics(GRAPHICS_FUNC_ARGS);
+};
+
+class Element_DTRM: public Element
+{
+public:
+	Element_DTRM();
+	virtual ~Element_DTRM();
 	static int update(UPDATE_FUNC_ARGS);
 };
 
@@ -1873,12 +1873,21 @@ public:
 	static int graphics(GRAPHICS_FUNC_ARGS);
 };
 
-class Element_PRPC: public Element
+class Element_GIND: public Element
 {
 public:
-	Element_PRPC();
-	virtual ~Element_PRPC();
+	Element_GIND();
+	virtual ~Element_GIND();
 	
+};
+
+class Element_GLUON: public Element
+{
+public:
+	Element_GLUON();
+	virtual ~Element_GLUON();
+	static int update(UPDATE_FUNC_ARGS);
+	static int graphics(GRAPHICS_FUNC_ARGS);
 };
 
 class Element_GRID: public Element
@@ -1889,43 +1898,37 @@ public:
 	static int update(UPDATE_FUNC_ARGS);
 };
 
-class Element_ASPK: public Element
+class Element_GVTN: public Element
 {
 public:
-	Element_ASPK();
-	virtual ~Element_ASPK();
+	Element_GVTN();
+	virtual ~Element_GVTN();
+	static int update(UPDATE_FUNC_ARGS);
+	static int graphics(GRAPHICS_FUNC_ARGS);
+};
+
+class Element_HDRN: public Element
+{
+public:
+	Element_HDRN();
+	virtual ~Element_HDRN();
+	static int update(UPDATE_FUNC_ARGS);
+	static int graphics(GRAPHICS_FUNC_ARGS);
+};
+
+class Element_HELI: public Element
+{
+public:
+	Element_HELI();
+	virtual ~Element_HELI();
 	static int update(UPDATE_FUNC_ARGS);
 };
 
-class Element_BEEP: public Element
+class Element_HLM3: public Element
 {
 public:
-	Element_BEEP();
-	virtual ~Element_BEEP();
-	static int update(UPDATE_FUNC_ARGS);
-};
-
-class Element_MCLX: public Element
-{
-public:
-	Element_MCLX();
-	virtual ~Element_MCLX();
-	
-};
-
-class Element_RBBR: public Element
-{
-public:
-	Element_RBBR();
-	virtual ~Element_RBBR();
-	
-};
-
-class Element_AQRG: public Element
-{
-public:
-	Element_AQRG();
-	virtual ~Element_AQRG();
+	Element_HLM3();
+	virtual ~Element_HLM3();
 	static int update(UPDATE_FUNC_ARGS);
 };
 
@@ -1937,12 +1940,187 @@ public:
 	
 };
 
+class Element_LRVS: public Element
+{
+public:
+	Element_LRVS();
+	virtual ~Element_LRVS();
+	static int update(UPDATE_FUNC_ARGS);
+};
+
+class Element_MCLX: public Element
+{
+public:
+	Element_MCLX();
+	virtual ~Element_MCLX();
+	
+};
+
+class Element_METR: public Element
+{
+public:
+	Element_METR();
+	virtual ~Element_METR();
+	static int update(UPDATE_FUNC_ARGS);
+	static int graphics(GRAPHICS_FUNC_ARGS);
+};
+
+class Element_N2: public Element
+{
+public:
+	Element_N2();
+	virtual ~Element_N2();
+	static int update(UPDATE_FUNC_ARGS);
+};
+
+class Element_NEGP: public Element
+{
+public:
+	Element_NEGP();
+	virtual ~Element_NEGP();
+	static int graphics(GRAPHICS_FUNC_ARGS);
+};
+
+class Element_NTGN: public Element
+{
+public:
+	Element_NTGN();
+	virtual ~Element_NTGN();
+	static int update(UPDATE_FUNC_ARGS);
+};
+
+class Element_NTNO: public Element
+{
+public:
+	Element_NTNO();
+	virtual ~Element_NTNO();
+	static int update(UPDATE_FUNC_ARGS);
+	static int graphics(GRAPHICS_FUNC_ARGS);
+};
+
+class Element_OTWI: public Element
+{
+public:
+	Element_OTWI();
+	virtual ~Element_OTWI();
+	static int update(UPDATE_FUNC_ARGS);
+};
+
+class Element_PHOS: public Element
+{
+public:
+	Element_PHOS();
+	virtual ~Element_PHOS();
+	static int update(UPDATE_FUNC_ARGS);
+};
+
 class Element_PIND: public Element
 {
 public:
 	Element_PIND();
 	virtual ~Element_PIND();
 	
+};
+
+class Element_PLGN: public Element
+{
+public:
+	Element_PLGN();
+	virtual ~Element_PLGN();
+	static int update(UPDATE_FUNC_ARGS);
+};
+
+class Element_PROT: public Element
+{
+public:
+	Element_PROT();
+	virtual ~Element_PROT();
+	static int update(UPDATE_FUNC_ARGS);
+	static int graphics(GRAPHICS_FUNC_ARGS);
+};
+
+class Element_PRPC: public Element
+{
+public:
+	Element_PRPC();
+	virtual ~Element_PRPC();
+	static int update(UPDATE_FUNC_ARGS);
+};
+
+class Element_PTRN: public Element
+{
+public:
+	Element_PTRN();
+	virtual ~Element_PTRN();
+	static int update(UPDATE_FUNC_ARGS);
+	static int graphics(GRAPHICS_FUNC_ARGS);
+};
+
+class Element_RBBR: public Element
+{
+public:
+	Element_RBBR();
+	virtual ~Element_RBBR();
+	static int update(UPDATE_FUNC_ARGS);
+};
+
+class Element_REXP: public Element
+{
+public:
+	Element_REXP();
+	virtual ~Element_REXP();
+	static int update(UPDATE_FUNC_ARGS);
+};
+
+class Element_RVRS: public Element
+{
+public:
+	Element_RVRS();
+	virtual ~Element_RVRS();
+	static int update(UPDATE_FUNC_ARGS);
+};
+
+class Element_SDST: public Element
+{
+public:
+	Element_SDST();
+	virtual ~Element_SDST();
+	static int update(UPDATE_FUNC_ARGS);
+	static int graphics(GRAPHICS_FUNC_ARGS);
+};
+
+class Element_SEED: public Element
+{
+public:
+	Element_SEED();
+	virtual ~Element_SEED();
+	static int update(UPDATE_FUNC_ARGS);
+};
+
+class Element_STAR: public Element
+{
+public:
+	Element_STAR();
+	virtual ~Element_STAR();
+	static int update(UPDATE_FUNC_ARGS);
+	static int graphics(GRAPHICS_FUNC_ARGS);
+};
+
+class Element_TRIT: public Element
+{
+public:
+	Element_TRIT();
+	virtual ~Element_TRIT();
+	static int update(UPDATE_FUNC_ARGS);
+};
+
+class Element_UQRK: public Element
+{
+public:
+	Element_UQRK();
+	virtual ~Element_UQRK();
+	static int update(UPDATE_FUNC_ARGS);
+	static int graphics(GRAPHICS_FUNC_ARGS);
 };
 
 std::vector<Element> GetElements();

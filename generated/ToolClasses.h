@@ -10,7 +10,17 @@
 #define TOOL_HEAT 0
 #define TOOL_NGRV 5
 #define TOOL_PGRV 4
+#define TOOL_SCOL 6
+#define TOOL_SHET 7
 #define TOOL_VAC 3
+
+class Tool_Shet: public SimTool
+{
+public:
+	Tool_Shet();
+	virtual ~Tool_Shet();
+	virtual int Perform(Simulation * sim, Particle * cpart, int x, int y, float strength);
+};
 
 class Tool_Air: public SimTool
 {
@@ -25,6 +35,14 @@ class Tool_Vac: public SimTool
 public:
 	Tool_Vac();
 	virtual ~Tool_Vac();
+	virtual int Perform(Simulation * sim, Particle * cpart, int x, int y, float strength);
+};
+
+class Tool_Scol: public SimTool
+{
+public:
+	Tool_Scol();
+	virtual ~Tool_Scol();
 	virtual int Perform(Simulation * sim, Particle * cpart, int x, int y, float strength);
 };
 
