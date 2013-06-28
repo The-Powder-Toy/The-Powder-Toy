@@ -12,6 +12,7 @@ stamps/*
 Saves/*
 includes/*
 Makefile.me
+generated/*
 *.xcodeproj
 .DS_Store
 *.plist
