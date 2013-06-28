@@ -2949,7 +2949,7 @@ int Simulation::create_part(int p, int x, int y, int tv)
 			case PT_TSNS:
 				parts[i].tmp2 = 2;
 				break;
-			case PT_FIGH:
+			case PT_FIGH:{
 				unsigned char fcount = 0;
 				while (fcount < 100 && fcount < (fighcount+1) && fighters[fcount].spwn==1) fcount++;
 				if (fcount < 100 && fighters[fcount].spwn==0)
@@ -2964,35 +2964,35 @@ int Simulation::create_part(int p, int x, int y, int tv)
 					return i;
 				}
 				parts[i].type=0;
-				return -1;
-			case PT_PHOT:
+				return -1;}
+			case PT_PHOT:{
 				float a = (rand()%8) * 0.78540f;
 				parts[i].life = 680;
 				parts[i].ctype = 0x3FFFFFFF;
 				parts[i].vx = 3.0f*cosf(a);
 				parts[i].vy = 3.0f*sinf(a);
-				break;
-			case PT_ELEC:
+				break;}
+			case PT_ELEC:{
 				float a = (rand()%360)*3.14159f/180.0f;
 				parts[i].life = 680;
 				parts[i].vx = 2.0f*cosf(a);
 				parts[i].vy = 2.0f*sinf(a);
-				break;
-			case PT_NEUT:
+				break;}
+			case PT_NEUT:{
 				float r = (rand()%128+128)/127.0f;
 				float a = (rand()%360)*3.14159f/180.0f;
 				parts[i].life = rand()%480+480;
 				parts[i].vx = r*cosf(a);
 				parts[i].vy = r*sinf(a);
-				break;
-			case PT_TRON:
+				break;}
+			case PT_TRON:{
 				int randhue = rand()%360;
 				int randomdir = rand()%4;
 				parts[i].tmp = 1|(randomdir<<5)|(randhue<<7);//set as a head and a direction
 				parts[i].tmp2 = 4;//tail
 				parts[i].life = 5;
-				break;
-			case PT_LIGH:
+				break;}
+			case PT_LIGH:{
 				float gx, gy, gsize;
 				if (p!=-2)
 				{
@@ -3011,7 +3011,7 @@ int Simulation::create_part(int p, int x, int y, int tv)
 				}
 				parts[i].tmp = (((int)(atan2f(-gy, gx)*(180.0f/M_PI)))+rand()%40-20+360)%360;
 				parts[i].tmp2 = 4;
-				break;
+				break;}
 			default:
 				break;
 		}
