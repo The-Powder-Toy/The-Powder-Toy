@@ -8,6 +8,10 @@
 *.pref
 stdout.txt
 stderr.txt
+<<<<<<< HEAD
+=======
+build*/*
+>>>>>>> c1320d200735ab3a0e25d169a4bb329de2bb40ba
 stamps/*
 Saves/*
 includes/*

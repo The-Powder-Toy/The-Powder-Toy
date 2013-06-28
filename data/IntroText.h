@@ -18,12 +18,14 @@ static const char *introTextData =
 	"'L' will load the most recent stamp, 'K' shows a library of stamps you saved.\n"
 	"'P' will take a screenshot and save it into the current directory.\n"
 	"\n"
-	"Contributors: \bgwolfy1339 (Leader), firefreak11(Lead Programmer), cyberdragon (Github staff), tommig, kikinicij," 
+	"Contributors: \bgwolfy1339 (Leader), firefreak11(Lead Programmer), cyberdragon (Github staff), tommig, kikinicij,\n" 
 	"\bggreymatter, Xetalim, GreenFireDragon\n"
-	"TPT:\bgStanislaw K Skowronek (Designed the original Powder Toy), Simon Robertshaw, Skresanov Savely, cracker64," 
-	"\bgCatelite, Bryan Hoyle, Nathan Cousins, jacksonmj, Felix Wallin, Lieuwe Mosch, Anthony Boot, Matthew \"me4502\", MaksProg, jacob1, mniip\n"
+	"\boTPT: \bgStanislaw K Skowronek (Designed the original Powder Toy), Simon Robertshaw, Skresanov Savely, cracker64,\n"
+	"\bgCatelite, Bryan Hoyle, Nathan Cousins, jacksonmj, Felix Wallin, Lieuwe Mosch, Anthony Boot, Matthew \me4502\,\n" 
+	"\bgMaksProg, jacob1, mniip\n"
 	"\bgYou can not use online features like publishing saves\n"
 	"\n"
+	
 	"\bt" MTOS(SAVE_VERSION) "." MTOS(MINOR_VERSION) "." MTOS(BUILD_NUM) " " IDENT_PLATFORM " "
 #ifdef X86
 	"X86 "

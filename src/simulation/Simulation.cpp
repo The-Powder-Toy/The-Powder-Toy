@@ -38,7 +38,7 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 {
 	int blockX, blockY, x, y, r;
 
-	if(!save) return 0;
+	if(!save) return 1;
 	save->Expand();
 
 	//Align to blockMap
@@ -1996,7 +1996,7 @@ void Simulation::init_can_move()
 	}
 	for (movingType = 1; movingType < PT_NUM; movingType++)
 	{
-		// everything "swaps" with VACU and BHOL to make them eat things
+		//everything "swaps" with VACU and BHOL to make them eat things
 		can_move[movingType][PT_BHOL] = 1;
 		can_move[movingType][PT_NBHL] = 1;
 		//nothing goes through stickmen
@@ -2005,7 +2005,7 @@ void Simulation::init_can_move()
 		can_move[movingType][PT_FIGH] = 0;
 		//INVS behaviour varies with pressure
 		can_move[movingType][PT_INVIS] = 3;
-		//stop CNCT being displaced by other particles
+		//stop CNCT from being displaced by other particles
 		can_move[movingType][PT_CNCT] = 0;
 		//VOID and PVOD behaviour varies with powered state and ctype
 		can_move[movingType][PT_PVOD] = 3;
@@ -4758,7 +4758,6 @@ Simulation::Simulation():
 	lighting_recreate(0),
 	force_stacking_check(0),
 	ISWIRE(0),
-	VINE_MODE(0),
 	gravWallChanged(false),
 	replaceModeSelected(0),
 	replaceModeFlags(0)
