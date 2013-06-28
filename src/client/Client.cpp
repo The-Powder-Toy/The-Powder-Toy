@@ -1338,7 +1338,7 @@ LoginStatus Client::Login(std::string username, std::string password, User & use
 		}
 		catch (json::Exception &e)
 		{
-			lastError = "Could not read response";
+			lastError = "Server responded with crap";
 			return LoginError;
 		}
 	}
