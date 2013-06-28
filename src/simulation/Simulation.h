@@ -108,6 +108,7 @@ public:
 	int gravityMode;
 	int legacy_enable;
 	int aheat_enable;
+	int VINE_MODE;
 	int water_equal_test;
 	int sys_pause;
 	int framerender;
