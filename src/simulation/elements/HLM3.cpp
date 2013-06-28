@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_HLM3 PT_HLM3 80
+//#TPT-Directive ElementClass Element_HLM3 PT_HLM3 198
 Element_HLM3::Element_HLM3()
 {
 	Identifier = "DEFAULT_PT_HLM3";

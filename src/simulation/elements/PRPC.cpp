@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_PRPC PT_PRPC 175
+//#TPT-Directive ElementClass Element_PRPC PT_PRPC 212
 Element_PRPC::Element_PRPC()
 {
 	Identifier = "DEFAULT_PT_PRPC";

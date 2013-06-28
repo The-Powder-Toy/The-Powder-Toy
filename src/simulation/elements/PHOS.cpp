@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_PHOS PT_PHOS 20
+//#TPT-Directive ElementClass Element_PHOS PT_PHOS 208
 Element_PHOS::Element_PHOS()
 {
 	Identifier = "DEFAULT_PT_PHOS";

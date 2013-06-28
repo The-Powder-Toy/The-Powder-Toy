@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_coffee PT_coffee 20
+//#TPT-Directive ElementClass Element_coffee PT_coffee 185
 Element_coffee::Element_coffee()
 {
 	Identifier = "DEFAULT_PT_coffee";

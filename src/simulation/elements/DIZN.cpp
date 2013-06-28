@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_DIZN PT_DIZN 202
+//#TPT-Directive ElementClass Element_DIZN PT_DIZN 187
 Element_DIZN::Element_DIZN()
 {
 	Identifier = "DEFAULT_PT_DIZN";

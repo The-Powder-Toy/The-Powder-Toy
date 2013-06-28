@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_GVTN PT_GVTN 206
+//#TPT-Directive ElementClass Element_GVTN PT_GVTN 195
 Element_GVTN::Element_GVTN()
 {
 	Identifier = "DEFAULT_PT_GVTN";

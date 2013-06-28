@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_DQRK PT_DQRK 204
+//#TPT-Directive ElementClass Element_DQRK PT_DQRK 189
 Element_DQRK::Element_DQRK()
 {
 	Identifier = "DEFAULT_PT_DQRK";

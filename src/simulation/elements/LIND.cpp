@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_LIND PT_LIND 192
+//#TPT-Directive ElementClass Element_LIND PT_LIND 199
 Element_LIND::Element_LIND()
 {
 	Identifier = "DEFAULT_PT_LIND";

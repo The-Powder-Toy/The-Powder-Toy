@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_COFF PT_COFF 20
+//#TPT-Directive ElementClass Element_COFF PT_COFF 184
 Element_COFF::Element_COFF()
 {
 	Identifier = "DEFAULT_PT_COFF";

@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_RVRS PT_RVRS 14
+//#TPT-Directive ElementClass Element_RVRS PT_RVRS 216
 Element_RVRS::Element_RVRS()
 {
 	Identifier = "DEFAULT_PT_RVRS";

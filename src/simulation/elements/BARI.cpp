@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_BARI PT_BARI 14
+//#TPT-Directive ElementClass Element_BARI PT_BARI 179
 Element_BARI::Element_BARI()
 {
 	Identifier = "DEFAULT_PT_BARI";

@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_ALCO PT_ALCO 195
+//#TPT-Directive ElementClass Element_ALCO PT_ALCO 175
 Element_ALCO::Element_ALCO()
 {
     Identifier = "DEFAULT_PT_ALCO";

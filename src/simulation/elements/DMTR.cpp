@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_DMTR PT_DMTR 203
+//#TPT-Directive ElementClass Element_DMTR PT_DMTR 188
 Element_DMTR::Element_DMTR()
 {
 	Identifier = "DEFAULT_PT_DMTR";

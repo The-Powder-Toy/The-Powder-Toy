@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_NTGN PT_NTGN 173
+//#TPT-Directive ElementClass Element_NTGN PT_NTGN 205
 Element_NTGN::Element_NTGN()
 {
 	Identifier = "DEFAULT_PT_NTGN";

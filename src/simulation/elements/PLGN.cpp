@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_PLGN PT_PLGN 173
+//#TPT-Directive ElementClass Element_PLGN PT_PLGN 210
 Element_PLGN::Element_PLGN()
 {
 	Identifier = "DEFAULT_PT_PLGN";

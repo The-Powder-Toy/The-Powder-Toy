@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_GIND PT_GIND 196
+//#TPT-Directive ElementClass Element_GIND PT_GIND 192
 Element_GIND::Element_GIND()
 {
 	Identifier = "DEFAULT_PT_GIND";

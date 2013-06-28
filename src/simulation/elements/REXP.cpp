@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_REXP PT_REXP 131
+//#TPT-Directive ElementClass Element_REXP PT_REXP 215
 Element_REXP::Element_REXP()
 {
 	Identifier = "DEFAULT_PT_REXP";

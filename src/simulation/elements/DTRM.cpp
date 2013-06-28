@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_DTRM PT_DTRM 23
+//#TPT-Directive ElementClass Element_DTRM PT_DTRM 190
 Element_DTRM::Element_DTRM()
 {
 	Identifier = "DEFAULT_PT_DTRM";

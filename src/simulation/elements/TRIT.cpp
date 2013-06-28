@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_TRIT PT_TRIT 23
+//#TPT-Directive ElementClass Element_TRIT PT_TRIT 220
 Element_TRIT::Element_TRIT()
 {
 	Identifier = "DEFAULT_PT_TRIT";

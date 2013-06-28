@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_BOX PT_BOX 14
+//#TPT-Directive ElementClass Element_BOX PT_BOX 181
 Element_BOX::Element_BOX()
 {
 	Identifier = "DEFAULT_PT_BOX";

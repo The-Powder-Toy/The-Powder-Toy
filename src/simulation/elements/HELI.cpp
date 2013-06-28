@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_HELI PT_HELI 80
+//#TPT-Directive ElementClass Element_HELI PT_HELI 197
 Element_HELI::Element_HELI()
 {
 	Identifier = "DEFAULT_PT_HELI";

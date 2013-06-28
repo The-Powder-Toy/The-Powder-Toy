@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_NEGP PT_NEGP 170
+//#TPT-Directive ElementClass Element_NEGP PT_NEGP 204
 Element_NEGP::Element_NEGP()
 {
 Identifier = "DEFAULT_PT_NEGP";

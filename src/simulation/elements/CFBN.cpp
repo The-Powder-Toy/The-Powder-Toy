@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_CFBN PT_CFBN 202
+//#TPT-Directive ElementClass Element_CFBN PT_CFBN 182
 Element_CFBN::Element_CFBN()
 {
 	Identifier = "DEFAULT_PT_CFBN";

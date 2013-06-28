@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_AQRG PT_AQRG 190
+//#TPT-Directive ElementClass Element_AQRG PT_AQRG 178
 Element_AQRG::Element_AQRG()
 {
 	Identifier = "DEFAULT_PT_AQRG";

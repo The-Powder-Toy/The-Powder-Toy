@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_ALPH PT_ALPH 200
+//#TPT-Directive ElementClass Element_ALPH PT_ALPH 177
 Element_ALPH::Element_ALPH()
 {
 	Identifier = "DEFAULT_PT_ALPH";

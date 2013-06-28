@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_GLUON PT_GLUON 205
+//#TPT-Directive ElementClass Element_GLUON PT_GLUON 193
 Element_GLUON::Element_GLUON()
 {
 	Identifier = "DEFAULT_PT_GLUON";

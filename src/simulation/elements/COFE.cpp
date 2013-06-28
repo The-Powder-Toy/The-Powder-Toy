@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_COFE PT_COFE 2
+//#TPT-Directive ElementClass Element_COFE PT_COFE 183
 Element_COFE::Element_COFE()
 {
 	Identifier = "DEFAULT_PT_COFE";

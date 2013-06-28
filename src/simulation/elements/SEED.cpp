@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_SEED PT_SEED 20
+//#TPT-Directive ElementClass Element_SEED PT_SEED 218
 Element_SEED::Element_SEED()
 {
 	Identifier = "DEFAULT_PT_SEED";
