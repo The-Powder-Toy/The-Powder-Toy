@@ -38,7 +38,7 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 {
 	int blockX, blockY, x, y, r;
 
-	if(!save) return 1;
+	if(!save) return 0;
 	save->Expand();
 
 	//Align to blockMap
@@ -218,7 +218,7 @@ GameSave * Simulation::Save(int fullX, int fullY, int fullX2, int fullY2)
 	fullH = fullY2-fullY;
 
 	GameSave * newSave = new GameSave(blockW, blockH);
-
+	
 	int storedParts = 0;
 	int elementCount[PT_NUM];
 	std::fill(elementCount, elementCount+PT_NUM, 0);
@@ -251,7 +251,7 @@ GameSave * Simulation::Save(int fullX, int fullY, int fullX2, int fullY2)
 			}
 		}
 	}
-
+	
 	for(int i = 0; i < MAXSIGNS && i < signs.size(); i++)
 	{
 		if(signs[i].text.length() && signs[i].x >= fullX && signs[i].y >= fullY && signs[i].x <= fullX2 && signs[i].y <= fullY2)
@@ -262,7 +262,7 @@ GameSave * Simulation::Save(int fullX, int fullY, int fullX2, int fullY2)
 			*newSave << tempSign;
 		}
 	}
-
+	
 	for(int saveBlockX = 0; saveBlockX < newSave->blockWidth; saveBlockX++)
 	{
 		for(int saveBlockY = 0; saveBlockY < newSave->blockHeight; saveBlockY++)
@@ -399,16 +399,16 @@ int Simulation::flood_prop_2(int x, int y, size_t propoffset, void * propvalue, 
 			case StructProperty::Float:
 				*((float*)(((char*)&parts[i])+propoffset)) = *((float*)propvalue);
 				break;
-
+				
 			case StructProperty::ParticleType:
 			case StructProperty::Integer:
 				*((int*)(((char*)&parts[i])+propoffset)) = *((int*)propvalue);
 				break;
-
+				
 			case StructProperty::UInteger:
 				*((unsigned int*)(((char*)&parts[i])+propoffset)) = *((unsigned int*)propvalue);
 				break;
-
+				
 			default:
 				break;
 		}
@@ -782,7 +782,7 @@ void Simulation::ApplyDecoration(int x, int y, int colR_, int colG_, int colB_, 
 	else if (mode == DECO_SMUDGE)
 	{
 		float tas = 0.0f, trs = 0.0f, tgs = 0.0f, tbs = 0.0f;
-
+		
 		int rx, ry;
 		float num = 0;	
 		for (rx=-2; rx<3; rx++)
@@ -1048,7 +1048,7 @@ int Simulation::CreateWalls(int x, int y, int rx, int ry, int wall, Brush * cBru
 		wall = 0;
 	if (flags == -1)
 		flags = replaceModeFlags;
-
+	
 	ry = ry/CELL;
 	rx = rx/CELL;
 	x = x/CELL;
@@ -1183,10 +1183,10 @@ int Simulation::FloodWalls(int x, int y, int wall, int cm, int bm, int flags)
 		if (flags == -1)
 			flags = replaceModeFlags;
 	}
-
+	
 	if ((pmap[y][x]&0xFF)!=cm || bmap[y/CELL][x/CELL]!=bm || ((flags&SPECIFIC_DELETE) && cm != replaceModeSelected))
 		return 1;
-
+	
 	// go left as far as possible
 	x1 = x2 = x;
 	while (x1>=CELL)
@@ -1205,7 +1205,7 @@ int Simulation::FloodWalls(int x, int y, int wall, int cm, int bm, int flags)
 		}
 		x2++;
 	}
-
+	
 	// fill span
 	for (x=x1; x<=x2; x++)
 	{
@@ -1234,7 +1234,7 @@ int Simulation::CreateParts(int positionX, int positionY, int c, Brush * cBrush,
 	{
 		int radiusX = cBrush->GetRadius().X, radiusY = cBrush->GetRadius().Y, sizeX = cBrush->GetSize().X, sizeY = cBrush->GetSize().Y;
 		unsigned char *bitmap = cBrush->GetBitmap();
-
+		
 		for(int y = 0; y < sizeY; y++)
 		{
 			for(int x = 0; x < sizeX; x++)
@@ -1944,7 +1944,7 @@ void Simulation::init_can_move()
 	//  1 = Swap
 	//  2 = Both particles occupy the same space.
 	//  3 = Varies, go run some extra checks
-
+	
 	//particles that don't exist shouldn't move...
 	for (destinationType = 0; destinationType < PT_NUM; destinationType++)
 		can_move[0][destinationType] = 0;
@@ -1996,7 +1996,7 @@ void Simulation::init_can_move()
 	}
 	for (movingType = 1; movingType < PT_NUM; movingType++)
 	{
-		//everything "swaps" with VACU and BHOL to make them eat things
+		// everything "swaps" with VACU and BHOL to make them eat things
 		can_move[movingType][PT_BHOL] = 1;
 		can_move[movingType][PT_NBHL] = 1;
 		//nothing goes through stickmen
@@ -2005,7 +2005,7 @@ void Simulation::init_can_move()
 		can_move[movingType][PT_FIGH] = 0;
 		//INVS behaviour varies with pressure
 		can_move[movingType][PT_INVIS] = 3;
-		//stop CNCT from being displaced by other particles
+		//stop CNCT being displaced by other particles
 		can_move[movingType][PT_CNCT] = 0;
 		//VOID and PVOD behaviour varies with powered state and ctype
 		can_move[movingType][PT_PVOD] = 3;
@@ -4758,6 +4758,7 @@ Simulation::Simulation():
 	lighting_recreate(0),
 	force_stacking_check(0),
 	ISWIRE(0),
+	VINE_MODE(0),
 	gravWallChanged(false),
 	replaceModeSelected(0),
 	replaceModeFlags(0)
@@ -4810,7 +4811,7 @@ Simulation::Simulation():
 	unsigned int * platentT = LoadLatent(latentCount);
 	memcpy(platent, platentT, latentCount * sizeof(unsigned int));
 	free(platentT);
-
+	
 	//elements = new Element[PT_NUM];
 	std::vector<Element> elementList = GetElements();
 	for(int i = 0; i < PT_NUM; i++)
@@ -4820,7 +4821,7 @@ Simulation::Simulation():
 		else
 			elements[i] = Element();
 	}
-
+	
 	tools = GetTools();
 
 	int golRulesCount;
