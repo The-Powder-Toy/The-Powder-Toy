@@ -19,7 +19,7 @@ User element suggestions:<br />
 Elements:
 - Cure (Turns virus into whatever it was before) Credit to: jacob1 for the element <br />
 - Fix Nuclear Waste (WSTE) (it creates a pressure of nan) <br />
-- Fix Stalk(coffee.cpp) so it diesn't use Vine Mode
+- Fix Stalk(coffee.cpp) so it doesn't use Vine Mode
 
 Features:
 - IRC client (Credit to mniip)(for code see irc_client_mniip.lua)
