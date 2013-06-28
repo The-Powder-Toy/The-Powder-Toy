@@ -1366,14 +1366,13 @@ int LuaScriptInterface::simulation_loadStamp(lua_State * l)
 	}
 	if (tempfile)
 	{
-		if (!luacon_sim->Load(x, y, tempfile->GetGameSave()))
+		if (luacon_sim->Load(x, y, tempfile->GetGameSave()))
 		{
 			//luacon_sim->sys_pause = (tempfile->GetGameSave()->paused | luacon_model->GetPaused())?1:0;
 			lua_pushinteger(l, 1);
 		}
 		else
 			lua_pushnil(l);
-		delete tempfile;
 	}
 	else
 		lua_pushnil(l);
