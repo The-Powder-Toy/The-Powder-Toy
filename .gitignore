@@ -16,6 +16,7 @@ Saves/*
 includes/*
 Makefile.me
 generated/*
+build/*
 *.xcodeproj
 .DS_Store
 *.plist
