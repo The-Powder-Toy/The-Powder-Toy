@@ -11,11 +11,12 @@
 ###[Powder Sim 2 Development Team] 
 -  wolfy1339 (Leader)<br />
 -  firefreak11 (Lead Programmer)<br />
--  tommig (Programmer)<br />
--  greymatter (Programmer)<br />
--  Kikinicij (Programmer)<br />
--  xetalim (Programmer)<br />
 -  cyberdragon (github staff)<br />
+-  tommig <br />
+-  greymatter <br />
+-  Kikinicij <br />
+-  xetalim <br />
+
   
 ###[IRC Client]
 -  mniip
