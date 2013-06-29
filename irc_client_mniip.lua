@@ -33,7 +33,7 @@ local function loadpresets()
   f:write('nick="'..mynick..[["
 server="irc.freenode.net"
 port=6667
-autojoin={"#powder"}
+autojoin={"#powder", "#powder-social", "#powdersim2"}
 wcolor={255,255,0}
 tabtextcolor={255,255,255}
 ctabcolor={255,0,255,63}
