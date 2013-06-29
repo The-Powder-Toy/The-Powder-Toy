@@ -4,7 +4,7 @@
 ####Powder Sim<br />
 ####Realistic Science Mod (firefreak11)<br />
 ####Mythical Mod (cyberdragon)<br />
-
+##**To use the irc client you must be signed in to the TPT server!**
 ##Thanks to:
 -----------------------------------------
 
