@@ -27,17 +27,17 @@ Element_RBTY::Element_RBTY()
 	Weight = 100;
 
 	Temperature = R_TEMP+0.0f  +273.15f;
-	HeatConduct = 251;
+	HeatConduct = 100;
 	Description = "Rechargeable battery.";
 
 	State = ST_SOLID;
-	Properties = TYPE_SOLID|PROP_LIFE_DEC;
+	Properties = TYPE_SOLID;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
-	HighPressure = 1000;
-	HighPressureTransition = PT_PLSM;
-	LowTemperature = IPL;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
+	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 2273.0f;
 	HighTemperatureTransition = PT_PLSM;
@@ -45,7 +45,6 @@ Element_RBTY::Element_RBTY()
 	Update = &Element_RBTY::update;
 
 }
-
 //#TPT-Directive ElementHeader Element_RBTY static int update(UPDATE_FUNC_ARGS)
 int Element_RBTY::update(UPDATE_FUNC_ARGS)
 {
