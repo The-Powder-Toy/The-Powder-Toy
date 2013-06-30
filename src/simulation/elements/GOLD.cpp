@@ -78,9 +78,12 @@ int Element_GOLD::update(UPDATE_FUNC_ARGS)
 				if(!r) continue;
 				if((r&0xFF)==PT_SPRK && parts[r>>8].life && parts[r>>8].life<4)
 				{
+					if((r&0xFF)!=PT_ASPK)
+					{
 					parts[i].life = 4;
 					parts[i].type = PT_SPRK;
 					parts[i].ctype = PT_GOLD;
+					}
 				}
 			}
 		}
