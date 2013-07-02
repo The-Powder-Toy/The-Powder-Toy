@@ -138,10 +138,8 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 												parts[nr].life = 1;
 												if (parts[i].dcolour)
 												{
-													int red = PIXR(parts[i].dcolour)&0xFF;
-													int green = PIXG(parts[i].dcolour);
-													int blue = PIXB(parts[i].dcolour);
-													parts[nr].dcolour = 255<<24|PIXRGB(red>60?red-60:0, green>60?green-60:0, blue>60?blue-60:0);
+													int colour=parts[i].dcolour;
+													parts[nr].dcolour=(colour&0xFF000000)|std::max(colour&0xFF0000-0x3C0000,0)|std::max(colour&0xFF00-0x3C00,0)|std::max(colour&0xFF-0x3C,0);
 												}
 											}
 										}
