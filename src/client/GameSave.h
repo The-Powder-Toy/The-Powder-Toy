@@ -42,6 +42,7 @@ public:
 	bool waterEEnabled;
 	bool legacyEnable;
 	bool gravityEnable;
+	bool aheatEnable;
 	bool paused;
 	int gravityMode;
 	int airMode;

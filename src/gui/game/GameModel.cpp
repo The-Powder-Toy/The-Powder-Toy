@@ -83,6 +83,11 @@ GameModel::GameModel():
 	//Load config into simulation
 	edgeMode = Client::Ref().GetPrefInteger("Simulation.EdgeMode", 0);
 	sim->SetEdgeMode(edgeMode);
+	int ngrav_enable = Client::Ref().GetPrefInteger("Simulation.NewtonianGravity", 0);
+	if (ngrav_enable)
+		sim->grav->start_grav_async();
+	sim->aheat_enable =  Client::Ref().GetPrefInteger("Simulation.AmbientHeat", 0);
+	sim->pretty_powder =  Client::Ref().GetPrefInteger("Simulation.PrettyPowder", 0);
 
 	//Load last user
 	if(Client::Ref().GetAuthUser().ID)
@@ -155,8 +160,12 @@ GameModel::~GameModel()
 
 	Client::Ref().SetPref("Renderer.GravityField", (bool)ren->gravityFieldEnabled);
 	Client::Ref().SetPref("Renderer.Decorations", (bool)ren->decorations_enable);
+	Client::Ref().SetPref("Renderer.DebugMode", ren->debugLines); //These two should always be equivalent, even though they are different things
 
 	Client::Ref().SetPref("Simulation.EdgeMode", sim->edgeMode);
+	Client::Ref().SetPref("Simulation.NewtonianGravity", sim->grav->ngrav_enable);
+	Client::Ref().SetPref("Simulation.AmbientHeat", sim->aheat_enable);
+	Client::Ref().SetPref("Simulation.PrettyPowder", sim->pretty_powder);
 
 	Client::Ref().SetPref("Decoration.Red", (int)colour.Red);
 	Client::Ref().SetPref("Decoration.Green", (int)colour.Green);
@@ -566,6 +575,7 @@ void GameModel::SetSave(SaveInfo * newSave)
 		sim->air->airMode = saveData->airMode;
 		sim->legacy_enable = saveData->legacyEnable;
 		sim->water_equal_test = saveData->waterEEnabled;
+		sim->aheat_enable = saveData->aheatEnable;
 		if(saveData->gravityEnable)
 			sim->grav->start_grav_async();
 		else
@@ -607,6 +617,7 @@ void GameModel::SetSaveFile(SaveFile * newSave)
 		sim->air->airMode = saveData->airMode;
 		sim->legacy_enable = saveData->legacyEnable;
 		sim->water_equal_test = saveData->waterEEnabled;
+		sim->aheat_enable = saveData->aheatEnable;
 		if(saveData->gravityEnable && !sim->grav->ngrav_enable)
 		{
 			sim->grav->start_grav_async();

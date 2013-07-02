@@ -150,6 +150,8 @@ GameController::GameController():
 	gameView->AttachController(this);
 	gameModel->AddObserver(gameView);
 
+	gameView->SetDebugHUD(Client::Ref().GetPrefBool("Renderer.DebugMode", false));
+
 #ifdef LUACONSOLE
 	commandInterface = new LuaScriptInterface(this, gameModel);
 	((LuaScriptInterface*)commandInterface)->SetWindow(gameView);
@@ -1016,6 +1018,7 @@ void GameController::OpenLocalSaveWindow(bool asCurrent)
 	gameSave->legacyEnable = sim->legacy_enable;
 	gameSave->waterEEnabled = sim->water_equal_test;
 	gameSave->gravityEnable = sim->grav->ngrav_enable;
+	gameSave->aheatEnable = sim->aheat_enable;
 	if(!gameSave)
 	{
 		new ErrorMessage("Error", "Unable to build save.");
@@ -1227,6 +1230,7 @@ void GameController::OpenSaveWindow()
 		gameSave->legacyEnable = sim->legacy_enable;
 		gameSave->waterEEnabled = sim->water_equal_test;
 		gameSave->gravityEnable = sim->grav->ngrav_enable;
+		gameSave->aheatEnable = sim->aheat_enable;
 		if(!gameSave)
 		{
 			new ErrorMessage("Error", "Unable to build save.");
@@ -1278,6 +1282,7 @@ void GameController::SaveAsCurrent()
 		gameSave->legacyEnable = sim->legacy_enable;
 		gameSave->waterEEnabled = sim->water_equal_test;
 		gameSave->gravityEnable = sim->grav->ngrav_enable;
+		gameSave->aheatEnable = sim->aheat_enable;
 		if(!gameSave)
 		{
 			new ErrorMessage("Error", "Unable to build save.");

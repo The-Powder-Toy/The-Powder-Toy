@@ -192,7 +192,7 @@ int Element_PIPE::update(UPDATE_FUNC_ARGS)
 						np = sim->create_part(-1,x+rx,y+ry,parts[i].tmp&0xFF);
 						if (np!=-1)
 						{
-							transfer_pipe_to_part(parts+i, parts+np);
+							transfer_pipe_to_part(sim, parts+i, parts+np);
 						}
 					}
 					//try eating particle at entrance
@@ -374,8 +374,8 @@ int Element_PIPE::graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
-//#TPT-Directive ElementHeader Element_PIPE static void transfer_pipe_to_part(Particle *pipe, Particle *part)
-void Element_PIPE::transfer_pipe_to_part(Particle *pipe, Particle *part)
+//#TPT-Directive ElementHeader Element_PIPE static void transfer_pipe_to_part(Simulation * sim, Particle *pipe, Particle *part)
+void Element_PIPE::transfer_pipe_to_part(Simulation * sim, Particle *pipe, Particle *part)
 {
 	part->type = (pipe->tmp & 0xFF);
 	part->temp = pipe->temp;
@@ -384,7 +384,7 @@ void Element_PIPE::transfer_pipe_to_part(Particle *pipe, Particle *part)
 	part->ctype = pipe->pavg[1];
 	pipe->tmp &= ~0xFF;
 
-	if (part->type != PT_PHOT && part->type != PT_ELEC && part->type != PT_NEUT)
+	if (!(sim->elements[part->type].Properties & TYPE_ENERGY))
 	{
 		part->vx = 0.0f;
 		part->vy = 0.0f;
@@ -456,7 +456,7 @@ void Element_PIPE::pushParticle(Simulation * sim, int i, int count, int original
 					for (nnx=0; nnx<80; nnx++)
 						if (!sim->portalp[sim->parts[r>>8].tmp][count][nnx].type)
 						{
-							transfer_pipe_to_part(sim->parts+i, &(sim->portalp[sim->parts[r>>8].tmp][count][nnx]));
+							transfer_pipe_to_part(sim, sim->parts+i, &(sim->portalp[sim->parts[r>>8].tmp][count][nnx]));
 							count++;
 							break;
 						}
@@ -482,7 +482,7 @@ void Element_PIPE::pushParticle(Simulation * sim, int i, int count, int original
 			for (nnx=0; nnx<80; nnx++)
 				if (!sim->portalp[sim->parts[r>>8].tmp][count][nnx].type)
 				{
-					transfer_pipe_to_part(sim->parts+i, &(sim->portalp[sim->parts[r>>8].tmp][count][nnx]));
+					transfer_pipe_to_part(sim, sim->parts+i, &(sim->portalp[sim->parts[r>>8].tmp][count][nnx]));
 					count++;
 					break;
 				}
@@ -494,7 +494,7 @@ void Element_PIPE::pushParticle(Simulation * sim, int i, int count, int original
 			np = sim->create_part(-1,x+rx,y+ry,sim->parts[i].tmp&0xFF);
 			if (np!=-1)
 			{
-				transfer_pipe_to_part(sim->parts+i, sim->parts+np);
+				transfer_pipe_to_part(sim, sim->parts+i, sim->parts+np);
 			}
 		}
 		
