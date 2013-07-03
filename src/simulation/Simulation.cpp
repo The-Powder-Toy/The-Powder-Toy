@@ -2811,7 +2811,7 @@ int Simulation::create_part(int p, int x, int y, int tv)
 				parts[i].tmp = -1;
 				parts[i].tmp2 = -1;
 				break;
-			case PT_ACID: case PT_CAUS:
+			case PT_ACID: case PT_CAUS: case PT_AQRG:
 				parts[i].life = 75;
 				break;
 			/*Testing
