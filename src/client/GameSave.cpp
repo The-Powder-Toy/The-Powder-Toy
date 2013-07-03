@@ -20,6 +20,7 @@ legacyEnable(save.legacyEnable),
 gravityEnable(save.gravityEnable),
 paused(save.paused),
 gravityMode(save.gravityMode),
+aheatEnable(save.aheatEnable),
 airMode(save.airMode),
 signs(save.signs),
 expanded(save.expanded),
@@ -171,10 +172,11 @@ void GameSave::Expand()
 {
 	if(hasOriginalData && !expanded)
 	{
-		waterEEnabled = 0;
-		legacyEnable = 0;
-		gravityEnable = 0;
-		paused = 0;
+		waterEEnabled = false;
+		legacyEnable = false;
+		gravityEnable = false;
+		aheatEnable = false;
+		paused = false;
 		gravityMode = 0;
 		airMode = 0;
 		expanded = true;
@@ -612,6 +614,17 @@ void GameSave::readOPS(char * data, int dataLength)
 			if(bson_iterator_type(&iter)==BSON_BOOL)
 			{
 				gravityEnable = bson_iterator_bool(&iter);
+			}
+			else
+			{
+				fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
+			}
+		}
+		else if(!strcmp(bson_iterator_key(&iter), "aheat_enable"))
+		{
+			if(bson_iterator_type(&iter)==BSON_BOOL)
+			{
+				aheatEnable = bson_iterator_bool(&iter);
 			}
 			else
 			{
@@ -1973,6 +1986,7 @@ char * GameSave::serialiseOPS(int & dataLength)
 	bson_append_bool(&b, "waterEEnabled", waterEEnabled);
 	bson_append_bool(&b, "legacyEnable", legacyEnable);
 	bson_append_bool(&b, "gravityEnable", gravityEnable);
+	bson_append_bool(&b, "aheat_enable", aheatEnable);
 	bson_append_bool(&b, "paused", paused);
 	bson_append_int(&b, "gravityMode", gravityMode);
 	bson_append_int(&b, "airMode", airMode);

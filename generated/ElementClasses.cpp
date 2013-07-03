@@ -190,7 +190,6 @@ std::vector<Element> GetElements()
 	elements.push_back(Element_CFBN());
 	elements.push_back(Element_COFE());
 	elements.push_back(Element_COFF());
-	elements.push_back(Element_coffee());
 	elements.push_back(Element_STALK());
 	elements.push_back(Element_DIZN());
 	elements.push_back(Element_DMTR());

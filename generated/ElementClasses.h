@@ -193,7 +193,6 @@
 #define PT_CFBN 182
 #define PT_COFE 183
 #define PT_COFF 184
-#define PT_coffee 185
 #define PT_STALK 186
 #define PT_DIZN 187
 #define PT_DMTR 188
@@ -1811,14 +1810,6 @@ class Element_COFF: public Element
 public:
 	Element_COFF();
 	virtual ~Element_COFF();
-	static int update(UPDATE_FUNC_ARGS);
-};
-
-class Element_coffee: public Element
-{
-public:
-	Element_coffee();
-	virtual ~Element_coffee();
 	static int update(UPDATE_FUNC_ARGS);
 };
 

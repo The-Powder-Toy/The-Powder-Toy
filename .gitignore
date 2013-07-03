@@ -9,8 +9,12 @@
 stdout.txt
 stderr.txt
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> c1320d200735ab3a0e25d169a4bb329de2bb40ba
+=======
+build*/*
+>>>>>>> cb1023fe24545c6c32b534921e9f89e743125ac7
 stamps/*
 Saves/*
 includes/*
