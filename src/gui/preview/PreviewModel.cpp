@@ -347,9 +347,21 @@ void PreviewModel::Update()
 }
 
 PreviewModel::~PreviewModel() {
-	pthread_cancel(updateSaveDataThread);
-	pthread_cancel(updateSaveInfoThread);
-	pthread_cancel(updateSaveCommentsThread);
+	if (updateSaveDataWorking)
+	{
+		pthread_cancel(updateSaveDataThread);
+		pthread_join(updateSaveDataThread, NULL);
+	}
+	if (updateSaveInfoWorking)
+	{
+		pthread_cancel(updateSaveInfoThread);
+		pthread_join(updateSaveInfoThread, NULL);
+	}
+	if (updateSaveCommentsWorking)
+	{
+		pthread_cancel(updateSaveCommentsThread);
+		pthread_join(updateSaveCommentsThread, NULL);
+	}
 	if(save)
 		delete save;
 	if(saveComments)
