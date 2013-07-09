@@ -307,6 +307,10 @@ Snapshot * Simulation::CreateSnapshot()
 void Simulation::Restore(const Snapshot & snap)
 {
 	parts_lastActiveIndex = NPART-1; 
+
+	for(int i; i<NPART; i++)
+		elementCount[i] = 0;
+
 	std::copy(snap.AirPressure.begin(), snap.AirPressure.end(), &pv[0][0]);
 	std::copy(snap.AirVelocityX.begin(), snap.AirVelocityX.end(), &vx[0][0]);
 	std::copy(snap.AirVelocityY.begin(), snap.AirVelocityY.end(), &vy[0][0]);
