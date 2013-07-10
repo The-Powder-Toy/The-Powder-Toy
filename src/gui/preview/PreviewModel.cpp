@@ -252,7 +252,7 @@ void PreviewModel::Update()
 		delete updateSaveDataInfo;
 		updateSaveDataInfo = NULL;
 
-		if (save)
+		if (save && saveData)
 		{
 			commentsTotal = save->Comments;
 			try
@@ -279,7 +279,7 @@ void PreviewModel::Update()
 		delete updateSaveInfoInfo;
 		updateSaveInfoInfo = NULL;
 
-		if (save)
+		if (save && saveData)
 		{
 			commentsTotal = save->Comments;
 			try

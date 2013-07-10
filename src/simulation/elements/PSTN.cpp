@@ -168,7 +168,7 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 int Element_PSTN::CanMoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int maxSize, int amount, bool retract, int block)
 {
 	int posX, posY, r, spaces = 0, currentPos = 0;
-	if (amount == 0)
+	if (amount <= 0)
 		return 0;
 	for(posX = stackX, posY = stackY; currentPos < maxSize + amount; posX += directionX, posY += directionY) {
 		if (!(posX < XRES && posY < YRES && posX >= 0 && posY >= 0)) {
@@ -176,14 +176,14 @@ int Element_PSTN::CanMoveStack(Simulation * sim, int stackX, int stackY, int dir
 		}
 		r = sim->pmap[posY][posX];
 		if (sim->IsWallBlocking(posX, posY, 0) || (block && (r&0xFF) == block))
-			break;
+			return spaces;
 		if(!r) {
 			spaces++;
 			tempParts[currentPos++] = -1;
 			if(spaces >= amount)
 				break;
 		} else {
-			if(spaces < maxSize && !retract)
+			if(spaces < maxSize && currentPos < maxSize && (!retract || ((r&0xFF) == PT_FRME) && posX == stackX && posY == stackY))
 				tempParts[currentPos++] = r>>8;
 			else
 				return spaces;
@@ -212,7 +212,7 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 			posY = stackY + (c*newY);
 			posX = stackX + (c*newX);
 			if (posX < XRES && posY < YRES && posX >= 0 && posY >= 0 && (sim->pmap[posY][posX]&0xFF) == PT_FRME) {
-				int val = CanMoveStack(sim, posX+realDirectionX, posY+realDirectionY, realDirectionX, realDirectionY, maxSize, amount, retract, block);
+				int val = CanMoveStack(sim, posX, posY, realDirectionX, realDirectionY, maxSize, amount, retract, block);
 				if(val < amount)
 					amount = val;
 			} else {
@@ -224,7 +224,7 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 			posY = stackY - (c*newY);
 			posX = stackX - (c*newX);
 			if (posX < XRES && posY < YRES && posX >= 0 && posY >= 0 && (sim->pmap[posY][posX]&0xFF) == PT_FRME) {
-				int val = CanMoveStack(sim, posX+realDirectionX, posY+realDirectionY, realDirectionX, realDirectionY, maxSize, amount, retract, block);
+				int val = CanMoveStack(sim, posX, posY, realDirectionX, realDirectionY, maxSize, amount, retract, block);
 				if(val < amount)
 					amount = val;
 			} else {

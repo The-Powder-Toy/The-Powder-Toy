@@ -779,7 +779,7 @@ int main(int argc, char * argv[])
 	engine->Begin(XRES+BARSIZE, YRES+MENUSIZE);
 	engine->SetFastQuit(Client::Ref().GetPrefBool("FastQuit", true));
 
-#ifndef DEBUG
+#if !defined(DEBUG) && !defined(_DEBUG)
 	//Get ready to catch any dodgy errors
 	signal(SIGSEGV, SigHandler);
 	signal(SIGFPE, SigHandler);
