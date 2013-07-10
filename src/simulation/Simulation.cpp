@@ -332,26 +332,6 @@ void Simulation::Restore(const Snapshot & snap)
 	signs = snap.signs;
 }
 
-/*int Simulation::Load(unsigned char * data, int dataLength)
-{
-	return SaveLoader::Load(data, dataLength, this, true, 0, 0);
-}
-
-int Simulation::Load(int x, int y, unsigned char * data, int dataLength)
-{
-	return SaveLoader::Load(data, dataLength, this, false, x, y);
-}
-
-unsigned char * Simulation::Save(int & dataLength)
-{
-	return SaveLoader::Build(dataLength, this, 0, 0, XRES, YRES);
-}
-
-unsigned char * Simulation::Save(int x1, int y1, int x2, int y2, int & dataLength)
-{
-	return SaveLoader::Build(dataLength, this, x1, y1, x2-x1, y2-y1);
-}*/
-
 void Simulation::clear_area(int area_x, int area_y, int area_w, int area_h)
 {
 	int cx = 0;
@@ -376,13 +356,23 @@ void Simulation::clear_area(int area_x, int area_y, int area_w, int area_h)
 	}
 }
 
+bool Simulation::FloodFillPmapCheck(int x, int y, int type)
+{
+	if (type == 0)
+		return !pmap[y][x] && !photons[y][x];
+	if (elements[type].Properties&TYPE_ENERGY)
+		return (photons[y][x]&0xFF) == type;
+	else
+		return (pmap[y][x]&0xFF) == type;
+}
+
 int Simulation::flood_prop_2(int x, int y, size_t propoffset, void * propvalue, StructProperty::PropertyType proptype, int parttype, char * bitmap)
 {
 	int x1, x2, i, dy = 1;
 	x1 = x2 = x;
 	while (x1>=CELL)
 	{
-		if ((pmap[y][x1-1]&0xFF)!=parttype || bitmap[(y*XRES)+x1-1])
+		if (!FloodFillPmapCheck(x1-1, y, parttype) || bitmap[(y*XRES)+x1-1])
 		{
 			break;
 		}
@@ -390,7 +380,7 @@ int Simulation::flood_prop_2(int x, int y, size_t propoffset, void * propvalue, 
 	}
 	while (x2<XRES-CELL)
 	{
-		if ((pmap[y][x2+1]&0xFF)!=parttype || bitmap[(y*XRES)+x2+1])
+		if (!FloodFillPmapCheck(x2+1, y, parttype) || bitmap[(y*XRES)+x2+1])
 		{
 			break;
 		}
@@ -399,6 +389,10 @@ int Simulation::flood_prop_2(int x, int y, size_t propoffset, void * propvalue, 
 	for (x=x1; x<=x2; x++)
 	{
 		i = pmap[y][x]>>8;
+		if (!i)
+			i = photons[y][x]>>8;
+		if (!i)
+			continue;
 		switch (proptype) {
 			case StructProperty::Float:
 				*((float*)(((char*)&parts[i])+propoffset)) = *((float*)propvalue);
@@ -420,12 +414,12 @@ int Simulation::flood_prop_2(int x, int y, size_t propoffset, void * propvalue, 
 	}
 	if (y>=CELL+dy)
 		for (x=x1; x<=x2; x++)
-			if ((pmap[y-dy][x]&0xFF)==parttype && !bitmap[((y-dy)*XRES)+x])
+			if (FloodFillPmapCheck(x, y-dy, parttype) && !bitmap[((y-dy)*XRES)+x])
 				if (!flood_prop_2(x, y-dy, propoffset, propvalue, proptype, parttype, bitmap))
 					return 0;
 	if (y<YRES-CELL-dy)
 		for (x=x1; x<=x2; x++)
-			if ((pmap[y+dy][x]&0xFF)==parttype && !bitmap[((y+dy)*XRES)+x])
+			if (FloodFillPmapCheck(x, y+dy, parttype) && !bitmap[((y+dy)*XRES)+x])
 				if (!flood_prop_2(x, y+dy, propoffset, propvalue, proptype, parttype, bitmap))
 					return 0;
 	return 1;
@@ -437,6 +431,10 @@ int Simulation::flood_prop(int x, int y, size_t propoffset, void * propvalue, St
 	char * bitmap = (char *)malloc(XRES*YRES); //Bitmap for checking
 	memset(bitmap, 0, XRES*YRES);
 	r = pmap[y][x];
+	if (!r)
+		r = photons[y][x];
+	if (!r)
+		return 1;
 	flood_prop_2(x, y, propoffset, propvalue, proptype, r&0xFF, bitmap);
 	free(bitmap);
 	return 0;
@@ -1443,6 +1441,8 @@ int Simulation::FloodParts(int x, int y, int fullc, int cm, int bm, int flags)
 		{
 			cm = pmap[y][x]&0xFF;
 			if (!cm)
+				cm = photons[y][x]&0xFF;
+			if (!cm)
 				return 0;
 		}
 		else
@@ -1453,7 +1453,7 @@ int Simulation::FloodParts(int x, int y, int fullc, int cm, int bm, int flags)
 		bm = bmap[y/CELL][x/CELL];
 	}
 
-	if (((pmap[y][x]&0xFF)!=cm || bmap[y/CELL][x/CELL]!=bm ))
+	if (!FloodFillPmapCheck(x, y, cm) || bmap[y/CELL][x/CELL] != bm )
 		return 1;
 
 	coord_stack = (short unsigned int (*)[2])malloc(sizeof(unsigned short)*2*coord_stack_limit);
@@ -1470,7 +1470,7 @@ int Simulation::FloodParts(int x, int y, int fullc, int cm, int bm, int flags)
 		// go left as far as possible
 		while (x1>=CELL)
 		{
-			if ((pmap[y][x1-1]&0xFF)!=cm || bmap[y/CELL][(x1-1)/CELL]!=bm)
+			if (!FloodFillPmapCheck(x1-1, y, cm) || bmap[y/CELL][(x1-1)/CELL]!=bm)
 			{
 				break;
 			}
@@ -1479,7 +1479,7 @@ int Simulation::FloodParts(int x, int y, int fullc, int cm, int bm, int flags)
 		// go right as far as possible
 		while (x2<XRES-CELL)
 		{
-			if ((pmap[y][x2+1]&0xFF)!=cm || bmap[y/CELL][(x2+1)/CELL]!=bm)
+			if (!FloodFillPmapCheck(x2+1, y, cm) || bmap[y/CELL][(x2+1)/CELL]!=bm)
 			{
 				break;
 			}
@@ -1494,7 +1494,7 @@ int Simulation::FloodParts(int x, int y, int fullc, int cm, int bm, int flags)
 
 		if (y>=CELL+dy)
 			for (x=x1; x<=x2; x++)
-				if ((pmap[y-dy][x]&0xFF)==cm && bmap[(y-dy)/CELL][x/CELL]==bm)
+				if (FloodFillPmapCheck(x, y-dy, cm) && bmap[(y-dy)/CELL][x/CELL]==bm)
 				{
 					coord_stack[coord_stack_size][0] = x;
 					coord_stack[coord_stack_size][1] = y-dy;
@@ -1508,7 +1508,7 @@ int Simulation::FloodParts(int x, int y, int fullc, int cm, int bm, int flags)
 
 		if (y<YRES-CELL-dy)
 			for (x=x1; x<=x2; x++)
-				if ((pmap[y+dy][x]&0xFF)==cm && bmap[(y+dy)/CELL][x/CELL]==bm)
+				if (FloodFillPmapCheck(x, y+dy, cm) && bmap[(y+dy)/CELL][x/CELL]==bm)
 				{
 					coord_stack[coord_stack_size][0] = x;
 					coord_stack[coord_stack_size][1] = y+dy;

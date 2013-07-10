@@ -138,6 +138,7 @@ public:
 	void create_cherenkov_photon(int pp);
 	void create_gain_photon(int pp);
 	TPT_NO_INLINE void kill_part(int i);
+	bool FloodFillPmapCheck(int x, int y, int type);
 	int flood_prop(int x, int y, size_t propoffset, void * propvalue, StructProperty::PropertyType proptype);
 	int flood_prop_2(int x, int y, size_t propoffset, void * propvalue, StructProperty::PropertyType proptype, int parttype, char * bitmap);
 	int flood_water(int x, int y, int i, int originaly, int check);
