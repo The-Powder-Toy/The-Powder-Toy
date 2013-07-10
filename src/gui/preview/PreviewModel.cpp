@@ -23,7 +23,7 @@ void * PreviewModel::updateSaveInfoT(void * obj)
 {
 	SaveInfo * tempSave = Client::Ref().GetSave(((threadInfo*)obj)->saveID, ((threadInfo*)obj)->saveDate);
 	((threadInfo*)obj)->threadFinished = true;
-	if (((threadInfo*)obj)->previewExited)
+	if (((threadInfo*)obj)->previewExited && tempSave)
 		delete tempSave;
 	return tempSave;
 }
@@ -36,8 +36,10 @@ void * PreviewModel::updateSaveDataT(void * obj)
 	((threadInfo*)obj)->threadFinished = true;
 	if (((threadInfo*)obj)->previewExited)
 	{
-		delete tempSave;
-		free(tempData);
+		if (tempSave)
+			delete tempSave;
+		if (tempData)
+			free(tempData);
 	}
 	return tempSave;
 }
@@ -46,7 +48,7 @@ void * PreviewModel::updateSaveCommentsT(void * obj)
 {
 	std::vector<SaveComment*> * tempComments = Client::Ref().GetComments(((threadInfo*)obj)->saveID, (((threadInfo*)obj)->saveDate-1)*20, 20); //saveDate is used as commentsPageNumber
 	((threadInfo*)obj)->threadFinished = true;
-	if (((threadInfo*)obj)->previewExited)
+	if (((threadInfo*)obj)->previewExited && tempComments)
 	{
 		for(int i = 0; i < tempComments->size(); i++)
 			delete tempComments->at(i);
@@ -244,81 +246,74 @@ void PreviewModel::AddObserver(PreviewView * observer)
 
 void PreviewModel::Update()
 {
-	if (updateSaveDataInfo)
+	if (updateSaveDataInfo && updateSaveDataInfo->threadFinished)
 	{
-		if (updateSaveDataInfo->threadFinished)
-		{
-			delete updateSaveDataInfo;
-			updateSaveDataInfo = NULL;
-			pthread_join(updateSaveDataThread, (void**)(&saveData));
+		pthread_join(updateSaveDataThread, (void**)(&saveData));
+		delete updateSaveDataInfo;
+		updateSaveDataInfo = NULL;
 
-			if (save)
-			{
-				commentsTotal = save->Comments;
-				try
-				{
-					save->SetGameSave(new GameSave((char*)saveData->data, saveData->length));
-				}
-				catch(ParseException &e)
-				{
-					throw PreviewModelException("Save file corrupt or from newer version");
-				}
-				notifySaveChanged();
-				notifyCommentsPageChanged();
-			}
-		}
-	}
-
-	if (updateSaveInfoInfo)
-	{
-		if (updateSaveInfoInfo->threadFinished)
+		if (save)
 		{
-			if (save)
+			commentsTotal = save->Comments;
+			try
 			{
-				delete save;
-				save = NULL;
+				save->SetGameSave(new GameSave((char*)saveData->data, saveData->length));
 			}
-			delete updateSaveInfoInfo;
-			updateSaveInfoInfo = NULL;
-			pthread_join(updateSaveInfoThread, (void**)(&save));
-			if (save)
+			catch(ParseException &e)
 			{
-				commentsTotal = save->Comments;
-				try
-				{
-					save->SetGameSave(new GameSave((char*)saveData->data, saveData->length));
-				}
-				catch(ParseException &e)
-				{
-					throw PreviewModelException("Save file corrupt or from newer version");
-				}
-				notifyCommentsPageChanged();
+				throw PreviewModelException("Save file corrupt or from newer version");
 			}
 			notifySaveChanged();
-
-			if(!save)
-				throw PreviewModelException("Unable to load save");
+			notifyCommentsPageChanged();
 		}
 	}
 
-	if (updateSaveCommentsInfo)
+	if (updateSaveInfoInfo && updateSaveInfoInfo->threadFinished)
 	{
-		if (updateSaveCommentsInfo->threadFinished)
+		if (save)
 		{
-			if(saveComments)
-			{
-				for(int i = 0; i < saveComments->size(); i++)
-					delete saveComments->at(i);
-				saveComments->clear();
-				delete saveComments;
-				saveComments = NULL;
-			}
-			commentsLoaded = true;
-			delete updateSaveCommentsInfo;
-			updateSaveCommentsInfo = NULL;
-			pthread_join(updateSaveCommentsThread, (void**)(&saveComments));
-			notifySaveCommentsChanged();
+			delete save;
+			save = NULL;
 		}
+		pthread_join(updateSaveInfoThread, (void**)(&save));
+		delete updateSaveInfoInfo;
+		updateSaveInfoInfo = NULL;
+
+		if (save)
+		{
+			commentsTotal = save->Comments;
+			try
+			{
+				save->SetGameSave(new GameSave((char*)saveData->data, saveData->length));
+			}
+			catch(ParseException &e)
+			{
+				throw PreviewModelException("Save file corrupt or from newer version");
+			}
+			notifyCommentsPageChanged();
+		}
+		notifySaveChanged();
+
+		if(!save)
+			throw PreviewModelException("Unable to load save");
+	}
+
+	if (updateSaveCommentsInfo && updateSaveCommentsInfo->threadFinished)
+	{
+		if(saveComments)
+		{
+			for(int i = 0; i < saveComments->size(); i++)
+				delete saveComments->at(i);
+			saveComments->clear();
+			delete saveComments;
+			saveComments = NULL;
+		}
+
+		commentsLoaded = true;
+		pthread_join(updateSaveCommentsThread, (void**)(&saveComments));
+		delete updateSaveCommentsInfo;
+		updateSaveCommentsInfo = NULL;
+		notifySaveCommentsChanged();
 	}
 }
 
