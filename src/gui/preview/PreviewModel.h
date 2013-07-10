@@ -1,5 +1,5 @@
-#ifndef PREVIEWMODEL_H_
-#define PREVIEWMODEL_H_
+#ifndef PREVIEWMODEL_H
+#define PREVIEWMODEL_H
 
 #include <vector>
 #include <iostream>
@@ -14,8 +14,27 @@ using namespace std;
 
 struct SaveData
 {
+	SaveData(unsigned char * data_, int len):
+		data(data_),
+		length(len)
+	{
+	}
 	unsigned char * data;
 	int length;
+};
+
+struct threadInfo {
+	threadInfo(int saveID_, int saveDate_):
+		threadFinished(true),
+		previewExited(false),
+		saveID(saveID_),
+		saveDate(saveDate_)
+	{
+	}
+	bool threadFinished;
+	bool previewExited;
+	int saveID;
+	int saveDate;
 };
 
 class PreviewView;
@@ -24,7 +43,7 @@ class PreviewModel {
 	bool commentBoxEnabled;
 	vector<PreviewView*> observers;
 	SaveInfo * save;
-	vector<char> saveDataBuffer;
+	SaveData *saveData;
 	std::vector<SaveComment*> * saveComments;
 	void notifySaveChanged();
 	void notifySaveCommentsChanged();
@@ -40,26 +59,17 @@ class PreviewModel {
 	int commentsTotal;
 	int commentsPageNumber;
 
-	bool updateSaveDataWorking;
-	volatile bool updateSaveDataFinished;
+	threadInfo * updateSaveDataInfo;
 	pthread_t updateSaveDataThread;
-	static void * updateSaveDataTHelper(void * obj);
-	static void updateSaveDataTDelete(void * arg);
-	void * updateSaveDataT();
+	static void * updateSaveDataT(void * obj);
 
-	bool updateSaveInfoWorking;
-	volatile bool updateSaveInfoFinished;
+	threadInfo * updateSaveInfoInfo;
 	pthread_t updateSaveInfoThread;
-	static void * updateSaveInfoTHelper(void * obj);
-	static void updateSaveInfoTDelete(void * arg);
-	void * updateSaveInfoT();
+	static void * updateSaveInfoT(void * obj);
 
-	bool updateSaveCommentsWorking;
-	volatile bool updateSaveCommentsFinished;
+	threadInfo * updateSaveCommentsInfo;
 	pthread_t updateSaveCommentsThread;
-	static void * updateSaveCommentsTHelper(void * obj);
-	static void updateSaveCommentsTDelete(void * arg);
-	void * updateSaveCommentsT();
+	static void * updateSaveCommentsT(void * obj);
 public:
 	PreviewModel();
 	SaveInfo * GetSave();
@@ -82,4 +92,4 @@ public:
 	virtual ~PreviewModel();
 };
 
-#endif /* PREVIEWMODEL_H_ */
+#endif /* PREVIEWMODEL_H */
