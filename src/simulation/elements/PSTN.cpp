@@ -46,8 +46,8 @@ Element_PSTN::Element_PSTN()
 	Graphics = &Element_PSTN::graphics;
 }
 
-//#TPT-Directive ElementHeader Element_PSTN static int tempParts[128];
-int Element_PSTN::tempParts[128];
+//#TPT-Directive ElementHeader Element_PSTN static int tempParts[XRES]
+int Element_PSTN::tempParts[XRES];
 
 #define PISTON_INACTIVE		0x00
 #define PISTON_RETRACT		0x01
@@ -170,7 +170,7 @@ int Element_PSTN::CanMoveStack(Simulation * sim, int stackX, int stackY, int dir
 	int posX, posY, r, spaces = 0, currentPos = 0;
 	if (amount <= 0)
 		return 0;
-	for(posX = stackX, posY = stackY; currentPos < maxSize + amount; posX += directionX, posY += directionY) {
+	for(posX = stackX, posY = stackY; currentPos < maxSize + amount && currentPos < XRES-1; posX += directionX, posY += directionY) {
 		if (!(posX < XRES && posY < YRES && posX >= 0 && posY >= 0)) {
 			break;
 		}
@@ -257,7 +257,7 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 			for(int j = 1; j <= amount; j++)
 				sim->kill_part(sim->pmap[stackY+(directionY*-j)][stackX+(directionX*-j)]>>8);
 		bool foundEnd = false;
-		for(posX = stackX, posY = stackY; currentPos < maxSize; posX += directionX, posY += directionY) {
+		for(posX = stackX, posY = stackY; currentPos < maxSize && currentPos < XRES-1; posX += directionX, posY += directionY) {
 			if (!(posX < XRES && posY < YRES && posX >= 0 && posY >= 0)) {
 				break;
 			}
