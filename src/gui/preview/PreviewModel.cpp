@@ -24,7 +24,10 @@ void * PreviewModel::updateSaveInfoT(void * obj)
 	SaveInfo * tempSave = Client::Ref().GetSave(((threadInfo*)obj)->saveID, ((threadInfo*)obj)->saveDate);
 	((threadInfo*)obj)->threadFinished = true;
 	if (((threadInfo*)obj)->previewExited && tempSave)
+	{
 		delete tempSave;
+		delete obj;
+	}
 	return tempSave;
 }
 
@@ -40,6 +43,7 @@ void * PreviewModel::updateSaveDataT(void * obj)
 			delete tempSave;
 		if (tempData)
 			free(tempData);
+		delete obj;
 	}
 	return tempSave;
 }
@@ -54,6 +58,7 @@ void * PreviewModel::updateSaveCommentsT(void * obj)
 			delete tempComments->at(i);
 		tempComments->clear();
 		delete tempComments;
+		delete obj;
 	}
 	return tempComments;
 }
