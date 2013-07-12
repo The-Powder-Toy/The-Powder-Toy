@@ -23,9 +23,10 @@ void * PreviewModel::updateSaveInfoT(void * obj)
 {
 	SaveInfo * tempSave = Client::Ref().GetSave(((threadInfo*)obj)->saveID, ((threadInfo*)obj)->saveDate);
 	((threadInfo*)obj)->threadFinished = true;
-	if (((threadInfo*)obj)->previewExited && tempSave)
+	if (((threadInfo*)obj)->previewExited)
 	{
-		delete tempSave;
+		if (tempSave)
+			delete tempSave;
 		delete obj;
 	}
 	return tempSave;
@@ -52,12 +53,15 @@ void * PreviewModel::updateSaveCommentsT(void * obj)
 {
 	std::vector<SaveComment*> * tempComments = Client::Ref().GetComments(((threadInfo*)obj)->saveID, (((threadInfo*)obj)->saveDate-1)*20, 20); //saveDate is used as commentsPageNumber
 	((threadInfo*)obj)->threadFinished = true;
-	if (((threadInfo*)obj)->previewExited && tempComments)
+	if (((threadInfo*)obj)->previewExited)
 	{
-		for(int i = 0; i < tempComments->size(); i++)
-			delete tempComments->at(i);
-		tempComments->clear();
-		delete tempComments;
+		if (tempComments)
+		{
+			for(int i = 0; i < tempComments->size(); i++)
+				delete tempComments->at(i);
+			tempComments->clear();
+			delete tempComments;
+		}
 		delete obj;
 	}
 	return tempComments;

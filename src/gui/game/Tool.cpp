@@ -65,7 +65,7 @@ void ElementTool::DrawRect(Simulation * sim, Brush * brush, ui::Point position1,
 	sim->CreateBox(position1.X, position1.Y, position2.X, position2.Y, toolID);
 }
 void ElementTool::DrawFill(Simulation * sim, Brush * brush, ui::Point position) {
-	sim->FloodParts(position.X, position.Y, toolID, -1, -1);
+	sim->FloodParts(position.X, position.Y, toolID, -1);
 }
 
 
@@ -87,7 +87,7 @@ void WallTool::DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui
 		newFanVelX *= strength;
 		float newFanVelY = (position2.Y-position1.Y)*0.005f;
 		newFanVelY *= strength;
-		sim->FloodWalls(position1.X, position1.Y, WL_FLOODHELPER, -1, WL_FAN, 0);
+		sim->FloodWalls(position1.X, position1.Y, WL_FLOODHELPER, WL_FAN, 0);
 		for (int j = 0; j < YRES/CELL; j++)
 			for (int i = 0; i < XRES/CELL; i++)
 				if (sim->bmap[j][i] == WL_FLOODHELPER)
@@ -107,7 +107,7 @@ void WallTool::DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui
 }
 void WallTool::DrawFill(Simulation * sim, Brush * brush, ui::Point position) {
 	if (toolID != WL_STREAM)
-		sim->FloodWalls(position.X, position.Y, toolID, -1, -1);
+		sim->FloodWalls(position.X, position.Y, toolID, -1);
 }
 
 WindTool::WindTool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int)):
@@ -185,7 +185,7 @@ void Element_TESC_Tool::DrawRect(Simulation * sim, Brush * brush, ui::Point posi
 }
 void Element_TESC_Tool::DrawFill(Simulation * sim, Brush * brush, ui::Point position) {
 	int radiusInfo = brush->GetRadius().X*4+brush->GetRadius().Y*4+7;
-	sim->FloodParts(position.X, position.Y, toolID | (radiusInfo << 8), -1, -1);
+	sim->FloodParts(position.X, position.Y, toolID | (radiusInfo << 8), -1);
 }
 
 

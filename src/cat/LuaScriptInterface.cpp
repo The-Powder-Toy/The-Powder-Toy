@@ -1033,9 +1033,8 @@ int LuaScriptInterface::simulation_floodParts(lua_State * l)
 	int y = luaL_optint(l,2,-1);
 	int c = luaL_optint(l,3,luacon_model->GetActiveTool(0)->GetToolID());
 	int cm = luaL_optint(l,4,-1);
-	int bm = luaL_optint(l,5,-1);
-	int flags = luaL_optint(l,6,luacon_sim->replaceModeFlags);
-	int ret = luacon_sim->FloodParts(x, y, c, cm, bm, flags);
+	int flags = luaL_optint(l,5,luacon_sim->replaceModeFlags);
+	int ret = luacon_sim->FloodParts(x, y, c, cm, flags);
 	lua_pushinteger(l, ret);
 	return 1;
 }
@@ -1093,12 +1092,11 @@ int LuaScriptInterface::simulation_floodWalls(lua_State * l)
 	int x = luaL_optint(l,1,-1);
 	int y = luaL_optint(l,2,-1);
 	int c = luaL_optint(l,3,8);
-	int cm = luaL_optint(l,4,-1);
-	int bm = luaL_optint(l,5,-1);
-	int flags = luaL_optint(l,6,luacon_sim->replaceModeFlags);
+	int bm = luaL_optint(l,4,-1);
+	int flags = luaL_optint(l,5,luacon_sim->replaceModeFlags);
 	if (c < 0 || c >= UI_WALLCOUNT)
 		return luaL_error(l, "Unrecognised wall id '%d'", c);
-	int ret = luacon_sim->FloodWalls(x, y, c, cm, bm, flags);
+	int ret = luacon_sim->FloodWalls(x, y, c, bm, flags);
 	lua_pushinteger(l, ret);
 	return 1;
 }

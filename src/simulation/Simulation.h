@@ -179,7 +179,7 @@ public:
 	int CreateWalls(int x, int y, int rx, int ry, int wall, Brush * cBrush = NULL, int flags = -1);
 	void CreateWallLine(int x1, int y1, int x2, int y2, int rx, int ry, int wall, Brush * cBrush = NULL, int flags = -1);
 	void CreateWallBox(int x1, int y1, int x2, int y2, int wall, int flags = -1);
-	int FloodWalls(int x, int y, int wall, int cm, int bm, int flags = -1);
+	int FloodWalls(int x, int y, int wall, int bm, int flags = -1);
 
 	//Drawing Particles
 	int CreateParts(int positionX, int positionY, int c, Brush * cBrush, int flags = -1);
@@ -188,7 +188,7 @@ public:
 	void CreateLine(int x1, int y1, int x2, int y2, int c, Brush * cBrush, int flags = -1);
 	void CreateLine(int x1, int y1, int x2, int y2, int c);
 	void CreateBox(int x1, int y1, int x2, int y2, int c, int flags = -1);
-	int FloodParts(int x, int y, int c, int cm, int bm, int flags = -1);
+	int FloodParts(int x, int y, int c, int cm, int flags = -1);
 
 	
 	void GetGravityField(int x, int y, float particleGrav, float newtonGrav, float & pGravX, float & pGravY);
