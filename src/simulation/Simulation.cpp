@@ -521,7 +521,7 @@ int Simulation::FloodINST(int x, int y, int fullc, int cm)
 		y = coord_stack[coord_stack_size][1];
 		x1 = x2 = x;
 		// go left as far as possible
-		while (x1>=0)
+		while (x1>=CELL)
 		{
 			if ((pmap[y][x1-1]&0xFF)!=cm || parts[pmap[y][x1-1]>>8].life!=0)
 			{
