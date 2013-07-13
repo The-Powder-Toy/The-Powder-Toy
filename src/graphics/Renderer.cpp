@@ -1123,7 +1123,6 @@ void Renderer::render_parts()
 	int orbd[4] = {0, 0, 0, 0}, orbl[4] = {0, 0, 0, 0};
 	float gradv, flicker, fnx, fny;
 	Particle * parts;
-	part_transition *ptransitions;
 	Element *elements;
 	if(!sim)
 		return;
@@ -1369,7 +1368,6 @@ void Renderer::render_parts()
 				if(pixel_mode & PSPEC_STICKMAN)
 				{
 					char buff[4];  //Buffer for HP
-					int s;
 					int legr, legg, legb;
 					playerst *cplayer;
 					if(t==PT_STKM)
@@ -1857,7 +1855,6 @@ void Renderer::render_parts()
 					int nxo = 0;
 					int nyo = 0;
 					int r;
-					int fire_rv = 0;
 					float drad = 0.0f;
 					float ddist = 0.0f;
 					sim->orbitalparts_get(parts[i].life, parts[i].ctype, orbd, orbl);
@@ -1875,7 +1872,6 @@ void Renderer::render_parts()
 					int nxo = 0;
 					int nyo = 0;
 					int r;
-					int fire_bv = 0;
 					float drad = 0.0f;
 					float ddist = 0.0f;
 					sim->orbitalparts_get(parts[i].life, parts[i].ctype, orbd, orbl);
@@ -1890,19 +1886,24 @@ void Renderer::render_parts()
 				}
 				if (pixel_mode & EFFECT_DBGLINES)
 				{
-					if (mousePos.X == nx && mousePos.Y == ny && debugLines)//draw lines connecting wifi/portal channels
+					if (mousePos.X == nx && mousePos.Y == ny && debugLines && !(display_mode&DISPLAY_PERS))//draw lines connecting wifi/portal channels
 					{
 						int z;
-						int type = parts[i].type;
+						int type = parts[i].type, tmp = (int)((parts[i].temp-73.15f)/100+1), othertmp;
 						if (type == PT_PRTI)
 							type = PT_PRTO;
 						else if (type == PT_PRTO)
 							type = PT_PRTI;
-						for (z = 0; z<NPART; z++) {
+						for (z = 0; z<NPART; z++)
+						{
 							if (parts[z].type)
 							{
-								if (parts[z].type==type&&parts[z].tmp==parts[i].tmp)
-									xor_line(nx,ny,(int)(parts[z].x+0.5f),(int)(parts[z].y+0.5f));
+								if (parts[z].type==type)
+								{
+									othertmp = (int)((parts[z].temp-73.15f)/100+1);
+									if (tmp == othertmp)
+										xor_line(nx,ny,(int)(parts[z].x+0.5f),(int)(parts[z].y+0.5f));
+								}
 							}
 						}
 					}

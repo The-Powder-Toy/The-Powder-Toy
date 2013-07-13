@@ -89,7 +89,7 @@ int Element_WIFI::graphics(GRAPHICS_FUNC_ARGS)
 
 {
 	float frequency = 0.0628;
-	int q = cpart->tmp;
+	int q = (int)((cpart->temp-73.15f)/100+1);
 	*colr = sin(frequency*q + 0) * 127 + 128;
 	*colg = sin(frequency*q + 2) * 127 + 128;
 	*colb = sin(frequency*q + 4) * 127 + 128;
