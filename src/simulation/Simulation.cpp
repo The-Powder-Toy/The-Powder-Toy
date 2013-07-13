@@ -1445,7 +1445,7 @@ int Simulation::FloodParts(int x, int y, int fullc, int cm, int flags)
 		else
 			cm = 0;
 	}
-	if (IsWallBlocking(x, y, c))
+	if (c != 0 && IsWallBlocking(x, y, c))
 		return 1;
 
 	if (!FloodFillPmapCheck(x, y, cm))
@@ -2736,6 +2736,8 @@ int Simulation::create_part(int p, int x, int y, int tv)
 			}
 			return -1;
 		}
+		else if (IsWallBlocking(x, y, t))
+			return -1;
 		if (photons[y][x] && (elements[t].Properties & TYPE_ENERGY))
 			return -1;
 		if (pfree == -1)
