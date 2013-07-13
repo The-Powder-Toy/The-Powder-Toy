@@ -162,7 +162,7 @@ void SaveButton::Tick(float dt)
 		else if(file && file->GetGameSave())
 		{
 			waitingForThumb = true;
-			RequestBroker::Ref().RenderThumbnail(file->GetGameSave(), thumbBoxSize.X, thumbBoxSize.Y, this);
+			RequestBroker::Ref().RenderThumbnail(file->GetGameSave(), true, false, thumbBoxSize.X, thumbBoxSize.Y, this);
 		}
 	}
 }
