@@ -128,7 +128,7 @@ void SearchController::PrevPage()
 
 void SearchController::NextPage()
 {
-	if(searchModel->GetPageNum() <= searchModel->GetPageCount())
+	if(searchModel->GetPageNum() < searchModel->GetPageCount())
 		searchModel->UpdateSaveList(searchModel->GetPageNum()+1, searchModel->GetLastQuery());
 }
 
