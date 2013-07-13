@@ -1070,7 +1070,7 @@ void GameView::OnMouseUp(int x, int y, unsigned button)
 		{
 			if(selectMode==PlaceSave)
 			{
-				if(placeSaveThumb)
+				if(placeSaveThumb && y <= YRES+MENUSIZE-BARSIZE)
 				{
 					int thumbX = selectPoint2.X - (placeSaveThumb->Width/2);
 					int thumbY = selectPoint2.Y - (placeSaveThumb->Height/2);
