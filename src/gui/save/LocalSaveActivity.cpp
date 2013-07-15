@@ -81,7 +81,6 @@ void LocalSaveActivity::Save()
 			if (result == ConfirmPrompt::ResultOkay)
 			{
 				a->saveWrite(filename);
-				a->Exit();
 			}
 		}
 		virtual ~FileOverwriteConfirmation() { }
@@ -99,7 +98,6 @@ void LocalSaveActivity::Save()
 		else
 		{
 			saveWrite(finalFilename);
-			Exit();
 		}
 	}
 	else
@@ -111,8 +109,13 @@ void LocalSaveActivity::Save()
 void LocalSaveActivity::saveWrite(std::string finalFilename)
 {
 	Client::Ref().MakeDirectory(LOCAL_SAVE_DIR);
-	Client::Ref().WriteFile(save.GetGameSave()->Serialise(), finalFilename);
-	callback->FileSaved(&save);
+	if (Client::Ref().WriteFile(save.GetGameSave()->Serialise(), finalFilename))
+		new ErrorMessage("Error", "Unable to write save file.");
+	else
+	{
+		callback->FileSaved(&save);
+		Exit();
+	}
 }
 
 void LocalSaveActivity::OnDraw()

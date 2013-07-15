@@ -1059,7 +1059,8 @@ void GameController::OpenLocalSaveWindow(bool asCurrent)
 		else if (gameModel->GetSaveFile())
 		{
 			Client::Ref().MakeDirectory(LOCAL_SAVE_DIR);
-			Client::Ref().WriteFile(gameSave->Serialise(), gameModel->GetSaveFile()->GetName());
+			if (Client::Ref().WriteFile(gameSave->Serialise(), gameModel->GetSaveFile()->GetName()))
+				new ErrorMessage("Error", "Unable to write save file.");
 		}
 	}
 }

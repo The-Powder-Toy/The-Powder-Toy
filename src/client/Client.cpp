@@ -515,8 +515,9 @@ int Client::MakeDirectory(const char * dirName)
 #endif
 }
 
-void Client::WriteFile(std::vector<unsigned char> fileData, std::string filename)
+bool Client::WriteFile(std::vector<unsigned char> fileData, std::string filename)
 {
+	bool saveError = false;
 	try
 	{
 		std::ofstream fileStream;
@@ -526,12 +527,15 @@ void Client::WriteFile(std::vector<unsigned char> fileData, std::string filename
 			fileStream.write((char*)&fileData[0], fileData.size());
 			fileStream.close();
 		}
+		else
+			saveError = true;
 	}
 	catch (std::exception & e)
 	{
 		std::cerr << "WriteFile:" << e.what() << std::endl;
-		throw;
-	}	
+		saveError = true;
+	}
+	return saveError;
 }
 
 bool Client::FileExists(std::string filename)
@@ -554,8 +558,9 @@ bool Client::FileExists(std::string filename)
 	return exists;
 }
 
-void Client::WriteFile(std::vector<char> fileData, std::string filename)
+bool Client::WriteFile(std::vector<char> fileData, std::string filename)
 {
+	bool saveError = false;
 	try
 	{
 		std::ofstream fileStream;
@@ -565,12 +570,15 @@ void Client::WriteFile(std::vector<char> fileData, std::string filename)
 			fileStream.write(&fileData[0], fileData.size());
 			fileStream.close();
 		}
+		else
+			saveError = true;
 	}
 	catch (std::exception & e)
 	{
 		std::cerr << "WriteFile:" << e.what() << std::endl;
-		throw;
-	}	
+		saveError = true;
+	}
+	return saveError;
 }
 
 std::vector<unsigned char> Client::ReadFile(std::string filename)
