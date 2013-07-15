@@ -57,7 +57,7 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 		for(std::vector<GameSave::PaletteItem>::iterator iter = save->palette.begin(), end = save->palette.end(); iter != end; ++iter)
 		{
 			GameSave::PaletteItem pi = *iter;
-			if(pi.second >= 0 && pi.second < PT_NUM)
+			if(pi.second >= DEFAULT_PT_NUM && pi.second < PT_NUM)
 			{
 				int myId = 0;//pi.second;
 				for(int i = 0; i < PT_NUM; i++)
@@ -243,7 +243,7 @@ GameSave * Simulation::Save(int fullX, int fullY, int fullX2, int fullY2)
 
 	if(storedParts)
 	{
-		for(int i = 0; i < PT_NUM; i++)
+		for(int i = DEFAULT_PT_NUM; i < PT_NUM; i++)
 		{
 			if(elements[i].Enabled && elementCount[i])
 			{
@@ -3175,14 +3175,13 @@ void Simulation::delete_part(int x, int y)//calls kill_part with the particle lo
 void Simulation::update_particles_i(int start, int inc)
 {
 	int i, j, x, y, t, nx, ny, r, surround_space, s, lt, rt, nt, nnx, nny, q, golnum, z, neighbors;
-	float mv, dx, dy, ix, iy, lx, ly, nrx, nry, dp, ctemph, ctempl, gravtot;
+	float mv, dx, dy, nrx, nry, dp, ctemph, ctempl, gravtot;
 	int fin_x, fin_y, clear_x, clear_y, stagnant;
 	float fin_xf, fin_yf, clear_xf, clear_yf;
 	float nn, ct1, ct2, swappage;
 	float pt = R_TEMP;
 	float c_heat = 0.0f;
 	int h_count = 0;
-	int starti = (start*-1);
 	int surround[8];
 	int surround_hconduct[8];
 	int lighting_ok=1;
@@ -4786,9 +4785,9 @@ Simulation::Simulation():
 	unsigned int * platentT = LoadLatent(latentCount);
 	memcpy(platent, platentT, latentCount * sizeof(unsigned int));
 	free(platentT);
-	
-	//elements = new Element[PT_NUM];
+
 	std::vector<Element> elementList = GetElements();
+	DEFAULT_PT_NUM = elementList.size();
 	for(int i = 0; i < PT_NUM; i++)
 	{
 		if(i < elementList.size())
