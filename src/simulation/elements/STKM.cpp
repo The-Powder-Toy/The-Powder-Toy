@@ -144,7 +144,6 @@ int Element_STKM::run_stickman(playerst* playerp, UPDATE_FUNC_ARGS) {
 		rby = 1.0f;
 		tmp = 1.0f;
 	}
-	float rbx1 = rbx/tmp, rby1 = rby/tmp;// scale so that the largest is 1.0
 	tmp = 1.0f/sqrtf(rbx*rbx+rby*rby);
 	rbx *= tmp;// scale to a unit vector
 	rby *= tmp;

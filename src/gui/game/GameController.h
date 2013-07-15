@@ -143,6 +143,7 @@ public:
 	void SwitchGravity();
 	void SwitchAir();
 	void ToggleAHeat();
+	void ToggleNewtonianGravity();
 
 	void LoadClipboard();
 	void LoadStamp();

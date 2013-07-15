@@ -823,6 +823,15 @@ void GameController::ToggleAHeat()
 	gameModel->SetAHeatEnable(!gameModel->GetAHeatEnable());
 }
 
+void GameController::ToggleNewtonianGravity()
+{
+	if (gameModel->GetSimulation()->grav->ngrav_enable)
+		gameModel->GetSimulation()->grav->stop_grav_async();
+	else
+		gameModel->GetSimulation()->grav->start_grav_async();
+	gameModel->UpdateQuickOptions();
+}
+
 
 void GameController::LoadRenderPreset(int presetNum)
 {

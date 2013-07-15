@@ -1395,6 +1395,8 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 	case 'u':
 		c->ToggleAHeat();
 		break;
+	case 'n':
+		c->ToggleNewtonianGravity();
 	case '=':
 		if(ctrl)
 			c->ResetSpark();
@@ -2021,7 +2023,11 @@ void GameView::OnDraw()
 	else if(showHud)
 	{
 		//Draw info about simulation under cursor
-		int wavelengthGfx = 0;
+		int wavelengthGfx = 0, alpha = 255;
+		if (toolTipPosition.Y < 120)
+			alpha = 255-toolTipPresence*3;
+		if (alpha < 50)
+			alpha = 50;
 		std::stringstream sampleInfo;
 		sampleInfo.precision(2);
 		if(sample.particle.type)
@@ -2081,8 +2087,8 @@ void GameView::OnDraw()
 		}
 
 		int textWidth = Graphics::textwidth((char*)sampleInfo.str().c_str());
-		g->fillrect(XRES-20-textWidth, 12, textWidth+8, 15, 0, 0, 0, 255*0.5);
-		g->drawtext(XRES-16-textWidth, 16, (const char*)sampleInfo.str().c_str(), 255, 255, 255, 255*0.75);
+		g->fillrect(XRES-20-textWidth, 12, textWidth+8, 15, 0, 0, 0, alpha*0.5f);
+		g->drawtext(XRES-16-textWidth, 16, (const char*)sampleInfo.str().c_str(), 255, 255, 255, alpha*0.75f);
 
 #ifndef OGLI
 		if(wavelengthGfx)
@@ -2134,8 +2140,8 @@ void GameView::OnDraw()
 				sampleInfo << " GX: " << sample.GravityVelocityX << " GY: " << sample.GravityVelocityY;
 
 			textWidth = Graphics::textwidth((char*)sampleInfo.str().c_str());
-			g->fillrect(XRES-20-textWidth, 26, textWidth+8, 15, 0, 0, 0, 255*0.5);
-			g->drawtext(XRES-16-textWidth, 30, (const char*)sampleInfo.str().c_str(), 255, 255, 255, 255*0.75);
+			g->fillrect(XRES-20-textWidth, 26, textWidth+8, 15, 0, 0, 0, alpha*0.5f);
+			g->drawtext(XRES-16-textWidth, 30, (const char*)sampleInfo.str().c_str(), 255, 255, 255, alpha*0.75f);
 		}
 	}
 

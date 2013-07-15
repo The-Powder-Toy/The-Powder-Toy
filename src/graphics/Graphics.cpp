@@ -573,7 +573,19 @@ int Graphics::textwidth(const char *s)
 {
 	int x = 0;
 	for (; *s; s++)
+	{
+		if(((char)*s)=='\b')
+		{
+			if(!s[1]) break;
+			s++;
+			continue;
+		} else if(*s == '\x0F') {
+			if(!s[1] || !s[2] || !s[3]) break;
+			s+=3;
+			continue;
+		}
 		x += font_data[font_ptrs[(int)(*(unsigned char *)s)]];
+	}
 	return x-1;
 }
 
