@@ -23,7 +23,7 @@ class DrawGravOption: public QuickOption
 {
 public:
 	DrawGravOption(GameModel * m):
-	QuickOption("G", "Draw gravity field \bg(g)", m, Toggle)
+	QuickOption("G", "Draw gravity field \bg(ctrl+g)", m, Toggle)
 	{
 
 	}
