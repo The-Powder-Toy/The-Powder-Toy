@@ -247,6 +247,7 @@ public:
 	void draw_image(pixel *img, int x, int y, int w, int h, int a);
 	void draw_image(const VideoBuffer & vidBuf, int w, int h, int a);
 	void draw_image(VideoBuffer * vidBuf, int w, int h, int a);
+	void draw_rgba_image(unsigned char *data, int x, int y, float alpha);
 
 	Graphics();
 	~Graphics();

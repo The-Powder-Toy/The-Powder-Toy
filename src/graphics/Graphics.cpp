@@ -1116,6 +1116,27 @@ void Graphics::draw_icon(int x, int y, Icon icon, unsigned char alpha, bool inve
 	}
 }
 
+void Graphics::draw_rgba_image(unsigned char *data, int x, int y, float alpha)
+{
+	unsigned char w, h;
+	int i, j;
+	unsigned char r, g, b, a;
+	if (!data) return;
+	w = *(data++)&0xFF;
+	h = *(data++)&0xFF;
+	for (j=0; j<h; j++)
+	{
+		for (i=0; i<w; i++)
+		{
+			r = *(data++)&0xFF;
+			g = *(data++)&0xFF;
+			b = *(data++)&0xFF;
+			a = *(data++)&0xFF;
+			addpixel(x+i, y+j, r, g, b, (int)(a*alpha));
+		}
+	}
+}
+
 pixel *Graphics::render_packed_rgb(void *image, int width, int height, int cmp_size)
 {
 	unsigned char *tmp;
