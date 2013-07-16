@@ -836,6 +836,7 @@ void GameView::NotifyUserChanged(GameModel * sender)
 		((SplitButton*)loginButton)->SetShowSplit(true);
 		((SplitButton*)loginButton)->SetRightToolTip("Edit profile");
 	}
+	saveSimulationButtonEnabled = sender->GetUser().ID;
 	NotifySaveChanged(sender);
 }
 
@@ -892,7 +893,7 @@ void GameView::NotifySaveChanged(GameModel * sender)
 			downVoteButton->Appearance.BorderDisabled = ui::Colour(100, 100, 100);
 		}
 
-		tagSimulationButton->Enabled = (sender->GetSave()->GetID() && sender->GetUser().ID);
+		tagSimulationButton->Enabled = sender->GetSave()->GetID();
 		if(sender->GetSave()->GetID())
 		{
 			std::stringstream tagsStream;
@@ -951,6 +952,7 @@ void GameView::NotifySaveChanged(GameModel * sender)
 		tagSimulationButton->SetText("[no tags set]");
 		currentSaveType = 0;
 	}
+	saveSimulationButton->Enabled = (saveSimulationButtonEnabled || ctrlBehaviour);
 	c->HistorySnapshot();
 }
 
@@ -1813,6 +1815,7 @@ void GameView::enableCtrlBehaviour()
 		//Show HDD save & load buttons
 		saveSimulationButton->Appearance.BackgroundInactive = saveSimulationButton->Appearance.BackgroundHover = ui::Colour(255, 255, 255);
 		saveSimulationButton->Appearance.TextInactive = saveSimulationButton->Appearance.TextHover = ui::Colour(0, 0, 0);
+		saveSimulationButton->Enabled = true;
 		searchButton->Appearance.BackgroundInactive = searchButton->Appearance.BackgroundHover = ui::Colour(255, 255, 255);
 		searchButton->Appearance.TextInactive = searchButton->Appearance.TextHover = ui::Colour(0, 0, 0);
 		if (currentSaveType == 2)
@@ -1837,6 +1840,7 @@ void GameView::disableCtrlBehaviour()
 		saveSimulationButton->Appearance.BackgroundInactive = ui::Colour(0, 0, 0);
 		saveSimulationButton->Appearance.BackgroundHover = ui::Colour(20, 20, 20);
 		saveSimulationButton->Appearance.TextInactive = saveSimulationButton->Appearance.TextHover = ui::Colour(255, 255, 255);
+		saveSimulationButton->Enabled = saveSimulationButtonEnabled;
 		searchButton->Appearance.BackgroundInactive = ui::Colour(0, 0, 0);
 		searchButton->Appearance.BackgroundHover = ui::Colour(20, 20, 20);
 		searchButton->Appearance.TextInactive = searchButton->Appearance.TextHover = ui::Colour(255, 255, 255);

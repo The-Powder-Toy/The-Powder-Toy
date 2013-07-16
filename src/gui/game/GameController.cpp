@@ -1162,21 +1162,16 @@ void GameController::OpenColourPicker()
 
 void GameController::OpenTags()
 {
-	if(gameModel->GetUser().ID)
+	if(gameModel->GetSave() && gameModel->GetSave()->GetID())
 	{
-		if(gameModel->GetSave() && gameModel->GetSave()->GetID())
-		{
-			tagsWindow = new TagsController(new TagsCallback(this), gameModel->GetSave());
-			ui::Engine::Ref().ShowWindow(tagsWindow->GetView());
-		}
-		else
-		{
-			new ErrorMessage("Error", "No save open");
-		}
+		if (tagsWindow)
+			delete tagsWindow;
+		tagsWindow = new TagsController(new TagsCallback(this), gameModel->GetSave());
+		ui::Engine::Ref().ShowWindow(tagsWindow->GetView());
 	}
 	else
 	{
-		new ErrorMessage("Error", "You need to login to edit tags.");
+		new ErrorMessage("Error", "No save open");
 	}
 }
 
