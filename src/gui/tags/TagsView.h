@@ -24,7 +24,7 @@ class TagsView: public ui::Window {
 public:
 	TagsView();
 	virtual void OnDraw();
-	void AttachController(TagsController * c_) { c = c_; };
+	void AttachController(TagsController * c_) { c = c_; }
 	virtual void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
 	void NotifyTagsChanged(TagsModel * sender);
 	virtual ~TagsView();
