@@ -152,7 +152,7 @@ int VideoBuffer::AddCharacter(int x, int y, int c, int r, int g, int b, int a)
 VideoBuffer::~VideoBuffer()
 {
 	delete[] Buffer;
-};
+}
 
 /**
  * Common graphics functions, mostly static methods that provide

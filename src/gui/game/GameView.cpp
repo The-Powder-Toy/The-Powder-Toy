@@ -17,6 +17,7 @@
 #include "Format.h"
 #include "QuickOption.h"
 #include "IntroText.h"
+#include "DecorationTool.h"
 
 
 class SplitButton;
@@ -656,10 +657,8 @@ void GameView::NotifyLastToolChanged(GameModel * sender)
 
 void GameView::NotifyToolListChanged(GameModel * sender)
 {
-	//int currentY = YRES+MENUSIZE-36;
 	lastOffset = 0;
 	int currentX = XRES+BARSIZE-56;
-	int totalColour;
 	for(int i = 0; i < menuButtons.size(); i++)
 	{
 		if(((MenuAction*)menuButtons[i]->GetActionCallback())->menuID==sender->GetActiveMenu())
@@ -680,9 +679,12 @@ void GameView::NotifyToolListChanged(GameModel * sender)
 	vector<Tool*> toolList = sender->GetToolList();
 	for(int i = 0; i < toolList.size(); i++)
 	{
-		//ToolButton * tempButton = new ToolButton(ui::Point(XRES+1, currentY), ui::Point(28, 15), toolList[i]->GetName());
 		VideoBuffer * tempTexture = toolList[i]->GetTexture(26, 14);
 		ToolButton * tempButton;
+
+		//get decotool texture manually, since it changes depending on it's own color
+		if (sender->GetActiveMenu() == SC_DECO)
+			tempTexture = ((DecorationTool*)toolList[i])->GetIcon(toolList[i]->GetToolID(), 26, 14);
 
 		if(tempTexture)
 			tempButton = new ToolButton(ui::Point(currentX, YRES+1), ui::Point(30, 18), "", toolList[i]->GetDescription());
@@ -808,6 +810,7 @@ void GameView::NotifyColourSelectorColourChanged(GameModel * sender)
 {
 	colourPicker->Appearance.BackgroundInactive = sender->GetColourSelectorColour();
 	colourPicker->Appearance.BackgroundHover = sender->GetColourSelectorColour();
+	NotifyToolListChanged(sender);
 }
 
 void GameView::NotifyRendererChanged(GameModel * sender)
