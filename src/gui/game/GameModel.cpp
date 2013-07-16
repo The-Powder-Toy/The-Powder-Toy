@@ -799,13 +799,16 @@ bool GameModel::GetPaused()
 
 void GameModel::SetDecoration(bool decorationState)
 {
-	ren->decorations_enable = decorationState?1:0;
-	notifyDecorationChanged();
-	UpdateQuickOptions();
-	if (decorationState)
-		SetInfoTip("Decorations Layer: On");
-	else
-		SetInfoTip("Decorations Layer: Off");
+	if (ren->decorations_enable != decorationState)
+	{
+		ren->decorations_enable = decorationState?1:0;
+		notifyDecorationChanged();
+		UpdateQuickOptions();
+		if (decorationState)
+			SetInfoTip("Decorations Layer: On");
+		else
+			SetInfoTip("Decorations Layer: Off");
+	}
 }
 
 bool GameModel::GetDecoration()

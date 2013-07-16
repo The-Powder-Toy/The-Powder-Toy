@@ -741,6 +741,7 @@ void GameView::NotifyColourSelectorVisibilityChanged(GameModel * sender)
 			AddComponent(button);
 		}
 		AddComponent(colourPicker);
+		c->SetActiveColourPreset(-1);
 	}
 }
 
@@ -754,14 +755,8 @@ void GameView::NotifyColourPresetsChanged(GameModel * sender)
 		ColourPresetAction(GameView * _v, int preset) : preset(preset) { v = _v; }
 		void ActionCallback(ui::Button * sender_)
 		{
-			ToolButton *sender = (ToolButton*)sender_;
-			if(sender->GetSelectionState() == 0)
-			{
-				v->c->SetActiveColourPreset(preset);
-				v->c->SetColour(sender->Appearance.BackgroundInactive);
-			}
-			else
-				sender->SetSelectionState(0);
+			v->c->SetActiveColourPreset(preset);
+			v->c->SetColour(sender_->Appearance.BackgroundInactive);
 		}
 	};
 
