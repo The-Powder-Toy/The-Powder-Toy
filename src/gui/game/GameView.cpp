@@ -776,7 +776,7 @@ void GameView::NotifyColourPresetsChanged(GameModel * sender)
 	int i = 0;
 	for(std::vector<ui::Colour>::iterator iter = colours.begin(), end = colours.end(); iter != end; ++iter)
 	{
-		ToolButton * tempButton = new ToolButton(ui::Point(currentX, YRES+1), ui::Point(30, 18), "");
+		ToolButton * tempButton = new ToolButton(ui::Point(currentX, YRES+1), ui::Point(30, 18), "", "Decoration Presets.");
 		tempButton->Appearance.BackgroundInactive = *iter;
 		tempButton->SetActionCallback(new ColourPresetAction(this, i));
 
