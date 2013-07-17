@@ -422,6 +422,7 @@ void EngineProcess()
 				break;
 #ifdef OGLI
 			case SDL_VIDEORESIZE:
+			{
 				float ratio = float(XRES+BARSIZE) / float(YRES+MENUSIZE);
 				float width = event.resize.w;
 				float height = width/ratio;
@@ -442,6 +443,7 @@ void EngineProcess()
 					std::cerr << "Oh bugger" << std::endl;
 				}
 				break;
+			}
 #endif
 #if defined (USE_SDL) && defined(LIN) && defined(SDL_VIDEO_DRIVER_X11)
 			case SDL_SYSWMEVENT:
