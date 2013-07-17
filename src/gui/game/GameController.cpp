@@ -974,7 +974,6 @@ void GameController::SetColour(ui::Colour colour)
 void GameController::SetActiveMenu(int menuID)
 {
 	gameModel->SetActiveMenu(menuID);
-	vector<Menu*> menuList = gameModel->GetMenuList();
 	if(menuID == SC_DECO)
 		gameModel->SetColourSelectorVisibility(true);
 	else
@@ -998,6 +997,8 @@ Tool * GameController::GetActiveTool(int selection)
 
 void GameController::SetActiveTool(int toolSelection, Tool * tool)
 {
+	if (gameModel->GetActiveMenu() == SC_DECO && toolSelection == 2)
+		toolSelection = 0;
 	gameModel->SetActiveTool(toolSelection, tool);
 	gameModel->GetRenderer()->gravityZonesEnabled = false;
 	gameModel->SetLastTool(tool);
