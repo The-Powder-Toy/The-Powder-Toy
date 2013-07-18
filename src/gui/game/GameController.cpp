@@ -79,18 +79,6 @@ public:
 	}
 };
 
-
-class GameController::RenderCallback: public ControllerCallback
-{
-	GameController * cc;
-public:
-	RenderCallback(GameController * cc_) { cc = cc_; }
-	virtual void ControllerExit()
-	{
-		//cc->gameModel->SetUser(cc->loginWindow->GetUser());
-	}
-};
-
 class GameController::OptionsCallback: public ControllerCallback
 {
 	GameController * cc;
@@ -99,7 +87,6 @@ public:
 	virtual void ControllerExit()
 	{
 		cc->gameModel->UpdateQuickOptions();
-		//cc->gameModel->SetUser(cc->loginWindow->GetUser());
 	}
 };
 
@@ -1219,7 +1206,7 @@ void GameController::HideConsole()
 
 void GameController::OpenRenderOptions()
 {
-	renderOptions = new RenderController(gameModel->GetRenderer(), new RenderCallback(this));
+	renderOptions = new RenderController(gameModel->GetRenderer(), NULL);
 	ui::Engine::Ref().ShowWindow(renderOptions->GetView());
 }
 
@@ -1230,7 +1217,7 @@ void GameController::OpenSaveWindow()
 		GameController * c;
 	public:
 		SaveUploadedCallback(GameController * _c): c(_c) {}
-		virtual  ~SaveUploadedCallback() {};
+		virtual  ~SaveUploadedCallback() {}
 		virtual void SaveUploaded(SaveInfo save)
 		{
 			save.SetVote(1);

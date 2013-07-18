@@ -1273,7 +1273,6 @@ RequestBroker::Request * Client::GetUserInfoAsync(std::string username)
 LoginStatus Client::Login(std::string username, std::string password, User & user)
 {
 	lastError = "";
-	std::stringstream urlStream;
 	std::stringstream hashStream;
 	char passwordHash[33];
 	char totalHash[33];
@@ -1296,7 +1295,6 @@ LoginStatus Client::Login(std::string username, std::string password, User & use
 	char * postDatas[] = { (char*)username.c_str(), totalHash };
 	int postLengths[] = { username.length(), 32 };
 	data = http_multipart_post("http://" SERVER "/Login.json", postNames, postDatas, postLengths, NULL, NULL, NULL, &dataStatus, &dataLength);
-	//data = http_auth_get("http://" SERVER "/Login.json", (char*)username.c_str(), (char*)password.c_str(), NULL, &dataStatus, &dataLength);
 	if(dataStatus == 200 && data)
 	{
 		try
@@ -1355,9 +1353,7 @@ LoginStatus Client::Login(std::string username, std::string password, User & use
 		lastError = http_ret_text(dataStatus);
 	}
 	if(data)
-	{
 		free(data);
-	}
 	return LoginError;
 }
 

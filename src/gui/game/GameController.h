@@ -47,7 +47,6 @@ private:
 public:
 	bool HasDone;
 	class SearchCallback;
-	class RenderCallback;
 	class SSaveCallback;
 	class TagsCallback;
 	class StampsCallback;
