@@ -1038,17 +1038,13 @@ void Simulation::ToolBox(int x1, int y1, int x2, int y2, int tool, float strengt
 			Tool(i, j, tool, strength);
 }
 
-int Simulation::CreateWalls(int x, int y, int rx, int ry, int wall, Brush * cBrush, int flags)
+int Simulation::CreateWalls(int x, int y, int rx, int ry, int wall, Brush * cBrush)
 {
 	if(cBrush)
 	{
 		rx = cBrush->GetRadius().X;
 		ry = cBrush->GetRadius().Y;
 	}
-	if (wall == WL_ERASE)
-		wall = 0;
-	if (flags == -1)
-		flags = replaceModeFlags;
 	
 	ry = ry/CELL;
 	rx = rx/CELL;
@@ -1062,9 +1058,6 @@ int Simulation::CreateWalls(int x, int y, int rx, int ry, int wall, Brush * cBru
 		{
 			if (wallX >= 0 && wallX < XRES/CELL && wallY >= 0 && wallY < YRES/CELL)
 			{
-				if ((flags&SPECIFIC_DELETE) && wall != WL_FLOODHELPER && wall == replaceModeSelected)
-					wall = 0;
-
 				if (wall == WL_FAN)
 				{
 					fvx[wallY][wallX] = 0.0f;
@@ -1091,7 +1084,7 @@ int Simulation::CreateWalls(int x, int y, int rx, int ry, int wall, Brush * cBru
 	return 1;
 }
 
-void Simulation::CreateWallLine(int x1, int y1, int x2, int y2, int rx, int ry, int wall, Brush * cBrush, int flags)
+void Simulation::CreateWallLine(int x1, int y1, int x2, int y2, int rx, int ry, int wall, Brush * cBrush)
 {
 	int x, y, dx, dy, sy;
 	bool reverseXY = abs(y2-y1) > abs(x2-x1);
@@ -1125,9 +1118,9 @@ void Simulation::CreateWallLine(int x1, int y1, int x2, int y2, int rx, int ry, 
 	for (x=x1; x<=x2; x++)
 	{
 		if (reverseXY)
-			CreateWalls(y, x, rx, ry, wall, cBrush, flags);
+			CreateWalls(y, x, rx, ry, wall, cBrush);
 		else
-			CreateWalls(x, y, rx, ry, wall, cBrush, flags);
+			CreateWalls(x, y, rx, ry, wall, cBrush);
 		e += de;
 		if (e >= 0.5f)
 		{
@@ -1135,16 +1128,16 @@ void Simulation::CreateWallLine(int x1, int y1, int x2, int y2, int rx, int ry, 
 			if (!(rx+ry) && ((y1<y2) ? (y<=y2) : (y>=y2)))
 			{
 				if (reverseXY)
-					CreateWalls(y, x, rx, ry, wall, cBrush, flags);
+					CreateWalls(y, x, rx, ry, wall, cBrush);
 				else
-					CreateWalls(x, y, rx, ry, wall, cBrush, flags);
+					CreateWalls(x, y, rx, ry, wall, cBrush);
 			}
 			e -= 1.0f;
 		}
 	}
 }
 
-void Simulation::CreateWallBox(int x1, int y1, int x2, int y2, int wall, int flags)
+void Simulation::CreateWallBox(int x1, int y1, int x2, int y2, int wall)
 {
 	int i, j;
 	if (x1>x2)
@@ -1161,10 +1154,10 @@ void Simulation::CreateWallBox(int x1, int y1, int x2, int y2, int wall, int fla
 	}
 	for (j=y1; j<=y2; j++)
 		for (i=x1; i<=x2; i++)
-			CreateWalls(i, j, 0, 0, wall, NULL, flags);
+			CreateWalls(i, j, 0, 0, wall, NULL);
 }
 
-int Simulation::FloodWalls(int x, int y, int wall, int bm, int flags)
+int Simulation::FloodWalls(int x, int y, int wall, int bm)
 {
 	int x1, x2, dy = CELL;
 	if (bm==-1)
@@ -1177,8 +1170,6 @@ int Simulation::FloodWalls(int x, int y, int wall, int bm, int flags)
 		}
 		else
 			bm = 0;
-		if (flags == -1)
-			flags = replaceModeFlags;
 	}
 	
 	if (bmap[y/CELL][x/CELL]!=bm)
@@ -1206,19 +1197,19 @@ int Simulation::FloodWalls(int x, int y, int wall, int bm, int flags)
 	// fill span
 	for (x=x1; x<=x2; x++)
 	{
-		if (!CreateWalls(x, y, 0, 0, wall, NULL, flags))
+		if (!CreateWalls(x, y, 0, 0, wall, NULL))
 			return 0;
 	}
 	// fill children
 	if (y>=CELL)
 		for (x=x1; x<=x2; x++)
 			if (bmap[(y-dy)/CELL][x/CELL]==bm)
-				if (!FloodWalls(x, y-dy, wall, bm, flags))
+				if (!FloodWalls(x, y-dy, wall, bm))
 					return 0;
 	if (y<YRES-CELL)
 		for (x=x1; x<=x2; x++)
 			if (bmap[(y+dy)/CELL][x/CELL]==bm)
-				if (!FloodWalls(x, y+dy, wall, bm, flags))
+				if (!FloodWalls(x, y+dy, wall, bm))
 					return 0;
 	return 1;
 }
@@ -1442,7 +1433,7 @@ int Simulation::FloodParts(int x, int y, int fullc, int cm, int flags)
 			if (!cm)
 				cm = photons[y][x]&0xFF;
 			if (!cm && bmap[y/CELL][x/CELL])
-				FloodWalls(x, y, WL_ERASE, -1, flags);
+				FloodWalls(x, y, WL_ERASE, -1);
 		}
 		else
 			cm = 0;

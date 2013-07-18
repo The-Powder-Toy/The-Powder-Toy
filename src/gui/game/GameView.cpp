@@ -519,7 +519,8 @@ public:
 	{
 		ToolButton *sender = (ToolButton*)sender_;
 		if (v->CtrlBehaviour() && v->AltBehaviour() && !v->ShiftBehaviour())
-			sender->SetSelectionState(3);
+			if (tool->GetIdentifier().find("DEFAULT_PT_") != tool->GetIdentifier().npos)
+				sender->SetSelectionState(3);
 		if(sender->GetSelectionState() >= 0 && sender->GetSelectionState() <= 3)
 			v->c->SetActiveTool(sender->GetSelectionState(), tool);
 	}

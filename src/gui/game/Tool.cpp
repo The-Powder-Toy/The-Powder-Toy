@@ -87,7 +87,7 @@ void WallTool::DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui
 		newFanVelX *= strength;
 		float newFanVelY = (position2.Y-position1.Y)*0.005f;
 		newFanVelY *= strength;
-		sim->FloodWalls(position1.X, position1.Y, WL_FLOODHELPER, WL_FAN, 0);
+		sim->FloodWalls(position1.X, position1.Y, WL_FLOODHELPER, WL_FAN);
 		for (int j = 0; j < YRES/CELL; j++)
 			for (int i = 0; i < XRES/CELL; i++)
 				if (sim->bmap[j][i] == WL_FLOODHELPER)

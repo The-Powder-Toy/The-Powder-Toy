@@ -177,10 +177,10 @@ public:
 	void ToolBox(int x1, int y1, int x2, int y2, int tool, float strength = 1.0f);
 	
 	//Drawing Walls
-	int CreateWalls(int x, int y, int rx, int ry, int wall, Brush * cBrush = NULL, int flags = -1);
-	void CreateWallLine(int x1, int y1, int x2, int y2, int rx, int ry, int wall, Brush * cBrush = NULL, int flags = -1);
-	void CreateWallBox(int x1, int y1, int x2, int y2, int wall, int flags = -1);
-	int FloodWalls(int x, int y, int wall, int bm, int flags = -1);
+	int CreateWalls(int x, int y, int rx, int ry, int wall, Brush * cBrush = NULL);
+	void CreateWallLine(int x1, int y1, int x2, int y2, int rx, int ry, int wall, Brush * cBrush = NULL);
+	void CreateWallBox(int x1, int y1, int x2, int y2, int wall);
+	int FloodWalls(int x, int y, int wall, int bm);
 
 	//Drawing Particles
 	int CreateParts(int positionX, int positionY, int c, Brush * cBrush, int flags = -1);
