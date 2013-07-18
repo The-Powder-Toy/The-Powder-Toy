@@ -1434,13 +1434,15 @@ int Simulation::FloodParts(int x, int y, int fullc, int cm, int flags)
 		//if initial flood point is out of bounds, do nothing
 		if (c != 0 && (x < CELL || x >= XRES-CELL || y < CELL || y >= YRES-CELL))
 			return 1;
+		else if (x < 0 || x >= XRES || y < 0 || y >= YRES)
+			return 1;
 		if (c==0)
 		{
 			cm = pmap[y][x]&0xFF;
 			if (!cm)
 				cm = photons[y][x]&0xFF;
-			if (!cm)
-				return 0;
+			if (!cm && bmap[y/CELL][x/CELL])
+				FloodWalls(x, y, WL_ERASE, -1, flags);
 		}
 		else
 			cm = 0;
@@ -3526,11 +3528,11 @@ void Simulation::update_particles_i(int start, int inc)
 				create_part(-1, parts[i].x, parts[i].y, PT_STKM2);
 		}
 
-		//the main particle loop function, goes over all particles.
-		for (i=0; i<=parts_lastActiveIndex; i++)
-			if (parts[i].type)
-			{
-				t = parts[i].type;
+	//the main particle loop function, goes over all particles.
+	for (i=0; i<=parts_lastActiveIndex; i++)
+		if (parts[i].type)
+		{
+			t = parts[i].type;
 
 			x = (int)(parts[i].x+0.5f);
 			y = (int)(parts[i].y+0.5f);
@@ -3664,7 +3666,7 @@ void Simulation::update_particles_i(int start, int inc)
 
 			if (!legacy_enable)
 			{
-				 if (y-2 >= 0 && y-2 < YRES && (elements[t].Properties&TYPE_LIQUID) && (t!=PT_GEL || gel_scale>(1+rand()%255))) {//some heat convection for liquids
+				if (y-2 >= 0 && y-2 < YRES && (elements[t].Properties&TYPE_LIQUID) && (t!=PT_GEL || gel_scale>(1+rand()%255))) {//some heat convection for liquids
 					r = pmap[y-2][x];
 					if (!(!r || parts[i].type != (r&0xFF))) {
 						if (parts[i].temp>parts[r>>8].temp) {
@@ -3802,14 +3804,14 @@ void Simulation::update_particles_i(int start, int inc)
 									if (platent[t] <= (c_heat - (elements[parts[i].ctype].LowTemperature - dbt)*c_Cm))
 									{
 										pt = (c_heat - platent[t])/c_Cm;
-									 	 t = parts[i].ctype;
-									 	 parts[i].ctype = PT_NONE;
-									 	 parts[i].life = 0;
+										t = parts[i].ctype;
+										parts[i].ctype = PT_NONE;
+										parts[i].life = 0;
 									}
 									else
 									{
 										parts[i].temp = restrict_flt(elements[parts[i].ctype].LowTemperature - dbt, MIN_TEMP, MAX_TEMP);
-									 	 s = 0;
+										s = 0;
 									}
 #else
 									t = parts[i].ctype;
@@ -4202,10 +4204,10 @@ killed:
 						photons[ny][nx] = t|(i<<8);
 					else if (t)
 						pmap[ny][nx] = t|(i<<8);
-					}
 				}
-				else if (elements[t].Properties & TYPE_ENERGY)
-				{
+			}
+			else if (elements[t].Properties & TYPE_ENERGY)
+			{
 				if (t == PT_PHOT) {
 					if (parts[i].flags&FLAG_SKIPMOVE)
 					{

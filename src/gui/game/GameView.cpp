@@ -1471,8 +1471,10 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		break;
 	case SDLK_INSERT:
 		c->SetReplaceModeFlags(c->GetReplaceModeFlags()^REPLACE_MODE);
+		break;
 	case SDLK_DELETE:
 		c->SetReplaceModeFlags(c->GetReplaceModeFlags()^SPECIFIC_DELETE);
+		break;
 	}
 
 	if (shift && showDebug && key == '1')
