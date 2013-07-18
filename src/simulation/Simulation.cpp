@@ -2915,7 +2915,6 @@ int Simulation::create_part(int p, int x, int y, int tv)
 					parts[i].life = 100;
 					Element_STKM::STKM_init_legs(this, &player, i);
 					player.spwn = 1;
-					player.elem = PT_DUST;
 					player.rocketBoots = false;
 				}
 				else
@@ -2931,7 +2930,6 @@ int Simulation::create_part(int p, int x, int y, int tv)
 					parts[i].life = 100;
 					Element_STKM::STKM_init_legs(this, &player2, i);
 					player2.spwn = 1;
-					player2.elem = PT_DUST;
 					player2.rocketBoots = false;
 				}
 				else
@@ -3521,9 +3519,14 @@ void Simulation::update_particles_i(int start, int inc)
 				kill_part(i);
 				continue;
 			}
-		}
-			//the main particle loop function, goes over all particles.
 
+			if (parts[i].type == PT_SPAWN && !player.spwn)
+				create_part(-1, parts[i].x, parts[i].y, PT_STKM);
+			else if (parts[i].type == PT_SPAWN2 && !player2.spwn)
+				create_part(-1, parts[i].x, parts[i].y, PT_STKM2);
+		}
+
+		//the main particle loop function, goes over all particles.
 		for (i=0; i<=parts_lastActiveIndex; i++)
 			if (parts[i].type)
 			{

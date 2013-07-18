@@ -839,7 +839,27 @@ void GameController::Update()
 	else
 		gameView->SetSample(gameModel->GetSimulation()->GetSample(pos.X, pos.Y));
 
-	gameModel->GetSimulation()->update_particles();
+	Simulation * sim = gameModel->GetSimulation();
+	sim->update_particles();
+
+	//if either STKM or STK2 isn't out, reset it's selected element. Defaults to PT_DUST unless right selected is something else
+	//This won't run if the stickmen dies in a frame, since it respawns instantly
+	if (!sim->player.spwn || !sim->player2.spwn)
+	{
+		int rightSelected = PT_DUST;
+		Tool * activeTool = gameModel->GetActiveTool(1);
+		if (activeTool->GetIdentifier().find("DEFAULT_PT_") != activeTool->GetIdentifier().npos)
+		{
+			int sr = activeTool->GetToolID();
+			if ((sr>0 && sr<PT_NUM && sim->elements[sr].Enabled && sim->elements[sr].Falldown>0) || sr==SPC_AIR || sr == PT_NEUT || sr == PT_PHOT || sr == PT_LIGH)
+				rightSelected = sr;
+		}
+
+		if (!sim->player.spwn)
+			sim->player.elem = rightSelected;
+		if (!sim->player2.spwn)
+			sim->player2.elem = rightSelected;
+	}
 	if(renderOptions && renderOptions->HasExited)
 	{
 		delete renderOptions;

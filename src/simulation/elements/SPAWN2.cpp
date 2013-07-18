@@ -26,7 +26,7 @@ Element_SPAWN2::Element_SPAWN2()
 	
 	Weight = 100;
 	
-	Temperature = R_TEMP+0.0f	+273.15f;
+	Temperature = R_TEMP+273.15f;
 	HeatConduct = 0;
 	Description = "STK2 spawn point.";
 	
@@ -42,19 +42,8 @@ Element_SPAWN2::Element_SPAWN2()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 	
-	Update = &Element_SPAWN2::update;
+	Update = NULL;
 	
 }
-
-//#TPT-Directive ElementHeader Element_SPAWN2 static int update(UPDATE_FUNC_ARGS)
-int Element_SPAWN2::update(UPDATE_FUNC_ARGS)
- {
-	if (!sim->player2.spwn)
-		sim->create_part(-1, x, y, PT_STKM2);
-
-	return 0;
-}
-
-
 
 Element_SPAWN2::~Element_SPAWN2() {}
