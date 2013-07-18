@@ -1022,6 +1022,7 @@ void GameView::setToolButtonOffset(int offset)
 void GameView::OnMouseMove(int x, int y, int dx, int dy)
 {
 	mousePosition = c->PointTranslate(ui::Point(x, y));
+	currentMouse = ui::Point(x, y);
 	if(selectMode!=SelectNone)
 	{
 		if(selectMode==PlaceSave)
@@ -1030,7 +1031,6 @@ void GameView::OnMouseMove(int x, int y, int dx, int dy)
 			selectPoint2 = c->PointTranslate(ui::Point(x, y));
 		return;
 	}
-	currentMouse = ui::Point(x, y);
 	if(isMouseDown && drawMode == DrawPoints)
 	{
 		pointQueue.push(ui::Point(c->PointTranslate(ui::Point(x-dx, y-dy))));
@@ -1075,53 +1075,52 @@ void GameView::OnMouseDown(int x, int y, unsigned button)
 
 void GameView::OnMouseUp(int x, int y, unsigned button)
 {
-	if(selectMode!=SelectNone)
-	{
-		if(button==BUTTON_LEFT)
-		{
-			if(selectMode==PlaceSave)
-			{
-				if(placeSaveThumb && y <= YRES+MENUSIZE-BARSIZE)
-				{
-					int thumbX = selectPoint2.X - (placeSaveThumb->Width/2);
-					int thumbY = selectPoint2.Y - (placeSaveThumb->Height/2);
-
-					if(thumbX<0)
-						thumbX = 0;
-					if(thumbX+(placeSaveThumb->Width)>=XRES)
-						thumbX = XRES-placeSaveThumb->Width;
-
-					if(thumbY<0)
-						thumbY = 0;
-					if(thumbY+(placeSaveThumb->Height)>=YRES)
-						thumbY = YRES-placeSaveThumb->Height;
-
-					c->PlaceSave(ui::Point(thumbX, thumbY));
-				}
-			}
-			else
-			{
-				int x2 = (selectPoint1.X>selectPoint2.X)?selectPoint1.X:selectPoint2.X;
-				int y2 = (selectPoint1.Y>selectPoint2.Y)?selectPoint1.Y:selectPoint2.Y;
-				int x1 = (selectPoint2.X<selectPoint1.X)?selectPoint2.X:selectPoint1.X;
-				int y1 = (selectPoint2.Y<selectPoint1.Y)?selectPoint2.Y:selectPoint1.Y;
-				if(selectMode==SelectCopy)
-					c->CopyRegion(ui::Point(x1, y1), ui::Point(x2, y2));
-				else if(selectMode==SelectCut)
-					c->CutRegion(ui::Point(x1, y1), ui::Point(x2, y2));
-				else if(selectMode==SelectStamp)
-					c->StampRegion(ui::Point(x1, y1), ui::Point(x2, y2));
-			}
-		}
-		currentMouse = ui::Point(x, y);
-		selectMode = SelectNone;
-		return;
-	}
-
 	if(zoomEnabled && !zoomCursorFixed)
 		zoomCursorFixed = true;
 	else
 	{
+		if(selectMode!=SelectNone)
+		{
+			if(button==BUTTON_LEFT)
+			{
+				if(selectMode==PlaceSave)
+				{
+					if(placeSaveThumb && y <= YRES+MENUSIZE-BARSIZE)
+					{
+						int thumbX = selectPoint2.X - (placeSaveThumb->Width/2);
+						int thumbY = selectPoint2.Y - (placeSaveThumb->Height/2);
+
+						if(thumbX<0)
+							thumbX = 0;
+						if(thumbX+(placeSaveThumb->Width)>=XRES)
+							thumbX = XRES-placeSaveThumb->Width;
+
+						if(thumbY<0)
+							thumbY = 0;
+						if(thumbY+(placeSaveThumb->Height)>=YRES)
+							thumbY = YRES-placeSaveThumb->Height;
+
+						c->PlaceSave(ui::Point(thumbX, thumbY));
+					}
+				}
+				else
+				{
+					int x2 = (selectPoint1.X>selectPoint2.X)?selectPoint1.X:selectPoint2.X;
+					int y2 = (selectPoint1.Y>selectPoint2.Y)?selectPoint1.Y:selectPoint2.Y;
+					int x1 = (selectPoint2.X<selectPoint1.X)?selectPoint2.X:selectPoint1.X;
+					int y1 = (selectPoint2.Y<selectPoint1.Y)?selectPoint2.Y:selectPoint1.Y;
+					if(selectMode==SelectCopy)
+						c->CopyRegion(ui::Point(x1, y1), ui::Point(x2, y2));
+					else if(selectMode==SelectCut)
+						c->CutRegion(ui::Point(x1, y1), ui::Point(x2, y2));
+					else if(selectMode==SelectStamp)
+						c->StampRegion(ui::Point(x1, y1), ui::Point(x2, y2));
+				}
+			}
+			selectMode = SelectNone;
+			return;
+		}
+
 		if(isMouseDown)
 		{
 			isMouseDown = false;
@@ -1274,7 +1273,7 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 				break;
 			}
 		}
-		if(key != ' ')
+		if(key != ' ' && key != 'z')
 			return;
 	}
 	switch(key)
@@ -1470,12 +1469,11 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		else
 			c->InvertAirSim();
 		break;
-	}
-
-	if (key == SDLK_INSERT)
+	case SDLK_INSERT:
 		c->SetReplaceModeFlags(c->GetReplaceModeFlags()^REPLACE_MODE);
-	else if (key == SDLK_DELETE)
+	case SDLK_DELETE:
 		c->SetReplaceModeFlags(c->GetReplaceModeFlags()^SPECIFIC_DELETE);
+	}
 
 	if (shift && showDebug && key == '1')
 		c->LoadRenderPreset(10);
