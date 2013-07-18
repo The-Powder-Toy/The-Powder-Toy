@@ -84,6 +84,7 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	luacon_selectedl(""),
 	luacon_selectedr(""),
 	luacon_selectedalt(""),
+	luacon_selectedreplace(""),
 	luacon_mousedown(false)
 {
 	luacon_model = m;
@@ -2821,6 +2822,8 @@ bool LuaScriptInterface::OnActiveToolChanged(int toolSelection, Tool * tool)
 		luacon_selectedr = tool->GetIdentifier();
 	else if (toolSelection == 2)
 		luacon_selectedalt = tool->GetIdentifier();
+	else if (toolSelection == 3)
+		luacon_selectedreplace = tool->GetIdentifier();
 	return true;
 }
 

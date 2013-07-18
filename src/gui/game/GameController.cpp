@@ -1001,6 +1001,8 @@ void GameController::SetActiveTool(int toolSelection, Tool * tool)
 		toolSelection = 0;
 	gameModel->SetActiveTool(toolSelection, tool);
 	gameModel->GetRenderer()->gravityZonesEnabled = false;
+	if (toolSelection == 3)
+		gameModel->GetSimulation()->replaceModeSelected = tool->GetToolID();
 	gameModel->SetLastTool(tool);
 	for(int i = 0; i < 3; i++)
 	{
@@ -1009,6 +1011,16 @@ void GameController::SetActiveTool(int toolSelection, Tool * tool)
 			gameModel->GetRenderer()->gravityZonesEnabled = true;
 		}
 	}
+}
+
+int GameController::GetReplaceModeFlags()
+{
+	return gameModel->GetSimulation()->replaceModeFlags;
+}
+
+void GameController::SetReplaceModeFlags(int flags)
+{
+	gameModel->GetSimulation()->replaceModeFlags = flags;
 }
 
 void GameController::OpenSearch()

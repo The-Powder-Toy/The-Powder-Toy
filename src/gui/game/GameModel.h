@@ -62,8 +62,8 @@ private:
 	Renderer * ren;
 	Tool * lastTool;
 	Tool ** activeTools;
-	Tool * decoToolset[3];
-	Tool * regularToolset[3];
+	Tool * decoToolset[4];
+	Tool * regularToolset[4];
 	User currentUser;
 	float toolStrength;
 	std::deque<Snapshot*> history;

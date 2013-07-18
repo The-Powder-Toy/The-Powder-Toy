@@ -102,6 +102,8 @@ public:
 	std::vector<Menu*> GetMenuList();
 	Tool * GetActiveTool(int selection);
 	void SetActiveTool(int toolSelection, Tool * tool);
+	int GetReplaceModeFlags();
+	void SetReplaceModeFlags(int flags);
 	void ActiveToolChanged(int toolSelection, Tool *tool);
 	void SetActiveColourPreset(int preset);
 	void SetColour(ui::Colour colour);

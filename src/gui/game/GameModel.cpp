@@ -39,8 +39,8 @@ GameModel::GameModel():
 
 	activeTools = regularToolset;
 
-	std::fill(decoToolset, decoToolset+3, (Tool*)NULL);
-	std::fill(regularToolset, regularToolset+3, (Tool*)NULL);
+	std::fill(decoToolset, decoToolset+4, (Tool*)NULL);
+	std::fill(regularToolset, regularToolset+4, (Tool*)NULL);
 
 	//Default render prefs
 	std::vector<unsigned int> tempArray;
@@ -235,13 +235,15 @@ void GameModel::BuildMenus()
 	if(activeMenu != -1)
 		lastMenu = activeMenu;
 
-	std::string activeToolIdentifiers[3];
+	std::string activeToolIdentifiers[4];
 	if(regularToolset[0])
 		activeToolIdentifiers[0] = regularToolset[0]->GetIdentifier();
 	if(regularToolset[1])
 		activeToolIdentifiers[1] = regularToolset[1]->GetIdentifier();
 	if(regularToolset[2])
 		activeToolIdentifiers[2] = regularToolset[2]->GetIdentifier();
+	if(regularToolset[3])
+		activeToolIdentifiers[3] = regularToolset[3]->GetIdentifier();
 
 	//Empty current menus
 	for(std::vector<Menu*>::iterator iter = menuList.begin(), end = menuList.end(); iter != end; ++iter)
@@ -338,11 +340,13 @@ void GameModel::BuildMenus()
 	decoToolset[0] = GetToolFromIdentifier("DEFAULT_DECOR_SET");
 	decoToolset[1] = GetToolFromIdentifier("DEFAULT_DECOR_CLR");
 	decoToolset[2] = GetToolFromIdentifier("DEFAULT_UI_SAMPLE");
+	decoToolset[3] = GetToolFromIdentifier("DEFAULT_PT_NONE");
 
 	//Set default tools
 	regularToolset[0] = GetToolFromIdentifier("DEFAULT_PT_DUST");
 	regularToolset[1] = GetToolFromIdentifier("DEFAULT_PT_NONE");
 	regularToolset[2] = GetToolFromIdentifier("DEFAULT_UI_SAMPLE");
+	regularToolset[3] = GetToolFromIdentifier("DEFAULT_PT_NONE");
 
 
 	if(activeToolIdentifiers[0].length())
@@ -351,6 +355,8 @@ void GameModel::BuildMenus()
 		regularToolset[1] = GetToolFromIdentifier(activeToolIdentifiers[1]);
 	if(activeToolIdentifiers[2].length())
 		regularToolset[2] = GetToolFromIdentifier(activeToolIdentifiers[2]);
+	if(activeToolIdentifiers[3].length())
+		regularToolset[3] = GetToolFromIdentifier(activeToolIdentifiers[3]);
 
 	lastTool = activeTools[0];
 

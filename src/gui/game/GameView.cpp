@@ -518,7 +518,9 @@ public:
 	void ActionCallback(ui::Button * sender_)
 	{
 		ToolButton *sender = (ToolButton*)sender_;
-		if(sender->GetSelectionState() >= 0 && sender->GetSelectionState() <= 2)
+		if (v->CtrlBehaviour() && v->AltBehaviour() && !v->ShiftBehaviour())
+			sender->SetSelectionState(3);
+		if(sender->GetSelectionState() >= 0 && sender->GetSelectionState() <= 3)
 			v->c->SetActiveTool(sender->GetSelectionState(), tool);
 	}
 };
@@ -631,6 +633,10 @@ void GameView::NotifyActiveToolsChanged(GameModel * sender)
 		{
 			toolButtons[i]->SetSelectionState(2);	//Tertiary
 		}
+		else if(sender->GetActiveTool(3) == tool)
+		{
+			toolButtons[i]->SetSelectionState(3);	//Replace Mode
+		}
 		else
 		{
 			toolButtons[i]->SetSelectionState(-1);
@@ -640,6 +646,7 @@ void GameView::NotifyActiveToolsChanged(GameModel * sender)
 	c->ActiveToolChanged(0, sender->GetActiveTool(0));
 	c->ActiveToolChanged(1, sender->GetActiveTool(1));
 	c->ActiveToolChanged(2, sender->GetActiveTool(2));
+	c->ActiveToolChanged(3, sender->GetActiveTool(3));
 }
 
 void GameView::NotifyLastToolChanged(GameModel * sender)
@@ -712,6 +719,10 @@ void GameView::NotifyToolListChanged(GameModel * sender)
 		else if(sender->GetActiveTool(2) == toolList[i])
 		{
 			tempButton->SetSelectionState(2);	//Tertiary
+		}
+		else if(sender->GetActiveTool(3) == toolList[i])
+		{
+			tempButton->SetSelectionState(3);	//Replace mode
 		}
 
 		tempButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
@@ -1461,6 +1472,11 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		break;
 	}
 
+	if (key == SDLK_INSERT)
+		c->SetReplaceModeFlags(c->GetReplaceModeFlags()^REPLACE_MODE);
+	else if (key == SDLK_DELETE)
+		c->SetReplaceModeFlags(c->GetReplaceModeFlags()^SPECIFIC_DELETE);
+
 	if (shift && showDebug && key == '1')
 		c->LoadRenderPreset(10);
 	else if(key >= '0' && key <= '9')
@@ -2162,6 +2178,10 @@ void GameView::OnDraw()
 
 		if (showDebug)
 			fpsInfo << " Parts: " << sample.NumParts;
+		if (c->GetReplaceModeFlags()&REPLACE_MODE)
+			fpsInfo << " [REPLACE MODE]";
+		if (c->GetReplaceModeFlags()&SPECIFIC_DELETE)
+			fpsInfo << " [SPECIFIC DELETE]";
 		if (ren->GetGridSize())
 			fpsInfo << " [GRID: " << ren->GetGridSize() << "]";
 
