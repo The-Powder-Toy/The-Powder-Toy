@@ -6,7 +6,7 @@ Element_RIME::Element_RIME()
 	Name = "RIME";
 	Colour = PIXPACK(0xCCCCCC);
 	MenuVisible = 1;
-	MenuSection = SC_CRACKER2;
+	MenuSection = SC_SOLIDS;
 	Enabled = 1;
 	
 	Advection = 0.00f;

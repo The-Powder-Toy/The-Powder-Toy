@@ -6,7 +6,7 @@ Element_FOG::Element_FOG()
 	Name = "FOG";
 	Colour = PIXPACK(0xAAAAAA);
 	MenuVisible = 1;
-	MenuSection = SC_CRACKER2;
+	MenuSection = SC_GAS;
 	Enabled = 1;
 	
 	Advection = 0.8f;
