@@ -36,8 +36,8 @@ public:
 	void FavouriteSave();
 	bool SubmitComment(std::string comment);
 
-	void NextCommentPage();
-	void PrevCommentPage();
+	bool NextCommentPage();
+	bool PrevCommentPage();
 
 	virtual ~PreviewController();
 };

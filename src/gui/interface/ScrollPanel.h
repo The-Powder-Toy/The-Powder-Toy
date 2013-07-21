@@ -14,9 +14,11 @@ namespace ui
 		float yScrollVel;
 		float xScrollVel;
 		bool isMouseInsideScrollbar;
+		bool isMouseInsideScrollbarArea;
 		bool scrollbarSelected;
 		int scrollbarInitialYOffset;
 		int scrollbarInitialYClick;
+		int scrollbarClickLocation;
 	public:
 		ScrollPanel(Point position, Point size);
 

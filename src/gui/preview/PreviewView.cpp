@@ -376,10 +376,21 @@ void PreviewView::OnMouseWheel(int x, int y, int d)
 		c->NextCommentPage();
 	if(commentsPanel->GetScrollLimit() == -1 && d > 0)
 	{
-		prevPage = true;
-		c->PrevCommentPage();
+		if (c->PrevCommentPage())
+			prevPage = true;
 	}
 
+}
+
+void PreviewView::OnMouseUp(int x, int y, unsigned int button)
+{
+	if(commentsPanel->GetScrollLimit() == 1)
+		c->NextCommentPage();
+	if(commentsPanel->GetScrollLimit() == -1)
+	{
+		if (c->PrevCommentPage())
+			prevPage = true;
+	}
 }
 
 void PreviewView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
@@ -558,7 +569,7 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 			}
 
 			if(showAvatars)
-				tempUsername = new ui::Label(ui::Point(31, currentY+3), ui::Point(Size.X-((XRES/2) + 13), 16), comments->at(i)->authorNameFormatted);
+				tempUsername = new ui::Label(ui::Point(31, currentY+3), ui::Point(Size.X-((XRES/2) + 13 + 26), 16), comments->at(i)->authorNameFormatted);
 			else
 				tempUsername = new ui::Label(ui::Point(5, currentY+3), ui::Point(Size.X-((XRES/2) + 13), 16), comments->at(i)->authorNameFormatted);
 			tempUsername->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
@@ -593,8 +604,6 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 		{
 			prevPage = false;
 			commentsPanel->SetScrollPosition(currentY);
-			//update positions of the comments so that it doesn't start at the top for a frame
-			commentsPanel->Tick(0);
 		}
 	}
 }
