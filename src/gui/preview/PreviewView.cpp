@@ -69,7 +69,8 @@ PreviewView::PreviewView():
 	addCommentBox(NULL),
 	submitCommentButton(NULL),
 	commentBoxHeight(20),
-	showAvatars(true)
+	showAvatars(true),
+	prevPage(false)
 {
 	class FavAction: public ui::ButtonAction
 	{
@@ -374,7 +375,10 @@ void PreviewView::OnMouseWheel(int x, int y, int d)
 	if(commentsPanel->GetScrollLimit() == 1 && d < 0)
 		c->NextCommentPage();
 	if(commentsPanel->GetScrollLimit() == -1 && d > 0)
+	{
+		prevPage = true;
 		c->PrevCommentPage();
+	}
 
 }
 
@@ -585,23 +589,15 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 		}
 
 		commentsPanel->InnerSize = ui::Point(commentsPanel->Size.X, currentY+4);
+		if (prevPage)
+		{
+			prevPage = false;
+			commentsPanel->SetScrollPosition(currentY);
+			//update positions of the comments so that it doesn't start at the top for a frame
+			commentsPanel->Tick(0);
+		}
 	}
 }
-
-/*void PreviewView::NotifyPreviewChanged(PreviewModel * sender)
-{
-	savePreview = sender->GetGameSave();
-	if(savePreview && savePreview->Data && !(savePreview->Width == XRES/2 && savePreview->Height == YRES/2))
-	{
-		int newSizeX, newSizeY;
-		float factorX = ((float)XRES/2)/((float)savePreview->Width);
-		float factorY = ((float)YRES/2)/((float)savePreview->Height);
-		float scaleFactor = factorY < factorX ? factorY : factorX;
-		savePreview->Data = Graphics::resample_img(savePreview->Data, savePreview->Width, savePreview->Height, savePreview->Width*scaleFactor, savePreview->Height*scaleFactor);
-		savePreview->Width *= scaleFactor;
-		savePreview->Height *= scaleFactor;
-	}
-}*/
 
 PreviewView::~PreviewView()
 {

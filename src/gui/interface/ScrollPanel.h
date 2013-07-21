@@ -21,6 +21,7 @@ namespace ui
 		ScrollPanel(Point position, Point size);
 
 		int GetScrollLimit();
+		void SetScrollPosition(int position);
 
 		virtual void Draw(const Point& screenPos);
 		virtual void XTick(float dt);

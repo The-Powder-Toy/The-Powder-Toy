@@ -49,6 +49,7 @@ class PreviewView: public ui::Window {
 	int votesDown;
 	bool doOpen;
 	bool showAvatars;
+	bool prevPage;
 
 	int commentBoxHeight;
 	float commentBoxPositionX;

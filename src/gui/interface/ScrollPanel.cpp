@@ -28,6 +28,11 @@ int ScrollPanel::GetScrollLimit()
 	return 0;
 }
 
+void ScrollPanel::SetScrollPosition(int position)
+{
+	offsetY = position;
+}
+
 void ScrollPanel::XOnMouseWheelInside(int localx, int localy, int d)
 {
 	if(!d)
