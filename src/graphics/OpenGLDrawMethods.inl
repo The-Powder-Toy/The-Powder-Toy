@@ -414,3 +414,8 @@ void PIXELMETHODS_CLASS::draw_image(pixel *img, int x, int y, int w, int h, int 
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_TEXTURE_2D);
 }
+
+void PIXELMETHODS_CLASS::draw_image(VideoBuffer * vidBuf, int x, int y, int a)
+{
+	draw_image(vidBuf->Buffer, x, y, vidBuf->Width, vidBuf->Height, a);
+}

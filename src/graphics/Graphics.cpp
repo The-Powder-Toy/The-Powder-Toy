@@ -152,7 +152,7 @@ int VideoBuffer::AddCharacter(int x, int y, int c, int r, int g, int b, int a)
 VideoBuffer::~VideoBuffer()
 {
 	delete[] Buffer;
-};
+}
 
 /**
  * Common graphics functions, mostly static methods that provide
@@ -573,7 +573,19 @@ int Graphics::textwidth(const char *s)
 {
 	int x = 0;
 	for (; *s; s++)
+	{
+		if(((char)*s)=='\b')
+		{
+			if(!s[1]) break;
+			s++;
+			continue;
+		} else if(*s == '\x0F') {
+			if(!s[1] || !s[2] || !s[3]) break;
+			s+=3;
+			continue;
+		}
 		x += font_data[font_ptrs[(int)(*(unsigned char *)s)]];
+	}
 	return x-1;
 }
 
@@ -1101,6 +1113,27 @@ void Graphics::draw_icon(int x, int y, Icon icon, unsigned char alpha, bool inve
 		else
 			drawchar(x, y, 't', 255, 255, 255, alpha);
 		break;
+	}
+}
+
+void Graphics::draw_rgba_image(unsigned char *data, int x, int y, float alpha)
+{
+	unsigned char w, h;
+	int i, j;
+	unsigned char r, g, b, a;
+	if (!data) return;
+	w = *(data++)&0xFF;
+	h = *(data++)&0xFF;
+	for (j=0; j<h; j++)
+	{
+		for (i=0; i<w; i++)
+		{
+			r = *(data++)&0xFF;
+			g = *(data++)&0xFF;
+			b = *(data++)&0xFF;
+			a = *(data++)&0xFF;
+			addpixel(x+i, y+j, r, g, b, (int)(a*alpha));
+		}
 	}
 }
 

@@ -47,7 +47,6 @@ private:
 public:
 	bool HasDone;
 	class SearchCallback;
-	class RenderCallback;
 	class SSaveCallback;
 	class TagsCallback;
 	class StampsCallback;
@@ -102,6 +101,8 @@ public:
 	std::vector<Menu*> GetMenuList();
 	Tool * GetActiveTool(int selection);
 	void SetActiveTool(int toolSelection, Tool * tool);
+	int GetReplaceModeFlags();
+	void SetReplaceModeFlags(int flags);
 	void ActiveToolChanged(int toolSelection, Tool *tool);
 	void SetActiveColourPreset(int preset);
 	void SetColour(ui::Colour colour);
@@ -135,7 +136,7 @@ public:
 	void TransformSave(matrix2d transform);
 	ui::Point PointTranslate(ui::Point point);
 	ui::Point NormaliseBlockCoord(ui::Point point);
-	std::string ElementResolve(int type);
+	std::string ElementResolve(int type, int ctype);
 	std::string WallName(int type);
 
 	void ResetAir();
@@ -143,6 +144,7 @@ public:
 	void SwitchGravity();
 	void SwitchAir();
 	void ToggleAHeat();
+	void ToggleNewtonianGravity();
 
 	void LoadClipboard();
 	void LoadStamp();

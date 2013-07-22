@@ -17,6 +17,7 @@
 #include "Format.h"
 #include "QuickOption.h"
 #include "IntroText.h"
+#include "DecorationTool.h"
 
 
 class SplitButton;
@@ -517,7 +518,10 @@ public:
 	void ActionCallback(ui::Button * sender_)
 	{
 		ToolButton *sender = (ToolButton*)sender_;
-		if(sender->GetSelectionState() >= 0 && sender->GetSelectionState() <= 2)
+		if (v->CtrlBehaviour() && v->AltBehaviour() && !v->ShiftBehaviour())
+			if (tool->GetIdentifier().find("DEFAULT_PT_") != tool->GetIdentifier().npos)
+				sender->SetSelectionState(3);
+		if(sender->GetSelectionState() >= 0 && sender->GetSelectionState() <= 3)
 			v->c->SetActiveTool(sender->GetSelectionState(), tool);
 	}
 };
@@ -606,7 +610,7 @@ bool GameView::GetDebugHUD()
 
 ui::Point GameView::GetMousePosition()
 {
-	return mousePosition;
+	return currentMouse;
 }
 
 void GameView::NotifyActiveToolsChanged(GameModel * sender)
@@ -630,6 +634,10 @@ void GameView::NotifyActiveToolsChanged(GameModel * sender)
 		{
 			toolButtons[i]->SetSelectionState(2);	//Tertiary
 		}
+		else if(sender->GetActiveTool(3) == tool)
+		{
+			toolButtons[i]->SetSelectionState(3);	//Replace Mode
+		}
 		else
 		{
 			toolButtons[i]->SetSelectionState(-1);
@@ -639,6 +647,7 @@ void GameView::NotifyActiveToolsChanged(GameModel * sender)
 	c->ActiveToolChanged(0, sender->GetActiveTool(0));
 	c->ActiveToolChanged(1, sender->GetActiveTool(1));
 	c->ActiveToolChanged(2, sender->GetActiveTool(2));
+	c->ActiveToolChanged(3, sender->GetActiveTool(3));
 }
 
 void GameView::NotifyLastToolChanged(GameModel * sender)
@@ -656,10 +665,8 @@ void GameView::NotifyLastToolChanged(GameModel * sender)
 
 void GameView::NotifyToolListChanged(GameModel * sender)
 {
-	//int currentY = YRES+MENUSIZE-36;
 	lastOffset = 0;
 	int currentX = XRES+BARSIZE-56;
-	int totalColour;
 	for(int i = 0; i < menuButtons.size(); i++)
 	{
 		if(((MenuAction*)menuButtons[i]->GetActionCallback())->menuID==sender->GetActiveMenu())
@@ -680,9 +687,12 @@ void GameView::NotifyToolListChanged(GameModel * sender)
 	vector<Tool*> toolList = sender->GetToolList();
 	for(int i = 0; i < toolList.size(); i++)
 	{
-		//ToolButton * tempButton = new ToolButton(ui::Point(XRES+1, currentY), ui::Point(28, 15), toolList[i]->GetName());
 		VideoBuffer * tempTexture = toolList[i]->GetTexture(26, 14);
 		ToolButton * tempButton;
+
+		//get decotool texture manually, since it changes depending on it's own color
+		if (sender->GetActiveMenu() == SC_DECO)
+			tempTexture = ((DecorationTool*)toolList[i])->GetIcon(toolList[i]->GetToolID(), 26, 14);
 
 		if(tempTexture)
 			tempButton = new ToolButton(ui::Point(currentX, YRES+1), ui::Point(30, 18), "", toolList[i]->GetDescription());
@@ -710,6 +720,10 @@ void GameView::NotifyToolListChanged(GameModel * sender)
 		else if(sender->GetActiveTool(2) == toolList[i])
 		{
 			tempButton->SetSelectionState(2);	//Tertiary
+		}
+		else if(sender->GetActiveTool(3) == toolList[i])
+		{
+			tempButton->SetSelectionState(3);	//Replace mode
 		}
 
 		tempButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
@@ -741,6 +755,7 @@ void GameView::NotifyColourSelectorVisibilityChanged(GameModel * sender)
 			AddComponent(button);
 		}
 		AddComponent(colourPicker);
+		c->SetActiveColourPreset(-1);
 	}
 }
 
@@ -754,14 +769,8 @@ void GameView::NotifyColourPresetsChanged(GameModel * sender)
 		ColourPresetAction(GameView * _v, int preset) : preset(preset) { v = _v; }
 		void ActionCallback(ui::Button * sender_)
 		{
-			ToolButton *sender = (ToolButton*)sender_;
-			if(sender->GetSelectionState() == 0)
-			{
-				v->c->SetActiveColourPreset(preset);
-				v->c->SetColour(sender->Appearance.BackgroundInactive);
-			}
-			else
-				sender->SetSelectionState(0);
+			v->c->SetActiveColourPreset(preset);
+			v->c->SetColour(sender_->Appearance.BackgroundInactive);
 		}
 	};
 
@@ -779,7 +788,7 @@ void GameView::NotifyColourPresetsChanged(GameModel * sender)
 	int i = 0;
 	for(std::vector<ui::Colour>::iterator iter = colours.begin(), end = colours.end(); iter != end; ++iter)
 	{
-		ToolButton * tempButton = new ToolButton(ui::Point(currentX, YRES+1), ui::Point(30, 18), "");
+		ToolButton * tempButton = new ToolButton(ui::Point(currentX, YRES+1), ui::Point(30, 18), "", "Decoration Presets.");
 		tempButton->Appearance.BackgroundInactive = *iter;
 		tempButton->SetActionCallback(new ColourPresetAction(this, i));
 
@@ -813,6 +822,7 @@ void GameView::NotifyColourSelectorColourChanged(GameModel * sender)
 {
 	colourPicker->Appearance.BackgroundInactive = sender->GetColourSelectorColour();
 	colourPicker->Appearance.BackgroundHover = sender->GetColourSelectorColour();
+	NotifyToolListChanged(sender);
 }
 
 void GameView::NotifyRendererChanged(GameModel * sender)
@@ -838,6 +848,7 @@ void GameView::NotifyUserChanged(GameModel * sender)
 		((SplitButton*)loginButton)->SetShowSplit(true);
 		((SplitButton*)loginButton)->SetRightToolTip("Edit profile");
 	}
+	saveSimulationButtonEnabled = sender->GetUser().ID;
 	NotifySaveChanged(sender);
 }
 
@@ -894,7 +905,7 @@ void GameView::NotifySaveChanged(GameModel * sender)
 			downVoteButton->Appearance.BorderDisabled = ui::Colour(100, 100, 100);
 		}
 
-		tagSimulationButton->Enabled = (sender->GetSave()->GetID() && sender->GetUser().ID);
+		tagSimulationButton->Enabled = sender->GetSave()->GetID();
 		if(sender->GetSave()->GetID())
 		{
 			std::stringstream tagsStream;
@@ -953,6 +964,8 @@ void GameView::NotifySaveChanged(GameModel * sender)
 		tagSimulationButton->SetText("[no tags set]");
 		currentSaveType = 0;
 	}
+	saveSimulationButton->Enabled = (saveSimulationButtonEnabled || ctrlBehaviour);
+	c->HistorySnapshot();
 }
 
 void GameView::NotifyBrushChanged(GameModel * sender)
@@ -1010,6 +1023,7 @@ void GameView::setToolButtonOffset(int offset)
 void GameView::OnMouseMove(int x, int y, int dx, int dy)
 {
 	mousePosition = c->PointTranslate(ui::Point(x, y));
+	currentMouse = ui::Point(x, y);
 	if(selectMode!=SelectNone)
 	{
 		if(selectMode==PlaceSave)
@@ -1018,7 +1032,6 @@ void GameView::OnMouseMove(int x, int y, int dx, int dy)
 			selectPoint2 = c->PointTranslate(ui::Point(x, y));
 		return;
 	}
-	currentMouse = ui::Point(x, y);
 	if(isMouseDown && drawMode == DrawPoints)
 	{
 		pointQueue.push(ui::Point(c->PointTranslate(ui::Point(x-dx, y-dy))));
@@ -1063,53 +1076,52 @@ void GameView::OnMouseDown(int x, int y, unsigned button)
 
 void GameView::OnMouseUp(int x, int y, unsigned button)
 {
-	if(selectMode!=SelectNone)
-	{
-		if(button==BUTTON_LEFT)
-		{
-			if(selectMode==PlaceSave)
-			{
-				if(placeSaveThumb)
-				{
-					int thumbX = selectPoint2.X - (placeSaveThumb->Width/2);
-					int thumbY = selectPoint2.Y - (placeSaveThumb->Height/2);
-
-					if(thumbX<0)
-						thumbX = 0;
-					if(thumbX+(placeSaveThumb->Width)>=XRES)
-						thumbX = XRES-placeSaveThumb->Width;
-
-					if(thumbY<0)
-						thumbY = 0;
-					if(thumbY+(placeSaveThumb->Height)>=YRES)
-						thumbY = YRES-placeSaveThumb->Height;
-
-					c->PlaceSave(ui::Point(thumbX, thumbY));
-				}
-			}
-			else
-			{
-				int x2 = (selectPoint1.X>selectPoint2.X)?selectPoint1.X:selectPoint2.X;
-				int y2 = (selectPoint1.Y>selectPoint2.Y)?selectPoint1.Y:selectPoint2.Y;
-				int x1 = (selectPoint2.X<selectPoint1.X)?selectPoint2.X:selectPoint1.X;
-				int y1 = (selectPoint2.Y<selectPoint1.Y)?selectPoint2.Y:selectPoint1.Y;
-				if(selectMode==SelectCopy)
-					c->CopyRegion(ui::Point(x1, y1), ui::Point(x2, y2));
-				else if(selectMode==SelectCut)
-					c->CutRegion(ui::Point(x1, y1), ui::Point(x2, y2));
-				else if(selectMode==SelectStamp)
-					c->StampRegion(ui::Point(x1, y1), ui::Point(x2, y2));
-			}
-		}
-		currentMouse = ui::Point(x, y);
-		selectMode = SelectNone;
-		return;
-	}
-
 	if(zoomEnabled && !zoomCursorFixed)
 		zoomCursorFixed = true;
 	else
 	{
+		if(selectMode!=SelectNone)
+		{
+			if(button==BUTTON_LEFT)
+			{
+				if(selectMode==PlaceSave)
+				{
+					if(placeSaveThumb && y <= YRES+MENUSIZE-BARSIZE)
+					{
+						int thumbX = selectPoint2.X - (placeSaveThumb->Width/2);
+						int thumbY = selectPoint2.Y - (placeSaveThumb->Height/2);
+
+						if(thumbX<0)
+							thumbX = 0;
+						if(thumbX+(placeSaveThumb->Width)>=XRES)
+							thumbX = XRES-placeSaveThumb->Width;
+
+						if(thumbY<0)
+							thumbY = 0;
+						if(thumbY+(placeSaveThumb->Height)>=YRES)
+							thumbY = YRES-placeSaveThumb->Height;
+
+						c->PlaceSave(ui::Point(thumbX, thumbY));
+					}
+				}
+				else
+				{
+					int x2 = (selectPoint1.X>selectPoint2.X)?selectPoint1.X:selectPoint2.X;
+					int y2 = (selectPoint1.Y>selectPoint2.Y)?selectPoint1.Y:selectPoint2.Y;
+					int x1 = (selectPoint2.X<selectPoint1.X)?selectPoint2.X:selectPoint1.X;
+					int y1 = (selectPoint2.Y<selectPoint1.Y)?selectPoint2.Y:selectPoint1.Y;
+					if(selectMode==SelectCopy)
+						c->CopyRegion(ui::Point(x1, y1), ui::Point(x2, y2));
+					else if(selectMode==SelectCut)
+						c->CutRegion(ui::Point(x1, y1), ui::Point(x2, y2));
+					else if(selectMode==SelectStamp)
+						c->StampRegion(ui::Point(x1, y1), ui::Point(x2, y2));
+				}
+			}
+			selectMode = SelectNone;
+			return;
+		}
+
 		if(isMouseDown)
 		{
 			isMouseDown = false;
@@ -1262,7 +1274,7 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 				break;
 			}
 		}
-		if(key != ' ')
+		if(key != ' ' && key != 'z')
 			return;
 	}
 	switch(key)
@@ -1394,6 +1406,8 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 	case 'u':
 		c->ToggleAHeat();
 		break;
+	case 'n':
+		c->ToggleNewtonianGravity();
 	case '=':
 		if(ctrl)
 			c->ResetSpark();
@@ -1455,6 +1469,12 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 			c->Install();
 		else
 			c->InvertAirSim();
+		break;
+	case SDLK_INSERT:
+		c->SetReplaceModeFlags(c->GetReplaceModeFlags()^REPLACE_MODE);
+		break;
+	case SDLK_DELETE:
+		c->SetReplaceModeFlags(c->GetReplaceModeFlags()^SPECIFIC_DELETE);
 		break;
 	}
 
@@ -1812,6 +1832,7 @@ void GameView::enableCtrlBehaviour()
 		//Show HDD save & load buttons
 		saveSimulationButton->Appearance.BackgroundInactive = saveSimulationButton->Appearance.BackgroundHover = ui::Colour(255, 255, 255);
 		saveSimulationButton->Appearance.TextInactive = saveSimulationButton->Appearance.TextHover = ui::Colour(0, 0, 0);
+		saveSimulationButton->Enabled = true;
 		searchButton->Appearance.BackgroundInactive = searchButton->Appearance.BackgroundHover = ui::Colour(255, 255, 255);
 		searchButton->Appearance.TextInactive = searchButton->Appearance.TextHover = ui::Colour(0, 0, 0);
 		if (currentSaveType == 2)
@@ -1836,6 +1857,7 @@ void GameView::disableCtrlBehaviour()
 		saveSimulationButton->Appearance.BackgroundInactive = ui::Colour(0, 0, 0);
 		saveSimulationButton->Appearance.BackgroundHover = ui::Colour(20, 20, 20);
 		saveSimulationButton->Appearance.TextInactive = saveSimulationButton->Appearance.TextHover = ui::Colour(255, 255, 255);
+		saveSimulationButton->Enabled = saveSimulationButtonEnabled;
 		searchButton->Appearance.BackgroundInactive = ui::Colour(0, 0, 0);
 		searchButton->Appearance.BackgroundHover = ui::Colour(20, 20, 20);
 		searchButton->Appearance.TextInactive = searchButton->Appearance.TextHover = ui::Colour(255, 255, 255);
@@ -2020,26 +2042,31 @@ void GameView::OnDraw()
 	else if(showHud)
 	{
 		//Draw info about simulation under cursor
-		int wavelengthGfx = 0;
+		int wavelengthGfx = 0, alpha = 255;
+		if (toolTipPosition.Y < 120)
+			alpha = 255-toolTipPresence*3;
+		if (alpha < 50)
+			alpha = 50;
 		std::stringstream sampleInfo;
 		sampleInfo.precision(2);
 		if(sample.particle.type)
 		{
+			int ctype = sample.particle.ctype;
+			if (sample.particle.type == PT_PIPE || sample.particle.type == PT_PPIP)
+				ctype = sample.particle.tmp&0xFF;
 			if(showDebug)
 			{
-				int ctype = sample.particle.ctype;
-				if (sample.particle.type == PT_PIPE || sample.particle.type == PT_PPIP)
-					ctype = sample.particle.tmp;
-
 				if (sample.particle.type == PT_LAVA && ctype > 0 && ctype < PT_NUM)
-					sampleInfo << "Molten " << c->ElementResolve(ctype);
-				else if((sample.particle.type == PT_PIPE || sample.particle.type == PT_PPIP) && ctype > 0 && ctype < PT_NUM)
-					sampleInfo << c->ElementResolve(sample.particle.type) << " with " << c->ElementResolve(ctype);
+					sampleInfo << "Molten " << c->ElementResolve(ctype, -1);
+				else if ((sample.particle.type == PT_PIPE || sample.particle.type == PT_PPIP) && ctype > 0 && ctype < PT_NUM)
+					sampleInfo << c->ElementResolve(sample.particle.type, -1) << " with " << c->ElementResolve(ctype, (int)sample.particle.pavg[1]);
+				else if (sample.particle.type == PT_LIFE)
+					sampleInfo << c->ElementResolve(sample.particle.type, sample.particle.ctype);
 				else
 				{
-					sampleInfo << c->ElementResolve(sample.particle.type);
+					sampleInfo << c->ElementResolve(sample.particle.type, sample.particle.ctype);
 					if(ctype > 0 && ctype < PT_NUM)
-						sampleInfo << " (" << c->ElementResolve(ctype) << ")";
+						sampleInfo << " (" << c->ElementResolve(ctype, -1) << ")";
 					else
 						sampleInfo << " ()";
 				}
@@ -2051,11 +2078,13 @@ void GameView::OnDraw()
 			else
 			{
 				if (sample.particle.type == PT_LAVA && sample.particle.ctype > 0 && sample.particle.ctype < PT_NUM)
-					sampleInfo << "Molten " << c->ElementResolve(sample.particle.ctype);
-				else if((sample.particle.type == PT_PIPE || sample.particle.type == PT_PPIP) && sample.particle.tmp > 0 && sample.particle.tmp < PT_NUM)
-					sampleInfo << c->ElementResolve(sample.particle.type) << " with " << c->ElementResolve(sample.particle.tmp);
+					sampleInfo << "Molten " << c->ElementResolve(sample.particle.ctype, -1);
+				else if ((sample.particle.type == PT_PIPE || sample.particle.type == PT_PPIP) && ctype > 0 && ctype < PT_NUM)
+					sampleInfo << c->ElementResolve(sample.particle.type, -1) << " with " << c->ElementResolve(ctype, (int)sample.particle.pavg[1]);
+				else if (sample.particle.type == PT_LIFE)
+					sampleInfo << c->ElementResolve(sample.particle.type, sample.particle.ctype);
 				else
-					sampleInfo << c->ElementResolve(sample.particle.type);
+					sampleInfo << c->ElementResolve(sample.particle.type, sample.particle.ctype);
 				sampleInfo << ", Temp: " << std::fixed << sample.particle.temp -273.15f;
 				sampleInfo << ", Pressure: " << std::fixed << sample.AirPressure;
 			}
@@ -2067,14 +2096,18 @@ void GameView::OnDraw()
 			sampleInfo << c->WallName(sample.WallType);
 			sampleInfo << ", Pressure: " << std::fixed << sample.AirPressure;
 		}
-		else
+		else if (sample.isMouseInSim)
 		{
 			sampleInfo << "Empty, Pressure: " << std::fixed << sample.AirPressure;
 		}
+		else
+		{
+			sampleInfo << "Empty";
+		}
 
 		int textWidth = Graphics::textwidth((char*)sampleInfo.str().c_str());
-		g->fillrect(XRES-20-textWidth, 12, textWidth+8, 15, 0, 0, 0, 255*0.5);
-		g->drawtext(XRES-16-textWidth, 16, (const char*)sampleInfo.str().c_str(), 255, 255, 255, 255*0.75);
+		g->fillrect(XRES-20-textWidth, 12, textWidth+8, 15, 0, 0, 0, alpha*0.5f);
+		g->drawtext(XRES-16-textWidth, 16, (const char*)sampleInfo.str().c_str(), 255, 255, 255, alpha*0.75f);
 
 #ifndef OGLI
 		if(wavelengthGfx)
@@ -2126,8 +2159,8 @@ void GameView::OnDraw()
 				sampleInfo << " GX: " << sample.GravityVelocityX << " GY: " << sample.GravityVelocityY;
 
 			textWidth = Graphics::textwidth((char*)sampleInfo.str().c_str());
-			g->fillrect(XRES-20-textWidth, 26, textWidth+8, 15, 0, 0, 0, 255*0.5);
-			g->drawtext(XRES-16-textWidth, 30, (const char*)sampleInfo.str().c_str(), 255, 255, 255, 255*0.75);
+			g->fillrect(XRES-20-textWidth, 26, textWidth+8, 15, 0, 0, 0, alpha*0.5f);
+			g->drawtext(XRES-16-textWidth, 30, (const char*)sampleInfo.str().c_str(), 255, 255, 255, alpha*0.75f);
 		}
 	}
 
@@ -2146,6 +2179,10 @@ void GameView::OnDraw()
 
 		if (showDebug)
 			fpsInfo << " Parts: " << sample.NumParts;
+		if (c->GetReplaceModeFlags()&REPLACE_MODE)
+			fpsInfo << " [REPLACE MODE]";
+		if (c->GetReplaceModeFlags()&SPECIFIC_DELETE)
+			fpsInfo << " [SPECIFIC DELETE]";
 		if (ren->GetGridSize())
 			fpsInfo << " [GRID: " << ren->GetGridSize() << "]";
 

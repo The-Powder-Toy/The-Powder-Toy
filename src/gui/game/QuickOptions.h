@@ -23,7 +23,7 @@ class DrawGravOption: public QuickOption
 {
 public:
 	DrawGravOption(GameModel * m):
-	QuickOption("G", "Draw gravity field", m, Toggle)
+	QuickOption("G", "Draw gravity field \bg(ctrl+g)", m, Toggle)
 	{
 
 	}
@@ -41,7 +41,7 @@ class DecorationsOption: public QuickOption
 {
 public:
 	DecorationsOption(GameModel * m):
-	QuickOption("D", "Draw decorations", m, Toggle)
+	QuickOption("D", "Draw decorations \bg(ctrl+b)", m, Toggle)
 	{
 
 	}
@@ -59,7 +59,7 @@ class NGravityOption: public QuickOption
 {
 public:
 	NGravityOption(GameModel * m):
-	QuickOption("N", "Newtonian Gravity", m, Toggle)
+	QuickOption("N", "Newtonian Gravity \bg(n)", m, Toggle)
 	{
 
 	}
@@ -86,7 +86,7 @@ class AHeatOption: public QuickOption
 {
 public:
 	AHeatOption(GameModel * m):
-	QuickOption("A", "Ambient heat", m, Toggle)
+	QuickOption("A", "Ambient heat \bg(u)", m, Toggle)
 	{
 
 	}
@@ -105,7 +105,7 @@ class ConsoleShowOption: public QuickOption
 	GameController * c;
 public:
 	ConsoleShowOption(GameModel * m, GameController * c_):
-	QuickOption("C", "Show Console", m, Toggle)
+	QuickOption("C", "Show Console \bg(~)", m, Toggle)
 	{
 		c = c_;
 	}

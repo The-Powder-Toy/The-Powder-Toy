@@ -49,6 +49,7 @@ class PreviewView: public ui::Window {
 	int votesDown;
 	bool doOpen;
 	bool showAvatars;
+	bool prevPage;
 
 	int commentBoxHeight;
 	float commentBoxPositionX;
@@ -71,6 +72,7 @@ public:
 	virtual void OnTick(float dt);
 	virtual void OnTryExit(ExitMethod method);
 	virtual void OnMouseWheel(int x, int y, int d);
+	virtual void OnMouseUp(int x, int y, unsigned int button);
 	virtual void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
 	virtual ~PreviewView();
 };

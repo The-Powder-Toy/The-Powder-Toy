@@ -340,7 +340,7 @@ void SearchView::NotifyPageChanged(SearchModel * sender)
 	{
 		previousButton->Visible = true;
 	}
-	if(sender->GetPageNum() == sender->GetPageCount())
+	if(sender->GetPageNum() >= sender->GetPageCount())
 	{
 		nextButton->Visible = false;
 	}

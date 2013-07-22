@@ -69,7 +69,8 @@ PreviewView::PreviewView():
 	addCommentBox(NULL),
 	submitCommentButton(NULL),
 	commentBoxHeight(20),
-	showAvatars(true)
+	showAvatars(true),
+	prevPage(false)
 {
 	class FavAction: public ui::ButtonAction
 	{
@@ -374,8 +375,22 @@ void PreviewView::OnMouseWheel(int x, int y, int d)
 	if(commentsPanel->GetScrollLimit() == 1 && d < 0)
 		c->NextCommentPage();
 	if(commentsPanel->GetScrollLimit() == -1 && d > 0)
-		c->PrevCommentPage();
+	{
+		if (c->PrevCommentPage())
+			prevPage = true;
+	}
 
+}
+
+void PreviewView::OnMouseUp(int x, int y, unsigned int button)
+{
+	if(commentsPanel->GetScrollLimit() == 1)
+		c->NextCommentPage();
+	if(commentsPanel->GetScrollLimit() == -1)
+	{
+		if (c->PrevCommentPage())
+			prevPage = true;
+	}
 }
 
 void PreviewView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
@@ -427,7 +442,6 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 
 			if(savePreview && savePreview->Buffer && !(savePreview->Width == XRES/2 && savePreview->Width == YRES/2))
 			{
-				int newSizeX, newSizeY;
 				pixel * oldData = savePreview->Buffer;
 				float factorX = ((float)XRES/2)/((float)savePreview->Width);
 				float factorY = ((float)YRES/2)/((float)savePreview->Height);
@@ -555,11 +569,15 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 			}
 
 			if(showAvatars)
-				tempUsername = new ui::Label(ui::Point(31, currentY+3), ui::Point(Size.X-((XRES/2) + 13), 16), comments->at(i)->authorNameFormatted);
+				tempUsername = new ui::Label(ui::Point(31, currentY+3), ui::Point(Size.X-((XRES/2) + 13 + 26), 16), comments->at(i)->authorNameFormatted);
 			else
 				tempUsername = new ui::Label(ui::Point(5, currentY+3), ui::Point(Size.X-((XRES/2) + 13), 16), comments->at(i)->authorNameFormatted);
 			tempUsername->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 			tempUsername->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
+			if (sender->GetSave() && sender->GetSave()->GetUserName() == comments->at(i)->authorName)
+				tempUsername->SetTextColour(ui::Colour(255, 100, 100));
+			else if (Client::Ref().GetAuthUser().ID && Client::Ref().GetAuthUser().Username == comments->at(i)->authorName)
+				tempUsername->SetTextColour(ui::Colour(255, 255, 100));
 			currentY += 16;
 
 			commentComponents.push_back(tempUsername);
@@ -582,23 +600,13 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 		}
 
 		commentsPanel->InnerSize = ui::Point(commentsPanel->Size.X, currentY+4);
+		if (prevPage)
+		{
+			prevPage = false;
+			commentsPanel->SetScrollPosition(currentY);
+		}
 	}
 }
-
-/*void PreviewView::NotifyPreviewChanged(PreviewModel * sender)
-{
-	savePreview = sender->GetGameSave();
-	if(savePreview && savePreview->Data && !(savePreview->Width == XRES/2 && savePreview->Height == YRES/2))
-	{
-		int newSizeX, newSizeY;
-		float factorX = ((float)XRES/2)/((float)savePreview->Width);
-		float factorY = ((float)YRES/2)/((float)savePreview->Height);
-		float scaleFactor = factorY < factorX ? factorY : factorX;
-		savePreview->Data = Graphics::resample_img(savePreview->Data, savePreview->Width, savePreview->Height, savePreview->Width*scaleFactor, savePreview->Height*scaleFactor);
-		savePreview->Width *= scaleFactor;
-		savePreview->Height *= scaleFactor;
-	}
-}*/
 
 PreviewView::~PreviewView()
 {

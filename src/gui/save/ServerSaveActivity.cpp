@@ -12,6 +12,7 @@
 #include "tasks/Task.h"
 #include "gui/Style.h"
 #include "client/GameSave.h"
+#include "images.h"
 
 class ServerSaveActivity::CancelAction: public ui::ButtonAction
 {
@@ -286,26 +287,27 @@ void ServerSaveActivity::ShowPublishingInfo()
 void ServerSaveActivity::ShowRules()
 {
 	const char *rules =
-		"These are the rules you should follow when uploading saves to avoid having them deleted or otherwise hidden from public view. If you fail to follow them, don't be surprised if your saves get lousy votes, unpublished, or removed from the front page should they make it there. They may change at any time as new problems arise, and how each rule is handled changes depending on the situation.\n"
+		"These are the rules you should follow when uploading saves to avoid having them deleted or otherwise hidden from public view. If you fail to follow them, don't be surprised if your saves get lousy votes, unpublished, or removed from the front page should they make it there. These rules may change at any time as new problems arise, and how each rule is handled changes depending on the situation.\n"
 		"\n"
-		"\bt1. No image plotting.\bw If you use a program to draw out pixels from an image outside of TPT without drawing it by hand, don't be surprised when it gets deleted and you get banned.\n"
+		"\bt1. No image plotting.\bw If you use a program to draw out pixels from an image outside of TPT without drawing it by hand, don't be surprised when the save gets deleted and you get banned.\n"
 		"\bt2. No self voting.\bw This means making more than one account, and then using that account to vote on any save multiple times. We can see this stuff, and people get banned for doing it. Don't do it.\n"
-		"\bt3. No hate saves.\bw This means things like shooting Jews or killing Beiber; these will not be allowed.\n"
-		"\bt4. No penis drawings.\bw Or any other explicit or non-explicit sex please. We like to think this is a game that kids can play with their family around, don't post anything too inappropriate.\n"
-		"\bt5. Don't ask people to vote.\bw If your stuff is awesome, you shouldn't have to beg for popularity to get votes. People tend to downvote when they see vote begging anyway.\n"
-		   "- This includes vote signs in the game, drawings of vote arrows, and comments on the save telling people to vote up.\n"
-		   "- Gimmicks for getting votes like '100 votes and I'll make a better version' are similarly frowned upon.\n"
-		"\bt6. Keep the number of logos and signs to a minimum.\bw They not only slow the game down, but it can also make saves unappealing for people to use. \n"
-		   "- Please do not make fake update or similar fake signs either.\n"
+		"\bt3. No hate saves.\bw This means things like shooting Jews or killing Bieber; these are not allowed.\n"
+		"\bt4. No penis drawings.\bw Or any other explicit or non-explicit sex please. We like to think this is a game that people can play with their family around. Don't post anything too inappropriate.\n"
+		"\bt5. Don't ask people to vote.\bw If your stuff is awesome, you shouldn't have to beg for popularity to get votes. Do not have anything relating to or mentioning votes inside the actual save.\n"
+		   "- This includes vote signs in the game, drawings of vote arrows, or almost any mention of voting in the save. If you want to thank people for the votes they have given, that can be a small note in the description or comments, but don't make it excessive either. Testing this rule to see how far you can go is a bad idea and may get your save unpublished.\n"
+		   "- Gimmicks for getting votes like \"100 votes and I'll make a better version\" are similarly frowned upon.\n"
+		"\bt6. Keep the number of logos and signs to a minimum.\bw They not only slow the game down, but can also make saves unappealing for people to use. \n"
+		   "- If you link to more then 3 unrelated saves using link signs, this is just too much advertising, and the save will probably be removed from the front page if it gets there.\n"
+		   "- Please do not make fake update signs or similar fake notification signs either.\n"
 		"\bt7. Please don't swear excessively.\bw Saves containing excessive swearing or rude language will be unpublished. Don't make rude or offensive comments either.\n"
-		"\bt8. Don't make text only saves.\bw Saves are much better when they actually use some of the features in the game. Text only saves will be removed from the front page should they ever get there.\n"
-		   "- Also, element suggestion saves will be removed from the front page. It's recommended you make a thread on the forum instead so you can get actual criticism from other users and devs.\n"
+		"\bt8. Don't make text-only saves.\bw Saves are much better when they actually use some of the features in the game. Text-only saves will be removed from the front page should they ever get there.\n"
+		   "- Also, element suggestion saves will be removed from the front page. It's recommended that you make a thread on the forum instead so you can get actual criticism from developers and other users.\n"
 		   "- This is also related to art on the front page. Art saves that only rely on the deco layer are generally removed. Art using elements may stay longer if it's more impressive.\n"
-		"\bt9. Don't claim others' work as your own.\bw If you didn't make it, don't resave it for yourself. You can fav. a save instead of publishing a copy if you want to see it later.\n"
+		"\bt9. Don't claim others' work as your own.\bw If you didn't make it, don't resave it for yourself. You can favorite a save instead of publishing a copy if you want to see it later.\n"
 		   "- This doesn't mean you can't modify or improve saves; building on the works of others is encouraged. If you give credit to the original author, it is usually OK to resave unless the author specifically prohibits it.\n"
-		"\bt10. Do not make laggy saves.\bw If a save is so laggy that it crashes the game for some people, it's just really annoying. Saves that do make it to the front page that purposely lag the game will be demoted.\n"
+		"\bt10. Don't make laggy saves.\bw If a save is so laggy that it crashes the game for some people, it's just really annoying. Saves that do make it to the front page that purposely lag the game will be demoted.\n"
 		"\n"
-		"You can report a save breaking any one of these rules, as the moderators are busy in real life too and don't always have the time to search through all saves for these kinds of things. If reporting a copied save, just give the ID of the original, but if not an ID isn't needed.";
+		"You can report a save breaking any one of these rules, as the moderators are busy in real life too and don't always have the time to search through all saves for these kinds of things. If reporting a copied save, put the save ID of the save it was stolen from in the report.";
 
 	new InformationMessage("Save Uploading Rules", rules, true);
 }
@@ -319,6 +321,7 @@ void ServerSaveActivity::OnTick(float dt)
 void ServerSaveActivity::OnDraw()
 {
 	Graphics * g = ui::Engine::Ref().g;
+	g->draw_rgba_image((unsigned char*)save_to_server_image, -10, 0, 0.7f);
 	g->clearrect(Position.X-2, Position.Y-2, Size.X+3, Size.Y+3);
 	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 255, 255, 255, 255);
 

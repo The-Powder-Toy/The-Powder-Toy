@@ -84,6 +84,7 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	luacon_selectedl(""),
 	luacon_selectedr(""),
 	luacon_selectedalt(""),
+	luacon_selectedreplace(""),
 	luacon_mousedown(false)
 {
 	luacon_model = m;
@@ -782,7 +783,7 @@ int LuaScriptInterface::simulation_partProperty(lua_State * l)
 int LuaScriptInterface::simulation_partKill(lua_State * l)
 {
 	if(lua_gettop(l)==2)
-		luacon_sim->delete_part(lua_tointeger(l, 1), lua_tointeger(l, 2), 0);
+		luacon_sim->delete_part(lua_tointeger(l, 1), lua_tointeger(l, 2));
 	else
 		luacon_sim->kill_part(lua_tointeger(l, 1));
 	return 0;
@@ -977,7 +978,7 @@ int LuaScriptInterface::simulation_createParts(lua_State * l)
 	int ry = luaL_optint(l,4,5);
 	int c = luaL_optint(l,5,luacon_model->GetActiveTool(0)->GetToolID());
 	int brush = luaL_optint(l,6,CIRCLE_BRUSH);
-	int flags = luaL_optint(l,7,0);
+	int flags = luaL_optint(l,7,luacon_sim->replaceModeFlags);
 
 	vector<Brush*> brushList = luacon_model->GetBrushList();
 	if (brush < 0 || brush >= brushList.size())
@@ -985,7 +986,7 @@ int LuaScriptInterface::simulation_createParts(lua_State * l)
 	ui::Point tempRadius = brushList[brush]->GetRadius();
 	brushList[brush]->SetRadius(ui::Point(rx, ry));
 
-	int ret = luacon_sim->CreateParts(x, y, c, brushList[brush]);
+	int ret = luacon_sim->CreateParts(x, y, c, brushList[brush], flags);
 	brushList[brush]->SetRadius(tempRadius);
 	lua_pushinteger(l, ret);
 	return 1;
@@ -1001,7 +1002,7 @@ int LuaScriptInterface::simulation_createLine(lua_State * l)
 	int ry = luaL_optint(l,6,5);
 	int c = luaL_optint(l,7,luacon_model->GetActiveTool(0)->GetToolID());
 	int brush = luaL_optint(l,8,CIRCLE_BRUSH);
-	int flags = luaL_optint(l,9,0);
+	int flags = luaL_optint(l,9,luacon_sim->replaceModeFlags);
 
 	vector<Brush*> brushList = luacon_model->GetBrushList();
 	if (brush < 0 || brush >= brushList.size())
@@ -1009,7 +1010,7 @@ int LuaScriptInterface::simulation_createLine(lua_State * l)
 	ui::Point tempRadius = brushList[brush]->GetRadius();
 	brushList[brush]->SetRadius(ui::Point(rx, ry));
 
-	luacon_sim->CreateLine(x1, y1, x2, y2, c, brushList[brush]);
+	luacon_sim->CreateLine(x1, y1, x2, y2, c, brushList[brush], flags);
 	brushList[brush]->SetRadius(tempRadius);
 	return 0;
 }
@@ -1021,7 +1022,7 @@ int LuaScriptInterface::simulation_createBox(lua_State * l)
 	int x2 = luaL_optint(l,3,-1);
 	int y2 = luaL_optint(l,4,-1);
 	int c = luaL_optint(l,5,luacon_model->GetActiveTool(0)->GetToolID());
-	int flags = luaL_optint(l,6,0);
+	int flags = luaL_optint(l,6,luacon_sim->replaceModeFlags);
 
 	luacon_sim->CreateBox(x1, y1, x2, y2, c, flags);
 	return 0;
@@ -1033,9 +1034,8 @@ int LuaScriptInterface::simulation_floodParts(lua_State * l)
 	int y = luaL_optint(l,2,-1);
 	int c = luaL_optint(l,3,luacon_model->GetActiveTool(0)->GetToolID());
 	int cm = luaL_optint(l,4,-1);
-	int bm = luaL_optint(l,5,-1);
-	int flags = luaL_optint(l,6,0);
-	int ret = luacon_sim->FloodParts(x, y, c, cm, bm, flags);
+	int flags = luaL_optint(l,5,luacon_sim->replaceModeFlags);
+	int ret = luacon_sim->FloodParts(x, y, c, cm, flags);
 	lua_pushinteger(l, ret);
 	return 1;
 }
@@ -1047,11 +1047,10 @@ int LuaScriptInterface::simulation_createWalls(lua_State * l)
 	int rx = luaL_optint(l,3,0);
 	int ry = luaL_optint(l,4,0);
 	int c = luaL_optint(l,5,8);
-	int flags = luaL_optint(l,6,0);
 	if (c < 0 || c >= UI_WALLCOUNT)
 		return luaL_error(l, "Unrecognised wall id '%d'", c);
 
-	int ret = luacon_sim->CreateWalls(x, y, rx, ry, c, flags);
+	int ret = luacon_sim->CreateWalls(x, y, rx, ry, c, NULL);
 	lua_pushinteger(l, ret);
 	return 1;
 }
@@ -1065,11 +1064,10 @@ int LuaScriptInterface::simulation_createWallLine(lua_State * l)
 	int rx = luaL_optint(l,5,0);
 	int ry = luaL_optint(l,6,0);
 	int c = luaL_optint(l,7,8);
-	int flags = luaL_optint(l,8,0);
 	if (c < 0 || c >= UI_WALLCOUNT)
 		return luaL_error(l, "Unrecognised wall id '%d'", c);
 
-	luacon_sim->CreateWallLine(x1, y1, x2, y2, rx, ry, c, flags);
+	luacon_sim->CreateWallLine(x1, y1, x2, y2, rx, ry, c, NULL);
 	return 0;
 }
 
@@ -1080,11 +1078,10 @@ int LuaScriptInterface::simulation_createWallBox(lua_State * l)
 	int x2 = luaL_optint(l,3,-1);
 	int y2 = luaL_optint(l,4,-1);
 	int c = luaL_optint(l,5,8);
-	int flags = luaL_optint(l,6,0);
 	if (c < 0 || c >= UI_WALLCOUNT)
 		return luaL_error(l, "Unrecognised wall id '%d'", c);
 
-	luacon_sim->CreateWallBox(x1, y1, x2, y2, c, flags);
+	luacon_sim->CreateWallBox(x1, y1, x2, y2, c);
 	return 0;
 }
 
@@ -1093,12 +1090,10 @@ int LuaScriptInterface::simulation_floodWalls(lua_State * l)
 	int x = luaL_optint(l,1,-1);
 	int y = luaL_optint(l,2,-1);
 	int c = luaL_optint(l,3,8);
-	int cm = luaL_optint(l,4,-1);
-	int bm = luaL_optint(l,5,-1);
-	int flags = luaL_optint(l,6,0);
+	int bm = luaL_optint(l,4,-1);
 	if (c < 0 || c >= UI_WALLCOUNT)
 		return luaL_error(l, "Unrecognised wall id '%d'", c);
-	int ret = luacon_sim->FloodWalls(x, y, c, cm, bm, flags);
+	int ret = luacon_sim->FloodWalls(x, y, c, bm);
 	lua_pushinteger(l, ret);
 	return 1;
 }
@@ -1366,13 +1361,14 @@ int LuaScriptInterface::simulation_loadStamp(lua_State * l)
 	}
 	if (tempfile)
 	{
-		if (luacon_sim->Load(x, y, tempfile->GetGameSave()))
+		if (!luacon_sim->Load(x, y, tempfile->GetGameSave()))
 		{
 			//luacon_sim->sys_pause = (tempfile->GetGameSave()->paused | luacon_model->GetPaused())?1:0;
 			lua_pushinteger(l, 1);
 		}
 		else
 			lua_pushnil(l);
+		delete tempfile;
 	}
 	else
 		lua_pushnil(l);
@@ -1845,6 +1841,7 @@ void LuaScriptInterface::initElementsAPI()
 	SETCONST(l, SC_WALL);
 	SETCONST(l, SC_ELEC);
 	SETCONST(l, SC_POWERED);
+	SETCONST(l, SC_SENSOR);
 	SETCONST(l, SC_FORCE);
 	SETCONST(l, SC_EXPLOSIVE);
 	SETCONST(l, SC_GAS);
@@ -1856,7 +1853,6 @@ void LuaScriptInterface::initElementsAPI()
 	SETCONST(l, SC_LIFE);
 	SETCONST(l, SC_TOOL);
 	SETCONST(l, SC_DECO);
-	SETCONST(l, SC_SENSOR);
 
 	//Element identifiers
 	for(int i = 0; i < PT_NUM; i++)
@@ -2822,6 +2818,8 @@ bool LuaScriptInterface::OnActiveToolChanged(int toolSelection, Tool * tool)
 		luacon_selectedr = tool->GetIdentifier();
 	else if (toolSelection == 2)
 		luacon_selectedalt = tool->GetIdentifier();
+	else if (toolSelection == 3)
+		luacon_selectedreplace = tool->GetIdentifier();
 	return true;
 }
 

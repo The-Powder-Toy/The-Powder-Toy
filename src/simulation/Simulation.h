@@ -1,5 +1,5 @@
-#ifndef SIMULATION_H_
-#define SIMULATION_H_
+#ifndef SIMULATION_H
+#define SIMULATION_H
 #include <cstring>
 #include <cstddef>
 #include <vector>
@@ -30,10 +30,8 @@ class Gravity;
 class Air;
 class GameSave;
 
-//#ifdef _cplusplus
 class Simulation
 {
-private:
 public:
 
 	Gravity * grav;
@@ -51,9 +49,11 @@ public:
 	menu_section msections[SC_TOTAL];
 
 	int currentTick;
+	int replaceModeSelected;
+	int replaceModeFlags;
 
 	char can_move[PT_NUM][PT_NUM];
-	int parts_lastActiveIndex;// = NPART-1;
+	int parts_lastActiveIndex;
 	int pfree;
 	int NUM_PARTS;
 	bool elementRecount;
@@ -108,19 +108,19 @@ public:
 	int gravityMode;
 	int legacy_enable;
 	int aheat_enable;
-	int VINE_MODE;
 	int water_equal_test;
 	int sys_pause;
 	int framerender;
 	int pretty_powder;
 	int sandcolour;
 	int sandcolour_frame;
+	int DEFAULT_PT_NUM;
 
 	int Load(GameSave * save);
 	int Load(int x, int y, GameSave * save);
 	GameSave * Save();
 	GameSave * Save(int x1, int y1, int x2, int y2);
-	SimulationSample Get(int x, int y);
+	SimulationSample GetSample(int x, int y);
 
 	Snapshot * CreateSnapshot();
 	void Restore(const Snapshot & snap);
@@ -139,15 +139,17 @@ public:
 	void create_cherenkov_photon(int pp);
 	void create_gain_photon(int pp);
 	TPT_NO_INLINE void kill_part(int i);
+	bool FloodFillPmapCheck(int x, int y, int type);
 	int flood_prop(int x, int y, size_t propoffset, void * propvalue, StructProperty::PropertyType proptype);
 	int flood_prop_2(int x, int y, size_t propoffset, void * propvalue, StructProperty::PropertyType proptype, int parttype, char * bitmap);
 	int flood_water(int x, int y, int i, int originaly, int check);
+	int FloodINST(int x, int y, int fullc, int cm);
 	TPT_NO_INLINE void detach(int i);
 	TPT_NO_INLINE void part_change_type(int i, int x, int y, int t);
 	//int InCurrentBrush(int i, int j, int rx, int ry);
 	//int get_brush_flags();
 	TPT_NO_INLINE int create_part(int p, int x, int y, int t);
-	TPT_NO_INLINE void delete_part(int x, int y, int flags);
+	TPT_NO_INLINE void delete_part(int x, int y);
 	void get_sign_pos(int i, int *x0, int *y0, int *w, int *h);
 	TPT_NO_INLINE int is_wire(int x, int y);
 	TPT_NO_INLINE int is_wire_off(int x, int y);
@@ -162,31 +164,33 @@ public:
 
 	void SetEdgeMode(int newEdgeMode);
 
+	//Drawing Deco
+	void ApplyDecoration(int x, int y, int colR, int colG, int colB, int colA, int mode);
+	void ApplyDecorationPoint(int x, int y, int colR, int colG, int colB, int colA, int mode, Brush * cBrush = NULL);
+	void ApplyDecorationLine(int x1, int y1, int x2, int y2, int colR, int colG, int colB, int colA, int mode, Brush * cBrush = NULL);
+	void ApplyDecorationBox(int x1, int y1, int x2, int y2, int colR, int colG, int colB, int colA, int mode);
+
+	//Drawing Tools like HEAT, AIR, and GRAV
 	int Tool(int x, int y, int tool, float strength = 1.0f);
 	int ToolBrush(int x, int y, int tool, Brush * cBrush, float strength = 1.0f);
 	void ToolLine(int x1, int y1, int x2, int y2, int tool, Brush * cBrush, float strength = 1.0f);
 	void ToolBox(int x1, int y1, int x2, int y2, int tool, float strength = 1.0f);
 	
-	void CreateBox(int x1, int y1, int x2, int y2, int c, int flags);
-	int FloodINST(int x, int y, int fullc, int cm);
-	int FloodParts(int x, int y, int c, int cm, int bm, int flags);
-	//Create particles from brush/mask
-	int CreateParts(int positionX, int positionY, int c, Brush * cBrush);
-	//Old particle creation, will create a crappy square, do not use
-	int CreateParts(int x, int y, int rx, int ry, int c, int flags);
-	int CreatePartFlags(int x, int y, int c, int fn, int flags);
-	void CreateLine(int x1, int y1, int x2, int y2, int c, Brush * cBrush);
+	//Drawing Walls
+	int CreateWalls(int x, int y, int rx, int ry, int wall, Brush * cBrush = NULL);
+	void CreateWallLine(int x1, int y1, int x2, int y2, int rx, int ry, int wall, Brush * cBrush = NULL);
+	void CreateWallBox(int x1, int y1, int x2, int y2, int wall);
+	int FloodWalls(int x, int y, int wall, int bm);
+
+	//Drawing Particles
+	int CreateParts(int positionX, int positionY, int c, Brush * cBrush, int flags = -1);
+	int CreateParts(int x, int y, int rx, int ry, int c, int flags = -1);
+	int CreatePartFlags(int x, int y, int c, int flags);
+	void CreateLine(int x1, int y1, int x2, int y2, int c, Brush * cBrush, int flags = -1);
 	void CreateLine(int x1, int y1, int x2, int y2, int c);
-	
-	void CreateWallBox(int x1, int y1, int x2, int y2, int c, int flags);
-	int FloodWalls(int x, int y, int c, int cm, int bm, int flags);
-	int CreateWalls(int x, int y, int rx, int ry, int c, int flags, Brush * cBrush = NULL);
-	void CreateWallLine(int x1, int y1, int x2, int y2, int rx, int ry, int c, int flags, Brush * cBrush = NULL);
-	
-	void ApplyDecoration(int x, int y, int colR, int colG, int colB, int colA, int mode);
-	void ApplyDecorationPoint(int x, int y, int colR, int colG, int colB, int colA, int mode, Brush * cBrush = NULL);
-	void ApplyDecorationLine(int x1, int y1, int x2, int y2, int colR, int colG, int colB, int colA, int mode, Brush * cBrush = NULL);
-	void ApplyDecorationBox(int x1, int y1, int x2, int y2, int colR, int colG, int colB, int colA, int mode);
+	void CreateBox(int x1, int y1, int x2, int y2, int c, int flags = -1);
+	int FloodParts(int x, int y, int c, int cm, int flags = -1);
+
 	
 	void GetGravityField(int x, int y, float particleGrav, float newtonGrav, float & pGravX, float & pGravY);
 
@@ -204,6 +208,4 @@ public:
 	~Simulation();
 };
 
-//#endif
-
-#endif /* SIMULATION_H_ */
+#endif /* SIMULATION_H */

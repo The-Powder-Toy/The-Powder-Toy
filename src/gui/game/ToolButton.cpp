@@ -33,7 +33,7 @@ void ToolButton::Draw(const ui::Point& screenPos)
 	Graphics * g = ui::Engine::Ref().g;
 	int totalColour = Appearance.BackgroundInactive.Blue + (3*Appearance.BackgroundInactive.Green) + (2*Appearance.BackgroundInactive.Red);
 
-	if(Appearance.GetTexture())
+	if (Appearance.GetTexture())
 	{
 		g->draw_image(Appearance.GetTexture(), screenPos.X+2, screenPos.Y+2, 255);
 	}
@@ -42,7 +42,7 @@ void ToolButton::Draw(const ui::Point& screenPos)
 		g->fillrect(screenPos.X+2, screenPos.Y+2, Size.X-4, Size.Y-4, Appearance.BackgroundInactive.Red, Appearance.BackgroundInactive.Green, Appearance.BackgroundInactive.Blue, Appearance.BackgroundInactive.Alpha);
 	}
 
-	if(isMouseInside && currentSelection == -1)
+	if (isMouseInside && currentSelection == -1)
 	{
 		g->drawrect(screenPos.X, screenPos.Y, Size.X, Size.Y, Appearance.BorderActive.Red, Appearance.BorderActive.Green, Appearance.BorderActive.Blue, Appearance.BorderActive.Alpha);
 	}
@@ -74,6 +74,9 @@ void ToolButton::SetSelectionState(int state)
 		break;
 	case 2:
 		Appearance.BorderInactive = ui::Colour(0, 255, 0);
+		break;
+	case 3:
+		Appearance.BorderInactive = ui::Colour(0, 255, 255);
 		break;
 	default:
 		Appearance.BorderInactive = ui::Colour(0, 0, 0);

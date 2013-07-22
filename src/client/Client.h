@@ -111,8 +111,8 @@ public:
 	void SetProxy(std::string proxy);
 
 	int MakeDirectory(const char * dirname);
-	void WriteFile(std::vector<unsigned char> fileData, std::string filename);
-	void WriteFile(std::vector<char> fileData, std::string filename);
+	bool WriteFile(std::vector<unsigned char> fileData, std::string filename);
+	bool WriteFile(std::vector<char> fileData, std::string filename);
 	bool FileExists(std::string filename);
 
 	void AddListener(ClientListener * listener);

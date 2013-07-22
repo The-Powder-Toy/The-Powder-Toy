@@ -515,8 +515,9 @@ int Client::MakeDirectory(const char * dirName)
 #endif
 }
 
-void Client::WriteFile(std::vector<unsigned char> fileData, std::string filename)
+bool Client::WriteFile(std::vector<unsigned char> fileData, std::string filename)
 {
+	bool saveError = false;
 	try
 	{
 		std::ofstream fileStream;
@@ -526,12 +527,15 @@ void Client::WriteFile(std::vector<unsigned char> fileData, std::string filename
 			fileStream.write((char*)&fileData[0], fileData.size());
 			fileStream.close();
 		}
+		else
+			saveError = true;
 	}
 	catch (std::exception & e)
 	{
 		std::cerr << "WriteFile:" << e.what() << std::endl;
-		throw;
-	}	
+		saveError = true;
+	}
+	return saveError;
 }
 
 bool Client::FileExists(std::string filename)
@@ -554,8 +558,9 @@ bool Client::FileExists(std::string filename)
 	return exists;
 }
 
-void Client::WriteFile(std::vector<char> fileData, std::string filename)
+bool Client::WriteFile(std::vector<char> fileData, std::string filename)
 {
+	bool saveError = false;
 	try
 	{
 		std::ofstream fileStream;
@@ -565,12 +570,15 @@ void Client::WriteFile(std::vector<char> fileData, std::string filename)
 			fileStream.write(&fileData[0], fileData.size());
 			fileStream.close();
 		}
+		else
+			saveError = true;
 	}
 	catch (std::exception & e)
 	{
 		std::cerr << "WriteFile:" << e.what() << std::endl;
-		throw;
-	}	
+		saveError = true;
+	}
+	return saveError;
 }
 
 std::vector<unsigned char> Client::ReadFile(std::string filename)
@@ -1265,7 +1273,6 @@ RequestBroker::Request * Client::GetUserInfoAsync(std::string username)
 LoginStatus Client::Login(std::string username, std::string password, User & user)
 {
 	lastError = "";
-	std::stringstream urlStream;
 	std::stringstream hashStream;
 	char passwordHash[33];
 	char totalHash[33];
@@ -1288,7 +1295,6 @@ LoginStatus Client::Login(std::string username, std::string password, User & use
 	char * postDatas[] = { (char*)username.c_str(), totalHash };
 	int postLengths[] = { username.length(), 32 };
 	data = http_multipart_post("http://" SERVER "/Login.json", postNames, postDatas, postLengths, NULL, NULL, NULL, &dataStatus, &dataLength);
-	//data = http_auth_get("http://" SERVER "/Login.json", (char*)username.c_str(), (char*)password.c_str(), NULL, &dataStatus, &dataLength);
 	if(dataStatus == 200 && data)
 	{
 		try
@@ -1338,7 +1344,7 @@ LoginStatus Client::Login(std::string username, std::string password, User & use
 		}
 		catch (json::Exception &e)
 		{
-			lastError = "Server responded with crap";
+			lastError = "Could not read response";
 			return LoginError;
 		}
 	}
@@ -1347,16 +1353,13 @@ LoginStatus Client::Login(std::string username, std::string password, User & use
 		lastError = http_ret_text(dataStatus);
 	}
 	if(data)
-	{
 		free(data);
-	}
 	return LoginError;
 }
 
 RequestStatus Client::DeleteSave(int saveID)
 {
 	lastError = "";
-	std::vector<std::string> * tags = NULL;
 	std::stringstream urlStream;
 	char * data = NULL;
 	int dataStatus, dataLength;
@@ -1408,11 +1411,10 @@ failure:
 RequestStatus Client::AddComment(int saveID, std::string comment)
 {
 	lastError = "";
-	std::vector<std::string> * tags = NULL;
 	std::stringstream urlStream;
 	char * data = NULL;
 	int dataStatus, dataLength;
-	urlStream << "http://" << SERVER << "/Browse/Comments.json?ID=" << saveID << "&Key=" << authUser.SessionKey;
+	urlStream << "http://" << SERVER << "/Browse/Comments.json?ID=" << saveID;
 	if(authUser.ID)
 	{
 		std::stringstream userIDStream;
@@ -1469,7 +1471,6 @@ failure:
 RequestStatus Client::FavouriteSave(int saveID, bool favourite)
 {
 	lastError = "";
-	std::vector<std::string> * tags = NULL;
 	std::stringstream urlStream;
 	char * data = NULL;
 	int dataStatus, dataLength;
@@ -1526,7 +1527,6 @@ failure:
 RequestStatus Client::ReportSave(int saveID, std::string message)
 {
 	lastError = "";
-	std::vector<std::string> * tags = NULL;
 	std::stringstream urlStream;
 	char * data = NULL;
 	int dataStatus, dataLength;
@@ -1585,7 +1585,6 @@ failure:
 RequestStatus Client::UnpublishSave(int saveID)
 {
 	lastError = "";
-	std::vector<std::string> * tags = NULL;
 	std::stringstream urlStream;
 	char * data = NULL;
 	int dataStatus, dataLength;

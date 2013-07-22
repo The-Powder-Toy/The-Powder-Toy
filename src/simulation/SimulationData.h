@@ -19,8 +19,6 @@
 #define SC_CRACKER2 16
 #define SC_TOTAL 15
 
-#define UI_WALLCOUNT 16
-
 #define O_WL_WALLELEC	122
 #define O_WL_EWALL		123
 #define O_WL_DETECT		124
@@ -40,7 +38,6 @@
 #define O_WL_GRAV		142
 #define O_WL_ALLOWENERGY 145
 
-
 #define WL_ERASE		0
 #define WL_WALLELEC		1
 #define WL_EWALL		2
@@ -58,6 +55,8 @@
 #define WL_GRAV			14
 #define WL_ALLOWENERGY	15
 #define WL_FLOODHELPER	255
+
+#define UI_WALLCOUNT 16
 
 #define OLD_SPC_AIR 236
 #define SPC_AIR 256
@@ -122,30 +121,21 @@
 #define NGT_FROG 22
 #define NGT_BRAN 23
 
-#ifndef SIMULATIONDATA_H_
-#define SIMULATIONDATA_H_
+//replace mode / specific delete flags
+#define REPLACE_MODE 0x1
+#define SPECIFIC_DELETE 0x2
 
-//#include "elements/NULLElement.h"
-//#include "Simulation.h"
-
-/*class Simulation;
-class Renderer;
-struct Particle;*/
+#ifndef SIMULATIONDATA_H
+#define SIMULATIONDATA_H
 
 struct part_type;
-
 struct part_transition;
 
 struct wall_type;
-
 struct gol_menu;
-
 struct menu_section;
 
-struct wall_type;
-
 class SimTool;
-
 class Element;
 
 gol_menu * LoadGOLMenu(int & golMenuCount);
@@ -160,4 +150,4 @@ menu_section * LoadMenus(int & menuCount);
 
 unsigned int * LoadLatent(int & elementCount);
 
-#endif /* SIMULATIONDATA_H_ */
+#endif /* SIMULATIONDATA_H */

@@ -81,7 +81,7 @@ int Element_PLNT::update(UPDATE_FUNC_ARGS)
 					}
 					break;
 				case PT_WOOD:
-					if (surround_space && !(rand()%4) && (abs(rx+ry)<=2) && (sim->VINE_MODE || parts[i].tmp==1))
+					if (surround_space && !(rand()%4) && (abs(rx+ry)<=2) && parts[i].tmp==1)
 					{
 						int nnx = rand()%3 -1;
 						int nny = rand()%3 -1;

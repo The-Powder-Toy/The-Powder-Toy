@@ -12,6 +12,8 @@ ScrollPanel::ScrollPanel(Point position, Point size):
 	xScrollVel(0.0f),
 	scrollBarWidth(0),
 	isMouseInsideScrollbar(false),
+	isMouseInsideScrollbarArea(false),
+	scrollbarClickLocation(0),
 	scrollbarSelected(false),
 	scrollbarInitialYOffset(0),
 	scrollbarInitialYClick(0)
@@ -21,16 +23,22 @@ ScrollPanel::ScrollPanel(Point position, Point size):
 
 int ScrollPanel::GetScrollLimit()
 {
-	if(ViewportPosition.Y == 0)
+	if (ViewportPosition.Y == 0)
 		return -1;
-	else if(maxOffset.Y == -ViewportPosition.Y)
+	else if (maxOffset.Y == -ViewportPosition.Y)
 		return 1;
 	return 0;
 }
 
+void ScrollPanel::SetScrollPosition(int position)
+{
+	offsetY = position;
+	ViewportPosition.Y = position;
+}
+
 void ScrollPanel::XOnMouseWheelInside(int localx, int localy, int d)
 {
-	if(!d)
+	if (!d)
 		return;
 	yScrollVel -= d*2;
 }
@@ -42,11 +50,11 @@ void ScrollPanel::Draw(const Point& screenPos)
 	Graphics * g = ui::Engine::Ref().g;
 
 	//Vertical scroll bar
-	if(maxOffset.Y>0 && InnerSize.Y>0)
+	if (maxOffset.Y>0 && InnerSize.Y>0)
 	{
 		float scrollHeight = float(Size.Y)*(float(Size.Y)/float(InnerSize.Y));
 		float scrollPos = 0;
-		if(-ViewportPosition.Y>0)
+		if (-ViewportPosition.Y>0)
 		{
 			scrollPos = float(Size.Y-scrollHeight)*(float(offsetY)/float(maxOffset.Y));
 		}
@@ -62,13 +70,16 @@ void ScrollPanel::XOnMouseClick(int x, int y, unsigned int button)
 	{
 		scrollbarSelected = true;
 		scrollbarInitialYOffset = offsetY;
-		scrollbarInitialYClick = y;
 	}
+	scrollbarInitialYClick = y;
+	scrollbarClickLocation = 100;
 }
 
 void ScrollPanel::XOnMouseUp(int x, int y, unsigned int button)
 {
 	scrollbarSelected = false;
+	isMouseInsideScrollbarArea = false;
+	scrollbarClickLocation = 0;
 }
 
 void ScrollPanel::XOnMouseMoved(int x, int y, int dx, int dy)
@@ -77,7 +88,7 @@ void ScrollPanel::XOnMouseMoved(int x, int y, int dx, int dy)
 	{
 		float scrollHeight = float(Size.Y)*(float(Size.Y)/float(InnerSize.Y));
 		float scrollPos = 0;
-		if(-ViewportPosition.Y>0)
+		if (-ViewportPosition.Y>0)
 		{
 			scrollPos = float(Size.Y-scrollHeight)*(float(offsetY)/float(maxOffset.Y));
 		}
@@ -97,8 +108,12 @@ void ScrollPanel::XOnMouseMoved(int x, int y, int dx, int dy)
 			}
 		}
 
-		if (x > (Size.X-scrollBarWidth) && x < (Size.X-scrollBarWidth)+scrollBarWidth && y > scrollPos && y < scrollPos+scrollHeight)
-			isMouseInsideScrollbar = true;
+		if (x > (Size.X-scrollBarWidth) && x < (Size.X-scrollBarWidth)+scrollBarWidth)
+		{
+			if (y > scrollPos && y < scrollPos+scrollHeight)
+				isMouseInsideScrollbar = true;
+			isMouseInsideScrollbarArea = true;
+		}
 		else
 			isMouseInsideScrollbar = false;
 	}
@@ -106,14 +121,12 @@ void ScrollPanel::XOnMouseMoved(int x, int y, int dx, int dy)
 
 void ScrollPanel::XTick(float dt)
 {
-	//if(yScrollVel > 7.0f) yScrollVel = 7.0f;
-	//if(yScrollVel < -7.0f) yScrollVel = -7.0f;
-	if(yScrollVel > -0.5f && yScrollVel < 0.5)
+	if (yScrollVel > -0.5f && yScrollVel < 0.5)
 		yScrollVel = 0;
 
-	if(xScrollVel > 7.0f) xScrollVel = 7.0f;
-	if(xScrollVel < -7.0f) xScrollVel = -7.0f;
-	if(xScrollVel > -0.5f && xScrollVel < 0.5)
+	if (xScrollVel > 7.0f) xScrollVel = 7.0f;
+	if (xScrollVel < -7.0f) xScrollVel = -7.0f;
+	if (xScrollVel > -0.5f && xScrollVel < 0.5)
 		xScrollVel = 0;
 
 	maxOffset = InnerSize-Size;
@@ -128,46 +141,55 @@ void ScrollPanel::XTick(float dt)
 	yScrollVel*=0.98f;
 	xScrollVel*=0.98f;
 
-	if(oldOffsetY!=int(offsetY))
+	if (oldOffsetY!=int(offsetY))
 	{
-		if(offsetY<0)
+		if (offsetY<0)
 		{
 			offsetY = 0;
 			yScrollVel = 0;
-			//commentsBegin = true;
-			//commentsEnd = false;
 		}
-		else if(offsetY>maxOffset.Y)
+		else if (offsetY>maxOffset.Y)
 		{
 			offsetY = maxOffset.Y;
 			yScrollVel = 0;
-			//commentsEnd = true;
-			//commentsBegin = false;
-		}
-		else
-		{
-			//commentsEnd = false;
-			//commentsBegin = false;
 		}
 		ViewportPosition.Y = -offsetY;
 	}
 	else
 	{
-		if(offsetY<0)
+		if (offsetY<0)
 		{
 			offsetY = 0;
 			yScrollVel = 0;
 			ViewportPosition.Y = -offsetY;
 		}
-		else if(offsetY>maxOffset.Y)
+		else if (offsetY>maxOffset.Y)
 		{
 			offsetY = maxOffset.Y;
 			ViewportPosition.Y = -offsetY;
 		}
 	}
 
-	if(mouseInside && scrollBarWidth < 6)
+	if (mouseInside && scrollBarWidth < 6)
 		scrollBarWidth++;
-	else if(!mouseInside && scrollBarWidth > 0 && !scrollbarSelected)
+	else if (!mouseInside && scrollBarWidth > 0 && !scrollbarSelected)
 		scrollBarWidth--;
+
+	if (isMouseInsideScrollbarArea && scrollbarClickLocation && !scrollbarSelected)
+	{
+		float scrollHeight = float(Size.Y)*(float(Size.Y)/float(InnerSize.Y));
+		float scrollPos = 0;
+		if (-ViewportPosition.Y > 0)
+			scrollPos = float(Size.Y-scrollHeight)*(float(offsetY)/float(maxOffset.Y));
+
+		if (scrollbarInitialYClick <= scrollPos)
+			scrollbarClickLocation = -1;
+		else if (scrollbarInitialYClick >= scrollPos+scrollHeight)
+			scrollbarClickLocation = 1;
+		else
+			scrollbarClickLocation = 0;
+
+		offsetY += scrollbarClickLocation*scrollHeight/10;
+		ViewportPosition.Y -= scrollbarClickLocation*scrollHeight/10;
+	}
 }

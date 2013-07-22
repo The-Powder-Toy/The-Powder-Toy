@@ -128,7 +128,7 @@ void SearchController::PrevPage()
 
 void SearchController::NextPage()
 {
-	if(searchModel->GetPageNum() <= searchModel->GetPageCount())
+	if(searchModel->GetPageNum() < searchModel->GetPageCount())
 		searchModel->UpdateSaveList(searchModel->GetPageNum()+1, searchModel->GetLastQuery());
 }
 
@@ -222,6 +222,7 @@ void SearchController::RemoveSelected()
 	desc << "Are you sure you want to delete " << searchModel->GetSelected().size() << " save";
 	if(searchModel->GetSelected().size()>1)
 		desc << "s";
+	desc << "?";
 	new ConfirmPrompt("Delete saves", desc.str(), new RemoveSelectedConfirmation(this));
 }
 
@@ -274,6 +275,7 @@ void SearchController::UnpublishSelected()
 	desc << "Are you sure you want to hide " << searchModel->GetSelected().size() << " save";
 	if(searchModel->GetSelected().size()>1)
 		desc << "s";
+	desc << "?";
 	new ConfirmPrompt("Unpublish saves", desc.str(), new UnpublishSelectedConfirmation(this));
 }
 
@@ -289,13 +291,14 @@ void SearchController::unpublishSelectedC()
 			for(int i = 0; i < saves.size(); i++)
 			{
 				std::stringstream saveID;
-				saveID << "Hiding save [" << saves[i] << "] ...";
+				saveID << "Hiding save [" << saves[i] << "]";
  				notifyStatus(saveID.str());
  				if(Client::Ref().UnpublishSave(saves[i])!=RequestOkay)
 				{
  					std::stringstream saveIDF;
- 					saveIDF << "\boFailed to hide [" << saves[i] << "] ...";
-					notifyStatus(saveIDF.str());
+					saveIDF << "\boFailed to hide [" << saves[i] << "], is this save yours?";
+					notifyError(saveIDF.str());
+					return false;
 				}
 				notifyProgress((float(i+1)/float(saves.size())*100));
 			}
@@ -321,13 +324,14 @@ void SearchController::FavouriteSelected()
 			for(int i = 0; i < saves.size(); i++)
 			{
 				std::stringstream saveID;
-				saveID << "Favouring save [" << saves[i] << "] ...";
+				saveID << "Favouring save [" << saves[i] << "]";
 				notifyStatus(saveID.str());
 				if(Client::Ref().FavouriteSave(saves[i], true)!=RequestOkay)
 				{
 					std::stringstream saveIDF;
-					saveIDF << "\boFailed to favourite [" << saves[i] << "] ...";
-					notifyStatus(saveIDF.str());
+					saveIDF << "\boFailed to favourite [" << saves[i] << "], are you logged in?";
+					notifyError(saveIDF.str());
+					return false;
 				}
 				notifyProgress((float(i+1)/float(saves.size())*100));
 			}
@@ -345,13 +349,14 @@ void SearchController::FavouriteSelected()
 			for(int i = 0; i < saves.size(); i++)
 			{
 				std::stringstream saveID;
-				saveID << "Unfavouring save [" << saves[i] << "] ...";
+				saveID << "Unfavouring save [" << saves[i] << "]";
 				notifyStatus(saveID.str());
 				if(Client::Ref().FavouriteSave(saves[i], false)!=RequestOkay)
 				{
 					std::stringstream saveIDF;
-					saveIDF << "\boFailed to remove [" << saves[i] << "] ...";
-					notifyStatus(saveIDF.str());
+					saveIDF << "\boFailed to unfavourite [" << saves[i] << "], are you logged in?";
+					notifyError(saveIDF.str());
+					return false;
 				}
 				notifyProgress((float(i+1)/float(saves.size())*100));
 			}

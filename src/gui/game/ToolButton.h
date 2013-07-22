@@ -3,7 +3,8 @@
 
 #include "gui/interface/Button.h"
 
-class ToolButton: public ui::Button {
+class ToolButton: public ui::Button
+{
 	int currentSelection;
 public:
 	ToolButton(ui::Point position, ui::Point size, std::string text_, std::string toolTip = "");

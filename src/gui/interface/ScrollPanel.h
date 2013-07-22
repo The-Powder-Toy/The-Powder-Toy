@@ -14,13 +14,16 @@ namespace ui
 		float yScrollVel;
 		float xScrollVel;
 		bool isMouseInsideScrollbar;
+		bool isMouseInsideScrollbarArea;
 		bool scrollbarSelected;
 		int scrollbarInitialYOffset;
 		int scrollbarInitialYClick;
+		int scrollbarClickLocation;
 	public:
 		ScrollPanel(Point position, Point size);
 
 		int GetScrollLimit();
+		void SetScrollPosition(int position);
 
 		virtual void Draw(const Point& screenPos);
 		virtual void XTick(float dt);

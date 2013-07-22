@@ -9,6 +9,7 @@
 #include "client/Client.h"
 #include "client/GameSave.h"
 #include "gui/Style.h"
+#include "images.h"
 
 class LocalSaveActivity::CancelAction: public ui::ButtonAction
 {
@@ -81,7 +82,6 @@ void LocalSaveActivity::Save()
 			if (result == ConfirmPrompt::ResultOkay)
 			{
 				a->saveWrite(filename);
-				a->Exit();
 			}
 		}
 		virtual ~FileOverwriteConfirmation() { }
@@ -99,7 +99,6 @@ void LocalSaveActivity::Save()
 		else
 		{
 			saveWrite(finalFilename);
-			Exit();
 		}
 	}
 	else
@@ -111,13 +110,19 @@ void LocalSaveActivity::Save()
 void LocalSaveActivity::saveWrite(std::string finalFilename)
 {
 	Client::Ref().MakeDirectory(LOCAL_SAVE_DIR);
-	Client::Ref().WriteFile(save.GetGameSave()->Serialise(), finalFilename);
-	callback->FileSaved(&save);
+	if (Client::Ref().WriteFile(save.GetGameSave()->Serialise(), finalFilename))
+		new ErrorMessage("Error", "Unable to write save file.");
+	else
+	{
+		callback->FileSaved(&save);
+		Exit();
+	}
 }
 
 void LocalSaveActivity::OnDraw()
 {
 	Graphics * g = ui::Engine::Ref().g;
+	g->draw_rgba_image((unsigned char*)save_to_disk_image, 0, 0, 0.7f);
 	g->clearrect(Position.X-2, Position.Y-2, Size.X+3, Size.Y+3);
 	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 255, 255, 255, 255);
 

@@ -30,6 +30,7 @@ TagsView::TagsView():
 	closeButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	closeButton->SetActionCallback(new CloseAction(this));
 	AddComponent(closeButton);
+	SetCancelButton(closeButton);
 
 
 	tagInput = new ui::Textbox(ui::Point(8, Size.Y-40), ui::Point(Size.X-60, 16), "", "[new tag]");
@@ -55,9 +56,13 @@ TagsView::TagsView():
 	addButton->SetActionCallback(new AddTagAction(this));
 	AddComponent(addButton);
 
-	title = new ui::Label(ui::Point(5, 5), ui::Point(185, 16), "Manage tags:");
+	if (!Client::Ref().GetAuthUser().ID)
+		addButton->Enabled = false;
+
+	title = new ui::Label(ui::Point(5, 5), ui::Point(185, 28), "Manage tags:    \bgTags are only to \nbe used to improve search results");
 	title->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	title->Appearance.VerticalAlign = ui::Appearance::AlignTop;
+	title->SetMultiline(true);
 	AddComponent(title);
 }
 

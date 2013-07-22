@@ -46,7 +46,7 @@ class TPTScriptInterface;
 class LuaScriptInterface: public CommandInterface
 {
 	int luacon_mousex, luacon_mousey, luacon_mousebutton, luacon_brushx, luacon_brushy;
-	std::string luacon_selectedl, luacon_selectedr, luacon_selectedalt;
+	std::string luacon_selectedl, luacon_selectedr, luacon_selectedalt, luacon_selectedreplace;
 	bool luacon_mousedown;
 	bool currentCommand;
 	TPTScriptInterface * legacy;

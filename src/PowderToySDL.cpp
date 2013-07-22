@@ -5,7 +5,7 @@
 #include <time.h>
 #include "SDL.h"
 #ifdef WIN
-#define _WIN32_WINNT 0x0501	//Necessary for some macros and functions
+#define _WIN32_WINNT 0x0501	//Necessary for some macros and functions, tells windows.h to include functions only available in Windows XP or later
 #include "SDL_syswm.h"
 #include <direct.h>
 #endif
@@ -422,6 +422,7 @@ void EngineProcess()
 				break;
 #ifdef OGLI
 			case SDL_VIDEORESIZE:
+			{
 				float ratio = float(XRES+BARSIZE) / float(YRES+MENUSIZE);
 				float width = event.resize.w;
 				float height = width/ratio;
@@ -442,6 +443,7 @@ void EngineProcess()
 					std::cerr << "Oh bugger" << std::endl;
 				}
 				break;
+			}
 #endif
 #if defined (USE_SDL) && defined(LIN) && defined(SDL_VIDEO_DRIVER_X11)
 			case SDL_SYSWMEVENT:
@@ -779,7 +781,7 @@ int main(int argc, char * argv[])
 	engine->Begin(XRES+BARSIZE, YRES+MENUSIZE);
 	engine->SetFastQuit(Client::Ref().GetPrefBool("FastQuit", true));
 
-#ifndef DEBUG
+#if !defined(DEBUG) && !defined(_DEBUG)
 	//Get ready to catch any dodgy errors
 	//signal(SIGSEGV, SigHandler);
 	signal(SIGFPE, SigHandler);

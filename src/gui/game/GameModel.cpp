@@ -39,8 +39,8 @@ GameModel::GameModel():
 
 	activeTools = regularToolset;
 
-	std::fill(decoToolset, decoToolset+3, (Tool*)NULL);
-	std::fill(regularToolset, regularToolset+3, (Tool*)NULL);
+	std::fill(decoToolset, decoToolset+4, (Tool*)NULL);
+	std::fill(regularToolset, regularToolset+4, (Tool*)NULL);
 
 	//Default render prefs
 	std::vector<unsigned int> tempArray;
@@ -83,6 +83,11 @@ GameModel::GameModel():
 	//Load config into simulation
 	edgeMode = Client::Ref().GetPrefInteger("Simulation.EdgeMode", 0);
 	sim->SetEdgeMode(edgeMode);
+	int ngrav_enable = Client::Ref().GetPrefInteger("Simulation.NewtonianGravity", 0);
+	if (ngrav_enable)
+		sim->grav->start_grav_async();
+	sim->aheat_enable =  Client::Ref().GetPrefInteger("Simulation.AmbientHeat", 0);
+	sim->pretty_powder =  Client::Ref().GetPrefInteger("Simulation.PrettyPowder", 0);
 
 	//Load last user
 	if(Client::Ref().GetAuthUser().ID)
@@ -140,6 +145,7 @@ GameModel::GameModel():
 	colourPresets.push_back(ui::Colour(255, 0, 0));
 	colourPresets.push_back(ui::Colour(0, 255, 0));
 	colourPresets.push_back(ui::Colour(0, 0, 255));
+	colourPresets.push_back(ui::Colour(0, 0, 0));
 }
 
 GameModel::~GameModel()
@@ -155,8 +161,12 @@ GameModel::~GameModel()
 
 	Client::Ref().SetPref("Renderer.GravityField", (bool)ren->gravityFieldEnabled);
 	Client::Ref().SetPref("Renderer.Decorations", (bool)ren->decorations_enable);
+	Client::Ref().SetPref("Renderer.DebugMode", ren->debugLines); //These two should always be equivalent, even though they are different things
 
 	Client::Ref().SetPref("Simulation.EdgeMode", sim->edgeMode);
+	Client::Ref().SetPref("Simulation.NewtonianGravity", sim->grav->ngrav_enable);
+	Client::Ref().SetPref("Simulation.AmbientHeat", sim->aheat_enable);
+	Client::Ref().SetPref("Simulation.PrettyPowder", sim->pretty_powder);
 
 	Client::Ref().SetPref("Decoration.Red", (int)colour.Red);
 	Client::Ref().SetPref("Decoration.Green", (int)colour.Green);
@@ -225,13 +235,15 @@ void GameModel::BuildMenus()
 	if(activeMenu != -1)
 		lastMenu = activeMenu;
 
-	std::string activeToolIdentifiers[3];
+	std::string activeToolIdentifiers[4];
 	if(regularToolset[0])
 		activeToolIdentifiers[0] = regularToolset[0]->GetIdentifier();
 	if(regularToolset[1])
 		activeToolIdentifiers[1] = regularToolset[1]->GetIdentifier();
 	if(regularToolset[2])
 		activeToolIdentifiers[2] = regularToolset[2]->GetIdentifier();
+	if(regularToolset[3])
+		activeToolIdentifiers[3] = regularToolset[3]->GetIdentifier();
 
 	//Empty current menus
 	for(std::vector<Menu*>::iterator iter = menuList.begin(), end = menuList.end(); iter != end; ++iter)
@@ -312,27 +324,29 @@ void GameModel::BuildMenus()
 		menuList[SC_TOOL]->AddTool(tempTool);
 	}
 	//Add special sign and prop tools
-	menuList[SC_TOOL]->AddTool(new WindTool(0, "WIND", "Create air movement.", 64, 64, 64, "DEFAULT_UI_WIND"));
+	menuList[SC_TOOL]->AddTool(new WindTool(0, "WIND", "Creates air movement.", 64, 64, 64, "DEFAULT_UI_WIND"));
 	menuList[SC_TOOL]->AddTool(new PropertyTool());
 	menuList[SC_TOOL]->AddTool(new SignTool());
 	menuList[SC_TOOL]->AddTool(new SampleTool(this));
 
 	//Add decoration tools to menu
-	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::BlendAdd, "ADD", "Colour blending: Add", 0, 0, 0, "DEFAULT_DECOR_ADD"));
-	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::BlendRemove, "SUB", "Colour blending: Subtract", 0, 0, 0, "DEFAULT_DECOR_SUB"));
-	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::BlendMultiply, "MUL", "Colour blending: Multiply", 0, 0, 0, "DEFAULT_DECOR_MUL"));
-	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::BlendDivide, "DIV", "Colour blending: Divide" , 0, 0, 0, "DEFAULT_DECOR_DIV"));
-	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::BlendSmudge, "SMDG", "Smudge colour", 0, 0, 0, "DEFAULT_DECOR_SMDG"));
-	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::BlendSet, "SET", "Set colour (No blending)", 0, 0, 0, "DEFAULT_DECOR_SET"));
-	menuList[SC_DECO]->AddTool(new DecorationTool(DecorationTool::Remove, "CLR", "Clear any set decoration", 0, 0, 0, "DEFAULT_DECOR_CLR"));
+	menuList[SC_DECO]->AddTool(new DecorationTool(DECO_ADD, "ADD", "Colour blending: Add.", 0, 0, 0, "DEFAULT_DECOR_ADD"));
+	menuList[SC_DECO]->AddTool(new DecorationTool(DECO_SUBTRACT, "SUB", "Colour blending: Subtract.", 0, 0, 0, "DEFAULT_DECOR_SUB"));
+	menuList[SC_DECO]->AddTool(new DecorationTool(DECO_MULTIPLY, "MUL", "Colour blending: Multiply.", 0, 0, 0, "DEFAULT_DECOR_MUL"));
+	menuList[SC_DECO]->AddTool(new DecorationTool(DECO_DIVIDE, "DIV", "Colour blending: Divide." , 0, 0, 0, "DEFAULT_DECOR_DIV"));
+	menuList[SC_DECO]->AddTool(new DecorationTool(DECO_SMUDGE, "SMDG", "Smudge tool, blends surrounding deco together.", 0, 0, 0, "DEFAULT_DECOR_SMDG"));
+	menuList[SC_DECO]->AddTool(new DecorationTool(DECO_CLEAR, "CLR", "Erase any set decoration.", 0, 0, 0, "DEFAULT_DECOR_CLR"));
+	menuList[SC_DECO]->AddTool(new DecorationTool(DECO_DRAW, "SET", "Draw decoration (No blending).", 0, 0, 0, "DEFAULT_DECOR_SET"));
 	decoToolset[0] = GetToolFromIdentifier("DEFAULT_DECOR_SET");
 	decoToolset[1] = GetToolFromIdentifier("DEFAULT_DECOR_CLR");
 	decoToolset[2] = GetToolFromIdentifier("DEFAULT_UI_SAMPLE");
+	decoToolset[3] = GetToolFromIdentifier("DEFAULT_PT_NONE");
 
 	//Set default tools
 	regularToolset[0] = GetToolFromIdentifier("DEFAULT_PT_DUST");
 	regularToolset[1] = GetToolFromIdentifier("DEFAULT_PT_NONE");
 	regularToolset[2] = GetToolFromIdentifier("DEFAULT_UI_SAMPLE");
+	regularToolset[3] = GetToolFromIdentifier("DEFAULT_PT_NONE");
 
 
 	if(activeToolIdentifiers[0].length())
@@ -341,6 +355,8 @@ void GameModel::BuildMenus()
 		regularToolset[1] = GetToolFromIdentifier(activeToolIdentifiers[1]);
 	if(activeToolIdentifiers[2].length())
 		regularToolset[2] = GetToolFromIdentifier(activeToolIdentifiers[2]);
+	if(activeToolIdentifiers[3].length())
+		regularToolset[3] = GetToolFromIdentifier(activeToolIdentifiers[3]);
 
 	lastTool = activeTools[0];
 
@@ -566,6 +582,7 @@ void GameModel::SetSave(SaveInfo * newSave)
 		sim->air->airMode = saveData->airMode;
 		sim->legacy_enable = saveData->legacyEnable;
 		sim->water_equal_test = saveData->waterEEnabled;
+		sim->aheat_enable = saveData->aheatEnable;
 		if(saveData->gravityEnable)
 			sim->grav->start_grav_async();
 		else
@@ -607,6 +624,7 @@ void GameModel::SetSaveFile(SaveFile * newSave)
 		sim->air->airMode = saveData->airMode;
 		sim->legacy_enable = saveData->legacyEnable;
 		sim->water_equal_test = saveData->waterEEnabled;
+		sim->aheat_enable = saveData->aheatEnable;
 		if(saveData->gravityEnable && !sim->grav->ngrav_enable)
 		{
 			sim->grav->start_grav_async();
@@ -711,7 +729,13 @@ int GameModel::GetZoomFactor()
 
 void GameModel::SetActiveColourPreset(int preset)
 {
-	activeColourPreset = preset;
+	if (activeColourPreset != preset)
+		activeColourPreset = preset;
+	else
+	{
+		activeTools[0] = GetToolFromIdentifier("DEFAULT_DECOR_SET");
+		notifyActiveToolsChanged();
+	}
 	notifyColourActivePresetChanged();
 }
 
@@ -751,7 +775,6 @@ bool GameModel::GetColourSelectorVisibility()
 void GameModel::SetColourSelectorColour(ui::Colour colour_)
 {
 	colour = colour_;
-	notifyColourSelectorColourChanged();
 
 	vector<Tool*> tools = GetMenuList()[SC_DECO]->GetToolList();
 	for(int i = 0; i < tools.size(); i++)
@@ -761,6 +784,8 @@ void GameModel::SetColourSelectorColour(ui::Colour colour_)
 		((DecorationTool*)tools[i])->Blue = colour.Blue;
 		((DecorationTool*)tools[i])->Alpha = colour.Alpha;
 	}
+
+	notifyColourSelectorColourChanged();
 }
 
 ui::Colour GameModel::GetColourSelectorColour()
@@ -788,13 +813,16 @@ bool GameModel::GetPaused()
 
 void GameModel::SetDecoration(bool decorationState)
 {
-	ren->decorations_enable = decorationState?1:0;
-	notifyDecorationChanged();
-	UpdateQuickOptions();
-	if (decorationState)
-		SetInfoTip("Decorations Layer: On");
-	else
-		SetInfoTip("Decorations Layer: Off");
+	if (ren->decorations_enable != decorationState)
+	{
+		ren->decorations_enable = decorationState?1:0;
+		notifyDecorationChanged();
+		UpdateQuickOptions();
+		if (decorationState)
+			SetInfoTip("Decorations Layer: On");
+		else
+			SetInfoTip("Decorations Layer: Off");
+	}
 }
 
 bool GameModel::GetDecoration()

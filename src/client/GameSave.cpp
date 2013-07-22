@@ -20,6 +20,7 @@ legacyEnable(save.legacyEnable),
 gravityEnable(save.gravityEnable),
 paused(save.paused),
 gravityMode(save.gravityMode),
+aheatEnable(save.aheatEnable),
 airMode(save.airMode),
 signs(save.signs),
 expanded(save.expanded),
@@ -171,10 +172,11 @@ void GameSave::Expand()
 {
 	if(hasOriginalData && !expanded)
 	{
-		waterEEnabled = 0;
-		legacyEnable = 0;
-		gravityEnable = 0;
-		paused = 0;
+		waterEEnabled = false;
+		legacyEnable = false;
+		gravityEnable = false;
+		aheatEnable = false;
+		paused = false;
 		gravityMode = 0;
 		airMode = 0;
 		expanded = true;
@@ -432,7 +434,7 @@ void GameSave::readOPS(char * data, int dataLength)
 	unsigned char * inputData = (unsigned char*)data, *bsonData = NULL, *partsData = NULL, *partsPosData = NULL, *fanData = NULL, *wallData = NULL, *soapLinkData = NULL;
 	unsigned int inputDataLen = dataLength, bsonDataLen = 0, partsDataLen, partsPosDataLen, fanDataLen, wallDataLen, soapLinkDataLen;
 	unsigned partsCount = 0, *partsSimIndex = NULL;
-	int i, freeIndicesCount, x, y, j;
+	int i, x, y, j;
 	int *freeIndices = NULL;
 	int blockX, blockY, blockW, blockH, fullX, fullY, fullW, fullH;
 	int savedVersion = inputData[4];
@@ -612,6 +614,17 @@ void GameSave::readOPS(char * data, int dataLength)
 			if(bson_iterator_type(&iter)==BSON_BOOL)
 			{
 				gravityEnable = bson_iterator_bool(&iter);
+			}
+			else
+			{
+				fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
+			}
+		}
+		else if(!strcmp(bson_iterator_key(&iter), "aheat_enable"))
+		{
+			if(bson_iterator_type(&iter)==BSON_BOOL)
+			{
+				aheatEnable = bson_iterator_bool(&iter);
 			}
 			else
 			{
@@ -1962,8 +1975,8 @@ char * GameSave::serialiseOPS(int & dataLength)
 	bson_append_start_object(&b, "origin");
 	bson_append_int(&b, "majorVersion", SAVE_VERSION);
 	bson_append_int(&b, "minorVersion", MINOR_VERSION);
-	bson_append_int(&b, "buildNum", MINOR_VERSION);
-	bson_append_int(&b, "snapshotId", MINOR_VERSION);
+	bson_append_int(&b, "buildNum", BUILD_NUM);
+	bson_append_int(&b, "snapshotId", SNAPSHOT_ID);
 	bson_append_string(&b, "releaseType", IDENT_RELTYPE);
 	bson_append_string(&b, "platform", IDENT_PLATFORM);
 	bson_append_string(&b, "builtType", IDENT_BUILD);
@@ -1973,6 +1986,7 @@ char * GameSave::serialiseOPS(int & dataLength)
 	bson_append_bool(&b, "waterEEnabled", waterEEnabled);
 	bson_append_bool(&b, "legacyEnable", legacyEnable);
 	bson_append_bool(&b, "gravityEnable", gravityEnable);
+	bson_append_bool(&b, "aheat_enable", aheatEnable);
 	bson_append_bool(&b, "paused", paused);
 	bson_append_int(&b, "gravityMode", gravityMode);
 	bson_append_int(&b, "airMode", airMode);

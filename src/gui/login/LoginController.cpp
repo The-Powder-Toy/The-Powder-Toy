@@ -31,12 +31,9 @@ void LoginController::Exit()
 	{
 		ui::Engine::Ref().CloseWindow();
 	}
+	Client::Ref().SetAuthUser(loginModel->GetUser());
 	if(callback)
 		callback->ControllerExit();
-	else
-	{
-		Client::Ref().SetAuthUser(loginModel->GetUser());
-	}
 	HasExited = true;
 }
 

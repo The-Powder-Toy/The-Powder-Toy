@@ -50,6 +50,7 @@ void LocalBrowserController::RemoveSelected()
 	desc << "Are you sure you want to delete " << browserModel->GetSelected().size() << " stamp";
 	if(browserModel->GetSelected().size()>1)
 		desc << "s";
+	desc << "?";
 	new ConfirmPrompt("Delete stamps", desc.str(), new RemoveSelectedConfirmation(this));
 }
 
