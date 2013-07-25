@@ -139,13 +139,16 @@ void PreviewModel::UpdateSave(int saveID, int saveDate)
 		pthread_create(&updateSaveInfoThread, 0, &PreviewModel::updateSaveInfoT, updateSaveInfoInfo);
 	}
 
-	if (!updateSaveCommentsInfo)
-		updateSaveCommentsInfo = new threadInfo(saveID, commentsPageNumber);
-	if (updateSaveCommentsInfo->threadFinished)
+	if (!GetDoOpen())
 	{
-		commentsLoaded = false;
-		updateSaveCommentsInfo->threadFinished = false;
-		pthread_create(&updateSaveCommentsThread, 0, &PreviewModel::updateSaveCommentsT, updateSaveCommentsInfo);
+		if (!updateSaveCommentsInfo)
+			updateSaveCommentsInfo = new threadInfo(saveID, commentsPageNumber);
+		if (updateSaveCommentsInfo->threadFinished)
+		{
+			commentsLoaded = false;
+			updateSaveCommentsInfo->threadFinished = false;
+			pthread_create(&updateSaveCommentsThread, 0, &PreviewModel::updateSaveCommentsT, updateSaveCommentsInfo);
+		}
 	}
 }
 

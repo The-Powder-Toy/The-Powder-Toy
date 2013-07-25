@@ -712,7 +712,9 @@ void SearchView::OnMouseWheel(int x, int y, int d)
 }
 void SearchView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
-	if(key==KEY_ESCAPE)
+	if (key == KEY_ESCAPE)
 		c->Exit();
+	if (ctrl)
+		c->InstantOpen(ctrl);
 }
 

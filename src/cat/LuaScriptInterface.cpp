@@ -1378,8 +1378,9 @@ int LuaScriptInterface::simulation_loadStamp(lua_State * l)
 int LuaScriptInterface::simulation_loadSave(lua_State * l)
 {
 	int saveID = luaL_optint(l,1,0);
-	int history = luaL_optint(l,2,0); //Exact second a previous save was saved
-	luacon_controller->OpenSavePreview(saveID, history);
+	int instant = luaL_optint(l,2,0);
+	int history = luaL_optint(l,3,0); //Exact second a previous save was saved
+	luacon_controller->OpenSavePreview(saveID, history, instant?true:false);
 	return 0;
 }
 

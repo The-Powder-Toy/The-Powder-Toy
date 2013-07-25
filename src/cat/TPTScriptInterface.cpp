@@ -426,7 +426,7 @@ AnyType TPTScriptInterface::tptS_load(std::deque<std::string> * words)
 	//Arguments from stack
 	NumberType saveID = eval(words);
 
-	c->OpenSavePreview(saveID.Value(), 0);
+	c->OpenSavePreview(saveID.Value(), 0, false);
 
 	return NumberType(0);
 }

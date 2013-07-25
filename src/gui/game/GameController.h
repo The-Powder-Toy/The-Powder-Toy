@@ -113,7 +113,7 @@ public:
 	void OpenLogin();
 	void OpenProfile();
 	void OpenTags();
-	void OpenSavePreview(int saveID, int saveDate);
+	void OpenSavePreview(int saveID, int saveDate, bool instant);
 	void OpenSavePreview();
 	void OpenLocalSaveWindow(bool asCurrent);
 	void OpenLocalBrowse();

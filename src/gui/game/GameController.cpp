@@ -588,7 +588,7 @@ bool GameController::MouseUp(int x, int y, unsigned button)
 						if (tempSaveID)
 						{
 							if ((*iter).text.c_str()[1] == 'c')
-								OpenSavePreview(tempSaveID, 0);
+								OpenSavePreview(tempSaveID, 0, false);
 							else if ((*iter).text.c_str()[1] == 't')
 							{
 								char url[256];
@@ -1096,9 +1096,9 @@ void GameController::LoadSave(SaveInfo * save)
 	gameModel->SetSave(save);
 }
 
-void GameController::OpenSavePreview(int saveID, int saveDate)
+void GameController::OpenSavePreview(int saveID, int saveDate, bool instant)
 {
-	activePreview = new PreviewController(saveID, saveDate, new SaveOpenCallback(this));
+	activePreview = new PreviewController(saveID, saveDate, instant, new SaveOpenCallback(this));
 	ui::Engine::Ref().ShowWindow(activePreview->GetView());
 }
 
@@ -1106,7 +1106,7 @@ void GameController::OpenSavePreview()
 {
 	if(gameModel->GetSave())
 	{
-		activePreview = new PreviewController(gameModel->GetSave()->GetID(), new SaveOpenCallback(this));
+		activePreview = new PreviewController(gameModel->GetSave()->GetID(), false, new SaveOpenCallback(this));
 		ui::Engine::Ref().ShowWindow(activePreview->GetView());
 	}
 }
