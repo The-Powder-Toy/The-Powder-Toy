@@ -347,7 +347,7 @@ void Simulation::clear_area(int area_x, int area_y, int area_w, int area_h)
 			delete_part(cx+area_x, cy+area_y);
 		}
 	}
-	for(int i = 0; i < MAXSIGNS && i < signs.size(); i++)
+	for(int i = signs.size()-1; i >= 0; i--)
 	{
 		if(signs[i].text.length() && signs[i].x >= area_x && signs[i].y >= area_y && signs[i].x <= area_x+area_w && signs[i].y <= area_y+area_h)
 		{
