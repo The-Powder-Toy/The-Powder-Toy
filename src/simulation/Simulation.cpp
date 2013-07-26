@@ -28,7 +28,6 @@
 #include "cat/LuaScriptInterface.h"
 #include "cat/LuaScriptHelper.h"
 #endif
-#include "SDL/SDL.h"
 
 int Simulation::Load(GameSave * save)
 {
@@ -4639,9 +4638,9 @@ void Simulation::update_particles()//doesn't update the particles themselves, bu
 	sandcolour = (int)(20.0f*sin((float)sandcolour_frame*(M_PI/180.0f)));
 	sandcolour_frame = (sandcolour_frame++)%360;
 
-	if (lastPartUsed > 10000)
+	//TODO: decide whether or not to even do this. If yes, fix SOAP and add lua functions to stop it so that particle tracking can work.
+	/*if (lastPartUsed > 10000)
 	{
-		int timer = SDL_GetTicks();
 		float ratio = (float)NUM_PARTS/(float)lastPartUsed;
 		if (ratio < .8f)
 		{
@@ -4661,10 +4660,8 @@ void Simulation::update_particles()//doesn't update the particles themselves, bu
 			parts[NPART].life = -1;
 			parts_lastActiveIndex = nindex-1;
 			pfree = nindex;
-			printf("reorganize:%i\n", SDL_GetTicks()-timer);
 		}
-	}
-	int timer = SDL_GetTicks();
+	}*/
 
 	memset(pmap, 0, sizeof(pmap));
 	memset(pmap_count, 0, sizeof(pmap_count));
@@ -4730,7 +4727,6 @@ void Simulation::update_particles()//doesn't update the particles themselves, bu
 	if(!sys_pause||framerender)
 		update_particles_i(0, 1);
 
-	printf("update:%i\n", SDL_GetTicks()-timer);
 	if(framerender)
 		framerender--;
 }
