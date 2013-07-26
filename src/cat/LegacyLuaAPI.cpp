@@ -1871,7 +1871,7 @@ int luatpt_heat(lua_State* l)
 	heatstate = luaL_optint(l, 1, -1);
 	if (heatstate == -1)
 	{
-		lua_pushinteger(l, luacon_sim->legacy_enable);
+		lua_pushinteger(l, !luacon_sim->legacy_enable);
 		return 1;
 	}
 	luacon_sim->legacy_enable = (heatstate==1?0:1);
