@@ -4723,7 +4723,7 @@ void Simulation::update_particles()//doesn't update the particles themselves, bu
 			parts[i].type=0;
 			parts[i].life = i+1;
         }    
-        parts_lastActiveIndex = nindex;
+        parts_lastActiveIndex = nindex-1;
 		pfree = nindex;
     }
 
