@@ -57,6 +57,7 @@ public:
 	int pfree;
 	int NUM_PARTS;
 	bool elementRecount;
+	int lastPartUsed;
 	int elementCount[PT_NUM];
 	int ISWIRE;
 	int force_stacking_check;

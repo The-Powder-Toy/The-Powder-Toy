@@ -28,6 +28,7 @@
 #include "cat/LuaScriptInterface.h"
 #include "cat/LuaScriptHelper.h"
 #endif
+#include "SDL/SDL.h"
 
 int Simulation::Load(GameSave * save)
 {
@@ -1876,6 +1877,7 @@ void Simulation::clear_sim(void)
 	parts[NPART-1].life = -1;
 	pfree = 0;
 	parts_lastActiveIndex = 0;
+	lastPartUsed = 0;
 	memset(pmap, 0, sizeof(pmap));
 	if(fvx)
 		memset(fvx, 0, sizeof(fvx));
@@ -4601,7 +4603,6 @@ int Simulation::GetParticleType(std::string type)
 void Simulation::update_particles()//doesn't update the particles themselves, but some other things
 {
 	int i, x, y, t;
-	int lastPartUsed = 0;
 	int lastPartUnused = -1;
 #ifdef MT
 	int pt = 0, pc = 0;
@@ -4637,6 +4638,33 @@ void Simulation::update_particles()//doesn't update the particles themselves, bu
 	}
 	sandcolour = (int)(20.0f*sin((float)sandcolour_frame*(M_PI/180.0f)));
 	sandcolour_frame = (sandcolour_frame++)%360;
+
+	if (lastPartUsed > 10000)
+	{
+		int timer = SDL_GetTicks();
+		float ratio = (float)NUM_PARTS/(float)lastPartUsed;
+		if (ratio < .8f)
+		{
+			int nindex = 0;
+			for (int i = 0; i <= lastPartUsed; i++)
+			{
+				if (parts[i].type)
+				{
+					parts[nindex++] = parts[i];
+				}
+			}
+			for (int i = nindex; i < NPART; i++)
+			{
+				parts[i].type = 0;
+				parts[i].life = i+1;
+			}
+			parts[NPART].life = -1;
+			parts_lastActiveIndex = nindex-1;
+			pfree = nindex;
+			printf("reorganize:%i\n", SDL_GetTicks()-timer);
+		}
+	}
+	int timer = SDL_GetTicks();
 
 	memset(pmap, 0, sizeof(pmap));
 	memset(pmap_count, 0, sizeof(pmap_count));
@@ -4702,30 +4730,9 @@ void Simulation::update_particles()//doesn't update the particles themselves, bu
 	if(!sys_pause||framerender)
 		update_particles_i(0, 1);
 
+	printf("update:%i\n", SDL_GetTicks()-timer);
 	if(framerender)
 		framerender--;
-	float ratio = (float)NUM_PARTS/(float)lastPartUsed;
-	if(ratio < .25 && ratio > 0.0001)
-	{    
-		int nindex = 0; 
-		printf("Ratio tripped\n");
-		printf("%d particles defragmenting last ind: %d\n",NUM_PARTS,lastPartUsed);
-		for(int i = 0; i <= lastPartUsed; i ++)
-		{
-			if(parts[i].type)
-			{    
-				parts[nindex++] = parts[i];
-			}
-		}
-		for(int i = nindex; i < NPART; i++) 
-		{    
-			parts[i].type=0;
-			parts[i].life = i+1; 
-		}    
-		parts_lastActiveIndex = nindex-1;
-		pfree = nindex;
-	}
-
 }
 
 Simulation::~Simulation()
