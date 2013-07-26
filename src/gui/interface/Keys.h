@@ -1,0 +1,84 @@
+
+#if defined(USE_SDL)
+#include "SDL.h"
+#define KEY_UP SDLK_UP
+#define KEY_DOWN SDLK_DOWN
+#define KEY_RIGHT SDLK_RIGHT
+#define KEY_LEFT SDLK_LEFT
+#define KEY_HOME SDLK_HOME
+#define KEY_END SDLK_END
+#define KEY_BACKSPACE SDLK_BACKSPACE
+#define	KEY_DELETE SDLK_DELETE
+#define KEY_TAB SDLK_TAB
+#define KEY_RETURN SDLK_RETURN
+#define KEY_ENTER SDLK_KP_ENTER
+#define KEY_ESCAPE SDLK_ESCAPE
+
+#define KEY_CTRL SDLK_LCTRL
+#define KEY_ALT SDLK_LALT
+#define KEY_SHIFT SDLK_LSHIFT
+
+#define KEY_MOD_NONE			KMOD_NONE
+#define KEY_MOD_LSHIFT			KMOD_LSHIFT
+#define KEY_MOD_RSHIFT			KMOD_RSHIFT
+#define KEY_MOD_LCONTROL		KMOD_LCTRL
+#define KEY_MOD_RCONTROL		KMOD_RCTRL
+#define KEY_MOD_LALT			KMOD_LALT
+#define KEY_MOD_RALT			KMOD_RALT
+#define KEY_MOD_LMETA			KMOD_LMETA
+#define KEY_MOD_RMETA			KMOD_RMETA
+#define KEY_MOD_NUM				KMOD_NUM
+#define KEY_MOD_CAPS			KMOD_CAPS
+#define KEY_MOD_MODE			KMOD_MODE
+#define KEY_MOD_RESERVED		KMOD_RESERVED
+
+#define KEY_MOD_CONTROL			KEY_MOD_RCONTROL | KEY_MOD_LCONTROL
+#define KEY_MOD_ALT				KEY_MOD_RALT | KEY_MOD_LALT
+#define KEY_MOD_SHIFT			KEY_MOD_RSHIFT | KEY_MOD_LSHIFT
+
+#define KEY_a SDLK_a
+#define KEY_d SDLK_d
+#define KEY_s SDLK_s
+#define KEY_w SDLK_w
+
+#define KEY_F1 SDLK_F1
+
+#define BUTTON_LEFT SDL_BUTTON_LEFT
+#define BUTTON_MIDDLE SDL_BUTTON_MIDDLE
+#define BUTTON_RIGHT SDL_BUTTON_RIGHT
+
+#else
+
+#define KEY_UP 1
+#define KEY_DOWN 2
+#define KEY_RIGHT 3
+#define KEY_LEFT 4
+#define KEY_HOME 5
+#define KEY_END 6
+#define KEY_BACKSPACE 7
+#define	KEY_DELETE 8
+#define KEY_TAB 9
+#define KEY_RETURN 10
+#define KEY_ENTER 11
+#define KEY_ESCAPE 12
+
+#define KEY_CTRL 13
+#define KEY_ALT 14
+#define KEY_SHIFT 15
+
+#define KEY_MOD_CONTROL 16
+#define KEY_MOD_ALT 17
+#define KEY_MOD_SHIFT 18
+
+#define BUTTON_LEFT 19
+#define BUTTON_MIDDLE 20
+#define BUTTON_RIGHT 21
+
+#define KEY_a 22
+#define KEY_d 23
+#define KEY_s 24
+#define KEY_w 25
+
+#define KEY_F1 26
+
+#endif
