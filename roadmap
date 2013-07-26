@@ -1,8 +1,0 @@
-Next two releases:
-use bitmasks where possible, add these to init list for part_types
-splitting of powder.c
-feature freeze
-Focus on scalability
-stability, possibly not use -O3 on linux, inlines where possible.
-performance.
-Multithreading?
