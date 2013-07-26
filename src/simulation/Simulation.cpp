@@ -4705,30 +4705,26 @@ void Simulation::update_particles()//doesn't update the particles themselves, bu
 	if(framerender)
 		framerender--;
 
-    float ratio = (float)NUM_PARTS/(float)parts_lastActiveIndex;
+    float ratio = (float)NUM_PARTS/(float)lastPartUsed;
     if(ratio < .25 && ratio > 0.0001)
     {    
         int nindex = 0; 
-        Particle nparts[NUM_PARTS];
         printf("Ratio tripped\n");
         printf("%d particles defragmenting last ind: %d\n",NUM_PARTS,lastPartUsed);
         for(int i = 0; i <= lastPartUsed; i ++)
         {    
             if(parts[i].type)
             {    
-                nparts[nindex++] = parts[i];
+                parts[nindex++] = parts[i];
             }    
-        }    
-        for(int i = 0; i < nindex; i++) 
-        {    
-            parts[i] = nparts[i];
         }    
         for(int i = nindex; i < lastPartUsed; i++) 
         {    
-            if(parts[i].type)
-                kill_part(i);
+			parts[i].type=0;
+			parts[i].life = i+1;
         }    
         parts_lastActiveIndex = nindex;
+		pfree = nindex;
     }
 
 }
