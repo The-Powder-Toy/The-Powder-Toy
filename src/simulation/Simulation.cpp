@@ -4718,7 +4718,7 @@ void Simulation::update_particles()//doesn't update the particles themselves, bu
                 parts[nindex++] = parts[i];
             }    
         }    
-        for(int i = nindex; i < lastPartUsed; i++) 
+        for(int i = nindex; i < NPART; i++) 
         {    
 			parts[i].type=0;
 			parts[i].life = i+1;
