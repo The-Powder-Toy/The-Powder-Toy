@@ -206,13 +206,13 @@ void LocalBrowserView::OnKeyPress(int key, Uint16 character, bool shift, bool ct
 {
 	if(key == KEY_ESCAPE)
 		c->Exit();
-	else if (key == KEY_CTRL)
+	else if (key == KEY_LCTRL || key == KEY_RCTRL)
 		c->SetMoveToFront(false);
 }
 
 void LocalBrowserView::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
-	if (key == KEY_CTRL)
+	if (key == KEY_LCTRL || key == KEY_RCTRL)
 		c->SetMoveToFront(true);
 }
 

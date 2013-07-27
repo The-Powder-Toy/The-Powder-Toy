@@ -714,12 +714,12 @@ void SearchView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bo
 {
 	if (key == KEY_ESCAPE)
 		c->Exit();
-	if (key == KEY_CTRL)
+	else if (key == KEY_LCTRL || key == KEY_RCTRL)
 		c->InstantOpen(true);
 }
 
 void SearchView::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
-	if (key == KEY_CTRL)
+	if (key == KEY_LCTRL || key == KEY_RCTRL)
 		c->InstantOpen(false);
 }
