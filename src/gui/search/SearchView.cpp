@@ -714,7 +714,12 @@ void SearchView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bo
 {
 	if (key == KEY_ESCAPE)
 		c->Exit();
-	if (ctrl)
-		c->InstantOpen(ctrl);
+	if (key == KEY_CTRL)
+		c->InstantOpen(true);
 }
 
+void SearchView::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+{
+	if (key == KEY_CTRL)
+		c->InstantOpen(false);
+}
