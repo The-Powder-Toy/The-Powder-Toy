@@ -167,7 +167,7 @@ void ProfileActivity::setUserInfo(UserInfo newInfo)
 	//exit(0);
 }
 
-void ProfileActivity::OnResponseReady(void * userDataPtr)
+void ProfileActivity::OnResponseReady(void * userDataPtr, int identifier)
 {
 	if(loading)
 	{

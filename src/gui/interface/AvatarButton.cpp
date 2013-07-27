@@ -40,7 +40,7 @@ void AvatarButton::Tick(float dt)
 	}
 }
 
-void AvatarButton::OnResponseReady(void * imagePtr)
+void AvatarButton::OnResponseReady(void * imagePtr, int identifier)
 {
 	VideoBuffer * image = (VideoBuffer*)imagePtr;
 	if(image)

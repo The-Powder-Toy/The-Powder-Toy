@@ -128,7 +128,7 @@ SaveButton::~SaveButton()
 		delete file;
 }
 
-void SaveButton::OnResponseReady(void * imagePtr)
+void SaveButton::OnResponseReady(void * imagePtr, int identifier)
 {
 	VideoBuffer * image = (VideoBuffer*)imagePtr;
 	if(image)

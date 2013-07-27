@@ -114,7 +114,7 @@ void RequestBroker::RetrieveAvatar(std::string username, int width, int height, 
 	RetrieveImage(urlStream.str(), width, height, tListener);
 }
 
-void RequestBroker::Start(Request * request, RequestListener * tListener)
+void RequestBroker::Start(Request * request, RequestListener * tListener, int identifier)
 {
 	ListenerHandle handle = AttachRequestListener(tListener);
 
@@ -152,7 +152,7 @@ void RequestBroker::FlushThumbQueue()
 	{
 		if(CheckRequestListener(completeQueue.front()->Listener))
 		{
-			completeQueue.front()->Listener.second->OnResponseReady(completeQueue.front()->ResultObject);
+			completeQueue.front()->Listener.second->OnResponseReady(completeQueue.front()->ResultObject, completeQueue.front()->Identifier);
 		}
 		else
 		{
@@ -288,11 +288,12 @@ void RequestBroker::DetachRequestListener(RequestListener * tListener)
 	pthread_mutex_unlock(&listenersMutex);
 }
 
-RequestBroker::Request::Request(RequestType type, ListenerHandle listener)
+RequestBroker::Request::Request(RequestType type, ListenerHandle listener, int identifier)
 {
 	Type = type;
 	Listener = listener;
 	ResultObject = NULL;
+	Identifier = identifier;
 }
 RequestBroker::Request::~Request()
 {

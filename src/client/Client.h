@@ -136,8 +136,10 @@ public:
 	RequestBroker::Request * GetUserInfoAsync(std::string username);
 	RequestBroker::Request * SaveUserInfoAsync(UserInfo info);
 
+	RequestBroker::Request * GetSaveDataAsync(int saveID, int saveDate);
 	unsigned char * GetSaveData(int saveID, int saveDate, int & dataLength);
 	std::vector<unsigned char> GetSaveData(int saveID, int saveDate);
+
 	LoginStatus Login(std::string username, std::string password, User & user);
 	void ClearThumbnailRequests();
 	std::vector<SaveInfo*> * SearchSaves(int start, int count, std::string query, std::string sort, std::string category, int & resultCount);

@@ -5,8 +5,8 @@
 #include "graphics/Graphics.h"
 #include "simulation/SaveRenderer.h"
 
-ThumbRenderRequest::ThumbRenderRequest(GameSave * save, bool decorations, bool fire, int width, int height, ListenerHandle listener):
-	RequestBroker::Request(ThumbnailRender, listener)
+ThumbRenderRequest::ThumbRenderRequest(GameSave * save, bool decorations, bool fire, int width, int height, ListenerHandle listener, int identifier):
+	RequestBroker::Request(ThumbnailRender, listener, identifier)
 {
 	Save = save;
 	Width = width;

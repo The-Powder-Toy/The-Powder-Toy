@@ -45,6 +45,7 @@
 #include "gui/preview/Comment.h"
 #include "ClientListener.h"
 #include "requestbroker/RequestBroker.h"
+#include "requestbroker/WebRequest.h"
 #include "requestbroker/APIRequest.h"
 #include "requestbroker/APIResultParser.h"
 
@@ -1194,6 +1195,17 @@ std::vector<unsigned char> Client::GetSaveData(int saveID, int saveDate)
 
 	delete[] data;
 	return saveData;
+}
+
+RequestBroker::Request * Client::GetSaveDataAsync(int saveID, int saveDate)
+{
+	std::stringstream urlStream;
+	if(saveDate){
+		urlStream << "http://" << STATICSERVER << "/" << saveID << "_" << saveDate << ".cps";
+	} else {
+		urlStream << "http://" << STATICSERVER << "/" << saveID << ".cps";
+	}
+	return new WebRequest(urlStream.str());	
 }
 
 RequestBroker::Request * Client::SaveUserInfoAsync(UserInfo info)

@@ -58,7 +58,7 @@ public:
 	virtual void Draw(const Point& screenPos);
 	virtual void Tick(float dt);
 
-	virtual void OnResponseReady(void * imagePtr);
+	virtual void OnResponseReady(void * imagePtr, int identifier);
 
 	void SetSelected(bool selected_) { selected = selected_; }
 	bool GetSelected() { return selected; }

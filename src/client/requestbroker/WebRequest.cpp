@@ -1,34 +1,33 @@
 #include <iostream>
+#include <vector>
 #include <typeinfo>
 #include <cstdlib>
 #include <cstring>
 #include "Config.h"
 #include "Format.h"
 #include "client/Client.h"
-#include "APIRequest.h"
+#include "WebRequest.h"
 #include "client/HTTP.h"
 #include "APIResultParser.h"
 
-APIRequest::APIRequest(std::string url, APIResultParser * parser, ListenerHandle listener, int identifier):
+WebRequest::WebRequest(std::string url, ListenerHandle listener, int identifier):
 	RequestBroker::Request(API, listener, identifier)
 {
 	Post = false;
 	HTTPContext = NULL;
-	Parser = parser;
 	URL = url;
 }
 
-APIRequest::APIRequest(std::string url, std::map<std::string, std::string> postData, APIResultParser * parser, ListenerHandle listener, int identifier):
+WebRequest::WebRequest(std::string url, std::map<std::string, std::string> postData, ListenerHandle listener, int identifier):
 	RequestBroker::Request(API, listener, identifier)
 {
 	Post = true;
 	PostData = postData;
 	HTTPContext = NULL;
-	Parser = parser;
 	URL = url;
 }
 
-RequestBroker::ProcessResponse APIRequest::Process(RequestBroker & rb)
+RequestBroker::ProcessResponse WebRequest::Process(RequestBroker & rb)
 {
 	if(HTTPContext)
 	{
@@ -40,7 +39,7 @@ RequestBroker::ProcessResponse APIRequest::Process(RequestBroker & rb)
 
 			if (status == 200 && data)
 			{
-				void * resultObject = Parser->ProcessResponse((unsigned char *)data, data_size);
+				void * resultObject = new std::vector<unsigned char>(data, data+data_size);
 
 				if(resultObject)
 				{
@@ -116,22 +115,20 @@ RequestBroker::ProcessResponse APIRequest::Process(RequestBroker & rb)
 		{
 			HTTPContext = http_async_req_start(NULL, (char *)URL.c_str(), NULL, 0, 0);
 		}
-		//RequestTime = time(NULL);
 	}
 	return RequestBroker::OK;
 }
 
-APIRequest::~APIRequest()
+WebRequest::~WebRequest()
 {
-	delete Parser;
 }
 
-void APIRequest::Cleanup()
+void WebRequest::Cleanup()
 {
 	Request::Cleanup();
 	if(ResultObject)
 	{
-		Parser->Cleanup(ResultObject);
+		delete (std::vector<unsigned char>*)ResultObject;
 		ResultObject = NULL;
 	}
 }

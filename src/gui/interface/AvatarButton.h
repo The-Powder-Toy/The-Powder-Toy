@@ -38,7 +38,7 @@ public:
 	virtual void Draw(const Point& screenPos);
 	virtual void Tick(float dt);
 
-	virtual void OnResponseReady(void * imagePtr);
+	virtual void OnResponseReady(void * imagePtr, int identifier);
 	
 	virtual void DoAction();
 
