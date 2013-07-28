@@ -9,41 +9,16 @@
 #include "client/SaveInfo.h"
 #include "gui/preview/Comment.h"
 #include "gui/search/Thumbnail.h"
+#include "client/requestbroker/RequestListener.h"
 
 using namespace std;
 
-struct SaveData
-{
-	SaveData(unsigned char * data_, int len):
-		data(data_),
-		length(len)
-	{
-	}
-	unsigned char * data;
-	int length;
-};
-
-struct threadInfo {
-	threadInfo(int saveID_, int saveDate_):
-		threadFinished(true),
-		previewExited(false),
-		saveID(saveID_),
-		saveDate(saveDate_)
-	{
-	}
-	bool threadFinished;
-	bool previewExited;
-	int saveID;
-	int saveDate;
-};
-
 class PreviewView;
-class PreviewModel {
+class PreviewModel: RequestListener {
 	bool doOpen;
-	bool commentBoxEnabled;
 	vector<PreviewView*> observers;
 	SaveInfo * save;
-	SaveData *saveData;
+	std::vector<unsigned char> * saveData;
 	std::vector<SaveComment*> * saveComments;
 	void notifySaveChanged();
 	void notifySaveCommentsChanged();
@@ -55,21 +30,11 @@ class PreviewModel {
 	int tSaveDate;
 
 	//
+	bool commentBoxEnabled;
 	bool commentsLoaded;
 	int commentsTotal;
 	int commentsPageNumber;
 
-	threadInfo * updateSaveDataInfo;
-	pthread_t updateSaveDataThread;
-	static void * updateSaveDataT(void * obj);
-
-	threadInfo * updateSaveInfoInfo;
-	pthread_t updateSaveInfoThread;
-	static void * updateSaveInfoT(void * obj);
-
-	threadInfo * updateSaveCommentsInfo;
-	pthread_t updateSaveCommentsThread;
-	static void * updateSaveCommentsT(void * obj);
 public:
 	PreviewModel();
 	SaveInfo * GetSave();
@@ -89,6 +54,7 @@ public:
 	bool GetDoOpen();
 	void SetDoOpen(bool doOpen);
 	void Update();
+	virtual void OnResponseReady(void * object, int identifier);
 	virtual ~PreviewModel();
 };
 
