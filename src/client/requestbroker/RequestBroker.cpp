@@ -118,6 +118,7 @@ void RequestBroker::Start(Request * request, RequestListener * tListener, int id
 {
 	ListenerHandle handle = AttachRequestListener(tListener);
 
+	request->Identifier = identifier;
 	request->Listener = handle;
 	pthread_mutex_lock(&requestQueueMutex);
 	requestQueue.push_back(request);
