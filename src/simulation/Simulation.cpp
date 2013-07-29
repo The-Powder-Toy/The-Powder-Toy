@@ -1419,7 +1419,7 @@ int Simulation::FloodParts(int x, int y, int fullc, int cm, int flags)
 	unsigned short (*coord_stack)[2];
 	int coord_stack_size = 0;
 	int created_something = 0;
-
+	
 	if (cm==-1)
 	{
 		//if initial flood point is out of bounds, do nothing
@@ -1432,8 +1432,13 @@ int Simulation::FloodParts(int x, int y, int fullc, int cm, int flags)
 			cm = pmap[y][x]&0xFF;
 			if (!cm)
 				cm = photons[y][x]&0xFF;
-			if (!cm && bmap[y/CELL][x/CELL])
-				FloodWalls(x, y, WL_ERASE, -1);
+			if (!cm)
+			{
+				if (bmap[y/CELL][x/CELL])
+					return FloodWalls(x, y, WL_ERASE, -1);
+				else
+					return -1;
+			}
 		}
 		else
 			cm = 0;
