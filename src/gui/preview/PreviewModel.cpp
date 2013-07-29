@@ -135,20 +135,23 @@ void PreviewModel::UpdateComments(int pageNumber)
 
 void PreviewModel::OnResponseReady(void * object, int identifier)
 {
-	if(identifier == 1){
-		if(saveData)
+	if (identifier == 1)
+	{
+		if (saveData)
 			delete saveData;
 		saveData = (std::vector<unsigned char>*)object;
 	}
-	if(identifier == 2){
-		if(save)
+	if (identifier == 2)
+	{
+		if (save)
 			delete save;
 		save = (SaveInfo*)object;
 	}
-	if(identifier == 3){
+	if (identifier == 3)
+	{
 		if(saveComments)
 		{
-			for(int i = 0; i < saveComments->size(); i++)
+			for (int i = 0; i < saveComments->size(); i++)
 				delete saveComments->at(i);
 			saveComments->clear();
 			delete saveComments;
@@ -160,7 +163,8 @@ void PreviewModel::OnResponseReady(void * object, int identifier)
 		notifySaveCommentsChanged();
 	}
 
-	if(identifier == 1 || identifier == 2) {
+	if(identifier == 1 || identifier == 2)
+	{
 		if (save && saveData)
 		{
 			commentsTotal = save->Comments;
@@ -174,6 +178,9 @@ void PreviewModel::OnResponseReady(void * object, int identifier)
 			}
 			notifySaveChanged();
 			notifyCommentsPageChanged();
+			//make sure author name comments are red
+			if (commentsLoaded)
+				notifySaveCommentsChanged();
 		}
 	}
 }
