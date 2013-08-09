@@ -713,7 +713,8 @@ int luatpt_getelement(lua_State *l)
 	}
 	else
 	{
-		char* name = (char*)luaL_optstring(l, 1, "dust");
+		luaL_checktype(l, 1, LUA_TSTRING);
+		char* name = (char*)luaL_optstring(l, 1, "");
 		if ((t = luacon_ci->GetParticleType(name))==-1)
 			return luaL_error(l, "Unrecognised element '%s'", name);
 		lua_pushinteger(l, t);
