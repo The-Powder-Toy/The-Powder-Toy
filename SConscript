@@ -248,7 +248,7 @@ if GetOption("ptw32-static"):
 # check if we need to do static linking.
 
 if(GetOption('static')):
-	env.Append(LINKFLAGS=['-static-libgcc','-static'])
+	env.Append(LINKFLAGS=['-static-libgcc'])
 
 # check if we need to compile the save renderer. add a define accordingly. compile the game by default.
 
