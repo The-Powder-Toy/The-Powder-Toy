@@ -2,7 +2,6 @@
 #include <sstream>
 #include <stdlib.h>
 #include <string.h>
-#include <regex.h>
 #include <sys/types.h>
 #include <cmath>
 #include "Config.h"
@@ -171,17 +170,6 @@ void clean_text(char *text, int vwidth)
 			text[i] = ' ';
 		}
 	}
-}
-
-int sregexp(const char *str, char *pattern)
-{
-	int result;
-	regex_t patternc;
-	if (regcomp(&patternc, pattern,  0)!=0)
-		return 1;
-	result = regexec(&patternc, str, 0, NULL, 0);
-	regfree(&patternc);
-	return result;
 }
 
 void save_string(FILE *f, char *str)
