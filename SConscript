@@ -285,7 +285,7 @@ if(GetOption('rpi')):
 
 if(GetOption('win')):
 	openGLLibs = ['opengl32', 'glew32']
-	env.Prepend(LIBS=['mingw32', 'ws2_32', 'SDLmain', 'SDL', 'regex'])
+	env.Prepend(LIBS=['mingw32', 'ws2_32', 'SDLmain', 'SDL'])
 	env.Append(CCFLAGS=['-std=gnu++98'])
 	env.Append(LIBS=['winmm', 'gdi32'])
 	env.Append(CPPDEFINES=["WIN"])
