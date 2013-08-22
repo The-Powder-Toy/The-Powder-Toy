@@ -177,16 +177,30 @@ void SignWindow::DoDraw()
 	for(std::vector<sign>::iterator iter = sim->signs.begin(), end = sim->signs.end(); iter != end; ++iter)
 	{
 		sign & currentSign = *iter;
-		int x, y, w, h, dx, dy;
+		int x, y, w, h, dx, dy, match=0;
 		Graphics * g = ui::Engine::Ref().g;
 		std::string text = currentSign.getText(sim);
+		const char* str = currentSign.text.c_str();
 		currentSign.pos(text, x, y, w, h);
 		g->clearrect(x, y, w+1, h);
 		g->drawrect(x, y, w+1, h, 192, 192, 192, 255);
-		if (sregexp(currentSign.text.c_str(), "^{[ct]:[0-9]*|.*}$"))
-			g->drawtext(x+3, y+3, text, 255, 255, 255, 255);
-		else
+		if (str[0]=='{' && (str[1]=='c' || str[1]=='t') && str[2]==':' && str[3]>='0' && str[3]<='9')
+		{
+			const char* p=str+4;
+			while (*p>='0' && *p<='9')
+				p++;
+			if (*p=='|')
+			{
+				while (*p)
+					p++;
+				if (p[-1]=='}')
+					match=1;
+			}
+		}
+		if (match)
 			g->drawtext(x+3, y+3, text, 0, 191, 255, 255);
+		else
+			g->drawtext(x+3, y+3, text, 255, 255, 255, 255);
 
 		x = currentSign.x;
 		y = currentSign.y;
