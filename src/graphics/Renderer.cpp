@@ -912,7 +912,7 @@ void Renderer::DrawWalls()
 
 void Renderer::DrawSigns()
 {
-	int i, j, x, y, w, h, dx, dy,mx,my,b=1,bq;
+	int i, j, x, y, w, h, dx, dy,mx,my,b=1,bq,match;
 	std::vector<sign> signs = sim->signs;
 #ifdef OGLR
 	GLint prevFbo;
@@ -923,14 +923,30 @@ void Renderer::DrawSigns()
 	for (i=0; i < signs.size(); i++)
 		if (signs[i].text.length())
 		{
-			std::string text = sim->signs[i].getText(sim);
-			sim->signs[i].pos(text, x, y, w, h);
+			std::string text = signs[i].getText(sim);
+			const char* str = signs[i].text.c_str();
+			signs[i].pos(text, x, y, w, h);
 			clearrect(x, y, w+1, h);
 			drawrect(x, y, w+1, h, 192, 192, 192, 255);
-			if (sregexp(signs[i].text.c_str(), "^{[ct]:[0-9]*|.*}$"))
-				drawtext(x+3, y+3, text, 255, 255, 255, 255);
-			else
+			match=0;
+			// check if it's a link sign
+			if (str[0]=='{' && (str[1]=='c' || str[1]=='t') && str[2]==':' && str[3]>='0' && str[3]<='9')
+			{
+				const char* p=str+4;
+				while (*p>='0' && *p<='9')
+					p++;
+				if (*p=='|')
+				{
+					while (*p)
+						p++;
+					if (p[-1]=='}')
+						match=1;
+				}
+			}
+			if (match)
 				drawtext(x+3, y+3, text, 0, 191, 255, 255);
+			else
+				drawtext(x+3, y+3, text, 255, 255, 255, 255);
 				
 			x = signs[i].x;
 			y = signs[i].y;
