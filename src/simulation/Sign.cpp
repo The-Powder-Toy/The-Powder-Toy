@@ -31,7 +31,7 @@ std::string sign::getText(Simulation *sim)
 		else
 			sprintf(buff, "Temp: 0.00");  //...temperature
 	}
-	else if (sregexp(signText, "^{[c|t]:[0-9]*|.*}$")==0)
+	else if (sregexp(signText, "^{[ct]:[0-9]*|.*}$")==0)
 	{
 		int sldr, startm;
 		memset(buff, 0, sizeof(buff));

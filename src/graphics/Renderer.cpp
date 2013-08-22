@@ -927,7 +927,7 @@ void Renderer::DrawSigns()
 			sim->signs[i].pos(text, x, y, w, h);
 			clearrect(x, y, w+1, h);
 			drawrect(x, y, w+1, h, 192, 192, 192, 255);
-			if (sregexp(signs[i].text.c_str(), "^{[c|t]:[0-9]*|.*}$"))
+			if (sregexp(signs[i].text.c_str(), "^{[ct]:[0-9]*|.*}$"))
 				drawtext(x+3, y+3, text, 255, 255, 255, 255);
 			else
 				drawtext(x+3, y+3, text, 0, 191, 255, 255);

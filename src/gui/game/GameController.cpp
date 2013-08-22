@@ -571,7 +571,7 @@ bool GameController::MouseUp(int x, int y, unsigned button)
 				(*iter).pos((*iter).getText(sim), signx, signy, signw, signh);
 				if (x>=signx && x<=signx+signw && y>=signy && y<=signy+signh)
 				{
-					if (sregexp((*iter).text.c_str(), "^{[c|t]:[0-9]*|.*}$")==0)
+					if (sregexp((*iter).text.c_str(), "^{[ct]:[0-9]*|.*}$")==0)
 					{
 						const char * signText = (*iter).text.c_str();
 						char buff[256];

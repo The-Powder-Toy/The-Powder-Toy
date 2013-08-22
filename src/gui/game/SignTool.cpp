@@ -183,7 +183,7 @@ void SignWindow::DoDraw()
 		currentSign.pos(text, x, y, w, h);
 		g->clearrect(x, y, w+1, h);
 		g->drawrect(x, y, w+1, h, 192, 192, 192, 255);
-		if (sregexp(currentSign.text.c_str(), "^{[c|t]:[0-9]*|.*}$"))
+		if (sregexp(currentSign.text.c_str(), "^{[ct]:[0-9]*|.*}$"))
 			g->drawtext(x+3, y+3, text, 255, 255, 255, 255);
 		else
 			g->drawtext(x+3, y+3, text, 0, 191, 255, 255);
