@@ -33,30 +33,11 @@ std::string sign::getText(Simulation *sim)
 	}
 	else
 	{
-		int match=0;
-		const char* r;
-		const char* e;
-		if (signText[0]=='{' && (signText[1]=='c' || signText[1]=='t') && signText[2]==':' && signText[3]>='0' && signText[3]<='9')
+		int pos=splitsign(signText);
+		if (pos)
 		{
-			const char* p=signText+4;
-			while (*p>='0' && *p<='9')
-				p++;
-			if (*p=='|')
-			{
-				r=p+1;
-				while (*p)
-					p++;
-				if (p[-1]=='}')
-				{
-					match=1;
-					e=p;
-				}
-			}
-		}
-		if (match)
-		{
-			strcpy(buff, r);
-			buff[e-r-1]=0;
+			strcpy(buff, signText+pos+1);
+			buff[strlen(signText)-pos-2]=0;
 		}
 		else
 			strcpy(buff, signText);
