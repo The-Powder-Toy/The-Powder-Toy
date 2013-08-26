@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <queue>
 #include "Config.h"
@@ -581,9 +580,9 @@ bool GameController::MouseUp(int x, int y, unsigned button)
 						int tempSaveID = format::StringToNumber<int>(std::string(buff));
 						if (tempSaveID)
 						{
-							if ((*iter).text.c_str()[1] == 'c')
+							if (str[1] == 'c')
 								OpenSavePreview(tempSaveID, 0, false);
-							else if ((*iter).text.c_str()[1] == 't')
+							else if (str[1] == 't')
 							{
 								char url[256];
 								sprintf(url, "http://powdertoy.co.uk/Discussions/Thread/View.html?Thread=%i", tempSaveID);
