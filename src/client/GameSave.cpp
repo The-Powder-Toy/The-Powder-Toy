@@ -965,6 +965,13 @@ void GameSave::readOPS(char * data, int dataLength)
 					case PT_FIGH:
 						if (savedVersion < 88 && particles[newIndex].ctype == OLD_SPC_AIR)
 							particles[newIndex].ctype = SPC_AIR;
+					case PT_FILT:
+						if (savedVersion < 89)
+						{
+							if (particles[newIndex].tmp<0 || particles[newIndex].tmp>3)
+								particles[newIndex].tmp = 6;
+							particles[newIndex].ctype = 0;
+						}
 					}
 					newIndex++;
 				}
@@ -1587,6 +1594,15 @@ void GameSave::readPSv(char * data, int dataLength)
 			if (ver < 88) //fix air blowing stickmen
 				if ((particles[i-1].type == PT_STKM || particles[i-1].type == PT_STKM2 || particles[i-1].type == PT_FIGH) && particles[i-1].ctype == OLD_SPC_AIR)
 					particles[i-1].ctype == SPC_AIR;
+			if (ver < 89)
+			{
+				if (particles[i-1].type == PT_FILT)
+				{
+					if (particles[i-1].tmp<0 || particles[i-1].tmp>3)
+						particles[i-1].tmp = 6;
+					particles[i-1].ctype = 0;
+				}
+			}
 		}
 	}
 

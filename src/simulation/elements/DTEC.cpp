@@ -73,6 +73,7 @@ int Element_DTEC::update(UPDATE_FUNC_ARGS)
 					}
 				}
 	}
+	int photonWl = 0;
 	for (rx=-rd; rx<rd+1; rx++)
 		for (ry=-rd; ry<rd+1; ry++)
 			if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES && (rx || ry))
@@ -84,7 +85,32 @@ int Element_DTEC::update(UPDATE_FUNC_ARGS)
 					continue;
 				if (parts[r>>8].type == parts[i].ctype && (parts[i].ctype != PT_LIFE || parts[i].tmp == parts[r>>8].ctype || !parts[i].tmp))
 					parts[i].life = 1;
+				if (parts[r>>8].type == PT_PHOT)
+					photonWl = parts[r>>8].ctype;
 			}
+	if (photonWl)
+	{
+		int nx, ny;
+		for (rx=-1; rx<2; rx++)
+			for (ry=-1; ry<2; ry++)
+				if (BOUNDS_CHECK && (rx || ry))
+				{
+					r = pmap[y+ry][x+rx];
+					if (!r)
+						continue;
+					nx = x+rx;
+					ny = y+ry;
+					while ((r&0xFF)==PT_FILT)
+					{
+						parts[r>>8].ctype = photonWl;
+						nx += rx;
+						ny += ry;
+						if (nx<0 || ny<0 || nx>=XRES || ny>=YRES)
+							break;
+						r = pmap[ny][nx];
+					}
+				}
+	}
 	return 0;
 }
 

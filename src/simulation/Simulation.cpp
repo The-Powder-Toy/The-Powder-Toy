@@ -2200,18 +2200,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 			}
 		if (parts[i].type == PT_PHOT && (r&0xFF)==PT_FILT)
 		{
-			int temp_bin = (int)((parts[r>>8].temp-273.0f)*0.025f);
-			if (temp_bin < 0) temp_bin = 0;
-			if (temp_bin > 25) temp_bin = 25;
-			if(!parts[r>>8].tmp){
-				parts[i].ctype = 0x1F << temp_bin; //Assign Colour
-			} else if(parts[r>>8].tmp==1){
-				parts[i].ctype &= 0x1F << temp_bin; //Filter Colour
-			} else if(parts[r>>8].tmp==2){
-				parts[i].ctype |= 0x1F << temp_bin; //Add Colour
-			} else if(parts[r>>8].tmp==3){
-				parts[i].ctype &= ~(0x1F << temp_bin); //Subtract Colour
-			}
+			parts[i].ctype = Element_FILT::interactWavelengths(&parts[r>>8], parts[i].ctype);
 		}
 		if (parts[i].type == PT_NEUT && (r&0xFF)==PT_GLAS) {
 			if (rand() < RAND_MAX/10)
@@ -2223,10 +2212,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 		}
 		if ((parts[i].type==PT_BIZR||parts[i].type==PT_BIZRG) && (r&0xFF)==PT_FILT)
 		{
-			int temp_bin = (int)((parts[r>>8].temp-273.0f)*0.025f);
-			if (temp_bin < 0) temp_bin = 0;
-			if (temp_bin > 25) temp_bin = 25;
-			parts[i].ctype = 0x1F << temp_bin;
+			parts[i].ctype = Element_FILT::interactWavelengths(&parts[r>>8], parts[i].ctype);
 		}
 		if (((r&0xFF)==PT_BIZR || (r&0xFF)==PT_BIZRG || (r&0xFF)==PT_BIZRS) && parts[i].type==PT_PHOT)
 		{

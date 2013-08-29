@@ -98,7 +98,7 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 										break;
 									}
 								} else if ((r&0xFF)==PT_FILT) {//get color if passed through FILT
-									colored = parts[r>>8].ctype;
+									colored = Element_FILT::interactWavelengths(&parts[r>>8], colored);
 									//this if prevents BRAY from stopping on certain materials
 								} else if ((r&0xFF)!=PT_STOR && (r&0xFF)!=PT_INWR && ((r&0xFF)!=PT_SPRK || parts[r>>8].ctype!=PT_INWR) && (r&0xFF)!=PT_ARAY && (r&0xFF)!=PT_WIFI && !((r&0xFF)==PT_SWCH && parts[r>>8].life>=10)) {
 									if (nyy!=0 || nxx!=0) {

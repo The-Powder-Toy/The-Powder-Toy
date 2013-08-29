@@ -2068,6 +2068,15 @@ void GameView::OnDraw()
 					sampleInfo << c->ElementResolve(sample.particle.type, -1) << " with " << c->ElementResolve(ctype, (int)sample.particle.pavg[1]);
 				else if (sample.particle.type == PT_LIFE)
 					sampleInfo << c->ElementResolve(sample.particle.type, sample.particle.ctype);
+				else if (sample.particle.type == PT_FILT)
+				{
+					sampleInfo << c->ElementResolve(sample.particle.type, sample.particle.ctype);
+					const char* filtModes[] = {"set colour", "AND", "OR", "subtract colour", "red shift", "blue shift", "no effect"};
+					if (sample.particle.tmp>=0 && sample.particle.tmp<=6)
+						sampleInfo << " (" << filtModes[sample.particle.tmp] << ")";
+					else
+						sampleInfo << " (unknown mode)";
+				}
 				else
 				{
 					sampleInfo << c->ElementResolve(sample.particle.type, sample.particle.ctype);
@@ -2094,7 +2103,9 @@ void GameView::OnDraw()
 				sampleInfo << ", Temp: " << std::fixed << sample.particle.temp -273.15f;
 				sampleInfo << ", Pressure: " << std::fixed << sample.AirPressure;
 			}
-			if(sample.particle.type == PT_PHOT)
+			if (sample.particle.type == PT_PHOT || sample.particle.type == PT_BIZR || sample.particle.type == PT_BIZRG || sample.particle.type == PT_BIZRS)
+				wavelengthGfx = sample.particle.ctype;
+			if (sample.particle.type == PT_FILT && sample.particle.ctype)
 				wavelengthGfx = sample.particle.ctype;
 		}
 		else if (sample.WallType)

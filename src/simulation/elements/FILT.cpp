@@ -48,21 +48,17 @@ Element_FILT::Element_FILT()
 
 //#TPT-Directive ElementHeader Element_FILT static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_FILT::graphics(GRAPHICS_FUNC_ARGS)
-
 {
-	int x, temp_bin = (int)((cpart->temp-273.0f)*0.025f);
-	if (temp_bin < 0) temp_bin = 0;
-	if (temp_bin > 25) temp_bin = 25;
-	cpart->ctype = 0x1F << temp_bin;
+	int x, wl = Element_FILT::getWavelengths(cpart);
 	*colg = 0;
 	*colb = 0;
 	*colr = 0;
 	for (x=0; x<12; x++) {
-		*colr += (cpart->ctype >> (x+18)) & 1;
-		*colb += (cpart->ctype >>  x)     & 1;
+		*colr += (wl >> (x+18)) & 1;
+		*colb += (wl >>  x)     & 1;
 	}
 	for (x=0; x<12; x++)
-		*colg += (cpart->ctype >> (x+9))  & 1;
+		*colg += (wl >> (x+9))  & 1;
 	x = 624/(*colr+*colg+*colb+1);
 	*cola = 127;
 	*colr *= x;
@@ -73,5 +69,56 @@ int Element_FILT::graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
+//#TPT-Directive ElementHeader Element_FILT static int interactWavelengths(Particle* cpart, int origWl)
+// Returns the wavelengths in a particle after FILT interacts with it (e.g. a photon)
+// cpart is the FILT particle, origWl the original wavelengths in the interacting particle
+int Element_FILT::interactWavelengths(Particle* cpart, int origWl)
+{
+	const int mask = 0x3FFFFFFF;
+	int filtWl = getWavelengths(cpart);
+	switch (cpart->tmp)
+	{
+		case 0:
+			return filtWl; //Assign Colour
+		case 1:
+			return origWl & filtWl; //Filter Colour
+		case 2:
+			return origWl | filtWl; //Add Colour
+		case 3:
+			return origWl & (~filtWl); //Subtract colour of filt from colour of photon
+		case 4:
+			{
+				int shift = int((cpart->temp-273.0f)*0.025f);
+				if (shift<=0) shift = 1;
+				return (origWl << shift) & mask; // red shift
+			}
+		case 5:
+			{
+				int shift = int((cpart->temp-273.0f)*0.025f);
+				if (shift<=0) shift = 1;
+				return (origWl >> shift) & mask; // blue shift
+			}
+		case 6:
+			return origWl; // No change
+		default:
+			return filtWl;
+	}
+}
+
+//#TPT-Directive ElementHeader Element_FILT static int getWavelengths(Particle* cpart)
+int Element_FILT::getWavelengths(Particle* cpart)
+{
+	if (cpart->ctype)
+	{
+		return cpart->ctype;
+	}
+	else
+	{
+		int temp_bin = (int)((cpart->temp-273.0f)*0.025f);
+		if (temp_bin < 0) temp_bin = 0;
+		if (temp_bin > 25) temp_bin = 25;
+		return (0x1F << temp_bin);
+	}
+}
 
 Element_FILT::~Element_FILT() {}
