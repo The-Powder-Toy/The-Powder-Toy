@@ -104,6 +104,14 @@ int Element_FILT::interactWavelengths(Particle* cpart, int origWl)
 			return origWl ^ filtWl; // XOR colours
 		case 8:
 			return (~origWl) & mask; // Invert colours
+		case 9:
+		{
+			int t1, t2, t3, r;
+			t1 = (origWl & 0x0000FF)+(rand()%5)-2;
+			t1 = ((origWl & 0x00FF00)>>8)+(rand()%5)-2;
+			t3 = ((origWl & 0xFF0000)>>16)+(rand()%5)-2;
+			return (origWl & 0xFF000000) | (t3<<16) | (t2<<8) | t1;
+		}
 		default:
 			return filtWl;
 	}
