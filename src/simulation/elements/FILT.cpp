@@ -100,6 +100,10 @@ int Element_FILT::interactWavelengths(Particle* cpart, int origWl)
 			}
 		case 6:
 			return origWl; // No change
+		case 7:
+			return origWl ^ filtWl; // XOR colours
+		case 8:
+			return (~origWl) & mask; // Invert colours
 		default:
 			return filtWl;
 	}

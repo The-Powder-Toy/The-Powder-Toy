@@ -2071,8 +2071,8 @@ void GameView::OnDraw()
 				else if (sample.particle.type == PT_FILT)
 				{
 					sampleInfo << c->ElementResolve(sample.particle.type, sample.particle.ctype);
-					const char* filtModes[] = {"set colour", "AND", "OR", "subtract colour", "red shift", "blue shift", "no effect"};
-					if (sample.particle.tmp>=0 && sample.particle.tmp<=6)
+					const char* filtModes[] = {"set colour", "AND", "OR", "subtract colour", "red shift", "blue shift", "no effect", "XOR", "NOT"};
+					if (sample.particle.tmp>=0 && sample.particle.tmp<=8)
 						sampleInfo << " (" << filtModes[sample.particle.tmp] << ")";
 					else
 						sampleInfo << " (unknown mode)";
