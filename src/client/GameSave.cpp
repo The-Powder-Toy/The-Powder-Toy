@@ -972,7 +972,16 @@ void GameSave::readOPS(char * data, int dataLength)
 								particles[newIndex].tmp = 6;
 							particles[newIndex].ctype = 0;
 						}
+					case PT_QRTZ:
+					case PT_PQRT:
+						if (savedVersion < 89)
+						{
+							particles[newIndex].tmp2 = particles[newIndex].tmp;
+							particles[newIndex].tmp = particles[newIndex].ctype;
+							particles[newIndex].ctype = 0;
+						}
 					}
+					//note: PSv was used in version 77.0 and every version before, add something in PSv too if the element is that old
 					newIndex++;
 				}
 			}
@@ -1600,6 +1609,12 @@ void GameSave::readPSv(char * data, int dataLength)
 				{
 					if (particles[i-1].tmp<0 || particles[i-1].tmp>3)
 						particles[i-1].tmp = 6;
+					particles[i-1].ctype = 0;
+				}
+				else if (particles[i-1].type == PT_QRTZ || particles[i-1].type == PT_PQRT)
+				{
+					particles[i-1].tmp2 = particles[i-1].tmp;
+					particles[i-1].tmp = particles[i-1].ctype;
 					particles[i-1].ctype = 0;
 				}
 			}

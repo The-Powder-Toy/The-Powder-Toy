@@ -2835,7 +2835,7 @@ int Simulation::create_part(int p, int x, int y, int tv)
 				break;
 			case PT_QRTZ:
 			case PT_PQRT:
-				parts[i].tmp = (rand()%11);
+				parts[i].tmp2 = (rand()%11);
 				break;
 			case PT_CLST:
 				parts[i].tmp = (rand()%7);
