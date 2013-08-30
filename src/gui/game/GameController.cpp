@@ -749,7 +749,7 @@ void GameController::ResetSpark()
 			if (sim->parts[i].ctype >= 0 && sim->parts[i].ctype < PT_NUM && sim->elements[sim->parts[i].ctype].Enabled)
 			{
 				sim->parts[i].type = sim->parts[i].ctype;
-				sim->parts[i].life = 0;
+				sim->parts[i].ctype = sim->parts[i].life = 0;
 			}
 			else
 				sim->kill_part(i);
