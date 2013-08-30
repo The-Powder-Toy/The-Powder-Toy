@@ -388,23 +388,23 @@ int Simulation::flood_prop_2(int x, int y, size_t propoffset, void * propvalue, 
 	}
 	for (x=x1; x<=x2; x++)
 	{
-		i = pmap[y][x]>>8;
+		i = pmap[y][x];
 		if (!i)
-			i = photons[y][x]>>8;
+			i = photons[y][x];
 		if (!i)
 			continue;
 		switch (proptype) {
 			case StructProperty::Float:
-				*((float*)(((char*)&parts[i])+propoffset)) = *((float*)propvalue);
+				*((float*)(((char*)&parts[i>>8])+propoffset)) = *((float*)propvalue);
 				break;
 				
 			case StructProperty::ParticleType:
 			case StructProperty::Integer:
-				*((int*)(((char*)&parts[i])+propoffset)) = *((int*)propvalue);
+				*((int*)(((char*)&parts[i>>8])+propoffset)) = *((int*)propvalue);
 				break;
 				
 			case StructProperty::UInteger:
-				*((unsigned int*)(((char*)&parts[i])+propoffset)) = *((unsigned int*)propvalue);
+				*((unsigned int*)(((char*)&parts[i>>8])+propoffset)) = *((unsigned int*)propvalue);
 				break;
 				
 			default:
