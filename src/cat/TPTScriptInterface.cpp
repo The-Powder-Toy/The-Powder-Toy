@@ -255,16 +255,29 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 	//Selector
 	int newValue;
 	if(value.GetType() == TypeNumber)
+	{
 		newValue = ((NumberType)value).Value();
+	}
 	else if(value.GetType() == TypeString)
 	{
-		newValue = GetParticleType(((StringType)value).Value());
-		if (newValue < 0 || newValue >= PT_NUM)
+		if (property.Value() == "temp")
 		{
-			// TODO: add element CAKE to invalidate this
-			if (!strcasecmp(((StringType)value).Value().c_str(),"cake"))
-				throw GeneralException("Cake is a lie, not an element");
-			throw GeneralException("Invalid element");
+			std::string newString = ((StringType)value).Value();
+			if (newString.at(newString.length()-1) == 'C')
+				newValue = atoi(newString.substr(0, newString.length()-1).c_str())+273;
+			else if (newString.at(newString.length()-1) == 'F')
+				newValue = (int)((atoi(newString.substr(0, newString.length()-1).c_str())-32.0f)*5/9+273.15f);
+		}
+		else
+		{
+			newValue = GetParticleType(((StringType)value).Value());
+			if (newValue < 0 || newValue >= PT_NUM)
+			{
+				// TODO: add element CAKE to invalidate this
+				if (!strcasecmp(((StringType)value).Value().c_str(),"cake"))
+					throw GeneralException("Cake is a lie, not an element");
+				throw GeneralException("Invalid element");
+			}
 		}
 	}
 	else
