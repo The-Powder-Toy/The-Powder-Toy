@@ -67,13 +67,10 @@ void VideoBuffer::Resize(int width, int height, bool resample, bool fixedRatio)
 	else if(fixedRatio)
 	{
 		//Force proportions
-		float scaleFactor = 1.0f;
-		if(Height >  newHeight)
-			scaleFactor = ((float)newHeight)/((float)Height);
-		if(Width > newWidth)
-			scaleFactor = ((float)newWidth)/((float)Width);
-		newWidth = ((float)Width)*scaleFactor;
-		newHeight = ((float)Height)*scaleFactor;
+		if(newWidth*Height > newHeight*Width) // same as nW/W > nH/H
+			newWidth = (int)(Width * (newHeight/(float)Height));
+		else
+			newHeight = (int)(Height * (newWidth/(float)Width));
 	}
 	if(resample)
 		newBuffer = Graphics::resample_img(Buffer, Width, Height, newWidth, newHeight);
