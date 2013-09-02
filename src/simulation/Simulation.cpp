@@ -2019,13 +2019,15 @@ void Simulation::init_can_move()
 	}
 	//a list of lots of things PHOT can move through
 	// TODO: replace with property
-	for (movingType = 0; movingType < PT_NUM; movingType++)
+	for (destinationType = 0; destinationType < PT_NUM; destinationType++)
 	{
-		if (movingType == PT_GLAS || movingType == PT_PHOT || movingType == PT_FILT || movingType == PT_INVIS
-		 || movingType == PT_CLNE || movingType == PT_PCLN || movingType == PT_BCLN || movingType == PT_PBCN
-		 || movingType == PT_WATR || movingType == PT_DSTW || movingType == PT_SLTW || movingType == PT_GLOW
-		 || movingType == PT_ISOZ || movingType == PT_ISZS || movingType == PT_QRTZ || movingType == PT_PQRT)
-			can_move[PT_PHOT][movingType] = 2;
+		if (destinationType == PT_GLAS || destinationType == PT_PHOT || destinationType == PT_FILT || destinationType == PT_INVIS
+		 || destinationType == PT_CLNE || destinationType == PT_PCLN || destinationType == PT_BCLN || destinationType == PT_PBCN
+		 || destinationType == PT_WATR || destinationType == PT_DSTW || destinationType == PT_SLTW || destinationType == PT_GLOW
+		 || destinationType == PT_ISOZ || destinationType == PT_ISZS || destinationType == PT_QRTZ || destinationType == PT_PQRT)
+			can_move[PT_PHOT][destinationType] = 2;
+		if (destinationType != PT_DMND && destinationType != PT_INSL && destinationType != PT_VOID && destinationType != PT_PVOD)
+			can_move[PT_PROT][destinationType] = 2;
 	}
 
 	//other special cases that weren't covered above
@@ -2932,7 +2934,8 @@ int Simulation::create_part(int p, int x, int y, int tv)
 			case PT_TSNS:
 				parts[i].tmp2 = 2;
 				break;
-			case PT_FIGH:{
+			case PT_FIGH:
+			{
 				unsigned char fcount = 0;
 				while (fcount < 100 && fcount < (fighcount+1) && fighters[fcount].spwn==1) fcount++;
 				if (fcount < 100 && fighters[fcount].spwn==0)
@@ -2947,35 +2950,53 @@ int Simulation::create_part(int p, int x, int y, int tv)
 					return i;
 				}
 				parts[i].type=0;
-				return -1;}
-			case PT_PHOT:{
+				return -1;
+			}
+			case PT_PHOT:
+			{
 				float a = (rand()%8) * 0.78540f;
 				parts[i].life = 680;
 				parts[i].ctype = 0x3FFFFFFF;
 				parts[i].vx = 3.0f*cosf(a);
 				parts[i].vy = 3.0f*sinf(a);
-				break;}
-			case PT_ELEC:{
+				break;
+			}
+			case PT_ELEC:
+			{
 				float a = (rand()%360)*3.14159f/180.0f;
 				parts[i].life = 680;
 				parts[i].vx = 2.0f*cosf(a);
 				parts[i].vy = 2.0f*sinf(a);
-				break;}
-			case PT_NEUT:{
+				break;
+			}
+			case PT_NEUT:
+			{
 				float r = (rand()%128+128)/127.0f;
 				float a = (rand()%360)*3.14159f/180.0f;
 				parts[i].life = rand()%480+480;
 				parts[i].vx = r*cosf(a);
 				parts[i].vy = r*sinf(a);
-				break;}
-			case PT_TRON:{
+				break;
+			}
+			case PT_PROT:
+			{
+				float a = (rand()%72)* 0.08727f;
+				parts[i].life = 680;
+				parts[i].vx = 2.0f*cosf(a);
+				parts[i].vy = 2.0f*sinf(a);
+				break;
+			}
+			case PT_TRON:
+			{
 				int randhue = rand()%360;
 				int randomdir = rand()%4;
 				parts[i].tmp = 1|(randomdir<<5)|(randhue<<7);//set as a head and a direction
 				parts[i].tmp2 = 4;//tail
 				parts[i].life = 5;
-				break;}
-			case PT_LIGH:{
+				break;
+			}
+			case PT_LIGH:
+			{
 				float gx, gy, gsize;
 				if (p!=-2)
 				{
@@ -2994,7 +3015,8 @@ int Simulation::create_part(int p, int x, int y, int tv)
 				}
 				parts[i].tmp = (((int)(atan2f(-gy, gx)*(180.0f/M_PI)))+rand()%40-20+360)%360;
 				parts[i].tmp2 = 4;
-				break;}
+				break;
+			}
 			default:
 				break;
 		}

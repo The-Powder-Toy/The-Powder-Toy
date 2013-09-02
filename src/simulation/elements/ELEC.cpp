@@ -91,6 +91,7 @@ int Element_ELEC::update(UPDATE_FUNC_ARGS)
 						sim->create_part(r>>8, x+rx, y+ry, PT_H2);
 					return 1;
 				case PT_NEUT:
+				case PT_PROT: // this is the correct reaction, not NEUT, but leaving NEUT in anyway
 					sim->part_change_type(r>>8, x+rx, y+ry, PT_H2);
 					parts[r>>8].life = 0;
 					parts[r>>8].ctype = 0;
@@ -123,8 +124,6 @@ int Element_ELEC::update(UPDATE_FUNC_ARGS)
 			}
 	return 0;
 }
-
-
 
 //#TPT-Directive ElementHeader Element_ELEC static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_ELEC::graphics(GRAPHICS_FUNC_ARGS)
