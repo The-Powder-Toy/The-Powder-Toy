@@ -49,7 +49,7 @@ Element_PROT::Element_PROT()
 //#TPT-Directive ElementHeader Element_PROT static int update(UPDATE_FUNC_ARGS)
 int Element_PROT::update(UPDATE_FUNC_ARGS)
 {
-	sim->pv[y/CELL][x/CELL] -= .005f;
+	sim->pv[y/CELL][x/CELL] -= .003f;
 	int under = pmap[y][x];
 	//set off explosives (only when hot because it wasn't as fun when it made an entire save explode)
 	if (parts[i].temp > 273.15f+500.0f && (sim->elements[under&0xFF].Flammable || sim->elements[under&0xFF].Explosive || (under&0xFF) == PT_BANG))
@@ -81,6 +81,47 @@ int Element_PROT::update(UPDATE_FUNC_ARGS)
 	//else, slowly kill it if it's not inside an element
 	else
 		parts[i].life--;
+	
+	//if this proton has collided with another last frame, change it into a heavier element
+	if (parts[i].tmp)
+	{
+		int newID, element;
+		if (parts[i].tmp > 4250)
+			element = PT_SING; //particle accelerators are known to create earth-destroying black holes
+		else if (parts[i].tmp > 275)
+			element = PT_PLUT;
+		else if (parts[i].tmp > 170)
+			element = PT_URAN;
+		else if (parts[i].tmp > 100)
+			element = PT_PLSM;
+		else if (parts[i].tmp > 40)
+			element = PT_O2;
+		else if (parts[i].tmp > 20)
+			element = PT_CO2;
+		else
+			element = PT_NBLE;
+		newID = sim->create_part(-1, x+rand()%3-1, y+rand()%3-1, element);
+		parts[newID].temp = restrict_flt(100.0f*parts[i].tmp, MIN_TEMP, MAX_TEMP);
+		sim->kill_part(i);
+		return 1;
+	}
+	//collide with other protons to make heavier materials
+	int ahead = sim->photons[y][x];
+	if ((ahead>>8) != i && (ahead&0xFF) == PT_PROT)
+	{
+		float velocity1 = powf(parts[i].vx, 2.0f)+powf(parts[i].vy, 2.0f);
+		float velocity2 = powf(parts[ahead>>8].vx, 2.0f)+powf(parts[ahead>>8].vy, 2.0f);
+		float direction1 = atan2f(-parts[i].vy, parts[i].vx);
+		float direction2 = atan2f(-parts[ahead>>8].vy, parts[ahead>>8].vx);
+		float difference = direction1 - direction2; if (difference < 0) difference += 6.28319f;
+
+		if (difference > 3.12659f && difference < 3.15659f && velocity1 + velocity2 > 10.0f)
+		{
+			parts[ahead>>8].tmp += (int)(velocity1 + velocity2);
+			sim->kill_part(i);
+			return 1;
+		}
+	}
 	return 0;
 }
 
