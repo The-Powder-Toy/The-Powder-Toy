@@ -48,7 +48,7 @@ Element_ACID::Element_ACID()
 
 //#TPT-Directive ElementHeader Element_ACID static int update(UPDATE_FUNC_ARGS)
 int Element_ACID::update(UPDATE_FUNC_ARGS)
- {
+{
 	int r, rx, ry, trade, np;
 	for (rx=-2; rx<3; rx++)
 		for (ry=-2; ry<3; ry++)
@@ -95,7 +95,7 @@ int Element_ACID::update(UPDATE_FUNC_ARGS)
 					}
 				}
 			}
-	for ( trade = 0; trade<2; trade ++)
+	for (trade = 0; trade<2; trade++)
 	{
 		rx = rand()%5-2;
 		ry = rand()%5-2;
@@ -109,8 +109,8 @@ int Element_ACID::update(UPDATE_FUNC_ARGS)
 				int temp = parts[i].life - parts[r>>8].life;
 				if (temp==1)
 				{
-					parts[r>>8].life ++;
-					parts[i].life --;
+					parts[r>>8].life++;
+					parts[i].life--;
 				}
 				else if (temp>0)
 				{
@@ -126,7 +126,6 @@ int Element_ACID::update(UPDATE_FUNC_ARGS)
 
 //#TPT-Directive ElementHeader Element_ACID static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_ACID::graphics(GRAPHICS_FUNC_ARGS)
-
 {
 	int s = cpart->life;
 	if (s>75) s = 75; //These two should not be here.
@@ -139,6 +138,5 @@ int Element_ACID::graphics(GRAPHICS_FUNC_ARGS)
 	*pixel_mode |= PMODE_BLUR;
 	return 0;
 }
-
 
 Element_ACID::~Element_ACID() {}

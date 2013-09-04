@@ -2284,7 +2284,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 			return 0;
 		}
 	}
-	if (((r&0xFF)==PT_VIBR || (r&0xFF)==PT_BVBR))
+	else if (((r&0xFF)==PT_VIBR || (r&0xFF)==PT_BVBR))
 	{
 		if ((elements[parts[i].type].Properties & TYPE_ENERGY))
 		{
@@ -2307,7 +2307,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 		if (y<ny && (pmap[y+1][x]&0xFF) == PT_CNCT) //check below CNCT for another CNCT
 			return 0;
 	}
-	else if(parts[i].type==PT_GBMB)
+	else if(parts[i].type == PT_GBMB)
 	{
 		if (parts[i].life>0)
 			return 0;
@@ -2967,10 +2967,13 @@ int Simulation::create_part(int p, int x, int y, int tv)
 				parts[i].ctype = 0x47FFFF;
 				break;
 			case PT_DTEC:
-				parts[i].tmp2 = 2;
-				break;
 			case PT_TSNS:
 				parts[i].tmp2 = 2;
+				break;
+			case PT_VIRS:
+			case PT_VRSS:
+			case PT_VRSG:
+				parts[i].pavg[1] = 250;
 				break;
 			case PT_FIGH:
 			{
