@@ -76,7 +76,20 @@ int Element_PROT::update(UPDATE_FUNC_ARGS)
 	//make temp of other things closer to it's own temperature. This will change temp of things that don't conduct, and won't change the PROT's temperature
 	if (under)
 	{
-		parts[under>>8].temp -= restrict_flt((parts[under>>8].temp-parts[i].temp)/4.0f, MIN_TEMP, MAX_TEMP);
+		if ((under&0xFF) == PT_WIFI || (under&0xFF) == PT_PRTI || (under&0xFF) == PT_PRTO)
+		{
+			float change;
+			if (parts[i].temp<173.15f) change = -1000.0f;
+			else if (parts[i].temp<273.15f) change = -100.0f;
+			else if (parts[i].temp>473.15f) change = 1000.0f;
+			else if (parts[i].temp>373.15f) change = 100.0f;
+			else change = 0.0f;
+			parts[under>>8].temp = restrict_flt(parts[under>>8].temp+change, MIN_TEMP, MAX_TEMP);
+		}
+		else
+		{
+			parts[under>>8].temp = restrict_flt(parts[under>>8].temp-(parts[under>>8].temp-parts[i].temp)/4.0f, MIN_TEMP, MAX_TEMP);
+		}
 	}
 	//else, slowly kill it if it's not inside an element
 	else
