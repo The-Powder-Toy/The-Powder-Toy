@@ -21,7 +21,7 @@ Element_BCOL::Element_BCOL()
 	
 	Flammable = 0;
 	Explosive = 0;
-	Meltable = 5;
+	Meltable = 0;
 	Hardness = 2;
 	
 	Weight = 90;
