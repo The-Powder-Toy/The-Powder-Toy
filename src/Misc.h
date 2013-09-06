@@ -88,6 +88,8 @@ void membwand(void * dest, void * src, size_t destsize, size_t srcsize);
 
 int splitsign(const char* str);
 
+std::string wordwrap(std::string text, int width);
+
 // a b
 // c d
 

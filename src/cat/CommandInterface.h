@@ -10,7 +10,6 @@ class GameController;
 class Tool;
 class CommandInterface {
 protected:
-	std::string lastError;
 	GameModel * m;
 	GameController * c;
 public:
@@ -30,9 +29,22 @@ public:
 	virtual bool OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt) {return true;}
 	virtual bool OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt) {return true;}
 	virtual void OnTick() {}
-	virtual int Command(std::string command);
+	enum EvalStatus
+	{
+		EvalSuccess, EvalFail, EvalMore
+	};
+	class EvalResult
+	{
+		public:
+		EvalStatus status;
+		std::string buffer;
+		EvalResult(EvalStatus Status, std::string Buffer):
+			status(Status),
+			buffer(Buffer)
+		{}
+	};
+	virtual EvalResult * Command(std::string command);
 	virtual std::string FormatCommand(std::string command);
-	std::string GetLastError();
 	virtual ~CommandInterface();
 };
 

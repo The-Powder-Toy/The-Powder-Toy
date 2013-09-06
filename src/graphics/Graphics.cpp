@@ -589,7 +589,7 @@ int Graphics::textwidth(const char *s)
 	return x-1;
 }
 
-int Graphics::CharWidth(char c)
+int Graphics::CharWidth(unsigned char c)
 {
 	return font_data[font_ptrs[(int)c]];
 }
