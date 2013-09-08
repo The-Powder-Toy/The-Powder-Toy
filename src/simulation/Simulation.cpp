@@ -2692,7 +2692,7 @@ int Simulation::create_part(int p, int x, int y, int tv)
 		if (p==-2 && ((elements[type].Properties & PROP_DRAWONCTYPE) || type==PT_CRAY))
 		{
 			parts[index].ctype = PT_SPRK;
-			return -1;
+			return index;
 		}
 		if (!(type == PT_INST || (elements[type].Properties&PROP_CONDUCTS)) || parts[index].life!=0)
 			return -1;

@@ -960,11 +960,13 @@ void GameSave::readOPS(char * data, int dataLength)
 					case PT_PSTN:
 						if (savedVersion < 87 && particles[newIndex].ctype)
 							particles[newIndex].life = 1;
+						break;
 					case PT_STKM:
 					case PT_STKM2:
 					case PT_FIGH:
 						if (savedVersion < 88 && particles[newIndex].ctype == OLD_SPC_AIR)
 							particles[newIndex].ctype = SPC_AIR;
+						break;
 					case PT_FILT:
 						if (savedVersion < 89)
 						{
@@ -972,6 +974,7 @@ void GameSave::readOPS(char * data, int dataLength)
 								particles[newIndex].tmp = 6;
 							particles[newIndex].ctype = 0;
 						}
+						break;
 					case PT_QRTZ:
 					case PT_PQRT:
 						if (savedVersion < 89)
@@ -980,6 +983,7 @@ void GameSave::readOPS(char * data, int dataLength)
 							particles[newIndex].tmp = particles[newIndex].ctype;
 							particles[newIndex].ctype = 0;
 						}
+						break;
 					}
 					//note: PSv was used in version 77.0 and every version before, add something in PSv too if the element is that old
 					newIndex++;
