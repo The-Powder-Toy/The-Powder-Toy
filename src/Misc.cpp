@@ -6,6 +6,7 @@
 #include <cmath>
 #include "Config.h"
 #include "Misc.h"
+#include "graphics/Graphics.h"
 #include "icondoc.h"
 #if defined(WIN)
 #include <shlobj.h>
@@ -641,6 +642,61 @@ int splitsign(const char* str)
 	}
 	return 0;
 }
+
+std::string wordwrap(std::string text, int width)
+{
+	char * rawText = new char[text.length()+1];
+	std::copy(text.begin(), text.end(), rawText);
+	rawText[text.length()] = 0;
+	std::string textLines;
+	unsigned char c, pc = 0;
+	int charIndex = 0;
+
+	int wordWidth = 0;
+	int lineWidth = 0;
+	char * wordStart = NULL;
+	while(c = rawText[charIndex++])
+	{
+		switch(c)
+		{
+			case ' ':
+				lineWidth += Graphics::CharWidth(c);
+				lineWidth += wordWidth;
+				wordWidth = 0;
+				break;
+			case '\n':
+				lineWidth = wordWidth = 0;
+				break;
+			default:
+				wordWidth += Graphics::CharWidth(c);
+				break;
+		}
+		if(pc == ' ')
+		{
+			wordStart = &rawText[charIndex-2];
+		}
+		if ((c != ' ' || pc == ' ') && lineWidth + wordWidth >= width)
+		{
+			if(wordStart && *wordStart)
+			{
+				*wordStart = '\n';
+				if (lineWidth != 0)
+					lineWidth = wordWidth;
+			}
+			else if(!wordStart)
+			{
+				rawText[charIndex-1] = '\n';
+				lineWidth = 0;
+			}
+			wordWidth = 0;
+			wordStart = 0;
+		}
+		pc = c;
+	}
+	textLines = std::string(rawText);
+	delete[] rawText;
+	return textLines;
+}	
 
 vector2d v2d_zero = {0,0};
 matrix2d m2d_identity = {1,0,0,1};

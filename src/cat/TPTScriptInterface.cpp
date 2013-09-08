@@ -12,13 +12,11 @@ TPTScriptInterface::TPTScriptInterface(GameController * c, GameModel * m): Comma
 {
 }
 
-int TPTScriptInterface::Command(std::string command)
+CommandInterface::EvalResult * TPTScriptInterface::Command(std::string command)
 {
-	lastError = "";
 	std::deque<std::string> words;
 	std::deque<AnyType> commandWords;
-	int retCode;
-
+	std::string error;
 	//Split command into words, put them on the stack
 	char * rawCommand;
 	rawCommand = (char*)calloc(command.length()+1, 1);
@@ -40,20 +38,14 @@ int TPTScriptInterface::Command(std::string command)
 		}
 		catch (GeneralException & e)
 		{
-			retCode = -1;
-			lastError = e.GetExceptionMessage();
-			break;
+			free(rawCommand);
+			return new CommandInterface::EvalResult(CommandInterface::EvalFail, "\br" + e.GetExceptionMessage());
 		}
 	}
 	free(rawCommand);
 	if(commandWords.size())
-	{
-		retCode = 0;
-		lastError = ((StringType)commandWords.front()).Value();
-	}
-
-	//Evaluate
-	return 0;
+		return new CommandInterface::EvalResult(CommandInterface::EvalSuccess, ((StringType)commandWords.front()).Value());
+	return new CommandInterface::EvalResult(CommandInterface::EvalSuccess, "");
 }
 
 ValueType TPTScriptInterface::testType(std::string word)
@@ -439,6 +431,7 @@ AnyType TPTScriptInterface::tptS_load(std::deque<std::string> * words)
 	//Arguments from stack
 	NumberType saveID = eval(words);
 
+	c->HideConsole();
 	c->OpenSavePreview(saveID.Value(), 0, false);
 
 	return NumberType(0);

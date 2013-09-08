@@ -19,7 +19,7 @@ protected:
 public:
 	TPTScriptInterface(GameController * c, GameModel * m);
 	virtual void Tick() {}
-	virtual int Command(std::string command);
+	virtual EvalResult * Command(std::string command);
 	virtual std::string FormatCommand(std::string command);
 	virtual ~TPTScriptInterface();
 };
