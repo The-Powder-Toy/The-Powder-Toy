@@ -1389,6 +1389,16 @@ std::string GameController::ElementResolve(int type, int ctype)
 		return "";
 }
 
+bool GameController::IsValidElement(int type)
+{
+	if(gameModel && gameModel->GetSimulation())
+	{
+		return (type > 0 && type < PT_NUM && gameModel->GetSimulation()->elements[type].Enabled);
+	}
+	else
+		return false;
+}
+
 std::string GameController::WallName(int type)
 {
 	if(gameModel && gameModel->GetSimulation() && gameModel->GetSimulation()->wtypes && type >= 0 && type < UI_WALLCOUNT)

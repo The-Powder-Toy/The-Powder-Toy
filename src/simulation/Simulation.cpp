@@ -3811,7 +3811,7 @@ void Simulation::update_particles_i(int start, int inc)
 					s = 1;
 
 					//A fix for ice with ctype = 0
-					if ((t==PT_ICEI || t==PT_SNOW) && (parts[i].ctype==0 || parts[i].ctype>=PT_NUM || parts[i].ctype==PT_ICEI || parts[i].ctype==PT_SNOW))
+					if ((t==PT_ICEI || t==PT_SNOW) && (parts[i].ctype<=0 || parts[i].ctype>=PT_NUM || parts[i].ctype==PT_ICEI || parts[i].ctype==PT_SNOW || !elements[parts[i].ctype].Enabled))
 						parts[i].ctype = PT_WATR;
 
 					if (ctemph>elements[t].HighTemperature && elements[t].HighTemperatureTransition>-1)
@@ -3838,7 +3838,7 @@ void Simulation::update_particles_i(int start, int inc)
 #endif
 						else if (t == PT_ICEI || t == PT_SNOW)
 						{
-							if (parts[i].ctype < PT_NUM && parts[i].ctype != t)
+							if (parts[i].ctype > 0 && parts[i].ctype < PT_NUM && parts[i].ctype != t)
 							{
 								if (elements[parts[i].ctype].LowTemperatureTransition==t && pt<=elements[parts[i].ctype].LowTemperature)
 									s = 0;
@@ -3941,7 +3941,7 @@ void Simulation::update_particles_i(int start, int inc)
 						}
 						else if (t == PT_LAVA)
 						{
-							if (parts[i].ctype>0 && parts[i].ctype<PT_NUM && parts[i].ctype!=PT_LAVA)
+							if (parts[i].ctype>0 && parts[i].ctype<PT_NUM && parts[i].ctype!=PT_LAVA && parts[i].ctype!=PT_LAVA && elements[parts[i].ctype].Enabled)
 							{
 								if (parts[i].ctype==PT_THRM&&pt>=elements[PT_BMTL].HighTemperature)
 									s = 0;

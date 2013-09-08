@@ -2069,7 +2069,7 @@ void GameView::OnDraw()
 				ctype = sample.particle.tmp&0xFF;
 			if(showDebug)
 			{
-				if (sample.particle.type == PT_LAVA && ctype > 0 && ctype < PT_NUM)
+				if (sample.particle.type == PT_LAVA && c->IsValidElement(ctype))
 					sampleInfo << "Molten " << c->ElementResolve(ctype, -1);
 				else if ((sample.particle.type == PT_PIPE || sample.particle.type == PT_PPIP) && ctype > 0 && ctype < PT_NUM)
 					sampleInfo << c->ElementResolve(sample.particle.type, -1) << " with " << c->ElementResolve(ctype, (int)sample.particle.pavg[1]);
@@ -2087,7 +2087,7 @@ void GameView::OnDraw()
 				else
 				{
 					sampleInfo << c->ElementResolve(sample.particle.type, sample.particle.ctype);
-					if(ctype > 0 && ctype < PT_NUM)
+					if (c->IsValidElement(ctype))
 						sampleInfo << " (" << c->ElementResolve(ctype, -1) << ")";
 					else
 						sampleInfo << " ()";
