@@ -2071,7 +2071,7 @@ void GameView::OnDraw()
 			{
 				if (sample.particle.type == PT_LAVA && c->IsValidElement(ctype))
 					sampleInfo << "Molten " << c->ElementResolve(ctype, -1);
-				else if ((sample.particle.type == PT_PIPE || sample.particle.type == PT_PPIP) && ctype > 0 && ctype < PT_NUM)
+				else if ((sample.particle.type == PT_PIPE || sample.particle.type == PT_PPIP) && c->IsValidElement(ctype))
 					sampleInfo << c->ElementResolve(sample.particle.type, -1) << " with " << c->ElementResolve(ctype, (int)sample.particle.pavg[1]);
 				else if (sample.particle.type == PT_LIFE)
 					sampleInfo << c->ElementResolve(sample.particle.type, sample.particle.ctype);
