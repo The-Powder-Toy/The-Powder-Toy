@@ -80,7 +80,7 @@ int Element_CRAY::update(UPDATE_FUNC_ARGS)
 						unsigned int colored = 0;
 						bool destroy = parts[r>>8].ctype==PT_PSCN;
 						bool nostop = parts[r>>8].ctype==PT_INST;
-						bool createOnExisting = (parts[r>>8].ctype==PT_INWR);
+						bool createSpark = (parts[r>>8].ctype==PT_INWR);
 						int partsRemaining = 255;
 						if (parts[i].tmp) //how far it shoots
 							partsRemaining = parts[i].tmp;
@@ -89,36 +89,17 @@ int Element_CRAY::update(UPDATE_FUNC_ARGS)
 								break;
 							}
 							r = pmap[y+nyi+nyy][x+nxi+nxx];
-							if (!sim->IsWallBlocking(x+nxi+nxx, y+nyi+nyy, parts[i].ctype) && (!r || createOnExisting)) { // create, also set color if it has passed through FILT
+							if (!sim->IsWallBlocking(x+nxi+nxx, y+nyi+nyy, parts[i].ctype) && (!sim->pmap[y+nyi+nyy][x+nxi+nxx] || createSpark)) { // create, also set color if it has passed through FILT
 								int nr;
-								if (createOnExisting)
-								{
-									if (r&0xFF)
-									{
-										if (parts[i].ctype == PT_SOAP)
-											parts[r>>8].dcolour = 0;
-										else if (parts[i].ctype == PT_FILT)
-											parts[r>>8].dcolour = colored;
-										else 
-											nr = sim->create_part(-1, x+nxi+nxx, y+nyi+nyy, PT_SPRK);
-										if ((r&0xFF)==PT_FILT)
-											colored = wavelengthToDecoColour(Element_FILT::getWavelengths(&parts[r>>8]));
-										if (!--partsRemaining)
-											docontinue = 0;
-									}
-								}
+								if (parts[i].ctype == PT_LIFE)
+									nr = sim->create_part(-1, x+nxi+nxx, y+nyi+nyy, parts[i].ctype|(parts[i].tmp2<<8));
 								else
-								{
-									if (parts[i].ctype == PT_LIFE)
-										nr = sim->create_part(-1, x+nxi+nxx, y+nyi+nyy, parts[i].ctype|(parts[i].tmp2<<8));
-									else
-										nr = sim->create_part(-1, x+nxi+nxx, y+nyi+nyy, parts[i].ctype);
-									if (nr!=-1) {
-										parts[nr].dcolour = colored;
-										parts[nr].temp = parts[i].temp;
-										if(!--partsRemaining)
-											docontinue = 0;
-									}
+									nr = sim->create_part(-1, x+nxi+nxx, y+nyi+nyy, parts[i].ctype);
+								if (nr!=-1) {
+									parts[nr].dcolour = colored;
+									parts[nr].temp = parts[i].temp;
+									if(!--partsRemaining)
+										docontinue = 0;
 								}
 							} else if ((r&0xFF)==PT_FILT) { // get color if passed through FILT
 								colored = wavelengthToDecoColour(Element_FILT::getWavelengths(&parts[r>>8]));
