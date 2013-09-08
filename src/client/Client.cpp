@@ -45,6 +45,7 @@
 #include "gui/preview/Comment.h"
 #include "ClientListener.h"
 #include "requestbroker/RequestBroker.h"
+#include "requestbroker/WebRequest.h"
 #include "requestbroker/APIRequest.h"
 #include "requestbroker/APIResultParser.h"
 
@@ -1196,6 +1197,17 @@ std::vector<unsigned char> Client::GetSaveData(int saveID, int saveDate)
 	return saveData;
 }
 
+RequestBroker::Request * Client::GetSaveDataAsync(int saveID, int saveDate)
+{
+	std::stringstream urlStream;
+	if(saveDate){
+		urlStream << "http://" << STATICSERVER << "/" << saveID << "_" << saveDate << ".cps";
+	} else {
+		urlStream << "http://" << STATICSERVER << "/" << saveID << ".cps";
+	}
+	return new WebRequest(urlStream.str());	
+}
+
 RequestBroker::Request * Client::SaveUserInfoAsync(UserInfo info)
 {
 	class StatusParser: public APIResultParser
@@ -1723,6 +1735,80 @@ SaveInfo * Client::GetSave(int saveID, int saveDate)
 	return NULL;
 }
 
+RequestBroker::Request * Client::GetSaveAsync(int saveID, int saveDate)
+{
+	std::stringstream urlStream;
+	urlStream << "http://" << SERVER  << "/Browse/View.json?ID=" << saveID;
+	if(saveDate)
+	{
+		urlStream << "&Date=" << saveDate;
+	}
+
+	class SaveInfoParser: public APIResultParser
+	{
+		virtual void * ProcessResponse(unsigned char * data, int dataLength)
+		{
+			try
+			{
+				std::istringstream dataStream((char*)data);
+				json::Object objDocument;
+				json::Reader::Read(objDocument, dataStream);
+
+				json::Number tempID = objDocument["ID"];
+				json::Number tempScoreUp = objDocument["ScoreUp"];
+				json::Number tempScoreDown = objDocument["ScoreDown"];
+				json::Number tempMyScore = objDocument["ScoreMine"];
+				json::String tempUsername = objDocument["Username"];
+				json::String tempName = objDocument["Name"];
+				json::String tempDescription = objDocument["Description"];
+				json::Number tempDate = objDocument["Date"];
+				json::Boolean tempPublished = objDocument["Published"];
+				json::Boolean tempFavourite = objDocument["Favourite"];
+				json::Number tempComments = objDocument["Comments"];
+				json::Number tempViews = objDocument["Views"];
+				json::Number tempVersion = objDocument["Version"];
+
+				json::Array tagsArray = objDocument["Tags"];
+				std::vector<std::string> tempTags;
+
+				for(int j = 0; j < tagsArray.Size(); j++)
+				{
+					json::String tempTag = tagsArray[j];
+					tempTags.push_back(tempTag.Value());
+				}
+
+				SaveInfo * tempSave = new SaveInfo(
+						tempID.Value(),
+						tempDate.Value(),
+						tempScoreUp.Value(),
+						tempScoreDown.Value(),
+						tempMyScore.Value(),
+						tempUsername.Value(),
+						tempName.Value(),
+						tempDescription.Value(),
+						tempPublished.Value(),
+						tempTags
+						);
+				tempSave->Comments = tempComments.Value();
+				tempSave->Favourite = tempFavourite.Value();
+				tempSave->Views = tempViews.Value();
+				tempSave->Version = tempVersion.Value();
+				return tempSave;
+			}
+			catch (json::Exception &e)
+			{
+				return NULL;
+			}
+		}
+		virtual void Cleanup(void * objectPtr)
+		{
+			delete (SaveInfo*)objectPtr;
+		}
+		virtual ~SaveInfoParser() { }
+	};
+	return new APIRequest(urlStream.str(), new SaveInfoParser());
+}
+
 Thumbnail * Client::GetPreview(int saveID, int saveDate)
 {
 	std::stringstream urlStream;
@@ -1763,6 +1849,54 @@ Thumbnail * Client::GetPreview(int saveID, int saveDate)
 		}
 	}
 	return new Thumbnail(saveID, saveDate, (pixel *)malloc((128*128) * PIXELSIZE), ui::Point(128, 128));
+}
+
+RequestBroker::Request * Client::GetCommentsAsync(int saveID, int start, int count)
+{
+	class CommentsParser: public APIResultParser
+	{
+		virtual void * ProcessResponse(unsigned char * data, int dataLength)
+		{
+			std::vector<SaveComment*> * commentArray = new std::vector<SaveComment*>();
+			try
+			{
+				std::istringstream dataStream((char*)data);
+				json::Array commentsArray;
+				json::Reader::Read(commentsArray, dataStream);
+
+				for(int j = 0; j < commentsArray.Size(); j++)
+				{
+					json::Number tempUserID = commentsArray[j]["UserID"];
+					json::String tempUsername = commentsArray[j]["Username"];
+					json::String tempFormattedUsername = commentsArray[j]["FormattedUsername"];
+					json::String tempComment = commentsArray[j]["Text"];
+					commentArray->push_back(
+								new SaveComment(
+									tempUserID.Value(),
+									tempUsername.Value(),
+									tempFormattedUsername.Value(),
+									tempComment.Value()
+									)
+								);
+				}
+				return commentArray;
+			}
+			catch (json::Exception &e)
+			{
+				delete commentArray;
+				return NULL;
+			}
+		}
+		virtual void Cleanup(void * objectPtr)
+		{
+			delete (std::vector<SaveComment*>*)objectPtr;
+		}
+		virtual ~CommentsParser() { }
+	};
+
+	std::stringstream urlStream;
+	urlStream << "http://" << SERVER << "/Browse/Comments.json?ID=" << saveID << "&Start=" << start << "&Count=" << count;
+	return new APIRequest(urlStream.str(), new CommentsParser());
 }
 
 std::vector<SaveComment*> * Client::GetComments(int saveID, int start, int count)

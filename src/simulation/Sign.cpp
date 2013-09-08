@@ -31,25 +31,19 @@ std::string sign::getText(Simulation *sim)
 		else
 			sprintf(buff, "Temp: 0.00");  //...temperature
 	}
-	else if (sregexp(signText, "^{[c|t]:[0-9]*|.*}$")==0)
-	{
-		int sldr, startm;
-		memset(buff, 0, sizeof(buff));
-		for (sldr=3; signText[sldr-1] != '|'; sldr++)
-			startm = sldr + 1;
-		sldr = startm;
-		while (signText[sldr] != '}')
-		{
-			buff[sldr - startm] = signText[sldr];
-			sldr++;
-		}
-	}
 	else
 	{
-		sprintf(buff, "%s", signText);
+		int pos=splitsign(signText);
+		if (pos)
+		{
+			strcpy(buff, signText+pos+1);
+			buff[strlen(signText)-pos-2]=0;
+		}
+		else
+			strcpy(buff, signText);
 	}
 
-	return std::string(buff,256);
+	return std::string(buff);
 }
 
 void sign::pos(std::string signText, int & x0, int & y0, int & w, int & h)

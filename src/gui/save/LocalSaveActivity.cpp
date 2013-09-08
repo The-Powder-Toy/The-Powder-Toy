@@ -133,7 +133,7 @@ void LocalSaveActivity::OnDraw()
 	}
 }
 
-void LocalSaveActivity::OnResponseReady(void * imagePtr)
+void LocalSaveActivity::OnResponseReady(void * imagePtr, int identifier)
 {
 	if(thumbnail)
 		delete thumbnail;

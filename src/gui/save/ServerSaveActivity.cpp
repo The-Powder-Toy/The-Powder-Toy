@@ -335,7 +335,7 @@ void ServerSaveActivity::OnDraw()
 	}
 }
 
-void ServerSaveActivity::OnResponseReady(void * imagePtr)
+void ServerSaveActivity::OnResponseReady(void * imagePtr, int identifier)
 {
 	if(thumbnail)
 		delete thumbnail;

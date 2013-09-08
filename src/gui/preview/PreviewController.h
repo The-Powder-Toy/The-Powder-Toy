@@ -22,8 +22,8 @@ public:
 	inline int SaveID() { return saveId; };
 
 	bool HasExited;
-	PreviewController(int saveID, ControllerCallback * callback);
-	PreviewController(int saveID, int saveDate, ControllerCallback * callback);
+	PreviewController(int saveID, bool instant, ControllerCallback * callback);
+	PreviewController(int saveID, int saveDate, bool instant, ControllerCallback * callback);
 	void Exit();
 	void DoOpen();
 	void OpenInBrowser();

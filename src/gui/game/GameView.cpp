@@ -1279,11 +1279,13 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 	}
 	switch(key)
 	{
-	case KEY_ALT:
+	case KEY_LALT:
+	case KEY_RALT:
 		drawSnap = true;
 		enableAltBehaviour();
 		break;
-	case KEY_CTRL:
+	case KEY_LCTRL:
+	case KEY_RCTRL:
 		if(!isMouseDown)
 		{
 			if(drawModeReset)
@@ -1302,7 +1304,8 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		}
 		enableCtrlBehaviour();
 		break;
-	case KEY_SHIFT:
+	case KEY_LSHIFT:
+	case KEY_RSHIFT:
 		if(!isMouseDown)
 		{
 			if(drawModeReset)
@@ -1470,6 +1473,13 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		else
 			c->InvertAirSim();
 		break;
+	case ';':
+		if (ctrl)
+		{
+			c->SetReplaceModeFlags(c->GetReplaceModeFlags()^SPECIFIC_DELETE);
+			break;
+		}
+		//fancy case switch without break
 	case SDLK_INSERT:
 		c->SetReplaceModeFlags(c->GetReplaceModeFlags()^REPLACE_MODE);
 		break;
@@ -1500,14 +1510,17 @@ void GameView::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bo
 		drawModeReset = true;
 	switch(key)
 	{
-	case KEY_ALT:
+	case KEY_LALT:
+	case KEY_RALT:
 		drawSnap = false;
 		disableAltBehaviour();
 		break;
-	case KEY_CTRL:
+	case KEY_LCTRL:
+	case KEY_RCTRL:
 		disableCtrlBehaviour();
 		break;
-	case KEY_SHIFT:
+	case KEY_LSHIFT:
+	case KEY_RSHIFT:
 		disableShiftBehaviour();
 		break;
 	case 'z':
@@ -2056,16 +2069,25 @@ void GameView::OnDraw()
 				ctype = sample.particle.tmp&0xFF;
 			if(showDebug)
 			{
-				if (sample.particle.type == PT_LAVA && ctype > 0 && ctype < PT_NUM)
+				if (sample.particle.type == PT_LAVA && c->IsValidElement(ctype))
 					sampleInfo << "Molten " << c->ElementResolve(ctype, -1);
-				else if ((sample.particle.type == PT_PIPE || sample.particle.type == PT_PPIP) && ctype > 0 && ctype < PT_NUM)
+				else if ((sample.particle.type == PT_PIPE || sample.particle.type == PT_PPIP) && c->IsValidElement(ctype))
 					sampleInfo << c->ElementResolve(sample.particle.type, -1) << " with " << c->ElementResolve(ctype, (int)sample.particle.pavg[1]);
 				else if (sample.particle.type == PT_LIFE)
 					sampleInfo << c->ElementResolve(sample.particle.type, sample.particle.ctype);
+				else if (sample.particle.type == PT_FILT)
+				{
+					sampleInfo << c->ElementResolve(sample.particle.type, sample.particle.ctype);
+					const char* filtModes[] = {"set colour", "AND", "OR", "subtract colour", "red shift", "blue shift", "no effect", "XOR", "NOT"};
+					if (sample.particle.tmp>=0 && sample.particle.tmp<=8)
+						sampleInfo << " (" << filtModes[sample.particle.tmp] << ")";
+					else
+						sampleInfo << " (unknown mode)";
+				}
 				else
 				{
 					sampleInfo << c->ElementResolve(sample.particle.type, sample.particle.ctype);
-					if(ctype > 0 && ctype < PT_NUM)
+					if (c->IsValidElement(ctype))
 						sampleInfo << " (" << c->ElementResolve(ctype, -1) << ")";
 					else
 						sampleInfo << " ()";
@@ -2088,7 +2110,9 @@ void GameView::OnDraw()
 				sampleInfo << ", Temp: " << std::fixed << sample.particle.temp -273.15f;
 				sampleInfo << ", Pressure: " << std::fixed << sample.AirPressure;
 			}
-			if(sample.particle.type == PT_PHOT)
+			if (sample.particle.type == PT_PHOT || sample.particle.type == PT_BIZR || sample.particle.type == PT_BIZRG || sample.particle.type == PT_BIZRS)
+				wavelengthGfx = sample.particle.ctype;
+			if (sample.particle.type == PT_FILT && sample.particle.ctype)
 				wavelengthGfx = sample.particle.ctype;
 		}
 		else if (sample.WallType)

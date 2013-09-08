@@ -34,6 +34,6 @@ public:
 	void saveWrite(std::string finalFilename);
 	virtual void Save();
 	virtual void OnDraw();
-	virtual void OnResponseReady(void * imagePtr);
+	virtual void OnResponseReady(void * imagePtr, int identifier);
 	virtual ~LocalSaveActivity();
 };

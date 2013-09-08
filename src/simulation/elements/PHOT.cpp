@@ -88,6 +88,11 @@ int Element_PHOT::update(UPDATE_FUNC_ARGS)
 						parts[i].ctype = 0x1F<<(rand()%26);
 					parts[i].life++; //Delay death
 				}
+				else if ((r&0xFF) == PT_FILT && parts[r>>8].tmp==9)
+				{
+					parts[i].vx += ((float)(rand()%1000-500))/1000.0f;
+					parts[i].vy += ((float)(rand()%1000-500))/1000.0f;
+				}
 			}
 	return 0;
 }

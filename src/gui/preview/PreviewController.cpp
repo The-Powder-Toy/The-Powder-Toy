@@ -8,7 +8,7 @@
 #include "gui/login/LoginController.h"
 #include "Controller.h"
 
-PreviewController::PreviewController(int saveID, int saveDate, ControllerCallback * callback):
+PreviewController::PreviewController(int saveID, int saveDate, bool instant, ControllerCallback * callback):
 	HasExited(false),
 	saveId(saveID),
 	saveDate(saveDate),
@@ -18,6 +18,7 @@ PreviewController::PreviewController(int saveID, int saveDate, ControllerCallbac
 	previewView = new PreviewView();
 	previewModel->AddObserver(previewView);
 	previewView->AttachController(this);
+	previewModel->SetDoOpen(instant);
 
 	previewModel->UpdateSave(saveID, saveDate);
 
@@ -31,7 +32,7 @@ PreviewController::PreviewController(int saveID, int saveDate, ControllerCallbac
 	this->callback = callback;
 }
 
-PreviewController::PreviewController(int saveID, ControllerCallback * callback):
+PreviewController::PreviewController(int saveID, bool instant, ControllerCallback * callback):
 	HasExited(false),
 	saveId(saveID),
 	saveDate(0),
@@ -164,7 +165,7 @@ void PreviewController::OpenInBrowser()
 
 bool PreviewController::NextCommentPage()
 {
-	if(previewModel->GetCommentsPageNum() < previewModel->GetCommentsPageCount() && previewModel->GetCommentsLoaded())
+	if(previewModel->GetCommentsPageNum() < previewModel->GetCommentsPageCount() && previewModel->GetCommentsLoaded() && !previewModel->GetDoOpen())
 	{
 		previewModel->UpdateComments(previewModel->GetCommentsPageNum()+1);
 		return true;
@@ -174,7 +175,7 @@ bool PreviewController::NextCommentPage()
 
 bool PreviewController::PrevCommentPage()
 {
-	if(previewModel->GetCommentsPageNum()>1 && previewModel->GetCommentsLoaded())
+	if(previewModel->GetCommentsPageNum() > 1 && previewModel->GetCommentsLoaded() && !previewModel->GetDoOpen())
 	{
 		previewModel->UpdateComments(previewModel->GetCommentsPageNum()-1);
 		return true;

@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <queue>
 #include "Config.h"
@@ -571,25 +570,19 @@ bool GameController::MouseUp(int x, int y, unsigned button)
 				(*iter).pos((*iter).getText(sim), signx, signy, signw, signh);
 				if (x>=signx && x<=signx+signw && y>=signy && y<=signy+signh)
 				{
-					if (sregexp((*iter).text.c_str(), "^{[c|t]:[0-9]*|.*}$")==0)
+					const char* str=(*iter).text.c_str();
+					int pos=splitsign(str);
+					if (pos)
 					{
-						const char * signText = (*iter).text.c_str();
 						char buff[256];
-						int sldr;
-
-						memset(buff, 0, sizeof(buff));
-
-						for (sldr=3; signText[sldr] != '|'; sldr++)
-							buff[sldr-3] = signText[sldr];
-
-						buff[sldr-3] = '\0';
-
+						strcpy(buff, str+3);
+						buff[pos]=0;
 						int tempSaveID = format::StringToNumber<int>(std::string(buff));
 						if (tempSaveID)
 						{
-							if ((*iter).text.c_str()[1] == 'c')
-								OpenSavePreview(tempSaveID, 0);
-							else if ((*iter).text.c_str()[1] == 't')
+							if (str[1] == 'c')
+								OpenSavePreview(tempSaveID, 0, false);
+							else if (str[1] == 't')
 							{
 								char url[256];
 								sprintf(url, "http://powdertoy.co.uk/Discussions/Thread/View.html?Thread=%i", tempSaveID);
@@ -756,7 +749,7 @@ void GameController::ResetSpark()
 			if (sim->parts[i].ctype >= 0 && sim->parts[i].ctype < PT_NUM && sim->elements[sim->parts[i].ctype].Enabled)
 			{
 				sim->parts[i].type = sim->parts[i].ctype;
-				sim->parts[i].life = 0;
+				sim->parts[i].ctype = sim->parts[i].life = 0;
 			}
 			else
 				sim->kill_part(i);
@@ -1096,9 +1089,9 @@ void GameController::LoadSave(SaveInfo * save)
 	gameModel->SetSave(save);
 }
 
-void GameController::OpenSavePreview(int saveID, int saveDate)
+void GameController::OpenSavePreview(int saveID, int saveDate, bool instant)
 {
-	activePreview = new PreviewController(saveID, saveDate, new SaveOpenCallback(this));
+	activePreview = new PreviewController(saveID, saveDate, instant, new SaveOpenCallback(this));
 	ui::Engine::Ref().ShowWindow(activePreview->GetView());
 }
 
@@ -1106,7 +1099,7 @@ void GameController::OpenSavePreview()
 {
 	if(gameModel->GetSave())
 	{
-		activePreview = new PreviewController(gameModel->GetSave()->GetID(), new SaveOpenCallback(this));
+		activePreview = new PreviewController(gameModel->GetSave()->GetID(), false, new SaveOpenCallback(this));
 		ui::Engine::Ref().ShowWindow(activePreview->GetView());
 	}
 }
@@ -1394,6 +1387,16 @@ std::string GameController::ElementResolve(int type, int ctype)
 	}
 	else
 		return "";
+}
+
+bool GameController::IsValidElement(int type)
+{
+	if(gameModel && gameModel->GetSimulation())
+	{
+		return (type > 0 && type < PT_NUM && gameModel->GetSimulation()->elements[type].Enabled);
+	}
+	else
+		return false;
 }
 
 std::string GameController::WallName(int type)

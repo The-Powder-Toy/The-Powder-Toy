@@ -85,7 +85,7 @@ int Element_PRTO::update(UPDATE_FUNC_ARGS)
 							sim->create_part(-1,x-1,y+1,PT_SPRK);
 							sim->create_part(-1,x-1,y,PT_SPRK);
 							sim->create_part(-1,x-1,y-1,PT_SPRK);
-							sim->portalp[parts[i].tmp][randomness][nnx] = sim->emptyparticle;
+							memset(&sim->portalp[parts[i].tmp][randomness][nnx], 0, sizeof(Particle));
 							break;
 						}
 						else if (sim->portalp[parts[i].tmp][randomness][nnx].type)
@@ -132,7 +132,7 @@ int Element_PRTO::update(UPDATE_FUNC_ARGS)
 								parts[np] = sim->portalp[parts[i].tmp][randomness][nnx];
 							parts[np].x = x+rx;
 							parts[np].y = y+ry;
-							sim->portalp[parts[i].tmp][randomness][nnx] = sim->emptyparticle;
+							memset(&sim->portalp[parts[i].tmp][randomness][nnx], 0, sizeof(Particle));
 							break;
 						}
 					}

@@ -28,7 +28,7 @@ Element_SOAP::Element_SOAP()
 	
 	Temperature = R_TEMP-2.0f	+273.15f;
 	HeatConduct = 29;
-	Description = "Soap. Creates bubbles. Washes off deco color.";
+	Description = "Soap. Creates bubbles, washes off deco color, and cures virus.";
 	
 	State = ST_LIQUID;
 	Properties = TYPE_LIQUID|PROP_NEUTPENETRATE|PROP_LIFE_DEC;
@@ -68,6 +68,8 @@ void Element_SOAP::attach(Particle * parts, int i1, int i2)
 	}
 }
 
+#define FREEZING 248.15f
+
 //#TPT-Directive ElementHeader Element_SOAP static int update(UPDATE_FUNC_ARGS)
 int Element_SOAP::update(UPDATE_FUNC_ARGS)
  
@@ -82,7 +84,7 @@ int Element_SOAP::update(UPDATE_FUNC_ARGS)
 
 	if (parts[i].ctype&1)
 	{
-		if (parts[i].temp>0)
+		if (parts[i].temp>FREEZING)
 		{
 			if (parts[i].life<=0)
 			{
@@ -135,7 +137,7 @@ int Element_SOAP::update(UPDATE_FUNC_ARGS)
 							r = pmap[y+ry][x+rx];
 							if (!r && !sim->bmap[(y+ry)/CELL][(x+rx)/CELL])
 								continue;
-							if (parts[i].temp>0)
+							if (parts[i].temp>FREEZING)
 							{
 								if (sim->bmap[(y+ry)/CELL][(x+rx)/CELL]
 								    || (r && sim->elements[r&0xFF].State != ST_GAS

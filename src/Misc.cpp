@@ -2,7 +2,6 @@
 #include <sstream>
 #include <stdlib.h>
 #include <string.h>
-#include <regex.h>
 #include <sys/types.h>
 #include <cmath>
 #include "Config.h"
@@ -171,17 +170,6 @@ void clean_text(char *text, int vwidth)
 			text[i] = ' ';
 		}
 	}
-}
-
-int sregexp(const char *str, char *pattern)
-{
-	int result;
-	regex_t patternc;
-	if (regcomp(&patternc, pattern,  0)!=0)
-		return 1;
-	result = regexec(&patternc, str, 0, NULL, 0);
-	regfree(&patternc);
-	return result;
 }
 
 void save_string(FILE *f, char *str)
@@ -633,5 +621,26 @@ void membwand(void * destv, void * srcv, size_t destsize, size_t srcsize)
 		dest[i] = dest[i] & src[i%srcsize];
 	}
 }
+
+int splitsign(const char* str)
+{
+	int match=0,r;
+	if (str[0]=='{' && (str[1]=='c' || str[1]=='t') && str[2]==':' && str[3]>='0' && str[3]<='9')
+	{
+		const char* p=str+4;
+		while (*p>='0' && *p<='9')
+			p++;
+		if (*p=='|')
+		{
+			r=p-str;
+			while (*p)
+				p++;
+			if (p[-1]=='}')
+				return r;
+		}
+	}
+	return 0;
+}
+
 vector2d v2d_zero = {0,0};
 matrix2d m2d_identity = {1,0,0,1};

@@ -713,7 +713,8 @@ int luatpt_getelement(lua_State *l)
 	}
 	else
 	{
-		char* name = (char*)luaL_optstring(l, 1, "dust");
+		luaL_checktype(l, 1, LUA_TSTRING);
+		char* name = (char*)luaL_optstring(l, 1, "");
 		if ((t = luacon_ci->GetParticleType(name))==-1)
 			return luaL_error(l, "Unrecognised element '%s'", name);
 		lua_pushinteger(l, t);
@@ -1099,7 +1100,7 @@ int luatpt_reset_spark(lua_State* l)
 			if (luacon_sim->parts[i].ctype >= 0 && luacon_sim->parts[i].ctype < PT_NUM)
 			{
 				luacon_sim->parts[i].type = luacon_sim->parts[i].ctype;
-				luacon_sim->parts[i].life = 0;
+				luacon_sim->parts[i].life = luacon_sim->parts[i].ctype = 0;
 			}
 			else
 				luacon_sim->kill_part(i);
@@ -1871,7 +1872,7 @@ int luatpt_heat(lua_State* l)
 	heatstate = luaL_optint(l, 1, -1);
 	if (heatstate == -1)
 	{
-		lua_pushinteger(l, luacon_sim->legacy_enable);
+		lua_pushinteger(l, !luacon_sim->legacy_enable);
 		return 1;
 	}
 	luacon_sim->legacy_enable = (heatstate==1?0:1);

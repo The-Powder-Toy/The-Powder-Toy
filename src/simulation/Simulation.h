@@ -70,7 +70,6 @@ public:
 	bool gravWallChanged;
 	//Portals and Wifi
 	Particle portalp[CHANNELS][8][80];
-	Particle emptyparticle;
 	int portal_rx[8];
 	int portal_ry[8];
 	int wireless[CHANNELS][2];

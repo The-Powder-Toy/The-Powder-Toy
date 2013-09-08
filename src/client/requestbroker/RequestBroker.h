@@ -17,6 +17,7 @@ class RequestBroker: public Singleton<RequestBroker>
 {
 	friend class ImageRequest;
 	friend class APIRequest;
+	friend class WebRequest;
 	friend class ThumbRenderRequest;
 public:
 	class Request;
@@ -56,7 +57,7 @@ public:
 	void RetrieveThumbnail(int saveID, int saveDate, int width, int height, RequestListener * tListener);
 	void RetrieveThumbnail(int saveID, int width, int height, RequestListener * tListener);
 	void RetrieveAvatar(std::string username, int width, int height, RequestListener * tListener);
-	void Start(Request * request, RequestListener * tLIstener);
+	void Start(Request * request, RequestListener * tLIstener, int identifier = 0);
 	
 	bool CheckRequestListener(ListenerHandle handle);
 	ListenerHandle AttachRequestListener(RequestListener * tListener);
@@ -65,12 +66,13 @@ public:
 	class Request
 	{
 	public:
-		enum RequestType { ThumbnailRender, Image, API };
+		enum RequestType { ThumbnailRender, Image, API, Web };
+		int Identifier;
 		RequestType Type;
 		void * ResultObject;
 		ListenerHandle Listener;
 		std::vector<Request*> Children;
-		Request(RequestType type, ListenerHandle listener);
+		Request(RequestType type, ListenerHandle listener, int identifier);
 		virtual ProcessResponse Process(RequestBroker & rb) { return Failed; }
 		virtual ~Request();
 		virtual void Cleanup();

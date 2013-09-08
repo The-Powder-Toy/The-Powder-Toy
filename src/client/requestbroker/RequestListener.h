@@ -7,5 +7,5 @@ public:
 	RequestListener() { ListenerRand = rand(); }
 	virtual ~RequestListener() {}
 
-	virtual void OnResponseReady(void * response) {}
+	virtual void OnResponseReady(void * response, int identifier) {}
 };

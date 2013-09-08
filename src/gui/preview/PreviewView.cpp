@@ -574,10 +574,10 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 				tempUsername = new ui::Label(ui::Point(5, currentY+3), ui::Point(Size.X-((XRES/2) + 13), 16), comments->at(i)->authorNameFormatted);
 			tempUsername->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 			tempUsername->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
-			if (sender->GetSave() && sender->GetSave()->GetUserName() == comments->at(i)->authorName)
-				tempUsername->SetTextColour(ui::Colour(255, 100, 100));
-			else if (Client::Ref().GetAuthUser().ID && Client::Ref().GetAuthUser().Username == comments->at(i)->authorName)
+			if (Client::Ref().GetAuthUser().ID && Client::Ref().GetAuthUser().Username == comments->at(i)->authorName)
 				tempUsername->SetTextColour(ui::Colour(255, 255, 100));
+			else if (sender->GetSave() && sender->GetSave()->GetUserName() == comments->at(i)->authorName)
+				tempUsername->SetTextColour(ui::Colour(255, 100, 100));
 			currentY += 16;
 
 			commentComponents.push_back(tempUsername);

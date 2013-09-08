@@ -912,7 +912,7 @@ void Renderer::DrawWalls()
 
 void Renderer::DrawSigns()
 {
-	int i, j, x, y, w, h, dx, dy,mx,my,b=1,bq;
+	int i, j, x, y, w, h, dx, dy,mx,my,b=1,bq,match;
 	std::vector<sign> signs = sim->signs;
 #ifdef OGLR
 	GLint prevFbo;
@@ -923,14 +923,14 @@ void Renderer::DrawSigns()
 	for (i=0; i < signs.size(); i++)
 		if (signs[i].text.length())
 		{
-			std::string text = sim->signs[i].getText(sim);
-			sim->signs[i].pos(text, x, y, w, h);
+			std::string text = signs[i].getText(sim);
+			signs[i].pos(text, x, y, w, h);
 			clearrect(x, y, w+1, h);
 			drawrect(x, y, w+1, h, 192, 192, 192, 255);
-			if (sregexp(signs[i].text.c_str(), "^{[c|t]:[0-9]*|.*}$"))
-				drawtext(x+3, y+3, text, 255, 255, 255, 255);
-			else
+			if (splitsign(signs[i].text.c_str()))
 				drawtext(x+3, y+3, text, 0, 191, 255, 255);
+			else
+				drawtext(x+3, y+3, text, 255, 255, 255, 255);
 				
 			x = signs[i].x;
 			y = signs[i].y;

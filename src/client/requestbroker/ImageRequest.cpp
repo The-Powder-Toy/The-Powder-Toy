@@ -4,8 +4,8 @@
 #include "graphics/Graphics.h"
 #include "client/HTTP.h"
 
-ImageRequest::ImageRequest(std::string url, int width, int height, ListenerHandle listener):
-	Request(Image, listener)
+ImageRequest::ImageRequest(std::string url, int width, int height, ListenerHandle listener, int identifier):
+	Request(Image, listener, identifier)
 {
 	URL = url;
 	HTTPContext = NULL;

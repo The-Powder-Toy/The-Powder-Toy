@@ -31,7 +31,7 @@ public:
 	virtual void ShowPublishingInfo();
 	virtual void ShowRules();
 	virtual void OnDraw();
-	virtual void OnResponseReady(void * imagePtr);
+	virtual void OnResponseReady(void * imagePtr, int identifier);
 	virtual void OnTick(float dt);
 	virtual ~ServerSaveActivity();
 protected:

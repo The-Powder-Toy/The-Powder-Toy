@@ -5,66 +5,16 @@
 #include "PreviewModelException.h"
 
 PreviewModel::PreviewModel():
-	save(NULL),
-	saveComments(NULL),
-	saveData(NULL),
 	doOpen(false),
-	commentsTotal(0),
-	commentsPageNumber(1),
+	save(NULL),
+	saveData(NULL),
+	saveComments(NULL),
 	commentBoxEnabled(false),
-	updateSaveDataInfo(NULL),
-	updateSaveInfoInfo(NULL),
-	updateSaveCommentsInfo(NULL)
+	commentsLoaded(false),
+	commentsTotal(0),
+	commentsPageNumber(1)
 {
 
-}
-
-void * PreviewModel::updateSaveInfoT(void * obj)
-{
-	SaveInfo * tempSave = Client::Ref().GetSave(((threadInfo*)obj)->saveID, ((threadInfo*)obj)->saveDate);
-	((threadInfo*)obj)->threadFinished = true;
-	if (((threadInfo*)obj)->previewExited)
-	{
-		if (tempSave)
-			delete tempSave;
-		delete obj;
-	}
-	return tempSave;
-}
-
-void * PreviewModel::updateSaveDataT(void * obj)
-{
-	int tempDataSize;
-	unsigned char * tempData = Client::Ref().GetSaveData(((threadInfo*)obj)->saveID, ((threadInfo*)obj)->saveDate, tempDataSize);
-	SaveData * tempSave = new SaveData(tempData, tempDataSize);
-	((threadInfo*)obj)->threadFinished = true;
-	if (((threadInfo*)obj)->previewExited)
-	{
-		if (tempSave)
-			delete tempSave;
-		if (tempData)
-			free(tempData);
-		delete obj;
-	}
-	return tempSave;
-}
-
-void * PreviewModel::updateSaveCommentsT(void * obj)
-{
-	std::vector<SaveComment*> * tempComments = Client::Ref().GetComments(((threadInfo*)obj)->saveID, (((threadInfo*)obj)->saveDate-1)*20, 20); //saveDate is used as commentsPageNumber
-	((threadInfo*)obj)->threadFinished = true;
-	if (((threadInfo*)obj)->previewExited)
-	{
-		if (tempComments)
-		{
-			for(int i = 0; i < tempComments->size(); i++)
-				delete tempComments->at(i);
-			tempComments->clear();
-			delete tempComments;
-		}
-		delete obj;
-	}
-	return tempComments;
 }
 
 void PreviewModel::SetFavourite(bool favourite)
@@ -107,8 +57,6 @@ void PreviewModel::UpdateSave(int saveID, int saveDate)
 	}
 	if (saveData)
 	{
-		if (saveData->data)
-			free(saveData->data);
 		delete saveData;
 		saveData = NULL;
 	}
@@ -123,29 +71,13 @@ void PreviewModel::UpdateSave(int saveID, int saveDate)
 	notifySaveChanged();
 	notifySaveCommentsChanged();
 
-	if (!updateSaveDataInfo)
-		updateSaveDataInfo = new threadInfo(saveID, saveDate);
-	if (updateSaveDataInfo->threadFinished)
-	{
-		updateSaveDataInfo->threadFinished = false;
-		pthread_create(&updateSaveDataThread, 0, &PreviewModel::updateSaveDataT, updateSaveDataInfo);
-	}
+	RequestBroker::Ref().Start(Client::Ref().GetSaveDataAsync(saveID, saveDate), this, 1);
+	RequestBroker::Ref().Start(Client::Ref().GetSaveAsync(saveID, saveDate), this, 2);
 
-	if (!updateSaveInfoInfo)
-		updateSaveInfoInfo = new threadInfo(saveID, saveDate);
-	if(updateSaveInfoInfo->threadFinished)
-	{
-		updateSaveInfoInfo->threadFinished = false;
-		pthread_create(&updateSaveInfoThread, 0, &PreviewModel::updateSaveInfoT, updateSaveInfoInfo);
-	}
-
-	if (!updateSaveCommentsInfo)
-		updateSaveCommentsInfo = new threadInfo(saveID, commentsPageNumber);
-	if (updateSaveCommentsInfo->threadFinished)
+	if(!GetDoOpen())
 	{
 		commentsLoaded = false;
-		updateSaveCommentsInfo->threadFinished = false;
-		pthread_create(&updateSaveCommentsThread, 0, &PreviewModel::updateSaveCommentsT, updateSaveCommentsInfo);
+		RequestBroker::Ref().Start(Client::Ref().GetCommentsAsync(saveID, (commentsPageNumber-1)*20, 20), this, 3);
 	}
 }
 
@@ -181,30 +113,82 @@ bool PreviewModel::GetCommentsLoaded()
 
 void PreviewModel::UpdateComments(int pageNumber)
 {
-	commentsLoaded = false;
-	if(saveComments)
-	{
-		for(int i = 0; i < saveComments->size(); i++)
-			delete saveComments->at(i);
-		saveComments->clear();
-		delete saveComments;
-		saveComments = NULL;
-	}
-
-	//resultCount = 0;
-	commentsPageNumber = pageNumber;
-	notifySaveCommentsChanged();
-	notifyCommentsPageChanged();
-
-	//Threading
-	if (!updateSaveCommentsInfo)
-		updateSaveCommentsInfo = new threadInfo(tSaveID, commentsPageNumber);
-	if (updateSaveCommentsInfo->threadFinished)
-	{
+	if(commentsLoaded){
 		commentsLoaded = false;
-		updateSaveCommentsInfo->threadFinished = false;
-		pthread_create(&updateSaveCommentsThread, 0, &PreviewModel::updateSaveCommentsT, updateSaveCommentsInfo);
+		if(saveComments)
+		{
+			for(int i = 0; i < saveComments->size(); i++)
+				delete saveComments->at(i);
+			saveComments->clear();
+			delete saveComments;
+			saveComments = NULL;
+		}
+
+		commentsPageNumber = pageNumber;
+		if(!GetDoOpen())
+			RequestBroker::Ref().Start(Client::Ref().GetCommentsAsync(tSaveID, (commentsPageNumber-1)*20, 20), this, 3);
+
+		notifySaveCommentsChanged();
+		notifyCommentsPageChanged();
 	}
+}
+
+void PreviewModel::OnResponseReady(void * object, int identifier)
+{
+	if (identifier == 1)
+	{
+		if (saveData)
+			delete saveData;
+		saveData = (std::vector<unsigned char>*)object;
+	}
+	if (identifier == 2)
+	{
+		if (save)
+			delete save;
+		save = (SaveInfo*)object;
+	}
+	if (identifier == 3)
+	{
+		if(saveComments)
+		{
+			for (int i = 0; i < saveComments->size(); i++)
+				delete saveComments->at(i);
+			saveComments->clear();
+			delete saveComments;
+			saveComments = NULL;
+		}
+		saveComments = (std::vector<SaveComment*>*)object;
+		std::cout << object << std::endl;
+		commentsLoaded = true;
+		notifySaveCommentsChanged();
+	}
+
+	if(identifier == 1 || identifier == 2)
+	{
+		if (save && saveData)
+		{
+			commentsTotal = save->Comments;
+			try
+			{
+				save->SetGameSave(new GameSave(*saveData));
+			}
+			catch(ParseException &e)
+			{
+				throw PreviewModelException("Save file corrupt or from newer version");
+			}
+			notifySaveChanged();
+			notifyCommentsPageChanged();
+			//make sure author name comments are red
+			if (commentsLoaded)
+				notifySaveCommentsChanged();
+		}
+	}
+}
+
+
+void PreviewModel::Update()
+{
+
 }
 
 std::vector<SaveComment*> * PreviewModel::GetComments()
@@ -253,100 +237,19 @@ void PreviewModel::AddObserver(PreviewView * observer)
 	observer->NotifyCommentBoxEnabledChanged(this);
 }
 
-void PreviewModel::Update()
-{
-	if (updateSaveDataInfo && updateSaveDataInfo->threadFinished)
-	{
-		pthread_join(updateSaveDataThread, (void**)(&saveData));
-		delete updateSaveDataInfo;
-		updateSaveDataInfo = NULL;
-
-		if (save && saveData)
-		{
-			commentsTotal = save->Comments;
-			try
-			{
-				save->SetGameSave(new GameSave((char*)saveData->data, saveData->length));
-			}
-			catch(ParseException &e)
-			{
-				throw PreviewModelException("Save file corrupt or from newer version");
-			}
-			notifySaveChanged();
-			notifyCommentsPageChanged();
-		}
-	}
-
-	if (updateSaveInfoInfo && updateSaveInfoInfo->threadFinished)
-	{
-		if (save)
-		{
-			delete save;
-			save = NULL;
-		}
-		pthread_join(updateSaveInfoThread, (void**)(&save));
-		delete updateSaveInfoInfo;
-		updateSaveInfoInfo = NULL;
-
-		if (save && saveData)
-		{
-			commentsTotal = save->Comments;
-			try
-			{
-				save->SetGameSave(new GameSave((char*)saveData->data, saveData->length));
-			}
-			catch(ParseException &e)
-			{
-				throw PreviewModelException("Save file corrupt or from newer version");
-			}
-			notifyCommentsPageChanged();
-		}
-		notifySaveChanged();
-
-		if(!save)
-			throw PreviewModelException("Unable to load save");
-	}
-
-	if (updateSaveCommentsInfo && updateSaveCommentsInfo->threadFinished)
-	{
-		if(saveComments)
-		{
-			for(int i = 0; i < saveComments->size(); i++)
-				delete saveComments->at(i);
-			saveComments->clear();
-			delete saveComments;
-			saveComments = NULL;
-		}
-
-		commentsLoaded = true;
-		pthread_join(updateSaveCommentsThread, (void**)(&saveComments));
-		delete updateSaveCommentsInfo;
-		updateSaveCommentsInfo = NULL;
-		notifySaveCommentsChanged();
-	}
-}
 
 PreviewModel::~PreviewModel()
 {
-	if (updateSaveDataInfo)
-		updateSaveDataInfo->previewExited = true;
-	if (updateSaveInfoInfo)
-		updateSaveInfoInfo->previewExited = true;
-	if (updateSaveCommentsInfo)
-		updateSaveCommentsInfo->previewExited = true;
+	RequestBroker::Ref().DetachRequestListener(this);
 	if(save)
 		delete save;
+	if (saveData)
+		delete saveData;
 	if(saveComments)
 	{
 		for(int i = 0; i < saveComments->size(); i++)
 			delete saveComments->at(i);
 		saveComments->clear();
 		delete saveComments;
-	}
-	if (saveData)
-	{
-		if (saveData->data)
-			free(saveData->data);
-		delete saveData;
 	}
 }

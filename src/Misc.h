@@ -62,8 +62,6 @@ void load_presets(void);
 
 void save_string(FILE *f, char *str);
 
-int sregexp(const char *str, char *pattern);
-
 int load_string(FILE *f, char *str, int max);
 
 void strcaturl(char *dst, char *src);
@@ -87,6 +85,9 @@ void RGB_to_HSV(int r,int g,int b,int *h,int *s,int *v);
 void OpenURI(std::string uri);
 
 void membwand(void * dest, void * src, size_t destsize, size_t srcsize);
+
+int splitsign(const char* str);
+
 // a b
 // c d
 

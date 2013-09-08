@@ -18,7 +18,7 @@ class ProfileActivity: public WindowActivity, public RequestListener {
 public:
 	ProfileActivity(std::string username);
 	virtual ~ProfileActivity();
-	virtual void OnResponseReady(void * userDataPtr);
+	virtual void OnResponseReady(void * userDataPtr, int identifier);
 	virtual void OnDraw();
 };
 

@@ -36,6 +36,7 @@ SearchController::SearchController(ControllerCallback * callback):
 	HasExited(false),
 	nextQueryTime(0.0f),
 	nextQueryDone(true),
+	instantOpen(false),
 	searchModel(NULL)
 {
 	searchModel = new SearchModel();
@@ -46,9 +47,6 @@ SearchController::SearchController(ControllerCallback * callback):
 	searchModel->UpdateSaveList(1, "");
 
 	this->callback = callback;
-
-	//Set up interface
-	//windowPanel.AddChild();
 }
 
 SaveInfo * SearchController::GetLoadedSave()
@@ -180,13 +178,18 @@ void SearchController::Selected(int saveID, bool selected)
 		searchModel->DeselectSave(saveID);
 }
 
+void SearchController::InstantOpen(bool instant)
+{
+	instantOpen = instant;
+}
+
 void SearchController::OpenSave(int saveID)
 {
 	if(activePreview)
 		delete activePreview;
 	Graphics * g = ui::Engine::Ref().g;
 	g->fillrect(XRES/3, YRES+MENUSIZE-20, XRES/3, 20, 0, 0, 0, 150); //dim the "Page X of Y" a little to make the CopyTextButton more noticeable
-	activePreview = new PreviewController(saveID, new OpenCallback(this));
+	activePreview = new PreviewController(saveID, instantOpen, new OpenCallback(this));
 	ui::Engine::Ref().ShowWindow(activePreview->GetView());
 }
 
@@ -196,7 +199,7 @@ void SearchController::OpenSave(int saveID, int saveDate)
 		delete activePreview;
 	Graphics * g = ui::Engine::Ref().g;
 	g->fillrect(XRES/3, YRES+MENUSIZE-20, XRES/3, 20, 0, 0, 0, 150); //dim the "Page X of Y" a little to make the CopyTextButton more noticeable
-	activePreview = new PreviewController(saveID, saveDate, new OpenCallback(this));
+	activePreview = new PreviewController(saveID, saveDate, instantOpen, new OpenCallback(this));
 	ui::Engine::Ref().ShowWindow(activePreview->GetView());
 }
 

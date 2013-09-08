@@ -113,7 +113,7 @@ public:
 	void OpenLogin();
 	void OpenProfile();
 	void OpenTags();
-	void OpenSavePreview(int saveID, int saveDate);
+	void OpenSavePreview(int saveID, int saveDate, bool instant);
 	void OpenSavePreview();
 	void OpenLocalSaveWindow(bool asCurrent);
 	void OpenLocalBrowse();
@@ -137,6 +137,7 @@ public:
 	ui::Point PointTranslate(ui::Point point);
 	ui::Point NormaliseBlockCoord(ui::Point point);
 	std::string ElementResolve(int type, int ctype);
+	bool IsValidElement(int type);
 	std::string WallName(int type);
 
 	void ResetAir();
