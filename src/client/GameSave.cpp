@@ -1879,12 +1879,17 @@ char * GameSave::serialiseOPS(int & dataLength)
 				//Life (optional), 1 to 2 bytes
 				if(particles[i].life)
 				{
+					int life = particles[i].life;
+					if (life > 0xFFFF)
+						life = 0xFFFF;
+					else if (life < 0)
+						life = 0;
 					fieldDesc |= 1 << 1;
-					partsData[partsDataLen++] = particles[i].life;
+					partsData[partsDataLen++] = life;
 					if(particles[i].life & 0xFF00)
 					{
 						fieldDesc |= 1 << 2;
-						partsData[partsDataLen++] = particles[i].life >> 8;
+						partsData[partsDataLen++] = life >> 8;
 					}
 				}
 
@@ -1962,6 +1967,7 @@ char * GameSave::serialiseOPS(int & dataLength)
 					}
 				}
 
+				//Pavg, 4 bytes
 				//Don't save pavg for things that break under pressure, because then they will break when the save is loaded, since pressure isn't also loaded
 				if ((particles[i].pavg[0] || particles[i].pavg[1]) && !(particles[i].type == PT_QRTZ || particles[i].type == PT_GLAS || particles[i].type == PT_TUNG))
 				{
@@ -1972,7 +1978,7 @@ char * GameSave::serialiseOPS(int & dataLength)
 					partsData[partsDataLen++] = ((int)particles[i].pavg[1])>>8;
 				}
 
-				//Write the field descriptor;
+				//Write the field descriptor
 				partsData[fieldDescLoc] = fieldDesc;
 				partsData[fieldDescLoc+1] = fieldDesc>>8;
 
