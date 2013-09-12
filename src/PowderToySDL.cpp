@@ -125,17 +125,16 @@ char * ClipboardPull()
 		//}
 	}
 #elif defined(LIN) && defined(SDL_VIDEO_DRIVER_X11)
-	
 	char *text = NULL;
-	unsigned char *data = NULL;
-	Atom type;
-	int format, result;
-	unsigned long len, bytesLeft, _;
 	Window selectionOwner;
 	sdl_wminfo.info.x11.lock_func();
 	selectionOwner = XGetSelectionOwner(sdl_wminfo.info.x11.display, XA_CLIPBOARD);
 	if (selectionOwner != None)
 	{
+		unsigned char *data = NULL;
+		Atom type;
+		int format, result;
+		unsigned long len, bytesLeft;
 		std::list<SDL_Event> evlist; // if there arrive any events while fetching keyboard
 		XConvertSelection(sdl_wminfo.info.x11.display, XA_CLIPBOARD, XA_UTF8_STRING, XA_CLIPBOARD, sdl_wminfo.info.x11.window, CurrentTime);
 		XFlush(sdl_wminfo.info.x11.display);
@@ -166,7 +165,7 @@ char * ClipboardPull()
 		}
 		if (bytesLeft)
 		{
-			result = XGetWindowProperty(sdl_wminfo.info.x11.display, sdl_wminfo.info.x11.window, XA_CLIPBOARD, 0, bytesLeft, 0, AnyPropertyType, &type, &format, &len, &_, &data);
+			result = XGetWindowProperty(sdl_wminfo.info.x11.display, sdl_wminfo.info.x11.window, XA_CLIPBOARD, 0, bytesLeft, 0, AnyPropertyType, &type, &format, &len, &bytesLeft, &data);
 			if (result == Success)
 			{
 				text = strdup((const char*) data);

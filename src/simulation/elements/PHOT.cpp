@@ -49,10 +49,8 @@ Element_PHOT::Element_PHOT()
 //#TPT-Directive ElementHeader Element_PHOT static int update(UPDATE_FUNC_ARGS)
 int Element_PHOT::update(UPDATE_FUNC_ARGS)
  {
-	int r, rt, rx, ry;
+	int r, rx, ry;
 	float rr, rrr;
-	parts[i].pavg[0] = x;
-	parts[i].pavg[1] = y;
 	if (!(parts[i].ctype&0x3FFFFFFF)) {
 		sim->kill_part(i);
 		return 1;

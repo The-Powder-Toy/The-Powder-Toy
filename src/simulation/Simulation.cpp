@@ -140,10 +140,6 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 				}
 			}
 		}
-		if (parts[i].pavg[0] || parts[i].pavg[1])
-		{
-			parts[i].pavg[0] = parts[i].pavg[1] = 0;
-		}
 	}
 	parts_lastActiveIndex = NPART-1;
 	force_stacking_check = 1;

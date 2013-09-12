@@ -924,6 +924,19 @@ void GameSave::readOPS(char * data, int dataLength)
 						}
 					}
 
+					//Read pavg
+					if(fieldDescriptor & 0x2000)
+					{
+						if(i+3 >= partsDataLen) goto fail;
+						int pavg;
+						pavg = partsData[i++];
+						pavg |= (((unsigned)partsData[i++]) << 8);
+						particles[newIndex].pavg[0] = (float)pavg;
+						pavg = partsData[i++];
+						pavg |= (((unsigned)partsData[i++]) << 8);
+						particles[newIndex].pavg[1] = (float)pavg;
+					}
+
 					//Particle specific parsing:
 					switch(particles[newIndex].type)
 					{
@@ -1814,7 +1827,7 @@ char * GameSave::serialiseOPS(int & dataLength)
 	//Copy parts data
 	/* Field descriptor format:
 	 |		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|
-	 																|	tmp2[2]		|		tmp2	|	ctype[2]	|		vy		|		vx		|	dcololour	|	ctype[1]	|		tmp[2]	|		tmp[1]	|		life[2]	|		life[1]	|	temp dbl len|
+									|	   pavg		|	 tmp[3+4]	|	tmp2[2]		|		tmp2	|	ctype[2]	|		vy		|		vx		|	dcololour	|	ctype[1]	|		tmp[2]	|		tmp[1]	|		life[2]	|		life[1]	|	temp dbl len|
 	 life[2] means a second byte (for a 16 bit field) if life[1] is present
 	 */
 	partsData = (unsigned char *)malloc(NPART * (sizeof(Particle)+1));
@@ -1875,7 +1888,7 @@ char * GameSave::serialiseOPS(int & dataLength)
 					}
 				}
 
-				//Tmp (optional), 1 to 2 bytes
+				//Tmp (optional), 1, 2, or 4 bytes
 				if(particles[i].tmp)
 				{
 					fieldDesc |= 1 << 3;
@@ -1947,6 +1960,16 @@ char * GameSave::serialiseOPS(int & dataLength)
 						fieldDesc |= 1 << 11;
 						partsData[partsDataLen++] = particles[i].tmp2 >> 8;
 					}
+				}
+
+				//Don't save pavg for things that break under pressure, because then they will break when the save is loaded, since pressure isn't also loaded
+				if ((particles[i].pavg[0] || particles[i].pavg[1]) && !(particles[i].type == PT_QRTZ || particles[i].type == PT_GLAS || particles[i].type == PT_TUNG))
+				{
+					fieldDesc |= 1 << 13;
+					partsData[partsDataLen++] = (int)particles[i].pavg[0];
+					partsData[partsDataLen++] = ((int)particles[i].pavg[0])>>8;
+					partsData[partsDataLen++] = (int)particles[i].pavg[1];
+					partsData[partsDataLen++] = ((int)particles[i].pavg[1])>>8;
 				}
 
 				//Write the field descriptor;

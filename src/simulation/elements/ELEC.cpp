@@ -50,8 +50,6 @@ Element_ELEC::Element_ELEC()
 int Element_ELEC::update(UPDATE_FUNC_ARGS)
  {
 	int r, rt, rx, ry, nb, rrx, rry;
-	parts[i].pavg[0] = x;
-	parts[i].pavg[1] = y;
 	for (rx=-2; rx<=2; rx++)
 		for (ry=-2; ry<=2; ry++)
 			if (BOUNDS_CHECK) {
