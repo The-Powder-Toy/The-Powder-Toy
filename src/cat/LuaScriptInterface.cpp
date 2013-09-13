@@ -2896,14 +2896,17 @@ CommandInterface::EvalResult * LuaScriptInterface::Command(std::string command)
 		{
 			if(std::string(luacon_geterror()).find("near '<eof>'")!=std::string::npos) //the idea stolen from lua-5.1.5/lua.c
 			{
+				lua_pop(l,1);
 				currentCommand = false;
 				return new CommandInterface::EvalResult(CommandInterface::EvalMore, "");
 			}
+			lua_pop(l,1);
 			luaL_loadbuffer(l, command.c_str(), command.length(), "@console");
 		}
 		if(lua_type(l, -1) != LUA_TFUNCTION)
 		{
 			std::string err = luacon_geterror();
+			lua_pop(l,1);
 			currentCommand = false;
 			if(err.find("near '<eof>'")!=std::string::npos)
 				return new CommandInterface::EvalResult(CommandInterface::EvalMore, "");
@@ -2923,15 +2926,17 @@ CommandInterface::EvalResult * LuaScriptInterface::Command(std::string command)
 			}
 			else
 			{
-				for(level++;level<=lua_gettop(l);level++)
+				int arg;
+				for(arg=level+1;arg<=lua_gettop(l);arg++)
 				{
-					luaL_tostring(l, level);
+					luaL_tostring(l, arg);
 					if(text.length())
 						text += ", " + std::string(luaL_optstring(l, -1, ""));
 					else
 						text = std::string(luaL_optstring(l, -1, ""));
 					lua_pop(l, 1);
 				}
+				lua_pop(l,arg-level-1);
 				if(buffer.size())
 					if(text.size())
 						text = buffer + "\n" + text;
