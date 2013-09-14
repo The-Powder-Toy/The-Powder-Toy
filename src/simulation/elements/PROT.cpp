@@ -65,6 +65,14 @@ int Element_PROT::update(UPDATE_FUNC_ARGS)
 		parts[under>>8].life = 44+parts[under>>8].life;
 		parts[under>>8].ctype = 0;
 	}
+	else if ((under&0xFF) == PT_DEUT)
+	{
+		if ((-((int)sim->pv[y/CELL][x/CELL]-4)+(parts[under>>8].life/100)) > rand()%200)
+		{
+			DeutImplosion(sim, parts[under>>8].life, x, y, restrict_flt(parts[under>>8].temp + parts[under>>8].life*500, MIN_TEMP, MAX_TEMP), PT_PROT);
+			sim->kill_part(under>>8);
+		}
+	}
 	//prevent inactive sparkable elements from being sparked
 	else if ((sim->elements[under&0xFF].Properties&PROP_CONDUCTS) && parts[under>>8].life <= 4)
 	{
@@ -134,6 +142,27 @@ int Element_PROT::update(UPDATE_FUNC_ARGS)
 			sim->kill_part(i);
 			return 1;
 		}
+	}
+	return 0;
+}
+
+//#TPT-Directive ElementHeader Element_PROT static int DeutImplosion(Simulation * sim, int n, int x, int y, float temp, int t)
+int Element_PROT::DeutImplosion(Simulation * sim, int n, int x, int y, float temp, int t)
+{
+	int i;
+	n = (n/50);
+	if (n<1)
+		n = 1;
+	else if (n>340)
+		n = 340;
+
+	for (int c=0; c<n; c++)
+	{
+		i = sim->create_part(-3, x, y, t);
+		if (i >= 0)
+			sim->parts[i].temp = temp;
+
+		sim->pv[y/CELL][x/CELL] -= 6.0f * CFDS;
 	}
 	return 0;
 }
