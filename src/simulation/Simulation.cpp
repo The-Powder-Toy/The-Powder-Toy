@@ -2216,7 +2216,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 				part_change_type(i, x, y, PT_ELEC);
 				parts[i].ctype = 0;
 			}
-			else if ((r&0xFF) == PT_H2)
+			else if ((r&0xFF) == PT_H2 && pv[y/CELL][x/CELL] < 45.0f)
 			{
 				create_part(i, x, y, PT_PROT);
 				parts[i].tmp2 = 0x1;
