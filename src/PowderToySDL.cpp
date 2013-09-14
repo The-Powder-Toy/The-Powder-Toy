@@ -50,7 +50,7 @@ using namespace std;
 #endif
 #if defined(USE_SDL) && defined(LIN) && defined(SDL_VIDEO_DRIVER_X11)
 SDL_SysWMinfo sdl_wminfo;
-Atom XA_CLIPBOARD, XA_TARGETS;
+Atom XA_CLIPBOARD, XA_TARGETS, XA_UTF8_STRING;
 #endif
 
 char *clipboardText = NULL;
@@ -125,7 +125,57 @@ char * ClipboardPull()
 		//}
 	}
 #elif defined(LIN) && defined(SDL_VIDEO_DRIVER_X11)
-	printf("Not implemented: get text from clipboard\n");
+	char *text = NULL;
+	Window selectionOwner;
+	sdl_wminfo.info.x11.lock_func();
+	selectionOwner = XGetSelectionOwner(sdl_wminfo.info.x11.display, XA_CLIPBOARD);
+	if (selectionOwner != None)
+	{
+		unsigned char *data = NULL;
+		Atom type;
+		int format, result;
+		unsigned long len, bytesLeft;
+		std::list<SDL_Event> evlist; // if there arrive any events while fetching keyboard
+		XConvertSelection(sdl_wminfo.info.x11.display, XA_CLIPBOARD, XA_UTF8_STRING, XA_CLIPBOARD, sdl_wminfo.info.x11.window, CurrentTime);
+		XFlush(sdl_wminfo.info.x11.display);
+		sdl_wminfo.info.x11.unlock_func();
+		while (1)
+		{
+			SDL_Event event;
+			SDL_WaitEvent(&event);
+			if (event.type == SDL_SYSWMEVENT)
+			{
+				XEvent xevent = event.syswm.msg->event.xevent;
+				if (xevent.type == SelectionNotify && xevent.xselection.requestor == sdl_wminfo.info.x11.window)
+					break;
+				evlist.push_back(event);
+			}
+		}
+		for (std::list<SDL_Event>::iterator iter = evlist.begin(), end = evlist.end(); iter != end; iter++)
+		{
+			SDL_Event event = *iter;
+			SDL_PushEvent(&event); // replay the missed events
+		}
+		sdl_wminfo.info.x11.lock_func();
+		XGetWindowProperty(sdl_wminfo.info.x11.display, sdl_wminfo.info.x11.window, XA_CLIPBOARD, 0, 0, 0, AnyPropertyType, &type, &format, &len, &bytesLeft, &data);
+		if (data)
+		{
+			XFree(data);
+			data = NULL;
+		}
+		if (bytesLeft)
+		{
+			result = XGetWindowProperty(sdl_wminfo.info.x11.display, sdl_wminfo.info.x11.window, XA_CLIPBOARD, 0, bytesLeft, 0, AnyPropertyType, &type, &format, &len, &bytesLeft, &data);
+			if (result == Success)
+			{
+				text = strdup((const char*) data);
+				XFree(data);
+			}
+		}
+		XDeleteProperty(sdl_wminfo.info.x11.display, sdl_wminfo.info.x11.window, XA_CLIPBOARD);
+	}
+	sdl_wminfo.info.x11.unlock_func();
+	return text;
 #else
 	printf("Not implemented: get text from clipboard\n");
 #endif
@@ -769,6 +819,7 @@ int main(int argc, char * argv[])
 	sdl_wminfo.info.x11.lock_func();
 	XA_CLIPBOARD = XInternAtom(sdl_wminfo.info.x11.display, "CLIPBOARD", 1);
 	XA_TARGETS = XInternAtom(sdl_wminfo.info.x11.display, "TARGETS", 1);
+	XA_UTF8_STRING = XInternAtom(sdl_wminfo.info.x11.display, "UTF8_STRING", 1);
 	sdl_wminfo.info.x11.unlock_func();
 #endif
 	ui::Engine::Ref().g = new Graphics();

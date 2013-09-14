@@ -49,7 +49,7 @@ Element_NEUT::Element_NEUT()
 //#TPT-Directive ElementHeader Element_NEUT static int update(UPDATE_FUNC_ARGS)
 int Element_NEUT::update(UPDATE_FUNC_ARGS)
  {
-	int r, rx, ry, rt;
+	int r, rx, ry;
 	int pressureFactor = 3 + (int)sim->pv[y/CELL][x/CELL];
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)
@@ -208,6 +208,5 @@ int Element_NEUT::DeutExplosion(Simulation * sim, int n, int x, int y, float tem
 	}
 	return 0;
 }
-
 
 Element_NEUT::~Element_NEUT() {}

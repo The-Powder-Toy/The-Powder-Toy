@@ -924,6 +924,19 @@ void GameSave::readOPS(char * data, int dataLength)
 						}
 					}
 
+					//Read pavg
+					if(fieldDescriptor & 0x2000)
+					{
+						if(i+3 >= partsDataLen) goto fail;
+						int pavg;
+						pavg = partsData[i++];
+						pavg |= (((unsigned)partsData[i++]) << 8);
+						particles[newIndex].pavg[0] = (float)pavg;
+						pavg = partsData[i++];
+						pavg |= (((unsigned)partsData[i++]) << 8);
+						particles[newIndex].pavg[1] = (float)pavg;
+					}
+
 					//Particle specific parsing:
 					switch(particles[newIndex].type)
 					{
@@ -960,11 +973,13 @@ void GameSave::readOPS(char * data, int dataLength)
 					case PT_PSTN:
 						if (savedVersion < 87 && particles[newIndex].ctype)
 							particles[newIndex].life = 1;
+						break;
 					case PT_STKM:
 					case PT_STKM2:
 					case PT_FIGH:
 						if (savedVersion < 88 && particles[newIndex].ctype == OLD_SPC_AIR)
 							particles[newIndex].ctype = SPC_AIR;
+						break;
 					case PT_FILT:
 						if (savedVersion < 89)
 						{
@@ -972,6 +987,7 @@ void GameSave::readOPS(char * data, int dataLength)
 								particles[newIndex].tmp = 6;
 							particles[newIndex].ctype = 0;
 						}
+						break;
 					case PT_QRTZ:
 					case PT_PQRT:
 						if (savedVersion < 89)
@@ -980,6 +996,7 @@ void GameSave::readOPS(char * data, int dataLength)
 							particles[newIndex].tmp = particles[newIndex].ctype;
 							particles[newIndex].ctype = 0;
 						}
+						break;
 					}
 					//note: PSv was used in version 77.0 and every version before, add something in PSv too if the element is that old
 					newIndex++;
@@ -1810,7 +1827,7 @@ char * GameSave::serialiseOPS(int & dataLength)
 	//Copy parts data
 	/* Field descriptor format:
 	 |		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|
-	 																|	tmp2[2]		|		tmp2	|	ctype[2]	|		vy		|		vx		|	dcololour	|	ctype[1]	|		tmp[2]	|		tmp[1]	|		life[2]	|		life[1]	|	temp dbl len|
+									|	   pavg		|	 tmp[3+4]	|	tmp2[2]		|		tmp2	|	ctype[2]	|		vy		|		vx		|	dcololour	|	ctype[1]	|		tmp[2]	|		tmp[1]	|		life[2]	|		life[1]	|	temp dbl len|
 	 life[2] means a second byte (for a 16 bit field) if life[1] is present
 	 */
 	partsData = (unsigned char *)malloc(NPART * (sizeof(Particle)+1));
@@ -1862,16 +1879,21 @@ char * GameSave::serialiseOPS(int & dataLength)
 				//Life (optional), 1 to 2 bytes
 				if(particles[i].life)
 				{
+					int life = particles[i].life;
+					if (life > 0xFFFF)
+						life = 0xFFFF;
+					else if (life < 0)
+						life = 0;
 					fieldDesc |= 1 << 1;
-					partsData[partsDataLen++] = particles[i].life;
+					partsData[partsDataLen++] = life;
 					if(particles[i].life & 0xFF00)
 					{
 						fieldDesc |= 1 << 2;
-						partsData[partsDataLen++] = particles[i].life >> 8;
+						partsData[partsDataLen++] = life >> 8;
 					}
 				}
 
-				//Tmp (optional), 1 to 2 bytes
+				//Tmp (optional), 1, 2, or 4 bytes
 				if(particles[i].tmp)
 				{
 					fieldDesc |= 1 << 3;
@@ -1945,7 +1967,18 @@ char * GameSave::serialiseOPS(int & dataLength)
 					}
 				}
 
-				//Write the field descriptor;
+				//Pavg, 4 bytes
+				//Don't save pavg for things that break under pressure, because then they will break when the save is loaded, since pressure isn't also loaded
+				if ((particles[i].pavg[0] || particles[i].pavg[1]) && !(particles[i].type == PT_QRTZ || particles[i].type == PT_GLAS || particles[i].type == PT_TUNG))
+				{
+					fieldDesc |= 1 << 13;
+					partsData[partsDataLen++] = (int)particles[i].pavg[0];
+					partsData[partsDataLen++] = ((int)particles[i].pavg[0])>>8;
+					partsData[partsDataLen++] = (int)particles[i].pavg[1];
+					partsData[partsDataLen++] = ((int)particles[i].pavg[1])>>8;
+				}
+
+				//Write the field descriptor
 				partsData[fieldDescLoc] = fieldDesc;
 				partsData[fieldDescLoc+1] = fieldDesc>>8;
 

@@ -66,7 +66,6 @@ public:
 	playerst player2;
 	playerst fighters[256]; //255 is the maximum number of fighters
 	unsigned char fighcount; //Contains the number of fighters
-	int lighting_recreate;
 	bool gravWallChanged;
 	//Portals and Wifi
 	Particle portalp[CHANNELS][8][80];

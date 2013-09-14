@@ -140,10 +140,6 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 				}
 			}
 		}
-		if (parts[i].pavg[0] || parts[i].pavg[1])
-		{
-			parts[i].pavg[0] = parts[i].pavg[1] = 0;
-		}
 	}
 	parts_lastActiveIndex = NPART-1;
 	force_stacking_check = 1;
@@ -2027,7 +2023,7 @@ void Simulation::init_can_move()
 		 || destinationType == PT_ISOZ || destinationType == PT_ISZS || destinationType == PT_QRTZ || destinationType == PT_PQRT
 		 || destinationType == PT_H2)
 			can_move[PT_PHOT][destinationType] = 2;
-		if (destinationType != PT_DMND && destinationType != PT_INSL && destinationType != PT_VOID && destinationType != PT_PVOD)
+		if (destinationType != PT_DMND && destinationType != PT_INSL && destinationType != PT_VOID && destinationType != PT_PVOD && destinationType != PT_VIBR)
 			can_move[PT_PROT][destinationType] = 2;
 	}
 
@@ -2220,10 +2216,12 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 				part_change_type(i, x, y, PT_ELEC);
 				parts[i].ctype = 0;
 			}
-			else if ((r&0xFF) == PT_H2)
+			else if ((r&0xFF) == PT_H2 && pv[y/CELL][x/CELL] < 45.0f)
 			{
-				part_change_type(i, x, y, PT_PROT);
-				parts[i].ctype = 0;
+				create_part(i, x, y, PT_PROT);
+				parts[i].tmp2 = 0x1;
+				create_part(r>>8, x, y, PT_ELEC);
+				return 1;
 			}
 		}
 		else if (parts[i].type == PT_NEUT)
@@ -2692,7 +2690,7 @@ int Simulation::create_part(int p, int x, int y, int tv)
 		if (p==-2 && ((elements[type].Properties & PROP_DRAWONCTYPE) || type==PT_CRAY))
 		{
 			parts[index].ctype = PT_SPRK;
-			return -1;
+			return index;
 		}
 		if (!(type == PT_INST || (elements[type].Properties&PROP_CONDUCTS)) || parts[index].life!=0)
 			return -1;
@@ -3234,33 +3232,11 @@ void Simulation::update_particles_i(int start, int inc)
 	int h_count = 0;
 	int surround[8];
 	int surround_hconduct[8];
-	int lighting_ok=1;
 	unsigned int elem_properties;
 	float pGravX, pGravY, pGravD;
 	int excessive_stacking_found = 0;
 
 	currentTick++;
-
-	if (lighting_recreate>0)
-    {
-        for (i=0; i<=parts_lastActiveIndex; i++)
-        {
-            if (parts[i].type==PT_LIGH && parts[i].tmp2>0)
-            {
-                lighting_ok=0;
-                break;
-            }
-        }
-    }
-
-	if (lighting_ok)
-        lighting_recreate--;
-
-    if (lighting_recreate<0)
-        lighting_recreate=1;
-
-    if (lighting_recreate>21)
-        lighting_recreate=21;
 
 	//if (sys_pause&&!framerender)//do nothing if paused
 	//	return;
@@ -3819,7 +3795,7 @@ void Simulation::update_particles_i(int start, int inc)
 					if ((t==PT_ICEI || t==PT_SNOW) && (parts[i].ctype<=0 || parts[i].ctype>=PT_NUM || parts[i].ctype==PT_ICEI || parts[i].ctype==PT_SNOW || !elements[parts[i].ctype].Enabled))
 						parts[i].ctype = PT_WATR;
 
-					if (ctemph>elements[t].HighTemperature && elements[t].HighTemperatureTransition>-1)
+					if (elements[t].HighTemperatureTransition>-1 && ctemph>elements[t].HighTemperature)
 					{
 						// particle type change due to high temperature
 #ifdef REALISTIC
@@ -3915,7 +3891,7 @@ void Simulation::update_particles_i(int start, int inc)
 						else
 							s = 0;
 					}
-					else if (ctempl<elements[t].LowTemperature && elements[t].LowTemperatureTransition > -1)
+					else if (elements[t].LowTemperatureTransition > -1 && ctempl<elements[t].LowTemperature)
 					{
 						// particle type change due to low temperature
 #ifdef REALISTIC
@@ -4099,7 +4075,7 @@ void Simulation::update_particles_i(int start, int inc)
 
 			s = 1;
 			gravtot = fabs(gravy[(y/CELL)*(XRES/CELL)+(x/CELL)])+fabs(gravx[(y/CELL)*(XRES/CELL)+(x/CELL)]);
-			if (pv[y/CELL][x/CELL]>elements[t].HighPressure&&elements[t].HighPressureTransition>-1) {
+			if (elements[t].HighPressureTransition>-1 && pv[y/CELL][x/CELL]>elements[t].HighPressure) {
 				// particle type change due to high pressure
 				if (elements[t].HighPressureTransition!=PT_NUM)
 					t = elements[t].HighPressureTransition;
@@ -4111,12 +4087,12 @@ void Simulation::update_particles_i(int start, int inc)
 					else s = 0;
 				}
 				else s = 0;
-			} else if (pv[y/CELL][x/CELL]<elements[t].LowPressure&&elements[t].LowPressureTransition>-1) {
+			} else if (elements[t].LowPressureTransition>-1 && pv[y/CELL][x/CELL]<elements[t].LowPressure) {
 				// particle type change due to low pressure
 				if (elements[t].LowPressureTransition!=PT_NUM)
 					t = elements[t].LowPressureTransition;
 				else s = 0;
-			} else if (gravtot>(elements[t].HighPressure/4.0f)&&elements[t].HighPressureTransition>-1) {
+			} else if (elements[t].HighPressureTransition>-1 && gravtot>(elements[t].HighPressure/4.0f)) {
 				// particle type change due to high gravity
 				if (elements[t].HighPressureTransition!=PT_NUM)
 					t = elements[t].HighPressureTransition;
@@ -4129,12 +4105,16 @@ void Simulation::update_particles_i(int start, int inc)
 				}
 				else s = 0;
 			} else s = 0;
-			if (s) { // particle type change occurred
+
+			// particle type change occurred
+			if (s)
+			{
 				parts[i].life = 0;
 				part_change_type(i,x,y,t);
 				if (t==PT_FIRE)
 					parts[i].life = rand()%50+120;
-				if (t==PT_NONE) {
+				if (t==PT_NONE)
+				{
 					kill_part(i);
 					goto killed;
 				}
@@ -4785,7 +4765,6 @@ Simulation::Simulation():
 	pretty_powder(0),
 	sandcolour_frame(0),
 	emp_decor(0),
-	lighting_recreate(0),
 	force_stacking_check(0),
 	ISWIRE(0),
 	gravWallChanged(false),
