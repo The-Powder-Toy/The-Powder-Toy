@@ -172,8 +172,8 @@ int Element_PROT::graphics(GRAPHICS_FUNC_ARGS)
 {
 	*firea = 20;
 	*firer = 250;
-	*fireg = 128;
-	*fireb = 128;
+	*fireg = 100;
+	*fireb = 100;
 
 	*pixel_mode |= FIRE_ADD;
 	return 1;
