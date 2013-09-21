@@ -73,7 +73,7 @@ int Element_WIFI::update(UPDATE_FUNC_ARGS)
 				}
 				else
 				{
-					if ((r&0xFF)==PT_SPRK && parts[r>>8].ctype!=PT_NSCN && parts[r>>8].life>=3)
+					if ((r&0xFF)==PT_SPRK && parts[r>>8].ctype!=PT_NSCN && parts[r>>8].life==3)
 					{
 						sim->wireless[parts[i].tmp][1] = 1;
 						sim->ISWIRE = 2;
