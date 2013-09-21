@@ -68,7 +68,7 @@ int Element_STKM::graphics(GRAPHICS_FUNC_ARGS)
 
 //#TPT-Directive ElementHeader Element_STKM static int run_stickman(playerst* playerp, UPDATE_FUNC_ARGS)
 int Element_STKM::run_stickman(playerst* playerp, UPDATE_FUNC_ARGS) {
-	int r, rx, ry;
+	int r, rx, ry, rocket_type;
 	int t = parts[i].type;
 	float pp, d;
 	float dt = 0.9;///(FPSB*FPSB);  //Delta time in square
@@ -82,6 +82,14 @@ int Element_STKM::run_stickman(playerst* playerp, UPDATE_FUNC_ARGS) {
 	if ((parts[i].ctype>0 && parts[i].ctype<PT_NUM && sim->elements[parts[i].ctype].Enabled && sim->elements[parts[i].ctype].Falldown>0) || parts[i].ctype==SPC_AIR || parts[i].ctype == PT_NEUT || parts[i].ctype == PT_PHOT || parts[i].ctype == PT_LIGH)
 		playerp->elem = parts[i].ctype;
 	playerp->frames++;
+
+	// Set rocket boots
+	if (parts[i].tmp == 1) // TMP 1 = use ctype
+		rocket_type = parts[i].ctype;
+	else if(parts[i].tmp == 2 && parts[i].tmp2 < PT_NUM && parts[i].tmp2 > 0) // TMP 2 = use tmp2
+		rocket_type = parts[i].tmp2;
+	else // else: use PLSM
+		rocket_type = PT_PLSM;
 
 	//Temperature handling
 	if (parts[i].temp<243)
@@ -242,7 +250,7 @@ int Element_STKM::run_stickman(playerst* playerp, UPDATE_FUNC_ARGS) {
 				if (leg==1 && (((int)(playerp->comm)&0x02) == 0x02))
 					continue;
 				int footX = playerp->legs[leg*8+4], footY = playerp->legs[leg*8+5];
-				int np = sim->create_part(-1, footX, footY, PT_PLSM);
+				int np = sim->create_part(-1, footX, footY, rocket_type);
 				if (np>=0)
 				{
 					parts[np].vx = parts[i].vx+rby*25;
@@ -292,7 +300,7 @@ int Element_STKM::run_stickman(playerst* playerp, UPDATE_FUNC_ARGS) {
 				if (leg==0 && (((int)(playerp->comm)&0x01) == 0x01))
 					continue;
 				int footX = playerp->legs[leg*8+4], footY = playerp->legs[leg*8+5];
-				int np = sim->create_part(-1, footX, footY, PT_PLSM);
+				int np = sim->create_part(-1, footX, footY, rocket_type);
 				if (np>=0)
 				{
 					parts[np].vx = parts[i].vx-rby*25;
@@ -327,7 +335,7 @@ int Element_STKM::run_stickman(playerst* playerp, UPDATE_FUNC_ARGS) {
 			for (int leg=0; leg<2; leg++)
 			{
 				int footX = playerp->legs[leg*8+4], footY = playerp->legs[leg*8+5];
-				int np = sim->create_part(-1, footX, footY+1, PT_PLSM);
+				int np = sim->create_part(-1, footX, footY+1, rocket_type);
 				if (np>=0)
 				{
 					parts[np].vx = parts[i].vx+rbx*30;
@@ -371,7 +379,7 @@ int Element_STKM::run_stickman(playerst* playerp, UPDATE_FUNC_ARGS) {
 					|| sim->elements[r&0xFF].Properties&TYPE_LIQUID
 					|| (r&0xFF) == PT_NEUT || (r&0xFF) == PT_PHOT)
 				{
-					if (!playerp->rocketBoots || (r&0xFF)!=PT_PLSM)
+					if (!playerp->rocketBoots || (r&0xFF)!=rocket_type)
 						playerp->elem = r&0xFF;  //Current element
 				}
 				if ((r&0xFF)==PT_TESC || (r&0xFF)==PT_LIGH)
