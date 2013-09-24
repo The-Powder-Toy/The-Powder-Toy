@@ -78,6 +78,12 @@ int Element_PROT::update(UPDATE_FUNC_ARGS)
 	{
 		parts[under>>8].life = 40+parts[under>>8].life;
 	}
+	//Powered LCRY reaction: PROT->PHOT
+	else if (((under&0xFF) == PT_LCRY) && (parts[under>>8].life > 5) && (1>(rand()%10))) {
+		parts[i].type = PT_PHOT;
+		parts[i].life *= 2;
+		parts[i].ctype = 0x3FFFFFFF;
+	} 
 	else if ((under&0xFF) == PT_EXOT)
 		parts[under>>8].ctype = PT_PROT;
 
