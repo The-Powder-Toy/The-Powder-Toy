@@ -66,7 +66,7 @@ void ConsoleModel::ProcessResult(std::string cmd, std::string highlighted, Comma
 						}
 					}
 					history += "\n\bo" + buffer + "\bw";
-					if(inverted)
+					if(std::count(buffer.begin(), buffer.end(), '\x01')&1)
 						history += '\x01';
 					for(; newlines>0; newlines--)
 						promptHistory += '\n';
@@ -88,6 +88,7 @@ void ConsoleModel::ProcessResult(std::string cmd, std::string highlighted, Comma
 							break;
 						}
 				command = "";
+				prompt = ">";
 				currentCommandIndex = -1;
 			}
 			break;

@@ -1,6 +1,5 @@
 #include "ConsoleView.h"
 #include "Misc.h"
-#include <algorithm>
 #include "gui/interface/Keys.h"
 
 ConsoleView::ConsoleView():
@@ -15,6 +14,7 @@ ConsoleView::ConsoleView():
 		{
 			v->Highlight();
 			v->ResizePrompt();
+			sender->SetDisplayText(wordwrap(v->c->FormatCommand(sender->GetText()),sender->Size.X-(sender->Appearance.Margin.Left+sender->Appearance.Margin.Right)));
 		}
 	};
 	class TransparentScrollPanel: public ui::ScrollPanel
@@ -151,6 +151,7 @@ void ConsoleView::DoKeyPress(int key, Uint16 character, bool shift, bool ctrl, b
 
 void ConsoleView::NotifyHistoryChanged(ConsoleModel * sender, std::string command, std::string prompthistory, std::string History)
 {
+	promptLabel->SetText(prompt);
 	commandField->SetDisplayText("");
 	commandField->SetText(command);
 	Highlight();
