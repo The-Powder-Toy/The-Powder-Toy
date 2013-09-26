@@ -2944,6 +2944,222 @@ CommandInterface::EvalResult * LuaScriptInterface::Command(std::string command)
 	}
 }
 
+int strlcmp(const char* a, const char* b, int len)
+{
+	while(len)
+	{
+		if(!*b)
+			return 1;
+		if(*a>*b)
+			return -1;
+		if(*a<*b)
+			return 1;
+		a++;
+		b++;
+		len--;
+	}
+	if(!*b)
+		return 0;
+	return -1;
+}
+
+std::string highlight(std::string command)
+{
+	std::string result = "";
+	int pos = 0;
+	int len = command.length();
+	char* raw = new char[len+1];
+	char c;
+	std::copy(command.begin(), command.end(), raw);
+	raw[len] = 0;
+	while(c = raw[pos])
+	{
+		if((c>='A' && c<='Z') || (c>='a' && c<='z') || c=='_')
+		{
+			int len = 0;
+			char w;
+			const char* wstart = raw+pos;
+			while((w = wstart[len]) && ((w>='A' && w<='Z') || (w>='a' && w<='z') || (w>='0' && w<='9') || w=='_'))
+				len++;
+			if(!strlcmp(wstart,"break",len) || !strlcmp(wstart,"do",len) || !strlcmp(wstart,"else",len) ||
+			   !strlcmp(wstart,"elseif",len) || !strlcmp(wstart,"end",len) || !strlcmp(wstart,"for",len) ||
+			   !strlcmp(wstart,"function",len) || !strlcmp(wstart,"if",len) || !strlcmp(wstart,"if",len) ||
+			   !strlcmp(wstart,"repeat",len) || !strlcmp(wstart,"return",len) || !strlcmp(wstart,"then",len) ||
+			   !strlcmp(wstart,"until",len) || !strlcmp(wstart,"while",len))
+			{
+				result += "\bo";
+				result.append(wstart, len);
+				result += "\bw";
+			}
+			else if(!strlcmp(wstart,"and",len) || !strlcmp(wstart,"false",len) || !strlcmp(wstart,"in",len) ||
+			   !strlcmp(wstart,"local",len) || !strlcmp(wstart,"nil",len) || !strlcmp(wstart,"not",len) ||
+			   !strlcmp(wstart,"or",len) || !strlcmp(wstart,"true",len))
+			{
+				result += "\bl";
+				result.append(wstart, len);
+				result += "\bw";
+			}
+			else
+			{
+				result += "\bt";
+				result.append(wstart, len);
+				result += "\bw";
+			}
+			pos += len;
+		}
+		else if((c>='0' && c<='9') || (c=='.' && raw[pos+1]>='0' && raw[pos+1]<='9'))
+		{
+			if(c=='0' && raw[pos+1]=='x')
+			{
+				int len = 2;
+				char w;
+				const char* wstart = raw+pos;
+				while((w = wstart[len]) && ((w>='0' && w<='9') || (w>='A' && w<='F') || (w>='a' && w<='f')))
+					len++;
+
+				result += "\bb0x";
+				result.append(wstart, len);
+				result += "\bw";
+				pos += len;
+			}
+			else
+			{
+				int len = 0;
+				char w;
+				const char* wstart = raw+pos;
+				int seendot = 0;
+				while((w = wstart[len]) && ((w>='0' && w<='9') || w=='.'))
+				{
+					if(w=='.')
+						if(seendot)
+							break;
+						else
+							seendot=1;
+					len++;
+				}
+				if(w=='e')
+				{
+					len++;
+					w = wstart[len];
+					if(w=='+' || w=='-')
+						len++;
+					while((w = wstart[len]) && (w>='0' && w<='9'))
+						len++;
+				}
+				result += "\bb";
+				result.append(wstart, len);
+				result += "\bw";
+				pos += len;
+			}
+		}
+		else if(c=='\'' || c=='"' || (c=='[' && (raw[pos+1]=='[' || raw[pos+1]=='=')))
+		{
+			if(c=='[')
+			{
+				int len = 1,eqs=0;
+				char w;
+				const char* wstart = raw+pos;
+				while((w = wstart[len]) && (w=='='))
+				{
+					eqs++;
+					len++;
+				}
+				while((w = wstart[len]))
+				{
+					if(w==']')
+					{
+						int nlen = 1;
+						const char* cstart = wstart + len;
+						while((w = cstart[nlen]) && (w=='='))
+							nlen++;
+						if(w==']' && nlen==eqs+1)
+						{
+							len+=nlen+1;
+							break;
+						}
+					}
+					len++;
+				}
+				result += "\br";
+				result.append(wstart, len);
+				result += "\bw";
+				pos += len;
+			}
+			else
+			{
+				int len = 1;
+				char w;
+				const char* wstart = raw+pos;
+				while((w = wstart[len]) && (w!=c))
+				{
+					if(w=='\\' && wstart[len+1])
+						len++;
+					len++;
+				}
+				if(w==c)
+					len++;
+				result += "\br";
+				result.append(wstart, len);
+				result += "\bw";
+				pos += len;
+			}
+		}
+		else if(c=='-' && raw[pos+1]=='-')
+		{
+			if(raw[pos+2]=='[')
+			{
+				int len = 3,eqs=0;
+				char w;
+				const char* wstart = raw+pos;
+				while((w = wstart[len]) && (w=='='))
+				{
+					eqs++;
+					len++;
+				}
+				while((w = wstart[len]))
+				{
+					if(w==']')
+					{
+						int nlen = 1;
+						const char* cstart = wstart + len;
+						while((w = cstart[nlen]) && (w=='='))
+							nlen++;
+						if(w==']' && nlen==eqs+1)
+						{
+							len+=nlen+1;
+							break;
+						}
+					}
+					len++;
+				}
+				result += "\bg";
+				result.append(wstart, len);
+				result += "\bw";
+				pos += len;
+			}
+			else
+			{
+				int len = 2;
+				char w;
+				const char* wstart = raw+pos;
+				while((w = wstart[len]) && (w!='\n'))
+					len++;
+				result += "\bg";
+				result.append(wstart, len);
+				result += "\bw";
+				pos += len;
+			}
+		}
+		else
+		{
+			result += c;
+			pos++;
+		}
+	}
+	delete[] raw;
+	return result;
+}
+
 std::string LuaScriptInterface::FormatCommand(std::string command)
 {
 	if(command != "" && command[0] == '!')
@@ -2951,7 +3167,7 @@ std::string LuaScriptInterface::FormatCommand(std::string command)
 		return "!"+legacy->FormatCommand(command.substr(1));
 	}
 	else
-		return command;
+		return highlight(command);
 }
 
 LuaScriptInterface::~LuaScriptInterface() {
