@@ -1,79 +1,141 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_LAVA PT_LAVA 6
-Element_LAVA::Element_LAVA()
+
+bool Element_GOL_colourInit = false;
+pixel Element_GOL_colour[NGOL];
+
+//#TPT-Directive ElementClass Element_LIFE PT_LIFE 78
+Element_LIFE::Element_LIFE()
 {
-	Identifier = "DEFAULT_PT_LAVA";
-	Name = "LAVA";
-	Colour = PIXPACK(0xE05010);
-	MenuVisible = 1;
-	MenuSection = SC_LIQUID;
+	Identifier = "DEFAULT_PT_LIFE";
+	Name = "LIFE";
+	Colour = PIXPACK(0x0CAC00);
+	MenuVisible = 0;
+	MenuSection = SC_LIFE;
 	Enabled = 1;
 	
-	Advection = 0.3f;
-	AirDrag = 0.02f * CFDS;
-	AirLoss = 0.95f;
-	Loss = 0.80f;
+	Advection = 0.0f;
+	AirDrag = 0.00f * CFDS;
+	AirLoss = 0.90f;
+	Loss = 0.00f;
 	Collision = 0.0f;
-	Gravity = 0.15f;
+	Gravity = 0.0f;
 	Diffusion = 0.00f;
-	HotAir = 0.0003f	* CFDS;
-	Falldown = 2;
+	HotAir = 0.000f	* CFDS;
+	Falldown = 0;
 	
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
-	Hardness = 2;
+	Hardness = 0;
 	
-	Weight = 45;
+	Weight = 100;
 	
-	Temperature = R_TEMP+1500.0f+273.15f;
-	HeatConduct = 60;
-	Description = "Molten lava. Ignites flammable materials. Generated when metals and other materials melt, solidifies when cold.";
+	Temperature = 9000.0f;
+	HeatConduct = 40;
+	Description = "Game Of Life! B3/S23";
 	
-	State = ST_LIQUID;
-	Properties = TYPE_LIQUID|PROP_LIFE_DEC;
+	State = ST_NONE;
+	Properties = TYPE_SOLID|PROP_LIFE;
 	
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
 	HighPressureTransition = NT;
-	LowTemperature = 3695.0f;// Highest temperature at which any type of lava can solidify
-	LowTemperatureTransition = ST;
+	LowTemperature = ITL;
+	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 	
-	Update = &Element_FIRE::update;
-	Graphics = &Element_LAVA::graphics;
-	Create = &Element_LAVA::create;
+	Update = NULL;//&Element_LIFE::update;
+	Graphics = &Element_LIFE::graphics;
+	Create = &Element_LIFE::create;
+
+	if(!Element_GOL_colourInit)
+	{
+		Element_GOL_colourInit = true;
+
+		int golMenuCount;
+		gol_menu * golMenuT = LoadGOLMenu(golMenuCount);
+		for(int i = 0; i < golMenuCount && i < NGOL; i++)
+		{
+			Element_GOL_colour[i] = golMenuT[i].colour;
+		}
+		free(golMenuT);
+	}
 }
 
-
-//#TPT-Directive ElementHeader Element_LAVA static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_LAVA::graphics(GRAPHICS_FUNC_ARGS)
-
+//#TPT-Directive ElementHeader Element_LIFE static int update(UPDATE_FUNC_ARGS)
+int Element_LIFE::update(UPDATE_FUNC_ARGS)
 {
-	*colr = cpart->life * 2 + 0xE0;
-	*colg = cpart->life * 1 + 0x50;
-	*colb = cpart->life / 2 + 0x10;
-	if (*colr>255) *colr = 255;
-	if (*colg>192) *colg = 192;
-	if (*colb>128) *colb = 128;
-	*firea = 40;
-	*firer = *colr;
-	*fireg = *colg;
-	*fireb = *colb;
-	*pixel_mode |= FIRE_ADD;
-	*pixel_mode |= PMODE_BLUR;
-	//Returning 0 means dynamic, do not cache
+	if (parts[i].tmp <= 0)
+		sim->kill_part(i);
 	return 0;
 }
 
+//#TPT-Directive ElementHeader Element_LIFE static int graphics(GRAPHICS_FUNC_ARGS)
+int Element_LIFE::graphics(GRAPHICS_FUNC_ARGS)
 
-//#TPT-Directive ElementHeader Element_LAVA static void create(CREATE_FUNC_ARGS)
-void Element_LAVA::create(CREATE_FUNC_ARGS)
 {
-	parts[i].life = rand()%120+240;
+	pixel pc;
+	if (cpart->ctype==NGT_LOTE)//colors for life states
+	{
+		if (cpart->tmp==2)
+			pc = PIXRGB(255, 128, 0);
+		else if (cpart->tmp==1)
+			pc = PIXRGB(255, 255, 0);
+		else
+			pc = PIXRGB(255, 0, 0);
+	}
+	else if (cpart->ctype==NGT_FRG2)//colors for life states
+	{
+		if (cpart->tmp==2)
+			pc = PIXRGB(0, 100, 50);
+		else
+			pc = PIXRGB(0, 255, 90);
+	}
+	else if (cpart->ctype==NGT_STAR)//colors for life states
+	{
+		if (cpart->tmp==4)
+			pc = PIXRGB(0, 0, 128);
+		else if (cpart->tmp==3)
+			pc = PIXRGB(0, 0, 150);
+		else if (cpart->tmp==2)
+			pc = PIXRGB(0, 0, 190);
+		else if (cpart->tmp==1)
+			pc = PIXRGB(0, 0, 230);
+		else
+			pc = PIXRGB(0, 0, 70);
+	}
+	else if (cpart->ctype==NGT_FROG)//colors for life states
+	{
+		if (cpart->tmp==2)
+			pc = PIXRGB(0, 100, 0);
+		else
+			pc = PIXRGB(0, 255, 0);
+	}
+	else if (cpart->ctype==NGT_BRAN)//colors for life states
+	{
+		if (cpart->tmp==1)
+			pc = PIXRGB(150, 150, 0);
+		else
+			pc = PIXRGB(255, 255, 0);
+	} else {
+		pc = Element_GOL_colour[cpart->ctype];
+	}
+	*colr = PIXR(pc);
+	*colg = PIXG(pc);
+	*colb = PIXB(pc);
+	return 0;
+}
+//#TPT-Directive ElementHeader Element_LIFE static void create(CREATE_FUNC_ARGS)
+void Element_LIFE::create(CREATE_FUNC_ARGS)
+{
+	if (var<NGOL)
+	{
+		parts[i].tmp = sim->grule[var+1][9] - 1;
+		parts[i].ctype = var;
+	}
 }
 
 
-Element_LAVA::~Element_LAVA() {}
+Element_LIFE::~Element_LIFE() {}
