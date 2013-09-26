@@ -43,7 +43,17 @@ Element_TESC::Element_TESC()
 	HighTemperatureTransition = NT;
 	
 	Update = NULL;
+	Create = &Element_TESC::create;
 	
+}
+
+
+//#TPT-Directive ElementHeader Element_TESC static void create(CREATE_FUNC_ARGS)
+void Element_TESC::create(CREATE_FUNC_ARGS)
+{
+	parts[i].tmp = var;
+	if (parts[i].tmp > 300)
+		parts[i].tmp=300;
 }
 
 Element_TESC::~Element_TESC() {}
