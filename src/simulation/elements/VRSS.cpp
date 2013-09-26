@@ -43,6 +43,7 @@ Element_VRSS::Element_VRSS()
 	HighTemperatureTransition = PT_VIRS;
 	
 	Update = &Element_VIRS::update;
+	Create = &Element_VIRS::create;
 	
 }
 
