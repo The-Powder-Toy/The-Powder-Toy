@@ -3,7 +3,7 @@
 #include <math.h>
 #if !defined(_MSC_VER)
 #include <strings.h>
-#else q
+#else
 #include <windows.h>
 #endif
 #include "Config.h"
