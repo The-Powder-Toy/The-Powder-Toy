@@ -451,15 +451,12 @@ AnyType TPTScriptInterface::tptS_load(std::deque<std::string> * words)
 {
 	//Arguments from stack
 	NumberType saveID = eval(words);
+	if(saveID.Value()<0)
+		throw GeneralException("Invalid SaveID");
+	c->HideConsole();
+	c->OpenSavePreview(saveID.Value(), 0, false);
 
-	if (saveID.Value() > 0)
-	{
-		c->HideConsole();
-		c->OpenSavePreview(saveID.Value(), 0, false);
-		return NumberType(0);
-	}
-	else
-		throw GeneralException("Invalid save ID");
+	return NumberType(0);
 }
 
 AnyType TPTScriptInterface::tptS_bubble(std::deque<std::string> * words)
