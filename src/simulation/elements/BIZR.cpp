@@ -44,6 +44,7 @@ Element_BIZR::Element_BIZR()
 	
 	Update = &Element_BIZR::update;
 	Graphics = &Element_BIZR::graphics;
+	Create = &Element_BIZR::create;
 }
 
 //#TPT-Directive ElementHeader Element_BIZR static int update(UPDATE_FUNC_ARGS)
@@ -119,6 +120,12 @@ int Element_BIZR::graphics(GRAPHICS_FUNC_ARGS)
 	}
 	*pixel_mode |= PMODE_BLUR;
 	return 0;
+}
+
+//#TPT-Directive ElementHeader Element_BIZR static void create(CREATE_FUNC_ARGS)
+void Element_BIZR::create(CREATE_FUNC_ARGS)
+{
+	parts[i].ctype = 0x47FFFF;
 }
 
 
