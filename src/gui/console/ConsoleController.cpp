@@ -15,7 +15,7 @@ ConsoleController::ConsoleController(ControllerCallback * callback, CommandInter
 
 void ConsoleController::EvaluateCommand(std::string command)
 {
-	consoleModel->ProcessResult(command, commandInterface->Command(command));
+	consoleModel->ProcessResult(command, FormatCommand(command), commandInterface->Command(command));
 }
 
 void ConsoleController::CloseConsole()

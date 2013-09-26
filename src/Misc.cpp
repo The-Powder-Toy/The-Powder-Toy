@@ -645,55 +645,79 @@ int splitsign(const char* str)
 
 std::string wordwrap(std::string text, int width)
 {
-	char * rawText = new char[text.length()+1];
+	char c;
+	char* rawText = new char[text.length()+1];
+	const char* lstart = rawText;
+	const char* wstart = lstart;
+	std::string textLines;
 	std::copy(text.begin(), text.end(), rawText);
 	rawText[text.length()] = 0;
-	std::string textLines;
-	unsigned char c, pc = 0;
-	int charIndex = 0;
-
-	int wordWidth = 0;
-	int lineWidth = 0;
-	char * wordStart = NULL;
-	while(c = rawText[charIndex++])
+	int linewidth = 0,len = 0;
+	while(c = wstart[len])
 	{
-		switch(c)
+		int cwidth = Graphics::CharWidth(c);
+		switch (c)
+		{
+			case '\x01':
+			case '\b':
+			case '\n':
+			case '\x0F':
+			case '\x0E':
+				cwidth = 0;
+				break;
+		}
+		if(cwidth+linewidth>width)
+		{	
+			if(wstart==lstart)
+			{
+				if(textLines.size())
+					textLines += "\n";
+				textLines.append(wstart,len);
+				lstart = wstart += len;
+				linewidth = len = 0;
+			}
+			else
+			{
+				if(textLines.size())
+					textLines += '\n';
+				textLines.append(lstart,wstart-lstart);
+				lstart = wstart;
+				linewidth = len = 0;
+			}
+			continue;
+		}
+		linewidth += cwidth;
+		switch (c)
 		{
 			case ' ':
-				lineWidth += Graphics::CharWidth(c);
-				lineWidth += wordWidth;
-				wordWidth = 0;
+				wstart += len+1;
+				len = 0;
 				break;
 			case '\n':
-				lineWidth = wordWidth = 0;
+				if(textLines.size())
+					textLines += '\n';
+				textLines.append(lstart,wstart-lstart+len);
+				lstart = wstart += len+1;
+				linewidth = len = 0;
+				break;
+			case '\b':
+				if(wstart[++len])
+					len++;
+				break;
+			case '\x0F':
+				if(wstart[++len])
+					if(wstart[++len])
+						if(wstart[++len])
+							len++;
 				break;
 			default:
-				wordWidth += Graphics::CharWidth(c);
+				len++;
 				break;
 		}
-		if(pc == ' ')
-		{
-			wordStart = &rawText[charIndex-2];
-		}
-		if ((c != ' ' || pc == ' ') && lineWidth + wordWidth >= width)
-		{
-			if(wordStart && *wordStart)
-			{
-				*wordStart = '\n';
-				if (lineWidth != 0)
-					lineWidth = wordWidth;
-			}
-			else if(!wordStart)
-			{
-				rawText[charIndex-1] = '\n';
-				lineWidth = 0;
-			}
-			wordWidth = 0;
-			wordStart = 0;
-		}
-		pc = c;
 	}
-	textLines = std::string(rawText);
+	if(textLines.size())
+		textLines += '\n';
+	textLines += lstart;
 	delete[] rawText;
 	return textLines;
 }	

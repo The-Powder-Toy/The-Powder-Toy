@@ -23,7 +23,7 @@ void ConsoleModel::AddObserver(ConsoleView * observer)
 	observers.push_back(observer);
 }
 
-void ConsoleModel::ProcessResult(std::string cmd, CommandInterface::EvalResult * result)
+void ConsoleModel::ProcessResult(std::string cmd, std::string highlighted, CommandInterface::EvalResult * result)
 {
 	int newlines;
 	switch(result->status)
@@ -35,7 +35,7 @@ void ConsoleModel::ProcessResult(std::string cmd, CommandInterface::EvalResult *
 				previousCommands.push_front(cmd);
 				cmd = wordwrap(cmd, XRES-20);
 				newlines = std::count(cmd.begin(), cmd.end(), '\n');
-				history += "\n" + cmd;
+				history += '\n' + highlighted;
 				promptHistory += "\n>";
 				for(; newlines>0; newlines--)
 					promptHistory += "\n>>";
@@ -43,16 +43,18 @@ void ConsoleModel::ProcessResult(std::string cmd, CommandInterface::EvalResult *
 				{
 					newlines = 1 + std::count(buffer.begin(), buffer.end(), '\n');
 					history += "\n\bo" + buffer + "\bw";
+					if(std::count(buffer.begin(), buffer.end(), '\x01')&1)
+						history += '\x01';
 					for(; newlines>0; newlines--)
-						promptHistory += "\n";
+						promptHistory += '\n';
 				}
 				command = "";
 				prompt = ">";
-				currentCommandIndex-1;
+				currentCommandIndex = -1;
 			}
 			break;
 		case CommandInterface::EvalMore:
-			command=cmd + "\n";
+			command = cmd + '\n';
 			newlines = 1 + std::count(cmd.begin(), cmd.end(), '\n');
 			prompt = ">";
 			for(; newlines>0; newlines--)

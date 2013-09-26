@@ -1,4 +1,5 @@
 #include "ConsoleView.h"
+#include "Misc.h"
 #include "gui/interface/Keys.h"
 
 ConsoleView::ConsoleView():
@@ -12,7 +13,7 @@ ConsoleView::ConsoleView():
 		virtual void TextChangedCallback(ui::Textbox * sender)
 		{
 			v->ResizePrompt();
-			//sender->SetDisplayText(v->c->FormatCommand(sender->DisplayText));
+			sender->SetDisplayText(wordwrap(v->c->FormatCommand(sender->GetText()),sender->Size.X-(sender->Appearance.Margin.Left+sender->Appearance.Margin.Right)));
 		}
 	};
 	class TransparentScrollPanel: public ui::ScrollPanel
@@ -30,13 +31,14 @@ ConsoleView::ConsoleView():
 			GLint lastVid;
 			glGetIntegerv(GL_FRAMEBUFFER_BINDING, &lastVid);
 			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, myVid);
-			glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
+			glClearColor(0.7f, 0.0f, 0.0f, 0.0f);
 			glClear(GL_COLOR_BUFFER_BIT);
 #else
 			Graphics * g = ui::Engine::Ref().g;
 			pixel * lastVid = g->vid;
 			g->vid = myVid;
-			std::fill(myVid, myVid+((XRES+BARSIZE)*(YRES+MENUSIZE)), 0);
+			for (int row = 0; row < Size.Y; row++)
+				std::copy(lastVid+((screenPos.Y+row)*(XRES+BARSIZE)+screenPos.X), lastVid+((screenPos.Y+row)*(XRES+BARSIZE)+screenPos.X+Size.X), myVid+(row*(XRES+BARSIZE)));
 #endif
 			
 			// attempt to draw all children
@@ -84,16 +86,8 @@ ConsoleView::ConsoleView():
 			glDisable(GL_TEXTURE_2D);
 #else
 			g->vid = lastVid;
-
-			//dst=(pixel *)sdl_scrn->pixels+y*sdl_scrn->pitch/PIXELSIZE+x;
 			for (int row = 0; row < Size.Y; row++)
-				for (int col = 0; col < Size.X; col++)
-				{
-					pixel p = myVid[row*Size.X+col];
-					int rr = PIXR(p), gg = PIXG(p), bb = PIXB(p);
-					if(rr|gg|bb)
-						g->addpixel(col+screenPos.X, row+screenPos.Y, rr, gg, bb, 255);
-				}
+				std::copy(myVid+(row*(XRES+BARSIZE)), myVid+(row*(XRES+BARSIZE))+Size.X, lastVid+((screenPos.Y+row)*(XRES+BARSIZE))+screenPos.X);
 #endif
 		}		
 	};
@@ -157,6 +151,7 @@ void ConsoleView::DoKeyPress(int key, Uint16 character, bool shift, bool ctrl, b
 void ConsoleView::NotifyHistoryChanged(ConsoleModel * sender, std::string prompt, std::string command, std::string prompthistory, std::string History)
 {
 	promptLabel->SetText(prompt);
+	commandField->SetDisplayText("");
 	commandField->SetText(command);
 	ResizePrompt();
 	promptHistory->SetText(prompthistory);

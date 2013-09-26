@@ -24,7 +24,7 @@ public:
 
 	ConsoleModel();
 	void AddObserver(ConsoleView * observer);
-	void ProcessResult(std::string command, CommandInterface::EvalResult * result);
+	void ProcessResult(std::string command, std::string highlighted, CommandInterface::EvalResult * result);
 	virtual ~ConsoleModel();
 };
 

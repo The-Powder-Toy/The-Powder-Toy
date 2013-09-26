@@ -1,4 +1,5 @@
 #include <string>
+#include <algorithm>
 #include <iostream>
 #include <stdexcept>
 #include <time.h>
@@ -39,6 +40,21 @@ Textbox::~Textbox()
 		delete actionCallback;
 }
 
+void Textbox::updateCursor()
+{
+	if(cursor)
+	{
+		int linenum = 0;
+		if(multiline)
+			linenum = std::count(textLines.begin(), textLines.begin() + cursor, '\n') - std::count(text.begin(), text.begin() + cursor, '\n');
+		Graphics::PositionAtCharIndex((char*)(multiline?textLines:text).c_str(), cursor+linenum, cursorPositionX, cursorPositionY);
+	}
+	else
+	{
+		cursorPositionY = cursorPositionX = 0;
+	}
+}
+
 void Textbox::SetHidden(bool hidden)
 {
 	menu->RemoveItem(0);
@@ -70,15 +86,9 @@ void Textbox::SetText(std::string newText)
 		Label::SetText(newText);
 
 	cursor = newText.length();
-
-	if(cursor)
-	{
-		Graphics::PositionAtCharIndex(multiline?((char*)textLines.c_str()):((char*)text.c_str()), cursor, cursorPositionX, cursorPositionY);
-	}
-	else
-	{
-		cursorPositionY = cursorPositionX = 0;
-	}
+	updateCursor();
+	if(actionCallback)
+		actionCallback->TextChangedCallback(this);
 }
 
 Textbox::ValidInput Textbox::GetInputType()
@@ -160,15 +170,7 @@ void Textbox::cutSelection()
 		updateMultiline();
 	updateSelection();
 	TextPosition(text);
-
-	if(cursor)
-	{
-		Graphics::PositionAtCharIndex(multiline?((char*)textLines.c_str()):((char*)text.c_str()), cursor, cursorPositionX, cursorPositionY);
-	}
-	else
-	{
-		cursorPositionY = cursorPositionX = 0;
-	}
+	updateCursor();
 }
 
 void Textbox::selectAll()
@@ -256,14 +258,7 @@ void Textbox::pasteIntoSelection()
 	else
 		TextPosition(text);
 
-	if(cursor)
-	{
-		Graphics::PositionAtCharIndex(multiline?((char*)textLines.c_str()):((char*)text.c_str()), cursor, cursorPositionX, cursorPositionY);
-	}
-	else
-	{
-		cursorPositionY = cursorPositionX = 0;
-	}
+	updateCursor();
 }
 
 bool Textbox::CharacterValid(Uint16 character)
@@ -471,15 +466,7 @@ void Textbox::OnVKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		TextPosition(textLines);
 	else
 		TextPosition(text);
-
-	if(cursor)
-	{
-		Graphics::PositionAtCharIndex(multiline?((char*)textLines.c_str()):((char*)text.c_str()), cursor, cursorPositionX, cursorPositionY);
-	}
-	else
-	{
-		cursorPositionY = cursorPositionX = 0;
-	}
+	updateCursor();
 }
 
 void Textbox::OnMouseClick(int x, int y, unsigned button)
@@ -489,14 +476,7 @@ void Textbox::OnMouseClick(int x, int y, unsigned button)
 	{
 		mouseDown = true;
 		cursor = Graphics::CharIndexAtPosition(multiline?((char*)textLines.c_str()):((char*)text.c_str()), x-textPosition.X, y-textPosition.Y);
-		if(cursor)
-		{
-			Graphics::PositionAtCharIndex(multiline?((char*)textLines.c_str()):((char*)text.c_str()), cursor, cursorPositionX, cursorPositionY);
-		}
-		else
-		{
-			cursorPositionY = cursorPositionX = 0;
-		}
+		updateCursor();
 	}
 	Label::OnMouseClick(x, y, button);
 }
@@ -512,14 +492,7 @@ void Textbox::OnMouseMoved(int localx, int localy, int dx, int dy)
 	if(mouseDown)
 	{
 		cursor = Graphics::CharIndexAtPosition(multiline?((char*)textLines.c_str()):((char*)text.c_str()), localx-textPosition.X, localy-textPosition.Y);
-		if(cursor)
-		{
-			Graphics::PositionAtCharIndex(multiline?((char*)textLines.c_str()):((char*)text.c_str()), cursor, cursorPositionX, cursorPositionY);
-		}
-		else
-		{
-			cursorPositionY = cursorPositionX = 0;
-		}
+		updateCursor();
 	}
 	Label::OnMouseMoved(localx, localy, dx, dy);
 }

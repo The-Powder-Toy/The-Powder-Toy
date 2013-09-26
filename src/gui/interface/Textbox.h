@@ -24,7 +24,8 @@ public:
 	enum ValidInput { All, Numeric, Number };
 	Textbox(Point position, Point size, std::string textboxText = "", std::string textboxPlaceholder = "");
 	virtual ~Textbox();
-
+	
+	void updateCursor();
 	virtual void SetText(std::string text);
 	virtual std::string GetText();
 
