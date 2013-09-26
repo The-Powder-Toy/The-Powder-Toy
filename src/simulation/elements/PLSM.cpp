@@ -44,6 +44,7 @@ Element_PLSM::Element_PLSM()
 	
 	Update = &Element_FIRE::update;
 	Graphics = &Element_PLSM::graphics;
+	Create = &Element_PLSM::create;
 }
 
 //#TPT-Directive ElementHeader Element_PLSM static int graphics(GRAPHICS_FUNC_ARGS)
@@ -64,6 +65,13 @@ int Element_PLSM::graphics(GRAPHICS_FUNC_ARGS)
 	*pixel_mode |= FIRE_ADD;
 	//Returning 0 means dynamic, do not cache
 	return 0;
+}
+
+
+//#TPT-Directive ElementHeader Element_PLSM static void create(CREATE_FUNC_ARGS)
+void Element_PLSM::create(CREATE_FUNC_ARGS)
+{
+	parts[i].life = rand()%150+50;
 }
 
 
