@@ -44,6 +44,7 @@ Element_FIGH::Element_FIGH()
 	
 	Update = &Element_FIGH::update;
 	Graphics = &Element_STKM::graphics;
+	Create = &Element_FIGH::create;
 }
 
 //#TPT-Directive ElementHeader Element_FIGH static int update(UPDATE_FUNC_ARGS)
@@ -135,5 +136,25 @@ int Element_FIGH::update(UPDATE_FUNC_ARGS)
 	Element_STKM::run_stickman(figh, UPDATE_FUNC_SUBCALL_ARGS);
 	return 0;
 }
+
+//#TPT-Directive ElementHeader Element_FIGH static void create(CREATE_FUNC_ARGS)
+void Element_FIGH::create(CREATE_FUNC_ARGS)
+{
+	unsigned char fcount = 0;
+	while (fcount < 100 && fcount < (sim->fighcount+1) && sim->fighters[fcount].spwn==1) fcount++;
+	if (fcount < 100 && sim->fighters[fcount].spwn==0)
+	{
+		parts[i].life = 100;
+		parts[i].tmp = fcount;
+		Element_STKM::STKM_init_legs(sim, &sim->fighters[fcount], i);
+		sim->fighters[fcount].spwn = 1;			
+		sim->fighters[fcount].elem = PT_DUST;
+		sim->fighters[fcount].rocketBoots = false;
+		sim->fighcount++;
+	} else {
+		parts[i].type=0;
+	}
+}
+
 
 Element_FIGH::~Element_FIGH() {}
