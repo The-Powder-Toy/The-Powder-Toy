@@ -1,37 +1,37 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_EXOT PT_EXOT 145
-Element_EXOT::Element_EXOT()
+//#TPT-Directive ElementClass Element_EMBR PT_EMBR 147
+Element_EMBR::Element_EMBR()
 {
-	Identifier = "DEFAULT_PT_EXOT";
-	Name = "EXOT";
-	Colour = PIXPACK(0x404040);
-	MenuVisible = 1;
-	MenuSection = SC_NUCLEAR;
+	Identifier = "DEFAULT_PT_EMBR";
+	Name = "EMBR";
+	Colour = PIXPACK(0xFFF288);
+	MenuVisible = 0;
+	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;
 	
-	Advection = 0.3f;
-	AirDrag = 0.02f * CFDS;
-	AirLoss = 0.95f;
-	Loss = 0.80f;
+	Advection = 0.4f;
+	AirDrag = 0.001f * CFDS;
+	AirLoss = 0.99f;
+	Loss = 0.90f;
 	Collision = 0.0f;
-	Gravity = 0.15f;
+	Gravity = 0.07f;
 	Diffusion = 0.00f;
-	HotAir = 0.0003f	* CFDS;
-	Falldown = 2;
+	HotAir = 0.000f	* CFDS;
+	Falldown = 1;
 	
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
-	Hardness = 2;
+	Hardness = 20;
 	
-	Weight = 46;
+	Weight = 30;
 	
-	Temperature = R_TEMP-2.0f	+273.15f;
-	HeatConduct = 250;
-	Description = "Exotic matter. Explodes with excess exposure to electrons. Has many other odd reactions.";
+	Temperature = 500.0f +273.15f;
+	HeatConduct = 29;
+	Description = "Sparks. Formed by explosions.";
 	
-	State = ST_LIQUID;
-	Properties = TYPE_LIQUID|PROP_NEUTPASS;
+	State = ST_NONE;
+	Properties = TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL|PROP_SPARKSETTLE;
 	
 	LowPressure = IPL;
 	LowPressureTransition = NT;
@@ -42,207 +42,90 @@ Element_EXOT::Element_EXOT()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 	
-	Update = &Element_EXOT::update;
-	Graphics = &Element_EXOT::graphics;
-	Create = &Element_EXOT::create;
+	Update = &Element_EMBR::update;
+	Graphics = &Element_EMBR::graphics;
+	Create = &Element_EMBR::create;
 }
 
-//#TPT-Directive ElementHeader Element_EXOT static int update(UPDATE_FUNC_ARGS)
-int Element_EXOT::update(UPDATE_FUNC_ARGS)
-{
-	int r, rt, rx, ry, nb, rrx, rry, trade, tym;
-	for (rx=-2; rx<=2; rx++)
-		for (ry=-2; ry<=2; ry++)
+//#TPT-Directive ElementHeader Element_EMBR static int update(UPDATE_FUNC_ARGS)
+int Element_EMBR::update(UPDATE_FUNC_ARGS) {
+	int r, rx, ry, nb;
+	for (rx=-1; rx<2; rx++)
+		for (ry=-1; ry<2; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				rt = r&0xFF;
-				if (rt == PT_WARP)
+				if ((sim->elements[r&0xFF].Properties & (TYPE_SOLID | TYPE_PART | TYPE_LIQUID)) && !(sim->elements[r&0xFF].Properties & PROP_SPARKSETTLE))
 				{
-					if (parts[r>>8].tmp2>2000 && !(rand()%100))
-					{
-						parts[i].tmp2 += 100;
-					}
-				}
-				else if (rt == PT_EXOT)
-				{
-					if (parts[r>>8].ctype == PT_PROT)
-						parts[i].ctype = PT_PROT;
-					if (parts[r>>8].life == 1500 && !(rand()%1000))
-						parts[i].life = 1500;
-				}
-				else if (rt == PT_LAVA)
-				{
-					//turn molten TTAN or molten GOLD to molten VIBR
-					if (parts[r>>8].ctype == PT_TTAN || parts[r>>8].ctype == PT_GOLD)
-					{
-						if (!(rand()%10))
-						{
-							parts[r>>8].ctype = PT_VIBR;
-							sim->kill_part(i);
-							return 1;
-						}
-					}
-					//molten VIBR will kill the leftover EXOT though, so the VIBR isn't killed later
-					else if (parts[r>>8].ctype == PT_VIBR)
-					{
-						if (!(rand()%1000))
-						{
-							sim->kill_part(i);
-							return 1;
-						}
-					}
-				}
-				if (parts[i].tmp > 245 && parts[i].life > 1000)
-					if (rt!=PT_EXOT && rt!=PT_BREC && rt!=PT_DMND && rt!=PT_CLNE && rt!=PT_PRTI && rt!=PT_PRTO && rt!=PT_PCLN && rt!=PT_VOID && rt!=PT_NBHL && rt!=PT_WARP)
-					{
-						sim->create_part(i, x, y, rt);
-						return 1;
-					}
-			}
-
-	parts[i].tmp--;
-	parts[i].tmp2--;
-	//reset tmp every 250 frames, gives EXOT it's slow flashing effect
-	if (parts[i].tmp < 1 || parts[i].tmp > 250)
-		parts[i].tmp = 250;
-
-	if (parts[i].tmp2 < 1)
-		parts[i].tmp2 = 1;
-	else if (parts[i].tmp2 > 6000)
-	{
-		parts[i].tmp2 = 10000;
-		if (parts[i].life < 1001)
-		{
-			sim->part_change_type(i, x, y, PT_WARP);
-			return 0;
-		}
-	}
-	else if(parts[i].life < 1001)
-		sim->pv[y/CELL][x/CELL] += (parts[i].tmp2*CFDS)/160000;
-
-	if (sim->pv[y/CELL][x/CELL]>200 && parts[i].temp>9000 && parts[i].tmp2>200)
-	{
-		parts[i].tmp2 = 6000;
-		sim->part_change_type(i, x, y, PT_WARP);
-		return 0;
-	}
-	if (parts[i].tmp2 > 100)
-	{
-		for (trade = 0; trade < 9; trade++)
-		{
-			rx = rand()%5-2;
-			ry = rand()%5-2;
-			if (BOUNDS_CHECK && (rx || ry))
-			{
-				r = pmap[y+ry][x+rx];
-				if (!r)
-					continue;
-				if ((r&0xFF)==PT_EXOT && (parts[i].tmp2 > parts[r>>8].tmp2) && parts[r>>8].tmp2 >= 0) //diffusion
-				{
-					tym = parts[i].tmp2 - parts[r>>8].tmp2;
-					if (tym == 1)
-					{
-						parts[r>>8].tmp2++;
-						parts[i].tmp2--;
-						break;
-					}
-					if (tym > 0)
-					{
-						parts[r>>8].tmp2 += tym/2;
-						parts[i].tmp2 -= tym/2;
-						break;
-					}
+					sim->kill_part(i);
+					return 1;
 				}
 			}
-		}
-	}
-	if (parts[i].ctype == PT_PROT)
-	{
-		if (parts[i].temp < 50.0f)
-		{
-			sim->create_part(i, x, y, PT_CFLM);
-			return 1;
-		}
-		else
-			parts[i].temp -= 1.0f;
-	}
-	else if (parts[i].temp < 273.15f)
-	{
-		parts[i].vx = 0;
-		parts[i].vy = 0;
-		sim->pv[y/CELL][x/CELL] -= 0.01;
-		parts[i].tmp--;
-	}
 	return 0;
-
 }
 
-//#TPT-Directive ElementHeader Element_EXOT static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_EXOT::graphics(GRAPHICS_FUNC_ARGS)
+//#TPT-Directive ElementHeader Element_EMBR static int graphics(GRAPHICS_FUNC_ARGS)
+int Element_EMBR::graphics(GRAPHICS_FUNC_ARGS)
 {
-	int q = cpart->temp;
-	int b = cpart->tmp;
-	int c = cpart->tmp2;
-	if (cpart->life < 1001)
+	if (cpart->ctype&0xFFFFFF)
 	{
-		if ((cpart->tmp2 - 1)>rand()%1000)
+		int maxComponent;
+		*colr = (cpart->ctype&0xFF0000)>>16;
+		*colg = (cpart->ctype&0x00FF00)>>8;
+		*colb = (cpart->ctype&0x0000FF);
+		maxComponent = *colr;
+
+		if (*colg>maxComponent) maxComponent = *colg;
+		if (*colb>maxComponent) maxComponent = *colb;
+		if (maxComponent<60)//make sure it isn't too dark to see
 		{
-			float frequency = 0.04045;
-			*colr = (sin(frequency*c + 4) * 127 + 150);
-			*colg = (sin(frequency*c + 6) * 127 + 150);
-			*colb = (sin(frequency*c + 8) * 127 + 150);
-
-			*firea = 100;
-			*firer = 0;
-			*fireg = 0;
-			*fireb = 0;
-
-			*pixel_mode |= PMODE_FLAT;
-			*pixel_mode |= PMODE_FLARE;
+			float multiplier = 60.0f/maxComponent;
+			*colr *= multiplier;
+			*colg *= multiplier;
+			*colb *= multiplier;
 		}
-		else
-		{
-			float frequency = 0.00045;
-			*colr = (sin(frequency*q + 4) * 127 + (b/1.7));
-			*colg = (sin(frequency*q + 6) * 127 + (b/1.7));
-			*colb = (sin(frequency*q + 8) * 127 + (b/1.7));
-			*cola = cpart->tmp / 6; 
+	}
+	else if (cpart->tmp != 0)
+	{
+		*colr = *colg = *colb = 255;
+	}
 
-			*firea = *cola;
-			*firer = *colr;
-			*fireg = *colg;
-			*fireb = *colb;
-
-			*pixel_mode |= FIRE_ADD;
-			*pixel_mode |= PMODE_BLUR;
-		}
+	if (ren->decorations_enable && cpart->dcolour)
+	{
+		int a = (cpart->dcolour>>24)&0xFF;
+		*colr = (a*((cpart->dcolour>>16)&0xFF) + (255-a)**colr) >> 8;
+		*colg = (a*((cpart->dcolour>>8)&0xFF) + (255-a)**colg) >> 8;
+		*colb = (a*((cpart->dcolour)&0xFF) + (255-a)**colb) >> 8;
+	}
+	*firer = *colr;
+	*fireg = *colg;
+	*fireb = *colb;
+	if (cpart->tmp==1)
+	{
+		*pixel_mode = FIRE_ADD | PMODE_BLEND | PMODE_GLOW;
+		*firea = (cpart->life-15)*4;
+		*cola = (cpart->life+15)*4;
+	}
+	else if (cpart->tmp==2)
+	{
+		*pixel_mode = PMODE_FLAT | FIRE_ADD;
+		*firea = 255;
 	}
 	else
 	{
-		float frequency = 0.01300;
-		*colr = (sin(frequency*q + 6.00) * 127 + ((b/2.9) + 80));
-		*colg = (sin(frequency*q + 6.00) * 127 + ((b/2.9) + 80));
-		*colb = (sin(frequency*q + 6.00) * 127 + ((b/2.9) + 80));
-		*cola = cpart->tmp / 6;
-		*firea = *cola;
-		*firer = *colr;
-		*fireg = *colg;
-		*fireb = *colb;
-		*pixel_mode |= FIRE_ADD;
-		*pixel_mode |= PMODE_BLUR;
+		*pixel_mode = PMODE_SPARK | PMODE_ADD;
+		if (cpart->life<64) *cola = 4*cpart->life;
 	}
 	return 0;
 }
 
 
-//#TPT-Directive ElementHeader Element_EXOT static void create(CREATE_FUNC_ARGS)
-void Element_EXOT::create(CREATE_FUNC_ARGS)
+//#TPT-Directive ElementHeader Element_EMBR static void create(CREATE_FUNC_ARGS)
+void Element_EMBR::create(CREATE_FUNC_ARGS)
 {
-	parts[i].life = 1000;
-	parts[i].tmp = 244;
+	parts[i].life = 50;
 }
 
-Element_EXOT::~Element_EXOT() {}
+Element_EMBR::~Element_EMBR() {}
