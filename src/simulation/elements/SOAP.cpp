@@ -44,6 +44,7 @@ Element_SOAP::Element_SOAP()
 	
 	Update = &Element_SOAP::update;
 	Graphics = &Element_SOAP::graphics;
+	Create = &Element_SOAP::create;
 	
 }
 
@@ -252,6 +253,13 @@ int Element_SOAP::graphics(GRAPHICS_FUNC_ARGS)
 {
 	*pixel_mode |= EFFECT_LINES|PMODE_BLUR;
 	return 1;
+}
+
+//#TPT-Directive ElementHeader Element_SOAP static void create(CREATE_FUNC_ARGS)
+void Element_SOAP::create(CREATE_FUNC_ARGS)
+{
+	parts[i].tmp = -1;
+	parts[i].tmp2 = -1;
 }
 
 Element_SOAP::~Element_SOAP() {}
