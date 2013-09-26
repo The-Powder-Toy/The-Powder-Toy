@@ -44,6 +44,7 @@ Element_PROT::Element_PROT()
 	
 	Update = &Element_PROT::update;
 	Graphics = &Element_PROT::graphics;
+	Create = &Element_PROT::create;
 }
 
 //#TPT-Directive ElementHeader Element_PROT static int update(UPDATE_FUNC_ARGS)
@@ -183,6 +184,15 @@ int Element_PROT::graphics(GRAPHICS_FUNC_ARGS)
 
 	*pixel_mode |= FIRE_ADD;
 	return 1;
+}
+
+//#TPT-Directive ElementHeader Element_PROT static void create(CREATE_FUNC_ARGS)
+void Element_PROT::create(CREATE_FUNC_ARGS)
+{
+	float a = (rand()%36)* 0.17453f;
+	parts[i].life = 680;
+	parts[i].vx = 2.0f*cosf(a);
+	parts[i].vy = 2.0f*sinf(a);
 }
 
 Element_PROT::~Element_PROT() {}
