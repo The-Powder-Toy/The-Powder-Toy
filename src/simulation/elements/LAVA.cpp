@@ -44,6 +44,7 @@ Element_LAVA::Element_LAVA()
 	
 	Update = &Element_FIRE::update;
 	Graphics = &Element_LAVA::graphics;
+	Create = &Element_LAVA::create;
 }
 
 
@@ -65,6 +66,13 @@ int Element_LAVA::graphics(GRAPHICS_FUNC_ARGS)
 	*pixel_mode |= PMODE_BLUR;
 	//Returning 0 means dynamic, do not cache
 	return 0;
+}
+
+
+//#TPT-Directive ElementHeader Element_LAVA static void create(CREATE_FUNC_ARGS)
+void Element_LAVA::create(CREATE_FUNC_ARGS)
+{
+	parts[i].life = rand()%120+240;
 }
 
 
