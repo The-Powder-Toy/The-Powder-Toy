@@ -1,12 +1,12 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_FUSE PT_FUSE 70
-Element_FUSE::Element_FUSE()
+//#TPT-Directive ElementClass Element_GPMP PT_GPMP 154
+Element_GPMP::Element_GPMP()
 {
-	Identifier = "DEFAULT_PT_FUSE";
-	Name = "FUSE";
-	Colour = PIXPACK(0x0A5706);
+	Identifier = "DEFAULT_PT_GPMP";
+	Name = "GPMP";
+	Colour = PIXPACK(0x0A3B3B);
 	MenuVisible = 1;
-	MenuSection = SC_SOLIDS;
+	MenuSection = SC_POWERED;
 	Enabled = 1;
 	
 	Advection = 0.0f;
@@ -15,22 +15,22 @@ Element_FUSE::Element_FUSE()
 	Loss = 0.00f;
 	Collision = 0.0f;
 	Gravity = 0.0f;
-	Diffusion = 0.0f;
-	HotAir = 0.0f	* CFDS;
+	Diffusion = 0.00f;
+	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
 	
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
-	Hardness = 20;
+	Hardness = 1;
 	
 	Weight = 100;
 	
-	Temperature = R_TEMP+0.0f	+273.15f;
-	HeatConduct = 200;
-	Description = "Burns slowly. Ignites at somewhat high temperatures or with electricity.";
+	Temperature = 0.0f		+273.15f;
+	HeatConduct = 0;
+	Description = "Gravity pump. Changes gravity to its temp when activated. (use HEAT/COOL)";
 	
-	State = ST_SOLID;
+	State = ST_NONE;
 	Properties = TYPE_SOLID;
 	
 	LowPressure = IPL;
@@ -42,60 +42,56 @@ Element_FUSE::Element_FUSE()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 	
-	Update = &Element_FUSE::update;
-	Create = &Element_FUSE::create;
-	
+	Update = &Element_GPMP::update;
+	Graphics = &Element_GPMP::graphics;
+	Create = &Element_PUMP::create;
 }
 
-//#TPT-Directive ElementHeader Element_FUSE static int update(UPDATE_FUNC_ARGS)
-int Element_FUSE::update(UPDATE_FUNC_ARGS)
+//#TPT-Directive ElementHeader Element_GPMP static int update(UPDATE_FUNC_ARGS)
+int Element_GPMP::update(UPDATE_FUNC_ARGS)
  {
 	int r, rx, ry;
-	if (parts[i].life<=0) {
-		r = sim->create_part(i, x, y, PT_PLSM);
-		if (r>-1)
-			parts[r].life = 50;
-		return 1;
+	if (parts[i].life!=10)
+	{
+		if (parts[i].life>0)
+			parts[i].life--;
 	}
-	else if (parts[i].life < 40) {
-		parts[i].life--;
-		if (!(rand()%100)) {
-			r = sim->create_part(-1, x+rand()%3-1, y+rand()%3-1, PT_PLSM);
-			if (r>-1)
-				parts[r].life = 50;
-		}
-	}
-	if ((sim->pv[y/CELL][x/CELL] > 2.7f) && parts[i].tmp>40)
-		parts[i].tmp=39;
-	else if (parts[i].tmp<=0) {
-		sim->create_part(i, x, y, PT_FSEP);
-		return 1;
-	}
-	else if (parts[i].tmp<40)
-		parts[i].tmp--;
-	
-	for (rx=-2; rx<3; rx++)
-		for (ry=-2; ry<3; ry++)
-			if (BOUNDS_CHECK && (rx || ry))
-			{
-				r = pmap[y+ry][x+rx];
-				if (!r)
-					continue;
-				if ((r&0xFF)==PT_SPRK || ((parts[i].temp>=(273.15+700.0f)) && parts[i].life>40 && !(rand()%20)))
+	else
+	{
+		if (parts[i].temp>=256.0+273.15)
+			parts[i].temp=256.0+273.15;
+		if (parts[i].temp<= -256.0+273.15)
+			parts[i].temp = -256.0+273.15;
+
+		sim->gravmap[(y/CELL)*(XRES/CELL)+(x/CELL)] = 0.2f*(parts[i].temp-273.15);
+		for (rx=-2; rx<3; rx++)
+			for (ry=-2; ry<3; ry++)
+				if (BOUNDS_CHECK && (rx || ry))
 				{
-					parts[i].life = 39;
-					
+					r = pmap[y+ry][x+rx];
+					if (!r)
+						continue;
+					if ((r&0xFF)==PT_GPMP)
+					{
+						if (parts[r>>8].life<10&&parts[r>>8].life>0)
+							parts[i].life = 9;
+						else if (parts[r>>8].life==0)
+							parts[r>>8].life = 10;
+					}
 				}
-			}
+	}
 	return 0;
 }
 
-//#TPT-Directive ElementHeader Element_FUSE static void create(CREATE_FUNC_ARGS)
-void Element_FUSE::create(CREATE_FUNC_ARGS)
+
+//#TPT-Directive ElementHeader Element_GPMP static int graphics(GRAPHICS_FUNC_ARGS)
+int Element_GPMP::graphics(GRAPHICS_FUNC_ARGS)
+
 {
-	parts[i].life = 50;
-	parts[i].tmp = 50;
+	int lifemod = ((cpart->life>10?10:cpart->life)*19);
+	*colg += lifemod;
+	*colb += lifemod;
+	return 0;
 }
 
-
-Element_FUSE::~Element_FUSE() {}
+Element_GPMP::~Element_GPMP() {}
