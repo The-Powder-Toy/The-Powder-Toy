@@ -853,6 +853,42 @@ int luatpt_graphics_func(lua_State *l)
 	return 0;
 }
 
+int luatpt_create_func(lua_State *l)
+{
+	if(lua_isfunction(l, 1))
+	{
+		int element = luaL_optint(l, 2, 0);
+		int function;
+		lua_pushvalue(l, 1);
+		function = luaL_ref(l, LUA_REGISTRYINDEX);
+		if(element > 0 && element < PT_NUM)
+		{
+			lua_cr_func[element] = function;
+			return 0;
+		}
+		else
+		{
+			return luaL_error(l, "Invalid element");
+		}
+	}
+	else if (lua_isnil(l, 1))
+	{
+		int element = luaL_optint(l, 2, 0);
+		if(element > 0 && element < PT_NUM)
+		{
+			lua_cr_func[element] = 0;
+			return 0;
+		}
+		else
+		{
+			return luaL_error(l, "Invalid element");
+		}
+	}
+	else
+		return luaL_error(l, "Not a function");
+	return 0;
+}
+
 int luatpt_error(lua_State* l)
 {
 	std::string errorMessage = std::string(luaL_optstring(l, 1, "Error text"));
