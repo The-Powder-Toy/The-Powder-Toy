@@ -43,6 +43,7 @@ Element_ICEI::Element_ICEI()
 	HighTemperatureTransition = ST;
 	
 	Update = &Element_ICEI::update;
+	Create = &Element_ICEI::create;
 	
 }
 
@@ -74,6 +75,13 @@ int Element_ICEI::update(UPDATE_FUNC_ARGS)
 					sim->part_change_type(r>>8,x+rx,y+ry,PT_ICEI);
 			}
 	return 0;
+}
+
+
+//#TPT-Directive ElementHeader Element_ICEI static void create(CREATE_FUNC_ARGS)
+void Element_ICEI::create(CREATE_FUNC_ARGS)
+{
+	parts[i].ctype = PT_WATR;
 }
 
 

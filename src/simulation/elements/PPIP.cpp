@@ -44,6 +44,7 @@ Element_PPIP::Element_PPIP()
 	
 	Update = &Element_PIPE::update;
 	Graphics = &Element_PIPE::graphics;
+	Create = &Element_PIPE::create;
 }
 
 #define PFLAG_NORMALSPEED 0x00010000

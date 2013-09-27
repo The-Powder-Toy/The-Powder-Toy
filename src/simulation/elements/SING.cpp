@@ -43,6 +43,7 @@ Element_SING::Element_SING()
 	HighTemperatureTransition = NT;
 	
 	Update = &Element_SING::update;
+	Create = &Element_SING::create;
 	
 }
 
@@ -149,6 +150,11 @@ int Element_SING::update(UPDATE_FUNC_ARGS)
 				}
 			}
 	return 0;
+}
+//#TPT-Directive ElementHeader Element_SING static void create(CREATE_FUNC_ARGS)
+void Element_SING::create(CREATE_FUNC_ARGS)
+{
+	parts[i].life = rand()%50+60;
 }
 
 

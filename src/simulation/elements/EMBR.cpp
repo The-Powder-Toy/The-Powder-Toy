@@ -44,6 +44,7 @@ Element_EMBR::Element_EMBR()
 	
 	Update = &Element_EMBR::update;
 	Graphics = &Element_EMBR::graphics;
+	Create = &Element_EMBR::create;
 }
 
 //#TPT-Directive ElementHeader Element_EMBR static int update(UPDATE_FUNC_ARGS)
@@ -118,6 +119,13 @@ int Element_EMBR::graphics(GRAPHICS_FUNC_ARGS)
 		if (cpart->life<64) *cola = 4*cpart->life;
 	}
 	return 0;
+}
+
+
+//#TPT-Directive ElementHeader Element_EMBR static void create(CREATE_FUNC_ARGS)
+void Element_EMBR::create(CREATE_FUNC_ARGS)
+{
+	parts[i].life = 50;
 }
 
 Element_EMBR::~Element_EMBR() {}

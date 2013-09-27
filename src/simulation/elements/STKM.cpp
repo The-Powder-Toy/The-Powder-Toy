@@ -44,6 +44,7 @@ Element_STKM::Element_STKM()
 	
 	Update = &Element_STKM::update;
 	Graphics = &Element_STKM::graphics;
+	Create = &Element_STKM::create;
 }
 
 //#TPT-Directive ElementHeader Element_STKM static int update(UPDATE_FUNC_ARGS)
@@ -676,6 +677,23 @@ void Element_STKM::STKM_init_legs(Simulation * sim, playerst* playerp, int i)
 	playerp->comm = 0;
 	playerp->pcomm = 0;
 	playerp->frames = 0;
+}
+
+//#TPT-Directive ElementHeader Element_STKM static void create(CREATE_FUNC_ARGS)
+void Element_STKM::create(CREATE_FUNC_ARGS)
+{
+	if (sim->player.spwn==0)
+	{
+		parts[i].life = 100;
+		STKM_init_legs(sim, &sim->player, i);
+		sim->player.spwn = 1;
+		sim->player.rocketBoots = false;
+	}
+	else
+	{
+		parts[i].type=0;
+	}
+	sim->create_part(-3,x,y,PT_SPAWN);
 }
 
 

@@ -44,6 +44,7 @@ Element_NEUT::Element_NEUT()
 	
 	Update = &Element_NEUT::update;
 	Graphics = &Element_NEUT::graphics;
+	Create = &Element_NEUT::create;
 }
 
 //#TPT-Directive ElementHeader Element_NEUT static int update(UPDATE_FUNC_ARGS)
@@ -208,5 +209,16 @@ int Element_NEUT::DeutExplosion(Simulation * sim, int n, int x, int y, float tem
 	}
 	return 0;
 }
+
+//#TPT-Directive ElementHeader Element_NEUT static void create(CREATE_FUNC_ARGS)
+void Element_NEUT::create(CREATE_FUNC_ARGS)
+{
+	float r = (rand()%128+128)/127.0f;
+	float a = (rand()%360)*3.14159f/180.0f;
+	parts[i].life = rand()%480+480;
+	parts[i].vx = r*cosf(a);
+	parts[i].vy = r*sinf(a);
+}
+
 
 Element_NEUT::~Element_NEUT() {}

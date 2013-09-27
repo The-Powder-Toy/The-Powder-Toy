@@ -44,6 +44,7 @@ Element_QRTZ::Element_QRTZ()
 	
 	Update = &Element_QRTZ::update;
 	Graphics = &Element_QRTZ::graphics;
+	Create = &Element_QRTZ::create;
 }
 
 //#TPT-Directive ElementHeader Element_QRTZ static int update(UPDATE_FUNC_ARGS)
@@ -159,5 +160,10 @@ int Element_QRTZ::graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
+//#TPT-Directive ElementHeader Element_QRTZ static void create(CREATE_FUNC_ARGS)
+void Element_QRTZ::create(CREATE_FUNC_ARGS)
+{
+	parts[i].tmp2 = (rand()%11);
+}
 
 Element_QRTZ::~Element_QRTZ() {}

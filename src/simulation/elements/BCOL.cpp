@@ -44,6 +44,14 @@ Element_BCOL::Element_BCOL()
 	
 	Update = &Element_COAL::update;
 	Graphics = &Element_COAL::graphics;
+	Create = &Element_BCOL::create;
+}
+
+
+//#TPT-Directive ElementHeader Element_BCOL static void create(CREATE_FUNC_ARGS)
+void Element_BCOL::create(CREATE_FUNC_ARGS)
+{
+	parts[i].life = 110;
 }
 
 Element_BCOL::~Element_BCOL() {}
