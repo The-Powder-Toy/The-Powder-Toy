@@ -48,6 +48,13 @@ AnyType::operator StringType()
 	{
 		return StringType(*((std::string*)value));
 	}
+	else if (type == TypePoint && value)
+	{
+		ui::Point thisPoint = *((ui::Point*)value);
+		std::stringstream pointStream;
+		pointStream << thisPoint.X << "," << thisPoint.Y;
+		return StringType(pointStream.str());
+	}
 	else
 		throw InvalidConversionException(type, TypeString);
 
@@ -61,10 +68,13 @@ AnyType::operator PointType()
 	}
 	else if(type == TypeString)
 	{
-		ui::Point thisPoint = *((ui::Point*)value);
-		std::stringstream pointStream;
-		pointStream << thisPoint.X << "," << thisPoint.Y;
-		return StringType(pointStream.str());
+		std::stringstream pointStream(*((std::string*)value));
+		int x, y;
+		char comma;
+		pointStream >> x >> comma >> y;
+		if (pointStream.fail() || comma != ',')
+			throw InvalidConversionException(type, TypePoint);
+		return PointType(ui::Point(x, y));
 	}
 	else
 		throw InvalidConversionException(type, TypePoint);

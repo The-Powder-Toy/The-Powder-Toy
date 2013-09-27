@@ -146,7 +146,7 @@ int TPTScriptInterface::parseNumber(char * stringData)
 	}
 	else
 	{
-		return atoi(stringData);
+		return atof(stringData);
 	}
 	return currentNumber;
 }
