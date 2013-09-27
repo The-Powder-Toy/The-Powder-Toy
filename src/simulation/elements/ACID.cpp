@@ -44,6 +44,7 @@ Element_ACID::Element_ACID()
 	
 	Update = &Element_ACID::update;
 	Graphics = &Element_ACID::graphics;
+	Create = &Element_ACID::create;
 }
 
 //#TPT-Directive ElementHeader Element_ACID static int update(UPDATE_FUNC_ARGS)
@@ -137,6 +138,12 @@ int Element_ACID::graphics(GRAPHICS_FUNC_ARGS)
 	*colb += s*2;
 	*pixel_mode |= PMODE_BLUR;
 	return 0;
+}
+
+//#TPT-Directive ElementHeader Element_ACID static void create(CREATE_FUNC_ARGS)
+void Element_ACID::create(CREATE_FUNC_ARGS)
+{
+	parts[i].life = 75;
 }
 
 Element_ACID::~Element_ACID() {}

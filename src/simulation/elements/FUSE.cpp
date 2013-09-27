@@ -43,6 +43,7 @@ Element_FUSE::Element_FUSE()
 	HighTemperatureTransition = NT;
 	
 	Update = &Element_FUSE::update;
+	Create = &Element_FUSE::create;
 	
 }
 
@@ -87,6 +88,13 @@ int Element_FUSE::update(UPDATE_FUNC_ARGS)
 				}
 			}
 	return 0;
+}
+
+//#TPT-Directive ElementHeader Element_FUSE static void create(CREATE_FUNC_ARGS)
+void Element_FUSE::create(CREATE_FUNC_ARGS)
+{
+	parts[i].life = 50;
+	parts[i].tmp = 50;
 }
 
 

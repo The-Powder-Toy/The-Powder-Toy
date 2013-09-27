@@ -44,6 +44,7 @@ Element_EXOT::Element_EXOT()
 	
 	Update = &Element_EXOT::update;
 	Graphics = &Element_EXOT::graphics;
+	Create = &Element_EXOT::create;
 }
 
 //#TPT-Directive ElementHeader Element_EXOT static int update(UPDATE_FUNC_ARGS)
@@ -234,6 +235,14 @@ int Element_EXOT::graphics(GRAPHICS_FUNC_ARGS)
 		*pixel_mode |= PMODE_BLUR;
 	}
 	return 0;
+}
+
+
+//#TPT-Directive ElementHeader Element_EXOT static void create(CREATE_FUNC_ARGS)
+void Element_EXOT::create(CREATE_FUNC_ARGS)
+{
+	parts[i].life = 1000;
+	parts[i].tmp = 244;
 }
 
 Element_EXOT::~Element_EXOT() {}

@@ -49,6 +49,7 @@ Element_CFLM::Element_CFLM()
 	
 	Update = NULL;
 	Graphics = &Element_CFLM::graphics;
+	Create = &Element_CFLM::create;
 }
 
 //#TPT-Directive ElementHeader Element_CFLM static int graphics(GRAPHICS_FUNC_ARGS)
@@ -69,6 +70,12 @@ int Element_CFLM::graphics(GRAPHICS_FUNC_ARGS)
 	*pixel_mode |= FIRE_ADD;
 	//Returning 0 means dynamic, do not cache
 	return 0;
+}
+
+//#TPT-Directive ElementHeader Element_CFLM static void create(CREATE_FUNC_ARGS)
+void Element_CFLM::create(CREATE_FUNC_ARGS)
+{
+	parts[i].life = rand()%150+50;
 }
 
 

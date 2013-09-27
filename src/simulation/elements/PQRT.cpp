@@ -44,6 +44,7 @@ Element_PQRT::Element_PQRT()
 	
 	Update = &Element_QRTZ::update;
 	Graphics = &Element_QRTZ::graphics;
+	Create = &Element_QRTZ::create;
 }
 
 Element_PQRT::~Element_PQRT() {}

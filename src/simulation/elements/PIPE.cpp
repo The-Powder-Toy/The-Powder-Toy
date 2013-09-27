@@ -44,6 +44,7 @@ Element_PIPE::Element_PIPE()
 	
 	Update = &Element_PIPE::update;
 	Graphics = &Element_PIPE::graphics;
+	Create = &Element_PIPE::create;
 }
 
 #define PFLAG_NORMALSPEED 0x00010000
@@ -502,6 +503,13 @@ void Element_PIPE::pushParticle(Simulation * sim, int i, int count, int original
 		
 	}
 	return;
+}
+
+
+//#TPT-Directive ElementHeader Element_PIPE static void create(CREATE_FUNC_ARGS)
+void Element_PIPE::create(CREATE_FUNC_ARGS)
+{
+	parts[i].life = 60;
 }
 
 

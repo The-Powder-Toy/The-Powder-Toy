@@ -43,6 +43,7 @@ Element_VIRS::Element_VIRS()
 	HighTemperatureTransition = PT_VRSG;
 	
 	Update = &Element_VIRS::update;
+	Create = &Element_VIRS::create;
 
 }
 
@@ -140,6 +141,12 @@ int Element_VIRS::update(UPDATE_FUNC_ARGS)
 		}
 	}
 	return 0;
+}
+
+//#TPT-Directive ElementHeader Element_VIRS static void create(CREATE_FUNC_ARGS)
+void Element_VIRS::create(CREATE_FUNC_ARGS)
+{
+	parts[i].pavg[1] = 250;
 }
 
 Element_VIRS::~Element_VIRS() {}

@@ -64,7 +64,7 @@ bool *luacon_currentCommand;
 std::string *luacon_lastError;
 std::string lastCode;
 
-int *lua_el_func, *lua_el_mode, *lua_gr_func;
+int *lua_el_func, *lua_el_mode, *lua_gr_func, *lua_cr_func;
 
 int getPartIndex_curIdx;
 int tptProperties; //Table for some TPT properties
@@ -187,6 +187,7 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 		{"element",&luatpt_getelement},
 		{"element_func",&luatpt_element_func},
 		{"graphics_func",&luatpt_graphics_func},
+		{"create_func",&luatpt_create_func},
 		{NULL,NULL}
 	};
 
@@ -321,10 +322,12 @@ tpt.partsdata = nil");
 	lua_el_func = (int*)calloc(PT_NUM, sizeof(int));
 	lua_el_mode = (int*)calloc(PT_NUM, sizeof(int));
 	lua_gr_func = (int*)calloc(PT_NUM, sizeof(int));
+	lua_cr_func = (int*)calloc(PT_NUM, sizeof(int));
 	for(i = 0; i < PT_NUM; i++)
 	{
 		lua_el_mode[i] = 0;
 		lua_gr_func[i] = 0;
+		lua_cr_func[i] = 0;
 	}
 
 }
@@ -653,7 +656,7 @@ int LuaScriptInterface::simulation_partPosition(lua_State * l)
 			return 0;
 		}
 	}
-	
+
 	if(argCount == 3)
 	{
 		luacon_sim->parts[particleID].x = lua_tonumber(l, 2);
@@ -1676,7 +1679,7 @@ int LuaScriptInterface::renderer_renderModes(lua_State * l)
 		int size = 0;
 		luaL_checktype(l, 1, LUA_TTABLE);
 		size = luaL_getn(l, 1);
-		
+
 		std::vector<unsigned int> renderModes;
 		for(int i = 1; i <= size; i++)
 		{
@@ -1709,7 +1712,7 @@ int LuaScriptInterface::renderer_displayModes(lua_State * l)
 		int size = 0;
 		luaL_checktype(l, 1, LUA_TTABLE);
 		size = luaL_getn(l, 1);
-		
+
 		std::vector<unsigned int> displayModes;
 		for(int i = 1; i <= size; i++)
 		{
@@ -2097,6 +2100,19 @@ int LuaScriptInterface::elements_element(lua_State * l)
 		else
 			lua_pop(l, 1);
 
+		lua_getfield(l, -1, "Create");
+		if(lua_type(l, -1) == LUA_TFUNCTION)
+		{
+			lua_cr_func[id] = luaL_ref(l, LUA_REGISTRYINDEX);
+		}
+		else if(lua_type(l, -1) == LUA_TBOOLEAN && !lua_toboolean(l, -1))
+		{
+			lua_cr_func[id] = 0;
+			luacon_sim->elements[id].Create = NULL;
+		}
+		else
+			lua_pop(l, 1);
+
 		luacon_model->BuildMenus();
 		luacon_sim->init_can_move();
 		luacon_ren->graphicscache[id].isready = 0;
@@ -2264,6 +2280,19 @@ int LuaScriptInterface::elements_property(lua_State * l)
 			}
 			luacon_ren->graphicscache[id].isready = 0;
 		}
+		else if(propertyName == "Create")
+		{
+			if(lua_type(l, 3) == LUA_TFUNCTION)
+			{
+				lua_pushvalue(l, 3);
+				lua_cr_func[id] = luaL_ref(l, LUA_REGISTRYINDEX);
+			}
+			else if(lua_type(l, 3) == LUA_TBOOLEAN && !lua_toboolean(l, -1))
+			{
+				lua_cr_func[id] = 0;
+				luacon_sim->elements[id].Create = NULL;
+			}
+		}
 		else
 			return luaL_error(l, "Invalid element property");
 	}
@@ -2329,7 +2358,7 @@ int LuaScriptInterface::elements_free(lua_State * l)
 	int id;
 	luaL_checktype(l, 1, LUA_TNUMBER);
 	id = lua_tointeger(l, 1);
-	
+
 	if(id < 0 || id >= PT_NUM || !luacon_sim->elements[id].Enabled)
 		return luaL_error(l, "Invalid element");
 
@@ -2383,7 +2412,7 @@ int LuaScriptInterface::virtualMachine_loadProgram(lua_State * l)
 
 
 	pim::compiler::Parser * parser = new pim::compiler::Parser(input);
-	
+
 	std::vector<unsigned char> programData = parser->Compile();
 
 	pim::VirtualMachine * machine = new pim::VirtualMachine(luacon_sim);
@@ -2437,7 +2466,7 @@ int LuaScriptInterface::graphics_drawText(lua_State * l)
 	int g = luaL_optint(l, 5, 255);
 	int b = luaL_optint(l, 6, 255);
 	int a = luaL_optint(l, 7, 255);
-	
+
 	if (r<0) r = 0;
 	else if (r>255) r = 255;
 	if (g<0) g = 0;

@@ -43,6 +43,7 @@ Element_TSNS::Element_TSNS()
 	HighTemperatureTransition = NT;
 	
 	Update = &Element_TSNS::update;
+	Create = &Element_DTEC::create;
 	
 }
 

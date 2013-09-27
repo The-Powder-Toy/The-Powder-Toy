@@ -39,6 +39,7 @@ public:
 	unsigned int Properties;
 	int (*Update) (UPDATE_FUNC_ARGS);
 	int (*Graphics) (GRAPHICS_FUNC_ARGS);
+	void (*Create) (CREATE_FUNC_ARGS);
 	VideoBuffer * (*IconGenerator)(int, int, int);
 	
 	float HighPressure;

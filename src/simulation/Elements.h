@@ -48,6 +48,9 @@
 #define GRAPHICS_FUNC_ARGS Renderer * ren, Particle *cpart, int nx, int ny, int *pixel_mode, int* cola, int *colr, int *colg, int *colb, int *firea, int *firer, int *fireg, int *fireb
 #define GRAPHICS_FUNC_SUBCALL_ARGS ren, cpart, nx, ny, pixel_mode, cola, colr, colg, colb, firea, firer, fireg, fireb
 
+#define CREATE_FUNC_ARGS Simulation* sim, int i, int x, int y, int var, int p, Particle *parts, int pmap[YRES][XRES]
+#define CREATE_FUNC_SUBCALL_ARGS sim, i, x, y, var, p, parts, pmap
+
 #define BOUNDS_CHECK true
 
 #define OLD_PT_WIND 147

@@ -44,6 +44,7 @@ Element_GPMP::Element_GPMP()
 	
 	Update = &Element_GPMP::update;
 	Graphics = &Element_GPMP::graphics;
+	Create = &Element_PUMP::create;
 }
 
 //#TPT-Directive ElementHeader Element_GPMP static int update(UPDATE_FUNC_ARGS)
@@ -92,6 +93,5 @@ int Element_GPMP::graphics(GRAPHICS_FUNC_ARGS)
 	*colb += lifemod;
 	return 0;
 }
-
 
 Element_GPMP::~Element_GPMP() {}

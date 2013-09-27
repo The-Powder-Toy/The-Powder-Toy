@@ -44,6 +44,7 @@ Element_ELEC::Element_ELEC()
 	
 	Update = &Element_ELEC::update;
 	Graphics = &Element_ELEC::graphics;
+	Create = &Element_ELEC::create;
 }
 
 //#TPT-Directive ElementHeader Element_ELEC static int update(UPDATE_FUNC_ARGS)
@@ -137,6 +138,16 @@ int Element_ELEC::graphics(GRAPHICS_FUNC_ARGS)
 	*pixel_mode |= FIRE_ADD;
 	return 0;
 }
+
+//#TPT-Directive ElementHeader Element_ELEC static void create(CREATE_FUNC_ARGS)
+void Element_ELEC::create(CREATE_FUNC_ARGS)
+{
+	float a = (rand()%360)*3.14159f/180.0f;
+	parts[i].life = 680;
+	parts[i].vx = 2.0f*cosf(a);
+	parts[i].vy = 2.0f*sinf(a);
+}
+
 
 
 Element_ELEC::~Element_ELEC() {}
