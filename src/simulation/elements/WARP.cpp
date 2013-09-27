@@ -44,6 +44,7 @@ Element_WARP::Element_WARP()
 	
 	Update = &Element_WARP::update;
 	Graphics = &Element_WARP::graphics;
+	Create = &Element_WARP::create;
 }
 
 //#TPT-Directive ElementHeader Element_WARP static int update(UPDATE_FUNC_ARGS)
@@ -90,6 +91,12 @@ int Element_WARP::graphics(GRAPHICS_FUNC_ARGS)
 	*colr = *colg = *colb = *cola = 0;
 	*pixel_mode &= ~PMODE;
 	return 0;
+}
+
+//#TPT-Directive ElementHeader Element_WARP static void create(CREATE_FUNC_ARGS)
+void Element_WARP::create(CREATE_FUNC_ARGS)
+{
+	parts[i].life = rand()%95+70;
 }
 
 Element_WARP::~Element_WARP() {}

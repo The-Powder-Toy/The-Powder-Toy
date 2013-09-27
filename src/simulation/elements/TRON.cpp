@@ -44,6 +44,7 @@ Element_TRON::Element_TRON()
 	
 	Update = &Element_TRON::update;
 	Graphics = &Element_TRON::graphics;
+	Create = &Element_TRON::create;
 
 	Element_TRON::init_graphics();
 }
@@ -264,6 +265,16 @@ bool Element_TRON::canmovetron(Simulation * sim, int r, int len)
 	if ((((sim->elements[r&0xFF].Properties & PROP_LIFE_KILL_DEC) && sim->parts[r>>8].life > 0)|| ((sim->elements[r&0xFF].Properties & PROP_LIFE_KILL) && (sim->elements[r&0xFF].Properties & PROP_LIFE_DEC))) && sim->parts[r>>8].life < len)
 		return true;
 	return false;
+}
+
+//#TPT-Directive ElementHeader Element_TRON static void create(CREATE_FUNC_ARGS)
+void Element_TRON::create(CREATE_FUNC_ARGS)
+{
+	int randhue = rand()%360;
+	int randomdir = rand()%4;
+	parts[i].tmp = 1|(randomdir<<5)|(randhue<<7);	//set as a head and a direction
+	parts[i].tmp2 = 4;				//tail
+	parts[i].life = 5;
 }
 
 Element_TRON::~Element_TRON() {}

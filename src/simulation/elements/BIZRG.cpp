@@ -44,6 +44,7 @@ Element_BIZRG::Element_BIZRG()
 	
 	Update = &Element_BIZR::update;
 	Graphics = &Element_BIZR::graphics;
+	Create = &Element_BIZR::create;
 }
 //BIZRG update is in BIZR.cpp
 Element_BIZRG::~Element_BIZRG() {}

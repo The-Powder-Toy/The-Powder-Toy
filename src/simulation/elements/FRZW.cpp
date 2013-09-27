@@ -43,6 +43,7 @@ Element_FRZW::Element_FRZW()
 	HighTemperatureTransition = PT_ICEI;
 	
 	Update = &Element_FRZW::update;
+	Create = &Element_FRZW::create;
 	
 }
 
@@ -69,6 +70,13 @@ int Element_FRZW::update(UPDATE_FUNC_ARGS)
 		parts[i].temp = restrict_flt(parts[i].temp-200.0f, MIN_TEMP, MAX_TEMP);
 	}
 	return 0;
+}
+
+
+//#TPT-Directive ElementHeader Element_FRZW static void create(CREATE_FUNC_ARGS)
+void Element_FRZW::create(CREATE_FUNC_ARGS)
+{
+	parts[i].life = 100;
 }
 
 

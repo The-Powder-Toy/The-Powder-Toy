@@ -43,6 +43,7 @@ Element_MORT::Element_MORT()
 	HighTemperatureTransition = NT;
 	
 	Update = &Element_MORT::update;
+	Create = &Element_MORT::create;
 	
 }
 
@@ -51,6 +52,13 @@ int Element_MORT::update(UPDATE_FUNC_ARGS)
  {
 	sim->create_part(-1, x, y-1, PT_SMKE);
 	return 0;
+}
+
+
+//#TPT-Directive ElementHeader Element_MORT static void create(CREATE_FUNC_ARGS)
+void Element_MORT::create(CREATE_FUNC_ARGS)
+{
+	parts[i].vx = 2;
 }
 
 

@@ -44,6 +44,7 @@ Element_COAL::Element_COAL()
 	
 	Update = &Element_COAL::update;
 	Graphics = &Element_COAL::graphics;
+	Create = &Element_COAL::create;
 }
 
 //#TPT-Directive ElementHeader Element_COAL static int update(UPDATE_FUNC_ARGS)
@@ -130,5 +131,11 @@ int Element_COAL::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
+//#TPT-Directive ElementHeader Element_COAL static void create(CREATE_FUNC_ARGS)
+void Element_COAL::create(CREATE_FUNC_ARGS)
+{
+	parts[i].life = 110;
+	parts[i].tmp = 50;
+}
 
 Element_COAL::~Element_COAL() {}
