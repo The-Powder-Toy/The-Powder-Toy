@@ -44,6 +44,7 @@ Element_PHOT::Element_PHOT()
 	
 	Update = &Element_PHOT::update;
 	Graphics = &Element_PHOT::graphics;
+	Create = &Element_PHOT::create;
 }
 
 //#TPT-Directive ElementHeader Element_PHOT static int update(UPDATE_FUNC_ARGS)
@@ -124,5 +125,14 @@ int Element_PHOT::graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
+//#TPT-Directive ElementHeader Element_PHOT static void create(CREATE_FUNC_ARGS)
+void Element_PHOT::create(CREATE_FUNC_ARGS)
+{
+	float a = (rand()%8) * 0.78540f;
+	parts[i].life = 680;
+	parts[i].ctype = 0x3FFFFFFF;
+	parts[i].vx = 3.0f*cosf(a);
+	parts[i].vy = 3.0f*sinf(a);
+}
 
 Element_PHOT::~Element_PHOT() {}

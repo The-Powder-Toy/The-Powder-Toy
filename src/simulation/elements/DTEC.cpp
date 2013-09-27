@@ -43,6 +43,7 @@ Element_DTEC::Element_DTEC()
 	HighTemperatureTransition = NT;
 	
 	Update = &Element_DTEC::update;
+	Create = &Element_DTEC::create;
 	
 }
 
@@ -112,6 +113,12 @@ int Element_DTEC::update(UPDATE_FUNC_ARGS)
 				}
 	}
 	return 0;
+}
+
+//#TPT-Directive ElementHeader Element_DTEC static void create(CREATE_FUNC_ARGS)
+void Element_DTEC::create(CREATE_FUNC_ARGS)
+{
+	parts[i].tmp2 = 2;
 }
 
 

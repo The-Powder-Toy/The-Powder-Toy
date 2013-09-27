@@ -43,6 +43,7 @@ Element_MERC::Element_MERC()
 	HighTemperatureTransition = NT;
 	
 	Update = &Element_MERC::update;
+	Create = &Element_MERC::create;
 	
 }
 
@@ -116,6 +117,13 @@ int Element_MERC::update(UPDATE_FUNC_ARGS)
 		}
 	}
 	return 0;
+}
+
+
+//#TPT-Directive ElementHeader Element_MERC static void create(CREATE_FUNC_ARGS)
+void Element_MERC::create(CREATE_FUNC_ARGS)
+{
+	parts[i].tmp = 10;
 }
 
 

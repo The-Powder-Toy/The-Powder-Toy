@@ -44,11 +44,11 @@ Element_BRAY::Element_BRAY()
 	
 	Update = NULL;
 	Graphics = &Element_BRAY::graphics;
+	Create = &Element_BRAY::create;
 }
 
 //#TPT-Directive ElementHeader Element_BRAY static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_BRAY::graphics(GRAPHICS_FUNC_ARGS)
-
 {
 	int x, trans = 255;
 	if(cpart->tmp==0)
@@ -103,6 +103,12 @@ int Element_BRAY::graphics(GRAPHICS_FUNC_ARGS)
 	*pixel_mode &= ~PMODE;
 	*pixel_mode |= PMODE_BLEND | PMODE_GLOW;
 	return 0;
+}
+
+//#TPT-Directive ElementHeader Element_BRAY static void create(CREATE_FUNC_ARGS)
+void Element_BRAY::create(CREATE_FUNC_ARGS)
+{
+	parts[i].life = 30;
 }
 
 

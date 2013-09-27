@@ -44,6 +44,7 @@ Element_DEUT::Element_DEUT()
 	
 	Update = &Element_DEUT::update;
 	Graphics = &Element_DEUT::graphics;
+	Create = &Element_DEUT::create;
 }
 
 //#TPT-Directive ElementHeader Element_DEUT static int update(UPDATE_FUNC_ARGS)
@@ -143,6 +144,12 @@ int Element_DEUT::graphics(GRAPHICS_FUNC_ARGS)
 		*pixel_mode |= PMODE_BLUR;
 	}
 	return 0;
+}
+
+//#TPT-Directive ElementHeader Element_DEUT static void create(CREATE_FUNC_ARGS)
+void Element_DEUT::create(CREATE_FUNC_ARGS)
+{
+	parts[i].life = 10;
 }
 
 

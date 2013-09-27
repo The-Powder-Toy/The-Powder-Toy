@@ -44,6 +44,7 @@ Element::Element():
 
 	Update(NULL),
 	Graphics(&Element::defaultGraphics),
+	Create(NULL),
 	IconGenerator(NULL)
 {
 }

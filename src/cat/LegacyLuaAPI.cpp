@@ -853,6 +853,63 @@ int luatpt_graphics_func(lua_State *l)
 	return 0;
 }
 
+int luacon_createReplacement(CREATE_FUNC_ARGS)
+{
+	int retval = 0, callret;
+	if(lua_cr_func[parts[i].type]){
+		lua_rawgeti(luacon_ci->l, LUA_REGISTRYINDEX, lua_cr_func[parts[i].type]);
+		lua_pushinteger(luacon_ci->l, i);
+		lua_pushinteger(luacon_ci->l, x);
+		lua_pushinteger(luacon_ci->l, y);
+		lua_pushinteger(luacon_ci->l, var);
+		lua_pushinteger(luacon_ci->l, p);
+		callret = lua_pcall(luacon_ci->l, 5, 1, 0);
+		if (callret)
+			luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
+		if(lua_isboolean(luacon_ci->l, -1)){
+			retval = lua_toboolean(luacon_ci->l, -1);
+		}
+		lua_pop(luacon_ci->l, 1);
+	}
+	return retval;
+}
+
+int luatpt_create_func(lua_State *l)
+{
+	if(lua_isfunction(l, 1))
+	{
+		int element = luaL_optint(l, 2, 0);
+		int function;
+		lua_pushvalue(l, 1);
+		function = luaL_ref(l, LUA_REGISTRYINDEX);
+		if(element > 0 && element < PT_NUM)
+		{
+			lua_cr_func[element] = function;
+			return 0;
+		}
+		else
+		{
+			return luaL_error(l, "Invalid element");
+		}
+	}
+	else if (lua_isnil(l, 1))
+	{
+		int element = luaL_optint(l, 2, 0);
+		if(element > 0 && element < PT_NUM)
+		{
+			lua_cr_func[element] = 0;
+			return 0;
+		}
+		else
+		{
+			return luaL_error(l, "Invalid element");
+		}
+	}
+	else
+		return luaL_error(l, "Not a function");
+	return 0;
+}
+
 int luatpt_error(lua_State* l)
 {
 	std::string errorMessage = std::string(luaL_optstring(l, 1, "Error text"));

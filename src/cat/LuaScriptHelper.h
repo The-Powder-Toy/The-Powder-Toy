@@ -12,7 +12,7 @@ extern bool *luacon_currentCommand;
 extern int luaL_tostring(lua_State* l, int n);
 extern std::string *luacon_lastError;
 
-extern int *lua_el_func, *lua_el_mode, *lua_gr_func;
+extern int *lua_el_func, *lua_el_mode, *lua_gr_func, *lua_cr_func;
 
 extern int getPartIndex_curIdx;
 extern int tptProperties; //Table for some TPT properties
@@ -49,6 +49,9 @@ int luatpt_graphics_func(lua_State *l);
 
 int luacon_elementReplacement(UPDATE_FUNC_ARGS);
 int luatpt_element_func(lua_State *l);
+
+int luacon_createReplacement(UPDATE_FUNC_ARGS);
+int luatpt_create_func(lua_State *l);
 
 int luatpt_error(lua_State* l);
 int luatpt_drawtext(lua_State* l);

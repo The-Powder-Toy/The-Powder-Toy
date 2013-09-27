@@ -45,6 +45,7 @@ Element_LIGH::Element_LIGH()
 	
 	Update = &Element_LIGH::update;
 	Graphics = &Element_LIGH::graphics;
+	Create = &Element_LIGH::create;
 }
 
 #define LIGHTING_POWER 0.65
@@ -366,6 +367,29 @@ int Element_LIGH::graphics(GRAPHICS_FUNC_ARGS)
 	*fireb = *colb = 255;
 	*pixel_mode |= PMODE_GLOW | FIRE_ADD;
 	return 1;
+}
+
+//#TPT-Directive ElementHeader Element_LIGH static void create(CREATE_FUNC_ARGS)
+void Element_LIGH::create(CREATE_FUNC_ARGS)
+{
+	float gx, gy, gsize;
+	if (p!=-2)
+	{
+		parts[i].life=30;
+		parts[i].temp=parts[i].life*150.0f; // temperature of the lighting shows the power of the lighting
+	}
+	sim->GetGravityField(x, y, 1.0f, 1.0f, gx, gy);
+	gsize = gx*gx+gy*gy;
+	if (gsize<0.0016f)
+	{
+		float angle = (rand()%6284)*0.001f;//(in radians, between 0 and 2*pi)
+		gsize = sqrtf(gsize);
+		// randomness in weak gravity fields (more randomness with weaker fields)
+		gx += cosf(angle)*(0.04f-gsize);
+		gy += sinf(angle)*(0.04f-gsize);
+	}
+	parts[i].tmp = (((int)(atan2f(-gy, gx)*(180.0f/M_PI)))+rand()%40-20+360)%360;
+	parts[i].tmp2 = 4;
 }
 
 

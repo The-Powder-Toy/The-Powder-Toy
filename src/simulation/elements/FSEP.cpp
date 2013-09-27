@@ -43,6 +43,7 @@ Element_FSEP::Element_FSEP()
 	HighTemperatureTransition = NT;
 	
 	Update = &Element_FSEP::update;
+	Create = &Element_FSEP::create;
 	
 }
 
@@ -79,6 +80,13 @@ int Element_FSEP::update(UPDATE_FUNC_ARGS)
 				}
 	}
 	return 0;
+}
+
+
+//#TPT-Directive ElementHeader Element_FSEP static void create(CREATE_FUNC_ARGS)
+void Element_FSEP::create(CREATE_FUNC_ARGS)
+{
+	parts[i].life = 50;
 }
 
 

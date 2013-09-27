@@ -44,6 +44,7 @@ Element_PUMP::Element_PUMP()
 	
 	Update = &Element_PUMP::update;
 	Graphics = &Element_PUMP::graphics;
+	Create = &Element_PUMP::create;
 }
 
 //#TPT-Directive ElementHeader Element_PUMP static int update(UPDATE_FUNC_ARGS)
@@ -95,6 +96,12 @@ int Element_PUMP::graphics(GRAPHICS_FUNC_ARGS)
 	int lifemod = ((cpart->life>10?10:cpart->life)*19);
 	*colb += lifemod;
 	return 0;
+}
+
+//#TPT-Directive ElementHeader Element_PUMP static void create(CREATE_FUNC_ARGS)
+void Element_PUMP::create(CREATE_FUNC_ARGS)
+{
+	parts[i].life = 10;
 }
 
 

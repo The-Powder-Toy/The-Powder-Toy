@@ -43,6 +43,7 @@ Element_CAUS::Element_CAUS()
 	HighTemperatureTransition = NT;
 	
 	Update = &Element_CAUS::update;
+	Create = &Element_CAUS::create;
 	
 }
 
@@ -80,6 +81,11 @@ int Element_CAUS::update(UPDATE_FUNC_ARGS)
 				}
 			}
 	return 0;
+}
+//#TPT-Directive ElementHeader Element_CAUS static void create(CREATE_FUNC_ARGS)
+void Element_CAUS::create(CREATE_FUNC_ARGS)
+{
+	parts[i].life = 75;
 }
 
 
