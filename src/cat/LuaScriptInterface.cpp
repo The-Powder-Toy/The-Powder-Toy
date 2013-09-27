@@ -64,7 +64,7 @@ bool *luacon_currentCommand;
 std::string *luacon_lastError;
 std::string lastCode;
 
-int *lua_el_func, *lua_el_mode, *lua_gr_func;
+int *lua_el_func, *lua_el_mode, *lua_gr_func, *lua_cr_func;
 
 int getPartIndex_curIdx;
 int tptProperties; //Table for some TPT properties
@@ -187,6 +187,7 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 		{"element",&luatpt_getelement},
 		{"element_func",&luatpt_element_func},
 		{"graphics_func",&luatpt_graphics_func},
+		{"create_func",&luatpt_create_func},
 		{NULL,NULL}
 	};
 
@@ -321,10 +322,12 @@ tpt.partsdata = nil");
 	lua_el_func = (int*)calloc(PT_NUM, sizeof(int));
 	lua_el_mode = (int*)calloc(PT_NUM, sizeof(int));
 	lua_gr_func = (int*)calloc(PT_NUM, sizeof(int));
+	lua_cr_func = (int*)calloc(PT_NUM, sizeof(int));
 	for(i = 0; i < PT_NUM; i++)
 	{
 		lua_el_mode[i] = 0;
 		lua_gr_func[i] = 0;
+		lua_cr_func[i] = 0;
 	}
 
 }
@@ -2096,6 +2099,19 @@ int LuaScriptInterface::elements_element(lua_State * l)
 		}
 		else
 			lua_pop(l, 1);
+			
+		lua_getfield(l, -1, "Create");
+		if(lua_type(l, -1) == LUA_TFUNCTION)
+		{
+			lua_cr_func[id] = luaL_ref(l, LUA_REGISTRYINDEX);
+		}
+		else if(lua_type(l, -1) == LUA_TBOOLEAN && !lua_toboolean(l, -1))
+		{
+			lua_cr_func[id] = 0;
+			luacon_sim->elements[id].Create = NULL;
+		}
+		else
+			lua_pop(l, 1);
 
 		luacon_model->BuildMenus();
 		luacon_sim->init_can_move();
@@ -2263,6 +2279,19 @@ int LuaScriptInterface::elements_property(lua_State * l)
 				luacon_sim->elements[id].Graphics = NULL;
 			}
 			luacon_ren->graphicscache[id].isready = 0;
+		}
+		else if(propertyName == "Create")
+		{
+			if(lua_type(l, 3) == LUA_TFUNCTION)
+			{
+				lua_pushvalue(l, 3);
+				lua_cr_func[id] = luaL_ref(l, LUA_REGISTRYINDEX);
+			}
+			else if(lua_type(l, 3) == LUA_TBOOLEAN && !lua_toboolean(l, -1))
+			{
+				lua_cr_func[id] = 0;
+				luacon_sim->elements[id].Create = NULL;
+			}
 		}
 		else
 			return luaL_error(l, "Invalid element property");
