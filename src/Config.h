@@ -169,10 +169,14 @@ extern unsigned char ZSIZE;
 #define strcasecmp stricmp
 #endif
 #if defined(_MSC_VER)
+#if _MSC_VER < 1800
 #define fmin min
 #define fminf min
 #define fmax max
 #define fmaxf max
+#else
+#include <algorithm>
+#endif
 #endif
 
 #if defined(_MSC_VER)
