@@ -32,6 +32,7 @@ void ConsoleModel::ProcessResult(std::string cmd, std::string highlighted, Comma
 		case CommandInterface::EvalSuccess:
 			{
 				std::string buffer = wordwrap(result->buffer, XRES-20);
+				int ln,inverted=0;
 				previousCommands.push_front(cmd);
 				cmd = wordwrap(cmd, XRES-20);
 				newlines = std::count(cmd.begin(), cmd.end(), '\n');
@@ -41,13 +42,51 @@ void ConsoleModel::ProcessResult(std::string cmd, std::string highlighted, Comma
 					promptHistory += "\n>>";
 				if(buffer.size())
 				{
-					newlines = 1 + std::count(buffer.begin(), buffer.end(), '\n');
+					newlines = 1;
+					for(std::string::iterator it = buffer.begin(), end = buffer.end(); it != end; it++)
+					{
+						if(*it=='\n')
+							newlines++;
+						if(*it=='\x01')
+							inverted=!inverted;
+						if(*it=='\x0F')
+						{
+							if(++it==end)
+								continue;
+							if(*it=='\n' || *it=='\x00')
+								*it+=1;
+							if(++it==end)
+								continue;
+							if(*it=='\n' || *it=='\x00')
+								*it+=1;
+							if(++it==end)
+								continue;
+							if(*it=='\n' || *it=='\x00')
+								*it+=1;
+						}
+					}
 					history += "\n\bo" + buffer + "\bw";
-					if(std::count(buffer.begin(), buffer.end(), '\x01')&1)
+					if(inverted)
 						history += '\x01';
 					for(; newlines>0; newlines--)
 						promptHistory += '\n';
 				}
+				ln = 512;
+				for(std::string::iterator it = history.end(), begin = history.begin(); it != begin; it--)
+					if(*it=='\n')
+						if(!--ln)
+						{
+							history = history.substr(it-begin);
+							break;
+						}
+				ln = 512;
+				for(std::string::iterator it = promptHistory.end(), begin = promptHistory.begin(); it != begin; it--)
+					if(*it=='\n')
+						if(!--ln)
+						{
+							promptHistory = promptHistory.substr(it-begin);
+							break;
+						}
 				command = "";
 				prompt = ">";
 				currentCommandIndex = -1;
