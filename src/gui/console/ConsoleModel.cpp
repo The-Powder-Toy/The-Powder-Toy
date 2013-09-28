@@ -88,7 +88,6 @@ void ConsoleModel::ProcessResult(std::string cmd, std::string highlighted, Comma
 							break;
 						}
 				command = "";
-				prompt = ">";
 				currentCommandIndex = -1;
 			}
 			break;
