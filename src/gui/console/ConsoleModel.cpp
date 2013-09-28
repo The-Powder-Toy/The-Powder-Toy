@@ -88,16 +88,12 @@ void ConsoleModel::ProcessResult(std::string cmd, std::string highlighted, Comma
 							break;
 						}
 				command = "";
-				prompt = ">";
 				currentCommandIndex = -1;
 			}
 			break;
 		case CommandInterface::EvalMore:
 			command = cmd + '\n';
 			newlines = 1 + std::count(cmd.begin(), cmd.end(), '\n');
-			prompt = ">";
-			for(; newlines>0; newlines--)
-				prompt += "\n>>";
 			break;
 	}
 	delete result;
@@ -108,7 +104,7 @@ void ConsoleModel::notifyHistoryChanged()
 {
 	for(int i = 0; i < observers.size(); i++)
 	{
-		observers[i]->NotifyHistoryChanged(this, prompt, command, promptHistory, history);
+		observers[i]->NotifyHistoryChanged(this, command, promptHistory, history);
 	}
 }
 
@@ -123,9 +119,6 @@ void ConsoleModel::NextCommand()
 		else
 			command="";
 		newlines = std::count(command.begin(), command.end(), '\n');
-		prompt = ">";
-		for(; newlines>0; newlines--)
-			prompt += "\n>>";
 		notifyHistoryChanged();
 	}
 }
@@ -138,9 +131,6 @@ void ConsoleModel::PreviousCommand()
 		currentCommandIndex++;
 		command=previousCommands.at(currentCommandIndex);
 		newlines = std::count(command.begin(), command.end(), '\n');
-		prompt = ">";
-		for(; newlines>0; newlines--)
-			prompt += "\n>>";
 		notifyHistoryChanged();
 	}
 }

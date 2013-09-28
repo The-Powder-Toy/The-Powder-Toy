@@ -26,7 +26,7 @@ public:
 	virtual void OnDraw();
 	virtual void DoKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
 	void AttachController(ConsoleController * c_) { c = c_; }
-	void NotifyHistoryChanged(ConsoleModel * sender, std::string prompt, std::string command, std::string prompthistory, std::string history);
+	void NotifyHistoryChanged(ConsoleModel * sender, std::string command, std::string prompthistory, std::string history);
 	void ResizePrompt();
 	virtual ~ConsoleView();
 };

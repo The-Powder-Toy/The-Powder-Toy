@@ -1,5 +1,6 @@
 #include "ConsoleView.h"
 #include "Misc.h"
+#include <algorithm>
 #include "gui/interface/Keys.h"
 
 ConsoleView::ConsoleView():
@@ -148,9 +149,8 @@ void ConsoleView::DoKeyPress(int key, Uint16 character, bool shift, bool ctrl, b
 	}
 }
 
-void ConsoleView::NotifyHistoryChanged(ConsoleModel * sender, std::string prompt, std::string command, std::string prompthistory, std::string History)
+void ConsoleView::NotifyHistoryChanged(ConsoleModel * sender, std::string command, std::string prompthistory, std::string History)
 {
-	promptLabel->SetText(prompt);
 	commandField->SetDisplayText("");
 	commandField->SetText(command);
 	ResizePrompt();
@@ -163,6 +163,12 @@ void ConsoleView::NotifyHistoryChanged(ConsoleModel * sender, std::string prompt
 
 void ConsoleView::ResizePrompt()
 {
+	std::string command = commandField->GetText();
+	std::string prompt = ">";
+	int newlines = std::count(command.begin(), command.end(), '\n');
+	for(int i=0;i<newlines;i++)
+		prompt += "\n>>";
+	promptLabel->SetText(prompt);
 	commandField->AutoHeight();
 	commandField->Size.Y = std::max(commandField->Size.Y+2, 16);
 	history->Size.Y = promptLabel->Position.Y = commandField->Position.Y = Size.Y-commandField->Size.Y;

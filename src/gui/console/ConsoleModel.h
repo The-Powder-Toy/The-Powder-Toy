@@ -11,7 +11,6 @@ class ConsoleModel {
 	int currentCommandIndex;
 	std::vector<ConsoleView*> observers;
 	std::deque<std::string> previousCommands;
-	std::string prompt;
 	std::string command;
 	std::string promptHistory;
 	std::string history;
