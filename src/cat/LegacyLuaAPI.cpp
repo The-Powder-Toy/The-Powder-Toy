@@ -1757,7 +1757,7 @@ int luatpt_message_box(lua_State* l)
 }
 int luatpt_get_numOfParts(lua_State* l)
 {
-	lua_pushinteger(l, luacon_sim->parts_lastActiveIndex);
+	lua_pushinteger(l, luacon_sim->NUM_PARTS);
 	return 1;
 }
 int luatpt_start_getPartIndex(lua_State* l)

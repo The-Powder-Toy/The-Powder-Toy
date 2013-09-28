@@ -2092,7 +2092,7 @@ void GameView::OnDraw()
 					else
 						sampleInfo << " ()";
 				}
-				sampleInfo << ", Temp: " << std::fixed << sample.particle.temp -273.15f;
+				sampleInfo << ", Temp: " << std::fixed << sample.particle.temp -273.15f << " C";
 				sampleInfo << ", Life: " << sample.particle.life;
 				sampleInfo << ", Tmp: " << sample.particle.tmp;
 				sampleInfo << ", Pressure: " << std::fixed << sample.AirPressure;
@@ -2107,7 +2107,7 @@ void GameView::OnDraw()
 					sampleInfo << c->ElementResolve(sample.particle.type, sample.particle.ctype);
 				else
 					sampleInfo << c->ElementResolve(sample.particle.type, sample.particle.ctype);
-				sampleInfo << ", Temp: " << std::fixed << sample.particle.temp -273.15f;
+				sampleInfo << ", Temp: " << std::fixed << sample.particle.temp - 273.15f << " C";
 				sampleInfo << ", Pressure: " << std::fixed << sample.AirPressure;
 			}
 			if (sample.particle.type == PT_PHOT || sample.particle.type == PT_BIZR || sample.particle.type == PT_BIZRG || sample.particle.type == PT_BIZRS)
