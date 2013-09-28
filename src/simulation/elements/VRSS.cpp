@@ -19,7 +19,7 @@ Element_VRSS::Element_VRSS()
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
 	
-	Flammable = 5;
+	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 1;
@@ -43,7 +43,7 @@ Element_VRSS::Element_VRSS()
 	HighTemperatureTransition = PT_VIRS;
 	
 	Update = &Element_VIRS::update;
-	
+	Graphics = &Element_VIRS::graphics;
 }
 
 Element_VRSS::~Element_VRSS() {}

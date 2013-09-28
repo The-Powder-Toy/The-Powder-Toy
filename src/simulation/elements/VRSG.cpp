@@ -43,7 +43,7 @@ Element_VRSG::Element_VRSG()
 	HighTemperatureTransition = NT;
 	
 	Update = &Element_VIRS::update;
-	
+	Graphics = &Element_VIRS::graphics;
 }
 
 Element_VRSG::~Element_VRSG() {}
