@@ -3026,7 +3026,7 @@ CommandInterface::EvalResult * LuaScriptInterface::Command(std::string command)
 			if(err.find("near '<eof>'")!=std::string::npos)
 				return new CommandInterface::EvalResult(CommandInterface::EvalMore, "");
 			else
-				return new CommandInterface::EvalResult(CommandInterface::EvalFail, "\br" + err);
+				return new CommandInterface::EvalResult(CommandInterface::EvalFail, "\x0F\xFF\x73\x73" + err);
 		}
 		else
 		{
@@ -3035,9 +3035,9 @@ CommandInterface::EvalResult * LuaScriptInterface::Command(std::string command)
 			{
 				currentCommand = false;
 				if(buffer.size())
-					return new CommandInterface::EvalResult(CommandInterface::EvalFail, buffer + "\n\br" + std::string(luacon_geterror()));
+					return new CommandInterface::EvalResult(CommandInterface::EvalFail, buffer + "\n\x0F\xFF\x73\x73" + std::string(luacon_geterror()));
 				else
-					return new CommandInterface::EvalResult(CommandInterface::EvalFail, "\br" + std::string(luacon_geterror()));
+					return new CommandInterface::EvalResult(CommandInterface::EvalFail, "\x0F\xFF\x73\x73" + std::string(luacon_geterror()));
 			}
 			else
 			{
@@ -3101,29 +3101,26 @@ std::string highlight(std::string command)
 			const char* wstart = raw+pos;
 			while((w = wstart[len]) && ((w>='A' && w<='Z') || (w>='a' && w<='z') || (w>='0' && w<='9') || w=='_'))
 				len++;
-			if(!strlcmp(wstart,"break",len) || !strlcmp(wstart,"do",len) || !strlcmp(wstart,"else",len) ||
-			   !strlcmp(wstart,"elseif",len) || !strlcmp(wstart,"end",len) || !strlcmp(wstart,"for",len) ||
-			   !strlcmp(wstart,"function",len) || !strlcmp(wstart,"if",len) || !strlcmp(wstart,"if",len) ||
-			   !strlcmp(wstart,"repeat",len) || !strlcmp(wstart,"return",len) || !strlcmp(wstart,"then",len) ||
-			   !strlcmp(wstart,"until",len) || !strlcmp(wstart,"while",len))
+			if(!strlcmp(wstart,"and",len) || !strlcmp(wstart,"break",len) || !strlcmp(wstart,"do",len) ||
+			   !strlcmp(wstart,"else",len) || !strlcmp(wstart,"elseif",len) || !strlcmp(wstart,"end",len) ||
+			   !strlcmp(wstart,"for",len) || !strlcmp(wstart,"function",len) || !strlcmp(wstart,"in",len) ||
+			   !strlcmp(wstart,"if",len) || !strlcmp(wstart,"local",len) || !strlcmp(wstart,"not",len) ||
+			   !strlcmp(wstart,"or",len) || !strlcmp(wstart,"repeat",len) || !strlcmp(wstart,"return",len) ||
+			   !strlcmp(wstart,"then",len) || !strlcmp(wstart,"until",len) || !strlcmp(wstart,"while",len))
 			{
-				result += "\bo";
+				result += "\x0F\xB5\x89\x01";
 				result.append(wstart, len);
 				result += "\bw";
 			}
-			else if(!strlcmp(wstart,"and",len) || !strlcmp(wstart,"false",len) || !strlcmp(wstart,"in",len) ||
-			   !strlcmp(wstart,"local",len) || !strlcmp(wstart,"nil",len) || !strlcmp(wstart,"not",len) ||
-			   !strlcmp(wstart,"or",len) || !strlcmp(wstart,"true",len))
+			else if(!strlcmp(wstart,"false",len) || !strlcmp(wstart,"nil",len) || !strlcmp(wstart,"true",len))
 			{
-				result += "\bl";
+				result += "\x0F\xCB\x4B\x16";
 				result.append(wstart, len);
-				result += "\bw";
 			}
 			else
 			{
-				result += "\bt";
+				result += "\x0F\x2A\xA1\x98";
 				result.append(wstart, len);
-				result += "\bw";
 			}
 			pos += len;
 		}
@@ -3137,9 +3134,8 @@ std::string highlight(std::string command)
 				while((w = wstart[len]) && ((w>='0' && w<='9') || (w>='A' && w<='F') || (w>='a' && w<='f')))
 					len++;
 
-				result += "\bb0x";
+				result += "\x0F\xD3\x36\x82";
 				result.append(wstart, len);
-				result += "\bw";
 				pos += len;
 			}
 			else
@@ -3166,9 +3162,8 @@ std::string highlight(std::string command)
 					while((w = wstart[len]) && (w>='0' && w<='9'))
 						len++;
 				}
-				result += "\bb";
+				result += "\x0F\xD3\x36\x82";
 				result.append(wstart, len);
-				result += "\bw";
 				pos += len;
 			}
 		}
@@ -3200,9 +3195,8 @@ std::string highlight(std::string command)
 					}
 					len++;
 				}
-				result += "\br";
+				result += "\x0F\xDC\x32\x2F";
 				result.append(wstart, len);
-				result += "\bw";
 				pos += len;
 			}
 			else
@@ -3218,9 +3212,8 @@ std::string highlight(std::string command)
 				}
 				if(w==c)
 					len++;
-				result += "\br";
+				result += "\x0F\xDC\x32\x2F";
 				result.append(wstart, len);
-				result += "\bw";
 				pos += len;
 			}
 		}
@@ -3252,9 +3245,8 @@ std::string highlight(std::string command)
 					}
 					len++;
 				}
-				result += "\bg";
+				result += "\x0F\x85\x99\x01";
 				result.append(wstart, len);
-				result += "\bw";
 				pos += len;
 			}
 			else
@@ -3264,14 +3256,25 @@ std::string highlight(std::string command)
 				const char* wstart = raw+pos;
 				while((w = wstart[len]) && (w!='\n'))
 					len++;
-				result += "\bg";
+				result += "\x0F\x82\x99\x01";
 				result.append(wstart, len);
-				result += "\bw";
 				pos += len;
 			}
 		}
+		else if(c=='{' || c=='}')
+		{
+			result += "\x0F\xCB\x4B\x16";
+			result += c;
+			pos++;
+		}
+		else if(c=='.' && raw[pos+1]=='.' && raw[pos+2]=='.')
+		{
+			result += "\x0F\x2A\xA1\x98...";
+			pos+=3;
+		}
 		else
 		{
+			result += "\x0F\x83\x94\x96";
 			result += c;
 			pos++;
 		}

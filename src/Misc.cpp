@@ -691,10 +691,10 @@ std::string wordwrap(std::string text, int width)
 	char* rawText = new char[text.length()+1];
 	const char* lstart = rawText;
 	const char* wstart = lstart;
+	int linewidth = 0,len = 0,nl = 0;
 	std::string textLines;
 	std::copy(text.begin(), text.end(), rawText);
 	rawText[text.length()] = 0;
-	int linewidth = 0,len = 0;
 	while(c = wstart[len])
 	{
 		int cwidth = Graphics::CharWidth(c);
@@ -712,7 +712,7 @@ std::string wordwrap(std::string text, int width)
 		{	
 			if(wstart==lstart)
 			{
-				if(textLines.size())
+				if(nl++)
 					textLines += "\n";
 				textLines.append(wstart,len);
 				lstart = wstart += len;
@@ -720,7 +720,7 @@ std::string wordwrap(std::string text, int width)
 			}
 			else
 			{
-				if(textLines.size())
+				if(nl++)
 					textLines += '\n';
 				textLines.append(lstart,wstart-lstart);
 				lstart = wstart;
@@ -736,7 +736,7 @@ std::string wordwrap(std::string text, int width)
 				len = 0;
 				break;
 			case '\n':
-				if(textLines.size())
+				if(nl++)
 					textLines += '\n';
 				textLines.append(lstart,wstart-lstart+len);
 				lstart = wstart += len+1;
@@ -757,7 +757,7 @@ std::string wordwrap(std::string text, int width)
 				break;
 		}
 	}
-	if(textLines.size())
+	if(nl++)
 		textLines += '\n';
 	textLines += lstart;
 	delete[] rawText;
