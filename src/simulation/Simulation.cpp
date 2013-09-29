@@ -2218,8 +2218,10 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 			}
 			else if ((r&0xFF) == PT_H2 && pv[y/CELL][x/CELL] < 45.0f)
 			{
-				create_part(i, x, y, PT_PROT);
+				part_change_type(i, x, y, PT_PROT);
+				parts[i].ctype = 0;
 				parts[i].tmp2 = 0x1;
+
 				create_part(r>>8, x, y, PT_ELEC);
 				return 1;
 			}

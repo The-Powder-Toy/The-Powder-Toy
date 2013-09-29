@@ -79,8 +79,9 @@ int Element_PROT::update(UPDATE_FUNC_ARGS)
 		parts[under>>8].life = 40+parts[under>>8].life;
 	}
 	//Powered LCRY reaction: PROT->PHOT
-	else if (((under&0xFF) == PT_LCRY) && (parts[under>>8].life > 5) && (1>(rand()%10))) {
-		parts[i].type = PT_PHOT;
+	else if ((under&0xFF) == PT_LCRY && parts[under>>8].life > 5 && !(rand()%10))
+	{
+		sim->part_change_type(i, x, y, PT_PHOT);
 		parts[i].life *= 2;
 		parts[i].ctype = 0x3FFFFFFF;
 	} 
@@ -113,15 +114,15 @@ int Element_PROT::update(UPDATE_FUNC_ARGS)
 	if (parts[i].tmp)
 	{
 		int newID, element;
-		if (parts[i].tmp > 4250)
+		if (parts[i].tmp > 500000)
 			element = PT_SING; //particle accelerators are known to create earth-destroying black holes
-		else if (parts[i].tmp > 275)
+		else if (parts[i].tmp > 500)
 			element = PT_PLUT;
-		else if (parts[i].tmp > 170)
+		else if (parts[i].tmp > 320)
 			element = PT_URAN;
-		else if (parts[i].tmp > 100)
+		else if (parts[i].tmp > 150)
 			element = PT_PLSM;
-		else if (parts[i].tmp > 40)
+		else if (parts[i].tmp > 50)
 			element = PT_O2;
 		else if (parts[i].tmp > 20)
 			element = PT_CO2;
@@ -176,12 +177,12 @@ int Element_PROT::DeutImplosion(Simulation * sim, int n, int x, int y, float tem
 //#TPT-Directive ElementHeader Element_PROT static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_PROT::graphics(GRAPHICS_FUNC_ARGS)
 {
-	*firea = 20;
+	*firea = 7;
 	*firer = 250;
-	*fireg = 100;
-	*fireb = 100;
+	*fireg = 170;
+	*fireb = 170;
 
-	*pixel_mode |= FIRE_ADD;
+	*pixel_mode |= FIRE_BLEND;
 	return 1;
 }
 
