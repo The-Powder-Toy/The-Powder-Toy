@@ -87,8 +87,6 @@ void Textbox::SetText(std::string newText)
 
 	cursor = newText.length();
 	updateCursor();
-	if(actionCallback)
-		actionCallback->TextChangedCallback(this);
 }
 
 Textbox::ValidInput Textbox::GetInputType()
