@@ -164,7 +164,7 @@ void ConsoleView::NotifyHistoryChanged(ConsoleModel * sender, std::string comman
 
 void ConsoleView::Highlight()
 {
-	commandField->SetDisplayText(wordwrap(c->FormatCommand(commandField->GetText()),commandField->Size.X-(commandField->Appearance.Margin.Left+commandField->Appearance.Margin.Right)));
+	commandField->SetDisplayText(wordwrap(c->FormatCommand(commandField->GetText()),XRES-20));
 }
 
 void ConsoleView::ResizePrompt()
