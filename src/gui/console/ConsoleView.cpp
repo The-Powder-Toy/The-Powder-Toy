@@ -15,7 +15,6 @@ ConsoleView::ConsoleView():
 		{
 			v->Highlight();
 			v->ResizePrompt();
-			sender->SetDisplayText(wordwrap(v->c->FormatCommand(sender->GetText()),sender->Size.X-(sender->Appearance.Margin.Left+sender->Appearance.Margin.Right)));
 		}
 	};
 	class TransparentScrollPanel: public ui::ScrollPanel
@@ -165,7 +164,7 @@ void ConsoleView::NotifyHistoryChanged(ConsoleModel * sender, std::string comman
 
 void ConsoleView::Highlight()
 {
-	commandField->SetDisplayText(wordwrap(c->FormatCommand(commandField->GetText()),XRES-20));
+	commandField->SetDisplayText(wordwrap(c->FormatCommand(commandField->GetText()),commandField->Size.X-(commandField->Appearance.Margin.Left+commandField->Appearance.Margin.Right)));
 }
 
 void ConsoleView::ResizePrompt()
