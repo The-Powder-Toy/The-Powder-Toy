@@ -176,7 +176,7 @@ int Element_PSTN::CanMoveStack(Simulation * sim, int stackX, int stackY, int dir
 		}
 		r = sim->pmap[posY][posX];
 		if (sim->IsWallBlocking(posX, posY, 0) || (block && (r&0xFF) == block))
-			return num;
+			break;
 		if(!r) {
 			spaces++;
 			tempParts[currentPos++] = -1;
@@ -186,12 +186,13 @@ int Element_PSTN::CanMoveStack(Simulation * sim, int stackX, int stackY, int dir
 			if(spaces < maxSize && currentPos < maxSize && (!retract || ((r&0xFF) == PT_FRME) && posX == stackX && posY == stackY))
 				tempParts[currentPos++] = r>>8;
 			else
-				return num;
+				break;
 		}
 		num++;
 	}
 	if (spaces)
-		return currentPos;
+		if (num > amount) num = amount;
+		return num;
 	else
 		return 0;
 }
