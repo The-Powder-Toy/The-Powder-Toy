@@ -31,7 +31,7 @@ Element_PROT::Element_PROT()
 	Description = "Protons. Transfer heat to materials, and removes sparks.";
 	
 	State = ST_GAS;
-	Properties = TYPE_ENERGY|PROP_LIFE_KILL;
+	Properties = TYPE_ENERGY;
 	
 	LowPressure = IPL;
 	LowPressureTransition = NT;
@@ -107,8 +107,11 @@ int Element_PROT::update(UPDATE_FUNC_ARGS)
 		}
 	}
 	//else, slowly kill it if it's not inside an element
-	else
-		parts[i].life--;
+	else if (parts[i].life)
+	{
+		if (!--parts[i].life)
+			sim->kill_part(i);
+	}
 	
 	//if this proton has collided with another last frame, change it into a heavier element
 	if (parts[i].tmp)
