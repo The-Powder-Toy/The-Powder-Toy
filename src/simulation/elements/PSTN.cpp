@@ -167,33 +167,32 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 //#TPT-Directive ElementHeader Element_PSTN static int CanMoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int maxSize, int amount, bool retract, int block)
 int Element_PSTN::CanMoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int maxSize, int amount, bool retract, int block)
 {
-	int posX, posY, r, spaces = 0, currentPos = 0, num = 0;
+	int posX, posY, r, spaces = 0, currentPos = 0, count = 0, num = 0;
 	if (amount <= 0)
 		return 0;
-	for(posX = stackX, posY = stackY; currentPos < maxSize + amount && currentPos < XRES-1; posX += directionX, posY += directionY) {
-		if (!(posX < XRES && posY < YRES && posX >= 0 && posY >= 0)) {
-			break;
-		}
+	for(posX = stackX, posY = stackY; posX < XRES - 1 && posY < YRES - 1 && posX > 0 && posY > 0; posX += directionX, posY += directionY) {
 		r = sim->pmap[posY][posX];
-		if (sim->IsWallBlocking(posX, posY, 0) || (block && (r&0xFF) == block))
-			return num;
+		if (sim->IsWallBlocking(posX, posY, 0) || (block && (r&0xFF) == block) ||
+			(currentPos > maxSize + spaces) || (spaces >= amount) || (currentPos > maxSize + spaces))
+			return num + spaces;
 		if(!r) {
 			spaces++;
+			num += count;
+			count = 0;
 			tempParts[currentPos++] = -1;
 			if(spaces >= amount)
 				break;
+		} else if(num >= maxSize) {
+			return maxSize + spaces;
 		} else {
-			if(spaces < maxSize && currentPos < maxSize && (!retract || ((r&0xFF) == PT_FRME) && posX == stackX && posY == stackY))
+			if(!retract || ((r&0xFF) == PT_FRME) && posX == stackX && posY == stackY) {
 				tempParts[currentPos++] = r>>8;
-			else
-				return num;
+				count++;
+			} else
+				break;
 		}
-		num++;
 	}
-	if (spaces)
-		return currentPos;
-	else
-		return 0;
+	return num + spaces;
 }
 
 //#TPT-Directive ElementHeader Element_PSTN static int MoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int maxSize, int amount, bool retract, int block, bool sticky, int callDepth = 0)

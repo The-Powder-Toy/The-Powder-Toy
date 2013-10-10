@@ -284,7 +284,7 @@ Snapshot * Simulation::CreateSnapshot()
 	snap->AmbientHeat.insert(snap->AmbientHeat.begin(), &hv[0][0], &hv[0][0]+((XRES/CELL)*(YRES/CELL)));
 	snap->Particles.insert(snap->Particles.begin(), parts, parts+NPART);
 	snap->PortalParticles.insert(snap->PortalParticles.begin(), &portalp[0][0][0], &portalp[CHANNELS-1][8-1][80-1]);
-	snap->WirelessData.insert(snap->WirelessData.begin(), &wireless[0][0], &wireless[CHANNELS-1][2-1]);
+	snap->WirelessData.insert(snap->WirelessData.begin(), &wireless[0][0][0], &wireless[BLOCKER_CHANNELS-1][CHANNELS-1][2-1]);
 	snap->GravVelocityX.insert(snap->GravVelocityX.begin(), gravx, gravx+((XRES/CELL)*(YRES/CELL)));
 	snap->GravVelocityY.insert(snap->GravVelocityY.begin(), gravy, gravy+((XRES/CELL)*(YRES/CELL)));
 	snap->GravValue.insert(snap->GravValue.begin(), gravp, gravp+((XRES/CELL)*(YRES/CELL)));
@@ -313,7 +313,7 @@ void Simulation::Restore(const Snapshot & snap)
 	std::copy(snap.AmbientHeat.begin(), snap.AmbientHeat.end(), &hv[0][0]);
 	std::copy(snap.Particles.begin(), snap.Particles.end(), parts);
 	std::copy(snap.PortalParticles.begin(), snap.PortalParticles.end(), &portalp[0][0][0]);
-	std::copy(snap.WirelessData.begin(), snap.WirelessData.end(), &wireless[0][0]);
+	std::copy(snap.WirelessData.begin(), snap.WirelessData.end(), &wireless[0][0][0]);
 	std::copy(snap.GravVelocityX.begin(), snap.GravVelocityX.end(), gravx);
 	std::copy(snap.GravVelocityY.begin(), snap.GravVelocityY.end(), gravy);
 	std::copy(snap.GravValue.begin(), snap.GravValue.end(), gravp);
@@ -1034,6 +1034,45 @@ void Simulation::ToolBox(int x1, int y1, int x2, int y2, int tool, float strengt
 			Tool(i, j, tool, strength);
 }
 
+void Simulation::CalculateBlockerWall() 
+{
+	int wallX, wallY, id = 0, list_start = 1, list_end = 1, px, py, rx, ry;
+	bool (*hasGone)[XRES/CELL];
+	unsigned short (*list)[2];
+	hasGone = (bool (*)[XRES/CELL])malloc(sizeof(bool) * (XRES/CELL) * (YRES/CELL));
+	list = (short unsigned int (*)[2])malloc(sizeof(unsigned short)*2*(XRES/CELL)*(YRES/CELL));
+	for (wallX = 0;wallX < XRES / CELL;wallX++) {
+		for (wallY = 0;wallY < YRES / CELL;wallY++) {
+			if(bmap[wallY][wallX] != WL_BLOCKER) {
+				BlockerWall[wallY][wallX] = 0;
+			} else if (!hasGone[wallY][wallX]) {
+				id++;
+				hasGone[wallY][wallX] = true;
+				list[list_start][1] = wallX;
+				list[list_start][2] = wallY;
+				do {
+					px = list[list_start][1];
+					py = list[list_start][2];
+					BlockerWall[py][px] = id;
+					list_start++;
+					for (rx = -1; rx <= 1;rx++) {
+						for (ry = -1; ry <= 1;ry++) {
+							if (bmap[py+ry][px+rx] == WL_BLOCKER && !hasGone[py+ry][px+rx]) {
+								list_end++;
+								list[list_end][1] = px+rx;
+								list[list_end][2] = py+ry;
+								hasGone[py+ry][px+rx] = true;
+							}
+						}
+					}
+				} while (list_start <= list_end);
+			}
+		}
+	}
+	free(hasGone);
+	free(list);
+}
+
 int Simulation::CreateWalls(int x, int y, int rx, int ry, int wall, Brush * cBrush)
 {
 	if(cBrush)
@@ -1077,12 +1116,16 @@ int Simulation::CreateWalls(int x, int y, int rx, int ry, int wall, Brush * cBru
 			}
 		}
 	}
+	if ((wall == WL_BLOCKER || wall == WL_ERASE) && !calculated) {
+		CalculateBlockerWall();
+	}
 	return 1;
 }
 
 void Simulation::CreateWallLine(int x1, int y1, int x2, int y2, int rx, int ry, int wall, Brush * cBrush)
 {
 	int x, y, dx, dy, sy;
+	calculated = true;
 	bool reverseXY = abs(y2-y1) > abs(x2-x1);
 	float e = 0.0f, de;
 	if (reverseXY)
@@ -1131,11 +1174,16 @@ void Simulation::CreateWallLine(int x1, int y1, int x2, int y2, int rx, int ry, 
 			e -= 1.0f;
 		}
 	}
+	if (wall == WL_BLOCKER || wall == WL_ERASE) {
+		CalculateBlockerWall();
+	}
+	calculated = false;
 }
 
 void Simulation::CreateWallBox(int x1, int y1, int x2, int y2, int wall)
 {
 	int i, j;
+	calculated = true;
 	if (x1>x2)
 	{
 		i = x2;
@@ -1151,6 +1199,10 @@ void Simulation::CreateWallBox(int x1, int y1, int x2, int y2, int wall)
 	for (j=y1; j<=y2; j++)
 		for (i=x1; i<=x2; i++)
 			CreateWalls(i, j, 0, 0, wall, NULL);
+	if (wall == WL_BLOCKER || wall == WL_ERASE) {
+		CalculateBlockerWall();
+	}
+	calculated = false;
 }
 
 int Simulation::FloodWalls(int x, int y, int wall, int bm)
@@ -3506,8 +3558,11 @@ void Simulation::update_particles_i(int start, int inc)
 	{
 		for ( q = 0; q<(int)(MAX_TEMP-73.15f)/100+2; q++)
 		{
-			wireless[q][0] = wireless[q][1];
-			wireless[q][1] = 0;
+			for ( i = 0; i < BLOCKER_CHANNELS; i++)
+			{
+				wireless[i][q][0] = wireless[i][q][1];
+				wireless[i][q][1] = 0;
+			}
 		}
 		ISWIRE--;
 	}
