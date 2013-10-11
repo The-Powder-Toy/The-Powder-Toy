@@ -37,6 +37,8 @@ public:
 	}
 };
 
+
+
 class DecorationsOption: public QuickOption
 {
 public:
@@ -117,4 +119,27 @@ public:
 	{
 		c->ShowConsole();
 	}
+};
+
+
+// #define REPLACE_MODE 0x1
+class ReplaceToggleOption: public QuickOption 
+{
+  GameController *c; 
+public: 
+  ReplaceToggleOption(GameModel *m, GameController *c_): 
+  QuickOption("R", "Replace mode \bg(ins)", m, Toggle) 
+  {
+    c = c_;
+  }
+
+  virtual bool GetToggle () 
+  {
+    return c->GetReplaceModeFlags()&1;
+  }
+
+  virtual void perform() 
+  {
+    c->SetReplaceModeFlags(c->GetReplaceModeFlags()^1);
+  }
 };
