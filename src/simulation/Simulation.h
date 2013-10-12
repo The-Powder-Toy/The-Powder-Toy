@@ -72,7 +72,7 @@ public:
 	Particle portalp[2][CHANNELS][8][80];
 	int portal_rx[8];
 	int portal_ry[8];
-	int wireless[BLOCKER_CHANNELS][CHANNELS][2];
+	char wireless[BLOCKER_CHANNELS][CHANNELS];
 	//PROP tool property to draw (TODO)
 	//void *prop_value;
 	//StructProperty::PropertyType proptype;
