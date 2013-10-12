@@ -49,7 +49,7 @@ Element_SPRK::Element_SPRK()
 //#TPT-Directive ElementHeader Element_SPRK static int update(UPDATE_FUNC_ARGS)
 int Element_SPRK::update(UPDATE_FUNC_ARGS)
  {
-	 int r, rx, ry, rt, conduct_sprk, nearp, pavg, ct = parts[i].ctype, sender, receiver;
+	 int r, rx, ry, rt, conduct_sprk, nearp, pavg, ct = parts[i].ctype, sender, receiver, Blocker, distance, ndistance;
 	Element_FIRE::update(UPDATE_FUNC_SUBCALL_ARGS);
 
 	if (parts[i].life<=0)
@@ -82,7 +82,20 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 	case PT_ETRD:
 		if (parts[i].life==1)
 		{
-			nearp = sim->nearest_part(i, PT_ETRD, -1);
+			nearp = -1;
+			Blocker = sim->BlockerWall[y/CELL][x/CELL];
+			for (int j=0; j<=sim->parts_lastActiveIndex; j++)
+			{
+				if ((parts[j].type==PT_ETRD) && !parts[j].life && i != j && sim->BlockerWall[int(parts[j].y+0.5f)/CELL][int(parts[j].x+0.5f)/CELL] == Blocker)
+				{
+					ndistance = abs(x-parts[i].x)+abs(y-parts[i].y);// Faster but less accurate  Older: sqrt(pow(cx-parts[i].x, 2)+pow(cy-parts[i].y, 2));
+					if (ndistance<distance)
+					{
+						distance = ndistance;
+						nearp = j;
+					}
+				}
+			}
 			if (nearp!=-1 && sim->parts_avg(i, nearp, PT_INSL)!=PT_INSL)
 			{
 				sim->CreateLine(x, y, (int)(parts[nearp].x+0.5f), (int)(parts[nearp].y+0.5f), PT_PLSM);
