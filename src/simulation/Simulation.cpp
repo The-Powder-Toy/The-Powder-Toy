@@ -285,7 +285,7 @@ Snapshot * Simulation::CreateSnapshot()
 	snap->AmbientHeat.insert(snap->AmbientHeat.begin(), &hv[0][0], &hv[0][0]+((XRES/CELL)*(YRES/CELL)));
 	snap->Particles.insert(snap->Particles.begin(), parts, parts+NPART);
 	snap->PortalParticles.insert(snap->PortalParticles.begin(), &portalp[0][0][0][0], &portalp[2-1][CHANNELS-1][8-1][80-1]);
-	snap->WirelessData.insert(snap->WirelessData.begin(), &wireless[0][0][0], &wireless[BLOCKER_CHANNELS-1][CHANNELS-1][2-1]);
+	snap->WirelessData.insert(snap->WirelessData.begin(), &wireless[0][0], &wireless[BLOCKER_CHANNELS-1][CHANNELS-1]);
 	snap->GravVelocityX.insert(snap->GravVelocityX.begin(), gravx, gravx+((XRES/CELL)*(YRES/CELL)));
 	snap->GravVelocityY.insert(snap->GravVelocityY.begin(), gravy, gravy+((XRES/CELL)*(YRES/CELL)));
 	snap->GravValue.insert(snap->GravValue.begin(), gravp, gravp+((XRES/CELL)*(YRES/CELL)));
@@ -314,7 +314,7 @@ void Simulation::Restore(const Snapshot & snap)
 	std::copy(snap.AmbientHeat.begin(), snap.AmbientHeat.end(), &hv[0][0]);
 	std::copy(snap.Particles.begin(), snap.Particles.end(), parts);
 	std::copy(snap.PortalParticles.begin(), snap.PortalParticles.end(), &portalp[0][0][0][0]);
-	std::copy(snap.WirelessData.begin(), snap.WirelessData.end(), &wireless[0][0][0]);
+	std::copy(snap.WirelessData.begin(), snap.WirelessData.end(), &wireless[0][0]);
 	std::copy(snap.GravVelocityX.begin(), snap.GravVelocityX.end(), gravx);
 	std::copy(snap.GravVelocityY.begin(), snap.GravVelocityY.end(), gravy);
 	std::copy(snap.GravValue.begin(), snap.GravValue.end(), gravp);
@@ -1049,6 +1049,7 @@ void Simulation::CalculateBlockerWall()
 				BlockerWall[wallY][wallX] = 0;
 			} else if (!hasGone[wallY][wallX]) {
 				id++;
+				if (id >= BLOCKER_CHANNELS) return;
 				hasGone[wallY][wallX] = true;
 				list[list_start][1] = wallX;
 				list[list_start][2] = wallY;
@@ -3566,8 +3567,7 @@ void Simulation::update_particles_i(int start, int inc)
 		{
 			for ( i = 0; i < BLOCKER_CHANNELS; i++)
 			{
-				wireless[i][q][0] = wireless[i][q][1];
-				wireless[i][q][1] = 0;
+				wireless[i][q] = (wireless[i][q] << 1) & 2;
 			}
 		}
 		ISWIRE--;
