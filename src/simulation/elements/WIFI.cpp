@@ -49,7 +49,7 @@ Element_WIFI::Element_WIFI()
 //#TPT-Directive ElementHeader Element_WIFI static int update(UPDATE_FUNC_ARGS)
 int Element_WIFI::update(UPDATE_FUNC_ARGS)
  {
-	int r, rx, ry;
+	int r, rx, ry, BlockerIndex = sim->BlockerWall[y/CELL][x/CELL];
 	parts[i].tmp = (int)((parts[i].temp-73.15f)/100+1);
 	if (parts[i].tmp>=CHANNELS) parts[i].tmp = CHANNELS-1;
 	else if (parts[i].tmp<0) parts[i].tmp = 0;
@@ -62,7 +62,7 @@ int Element_WIFI::update(UPDATE_FUNC_ARGS)
 					continue;
 				// wireless[][0] - whether channel is active on this frame
 				// wireless[][1] - whether channel should be active on next frame
-				if (sim->wireless[parts[i].tmp][0])
+				if (sim->wireless[BlockerIndex][parts[i].tmp][0])
 				{
 					if (((r&0xFF)==PT_NSCN||(r&0xFF)==PT_PSCN||(r&0xFF)==PT_INWR)&&parts[r>>8].life==0 && sim->wireless[parts[i].tmp][0])
 					{
@@ -73,9 +73,9 @@ int Element_WIFI::update(UPDATE_FUNC_ARGS)
 				}
 				else
 				{
-					if ((r&0xFF)==PT_SPRK && parts[r>>8].ctype!=PT_NSCN && parts[r>>8].life==3)
+					if ((r&0xFF)==PT_SPRK && parts[r>>8].ctype!=PT_NSCN && ((parts[r>>8].life<=4 && r>>8 > i) || (parts[r>>8].life<=3 && r>>8 < i)))
 					{
-						sim->wireless[parts[i].tmp][1] = 1;
+						sim->wireless[BlockerIndex][parts[i].tmp][1] = 1;
 						sim->ISWIRE = 2;
 					}
 				}

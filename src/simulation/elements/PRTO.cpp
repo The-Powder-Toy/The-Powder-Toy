@@ -58,7 +58,7 @@ Element_PRTO::Element_PRTO()
 int Element_PRTO::update(UPDATE_FUNC_ARGS)
  {
 	int r, nnx, rx, ry, np, fe = 0;
-	int count = 0;
+	int count = 0, blocker = sim->bmap[y/CELL][x/CELL] == WL_BLOCKER ? 1 : 0;
 	parts[i].tmp = (int)((parts[i].temp-73.15f)/100+1);
 	if (parts[i].tmp>=CHANNELS) parts[i].tmp = CHANNELS-1;
 	else if (parts[i].tmp<0) parts[i].tmp = 0;
@@ -75,7 +75,7 @@ int Element_PRTO::update(UPDATE_FUNC_ARGS)
 					for ( nnx =0 ; nnx<80; nnx++)
 					{
 						int randomness = (count + rand()%3-1 + 4)%8;//add -1,0,or 1 to count
-						if (sim->portalp[parts[i].tmp][randomness][nnx].type==PT_SPRK)// TODO: make it look better, spark creation
+						if (sim->portalp[blocker][parts[i].tmp][randomness][nnx].type==PT_SPRK)// TODO: make it look better, spark creation
 						{
 							sim->create_part(-1,x+1,y,PT_SPRK);
 							sim->create_part(-1,x+1,y+1,PT_SPRK);
@@ -85,31 +85,31 @@ int Element_PRTO::update(UPDATE_FUNC_ARGS)
 							sim->create_part(-1,x-1,y+1,PT_SPRK);
 							sim->create_part(-1,x-1,y,PT_SPRK);
 							sim->create_part(-1,x-1,y-1,PT_SPRK);
-							memset(&sim->portalp[parts[i].tmp][randomness][nnx], 0, sizeof(Particle));
+							memset(&sim->portalp[blocker][parts[i].tmp][randomness][nnx], 0, sizeof(Particle));
 							break;
 						}
-						else if (sim->portalp[parts[i].tmp][randomness][nnx].type)
+						else if (sim->portalp[blocker][parts[i].tmp][randomness][nnx].type)
 						{
-							if (sim->portalp[parts[i].tmp][randomness][nnx].type==PT_STKM)
+							if (sim->portalp[blocker][parts[i].tmp][randomness][nnx].type==PT_STKM)
 								sim->player.spwn = 0;
-							if (sim->portalp[parts[i].tmp][randomness][nnx].type==PT_STKM2)
+							if (sim->portalp[blocker][parts[i].tmp][randomness][nnx].type==PT_STKM2)
 								sim->player2.spwn = 0;
-							if (sim->portalp[parts[i].tmp][randomness][nnx].type==PT_FIGH)
+							if (sim->portalp[blocker][parts[i].tmp][randomness][nnx].type==PT_FIGH)
 							{
 								sim->fighcount--;
-								sim->fighters[(unsigned char)sim->portalp[parts[i].tmp][randomness][nnx].tmp].spwn = 0;
+								sim->fighters[(unsigned char)sim->portalp[blocker][parts[i].tmp][randomness][nnx].tmp].spwn = 0;
 							}
-							np = sim->create_part(-1, x+rx, y+ry, sim->portalp[parts[i].tmp][randomness][nnx].type);
+							np = sim->create_part(-1, x+rx, y+ry, sim->portalp[blocker][parts[i].tmp][randomness][nnx].type);
 							if (np<0)
 							{
-								if (sim->portalp[parts[i].tmp][randomness][nnx].type==PT_STKM)
+								if (sim->portalp[blocker][parts[i].tmp][randomness][nnx].type==PT_STKM)
 									sim->player.spwn = 1;
-								if (sim->portalp[parts[i].tmp][randomness][nnx].type==PT_STKM2)
+								if (sim->portalp[blocker][parts[i].tmp][randomness][nnx].type==PT_STKM2)
 									sim->player2.spwn = 1;
-								if (sim->portalp[parts[i].tmp][randomness][nnx].type==PT_FIGH)
+								if (sim->portalp[blocker][parts[i].tmp][randomness][nnx].type==PT_FIGH)
 								{
 									sim->fighcount++;
-									sim->fighters[(unsigned char)sim->portalp[parts[i].tmp][randomness][nnx].tmp].spwn = 1;
+									sim->fighters[(unsigned char)sim->portalp[blocker][parts[i].tmp][randomness][nnx].tmp].spwn = 1;
 								}
 								continue;
 							}
@@ -117,22 +117,22 @@ int Element_PRTO::update(UPDATE_FUNC_ARGS)
 							{
 								// Release the fighters[] element allocated by create_part, the one reserved when the fighter went into the portal will be used
 								sim->fighters[(unsigned char)parts[np].tmp].spwn = 0;
-								sim->fighters[(unsigned char)sim->portalp[parts[i].tmp][randomness][nnx].tmp].spwn = 1;
+								sim->fighters[(unsigned char)sim->portalp[blocker][parts[i].tmp][randomness][nnx].tmp].spwn = 1;
 							}
-							if (sim->portalp[parts[i].tmp][randomness][nnx].vx == 0.0f && sim->portalp[parts[i].tmp][randomness][nnx].vy == 0.0f)
+							if (sim->portalp[blocker][parts[i].tmp][randomness][nnx].vx == 0.0f && sim->portalp[blocker][parts[i].tmp][randomness][nnx].vy == 0.0f)
 							{
 								// particles that have passed from PIPE into PRTI have lost their velocity, so use the velocity of the newly created particle if the particle in the portal has no velocity
 								float tmp_vx = parts[np].vx;
 								float tmp_vy = parts[np].vy;
-								parts[np] = sim->portalp[parts[i].tmp][randomness][nnx];
+								parts[np] = sim->portalp[blocker][parts[i].tmp][randomness][nnx];
 								parts[np].vx = tmp_vx;
 								parts[np].vy = tmp_vy;
 							}
 							else
-								parts[np] = sim->portalp[parts[i].tmp][randomness][nnx];
+								parts[np] = sim->portalp[blocker][parts[i].tmp][randomness][nnx];
 							parts[np].x = x+rx;
 							parts[np].y = y+ry;
-							memset(&sim->portalp[parts[i].tmp][randomness][nnx], 0, sizeof(Particle));
+							memset(&sim->portalp[blocker][parts[i].tmp][randomness][nnx], 0, sizeof(Particle));
 							break;
 						}
 					}

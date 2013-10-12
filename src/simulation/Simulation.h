@@ -16,6 +16,7 @@
 #include "elements/Element.h"
 
 #define CHANNELS ((int)(MAX_TEMP-73)/100+2)
+#define BLOCKER_CHANNELS 99
 
 class Snapshot;
 class SimTool;
@@ -68,10 +69,10 @@ public:
 	unsigned char fighcount; //Contains the number of fighters
 	bool gravWallChanged;
 	//Portals and Wifi
-	Particle portalp[CHANNELS][8][80];
+	Particle portalp[2][CHANNELS][8][80];
 	int portal_rx[8];
 	int portal_ry[8];
-	int wireless[CHANNELS][2];
+	int wireless[BLOCKER_CHANNELS][CHANNELS][2];
 	//PROP tool property to draw (TODO)
 	//void *prop_value;
 	//StructProperty::PropertyType proptype;
@@ -96,6 +97,8 @@ public:
 	unsigned char emap[YRES/CELL][XRES/CELL];
 	float fvx[YRES/CELL][XRES/CELL];
 	float fvy[YRES/CELL][XRES/CELL];
+	unsigned char BlockerWall[YRES/CELL][XRES/CELL];
+	bool calculated;
 	//Particles
 	Particle parts[NPART];
 	int pmap[YRES][XRES];
@@ -175,6 +178,8 @@ public:
 	void ToolBox(int x1, int y1, int x2, int y2, int tool, float strength = 1.0f);
 	
 	//Drawing Walls
+	void CalculateBlockerWall();
+	void FillBlockerWall(int wallX,int wallY,int id);
 	int CreateWalls(int x, int y, int rx, int ry, int wall, Brush * cBrush = NULL);
 	void CreateWallLine(int x1, int y1, int x2, int y2, int rx, int ry, int wall, Brush * cBrush = NULL);
 	void CreateWallBox(int x1, int y1, int x2, int y2, int wall);
