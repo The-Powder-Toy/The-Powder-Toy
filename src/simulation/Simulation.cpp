@@ -332,6 +332,12 @@ void Simulation::Restore(const Snapshot & snap)
 
 void Simulation::clear_area(int area_x, int area_y, int area_w, int area_h)
 {
+	int i = 0;
+	for (i = 0; i <= parts_lastActiveIndex; i++) {
+		if (parts[i].type)
+			if (parts[i].x >= area_x && parts[i].x <= area_x + area_w && parts[i].y >= area_y && parts[i].y <= area_y + area_h)
+				kill_part(i);
+	}
 	int cx = 0;
 	int cy = 0;
 	for (cy=0; cy<=area_h; cy++)
@@ -342,7 +348,6 @@ void Simulation::clear_area(int area_x, int area_y, int area_w, int area_h)
 				gravWallChanged = true;
 			bmap[(cy+area_y)/CELL][(cx+area_x)/CELL] = 0;
 			emap[(cy+area_y)/CELL][(cx+area_x)/CELL] = 0;
-			delete_part(cx+area_x, cy+area_y);
 		}
 	}
 	for(int i = signs.size()-1; i >= 0; i--)
