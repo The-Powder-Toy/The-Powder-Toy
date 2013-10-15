@@ -89,14 +89,14 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 				if ((parts[j].type==PT_ETRD) && !parts[j].life && i != j && sim->BlockerWall[int(parts[j].y+0.5f)/CELL][int(parts[j].x+0.5f)/CELL] == Blocker)
 				{
 					ndistance = abs(x-parts[i].x)+abs(y-parts[i].y);// Faster but less accurate  Older: sqrt(pow(cx-parts[i].x, 2)+pow(cy-parts[i].y, 2));
-					if (ndistance<distance)
+					if (ndistance < distance || nearp == -1)
 					{
 						distance = ndistance;
 						nearp = j;
 					}
 				}
 			}
-			if (nearp!=-1 && sim->parts_avg(i, nearp, PT_INSL)!=PT_INSL)
+			if (nearp!=-1)
 			{
 				sim->CreateLine(x, y, (int)(parts[nearp].x+0.5f), (int)(parts[nearp].y+0.5f), PT_PLSM);
 				sim->part_change_type(i,x,y,ct);

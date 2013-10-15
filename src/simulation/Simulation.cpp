@@ -1124,9 +1124,7 @@ int Simulation::CreateWalls(int x, int y, int rx, int ry, int wall, Brush * cBru
 			}
 		}
 	}
-	if ((wall == WL_BLOCKER || wall == WL_ERASE) && !calculated) {
-		CalculateBlockerWall();
-	}
+	CalculateBlockerWall();
 	return 1;
 }
 
@@ -1182,9 +1180,7 @@ void Simulation::CreateWallLine(int x1, int y1, int x2, int y2, int rx, int ry, 
 			e -= 1.0f;
 		}
 	}
-	if (wall == WL_BLOCKER || wall == WL_ERASE) {
-		CalculateBlockerWall();
-	}
+	CalculateBlockerWall();
 	calculated = false;
 }
 
@@ -1207,9 +1203,7 @@ void Simulation::CreateWallBox(int x1, int y1, int x2, int y2, int wall)
 	for (j=y1; j<=y2; j++)
 		for (i=x1; i<=x2; i++)
 			CreateWalls(i, j, 0, 0, wall, NULL);
-	if (wall == WL_BLOCKER || wall == WL_ERASE) {
-		CalculateBlockerWall();
-	}
+	CalculateBlockerWall();
 	calculated = false;
 }
 
