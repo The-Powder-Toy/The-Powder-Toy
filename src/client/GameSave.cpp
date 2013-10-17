@@ -1187,7 +1187,7 @@ void GameSave::readPSv(char * data, int dataLength)
 			{
 				//In old saves, ignore walls created by sign tool bug
 				//Not ignoring other invalid walls or invalid walls in new saves, so that any other bugs causing them are easier to notice, find and fix
-				if (ver<71 && d[p]==O_WL_SIGN)
+				if (ver>=44 && ver<71 && d[p]==O_WL_SIGN)
 				{
 					p++;
 					continue;
@@ -1220,38 +1220,44 @@ void GameSave::readPSv(char * data, int dataLength)
 				else if (blockMap[y][x]==13)
 					blockMap[y][x]=WL_ALLOWGAS;
 
-				if (blockMap[y][x]==O_WL_WALLELEC)
-					blockMap[y][x]=WL_WALLELEC;
-				else if (blockMap[y][x]==O_WL_EWALL)
-					blockMap[y][x]=WL_EWALL;
-				else if (blockMap[y][x]==O_WL_DETECT)
-					blockMap[y][x]=WL_DETECT;
-				else if (blockMap[y][x]==O_WL_STREAM)
-					blockMap[y][x]=WL_STREAM;
-				else if (blockMap[y][x]==O_WL_FAN||blockMap[y][x]==O_WL_FANHELPER)
-					blockMap[y][x]=WL_FAN;
-				else if (blockMap[y][x]==O_WL_ALLOWLIQUID)
-					blockMap[y][x]=WL_ALLOWLIQUID;
-				else if (blockMap[y][x]==O_WL_DESTROYALL)
-					blockMap[y][x]=WL_DESTROYALL;
-				else if (blockMap[y][x]==O_WL_ERASE)
-					blockMap[y][x]=WL_ERASE;
-				else if (blockMap[y][x]==O_WL_WALL)
-					blockMap[y][x]=WL_WALL;
-				else if (blockMap[y][x]==O_WL_ALLOWAIR)
-					blockMap[y][x]=WL_ALLOWAIR;
-				else if (blockMap[y][x]==O_WL_ALLOWSOLID)
-					blockMap[y][x]=WL_ALLOWSOLID;
-				else if (blockMap[y][x]==O_WL_ALLOWALLELEC)
-					blockMap[y][x]=WL_ALLOWALLELEC;
-				else if (blockMap[y][x]==O_WL_EHOLE)
-					blockMap[y][x]=WL_EHOLE;
-				else if (blockMap[y][x]==O_WL_ALLOWGAS)
-					blockMap[y][x]=WL_ALLOWGAS;
-				else if (blockMap[y][x]==O_WL_GRAV)
-					blockMap[y][x]=WL_GRAV;
-				else if (blockMap[y][x]==O_WL_ALLOWENERGY)
-					blockMap[y][x]=WL_ALLOWENERGY;
+				if (ver>=44)
+				{
+					/* The numbers used to save walls were changed, starting in v44.
+					 * The new numbers are ignored for older versions due to some corruption of bmap in saves from older versions. 
+					 */
+					if (blockMap[y][x]==O_WL_WALLELEC)
+						blockMap[y][x]=WL_WALLELEC;
+					else if (blockMap[y][x]==O_WL_EWALL)
+						blockMap[y][x]=WL_EWALL;
+					else if (blockMap[y][x]==O_WL_DETECT)
+						blockMap[y][x]=WL_DETECT;
+					else if (blockMap[y][x]==O_WL_STREAM)
+						blockMap[y][x]=WL_STREAM;
+					else if (blockMap[y][x]==O_WL_FAN||blockMap[y][x]==O_WL_FANHELPER)
+						blockMap[y][x]=WL_FAN;
+					else if (blockMap[y][x]==O_WL_ALLOWLIQUID)
+						blockMap[y][x]=WL_ALLOWLIQUID;
+					else if (blockMap[y][x]==O_WL_DESTROYALL)
+						blockMap[y][x]=WL_DESTROYALL;
+					else if (blockMap[y][x]==O_WL_ERASE)
+						blockMap[y][x]=WL_ERASE;
+					else if (blockMap[y][x]==O_WL_WALL)
+						blockMap[y][x]=WL_WALL;
+					else if (blockMap[y][x]==O_WL_ALLOWAIR)
+						blockMap[y][x]=WL_ALLOWAIR;
+					else if (blockMap[y][x]==O_WL_ALLOWSOLID)
+						blockMap[y][x]=WL_ALLOWSOLID;
+					else if (blockMap[y][x]==O_WL_ALLOWALLELEC)
+						blockMap[y][x]=WL_ALLOWALLELEC;
+					else if (blockMap[y][x]==O_WL_EHOLE)
+						blockMap[y][x]=WL_EHOLE;
+					else if (blockMap[y][x]==O_WL_ALLOWGAS)
+						blockMap[y][x]=WL_ALLOWGAS;
+					else if (blockMap[y][x]==O_WL_GRAV)
+						blockMap[y][x]=WL_GRAV;
+					else if (blockMap[y][x]==O_WL_ALLOWENERGY)
+						blockMap[y][x]=WL_ALLOWENERGY;
+				}
 
 				if (blockMap[y][x] < 0 || blockMap[y][x] >= UI_WALLCOUNT)
 					blockMap[y][x] = 0;
@@ -1261,7 +1267,7 @@ void GameSave::readPSv(char * data, int dataLength)
 		}
 	for (y=by0; y<by0+bh; y++)
 		for (x=bx0; x<bx0+bw; x++)
-			if (d[(y-by0)*bw+(x-bx0)]==4||d[(y-by0)*bw+(x-bx0)]==O_WL_FAN)
+			if (d[(y-by0)*bw+(x-bx0)]==4||(ver>=44 && d[(y-by0)*bw+(x-bx0)]==O_WL_FAN))
 			{
 				if (p >= dataLength)
 					throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
@@ -1269,7 +1275,7 @@ void GameSave::readPSv(char * data, int dataLength)
 			}
 	for (y=by0; y<by0+bh; y++)
 		for (x=bx0; x<bx0+bw; x++)
-			if (d[(y-by0)*bw+(x-bx0)]==4||d[(y-by0)*bw+(x-bx0)]==O_WL_FAN)
+			if (d[(y-by0)*bw+(x-bx0)]==4||(ver>=44 && d[(y-by0)*bw+(x-bx0)]==O_WL_FAN))
 			{
 				if (p >= dataLength)
 					throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
