@@ -167,7 +167,7 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 //#TPT-Directive ElementHeader Element_PSTN static int CanMoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int maxSize, int amount, bool retract, int block)
 int Element_PSTN::CanMoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int maxSize, int amount, bool retract, int block)
 {
-	int posX, posY, r, spaces = 0, currentPos = 0, num = 0;
+	int posX, posY, r, spaces = 0, currentPos = 0;
 	if (amount <= 0)
 		return 0;
 	for(posX = stackX, posY = stackY; currentPos < maxSize + amount && currentPos < XRES-1; posX += directionX, posY += directionY) {
@@ -176,7 +176,7 @@ int Element_PSTN::CanMoveStack(Simulation * sim, int stackX, int stackY, int dir
 		}
 		r = sim->pmap[posY][posX];
 		if (sim->IsWallBlocking(posX, posY, 0) || (block && (r&0xFF) == block))
-			return num;
+			return spaces;
 		if(!r) {
 			spaces++;
 			tempParts[currentPos++] = -1;
@@ -186,9 +186,8 @@ int Element_PSTN::CanMoveStack(Simulation * sim, int stackX, int stackY, int dir
 			if(spaces < maxSize && currentPos < maxSize && (!retract || ((r&0xFF) == PT_FRME) && posX == stackX && posY == stackY))
 				tempParts[currentPos++] = r>>8;
 			else
-				return num;
+				return spaces;
 		}
-		num++;
 	}
 	if (spaces)
 		return currentPos;
