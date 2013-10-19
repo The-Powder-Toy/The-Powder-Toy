@@ -17,30 +17,37 @@ std::string sign::getText(Simulation *sim)
 	char signText[256];
 	sprintf(signText, "%s", text.substr(0, 255).c_str());
 
-	if (!strcmp(signText,"{p}"))
+	if(signText[0] && signText[0] == '{')
 	{
-		float pressure = 0.0f;
-		if (x>=0 && x<XRES && y>=0 && y<YRES)
-			pressure = sim->pv[y/CELL][x/CELL];
-		sprintf(buff, "Pressure: %3.2f", pressure);  //...pressure
-	}
-	else if (!strcmp(signText,"{t}"))
-	{
-		if (x>=0 && x<XRES && y>=0 && y<YRES && sim->pmap[y][x])
-			sprintf(buff, "Temp: %4.2f", sim->parts[sim->pmap[y][x]>>8].temp-273.15);  //...temperature
+		if (!strcmp(signText,"{p}"))
+		{
+			float pressure = 0.0f;
+			if (x>=0 && x<XRES && y>=0 && y<YRES)
+				pressure = sim->pv[y/CELL][x/CELL];
+			sprintf(buff, "Pressure: %3.2f", pressure);  //...pressure
+		}
+		else if (!strcmp(signText,"{t}"))
+		{
+			if (x>=0 && x<XRES && y>=0 && y<YRES && sim->pmap[y][x])
+				sprintf(buff, "Temp: %4.2f", sim->parts[sim->pmap[y][x]>>8].temp-273.15);  //...temperature
+			else
+				sprintf(buff, "Temp: 0.00");  //...temperature
+		}
 		else
-			sprintf(buff, "Temp: 0.00");  //...temperature
+		{
+			int pos=splitsign(signText);
+			if (pos)
+			{
+				strcpy(buff, signText+pos+1);
+				buff[strlen(signText)-pos-2]=0;
+			}
+			else
+				strcpy(buff, signText);
+		}
 	}
 	else
 	{
-		int pos=splitsign(signText);
-		if (pos)
-		{
-			strcpy(buff, signText+pos+1);
-			buff[strlen(signText)-pos-2]=0;
-		}
-		else
-			strcpy(buff, signText);
+		strcpy(buff, signText);
 	}
 
 	return std::string(buff);
