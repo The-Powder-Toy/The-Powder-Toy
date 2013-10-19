@@ -634,6 +634,8 @@ int splitsign(const char* str, char * type)
 			while (*p>='0' && *p<='9')
 				p++;
 		}
+		else if(str[1] != 'b')
+			return 0;
 
 		if (*p=='|')
 		{
