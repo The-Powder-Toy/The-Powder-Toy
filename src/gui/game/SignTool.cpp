@@ -178,15 +178,19 @@ void SignWindow::DoDraw()
 	{
 		sign & currentSign = *iter;
 		int x, y, w, h, dx, dy;
+		char type = 0;
 		Graphics * g = ui::Engine::Ref().g;
 		std::string text = currentSign.getText(sim);
+		splitsign(currentSign.text.c_str(), &type);
 		currentSign.pos(text, x, y, w, h);
 		g->clearrect(x, y, w+1, h);
 		g->drawrect(x, y, w+1, h, 192, 192, 192, 255);
-		if (splitsign(currentSign.text.c_str()))
-			g->drawtext(x+3, y+3, text, 0, 191, 255, 255);
-		else
+		if (!type)
 			g->drawtext(x+3, y+3, text, 255, 255, 255, 255);
+		else if(type == 'b')
+			g->drawtext(x+3, y+3, text, 211, 211, 40, 255);
+		else
+			g->drawtext(x+3, y+3, text, 0, 191, 255, 255);
 
 		x = currentSign.x;
 		y = currentSign.y;

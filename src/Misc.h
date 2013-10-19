@@ -86,7 +86,7 @@ void OpenURI(std::string uri);
 
 void membwand(void * dest, void * src, size_t destsize, size_t srcsize);
 
-int splitsign(const char* str);
+int splitsign(const char* str, char * type = NULL);
 
 // a b
 // c d
