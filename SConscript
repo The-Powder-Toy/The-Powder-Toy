@@ -89,6 +89,7 @@ AddOption('--stable',dest="stable",default=True,help="Non snapshot build")
 AddOption('--aao', dest="everythingAtOnce", action='store_true', default=False, help="Compile the whole game without generating intermediate objects (very slow), enable this when using compilers like clang or mscc that don't support -fkeep-inline-functions")
 
 AddOption('--fullclean',dest="justwork",action='store_true',default=False,help="for when nothing else works. Deletes all sconscript temporary files.") 
+AddOption('--copy-env',dest="copy_env",action='store_true',default=False,help="copy some common enviroment variables from the parent enviroment.") 
 
 # using one of these commandline options is compulsory
 
@@ -134,9 +135,17 @@ if((not GetOption('lin')) and (not GetOption('win')) and (not GetOption('rpi')) 
 # if the platform is windows switch to a mingw toolset, use the default otherwise
 
 if(GetOption('win')):
-	env = Environment(tools = ['mingw'], ENV = os.environ)
+	env = Environment(tools = ['mingw'])
 else:
-	env = Environment(tools = ['default'], ENV = os.environ)
+	env = Environment(tools = ['default'])
+
+if(GetOption("copy_env")):
+    lstvar=["CC","CXX","LD","CFLAGS"]
+    print "WARNING: enviroment copying enabled. changes in the enviroment can easily break the build process."
+    for var in lstvar:
+        if var in os.environ:
+            env[var]=os.environ[var]
+            print "WARNING: copying enviroment variable {}={!r}".format(var,os.environ[var])
 
 # macosx specific platform settings
 # +++++++++++++++++++++++++++++++++
