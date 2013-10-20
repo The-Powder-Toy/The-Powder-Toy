@@ -38,6 +38,7 @@ Makefile.me
 *.tlog
 *.lib
 *.ipch
+*.ilk
 *.log
 *.lastbuildstate
 *.unsuccessfulbuild
