@@ -16,10 +16,6 @@ namespace ui
 	class Window;
 }
 
-namespace pim
-{
-	class VirtualMachine;
-}
 class Tool;
 
 //Because lua only has bindings for C, we're going to have to go outside "outside" the LuaScriptInterface, this means we can only have one instance :(
@@ -115,9 +111,6 @@ class LuaScriptInterface: public CommandInterface
 	static int renderer_debugHUD(lua_State * l);
 
 	//Elements
-	static pim::VirtualMachine * updateVirtualMachines[PT_NUM];
-	static int updateVM(UPDATE_FUNC_ARGS);
-	//
 	void initElementsAPI();
 	static int elements_allocate(lua_State * l);
 	static int elements_element(lua_State * l);
@@ -131,10 +124,6 @@ class LuaScriptInterface: public CommandInterface
 	static int interface_closeWindow(lua_State * l);
 	static int interface_addComponent(lua_State * l);
 	static int interface_removeComponent(lua_State * l);
-
-	//VM
-	void initVirtualMachineAPI();
-	static int virtualMachine_loadProgram(lua_State * l);
 
 	void initGraphicsAPI();
 	static int graphics_textSize(lua_State * l);

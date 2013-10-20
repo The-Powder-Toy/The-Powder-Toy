@@ -23,10 +23,6 @@
 #include "client/HTTP.h"
 #include "PowderToy.h"
 
-//#include "virtualmachine/VirtualMachine.h"
-#include "pim/Parser.h"
-#include "pim/Machine.h"
-
 #include "LuaBit.h"
 
 #include "LuaWindow.h"
@@ -118,7 +114,6 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	initInterfaceAPI();
 	initRendererAPI();
 	initElementsAPI();
-	initVirtualMachineAPI();
 	initGraphicsAPI();
 	initFileSystemAPI();
 
@@ -1873,49 +1868,6 @@ void LuaScriptInterface::initElementsAPI()
 	}
 }
 
-pim::VirtualMachine * LuaScriptInterface::updateVirtualMachines[PT_NUM];
-
-int LuaScriptInterface::updateVM(UPDATE_FUNC_ARGS)
-{
-	pim::VirtualMachine * machine = updateVirtualMachines[parts[i].type];
-
-	machine->CSPush(i);
-	machine->CSPush(x);
-	machine->CSPush(y);
-	machine->Call(0);
-
-
-	/*vm::VirtualMachine * vMachine = updateVirtualMachines[parts[i].type];
-
-	vm::word w;
-	int argAddr = 0, argCount = 5;
-	vMachine->sim = sim;
-	
-	vMachine->OpPUSH(w);  //Pointless null in stack
-	w.int4 = (argCount + 2) * sizeof(vm::word);
-	vMachine->OpENTER(w);
-	argAddr = 8;
-
-	//Arguments
-	w.int4 = i; vMachine->Marshal(argAddr, w); argAddr += 4;
-	w.int4 = x; vMachine->Marshal(argAddr, w); argAddr += 4;
-	w.int4 = y; vMachine->Marshal(argAddr, w); argAddr += 4;
-	w.int4 = nt; vMachine->Marshal(argAddr, w); argAddr += 4;
-	w.int4 = surround_space; vMachine->Marshal(argAddr, w); argAddr += 4;
-	
-	w.int4 = 0;
-	vMachine->Push(w);
-	
-	vMachine->OpCALL(w);
-	vMachine->Run();
-	w.int4 = (argCount + 2) * sizeof(vm::word);
-	vMachine->OpLEAVE(w);
-	vMachine->OpPOP(w);   //Pop pointless null
-	vMachine->End();*/
-
-	return 0;
-}
-
 int LuaScriptInterface::elements_loadDefault(lua_State * l)
 {
 	int args = lua_gettop(l);
@@ -2238,11 +2190,6 @@ int LuaScriptInterface::elements_property(lua_State * l)
 				else
 					lua_el_mode[id] = 1;
 			}
-			else if(lua_type(l, 3) == LUA_TLIGHTUSERDATA)
-			{
-				updateVirtualMachines[id] = (pim::VirtualMachine*)lua_touserdata(l, 3);
-				luacon_sim->elements[id].Update = &updateVM;
-			}
 			else if(lua_type(l, 3) == LUA_TBOOLEAN && !lua_toboolean(l, 3))
 			{
 				lua_el_func[id] = 0;
@@ -2345,52 +2292,6 @@ int LuaScriptInterface::elements_free(lua_State * l)
 	lua_pop(l, 1);
 
 	return 0;
-}
-
-void LuaScriptInterface::initVirtualMachineAPI()
-{
-	//Methods
-	struct luaL_reg vmAPIMethods [] = {
-		{"loadProgram", virtualMachine_loadProgram},
-		{NULL, NULL}
-	};
-	luaL_register(l, "virtualMachine", vmAPIMethods);
-
-	//elem shortcut
-	lua_getglobal(l, "virtualMachine");
-	lua_setglobal(l, "vm");
-}
-
-int LuaScriptInterface::virtualMachine_loadProgram(lua_State * l)
-{
-	/*luaL_checktype(l, 1, LUA_TSTRING);
-
-	vm::VirtualMachine * newVM = new vm::VirtualMachine(1);
-	try
-	{
-		const char * tempString = lua_tostring(l, 1);
-		int tempStringLength = lua_strlen(l, 1);
-		std::vector<char> programData(tempString, tempString+tempStringLength);
-		newVM->LoadProgram(programData);
-	}
-	catch(std::exception & e)
-	{
-		return luaL_error(l, "Unable to load program");
-	}
-	lua_pushlightuserdata(l, newVM);*/
-	std::string programSource(lua_tostring(l, 1));
-	std::stringstream input(programSource);
-
-
-	pim::compiler::Parser * parser = new pim::compiler::Parser(input);
-	
-	std::vector<unsigned char> programData = parser->Compile();
-
-	pim::VirtualMachine * machine = new pim::VirtualMachine(luacon_sim);
-	machine->LoadProgram(programData);
-
-	lua_pushlightuserdata(l, machine);
-	return 1;
 }
 
 void LuaScriptInterface::initGraphicsAPI()
