@@ -135,9 +135,9 @@ if((not GetOption('lin')) and (not GetOption('win')) and (not GetOption('rpi')) 
 # if the platform is windows switch to a mingw toolset, use the default otherwise
 
 if(GetOption('win')):
-	env = Environment(tools = ['mingw'])
+	env = Environment(tools = ['mingw'], ENV = os.environ)
 else:
-	env = Environment(tools = ['default'])
+	env = Environment(tools = ['default'], ENV = os.environ)
 
 if(GetOption("copy_env")):
     lstvar=["CC","CXX","LD","CFLAGS"]
