@@ -104,6 +104,8 @@ void ClipboardPush(char * text)
 #endif
 }
 
+void EventProcess(SDL_Event event);
+
 char * ClipboardPull()
 {
 #ifdef MACOSX
@@ -135,7 +137,6 @@ char * ClipboardPull()
 		Atom type;
 		int format, result;
 		unsigned long len, bytesLeft;
-		std::list<SDL_Event> evlist; // if there arrive any events while fetching keyboard
 		XConvertSelection(sdl_wminfo.info.x11.display, XA_CLIPBOARD, XA_UTF8_STRING, XA_CLIPBOARD, sdl_wminfo.info.x11.window, CurrentTime);
 		XFlush(sdl_wminfo.info.x11.display);
 		sdl_wminfo.info.x11.unlock_func();
@@ -148,13 +149,11 @@ char * ClipboardPull()
 				XEvent xevent = event.syswm.msg->event.xevent;
 				if (xevent.type == SelectionNotify && xevent.xselection.requestor == sdl_wminfo.info.x11.window)
 					break;
-				evlist.push_back(event);
+				else
+					EventProcess(event);
 			}
-		}
-		for (std::list<SDL_Event>::iterator iter = evlist.begin(), end = evlist.end(); iter != end; iter++)
-		{
-			SDL_Event event = *iter;
-			SDL_PushEvent(&event); // replay the missed events
+			else
+				EventProcess(event);
 		}
 		sdl_wminfo.info.x11.lock_func();
 		XGetWindowProperty(sdl_wminfo.info.x11.display, sdl_wminfo.info.x11.window, XA_CLIPBOARD, 0, 0, 0, AnyPropertyType, &type, &format, &len, &bytesLeft, &data);
@@ -171,7 +170,14 @@ char * ClipboardPull()
 				text = strdup((const char*) data);
 				XFree(data);
 			}
+			else
+			{
+				printf("Failed to pull from clipboard\n");
+				return mystrdup("?");
+			}
 		}
+		else
+			return mystrdup("");
 		XDeleteProperty(sdl_wminfo.info.x11.display, sdl_wminfo.info.x11.window, XA_CLIPBOARD);
 	}
 	sdl_wminfo.info.x11.unlock_func();
@@ -425,6 +431,113 @@ unsigned int lastTick = 0;
 float fps = 0, delta = 1.0f, inputScale = 1.0f;
 ui::Engine * engine = NULL;
 float currentWidth, currentHeight;
+
+void EventProcess(SDL_Event event)
+{
+	switch (event.type)
+	{
+	case SDL_QUIT:
+		if (engine->GetFastQuit() || engine->CloseWindow())
+			engine->Exit();
+		break;
+	case SDL_KEYDOWN:
+		engine->onKeyPress(event.key.keysym.sym, event.key.keysym.unicode, event.key.keysym.mod&KEY_MOD_SHIFT, event.key.keysym.mod&KEY_MOD_CONTROL, event.key.keysym.mod&KEY_MOD_ALT);
+		break;
+	case SDL_KEYUP:
+		engine->onKeyRelease(event.key.keysym.sym, event.key.keysym.unicode, event.key.keysym.mod&KEY_MOD_SHIFT, event.key.keysym.mod&KEY_MOD_CONTROL, event.key.keysym.mod&KEY_MOD_ALT);
+		break;
+	case SDL_MOUSEMOTION:
+		engine->onMouseMove(event.motion.x*inputScale, event.motion.y*inputScale);
+		break;
+	case SDL_MOUSEBUTTONDOWN:
+		if(event.button.button == SDL_BUTTON_WHEELUP)
+		{
+			engine->onMouseWheel(event.motion.x*inputScale, event.motion.y*inputScale, 1);
+		}
+		else if (event.button.button == SDL_BUTTON_WHEELDOWN)
+		{
+			engine->onMouseWheel(event.motion.x*inputScale, event.motion.y*inputScale, -1);
+		}
+		else
+		{
+			engine->onMouseClick(event.motion.x*inputScale, event.motion.y*inputScale, event.button.button);
+		}
+		break;
+	case SDL_MOUSEBUTTONUP:
+		if(event.button.button != SDL_BUTTON_WHEELUP && event.button.button != SDL_BUTTON_WHEELDOWN)
+			engine->onMouseUnclick(event.motion.x*inputScale, event.motion.y*inputScale, event.button.button);
+		break;
+#ifdef OGLI
+	case SDL_VIDEORESIZE:
+	{
+		float ratio = float(XRES+BARSIZE) / float(YRES+MENUSIZE);
+		float width = event.resize.w;
+		float height = width/ratio;
+
+		sdl_scrn = SDL_SetVideoMode(event.resize.w, height, 32, SDL_OPENGL | SDL_RESIZABLE);
+
+		glViewport(0, 0, width, height);
+		engine->g->Reset();
+		//glScaled(width/currentWidth, height/currentHeight, 1.0f);
+
+		currentWidth = width;
+		currentHeight = height;
+		inputScale = float(XRES+BARSIZE)/currentWidth;
+
+		glLineWidth(currentWidth/float(XRES+BARSIZE));
+		if(sdl_scrn == NULL)
+		{
+			std::cerr << "Oh bugger" << std::endl;
+		}
+		break;
+	}
+#endif
+#if defined (USE_SDL) && defined(LIN) && defined(SDL_VIDEO_DRIVER_X11)
+	case SDL_SYSWMEVENT:
+		if (event.syswm.msg->subsystem != SDL_SYSWM_X11)
+			break;
+		sdl_wminfo.info.x11.lock_func();
+		XEvent xe = event.syswm.msg->event.xevent;
+		if (xe.type==SelectionClear)
+		{
+			if (clipboardText != NULL) {
+				free(clipboardText);
+				clipboardText = NULL;
+			}
+		}
+		else if (xe.type==SelectionRequest)
+		{
+			XEvent xr;
+			xr.xselection.type = SelectionNotify;
+			xr.xselection.requestor = xe.xselectionrequest.requestor;
+			xr.xselection.selection = xe.xselectionrequest.selection;
+			xr.xselection.target = xe.xselectionrequest.target;
+			xr.xselection.property = xe.xselectionrequest.property;
+			xr.xselection.time = xe.xselectionrequest.time;
+			if (xe.xselectionrequest.target==XA_TARGETS)
+			{
+				// send list of supported formats
+				Atom targets[] = {XA_TARGETS, XA_STRING, XA_UTF8_STRING};
+				xr.xselection.property = xe.xselectionrequest.property;
+				XChangeProperty(sdl_wminfo.info.x11.display, xe.xselectionrequest.requestor, xe.xselectionrequest.property, XA_ATOM, 32, PropModeReplace, (unsigned char*)targets, (int)(sizeof(targets)/sizeof(Atom)));
+			}
+			// TODO: Supporting more targets would be nice
+			else if ((xe.xselectionrequest.target==XA_STRING || xe.xselectionrequest.target==XA_UTF8_STRING) && clipboardText)
+			{
+				XChangeProperty(sdl_wminfo.info.x11.display, xe.xselectionrequest.requestor, xe.xselectionrequest.property, xe.xselectionrequest.target, 8, PropModeReplace, (unsigned char*)clipboardText, strlen(clipboardText)+1);
+			}
+			else
+			{
+				// refuse clipboard request
+				xr.xselection.property = None;
+			}
+			XSendEvent(sdl_wminfo.info.x11.display, xe.xselectionrequest.requestor, 0, 0, &xr);
+		}
+		sdl_wminfo.info.x11.unlock_func();
+#endif
+	}
+}
+
 void EngineProcess()
 {
 	int frameStart = SDL_GetTicks();
@@ -437,109 +550,7 @@ void EngineProcess()
 		event.type = 0;
 		while (SDL_PollEvent(&event))
 		{
-			switch (event.type)
-			{
-			case SDL_QUIT:
-				if (engine->GetFastQuit() || engine->CloseWindow())
-					engine->Exit();
-				break;
-			case SDL_KEYDOWN:
-				engine->onKeyPress(event.key.keysym.sym, event.key.keysym.unicode, event.key.keysym.mod&KEY_MOD_SHIFT, event.key.keysym.mod&KEY_MOD_CONTROL, event.key.keysym.mod&KEY_MOD_ALT);
-				break;
-			case SDL_KEYUP:
-				engine->onKeyRelease(event.key.keysym.sym, event.key.keysym.unicode, event.key.keysym.mod&KEY_MOD_SHIFT, event.key.keysym.mod&KEY_MOD_CONTROL, event.key.keysym.mod&KEY_MOD_ALT);
-				break;
-			case SDL_MOUSEMOTION:
-				engine->onMouseMove(event.motion.x*inputScale, event.motion.y*inputScale);
-				break;
-			case SDL_MOUSEBUTTONDOWN:
-				if(event.button.button == SDL_BUTTON_WHEELUP)
-				{
-					engine->onMouseWheel(event.motion.x*inputScale, event.motion.y*inputScale, 1);
-				}
-				else if (event.button.button == SDL_BUTTON_WHEELDOWN)
-				{
-					engine->onMouseWheel(event.motion.x*inputScale, event.motion.y*inputScale, -1);
-				}
-				else
-				{
-					engine->onMouseClick(event.motion.x*inputScale, event.motion.y*inputScale, event.button.button);
-				}
-				break;
-			case SDL_MOUSEBUTTONUP:
-				if(event.button.button != SDL_BUTTON_WHEELUP && event.button.button != SDL_BUTTON_WHEELDOWN)
-					engine->onMouseUnclick(event.motion.x*inputScale, event.motion.y*inputScale, event.button.button);
-				break;
-#ifdef OGLI
-			case SDL_VIDEORESIZE:
-			{
-				float ratio = float(XRES+BARSIZE) / float(YRES+MENUSIZE);
-				float width = event.resize.w;
-				float height = width/ratio;
-
-				sdl_scrn = SDL_SetVideoMode(event.resize.w, height, 32, SDL_OPENGL | SDL_RESIZABLE);
-
-				glViewport(0, 0, width, height);
-				engine->g->Reset();
-				//glScaled(width/currentWidth, height/currentHeight, 1.0f);
-
-				currentWidth = width;
-				currentHeight = height;
-				inputScale = float(XRES+BARSIZE)/currentWidth;
-
-				glLineWidth(currentWidth/float(XRES+BARSIZE));
-				if(sdl_scrn == NULL)
-				{
-					std::cerr << "Oh bugger" << std::endl;
-				}
-				break;
-			}
-#endif
-#if defined (USE_SDL) && defined(LIN) && defined(SDL_VIDEO_DRIVER_X11)
-			case SDL_SYSWMEVENT:
-				if (event.syswm.msg->subsystem != SDL_SYSWM_X11)
-					break;
-				sdl_wminfo.info.x11.lock_func();
-				XEvent xe = event.syswm.msg->event.xevent;
-				if (xe.type==SelectionClear)
-				{
-					if (clipboardText != NULL) {
-						free(clipboardText);
-						clipboardText = NULL;
-					}
-				}
-				else if (xe.type==SelectionRequest)
-				{
-					XEvent xr;
-					xr.xselection.type = SelectionNotify;
-					xr.xselection.requestor = xe.xselectionrequest.requestor;
-					xr.xselection.selection = xe.xselectionrequest.selection;
-					xr.xselection.target = xe.xselectionrequest.target;
-					xr.xselection.property = xe.xselectionrequest.property;
-					xr.xselection.time = xe.xselectionrequest.time;
-					if (xe.xselectionrequest.target==XA_TARGETS)
-					{
-						// send list of supported formats
-						Atom targets[] = {XA_TARGETS, XA_STRING};
-						xr.xselection.property = xe.xselectionrequest.property;
-						XChangeProperty(sdl_wminfo.info.x11.display, xe.xselectionrequest.requestor, xe.xselectionrequest.property, XA_ATOM, 32, PropModeReplace, (unsigned char*)targets, (int)(sizeof(targets)/sizeof(Atom)));
-					}
-					// TODO: Supporting more targets would be nice
-					else if (xe.xselectionrequest.target==XA_STRING && clipboardText)
-					{
-						XChangeProperty(sdl_wminfo.info.x11.display, xe.xselectionrequest.requestor, xe.xselectionrequest.property, xe.xselectionrequest.target, 8, PropModeReplace, (unsigned char*)clipboardText, strlen(clipboardText)+1);
-					}
-					else
-					{
-						// refuse clipboard request
-						xr.xselection.property = None;
-					}
-					XSendEvent(sdl_wminfo.info.x11.display, xe.xselectionrequest.requestor, 0, 0, &xr);
-				}
-				sdl_wminfo.info.x11.unlock_func();
-				continue;
-#endif
-			}
+			EventProcess(event);
 			event.type = 0; //Clear last event
 		}
 		if(engine->Broken()) { engine->UnBreak(); break; }
