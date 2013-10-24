@@ -121,7 +121,7 @@ int Element_SING::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if ((r&0xFF)!=PT_DMND&& !(rand()%3))
+				if ((r&0xFF)!=PT_DMND && (r & 0xFF) != PT_CLNE && (r & 0xFF) != PT_PCLN && (r & 0xFF) != PT_BCLN && (r & 0xFF) != PT_PBCN && !(rand()%3))
 				{
 					if ((r&0xFF)==PT_SING && parts[r>>8].life >10)
 					{
