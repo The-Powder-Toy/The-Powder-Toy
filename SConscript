@@ -176,19 +176,20 @@ if not GetOption("macosx"):
 				raise SystemExit(1)
 			
 
-# if lua is enabled try to parse the lua pgk-config, if that fails try the lua-dir option
-# .. : TODO: make this look the same as the SDL check, maybe make a function for it. keep it DRY.
+# if lua is enabled try to parse the lua pgk-config, or the lua-dir option if given
 
-	if not GetOption("nolua"):
+	if(GetOption("lua-dir")):
+		if not conf.CheckCHeader(GetOption("lua-dir") + '/lua.h'):
+			print "lua5.1 headers not found or not installed"
+			raise SystemExit(1)
+		else:
+			env.Append(CPPPATH=[GetOption("lua-dir")])
+	else:
 		try:
 			env.ParseConfig('pkg-config --cflags lua5.1')
 		except:
-			if(GetOption("lua-dir")):
-				if not conf.CheckCHeader(GetOption("lua-dir") + '/lua.h'):
-					print "lua5.1 headers not found or not installed"
-					raise SystemExit(1)
-				else:
-					env.Append(CPPPATH=[GetOption("lua-dir")])
+			print "lua5.1 headers not found or not installed"
+			raise SystemExit(1)
 
 # if fft is enabled try to parse its config, fail otherwise.
 
