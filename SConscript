@@ -140,7 +140,7 @@ else:
 	env = Environment(tools = ['default'], ENV = os.environ)
 
 if(GetOption("copy_env")):
-    lstvar=["CC","CXX","LD","CFLAGS"]
+    lstvar=["CC","CXX","LD","CFLAGS","LIBPATH"]
     print "WARNING: enviroment copying enabled. changes in the enviroment can easily break the build process."
     for var in lstvar:
         if var in os.environ:
