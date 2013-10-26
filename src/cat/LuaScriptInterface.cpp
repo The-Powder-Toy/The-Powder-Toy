@@ -479,6 +479,7 @@ void LuaScriptInterface::initSimulationAPI()
 		{"waterEqualization", simulation_waterEqualisation},
 		{"ambientAirTemp", simulation_ambientAirTemp},
 		{"elementCount", simulation_elementCount},
+		{"can_move", simulation_canMove},
 		{"parts", simulation_parts},
 		{"pmap", simulation_pmap},
 		{"neighbours", simulation_neighbours},
@@ -1230,13 +1231,11 @@ int LuaScriptInterface::simulation_decoBox(lua_State * l)
 	int y1 = luaL_optint(l,2,-1);
 	int x2 = luaL_optint(l,3,-1);
 	int y2 = luaL_optint(l,4,-1);
-	int rx = luaL_optint(l,5,5);
-	int ry = luaL_optint(l,6,5);
-	int r = luaL_optint(l,7,255);
-	int g = luaL_optint(l,8,255);
-	int b = luaL_optint(l,9,255);
-	int a = luaL_optint(l,10,255);
-	int tool = luaL_optint(l,11,0);
+	int r = luaL_optint(l,5,255);
+	int g = luaL_optint(l,6,255);
+	int b = luaL_optint(l,7,255);
+	int a = luaL_optint(l,8,255);
+	int tool = luaL_optint(l,9,0);
 
 	luacon_sim->ApplyDecorationBox(x1, y1, x2, y2, r, g, b, a, tool);
 	return 0;
@@ -1501,6 +1500,27 @@ int LuaScriptInterface::simulation_elementCount(lua_State * l)
 
 	lua_pushnumber(l, luacon_sim->elementCount[element]);
 	return 1;
+}
+
+int LuaScriptInterface::simulation_canMove(lua_State * l)
+{
+	int movingElement = luaL_checkint(l, 1);
+	int destinationElement = luaL_checkint(l, 2);
+	if (movingElement < 0 || movingElement >= PT_NUM)
+		return luaL_error(l, "Invalid element ID (%d)", movingElement);
+	if (destinationElement < 0 || destinationElement >= PT_NUM)
+		return luaL_error(l, "Invalid element ID (%d)", destinationElement);
+	
+	if (lua_gettop(l) < 3)
+	{
+		lua_pushnumber(l, luacon_sim->can_move[movingElement][destinationElement]);
+		return 1;
+	}
+	else
+	{
+		luacon_sim->can_move[movingElement][destinationElement] = luaL_checkint(l, 3);
+		return 0;
+	}
 }
 
 int PartsClosure(lua_State * l)
