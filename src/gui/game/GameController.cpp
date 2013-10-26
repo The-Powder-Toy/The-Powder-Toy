@@ -568,8 +568,11 @@ bool GameController::MouseDown(int x, int y, unsigned button)
 	y = point.Y;
 	if(ret && y<YRES && x<XRES)
 		if (gameModel->GetActiveTool(0)->GetIdentifier() != "DEFAULT_UI_SIGN" || button != BUTTON_LEFT) //If it's not a sign tool or you are right/middle clicking
-			if(GetSignAt(x, y))
+		{
+			sign * foundSign = GetSignAt(x, y);
+			if(foundSign && splitsign(foundSign->text.c_str()))
 				return false;
+		}
 	return ret;
 }
 
@@ -585,12 +588,12 @@ bool GameController::MouseUp(int x, int y, unsigned button)
 		{
 			sign * foundSign = GetSignAt(x, y);
 			if(foundSign) {
-				ret = false;
 				const char* str=foundSign->text.c_str();
 				char type;
 				int pos=splitsign(str, &type);
 				if (pos)
 				{
+					ret = false;
 					if(type == 'c' || type == 't') {
 						char buff[256];
 						strcpy(buff, str+3);
