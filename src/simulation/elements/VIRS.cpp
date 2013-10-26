@@ -153,6 +153,7 @@ int Element_VIRS::update(UPDATE_FUNC_ARGS)
 //#TPT-Directive ElementHeader Element_VIRS static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_VIRS::graphics(GRAPHICS_FUNC_ARGS)
 {
+	*pixel_mode |= PMODE_BLUR;
 	*pixel_mode |= NO_DECO;
 	return 1;
 }

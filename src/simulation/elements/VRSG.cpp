@@ -43,7 +43,21 @@ Element_VRSG::Element_VRSG()
 	HighTemperatureTransition = NT;
 	
 	Update = &Element_VIRS::update;
-	Graphics = &Element_VIRS::graphics;
+	Graphics = &Element_VRSG::graphics;
+}
+
+
+//#TPT-Directive ElementHeader Element_VRSG static int graphics(GRAPHICS_FUNC_ARGS)
+int Element_VRSG::graphics(GRAPHICS_FUNC_ARGS)
+{
+	*pixel_mode &= ~PMODE;
+	*pixel_mode |= FIRE_BLEND;
+	*firer = *colr/2;
+	*fireg = *colg/2;
+	*fireb = *colb/2;
+	*firea = 125;
+	*pixel_mode |= NO_DECO;
+	return 1;
 }
 
 Element_VRSG::~Element_VRSG() {}

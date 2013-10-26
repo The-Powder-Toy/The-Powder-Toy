@@ -43,7 +43,14 @@ Element_VRSS::Element_VRSS()
 	HighTemperatureTransition = PT_VIRS;
 	
 	Update = &Element_VIRS::update;
-	Graphics = &Element_VIRS::graphics;
+	Graphics = &Element_VRSS::graphics;
+}
+
+//#TPT-Directive ElementHeader Element_VRSS static int graphics(GRAPHICS_FUNC_ARGS)
+int Element_VRSS::graphics(GRAPHICS_FUNC_ARGS)
+{
+	*pixel_mode |= NO_DECO;
+	return 1;
 }
 
 Element_VRSS::~Element_VRSS() {}
