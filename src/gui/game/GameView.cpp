@@ -1347,7 +1347,14 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		c->ShowConsole();
 		break;
 	case 'p':
+	case KEY_F2:
 		screenshot();
+		break;
+	case KEY_F3:
+		SetDebugHUD(!GetDebugHUD());
+		break;
+	case KEY_F5:
+		c->ReloadSim();
 		break;
 	case 'r':
 		if (ctrl)

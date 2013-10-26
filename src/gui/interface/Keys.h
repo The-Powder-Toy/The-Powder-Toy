@@ -45,6 +45,9 @@
 #define KEY_w SDLK_w
 
 #define KEY_F1 SDLK_F1
+#define KEY_F2 SDLK_F2
+#define KEY_F3 SDLK_F3
+#define KEY_F5 SDLK_F5
 
 #define BUTTON_LEFT SDL_BUTTON_LEFT
 #define BUTTON_MIDDLE SDL_BUTTON_MIDDLE
@@ -83,5 +86,8 @@
 #define KEY_w 25
 
 #define KEY_F1 26
+#define KEY_F2 27
+#define KEY_F3 28
+#define KEY_F5 29
 
 #endif
