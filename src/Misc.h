@@ -40,7 +40,7 @@ unsigned clamp_flt(float f, float min, float max);
 
 float restrict_flt(float f, float min, float max);
 
-char *mystrdup(char *s);
+char *mystrdup(const char *s);
 
 struct strlist
 {
@@ -64,11 +64,11 @@ void save_string(FILE *f, char *str);
 
 int load_string(FILE *f, char *str, int max);
 
-void strcaturl(char *dst, char *src);
+void strcaturl(char *dst, const char *src);
 
 std::string URLEscape(std::string source);
 
-void strappend(char *dst, char *src);
+void strappend(char *dst, const char *src);
 
 void *file_load(char *fn, int *size);
 

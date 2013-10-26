@@ -687,7 +687,7 @@ bool SaveWindowPosition()
 
 #endif
 
-void BlueScreen(char * detailMessage){
+void BlueScreen(const char * detailMessage){
 	ui::Engine * engine = &ui::Engine::Ref();
 	engine->g->fillrect(0, 0, engine->GetWidth(), engine->GetHeight(), 17, 114, 169, 210);
 
