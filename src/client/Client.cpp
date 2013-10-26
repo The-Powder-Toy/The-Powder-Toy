@@ -1221,9 +1221,7 @@ RequestBroker::Request * Client::SaveUserInfoAsync(UserInfo info)
 				json::Reader::Read(objDocument, dataStream);
 				json::Number tempStatus = objDocument["Status"];
 
-				bool returnValue = tempStatus.Value() == 1;
-
-				return (void*)(returnValue ? 1 : 0);
+				return (void*)(tempStatus.Value() == 1);
 			}
 			catch (json::Exception &e)
 			{

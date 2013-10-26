@@ -63,7 +63,7 @@ namespace ui
 		inline int GetMaxWidth() { return maxWidth; }
 		inline int GetMaxHeight() { return maxHeight; }
 
-		TPT_NO_INLINE void SetMaxSize(int width, int height);
+		void SetMaxSize(int width, int height);
 
 		inline void SetSize(int width, int height);
 		

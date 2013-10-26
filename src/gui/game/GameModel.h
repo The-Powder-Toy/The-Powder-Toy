@@ -12,7 +12,7 @@
 #include "Brush.h"
 #include "client/User.h"
 #include "Notification.h"
-
+#include "QuickOption.h"
 #include "Tool.h"
 #include "Menu.h"
 
@@ -23,7 +23,6 @@ class GameController;
 class Simulation;
 class Renderer;
 
-class QuickOption;
 class ToolSelection
 {
 public:

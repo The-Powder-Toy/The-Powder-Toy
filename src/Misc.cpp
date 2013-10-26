@@ -101,7 +101,7 @@ int isign(float i) //TODO: INline or macro
 	return 0;
 }
 
-TPT_NO_INLINE unsigned clamp_flt(float f, float min, float max) //TODO: Also inline/macro
+unsigned clamp_flt(float f, float min, float max) //TODO: Also inline/macro
 {
 	if (f<min)
 		return 0;
@@ -110,7 +110,7 @@ TPT_NO_INLINE unsigned clamp_flt(float f, float min, float max) //TODO: Also inl
 	return (int)(255.0f*(f-min)/(max-min));
 }
 
-TPT_NO_INLINE float restrict_flt(float f, float min, float max) //TODO Inline or macro or something
+float restrict_flt(float f, float min, float max) //TODO Inline or macro or something
 {
 	if (f<min)
 		return min;

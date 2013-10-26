@@ -1,5 +1,3 @@
-#pragma once
-
 #include "ElementPopulation.h"
 #include "gui/interface/Engine.h"
 #include "simulation/Simulation.h"

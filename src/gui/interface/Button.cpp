@@ -59,12 +59,12 @@ bool Button::GetTogglable()
 	return isTogglable;
 }
 
-TPT_NO_INLINE bool Button::GetToggleState()
+bool Button::GetToggleState()
 {
 	return toggle;
 }
 
-TPT_NO_INLINE void Button::SetToggleState(bool state)
+void Button::SetToggleState(bool state)
 {
 	toggle = state;
 }
