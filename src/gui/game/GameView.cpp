@@ -1487,10 +1487,10 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 			break;
 		}
 		//fancy case switch without break
-	case SDLK_INSERT:
+	case KEY_INSERT:
 		c->SetReplaceModeFlags(c->GetReplaceModeFlags()^REPLACE_MODE);
 		break;
-	case SDLK_DELETE:
+	case KEY_DELETE:
 		c->SetReplaceModeFlags(c->GetReplaceModeFlags()^SPECIFIC_DELETE);
 		break;
 	}
