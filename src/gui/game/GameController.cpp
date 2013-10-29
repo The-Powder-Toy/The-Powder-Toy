@@ -253,6 +253,18 @@ GameView * GameController::GetView()
 	return gameView;
 }
 
+sign * GameController::GetSignAt(int x, int y){
+	Simulation * sim = gameModel->GetSimulation();
+	for (std::vector<sign>::iterator iter = sim->signs.begin(), end = sim->signs.end(); iter != end; ++iter)
+	{
+		int signx, signy, signw, signh;
+		(*iter).pos((*iter).getText(sim), signx, signy, signw, signh);
+		if (x>=signx && x<=signx+signw && y>=signy && y<=signy+signh)
+			return &(*iter);
+	}
+	return NULL;
+}
+
 void GameController::PlaceSave(ui::Point position)
 {
 	if(gameModel->GetPlaceSave())
@@ -550,7 +562,18 @@ bool GameController::BrushChanged(int brushType, int rx, int ry)
 
 bool GameController::MouseDown(int x, int y, unsigned button)
 {
-	return commandInterface->OnMouseDown(x, y, button);
+	bool ret = commandInterface->OnMouseDown(x, y, button);
+	ui::Point point = PointTranslate(ui::Point(x, y));
+	x = point.X;
+	y = point.Y;
+	if(ret && y<YRES && x<XRES)
+		if (gameModel->GetActiveTool(0)->GetIdentifier() != "DEFAULT_UI_SIGN" || button != BUTTON_LEFT) //If it's not a sign tool or you are right/middle clicking
+		{
+			sign * foundSign = GetSignAt(x, y);
+			if(foundSign && splitsign(foundSign->text.c_str()))
+				return false;
+		}
+	return ret;
 }
 
 bool GameController::MouseUp(int x, int y, unsigned button)
@@ -563,17 +586,15 @@ bool GameController::MouseUp(int x, int y, unsigned button)
 	{
 		if (gameModel->GetActiveTool(0)->GetIdentifier() != "DEFAULT_UI_SIGN" || button != BUTTON_LEFT) //If it's not a sign tool or you are right/middle clicking
 		{
-			Simulation * sim = gameModel->GetSimulation();
-			for (std::vector<sign>::iterator iter = sim->signs.begin(), end = sim->signs.end(); iter != end; ++iter)
-			{
-				int signx, signy, signw, signh;
-				(*iter).pos((*iter).getText(sim), signx, signy, signw, signh);
-				if (x>=signx && x<=signx+signw && y>=signy && y<=signy+signh)
+			sign * foundSign = GetSignAt(x, y);
+			if(foundSign) {
+				const char* str=foundSign->text.c_str();
+				char type;
+				int pos=splitsign(str, &type);
+				if (pos)
 				{
-					const char* str=(*iter).text.c_str();
-					int pos=splitsign(str);
-					if (pos)
-					{
+					ret = false;
+					if(type == 'c' || type == 't') {
 						char buff[256];
 						strcpy(buff, str+3);
 						buff[pos]=0;
@@ -589,7 +610,9 @@ bool GameController::MouseUp(int x, int y, unsigned button)
 								OpenURI(url);
 							}
 						}
-						break;
+					} else if(type == 'b') {
+						Simulation * sim = gameModel->GetSimulation();
+						sim->create_part(-1, foundSign->x, foundSign->y, PT_SPRK);
 					}
 				}
 			}

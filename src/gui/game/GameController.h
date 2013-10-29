@@ -56,6 +56,7 @@ public:
 	GameController();
 	~GameController();
 	GameView * GetView();
+	sign * GetSignAt(int x, int y);
 
 	bool BrushChanged(int brushType, int rx, int ry);
 	bool MouseMove(int x, int y, int dx, int dy);
