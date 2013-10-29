@@ -255,7 +255,7 @@ GameView * GameController::GetView()
 
 sign * GameController::GetSignAt(int x, int y){
 	Simulation * sim = gameModel->GetSimulation();
-	for (std::vector<sign>::iterator iter = sim->signs.begin(), end = sim->signs.end(); iter != end; ++iter)
+	for (std::vector<sign>::reverse_iterator iter = sim->signs.rbegin(), end = sim->signs.rend(); iter != end; ++iter)
 	{
 		int signx, signy, signw, signh;
 		(*iter).pos((*iter).getText(sim), signx, signy, signw, signh);
