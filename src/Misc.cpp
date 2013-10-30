@@ -7,12 +7,14 @@
 #include "Config.h"
 #include "Misc.h"
 #include "icondoc.h"
-#if defined(WIN)
+#ifdef WIN
 #include <shlobj.h>
 #include <shlwapi.h>
 #include <windows.h>
 #else
 #include <unistd.h>
+#include <time.h>
+#include <sys/time.h>
 #endif
 #ifdef MACOSX
 #include <mach-o/dyld.h>
@@ -653,6 +655,18 @@ int splitsign(const char* str, char * type)
 		}
 	}
 	return 0;
+}
+
+void* millisleep(long int t)
+{
+#ifdef WIN
+	Sleep(t);
+#else
+	struct timespec s;
+	s.tv_sec = t/1000;
+	s.tv_nsec = (t%1000)*10000000;
+	nanosleep(&s, NULL);
+#endif
 }
 
 vector2d v2d_zero = {0,0};
