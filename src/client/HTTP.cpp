@@ -52,6 +52,7 @@
 #include "Misc.h"
 #include "HTTP.h"
 #include "MD5.h"
+#include "Misc.h"
 
 #ifdef WIN
 #define PERROR SOCKET_ERROR
@@ -599,7 +600,8 @@ char *http_async_req_stop(void *ctx, int *ret, int *len)
 	char *rxd;
 
 	if (cx->state != HTS_DONE)
-		while (!http_async_req_status(ctx)) ;
+		while (!http_async_req_status(ctx))
+			millisleep(1);
 
 	if (cx->host)
 	{
