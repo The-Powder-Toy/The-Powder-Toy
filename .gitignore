@@ -9,6 +9,7 @@
 *~
 *.pref
 *.lua
+*.sh
 stdout.txt
 stderr.txt
 build*/*
