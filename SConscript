@@ -253,7 +253,7 @@ if GetOption("toolprefix"):
 # make sure the compiler can find the source data and generated files. enable warnings, set C++ flavor, and keep inline functions
 
 env.Append(CPPPATH=['src/', 'data/', 'generated/'])
-env.Append(CCFLAGS=['-w', '-std=c++98', '-fkeep-inline-functions'])
+env.Append(CXXFLAGS=['-std=c++98'])
 env.Append(LIBS=['pthread', 'm'])
 env.Append(CPPDEFINES=["_GNU_SOURCE", "USE_STDINT", "_POSIX_C_SOURCE=200112L"])
 

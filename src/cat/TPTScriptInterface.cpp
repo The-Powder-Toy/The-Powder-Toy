@@ -154,7 +154,7 @@ int TPTScriptInterface::parseNumber(char * stringData)
 AnyType TPTScriptInterface::eval(std::deque<std::string> * words)
 {
 	if(words->size() < 1)
-		return AnyType(TypeNull, NULL);
+		return AnyType(TypeNull, ValueValue());
 	std::string word = words->front(); words->pop_front();
 	char * rawWord = (char *)word.c_str();
 	ValueType wordType = testType(word);

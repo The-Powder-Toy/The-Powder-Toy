@@ -1,7 +1,7 @@
 #include <cmath>
 #include "PreviewModel.h"
 #include "client/Client.h"
-#include "client/GameSave.h";
+#include "client/GameSave.h"
 #include "PreviewModelException.h"
 
 PreviewModel::PreviewModel():

@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include "TPTSTypes.h"
 
-AnyType::AnyType(ValueType type_, void * value_):
+AnyType::AnyType(ValueType type_, ValueValue value_):
 	type(type_),
 	value(value_)
 {
@@ -19,13 +19,9 @@ AnyType::AnyType(const AnyType & v):
 	value(v.value)
 {
 	if(type == TypeString)
-	{
-		value = new std::string(*((std::string*)value));
-	}
+		value.str = new std::string(*(value.str));
 	else if(type == TypePoint)
-	{
-		value = new ui::Point(*((ui::Point*)value));
-	}
+		value.pt = new ui::Point(*(value.pt));
 }
 
 AnyType::operator NumberType()
@@ -33,7 +29,7 @@ AnyType::operator NumberType()
 	if(type != TypeNumber)
 		throw InvalidConversionException(type, TypeNumber);
 	else
-		return NumberType((intptr_t)value);
+		return NumberType(value.num);
 }
 
 AnyType::operator StringType()
@@ -41,16 +37,16 @@ AnyType::operator StringType()
 	if(type == TypeNumber)
 	{
 		std::stringstream numberStream;
-		numberStream << ((NumberType*)this)->Value();
+		numberStream << ((NumberType *)this)->Value();
 		return StringType(numberStream.str());
 	}
-	else if(type == TypeString && value)
+	else if(type == TypeString && value.str)
 	{
-		return StringType(*((std::string*)value));
+		return StringType(*(value.str));
 	}
-	else if (type == TypePoint && value)
+	else if (type == TypePoint && value.pt)
 	{
-		ui::Point thisPoint = *((ui::Point*)value);
+		ui::Point thisPoint = *(value.pt);
 		std::stringstream pointStream;
 		pointStream << thisPoint.X << "," << thisPoint.Y;
 		return StringType(pointStream.str());
@@ -64,11 +60,11 @@ AnyType::operator PointType()
 {
 	if(type == TypePoint)
 	{
-		return PointType(*((ui::Point*)value));
+		return PointType(*(value.pt));
 	}
 	else if(type == TypeString)
 	{
-		std::stringstream pointStream(*((std::string*)value));
+		std::stringstream pointStream(*(value.str));
 		int x, y;
 		char comma;
 		pointStream >> x >> comma >> y;
@@ -82,35 +78,49 @@ AnyType::operator PointType()
 
 AnyType::~AnyType()
 {
-	if(type == TypeString || type == TypePoint)
-		delete value;
+	if(type == TypeString)
+		delete value.str;
+	else if(type == TypePoint)
+		delete value.pt;
 }
 
 //Number Type
 
-NumberType::NumberType(int number):	AnyType(TypeNumber, (void*)number) { }
+NumberType::NumberType(int number): AnyType(TypeNumber, ValueValue())
+{
+	value.num = number;
+}
 
 int NumberType::Value()
 {
-	return (intptr_t)value;
+	return value.num;
 }
 
 //String type
 
-StringType::StringType(std::string string):	AnyType(TypeString, new std::string(string)) { }
+StringType::StringType(std::string string):	AnyType(TypeString, ValueValue())
+{
+	value.str = new std::string(string);
+}
 
 std::string StringType::Value()
 {
-	return std::string(*((std::string*)value));
+	return *value.str;
 }
 
 //Point type
 
-PointType::PointType(ui::Point point): AnyType(TypePoint, new ui::Point(point)) { }
+PointType::PointType(ui::Point point): AnyType(TypePoint, ValueValue())
+{
+	value.pt = new ui::Point(point);
+}
 
-PointType::PointType(int pointX, int pointY): AnyType(TypePoint, new ui::Point(pointX, pointY)) { }
+PointType::PointType(int pointX, int pointY): AnyType(TypePoint, ValueValue())
+{
+	value.pt = new ui::Point(pointX, pointY);
+}
 
 ui::Point PointType::Value()
 {
-	return ui::Point(*((ui::Point*)value));
+	return *value.pt;
 }
