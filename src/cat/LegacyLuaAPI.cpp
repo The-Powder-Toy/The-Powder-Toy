@@ -1917,7 +1917,8 @@ int luatpt_setfpscap(lua_State* l)
 }
 int luatpt_getscript(lua_State* l)
 {
-	char *filedata = NULL, *fileuri = NULL, *filename = NULL, *lastError = NULL, *luacommand = NULL;
+	char *filedata = NULL, *fileuri = NULL, *filename = NULL, *luacommand = NULL;
+	const char *lastError = NULL;
 	std::string fileauthor = "", fileid = "";
 	int len, ret,run_script;
 	FILE * outputfile;
@@ -1927,7 +1928,7 @@ int luatpt_getscript(lua_State* l)
 	run_script = luaL_optint(l, 3, 0);
 	if(!fileauthor.length() || !fileid.length())
 	{
-		lastError = mystrdup("Script Author or ID not given");
+		lastError = "Script Author or ID not given";
 		goto fin;
 	}
 	if(!ConfirmPrompt::Blocking("Do you want to install script?", fileid, "Install"))
@@ -1941,12 +1942,12 @@ int luatpt_getscript(lua_State* l)
 
 	if(len <= 0 || !filedata)
 	{
-		strcpy(lastError, "Server did not return data.");
+		lastError = "Server did not return data.";
 		goto fin;
 	}
 	if(ret != 200)
 	{
-		lastError = mystrdup(http_ret_text(ret));
+		lastError = http_ret_text(ret);
 		goto fin;
 	}
 
@@ -1976,7 +1977,7 @@ int luatpt_getscript(lua_State* l)
 
 	if(!outputfile)
 	{
-		lastError = mystrdup("Unable to write to file");
+		lastError = "Unable to write to file";
 		goto fin;
 	}
 
@@ -2001,7 +2002,6 @@ fin:
 	if(lastError)
 	{
 		return luaL_error(l, lastError);
-		free(lastError);
 	}
 	return 0;
 }
