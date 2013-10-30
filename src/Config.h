@@ -165,7 +165,7 @@ extern unsigned char ZSIZE;
 #define GLASS_IOR		1.9
 #define GLASS_DISP		0.07
 
-#ifdef WIN
+#if defined(WIN) && !defined(strcasecmp)
 #define strcasecmp stricmp
 #endif
 #if defined(_MSC_VER)

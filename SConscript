@@ -78,6 +78,7 @@ AddOption('--x86',dest="x86",action='store_true',default=True,help="Target Intel
 AddOption('--nofft',dest="nofft", action='store_true',default=False,help="Do not use fftw3f for gravity.")
 AddOption('--nolua',dest="nolua", action='store_true',default=False,help="Disable all lua scripting features.")
 
+AddOption('--warnings-as-errors', dest="warnings_as_errors", action="store_true", default=False, help="Treat all warnings as errors")
 AddOption('--debugging', dest="debug", action="store_true", default=False, help="Enable debug options")
 AddOption('--beta',dest="beta",action='store_true',default=False,help="Beta build.")
 AddOption('--save-version',dest="save-version",default=False,help="Save version.")
@@ -257,6 +258,12 @@ env.Append(CXXFLAGS=['-std=c++98'])
 env.Append(LIBS=['pthread', 'm'])
 env.Append(CPPDEFINES=["_GNU_SOURCE", "USE_STDINT", "_POSIX_C_SOURCE=200112L"])
 
+# set the warnings we want, treat all warnings as errors, and ignore all "offsetof" warnings
+
+env.Append(CCFLAGS=['-Wno-invalid-offsetof']);
+if GetOption('warnings_as_errors'):
+	env.Append(CCFLAGS=['-Werror']);
+
 # check all enabled libs, and add a define if they are enabled.
 
 if not GetOption('nofft'):
@@ -287,7 +294,7 @@ if(GetOption('release')):
 	if GetOption('macosx'):
 		env.Append(CCFLAGS=['-O3', '-ftree-vectorize', '-funsafe-math-optimizations', '-ffast-math', '-fomit-frame-pointer'])
 	else:
-		env.Append(CCFLAGS=['-O3', '-ftree-vectorize', '-funsafe-math-optimizations', '-ffast-math', '-fomit-frame-pointer', '-funsafe-loop-optimizations', '-Wno-invalid-offsetof'])
+		env.Append(CCFLAGS=['-O3', '-ftree-vectorize', '-funsafe-math-optimizations', '-ffast-math', '-fomit-frame-pointer', '-funsafe-loop-optimizations'])
 
 # rpi specific enviroment settings
 # ++++++++++++++++++++++++++++++++
