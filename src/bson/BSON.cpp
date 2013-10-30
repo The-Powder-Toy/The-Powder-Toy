@@ -48,7 +48,7 @@ static int ( *oid_inc_func )( void )  = NULL;
    ------------------------------ */
 
 bson *bson_empty( bson *obj ) {
-    static char *data = "\005\0\0\0\0";
+    static char data[] = "\005\0\0\0\0";
     bson_init_data( obj, data );
     obj->finished = 1;
     obj->err = 0;

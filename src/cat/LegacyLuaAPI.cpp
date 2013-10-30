@@ -650,7 +650,7 @@ int luacon_step(int mx, int my, std::string selectl, std::string selectr, std::s
 }
 
 
-int luacon_eval(char *command){
+int luacon_eval(const char *command){
 	ui::Engine::Ref().LastTick(clock());
 	return luaL_dostring (luacon_ci->l, command);
 }
@@ -1917,7 +1917,8 @@ int luatpt_setfpscap(lua_State* l)
 }
 int luatpt_getscript(lua_State* l)
 {
-	char *filedata = NULL, *fileuri = NULL, *filename = NULL, *lastError = NULL, *luacommand = NULL;
+	char *filedata = NULL, *fileuri = NULL, *filename = NULL, *luacommand = NULL;
+	const char *lastError = NULL;
 	std::string fileauthor = "", fileid = "";
 	int len, ret,run_script;
 	FILE * outputfile;
@@ -1998,7 +1999,10 @@ fin:
 	if(luacommand) delete[] luacommand;
 	luacommand = NULL;
 
-	if(lastError) return luaL_error(l, lastError);
+	if(lastError)
+	{
+		return luaL_error(l, lastError);
+	}
 	return 0;
 }
 

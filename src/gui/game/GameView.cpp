@@ -15,7 +15,7 @@
 #include "simulation/SimulationData.h"
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "Format.h"
-#include "QuickOption.h"
+#include "QuickOptions.h"
 #include "IntroText.h"
 #include "DecorationTool.h"
 

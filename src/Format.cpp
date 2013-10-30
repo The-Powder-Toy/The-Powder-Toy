@@ -73,7 +73,7 @@ std::string format::UnixtimeToDateMini(time_t unixtime)
 
 std::string format::CleanString(std::string dirtyString, int maxStringLength)
 {
-	return CleanString(dirtyString, std::string::npos, maxStringLength);
+	return CleanString(dirtyString, (int)std::string::npos, maxStringLength);
 }
 
 std::string format::CleanString(std::string dirtyString, int maxVisualSize, int maxStringLength)
@@ -97,7 +97,7 @@ std::string format::CleanString(std::string dirtyString, int maxVisualSize, int 
 
 std::string format::CleanString(char * dirtyData, int maxStringLength)
 {
-	return CleanString(dirtyData, std::string::npos, maxStringLength);
+	return CleanString(dirtyData, (int)std::string::npos, maxStringLength);
 }
 
 std::string format::CleanString(char * dirtyData, int maxVisualSize, int maxStringLength)

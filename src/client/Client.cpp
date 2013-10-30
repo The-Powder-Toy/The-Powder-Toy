@@ -333,7 +333,7 @@ bool Client::DoInstallation()
 
 	char *currentfilename = exe_name();
 	FILE *f;
-	char *mimedata =
+	const char *mimedata =
 "<?xml version=\"1.0\"?>\n"
 "	<mime-info xmlns='http://www.freedesktop.org/standards/shared-mime-info'>\n"
 "	<mime-type type=\"application/vnd.powdertoy.save\">\n"
@@ -348,7 +348,7 @@ bool Client::DoInstallation()
 	fwrite(mimedata, 1, strlen(mimedata), f);
 	fclose(f);
 
-	char *protocolfiledata_tmp =
+	const char *protocolfiledata_tmp =
 "[Desktop Entry]\n"
 "Type=Application\n"
 "Name=Powder Toy\n"
@@ -367,7 +367,7 @@ bool Client::DoInstallation()
 	fclose(f);
 	system("xdg-desktop-menu install powdertoy-tpt-ptsave.desktop");
 
-	char *desktopfiledata_tmp =
+	const char *desktopfiledata_tmp =
 "[Desktop Entry]\n"
 "Type=Application\n"
 "Name=Powder Toy\n"
@@ -893,8 +893,8 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 		char *session = new char[authUser.SessionID.length() + 1];
 		std::strcpy (session, authUser.SessionID.c_str());
 
-		char * postNames[] = { "Name", "Description", "Data:save.bin", "Publish", NULL };
-		char * postDatas[] = { saveName, saveDescription, gameData, (char *)(save.GetPublished()?"Public":"Private") };
+		const char *const postNames[] = { "Name", "Description", "Data:save.bin", "Publish", NULL };
+		const char *const postDatas[] = { saveName, saveDescription, gameData, (char *)(save.GetPublished()?"Public":"Private") };
 		int postLengths[] = { save.GetName().length(), save.GetDescription().length(), gameDataLength, save.GetPublished()?6:7 };
 		//std::cout << postNames[0] << " " << postDatas[0] << " " << postLengths[0] << std::endl;
 		data = http_multipart_post("http://" SERVER "/Save.api", postNames, postDatas, postLengths, userid, NULL, session, &dataStatus, &dataLength);
@@ -1120,8 +1120,8 @@ RequestStatus Client::ExecVote(int saveID, int direction)
 		char *session = new char[authUser.SessionID.length() + 1];
 		std::strcpy (session, authUser.SessionID.c_str());
 
-		char * postNames[] = { "ID", "Action", NULL };
-		char * postDatas[] = { id, directionText };
+		const char *const postNames[] = { "ID", "Action", NULL };
+		const char *const postDatas[] = { id, directionText };
 		int postLengths[] = { saveIDText.length(), strlen(directionText) };
 		//std::cout << postNames[0] << " " << postDatas[0] << " " << postLengths[0] << std::endl;
 		data = http_multipart_post("http://" SERVER "/Vote.api", postNames, postDatas, postLengths, userid, NULL, session, &dataStatus, &dataLength);
@@ -1221,9 +1221,7 @@ RequestBroker::Request * Client::SaveUserInfoAsync(UserInfo info)
 				json::Reader::Read(objDocument, dataStream);
 				json::Number tempStatus = objDocument["Status"];
 
-				bool returnValue = tempStatus.Value() == 1;
-
-				return (void*)(returnValue ? 1 : 0);
+				return (void*)(tempStatus.Value() == 1);
 			}
 			catch (json::Exception &e)
 			{
@@ -1303,8 +1301,8 @@ LoginStatus Client::Login(std::string username, std::string password, User & use
 
 	char * data;
 	int dataStatus, dataLength;
-	char * postNames[] = { "Username", "Hash", NULL };
-	char * postDatas[] = { (char*)username.c_str(), totalHash };
+	const char *const postNames[] = { "Username", "Hash", NULL };
+	const char *const postDatas[] = { (char*)username.c_str(), totalHash };
 	int postLengths[] = { username.length(), 32 };
 	data = http_multipart_post("http://" SERVER "/Login.json", postNames, postDatas, postLengths, NULL, NULL, NULL, &dataStatus, &dataLength);
 	if(dataStatus == 200 && data)
@@ -1432,8 +1430,8 @@ RequestStatus Client::AddComment(int saveID, std::string comment)
 		std::stringstream userIDStream;
 		userIDStream << authUser.ID;
 		
-		char * postNames[] = { "Comment", NULL };
-		char * postDatas[] = { (char*)(comment.c_str()) };
+		const char *const postNames[] = { "Comment", NULL };
+		const char *const postDatas[] = { (char*)(comment.c_str()) };
 		int postLengths[] = { comment.length() };
 		data = http_multipart_post((char *)urlStream.str().c_str(), postNames, postDatas, postLengths, (char *)(userIDStream.str().c_str()), NULL, (char *)(authUser.SessionID.c_str()), &dataStatus, &dataLength);
 	}
@@ -1548,8 +1546,8 @@ RequestStatus Client::ReportSave(int saveID, std::string message)
 		std::stringstream userIDStream;
 		userIDStream << authUser.ID;
 
-		char * postNames[] = { "Reason", NULL };
-		char * postDatas[] = { (char*)(message.c_str()) };
+		const char *const postNames[] = { "Reason", NULL };
+		const char *const postDatas[] = { (char*)(message.c_str()) };
 		int postLengths[] = { message.length() };
 		data = http_multipart_post((char *)urlStream.str().c_str(), postNames, postDatas, postLengths, (char *)(userIDStream.str().c_str()), NULL, (char *)(authUser.SessionID.c_str()), &dataStatus, &dataLength);
 	}
