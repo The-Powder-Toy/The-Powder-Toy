@@ -224,6 +224,7 @@ void GameSave::Collapse()
 			delete[] fanVelYPtr;
 			fanVelYPtr = NULL;
 		}
+		signs.clear();
 	}
 }
 
