@@ -33,7 +33,7 @@ void ContextMenu::Show(ui::Point position)
 	Size.X = 100;
 	Size.Y = items.size()*16-1;
 
-	if(position.X+Size.X > XRES+BARSIZE)
+	if(position.X+Size.X > WINDOWW)
 		position.X -= std::min(position.X, Size.X);
 	if(position.Y+Size.Y > YRES+MENUSIZE)
 		position.Y -= std::min(position.Y, Size.Y);

@@ -24,7 +24,7 @@ JNIEXPORT void JNICALL Java_PowderToy_initialise(JNIEnv * env, jobject canvas)
 	ui::Engine::Ref().g = new Graphics();
 	
 	engine = &ui::Engine::Ref();
-	engine->Begin(XRES+BARSIZE, YRES+MENUSIZE);
+	engine->Begin(WINDOWW, WINDOWH);
 	
 	gameController = new GameController();
 	engine->ShowWindow(gameController->GetView());
@@ -51,12 +51,12 @@ JNIEXPORT void JNICALL Java_PowderToy_finish(JNIEnv * env, jobject canvas)
 
 JNIEXPORT jint JNICALL Java_PowderToy_getWidth(JNIEnv * env, jobject canvas)
 {
-	return XRES+BARSIZE;
+	return WINDOWW;
 }
 
 JNIEXPORT jint JNICALL Java_PowderToy_getHeight(JNIEnv * env, jobject canvas)
 {
-	return YRES+MENUSIZE;
+	return WINDOWH;
 }
 
 JNIEXPORT void JNICALL Java_PowderToy_mousePressed(JNIEnv * env, jobject canvas, jint mouseX, jint mouseY, jint mouseButton)

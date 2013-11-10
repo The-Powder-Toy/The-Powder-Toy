@@ -870,7 +870,7 @@ int luatpt_drawtext(lua_State* l)
 	textgreen = luaL_optint(l, 5, 255);
 	textblue = luaL_optint(l, 6, 255);
 	textalpha = luaL_optint(l, 7, 255);
-	if (textx<0 || texty<0 || textx>=XRES+BARSIZE || texty>=YRES+MENUSIZE)
+	if (textx<0 || texty<0 || textx>=WINDOWW || texty>=WINDOWH)
 		return luaL_error(l, "Screen coordinates out of range (%d,%d)", textx, texty);
 	if (textred<0) textred = 0;
 	if (textred>255) textred = 255;
@@ -1430,7 +1430,7 @@ int luatpt_drawpixel(lua_State* l)
 	b = luaL_optint(l, 5, 255);
 	a = luaL_optint(l, 6, 255);
 
-	if (x<0 || y<0 || x>=XRES+BARSIZE || y>=YRES+MENUSIZE)
+	if (x<0 || y<0 || x>=WINDOWW || y>=WINDOWH)
 		return luaL_error(l, "Screen coordinates out of range (%d,%d)", x, y);
 	if (r<0) r = 0;
 	if (r>255) r = 255;
@@ -1456,12 +1456,12 @@ int luatpt_drawrect(lua_State* l)
 	b = luaL_optint(l, 7, 255);
 	a = luaL_optint(l, 8, 255);
 
-	if (x<0 || y<0 || x>=XRES+BARSIZE || y>=YRES+MENUSIZE)
+	if (x<0 || y<0 || x>=WINDOWW || y>=WINDOWH)
 		return luaL_error(l, "Screen coordinates out of range (%d,%d)", x, y);
-	if(x+w > XRES+BARSIZE)
-		w = XRES+BARSIZE-x;
-	if(y+h > YRES+MENUSIZE)
-		h = YRES+MENUSIZE-y;
+	if(x+w > WINDOWW)
+		w = WINDOWW-x;
+	if(y+h > WINDOWH)
+		h = WINDOWH-y;
 	if (r<0) r = 0;
 	if (r>255) r = 255;
 	if (g<0) g = 0;
@@ -1486,12 +1486,12 @@ int luatpt_fillrect(lua_State* l)
 	b = luaL_optint(l, 7, 255);
 	a = luaL_optint(l, 8, 255);
 
-	if (x<0 || y<0 || x>=XRES+BARSIZE || y>=YRES+MENUSIZE)
+	if (x<0 || y<0 || x>=WINDOWW || y>=WINDOWH)
 		return luaL_error(l, "Screen coordinates out of range (%d,%d)", x, y);
-	if(x+w > XRES+BARSIZE)
-		w = XRES+BARSIZE-x;
-	if(y+h > YRES+MENUSIZE)
-		h = YRES+MENUSIZE-y;
+	if(x+w > WINDOWW)
+		w = WINDOWW-x;
+	if(y+h > WINDOWH)
+		h = WINDOWH-y;
 	if (r<0) r = 0;
 	if (r>255) r = 255;
 	if (g<0) g = 0;

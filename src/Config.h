@@ -125,6 +125,9 @@
 #define XCNTR   306
 #define YCNTR   192
 
+#define WINDOWW (XRES+BARSIZE)
+#define WINDOWH (YRES+MENUSIZE)
+
 #define MAX_DISTANCE sqrt(pow((float)XRES, 2)+pow((float)YRES, 2))
 
 #define GRAV_DIFF

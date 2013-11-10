@@ -143,7 +143,7 @@ public:
 
 
 GameView::GameView():
-	ui::Window(ui::Point(0, 0), ui::Point(XRES+BARSIZE, YRES+MENUSIZE)),
+	ui::Window(ui::Point(0, 0), ui::Point(WINDOWW, WINDOWH)),
 	pointQueue(queue<ui::Point>()),
 	isMouseDown(false),
 	ren(NULL),
@@ -415,7 +415,7 @@ GameView::GameView():
 			v->c->OpenElementSearch();
 		}
 	};
-	ui::Button * tempButton = new ui::Button(ui::Point(XRES+BARSIZE-16, YRES+MENUSIZE-32), ui::Point(15, 15), "\xE5", "Search for elements");
+	ui::Button * tempButton = new ui::Button(ui::Point(WINDOWW-16, WINDOWH-32), ui::Point(15, 15), "\xE5", "Search for elements");
 	tempButton->Appearance.Margin = ui::Border(0, 2, 3, 2);
 	tempButton->SetActionCallback(new ElementSearchAction(this));
 	AddComponent(tempButton);
@@ -539,7 +539,7 @@ void GameView::NotifyQuickOptionsChanged(GameModel * sender)
 	for(vector<QuickOption*>::iterator iter = optionList.begin(), end = optionList.end(); iter != end; ++iter)
 	{
 		QuickOption * option = *iter;
-		ui::Button * tempButton = new ui::Button(ui::Point(XRES+BARSIZE-16, currentY), ui::Point(15, 15), option->GetIcon(), option->GetDescription());
+		ui::Button * tempButton = new ui::Button(ui::Point(WINDOWW-16, currentY), ui::Point(15, 15), option->GetIcon(), option->GetDescription());
 		//tempButton->Appearance.Margin = ui::Border(0, 2, 3, 2);
 		tempButton->SetTogglable(true);
 		tempButton->SetActionCallback(new OptionAction(option));
@@ -553,7 +553,7 @@ void GameView::NotifyQuickOptionsChanged(GameModel * sender)
 
 void GameView::NotifyMenuListChanged(GameModel * sender)
 {
-	int currentY = YRES+MENUSIZE-48;//-(sender->GetMenuList().size()*16);
+	int currentY = WINDOWH-48;//-(sender->GetMenuList().size()*16);
 	for(int i = 0; i < menuButtons.size(); i++)
 	{
 		RemoveComponent(menuButtons[i]);
@@ -571,7 +571,7 @@ void GameView::NotifyMenuListChanged(GameModel * sender)
 	{
 		std::string tempString = "";
 		tempString += menuList[i]->GetIcon();
-		ui::Button * tempButton = new ui::Button(ui::Point(XRES+BARSIZE-16, currentY), ui::Point(15, 15), tempString, menuList[i]->GetDescription());
+		ui::Button * tempButton = new ui::Button(ui::Point(WINDOWW-16, currentY), ui::Point(15, 15), tempString, menuList[i]->GetDescription());
 		tempButton->Appearance.Margin = ui::Border(0, 2, 3, 2);
 		tempButton->SetTogglable(true);
 		tempButton->SetActionCallback(new MenuAction(this, i));
@@ -666,7 +666,7 @@ void GameView::NotifyLastToolChanged(GameModel * sender)
 void GameView::NotifyToolListChanged(GameModel * sender)
 {
 	lastOffset = 0;
-	int currentX = XRES+BARSIZE-56;
+	int currentX = WINDOWW-56;
 	for(int i = 0; i < menuButtons.size(); i++)
 	{
 		if(((MenuAction*)menuButtons[i]->GetActionCallback())->menuID==sender->GetActiveMenu())
@@ -1086,7 +1086,7 @@ void GameView::OnMouseUp(int x, int y, unsigned button)
 			{
 				if(selectMode==PlaceSave)
 				{
-					if(placeSaveThumb && y <= YRES+MENUSIZE-BARSIZE)
+					if(placeSaveThumb && y <= WINDOWH-BARSIZE)
 					{
 						int thumbX = selectPoint2.X - (placeSaveThumb->Width/2);
 						int thumbY = selectPoint2.Y - (placeSaveThumb->Height/2);
@@ -2245,7 +2245,7 @@ void GameView::OnDraw()
 	//Introduction text
 	if(introText)
 	{
-		g->fillrect(0, 0, XRES+BARSIZE, YRES+MENUSIZE, 0, 0, 0, introText>51?102:introText*2);
+		g->fillrect(0, 0, WINDOWW, WINDOWH, 0, 0, 0, introText>51?102:introText*2);
 		g->drawtext(16, 20, (char*)introTextMessage.c_str(), 255, 255, 255, introText>51?255:introText*5);
 	}
 }
