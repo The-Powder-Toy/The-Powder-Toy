@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
 	ui::Engine::Ref().g = new Graphics();
 	
 	engine = &ui::Engine::Ref();
-	engine->Begin(XRES+BARSIZE, YRES+MENUSIZE);
+	engine->Begin(WINDOWW, WINDOWH);
 
 	GameSave * gameSave = new GameSave(inputFile);
 

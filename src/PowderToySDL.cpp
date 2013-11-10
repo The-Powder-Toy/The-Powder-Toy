@@ -200,7 +200,7 @@ void blit(pixel * vid)
 	if(sdl_scrn)
 	{
 		pixel * src = vid;
-		int j, x = 0, y = 0, w = XRES+BARSIZE, h = YRES+MENUSIZE, pitch = XRES+BARSIZE;
+		int j, x = 0, y = 0, w = WINDOWW, h = WINDOWH, pitch = WINDOWW;
 		pixel *dst;
 		if (SDL_MUSTLOCK(sdl_scrn))
 			if (SDL_LockSurface(sdl_scrn)<0)
@@ -244,7 +244,7 @@ void blit2(pixel * vid, int currentScale)
 	if(sdl_scrn)
 	{
 		pixel * src = vid;
-		int j, x = 0, y = 0, w = XRES+BARSIZE, h = YRES+MENUSIZE, pitch = XRES+BARSIZE;
+		int j, x = 0, y = 0, w = WINDOWW, h = WINDOWH, pitch = WINDOWW;
 		pixel *dst;
 		int i,k;
 		if (SDL_MUSTLOCK(sdl_scrn))
@@ -354,9 +354,9 @@ SDL_Surface * SDLSetScreen(int newScale, bool newFullscreen)
 	fullscreen = newFullscreen;
 	SDL_Surface * surface;
 #ifndef OGLI
-	surface = SDL_SetVideoMode((XRES + BARSIZE) * newScale, (YRES + MENUSIZE) * newScale, 32, SDL_SWSURFACE | (newFullscreen?SDL_FULLSCREEN:0));
+	surface = SDL_SetVideoMode(WINDOWW * newScale, WINDOWH * newScale, 32, SDL_SWSURFACE | (newFullscreen?SDL_FULLSCREEN:0));
 #else
-	surface = SDL_SetVideoMode((XRES + BARSIZE) * newScale, (YRES + MENUSIZE) * newScale, 32, SDL_OPENGL | SDL_RESIZABLE | (newFullscreen?SDL_FULLSCREEN:0));
+	surface = SDL_SetVideoMode(WINDOWW * newScale, WINDOWH * newScale, 32, SDL_OPENGL | SDL_RESIZABLE | (newFullscreen?SDL_FULLSCREEN:0));
 #endif
 	return surface;
 }
@@ -469,7 +469,7 @@ void EventProcess(SDL_Event event)
 #ifdef OGLI
 	case SDL_VIDEORESIZE:
 	{
-		float ratio = float(XRES+BARSIZE) / float(YRES+MENUSIZE);
+		float ratio = (float)WINDOWW / WINDOWH;
 		float width = event.resize.w;
 		float height = width/ratio;
 
@@ -481,9 +481,9 @@ void EventProcess(SDL_Event event)
 
 		currentWidth = width;
 		currentHeight = height;
-		inputScale = float(XRES+BARSIZE)/currentWidth;
+		inputScale = (float)WINDOWW/currentWidth;
 
-		glLineWidth(currentWidth/float(XRES+BARSIZE));
+		glLineWidth(currentWidth/(float)WINDOWW);
 		if(sdl_scrn == NULL)
 		{
 			std::cerr << "Oh bugger" << std::endl;
@@ -615,8 +615,8 @@ bool LoadWindowPosition(int scale)
 	SDL_VERSION(&sysInfo.version);
 	if (SDL_GetWMInfo(&sysInfo) > 0)
 	{
-		int windowW = (XRES + BARSIZE) * scale;
-		int windowH = (YRES + MENUSIZE) * scale;
+		int windowW = WINDOWW * scale;
+		int windowH = WINDOWH * scale;
 
 		int savedWindowX = Client::Ref().GetPrefInteger("WindowX", INT_MAX);
 		int savedWindowY = Client::Ref().GetPrefInteger("WindowY", INT_MAX);
@@ -748,8 +748,8 @@ void SigHandler(int signal)
 
 int main(int argc, char * argv[])
 {
-	currentWidth = XRES+BARSIZE; 
-	currentHeight = YRES+MENUSIZE;
+	currentWidth = WINDOWW; 
+	currentHeight = WINDOWH;
 
 
 	std::map<std::string, std::string> arguments = readArguments(argc, argv);
@@ -839,7 +839,7 @@ int main(int argc, char * argv[])
 
 	engine = &ui::Engine::Ref();
 	engine->SetMaxSize(desktopWidth, desktopHeight);
-	engine->Begin(XRES+BARSIZE, YRES+MENUSIZE);
+	engine->Begin(WINDOWW, WINDOWH);
 	engine->SetFastQuit(Client::Ref().GetPrefBool("FastQuit", true));
 
 #if !defined(DEBUG) && !defined(_DEBUG)

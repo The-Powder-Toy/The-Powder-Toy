@@ -15,12 +15,12 @@
 #include "LocalBrowserModelException.h"
 
 LocalBrowserView::LocalBrowserView():
-	ui::Window(ui::Point(0, 0), ui::Point(XRES+BARSIZE, YRES+MENUSIZE))
+	ui::Window(ui::Point(0, 0), ui::Point(WINDOWW, WINDOWH))
 {
-	nextButton = new ui::Button(ui::Point(XRES+BARSIZE-52, YRES+MENUSIZE-18), ui::Point(50, 16), "Next \x95");
-	previousButton = new ui::Button(ui::Point(1, YRES+MENUSIZE-18), ui::Point(50, 16), "\x96 Prev");
-	undeleteButton = new ui::Button(ui::Point(XRES+BARSIZE-122, YRES+MENUSIZE-18), ui::Point(60, 16), "Rescan");
-	infoLabel  = new ui::Label(ui::Point(51, YRES+MENUSIZE-18), ui::Point(XRES+BARSIZE-102, 16), "Loading...");
+	nextButton = new ui::Button(ui::Point(WINDOWW-52, WINDOWH-18), ui::Point(50, 16), "Next \x95");
+	previousButton = new ui::Button(ui::Point(1, WINDOWH-18), ui::Point(50, 16), "\x96 Prev");
+	undeleteButton = new ui::Button(ui::Point(WINDOWW-122, WINDOWH-18), ui::Point(60, 16), "Rescan");
+	infoLabel  = new ui::Label(ui::Point(51, WINDOWH-18), ui::Point(WINDOWW-102, 16), "Loading...");
 	AddComponent(infoLabel);
 	AddComponent(nextButton);
 	AddComponent(previousButton);
@@ -77,7 +77,7 @@ LocalBrowserView::LocalBrowserView():
 		}
 	};
 
-	removeSelected = new ui::Button(ui::Point((((XRES+BARSIZE)-100)/2), YRES+MENUSIZE-18), ui::Point(100, 16), "Delete");
+	removeSelected = new ui::Button(ui::Point(((WINDOWW-100)/2), WINDOWH-18), ui::Point(100, 16), "Delete");
 	removeSelected->Visible = false;
 	removeSelected->SetActionCallback(new RemoveSelectedAction(this));
 	AddComponent(removeSelected);

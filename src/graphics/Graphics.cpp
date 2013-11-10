@@ -1169,8 +1169,8 @@ VideoBuffer Graphics::DumpFrame()
 {
 #ifdef OGLI
 #else
-	VideoBuffer newBuffer(XRES+BARSIZE, YRES+MENUSIZE);
-	std::copy(vid, vid+((XRES+BARSIZE)*(YRES+MENUSIZE)), newBuffer.Buffer);
+	VideoBuffer newBuffer(WINDOWW, WINDOWH);
+	std::copy(vid, vid+(WINDOWW*WINDOWH), newBuffer.Buffer);
 	return newBuffer;
 #endif
 }
