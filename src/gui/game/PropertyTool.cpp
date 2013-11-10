@@ -4,6 +4,7 @@
 #include "simulation/Simulation.h"
 #include "Tool.h"
 #include "gui/interface/Window.h"
+#include "gui/interface/Checkbox.h"
 #include "gui/interface/Button.h"
 #include "gui/interface/Label.h"
 #include "gui/interface/Textbox.h"
@@ -15,6 +16,7 @@ class PropertyWindow: public ui::Window
 {
 public:
 	ui::DropDown * property;
+	ui::Checkbox * fill;
 	ui::Textbox * textField;
 	SignTool * tool;
 	Simulation * sim;
@@ -71,18 +73,35 @@ position(position_)
 		PropertyChanged(PropertyWindow * w): w(w) { }
 		virtual void OptionChanged(ui::DropDown * sender, std::pair<std::string, int> option)
 		{
+			Client::Ref().SetPref("Prop.Property", option.second);
 			w->FocusComponent(w->textField);
 		}
 	};
-	property = new ui::DropDown(ui::Point(8, 25), ui::Point(Size.X-16, 17));
+	property = new ui::DropDown(ui::Point(8, 25), ui::Point(Size.X-90, 17));
 	property->SetActionCallback(new PropertyChanged(this));
 	AddComponent(property);
 	for(int i = 0; i < properties.size(); i++)
 	{
 		property->AddOption(std::pair<std::string, int>(properties[i].Name, i));
 	}
-	property->SetOption(0);
-	
+	property->SetOption(Client::Ref().GetPrefInteger("Prop.Property", 0));
+
+	class FillChanged: public ui::CheckboxAction
+	{
+		PropertyWindow * w;
+	public:
+		FillChanged(PropertyWindow * w): w(w) { }
+		virtual void ActionCallback(ui::Checkbox * sender)
+		{
+			Client::Ref().SetPref("Prop.Fill", sender->GetChecked());
+			w->FocusComponent(w->textField);
+		}
+	};
+	fill = new ui::Checkbox(ui::Point(Size.X-80, 25), ui::Point(74, 17), "Floodfill", "");
+	fill->SetActionCallback(new FillChanged(this));
+	fill->SetChecked(Client::Ref().GetPrefBool("Prop.Fill", true));
+	AddComponent(fill);
+
 	textField = new ui::Textbox(ui::Point(8, 46), ui::Point(Size.X-16, 16), "", "[value]");
 	textField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	textField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
@@ -101,7 +120,8 @@ void PropertyWindow::SetProperty()
 		float tempFloat;
 		std::string value = textField->GetText();
 		try {
-			switch(properties[property->GetOption().second].Type)
+			StructProperty::PropertyType proptype = properties[property->GetOption().second].Type;
+			switch(proptype)
 			{
 				case StructProperty::Integer:
 				case StructProperty::ParticleType:
@@ -200,13 +220,37 @@ void PropertyWindow::SetProperty()
 					new ErrorMessage("Could not set property", "Invalid property");
 					return;
 			}
-			sim->flood_prop(
-							position.X,
-							position.Y,
-							properties[property->GetOption().second].Offset,
-							propValue,
-							properties[property->GetOption().second].Type
-							);
+			size_t propoffset = properties[property->GetOption().second].Offset;
+			if(fill->GetChecked())
+				sim->flood_prop(
+								position.X,
+								position.Y,
+								propoffset,
+								propValue,
+								proptype
+								);
+			else
+			{
+				int i = sim->pmap[position.Y][position.X];
+				if (!i)
+					i = sim->photons[position.Y][position.X];
+				if (i)
+					switch (proptype)
+					{
+						case StructProperty::Float:
+							*((float*)(((char*)&sim->parts[i>>8])+propoffset)) = *((float*)propValue);
+							break;
+						case StructProperty::ParticleType:
+						case StructProperty::Integer:
+							*((int*)(((char*)&sim->parts[i>>8])+propoffset)) = *((int*)propValue);
+							break;		
+						case StructProperty::UInteger:
+							*((unsigned int*)(((char*)&sim->parts[i>>8])+propoffset)) = *((unsigned int*)propValue);
+							break;
+						default:
+							break;
+					}
+			}
 		} catch (const std::exception& ex) {
 			new ErrorMessage("Could not set property", "Invalid value provided");
 		}
@@ -230,9 +274,15 @@ void PropertyWindow::OnDraw()
 void PropertyWindow::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
 	if (key == KEY_UP)
+	{
 		property->SetOption(property->GetOption().second-1);
+		Client::Ref().SetPref("Prop.Property", property->GetOption().second);
+	}
 	else if (key == KEY_DOWN)
+	{
 		property->SetOption(property->GetOption().second+1);
+		Client::Ref().SetPref("Prop.Property", property->GetOption().second);
+	}
 }
 
 void PropertyTool::Click(Simulation * sim, Brush * brush, ui::Point position)
