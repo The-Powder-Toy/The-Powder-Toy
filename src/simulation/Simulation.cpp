@@ -1897,7 +1897,7 @@ void Simulation::clear_sim(void)
 	fighcount = 0;
 	player.spwn = 0;
 	player2.spwn = 0;
-	//memset(pers_bg, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
+	//memset(pers_bg, 0, WINDOWW*YRES*PIXELSIZE);
 	//memset(fire_r, 0, sizeof(fire_r));
 	//memset(fire_g, 0, sizeof(fire_g));
 	//memset(fire_b, 0, sizeof(fire_b));

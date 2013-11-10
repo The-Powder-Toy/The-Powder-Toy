@@ -2333,8 +2333,8 @@ void LuaScriptInterface::initGraphicsAPI()
 	lua_getglobal(l, "graphics");
 	lua_setglobal(l, "gfx");
 
-	lua_pushinteger(l, XRES+BARSIZE);	lua_setfield(l, -2, "WIDTH");
-	lua_pushinteger(l, YRES+MENUSIZE);	lua_setfield(l, -2, "HEIGHT");
+	lua_pushinteger(l, WINDOWW);	lua_setfield(l, -2, "WIDTH");
+	lua_pushinteger(l, WINDOWH);	lua_setfield(l, -2, "HEIGHT");
 }
 
 int LuaScriptInterface::graphics_textSize(lua_State * l)

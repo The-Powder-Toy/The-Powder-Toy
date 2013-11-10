@@ -23,7 +23,7 @@ Graphics::Graphics():
 	
 	glGenTextures(1, &vidBuf);
 	glBindTexture(GL_TEXTURE_2D, vidBuf);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, XRES+BARSIZE, YRES+MENUSIZE, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, WINDOWW, WINDOWH, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
 	
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
@@ -61,13 +61,13 @@ void Graphics::Reset()
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	//glOrtho(0, (XRES+BARSIZE)*sdl_scale, 0, (YRES+MENUSIZE)*sdl_scale, -1, 1);
-	glOrtho(0, (XRES+BARSIZE)*sdl_scale, (YRES+MENUSIZE)*sdl_scale, 0, -1, 1);
+	//glOrtho(0, WINDOWW*sdl_scale, 0, WINDOWH*sdl_scale, -1, 1);
+	glOrtho(0, WINDOWW*sdl_scale, WINDOWH*sdl_scale, 0, -1, 1);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	//glRasterPos2i(0, (YRES+MENUSIZE));
+	//glRasterPos2i(0, WINDOWH);
 	glRasterPos2i(0, 0);
 	glPixelZoom(1, 1);
 }
@@ -83,8 +83,8 @@ void Graphics::Finalise()
     glFlush();
 }
 
-#define VIDXRES XRES+BARSIZE
-#define VIDYRES YRES+MENUSIZE
+#define VIDXRES WINDOWW
+#define VIDYRES WINDOWH
 #define PIXELMETHODS_CLASS Graphics
 #include "OpenGLDrawMethods.inl"
 #undef VIDYRES

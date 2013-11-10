@@ -77,7 +77,7 @@ public:
 };
 
 RenderView::RenderView():
-	ui::Window(ui::Point(0, 0), ui::Point(XRES, YRES+MENUSIZE)),
+	ui::Window(ui::Point(0, 0), ui::Point(XRES, WINDOWH)),
 	toolTip(""),
 	toolTipPresence(0),
 	isToolTipFadingIn(false),
@@ -353,7 +353,7 @@ void RenderView::NotifyColourChanged(RenderModel * sender)
 void RenderView::OnDraw()
 {
 	Graphics * g = ui::Engine::Ref().g;
-	g->clearrect(-1, -1, XRES+BARSIZE+1, YRES+MENUSIZE+1);
+	g->clearrect(-1, -1, WINDOWW+1, WINDOWH+1);
 	if(ren)
 	{
 		ren->clearScreen(1.0f);
@@ -361,11 +361,11 @@ void RenderView::OnDraw()
 		ren->RenderEnd();
 	}
 	g->draw_line(0, YRES, XRES-1, YRES, 200, 200, 200, 255);
-	g->draw_line(line1, YRES, line1, YRES+MENUSIZE, 200, 200, 200, 255);
-	g->draw_line(line2, YRES, line2, YRES+MENUSIZE, 200, 200, 200, 255);
-	g->draw_line(line3, YRES, line3, YRES+MENUSIZE, 200, 200, 200, 255);
-	g->draw_line(line4, YRES, line4, YRES+MENUSIZE, 200, 200, 200, 255);
-	g->draw_line(XRES, 0, XRES, YRES+MENUSIZE, 255, 255, 255, 255);
+	g->draw_line(line1, YRES, line1, WINDOWH, 200, 200, 200, 255);
+	g->draw_line(line2, YRES, line2, WINDOWH, 200, 200, 200, 255);
+	g->draw_line(line3, YRES, line3, WINDOWH, 200, 200, 200, 255);
+	g->draw_line(line4, YRES, line4, WINDOWH, 200, 200, 200, 255);
+	g->draw_line(XRES, 0, XRES, WINDOWH, 255, 255, 255, 255);
 	if(toolTipPresence && toolTip.length())
 	{
 		g->drawtext(6, Size.Y-MENUSIZE-12, (char*)toolTip.c_str(), 255, 255, 255, toolTipPresence>51?255:toolTipPresence*5);

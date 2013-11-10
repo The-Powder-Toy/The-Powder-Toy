@@ -2,7 +2,7 @@
 #include "gui/interface/Keys.h"
 
 ConsoleView::ConsoleView():
-	ui::Window(ui::Point(0, 0), ui::Point(XRES+BARSIZE, 150)),
+	ui::Window(ui::Point(0, 0), ui::Point(WINDOWW, 150)),
 	commandField(NULL)
 {
 	class CommandHighlighter: public ui::TextboxAction
