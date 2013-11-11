@@ -909,14 +909,14 @@ void GameView::NotifySaveChanged(GameModel * sender)
 		if(sender->GetSave()->GetID())
 		{
 			std::stringstream tagsStream;
-			std::vector<string> tags = sender->GetSave()->GetTags();
+			std::list<string> tags = sender->GetSave()->GetTags();
 			if(tags.size())
 			{
-				for(int i = 0; i < tags.size(); i++)
+				for(std::list<std::string>::const_iterator iter = tags.begin(), begin = tags.begin(), end = tags.end(); iter != end; iter++)
 				{
-					tagsStream << sender->GetSave()->GetTags()[i];
-					if(i < tags.size()-1)
+					if(iter != begin)
 						tagsStream << " ";
+					tagsStream << *iter;
 				}
 				tagSimulationButton->SetText(tagsStream.str());
 			}

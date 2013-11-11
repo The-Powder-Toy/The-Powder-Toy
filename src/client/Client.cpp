@@ -1691,7 +1691,7 @@ SaveInfo * Client::GetSave(int saveID, int saveDate)
 			json::Number tempVersion = objDocument["Version"];
 
 			json::Array tagsArray = objDocument["Tags"];
-			std::vector<std::string> tempTags;
+			std::list<std::string> tempTags;
 
 			for(int j = 0; j < tagsArray.Size(); j++)
 			{
@@ -1767,7 +1767,7 @@ RequestBroker::Request * Client::GetSaveAsync(int saveID, int saveDate)
 				json::Number tempVersion = objDocument["Version"];
 
 				json::Array tagsArray = objDocument["Tags"];
-				std::vector<std::string> tempTags;
+				std::list<std::string> tempTags;
 
 				for(int j = 0; j < tagsArray.Size(); j++)
 				{
@@ -2205,10 +2205,10 @@ Thumbnail * Client::GetThumbnail(int saveID, int saveDate)
 	return NULL;
 }
 
-std::vector<std::string> * Client::RemoveTag(int saveID, std::string tag)
+std::list<std::string> * Client::RemoveTag(int saveID, std::string tag)
 {
 	lastError = "";
-	std::vector<std::string> * tags = NULL;
+	std::list<std::string> * tags = NULL;
 	std::stringstream urlStream;
 	char * data = NULL;
 	int dataStatus, dataLength;
@@ -2243,7 +2243,7 @@ std::vector<std::string> * Client::RemoveTag(int saveID, std::string tag)
 			{
 				json::Array tagsArray = responseObject["Tags"];
 
-				tags = new std::vector<std::string>();
+				tags = new std::list<std::string>();
 
 				for(int j = 0; j < tagsArray.Size(); j++)
 				{
@@ -2266,10 +2266,10 @@ std::vector<std::string> * Client::RemoveTag(int saveID, std::string tag)
 	return tags;
 }
 
-std::vector<std::string> * Client::AddTag(int saveID, std::string tag)
+std::list<std::string> * Client::AddTag(int saveID, std::string tag)
 {
 	lastError = "";
-	std::vector<std::string> * tags = NULL;
+	std::list<std::string> * tags = NULL;
 	std::stringstream urlStream;
 	char * data = NULL;
 	int dataStatus, dataLength;
@@ -2304,7 +2304,7 @@ std::vector<std::string> * Client::AddTag(int saveID, std::string tag)
 			{
 				json::Array tagsArray = responseObject["Tags"];
 
-				tags = new std::vector<std::string>();
+				tags = new std::list<std::string>();
 
 				for(int j = 0; j < tagsArray.Size(); j++)
 				{
