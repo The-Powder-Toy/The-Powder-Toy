@@ -106,7 +106,7 @@ void TagsView::NotifyTagsChanged(TagsModel * sender)
 	{
 		std::list<std::string> Tags = sender->GetSave()->GetTags();
 		int i = 0;
-		for(std::list<std::string>::const_iterator iter = Tags.begin(), begin = Tags.begin(), end = Tags.end(); iter != end; iter++)
+		for(std::list<std::string>::const_iterator iter = Tags.begin(), end = Tags.end(); iter != end; iter++)
 		{
 			ui::Label * tempLabel = new ui::Label(ui::Point(35, 35+(16*i)), ui::Point(120, 16), *iter);
 			tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;			tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
