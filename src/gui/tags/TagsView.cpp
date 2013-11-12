@@ -104,9 +104,11 @@ void TagsView::NotifyTagsChanged(TagsModel * sender)
 
 	if(sender->GetSave())
 	{
-		for(int i = 0; i < sender->GetSave()->GetTags().size(); i++)
+		std::list<std::string> Tags = sender->GetSave()->GetTags();
+		int i = 0;
+		for(std::list<std::string>::const_iterator iter = Tags.begin(), end = Tags.end(); iter != end; iter++)
 		{
-			ui::Label * tempLabel = new ui::Label(ui::Point(35, 35+(16*i)), ui::Point(120, 16), sender->GetSave()->GetTags()[i]);
+			ui::Label * tempLabel = new ui::Label(ui::Point(35, 35+(16*i)), ui::Point(120, 16), *iter);
 			tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;			tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 			tags.push_back(tempLabel);
 			AddComponent(tempLabel);
@@ -119,10 +121,11 @@ void TagsView::NotifyTagsChanged(TagsModel * sender)
 				tempButton->Appearance.Margin.Top += 2;
 				tempButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;	
 				tempButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-				tempButton->SetActionCallback(new DeleteTagAction(this, sender->GetSave()->GetTags()[i]));
+				tempButton->SetActionCallback(new DeleteTagAction(this, *iter));
 				tags.push_back(tempButton);
 				AddComponent(tempButton);
 			}
+			i++;
 		}
 	}
 }

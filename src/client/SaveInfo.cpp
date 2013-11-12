@@ -13,11 +13,13 @@ SaveInfo::SaveInfo(SaveInfo & save):
 		votesDown(save.votesDown),
 		gameSave(NULL),
 		vote(save.vote),
-		tags(save.tags),
 		Comments(save.Comments),
 		Views(save.Views),
 		Version(save.Version)
 {
+	std::list<std::string> tagsSorted = save.tags;
+	tagsSorted.sort();
+	tags=tagsSorted;
 	if(save.gameSave)
 		gameSave = new GameSave(*save.gameSave);
 }
@@ -41,7 +43,7 @@ SaveInfo::SaveInfo(int _id, int _date, int _votesUp, int _votesDown, std::string
 
 }
 
-SaveInfo::SaveInfo(int _id, int date_, int _votesUp, int _votesDown, int _vote, std::string _userName, std::string _name, std::string description_, bool published_, std::vector<std::string> tags_):
+SaveInfo::SaveInfo(int _id, int date_, int _votesUp, int _votesDown, int _vote, std::string _userName, std::string _name, std::string description_, bool published_, std::list<std::string> tags_):
 		id(_id),
 		votesUp(_votesUp),
 		votesDown(_votesDown),
@@ -52,12 +54,13 @@ SaveInfo::SaveInfo(int _id, int date_, int _votesUp, int _votesDown, int _vote, 
 		Published(published_),
 		gameSave(NULL),
 		vote(_vote),
-		tags(tags_),
 		Comments(0),
 		Views(0),
 		Version(0)
 {
-
+	std::list<std::string> tagsSorted = tags_;
+	tagsSorted.sort();
+	tags=tagsSorted;
 }
 
 SaveInfo::~SaveInfo()
@@ -150,11 +153,14 @@ int SaveInfo::GetVersion()
 	return Version;
 }
 
-void SaveInfo::SetTags(std::vector<std::string> tags)
+void SaveInfo::SetTags(std::list<std::string> tags)
 {
-	this->tags = tags;
+	std::list<std::string> tagsSorted = tags;
+	tagsSorted.sort();
+	this->tags=tagsSorted;
 }
-std::vector<std::string> SaveInfo::GetTags()
+
+std::list<std::string> SaveInfo::GetTags()
 {
 	return tags;
 }

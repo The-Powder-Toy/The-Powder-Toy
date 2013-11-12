@@ -160,8 +160,8 @@ public:
 	RequestStatus FavouriteSave(int saveID, bool favourite);
 	void SetAuthUser(User user);
 	User GetAuthUser();
-	std::vector<std::string> * RemoveTag(int saveID, std::string tag); //TODO RequestStatus
-	std::vector<std::string> * AddTag(int saveID, std::string tag);
+	std::list<std::string> * RemoveTag(int saveID, std::string tag); //TODO RequestStatus
+	std::list<std::string> * AddTag(int saveID, std::string tag);
 	std::string GetLastError() {
 		return lastError;
 	}
