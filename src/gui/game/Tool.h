@@ -6,6 +6,7 @@
 using namespace std;
 
 #include "gui/interface/Point.h"
+#include "simulation/StructProperty.h"
 
 class Simulation;
 class Brush;
@@ -63,7 +64,7 @@ class SampleTool: public Tool
 {
 	GameModel * gameModel;
 public:
-	SampleTool(GameModel * model):
+	SampleTool(GameModel *model):
 	Tool(0, "SMPL", "Sample an element on the screen.", 0, 0, 0, "DEFAULT_UI_SAMPLE", SampleTool::GetIcon),
 	gameModel(model)
 	{
@@ -81,15 +82,22 @@ class PropertyTool: public Tool
 {
 public:
 	PropertyTool():
-	Tool(0, "PROP", "Property Edit. Click to alter the properties of elements in the field.", 0xfe, 0xa9, 0x00, "DEFAULT_UI_PROPERTY", NULL)
+	Tool(0, "PROP", "Property Edit. Click to alter the properties of elements in the field.", 0xfe, 0xa9, 0x00, "DEFAULT_UI_PROPERTY", NULL),
+	propValue(NULL)
 	{
 	}
+	StructProperty::PropertyType propType;
+	void *propValue;
+	size_t propOffset;
+
+	void OpenWindow(Simulation *sim);
 	virtual ~PropertyTool() {}
-	virtual void Click(Simulation * sim, Brush * brush, ui::Point position);
-	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position) {}
-	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false) { }
-	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) { }
-	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position) { }
+	virtual void SetProperty(Simulation *sim, ui::Point position);
+	virtual void Click(Simulation * sim, Brush * brush, ui::Point position) { }
+	virtual void Draw(Simulation *sim, Brush *brush, ui::Point position);
+	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false);
+	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2);
+	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position);
 };
 
 class Element_LIGH_Tool: public Tool

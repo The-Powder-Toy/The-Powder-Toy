@@ -1032,10 +1032,10 @@ void GameController::SetActiveTool(int toolSelection, Tool * tool)
 	for(int i = 0; i < 3; i++)
 	{
 		if(gameModel->GetActiveTool(i) == gameModel->GetMenuList().at(SC_WALL)->GetToolList().at(WL_GRAV))
-		{
 			gameModel->GetRenderer()->gravityZonesEnabled = true;
-		}
 	}
+	if(tool->GetIdentifier() == "DEFAULT_UI_PROPERTY")
+		((PropertyTool *)tool)->OpenWindow(gameModel->GetSimulation());
 }
 
 int GameController::GetReplaceModeFlags()
