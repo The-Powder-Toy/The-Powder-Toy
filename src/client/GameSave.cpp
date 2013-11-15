@@ -471,8 +471,13 @@ void GameSave::readOPS(char * data, int dataLength)
 	bsonDataLen |= ((unsigned)inputData[9]) << 8;
 	bsonDataLen |= ((unsigned)inputData[10]) << 16;
 	bsonDataLen |= ((unsigned)inputData[11]) << 24;
-
-	bsonData = (unsigned char*)malloc(bsonDataLen+1);
+	
+	//Check for overflows, don't load saves larger than 200MB
+	unsigned int toAlloc = bsonDataLen+1;
+	if(toAlloc > 209715200 || !toAlloc)
+		throw ParseException(ParseException::InvalidDimensions, "Save data too large, refusing");
+		
+	bsonData = (unsigned char*)malloc(toAlloc);
 	if(!bsonData)
 		throw ParseException(ParseException::InternalError, "Unable to allocate memory");
 
@@ -1145,6 +1150,10 @@ void GameSave::readPSv(char * data, int dataLength)
 	i |= ((unsigned)c[9])<<8;
 	i |= ((unsigned)c[10])<<16;
 	i |= ((unsigned)c[11])<<24;
+	
+	if(i > 209715200 || !i)
+		throw ParseException(ParseException::InvalidDimensions, "Save data too large");
+	
 	d = (unsigned char *)malloc(i);
 	if (!d)
 		throw ParseException(ParseException::Corrupt, "Cannot allocate memory");
