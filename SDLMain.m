@@ -253,6 +253,7 @@ static void CustomApplicationMain (int argc, char **argv)
     const char *temparg;
     size_t arglen;
     char *arg;
+    char *openCommandArg;
     char **newargv;
 
     if (!gFinderLaunch)  /* MacOS is passing command line args. */
@@ -267,7 +268,11 @@ static void CustomApplicationMain (int argc, char **argv)
     if (arg == NULL)
         return FALSE;
 
-    newargv = (char **) realloc(gArgv, sizeof (char *) * (gArgc + 2));
+    openCommandArg = (char *) SDL_malloc(5);
+    if (openCommandArg == NULL)
+        return FALSE;
+
+    newargv = (char **) realloc(gArgv, sizeof (char *) * (gArgc + 3));
     if (newargv == NULL)
     {
         SDL_free(arg);
@@ -275,7 +280,9 @@ static void CustomApplicationMain (int argc, char **argv)
     }
     gArgv = newargv;
 
+    SDL_strlcpy(openCommandArg, "open", 5);
     SDL_strlcpy(arg, temparg, arglen);
+    gArgv[gArgc++] = "open";
     gArgv[gArgc++] = arg;
     gArgv[gArgc] = NULL;
     return TRUE;
@@ -344,6 +351,33 @@ static void CustomApplicationMain (int argc, char **argv)
 
 @end
 
+char * readUserPreferences() {
+    NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
+
+    NSString *prefDataNSString = [prefs stringForKey:@"powder.pref"];
+    const char *prefData = [prefDataNSString UTF8String];
+    if(prefData == NULL)
+        prefData = "";
+
+    char *prefDataCopy = calloc([prefDataNSString length]+1, 1);
+    SDL_strlcpy(prefDataCopy, prefData, [prefDataNSString length]);
+
+    [prefDataNSString release];
+    [prefs release];
+
+    return prefDataCopy;
+}
+
+void writeUserPreferences(const char * prefData) {
+    NSString *prefDataNSString = [NSString stringWithUTF8String:prefData];
+
+    NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
+    [prefs setObject:prefDataNSString forKey:@"powder.pref"];
+    [prefs synchronize];
+
+    [prefDataNSString release];
+    [prefs release];
+}
 
 
 #ifdef main
