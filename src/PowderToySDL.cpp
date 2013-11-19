@@ -24,6 +24,10 @@
 #endif
 #ifdef MACOSX
 #include <ApplicationServices/ApplicationServices.h>
+extern "C" {
+	char * readClipboard();
+	void writeClipboard(const char * clipboardData);	
+}
 #endif
 
 #include "Format.h"
@@ -69,14 +73,7 @@ void ClipboardPush(char * text)
 	}
 	clipboardText = mystrdup(text);
 #ifdef MACOSX
-	PasteboardRef newclipboard;
-
-	if (PasteboardCreate(kPasteboardClipboard, &newclipboard)!=noErr) return;
-	if (PasteboardClear(newclipboard)!=noErr) return;
-	PasteboardSynchronize(newclipboard);
-
-	CFDataRef data = CFDataCreate(kCFAllocatorDefault, (const UInt8*)text, strlen(text));
-	PasteboardPutItemFlavor(newclipboard, (PasteboardItemID)1, CFSTR("com.apple.traditional-mac-plain-text"), data, 0);
+	writeClipboard(text);
 #elif defined(WIN)
 	if (OpenClipboard(NULL))
 	{
@@ -109,7 +106,9 @@ void EventProcess(SDL_Event event);
 char * ClipboardPull()
 {
 #ifdef MACOSX
-	printf("Not implemented: get text from clipboard\n");
+	char * data = readClipboard();
+	if(!data) return mystrdup("");
+	return mystrdup(data);
 #elif defined(WIN)
 	if (OpenClipboard(NULL))
 	{

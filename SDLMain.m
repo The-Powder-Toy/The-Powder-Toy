@@ -360,10 +360,12 @@ char * readUserPreferences() {
         prefData = "";
 
     char *prefDataCopy = calloc([prefDataNSString length]+1, 1);
-    SDL_strlcpy(prefDataCopy, prefData, [prefDataNSString length]);
+    SDL_strlcpy(prefDataCopy, prefData, [prefDataNSString length]+1);
 
     [prefDataNSString release];
     [prefs release];
+
+    puts(prefDataCopy);
 
     return prefDataCopy;
 }
@@ -377,6 +379,36 @@ void writeUserPreferences(const char * prefData) {
 
     [prefDataNSString release];
     [prefs release];
+}
+
+char * readClipboard() {
+    NSPasteboard *clipboard = [NSPasteboard generalPasteboard];
+
+    NSArray *classes = [[NSArray alloc] initWithObjects:[NSString class], nil];
+    NSDictionary *options = [NSDictionary dictionary];
+    NSArray *clipboardItems = [clipboard readObjectsForClasses:classes options:options];
+    
+    if(clipboardItems == nil || [clipboardItems count] == 0) return NULL;
+
+    NSString *newString = [clipboardItems objectAtIndex:0];
+    const char * clipboardData = [newString UTF8String];
+    if(clipboardData == NULL)
+        clipboardData = "";
+
+    char *clipboardDataCopy = calloc([newString length]+1, 1);
+    SDL_strlcpy(clipboardDataCopy, clipboardData, [newString length]+1);
+
+    return clipboardDataCopy;
+}
+
+void writeClipboard(const char * clipboardData) {
+    NSPasteboard *clipboard = [NSPasteboard generalPasteboard];
+
+    NSString *newString = [NSString stringWithUTF8String: clipboardData];
+
+    [clipboard clearContents];
+    [clipboard setString:newString forType:NSStringPboardType];
+
 }
 
 
