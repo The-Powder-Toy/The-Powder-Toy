@@ -365,8 +365,6 @@ char * readUserPreferences() {
     [prefDataNSString release];
     [prefs release];
 
-    puts(prefDataCopy);
-
     return prefDataCopy;
 }
 

@@ -851,7 +851,6 @@ void Client::WritePrefs()
 
 		char prefData[prefString.length()+1];
 		std::strcpy(prefData, prefString.c_str());
-		std::cout << prefData << std::endl;
 		writeUserPreferences(prefData);
 #else
 		configFile.close();
