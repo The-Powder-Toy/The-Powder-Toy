@@ -3,6 +3,7 @@
 #include <string>
 #include <deque>
 #include <string.h>
+#include <strings.h>
 #include <stdlib.h>
 #include "TPTScriptInterface.h"
 #include "gui/game/GameModel.h"
