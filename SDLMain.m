@@ -84,17 +84,21 @@ static NSString *getApplicationName(void)
 /* Set the working directory to the .app's parent directory */
 - (void) setupWorkingDirectory:(BOOL)shouldChdir
 {
-    if (shouldChdir)
-    {
-        char parentdir[MAXPATHLEN];
-        CFURLRef url = CFBundleCopyBundleURL(CFBundleGetMainBundle());
-        CFURLRef url2 = CFURLCreateCopyDeletingLastPathComponent(0, url);
-        if (CFURLGetFileSystemRepresentation(url2, 1, (UInt8 *)parentdir, MAXPATHLEN)) {
-            chdir(parentdir);   /* chdir to the binary app's parent */
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
+    if([paths count] < 1) return;
+    
+    NSString *appSupportPath = [paths objectAtIndex:0];
+    BOOL isDir = NO;
+    NSError *error = nil;
+    NSString *appPath = [appSupportPath stringByAppendingPathComponent:@"The Powder Toy"];
+    if (![[NSFileManager defaultManager] fileExistsAtPath:appPath isDirectory:&isDir] && isDir == NO) {
+        if(![[NSFileManager defaultManager] createDirectoryAtPath:appPath withIntermediateDirectories:YES attributes:nil error:&error])
+        {
+            NSLog(@"Could not set up working dir. Error: %@", error);
+            return;
         }
-        CFRelease(url);
-        CFRelease(url2);
     }
+    chdir([appPath UTF8String]);
 }
 
 #if SDL_USE_NIB_FILE
