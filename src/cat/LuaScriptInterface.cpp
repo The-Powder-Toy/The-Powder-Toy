@@ -33,6 +33,9 @@
 #include "LuaSlider.h"
 #include "LuaProgressBar.h"
 
+// ERAY defines some useful bitmasks
+#include "simulation/elements/ERAY.h"
+
 #ifndef WIN
 #include <unistd.h>
 #endif
@@ -1869,6 +1872,20 @@ void LuaScriptInterface::initElementsAPI()
 	SETCONST(l, SC_LIFE);
 	SETCONST(l, SC_TOOL);
 	SETCONST(l, SC_DECO);
+
+	// expose ERAY bit variables for convenience
+	SETCONST(l, ERAY_TYPE_BIT);
+	SETCONST(l, ERAY_LIFE_BIT);
+	SETCONST(l, ERAY_CTYPE_BIT);
+	SETCONST(l, ERAY_X_BIT);
+	SETCONST(l, ERAY_Y_BIT);
+	SETCONST(l, ERAY_VX_BIT);
+	SETCONST(l, ERAY_VY_BIT);
+	SETCONST(l, ERAY_TEMP_BIT);
+	SETCONST(l, ERAY_FLAGS_BIT);
+	SETCONST(l, ERAY_TMP_BIT);
+	SETCONST(l, ERAY_TMP2_BIT);
+	SETCONST(l, ERAY_DCOLOUR_BIT);
 
 	//Element identifiers
 	for(int i = 0; i < PT_NUM; i++)
