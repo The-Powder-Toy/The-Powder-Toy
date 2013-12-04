@@ -851,7 +851,7 @@ int main(int argc, char * argv[])
 #endif
 
 	GameController * gameController = NULL;
-#ifndef DEBUG
+#if !defined(DEBUG) && !defined(_DEBUG)
 	try {
 #endif
 
@@ -860,9 +860,9 @@ int main(int argc, char * argv[])
 
 		if(arguments["open"].length())
 		{
-	#ifdef DEBUG
+#ifdef DEBUG
 			std::cout << "Loading " << arguments["open"] << std::endl;
-	#endif
+#endif
 			if(Client::Ref().FileExists(arguments["open"]))
 			{
 				try
@@ -899,14 +899,14 @@ int main(int argc, char * argv[])
 			engine->g->drawrect((engine->GetWidth()/2)-100, (engine->GetHeight()/2)-25, 200, 50, 255, 255, 255, 180);
 			engine->g->drawtext((engine->GetWidth()/2)-(Graphics::textwidth("Loading save...")/2), (engine->GetHeight()/2)-5, "Loading save...", style::Colour::InformationTitle.Red, style::Colour::InformationTitle.Green, style::Colour::InformationTitle.Blue, 255);
 
-	#ifdef OGLI
+#ifdef OGLI
 			blit();
-	#else
+#else
 			if(engine->Scale==2)
 				blit2(engine->g->vid, engine->Scale);
 			else
 				blit(engine->g->vid);
-	#endif
+#endif
 			std::string ptsaveArg = arguments["ptsave"];
 			try
 			{
@@ -925,9 +925,9 @@ int main(int argc, char * argv[])
 				}
 				if(saveIdPart.length())
 				{
-	#ifdef DEBUG
+#ifdef DEBUG
 					std::cout << "Got Ptsave: id: " <<  saveIdPart << std::endl;
-	#endif
+#endif
 					saveId = format::StringToNumber<int>(saveIdPart);
 					if(!saveId)
 						throw std::runtime_error("Invalid Save ID");
@@ -959,11 +959,11 @@ int main(int argc, char * argv[])
 		SaveWindowPosition();
 	#endif
 
-#ifndef DEBUG
+#if !defined(DEBUG) && !defined(_DEBUG)
 	}
-	catch(...)
+	catch(exception& e)
 	{
-		BlueScreen("Unhandled exception");
+		BlueScreen(e.what());
 	}
 #endif
 	

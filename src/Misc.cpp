@@ -657,7 +657,7 @@ int splitsign(const char* str, char * type)
 	return 0;
 }
 
-void* millisleep(long int t)
+void millisleep(long int t)
 {
 #ifdef WIN
 	Sleep(t);
