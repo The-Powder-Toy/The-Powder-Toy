@@ -19,7 +19,7 @@ Element_VRSS::Element_VRSS()
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
 	
-	Flammable = 5;
+	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 1;
@@ -43,7 +43,14 @@ Element_VRSS::Element_VRSS()
 	HighTemperatureTransition = PT_VIRS;
 	
 	Update = &Element_VIRS::update;
-	
+	Graphics = &Element_VRSS::graphics;
+}
+
+//#TPT-Directive ElementHeader Element_VRSS static int graphics(GRAPHICS_FUNC_ARGS)
+int Element_VRSS::graphics(GRAPHICS_FUNC_ARGS)
+{
+	*pixel_mode |= NO_DECO;
+	return 1;
 }
 
 Element_VRSS::~Element_VRSS() {}

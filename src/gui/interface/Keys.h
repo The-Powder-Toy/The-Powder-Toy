@@ -13,6 +13,7 @@
 #define KEY_RETURN SDLK_RETURN
 #define KEY_ENTER SDLK_KP_ENTER
 #define KEY_ESCAPE SDLK_ESCAPE
+#define KEY_INSERT SDLK_INSERT
 
 #define KEY_LCTRL SDLK_LCTRL
 #define KEY_LALT SDLK_LALT
@@ -45,6 +46,9 @@
 #define KEY_w SDLK_w
 
 #define KEY_F1 SDLK_F1
+#define KEY_F2 SDLK_F2
+#define KEY_F3 SDLK_F3
+#define KEY_F5 SDLK_F5
 
 #define BUTTON_LEFT SDL_BUTTON_LEFT
 #define BUTTON_MIDDLE SDL_BUTTON_MIDDLE
@@ -64,18 +68,32 @@
 #define KEY_RETURN 10
 #define KEY_ENTER 11
 #define KEY_ESCAPE 12
+#define KEY_INSERT 46
 
-#define KEY_CTRL 13
-#define KEY_ALT 14
-#define KEY_SHIFT 15
+#define KEY_LCTRL 13
+#define KEY_LALT 14
+#define KEY_LSHIFT 15
+#define KEY_RCTRL 43
+#define KEY_RALT 44
+#define KEY_RSHIFT 45
+
+#define KEY_MOD_NONE 30
+#define KEY_MOD_LSHIFT 31
+#define KEY_MOD_RSHIFT 32
+#define KEY_MOD_LCONTROL 33
+#define KEY_MOD_RCONTROL 34
+#define KEY_MOD_LALT 35
+#define KEY_MOD_RALT 36
+#define KEY_MOD_LMETA 37
+#define KEY_MOD_RMETA 38
+#define KEY_MOD_NUM	39
+#define KEY_MOD_CAPS 40
+#define KEY_MOD_MODE 41
+#define KEY_MOD_RESERVED 42 
 
 #define KEY_MOD_CONTROL 16
 #define KEY_MOD_ALT 17
 #define KEY_MOD_SHIFT 18
-
-#define BUTTON_LEFT 19
-#define BUTTON_MIDDLE 20
-#define BUTTON_RIGHT 21
 
 #define KEY_a 22
 #define KEY_d 23
@@ -83,5 +101,12 @@
 #define KEY_w 25
 
 #define KEY_F1 26
+#define KEY_F2 27
+#define KEY_F3 28
+#define KEY_F5 29
+
+#define BUTTON_LEFT 19
+#define BUTTON_MIDDLE 20
+#define BUTTON_RIGHT 21
 
 #endif

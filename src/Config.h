@@ -12,15 +12,15 @@
 
 //VersionInfoStart
 #ifndef SAVE_VERSION
-#define SAVE_VERSION 88
+#define SAVE_VERSION 89
 #endif
 
 #ifndef MINOR_VERSION
-#define MINOR_VERSION 1
+#define MINOR_VERSION 0
 #endif
 
 #ifndef BUILD_NUM
-#define BUILD_NUM 272
+#define BUILD_NUM 274
 #endif
 
 #ifndef SNAPSHOT_ID
@@ -169,10 +169,14 @@ extern unsigned char ZSIZE;
 #define strcasecmp stricmp
 #endif
 #if defined(_MSC_VER)
+#if _MSC_VER < 1800
 #define fmin min
 #define fminf min
 #define fmax max
 #define fmaxf max
+#else
+#include <algorithm>
+#endif
 #endif
 
 #if defined(_MSC_VER)

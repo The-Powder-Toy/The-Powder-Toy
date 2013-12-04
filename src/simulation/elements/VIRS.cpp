@@ -19,7 +19,7 @@ Element_VIRS::Element_VIRS()
 	HotAir = 0.000f	* CFDS;
 	Falldown = 2;
 	
-	Flammable = 100;
+	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 20;
@@ -43,7 +43,7 @@ Element_VIRS::Element_VIRS()
 	HighTemperatureTransition = PT_VRSG;
 	
 	Update = &Element_VIRS::update;
-
+	Graphics = &Element_VIRS::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_VIRS static int update(UPDATE_FUNC_ARGS)
@@ -111,6 +111,14 @@ int Element_VIRS::update(UPDATE_FUNC_ARGS)
 						sim->kill_part(r>>8);
 					return 0;
 				}
+				else if ((r&0xFF) == PT_PLSM)
+				{
+					if (surround_space && 10 + (int)(sim->pv[(y+ry)/CELL][(x+rx)/CELL]) > (rand()%100))
+					{
+						sim->create_part(i, x, y, PT_PLSM);
+						return 1;
+					}
+				}
 				//transforms things into virus here
 				else if ((r&0xFF) != PT_VIRS && (r&0xFF) != PT_VRSS && (r&0xFF) != PT_VRSG && (r&0xFF) != PT_DMND)
 				{
@@ -140,6 +148,14 @@ int Element_VIRS::update(UPDATE_FUNC_ARGS)
 		}
 	}
 	return 0;
+}
+
+//#TPT-Directive ElementHeader Element_VIRS static int graphics(GRAPHICS_FUNC_ARGS)
+int Element_VIRS::graphics(GRAPHICS_FUNC_ARGS)
+{
+	*pixel_mode |= PMODE_BLUR;
+	*pixel_mode |= NO_DECO;
+	return 1;
 }
 
 Element_VIRS::~Element_VIRS() {}

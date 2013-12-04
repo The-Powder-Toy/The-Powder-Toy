@@ -923,14 +923,18 @@ void Renderer::DrawSigns()
 	for (i=0; i < signs.size(); i++)
 		if (signs[i].text.length())
 		{
+			char type = 0;
 			std::string text = signs[i].getText(sim);
+			splitsign(signs[i].text.c_str(), &type);
 			signs[i].pos(text, x, y, w, h);
 			clearrect(x, y, w+1, h);
 			drawrect(x, y, w+1, h, 192, 192, 192, 255);
-			if (splitsign(signs[i].text.c_str()))
-				drawtext(x+3, y+3, text, 0, 191, 255, 255);
-			else
+			if (!type)
 				drawtext(x+3, y+3, text, 255, 255, 255, 255);
+			else if(type == 'b')
+				drawtext(x+3, y+3, text, 211, 211, 40, 255);
+			else
+				drawtext(x+3, y+3, text, 0, 191, 255, 255);
 				
 			x = signs[i].x;
 			y = signs[i].y;

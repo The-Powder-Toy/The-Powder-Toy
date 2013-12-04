@@ -1347,7 +1347,14 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		c->ShowConsole();
 		break;
 	case 'p':
+	case KEY_F2:
 		screenshot();
+		break;
+	case KEY_F3:
+		SetDebugHUD(!GetDebugHUD());
+		break;
+	case KEY_F5:
+		c->ReloadSim();
 		break;
 	case 'r':
 		if (ctrl)
@@ -1480,10 +1487,10 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 			break;
 		}
 		//fancy case switch without break
-	case SDLK_INSERT:
+	case KEY_INSERT:
 		c->SetReplaceModeFlags(c->GetReplaceModeFlags()^REPLACE_MODE);
 		break;
-	case SDLK_DELETE:
+	case KEY_DELETE:
 		c->SetReplaceModeFlags(c->GetReplaceModeFlags()^SPECIFIC_DELETE);
 		break;
 	}
@@ -1633,12 +1640,12 @@ void GameView::DoMouseMove(int x, int y, int dx, int dy)
 			int mouseX = x;
 			if(mouseX > XRES)
 				mouseX = XRES;
-			if (mouseX < 15)
-				mouseX = 15;
+			//if (mouseX < 15) //makes scrolling a little nicer at edges but apparently if you put hundreds of elements in a menu it makes the end not show ...
+			//	mouseX = 15;
 
 			scrollBar->Position.X = (int)(((float)mouseX/((float)XRES))*(float)(XRES-scrollSize));
 
-			float overflow = totalWidth-(XRES-BARSIZE), mouseLocation = float(XRES)/float(mouseX-(XRES));
+			float overflow = totalWidth-(XRES-BARSIZE), mouseLocation = float(XRES-3)/float(mouseX-(XRES-2)); //mouseLocation adjusted slightly in case you have 200 elements in one menu
 			setToolButtonOffset(overflow/mouseLocation);
 
 			//Ensure that mouseLeave events are make their way to the buttons should they move from underneath the mouse pointer
@@ -2078,8 +2085,8 @@ void GameView::OnDraw()
 				else if (sample.particle.type == PT_FILT)
 				{
 					sampleInfo << c->ElementResolve(sample.particle.type, sample.particle.ctype);
-					const char* filtModes[] = {"set colour", "AND", "OR", "subtract colour", "red shift", "blue shift", "no effect", "XOR", "NOT"};
-					if (sample.particle.tmp>=0 && sample.particle.tmp<=8)
+					const char* filtModes[] = {"set colour", "AND", "OR", "subtract colour", "red shift", "blue shift", "no effect", "XOR", "NOT", "old QRTZ scattering"};
+					if (sample.particle.tmp>=0 && sample.particle.tmp<=9)
 						sampleInfo << " (" << filtModes[sample.particle.tmp] << ")";
 					else
 						sampleInfo << " (unknown mode)";
@@ -2092,7 +2099,7 @@ void GameView::OnDraw()
 					else
 						sampleInfo << " ()";
 				}
-				sampleInfo << ", Temp: " << std::fixed << sample.particle.temp -273.15f;
+				sampleInfo << ", Temp: " << std::fixed << sample.particle.temp -273.15f << " C";
 				sampleInfo << ", Life: " << sample.particle.life;
 				sampleInfo << ", Tmp: " << sample.particle.tmp;
 				sampleInfo << ", Pressure: " << std::fixed << sample.AirPressure;
@@ -2107,7 +2114,7 @@ void GameView::OnDraw()
 					sampleInfo << c->ElementResolve(sample.particle.type, sample.particle.ctype);
 				else
 					sampleInfo << c->ElementResolve(sample.particle.type, sample.particle.ctype);
-				sampleInfo << ", Temp: " << std::fixed << sample.particle.temp -273.15f;
+				sampleInfo << ", Temp: " << std::fixed << sample.particle.temp - 273.15f << " C";
 				sampleInfo << ", Pressure: " << std::fixed << sample.AirPressure;
 			}
 			if (sample.particle.type == PT_PHOT || sample.particle.type == PT_BIZR || sample.particle.type == PT_BIZRG || sample.particle.type == PT_BIZRS)

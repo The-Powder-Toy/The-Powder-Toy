@@ -384,12 +384,16 @@ void PreviewView::OnMouseWheel(int x, int y, int d)
 
 void PreviewView::OnMouseUp(int x, int y, unsigned int button)
 {
-	if(commentsPanel->GetScrollLimit() == 1)
-		c->NextCommentPage();
-	if(commentsPanel->GetScrollLimit() == -1)
+	//if mouse is on the scrollbar or farther right, and you are at the top of bottom of a page, change pages
+	if (x > Position.X+commentsPanel->Position.X+commentsPanel->Size.X-6)
 	{
-		if (c->PrevCommentPage())
-			prevPage = true;
+		if (commentsPanel->GetScrollLimit() == 1)
+			c->NextCommentPage();
+		if (commentsPanel->GetScrollLimit() == -1)
+		{
+			if (c->PrevCommentPage())
+				prevPage = true;
+		}
 	}
 }
 

@@ -31,7 +31,7 @@ Element_PROT::Element_PROT()
 	Description = "Protons. Transfer heat to materials, and removes sparks.";
 	
 	State = ST_GAS;
-	Properties = TYPE_ENERGY|PROP_LIFE_KILL;
+	Properties = TYPE_ENERGY;
 	
 	LowPressure = IPL;
 	LowPressureTransition = NT;
@@ -78,6 +78,13 @@ int Element_PROT::update(UPDATE_FUNC_ARGS)
 	{
 		parts[under>>8].life = 40+parts[under>>8].life;
 	}
+	//Powered LCRY reaction: PROT->PHOT
+	else if ((under&0xFF) == PT_LCRY && parts[under>>8].life > 5 && !(rand()%10))
+	{
+		sim->part_change_type(i, x, y, PT_PHOT);
+		parts[i].life *= 2;
+		parts[i].ctype = 0x3FFFFFFF;
+	} 
 	else if ((under&0xFF) == PT_EXOT)
 		parts[under>>8].ctype = PT_PROT;
 
@@ -100,22 +107,25 @@ int Element_PROT::update(UPDATE_FUNC_ARGS)
 		}
 	}
 	//else, slowly kill it if it's not inside an element
-	else
-		parts[i].life--;
+	else if (parts[i].life)
+	{
+		if (!--parts[i].life)
+			sim->kill_part(i);
+	}
 	
 	//if this proton has collided with another last frame, change it into a heavier element
 	if (parts[i].tmp)
 	{
 		int newID, element;
-		if (parts[i].tmp > 4250)
+		if (parts[i].tmp > 500000)
 			element = PT_SING; //particle accelerators are known to create earth-destroying black holes
-		else if (parts[i].tmp > 275)
+		else if (parts[i].tmp > 500)
 			element = PT_PLUT;
-		else if (parts[i].tmp > 170)
+		else if (parts[i].tmp > 320)
 			element = PT_URAN;
-		else if (parts[i].tmp > 100)
+		else if (parts[i].tmp > 150)
 			element = PT_PLSM;
-		else if (parts[i].tmp > 40)
+		else if (parts[i].tmp > 50)
 			element = PT_O2;
 		else if (parts[i].tmp > 20)
 			element = PT_CO2;
@@ -170,12 +180,12 @@ int Element_PROT::DeutImplosion(Simulation * sim, int n, int x, int y, float tem
 //#TPT-Directive ElementHeader Element_PROT static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_PROT::graphics(GRAPHICS_FUNC_ARGS)
 {
-	*firea = 20;
+	*firea = 7;
 	*firer = 250;
-	*fireg = 128;
-	*fireb = 128;
+	*fireg = 170;
+	*fireb = 170;
 
-	*pixel_mode |= FIRE_ADD;
+	*pixel_mode |= FIRE_BLEND;
 	return 1;
 }
 

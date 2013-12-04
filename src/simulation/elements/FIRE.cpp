@@ -132,12 +132,13 @@ int Element_FIRE::update(UPDATE_FUNC_ARGS)
 				}
 
 				if ((surround_space || sim->elements[rt].Explosive) &&
-				    (t!=PT_SPRK || (rt!=PT_RBDM && rt!=PT_LRBD && rt!=PT_INSL)) &&
-				    (t!=PT_PHOT || rt!=PT_INSL) &&
-				    (rt!=PT_SPNG || parts[r>>8].life==0) &&
-					sim->elements[rt].Flammable && (sim->elements[rt].Flammable + (int)(sim->pv[(y+ry)/CELL][(x+rx)/CELL]*10.0f))>(rand()%1000))
+				    sim->elements[rt].Flammable && (sim->elements[rt].Flammable + (int)(sim->pv[(y+ry)/CELL][(x+rx)/CELL] * 10.0f)) > (rand()%1000) &&
+				    //exceptions, t is the thing causing the spark and rt is what's burning
+				    (t != PT_SPRK || (rt != PT_RBDM && rt != PT_LRBD && rt != PT_INSL)) &&
+				    (t != PT_PHOT || rt != PT_INSL) &&
+				    (rt != PT_SPNG || parts[r>>8].life == 0))
 				{
-					sim->part_change_type(r>>8,x+rx,y+ry,PT_FIRE);
+					sim->part_change_type(r>>8, x+rx, y+ry, PT_FIRE);
 					parts[r>>8].temp = restrict_flt(sim->elements[PT_FIRE].Temperature + (sim->elements[rt].Flammable/2), MIN_TEMP, MAX_TEMP);
 					parts[r>>8].life = rand()%80+180;
 					parts[r>>8].tmp = parts[r>>8].ctype = 0;
@@ -145,7 +146,8 @@ int Element_FIRE::update(UPDATE_FUNC_ARGS)
 						sim->pv[y/CELL][x/CELL] += 0.25f * CFDS;
 				}
 			}
-	if (sim->legacy_enable) updateLegacy(UPDATE_FUNC_SUBCALL_ARGS);
+	if (sim->legacy_enable)
+		updateLegacy(UPDATE_FUNC_SUBCALL_ARGS);
 	return 0;
 }
 
@@ -218,7 +220,6 @@ int Element_FIRE::updateLegacy(UPDATE_FUNC_ARGS) {
 
 //#TPT-Directive ElementHeader Element_FIRE static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_FIRE::graphics(GRAPHICS_FUNC_ARGS)
-
 {
 	int caddress = restrict_flt(restrict_flt((float)cpart->life, 0.0f, 200.0f)*3, 0.0f, (200.0f*3)-3);
 	*colr = (unsigned char)ren->flm_data[caddress];

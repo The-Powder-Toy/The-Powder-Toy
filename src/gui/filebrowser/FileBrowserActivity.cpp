@@ -314,7 +314,7 @@ void FileBrowserActivity::OnTick(float dt)
 			itemList->AddChild(*iter);
 		}
 		componentsQueue.clear();
-		itemList->InnerSize.Y = (buttonHeight+(buttonPadding*2))*fileY;
+		itemList->InnerSize.Y = (buttonHeight+(buttonPadding*2))*(fileY+1);
 		if(!componentsQueue.size())
 			progressBar->Visible = false;
 	}
