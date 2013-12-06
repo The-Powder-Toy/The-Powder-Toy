@@ -252,6 +252,9 @@ GameView * GameController::GetView()
 {
 	return gameView;
 }
+Simulation * GameController::GetSimulation() {
+	return gameModel->GetSimulation();
+}
 
 sign * GameController::GetSignAt(int x, int y){
 	Simulation * sim = gameModel->GetSimulation();

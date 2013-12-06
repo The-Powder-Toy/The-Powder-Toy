@@ -56,6 +56,7 @@ public:
 	GameController();
 	~GameController();
 	GameView * GetView();
+	Simulation * GetSimulation();
 	sign * GetSignAt(int x, int y);
 
 	bool BrushChanged(int brushType, int rx, int ry);
