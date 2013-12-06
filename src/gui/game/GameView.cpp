@@ -2107,6 +2107,7 @@ void GameView::OnDraw()
 				sampleInfo << ", Temp: " << std::fixed << sample.particle.temp -273.15f << " C";
 				sampleInfo << ", Life: " << sample.particle.life;
 				sampleInfo << ", Tmp: " << sample.particle.tmp;
+				sampleInfo << ", Tmp2: " << sample.particle.tmp2;
 				sampleInfo << ", Pressure: " << std::fixed << sample.AirPressure;
 			}
 			else
