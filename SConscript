@@ -178,19 +178,22 @@ if not GetOption("macosx"):
 			
 
 # if lua is enabled try to parse the lua pgk-config, or the lua-dir option if given
-
-	if(GetOption("lua-dir")):
-		if not conf.CheckCHeader(GetOption("lua-dir") + '/lua.h'):
-			print "lua5.1 headers not found or not installed"
-			raise SystemExit(1)
+	
+	if not GetOption("nolua"):
+		if(GetOption("lua-dir")):
+			if not conf.CheckCHeader(GetOption("lua-dir") + '/lua.h'):
+				print "lua5.1 headers not found or not installed"
+				raise SystemExit(1)
+			else:
+				env.Append(CPPPATH=[GetOption("lua-dir")])
 		else:
-			env.Append(CPPPATH=[GetOption("lua-dir")])
-	else:
-		try:
-			env.ParseConfig('pkg-config --cflags lua5.1')
-		except:
-			print "lua5.1 headers not found or not installed"
-			raise SystemExit(1)
+			try:
+				env.ParseConfig('pkg-config --cflags lua5.1')
+			except:
+				#Check for Lua lib
+				if not conf.CheckLib('lua5.1') and not conf.CheckLib('lua-5.1') and not conf.CheckLib('lua51') and not conf.CheckLib('lua'):
+					print "liblua5.1 not found or not installed"
+					raise SystemExit(1)
 
 # if fft is enabled try to parse its config, fail otherwise.
 
@@ -215,12 +218,6 @@ if not GetOption("macosx"):
 	if not conf.CheckCHeader("bzlib.h"):
 		print "bzip2 headers not found"
 		raise SystemExit(1)
-
-	#Check for Lua lib
-	if not GetOption("nolua"):
-		if not conf.CheckLib('lua5.1') and not conf.CheckLib('lua-5.1') and not conf.CheckLib('lua51') and not conf.CheckLib('lua'):
-			print "liblua not found or not installed"
-			raise SystemExit(1)
 
 # finish the configuration
 
