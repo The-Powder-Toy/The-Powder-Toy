@@ -31,6 +31,7 @@ namespace format
 	std::string CleanString(char * dirtyData, int maxVisualSize, int maxStringLength);
 	std::string CleanString(char * dirtyData, int maxStringLength);
 	std::vector<char> VideoBufferToPNG(const VideoBuffer & vidBuf);
+	std::vector<char> VideoBufferToBMP(const VideoBuffer & vidBuf);
 	std::vector<char> VideoBufferToPPM(const VideoBuffer & vidBuf);
 	std::vector<char> VideoBufferToPTI(const VideoBuffer & vidBuf);
 	VideoBuffer * PTIToVideoBuffer(std::vector<char> & data);
