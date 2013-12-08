@@ -153,38 +153,31 @@ VideoBuffer * format::PTIToVideoBuffer(std::vector<char> & data)
 	return NULL;
 }
 
-void write_int_to_char(char* charArray,int pos,int value)
-{
-	charArray[pos] = (value)&0xFF;
-	charArray[pos+1] = (value>>8)&0xFF;
-	charArray[pos+2] = (value>>16)&0xFF;
-	charArray[pos+3] = (value>>24)&0xFF;
-}
-
 std::vector<char> format::VideoBufferToBMP(const VideoBuffer & vidBuf)
 {
 	std::vector<char> data;
 	char buffer[54] = "BM";
-	unsigned int fileSize = (ceil((double)vidBuf.Width*3/4)*vidBuf.Height*4)+54;
-	write_int_to_char(buffer,2,fileSize);
-	write_int_to_char(buffer,6,0);
-	write_int_to_char(buffer,10,0x36);
-	write_int_to_char(buffer,14,0x28);
-	write_int_to_char(buffer,18,vidBuf.Width);
-	write_int_to_char(buffer,22,vidBuf.Height);
-	write_int_to_char(buffer,26,0x180001);
-	write_int_to_char(buffer,30,0);
-	write_int_to_char(buffer,34,fileSize-54);
-	write_int_to_char(buffer,38,0xB13);
-	write_int_to_char(buffer,42,0xB13);
-	write_int_to_char(buffer,46,0);
-	write_int_to_char(buffer,50,0);
-	
-	data.insert(data.end(), buffer, buffer+54);
-	
-	int padding = (ceil((double)vidBuf.Width*3/4)*4) - (vidBuf.Width*3);
+	int padding = 3 - (vidBuf.Width * 3 + 3) % 4;
+	unsigned int fileSize = (vidBuf.Width * 3 + padding) * vidBuf.Height + 54;
+	*(int *)(buffer + 2) = fileSize;
+	*(short int *)(buffer + 6) = 0; // reserved;
+	*(short int *)(buffer + 8) = 0; // reserved;
+	*(int *)(buffer + 10) = 0x36; // 54 bytes from start to data
+	*(int *)(buffer + 14) = 0x28; // 40 bytes in info header
+	*(int *)(buffer + 18) = vidBuf.Width;
+	*(int *)(buffer + 22) = vidBuf.Height;
+	*(short int *)(buffer + 26) = 1; // 1 plane
+	*(short int *)(buffer + 28) = 24; // 24 bits per pixel
+	*(int *)(buffer + 30) = 0; // no compression
+	*(int *)(buffer + 34) = fileSize - 54; // bitmap size
+	*(int *)(buffer + 38) = 0xB13; // 72dpi
+	*(int *)(buffer + 42) = 0xB13; // 72dpi
+	*(int *)(buffer + 46) = 0; // all colors used
+	*(int *)(buffer + 50) = 0; // all colors important
 
-	unsigned char * currentRow = new unsigned char[(vidBuf.Width*3)+padding];
+	data.insert(data.end(), buffer, buffer+54);
+
+	char *currentRow = (char *)malloc((vidBuf.Width * 3) + padding);
 	for(int y = vidBuf.Height - 1; y >= 0; y--)
 	{
 		int rowPos = 0;
@@ -194,13 +187,9 @@ std::vector<char> format::VideoBufferToBMP(const VideoBuffer & vidBuf)
 			currentRow[rowPos++] = PIXG(vidBuf.Buffer[(y*vidBuf.Width)+x]);
 			currentRow[rowPos++] = PIXR(vidBuf.Buffer[(y*vidBuf.Width)+x]);
 		}
-		for(int i = 0; i < padding; i++)
-		{
-			currentRow[rowPos++] = 0;
-		}
 		data.insert(data.end(), currentRow, currentRow+(vidBuf.Width*3)+padding);
 	}
-	delete currentRow;
+	free(currentRow);
 
 	return data;
 }
