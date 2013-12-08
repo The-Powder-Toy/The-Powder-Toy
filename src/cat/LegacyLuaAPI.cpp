@@ -2017,22 +2017,40 @@ int screenshotIndex = 0;
 int luatpt_screenshot(lua_State* l)
 {
 	int captureUI = luaL_optint(l, 1, 0);
+	int fileType = luaL_optint(l, 2, 0);
 	std::vector<char> data;
-	if(captureUI)
-	{
-		VideoBuffer screenshot(ui::Engine::Ref().g->DumpFrame());
-		data = format::VideoBufferToPNG(screenshot);
+	if(fileType) {
+		if(captureUI)
+		{
+			VideoBuffer screenshot(ui::Engine::Ref().g->DumpFrame());
+			data = format::VideoBufferToPPM(screenshot);
+		}
+		else
+		{
+			VideoBuffer screenshot(luacon_ren->DumpFrame());
+			data = format::VideoBufferToPPM(screenshot);
+		}
 	}
 	else
 	{
-		VideoBuffer screenshot(luacon_ren->DumpFrame());
-		data = format::VideoBufferToPNG(screenshot);
+		if(captureUI)
+		{
+			VideoBuffer screenshot(ui::Engine::Ref().g->DumpFrame());
+			data = format::VideoBufferToPNG(screenshot);
+		}
+		else
+		{
+			VideoBuffer screenshot(luacon_ren->DumpFrame());
+			data = format::VideoBufferToPNG(screenshot);
+		}
 	}
 	std::stringstream filename;
 	filename << "screenshot_";
 	filename << std::setfill('0') << std::setw(6) << (screenshotIndex++);
-	filename << ".png";
+	if(fileType) { filename << ".ppm"; }
+	else { filename << ".png"; }
 	Client::Ref().WriteFile(data, filename.str());
-	return 0;
+	lua_pushstring(l, filename.str().c_str());
+	return 1;
 }
 #endif
