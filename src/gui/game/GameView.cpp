@@ -2264,10 +2264,9 @@ ui::Point GameView::lineSnapCoords(ui::Point point1, ui::Point point2)
 
 ui::Point GameView::rectSnapCoords(ui::Point point1, ui::Point point2)
 {
-	ui::Point newPoint(0, 0);
-	float snapAngle = floor((atan2((float)point2.Y-point1.Y, point2.X-point1.X)+M_PI*0.25)/(M_PI*0.5)+0.5)*M_PI*0.5 - M_PI*0.25;
-	float lineMag = sqrtf(pow((float)(point2.X-point1.X),2)+pow((float)(point2.Y-point1.Y),2));
-	newPoint.X = (int)(lineMag*cos(snapAngle)+point1.X+0.5f);
-	newPoint.Y = (int)(lineMag*sin(snapAngle)+point1.Y+0.5f);
-	return newPoint;
+	ui::Point diff = point2 - point1;
+	if(diff.X * diff.Y > 0) // NW-SE
+		return point1 + ui::Point((diff.X + diff.Y)/2, (diff.X + diff.Y)/2);
+	// SW-NE
+	return point1 + ui::Point((diff.X - diff.Y)/2, (diff.Y - diff.X)/2);
 }
