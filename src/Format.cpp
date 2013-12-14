@@ -71,12 +71,12 @@ std::string format::UnixtimeToDateMini(time_t unixtime)
 	}
 }
 
-std::string format::CleanString(std::string dirtyString, int maxStringLength)
+std::string format::CleanString(std::string dirtyString, size_t maxStringLength)
 {
-	return CleanString(dirtyString, (int)std::string::npos, maxStringLength);
+	return CleanString(dirtyString, std::string::npos, maxStringLength);
 }
 
-std::string format::CleanString(std::string dirtyString, int maxVisualSize, int maxStringLength)
+std::string format::CleanString(std::string dirtyString, size_t maxVisualSize, size_t maxStringLength)
 {
 	std::string newString = dirtyString;
 	if(maxStringLength != std::string::npos && newString.size() > maxStringLength)
@@ -95,12 +95,12 @@ std::string format::CleanString(std::string dirtyString, int maxVisualSize, int 
 	return newString;
 }
 
-std::string format::CleanString(char * dirtyData, int maxStringLength)
+std::string format::CleanString(char * dirtyData, size_t maxStringLength)
 {
-	return CleanString(dirtyData, (int)std::string::npos, maxStringLength);
+	return CleanString(dirtyData, std::string::npos, maxStringLength);
 }
 
-std::string format::CleanString(char * dirtyData, int maxVisualSize, int maxStringLength)
+std::string format::CleanString(char * dirtyData, size_t maxVisualSize, size_t maxStringLength)
 {
 	char * newData = new char[maxStringLength+1];
 	strncpy(newData, dirtyData, maxStringLength);

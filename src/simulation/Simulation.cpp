@@ -304,7 +304,7 @@ void Simulation::Restore(const Snapshot & snap)
 {
 	parts_lastActiveIndex = NPART-1; 
 
-	for(int i = 0; i<NPART; i++)
+	for(int i = 0; i<PT_NUM; i++)
 		elementCount[i] = 0;
 
 	std::copy(snap.AirPressure.begin(), snap.AirPressure.end(), &pv[0][0]);
