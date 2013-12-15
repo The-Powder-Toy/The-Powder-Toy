@@ -110,7 +110,7 @@ void ElementSearchActivity::searchTools(std::string query)
 			exactmatches.push_back(*iter);
 		else if(!strncmp(nameLower.c_str(), queryLower.c_str(), queryLower.length()))
 			frontmatches.push_back(*iter);
-		else if(!strstr(nameLower.c_str(), queryLower.c_str()))
+		else if(strstr(nameLower.c_str(), queryLower.c_str()))
 			matches.push_back(*iter);
 	}
 
