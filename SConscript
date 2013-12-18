@@ -188,6 +188,7 @@ if not GetOption("macosx"):
 				env.Append(CPPPATH=[GetOption("lua-dir")])
 		try:
 			env.ParseConfig('pkg-config --cflags lua5.1')
+			env.ParseConfig('pkg-config --libs lua5.1')
 		except:
 			#Check for Lua lib
 			if not conf.CheckLib('lua5.1') and not conf.CheckLib('lua-5.1') and not conf.CheckLib('lua51') and not conf.CheckLib('lua'):
