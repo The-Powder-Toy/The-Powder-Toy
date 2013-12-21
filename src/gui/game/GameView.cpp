@@ -2198,7 +2198,6 @@ void GameView::OnDraw()
 	if(showHud && introText < 51)
 	{
 		//FPS and some version info
-#ifndef DEBUG //In debug mode, the Engine will draw FPS and other info instead
 		std::stringstream fpsInfo;
 		fpsInfo.precision(2);
 #ifdef SNAPSHOT
@@ -2207,6 +2206,9 @@ void GameView::OnDraw()
 		fpsInfo << "Beta " << SAVE_VERSION << "." << MINOR_VERSION << "." << BUILD_NUM << ", ";
 #endif
 		fpsInfo << "FPS: " << std::fixed << ui::Engine::Ref().GetFps();
+#ifdef DEBUG
+		fpsInfo << " Delta: " << std::fixed << ui::Engine::Ref().GetDelta();
+#endif
 
 		if (showDebug)
 			fpsInfo << " Parts: " << sample.NumParts;
@@ -2221,7 +2223,6 @@ void GameView::OnDraw()
 		int alpha = 255-introText*5;
 		g->fillrect(12, 12, textWidth+8, 15, 0, 0, 0, alpha*0.5);
 		g->drawtext(16, 16, (const char*)fpsInfo.str().c_str(), 32, 216, 255, alpha*0.75);
-#endif
 	}
 
 	//Tooltips
