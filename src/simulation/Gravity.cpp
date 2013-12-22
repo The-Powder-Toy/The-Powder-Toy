@@ -55,6 +55,7 @@ void Gravity::gravity_init()
 	gravx = (float *)calloc((XRES/CELL)*(YRES/CELL), sizeof(float));
 	gravp = (float *)calloc((XRES/CELL)*(YRES/CELL), sizeof(float));
 	gravmask = (unsigned int *)calloc((XRES/CELL)*(YRES/CELL), sizeof(unsigned));
+	obmap = (unsigned char (*)[XRES/CELL])calloc((XRES/CELL)*(YRES/CELL), sizeof(unsigned char));
 }
 
 void Gravity::gravity_cleanup()
@@ -291,7 +292,7 @@ void Gravity::update_grav()
 			break;
 		for (x=0; x<XRES/CELL; x++)
 		{
-			if(th_ogravmap[y*(XRES/CELL)+x]!=th_gravmap[y*(XRES/CELL)+x]){
+			if(th_ogravmap[y*(XRES/CELL)+x] != th_gravmap[y*(XRES/CELL)+x] || bmap[y][x] != obmap[y][x]){
 				changed = 1;
 				break;
 			}
@@ -348,6 +349,7 @@ void Gravity::update_grav()
 		th_gravchanged = 0;
 	}
 	memcpy(th_ogravmap, th_gravmap, (XRES/CELL)*(YRES/CELL)*sizeof(float));
+	memcpy(obmap, bmap, (XRES/CELL)*(YRES/CELL)*sizeof(unsigned char));
 }
 
 #else
@@ -407,6 +409,7 @@ void Gravity::update_grav(void)
 	}
 fin:
 	memcpy(th_ogravmap, th_gravmap, (XRES/CELL)*(YRES/CELL)*sizeof(float));
+	memcpy(obmap, bmap, (XRES/CELL)*(YRES/CELL)*sizeof(unsigned char));
 }
 #endif
 
