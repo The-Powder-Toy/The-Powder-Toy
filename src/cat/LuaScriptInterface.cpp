@@ -68,6 +68,11 @@ int tptPropertiesVersion;
 int tptElements; //Table for TPT element names
 int tptParts, tptPartsMeta, tptElementTransitions, tptPartsCData, tptPartMeta, tptPart, cIndex;
 
+int atPanic(lua_State *l)
+{
+	throw std::runtime_error("Unprotected lua panic: " + std::string(lua_tostring(l, -1)));
+}
+
 LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	CommandInterface(c, m),
 	currentCommand(false),
@@ -91,7 +96,8 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	luacon_ci = this;
 
 	//New TPT API
-	l = lua_open();
+	l = luaL_newstate();
+	lua_atpanic(l, atPanic);
 	luaL_openlibs(l);
 	luaopen_bit(l);
 	luaopen_socket_core(l);
