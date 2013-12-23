@@ -1057,7 +1057,7 @@ std::string Client::AddStamp(GameSave * saveData)
 	stampStream.write((const char *)gameData, gameDataLength);
 	stampStream.close();
 
-	delete gameData;
+	delete[] gameData;
 
 	stampIDs.push_front(saveID.str());
 
