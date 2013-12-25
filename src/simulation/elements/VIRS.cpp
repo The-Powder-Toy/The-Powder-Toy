@@ -131,11 +131,11 @@ int Element_VIRS::update(UPDATE_FUNC_ARGS)
 						else
 							parts[r>>8].pavg[1] = 0;
 						if (parts[r>>8].temp < 305.0f)
-							sim->part_change_type(r>>8,x,y,PT_VRSS);
+							sim->part_change_type(r>>8, x+rx, y+ry, PT_VRSS);
 						else if (parts[r>>8].temp > 673.0f)
-							sim->part_change_type(r>>8,x,y,PT_VRSG);
+							sim->part_change_type(r>>8, x+rx, y+ry, PT_VRSG);
 						else
-							sim->part_change_type(r>>8,x,y,PT_VIRS);
+							sim->part_change_type(r>>8, x+rx, y+ry, PT_VIRS);
 					}
 					rndstore = rndstore >> 5;
 				}
