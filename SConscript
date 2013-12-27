@@ -528,7 +528,7 @@ sources+=Glob("generated/ToolClasses.cpp")
 
 env.Decider('MD5')
 
-# set a defaukt target
+# set a default target
 
 t=env.Program(target=programName, source=sources)
 Default(t)
