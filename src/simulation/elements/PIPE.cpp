@@ -454,11 +454,14 @@ void Element_PIPE::pushParticle(Simulation * sim, int i, int count, int original
 				}
 				else if ((r&0xFF) == PT_PRTI) //Pass particles into PRTI for a pipe speed increase
 				{
-					int nnx;
+					int nnx, portalx, portaly, blocker;
+					portalx = sim->parts[r&0xFF].x;
+					portaly = sim->parts[r&0xFF].y;
+					blocker = sim->bmap[portaly/CELL][portalx/CELL] == WL_BLOCKER ? 1 : 0;
 					for (nnx=0; nnx<80; nnx++)
-						if (!sim->portalp[sim->parts[r>>8].tmp][count][nnx].type)
+						if (!sim->portalp[blocker][sim->parts[r>>8].tmp][count][nnx].type)
 						{
-							transfer_pipe_to_part(sim, sim->parts+i, &(sim->portalp[sim->parts[r>>8].tmp][count][nnx]));
+							transfer_pipe_to_part(sim, sim->parts+i, &(sim->portalp[blocker][sim->parts[r>>8].tmp][count][nnx]));
 							count++;
 							break;
 						}
@@ -480,11 +483,14 @@ void Element_PIPE::pushParticle(Simulation * sim, int i, int count, int original
 		}
 		else if ((r&0xFF) == PT_PRTI) //Pass particles into PRTI for a pipe speed increase
 		{
-			int nnx;
+			int nnx, portalx, portaly, blocker;
+			portalx = sim->parts[r&0xFF].x;
+			portaly = sim->parts[r&0xFF].y;
+			blocker = sim->bmap[portaly/CELL][portalx/CELL] == WL_BLOCKER ? 1 : 0;
 			for (nnx=0; nnx<80; nnx++)
-				if (!sim->portalp[sim->parts[r>>8].tmp][count][nnx].type)
+				if (!sim->portalp[blocker][sim->parts[r>>8].tmp][count][nnx].type)
 				{
-					transfer_pipe_to_part(sim, sim->parts+i, &(sim->portalp[sim->parts[r>>8].tmp][count][nnx]));
+					transfer_pipe_to_part(sim, sim->parts+i, &(sim->portalp[blocker][sim->parts[r>>8].tmp][count][nnx]));
 					count++;
 					break;
 				}

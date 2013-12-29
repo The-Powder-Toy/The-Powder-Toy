@@ -616,14 +616,18 @@ void Element_STKM::STKM_interact(Simulation * sim, playerst* playerp, int i, int
 			sim->parts[r>>8].tmp = (int)((sim->parts[r>>8].temp-73.15f)/100+1);
 			if (sim->parts[r>>8].tmp>=CHANNELS) sim->parts[r>>8].tmp = CHANNELS-1;
 			else if (sim->parts[r>>8].tmp<0) sim->parts[r>>8].tmp = 0;
+			int portalx, portaly, blocker;
+			portalx = sim->parts[r>>8].x;
+			portaly = sim->parts[r>>8].y;
+			blocker = sim->BlockerWall[portaly/CELL][portalx/CELL];
 			for (nnx=0; nnx<80; nnx++)
-				if (!sim->portalp[sim->parts[r>>8].tmp][count][nnx].type)
+				if (!sim->portalp[blocker][sim->parts[r>>8].tmp][count][nnx].type)
 				{
-					sim->portalp[sim->parts[r>>8].tmp][count][nnx] = sim->parts[i];
+					sim->portalp[blocker][sim->parts[r>>8].tmp][count][nnx] = sim->parts[i];
 					sim->kill_part(i);
 					//stop new STKM/fighters being created to replace the ones in the portal:
 					playerp->spwn = 1;
-					if (sim->portalp[sim->parts[r>>8].tmp][count][nnx].type==PT_FIGH)
+					if (sim->portalp[blocker][sim->parts[r>>8].tmp][count][nnx].type==PT_FIGH)
 						sim->fighcount++;
 					break;
 				}

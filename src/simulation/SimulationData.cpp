@@ -130,6 +130,7 @@ wall_type * LoadWalls(int & wallCount)
 		{PIXPACK(0x579777), PIXPACK(0x000000), 1, Renderer::WallIcon, "GAS WALL",		"Allows gases, blocks all other particles."},
 		{PIXPACK(0xFFEE00), PIXPACK(0xAA9900), 4, Renderer::WallIcon, "GRAVITY WALL",	"Gravity wall. Newtonian Gravity has no effect inside a box drawn with this."},
 		{PIXPACK(0xFFAA00), PIXPACK(0xAA5500), 4, Renderer::WallIcon, "ENERGY WALL",	"Allows energy particles, blocks all other particles."},
+		{PIXPACK(0x101010), PIXPACK(0x000000), 1, Renderer::WallIcon, "BLOCKER WALL",	"Blocks WIFI, ETRD and portals."}, // Suggested in http://powdertoy.co.uk/Discussions/Thread/View.html?Thread=17123
 	};
 	wallCount = UI_WALLCOUNT;
 	wall_type * wtypesT = (wall_type*)malloc(UI_WALLCOUNT*sizeof(wall_type));

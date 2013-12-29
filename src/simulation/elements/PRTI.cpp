@@ -58,7 +58,7 @@ Element_PRTI::Element_PRTI()
 int Element_PRTI::update(UPDATE_FUNC_ARGS)
  {
 	int r, nnx, rx, ry, fe = 0;
-	int count =0;
+	int count = 0, blocker = sim->bmap[y/CELL][x/CELL] == WL_BLOCKER ? 1 : 0;
 	parts[i].tmp = (int)((parts[i].temp-73.15f)/100+1);
 	if (parts[i].tmp>=CHANNELS) parts[i].tmp = CHANNELS-1;
 	else if (parts[i].tmp<0) parts[i].tmp = 0;
@@ -85,9 +85,9 @@ int Element_PRTI::update(UPDATE_FUNC_ARGS)
 				sim->detach(r>>8);
 
 			for ( nnx=0; nnx<80; nnx++)
-				if (!sim->portalp[parts[i].tmp][count][nnx].type)
+				if (!sim->portalp[blocker][parts[i].tmp][count][nnx].type)
 				{
-					sim->portalp[parts[i].tmp][count][nnx] = parts[r>>8];
+					sim->portalp[blocker][parts[i].tmp][count][nnx] = parts[r>>8];
 					if ((r&0xFF)==PT_SPRK)
 						sim->part_change_type(r>>8,x+rx,y+ry,parts[r>>8].ctype);
 					else
