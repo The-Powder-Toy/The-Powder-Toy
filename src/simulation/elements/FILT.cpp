@@ -119,7 +119,7 @@ int Element_FILT::interactWavelengths(Particle* cpart, int origWl)
 //#TPT-Directive ElementHeader Element_FILT static int getWavelengths(Particle* cpart)
 int Element_FILT::getWavelengths(Particle* cpart)
 {
-	if (cpart->ctype)
+	if (cpart->ctype&0x3FFFFFFF)
 	{
 		return cpart->ctype;
 	}
