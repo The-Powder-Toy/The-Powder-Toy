@@ -3805,7 +3805,7 @@ void Simulation::update_particles_i(int start, int inc)
 					if ((t==PT_ICEI || t==PT_SNOW) && (parts[i].ctype<=0 || parts[i].ctype>=PT_NUM || parts[i].ctype==PT_ICEI || parts[i].ctype==PT_SNOW || !elements[parts[i].ctype].Enabled))
 						parts[i].ctype = PT_WATR;
 
-					if (elements[t].HighTemperatureTransition>-1 && ctemph>elements[t].HighTemperature)
+					if (elements[t].HighTemperatureTransition>-1 && ctemph>=elements[t].HighTemperature)
 					{
 						// particle type change due to high temperature
 #ifdef REALISTIC
@@ -3831,7 +3831,7 @@ void Simulation::update_particles_i(int start, int inc)
 						{
 							if (parts[i].ctype > 0 && parts[i].ctype < PT_NUM && parts[i].ctype != t)
 							{
-								if (elements[parts[i].ctype].LowTemperatureTransition==t && pt<=elements[parts[i].ctype].LowTemperature)
+								if (elements[parts[i].ctype].LowTemperatureTransition==t && pt<elements[parts[i].ctype].LowTemperature)
 									s = 0;
 								else
 								{
@@ -3885,7 +3885,7 @@ void Simulation::update_particles_i(int start, int inc)
 						{
 							if (parts[i].ctype == PT_TUNG)
 							{
-								if (ctemph <= 3695.0)
+								if (ctemph < 3695.0)
 									s = 0;
 								else
 								{
@@ -3940,7 +3940,7 @@ void Simulation::update_particles_i(int start, int inc)
 									s = 0;
 								else if (parts[i].ctype==PT_TUNG)
 								{
-									if (pt>3695.0)
+									if (pt>=3695.0)
 										s = 0;
 								}
 								else if (elements[parts[i].ctype].HighTemperatureTransition == PT_LAVA)
