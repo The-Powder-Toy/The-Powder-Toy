@@ -6,7 +6,7 @@ Element_KNO3::Element_KNO3()
 	Name = "KNO3";
 	Colour = PIXPACK(0xCECDCC);
 	MenuVisible = 1;
-	MenuSection = SC_POWDERS;
+	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;
 
 	Advection = 0.4f;
