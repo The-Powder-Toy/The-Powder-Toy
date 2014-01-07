@@ -264,7 +264,7 @@ int luacon_element_getproperty(char * key, int * format, unsigned int * modified
 		offset = offsetof(Element, Colour);
 		*format = 0;
 		if (modified_stuff)
-			*modified_stuff |= LUACON_EL_MODIFIED_GRAPHICS;
+			*modified_stuff |= LUACON_EL_MODIFIED_GRAPHICS | LUACON_EL_MODIFIED_MENUS;
 	}
 	else if (strcmp(key, "colour")==0){
 		offset = offsetof(Element, Colour);
@@ -457,12 +457,6 @@ int luacon_elementwrite(lua_State* l){
 			//Convert to upper case
 			for(j = 0; j < strlen(tempstring); j++)
 				tempstring[j] = toupper(tempstring[j]);
-			if(strlen(tempstring)>4)
-			{
-				free(tempstring);
-				free(key);
-				return luaL_error(l, "Name too long");
-			}
 			if(luacon_ci->GetParticleType(tempstring) != -1)
 			{
 				free(tempstring);
