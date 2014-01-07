@@ -1479,14 +1479,11 @@ int Simulation::FloodParts(int x, int y, int fullc, int cm, int flags)
 			}
 			x2++;
 		}
-		if (FloodFillPmapCheck(x2+1, y, cm))
+		// fill span
+		for (x=x1; x<=x2; x++)
 		{
-			// fill span
-			for (x=x1; x<=x2; x++)
-			{
-				if (CreateParts(x, y, 0, 0, fullc, flags))
-					created_something = 1;
-			}
+			if (CreateParts(x, y, 0, 0, fullc, flags))
+				created_something = 1;
 		}
 
 		if (c?y>=CELL+dy:y>=dy)
