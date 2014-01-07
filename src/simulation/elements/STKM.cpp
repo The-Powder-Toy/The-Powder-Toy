@@ -590,7 +590,7 @@ void Element_STKM::STKM_interact(Simulation * sim, playerst* playerp, int i, int
 			sim->parts[i].life -= (int)(rand()*20/RAND_MAX)+32;
 		}
 
-		if (sim->elements[r&0xFF].HeatConduct && ((playerp->elem!=PT_LIGH && sim->parts[r>>8].temp>=323) || sim->parts[r>>8].temp<=243) && (!playerp->rocketBoots || (r&0xFF)!=PT_PLSM))
+		if (sim->elements[r&0xFF].HeatConduct && ((r&0xFF)!=PT_HSWC||sim->parts[r>>8].life==10) && ((playerp->elem!=PT_LIGH && sim->parts[r>>8].temp>=323) || sim->parts[r>>8].temp<=243) && (!playerp->rocketBoots || (r&0xFF)!=PT_PLSM))
 		{
 			sim->parts[i].life -= 2;
 			playerp->accs[3] -= 1;
