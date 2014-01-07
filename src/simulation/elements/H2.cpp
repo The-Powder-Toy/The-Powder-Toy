@@ -111,6 +111,7 @@ int Element_H2::update(UPDATE_FUNC_ARGS)
 			{
 				parts[j].ctype = 0x7C0000;
 				parts[j].temp = temp;
+				parts[j].tmp = 0x1;
 			}
 			j = sim->create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_PLSM);
 			if (j>-1)
