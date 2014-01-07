@@ -4023,7 +4023,12 @@ void Simulation::update_particles_i(int start, int inc)
 						}
 					}
 				}
-				else parts[i].temp = restrict_flt(parts[i].temp, MIN_TEMP, MAX_TEMP);
+				else
+				{
+					if (!(air->bmap_blockairh[y/CELL][x/CELL]&0x8))
+						air->bmap_blockairh[y/CELL][x/CELL]++;
+					parts[i].temp = restrict_flt(parts[i].temp, MIN_TEMP, MAX_TEMP);
+				}
 			}
 
 			if (t==PT_LIFE)
@@ -4739,7 +4744,7 @@ void Simulation::update_particles()//doesn't update the particles themselves, bu
 				if (emap[y][x])
 					emap[y][x] --;
 				air->bmap_blockair[y][x] = (bmap[y][x]==WL_WALL || bmap[y][x]==WL_WALLELEC || (bmap[y][x]==WL_EWALL && !emap[y][x]));
-				air->bmap_blockairh[y][x] = (bmap[y][x]==WL_WALL || bmap[y][x]==WL_WALLELEC || bmap[y][x]==WL_GRAV || (bmap[y][x]==WL_EWALL && !emap[y][x]));
+				air->bmap_blockairh[y][x] = (bmap[y][x]==WL_WALL || bmap[y][x]==WL_WALLELEC || bmap[y][x]==WL_GRAV || (bmap[y][x]==WL_EWALL && !emap[y][x])) ? 0x8:0;
 			}
 		}
 	}

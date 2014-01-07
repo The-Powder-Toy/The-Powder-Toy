@@ -84,7 +84,7 @@ void Air::update_airh(void)
 				{
 					if (y+j>0 && y+j<YRES/CELL-2 &&
 					        x+i>0 && x+i<XRES/CELL-2 &&
-					        !bmap_blockairh[y+j][x+i])
+					        !(bmap_blockairh[y+j][x+i]&0x8))
 						{
 						f = kernel[i+1+(j+1)*3];
 						dh += hv[y+j][x+i]*f;
@@ -110,15 +110,15 @@ void Air::update_airh(void)
 			{
 				odh = dh;
 				dh *= 1.0f - AIR_VADV;
-				dh += AIR_VADV*(1.0f-tx)*(1.0f-ty)*(bmap_blockairh[j][i] ? odh : hv[j][i]);
-				dh += AIR_VADV*tx*(1.0f-ty)*(bmap_blockairh[j][i+1] ? odh : hv[j][i+1]);
-				dh += AIR_VADV*(1.0f-tx)*ty*(bmap_blockairh[j+1][i] ? odh : hv[j+1][i]);
-				dh += AIR_VADV*tx*ty*(bmap_blockairh[j+1][i+1] ? odh : hv[j+1][i+1]);
+				dh += AIR_VADV*(1.0f-tx)*(1.0f-ty)*((bmap_blockairh[j][i]&0x8) ? odh : hv[j][i]);
+				dh += AIR_VADV*tx*(1.0f-ty)*((bmap_blockairh[j][i+1]&0x8) ? odh : hv[j][i+1]);
+				dh += AIR_VADV*(1.0f-tx)*ty*((bmap_blockairh[j+1][i]&0x8) ? odh : hv[j+1][i]);
+				dh += AIR_VADV*tx*ty*((bmap_blockairh[j+1][i+1]&0x8) ? odh : hv[j+1][i+1]);
 			}
 			if(!sim.gravityMode)
 			{ //Vertical gravity only for the time being
 				float airdiff = hv[y-1][x]-hv[y][x];
-				if(airdiff>0 && !bmap_blockairh[y-1][x])
+				if(airdiff>0 && !(bmap_blockairh[y-1][x]&0x8))
 					vy[y][x] -= airdiff/5000.0f;
 			}
 			ohv[y][x] = dh;
