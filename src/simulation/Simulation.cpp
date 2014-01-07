@@ -3083,15 +3083,14 @@ int Simulation::create_part(int p, int x, int y, int tv)
 	//Fancy dust effects for powder types
 	if((elements[t].Properties & TYPE_PART) && pretty_powder)
 	{
-		int colr, colg, colb, randa;
-		randa = (rand()%30)-15;
-		colr = (PIXR(elements[t].Colour)+sandcolour+(rand()%20)-10+randa);
-		colg = (PIXG(elements[t].Colour)+sandcolour+(rand()%20)-10+randa);
-		colb = (PIXB(elements[t].Colour)+sandcolour+(rand()%20)-10+randa);
+		int colr, colg, colb;
+		colr = PIXR(elements[t].Colour)+sandcolour*1.3+(rand()%40)-20+(rand()%30)-15;
+		colg = PIXG(elements[t].Colour)+sandcolour*1.3+(rand()%40)-20+(rand()%30)-15;
+		colb = PIXB(elements[t].Colour)+sandcolour*1.3+(rand()%40)-20+(rand()%30)-15;
 		colr = colr>255 ? 255 : (colr<0 ? 0 : colr);
 		colg = colg>255 ? 255 : (colg<0 ? 0 : colg);
 		colb = colb>255 ? 255 : (colb<0 ? 0 : colb);
-		parts[i].dcolour = 0xFF000000 | (colr<<16) | (colg<<8) | colb;
+		parts[i].dcolour = ((rand()%150)<<24) | (colr<<16) | (colg<<8) | colb;
 	}
 	elementCount[t]++;
 	return i;
