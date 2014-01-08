@@ -49,6 +49,8 @@ public:
 					}
 				}
 			}
+			bitmap[size.X/2] = 255;
+			bitmap[size.X*size.Y-size.X/2-1] = 255;
 		}
 	}
 };
