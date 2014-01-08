@@ -1126,7 +1126,7 @@ void Simulation::CreateWallLine(int x1, int y1, int x2, int y2, int rx, int ry, 
 		if (e >= 0.5f)
 		{
 			y += sy;
-			if (!(rx+ry) && ((y1<y2) ? (y<=y2) : (y>=y2)))
+			if ((y1<y2) ? (y<=y2) : (y>=y2))
 			{
 				if (reverseXY)
 					CreateWalls(y, x, rx, ry, wall, cBrush);
