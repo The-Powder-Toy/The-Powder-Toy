@@ -72,10 +72,6 @@ public:
 	int portal_rx[8];
 	int portal_ry[8];
 	int wireless[CHANNELS][2];
-	//PROP tool property to draw (TODO)
-	//void *prop_value;
-	//StructProperty::PropertyType proptype;
-	//size_t prop_offset;
 	//Gol sim
 	int CGOL;
 	int GSPEED;
@@ -138,8 +134,8 @@ public:
 	void create_gain_photon(int pp);
 	void kill_part(int i);
 	bool FloodFillPmapCheck(int x, int y, int type);
-	int flood_prop(int x, int y, size_t propoffset, void * propvalue, StructProperty::PropertyType proptype);
-	int flood_prop_2(int x, int y, size_t propoffset, void * propvalue, StructProperty::PropertyType proptype, int parttype, char * bitmap);
+	int flood_prop(int x, int y, size_t propoffset, PropertyValue propvalue, StructProperty::PropertyType proptype);
+	int flood_prop_2(int x, int y, size_t propoffset, PropertyValue propvalue, StructProperty::PropertyType proptype, int parttype, char * bitmap);
 	int flood_water(int x, int y, int i, int originaly, int check);
 	int FloodINST(int x, int y, int fullc, int cm);
 	void detach(int i);

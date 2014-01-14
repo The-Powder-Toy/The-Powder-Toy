@@ -99,25 +99,21 @@ void PropertyWindow::SetProperty()
 		Client::Ref().SetPref("Prop.Type", property->GetOption().second);
 		Client::Ref().SetPref("Prop.Value", textField->GetText());
 
-		if(tool->propValue)
-			free(tool->propValue);
-		tool->propValue=malloc(sizeof(int));
-		int tempInt;
-		unsigned int tempUInt;
-		float tempFloat;
 		std::string value = textField->GetText();
 		try {
 			switch(properties[property->GetOption().second].Type)
 			{
 				case StructProperty::Integer:
 				case StructProperty::ParticleType:
+				{
+					int v;
 					if(value.length() > 2 && value.substr(0, 2) == "0x")
 					{
 						//0xC0FFEE
 						std::stringstream buffer;
 						buffer.exceptions(std::stringstream::failbit | std::stringstream::badbit);
 						buffer << std::hex << value.substr(2);
-						buffer >> tempInt;
+						buffer >> v;
 					}
 					else if(value.length() > 1 && value[0] == '#')
 					{
@@ -125,7 +121,7 @@ void PropertyWindow::SetProperty()
 						std::stringstream buffer;
 						buffer.exceptions(std::stringstream::failbit | std::stringstream::badbit);
 						buffer << std::hex << value.substr(1);
-						buffer >> tempInt;
+						buffer >> v;
 					}
 					else 
 					{
@@ -137,15 +133,15 @@ void PropertyWindow::SetProperty()
 #ifdef DEBUG
 								std::cout << "Got type from particle name" << std::endl;
 #endif
-								tempInt = type;
+								v = type;
 							}
 							else
 							{
 								std::stringstream buffer(value);
 								buffer.exceptions(std::stringstream::failbit | std::stringstream::badbit);
-								buffer >> tempInt;
+								buffer >> v;
 							}
-							if (property->GetOption().first == "type" && (tempInt < 0 || tempInt >= PT_NUM || !sim->elements[tempInt].Enabled))
+							if (property->GetOption().first == "type" && (v < 0 || v >= PT_NUM || !sim->elements[v].Enabled))
 							{
 								new ErrorMessage("Could not set property", "Invalid Particle Type");
 								return;
@@ -155,22 +151,25 @@ void PropertyWindow::SetProperty()
 						{
 							std::stringstream buffer(value);
 							buffer.exceptions(std::stringstream::failbit | std::stringstream::badbit);
-							buffer >> tempInt;
+							buffer >> v;
 						}
 					}
 #ifdef DEBUG
-					std::cout << "Got int value " << tempInt << std::endl;
+					std::cout << "Got int value " << v << std::endl;
 #endif
-					*(int *)tool->propValue = tempInt;
+					tool->propValue.Integer = v;
 					break;
+				}
 				case StructProperty::UInteger:
+				{
+					unsigned int v;
 					if(value.length() > 2 && value.substr(0, 2) == "0x")
 					{
 						//0xC0FFEE
 						std::stringstream buffer;
 						buffer.exceptions(std::stringstream::failbit | std::stringstream::badbit);
 						buffer << std::hex << value.substr(2);
-						buffer >> tempUInt;
+						buffer >> v;
 					}
 					else if(value.length() > 1 && value[0] == '#')
 					{
@@ -178,28 +177,28 @@ void PropertyWindow::SetProperty()
 						std::stringstream buffer;
 						buffer.exceptions(std::stringstream::failbit | std::stringstream::badbit);
 						buffer << std::hex << value.substr(1);
-						buffer >> tempUInt;
+						buffer >> v;
 					}
 					else 
 					{
 						std::stringstream buffer(value);
 						buffer.exceptions(std::stringstream::failbit | std::stringstream::badbit);
-						buffer >> tempUInt;
+						buffer >> v;
 					}
 #ifdef DEBUG
-					std::cout << "Got uint value " << tempUInt << std::endl;
+					std::cout << "Got uint value " << v << std::endl;
 #endif
-					*(unsigned int *)tool->propValue = tempUInt;
+					tool->propValue.UInteger = v;
 					break;
+				}
 				case StructProperty::Float:
 				{
 					std::stringstream buffer(value);
 					buffer.exceptions(std::stringstream::failbit | std::stringstream::badbit);
-					buffer >> tempFloat;
+					buffer >> tool->propValue.Float;
 #ifdef DEBUG
-					std::cout << "Got float value " << tempFloat << std::endl;
+					std::cout << "Got float value " << tool->propValue.Float << std::endl;
 #endif
-					*(float *)tool->propValue = tempFloat;
 				}
 					break;
 				default:
@@ -243,8 +242,6 @@ void PropertyTool::OpenWindow(Simulation *sim)
 
 void PropertyTool::SetProperty(Simulation *sim, ui::Point position)
 {
-	if(!propValue)
-		return;
 	if(position.X<0 || position.X>XRES || position.Y<0 || position.Y>YRES)
 		return;
 	int i = sim->pmap[position.Y][position.X];
@@ -255,14 +252,14 @@ void PropertyTool::SetProperty(Simulation *sim, ui::Point position)
 	switch (propType)
 	{
 		case StructProperty::Float:
-			*((float*)(((char*)&sim->parts[i>>8])+propOffset)) = *((float*)propValue);
+			*((float*)(((char*)&sim->parts[i>>8])+propOffset)) = propValue.Float;
 			break;
 		case StructProperty::ParticleType:
 		case StructProperty::Integer:
-			*((int*)(((char*)&sim->parts[i>>8])+propOffset)) = *((int*)propValue);
+			*((int*)(((char*)&sim->parts[i>>8])+propOffset)) = propValue.Integer;
 			break;
 		case StructProperty::UInteger:
-			*((unsigned int*)(((char*)&sim->parts[i>>8])+propOffset)) = *((unsigned int*)propValue);
+			*((unsigned int*)(((char*)&sim->parts[i>>8])+propOffset)) = propValue.UInteger;
 			break;
 		default:
 			break;

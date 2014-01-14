@@ -28,4 +28,10 @@ struct StructProperty
 	}
 };
 
+union PropertyValue {
+	int Integer;
+	unsigned int UInteger;
+	float Float;
+};
+
 #endif

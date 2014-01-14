@@ -82,12 +82,11 @@ class PropertyTool: public Tool
 {
 public:
 	PropertyTool():
-	Tool(0, "PROP", "Property Edit. Click to alter the properties of elements in the field.", 0xfe, 0xa9, 0x00, "DEFAULT_UI_PROPERTY", NULL),
-	propValue(NULL)
+	Tool(0, "PROP", "Property Edit. Click to alter the properties of elements in the field.", 0xfe, 0xa9, 0x00, "DEFAULT_UI_PROPERTY", NULL)
 	{
 	}
 	StructProperty::PropertyType propType;
-	void *propValue;
+	PropertyValue propValue;
 	size_t propOffset;
 
 	void OpenWindow(Simulation *sim);

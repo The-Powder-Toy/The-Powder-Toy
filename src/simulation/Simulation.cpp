@@ -367,7 +367,7 @@ bool Simulation::FloodFillPmapCheck(int x, int y, int type)
 		return (pmap[y][x]&0xFF) == type;
 }
 
-int Simulation::flood_prop_2(int x, int y, size_t propoffset, void * propvalue, StructProperty::PropertyType proptype, int parttype, char * bitmap)
+int Simulation::flood_prop_2(int x, int y, size_t propoffset, PropertyValue propvalue, StructProperty::PropertyType proptype, int parttype, char * bitmap)
 {
 	int x1, x2, i, dy = 1;
 	x1 = x2 = x;
@@ -396,16 +396,16 @@ int Simulation::flood_prop_2(int x, int y, size_t propoffset, void * propvalue, 
 			continue;
 		switch (proptype) {
 			case StructProperty::Float:
-				*((float*)(((char*)&parts[i>>8])+propoffset)) = *((float*)propvalue);
+				*((float*)(((char*)&parts[i>>8])+propoffset)) = propvalue.Float;
 				break;
 				
 			case StructProperty::ParticleType:
 			case StructProperty::Integer:
-				*((int*)(((char*)&parts[i>>8])+propoffset)) = *((int*)propvalue);
+				*((int*)(((char*)&parts[i>>8])+propoffset)) = propvalue.Integer;
 				break;
 				
 			case StructProperty::UInteger:
-				*((unsigned int*)(((char*)&parts[i>>8])+propoffset)) = *((unsigned int*)propvalue);
+				*((unsigned int*)(((char*)&parts[i>>8])+propoffset)) = propvalue.UInteger;
 				break;
 				
 			default:
@@ -426,7 +426,7 @@ int Simulation::flood_prop_2(int x, int y, size_t propoffset, void * propvalue, 
 	return 1;
 }
 
-int Simulation::flood_prop(int x, int y, size_t propoffset, void * propvalue, StructProperty::PropertyType proptype)
+int Simulation::flood_prop(int x, int y, size_t propoffset, PropertyValue propvalue, StructProperty::PropertyType proptype)
 {
 	int r = 0;
 	char * bitmap = (char *)malloc(XRES*YRES); //Bitmap for checking
