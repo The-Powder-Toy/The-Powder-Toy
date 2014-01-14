@@ -3,7 +3,9 @@
 #include <string>
 #include <deque>
 #include <string.h>
+#ifdef MACOSX
 #include <strings.h>
+#endif
 #include <stdlib.h>
 #include "TPTScriptInterface.h"
 #include "gui/game/GameModel.h"
