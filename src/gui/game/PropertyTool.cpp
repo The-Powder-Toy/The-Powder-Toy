@@ -96,9 +96,6 @@ void PropertyWindow::SetProperty()
 {
 	if(property->GetOption().second!=-1 && textField->GetText().length() > 0)
 	{
-		Client::Ref().SetPref("Prop.Type", property->GetOption().second);
-		Client::Ref().SetPref("Prop.Value", textField->GetText());
-
 		std::string value = textField->GetText();
 		try {
 			switch(properties[property->GetOption().second].Type)
@@ -209,7 +206,10 @@ void PropertyWindow::SetProperty()
 			tool->propType = properties[property->GetOption().second].Type;
 		} catch (const std::exception& ex) {
 			new ErrorMessage("Could not set property", "Invalid value provided");
+			return;
 		}
+		Client::Ref().SetPref("Prop.Type", property->GetOption().second);
+		Client::Ref().SetPref("Prop.Value", textField->GetText());
 	}
 }
 
