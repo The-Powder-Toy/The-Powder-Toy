@@ -1,5 +1,5 @@
-//#ifndef CONFIG_H_
-//#define CONFIG_H_
+#ifndef CONFIG_H
+#define CONFIG_H
 
 
 #ifdef WIN
@@ -77,8 +77,6 @@
 #define IDENT_BUILD "NO"
 #endif
 
-#define IDENT_VERSION "G" //Change this if you're not Simon! It should be a single letter
-
 #define MTOS_EXPAND(str) #str
 #define MTOS(str) MTOS_EXPAND(str)
 
@@ -104,18 +102,12 @@
 
 //Number of asynchronous connections used to retrieve thumbnails
 #define IMGCONNS 5
-//Not sure
-#define TIMEOUT 100
-//HTTP request timeout in seconds
-#define HTTP_TIMEOUT 10
 
 #ifdef RENDERER
 #define MENUSIZE 0
 #define BARSIZE 0
 #else
 #define MENUSIZE 40
-//#define MENUSIZE 20
-//#define BARSIZE 50
 #define BARSIZE 17
 #endif
 #define XRES	612
@@ -134,15 +126,12 @@
 
 #define MAXSIGNS 16
 
-#define ZSIZE_D	16
-#define ZFACTOR_D	8
-extern unsigned char ZFACTOR;
-extern unsigned char ZSIZE;
-
+//CELL, the size of the pressure, gravity, and wall maps. Larger than 1 to prevent extreme lag
 #define CELL	4
 #define ISTP	(CELL/2)
 #define CFDS	(4.0f/CELL)
 
+//Air constants
 #define AIR_TSTEPP 0.3f
 #define AIR_TSTEPV 0.4f
 #define AIR_VADV 0.3f
@@ -156,6 +145,7 @@ extern unsigned char ZSIZE;
 #define TRI_BRUSH 2
 #define BRUSH_NUM 3
 
+//Photon constants
 #define SURF_RANGE		10
 #define NORMAL_MIN_EST	3
 #define NORMAL_INTERP	20
@@ -168,6 +158,7 @@ extern unsigned char ZSIZE;
 #define GLASS_IOR		1.9
 #define GLASS_DISP		0.07
 
+//some compatibility stuff for non-standard compilers
 #if defined(WIN) && !defined(strcasecmp)
 #define strcasecmp stricmp
 #endif
@@ -193,4 +184,4 @@ extern unsigned char ZSIZE;
 #define SDEUT
 //#define REALHEAT
 
-//#endif /* CONFIG_H_ */
+#endif /* CONFIG_H */
