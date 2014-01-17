@@ -57,6 +57,7 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 		for(std::vector<GameSave::PaletteItem>::iterator iter = save->palette.begin(), end = save->palette.end(); iter != end; ++iter)
 		{
 			GameSave::PaletteItem pi = *iter;
+			//This makes it only apply to lua elements (greater than the default number of elements), because if not it glitches for default elements when they change name
 			if(pi.second >= DEFAULT_PT_NUM && pi.second < PT_NUM)
 			{
 				int myId = 0;//pi.second;
@@ -86,6 +87,17 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 			continue;
 		if (!elements[tempPart.type].Enabled)
 			continue;
+
+		if (tempPart.ctype > 0 && tempPart.ctype < PT_NUM)
+			if (tempPart.type == PT_CLNE || tempPart.type == PT_PCLN || tempPart.type == PT_BCLN || tempPart.type == PT_PBCN || tempPart.type == PT_STOR || tempPart.type == PT_CONV || tempPart.type == PT_STKM || tempPart.type == PT_STKM2 || tempPart.type == PT_FIGH || tempPart.type == PT_LAVA || tempPart.type == PT_SPRK || tempPart.type == PT_PSTN || tempPart.type == PT_CRAY)
+			{
+				tempPart.ctype = partMap[tempPart.ctype];
+			}
+		if (tempPart.tmp > 0 && tempPart.tmp < PT_NUM)
+			if (tempPart.type == PT_PIPE || tempPart.type == PT_PPIP)
+			{
+				tempPart.tmp = partMap[tempPart.tmp];
+			}
 
 		if(r = pmap[y][x])
 		{
