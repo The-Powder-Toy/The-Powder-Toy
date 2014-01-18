@@ -122,6 +122,11 @@ void Textbox::OnContextMenuAction(int item)
 	}
 }
 
+void Textbox::resetCursorPosition()
+{
+	Graphics::PositionAtCharIndex(multiline?((char*)textLines.c_str()):((char*)text.c_str()), cursor, cursorPositionX, cursorPositionY);
+}
+
 void Textbox::cutSelection()
 {
 	char * clipboardText;
