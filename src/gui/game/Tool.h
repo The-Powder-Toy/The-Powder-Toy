@@ -42,11 +42,15 @@ public:
 	int colRed, colBlue, colGreen;
 };
 
+class GameModel;
+
 class SignTool: public Tool
 {
 public:
-	SignTool():
-	Tool(0, "SIGN", "Sign. Displays text. Click on a sign to edit it or anywhere else to place a new one.", 0, 0, 0, "DEFAULT_UI_SIGN", SignTool::GetIcon)
+	GameModel * gameModel;
+	SignTool(GameModel *model):
+	Tool(0, "SIGN", "Sign. Displays text. Click on a sign to edit it or anywhere else to place a new one.", 0, 0, 0, "DEFAULT_UI_SIGN", SignTool::GetIcon),
+	  gameModel(model)
 	{
 	}
 	static VideoBuffer * GetIcon(int toolID, int width, int height);
@@ -57,8 +61,6 @@ public:
 	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) { }
 	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position) { }
 };
-
-class GameModel;
 
 class SampleTool: public Tool
 {

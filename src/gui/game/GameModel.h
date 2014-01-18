@@ -182,6 +182,7 @@ public:
 	int GetZoomFactor();
 	void SetZoomPosition(ui::Point position);
 	ui::Point GetZoomPosition();
+	ui::Point AdjustZoomCoords(ui::Point position);
 	void SetZoomWindowPosition(ui::Point position);
 	ui::Point GetZoomWindowPosition();
 	void SetStamp(GameSave * newStamp);

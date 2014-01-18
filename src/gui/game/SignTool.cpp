@@ -7,6 +7,7 @@
 #include "gui/interface/Label.h"
 #include "gui/interface/Textbox.h"
 #include "gui/interface/DropDown.h"
+#include "gui/game/GameModel.h"
 
 class SignWindow: public ui::Window
 {
@@ -222,12 +223,13 @@ void SignWindow::DoMouseMove(int x, int y, int dx, int dy) {
 		ui::Window::DoMouseMove(x, y, dx, dy);
 	else
 	{
-		if(x < XRES && y < YRES)
+		ui::Point pos = tool->gameModel->AdjustZoomCoords(ui::Point(x, y));
+		if(pos.X < XRES && pos.Y < YRES)
 		{
-			movingSign->x = x;
-			movingSign->y = y;
-			signPosition.X = x;
-			signPosition.Y = y;
+			movingSign->x = pos.X;
+			movingSign->y = pos.Y;
+			signPosition.X = pos.X;
+			signPosition.Y = pos.Y;
 		}
 	}
 }
