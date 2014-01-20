@@ -25,8 +25,8 @@
 //#include "StorageClasses.h"
 
 #ifdef LUACONSOLE
-#include "cat/LuaScriptInterface.h"
-#include "cat/LuaScriptHelper.h"
+#include "lua/LuaScriptInterface.h"
+#include "lua/LuaScriptHelper.h"
 #endif
 
 int Simulation::Load(GameSave * save)

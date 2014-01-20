@@ -27,9 +27,9 @@
 #include "simulation/Snapshot.h"
 #include "debug/DebugInfo.h"
 #ifdef LUACONSOLE
-#include "cat/LuaScriptInterface.h"
+#include "lua/LuaScriptInterface.h"
 #else
-#include "cat/TPTScriptInterface.h"
+#include "lua/TPTScriptInterface.h"
 #endif
 //#include "debug/ElementPopulation.h"
 

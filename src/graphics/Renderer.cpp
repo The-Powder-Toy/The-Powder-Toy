@@ -10,8 +10,8 @@
 #include "simulation/ElementGraphics.h"
 #include "simulation/Air.h"
 #ifdef LUACONSOLE
-#include "cat/LuaScriptInterface.h"
-#include "cat/LuaScriptHelper.h"
+#include "lua/LuaScriptInterface.h"
+#include "lua/LuaScriptHelper.h"
 #endif
 extern "C"
 {
