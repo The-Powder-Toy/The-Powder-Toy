@@ -62,16 +62,6 @@ void PreviewController::Update()
 		delete loginWindow;
 		loginWindow = NULL;
 	}
-
-	try
-	{
-		previewModel->Update();
-	}
-	catch (PreviewModelException & e)
-	{
-		Exit();
-		new ErrorMessage("Error", e.what());
-	}
 	if(previewModel->GetDoOpen() && previewModel->GetSave() && previewModel->GetSave()->GetGameSave())
 	{
 		Exit();
