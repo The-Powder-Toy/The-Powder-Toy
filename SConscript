@@ -441,10 +441,7 @@ elif(GetOption('opengl-renderer')):
 sources=Glob("src/*.cpp")
 	
 sources+=Glob("src/*/*.cpp")
-sources+=Glob("src/gui/*/*.cpp")
-sources+=Glob("src/simulation/elements/*.cpp")
-sources+=Glob("src/simulation/tools/*.cpp")
-sources+=Glob("src/client/requestbroker/*.cpp")
+sources+=Glob("src/*/*/*.cpp")
 if not GetOption('nolua'):
 	sources+=Glob("src/socket/*.c")
 
@@ -525,7 +522,7 @@ if(GetOption('win')):
 env.Command(['generated/ElementClasses.cpp', 'generated/ElementClasses.h'], Glob('src/simulation/elements/*.cpp'), pythonVer + " generator.py elements $TARGETS $SOURCES")
 sources+=Glob("generated/ElementClasses.cpp")
 
-env.Command(['generated/ToolClasses.cpp', 'generated/ToolClasses.h'], Glob('src/simulation/tools/*.cpp'), pythonVer + " generator.py tools $TARGETS $SOURCES")
+env.Command(['generated/ToolClasses.cpp', 'generated/ToolClasses.h'], Glob('src/simulation/simtools/*.cpp'), pythonVer + " generator.py tools $TARGETS $SOURCES")
 sources+=Glob("generated/ToolClasses.cpp")
 
 # final settings
