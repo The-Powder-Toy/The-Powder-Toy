@@ -9,6 +9,7 @@
 #include "Format.h"
 #include "LuaScriptInterface.h"
 #include "LuaScriptHelper.h"
+#include "PowderToy.h"
 
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/dialogues/InformationMessage.h"
@@ -2053,4 +2054,18 @@ int luatpt_screenshot(lua_State* l)
 	lua_pushstring(l, filename.str().c_str());
 	return 1;
 }
+
+int luatpt_getclip (lua_State* l)
+{
+	lua_pushstring(l, ClipboardPull());
+	return 1; 
+}
+
+int luatpt_setclip (lua_State* l)
+{
+	luaL_checktype(l, 1, LUA_TSTRING);
+	ClipboardPush((char*) std::string(luaL_optstring(l, 1, "")).c_str());
+	return 0;
+}
+
 #endif

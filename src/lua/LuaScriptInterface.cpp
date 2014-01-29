@@ -188,6 +188,8 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 		{"element",&luatpt_getelement},
 		{"element_func",&luatpt_element_func},
 		{"graphics_func",&luatpt_graphics_func},
+		{"get_clipboard", &luatpt_getclip}, 
+		{"set_clipboard", &luatpt_setclip},
 		{NULL,NULL}
 	};
 
