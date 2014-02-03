@@ -9,6 +9,7 @@
 #include "Format.h"
 #include "LuaScriptInterface.h"
 #include "LuaScriptHelper.h"
+#include "Misc.h"
 #include "PowderToy.h"
 
 #include "gui/dialogues/ErrorMessage.h"
@@ -18,7 +19,6 @@
 #include "gui/game/GameModel.h"
 #include "simulation/Simulation.h"
 
-#include <time.h>
 
 #ifndef FFI
 int luacon_partread(lua_State* l){
@@ -512,7 +512,7 @@ int luacon_keyevent(int key, int modifier, int event)
 		{
 			if (!strcmp(luacon_geterror(), "Error: Script not responding"))
 			{
-				ui::Engine::Ref().LastTick(clock());
+				ui::Engine::Ref().LastTick(gettime());
 				for(j=i;j<=c-1;j++)
 				{
 					lua_rawgeti(l, -2, j+1);
@@ -564,7 +564,7 @@ int luacon_mouseevent(int mx, int my, int mb, int event, int mouse_wheel)
 		{
 			if (!strcmp(luacon_geterror(), "Error: Script not responding"))
 			{
-				ui::Engine::Ref().LastTick(clock());
+				ui::Engine::Ref().LastTick(gettime());
 				for(j=i;j<=c-1;j++)
 				{
 					lua_rawgeti(l, -2, j+1);
@@ -625,7 +625,7 @@ int luacon_step(int mx, int my, std::string selectl, std::string selectr, std::s
 		{
 			if (!strcmp(luacon_geterror(), "Error: Script not responding"))
 			{
-				ui::Engine::Ref().LastTick(clock());
+				ui::Engine::Ref().LastTick(gettime());
 				for(j=i;j<=c-1;j++)
 				{
 					lua_rawgeti(l, -2, j+1);
@@ -646,17 +646,17 @@ int luacon_step(int mx, int my, std::string selectl, std::string selectr, std::s
 
 
 int luacon_eval(const char *command){
-	ui::Engine::Ref().LastTick(clock());
+	ui::Engine::Ref().LastTick(gettime());
 	return luaL_dostring (luacon_ci->l, command);
 }
 
 void luacon_hook(lua_State * l, lua_Debug * ar)
 {
-	if(ar->event == LUA_HOOKCOUNT && clock()-ui::Engine::Ref().LastTick() > CLOCKS_PER_SEC*3)
+	if(ar->event == LUA_HOOKCOUNT && gettime()-ui::Engine::Ref().LastTick() > 3000)
 	{
 		if(ConfirmPrompt::Blocking("Script not responding", "The Lua script may have stopped responding. There might be an infinite loop. Press \"Stop\" to stop it", "Stop"))
 			luaL_error(l, "Error: Script not responding");
-		ui::Engine::Ref().LastTick(clock());
+		ui::Engine::Ref().LastTick(gettime());
 	}
 }
 

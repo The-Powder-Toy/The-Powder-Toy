@@ -90,6 +90,8 @@ int splitsign(const char* str, char * type = NULL);
 
 void millisleep(long int t);
 
+long unsigned int gettime();
+
 // a b
 // c d
 

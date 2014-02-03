@@ -21,6 +21,7 @@
 #include "gui/game/Tool.h"
 #include "LuaScriptHelper.h"
 #include "client/HTTP.h"
+#include "Misc.h"
 #include "PowderToy.h"
 
 #include "LuaBit.h"
@@ -44,7 +45,6 @@ extern "C"
 #endif
 #include <sys/stat.h>
 #include <dirent.h>
-#include <time.h>
 #include "socket/luasocket.h"
 }
 #include "socket/socket.lua.h"
@@ -2804,7 +2804,7 @@ void LuaScriptInterface::OnTick()
 	lua_getglobal(l, "simulation");
 	lua_pushinteger(l, luacon_sim->NUM_PARTS); lua_setfield(l, -2, "NUM_PARTS");
 	lua_pop(l, 1);
-	ui::Engine::Ref().LastTick(clock());
+	ui::Engine::Ref().LastTick(gettime());
 	if(luacon_mousedown)
 		luacon_mouseevent(luacon_mousex, luacon_mousey, luacon_mousebutton, LUACON_MPRESS, 0);
 	luacon_step(luacon_mousex, luacon_mousey, luacon_selectedl, luacon_selectedr, luacon_selectedalt, luacon_brushx, luacon_brushy);
@@ -2829,7 +2829,7 @@ int LuaScriptInterface::Command(std::string command)
 			lastCode += "\n";
 		lastCode += command;
 		std::string tmp = "return " + lastCode;
-		ui::Engine::Ref().LastTick(clock());
+		ui::Engine::Ref().LastTick(gettime());
 		luaL_loadbuffer(l, tmp.c_str(), tmp.length(), "@console");
 		if(lua_type(l, -1) != LUA_TFUNCTION)
 		{

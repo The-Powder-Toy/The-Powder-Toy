@@ -1,9 +1,9 @@
 #include <iostream>
 #include <stack>
 #include <cstdio>
-#include <time.h>
 
 #include "Config.h"
+#include "Misc.h"
 #include "gui/interface/Window.h"
 #include "gui/interface/Platform.h"
 #include "gui/interface/Engine.h"
@@ -181,7 +181,7 @@ void Engine::Tick()
 		state_->DoTick(dt);
 
 
-	lastTick = clock();
+	lastTick = gettime();
 	if(windowOpenState<1.0f)
 	{
 		if(lastBuffer)

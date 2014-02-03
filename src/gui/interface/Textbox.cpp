@@ -1,8 +1,8 @@
 #include <string>
 #include <iostream>
 #include <stdexcept>
-#include <time.h>
 #include "Config.h"
+#include "Misc.h"
 #include "gui/interface/Point.h"
 #include "gui/interface/Textbox.h"
 #include "gui/interface/Keys.h"
@@ -299,10 +299,10 @@ void Textbox::Tick(float dt)
 		keyDown = 0;
 		characterDown = 0;
 	}
-	if((keyDown || characterDown) && repeatTime <= clock())
+	if((keyDown || characterDown) && repeatTime <= gettime())
 	{
 		OnVKeyPress(keyDown, characterDown, false, false, false);
-		repeatTime = clock()+(0.03 * CLOCKS_PER_SEC);
+		repeatTime = gettime()+30;
 	}
 }
 
@@ -316,7 +316,7 @@ void Textbox::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool 
 {
 	characterDown = character;
 	keyDown = key;
-	repeatTime = clock()+(0.3 * CLOCKS_PER_SEC);
+	repeatTime = gettime()+300;
 	OnVKeyPress(key, character, shift, ctrl, alt);
 }
 
