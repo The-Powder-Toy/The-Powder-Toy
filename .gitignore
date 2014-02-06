@@ -51,7 +51,7 @@ Makefile.me
 *.cbp
 *.layout
 *.config
-*.creator
+*.creator*
 *.files
 *.includes
 config.log

@@ -36,6 +36,7 @@ public:
 	virtual void OnMouseMove(int x, int y, int dx, int dy);
 	virtual void OnMouseDown(int x, int y, unsigned button);
 	virtual void OnMouseUp(int x, int y, unsigned button);
+	virtual void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
 	virtual void OnTryExit(ExitMethod method);
 	ColourPickerActivity(ui::Colour initialColour, ColourPickedCallback * callback = NULL);
 	virtual ~ColourPickerActivity();

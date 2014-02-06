@@ -42,6 +42,7 @@ public:
 	void SetInputType(ValidInput input);
 
 	void resetCursorPosition();
+	void TabFocus();
 	//Determines if the given character is valid given the input type
 	bool CharacterValid(Uint16 character);
 
