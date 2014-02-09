@@ -61,10 +61,20 @@ LuaWindow::LuaWindow(lua_State * l) :
 	onKeyReleaseFunction(0)
 {
 	this->l = l;
-	int posX = luaL_optinteger(l, 1, 0);
-	int posY = luaL_optinteger(l, 2, 0);
+	int posX = luaL_optinteger(l, 1, 1);
+	int posY = luaL_optinteger(l, 2, 1);
 	int sizeX = luaL_optinteger(l, 3, 10);
 	int sizeY = luaL_optinteger(l, 4, 10);
+
+	// We should replace this with errors
+	if (posX < 1)
+		posX = 1;
+	if (posY < 1)
+		posY = 1;
+	if (sizeX < 10)
+		sizeX = 10;
+	if (sizeY < 10)
+		sizeY = 10;
 
 	lua_pushstring(l, "Luacon_ci");
 	lua_gettable(l, LUA_REGISTRYINDEX);
@@ -154,7 +164,14 @@ int LuaWindow::position(lua_State * l)
 	{
 		luaL_checktype(l, 1, LUA_TNUMBER);
 		luaL_checktype(l, 2, LUA_TNUMBER);
-		window->Position = ui::Point(lua_tointeger(l, 1), lua_tointeger(l, 2));
+		int posX = lua_tointeger(l, 1);
+		int posY = lua_tointeger(l, 2);
+
+		if (posX < 1 || posY < 1)
+		{
+			return luaL_error(l, "Invalid position: '%d,%d'", posX, posY);
+		}
+		window->Position = ui::Point(posX, posY);
 		return 0;
 	}
 	else
@@ -172,7 +189,14 @@ int LuaWindow::size(lua_State * l)
 	{
 		luaL_checktype(l, 1, LUA_TNUMBER);
 		luaL_checktype(l, 2, LUA_TNUMBER);
-		window->Size = ui::Point(lua_tointeger(l, 1), lua_tointeger(l, 2));
+		int sizeX = lua_tointeger(l, 1);
+		int sizeY = lua_tointeger(l, 2);
+
+		if (sizeX < 10 || sizeY < 10)
+		{
+			return luaL_error(l, "Invalid size: '%d,%d'", sizeX, sizeY);
+		}
+		window->Size = ui::Point(sizeX, sizeY);
 		return 0;
 	}
 	else
