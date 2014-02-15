@@ -1371,7 +1371,6 @@ void Renderer::render_parts()
 				}
 				if(pixel_mode & PSPEC_STICKMAN)
 				{
-					char buff[4];  //Buffer for HP
 					int legr, legg, legb;
 					playerst *cplayer;
 					if(t==PT_STKM)
@@ -1385,6 +1384,7 @@ void Renderer::render_parts()
 
 					if (mousePos.X>(nx-3) && mousePos.X<(nx+3) && mousePos.Y<(ny+3) && mousePos.Y>(ny-3)) //If mouse is in the head
 					{
+						char buff[12];  //Buffer for HP
 						sprintf(buff, "%3d", sim->parts[i].life);  //Show HP
 						drawtext(mousePos.X-8-2*(sim->parts[i].life<100)-2*(sim->parts[i].life<10), mousePos.Y-12, buff, 255, 255, 255, 255);
 					}
