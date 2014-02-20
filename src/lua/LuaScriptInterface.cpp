@@ -475,6 +475,7 @@ void LuaScriptInterface::initSimulationAPI()
 		{"resetPressure", simulation_resetPressure},
 		{"saveStamp", simulation_saveStamp},
 		{"loadStamp", simulation_loadStamp},
+		{"deleteStamp", simulation_deleteStamp},
 		{"loadSave", simulation_loadSave},
 		{"getSaveID", simulation_getSaveID},
 		{"adjustCoords", simulation_adjustCoords},
@@ -1344,7 +1345,7 @@ int LuaScriptInterface::simulation_saveStamp(lua_State * l)
 
 int LuaScriptInterface::simulation_loadStamp(lua_State * l)
 {
-	int stamp_size, i = -1, j, x, y, ret;
+	int i = -1, j, x, y;
 	SaveFile * tempfile;
 	x = luaL_optint(l,2,0);
 	y = luaL_optint(l,3,0);
@@ -1375,6 +1376,34 @@ int LuaScriptInterface::simulation_loadStamp(lua_State * l)
 	else
 		lua_pushnil(l);
 	return 1;
+}
+
+int LuaScriptInterface::simulation_deleteStamp(lua_State * l)
+{
+	int stampCount = Client::Ref().GetStampsCount();
+	std::vector<std::string> stamps = Client::Ref().GetStamps(0, stampCount);
+
+	if (lua_isnumber(l, 1)) //Load from stamp ID
+	{
+		int i = luaL_optint(l, 1, 0);
+		if (i < 0 || i >= stampCount)
+			return luaL_error(l, "Invalid stamp ID: %d", i);
+		Client::Ref().DeleteStamp(stamps[i]);
+		return 0;
+	}
+	else //Load from 10 char name, or full filename
+	{
+		char * filename = (char*)luaL_optstring(l, 1, "");
+		for (std::vector<std::string>::const_iterator iterator = stamps.begin(), end = stamps.end(); iterator != end; ++iterator)
+		{
+			if (*iterator == filename)
+			{
+				Client::Ref().DeleteStamp(*iterator);
+				return 0;
+			}
+		}
+		return luaL_error(l, "Invalid stamp Name: %s", filename);
+	}
 }
 
 int LuaScriptInterface::simulation_loadSave(lua_State * l)
