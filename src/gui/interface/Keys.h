@@ -2,11 +2,17 @@
 #if defined(USE_SDL)
 #include "SDL.h"
 #define KEY_UP SDLK_UP
+#define KEY_NUM_UP SDLK_KP8
 #define KEY_DOWN SDLK_DOWN
+#define KEY_NUM_DOWN SDLK_KP2
 #define KEY_RIGHT SDLK_RIGHT
+#define KEY_NUM_RIGHT SDLK_KP6
 #define KEY_LEFT SDLK_LEFT
+#define KEY_NUM_LEFT SDLK_KP4
 #define KEY_HOME SDLK_HOME
+#define KEY_NUM_HOME SDLK_KP7
 #define KEY_END SDLK_END
+#define KEY_NUM_END SDLK_KP1
 #define KEY_BACKSPACE SDLK_BACKSPACE
 #define	KEY_DELETE SDLK_DELETE
 #define KEY_TAB SDLK_TAB
@@ -57,11 +63,17 @@
 #else
 
 #define KEY_UP 1
+#define KEY_NUM_UP 47
 #define KEY_DOWN 2
+#define KEY_NUM_DOWN 48
 #define KEY_RIGHT 3
+#define KEY_NUM_RIGHT 49
 #define KEY_LEFT 4
+#define KEY_NUM_LEFT 50
 #define KEY_HOME 5
+#define KEY_NUM_HOME 51
 #define KEY_END 6
+#define KEY_NUM_END 47
 #define KEY_BACKSPACE 7
 #define	KEY_DELETE 8
 #define KEY_TAB 9

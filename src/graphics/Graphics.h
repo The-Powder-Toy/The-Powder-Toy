@@ -33,7 +33,7 @@
 #define PIXRGB(r,g,b) (((b)<<24)|((g)<<16)|((r)<<8))
 #define PIXR(x) (((x)>>8)&0xFF)
 #define PIXG(x) (((x)>>16)&0xFF)
-#define PIXB(x) (((x)>>24))
+#define PIXB(x) (((x)>>24)&0xFF)
 #elif defined(PIX32OGL)
 #define PIXELCHANNELS 4
 #define PIXPACK(x) (0xFF000000|((x)&0xFFFFFF))												//32bit ARGB in 32bit int: AARRGGBB
@@ -46,7 +46,7 @@
 #else
 #define PIXPACK(x) (x)																		//24bit RGB in 32bit int: 00RRGGBB.
 #define PIXRGB(r,g,b) (((r)<<16)|((g)<<8)|(b))
-#define PIXR(x) ((x)>>16)
+#define PIXR(x) (((x)>>16)&0xFF)
 #define PIXG(x) (((x)>>8)&0xFF)
 #define PIXB(x) ((x)&0xFF)
 #endif

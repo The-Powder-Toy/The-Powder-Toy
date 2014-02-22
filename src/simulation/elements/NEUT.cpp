@@ -92,7 +92,7 @@ int Element_NEUT::update(UPDATE_FUNC_ARGS)
 				case PT_DEUT:
 					if ((pressureFactor+1+(parts[r>>8].life/100))>(rand()%1000))
 					{
-						DeutExplosion(sim, parts[r>>8].life, x+rx, y+ry, restrict_flt(parts[r>>8].temp + parts[r>>8].life*500, MIN_TEMP, MAX_TEMP), PT_NEUT);
+						DeutExplosion(sim, parts[r>>8].life, x+rx, y+ry, restrict_flt(parts[r>>8].temp + parts[r>>8].life*500.0f, MIN_TEMP, MAX_TEMP), PT_NEUT);
 						sim->kill_part(r>>8);
 					}
 					break;
@@ -104,7 +104,7 @@ int Element_NEUT::update(UPDATE_FUNC_ARGS)
 						parts[r>>8].vx = 0.25f*parts[r>>8].vx + parts[i].vx;
 						parts[r>>8].vy = 0.25f*parts[r>>8].vy + parts[i].vy;
 						parts[r>>8].life --;
-						parts[r>>8].temp = restrict_flt(parts[r>>8].temp + parts[r>>8].life*17, MIN_TEMP, MAX_TEMP);
+						parts[r>>8].temp = restrict_flt(parts[r>>8].temp + parts[r>>8].life*17.0f, MIN_TEMP, MAX_TEMP);
 						pv[y/CELL][x/CELL] += 6.0f * CFDS;
 
 					}

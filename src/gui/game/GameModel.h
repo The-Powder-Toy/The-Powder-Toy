@@ -12,7 +12,7 @@
 #include "Brush.h"
 #include "client/User.h"
 #include "Notification.h"
-
+#include "QuickOption.h"
 #include "Tool.h"
 #include "Menu.h"
 
@@ -23,7 +23,6 @@ class GameController;
 class Simulation;
 class Renderer;
 
-class QuickOption;
 class ToolSelection
 {
 public:
@@ -183,6 +182,7 @@ public:
 	int GetZoomFactor();
 	void SetZoomPosition(ui::Point position);
 	ui::Point GetZoomPosition();
+	ui::Point AdjustZoomCoords(ui::Point position);
 	void SetZoomWindowPosition(ui::Point position);
 	ui::Point GetZoomWindowPosition();
 	void SetStamp(GameSave * newStamp);

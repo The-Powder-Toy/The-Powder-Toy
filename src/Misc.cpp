@@ -7,12 +7,14 @@
 #include "Config.h"
 #include "Misc.h"
 #include "icondoc.h"
-#if defined(WIN)
+#ifdef WIN
 #include <shlobj.h>
 #include <shlwapi.h>
 #include <windows.h>
 #else
 #include <unistd.h>
+#include <time.h>
+#include <sys/time.h>
 #endif
 #ifdef MACOSX
 #include <mach-o/dyld.h>
@@ -101,7 +103,7 @@ int isign(float i) //TODO: INline or macro
 	return 0;
 }
 
-TPT_NO_INLINE unsigned clamp_flt(float f, float min, float max) //TODO: Also inline/macro
+unsigned clamp_flt(float f, float min, float max) //TODO: Also inline/macro
 {
 	if (f<min)
 		return 0;
@@ -110,7 +112,7 @@ TPT_NO_INLINE unsigned clamp_flt(float f, float min, float max) //TODO: Also inl
 	return (int)(255.0f*(f-min)/(max-min));
 }
 
-TPT_NO_INLINE float restrict_flt(float f, float min, float max) //TODO Inline or macro or something
+float restrict_flt(float f, float min, float max) //TODO Inline or macro or something
 {
 	if (f<min)
 		return min;
@@ -119,7 +121,7 @@ TPT_NO_INLINE float restrict_flt(float f, float min, float max) //TODO Inline or
 	return f;
 }
 
-char *mystrdup(char *s)
+char *mystrdup(const char *s)
 {
 	char *x;
 	if (s)
@@ -128,7 +130,7 @@ char *mystrdup(char *s)
 		strcpy(x, s);
 		return x;
 	}
-	return s;
+	return NULL;
 }
 
 void strlist_add(struct strlist **list, char *str)
@@ -221,7 +223,7 @@ void strcaturl(char *dst, char *src)
 	*d = 0;
 }
 
-void strappend(char *dst, char *src)
+void strappend(char *dst, const char *src)
 {
 	char *d;
 	unsigned char *s;
@@ -465,7 +467,7 @@ int register_extension()
 #elif defined(LIN)
 	char *currentfilename = exe_name();
 	FILE *f;
-	char *mimedata =
+	const char *mimedata =
 "<?xml version=\"1.0\"?>\n"
 "	<mime-info xmlns='http://www.freedesktop.org/standards/shared-mime-info'>\n"
 "	<mime-type type=\"application/vnd.powdertoy.save\">\n"
@@ -480,7 +482,7 @@ int register_extension()
 	fwrite(mimedata, 1, strlen(mimedata), f);
 	fclose(f);
 
-	char *desktopfiledata_tmp =
+	const char *desktopfiledata_tmp =
 "[Desktop Entry]\n"
 "Type=Application\n"
 "Name=Powder Toy\n"
@@ -653,6 +655,29 @@ int splitsign(const char* str, char * type)
 		}
 	}
 	return 0;
+}
+
+void millisleep(long int t)
+{
+#ifdef WIN
+	Sleep(t);
+#else
+	struct timespec s;
+	s.tv_sec = t / 1000;
+	s.tv_nsec = (t % 1000) * 10000000;
+	nanosleep(&s, NULL);
+#endif
+}
+
+long unsigned int gettime()
+{
+#ifdef WIN
+	return GetTickCount();
+#else
+	struct timespec s;
+	clock_gettime(CLOCK_MONOTONIC, &s);
+	return s.tv_sec * 1000 + s.tv_nsec / 1000000;
+#endif
 }
 
 vector2d v2d_zero = {0,0};

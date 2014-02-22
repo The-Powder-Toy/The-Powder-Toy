@@ -1,4 +1,3 @@
-#pragma once
 #include <vector>
 //#include "Platform.h"
 
@@ -24,7 +23,7 @@ Panel::Panel(Point position, Point size):
 	glEnable(GL_TEXTURE_2D);
 	glGenTextures(1, &myVidTex);
 	glBindTexture(GL_TEXTURE_2D, myVidTex);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, XRES+BARSIZE, YRES+MENUSIZE, 0, GL_RGBA, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, WINDOWW, WINDOWH, 0, GL_RGBA, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 
@@ -39,7 +38,7 @@ Panel::Panel(Point position, Point size):
 
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, lastVid);
 #else
-	myVid = new pixel[(XRES+BARSIZE)*(YRES+MENUSIZE)];
+	myVid = new pixel[WINDOWW*WINDOWH];
 #endif
 }
 
@@ -111,7 +110,7 @@ void Panel::Draw(const Point& screenPos)
 #else
 	pixel * lastVid = ui::Engine::Ref().g->vid;
 	ui::Engine::Ref().g->vid = myVid;
-	std::fill(myVid, myVid+((XRES+BARSIZE)*(YRES+MENUSIZE)), 0);
+	std::fill(myVid, myVid+(WINDOWW*WINDOWH), 0);
 #endif
 	
 	// attempt to draw all children
@@ -141,7 +140,7 @@ void Panel::Draw(const Point& screenPos)
 	int x = screenPos.X, y = screenPos.Y;
 	int h = Size.Y, w = Size.X;
 
-	double texX = double(Size.X)/double(XRES+BARSIZE), texY = 1, texYB = 1-(double(Size.Y)/double(YRES+MENUSIZE));
+	double texX = double(Size.X)/WINDOWW, texY = 1, texYB = 1-(double(Size.Y)/WINDOWH);
 
     glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	glBegin(GL_QUADS);
@@ -163,7 +162,7 @@ void Panel::Draw(const Point& screenPos)
 	//dst=(pixel *)sdl_scrn->pixels+y*sdl_scrn->pitch/PIXELSIZE+x;
 	for (int row = 0; row < Size.Y; row++)
 	{
-		std::copy(myVid+(row*(XRES+BARSIZE)), myVid+(row*(XRES+BARSIZE))+Size.X, lastVid+((screenPos.Y+row)*(XRES+BARSIZE))+screenPos.X);
+		std::copy(myVid+(row*WINDOWW), myVid+(row*WINDOWW)+Size.X, lastVid+((screenPos.Y+row)*WINDOWW)+screenPos.X);
 	}
 #endif
 }

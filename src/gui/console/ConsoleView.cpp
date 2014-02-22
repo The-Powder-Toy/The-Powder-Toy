@@ -2,7 +2,7 @@
 #include "gui/interface/Keys.h"
 
 ConsoleView::ConsoleView():
-	ui::Window(ui::Point(0, 0), ui::Point(XRES+BARSIZE, 150)),
+	ui::Window(ui::Point(0, 0), ui::Point(WINDOWW, 150)),
 	commandField(NULL)
 {
 	class CommandHighlighter: public ui::TextboxAction
@@ -41,10 +41,10 @@ void ConsoleView::DoKeyPress(int key, Uint16 character, bool shift, bool ctrl, b
 		commandField->SetText("");
 		commandField->SetDisplayText("");
 		break;
-	case KEY_DOWN:
+	case KEY_DOWN: case KEY_NUM_DOWN:
 		c->NextCommand();
 		break;
-	case KEY_UP:
+	case KEY_UP: case KEY_NUM_UP:
 		c->PreviousCommand();
 		break;
 	default:

@@ -1,6 +1,5 @@
 #include <string>
 #include <sstream>
-#include <time.h>
 #include "SearchController.h"
 #include "SearchModel.h"
 #include "SearchView.h"
@@ -9,6 +8,7 @@
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/preview/PreviewController.h"
 #include "client/Client.h"
+#include "Misc.h"
 #include "tasks/Task.h"
 #include "tasks/TaskWindow.h"
 
@@ -61,7 +61,7 @@ void SearchController::ReleaseLoadedSave()
 
 void SearchController::Update()
 {
-	if(!nextQueryDone && nextQueryTime < clock())
+	if(!nextQueryDone && nextQueryTime < gettime())
 	{
 		nextQueryDone = true;
 		searchModel->UpdateSaveList(1, nextQuery);
@@ -107,7 +107,7 @@ void SearchController::DoSearch(std::string query, bool now)
 	nextQuery = query;
 	if(!now)
 	{
-		nextQueryTime = clock()+(0.6 * CLOCKS_PER_SEC);
+		nextQueryTime = gettime()+600;
 		nextQueryDone = false;
 	}
 	else
@@ -188,7 +188,7 @@ void SearchController::OpenSave(int saveID)
 	if(activePreview)
 		delete activePreview;
 	Graphics * g = ui::Engine::Ref().g;
-	g->fillrect(XRES/3, YRES+MENUSIZE-20, XRES/3, 20, 0, 0, 0, 150); //dim the "Page X of Y" a little to make the CopyTextButton more noticeable
+	g->fillrect(XRES/3, WINDOWH-20, XRES/3, 20, 0, 0, 0, 150); //dim the "Page X of Y" a little to make the CopyTextButton more noticeable
 	activePreview = new PreviewController(saveID, instantOpen, new OpenCallback(this));
 	ui::Engine::Ref().ShowWindow(activePreview->GetView());
 }
@@ -198,7 +198,7 @@ void SearchController::OpenSave(int saveID, int saveDate)
 	if(activePreview)
 		delete activePreview;
 	Graphics * g = ui::Engine::Ref().g;
-	g->fillrect(XRES/3, YRES+MENUSIZE-20, XRES/3, 20, 0, 0, 0, 150); //dim the "Page X of Y" a little to make the CopyTextButton more noticeable
+	g->fillrect(XRES/3, WINDOWH-20, XRES/3, 20, 0, 0, 0, 150); //dim the "Page X of Y" a little to make the CopyTextButton more noticeable
 	activePreview = new PreviewController(saveID, saveDate, instantOpen, new OpenCallback(this));
 	ui::Engine::Ref().ShowWindow(activePreview->GetView());
 }

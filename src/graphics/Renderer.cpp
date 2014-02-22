@@ -10,8 +10,8 @@
 #include "simulation/ElementGraphics.h"
 #include "simulation/Air.h"
 #ifdef LUACONSOLE
-#include "cat/LuaScriptInterface.h"
-#include "cat/LuaScriptHelper.h"
+#include "lua/LuaScriptInterface.h"
+#include "lua/LuaScriptHelper.h"
 #endif
 extern "C"
 {
@@ -22,8 +22,8 @@ extern "C"
 }
 
 #ifndef OGLI
-#define VIDXRES (XRES+BARSIZE)
-#define VIDYRES (YRES+MENUSIZE)
+#define VIDXRES WINDOWW
+#define VIDYRES WINDOWH
 #else
 #define VIDXRES XRES
 #define VIDYRES YRES
@@ -356,10 +356,10 @@ void Renderer::FinaliseParts()
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	glBegin(GL_QUADS);
 	glTexCoord2d(1, 0);
-	//glVertex3f(XRES*sdl_scale, (YRES+MENUSIZE)*sdl_scale, 1.0);
+	//glVertex3f(XRES*sdl_scale, WINDOWH*sdl_scale, 1.0);
 	glVertex3f(XRES*sdl_scale, YRES*sdl_scale, 1.0);
 	glTexCoord2d(0, 0);
-	//glVertex3f(0, (YRES+MENUSIZE)*sdl_scale, 1.0);
+	//glVertex3f(0, WINDOWH*sdl_scale, 1.0);
 	glVertex3f(0, YRES*sdl_scale, 1.0);
 	glTexCoord2d(0, 1);
 	//glVertex3f(0, MENUSIZE*sdl_scale, 1.0);
@@ -474,11 +474,11 @@ void Renderer::RenderZoom()
 			glVertex2i(zoomScopePosition.X+zoomScopeSize, zoomScopePosition.Y);
 			glVertex2i(zoomScopePosition.X+zoomScopeSize, zoomScopePosition.Y+zoomScopeSize);
 			glVertex2i(zoomScopePosition.X, zoomScopePosition.Y+zoomScopeSize);
-			/*glVertex3i((zoomScopePosition.X-1)*sdl_scale, (YRES+MENUSIZE-(zoomScopePosition.Y-1))*sdl_scale, 0);
-			glVertex3i((zoomScopePosition.X-1)*sdl_scale, (YRES+MENUSIZE-(zoomScopePosition.Y+zoomScopeSize))*sdl_scale, 0);
-			glVertex3i((zoomScopePosition.X+zoomScopeSize)*sdl_scale, (YRES+MENUSIZE-(zoomScopePosition.Y+zoomScopeSize))*sdl_scale, 0);
-			glVertex3i((zoomScopePosition.X+zoomScopeSize)*sdl_scale, (YRES+MENUSIZE-(zoomScopePosition.Y-1))*sdl_scale, 0);
-			glVertex3i((zoomScopePosition.X-1)*sdl_scale, (YRES+MENUSIZE-(zoomScopePosition.Y-1))*sdl_scale, 0);*/
+			/*glVertex3i((zoomScopePosition.X-1)*sdl_scale, (WINDOWH-(zoomScopePosition.Y-1))*sdl_scale, 0);
+			glVertex3i((zoomScopePosition.X-1)*sdl_scale, (WINDOWH-(zoomScopePosition.Y+zoomScopeSize))*sdl_scale, 0);
+			glVertex3i((zoomScopePosition.X+zoomScopeSize)*sdl_scale, (WINDOWH-(zoomScopePosition.Y+zoomScopeSize))*sdl_scale, 0);
+			glVertex3i((zoomScopePosition.X+zoomScopeSize)*sdl_scale, (WINDOWH-(zoomScopePosition.Y-1))*sdl_scale, 0);
+			glVertex3i((zoomScopePosition.X-1)*sdl_scale, (WINDOWH-(zoomScopePosition.Y-1))*sdl_scale, 0);*/
 			glEnd();
 			glDisable(GL_COLOR_LOGIC_OP);
 		}
@@ -880,7 +880,7 @@ void Renderer::DrawWalls()
 									drawblob((x*CELL+i), (y*CELL+j), 0x24, 0x24, 0x24);
 							for (j=0; j<CELL; j+=2)
 								for (i=0; i<CELL; i+=2)
-									vid[(y*CELL+j)*(XRES+BARSIZE)+(x*CELL+i)] = PIXPACK(0x000000);
+									vid[(y*CELL+j)*WINDOWW+(x*CELL+i)] = PIXPACK(0x000000);
 						}
 						else
 						{
@@ -1371,7 +1371,6 @@ void Renderer::render_parts()
 				}
 				if(pixel_mode & PSPEC_STICKMAN)
 				{
-					char buff[4];  //Buffer for HP
 					int legr, legg, legb;
 					playerst *cplayer;
 					if(t==PT_STKM)
@@ -1385,6 +1384,7 @@ void Renderer::render_parts()
 
 					if (mousePos.X>(nx-3) && mousePos.X<(nx+3) && mousePos.Y<(ny+3) && mousePos.Y>(ny-3)) //If mouse is in the head
 					{
+						char buff[12];  //Buffer for HP
 						sprintf(buff, "%3d", sim->parts[i].life);  //Show HP
 						drawtext(mousePos.X-8-2*(sim->parts[i].life<100)-2*(sim->parts[i].life<10), mousePos.Y-12, buff, 255, 255, 255, 255);
 					}
@@ -2169,8 +2169,8 @@ void Renderer::draw_other() // EMP effect
 		glColor4f(femp_decor*2.5f, 0.4f+femp_decor*1.5f, 1.0f+femp_decor*1.5f, femp_decor/0.44f);
 		glVertex2f(0, MENUSIZE);
 		glVertex2f(XRES, MENUSIZE);
-		glVertex2f(XRES, YRES+MENUSIZE);
-		glVertex2f(0, YRES+MENUSIZE);
+		glVertex2f(XRES, WINDOWH);
+		glVertex2f(0, WINDOWH);
 		glEnd();
 		glTranslated(0, -MENUSIZE, 0);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, prevFbo);
@@ -2795,7 +2795,7 @@ VideoBuffer Renderer::DumpFrame()
 	VideoBuffer newBuffer(XRES, YRES);
 	for(int y = 0; y < YRES; y++)
 	{
-		std::copy(vid+(y*(XRES+BARSIZE)), vid+(y*(XRES+BARSIZE))+XRES, newBuffer.Buffer+(y*XRES));
+		std::copy(vid+(y*WINDOWW), vid+(y*WINDOWW)+XRES, newBuffer.Buffer+(y*XRES));
 	}
 	return newBuffer;
 #endif

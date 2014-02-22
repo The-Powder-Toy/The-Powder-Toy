@@ -1,6 +1,7 @@
 #ifndef SAVE_H
 #define SAVE_H
 
+#include <list>
 #include <vector>
 #include <string>
 #include <stdlib.h>
@@ -26,7 +27,7 @@ public:
 
 	SaveInfo(int _id, int _date, int _votesUp, int _votesDown, std::string _userName, std::string _name);
 
-	SaveInfo(int _id, int date_, int _votesUp, int _votesDown, int _vote, std::string _userName, std::string _name, std::string description_, bool published_, std::vector<std::string> tags);
+	SaveInfo(int _id, int date_, int _votesUp, int _votesDown, int _vote, std::string _userName, std::string _name, std::string description_, bool published_, std::list<std::string> tags);
 
 	~SaveInfo();
 
@@ -35,7 +36,7 @@ public:
 
 	std::string Description;
 
-	std::vector<std::string> tags;
+	std::list<std::string> tags;
 
 	int vote;
 
@@ -68,8 +69,8 @@ public:
 	void SetVersion(int version);
 	int GetVersion();
 
-	void SetTags(std::vector<std::string> tags);
-	std::vector<std::string> GetTags();
+	void SetTags(std::list<std::string> tags);
+	std::list<std::string> GetTags();
 
 	GameSave * GetGameSave();
 	void SetGameSave(GameSave * gameSave);

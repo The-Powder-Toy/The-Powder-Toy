@@ -66,7 +66,7 @@ Element_LIFE::Element_LIFE()
 //#TPT-Directive ElementHeader Element_LIFE static int update(UPDATE_FUNC_ARGS)
 int Element_LIFE::update(UPDATE_FUNC_ARGS)
 {
-	if (parts[i].tmp <= 0)
+	if (parts[i].tmp <= 0 && parts[i].tmp > NGOL)
 		sim->kill_part(i);
 	return 0;
 }
@@ -118,9 +118,13 @@ int Element_LIFE::graphics(GRAPHICS_FUNC_ARGS)
 			pc = PIXRGB(150, 150, 0);
 		else
 			pc = PIXRGB(255, 255, 0);
-	} else {
+	}
+	else if (cpart->ctype >= 0 && cpart->ctype < NGOL)
+	{
 		pc = Element_GOL_colour[cpart->ctype];
 	}
+	else
+		pc = ren->sim->elements[cpart->type].Colour;
 	*colr = PIXR(pc);
 	*colg = PIXG(pc);
 	*colb = PIXB(pc);

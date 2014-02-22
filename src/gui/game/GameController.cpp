@@ -27,9 +27,9 @@
 #include "simulation/Snapshot.h"
 #include "debug/DebugInfo.h"
 #ifdef LUACONSOLE
-#include "cat/LuaScriptInterface.h"
+#include "lua/LuaScriptInterface.h"
 #else
-#include "cat/TPTScriptInterface.h"
+#include "lua/TPTScriptInterface.h"
 #endif
 //#include "debug/ElementPopulation.h"
 
@@ -382,17 +382,7 @@ ui::Point GameController::PointTranslate(ui::Point point)
 	if(point.X < 0)
 		point.X = 0;
 
-	bool zoomEnabled = gameModel->GetZoomEnabled();
-	if(!zoomEnabled)
-		return point;
-	//If we try to draw inside the zoom window, normalise the coordinates
-	int zoomFactor = gameModel->GetZoomFactor();
-	ui::Point zoomWindowPosition = gameModel->GetZoomWindowPosition();
-	ui::Point zoomWindowSize = ui::Point(gameModel->GetZoomSize()*zoomFactor, gameModel->GetZoomSize()*zoomFactor);
-
-	if(point.X >= zoomWindowPosition.X && point.X >= zoomWindowPosition.Y && point.X <= zoomWindowPosition.X+zoomWindowSize.X && point.Y <= zoomWindowPosition.Y+zoomWindowSize.Y)
-		return ((point-zoomWindowPosition)/gameModel->GetZoomFactor())+gameModel->GetZoomPosition();
-	return point;
+	return gameModel->AdjustZoomCoords(point);
 }
 
 ui::Point GameController::NormaliseBlockCoord(ui::Point point)
@@ -732,11 +722,13 @@ void GameController::Tick()
 #ifdef LUACONSOLE
 		((LuaScriptInterface*)commandInterface)->Init();
 #endif
+#ifndef MACOSX
 		if(!Client::Ref().GetPrefBool("InstallCheck", false))
 		{
 			Client::Ref().SetPref("InstallCheck", true);
 			Install();
 		}
+#endif
 		firstTick = false;
 	}
 	for(std::vector<DebugInfo*>::iterator iter = debugInfo.begin(), end = debugInfo.end(); iter != end; iter++)
@@ -1033,10 +1025,10 @@ void GameController::SetActiveTool(int toolSelection, Tool * tool)
 	for(int i = 0; i < 3; i++)
 	{
 		if(gameModel->GetActiveTool(i) == gameModel->GetMenuList().at(SC_WALL)->GetToolList().at(WL_GRAV))
-		{
 			gameModel->GetRenderer()->gravityZonesEnabled = true;
-		}
 	}
+	if(tool->GetIdentifier() == "DEFAULT_UI_PROPERTY")
+		((PropertyTool *)tool)->OpenWindow(gameModel->GetSimulation());
 }
 
 int GameController::GetReplaceModeFlags()

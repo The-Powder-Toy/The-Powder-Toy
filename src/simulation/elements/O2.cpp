@@ -88,7 +88,10 @@ int Element_O2::update(UPDATE_FUNC_ARGS)
 				parts[j].temp = MAX_TEMP;
 			j = sim->create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_PHOT);
 			if (j != -1)
+			{
 				parts[j].temp = MAX_TEMP;
+				parts[j].tmp = 0x1;
+			}
 			j = sim->create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_PLSM);
 			if (j != -1)
 			{

@@ -24,6 +24,10 @@
 #endif
 #ifdef MACOSX
 #include <ApplicationServices/ApplicationServices.h>
+extern "C" {
+	char * readClipboard();
+	void writeClipboard(const char * clipboardData);	
+}
 #endif
 
 #include "Format.h"
@@ -69,14 +73,7 @@ void ClipboardPush(char * text)
 	}
 	clipboardText = mystrdup(text);
 #ifdef MACOSX
-	PasteboardRef newclipboard;
-
-	if (PasteboardCreate(kPasteboardClipboard, &newclipboard)!=noErr) return;
-	if (PasteboardClear(newclipboard)!=noErr) return;
-	PasteboardSynchronize(newclipboard);
-
-	CFDataRef data = CFDataCreate(kCFAllocatorDefault, (const UInt8*)text, strlen(text));
-	PasteboardPutItemFlavor(newclipboard, (PasteboardItemID)1, CFSTR("com.apple.traditional-mac-plain-text"), data, 0);
+	writeClipboard(text);
 #elif defined(WIN)
 	if (OpenClipboard(NULL))
 	{
@@ -109,7 +106,9 @@ void EventProcess(SDL_Event event);
 char * ClipboardPull()
 {
 #ifdef MACOSX
-	printf("Not implemented: get text from clipboard\n");
+	char * data = readClipboard();
+	if(!data) return mystrdup("");
+	return mystrdup(data);
 #elif defined(WIN)
 	if (OpenClipboard(NULL))
 	{
@@ -201,7 +200,7 @@ void blit(pixel * vid)
 	if(sdl_scrn)
 	{
 		pixel * src = vid;
-		int j, x = 0, y = 0, w = XRES+BARSIZE, h = YRES+MENUSIZE, pitch = XRES+BARSIZE;
+		int j, x = 0, y = 0, w = WINDOWW, h = WINDOWH, pitch = WINDOWW;
 		pixel *dst;
 		if (SDL_MUSTLOCK(sdl_scrn))
 			if (SDL_LockSurface(sdl_scrn)<0)
@@ -245,7 +244,7 @@ void blit2(pixel * vid, int currentScale)
 	if(sdl_scrn)
 	{
 		pixel * src = vid;
-		int j, x = 0, y = 0, w = XRES+BARSIZE, h = YRES+MENUSIZE, pitch = XRES+BARSIZE;
+		int j, x = 0, y = 0, w = WINDOWW, h = WINDOWH, pitch = WINDOWW;
 		pixel *dst;
 		int i,k;
 		if (SDL_MUSTLOCK(sdl_scrn))
@@ -355,9 +354,9 @@ SDL_Surface * SDLSetScreen(int newScale, bool newFullscreen)
 	fullscreen = newFullscreen;
 	SDL_Surface * surface;
 #ifndef OGLI
-	surface = SDL_SetVideoMode((XRES + BARSIZE) * newScale, (YRES + MENUSIZE) * newScale, 32, SDL_SWSURFACE | (newFullscreen?SDL_FULLSCREEN:0));
+	surface = SDL_SetVideoMode(WINDOWW * newScale, WINDOWH * newScale, 32, SDL_SWSURFACE | (newFullscreen?SDL_FULLSCREEN:0));
 #else
-	surface = SDL_SetVideoMode((XRES + BARSIZE) * newScale, (YRES + MENUSIZE) * newScale, 32, SDL_OPENGL | SDL_RESIZABLE | (newFullscreen?SDL_FULLSCREEN:0));
+	surface = SDL_SetVideoMode(WINDOWW * newScale, WINDOWH * newScale, 32, SDL_OPENGL | SDL_RESIZABLE | (newFullscreen?SDL_FULLSCREEN:0));
 #endif
 	return surface;
 }
@@ -470,7 +469,7 @@ void EventProcess(SDL_Event event)
 #ifdef OGLI
 	case SDL_VIDEORESIZE:
 	{
-		float ratio = float(XRES+BARSIZE) / float(YRES+MENUSIZE);
+		float ratio = (float)WINDOWW / WINDOWH;
 		float width = event.resize.w;
 		float height = width/ratio;
 
@@ -482,9 +481,9 @@ void EventProcess(SDL_Event event)
 
 		currentWidth = width;
 		currentHeight = height;
-		inputScale = float(XRES+BARSIZE)/currentWidth;
+		inputScale = (float)WINDOWW/currentWidth;
 
-		glLineWidth(currentWidth/float(XRES+BARSIZE));
+		glLineWidth(currentWidth/(float)WINDOWW);
 		if(sdl_scrn == NULL)
 		{
 			std::cerr << "Oh bugger" << std::endl;
@@ -616,8 +615,8 @@ bool LoadWindowPosition(int scale)
 	SDL_VERSION(&sysInfo.version);
 	if (SDL_GetWMInfo(&sysInfo) > 0)
 	{
-		int windowW = (XRES + BARSIZE) * scale;
-		int windowH = (YRES + MENUSIZE) * scale;
+		int windowW = WINDOWW * scale;
+		int windowH = WINDOWH * scale;
 
 		int savedWindowX = Client::Ref().GetPrefInteger("WindowX", INT_MAX);
 		int savedWindowY = Client::Ref().GetPrefInteger("WindowY", INT_MAX);
@@ -687,7 +686,7 @@ bool SaveWindowPosition()
 
 #endif
 
-void BlueScreen(char * detailMessage){
+void BlueScreen(const char * detailMessage){
 	ui::Engine * engine = &ui::Engine::Ref();
 	engine->g->fillrect(0, 0, engine->GetWidth(), engine->GetHeight(), 17, 114, 169, 210);
 
@@ -749,8 +748,8 @@ void SigHandler(int signal)
 
 int main(int argc, char * argv[])
 {
-	currentWidth = XRES+BARSIZE; 
-	currentHeight = YRES+MENUSIZE;
+	currentWidth = WINDOWW; 
+	currentHeight = WINDOWH;
 
 
 	std::map<std::string, std::string> arguments = readArguments(argc, argv);
@@ -840,7 +839,7 @@ int main(int argc, char * argv[])
 
 	engine = &ui::Engine::Ref();
 	engine->SetMaxSize(desktopWidth, desktopHeight);
-	engine->Begin(XRES+BARSIZE, YRES+MENUSIZE);
+	engine->Begin(WINDOWW, WINDOWH);
 	engine->SetFastQuit(Client::Ref().GetPrefBool("FastQuit", true));
 
 #if !defined(DEBUG) && !defined(_DEBUG)
@@ -852,7 +851,7 @@ int main(int argc, char * argv[])
 #endif
 
 	GameController * gameController = NULL;
-#ifndef DEBUG
+#if !defined(DEBUG) && !defined(_DEBUG)
 	try {
 #endif
 
@@ -861,9 +860,9 @@ int main(int argc, char * argv[])
 
 		if(arguments["open"].length())
 		{
-	#ifdef DEBUG
+#ifdef DEBUG
 			std::cout << "Loading " << arguments["open"] << std::endl;
-	#endif
+#endif
 			if(Client::Ref().FileExists(arguments["open"]))
 			{
 				try
@@ -900,14 +899,14 @@ int main(int argc, char * argv[])
 			engine->g->drawrect((engine->GetWidth()/2)-100, (engine->GetHeight()/2)-25, 200, 50, 255, 255, 255, 180);
 			engine->g->drawtext((engine->GetWidth()/2)-(Graphics::textwidth("Loading save...")/2), (engine->GetHeight()/2)-5, "Loading save...", style::Colour::InformationTitle.Red, style::Colour::InformationTitle.Green, style::Colour::InformationTitle.Blue, 255);
 
-	#ifdef OGLI
+#ifdef OGLI
 			blit();
-	#else
+#else
 			if(engine->Scale==2)
 				blit2(engine->g->vid, engine->Scale);
 			else
 				blit(engine->g->vid);
-	#endif
+#endif
 			std::string ptsaveArg = arguments["ptsave"];
 			try
 			{
@@ -926,9 +925,9 @@ int main(int argc, char * argv[])
 				}
 				if(saveIdPart.length())
 				{
-	#ifdef DEBUG
+#ifdef DEBUG
 					std::cout << "Got Ptsave: id: " <<  saveIdPart << std::endl;
-	#endif
+#endif
 					saveId = format::StringToNumber<int>(saveIdPart);
 					if(!saveId)
 						throw std::runtime_error("Invalid Save ID");
@@ -960,11 +959,11 @@ int main(int argc, char * argv[])
 		SaveWindowPosition();
 	#endif
 
-#ifndef DEBUG
+#if !defined(DEBUG) && !defined(_DEBUG)
 	}
-	catch(...)
+	catch(exception& e)
 	{
-		BlueScreen("Unhandled exception");
+		BlueScreen(e.what());
 	}
 #endif
 	

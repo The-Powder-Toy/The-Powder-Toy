@@ -9,6 +9,8 @@
 #include "Format.h"
 #include "LuaScriptInterface.h"
 #include "LuaScriptHelper.h"
+#include "Misc.h"
+#include "PowderToy.h"
 
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/dialogues/InformationMessage.h"
@@ -17,7 +19,6 @@
 #include "gui/game/GameModel.h"
 #include "simulation/Simulation.h"
 
-#include <time.h>
 
 #ifndef FFI
 int luacon_partread(lua_State* l){
@@ -264,7 +265,7 @@ int luacon_element_getproperty(char * key, int * format, unsigned int * modified
 		offset = offsetof(Element, Colour);
 		*format = 0;
 		if (modified_stuff)
-			*modified_stuff |= LUACON_EL_MODIFIED_GRAPHICS;
+			*modified_stuff |= LUACON_EL_MODIFIED_GRAPHICS | LUACON_EL_MODIFIED_MENUS;
 	}
 	else if (strcmp(key, "colour")==0){
 		offset = offsetof(Element, Colour);
@@ -457,12 +458,6 @@ int luacon_elementwrite(lua_State* l){
 			//Convert to upper case
 			for(j = 0; j < strlen(tempstring); j++)
 				tempstring[j] = toupper(tempstring[j]);
-			if(strlen(tempstring)>4)
-			{
-				free(tempstring);
-				free(key);
-				return luaL_error(l, "Name too long");
-			}
 			if(luacon_ci->GetParticleType(tempstring) != -1)
 			{
 				free(tempstring);
@@ -517,7 +512,7 @@ int luacon_keyevent(int key, int modifier, int event)
 		{
 			if (!strcmp(luacon_geterror(), "Error: Script not responding"))
 			{
-				ui::Engine::Ref().LastTick(clock());
+				ui::Engine::Ref().LastTick(gettime());
 				for(j=i;j<=c-1;j++)
 				{
 					lua_rawgeti(l, -2, j+1);
@@ -569,7 +564,7 @@ int luacon_mouseevent(int mx, int my, int mb, int event, int mouse_wheel)
 		{
 			if (!strcmp(luacon_geterror(), "Error: Script not responding"))
 			{
-				ui::Engine::Ref().LastTick(clock());
+				ui::Engine::Ref().LastTick(gettime());
 				for(j=i;j<=c-1;j++)
 				{
 					lua_rawgeti(l, -2, j+1);
@@ -630,7 +625,7 @@ int luacon_step(int mx, int my, std::string selectl, std::string selectr, std::s
 		{
 			if (!strcmp(luacon_geterror(), "Error: Script not responding"))
 			{
-				ui::Engine::Ref().LastTick(clock());
+				ui::Engine::Ref().LastTick(gettime());
 				for(j=i;j<=c-1;j++)
 				{
 					lua_rawgeti(l, -2, j+1);
@@ -650,18 +645,18 @@ int luacon_step(int mx, int my, std::string selectl, std::string selectr, std::s
 }
 
 
-int luacon_eval(char *command){
-	ui::Engine::Ref().LastTick(clock());
+int luacon_eval(const char *command){
+	ui::Engine::Ref().LastTick(gettime());
 	return luaL_dostring (luacon_ci->l, command);
 }
 
 void luacon_hook(lua_State * l, lua_Debug * ar)
 {
-	if(ar->event == LUA_HOOKCOUNT && clock()-ui::Engine::Ref().LastTick() > CLOCKS_PER_SEC*3)
+	if(ar->event == LUA_HOOKCOUNT && gettime()-ui::Engine::Ref().LastTick() > 3000)
 	{
 		if(ConfirmPrompt::Blocking("Script not responding", "The Lua script may have stopped responding. There might be an infinite loop. Press \"Stop\" to stop it", "Stop"))
 			luaL_error(l, "Error: Script not responding");
-		ui::Engine::Ref().LastTick(clock());
+		ui::Engine::Ref().LastTick(gettime());
 	}
 }
 
@@ -870,7 +865,7 @@ int luatpt_drawtext(lua_State* l)
 	textgreen = luaL_optint(l, 5, 255);
 	textblue = luaL_optint(l, 6, 255);
 	textalpha = luaL_optint(l, 7, 255);
-	if (textx<0 || texty<0 || textx>=XRES+BARSIZE || texty>=YRES+MENUSIZE)
+	if (textx<0 || texty<0 || textx>=WINDOWW || texty>=WINDOWH)
 		return luaL_error(l, "Screen coordinates out of range (%d,%d)", textx, texty);
 	if (textred<0) textred = 0;
 	if (textred>255) textred = 255;
@@ -1430,7 +1425,7 @@ int luatpt_drawpixel(lua_State* l)
 	b = luaL_optint(l, 5, 255);
 	a = luaL_optint(l, 6, 255);
 
-	if (x<0 || y<0 || x>=XRES+BARSIZE || y>=YRES+MENUSIZE)
+	if (x<0 || y<0 || x>=WINDOWW || y>=WINDOWH)
 		return luaL_error(l, "Screen coordinates out of range (%d,%d)", x, y);
 	if (r<0) r = 0;
 	if (r>255) r = 255;
@@ -1456,12 +1451,12 @@ int luatpt_drawrect(lua_State* l)
 	b = luaL_optint(l, 7, 255);
 	a = luaL_optint(l, 8, 255);
 
-	if (x<0 || y<0 || x>=XRES+BARSIZE || y>=YRES+MENUSIZE)
+	if (x<0 || y<0 || x>=WINDOWW || y>=WINDOWH)
 		return luaL_error(l, "Screen coordinates out of range (%d,%d)", x, y);
-	if(x+w > XRES+BARSIZE)
-		w = XRES+BARSIZE-x;
-	if(y+h > YRES+MENUSIZE)
-		h = YRES+MENUSIZE-y;
+	if(x+w > WINDOWW)
+		w = WINDOWW-x;
+	if(y+h > WINDOWH)
+		h = WINDOWH-y;
 	if (r<0) r = 0;
 	if (r>255) r = 255;
 	if (g<0) g = 0;
@@ -1486,12 +1481,12 @@ int luatpt_fillrect(lua_State* l)
 	b = luaL_optint(l, 7, 255);
 	a = luaL_optint(l, 8, 255);
 
-	if (x<0 || y<0 || x>=XRES+BARSIZE || y>=YRES+MENUSIZE)
+	if (x<0 || y<0 || x>=WINDOWW || y>=WINDOWH)
 		return luaL_error(l, "Screen coordinates out of range (%d,%d)", x, y);
-	if(x+w > XRES+BARSIZE)
-		w = XRES+BARSIZE-x;
-	if(y+h > YRES+MENUSIZE)
-		h = YRES+MENUSIZE-y;
+	if(x+w > WINDOWW)
+		w = WINDOWW-x;
+	if(y+h > WINDOWH)
+		h = WINDOWH-y;
 	if (r<0) r = 0;
 	if (r>255) r = 255;
 	if (g<0) g = 0;
@@ -1917,7 +1912,8 @@ int luatpt_setfpscap(lua_State* l)
 }
 int luatpt_getscript(lua_State* l)
 {
-	char *filedata = NULL, *fileuri = NULL, *filename = NULL, *lastError = NULL, *luacommand = NULL;
+	char *filedata = NULL, *fileuri = NULL, *filename = NULL, *luacommand = NULL;
+	const char *lastError = NULL;
 	std::string fileauthor = "", fileid = "";
 	int len, ret,run_script;
 	FILE * outputfile;
@@ -1998,7 +1994,10 @@ fin:
 	if(luacommand) delete[] luacommand;
 	luacommand = NULL;
 
-	if(lastError) return luaL_error(l, lastError);
+	if(lastError)
+	{
+		return luaL_error(l, lastError);
+	}
 	return 0;
 }
 
@@ -2017,22 +2016,56 @@ int screenshotIndex = 0;
 int luatpt_screenshot(lua_State* l)
 {
 	int captureUI = luaL_optint(l, 1, 0);
+	int fileType = luaL_optint(l, 2, 0);
 	std::vector<char> data;
 	if(captureUI)
 	{
 		VideoBuffer screenshot(ui::Engine::Ref().g->DumpFrame());
-		data = format::VideoBufferToPNG(screenshot);
+		if(fileType == 1) {
+			data = format::VideoBufferToBMP(screenshot);
+		} else if(fileType == 2) {
+			data = format::VideoBufferToPPM(screenshot);
+		} else {
+			data = format::VideoBufferToPNG(screenshot);
+		}
 	}
 	else
 	{
 		VideoBuffer screenshot(luacon_ren->DumpFrame());
-		data = format::VideoBufferToPNG(screenshot);
+		if(fileType == 1) {
+			data = format::VideoBufferToBMP(screenshot);
+		} else if(fileType == 2) {
+			data = format::VideoBufferToPPM(screenshot);
+		} else {
+			data = format::VideoBufferToPNG(screenshot);
+		}
 	}
 	std::stringstream filename;
 	filename << "screenshot_";
 	filename << std::setfill('0') << std::setw(6) << (screenshotIndex++);
-	filename << ".png";
+	if(fileType == 1) {
+		filename << ".bmp";
+	} else if(fileType == 2) {
+		filename << ".ppm";
+	} else {
+		filename << ".png";
+	}
 	Client::Ref().WriteFile(data, filename.str());
+	lua_pushstring(l, filename.str().c_str());
+	return 1;
+}
+
+int luatpt_getclip (lua_State* l)
+{
+	lua_pushstring(l, ClipboardPull());
+	return 1; 
+}
+
+int luatpt_setclip (lua_State* l)
+{
+	luaL_checktype(l, 1, LUA_TSTRING);
+	ClipboardPush((char*) std::string(luaL_optstring(l, 1, "")).c_str());
 	return 0;
 }
+
 #endif

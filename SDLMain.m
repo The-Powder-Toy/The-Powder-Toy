@@ -84,17 +84,21 @@ static NSString *getApplicationName(void)
 /* Set the working directory to the .app's parent directory */
 - (void) setupWorkingDirectory:(BOOL)shouldChdir
 {
-    if (shouldChdir)
-    {
-        char parentdir[MAXPATHLEN];
-        CFURLRef url = CFBundleCopyBundleURL(CFBundleGetMainBundle());
-        CFURLRef url2 = CFURLCreateCopyDeletingLastPathComponent(0, url);
-        if (CFURLGetFileSystemRepresentation(url2, 1, (UInt8 *)parentdir, MAXPATHLEN)) {
-            chdir(parentdir);   /* chdir to the binary app's parent */
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
+    if([paths count] < 1) return;
+    
+    NSString *appSupportPath = [paths objectAtIndex:0];
+    BOOL isDir = NO;
+    NSError *error = nil;
+    NSString *appPath = [appSupportPath stringByAppendingPathComponent:@"The Powder Toy"];
+    if (![[NSFileManager defaultManager] fileExistsAtPath:appPath isDirectory:&isDir] && isDir == NO) {
+        if(![[NSFileManager defaultManager] createDirectoryAtPath:appPath withIntermediateDirectories:YES attributes:nil error:&error])
+        {
+            NSLog(@"Could not set up working dir. Error: %@", error);
+            return;
         }
-        CFRelease(url);
-        CFRelease(url2);
     }
+    chdir([appPath UTF8String]);
 }
 
 #if SDL_USE_NIB_FILE
@@ -253,6 +257,7 @@ static void CustomApplicationMain (int argc, char **argv)
     const char *temparg;
     size_t arglen;
     char *arg;
+    char *openCommandArg;
     char **newargv;
 
     if (!gFinderLaunch)  /* MacOS is passing command line args. */
@@ -267,7 +272,11 @@ static void CustomApplicationMain (int argc, char **argv)
     if (arg == NULL)
         return FALSE;
 
-    newargv = (char **) realloc(gArgv, sizeof (char *) * (gArgc + 2));
+    openCommandArg = (char *) SDL_malloc(5);
+    if (openCommandArg == NULL)
+        return FALSE;
+
+    newargv = (char **) realloc(gArgv, sizeof (char *) * (gArgc + 3));
     if (newargv == NULL)
     {
         SDL_free(arg);
@@ -275,7 +284,9 @@ static void CustomApplicationMain (int argc, char **argv)
     }
     gArgv = newargv;
 
+    SDL_strlcpy(openCommandArg, "open", 5);
     SDL_strlcpy(arg, temparg, arglen);
+    gArgv[gArgc++] = "open";
     gArgv[gArgc++] = arg;
     gArgv[gArgc] = NULL;
     return TRUE;
@@ -344,6 +355,63 @@ static void CustomApplicationMain (int argc, char **argv)
 
 @end
 
+char * readUserPreferences() {
+    NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
+
+    NSString *prefDataNSString = [prefs stringForKey:@"powder.pref"];
+    const char *prefData = [prefDataNSString UTF8String];
+    if(prefData == NULL)
+        prefData = "";
+
+    char *prefDataCopy = calloc([prefDataNSString length]+1, 1);
+    SDL_strlcpy(prefDataCopy, prefData, [prefDataNSString length]+1);
+
+    [prefDataNSString release];
+    [prefs release];
+
+    return prefDataCopy;
+}
+
+void writeUserPreferences(const char * prefData) {
+    NSString *prefDataNSString = [NSString stringWithUTF8String:prefData];
+
+    NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
+    [prefs setObject:prefDataNSString forKey:@"powder.pref"];
+    [prefs synchronize];
+
+    [prefDataNSString release];
+    [prefs release];
+}
+
+char * readClipboard() {
+    NSPasteboard *clipboard = [NSPasteboard generalPasteboard];
+
+    NSArray *classes = [[NSArray alloc] initWithObjects:[NSString class], nil];
+    NSDictionary *options = [NSDictionary dictionary];
+    NSArray *clipboardItems = [clipboard readObjectsForClasses:classes options:options];
+    
+    if(clipboardItems == nil || [clipboardItems count] == 0) return NULL;
+
+    NSString *newString = [clipboardItems objectAtIndex:0];
+    const char * clipboardData = [newString UTF8String];
+    if(clipboardData == NULL)
+        clipboardData = "";
+
+    char *clipboardDataCopy = calloc([newString length]+1, 1);
+    SDL_strlcpy(clipboardDataCopy, clipboardData, [newString length]+1);
+
+    return clipboardDataCopy;
+}
+
+void writeClipboard(const char * clipboardData) {
+    NSPasteboard *clipboard = [NSPasteboard generalPasteboard];
+
+    NSString *newString = [NSString stringWithUTF8String: clipboardData];
+
+    [clipboard clearContents];
+    [clipboard setString:newString forType:NSStringPboardType];
+
+}
 
 
 #ifdef main

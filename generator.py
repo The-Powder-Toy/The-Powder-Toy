@@ -146,7 +146,7 @@ def generateTools(toolFiles, outputCpp, outputH):
 
 #include <vector>
 
-#include "simulation/tools/SimTool.h"
+#include "simulation/simtools/SimTool.h"
 
 """
 	
@@ -156,7 +156,7 @@ def generateTools(toolFiles, outputCpp, outputH):
 		try:
 			f = open(toolFile, "r")
 		except:
-			f = open("src/simulation/tools/"+toolFile, "r")
+			f = open("src/simulation/simtools/"+toolFile, "r")
 		fileData = f.read()
 		f.close()
 		
@@ -230,4 +230,4 @@ if(len(sys.argv) > 3):
     	generateTools(sys.argv[4:], sys.argv[2], sys.argv[3])
 else:
 	generateElements(os.listdir("src/simulation/elements"), "generated/ElementClasses.cpp", "generated/ElementClasses.h")
-	generateTools(os.listdir("src/simulation/tools"), "generated/ToolClasses.cpp", "generated/ToolClasses.h")
+	generateTools(os.listdir("src/simulation/simtools"), "generated/ToolClasses.cpp", "generated/ToolClasses.h")

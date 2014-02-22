@@ -351,6 +351,8 @@ void PreviewView::OnTick(float dt)
 				xdiff = 1*isign(sizeDiff.X);
 			addCommentBox->Size.X += xdiff;
 			addCommentBox->Invalidate();
+			commentBoxAutoHeight(); //make sure textbox height is correct after resizes
+			addCommentBox->resetCursorPosition(); //make sure cursor is in correct position after resizes
 		}
 		if(sizeDiff.Y!=0)
 		{

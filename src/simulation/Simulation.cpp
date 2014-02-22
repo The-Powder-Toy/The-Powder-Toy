@@ -25,8 +25,8 @@
 //#include "StorageClasses.h"
 
 #ifdef LUACONSOLE
-#include "cat/LuaScriptInterface.h"
-#include "cat/LuaScriptHelper.h"
+#include "lua/LuaScriptInterface.h"
+#include "lua/LuaScriptHelper.h"
 #endif
 
 int Simulation::Load(GameSave * save)
@@ -57,6 +57,7 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 		for(std::vector<GameSave::PaletteItem>::iterator iter = save->palette.begin(), end = save->palette.end(); iter != end; ++iter)
 		{
 			GameSave::PaletteItem pi = *iter;
+			//This makes it only apply to lua elements (greater than the default number of elements), because if not it glitches for default elements when they change name
 			if(pi.second >= DEFAULT_PT_NUM && pi.second < PT_NUM)
 			{
 				int myId = 0;//pi.second;
@@ -86,6 +87,17 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 			continue;
 		if (!elements[tempPart.type].Enabled)
 			continue;
+
+		if (tempPart.ctype > 0 && tempPart.ctype < PT_NUM)
+			if (tempPart.type == PT_CLNE || tempPart.type == PT_PCLN || tempPart.type == PT_BCLN || tempPart.type == PT_PBCN || tempPart.type == PT_STOR || tempPart.type == PT_CONV || tempPart.type == PT_STKM || tempPart.type == PT_STKM2 || tempPart.type == PT_FIGH || tempPart.type == PT_LAVA || tempPart.type == PT_SPRK || tempPart.type == PT_PSTN || tempPart.type == PT_CRAY)
+			{
+				tempPart.ctype = partMap[tempPart.ctype];
+			}
+		if (tempPart.tmp > 0 && tempPart.tmp < PT_NUM)
+			if (tempPart.type == PT_PIPE || tempPart.type == PT_PPIP)
+			{
+				tempPart.tmp = partMap[tempPart.tmp];
+			}
 
 		if(r = pmap[y][x])
 		{
@@ -304,7 +316,7 @@ void Simulation::Restore(const Snapshot & snap)
 {
 	parts_lastActiveIndex = NPART-1; 
 
-	for(int i = 0; i<NPART; i++)
+	for(int i = 0; i<PT_NUM; i++)
 		elementCount[i] = 0;
 
 	std::copy(snap.AirPressure.begin(), snap.AirPressure.end(), &pv[0][0]);
@@ -330,6 +342,12 @@ void Simulation::Restore(const Snapshot & snap)
 
 void Simulation::clear_area(int area_x, int area_y, int area_w, int area_h)
 {
+	int i = 0;
+	for (i = 0; i <= parts_lastActiveIndex; i++) {
+		if (parts[i].type)
+			if (parts[i].x >= area_x && parts[i].x <= area_x + area_w && parts[i].y >= area_y && parts[i].y <= area_y + area_h)
+				kill_part(i);
+	}
 	int cx = 0;
 	int cy = 0;
 	for (cy=0; cy<=area_h; cy++)
@@ -340,7 +358,6 @@ void Simulation::clear_area(int area_x, int area_y, int area_w, int area_h)
 				gravWallChanged = true;
 			bmap[(cy+area_y)/CELL][(cx+area_x)/CELL] = 0;
 			emap[(cy+area_y)/CELL][(cx+area_x)/CELL] = 0;
-			delete_part(cx+area_x, cy+area_y);
 		}
 	}
 	for(int i = signs.size()-1; i >= 0; i--)
@@ -362,7 +379,7 @@ bool Simulation::FloodFillPmapCheck(int x, int y, int type)
 		return (pmap[y][x]&0xFF) == type;
 }
 
-int Simulation::flood_prop_2(int x, int y, size_t propoffset, void * propvalue, StructProperty::PropertyType proptype, int parttype, char * bitmap)
+int Simulation::flood_prop_2(int x, int y, size_t propoffset, PropertyValue propvalue, StructProperty::PropertyType proptype, int parttype, char * bitmap)
 {
 	int x1, x2, i, dy = 1;
 	x1 = x2 = x;
@@ -391,16 +408,16 @@ int Simulation::flood_prop_2(int x, int y, size_t propoffset, void * propvalue, 
 			continue;
 		switch (proptype) {
 			case StructProperty::Float:
-				*((float*)(((char*)&parts[i>>8])+propoffset)) = *((float*)propvalue);
+				*((float*)(((char*)&parts[i>>8])+propoffset)) = propvalue.Float;
 				break;
 				
 			case StructProperty::ParticleType:
 			case StructProperty::Integer:
-				*((int*)(((char*)&parts[i>>8])+propoffset)) = *((int*)propvalue);
+				*((int*)(((char*)&parts[i>>8])+propoffset)) = propvalue.Integer;
 				break;
 				
 			case StructProperty::UInteger:
-				*((unsigned int*)(((char*)&parts[i>>8])+propoffset)) = *((unsigned int*)propvalue);
+				*((unsigned int*)(((char*)&parts[i>>8])+propoffset)) = propvalue.UInteger;
 				break;
 				
 			default:
@@ -421,7 +438,7 @@ int Simulation::flood_prop_2(int x, int y, size_t propoffset, void * propvalue, 
 	return 1;
 }
 
-int Simulation::flood_prop(int x, int y, size_t propoffset, void * propvalue, StructProperty::PropertyType proptype)
+int Simulation::flood_prop(int x, int y, size_t propoffset, PropertyValue propvalue, StructProperty::PropertyType proptype)
 {
 	int r = 0;
 	char * bitmap = (char *)malloc(XRES*YRES); //Bitmap for checking
@@ -778,31 +795,34 @@ void Simulation::ApplyDecoration(int x, int y, int colR_, int colG_, int colB_, 
 	}
 	else if (mode == DECO_SMUDGE)
 	{
-		float tas = 0.0f, trs = 0.0f, tgs = 0.0f, tbs = 0.0f;
-		
-		int rx, ry;
-		float num = 0;	
-		for (rx=-2; rx<3; rx++)
-			for (ry=-2; ry<3; ry++)
-			{
-				if (abs(rx)+abs(ry) > 2 && (pmap[y+ry][x+rx]&0xFF) && parts[pmap[y+ry][x+rx]>>8].dcolour)
+		if (x >= CELL && x < XRES-CELL && y >= CELL && y < YRES-CELL)
+		{
+			float tas = 0.0f, trs = 0.0f, tgs = 0.0f, tbs = 0.0f;
+
+			int rx, ry;
+			float num = 0;
+			for (rx=-2; rx<3; rx++)
+				for (ry=-2; ry<3; ry++)
 				{
-					Particle part = parts[pmap[y+ry][x+rx]>>8];
-					num += 1.0f;
-					tas += ((float)((part.dcolour>>24)&0xFF));
-					trs += ((float)((part.dcolour>>16)&0xFF));
-					tgs += ((float)((part.dcolour>>8)&0xFF));
-					tbs += ((float)((part.dcolour)&0xFF));
+					if (abs(rx)+abs(ry) > 2 && (pmap[y+ry][x+rx]&0xFF) && parts[pmap[y+ry][x+rx]>>8].dcolour)
+					{
+						Particle part = parts[pmap[y+ry][x+rx]>>8];
+						num += 1.0f;
+						tas += ((float)((part.dcolour>>24)&0xFF));
+						trs += ((float)((part.dcolour>>16)&0xFF));
+						tgs += ((float)((part.dcolour>>8)&0xFF));
+						tbs += ((float)((part.dcolour)&0xFF));
+					}
 				}
-			}
-		if (num == 0)
-			return;
-		ta = (tas/num)/255.0f;
-		tr = (trs/num)/255.0f;
-		tg = (tgs/num)/255.0f;
-		tb = (tbs/num)/255.0f;
-		if (!parts[rp>>8].dcolour)
-			ta -= 3/255.0f;
+			if (num == 0)
+				return;
+			ta = (tas/num)/255.0f;
+			tr = (trs/num)/255.0f;
+			tg = (tgs/num)/255.0f;
+			tb = (tbs/num)/255.0f;
+			if (!parts[rp>>8].dcolour)
+				ta -= 3/255.0f;
+		}
 	}
 
 	ta *= 255.0f; tr *= 255.0f; tg *= 255.0f; tb *= 255.0f;
@@ -1121,7 +1141,7 @@ void Simulation::CreateWallLine(int x1, int y1, int x2, int y2, int rx, int ry, 
 		if (e >= 0.5f)
 		{
 			y += sy;
-			if (!(rx+ry) && ((y1<y2) ? (y<=y2) : (y>=y2)))
+			if ((y1<y2) ? (y<=y2) : (y>=y2))
 			{
 				if (reverseXY)
 					CreateWalls(y, x, rx, ry, wall, cBrush);
@@ -1658,7 +1678,7 @@ void *Simulation::transform_save(void *odata, int *size, matrix2d transform, vec
 	return ndata;
 }
 
-TPT_NO_INLINE void Simulation::orbitalparts_get(int block1, int block2, int resblock1[], int resblock2[])
+void Simulation::orbitalparts_get(int block1, int block2, int resblock1[], int resblock2[])
 {
 	resblock1[0] = (block1&0x000000FF);
 	resblock1[1] = (block1&0x0000FF00)>>8;
@@ -1671,7 +1691,7 @@ TPT_NO_INLINE void Simulation::orbitalparts_get(int block1, int block2, int resb
 	resblock2[3] = (block2&0xFF000000)>>24;
 }
 
-TPT_NO_INLINE void Simulation::orbitalparts_set(int *block1, int *block2, int resblock1[], int resblock2[])
+void Simulation::orbitalparts_set(int *block1, int *block2, int resblock1[], int resblock2[])
 {
 	int block1tmp = 0;
 	int block2tmp = 0;
@@ -1894,7 +1914,7 @@ void Simulation::clear_sim(void)
 	fighcount = 0;
 	player.spwn = 0;
 	player2.spwn = 0;
-	//memset(pers_bg, 0, (XRES+BARSIZE)*YRES*PIXELSIZE);
+	//memset(pers_bg, 0, WINDOWW*YRES*PIXELSIZE);
 	//memset(fire_r, 0, sizeof(fire_r));
 	//memset(fire_g, 0, sizeof(fire_g));
 	//memset(fire_b, 0, sizeof(fire_b));
@@ -2218,7 +2238,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 				part_change_type(i, x, y, PT_ELEC);
 				parts[i].ctype = 0;
 			}
-			else if ((r&0xFF) == PT_H2 && pv[y/CELL][x/CELL] < 45.0f && parts[i].temp < 3000)
+			else if ((r&0xFF) == PT_H2 && !(parts[i].tmp&0x1))
 			{
 				part_change_type(i, x, y, PT_PROT);
 				parts[i].ctype = 0;
@@ -2327,6 +2347,8 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 			if (s && !(elements[s&0xFF].Properties&PROP_NEUTPENETRATE))
 				return 1; // if the element currently underneath neutron isn't NEUTPENETRATE, don't move anything except the neutron
 			// if nothing is currently underneath neutron, only move target particle
+			if(bmap[y/CELL][x/CELL] == WL_ALLOWENERGY)
+				return 1; // do not drag target particle into an energy only wall
 			if (s)
 			{
 				pmap[ny][nx] = (s&~(0xFF))|parts[s>>8].type;
@@ -3077,15 +3099,14 @@ int Simulation::create_part(int p, int x, int y, int tv)
 	//Fancy dust effects for powder types
 	if((elements[t].Properties & TYPE_PART) && pretty_powder)
 	{
-		int colr, colg, colb, randa;
-		randa = (rand()%30)-15;
-		colr = (PIXR(elements[t].Colour)+sandcolour+(rand()%20)-10+randa);
-		colg = (PIXG(elements[t].Colour)+sandcolour+(rand()%20)-10+randa);
-		colb = (PIXB(elements[t].Colour)+sandcolour+(rand()%20)-10+randa);
+		int colr, colg, colb;
+		colr = PIXR(elements[t].Colour)+sandcolour*1.3+(rand()%40)-20+(rand()%30)-15;
+		colg = PIXG(elements[t].Colour)+sandcolour*1.3+(rand()%40)-20+(rand()%30)-15;
+		colb = PIXB(elements[t].Colour)+sandcolour*1.3+(rand()%40)-20+(rand()%30)-15;
 		colr = colr>255 ? 255 : (colr<0 ? 0 : colr);
 		colg = colg>255 ? 255 : (colg<0 ? 0 : colg);
 		colb = colb>255 ? 255 : (colb<0 ? 0 : colb);
-		parts[i].dcolour = 0xFF000000 | (colr<<16) | (colg<<8) | colb;
+		parts[i].dcolour = ((rand()%150)<<24) | (colr<<16) | (colg<<8) | colb;
 	}
 	elementCount[t]++;
 	return i;
@@ -3799,7 +3820,7 @@ void Simulation::update_particles_i(int start, int inc)
 					if ((t==PT_ICEI || t==PT_SNOW) && (parts[i].ctype<=0 || parts[i].ctype>=PT_NUM || parts[i].ctype==PT_ICEI || parts[i].ctype==PT_SNOW || !elements[parts[i].ctype].Enabled))
 						parts[i].ctype = PT_WATR;
 
-					if (elements[t].HighTemperatureTransition>-1 && ctemph>elements[t].HighTemperature)
+					if (elements[t].HighTemperatureTransition>-1 && ctemph>=elements[t].HighTemperature)
 					{
 						// particle type change due to high temperature
 #ifdef REALISTIC
@@ -3825,7 +3846,7 @@ void Simulation::update_particles_i(int start, int inc)
 						{
 							if (parts[i].ctype > 0 && parts[i].ctype < PT_NUM && parts[i].ctype != t)
 							{
-								if (elements[parts[i].ctype].LowTemperatureTransition==t && pt<=elements[parts[i].ctype].LowTemperature)
+								if (elements[parts[i].ctype].LowTemperatureTransition==t && pt<elements[parts[i].ctype].LowTemperature)
 									s = 0;
 								else
 								{
@@ -3879,7 +3900,7 @@ void Simulation::update_particles_i(int start, int inc)
 						{
 							if (parts[i].ctype == PT_TUNG)
 							{
-								if (ctemph <= 3695.0)
+								if (ctemph < 3695.0)
 									s = 0;
 								else
 								{
@@ -3934,7 +3955,7 @@ void Simulation::update_particles_i(int start, int inc)
 									s = 0;
 								else if (parts[i].ctype==PT_TUNG)
 								{
-									if (pt>3695.0)
+									if (pt>=3695.0)
 										s = 0;
 								}
 								else if (elements[parts[i].ctype].HighTemperatureTransition == PT_LAVA)
@@ -4021,7 +4042,12 @@ void Simulation::update_particles_i(int start, int inc)
 						}
 					}
 				}
-				else parts[i].temp = restrict_flt(parts[i].temp, MIN_TEMP, MAX_TEMP);
+				else
+				{
+					if (!(air->bmap_blockairh[y/CELL][x/CELL]&0x8))
+						air->bmap_blockairh[y/CELL][x/CELL]++;
+					parts[i].temp = restrict_flt(parts[i].temp, MIN_TEMP, MAX_TEMP);
+				}
 			}
 
 			if (t==PT_LIFE)
@@ -4737,7 +4763,7 @@ void Simulation::update_particles()//doesn't update the particles themselves, bu
 				if (emap[y][x])
 					emap[y][x] --;
 				air->bmap_blockair[y][x] = (bmap[y][x]==WL_WALL || bmap[y][x]==WL_WALLELEC || (bmap[y][x]==WL_EWALL && !emap[y][x]));
-				air->bmap_blockairh[y][x] = (bmap[y][x]==WL_WALL || bmap[y][x]==WL_WALLELEC || bmap[y][x]==WL_GRAV || (bmap[y][x]==WL_EWALL && !emap[y][x]));
+				air->bmap_blockairh[y][x] = (bmap[y][x]==WL_WALL || bmap[y][x]==WL_WALLELEC || bmap[y][x]==WL_GRAV || (bmap[y][x]==WL_EWALL && !emap[y][x])) ? 0x8:0;
 			}
 		}
 	}

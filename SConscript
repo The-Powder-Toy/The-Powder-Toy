@@ -78,6 +78,7 @@ AddOption('--x86',dest="x86",action='store_true',default=True,help="Target Intel
 AddOption('--nofft',dest="nofft", action='store_true',default=False,help="Do not use fftw3f for gravity.")
 AddOption('--nolua',dest="nolua", action='store_true',default=False,help="Disable all lua scripting features.")
 
+AddOption('--warnings-as-errors', dest="warnings_as_errors", action="store_true", default=False, help="Treat all warnings as errors")
 AddOption('--debugging', dest="debug", action="store_true", default=False, help="Enable debug options")
 AddOption('--beta',dest="beta",action='store_true',default=False,help="Beta build.")
 AddOption('--save-version',dest="save-version",default=False,help="Save version.")
@@ -177,19 +178,22 @@ if not GetOption("macosx"):
 			
 
 # if lua is enabled try to parse the lua pgk-config, or the lua-dir option if given
-
-	if(GetOption("lua-dir")):
-		if not conf.CheckCHeader(GetOption("lua-dir") + '/lua.h'):
-			print "lua5.1 headers not found or not installed"
-			raise SystemExit(1)
-		else:
-			env.Append(CPPPATH=[GetOption("lua-dir")])
-	else:
+	
+	if not GetOption("nolua"):
+		if(GetOption("lua-dir")):
+			if not conf.CheckCHeader(GetOption("lua-dir") + '/lua.h'):
+				print "lua5.1 headers not found or not installed"
+				raise SystemExit(1)
+			else:
+				env.Append(CPPPATH=[GetOption("lua-dir")])
 		try:
 			env.ParseConfig('pkg-config --cflags lua5.1')
+			env.ParseConfig('pkg-config --libs lua5.1')
 		except:
-			print "lua5.1 headers not found or not installed"
-			raise SystemExit(1)
+			#Check for Lua lib
+			if not conf.CheckLib('lua5.1') and not conf.CheckLib('lua-5.1') and not conf.CheckLib('lua51') and not conf.CheckLib('lua'):
+				print "liblua5.1 not found or not installed"
+				raise SystemExit(1)
 
 # if fft is enabled try to parse its config, fail otherwise.
 
@@ -214,12 +218,6 @@ if not GetOption("macosx"):
 	if not conf.CheckCHeader("bzlib.h"):
 		print "bzip2 headers not found"
 		raise SystemExit(1)
-
-	#Check for Lua lib
-	if not GetOption("nolua"):
-		if not conf.CheckLib('lua5.1') and not conf.CheckLib('lua-5.1') and not conf.CheckLib('lua51') and not conf.CheckLib('lua'):
-			print "liblua not found or not installed"
-			raise SystemExit(1)
 
 # finish the configuration
 
@@ -253,9 +251,15 @@ if GetOption("toolprefix"):
 # make sure the compiler can find the source data and generated files. enable warnings, set C++ flavor, and keep inline functions
 
 env.Append(CPPPATH=['src/', 'data/', 'generated/'])
-env.Append(CCFLAGS=['-w', '-std=c++98', '-fkeep-inline-functions'])
+env.Append(CXXFLAGS=['-std=c++98'])
 env.Append(LIBS=['pthread', 'm'])
 env.Append(CPPDEFINES=["_GNU_SOURCE", "USE_STDINT", "_POSIX_C_SOURCE=200112L"])
+
+# set the warnings we want, treat all warnings as errors, and ignore all "offsetof" warnings
+
+env.Append(CCFLAGS=['-Wno-invalid-offsetof']);
+if GetOption('warnings_as_errors'):
+	env.Append(CCFLAGS=['-Werror']);
 
 # check all enabled libs, and add a define if they are enabled.
 
@@ -287,7 +291,7 @@ if(GetOption('release')):
 	if GetOption('macosx'):
 		env.Append(CCFLAGS=['-O3', '-ftree-vectorize', '-funsafe-math-optimizations', '-ffast-math', '-fomit-frame-pointer'])
 	else:
-		env.Append(CCFLAGS=['-O3', '-ftree-vectorize', '-funsafe-math-optimizations', '-ffast-math', '-fomit-frame-pointer', '-funsafe-loop-optimizations', '-Wunsafe-loop-optimizations'])
+		env.Append(CCFLAGS=['-O3', '-ftree-vectorize', '-funsafe-math-optimizations', '-ffast-math', '-fomit-frame-pointer', '-funsafe-loop-optimizations'])
 
 # rpi specific enviroment settings
 # ++++++++++++++++++++++++++++++++
@@ -437,10 +441,7 @@ elif(GetOption('opengl-renderer')):
 sources=Glob("src/*.cpp")
 	
 sources+=Glob("src/*/*.cpp")
-sources+=Glob("src/gui/*/*.cpp")
-sources+=Glob("src/simulation/elements/*.cpp")
-sources+=Glob("src/simulation/tools/*.cpp")
-sources+=Glob("src/client/requestbroker/*.cpp")
+sources+=Glob("src/*/*/*.cpp")
 if not GetOption('nolua'):
 	sources+=Glob("src/socket/*.c")
 
@@ -521,7 +522,7 @@ if(GetOption('win')):
 env.Command(['generated/ElementClasses.cpp', 'generated/ElementClasses.h'], Glob('src/simulation/elements/*.cpp'), pythonVer + " generator.py elements $TARGETS $SOURCES")
 sources+=Glob("generated/ElementClasses.cpp")
 
-env.Command(['generated/ToolClasses.cpp', 'generated/ToolClasses.h'], Glob('src/simulation/tools/*.cpp'), pythonVer + " generator.py tools $TARGETS $SOURCES")
+env.Command(['generated/ToolClasses.cpp', 'generated/ToolClasses.h'], Glob('src/simulation/simtools/*.cpp'), pythonVer + " generator.py tools $TARGETS $SOURCES")
 sources+=Glob("generated/ToolClasses.cpp")
 
 # final settings
@@ -531,7 +532,7 @@ sources+=Glob("generated/ToolClasses.cpp")
 
 env.Decider('MD5')
 
-# set a defaukt target
+# set a default target
 
 t=env.Program(target=programName, source=sources)
 Default(t)

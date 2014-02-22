@@ -30,9 +30,14 @@ void ContextMenu::Show(ui::Point position)
 	}
 	buttons.clear();
 
-	Position = position;
-	Size.Y = items.size()*16;
 	Size.X = 100;
+	Size.Y = items.size()*16-1;
+
+	if(position.X+Size.X > WINDOWW)
+		position.X -= std::min(position.X, Size.X);
+	if(position.Y+Size.Y > YRES+MENUSIZE)
+		position.Y -= std::min(position.Y, Size.Y);
+	Position = position;
 
 	int currentY = 1;
 	for(int i = 0; i < items.size(); i++)

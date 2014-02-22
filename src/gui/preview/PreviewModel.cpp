@@ -1,7 +1,8 @@
 #include <cmath>
 #include "PreviewModel.h"
 #include "client/Client.h"
-#include "client/GameSave.h";
+#include "client/GameSave.h"
+#include "gui/dialogues/ErrorMessage.h"
 #include "PreviewModelException.h"
 
 PreviewModel::PreviewModel():
@@ -174,7 +175,7 @@ void PreviewModel::OnResponseReady(void * object, int identifier)
 			}
 			catch(ParseException &e)
 			{
-				throw PreviewModelException("Save file corrupt or from newer version");
+				new ErrorMessage("Error", e.what());
 			}
 			notifySaveChanged();
 			notifyCommentsPageChanged();

@@ -84,7 +84,7 @@ void Air::update_airh(void)
 				{
 					if (y+j>0 && y+j<YRES/CELL-2 &&
 					        x+i>0 && x+i<XRES/CELL-2 &&
-					        !bmap_blockairh[y+j][x+i])
+					        !(bmap_blockairh[y+j][x+i]&0x8))
 						{
 						f = kernel[i+1+(j+1)*3];
 						dh += hv[y+j][x+i]*f;
@@ -110,15 +110,15 @@ void Air::update_airh(void)
 			{
 				odh = dh;
 				dh *= 1.0f - AIR_VADV;
-				dh += AIR_VADV*(1.0f-tx)*(1.0f-ty)*(bmap_blockairh[j][i] ? odh : hv[j][i]);
-				dh += AIR_VADV*tx*(1.0f-ty)*(bmap_blockairh[j][i+1] ? odh : hv[j][i+1]);
-				dh += AIR_VADV*(1.0f-tx)*ty*(bmap_blockairh[j+1][i] ? odh : hv[j+1][i]);
-				dh += AIR_VADV*tx*ty*(bmap_blockairh[j+1][i+1] ? odh : hv[j+1][i+1]);
+				dh += AIR_VADV*(1.0f-tx)*(1.0f-ty)*((bmap_blockairh[j][i]&0x8) ? odh : hv[j][i]);
+				dh += AIR_VADV*tx*(1.0f-ty)*((bmap_blockairh[j][i+1]&0x8) ? odh : hv[j][i+1]);
+				dh += AIR_VADV*(1.0f-tx)*ty*((bmap_blockairh[j+1][i]&0x8) ? odh : hv[j+1][i]);
+				dh += AIR_VADV*tx*ty*((bmap_blockairh[j+1][i+1]&0x8) ? odh : hv[j+1][i+1]);
 			}
 			if(!sim.gravityMode)
 			{ //Vertical gravity only for the time being
 				float airdiff = hv[y-1][x]-hv[y][x];
-				if(airdiff>0 && !bmap_blockairh[y-1][x])
+				if(airdiff>0 && !(bmap_blockairh[y-1][x]&0x8))
 					vy[y][x] -= airdiff/5000.0f;
 			}
 			ohv[y][x] = dh;
@@ -131,6 +131,9 @@ void Air::update_air(void)
 {
 	int x = 0, y = 0, i = 0, j = 0;
 	float dp = 0.0f, dx = 0.0f, dy = 0.0f, f = 0.0f, tx = 0.0f, ty = 0.0f;
+	const float advDistanceMult = 0.7f;
+	float stepX, stepY;
+	int stepLimit, step;
 
 	if (airMode != 4) { //airMode 4 is no air/pressure update
 
@@ -232,14 +235,49 @@ void Air::update_air(void)
 							dp += pv[y][x]*f;
 						}
 
-				tx = x - dx*0.7f;
-				ty = y - dy*0.7f;
+				tx = x - dx*advDistanceMult;
+				ty = y - dy*advDistanceMult;
+				if ((dx*advDistanceMult>1.0f || dy*advDistanceMult>1.0f) && (tx>=2 && tx<XRES/CELL-2 && ty>=2 && ty<YRES/CELL-2))
+				{
+					// Trying to take velocity from far away, check whether there is an intervening wall. Step from current position to desired source location, looking for walls, with either the x or y step size being 1 cell
+					if (abs(dx)>abs(dy))
+					{
+						stepX = (dx<0.0f) ? 1 : -1;
+						stepY = -dy/fabsf(dx);
+						stepLimit = (int)(fabsf(dx*advDistanceMult));
+					}
+					else
+					{
+						stepY = (dy<0.0f) ? 1 : -1;
+						stepX = -dx/fabsf(dy);
+						stepLimit = (int)(fabsf(dy*advDistanceMult));
+					}
+					tx = x;
+					ty = y;
+					for (step=0; step<stepLimit; ++step)
+					{
+						tx += stepX;
+						ty += stepY;
+						if (bmap_blockair[(int)(ty+0.5f)][(int)(tx+0.5f)])
+						{
+							tx -= stepX;
+							ty -= stepY;
+							break;
+						}
+					}
+					if (step==stepLimit)
+					{
+						// No wall found
+						tx = x - dx*advDistanceMult;
+						ty = y - dy*advDistanceMult;
+					}
+				}
 				i = (int)tx;
 				j = (int)ty;
 				tx -= i;
 				ty -= j;
-				if (i>=2 && i<XRES/CELL-3 &&
-				        j>=2 && j<YRES/CELL-3)
+				if (!bmap_blockair[y][x] && i>=2 && i<=XRES/CELL-3 &&
+				        j>=2 && j<=YRES/CELL-3)
 				{
 					dx *= 1.0f - AIR_VADV;
 					dy *= 1.0f - AIR_VADV;

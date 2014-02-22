@@ -122,7 +122,7 @@ RequestBroker::ProcessResponse WebRequest::Process(RequestBroker & rb)
 				std::strcpy(userName, format::NumberToString<int>(user.ID).c_str());
 				std::strcpy(userSession, user.SessionID.c_str());
 				http_auth_headers(HTTPContext, userName, NULL, userSession);
-				delete userSession;
+				delete[] userSession;
 			}
 		}
 	}

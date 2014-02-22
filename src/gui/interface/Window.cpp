@@ -190,10 +190,10 @@ void Window::DoDraw()
 			sprintf(tempString, "Position: L %d, R %d, T: %d, B: %d", focusedComponent_->Position.X, Size.X-(focusedComponent_->Position.X+focusedComponent_->Size.X), focusedComponent_->Position.Y, Size.Y-(focusedComponent_->Position.Y+focusedComponent_->Size.Y));
 			sprintf(tempString2, "Size: %d, %d", focusedComponent_->Size.X, focusedComponent_->Size.Y);
 			
-			if(Graphics::textwidth(tempString)+xPos > XRES+BARSIZE)
-				xPos = XRES+BARSIZE-(Graphics::textwidth(tempString)+5);
-			if(Graphics::textwidth(tempString2)+xPos > XRES+BARSIZE)
-				xPos = XRES+BARSIZE-(Graphics::textwidth(tempString2)+5);
+			if(Graphics::textwidth(tempString)+xPos > WINDOWW)
+				xPos = WINDOWW-(Graphics::textwidth(tempString)+5);
+			if(Graphics::textwidth(tempString2)+xPos > WINDOWW)
+				xPos = WINDOWW-(Graphics::textwidth(tempString2)+5);
 			
 			g->drawtext(xPos, focusedComponent_->Position.Y+Position.Y+1, tempString, 0, 0, 0, 200);
 			g->drawtext(xPos, focusedComponent_->Position.Y+Position.Y, tempString, 255, 255, 255, 255);

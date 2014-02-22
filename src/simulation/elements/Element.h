@@ -12,8 +12,8 @@ struct Particle;
 class Element
 {
 public:
-	char *Identifier;
-	char *Name;
+	const char *Identifier;
+	const char *Name;
 	pixel Colour;
 	float Advection;
 	float AirDrag;
@@ -34,7 +34,7 @@ public:
 	int MenuSection;
 	float Temperature;
 	unsigned char HeatConduct;
-	char *Description;
+	const char *Description;
 	char State;
 	unsigned int Properties;
 	int (*Update) (UPDATE_FUNC_ARGS);

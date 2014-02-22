@@ -54,6 +54,7 @@ namespace ui
 
 		void SetFps(float fps);
 		inline float GetFps() { return fps; }
+		inline float GetDelta() { return dt; }
 
 		inline int GetMouseButton() { return mouseb_; }
 		inline int GetMouseX() { return mousex_; }
@@ -63,7 +64,7 @@ namespace ui
 		inline int GetMaxWidth() { return maxWidth; }
 		inline int GetMaxHeight() { return maxHeight; }
 
-		TPT_NO_INLINE void SetMaxSize(int width, int height);
+		void SetMaxSize(int width, int height);
 
 		inline void SetSize(int width, int height);
 		

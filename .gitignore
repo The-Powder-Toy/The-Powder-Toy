@@ -9,6 +9,7 @@
 *~
 *.pref
 *.lua
+*.sh
 stdout.txt
 stderr.txt
 build*/*
@@ -50,7 +51,7 @@ Makefile.me
 *.cbp
 *.layout
 *.config
-*.creator
+*.creator*
 *.files
 *.includes
 config.log

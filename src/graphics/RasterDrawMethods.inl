@@ -108,7 +108,7 @@ int PIXELMETHODS_CLASS::drawtext(int x, int y, std::string s, int r, int g, int 
 	return drawtext(x, y, s.c_str(), r, g, b, a);
 }
 
-TPT_INLINE int PIXELMETHODS_CLASS::drawchar(int x, int y, int c, int r, int g, int b, int a)
+int PIXELMETHODS_CLASS::drawchar(int x, int y, int c, int r, int g, int b, int a)
 {
 	int i, j, w, bn = 0, ba = 0;
 	char *rp = font_data + font_ptrs[c];
@@ -128,7 +128,7 @@ TPT_INLINE int PIXELMETHODS_CLASS::drawchar(int x, int y, int c, int r, int g, i
 	return x + w;
 }
 
-TPT_NO_INLINE int PIXELMETHODS_CLASS::addchar(int x, int y, int c, int r, int g, int b, int a)
+int PIXELMETHODS_CLASS::addchar(int x, int y, int c, int r, int g, int b, int a)
 {
 	int i, j, w, bn = 0, ba = 0;
 	char *rp = font_data + font_ptrs[c];
@@ -163,7 +163,7 @@ TPT_INLINE void PIXELMETHODS_CLASS::xor_pixel(int x, int y)
 		vid[y*(VIDXRES)+x] = PIXPACK(0x404040);
 }
 
-TPT_INLINE void PIXELMETHODS_CLASS::blendpixel(int x, int y, int r, int g, int b, int a)
+void PIXELMETHODS_CLASS::blendpixel(int x, int y, int r, int g, int b, int a)
 {
 	pixel t;
 	if (x<0 || y<0 || x>=VIDXRES || y>=VIDYRES)
@@ -178,7 +178,7 @@ TPT_INLINE void PIXELMETHODS_CLASS::blendpixel(int x, int y, int r, int g, int b
 	vid[y*(VIDXRES)+x] = PIXRGB(r,g,b);
 }
 
-TPT_INLINE void PIXELMETHODS_CLASS::addpixel(int x, int y, int r, int g, int b, int a)
+void PIXELMETHODS_CLASS::addpixel(int x, int y, int r, int g, int b, int a)
 {
 	pixel t;
 	if (x<0 || y<0 || x>=VIDXRES || y>=VIDYRES)

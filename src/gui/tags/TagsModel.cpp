@@ -25,10 +25,10 @@ void TagsModel::RemoveTag(std::string tag)
 {
 	if(save)
 	{
-		std::vector<std::string> * tags = Client::Ref().RemoveTag(save->GetID(), tag);
+		std::list<std::string> * tags = Client::Ref().RemoveTag(save->GetID(), tag);
 		if(tags)
 		{
-			save->SetTags(std::vector<std::string>(*tags));
+			save->SetTags(std::list<std::string>(*tags));
 			notifyTagsChanged();
 			delete tags;
 		}
@@ -43,10 +43,10 @@ void TagsModel::AddTag(std::string tag)
 {
 	if(save)
 	{
-		std::vector<std::string> * tags = Client::Ref().AddTag(save->GetID(), tag);
+		std::list<std::string> * tags = Client::Ref().AddTag(save->GetID(), tag);
 		if(tags)
 		{
-			save->SetTags(std::vector<std::string>(*tags));
+			save->SetTags(std::list<std::string>(*tags));
 			notifyTagsChanged();
 			delete tags;
 		}

@@ -30,7 +30,7 @@ public:
 
 	virtual void SetPlaceholder(std::string text);
 
-	void SetBorder(bool border) { this->border = border; };
+	void SetBorder(bool border) { this->border = border; }
 	void SetHidden(bool hidden);
 	bool GetHidden() { return masked; }
 	void SetActionCallback(TextboxAction * action) { actionCallback = action; }
@@ -41,6 +41,8 @@ public:
 	ValidInput GetInputType();
 	void SetInputType(ValidInput input);
 
+	void resetCursorPosition();
+	void TabFocus();
 	//Determines if the given character is valid given the input type
 	bool CharacterValid(Uint16 character);
 

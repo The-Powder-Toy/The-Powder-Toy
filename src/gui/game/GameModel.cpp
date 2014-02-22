@@ -13,8 +13,8 @@
 #include "client/Client.h"
 #include "client/GameSave.h"
 #include "gui/game/DecorationTool.h"
-#include "GameModelException.h"
 #include "QuickOptions.h"
+#include "GameModelException.h"
 #include "Format.h"
 
 GameModel::GameModel():
@@ -326,7 +326,7 @@ void GameModel::BuildMenus()
 	//Add special sign and prop tools
 	menuList[SC_TOOL]->AddTool(new WindTool(0, "WIND", "Creates air movement.", 64, 64, 64, "DEFAULT_UI_WIND"));
 	menuList[SC_TOOL]->AddTool(new PropertyTool());
-	menuList[SC_TOOL]->AddTool(new SignTool());
+	menuList[SC_TOOL]->AddTool(new SignTool(this));
 	menuList[SC_TOOL]->AddTool(new SampleTool(this));
 
 	//Add decoration tools to menu
@@ -692,6 +692,20 @@ void GameModel::SetZoomPosition(ui::Point position)
 ui::Point GameModel::GetZoomPosition()
 {
 	return ren->zoomScopePosition;
+}
+
+ui::Point GameModel::AdjustZoomCoords(ui::Point position)
+{
+	if (!GetZoomEnabled())
+		return position;
+
+	int zoomFactor = GetZoomFactor();
+	ui::Point zoomWindowPosition = GetZoomWindowPosition();
+	ui::Point zoomWindowSize = ui::Point(GetZoomSize()*zoomFactor, GetZoomSize()*zoomFactor);
+
+	if (position.X >= zoomWindowPosition.X && position.X >= zoomWindowPosition.Y && position.X <= zoomWindowPosition.X+zoomWindowSize.X && position.Y <= zoomWindowPosition.Y+zoomWindowSize.Y)
+		return ((position-zoomWindowPosition)/GetZoomFactor())+GetZoomPosition();
+	return position;
 }
 
 void GameModel::SetZoomWindowPosition(ui::Point position)

@@ -43,16 +43,16 @@ namespace json
 {
 
 
-TPT_NO_INLINE void Writer::Write(const UnknownElement& elementRoot, std::ostream& ostr) { Write_i(elementRoot, ostr); }
-TPT_NO_INLINE void Writer::Write(const Object& object, std::ostream& ostr)              { Write_i(object, ostr); }
-TPT_NO_INLINE void Writer::Write(const Array& array, std::ostream& ostr)                { Write_i(array, ostr); }
-TPT_NO_INLINE void Writer::Write(const Number& number, std::ostream& ostr)              { Write_i(number, ostr); }
-TPT_NO_INLINE void Writer::Write(const String& string, std::ostream& ostr)              { Write_i(string, ostr); }
-TPT_NO_INLINE void Writer::Write(const Boolean& boolean, std::ostream& ostr)            { Write_i(boolean, ostr); }
-TPT_NO_INLINE void Writer::Write(const Null& null, std::ostream& ostr)                  { Write_i(null, ostr); }
+void Writer::Write(const UnknownElement& elementRoot, std::ostream& ostr) { Write_i(elementRoot, ostr); }
+void Writer::Write(const Object& object, std::ostream& ostr)              { Write_i(object, ostr); }
+void Writer::Write(const Array& array, std::ostream& ostr)                { Write_i(array, ostr); }
+void Writer::Write(const Number& number, std::ostream& ostr)              { Write_i(number, ostr); }
+void Writer::Write(const String& string, std::ostream& ostr)              { Write_i(string, ostr); }
+void Writer::Write(const Boolean& boolean, std::ostream& ostr)            { Write_i(boolean, ostr); }
+void Writer::Write(const Null& null, std::ostream& ostr)                  { Write_i(null, ostr); }
 
 
-TPT_NO_INLINE Writer::Writer(std::ostream& ostr) :
+Writer::Writer(std::ostream& ostr) :
    m_ostr(ostr),
    m_nTabDepth(0)
 {}
@@ -65,7 +65,7 @@ void Writer::Write_i(const ElementTypeT& element, std::ostream& ostr)
    ostr.flush(); // all done
 }
 
-TPT_NO_INLINE void Writer::Write_i(const Array& array)
+void Writer::Write_i(const Array& array)
 {
    if (array.Empty())
       m_ostr << "[]";
@@ -91,7 +91,7 @@ TPT_NO_INLINE void Writer::Write_i(const Array& array)
    }
 }
 
-TPT_NO_INLINE void Writer::Write_i(const Object& object)
+void Writer::Write_i(const Object& object)
 {
    if (object.Empty())
       m_ostr << "{}";
@@ -120,17 +120,17 @@ TPT_NO_INLINE void Writer::Write_i(const Object& object)
    }
 }
 
-TPT_NO_INLINE void Writer::Write_i(const Number& numberElement)
+void Writer::Write_i(const Number& numberElement)
 {
    m_ostr << std::setprecision(20) << numberElement.Value();
 }
 
-TPT_NO_INLINE void Writer::Write_i(const Boolean& booleanElement)
+void Writer::Write_i(const Boolean& booleanElement)
 {
    m_ostr << (booleanElement.Value() ? "true" : "false");
 }
 
-TPT_NO_INLINE void Writer::Write_i(const String& stringElement)
+void Writer::Write_i(const String& stringElement)
 {
    m_ostr << '"';
 
@@ -156,22 +156,22 @@ TPT_NO_INLINE void Writer::Write_i(const String& stringElement)
    m_ostr << '"';   
 }
 
-TPT_NO_INLINE void Writer::Write_i(const Null& )
+void Writer::Write_i(const Null& )
 {
    m_ostr << "null";
 }
 
-TPT_NO_INLINE void Writer::Write_i(const UnknownElement& unknown)
+void Writer::Write_i(const UnknownElement& unknown)
 {
    unknown.Accept(*this); 
 }
 
-TPT_NO_INLINE void Writer::Visit(const Array& array)       { Write_i(array); }
-TPT_NO_INLINE void Writer::Visit(const Object& object)     { Write_i(object); }
-TPT_NO_INLINE void Writer::Visit(const Number& number)     { Write_i(number); }
-TPT_NO_INLINE void Writer::Visit(const String& string)     { Write_i(string); }
-TPT_NO_INLINE void Writer::Visit(const Boolean& boolean)   { Write_i(boolean); }
-TPT_NO_INLINE void Writer::Visit(const Null& null)         { Write_i(null); }
+void Writer::Visit(const Array& array)       { Write_i(array); }
+void Writer::Visit(const Object& object)     { Write_i(object); }
+void Writer::Visit(const Number& number)     { Write_i(number); }
+void Writer::Visit(const String& string)     { Write_i(string); }
+void Writer::Visit(const Boolean& boolean)   { Write_i(boolean); }
+void Writer::Visit(const Null& null)         { Write_i(null); }
 
 
 

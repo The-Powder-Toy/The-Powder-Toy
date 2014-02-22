@@ -25,22 +25,22 @@ static char hexChars[] = "0123456789abcdef";
 void http_init(char *proxy);
 void http_done(void);
 
-char *http_simple_get(char *uri, int *ret, int *len);
-char *http_auth_get(char *uri, char *user, char *pass, char * session_id, int *ret, int *len);
-char *http_simple_post(char *uri, char *data, int dlen, int *ret, int *len);
+char *http_simple_get(const char *uri, int *ret, int *len);
+char *http_auth_get(const char *uri, const char *user, const char *pass, const char *session_id, int *ret, int *len);
+char *http_simple_post(const char *uri, const char *data, int dlen, int *ret, int *len);
 
-void http_auth_headers(void *ctx, char *user, char *pass, char * session_id);
+void http_auth_headers(void *ctx, const char *user, const char *pass, const char *session_id);
 
-void *http_async_req_start(void *ctx, char *uri, char *data, int dlen, int keep);
-void http_async_add_header(void *ctx, char *name, char *data);
+void *http_async_req_start(void *ctx, const char *uri, const char *data, int dlen, int keep);
+void http_async_add_header(void *ctx, const char *name, const char *data);
 int http_async_req_status(void *ctx);
 void http_async_get_length(void *ctx, int *total, int *done);
 char *http_async_req_stop(void *ctx, int *ret, int *len);
 void http_async_req_close(void *ctx);
 
-char *http_multipart_post(char *uri, char **names, char **parts, int *plens, char *user, char *pass, char * session_id, int *ret, int *len);
-void *http_multipart_post_async(char *uri, char **names, char **parts, int *plens, char *user, char *pass, char * session_id);
+char *http_multipart_post(const char *uri, const char *const *names, const char *const *parts, int *plens, const char *user, const char *pass, const char * session_id, int *ret, int *len);
+void *http_multipart_post_async(const char *uri, const char *const *names, const char *const *parts, int *plens, const char *user, const char *pass, const char *session_id);
 
-char *http_ret_text(int ret);
+const char *http_ret_text(int ret);
 
 #endif

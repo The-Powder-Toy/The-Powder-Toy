@@ -1,9 +1,9 @@
 #include <iostream>
 #include <stack>
 #include <cstdio>
-#include <time.h>
 
 #include "Config.h"
+#include "Misc.h"
 #include "gui/interface/Window.h"
 #include "gui/interface/Platform.h"
 #include "gui/interface/Engine.h"
@@ -181,7 +181,7 @@ void Engine::Tick()
 		state_->DoTick(dt);
 
 
-	lastTick = clock();
+	lastTick = gettime();
 	if(windowOpenState<1.0f)
 	{
 		if(lastBuffer)
@@ -232,11 +232,6 @@ void Engine::Draw()
 	if(state_)
 		state_->DoDraw();
 
-#ifdef DEBUG
-	char fpsText[512];
-	sprintf(fpsText, "FPS: %.2f, Delta: %.3f", fps, dt);
-	ui::Engine::Ref().g->drawtext(10, 10, fpsText, 255, 255, 255, 255);
-#endif
 	g->Finalise();
 	g->Release();
 	FrameIndex++;

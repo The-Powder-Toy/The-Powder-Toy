@@ -6,7 +6,7 @@
 #include "ConsoleView.h"
 #include "ConsoleModel.h"
 #include "ConsoleCommand.h"
-#include "cat/CommandInterface.h"
+#include "lua/CommandInterface.h"
 
 class ConsoleModel;
 class ConsoleView;

@@ -73,8 +73,9 @@ int Element_BANG::update(UPDATE_FUNC_ARGS)
 	{
 		if ((pmap[y][x]>>8 == i))
 		{
-			int tempvalue = 2;
-			sim->flood_prop(x, y, offsetof(Particle, tmp), &tempvalue, StructProperty::Integer);
+			PropertyValue value;
+			value.Integer = 2;
+			sim->flood_prop(x, y, offsetof(Particle, tmp), value, StructProperty::Integer);
 		}
 		parts[i].tmp = 2;
 	}

@@ -96,7 +96,7 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 		}
 		break;
 	case PT_NBLE:
-		if (parts[i].life<=1&&parts[i].tmp!=1)
+		if (parts[i].life<=1 && parts[i].temp<5273.15f)
 		{
 			parts[i].life = rand()%150+50;
 			sim->part_change_type(i,x,y,PT_PLSM);
@@ -302,7 +302,7 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 						goto conduct;
 					continue;
 				case PT_NBLE:
-					if (parts[r>>8].tmp != 1)
+					if (parts[i].temp < 5273.15f)
 						goto conduct;
 					continue;
 				case PT_PSCN:

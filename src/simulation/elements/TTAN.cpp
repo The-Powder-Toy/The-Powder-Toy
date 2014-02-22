@@ -67,7 +67,7 @@ int Element_TTAN::update(UPDATE_FUNC_ARGS)
 
 	if(ttan>=2) {
 		sim->air->bmap_blockair[y/CELL][x/CELL] = 1;
-		sim->air->bmap_blockairh[y/CELL][x/CELL] = 1;
+		sim->air->bmap_blockairh[y/CELL][x/CELL] = 0x8;
 	}
 	return 0;
 }
