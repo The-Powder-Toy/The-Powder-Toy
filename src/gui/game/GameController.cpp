@@ -619,24 +619,37 @@ bool GameController::MouseWheel(int x, int y, int d)
 bool GameController::KeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
 	bool ret = commandInterface->OnKeyPress(key, character, shift, ctrl, alt);
+
 	if(ret)
 	{
 		Simulation * sim = gameModel->GetSimulation();
 		if (key == KEY_RIGHT)
 		{
 			sim->player.comm = (int)(sim->player.comm)|0x02;  //Go right command
+			
+			// right: 0b00001000 0x08, ~ 0b00000111 0x07
+			Element_KSNS::arrows |= 0x08; 
 		}
 		if (key == KEY_LEFT)
 		{
 			sim->player.comm = (int)(sim->player.comm)|0x01;  //Go left command
+
+			// left:  0b00000010 0x02, ~ 0b00001101 0x0d
+			Element_KSNS::arrows |= 0x02; 
 		}
 		if (key == KEY_DOWN && ((int)(sim->player.comm)&0x08)!=0x08)
 		{
 			sim->player.comm = (int)(sim->player.comm)|0x08;  //Use element command
+
+			// down:  0b00000100 0x04, ~ 0b00001011 0x0b
+			Element_KSNS::arrows |= 0x04;
 		}
 		if (key == KEY_UP && ((int)(sim->player.comm)&0x04)!=0x04)
 		{
 			sim->player.comm = (int)(sim->player.comm)|0x04;  //Jump command
+
+			// 0b00000001 0x01, ~ 0b00001110 0x0e
+			Element_KSNS::arrows |= 0x01;
 		}
 
 		if (key == KEY_d)
@@ -671,6 +684,8 @@ bool GameController::KeyPress(int key, Uint16 character, bool shift, bool ctrl, 
 				break;
 			}
 		}
+
+		Element_KSNS::key = key; 
 	}
 	return ret;
 }
@@ -685,14 +700,27 @@ bool GameController::KeyRelease(int key, Uint16 character, bool shift, bool ctrl
 		{
 			sim->player.pcomm = sim->player.comm;  //Saving last movement
 			sim->player.comm = (int)(sim->player.comm)&12;  //Stop command
+
+			// right: 0b00001000 0x08, NOT: 0b00000111 0x07
+			if (key == KEY_RIGHT)
+				Element_KSNS::arrows = Element_KSNS::arrows & 0x07;
+			// left:  0b00000010 0x02, ~ 0b00001101 0x0d
+			else if (key == KEY_LEFT)
+				Element_KSNS::arrows = Element_KSNS::arrows & 0x0d;
 		}
 		if (key == KEY_UP)
 		{
 			sim->player.comm = (int)(sim->player.comm)&11;
+
+			// up:    0b00000001 0x01, ~ 0b00001110 0x0e
+			Element_KSNS::arrows = Element_KSNS::arrows & 0x0e;
 		}
 		if (key == KEY_DOWN)
 		{
 			sim->player.comm = (int)(sim->player.comm)&7;
+
+			// down:  0b00000100 0x04, ~ 0b00001011 0x0b
+			Element_KSNS::arrows = Element_KSNS::arrows & 0x0b;
 		}
 
 		if (key == KEY_d || key == KEY_a)
@@ -708,6 +736,7 @@ bool GameController::KeyRelease(int key, Uint16 character, bool shift, bool ctrl
 		{
 			sim->player2.comm = (int)(sim->player2.comm)&7;
 		}
+		Element_KSNS::key = 0;
 	}
 	return ret;
 }
