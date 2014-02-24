@@ -673,6 +673,10 @@ long unsigned int gettime()
 {
 #ifdef WIN
 	return GetTickCount();
+#elif defined(MACOSX)
+	struct timeval s;
+	gettimeofday(&s, NULL);
+	return (unsigned int)(s.tv_sec * 1000 + s.tv_usec / 1000);
 #else
 	struct timespec s;
 	clock_gettime(CLOCK_MONOTONIC, &s);
