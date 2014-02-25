@@ -135,10 +135,7 @@ void Textbox::TabFocus()
 
 void Textbox::cutSelection()
 {
-	char * clipboardText;
-	clipboardText = ClipboardPull();
-	std::string newText = std::string(clipboardText);
-	free(clipboardText);
+	std::string newText = ClipboardPull();
 	if(HasSelection())
 	{
 		if(getLowerSelectionBound() < 0 || getHigherSelectionBound() > backingText.length())
@@ -191,10 +188,7 @@ void Textbox::selectAll()
 
 void Textbox::pasteIntoSelection()
 {
-	char * clipboardText;
-	clipboardText = ClipboardPull();
-	std::string newText = std::string(clipboardText);
-	free(clipboardText);
+	std::string newText = ClipboardPull();
 	if(HasSelection())
 	{
 		if(getLowerSelectionBound() < 0 || getHigherSelectionBound() > backingText.length())

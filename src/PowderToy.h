@@ -1,6 +1,7 @@
 #pragma once
+#include <string>
 
 void EngineProcess();
-void ClipboardPush(char * text);
-char * ClipboardPull();
+void ClipboardPush(std::string text);
+std::string ClipboardPull();
 int GetModifiers();

@@ -57,7 +57,7 @@ SDL_SysWMinfo sdl_wminfo;
 Atom XA_CLIPBOARD, XA_TARGETS, XA_UTF8_STRING;
 #endif
 
-char *clipboardText = NULL;
+std::string clipboardText = "";
 
 int desktopWidth = 1280, desktopHeight = 1024;
 
@@ -65,15 +65,11 @@ SDL_Surface * sdl_scrn;
 int scale = 1;
 bool fullscreen = false;
 
-void ClipboardPush(char * text)
+void ClipboardPush(std::string text)
 {
-	if (clipboardText != NULL) {
-		free(clipboardText);
-		clipboardText = NULL;
-	}
-	clipboardText = mystrdup(text);
+	clipboardText = text;
 #ifdef MACOSX
-	writeClipboard(text);
+	writeClipboard(text.c_str());
 #elif defined(WIN)
 	if (OpenClipboard(NULL))
 	{
@@ -82,10 +78,10 @@ void ClipboardPush(char * text)
 
 		EmptyClipboard();
 
-		cbuffer = GlobalAlloc(GMEM_DDESHARE, strlen(text)+1);
+		cbuffer = GlobalAlloc(GMEM_DDESHARE, text.size() + 1);
 		glbuffer = (char*)GlobalLock(cbuffer);
 
-		strcpy(glbuffer, text);
+		strcpy(glbuffer, text.c_str());
 
 		GlobalUnlock(cbuffer);
 		SetClipboardData(CF_TEXT, cbuffer);
@@ -103,12 +99,11 @@ void ClipboardPush(char * text)
 
 void EventProcess(SDL_Event event);
 
-char * ClipboardPull()
+std::string ClipboardPull()
 {
 #ifdef MACOSX
-	char * data = readClipboard();
-	if(!data) return mystrdup("");
-	return mystrdup(data);
+	const char *text = readClipboard();
+	return text ? text : "";
 #elif defined(WIN)
 	if (OpenClipboard(NULL))
 	{
@@ -119,14 +114,10 @@ char * ClipboardPull()
 		glbuffer = (char*)GlobalLock(cbuffer);
 		GlobalUnlock(cbuffer);
 		CloseClipboard();
-		if(glbuffer!=NULL){
-			return mystrdup(glbuffer);
-		}// else {
-		//	return mystrdup("");
-		//}
+		return glbuffer ? glbuffer : "";
 	}
 #elif defined(LIN) && defined(SDL_VIDEO_DRIVER_X11)
-	char *text = NULL;
+	std::string text = "";
 	Window selectionOwner;
 	sdl_wminfo.info.x11.lock_func();
 	selectionOwner = XGetSelectionOwner(sdl_wminfo.info.x11.display, XA_CLIPBOARD);
@@ -166,17 +157,17 @@ char * ClipboardPull()
 			result = XGetWindowProperty(sdl_wminfo.info.x11.display, sdl_wminfo.info.x11.window, XA_CLIPBOARD, 0, bytesLeft, 0, AnyPropertyType, &type, &format, &len, &bytesLeft, &data);
 			if (result == Success)
 			{
-				text = strdup((const char*) data);
+				text = data ? (const char*)data : "";
 				XFree(data);
 			}
 			else
 			{
 				printf("Failed to pull from clipboard\n");
-				return mystrdup("?");
+				return "?";
 			}
 		}
 		else
-			return mystrdup("");
+			return "";
 		XDeleteProperty(sdl_wminfo.info.x11.display, sdl_wminfo.info.x11.window, XA_CLIPBOARD);
 	}
 	sdl_wminfo.info.x11.unlock_func();
@@ -184,9 +175,7 @@ char * ClipboardPull()
 #else
 	printf("Not implemented: get text from clipboard\n");
 #endif
-	if (clipboardText)
-		return mystrdup(clipboardText);
-	return mystrdup("");
+	return clipboardText;
 }
 
 #ifdef OGLI
@@ -499,10 +488,7 @@ void EventProcess(SDL_Event event)
 		XEvent xe = event.syswm.msg->event.xevent;
 		if (xe.type==SelectionClear)
 		{
-			if (clipboardText != NULL) {
-				free(clipboardText);
-				clipboardText = NULL;
-			}
+			clipboardText = "";
 		}
 		else if (xe.type==SelectionRequest)
 		{
@@ -521,9 +507,9 @@ void EventProcess(SDL_Event event)
 				XChangeProperty(sdl_wminfo.info.x11.display, xe.xselectionrequest.requestor, xe.xselectionrequest.property, XA_ATOM, 32, PropModeReplace, (unsigned char*)targets, (int)(sizeof(targets)/sizeof(Atom)));
 			}
 			// TODO: Supporting more targets would be nice
-			else if ((xe.xselectionrequest.target==XA_STRING || xe.xselectionrequest.target==XA_UTF8_STRING) && clipboardText)
+			else if ((xe.xselectionrequest.target==XA_STRING || xe.xselectionrequest.target==XA_UTF8_STRING))
 			{
-				XChangeProperty(sdl_wminfo.info.x11.display, xe.xselectionrequest.requestor, xe.xselectionrequest.property, xe.xselectionrequest.target, 8, PropModeReplace, (unsigned char*)clipboardText, strlen(clipboardText)+1);
+				XChangeProperty(sdl_wminfo.info.x11.display, xe.xselectionrequest.requestor, xe.xselectionrequest.property, xe.xselectionrequest.target, 8, PropModeReplace, (unsigned char*)clipboardText.c_str(), clipboardText.size()+1);
 			}
 			else
 			{

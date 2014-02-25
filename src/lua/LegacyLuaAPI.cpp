@@ -2057,14 +2057,14 @@ int luatpt_screenshot(lua_State* l)
 
 int luatpt_getclip (lua_State* l)
 {
-	lua_pushstring(l, ClipboardPull());
+	lua_pushstring(l, ClipboardPull().c_str());
 	return 1; 
 }
 
 int luatpt_setclip (lua_State* l)
 {
 	luaL_checktype(l, 1, LUA_TSTRING);
-	ClipboardPush((char*) std::string(luaL_optstring(l, 1, "")).c_str());
+	ClipboardPush(luaL_optstring(l, 1, ""));
 	return 0;
 }
 
