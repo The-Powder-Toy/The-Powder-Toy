@@ -342,20 +342,20 @@ void Textbox::OnVKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 	{
 		switch(key)
 		{
-		case KEY_HOME: case KEY_NUM_HOME:
+		case KEY_HOME:
 			cursor = 0;
 			ClearSelection();
 			break;
-		case KEY_END: case KEY_NUM_END:
+		case KEY_END:
 			cursor = backingText.length();
 			ClearSelection();
 			break;
-		case KEY_LEFT: case KEY_NUM_LEFT:
+		case KEY_LEFT:
 			if(cursor > 0)
 				cursor--;
 			ClearSelection();
 			break;
-		case KEY_RIGHT: case KEY_NUM_RIGHT:
+		case KEY_RIGHT:
 			if(cursor < backingText.length())
 				cursor++;
 			ClearSelection();

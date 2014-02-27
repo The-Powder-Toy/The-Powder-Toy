@@ -414,6 +414,27 @@ std::map<std::string, std::string> readArguments(int argc, char * argv[])
 	return arguments;
 }
 
+SDLKey MapNumpad(SDLKey key)
+{
+	switch(key)
+	{
+	case KEY_NUM_UP:
+		return KEY_UP;
+	case KEY_NUM_DOWN:
+		return KEY_DOWN;
+	case KEY_NUM_RIGHT:
+		return KEY_RIGHT;
+	case KEY_NUM_LEFT:
+		return KEY_LEFT;
+	case KEY_NUM_HOME:
+		return KEY_HOME;
+	case KEY_NUM_END:
+		return KEY_END;
+	default:
+		return key;
+	}
+}
+
 int elapsedTime = 0, currentTime = 0, lastTime = 0, currentFrame = 0;
 unsigned int lastTick = 0;
 float fps = 0, delta = 1.0f, inputScale = 1.0f;
@@ -422,6 +443,9 @@ float currentWidth, currentHeight;
 
 void EventProcess(SDL_Event event)
 {
+	if(event.type == SDL_KEYDOWN || event.type == SDL_KEYUP)
+		if(!(event.key.keysym.mod&KEY_MOD_NUM))
+			event.key.keysym.sym = MapNumpad(event.key.keysym.sym);
 	switch (event.type)
 	{
 	case SDL_QUIT:
