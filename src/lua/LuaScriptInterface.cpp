@@ -1620,12 +1620,12 @@ int NeighboursClosure(lua_State * l)
 			if(y>ry)
 				return 0;
 		}
-		if(!(x && y) || sx+x<0 || sy+y<0 || sx+x>=XRES*CELL || sy+y>=YRES*CELL)
+		if(!(x || y) || sx+x<0 || sy+y<0 || sx+x>=XRES*CELL || sy+y>=YRES*CELL)
 		{
 			continue;
 		}
 		i=luacon_sim->pmap[y+sx][x+sx];
-	} while(!i&0xFF);
+	} while(!(i&0xFF));
 	lua_pushnumber(l, x);
 	lua_replace(l, lua_upvalueindex(5));
 	lua_pushnumber(l, y);
