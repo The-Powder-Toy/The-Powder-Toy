@@ -523,8 +523,8 @@ int luacon_keyevent(int key, int modifier, int event)
 				c--;
 				i--;
 			}
-			lua_pop(l, 1);
 			luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
+			lua_pop(l, 1);
 		}
 		else
 		{
