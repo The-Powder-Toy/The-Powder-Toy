@@ -571,9 +571,10 @@ int LuaScriptInterface::simulation_partNeighbours(lua_State * l)
 {
 	lua_newtable(l);
 	int id = 0;
-	if(lua_gettop(l) == 4)
+	int x = lua_tointeger(l, 1), y = lua_tointeger(l, 2), r = lua_tointeger(l, 3), rx, ry, n;
+	if(lua_gettop(l) == 5) // this is one more than the number of arguments because a table has just been pushed onto the stack with lua_newtable(l);
 	{
-		int x = lua_tointeger(l, 1), y = lua_tointeger(l, 2), r = lua_tointeger(l, 3), t = lua_tointeger(l, 4), rx, ry, n;
+		int t = lua_tointeger(l, 4);
 		for (rx = -r; rx <= r; rx++)
 			for (ry = -r; ry <= r; ry++)
 				if (x+rx >= 0 && y+ry >= 0 && x+rx < XRES && y+ry < YRES && (rx || ry))
@@ -589,7 +590,6 @@ int LuaScriptInterface::simulation_partNeighbours(lua_State * l)
 	}
 	else
 	{
-		int x = lua_tointeger(l, 1), y = lua_tointeger(l, 2), r = lua_tointeger(l, 3), rx, ry, n;
 		for (rx = -r; rx <= r; rx++)
 			for (ry = -r; ry <= r; ry++)
 				if (x+rx >= 0 && y+ry >= 0 && x+rx < XRES && y+ry < YRES && (rx || ry))
