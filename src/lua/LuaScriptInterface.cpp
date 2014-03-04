@@ -645,7 +645,10 @@ int LuaScriptInterface::simulation_partID(lua_State * l)
 	int amalgam = luacon_sim->pmap[y][x];
 	if(!amalgam)
 		amalgam = luacon_sim->photons[y][x];
-	lua_pushinteger(l, amalgam >> 8);
+	if (!amalgam)
+		lua_pushnil(l);
+	else
+		lua_pushinteger(l, amalgam >> 8);
 	return 1;
 }
 
@@ -796,7 +799,11 @@ int LuaScriptInterface::simulation_partKill(lua_State * l)
 	if(lua_gettop(l)==2)
 		luacon_sim->delete_part(lua_tointeger(l, 1), lua_tointeger(l, 2));
 	else
-		luacon_sim->kill_part(lua_tointeger(l, 1));
+	{
+		int i = lua_tointeger(l, 1);
+		if (i>=0 && i<NPART)
+			luacon_sim->kill_part(i);
+	}
 	return 0;
 }
 
@@ -1599,7 +1606,7 @@ int LuaScriptInterface::simulation_pmap(lua_State * l)
 	if(x < 0 || x >= XRES || y < 0 || y >= YRES)
 		return luaL_error(l, "coordinates out of range (%d,%d)", x, y);
 	r=luacon_sim->pmap[y][x];
-	if(!r&0xFF)
+	if(!(r&0xFF))
 		return 0;
 	lua_pushnumber(l, r>>8);
 	return 1;
@@ -1629,7 +1636,7 @@ int NeighboursClosure(lua_State * l)
 		{
 			continue;
 		}
-		i=luacon_sim->pmap[y+sx][x+sx];
+		i=luacon_sim->pmap[y+sy][x+sx];
 	} while(!(i&0xFF));
 	lua_pushnumber(l, x);
 	lua_replace(l, lua_upvalueindex(5));
