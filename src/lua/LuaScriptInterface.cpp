@@ -334,9 +334,14 @@ tpt.partsdata = nil");
 
 void LuaScriptInterface::Init()
 {
-	if(Client::Ref().FileExists("autorun.lua"))		
-		if(luacon_eval("dofile(\"autorun.lua\")"))
+	if(Client::Ref().FileExists("autorun.lua"))
+	{
+		lua_State *l = luacon_ci->l;
+		if(luaL_loadfile(l, "autorun.lua") || lua_pcall(l, 0, 0, 0))
 			luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
+		else
+			luacon_ci->Log(CommandInterface::LogNotice, "Loaded autorun.lua");
+	}
 }
 
 void LuaScriptInterface::SetWindow(ui::Window * window)
