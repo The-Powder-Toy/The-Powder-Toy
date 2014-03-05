@@ -1364,7 +1364,7 @@ int LuaScriptInterface::simulation_loadStamp(lua_State * l)
 	y = luaL_optint(l,3,0);
 	if (lua_isstring(l, 1)) //Load from 10 char name, or full filename
 	{
-		char * filename = (char*)luaL_optstring(l, 1, "");
+		const char * filename = luaL_optstring(l, 1, "");
 		tempfile = Client::Ref().GetStamp(filename);
 	}
 	if (!tempfile && lua_isnumber(l, 1)) //Load from stamp ID
@@ -1399,7 +1399,7 @@ int LuaScriptInterface::simulation_deleteStamp(lua_State * l)
 
 	if (lua_isstring(l, 1)) //note: lua_isstring returns true on numbers too
 	{
-		char * filename = (char*)luaL_optstring(l, 1, "");
+		const char * filename = luaL_optstring(l, 1, "");
 		for (std::vector<std::string>::const_iterator iterator = stamps.begin(), end = stamps.end(); iterator != end; ++iterator)
 		{
 			if (*iterator == filename)
@@ -2391,9 +2391,8 @@ void LuaScriptInterface::initGraphicsAPI()
 
 int LuaScriptInterface::graphics_textSize(lua_State * l)
 {
-	char * text;
 	int width, height;
-	text = (char*)luaL_optstring(l, 1, "");
+	const char* text = luaL_optstring(l, 1, "");
 	Graphics::textsize(text, width, height);
 
 	lua_pushinteger(l, width);
@@ -2405,7 +2404,7 @@ int LuaScriptInterface::graphics_drawText(lua_State * l)
 {
 	int x = lua_tointeger(l, 1);
 	int y = lua_tointeger(l, 2);
-	char * text = (char*)luaL_optstring(l, 3, "");
+	const char * text = luaL_optstring(l, 3, "");
 	int r = luaL_optint(l, 4, 255);
 	int g = luaL_optint(l, 5, 255);
 	int b = luaL_optint(l, 6, 255);
@@ -2818,6 +2817,7 @@ bool LuaScriptInterface::OnMouseUp(int x, int y, unsigned button)
 	if (button == 3)
 		button = 4;
 	luacon_mousedown = false;
+	luacon_mousebutton = 0;
 	return luacon_mouseevent(x, y, button, LUACON_MUP, 0);
 }
 
