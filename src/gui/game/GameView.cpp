@@ -2074,6 +2074,10 @@ void GameView::OnDraw()
 			int ctype = sample.particle.ctype;
 			if (sample.particle.type == PT_PIPE || sample.particle.type == PT_PPIP)
 				ctype = sample.particle.tmp&0xFF;
+
+			if (sample.particle.type == PT_PHOT || sample.particle.type == PT_BIZR || sample.particle.type == PT_BIZRG || sample.particle.type == PT_BIZRS || sample.particle.type == PT_FILT || sample.particle.type == PT_BRAY)
+				wavelengthGfx = ctype;
+
 			if(showDebug)
 			{
 				if (sample.particle.type == PT_LAVA && c->IsValidElement(ctype))
@@ -2094,7 +2098,9 @@ void GameView::OnDraw()
 				else
 				{
 					sampleInfo << c->ElementResolve(sample.particle.type, sample.particle.ctype);
-					if (c->IsValidElement(ctype))
+					if (wavelengthGfx)
+						sampleInfo << " (" << ctype << ")";
+					else if (c->IsValidElement(ctype))
 						sampleInfo << " (" << c->ElementResolve(ctype, -1) << ")";
 					else
 						sampleInfo << " ()";
@@ -2117,10 +2123,6 @@ void GameView::OnDraw()
 				sampleInfo << ", Temp: " << std::fixed << sample.particle.temp - 273.15f << " C";
 				sampleInfo << ", Pressure: " << std::fixed << sample.AirPressure;
 			}
-			if (sample.particle.type == PT_PHOT || sample.particle.type == PT_BIZR || sample.particle.type == PT_BIZRG || sample.particle.type == PT_BIZRS)
-				wavelengthGfx = sample.particle.ctype;
-			if (sample.particle.type == PT_FILT && sample.particle.ctype)
-				wavelengthGfx = sample.particle.ctype;
 		}
 		else if (sample.WallType)
 		{
