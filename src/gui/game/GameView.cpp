@@ -1261,9 +1261,14 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 				c->TranslateSave(ui::Point(0, 1));
 				break;
 			case 'r':
-				if(shift)
+				if (ctrl && shift)
 				{
-					//Flip
+					//Vertical flip
+					c->TransformSave(m2d_new(1,0,0,-1));
+				}
+				else if (!ctrl && shift)
+				{
+					//Horizontal flip
 					c->TransformSave(m2d_new(-1,0,0,1));
 				}
 				else
