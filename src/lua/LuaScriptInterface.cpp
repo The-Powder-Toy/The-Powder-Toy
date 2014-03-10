@@ -685,7 +685,7 @@ int LuaScriptInterface::simulation_partPosition(lua_State * l)
 int LuaScriptInterface::simulation_partProperty(lua_State * l)
 {
 	int argCount = lua_gettop(l);
-	int particleID = lua_tointeger(l, 1);
+	int particleID = luaL_checkinteger(l, 1);
 	StructProperty * property = NULL;
 
 	if(particleID < 0 || particleID >= NPART || !luacon_sim->parts[particleID].type)
