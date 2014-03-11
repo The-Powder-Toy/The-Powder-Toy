@@ -302,8 +302,11 @@ void Textbox::Tick(float dt)
 
 void Textbox::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
-	keyDown = 0;
-	characterDown = 0;
+	if (keyDown == key)
+	{
+		keyDown = 0;
+		characterDown = 0;
+	}
 }
 
 void Textbox::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
@@ -408,36 +411,38 @@ void Textbox::OnVKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 			}
 			ClearSelection();
 			break;
-		}
-		if(CharacterValid(character) && !ReadOnly)
-		{
-			if(HasSelection())
+		default:
+			if(CharacterValid(character) && !ReadOnly)
 			{
-				if(getLowerSelectionBound() < 0 || getHigherSelectionBound() > backingText.length())
-					return;
-				backingText.erase(backingText.begin()+getLowerSelectionBound(), backingText.begin()+getHigherSelectionBound());
-				cursor = getLowerSelectionBound();
-			}
+				if(HasSelection())
+				{
+					if(getLowerSelectionBound() < 0 || getHigherSelectionBound() > backingText.length())
+						return;
+					backingText.erase(backingText.begin()+getLowerSelectionBound(), backingText.begin()+getHigherSelectionBound());
+					cursor = getLowerSelectionBound();
+				}
 
-			int regionWidth = Size.X;
-			if(Appearance.icon)
-				regionWidth -= 13;
-			regionWidth -= Appearance.Margin.Left;
-			regionWidth -= Appearance.Margin.Right;
-			if((limit==std::string::npos || backingText.length() < limit) && (Graphics::textwidth((char*)std::string(backingText+char(character)).c_str()) <= regionWidth || multiline || limit!=std::string::npos))
-			{
-				if(cursor == backingText.length())
+				int regionWidth = Size.X;
+				if(Appearance.icon)
+					regionWidth -= 13;
+				regionWidth -= Appearance.Margin.Left;
+				regionWidth -= Appearance.Margin.Right;
+				if((limit==std::string::npos || backingText.length() < limit) && (Graphics::textwidth((char*)std::string(backingText+char(character)).c_str()) <= regionWidth || multiline || limit!=std::string::npos))
 				{
-					backingText += character;
+					if(cursor == backingText.length())
+					{
+						backingText += character;
+					}
+					else
+					{
+						backingText.insert(cursor, 1, (char)character);
+					}
+					cursor++;
 				}
-				else
-				{
-					backingText.insert(cursor, 1, (char)character);
-				}
-				cursor++;
+				changed = true;
+				ClearSelection();
 			}
-			changed = true;
-			ClearSelection();
+			break;
 		}
 	}
 	catch(std::out_of_range &e)

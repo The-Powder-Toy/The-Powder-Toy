@@ -443,9 +443,16 @@ float currentWidth, currentHeight;
 
 void EventProcess(SDL_Event event)
 {
-	if(event.type == SDL_KEYDOWN || event.type == SDL_KEYUP)
-		if(!(event.key.keysym.mod&KEY_MOD_NUM))
-			event.key.keysym.sym = MapNumpad(event.key.keysym.sym);
+	if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP)
+		if (!(event.key.keysym.mod&KEY_MOD_NUM))
+		{
+			SDLKey newKey = MapNumpad(event.key.keysym.sym);
+			if (newKey != event.key.keysym.sym)
+			{
+				event.key.keysym.sym = newKey;
+				event.key.keysym.unicode = 0;
+			}
+		}
 	switch (event.type)
 	{
 	case SDL_QUIT:
@@ -462,7 +469,7 @@ void EventProcess(SDL_Event event)
 		engine->onMouseMove(event.motion.x*inputScale, event.motion.y*inputScale);
 		break;
 	case SDL_MOUSEBUTTONDOWN:
-		if(event.button.button == SDL_BUTTON_WHEELUP)
+		if (event.button.button == SDL_BUTTON_WHEELUP)
 		{
 			engine->onMouseWheel(event.motion.x*inputScale, event.motion.y*inputScale, 1);
 		}
@@ -476,7 +483,7 @@ void EventProcess(SDL_Event event)
 		}
 		break;
 	case SDL_MOUSEBUTTONUP:
-		if(event.button.button != SDL_BUTTON_WHEELUP && event.button.button != SDL_BUTTON_WHEELDOWN)
+		if (event.button.button != SDL_BUTTON_WHEELUP && event.button.button != SDL_BUTTON_WHEELDOWN)
 			engine->onMouseUnclick(event.motion.x*inputScale, event.motion.y*inputScale, event.button.button);
 		break;
 #ifdef OGLI
