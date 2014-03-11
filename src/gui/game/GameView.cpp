@@ -101,6 +101,11 @@ public:
 		ui::Button::TextPosition();
 		textPosition.X += 3;
 	}
+	void SetToolTips(std::string newToolTip1, std::string newToolTip2)
+	{
+		toolTip = newToolTip1;
+		toolTip2 = newToolTip2;
+	}
 	virtual void OnMouseClick(int x, int y, unsigned int button)
 	{
 		ui::Button::OnMouseClick(x, y, button);
@@ -261,7 +266,7 @@ GameView::GameView():
 				v->c->SaveAsCurrent();
 		}
 	};
-	saveSimulationButton = new SplitButton(ui::Point(currentX, Size.Y-16), ui::Point(150, 15), "[untitled simulation]", "Save game as current name", "Save game as new name", 19);
+	saveSimulationButton = new SplitButton(ui::Point(currentX, Size.Y-16), ui::Point(150, 15), "[untitled simulation]", "Upload the simulation under current name", "Upload the simulation under new name", 19);
 	saveSimulationButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	saveSimulationButton->SetIcon(IconSave);
 	currentX+=151;
@@ -1848,6 +1853,8 @@ void GameView::disableAltBehaviour()
 	}
 }
 
+//"Upload the simulation under current name", "Upload the simulation under new name"
+//"Find & open a simulation"
 void GameView::enableCtrlBehaviour()
 {
 	if(!ctrlBehaviour)
@@ -1858,8 +1865,10 @@ void GameView::enableCtrlBehaviour()
 		saveSimulationButton->Appearance.BackgroundInactive = saveSimulationButton->Appearance.BackgroundHover = ui::Colour(255, 255, 255);
 		saveSimulationButton->Appearance.TextInactive = saveSimulationButton->Appearance.TextHover = ui::Colour(0, 0, 0);
 		saveSimulationButton->Enabled = true;
+		((SplitButton*)saveSimulationButton)->SetToolTips("Save the simulation to your hard drive", "Save the simulation to your hard drive");
 		searchButton->Appearance.BackgroundInactive = searchButton->Appearance.BackgroundHover = ui::Colour(255, 255, 255);
 		searchButton->Appearance.TextInactive = searchButton->Appearance.TextHover = ui::Colour(0, 0, 0);
+		searchButton->SetToolTip("Open a simulation from your hard drive");
 		if (currentSaveType == 2)
 			((SplitButton*)saveSimulationButton)->SetShowSplit(true);
 		if(isMouseDown || (toolBrush && drawMode == DrawPoints))
@@ -1883,9 +1892,11 @@ void GameView::disableCtrlBehaviour()
 		saveSimulationButton->Appearance.BackgroundHover = ui::Colour(20, 20, 20);
 		saveSimulationButton->Appearance.TextInactive = saveSimulationButton->Appearance.TextHover = ui::Colour(255, 255, 255);
 		saveSimulationButton->Enabled = saveSimulationButtonEnabled;
+		((SplitButton*)saveSimulationButton)->SetToolTips("Upload the simulation under current name", "Upload the simulation under new name");
 		searchButton->Appearance.BackgroundInactive = ui::Colour(0, 0, 0);
 		searchButton->Appearance.BackgroundHover = ui::Colour(20, 20, 20);
 		searchButton->Appearance.TextInactive = searchButton->Appearance.TextHover = ui::Colour(255, 255, 255);
+		searchButton->SetToolTip("Find & open a simulation");
 		if (currentSaveType == 2)
 			((SplitButton*)saveSimulationButton)->SetShowSplit(false);
 		if(!shiftBehaviour)
