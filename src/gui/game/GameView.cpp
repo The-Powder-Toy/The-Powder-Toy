@@ -266,7 +266,7 @@ GameView::GameView():
 				v->c->SaveAsCurrent();
 		}
 	};
-	saveSimulationButton = new SplitButton(ui::Point(currentX, Size.Y-16), ui::Point(150, 15), "[untitled simulation]", "Upload the simulation under current name", "Upload the simulation under new name", 19);
+	saveSimulationButton = new SplitButton(ui::Point(currentX, Size.Y-16), ui::Point(150, 15), "[untitled simulation]", "Upload the simulation under the current name", "Upload the simulation under a new name", 19);
 	saveSimulationButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	saveSimulationButton->SetIcon(IconSave);
 	currentX+=151;
@@ -1853,8 +1853,6 @@ void GameView::disableAltBehaviour()
 	}
 }
 
-//"Upload the simulation under current name", "Upload the simulation under new name"
-//"Find & open a simulation"
 void GameView::enableCtrlBehaviour()
 {
 	if(!ctrlBehaviour)
