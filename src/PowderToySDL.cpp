@@ -430,6 +430,12 @@ SDLKey MapNumpad(SDLKey key)
 		return KEY_HOME;
 	case KEY_NUM_END:
 		return KEY_END;
+	case KEY_NUM_PERIOD:
+		return KEY_DELETE;
+	case KEY_NUM_INS:
+	case KEY_NUM_PGUP:
+	case KEY_NUM_PGDOWN:
+		return KEY_UNKNOWN;
 	default:
 		return key;
 	}

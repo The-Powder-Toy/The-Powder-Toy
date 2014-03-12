@@ -1,6 +1,7 @@
 
 #if defined(USE_SDL)
 #include "SDL.h"
+#define KEY_UNKNOWN SDLK_UNKNOWN
 #define KEY_UP SDLK_UP
 #define KEY_NUM_UP SDLK_KP8
 #define KEY_DOWN SDLK_DOWN
@@ -13,13 +14,19 @@
 #define KEY_NUM_HOME SDLK_KP7
 #define KEY_END SDLK_END
 #define KEY_NUM_END SDLK_KP1
+#define KEY_NUM_INS SDLK_KP0
+#define KEY_NUM_PGUP SDLK_KP9
+#define KEY_NUM_PGDOWN SDLK_KP3
+#define KEY_NUM_PERIOD SDLK_KP_PERIOD
 #define KEY_BACKSPACE SDLK_BACKSPACE
-#define	KEY_DELETE SDLK_DELETE
+#define KEY_DELETE SDLK_DELETE
 #define KEY_TAB SDLK_TAB
 #define KEY_RETURN SDLK_RETURN
 #define KEY_ENTER SDLK_KP_ENTER
 #define KEY_ESCAPE SDLK_ESCAPE
 #define KEY_INSERT SDLK_INSERT
+
+#define KEY_NUM_5 SDLK_KP5
 
 #define KEY_LCTRL SDLK_LCTRL
 #define KEY_LALT SDLK_LALT
@@ -62,6 +69,7 @@
 
 #else
 
+#define KEY_UNKNOWN 0
 #define KEY_UP 1
 #define KEY_NUM_UP 47
 #define KEY_DOWN 2
@@ -81,6 +89,12 @@
 #define KEY_ENTER 11
 #define KEY_ESCAPE 12
 #define KEY_INSERT 46
+
+#define KEY_NUM_INS 52
+#define KEY_NUM_PGUP 53
+#define KEY_NUM_PGDOWN 54
+#define KEY_NUM_PERIOD 55
+#define KEY_NUM_5 56
 
 #define KEY_LCTRL 13
 #define KEY_LALT 14
