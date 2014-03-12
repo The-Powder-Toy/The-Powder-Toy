@@ -302,11 +302,8 @@ void Textbox::Tick(float dt)
 
 void Textbox::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
-	if (keyDown == key)
-	{
-		keyDown = 0;
-		characterDown = 0;
-	}
+	keyDown = 0;
+	characterDown = 0;
 }
 
 void Textbox::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)

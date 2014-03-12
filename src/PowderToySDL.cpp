@@ -450,8 +450,12 @@ float currentWidth, currentHeight;
 void EventProcess(SDL_Event event)
 {
 	if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP)
-		if ((!(event.key.keysym.mod&KEY_MOD_NUM)) ^ (!!(event.key.keysym.mod&KEY_MOD_SHIFT)))
+	{
+		if (event.key.keysym.unicode==0)
 		{
+			// If unicode is zero, this could be a numpad key with numlock off, or numlock on and shift on (unicode is set to 0 by SDL or the OS in these circumstances. If numlock is on, unicode is the relevant digit character).
+			// For some unknown reason, event.key.keysym.mod seems to be unreliable on some computers (keysum.mod&KEY_MOD_NUM is opposite to the actual value), so check keysym.unicode instead.
+			// Note: unicode is always zero for SDL_KEYUP events, so this translation won't always work properly for keyup events.
 			SDLKey newKey = MapNumpad(event.key.keysym.sym);
 			if (newKey != event.key.keysym.sym)
 			{
@@ -459,6 +463,7 @@ void EventProcess(SDL_Event event)
 				event.key.keysym.unicode = 0;
 			}
 		}
+	}
 	switch (event.type)
 	{
 	case SDL_QUIT:
