@@ -444,7 +444,7 @@ float currentWidth, currentHeight;
 void EventProcess(SDL_Event event)
 {
 	if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP)
-		if (!(event.key.keysym.mod&KEY_MOD_NUM))
+		if ((!(event.key.keysym.mod&KEY_MOD_NUM)) ^ (!!(event.key.keysym.mod&KEY_MOD_SHIFT)))
 		{
 			SDLKey newKey = MapNumpad(event.key.keysym.sym);
 			if (newKey != event.key.keysym.sym)
