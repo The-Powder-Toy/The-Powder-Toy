@@ -483,6 +483,7 @@ void LuaScriptInterface::initSimulationAPI()
 		{"loadStamp", simulation_loadStamp},
 		{"deleteStamp", simulation_deleteStamp},
 		{"loadSave", simulation_loadSave},
+		{"reloadSave", simulation_reloadSave},
 		{"getSaveID", simulation_getSaveID},
 		{"adjustCoords", simulation_adjustCoords},
 		{"prettyPowders", simulation_prettyPowders},
@@ -1427,6 +1428,12 @@ int LuaScriptInterface::simulation_loadSave(lua_State * l)
 	int instant = luaL_optint(l,2,0);
 	int history = luaL_optint(l,3,0); //Exact second a previous save was saved
 	luacon_controller->OpenSavePreview(saveID, history, instant?true:false);
+	return 0;
+}
+
+int LuaScriptInterface::simulation_reloadSave(lua_State * l)
+{
+	luacon_controller->ReloadSim();
 	return 0;
 }
 
@@ -2851,7 +2858,7 @@ void LuaScriptInterface::OnTick()
 	ui::Engine::Ref().LastTick(gettime());
 	if(luacon_mousedown)
 		luacon_mouseevent(luacon_mousex, luacon_mousey, luacon_mousebutton, LUACON_MPRESS, 0);
-	luacon_step(luacon_mousex, luacon_mousey, luacon_selectedl, luacon_selectedr, luacon_selectedalt, luacon_brushx, luacon_brushy);
+	luacon_step(luacon_mousex, luacon_mousey, luacon_selectedl, luacon_selectedr, luacon_selectedalt, luacon_selectedreplace, luacon_brushx, luacon_brushy);
 }
 
 int LuaScriptInterface::Command(std::string command)

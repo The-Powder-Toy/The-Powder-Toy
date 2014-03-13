@@ -149,6 +149,7 @@ GameController::GameController():
 	ActiveToolChanged(0, gameModel->GetActiveTool(0));
 	ActiveToolChanged(1, gameModel->GetActiveTool(1));
 	ActiveToolChanged(2, gameModel->GetActiveTool(2));
+	ActiveToolChanged(3, gameModel->GetActiveTool(3));
 
 	//sim = new Simulation();
 	Client::Ref().AddListener(this);
