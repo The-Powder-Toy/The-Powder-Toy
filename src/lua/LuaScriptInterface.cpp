@@ -214,12 +214,14 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	lua_setfield(l, tptProperties, "mousex");
 	lua_pushinteger(l, 0);
 	lua_setfield(l, tptProperties, "mousey");
-	lua_pushstring(l, "");
+	lua_pushstring(l, "DEFAULT_PT_DUST");
 	lua_setfield(l, tptProperties, "selectedl");
-	lua_pushstring(l, "");
+	lua_pushstring(l, "DEFAULT_PT_NONE");
 	lua_setfield(l, tptProperties, "selectedr");
-	lua_pushstring(l, "");
+	lua_pushstring(l, "DEFAULT_PT_NONE");
 	lua_setfield(l, tptProperties, "selecteda");
+	lua_pushstring(l, "DEFAULT_PT_NONE");
+	lua_setfield(l, tptProperties, "selectedreplace");
 
 	lua_newtable(l);
 	tptPropertiesVersion = lua_gettop(l);
@@ -2176,6 +2178,8 @@ int LuaScriptInterface::elements_element(lua_State * l)
 			}
 			lua_setfield(l, -2, (*iter).Name.c_str());
 		}
+		lua_pushstring(l, luacon_sim->elements[id].Identifier);
+		lua_setfield(l, -2, "Identifier");
 		return 1;
 	}
 }
@@ -2343,6 +2347,11 @@ int LuaScriptInterface::elements_property(lua_State * l)
 				default:
 					lua_pushnil(l);
 			}
+			return 1;
+		}
+		else if(propertyName == "Identifier")
+		{
+			lua_pushstring(l, luacon_sim->elements[id].Identifier);
 			return 1;
 		}
 		else
