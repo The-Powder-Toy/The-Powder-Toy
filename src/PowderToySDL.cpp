@@ -103,7 +103,7 @@ std::string ClipboardPull()
 {
 #ifdef MACOSX
 	const char *text = readClipboard();
-	return text ? text : "";
+	return text ? std::string(text) : "";
 #elif defined(WIN)
 	if (OpenClipboard(NULL))
 	{
@@ -114,7 +114,7 @@ std::string ClipboardPull()
 		glbuffer = (char*)GlobalLock(cbuffer);
 		GlobalUnlock(cbuffer);
 		CloseClipboard();
-		return glbuffer ? glbuffer : "";
+		return glbuffer ? std::string(glbuffer) : "";
 	}
 #elif defined(LIN) && defined(SDL_VIDEO_DRIVER_X11)
 	std::string text = "";
