@@ -3027,6 +3027,8 @@ int Simulation::create_part(int p, int x, int y, int tv)
 				parts[i].ctype = 0x3FFFFFFF;
 				parts[i].vx = 3.0f*cosf(a);
 				parts[i].vy = 3.0f*sinf(a);
+				if ((pmap[y][x]&0xFF) == PT_FILT)
+					parts[i].ctype = Element_FILT::interactWavelengths(&parts[pmap[y][x]>>8], parts[i].ctype);
 				break;
 			}
 			case PT_ELEC:
