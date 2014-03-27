@@ -179,7 +179,7 @@ def generateTools(toolFiles, outputCpp, outputH):
 		if d[0] == "ToolHeader":
 			toolClasses[d[1]].append(string.join(d[2:], " ")+";")
 	
-	for className, classMembers in toolClasses.items():
+	for className, classMembers in list(toolClasses.items()):
 		toolHeader += """
 class {0}: public SimTool
 {{
