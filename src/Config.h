@@ -130,6 +130,7 @@
 #define CELL	4
 #define ISTP	(CELL/2)
 #define CFDS	(4.0f/CELL)
+#define SIM_MAXVELOCITY 1e4f
 
 //Air constants
 #define AIR_TSTEPP 0.3f

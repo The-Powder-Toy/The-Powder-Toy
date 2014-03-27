@@ -4199,6 +4199,12 @@ killed:
 			}
 			else
 			{
+				if (mv > SIM_MAXVELOCITY)
+				{
+					parts[i].vx *= SIM_MAXVELOCITY/mv;
+					parts[i].vy *= SIM_MAXVELOCITY/mv;
+					mv = SIM_MAXVELOCITY;
+				}
 				// interpolate to see if there is anything in the way
 				dx = parts[i].vx*ISTP/mv;
 				dy = parts[i].vy*ISTP/mv;
