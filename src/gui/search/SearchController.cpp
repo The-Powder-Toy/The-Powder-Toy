@@ -80,6 +80,7 @@ void SearchController::Update()
 
 void SearchController::Exit()
 {
+	InstantOpen(false);
 	if(ui::Engine::Ref().GetWindow() == searchView)
 	{
 		ui::Engine::Ref().CloseWindow();
