@@ -55,7 +55,7 @@ int Element_BRAY::graphics(GRAPHICS_FUNC_ARGS)
 	{
 		trans = cpart->life * 7;
 		if (trans>255) trans = 255;
-		if (cpart->ctype) {
+		if (cpart->ctype&0x3FFFFFFF) {
 			*colg = 0;
 			*colb = 0;
 			*colr = 0;
@@ -75,7 +75,7 @@ int Element_BRAY::graphics(GRAPHICS_FUNC_ARGS)
 	{
 		trans = cpart->life/4;
 		if (trans>255) trans = 255;
-		if (cpart->ctype) {
+		if (cpart->ctype&0x3FFFFFFF) {
 			*colg = 0;
 			*colb = 0;
 			*colr = 0;

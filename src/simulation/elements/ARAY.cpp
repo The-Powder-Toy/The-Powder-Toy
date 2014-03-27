@@ -138,6 +138,7 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 								}
 							} else if (destroy) {
 								if ((r&0xFF)==PT_BRAY) {
+									parts[r>>8].tmp = 2;
 									parts[r>>8].life = 1;
 									docontinue = 1;
 									//this if prevents red BRAY from stopping on certain materials
