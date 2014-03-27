@@ -38,7 +38,7 @@ def generateElements(elementFiles, outputCpp, outputH):
 	classDirectives = []
 	for d in directives:
 		if d[0] == "ElementClass":
-			d[3] = string.atoi(d[3])
+			d[3] = int(d[3])
 			classDirectives.append(d)
 
 	elementIDs = sorted(classDirectives, key=lambda directive: directive[3])
@@ -69,7 +69,7 @@ def generateElements(elementFiles, outputCpp, outputH):
 				baseClass = classBits[1]
 			else:
 				newClass = tmpClass
-			elementClasses[newClass].append(string.join(d[2:], " ")+";")
+			elementClasses[newClass].append(" ".join(d[2:])+";")
 
 	#for className, classMembers in elementClasses.items():
 	for d in elementIDs:
@@ -94,7 +94,7 @@ public:
 	virtual ~{0}();
 	{2}
 }};
-""".format(className, elementBase, string.join(classMembers, "\n\t"))
+""".format(className, elementBase, str.join("\n\t", classMembers))
 
 	elementHeader += """
 std::vector<Element> GetElements();
@@ -172,14 +172,14 @@ def generateTools(toolFiles, outputCpp, outputH):
 		if d[0] == "ToolClass":
 			toolClasses[d[1]] = []
 			toolHeader += "#define %s %s\n" % (d[2], d[3])
-			d[3] = string.atoi(d[3])
+			d[3] = int(d[3])
 			classDirectives.append(d)
 	
 	for d in directives:
 		if d[0] == "ToolHeader":
-			toolClasses[d[1]].append(string.join(d[2:], " ")+";")
+			toolClasses[d[1]].append(" ".join(d[2:])+";")
 	
-	for className, classMembers in toolClasses.items():
+	for className, classMembers in list(toolClasses.items()):
 		toolHeader += """
 class {0}: public SimTool
 {{
@@ -188,7 +188,7 @@ public:
 	virtual ~{0}();
 	virtual int Perform(Simulation * sim, Particle * cpart, int x, int y, float strength);
 }};
-""".format(className, string.join(classMembers, "\n"))
+""".format(className, str.join("\n", classMembers))
 	
 	toolHeader += """
 std::vector<SimTool*> GetTools();
