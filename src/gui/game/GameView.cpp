@@ -618,6 +618,11 @@ ui::Point GameView::GetMousePosition()
 	return currentMouse;
 }
 
+bool GameView::GetPlacingSave()
+{
+	return selectMode != SelectNone;
+}
+
 void GameView::NotifyActiveToolsChanged(GameModel * sender)
 {
 	for(int i = 0; i < toolButtons.size(); i++)
