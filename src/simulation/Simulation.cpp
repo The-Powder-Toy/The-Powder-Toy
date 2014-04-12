@@ -2827,7 +2827,7 @@ int Simulation::create_part(int p, int x, int y, int tv)
 		}
 		else if (parts[p].type == PT_SOAP)
 		{
-			detach(i);
+			detach(p);
 		}
 		i = p;
 	}
