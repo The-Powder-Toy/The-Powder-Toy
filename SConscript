@@ -64,6 +64,7 @@ AddOption('--opengl',dest="opengl",action='store_true',default=False,help="Build
 AddOption('--opengl-renderer',dest="opengl-renderer",action='store_true',default=False,help="Build with OpenGL renderer support. (requires --opengl)")
 AddOption('--renderer',dest="renderer",action='store_true',default=False,help="Save renderer")
 AddOption('--64bit',dest="_64bit",action='store_true',default=False,help="64-bit platform target")
+AddOption('--32bit',dest="_32bit",action='store_true',default=False,help="32-bit platform target")
 AddOption('--static',dest="static",action="store_true",default=False,help="Static linking, reduces external library dependancies but increased file size")
 AddOption('--pthreadw32-static',dest="ptw32-static",action="store_true",default=False,help="Use PTW32_STATIC_LIB for pthreadw32 headers")
 AddOption('--python-ver',dest="pythonver",default=False,help="Python version to use for generator.py")
@@ -336,7 +337,7 @@ if(GetOption('lin')):
 	if GetOption('_64bit'):
 		env.Append(LINKFLAGS=['-m64'])
 		env.Append(CCFLAGS=['-m64'])
-	else:
+	elif GetOption('_32bit'):
 		env.Append(LINKFLAGS=['-m32'])
 		env.Append(CCFLAGS=['-m32'])
 
@@ -363,7 +364,7 @@ if(GetOption('macosx')):
 	if GetOption('_64bit'):
 		env.Append(LINKFLAGS=['-m64'])
 		env.Append(CCFLAGS=['-m64'])
-	else:
+	elif GetOption('_32bit'):
 		env.Append(LINKFLAGS=['-m32'])
 		env.Append(CCFLAGS=['-m32'])
 
@@ -374,6 +375,8 @@ if(GetOption('macosx')):
 
 if GetOption('_64bit'):
 	env.Append(CPPDEFINES=["_64BIT"])
+if GetOption('_32bit'):
+	env.Append(CPPDEFINES=["_32BIT"])
 
 if(GetOption('beta')):
 	env.Append(CPPDEFINES='BETA')
