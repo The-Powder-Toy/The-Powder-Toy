@@ -10,6 +10,8 @@
 # requirements
 # ============
 
+import SCons.Util
+
 # stdlib
 # ======
 
@@ -142,11 +144,15 @@ else:
 	env = Environment(tools = ['default'], ENV = os.environ)
 
 if(GetOption("copy_env")):
-    lstvar=["CC","CXX","LD","CFLAGS","CCFLAGS","LIBPATH"]
-    print "WARNING: enviroment copying enabled. changes in the enviroment can easily break the build process."
-    for var in lstvar:
+    singlevar=["CC","CXX","LD","LIBPATH"]
+    multivar=["CFLAGS","CCFLAGS","LINKFLAGS"] # variables containing several space separated things
+    for var in singlevar:
         if var in os.environ:
-            env[var]=os.environ[var]
+            env[var] = os.environ[var]
+            print "WARNING: copying enviroment variable {}={!r}".format(var,os.environ[var])
+    for var in multivar:
+        if var in os.environ:
+            env[var] += SCons.Util.CLVar(os.environ[var])
             print "WARNING: copying enviroment variable {}={!r}".format(var,os.environ[var])
 
 # macosx specific platform settings
