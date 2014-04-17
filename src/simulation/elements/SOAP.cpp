@@ -88,10 +88,11 @@ int Element_SOAP::update(UPDATE_FUNC_ARGS)
 		{
 			if (parts[i].life<=0)
 			{
+				//if only connected on one side
 				if ((parts[i].ctype&6) != 6 && (parts[i].ctype&6))
 				{
-					int target;
-					target = i;
+					int target = i;
+					//break entire bubble in a loop
 					while((parts[target].ctype&6) != 6 && (parts[target].ctype&6))
 					{
 						if (parts[target].ctype&2)
@@ -151,18 +152,21 @@ int Element_SOAP::update(UPDATE_FUNC_ARGS)
 							{
 								if (parts[r>>8].ctype == 1)
 								{
-									int buf;
-									buf = parts[i].tmp;
+									int buf = parts[i].tmp;
+
 									parts[i].tmp = r>>8;
-									parts[buf].tmp2 = r>>8;
+									if (parts[buf].type == PT_SOAP)
+										parts[buf].tmp2 = r>>8;
 									parts[r>>8].tmp2 = i;
 									parts[r>>8].tmp = buf;
 									parts[r>>8].ctype = 7;
 								}
 								else if (parts[r>>8].ctype == 7 && parts[i].tmp != r>>8 && parts[i].tmp2 != r>>8)
 								{
-									parts[parts[i].tmp].tmp2 = parts[r>>8].tmp2;
-									parts[parts[r>>8].tmp2].tmp = parts[i].tmp;
+									if (parts[parts[i].tmp].type == PT_SOAP)
+										parts[parts[i].tmp].tmp2 = parts[r>>8].tmp2;
+									if (parts[parts[r>>8].tmp2].type == PT_SOAP)
+										parts[parts[r>>8].tmp2].tmp = parts[i].tmp;
 									parts[r>>8].tmp2 = i;
 									parts[i].tmp = r>>8;
 								}
