@@ -4292,7 +4292,8 @@ killed:
 						}
 
 						r = get_wavelength_bin(&parts[i].ctype);
-						if (r == -1) {
+						if (r == -1 || !(parts[i].ctype&0x3FFFFFFF))
+						{
 							kill_part(i);
 							continue;
 						}
