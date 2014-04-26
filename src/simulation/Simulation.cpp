@@ -4532,6 +4532,8 @@ killed:
 								rt = 10;
 							nxf = clear_xf;
 							nyf = clear_yf;
+							nx = (int)(parts[i].x+0.5f);
+							ny = (int)(parts[i].y+0.5f);
 							for (j=0;j<rt;j++)
 							{
 								switch (gravityMode)
