@@ -47,6 +47,24 @@ Element_SOAP::Element_SOAP()
 	
 }
 
+//#TPT-Directive ElementHeader Element_SOAP static void detach(Simulation * sim, int i)
+void Element_SOAP::detach(Simulation * sim, int i)
+{
+	if ((sim->parts[i].ctype&2) == 2 && sim->parts[sim->parts[i].tmp].type == PT_SOAP)
+	{
+		if ((sim->parts[sim->parts[i].tmp].ctype&4) == 4)
+			sim->parts[sim->parts[i].tmp].ctype ^= 4;
+	}
+
+	if ((sim->parts[i].ctype&4) == 4 && sim->parts[sim->parts[i].tmp2].type == PT_SOAP)
+	{
+		if ((sim->parts[sim->parts[i].tmp2].ctype&2) == 2)
+			sim->parts[sim->parts[i].tmp2].ctype ^= 2;
+	}
+
+	sim->parts[i].ctype = 0;
+}
+
 //#TPT-Directive ElementHeader Element_SOAP static void attach(Particle * parts, int i1, int i2)
 void Element_SOAP::attach(Particle * parts, int i1, int i2)
 {
@@ -93,24 +111,24 @@ int Element_SOAP::update(UPDATE_FUNC_ARGS)
 				{
 					int target = i;
 					//break entire bubble in a loop
-					while((parts[target].ctype&6) != 6 && (parts[target].ctype&6))
+					while((parts[target].ctype&6) != 6 && (parts[target].ctype&6) && parts[target].type == PT_SOAP)
 					{
 						if (parts[target].ctype&2)
 						{
 							target = parts[target].tmp;
-							sim->detach(target);
+							detach(sim, target);
 						}
 						if (parts[target].ctype&4)
 						{
 							target = parts[target].tmp2;
-							sim->detach(target);
+							detach(sim, target);
 						}
 					}
 				}
 				if ((parts[i].ctype&6) != 6)
 					parts[i].ctype = 0;
 				if ((parts[i].ctype&6) == 6 && (parts[parts[i].tmp].ctype&6) == 6 && parts[parts[i].tmp].tmp == i)
-					sim->detach(i);
+					detach(sim, i);
 			}
 			parts[i].vy = (parts[i].vy-0.1f)*0.5f;
 			parts[i].vx *= 0.5f;
@@ -144,7 +162,7 @@ int Element_SOAP::update(UPDATE_FUNC_ARGS)
 								    || (r && sim->elements[r&0xFF].State != ST_GAS
 								    && (r&0xFF) != PT_SOAP && (r&0xFF) != PT_GLAS))
 								{
-									sim->detach(i);
+									detach(sim, i);
 									continue;
 								}
 							}

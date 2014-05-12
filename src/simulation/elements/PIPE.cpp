@@ -201,7 +201,7 @@ int Element_PIPE::update(UPDATE_FUNC_ARGS)
 					else if ((parts[i].tmp&0xFF) == 0 && (sim->elements[r&0xFF].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY)))
 					{
 						if ((r&0xFF)==PT_SOAP)
-							sim->detach(r>>8);
+							Element_SOAP::detach(sim, r>>8);
 						transfer_part_to_pipe(parts+(r>>8), parts+i);
 						sim->kill_part(r>>8);
 					}

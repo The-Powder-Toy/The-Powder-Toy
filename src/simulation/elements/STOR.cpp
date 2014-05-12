@@ -61,7 +61,8 @@ int Element_STOR::update(UPDATE_FUNC_ARGS)
 					continue;
 				if (!parts[i].tmp && !parts[i].life && (r&0xFF)!=PT_STOR && !(sim->elements[(r&0xFF)].Properties&TYPE_SOLID) && (!parts[i].ctype || (r&0xFF)==parts[i].ctype))
 				{
-					if ((r&0xFF) == PT_SOAP) sim->detach(r>>8);
+					if ((r&0xFF) == PT_SOAP)
+						Element_SOAP::detach(sim, r>>8);
 					parts[i].tmp = parts[r>>8].type;
 					parts[i].temp = parts[r>>8].temp;
 					parts[i].tmp2 = parts[r>>8].life;

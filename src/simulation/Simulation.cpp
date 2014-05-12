@@ -2578,24 +2578,6 @@ int Simulation::get_normal_interp(int pt, float x0, float y0, float dx, float dy
 	return get_normal(pt, x, y, dx, dy, nx, ny);
 }
 
-//For soap only
-void Simulation::detach(int i)
-{
-	if ((parts[i].ctype&2) == 2)
-	{
-		if ((parts[parts[i].tmp].ctype&4) == 4)
-			parts[parts[i].tmp].ctype ^= 4;
-	}
-
-	if ((parts[i].ctype&4) == 4)
-	{
-		if ((parts[parts[i].tmp2].ctype&2) == 2)
-			parts[parts[i].tmp2].ctype ^= 2;
-	}
-
-	parts[i].ctype = 0;
-}
-
 void Simulation::kill_part(int i)//kills particle number i
 {
 	int x = (int)(parts[i].x+0.5f);
@@ -2627,7 +2609,7 @@ void Simulation::kill_part(int i)//kills particle number i
 	}
 	else if (parts[i].type == PT_SOAP)
 	{
-		detach(i);
+		Element_SOAP::detach(this, i);
 	}
 
 	parts[i].type = PT_NONE;
@@ -2657,7 +2639,7 @@ void Simulation::part_change_type(int i, int x, int y, int t)//changes the type 
 		fighcount--;
 	}
 	else if (parts[i].type == PT_SOAP)
-		detach(i);
+		Element_SOAP::detach(this, i);
 
 	parts[i].type = t;
 	if (elements[t].Properties & TYPE_ENERGY)
@@ -2827,7 +2809,7 @@ int Simulation::create_part(int p, int x, int y, int tv)
 		}
 		else if (parts[p].type == PT_SOAP)
 		{
-			detach(p);
+			Element_SOAP::detach(this, p);
 		}
 		i = p;
 	}
