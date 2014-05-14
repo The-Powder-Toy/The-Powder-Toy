@@ -2804,7 +2804,7 @@ int Simulation::create_part(int p, int x, int y, int tv)
 		}
 		else if (parts[p].type == PT_FIGH)
 		{
-			fighters[(unsigned char)parts[i].tmp].spwn = 0;
+			fighters[(unsigned char)parts[p].tmp].spwn = 0;
 			fighcount--;
 		}
 		else if (parts[p].type == PT_SOAP)
