@@ -104,13 +104,14 @@ int Element_CRAY::update(UPDATE_FUNC_ARGS)
 										docontinue = 0;
 								}
 							} else if ((r&0xFF)==PT_FILT) { // get color if passed through FILT
-								if (parts[r>>8].tmp==0)
+								if (parts[r>>8].dcolour == 0xFF000000)
+									colored = 0xFF000000;
+								else if (parts[r>>8].tmp==0)
 								{
-									if (parts[r>>8].dcolour == 0xFF000000)
-										colored = 0xFF000000;
-									else
-										colored = wavelengthToDecoColour(Element_FILT::getWavelengths(&parts[r>>8]));
+									colored = wavelengthToDecoColour(Element_FILT::getWavelengths(&parts[r>>8]));
 								}
+								else if (colored==0xFF000000)
+									colored = 0;
 								parts[r>>8].life = 4;
 							} else if ((r&0xFF) == PT_CRAY || nostop) {
 								docontinue = 1;
