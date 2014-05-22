@@ -107,6 +107,7 @@ int Element_CRAY::update(UPDATE_FUNC_ARGS)
 								{
 									colored = wavelengthToDecoColour(Element_FILT::getWavelengths(&parts[r>>8]));
 								}
+								parts[r>>8].life = 4;
 							} else if ((r&0xFF) == PT_CRAY || nostop) {
 								docontinue = 1;
 							} else if(destroy && r && ((r&0xFF) != PT_DMND)) {
