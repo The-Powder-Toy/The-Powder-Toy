@@ -1401,8 +1401,7 @@ std::string GameController::ElementResolve(int type, int ctype)
 		else if (type >= 0 && type < PT_NUM && gameModel->GetSimulation()->elements)
 			return std::string(gameModel->GetSimulation()->elements[type].Name);
 	}
-	else
-		return "";
+	return "";
 }
 
 bool GameController::IsValidElement(int type)

@@ -1999,7 +1999,7 @@ int LuaScriptInterface::elements_loadDefault(lua_State * l)
 	luacon_model->BuildMenus();
 	luacon_sim->init_can_move();
 	std::fill(luacon_ren->graphicscache, luacon_ren->graphicscache+PT_NUM, gcache_item());
-
+	return 0;
 }
 
 int LuaScriptInterface::elements_allocate(lua_State * l)
@@ -2296,6 +2296,7 @@ int LuaScriptInterface::elements_property(lua_State * l)
 		}
 		else
 			return luaL_error(l, "Invalid element property");
+		return 0;
 	}
 	else
 	{
