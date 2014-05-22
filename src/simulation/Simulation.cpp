@@ -13,6 +13,7 @@
 #include "Air.h"
 #include "Gravity.h"
 #include "elements/Element.h"
+#include "CoordStack.h"
 
 //#include "graphics/Renderer.h"
 //#include "graphics/Graphics.h"
@@ -379,78 +380,85 @@ bool Simulation::FloodFillPmapCheck(int x, int y, int type)
 		return (pmap[y][x]&0xFF) == type;
 }
 
-int Simulation::flood_prop_2(int x, int y, size_t propoffset, PropertyValue propvalue, StructProperty::PropertyType proptype, int parttype, char * bitmap)
-{
-	int x1, x2, i, dy = 1;
-	x1 = x2 = x;
-	while (x1>=CELL)
-	{
-		if (!FloodFillPmapCheck(x1-1, y, parttype) || bitmap[(y*XRES)+x1-1])
-		{
-			break;
-		}
-		x1--;
-	}
-	while (x2<XRES-CELL)
-	{
-		if (!FloodFillPmapCheck(x2+1, y, parttype) || bitmap[(y*XRES)+x2+1])
-		{
-			break;
-		}
-		x2++;
-	}
-	for (x=x1; x<=x2; x++)
-	{
-		i = pmap[y][x];
-		if (!i)
-			i = photons[y][x];
-		if (!i)
-			continue;
-		switch (proptype) {
-			case StructProperty::Float:
-				*((float*)(((char*)&parts[i>>8])+propoffset)) = propvalue.Float;
-				break;
-				
-			case StructProperty::ParticleType:
-			case StructProperty::Integer:
-				*((int*)(((char*)&parts[i>>8])+propoffset)) = propvalue.Integer;
-				break;
-				
-			case StructProperty::UInteger:
-				*((unsigned int*)(((char*)&parts[i>>8])+propoffset)) = propvalue.UInteger;
-				break;
-				
-			default:
-				break;
-		}
-		bitmap[(y*XRES)+x] = 1;
-	}
-	if (y>=CELL+dy)
-		for (x=x1; x<=x2; x++)
-			if (FloodFillPmapCheck(x, y-dy, parttype) && !bitmap[((y-dy)*XRES)+x])
-				if (!flood_prop_2(x, y-dy, propoffset, propvalue, proptype, parttype, bitmap))
-					return 0;
-	if (y<YRES-CELL-dy)
-		for (x=x1; x<=x2; x++)
-			if (FloodFillPmapCheck(x, y+dy, parttype) && !bitmap[((y+dy)*XRES)+x])
-				if (!flood_prop_2(x, y+dy, propoffset, propvalue, proptype, parttype, bitmap))
-					return 0;
-	return 1;
-}
-
 int Simulation::flood_prop(int x, int y, size_t propoffset, PropertyValue propvalue, StructProperty::PropertyType proptype)
 {
-	int r = 0;
-	char * bitmap = (char *)malloc(XRES*YRES); //Bitmap for checking
-	memset(bitmap, 0, XRES*YRES);
-	r = pmap[y][x];
+	int i, x1, x2, dy = 1;
+	int did_something = 0;
+	int r = pmap[y][x];
 	if (!r)
 		r = photons[y][x];
 	if (!r)
-		return 1;
-	flood_prop_2(x, y, propoffset, propvalue, proptype, r&0xFF, bitmap);
+		return 0;
+	int parttype = (r&0xFF);
+	char * bitmap = (char*)malloc(XRES*YRES); //Bitmap for checking
+	if (!bitmap) return -1;
+	memset(bitmap, 0, XRES*YRES);
+	try
+	{
+		CoordStack cs;
+		cs.push(x, y);
+		do
+		{
+			cs.pop(x, y);
+			x1 = x2 = x;
+			x1 = x2 = x;
+			while (x1>=CELL)
+			{
+				if (!FloodFillPmapCheck(x1-1, y, parttype) || bitmap[(y*XRES)+x1-1])
+					break;
+				x1--;
+			}
+			while (x2<XRES-CELL)
+			{
+				if (!FloodFillPmapCheck(x2+1, y, parttype) || bitmap[(y*XRES)+x2+1])
+					break;
+				x2++;
+			}
+			for (x=x1; x<=x2; x++)
+			{
+				i = pmap[y][x];
+				if (!i)
+					i = photons[y][x];
+				if (!i)
+					continue;
+				switch (proptype) {
+					case StructProperty::Float:
+						*((float*)(((char*)&parts[i>>8])+propoffset)) = propvalue.Float;
+						break;
+						
+					case StructProperty::ParticleType:
+					case StructProperty::Integer:
+						*((int*)(((char*)&parts[i>>8])+propoffset)) = propvalue.Integer;
+						break;
+						
+					case StructProperty::UInteger:
+						*((unsigned int*)(((char*)&parts[i>>8])+propoffset)) = propvalue.UInteger;
+						break;
+						
+					default:
+						break;
+				}
+				bitmap[(y*XRES)+x] = 1;
+				did_something = 1;
+			}
+			if (y>=CELL+dy)
+				for (x=x1; x<=x2; x++)
+					if (FloodFillPmapCheck(x, y-dy, parttype) && !bitmap[((y-dy)*XRES)+x])
+						cs.push(x, y-dy);
+			if (y<YRES-CELL-dy)
+				for (x=x1; x<=x2; x++)
+					if (FloodFillPmapCheck(x, y+dy, parttype) && !bitmap[((y+dy)*XRES)+x])
+						cs.push(x, y+dy);
+		} while (cs.getSize()>0);
+	}
+	catch (std::exception& e)
+	{
+		std::cerr << e.what() << std::endl;
+		free(bitmap);
+		return -1;
+	}
 	free(bitmap);
-	return 0;
+	return did_something;
 }
 
 SimulationSample Simulation::GetSample(int x, int y)
