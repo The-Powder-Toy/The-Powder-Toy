@@ -78,6 +78,7 @@ int Element_CRAY::update(UPDATE_FUNC_ARGS)
 						continue;
 					if ((r&0xFF)==PT_SPRK && parts[r>>8].life==3) { //spark found, start creating
 						unsigned int colored = 0;
+						bool isBlackDeco = false;
 						bool destroy = parts[r>>8].ctype==PT_PSCN;
 						bool nostop = parts[r>>8].ctype==PT_INST;
 						bool createSpark = (parts[r>>8].ctype==PT_INWR);
@@ -105,7 +106,10 @@ int Element_CRAY::update(UPDATE_FUNC_ARGS)
 							} else if ((r&0xFF)==PT_FILT) { // get color if passed through FILT
 								if (parts[r>>8].tmp==0)
 								{
-									colored = wavelengthToDecoColour(Element_FILT::getWavelengths(&parts[r>>8]));
+									if (parts[r>>8].dcolour == 0xFF000000)
+										colored = 0xFF000000;
+									else
+										colored = wavelengthToDecoColour(Element_FILT::getWavelengths(&parts[r>>8]));
 								}
 								parts[r>>8].life = 4;
 							} else if ((r&0xFF) == PT_CRAY || nostop) {
