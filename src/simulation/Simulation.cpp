@@ -1447,21 +1447,23 @@ int Simulation::FloodParts(int x, int y, int fullc, int cm, int flags)
 	if (cm==-1)
 	{
 		//if initial flood point is out of bounds, do nothing
-		if (c != 0 && (x < CELL || x >= XRES-CELL || y < CELL || y >= YRES-CELL))
+		if (c != 0 && (x < CELL || x >= XRES-CELL || y < CELL || y >= YRES-CELL || c == PT_SPRK))
 			return 1;
 		else if (x < 0 || x >= XRES || y < 0 || y >= YRES)
 			return 1;
-		if (c==0)
+		if (c == 0)
 		{
 			cm = pmap[y][x]&0xFF;
 			if (!cm)
-				cm = photons[y][x]&0xFF;
-			if (!cm)
 			{
-				if (bmap[y/CELL][x/CELL])
-					return FloodWalls(x, y, WL_ERASE, -1);
-				else
-					return -1;
+				cm = photons[y][x]&0xFF;
+				if (!cm)
+				{
+					if (bmap[y/CELL][x/CELL])
+						return FloodWalls(x, y, WL_ERASE, -1);
+					else
+						return -1;
+				}
 			}
 		}
 		else
