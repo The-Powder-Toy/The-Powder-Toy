@@ -1226,15 +1226,16 @@ int luatpt_set_property(lua_State* l)
 int luatpt_set_wallmap(lua_State* l)
 {
 	int nx, ny, acount;
-	int x1, y1, width, height;
-	float value;
+	int x1, y1, width, height, wallType;
 	acount = lua_gettop(l);
 
 	x1 = abs(luaL_optint(l, 1, 0));
 	y1 = abs(luaL_optint(l, 2, 0));
 	width = abs(luaL_optint(l, 3, XRES/CELL));
 	height = abs(luaL_optint(l, 4, YRES/CELL));
-	value = (float)luaL_optint(l, acount, 0);
+	wallType = luaL_optint(l, acount, 0);
+	if (wallType < 0 || wallType >= UI_WALLCOUNT)
+		return luaL_error(l, "Unrecognised wall number %d", wallType);
 
 	if (acount == 5)	//Draw rect
 	{
@@ -1249,7 +1250,7 @@ int luatpt_set_wallmap(lua_State* l)
 		for (nx = x1; nx<x1+width; nx++)
 			for (ny = y1; ny<y1+height; ny++)
 			{
-				luacon_sim->bmap[ny][nx] = value;
+				luacon_sim->bmap[ny][nx] = wallType;
 			}
 	}
 	else	//Set point
@@ -1258,20 +1259,15 @@ int luatpt_set_wallmap(lua_State* l)
 			x1 = (XRES/CELL);
 		if(y1 > (YRES/CELL))
 			y1 = (YRES/CELL);
-		luacon_sim->bmap[y1][x1] = value;
+		luacon_sim->bmap[y1][x1] = wallType;
 	}
 	return 0;
 }
 
 int luatpt_get_wallmap(lua_State* l)
 {
-	int nx, ny, acount;
-	int x1, y1, width, height;
-	float value;
-	acount = lua_gettop(l);
-
-	x1 = abs(luaL_optint(l, 1, 0));
-	y1 = abs(luaL_optint(l, 2, 0));
+	int x1 = abs(luaL_optint(l, 1, 0));
+	int y1 = abs(luaL_optint(l, 2, 0));
 
 	if(x1 > (XRES/CELL) || y1 > (YRES/CELL))
 		return luaL_error(l, "Out of range");
