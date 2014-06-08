@@ -29,12 +29,7 @@
 
 #define LUA_BITOP_VERSION	"1.0.2"
 
-extern "C"
-{
-#include "lua.h"
-#include "lauxlib.h"
-#include "lualib.h"
-}
+#include "luainc.h"
 
 #ifdef _MSC_VER
 /* MSVC is stuck in the last century and doesn't have C99's stdint.h. */

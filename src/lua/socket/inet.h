@@ -16,7 +16,7 @@
 *
 * RCS ID: $Id: inet.h,v 1.16 2005/10/07 04:40:59 diego Exp $
 \*=========================================================================*/
-#include "lua.h"
+#include "../luainc.h"
 #include "socket.h"
 #include "timeout.h"
 

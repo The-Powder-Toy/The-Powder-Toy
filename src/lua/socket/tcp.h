@@ -16,7 +16,7 @@
 *
 * RCS ID: $Id: tcp.h,v 1.7 2005/10/07 04:40:59 diego Exp $
 \*=========================================================================*/
-#include "lua.h"
+#include "../luainc.h"
 
 #include "buffer.h"
 #include "timeout.h"

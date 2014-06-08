@@ -1,10 +1,4 @@
 #ifdef LUACONSOLE
-extern "C"
-{
-#include "lua.h"
-#include "lauxlib.h"
-#include "lualib.h"
-}
 
 #include <iostream>
 #include "LuaComponent.h"

@@ -1,12 +1,7 @@
 #ifndef LUASCRIPTINTERFACE_H_
 #define LUASCRIPTINTERFACE_H_
 
-extern "C"
-{
-#include "lua.h"
-#include "lauxlib.h"
-#include "lualib.h"
-}
+#include "luainc.h"
 
 #include "CommandInterface.h"
 #include "simulation/Simulation.h"

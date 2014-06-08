@@ -10,7 +10,7 @@
 * RCS ID: $Id: options.h,v 1.4 2005/10/07 04:40:59 diego Exp $
 \*=========================================================================*/
 
-#include "lua.h"
+#include "../luainc.h"
 #include "socket.h"
 
 /* option registry */

@@ -31,8 +31,7 @@
 * RCS ID: $Id: auxiliar.h,v 1.9 2005/10/07 04:40:59 diego Exp $
 \*=========================================================================*/
 
-#include "lua.h"
-#include "lauxlib.h"
+#include "../luainc.h"
 
 int auxiliar_open(lua_State *L);
 void auxiliar_newclass(lua_State *L, const char *classname, luaL_reg *func);

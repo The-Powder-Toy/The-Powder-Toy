@@ -15,7 +15,7 @@
 * RCS ID: $Id: io.h,v 1.11 2005/10/07 04:40:59 diego Exp $
 \*=========================================================================*/
 #include <stdio.h>
-#include "lua.h"
+#include "../luainc.h"
 
 #include "timeout.h"
 

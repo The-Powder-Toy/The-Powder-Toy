@@ -26,20 +26,11 @@
 #ifndef SNAPSHOT_ID
 #define SNAPSHOT_ID 0
 #endif
-
-#ifndef STABLE
-#ifndef BETA
-#define BETA
-#define SNAPSHOT
-#endif
-#endif
 //VersionInfoEnd
 
 //#define IGNORE_UPDATES //uncomment this for mods, to not get any update notifications
 
-#if defined(DEBUG) || defined(RENDERER) || defined(X86_SSE2)
 #define HIGH_QUALITY_RESAMPLE			//High quality image resampling, slower but much higher quality than my terribad linear interpolation
-#endif
 
 #if defined(SNAPSHOT)
 #define IDENT_RELTYPE "S"
@@ -52,14 +43,18 @@
 #if defined(WIN)
 #if defined(_64BIT)
 #define IDENT_PLATFORM "WIN64"
-#else
+#elif defined(_32BIT)
 #define IDENT_PLATFORM "WIN32"
+#else
+#define IDENT_PLATFORM "WIN"
 #endif
 #elif defined(LIN)
 #if defined(_64BIT)
 #define IDENT_PLATFORM "LIN64"
-#else
+#elif defined(_32BIT)
 #define IDENT_PLATFORM "LIN32"
+#else
+#define IDENT_PLATFORM "LIN"
 #endif
 #elif defined(MACOSX)
 #define IDENT_PLATFORM "MACOSX"

@@ -5,7 +5,11 @@
     Feel free to customize this file to suit your needs
 */
 
+#ifdef SDL_INC
+#include "SDL/SDL.h"
+#else
 #include "SDL.h"
+#endif
 #include "SDLMain.h"
 #include <sys/param.h> /* for MAXPATHLEN */
 #include <unistd.h>

@@ -1,6 +1,10 @@
 
 #if defined(USE_SDL)
+#ifdef SDL_INC
+#include "SDL/SDL.h"
+#else
 #include "SDL.h"
+#endif
 #define KEY_UNKNOWN SDLK_UNKNOWN
 #define KEY_UP SDLK_UP
 #define KEY_NUM_UP SDLK_KP8
