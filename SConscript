@@ -287,7 +287,7 @@ def findLibs(env, conf):
 		FatalError("pthreads development library not found or not installed")
 	
 	if msvc:
-		if not conf.CheckHeader('dirent.h') or not conf.CheckHeader('fftw3.h') or not conf.CheckHeader('pthread.h') or not conf.CheckHeader('sched.h') or not conf.CheckHeader('zlib.h'):
+		if not conf.CheckHeader('dirent.h') or not conf.CheckHeader('fftw3.h') or not conf.CheckHeader('pthread.h') or not conf.CheckHeader('zlib.h'):
 			FatalError("Required headers not found")
 	else:
 		#Look for libm
@@ -320,10 +320,6 @@ def findLibs(env, conf):
 		if not conf.CheckLib('rt'):
 			FatalError("librt not found or not installed")
 	elif platform == "Windows":
-		#Look for regex
-		if not conf.CheckLib(['gnurx', 'regex']):
-			FatalError("regex not found or not installed")
-
 		#These need to go last
 		if not conf.CheckLib('gdi32') or not conf.CheckLib('winmm') or (not msvc and not conf.CheckLib('dxguid')):
 			FatalError("Error: some windows libraries not found or not installed, make sure your compiler is set up correctly")
