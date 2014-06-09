@@ -957,6 +957,7 @@ void GameModel::Log(string message)
 	if(consoleLog.size()>100)
 		consoleLog.pop_back();
 	notifyLogChanged(message);
+	std::cout << message << std::endl;
 }
 
 deque<string> GameModel::GetLog()
