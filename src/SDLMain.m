@@ -88,21 +88,47 @@ static NSString *getApplicationName(void)
 /* Set the working directory to the .app's parent directory */
 - (void) setupWorkingDirectory:(BOOL)shouldChdir
 {
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
-    if([paths count] < 1) return;
-    
-    NSString *appSupportPath = [paths objectAtIndex:0];
-    BOOL isDir = NO;
-    NSError *error = nil;
-    NSString *appPath = [appSupportPath stringByAppendingPathComponent:@"The Powder Toy"];
-    if (![[NSFileManager defaultManager] fileExistsAtPath:appPath isDirectory:&isDir] && isDir == NO) {
-        if(![[NSFileManager defaultManager] createDirectoryAtPath:appPath withIntermediateDirectories:YES attributes:nil error:&error])
-        {
-            NSLog(@"Could not set up working dir. Error: %@", error);
+    SInt32 versionMajor = 0, versionMinor = 0;
+    Gestalt(gestaltSystemVersionMajor, &versionMajor);
+    Gestalt(gestaltSystemVersionMinor, &versionMinor);
+
+    /* Set the working directory to Application Support on Mavericks and above */
+    if (versionMajor > 10 || versionMinor >= 9)
+    {
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
+        if ([paths count] < 1)
             return;
+
+        NSString *appSupportPath = [paths objectAtIndex:0];
+        BOOL isDir = NO;
+        NSError *error = nil;
+        NSString *appPath = [appSupportPath stringByAppendingPathComponent:@"The Powder Toy"];
+        if (![[NSFileManager defaultManager] fileExistsAtPath:appPath isDirectory:&isDir] && isDir == NO)
+        {
+            if (![[NSFileManager defaultManager] createDirectoryAtPath:appPath withIntermediateDirectories:YES attributes:nil error:&error])
+            {
+                NSLog(@"Could not set up working dir. Error: %@", error);
+                return;
+            }
+        }
+        chdir([appPath UTF8String]);
+    }
+    /* Set the working directory to the .app's parent directory, because the code above breaks anything below Mavericks? (just a guess) */
+    else
+    {
+        if (shouldChdir)
+        {
+            char parentdir[MAXPATHLEN];
+            CFURLRef url = CFBundleCopyBundleURL(CFBundleGetMainBundle());
+            CFURLRef url2 = CFURLCreateCopyDeletingLastPathComponent(0, url);
+            if (CFURLGetFileSystemRepresentation(url2, 1, (UInt8 *)parentdir, MAXPATHLEN))
+            {
+                chdir(parentdir);   /* chdir to the binary app's parent */
+            }
+            CFRelease(url);
+            CFRelease(url2);
         }
     }
-    chdir([appPath UTF8String]);
 }
 
 #if SDL_USE_NIB_FILE
@@ -301,8 +327,14 @@ static void CustomApplicationMain (int argc, char **argv)
 - (void) applicationDidFinishLaunching: (NSNotification *) note
 {
     int status;
+    SInt32 versionMajor = 0, versionMinor = 0;
+    Gestalt(gestaltSystemVersionMajor, &versionMajor);
+    Gestalt(gestaltSystemVersionMinor, &versionMinor);
 
-    /* Set the working directory to the .app's parent directory */
+    /* using gFinderLaunch doesn't work in Mavericks and above, so always change it */
+    if (versionMajor > 10 || versionMinor >= 9)
+        [self setupWorkingDirectory:TRUE];
+    else
     [self setupWorkingDirectory:gFinderLaunch];
 
 #if SDL_USE_NIB_FILE
