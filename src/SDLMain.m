@@ -335,7 +335,7 @@ static void CustomApplicationMain (int argc, char **argv)
     if (versionMajor > 10 || versionMinor >= 9)
         [self setupWorkingDirectory:TRUE];
     else
-    [self setupWorkingDirectory:gFinderLaunch];
+        [self setupWorkingDirectory:gFinderLaunch];
 
 #if SDL_USE_NIB_FILE
     /* Set the main menu to contain the real app name instead of "SDL App" */
