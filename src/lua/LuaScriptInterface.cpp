@@ -2394,6 +2394,7 @@ void LuaScriptInterface::initGraphicsAPI()
 		{"fillRect", graphics_fillRect},
 		{"drawCircle", graphics_drawCircle},
 		{"fillCircle", graphics_fillCircle},
+		{"getColors", graphics_getColors},
 		{NULL, NULL}
 	};
 	luaL_register(l, "graphics", graphicsAPIMethods);
@@ -2558,6 +2559,22 @@ int LuaScriptInterface::graphics_fillCircle(lua_State * l)
 
 	luacon_g->fillcircle(x, y, abs(rx), abs(ry), r, g, b, a);
 	return 0;
+}
+
+int LuaScriptInterface::graphics_getColors(lua_State * l)
+{
+	int color = lua_tointeger(l, 1);
+
+	int a = color >> 24;
+	int r = (color >> 16)&0xFF;
+	int g = (color >> 8)&0xFF;
+	int b = color&0xFF;
+
+	lua_pushinteger(l, r);
+	lua_pushinteger(l, g);
+	lua_pushinteger(l, b);
+	lua_pushinteger(l, a);
+	return 4;
 }
 
 void LuaScriptInterface::initFileSystemAPI()

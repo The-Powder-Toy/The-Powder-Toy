@@ -337,6 +337,12 @@ if not GetOption('clean'):
 		conf.CheckBit()
 	findLibs(env, conf)
 	env = conf.Finish()
+else:
+	import os, shutil
+	try:
+		shutil.rmtree("generated/")
+	except:
+		print "couldn't remove build/generated/"
 
 if not msvc:
 	if platform == "Windows":
