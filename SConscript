@@ -338,7 +338,7 @@ if not GetOption('clean'):
 	findLibs(env, conf)
 	env = conf.Finish()
 else:
-	import os, shutil
+	import shutil
 	try:
 		shutil.rmtree("generated/")
 	except:

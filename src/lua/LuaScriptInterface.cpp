@@ -2395,6 +2395,7 @@ void LuaScriptInterface::initGraphicsAPI()
 		{"drawCircle", graphics_drawCircle},
 		{"fillCircle", graphics_fillCircle},
 		{"getColors", graphics_getColors},
+		{"getHexColor", graphics_getHexColor},
 		{NULL, NULL}
 	};
 	luaL_register(l, "graphics", graphicsAPIMethods);
@@ -2563,7 +2564,7 @@ int LuaScriptInterface::graphics_fillCircle(lua_State * l)
 
 int LuaScriptInterface::graphics_getColors(lua_State * l)
 {
-	int color = lua_tointeger(l, 1);
+	unsigned int color = lua_tointeger(l, 1);
 
 	int a = color >> 24;
 	int r = (color >> 16)&0xFF;
@@ -2575,6 +2576,20 @@ int LuaScriptInterface::graphics_getColors(lua_State * l)
 	lua_pushinteger(l, b);
 	lua_pushinteger(l, a);
 	return 4;
+}
+
+int LuaScriptInterface::graphics_getHexColor(lua_State * l)
+{
+	int r = lua_tointeger(l, 1);
+	int g = lua_tointeger(l, 2);
+	int b = lua_tointeger(l, 3);
+	int a = 0;
+	if (lua_gettop(l) >= 4)
+		a = lua_tointeger(l, 4);
+	unsigned int color = (a<<24) + (r<<16) + (g<<8) + b;
+
+	lua_pushinteger(l, color);
+	return 1;
 }
 
 void LuaScriptInterface::initFileSystemAPI()
@@ -2819,14 +2834,19 @@ bool LuaScriptInterface::OnBrushChanged(int brushType, int rx, int ry)
 
 bool LuaScriptInterface::OnActiveToolChanged(int toolSelection, Tool * tool)
 {
+	std::string identifier;
+	if (tool)
+		identifier = tool->GetIdentifier();
+	else
+		identifier = "";
 	if (toolSelection == 0)
-		luacon_selectedl = tool->GetIdentifier();
+		luacon_selectedl = identifier;
 	else if (toolSelection == 1)
-		luacon_selectedr = tool->GetIdentifier();
+		luacon_selectedr = identifier;
 	else if (toolSelection == 2)
-		luacon_selectedalt = tool->GetIdentifier();
+		luacon_selectedalt = identifier;
 	else if (toolSelection == 3)
-		luacon_selectedreplace = tool->GetIdentifier();
+		luacon_selectedreplace = identifier;
 	return true;
 }
 

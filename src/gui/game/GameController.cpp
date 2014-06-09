@@ -558,7 +558,7 @@ bool GameController::MouseDown(int x, int y, unsigned button)
 	x = point.X;
 	y = point.Y;
 	if (ret && y<YRES && x<XRES && !gameView->GetPlacingSave())
-		if (gameModel->GetActiveTool(0)->GetIdentifier() != "DEFAULT_UI_SIGN" || button != BUTTON_LEFT) //If it's not a sign tool or you are right/middle clicking
+		if (gameModel->GetActiveTool(0) && gameModel->GetActiveTool(0)->GetIdentifier() != "DEFAULT_UI_SIGN" || button != BUTTON_LEFT) //If it's not a sign tool or you are right/middle clicking
 		{
 			sign * foundSign = GetSignAt(x, y);
 			if(foundSign && splitsign(foundSign->text.c_str()))
@@ -575,7 +575,7 @@ bool GameController::MouseUp(int x, int y, unsigned button)
 	y = point.Y;
 	if (ret && y<YRES && x<XRES && !gameView->GetPlacingSave())
 	{
-		if (gameModel->GetActiveTool(0)->GetIdentifier() != "DEFAULT_UI_SIGN" || button != BUTTON_LEFT) //If it's not a sign tool or you are right/middle clicking
+		if (gameModel->GetActiveTool(0) && gameModel->GetActiveTool(0)->GetIdentifier() != "DEFAULT_UI_SIGN" || button != BUTTON_LEFT) //If it's not a sign tool or you are right/middle clicking
 		{
 			sign * foundSign = GetSignAt(x, y);
 			if(foundSign) {

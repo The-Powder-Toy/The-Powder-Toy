@@ -379,15 +379,21 @@ void GameModel::BuildMenus()
 
 Tool * GameModel::GetToolFromIdentifier(std::string identifier)
 {
-	for(std::vector<Menu*>::iterator iter = menuList.begin(), end = menuList.end(); iter != end; ++iter)
+	for (std::vector<Menu*>::iterator iter = menuList.begin(), end = menuList.end(); iter != end; ++iter)
 	{
 		std::vector<Tool*> menuTools = (*iter)->GetToolList();
-		for(std::vector<Tool*>::iterator titer = menuTools.begin(), tend = menuTools.end(); titer != tend; ++titer)
+		for (std::vector<Tool*>::iterator titer = menuTools.begin(), tend = menuTools.end(); titer != tend; ++titer)
 		{
-			if(identifier == (*titer)->GetIdentifier())
+			if (identifier == (*titer)->GetIdentifier())
 				return *titer;
 		}
 	}
+	for (std::vector<Tool*>::iterator iter = extraElementTools.begin(), end = extraElementTools.end(); iter != end; ++iter)
+	{
+		if (identifier == (*iter)->GetIdentifier())
+			return *iter;
+	}
+
 	return NULL;
 }
 
