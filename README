@@ -100,4 +100,4 @@ kiosk                    Fullscreen mode
 proxy:server[:port]      Proxy server to use [Example: proxy:wwwcache.lancs.ac.uk:8080]
 open <file>              Opens the file as a stamp or game save
 ddir <directory>         Directory used for saving stamps and preferences
-ptsave:<save id>#<name(Optional)> (ex. ptsave:2198#Destroyable_city_5_wth_metro~dima-gord)
+ptsave:<save id>#[name]  [Example: ptsave:2198#Destroyable_city_5_wth_metro~dima-gord]
