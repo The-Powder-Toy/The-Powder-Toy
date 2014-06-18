@@ -1761,7 +1761,7 @@ int luatpt_next_getPartIndex(lua_State* l)
 		getPartIndex_curIdx++;
 		if (getPartIndex_curIdx >= NPART)
 		{
-			getPartIndex_curIdx = 0;
+			getPartIndex_curIdx = -1;
 			lua_pushboolean(l, 0);
 			return 1;
 		}
@@ -1778,7 +1778,7 @@ int luatpt_getPartIndex(lua_State* l)
 {
 	if(getPartIndex_curIdx < 0)
 	{
-		lua_pushinteger(l, 0);
+		lua_pushinteger(l, -1);
 		return 1;
 	}
 	lua_pushinteger(l, getPartIndex_curIdx);
