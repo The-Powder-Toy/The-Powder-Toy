@@ -38,11 +38,11 @@ def FatalError(message):
 def AddSconsOption(name, default, hasArgs, help):
 	AddOption("--{0}".format(name), dest=name, action=("store" if hasArgs else "store_true"), default=default, help=help)
 
-AddSconsOption('win', False, False, "Target Windows")
-AddSconsOption('lin', False, False, "Target Linux")
-AddSconsOption('mac', False, False, "Target Mac OS X")
-AddSconsOption('msvc', False, False, "Use the Microsoft Visual Studio compiler")
-AddSconsOption("tool", False, True, "Tool prefix appended before gcc/g++")
+AddSconsOption('win', False, False, "Target Windows.")
+AddSconsOption('lin', False, False, "Target Linux.")
+AddSconsOption('mac', False, False, "Target Mac OS X.")
+AddSconsOption('msvc', False, False, "Use the Microsoft Visual Studio compiler.")
+AddSconsOption("tool", False, True, "Tool prefix appended before gcc/g++.")
 
 AddSconsOption('beta', False, False, "Beta build.")
 AddSconsOption('save-version', False, True, "Save version.")
@@ -51,27 +51,27 @@ AddSconsOption('build-number', False, True, "Build number.")
 AddSconsOption('snapshot', False, False, "Snapshot build.")
 AddSconsOption('snapshot-id', False, True, "Snapshot build ID.")
 
-AddSconsOption('64bit', False, False, "Compile a 64 bit binary")
-AddSconsOption('32bit', False, False, "Compile a 32 bit binary")
-AddSconsOption("universal", False, False, "compile universal binaries on Mac OS X")
-AddSconsOption('no-sse', False, False, "Disable SSE optimizations")
-AddSconsOption('sse', True, False, "Enable SSE optimizations (default)")
-AddSconsOption('sse2', True, False, "Enable SSE2 optimizations (default)")
-AddSconsOption('sse3', False, False, "Enable SSE3 optimizations")
-AddSconsOption('native', False, False, "Enable optimizations specific to your cpu")
-AddSconsOption('release', True, False, "Enable loop / compiling optimizations (default)")
+AddSconsOption('64bit', False, False, "Compile a 64 bit binary.")
+AddSconsOption('32bit', False, False, "Compile a 32 bit binary.")
+AddSconsOption("universal", False, False, "compile universal binaries on Mac OS X.")
+AddSconsOption('no-sse', False, False, "Disable SSE optimizations.")
+AddSconsOption('sse', True, False, "Enable SSE optimizations (default).")
+AddSconsOption('sse2', True, False, "Enable SSE2 optimizations (default).")
+AddSconsOption('sse3', False, False, "Enable SSE3 optimizations.")
+AddSconsOption('native', False, False, "Enable optimizations specific to your cpu.")
+AddSconsOption('release', True, False, "Enable loop / compiling optimizations (default).")
 
-AddSconsOption('debugging', False, False, "Compile with debug symbols")
-AddSconsOption('static', False, False, "Compile statically")
-AddSconsOption('opengl', False, False, "Build with OpenGL interface support")
-AddSconsOption('opengl-renderer', False, False, "Build with OpenGL renderer support (turns on --opengl)") #Note: this has nothing to do with --renderer, only tells the game to render particles with opengl
-AddSconsOption('renderer', False, False, "Build the save renderer")
+AddSconsOption('debugging', False, False, "Compile with debug symbols.")
+AddSconsOption('static', False, False, "Compile statically.")
+AddSconsOption('opengl', False, False, "Build with OpenGL interface support.")
+AddSconsOption('opengl-renderer', False, False, "Build with OpenGL renderer support (turns on --opengl).") #Note: this has nothing to do with --renderer, only tells the game to render particles with opengl
+AddSconsOption('renderer', False, False, "Build the save renderer.")
 
-AddSconsOption('wall', False, False, "Error on all warnings")
-AddSconsOption('no-warnings', True, False, "Disable all compiler warnings (default)")
-AddSconsOption('nolua', False, False, "Disable Lua")
-AddSconsOption('nofft', False, False, "Disable FFT")
-AddSconsOption("output", False, True, "Executable output name")
+AddSconsOption('wall', False, False, "Error on all warnings.")
+AddSconsOption('no-warnings', True, False, "Disable all compiler warnings (default).")
+AddSconsOption('nolua', False, False, "Disable Lua.")
+AddSconsOption('nofft', False, False, "Disable FFT.")
+AddSconsOption("output", False, True, "Executable output name.")
 
 
 #detect platform automatically, but it can be overrided
@@ -327,7 +327,13 @@ def findLibs(env, conf):
 		if not conf.CheckFramework("Cocoa"):
 			FatalError("Cocoa framework not found or not installed")
 
-if not GetOption('clean'):
+if GetOption('clean'):
+	import shutil
+	try:
+		shutil.rmtree("generated/")
+	except:
+		print "couldn't remove build/generated/"
+elif not GetOption('help'):
 	conf = Configure(env)
 	conf.AddTest('CheckFramework', CheckFramework)
 	conf.AddTest('CheckBit', CheckBit)
@@ -337,12 +343,6 @@ if not GetOption('clean'):
 		conf.CheckBit()
 	findLibs(env, conf)
 	env = conf.Finish()
-else:
-	import shutil
-	try:
-		shutil.rmtree("generated/")
-	except:
-		print "couldn't remove build/generated/"
 
 if not msvc:
 	if platform == "Windows":
@@ -514,7 +514,7 @@ def strip():
 		os.system("{0} {1}/{2}".format(env['STRIP'] if 'STRIP' in env else "strip", GetOption('builddir'), programName))
 	except:
 		print("Couldn't strip binary")
-if not GetOption('debugging') and not GetOption('clean') and not msvc:
+if not GetOption('debugging') and not GetOption('clean') and not GetOption('help') and not msvc:
 	atexit.register(strip)
 
 #Long command line fix for mingw on windows
