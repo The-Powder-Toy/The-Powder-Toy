@@ -2767,11 +2767,16 @@ int Simulation::create_part(int p, int x, int y, int tv)
 				if (t == PT_LIFE && v < NGOL && drawOn != PT_STOR)
 					parts[pmap[y][x]>>8].tmp = v;
 			}
-			else if ((drawOn == PT_DTEC || (drawOn == PT_PSTN && t != PT_FRME)) && drawOn != t)
+			else if ((drawOn == PT_DTEC || (drawOn == PT_PSTN && t != PT_FRME) || drawOn == PT_DRAY) && drawOn != t)
 			{
 				parts[pmap[y][x]>>8].ctype = t;
-				if (drawOn == PT_DTEC && t==PT_LIFE && v<NGOL)
-					parts[pmap[y][x]>>8].tmp = v;
+				if (t == PT_LIFE && v >= 0 && v < NGOL)
+				{
+					if (drawOn == PT_DTEC)
+						parts[pmap[y][x]>>8].tmp = v;
+					else if (drawOn == PT_DRAY)
+						parts[pmap[y][x]>>8].ctype |= v<<8;
+				}
 			}
 			else if (drawOn == PT_CRAY && drawOn != t && drawOn != PT_PSCN && drawOn != PT_INST && drawOn != PT_METL)
 			{
