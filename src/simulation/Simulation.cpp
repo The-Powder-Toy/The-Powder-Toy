@@ -2778,7 +2778,7 @@ int Simulation::create_part(int p, int x, int y, int tv)
 						parts[pmap[y][x]>>8].ctype |= v<<8;
 				}
 			}
-			else if (drawOn == PT_CRAY && drawOn != t && drawOn != PT_PSCN && drawOn != PT_INST && drawOn != PT_METL)
+			else if (drawOn == PT_CRAY && drawOn != t && t != PT_PSCN && t != PT_INST && t != PT_METL)
 			{
 				parts[pmap[y][x]>>8].ctype = t;
 				if (t==PT_LIFE && v<NGOL)
@@ -4241,7 +4241,7 @@ killed:
 						clear_y = (int)(clear_yf+0.5f);
 						break;
 					}
-					if (!eval_move(t, fin_x, fin_y, NULL))
+					if (!eval_move(t, fin_x, fin_y, NULL) || (t == PT_PHOT && pmap[fin_y][fin_x]))
 					{
 						// found an obstacle
 						clear_xf = fin_xf-dx;
