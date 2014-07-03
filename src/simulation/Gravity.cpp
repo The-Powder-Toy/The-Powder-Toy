@@ -144,6 +144,7 @@ void Gravity::update_grav_async()
 	//memset(th_gravy, 0, XRES*YRES*sizeof(float));
 	//memset(th_gravx, 0, XRES*YRES*sizeof(float));
 	//memset(th_gravp, 0, XRES*YRES*sizeof(float));
+	if (!grav_fft_status) grav_fft_init();
 	while(!thread_done){
 		if(!done){
 			update_grav();
@@ -301,7 +302,6 @@ void Gravity::update_grav()
 	if(changed)
 	{
 		th_gravchanged = 1;
-		if (!grav_fft_status) grav_fft_init();
 
 		//copy gravmap into padded gravmap array
 		for (y=0; y<YRES/CELL; y++)
