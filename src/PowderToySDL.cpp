@@ -100,7 +100,7 @@ void ClipboardPush(std::string text)
 	XFlush(sdl_wminfo.info.x11.display);
 	sdl_wminfo.info.x11.unlock_func();
 #else
-	printf("Not implemented: put text on clipboard \"%s\"\n", text);
+	printf("Not implemented: put text on clipboard \"%s\"\n", text.c_str());
 #endif
 }
 
