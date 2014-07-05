@@ -28,7 +28,7 @@ Element_KNO3::Element_KNO3()
 
     Temperature = R_TEMP+0.0f + 273.15f;
     HeatConduct = 110;
-    Description = "Potassium Nitrate. Good for smoke bombs.";
+    Description = "Potassium Nitrate. Good for smoke bombs. Mix with BCOL to make gunpowder.";
 
     State = ST_SOLID;
     Properties = TYPE_PART;
