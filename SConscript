@@ -138,7 +138,6 @@ for var in ["CFLAGS","CCFLAGS","CXXFLAGS","LINKFLAGS","CPPDEFINES","CPPPATH"]:
 
 #Used for intro text / executable name, actual bit flags are only set if the --64bit/--32bit command line args are given
 def add32bitflags(env):
-	env.Append(CPPDEFINES='_32BIT')
 	env["BIT"] = 32
 def add64bitflags(env):
 	if platform == "Windows":

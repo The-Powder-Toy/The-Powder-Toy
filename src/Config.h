@@ -43,18 +43,14 @@
 #if defined(WIN)
 #if defined(_64BIT)
 #define IDENT_PLATFORM "WIN64"
-#elif defined(_32BIT)
-#define IDENT_PLATFORM "WIN32"
 #else
-#define IDENT_PLATFORM "WIN"
+#define IDENT_PLATFORM "WIN32"
 #endif
 #elif defined(LIN)
 #if defined(_64BIT)
 #define IDENT_PLATFORM "LIN64"
-#elif defined(_32BIT)
-#define IDENT_PLATFORM "LIN32"
 #else
-#define IDENT_PLATFORM "LIN"
+#define IDENT_PLATFORM "LIN32"
 #endif
 #elif defined(MACOSX)
 #define IDENT_PLATFORM "MACOSX"
