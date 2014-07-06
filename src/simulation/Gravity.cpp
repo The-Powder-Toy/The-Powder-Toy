@@ -144,7 +144,10 @@ void Gravity::update_grav_async()
 	//memset(th_gravy, 0, XRES*YRES*sizeof(float));
 	//memset(th_gravx, 0, XRES*YRES*sizeof(float));
 	//memset(th_gravp, 0, XRES*YRES*sizeof(float));
-	if (!grav_fft_status) grav_fft_init();
+#ifdef GRAVFFT
+	if (!grav_fft_status)
+		grav_fft_init();
+#endif
 	while(!thread_done){
 		if(!done){
 			update_grav();

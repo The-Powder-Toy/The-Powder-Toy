@@ -339,7 +339,7 @@ elif not GetOption('help'):
 	conf.AddTest('CheckBit', CheckBit)
 	if not conf.CheckCC() or not conf.CheckCXX():
 		FatalError("compiler not correctly configured")
-	if isX86 and not GetOption('32bit') and not GetOption('64bit'):
+	if platform == compilePlatform and isX86 and not GetOption('32bit') and not GetOption('64bit'):
 		conf.CheckBit()
 	findLibs(env, conf)
 	env = conf.Finish()
