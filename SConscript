@@ -106,7 +106,7 @@ if not tool and compilePlatform == "Linux" and compilePlatform != platform:
 	else:
 		crossList = ["x86_64-w64-mingw32", "i686-w64-mingw32", "amd64-mingw32msvc"]
 	for i in crossList:
-		if WhereIs("{}-g++".format(i)):
+		if WhereIs("{0}-g++".format(i)):
 			env['ENV']['PATH'] = "/usr/{0}/bin:{1}".format(i, os.environ['PATH'])
 			tool = i+"-"
 			break
@@ -126,7 +126,7 @@ if tool:
 for var in ["CC","CXX","LD","LIBPATH"]:
 	if var in os.environ:
 		env[var] = os.environ[var]
-		print "copying enviroment variable {}={!r}".format(var,os.environ[var])
+		print "copying enviroment variable {0}={1!r}".format(var,os.environ[var])
 # variables containing several space separated things
 for var in ["CFLAGS","CCFLAGS","CXXFLAGS","LINKFLAGS","CPPDEFINES","CPPPATH"]:
 	if var in os.environ:
@@ -134,7 +134,7 @@ for var in ["CFLAGS","CCFLAGS","CXXFLAGS","LINKFLAGS","CPPDEFINES","CPPPATH"]:
 			env[var] += SCons.Util.CLVar(os.environ[var])
 		else:
 			env[var] = SCons.Util.CLVar(os.environ[var])
-		print "copying enviroment variable {}={!r}".format(var,os.environ[var])
+		print "copying enviroment variable {0}={1!r}".format(var,os.environ[var])
 
 #Used for intro text / executable name, actual bit flags are only set if the --64bit/--32bit command line args are given
 def add32bitflags(env):
@@ -198,12 +198,12 @@ def CheckBit(context):
 def CheckFramework(context, framework):
 	import SCons.Conftest
 	#Extreme hack, TODO: maybe think of a better one (like replicating CheckLib here) or at least just fix the message
-	ret = SCons.Conftest.CheckLib(context, ['m" -framework {}"'.format(framework)], autoadd = 0)
+	ret = SCons.Conftest.CheckLib(context, ['m" -framework {0}"'.format(framework)], autoadd = 0)
 	context.did_show_result = 1
 	if not ret:
 		context.env.Append(LINKFLAGS=["-framework", framework])
 		if framework != "Cocoa":
-			env.Append(CPPPATH=['/Library/Frameworks/{}.framework/Headers/'.format(framework)])
+			env.Append(CPPPATH=['/Library/Frameworks/{0}.framework/Headers/'.format(framework)])
 	return not ret
 
 #function that finds libraries and appends them to LIBS
@@ -457,18 +457,18 @@ elif GetOption("no-warnings"):
 
 #Add version defines
 if GetOption('save-version'):
-	env.Append(CPPDEFINES="SAVE_VERSION={}".format(GetOption('save-version')))
+	env.Append(CPPDEFINES="SAVE_VERSION={0}".format(GetOption('save-version')))
 
 if GetOption('minor-version'):
-	env.Append(CPPDEFINES="MINOR_VERSION={}".format(GetOption('minor-version')))
+	env.Append(CPPDEFINES="MINOR_VERSION={0}".format(GetOption('minor-version')))
 
 if GetOption('build-number'):
-	env.Append(CPPDEFINES="BUILD_NUM={}".format(GetOption('build-number')))
+	env.Append(CPPDEFINES="BUILD_NUM={0}".format(GetOption('build-number')))
 
 if GetOption('snapshot-id'):
-	env.Append(CPPDEFINES=["SNAPSHOT", "SNAPSHOT_ID={}".format(GetOption('snapshot-id'))])
+	env.Append(CPPDEFINES=["SNAPSHOT", "SNAPSHOT_ID={0}".format(GetOption('snapshot-id'))])
 elif GetOption('snapshot'):
-	env.Append(CPPDEFINES=["SNAPSHOT", "SNAPSHOT_ID={}".format(str(int(time.time())))])
+	env.Append(CPPDEFINES=["SNAPSHOT", "SNAPSHOT_ID={0}".format(str(int(time.time())))])
 
 if GetOption('beta'):
 	env.Append(CPPDEFINES="BETA")
