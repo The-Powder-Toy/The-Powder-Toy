@@ -64,6 +64,12 @@
 #define IDENT_BUILD "SSE2"
 #elif defined(X86_SSE)
 #define IDENT_BUILD "SSE"
+#elif defined(X64_SSE3)
+#define IDENT_BUILD "SSE3"
+#elif defined(X64_SSE2)
+#define IDENT_BUILD "SSE2"
+#elif defined(X64_SSE)
+#define IDENT_BUILD "SSE"
 #else
 #define IDENT_BUILD "NO"
 #endif

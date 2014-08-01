@@ -380,19 +380,28 @@ if not GetOption('no-sse'):
 			env.Append(CCFLAGS=['/arch:SSE'])
 		else:
 			env.Append(CCFLAGS=['-msse'])
-		env.Append(CPPDEFINES=['X86_SSE'])
+		if GetOption('32bit') or isX86:
+			env.Append(CPPDEFINES=['X86_SSE'])
+		if GetOption('64bit'):
+			env.Append(CPPDEFINES=['X64_SSE'])
 	if GetOption('sse2'):
 		if msvc:
 			env.Append(CCFLAGS=['/arch:SSE2'])
 		else:
 			env.Append(CCFLAGS=['-msse2'])
-		env.Append(CPPDEFINES=['X86_SSE2'])
+		if GetOption('32bit') or isX86:
+			env.Append(CPPDEFINES=['X86_SSE2'])
+		if GetOption('64bit'):
+			env.Append(CPPDEFINES=['X64_SSE2'])
 	if GetOption('sse3'):
 		if msvc:
 			env.Append(CCFLAGS=['/arch:SSE3'])
 		else:
 			env.Append(CCFLAGS=['-msse3'])
-		env.Append(CPPDEFINES=['X86_SSE3'])
+		if GetOption('32bit') or isX86:
+			env.Append(CPPDEFINES=['X86_SSE3'])
+		if GetOption('64bit') or "BIT" in env and env["BIT"] == 64:
+			env.Append(CPPDEFINES=['X64_SSE3'])
 if GetOption('native') and not msvc:
 	env.Append(CCFLAGS=['-march=native'])
 
