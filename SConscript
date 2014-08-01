@@ -415,7 +415,9 @@ elif GetOption('release'):
 		else:
 			env.Append(CCFLAGS=['/MD'])
 	else:
-		env.Append(CCFLAGS=['-O3', '-ftree-vectorize', '-funsafe-math-optimizations', '-ffast-math', '-fomit-frame-pointer', '-funsafe-loop-optimizations'])
+		env.Append(CCFLAGS=['-O3', '-ftree-vectorize', '-funsafe-math-optimizations', '-ffast-math', '-fomit-frame-pointer'])
+		if platform != "Darwin":
+			env.Append(CCFLAGS=['-funsafe-loop-optimizations'])
 
 if GetOption('static'):
 	if not msvc:
