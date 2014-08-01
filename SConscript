@@ -141,18 +141,18 @@ def add32bitflags(env):
 	env["BIT"] = 32
 def add64bitflags(env):
 	if platform == "Windows":
-		env.Append(CPPDEFINES='__CRT__NO_INLINE')
-		env.Append(LINKFLAGS='-Wl,--stack=16777216')
-	env.Append(CPPDEFINES='_64BIT')
+		env.Append(CPPDEFINES=['__CRT__NO_INLINE'])
+		env.Append(LINKFLAGS=['-Wl,--stack=16777216'])
+	env.Append(CPPDEFINES=['_64BIT'])
 	env["BIT"] = 64
 #add 32/64 bit defines before configuration
 if GetOption('64bit'):
-	env.Append(LINKFLAGS='-m64')
-	env.Append(CCFLAGS='-m64')
+	env.Append(LINKFLAGS=['-m64'])
+	env.Append(CCFLAGS=['-m64'])
 	add64bitflags(env)
 elif GetOption('32bit'):
-	env.Append(LINKFLAGS='-m32')
-	env.Append(CCFLAGS='-m32')
+	env.Append(LINKFLAGS=['-m32'])
+	env.Append(CCFLAGS=['-m32'])
 	add32bitflags(env)
 
 if GetOption('universal'):
@@ -165,9 +165,9 @@ if GetOption('universal'):
 env.Append(CPPPATH=['src/', 'data/', 'generated/'])
 if GetOption("msvc"):
 	if GetOption("static"):
-		env.Append(LIBPATH='StaticLibs/')
+		env.Append(LIBPATH=['StaticLibs/'])
 	else:
-		env.Append(LIBPATH='Libraries/')
+		env.Append(LIBPATH=['Libraries/'])
 
 #Check 32/64 bit
 def CheckBit(context):
@@ -348,7 +348,7 @@ if not msvc:
 		env.Append(CCFLAGS=['-std=gnu++98'])
 	else:
 		env.Append(CXXFLAGS=['-std=c++98'])
-	env.Append(CXXFLAGS="-Wno-invalid-offsetof")
+	env.Append(CXXFLAGS=['-Wno-invalid-offsetof'])
 
 
 #Add platform specific flags and defines
@@ -358,17 +358,17 @@ if platform == "Windows":
 		env.Append(CCFLAGS=['/Gm', '/Zi', '/EHsc']) #enable minimal rebuild, enable exceptions
 		env.Append(LINKFLAGS=['/SUBSYSTEM:WINDOWS', '/OPT:REF', '/OPT:ICF'])
 		if GetOption('static'):
-			env.Append(CCFLAGS='/GL') #whole program optimization (linker may freeze indefinitely without this)
+			env.Append(CCFLAGS=['/GL']) #whole program optimization (linker may freeze indefinitely without this)
 			env.Append(LINKFLAGS=['/NODEFAULTLIB:LIBCMT.lib', '/LTCG'])
 		else:
-			env.Append(LINKFLAGS='/NODEFAULTLIB:msvcrt.lib')
+			env.Append(LINKFLAGS=['/NODEFAULTLIB:msvcrt.lib'])
 	else:
-		env.Append(LINKFLAGS='-mwindows')
+		env.Append(LINKFLAGS=['-mwindows'])
 elif platform == "Linux":
-	env.Append(CPPDEFINES="LIN")
+	env.Append(CPPDEFINES=['LIN'])
 elif platform == "Darwin":
-	env.Append(CPPDEFINES="MACOSX")
-	env.Append(LINKFLAGS="-headerpad_max_install_names")
+	env.Append(CPPDEFINES=['MACOSX'])
+	#env.Append(LINKFLAGS=['-headerpad_max_install_names']) #needed in some cross compiles
 
 
 #Add architecture flags and defines
@@ -377,93 +377,93 @@ if isX86:
 if not GetOption('no-sse'):
 	if GetOption('sse'):
 		if msvc:
-			env.Append(CCFLAGS='/arch:SSE')
+			env.Append(CCFLAGS=['/arch:SSE'])
 		else:
-			env.Append(CCFLAGS='-msse')
-		env.Append(CPPDEFINES='X86_SSE')
+			env.Append(CCFLAGS=['-msse'])
+		env.Append(CPPDEFINES=['X86_SSE'])
 	if GetOption('sse2'):
 		if msvc:
-			env.Append(CCFLAGS='/arch:SSE2')
+			env.Append(CCFLAGS=['/arch:SSE2'])
 		else:
-			env.Append(CCFLAGS='-msse2')
-		env.Append(CPPDEFINES='X86_SSE2')
+			env.Append(CCFLAGS=['-msse2'])
+		env.Append(CPPDEFINES=['X86_SSE2'])
 	if GetOption('sse3'):
 		if msvc:
-			env.Append(CCFLAGS='/arch:SSE3')
+			env.Append(CCFLAGS=['/arch:SSE3'])
 		else:
-			env.Append(CCFLAGS='-msse3')
-		env.Append(CPPDEFINES='X86_SSE3')
+			env.Append(CCFLAGS=['-msse3'])
+		env.Append(CPPDEFINES=['X86_SSE3'])
 if GetOption('native') and not msvc:
-	env.Append(CCFLAGS='-march=native')
+	env.Append(CCFLAGS=['-march=native'])
 
 
 #Add optimization flags and defines
 if GetOption('debugging'):
 	if msvc:
-		env.Append(CCFLAGS='/Od')
+		env.Append(CCFLAGS=['/Od'])
 		if GetOption('static'):
-			env.Append(CCFLAGS='/MTd')
+			env.Append(CCFLAGS=['/MTd'])
 		else:
-			env.Append(CCFLAGS='/MDd')
+			env.Append(CCFLAGS=['/MDd'])
 	else:
 		env.Append(CCFLAGS=['-Wall', '-pg', '-g'])
 elif GetOption('release'):
 	if msvc:
 		env.Append(CCFLAGS=['/O2', '/fp:fast'])
 		if GetOption('static'):
-			env.Append(CCFLAGS='/MT')
+			env.Append(CCFLAGS=['/MT'])
 		else:
-			env.Append(CCFLAGS='/MD')
+			env.Append(CCFLAGS=['/MD'])
 	else:
 		env.Append(CCFLAGS=['-O3', '-ftree-vectorize', '-funsafe-math-optimizations', '-ffast-math', '-fomit-frame-pointer', '-funsafe-loop-optimizations'])
 
 if GetOption('static'):
 	if not msvc:
-		env.Append(CCFLAGS='-static-libgcc')
-		env.Append(LINKFLAGS='-static-libgcc')
+		env.Append(CCFLAGS=['-static-libgcc'])
+		env.Append(LINKFLAGS=['-static-libgcc'])
 	if platform == "Windows":
-		env.Append(CPPDEFINES='PTW32_STATIC_LIB')
+		env.Append(CPPDEFINES=['PTW32_STATIC_LIB'])
 		if not msvc:
-			env.Append(LINKFLAGS='-Wl,-Bstatic')
+			env.Append(LINKFLAGS=['-Wl,-Bstatic'])
 
 
 #Add other flags and defines
 if not GetOption('nofft'):
-	env.Append(CPPDEFINES="GRAVFFT")
+	env.Append(CPPDEFINES=['GRAVFFT'])
 if not GetOption('nolua') and not GetOption('renderer'):
-	env.Append(CPPDEFINES="LUACONSOLE")
+	env.Append(CPPDEFINES=['LUACONSOLE'])
 
 if GetOption('opengl') or GetOption('opengl-renderer'):
 	env.Append(CPPDEFINES=['OGLI', 'PIX32OGL'])
 	if GetOption('opengl-renderer'):
-		env.Append(CPPDEFINES='OGLR')
+		env.Append(CPPDEFINES=['OGLR'])
 
 if GetOption('renderer'):
-	env.Append(CPPDEFINES='RENDERER')
+	env.Append(CPPDEFINES=['RENDERER'])
 else:
-	env.Append(CPPDEFINES='USE_SDL')
+	env.Append(CPPDEFINES=['USE_SDL'])
 
 if GetOption("wall"):
 	if msvc:
-		env.Append(CCFLAGS='/WX')
+		env.Append(CCFLAGS=['/WX'])
 	else:
-		env.Append(CCFLAGS='-Werror')
+		env.Append(CCFLAGS=['-Werror'])
 elif GetOption("no-warnings"):
 	if msvc:
-		env.Append(CCFLAGS='/W0')
+		env.Append(CCFLAGS=['/W0'])
 	else:
-		env.Append(CCFLAGS='-w')
+		env.Append(CCFLAGS=['-w'])
 
 
 #Add version defines
 if GetOption('save-version'):
-	env.Append(CPPDEFINES="SAVE_VERSION={0}".format(GetOption('save-version')))
+	env.Append(CPPDEFINES=["SAVE_VERSION={0}".format(GetOption('save-version'))])
 
 if GetOption('minor-version'):
-	env.Append(CPPDEFINES="MINOR_VERSION={0}".format(GetOption('minor-version')))
+	env.Append(CPPDEFINES=["MINOR_VERSION={0}".format(GetOption('minor-version'))])
 
 if GetOption('build-number'):
-	env.Append(CPPDEFINES="BUILD_NUM={0}".format(GetOption('build-number')))
+	env.Append(CPPDEFINES=["BUILD_NUM={0}".format(GetOption('build-number'))])
 
 if GetOption('snapshot-id'):
 	env.Append(CPPDEFINES=["SNAPSHOT", "SNAPSHOT_ID={0}".format(GetOption('snapshot-id'))])
@@ -471,7 +471,7 @@ elif GetOption('snapshot'):
 	env.Append(CPPDEFINES=["SNAPSHOT", "SNAPSHOT_ID={0}".format(str(int(time.time())))])
 
 if GetOption('beta'):
-	env.Append(CPPDEFINES="BETA")
+	env.Append(CPPDEFINES=['BETA'])
 
 
 #Generate list of sources to compile
