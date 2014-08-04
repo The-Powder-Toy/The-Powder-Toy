@@ -85,50 +85,26 @@ static NSString *getApplicationName(void)
 /* The main class of the application, the application's delegate */
 @implementation SDLMain
 
-/* Set the working directory to the .app's parent directory */
+/* Set the working directory to Application Support */
 - (void) setupWorkingDirectory:(BOOL)shouldChdir
 {
-    SInt32 versionMajor = 0, versionMinor = 0;
-    Gestalt(gestaltSystemVersionMajor, &versionMajor);
-    Gestalt(gestaltSystemVersionMinor, &versionMinor);
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
+    if ([paths count] < 1)
+        return;
 
-    /* Set the working directory to Application Support on Mavericks and above */
-    if (versionMajor > 10 || versionMinor >= 9)
+    NSString *appSupportPath = [paths objectAtIndex:0];
+    BOOL isDir = NO;
+    NSError *error = nil;
+    NSString *appPath = [appSupportPath stringByAppendingPathComponent:@"The Powder Toy"];
+    if (![[NSFileManager defaultManager] fileExistsAtPath:appPath isDirectory:&isDir] && isDir == NO)
     {
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
-        if ([paths count] < 1)
+        if (![[NSFileManager defaultManager] createDirectoryAtPath:appPath withIntermediateDirectories:YES attributes:nil error:&error])
+        {
+            NSLog(@"Could not set up working dir. Error: %@", error);
             return;
-
-        NSString *appSupportPath = [paths objectAtIndex:0];
-        BOOL isDir = NO;
-        NSError *error = nil;
-        NSString *appPath = [appSupportPath stringByAppendingPathComponent:@"The Powder Toy"];
-        if (![[NSFileManager defaultManager] fileExistsAtPath:appPath isDirectory:&isDir] && isDir == NO)
-        {
-            if (![[NSFileManager defaultManager] createDirectoryAtPath:appPath withIntermediateDirectories:YES attributes:nil error:&error])
-            {
-                NSLog(@"Could not set up working dir. Error: %@", error);
-                return;
-            }
-        }
-        chdir([appPath UTF8String]);
-    }
-    /* Set the working directory to the .app's parent directory, because the code above breaks anything below Mavericks? (just a guess) */
-    else
-    {
-        if (shouldChdir)
-        {
-            char parentdir[MAXPATHLEN];
-            CFURLRef url = CFBundleCopyBundleURL(CFBundleGetMainBundle());
-            CFURLRef url2 = CFURLCreateCopyDeletingLastPathComponent(0, url);
-            if (CFURLGetFileSystemRepresentation(url2, 1, (UInt8 *)parentdir, MAXPATHLEN))
-            {
-                chdir(parentdir);   /* chdir to the binary app's parent */
-            }
-            CFRelease(url);
-            CFRelease(url2);
         }
     }
+    chdir([appPath UTF8String]);
 }
 
 #if SDL_USE_NIB_FILE
@@ -391,7 +367,8 @@ static void CustomApplicationMain (int argc, char **argv)
 
 @end
 
-char * readUserPreferences() {
+char * readUserPreferences()
+{
     NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
 
     NSString *prefDataNSString = [prefs stringForKey:@"powder.pref"];
@@ -403,12 +380,12 @@ char * readUserPreferences() {
     SDL_strlcpy(prefDataCopy, prefData, [prefDataNSString length]+1);
 
     [prefDataNSString release];
-    [prefs release];
 
     return prefDataCopy;
 }
 
-void writeUserPreferences(const char * prefData) {
+void writeUserPreferences(const char * prefData)
+{
     NSString *prefDataNSString = [NSString stringWithUTF8String:prefData];
 
     NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
@@ -416,10 +393,10 @@ void writeUserPreferences(const char * prefData) {
     [prefs synchronize];
 
     [prefDataNSString release];
-    [prefs release];
 }
 
-char * readClipboard() {
+char * readClipboard()
+{
     NSPasteboard *clipboard = [NSPasteboard generalPasteboard];
 
     NSArray *classes = [[NSArray alloc] initWithObjects:[NSString class], nil];
@@ -439,7 +416,8 @@ char * readClipboard() {
     return clipboardDataCopy;
 }
 
-void writeClipboard(const char * clipboardData) {
+void writeClipboard(const char * clipboardData)
+{
     NSPasteboard *clipboard = [NSPasteboard generalPasteboard];
 
     NSString *newString = [NSString stringWithUTF8String: clipboardData];
