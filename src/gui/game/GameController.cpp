@@ -126,6 +126,7 @@ GameController::GameController():
 		options(NULL),
 		activePreview(NULL),
 		localBrowser(NULL),
+		foundSign(NULL),
 		HasDone(false),
 		firstTick(true)
 {
@@ -554,34 +555,36 @@ bool GameController::BrushChanged(int brushType, int rx, int ry)
 bool GameController::MouseDown(int x, int y, unsigned button)
 {
 	bool ret = commandInterface->OnMouseDown(x, y, button);
-	ui::Point point = PointTranslate(ui::Point(x, y));
-	x = point.X;
-	y = point.Y;
-	if (ret && y<YRES && x<XRES && !gameView->GetPlacingSave())
+	if (ret && y<YRES && x<XRES && !gameView->GetPlacingSave() && !gameView->GetPlacingZoom())
+	{
+		ui::Point point = gameModel->AdjustZoomCoords(ui::Point(x, y));
+		x = point.X;
+		y = point.Y;
 		if (gameModel->GetActiveTool(0) && gameModel->GetActiveTool(0)->GetIdentifier() != "DEFAULT_UI_SIGN" || button != BUTTON_LEFT) //If it's not a sign tool or you are right/middle clicking
 		{
-			sign * foundSign = GetSignAt(x, y);
+			foundSign = GetSignAt(x, y);
 			if(foundSign && splitsign(foundSign->text.c_str()))
 				return false;
 		}
+	}
 	return ret;
 }
 
 bool GameController::MouseUp(int x, int y, unsigned button)
 {
 	bool ret = commandInterface->OnMouseUp(x, y, button);
-	ui::Point point = PointTranslate(ui::Point(x, y));
-	x = point.X;
-	y = point.Y;
-	if (ret && y<YRES && x<XRES && !gameView->GetPlacingSave())
+	if (ret && foundSign && y<YRES && x<XRES && !gameView->GetPlacingSave())
 	{
+		ui::Point point = gameModel->AdjustZoomCoords(ui::Point(x, y));
+		x = point.X;
+		y = point.Y;
 		if (gameModel->GetActiveTool(0) && gameModel->GetActiveTool(0)->GetIdentifier() != "DEFAULT_UI_SIGN" || button != BUTTON_LEFT) //If it's not a sign tool or you are right/middle clicking
 		{
 			sign * foundSign = GetSignAt(x, y);
 			if(foundSign) {
-				const char* str=foundSign->text.c_str();
+				const char* str = foundSign->text.c_str();
 				char type;
-				int pos=splitsign(str, &type);
+				int pos = splitsign(str, &type);
 				if (pos)
 				{
 					ret = false;
@@ -609,6 +612,7 @@ bool GameController::MouseUp(int x, int y, unsigned button)
 			}
 		}
 	}
+	foundSign = NULL;
 	return ret;
 }
 

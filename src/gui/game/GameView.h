@@ -137,6 +137,7 @@ public:
 	void SetDebugHUD(bool mode);
 	bool GetDebugHUD();
 	bool GetPlacingSave();
+	bool GetPlacingZoom();
 	bool CtrlBehaviour(){ return ctrlBehaviour; }
 	bool ShiftBehaviour(){ return shiftBehaviour; }
 	bool AltBehaviour(){ return altBehaviour; }

@@ -623,6 +623,11 @@ bool GameView::GetPlacingSave()
 	return selectMode != SelectNone;
 }
 
+bool GameView::GetPlacingZoom()
+{
+	return !zoomCursorFixed;
+}
+
 void GameView::NotifyActiveToolsChanged(GameModel * sender)
 {
 	for(int i = 0; i < toolButtons.size(); i++)

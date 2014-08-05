@@ -32,6 +32,8 @@ private:
 	//Simulation * sim;
 	bool firstTick;
 	int screenshotIndex;
+	sign * foundSign;
+
 	PreviewController * activePreview;
 	GameView * gameView;
 	GameModel * gameModel;
