@@ -1003,6 +1003,11 @@ void GameSave::readOPS(char * data, int dataLength)
 							particles[newIndex].ctype = 0;
 						}
 						break;
+					case PT_PHOT:
+						if (savedVersion < 90)
+						{
+							particles[newIndex].flags |= FLAG_PHOTDECO;
+						}
 					}
 					//note: PSv was used in version 77.0 and every version before, add something in PSv too if the element is that old
 					newIndex++;
@@ -1550,6 +1555,10 @@ void GameSave::readPSv(char * data, int dataLength)
 		// no more particle properties to load, so we can change type here without messing up loading
 		if (i && i<=NPART)
 		{
+			if (ver<90 && particles[i-1].type == PT_PHOT)
+			{
+				particles[i-1].flags |= FLAG_PHOTDECO;
+			}
 			if (ver<79 && particles[i-1].type == PT_SPNG)
 			{
 				if (fabs(particles[i-1].vx)>0.0f || fabs(particles[i-1].vy)>0.0f)

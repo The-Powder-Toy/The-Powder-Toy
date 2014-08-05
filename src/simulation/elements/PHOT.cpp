@@ -121,6 +121,10 @@ int Element_PHOT::graphics(GRAPHICS_FUNC_ARGS)
 
 	*pixel_mode &= ~PMODE_FLAT;
 	*pixel_mode |= FIRE_ADD | PMODE_ADD | NO_DECO;
+	if (cpart->flags & FLAG_PHOTDECO)
+	{
+		*pixel_mode &= ~NO_DECO;
+	}
 	return 0;
 }
 
