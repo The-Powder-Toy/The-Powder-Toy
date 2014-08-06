@@ -86,12 +86,12 @@ AnyType::~AnyType()
 
 //Number Type
 
-NumberType::NumberType(int number): AnyType(TypeNumber, ValueValue())
+NumberType::NumberType(float number): AnyType(TypeNumber, ValueValue())
 {
 	value.num = number;
 }
 
-int NumberType::Value()
+float NumberType::Value()
 {
 	return value.num;
 }

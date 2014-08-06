@@ -6,7 +6,7 @@
 #include "gui/interface/Point.h"
 
 enum ValueType { TypeNumber, TypePoint, TypeString, TypeNull, TypeFunction };
-typedef union { int num; std::string* str; ui::Point* pt; } ValueValue;
+typedef union { float num; std::string* str; ui::Point* pt; } ValueValue;
 
 class GeneralException
 {
@@ -91,8 +91,8 @@ public:
 class NumberType: public AnyType
 {
 public:
-	NumberType(int number);
-	int Value();
+	NumberType(float number);
+	float Value();
 };
 
 class StringType: public AnyType

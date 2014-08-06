@@ -117,7 +117,7 @@ ValueType TPTScriptInterface::testType(std::string word)
 			return TypeString;
 }
 
-int TPTScriptInterface::parseNumber(char * stringData)
+float TPTScriptInterface::parseNumber(char * stringData)
 {
 	char cc;
 	int base = 10;
@@ -257,7 +257,7 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 		throw GeneralException("Invalid property");
 
 	//Selector
-	int newValue;
+	float newValue;
 	if(value.GetType() == TypeNumber)
 	{
 		newValue = ((NumberType)value).Value();
@@ -268,9 +268,9 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 		{
 			std::string newString = ((StringType)value).Value();
 			if (newString.at(newString.length()-1) == 'C')
-				newValue = atoi(newString.substr(0, newString.length()-1).c_str())+273;
+				newValue = atof(newString.substr(0, newString.length()-1).c_str())+273.15;
 			else if (newString.at(newString.length()-1) == 'F')
-				newValue = (int)((atoi(newString.substr(0, newString.length()-1).c_str())-32.0f)*5/9+273.15f);
+				newValue = (atof(newString.substr(0, newString.length()-1).c_str())-32.0f)*5/9+273.15f;
 		}
 		else
 		{
