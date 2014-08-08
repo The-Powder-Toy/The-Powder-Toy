@@ -406,7 +406,7 @@ if GetOption('debugging'):
 		else:
 			env.Append(CCFLAGS=['/MDd'])
 	else:
-		env.Append(CCFLAGS=['-Wall', '-pg', '-g'])
+		env.Append(CCFLAGS=['-Wall', '-g'])
 elif GetOption('release'):
 	if msvc:
 		env.Append(CCFLAGS=['/O2', '/fp:fast'])
