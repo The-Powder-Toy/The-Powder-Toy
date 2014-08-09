@@ -86,8 +86,8 @@ ValueType TPTScriptInterface::testType(std::string word)
 			{
 				if (!(rawWord[i] >= '0' && rawWord[i] <= '9') && !(rawWord[i] == '-' && !i))
 				{
-					if (rawWord[i] == '.' && i)
-						return TypeFloat;
+					if (rawWord[i] == '.' && rawWord[i+1])
+						goto parseFloat;
 					else if (rawWord[i] == ',' && rawWord[i+1] >= '0' && rawWord[i+1] <= '9')
 						goto parsePoint;
 					else if ((rawWord[i] == '#' || rawWord[i] == 'x') &&
@@ -99,17 +99,23 @@ ValueType TPTScriptInterface::testType(std::string word)
 						goto parseString;
 				}
 			}
+			return TypeNumber;
+	parseFloat:
+			for (i++; i < word.length(); i++)
+				if(!((rawWord[i] >= '0' && rawWord[i] <= '9') || (rawWord[i] >= 'a' && rawWord[i] <= 'f') || (rawWord[i] >= 'A' && rawWord[i] <= 'F')))
+				{
+					goto parseString;
+				}
+			return TypeFloat;
 	parseNumberHex:
-			i++;
-			for (; i < word.length(); i++)
+			for (i++; i < word.length(); i++)
 				if(!((rawWord[i] >= '0' && rawWord[i] <= '9') || (rawWord[i] >= 'a' && rawWord[i] <= 'f') || (rawWord[i] >= 'A' && rawWord[i] <= 'F')))
 				{
 					goto parseString;
 				}
 			return TypeNumber;
 	parsePoint:
-			i++;
-			for (; i < word.length(); i++)
+			for (i++; i < word.length(); i++)
 				if(!(rawWord[i] >= '0' && rawWord[i] <= '9'))
 				{
 					goto parseString;
