@@ -90,7 +90,7 @@ ValueType TPTScriptInterface::testType(std::string word)
 						goto parseFloat;
 					else if (rawWord[i] == ',' && rawWord[i+1] >= '0' && rawWord[i+1] <= '9')
 						goto parsePoint;
-					else if ((rawWord[i] == '#' || rawWord[i] == 'x') &&
+					else if ((rawWord[i] == '#' || (i && rawWord[i-1] == '0' && rawWord[i] == 'x')) &&
 						((rawWord[i+1] >= '0' && rawWord[i+1] <= '9')
 						|| (rawWord[i+1] >= 'a' && rawWord[i+1] <= 'f')
 						|| (rawWord[i+1] >= 'A' && rawWord[i+1] <= 'F')))
