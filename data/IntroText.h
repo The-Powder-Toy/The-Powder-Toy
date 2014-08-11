@@ -41,6 +41,18 @@ static const char *introTextData =
 #ifdef X86_SSE3
 	"X86_SSE3 "
 #endif
+#ifdef X64
+	"X64 "
+#endif
+#ifdef X64_SSE
+	"X86_SSE "
+#endif
+#ifdef X64_SSE2
+	"X64_SSE2 "
+#endif
+#ifdef X86_SSE3
+	"X64_SSE3 "
+#endif
 #ifdef MACOSX
 	"MACOSX "
 #endif
