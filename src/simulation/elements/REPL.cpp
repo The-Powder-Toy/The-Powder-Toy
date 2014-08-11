@@ -54,7 +54,7 @@ int Element_REPL::update(UPDATE_FUNC_ARGS)
 	{
 		rx = (rand()%21)-10;
 		ry = (rand()%21)-10;
-		if (BOUNDS_CHECK && (rx || ry))
+		if (x+rx >= 0 && x+rx < XRES && y+ry >= 0 && y+ry < YRES && (rx || ry))
 		{
 			r = pmap[y+ry][x+rx];
 			if (!r)
