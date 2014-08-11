@@ -21,11 +21,13 @@ class ElementSearchActivity: public WindowActivity {
 	void searchTools(std::string query);
 public:
 	class ToolAction;
+	bool exit;
 	Tool * GetFirstResult() { return firstResult; }
 	ElementSearchActivity(GameController * gameController, std::vector<Tool*> tools);
 	void SetActiveTool(int selectionState, Tool * tool);
 	virtual ~ElementSearchActivity();
 	virtual void OnDraw();
+	virtual void OnTick(float dt);
 	virtual void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
 };
 
