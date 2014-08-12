@@ -1155,9 +1155,9 @@ void Renderer::render_parts()
 		for (ny=0; ny<YRES; ny++)
 			for (nx=0; nx<XRES; nx++)
 			{
-				if (ny%(4*gridSize)==0)
+				if (ny%(4*gridSize) == 0)
 					blendpixel(nx, ny, 100, 100, 100, 80);
-				if (nx%(4*gridSize)==0)
+				if (nx%(4*gridSize) == 0 && ny%(4*gridSize) != 0)
 					blendpixel(nx, ny, 100, 100, 100, 80);
 			}
 	}
