@@ -11,6 +11,7 @@
 #include "gui/interface/Button.h"
 #include "gui/interface/Label.h"
 #include "gui/interface/DropDown.h"
+#include "gui/dialogues/ErrorMessage.h"
 
 OptionsView::OptionsView():
 	ui::Window(ui::Point(-1, -1), ui::Point(300, 330)){
@@ -158,7 +159,14 @@ OptionsView::OptionsView():
 		OptionsView * v;
 	public:
 		FullscreenAction(OptionsView * v_){	v = v_;	}
-		virtual void ActionCallback(ui::Checkbox * sender){	v->c->SetFullscreen(sender->GetChecked()); }
+		virtual void ActionCallback(ui::Checkbox * sender)
+		{
+#ifdef MACOSX
+			ErrorMessage::Blocking("Error", "fullscreen doesn't work on OS X");
+#else
+			v->c->SetFullscreen(sender->GetChecked());
+#endif
+		}
 	};
 
 	fullscreen = new ui::Checkbox(ui::Point(8, 230), ui::Point(Size.X-6, 16), "Fullscreen", "");
