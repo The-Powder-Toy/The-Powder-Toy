@@ -127,7 +127,7 @@ void Gravity::gravity_update_async()
 	}
 }
 
-void *Gravity::update_grav_async_helper(void * context)
+TH_ENTRY_POINT void *Gravity::update_grav_async_helper(void * context)
 {
 	((Gravity *)context)->update_grav_async();
 	return NULL;

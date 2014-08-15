@@ -29,7 +29,7 @@ bool SearchModel::GetShowTags()
 	return showTags;	
 }
 
-void * SearchModel::updateSaveListTHelper(void * obj)
+TH_ENTRY_POINT void * SearchModel::updateSaveListTHelper(void * obj)
 {
 	return ((SearchModel *)obj)->updateSaveListT();
 }
