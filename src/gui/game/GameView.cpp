@@ -175,6 +175,7 @@ GameView::GameView():
 	isToolTipFadingIn(false),
 	isButtonTipFadingIn(false),
 	toolTipPosition(-1, -1),
+	saveSimulationButtonEnabled(false),
 	shiftBehaviour(false),
 	ctrlBehaviour(false),
 	altBehaviour(false),

@@ -74,6 +74,7 @@ void Gravity::gravity_cleanup()
 	free(gravx);
 	free(gravp);
 	free(gravmask);
+	free(obmap);
 }
 
 void Gravity::gravity_update_async()
