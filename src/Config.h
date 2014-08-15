@@ -173,15 +173,13 @@
 #define TPT_INLINE inline
 #endif
 
-#if
-
-#define SDEUT
-//#define REALHEAT
-
 #if defined(WIN) && defined(__GNUC__)
 #define TH_ENTRY_POINT __attribute__((force_align_arg_pointer)) 
 #else
 #define TH_ENTRY_POINT
 #endif
+
+#define SDEUT
+//#define REALHEAT
 
 #endif /* CONFIG_H */
