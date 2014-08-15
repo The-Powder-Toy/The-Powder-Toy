@@ -625,7 +625,7 @@ bool GameView::GetPlacingSave()
 
 bool GameView::GetPlacingZoom()
 {
-	return !zoomCursorFixed;
+	return zoomEnabled && !zoomCursorFixed;
 }
 
 void GameView::NotifyActiveToolsChanged(GameModel * sender)
