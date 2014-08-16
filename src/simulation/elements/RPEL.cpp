@@ -1,8 +1,8 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_REPL PT_REPL 160
-Element_REPL::Element_REPL()
+//#TPT-Directive ElementClass Element_RPEL PT_RPEL 160
+Element_RPEL::Element_RPEL()
 {
-	Identifier = "DEFAULT_PT_REPL";
+	Identifier = "DEFAULT_PT_RPEL";
 	Name = "RPEL";
 	Colour = PIXPACK(0x99CC00);
 	MenuVisible = 1;
@@ -46,8 +46,8 @@ Element_REPL::Element_REPL()
 	
 }
 
-//#TPT-Directive ElementHeader Element_REPL static int update(UPDATE_FUNC_ARGS)
-int Element_REPL::update(UPDATE_FUNC_ARGS)
+//#TPT-Directive ElementHeader Element_RPEL static int update(UPDATE_FUNC_ARGS)
+int Element_RPEL::update(UPDATE_FUNC_ARGS)
  {
 	int r, rx, ry, ri;
 	for(ri = 0; ri <= 10; ri++)
@@ -70,4 +70,4 @@ int Element_REPL::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_REPL::~Element_REPL() {}
+Element_RPEL::~Element_RPEL() {}
