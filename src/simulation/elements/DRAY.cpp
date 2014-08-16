@@ -100,8 +100,10 @@ int Element_DRAY::update(UPDATE_FUNC_ARGS)
 								sim->delete_part(xCopyTo, yCopyTo);
 							if (type == PT_SPRK) //hack
 								p = sim->create_part(-1, xCopyTo, yCopyTo, PT_METL);
-							else
+							else if (type)
 								p = sim->create_part(-1, xCopyTo, yCopyTo, type);
+							else
+								continue;
 							if (p >= 0)
 							{
 								if (type == PT_SPRK)
