@@ -42,7 +42,7 @@ Element_RPEL::Element_RPEL()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 	
-	Update = &Element_REPL::update;
+	Update = &Element_RPEL::update;
 	
 }
 

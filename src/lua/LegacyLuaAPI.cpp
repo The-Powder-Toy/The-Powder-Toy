@@ -588,26 +588,14 @@ int luacon_mouseevent(int mx, int my, int mb, int event, int mouse_wheel)
 	return mpcontinue;
 }
 
-int luacon_step(int mx, int my, std::string selectl, std::string selectr, std::string selectalt, std::string selectreplace, int bsx, int bsy)
+int luacon_step(int mx, int my)
 {
 	int i, j, callret;
 	lua_State* l=luacon_ci->l;
-	lua_pushinteger(l, bsy);
-	lua_pushinteger(l, bsx);
-	lua_pushstring(l, selectreplace.c_str());
-	lua_pushstring(l, selectalt.c_str());
-	lua_pushstring(l, selectr.c_str());
-	lua_pushstring(l, selectl.c_str());
 	lua_pushinteger(l, my);
 	lua_pushinteger(l, mx);
 	lua_setfield(l, tptProperties, "mousex");
 	lua_setfield(l, tptProperties, "mousey");
-	lua_setfield(l, tptProperties, "selectedl");
-	lua_setfield(l, tptProperties, "selectedr");
-	lua_setfield(l, tptProperties, "selecteda");
-	lua_setfield(l, tptProperties, "selectedreplace");
-	lua_setfield(l, tptProperties, "brushx");
-	lua_setfield(l, tptProperties, "brushy");
 	lua_pushstring(l, "stepfunctions");
 	lua_rawget(l, LUA_REGISTRYINDEX);
 	if(!lua_istable(l, -1))

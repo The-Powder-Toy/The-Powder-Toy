@@ -351,6 +351,12 @@ void GameController::AdjustBrushSize(int direction, bool logarithmic, bool xAxis
 	BrushChanged(gameModel->GetBrushID(), gameModel->GetBrush()->GetRadius().X, gameModel->GetBrush()->GetRadius().Y);
 }
 
+void GameController::SetBrushSize(ui::Point newSize)
+{
+	gameModel->GetBrush()->SetRadius(newSize);
+	BrushChanged(gameModel->GetBrushID(), gameModel->GetBrush()->GetRadius().X, gameModel->GetBrush()->GetRadius().Y);
+}
+
 void GameController::AdjustZoomSize(int direction, bool logarithmic)
 {
 	int newSize;
