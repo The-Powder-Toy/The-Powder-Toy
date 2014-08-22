@@ -1,7 +1,7 @@
 #ifndef LUASCRIPTINTERFACE_H_
 #define LUASCRIPTINTERFACE_H_
 
-#include "luainc.h"
+#include "LuaCompat.h"
 
 #include "CommandInterface.h"
 #include "simulation/Simulation.h"

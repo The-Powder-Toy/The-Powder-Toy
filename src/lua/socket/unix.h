@@ -10,7 +10,7 @@
 *
 * RCS ID: $Id: unix.h,v 1.9 2006/03/13 07:16:39 diego Exp $
 \*=========================================================================*/
-#include "../luainc.h"
+#include "../LuaCompat.h"
 
 #include "buffer.h"
 #include "timeout.h"

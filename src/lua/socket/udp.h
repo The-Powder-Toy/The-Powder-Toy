@@ -14,7 +14,7 @@
 *
 * RCS ID: $Id: udp.h,v 1.10 2005/10/07 04:40:59 diego Exp $
 \*=========================================================================*/
-#include "../luainc.h"
+#include "../LuaCompat.h"
 
 #include "timeout.h"
 #include "socket.h"

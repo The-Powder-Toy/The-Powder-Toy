@@ -139,7 +139,7 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	int i = 0, j;
 	char tmpname[12];
 	int currentElementMeta, currentElement;
-	const static struct luaL_reg tptluaapi [] = {
+	const static struct luaL_Reg tptluaapi [] = {
 		{"test", &luatpt_test},
 		{"drawtext", &luatpt_drawtext},
 		{"create", &luatpt_create},
@@ -442,7 +442,7 @@ int LuaScriptInterface::tpt_newIndex(lua_State *l)
 
 void LuaScriptInterface::initInterfaceAPI()
 {
-	struct luaL_reg interfaceAPIMethods [] = {
+	struct luaL_Reg interfaceAPIMethods [] = {
 		{"showWindow", interface_showWindow},
 		{"closeWindow", interface_closeWindow},
 		{"addComponent", interface_addComponent},
@@ -535,7 +535,7 @@ int LuaScriptInterface::particlePropertiesCount;
 void LuaScriptInterface::initSimulationAPI()
 {
 	//Methods
-	struct luaL_reg simulationAPIMethods [] = {
+	struct luaL_Reg simulationAPIMethods [] = {
 		{"partNeighbours", simulation_partNeighbours},
 		{"partNeighbors", simulation_partNeighbours},
 		{"partChangeType", simulation_partChangeType},
@@ -1765,7 +1765,7 @@ int LuaScriptInterface::simulation_neighbours(lua_State * l)
 void LuaScriptInterface::initRendererAPI()
 {
 	//Methods
-	struct luaL_reg rendererAPIMethods [] = {
+	struct luaL_Reg rendererAPIMethods [] = {
 		{"renderModes", renderer_renderModes},
 		{"displayModes", renderer_displayModes},
 		{"colourMode", renderer_colourMode},
@@ -1957,7 +1957,7 @@ int LuaScriptInterface::renderer_debugHUD(lua_State * l)
 void LuaScriptInterface::initElementsAPI()
 {
 	//Methods
-	struct luaL_reg elementsAPIMethods [] = {
+	struct luaL_Reg elementsAPIMethods [] = {
 		{"allocate", elements_allocate},
 		{"element", elements_element},
 		{"property", elements_property},
@@ -2474,7 +2474,7 @@ int LuaScriptInterface::elements_free(lua_State * l)
 void LuaScriptInterface::initGraphicsAPI()
 {
 	//Methods
-	struct luaL_reg graphicsAPIMethods [] = {
+	struct luaL_Reg graphicsAPIMethods [] = {
 		{"textSize", graphics_textSize},
 		{"drawText", graphics_drawText},
 		{"drawLine", graphics_drawLine},
@@ -2683,7 +2683,7 @@ int LuaScriptInterface::graphics_getHexColor(lua_State * l)
 void LuaScriptInterface::initFileSystemAPI()
 {
 	//Methods
-	struct luaL_reg fileSystemAPIMethods [] = {
+	struct luaL_Reg fileSystemAPIMethods [] = {
 		{"list", fileSystem_list},
 		{"exists", fileSystem_exists},
 		{"isFile", fileSystem_isFile},

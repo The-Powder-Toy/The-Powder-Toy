@@ -6,7 +6,7 @@
 *
 * RCS ID: $Id: timeout.h,v 1.14 2005/10/07 04:40:59 diego Exp $
 \*=========================================================================*/
-#include "../luainc.h"
+#include "../LuaCompat.h"
 
 /* timeout control structure */
 typedef struct t_timeout_ {

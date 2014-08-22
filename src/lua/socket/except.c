@@ -18,7 +18,7 @@ static int finalize(lua_State *L);
 static int do_nothing(lua_State *L);
 
 /* except functions */
-static luaL_reg func[] = {
+static luaL_Reg func[] = {
     {"newtry",    global_newtry},
     {"protect",   global_protect},
     {NULL,        NULL}

@@ -248,13 +248,17 @@ def findLibs(env, conf):
 
 	if not GetOption('nolua') and not GetOption('renderer'):
 		#Look for Lua
+		luaver = "lua5.1"
 		if not conf.CheckLib(['lua5.1', 'lua-5.1', 'lua51', 'lua']):
-			if platform != "Darwin" or not conf.CheckFramework("Lua"):
+			if conf.CheckLib(['lua5.2', 'lua-5.2', 'lua52']):
+				env.Append(CPPDEFINES=["LUA_COMPAT_ALL"])
+				luaver = "lua5.2"
+			elif platform != "Darwin" or not conf.CheckFramework("Lua"):
 				FatalError("lua5.1 development library not found or not installed")
 		if platform == "Linux":
 			try:
-				env.ParseConfig('pkg-config --cflags lua5.1')
-				env.ParseConfig('pkg-config --libs lua5.1')
+				env.ParseConfig("pkg-config --cflags {0}".format(luaver))
+				env.ParseConfig("pkg-config --libs {0}".format(luaver))
 			except:
 				pass
 
@@ -479,7 +483,7 @@ if GetOption('beta'):
 #Generate list of sources to compile
 sources = Glob("src/*.cpp") + Glob("src/*/*.cpp") + Glob("src/*/*/*.cpp") + Glob("generated/*.cpp")
 if not GetOption('nolua') and not GetOption('renderer'):
-	sources += Glob("src/lua/socket/*.c")
+	sources += Glob("src/lua/socket/*.c") + Glob("src/lua/LuaCompat.c")
 
 if platform == "Windows" and not msvc:
 	sources += env.RES('resources/powder-res.rc')

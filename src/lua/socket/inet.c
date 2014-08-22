@@ -18,7 +18,7 @@ static void inet_pushresolved(lua_State *L, struct hostent *hp);
 static int inet_global_gethostname(lua_State *L);
 
 /* DNS functions */
-static luaL_reg func[] = {
+static luaL_Reg func[] = {
     { "toip", inet_global_toip },
     { "tohostname", inet_global_tohostname },
     { "gethostname", inet_global_gethostname},

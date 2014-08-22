@@ -37,7 +37,7 @@ static int base_open(lua_State *L);
 /*-------------------------------------------------------------------------*\
 * Modules and functions
 \*-------------------------------------------------------------------------*/
-static const luaL_reg mod[] = {
+static const luaL_Reg mod[] = {
     {"auxiliar", auxiliar_open},
     {"except", except_open},
     {"timeout", timeout_open},
@@ -49,7 +49,7 @@ static const luaL_reg mod[] = {
     {NULL, NULL}
 };
 
-static luaL_reg func[] = {
+static luaL_Reg func[] = {
     {"skip",      global_skip},
     {"__unload",  global_unload},
     {NULL,        NULL}
