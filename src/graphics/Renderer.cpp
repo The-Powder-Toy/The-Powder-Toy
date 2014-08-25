@@ -1365,7 +1365,7 @@ void Renderer::render_parts()
 				{
 					if (t==PT_SOAP)
 					{
-						if ((parts[i].ctype&7) == 7)
+						if ((parts[i].ctype&7) == 7 && parts[i].tmp >= 0 && parts[i].tmp < NPART && parts[i].tmp2 >= 0 && parts[i].tmp2 < NPART)
 							draw_line(nx, ny, (int)(parts[parts[i].tmp].x+0.5f), (int)(parts[parts[i].tmp].y+0.5f), colr, colg, colb, cola);
 					}
 				}
