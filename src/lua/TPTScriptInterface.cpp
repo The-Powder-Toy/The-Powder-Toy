@@ -303,7 +303,7 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 	}
 	else
 		throw GeneralException("Invalid value for assignment");
-	if (property.Value() == "type" && (newValue < 0 || newValue >= PT_NUM))
+	if (property.Value() == "type" && (newValue < 0 || newValue >= PT_NUM || !sim->elements[newValue].Enabled))
 		throw GeneralException("Invalid element");
 
 	if(selector.GetType() == TypePoint || selector.GetType() == TypeNumber)
