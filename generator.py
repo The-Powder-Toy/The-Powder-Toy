@@ -223,11 +223,5 @@ std::vector<SimTool*> GetTools()
 	f.write(toolContent)
 	f.close()
 
-if(len(sys.argv) > 3):
-    if(sys.argv[1] == "elements"):
-    	generateElements(sys.argv[4:], sys.argv[2], sys.argv[3])
-    elif(sys.argv[1] == "tools"):
-    	generateTools(sys.argv[4:], sys.argv[2], sys.argv[3])
-else:
-	generateElements(os.listdir("src/simulation/elements"), "generated/ElementClasses.cpp", "generated/ElementClasses.h")
-	generateTools(os.listdir("src/simulation/simtools"), "generated/ToolClasses.cpp", "generated/ToolClasses.h")
+generateElements(os.listdir("src/simulation/elements"), "generated/ElementClasses.cpp", "generated/ElementClasses.h")
+generateTools(os.listdir("src/simulation/simtools"), "generated/ToolClasses.cpp", "generated/ToolClasses.h")

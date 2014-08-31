@@ -12,7 +12,7 @@
 
 //VersionInfoStart
 #ifndef SAVE_VERSION
-#define SAVE_VERSION 89
+#define SAVE_VERSION 90
 #endif
 
 #ifndef MINOR_VERSION
@@ -20,26 +20,17 @@
 #endif
 
 #ifndef BUILD_NUM
-#define BUILD_NUM 283
+#define BUILD_NUM 322
 #endif
 
 #ifndef SNAPSHOT_ID
 #define SNAPSHOT_ID 0
 #endif
-
-#ifndef STABLE
-#ifndef BETA
-#define BETA
-#define SNAPSHOT
-#endif
-#endif
 //VersionInfoEnd
 
 //#define IGNORE_UPDATES //uncomment this for mods, to not get any update notifications
 
-#if defined(DEBUG) || defined(RENDERER) || defined(X86_SSE2)
 #define HIGH_QUALITY_RESAMPLE			//High quality image resampling, slower but much higher quality than my terribad linear interpolation
-#endif
 
 #if defined(SNAPSHOT)
 #define IDENT_RELTYPE "S"
@@ -130,6 +121,7 @@
 #define CELL	4
 #define ISTP	(CELL/2)
 #define CFDS	(4.0f/CELL)
+#define SIM_MAXVELOCITY 1e4f
 
 //Air constants
 #define AIR_TSTEPP 0.3f
@@ -179,6 +171,12 @@
 #define TPT_INLINE
 #else
 #define TPT_INLINE inline
+#endif
+
+#if defined(WIN) && defined(__GNUC__)
+#define TH_ENTRY_POINT __attribute__((force_align_arg_pointer)) 
+#else
+#define TH_ENTRY_POINT
 #endif
 
 #define SDEUT

@@ -5,8 +5,8 @@
 #include <typeinfo>
 #include "gui/interface/Point.h"
 
-enum ValueType { TypeNumber, TypePoint, TypeString, TypeNull, TypeFunction };
-typedef union { int num; std::string* str; ui::Point* pt; } ValueValue;
+enum ValueType { TypeNumber, TypeFloat, TypePoint, TypeString, TypeNull, TypeFunction };
+typedef union { int num; float numf; std::string* str; ui::Point* pt; } ValueValue;
 
 class GeneralException
 {
@@ -23,6 +23,7 @@ public:
 
 
 class NumberType;
+class FloatType;
 class StringType;
 class PointType;
 
@@ -35,6 +36,7 @@ public:
 	AnyType(ValueType type_, ValueValue value_);
 	AnyType(const AnyType & v);
 	operator NumberType();
+	operator FloatType();
 	operator StringType();
 	operator PointType();
 	ValueType GetType();
@@ -44,6 +46,8 @@ public:
 		{
 		case TypeNumber:
 			return "Number";
+		case TypeFloat:
+			return "Float";
 		case TypePoint:
 			return "Point";
 		case TypeString:
@@ -62,6 +66,8 @@ public:
 		{
 		case TypeNumber:
 			return "Number";
+		case TypeFloat:
+			return "Float";
 		case TypePoint:
 			return "Point";
 		case TypeString:
@@ -93,6 +99,13 @@ class NumberType: public AnyType
 public:
 	NumberType(int number);
 	int Value();
+};
+
+class FloatType: public AnyType
+{
+public:
+	FloatType(float number);
+	float Value();
 };
 
 class StringType: public AnyType

@@ -180,18 +180,15 @@ void SaveButton::Draw(const Point& screenPos)
 		g->fillrect(screenPos.X, screenPos.Y, Size.X, Size.Y, 100, 170, 255, 100);
 	}
 
+	scaleFactor = (Size.Y-25)/((float)YRES);
+	thumbBoxSize = ui::Point(((float)XRES)*scaleFactor, ((float)YRES)*scaleFactor);
 	if(thumbnail)
 	{
-		thumbBoxSize = ui::Point(thumbnail->Width, thumbnail->Height);
+		//thumbBoxSize = ui::Point(thumbnail->Width, thumbnail->Height);
 		if(save && save->id)
 			g->draw_image(thumbnail, screenPos.X-3+(Size.X-thumbBoxSize.X)/2, screenPos.Y+(Size.Y-21-thumbBoxSize.Y)/2, 255);
 		else
 			g->draw_image(thumbnail, screenPos.X+(Size.X-thumbBoxSize.X)/2, screenPos.Y+(Size.Y-21-thumbBoxSize.Y)/2, 255);
-	}
-	else
-	{
-		scaleFactor = (Size.Y-25)/((float)YRES);
-		thumbBoxSize = ui::Point(((float)XRES)*scaleFactor, ((float)YRES)*scaleFactor);
 	}
 	if(save)
 	{

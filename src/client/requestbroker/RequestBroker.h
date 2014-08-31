@@ -7,6 +7,7 @@
 #include <pthread.h>
 #undef GetUserName //God dammit microsoft!
 
+#include "Config.h"
 #include "Singleton.h"
 
 class GameSave;
@@ -39,7 +40,7 @@ private:
 	std::vector<Request*> requestQueue;
 	std::vector<Request*> activeRequests;
 
-	static void * thumbnailQueueProcessHelper(void * ref);
+	TH_ENTRY_POINT static void * thumbnailQueueProcessHelper(void * ref);
 	void thumbnailQueueProcessTH();
 	void assureRunning();
 

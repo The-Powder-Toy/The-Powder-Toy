@@ -42,13 +42,13 @@ private:
 	bool updateSaveListWorking;
 	volatile bool updateSaveListFinished;
 	pthread_t updateSaveListThread;
-	static void * updateSaveListTHelper(void * obj);
+	TH_ENTRY_POINT static void * updateSaveListTHelper(void * obj);
 	void * updateSaveListT();
 
 	bool updateTagListWorking;
 	volatile bool updateTagListFinished;
 	pthread_t updateTagListThread;
-	static void * updateTagListTHelper(void * obj);
+	TH_ENTRY_POINT static void * updateTagListTHelper(void * obj);
 	void * updateTagListT();
 public:
     SearchModel();

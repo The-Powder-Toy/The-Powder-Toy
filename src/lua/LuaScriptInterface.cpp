@@ -73,6 +73,18 @@ int atPanic(lua_State *l)
 	throw std::runtime_error("Unprotected lua panic: " + std::string(lua_tostring(l, -1)));
 }
 
+int TptIndexClosure(lua_State *l)
+{
+	LuaScriptInterface *lsi = (LuaScriptInterface *)lua_touserdata(l, lua_upvalueindex(1));
+	return lsi->tpt_index(l);
+}
+
+int TptNewindexClosure(lua_State *l)
+{
+	LuaScriptInterface *lsi = (LuaScriptInterface *)lua_touserdata(l, lua_upvalueindex(1));
+	return lsi->tpt_newIndex(l);
+}
+
 LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	CommandInterface(c, m),
 	currentCommand(false),
@@ -127,7 +139,7 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	int i = 0, j;
 	char tmpname[12];
 	int currentElementMeta, currentElement;
-	const static struct luaL_reg tptluaapi [] = {
+	const static struct luaL_Reg tptluaapi [] = {
 		{"test", &luatpt_test},
 		{"drawtext", &luatpt_drawtext},
 		{"create", &luatpt_create},
@@ -214,14 +226,6 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	lua_setfield(l, tptProperties, "mousex");
 	lua_pushinteger(l, 0);
 	lua_setfield(l, tptProperties, "mousey");
-	lua_pushstring(l, "DEFAULT_PT_DUST");
-	lua_setfield(l, tptProperties, "selectedl");
-	lua_pushstring(l, "DEFAULT_PT_NONE");
-	lua_setfield(l, tptProperties, "selectedr");
-	lua_pushstring(l, "DEFAULT_PT_NONE");
-	lua_setfield(l, tptProperties, "selecteda");
-	lua_pushstring(l, "DEFAULT_PT_NONE");
-	lua_setfield(l, tptProperties, "selectedreplace");
 
 	lua_newtable(l);
 	tptPropertiesVersion = lua_gettop(l);
@@ -332,6 +336,16 @@ tpt.partsdata = nil");
 		lua_gr_func[i] = 0;
 	}
 
+	//make tpt.* a metatable
+	lua_newtable(l);
+	lua_pushlightuserdata(l, this);
+	lua_pushcclosure(l, TptIndexClosure, 1);
+	lua_setfield(l, -2, "__index");
+	lua_pushlightuserdata(l, this);
+	lua_pushcclosure(l, TptNewindexClosure, 1);
+	lua_setfield(l, -2, "__newindex");
+	lua_setmetatable(l, -2);
+
 }
 
 void LuaScriptInterface::Init()
@@ -351,11 +365,84 @@ void LuaScriptInterface::SetWindow(ui::Window * window)
 	Window = window;
 }
 
+int LuaScriptInterface::tpt_index(lua_State *l)
+{
+	std::string key = luaL_checkstring(l, 2);
+	if (!key.compare("selectedl"))
+		return lua_pushstring(l, luacon_selectedl.c_str()), 1;
+	if (!key.compare("selectedr"))
+		return lua_pushstring(l, luacon_selectedr.c_str()), 1;
+	if (!key.compare("selecteda"))
+		return lua_pushstring(l, luacon_selectedalt.c_str()), 1;
+	if (!key.compare("selectedreplace"))
+		return lua_pushstring(l, luacon_selectedreplace.c_str()), 1;
+	if (!key.compare("brushx"))
+		return lua_pushnumber(l, luacon_brushx), 1;
+	if (!key.compare("brushy"))
+		return lua_pushnumber(l, luacon_brushy), 1;
+	if (!key.compare("brushID"))
+		return lua_pushnumber(l, m->GetBrushID()), 1;
+
+	//if not a special key, return the value in the table
+	return lua_rawget(l, 1), 1;
+}
+
+int LuaScriptInterface::tpt_newIndex(lua_State *l)
+{
+	std::string key = luaL_checkstring(l, 2);
+	if (!key.compare("selectedl"))
+	{
+		Tool *t = m->GetToolFromIdentifier(luaL_checkstring(l, 3));
+		if (t)
+			c->SetActiveTool(0, t);
+		else
+			luaL_error(l, "Invalid tool identifier: %s", lua_tostring(l, 3));
+	}
+	else if (!key.compare("selectedr"))
+	{
+		Tool *t = m->GetToolFromIdentifier(luaL_checkstring(l, 3));
+		if (t)
+			c->SetActiveTool(1, t);
+		else
+			luaL_error(l, "Invalid tool identifier: %s", lua_tostring(l, 3));
+	}
+	else if (!key.compare("selecteda"))
+	{
+		Tool *t = m->GetToolFromIdentifier(luaL_checkstring(l, 3));
+		if (t)
+			c->SetActiveTool(2, t);
+		else
+			luaL_error(l, "Invalid tool identifier: %s", lua_tostring(l, 3));
+	}
+	else if (!key.compare("selectedreplace"))
+	{
+		Tool *t = m->GetToolFromIdentifier(luaL_checkstring(l, 3));
+		if( t)
+			c->SetActiveTool(3, t);
+		else
+			luaL_error(l, "Invalid tool identifier: %s", lua_tostring(l, 3));
+	}
+	else if (!key.compare("brushx"))
+		c->SetBrushSize(ui::Point(luaL_checkinteger(l, 3), luacon_brushy));
+	else if (!key.compare("brushy"))
+		c->SetBrushSize(ui::Point(luacon_brushx, luaL_checkinteger(l, 3)));
+	else if (!key.compare("brushID"))
+	{
+		m->SetBrushID(luaL_checkinteger(l, 3));
+		c->BrushChanged(m->GetBrushID(), luacon_brushx, luacon_brushy);
+	}
+	else
+	{
+		//if not a special key, set a value in the table
+		return lua_rawset(l, 1), 1;
+	}
+}
+
 //// Begin Interface API
 
 void LuaScriptInterface::initInterfaceAPI()
 {
-	struct luaL_reg interfaceAPIMethods [] = {
+	struct luaL_Reg interfaceAPIMethods [] = {
 		{"showWindow", interface_showWindow},
 		{"closeWindow", interface_closeWindow},
 		{"addComponent", interface_addComponent},
@@ -448,7 +535,7 @@ int LuaScriptInterface::particlePropertiesCount;
 void LuaScriptInterface::initSimulationAPI()
 {
 	//Methods
-	struct luaL_reg simulationAPIMethods [] = {
+	struct luaL_Reg simulationAPIMethods [] = {
 		{"partNeighbours", simulation_partNeighbours},
 		{"partNeighbors", simulation_partNeighbours},
 		{"partChangeType", simulation_partChangeType},
@@ -1678,7 +1765,7 @@ int LuaScriptInterface::simulation_neighbours(lua_State * l)
 void LuaScriptInterface::initRendererAPI()
 {
 	//Methods
-	struct luaL_reg rendererAPIMethods [] = {
+	struct luaL_Reg rendererAPIMethods [] = {
 		{"renderModes", renderer_renderModes},
 		{"displayModes", renderer_displayModes},
 		{"colourMode", renderer_colourMode},
@@ -1870,7 +1957,7 @@ int LuaScriptInterface::renderer_debugHUD(lua_State * l)
 void LuaScriptInterface::initElementsAPI()
 {
 	//Methods
-	struct luaL_reg elementsAPIMethods [] = {
+	struct luaL_Reg elementsAPIMethods [] = {
 		{"allocate", elements_allocate},
 		{"element", elements_element},
 		{"property", elements_property},
@@ -1910,6 +1997,7 @@ void LuaScriptInterface::initElementsAPI()
 	SETCONST(l, FLAG_STAGNANT);
 	SETCONST(l, FLAG_SKIPMOVE);
 	SETCONST(l, FLAG_MOVABLE);
+	SETCONST(l, FLAG_PHOTDECO);
 	SETCONST(l, ST_NONE);
 	SETCONST(l, ST_SOLID);
 	SETCONST(l, ST_LIQUID);
@@ -1999,7 +2087,7 @@ int LuaScriptInterface::elements_loadDefault(lua_State * l)
 	luacon_model->BuildMenus();
 	luacon_sim->init_can_move();
 	std::fill(luacon_ren->graphicscache, luacon_ren->graphicscache+PT_NUM, gcache_item());
-
+	return 0;
 }
 
 int LuaScriptInterface::elements_allocate(lua_State * l)
@@ -2296,6 +2384,7 @@ int LuaScriptInterface::elements_property(lua_State * l)
 		}
 		else
 			return luaL_error(l, "Invalid element property");
+		return 0;
 	}
 	else
 	{
@@ -2385,7 +2474,7 @@ int LuaScriptInterface::elements_free(lua_State * l)
 void LuaScriptInterface::initGraphicsAPI()
 {
 	//Methods
-	struct luaL_reg graphicsAPIMethods [] = {
+	struct luaL_Reg graphicsAPIMethods [] = {
 		{"textSize", graphics_textSize},
 		{"drawText", graphics_drawText},
 		{"drawLine", graphics_drawLine},
@@ -2393,6 +2482,8 @@ void LuaScriptInterface::initGraphicsAPI()
 		{"fillRect", graphics_fillRect},
 		{"drawCircle", graphics_drawCircle},
 		{"fillCircle", graphics_fillCircle},
+		{"getColors", graphics_getColors},
+		{"getHexColor", graphics_getHexColor},
 		{NULL, NULL}
 	};
 	luaL_register(l, "graphics", graphicsAPIMethods);
@@ -2559,10 +2650,40 @@ int LuaScriptInterface::graphics_fillCircle(lua_State * l)
 	return 0;
 }
 
+int LuaScriptInterface::graphics_getColors(lua_State * l)
+{
+	unsigned int color = lua_tointeger(l, 1);
+
+	int a = color >> 24;
+	int r = (color >> 16)&0xFF;
+	int g = (color >> 8)&0xFF;
+	int b = color&0xFF;
+
+	lua_pushinteger(l, r);
+	lua_pushinteger(l, g);
+	lua_pushinteger(l, b);
+	lua_pushinteger(l, a);
+	return 4;
+}
+
+int LuaScriptInterface::graphics_getHexColor(lua_State * l)
+{
+	int r = lua_tointeger(l, 1);
+	int g = lua_tointeger(l, 2);
+	int b = lua_tointeger(l, 3);
+	int a = 0;
+	if (lua_gettop(l) >= 4)
+		a = lua_tointeger(l, 4);
+	unsigned int color = (a<<24) + (r<<16) + (g<<8) + b;
+
+	lua_pushinteger(l, color);
+	return 1;
+}
+
 void LuaScriptInterface::initFileSystemAPI()
 {
 	//Methods
-	struct luaL_reg fileSystemAPIMethods [] = {
+	struct luaL_Reg fileSystemAPIMethods [] = {
 		{"list", fileSystem_list},
 		{"exists", fileSystem_exists},
 		{"isFile", fileSystem_isFile},
@@ -2801,14 +2922,19 @@ bool LuaScriptInterface::OnBrushChanged(int brushType, int rx, int ry)
 
 bool LuaScriptInterface::OnActiveToolChanged(int toolSelection, Tool * tool)
 {
+	std::string identifier;
+	if (tool)
+		identifier = tool->GetIdentifier();
+	else
+		identifier = "";
 	if (toolSelection == 0)
-		luacon_selectedl = tool->GetIdentifier();
+		luacon_selectedl = identifier;
 	else if (toolSelection == 1)
-		luacon_selectedr = tool->GetIdentifier();
+		luacon_selectedr = identifier;
 	else if (toolSelection == 2)
-		luacon_selectedalt = tool->GetIdentifier();
+		luacon_selectedalt = identifier;
 	else if (toolSelection == 3)
-		luacon_selectedreplace = tool->GetIdentifier();
+		luacon_selectedreplace = identifier;
 	return true;
 }
 
@@ -2867,7 +2993,7 @@ void LuaScriptInterface::OnTick()
 	ui::Engine::Ref().LastTick(gettime());
 	if(luacon_mousedown)
 		luacon_mouseevent(luacon_mousex, luacon_mousey, luacon_mousebutton, LUACON_MPRESS, 0);
-	luacon_step(luacon_mousex, luacon_mousey, luacon_selectedl, luacon_selectedr, luacon_selectedalt, luacon_selectedreplace, luacon_brushx, luacon_brushy);
+	luacon_step(luacon_mousex, luacon_mousey);
 }
 
 int LuaScriptInterface::Command(std::string command)
@@ -2934,6 +3060,223 @@ int LuaScriptInterface::Command(std::string command)
 	}
 }
 
+int strlcmp(const char* a, const char* b, int len)
+{
+	while(len)
+	{
+		if(!*b)
+			return 1;
+		if(*a>*b)
+			return -1;
+		if(*a<*b)
+			return 1;
+		a++;
+		b++;
+		len--;
+	}
+	if(!*b)
+		return 0;
+	return -1;
+}
+
+std::string highlight(std::string command)
+{
+#define CMP(X) (!strlcmp(wstart, X, len))
+	std::stringstream result;
+	int pos = 0;
+	int len = command.length();
+	const char *raw = command.c_str();
+	char c;
+	while(c = raw[pos])
+	{
+		if((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_')
+		{
+			int len = 0;
+			char w;
+			const char* wstart = raw+pos;
+			while((w = wstart[len]) && ((w >= 'A' && w <= 'Z') || (w >= 'a' && w <= 'z') || (w >= '0' && w <= '9') || w == '_'))
+				len++;
+			if(CMP("and") || CMP("break") || CMP("do") || CMP("else") || CMP("elseif") || CMP("end") || CMP("for") || CMP("function") || CMP("if") || CMP("in") || CMP("local") || CMP("not") || CMP("or") || CMP("repeat") || CMP("return") || CMP("then") || CMP("until") || CMP("while"))
+			{
+				result << "\x0F\xB5\x89\x01";
+				result.write(wstart, len);
+				result << "\bw";
+			}
+			else if(CMP("false") || CMP("nil") || CMP("true"))
+			{
+				result << "\x0F\xCB\x4B\x16";
+				result.write(wstart, len);
+				result << "\bw";
+			}
+			else
+			{
+				result << "\x0F\x2A\xA1\x98";
+				result.write(wstart, len);
+				result << "\bw";
+			}
+			pos += len;
+		}
+		else if((c >= '0' && c <= '9') || (c == '.' && raw[pos + 1] >= '0' && raw[pos + 1] <= '9'))
+		{
+			if(c == '0' && raw[pos + 1] == 'x')
+			{
+				int len = 2;
+				char w;
+				const char *wstart = raw + pos;
+				while((w = wstart[len]) && ((w >= '0' && w <= '9') || (w >= 'A' && w <= 'F') || (w >= 'a' && w <= 'f')))
+					len++;
+				result << "\x0F\xD3\x36\x82";
+				result.write(wstart, len);
+				result << "\bw";
+				pos += len;
+			}
+			else
+			{
+				int len = 0;
+				char w;
+				const char *wstart = raw+pos;
+				bool seendot = false;
+				while((w = wstart[len]) && ((w >= '0' && w <= '9') || w == '.'))
+				{
+					if(w == '.')
+						if(seendot)
+							break;
+						else
+							seendot = true;
+					len++;
+				}
+				if(w == 'e')
+				{
+					len++;
+					w = wstart[len];
+					if(w == '+' || w == '-')
+						len++;
+					while((w = wstart[len]) && (w >= '0' && w <= '9'))
+						len++;
+				}
+				result << "\x0F\xD3\x36\x82";
+				result.write(wstart, len);
+				result << "\bw";
+				pos += len;
+			}
+		}
+		else if(c == '\'' || c == '"' || (c == '[' && (raw[pos + 1] == '[' || raw[pos + 1] == '=')))
+		{
+			if(c == '[')
+			{
+				int len = 1, eqs=0;
+				char w;
+				const char *wstart = raw + pos;
+				while((w = wstart[len]) && (w == '='))
+				{
+					eqs++;
+					len++;
+				}
+				while((w = wstart[len]))
+				{
+					if(w == ']')
+					{
+						int nlen = 1;
+						const char *cstart = wstart + len;
+						while((w = cstart[nlen]) && (w == '='))
+							nlen++;
+						if(w == ']' && nlen == eqs+1)
+						{
+							len += nlen+1;
+							break;
+						}
+					}
+					len++;
+				}
+				result << "\x0F\xDC\x32\x2F";
+				result.write(wstart, len);
+				result << "\bw";
+				pos += len;
+			}
+			else
+			{
+				int len = 1;
+				char w;
+				const char *wstart = raw+pos;
+				while((w = wstart[len]) && (w != c))
+				{
+					if(w == '\\' && wstart[len + 1])
+						len++;
+					len++;
+				}
+				if(w == c)
+					len++;
+				result << "\x0F\xDC\x32\x2F";
+				result.write(wstart, len);
+				result << "\bw";
+				pos += len;
+			}
+		}
+		else if(c == '-' && raw[pos + 1] == '-')
+		{
+			if(raw[pos + 2] == '[')
+			{
+				int len = 3, eqs = 0;
+				char w;
+				const char *wstart = raw + pos;
+				while((w = wstart[len]) && (w == '='))
+				{
+					eqs++;
+					len++;
+				}
+				while((w = wstart[len]))
+				{
+					if(w == ']')
+					{
+						int nlen = 1;
+						const char *cstart = wstart + len;
+						while((w = cstart[nlen]) && (w == '='))
+							nlen++;
+						if(w == ']' && nlen == eqs + 1)
+						{
+							len += nlen+1;
+							break;
+						}
+					}
+					len++;
+				}
+				result << "\x0F\x85\x99\x01";
+				result.write(wstart, len);
+				result << "\bw";
+				pos += len;
+			}
+			else
+			{
+				int len = 2;
+				char w;
+				const char *wstart = raw + pos;
+				while((w = wstart[len]) && (w != '\n'))
+					len++;
+				result << "\x0F\x85\x99\x01";
+				result.write(wstart, len);
+				result << "\bw";
+				pos += len;
+			}
+		}
+		else if(c == '{' || c == '}')
+		{
+			result << "\x0F\xCB\x4B\x16" << c;
+			pos++;
+		}
+		else if(c == '.' && raw[pos + 1] == '.' && raw[pos + 2] == '.')
+		{
+			result << "\x0F\x2A\xA1\x98...";
+			pos += 3;
+		}
+		else
+		{
+			result << c;
+			pos++;
+		}
+	}
+	return result.str();
+}
+
 std::string LuaScriptInterface::FormatCommand(std::string command)
 {
 	if(command != "" && command[0] == '!')
@@ -2941,7 +3284,7 @@ std::string LuaScriptInterface::FormatCommand(std::string command)
 		return "!"+legacy->FormatCommand(command.substr(1));
 	}
 	else
-		return command;
+		return highlight(command);
 }
 
 LuaScriptInterface::~LuaScriptInterface() {

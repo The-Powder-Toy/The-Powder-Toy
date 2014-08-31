@@ -26,10 +26,22 @@ AnyType::AnyType(const AnyType & v):
 
 AnyType::operator NumberType()
 {
-	if(type != TypeNumber)
-		throw InvalidConversionException(type, TypeNumber);
-	else
+	if (type == TypeNumber)
 		return NumberType(value.num);
+	else if (type == TypeFloat)
+		return NumberType(value.numf);
+	else
+		throw InvalidConversionException(type, TypeNumber);
+}
+
+AnyType::operator FloatType()
+{
+	if (type == TypeNumber)
+		return FloatType(value.num);
+	else if (type == TypeFloat)
+		return FloatType(value.numf);
+	else
+		throw InvalidConversionException(type, TypeFloat);
 }
 
 AnyType::operator StringType()
@@ -94,6 +106,18 @@ NumberType::NumberType(int number): AnyType(TypeNumber, ValueValue())
 int NumberType::Value()
 {
 	return value.num;
+}
+
+//Float Type
+
+FloatType::FloatType(float number): AnyType(TypeFloat, ValueValue())
+{
+	value.numf = number;
+}
+
+float FloatType::Value()
+{
+	return value.numf;
 }
 
 //String type

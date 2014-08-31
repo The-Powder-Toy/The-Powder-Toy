@@ -29,12 +29,7 @@
 
 #define LUA_BITOP_VERSION	"1.0.2"
 
-extern "C"
-{
-#include "lua.h"
-#include "lauxlib.h"
-#include "lualib.h"
-}
+#include "LuaCompat.h"
 
 #ifdef _MSC_VER
 /* MSVC is stuck in the last century and doesn't have C99's stdint.h. */
@@ -183,11 +178,11 @@ int luaopen_bit(lua_State *L)
       msg = "arithmetic right-shift broken";
     luaL_error(L, "bit library self-test failed (%s)", msg);
   }
-#if LUA_VERSION_NUM < 502
+//#if LUA_VERSION_NUM < 502
   luaL_register(L, "bit", bit_funcs);
-#else
-  luaL_newlib(L, bit_funcs);
-#endif
+//#else
+//  luaL_newlib(L, bit_funcs);
+//#endif
   return 1;
 }
 #endif

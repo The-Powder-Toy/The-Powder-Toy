@@ -141,7 +141,7 @@ void RequestBroker::RetrieveImage(std::string imageUrl, int width, int height, R
 	assureRunning();
 }
 
-void * RequestBroker::thumbnailQueueProcessHelper(void * ref)
+TH_ENTRY_POINT void * RequestBroker::thumbnailQueueProcessHelper(void * ref)
 {
 	((RequestBroker*)ref)->thumbnailQueueProcessTH();
 	return NULL;

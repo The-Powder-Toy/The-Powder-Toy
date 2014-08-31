@@ -418,8 +418,30 @@ void PIXELMETHODS_CLASS::gradientrect(int x, int y, int width, int height, int r
 void PIXELMETHODS_CLASS::clearrect(int x, int y, int w, int h)
 {
 	int i;
-	for (i=1; i<h; i++)
-		memset(vid+(x+1+(VIDXRES)*(y+i)), 0, PIXELSIZE*(w-1));
+
+	// TODO: change calls to clearrect to use sensible meanings of x, y, w, h then remove these 4 lines
+	x += 1;
+	y += 1;
+	w -= 1;
+	h -= 1;
+
+	if (x+w > VIDXRES) w = VIDXRES-x;
+	if (y+h > VIDYRES) h = VIDYRES-y;
+	if (x<0)
+	{
+		w += x;
+		x = 0;
+	}
+	if (y<0)
+	{
+		h += y;
+		y = 0;
+	}
+	if (w<0 || h<0)
+		return;
+
+	for (i=0; i<h; i++)
+		memset(vid+(x+(VIDXRES)*(y+i)), 0, PIXELSIZE*w);
 }
 
 void PIXELMETHODS_CLASS::draw_image(pixel *img, int x, int y, int w, int h, int a)

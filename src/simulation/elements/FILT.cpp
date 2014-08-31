@@ -31,7 +31,7 @@ Element_FILT::Element_FILT()
 	Description = "Filter for photons, changes the color.";
 	
 	State = ST_SOLID;
-	Properties = TYPE_SOLID | PROP_NOAMBHEAT;
+	Properties = TYPE_SOLID | PROP_NOAMBHEAT | PROP_LIFE_DEC;
 	
 	LowPressure = IPL;
 	LowPressureTransition = NT;
@@ -60,7 +60,10 @@ int Element_FILT::graphics(GRAPHICS_FUNC_ARGS)
 	for (x=0; x<12; x++)
 		*colg += (wl >> (x+9))  & 1;
 	x = 624/(*colr+*colg+*colb+1);
-	*cola = 127;
+	if (cpart->life>0 && cpart->life<=4)
+		*cola = 127+cpart->life*30;
+	else
+		*cola = 127;
 	*colr *= x;
 	*colg *= x;
 	*colb *= x;

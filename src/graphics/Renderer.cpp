@@ -1155,9 +1155,9 @@ void Renderer::render_parts()
 		for (ny=0; ny<YRES; ny++)
 			for (nx=0; nx<XRES; nx++)
 			{
-				if (ny%(4*gridSize)==0)
+				if (ny%(4*gridSize) == 0)
 					blendpixel(nx, ny, 100, 100, 100, 80);
-				if (nx%(4*gridSize)==0)
+				if (nx%(4*gridSize) == 0 && ny%(4*gridSize) != 0)
 					blendpixel(nx, ny, 100, 100, 100, 80);
 			}
 	}
@@ -1365,7 +1365,7 @@ void Renderer::render_parts()
 				{
 					if (t==PT_SOAP)
 					{
-						if ((parts[i].ctype&7) == 7)
+						if ((parts[i].ctype&7) == 7 && parts[i].tmp >= 0 && parts[i].tmp < NPART && parts[i].tmp2 >= 0 && parts[i].tmp2 < NPART)
 							draw_line(nx, ny, (int)(parts[parts[i].tmp].x+0.5f), (int)(parts[parts[i].tmp].y+0.5f), colr, colg, colb, cola);
 					}
 				}
@@ -1958,6 +1958,23 @@ void Renderer::render_parts()
 					fire_b[ny/CELL][nx/CELL] = fireb;
 #endif
 				}
+				if(firea && (pixel_mode & FIRE_SPARK))
+				{
+#ifdef OGLR
+					smokeV[csmokeV++] = nx;
+					smokeV[csmokeV++] = ny;
+					smokeC[csmokeC++] = ((float)firer)/255.0f;
+					smokeC[csmokeC++] = ((float)fireg)/255.0f;
+					smokeC[csmokeC++] = ((float)fireb)/255.0f;
+					smokeC[csmokeC++] = ((float)firea)/255.0f;
+					csmoke++;
+#else
+					firea /= 4;
+					fire_r[ny/CELL][nx/CELL] = (firea*firer + (255-firea)*fire_r[ny/CELL][nx/CELL]) >> 8;
+					fire_g[ny/CELL][nx/CELL] = (firea*fireg + (255-firea)*fire_g[ny/CELL][nx/CELL]) >> 8;
+					fire_b[ny/CELL][nx/CELL] = (firea*fireb + (255-firea)*fire_b[ny/CELL][nx/CELL]) >> 8;
+#endif
+				}
 			}
 		}
 	}
@@ -2441,6 +2458,7 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 	SetColourMode(COLOUR_DEFAULT);
 	AddRenderMode(RENDER_BASC);
 	AddRenderMode(RENDER_FIRE);
+	AddRenderMode(RENDER_SPRK);
 
 	//Render mode presets. Possibly load from config in future?
 	renderModePresets = new RenderPreset[11];
@@ -2467,11 +2485,13 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 
 	renderModePresets[4].Name = "Fire Display";
 	renderModePresets[4].RenderModes.push_back(RENDER_FIRE);
+	renderModePresets[4].RenderModes.push_back(RENDER_SPRK);
 	renderModePresets[4].RenderModes.push_back(RENDER_EFFE);
 	renderModePresets[4].RenderModes.push_back(RENDER_BASC);
 
 	renderModePresets[5].Name = "Blob Display";
 	renderModePresets[5].RenderModes.push_back(RENDER_FIRE);
+	renderModePresets[5].RenderModes.push_back(RENDER_SPRK);
 	renderModePresets[5].RenderModes.push_back(RENDER_EFFE);
 	renderModePresets[5].RenderModes.push_back(RENDER_BLOB);
 
@@ -2482,6 +2502,7 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 
 	renderModePresets[7].Name = "Fancy Display";
 	renderModePresets[7].RenderModes.push_back(RENDER_FIRE);
+	renderModePresets[7].RenderModes.push_back(RENDER_SPRK);
 	renderModePresets[7].RenderModes.push_back(RENDER_GLOW);
 	renderModePresets[7].RenderModes.push_back(RENDER_BLUR);
 	renderModePresets[7].RenderModes.push_back(RENDER_EFFE);

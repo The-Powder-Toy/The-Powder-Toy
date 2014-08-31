@@ -96,6 +96,7 @@ int Element_H2::update(UPDATE_FUNC_ARGS)
 			int j;
 			float temp = parts[i].temp;
 			sim->create_part(i,x,y,PT_NBLE);
+			parts[i].tmp = 0x1;
 
 			j = sim->create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_NEUT);
 			if (j>-1)

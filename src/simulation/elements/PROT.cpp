@@ -91,7 +91,8 @@ int Element_PROT::update(UPDATE_FUNC_ARGS)
 	//make temp of other things closer to it's own temperature. This will change temp of things that don't conduct, and won't change the PROT's temperature
 	if (under)
 	{
-		if ((under&0xFF) == PT_WIFI || (under&0xFF) == PT_PRTI || (under&0xFF) == PT_PRTO)
+		//now changed so that PROT goes through portal, so only the WIFI part applies
+		if ((under&0xFF) == PT_WIFI/* || (under&0xFF) == PT_PRTI || (under&0xFF) == PT_PRTO*/)
 		{
 			float change;
 			if (parts[i].temp<173.15f) change = -1000.0f;

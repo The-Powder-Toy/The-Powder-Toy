@@ -126,6 +126,7 @@ GameController::GameController():
 		options(NULL),
 		activePreview(NULL),
 		localBrowser(NULL),
+		foundSign(NULL),
 		HasDone(false),
 		firstTick(true)
 {
@@ -350,6 +351,12 @@ void GameController::AdjustBrushSize(int direction, bool logarithmic, bool xAxis
 	BrushChanged(gameModel->GetBrushID(), gameModel->GetBrush()->GetRadius().X, gameModel->GetBrush()->GetRadius().Y);
 }
 
+void GameController::SetBrushSize(ui::Point newSize)
+{
+	gameModel->GetBrush()->SetRadius(newSize);
+	BrushChanged(gameModel->GetBrushID(), gameModel->GetBrush()->GetRadius().X, gameModel->GetBrush()->GetRadius().Y);
+}
+
 void GameController::AdjustZoomSize(int direction, bool logarithmic)
 {
 	int newSize;
@@ -554,34 +561,36 @@ bool GameController::BrushChanged(int brushType, int rx, int ry)
 bool GameController::MouseDown(int x, int y, unsigned button)
 {
 	bool ret = commandInterface->OnMouseDown(x, y, button);
-	ui::Point point = PointTranslate(ui::Point(x, y));
-	x = point.X;
-	y = point.Y;
-	if(ret && y<YRES && x<XRES)
-		if (gameModel->GetActiveTool(0)->GetIdentifier() != "DEFAULT_UI_SIGN" || button != BUTTON_LEFT) //If it's not a sign tool or you are right/middle clicking
+	if (ret && y<YRES && x<XRES && !gameView->GetPlacingSave() && !gameView->GetPlacingZoom())
+	{
+		ui::Point point = gameModel->AdjustZoomCoords(ui::Point(x, y));
+		x = point.X;
+		y = point.Y;
+		if (gameModel->GetActiveTool(0) && gameModel->GetActiveTool(0)->GetIdentifier() != "DEFAULT_UI_SIGN" || button != BUTTON_LEFT) //If it's not a sign tool or you are right/middle clicking
 		{
-			sign * foundSign = GetSignAt(x, y);
+			foundSign = GetSignAt(x, y);
 			if(foundSign && splitsign(foundSign->text.c_str()))
 				return false;
 		}
+	}
 	return ret;
 }
 
 bool GameController::MouseUp(int x, int y, unsigned button)
 {
 	bool ret = commandInterface->OnMouseUp(x, y, button);
-	ui::Point point = PointTranslate(ui::Point(x, y));
-	x = point.X;
-	y = point.Y;
-	if(ret && y<YRES && x<XRES)
+	if (ret && foundSign && y<YRES && x<XRES && !gameView->GetPlacingSave())
 	{
-		if (gameModel->GetActiveTool(0)->GetIdentifier() != "DEFAULT_UI_SIGN" || button != BUTTON_LEFT) //If it's not a sign tool or you are right/middle clicking
+		ui::Point point = gameModel->AdjustZoomCoords(ui::Point(x, y));
+		x = point.X;
+		y = point.Y;
+		if (gameModel->GetActiveTool(0) && gameModel->GetActiveTool(0)->GetIdentifier() != "DEFAULT_UI_SIGN" || button != BUTTON_LEFT) //If it's not a sign tool or you are right/middle clicking
 		{
 			sign * foundSign = GetSignAt(x, y);
 			if(foundSign) {
-				const char* str=foundSign->text.c_str();
+				const char* str = foundSign->text.c_str();
 				char type;
-				int pos=splitsign(str, &type);
+				int pos = splitsign(str, &type);
 				if (pos)
 				{
 					ret = false;
@@ -609,6 +618,7 @@ bool GameController::MouseUp(int x, int y, unsigned button)
 			}
 		}
 	}
+	foundSign = NULL;
 	return ret;
 }
 
@@ -720,7 +730,7 @@ void GameController::Tick()
 #ifdef LUACONSOLE
 		((LuaScriptInterface*)commandInterface)->Init();
 #endif
-#ifndef MACOSX
+#if !defined(MACOSX) && !defined(NO_INSTALL_CHECK)
 		if(!Client::Ref().GetPrefBool("InstallCheck", false))
 		{
 			Client::Ref().SetPref("InstallCheck", true);
@@ -1401,8 +1411,7 @@ std::string GameController::ElementResolve(int type, int ctype)
 		else if (type >= 0 && type < PT_NUM && gameModel->GetSimulation()->elements)
 			return std::string(gameModel->GetSimulation()->elements[type].Name);
 	}
-	else
-		return "";
+	return "";
 }
 
 bool GameController::IsValidElement(int type)

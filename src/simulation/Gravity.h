@@ -85,7 +85,7 @@ public:
 	void gravity_cleanup();
 	void gravity_update_async();
 
-	static void *update_grav_async_helper(void * context);
+	TH_ENTRY_POINT static void *update_grav_async_helper(void * context);
 	void update_grav_async();
 
 	void start_grav_async();

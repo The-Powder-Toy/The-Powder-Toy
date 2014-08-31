@@ -3,10 +3,13 @@
 #include <map>
 #include <string>
 #include <time.h>
+#ifdef SDL_INC
+#include "SDL/SDL.h"
+#else
 #include "SDL.h"
+#endif
 #ifdef WIN
 #define _WIN32_WINNT 0x0501	//Necessary for some macros and functions, tells windows.h to include functions only available in Windows XP or later
-#include "SDL_syswm.h"
 #include <direct.h>
 #endif
 #include <iostream>
@@ -49,8 +52,12 @@ extern "C" {
 
 using namespace std;
 
-#if defined(USE_SDL) && defined(LIN)
+#if defined(WIN) || defined(LIN)
+#ifdef SDL_INC
+#include <SDL/SDL_syswm.h>
+#else
 #include <SDL_syswm.h>
+#endif
 #endif
 #if defined(USE_SDL) && defined(LIN) && defined(SDL_VIDEO_DRIVER_X11)
 SDL_SysWMinfo sdl_wminfo;
@@ -93,7 +100,7 @@ void ClipboardPush(std::string text)
 	XFlush(sdl_wminfo.info.x11.display);
 	sdl_wminfo.info.x11.unlock_func();
 #else
-	printf("Not implemented: put text on clipboard \"%s\"\n", text);
+	printf("Not implemented: put text on clipboard \"%s\"\n", text.c_str());
 #endif
 }
 

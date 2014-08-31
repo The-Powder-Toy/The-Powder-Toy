@@ -84,11 +84,13 @@ ValueType TPTScriptInterface::testType(std::string word)
 	parseNumber:
 			for(i = 0; i < word.length(); i++)
 			{
-				if(!(rawWord[i] >= '0' && rawWord[i] <= '9') && rawWord[i] != '.' && !(rawWord[i] == '-' && !i))
+				if (!(rawWord[i] >= '0' && rawWord[i] <= '9') && !(rawWord[i] == '-' && !i))
 				{
-					if(rawWord[i] == ',' && rawWord[i+1] >= '0' && rawWord[i+1] <= '9')
+					if (rawWord[i] == '.' && rawWord[i+1])
+						goto parseFloat;
+					else if (rawWord[i] == ',' && rawWord[i+1] >= '0' && rawWord[i+1] <= '9')
 						goto parsePoint;
-					else if((rawWord[i] == '#' || rawWord[i] == 'x') &&
+					else if ((rawWord[i] == '#' || (i && rawWord[i-1] == '0' && rawWord[i] == 'x')) &&
 						((rawWord[i+1] >= '0' && rawWord[i+1] <= '9')
 						|| (rawWord[i+1] >= 'a' && rawWord[i+1] <= 'f')
 						|| (rawWord[i+1] >= 'A' && rawWord[i+1] <= 'F')))
@@ -97,17 +99,23 @@ ValueType TPTScriptInterface::testType(std::string word)
 						goto parseString;
 				}
 			}
+			return TypeNumber;
+	parseFloat:
+			for (i++; i < word.length(); i++)
+				if(!((rawWord[i] >= '0' && rawWord[i] <= '9') || (rawWord[i] >= 'a' && rawWord[i] <= 'f') || (rawWord[i] >= 'A' && rawWord[i] <= 'F')))
+				{
+					goto parseString;
+				}
+			return TypeFloat;
 	parseNumberHex:
-			i++;
-			for(; i < word.length(); i++)
+			for (i++; i < word.length(); i++)
 				if(!((rawWord[i] >= '0' && rawWord[i] <= '9') || (rawWord[i] >= 'a' && rawWord[i] <= 'f') || (rawWord[i] >= 'A' && rawWord[i] <= 'F')))
 				{
 					goto parseString;
 				}
 			return TypeNumber;
 	parsePoint:
-			i++;
-			for(; i < word.length(); i++)
+			for (i++; i < word.length(); i++)
 				if(!(rawWord[i] >= '0' && rawWord[i] <= '9'))
 				{
 					goto parseString;
@@ -117,22 +125,22 @@ ValueType TPTScriptInterface::testType(std::string word)
 			return TypeString;
 }
 
-int TPTScriptInterface::parseNumber(char * stringData)
+float TPTScriptInterface::parseNumber(char * stringData)
 {
 	char cc;
 	int base = 10;
 	int currentNumber = 0;
-	if(stringData[0] == '#')
+	if (stringData[0] == '#')
 	{
 		stringData++;
 		base = 16;
 	}
-	else if(stringData[0] == '0' && stringData[1] == 'x')
+	else if (stringData[0] == '0' && stringData[1] == 'x')
 	{
 		stringData+=2;
 		base = 16;
 	}
-	if(base == 16)
+	if (base == 16)
 	{
 		while(cc = *(stringData++))
 		{
@@ -149,7 +157,7 @@ int TPTScriptInterface::parseNumber(char * stringData)
 	}
 	else
 	{
-		return atof(stringData);
+		return atoi(stringData);
 	}
 	return currentNumber;
 }
@@ -181,6 +189,8 @@ AnyType TPTScriptInterface::eval(std::deque<std::string> * words)
 		break;
 	case TypeNumber:
 		return NumberType(parseNumber(rawWord));
+	case TypeFloat:
+		return FloatType(atof(rawWord));
 	case TypePoint:
 	{
 		int pointX, pointY;
@@ -190,6 +200,7 @@ AnyType TPTScriptInterface::eval(std::deque<std::string> * words)
 	case TypeString:
 		return StringType(word);
 	}
+	return StringType(word);
 }
 
 std::string TPTScriptInterface::FormatCommand(std::string command)
@@ -257,9 +268,14 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 
 	//Selector
 	int newValue;
-	if(value.GetType() == TypeNumber)
+	float newValuef;
+	if (value.GetType() == TypeNumber)
 	{
-		newValue = ((NumberType)value).Value();
+		newValue = newValuef = ((NumberType)value).Value();
+	}
+	else if (value.GetType() == TypeFloat)
+	{
+		newValue = newValuef = ((FloatType)value).Value();
 	}
 	else if(value.GetType() == TypeString)
 	{
@@ -267,9 +283,11 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 		{
 			std::string newString = ((StringType)value).Value();
 			if (newString.at(newString.length()-1) == 'C')
-				newValue = atoi(newString.substr(0, newString.length()-1).c_str())+273;
+				newValuef = atof(newString.substr(0, newString.length()-1).c_str())+273.15;
 			else if (newString.at(newString.length()-1) == 'F')
-				newValue = (int)((atoi(newString.substr(0, newString.length()-1).c_str())-32.0f)*5/9+273.15f);
+				newValuef = (atof(newString.substr(0, newString.length()-1).c_str())-32.0f)*5/9+273.15f;
+			else
+				throw GeneralException("Invalid value for assignment");
 		}
 		else
 		{
@@ -285,7 +303,7 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 	}
 	else
 		throw GeneralException("Invalid value for assignment");
-	if (property.Value() == "type" && (newValue < 0 || newValue >= PT_NUM))
+	if (property.Value() == "type" && (newValue < 0 || newValue >= PT_NUM || !sim->elements[newValue].Enabled))
 		throw GeneralException("Invalid element");
 
 	if(selector.GetType() == TypePoint || selector.GetType() == TypeNumber)
@@ -309,7 +327,7 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 			*((int*)(partsBlock+(partIndex*sizeof(Particle))+propertyOffset)) = newValue;
 			break;
 		case FormatFloat:
-			*((float*)(partsBlock+(partIndex*sizeof(Particle))+propertyOffset)) = newValue;
+			*((float*)(partsBlock+(partIndex*sizeof(Particle))+propertyOffset)) = newValuef;
 			break;
 		}
 		returnValue = 1;
@@ -334,7 +352,7 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 					if(sim->parts[j].type)
 					{
 						returnValue++;
-						*((float*)(partsBlock+(j*sizeof(Particle))+propertyOffset)) = newValue;
+						*((float*)(partsBlock+(j*sizeof(Particle))+propertyOffset)) = newValuef;
 					}
 			}
 			break;
@@ -371,7 +389,7 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 					if(sim->parts[j].type == type)
 					{
 						returnValue++;
-						*((float*)(partsBlock+(j*sizeof(Particle))+propertyOffset)) = newValue;
+						*((float*)(partsBlock+(j*sizeof(Particle))+propertyOffset)) = newValuef;
 					}
 			}
 			break;

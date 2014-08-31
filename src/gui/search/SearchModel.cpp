@@ -29,7 +29,7 @@ bool SearchModel::GetShowTags()
 	return showTags;	
 }
 
-void * SearchModel::updateSaveListTHelper(void * obj)
+TH_ENTRY_POINT void * SearchModel::updateSaveListTHelper(void * obj)
 {
 	return ((SearchModel *)obj)->updateSaveListT();
 }
@@ -47,7 +47,7 @@ void * SearchModel::updateSaveListT()
 	return saveList;
 }
 
-void * SearchModel::updateTagListTHelper(void * obj)
+TH_ENTRY_POINT void * SearchModel::updateTagListTHelper(void * obj)
 {
 	return ((SearchModel *)obj)->updateTagListT();
 }
