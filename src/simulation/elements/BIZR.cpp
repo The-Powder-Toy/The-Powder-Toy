@@ -96,19 +96,22 @@ int Element_BIZR::graphics(GRAPHICS_FUNC_ARGS)
  //BIZR, BIZRG, BIZRS
 {
 	int x = 0;
-	*colg = 0;
-	*colb = 0;
-	*colr = 0;
-	for (x=0; x<12; x++) {
-		*colr += (cpart->ctype >> (x+18)) & 1;
-		*colb += (cpart->ctype >>  x)     & 1;
+	if (cpart->ctype&0x3FFFFFFF)
+	{
+		*colg = 0;
+		*colb = 0;
+		*colr = 0;
+		for (x=0; x<12; x++) {
+			*colr += (cpart->ctype >> (x+18)) & 1;
+			*colb += (cpart->ctype >>  x)     & 1;
+		}
+		for (x=0; x<12; x++)
+			*colg += (cpart->ctype >> (x+9))  & 1;
+		x = *colr+*colg+*colb+1;
+		*colr = *colr*624/x;
+		*colg = *colg*624/x;
+		*colb = *colb*624/x;
 	}
-	for (x=0; x<12; x++)
-		*colg += (cpart->ctype >> (x+9))  & 1;
-	x = *colr+*colg+*colb+1;
-	*colr = *colr*624/x;
-	*colg = *colg*624/x;
-	*colb = *colb*624/x;
 	if(fabs(cpart->vx)+fabs(cpart->vy)>0)
 	{
 		*firea = 255;
