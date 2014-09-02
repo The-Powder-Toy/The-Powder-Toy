@@ -57,11 +57,9 @@ ContextInfo* getContext(JNIEnv *env, jobject canvas)
 
 void freeContext(JNIEnv *env, jobject canvas, ContextInfo* ci) 
 {
-	if (ci) {
-		free(ci->awt);
-		free(ci);
-		env->SetLongField(canvas, ctxID, 0L);
-	}
+    free(ci->awt);
+    free(ci);
+    env->SetLongField(canvas, ctxID, 0L);
 }
 
 JNIEXPORT jboolean JNICALL Java_OpenGLCanvas_beginOpenGL(JNIEnv *env, jobject canvas)

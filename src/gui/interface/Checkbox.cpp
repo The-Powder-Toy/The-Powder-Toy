@@ -96,13 +96,11 @@ void Checkbox::Draw(const Point& screenPos)
 
 void Checkbox::SetActionCallback(CheckboxAction * action)
 {
-	if(actionCallback)
-		delete actionCallback;
+    delete actionCallback;
 	actionCallback = action;
 }
 
 Checkbox::~Checkbox() {
-	if(actionCallback)
-		delete actionCallback;
+    delete actionCallback;
 }
 

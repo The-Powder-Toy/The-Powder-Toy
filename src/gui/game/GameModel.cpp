@@ -187,18 +187,12 @@ GameModel::~GameModel()
 	}
 	delete sim;
 	delete ren;
-	if(placeSave)
-		delete placeSave;
-	if(clipboard)
-		delete clipboard;
-	if(stamp)
-		delete stamp;
-	if(currentSave)
-		delete currentSave;
-	if(currentFile)
-		delete currentFile;
-	//if(activeTools)
-	//	delete[] activeTools;
+    delete placeSave;
+    delete clipboard;
+    delete stamp;
+    delete currentSave;
+    delete currentFile;
+	//delete[] activeTools;
 }
 
 void GameModel::UpdateQuickOptions()
@@ -569,8 +563,7 @@ void GameModel::SetSave(SaveInfo * newSave)
 {
 	if(currentSave != newSave)
 	{
-		if(currentSave)
-			delete currentSave;
+        delete currentSave;
 		if(newSave == NULL)
 			currentSave = NULL;
 		else
@@ -618,8 +611,7 @@ void GameModel::SetSaveFile(SaveFile * newSave)
 		else
 			currentFile = new SaveFile(*newSave);
 	}
-	if (currentSave)
-		delete currentSave;
+    delete currentSave;
 	currentSave = NULL;
 
 	if(newSave && newSave->GetGameSave())
@@ -904,8 +896,7 @@ void GameModel::SetStamp(GameSave * save)
 {
 	if(stamp != save)
 	{
-		if(stamp)
-			delete stamp;
+        delete stamp;
 		if(save)
 			stamp = new GameSave(*save);
 		else
@@ -917,8 +908,7 @@ void GameModel::SetPlaceSave(GameSave * save)
 {
 	if(save != placeSave)
 	{
-		if(placeSave)
-			delete placeSave;
+        delete placeSave;
 		if(save)
 			placeSave = new GameSave(*save);
 		else
@@ -929,16 +919,14 @@ void GameModel::SetPlaceSave(GameSave * save)
 
 std::string GameModel::AddStamp(GameSave * save)
 {
-	if(stamp)
-		delete stamp;
+    delete stamp;
 	stamp = save;
 	return Client::Ref().AddStamp(save);
 }
 
 void GameModel::SetClipboard(GameSave * save)
 {
-	if(clipboard)
-		delete clipboard;
+    delete clipboard;
 	clipboard = save;
 }
 
