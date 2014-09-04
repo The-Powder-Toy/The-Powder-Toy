@@ -92,7 +92,9 @@ if msvc and platform != "Windows":
 	FatalError("Error: --msvc only works on windows")
 
 #Create SCons Environment
-if platform == "Windows" and not GetOption('msvc'):
+if GetOption('msvc'):
+	env = Environment(tools = ['default'], ENV = {'PATH' : os.environ['PATH'], 'TMP' : os.environ['TMP']}, TARGET_ARCH = 'x86')
+elif platform == "Windows" and not GetOption('msvc'):
 	env = Environment(tools = ['mingw'], ENV = {'PATH' : os.environ['PATH']})
 else:
 	env = Environment(tools = ['default'], ENV = {'PATH' : os.environ['PATH']})
@@ -168,6 +170,7 @@ if GetOption("msvc"):
 		env.Append(LIBPATH=['StaticLibs/'])
 	else:
 		env.Append(LIBPATH=['Libraries/'])
+	env.Append(CPPPATH=['includes/'])
 
 #Check 32/64 bit
 def CheckBit(context):
@@ -282,7 +285,7 @@ def findLibs(env, conf):
 		FatalError("bzip2 headers not found")
 
 	#Look for libz
-	if not conf.CheckLib('z'):
+	if not conf.CheckLib(['z', 'zlib']):
 		FatalError("libz not found or not installed")
 
 	#Look for pthreads
@@ -342,7 +345,7 @@ elif not GetOption('help'):
 	conf.AddTest('CheckBit', CheckBit)
 	if not conf.CheckCC() or not conf.CheckCXX():
 		FatalError("compiler not correctly configured")
-	if platform == compilePlatform and isX86 and not GetOption('32bit') and not GetOption('64bit'):
+	if platform == compilePlatform and isX86 and not GetOption('32bit') and not GetOption('64bit') and not GetOption('msvc'):
 		conf.CheckBit()
 	findLibs(env, conf)
 	env = conf.Finish()
@@ -381,7 +384,8 @@ if isX86:
 if not GetOption('no-sse'):
 	if GetOption('sse'):
 		if msvc:
-			env.Append(CCFLAGS=['/arch:SSE'])
+			if not GetOption('sse2'):
+				env.Append(CCFLAGS=['/arch:SSE'])
 		else:
 			env.Append(CCFLAGS=['-msse'])
 		env.Append(CPPDEFINES=['X86_SSE'])
