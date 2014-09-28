@@ -1885,7 +1885,9 @@ int luatpt_setfire(lua_State* l)
 
 int luatpt_setdebug(lua_State* l)
 {
-	return luaL_error(l, "setdebug: Deprecated"); //TODO: maybe use the debugInfo thing in GameController to implement this
+	int debugFlags = luaL_optint(l, 1, 0);
+	luacon_controller->SetDebugFlags(debugFlags);
+	return 0;
 }
 
 int luatpt_setfpscap(lua_State* l)
