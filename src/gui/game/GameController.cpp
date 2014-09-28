@@ -26,6 +26,7 @@
 #include "gui/interface/Keys.h"
 #include "simulation/Snapshot.h"
 #include "debug/DebugInfo.h"
+#include "debug/DebugParts.h"
 #include "debug/ElementPopulation.h"
 #include "debug/DebugLines.h"
 #ifdef LUACONSOLE
@@ -155,8 +156,9 @@ GameController::GameController():
 
 	Client::Ref().AddListener(this);
 
+	debugInfo.push_back(new DebugParts(0x1, gameModel->GetSimulation()));
 	debugInfo.push_back(new ElementPopulationDebug(0x2, gameModel->GetSimulation()));
-	debugInfo.push_back(new LineDebug(0x4, gameView, this));
+	debugInfo.push_back(new DebugLines(0x4, gameView, this));
 }
 
 GameController::~GameController()

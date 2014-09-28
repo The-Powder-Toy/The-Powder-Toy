@@ -3,7 +3,7 @@
 #include "gui/game/GameView.h"
 #include "gui/game/GameController.h"
 
-LineDebug::LineDebug(unsigned int id, GameView * view, GameController * controller):
+DebugLines::DebugLines(unsigned int id, GameView * view, GameController * controller):
 	DebugInfo(id),
 	view(view),
 	controller(controller)
@@ -11,7 +11,7 @@ LineDebug::LineDebug(unsigned int id, GameView * view, GameController * controll
 
 }
 
-void LineDebug::Draw()
+void DebugLines::Draw()
 {
 	Graphics * g = ui::Engine::Ref().g;
 
@@ -28,7 +28,7 @@ void LineDebug::Draw()
 		g->draw_line(0, drawPoint2.Y, XRES, drawPoint2.Y, 255, 255, 255, 120);
 		g->draw_line(drawPoint2.X, 0, drawPoint2.X, YRES, 255, 255, 255, 120);
 
-		stringstream info;
+		std::stringstream info;
 		info << drawPoint2.X << " x " << drawPoint2.Y;
 		g->drawtext_outline(drawPoint2.X+(drawPoint2.X>drawPoint1.X?3:-g->textwidth(info.str().c_str())-3), drawPoint2.Y+(drawPoint2.Y<drawPoint1.Y?-10:3), info.str().c_str(), 255, 255, 255, 200);
 
@@ -46,7 +46,7 @@ void LineDebug::Draw()
 	}
 }
 
-LineDebug::~LineDebug()
+DebugLines::~DebugLines()
 {
 
 }

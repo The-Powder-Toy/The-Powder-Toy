@@ -4,12 +4,12 @@
 
 class GameView;
 class GameController;
-class LineDebug : public DebugInfo
+class DebugLines : public DebugInfo
 {
 	GameView * view;
 	GameController * controller;
 public:
-	LineDebug(unsigned int id, GameView * view, GameController * controller);
+	DebugLines(unsigned int id, GameView * view, GameController * controller);
 	virtual void Draw();
-	virtual ~LineDebug();
+	virtual ~DebugLines();
 };
