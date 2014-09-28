@@ -113,8 +113,6 @@ private:
 
 	int lastOffset;
 	void setToolButtonOffset(int offset);
-	virtual ui::Point lineSnapCoords(ui::Point point1, ui::Point point2);
-	virtual ui::Point rectSnapCoords(ui::Point point1, ui::Point point2);
 
 	void screenshot();
 	void record();
@@ -144,6 +142,14 @@ public:
 	void ExitPrompt();
 	SelectMode GetSelectMode() { return selectMode; }
 	void BeginStampSelection();
+
+	//all of these are only here for one debug lines
+	bool GetDrawingLine() { return drawMode == DrawLine && isMouseDown; }
+	bool GetDrawSnap() { return drawSnap; }
+	ui::Point GetLineStartCoords() { return drawPoint1; }
+	ui::Point GetLineFinishCoords() { return currentMouse; }
+	ui::Point lineSnapCoords(ui::Point point1, ui::Point point2);
+	ui::Point rectSnapCoords(ui::Point point1, ui::Point point2);
 
 	void AttachController(GameController * _c){ c = _c; }
 	void NotifyRendererChanged(GameModel * sender);

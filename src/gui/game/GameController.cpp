@@ -26,12 +26,13 @@
 #include "gui/interface/Keys.h"
 #include "simulation/Snapshot.h"
 #include "debug/DebugInfo.h"
+#include "debug/ElementPopulation.h"
+#include "debug/DebugLines.h"
 #ifdef LUACONSOLE
 #include "lua/LuaScriptInterface.h"
 #else
 #include "lua/TPTScriptInterface.h"
 #endif
-//#include "debug/ElementPopulation.h"
 
 using namespace std;
 
@@ -156,6 +157,7 @@ GameController::GameController():
 	Client::Ref().AddListener(this);
 
 	//debugInfo.push_back(new ElementPopulationDebug(gameModel->GetSimulation()));
+	//debugInfo.push_back(new LineDebug(gameView, this));
 }
 
 GameController::~GameController()
@@ -741,7 +743,7 @@ void GameController::Tick()
 	}
 	for(std::vector<DebugInfo*>::iterator iter = debugInfo.begin(), end = debugInfo.end(); iter != end; iter++)
 	{
-		(*iter)->Draw(ui::Point(10, 10));
+		(*iter)->Draw();
 	}
 	commandInterface->OnTick();
 }
