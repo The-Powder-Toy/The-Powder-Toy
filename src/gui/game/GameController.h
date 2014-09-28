@@ -46,6 +46,7 @@ private:
 	OptionsController * options;
 	CommandInterface * commandInterface;
 	vector<DebugInfo*> debugInfo;
+	unsigned int debugFlags;
 public:
 	bool HasDone;
 	class SearchCallback;
@@ -101,6 +102,7 @@ public:
 	bool GetHudEnable();
 	void SetDebugHUD(bool hudState);
 	bool GetDebugHUD();
+	void SetDebugFlags(unsigned int flags) { debugFlags = flags; }
 	void SetActiveMenu(int menuID);
 	std::vector<Menu*> GetMenuList();
 	Tool * GetActiveTool(int selection);

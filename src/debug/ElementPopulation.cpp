@@ -3,7 +3,8 @@
 #include "simulation/Simulation.h"
 #include "Format.h"
 
-ElementPopulationDebug::ElementPopulationDebug(Simulation * sim):
+ElementPopulationDebug::ElementPopulationDebug(unsigned int id, Simulation * sim):
+	DebugInfo(id),
 	sim(sim),
 	maxAverage(255.0f)
 {

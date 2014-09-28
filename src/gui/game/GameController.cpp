@@ -153,11 +153,10 @@ GameController::GameController():
 	ActiveToolChanged(2, gameModel->GetActiveTool(2));
 	ActiveToolChanged(3, gameModel->GetActiveTool(3));
 
-	//sim = new Simulation();
 	Client::Ref().AddListener(this);
 
-	//debugInfo.push_back(new ElementPopulationDebug(gameModel->GetSimulation()));
-	//debugInfo.push_back(new LineDebug(gameView, this));
+	debugInfo.push_back(new ElementPopulationDebug(0x2, gameModel->GetSimulation()));
+	debugInfo.push_back(new LineDebug(0x4, gameView, this));
 }
 
 GameController::~GameController()
@@ -743,7 +742,8 @@ void GameController::Tick()
 	}
 	for(std::vector<DebugInfo*>::iterator iter = debugInfo.begin(), end = debugInfo.end(); iter != end; iter++)
 	{
-		(*iter)->Draw();
+		if ((*iter)->ID & debugFlags)
+			(*iter)->Draw();
 	}
 	commandInterface->OnTick();
 }
