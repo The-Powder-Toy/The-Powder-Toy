@@ -22,7 +22,7 @@ Element_ACID::Element_ACID()
 	Flammable = 40;
 	Explosive = 0;
 	Meltable = 0;
-	Hardness = 1;
+	Hardness = 0;
 	
 	Weight = 10;
 	
