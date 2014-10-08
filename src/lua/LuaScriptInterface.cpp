@@ -436,6 +436,7 @@ int LuaScriptInterface::tpt_newIndex(lua_State *l)
 		//if not a special key, set a value in the table
 		return lua_rawset(l, 1), 1;
 	}
+	return 0;
 }
 
 //// Begin Interface API

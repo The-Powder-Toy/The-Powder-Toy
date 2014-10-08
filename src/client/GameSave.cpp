@@ -1644,7 +1644,7 @@ void GameSave::readPSv(char * data, int dataLength)
 			}
 			if (ver < 88) //fix air blowing stickmen
 				if ((particles[i-1].type == PT_STKM || particles[i-1].type == PT_STKM2 || particles[i-1].type == PT_FIGH) && particles[i-1].ctype == OLD_SPC_AIR)
-					particles[i-1].ctype == SPC_AIR;
+					particles[i-1].ctype = SPC_AIR;
 			if (ver < 89)
 			{
 				if (particles[i-1].type == PT_FILT)

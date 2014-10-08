@@ -833,7 +833,7 @@ bool GameModel::GetPaused()
 
 void GameModel::SetDecoration(bool decorationState)
 {
-	if (ren->decorations_enable != decorationState)
+	if (ren->decorations_enable != (decorationState?1:0))
 	{
 		ren->decorations_enable = decorationState?1:0;
 		notifyDecorationChanged();

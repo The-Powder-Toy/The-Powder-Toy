@@ -130,7 +130,8 @@ GameController::GameController():
 		localBrowser(NULL),
 		foundSign(NULL),
 		HasDone(false),
-		firstTick(true)
+		firstTick(true),
+		debugFlags(0)
 {
 	gameView = new GameView();
 	gameModel = new GameModel();
