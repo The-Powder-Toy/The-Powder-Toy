@@ -271,7 +271,7 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 	float newValuef;
 	if (value.GetType() == TypeNumber)
 	{
-		newValue = newValuef = ((NumberType)value).Value();
+		newValuef = newValue = ((NumberType)value).Value();
 	}
 	else if (value.GetType() == TypeFloat)
 	{
