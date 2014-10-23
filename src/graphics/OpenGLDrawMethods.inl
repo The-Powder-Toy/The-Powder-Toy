@@ -136,7 +136,7 @@ int PIXELMETHODS_CLASS::drawtext(int x, int y, std::string s, int r, int g, int 
 int PIXELMETHODS_CLASS::drawchar(int x, int y, int c, int r, int g, int b, int a)
 {
 	int i, j, w, bn = 0, ba = 0;
-	char *rp = font_data + font_ptrs[c];
+	unsigned char *rp = font_data + font_ptrs[c];
 	w = *(rp++);
 	VideoBuffer texture(w, 12);
 	texture.SetCharacter(0, 0, c, r, g, b, a);
@@ -166,7 +166,7 @@ int PIXELMETHODS_CLASS::drawchar(int x, int y, int c, int r, int g, int b, int a
 int PIXELMETHODS_CLASS::addchar(int x, int y, int c, int r, int g, int b, int a)
 {
 	int i, j, w, bn = 0, ba = 0;
-	char *rp = font_data + font_ptrs[c];
+	unsigned char *rp = font_data + font_ptrs[c];
 	w = *(rp++);
 	VideoBuffer texture(w, 12);
 	texture.AddCharacter(0, 0, c, r, g, b, a);

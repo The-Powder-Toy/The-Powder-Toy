@@ -7,7 +7,7 @@ class VideoBuffer;
 
 namespace format
 {
-	static char hex[] = "0123456789ABCDEF";
+	const static char hex[] = "0123456789ABCDEF";
 
 	template <typename T> std::string NumberToString(T number)
 	{

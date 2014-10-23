@@ -67,10 +67,10 @@ void writeUserPreferences(const char * prefData);
 
 
 Client::Client():
-	authUser(0, ""),
-	updateAvailable(false),
+	messageOfTheDay(""),
 	versionCheckRequest(NULL),
-	messageOfTheDay("")
+	updateAvailable(false),
+	authUser(0, "")
 {
 	int i = 0;
 	for(i = 0; i < THUMB_CACHE_SIZE; i++)

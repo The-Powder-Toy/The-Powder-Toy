@@ -56,9 +56,9 @@ int Element_CFLM::graphics(GRAPHICS_FUNC_ARGS)
 
 {
 	int caddress = restrict_flt(restrict_flt((float)((int)(cpart->life/2)), 0.0f, 200.0f)*3, 0.0f, (200.0f*3)-3);
-	*colr = (unsigned char)hflm_data[caddress];
-	*colg = (unsigned char)hflm_data[caddress+1];
-	*colb = (unsigned char)hflm_data[caddress+2];
+	*colr = hflm_data[caddress];
+	*colg = hflm_data[caddress+1];
+	*colb = hflm_data[caddress+2];
 	
 	*firea = 255;
 	*firer = *colr;

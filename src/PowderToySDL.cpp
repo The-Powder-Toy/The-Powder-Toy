@@ -333,7 +333,7 @@ int SDLOpen()
 	SendMessage(WindowHandle, WM_SETICON, ICON_SMALL, (LPARAM)hIconSmall);
 	SendMessage(WindowHandle, WM_SETICON, ICON_BIG, (LPARAM)hIconBig);
 #elif defined(LIN)
-	SDL_Surface *icon = SDL_CreateRGBSurfaceFrom(app_icon, 16, 16, 32, 64, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
+	SDL_Surface *icon = SDL_CreateRGBSurfaceFrom((void*)app_icon, 16, 16, 32, 64, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
 	SDL_WM_SetIcon(icon, NULL);
 #endif
 
@@ -949,7 +949,7 @@ int main(int argc, char * argv[])
 			{
 				std::string saveIdPart = "";
 				int saveId;
-				int hashPos = ptsaveArg.find('#');
+				unsigned int hashPos = ptsaveArg.find('#');
 				if(hashPos != std::string::npos)
 				{
 					saveIdPart = ptsaveArg.substr(7, hashPos-7);

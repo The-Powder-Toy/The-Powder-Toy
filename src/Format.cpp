@@ -87,10 +87,10 @@ std::string format::CleanString(std::string dirtyString, size_t maxVisualSize, s
 	{
 		newString = newString.substr(0, maxVisualSize/10);
 	}
-	for(int i = 0; i < newString.size(); i++){
-		if(!(newString[i]>=' ' && newString[i]<127)){	//Clamp to ASCII range
+	for (unsigned int i = 0; i < newString.size(); i++)
+	{
+		if (!(newString[i]>=' ' && newString[i]<127))	//Clamp to ASCII range
 			newString[i] = '?';							//Replace with "huh" char
-		}
 	}
 	return newString;
 }
@@ -113,10 +113,10 @@ std::string format::CleanString(char * dirtyData, size_t maxVisualSize, size_t m
 	{
 		newString = newString.substr(0, maxVisualSize/10);
 	}
-	for(int i = 0; i < newString.size(); i++){
-		if(!(newString[i]>=' ' && newString[i]<127)){	//Clamp to ASCII range
+	for (unsigned int i = 0; i < newString.size(); i++)
+	{
+		if (!(newString[i]>=' ' && newString[i]<127))	//Clamp to ASCII range
 			newString[i] = '?';							//Replace with "huh" char
-		}
 	}
 	return newString;
 }

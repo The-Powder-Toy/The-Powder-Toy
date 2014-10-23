@@ -36,10 +36,10 @@ protected:
 	}
 public:
 	Brush(ui::Point size_):
-		bitmap(NULL),
 		outline(NULL),
-		radius(0, 0),
-		size(0, 0)
+		bitmap(NULL),
+		size(0, 0),
+		radius(0, 0)
 	{
 		SetRadius(size_);
 	};

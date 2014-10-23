@@ -973,7 +973,7 @@ void GameSave::readOPS(char * data, int dataLength)
 							int caddress = restrict_flt(restrict_flt((float)(particles[newIndex].tmp-4), 0.0f, 200.0f)*3, 0.0f, (200.0f*3)-3);
 							particles[newIndex].type = PT_EMBR;
 							particles[newIndex].tmp = 1;
-							particles[newIndex].ctype = (((unsigned char)(firw_data[caddress]))<<16) | (((unsigned char)(firw_data[caddress+1]))<<8) | ((unsigned char)(firw_data[caddress+2]));
+							particles[newIndex].ctype = (((firw_data[caddress]))<<16) | (((firw_data[caddress+1]))<<8) | ((firw_data[caddress+2]));
 						}
 						break;
 					case PT_PSTN:
@@ -1639,7 +1639,7 @@ void GameSave::readPSv(char * data, int dataLength)
 					int caddress = restrict_flt(restrict_flt((float)(particles[i-1].tmp-4), 0.0f, 200.0f)*3, 0.0f, (200.0f*3)-3);
 					particles[i-1].type = PT_EMBR;
 					particles[i-1].tmp = 1;
-					particles[i-1].ctype = (((unsigned char)(firw_data[caddress]))<<16) | (((unsigned char)(firw_data[caddress+1]))<<8) | ((unsigned char)(firw_data[caddress+2]));
+					particles[i-1].ctype = (((firw_data[caddress]))<<16) | (((firw_data[caddress+1]))<<8) | ((firw_data[caddress+2]));
 				}
 			}
 			if (ver < 88) //fix air blowing stickmen

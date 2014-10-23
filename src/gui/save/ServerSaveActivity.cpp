@@ -322,7 +322,7 @@ void ServerSaveActivity::OnTick(float dt)
 void ServerSaveActivity::OnDraw()
 {
 	Graphics * g = ui::Engine::Ref().g;
-	g->draw_rgba_image((unsigned char*)save_to_server_image, -10, 0, 0.7f);
+	g->draw_rgba_image(save_to_server_image, -10, 0, 0.7f);
 	g->clearrect(Position.X-2, Position.Y-2, Size.X+3, Size.Y+3);
 	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 255, 255, 255, 255);
 
