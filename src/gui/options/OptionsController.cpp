@@ -44,9 +44,9 @@ void OptionsController::SetAirMode(int airMode)
 	model->SetAirMode(airMode);
 }
 
-void OptionsController::SetEdgeMode(int airMode)
+void OptionsController::SetEdgeMode(int edgeMode)
 {
-	model->SetEdgeMode(airMode);
+	model->SetEdgeMode(edgeMode);
 }
 
 void OptionsController::SetFullscreen(bool fullscreen)

@@ -132,6 +132,7 @@ OptionsView::OptionsView():
 	AddComponent(edgeMode);
 	edgeMode->AddOption(std::pair<std::string, int>("Void", 0));
 	edgeMode->AddOption(std::pair<std::string, int>("Solid", 1));
+	edgeMode->AddOption(std::pair<std::string, int>("Loop", 2));
 	edgeMode->SetActionCallback(new EdgeModeChanged(this));
 
 	tempLabel = new ui::Label(ui::Point(8, 186), ui::Point(Size.X-96, 16), "Edge Mode");
