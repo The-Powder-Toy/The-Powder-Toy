@@ -146,6 +146,12 @@ int luacon_particle_getproperty(const char * key, int * format)
 	} else if (!strcmp(key, "dcolor")) {
 		offset = offsetof(Particle, dcolour);
 		*format = 0;
+	} else if (!strcmp(key, "pavg0")) {
+		offset = offsetof(Particle, pavg[0]);
+		*format = 1;
+	} else if (!strcmp(key, "pavg1")) {
+		offset = offsetof(Particle, pavg[1]);
+		*format = 1;
 	} else {
 		offset = -1;
 	}
