@@ -588,6 +588,7 @@ void LuaScriptInterface::initSimulationAPI()
 		{"can_move", simulation_canMove},
 		{"parts", simulation_parts},
 		{"pmap", simulation_pmap},
+		{"photons", simulation_photons},
 		{"neighbours", simulation_neighbours},
 		{"neighbors", simulation_neighbours},
 		{NULL, NULL}
@@ -676,7 +677,9 @@ int LuaScriptInterface::simulation_partNeighbours(lua_State * l)
 				if (x+rx >= 0 && y+ry >= 0 && x+rx < XRES && y+ry < YRES && (rx || ry))
 				{
 					n = luacon_sim->pmap[y+ry][x+rx];
-					if(n && (n&0xFF) == t)
+					if (!n || (n&0xFF) != t)
+						n = luacon_sim->photons[y+ry][x+rx];
+					if (n && (n&0xFF) == t)
 					{
 						lua_pushinteger(l, n>>8);
 						lua_rawseti(l, -2, id++);
@@ -691,7 +694,9 @@ int LuaScriptInterface::simulation_partNeighbours(lua_State * l)
 				if (x+rx >= 0 && y+ry >= 0 && x+rx < XRES && y+ry < YRES && (rx || ry))
 				{
 					n = luacon_sim->pmap[y+ry][x+rx];
-					if(n)
+					if (!n)
+						n = luacon_sim->photons[y+ry][x+rx];
+					if (n)
 					{
 						lua_pushinteger(l, n>>8);
 						lua_rawseti(l, -2, id++);
@@ -1056,11 +1061,11 @@ int LuaScriptInterface::simulation_gravMap(lua_State* l)
 	if (x*CELL<0 || y*CELL<0 || x*CELL>=XRES || y*CELL>=YRES)
 		return luaL_error(l, "coordinates out of range (%d,%d)", x, y);
 
-	/*if (argCount == 2)
+	if (argCount == 2)
 	{
-		lua_pushnumber(l, luacon_sim->gravmap[y*XRES/CELL+x]);
+		lua_pushnumber(l, luacon_sim->gravp[y*XRES/CELL+x]);
 		return 1;
-	}*/
+	}
 	int width = 1, height = 1;
 	float value;
 	luaL_checktype(l, 3, LUA_TNUMBER);
@@ -1697,18 +1702,29 @@ int LuaScriptInterface::simulation_parts(lua_State * l)
 
 int LuaScriptInterface::simulation_pmap(lua_State * l)
 {
-	int x=luaL_checkint(l, 1);
-	int y=luaL_checkint(l, 2);
-	int r;
-	if(x < 0 || x >= XRES || y < 0 || y >= YRES)
+	int x = luaL_checkint(l, 1);
+	int y = luaL_checkint(l, 2);
+	if (x < 0 || x >= XRES || y < 0 || y >= YRES)
 		return luaL_error(l, "coordinates out of range (%d,%d)", x, y);
-	r=luacon_sim->pmap[y][x];
-	if(!(r&0xFF))
+	int r = luacon_sim->pmap[y][x];
+	if (!(r&0xFF))
 		return 0;
 	lua_pushnumber(l, r>>8);
 	return 1;
 }
 
+int LuaScriptInterface::simulation_photons(lua_State * l)
+{
+	int x = luaL_checkint(l, 1);
+	int y = luaL_checkint(l, 2);
+	if (x < 0 || x >= XRES || y < 0 || y >= YRES)
+		return luaL_error(l, "coordinates out of range (%d,%d)", x, y);
+	int r = luacon_sim->photons[y][x];
+	if (!(r&0xFF))
+		return 0;
+	lua_pushnumber(l, r>>8);
+	return 1;
+}
 
 int NeighboursClosure(lua_State * l)
 {
@@ -1734,6 +1750,8 @@ int NeighboursClosure(lua_State * l)
 			continue;
 		}
 		i=luacon_sim->pmap[y+sy][x+sx];
+		if(!i)
+			i=luacon_sim->photons[y+sy][x+sx];
 	} while(!(i&0xFF));
 	lua_pushnumber(l, x);
 	lua_replace(l, lua_upvalueindex(5));
