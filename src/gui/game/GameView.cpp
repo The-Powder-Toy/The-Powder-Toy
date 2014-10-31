@@ -1042,9 +1042,9 @@ void GameView::OnMouseMove(int x, int y, int dx, int dy)
 	currentMouse = ui::Point(x, y);
 	if (selectMode != SelectNone)
 	{
-		if(selectMode == PlaceSave)
+		if (selectMode == PlaceSave)
 			selectPoint1 = c->PointTranslate(ui::Point(x, y));
-		if(selectPoint1.X != -1)
+		if (selectPoint1.X != -1)
 			selectPoint2 = c->PointTranslate(ui::Point(x, y));
 		return;
 	}
@@ -1096,7 +1096,11 @@ void GameView::OnMouseDown(int x, int y, unsigned button)
 void GameView::OnMouseUp(int x, int y, unsigned button)
 {
 	if (zoomEnabled && !zoomCursorFixed)
+	{
 		zoomCursorFixed = true;
+		drawMode = DrawPoints;
+		isMouseDown = false;
+	}
 	else
 	{
 		if (selectMode != SelectNone)
@@ -1355,7 +1359,7 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		c->ChangeBrush();
 		break;
 	case 'z':
-		if(ctrl)
+		if (ctrl)
 		{
 			c->HistoryRestore();
 		}
