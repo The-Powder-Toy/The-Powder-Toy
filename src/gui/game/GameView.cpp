@@ -1063,7 +1063,7 @@ void GameView::OnMouseDown(int x, int y, unsigned button)
 	{
 		if (selectMode != SelectNone)
 		{
-			if (button == BUTTON_LEFT)
+			if (button == BUTTON_LEFT && selectPoint1.X == -1)
 			{
 				selectPoint1 = c->PointTranslate(ui::Point(x, y));
 				selectPoint2 = selectPoint1;
