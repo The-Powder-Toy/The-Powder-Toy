@@ -1040,15 +1040,15 @@ void GameView::OnMouseMove(int x, int y, int dx, int dy)
 {
 	mousePosition = c->PointTranslate(ui::Point(x, y));
 	currentMouse = ui::Point(x, y);
-	if(selectMode!=SelectNone)
+	if (selectMode != SelectNone)
 	{
-		if(selectMode==PlaceSave)
+		if(selectMode == PlaceSave)
 			selectPoint1 = c->PointTranslate(ui::Point(x, y));
-		if(selectPoint1.X!=-1)
+		if(selectPoint1.X != -1)
 			selectPoint2 = c->PointTranslate(ui::Point(x, y));
 		return;
 	}
-	if(isMouseDown && drawMode == DrawPoints)
+	if (isMouseDown && drawMode == DrawPoints)
 	{
 		pointQueue.push(ui::Point(c->PointTranslate(ui::Point(x-dx, y-dy))));
 		pointQueue.push(ui::Point(c->PointTranslate(ui::Point(x, y))));
@@ -1057,64 +1057,67 @@ void GameView::OnMouseMove(int x, int y, int dx, int dy)
 
 void GameView::OnMouseDown(int x, int y, unsigned button)
 {
-	if(altBehaviour && !shiftBehaviour && !ctrlBehaviour)
+	if (altBehaviour && !shiftBehaviour && !ctrlBehaviour)
 		button = BUTTON_MIDDLE;
-	if(selectMode!=SelectNone)
+	if  (!(zoomEnabled && !zoomCursorFixed))
 	{
-		if(button==BUTTON_LEFT)
+		if (selectMode != SelectNone)
 		{
-			selectPoint1 = c->PointTranslate(ui::Point(x, y));
-			selectPoint2 = selectPoint1;
+			if (button == BUTTON_LEFT)
+			{
+				selectPoint1 = c->PointTranslate(ui::Point(x, y));
+				selectPoint2 = selectPoint1;
+			}
+			return;
 		}
-		return;
-	}
-	if(currentMouse.X >= 0 && currentMouse.X < XRES && currentMouse.Y >= 0 && currentMouse.Y < YRES && !(zoomEnabled && !zoomCursorFixed))
-	{
-		if(button == BUTTON_LEFT)
-			toolIndex = 0;
-		if(button == BUTTON_RIGHT)
-			toolIndex = 1;
-		if(button == BUTTON_MIDDLE)
-			toolIndex = 2;
-		isMouseDown = true;
-		if(!pointQueue.size())
-			c->HistorySnapshot();
-		if(drawMode == DrawRect || drawMode == DrawLine)
+		if (currentMouse.X >= 0 && currentMouse.X < XRES && currentMouse.Y >= 0 && currentMouse.Y < YRES)
 		{
-			drawPoint1 = c->PointTranslate(ui::Point(x, y));
-		}
-		if(drawMode == DrawPoints)
-		{
-			pointQueue.push(ui::Point(c->PointTranslate(ui::Point(x, y))));
+			if (button == BUTTON_LEFT)
+				toolIndex = 0;
+			if (button == BUTTON_RIGHT)
+				toolIndex = 1;
+			if (button == BUTTON_MIDDLE)
+				toolIndex = 2;
+			isMouseDown = true;
+			if (!pointQueue.size())
+				c->HistorySnapshot();
+			if (drawMode == DrawRect || drawMode == DrawLine)
+			{
+				drawPoint1 = c->PointTranslate(ui::Point(x, y));
+			}
+			if (drawMode == DrawPoints)
+			{
+				pointQueue.push(ui::Point(c->PointTranslate(ui::Point(x, y))));
+			}
 		}
 	}
 }
 
 void GameView::OnMouseUp(int x, int y, unsigned button)
 {
-	if(zoomEnabled && !zoomCursorFixed)
+	if (zoomEnabled && !zoomCursorFixed)
 		zoomCursorFixed = true;
 	else
 	{
-		if(selectMode!=SelectNone)
+		if (selectMode != SelectNone)
 		{
-			if(button==BUTTON_LEFT)
+			if (button == BUTTON_LEFT)
 			{
-				if(selectMode==PlaceSave)
+				if (selectMode == PlaceSave)
 				{
-					if(placeSaveThumb && y <= WINDOWH-BARSIZE)
+					if (placeSaveThumb && y <= WINDOWH-BARSIZE)
 					{
 						int thumbX = selectPoint2.X - (placeSaveThumb->Width/2);
 						int thumbY = selectPoint2.Y - (placeSaveThumb->Height/2);
 
-						if(thumbX<0)
+						if (thumbX < 0)
 							thumbX = 0;
-						if(thumbX+(placeSaveThumb->Width)>=XRES)
+						if (thumbX+(placeSaveThumb->Width) >= XRES)
 							thumbX = XRES-placeSaveThumb->Width;
 
-						if(thumbY<0)
+						if (thumbY < 0)
 							thumbY = 0;
-						if(thumbY+(placeSaveThumb->Height)>=YRES)
+						if (thumbY+(placeSaveThumb->Height) >= YRES)
 							thumbY = YRES-placeSaveThumb->Height;
 
 						c->PlaceSave(ui::Point(thumbX, thumbY));
@@ -1122,15 +1125,15 @@ void GameView::OnMouseUp(int x, int y, unsigned button)
 				}
 				else
 				{
-					int x2 = (selectPoint1.X>selectPoint2.X)?selectPoint1.X:selectPoint2.X;
-					int y2 = (selectPoint1.Y>selectPoint2.Y)?selectPoint1.Y:selectPoint2.Y;
-					int x1 = (selectPoint2.X<selectPoint1.X)?selectPoint2.X:selectPoint1.X;
-					int y1 = (selectPoint2.Y<selectPoint1.Y)?selectPoint2.Y:selectPoint1.Y;
-					if(selectMode==SelectCopy)
+					int x2 = (selectPoint1.X>selectPoint2.X) ? selectPoint1.X : selectPoint2.X;
+					int y2 = (selectPoint1.Y>selectPoint2.Y) ? selectPoint1.Y : selectPoint2.Y;
+					int x1 = (selectPoint2.X<selectPoint1.X) ? selectPoint2.X : selectPoint1.X;
+					int y1 = (selectPoint2.Y<selectPoint1.Y) ? selectPoint2.Y : selectPoint1.Y;
+					if (selectMode ==SelectCopy)
 						c->CopyRegion(ui::Point(x1, y1), ui::Point(x2, y2));
-					else if(selectMode==SelectCut)
+					else if (selectMode == SelectCut)
 						c->CutRegion(ui::Point(x1, y1), ui::Point(x2, y2));
-					else if(selectMode==SelectStamp)
+					else if (selectMode == SelectStamp)
 						c->StampRegion(ui::Point(x1, y1), ui::Point(x2, y2));
 				}
 			}
@@ -1138,39 +1141,39 @@ void GameView::OnMouseUp(int x, int y, unsigned button)
 			return;
 		}
 
-		if(isMouseDown)
+		if (isMouseDown)
 		{
 			isMouseDown = false;
-			if(drawMode == DrawRect || drawMode == DrawLine)
+			if (drawMode == DrawRect || drawMode == DrawLine)
 			{
 				ui::Point finalDrawPoint2(0, 0);
 				drawPoint2 = c->PointTranslate(ui::Point(x, y));
 				finalDrawPoint2 = drawPoint2;
 
-				if(drawSnap && drawMode == DrawLine)
+				if (drawSnap && drawMode == DrawLine)
 				{
 					finalDrawPoint2 = lineSnapCoords(c->PointTranslate(drawPoint1), drawPoint2);
 				}
 
-				if(drawSnap && drawMode == DrawRect)
+				if (drawSnap && drawMode == DrawRect)
 				{
 					finalDrawPoint2 = rectSnapCoords(c->PointTranslate(drawPoint1), drawPoint2);
 				}
 
-				if(drawMode == DrawRect)
+				if (drawMode == DrawRect)
 				{
 					c->DrawRect(toolIndex, c->PointTranslate(drawPoint1), finalDrawPoint2);
 				}
-				if(drawMode == DrawLine)
+				if (drawMode == DrawLine)
 				{
 					c->DrawLine(toolIndex, c->PointTranslate(drawPoint1), finalDrawPoint2);
 				}
 			}
-			if(drawMode == DrawPoints)
+			if (drawMode == DrawPoints)
 			{
 				c->ToolClick(toolIndex, c->PointTranslate(ui::Point(x, y)));
 			}
-			if(drawModeReset)
+			if (drawModeReset)
 			{
 				drawModeReset = false;
 				drawMode = DrawPoints;
