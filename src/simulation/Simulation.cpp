@@ -1248,7 +1248,7 @@ int Simulation::CreateParts(int positionX, int positionY, int c, Brush * cBrush,
 		int radiusX = cBrush->GetRadius().X, radiusY = cBrush->GetRadius().Y, sizeX = cBrush->GetSize().X, sizeY = cBrush->GetSize().Y;
 		unsigned char *bitmap = cBrush->GetBitmap();
 		
-		for(int y = 0; y < sizeY; y++)
+		for(int y = sizeY-1; y >=0; y--)
 		{
 			for(int x = 0; x < sizeX; x++)
 			{
@@ -1431,7 +1431,7 @@ void Simulation::CreateBox(int x1, int y1, int x2, int y2, int c, int flags)
 		y2 = y1;
 		y1 = j;
 	}
-	for (j=y1; j<=y2; j++)
+	for (j=y2; j>=y1; j--)
 		for (i=x1; i<=x2; i++)
 			CreateParts(i, j, 0, 0, c, flags);
 }
