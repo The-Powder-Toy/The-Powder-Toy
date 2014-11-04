@@ -979,6 +979,8 @@ void GameSave::readOPS(char * data, int dataLength)
 					case PT_PSTN:
 						if (savedVersion < 87 && particles[newIndex].ctype)
 							particles[newIndex].life = 1;
+						if (savedVersion < 91)
+							particles[newIndex].temp = 283.15;
 						break;
 					case PT_STKM:
 					case PT_STKM2:
@@ -1008,6 +1010,7 @@ void GameSave::readOPS(char * data, int dataLength)
 						{
 							particles[newIndex].flags |= FLAG_PHOTDECO;
 						}
+						break;
 					}
 					//note: PSv was used in version 77.0 and every version before, add something in PSv too if the element is that old
 					newIndex++;
