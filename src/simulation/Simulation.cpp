@@ -3880,9 +3880,15 @@ void Simulation::update_particles_i(int start, int inc)
 						{
 							if (parts[i].ctype > 0 && parts[i].ctype < PT_NUM && parts[i].ctype != t)
 							{
-								if ((elements[parts[i].ctype].LowTemperatureTransition==PT_ICEI || elements[parts[i].ctype].LowTemperatureTransition==PT_SNOW) && pt<elements[parts[i].ctype].LowTemperature)
+								if (elements[parts[i].ctype].LowTemperatureTransition==PT_ICEI || elements[parts[i].ctype].LowTemperatureTransition==PT_SNOW)
+								{
+									if (pt<elements[parts[i].ctype].LowTemperature)
+										s = 0;
+								}
+								else if (pt<273.15f)
 									s = 0;
-								else
+
+								if (s)
 								{
 #ifdef REALISTIC
 									//One ice table value for all it's kinds
