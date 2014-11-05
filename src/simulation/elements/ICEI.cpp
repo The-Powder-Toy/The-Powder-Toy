@@ -70,8 +70,11 @@ int Element_ICEI::update(UPDATE_FUNC_ARGS)
 						return 0;
 					}
 				}
-				else if (((r&0xFF)==PT_FRZZ) && (parts[i].ctype=PT_FRZW) && !(rand()%200))
+				else if (((r&0xFF)==PT_FRZZ) && !(rand()%200))
+				{
 					sim->part_change_type(r>>8,x+rx,y+ry,PT_ICEI);
+					parts[r>>8].ctype = PT_FRZW;
+				}
 			}
 	return 0;
 }

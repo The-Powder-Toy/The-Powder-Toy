@@ -37,10 +37,10 @@ Element_FRZW::Element_FRZW()
 	LowPressureTransition = NT;
 	HighPressure = IPH;
 	HighPressureTransition = NT;
-	LowTemperature = ITL;
-	LowTemperatureTransition = NT;
-	HighTemperature = 53.0f;
-	HighTemperatureTransition = PT_ICEI;
+	LowTemperature = 53.0f;
+	LowTemperatureTransition = PT_ICEI;
+	HighTemperature = ITH;
+	HighTemperatureTransition = NT;
 	
 	Update = &Element_FRZW::update;
 	
