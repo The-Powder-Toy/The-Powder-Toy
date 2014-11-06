@@ -87,6 +87,7 @@ int Element_ELEC::update(UPDATE_FUNC_ARGS)
 						sim->create_part(r>>8, x+rx, y+ry, PT_O2);
 					else
 						sim->create_part(r>>8, x+rx, y+ry, PT_H2);
+					sim->kill_part(i);
 					return 1;
 				case PT_PROT: // this is the correct reaction, not NEUT, but leaving NEUT in anyway
 					if (parts[r>>8].tmp2 & 0x1)

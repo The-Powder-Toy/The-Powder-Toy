@@ -80,10 +80,10 @@ int Element_FUSE::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if ((r&0xFF)==PT_SPRK || ((parts[i].temp>=(273.15+700.0f)) && parts[i].life>40 && !(rand()%20)))
+				if ((r&0xFF)==PT_SPRK || (parts[i].temp>=(273.15+700.0f) && !(rand()%20)))
 				{
-					parts[i].life = 39;
-					
+					if (parts[i].life > 40)
+						parts[i].life = 39;
 				}
 			}
 	return 0;
