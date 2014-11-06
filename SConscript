@@ -248,13 +248,13 @@ def findLibs(env, conf):
 
 	if not GetOption('nolua') and not GetOption('renderer'):
 		#Look for Lua
-		luaver = "lua5.1"
-		if not conf.CheckLib(['lua5.1', 'lua-5.1', 'lua51', 'lua']):
+		luaver = "luajit"
+		if not conf.CheckLib(['luajit', 'lua-5.1', 'lua51', 'lua']):
 			if conf.CheckLib(['lua5.2', 'lua-5.2', 'lua52']):
 				env.Append(CPPDEFINES=["LUA_COMPAT_ALL"])
 				luaver = "lua5.2"
-			elif platform != "Darwin" or not conf.CheckFramework("Lua"):
-				FatalError("lua5.1 development library not found or not installed")
+			#elif platform != "Darwin" or not conf.CheckFramework("luajit"):
+			#	FatalError("luajit development library not found or not installed")
 		if platform == "Linux":
 			try:
 				env.ParseConfig("pkg-config --cflags {0}".format(luaver))
@@ -264,7 +264,7 @@ def findLibs(env, conf):
 
 		#Look for lua.h
 		if not conf.CheckCHeader('lua.h'):
-			if conf.CheckCHeader('lua5.1/lua.h'):
+			if conf.CheckCHeader('luajit/lua.h'):
 				env.Append(CPPDEFINES=["LUA_INC"])
 			else:
 				FatalError("lua.h not found")
