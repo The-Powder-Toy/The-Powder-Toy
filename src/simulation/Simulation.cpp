@@ -3733,6 +3733,8 @@ void Simulation::update_particles_i(int start, int inc)
 #endif
 			}
 
+			transitionOccurred = false;
+
 			j = surround_space = nt = 0;//if nt is greater than 1 after this, then there is a particle around the current particle, that is NOT the current particle's type, for water movement.
 			for (nx=-1; nx<2; nx++)
 				for (ny=-1; ny<2; ny++) {
@@ -3840,8 +3842,6 @@ void Simulation::update_particles_i(int start, int inc)
 						parts[surround_hconduct[j]].temp = pt;
 					}
 #endif
-
-					transitionOccurred = false;
 
 					ctemph = ctempl = pt;
 					// change boiling point with pressure
