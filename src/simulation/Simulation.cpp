@@ -3294,6 +3294,7 @@ void Simulation::update_particles_i(int start, int inc)
 	unsigned int elem_properties;
 	float pGravX, pGravY, pGravD;
 	int excessive_stacking_found = 0;
+	bool transitionOccurred;
 
 	currentTick++;
 
@@ -3840,6 +3841,8 @@ void Simulation::update_particles_i(int start, int inc)
 					}
 #endif
 
+					transitionOccurred = false;
+
 					ctemph = ctempl = pt;
 					// change boiling point with pressure
 					if ((elements[t].State==ST_LIQUID && elements[t].HighTemperatureTransition>-1 && elements[t].HighTemperatureTransition<PT_NUM && elements[elements[t].HighTemperatureTransition].State==ST_GAS)
@@ -4064,6 +4067,7 @@ void Simulation::update_particles_i(int start, int inc)
 							kill_part(i);
 							goto killed;
 						}
+						transitionOccurred = true;
 					}
 
 					pt = parts[i].temp = restrict_flt(parts[i].temp, MIN_TEMP, MAX_TEMP);
@@ -4188,6 +4192,7 @@ void Simulation::update_particles_i(int start, int inc)
 					kill_part(i);
 					goto killed;
 				}
+				transitionOccurred = true;
 			}
 
 			//call the particle update function, if there is one
@@ -4222,6 +4227,9 @@ void Simulation::update_particles_i(int start, int inc)
 
 killed:
 			if (parts[i].type == PT_NONE)//if its dead, skip to next particle
+				continue;
+
+			if (transitionOccurred)
 				continue;
 
 			if (!parts[i].vx&&!parts[i].vy)//if its not moving, skip to next particle, movement code it next
