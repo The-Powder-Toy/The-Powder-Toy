@@ -57,8 +57,6 @@ Graphics * luacon_g;
 Renderer * luacon_ren;
 
 bool *luacon_currentCommand;
-std::string *luacon_lastError;
-std::string lastCode;
 
 int *lua_el_func, *lua_el_mode, *lua_gr_func;
 
@@ -98,7 +96,8 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	luacon_selectedr(""),
 	luacon_selectedalt(""),
 	luacon_selectedreplace(""),
-	luacon_mousedown(false)
+	luacon_mousedown(false),
+	buffer("")
 {
 	luacon_model = m;
 	luacon_controller = c;
@@ -209,9 +208,6 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	luacon_mousebutton = 0;
 
 	luacon_currentCommand = &currentCommand;
-	luacon_lastError = &lastError;
-
-	lastCode = "";
 
 	//Replace print function with our screen logging thingy
 	lua_pushcfunction(l, luatpt_log);
@@ -2996,67 +2992,75 @@ void LuaScriptInterface::OnTick()
 	luacon_step(luacon_mousex, luacon_mousey);
 }
 
-int LuaScriptInterface::Command(std::string command)
+CommandInterface::EvalResult * LuaScriptInterface::Command(std::string command)
 {
 	if(command[0] == '!')
 	{
-		lastError = "";
-		int ret = legacy->Command(command.substr(1));
-		lastError = legacy->GetLastError();
-		return ret;
+		return legacy->Command(command.substr(1));
 	}
 	else
 	{
 		int level = lua_gettop(l), ret = -1;
 		std::string text = "";
-		lastError = "";
 		currentCommand = true;
-		if(lastCode.length())
-			lastCode += "\n";
-		lastCode += command;
-		std::string tmp = "return " + lastCode;
+		std::string tmp = "return " + command;
+		buffer = "";
 		ui::Engine::Ref().LastTick(gettime());
 		luaL_loadbuffer(l, tmp.c_str(), tmp.length(), "@console");
 		if(lua_type(l, -1) != LUA_TFUNCTION)
 		{
-			lua_pop(l, 1);
-			luaL_loadbuffer(l, lastCode.c_str(), lastCode.length(), "@console");
+			if(std::string(luacon_geterror()).find("near '<eof>'")!=std::string::npos) //the idea stolen from lua-5.1.5/lua.c
+			{
+				lua_pop(l,1);
+				currentCommand = false;
+				return new CommandInterface::EvalResult(CommandInterface::EvalMore, "");
+			}
+			lua_pop(l,1);
+			luaL_loadbuffer(l, command.c_str(), command.length(), "@console");
 		}
 		if(lua_type(l, -1) != LUA_TFUNCTION)
 		{
-			lastError = luacon_geterror();
-			if(std::string(lastError).find("near '<eof>'")!=-1) //the idea stolen from lua-5.1.5/lua.c
-				lastError = "...";
+			std::string err = luacon_geterror();
+			lua_pop(l,1);
+			currentCommand = false;
+			if(err.find("near '<eof>'")!=std::string::npos)
+				return new CommandInterface::EvalResult(CommandInterface::EvalMore, "");
 			else
-				lastCode = "";
+				return new CommandInterface::EvalResult(CommandInterface::EvalFail, "\x0F\xFF\x73\x73" + err);
 		}
 		else
 		{
-			lastCode = "";
 			ret = lua_pcall(l, 0, LUA_MULTRET, 0);
 			if(ret)
-				lastError = luacon_geterror();
+			{
+				currentCommand = false;
+				if(buffer.size())
+					return new CommandInterface::EvalResult(CommandInterface::EvalFail, buffer + "\n\x0F\xFF\x73\x73" + std::string(luacon_geterror()));
+				else
+					return new CommandInterface::EvalResult(CommandInterface::EvalFail, "\x0F\xFF\x73\x73" + std::string(luacon_geterror()));
+			}
 			else
 			{
-				for(level++;level<=lua_gettop(l);level++)
+				int arg;
+				for(arg=level+1;arg<=lua_gettop(l);arg++)
 				{
-					luaL_tostring(l, level);
+					luaL_tostring(l, arg);
 					if(text.length())
 						text += ", " + std::string(luaL_optstring(l, -1, ""));
 					else
 						text = std::string(luaL_optstring(l, -1, ""));
 					lua_pop(l, 1);
 				}
-				if(text.length())
-					if(lastError.length())
-						lastError += "; " + text;
+				lua_pop(l,arg-level-1);
+				if(buffer.size())
+					if(text.size())
+						text = buffer + "\n" + text;
 					else
-						lastError = text;
-
+						text = buffer;
+				currentCommand = false;
+				return new CommandInterface::EvalResult(CommandInterface::EvalSuccess, text);
 			}
 		}
-		currentCommand = false;
-		return ret;
 	}
 }
 
@@ -3081,200 +3085,202 @@ int strlcmp(const char* a, const char* b, int len)
 
 std::string highlight(std::string command)
 {
-#define CMP(X) (!strlcmp(wstart, X, len))
-	std::stringstream result;
+	std::string result = "";
 	int pos = 0;
 	int len = command.length();
-	const char *raw = command.c_str();
+	char* raw = new char[len+1];
 	char c;
+	std::copy(command.begin(), command.end(), raw);
+	raw[len] = 0;
 	while(c = raw[pos])
 	{
-		if((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_')
+		if((c>='A' && c<='Z') || (c>='a' && c<='z') || c=='_')
 		{
 			int len = 0;
 			char w;
 			const char* wstart = raw+pos;
-			while((w = wstart[len]) && ((w >= 'A' && w <= 'Z') || (w >= 'a' && w <= 'z') || (w >= '0' && w <= '9') || w == '_'))
+			while((w = wstart[len]) && ((w>='A' && w<='Z') || (w>='a' && w<='z') || (w>='0' && w<='9') || w=='_'))
 				len++;
-			if(CMP("and") || CMP("break") || CMP("do") || CMP("else") || CMP("elseif") || CMP("end") || CMP("for") || CMP("function") || CMP("if") || CMP("in") || CMP("local") || CMP("not") || CMP("or") || CMP("repeat") || CMP("return") || CMP("then") || CMP("until") || CMP("while"))
+			if(!strlcmp(wstart,"and",len) || !strlcmp(wstart,"break",len) || !strlcmp(wstart,"do",len) ||
+			   !strlcmp(wstart,"else",len) || !strlcmp(wstart,"elseif",len) || !strlcmp(wstart,"end",len) ||
+			   !strlcmp(wstart,"for",len) || !strlcmp(wstart,"function",len) || !strlcmp(wstart,"in",len) ||
+			   !strlcmp(wstart,"if",len) || !strlcmp(wstart,"local",len) || !strlcmp(wstart,"not",len) ||
+			   !strlcmp(wstart,"or",len) || !strlcmp(wstart,"repeat",len) || !strlcmp(wstart,"return",len) ||
+			   !strlcmp(wstart,"then",len) || !strlcmp(wstart,"until",len) || !strlcmp(wstart,"while",len))
 			{
-				result << "\x0F\xB5\x89\x01";
-				result.write(wstart, len);
-				result << "\bw";
+				result += "\x0F\xFF\xC2\x02";
+				result.append(wstart, len);
+				result += "\bw";
 			}
-			else if(CMP("false") || CMP("nil") || CMP("true"))
+			else if(!strlcmp(wstart,"false",len) || !strlcmp(wstart,"nil",len) || !strlcmp(wstart,"true",len))
 			{
-				result << "\x0F\xCB\x4B\x16";
-				result.write(wstart, len);
-				result << "\bw";
+				result += "\x0F\xEB\x74\x43";
+				result.append(wstart, len);
 			}
 			else
 			{
-				result << "\x0F\x2A\xA1\x98";
-				result.write(wstart, len);
-				result << "\bw";
+				result += "\x0F\x48\xCF\xC5";
+				result.append(wstart, len);
 			}
 			pos += len;
 		}
-		else if((c >= '0' && c <= '9') || (c == '.' && raw[pos + 1] >= '0' && raw[pos + 1] <= '9'))
+		else if((c>='0' && c<='9') || (c=='.' && raw[pos+1]>='0' && raw[pos+1]<='9'))
 		{
-			if(c == '0' && raw[pos + 1] == 'x')
+			if(c=='0' && raw[pos+1]=='x')
 			{
 				int len = 2;
 				char w;
-				const char *wstart = raw + pos;
-				while((w = wstart[len]) && ((w >= '0' && w <= '9') || (w >= 'A' && w <= 'F') || (w >= 'a' && w <= 'f')))
+				const char* wstart = raw+pos;
+				while((w = wstart[len]) && ((w>='0' && w<='9') || (w>='A' && w<='F') || (w>='a' && w<='f')))
 					len++;
-				result << "\x0F\xD3\x36\x82";
-				result.write(wstart, len);
-				result << "\bw";
+
+				result += "\x0F\xE1\x75\xA9";
+				result.append(wstart, len);
 				pos += len;
 			}
 			else
 			{
 				int len = 0;
 				char w;
-				const char *wstart = raw+pos;
-				bool seendot = false;
-				while((w = wstart[len]) && ((w >= '0' && w <= '9') || w == '.'))
+				const char* wstart = raw+pos;
+				int seendot = 0;
+				while((w = wstart[len]) && ((w>='0' && w<='9') || w=='.'))
 				{
-					if(w == '.')
+					if(w=='.')
 						if(seendot)
 							break;
 						else
-							seendot = true;
+							seendot=1;
 					len++;
 				}
-				if(w == 'e')
+				if(w=='e')
 				{
 					len++;
 					w = wstart[len];
-					if(w == '+' || w == '-')
+					if(w=='+' || w=='-')
 						len++;
-					while((w = wstart[len]) && (w >= '0' && w <= '9'))
+					while((w = wstart[len]) && (w>='0' && w<='9'))
 						len++;
 				}
-				result << "\x0F\xD3\x36\x82";
-				result.write(wstart, len);
-				result << "\bw";
+				result += "\x0F\xE1\x75\xA9";
+				result.append(wstart, len);
 				pos += len;
 			}
 		}
-		else if(c == '\'' || c == '"' || (c == '[' && (raw[pos + 1] == '[' || raw[pos + 1] == '=')))
+		else if(c=='\'' || c=='"' || (c=='[' && (raw[pos+1]=='[' || raw[pos+1]=='=')))
 		{
-			if(c == '[')
+			if(c=='[')
 			{
-				int len = 1, eqs=0;
+				int len = 1,eqs=0;
 				char w;
-				const char *wstart = raw + pos;
-				while((w = wstart[len]) && (w == '='))
+				const char* wstart = raw+pos;
+				while((w = wstart[len]) && (w=='='))
 				{
 					eqs++;
 					len++;
 				}
 				while((w = wstart[len]))
 				{
-					if(w == ']')
+					if(w==']')
 					{
 						int nlen = 1;
-						const char *cstart = wstart + len;
-						while((w = cstart[nlen]) && (w == '='))
+						const char* cstart = wstart + len;
+						while((w = cstart[nlen]) && (w=='='))
 							nlen++;
-						if(w == ']' && nlen == eqs+1)
+						if(w==']' && nlen==eqs+1)
 						{
-							len += nlen+1;
+							len+=nlen+1;
 							break;
 						}
 					}
 					len++;
 				}
-				result << "\x0F\xDC\x32\x2F";
-				result.write(wstart, len);
-				result << "\bw";
+				result += "\x0F\xE7\x73\x70";
+				result.append(wstart, len);
 				pos += len;
 			}
 			else
 			{
 				int len = 1;
 				char w;
-				const char *wstart = raw+pos;
-				while((w = wstart[len]) && (w != c))
+				const char* wstart = raw+pos;
+				while((w = wstart[len]) && (w!=c))
 				{
-					if(w == '\\' && wstart[len + 1])
+					if(w=='\\' && wstart[len+1])
 						len++;
 					len++;
 				}
-				if(w == c)
+				if(w==c)
 					len++;
-				result << "\x0F\xDC\x32\x2F";
-				result.write(wstart, len);
-				result << "\bw";
+				result += "\x0F\xE7\x73\x70";
+				result.append(wstart, len);
 				pos += len;
 			}
 		}
-		else if(c == '-' && raw[pos + 1] == '-')
+		else if(c=='-' && raw[pos+1]=='-')
 		{
-			if(raw[pos + 2] == '[')
+			if(raw[pos+2]=='[')
 			{
-				int len = 3, eqs = 0;
+				int len = 3,eqs=0;
 				char w;
-				const char *wstart = raw + pos;
-				while((w = wstart[len]) && (w == '='))
+				const char* wstart = raw+pos;
+				while((w = wstart[len]) && (w=='='))
 				{
 					eqs++;
 					len++;
 				}
 				while((w = wstart[len]))
 				{
-					if(w == ']')
+					if(w==']')
 					{
 						int nlen = 1;
-						const char *cstart = wstart + len;
-						while((w = cstart[nlen]) && (w == '='))
+						const char* cstart = wstart + len;
+						while((w = cstart[nlen]) && (w=='='))
 							nlen++;
-						if(w == ']' && nlen == eqs + 1)
+						if(w==']' && nlen==eqs+1)
 						{
-							len += nlen+1;
+							len+=nlen+1;
 							break;
 						}
 					}
 					len++;
 				}
-				result << "\x0F\x85\x99\x01";
-				result.write(wstart, len);
-				result << "\bw";
+				result += "\x0F\xC7\xE5\x01";
+				result.append(wstart, len);
 				pos += len;
 			}
 			else
 			{
 				int len = 2;
 				char w;
-				const char *wstart = raw + pos;
-				while((w = wstart[len]) && (w != '\n'))
+				const char* wstart = raw+pos;
+				while((w = wstart[len]) && (w!='\n'))
 					len++;
-				result << "\x0F\x85\x99\x01";
-				result.write(wstart, len);
-				result << "\bw";
+				result += "\x0F\xC7\xE5\x01";
+				result.append(wstart, len);
 				pos += len;
 			}
 		}
-		else if(c == '{' || c == '}')
+		else if(c=='{' || c=='}')
 		{
-			result << "\x0F\xCB\x4B\x16" << c;
+			result += "\x0F\xEB\x74\x43";
+			result += c;
 			pos++;
 		}
-		else if(c == '.' && raw[pos + 1] == '.' && raw[pos + 2] == '.')
+		else if(c=='.' && raw[pos+1]=='.' && raw[pos+2]=='.')
 		{
-			result << "\x0F\x2A\xA1\x98...";
-			pos += 3;
+			result += "\x0F\x48\xCF\xC5";
+			pos+=3;
 		}
 		else
 		{
-			result << c;
+			result += "\x0F\xAC\xB8\xB9";
+			result += c;
 			pos++;
 		}
 	}
-	return result.str();
+	delete[] raw;
+	return result;
 }
 
 std::string LuaScriptInterface::FormatCommand(std::string command)

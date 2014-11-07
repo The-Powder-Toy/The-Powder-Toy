@@ -6,6 +6,7 @@
 #include <cmath>
 #include "Config.h"
 #include "Misc.h"
+#include "graphics/Graphics.h"
 #include "icondoc.h"
 #ifdef WIN
 #include <shlobj.h>
@@ -682,6 +683,85 @@ long unsigned int gettime()
 	clock_gettime(CLOCK_MONOTONIC, &s);
 	return s.tv_sec * 1000 + s.tv_nsec / 1000000;
 #endif
+}
+
+std::string wordwrap(std::string text, int width)
+{
+	char c;
+	char* rawText = new char[text.length()+1];
+	const char* lstart = rawText;
+	const char* wstart = lstart;
+	int linewidth = 0,len = 0,nl = 0;
+	std::string textLines;
+	std::copy(text.begin(), text.end(), rawText);
+	rawText[text.length()] = 0;
+	while(c = wstart[len])
+	{
+		int cwidth = Graphics::CharWidth(c);
+		switch (c)
+		{
+			case '\x01':
+			case '\b':
+			case '\n':
+			case '\x0F':
+			case '\x0E':
+				cwidth = 0;
+				break;
+		}
+		if(cwidth+linewidth>width)
+		{	
+			if(wstart==lstart)
+			{
+				if(nl++)
+					textLines += "\n";
+				textLines.append(wstart,len);
+				lstart = wstart += len;
+				linewidth = len = 0;
+			}
+			else
+			{
+				if(nl++)
+					textLines += '\n';
+				textLines.append(lstart,wstart-lstart);
+				lstart = wstart;
+				linewidth = len = 0;
+			}
+			continue;
+		}
+		linewidth += cwidth;
+		switch (c)
+		{
+			case ' ':
+				wstart += len+1;
+				len = 0;
+				break;
+			case '\n':
+				if(nl++)
+					textLines += '\n';
+				textLines.append(lstart,wstart-lstart+len);
+				lstart = wstart += len+1;
+				linewidth = len = 0;
+				break;
+			case '\b':
+				if(wstart[++len])
+					len++;
+				break;
+			case '\x0F':
+				if(wstart[++len])
+					if(wstart[++len])
+						if(wstart[++len])
+							len++;
+				break;
+			default:
+				len++;
+				break;
+		}
+	}
+	if(nl++)
+		textLines += '\n';
+	textLines += lstart;
+	delete[] rawText;
+	return textLines;
 }
 
 vector2d v2d_zero = {0,0};

@@ -151,6 +151,7 @@ public:
 
 	ui::Window * Window;
 	lua_State *l;
+	std::string buffer;
 	LuaScriptInterface(GameController * c, GameModel * m);
 	virtual bool OnBrushChanged(int brushType, int rx, int ry);
 	virtual bool OnActiveToolChanged(int toolSelection, Tool * tool);
@@ -163,7 +164,7 @@ public:
 	virtual void OnTick();
 	virtual void Init();
 	virtual void SetWindow(ui::Window * window);
-	virtual int Command(std::string command);
+	virtual EvalResult * Command(std::string command);
 	virtual std::string FormatCommand(std::string command);
 	virtual ~LuaScriptInterface();
 };

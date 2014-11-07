@@ -92,6 +92,8 @@ void millisleep(long int t);
 
 long unsigned int gettime();
 
+std::string wordwrap(std::string text, int width);
+
 // a b
 // c d
 

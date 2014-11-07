@@ -18,10 +18,9 @@ CommandInterface::CommandInterface(GameController * c, GameModel * m) {
 	this->m = m;
 }*/
 
-int CommandInterface::Command(std::string command)
+CommandInterface::EvalResult * CommandInterface::Command(std::string command)
 {
-	lastError = "No interpreter";
-	return -1;
+	return new EvalResult(EvalFail, "No interpreter");
 }
 
 std::string CommandInterface::FormatCommand(std::string command)
@@ -99,11 +98,6 @@ int CommandInterface::GetParticleType(std::string type)
 		}
 	}
 	return -1;
-}
-
-std::string CommandInterface::GetLastError()
-{
-	return lastError;
 }
 
 CommandInterface::~CommandInterface() {
