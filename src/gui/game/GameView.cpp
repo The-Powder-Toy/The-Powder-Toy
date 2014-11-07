@@ -192,7 +192,6 @@ GameView::GameView():
 	recordingIndex(0),
 	toolTipPresence(0),
 	currentSaveType(0),
-	lastLogEntry(0.0f),
 	lastMenu(-1)
 {
 
@@ -1647,8 +1646,6 @@ void GameView::OnTick(float dt)
 			toolTipPresence = 0;
 	}
 	c->Update();
-	if(lastLogEntry > -0.1f)
-		lastLogEntry -= 0.16*dt;
 }
 
 
@@ -1823,9 +1820,8 @@ void GameView::NotifyZoomChanged(GameModel * sender)
 
 void GameView::NotifyLogChanged(GameModel * sender, string entry)
 {
-	logEntries.push_front(entry);
-	lastLogEntry = 100.0f;
-	if(logEntries.size()>20)
+	logEntries.push_front(std::pair<std::string, int>(entry, 600));
+	if (logEntries.size() > 20)
 		logEntries.pop_back();
 }
 
@@ -2076,20 +2072,24 @@ void GameView::OnDraw()
 			Client::Ref().WriteFile(data, filename.str());
 		}
 
-		int startX = 20;
-		int startY = YRES-20;
-		int startAlpha;
-		if(lastLogEntry>0.1f && logEntries.size())
+		if (logEntries.size())
 		{
-			startAlpha = 2.55f*lastLogEntry;
-			deque<string>::iterator iter;
-			for(iter = logEntries.begin(); iter != logEntries.end() && startAlpha>0; iter++)
+			int startX = 20;
+			int startY = YRES-20;
+			deque<std::pair<std::string, int>>::iterator iter;
+			for(iter = logEntries.begin(); iter != logEntries.end(); iter++)
 			{
-				string message = (*iter);
+				string message = (*iter).first;
+				int alpha = std::min((*iter).second, 255);
+				if (alpha <= 0) //erase this and everything older
+				{
+					logEntries.erase(iter, logEntries.end());
+					break;
+				}
 				startY -= 14;
 				g->fillrect(startX-3, startY-3, Graphics::textwidth((char*)message.c_str())+6, 14, 0, 0, 0, 100);
-				g->drawtext(startX, startY, message.c_str(), 255, 255, 255, startAlpha);
-				startAlpha-=14;
+				g->drawtext(startX, startY, message.c_str(), 255, 255, 255, alpha);
+				(*iter).second -= 3;
 			}
 		}
 	}
