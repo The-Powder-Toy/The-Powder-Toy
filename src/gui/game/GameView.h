@@ -188,6 +188,7 @@ public:
 	virtual void OnBlur();
 
 	//Top-level handlers, for Lua interface
+	virtual void DoTick(float dt);
 	virtual void DoDraw();
 	virtual void DoMouseMove(int x, int y, int dx, int dy);
 	virtual void DoMouseDown(int x, int y, unsigned button);

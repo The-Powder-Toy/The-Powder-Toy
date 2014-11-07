@@ -1729,6 +1729,19 @@ void GameView::DoKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bo
 		Window::DoKeyRelease(key, character, shift, ctrl, alt);
 }
 
+void GameView::DoTick(float dt)
+{
+	//mouse events trigger every frame when mouse is held down, needs to happen here (before things are drawn) so it can clear the point queue if false is returned from a lua mouse event
+	if (!c->MouseTick())
+	{
+		isMouseDown = false;
+		drawMode = DrawPoints;
+		while (!pointQueue.empty())
+			pointQueue.pop();
+	}
+	Window::DoTick(dt);
+}
+
 void GameView::DoDraw()
 {
 	Window::DoDraw();

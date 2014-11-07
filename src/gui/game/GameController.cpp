@@ -727,6 +727,11 @@ bool GameController::KeyRelease(int key, Uint16 character, bool shift, bool ctrl
 	return ret;
 }
 
+bool GameController::MouseTick()
+{
+	return commandInterface->OnMouseTick();
+}
+
 void GameController::Tick()
 {
 	if(firstTick)

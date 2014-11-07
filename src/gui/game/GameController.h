@@ -68,6 +68,7 @@ public:
 	bool MouseWheel(int x, int y, int d);
 	bool KeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
 	bool KeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt);
+	bool MouseTick();
 	void Tick();
 	void Exit();
 

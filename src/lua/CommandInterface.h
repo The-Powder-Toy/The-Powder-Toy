@@ -29,7 +29,8 @@ public:
 	virtual bool OnMouseWheel(int x, int y, int d) {return true;}
 	virtual bool OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt) {return true;}
 	virtual bool OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt) {return true;}
-	virtual void OnTick() {}
+	virtual bool OnMouseTick() { return true; }
+	virtual void OnTick() { }
 	virtual int Command(std::string command);
 	virtual std::string FormatCommand(std::string command);
 	std::string GetLastError();

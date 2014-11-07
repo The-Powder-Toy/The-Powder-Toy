@@ -3004,14 +3004,20 @@ bool LuaScriptInterface::OnKeyRelease(int key, Uint16 character, bool shift, boo
 	return luacon_keyevent(key, modifiers, LUACON_KUP);
 }
 
+bool LuaScriptInterface::OnMouseTick()
+{
+	ui::Engine::Ref().LastTick(gettime());
+	if (luacon_mousedown)
+		return luacon_mouseevent(luacon_mousex, luacon_mousey, luacon_mousebutton, LUACON_MPRESS, 0);
+	return true;
+}
+
 void LuaScriptInterface::OnTick()
 {
 	lua_getglobal(l, "simulation");
 	lua_pushinteger(l, luacon_sim->NUM_PARTS); lua_setfield(l, -2, "NUM_PARTS");
 	lua_pop(l, 1);
 	ui::Engine::Ref().LastTick(gettime());
-	if(luacon_mousedown)
-		luacon_mouseevent(luacon_mousex, luacon_mousey, luacon_mousebutton, LUACON_MPRESS, 0);
 	luacon_step(luacon_mousex, luacon_mousey);
 }
 

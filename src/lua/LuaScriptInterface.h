@@ -161,6 +161,7 @@ public:
 	virtual bool OnMouseWheel(int x, int y, int d);
 	virtual bool OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
 	virtual bool OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt);
+	virtual bool OnMouseTick();
 	virtual void OnTick();
 	virtual void Init();
 	virtual void SetWindow(ui::Window * window);
