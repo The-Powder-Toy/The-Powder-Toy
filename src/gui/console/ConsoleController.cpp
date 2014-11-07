@@ -15,15 +15,7 @@ ConsoleController::ConsoleController(ControllerCallback * callback, CommandInter
 
 void ConsoleController::EvaluateCommand(std::string command)
 {
-	if(command.length())
-	{
-		if (command.substr(0, 6) == "!load ")
-			CloseConsole();
-		int returnCode = commandInterface->Command(command);
-		consoleModel->AddLastCommand(ConsoleCommand(command, returnCode, commandInterface->GetLastError()));
-	}
-	else
-		CloseConsole();
+	consoleModel->ProcessResult(command, FormatCommand(command), commandInterface->Command(command));
 }
 
 void ConsoleController::CloseConsole()
@@ -39,16 +31,12 @@ std::string ConsoleController::FormatCommand(std::string command)
 
 void ConsoleController::NextCommand()
 {
-	int cIndex = consoleModel->GetCurrentCommandIndex();
-	if(cIndex < consoleModel->GetPreviousCommands().size())
-		consoleModel->SetCurrentCommandIndex(cIndex+1);
+	consoleModel->NextCommand();
 }
 
 void ConsoleController::PreviousCommand()
 {
-	int cIndex = consoleModel->GetCurrentCommandIndex();
-	if(cIndex > 0)
-		consoleModel->SetCurrentCommandIndex(cIndex-1);
+	consoleModel->PreviousCommand();
 }
 
 void ConsoleController::Exit()
@@ -73,4 +61,3 @@ ConsoleController::~ConsoleController() {
 	delete consoleModel;
 	delete consoleView;
 }
-

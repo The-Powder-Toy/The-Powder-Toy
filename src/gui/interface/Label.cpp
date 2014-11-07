@@ -1,4 +1,5 @@
 #include <string>
+#include <algorithm>
 #include "Config.h"
 #include "Point.h"
 #include "Label.h"
@@ -69,97 +70,13 @@ void Label::AutoHeight()
 
 void Label::updateMultiline()
 {
-	int lines = 1;
 	if(text.length()>0)
 	{
-		char * rawText = new char[text.length()+1];
-		std::copy(text.begin(), text.end(), rawText);
-		rawText[text.length()] = 0;
-
-		char c, pc = 0;
-		int charIndex = 0;
-
-		int wordWidth = 0;
-		int lineWidth = 0;
-		char * wordStart = NULL;
-		while(c = rawText[charIndex++])
-		{
-			switch(c)
-			{
-				case ' ':
-					lineWidth += Graphics::CharWidth(c);
-					lineWidth += wordWidth;
-					wordWidth = 0;
-					break;
-				case '\n':
-					lineWidth = wordWidth = 0;
-					lines++;
-					break;
-				default:
-					wordWidth += Graphics::CharWidth(c);
-					break;
-			}
-			if(pc == ' ')
-			{
-				wordStart = &rawText[charIndex-2];
-			}
-			if ((c != ' ' || pc == ' ') && lineWidth + wordWidth >= Size.X-(Appearance.Margin.Left+Appearance.Margin.Right))
-			{
-				if(wordStart && *wordStart)
-				{
-					*wordStart = '\n';
-					if (lineWidth != 0)
-						lineWidth = wordWidth;
-				}
-				else if(!wordStart)
-				{
-					rawText[charIndex-1] = '\n';
-					lineWidth = 0;
-				}
-				wordWidth = 0;
-				wordStart = 0;
-				lines++;
-			}
-			pc = c;
-		}
+		textLines = wordwrap(text, Size.X-(Appearance.Margin.Left+Appearance.Margin.Right));
 		if(autoHeight)
 		{
-			Size.Y = lines*12;
+			Size.Y = (1 + std::count(textLines.begin(), textLines.end(), '\n'))*12;
 		}
-		textLines = std::string(rawText);
-		delete[] rawText;
-		/*int currentWidth = 0;
-		char * lastSpace = NULL;
-		char * currentWord = rawText;
-		char * nextSpace;
-		while(true)
-		{
-			nextSpace = strchr(currentWord+1, ' ');
-			if(nextSpace)
-				nextSpace[0] = 0;
-			int width = Graphics::textwidth(currentWord);
-			if(width+currentWidth >= Size.X-(Appearance.Margin.Left+Appearance.Margin.Right))
-			{
-				currentWidth = width;
-				if(currentWord!=rawText)
-				{
-					currentWord[0] = '\n';
-					lines++;
-				}
-			}
-			else
-				currentWidth += width;
-			if(nextSpace)
-				nextSpace[0] = ' ';
-			if(!currentWord[0] || !currentWord[1] || !(currentWord = strchr(currentWord+1, ' ')))
-				break;
-		}
-		if(autoHeight)
-		{
-			Size.Y = lines*12;
-		}
-		textLines = std::string(rawText);
-		delete[] rawText;*/
 	}
 	else
 	{

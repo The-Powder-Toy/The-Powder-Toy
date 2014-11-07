@@ -97,6 +97,9 @@ if platform == "Windows" and not GetOption('msvc'):
 else:
 	env = Environment(tools = ['default'], ENV = {'PATH' : os.environ['PATH']})
 
+env.Append(CPPPATH = ['C:/lua/luajit-2.0/include'])
+env.Append(LIBPATH = ['C:/lua/luajit-2.0/lib'])
+
 #attempt to automatically find cross compiler
 if not tool and compilePlatform == "Linux" and compilePlatform != platform:
 	if platform == "Darwin":

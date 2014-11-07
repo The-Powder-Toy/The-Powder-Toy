@@ -5,12 +5,12 @@
 #include "Controller.h"
 #include "ConsoleView.h"
 #include "ConsoleModel.h"
-#include "ConsoleCommand.h"
 #include "lua/CommandInterface.h"
 
 class ConsoleModel;
 class ConsoleView;
-class ConsoleController {
+class ConsoleController
+{
 	ControllerCallback * callback;
 	ConsoleView * consoleView;
 	ConsoleModel * consoleModel;

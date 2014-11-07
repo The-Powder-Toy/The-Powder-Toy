@@ -57,8 +57,6 @@ Graphics * luacon_g;
 Renderer * luacon_ren;
 
 bool *luacon_currentCommand;
-std::string *luacon_lastError;
-std::string lastCode;
 
 int *lua_el_func, *lua_el_mode, *lua_gr_func;
 
@@ -98,7 +96,8 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	luacon_selectedr(""),
 	luacon_selectedalt(""),
 	luacon_selectedreplace(""),
-	luacon_mousedown(false)
+	luacon_mousedown(false),
+	buffer("")
 {
 	luacon_model = m;
 	luacon_controller = c;
@@ -209,9 +208,6 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	luacon_mousebutton = 0;
 
 	luacon_currentCommand = &currentCommand;
-	luacon_lastError = &lastError;
-
-	lastCode = "";
 
 	//Replace print function with our screen logging thingy
 	lua_pushcfunction(l, luatpt_log);
@@ -2996,67 +2992,75 @@ void LuaScriptInterface::OnTick()
 	luacon_step(luacon_mousex, luacon_mousey);
 }
 
-int LuaScriptInterface::Command(std::string command)
+CommandInterface::EvalResult * LuaScriptInterface::Command(std::string command)
 {
 	if(command[0] == '!')
 	{
-		lastError = "";
-		int ret = legacy->Command(command.substr(1));
-		lastError = legacy->GetLastError();
-		return ret;
+		return legacy->Command(command.substr(1));
 	}
 	else
 	{
 		int level = lua_gettop(l), ret = -1;
 		std::string text = "";
-		lastError = "";
 		currentCommand = true;
-		if(lastCode.length())
-			lastCode += "\n";
-		lastCode += command;
-		std::string tmp = "return " + lastCode;
+		std::string tmp = "return " + command;
+		buffer = "";
 		ui::Engine::Ref().LastTick(gettime());
 		luaL_loadbuffer(l, tmp.c_str(), tmp.length(), "@console");
 		if(lua_type(l, -1) != LUA_TFUNCTION)
 		{
-			lua_pop(l, 1);
-			luaL_loadbuffer(l, lastCode.c_str(), lastCode.length(), "@console");
+			if(std::string(luacon_geterror()).find("near '<eof>'")!=std::string::npos) //the idea stolen from lua-5.1.5/lua.c
+			{
+				lua_pop(l,1);
+				currentCommand = false;
+				return new CommandInterface::EvalResult(CommandInterface::EvalMore, "");
+			}
+			lua_pop(l,1);
+			luaL_loadbuffer(l, command.c_str(), command.length(), "@console");
 		}
 		if(lua_type(l, -1) != LUA_TFUNCTION)
 		{
-			lastError = luacon_geterror();
-			if(std::string(lastError).find("near '<eof>'")!=-1) //the idea stolen from lua-5.1.5/lua.c
-				lastError = "...";
+			std::string err = luacon_geterror();
+			lua_pop(l,1);
+			currentCommand = false;
+			if(err.find("near '<eof>'")!=std::string::npos)
+				return new CommandInterface::EvalResult(CommandInterface::EvalMore, "");
 			else
-				lastCode = "";
+				return new CommandInterface::EvalResult(CommandInterface::EvalFail, "\br" + err);
 		}
 		else
 		{
-			lastCode = "";
 			ret = lua_pcall(l, 0, LUA_MULTRET, 0);
 			if(ret)
-				lastError = luacon_geterror();
+			{
+				currentCommand = false;
+				if(buffer.size())
+					return new CommandInterface::EvalResult(CommandInterface::EvalFail, buffer + "\n\br" + std::string(luacon_geterror()));
+				else
+					return new CommandInterface::EvalResult(CommandInterface::EvalFail, "\br" + std::string(luacon_geterror()));
+			}
 			else
 			{
-				for(level++;level<=lua_gettop(l);level++)
+				int arg;
+				for(arg=level+1;arg<=lua_gettop(l);arg++)
 				{
-					luaL_tostring(l, level);
+					luaL_tostring(l, arg);
 					if(text.length())
 						text += ", " + std::string(luaL_optstring(l, -1, ""));
 					else
 						text = std::string(luaL_optstring(l, -1, ""));
 					lua_pop(l, 1);
 				}
-				if(text.length())
-					if(lastError.length())
-						lastError += "; " + text;
+				lua_pop(l,arg-level-1);
+				if(buffer.size())
+					if(text.size())
+						text = buffer + "\n" + text;
 					else
-						lastError = text;
-
+						text = buffer;
+				currentCommand = false;
+				return new CommandInterface::EvalResult(CommandInterface::EvalSuccess, text);
 			}
 		}
-		currentCommand = false;
-		return ret;
 	}
 }
 
