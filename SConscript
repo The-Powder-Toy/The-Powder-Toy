@@ -249,7 +249,7 @@ def findLibs(env, conf):
 	if not GetOption('nolua') and not GetOption('renderer'):
 		#Look for Lua
 		luaver = "luajit"
-		if not conf.CheckLib(['luajit', 'lua-5.1', 'lua51', 'lua']):
+		if not conf.CheckLib(['luajit', 'luajit-2.0', 'luajit2.0', 'lua-5.1', 'lua51', 'lua']):
 			if conf.CheckLib(['lua5.2', 'lua-5.2', 'lua52']):
 				env.Append(CPPDEFINES=["LUA_COMPAT_ALL"])
 				luaver = "lua5.2"
