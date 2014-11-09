@@ -102,9 +102,17 @@ int Element_LCRY::update(UPDATE_FUNC_ARGS)
 
 //#TPT-Directive ElementHeader Element_LCRY static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_LCRY::graphics(GRAPHICS_FUNC_ARGS)
-
 {
-	if(ren->decorations_enable && cpart->dcolour && (cpart->dcolour&0xFF000000))
+	bool deco = false;
+	if (ren->decorations_enable && cpart->dcolour && (cpart->dcolour&0xFF000000))
+	{
+		if (!ren->blackDecorations) // if blackDecorations is off, always show deco
+			deco = true;
+		else if(((cpart->dcolour>>24)&0xFF) >= 250 && ((cpart->dcolour>>16)&0xFF) <= 5 && ((cpart->dcolour>>8)&0xFF) <= 5 && ((cpart->dcolour)&0xFF) <= 5) // else only render black deco
+			deco = true;
+	}
+
+	if(deco)
 	{
 		*colr = (cpart->dcolour>>16)&0xFF;
 		*colg = (cpart->dcolour>>8)&0xFF;
