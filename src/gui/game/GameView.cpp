@@ -2076,7 +2076,7 @@ void GameView::OnDraw()
 		{
 			int startX = 20;
 			int startY = YRES-20;
-			deque<std::pair<std::string, int>>::iterator iter;
+			deque<std::pair<std::string, int> >::iterator iter;
 			for(iter = logEntries.begin(); iter != logEntries.end(); iter++)
 			{
 				string message = (*iter).first;
