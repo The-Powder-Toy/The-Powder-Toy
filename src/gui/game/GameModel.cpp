@@ -12,6 +12,7 @@
 #include "BitmapBrush.h"
 #include "client/Client.h"
 #include "client/GameSave.h"
+#include "client/SaveFile.h"
 #include "gui/game/DecorationTool.h"
 #include "QuickOptions.h"
 #include "GameModelException.h"

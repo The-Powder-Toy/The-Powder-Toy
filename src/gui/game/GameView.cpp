@@ -14,6 +14,7 @@
 #include "simulation/SaveRenderer.h"
 #include "simulation/SimulationData.h"
 #include "gui/dialogues/ConfirmPrompt.h"
+#include "client/SaveFile.h"
 #include "Format.h"
 #include "QuickOptions.h"
 #include "IntroText.h"

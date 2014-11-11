@@ -34,6 +34,7 @@ public:
 	void DoSearch(std::string query, bool now = false);
 	void NextPage();
 	void PrevPage();
+	void SetPage(int page);
 	void ChangeSort();
 	void ShowOwn(bool show);
 	void ShowFavourite(bool show);
