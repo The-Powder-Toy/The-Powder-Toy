@@ -317,7 +317,6 @@ void ColourPickerActivity::OnDraw()
 }
 
 ColourPickerActivity::~ColourPickerActivity() {
-	if(callback)
-		delete callback;
+	delete callback;
 }
 

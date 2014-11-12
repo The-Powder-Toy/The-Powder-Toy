@@ -68,8 +68,7 @@ ConsoleView * ConsoleController::GetView()
 ConsoleController::~ConsoleController() {
 	if(ui::Engine::Ref().GetWindow() == consoleView)
 		ui::Engine::Ref().CloseWindow();
-	if(callback)
-		delete callback;
+	delete callback;
 	delete consoleModel;
 	delete consoleView;
 }

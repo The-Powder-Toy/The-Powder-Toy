@@ -239,6 +239,5 @@ void Component::OnMouseWheelInside(int localx, int localy, int d)
 
 Component::~Component()
 {
-	if(menu)
-		delete menu;
+	delete menu;
 }

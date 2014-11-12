@@ -226,15 +226,13 @@ void Button::DoAltAction()
 
 void Button::SetActionCallback(ButtonAction * action)
 {
-	if(actionCallback)
-		delete actionCallback;
+	delete actionCallback;
 	actionCallback = action;
 }
 
 Button::~Button()
 {
-	if(actionCallback)
-		delete actionCallback;
+	delete actionCallback;
 }
 
 } /* namespace ui */

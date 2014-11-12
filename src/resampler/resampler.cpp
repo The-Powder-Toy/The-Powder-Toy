@@ -461,7 +461,7 @@ Resampler::Contrib_List* Resampler::make_clist(
    Pcontrib_bounds = (Contrib_Bounds*)calloc(dst_x, sizeof(Contrib_Bounds));
    if (!Pcontrib_bounds)
    {
-      free(Pcontrib);
+  	free(Pcontrib);
       return (NULL);
    }
 
@@ -504,8 +504,8 @@ Resampler::Contrib_List* Resampler::make_clist(
 
       if ((n == 0) || ((Pcpool = (Contrib*)calloc(n, sizeof(Contrib))) == NULL))
       {
-         free(Pcontrib);
-         free(Pcontrib_bounds);
+ 		free(Pcontrib);
+ 		free(Pcontrib_bounds);
          return NULL;
       }
       total = n;
@@ -581,9 +581,9 @@ Resampler::Contrib_List* Resampler::make_clist(
          //resampler_assert(max_k != -1);
          if ((max_k == -1) || (Pcontrib[i].n == 0))
          {
-            free(Pcpool);
-            free(Pcontrib);
-            free(Pcontrib_bounds);
+			free(Pcpool);
+			free(Pcontrib);
+			free(Pcontrib_bounds);
             return NULL;
          }
 
@@ -624,8 +624,8 @@ Resampler::Contrib_List* Resampler::make_clist(
       int total = n;
       if ((total == 0) || ((Pcpool = (Contrib*)calloc(total, sizeof(Contrib))) == NULL))
       {
-         free(Pcontrib);
-         free(Pcontrib_bounds);
+ 		free(Pcontrib);
+ 		free(Pcontrib_bounds);
          return NULL;
       }
 
@@ -701,9 +701,9 @@ Resampler::Contrib_List* Resampler::make_clist(
 
          if ((max_k == -1) || (Pcontrib[i].n == 0))
          {
-            free(Pcpool);
-            free(Pcontrib);
-            free(Pcontrib_bounds);
+			free(Pcpool);
+			free(Pcontrib);
+			free(Pcontrib_bounds);
             return NULL;
          }
 
@@ -944,7 +944,7 @@ Resampler::~Resampler()
 
    if (m_Ptmp_buf)
    {
-      free(m_Ptmp_buf);
+  	free(m_Ptmp_buf);
       m_Ptmp_buf = NULL;
    }
 
@@ -954,15 +954,15 @@ Resampler::~Resampler()
 
    if ((m_Pclist_x) && (!m_clist_x_forced))
    {
-      free(m_Pclist_x->p);
-      free(m_Pclist_x);
+  	free(m_Pclist_x->p);
+  	free(m_Pclist_x);
       m_Pclist_x = NULL;
    }
 
    if ((m_Pclist_y) && (!m_clist_y_forced))
    {
-      free(m_Pclist_y->p);
-      free(m_Pclist_y);
+  	free(m_Pclist_y->p);
+  	free(m_Pclist_y);
       m_Pclist_y = NULL;
    }
 
@@ -975,9 +975,9 @@ Resampler::~Resampler()
    if (m_Pscan_buf)
    {
       for (i = 0; i < MAX_SCAN_BUF_SIZE; i++)
-         free(m_Pscan_buf->scan_buf_l[i]);
+ 		free(m_Pscan_buf->scan_buf_l[i]);
 
-      free(m_Pscan_buf);
+  	free(m_Pscan_buf);
       m_Pscan_buf = NULL;
    }
 }
@@ -1006,7 +1006,7 @@ void Resampler::restart()
    {
       m_Pscan_buf->scan_buf_y[i] = -1;
 
-      free(m_Pscan_buf->scan_buf_l[i]);
+  	free(m_Pscan_buf->scan_buf_l[i]);
       m_Pscan_buf->scan_buf_l[i] = NULL;
    }
 }

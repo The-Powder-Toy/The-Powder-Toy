@@ -138,14 +138,12 @@ void PreviewModel::OnResponseReady(void * object, int identifier)
 {
 	if (identifier == 1)
 	{
-		if (saveData)
-			delete saveData;
+		delete saveData;
 		saveData = (std::vector<unsigned char>*)object;
 	}
 	if (identifier == 2)
 	{
-		if (save)
-			delete save;
+		delete save;
 		save = (SaveInfo*)object;
 	}
 	if (identifier == 3)
@@ -242,10 +240,8 @@ void PreviewModel::AddObserver(PreviewView * observer)
 PreviewModel::~PreviewModel()
 {
 	RequestBroker::Ref().DetachRequestListener(this);
-	if(save)
-		delete save;
-	if (saveData)
-		delete saveData;
+	delete save;
+	delete saveData;
 	if(saveComments)
 	{
 		for(int i = 0; i < saveComments->size(); i++)

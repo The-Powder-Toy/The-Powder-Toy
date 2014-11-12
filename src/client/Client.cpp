@@ -335,10 +335,10 @@ bool Client::DoInstallation()
 	returnval = 1;
 	finalise:
 
-	if(iconname) free(iconname);
-	if(opencommand) free(opencommand);
-	if(protocolcommand) free(protocolcommand);
-	if(currentfilename) free(currentfilename);
+	free(iconname);
+	free(opencommand);
+	free(protocolcommand);
+	free(currentfilename);
 	
 	return returnval;
 #elif defined(LIN)
@@ -666,8 +666,7 @@ void Client::Tick()
 
 		if(status != 200)
 		{
-			if(data)
-				free(data);
+			free(data);
 		}
 		else if(data)
 		{
@@ -756,8 +755,7 @@ void Client::Tick()
 				//Do nothing
 			}
 
-			if(data)
-				free(data);
+			free(data);
 		}
 	}
 }
@@ -940,7 +938,7 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 	{
 		if(strncmp((const char *)data, "OK", 2)!=0)
 		{
-			if(gameData) delete[] gameData;
+			delete[] gameData;
 			lastError = std::string((const char *)data);
 			free(data);
 			return RequestFailure;
@@ -961,14 +959,14 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 			}
 		}
 		free(data);
-		if(gameData) delete[] gameData;
+		delete[] gameData;
 		return RequestOkay;
 	}
 	else if(data)
 	{
 		free(data);
 	}
-	if(gameData) delete[] gameData;
+	delete[] gameData;
 	return RequestFailure;
 }
 
@@ -1389,8 +1387,7 @@ LoginStatus Client::Login(std::string username, std::string password, User & use
 	{
 		lastError = http_ret_text(dataStatus);
 	}
-	if(data)
-		free(data);
+	free(data);
 	return LoginError;
 }
 
@@ -1440,8 +1437,7 @@ RequestStatus Client::DeleteSave(int saveID)
 		free(data);
 	return RequestOkay;
 failure:
-	if(data)
-		free(data);
+	free(data);
 	return RequestFailure;
 }
 
@@ -1496,12 +1492,10 @@ RequestStatus Client::AddComment(int saveID, std::string comment)
 		lastError = http_ret_text(dataStatus);
 		goto failure;
 	}
-	if(data)
-		free(data);
+	free(data);
 	return RequestOkay;
 failure:
-	if(data)
-		free(data);
+	free(data);
 	return RequestFailure;
 }
 
@@ -1552,12 +1546,10 @@ RequestStatus Client::FavouriteSave(int saveID, bool favourite)
 		lastError = http_ret_text(dataStatus);
 		goto failure;
 	}
-	if(data)
-		free(data);
+	free(data);
 	return RequestOkay;
 failure:
-	if(data)
-		free(data);
+	free(data);
 	return RequestFailure;
 }
 
@@ -1610,12 +1602,10 @@ RequestStatus Client::ReportSave(int saveID, std::string message)
 		lastError = http_ret_text(dataStatus);
 		goto failure;
 	}
-	if(data)
-		free(data);
+	free(data);
 	return RequestOkay;
 failure:
-	if(data)
-		free(data);
+	free(data);
 	return RequestFailure;
 }
 
@@ -1664,12 +1654,10 @@ RequestStatus Client::UnpublishSave(int saveID)
 		lastError = http_ret_text(dataStatus);
 		goto failure;
 	}
-	if(data)
-		free(data);
+	free(data);
 	return RequestOkay;
 failure:
-	if(data)
-		free(data);
+	free(data);
 	return RequestFailure;
 }
 
@@ -1967,8 +1955,7 @@ std::vector<SaveComment*> * Client::GetComments(int saveID, int start, int count
 	{
 		lastError = http_ret_text(dataStatus);
 	}
-	if(data)
-		free(data);
+	free(data);
 	return commentArray;
 }
 
@@ -2016,8 +2003,7 @@ std::vector<std::pair<std::string, int> > * Client::GetTags(int start, int count
 	{
 		lastError = http_ret_text(dataStatus);
 	}
-	if(data)
-		free(data);
+	free(data);
 	return tagArray;
 }
 
@@ -2099,8 +2085,7 @@ std::vector<SaveInfo*> * Client::SearchSaves(int start, int count, std::string q
 	{
 		lastError = http_ret_text(dataStatus);
 	}
-	if(data)
-		free(data);
+	free(data);
 	return saveArray;
 }
 
@@ -2288,8 +2273,7 @@ std::list<std::string> * Client::RemoveTag(int saveID, std::string tag)
 	{
 		lastError = http_ret_text(dataStatus);
 	}
-	if(data)
-		free(data);
+	free(data);
 	return tags;
 }
 
@@ -2349,8 +2333,7 @@ std::list<std::string> * Client::AddTag(int saveID, std::string tag)
 	{
 		lastError = http_ret_text(dataStatus);
 	}
-	if(data)
-		free(data);
+	free(data);
 	return tags;
 }
 

@@ -332,6 +332,5 @@ void FileBrowserActivity::OnDraw()
 
 FileBrowserActivity::~FileBrowserActivity()
 {
-	if(callback)
-		delete callback;
+	delete callback;
 }

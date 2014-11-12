@@ -42,8 +42,7 @@ private:
 		data = http_async_req_stop(request, &status, &dataLength);
 		if (status!=200)
 		{
-			if (data)
-				free(data);
+			free(data);
 			errorStream << "Server responded with Status " << status;
 			notifyError("Could not download update");
 			return false;

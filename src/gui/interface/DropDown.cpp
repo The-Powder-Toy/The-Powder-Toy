@@ -190,8 +190,7 @@ void DropDown::OnMouseLeave(int x, int y)
 
 
 DropDown::~DropDown() {
-	if(callback)
-		delete callback;
+	delete callback;
 }
 
 } /* namespace ui */

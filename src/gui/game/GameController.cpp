@@ -1203,8 +1203,7 @@ void GameController::OpenTags()
 {
 	if(gameModel->GetSave() && gameModel->GetSave()->GetID())
 	{
-		if (tagsWindow)
-			delete tagsWindow;
+		delete tagsWindow;
 		tagsWindow = new TagsController(new TagsCallback(this), gameModel->GetSave());
 		ui::Engine::Ref().ShowWindow(tagsWindow->GetView());
 	}

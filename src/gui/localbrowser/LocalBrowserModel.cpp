@@ -49,8 +49,7 @@ SaveFile * LocalBrowserModel::GetSave()
 
 void LocalBrowserModel::SetSave(SaveFile * newStamp)
 {
-	if(stamp)
-		delete stamp;
+	delete stamp;
 	stamp = new SaveFile(*newStamp);
 }
 
@@ -140,7 +139,6 @@ void LocalBrowserModel::notifySelectedChanged()
 }
 
 LocalBrowserModel::~LocalBrowserModel() {
-	if(stamp)
-		delete stamp;
+	delete stamp;
 }
 

@@ -68,6 +68,5 @@ void Thumbnail::Resize(ui::Point newSize)
 
 Thumbnail::~Thumbnail()
 {
-	if(Data)
-		delete[] Data;
+	delete[] Data;
 }

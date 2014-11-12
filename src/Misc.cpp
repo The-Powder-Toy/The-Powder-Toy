@@ -459,9 +459,9 @@ int register_extension()
 	returnval = 1;
 	finalise:
 
-	if(iconname) free(iconname);
-	if(opencommand) free(opencommand);
-	if(currentfilename) free(currentfilename);
+	free(iconname);
+	free(opencommand);
+	free(currentfilename);
 	
 	return returnval;
 #elif defined(LIN)

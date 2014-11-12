@@ -105,7 +105,6 @@ OptionsController::~OptionsController() {
 	}
 	delete model;
 	delete view;
-	if(callback)
-		delete callback;
+	delete callback;
 }
 

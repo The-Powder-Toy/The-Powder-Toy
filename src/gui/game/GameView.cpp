@@ -141,8 +141,7 @@ public:
 	}
 	virtual ~SplitButton()
 	{
-		if(splitActionCallback)
-			delete splitActionCallback;
+		delete splitActionCallback;
 	}
 };
 
@@ -455,8 +454,7 @@ GameView::~GameView()
 
 	}
 
-	if(placeSaveThumb)
-		delete placeSaveThumb;
+	delete placeSaveThumb;
 }
 
 class GameView::MenuAction: public ui::ButtonAction
@@ -720,8 +718,7 @@ void GameView::NotifyToolListChanged(GameModel * sender)
 		tempButton->SetActionCallback(new ToolAction(this, toolList[i]));
 
 		tempButton->Appearance.SetTexture(tempTexture);
-		if(tempTexture)
-			delete tempTexture;
+		delete tempTexture;
 
 		tempButton->Appearance.BackgroundInactive = ui::Colour(toolList[i]->colRed, toolList[i]->colGreen, toolList[i]->colBlue);
 
@@ -1811,8 +1808,7 @@ void GameView::NotifyLogChanged(GameModel * sender, string entry)
 
 void GameView::NotifyPlaceSaveChanged(GameModel * sender)
 {
-	if(placeSaveThumb)
-		delete placeSaveThumb;
+	delete placeSaveThumb;
 	if(sender->GetPlaceSave())
 	{
 		placeSaveThumb = SaveRenderer::Ref().Render(sender->GetPlaceSave());
