@@ -73,7 +73,6 @@ private:
 	int activeThumbRequestTimes[IMGCONNS];
 	int activeThumbRequestCompleteTimes[IMGCONNS];
 	std::string activeThumbRequestIDs[IMGCONNS];
-	void updateStamps();
 	static std::vector<std::string> explodePropertyString(std::string property);
 	void notifyUpdateAvailable();
 	void notifyAuthUserChanged();
@@ -129,6 +128,7 @@ public:
 	int GetStampsCount();
 	SaveFile * GetFirstStamp();
 	void MoveStampToFront(std::string stampID);
+	void updateStamps();
 
 	RequestStatus AddComment(int saveID, std::string comment);
 

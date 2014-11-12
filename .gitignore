@@ -15,6 +15,7 @@ stderr.txt
 build*/*
 stamps/*
 Saves/*
+scripts/*
 generated/*
 includes/*
 generate

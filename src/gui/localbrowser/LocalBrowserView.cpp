@@ -233,12 +233,12 @@ void LocalBrowserView::NotifySavesListChanged(LocalBrowserModel * sender)
 void LocalBrowserView::NotifySelectedChanged(LocalBrowserModel * sender)
 {
 	vector<std::string> selected = sender->GetSelected();
-	for(int j = 0; j < stampButtons.size(); j++)
+	for (int j = 0; j < stampButtons.size(); j++)
 	{
 		stampButtons[j]->SetSelected(false);
-		for(int i = 0; i < selected.size(); i++)
+		for (int i = 0; i < selected.size(); i++)
 		{
-			if(stampButtons[j]->GetSaveFile()->GetName()==selected[i])
+			if (stampButtons[j]->GetSaveFile()->GetName()==selected[i])
 				stampButtons[j]->SetSelected(true);
 		}
 	}

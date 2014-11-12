@@ -190,6 +190,8 @@ void SaveButton::Draw(const Point& screenPos)
 		else
 			g->draw_image(thumbnail, screenPos.X+(Size.X-thumbBoxSize.X)/2, screenPos.Y+(Size.Y-21-thumbBoxSize.Y)/2, 255);
 	}
+	else if (file && !file->GetGameSave())
+		g->drawtext(screenPos.X+(Size.X-Graphics::textwidth("Error loading save"))/2, screenPos.Y+(Size.Y-28)/2, "Error loading save", 180, 180, 180, 255);
 	if(save)
 	{
 		if(save->id)
@@ -253,14 +255,14 @@ void SaveButton::Draw(const Point& screenPos)
 			g->drawtext(screenPos.X, screenPos.Y-2, "\xCE", 212, 151, 81, 255);
 		}
 	}
-	if(file)
+	else if (file)
 	{
-		if(isMouseInside)
+		if (isMouseInside)
 			g->drawrect(screenPos.X+(Size.X-thumbBoxSize.X)/2, screenPos.Y+(Size.Y-21-thumbBoxSize.Y)/2, thumbBoxSize.X, thumbBoxSize.Y, 210, 230, 255, 255);
 		else
 			g->drawrect(screenPos.X+(Size.X-thumbBoxSize.X)/2, screenPos.Y+(Size.Y-21-thumbBoxSize.Y)/2, thumbBoxSize.X, thumbBoxSize.Y, 180, 180, 180, 255);
 
-		if(isMouseInside)
+		if (isMouseInside)
 		{
 			g->drawtext(screenPos.X+(Size.X-Graphics::textwidth((char *)name.c_str()))/2, screenPos.Y+Size.Y - 21, name, 255, 255, 255, 255);
 		}

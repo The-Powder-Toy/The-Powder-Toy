@@ -76,6 +76,7 @@ void LocalBrowserController::removeSelectedC()
 		}
 		virtual void after()
 		{
+			Client::Ref().updateStamps();
 			c->RefreshSavesList();
 		}
 	};

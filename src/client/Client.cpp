@@ -989,11 +989,11 @@ void Client::MoveStampToFront(std::string stampID)
 SaveFile * Client::GetStamp(std::string stampID)
 {
 	std::string stampFile = std::string(STAMPS_DIR PATH_SEP + stampID + ".stm");
+	SaveFile * file = new SaveFile(stampID);
 	if (!FileExists(stampFile))
 		stampFile = stampID;
-	if(FileExists(stampFile))
+	if (FileExists(stampFile))
 	{
-		SaveFile * file = new SaveFile(stampID);
 		try
 		{
 			GameSave * tempSave = new GameSave(ReadFile(stampFile));
@@ -1003,12 +1003,8 @@ SaveFile * Client::GetStamp(std::string stampID)
 		{
 			std::cerr << "Client: Invalid stamp file, " << stampID << " " << std::string(e.what()) << std::endl;
 		}
-		return file;
 	}
-	else
-	{
-		return NULL;
-	}
+	return file;
 }
 
 void Client::DeleteStamp(std::string stampID)
