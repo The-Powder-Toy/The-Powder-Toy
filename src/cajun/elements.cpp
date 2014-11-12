@@ -164,7 +164,7 @@ UnknownElement& UnknownElement::operator = (const UnknownElement& unknown)
       //  more efficient, but isn't worth the complexity
       Imp* pOldImp = m_pImp;
       m_pImp = unknown.m_pImp->Clone();
-      delete pOldImp;
+  	delete pOldImp;
    }
 
    return *this;

@@ -192,6 +192,6 @@ PreviewController::~PreviewController() {
 	Client::Ref().RemoveListener(this);
 	delete previewModel;
 	delete previewView;
-    delete callback;
+	delete callback;
 }
 

@@ -338,14 +338,14 @@ void ServerSaveActivity::OnDraw()
 
 void ServerSaveActivity::OnResponseReady(void * imagePtr, int identifier)
 {
-    delete thumbnail;
+	delete thumbnail;
 	thumbnail = (VideoBuffer *)imagePtr;
 }
 
 ServerSaveActivity::~ServerSaveActivity()
 {
 	RequestBroker::Ref().DetachRequestListener(this);
-    delete saveUploadTask;
-    delete callback;
-    delete thumbnail;
+	delete saveUploadTask;
+	delete callback;
+	delete thumbnail;
 }

@@ -51,8 +51,8 @@ ContextInfo* getContext(JNIEnv *env, jobject canvas)
 
 void freeContext(JNIEnv *env, jobject canvas, ContextInfo* ci) 
 {
-    free(ci->awt);
-    free(ci);
+	free(ci->awt);
+	free(ci);
     env->SetLongField(canvas, ctxID, 0L);
 }
 

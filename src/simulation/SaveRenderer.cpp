@@ -140,7 +140,7 @@ VideoBuffer * SaveRenderer::Render(GameSave * save, bool decorations, bool fire)
 			src+=WINDOWW;
 		}
 		tempThumb = new VideoBuffer(pData, width*CELL, height*CELL);
-        free(pData);
+		free(pData);
 #endif
 	}
 	if(doCollapse)

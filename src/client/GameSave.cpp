@@ -1056,13 +1056,13 @@ void GameSave::readOPS(char * data, int dataLength)
 fail:
 	//Clean up everything
 	bson_destroy(&b);
-    free(freeIndices);
-    free(partsSimIndex);
+	free(freeIndices);
+	free(partsSimIndex);
 	throw ParseException(ParseException::Corrupt, "Save data corrupt");
 fin:
 	bson_destroy(&b);
-    free(freeIndices);
-    free(partsSimIndex);
+	free(freeIndices);
+	free(partsSimIndex);
 }
 
 void GameSave::readPSv(char * data, int dataLength)

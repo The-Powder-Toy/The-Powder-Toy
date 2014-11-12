@@ -59,7 +59,7 @@ RenderController::~RenderController() {
 	{
 		ui::Engine::Ref().CloseWindow();
 	}
-    delete callback;
+	delete callback;
 	delete renderModel;
 	delete renderView;
 }

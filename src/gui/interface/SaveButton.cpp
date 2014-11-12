@@ -118,10 +118,10 @@ SaveButton::~SaveButton()
 {
 	RequestBroker::Ref().DetachRequestListener(this);
 
-    delete thumbnail;
-    delete actionCallback;
-    delete save;
-    delete file;
+	delete thumbnail;
+	delete actionCallback;
+	delete save;
+	delete file;
 }
 
 void SaveButton::OnResponseReady(void * imagePtr, int identifier)
@@ -129,7 +129,7 @@ void SaveButton::OnResponseReady(void * imagePtr, int identifier)
 	VideoBuffer * image = (VideoBuffer*)imagePtr;
 	if(image)
 	{
-        delete thumbnail;
+		delete thumbnail;
 		thumbnail = image;
 		waitingForThumb = false;
 	}

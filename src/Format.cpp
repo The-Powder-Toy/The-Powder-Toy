@@ -260,7 +260,7 @@ struct PNGChunk
 	}
 	~PNGChunk()
 	{
-        delete[] Data;
+		delete[] Data;
 	}
 };
 

@@ -18,7 +18,7 @@ protected:
 			GenerateBitmap();
 		if(!bitmap)
 			return;
-        delete[] outline;
+		delete[] outline;
 		outline = new unsigned char[size.X*size.Y];
 		for(int x = 0; x < size.X; x++)
 		{
@@ -63,8 +63,8 @@ public:
 		updateOutline();
 	}
 	virtual ~Brush() {
-        delete[] bitmap;
-        delete[] outline;
+		delete[] bitmap;
+		delete[] outline;
 	}
 	virtual void RenderRect(Renderer * ren, ui::Point position1, ui::Point position2);
 	virtual void RenderLine(Renderer * ren, ui::Point position1, ui::Point position2);
@@ -72,7 +72,7 @@ public:
 	virtual void RenderFill(Renderer * ren, ui::Point position);
 	virtual void GenerateBitmap()
 	{
-        delete[] bitmap;
+		delete[] bitmap;
 		bitmap = new unsigned char[size.X*size.Y];
 		for(int x = 0; x < size.X; x++)
 		{

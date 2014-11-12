@@ -47,6 +47,6 @@ TagsController::~TagsController() {
 		ui::Engine::Ref().CloseWindow();
 	delete tagsModel;
 	delete tagsView;
-    delete callback;
+	delete callback;
 }
 

@@ -169,7 +169,7 @@ void LocalBrowserController::Exit()
 LocalBrowserController::~LocalBrowserController() {
 	if(ui::Engine::Ref().GetWindow() == browserView)
 		ui::Engine::Ref().CloseWindow();
-    delete callback;
+	delete callback;
 	delete browserModel;
 	delete browserView;
 }

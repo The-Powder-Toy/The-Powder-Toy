@@ -38,14 +38,14 @@ Engine::Engine():
 
 Engine::~Engine()
 {
-    delete state_;
+	delete state_;
 	//Dispose of any Windows.
 	while(!windows.empty())
 	{
 		delete windows.top();
 		windows.pop();
 	}
-    free(lastBuffer);
+	free(lastBuffer);
 }
 
 void Engine::Begin(int width, int height)

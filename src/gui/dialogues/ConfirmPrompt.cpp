@@ -146,6 +146,6 @@ void ConfirmPrompt::OnDraw()
 }
 
 ConfirmPrompt::~ConfirmPrompt() {
-    delete callback;
+	delete callback;
 }
 

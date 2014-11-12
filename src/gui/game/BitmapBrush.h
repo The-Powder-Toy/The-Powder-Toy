@@ -51,7 +51,7 @@ public:
 	{
 		if(origBitmap)
 		{
-            delete[] bitmap;
+			delete[] bitmap;
 			bitmap = new unsigned char[size.X*size.Y];
 			if(size == origSize)
 				std::copy(origBitmap, origBitmap+(origSize.X*origSize.Y), bitmap);
@@ -87,7 +87,7 @@ public:
 	}
 	virtual ~BitmapBrush()
 	{
-        delete[] origBitmap;
+		delete[] origBitmap;
 	}
 };
 

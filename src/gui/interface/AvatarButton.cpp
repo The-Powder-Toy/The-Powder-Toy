@@ -25,8 +25,8 @@ AvatarButton::AvatarButton(Point position, Point size, std::string username):
 AvatarButton::~AvatarButton()
 {
 	RequestBroker::Ref().DetachRequestListener(this);
-    delete avatar;
-    delete actionCallback;
+	delete avatar;
+	delete actionCallback;
 }
 
 void AvatarButton::Tick(float dt)
@@ -43,7 +43,7 @@ void AvatarButton::OnResponseReady(void * imagePtr, int identifier)
 	VideoBuffer * image = (VideoBuffer*)imagePtr;
 	if(image)
 	{
-        delete avatar;
+		delete avatar;
 		avatar = image;
 	}
 }

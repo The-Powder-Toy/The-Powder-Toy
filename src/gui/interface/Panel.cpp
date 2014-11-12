@@ -46,7 +46,7 @@ Panel::~Panel()
 {
 	for(unsigned i = 0; i < children.size(); ++i)
 	{
-        delete children[i];
+		delete children[i];
 	}
 #ifdef OGLI
 	glDeleteTextures(1, &myVidTex);

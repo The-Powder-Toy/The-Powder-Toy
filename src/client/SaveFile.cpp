@@ -65,7 +65,7 @@ void SaveFile::SetDisplayName(std::string displayName)
 }
 
 SaveFile::~SaveFile() {
-    delete gameSave;
-    delete thumbnail;
+	delete gameSave;
+	delete thumbnail;
 }
 

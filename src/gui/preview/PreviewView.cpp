@@ -408,7 +408,7 @@ void PreviewView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, b
 void PreviewView::NotifySaveChanged(PreviewModel * sender)
 {
 	SaveInfo * save = sender->GetSave();
-    delete savePreview;
+	delete savePreview;
 	savePreview = NULL;
 	if(save)
 	{
@@ -625,6 +625,6 @@ PreviewView::~PreviewView()
 		RemoveComponent(submitCommentButton);
 		delete submitCommentButton;
 	}
-    delete savePreview;
+	delete savePreview;
 }
 

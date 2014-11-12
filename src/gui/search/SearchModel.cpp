@@ -278,5 +278,5 @@ void SearchModel::notifySelectedChanged()
 
 SearchModel::~SearchModel()
 {
-    delete loadedSave;
+	delete loadedSave;
 }

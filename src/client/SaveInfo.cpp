@@ -172,6 +172,6 @@ GameSave * SaveInfo::GetGameSave()
 
 void SaveInfo::SetGameSave(GameSave * saveGame)
 {
-    delete gameSave;
+	delete gameSave;
 	gameSave = saveGame;
 }

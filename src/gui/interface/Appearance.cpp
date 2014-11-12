@@ -37,7 +37,7 @@ namespace ui
 
 	void Appearance::SetTexture(VideoBuffer * texture)
 	{
-        delete this->texture;
+		delete this->texture;
 		if(texture)
 			this->texture = new VideoBuffer(texture);
 		else
@@ -46,7 +46,7 @@ namespace ui
 
 	Appearance::~Appearance()
 	{
-        delete texture;
+		delete texture;
 	}
 
 }

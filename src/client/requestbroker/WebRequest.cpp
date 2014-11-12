@@ -60,7 +60,7 @@ RequestBroker::ProcessResponse WebRequest::Process(RequestBroker & rb)
 //#ifdef DEBUG
 				std::cout << typeid(*this).name() << " Request for " << URL << " failed with status " << status << std::endl;
 //#endif	
-                free(data);
+				free(data);
 
 				return RequestBroker::Failed;
 			}

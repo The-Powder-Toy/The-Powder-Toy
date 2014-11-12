@@ -38,7 +38,7 @@ RequestBroker::ProcessResponse ThumbRenderRequest::Process(RequestBroker & rb)
 
 ThumbRenderRequest::~ThumbRenderRequest()
 {
-    delete Save;
+	delete Save;
 }
 
 void ThumbRenderRequest::Cleanup()

@@ -108,6 +108,6 @@ void TextPrompt::OnDraw()
 }
 
 TextPrompt::~TextPrompt() {
-    delete callback;
+	delete callback;
 }
 
