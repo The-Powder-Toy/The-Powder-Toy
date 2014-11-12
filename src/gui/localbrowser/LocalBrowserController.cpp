@@ -131,6 +131,12 @@ void LocalBrowserController::PrevPage()
 		browserModel->UpdateSavesList(browserModel->GetPageNum()-1);
 }
 
+void LocalBrowserController::SetPage(int page)
+{
+	if (page != browserModel->GetPageNum() && page > 0 && page <= browserModel->GetPageCount())
+		browserModel->UpdateSavesList(page);
+}
+
 void LocalBrowserController::Update()
 {
 	if(browserModel->GetSave())

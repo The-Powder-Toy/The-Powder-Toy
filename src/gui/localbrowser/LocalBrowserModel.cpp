@@ -31,6 +31,7 @@ void LocalBrowserModel::notifySavesListChanged()
 	for(int i = 0; i < observers.size(); i++)
 	{
 		observers[i]->NotifySavesListChanged(this);
+		observers[i]->NotifyPageChanged(this);
 	}
 }
 
