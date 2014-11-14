@@ -93,7 +93,10 @@ int Element_DMG::update(UPDATE_FUNC_ARGS)
 										else if(t == PT_QRTZ)
 											sim->part_change_type(rr>>8, x+nxi, y+nxj, PT_PQRT);
 										else if(t == PT_TUNG)
+										{
 											sim->part_change_type(rr>>8, x+nxi, y+nxj, PT_BRMT);
+											parts[rr>>8].ctype = PT_TUNG;
+										}
 									}
 								}
 							}
