@@ -11,6 +11,7 @@ struct playerst
 	char spwn;           //if stick man was spawned
 	unsigned int frames; //frames since last particle spawn - used when spawning LIGH
 	bool rocketBoots;
+	int spawnID;         //id of the SPWN particle that spawns it
 };
 
 #endif

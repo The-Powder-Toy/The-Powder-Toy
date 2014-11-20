@@ -86,6 +86,8 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 
 		if ((player.spwn == 1 && tempPart.type==PT_STKM) || (player2.spwn == 1 && tempPart.type==PT_STKM2))
 			continue;
+		if ((tempPart.type == PT_SPAWN && elementCount[PT_SPAWN]) || (tempPart.type == PT_SPAWN2 && elementCount[PT_SPAWN2]))
+			continue;
 		if (!elements[tempPart.type].Enabled)
 			continue;
 
@@ -135,6 +137,14 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 			player2.spwn = 1;
 			player2.elem = PT_DUST;
 			player2.rocketBoots = false;
+		}
+		else if (parts[i].type == PT_SPAWN)
+		{
+			player.spawnID = i;
+		}
+		else if (parts[i].type == PT_SPAWN2)
+		{
+			player2.spawnID = i;
 		}
 		else if (parts[i].type == PT_FIGH)
 		{
@@ -1922,7 +1932,9 @@ void Simulation::clear_sim(void)
 	elementRecount = true;
 	fighcount = 0;
 	player.spwn = 0;
+	player.spawnID = -1;
 	player2.spwn = 0;
+	player2.spawnID = -1;
 	//memset(pers_bg, 0, WINDOWW*YRES*PIXELSIZE);
 	//memset(fire_r, 0, sizeof(fire_r));
 	//memset(fire_g, 0, sizeof(fire_g));
@@ -2640,6 +2652,16 @@ void Simulation::kill_part(int i)//kills particle number i
 	{
 		player2.spwn = 0;
 	}
+	else if (parts[i].type == PT_SPAWN)
+	{
+		if (player.spawnID == i)
+			player.spawnID = -1;
+	}
+	else if (parts[i].type == PT_SPAWN2)
+	{
+		if (player2.spawnID == i)
+			player2.spawnID = -1;
+	}
 	else if (parts[i].type == PT_FIGH)
 	{
 		fighters[(unsigned char)parts[i].tmp].spwn = 0;
@@ -2671,6 +2693,16 @@ void Simulation::part_change_type(int i, int x, int y, int t)//changes the type 
 		player.spwn = 0;
 	else if (parts[i].type == PT_STKM2)
 		player2.spwn = 0;
+	else if (parts[i].type == PT_SPAWN)
+	{
+		if (player.spawnID == i)
+			player.spawnID = -1;
+	}
+	else if (parts[i].type == PT_SPAWN2)
+	{
+		if (player2.spawnID == i)
+			player2.spawnID = -1;
+	}
 	else if (parts[i].type == PT_FIGH)
 	{
 		fighters[(unsigned char)parts[i].tmp].spwn = 0;
@@ -2678,6 +2710,17 @@ void Simulation::part_change_type(int i, int x, int y, int t)//changes the type 
 	}
 	else if (parts[i].type == PT_SOAP)
 		Element_SOAP::detach(this, i);
+
+	if ((t == PT_STKM || t == PT_STKM2 || t == PT_SPAWN || t == PT_SPAWN2) && elementCount[t])
+	{
+		kill_part(i);
+		return;
+	}
+	else if ((t == PT_STKM && player.spwn) || (t == PT_STKM2 && player2.spwn))
+	{
+		kill_part(i);
+		return;
+	}
 
 	parts[i].type = t;
 	if (elements[t].Properties & TYPE_ENERGY)
@@ -2985,36 +3028,6 @@ int Simulation::create_part(int p, int x, int y, int tv)
 				if (parts[i].tmp > 300)
 					parts[i].tmp=300;
 				break;
-			case PT_STKM:
-				if (player.spwn==0)
-				{
-					parts[i].life = 100;
-					Element_STKM::STKM_init_legs(this, &player, i);
-					player.spwn = 1;
-					player.rocketBoots = false;
-				}
-				else
-				{
-					parts[i].type=0;
-					return -1;
-				}
-				create_part(-3,x,y,PT_SPAWN);
-				break;
-			case PT_STKM2:
-				if (player2.spwn==0)
-				{
-					parts[i].life = 100;
-					Element_STKM::STKM_init_legs(this, &player2, i);
-					player2.spwn = 1;
-					player2.rocketBoots = false;
-				}
-				else
-				{
-					parts[i].type=0;
-					return -1;
-				}
-				create_part(-3,x,y,PT_SPAWN2);
-				break;
 			case PT_BIZR: case PT_BIZRG: case PT_BIZRS:
 				parts[i].ctype = 0x47FFFF;
 				break;
@@ -3027,6 +3040,44 @@ int Simulation::create_part(int p, int x, int y, int tv)
 			case PT_VRSG:
 				parts[i].pavg[1] = 250;
 				break;
+			case PT_STKM:
+			{
+				if (player.spwn == 0)
+				{
+					parts[i].life = 100;
+					Element_STKM::STKM_init_legs(this, &player, i);
+					player.spwn = 1;
+					player.rocketBoots = false;
+				}
+				else
+				{
+					parts[i].type = 0;
+					return -1;
+				}
+				int spawnID = create_part(-3, x, y, PT_SPAWN);
+				if (spawnID >= 0)
+					player.spawnID = spawnID;
+				break;
+			}
+			case PT_STKM2:
+			{
+				if (player2.spwn==0)
+				{
+					parts[i].life = 100;
+					Element_STKM::STKM_init_legs(this, &player2, i);
+					player2.spwn = 1;
+					player2.rocketBoots = false;
+				}
+				else
+				{
+					parts[i].type=0;
+					return -1;
+				}
+				int spawnID = create_part(-3, x, y, PT_SPAWN2);
+				if (spawnID >= 0)
+					player2.spawnID = spawnID;
+				break;
+			}
 			case PT_FIGH:
 			{
 				unsigned char fcount = 0;
@@ -3607,12 +3658,12 @@ void Simulation::update_particles_i(int start, int inc)
 				kill_part(i);
 				continue;
 			}
-
-			if (parts[i].type == PT_SPAWN && !player.spwn)
-				create_part(-1, parts[i].x, parts[i].y, PT_STKM);
-			else if (parts[i].type == PT_SPAWN2 && !player2.spwn)
-				create_part(-1, parts[i].x, parts[i].y, PT_STKM2);
 		}
+
+	if (!player.spwn && player.spawnID >= 0)
+		create_part(-1, (int)parts[player.spawnID].x, (int)parts[player.spawnID].y, PT_STKM);
+	else if (!player2.spwn && player2.spawnID >= 0)
+		create_part(-1, (int)parts[player2.spawnID].x, (int)parts[player2.spawnID].y, PT_STKM2);
 
 	//the main particle loop function, goes over all particles.
 	for (i=0; i<=parts_lastActiveIndex; i++)
