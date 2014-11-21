@@ -92,15 +92,14 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 			continue;
 
 		if (tempPart.ctype > 0 && tempPart.ctype < PT_NUM)
-			if (tempPart.type == PT_CLNE || tempPart.type == PT_PCLN || tempPart.type == PT_BCLN || tempPart.type == PT_PBCN || tempPart.type == PT_STOR || tempPart.type == PT_CONV || tempPart.type == PT_STKM || tempPart.type == PT_STKM2 || tempPart.type == PT_FIGH || tempPart.type == PT_LAVA || tempPart.type == PT_SPRK || tempPart.type == PT_PSTN || tempPart.type == PT_CRAY)
+			if (tempPart.type == PT_CLNE || tempPart.type == PT_PCLN || tempPart.type == PT_BCLN || tempPart.type == PT_PBCN || tempPart.type == PT_STOR || tempPart.type == PT_CONV || tempPart.type == PT_STKM || tempPart.type == PT_STKM2 || tempPart.type == PT_FIGH || tempPart.type == PT_LAVA || tempPart.type == PT_SPRK || tempPart.type == PT_PSTN || tempPart.type == PT_CRAY || tempPart.type == PT_DTEC || tempPart.type == PT_DRAY)
 			{
 				tempPart.ctype = partMap[tempPart.ctype];
 			}
-		if (tempPart.tmp > 0 && tempPart.tmp < PT_NUM)
-			if (tempPart.type == PT_PIPE || tempPart.type == PT_PPIP)
-			{
-				tempPart.tmp = partMap[tempPart.tmp];
-			}
+		if (tempPart.type == PT_PIPE || tempPart.type == PT_PPIP)
+		{
+			tempPart.tmp = partMap[tempPart.tmp&0xFF] | tempPart.tmp&~0xFF;
+		}
 
 		//Replace existing
 		if (r = pmap[y][x])
