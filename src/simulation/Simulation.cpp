@@ -102,18 +102,18 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 				tempPart.tmp = partMap[tempPart.tmp];
 			}
 
-		if(r = pmap[y][x])
+		//Replace existing
+		if (r = pmap[y][x])
 		{
-			//Replace existing
+			elementCount[parts[r>>8].type]--;
 			parts[r>>8] = tempPart;
 			i = r>>8;
 			pmap[y][x] = 0;
-			elementCount[parts[r>>8].type]--;
 			elementCount[tempPart.type]++;
 		}
+		//Allocate new particle
 		else
 		{
-			//Allocate new particle
 			if (pfree == -1)
 				break;
 			i = pfree;
@@ -326,9 +326,7 @@ Snapshot * Simulation::CreateSnapshot()
 void Simulation::Restore(const Snapshot & snap)
 {
 	parts_lastActiveIndex = NPART-1; 
-
-	for(int i = 0; i<PT_NUM; i++)
-		elementCount[i] = 0;
+	elementRecount = true;
 
 	std::copy(snap.AirPressure.begin(), snap.AirPressure.end(), &pv[0][0]);
 	std::copy(snap.AirVelocityX.begin(), snap.AirVelocityX.end(), &vx[0][0]);
@@ -2722,6 +2720,24 @@ void Simulation::part_change_type(int i, int x, int y, int t)//changes the type 
 		return;
 	}
 
+	if (parts[i].type > 0 && parts[i].type < PT_NUM && elementCount[parts[i].type])
+		elementCount[parts[i].type]--;
+	elementCount[t]++;
+
+	if (t == PT_SPAWN && player.spawnID < 0)
+		player.spawnID = i;
+	else if (t == PT_SPAWN2 && player2.spawnID < 0)
+		player2.spawnID = i;
+	else if (t == PT_STKM)
+		Element_STKM::STKM_init_legs(this, &player, i);
+	else if (t == PT_STKM2)
+		Element_STKM::STKM_init_legs(this, &player2, i);
+	else if (t == PT_FIGH)
+	{
+		if (parts[i].tmp2 >= 0 && parts[i].tmp2 < 100)
+			Element_STKM::STKM_init_legs(this, &fighters[parts[i].tmp2], i);
+	}
+
 	parts[i].type = t;
 	if (elements[t].Properties & TYPE_ENERGY)
 	{
@@ -3622,10 +3638,8 @@ void Simulation::update_particles_i(int start, int inc)
 	}
 
 	elementRecount |= !(currentTick%180);
-	if(elementRecount)
-	{
+	if (elementRecount)
 		std::fill(elementCount, elementCount+PT_NUM, 0);
-	}
 
 	for (i=0; i<=parts_lastActiveIndex; i++)
 		if (parts[i].type)
@@ -3637,7 +3651,7 @@ void Simulation::update_particles_i(int start, int inc)
 				continue;
 			}
 
-			if(elementRecount)
+			if (elementRecount)
 				elementCount[t]++;
 
 			elem_properties = elements[t].Properties;

@@ -23,34 +23,32 @@
 #ifndef FFI
 int luacon_partread(lua_State* l)
 {
-	int format, offset, tempinteger;
+	int tempinteger, i = cIndex;
 	float tempfloat;
-	int i;
-	const char * key = luaL_optstring(l, 2, "");
-	offset = luacon_particle_getproperty(key, &format);
+	std::string key = luaL_optstring(l, 2, "");
+	CommandInterface::FormatType format;
+	int offset = luacon_ci->GetPropertyOffset(key, format);
 
-	i = cIndex;
-
-	if (i < 0 || i >= NPART || offset==-1)
+	if (i < 0 || i >= NPART)
+		return luaL_error(l, "Out of range");
+	if (offset == -1)
 	{
-		if (i < 0 || i >= NPART)
-			return luaL_error(l, "Out of range");
-		else if (!strcmp(key, "id"))
+		if (!key.compare("id"))
 		{
 			lua_pushnumber(l, i);
 			return 1;
 		}
-		else
-			return luaL_error(l, "Invalid property");
+		return luaL_error(l, "Invalid property");
 	}
 
 	switch(format)
 	{
-	case 0:
+	case CommandInterface::FormatInt:
+	case CommandInterface::FormatElement:
 		tempinteger = *((int*)(((unsigned char*)&luacon_sim->parts[i])+offset));
 		lua_pushnumber(l, tempinteger);
 		break;
-	case 1:
+	case CommandInterface::FormatFloat:
 		tempfloat = *((float*)(((unsigned char*)&luacon_sim->parts[i])+offset));
 		lua_pushnumber(l, tempfloat);
 		break;
@@ -60,29 +58,27 @@ int luacon_partread(lua_State* l)
 
 int luacon_partwrite(lua_State* l)
 {
-	int format, offset;
-	int i;
-	const char * key = luaL_optstring(l, 2, "");
-	offset = luacon_particle_getproperty(key, &format);
+	int tempinteger, i = cIndex;
+	float tempfloat;
+	std::string key = luaL_optstring(l, 2, "");
+	CommandInterface::FormatType format;
+	int offset = luacon_ci->GetPropertyOffset(key, format);
 
-	i = cIndex;
-
-	if (i < 0 || i >= NPART || offset==-1)
-	{
-		if (i < 0 || i >= NPART)
-			return luaL_error(l, "array index out of bounds");
-		else
-			return luaL_error(l, "Invalid property");
-	}
+	if (i < 0 || i >= NPART)
+		return luaL_error(l, "Out of range");
+	if (offset == -1)
+		return luaL_error(l, "Invalid property");
 
 	switch(format)
 	{
-	case 0:
+	case CommandInterface::FormatInt:
 		*((int*)(((unsigned char*)&luacon_sim->parts[i])+offset)) = luaL_optinteger(l, 3, 0);
 		break;
-	case 1:
+	case CommandInterface::FormatFloat:
 		*((float*)(((unsigned char*)&luacon_sim->parts[i])+offset)) = luaL_optnumber(l, 3, 0);
 		break;
+	case CommandInterface::FormatElement:
+		luacon_sim->part_change_type(i, luacon_sim->parts[i].x, luacon_sim->parts[i].y, luaL_optinteger(l, 3, 0));
 	}
 	return 0;
 }
@@ -106,57 +102,6 @@ int luacon_partswrite(lua_State* l)
 	return luaL_error(l, "table readonly");
 }
 #endif
-
-int luacon_particle_getproperty(const char * key, int * format)
-{
-	int offset;
-	if (!strcmp(key, "type")) {
-		offset = offsetof(Particle, type);
-		*format = 0;
-	} else if (!strcmp(key, "life")) {
-		offset = offsetof(Particle, life);
-		*format = 0;
-	} else if (!strcmp(key, "ctype")) {
-		offset = offsetof(Particle, ctype);
-		*format = 0;
-	} else if (!strcmp(key, "temp")) {
-		offset = offsetof(Particle, temp);
-		*format = 1;
-	} else if (!strcmp(key, "tmp")) {
-		offset = offsetof(Particle, tmp);
-		*format = 0;
-	} else if (!strcmp(key, "tmp2")) {
-		offset = offsetof(Particle, tmp2);
-		*format = 0;
-	} else if (!strcmp(key, "vy")) {
-		offset = offsetof(Particle, vy);
-		*format = 1;
-	} else if (!strcmp(key, "vx")) {
-		offset = offsetof(Particle, vx);
-		*format = 1;
-	} else if (!strcmp(key, "x")){
-		offset = offsetof(Particle, x);
-		*format = 1;
-	} else if (!strcmp(key, "y")) {
-		offset = offsetof(Particle, y);
-		*format = 1;
-	} else if (!strcmp(key, "dcolour")) {
-		offset = offsetof(Particle, dcolour);
-		*format = 0;
-	} else if (!strcmp(key, "dcolor")) {
-		offset = offsetof(Particle, dcolour);
-		*format = 0;
-	} else if (!strcmp(key, "pavg0")) {
-		offset = offsetof(Particle, pavg[0]);
-		*format = 1;
-	} else if (!strcmp(key, "pavg1")) {
-		offset = offsetof(Particle, pavg[1]);
-		*format = 1;
-	} else {
-		offset = -1;
-	}
-	return offset;
-}
 
 int luacon_transition_getproperty(const char * key, int * format)
 {
@@ -1125,7 +1070,7 @@ int luatpt_set_property(lua_State* l)
 		if(!lua_isnumber(l, acount) && lua_isstring(l, acount))
 		{
 			name = luaL_optstring(l, acount, "none");
-			if ((partsel = luacon_ci->GetParticleType(std::string(name)))==-1)
+			if ((partsel = luacon_ci->GetParticleType(std::string(name))) == -1)
 				return luaL_error(l, "Unrecognised element '%s'", name);
 		}
 	}
@@ -1178,7 +1123,9 @@ int luatpt_set_property(lua_State* l)
 				ny = (int)(parts[i].y + .5f);
 				if (nx >= x && nx < x+w && ny >= y && ny < y+h && (!partsel || partsel == parts[i].type))
 				{
-					if(format == CommandInterface::FormatFloat)
+					if (format == CommandInterface::FormatElement)
+						luacon_sim->part_change_type(i, nx, ny, t);
+					else if(format == CommandInterface::FormatFloat)
 						*((float*)(((unsigned char*)&luacon_sim->parts[i])+offset)) = f;
 					else
 						*((int*)(((unsigned char*)&luacon_sim->parts[i])+offset)) = t;
@@ -1209,7 +1156,9 @@ int luatpt_set_property(lua_State* l)
 		if (partsel && partsel != luacon_sim->parts[i].type)
 			return 0;
 
-		if(format == CommandInterface::FormatFloat)
+		if (format == CommandInterface::FormatElement)
+			luacon_sim->part_change_type(i, luacon_sim->parts[i].x, luacon_sim->parts[i].y, t);
+		else if (format == CommandInterface::FormatFloat)
 			*((float*)(((unsigned char*)&luacon_sim->parts[i])+offset)) = f;
 		else
 			*((int*)(((unsigned char*)&luacon_sim->parts[i])+offset)) = t;
@@ -1329,40 +1278,42 @@ int luatpt_get_elecmap(lua_State* l)
 
 int luatpt_get_property(lua_State* l)
 {
-	int i, r, y;
-	const char *prop;
-	prop = luaL_optstring(l, 1, ""); //x coord or particle index, depending on arguments
-	i = luaL_optint(l, 2, 0);
-	y = luaL_optint(l, 3, -1);
-	if (y!=-1 && y < YRES && y >= 0 && i < XRES && i >= 0)
+	std::string prop = luaL_optstring(l, 1, "");
+	int i = luaL_optint(l, 2, 0); //x coord or particle index, depending on arguments
+	int y = luaL_optint(l, 3, -1);
+	if (y!=-1 && y<YRES && y>=0 && i < XRES && i>=0)
 	{
-		r = luacon_sim->pmap[y][i];
-		if (!r)
-			r = luacon_sim->photons[y][i];
+		int r = luacon_sim->pmap[y][i];
 		if (!r)
 		{
-			if (!strcmp(prop,"type"))
+			r = luacon_sim->photons[y][i];
+			if (!r)
 			{
-				lua_pushinteger(l, 0);
-				return 1;
+				if (!prop.compare("type"))
+				{
+					lua_pushinteger(l, 0);
+					return 1;
+				}
+				return luaL_error(l, "Particle does not exist");
 			}
-			return luaL_error(l, "Particle does not exist");
 		}
 		i = r>>8;
 	}
-	else if (y!=-1)
+	else if (y != -1)
 		return luaL_error(l, "Coordinates out of range (%d,%d)", i, y);
 	if (i < 0 || i >= NPART)
 		return luaL_error(l, "Invalid particle ID '%d'", i);
+
 	if (luacon_sim->parts[i].type)
 	{
-		int format, tempinteger;
+		int tempinteger;
 		float tempfloat;
-		int offset = luacon_particle_getproperty(prop, &format);
+		CommandInterface::FormatType format;
+		int offset = luacon_ci->GetPropertyOffset(prop, format);
 
 		if (offset == -1)
 		{
-			if (!strcmp(prop,"id"))
+			if (!prop.compare("id"))
 			{
 				lua_pushnumber(l, i);
 				return 1;
@@ -1372,17 +1323,18 @@ int luatpt_get_property(lua_State* l)
 		}
 		switch(format)
 		{
-			case 0:
+			case CommandInterface::FormatInt:
+			case CommandInterface::FormatElement:
 				tempinteger = *((int*)(((unsigned char*)&luacon_sim->parts[i])+offset));
 				lua_pushnumber(l, tempinteger);
 				break;
-			case 1:
+			case CommandInterface::FormatFloat:
 				tempfloat = *((float*)(((unsigned char*)&luacon_sim->parts[i])+offset));
 				lua_pushnumber(l, tempfloat);
 		}
 		return 1;
 	}
-	else if (!strcmp(prop,"type"))
+	else if (!prop.compare("type"))
 	{
 		lua_pushinteger(l, 0);
 		return 1;

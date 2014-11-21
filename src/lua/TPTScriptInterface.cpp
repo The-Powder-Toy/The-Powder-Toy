@@ -262,8 +262,7 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 
 	FormatType propertyFormat;
 	int propertyOffset = GetPropertyOffset(property.Value(), propertyFormat);
-
-	if(propertyOffset==-1)
+	if (propertyOffset == -1)
 		throw GeneralException("Invalid property");
 
 	//Selector
@@ -306,7 +305,7 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 	if (property.Value() == "type" && (newValue < 0 || newValue >= PT_NUM || !sim->elements[newValue].Enabled))
 		throw GeneralException("Invalid element");
 
-	if(selector.GetType() == TypePoint || selector.GetType() == TypeNumber)
+	if (selector.GetType() == TypePoint || selector.GetType() == TypeNumber)
 	{
 		int partIndex = -1;
 		if(selector.GetType() == TypePoint)
@@ -329,10 +328,13 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 		case FormatFloat:
 			*((float*)(partsBlock+(partIndex*sizeof(Particle))+propertyOffset)) = newValuef;
 			break;
+		case FormatElement:
+			sim->part_change_type(partIndex, sim->parts[partIndex].x, sim->parts[partIndex].y, newValue);
+			break;
 		}
 		returnValue = 1;
 	}
-	else if(selector.GetType() == TypeString && ((StringType)selector).Value() == "all")
+	else if (selector.GetType() == TypeString && ((StringType)selector).Value() == "all")
 	{
 		switch(propertyFormat)
 		{
@@ -356,27 +358,37 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 					}
 			}
 			break;
+		case FormatElement:
+			{
+				for (int j = 0; j < NPART; j++)
+					if (sim->parts[j].type)
+					{
+						returnValue++;
+						sim->part_change_type(j, sim->parts[j].x, sim->parts[j].y, newValue);
+					}
+			}
+		break;
 		}
 	}
 	else if(selector.GetType() == TypeString || selector.GetType() == TypeNumber)
 	{
 		int type;
-		if(selector.GetType() == TypeNumber)
+		if (selector.GetType() == TypeNumber)
 			type = ((NumberType)selector).Value();
-		else if(selector.GetType() == TypeString)
+		else if (selector.GetType() == TypeString)
 			type = GetParticleType(((StringType)selector).Value());
 
-		if(type<0 || type>=PT_NUM)
+		if (type<0 || type>=PT_NUM)
 			throw GeneralException("Invalid particle type");
-		if(type==0)
+		if (type==0)
 			throw GeneralException("Cannot set properties of particles that do not exist");
 		std::cout << propertyOffset << std::endl;
 		switch(propertyFormat)
 		{
 		case FormatInt:
 			{
-				for(int j = 0; j < NPART; j++)
-					if(sim->parts[j].type == type)
+				for (int j = 0; j < NPART; j++)
+					if (sim->parts[j].type == type)
 					{
 						returnValue++;
 						*((int*)(partsBlock+(j*sizeof(Particle))+propertyOffset)) = newValue;
@@ -385,14 +397,23 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 			break;
 		case FormatFloat:
 			{
-				for(int j = 0; j < NPART; j++)
-					if(sim->parts[j].type == type)
+				for (int j = 0; j < NPART; j++)
+					if (sim->parts[j].type == type)
 					{
 						returnValue++;
 						*((float*)(partsBlock+(j*sizeof(Particle))+propertyOffset)) = newValuef;
 					}
 			}
 			break;
+		case FormatElement:
+			{
+				for (int j = 0; j < NPART; j++)
+					if (sim->parts[j].type == type)
+					{
+						returnValue++;
+						sim->part_change_type(j, sim->parts[j].x, sim->parts[j].y, newValue);
+					}
+			}
 		}
 	}
 	else
