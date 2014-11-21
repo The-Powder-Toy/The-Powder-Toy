@@ -2079,6 +2079,7 @@ void Simulation::init_can_move()
 	can_move[PT_NEUT][PT_INVIS] = 2;
 	can_move[PT_ELEC][PT_LCRY] = 2;
 	can_move[PT_ELEC][PT_EXOT] = 2;
+	can_move[PT_ELEC][PT_GLOW] = 2;
 	can_move[PT_PHOT][PT_LCRY] = 3; //varies according to LCRY life
 
 	can_move[PT_PHOT][PT_BIZR] = 2;
@@ -2274,12 +2275,20 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 				if (rand() < RAND_MAX/10)
 					create_cherenkov_photon(i);
 		}
+		else if (parts[i].type == PT_ELEC)
+		{
+			if ((r&0xFF) == PT_GLOW)
+			{
+				part_change_type(i, x, y, PT_PHOT);
+				parts[i].ctype = 0x3FFFFFFF;
+			}
+		}
 		else if (parts[i].type == PT_PROT)
 		{
 			if ((r&0xFF) == PT_INVIS)
 				part_change_type(i, x, y, PT_NEUT);
 		}
-		else if ((parts[i].type==PT_BIZR || parts[i].type==PT_BIZRG))
+		else if ((parts[i].type == PT_BIZR || parts[i].type == PT_BIZRG))
 		{
 			if ((r&0xFF) == PT_FILT)
 				parts[i].ctype = Element_FILT::interactWavelengths(&parts[r>>8], parts[i].ctype);

@@ -107,10 +107,6 @@ int Element_ELEC::update(UPDATE_FUNC_ARGS)
 					parts[r>>8].tmp2 += 5;
 					parts[r>>8].life = 1000;
 					break;
-				case PT_GLOW:
-					if (!rx && !ry)//if on GLOW
-						sim->part_change_type(i, x, y, PT_PHOT);
-					break;
 				case PT_NONE: //seems to speed up ELEC even if it isn't used
 					break;
 				default:

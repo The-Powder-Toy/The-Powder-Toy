@@ -62,6 +62,7 @@ int Element_H2::update(UPDATE_FUNC_ARGS)
 				{
 					sim->part_change_type(r>>8,x+rx,y+ry,PT_WATR);
 					sim->part_change_type(i,x,y,PT_OIL);
+					return 1;
 				}
 				if (sim->pv[y/CELL][x/CELL] > 45.0f)
 				{
@@ -80,12 +81,14 @@ int Element_H2::update(UPDATE_FUNC_ARGS)
 						sim->create_part(i,x,y,PT_FIRE);
 						parts[i].temp+=(rand()%100);
 						parts[i].tmp |= 1;
+						return 1;
 					}
 					else if ((rt==PT_PLSM && !(parts[r>>8].tmp&4)) || (rt==PT_LAVA && parts[r>>8].ctype != PT_BMTL))
 					{
 						sim->create_part(i,x,y,PT_FIRE);
 						parts[i].temp+=(rand()%100);
 						parts[i].tmp |= 1;
+						return 1;
 					}
 				}
 			}
@@ -122,6 +125,7 @@ int Element_H2::update(UPDATE_FUNC_ARGS)
 			}
 			parts[i].temp = temp+750+rand()%500;
 			sim->pv[y/CELL][x/CELL] += 30;
+			return 1;
 		}
 	}
 	return 0;

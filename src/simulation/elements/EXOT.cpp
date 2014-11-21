@@ -116,7 +116,7 @@ int Element_EXOT::update(UPDATE_FUNC_ARGS)
 		if (parts[i].life < 1001)
 		{
 			sim->part_change_type(i, x, y, PT_WARP);
-			return 0;
+			return 1;
 		}
 	}
 	else if(parts[i].life < 1001)
@@ -126,7 +126,7 @@ int Element_EXOT::update(UPDATE_FUNC_ARGS)
 	{
 		parts[i].tmp2 = 6000;
 		sim->part_change_type(i, x, y, PT_WARP);
-		return 0;
+		return 1;
 	}
 	if (parts[i].tmp2 > 100)
 	{
