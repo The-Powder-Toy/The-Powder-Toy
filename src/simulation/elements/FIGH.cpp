@@ -49,6 +49,11 @@ Element_FIGH::Element_FIGH()
 //#TPT-Directive ElementHeader Element_FIGH static int update(UPDATE_FUNC_ARGS)
 int Element_FIGH::update(UPDATE_FUNC_ARGS)
 {
+	if (parts[i].tmp < 0 || parts[i].tmp >= MAX_FIGHTERS)
+	{
+		sim->kill_part(i);
+		return 1;
+	}
 	playerst* figh = &sim->fighters[(unsigned char)parts[i].tmp];
 
 	unsigned int tarx, tary;

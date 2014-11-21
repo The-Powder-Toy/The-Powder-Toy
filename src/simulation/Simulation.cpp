@@ -148,8 +148,7 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 		}
 		else if (parts[i].type == PT_FIGH)
 		{
-			//TODO: 100 should be replaced with a macro
-			for(int fcount = 0; fcount < 100; fcount++)
+			for (int fcount = 0; fcount < MAX_FIGHTERS; fcount++)
 			{
 				if(!fighters[fcount].spwn)
 				{
@@ -318,7 +317,7 @@ Snapshot * Simulation::CreateSnapshot()
 	snap->FanVelocityY.insert(snap->FanVelocityY.begin(), &fvy[0][0], &fvy[0][0]+((XRES/CELL)*(YRES/CELL)));
 	snap->stickmen.push_back(player2);
 	snap->stickmen.push_back(player);
-	snap->stickmen.insert(snap->stickmen.begin(), &fighters[0], &fighters[255]);
+	snap->stickmen.insert(snap->stickmen.begin(), &fighters[0], &fighters[MAX_FIGHTERS]);
 	snap->signs = signs;
 	return snap;
 }
@@ -2686,6 +2685,16 @@ void Simulation::part_change_type(int i, int x, int y, int t)//changes the type 
 		kill_part(i);
 		return;
 	}
+	else if ((t == PT_STKM || t == PT_STKM2 || t == PT_SPAWN || t == PT_SPAWN2) && elementCount[t])
+	{
+		kill_part(i);
+		return;
+	}
+	else if ((t == PT_STKM && player.spwn) || (t == PT_STKM2 && player2.spwn))
+	{
+		kill_part(i);
+		return;
+	}
 
 	if (parts[i].type == PT_STKM)
 		player.spwn = 0;
@@ -2709,17 +2718,6 @@ void Simulation::part_change_type(int i, int x, int y, int t)//changes the type 
 	else if (parts[i].type == PT_SOAP)
 		Element_SOAP::detach(this, i);
 
-	if ((t == PT_STKM || t == PT_STKM2 || t == PT_SPAWN || t == PT_SPAWN2) && elementCount[t])
-	{
-		kill_part(i);
-		return;
-	}
-	else if ((t == PT_STKM && player.spwn) || (t == PT_STKM2 && player2.spwn))
-	{
-		kill_part(i);
-		return;
-	}
-
 	if (parts[i].type > 0 && parts[i].type < PT_NUM && elementCount[parts[i].type])
 		elementCount[parts[i].type]--;
 	elementCount[t]++;
@@ -2734,8 +2732,8 @@ void Simulation::part_change_type(int i, int x, int y, int t)//changes the type 
 		Element_STKM::STKM_init_legs(this, &player2, i);
 	else if (t == PT_FIGH)
 	{
-		if (parts[i].tmp2 >= 0 && parts[i].tmp2 < 100)
-			Element_STKM::STKM_init_legs(this, &fighters[parts[i].tmp2], i);
+		if (parts[i].tmp >= 0 && parts[i].tmp < MAX_FIGHTERS)
+			Element_STKM::STKM_init_legs(this, &fighters[parts[i].tmp], i);
 	}
 
 	parts[i].type = t;
@@ -3097,8 +3095,8 @@ int Simulation::create_part(int p, int x, int y, int tv)
 			case PT_FIGH:
 			{
 				unsigned char fcount = 0;
-				while (fcount < 100 && fcount < (fighcount+1) && fighters[fcount].spwn==1) fcount++;
-				if (fcount < 100 && fighters[fcount].spwn==0)
+				while (fcount < MAX_FIGHTERS && fcount < (fighcount+1) && fighters[fcount].spwn==1) fcount++;
+				if (fcount < MAX_FIGHTERS && fighters[fcount].spwn==0)
 				{
 					parts[i].life = 100;
 					parts[i].tmp = fcount;
@@ -4407,7 +4405,7 @@ killed:
 							stickman = &player;
 						else if (t == PT_STKM2)
 							stickman = &player2;
-						else if (t == PT_FIGH && parts[i].tmp >= 0 && parts[i].tmp < 256)
+						else if (t == PT_FIGH && parts[i].tmp >= 0 && parts[i].tmp < MAX_FIGHTERS)
 							stickman = &fighters[parts[i].tmp];
 
 						if (stickman)

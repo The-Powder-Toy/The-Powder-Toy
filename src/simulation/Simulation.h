@@ -64,7 +64,7 @@ public:
 	//Stickman
 	playerst player;
 	playerst player2;
-	playerst fighters[256]; //255 is the maximum number of fighters
+	playerst fighters[MAX_FIGHTERS]; //Defined in Stickman.h
 	unsigned char fighcount; //Contains the number of fighters
 	bool gravWallChanged;
 	//Portals and Wifi

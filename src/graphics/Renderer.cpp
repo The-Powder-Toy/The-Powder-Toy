@@ -1377,7 +1377,7 @@ void Renderer::render_parts()
 						cplayer = &sim->player;
 					else if(t==PT_STKM2)
 						cplayer = &sim->player2;
-					else if(t==PT_FIGH)
+					else if (t==PT_FIGH && sim->parts[i].tmp >= 0 && sim->parts[i].tmp < MAX_FIGHTERS)
 						cplayer = &sim->fighters[(unsigned char)sim->parts[i].tmp];
 					else
 						continue;
