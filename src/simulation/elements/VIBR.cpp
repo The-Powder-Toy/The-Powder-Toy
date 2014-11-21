@@ -176,12 +176,6 @@ int Element_VIBR::update(UPDATE_FUNC_ARGS) {
 					{
 						sim->create_part(i, x, y, PT_EXOT);
 					}
-					//Absorbs energy particles
-					else if ((sim->elements[r&0xFF].Properties & TYPE_ENERGY))
-					{
-						parts[i].tmp += 20;
-						sim->kill_part(r>>8);
-					}
 				}
 				//VIBR+ANAR=BVBR
 				if (parts[i].type != PT_BVBR && (r&0xFF) == PT_ANAR)

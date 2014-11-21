@@ -1073,6 +1073,7 @@ void GameController::OpenLocalSaveWindow(bool asCurrent)
 	gameSave->paused = gameModel->GetPaused();
 	gameSave->gravityMode = sim->gravityMode;
 	gameSave->airMode = sim->air->airMode;
+	gameSave->edgeMode = sim->edgeMode;
 	gameSave->legacyEnable = sim->legacy_enable;
 	gameSave->waterEEnabled = sim->water_equal_test;
 	gameSave->gravityEnable = sim->grav->ngrav_enable;
@@ -1281,6 +1282,7 @@ void GameController::OpenSaveWindow()
 		gameSave->paused = gameModel->GetPaused();
 		gameSave->gravityMode = sim->gravityMode;
 		gameSave->airMode = sim->air->airMode;
+		gameSave->edgeMode = sim->edgeMode;
 		gameSave->legacyEnable = sim->legacy_enable;
 		gameSave->waterEEnabled = sim->water_equal_test;
 		gameSave->gravityEnable = sim->grav->ngrav_enable;
@@ -1333,6 +1335,7 @@ void GameController::SaveAsCurrent()
 		gameSave->paused = gameModel->GetPaused();
 		gameSave->gravityMode = sim->gravityMode;
 		gameSave->airMode = sim->air->airMode;
+		gameSave->edgeMode = sim->edgeMode;
 		gameSave->legacyEnable = sim->legacy_enable;
 		gameSave->waterEEnabled = sim->water_equal_test;
 		gameSave->gravityEnable = sim->grav->ngrav_enable;

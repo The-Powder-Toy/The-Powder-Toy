@@ -22,6 +22,7 @@ paused(save.paused),
 gravityMode(save.gravityMode),
 aheatEnable(save.aheatEnable),
 airMode(save.airMode),
+edgeMode(save.edgeMode),
 signs(save.signs),
 expanded(save.expanded),
 hasOriginalData(save.hasOriginalData),
@@ -179,6 +180,7 @@ void GameSave::Expand()
 		paused = false;
 		gravityMode = 0;
 		airMode = 0;
+		edgeMode = 0;
 		expanded = true;
 		read(&originalData[0], originalData.size());
 	}
@@ -675,6 +677,17 @@ void GameSave::readOPS(char * data, int dataLength)
 			if(bson_iterator_type(&iter)==BSON_INT)
 			{
 				airMode = bson_iterator_int(&iter);
+			}
+			else
+			{
+				fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
+			}
+		}
+		else if (!strcmp(bson_iterator_key(&iter), "edgeMode"))
+		{
+			if(bson_iterator_type(&iter)==BSON_INT)
+			{
+				edgeMode = bson_iterator_int(&iter);
 			}
 			else
 			{
@@ -1914,7 +1927,7 @@ char * GameSave::serialiseOPS(int & dataLength)
 						life = 0;
 					fieldDesc |= 1 << 1;
 					partsData[partsDataLen++] = life;
-					if(particles[i].life & 0xFF00)
+					if (life & 0xFF00)
 					{
 						fieldDesc |= 1 << 2;
 						partsData[partsDataLen++] = life >> 8;
@@ -2082,6 +2095,7 @@ char * GameSave::serialiseOPS(int & dataLength)
 	bson_append_bool(&b, "paused", paused);
 	bson_append_int(&b, "gravityMode", gravityMode);
 	bson_append_int(&b, "airMode", airMode);
+	bson_append_int(&b, "edgeMode", edgeMode);
 
 	//bson_append_int(&b, "leftSelectedElement", sl);
 	//bson_append_int(&b, "rightSelectedElement", sr);
