@@ -132,9 +132,9 @@ int Element_DEUT::graphics(GRAPHICS_FUNC_ARGS)
 	if(cpart->life>=240)
 	{
 		*firea = 60;
-		*firer = *colr += cpart->life*1;
-		*fireg = *colg += cpart->life*2;
-		*fireb = *colb += cpart->life*3;
+		*firer = *colr += 255;
+		*fireg = *colg += 255;
+		*fireb = *colb += 255;
 		*pixel_mode |= PMODE_GLOW | FIRE_ADD;
 	}
 	else if(cpart->life>0)
