@@ -28,7 +28,7 @@ Element_DMND::Element_DMND()
 	
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 186;
-	Description = "Diamond. Indestructible.";
+	Description = "Diamond. Can't be molten, or blown up and doesn't break under pressure.";
 	
 	State = ST_SOLID;
 	Properties = TYPE_SOLID;
