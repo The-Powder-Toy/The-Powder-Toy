@@ -454,11 +454,15 @@ void Element_PIPE::pushParticle(Simulation * sim, int i, int count, int original
 				}
 				else if ((r&0xFF) == PT_PRTI) //Pass particles into PRTI for a pipe speed increase
 				{
-					int nnx;
-					for (nnx=0; nnx<80; nnx++)
-						if (!sim->portalp[sim->parts[r>>8].tmp][count][nnx].type)
+					int portaltmp = sim->parts[r>>8].tmp;
+					if (portaltmp >= CHANNELS)
+						portaltmp = CHANNELS-1;
+					else if (portaltmp < 0)
+						portaltmp = 0;
+					for (int nnx = 0; nnx < 80; nnx++)
+						if (!sim->portalp[portaltmp][count][nnx].type)
 						{
-							transfer_pipe_to_part(sim, sim->parts+i, &(sim->portalp[sim->parts[r>>8].tmp][count][nnx]));
+							transfer_pipe_to_part(sim, sim->parts+i, &(sim->portalp[portaltmp][count][nnx]));
 							count++;
 							break;
 						}
@@ -480,11 +484,15 @@ void Element_PIPE::pushParticle(Simulation * sim, int i, int count, int original
 		}
 		else if ((r&0xFF) == PT_PRTI) //Pass particles into PRTI for a pipe speed increase
 		{
-			int nnx;
-			for (nnx=0; nnx<80; nnx++)
-				if (!sim->portalp[sim->parts[r>>8].tmp][count][nnx].type)
+			int portaltmp = sim->parts[r>>8].tmp;
+			if (portaltmp >= CHANNELS)
+				portaltmp = CHANNELS-1;
+			else if (portaltmp < 0)
+				portaltmp = 0;
+			for (int nnx = 0; nnx < 80; nnx++)
+				if (!sim->portalp[portaltmp][count][nnx].type)
 				{
-					transfer_pipe_to_part(sim, sim->parts+i, &(sim->portalp[sim->parts[r>>8].tmp][count][nnx]));
+					transfer_pipe_to_part(sim, sim->parts+i, &(sim->portalp[portaltmp][count][nnx]));
 					count++;
 					break;
 				}
