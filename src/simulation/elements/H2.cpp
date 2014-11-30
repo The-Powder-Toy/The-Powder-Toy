@@ -101,23 +101,23 @@ int Element_H2::update(UPDATE_FUNC_ARGS)
 			sim->create_part(i,x,y,PT_NBLE);
 			parts[i].tmp = 0x1;
 
-			j = sim->create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_NEUT);
+			j = sim->create_part(-3,x,y,PT_NEUT);
 			if (j>-1)
 				parts[j].temp = temp;
 			if (!(rand()%10))
 			{
-				j = sim->create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_ELEC);
+				j = sim->create_part(-3,x,y,PT_ELEC);
 				if (j>-1)
 					parts[j].temp = temp;
 			}
-			j = sim->create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_PHOT);
+			j = sim->create_part(-3,x,y,PT_PHOT);
 			if (j>-1)
 			{
 				parts[j].ctype = 0x7C0000;
 				parts[j].temp = temp;
 				parts[j].tmp = 0x1;
 			}
-			j = sim->create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_PLSM);
+			j = sim->create_part(-1,x+rand()%3-1,y+rand()%3-1,PT_PLSM);
 			if (j>-1)
 			{
 				parts[j].temp = temp;
