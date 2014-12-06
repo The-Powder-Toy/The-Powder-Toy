@@ -50,7 +50,7 @@ Element_IRON::Element_IRON()
 int Element_IRON::update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry, rt;
-	if (!parts[i].life)
+	if (parts[i].life)
 		return 0;
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)

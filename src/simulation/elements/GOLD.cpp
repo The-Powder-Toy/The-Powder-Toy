@@ -56,9 +56,9 @@ int Element_GOLD::update(UPDATE_FUNC_ARGS)
 	//Find nearby rusted iron (BMTL with tmp 1+)
 	for(int j = 0; j < 8; j++){
 		rndstore = rand();
-		rx = ((rndstore & 0xF) % 9)-4;
+		rx = (rndstore % 9)-4;
 		rndstore >>= 4;
-		ry = ((rndstore & 0xF) % 9)-4;
+		ry = (rndstore % 9)-4;
 		if ((!rx != !ry) && BOUNDS_CHECK) {
 			r = pmap[y+ry][x+rx];
 			if(!r) continue;
@@ -101,11 +101,11 @@ int Element_GOLD::update(UPDATE_FUNC_ARGS)
 int Element_GOLD::graphics(GRAPHICS_FUNC_ARGS)
 {
 	int rndstore = rand();
-	*colr += (rndstore & 0xF) % 10 - 5;
+	*colr += (rndstore % 10) - 5;
 	rndstore >>= 4;
-	*colg += (rndstore & 0xF) % 10 - 5;
+	*colg += (rndstore % 10)- 5;
 	rndstore >>= 4;
-	*colb += (rndstore & 0xF) % 10 - 5;
+	*colb += (rndstore % 10) - 5;
 	return 0;
 }
 

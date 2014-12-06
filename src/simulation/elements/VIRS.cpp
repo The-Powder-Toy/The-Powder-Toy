@@ -127,7 +127,7 @@ int Element_VIRS::update(UPDATE_FUNC_ARGS)
 						parts[r>>8].pavg[0] = 0;
 						if (parts[i].pavg[1])
 						{
-							parts[r>>8].pavg[1] = parts[i].pavg[1] + ((rndstore & 0x3) % 3 ? 1 : 0);
+							parts[r>>8].pavg[1] = parts[i].pavg[1] + ((rndstore % 3) ? 1 : 0);
 							rndstore >>= 2;
 						}
 						else
