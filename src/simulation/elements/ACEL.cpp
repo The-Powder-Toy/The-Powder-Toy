@@ -63,7 +63,7 @@ int Element_ACEL::update(UPDATE_FUNC_ARGS)
 	parts[i].tmp = 0;
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)
-			if (BOUNDS_CHECK && (rx || ry) && !(rx && ry))
+			if (BOUNDS_CHECK && (!rx != !ry))
 			{
 				r = pmap[y+ry][x+rx];
 				if(!r)
