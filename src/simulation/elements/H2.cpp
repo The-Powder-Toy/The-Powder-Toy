@@ -117,11 +117,15 @@ int Element_H2::update(UPDATE_FUNC_ARGS)
 				parts[j].temp = temp;
 				parts[j].tmp = 0x1;
 			}
-			j = sim->create_part(-1,x+rand()%3-1,y+rand()%3-1,PT_PLSM);
-			if (j>-1)
+			rx = x+rand()%3-1, ry = y+rand()%3-1, rt = pmap[ry][rx]&0xFF;
+			if (sim->can_move[PT_PLSM][rt] || rt == PT_H2)
 			{
-				parts[j].temp = temp;
-				parts[j].tmp |= 4;
+				j = sim->create_part(-3,rx,ry,PT_PLSM);
+				if (j>-1)
+				{
+					parts[j].temp = temp;
+					parts[j].tmp |= 4;
+				}
 			}
 			parts[i].temp = temp+750+rand()%500;
 			sim->pv[y/CELL][x/CELL] += 30;
