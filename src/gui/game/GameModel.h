@@ -38,7 +38,6 @@ private:
 	vector<Notification*> notifications;
 	//int clipboardSize;
 	//unsigned char * clipboardData;
-	GameSave * stamp;
 	GameSave * clipboard;
 	GameSave * placeSave;
 	deque<string> consoleLog;
@@ -185,14 +184,11 @@ public:
 	ui::Point AdjustZoomCoords(ui::Point position);
 	void SetZoomWindowPosition(ui::Point position);
 	ui::Point GetZoomWindowPosition();
-	void SetStamp(GameSave * newStamp);
-	std::string AddStamp(GameSave * save);
 	void SetClipboard(GameSave * save);
 	void SetPlaceSave(GameSave * save);
 	void Log(string message);
 	deque<string> GetLog();
 	GameSave * GetClipboard();
-	GameSave * GetStamp();
 	GameSave * GetPlaceSave();
 
 	std::vector<Notification*> GetNotifications();

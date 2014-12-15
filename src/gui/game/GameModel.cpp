@@ -27,7 +27,6 @@ GameModel::GameModel():
 	currentFile(NULL),
 	colourSelector(false),
 	clipboard(NULL),
-	stamp(NULL),
 	placeSave(NULL),
 	colour(255, 0, 0, 255),
 	toolStrength(1.0f),
@@ -94,15 +93,6 @@ GameModel::GameModel():
 	if(Client::Ref().GetAuthUser().ID)
 	{
 		currentUser = Client::Ref().GetAuthUser();
-	}
-
-	//Set stamp to first stamp in list
-	vector<string> stamps = Client::Ref().GetStamps(0, 1);
-	if(stamps.size()>0)
-	{
-		SaveFile * stampFile = Client::Ref().GetStamp(stamps[0]);
-		if(stampFile && stampFile->GetGameSave())
-			stamp = stampFile->GetGameSave();
 	}
 
 	BuildMenus();
@@ -192,8 +182,6 @@ GameModel::~GameModel()
 		delete placeSave;
 	if(clipboard)
 		delete clipboard;
-	if(stamp)
-		delete stamp;
 	if(currentSave)
 		delete currentSave;
 	if(currentFile)
@@ -903,19 +891,6 @@ void GameModel::ClearSimulation()
 	UpdateQuickOptions();
 }
 
-void GameModel::SetStamp(GameSave * save)
-{
-	if(stamp != save)
-	{
-		if(stamp)
-			delete stamp;
-		if(save)
-			stamp = new GameSave(*save);
-		else
-			stamp = NULL;
-	}
-}
-
 void GameModel::SetPlaceSave(GameSave * save)
 {
 	if(save != placeSave)
@@ -928,14 +903,6 @@ void GameModel::SetPlaceSave(GameSave * save)
 			placeSave = NULL;
 	}
 	notifyPlaceSaveChanged();
-}
-
-std::string GameModel::AddStamp(GameSave * save)
-{
-	if(stamp)
-		delete stamp;
-	stamp = save;
-	return Client::Ref().AddStamp(save);
 }
 
 void GameModel::SetClipboard(GameSave * save)
@@ -953,11 +920,6 @@ GameSave * GameModel::GetClipboard()
 GameSave * GameModel::GetPlaceSave()
 {
 	return placeSave;
-}
-
-GameSave * GameModel::GetStamp()
-{
-	return stamp;
 }
 
 void GameModel::Log(string message)

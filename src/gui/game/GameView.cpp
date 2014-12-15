@@ -1479,12 +1479,18 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		}
 		break;
 	case 'l':
-		c->LoadStamp();
-		selectPoint2 = mousePosition;
-		selectPoint1 = selectPoint2;
-		isMouseDown = false;
-		drawMode = DrawPoints;
-		break;
+	{
+		std::vector<std::string> stampList = Client::Ref().GetStamps(0, 1);
+		if (stampList.size())
+		{
+			c->LoadStamp(Client::Ref().GetStamp(stampList[0])->GetGameSave());
+			selectPoint2 = mousePosition;
+			selectPoint1 = selectPoint2;
+			isMouseDown = false;
+			drawMode = DrawPoints;
+			break;
+		}
+	}
 	case 'k':
 		selectPoint2 = ui::Point(-1, -1);
 		selectPoint1 = selectPoint2;

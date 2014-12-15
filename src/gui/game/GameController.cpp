@@ -111,10 +111,9 @@ public:
 	{
 		if(cc->localBrowser->GetSave())
 		{
-			cc->gameModel->SetStamp(cc->localBrowser->GetSave()->GetGameSave());
 			if (cc->localBrowser->GetMoveToFront())
 				Client::Ref().MoveStampToFront(cc->localBrowser->GetSave()->GetName());
-			cc->LoadStamp();
+			cc->LoadStamp(cc->localBrowser->GetSave()->GetGameSave());
 		}
 	}
 };
@@ -487,9 +486,9 @@ void GameController::LoadClipboard()
 		gameModel->GetPlaceSave()->Expand();
 }
 
-void GameController::LoadStamp()
+void GameController::LoadStamp(GameSave *stamp)
 {
-	gameModel->SetPlaceSave(gameModel->GetStamp());
+	gameModel->SetPlaceSave(stamp);
 	if(gameModel->GetPlaceSave() && gameModel->GetPlaceSave()->Collapsed())
 		gameModel->GetPlaceSave()->Expand();
 }
@@ -526,7 +525,7 @@ std::string GameController::StampRegion(ui::Point point1, ui::Point point2)
 	if(newSave)
 	{
 		newSave->paused = gameModel->GetPaused();
-		return gameModel->AddStamp(newSave);
+		return Client::Ref().AddStamp(newSave);
 	}
 	else
 	{
