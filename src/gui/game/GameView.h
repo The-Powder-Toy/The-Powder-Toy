@@ -113,6 +113,8 @@ private:
 	int lastOffset;
 	void setToolButtonOffset(int offset);
 
+	void SetSaveButtonTooltips();
+
 	void screenshot();
 	void record();
 
