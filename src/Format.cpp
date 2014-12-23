@@ -213,7 +213,7 @@ std::vector<char> format::VideoBufferToPPM(const VideoBuffer & vidBuf)
 		}
 		data.insert(data.end(), currentRow, currentRow+(vidBuf.Width*3));
 	}
-	delete currentRow;
+	delete [] currentRow;
 
 	return data;
 }
