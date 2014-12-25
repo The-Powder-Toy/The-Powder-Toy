@@ -1069,20 +1069,15 @@ void GameController::OpenLocalSaveWindow(bool asCurrent)
 {
 	Simulation * sim = gameModel->GetSimulation();
 	GameSave * gameSave = sim->Save();
-	gameSave->paused = gameModel->GetPaused();
-	gameSave->gravityMode = sim->gravityMode;
-	gameSave->airMode = sim->air->airMode;
-	gameSave->edgeMode = sim->edgeMode;
-	gameSave->legacyEnable = sim->legacy_enable;
-	gameSave->waterEEnabled = sim->water_equal_test;
-	gameSave->gravityEnable = sim->grav->ngrav_enable;
-	gameSave->aheatEnable = sim->aheat_enable;
 	if(!gameSave)
 	{
 		new ErrorMessage("Error", "Unable to build save.");
 	}
 	else
 	{
+		sim->SaveSimOptions(gameSave);
+		gameSave->paused = gameModel->GetPaused();
+
 		std::string filename = "";
 		if (gameModel->GetSaveFile())
 			filename = gameModel->GetSaveFile()->GetDisplayName();
@@ -1278,20 +1273,15 @@ void GameController::OpenSaveWindow()
 	{
 		Simulation * sim = gameModel->GetSimulation();
 		GameSave * gameSave = sim->Save();
-		gameSave->paused = gameModel->GetPaused();
-		gameSave->gravityMode = sim->gravityMode;
-		gameSave->airMode = sim->air->airMode;
-		gameSave->edgeMode = sim->edgeMode;
-		gameSave->legacyEnable = sim->legacy_enable;
-		gameSave->waterEEnabled = sim->water_equal_test;
-		gameSave->gravityEnable = sim->grav->ngrav_enable;
-		gameSave->aheatEnable = sim->aheat_enable;
 		if(!gameSave)
 		{
 			new ErrorMessage("Error", "Unable to build save.");
 		}
 		else
 		{
+			sim->SaveSimOptions(gameSave);
+			gameSave->paused = gameModel->GetPaused();
+
 			if(gameModel->GetSave())
 			{
 				SaveInfo tempSave(*gameModel->GetSave());
@@ -1331,20 +1321,15 @@ void GameController::SaveAsCurrent()
 	{
 		Simulation * sim = gameModel->GetSimulation();
 		GameSave * gameSave = sim->Save();
-		gameSave->paused = gameModel->GetPaused();
-		gameSave->gravityMode = sim->gravityMode;
-		gameSave->airMode = sim->air->airMode;
-		gameSave->edgeMode = sim->edgeMode;
-		gameSave->legacyEnable = sim->legacy_enable;
-		gameSave->waterEEnabled = sim->water_equal_test;
-		gameSave->gravityEnable = sim->grav->ngrav_enable;
-		gameSave->aheatEnable = sim->aheat_enable;
 		if(!gameSave)
 		{
 			new ErrorMessage("Error", "Unable to build save.");
 		}
 		else
 		{
+			gameSave->paused = gameModel->GetPaused();
+			sim->SaveSimOptions(gameSave);
+
 			if(gameModel->GetSave())
 			{
 				SaveInfo tempSave(*gameModel->GetSave());

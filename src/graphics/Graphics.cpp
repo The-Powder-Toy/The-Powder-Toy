@@ -826,7 +826,7 @@ void Graphics::textsize(const char * s, int & width, int & height)
 		}
 		else if (*s == '\x0F')
 		{
-			if(!s[1] || !s[2] || !s[1]) break;
+			if(!s[1] || !s[2] || !s[3]) break;
 			s+=3;
 		}
 		else if (*s == '\b')

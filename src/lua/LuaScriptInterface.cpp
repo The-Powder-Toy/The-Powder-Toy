@@ -2766,18 +2766,7 @@ int LuaScriptInterface::fileSystem_exists(lua_State * l)
 	if(stat(filename, &s) == 0)
 #endif
 	{
-		if(s.st_mode & S_IFDIR)
-		{
-			exists = true;
-		}
-		else if(s.st_mode & S_IFREG)
-		{
-			exists = true;
-		}
-		else
-		{
-			exists = true;
-		}
+		exists = true;
 	}
 	else
 	{

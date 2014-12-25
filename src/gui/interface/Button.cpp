@@ -134,14 +134,7 @@ void Button::Draw(const Point& screenPos)
 	if(Appearance.icon)
 	{
 		if(Enabled)
-			if(isButtonDown || (isTogglable && toggle))
-			{
-				g->draw_icon(Position.X+iconPosition.X, Position.Y+iconPosition.Y, Appearance.icon, 255, iconInvert);
-			}
-			else
-			{
-				g->draw_icon(Position.X+iconPosition.X, Position.Y+iconPosition.Y, Appearance.icon, 255, iconInvert);	
-			}
+			g->draw_icon(Position.X+iconPosition.X, Position.Y+iconPosition.Y, Appearance.icon, 255, iconInvert);
 		else
 			g->draw_icon(Position.X+iconPosition.X, Position.Y+iconPosition.Y, Appearance.icon, 180, iconInvert);
 	}

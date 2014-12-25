@@ -321,7 +321,7 @@ int SDLOpen()
 	SDL_SysWMinfo SysInfo;
 	SDL_VERSION(&SysInfo.version);
 	if(SDL_GetWMInfo(&SysInfo) <= 0) {
-	    printf("%s : %d\n", SDL_GetError(), SysInfo.window);
+	    printf("%s : %p\n", SDL_GetError(), SysInfo.window);
 	    exit(-1);
 	}
 	HWND WindowHandle = SysInfo.window;
@@ -968,10 +968,10 @@ int main(int argc, char * argv[])
 						throw std::runtime_error("Invalid Save ID");
 
 					SaveInfo * newSave = Client::Ref().GetSave(saveId, 0);
-					GameSave * newGameSave = new GameSave(Client::Ref().GetSaveData(saveId, 0));
-					newSave->SetGameSave(newGameSave);
 					if(!newSave)
 						throw std::runtime_error("Could not load save");
+					GameSave * newGameSave = new GameSave(Client::Ref().GetSaveData(saveId, 0));
+					newSave->SetGameSave(newGameSave);
 
 					gameController->LoadSave(newSave);
 					delete newSave;

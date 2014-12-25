@@ -79,7 +79,6 @@ int Element_FWRK::update(UPDATE_FUNC_ARGS)
 			parts[i].ctype=0;
 			parts[i].vx -= gx*multiplier;
 			parts[i].vy -= gy*multiplier;
-			parts[i].dcolour = parts[i].dcolour;
 			return 0;
 		}
 	}

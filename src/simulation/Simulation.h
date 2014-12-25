@@ -114,6 +114,7 @@ public:
 	int Load(int x, int y, GameSave * save);
 	GameSave * Save();
 	GameSave * Save(int x1, int y1, int x2, int y2);
+	void SaveSimOptions(GameSave * gameSave);
 	SimulationSample GetSample(int x, int y);
 
 	Snapshot * CreateSnapshot();
@@ -189,7 +190,6 @@ public:
 
 	int GetParticleType(std::string type);
 
-	void *transform_save(void *odata, int *size, matrix2d transform, vector2d translate);
 	void orbitalparts_get(int block1, int block2, int resblock1[], int resblock2[]);
 	void orbitalparts_set(int *block1, int *block2, int resblock1[], int resblock2[]);
 	int get_wavelength_bin(int *wm);

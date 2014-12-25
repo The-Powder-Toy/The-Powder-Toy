@@ -217,7 +217,7 @@ void Engine::Tick()
 
 void Engine::Draw()
 {
-	if(lastBuffer && !(state_->Position.X == 0 && state_->Position.Y == 0 && state_->Size.X == width_ && state_->Size.Y == height_))
+	if(lastBuffer && !(state_ && state_->Position.X == 0 && state_->Position.Y == 0 && state_->Size.X == width_ && state_->Size.Y == height_))
 	{
 		g->Acquire();
 		g->Clear();

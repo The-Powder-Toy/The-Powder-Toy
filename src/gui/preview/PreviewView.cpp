@@ -446,7 +446,7 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 		{
 			savePreview = SaveRenderer::Ref().Render(save->GetGameSave(), false, true);
 
-			if(savePreview && savePreview->Buffer && !(savePreview->Width == XRES/2 && savePreview->Width == YRES/2))
+			if(savePreview && savePreview->Buffer && !(savePreview->Width == XRES/2 && savePreview->Height == YRES/2))
 			{
 				pixel * oldData = savePreview->Buffer;
 				float factorX = ((float)XRES/2)/((float)savePreview->Width);

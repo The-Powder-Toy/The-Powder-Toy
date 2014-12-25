@@ -296,6 +296,19 @@ GameSave * Simulation::Save(int fullX, int fullY, int fullX2, int fullY2)
 	return newSave;
 }
 
+void Simulation::SaveSimOptions(GameSave * gameSave)
+{
+	if (!gameSave)
+		return;
+	gameSave->gravityMode = gravityMode;
+	gameSave->airMode = air->airMode;
+	gameSave->edgeMode = edgeMode;
+	gameSave->legacyEnable = legacy_enable;
+	gameSave->waterEEnabled = water_equal_test;
+	gameSave->gravityEnable = grav->ngrav_enable;
+	gameSave->aheatEnable = aheat_enable;
+}
+
 Snapshot * Simulation::CreateSnapshot()
 {
 	Snapshot * snap = new Snapshot();
@@ -1548,151 +1561,6 @@ int Simulation::FloodParts(int x, int y, int fullc, int cm, int flags)
 	} while (coord_stack_size>0);
 	free(coord_stack);
 	return created_something;
-}
-
-void *Simulation::transform_save(void *odata, int *size, matrix2d transform, vector2d translate)
-{
-	void *ndata;
-	unsigned char (*bmapo)[XRES/CELL] = (unsigned char (*)[XRES/CELL])calloc((YRES/CELL)*(XRES/CELL), sizeof(unsigned char));
-	unsigned char (*bmapn)[XRES/CELL] = (unsigned char (*)[XRES/CELL])calloc((YRES/CELL)*(XRES/CELL), sizeof(unsigned char));
-	Particle *partst = (Particle*)calloc(sizeof(Particle), NPART);
-	sign *signst = (sign*)calloc(MAXSIGNS, sizeof(sign));
-	unsigned (*pmapt)[XRES] = (unsigned (*)[XRES])calloc(YRES*XRES, sizeof(unsigned));
-	float (*fvxo)[XRES/CELL] = (float (*)[XRES/CELL])calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
-	float (*fvyo)[XRES/CELL] = (float (*)[XRES/CELL])calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
-	float (*fvxn)[XRES/CELL] = (float (*)[XRES/CELL])calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
-	float (*fvyn)[XRES/CELL] = (float (*)[XRES/CELL])calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
-	float (*vxo)[XRES/CELL] = (float (*)[XRES/CELL])calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
-	float (*vyo)[XRES/CELL] = (float (*)[XRES/CELL])calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
-	float (*vxn)[XRES/CELL] = (float (*)[XRES/CELL])calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
-	float (*vyn)[XRES/CELL] = (float (*)[XRES/CELL])calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
-	float (*pvo)[XRES/CELL] = (float (*)[XRES/CELL])calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
-	float (*pvn)[XRES/CELL] = (float (*)[XRES/CELL])calloc((YRES/CELL)*(XRES/CELL), sizeof(float));
-	int i, x, y, nx, ny, w, h, nw, nh;
-	vector2d pos, tmp, ctl, cbr;
-	vector2d vel;
-	vector2d cornerso[4];
-	unsigned char *odatac = (unsigned char *)odata;
-	//if (parse_save(odata, *size, 0, 0, 0, bmapo, vxo, vyo, pvo, fvxo, fvyo, signst, partst, pmapt)) //TODO: Implement
-	{
-		free(bmapo);
-		free(bmapn);
-		free(partst);
-		free(signst);
-		free(pmapt);
-		free(fvxo);
-		free(fvyo);
-		free(fvxn);
-		free(fvyn);
-		free(vxo);
-		free(vyo);
-		free(vxn);
-		free(vyn);
-		free(pvo);
-		free(pvn);
-		return odata;
-	}
-	w = odatac[6]*CELL;
-	h = odatac[7]*CELL;
-	// undo any translation caused by rotation
-	cornerso[0] = v2d_new(0,0);
-	cornerso[1] = v2d_new(w-1,0);
-	cornerso[2] = v2d_new(0,h-1);
-	cornerso[3] = v2d_new(w-1,h-1);
-	for (i=0; i<4; i++)
-	{
-		tmp = m2d_multiply_v2d(transform,cornerso[i]);
-		if (i==0) ctl = cbr = tmp; // top left, bottom right corner
-		if (tmp.x<ctl.x) ctl.x = tmp.x;
-		if (tmp.y<ctl.y) ctl.y = tmp.y;
-		if (tmp.x>cbr.x) cbr.x = tmp.x;
-		if (tmp.y>cbr.y) cbr.y = tmp.y;
-	}
-	// casting as int doesn't quite do what we want with negative numbers, so use floor()
-	tmp = v2d_new(floor(ctl.x+0.5f),floor(ctl.y+0.5f));
-	translate = v2d_sub(translate,tmp);
-	nw = floor(cbr.x+0.5f)-floor(ctl.x+0.5f)+1;
-	nh = floor(cbr.y+0.5f)-floor(ctl.y+0.5f)+1;
-	if (nw>XRES) nw = XRES;
-	if (nh>YRES) nh = YRES;
-	// rotate and translate signs, parts, walls
-	for (i=0; i<MAXSIGNS; i++)
-	{
-		if (!signst[i].text[0]) continue;
-		pos = v2d_new(signst[i].x, signst[i].y);
-		pos = v2d_add(m2d_multiply_v2d(transform,pos),translate);
-		nx = floor(pos.x+0.5f);
-		ny = floor(pos.y+0.5f);
-		if (nx<0 || nx>=nw || ny<0 || ny>=nh)
-		{
-			signst[i].text[0] = 0;
-			continue;
-		}
-		signst[i].x = nx;
-		signst[i].y = ny;
-	}
-	for (i=0; i<NPART; i++)
-	{
-		if (!partst[i].type) continue;
-		pos = v2d_new(partst[i].x, partst[i].y);
-		pos = v2d_add(m2d_multiply_v2d(transform,pos),translate);
-		nx = floor(pos.x+0.5f);
-		ny = floor(pos.y+0.5f);
-		if (nx<0 || nx>=nw || ny<0 || ny>=nh)
-		{
-			partst[i].type = PT_NONE;
-			continue;
-		}
-		partst[i].x = nx;
-		partst[i].y = ny;
-		vel = v2d_new(partst[i].vx, partst[i].vy);
-		vel = m2d_multiply_v2d(transform, vel);
-		partst[i].vx = vel.x;
-		partst[i].vy = vel.y;
-	}
-	for (y=0; y<YRES/CELL; y++)
-		for (x=0; x<XRES/CELL; x++)
-		{
-			pos = v2d_new(x*CELL+CELL*0.4f, y*CELL+CELL*0.4f);
-			pos = v2d_add(m2d_multiply_v2d(transform,pos),translate);
-			nx = pos.x/CELL;
-			ny = pos.y/CELL;
-			if (nx<0 || nx>=nw/CELL || ny<0 || ny>=nh/CELL)
-				continue;
-			if (bmapo[y][x])
-			{
-				bmapn[ny][nx] = bmapo[y][x];
-				if (bmapo[y][x]==WL_FAN)
-				{
-					vel = v2d_new(fvxo[y][x], fvyo[y][x]);
-					vel = m2d_multiply_v2d(transform, vel);
-					fvxn[ny][nx] = vel.x;
-					fvyn[ny][nx] = vel.y;
-				}
-			}
-			vel = v2d_new(vxo[y][x], vyo[y][x]);
-			vel = m2d_multiply_v2d(transform, vel);
-			vxn[ny][nx] = vel.x;
-			vyn[ny][nx] = vel.y;
-			pvn[ny][nx] = pvo[y][x];
-		}
-	//ndata = build_save(size,0,0,nw,nh,bmapn,vxn,vyn,pvn,fvxn,fvyn,signst,partst); //TODO: IMPLEMENT
-	free(bmapo);
-	free(bmapn);
-	free(partst);
-	free(signst);
-	free(pmapt);
-	free(fvxo);
-	free(fvyo);
-	free(fvxn);
-	free(fvyn);
-	free(vxo);
-	free(vyo);
-	free(vxn);
-	free(vyn);
-	free(pvo);
-	free(pvn);
-	return ndata;
 }
 
 void Simulation::orbitalparts_get(int block1, int block2, int resblock1[], int resblock2[])
@@ -4905,7 +4773,7 @@ void Simulation::update_particles()//doesn't update the particles themselves, bu
 			emp_decor = 0;
 	}
 	sandcolour = (int)(20.0f*sin((float)sandcolour_frame*(M_PI/180.0f)));
-	sandcolour_frame = (sandcolour_frame++)%360;
+	sandcolour_frame = (sandcolour_frame+1)%360;
 
 	memset(pmap, 0, sizeof(pmap));
 	memset(pmap_count, 0, sizeof(pmap_count));
