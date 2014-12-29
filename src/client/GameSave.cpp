@@ -2153,7 +2153,7 @@ char * GameSave::serialiseOPS(int & dataLength)
 	if (BZ2_bzBuffToBuffCompress((char*)(outputData+12), &outputDataLen, (char*)finalData, bson_size(&b), 9, 0, 0) != BZ_OK)
 	{
 		puts("Save Error\n");
-		free(outputData);
+		delete [] outputData;
 		dataLength = 0;
 		outputData = NULL;
 		goto fin;

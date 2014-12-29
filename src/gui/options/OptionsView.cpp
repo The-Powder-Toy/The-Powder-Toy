@@ -225,7 +225,7 @@ OptionsView::OptionsView():
 			char* workingDirectory = new char[FILENAME_MAX+strlen(openCommand)];
 			sprintf(workingDirectory, "%s\"%s\"", openCommand, getcwd(NULL, 0));
 			system(workingDirectory);
-			delete workingDirectory;
+			delete [] workingDirectory;
 		}
 	};
 	ui::Button * dataFolderButton = new ui::Button(ui::Point(8, Size.Y-38), ui::Point(90, 16), "Open Data Folder");
