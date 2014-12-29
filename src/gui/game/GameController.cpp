@@ -1060,19 +1060,19 @@ void GameController::OpenLocalSaveWindow(bool asCurrent)
 {
 	Simulation * sim = gameModel->GetSimulation();
 	GameSave * gameSave = sim->Save();
-	gameSave->paused = gameModel->GetPaused();
-	gameSave->gravityMode = sim->gravityMode;
-	gameSave->airMode = sim->air->airMode;
-	gameSave->legacyEnable = sim->legacy_enable;
-	gameSave->waterEEnabled = sim->water_equal_test;
-	gameSave->gravityEnable = sim->grav->ngrav_enable;
-	gameSave->aheatEnable = sim->aheat_enable;
 	if(!gameSave)
 	{
 		new ErrorMessage("Error", "Unable to build save.");
 	}
 	else
 	{
+			gameSave->paused = gameModel->GetPaused();
+	gameSave->gravityMode = sim->gravityMode;
+	gameSave->airMode = sim->air->airMode;
+	gameSave->legacyEnable = sim->legacy_enable;
+	gameSave->waterEEnabled = sim->water_equal_test;
+	gameSave->gravityEnable = sim->grav->ngrav_enable;
+	gameSave->aheatEnable = sim->aheat_enable;
 		std::string filename = "";
 		if (gameModel->GetSaveFile())
 			filename = gameModel->GetSaveFile()->GetDisplayName();
