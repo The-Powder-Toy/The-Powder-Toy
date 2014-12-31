@@ -56,8 +56,13 @@ int Element_DEST::update(UPDATE_FUNC_ARGS)
 		return 1;
 
 	r = pmap[y+ry][x+rx];
-	if (!r || (r&0xFF)==PT_DEST || (r&0xFF)==PT_DMND || (r&0xFF)==PT_BCLN  || (r&0xFF)==PT_CLNE  || (r&0xFF)==PT_PCLN  || (r&0xFF)==PT_PBCN)
+	if ((r&0xFF)==PT_DEST || (r&0xFF)==PT_DMND || (r&0xFF)==PT_BCLN  || (r&0xFF)==PT_CLNE  || (r&0xFF)==PT_PCLN  || (r&0xFF)==PT_PBCN)
 		return 0;
+    if (!r) {
+        r = sim->photons[y+ry][x+rx];
+        if ((r&0xFF)!=PT_NTRI)
+            return 0;
+    }
 
 	if (parts[i].life<=0 || parts[i].life>37)
 	{
@@ -79,7 +84,7 @@ int Element_DEST::update(UPDATE_FUNC_ARGS)
 	{
 		sim->create_part(r>>8, x+rx, y+ry, PT_PLSM);
 	}
-	else if (!(rand()%3))
+	else if (!(rand()%3) && ((r&0xFF)!=PT_NTRI))
 	{
 		sim->kill_part(r>>8);
 		parts[i].life -= 4*((sim->elements[r&0xFF].Properties&TYPE_SOLID)?3:1);

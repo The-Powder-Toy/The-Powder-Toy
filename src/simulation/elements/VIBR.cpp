@@ -177,7 +177,7 @@ int Element_VIBR::update(UPDATE_FUNC_ARGS) {
 						sim->create_part(i, x, y, PT_EXOT);
 					}
 					//Absorbs energy particles
-					else if ((sim->elements[r&0xFF].Properties & TYPE_ENERGY))
+					else if ((sim->elements[r&0xFF].Properties & TYPE_ENERGY) && ((r&0xFF) != PT_NTRI))
 					{
 						parts[i].tmp += 20;
 						sim->kill_part(r>>8);
