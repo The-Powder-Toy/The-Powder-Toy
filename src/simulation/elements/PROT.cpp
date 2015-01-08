@@ -87,7 +87,7 @@ int Element_PROT::update(UPDATE_FUNC_ARGS)
 		else if (parts[i].temp > 373.15f) change = 100.0f;
 		else change = 0.0f;
 		parts[under>>8].temp = restrict_flt(parts[under>>8].temp + change, MIN_TEMP, MAX_TEMP);
-		goto no_temp_change;
+		break;
 	case PT_NONE:
 		//slowly kill if it's not inside an element
 		if (parts[i].life)
@@ -95,7 +95,7 @@ int Element_PROT::update(UPDATE_FUNC_ARGS)
 			if (!--parts[i].life)
 				sim->kill_part(i);
 		}
-		goto no_temp_change;
+		break;
 	default:
 		//set off explosives (only when hot because it wasn't as fun when it made an entire save explode)
 		if (parts[i].temp > 273.15f + 500.0f && (sim->elements[utype].Flammable || sim->elements[utype].Explosive || utype == PT_BANG))
@@ -112,9 +112,8 @@ int Element_PROT::update(UPDATE_FUNC_ARGS)
 		break;
 	}
 	//make temp of other things closer to it's own temperature. This will change temp of things that don't conduct, and won't change the PROT's temperature
-	parts[under>>8].temp = restrict_flt(parts[under>>8].temp - (parts[under>>8].temp - parts[i].temp) / 4.0f, MIN_TEMP, MAX_TEMP);
-
-no_temp_change:
+	if (utype && utype != PT_WIFI)
+		parts[under>>8].temp = restrict_flt(parts[under>>8].temp-(parts[under>>8].temp-parts[i].temp)/4.0f, MIN_TEMP, MAX_TEMP);
  
 	
 	//if this proton has collided with another last frame, change it into a heavier element

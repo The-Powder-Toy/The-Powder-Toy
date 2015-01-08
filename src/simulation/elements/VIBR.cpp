@@ -48,7 +48,7 @@ Element_VIBR::Element_VIBR()
 
 //#TPT-Directive ElementHeader Element_VIBR static int update(UPDATE_FUNC_ARGS)
 int Element_VIBR::update(UPDATE_FUNC_ARGS) {
-	int r, rx, ry, random;
+	int r, rx, ry, rndstore;
 	int trade, transfer;
 	if (!parts[i].life) //if not exploding
 	{
@@ -83,9 +83,10 @@ int Element_VIBR::update(UPDATE_FUNC_ARGS) {
 		//Release sparks before explode
 		if (parts[i].life < 300)
 		{
-			random = rand();
-			rx = random%3-1;
-			ry = (random>>2)%3-1;
+			rndstore = rand();
+			rx = rndstore%3-1;
+			ry = (rndstore>>2)%3-1;
+			rndstore = rndstore >> 4;
 			r = pmap[y+ry][x+rx];
 			if ((r&0xFF) && (r&0xFF) != PT_BREC && (sim->elements[r&0xFF].Properties&PROP_CONDUCTS) && !parts[r>>8].life)
 			{
@@ -97,9 +98,8 @@ int Element_VIBR::update(UPDATE_FUNC_ARGS) {
 		//Release all heat
 		if (parts[i].life < 500)
 		{
-			random = rand();
-			rx = random%7-3;
-			ry = (random>>3)%7-3;
+			rx = rndstore%7-1;
+			ry = (rndstore>>3)%7-1;
 			if(BOUNDS_CHECK)
 			{
 				r = pmap[y+ry][x+rx];
@@ -115,19 +115,19 @@ int Element_VIBR::update(UPDATE_FUNC_ARGS) {
 		{
 			if (!parts[i].tmp2)
 			{
-				int index;
-				random = rand();
+				rndstore = rand();
 				sim->create_part(i, x, y, PT_EXOT);
-				index = sim->create_part(-3,x+((random>>4)&3)-1,y+((random>>6)&3)-1,PT_ELEC);
+				parts[i].tmp2 = rand()%1000;
+				int index = sim->create_part(-3,x+((rndstore>>4)&3)-1,y+((rndstore>>6)&3)-1,PT_ELEC);
 				if (index != -1)
 					parts[index].temp = 7000;
-				index = sim->create_part(-3,x+((random>>8)&3)-1,y+((random>>10)&3)-1,PT_PHOT);
+				index = sim->create_part(-3,x+((rndstore>>8)&3)-1,y+((rndstore>>10)&3)-1,PT_PHOT);
 				if (index != -1)
 					parts[index].temp = 7000;
-				index = sim->create_part(-1,x+((random>>12)&3)-1,y+(random>>14)%3-1,PT_BREC);
+				index = sim->create_part(-1,x+((rndstore>>12)&3)-1,y+rand()%3-1,PT_BREC);
 				if (index != -1)
 					parts[index].temp = 7000;
-				parts[i].tmp2 = (random>>16) % 1000;
+				parts[i].tmp2 = (rndstore>>16) % 1000;
 				parts[i].temp=9000;
 				sim->pv[y/CELL][x/CELL] += 50;
 
@@ -174,7 +174,7 @@ int Element_VIBR::update(UPDATE_FUNC_ARGS) {
 					if ((r&0xFF) == PT_EXOT && !(rand()%25))
 					{
 						sim->part_change_type(i, x, y, PT_EXOT);
-						return 0;
+						return 1;
 					}
 				}
 				//VIBR+ANAR=BVBR
@@ -186,12 +186,12 @@ int Element_VIBR::update(UPDATE_FUNC_ARGS) {
 			}
 	for (trade = 0; trade < 9; trade++)
 	{
-		if (!(trade%5))
-			random = rand();
-		rx = random%7-3;
-		random >>= 3;
-		ry = random%7-3;
-		random >>= 3;
+		if (!(trade%2))
+			rndstore = rand();
+		rx = rndstore%7-3;
+		rndstore >>= 3;
+		ry = rndstore%7-3;
+		rndstore >>= 3;
 		if (BOUNDS_CHECK && (rx || ry))
 		{
 			r = pmap[y+ry][x+rx];

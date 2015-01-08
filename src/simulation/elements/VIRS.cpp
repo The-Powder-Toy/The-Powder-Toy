@@ -69,24 +69,15 @@ int Element_VIRS::update(UPDATE_FUNC_ARGS)
 	//decrease pavg[1] so it slowly dies
 	if (parts[i].pavg[1])
 	{
-		if (!(rndstore & 0x7))
+		if (!(rndstore & 0x7) && --parts[i].pavg[1] <= 0)
 		{
-			parts[i].pavg[1]--;
-			//if pavg[1] is now 0, kill it
-			if (!parts[i].pavg[1])
-			{
-				sim->kill_part(i);
-				return 1;
-			}
+			sim->kill_part(i);
+			return 1;
 		}
 		rndstore >>= 3;
 	}
 
 	for (rx=-1; rx<2; rx++)
-	{
-		//reset rndstore once, 1st rand has possible 3+15 bits max, this one has 30 max.
-		if (!rx) 
-			rndstore = rand();
 		for (ry=-1; ry<2; ry++)
 		{
 			if (BOUNDS_CHECK && (rx || ry))
@@ -122,14 +113,10 @@ int Element_VIRS::update(UPDATE_FUNC_ARGS)
 				{
 					if (!(rndstore & 0x7))
 					{
-						rndstore >>= 3;
 						parts[r>>8].tmp2 = (r&0xFF);
 						parts[r>>8].pavg[0] = 0;
 						if (parts[i].pavg[1])
-						{
-							parts[r>>8].pavg[1] = parts[i].pavg[1] + ((rndstore % 3) ? 1 : 0);
-							rndstore >>= 2;
-						}
+							parts[r>>8].pavg[1] = parts[i].pavg[1] + 1;
 						else
 							parts[r>>8].pavg[1] = 0;
 						if (parts[r>>8].temp < 305.0f)
@@ -139,8 +126,7 @@ int Element_VIRS::update(UPDATE_FUNC_ARGS)
 						else
 							sim->part_change_type(r>>8, x+rx, y+ry, PT_VIRS);
 					}
-					else 
-						rndstore >>= 3;
+					rndstore >>= 3;
 				}
 				//protons make VIRS last forever
 				else if ((sim->photons[y+ry][x+rx]&0xFF) == PT_PROT)
@@ -148,8 +134,10 @@ int Element_VIRS::update(UPDATE_FUNC_ARGS)
 					parts[i].pavg[1] = 0;
 				}
 			}
+			//reset rndstore only once, halfway through
+			else if (!rx && !ry)
+				rndstore = rand();
 		}
-	}
 	return 0;
 }
 
