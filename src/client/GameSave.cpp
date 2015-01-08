@@ -1024,6 +1024,12 @@ void GameSave::readOPS(char * data, int dataLength)
 							particles[newIndex].flags |= FLAG_PHOTDECO;
 						}
 						break;
+					case PT_VINE:
+						if (savedVersion < 91)
+						{
+							particles[newIndex].tmp = 1;
+						}
+						break;
 					}
 					//note: PSv was used in version 77.0 and every version before, add something in PSv too if the element is that old
 					newIndex++;
@@ -1675,6 +1681,11 @@ void GameSave::readPSv(char * data, int dataLength)
 					particles[i-1].tmp = particles[i-1].ctype;
 					particles[i-1].ctype = 0;
 				}
+			}
+			if (ver < 91)
+			{
+				if (particles[i-1].type == PT_VINE)
+					particles[i-1].tmp = 1;
 			}
 		}
 	}

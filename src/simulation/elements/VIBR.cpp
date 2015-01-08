@@ -116,18 +116,19 @@ int Element_VIBR::update(UPDATE_FUNC_ARGS) {
 			if (!parts[i].tmp2)
 			{
 				rndstore = rand();
-				sim->create_part(i, x, y, PT_EXOT);
-				parts[i].tmp2 = rand()%1000;
 				int index = sim->create_part(-3,x+((rndstore>>4)&3)-1,y+((rndstore>>6)&3)-1,PT_ELEC);
 				if (index != -1)
 					parts[index].temp = 7000;
 				index = sim->create_part(-3,x+((rndstore>>8)&3)-1,y+((rndstore>>10)&3)-1,PT_PHOT);
 				if (index != -1)
 					parts[index].temp = 7000;
-				index = sim->create_part(-1,x+((rndstore>>12)&3)-1,y+rand()%3-1,PT_BREC);
+				int rx = ((rndstore>>12)&3)-1;
+				rndstore = rand();
+				index = sim->create_part(-1,x+rx-1,y+rndstore%3-1,PT_BREC);
 				if (index != -1)
 					parts[index].temp = 7000;
-				parts[i].tmp2 = (rndstore>>16) % 1000;
+				sim->create_part(i, x, y, PT_EXOT);
+				parts[i].tmp2 = (rndstore>>2)%1000;
 				parts[i].temp=9000;
 				sim->pv[y/CELL][x/CELL] += 50;
 
