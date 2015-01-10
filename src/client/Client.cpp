@@ -344,7 +344,18 @@ bool Client::DoInstallation()
 #elif defined(LIN)
 	#include "icondoc.h"
 
-	char *currentfilename = exe_name();
+	std::string filename = exe_name(), pathname = filename.substr(0, filename.rfind('/'));
+	for (int i = 0; i < filename.size(); i++)
+	{
+		if (filename[i] == '\'')
+		{
+			filename.insert(i, "'\\'");
+			i += 3;
+		}
+	}
+	filename.insert(filename.size(), "'");
+	filename.insert(0, "'");
+
 	FILE *f;
 	const char *mimedata =
 "<?xml version=\"1.0\"?>\n"
@@ -367,16 +378,14 @@ bool Client::DoInstallation()
 "Name=Powder Toy\n"
 "Comment=Physics sandbox game\n"
 "MimeType=x-scheme-handler/ptsave;\n"
-"NoDisplay=true\n";
-	char *protocolfiledata = (char *)malloc(strlen(protocolfiledata_tmp)+strlen(currentfilename)+100);
-	strcpy(protocolfiledata, protocolfiledata_tmp);
-	strappend(protocolfiledata, "Exec=");
-	strappend(protocolfiledata, currentfilename);
-	strappend(protocolfiledata, " ptsave %u\n");
+"NoDisplay=true\n"
+"Categories=Game\n";
+	std::stringstream protocolfiledata;
+	protocolfiledata << protocolfiledata_tmp << "Exec=" << filename <<" ptsave %u\nPath=" << pathname << "\n";
 	f = fopen("powdertoy-tpt-ptsave.desktop", "wb");
 	if (!f)
 		return 0;
-	fwrite(protocolfiledata, 1, strlen(protocolfiledata), f);
+	fwrite(protocolfiledata.str().c_str(), 1, strlen(protocolfiledata.str().c_str()), f);
 	fclose(f);
 	system("xdg-desktop-menu install powdertoy-tpt-ptsave.desktop");
 
@@ -386,16 +395,14 @@ bool Client::DoInstallation()
 "Name=Powder Toy\n"
 "Comment=Physics sandbox game\n"
 "MimeType=application/vnd.powdertoy.save;\n"
-"NoDisplay=true\n";
-	char *desktopfiledata = (char *)malloc(strlen(desktopfiledata_tmp)+strlen(currentfilename)+100);
-	strcpy(desktopfiledata, desktopfiledata_tmp);
-	strappend(desktopfiledata, "Exec=");
-	strappend(desktopfiledata, currentfilename);
-	strappend(desktopfiledata, " open %f\n");
+"NoDisplay=true\n"
+"Categories=Game\n";
+	std::stringstream desktopfiledata;
+	desktopfiledata << desktopfiledata_tmp << "Exec=" << filename <<" open %f\nPath=" << pathname << "\n";
 	f = fopen("powdertoy-tpt.desktop", "wb");
 	if (!f)
 		return 0;
-	fwrite(desktopfiledata, 1, strlen(desktopfiledata), f);
+	fwrite(desktopfiledata.str().c_str(), 1, strlen(desktopfiledata.str().c_str()), f);
 	fclose(f);
 	system("xdg-mime install powdertoy-save.xml");
 	system("xdg-desktop-menu install powdertoy-tpt.desktop");
