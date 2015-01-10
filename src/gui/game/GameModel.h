@@ -181,6 +181,7 @@ public:
 	int GetZoomFactor();
 	void SetZoomPosition(ui::Point position);
 	ui::Point GetZoomPosition();
+	bool MouseInZoom(ui::Point position);
 	ui::Point AdjustZoomCoords(ui::Point position);
 	void SetZoomWindowPosition(ui::Point position);
 	ui::Point GetZoomWindowPosition();

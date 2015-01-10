@@ -141,6 +141,7 @@ public:
 	void FrameStep();
 	void TranslateSave(ui::Point point);
 	void TransformSave(matrix2d transform);
+	bool MouseInZoom(ui::Point position);
 	ui::Point PointTranslate(ui::Point point);
 	ui::Point NormaliseBlockCoord(ui::Point point);
 	std::string ElementResolve(int type, int ctype);

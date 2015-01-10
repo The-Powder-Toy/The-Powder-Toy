@@ -379,6 +379,20 @@ void GameController::AdjustZoomSize(int direction, bool logarithmic)
 	gameModel->SetZoomFactor(newZoomFactor);
 }
 
+bool GameController::MouseInZoom(ui::Point position)
+{
+	if(position.X >= XRES)
+		position.X = XRES-1;
+	if(position.Y >= YRES)
+		position.Y = YRES-1;
+	if(position.Y < 0)
+		position.Y = 0;
+	if(position.X < 0)
+		position.X = 0;
+
+	return gameModel->MouseInZoom(position);
+}
+
 ui::Point GameController::PointTranslate(ui::Point point)
 {
 	if(point.X >= XRES)

@@ -43,6 +43,7 @@ private:
 	bool isMouseDown;
 	bool zoomEnabled;
 	bool zoomCursorFixed;
+	bool mouseInZoom;
 	bool drawSnap;
 	bool shiftBehaviour;
 	bool ctrlBehaviour;

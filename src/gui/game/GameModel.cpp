@@ -691,6 +691,20 @@ ui::Point GameModel::GetZoomPosition()
 	return ren->zoomScopePosition;
 }
 
+bool GameModel::MouseInZoom(ui::Point position)
+{
+	if (!GetZoomEnabled())
+		return false;
+
+	int zoomFactor = GetZoomFactor();
+	ui::Point zoomWindowPosition = GetZoomWindowPosition();
+	ui::Point zoomWindowSize = ui::Point(GetZoomSize()*zoomFactor, GetZoomSize()*zoomFactor);
+
+	if (position.X >= zoomWindowPosition.X && position.X >= zoomWindowPosition.Y && position.X <= zoomWindowPosition.X+zoomWindowSize.X && position.Y <= zoomWindowPosition.Y+zoomWindowSize.Y)
+		return true;
+	return false;
+}
+
 ui::Point GameModel::AdjustZoomCoords(ui::Point position)
 {
 	if (!GetZoomEnabled())

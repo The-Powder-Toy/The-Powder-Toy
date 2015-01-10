@@ -158,6 +158,7 @@ GameView::GameView():
 	toolIndex(0),
 	zoomEnabled(false),
 	zoomCursorFixed(false),
+	mouseInZoom(false),
 	drawPoint1(0, 0),
 	drawPoint2(0, 0),
 	drawMode(DrawPoints),
@@ -1040,6 +1041,7 @@ void GameView::setToolButtonOffset(int offset)
 
 void GameView::OnMouseMove(int x, int y, int dx, int dy)
 {
+	bool newMouseInZoom = c->MouseInZoom(ui::Point(x, y));
 	mousePosition = c->PointTranslate(ui::Point(x, y));
 	currentMouse = ui::Point(x, y);
 	if (selectMode != SelectNone)
@@ -1048,13 +1050,21 @@ void GameView::OnMouseMove(int x, int y, int dx, int dy)
 			selectPoint1 = c->PointTranslate(ui::Point(x, y));
 		if (selectPoint1.X != -1)
 			selectPoint2 = c->PointTranslate(ui::Point(x, y));
-		return;
 	}
-	if (isMouseDown && drawMode == DrawPoints)
+	else if (isMouseDown)
 	{
-		pointQueue.push(ui::Point(c->PointTranslate(ui::Point(x-dx, y-dy))));
-		pointQueue.push(ui::Point(c->PointTranslate(ui::Point(x, y))));
+		if (newMouseInZoom == mouseInZoom)
+		{
+			if (drawMode == DrawPoints)
+			{
+				pointQueue.push(ui::Point(c->PointTranslate(ui::Point(x-dx, y-dy))));
+				pointQueue.push(ui::Point(c->PointTranslate(ui::Point(x, y))));
+			}
+		}
+		else if (drawMode == DrawPoints || drawMode == DrawFill)
+			isMouseDown = false;
 	}
+	mouseInZoom = newMouseInZoom;
 }
 
 void GameView::OnMouseDown(int x, int y, unsigned button)
