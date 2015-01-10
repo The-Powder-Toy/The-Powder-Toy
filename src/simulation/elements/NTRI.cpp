@@ -216,7 +216,7 @@ int Element_NTRI::DeutImplosion(Simulation * sim, int n, int x, int y, float tem
 		if (sim->grav->ngrav_enable)
             sim->gravmap[(y/CELL)*(XRES/CELL)+(x/CELL)] = restrict_flt(sim->gravmap[(y/CELL)*(XRES/CELL)+(x/CELL)] + (z * 4.0f * CFDS),-120,120);
         else
-            sim->pv[y/CELL][x/CELL] += 5.0f * z * CFDS;
+            sim->pv[y/CELL][x/CELL] -= 5.0f * z * CFDS;
 	}
 	return 0;
 }
