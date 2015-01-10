@@ -2330,29 +2330,29 @@ int LuaScriptInterface::elements_property(lua_State * l)
 				{
 					case StructProperty::ParticleType:
 					case StructProperty::Integer:
-						*((int*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = lua_tointeger(l, 3);
+						*((int*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = luaL_checkinteger(l, 3);
 						break;
 					case StructProperty::UInteger:
-						*((unsigned int*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = lua_tointeger(l, 3);
+						*((unsigned int*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = luaL_checkinteger(l, 3);
 						break;
 					case StructProperty::Float:
-						*((float*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = lua_tonumber(l, 3);
+						*((float*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = luaL_checkinteger(l, 3);
 						break;
 					case StructProperty::Char:
-						*((char*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = lua_tointeger(l, 3);
+						*((char*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = luaL_checkinteger(l, 3);
 						break;
 					case StructProperty::UChar:
-						*((unsigned char*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = lua_tointeger(l, 3);
+						*((unsigned char*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = luaL_checkinteger(l, 3);
 						break;
 					case StructProperty::String:
-						*((char**)(((unsigned char*)&luacon_sim->elements[id])+offset)) = strdup(lua_tostring(l, 3));
+						*((char**)(((unsigned char*)&luacon_sim->elements[id])+offset)) = strdup(luaL_checkstring(l, 3));
 						break;
 					case StructProperty::Colour:
-	#if PIXELSIZE == 4
-						*((unsigned int*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = lua_tointeger(l, 3);
-	#else
-						*((unsigned short*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = lua_tointeger(l, 3);
-	#endif
+#if PIXELSIZE == 4
+						*((unsigned int*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = luaL_checkinteger(l, 3);
+#else
+						*((unsigned short*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = luaL_checkinteger(l, 3);
+#endif
 						break;
 				}
 			}
@@ -2724,7 +2724,7 @@ void LuaScriptInterface::initFileSystemAPI()
 
 int LuaScriptInterface::fileSystem_list(lua_State * l)
 {
-	const char * directoryName = lua_tostring(l, 1);
+	const char * directoryName = luaL_checkstring(l, 1);
 
 	int index = 1;
 	lua_newtable(l);
@@ -2755,7 +2755,7 @@ int LuaScriptInterface::fileSystem_list(lua_State * l)
 
 int LuaScriptInterface::fileSystem_exists(lua_State * l)
 {
-	const char * filename = lua_tostring(l, 1);
+	const char * filename = luaL_checkstring(l, 1);
 
 	bool exists = false;
 #ifdef WIN
@@ -2779,7 +2779,7 @@ int LuaScriptInterface::fileSystem_exists(lua_State * l)
 
 int LuaScriptInterface::fileSystem_isFile(lua_State * l)
 {
-	const char * filename = lua_tostring(l, 1);
+	const char * filename = luaL_checkstring(l, 1);
 
 	bool isFile = false;
 #ifdef WIN
@@ -2810,7 +2810,7 @@ int LuaScriptInterface::fileSystem_isFile(lua_State * l)
 
 int LuaScriptInterface::fileSystem_isDirectory(lua_State * l)
 {
-	const char * filename = lua_tostring(l, 1);
+	const char * filename = luaL_checkstring(l, 1);
 
 	bool isDir = false;
 #ifdef WIN
@@ -2841,7 +2841,7 @@ int LuaScriptInterface::fileSystem_isDirectory(lua_State * l)
 
 int LuaScriptInterface::fileSystem_makeDirectory(lua_State * l)
 {
-	const char * dirname = lua_tostring(l, 1);
+	const char * dirname = luaL_checkstring(l, 1);
 
 	int ret = 0;
 	ret = Client::Ref().MakeDirectory(dirname);
@@ -2851,7 +2851,7 @@ int LuaScriptInterface::fileSystem_makeDirectory(lua_State * l)
 
 int LuaScriptInterface::fileSystem_removeDirectory(lua_State * l)
 {
-	const char * filename = lua_tostring(l, 1);
+	const char * filename = luaL_checkstring(l, 1);
 
 	int ret = 0;
 #ifdef WIN
@@ -2865,7 +2865,7 @@ int LuaScriptInterface::fileSystem_removeDirectory(lua_State * l)
 
 int LuaScriptInterface::fileSystem_removeFile(lua_State * l)
 {
-	const char * filename = lua_tostring(l, 1);
+	const char * filename = luaL_checkstring(l, 1);
 
 	int ret = 0;
 #ifdef WIN
@@ -2879,8 +2879,8 @@ int LuaScriptInterface::fileSystem_removeFile(lua_State * l)
 
 int LuaScriptInterface::fileSystem_move(lua_State * l)
 {
-	const char * filename = lua_tostring(l, 1);
-	const char * newFilename = lua_tostring(l, 2);
+	const char * filename = luaL_checkstring(l, 1);
+	const char * newFilename = luaL_checkstring(l, 2);
 	int ret = 0;
 
 	ret = rename(filename, newFilename);
@@ -2891,8 +2891,8 @@ int LuaScriptInterface::fileSystem_move(lua_State * l)
 
 int LuaScriptInterface::fileSystem_copy(lua_State * l)
 {
-	const char * filename = lua_tostring(l, 1);
-	const char * newFilename = lua_tostring(l, 2);
+	const char * filename = luaL_checkstring(l, 1);
+	const char * newFilename = luaL_checkstring(l, 2);
 	int ret = 0;
 
 	try

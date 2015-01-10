@@ -278,7 +278,7 @@ void GameModel::BuildMenus()
 				tempTool = new ElementTool(i, sim->elements[i].Name, sim->elements[i].Description, PIXR(sim->elements[i].Colour), PIXG(sim->elements[i].Colour), PIXB(sim->elements[i].Colour), sim->elements[i].Identifier, sim->elements[i].IconGenerator);
 			}
 
-			if(sim->elements[i].MenuSection < SC_TOTAL && sim->elements[i].MenuVisible)
+			if (sim->elements[i].MenuSection >= 0 && sim->elements[i].MenuSection < SC_TOTAL && sim->elements[i].MenuVisible)
 			{
 				menuList[sim->elements[i].MenuSection]->AddTool(tempTool);
 			}
