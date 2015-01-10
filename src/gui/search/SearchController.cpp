@@ -269,6 +269,8 @@ void SearchController::removeSelectedC()
  					std::stringstream saveIDF;
  					saveIDF << "\boFailed to delete [" << saves[i] << "] ...";
 					notifyStatus(saveIDF.str());
+					c->Refresh();
+					return false;
 				}
 				notifyProgress((float(i+1)/float(saves.size())*100));
 			}
@@ -283,47 +285,73 @@ void SearchController::removeSelectedC()
 	searchModel->UpdateSaveList(searchModel->GetPageNum(), searchModel->GetLastQuery());
 }
 
-void SearchController::UnpublishSelected()
+void SearchController::UnpublishSelected(bool publish)
 {
 	class UnpublishSelectedConfirmation: public ConfirmDialogueCallback {
 	public:
 		SearchController * c;
-		UnpublishSelectedConfirmation(SearchController * c_) {	c = c_;	}
+		bool publish;
+		UnpublishSelectedConfirmation(SearchController * c_, bool publish_) { c = c_; publish = publish_; }
 		virtual void ConfirmCallback(ConfirmPrompt::DialogueResult result) {
 			if (result == ConfirmPrompt::ResultOkay)
-				c->unpublishSelectedC();
+				c->unpublishSelectedC(publish);
 		}
 		virtual ~UnpublishSelectedConfirmation() { }
 	};
 
 	std::stringstream desc;
-	desc << "Are you sure you want to hide " << searchModel->GetSelected().size() << " save";
+	desc << "Are you sure you want to " << (publish ? "publish " : "unpublish ") << searchModel->GetSelected().size() << " save";
 	if(searchModel->GetSelected().size()>1)
 		desc << "s";
 	desc << "?";
-	new ConfirmPrompt("Unpublish saves", desc.str(), new UnpublishSelectedConfirmation(this));
+	new ConfirmPrompt((publish ? "Publish Saves" : "Unpublish Saves"), desc.str(), new UnpublishSelectedConfirmation(this, publish));
 }
 
-void SearchController::unpublishSelectedC()
+void SearchController::unpublishSelectedC(bool publish)
 {
 	class UnpublishSavesTask : public Task
 	{
 		std::vector<int> saves;
 		SearchController *c;
+		bool publish;
 	public:
-		UnpublishSavesTask(std::vector<int> saves_, SearchController *c_) { saves = saves_; c = c_; }
+		UnpublishSavesTask(std::vector<int> saves_, SearchController *c_, bool publish_) { saves = saves_; c = c_; publish = publish_; }
+
+		bool PublishSave(int saveID)
+		{
+			std::stringstream message;
+			message << "Publishing save [" << saveID << "]";
+			notifyStatus(message.str());
+			if (Client::Ref().PublishSave(saveID) != RequestOkay)
+				return false;
+			return true;
+		}
+
+		bool UnpublishSave(int saveID)
+		{
+			std::stringstream message;
+			message << "Unpublishing save [" << saveID << "]";
+			notifyStatus(message.str());
+			if (Client::Ref().UnpublishSave(saveID) != RequestOkay)
+				return false;
+			return true;
+		}
+
 		virtual bool doWork()
 		{
+			bool ret;
 			for(int i = 0; i < saves.size(); i++)
 			{
-				std::stringstream saveID;
-				saveID << "Hiding save [" << saves[i] << "]";
- 				notifyStatus(saveID.str());
- 				if(Client::Ref().UnpublishSave(saves[i])!=RequestOkay)
+				if (publish)
+					ret = PublishSave(saves[i]);
+				else
+					ret = UnpublishSave(saves[i]);
+				if (!ret)
 				{
- 					std::stringstream saveIDF;
-					saveIDF << "\boFailed to hide [" << saves[i] << "], is this save yours?";
-					notifyError(saveIDF.str());
+					std::stringstream error;
+					error << "\boFailed to " << (publish ? "Publish" : "Unpublish") << " [" << saves[i] << "], is this save yours?";
+					notifyError(error.str());
+					c->Refresh();
 					return false;
 				}
 				notifyProgress((float(i+1)/float(saves.size())*100));
@@ -334,7 +362,7 @@ void SearchController::unpublishSelectedC()
 	};
 
 	std::vector<int> selected = searchModel->GetSelected();
-	new TaskWindow("Unpublishing saves", new UnpublishSavesTask(selected, this));
+	new TaskWindow((publish ? "Publishing Saves" : "Unpublishing Saves"), new UnpublishSavesTask(selected, this, publish));
 }
 
 void SearchController::FavouriteSelected()

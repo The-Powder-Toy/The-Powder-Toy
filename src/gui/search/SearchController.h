@@ -24,7 +24,7 @@ private:
 	bool instantOpen;
 	bool doRefresh;
 	void removeSelectedC();
-	void unpublishSelectedC();
+	void unpublishSelectedC(bool publish);
 public:
 	class OpenCallback;
 	bool HasExited;
@@ -47,7 +47,7 @@ public:
 	void Update();
 	void ClearSelection();
 	void RemoveSelected();
-	void UnpublishSelected();
+	void UnpublishSelected(bool publish);
 	void FavouriteSelected();
 	void ReleaseLoadedSave();
 	SaveInfo * GetLoadedSave();

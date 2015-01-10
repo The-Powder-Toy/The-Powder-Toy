@@ -1676,6 +1676,36 @@ failure:
 	return RequestFailure;
 }
 
+RequestStatus Client::PublishSave(int saveID)
+{
+	lastError = "";
+	std::stringstream urlStream;
+	int dataStatus;
+	urlStream << "http://" << SERVER << "/Browse/View.html?ID=" << saveID << "&Key=" << authUser.SessionKey;
+	if (authUser.ID)
+	{
+		std::stringstream userIDStream;
+		userIDStream << authUser.ID;
+		const char *const postNames[] = { "ActionPublish", NULL };
+		const char *const postDatas[] = { "" };
+		int postLengths[] = { 1 };
+		char *data = http_multipart_post(urlStream.str().c_str(), postNames, postDatas, postLengths, userIDStream.str().c_str(), NULL, authUser.SessionID.c_str(), &dataStatus, NULL);
+		if (data)
+			free(data);
+	}
+	else
+	{
+		lastError = "Not authenticated";
+		return RequestFailure;
+	}
+	if (dataStatus != 302)
+	{
+		lastError = http_ret_text(dataStatus);
+		return RequestFailure;
+	}
+	return RequestOkay;
+}
+
 SaveInfo * Client::GetSave(int saveID, int saveDate)
 {
 	lastError = "";

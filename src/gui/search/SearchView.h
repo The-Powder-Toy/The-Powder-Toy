@@ -50,6 +50,7 @@ private:
 	bool changed;
 	int lastChanged;
 	int pageCount;
+	bool publishButtonShown;
 public:
 	void NotifyTagListChanged(SearchModel * sender);
 	void NotifySaveListChanged(SearchModel * sender);

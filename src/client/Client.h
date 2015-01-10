@@ -157,6 +157,7 @@ public:
 	RequestStatus DeleteSave(int saveID);
 	RequestStatus ReportSave(int saveID, std::string message);
 	RequestStatus UnpublishSave(int saveID);
+	RequestStatus PublishSave(int saveID);
 	RequestStatus FavouriteSave(int saveID, bool favourite);
 	void SetAuthUser(User user);
 	User GetAuthUser();

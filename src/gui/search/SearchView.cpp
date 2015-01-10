@@ -19,7 +19,8 @@ SearchView::SearchView():
 	c(NULL),
 	changed(true),
 	lastChanged(0),
-	pageCount(0)
+	pageCount(0),
+	publishButtonShown(false)
 {
 
 	Client::Ref().AddListener(this);
@@ -202,7 +203,7 @@ SearchView::SearchView():
 		UnpublishSelectedAction(SearchView * _v) { v = _v; }
 		void ActionCallback(ui::Button * sender)
 		{
-			v->c->UnpublishSelected();
+			v->c->UnpublishSelected(v->publishButtonShown);
 		}
 	};
 
@@ -730,13 +731,18 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 void SearchView::NotifySelectedChanged(SearchModel * sender)
 {
 	vector<int> selected = sender->GetSelected();
+	int published = 0;
 	for(int j = 0; j < saveButtons.size(); j++)
 	{
 		saveButtons[j]->SetSelected(false);
 		for(int i = 0; i < selected.size(); i++)
 		{
-			if(saveButtons[j]->GetSave()->GetID()==selected[i])
+			if(saveButtons[j]->GetSave()->GetID() == selected[i])
+			{
 				saveButtons[j]->SetSelected(true);
+				if (saveButtons[j]->GetSave()->GetPublished())
+					published++;
+			}
 		}
 	}
 
@@ -746,13 +752,29 @@ void SearchView::NotifySelectedChanged(SearchModel * sender)
 		unpublishSelected->Visible = true;
 		favouriteSelected->Visible = true;
 		clearSelection->Visible = true;
+		pageTextbox->Visible = false;
+		pageLabel->Visible = false;
+		pageCountLabel->Visible = false;
+		if (published <= selected.size()/2)
+		{
+			unpublishSelected->SetText("Publish");
+			publishButtonShown = true;
+		}
+		else
+		{
+			unpublishSelected->SetText("Unpublish");
+			publishButtonShown = false;
+		}
 	}
-	else
+	else if (removeSelected->Visible)
 	{
 		removeSelected->Visible = false;
 		unpublishSelected->Visible = false;
 		favouriteSelected->Visible = false;
 		clearSelection->Visible = false;
+		pageTextbox->Visible = true;
+		pageLabel->Visible = true;
+		pageCountLabel->Visible = true;
 	}
 }
 
