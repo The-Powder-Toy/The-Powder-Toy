@@ -22,6 +22,7 @@ private:
 	std::string nextQuery;
 	bool nextQueryDone;
 	bool instantOpen;
+	bool doRefresh;
 	void removeSelectedC();
 	void unpublishSelectedC();
 public:

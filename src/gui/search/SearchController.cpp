@@ -37,6 +37,7 @@ SearchController::SearchController(ControllerCallback * callback):
 	nextQueryTime(0.0f),
 	nextQueryDone(true),
 	instantOpen(false),
+	doRefresh(false),
 	searchModel(NULL)
 {
 	searchModel = new SearchModel();
@@ -61,7 +62,14 @@ void SearchController::ReleaseLoadedSave()
 
 void SearchController::Update()
 {
-	if(!nextQueryDone && nextQueryTime < gettime())
+	if (doRefresh)
+	{
+		nextQueryDone = true;
+		doRefresh = false;
+		ClearSelection();
+		searchModel->UpdateSaveList(searchModel->GetPageNum(), searchModel->GetLastQuery());
+	}
+	else if (!nextQueryDone && nextQueryTime < gettime())
 	{
 		nextQueryDone = true;
 		searchModel->UpdateSaveList(1, nextQuery);
@@ -121,8 +129,7 @@ void SearchController::DoSearch(std::string query, bool now)
 
 void SearchController::Refresh()
 {
-	ClearSelection();
-	searchModel->UpdateSaveList(searchModel->GetPageNum(), searchModel->GetLastQuery());
+	doRefresh = true;
 }
 
 void SearchController::PrevPage()
