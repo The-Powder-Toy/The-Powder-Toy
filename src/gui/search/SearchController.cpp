@@ -119,6 +119,12 @@ void SearchController::DoSearch(std::string query, bool now)
 	//searchModel->UpdateSaveList(1, query);
 }
 
+void SearchController::Refresh()
+{
+	ClearSelection();
+	searchModel->UpdateSaveList(searchModel->GetPageNum(), searchModel->GetLastQuery());
+}
+
 void SearchController::PrevPage()
 {
 	if (searchModel->GetPageNum()>1)
@@ -240,9 +246,10 @@ void SearchController::removeSelectedC()
 {
 	class RemoveSavesTask : public Task
 	{
+		SearchController *c;
 		std::vector<int> saves;
 	public:
-		RemoveSavesTask(std::vector<int> saves_) { saves = saves_; }
+		RemoveSavesTask(std::vector<int> saves_, SearchController *c_) { saves = saves_; c = c_; }
 		virtual bool doWork()
 		{
 			for(int i = 0; i < saves.size(); i++)
@@ -258,12 +265,13 @@ void SearchController::removeSelectedC()
 				}
 				notifyProgress((float(i+1)/float(saves.size())*100));
 			}
+			c->Refresh();
 			return true;
 		}
 	};
 
 	std::vector<int> selected = searchModel->GetSelected();
-	new TaskWindow("Removing saves", new RemoveSavesTask(selected));
+	new TaskWindow("Removing saves", new RemoveSavesTask(selected, this));
 	ClearSelection();
 	searchModel->UpdateSaveList(searchModel->GetPageNum(), searchModel->GetLastQuery());
 }
@@ -294,8 +302,9 @@ void SearchController::unpublishSelectedC()
 	class UnpublishSavesTask : public Task
 	{
 		std::vector<int> saves;
+		SearchController *c;
 	public:
-		UnpublishSavesTask(std::vector<int> saves_) { saves = saves_; }
+		UnpublishSavesTask(std::vector<int> saves_, SearchController *c_) { saves = saves_; c = c_; }
 		virtual bool doWork()
 		{
 			for(int i = 0; i < saves.size(); i++)
@@ -312,14 +321,13 @@ void SearchController::unpublishSelectedC()
 				}
 				notifyProgress((float(i+1)/float(saves.size())*100));
 			}
+			c->Refresh();
 			return true;
 		}
 	};
 
 	std::vector<int> selected = searchModel->GetSelected();
-	new TaskWindow("Unpublishing saves", new UnpublishSavesTask(selected));
-	ClearSelection();
-	searchModel->UpdateSaveList(searchModel->GetPageNum(), searchModel->GetLastQuery());
+	new TaskWindow("Unpublishing saves", new UnpublishSavesTask(selected, this));
 }
 
 void SearchController::FavouriteSelected()
