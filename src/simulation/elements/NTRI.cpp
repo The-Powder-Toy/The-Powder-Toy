@@ -4,7 +4,7 @@ Element_NTRI::Element_NTRI()
 {
 	Identifier = "DEFAULT_PT_NTRI";
 	Name = "NTRI";
-	Colour = PIXPACK(0x304030);
+	Colour = PIXPACK(0x404030);
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
 	Enabled = 1;
@@ -60,20 +60,26 @@ int Element_NTRI::update(UPDATE_FUNC_ARGS)
 			sim->kill_part(under>>8);
 		}
 	}
-    if (under)
+    if (under && !parts[i].tmp2)
 	{
 		if ((under&0xFF) == PT_HSWC)
             parts[i].temp = parts[under>>8].temp;
 		else if ((under&0xFF) == PT_FILT)
             parts[under>>8].temp = parts[i].temp;
 		else
-			if (sim->elements[(under&0xFF)].HeatConduct && ((under&0xFF) != PT_H2)) 
+			if (sim->elements[(under&0xFF)].HeatConduct && !(((under&0xFF) == PT_H2) || ((under&0xFF) == PT_NBLE) || ((under&0xFF) == PT_CO2) || ((under&0xFF) == PT_O2))) 
                 parts[i].temp = restrict_flt(parts[i].temp+(parts[under>>8].temp-parts[i].temp)/16.0f, MIN_TEMP, MAX_TEMP);
 	}
 	else if (parts[i].life)
 	{
 		if (!--parts[i].life)
 			sim->kill_part(i);
+        if (parts[i].tmp2) {
+            if (under)
+                parts[under>>8].temp = 9999;
+            sim->pv[y/CELL][x/CELL] += 300.0F;
+            sim->gravmap[(y/CELL)*(XRES/CELL)+(x/CELL)] += 40.0F;
+        }
 	}
     switch (under&0xFF)
     {
@@ -97,14 +103,22 @@ int Element_NTRI::update(UPDATE_FUNC_ARGS)
         if (3>(rand()%5))
             sim->part_change_type(under>>8,x,y,PT_PROT);
         break;
+    // well here we go
     case PT_H2:
-        if ((int(parts[i].temp)>>6)>(rand()%10000)) {
-            // well here we go
-            parts[under>>8].temp = 9999;
-            sim->pv[y/CELL][x/CELL] += 300.0F;
-            sim->gravmap[(y/CELL)*(XRES/CELL)+(x/CELL)] -= 30.0F;
-            sim->kill_part(i);
-        }
+        if ((int(parts[i].temp)>>6)>(rand()%10000))
+            fusion(sim, i, under, x, y);
+        break;
+    case PT_NBLE:
+        if ((int(parts[i].temp)>>7)>(rand()%10000))
+            fusion(sim, i, under, x, y);
+        break;
+    case PT_CO2:
+        if ((int(parts[i].temp)>>8)>(rand()%10000))
+            fusion(sim, i, under, x, y);
+        break; 
+    case PT_O2:
+        if ((int(parts[i].temp)>>9)>(rand()%10000))
+            fusion(sim, i, under, x, y);
         break;
     case PT_DYST:
         sim->part_change_type(under>>8,x,y,PT_YEST);
@@ -159,6 +173,18 @@ int Element_NTRI::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
+//#TPT-Directive ElementHeader Element_NTRI static int fusion(Simulation * sim, int i, int under, int x, int y)
+int Element_NTRI::fusion(Simulation * sim, int i, int under, int x, int y) {
+    sim->parts[under>>8].temp = 9999;
+    sim->pv[y/CELL][x/CELL] += 300.0F;
+    sim->gravmap[(y/CELL)*(XRES/CELL)+(x/CELL)] += 40.0F;
+    sim->parts[i].tmp2 = 1;
+    int z = int(sim->parts[i].temp) >> 10;
+    if (sim->parts[i].life > z)
+        sim->parts[i].life = z;
+    return 0;
+}
+
 //#TPT-Directive ElementHeader Element_NTRI static int DeutImplosion(Simulation * sim, int n, int x, int y, float temp, int t)
 int Element_NTRI::DeutImplosion(Simulation * sim, int n, int x, int y, float temp, int t)
 {
@@ -168,7 +194,7 @@ int Element_NTRI::DeutImplosion(Simulation * sim, int n, int x, int y, float tem
 		n = 1;
 	else if (n>340)
 		n = 340;
-    int z = 1;
+    int z = -1;
     
     int r, rx, ry;
 	for (rx=-1; rx<2; rx++)
@@ -177,7 +203,7 @@ int Element_NTRI::DeutImplosion(Simulation * sim, int n, int x, int y, float tem
 			{
 				r = sim->photons[y+ry][x+rx];
                 if ((r&0xFF)==PT_PROT) {
-                    z = -1;
+                    z = 1;
                 }
             }
 

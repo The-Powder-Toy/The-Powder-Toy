@@ -2058,7 +2058,7 @@ void Simulation::init_can_move()
 			can_move[PT_PROT][destinationType] = 2;
 			can_move[PT_GRVT][destinationType] = 2;
 		}
-		if (destinationType != PT_VOID && destinationType != PT_PVOD && destinationType != PT_PRTI && destinationType != PT_PRTO)
+		if (destinationType != PT_VOID && destinationType != PT_PVOD && destinationType != PT_PRTI && destinationType != PT_TRON && destinationType != PT_PRTO)
 		{
 			can_move[PT_NTRI][destinationType] = 2;
 		}
