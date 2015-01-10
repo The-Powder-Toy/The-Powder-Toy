@@ -333,8 +333,8 @@ int SDLOpen()
 	SendMessage(WindowHandle, WM_SETICON, ICON_SMALL, (LPARAM)hIconSmall);
 	SendMessage(WindowHandle, WM_SETICON, ICON_BIG, (LPARAM)hIconBig);
 #elif defined(LIN)
-	SDL_Surface *icon = SDL_CreateRGBSurfaceFrom((void*)app_icon, 16, 16, 32, 64, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
-	SDL_WM_SetIcon(icon, NULL);
+	SDL_Surface *icon = SDL_CreateRGBSurfaceFrom((void*)app_icon, 48, 48, 24, 144, 0x00FF0000, 0x0000FF00, 0x000000FF, 0);
+	SDL_WM_SetIcon(icon, (Uint8*)app_icon_bitmap);
 #endif
 
 	SDL_WM_SetCaption("The Powder Toy", "Powder Toy");
