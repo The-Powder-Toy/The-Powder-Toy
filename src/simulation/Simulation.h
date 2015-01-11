@@ -151,8 +151,8 @@ public:
 	int parts_avg(int ci, int ni, int t);
 	void create_arc(int sx, int sy, int dx, int dy, int midpoints, int variance, int type, int flags);
 	int nearest_part(int ci, int t, int max_d);
-	void update_particles_i(int start, int inc);
-	void update_particles();
+	void UpdateParticles(int start, int end);
+	void Update();
 	void rotate_area(int area_x, int area_y, int area_w, int area_h, int invert);
 	void clear_area(int area_x, int area_y, int area_w, int area_h);
 
@@ -196,7 +196,6 @@ public:
 	int get_normal(int pt, int x, int y, float dx, float dy, float *nx, float *ny);
 	int get_normal_interp(int pt, float x0, float y0, float dx, float dy, float *nx, float *ny);
 	void clear_sim();
-	void UpdateParticles();
 	Simulation();
 	~Simulation();
 };

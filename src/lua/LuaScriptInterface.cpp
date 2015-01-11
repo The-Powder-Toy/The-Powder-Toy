@@ -592,6 +592,7 @@ void LuaScriptInterface::initSimulationAPI()
 		{"photons", simulation_photons},
 		{"neighbours", simulation_neighbours},
 		{"neighbors", simulation_neighbours},
+		{"updateParticles", simulation_update_particles},
 		{NULL, NULL}
 	};
 	luaL_register(l, "simulation", simulationAPIMethods);
@@ -1778,6 +1779,16 @@ int LuaScriptInterface::simulation_neighbours(lua_State * l)
 	lua_pushnumber(l, -ry);
 	lua_pushcclosure(l, NeighboursClosure, 6);
 	return 1;
+}
+
+int LuaScriptInterface::simulation_update_particles(lua_State * l)
+{
+	int start = luaL_optint(l, 1, 0);
+	int end  = luaL_optint(l, 2, luacon_sim->parts_lastActiveIndex);
+	if (start < 0 || end >= NPART || start > end)
+		return luaL_error(l, "Invalid start / end positions: (%i, %i)", start, end);
+	luacon_sim->UpdateParticles(start, end);
+	return 0;
 }
 
 //// Begin Renderer API
