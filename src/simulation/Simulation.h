@@ -152,6 +152,8 @@ public:
 	void create_arc(int sx, int sy, int dx, int dy, int midpoints, int variance, int type, int flags);
 	int nearest_part(int ci, int t, int max_d);
 	void UpdateParticles(int start, int end);
+	void SimulateGoL();
+	void CheckStacking();
 	void Update();
 	void rotate_area(int area_x, int area_y, int area_w, int area_h, int invert);
 	void clear_area(int area_x, int area_y, int area_w, int area_h);

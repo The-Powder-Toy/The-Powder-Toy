@@ -4409,6 +4409,173 @@ int Simulation::GetParticleType(std::string type)
 	return -1;
 }
 
+void Simulation::SimulateGoL()
+{
+	CGOL=0;
+	//TODO: maybe this should only loop through active particles
+	for (int ny = CELL; ny < YRES-CELL; ny++)
+	{
+		//go through every particle and set neighbor map
+		for (int nx = CELL; nx < XRES-CELL; nx++)
+		{
+			int r = pmap[ny][nx];
+			if (!r)
+			{
+				gol[ny][nx] = 0;
+				continue;
+			}
+			if ((r&0xFF)==PT_LIFE)
+			{
+				int golnum = parts[r>>8].ctype+1;
+				if (golnum<=0 || golnum>NGOL) {
+					kill_part(r>>8);
+					continue;
+				}
+				gol[ny][nx] = golnum;
+				if (parts[r>>8].tmp == grule[golnum][9]-1)
+				{
+					for (int nnx = -1; nnx < 2; nnx++)
+					{
+						//it will count itself as its own neighbor, which is needed, but will have 1 extra for delete check
+						for (int nny = -1; nny < 2; nny++)
+						{
+							int adx = ((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL;
+							int ady = ((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL;
+							int rt = pmap[ady][adx];
+							if (!rt || (rt&0xFF)==PT_LIFE)
+							{
+								//the total neighbor count is in 0
+								gol2[ady][adx][0] ++;
+								//insert golnum into neighbor table
+								for (int i = 1; i < 9; i++)
+								{
+									if (!gol2[ady][adx][i])
+									{
+										gol2[ady][adx][i] = (golnum<<4)+1;
+										break;
+									}
+									else if((gol2[ady][adx][i]>>4)==golnum)
+									{
+										gol2[ady][adx][i]++;
+										break;
+									}
+								}
+							}
+						}
+					}
+				}
+				else
+				{
+					parts[r>>8].tmp --;
+				}
+			}
+		}
+	}
+	for (int ny = CELL; ny < YRES-CELL; ny++)
+	{
+		//go through every particle again, but check neighbor map, then update particles
+		for (int nx = CELL; nx < XRES-CELL; nx++)
+		{
+			int r = pmap[ny][nx];
+			if (r && (r&0xFF)!=PT_LIFE)
+				continue;
+			int neighbors = gol2[ny][nx][0];
+			if (neighbors)
+			{
+				int golnum = gol[ny][nx];
+				if (!r)
+				{
+					//Find which type we can try and create
+					int creategol = 0xFF;
+					for (int i = 1; i < 9; i++)
+					{
+						if (!gol2[ny][nx][i]) break;
+						golnum = (gol2[ny][nx][i]>>4);
+						if (grule[golnum][neighbors]>=2 && (gol2[ny][nx][i]&0xF)>=(neighbors%2)+neighbors/2)
+						{
+							if (golnum<creategol) creategol=golnum;
+						}
+					}
+					if (creategol<0xFF)
+						create_part(-1, nx, ny, PT_LIFE|((creategol-1)<<8));
+				}
+				else if (grule[golnum][neighbors-1]==0 || grule[golnum][neighbors-1]==2)//subtract 1 because it counted itself
+				{
+					if (parts[r>>8].tmp==grule[golnum][9]-1)
+						parts[r>>8].tmp --;
+				}
+				for (int z = 0; z < 9; z++)
+					gol2[ny][nx][z] = 0;//this improves performance A LOT compared to the memset, i was getting ~23 more fps with this.
+			}
+			//we still need to kill things with 0 neighbors (higher state life)
+			if (r && parts[r>>8].tmp<=0)
+					kill_part(r>>8);
+		}
+	}
+	//memset(gol2, 0, sizeof(gol2));
+}
+
+void Simulation::CheckStacking()
+{
+	bool excessive_stacking_found = false;
+	force_stacking_check = 0;
+	for (int y = 0; y < YRES; y++)
+	{
+		for (int x = 0; x < XRES; x++)
+		{
+			// Use a threshold, since some particle stacking can be normal (e.g. BIZR + FILT)
+			// Setting pmap_count[y][x] > NPART means BHOL will form in that spot
+			if (pmap_count[y][x]>5)
+			{
+				if (bmap[y/CELL][x/CELL]==WL_EHOLE)
+				{
+					// Allow more stacking in E-hole
+					if (pmap_count[y][x]>1500)
+					{
+						pmap_count[y][x] = pmap_count[y][x] + NPART;
+						excessive_stacking_found = 1;
+					}
+				}
+				else if (pmap_count[y][x]>1500 || (rand()%1600)<=(pmap_count[y][x]+100))
+				{
+					pmap_count[y][x] = pmap_count[y][x] + NPART;
+					excessive_stacking_found = true;
+				}
+			}
+		}
+	}
+	if (excessive_stacking_found)
+	{
+		for (int i = 0; i <= parts_lastActiveIndex; i++)
+		{
+			if (parts[i].type)
+			{
+				int t = parts[i].type;
+				int x = (int)(parts[i].x+0.5f);
+				int y = (int)(parts[i].y+0.5f);
+				if (x>=0 && y>=0 && x<XRES && y<YRES && !(elements[t].Properties&TYPE_ENERGY))
+				{
+					if (pmap_count[y][x]>=NPART)
+					{
+						if (pmap_count[y][x]>NPART)
+						{
+							create_part(i, x, y, PT_NBHL);
+							parts[i].temp = MAX_TEMP;
+							parts[i].tmp = pmap_count[y][x]-NPART;//strength of grav field
+							if (parts[i].tmp>51200) parts[i].tmp = 51200;
+							pmap_count[y][x] = NPART;
+						}
+						else
+						{
+							kill_part(i);
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 //updates pmap, gol, and some other simulation stuff (then calls UpdateParticles)
 void Simulation::Update()
 {
@@ -4446,6 +4613,12 @@ void Simulation::Update()
 			emp_decor -= emp_decor/25+2;
 		if(emp_decor < 0)
 			emp_decor = 0;
+
+		currentTick++;
+
+		elementRecount |= !(currentTick%180);
+		if (elementRecount)
+			std::fill(elementCount, elementCount+PT_NUM, 0);
 	}
 	sandcolour = (int)(20.0f*sin((float)sandcolour_frame*(M_PI/180.0f)));
 	sandcolour_frame = (sandcolour_frame+1)%360;
@@ -4478,6 +4651,38 @@ void Simulation::Update()
 			}
 			lastPartUsed = i;
 			NUM_PARTS ++;
+
+			//decrease particle life
+			if (!sys_pause || framerender)
+			{
+				if (t<0 || t>=PT_NUM || !elements[t].Enabled)
+				{
+					kill_part(i);
+					continue;
+				}
+
+				if (elementRecount)
+					elementCount[t]++;
+
+				unsigned int elem_properties = elements[t].Properties;
+				if (parts[i].life>0 && (elem_properties&PROP_LIFE_DEC))
+				{
+					// automatically decrease life
+					parts[i].life--;
+					if (parts[i].life<=0 && (elem_properties&(PROP_LIFE_KILL_DEC|PROP_LIFE_KILL)))
+					{
+						// kill on change to no life
+						kill_part(i);
+						continue;
+					}
+				}
+				else if (parts[i].life<=0 && (elem_properties&PROP_LIFE_KILL))
+				{
+					// kill if no life
+					kill_part(i);
+					continue;
+				}
+			}
 		}
 		else
 		{
@@ -4513,67 +4718,9 @@ void Simulation::Update()
 
 	if (!sys_pause||framerender)
 	{
-		currentTick++;
-
 		if (force_stacking_check || (rand()%10)==0)
 		{
-			bool excessive_stacking_found = false;
-			force_stacking_check = 0;
-			for (y=0; y<YRES; y++)
-			{
-				for (x=0; x<XRES; x++)
-				{
-					// Use a threshold, since some particle stacking can be normal (e.g. BIZR + FILT)
-					// Setting pmap_count[y][x] > NPART means BHOL will form in that spot
-					if (pmap_count[y][x]>5)
-					{
-						if (bmap[y/CELL][x/CELL]==WL_EHOLE)
-						{
-							// Allow more stacking in E-hole
-							if (pmap_count[y][x]>1500)
-							{
-								pmap_count[y][x] = pmap_count[y][x] + NPART;
-								excessive_stacking_found = 1;
-							}
-						}
-						else if (pmap_count[y][x]>1500 || (rand()%1600)<=(pmap_count[y][x]+100))
-						{
-							pmap_count[y][x] = pmap_count[y][x] + NPART;
-							excessive_stacking_found = true;
-						}
-					}
-				}
-			}
-			if (excessive_stacking_found)
-			{
-				for (i=0; i<=parts_lastActiveIndex; i++)
-				{
-					if (parts[i].type)
-					{
-						t = parts[i].type;
-						x = (int)(parts[i].x+0.5f);
-						y = (int)(parts[i].y+0.5f);
-						if (x>=0 && y>=0 && x<XRES && y<YRES && !(elements[t].Properties&TYPE_ENERGY))
-						{
-							if (pmap_count[y][x]>=NPART)
-							{
-								if (pmap_count[y][x]>NPART)
-								{
-									create_part(i, x, y, PT_NBHL);
-									parts[i].temp = MAX_TEMP;
-									parts[i].tmp = pmap_count[y][x]-NPART;//strength of grav field
-									if (parts[i].tmp>51200) parts[i].tmp = 51200;
-									pmap_count[y][x] = NPART;
-								}
-								else
-								{
-									kill_part(i);
-								}
-							}
-						}
-					}
-				}
-			}
+			CheckStacking();
 		}
 
 		if (elementCount[PT_LOVE] > 0 || elementCount[PT_LOLZ] > 0) //LOVE and LOLZ element handling
@@ -4675,108 +4822,11 @@ void Simulation::Update()
 		}
 
 		//game of life!
-		if (elementCount[PT_LIFE]>0&&++CGOL>=GSPEED)//GSPEED is frames per generation
+		if (elementCount[PT_LIFE]>0 && ++CGOL>=GSPEED)//GSPEED is frames per generation
 		{
-			CGOL=0;
-			//TODO: maybe this should only loop through active particles
-			for (int ny = CELL; ny < YRES-CELL; ny++)
-			{//go through every particle and set neighbor map
-				for (int nx = CELL; nx < XRES-CELL; nx++)
-				{
-					int r = pmap[ny][nx];
-					if (!r)
-					{
-						gol[ny][nx] = 0;
-						continue;
-					}
-					if ((r&0xFF)==PT_LIFE)
-					{
-						int golnum = parts[r>>8].ctype+1;
-						if (golnum<=0 || golnum>NGOL) {
-							kill_part(r>>8);
-							continue;
-						}
-						gol[ny][nx] = golnum;
-						if (parts[r>>8].tmp == grule[golnum][9]-1)
-						{
-							for (int nnx = -1; nnx < 2; nnx++)
-							{
-								for (int nny = -1; nny < 2; nny++)//it will count itself as its own neighbor, which is needed, but will have 1 extra for delete check
-								{
-									int adx = ((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL;
-									int ady = ((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL;
-									int rt = pmap[ady][adx];
-									if (!rt || (rt&0xFF)==PT_LIFE)
-									{
-										//the total neighbor count is in 0
-										gol2[ady][adx][0] ++;
-										//insert golnum into neighbor table
-										for (int i = 1; i < 9; i++)
-										{
-											if (!gol2[ady][adx][i])
-											{
-												gol2[ady][adx][i] = (golnum<<4)+1;
-												break;
-											}
-											else if((gol2[ady][adx][i]>>4)==golnum)
-											{
-												gol2[ady][adx][i]++;
-												break;
-											}
-										}
-									}
-								}
-							}
-						}
-						else
-						{
-							parts[r>>8].tmp --;
-						}
-					}
-				}
-			}
-			for (int ny = CELL; ny < YRES-CELL; ny++)
-			{ //go through every particle again, but check neighbor map, then update particles
-				for (int nx = CELL; nx < XRES-CELL; nx++)
-				{
-					int r = pmap[ny][nx];
-					if (r && (r&0xFF)!=PT_LIFE)
-						continue;
-					int neighbors = gol2[ny][nx][0];
-					if (neighbors)
-					{
-						int golnum = gol[ny][nx];
-						if (!r)
-						{
-							//Find which type we can try and create
-							int creategol = 0xFF;
-							for ( i=1; i<9; i++)
-							{
-								if (!gol2[ny][nx][i]) break;
-								golnum = (gol2[ny][nx][i]>>4);
-								if (grule[golnum][neighbors]>=2 && (gol2[ny][nx][i]&0xF)>=(neighbors%2)+neighbors/2)
-								{
-									if (golnum<creategol) creategol=golnum;
-								}
-							}
-							if (creategol<0xFF)
-								create_part(-1, nx, ny, PT_LIFE|((creategol-1)<<8));
-						}
-						else if (grule[golnum][neighbors-1]==0 || grule[golnum][neighbors-1]==2)//subtract 1 because it counted itself
-						{
-							if (parts[r>>8].tmp==grule[golnum][9]-1)
-								parts[r>>8].tmp --;
-						}
-						for (int z = 0; z < 9; z++)
-							gol2[ny][nx][z] = 0;//this improves performance A LOT compared to the memset, i was getting ~23 more fps with this.
-					}
-					//we still need to kill things with 0 neighbors (higher state life)
-					if (r && parts[r>>8].tmp<=0)
-							kill_part(r>>8);
-				}
-			}
-			//memset(gol2, 0, sizeof(gol2));
+			SimulateGoL();
 		}
+
 		if (ISWIRE>0)//wifi channel reseting
 		{
 			for (int q = 0; q < (int)(MAX_TEMP-73.15f)/100+2; q++)
@@ -4786,43 +4836,6 @@ void Simulation::Update()
 			}
 			ISWIRE--;
 		}
-
-		elementRecount |= !(currentTick%180);
-		if (elementRecount)
-			std::fill(elementCount, elementCount+PT_NUM, 0);
-
-		for (i=0; i<=parts_lastActiveIndex; i++)
-			if (parts[i].type)
-			{
-				t = parts[i].type;
-				if (t<0 || t>=PT_NUM || !elements[t].Enabled)
-				{
-					kill_part(i);
-					continue;
-				}
-
-				if (elementRecount)
-					elementCount[t]++;
-
-				unsigned int elem_properties = elements[t].Properties;
-				if (parts[i].life>0 && (elem_properties&PROP_LIFE_DEC))
-				{
-					// automatically decrease life
-					parts[i].life--;
-					if (parts[i].life<=0 && (elem_properties&(PROP_LIFE_KILL_DEC|PROP_LIFE_KILL)))
-					{
-						// kill on change to no life
-						kill_part(i);
-						continue;
-					}
-				}
-				else if (parts[i].life<=0 && (elem_properties&PROP_LIFE_KILL))
-				{
-					// kill if no life
-					kill_part(i);
-					continue;
-				}
-			}
 
 		if (!player.spwn && player.spawnID >= 0)
 			create_part(-1, (int)parts[player.spawnID].x, (int)parts[player.spawnID].y, PT_STKM);
