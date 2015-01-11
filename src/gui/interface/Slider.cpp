@@ -25,7 +25,6 @@ void Slider::updatePosition(int position)
 
 	float fPosition = position-3;
 	float fSize = Size.X-6;
-	float fSteps = sliderSteps;
 
 	float fSliderPosition = (fPosition/fSize)*sliderSteps;//position;//((x-3)/(Size.X-6))*sliderSteps;
 

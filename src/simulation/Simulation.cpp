@@ -200,7 +200,7 @@ GameSave * Simulation::Save()
 
 GameSave * Simulation::Save(int fullX, int fullY, int fullX2, int fullY2)
 {
-	int blockX, blockY, blockX2, blockY2, fullW, fullH, blockW, blockH;
+	int blockX, blockY, blockX2, blockY2, blockW, blockH;
 	//Normalise incoming coords
 	int swapTemp;
 	if(fullY>fullY2)
@@ -223,16 +223,8 @@ GameSave * Simulation::Save(int fullX, int fullY, int fullX2, int fullY2)
 	blockX2 = (fullX2+CELL)/CELL;
 	blockY2 = (fullY2+CELL)/CELL;
 
-	//fullX = blockX*CELL;
-	//fullY = blockY*CELL;
-
-	//fullX2 = blockX2*CELL;
-	//fullY2 = blockY2*CELL;
-
 	blockW = blockX2-blockX;
 	blockH = blockY2-blockY;
-	fullW = fullX2-fullX;
-	fullH = fullY2-fullY;
 
 	GameSave * newSave = new GameSave(blockW, blockH);
 	
@@ -1771,13 +1763,12 @@ void Simulation::create_arc(int sx, int sy, int dx, int dy, int midpoints, int v
 
 void Simulation::clear_sim(void)
 {
-	int i, x, y;
 	emp_decor = 0;
 	signs.clear();
 	memset(bmap, 0, sizeof(bmap));
 	memset(emap, 0, sizeof(emap));
 	memset(parts, 0, sizeof(Particle)*NPART);
-	for (i=0; i<NPART-1; i++)
+	for (int i = 0; i < NPART-1; i++)
 		parts[i].life = i+1;
 	parts[NPART-1].life = -1;
 	pfree = 0;
@@ -3163,7 +3154,7 @@ void Simulation::create_gain_photon(int pp)//photons from PHOT going through GLO
 void Simulation::create_cherenkov_photon(int pp)//photons from NEUT going through GLAS
 {
 	int i, lr, nx, ny;
-	float r, eff_ior;
+	float r;
 
 	if (pfree == -1)
 		return;
@@ -3715,12 +3706,11 @@ void Simulation::update_particles_i(int start, int inc)
 				if (t&&(t!=PT_HSWC||parts[i].life==10)&&(elements[t].HeatConduct*gel_scale)>(rand()%250))
 #endif
 				{
-					float c_Cm = 0.0f;
 					if (aheat_enable && !(elements[t].Properties&PROP_NOAMBHEAT))
 					{
 #ifdef REALISTIC
 						c_heat = parts[i].temp*96.645/elements[t].HeatConduct*gel_scale*fabs(elements[t].Weight) + hv[y/CELL][x/CELL]*100*(pv[y/CELL][x/CELL]+273.15f)/256;
-						c_Cm = 96.645/elements[t].HeatConduct*gel_scale*fabs(elements[t].Weight)  + 100*(pv[y/CELL][x/CELL]+273.15f)/256;
+						float c_Cm = 96.645/elements[t].HeatConduct*gel_scale*fabs(elements[t].Weight)  + 100*(pv[y/CELL][x/CELL]+273.15f)/256;
 						pt = c_heat/c_Cm;
 						pt = restrict_flt(pt, -MAX_TEMP+MIN_TEMP, MAX_TEMP-MIN_TEMP);
 						parts[i].temp = pt;
@@ -3735,7 +3725,9 @@ void Simulation::update_particles_i(int start, int inc)
 #endif
 					}
 					c_heat = 0.0f;
-					c_Cm = 0.0f;
+#ifdef REALISTIC
+					float c_Cm = 0.0f;
+#endif
 					for (j=0; j<8; j++)
 					{
 						surround_hconduct[j] = i;

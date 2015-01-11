@@ -706,7 +706,6 @@ void http_auth_headers(void *ctx, const char *user, const char *pass, const char
 	char *tmp;
 	int i;
 	unsigned char hash[16];
-	unsigned int m;
 	struct md5_context md5;
 
 	if (user)
@@ -716,7 +715,6 @@ void http_auth_headers(void *ctx, const char *user, const char *pass, const char
 			md5_init(&md5);
 			md5_update(&md5, (unsigned char *)user, strlen(user));
 			md5_update(&md5, (unsigned char *)"-", 1);
-			m = 0;
 
 			md5_update(&md5, (unsigned char *)pass, strlen(pass));
 			md5_final(hash, &md5);

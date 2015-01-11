@@ -58,8 +58,7 @@ int luacon_partread(lua_State* l)
 
 int luacon_partwrite(lua_State* l)
 {
-	int tempinteger, i = cIndex;
-	float tempfloat;
+	int i = cIndex;
 	std::string key = luaL_optstring(l, 2, "");
 	CommandInterface::FormatType format;
 	int offset = luacon_ci->GetPropertyOffset(key, format);
@@ -1260,13 +1259,8 @@ int luatpt_set_elecmap(lua_State* l)
 
 int luatpt_get_elecmap(lua_State* l)
 {
-	int nx, ny, acount;
-	int x1, y1, width, height;
-	float value;
-	acount = lua_gettop(l);
-
-	x1 = abs(luaL_optint(l, 1, 0));
-	y1 = abs(luaL_optint(l, 2, 0));
+	int x1 = abs(luaL_optint(l, 1, 0));
+	int y1 = abs(luaL_optint(l, 2, 0));
 
 	if(x1 > (XRES/CELL) || y1 > (YRES/CELL))
 		return luaL_error(l, "Out of range");

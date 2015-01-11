@@ -16,7 +16,6 @@ int PIXELMETHODS_CLASS::drawtext(int x, int y, const char *s, int r, int g, int 
 {
 	if(!strlen(s))
 		return 0;
-	int width, height;
 
 	int invert = 0;
 	int oR = r, oG = g, oB = b;

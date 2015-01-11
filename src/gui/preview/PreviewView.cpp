@@ -565,7 +565,6 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 		ui::AvatarButton * tempAvatar;
 		for(int i = 0; i < comments->size(); i++)
 		{
-			int usernameY = currentY+5, commentY;
 			if(showAvatars)
 			{
 				tempAvatar = new ui::AvatarButton(ui::Point(2, currentY+7), ui::Point(26, 26), comments->at(i)->authorName);
@@ -589,7 +588,6 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 			commentComponents.push_back(tempUsername);
 			commentsPanel->AddChild(tempUsername);
 
-			commentY = currentY+5;
 			if(showAvatars)
 				tempComment = new ui::Label(ui::Point(31, currentY+5), ui::Point(Size.X-((XRES/2) + 13 + 26), -1), comments->at(i)->comment);
 			else

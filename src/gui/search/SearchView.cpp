@@ -468,8 +468,8 @@ void SearchView::CheckAccess()
 void SearchView::NotifyTagListChanged(SearchModel * sender)
 {
 	int i = 0;
-	int buttonWidth, buttonHeight, saveX = 0, saveY = 0, savesX = 5, savesY = 4, buttonPadding = 1;
-	int buttonAreaWidth, buttonAreaHeight, buttonXOffset, buttonYOffset;
+	int savesY = 4, buttonPadding = 1;
+	int buttonAreaHeight, buttonYOffset;
 
 	int tagWidth, tagHeight, tagX = 0, tagY = 0, tagsX = 6, tagsY = 4, tagPadding = 1;
 	int tagAreaWidth, tagAreaHeight, tagXOffset, tagYOffset;
@@ -490,8 +490,6 @@ void SearchView::NotifyTagListChanged(SearchModel * sender)
 	tagButtons.clear();
 
 	buttonYOffset = 28;
-	buttonXOffset = buttonPadding;
-	buttonAreaWidth = Size.X;
 	buttonAreaHeight = Size.Y - buttonYOffset - 18;
 
 	if(sender->GetShowTags())
@@ -576,9 +574,6 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 	int buttonWidth, buttonHeight, saveX = 0, saveY = 0, savesX = 5, savesY = 4, buttonPadding = 1;
 	int buttonAreaWidth, buttonAreaHeight, buttonXOffset, buttonYOffset;
 
-	int tagWidth, tagHeight, tagX = 0, tagY = 0, tagsX = 6, tagsY = 4, tagPadding = 1;
-	int tagAreaWidth, tagAreaHeight, tagXOffset, tagYOffset;
-
 	vector<SaveInfo*> saves = sender->GetSaveList();
 	//string messageOfTheDay = sender->GetMessageOfTheDay();
 
@@ -662,13 +657,6 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 			buttonYOffset += (buttonAreaHeight/savesY) - buttonPadding*2;
 			buttonAreaHeight = Size.Y - buttonYOffset - 18;
 			savesY--;
-
-			tagXOffset = tagPadding;
-			tagYOffset = 60;
-			tagAreaWidth = Size.X;
-			tagAreaHeight = ((buttonAreaHeight/savesY) - buttonPadding*2)-(tagYOffset-28)-5;
-			tagWidth = (tagAreaWidth/tagsX) - tagPadding*2;
-			tagHeight = (tagAreaHeight/tagsY) - tagPadding*2;
 		}
 
 		buttonWidth = (buttonAreaWidth/savesX) - buttonPadding*2;

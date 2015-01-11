@@ -49,7 +49,7 @@ Element_EXOT::Element_EXOT()
 //#TPT-Directive ElementHeader Element_EXOT static int update(UPDATE_FUNC_ARGS)
 int Element_EXOT::update(UPDATE_FUNC_ARGS)
 {
-	int r, rt, rx, ry, nb, rrx, rry, trade, tym;
+	int r, rt, rx, ry, trade, tym;
 	for (rx=-2; rx<=2; rx++)
 		for (ry=-2; ry<=2; ry++)
 			if (BOUNDS_CHECK && (rx || ry))

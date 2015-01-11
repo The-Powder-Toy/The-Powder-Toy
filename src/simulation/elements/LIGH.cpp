@@ -70,8 +70,7 @@ int Element_LIGH::update(UPDATE_FUNC_ARGS)
 	*/
 	int r,rx,ry,rt, multipler, powderful;
 	float angle, angle2=-1;
-	int pNear = 0;
-	powderful = powderful = parts[i].temp*(1+parts[i].life/40)*LIGHTING_POWER;
+	powderful = parts[i].temp*(1+parts[i].life/40)*LIGHTING_POWER;
 	//Element_FIRE::update(UPDATE_FUNC_SUBCALL_ARGS);
 	if (sim->aheat_enable)
 	{
@@ -162,7 +161,7 @@ int Element_LIGH::update(UPDATE_FUNC_ARGS)
 	}
 
 	//Completely broken and laggy function, possibly can be fixed later
-	/*pNear = LIGH_nearest_part(sim, i, parts[i].life*2.5);
+	/*int pNear = LIGH_nearest_part(sim, i, parts[i].life*2.5);
 	if (pNear!=-1)
 	{
 		int t=parts[pNear].type;

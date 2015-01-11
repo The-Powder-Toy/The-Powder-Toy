@@ -521,7 +521,7 @@ wall_type * Renderer_wtypes = LoadWalls(Renderer_wtypesCount);
 
 VideoBuffer * Renderer::WallIcon(int wallID, int width, int height)
 {
-	int i, j, cr, cg, cb;
+	int i, j;
 	int wt = wallID;
 	if (wt<0 || wt>=Renderer_wtypesCount)
 		return 0;
@@ -912,7 +912,7 @@ void Renderer::DrawWalls()
 
 void Renderer::DrawSigns()
 {
-	int i, j, x, y, w, h, dx, dy,mx,my,b=1,bq,match;
+	int i, j, x, y, w, h, dx, dy;
 	std::vector<sign> signs = sim->signs;
 #ifdef OGLR
 	GLint prevFbo;
@@ -1004,7 +1004,7 @@ void Renderer::render_fire()
 #ifndef OGLR
 	if(!(render_mode & FIREMODE))
 		return;
-	int i,j,x,y,r,g,b,nx,ny;
+	int i,j,x,y,r,g,b;
 	for (j=0; j<YRES/CELL; j++)
 		for (i=0; i<XRES/CELL; i++)
 		{
@@ -1043,7 +1043,7 @@ float blur_alphaf[7][7];
 void Renderer::prepare_alpha(int size, float intensity)
 {
 	//TODO: implement size
-	int x,y,i,j,c;
+	int x,y,i,j;
 	float multiplier = 255.0f*intensity;
 
 	memset(temp, 0, sizeof(temp));
@@ -1071,7 +1071,7 @@ void Renderer::prepare_alpha(int size, float intensity)
 
 	memset(glow_alphaf, 0, sizeof(glow_alphaf));
 
-	c = 5;
+	int c = 5;
 
 	glow_alphaf[c][c-1] = 0.4f;
 	glow_alphaf[c][c+1] = 0.4f;
@@ -1125,7 +1125,7 @@ void Renderer::render_parts()
 {
 	int deca, decr, decg, decb, cola, colr, colg, colb, firea, firer, fireg, fireb, pixel_mode, q, i, t, nx, ny, x, y, caddress;
 	int orbd[4] = {0, 0, 0, 0}, orbl[4] = {0, 0, 0, 0};
-	float gradv, flicker, fnx, fny;
+	float gradv, flicker;
 	Particle * parts;
 	Element *elements;
 	if(!sim)
@@ -1133,6 +1133,7 @@ void Renderer::render_parts()
 	parts = sim->parts;
 	elements = sim->elements;
 #ifdef OGLR
+	float fnx, fny;
 	int cfireV = 0, cfireC = 0, cfire = 0;
 	int csmokeV = 0, csmokeC = 0, csmoke = 0;
 	int cblobV = 0, cblobC = 0, cblob = 0;
@@ -1168,8 +1169,10 @@ void Renderer::render_parts()
 
 			nx = (int)(sim->parts[i].x+0.5f);
 			ny = (int)(sim->parts[i].y+0.5f);
+#ifdef OGLR
 			fnx = sim->parts[i].x;
 			fny = sim->parts[i].y;
+#endif
 
 			if(nx >= XRES || nx < 0 || ny >= YRES || ny < 0)
 				continue;

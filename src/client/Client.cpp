@@ -712,31 +712,25 @@ void Client::Tick()
 #ifndef IGNORE_UPDATES
 				//Check for updates
 				json::Object versions = objDocument["Updates"];
-				
+#if not defined(BETA) && not defined(SNAPSHOT)
 				json::Object stableVersion = versions["Stable"];
-				json::Object betaVersion = versions["Beta"];
-				json::Object snapshotVersion = versions["Snapshot"];
-
 				json::Number stableMajor = stableVersion["Major"];
 				json::Number stableMinor = stableVersion["Minor"];
 				json::Number stableBuild = stableVersion["Build"];
 				json::String stableFile = stableVersion["File"];
-
-				json::Number betaMajor = betaVersion["Major"];
-				json::Number betaMinor = betaVersion["Minor"];
-				json::Number betaBuild = betaVersion["Build"];
-				json::String betaFile = betaVersion["File"];
-
-				json::Number snapshotSnapshot = snapshotVersion["Snapshot"];
-				json::String snapshotFile = snapshotVersion["File"];
-
 				if(stableMajor.Value()>SAVE_VERSION || (stableMinor.Value()>MINOR_VERSION && stableMajor.Value()==SAVE_VERSION) || stableBuild.Value()>BUILD_NUM)
 				{
 					updateAvailable = true;
 					updateInfo = UpdateInfo(stableMajor.Value(), stableMinor.Value(), stableBuild.Value(), stableFile.Value(), UpdateInfo::Stable);
 				}
+#endif
 
 #ifdef BETA
+				json::Object betaVersion = versions["Beta"];
+				json::Number betaMajor = betaVersion["Major"];
+				json::Number betaMinor = betaVersion["Minor"];
+				json::Number betaBuild = betaVersion["Build"];
+				json::String betaFile = betaVersion["File"];
 				if(betaMajor.Value()>SAVE_VERSION || (betaMinor.Value()>MINOR_VERSION && betaMajor.Value()==SAVE_VERSION) || betaBuild.Value()>BUILD_NUM)
 				{
 					updateAvailable = true;
@@ -745,6 +739,9 @@ void Client::Tick()
 #endif
 
 #ifdef SNAPSHOT
+				json::Object snapshotVersion = versions["Snapshot"];
+				json::Number snapshotSnapshot = snapshotVersion["Snapshot"];
+				json::String snapshotFile = snapshotVersion["File"];
 				if(snapshotSnapshot.Value() > SNAPSHOT_ID)
 				{
 					updateAvailable = true;

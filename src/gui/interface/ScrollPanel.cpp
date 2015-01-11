@@ -135,7 +135,6 @@ void ScrollPanel::XTick(float dt)
 
 	int oldOffsetY = offsetY;
 	offsetY += yScrollVel;
-	int oldOffsetX = offsetX;
 	offsetX += xScrollVel;
 
 	yScrollVel*=0.98f;

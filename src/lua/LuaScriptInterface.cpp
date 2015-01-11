@@ -709,7 +709,7 @@ int LuaScriptInterface::simulation_partNeighbours(lua_State * l)
 
 int LuaScriptInterface::simulation_partChangeType(lua_State * l)
 {
-	int partIndex = lua_tointeger(l, 1), x, y;
+	int partIndex = lua_tointeger(l, 1);
 	if(partIndex < 0 || partIndex >= NPART || !luacon_sim->parts[partIndex].type)
 		return 0;
 	luacon_sim->part_change_type(partIndex, luacon_sim->parts[partIndex].x+0.5f, luacon_sim->parts[partIndex].y+0.5f, lua_tointeger(l, 2));
@@ -1455,7 +1455,7 @@ int LuaScriptInterface::simulation_saveStamp(lua_State * l)
 
 int LuaScriptInterface::simulation_loadStamp(lua_State * l)
 {
-	int i = -1, j, x, y;
+	int i = -1, x, y;
 	SaveFile * tempfile;
 	x = luaL_optint(l,2,0);
 	y = luaL_optint(l,3,0);
@@ -3099,7 +3099,6 @@ std::string highlight(std::string command)
 #define CMP(X) (!strlcmp(wstart, X, len))
 	std::stringstream result;
 	int pos = 0;
-	int len = command.length();
 	const char *raw = command.c_str();
 	char c;
 	while(c = raw[pos])

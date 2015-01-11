@@ -49,7 +49,7 @@ Element_SING::Element_SING()
 //#TPT-Directive ElementHeader Element_SING static int update(UPDATE_FUNC_ARGS)
 int Element_SING::update(UPDATE_FUNC_ARGS)
  {
-	int r, rx, ry, cry, crx, rad, nxi, nxj, nb, j, spawncount;
+	int r, rx, ry, cry, crx, nb, j, spawncount;
 	int singularity = -parts[i].life;
 	float angle, v;
 

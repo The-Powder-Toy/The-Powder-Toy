@@ -11,7 +11,7 @@ public:
 		Brush(size_)
 	{
 		SetRadius(size_);
-	};
+	}
 	virtual void GenerateBitmap()
 	{
 		if(bitmap)
@@ -29,7 +29,7 @@ public:
 		}
 		else
 		{
-			int yTop = ry+1, yBottom, i, j;
+			int yTop = ry+1, yBottom, i;
 			for (i = 0; i <= rx; i++)
 			{
 				while (pow(i-rx,2.0)*pow(ry,2.0) + pow(yTop-ry,2.0)*pow(rx,2.0) <= pow(rx,2.0)*pow(ry,2.0))

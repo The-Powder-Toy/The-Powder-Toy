@@ -56,7 +56,7 @@ int TPTScriptInterface::Command(std::string command)
 	}
 
 	//Evaluate
-	return 0;
+	return retCode;
 }
 
 ValueType TPTScriptInterface::testType(std::string word)
@@ -81,7 +81,6 @@ ValueType TPTScriptInterface::testType(std::string word)
 	else if(word == "quit")
 		return TypeFunction;
 	//Basic type
-	parseNumber:
 			for(i = 0; i < word.length(); i++)
 			{
 				if (!(rawWord[i] >= '0' && rawWord[i] <= '9') && !(rawWord[i] == '-' && !i))

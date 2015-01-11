@@ -1094,9 +1094,9 @@ fin:
 void GameSave::readPSv(char * data, int dataLength)
 {
 	unsigned char * d = NULL, * c = (unsigned char *)data;
-	int q,i,j,k,x,y,p=0,*m=NULL, ver, pty, ty, legacy_beta=0, tempGrav = 0;
+	int q,i,j,k,x,y,p=0,*m=NULL, ver, pty, ty, legacy_beta=0;
 	int bx0=0, by0=0, bw, bh, w, h, y0 = 0, x0 = 0;
-	int nf=0, new_format = 0, ttv = 0;
+	int new_format = 0, ttv = 0;
 	int *fp = (int *)malloc(NPART*sizeof(int));
 
 	std::vector<sign> tempSigns;

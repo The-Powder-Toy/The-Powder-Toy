@@ -295,7 +295,6 @@ void blit2(pixel * vid, int currentScale)
 
 int SDLOpen()
 {
-	SDL_Surface * surface;
 #if defined(WIN) && defined(WINCONSOLE)
 	FILE * console = fopen("CON", "w" );
 #endif
@@ -839,7 +838,7 @@ int main(int argc, char * argv[])
 	if(tempScale != 1 && tempScale != 2)
 		tempScale = 1;
 
-	int sdlStatus = SDLOpen();
+	SDLOpen();
 #ifdef WIN
 	LoadWindowPosition(tempScale);
 #endif

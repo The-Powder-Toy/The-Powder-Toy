@@ -49,7 +49,6 @@ Element_BREC::Element_BREC()
 //#TPT-Directive ElementHeader Element_BREC static int update(UPDATE_FUNC_ARGS)
 int Element_BREC::update(UPDATE_FUNC_ARGS)
 {
-	int np;
 	if (parts[i].life)
 	{
 		if (sim->pv[y/CELL][x/CELL]>10.0f) 

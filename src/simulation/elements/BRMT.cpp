@@ -49,7 +49,7 @@ Element_BRMT::Element_BRMT()
 //#TPT-Directive ElementHeader Element_BRMT static int update(UPDATE_FUNC_ARGS)
 int Element_BRMT::update(UPDATE_FUNC_ARGS)
  {
-	int r, rx, ry, rt, tempFactor;
+	int r, rx, ry, tempFactor;
 	if (parts[i].temp > 523.15f)//250.0f+273.15f
 	{
 		tempFactor = 1000 - ((523.15f-parts[i].temp)*2);

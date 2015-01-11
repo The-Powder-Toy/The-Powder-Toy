@@ -49,7 +49,7 @@ Element_ARAY::Element_ARAY()
 //#TPT-Directive ElementHeader Element_ARAY static int update(UPDATE_FUNC_ARGS)
 int Element_ARAY::update(UPDATE_FUNC_ARGS)
  {
-	int r, nxx, nyy, docontinue, nxi, nyi, rx, ry, nr, ry1, rx1;
+	int r, nxx, nyy, docontinue, nxi, nyi, rx, ry, ry1, rx1;
 	if (parts[i].life==0) {
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)

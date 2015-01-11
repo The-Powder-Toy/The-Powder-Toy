@@ -50,7 +50,7 @@ Element_GOLD::Element_GOLD()
 //#TPT-Directive ElementHeader Element_GOLD static int update(UPDATE_FUNC_ARGS)
 int Element_GOLD::update(UPDATE_FUNC_ARGS)
  {
-	int rx, ry, r, rndstore, blocking = 0;
+	int rx, ry, r, rndstore;
 	static int checkCoordsX[] = { -4, 4, 0, 0 };
 	static int checkCoordsY[] = { 0, 0, -4, 4 };
 	//Find nearby rusted iron (BMTL with tmp 1+)

@@ -49,7 +49,7 @@ Element_BMTL::Element_BMTL()
 //#TPT-Directive ElementHeader Element_BMTL static int update(UPDATE_FUNC_ARGS)
 int Element_BMTL::update(UPDATE_FUNC_ARGS)
  {
-	int r, rx, ry, rt, tempFactor;
+	int r, rx, ry;
 	if (parts[i].tmp>1)
 	{
 		parts[i].tmp--;

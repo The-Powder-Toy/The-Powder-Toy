@@ -3,7 +3,7 @@
 
 void Brush::RenderRect(Renderer * ren, ui::Point position1, ui::Point position2)
 {
-	int width, height, t;
+	int width, height;
 	width = position2.X-position1.X;
 	height = position2.Y-position1.Y;
 	if(height<0)

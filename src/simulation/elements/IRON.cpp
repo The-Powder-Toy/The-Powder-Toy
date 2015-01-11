@@ -49,7 +49,7 @@ Element_IRON::Element_IRON()
 //#TPT-Directive ElementHeader Element_IRON static int update(UPDATE_FUNC_ARGS)
 int Element_IRON::update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry, rt;
+	int r, rx, ry;
 	if (parts[i].life)
 		return 0;
 	for (rx=-1; rx<2; rx++)
