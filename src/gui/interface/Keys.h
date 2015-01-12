@@ -1,6 +1,10 @@
 
 #if defined(USE_SDL)
+#ifdef SDL_INC
+#include "SDL/SDL.h"
+#else
 #include "SDL.h"
+#endif
 #define KEY_UNKNOWN SDLK_UNKNOWN
 #define KEY_UP SDLK_UP
 #define KEY_NUM_UP SDLK_KP8
@@ -49,7 +53,11 @@
 #define KEY_MOD_MODE			KMOD_MODE
 #define KEY_MOD_RESERVED		KMOD_RESERVED
 
+#ifdef MACOSX
+#define KEY_MOD_CONTROL			(KEY_MOD_RCONTROL | KEY_MOD_LCONTROL | KEY_MOD_LMETA | KEY_MOD_RMETA)
+#else
 #define KEY_MOD_CONTROL			(KEY_MOD_RCONTROL | KEY_MOD_LCONTROL)
+#endif
 #define KEY_MOD_ALT				(KEY_MOD_RALT | KEY_MOD_LALT)
 #define KEY_MOD_SHIFT			(KEY_MOD_RSHIFT | KEY_MOD_LSHIFT)
 

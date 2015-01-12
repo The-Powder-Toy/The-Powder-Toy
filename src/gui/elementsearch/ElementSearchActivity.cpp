@@ -25,7 +25,8 @@ ElementSearchActivity::ElementSearchActivity(GameController * gameController, st
 	WindowActivity(ui::Point(-1, -1), ui::Point(236, 302)),
 	gameController(gameController),
 	tools(tools),
-	firstResult(NULL)
+	firstResult(NULL),
+	exit(false)
 {
 	ui::Label * title = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 15), "Element Search");
 	title->SetTextColour(style::Colour::InformationTitle);
@@ -56,7 +57,7 @@ ElementSearchActivity::ElementSearchActivity(GameController * gameController, st
 			CloseAction(ElementSearchActivity * a) : a(a) {  }
 			void ActionCallback(ui::Button * sender_)
 			{
-				a->Exit();
+				a->exit = true;
 			}
 		};
 
@@ -167,7 +168,7 @@ void ElementSearchActivity::searchTools(std::string query)
 void ElementSearchActivity::SetActiveTool(int selectionState, Tool * tool)
 {
 	gameController->SetActiveTool(selectionState, tool);
-	Exit();
+	exit = true;
 }
 
 void ElementSearchActivity::OnDraw()
@@ -179,17 +180,23 @@ void ElementSearchActivity::OnDraw()
 	g->drawrect(Position.X+searchField->Position.X, Position.Y+searchField->Position.Y+searchField->Size.Y+8, searchField->Size.X, Size.Y-(searchField->Position.Y+searchField->Size.Y+8)-23, 255, 255, 255, 180);
 }
 
+void ElementSearchActivity::OnTick(float dt)
+{
+	if (exit)
+		Exit();
+}
+
 void ElementSearchActivity::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
 	if(key == KEY_ENTER || key == KEY_RETURN)
 	{
 		if(firstResult)
 			gameController->SetActiveTool(0, firstResult);
-		Exit();
+		exit = true;
 	}
 	if(key == KEY_ESCAPE)
 	{
-		Exit();
+		exit = true;
 	}
 }
 

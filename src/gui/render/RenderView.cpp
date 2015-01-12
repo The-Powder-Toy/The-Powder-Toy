@@ -186,6 +186,14 @@ RenderView::RenderView():
 	tCheckbox->SetActionCallback(new RenderModeAction(this, RENDER_BASC));
 	AddComponent(tCheckbox);
 
+	checkboxOffset += cSpace;
+
+	tCheckbox = new ui::Checkbox(ui::Point(checkboxOffset, YRES+4), ui::Point(30, 16), "Spark", "Glow effect on sparks");
+	renderModes.push_back(tCheckbox);
+	tCheckbox->SetIcon(IconEffect);
+	tCheckbox->SetActionCallback(new RenderModeAction(this, RENDER_SPRK));
+	AddComponent(tCheckbox);
+
 	checkboxOffset += sSpace;
 	line1 = checkboxOffset-5;
 
@@ -231,9 +239,9 @@ RenderView::RenderView():
 	AddComponent(tCheckbox);
 
 #ifdef OGLR
-	tCheckbox = new ui::Checkbox(ui::Point(checkboxOffset, YRES+4), ui::Point(30, 16), "Effect", "I don't know what this does..."); //I would remove the whole checkbox, but then there's a large empty space
+	tCheckbox = new ui::Checkbox(ui::Point(checkboxOffset, YRES+4), ui::Point(30, 16), "Effect", "Some type of OpenGL effect ... maybe"); //I would remove the whole checkbox, but then there's a large empty space
 #else
-	tCheckbox = new ui::Checkbox(ui::Point(checkboxOffset, YRES+4), ui::Point(30, 16), "Effect", "Does nothing");
+	tCheckbox = new ui::Checkbox(ui::Point(checkboxOffset, YRES+4), ui::Point(30, 16), "Effect", "Enables moving solids, stickmen guns, and premium(tm) graphics");
 #endif
 	displayModes.push_back(tCheckbox);
 	tCheckbox->SetIcon(IconEffect);
@@ -379,9 +387,9 @@ void RenderView::OnTick(float dt)
 		isToolTipFadingIn = false;
 		if(toolTipPresence < 120)
 		{
-			toolTipPresence += int(dt*2)>0?int(dt*2):1;
+			toolTipPresence += int(dt*2)>1?int(dt*2):2;
 			if(toolTipPresence > 120)
-				toolTipPresence = 0;
+				toolTipPresence = 120;
 		}
 	}
 	if(toolTipPresence>0)

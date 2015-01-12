@@ -1,3 +1,4 @@
+#include "Config.h"
 #include "Task.h"
 #include "TaskListener.h"
 
@@ -122,7 +123,7 @@ void Task::after()
 
 }
 
-void * Task::doWork_helper(void * ref)
+TH_ENTRY_POINT void * Task::doWork_helper(void * ref)
 {
 	bool newSuccess = ((Task*)ref)->doWork();
 	pthread_mutex_lock(&((Task*)ref)->taskMutex);

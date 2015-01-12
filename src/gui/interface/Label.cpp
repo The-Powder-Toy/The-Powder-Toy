@@ -346,8 +346,8 @@ void Label::updateSelection()
 
 void Label::SetDisplayText(std::string newText)
 {
-	displayText = newText;
-	tDisplayText = displayText;
+	ClearSelection();
+	displayText = tDisplayText = newText;
 }
 
 void Label::Draw(const Point& screenPos)

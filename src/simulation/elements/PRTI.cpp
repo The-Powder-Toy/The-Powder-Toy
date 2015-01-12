@@ -82,7 +82,7 @@ int Element_PRTI::update(UPDATE_FUNC_ARGS)
 				continue;// Handling these is a bit more complicated, and is done in STKM_interact()
 
 			if ((r&0xFF) == PT_SOAP)
-				sim->detach(r>>8);
+				Element_SOAP::detach(sim, r>>8);
 
 			for ( nnx=0; nnx<80; nnx++)
 				if (!sim->portalp[parts[i].tmp][count][nnx].type)

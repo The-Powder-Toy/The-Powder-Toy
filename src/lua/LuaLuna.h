@@ -1,10 +1,7 @@
 #pragma once
 //http://lua-users.org/wiki/SimplerCppBinding
 
-extern "C" {
-#include "lua.h"
-#include "lauxlib.h"
-}
+#include "LuaCompat.h"
 
 template <typename T> class Luna
 {

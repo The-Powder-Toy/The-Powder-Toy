@@ -74,6 +74,7 @@ void Gravity::gravity_cleanup()
 	free(gravx);
 	free(gravp);
 	free(gravmask);
+	free(obmap);
 }
 
 void Gravity::gravity_update_async()
@@ -126,7 +127,7 @@ void Gravity::gravity_update_async()
 	}
 }
 
-void *Gravity::update_grav_async_helper(void * context)
+TH_ENTRY_POINT void *Gravity::update_grav_async_helper(void * context)
 {
 	((Gravity *)context)->update_grav_async();
 	return NULL;
@@ -144,6 +145,10 @@ void Gravity::update_grav_async()
 	//memset(th_gravy, 0, XRES*YRES*sizeof(float));
 	//memset(th_gravx, 0, XRES*YRES*sizeof(float));
 	//memset(th_gravp, 0, XRES*YRES*sizeof(float));
+#ifdef GRAVFFT
+	if (!grav_fft_status)
+		grav_fft_init();
+#endif
 	while(!thread_done){
 		if(!done){
 			update_grav();
@@ -301,7 +306,6 @@ void Gravity::update_grav()
 	if(changed)
 	{
 		th_gravchanged = 1;
-		if (!grav_fft_status) grav_fft_init();
 
 		//copy gravmap into padded gravmap array
 		for (y=0; y<YRES/CELL; y++)

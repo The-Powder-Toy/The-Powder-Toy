@@ -135,7 +135,6 @@ public:
 	void kill_part(int i);
 	bool FloodFillPmapCheck(int x, int y, int type);
 	int flood_prop(int x, int y, size_t propoffset, PropertyValue propvalue, StructProperty::PropertyType proptype);
-	int flood_prop_2(int x, int y, size_t propoffset, PropertyValue propvalue, StructProperty::PropertyType proptype, int parttype, char * bitmap);
 	int flood_water(int x, int y, int i, int originaly, int check);
 	int FloodINST(int x, int y, int fullc, int cm);
 	void detach(int i);

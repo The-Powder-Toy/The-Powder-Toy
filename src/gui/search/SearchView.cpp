@@ -39,6 +39,7 @@ SearchView::SearchView():
 	searchField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	searchField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	searchField->SetActionCallback(new SearchAction(this));
+	FocusComponent(searchField);
 
 
 	class SortAction : public ui::ButtonAction

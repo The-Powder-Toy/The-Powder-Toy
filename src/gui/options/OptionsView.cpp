@@ -1,11 +1,20 @@
+#include <stdio.h>
+#ifdef WIN
+	#include <direct.h>
+	#define getcwd _getcwd
+#else
+	#include <unistd.h>
+#endif
+
 #include "OptionsView.h"
 #include "gui/Style.h"
 #include "gui/interface/Button.h"
 #include "gui/interface/Label.h"
 #include "gui/interface/DropDown.h"
+#include "gui/dialogues/ErrorMessage.h"
 
 OptionsView::OptionsView():
-	ui::Window(ui::Point(-1, -1), ui::Point(300, 310)){
+	ui::Window(ui::Point(-1, -1), ui::Point(300, 330)){
 
 	ui::Label * tempLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 14), "Simulation Options");
 	tempLabel->SetTextColour(style::Colour::InformationTitle);
@@ -150,7 +159,14 @@ OptionsView::OptionsView():
 		OptionsView * v;
 	public:
 		FullscreenAction(OptionsView * v_){	v = v_;	}
-		virtual void ActionCallback(ui::Checkbox * sender){	v->c->SetFullscreen(sender->GetChecked()); }
+		virtual void ActionCallback(ui::Checkbox * sender)
+		{
+#ifdef MACOSX
+			ErrorMessage::Blocking("Error", "fullscreen doesn't work on OS X");
+#else
+			v->c->SetFullscreen(sender->GetChecked());
+#endif
+		}
 	};
 
 	fullscreen = new ui::Checkbox(ui::Point(8, 230), ui::Point(Size.X-6, 16), "Fullscreen", "");
@@ -190,6 +206,35 @@ OptionsView::OptionsView():
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(tempLabel);
 	AddComponent(showAvatars);
+
+	class DataFolderAction: public ui::ButtonAction
+	{
+	public:
+		DataFolderAction() { }
+		void ActionCallback(ui::Button * sender)
+		{
+//one of these should always be defined
+#ifdef WIN
+			const char* openCommand = "start ";
+#elif MACOSX
+			const char* openCommand = "open ";
+//#elif LIN
+#else
+			const char* openCommand = "xdg-open ";
+#endif
+			char* workingDirectory = new char[FILENAME_MAX+strlen(openCommand)];
+			sprintf(workingDirectory, "%s\"%s\"", openCommand, getcwd(NULL, 0));
+			system(workingDirectory);
+			delete workingDirectory;
+		}
+	};
+	ui::Button * dataFolderButton = new ui::Button(ui::Point(8, Size.Y-38), ui::Point(90, 16), "Open Data Folder");
+	dataFolderButton->SetActionCallback(new DataFolderAction());
+	AddComponent(dataFolderButton);
+
+	tempLabel = new ui::Label(ui::Point(dataFolderButton->Position.X+dataFolderButton->Size.X+3, dataFolderButton->Position.Y), ui::Point(Size.X-28, 16), "\bg- Open the data and preferences folder");
+	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	AddComponent(tempLabel);
 
 	class CloseAction: public ui::ButtonAction
 	{

@@ -48,8 +48,8 @@ Element_SPRK::Element_SPRK()
 
 //#TPT-Directive ElementHeader Element_SPRK static int update(UPDATE_FUNC_ARGS)
 int Element_SPRK::update(UPDATE_FUNC_ARGS)
- {
-	 int r, rx, ry, rt, conduct_sprk, nearp, pavg, ct = parts[i].ctype, sender, receiver;
+{
+	int r, rx, ry, nearp, pavg, ct = parts[i].ctype, sender, receiver;
 	Element_FIRE::update(UPDATE_FUNC_SUBCALL_ARGS);
 
 	if (parts[i].life<=0)
@@ -96,13 +96,13 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 		}
 		break;
 	case PT_NBLE:
-		if (parts[i].life<=1 && parts[i].temp<5273.15f)
+		if (parts[i].life<=1 && !(parts[i].tmp&0x1))
 		{
 			parts[i].life = rand()%150+50;
 			sim->part_change_type(i,x,y,PT_PLSM);
 			parts[i].ctype = PT_NBLE;
 			if (parts[i].temp > 5273.15)
-				parts[i].tmp |= 4;
+				parts[i].tmp |= 0x4;
 			parts[i].temp = 3500;
 			sim->pv[y/CELL][x/CELL] += 1;
 		}
@@ -302,7 +302,7 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 						goto conduct;
 					continue;
 				case PT_NBLE:
-					if (parts[i].temp < 5273.15f)
+					if (!(parts[i].tmp&0x1))
 						goto conduct;
 					continue;
 				case PT_PSCN:
@@ -355,11 +355,11 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 int Element_SPRK::graphics(GRAPHICS_FUNC_ARGS)
 
 {
-	*firea = 80;
-	*firer = 170;
-	*fireg = 200;
-	*fireb = 220;
-	*pixel_mode |= FIRE_ADD;
+	*firea = 60;
+	*firer = *colr/2;
+	*fireg = *colg/2;
+	*fireb = *colb/2;
+	*pixel_mode |= FIRE_SPARK;
 	return 1;
 }
 

@@ -59,6 +59,7 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 					if (!r)
 						continue;
 					if ((r&0xFF)==PT_SPRK && parts[r>>8].life==3) {
+						bool isBlackDeco = false;
 						int destroy = (parts[r>>8].ctype==PT_PSCN)?1:0;
 						int nostop = (parts[r>>8].ctype==PT_INST)?1:0;
 						int colored = 0;
@@ -76,6 +77,8 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 									} else
 										parts[nr].ctype = colored;
 									parts[nr].temp = parts[i].temp;
+									if (isBlackDeco)
+										parts[nr].dcolour = 0xFF000000;
 								}
 							} else if (!destroy) {
 								if ((r&0xFF)==PT_BRAY) {
@@ -97,9 +100,18 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 										//docontinue = 1;
 										break;
 									}
+									if (isBlackDeco)
+										parts[r>>8].dcolour = 0xFF000000;
 								} else if ((r&0xFF)==PT_FILT) {//get color if passed through FILT
-									colored = Element_FILT::interactWavelengths(&parts[r>>8], colored);
-									//this if prevents BRAY from stopping on certain materials
+									if (parts[r>>8].tmp != 6)
+									{
+										colored = Element_FILT::interactWavelengths(&parts[r>>8], colored);
+										if (!colored)
+											break;
+									}
+									isBlackDeco = (parts[r>>8].dcolour==0xFF000000);
+									parts[r>>8].life = 4;
+								//this if prevents BRAY from stopping on certain materials
 								} else if ((r&0xFF)!=PT_STOR && (r&0xFF)!=PT_INWR && ((r&0xFF)!=PT_SPRK || parts[r>>8].ctype!=PT_INWR) && (r&0xFF)!=PT_ARAY && (r&0xFF)!=PT_WIFI && !((r&0xFF)==PT_SWCH && parts[r>>8].life>=10)) {
 									if (nyy!=0 || nxx!=0) {
 										sim->create_part(-1, x+nxi+nxx, y+nyi+nyy, PT_SPRK);
@@ -136,14 +148,22 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 								}
 							} else if (destroy) {
 								if ((r&0xFF)==PT_BRAY) {
+									parts[r>>8].tmp = 2;
 									parts[r>>8].life = 1;
 									docontinue = 1;
-									//this if prevents red BRAY from stopping on certain materials
+									if (isBlackDeco)
+										parts[r>>8].dcolour = 0xFF000000;
+								//this if prevents red BRAY from stopping on certain materials
 								} else if ((r&0xFF)==PT_STOR || (r&0xFF)==PT_INWR || ((r&0xFF)==PT_SPRK && parts[r>>8].ctype==PT_INWR) || (r&0xFF)==PT_ARAY || (r&0xFF)==PT_WIFI || (r&0xFF)==PT_FILT || ((r&0xFF)==PT_SWCH && parts[r>>8].life>=10)) {
 									if((r&0xFF)==PT_STOR)
 									{
 										parts[r>>8].tmp = 0;
 										parts[r>>8].life = 0;
+									}
+									else if ((r&0xFF)==PT_FILT)
+									{
+										isBlackDeco = (parts[r>>8].dcolour==0xFF000000);
+										parts[r>>8].life = 2;
 									}
 									docontinue = 1;
 								} else {
