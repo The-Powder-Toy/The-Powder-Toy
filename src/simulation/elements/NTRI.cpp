@@ -60,7 +60,7 @@ int Element_NTRI::update(UPDATE_FUNC_ARGS)
 			sim->kill_part(under>>8);
 		}
 	}
-    if (under && !parts[i].tmp2)
+    if (under && ((under&0xFF) != PT_NTRI) && !parts[i].tmp2)
 	{
 		if ((under&0xFF) == PT_HSWC)
             parts[i].temp = parts[under>>8].temp;
