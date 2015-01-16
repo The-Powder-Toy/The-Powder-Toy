@@ -52,6 +52,8 @@ int luacon_partread(lua_State* l)
 		tempfloat = *((float*)(((unsigned char*)&luacon_sim->parts[i])+offset));
 		lua_pushnumber(l, tempfloat);
 		break;
+	default:
+		break;
 	}
 	return 1;
 }
@@ -78,6 +80,8 @@ int luacon_partwrite(lua_State* l)
 		break;
 	case CommandInterface::FormatElement:
 		luacon_sim->part_change_type(i, luacon_sim->parts[i].x, luacon_sim->parts[i].y, luaL_optinteger(l, 3, 0));
+	default:
+		break;
 	}
 	return 0;
 }
@@ -403,9 +407,8 @@ int luacon_elementwrite(lua_State* l)
 		tempstring = mystrdup((char*)luaL_optstring(l, 3, ""));
 		if (!strcmp(key, "name"))
 		{
-			int j = 0;
 			//Convert to upper case
-			for(j = 0; j < strlen(tempstring); j++)
+			for (size_t j = 0; j < strlen(tempstring); j++)
 				tempstring[j] = toupper(tempstring[j]);
 			if(luacon_ci->GetParticleType(tempstring) != -1)
 			{
@@ -1051,15 +1054,14 @@ int luatpt_reset_spark(lua_State* l)
 
 int luatpt_set_property(lua_State* l)
 {
-	const char *prop, *name;
-	int r, i, x, y, w, h, t, nx, ny, partsel = 0, acount;
+	const char *name;
+	int r, i, x, y, w, h, t, nx, ny, partsel = 0;
 	float f;
-	size_t offset;
-	acount = lua_gettop(l);
-	prop = luaL_optstring(l, 1, "");
+	int acount = lua_gettop(l);
+	const char* prop = luaL_optstring(l, 1, "");
 
 	CommandInterface::FormatType format;
-	offset = luacon_ci->GetPropertyOffset(prop, format);
+	int offset = luacon_ci->GetPropertyOffset(prop, format);
 	if (offset == -1)
 		return luaL_error(l, "Invalid property '%s'", prop);
 
@@ -1316,14 +1318,17 @@ int luatpt_get_property(lua_State* l)
 		}
 		switch(format)
 		{
-			case CommandInterface::FormatInt:
-			case CommandInterface::FormatElement:
-				tempinteger = *((int*)(((unsigned char*)&luacon_sim->parts[i])+offset));
-				lua_pushnumber(l, tempinteger);
-				break;
-			case CommandInterface::FormatFloat:
-				tempfloat = *((float*)(((unsigned char*)&luacon_sim->parts[i])+offset));
-				lua_pushnumber(l, tempfloat);
+		case CommandInterface::FormatInt:
+		case CommandInterface::FormatElement:
+			tempinteger = *((int*)(((unsigned char*)&luacon_sim->parts[i])+offset));
+			lua_pushnumber(l, tempinteger);
+			break;
+		case CommandInterface::FormatFloat:
+			tempfloat = *((float*)(((unsigned char*)&luacon_sim->parts[i])+offset));
+			lua_pushnumber(l, tempfloat);
+			break;
+		default:
+			break;
 		}
 		return 1;
 	}

@@ -76,11 +76,11 @@ int buffer_meth_send(lua_State *L, p_buffer buf) {
     size_t size = 0, sent = 0;
     const char *data = luaL_checklstring(L, 2, &size);
     long start = (long) luaL_optnumber(L, 3, 1);
-	long end = (long) luaL_optnumber(L, 4, -1);
+    long end = (long) luaL_optnumber(L, 4, -1);
 #ifdef LUASOCKET_DEBUG
-	p_timeout tm = timeout_markstart(buf->tm);
+    p_timeout tm = timeout_markstart(buf->tm);
 #else
-	timeout_markstart(buf->tm); //not sure if this is needed, but prevent warning anyway
+    timeout_markstart(buf->tm); //not sure if this is needed, but prevent warning anyway
 #endif
     if (start < 0) start = (long) (size+start+1);
     if (end < 0) end = (long) (size+end+1);
@@ -115,7 +115,7 @@ int buffer_meth_receive(lua_State *L, p_buffer buf) {
 #ifdef LUASOCKET_DEBUG
     p_timeout tm = timeout_markstart(buf->tm);
 #else
-	timeout_markstart(buf->tm);
+    timeout_markstart(buf->tm);
 #endif
     /* initialize buffer with optional extra prefix 
      * (useful for concatenating previous partial results) */

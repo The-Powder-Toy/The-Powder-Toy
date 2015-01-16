@@ -18,16 +18,16 @@ GameSave::GameSave(GameSave & save) :
 waterEEnabled(save.waterEEnabled),
 legacyEnable(save.legacyEnable),
 gravityEnable(save.gravityEnable),
+aheatEnable(save.aheatEnable),
 paused(save.paused),
 gravityMode(save.gravityMode),
-aheatEnable(save.aheatEnable),
 airMode(save.airMode),
 edgeMode(save.edgeMode),
 signs(save.signs),
+palette(save.palette),
 expanded(save.expanded),
 hasOriginalData(save.hasOriginalData),
-originalData(save.originalData),
-palette(save.palette)
+originalData(save.originalData)
 {
 	blockMap = NULL;
 	blockMapPtr = NULL;
@@ -288,14 +288,14 @@ void GameSave::setSize(int newWidth, int newHeight)
 
 std::vector<char> GameSave::Serialise()
 {
-	int dataSize;
+	unsigned int dataSize;
 	char * data = Serialise(dataSize);
 	std::vector<char> dataVect(data, data+dataSize);
 	delete[] data;
 	return dataVect;
 }
 
-char * GameSave::Serialise(int & dataSize)
+char * GameSave::Serialise(unsigned int & dataSize)
 {
 	return serialiseOPS(dataSize);
 }
@@ -304,7 +304,7 @@ void GameSave::Transform(matrix2d transform, vector2d translate)
 {
 	if(Collapsed())
 		Expand();
-	int i, x, y, nx, ny, width = blockWidth*CELL, height = blockHeight*CELL, newWidth, newHeight, newBlockWidth, newBlockHeight;
+	int x, y, nx, ny, width = blockWidth*CELL, height = blockHeight*CELL, newWidth, newHeight, newBlockWidth, newBlockHeight;
 	vector2d pos, tmp, ctl, cbr, vel;
 	vector2d cornerso[4];
 	// undo any translation caused by rotation
@@ -312,7 +312,7 @@ void GameSave::Transform(matrix2d transform, vector2d translate)
 	cornerso[1] = v2d_new(width-1,0);
 	cornerso[2] = v2d_new(0,height-1);
 	cornerso[3] = v2d_new(width-1,height-1);
-	for (i=0; i<4; i++)
+	for (int i = 0; i < 4; i++)
 	{
 		tmp = m2d_multiply_v2d(transform,cornerso[i]);
 		if (i==0) ctl = cbr = tmp; // top left, bottom right corner
@@ -357,7 +357,7 @@ void GameSave::Transform(matrix2d transform, vector2d translate)
 		fanVelYNew[y] = &fanVelYPtrNew[y*newBlockWidth];
 
 	// rotate and translate signs, parts, walls
-	for (i=0; i < signs.size(); i++)
+	for (size_t i = 0; i < signs.size(); i++)
 	{
 		pos = v2d_new(signs[i].x, signs[i].y);
 		pos = v2d_add(m2d_multiply_v2d(transform,pos),translate);
@@ -371,7 +371,7 @@ void GameSave::Transform(matrix2d transform, vector2d translate)
 		signs[i].x = nx;
 		signs[i].y = ny;
 	}
-	for (i=0; i<particlesCount; i++)
+	for (int i = 0; i < particlesCount; i++)
 	{
 		if (!particles[i].type) continue;
 		pos = v2d_new(particles[i].x, particles[i].y);
@@ -437,9 +437,8 @@ void GameSave::readOPS(char * data, int dataLength)
 	unsigned char * inputData = (unsigned char*)data, *bsonData = NULL, *partsData = NULL, *partsPosData = NULL, *fanData = NULL, *wallData = NULL, *soapLinkData = NULL;
 	unsigned int inputDataLen = dataLength, bsonDataLen = 0, partsDataLen, partsPosDataLen, fanDataLen, wallDataLen, soapLinkDataLen;
 	unsigned partsCount = 0, *partsSimIndex = NULL;
-	int i, x, y, j;
 	int *freeIndices = NULL;
-	int blockX, blockY, blockW, blockH, fullX, fullY, fullW, fullH;
+	unsigned int blockX, blockY, blockW, blockH, fullX, fullY, fullW, fullH;
 	int savedVersion = inputData[4];
 	bson b;
 	bson_iterator iter;
@@ -717,15 +716,15 @@ void GameSave::readOPS(char * data, int dataLength)
 	//Read wall and fan data
 	if(wallData)
 	{
-		j = 0;
-		if(blockW * blockH > wallDataLen)
+		unsigned int j = 0;
+		if (blockW * blockH > wallDataLen)
 		{
 			fprintf(stderr, "Not enough wall data\n");
 			goto fail;
 		}
-		for(x = 0; x < blockW; x++)
+		for (unsigned int x = 0; x < blockW; x++)
 		{
-			for(y = 0; y < blockH; y++)
+			for (unsigned int y = 0; y < blockH; y++)
 			{
 				if (wallData[y*blockW+x])
 					blockMap[blockY+y][blockX+x] = wallData[y*blockW+x];
@@ -780,12 +779,11 @@ void GameSave::readOPS(char * data, int dataLength)
 	}
 
 	//Read particle data
-	if(partsData && partsPosData)
+	if (partsData && partsPosData)
 	{
 		int newIndex = 0, fieldDescriptor, tempTemp;
 		int posCount, posTotal, partsPosDataIndex = 0;
-		int saved_x, saved_y;
-		if(fullW * fullH * 3 > partsPosDataLen)
+		if (fullW * fullH * 3 > partsPosDataLen)
 		{
 			fprintf(stderr, "Not enough particle position data\n");
 			goto fail;
@@ -794,11 +792,12 @@ void GameSave::readOPS(char * data, int dataLength)
 		partsSimIndex = (unsigned int*)calloc(NPART, sizeof(unsigned));
 		partsCount = 0;
 
-		i = 0;
+		unsigned int i = 0;
+		unsigned int saved_x, saved_y, x, y;
 		newIndex = 0;
-		for (saved_y=0; saved_y<fullH; saved_y++)
+		for (saved_y = 0; saved_y < fullH; saved_y++)
 		{
-			for (saved_x=0; saved_x<fullW; saved_x++)
+			for (saved_x = 0; saved_x < fullW; saved_x++)
 			{
 				//Read total number of particles at this position
 				posTotal = 0;
@@ -806,10 +805,10 @@ void GameSave::readOPS(char * data, int dataLength)
 				posTotal |= partsPosData[partsPosDataIndex++]<<8;
 				posTotal |= partsPosData[partsPosDataIndex++];
 				//Put the next posTotal particles at this position
-				for (posCount=0; posCount<posTotal; posCount++)
+				for (posCount = 0; posCount < posTotal; posCount++)
 				{
 					particlesCount = newIndex+1;
-					if(newIndex>=NPART)
+					if (newIndex >= NPART)
 					{
 						goto fail;
 					}
@@ -821,15 +820,15 @@ void GameSave::readOPS(char * data, int dataLength)
 					y = saved_y + fullY;
 					fieldDescriptor = partsData[i+1];
 					fieldDescriptor |= partsData[i+2] << 8;
-					if(x >= fullW || x < 0 || y >= fullH || y < 0)
+					if (x >= fullW || y >= fullH)
 					{
 						fprintf(stderr, "Out of range [%d]: %d %d, [%d, %d], [%d, %d]\n", i, x, y, (unsigned)partsData[i+1], (unsigned)partsData[i+2], (unsigned)partsData[i+3], (unsigned)partsData[i+4]);
 						goto fail;
 					}
-					if(partsData[i] >= PT_NUM)
+					if (partsData[i] >= PT_NUM)
 						partsData[i] = PT_DMND;	//Replace all invalid elements with diamond
 
-					if(newIndex < 0 || newIndex >= NPART)
+					if (newIndex < 0 || newIndex >= NPART)
 						goto fail;
 
 					//Store partsptr index+1 for this saved particle index (0 means not loaded)
@@ -1038,13 +1037,13 @@ void GameSave::readOPS(char * data, int dataLength)
 		}
 		if (soapLinkData)
 		{
-			int soapLinkDataPos = 0;
-			for (i=0; i<partsCount; i++)
+			unsigned int soapLinkDataPos = 0;
+			for (unsigned int i = 0; i < partsCount; i++)
 			{
 				if (partsSimIndex[i] && particles[partsSimIndex[i]-1].type == PT_SOAP)
 				{
 					// Get the index of the particle forward linked from this one, if present in the save data
-					int linkedIndex = 0;
+					unsigned int linkedIndex = 0;
 					if (soapLinkDataPos+3 > soapLinkDataLen) break;
 					linkedIndex |= soapLinkData[soapLinkDataPos++]<<16;
 					linkedIndex |= soapLinkData[soapLinkDataPos++]<<8;
@@ -1067,7 +1066,7 @@ void GameSave::readOPS(char * data, int dataLength)
 
 	if(tempSigns.size())
 	{
-		for (int i = 0; i < tempSigns.size(); i++)
+		for (size_t i = 0; i < tempSigns.size(); i++)
 		{
 			if(signs.size() == MAXSIGNS)
 				break;
@@ -1189,7 +1188,7 @@ void GameSave::readPSv(char * data, int dataLength)
 	setSize(bw, bh);
 
 	int bzStatus = 0;
-	if (bzStatus = BZ2_bzBuffToBuffDecompress((char *)d, (unsigned *)&i, (char *)(c+12), dataLength-12, 0, 0))
+	if ((bzStatus = BZ2_bzBuffToBuffDecompress((char *)d, (unsigned *)&i, (char *)(c+12), dataLength-12, 0, 0)))
 	{
 		std::stringstream bzStatusStr;
 		bzStatusStr << bzStatus;
@@ -1717,7 +1716,7 @@ void GameSave::readPSv(char * data, int dataLength)
 		p += x;
 	}
 
-	for (i = 0; i < tempSigns.size(); i++)
+	for (size_t i = 0; i < tempSigns.size(); i++)
 	{
 		if(signs.size() == MAXSIGNS)
 			break;
@@ -1763,7 +1762,7 @@ void GameSave::readPSv(char * data, int dataLength)
 	}
 }
 
-char * GameSave::serialiseOPS(int & dataLength)
+char * GameSave::serialiseOPS(unsigned int & dataLength)
 {
 	//Particle *particles = sim->parts;
 	unsigned char *partsData = NULL, *partsPosData = NULL, *fanData = NULL, *wallData = NULL, *finalData = NULL, *outputData = NULL, *soapLinkData = NULL;
@@ -2131,17 +2130,17 @@ char * GameSave::serialiseOPS(int & dataLength)
 		bson_append_finish_array(&b);
 	}
 	signsCount = 0;
-	for(i = 0; i < signs.size(); i++)
+	for (size_t i = 0; i < signs.size(); i++)
 	{
 		if(signs[i].text.length() && signs[i].x>=0 && signs[i].x<=fullW && signs[i].y>=0 && signs[i].y<=fullH)
 		{
 			signsCount++;
 		}
 	}
-	if(signsCount)
+	if (signsCount)
 	{
 		bson_append_start_array(&b, "signs");
-		for(i = 0; i < signs.size(); i++)
+		for (size_t i = 0; i < signs.size(); i++)
 		{
 			if(signs[i].text.length() && signs[i].x>=0 && signs[i].x<=fullW && signs[i].y>=0 && signs[i].y<=fullH)
 			{

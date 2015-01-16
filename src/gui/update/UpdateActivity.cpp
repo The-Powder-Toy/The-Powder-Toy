@@ -58,7 +58,7 @@ private:
 		notifyStatus("Unpacking update");
 		notifyProgress(-1);
 
-		int uncompressedLength;
+		unsigned int uncompressedLength;
 
 		if(dataLength<16)
 		{

@@ -66,7 +66,7 @@
 	return name;
 }*/
 
-int update_start(char *data, int len)
+int update_start(char *data, unsigned int len)
 {
 	char *self=exe_name(), *temp;
 #ifdef WIN

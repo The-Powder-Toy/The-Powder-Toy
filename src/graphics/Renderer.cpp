@@ -912,7 +912,7 @@ void Renderer::DrawWalls()
 
 void Renderer::DrawSigns()
 {
-	int i, j, x, y, w, h, dx, dy;
+	int x, y, w, h;
 	std::vector<sign> signs = sim->signs;
 #ifdef OGLR
 	GLint prevFbo;
@@ -920,7 +920,7 @@ void Renderer::DrawSigns()
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, partsFbo);
 	glTranslated(0, MENUSIZE, 0);
 #endif
-	for (i=0; i < signs.size(); i++)
+	for (size_t i = 0; i < signs.size(); i++)
 		if (signs[i].text.length())
 		{
 			char type = 0;
@@ -936,10 +936,10 @@ void Renderer::DrawSigns()
 			else
 				drawtext(x+3, y+3, text, 0, 191, 255, 255);
 				
-			x = signs[i].x;
-			y = signs[i].y;
-			dx = 1 - signs[i].ju;
-			dy = (signs[i].y > 18) ? -1 : 1;
+			int x = signs[i].x;
+			int y = signs[i].y;
+			int dx = 1 - signs[i].ju;
+			int dy = (signs[i].y > 18) ? -1 : 1;
 #ifdef OGLR
 			glBegin(GL_LINES);
 			glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -947,11 +947,11 @@ void Renderer::DrawSigns()
 			glVertex2i(x+(dx*4), y+(dy*4));
 			glEnd();
 #else
-			for (j=0; j<4; j++)
+			for (int j = 0; j < 4; j++)
 			{
 				blendpixel(x, y, 192, 192, 192, 255);
-				x+=dx;
-				y+=dy;
+				x += dx;
+				y += dy;
 			}
 #endif
 		}
@@ -2424,22 +2424,22 @@ pixel Renderer::GetPixel(int x, int y)
 Renderer::Renderer(Graphics * g, Simulation * sim):
 	sim(NULL),
 	g(NULL),
+	render_mode(0),
+	colour_mode(0),
+	display_mode(0),
+	gravityZonesEnabled(false),
+	gravityFieldEnabled(false),
+	decorations_enable(1),
+	blackDecorations(false),
+	debugLines(false),
+	sampleColor(0xFFFFFFFF),
+	mousePos(0, 0),
 	zoomWindowPosition(0, 0),
 	zoomScopePosition(0, 0),
 	zoomScopeSize(32),
-	ZFACTOR(8),
 	zoomEnabled(false),
-	decorations_enable(1),
-	gravityFieldEnabled(false),
-	gravityZonesEnabled(false),
-	mousePos(0, 0),
-	display_mode(0),
-	render_mode(0),
-	colour_mode(0),
-	gridSize(0),
-	blackDecorations(false),
-	debugLines(false),
-	sampleColor(0xFFFFFFFF)
+	ZFACTOR(8),
+	gridSize(0)
 {
 	this->g = g;
 	this->sim = sim;
@@ -2688,7 +2688,7 @@ void Renderer::CompileRenderMode()
 {
 	int old_render_mode = render_mode;
 	render_mode = 0;
-	for(int i = 0; i < render_modes.size(); i++)
+	for (size_t i = 0; i < render_modes.size(); i++)
 		render_mode |= render_modes[i];
 
 	//If firemode is removed, clear the fire display
@@ -2710,7 +2710,7 @@ void Renderer::ClearAccumulation()
 
 void Renderer::AddRenderMode(unsigned int mode)
 {
-	for(int i = 0; i < render_modes.size(); i++)
+	for (size_t i = 0; i < render_modes.size(); i++)
 	{
 		if(render_modes[i] == mode)
 		{
@@ -2723,7 +2723,7 @@ void Renderer::AddRenderMode(unsigned int mode)
 
 void Renderer::RemoveRenderMode(unsigned int mode)
 {
-	for(int i = 0; i < render_modes.size(); i++)
+	for (size_t i = 0; i < render_modes.size(); i++)
 	{
 		if(render_modes[i] == mode)
 		{
@@ -2749,9 +2749,9 @@ void Renderer::CompileDisplayMode()
 {
 	int old_display_mode = display_mode;
 	display_mode = 0;
-	for(int i = 0; i < display_modes.size(); i++)
+	for (size_t i = 0; i < display_modes.size(); i++)
 		display_mode |= display_modes[i];
-	if(!(display_mode & DISPLAY_PERS) && (old_display_mode & DISPLAY_PERS))
+	if (!(display_mode & DISPLAY_PERS) && (old_display_mode & DISPLAY_PERS))
 	{
 		ClearAccumulation();
 	}
@@ -2759,13 +2759,13 @@ void Renderer::CompileDisplayMode()
 
 void Renderer::AddDisplayMode(unsigned int mode)
 {
-	for(int i = 0; i < display_modes.size(); i++)
+	for (size_t i = 0; i < display_modes.size(); i++)
 	{
-		if(display_modes[i] == mode)
+		if (display_modes[i] == mode)
 		{
 			return;
 		}
-		if(display_modes[i] & DISPLAY_AIR)
+		if (display_modes[i] & DISPLAY_AIR)
 		{
 			display_modes.erase(display_modes.begin()+i);
 		}
@@ -2776,9 +2776,9 @@ void Renderer::AddDisplayMode(unsigned int mode)
 
 void Renderer::RemoveDisplayMode(unsigned int mode)
 {
-	for(int i = 0; i < display_modes.size(); i++)
+	for (size_t i = 0; i < display_modes.size(); i++)
 	{
-		if(display_modes[i] == mode)
+		if (display_modes[i] == mode)
 		{
 			display_modes.erase(display_modes.begin() + i);
 			i = 0;

@@ -60,7 +60,7 @@ private:
 	std::string lastError;
 
 	std::list<std::string> stampIDs;
-	int lastStampTime;
+	unsigned lastStampTime;
 	int lastStampName;
 
 	//Auth session

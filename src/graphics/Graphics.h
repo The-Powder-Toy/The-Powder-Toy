@@ -35,6 +35,7 @@
 #define PIXG(x) (((x)>>16)&0xFF)
 #define PIXB(x) (((x)>>24)&0xFF)
 #elif defined(PIX32OGL)
+#undef PIXELCHANNELS
 #define PIXELCHANNELS 4
 #define PIXPACK(x) (0xFF000000|((x)&0xFFFFFF))												//32bit ARGB in 32bit int: AARRGGBB
 #define PIXRGB(r,g,b) (0xFF000000|((r)<<16)|((g)<<8)|((b)))

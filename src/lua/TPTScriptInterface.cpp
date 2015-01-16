@@ -61,27 +61,27 @@ int TPTScriptInterface::Command(std::string command)
 
 ValueType TPTScriptInterface::testType(std::string word)
 {
-	int i = 0;
+	size_t i = 0;
 	char * rawWord = (char *)word.c_str();
 	//Function
-	if(word == "set")
+	if (word == "set")
 		return TypeFunction;
-	else if(word == "create")
+	else if (word == "create")
 		return TypeFunction;
-	else if(word == "delete")
+	else if (word == "delete")
 		return TypeFunction;
-	else if(word == "kill")
+	else if (word == "kill")
 		return TypeFunction;
-	else if(word == "load")
+	else if (word == "load")
 		return TypeFunction;
-	else if(word == "reset")
+	else if (word == "reset")
 		return TypeFunction;
-	else if(word == "bubble")
+	else if (word == "bubble")
 		return TypeFunction;
-	else if(word == "quit")
+	else if (word == "quit")
 		return TypeFunction;
 	//Basic type
-			for(i = 0; i < word.length(); i++)
+			for (i = 0; i < word.length(); i++)
 			{
 				if (!(rawWord[i] >= '0' && rawWord[i] <= '9') && !(rawWord[i] == '-' && !i))
 				{
@@ -101,21 +101,21 @@ ValueType TPTScriptInterface::testType(std::string word)
 			return TypeNumber;
 	parseFloat:
 			for (i++; i < word.length(); i++)
-				if(!((rawWord[i] >= '0' && rawWord[i] <= '9') || (rawWord[i] >= 'a' && rawWord[i] <= 'f') || (rawWord[i] >= 'A' && rawWord[i] <= 'F')))
+				if (!((rawWord[i] >= '0' && rawWord[i] <= '9') || (rawWord[i] >= 'a' && rawWord[i] <= 'f') || (rawWord[i] >= 'A' && rawWord[i] <= 'F')))
 				{
 					goto parseString;
 				}
 			return TypeFloat;
 	parseNumberHex:
 			for (i++; i < word.length(); i++)
-				if(!((rawWord[i] >= '0' && rawWord[i] <= '9') || (rawWord[i] >= 'a' && rawWord[i] <= 'f') || (rawWord[i] >= 'A' && rawWord[i] <= 'F')))
+				if (!((rawWord[i] >= '0' && rawWord[i] <= '9') || (rawWord[i] >= 'a' && rawWord[i] <= 'f') || (rawWord[i] >= 'A' && rawWord[i] <= 'F')))
 				{
 					goto parseString;
 				}
 			return TypeNumber;
 	parsePoint:
 			for (i++; i < word.length(); i++)
-				if(!(rawWord[i] >= '0' && rawWord[i] <= '9'))
+				if (!(rawWord[i] >= '0' && rawWord[i] <= '9'))
 				{
 					goto parseString;
 				}
@@ -141,14 +141,14 @@ float TPTScriptInterface::parseNumber(char * stringData)
 	}
 	if (base == 16)
 	{
-		while(cc = *(stringData++))
+		while ((cc = *(stringData++)))
 		{
 			currentNumber *= base;
-			if(cc >= '0' && cc <= '9')
+			if (cc >= '0' && cc <= '9')
 				currentNumber += cc - '0';
-			else if(cc >= 'a' && cc <= 'f')
+			else if (cc >= 'a' && cc <= 'f')
 				currentNumber += (cc - 'a') + 10;
-			else if(cc >= 'A' && cc <= 'F')
+			else if (cc >= 'A' && cc <= 'F')
 				currentNumber += (cc - 'A') + 10;
 			else
 				break;
@@ -198,6 +198,8 @@ AnyType TPTScriptInterface::eval(std::deque<std::string> * words)
 	}
 	case TypeString:
 		return StringType(word);
+	default:
+		break;
 	}
 	return StringType(word);
 }
@@ -330,6 +332,8 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 		case FormatElement:
 			sim->part_change_type(partIndex, sim->parts[partIndex].x, sim->parts[partIndex].y, newValue);
 			break;
+		default:
+			break;
 		}
 		returnValue = 1;
 	}
@@ -366,7 +370,9 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 						sim->part_change_type(j, sim->parts[j].x, sim->parts[j].y, newValue);
 					}
 			}
-		break;
+			break;
+		default:
+			break;
 		}
 	}
 	else if(selector.GetType() == TypeString || selector.GetType() == TypeNumber)
@@ -413,6 +419,9 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 						sim->part_change_type(j, sim->parts[j].x, sim->parts[j].y, newValue);
 					}
 			}
+			break;
+		default:
+			break;
 		}
 	}
 	else
