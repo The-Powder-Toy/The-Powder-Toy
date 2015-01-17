@@ -33,10 +33,10 @@ PreviewController::PreviewController(int saveID, int saveDate, bool instant, Con
 }
 
 PreviewController::PreviewController(int saveID, bool instant, ControllerCallback * callback):
-	HasExited(false),
 	saveId(saveID),
 	saveDate(0),
-	loginWindow(NULL)
+	loginWindow(NULL),
+	HasExited(false)
 {
 	previewModel = new PreviewModel();
 	previewView = new PreviewView();

@@ -254,10 +254,10 @@ void PreviewView::DoDraw()
 {
 	Window::DoDraw();
 	Graphics * g = ui::Engine::Ref().g;
-	for(int i = 0; i < commentTextComponents.size(); i++)
+	for (size_t i = 0; i < commentTextComponents.size(); i++)
 	{
 		int linePos = commentTextComponents[i]->Position.Y+commentsPanel->ViewportPosition.Y+commentTextComponents[i]->Size.Y+4;
-		if(linePos > 0 && linePos < Size.Y-commentBoxHeight)
+		if (linePos > 0 && linePos < Size.Y-commentBoxHeight)
 		g->draw_line(
 				Position.X+1+XRES/2,
 				Position.Y+linePos,
@@ -265,7 +265,7 @@ void PreviewView::DoDraw()
 				Position.Y+linePos,
 				255, 255, 255, 100);
 	}
-	if(c->GetDoOpen())
+	if (c->GetDoOpen())
 	{
 		g->fillrect(Position.X+(Size.X/2)-101, Position.Y+(Size.Y/2)-26, 202, 52, 0, 0, 0, 210);
 		g->drawrect(Position.X+(Size.X/2)-100, Position.Y+(Size.Y/2)-25, 200, 50, 255, 255, 255, 180);
@@ -540,7 +540,7 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 {
 	std::vector<SaveComment*> * comments = sender->GetComments();
 
-	for(int i = 0; i < commentComponents.size(); i++)
+	for (size_t i = 0; i < commentComponents.size(); i++)
 	{
 		commentsPanel->RemoveChild(commentComponents[i]);
 		delete commentComponents[i];
@@ -549,9 +549,9 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 	commentTextComponents.clear();
 	commentsPanel->InnerSize = ui::Point(0, 0);
 
-	if(comments)
+	if (comments)
 	{
-		for(int i = 0; i < commentComponents.size(); i++)
+		for (size_t i = 0; i < commentComponents.size(); i++)
 		{
 			commentsPanel->RemoveChild(commentComponents[i]);
 			delete commentComponents[i];
@@ -563,9 +563,9 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 		ui::Label * tempUsername;
 		ui::Label * tempComment;
 		ui::AvatarButton * tempAvatar;
-		for(int i = 0; i < comments->size(); i++)
+		for (size_t i = 0; i < comments->size(); i++)
 		{
-			if(showAvatars)
+			if (showAvatars)
 			{
 				tempAvatar = new ui::AvatarButton(ui::Point(2, currentY+7), ui::Point(26, 26), comments->at(i)->authorName);
 				tempAvatar->SetActionCallback(new AvatarAction(this));
@@ -573,7 +573,7 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 				commentsPanel->AddChild(tempAvatar);
 			}
 
-			if(showAvatars)
+			if (showAvatars)
 				tempUsername = new ui::Label(ui::Point(31, currentY+3), ui::Point(Size.X-((XRES/2) + 13 + 26), 16), comments->at(i)->authorNameFormatted);
 			else
 				tempUsername = new ui::Label(ui::Point(5, currentY+3), ui::Point(Size.X-((XRES/2) + 13), 16), comments->at(i)->authorNameFormatted);
@@ -588,7 +588,7 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 			commentComponents.push_back(tempUsername);
 			commentsPanel->AddChild(tempUsername);
 
-			if(showAvatars)
+			if (showAvatars)
 				tempComment = new ui::Label(ui::Point(31, currentY+5), ui::Point(Size.X-((XRES/2) + 13 + 26), -1), comments->at(i)->comment);
 			else
 				tempComment = new ui::Label(ui::Point(5, currentY+5), ui::Point(Size.X-((XRES/2) + 13), -1), comments->at(i)->comment);

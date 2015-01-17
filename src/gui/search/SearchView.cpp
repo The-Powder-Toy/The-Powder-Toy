@@ -301,7 +301,7 @@ SearchView::~SearchView()
 	delete pageLabel;
 	delete pageCountLabel;
 
-	for(int i = 0; i < saveButtons.size(); i++)
+	for (size_t i = 0; i < saveButtons.size(); i++)
 	{
 		RemoveComponent(saveButtons[i]);
 		delete saveButtons[i];
@@ -420,7 +420,7 @@ void SearchView::NotifyAuthUserChanged(Client * sender)
 
 void SearchView::CheckAccess()
 {
-	if(c)
+	if (c)
 	{
 		c->ClearSelection();
 
@@ -430,17 +430,17 @@ void SearchView::CheckAccess()
 			favButton->DoAction();
 	}
 	
-	if(Client::Ref().GetAuthUser().ID)
+	if (Client::Ref().GetAuthUser().ID)
 	{
 		ownButton->Enabled = true;
 		favButton->Enabled = true;
 		favouriteSelected->Enabled = true;
 
-		if(Client::Ref().GetAuthUser().UserElevation == User::ElevationAdmin || Client::Ref().GetAuthUser().UserElevation == User::ElevationModerator)
+		if (Client::Ref().GetAuthUser().UserElevation == User::ElevationAdmin || Client::Ref().GetAuthUser().UserElevation == User::ElevationModerator)
 		{
 			unpublishSelected->Enabled = true;
 			removeSelected->Enabled = true;
-			for(int i = 0; i < saveButtons.size(); i++)
+			for (size_t i = 0; i < saveButtons.size(); i++)
 			{
 				saveButtons[i]->SetSelectable(true);
 			}
@@ -457,7 +457,7 @@ void SearchView::CheckAccess()
 		unpublishSelected->Enabled = false;
 		removeSelected->Enabled = false;
 
-		for(int i = 0; i < saveButtons.size(); i++)
+		for (size_t i = 0; i < saveButtons.size(); i++)
 		{
 			saveButtons[i]->SetSelectable(false);
 			saveButtons[i]->SetSelected(false);
@@ -467,7 +467,6 @@ void SearchView::CheckAccess()
 
 void SearchView::NotifyTagListChanged(SearchModel * sender)
 {
-	int i = 0;
 	int savesY = 4, buttonPadding = 1;
 	int buttonAreaHeight, buttonYOffset;
 
@@ -482,7 +481,7 @@ void SearchView::NotifyTagListChanged(SearchModel * sender)
 	RemoveComponent(tagsLabel);
 	tagsLabel->SetParentWindow(NULL);
 
-	for(i = 0; i < tagButtons.size(); i++)
+	for (size_t i = 0; i < tagButtons.size(); i++)
 	{
 		RemoveComponent(tagButtons[i]);
 		delete tagButtons[i];
@@ -492,7 +491,7 @@ void SearchView::NotifyTagListChanged(SearchModel * sender)
 	buttonYOffset = 28;
 	buttonAreaHeight = Size.Y - buttonYOffset - 18;
 
-	if(sender->GetShowTags())
+	if (sender->GetShowTags())
 	{
 		buttonYOffset += (buttonAreaHeight/savesY) - buttonPadding*2;
 		buttonAreaHeight = Size.Y - buttonYOffset - 18;
@@ -523,15 +522,15 @@ void SearchView::NotifyTagListChanged(SearchModel * sender)
 			v->Search(tag);
 		}
 	};
-	if(sender->GetShowTags())
+	if (sender->GetShowTags())
 	{
-		for(i = 0; i < tags.size(); i++)
+		for (size_t i = 0; i < tags.size(); i++)
 		{
 			int maxTagVotes = tags[0].second;
 
 			pair<string, int> tag = tags[i];
 			
-			if(tagX == tagsX)
+			if (tagX == tagsX)
 			{
 				if(tagY == tagsY-1)
 					break;
@@ -570,7 +569,6 @@ void SearchView::NotifyTagListChanged(SearchModel * sender)
 
 void SearchView::NotifySaveListChanged(SearchModel * sender)
 {
-	int i = 0;
 	int buttonWidth, buttonHeight, saveX = 0, saveY = 0, savesX = 5, savesY = 4, buttonPadding = 1;
 	int buttonAreaWidth, buttonAreaHeight, buttonXOffset, buttonYOffset;
 
@@ -583,11 +581,11 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 		favouriteSelected->SetText("Favourite");
 
 	Client::Ref().ClearThumbnailRequests();
-	for(i = 0; i < saveButtons.size(); i++)
+	for (size_t i = 0; i < saveButtons.size(); i++)
 	{
 		RemoveComponent(saveButtons[i]);
 	}
-	if(!sender->GetSavesLoaded())
+	if (!sender->GetSavesLoaded())
 	{
 		nextButton->Enabled = false;
 		previousButton->Enabled = false;
@@ -611,15 +609,15 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 			ownButton->Enabled = true;
 		sortButton->Enabled = true;
 	}
-	if(!saves.size())
+	if (!saves.size())
 	{
 		loadingSpinner->Visible = false;
-		if(!errorLabel)
+		if (!errorLabel)
 		{
 			errorLabel = new ui::Label(ui::Point((WINDOWW/2)-100, (WINDOWH/2)-6), ui::Point(200, 12), "Error");
 			AddComponent(errorLabel);
 		}
-		if(!sender->GetSavesLoaded())
+		if (!sender->GetSavesLoaded())
 		{
 			errorLabel->SetText("Loading...");
 			loadingSpinner->Visible = true;
@@ -635,13 +633,13 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 	else
 	{
 		loadingSpinner->Visible = false;
-		if(errorLabel)
+		if (errorLabel)
 		{
 			RemoveComponent(errorLabel);
 			delete errorLabel;
 			errorLabel = NULL;
 		}
-		for(i = 0; i < saveButtons.size(); i++)
+		for (size_t i = 0; i < saveButtons.size(); i++)
 		{
 			delete saveButtons[i];
 		}
@@ -652,7 +650,7 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 		buttonAreaWidth = Size.X;
 		buttonAreaHeight = Size.Y - buttonYOffset - 18;
 
-		if(sender->GetShowTags())
+		if (sender->GetShowTags())
 		{
 			buttonYOffset += (buttonAreaHeight/savesY) - buttonPadding*2;
 			buttonAreaHeight = Size.Y - buttonYOffset - 18;
@@ -688,11 +686,11 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 				v->Search("user:"+sender->GetSave()->GetUserName());
 			}
 		};
-		for(i = 0; i < saves.size(); i++)
+		for (size_t i = 0; i < saves.size(); i++)
 		{
-			if(saveX == savesX)
+			if (saveX == savesX)
 			{
-				if(saveY == savesY-1)
+				if (saveY == savesY-1)
 					break;
 				saveX = 0;
 				saveY++;
@@ -721,13 +719,13 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 void SearchView::NotifySelectedChanged(SearchModel * sender)
 {
 	vector<int> selected = sender->GetSelected();
-	int published = 0;
-	for(int j = 0; j < saveButtons.size(); j++)
+	size_t published = 0;
+	for (size_t j = 0; j < saveButtons.size(); j++)
 	{
 		saveButtons[j]->SetSelected(false);
-		for(int i = 0; i < selected.size(); i++)
+		for (size_t i = 0; i < selected.size(); i++)
 		{
-			if(saveButtons[j]->GetSave()->GetID() == selected[i])
+			if (saveButtons[j]->GetSave()->GetID() == selected[i])
 			{
 				saveButtons[j]->SetSelected(true);
 				if (saveButtons[j]->GetSave()->GetPublished())
@@ -736,7 +734,7 @@ void SearchView::NotifySelectedChanged(SearchModel * sender)
 		}
 	}
 
-	if(selected.size())
+	if (selected.size())
 	{
 		removeSelected->Visible = true;
 		unpublishSelected->Visible = true;

@@ -27,13 +27,13 @@ class LocalBrowserView: public ui::Window {
 
 	void textChanged();
 	bool changed;
-	int lastChanged;
+	unsigned int lastChanged;
 	int pageCount;
 public:
 	LocalBrowserView();
 	//virtual void OnDraw();
 	virtual void OnTick(float dt);
-	void AttachController(LocalBrowserController * c_) { c = c_; };
+	void AttachController(LocalBrowserController * c_) { c = c_; }
 	void NotifyPageChanged(LocalBrowserModel * sender);
 	void NotifySavesListChanged(LocalBrowserModel * sender);
 	void NotifySelectedChanged(LocalBrowserModel * sender);

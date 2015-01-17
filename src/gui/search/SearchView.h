@@ -48,7 +48,7 @@ private:
 	void doSearch();
 	void textChanged();
 	bool changed;
-	int lastChanged;
+	unsigned int lastChanged;
 	int pageCount;
 	bool publishButtonShown;
 public:

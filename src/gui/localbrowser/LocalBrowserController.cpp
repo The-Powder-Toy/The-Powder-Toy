@@ -64,7 +64,7 @@ void LocalBrowserController::removeSelectedC()
 		RemoveSavesTask(LocalBrowserController * c, std::vector<std::string> saves_) : c(c) { saves = saves_; }
 		virtual bool doWork()
 		{
-			for(int i = 0; i < saves.size(); i++)
+			for (size_t i = 0; i < saves.size(); i++)
 			{
 				std::stringstream saveName;
 				saveName << "Deleting stamp [" << saves[i] << "] ...";

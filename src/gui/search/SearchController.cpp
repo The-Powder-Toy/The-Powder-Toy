@@ -33,12 +33,11 @@ public:
 
 SearchController::SearchController(ControllerCallback * callback):
 	activePreview(NULL),
-	HasExited(false),
 	nextQueryTime(0.0f),
 	nextQueryDone(true),
 	instantOpen(false),
 	doRefresh(false),
-	searchModel(NULL)
+	HasExited(false)
 {
 	searchModel = new SearchModel();
 	searchView = new SearchView();
@@ -259,12 +258,12 @@ void SearchController::removeSelectedC()
 		RemoveSavesTask(std::vector<int> saves_, SearchController *c_) { saves = saves_; c = c_; }
 		virtual bool doWork()
 		{
-			for(int i = 0; i < saves.size(); i++)
+			for (size_t i = 0; i < saves.size(); i++)
 			{
 				std::stringstream saveID;
 				saveID << "Deleting save [" << saves[i] << "] ...";
  				notifyStatus(saveID.str());
- 				if(Client::Ref().DeleteSave(saves[i])!=RequestOkay)
+				if (Client::Ref().DeleteSave(saves[i])!=RequestOkay)
 				{
  					std::stringstream saveIDF;
  					saveIDF << "\boFailed to delete [" << saves[i] << "] ...";
@@ -301,7 +300,7 @@ void SearchController::UnpublishSelected(bool publish)
 
 	std::stringstream desc;
 	desc << "Are you sure you want to " << (publish ? "publish " : "unpublish ") << searchModel->GetSelected().size() << " save";
-	if(searchModel->GetSelected().size()>1)
+	if (searchModel->GetSelected().size() > 1)
 		desc << "s";
 	desc << "?";
 	new ConfirmPrompt((publish ? "Publish Saves" : "Unpublish Saves"), desc.str(), new UnpublishSelectedConfirmation(this, publish));
@@ -340,7 +339,7 @@ void SearchController::unpublishSelectedC(bool publish)
 		virtual bool doWork()
 		{
 			bool ret;
-			for(int i = 0; i < saves.size(); i++)
+			for (size_t i = 0; i < saves.size(); i++)
 			{
 				if (publish)
 					ret = PublishSave(saves[i]);
@@ -374,12 +373,12 @@ void SearchController::FavouriteSelected()
 		FavouriteSavesTask(std::vector<int> saves_) { saves = saves_; }
 		virtual bool doWork()
 		{
-			for(int i = 0; i < saves.size(); i++)
+			for (size_t i = 0; i < saves.size(); i++)
 			{
 				std::stringstream saveID;
 				saveID << "Favouring save [" << saves[i] << "]";
 				notifyStatus(saveID.str());
-				if(Client::Ref().FavouriteSave(saves[i], true)!=RequestOkay)
+				if (Client::Ref().FavouriteSave(saves[i], true)!=RequestOkay)
 				{
 					std::stringstream saveIDF;
 					saveIDF << "\boFailed to favourite [" << saves[i] << "], are you logged in?";
@@ -399,12 +398,12 @@ void SearchController::FavouriteSelected()
 		UnfavouriteSavesTask(std::vector<int> saves_) { saves = saves_; }
 		virtual bool doWork()
 		{
-			for(int i = 0; i < saves.size(); i++)
+			for (size_t i = 0; i < saves.size(); i++)
 			{
 				std::stringstream saveID;
 				saveID << "Unfavouring save [" << saves[i] << "]";
 				notifyStatus(saveID.str());
-				if(Client::Ref().FavouriteSave(saves[i], false)!=RequestOkay)
+				if (Client::Ref().FavouriteSave(saves[i], false)!=RequestOkay)
 				{
 					std::stringstream saveIDF;
 					saveIDF << "\boFailed to unfavourite [" << saves[i] << "], are you logged in?";
@@ -418,7 +417,7 @@ void SearchController::FavouriteSelected()
 	};
 
 	std::vector<int> selected = searchModel->GetSelected();
-	if(!searchModel->GetShowFavourite())
+	if (!searchModel->GetShowFavourite())
 		new TaskWindow("Favouring saves", new FavouriteSavesTask(selected));
 	else
 		new TaskWindow("Unfavouring saves", new UnfavouriteSavesTask(selected));

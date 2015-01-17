@@ -75,9 +75,9 @@ Component* Panel::GetChild(unsigned idx)
 
 void Panel::RemoveChild(Component* c)
 {
-	for(int i = 0; i < children.size(); ++i)
+	for (size_t i = 0; i < children.size(); ++i)
 	{
-		if(children[i] == c)
+		if (children[i] == c)
 		{
 			//remove child from parent. Does not free memory
 			children.erase(children.begin() + i);
@@ -114,13 +114,13 @@ void Panel::Draw(const Point& screenPos)
 #endif
 	
 	// attempt to draw all children
-	for(int i = 0; i < children.size(); ++i)
+	for (size_t i = 0; i < children.size(); ++i)
 	{
 		// the component must be visible
-		if(children[i]->Visible)
+		if (children[i]->Visible)
 		{
 			//check if the component is in the screen, draw if it is
-			if( children[i]->Position.X + ViewportPosition.X + children[i]->Size.X >= 0 &&
+			if (children[i]->Position.X + ViewportPosition.X + children[i]->Size.X >= 0 &&
 				children[i]->Position.Y + ViewportPosition.Y + children[i]->Size.Y >= 0 &&
 				children[i]->Position.X + ViewportPosition.X < ui::Engine::Ref().GetWidth() &&
 				children[i]->Position.Y + ViewportPosition.Y < ui::Engine::Ref().GetHeight() )
@@ -222,7 +222,7 @@ void Panel::OnMouseClick(int localx, int localy, unsigned button)
 void Panel::OnMouseDown(int x, int y, unsigned button)
 {
 	XOnMouseDown(x, y, button);
-	for(int i = 0; i < children.size(); ++i)
+	for (size_t i = 0; i < children.size(); ++i)
 	{
 		if(!children[i]->Locked)
 			children[i]->OnMouseDown(x, y, button);
@@ -232,9 +232,9 @@ void Panel::OnMouseDown(int x, int y, unsigned button)
 void Panel::OnMouseHover(int localx, int localy)
 {
 	// check if hovering on children
-	for(int i = children.size() - 1; i >= 0; --i)
+	for (int i = children.size() - 1; i >= 0; --i)
 	{
-		if(!children[i]->Locked)
+		if (!children[i]->Locked)
 		{
 			if( localx >= children[i]->Position.X &&
 				localy >= children[i]->Position.Y &&
@@ -254,7 +254,7 @@ void Panel::OnMouseHover(int localx, int localy)
 void Panel::OnMouseMoved(int localx, int localy, int dx, int dy)
 {
 	XOnMouseMoved(localx, localy, dx, dy);
-	for(int i = 0; i < children.size(); ++i)
+	for (size_t i = 0; i < children.size(); ++i)
 	{
 		if(!children[i]->Locked)
 			children[i]->OnMouseMoved(localx - children[i]->Position.X - ViewportPosition.X, localy - children[i]->Position.Y - ViewportPosition.Y, dx, dy);
@@ -264,9 +264,9 @@ void Panel::OnMouseMoved(int localx, int localy, int dx, int dy)
 void Panel::OnMouseMovedInside(int localx, int localy, int dx, int dy)
 {
 	mouseInside = true;
-	for(int i = 0; i < children.size(); ++i)
+	for (size_t i = 0; i < children.size(); ++i)
 	{
-		if(!children[i]->Locked)
+		if (!children[i]->Locked)
 		{
 			Point local	(localx - children[i]->Position.X - ViewportPosition.X, localy - children[i]->Position.Y - ViewportPosition.Y)
 			, prevlocal (local.X - dx, local.Y - dy);
@@ -344,7 +344,7 @@ void Panel::OnMouseUnclick(int localx, int localy, unsigned button)
 	}
 	
 	//if a child wasn't clicked, send click to ourself
-	if(!childunclicked)
+	if (!childunclicked)
 	{
 		XOnMouseUnclick(localx, localy, button);
 	}
@@ -353,9 +353,9 @@ void Panel::OnMouseUnclick(int localx, int localy, unsigned button)
 void Panel::OnMouseUp(int x, int y, unsigned button)
 {
 	XOnMouseUp(x, y, button);
-	for(int i = 0; i < children.size(); ++i)
+	for (size_t i = 0; i < children.size(); ++i)
 	{
-		if(!children[i]->Locked)
+		if (!children[i]->Locked)
 			children[i]->OnMouseUp(x, y, button);
 	}
 }
@@ -363,9 +363,9 @@ void Panel::OnMouseUp(int x, int y, unsigned button)
 void Panel::OnMouseWheel(int localx, int localy, int d)
 {
 	XOnMouseWheel(localx, localy, d);
-	for(int i = 0; i < children.size(); ++i)
+	for (size_t i = 0; i < children.size(); ++i)
 	{
-		if(!children[i]->Locked)
+		if (!children[i]->Locked)
 			children[i]->OnMouseWheel(localx - children[i]->Position.X - ViewportPosition.X, localy - children[i]->Position.Y - ViewportPosition.Y, d);
 	}
 }
@@ -374,13 +374,13 @@ void Panel::OnMouseWheelInside(int localx, int localy, int d)
 {
 	XOnMouseWheelInside(localx, localy, d);
 	//check if clicked a child
-	for(int i = children.size()-1; i >= 0 ; --i)
+	for (int i = children.size()-1; i >= 0 ; --i)
 	{
 		//child must be unlocked
-		if(!children[i]->Locked)
+		if (!children[i]->Locked)
 		{
 			//is mouse inside?
-			if( localx >= children[i]->Position.X + ViewportPosition.X &&
+			if (localx >= children[i]->Position.X + ViewportPosition.X &&
 				localy >= children[i]->Position.Y + ViewportPosition.Y &&
 				localx < children[i]->Position.X + ViewportPosition.X + children[i]->Size.X &&
 				localy < children[i]->Position.Y + ViewportPosition.Y + children[i]->Size.Y )

@@ -42,7 +42,7 @@ SaveButton::SaveButton(Point position, Point size, SaveInfo * save):
 
 		votes = format::NumberToString<int>(save->GetVotesUp()-save->GetVotesDown());
 		icon += 0xBB;
-		for (int j = 1; j < votes.length(); j++)
+		for (size_t j = 1; j < votes.length(); j++)
 			icon += 0xBC;
 		icon += 0xB9;
 		icon += 0xBA;

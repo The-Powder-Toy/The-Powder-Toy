@@ -59,7 +59,7 @@ public:
 protected:
 	ValidInput inputType;
 	size_t limit;
-	int repeatTime;
+	unsigned long repeatTime;
 	int keyDown;
 	Uint16 characterDown;
 	bool mouseDown;

@@ -176,12 +176,11 @@ void LocalBrowserView::NotifyPageChanged(LocalBrowserModel * sender)
 
 void LocalBrowserView::NotifySavesListChanged(LocalBrowserModel * sender)
 {
-	int i = 0;
 	int buttonWidth, buttonHeight, saveX = 0, saveY = 0, savesX = 5, savesY = 4, buttonPadding = 2;
 	int buttonAreaWidth, buttonAreaHeight, buttonXOffset, buttonYOffset;
 
 	vector<SaveFile*> saves = sender->GetSavesList();
-	for(i = 0; i < stampButtons.size(); i++)
+	for (size_t i = 0; i < stampButtons.size(); i++)
 	{
 		RemoveComponent(stampButtons[i]);
 		delete stampButtons[i];
@@ -209,7 +208,7 @@ void LocalBrowserView::NotifySavesListChanged(LocalBrowserModel * sender)
 				v->c->Selected(sender->GetSaveFile()->GetName(), sender->GetSelected());
 		}
 	};
-	for(i = 0; i < saves.size(); i++)
+	for (size_t i = 0; i < saves.size(); i++)
 	{
 		if(saveX == savesX)
 		{
@@ -237,10 +236,10 @@ void LocalBrowserView::NotifySavesListChanged(LocalBrowserModel * sender)
 void LocalBrowserView::NotifySelectedChanged(LocalBrowserModel * sender)
 {
 	vector<std::string> selected = sender->GetSelected();
-	for (int j = 0; j < stampButtons.size(); j++)
+	for (size_t j = 0; j < stampButtons.size(); j++)
 	{
 		stampButtons[j]->SetSelected(false);
-		for (int i = 0; i < selected.size(); i++)
+		for (size_t i = 0; i < selected.size(); i++)
 		{
 			if (stampButtons[j]->GetSaveFile()->GetName()==selected[i])
 				stampButtons[j]->SetSelected(true);

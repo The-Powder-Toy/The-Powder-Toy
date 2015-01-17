@@ -23,7 +23,7 @@ ContextMenu::ContextMenu(Component * source):
 
 void ContextMenu::Show(ui::Point position)
 {
-	for(int i = 0; i < buttons.size(); i++)
+	for (size_t i = 0; i < buttons.size(); i++)
 	{
 		RemoveComponent(buttons[i]);
 		delete buttons[i];
@@ -40,7 +40,7 @@ void ContextMenu::Show(ui::Point position)
 	Position = position;
 
 	int currentY = 1;
-	for(int i = 0; i < items.size(); i++)
+	for (size_t i = 0; i < items.size(); i++)
 	{
 		Button * tempButton = new Button(Point(1, currentY), Point(Size.X-2, 16), items[i].Text);
 		tempButton->Appearance = Appearance;
@@ -69,9 +69,9 @@ void ContextMenu::OnMouseDown(int x, int y, unsigned button)
 
 void ContextMenu::SetItem(int id, std::string text)
 {
-	for(int i = 0; i < items.size(); i++)
+	for (size_t i = 0; i < items.size(); i++)
 	{
-		if(items[i].ID == id)
+		if (items[i].ID == id)
 		{
 			items[i].Text = text;
 			break;
@@ -81,9 +81,9 @@ void ContextMenu::SetItem(int id, std::string text)
 
 void ContextMenu::RemoveItem(int id)
 {
-	for(int i = 0; i < items.size(); i++)
+	for (size_t i = 0; i < items.size(); i++)
 	{
-		if(items[i].ID == id)
+		if (items[i].ID == id)
 		{
 			items.erase(items.begin()+i);
 			break;
