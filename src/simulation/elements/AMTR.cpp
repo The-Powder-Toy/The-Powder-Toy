@@ -73,6 +73,12 @@ int Element_AMTR::update(UPDATE_FUNC_ARGS)
 					sim->pv[y/CELL][x/CELL] -= 2.0f;
 				}
 			}
+    if (parts[i].temp < 100) {
+        if ((sim->pv[y/CELL][x/CELL] < -5.0F) && !(rand()%5)) {
+            sim->kill_part(i);
+            sim->create_part(i, x, y, PT_NTRI);
+        }
+    }
 	return 0;
 }
 

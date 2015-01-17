@@ -80,7 +80,10 @@ int Element_NEUT::update(UPDATE_FUNC_ARGS)
 						}
 						else
 						{
-							sim->create_part(r>>8, x+rx, y+ry, PT_NEUT);
+                            if (parts[r>>8].tmp == 1)
+                                sim->create_part(r>>8, x+rx, y+ry, rand()%3 ? PT_NTRI : PT_NEUT);
+                            else
+                                sim->create_part(r>>8, x+rx, y+ry, PT_NEUT);
 							parts[r>>8].vx = 0.25f*parts[r>>8].vx + parts[i].vx;
 							parts[r>>8].vy = 0.25f*parts[r>>8].vy + parts[i].vy;
 						}

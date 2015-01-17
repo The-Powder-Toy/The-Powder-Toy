@@ -1943,13 +1943,13 @@ bool Simulation::IsWallBlocking(int x, int y, int type)
 	if (bmap[y/CELL][x/CELL])
 	{
 		int wall = bmap[y/CELL][x/CELL];
-		if (wall == WL_ALLOWGAS && !(elements[type].Properties&TYPE_GAS))
+		if (wall == WL_ALLOWGAS && (type != PT_NTRI) && !(elements[type].Properties&TYPE_GAS))
 			return true;
-		else if (wall == WL_ALLOWENERGY && !(elements[type].Properties&TYPE_ENERGY))
+		else if (wall == WL_ALLOWENERGY && (type != PT_NTRI) && !(elements[type].Properties&TYPE_ENERGY))
 			return true;
-		else if (wall == WL_ALLOWLIQUID && elements[type].Falldown!=2)
+		else if (wall == WL_ALLOWLIQUID && (type != PT_NTRI) && elements[type].Falldown!=2)
 			return true;
-		else if (wall == WL_ALLOWSOLID && elements[type].Falldown!=1)
+		else if (wall == WL_ALLOWSOLID && (type != PT_NTRI) && elements[type].Falldown!=1)
 			return true;
 		else if (wall == WL_ALLOWAIR || wall == WL_WALL || wall == WL_WALLELEC)
 			return true;
@@ -2058,6 +2058,10 @@ void Simulation::init_can_move()
 			can_move[PT_PROT][destinationType] = 2;
 			can_move[PT_GRVT][destinationType] = 2;
 		}
+		if (destinationType != PT_VOID && destinationType != PT_PVOD && destinationType != PT_PRTI && destinationType != PT_TRON && destinationType != PT_PRTO)
+		{
+			can_move[PT_NTRI][destinationType] = 2;
+		}
 	}
 
 	//other special cases that weren't covered above
@@ -2148,13 +2152,13 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr)
 	}
 	if (bmap[ny/CELL][nx/CELL])
 	{
-		if (bmap[ny/CELL][nx/CELL]==WL_ALLOWGAS && !(elements[pt].Properties&TYPE_GAS))// && elements[pt].Falldown!=0 && pt!=PT_FIRE && pt!=PT_SMKE)
+		if (bmap[ny/CELL][nx/CELL]==WL_ALLOWGAS && (pt != PT_NTRI) && !(elements[pt].Properties&TYPE_GAS))// && elements[pt].Falldown!=0 && pt!=PT_FIRE && pt!=PT_SMKE)
 			return 0;
-		if (bmap[ny/CELL][nx/CELL]==WL_ALLOWENERGY && !(elements[pt].Properties&TYPE_ENERGY))// && elements[pt].Falldown!=0 && pt!=PT_FIRE && pt!=PT_SMKE)
+		if (bmap[ny/CELL][nx/CELL]==WL_ALLOWENERGY && (pt != PT_NTRI) && !(elements[pt].Properties&TYPE_ENERGY))// && elements[pt].Falldown!=0 && pt!=PT_FIRE && pt!=PT_SMKE)
 			return 0;
-		if (bmap[ny/CELL][nx/CELL]==WL_ALLOWLIQUID && elements[pt].Falldown!=2)
+		if (bmap[ny/CELL][nx/CELL]==WL_ALLOWLIQUID && (pt != PT_NTRI) && elements[pt].Falldown!=2)
 			return 0;
-		if (bmap[ny/CELL][nx/CELL]==WL_ALLOWSOLID && elements[pt].Falldown!=1)
+		if (bmap[ny/CELL][nx/CELL]==WL_ALLOWSOLID && (pt != PT_NTRI) && elements[pt].Falldown!=1)
 			return 0;
 		if (bmap[ny/CELL][nx/CELL]==WL_ALLOWAIR || bmap[ny/CELL][nx/CELL]==WL_WALL || bmap[ny/CELL][nx/CELL]==WL_WALLELEC)
 			return 0;
@@ -3056,6 +3060,14 @@ int Simulation::create_part(int p, int x, int y, int tv)
 				parts[i].vy = 2.0f*sinf(a);
 				break;
 			}
+			case PT_NTRI:
+			{
+				float a = (rand()%360)*3.14159f/180.0f;
+				parts[i].life = 680;
+				parts[i].vx = 2.95f*cosf(a);
+				parts[i].vy = 2.95f*sinf(a);
+				break;
+			}
 			case PT_GRVT:
 			{
 				float a = (rand()%360)*3.14159f/180.0f;
@@ -3604,9 +3616,9 @@ void Simulation::update_particles_i(int start, int inc)
 			          bmap[y/CELL][x/CELL]==WL_WALLELEC ||
 			          bmap[y/CELL][x/CELL]==WL_ALLOWAIR ||
 			          (bmap[y/CELL][x/CELL]==WL_DESTROYALL) ||
-			          (bmap[y/CELL][x/CELL]==WL_ALLOWLIQUID && elements[t].Falldown!=2) ||
-			          (bmap[y/CELL][x/CELL]==WL_ALLOWSOLID && elements[t].Falldown!=1) ||
-			          (bmap[y/CELL][x/CELL]==WL_ALLOWGAS && !(elements[t].Properties&TYPE_GAS)) || //&& elements[t].Falldown!=0 && parts[i].type!=PT_FIRE && parts[i].type!=PT_SMKE && parts[i].type!=PT_CFLM) ||
+			          (bmap[y/CELL][x/CELL]==WL_ALLOWLIQUID && elements[t].Falldown!=2 && (t!=PT_NTRI)) ||
+			          (bmap[y/CELL][x/CELL]==WL_ALLOWSOLID && elements[t].Falldown!=1 && (t!=PT_NTRI)) ||
+			          (bmap[y/CELL][x/CELL]==WL_ALLOWGAS && !(elements[t].Properties&TYPE_GAS) && (t!=PT_NTRI)) || //&& elements[t].Falldown!=0 && parts[i].type!=PT_FIRE && parts[i].type!=PT_SMKE && parts[i].type!=PT_CFLM) ||
 			          (bmap[y/CELL][x/CELL]==WL_ALLOWENERGY && !(elements[t].Properties&TYPE_ENERGY)) ||
 					  (bmap[y/CELL][x/CELL]==WL_DETECT && (t==PT_METL || t==PT_SPRK)) ||
 			          (bmap[y/CELL][x/CELL]==WL_EWALL && !emap[y/CELL][x/CELL])) && (t!=PT_STKM) && (t!=PT_STKM2) && (t!=PT_FIGH)))
@@ -3614,7 +3626,7 @@ void Simulation::update_particles_i(int start, int inc)
 				kill_part(i);
 				continue;
 			}
-			if (bmap[y/CELL][x/CELL]==WL_DETECT && emap[y/CELL][x/CELL]<8)
+			if (bmap[y/CELL][x/CELL]==WL_DETECT && (t!=PT_NTRI) && emap[y/CELL][x/CELL]<8)
 				set_emap(x/CELL, y/CELL);
 
 			//adding to velocity from the particle's velocity
@@ -4250,7 +4262,7 @@ killed:
 						clear_y = (int)(clear_yf+0.5f);
 						break;
 					}
-					if (bmap[fin_y/CELL][fin_x/CELL]==WL_DETECT && emap[fin_y/CELL][fin_x/CELL]<8)
+					if (bmap[fin_y/CELL][fin_x/CELL]==WL_DETECT && (t!=PT_NTRI) && emap[fin_y/CELL][fin_x/CELL]<8)
 						set_emap(fin_x/CELL, fin_y/CELL);
 				}
 			}
