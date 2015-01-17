@@ -23,9 +23,9 @@ public:
 
 ElementSearchActivity::ElementSearchActivity(GameController * gameController, std::vector<Tool*> tools) :
 	WindowActivity(ui::Point(-1, -1), ui::Point(236, 302)),
+	firstResult(NULL),
 	gameController(gameController),
 	tools(tools),
-	firstResult(NULL),
 	exit(false)
 {
 	ui::Label * title = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 15), "Element Search");

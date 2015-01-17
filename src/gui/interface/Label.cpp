@@ -17,8 +17,7 @@ Label::Label(Point position, Point size, std::string labelText):
 	selectionXH(-1),
 	multiline(false),
 	selecting(false),
-	autoHeight(size.Y==-1?true:false),
-	caret(-1)
+	autoHeight(size.Y==-1?true:false)
 {
 	menu = new ContextMenu(this);
 	menu->AddItem(ContextMenuItem("Copy", 0, true));

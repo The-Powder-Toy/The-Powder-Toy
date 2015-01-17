@@ -33,13 +33,6 @@ class GameModel;
 class GameView: public ui::Window
 {
 private:
-	DrawMode drawMode;
-	
-	bool doScreenshot;
-	bool recording;
-	int screenshotIndex;
-	int recordingIndex;
-
 	bool isMouseDown;
 	bool zoomEnabled;
 	bool zoomCursorFixed;
@@ -53,8 +46,6 @@ private:
 	bool wallBrush;
 	bool toolBrush;
 	bool windTool;
-	int introText;
-	std::string introTextMessage;
 	int toolIndex;
 	int currentSaveType;
 	int lastMenu;
@@ -68,6 +59,13 @@ private:
 	int buttonTipShow;
 	std::string buttonTip;
 	bool isButtonTipFadingIn;
+	int introText;
+	std::string introTextMessage;
+
+	bool doScreenshot;
+	bool recording;
+	int screenshotIndex;
+	int recordingIndex;
 
 	queue<ui::Point> pointQueue;
 	GameController * c;
@@ -92,11 +90,11 @@ private:
 	ui::Button * simulationOptionButton;
 	ui::Button * displayModeButton;
 	ui::Button * pauseButton;
-	ui::Point currentMouse;
 
 	ui::Button * colourPicker;
 	vector<ToolButton*> colourPresets;
 
+	DrawMode drawMode;
 	bool drawModeReset;
 	ui::Point drawPoint1;
 	ui::Point drawPoint2;
@@ -105,6 +103,7 @@ private:
 	ui::Point selectPoint1;
 	ui::Point selectPoint2;
 
+	ui::Point currentMouse;
 	ui::Point mousePosition;
 
 	VideoBuffer * placeSaveThumb;

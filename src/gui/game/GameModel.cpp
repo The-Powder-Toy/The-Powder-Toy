@@ -19,19 +19,17 @@
 #include "Format.h"
 
 GameModel::GameModel():
-	sim(NULL),
-	ren(NULL),
-	currentBrush(0),
-	currentUser(0, ""),
-	currentSave(NULL),
-	currentFile(NULL),
-	colourSelector(false),
 	clipboard(NULL),
 	placeSave(NULL),
-	colour(255, 0, 0, 255),
-	toolStrength(1.0f),
-	activeColourPreset(-1),
 	activeMenu(-1),
+	currentBrush(0),
+	currentSave(NULL),
+	currentFile(NULL),
+	currentUser(0, ""),
+	toolStrength(1.0f),
+	activeColourPreset(0),
+	colourSelector(false),
+	colour(255, 0, 0, 255),
 	edgeMode(0)
 {
 	sim = new Simulation();
@@ -104,7 +102,7 @@ GameModel::GameModel():
 
 	//Load more from brushes folder
 	std::vector<string> brushFiles = Client::Ref().DirectorySearch(BRUSH_DIR, "", ".ptb");
-	for(int i = 0; i < brushFiles.size(); i++)
+	for (size_t i = 0; i < brushFiles.size(); i++)
 	{
 		std::vector<unsigned char> brushData = Client::Ref().ReadFile(brushFiles[i]);
 		if(!brushData.size())
@@ -112,8 +110,8 @@ GameModel::GameModel():
 			std::cout << "Brushes: Skipping " << brushFiles[i] << ". Could not open" << std::endl;
 			continue;
 		}
-		int dimension = std::sqrt((float)brushData.size());
-		if(dimension * dimension != brushData.size())
+		size_t dimension = std::sqrt((float)brushData.size());
+		if (dimension * dimension != brushData.size())
 		{
 			std::cout << "Brushes: Skipping " << brushFiles[i] << ". Invalid bitmap size" << std::endl;
 			continue;
@@ -164,15 +162,15 @@ GameModel::~GameModel()
 	Client::Ref().SetPref("Decoration.Blue", (int)colour.Blue);
 	Client::Ref().SetPref("Decoration.Alpha", (int)colour.Alpha);
 
-	for(int i = 0; i < menuList.size(); i++)
+	for (size_t i = 0; i < menuList.size(); i++)
 	{
 		delete menuList[i];
 	}
-	for(std::vector<Tool*>::iterator iter = extraElementTools.begin(), end = extraElementTools.end(); iter != end; ++iter)
+	for (std::vector<Tool*>::iterator iter = extraElementTools.begin(), end = extraElementTools.end(); iter != end; ++iter)
 	{
 		delete *iter;
 	}
-	for(int i = 0; i < brushList.size(); i++)
+	for (size_t i = 0; i < brushList.size(); i++)
 	{
 		delete brushList[i];
 	}
@@ -306,7 +304,7 @@ void GameModel::BuildMenus()
 	}
 	
 	//Build menu for tools
-	for(int i = 0; i < sim->tools.size(); i++)
+	for (size_t i = 0; i < sim->tools.size(); i++)
 	{
 		Tool * tempTool;
 		tempTool = new Tool(i, sim->tools[i]->Name, sim->tools[i]->Description, PIXR(sim->tools[i]->Colour), PIXG(sim->tools[i]->Colour), PIXB(sim->tools[i]->Colour), sim->tools[i]->Identifier);
@@ -752,10 +750,10 @@ int GameModel::GetZoomFactor()
 	return ren->ZFACTOR;
 }
 
-void GameModel::SetActiveColourPreset(int preset)
+void GameModel::SetActiveColourPreset(size_t preset)
 {
-	if (activeColourPreset != preset)
-		activeColourPreset = preset;
+	if (activeColourPreset-1 != preset)
+		activeColourPreset = preset+1;
 	else
 	{
 		activeTools[0] = GetToolFromIdentifier("DEFAULT_DECOR_SET");
@@ -764,16 +762,16 @@ void GameModel::SetActiveColourPreset(int preset)
 	notifyColourActivePresetChanged();
 }
 
-int GameModel::GetActiveColourPreset()
+size_t GameModel::GetActiveColourPreset()
 {
-	return activeColourPreset;
+	return activeColourPreset-1;
 }
 
 void GameModel::SetPresetColour(ui::Colour colour)
 {
-	if(activeColourPreset >= 0 && activeColourPreset < colourPresets.size())
+	if (activeColourPreset > 0 && activeColourPreset <= colourPresets.size())
 	{
-		colourPresets[activeColourPreset] = colour;
+		colourPresets[activeColourPreset-1] = colour;
 		notifyColourPresetsChanged();
 	}
 }
@@ -802,7 +800,7 @@ void GameModel::SetColourSelectorColour(ui::Colour colour_)
 	colour = colour_;
 
 	vector<Tool*> tools = GetMenuList()[SC_DECO]->GetToolList();
-	for(int i = 0; i < tools.size(); i++)
+	for (size_t i = 0; i < tools.size(); i++)
 	{
 		((DecorationTool*)tools[i])->Red = colour.Red;
 		((DecorationTool*)tools[i])->Green = colour.Green;
@@ -999,7 +997,7 @@ std::string GameModel::GetInfoTip()
 
 void GameModel::notifyNotificationsChanged()
 {
-	for(std::vector<GameView*>::iterator iter = observers.begin(); iter != observers.end(); ++iter)
+	for (std::vector<GameView*>::iterator iter = observers.begin(); iter != observers.end(); ++iter)
 	{
 		(*iter)->NotifyNotificationsChanged(this);
 	}
@@ -1007,7 +1005,7 @@ void GameModel::notifyNotificationsChanged()
 
 void GameModel::notifyColourPresetsChanged()
 {
-	for(std::vector<GameView*>::iterator iter = observers.begin(); iter != observers.end(); ++iter)
+	for (std::vector<GameView*>::iterator iter = observers.begin(); iter != observers.end(); ++iter)
 	{
 		(*iter)->NotifyColourPresetsChanged(this);
 	}
@@ -1015,7 +1013,7 @@ void GameModel::notifyColourPresetsChanged()
 
 void GameModel::notifyColourActivePresetChanged()
 {
-	for(std::vector<GameView*>::iterator iter = observers.begin(); iter != observers.end(); ++iter)
+	for (std::vector<GameView*>::iterator iter = observers.begin(); iter != observers.end(); ++iter)
 	{
 		(*iter)->NotifyColourActivePresetChanged(this);
 	}
@@ -1023,7 +1021,7 @@ void GameModel::notifyColourActivePresetChanged()
 
 void GameModel::notifyColourSelectorColourChanged()
 {
-	for(int i = 0; i < observers.size(); i++)
+	for (size_t i = 0; i < observers.size(); i++)
 	{
 		observers[i]->NotifyColourSelectorColourChanged(this);
 	}
@@ -1031,7 +1029,7 @@ void GameModel::notifyColourSelectorColourChanged()
 
 void GameModel::notifyColourSelectorVisibilityChanged()
 {
-	for(int i = 0; i < observers.size(); i++)
+	for (size_t i = 0; i < observers.size(); i++)
 	{
 		observers[i]->NotifyColourSelectorVisibilityChanged(this);
 	}
@@ -1039,7 +1037,7 @@ void GameModel::notifyColourSelectorVisibilityChanged()
 
 void GameModel::notifyRendererChanged()
 {
-	for(int i = 0; i < observers.size(); i++)
+	for (size_t i = 0; i < observers.size(); i++)
 	{
 		observers[i]->NotifyRendererChanged(this);
 	}
@@ -1047,7 +1045,7 @@ void GameModel::notifyRendererChanged()
 
 void GameModel::notifySaveChanged()
 {
-	for(int i = 0; i < observers.size(); i++)
+	for (size_t i = 0; i < observers.size(); i++)
 	{
 		observers[i]->NotifySaveChanged(this);
 	}
@@ -1055,7 +1053,7 @@ void GameModel::notifySaveChanged()
 
 void GameModel::notifySimulationChanged()
 {
-	for(int i = 0; i < observers.size(); i++)
+	for (size_t i = 0; i < observers.size(); i++)
 	{
 		observers[i]->NotifySimulationChanged(this);
 	}
@@ -1063,7 +1061,7 @@ void GameModel::notifySimulationChanged()
 
 void GameModel::notifyPausedChanged()
 {
-	for(int i = 0; i < observers.size(); i++)
+	for (size_t i = 0; i < observers.size(); i++)
 	{
 		observers[i]->NotifyPausedChanged(this);
 	}
@@ -1071,7 +1069,7 @@ void GameModel::notifyPausedChanged()
 
 void GameModel::notifyDecorationChanged()
 {
-	for(int i = 0; i < observers.size(); i++)
+	for (size_t i = 0; i < observers.size(); i++)
 	{
 		//observers[i]->NotifyPausedChanged(this);
 	}
@@ -1079,7 +1077,7 @@ void GameModel::notifyDecorationChanged()
 
 void GameModel::notifyBrushChanged()
 {
-	for(int i = 0; i < observers.size(); i++)
+	for (size_t i = 0; i < observers.size(); i++)
 	{
 		observers[i]->NotifyBrushChanged(this);
 	}
@@ -1087,7 +1085,7 @@ void GameModel::notifyBrushChanged()
 
 void GameModel::notifyMenuListChanged()
 {
-	for(int i = 0; i < observers.size(); i++)
+	for (size_t i = 0; i < observers.size(); i++)
 	{
 		observers[i]->NotifyMenuListChanged(this);
 	}
@@ -1095,7 +1093,7 @@ void GameModel::notifyMenuListChanged()
 
 void GameModel::notifyToolListChanged()
 {
-	for(int i = 0; i < observers.size(); i++)
+	for (size_t i = 0; i < observers.size(); i++)
 	{
 		observers[i]->NotifyToolListChanged(this);
 	}
@@ -1103,7 +1101,7 @@ void GameModel::notifyToolListChanged()
 
 void GameModel::notifyActiveToolsChanged()
 {
-	for(int i = 0; i < observers.size(); i++)
+	for (size_t i = 0; i < observers.size(); i++)
 	{
 		observers[i]->NotifyActiveToolsChanged(this);
 	}
@@ -1111,7 +1109,7 @@ void GameModel::notifyActiveToolsChanged()
 
 void GameModel::notifyUserChanged()
 {
-	for(int i = 0; i < observers.size(); i++)
+	for (size_t i = 0; i < observers.size(); i++)
 	{
 		observers[i]->NotifyUserChanged(this);
 	}
@@ -1119,7 +1117,7 @@ void GameModel::notifyUserChanged()
 
 void GameModel::notifyZoomChanged()
 {
-	for(int i = 0; i < observers.size(); i++)
+	for (size_t i = 0; i < observers.size(); i++)
 	{
 		observers[i]->NotifyZoomChanged(this);
 	}
@@ -1127,7 +1125,7 @@ void GameModel::notifyZoomChanged()
 
 void GameModel::notifyPlaceSaveChanged()
 {
-	for(int i = 0; i < observers.size(); i++)
+	for (size_t i = 0; i < observers.size(); i++)
 	{
 		observers[i]->NotifyPlaceSaveChanged(this);
 	}
@@ -1135,7 +1133,7 @@ void GameModel::notifyPlaceSaveChanged()
 
 void GameModel::notifyLogChanged(string entry)
 {
-	for(int i = 0; i < observers.size(); i++)
+	for (size_t i = 0; i < observers.size(); i++)
 	{
 		observers[i]->NotifyLogChanged(this, entry);
 	}
@@ -1143,7 +1141,7 @@ void GameModel::notifyLogChanged(string entry)
 
 void GameModel::notifyInfoTipChanged()
 {
-	for(int i = 0; i < observers.size(); i++)
+	for (size_t i = 0; i < observers.size(); i++)
 	{
 		observers[i]->NotifyInfoTipChanged(this);
 	}
@@ -1151,7 +1149,7 @@ void GameModel::notifyInfoTipChanged()
 
 void GameModel::notifyToolTipChanged()
 {
-	for(int i = 0; i < observers.size(); i++)
+	for (size_t i = 0; i < observers.size(); i++)
 	{
 		observers[i]->NotifyToolTipChanged(this);
 	}
@@ -1159,7 +1157,7 @@ void GameModel::notifyToolTipChanged()
 
 void GameModel::notifyQuickOptionsChanged()
 {
-	for(int i = 0; i < observers.size(); i++)
+	for (size_t i = 0; i < observers.size(); i++)
 	{
 		observers[i]->NotifyQuickOptionsChanged(this);
 	}
@@ -1167,7 +1165,7 @@ void GameModel::notifyQuickOptionsChanged()
 
 void GameModel::notifyLastToolChanged()
 {
-	for(int i = 0; i < observers.size(); i++)
+	for (size_t i = 0; i < observers.size(); i++)
 	{
 		observers[i]->NotifyLastToolChanged(this);
 	}

@@ -29,9 +29,7 @@ class ConsoleController;
 class GameController: public ClientListener
 {
 private:
-	//Simulation * sim;
 	bool firstTick;
-	int screenshotIndex;
 	sign * foundSign;
 
 	PreviewController * activePreview;

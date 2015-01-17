@@ -16,8 +16,8 @@ public:
 
 ContextMenu::ContextMenu(Component * source):
 		Window(ui::Point(0, 0), ui::Point(0, 0)),
-		Appearance(source->Appearance),
-		source(source)
+		source(source),
+		Appearance(source->Appearance)
 {
 }
 

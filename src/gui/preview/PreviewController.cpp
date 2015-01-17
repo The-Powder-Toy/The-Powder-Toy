@@ -9,10 +9,10 @@
 #include "Controller.h"
 
 PreviewController::PreviewController(int saveID, int saveDate, bool instant, ControllerCallback * callback):
-	HasExited(false),
 	saveId(saveID),
 	saveDate(saveDate),
-	loginWindow(NULL)
+	loginWindow(NULL),
+	HasExited(false)
 {
 	previewModel = new PreviewModel();
 	previewView = new PreviewView();

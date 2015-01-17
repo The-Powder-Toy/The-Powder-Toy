@@ -7,16 +7,16 @@
 using namespace std;
 
 Tool::Tool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int)):
+	textureGen(textureGen),
 	toolID(id),
 	toolName(name),
 	toolDescription(description),
-	colRed(r),
-	colGreen(g),
-	colBlue(b),
-	textureGen(textureGen),
 	strength(1.0f),
 	resolution(1),
-	identifier(identifier)
+	identifier(identifier),
+	colRed(r),
+	colGreen(g),
+	colBlue(b)
 {
 }
 

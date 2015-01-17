@@ -98,11 +98,11 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 			}
 		if (tempPart.type == PT_PIPE || tempPart.type == PT_PPIP)
 		{
-			tempPart.tmp = partMap[tempPart.tmp&0xFF] | tempPart.tmp&~0xFF;
+			tempPart.tmp = partMap[tempPart.tmp&0xFF] | (tempPart.tmp&~0xFF);
 		}
 
 		//Replace existing
-		if (r = pmap[y][x])
+		if ((r = pmap[y][x]))
 		{
 			elementCount[parts[r>>8].type]--;
 			parts[r>>8] = tempPart;
@@ -165,7 +165,7 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 	parts_lastActiveIndex = NPART-1;
 	force_stacking_check = 1;
 	Element_PPIP::ppip_changed = 1;
-	for(int i = 0; i < save->signs.size() && signs.size() < MAXSIGNS; i++)
+	for (size_t i = 0; i < save->signs.size() && signs.size() < MAXSIGNS; i++)
 	{
 		if (save->signs[i].text[0])
 		{
@@ -261,7 +261,7 @@ GameSave * Simulation::Save(int fullX, int fullY, int fullX2, int fullY2)
 		}
 	}
 	
-	for(int i = 0; i < MAXSIGNS && i < signs.size(); i++)
+	for (size_t i = 0; i < MAXSIGNS && i < signs.size(); i++)
 	{
 		if(signs[i].text.length() && signs[i].x >= fullX && signs[i].y >= fullY && signs[i].x <= fullX2 && signs[i].y <= fullY2)
 		{
@@ -979,9 +979,9 @@ int Simulation::Tool(int x, int y, int tool, float strength)
 	{
 		Particle * cpart = NULL;
 		int r;
-		if(r = pmap[y][x])
+		if ((r = pmap[y][x]))
 			cpart = &(parts[r>>8]);
-		else if(r = photons[y][x])
+		else if ((r = photons[y][x]))
 			cpart = &(parts[r>>8]);
 		return tools[tool]->Perform(this, cpart, x, y, strength);
 	}
@@ -2226,7 +2226,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 	if ((bmap[y/CELL][x/CELL]==WL_EHOLE && !emap[y/CELL][x/CELL]) && !(bmap[ny/CELL][nx/CELL]==WL_EHOLE && !emap[ny/CELL][nx/CELL]))
 		return 0;
 
-	e = r >> 8; //e is now the particle number at r (pmap[ny][nx])
+	int ri = r >> 8; //ri is the particle number at r (pmap[ny][nx])
 	if (r)//the swap part, if we make it this far, swap
 	{
 		if (parts[i].type==PT_NEUT) {
@@ -2243,17 +2243,19 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 				parts[s>>8].x = nx;
 				parts[s>>8].y = ny;
 			}
-			else pmap[ny][nx] = 0;
-			parts[e].x = x;
-			parts[e].y = y;
-			pmap[y][x] = (e<<8)|parts[e].type;
+			else
+				pmap[ny][nx] = 0;
+			parts[ri].x = x;
+			parts[ri].y = y;
+			pmap[y][x] = (ri<<8)|parts[ri].type;
 			return 1;
 		}
 
-		if ((pmap[ny][nx]>>8)==e) pmap[ny][nx] = 0;
-		parts[e].x += x-nx;
-		parts[e].y += y-ny;
-		pmap[(int)(parts[e].y+0.5f)][(int)(parts[e].x+0.5f)] = (e<<8)|parts[e].type;
+		if ((pmap[ny][nx]>>8) == ri)
+			pmap[ny][nx] = 0;
+		parts[ri].x += x-nx;
+		parts[ri].y += y-ny;
+		pmap[(int)(parts[ri].y+0.5f)][(int)(parts[ri].x+0.5f)] = (ri<<8)|parts[ri].type;
 	}
 	return 1;
 }
@@ -2314,7 +2316,7 @@ int Simulation::do_move(int i, int x, int y, float nxf, float nyf)
 
 int Simulation::pn_junction_sprk(int x, int y, int pt)
 {
-	unsigned r = pmap[y][x];
+	int r = pmap[y][x];
 	if ((r & 0xFF) != pt)
 		return 0;
 	r >>= 8;
@@ -4854,26 +4856,26 @@ Simulation::~Simulation()
 	delete[] platent;
 	delete grav;
 	delete air;
-	for(int i = 0; i < tools.size(); i++)
+	for (size_t i = 0; i < tools.size(); i++)
 		delete tools[i];
 }
 
 Simulation::Simulation():
+	replaceModeSelected(0),
+	replaceModeFlags(0),
+	ISWIRE(0),
+	force_stacking_check(0),
+	emp_decor(0),
+	gravWallChanged(false),
+	edgeMode(0),
+	gravityMode(0),
+	legacy_enable(0),
+	aheat_enable(0),
+	water_equal_test(0),
 	sys_pause(0),
 	framerender(0),
-	aheat_enable(0),
-	legacy_enable(0),
-	gravityMode(0),
-	edgeMode(0),
-	water_equal_test(0),
 	pretty_powder(0),
-	sandcolour_frame(0),
-	emp_decor(0),
-	force_stacking_check(0),
-	ISWIRE(0),
-	gravWallChanged(false),
-	replaceModeSelected(0),
-	replaceModeFlags(0)
+	sandcolour_frame(0)
 {
     int tportal_rx[] = {-1, 0, 1, 1, 1, 0,-1,-1};
     int tportal_ry[] = {-1,-1,-1, 0, 1, 1, 1, 0};
@@ -4928,7 +4930,7 @@ Simulation::Simulation():
 	DEFAULT_PT_NUM = elementList.size();
 	for(int i = 0; i < PT_NUM; i++)
 	{
-		if(i < elementList.size())
+		if (i < (int)elementList.size())
 			elements[i] = elementList[i];
 		else
 			elements[i] = Element();

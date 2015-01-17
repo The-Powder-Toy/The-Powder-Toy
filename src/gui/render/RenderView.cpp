@@ -78,10 +78,10 @@ public:
 
 RenderView::RenderView():
 	ui::Window(ui::Point(0, 0), ui::Point(XRES, WINDOWH)),
+	ren(NULL),
 	toolTip(""),
 	toolTipPresence(0),
-	isToolTipFadingIn(false),
-	ren(NULL)
+	isToolTipFadingIn(false)
 {
 	ui::Button * presetButton;
 	int presetButtonOffset = 375;

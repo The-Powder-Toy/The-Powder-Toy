@@ -38,10 +38,10 @@ public:
 	virtual ~ServerSaveActivity();
 protected:
 	virtual void NotifyDone(Task * task);
-	Task * saveUploadTask;
-	SaveUploadedCallback * callback;
-	SaveInfo save;
 	VideoBuffer * thumbnail;
+	SaveInfo save;
+	SaveUploadedCallback * callback;
+	Task * saveUploadTask;
 	ui::Label * titleLabel;
 	ui::Textbox * nameField;
 	ui::Textbox * descriptionField;

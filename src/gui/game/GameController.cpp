@@ -119,18 +119,18 @@ public:
 };
 
 GameController::GameController():
-		search(NULL),
-		renderOptions(NULL),
-		loginWindow(NULL),
-		console(NULL),
-		tagsWindow(NULL),
-		options(NULL),
-		activePreview(NULL),
-		localBrowser(NULL),
-		foundSign(NULL),
-		HasDone(false),
-		firstTick(true),
-		debugFlags(0)
+	firstTick(true),
+	foundSign(NULL),
+	activePreview(NULL),
+	search(NULL),
+	renderOptions(NULL),
+	loginWindow(NULL),
+	console(NULL),
+	tagsWindow(NULL),
+	localBrowser(NULL),
+	options(NULL),
+	debugFlags(0),
+	HasDone(false)
 {
 	gameView = new GameView();
 	gameModel = new GameModel();
@@ -583,7 +583,7 @@ bool GameController::MouseDown(int x, int y, unsigned button)
 		ui::Point point = gameModel->AdjustZoomCoords(ui::Point(x, y));
 		x = point.X;
 		y = point.Y;
-		if (gameModel->GetActiveTool(0) && gameModel->GetActiveTool(0)->GetIdentifier() != "DEFAULT_UI_SIGN" || button != BUTTON_LEFT) //If it's not a sign tool or you are right/middle clicking
+		if (!gameModel->GetActiveTool(0) || gameModel->GetActiveTool(0)->GetIdentifier() != "DEFAULT_UI_SIGN" || button != BUTTON_LEFT) //If it's not a sign tool or you are right/middle clicking
 		{
 			foundSign = GetSignAt(x, y);
 			if(foundSign && splitsign(foundSign->text.c_str()))
@@ -601,7 +601,7 @@ bool GameController::MouseUp(int x, int y, unsigned button)
 		ui::Point point = gameModel->AdjustZoomCoords(ui::Point(x, y));
 		x = point.X;
 		y = point.Y;
-		if (gameModel->GetActiveTool(0) && gameModel->GetActiveTool(0)->GetIdentifier() != "DEFAULT_UI_SIGN" || button != BUTTON_LEFT) //If it's not a sign tool or you are right/middle clicking
+		if (!gameModel->GetActiveTool(0) || gameModel->GetActiveTool(0)->GetIdentifier() != "DEFAULT_UI_SIGN" || button != BUTTON_LEFT) //If it's not a sign tool or you are right/middle clicking
 		{
 			sign * foundSign = GetSignAt(x, y);
 			if(foundSign) {
@@ -1455,7 +1455,7 @@ void GameController::NotifyNewNotification(Client * sender, std::pair<std::strin
 	{
 		std::string link;
 	public:
-		LinkNotification(std::string link_, std::string message) : link(link_), Notification(message) {}
+		LinkNotification(std::string link_, std::string message) : Notification(message), link(link_) {}
 		virtual ~LinkNotification() {}
 
 		virtual void Action()
@@ -1485,7 +1485,7 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 	{
 		GameController * c;
 	public:
-		UpdateNotification(GameController * c, std::string message) : c(c), Notification(message) {}
+		UpdateNotification(GameController * c, std::string message) : Notification(message), c(c) {}
 		virtual ~UpdateNotification() {}
 
 		virtual void Action()

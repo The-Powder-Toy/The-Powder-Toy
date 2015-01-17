@@ -4,10 +4,10 @@
 #include "Misc.h"
 
 sign::sign(std::string text_, int x_, int y_, Justification justification_):
-	text(text_),
 	x(x_),
 	y(y_),
-	ju(justification_)
+	ju(justification_),
+	text(text_)
 {
 }
 

@@ -23,6 +23,8 @@ protected:
 	int resolution;
 	std::string identifier;
 public:
+	int colRed, colGreen, colBlue;
+
 	Tool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int) = NULL);
 	int GetToolID() { return toolID; }
 	string GetName();
@@ -39,7 +41,6 @@ public:
 	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false);
 	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2);
 	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position);
-	int colRed, colBlue, colGreen;
 };
 
 class GameModel;

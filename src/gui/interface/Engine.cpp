@@ -13,26 +13,26 @@ using namespace ui;
 using namespace std;
 
 Engine::Engine():
+	FpsLimit(60.0f),
+	Scale(1),
+	Fullscreen(false),
+	FrameIndex(0),
+	lastBuffer(NULL),
+	prevBuffers(stack<pixel*>()),
+	windows(stack<Window*>()),
+	mousePositions(stack<Point>()),
 	state_(NULL),
-	maxWidth(0),
-	maxHeight(0),
+	windowTargetPosition(0, 0),
+	break_(false),
+	FastQuit(1),
+	lastTick(0),
 	mouseb_(0),
 	mousex_(0),
 	mousey_(0),
 	mousexp_(0),
 	mouseyp_(0),
-	FpsLimit(60.0f),
-	windows(stack<Window*>()),
-	mousePositions(stack<Point>()),
-	lastBuffer(NULL),
-	prevBuffers(stack<pixel*>()),
-	windowTargetPosition(0, 0),
-	FrameIndex(0),
-	Fullscreen(false),
-	Scale(1),
-	FastQuit(1),
-	break_(false),
-	lastTick(0)
+	maxWidth(0),
+	maxHeight(0)
 {
 }
 

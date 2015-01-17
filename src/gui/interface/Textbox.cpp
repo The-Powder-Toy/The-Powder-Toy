@@ -12,15 +12,15 @@ using namespace ui;
 
 Textbox::Textbox(Point position, Point size, std::string textboxText, std::string textboxPlaceholder):
 	Label(position, size, ""),
-	actionCallback(NULL),
-	masked(false),
-	border(true),
-	mouseDown(false),
-	limit(std::string::npos),
+	ReadOnly(false),
 	inputType(All),
+	limit(std::string::npos),
 	keyDown(0),
 	characterDown(0),
-	ReadOnly(false)
+	mouseDown(false),
+	masked(false),
+	border(true),
+	actionCallback(NULL)
 {
 	placeHolder = textboxPlaceholder;
 

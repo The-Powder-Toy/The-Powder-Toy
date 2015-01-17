@@ -18,15 +18,15 @@ SaveButton::SaveButton(Point position, Point size, SaveInfo * save):
 	file(NULL),
 	save(save),
 	thumbnail(NULL),
-	isMouseInside(false),
-	isButtonDown(false),
-	actionCallback(NULL),
-	selectable(false),
-	selected(false),
 	waitingForThumb(false),
 	isMouseInsideAuthor(false),
 	isMouseInsideHistory(false),
-	showVotes(false)
+	showVotes(false),
+	isButtonDown(false),
+	isMouseInside(false),
+	selected(false),
+	selectable(false),
+	actionCallback(NULL)
 {
 	if(save)
 	{
@@ -88,19 +88,19 @@ SaveButton::SaveButton(Point position, Point size, SaveInfo * save):
 
 SaveButton::SaveButton(Point position, Point size, SaveFile * file):
 	Component(position, size),
-	save(NULL),
 	file(file),
+	save(NULL),
 	thumbnail(NULL),
-	isMouseInside(false),
-	isButtonDown(false),
-	actionCallback(NULL),
-	selectable(false),
-	selected(false),
 	wantsDraw(false),
 	waitingForThumb(false),
 	isMouseInsideAuthor(false),
 	isMouseInsideHistory(false),
-	showVotes(false)
+	showVotes(false),
+	isButtonDown(false),
+	isMouseInside(false),
+	selected(false),
+	selectable(false),
+	actionCallback(NULL)
 {
 	if(file)
 	{

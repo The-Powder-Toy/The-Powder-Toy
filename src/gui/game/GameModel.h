@@ -49,6 +49,8 @@ private:
 	//Tools that are present in elementTools, but don't have an associated menu and need to be freed manually
 	vector<Tool*> extraElementTools;
 
+	Simulation * sim;
+	Renderer * ren;
 	vector<Menu*> menuList;
 	vector<QuickOption*> quickOptions;
 	int activeMenu;
@@ -56,8 +58,6 @@ private:
 	vector<Brush *> brushList;
 	SaveInfo * currentSave;
 	SaveFile * currentFile;
-	Simulation * sim;
-	Renderer * ren;
 	Tool * lastTool;
 	Tool ** activeTools;
 	Tool * decoToolset[4];
@@ -66,7 +66,7 @@ private:
 	float toolStrength;
 	std::deque<Snapshot*> history;
 
-	int activeColourPreset;
+	size_t activeColourPreset;
 	std::vector<ui::Colour> colourPresets;
 	bool colourSelector;
 	ui::Colour colour;
@@ -106,8 +106,8 @@ public:
 	void SetEdgeMode(int edgeMode);
 	int GetEdgeMode();
 
-	void SetActiveColourPreset(int preset);
-	int GetActiveColourPreset();
+	void SetActiveColourPreset(size_t preset);
+	size_t GetActiveColourPreset();
 
 	void SetPresetColour(ui::Colour colour);
 

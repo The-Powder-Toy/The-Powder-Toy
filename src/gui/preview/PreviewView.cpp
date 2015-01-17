@@ -65,12 +65,12 @@ public:
 PreviewView::PreviewView():
 	ui::Window(ui::Point(-1, -1), ui::Point((XRES/2)+210, (YRES/2)+150)),
 	savePreview(NULL),
-	doOpen(false),
-	addCommentBox(NULL),
 	submitCommentButton(NULL),
-	commentBoxHeight(20),
+	addCommentBox(NULL),
+	doOpen(false),
 	showAvatars(true),
-	prevPage(false)
+	prevPage(false),
+	commentBoxHeight(20)
 {
 	class FavAction: public ui::ButtonAction
 	{

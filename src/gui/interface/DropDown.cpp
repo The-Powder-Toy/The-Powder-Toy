@@ -8,8 +8,8 @@ namespace ui {
 class ItemSelectedAction;
 class DropDownWindow: public ui::Window {
 	friend class ItemSelectedAction;
-	Appearance appearance;
 	DropDown * dropDown;
+	Appearance appearance;
 	std::vector<Button> buttons;
 	bool isMouseInside;
 public:

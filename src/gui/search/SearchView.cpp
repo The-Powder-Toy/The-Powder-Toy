@@ -14,9 +14,9 @@
 
 SearchView::SearchView():
 	ui::Window(ui::Point(0, 0), ui::Point(WINDOWW, WINDOWH)),
+	c(NULL),
 	saveButtons(vector<ui::SaveButton*>()),
 	errorLabel(NULL),
-	c(NULL),
 	changed(true),
 	lastChanged(0),
 	pageCount(0),

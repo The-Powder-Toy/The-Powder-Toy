@@ -41,10 +41,10 @@ private:
 public:
 	SplitButton(ui::Point position, ui::Point size, std::string buttonText, std::string toolTip, std::string toolTip2, int split) :
 		Button(position, size, buttonText, toolTip),
-		toolTip2(toolTip2),
+		showSplit(true),
 		splitPosition(split),
-		splitActionCallback(NULL),
-		showSplit(true)
+		toolTip2(toolTip2),
+		splitActionCallback(NULL)
 	{
 
 	}
@@ -150,51 +150,54 @@ public:
 
 GameView::GameView():
 	ui::Window(ui::Point(0, 0), ui::Point(WINDOWW, WINDOWH)),
-	pointQueue(queue<ui::Point>()),
 	isMouseDown(false),
-	ren(NULL),
-	activeBrush(NULL),
-	currentMouse(0, 0),
-	toolIndex(0),
 	zoomEnabled(false),
 	zoomCursorFixed(false),
 	mouseInZoom(false),
-	drawPoint1(0, 0),
-	drawPoint2(0, 0),
-	drawMode(DrawPoints),
-	drawModeReset(false),
-	selectMode(SelectNone),
-	selectPoint1(0, 0),
-	selectPoint2(0, 0),
-	placeSaveThumb(NULL),
-	mousePosition(0, 0),
-	lastOffset(0),
 	drawSnap(false),
-	toolTip(""),
-	infoTip(""),
-	infoTipPresence(0),
-	buttonTipShow(0),
-	isToolTipFadingIn(false),
-	isButtonTipFadingIn(false),
-	toolTipPosition(-1, -1),
-	saveSimulationButtonEnabled(false),
 	shiftBehaviour(false),
 	ctrlBehaviour(false),
 	altBehaviour(false),
 	showHud(true),
 	showDebug(false),
-	introText(2048),
-	introTextMessage(introTextData),
 	wallBrush(false),
 	toolBrush(false),
 	windTool(false),
+	toolIndex(0),
+	currentSaveType(0),
+	lastMenu(-1),
+
+	toolTipPresence(0),
+	toolTip(""),
+	isToolTipFadingIn(false),
+	toolTipPosition(-1, -1),
+	infoTipPresence(0),
+	infoTip(""),
+	buttonTipShow(0),
+	buttonTip(""),
+	isButtonTipFadingIn(false),
+	introText(2048),
+	introTextMessage(introTextData),
+
 	doScreenshot(false),
 	recording(false),
 	screenshotIndex(0),
 	recordingIndex(0),
-	toolTipPresence(0),
-	currentSaveType(0),
-	lastMenu(-1)
+	pointQueue(queue<ui::Point>()),
+	ren(NULL),
+	activeBrush(NULL),
+	saveSimulationButtonEnabled(false),
+	drawMode(DrawPoints),
+	drawModeReset(false),
+	drawPoint1(0, 0),
+	drawPoint2(0, 0),
+	selectMode(SelectNone),
+	selectPoint1(0, 0),
+	selectPoint2(0, 0),
+	currentMouse(0, 0),
+	mousePosition(0, 0),
+	placeSaveThumb(NULL),
+	lastOffset(0)
 {
 
 	int currentX = 1;
@@ -513,6 +516,9 @@ public:
 		case QuickOption::Toggle:
 			button->SetTogglable(true);
 			button->SetToggleState(option->GetToggle());
+			break;
+		default:
+			break;
 		}
 	}
 };
@@ -536,7 +542,7 @@ public:
 
 void GameView::NotifyQuickOptionsChanged(GameModel * sender)
 {
-	for(int i = 0; i < quickOptionButtons.size(); i++)
+	for (size_t i = 0; i < quickOptionButtons.size(); i++)
 	{
 		RemoveComponent(quickOptionButtons[i]);
 		delete quickOptionButtons[i];
@@ -562,20 +568,20 @@ void GameView::NotifyQuickOptionsChanged(GameModel * sender)
 void GameView::NotifyMenuListChanged(GameModel * sender)
 {
 	int currentY = WINDOWH-48;//-(sender->GetMenuList().size()*16);
-	for(int i = 0; i < menuButtons.size(); i++)
+	for (size_t i = 0; i < menuButtons.size(); i++)
 	{
 		RemoveComponent(menuButtons[i]);
 		delete menuButtons[i];
 	}
 	menuButtons.clear();
-	for(int i = 0; i < toolButtons.size(); i++)
+	for (size_t i = 0; i < toolButtons.size(); i++)
 	{
 		RemoveComponent(toolButtons[i]);
 		delete toolButtons[i];
 	}
 	toolButtons.clear();
 	vector<Menu*> menuList = sender->GetMenuList();
-	for (int i = menuList.size()-1; i >= 0; i--)
+	for (int i = (int)menuList.size()-1; i >= 0; i--)
 	{
 		std::string tempString = "";
 		tempString += menuList[i]->GetIcon();
@@ -633,7 +639,7 @@ bool GameView::GetPlacingZoom()
 
 void GameView::NotifyActiveToolsChanged(GameModel * sender)
 {
-	for(int i = 0; i < toolButtons.size(); i++)
+	for (size_t i = 0; i < toolButtons.size(); i++)
 	{
 		Tool * tool = ((ToolAction*)toolButtons[i]->GetActionCallback())->tool;
 		if(sender->GetActiveTool(0) == tool)
@@ -685,9 +691,9 @@ void GameView::NotifyToolListChanged(GameModel * sender)
 {
 	lastOffset = 0;
 	int currentX = WINDOWW-56;
-	for(int i = 0; i < menuButtons.size(); i++)
+	for (size_t i = 0; i < menuButtons.size(); i++)
 	{
-		if(((MenuAction*)menuButtons[i]->GetActionCallback())->menuID==sender->GetActiveMenu())
+		if (((MenuAction*)menuButtons[i]->GetActionCallback())->menuID==sender->GetActiveMenu())
 		{
 			menuButtons[i]->SetToggleState(true);
 		}
@@ -696,14 +702,14 @@ void GameView::NotifyToolListChanged(GameModel * sender)
 			menuButtons[i]->SetToggleState(false);
 		}
 	}
-	for(int i = 0; i < toolButtons.size(); i++)
+	for (size_t i = 0; i < toolButtons.size(); i++)
 	{
 		RemoveComponent(toolButtons[i]);
 		delete toolButtons[i];
 	}
 	toolButtons.clear();
 	vector<Tool*> toolList = sender->GetToolList();
-	for(int i = 0; i < toolList.size(); i++)
+	for (size_t i = 0; i < toolList.size(); i++)
 	{
 		VideoBuffer * tempTexture = toolList[i]->GetTexture(26, 14);
 		ToolButton * tempButton;
@@ -823,9 +829,9 @@ void GameView::NotifyColourPresetsChanged(GameModel * sender)
 
 void GameView::NotifyColourActivePresetChanged(GameModel * sender)
 {
-	for(int i = 0; i < colourPresets.size(); i++)
+	for (size_t i = 0; i < colourPresets.size(); i++)
 	{
-		if(sender->GetActiveColourPreset() == i)
+		if (sender->GetActiveColourPreset() == i)
 		{
 			colourPresets[i]->SetSelectionState(0);	//Primary
 		}

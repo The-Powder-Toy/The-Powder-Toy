@@ -8,14 +8,14 @@ namespace ui {
 
 Button::Button(Point position, Point size, std::string buttonText, std::string toolTip):
 	Component(position, size),
+	Enabled(true),
 	ButtonText(buttonText),
-	isMouseInside(false),
+	toolTip(toolTip),
 	isButtonDown(false),
+	isMouseInside(false),
 	isTogglable(false),
 	toggle(false),
-	actionCallback(NULL),
-	Enabled(true),
-	toolTip(toolTip)
+	actionCallback(NULL)
 {
 	TextPosition();
 }

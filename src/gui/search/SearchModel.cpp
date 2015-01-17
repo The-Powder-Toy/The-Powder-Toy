@@ -4,18 +4,18 @@
 #include "client/Client.h"
 
 SearchModel::SearchModel():
+	loadedSave(NULL),
 	currentSort("best"),
+	currentPage(1),
+	resultCount(0),
 	showOwn(false),
 	showFavourite(false),
-	loadedSave(NULL),
+	showTags(true),
+	saveListLoaded(false),
 	updateSaveListWorking(false),
 	updateSaveListFinished(false),
 	updateTagListWorking(false),
-	updateTagListFinished(false),
-	saveListLoaded(false),
-	currentPage(1),
-	resultCount(0),
-	showTags(true)
+	updateTagListFinished(false)
 {
 }
 

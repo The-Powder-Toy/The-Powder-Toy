@@ -2,8 +2,8 @@
 #include "gui/dialogues/ErrorMessage.h"
 
 OptionsController::OptionsController(GameModel * gModel_, ControllerCallback * callback_):
-	callback(callback_),
 	gModel(gModel_),
+	callback(callback_),
 	HasExited(false)
 {
 	view = new OptionsView();

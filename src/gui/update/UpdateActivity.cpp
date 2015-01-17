@@ -13,7 +13,7 @@
 class UpdateDownloadTask : public Task
 {
 public:
-	UpdateDownloadTask(std::string updateName, UpdateActivity * a) : updateName(updateName), a(a) {};
+	UpdateDownloadTask(std::string updateName, UpdateActivity * a) : a(a), updateName(updateName) {}
 private:
 	UpdateActivity * a;
 	std::string updateName;
