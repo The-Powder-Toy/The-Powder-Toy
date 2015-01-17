@@ -86,6 +86,7 @@ int Element_NTRI::update(UPDATE_FUNC_ARGS)
     case PT_DSTW:
         if (3>(rand()%20))
             sim->part_change_type(under>>8,x,y,PT_WATR);
+		break;
     case PT_URAN:
         sim->part_change_type(under>>8,x,y,PT_PLUT);
         parts[under>>8].tmp = 1;
