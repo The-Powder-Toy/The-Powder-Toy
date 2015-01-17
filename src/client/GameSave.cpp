@@ -772,7 +772,7 @@ void GameSave::readOPS(char * data, int dataLength)
 					fanVelY[blockY+y][blockX+x] = (fanData[j++]-127.0f)/64.0f;
 				}
 
-				if (blockMap[y][x] < 0 || blockMap[y][x] >= UI_WALLCOUNT)
+				if (blockMap[y][x] >= UI_WALLCOUNT)
 					blockMap[y][x] = 0;
 			}
 		}
@@ -825,8 +825,6 @@ void GameSave::readOPS(char * data, int dataLength)
 						fprintf(stderr, "Out of range [%d]: %d %d, [%d, %d], [%d, %d]\n", i, x, y, (unsigned)partsData[i+1], (unsigned)partsData[i+2], (unsigned)partsData[i+3], (unsigned)partsData[i+4]);
 						goto fail;
 					}
-					if (partsData[i] >= PT_NUM)
-						partsData[i] = PT_DMND;	//Replace all invalid elements with diamond
 
 					if (newIndex < 0 || newIndex >= NPART)
 						goto fail;
@@ -1295,7 +1293,7 @@ void GameSave::readPSv(char * data, int dataLength)
 						blockMap[y][x]=WL_ALLOWENERGY;
 				}
 
-				if (blockMap[y][x] < 0 || blockMap[y][x] >= UI_WALLCOUNT)
+				if (blockMap[y][x] >= UI_WALLCOUNT)
 					blockMap[y][x] = 0;
 			}
 

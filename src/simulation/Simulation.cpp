@@ -81,8 +81,10 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 		x = int(tempPart.x + 0.5f);
 		y = int(tempPart.y + 0.5f);
 
-		if(tempPart.type >= 0 && tempPart.type < PT_NUM)
+		if (tempPart.type >= 0 && tempPart.type < PT_NUM)
 			tempPart.type = partMap[tempPart.type];
+		else
+			continue;
 
 		if ((player.spwn == 1 && tempPart.type==PT_STKM) || (player2.spwn == 1 && tempPart.type==PT_STKM2))
 			continue;

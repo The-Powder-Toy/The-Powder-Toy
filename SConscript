@@ -68,7 +68,7 @@ AddSconsOption('opengl-renderer', False, False, "Build with OpenGL renderer supp
 AddSconsOption('renderer', False, False, "Build the save renderer.")
 
 AddSconsOption('wall', False, False, "Error on all warnings.")
-AddSconsOption('no-warnings', True, False, "Disable all compiler warnings (default).")
+AddSconsOption('no-warnings', False, False, "Disable all compiler warnings.")
 AddSconsOption('nolua', False, False, "Disable Lua.")
 AddSconsOption('nofft', False, False, "Disable FFT.")
 AddSconsOption("output", False, True, "Executable output name.")

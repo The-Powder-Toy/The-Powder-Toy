@@ -948,8 +948,8 @@ int main(int argc, char * argv[])
 			{
 				std::string saveIdPart = "";
 				int saveId;
-				unsigned int hashPos = ptsaveArg.find('#');
-				if(hashPos != std::string::npos)
+				size_t hashPos = ptsaveArg.find('#');
+				if (hashPos != std::string::npos)
 				{
 					saveIdPart = ptsaveArg.substr(7, hashPos-7);
 				}
@@ -957,7 +957,7 @@ int main(int argc, char * argv[])
 				{
 					saveIdPart = ptsaveArg.substr(7);
 				}
-				if(saveIdPart.length())
+				if (saveIdPart.length())
 				{
 #ifdef DEBUG
 					std::cout << "Got Ptsave: id: " <<  saveIdPart << std::endl;
@@ -967,7 +967,7 @@ int main(int argc, char * argv[])
 						throw std::runtime_error("Invalid Save ID");
 
 					SaveInfo * newSave = Client::Ref().GetSave(saveId, 0);
-					if(!newSave)
+					if (!newSave)
 						throw std::runtime_error("Could not load save");
 					GameSave * newGameSave = new GameSave(Client::Ref().GetSaveData(saveId, 0));
 					newSave->SetGameSave(newGameSave);

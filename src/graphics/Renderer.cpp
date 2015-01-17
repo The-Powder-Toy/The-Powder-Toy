@@ -201,7 +201,7 @@ void Renderer::clearScreen(float alpha)
 #endif
 }
 #ifdef OGLR
-void Renderer::checkShader(GLuint shader, char * shname)
+void Renderer::checkShader(GLuint shader, const char * shname)
 {
 	GLint status;
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
@@ -214,7 +214,7 @@ void Renderer::checkShader(GLuint shader, char * shname)
 		exit(1);
 	}
 }
-void Renderer::checkProgram(GLuint program, char * progname)
+void Renderer::checkProgram(GLuint program, const char * progname)
 {
 	GLint status;
 	glGetProgramiv(program, GL_LINK_STATUS, &status);
@@ -706,7 +706,7 @@ void Renderer::DrawWalls()
 			if (bmap[y][x])
 			{
 				wt = bmap[y][x];
-				if (wt<0 || wt>=UI_WALLCOUNT)
+				if (wt >= UI_WALLCOUNT)
 					continue;
 				pc = wtypes[wt].colour;
 				gc = wtypes[wt].eglow;

@@ -99,8 +99,8 @@ public:
 	void SetSample(int x, int y);
 
 #ifdef OGLR
-	void checkShader(GLuint shader, char * shname);
-	void checkProgram(GLuint program, char * progname);
+	void checkShader(GLuint shader, const char * shname);
+	void checkProgram(GLuint program, const char * progname);
 	void loadShaders();
 	GLuint vidBuf,textTexture;
 	GLint prevFbo;
