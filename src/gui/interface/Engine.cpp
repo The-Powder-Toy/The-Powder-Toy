@@ -1,6 +1,7 @@
 #include <iostream>
 #include <stack>
 #include <cstdio>
+#include <cmath>
 
 #include "Config.h"
 #include "Misc.h"
@@ -76,7 +77,7 @@ void Engine::Exit()
 
 void Engine::ShowWindow(Window * window)
 {
-	windowOpenState = 0.0f;
+	windowOpenState = 0;
 	if(window->Position.X==-1)
 	{
 		window->Position.X = (width_-window->Size.X)/2;
@@ -182,22 +183,6 @@ void Engine::Tick()
 
 
 	lastTick = gettime();
-	if(windowOpenState<1.0f)
-	{
-		if(lastBuffer)
-		{
-			pixel * vid = g->vid;
-			g->vid = lastBuffer;
-			g->fillrect(0, 0, width_, height_, 0, 0, 0, 5);
-			g->vid = vid;
-
-		}
-		/*if(windowTargetPosition.Y < state_->Position.Y)
-		{
-			state_->Position.Y += windowTargetPosition.Y/20;
-		}*/
-		windowOpenState += 0.05f;//*dt;
-	}
 
 	/*if(statequeued_ != NULL)
 	{
@@ -223,6 +208,9 @@ void Engine::Draw()
 		g->Clear();
 #ifndef OGLI
 		memcpy(g->vid, lastBuffer, (width_ * height_) * PIXELSIZE);
+		if(windowOpenState < 20)
+			windowOpenState++;
+		g->fillrect(0, 0, width_, height_, 0, 0, 0, 255-std::pow(.98, windowOpenState)*255);
 #endif
 	}
 	else

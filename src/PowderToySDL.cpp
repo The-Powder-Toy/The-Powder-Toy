@@ -987,11 +987,15 @@ int main(int argc, char * argv[])
 			}
 		}
 
+		//initial mouse coords
+		int sdl_x, sdl_y;
+		SDL_GetMouseState(&sdl_x, &sdl_y);
+		engine->onMouseMove(sdl_x*inputScale, sdl_y*inputScale);
 		EngineProcess();
 		
-	#ifdef WIN
+#ifdef WIN
 		SaveWindowPosition();
-	#endif
+#endif
 
 #if !defined(DEBUG) && !defined(_DEBUG)
 	}
