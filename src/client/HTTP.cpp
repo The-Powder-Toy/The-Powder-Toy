@@ -936,7 +936,7 @@ retry:
 		memset(map, 0, 62*sizeof(int));
 		for (i=0; names[i]; i++)
 		{
-			for (size_t j=0; j<plens[i]-blen; j++)
+			for (ssize_t j=0; j<(ssize_t)plens[i]-blen; j++)
 				if (!blen || !memcmp(parts[i]+j, boundary, blen))
 				{
 					ch = parts[i][j+blen];
