@@ -573,12 +573,11 @@ void EventProcess(SDL_Event event)
 
 void EngineProcess()
 {
-	int frameStart = SDL_GetTicks();
-	float frameTime;
-	float frameTimeAvg = 0.0f, correctedFrameTimeAvg = 0.0f;
+	double frameTimeAvg = 0.0f, correctedFrameTimeAvg = 0.0f;
 	SDL_Event event;
 	while(engine->Running())
 	{
+		int frameStart = SDL_GetTicks();
 		if(engine->Broken()) { engine->UnBreak(); break; }
 		event.type = 0;
 		while (SDL_PollEvent(&event))
@@ -594,7 +593,7 @@ void EngineProcess()
 		if(scale != engine->Scale || fullscreen != engine->Fullscreen)
 		{
 			sdl_scrn = SDLSetScreen(engine->Scale, engine->Fullscreen);
-			inputScale = 1.0f/float(scale);
+			inputScale = 1.0f/(float)scale;
 		}
 
 #ifdef OGLI
@@ -606,23 +605,19 @@ void EngineProcess()
 			blit(engine->g->vid);
 #endif
 
-		frameTime = SDL_GetTicks() - frameStart;
-		frameTimeAvg = (frameTimeAvg*(1.0f-0.2f)) + (0.2f*frameTime);
-		if(ui::Engine::Ref().FpsLimit > 2.0f)
+		int frameTime = SDL_GetTicks() - frameStart;
+		frameTimeAvg = frameTimeAvg * 0.8 + frameTime * 0.2;
+		int fpsLimit = ui::Engine::Ref().FpsLimit;
+		if(fpsLimit > 2)
 		{
-			float targetFrameTime = 1000.0f/((float)ui::Engine::Ref().FpsLimit);
-			if(targetFrameTime - frameTimeAvg > 0)
-			{
-				SDL_Delay((targetFrameTime - frameTimeAvg) + 0.5f);
-				frameTime = SDL_GetTicks() - frameStart;//+= (int)(targetFrameTime - frameTimeAvg);
-			}
+			double offset = 1000.0 / fpsLimit - frameTimeAvg;
+			if(offset > 0)
+				SDL_Delay(offset + 0.5);
 		}
-		correctedFrameTimeAvg = (correctedFrameTimeAvg*(1.0f-0.05f)) + (0.05f*frameTime);
-		fps = 1000.0f/correctedFrameTimeAvg;
-		engine->SetFps(fps);
-		frameStart = SDL_GetTicks();
-
-		if(frameStart-lastTick>250)
+		int correctedFrameTime = SDL_GetTicks() - frameStart;
+		correctedFrameTimeAvg = correctedFrameTimeAvg * 0.95 + correctedFrameTime * 0.05;
+		engine->SetFps(1000.0 / correctedFrameTimeAvg);
+		if(frameStart - lastTick > 1000)
 		{
 			//Run client tick every second
 			lastTick = frameStart;
