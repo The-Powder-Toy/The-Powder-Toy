@@ -70,6 +70,7 @@ AddSconsOption('renderer', False, False, "Build the save renderer.")
 AddSconsOption('wall', False, False, "Error on all warnings.")
 AddSconsOption('no-warnings', False, False, "Disable all compiler warnings.")
 AddSconsOption('nolua', False, False, "Disable Lua.")
+AddSconsOption('luajit', False, False, "Enable LuaJIT.")
 AddSconsOption('nofft', False, False, "Disable FFT.")
 AddSconsOption("output", False, True, "Executable output name.")
 
@@ -252,12 +253,17 @@ def findLibs(env, conf):
 	if not GetOption('nolua') and not GetOption('renderer'):
 		#Look for Lua
 		luaver = "lua5.1"
-		if not conf.CheckLib(['lua5.1', 'lua-5.1', 'lua51', 'lua']):
-			if conf.CheckLib(['lua5.2', 'lua-5.2', 'lua52']):
-				env.Append(CPPDEFINES=["LUA_COMPAT_ALL"])
-				luaver = "lua5.2"
-			elif platform != "Darwin" or not conf.CheckFramework("Lua"):
-				FatalError("lua5.1 development library not found or not installed")
+		if GetOption('luajit'):
+			if not conf.CheckLib(['luajit-5.1', 'luajit']):
+				FatalError("luajit development library not found or not installed")
+			luaver = "luajit"
+		else:
+			if not conf.CheckLib(['lua5.1', 'lua-5.1', 'lua51', 'lua']):
+				if conf.CheckLib(['lua5.2', 'lua-5.2', 'lua52']):
+					env.Append(CPPDEFINES=["LUA_COMPAT_ALL"])
+					luaver = "lua5.2"
+				elif platform != "Darwin" or not conf.CheckFramework("Lua"):
+					FatalError("lua5.1 development library not found or not installed")
 		if platform == "Linux":
 			try:
 				env.ParseConfig("pkg-config --cflags {0}".format(luaver))
