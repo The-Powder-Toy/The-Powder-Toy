@@ -882,7 +882,9 @@ void GameController::Update()
 		gameView->SetSample(gameModel->GetSimulation()->GetSample(pos.X, pos.Y));
 
 	Simulation * sim = gameModel->GetSimulation();
-	sim->Update();
+	sim->UpdateSim();
+	if (!sim->sys_pause || sim->framerender)
+		sim->UpdateParticles(0, NPART);
 
 	//if either STKM or STK2 isn't out, reset it's selected element. Defaults to PT_DUST unless right selected is something else
 	//This won't run if the stickmen dies in a frame, since it respawns instantly
@@ -1412,6 +1414,51 @@ void GameController::ReloadSim()
 		gameModel->SetSaveFile(gameModel->GetSaveFile());
 	}
 }
+
+#ifdef PARTICLEDEBUG
+void GameController::ParticleDebug(int mode, int x, int y)
+{
+	Simulation *sim = gameModel->GetSimulation();
+	int debug_currentParticle = sim->debug_currentParticle;
+	int i;
+	std::stringstream logmessage;
+
+	if (mode == 0)
+	{
+		if (!sim->NUM_PARTS)
+			return;
+		i = debug_currentParticle;
+		while (i < NPART && !sim->parts[i].type)
+			i++;
+		if (i == NPART)
+			logmessage << "End of particles reached, updated sim";
+		else
+			logmessage << "Updated particle #" << i;
+	}
+	else if (mode == 1)
+	{
+		if (x < 0 || x >= XRES || y < 0 || y >= YRES || !(i = (sim->pmap[y][x]>>8)) || i < debug_currentParticle)
+		{
+			i = NPART;
+			logmessage << "Updated particles from #" << debug_currentParticle << " to end, updated sim";
+		}
+		else
+			logmessage << "Updated particles #" << debug_currentParticle << " through #" << i;
+	}
+	gameModel->Log(logmessage.str());
+
+	sim->UpdateParticles(debug_currentParticle, i);
+	if (i < NPART-1)
+		sim->debug_currentParticle = i+1;
+	else
+	{
+		sim->framerender = 1;
+		sim->UpdateSim();
+		sim->framerender = 0;
+		sim->debug_currentParticle = 0;
+	}
+}
+#endif
 
 std::string GameController::ElementResolve(int type, int ctype)
 {

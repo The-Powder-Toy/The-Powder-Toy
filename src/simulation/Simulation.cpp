@@ -3234,7 +3234,7 @@ void Simulation::UpdateParticles(int start, int end)
 	bool transitionOccurred;
 
 	//the main particle loop function, goes over all particles.
-	for (i = start; i <= end; i++)
+	for (i = start; i <= end && i <= parts_lastActiveIndex; i++)
 		if (parts[i].type)
 		{
 			t = parts[i].type;
@@ -4393,6 +4393,10 @@ killed:
 movedone:
 			continue;
 		}
+
+	//'f' was pressed (single frame)
+	if (framerender)
+		framerender--;
 }
 
 int Simulation::GetParticleType(std::string type)
@@ -4580,8 +4584,8 @@ void Simulation::CheckStacking()
 	}
 }
 
-//updates pmap, gol, and some other simulation stuff (then calls UpdateParticles)
-void Simulation::Update()
+//updates pmap, gol, and some other simulation stuff (but not particles)
+void Simulation::UpdateSim()
 {
 	int i, x, y, t;
 	int lastPartUsed = 0;
@@ -4706,8 +4710,9 @@ void Simulation::Update()
 		else parts[lastPartUnused].life = parts_lastActiveIndex+1;
 	}
 	parts_lastActiveIndex = lastPartUsed;
-	if (!sys_pause||framerender)
+	if  (!sys_pause || framerender)
 	{
+		// decrease wall conduction, make walls block air and ambient heat
 		for (y=0; y<YRES/CELL; y++)
 		{
 			for (x=0; x<XRES/CELL; x++)
@@ -4718,16 +4723,15 @@ void Simulation::Update()
 				air->bmap_blockairh[y][x] = (bmap[y][x]==WL_WALL || bmap[y][x]==WL_WALLELEC || bmap[y][x]==WL_BLOCKAIR || bmap[y][x]==WL_GRAV || (bmap[y][x]==WL_EWALL && !emap[y][x])) ? 0x8:0;
 			}
 		}
-	}
 
-	if (!sys_pause||framerender)
-	{
+		// check for stacking and create BHOL if found
 		if (force_stacking_check || (rand()%10)==0)
 		{
 			CheckStacking();
 		}
 
-		if (elementCount[PT_LOVE] > 0 || elementCount[PT_LOLZ] > 0) //LOVE and LOLZ element handling
+		// LOVE and LOLZ element handling
+		if (elementCount[PT_LOVE] > 0 || elementCount[PT_LOLZ] > 0)
 		{
 			int nx, nnx, ny, nny, r, rt;
 			for (ny=0; ny<YRES-4; ny++)
@@ -4796,7 +4800,7 @@ void Simulation::Update()
 			}
 		}
 
-		//wire!
+		// make WIRE work
 		if(elementCount[PT_WIRE] > 0)
 		{
 			for (int nx = 0; nx < XRES; nx++)
@@ -4812,6 +4816,7 @@ void Simulation::Update()
 			}
 		}
 
+		// update PPIP tmp?
 		if (Element_PPIP::ppip_changed)
 		{
 			for (i=0; i<=parts_lastActiveIndex; i++)
@@ -4825,13 +4830,15 @@ void Simulation::Update()
 			Element_PPIP::ppip_changed = 0;
 		}
 
-		//game of life!
-		if (elementCount[PT_LIFE]>0 && ++CGOL>=GSPEED)//GSPEED is frames per generation
+		// Simulate GoL
+		// GSPEED is frames per generation
+		if (elementCount[PT_LIFE]>0 && ++CGOL>=GSPEED)
 		{
 			SimulateGoL();
 		}
 
-		if (ISWIRE>0)//wifi channel reseting
+		// wifi channel reseting
+		if (ISWIRE>0)
 		{
 			for (int q = 0; q < (int)(MAX_TEMP-73.15f)/100+2; q++)
 			{
@@ -4841,16 +4848,14 @@ void Simulation::Update()
 			ISWIRE--;
 		}
 
+		// spawn STKM and STK2
 		if (!player.spwn && player.spawnID >= 0)
 			create_part(-1, (int)parts[player.spawnID].x, (int)parts[player.spawnID].y, PT_STKM);
 		else if (!player2.spwn && player2.spawnID >= 0)
 			create_part(-1, (int)parts[player2.spawnID].x, (int)parts[player2.spawnID].y, PT_STKM2);
 
-		UpdateParticles(0, parts_lastActiveIndex);
+		// particle update happens right after this function (called separately)
 	}
-
-	if(framerender)
-		framerender--;
 }
 
 Simulation::~Simulation()
@@ -4865,6 +4870,7 @@ Simulation::~Simulation()
 Simulation::Simulation():
 	replaceModeSelected(0),
 	replaceModeFlags(0),
+	debug_currentParticle(0),
 	ISWIRE(0),
 	force_stacking_check(0),
 	emp_decor(0),

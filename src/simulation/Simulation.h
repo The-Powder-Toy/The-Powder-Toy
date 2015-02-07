@@ -53,6 +53,7 @@ public:
 	int replaceModeFlags;
 
 	char can_move[PT_NUM][PT_NUM];
+	int debug_currentParticle;
 	int parts_lastActiveIndex;
 	int pfree;
 	int NUM_PARTS;
@@ -154,7 +155,7 @@ public:
 	void UpdateParticles(int start, int end);
 	void SimulateGoL();
 	void CheckStacking();
-	void Update();
+	void UpdateSim();
 	void rotate_area(int area_x, int area_y, int area_w, int area_h, int invert);
 	void clear_area(int area_x, int area_y, int area_w, int area_h);
 
