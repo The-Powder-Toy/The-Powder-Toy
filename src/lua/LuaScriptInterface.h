@@ -99,7 +99,7 @@ class LuaScriptInterface: public CommandInterface
 	static int simulation_pmap(lua_State * l);
 	static int simulation_photons(lua_State * l);
 	static int simulation_neighbours(lua_State * l);
-	static int simulation_update_particles(lua_State * l);
+	static int simulation_framerender(lua_State * l);
 
 	//Renderer
 	void initRendererAPI();

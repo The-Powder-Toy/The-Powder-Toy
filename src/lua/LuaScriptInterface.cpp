@@ -591,7 +591,7 @@ void LuaScriptInterface::initSimulationAPI()
 		{"photons", simulation_photons},
 		{"neighbours", simulation_neighbours},
 		{"neighbors", simulation_neighbours},
-		{"updateParticles", simulation_update_particles},
+		{"framerender", simulation_framerender},
 		{NULL, NULL}
 	};
 	luaL_register(l, "simulation", simulationAPIMethods);
@@ -1780,13 +1780,17 @@ int LuaScriptInterface::simulation_neighbours(lua_State * l)
 	return 1;
 }
 
-int LuaScriptInterface::simulation_update_particles(lua_State * l)
+int LuaScriptInterface::simulation_framerender(lua_State * l)
 {
-	int start = luaL_optint(l, 1, 0);
-	int end  = luaL_optint(l, 2, luacon_sim->parts_lastActiveIndex);
-	if (start < 0 || end >= NPART || start > end)
-		return luaL_error(l, "Invalid start / end positions: (%d, %d)", start, end);
-	luacon_sim->UpdateParticles(start, end);
+	if (lua_gettop(l) == 0)
+	{
+		lua_pushinteger(l, luacon_sim->framerender);
+		return 1;
+	}
+	int frames = luaL_checkinteger(l, 1);
+	if (frames < 0)
+		return luaL_error(l, "Can't simulate a negative number of frames");
+	luacon_sim->framerender = frames;
 	return 0;
 }
 
