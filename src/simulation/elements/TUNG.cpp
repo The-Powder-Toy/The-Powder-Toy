@@ -102,6 +102,7 @@ int Element_TUNG::update(UPDATE_FUNC_ARGS)
 	{
 		sim->part_change_type(i,x,y,PT_BRMT);
 		parts[i].ctype = PT_TUNG;
+		return 1;
 	}
 	return 0;
 }

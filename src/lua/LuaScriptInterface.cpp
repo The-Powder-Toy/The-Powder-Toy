@@ -2381,19 +2381,21 @@ int LuaScriptInterface::elements_property(lua_State * l)
 		{
 			if(lua_type(l, 3) == LUA_TFUNCTION)
 			{
-				lua_pushvalue(l, 3);
-				lua_el_func[id] = luaL_ref(l, LUA_REGISTRYINDEX);
 				if (args > 3)
 				{
 					luaL_checktype(l, 4, LUA_TNUMBER);
 					int replace = lua_tointeger(l, 4);
-					if (replace == 1)
-						lua_el_mode[id] = 2;
+					if (replace == 2)
+						lua_el_mode[id] = 3; //update before
+					else if (replace == 1)
+						lua_el_mode[id] = 2; //replace
 					else
-						lua_el_mode[id] = 1;
+						lua_el_mode[id] = 1; //update after
 				}
 				else
 					lua_el_mode[id] = 1;
+				lua_pushvalue(l, 3);
+				lua_el_func[id] = luaL_ref(l, LUA_REGISTRYINDEX);
 			}
 			else if(lua_type(l, 3) == LUA_TBOOLEAN && !lua_toboolean(l, 3))
 			{

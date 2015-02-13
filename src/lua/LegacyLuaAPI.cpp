@@ -699,10 +699,12 @@ int luatpt_element_func(lua_State *l)
 		if(element > 0 && element < PT_NUM)
 		{
 			lua_el_func[element] = function;
-			if(replace)
-				lua_el_mode[element] = 2;
+			if (replace == 2)
+				lua_el_mode[element] = 3; //update before
+			else if (replace)
+				lua_el_mode[element] = 2; //replace
 			else
-				lua_el_mode[element] = 1;
+				lua_el_mode[element] = 1; //update after
 			return 0;
 		}
 		else
