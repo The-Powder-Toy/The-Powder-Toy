@@ -339,11 +339,6 @@ void SearchView::NotifyShowOwnChanged(SearchModel * sender)
 		unpublishSelected->Enabled = true;
 		removeSelected->Enabled = true;
 	}
-	else if(sender->GetShowFavourite())
-	{
-		unpublishSelected->Enabled = false;
-		removeSelected->Enabled = false;
-	}
 	else
 	{
 		unpublishSelected->Enabled = false;

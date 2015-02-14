@@ -308,7 +308,7 @@ RequestBroker::Request::~Request()
 		delete (*iter);
 		iter++;
 	}
-	Children.empty();
+	Children.clear();
 }
 void RequestBroker::Request::Cleanup()
 {
