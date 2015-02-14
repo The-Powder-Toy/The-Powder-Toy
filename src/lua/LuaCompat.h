@@ -10,7 +10,7 @@ extern "C"
 #include "lua.h"
 #include "lauxlib.h"
 #include "lualib.h"
-#elif LUA_VERSION_NUM >= 502
+#elif defined(LUA_COMPAT_ALL)
 #include "lua5.2/lua.h"
 #include "lua5.2/lauxlib.h"
 #include "lua5.2/lualib.h"
