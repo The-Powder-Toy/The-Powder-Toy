@@ -176,14 +176,10 @@ GameModel::~GameModel()
 	}
 	delete sim;
 	delete ren;
-	if(placeSave)
-		delete placeSave;
-	if(clipboard)
-		delete clipboard;
-	if(currentSave)
-		delete currentSave;
-	if(currentFile)
-		delete currentFile;
+	delete placeSave;
+	delete clipboard;
+	delete currentSave;
+	delete currentFile;
 	//if(activeTools)
 	//	delete[] activeTools;
 }
@@ -556,15 +552,13 @@ void GameModel::SetSave(SaveInfo * newSave)
 {
 	if(currentSave != newSave)
 	{
-		if(currentSave)
-			delete currentSave;
+		delete currentSave;
 		if(newSave == NULL)
 			currentSave = NULL;
 		else
 			currentSave = new SaveInfo(*newSave);
 	}
-	if(currentFile)
-		delete currentFile;
+	delete currentFile;
 	currentFile = NULL;
 
 	if(currentSave && currentSave->GetGameSave())
@@ -599,15 +593,13 @@ void GameModel::SetSaveFile(SaveFile * newSave)
 {
 	if(currentFile != newSave)
 	{
-		if(currentFile)
-			delete currentFile;
+		delete currentFile;
 		if(newSave == NULL)
 			currentFile = NULL;
 		else
 			currentFile = new SaveFile(*newSave);
 	}
-	if (currentSave)
-		delete currentSave;
+	delete currentSave;
 	currentSave = NULL;
 
 	if(newSave && newSave->GetGameSave())
@@ -907,8 +899,7 @@ void GameModel::SetPlaceSave(GameSave * save)
 {
 	if(save != placeSave)
 	{
-		if(placeSave)
-			delete placeSave;
+		delete placeSave;
 		if(save)
 			placeSave = new GameSave(*save);
 		else
@@ -919,8 +910,7 @@ void GameModel::SetPlaceSave(GameSave * save)
 
 void GameModel::SetClipboard(GameSave * save)
 {
-	if(clipboard)
-		delete clipboard;
+	delete clipboard;
 	clipboard = save;
 }
 

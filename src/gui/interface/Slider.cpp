@@ -68,8 +68,7 @@ void Slider::SetColour(Colour col1, Colour col2)
 {
 	pixel pix[2] = {(pixel)PIXRGB(col1.Red, col1.Green, col1.Blue), (pixel)PIXRGB(col2.Red, col2.Green, col2.Blue)};
 	float fl[2] = {0.0f, 1.0f};
-	if(bgGradient)
-		free(bgGradient);
+	free(bgGradient);
 	this->col1 = col1;
 	this->col2 = col2;
 	bgGradient = (unsigned char*)Graphics::GenerateGradient(pix, fl, 2, Size.X-7);

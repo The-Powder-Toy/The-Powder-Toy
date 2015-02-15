@@ -552,8 +552,7 @@ int http_async_req_status(void *ctx)
 			{
 				cx->tptr = 0;
 				cx->tlen = 0;
-				if (cx->tbuf)
-					free(cx->tbuf);
+				free(cx->tbuf);
 				cx->state = HTS_RECV;
 			}
 			cx->last = now;
@@ -679,11 +678,9 @@ void http_async_req_close(void *ctx)
 	{
 		cx->keep = 1;
 		tmp = http_async_req_stop(ctx, NULL, NULL);
-		if (tmp)
-			free(tmp);
+		free(tmp);
 	}
-	if (cx->fdhost)
-		free(cx->fdhost);
+	free(cx->fdhost);
 	PCLOSE(cx->fd);
 	free(ctx);
 }
@@ -1083,8 +1080,7 @@ retry:
 	return http_async_req_stop(ctx, ret, len);
 
 fail:
-	if (data)
-		free(data);
+	free(data);
 	if (own_plen)
 		free(plens);
 	if (ret)
@@ -1273,8 +1269,7 @@ retry:
 	return ctx;
 
 fail:
-	if (data)
-		free(data);
+	free(data);
 	if (own_plen)
 		free(plens);
 	//if (ret)
