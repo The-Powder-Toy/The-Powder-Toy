@@ -282,10 +282,12 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 			//Move particles
 			for(int j = 0; j < currentPos; j++) {
 				int jP = tempParts[j];
-				sim->pmap[(int)(sim->parts[jP].y + 0.5f)][(int)(sim->parts[jP].x + 0.5f)] = 0;
-				sim->parts[jP].x += (float)((-directionX)*amount);
-				sim->parts[jP].y += (float)((-directionY)*amount);
-				sim->pmap[(int)(sim->parts[jP].y + 0.5f)][(int)(sim->parts[jP].x + 0.5f)] = sim->parts[jP].type|(jP<<8);
+				int srcX = (int)(sim->parts[jP].x + 0.5f), srcY = (int)(sim->parts[jP].y + 0.5f);
+				int destX = srcX-directionX*amount, destY = srcY-directionY*amount;
+				sim->pmap[srcY][srcX] = 0;
+				sim->parts[jP].x = destX;
+				sim->parts[jP].y = destY;
+				sim->pmap[destY][destX] = sim->parts[jP].type|(jP<<8);
 			}
 			return amount;
 		}
@@ -304,10 +306,12 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 				}
 				if(!possibleMovement)
 					continue;
-				sim->pmap[(int)(sim->parts[jP].y + 0.5f)][(int)(sim->parts[jP].x + 0.5f)] = 0;
-				sim->parts[jP].x += (float)(directionX*possibleMovement);
-				sim->parts[jP].y += (float)(directionY*possibleMovement);
-				sim->pmap[(int)(sim->parts[jP].y + 0.5f)][(int)(sim->parts[jP].x + 0.5f)] = sim->parts[jP].type|(jP<<8);
+				int srcX = (int)(sim->parts[jP].x + 0.5f), srcY = (int)(sim->parts[jP].y + 0.5f);
+				int destX = srcX+directionX*possibleMovement, destY = srcY+directionY*possibleMovement;
+				sim->pmap[srcY][srcX] = 0;
+				sim->parts[jP].x = destX;
+				sim->parts[jP].y = destY;
+				sim->pmap[destY][destX] = sim->parts[jP].type|(jP<<8);
 			}
 			return possibleMovement;
 		}
