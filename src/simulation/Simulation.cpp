@@ -3618,7 +3618,9 @@ void Simulation::UpdateParticles(int start, int end)
 									s = 0;
 								else if (parts[i].ctype==PT_TUNG)
 								{
-									if (pt>=3695.0)
+									// TUNG does its own melting in its update function, so HighTemperatureTransition is not LAVA so it won't be handled by the code for HighTemperatureTransition==PT_LAVA below
+									// However, the threshold is stored in HighTemperature to allow it to be changed from Lua
+									if (pt>=elements[parts[i].ctype].HighTemperature)
 										s = 0;
 								}
 								else if (elements[parts[i].ctype].HighTemperatureTransition == PT_LAVA)
