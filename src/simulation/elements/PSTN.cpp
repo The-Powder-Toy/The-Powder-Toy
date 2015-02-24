@@ -117,10 +117,7 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 								}
 								else
 								{
-									if (parts[r>>8].temp>283.15)
-										pistonCount += (int)((parts[r>>8].temp-268.15)/10);// how many tens of degrees above 0 C, rounded to nearest 10
-									else
-										pistonCount++;
+									pistonCount += floor((parts[r>>8].temp-268.15)/10);// How many tens of degrees above 0 C, rounded to nearest ten degrees. Can be negative.
 								}
 							} else {
 								pistonEndX = x+nxx;
@@ -154,7 +151,7 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 							} else if(state == PISTON_RETRACT) {
 								if(pistonCount > armCount)
 									pistonCount = armCount;
-								if(armCount) {
+								if(armCount && pistonCount > 0) {
 									MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY, maxSize, pistonCount, true, parts[i].ctype, true);
 									movedPiston = true;
 								}
