@@ -20,7 +20,7 @@
 class Snapshot;
 class SimTool;
 class Brush;
-struct SimulationSample;
+class SimulationSample;
 struct matrix2d;
 struct vector2d;
 

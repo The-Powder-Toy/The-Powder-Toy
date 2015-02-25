@@ -72,6 +72,11 @@
 #define PCLOSE close
 #endif
 
+#ifdef _MSC_VER
+#include <BaseTsd.h> //for SSIZE_T
+typedef SSIZE_T ssize_t;
+#endif
+
 char * userAgent;
 static int http_up = 0;
 static long http_timeout = 15;
