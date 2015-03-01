@@ -124,7 +124,7 @@ ValueType TPTScriptInterface::testType(std::string word)
 			return TypeString;
 }
 
-float TPTScriptInterface::parseNumber(char * stringData)
+int TPTScriptInterface::parseNumber(char * stringData)
 {
 	char cc;
 	int base = 10;
