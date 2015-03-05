@@ -180,13 +180,13 @@ def CheckBit(context):
 	program = """#include <stdlib.h>
 	#include <stdio.h>
 	int main() {
-	    printf("%d", (int)sizeof(size_t));
-	    return 0;
+		printf("%d", (int)sizeof(size_t));
+		return 0;
 	}
 	"""
 	ret = context.TryCompile(program, '.c')
 	if ret == 0:
-	    return False
+		return False
 	ret = context.TryRun(program, '.c')
 	if ret[1] == '':
 		return False
@@ -268,15 +268,16 @@ def findLibs(env, conf):
 			if not conf.CheckLib(['lua5.1', 'lua-5.1', 'lua51', 'lua']):
 				if platform != "Darwin" or not conf.CheckFramework("Lua"):
 					FatalError("lua5.1 development library not found or not installed")
-
+		foundpkg = False
 		if platform == "Linux":
 			try:
 				env.ParseConfig("pkg-config --cflags {0}".format(luaver))
 				env.ParseConfig("pkg-config --libs {0}".format(luaver))
 				env.Append(CPPDEFINES=["LUA_R_INCL"])
+				foundpkg = True
 			except:
 				pass
-		else:
+		if not foundpkg:
 			#Look for lua.h
 			foundheader = False
 			if GetOption('luajit'):
