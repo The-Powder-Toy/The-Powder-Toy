@@ -3563,7 +3563,7 @@ void Simulation::UpdateParticles(int start, int end)
 						{
 							if (parts[i].ctype == PT_TUNG)
 							{
-								if (ctemph < 3695.0)
+								if (ctemph < elements[parts[i].ctype].HighTemperature)
 									s = 0;
 								else
 								{
