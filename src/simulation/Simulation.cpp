@@ -356,27 +356,27 @@ void Simulation::Restore(const Snapshot & snap)
 
 void Simulation::clear_area(int area_x, int area_y, int area_w, int area_h)
 {
-	int i = 0;
-	for (i = 0; i <= parts_lastActiveIndex; i++) {
+	float fx = area_x-.5f, fy = area_y-.5f;
+	for (int i = 0; i <= parts_lastActiveIndex; i++)
+	{
 		if (parts[i].type)
-			if (parts[i].x >= area_x && parts[i].x <= area_x + area_w && parts[i].y >= area_y && parts[i].y <= area_y + area_h)
+			if (parts[i].x >= fx && parts[i].x <= fx+area_w+1 && parts[i].y >= fy && parts[i].y <= fy+area_h+1)
 				kill_part(i);
 	}
-	int cx = 0;
-	int cy = 0;
-	for (cy=0; cy<=area_h; cy++)
+	int cx1 = area_x/CELL, cy1 = area_y/CELL, cx2 = (area_x+area_w)/CELL, cy2 = (area_y+area_h)/CELL;
+	for (int y = cy1; y <= cy2; y++)
 	{
-		for (cx=0; cx<=area_w; cx++)
+		for (int x = cx1; x <= cx2; x++)
 		{
-			if(bmap[(cy+area_y)/CELL][(cx+area_x)/CELL] == WL_GRAV)
+			if (bmap[y][x] == WL_GRAV)
 				gravWallChanged = true;
-			bmap[(cy+area_y)/CELL][(cx+area_x)/CELL] = 0;
-			emap[(cy+area_y)/CELL][(cx+area_x)/CELL] = 0;
+			bmap[y][x] = 0;
+			emap[y][x] = 0;
 		}
 	}
-	for(int i = signs.size()-1; i >= 0; i--)
+	for( int i = signs.size()-1; i >= 0; i--)
 	{
-		if(signs[i].text.length() && signs[i].x >= area_x && signs[i].y >= area_y && signs[i].x <= area_x+area_w && signs[i].y <= area_y+area_h)
+		if (signs[i].text.length() && signs[i].x >= area_x && signs[i].y >= area_y && signs[i].x <= area_x+area_w && signs[i].y <= area_y+area_h)
 		{
 			signs.erase(signs.begin()+i);
 		}

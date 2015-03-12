@@ -567,6 +567,7 @@ void LuaScriptInterface::initSimulationAPI()
 		{"decoColor", simulation_decoColor},
 		{"decoColour", simulation_decoColor},
 		{"clearSim", simulation_clearSim},
+		{"clearRect", simulation_clearRect},
 		{"resetTemp", simulation_resetTemp},
 		{"resetPressure", simulation_resetPressure},
 		{"saveStamp", simulation_saveStamp},
@@ -1395,6 +1396,16 @@ int LuaScriptInterface::simulation_decoColor(lua_State * l)
 int LuaScriptInterface::simulation_clearSim(lua_State * l)
 {
 	luacon_sim->clear_sim();
+	return 0;
+}
+
+int LuaScriptInterface::simulation_clearRect(lua_State * l)
+{
+	int x = luaL_checkint(l,1);
+	int y = luaL_checkint(l,2);
+	int w = luaL_checkint(l,3)-1;
+	int h = luaL_checkint(l,4)-1;
+	luacon_sim->clear_area(x, y, w, h);
 	return 0;
 }
 
