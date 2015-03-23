@@ -1916,6 +1916,8 @@ void Simulation::clear_sim(void)
 	memset(wireless, 0, sizeof(wireless));
 	memset(gol2, 0, sizeof(gol2));
 	memset(portalp, 0, sizeof(portalp));
+	// Reset ERAY array if sim is cleared
+	memset(erays, 0, sizeof(erays));
 	memset(fighters, 0, sizeof(fighters));
 	std::fill(elementCount, elementCount+PT_NUM, 0);
 	elementRecount = true;

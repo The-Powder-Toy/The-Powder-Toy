@@ -1918,6 +1918,7 @@ void GameView::disableCtrlBehaviour()
 void GameView::OnDraw()
 {
 	Graphics * g = ui::Engine::Ref().g;
+	Simulation * sim = c->GetSimulation();
 	if(ren)
 	{
 		ren->clearScreen(1.0f);
@@ -2120,6 +2121,10 @@ void GameView::OnDraw()
 					else
 						sampleInfo << " (unknown mode)";
 				}
+				else if (sample.particle.type == PT_ERAY) {
+					sampleInfo << c->ElementResolve(sample.particle.type, sample.particle.ctype);
+					sampleInfo << " (erays[" << sample.particle.tmp2 << "])";
+				}
 				else
 				{
 					sampleInfo << c->ElementResolve(sample.particle.type, sample.particle.ctype);
@@ -2133,6 +2138,7 @@ void GameView::OnDraw()
 				sampleInfo << ", Temp: " << std::fixed << sample.particle.temp -273.15f << " C";
 				sampleInfo << ", Life: " << sample.particle.life;
 				sampleInfo << ", Tmp: " << sample.particle.tmp;
+				sampleInfo << ", Tmp2: " << sample.particle.tmp2;
 				sampleInfo << ", Pressure: " << std::fixed << sample.AirPressure;
 			}
 			else
@@ -2211,6 +2217,17 @@ void GameView::OnDraw()
 			if(sample.particle.type)
 			{
 				sampleInfo << "#" << sample.ParticleID << ", ";
+				if (sample.particle.type == PT_ERAY) {
+				sampleInfo << c->ElementResolve(sim->erays[sample.particle.tmp2].type, -1) 
+									 << " [" << c->ElementResolve(sim->erays[sample.particle.tmp2].ctype, -1) 
+								   << ", life: " << sim->erays[sample.particle.tmp2].life
+								   << ", vx: " << sim->erays[sample.particle.tmp2].vx
+								   << ", vy: " << sim->erays[sample.particle.tmp2].vy
+								   << ", temp: " << sim->erays[sample.particle.tmp2].temp
+								   << ", tmp: " << sim->erays[sample.particle.tmp2].tmp 
+								   << ", tmp2: " << sim->erays[sample.particle.tmp2].tmp2
+								   << ", dcol: " << sim->erays[sample.particle.tmp2].dcolour << "]  ";
+				}
 			}
 			sampleInfo << "X:" << sample.PositionX << " Y:" << sample.PositionY;
 			if (sample.Gravity)

@@ -879,7 +879,7 @@ int main(int argc, char * argv[])
 
 #if !defined(DEBUG) && !defined(_DEBUG)
 	//Get ready to catch any dodgy errors
-	signal(SIGSEGV, SigHandler);
+	//signal(SIGSEGV, SigHandler);
 	signal(SIGFPE, SigHandler);
 	signal(SIGILL, SigHandler);
 	signal(SIGABRT, SigHandler);
