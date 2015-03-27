@@ -1914,13 +1914,13 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 				//Store temperature as an offset of 21C(294.15K) or go into a 16byte int and store the whole thing
 				if(fabs(particles[i].temp-294.15f)<127)
 				{
-					tempTemp = (particles[i].temp-294.15f);
+					tempTemp = floor(particles[i].temp-294.15f+0.5f);
 					partsData[partsDataLen++] = tempTemp;
 				}
 				else
 				{
 					fieldDesc |= 1;
-					tempTemp = particles[i].temp;
+					tempTemp = (int)(particles[i].temp+0.5f);
 					partsData[partsDataLen++] = tempTemp;
 					partsData[partsDataLen++] = tempTemp >> 8;
 				}
