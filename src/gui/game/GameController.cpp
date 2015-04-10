@@ -1476,7 +1476,7 @@ bool GameController::IsValidElement(int type)
 {
 	if(gameModel && gameModel->GetSimulation())
 	{
-		return (type > 0 && type < PT_NUM && gameModel->GetSimulation()->elements[type].Enabled);
+		return (type && gameModel->GetSimulation()->IsValidElement(type));
 	}
 	else
 		return false;
