@@ -412,7 +412,7 @@ GameView::GameView():
 	};
 	pauseButton = new ui::Button(ui::Point(Size.X-16, Size.Y-16), ui::Point(15, 15), "", "Pause/Resume the simulation");  //Pause
 	pauseButton->SetIcon(IconPause);
-	pauseButton->SetTogglable(true); 
+	pauseButton->SetTogglable(true);
 	pauseButton->SetActionCallback(new PauseAction(this));
 	AddComponent(pauseButton);
 
@@ -471,9 +471,9 @@ public:
 	int menuID;
 	bool needsClick;
 	MenuAction(GameView * _v, int menuID_)
-	{ 
+	{
 		v = _v;
-		menuID = menuID_; 
+		menuID = menuID_;
 		if (menuID == SC_DECO)
 			needsClick = true;
 		else
@@ -865,6 +865,7 @@ void GameView::NotifyUserChanged(GameModel * sender)
 		loginButton->SetText("[sign in]");
 		((SplitButton*)loginButton)->SetShowSplit(false);
 		((SplitButton*)loginButton)->SetRightToolTip("Sign in to simulation server");
+    enableCtrlBehaviour();
 	}
 	else
 	{
@@ -1919,19 +1920,31 @@ void GameView::disableAltBehaviour()
 	}
 }
 
-void GameView::enableCtrlBehaviour()
+void GameView::enableCtrlBehaviour() {
+	// "Usual" Ctrl-holding behavior uses highlights
+	enableCtrlBehaviour(true);
+}
+
+void GameView::enableCtrlBehaviour(bool isHighlighted)
 {
 	if(!ctrlBehaviour)
 	{
 		ctrlBehaviour = true;
 
 		//Show HDD save & load buttons
-		saveSimulationButton->Appearance.BackgroundInactive = saveSimulationButton->Appearance.BackgroundHover = ui::Colour(255, 255, 255);
-		saveSimulationButton->Appearance.TextInactive = saveSimulationButton->Appearance.TextHover = ui::Colour(0, 0, 0);
+		if (isHighlighted) {
+			saveSimulationButton->Appearance.BackgroundInactive = saveSimulationButton->Appearance.BackgroundHover = ui::Colour(255, 255, 255);
+			saveSimulationButton->Appearance.TextInactive = saveSimulationButton->Appearance.TextHover = ui::Colour(0, 0, 0);
+		}
+
 		saveSimulationButton->Enabled = true;
 		SetSaveButtonTooltips();
-		searchButton->Appearance.BackgroundInactive = searchButton->Appearance.BackgroundHover = ui::Colour(255, 255, 255);
-		searchButton->Appearance.TextInactive = searchButton->Appearance.TextHover = ui::Colour(0, 0, 0);
+
+		if (isHighlighted) {
+			searchButton->Appearance.BackgroundInactive = searchButton->Appearance.BackgroundHover = ui::Colour(255, 255, 255);
+			searchButton->Appearance.TextInactive = searchButton->Appearance.TextHover = ui::Colour(0, 0, 0);
+		}
+
 		searchButton->SetToolTip("Open a simulation from your hard drive");
 		if (currentSaveType == 2)
 			((SplitButton*)saveSimulationButton)->SetShowSplit(true);
