@@ -40,6 +40,7 @@ private:
 	bool drawSnap;
 	bool shiftBehaviour;
 	bool ctrlBehaviour;
+	bool loggedIn;
 	bool altBehaviour;
 	bool showHud;
 	bool showDebug;

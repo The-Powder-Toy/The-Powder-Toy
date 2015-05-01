@@ -157,6 +157,7 @@ GameView::GameView():
 	drawSnap(false),
 	shiftBehaviour(false),
 	ctrlBehaviour(false),
+	loggedIn(false),
 	altBehaviour(false),
 	showHud(true),
 	showDebug(false),
@@ -865,13 +866,16 @@ void GameView::NotifyUserChanged(GameModel * sender)
 		loginButton->SetText("[sign in]");
 		((SplitButton*)loginButton)->SetShowSplit(false);
 		((SplitButton*)loginButton)->SetRightToolTip("Sign in to simulation server");
-    enableCtrlBehaviour();
+		
+		loggedIn = false;
 	}
 	else
 	{
 		loginButton->SetText(sender->GetUser().Username);
 		((SplitButton*)loginButton)->SetShowSplit(true);
 		((SplitButton*)loginButton)->SetRightToolTip("Edit profile");
+		
+		loggedIn = true;
 	}
 	saveSimulationButtonEnabled = sender->GetUser().ID;
 	NotifySaveChanged(sender);
@@ -921,11 +925,13 @@ void GameView::NotifySaveChanged(GameModel * sender)
 
 		if (sender->GetUser().ID)
 		{
+			loggedIn = true;
 			upVoteButton->Appearance.BorderDisabled = upVoteButton->Appearance.BorderInactive;
 			downVoteButton->Appearance.BorderDisabled = downVoteButton->Appearance.BorderInactive;
 		}
 		else
 		{
+			loggedIn = false;
 			upVoteButton->Appearance.BorderDisabled = ui::Colour(100, 100, 100);
 			downVoteButton->Appearance.BorderDisabled = ui::Colour(100, 100, 100);
 		}
@@ -1990,7 +1996,7 @@ void GameView::SetSaveButtonTooltips()
 	else if (((SplitButton*)saveSimulationButton)->GetShowSplit())
 		((SplitButton*)saveSimulationButton)->SetToolTips("Reupload the current simulation", "Modify simulation properties");
 	else
-		((SplitButton*)saveSimulationButton)->SetToolTips("Reupload the current simulation", "Upload a new simulation");
+		((SplitButton*)saveSimulationButton)->SetToolTips("Reupload the current simulation", "Upload a new simulation. Hold Ctrl to save offline.");
 }
 
 void GameView::OnDraw()
