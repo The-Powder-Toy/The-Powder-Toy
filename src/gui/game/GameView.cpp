@@ -224,7 +224,7 @@ GameView::GameView():
 	scrollBar->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(scrollBar);
 
-	searchButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(17, 15), "", "Find & open a simulation");  //Open
+	searchButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(17, 15), "", "Find & open a simulation. Hold Ctrl to load offline saves.");  //Open
 	searchButton->SetIcon(IconOpen);
 	currentX+=18;
 	searchButton->SetTogglable(false);
@@ -259,14 +259,14 @@ GameView::GameView():
 		SaveSimulationAction(GameView * _v) { v = _v; }
 		void ActionCallbackRight(ui::Button * sender)
 		{
-			if(v->CtrlBehaviour())
+			if(v->CtrlBehaviour() || !v->loggedIn)
 				v->c->OpenLocalSaveWindow(false);
 			else
 				v->c->OpenSaveWindow();
 		}
 		void ActionCallbackLeft(ui::Button * sender)
 		{
-			if(v->CtrlBehaviour())
+			if(v->CtrlBehaviour() || !v->loggedIn)
 				v->c->OpenLocalSaveWindow(true);
 			else
 				v->c->SaveAsCurrent();
@@ -877,7 +877,8 @@ void GameView::NotifyUserChanged(GameModel * sender)
 		
 		loggedIn = true;
 	}
-	saveSimulationButtonEnabled = sender->GetUser().ID;
+	// saveSimulationButtonEnabled = sender->GetUser().ID;
+	saveSimulationButtonEnabled = true;
 	NotifySaveChanged(sender);
 }
 
@@ -1951,7 +1952,7 @@ void GameView::enableCtrlBehaviour(bool isHighlighted)
 			searchButton->Appearance.TextInactive = searchButton->Appearance.TextHover = ui::Colour(0, 0, 0);
 		}
 
-		searchButton->SetToolTip("Open a simulation from your hard drive");
+		searchButton->SetToolTip("Open a simulation from your hard drive.");
 		if (currentSaveType == 2)
 			((SplitButton*)saveSimulationButton)->SetShowSplit(true);
 		if(isMouseDown || (toolBrush && drawMode == DrawPoints))
@@ -1979,7 +1980,7 @@ void GameView::disableCtrlBehaviour()
 		searchButton->Appearance.BackgroundInactive = ui::Colour(0, 0, 0);
 		searchButton->Appearance.BackgroundHover = ui::Colour(20, 20, 20);
 		searchButton->Appearance.TextInactive = searchButton->Appearance.TextHover = ui::Colour(255, 255, 255);
-		searchButton->SetToolTip("Find & open a simulation");
+		searchButton->SetToolTip("Find & open a simulation. Hold Ctrl to load offline saves.");
 		if (currentSaveType == 2)
 			((SplitButton*)saveSimulationButton)->SetShowSplit(false);
 		if(!shiftBehaviour)
@@ -1991,8 +1992,8 @@ void GameView::disableCtrlBehaviour()
 
 void GameView::SetSaveButtonTooltips()
 {
-	if (ctrlBehaviour)
-		((SplitButton*)saveSimulationButton)->SetToolTips("Save the simulation to your hard drive", "Save the simulation to your hard drive");
+	if (ctrlBehaviour || !loggedIn)
+		((SplitButton*)saveSimulationButton)->SetToolTips("Save the simulation to your hard drive. Login to save online.", "Save the simulation to your hard drive. Login to save online.");
 	else if (((SplitButton*)saveSimulationButton)->GetShowSplit())
 		((SplitButton*)saveSimulationButton)->SetToolTips("Reupload the current simulation", "Modify simulation properties");
 	else
