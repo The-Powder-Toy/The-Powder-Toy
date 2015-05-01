@@ -121,6 +121,7 @@ private:
 	void enableShiftBehaviour();
 	void disableShiftBehaviour();
 	void enableCtrlBehaviour();
+	void enableCtrlBehaviour(bool isHighlighted);
 	void disableCtrlBehaviour();
 	void enableAltBehaviour();
 	void disableAltBehaviour();
