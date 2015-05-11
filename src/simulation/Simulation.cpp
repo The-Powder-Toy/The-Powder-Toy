@@ -3220,7 +3220,7 @@ void Simulation::delete_part(int x, int y)//calls kill_part with the particle lo
 
 void Simulation::UpdateParticles(int start, int end)
 {
-	int i, j, x, y, t, nx, ny, r, surround_space, s, lt, rt, nt;
+	int i, j, x, y, t, nx, ny, r, surround_space, s, rt, nt;
 	float mv, dx, dy, nrx, nry, dp, ctemph, ctempl, gravtot;
 	int fin_x, fin_y, clear_x, clear_y, stagnant;
 	float fin_xf, fin_yf, clear_xf, clear_yf;
@@ -4012,51 +4012,54 @@ killed:
 			}
 			else if (elements[t].Properties & TYPE_ENERGY)
 			{
-				if (t == PT_PHOT) {
+				if (t == PT_PHOT)
+				{
 					if (parts[i].flags&FLAG_SKIPMOVE)
 					{
 						parts[i].flags &= ~FLAG_SKIPMOVE;
 						continue;
 					}
 
-					rt = pmap[fin_y][fin_x] & 0xFF;
-					lt = pmap[y][x] & 0xFF;
-
-					r = eval_move(PT_PHOT, fin_x, fin_y, NULL);
-					if (((rt==PT_GLAS && lt!=PT_GLAS) || (rt!=PT_GLAS && lt==PT_GLAS)) && r) {
-						if (!get_normal_interp(REFRACT|t, parts[i].x, parts[i].y, parts[i].vx, parts[i].vy, &nrx, &nry)) {
-							kill_part(i);
-							continue;
-						}
-
-						r = get_wavelength_bin(&parts[i].ctype);
-						if (r == -1 || !(parts[i].ctype&0x3FFFFFFF))
+					if (eval_move(PT_PHOT, fin_x, fin_y, NULL))
+					{
+						int rt = pmap[fin_y][fin_x] & 0xFF;
+						int lt = pmap[y][x] & 0xFF;
+						if ((rt==PT_GLAS && lt!=PT_GLAS) || (rt!=PT_GLAS && lt==PT_GLAS))
 						{
-							kill_part(i);
-							continue;
-						}
-						nn = GLASS_IOR - GLASS_DISP*(r-15)/15.0f;
-						nn *= nn;
-						nrx = -nrx;
-						nry = -nry;
-						if (rt==PT_GLAS && lt!=PT_GLAS)
-							nn = 1.0f/nn;
-						ct1 = parts[i].vx*nrx + parts[i].vy*nry;
-						ct2 = 1.0f - (nn*nn)*(1.0f-(ct1*ct1));
-						if (ct2 < 0.0f) {
-							// total internal reflection
-							parts[i].vx -= 2.0f*ct1*nrx;
-							parts[i].vy -= 2.0f*ct1*nry;
-							fin_xf = parts[i].x;
-							fin_yf = parts[i].y;
-							fin_x = x;
-							fin_y = y;
-						} else {
-							// refraction
-							ct2 = sqrtf(ct2);
-							ct2 = ct2 - nn*ct1;
-							parts[i].vx = nn*parts[i].vx + ct2*nrx;
-							parts[i].vy = nn*parts[i].vy + ct2*nry;
+							if (!get_normal_interp(REFRACT|t, parts[i].x, parts[i].y, parts[i].vx, parts[i].vy, &nrx, &nry)) {
+								kill_part(i);
+								continue;
+							}
+
+							r = get_wavelength_bin(&parts[i].ctype);
+							if (r == -1 || !(parts[i].ctype&0x3FFFFFFF))
+							{
+								kill_part(i);
+								continue;
+							}
+							nn = GLASS_IOR - GLASS_DISP*(r-15)/15.0f;
+							nn *= nn;
+							nrx = -nrx;
+							nry = -nry;
+							if (rt==PT_GLAS && lt!=PT_GLAS)
+								nn = 1.0f/nn;
+							ct1 = parts[i].vx*nrx + parts[i].vy*nry;
+							ct2 = 1.0f - (nn*nn)*(1.0f-(ct1*ct1));
+							if (ct2 < 0.0f) {
+								// total internal reflection
+								parts[i].vx -= 2.0f*ct1*nrx;
+								parts[i].vy -= 2.0f*ct1*nry;
+								fin_xf = parts[i].x;
+								fin_yf = parts[i].y;
+								fin_x = x;
+								fin_y = y;
+							} else {
+								// refraction
+								ct2 = sqrtf(ct2);
+								ct2 = ct2 - nn*ct1;
+								parts[i].vx = nn*parts[i].vx + ct2*nrx;
+								parts[i].vy = nn*parts[i].vy + ct2*nry;
+							}
 						}
 					}
 				}
