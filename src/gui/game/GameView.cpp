@@ -157,7 +157,6 @@ GameView::GameView():
 	drawSnap(false),
 	shiftBehaviour(false),
 	ctrlBehaviour(false),
-	loggedIn(false),
 	altBehaviour(false),
 	showHud(true),
 	showDebug(false),
@@ -259,14 +258,14 @@ GameView::GameView():
 		SaveSimulationAction(GameView * _v) { v = _v; }
 		void ActionCallbackRight(ui::Button * sender)
 		{
-			if(v->CtrlBehaviour() || !v->loggedIn)
+			if(v->CtrlBehaviour() || !Client::Ref().GetAuthUser().ID)
 				v->c->OpenLocalSaveWindow(false);
 			else
 				v->c->OpenSaveWindow();
 		}
 		void ActionCallbackLeft(ui::Button * sender)
 		{
-			if(v->CtrlBehaviour() || !v->loggedIn)
+			if(v->CtrlBehaviour() || !Client::Ref().GetAuthUser().ID)
 				v->c->OpenLocalSaveWindow(true);
 			else
 				v->c->SaveAsCurrent();
@@ -866,16 +865,12 @@ void GameView::NotifyUserChanged(GameModel * sender)
 		loginButton->SetText("[sign in]");
 		((SplitButton*)loginButton)->SetShowSplit(false);
 		((SplitButton*)loginButton)->SetRightToolTip("Sign in to simulation server");
-		
-		loggedIn = false;
 	}
 	else
 	{
 		loginButton->SetText(sender->GetUser().Username);
 		((SplitButton*)loginButton)->SetShowSplit(true);
 		((SplitButton*)loginButton)->SetRightToolTip("Edit profile");
-		
-		loggedIn = true;
 	}
 	// saveSimulationButtonEnabled = sender->GetUser().ID;
 	saveSimulationButtonEnabled = true;
@@ -926,13 +921,11 @@ void GameView::NotifySaveChanged(GameModel * sender)
 
 		if (sender->GetUser().ID)
 		{
-			loggedIn = true;
 			upVoteButton->Appearance.BorderDisabled = upVoteButton->Appearance.BorderInactive;
 			downVoteButton->Appearance.BorderDisabled = downVoteButton->Appearance.BorderInactive;
 		}
 		else
 		{
-			loggedIn = false;
 			upVoteButton->Appearance.BorderDisabled = ui::Colour(100, 100, 100);
 			downVoteButton->Appearance.BorderDisabled = ui::Colour(100, 100, 100);
 		}
@@ -1992,8 +1985,10 @@ void GameView::disableCtrlBehaviour()
 
 void GameView::SetSaveButtonTooltips()
 {
-	if (ctrlBehaviour || !loggedIn)
+	if (!Client::Ref().GetAuthUser().ID)
 		((SplitButton*)saveSimulationButton)->SetToolTips("Save the simulation to your hard drive. Login to save online.", "Save the simulation to your hard drive. Login to save online.");
+	else if (ctrlBehaviour)
+		((SplitButton*)saveSimulationButton)->SetToolTips("Save the simulation to your hard drive.", "Save the simulation to your hard drive.");
 	else if (((SplitButton*)saveSimulationButton)->GetShowSplit())
 		((SplitButton*)saveSimulationButton)->SetToolTips("Reupload the current simulation", "Modify simulation properties");
 	else
