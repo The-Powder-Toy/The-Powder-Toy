@@ -3669,10 +3669,23 @@ void Simulation::UpdateParticles(int start, int end)
 							parts[i].ctype = parts[i].type;
 						if (!(t==PT_ICEI && parts[i].ctype==PT_FRZW))
 							parts[i].life = 0;
+						if (t == PT_FIRE)
+						{
+							//hackish, if tmp isn't 0 the FIRE might turn into DSTW later
+							//idealy transitions should use create_part(i) but some elements rely on properties staying constant
+							//and I don't feel like checking each one right now
+							parts[i].tmp = 0;
+						}
 						if (elements[t].State==ST_GAS && elements[parts[i].type].State!=ST_GAS)
 							pv[y/CELL][x/CELL] += 0.50f;
 
-						part_change_type(i,x,y,t);
+						if (t == PT_NONE)
+						{
+							kill_part(i);
+							goto killed;
+						}
+						else
+							part_change_type(i,x,y,t);
 
 						if (t==PT_FIRE || t==PT_PLSM || t==PT_CFLM)
 							parts[i].life = rand()%50+120;
@@ -3683,11 +3696,6 @@ void Simulation::UpdateParticles(int start, int end)
 							else if (parts[i].ctype == PT_BGLA) parts[i].ctype = PT_GLAS;
 							else if (parts[i].ctype == PT_PQRT) parts[i].ctype = PT_QRTZ;
 							parts[i].life = rand()%120+240;
-						}
-						if (t == PT_NONE)
-						{
-							kill_part(i);
-							goto killed;
 						}
 						transitionOccurred = true;
 					}
