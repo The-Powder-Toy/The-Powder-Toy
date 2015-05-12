@@ -1256,16 +1256,36 @@ int Simulation::CreateParts(int positionX, int positionY, int c, Brush * cBrush,
 {
 	if (flags == -1)
 		flags = replaceModeFlags;
-	if(cBrush)
+	if (cBrush)
 	{
 		int radiusX = cBrush->GetRadius().X, radiusY = cBrush->GetRadius().Y, sizeX = cBrush->GetSize().X, sizeY = cBrush->GetSize().Y;
 		unsigned char *bitmap = cBrush->GetBitmap();
-		
-		for(int y = sizeY-1; y >=0; y--)
+
+		// special case for LIGH
+		if (c == PT_LIGH)
 		{
-			for(int x = 0; x < sizeX; x++)
+			if (currentTick < lightningRecreate)
+				return 1;
+			int newlife = radiusX + radiusY;
+			if (newlife > 55)
+				newlife = 55;
+			c = c|newlife<<8;
+			lightningRecreate = currentTick+newlife/4;
+			return CreatePartFlags(positionX, positionY, c, flags);
+		}
+		else if (c == PT_TESC)
+		{
+			int newtmp = (radiusX*4+radiusY*4+7);
+			if (newtmp > 300)
+				newtmp = 300;
+			c = c|newtmp<<8;
+		}
+		
+		for (int y = sizeY-1; y >=0; y--)
+		{
+			for (int x = 0; x < sizeX; x++)
 			{
-				if(bitmap[(y*sizeX)+x] && (positionX+(x-radiusX) >= 0 && positionY+(y-radiusY) >= 0 && positionX+(x-radiusX) < XRES && positionY+(y-radiusY) < YRES))
+				if (bitmap[(y*sizeX)+x] && (positionX+(x-radiusX) >= 0 && positionY+(y-radiusY) >= 0 && positionX+(x-radiusX) < XRES && positionY+(y-radiusY) < YRES))
 				{
 					CreatePartFlags(positionX+(x-radiusX), positionY+(y-radiusY), c, flags);
 				}
@@ -1277,16 +1297,36 @@ int Simulation::CreateParts(int positionX, int positionY, int c, Brush * cBrush,
 
 int Simulation::CreateParts(int x, int y, int rx, int ry, int c, int flags)
 {
-	int i, j, f = 0;
+	bool created = false;
 
 	if (flags == -1)
 		flags = replaceModeFlags;
 
-	for (j=-ry; j<=ry; j++)
-		for (i=-rx; i<=rx; i++)
+	// special case for LIGH
+	if (c == PT_LIGH)
+	{
+		if (currentTick < lightningRecreate)
+			return 1;
+		int newlife = rx + ry;
+		if (newlife > 55)
+			newlife = 55;
+		c = c|newlife<<8;
+		lightningRecreate = currentTick+newlife/4;
+		rx = ry = 0;
+	}
+	else if (c == PT_TESC)
+	{
+		int newtmp = (rx*4+ry*4+7);
+		if (newtmp > 300)
+			newtmp = 300;
+		c = c|newtmp<<8;
+	}
+
+	for (int j = -ry; j <= ry; j++)
+		for (int i = -rx; i <= rx; i++)
 			if (CreatePartFlags(x+i, y+j, c, flags))
-				f = 1;
-	return !f;
+				created = true;
+	return !created;
 }
 
 int Simulation::CreatePartFlags(int x, int y, int c, int flags)
@@ -3041,11 +3081,16 @@ int Simulation::create_part(int p, int x, int y, int tv)
 			case PT_LIGH:
 			{
 				float gx, gy, gsize;
-				if (p!=-2)
+
+				if (v >= 0)
 				{
-					parts[i].life=30;
-					parts[i].temp=parts[i].life*150.0f; // temperature of the lighting shows the power of the lighting
+					if (v > 55)
+						v = 55;
+					parts[i].life = v;
 				}
+				else
+					parts[i].life = 30;
+				parts[i].temp = parts[i].life*150.0f; // temperature of the lightning shows the power of the lightning
 				GetGravityField(x, y, 1.0f, 1.0f, gx, gy);
 				gsize = gx*gx+gy*gy;
 				if (gsize<0.0016f)
@@ -4896,6 +4941,7 @@ Simulation::Simulation():
 	ISWIRE(0),
 	force_stacking_check(0),
 	emp_decor(0),
+	lightningRecreate(0),
 	gravWallChanged(false),
 	edgeMode(0),
 	gravityMode(0),

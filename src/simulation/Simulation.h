@@ -62,6 +62,7 @@ public:
 	int ISWIRE;
 	int force_stacking_check;
 	int emp_decor;
+	int lightningRecreate;
 	//Stickman
 	playerst player;
 	playerst player2;

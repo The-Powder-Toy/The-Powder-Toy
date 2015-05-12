@@ -104,17 +104,13 @@ public:
 
 class Element_LIGH_Tool: public Tool
 {
-	int nextUse;
 public:
 	Element_LIGH_Tool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int) = NULL):
-	Tool(id, name, description, r, g, b, identifier, textureGen),
-	nextUse(0)
-	{
-	}
-	virtual ~Element_LIGH_Tool() {}
-	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position);
+		Tool(id, name, description, r, g, b, identifier, textureGen)
+	{ }
+	virtual ~Element_LIGH_Tool() { }
 	virtual void Click(Simulation * sim, Brush * brush, ui::Point position) { }
-	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false) { }
+	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false);
 	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) { }
 	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position) { }
 };
@@ -134,10 +130,10 @@ public:
 class Element_TESC_Tool: public ElementTool
 {
 public:
-	Element_TESC_Tool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int) = NULL);
+	Element_TESC_Tool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int) = NULL):
+		ElementTool(id, name, description, r, g, b, identifier, textureGen)
+	{ }
 	virtual ~Element_TESC_Tool() {}
-	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position);
-	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false);
 	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2);
 	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position);
 };
@@ -146,11 +142,10 @@ class PlopTool: public ElementTool
 {
 public:
 	PlopTool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int) = NULL):
-	ElementTool(id, name, description, r, g, b, identifier, textureGen)
-	{
-	}
-	virtual ~PlopTool() {}
-	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position) {}
+		ElementTool(id, name, description, r, g, b, identifier, textureGen)
+	{ }
+	virtual ~PlopTool() { }
+	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position) { }
 	virtual void Click(Simulation * sim, Brush * brush, ui::Point position);
 	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false) { }
 	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) { }
@@ -172,11 +167,11 @@ class WindTool: public Tool
 {
 public:
 	WindTool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int) = NULL);
-	virtual ~WindTool();
-	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position);
+	virtual ~WindTool() { }
+	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position) { }
 	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false);
-	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2);
-	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position);
+	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) { }
+	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position) { }
 };
 
 #endif /* TOOL_H_ */

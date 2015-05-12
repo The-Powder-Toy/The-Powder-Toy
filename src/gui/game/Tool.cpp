@@ -114,11 +114,7 @@ WindTool::WindTool(int id, string name, string description, int r, int g, int b,
 	Tool(id, name, description, r, g, b, identifier, textureGen)
 {
 }
-WindTool::~WindTool() {}
-void WindTool::Draw(Simulation * sim, Brush * brush, ui::Point position)
-{
 
-}
 void WindTool::DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging)
 {
 	int radiusX, radiusY, sizeX, sizeY;
@@ -146,39 +142,15 @@ void WindTool::DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui
 		}
 	}
 }
-void WindTool::DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) {}
-void WindTool::DrawFill(Simulation * sim, Brush * brush, ui::Point position) {}
 
 
-void Element_LIGH_Tool::Draw(Simulation * sim, Brush * brush, ui::Point position)
+void Element_LIGH_Tool::DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging)
 {
-	if(sim->currentTick >= nextUse)
-	{
-		int p = sim->create_part(-2, position.X, position.Y, toolID);
-		if (p != -1)
-		{
-			sim->parts[p].life = brush->GetRadius().X+brush->GetRadius().Y;
-			if (sim->parts[p].life > 55)
-				sim->parts[p].life = 55;
-			sim->parts[p].temp = sim->parts[p].life*150; // temperature of the lighting shows the power of the lighting
-			nextUse = sim->currentTick+sim->parts[p].life/4;
-		}
-	}
+	if (dragging)
+		sim->CreateParts(position1.X, position1.Y, brush->GetRadius().X, brush->GetRadius().Y, PT_LIGH);
 }
 
 
-Element_TESC_Tool::Element_TESC_Tool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int)):
-	ElementTool(id, name, description, r, g, b, identifier, textureGen)
-	{
-	}
-void Element_TESC_Tool::Draw(Simulation * sim, Brush * brush, ui::Point position){
-	int radiusInfo = brush->GetRadius().X*4+brush->GetRadius().Y*4+7;
-	sim->CreateParts(position.X, position.Y, toolID | (radiusInfo << 8), brush);
-}
-void Element_TESC_Tool::DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging) {
-	int radiusInfo = brush->GetRadius().X*4+brush->GetRadius().Y*4+7;
-	sim->CreateLine(position1.X, position1.Y, position2.X, position2.Y, toolID | (radiusInfo << 8), brush);
-}
 void Element_TESC_Tool::DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) {
 	int radiusInfo = brush->GetRadius().X*4+brush->GetRadius().Y*4+7;
 	sim->CreateBox(position1.X, position1.Y, position2.X, position2.Y, toolID | (radiusInfo << 8));
