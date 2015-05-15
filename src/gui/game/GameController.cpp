@@ -753,9 +753,8 @@ void GameController::Tick()
 		((LuaScriptInterface*)commandInterface)->Init();
 #endif
 #if !defined(MACOSX) && !defined(NO_INSTALL_CHECK)
-		if(!Client::Ref().GetPrefBool("InstallCheck", false))
+		if (Client::Ref().IsFirstRun())
 		{
-			Client::Ref().SetPref("InstallCheck", true);
 			Install();
 		}
 #endif

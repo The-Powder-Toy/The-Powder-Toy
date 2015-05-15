@@ -50,14 +50,14 @@ class ClientListener;
 class Client: public Singleton<Client> {
 private:
 	std::string messageOfTheDay;
-	std::vector<std::pair<std::string, std::string> > serverNotifications; 
+	std::vector<std::pair<std::string, std::string> > serverNotifications;
 
 	void * versionCheckRequest;
 	bool updateAvailable;
 	UpdateInfo updateInfo;
 
-
 	std::string lastError;
+	bool firstRun;
 
 	std::list<std::string> stampIDs;
 	unsigned lastStampTime;
@@ -108,6 +108,7 @@ public:
 
 	void Initialise(std::string proxyString);
 	void SetProxy(std::string proxy);
+	bool IsFirstRun();
 
 	int MakeDirectory(const char * dirname);
 	bool WriteFile(std::vector<unsigned char> fileData, std::string filename);

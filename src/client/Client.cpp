@@ -126,7 +126,10 @@ Client::Client():
 #ifndef MACOSX
 		configFile.close();
 #endif
+		firstRun = false;
 	}
+	else
+		firstRun = true;
 }
 
 void Client::Initialise(std::string proxyString)
@@ -171,6 +174,11 @@ void Client::Initialise(std::string proxyString)
 		delete[] id;
 		delete[] session;
 	}
+}
+
+bool Client::IsFirstRun()
+{
+	return firstRun;
 }
 
 bool Client::DoInstallation()
