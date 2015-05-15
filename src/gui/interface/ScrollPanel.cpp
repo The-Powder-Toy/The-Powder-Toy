@@ -5,18 +5,18 @@ using namespace ui;
 
 ScrollPanel::ScrollPanel(Point position, Point size):
 	Panel(position, size),
+	scrollBarWidth(0),
 	maxOffset(0, 0),
 	offsetX(0),
 	offsetY(0),
 	yScrollVel(0.0f),
 	xScrollVel(0.0f),
-	scrollBarWidth(0),
 	isMouseInsideScrollbar(false),
 	isMouseInsideScrollbarArea(false),
-	scrollbarClickLocation(0),
 	scrollbarSelected(false),
 	scrollbarInitialYOffset(0),
-	scrollbarInitialYClick(0)
+	scrollbarInitialYClick(0),
+	scrollbarClickLocation(0)
 {
 
 }
@@ -135,7 +135,6 @@ void ScrollPanel::XTick(float dt)
 
 	int oldOffsetY = offsetY;
 	offsetY += yScrollVel;
-	int oldOffsetX = offsetX;
 	offsetX += xScrollVel;
 
 	yScrollVel*=0.98f;

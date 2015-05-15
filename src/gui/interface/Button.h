@@ -24,7 +24,6 @@ public:
 	Button(Point position = Point(0, 0), Point size = Point(0, 0), std::string buttonText = "", std::string toolTip = "");
 	virtual ~Button();
 
-	bool Toggleable;
 	bool Enabled;
 
 	virtual void OnMouseClick(int x, int y, unsigned int button);
@@ -53,9 +52,9 @@ public:
 	void SetToolTip(std::string newToolTip) { toolTip = newToolTip; }
 protected:
 
+	std::string ButtonText;
 	std::string toolTip;
 	std::string buttonDisplayText;
-	std::string ButtonText;
 
 	bool isButtonDown, isAltButtonDown, state, isMouseInside, isTogglable, toggle;
 	ButtonAction * actionCallback;

@@ -76,7 +76,7 @@ sim(sim_)
 	property = new ui::DropDown(ui::Point(8, 25), ui::Point(Size.X-16, 17));
 	property->SetActionCallback(new PropertyChanged(this));
 	AddComponent(property);
-	for(int i = 0; i < properties.size(); i++)
+	for (size_t i = 0; i < properties.size(); i++)
 	{
 		property->AddOption(std::pair<std::string, int>(properties[i].Name, i));
 	}

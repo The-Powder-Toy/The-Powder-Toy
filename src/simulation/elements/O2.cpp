@@ -83,21 +83,28 @@ int Element_O2::update(UPDATE_FUNC_ARGS)
 			int j;
 			sim->create_part(i,x,y,PT_BRMT);
 
-			j = sim->create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_NEUT);
+			j = sim->create_part(-3,x,y,PT_NEUT);
 			if (j != -1)
 				parts[j].temp = MAX_TEMP;
-			j = sim->create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_PHOT);
+			j = sim->create_part(-3,x,y,PT_PHOT);
 			if (j != -1)
 			{
 				parts[j].temp = MAX_TEMP;
 				parts[j].tmp = 0x1;
 			}
-			j = sim->create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_PLSM);
-			if (j != -1)
+			rx = x+rand()%3-1, ry = y+rand()%3-1, r = pmap[ry][rx]&0xFF;
+			if (sim->can_move[PT_PLSM][r] || r == PT_O2)
 			{
-				parts[j].temp = MAX_TEMP;
-				parts[j].tmp |= 4;
+				j = sim->create_part(-3,rx,ry,PT_PLSM);
+				if (j > -1)
+				{
+					parts[j].temp = MAX_TEMP;
+					parts[j].tmp |= 4;
+				}
 			}
+			j = sim->create_part(-3,x,y,PT_GRVT);
+			if (j != -1)
+				parts[j].temp = MAX_TEMP;
 			parts[i].temp = MAX_TEMP;
 			sim->pv[y/CELL][x/CELL] = 256;
 		}

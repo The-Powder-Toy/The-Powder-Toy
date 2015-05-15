@@ -20,6 +20,7 @@
 #include <mach-o/dyld.h>
 #endif
 
+const static char hex[] = "0123456789ABCDEF";
 std::string URLEscape(std::string source)
 {
 	char * src = (char *)source.c_str();
@@ -161,14 +162,16 @@ void strlist_free(struct strlist **list)
 	}
 }
 
-void clean_text(char *text, int vwidth)
+void clean_text(char *text, unsigned int vwidth)
 {
-	int i = 0;
-	if(strlen(text)*10 > vwidth){
+	if (strlen(text)*10 > vwidth)
+	{
 		text[vwidth/10] = 0;
 	}
-	for(i = 0; i < strlen(text); i++){
-		if(! (text[i]>=' ' && text[i]<127)){
+	for (unsigned i = 0; i < strlen(text); i++)
+	{
+		if (! (text[i]>=' ' && text[i]<127))
+		{
 			text[i] = ' ';
 		}
 	}
@@ -626,7 +629,7 @@ void membwand(void * destv, void * srcv, size_t destsize, size_t srcsize)
 
 int splitsign(const char* str, char * type)
 {
-	int match=0,r;
+	int r;
 	if (str[0]=='{' && (str[1]=='c' || str[1]=='t' || str[1]=='b'))
 	{
 		const char* p=str+2;

@@ -36,10 +36,14 @@ def generateElements(elementFiles, outputCpp, outputH):
 			directives.append(match.split(" "))
 
 	classDirectives = []
+	usedIDs = []
 	for d in directives:
 		if d[0] == "ElementClass":
 			d[3] = int(d[3])
 			classDirectives.append(d)
+			if d[3] in usedIDs:
+				print("WARNING: duplicate element ID {} ({})".format(d[3],d[2]))
+			usedIDs.append(d[3])
 
 	elementIDs = sorted(classDirectives, key=lambda directive: directive[3])
 
@@ -168,12 +172,16 @@ def generateTools(toolFiles, outputCpp, outputH):
 			directives.append(match.split(" "))
 	
 	classDirectives = []
+	usedIDs = []
 	for d in directives:
 		if d[0] == "ToolClass":
 			toolClasses[d[1]] = []
 			toolHeader += "#define %s %s\n" % (d[2], d[3])
 			d[3] = int(d[3])
 			classDirectives.append(d)
+			if d[3] in usedIDs:
+				print("WARNING: duplicate tool ID {} ({})".format(d[3],d[2]))
+			usedIDs.append(d[3])
 	
 	for d in directives:
 		if d[0] == "ToolHeader":

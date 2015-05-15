@@ -49,7 +49,7 @@ Element_CRAY::Element_CRAY()
 //#TPT-Directive ElementHeader Element_CRAY static int update(UPDATE_FUNC_ARGS)
 int Element_CRAY::update(UPDATE_FUNC_ARGS)
  {
-	int r, nxx, nyy, docontinue, nxi, nyi, rx, ry, nr, ry1, rx1;
+	int r, nxx, nyy, docontinue, nxi, nyi, rx, ry;
 	// set ctype to things that touch it if it doesn't have one already
 	if(parts[i].ctype<=0 || parts[i].ctype>=PT_NUM || !sim->elements[parts[i].ctype].Enabled) {
 		int r, rx, ry;
@@ -78,7 +78,6 @@ int Element_CRAY::update(UPDATE_FUNC_ARGS)
 						continue;
 					if ((r&0xFF)==PT_SPRK && parts[r>>8].life==3) { //spark found, start creating
 						unsigned int colored = 0;
-						bool isBlackDeco = false;
 						bool destroy = parts[r>>8].ctype==PT_PSCN;
 						bool nostop = parts[r>>8].ctype==PT_INST;
 						bool createSpark = (parts[r>>8].ctype==PT_INWR);
@@ -134,7 +133,6 @@ int Element_CRAY::update(UPDATE_FUNC_ARGS)
 unsigned int Element_CRAY::wavelengthToDecoColour(int wavelength)
 {
 	int colr = 0, colg = 0, colb = 0, x;
-	unsigned int dcolour = 0;
 	for (x=0; x<12; x++) {
 		colr += (wavelength >> (x+18)) & 1;
 		colb += (wavelength >>  x)     & 1;

@@ -26,10 +26,10 @@ protected:
 	std::string icon;
 	std::string description;
 	QuickOption(std::string icon, std::string description, GameModel * m, Type type) :
-		icon(icon),
-		description(description),
 		m(m),
-		type(type)
+		type(type),
+		icon(icon),
+		description(description)
 	{
 
 	}

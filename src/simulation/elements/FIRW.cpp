@@ -94,7 +94,7 @@ int Element_FIRW::update(UPDATE_FUNC_ARGS)
 		float angle, magnitude;
 		int caddress = (rand()%200)*3;
 		int n;
-		unsigned col = (((unsigned char)(firw_data[caddress]))<<16) | (((unsigned char)(firw_data[caddress+1]))<<8) | ((unsigned char)(firw_data[caddress+2]));
+		unsigned col = (((firw_data[caddress]))<<16) | (((firw_data[caddress+1]))<<8) | ((firw_data[caddress+2]));
 		for (n=0; n<40; n++)
 		{
 			np = sim->create_part(-3, x, y, PT_EMBR);

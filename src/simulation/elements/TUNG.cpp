@@ -40,22 +40,20 @@ Element_TUNG::Element_TUNG()
 	HighPressureTransition = NT;
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
-	HighTemperature = ITH;
+	HighTemperature = 3695.0f;// TUNG melts in its update function instead of in the normal way, but store the threshold here so that it can be changed from Lua
 	HighTemperatureTransition = NT;
-	/*HighTemperature = 3895.0f;
-	HighTemperatureTransition = PT_LAVA;*/
 
 	Update = &Element_TUNG::update;
 	Graphics = &Element_TUNG::graphics;
 	
 }
 
-#define MELTING_POINT	3695.0
-
 //#TPT-Directive ElementHeader Element_TUNG static int update(UPDATE_FUNC_ARGS)
 int Element_TUNG::update(UPDATE_FUNC_ARGS)
 {
 	bool splode = false;
+	const float MELTING_POINT = sim->elements[PT_TUNG].HighTemperature;
+
 	if(parts[i].temp > 2400.0)
 	{
 		int r, rx, ry;
@@ -90,7 +88,7 @@ int Element_TUNG::update(UPDATE_FUNC_ARGS)
 		}
 		if(splode)
 		{
-			parts[i].temp = MELTING_POINT + (rand()%600) + 200;
+			parts[i].temp = restrict_flt(MELTING_POINT + (rand()%600) + 200, MIN_TEMP, MAX_TEMP);
 		}
 		parts[i].vx += (rand()%100)-50;
 		parts[i].vy += (rand()%100)-50;
@@ -102,6 +100,7 @@ int Element_TUNG::update(UPDATE_FUNC_ARGS)
 	{
 		sim->part_change_type(i,x,y,PT_BRMT);
 		parts[i].ctype = PT_TUNG;
+		return 1;
 	}
 	return 0;
 }
@@ -110,6 +109,7 @@ int Element_TUNG::update(UPDATE_FUNC_ARGS)
 //#TPT-Directive ElementHeader Element_TUNG static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_TUNG::graphics(GRAPHICS_FUNC_ARGS)
 {
+	const float MELTING_POINT = ren->sim->elements[PT_TUNG].HighTemperature;
 	double startTemp = (MELTING_POINT - 1500.0);
 	double tempOver = (((cpart->temp - startTemp)/1500.0)*M_PI) - (M_PI/2.0);
 	if(tempOver > -(M_PI/2.0))

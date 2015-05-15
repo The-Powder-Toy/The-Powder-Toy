@@ -22,8 +22,6 @@ __asm__ __volatile ("cpuid":\
 	"=a" (af), "=b" (bf), "=c" (cf), "=d" (df) : "a" (func));
 #endif
 
-static char hex[] = "0123456789ABCDEF";
-
 char *exe_name(void);
 
 //Linear interpolation

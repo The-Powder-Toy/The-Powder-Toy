@@ -50,13 +50,15 @@ Element_GOLD::Element_GOLD()
 //#TPT-Directive ElementHeader Element_GOLD static int update(UPDATE_FUNC_ARGS)
 int Element_GOLD::update(UPDATE_FUNC_ARGS)
  {
-	int rx, ry, r, blocking = 0;
+	int rx, ry, r, rndstore;
 	static int checkCoordsX[] = { -4, 4, 0, 0 };
 	static int checkCoordsY[] = { 0, 0, -4, 4 };
 	//Find nearby rusted iron (BMTL with tmp 1+)
 	for(int j = 0; j < 8; j++){
-		rx = (rand()%9)-4;
-		ry = (rand()%9)-4;
+		rndstore = rand();
+		rx = (rndstore % 9)-4;
+		rndstore >>= 4;
+		ry = (rndstore % 9)-4;
 		if ((!rx != !ry) && BOUNDS_CHECK) {
 			r = pmap[y+ry][x+rx];
 			if(!r) continue;
@@ -73,13 +75,13 @@ int Element_GOLD::update(UPDATE_FUNC_ARGS)
 		for(int j = 0; j < 4; j++){
 			rx = checkCoordsX[j];
 			ry = checkCoordsY[j];
-			if ((!rx != !ry) && BOUNDS_CHECK) {
+			if (BOUNDS_CHECK) {
 				r = pmap[y+ry][x+rx];
 				if(!r) continue;
 				if((r&0xFF)==PT_SPRK && parts[r>>8].life && parts[r>>8].life<4)
 				{
+					sim->part_change_type(i, x, y, PT_SPRK);
 					parts[i].life = 4;
-					parts[i].type = PT_SPRK;
 					parts[i].ctype = PT_GOLD;
 				}
 			}
@@ -98,9 +100,12 @@ int Element_GOLD::update(UPDATE_FUNC_ARGS)
 //#TPT-Directive ElementHeader Element_GOLD static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_GOLD::graphics(GRAPHICS_FUNC_ARGS)
 {
-	*colr += rand()%10-5;
-	*colg += rand()%10-5;
-	*colb += rand()%10-5;
+	int rndstore = rand();
+	*colr += (rndstore % 10) - 5;
+	rndstore >>= 4;
+	*colg += (rndstore % 10)- 5;
+	rndstore >>= 4;
+	*colb += (rndstore % 10) - 5;
 	return 0;
 }
 

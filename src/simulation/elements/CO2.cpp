@@ -92,12 +92,12 @@ int Element_CO2::update(UPDATE_FUNC_ARGS)
 		{
 			int j;
 			sim->create_part(i,x,y,PT_O2);
-			j = sim->create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_NEUT);
+			j = sim->create_part(-3,x,y,PT_NEUT);
 			if (j != -1)
 				parts[j].temp = MAX_TEMP;
 			if (!(rand()%50))
 			{
-				j = sim->create_part(-3,x+rand()%3-1,y+rand()%3-1,PT_ELEC);
+				j = sim->create_part(-3,x,y,PT_ELEC);
 				if (j != -1)
 					parts[j].temp = MAX_TEMP;
 			}

@@ -132,6 +132,7 @@ OptionsView::OptionsView():
 	AddComponent(edgeMode);
 	edgeMode->AddOption(std::pair<std::string, int>("Void", 0));
 	edgeMode->AddOption(std::pair<std::string, int>("Solid", 1));
+	edgeMode->AddOption(std::pair<std::string, int>("Loop", 2));
 	edgeMode->SetActionCallback(new EdgeModeChanged(this));
 
 	tempLabel = new ui::Label(ui::Point(8, 186), ui::Point(Size.X-96, 16), "Edge Mode");
@@ -215,7 +216,7 @@ OptionsView::OptionsView():
 		{
 //one of these should always be defined
 #ifdef WIN
-			const char* openCommand = "start ";
+			const char* openCommand = "explorer ";
 #elif MACOSX
 			const char* openCommand = "open ";
 //#elif LIN
@@ -225,7 +226,7 @@ OptionsView::OptionsView():
 			char* workingDirectory = new char[FILENAME_MAX+strlen(openCommand)];
 			sprintf(workingDirectory, "%s\"%s\"", openCommand, getcwd(NULL, 0));
 			system(workingDirectory);
-			delete workingDirectory;
+			delete[] workingDirectory;
 		}
 	};
 	ui::Button * dataFolderButton = new ui::Button(ui::Point(8, Size.Y-38), ui::Point(90, 16), "Open Data Folder");

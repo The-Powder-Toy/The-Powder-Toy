@@ -101,11 +101,11 @@ public:
 SignWindow::SignWindow(SignTool * tool_, Simulation * sim_, int signID_, ui::Point position_):
 	ui::Window(ui::Point(-1, -1), ui::Point(200, 87)),
 	tool(tool_),
-	signID(signID_),
-	sim(sim_),
-	signPosition(position_),
 	movingSign(NULL),
-	signMoving(false)
+	signMoving(false),
+	sim(sim_),
+	signID(signID_),
+	signPosition(position_)
 {
 	ui::Label * messageLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 15), "New sign");
 	messageLabel->SetTextColour(style::Colour::InformationTitle);
@@ -271,9 +271,10 @@ VideoBuffer * SignTool::GetIcon(int toolID, int width, int height)
 void SignTool::Click(Simulation * sim, Brush * brush, ui::Point position)
 {
 	int signX, signY, signW, signH, signIndex = -1;
-	for(int i = 0; i < sim->signs.size(); i++){
+	for (size_t i = 0; i < sim->signs.size(); i++)
+	{
 		sim->signs[i].pos(sim->signs[i].getText(sim), signX, signY, signW, signH);
-		if(position.X > signX && position.X < signX+signW && position.Y > signY && position.Y < signY+signH)
+		if (position.X > signX && position.X < signX+signW && position.Y > signY && position.Y < signY+signH)
 		{
 			signIndex = i;
 			break;

@@ -64,7 +64,7 @@ public:
 	int GetPageCount()
 	{
 		if (!showOwn && !showFavourite && currentSort == "best" && lastQuery == "")
-			return max(1, (int)(ceil((resultCount+5)/20.0f)));
+			return max(1, (int)(ceil(resultCount/20.0f))+1); //add one for front page (front page saves are repeated twice)
 		else
 			return max(1, (int)(ceil(resultCount/20.0f)));
 	}

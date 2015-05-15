@@ -3,8 +3,9 @@
 class RequestListener
 {
 public:
-	int ListenerRand;
-	RequestListener() { ListenerRand = rand(); }
+	static unsigned int nextListenerID;
+	int ListenerID;
+	RequestListener() { ListenerID = nextListenerID++; }
 	virtual ~RequestListener() {}
 
 	virtual void OnResponseReady(void * response, int identifier) {}

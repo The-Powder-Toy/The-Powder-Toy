@@ -3,11 +3,6 @@
 
 #include <vector>
 #include "SearchController.h"
-#include "gui/interface/SaveButton.h"
-#include "gui/interface/Button.h"
-#include "gui/interface/Label.h"
-#include "gui/interface/Spinner.h"
-#include "gui/interface/Textbox.h"
 #include "client/ClientListener.h"
 
 using namespace std;
@@ -36,7 +31,9 @@ private:
 	ui::Button * previousButton;
 	ui::Label * errorLabel;
 	ui::Textbox * searchField;
-	ui::Label * infoLabel;
+	ui::Textbox * pageTextbox;
+	ui::Label * pageLabel;
+	ui::Label * pageCountLabel;
 	ui::Label * tagsLabel;
 	ui::RichLabel * motdLabel;
 	ui::Button * sortButton;
@@ -49,6 +46,11 @@ private:
 	ui::Button * clearSelection;
 	void clearSearch();
 	void doSearch();
+	void textChanged();
+	bool changed;
+	unsigned int lastChanged;
+	int pageCount;
+	bool publishButtonShown;
 public:
 	void NotifyTagListChanged(SearchModel * sender);
 	void NotifySaveListChanged(SearchModel * sender);

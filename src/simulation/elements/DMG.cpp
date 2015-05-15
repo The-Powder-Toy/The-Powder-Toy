@@ -49,7 +49,7 @@ Element_DMG::Element_DMG()
 //#TPT-Directive ElementHeader Element_DMG static int update(UPDATE_FUNC_ARGS)
 int Element_DMG::update(UPDATE_FUNC_ARGS)
  {
-	int r, rr, rx, ry, nb, nxi, nxj, t, dist;
+	int r, rr, rx, ry, nxi, nxj, t, dist;
 	int rad = 25;
 	float angle, fx, fy;
 	
@@ -93,7 +93,10 @@ int Element_DMG::update(UPDATE_FUNC_ARGS)
 										else if(t == PT_QRTZ)
 											sim->part_change_type(rr>>8, x+nxi, y+nxj, PT_PQRT);
 										else if(t == PT_TUNG)
+										{
 											sim->part_change_type(rr>>8, x+nxi, y+nxj, PT_BRMT);
+											parts[rr>>8].ctype = PT_TUNG;
+										}
 									}
 								}
 							}

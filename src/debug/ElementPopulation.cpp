@@ -3,17 +3,17 @@
 #include "simulation/Simulation.h"
 #include "Format.h"
 
-ElementPopulationDebug::ElementPopulationDebug(Simulation * sim):
+ElementPopulationDebug::ElementPopulationDebug(unsigned int id, Simulation * sim):
+	DebugInfo(id),
 	sim(sim),
 	maxAverage(255.0f)
 {
 
 }
 
-void ElementPopulationDebug::Draw(ui::Point position)
+void ElementPopulationDebug::Draw()
 {
 	Graphics * g = ui::Engine::Ref().g;
-	//g->drawtext(10, 10, "Arse", 255, 255, 255, 255);
 
 	int yBottom = YRES-10;
 	int xStart = 10;

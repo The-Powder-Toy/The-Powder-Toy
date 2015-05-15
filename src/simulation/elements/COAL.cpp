@@ -49,7 +49,7 @@ Element_COAL::Element_COAL()
 //#TPT-Directive ElementHeader Element_COAL static int update(UPDATE_FUNC_ARGS)
 int Element_COAL::update(UPDATE_FUNC_ARGS)
  {
-	int r, rx, ry, trade, temp, t = parts[i].type;
+	int t = parts[i].type;
 	if (parts[i].life<=0) {
 		sim->create_part(i, x, y, PT_FIRE);
 		return 1;
@@ -68,36 +68,6 @@ int Element_COAL::update(UPDATE_FUNC_ARGS)
 			return 1;
 		}
 	}
-	/*if(100-parts[i].life > parts[i].tmp2)
-		parts[i].tmp2 = 100-parts[i].life;
-	if(parts[i].tmp2 < 0) parts[i].tmp2 = 0;
-	for ( trade = 0; trade<4; trade ++)
-	{
-		rx = rand()%5-2;
-		ry = rand()%5-2;
-		if (BOUNDS_CHECK && (rx || ry))
-		{
-			r = pmap[y+ry][x+rx];
-			if (!r)
-				continue;
-			if (((r&0xFF)==PT_COAL || (r&0xFF)==PT_BCOL)&&(parts[i].tmp2>parts[r>>8].tmp2)&&parts[i].tmp2>0)//diffusion
-			{
-				int temp = parts[i].tmp2 - parts[r>>8].tmp2;
-				if(temp < 10)
-					continue;
-				if (temp ==1)
-				{
-					parts[r>>8].tmp2 ++;
-					parts[i].tmp2 --;
-				}
-				else if (temp>0)
-				{
-					parts[r>>8].tmp2 += temp/2;
-					parts[i].tmp2 -= temp/2;
-				}
-			}
-		}
-	}*/
 	if(parts[i].temp > parts[i].tmp2)
 		parts[i].tmp2 = parts[i].temp;
 	return 0;

@@ -8,14 +8,14 @@ namespace ui {
 
 Button::Button(Point position, Point size, std::string buttonText, std::string toolTip):
 	Component(position, size),
+	Enabled(true),
 	ButtonText(buttonText),
-	isMouseInside(false),
+	toolTip(toolTip),
 	isButtonDown(false),
+	isMouseInside(false),
 	isTogglable(false),
 	toggle(false),
-	actionCallback(NULL),
-	Enabled(true),
-	toolTip(toolTip)
+	actionCallback(NULL)
 {
 	TextPosition();
 }
@@ -134,14 +134,7 @@ void Button::Draw(const Point& screenPos)
 	if(Appearance.icon)
 	{
 		if(Enabled)
-			if(isButtonDown || (isTogglable && toggle))
-			{
-				g->draw_icon(Position.X+iconPosition.X, Position.Y+iconPosition.Y, Appearance.icon, 255, iconInvert);
-			}
-			else
-			{
-				g->draw_icon(Position.X+iconPosition.X, Position.Y+iconPosition.Y, Appearance.icon, 255, iconInvert);	
-			}
+			g->draw_icon(Position.X+iconPosition.X, Position.Y+iconPosition.Y, Appearance.icon, 255, iconInvert);
 		else
 			g->draw_icon(Position.X+iconPosition.X, Position.Y+iconPosition.Y, Appearance.icon, 180, iconInvert);
 	}

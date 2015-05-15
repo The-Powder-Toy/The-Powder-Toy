@@ -49,18 +49,21 @@ Element_VINE::Element_VINE()
 //#TPT-Directive ElementHeader Element_VINE static int update(UPDATE_FUNC_ARGS)
 int Element_VINE::update(UPDATE_FUNC_ARGS)
 {
-	int r, np, rx =(rand()%3)-1, ry=(rand()%3)-1;
+	int r, np, rx, ry, rndstore = rand();
+	rx = (rndstore % 3) - 1;
+	rndstore >>= 2;
+	ry = (rndstore % 3) - 1;
+	rndstore >>= 2;
 	if (BOUNDS_CHECK && (rx || ry))
 	{
 		r = pmap[y+ry][x+rx];
-		if (!(rand()%15))
-			sim->part_change_type(i,x,y,PT_PLNT);
+		if (!(rndstore % 15))
+			sim->part_change_type(i, x, y, PT_PLNT);
 		else if (!r)
 		{
 			np = sim->create_part(-1,x+rx,y+ry,PT_VINE);
 			if (np<0) return 0;
 			parts[np].temp = parts[i].temp;
-			parts[i].tmp = 1;
 			sim->part_change_type(i,x,y,PT_PLNT);
 		}
 	}

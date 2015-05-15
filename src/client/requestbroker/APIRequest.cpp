@@ -103,7 +103,7 @@ RequestBroker::ProcessResponse APIRequest::Process(RequestBroker & rb)
 				std::strcpy(userName, format::NumberToString<int>(user.ID).c_str());
 				std::strcpy(userSession, user.SessionID.c_str());
 				HTTPContext = http_multipart_post_async((char*)URL.c_str(), postNames, postData, postLength, userName, NULL, userSession);
-				delete userSession;
+				delete[] userSession;
 			}
 			else
 			{

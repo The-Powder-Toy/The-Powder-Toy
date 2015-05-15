@@ -34,48 +34,73 @@ void CommandInterface::Log(LogType type, std::string message)
 	m->Log(message);
 }
 
-int CommandInterface::GetPropertyOffset(std::string key_, FormatType & format)
+int CommandInterface::GetPropertyOffset(std::string key, FormatType & format)
 {
-	char * key = (char *)key_.c_str();
-	int offset;
-	if (strcmp(key, "type")==0){
+	int offset = -1;
+	if (!key.compare("type"))
+	{
 		offset = offsetof(Particle, type);
-		format = FormatInt;
-	} else if (strcmp(key, "life")==0){
+		format = FormatElement;
+	}
+	else if (!key.compare("life"))
+	{
 		offset = offsetof(Particle, life);
 		format = FormatInt;
-	} else if (strcmp(key, "ctype")==0){
+	}
+	else if (!key.compare("ctype"))
+	{
 		offset = offsetof(Particle, ctype);
 		format = FormatInt;
-	} else if (strcmp(key, "temp")==0){
+	}
+	else if (!key.compare("temp"))
+	{
 		offset = offsetof(Particle, temp);
 		format = FormatFloat;
-	} else if (strcmp(key, "tmp2")==0){
+	}
+	else if (!key.compare("tmp2"))
+	{
 		offset = offsetof(Particle, tmp2);
 		format = FormatInt;
-	} else if (strcmp(key, "tmp")==0){
+	}
+	else if (!key.compare("tmp"))
+	{
 		offset = offsetof(Particle, tmp);
 		format = FormatInt;
-	} else if (strcmp(key, "vy")==0){
+	}
+	else if (!key.compare("vy"))
+	{
 		offset = offsetof(Particle, vy);
 		format = FormatFloat;
-	} else if (strcmp(key, "vx")==0){
+	}
+	else if (!key.compare("vx"))
+	{
 		offset = offsetof(Particle, vx);
 		format = FormatFloat;
-	} else if (strcmp(key, "x")==0){
+	}
+	else if (!key.compare("x"))
+	{
 		offset = offsetof(Particle, x);
 		format = FormatFloat;
-	} else if (strcmp(key, "y")==0){
+	}
+	else if (!key.compare("y"))
+	{
 		offset = offsetof(Particle, y);
 		format = FormatFloat;
-	} else if (strcmp(key, "dcolour")==0){
+	}
+	else if (!key.compare("dcolor") || !key.compare("dcolour"))
+	{
 		offset = offsetof(Particle, dcolour);
 		format = FormatInt;
-	} else if (strcmp(key, "dcolor")==0){
-		offset = offsetof(Particle, dcolour);
-		format = FormatInt;
-	} else {
-		offset = -1;
+	}
+	else if (!key.compare("pavg0"))
+	{
+		offset = offsetof(Particle, pavg[0]);
+		format = FormatFloat;
+	}
+	else if (!key.compare("pavg1"))
+	{
+		offset = offsetof(Particle, pavg[1]);
+		format = FormatFloat;
 	}
 	return offset;
 }

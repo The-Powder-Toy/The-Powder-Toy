@@ -10,16 +10,16 @@ using namespace ui;
 Window::Window(Point _position, Point _size):
 	Position(_position),
 	Size(_size),
-	focusedComponent_(NULL),
 	AllowExclusiveDrawing(true),
+	okayButton(NULL),
+	cancelButton(NULL),
+	focusedComponent_(NULL),
+#ifdef DEBUG
+	debugMode(false),
+#endif
 	halt(false),
 	destruct(false),
-	stop(false),
-	cancelButton(NULL),
-	okayButton(NULL)
-#ifdef DEBUG
-	,debugMode(false)
-#endif
+	stop(false)
 {
 }
 

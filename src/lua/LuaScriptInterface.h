@@ -77,6 +77,7 @@ class LuaScriptInterface: public CommandInterface
 	static int simulation_decoBox(lua_State * l);
 	static int simulation_decoColor(lua_State * l);
 	static int simulation_clearSim(lua_State * l);
+	static int simulation_clearRect(lua_State * l);
 	static int simulation_resetTemp(lua_State * l);
 	static int simulation_resetPressure(lua_State * l);
 	static int simulation_saveStamp(lua_State * l);
@@ -97,7 +98,9 @@ class LuaScriptInterface: public CommandInterface
 	static int simulation_canMove(lua_State * l);
 	static int simulation_parts(lua_State * l);
 	static int simulation_pmap(lua_State * l);
+	static int simulation_photons(lua_State * l);
 	static int simulation_neighbours(lua_State * l);
+	static int simulation_framerender(lua_State * l);
 
 	//Renderer
 	void initRendererAPI();
@@ -160,6 +163,7 @@ public:
 	virtual bool OnMouseWheel(int x, int y, int d);
 	virtual bool OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
 	virtual bool OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt);
+	virtual bool OnMouseTick();
 	virtual void OnTick();
 	virtual void Init();
 	virtual void SetWindow(ui::Window * window);

@@ -21,7 +21,6 @@ namespace ui
 		ui::Button::OnMouseClick(x, y, button);
 		ClipboardPush((char*)ButtonText.c_str());
 
-		int textWidth = Graphics::textwidth("Copied!");
 		copyTextLabel->SetText("Copied!");
 
 		Appearance.TextInactive = ui::Colour(180, 230, 180);

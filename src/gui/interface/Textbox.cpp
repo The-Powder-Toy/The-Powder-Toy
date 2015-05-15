@@ -12,15 +12,15 @@ using namespace ui;
 
 Textbox::Textbox(Point position, Point size, std::string textboxText, std::string textboxPlaceholder):
 	Label(position, size, ""),
-	actionCallback(NULL),
-	masked(false),
-	border(true),
-	mouseDown(false),
-	limit(std::string::npos),
+	ReadOnly(false),
 	inputType(All),
+	limit(std::string::npos),
 	keyDown(0),
 	characterDown(0),
-	ReadOnly(false)
+	mouseDown(false),
+	masked(false),
+	border(true),
+	actionCallback(NULL)
 {
 	placeHolder = textboxPlaceholder;
 
@@ -135,10 +135,9 @@ void Textbox::TabFocus()
 
 void Textbox::cutSelection()
 {
-	std::string newText = ClipboardPull();
-	if(HasSelection())
+	if (HasSelection())
 	{
-		if(getLowerSelectionBound() < 0 || getHigherSelectionBound() > backingText.length())
+		if (getLowerSelectionBound() < 0 || getHigherSelectionBound() > (int)backingText.length())
 			return;
 		ClipboardPush((char*)backingText.substr(getLowerSelectionBound(), getHigherSelectionBound()-getLowerSelectionBound()).c_str());
 		backingText.erase(backingText.begin()+getLowerSelectionBound(), backingText.begin()+getHigherSelectionBound());
@@ -191,7 +190,7 @@ void Textbox::pasteIntoSelection()
 	std::string newText = ClipboardPull();
 	if(HasSelection())
 	{
-		if(getLowerSelectionBound() < 0 || getHigherSelectionBound() > backingText.length())
+		if(getLowerSelectionBound() < 0 || getHigherSelectionBound() > (int)backingText.length())
 			return;
 		backingText.erase(backingText.begin()+getLowerSelectionBound(), backingText.begin()+getHigherSelectionBound());
 		cursor = getLowerSelectionBound();
@@ -288,12 +287,12 @@ bool Textbox::CharacterValid(Uint16 character)
 void Textbox::Tick(float dt)
 {
 	Label::Tick(dt);
-	if(!IsFocused())
+	if (!IsFocused())
 	{
 		keyDown = 0;
 		characterDown = 0;
 	}
-	if((keyDown || characterDown) && repeatTime <= gettime())
+	if ((keyDown || characterDown) && repeatTime <= gettime())
 	{
 		OnVKeyPress(keyDown, characterDown, false, false, false);
 		repeatTime = gettime()+30;
@@ -356,24 +355,24 @@ void Textbox::OnVKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 			ClearSelection();
 			break;
 		case KEY_RIGHT:
-			if(cursor < backingText.length())
+			if (cursor < (int)backingText.length())
 				cursor++;
 			ClearSelection();
 			break;
 		case KEY_DELETE:
 			if(ReadOnly)
 				break;
-			if(HasSelection())
+			if (HasSelection())
 			{
-				if(getLowerSelectionBound() < 0 || getHigherSelectionBound() > backingText.length())
+				if (getLowerSelectionBound() < 0 || getHigherSelectionBound() > (int)backingText.length())
 					return;
 				backingText.erase(backingText.begin()+getLowerSelectionBound(), backingText.begin()+getHigherSelectionBound());
 				cursor = getLowerSelectionBound();
 				changed = true;
 			}
-			else if(backingText.length() && cursor < backingText.length())
+			else if (backingText.length() && cursor < (int)backingText.length())
 			{
-				if(ctrl)
+				if (ctrl)
 					backingText.erase(cursor, backingText.length()-cursor);
 				else
 					backingText.erase(cursor, 1);
@@ -382,19 +381,19 @@ void Textbox::OnVKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 			ClearSelection();
 			break;
 		case KEY_BACKSPACE:
-			if(ReadOnly)
+			if (ReadOnly)
 				break;
-			if(HasSelection())
+			if (HasSelection())
 			{
-				if(getLowerSelectionBound() < 0 || getHigherSelectionBound() > backingText.length())
+				if (getLowerSelectionBound() < 0 || getHigherSelectionBound() > (int)backingText.length())
 					return;
 				backingText.erase(backingText.begin()+getLowerSelectionBound(), backingText.begin()+getHigherSelectionBound());
 				cursor = getLowerSelectionBound();
 				changed = true;
 			}
-			else if(backingText.length() && cursor > 0)
+			else if (backingText.length() && cursor > 0)
 			{
-				if(ctrl)
+				if (ctrl)
 				{
 					backingText.erase(0, cursor);
 					cursor = 0;
@@ -409,24 +408,24 @@ void Textbox::OnVKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 			ClearSelection();
 			break;
 		default:
-			if(CharacterValid(character) && !ReadOnly)
+			if (CharacterValid(character) && !ReadOnly)
 			{
-				if(HasSelection())
+				if (HasSelection())
 				{
-					if(getLowerSelectionBound() < 0 || getHigherSelectionBound() > backingText.length())
+					if (getLowerSelectionBound() < 0 || getHigherSelectionBound() > (int)backingText.length())
 						return;
 					backingText.erase(backingText.begin()+getLowerSelectionBound(), backingText.begin()+getHigherSelectionBound());
 					cursor = getLowerSelectionBound();
 				}
 
 				int regionWidth = Size.X;
-				if(Appearance.icon)
+				if( Appearance.icon)
 					regionWidth -= 13;
 				regionWidth -= Appearance.Margin.Left;
 				regionWidth -= Appearance.Margin.Right;
-				if((limit==std::string::npos || backingText.length() < limit) && (Graphics::textwidth((char*)std::string(backingText+char(character)).c_str()) <= regionWidth || multiline || limit!=std::string::npos))
+				if ((limit==std::string::npos || backingText.length() < limit) && (Graphics::textwidth((char*)std::string(backingText+char(character)).c_str()) <= regionWidth || multiline || limit!=std::string::npos))
 				{
-					if(cursor == backingText.length())
+					if (cursor == (int)backingText.length())
 					{
 						backingText += character;
 					}
@@ -442,22 +441,22 @@ void Textbox::OnVKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 			break;
 		}
 	}
-	catch(std::out_of_range &e)
+	catch (std::out_of_range &e)
 	{
 		cursor = 0;
 		backingText = "";
 	}
-	if(inputType == Number)
+	if (inputType == Number)
 	{
 		//Remove extra preceding 0's
 		while(backingText[0] == '0' && backingText.length()>1)
 			backingText.erase(backingText.begin());
 	}
-	if(cursor > backingText.length())
+	if (cursor > (int)backingText.length())
 		cursor = backingText.length();
-	if(changed)
+	if (changed)
 	{
-		if(masked)
+		if (masked)
 		{
 			std::string maskedText = std::string(backingText);
 			std::fill(maskedText.begin(), maskedText.end(), '\x8D');

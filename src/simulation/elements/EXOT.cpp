@@ -49,7 +49,7 @@ Element_EXOT::Element_EXOT()
 //#TPT-Directive ElementHeader Element_EXOT static int update(UPDATE_FUNC_ARGS)
 int Element_EXOT::update(UPDATE_FUNC_ARGS)
 {
-	int r, rt, rx, ry, nb, rrx, rry, trade, tym;
+	int r, rt, rx, ry, trade, tym;
 	for (rx=-2; rx<=2; rx++)
 		for (ry=-2; ry<=2; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
@@ -116,7 +116,7 @@ int Element_EXOT::update(UPDATE_FUNC_ARGS)
 		if (parts[i].life < 1001)
 		{
 			sim->part_change_type(i, x, y, PT_WARP);
-			return 0;
+			return 1;
 		}
 	}
 	else if(parts[i].life < 1001)
@@ -126,7 +126,7 @@ int Element_EXOT::update(UPDATE_FUNC_ARGS)
 	{
 		parts[i].tmp2 = 6000;
 		sim->part_change_type(i, x, y, PT_WARP);
-		return 0;
+		return 1;
 	}
 	if (parts[i].tmp2 > 100)
 	{

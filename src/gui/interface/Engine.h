@@ -87,7 +87,7 @@ namespace ui
 		//Window* statequeued_;
 		Window* state_;
 		Point windowTargetPosition;
-		float windowOpenState;
+		int windowOpenState;
 
 		bool running_;
 		bool break_;

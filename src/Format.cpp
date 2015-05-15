@@ -87,10 +87,10 @@ std::string format::CleanString(std::string dirtyString, size_t maxVisualSize, s
 	{
 		newString = newString.substr(0, maxVisualSize/10);
 	}
-	for(int i = 0; i < newString.size(); i++){
-		if(!(newString[i]>=' ' && newString[i]<127)){	//Clamp to ASCII range
+	for (unsigned int i = 0; i < newString.size(); i++)
+	{
+		if (!(newString[i]>=' ' && newString[i]<127))	//Clamp to ASCII range
 			newString[i] = '?';							//Replace with "huh" char
-		}
 	}
 	return newString;
 }
@@ -113,10 +113,10 @@ std::string format::CleanString(char * dirtyData, size_t maxVisualSize, size_t m
 	{
 		newString = newString.substr(0, maxVisualSize/10);
 	}
-	for(int i = 0; i < newString.size(); i++){
-		if(!(newString[i]>=' ' && newString[i]<127)){	//Clamp to ASCII range
+	for (unsigned int i = 0; i < newString.size(); i++)
+	{
+		if (!(newString[i]>=' ' && newString[i]<127))	//Clamp to ASCII range
 			newString[i] = '?';							//Replace with "huh" char
-		}
 	}
 	return newString;
 }
@@ -213,7 +213,7 @@ std::vector<char> format::VideoBufferToPPM(const VideoBuffer & vidBuf)
 		}
 		data.insert(data.end(), currentRow, currentRow+(vidBuf.Width*3));
 	}
-	delete currentRow;
+	delete [] currentRow;
 
 	return data;
 }
@@ -228,11 +228,11 @@ struct PNGChunk
 
 	PNGChunk(int length, std::string name)
 	{
-		if(name.length()!=4)
+		if (name.length()!=4)
 			throw std::runtime_error("Invalid chunk name");
 		std::copy(name.begin(), name.begin()+4, Name);
 		Length = length;
-		if(length)
+		if (length)
 		{
 			Data = new char[length];
 			std::fill(Data, Data+length, 0);
@@ -244,7 +244,7 @@ struct PNGChunk
 	}
 	unsigned long CRC()
 	{
-		if(!Data)
+		if (!Data)
 		{
 			return format::CalculateCRC((unsigned char*)Name, 4);
 		}
@@ -260,7 +260,7 @@ struct PNGChunk
 	}
 	~PNGChunk()
 	{
-		if(Data)
+		if (Data)
 			delete[] Data;
 	}
 };
@@ -270,28 +270,28 @@ std::vector<char> format::VideoBufferToPNG(const VideoBuffer & vidBuf)
 	std::vector<PNGChunk*> chunks;
 
 	//Begin IHDR (Image header) chunk (Image size and depth)
-	PNGChunk IHDRChunk = PNGChunk(13, "IHDR");
+	PNGChunk *IHDRChunk = new PNGChunk(13, "IHDR");
 
 	//Image Width
-	IHDRChunk.Data[0] = (vidBuf.Width>>24)&0xFF;
-	IHDRChunk.Data[1] = (vidBuf.Width>>16)&0xFF;
-	IHDRChunk.Data[2] = (vidBuf.Width>>8)&0xFF;
-	IHDRChunk.Data[3] = (vidBuf.Width)&0xFF;
+	IHDRChunk->Data[0] = (vidBuf.Width>>24)&0xFF;
+	IHDRChunk->Data[1] = (vidBuf.Width>>16)&0xFF;
+	IHDRChunk->Data[2] = (vidBuf.Width>>8)&0xFF;
+	IHDRChunk->Data[3] = (vidBuf.Width)&0xFF;
 
 	//Image Height
-	IHDRChunk.Data[4] = (vidBuf.Height>>24)&0xFF;
-	IHDRChunk.Data[5] = (vidBuf.Height>>16)&0xFF;
-	IHDRChunk.Data[6] = (vidBuf.Height>>8)&0xFF;
-	IHDRChunk.Data[7] = (vidBuf.Height)&0xFF;
+	IHDRChunk->Data[4] = (vidBuf.Height>>24)&0xFF;
+	IHDRChunk->Data[5] = (vidBuf.Height>>16)&0xFF;
+	IHDRChunk->Data[6] = (vidBuf.Height>>8)&0xFF;
+	IHDRChunk->Data[7] = (vidBuf.Height)&0xFF;
 
 	//Bit depth
-	IHDRChunk.Data[8] = 8; //8bits per channel or 24bpp
+	IHDRChunk->Data[8] = 8; //8bits per channel or 24bpp
 
 	//Colour type
-	IHDRChunk.Data[9] = 2; //RGB triple
+	IHDRChunk->Data[9] = 2; //RGB triple
 
 	//Everything else is default
-	chunks.push_back(&IHDRChunk);
+	chunks.push_back(IHDRChunk);
 
 	//Begin image data, format is 8bit RGB (24bit pixel)
 	int dataPos = 0;
@@ -356,17 +356,17 @@ std::vector<char> format::VideoBufferToPNG(const VideoBuffer & vidBuf)
     if (result != Z_STREAM_END) exit(result);
 
     int compressedSize = compressedBufferSize-zipStream.avail_out;
-	PNGChunk IDATChunk = PNGChunk(compressedSize, "IDAT");
-	std::copy(compressedData, compressedData+compressedSize, IDATChunk.Data);
-	chunks.push_back(&IDATChunk);
+	PNGChunk *IDATChunk = new PNGChunk(compressedSize, "IDAT");
+	std::copy(compressedData, compressedData+compressedSize, IDATChunk->Data);
+	chunks.push_back(IDATChunk);
 
 	deflateEnd(&zipStream);
 
 	delete[] compressedData;
 	delete[] uncompressedData;
 
-	PNGChunk IENDChunk = PNGChunk(0, "IEND");
-	chunks.push_back(&IENDChunk);
+	PNGChunk *IENDChunk = new PNGChunk(0, "IEND");
+	chunks.push_back(IENDChunk);
 
 	//Write chunks to output buffer
 	int finalDataSize = 8;
@@ -416,6 +416,8 @@ std::vector<char> format::VideoBufferToPNG(const VideoBuffer & vidBuf)
 		finalData[finalDataPos++] = (tempCRC>>16)&0xFF;
 		finalData[finalDataPos++] = (tempCRC>>8)&0xFF;
 		finalData[finalDataPos++] = (tempCRC)&0xFF;
+
+		delete cChunk;
 	}
 
 	std::vector<char> outputData(finalData, finalData+finalDataPos);

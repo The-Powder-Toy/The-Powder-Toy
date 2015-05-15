@@ -129,7 +129,7 @@ int Element_DEUT::update(UPDATE_FUNC_ARGS)
 int Element_DEUT::graphics(GRAPHICS_FUNC_ARGS)
 
 {
-	if(cpart->life>=700)
+	if(cpart->life>=240)
 	{
 		*firea = 60;
 		*firer = *colr += 255;

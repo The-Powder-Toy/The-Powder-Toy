@@ -41,7 +41,9 @@ static inline int resampler_range_check(int v, int h) { (void)h; resampler_asser
 
 #define RESAMPLER_DEBUG 0
 
+#ifndef M_PI
 #define M_PI 3.14159265358979323846
+#endif
 
 // Float to int cast with truncation.
 static inline int cast_to_int(Resample_Real i)

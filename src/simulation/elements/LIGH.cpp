@@ -70,8 +70,7 @@ int Element_LIGH::update(UPDATE_FUNC_ARGS)
 	*/
 	int r,rx,ry,rt, multipler, powderful;
 	float angle, angle2=-1;
-	int pNear = 0;
-	powderful = powderful = parts[i].temp*(1+parts[i].life/40)*LIGHTING_POWER;
+	powderful = parts[i].temp*(1+parts[i].life/40)*LIGHTING_POWER;
 	//Element_FIRE::update(UPDATE_FUNC_SUBCALL_ARGS);
 	if (sim->aheat_enable)
 	{
@@ -162,7 +161,7 @@ int Element_LIGH::update(UPDATE_FUNC_ARGS)
 	}
 
 	//Completely broken and laggy function, possibly can be fixed later
-	/*pNear = LIGH_nearest_part(sim, i, parts[i].life*2.5);
+	/*int pNear = LIGH_nearest_part(sim, i, parts[i].life*2.5);
 	if (pNear!=-1)
 	{
 		int t=parts[pNear].type;
@@ -204,13 +203,13 @@ int Element_LIGH::update(UPDATE_FUNC_ARGS)
 	multipler=parts[i].life*1.5+rand()%((int)(parts[i].life+1));	
 	rx=cos(angle*M_PI/180)*multipler;
 	ry=-sin(angle*M_PI/180)*multipler;
-	create_line_par(sim, x, y, x+rx, y+ry, PT_LIGH, parts[i].temp, parts[i].life, angle, 0);
+	create_line_par(sim, x, y, x+rx, y+ry, PT_LIGH, parts[i].temp, parts[i].life, angle, parts[i].tmp2);
 	if (parts[i].tmp2==2)// && pNear==-1)
 	{
 		angle2= ((int)angle+100-rand()%200)%360;
 		rx=cos(angle2*M_PI/180)*multipler;
 		ry=-sin(angle2*M_PI/180)*multipler;
-		create_line_par(sim, x, y, x+rx, y+ry, PT_LIGH, parts[i].temp, parts[i].life, angle2, 0);
+		create_line_par(sim, x, y, x+rx, y+ry, PT_LIGH, parts[i].temp, parts[i].life, angle2, parts[i].tmp2);
 	}
 
 	parts[i].tmp2=-1;
@@ -275,7 +274,7 @@ bool Element_LIGH::create_LIGH(Simulation * sim, int x, int y, int c, int temp, 
 		else
 		{
 			sim->parts[p].life = life;
-			sim->parts[p].tmp2 = tmp2;
+			sim->parts[p].tmp2 = 0;
 		}
 	}
 	else if (x >= 0 && x < XRES && y >= 0 && y < YRES)

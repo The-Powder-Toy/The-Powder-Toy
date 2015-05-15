@@ -20,7 +20,7 @@ void LoginModel::Login(string username, string password)
 		break;
 	case LoginError:
 		statusText = "Error: " + Client::Ref().GetLastError();
-		int banStart = statusText.find(". Ban expire in"); //TODO: temporary, remove this when the ban message is fixed
+		size_t banStart = statusText.find(". Ban expire in"); //TODO: temporary, remove this when the ban message is fixed
 		if (banStart != statusText.npos)
 			statusText.replace(banStart, 15, ". Login at http://powdertoy.co.uk in order to see the full ban reason. Ban expires in");
 		break;
@@ -50,7 +50,7 @@ bool LoginModel::GetStatus()
 
 void LoginModel::notifyStatusChanged()
 {
-	for(int i = 0; i < observers.size(); i++)
+	for (size_t i = 0; i < observers.size(); i++)
 	{
 		observers[i]->NotifyStatusChanged(this);
 	}

@@ -1,4 +1,7 @@
 #include "simulation/Elements.h"
+//Temp particle used for graphics
+Particle tpart;
+
 //#TPT-Directive ElementClass Element_PIPE PT_PIPE 99
 Element_PIPE::Element_PIPE()
 {
@@ -28,7 +31,7 @@ Element_PIPE::Element_PIPE()
 	
 	Temperature = 273.15f;
 	HeatConduct = 0;
-	Description = "PIPE, moves particles around. Once the BRCK generates, erase some for the exit. Then the PIPE generates and is useable.";
+	Description = "PIPE, moves particles around. Once the BRCK generates, erase some for the exit. Then the PIPE generates and is usable.";
 	
 	State = ST_SOLID;
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
@@ -44,6 +47,8 @@ Element_PIPE::Element_PIPE()
 	
 	Update = &Element_PIPE::update;
 	Graphics = &Element_PIPE::graphics;
+
+	memset(&tpart, 0, sizeof(Particle));
 }
 
 #define PFLAG_NORMALSPEED 0x00010000
@@ -205,7 +210,7 @@ int Element_PIPE::update(UPDATE_FUNC_ARGS)
 						transfer_part_to_pipe(parts+(r>>8), parts+i);
 						sim->kill_part(r>>8);
 					}
-					else if ((parts[i].tmp&0xFF) == 0 && (r&0xFF)==PT_STOR && parts[r>>8].tmp && (sim->elements[parts[r>>8].tmp].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY)))
+					else if ((parts[i].tmp&0xFF) == 0 && (r&0xFF)==PT_STOR && parts[r>>8].tmp>0 && sim->IsValidElement(parts[r>>8].tmp) && (sim->elements[parts[r>>8].tmp].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY)))
 					{
 						// STOR stores properties in the same places as PIPE does
 						transfer_pipe_to_pipe(parts+(r>>8), parts+i);
@@ -216,36 +221,23 @@ int Element_PIPE::update(UPDATE_FUNC_ARGS)
 	}
 	else if (!parts[i].ctype && parts[i].life<=10)
 	{
-		if (parts[i].temp<272.15)//manual pipe colors
-		{
-			if (parts[i].temp>173.25)
-				parts[i].ctype = 2;
-			else if (parts[i].temp>73.25)
-				parts[i].ctype = 3;
-			else if (parts[i].temp>=0)
-				parts[i].ctype = 4;
-			parts[i].life = 0;
-		}
-		else
-		{
-			// make a border
-			for (rx=-2; rx<3; rx++)
-				for (ry=-2; ry<3; ry++)
+		// make a border
+		for (rx=-2; rx<3; rx++)
+			for (ry=-2; ry<3; ry++)
+			{
+				if (BOUNDS_CHECK && (rx || ry))
 				{
-					if (BOUNDS_CHECK && (rx || ry))
+					r = pmap[y+ry][x+rx];
+					if (!r)
 					{
-						r = pmap[y+ry][x+rx];
-						if (!r)
-						{
-							int index = sim->create_part(-1,x+rx,y+ry,PT_BRCK);//BRCK border, people didn't like DMND
-							if (parts[i].type == PT_PPIP && index != -1)
-								parts[index].tmp = 1;
-						}
+						int index = sim->create_part(-1,x+rx,y+ry,PT_BRCK);//BRCK border, people didn't like DMND
+						if (parts[i].type == PT_PPIP && index != -1)
+							parts[index].tmp = 1;
 					}
 				}
-			if (parts[i].life<=1)
-				parts[i].ctype = 1;
-		}
+			}
+		if (parts[i].life<=1)
+			parts[i].ctype = 1;
 	}
 	else if (parts[i].ctype==1)//wait for empty space before starting to generate automatic pipe pattern
 	{
@@ -287,20 +279,9 @@ int Element_PIPE::update(UPDATE_FUNC_ARGS)
 //#TPT-Directive ElementHeader Element_PIPE static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_PIPE::graphics(GRAPHICS_FUNC_ARGS)
 {
-	if ((cpart->tmp&0xFF)>0 && (cpart->tmp&0xFF)<PT_NUM && ren->sim->elements[(cpart->tmp&0xFF)].Enabled)
+	int t = cpart->tmp & 0xFF;;
+	if (t>0 && t<PT_NUM && ren->sim->elements[t].Enabled)
 	{
-		//Create a temp. particle and do a subcall.
-		Particle tpart;
-		int t;
-		memset(&tpart, 0, sizeof(Particle));
-		tpart.type = cpart->tmp&0xFF;
-		tpart.temp = cpart->temp;
-		tpart.life = cpart->tmp2;
-		tpart.tmp = cpart->pavg[0];
-		tpart.ctype = cpart->pavg[1];
-		if (tpart.type == PT_PHOT && tpart.ctype == 0x40000000)
-			tpart.ctype = 0x3FFFFFFF;
-		t = tpart.type;
 		if (ren->graphicscache[t].isready)
 		{
 			*pixel_mode = ren->graphicscache[t].pixel_mode;
@@ -315,6 +296,15 @@ int Element_PIPE::graphics(GRAPHICS_FUNC_ARGS)
 		}
 		else
 		{
+			//Emulate the graphics of stored particle
+			tpart.type = t;
+			tpart.temp = cpart->temp;
+			tpart.life = cpart->tmp2;
+			tpart.tmp = cpart->pavg[0];
+			tpart.ctype = cpart->pavg[1];
+			if (t == PT_PHOT && tpart.ctype == 0x40000000)
+				tpart.ctype = 0x3FFFFFFF;
+
 			*colr = PIXR(ren->sim->elements[t].Colour);
 			*colg = PIXG(ren->sim->elements[t].Colour);
 			*colb = PIXB(ren->sim->elements[t].Colour);
@@ -333,44 +323,24 @@ int Element_PIPE::graphics(GRAPHICS_FUNC_ARGS)
 	}
 	else
 	{
-		if (cpart->ctype==2)
-		{
+		switch (cpart->ctype){
+		case 2:
 			*colr = 50;
 			*colg = 1;
 			*colb = 1;
-		}
-		else if (cpart->ctype==3)
-		{
+			break;
+		case 3:
 			*colr = 1;
 			*colg = 50;
 			*colb = 1;
-		}
-		else if (cpart->ctype==4)
-		{
+			break;
+		case 4:
 			*colr = 1;
 			*colg = 1;
 			*colb = 50;
-		}
-		else if (cpart->temp<272.15&&cpart->ctype!=1)
-		{
-			if (cpart->temp>173.25&&cpart->temp<273.15)
-			{
-				*colr = 50;
-				*colg = 1;
-				*colb = 1;
-			}
-			if (cpart->temp>73.25&&cpart->temp<=173.15)
-			{
-				*colr = 1;
-				*colg = 50;
-				*colb = 1;
-			}
-			if (cpart->temp>=0&&cpart->temp<=73.15)
-			{
-				*colr = 1;
-				*colg = 1;
-				*colb = 50;
-			}
+			break;
+		default:
+			break;
 		}
 	}
 	return 0;
@@ -439,7 +409,7 @@ void Element_PIPE::pushParticle(Simulation * sim, int i, int count, int original
 			rndstore = rndstore>>3;
 			rx = pos_1_rx[rnd];
 			ry = pos_1_ry[rnd];
-			if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES)
+			if (BOUNDS_CHECK)
 			{
 				r = sim->pmap[y+ry][x+rx];
 				if (!r)
@@ -454,11 +424,15 @@ void Element_PIPE::pushParticle(Simulation * sim, int i, int count, int original
 				}
 				else if ((r&0xFF) == PT_PRTI) //Pass particles into PRTI for a pipe speed increase
 				{
-					int nnx;
-					for (nnx=0; nnx<80; nnx++)
-						if (!sim->portalp[sim->parts[r>>8].tmp][count][nnx].type)
+					int portaltmp = sim->parts[r>>8].tmp;
+					if (portaltmp >= CHANNELS)
+						portaltmp = CHANNELS-1;
+					else if (portaltmp < 0)
+						portaltmp = 0;
+					for (int nnx = 0; nnx < 80; nnx++)
+						if (!sim->portalp[portaltmp][count][nnx].type)
 						{
-							transfer_pipe_to_part(sim, sim->parts+i, &(sim->portalp[sim->parts[r>>8].tmp][count][nnx]));
+							transfer_pipe_to_part(sim, sim->parts+i, &(sim->portalp[portaltmp][count][nnx]));
 							count++;
 							break;
 						}
@@ -480,11 +454,15 @@ void Element_PIPE::pushParticle(Simulation * sim, int i, int count, int original
 		}
 		else if ((r&0xFF) == PT_PRTI) //Pass particles into PRTI for a pipe speed increase
 		{
-			int nnx;
-			for (nnx=0; nnx<80; nnx++)
-				if (!sim->portalp[sim->parts[r>>8].tmp][count][nnx].type)
+			int portaltmp = sim->parts[r>>8].tmp;
+			if (portaltmp >= CHANNELS)
+				portaltmp = CHANNELS-1;
+			else if (portaltmp < 0)
+				portaltmp = 0;
+			for (int nnx = 0; nnx < 80; nnx++)
+				if (!sim->portalp[portaltmp][count][nnx].type)
 				{
-					transfer_pipe_to_part(sim, sim->parts+i, &(sim->portalp[sim->parts[r>>8].tmp][count][nnx]));
+					transfer_pipe_to_part(sim, sim->parts+i, &(sim->portalp[portaltmp][count][nnx]));
 					count++;
 					break;
 				}

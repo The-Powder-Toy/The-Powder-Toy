@@ -33,16 +33,10 @@ class GameModel;
 class GameView: public ui::Window
 {
 private:
-	DrawMode drawMode;
-	
-	bool doScreenshot;
-	bool recording;
-	int screenshotIndex;
-	int recordingIndex;
-
 	bool isMouseDown;
 	bool zoomEnabled;
 	bool zoomCursorFixed;
+	bool mouseInZoom;
 	bool drawSnap;
 	bool shiftBehaviour;
 	bool ctrlBehaviour;
@@ -52,8 +46,6 @@ private:
 	bool wallBrush;
 	bool toolBrush;
 	bool windTool;
-	int introText;
-	std::string introTextMessage;
 	int toolIndex;
 	int currentSaveType;
 	int lastMenu;
@@ -67,6 +59,13 @@ private:
 	int buttonTipShow;
 	std::string buttonTip;
 	bool isButtonTipFadingIn;
+	int introText;
+	std::string introTextMessage;
+
+	bool doScreenshot;
+	bool recording;
+	int screenshotIndex;
+	int recordingIndex;
 
 	queue<ui::Point> pointQueue;
 	GameController * c;
@@ -77,8 +76,7 @@ private:
 	vector<ui::Button*> menuButtons;
 	vector<ToolButton*> toolButtons;
 	vector<ui::Component*> notificationComponents;
-	deque<string> logEntries;
-	float lastLogEntry;
+	deque<std::pair<std::string, int> > logEntries;
 	ui::Button * scrollBar;
 	ui::Button * searchButton;
 	ui::Button * reloadButton;
@@ -92,11 +90,11 @@ private:
 	ui::Button * simulationOptionButton;
 	ui::Button * displayModeButton;
 	ui::Button * pauseButton;
-	ui::Point currentMouse;
 
 	ui::Button * colourPicker;
 	vector<ToolButton*> colourPresets;
 
+	DrawMode drawMode;
 	bool drawModeReset;
 	ui::Point drawPoint1;
 	ui::Point drawPoint2;
@@ -105,6 +103,7 @@ private:
 	ui::Point selectPoint1;
 	ui::Point selectPoint2;
 
+	ui::Point currentMouse;
 	ui::Point mousePosition;
 
 	VideoBuffer * placeSaveThumb;
@@ -113,8 +112,8 @@ private:
 
 	int lastOffset;
 	void setToolButtonOffset(int offset);
-	virtual ui::Point lineSnapCoords(ui::Point point1, ui::Point point2);
-	virtual ui::Point rectSnapCoords(ui::Point point1, ui::Point point2);
+
+	void SetSaveButtonTooltips();
 
 	void screenshot();
 	void record();
@@ -122,6 +121,7 @@ private:
 	void enableShiftBehaviour();
 	void disableShiftBehaviour();
 	void enableCtrlBehaviour();
+	void enableCtrlBehaviour(bool isHighlighted);
 	void disableCtrlBehaviour();
 	void enableAltBehaviour();
 	void disableAltBehaviour();
@@ -144,6 +144,14 @@ public:
 	void ExitPrompt();
 	SelectMode GetSelectMode() { return selectMode; }
 	void BeginStampSelection();
+
+	//all of these are only here for one debug lines
+	bool GetDrawingLine() { return drawMode == DrawLine && isMouseDown; }
+	bool GetDrawSnap() { return drawSnap; }
+	ui::Point GetLineStartCoords() { return drawPoint1; }
+	ui::Point GetLineFinishCoords() { return currentMouse; }
+	ui::Point lineSnapCoords(ui::Point point1, ui::Point point2);
+	ui::Point rectSnapCoords(ui::Point point1, ui::Point point2);
 
 	void AttachController(GameController * _c){ c = _c; }
 	void NotifyRendererChanged(GameModel * sender);
@@ -182,6 +190,7 @@ public:
 	virtual void OnBlur();
 
 	//Top-level handlers, for Lua interface
+	virtual void DoTick(float dt);
 	virtual void DoDraw();
 	virtual void DoMouseMove(int x, int y, int dx, int dy);
 	virtual void DoMouseDown(int x, int y, unsigned button);

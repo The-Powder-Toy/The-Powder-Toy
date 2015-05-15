@@ -40,7 +40,7 @@ Element_FRZZ::Element_FRZZ()
 	LowTemperature = 50.0f;
 	LowTemperatureTransition = PT_ICEI;
 	HighTemperature = 273.15;
-	HighTemperatureTransition = PT_WATR;
+	HighTemperatureTransition = PT_FRZW;
 	
 	Update = &Element_FRZZ::update;
 	

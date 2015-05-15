@@ -353,9 +353,9 @@ void Air::Invert()
 }
 
 Air::Air(Simulation & simulation):
+	sim(simulation),
 	airMode(0),
-	ambientAirTemp(295.15f),
-	sim(simulation)
+	ambientAirTemp(295.15f)
 {
 	//Simulation should do this.
 	make_kernel();

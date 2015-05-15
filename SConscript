@@ -68,8 +68,10 @@ AddSconsOption('opengl-renderer', False, False, "Build with OpenGL renderer supp
 AddSconsOption('renderer', False, False, "Build the save renderer.")
 
 AddSconsOption('wall', False, False, "Error on all warnings.")
-AddSconsOption('no-warnings', True, False, "Disable all compiler warnings (default).")
+AddSconsOption('no-warnings', False, False, "Disable all compiler warnings.")
 AddSconsOption('nolua', False, False, "Disable Lua.")
+AddSconsOption('luajit', False, False, "Enable LuaJIT")
+AddSconsOption('lua52', False, False, "Compile using lua 5.2")
 AddSconsOption('nofft', False, False, "Disable FFT.")
 AddSconsOption("output", False, True, "Executable output name.")
 
@@ -92,7 +94,9 @@ if msvc and platform != "Windows":
 	FatalError("Error: --msvc only works on windows")
 
 #Create SCons Environment
-if platform == "Windows" and not GetOption('msvc'):
+if GetOption('msvc'):
+	env = Environment(tools = ['default'], ENV = {'PATH' : os.environ['PATH'], 'TMP' : os.environ['TMP']}, TARGET_ARCH = 'x86')
+elif platform == "Windows" and not GetOption('msvc'):
 	env = Environment(tools = ['mingw'], ENV = {'PATH' : os.environ['PATH']})
 else:
 	env = Environment(tools = ['default'], ENV = {'PATH' : os.environ['PATH']})
@@ -168,6 +172,7 @@ if GetOption("msvc"):
 		env.Append(LIBPATH=['StaticLibs/'])
 	else:
 		env.Append(LIBPATH=['Libraries/'])
+	env.Append(CPPPATH=['includes/'])
 
 #Check 32/64 bit
 def CheckBit(context):
@@ -175,13 +180,13 @@ def CheckBit(context):
 	program = """#include <stdlib.h>
 	#include <stdio.h>
 	int main() {
-	    printf("%d", (int)sizeof(size_t));
-	    return 0;
+		printf("%d", (int)sizeof(size_t));
+		return 0;
 	}
 	"""
 	ret = context.TryCompile(program, '.c')
 	if ret == 0:
-	    return False
+		return False
 	ret = context.TryRun(program, '.c')
 	if ret[1] == '':
 		return False
@@ -249,28 +254,46 @@ def findLibs(env, conf):
 	if not GetOption('nolua') and not GetOption('renderer'):
 		#Look for Lua
 		luaver = "lua5.1"
-		if not conf.CheckLib(['lua5.1', 'lua-5.1', 'lua51', 'lua']):
-			if conf.CheckLib(['lua5.2', 'lua-5.2', 'lua52']):
-				env.Append(CPPDEFINES=["LUA_COMPAT_ALL"])
-				luaver = "lua5.2"
-			elif platform != "Darwin" or not conf.CheckFramework("Lua"):
-				FatalError("lua5.1 development library not found or not installed")
+		if GetOption('luajit'):
+			if not conf.CheckLib(['luajit-5.1', 'luajit5.1', 'luajit', 'libluajit']):
+				FatalError("luajit development library not found or not installed")
+			env.Append(CPPDEFINES=["LUAJIT"])
+			luaver = "luajit"
+		elif GetOption('lua52'):
+			if not conf.CheckLib(['lua5.2', 'lua-5.2', 'lua52']):
+				FatalError("lua5.2 development library not found or not installed")
+			env.Append(CPPDEFINES=["LUA_COMPAT_ALL"])
+			luaver = "lua5.2"
+		else:
+			if not conf.CheckLib(['lua5.1', 'lua-5.1', 'lua51', 'lua']):
+				if platform != "Darwin" or not conf.CheckFramework("Lua"):
+					FatalError("lua5.1 development library not found or not installed")
+		foundpkg = False
 		if platform == "Linux":
 			try:
 				env.ParseConfig("pkg-config --cflags {0}".format(luaver))
 				env.ParseConfig("pkg-config --libs {0}".format(luaver))
+				env.Append(CPPDEFINES=["LUA_R_INCL"])
+				foundpkg = True
 			except:
 				pass
-
-		#Look for lua.h
-		if not conf.CheckCHeader('lua.h'):
-			if conf.CheckCHeader('lua5.1/lua.h'):
-				env.Append(CPPDEFINES=["LUA_INC"])
+		if not foundpkg:
+			#Look for lua.h
+			foundheader = False
+			if GetOption('luajit'):
+				foundheader = conf.CheckCHeader('luajit-2.0/lua.h')
+			elif GetOption('lua52'):
+				foundheader = conf.CheckCHeader('lua5.2/lua.h')
 			else:
-				FatalError("lua.h not found")
+				foundheader = conf.CheckCHeader('lua5.1/lua.h')
+			if not foundheader:
+				if conf.CheckCHeader('lua.h'):
+					env.Append(CPPDEFINES=["LUA_R_INCL"])
+				else:
+					FatalError("lua.h not found")
 
 	#Look for fftw
-	if not GetOption('nofft') and not conf.CheckLib(['fftw3f', 'fftw3f-3', 'libfftw3f-3']):
+	if not GetOption('nofft') and not conf.CheckLib(['fftw3f', 'fftw3f-3', 'libfftw3f-3', 'libfftw3f']):
 			FatalError("fftw3f development library not found or not installed")
 
 	#Look for bz2
@@ -282,7 +305,7 @@ def findLibs(env, conf):
 		FatalError("bzip2 headers not found")
 
 	#Look for libz
-	if not conf.CheckLib('z'):
+	if not conf.CheckLib(['z', 'zlib']):
 		FatalError("libz not found or not installed")
 
 	#Look for pthreads
@@ -342,14 +365,14 @@ elif not GetOption('help'):
 	conf.AddTest('CheckBit', CheckBit)
 	if not conf.CheckCC() or not conf.CheckCXX():
 		FatalError("compiler not correctly configured")
-	if platform == compilePlatform and isX86 and not GetOption('32bit') and not GetOption('64bit'):
+	if platform == compilePlatform and isX86 and not GetOption('32bit') and not GetOption('64bit') and not GetOption('msvc'):
 		conf.CheckBit()
 	findLibs(env, conf)
 	env = conf.Finish()
 
 if not msvc:
 	if platform == "Windows":
-		env.Append(CCFLAGS=['-std=gnu++98'])
+		env.Append(CXXFLAGS=['-std=gnu++98'])
 	else:
 		env.Append(CXXFLAGS=['-std=c++98'])
 	env.Append(CXXFLAGS=['-Wno-invalid-offsetof'])
@@ -381,7 +404,8 @@ if isX86:
 if not GetOption('no-sse'):
 	if GetOption('sse'):
 		if msvc:
-			env.Append(CCFLAGS=['/arch:SSE'])
+			if not GetOption('sse2'):
+				env.Append(CCFLAGS=['/arch:SSE'])
 		else:
 			env.Append(CCFLAGS=['-msse'])
 		env.Append(CPPDEFINES=['X86_SSE'])

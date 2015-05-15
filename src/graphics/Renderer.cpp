@@ -201,7 +201,7 @@ void Renderer::clearScreen(float alpha)
 #endif
 }
 #ifdef OGLR
-void Renderer::checkShader(GLuint shader, char * shname)
+void Renderer::checkShader(GLuint shader, const char * shname)
 {
 	GLint status;
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
@@ -214,7 +214,7 @@ void Renderer::checkShader(GLuint shader, char * shname)
 		exit(1);
 	}
 }
-void Renderer::checkProgram(GLuint program, char * progname)
+void Renderer::checkProgram(GLuint program, const char * progname)
 {
 	GLint status;
 	glGetProgramiv(program, GL_LINK_STATUS, &status);
@@ -521,7 +521,7 @@ wall_type * Renderer_wtypes = LoadWalls(Renderer_wtypesCount);
 
 VideoBuffer * Renderer::WallIcon(int wallID, int width, int height)
 {
-	int i, j, cr, cg, cb;
+	int i, j;
 	int wt = wallID;
 	if (wt<0 || wt>=Renderer_wtypesCount)
 		return 0;
@@ -706,7 +706,7 @@ void Renderer::DrawWalls()
 			if (bmap[y][x])
 			{
 				wt = bmap[y][x];
-				if (wt<0 || wt>=UI_WALLCOUNT)
+				if (wt >= UI_WALLCOUNT)
 					continue;
 				pc = wtypes[wt].colour;
 				gc = wtypes[wt].eglow;
@@ -912,7 +912,7 @@ void Renderer::DrawWalls()
 
 void Renderer::DrawSigns()
 {
-	int i, j, x, y, w, h, dx, dy,mx,my,b=1,bq,match;
+	int x, y, w, h;
 	std::vector<sign> signs = sim->signs;
 #ifdef OGLR
 	GLint prevFbo;
@@ -920,7 +920,7 @@ void Renderer::DrawSigns()
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, partsFbo);
 	glTranslated(0, MENUSIZE, 0);
 #endif
-	for (i=0; i < signs.size(); i++)
+	for (size_t i = 0; i < signs.size(); i++)
 		if (signs[i].text.length())
 		{
 			char type = 0;
@@ -936,10 +936,10 @@ void Renderer::DrawSigns()
 			else
 				drawtext(x+3, y+3, text, 0, 191, 255, 255);
 				
-			x = signs[i].x;
-			y = signs[i].y;
-			dx = 1 - signs[i].ju;
-			dy = (signs[i].y > 18) ? -1 : 1;
+			int x = signs[i].x;
+			int y = signs[i].y;
+			int dx = 1 - signs[i].ju;
+			int dy = (signs[i].y > 18) ? -1 : 1;
 #ifdef OGLR
 			glBegin(GL_LINES);
 			glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -947,11 +947,11 @@ void Renderer::DrawSigns()
 			glVertex2i(x+(dx*4), y+(dy*4));
 			glEnd();
 #else
-			for (j=0; j<4; j++)
+			for (int j = 0; j < 4; j++)
 			{
 				blendpixel(x, y, 192, 192, 192, 255);
-				x+=dx;
-				y+=dy;
+				x += dx;
+				y += dy;
 			}
 #endif
 		}
@@ -1004,7 +1004,7 @@ void Renderer::render_fire()
 #ifndef OGLR
 	if(!(render_mode & FIREMODE))
 		return;
-	int i,j,x,y,r,g,b,nx,ny;
+	int i,j,x,y,r,g,b;
 	for (j=0; j<YRES/CELL; j++)
 		for (i=0; i<XRES/CELL; i++)
 		{
@@ -1043,7 +1043,7 @@ float blur_alphaf[7][7];
 void Renderer::prepare_alpha(int size, float intensity)
 {
 	//TODO: implement size
-	int x,y,i,j,c;
+	int x,y,i,j;
 	float multiplier = 255.0f*intensity;
 
 	memset(temp, 0, sizeof(temp));
@@ -1071,7 +1071,7 @@ void Renderer::prepare_alpha(int size, float intensity)
 
 	memset(glow_alphaf, 0, sizeof(glow_alphaf));
 
-	c = 5;
+	int c = 5;
 
 	glow_alphaf[c][c-1] = 0.4f;
 	glow_alphaf[c][c+1] = 0.4f;
@@ -1125,7 +1125,7 @@ void Renderer::render_parts()
 {
 	int deca, decr, decg, decb, cola, colr, colg, colb, firea, firer, fireg, fireb, pixel_mode, q, i, t, nx, ny, x, y, caddress;
 	int orbd[4] = {0, 0, 0, 0}, orbl[4] = {0, 0, 0, 0};
-	float gradv, flicker, fnx, fny;
+	float gradv, flicker;
 	Particle * parts;
 	Element *elements;
 	if(!sim)
@@ -1133,6 +1133,7 @@ void Renderer::render_parts()
 	parts = sim->parts;
 	elements = sim->elements;
 #ifdef OGLR
+	float fnx, fny;
 	int cfireV = 0, cfireC = 0, cfire = 0;
 	int csmokeV = 0, csmokeC = 0, csmoke = 0;
 	int cblobV = 0, cblobC = 0, cblob = 0;
@@ -1168,8 +1169,10 @@ void Renderer::render_parts()
 
 			nx = (int)(sim->parts[i].x+0.5f);
 			ny = (int)(sim->parts[i].y+0.5f);
+#ifdef OGLR
 			fnx = sim->parts[i].x;
 			fny = sim->parts[i].y;
+#endif
 
 			if(nx >= XRES || nx < 0 || ny >= YRES || ny < 0)
 				continue;
@@ -1280,9 +1283,9 @@ void Renderer::render_parts()
 				{
 					caddress = restrict_flt((int)( restrict_flt((float)(sim->parts[i].temp+(-MIN_TEMP)), 0.0f, MAX_TEMP+(-MIN_TEMP)) / ((MAX_TEMP+(-MIN_TEMP))/1024) ) *3, 0.0f, (1024.0f*3)-3);
 					firea = 255;
-					firer = colr = (unsigned char)color_data[caddress];
-					fireg = colg = (unsigned char)color_data[caddress+1];
-					fireb = colb = (unsigned char)color_data[caddress+2];
+					firer = colr = color_data[caddress];
+					fireg = colg = color_data[caddress+1];
+					fireb = colb = color_data[caddress+2];
 					cola = 255;
 					if(pixel_mode & (FIREMODE | PMODE_GLOW))
 						pixel_mode = (pixel_mode & ~(FIREMODE|PMODE_GLOW)) | PMODE_BLUR;
@@ -1365,7 +1368,7 @@ void Renderer::render_parts()
 				{
 					if (t==PT_SOAP)
 					{
-						if ((parts[i].ctype&7) == 7 && parts[i].tmp >= 0 && parts[i].tmp < NPART && parts[i].tmp2 >= 0 && parts[i].tmp2 < NPART)
+						if ((parts[i].ctype&3) == 3 && parts[i].tmp >= 0 && parts[i].tmp < NPART)
 							draw_line(nx, ny, (int)(parts[parts[i].tmp].x+0.5f), (int)(parts[parts[i].tmp].y+0.5f), colr, colg, colb, cola);
 					}
 				}
@@ -1377,7 +1380,7 @@ void Renderer::render_parts()
 						cplayer = &sim->player;
 					else if(t==PT_STKM2)
 						cplayer = &sim->player2;
-					else if(t==PT_FIGH)
+					else if (t==PT_FIGH && sim->parts[i].tmp >= 0 && sim->parts[i].tmp < MAX_FIGHTERS)
 						cplayer = &sim->fighters[(unsigned char)sim->parts[i].tmp];
 					else
 						continue;
@@ -2268,7 +2271,7 @@ void Renderer::draw_air()
 			{
 				float ttemp = hv[y][x]+(-MIN_TEMP);
 				int caddress = restrict_flt((int)( restrict_flt(ttemp, 0.0f, MAX_TEMP+(-MIN_TEMP)) / ((MAX_TEMP+(-MIN_TEMP))/1024) ) *3, 0.0f, (1024.0f*3)-3);
-				c = PIXRGB((int)((unsigned char)color_data[caddress]*0.7f), (int)((unsigned char)color_data[caddress+1]*0.7f), (int)((unsigned char)color_data[caddress+2]*0.7f));
+				c = PIXRGB((int)(color_data[caddress]*0.7f), (int)(color_data[caddress+1]*0.7f), (int)(color_data[caddress+2]*0.7f));
 				//c  = PIXRGB(clamp_flt(fabsf(vx[y][x]), 0.0f, 8.0f),//vx adds red
 				//	clamp_flt(hv[y][x], 0.0f, 1600.0f),//heat adds green
 				//	clamp_flt(fabsf(vy[y][x]), 0.0f, 8.0f));//vy adds blue
@@ -2421,22 +2424,22 @@ pixel Renderer::GetPixel(int x, int y)
 Renderer::Renderer(Graphics * g, Simulation * sim):
 	sim(NULL),
 	g(NULL),
+	render_mode(0),
+	colour_mode(0),
+	display_mode(0),
+	gravityZonesEnabled(false),
+	gravityFieldEnabled(false),
+	decorations_enable(1),
+	blackDecorations(false),
+	debugLines(false),
+	sampleColor(0xFFFFFFFF),
+	mousePos(0, 0),
 	zoomWindowPosition(0, 0),
 	zoomScopePosition(0, 0),
 	zoomScopeSize(32),
-	ZFACTOR(8),
 	zoomEnabled(false),
-	decorations_enable(1),
-	gravityFieldEnabled(false),
-	gravityZonesEnabled(false),
-	mousePos(0, 0),
-	display_mode(0),
-	render_mode(0),
-	colour_mode(0),
-	gridSize(0),
-	blackDecorations(false),
-	debugLines(false),
-	sampleColor(0xFFFFFFFF)
+	ZFACTOR(8),
+	gridSize(0)
 {
 	this->g = g;
 	this->sim = sim;
@@ -2685,7 +2688,7 @@ void Renderer::CompileRenderMode()
 {
 	int old_render_mode = render_mode;
 	render_mode = 0;
-	for(int i = 0; i < render_modes.size(); i++)
+	for (size_t i = 0; i < render_modes.size(); i++)
 		render_mode |= render_modes[i];
 
 	//If firemode is removed, clear the fire display
@@ -2707,7 +2710,7 @@ void Renderer::ClearAccumulation()
 
 void Renderer::AddRenderMode(unsigned int mode)
 {
-	for(int i = 0; i < render_modes.size(); i++)
+	for (size_t i = 0; i < render_modes.size(); i++)
 	{
 		if(render_modes[i] == mode)
 		{
@@ -2720,7 +2723,7 @@ void Renderer::AddRenderMode(unsigned int mode)
 
 void Renderer::RemoveRenderMode(unsigned int mode)
 {
-	for(int i = 0; i < render_modes.size(); i++)
+	for (size_t i = 0; i < render_modes.size(); i++)
 	{
 		if(render_modes[i] == mode)
 		{
@@ -2746,9 +2749,9 @@ void Renderer::CompileDisplayMode()
 {
 	int old_display_mode = display_mode;
 	display_mode = 0;
-	for(int i = 0; i < display_modes.size(); i++)
+	for (size_t i = 0; i < display_modes.size(); i++)
 		display_mode |= display_modes[i];
-	if(!(display_mode & DISPLAY_PERS) && (old_display_mode & DISPLAY_PERS))
+	if (!(display_mode & DISPLAY_PERS) && (old_display_mode & DISPLAY_PERS))
 	{
 		ClearAccumulation();
 	}
@@ -2756,13 +2759,13 @@ void Renderer::CompileDisplayMode()
 
 void Renderer::AddDisplayMode(unsigned int mode)
 {
-	for(int i = 0; i < display_modes.size(); i++)
+	for (size_t i = 0; i < display_modes.size(); i++)
 	{
-		if(display_modes[i] == mode)
+		if (display_modes[i] == mode)
 		{
 			return;
 		}
-		if(display_modes[i] & DISPLAY_AIR)
+		if (display_modes[i] & DISPLAY_AIR)
 		{
 			display_modes.erase(display_modes.begin()+i);
 		}
@@ -2773,9 +2776,9 @@ void Renderer::AddDisplayMode(unsigned int mode)
 
 void Renderer::RemoveDisplayMode(unsigned int mode)
 {
-	for(int i = 0; i < display_modes.size(); i++)
+	for (size_t i = 0; i < display_modes.size(); i++)
 	{
-		if(display_modes[i] == mode)
+		if (display_modes[i] == mode)
 		{
 			display_modes.erase(display_modes.begin() + i);
 			i = 0;

@@ -16,13 +16,13 @@ class LoginController;
 class LoginMode;
 class LoginView: public ui::Window {
 	LoginController * c;
-	ui::Point targetSize;
 	ui::Button * loginButton;
 	ui::Button * cancelButton;
 	ui::Label * titleLabel;
 	ui::Label * infoLabel;
 	ui::Textbox * usernameField;
 	ui::Textbox * passwordField;
+	ui::Point targetSize;
 public:
 	class LoginAction;
 	class CancelAction;

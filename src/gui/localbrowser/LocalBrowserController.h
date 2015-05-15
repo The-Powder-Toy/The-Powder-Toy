@@ -28,6 +28,7 @@ public:
 	void SetMoveToFront(bool move);
 	void NextPage();
 	void PrevPage();
+	void SetPage(int page);
 	void Update();
 	void Exit();
 	virtual ~LocalBrowserController();

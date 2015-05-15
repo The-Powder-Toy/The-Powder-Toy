@@ -56,33 +56,32 @@ int TPTScriptInterface::Command(std::string command)
 	}
 
 	//Evaluate
-	return 0;
+	return retCode;
 }
 
 ValueType TPTScriptInterface::testType(std::string word)
 {
-	int i = 0;
+	size_t i = 0;
 	char * rawWord = (char *)word.c_str();
 	//Function
-	if(word == "set")
+	if (word == "set")
 		return TypeFunction;
-	else if(word == "create")
+	else if (word == "create")
 		return TypeFunction;
-	else if(word == "delete")
+	else if (word == "delete")
 		return TypeFunction;
-	else if(word == "kill")
+	else if (word == "kill")
 		return TypeFunction;
-	else if(word == "load")
+	else if (word == "load")
 		return TypeFunction;
-	else if(word == "reset")
+	else if (word == "reset")
 		return TypeFunction;
-	else if(word == "bubble")
+	else if (word == "bubble")
 		return TypeFunction;
-	else if(word == "quit")
+	else if (word == "quit")
 		return TypeFunction;
 	//Basic type
-	parseNumber:
-			for(i = 0; i < word.length(); i++)
+			for (i = 0; i < word.length(); i++)
 			{
 				if (!(rawWord[i] >= '0' && rawWord[i] <= '9') && !(rawWord[i] == '-' && !i))
 				{
@@ -102,21 +101,21 @@ ValueType TPTScriptInterface::testType(std::string word)
 			return TypeNumber;
 	parseFloat:
 			for (i++; i < word.length(); i++)
-				if(!((rawWord[i] >= '0' && rawWord[i] <= '9') || (rawWord[i] >= 'a' && rawWord[i] <= 'f') || (rawWord[i] >= 'A' && rawWord[i] <= 'F')))
+				if (!((rawWord[i] >= '0' && rawWord[i] <= '9') || (rawWord[i] >= 'a' && rawWord[i] <= 'f') || (rawWord[i] >= 'A' && rawWord[i] <= 'F')))
 				{
 					goto parseString;
 				}
 			return TypeFloat;
 	parseNumberHex:
 			for (i++; i < word.length(); i++)
-				if(!((rawWord[i] >= '0' && rawWord[i] <= '9') || (rawWord[i] >= 'a' && rawWord[i] <= 'f') || (rawWord[i] >= 'A' && rawWord[i] <= 'F')))
+				if (!((rawWord[i] >= '0' && rawWord[i] <= '9') || (rawWord[i] >= 'a' && rawWord[i] <= 'f') || (rawWord[i] >= 'A' && rawWord[i] <= 'F')))
 				{
 					goto parseString;
 				}
 			return TypeNumber;
 	parsePoint:
 			for (i++; i < word.length(); i++)
-				if(!(rawWord[i] >= '0' && rawWord[i] <= '9'))
+				if (!(rawWord[i] >= '0' && rawWord[i] <= '9'))
 				{
 					goto parseString;
 				}
@@ -125,7 +124,7 @@ ValueType TPTScriptInterface::testType(std::string word)
 			return TypeString;
 }
 
-float TPTScriptInterface::parseNumber(char * stringData)
+int TPTScriptInterface::parseNumber(char * stringData)
 {
 	char cc;
 	int base = 10;
@@ -142,14 +141,14 @@ float TPTScriptInterface::parseNumber(char * stringData)
 	}
 	if (base == 16)
 	{
-		while(cc = *(stringData++))
+		while ((cc = *(stringData++)))
 		{
 			currentNumber *= base;
-			if(cc >= '0' && cc <= '9')
+			if (cc >= '0' && cc <= '9')
 				currentNumber += cc - '0';
-			else if(cc >= 'a' && cc <= 'f')
+			else if (cc >= 'a' && cc <= 'f')
 				currentNumber += (cc - 'a') + 10;
-			else if(cc >= 'A' && cc <= 'F')
+			else if (cc >= 'A' && cc <= 'F')
 				currentNumber += (cc - 'A') + 10;
 			else
 				break;
@@ -199,6 +198,8 @@ AnyType TPTScriptInterface::eval(std::deque<std::string> * words)
 	}
 	case TypeString:
 		return StringType(word);
+	default:
+		break;
 	}
 	return StringType(word);
 }
@@ -262,8 +263,7 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 
 	FormatType propertyFormat;
 	int propertyOffset = GetPropertyOffset(property.Value(), propertyFormat);
-
-	if(propertyOffset==-1)
+	if (propertyOffset == -1)
 		throw GeneralException("Invalid property");
 
 	//Selector
@@ -271,7 +271,7 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 	float newValuef;
 	if (value.GetType() == TypeNumber)
 	{
-		newValue = newValuef = ((NumberType)value).Value();
+		newValuef = newValue = ((NumberType)value).Value();
 	}
 	else if (value.GetType() == TypeFloat)
 	{
@@ -306,7 +306,7 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 	if (property.Value() == "type" && (newValue < 0 || newValue >= PT_NUM || !sim->elements[newValue].Enabled))
 		throw GeneralException("Invalid element");
 
-	if(selector.GetType() == TypePoint || selector.GetType() == TypeNumber)
+	if (selector.GetType() == TypePoint || selector.GetType() == TypeNumber)
 	{
 		int partIndex = -1;
 		if(selector.GetType() == TypePoint)
@@ -329,10 +329,15 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 		case FormatFloat:
 			*((float*)(partsBlock+(partIndex*sizeof(Particle))+propertyOffset)) = newValuef;
 			break;
+		case FormatElement:
+			sim->part_change_type(partIndex, sim->parts[partIndex].x, sim->parts[partIndex].y, newValue);
+			break;
+		default:
+			break;
 		}
 		returnValue = 1;
 	}
-	else if(selector.GetType() == TypeString && ((StringType)selector).Value() == "all")
+	else if (selector.GetType() == TypeString && ((StringType)selector).Value() == "all")
 	{
 		switch(propertyFormat)
 		{
@@ -355,28 +360,40 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 						*((float*)(partsBlock+(j*sizeof(Particle))+propertyOffset)) = newValuef;
 					}
 			}
+			break;
+		case FormatElement:
+			{
+				for (int j = 0; j < NPART; j++)
+					if (sim->parts[j].type)
+					{
+						returnValue++;
+						sim->part_change_type(j, sim->parts[j].x, sim->parts[j].y, newValue);
+					}
+			}
+			break;
+		default:
 			break;
 		}
 	}
 	else if(selector.GetType() == TypeString || selector.GetType() == TypeNumber)
 	{
 		int type;
-		if(selector.GetType() == TypeNumber)
+		if (selector.GetType() == TypeNumber)
 			type = ((NumberType)selector).Value();
-		else if(selector.GetType() == TypeString)
+		else if (selector.GetType() == TypeString)
 			type = GetParticleType(((StringType)selector).Value());
 
-		if(type<0 || type>=PT_NUM)
+		if (type<0 || type>=PT_NUM)
 			throw GeneralException("Invalid particle type");
-		if(type==0)
+		if (type==0)
 			throw GeneralException("Cannot set properties of particles that do not exist");
 		std::cout << propertyOffset << std::endl;
 		switch(propertyFormat)
 		{
 		case FormatInt:
 			{
-				for(int j = 0; j < NPART; j++)
-					if(sim->parts[j].type == type)
+				for (int j = 0; j < NPART; j++)
+					if (sim->parts[j].type == type)
 					{
 						returnValue++;
 						*((int*)(partsBlock+(j*sizeof(Particle))+propertyOffset)) = newValue;
@@ -385,13 +402,25 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 			break;
 		case FormatFloat:
 			{
-				for(int j = 0; j < NPART; j++)
-					if(sim->parts[j].type == type)
+				for (int j = 0; j < NPART; j++)
+					if (sim->parts[j].type == type)
 					{
 						returnValue++;
 						*((float*)(partsBlock+(j*sizeof(Particle))+propertyOffset)) = newValuef;
 					}
 			}
+			break;
+		case FormatElement:
+			{
+				for (int j = 0; j < NPART; j++)
+					if (sim->parts[j].type == type)
+					{
+						returnValue++;
+						sim->part_change_type(j, sim->parts[j].x, sim->parts[j].y, newValue);
+					}
+			}
+			break;
+		default:
 			break;
 		}
 	}

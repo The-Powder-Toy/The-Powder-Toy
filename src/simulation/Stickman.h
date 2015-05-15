@@ -1,6 +1,7 @@
 #ifndef STICKMAN_H_
 #define STICKMAN_H_
 
+#define MAX_FIGHTERS 100
 struct playerst
 {
 	char comm;           //command cell
@@ -11,6 +12,7 @@ struct playerst
 	char spwn;           //if stick man was spawned
 	unsigned int frames; //frames since last particle spawn - used when spawning LIGH
 	bool rocketBoots;
+	int spawnID;         //id of the SPWN particle that spawns it
 };
 
 #endif

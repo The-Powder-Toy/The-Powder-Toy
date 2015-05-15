@@ -5,5 +5,7 @@
 class DebugInfo
 {
 public:
-	virtual void Draw(ui::Point position) {}
+	DebugInfo(unsigned int id):ID(id) { }
+	unsigned int ID;
+	virtual void Draw() {}
 };
