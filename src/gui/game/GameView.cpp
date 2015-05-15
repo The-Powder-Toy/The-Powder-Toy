@@ -1986,9 +1986,9 @@ void GameView::disableCtrlBehaviour()
 void GameView::SetSaveButtonTooltips()
 {
 	if (!Client::Ref().GetAuthUser().ID)
-		((SplitButton*)saveSimulationButton)->SetToolTips("Save the simulation to your hard drive. Login to save online.", "Save the simulation to your hard drive. Login to save online.");
+		((SplitButton*)saveSimulationButton)->SetToolTips("Overwrite the open simulation on your hard drive.", "Save the simulation to your hard drive. Login to save online.");
 	else if (ctrlBehaviour)
-		((SplitButton*)saveSimulationButton)->SetToolTips("Save the simulation to your hard drive.", "Save the simulation to your hard drive.");
+		((SplitButton*)saveSimulationButton)->SetToolTips("Overwrite the open simulation on your hard drive.", "Save the simulation to your hard drive.");
 	else if (((SplitButton*)saveSimulationButton)->GetShowSplit())
 		((SplitButton*)saveSimulationButton)->SetToolTips("Reupload the current simulation", "Modify simulation properties");
 	else
