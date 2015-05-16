@@ -1944,10 +1944,10 @@ int luatpt_getscript(lua_State* l)
 	}
 
 fin:
-	if(filedata) free(filedata);
-	if(fileuri) delete[] fileuri;
-	if(filename) delete[] filename;
-	if(luacommand) delete[] luacommand;
+	free(filedata);
+	delete[] fileuri;
+	delete[] filename;
+	delete[] luacommand;
 	luacommand = NULL;
 
 	if(lastError)

@@ -35,8 +35,7 @@ Textbox::Textbox(Point position, Point size, std::string textboxText, std::strin
 
 Textbox::~Textbox()
 {
-	if(actionCallback)
-		delete actionCallback;
+	delete actionCallback;
 }
 
 void Textbox::SetHidden(bool hidden)
@@ -566,8 +565,7 @@ Textbox::Textbox(Point position, Point size, std::string textboxText):
 
 Textbox::~Textbox()
 {
-	if(actionCallback)
-		delete actionCallback;
+	delete actionCallback;
 }
 
 void Textbox::TextPosition()

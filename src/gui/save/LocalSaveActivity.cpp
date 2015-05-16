@@ -135,16 +135,13 @@ void LocalSaveActivity::OnDraw()
 
 void LocalSaveActivity::OnResponseReady(void * imagePtr, int identifier)
 {
-	if(thumbnail)
-		delete thumbnail;
+	delete thumbnail;
 	thumbnail = (VideoBuffer*)imagePtr;
 }
 
 LocalSaveActivity::~LocalSaveActivity()
 {
 	RequestBroker::Ref().DetachRequestListener(this);
-	if(thumbnail)
-		delete thumbnail;
-	if(callback)
-		delete callback;
+	delete thumbnail;
+	delete callback;
 }

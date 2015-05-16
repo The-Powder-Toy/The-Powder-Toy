@@ -1075,17 +1075,13 @@ void GameSave::readOPS(char * data, int dataLength)
 fail:
 	//Clean up everything
 	bson_destroy(&b);
-	if(freeIndices)
-		free(freeIndices);
-	if(partsSimIndex)
-		free(partsSimIndex);
+	free(freeIndices);
+	free(partsSimIndex);
 	throw ParseException(ParseException::Corrupt, "Save data corrupt");
 fin:
 	bson_destroy(&b);
-	if(freeIndices)
-		free(freeIndices);
-	if(partsSimIndex)
-		free(partsSimIndex);
+	free(freeIndices);
+	free(partsSimIndex);
 }
 
 void GameSave::readPSv(char * data, int dataLength)
@@ -2191,28 +2187,17 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 
 fin:
 	bson_destroy(&b);
-	if(partsData)
-		free(partsData);
-	if(wallData)
-		free(wallData);
-	if(fanData)
-		free(fanData);
-	if (elementCount)
-		delete[] elementCount;
-	if (partsSaveIndex)
-		free(partsSaveIndex);
-	if (soapLinkData)
-		free(soapLinkData);
-	if (partsPosData)
-		free(partsPosData);
-	if (partsPosFirstMap)
-		free(partsPosFirstMap);
-	if (partsPosLastMap)
-		free(partsPosLastMap);
-	if (partsPosCount)
-		free(partsPosCount);
-	if (partsPosLink)
-		free(partsPosLink);
+	free(partsData);
+	free(wallData);
+	free(fanData);
+	delete[] elementCount;
+	free(partsSaveIndex);
+	free(soapLinkData);
+	free(partsPosData);
+	free(partsPosFirstMap);
+	free(partsPosLastMap);
+	free(partsPosCount);
+	free(partsPosLink);
 
 	return (char*)outputData;
 }
