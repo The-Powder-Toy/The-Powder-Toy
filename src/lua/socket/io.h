@@ -45,7 +45,7 @@ typedef int (*p_send) (
 /* interface to recv function */
 typedef int (*p_recv) (
     void *ctx,          /* context needed by recv */
-    char *data,         /* pointer to buffer where data will be writen */
+    char *data,         /* pointer to buffer where data will be written */
     size_t count,       /* number of bytes to receive into buffer */
     size_t *got,        /* number of bytes received uppon return */
     p_timeout tm        /* timeout control */

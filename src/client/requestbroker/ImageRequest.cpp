@@ -113,7 +113,7 @@ RequestBroker::ProcessResponse ImageRequest::Process(RequestBroker & rb)
 	if(image)
 	{
 
-		//Create a copy, to seperate from the cache
+		//Create a copy, to separate from the cache
 		std::vector<Request *> children(Children.begin(), Children.end());
 		Children.clear();
 

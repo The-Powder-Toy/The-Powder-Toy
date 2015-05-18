@@ -24,7 +24,7 @@ public:
 	{
 		ui::Point newSize = rectSize_;
 
-		//Ensure the rect has odd dimentions so we can pull an integer radius with a 1x1 centre 
+		//Ensure the rect has odd dimensions so we can pull an integer radius with a 1x1 centre 
 		if(!(newSize.X % 2))
 			newSize.X += 1;
 		if(!(newSize.Y % 2))

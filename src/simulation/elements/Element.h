@@ -58,7 +58,7 @@ public:
 	static int legacyUpdate(UPDATE_FUNC_ARGS);
 
 	/** Returns a list of properties, their type and offset within the structure that can be changed
-	 by higher-level processes refering to them by name such as Lua or the property tool **/
+	 by higher-level processes referring to them by name such as Lua or the property tool **/
 	static std::vector<StructProperty> GetProperties();
 };
 

@@ -721,7 +721,7 @@ void BlueScreen(const char * detailMessage){
 
 	std::string errorTitle = "ERROR";
 	std::string errorDetails = "Details: " + std::string(detailMessage);
-	std::string errorHelp = "An unrecoverable fault has occured, please report the error by visiting the website below\n"
+	std::string errorHelp = "An unrecoverable fault has occurred, please report the error by visiting the website below\n"
 		"http://" SERVER;
 	int currentY = 0, width, height;
 	int errorWidth = 0;
