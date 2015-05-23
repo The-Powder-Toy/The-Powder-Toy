@@ -60,7 +60,7 @@ int Element_DRAY::update(UPDATE_FUNC_ARGS)
 		copySpaces = parts[i].tmp2 = 0;
 	if (copyLength < 0)
 		copyLength = parts[i].tmp = 0;
-	else
+	else if (copyLength > 0)
 		copySpaces++; //strange hack
 	if (!parts[i].life) // only fire when life is 0, but nothing sets the life right now
 	{
