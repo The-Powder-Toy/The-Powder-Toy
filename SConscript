@@ -294,6 +294,10 @@ def findLibs(env, conf):
 				else:
 					FatalError("lua.h not found")
 
+		#needed for static lua compiles (in some cases)
+		if platform == "Linux" and not conf.CheckLib('dl'):
+			FatalError("libdl not found")
+
 	#Look for fftw
 	if not GetOption('nofft') and not conf.CheckLib(['fftw3f', 'fftw3f-3', 'libfftw3f-3', 'libfftw3f']):
 			FatalError("fftw3f development library not found or not installed")
@@ -451,8 +455,8 @@ elif GetOption('release'):
 
 if GetOption('static'):
 	if not msvc:
-		env.Append(CCFLAGS=['-static-libgcc'])
-		env.Append(LINKFLAGS=['-static-libgcc'])
+		env.Append(CCFLAGS=['-static-libgcc', '-static-libstdc++'])
+		env.Append(LINKFLAGS=['-static-libgcc', '-static-libstdc++'])
 	if platform == "Windows":
 		env.Append(CPPDEFINES=['PTW32_STATIC_LIB'])
 		if not msvc:
