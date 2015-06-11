@@ -17,7 +17,7 @@ Element_CO2::Element_CO2()
 	Gravity = 0.1f;
 	Diffusion = 1.0f;
 	HotAir = 0.000f	* CFDS;
-	Falldown = 1;
+	Falldown = 0;
 	
 	Flammable = 0;
 	Explosive = 0;
