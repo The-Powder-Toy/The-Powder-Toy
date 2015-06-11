@@ -2065,7 +2065,7 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr)
 			return 0;
 		if (bmap[ny/CELL][nx/CELL]==WL_ALLOWLIQUID && elements[pt].Falldown!=2)
 			return 0;
-		if (bmap[ny/CELL][nx/CELL]==WL_ALLOWSOLID && (elements[pt].Falldown!=1 || pt == PT_FIRE || pt == PT_SMKE || pt || PT_CO2))
+		if (bmap[ny/CELL][nx/CELL]==WL_ALLOWSOLID && (elements[pt].Falldown!=1 || pt == PT_FIRE || pt == PT_SMKE || pt == PT_CO2))
 			return 0;
 		if (bmap[ny/CELL][nx/CELL]==WL_ALLOWAIR || bmap[ny/CELL][nx/CELL]==WL_WALL || bmap[ny/CELL][nx/CELL]==WL_WALLELEC)
 			return 0;
