@@ -1859,7 +1859,7 @@ bool Simulation::IsWallBlocking(int x, int y, int type)
 			return true;
 		else if (wall == WL_ALLOWLIQUID && elements[type].Falldown!=2)
 			return true;
-		else if (wall == WL_ALLOWSOLID && elements[type].Falldown!=1)
+		else if (wall == WL_ALLOWSOLID && (elements[type].Falldown!=1 || type == PT_CO2 || type == PT_FIRE || type == PT_SMKE))
 			return true;
 		else if (wall == WL_ALLOWAIR || wall == WL_WALL || wall == WL_WALLELEC)
 			return true;
@@ -2065,7 +2065,7 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr)
 			return 0;
 		if (bmap[ny/CELL][nx/CELL]==WL_ALLOWLIQUID && elements[pt].Falldown!=2)
 			return 0;
-		if (bmap[ny/CELL][nx/CELL]==WL_ALLOWSOLID && elements[pt].Falldown!=1)
+		if (bmap[ny/CELL][nx/CELL]==WL_ALLOWSOLID && (elements[pt].Falldown!=1 || pt == PT_FIRE || pt == PT_SMKE || pt || PT_CO2))
 			return 0;
 		if (bmap[ny/CELL][nx/CELL]==WL_ALLOWAIR || bmap[ny/CELL][nx/CELL]==WL_WALL || bmap[ny/CELL][nx/CELL]==WL_WALLELEC)
 			return 0;
