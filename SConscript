@@ -262,7 +262,7 @@ def findLibs(env, conf):
 			env.Append(CPPDEFINES=["LUAJIT"])
 			luaver = "luajit"
 		elif GetOption('lua52'):
-			if not conf.CheckLib(['lua5.2', 'lua-5.2', 'lua52']):
+			if not conf.CheckLib(['lua5.2', 'lua-5.2', 'lua52', 'lua']):
 				FatalError("lua5.2 development library not found or not installed")
 			env.Append(CPPDEFINES=["LUA_COMPAT_ALL"])
 			luaver = "lua5.2"
@@ -295,8 +295,8 @@ def findLibs(env, conf):
 					FatalError("lua.h not found")
 
 		#needed for static lua compiles (in some cases)
-		if platform == "Linux" and not conf.CheckLib('dl'):
-			FatalError("libdl not found")
+		if platform == "Linux":
+			conf.CheckLib('dl')
 
 	#Look for fftw
 	if not GetOption('nofft') and not conf.CheckLib(['fftw3f', 'fftw3f-3', 'libfftw3f-3', 'libfftw3f']):
