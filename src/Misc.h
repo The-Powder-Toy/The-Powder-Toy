@@ -72,8 +72,6 @@ void *file_load(char *fn, int *size);
 
 extern char *clipboard_text;
 
-int register_extension();
-
 int cpu_check(void);
 
 void HSV_to_RGB(int h,int s,int v,int *r,int *g,int *b);
