@@ -28,10 +28,10 @@ Element_FREN::Element_FREN()
     
     Temperature = R_TEMP+53.f+273.15f;
     HeatConduct = 200;
-    Description = "Freon gas. Releases heat corresponding to its tmp and changes to liquid under pressure.";
+    Description = "Freon gas. State transitions allow special heat flow.";
     
     State = ST_GAS;
-    Properties = TYPE_GAS;
+    Properties = TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
     
     LowPressure = IPL;
     LowPressureTransition = NT;
@@ -49,6 +49,32 @@ Element_FREN::Element_FREN()
 //#TPT-Directive ElementHeader Element_FREN static int update(UPDATE_FUNC_ARGS)
 int Element_FREN::update(UPDATE_FUNC_ARGS)
 {
+	if (sim->pv[y/CELL][x/CELL] > 5.0f)
+	{
+		parts[i].temp += parts[i].tmp;
+		parts[i].tmp = 0;
+		sim->part_change_type(i, parts[i].x, parts[i].y, PT_WATR); //Can't use normal transitions due to the above code needing to run first. PT_WATR is a placeholder.
+	}
+	int r, rx, ry;
+	for (rx=-1; rx<2; rx++)
+	{
+		for (ry=-1; ry<2; ry++)
+		{
+			if (BOUNDS_CHECK)
+			{
+				r = pmap[y+ry][x+rx];
+				if ((r&0xFF) == PT_O2)
+				{
+					sim->kill_part(r>>8);
+					if(!(rand() % 25))
+					{
+						sim->kill_part(i);
+						return 1;
+					}
+				}
+			}
+		}
+	}
     return 0;
 }
 
