@@ -26,7 +26,7 @@ Element_FREN::Element_FREN()
     
     Weight = 1;
     
-    Temperature = R_TEMP+273.15f;
+    Temperature = R_TEMP+273.15;
     HeatConduct = 200;
     Description = "Freon gas. State transitions allow controlled heat flow.";
     
@@ -49,11 +49,11 @@ Element_FREN::Element_FREN()
 //#TPT-Directive ElementHeader Element_FREN static int update(UPDATE_FUNC_ARGS)
 int Element_FREN::update(UPDATE_FUNC_ARGS)
 {
-	if (sim->pv[y/CELL][x/CELL] > 5.0f)
+	if (sim->pv[y/CELL][x/CELL] > 15.0f)
 	{
 		parts[i].temp += parts[i].tmp;
 		parts[i].tmp = 0;
-		sim->part_change_type(i, parts[i].x, parts[i].y, PT_WATR); //Can't use normal transitions due to the above code needing to run first. PT_WATR is a placeholder.
+		sim->part_change_type(i, parts[i].x, parts[i].y, PT_FRNL); //Can't use normal transitions due to the above code needing to run first
 	}
 	int r, rx, ry;
 	for (rx=-1; rx<2; rx++)
