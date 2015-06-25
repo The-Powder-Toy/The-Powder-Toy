@@ -26,12 +26,12 @@ Element_FREN::Element_FREN()
     
     Weight = 1;
     
-    Temperature = R_TEMP+53.f+273.15f;
+    Temperature = R_TEMP+273.15f;
     HeatConduct = 200;
-    Description = "Freon gas. State transitions allow special heat flow.";
+    Description = "Freon gas. State transitions allow controlled heat flow.";
     
     State = ST_GAS;
-    Properties = TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
+    Properties = TYPE_GAS|PROP_DEADLY;
     
     LowPressure = IPL;
     LowPressureTransition = NT;
