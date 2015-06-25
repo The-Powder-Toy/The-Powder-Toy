@@ -28,7 +28,7 @@ Element_FREN::Element_FREN()
     
     Temperature = R_TEMP+273.15;
     HeatConduct = 200;
-    Description = "Freon gas. State transitions allow controlled heat flow.";
+    Description = "Freon gas. Can be produced by decompression of liquid freon. State transitions allow controlled heat flow.";
     
     State = ST_GAS;
     Properties = TYPE_GAS|PROP_DEADLY;

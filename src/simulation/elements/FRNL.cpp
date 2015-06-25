@@ -28,7 +28,7 @@ Element_FRNL::Element_FRNL()
 	
 	Temperature = R_TEMP+273.15f;
 	HeatConduct = 200;
-	Description = "Freon liquid. Produced from compression of freon gas. State transitions allow controlled heat flow.";
+	Description = "Freon liquid. Can be produced from compression of freon gas. State transitions allow controlled heat flow.";
 	
 	State = ST_LIQUID;
 	Properties = TYPE_LIQUID|PROP_DEADLY;
