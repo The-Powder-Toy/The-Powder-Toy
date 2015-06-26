@@ -2054,8 +2054,8 @@ void GameView::OnDraw()
 			{
 				if(placeSaveThumb && selectPoint2.X!=-1)
 				{
-					int thumbX = selectPoint2.X - (placeSaveThumb->Width/2);
-					int thumbY = selectPoint2.Y - (placeSaveThumb->Height/2);
+					int thumbX = selectPoint2.X - (placeSaveThumb->Width/2) + CELL/2;
+					int thumbY = selectPoint2.Y - (placeSaveThumb->Height/2) + CELL/2;
 
 					ui::Point thumbPos = c->NormaliseBlockCoord(ui::Point(thumbX, thumbY));
 
