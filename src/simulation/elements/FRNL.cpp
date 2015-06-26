@@ -5,7 +5,7 @@ Element_FRNL::Element_FRNL()
 	Identifier = "DEFAULT_PT_FRNL";
 	Name = "FRNL";
 	Colour = PIXPACK(0x6E8B41);
-	MenuVisible = 1;
+	MenuVisible = 0;
 	MenuSection = SC_LIQUID;
 	Enabled = 1;
 	
@@ -28,7 +28,7 @@ Element_FRNL::Element_FRNL()
 	
 	Temperature = R_TEMP+273.15f;
 	HeatConduct = 200;
-	Description = "Freon liquid. Can be produced from compression of freon gas. State transitions allow controlled heat flow.";
+	Description = "Freon liquid. Gaseous at normal pressure. State transitions allow controlled heat flow.";
 	
 	State = ST_LIQUID;
 	Properties = TYPE_LIQUID|PROP_DEADLY;
@@ -49,10 +49,10 @@ Element_FRNL::Element_FRNL()
 //#TPT-Directive ElementHeader Element_FRNL static int update(UPDATE_FUNC_ARGS)
 int Element_FRNL::update(UPDATE_FUNC_ARGS)
  {
-	 if (sim->pv[y/CELL][x/CELL] < 15.0f)
+	if (sim->pv[y/CELL][x/CELL] < 15.0f)
 	{
-		parts[i].tmp = parts[i].temp - (273.15f - 50.0f); //tmp is the difference
-		parts[i].temp = 273.15f - 50.0f; //Newly decompressed freon liquid should start off at -50 C
+		parts[i].temp -= parts[i].tmp;
+		parts[i].tmp = 0;
 		sim->part_change_type(i, parts[i].x, parts[i].y, PT_FREN); //Can't use normal transitions due to the above code needing to run first
 	}
 	return 0;

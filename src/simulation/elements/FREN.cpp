@@ -51,8 +51,8 @@ int Element_FREN::update(UPDATE_FUNC_ARGS)
 {
 	if (sim->pv[y/CELL][x/CELL] > 15.0f)
 	{
-		parts[i].temp += parts[i].tmp;
-		parts[i].tmp = 0;
+		parts[i].temp += sim->pv[y/CELL][x/CELL] * 1.25f;
+		parts[i].tmp = sim->pv[y/CELL][x/CELL] * 1.25f;
 		sim->part_change_type(i, parts[i].x, parts[i].y, PT_FRNL); //Can't use normal transitions due to the above code needing to run first
 	}
 	int r, rx, ry;
