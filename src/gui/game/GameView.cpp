@@ -1595,11 +1595,8 @@ void GameView::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bo
 		disableShiftBehaviour();
 		break;
 	case 'z':
-		if(!ctrl)
-		{
-			if(!zoomCursorFixed && !alt)
-				c->SetZoomEnabled(false);
-		}
+		if(!zoomCursorFixed && !alt)
+			c->SetZoomEnabled(false);
 		break;
 	}
 }
