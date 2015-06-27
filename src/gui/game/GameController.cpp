@@ -586,7 +586,7 @@ bool GameController::MouseDown(int x, int y, unsigned button)
 		if (!gameModel->GetActiveTool(0) || gameModel->GetActiveTool(0)->GetIdentifier() != "DEFAULT_UI_SIGN" || button != BUTTON_LEFT) //If it's not a sign tool or you are right/middle clicking
 		{
 			foundSign = GetSignAt(x, y);
-			if(foundSign && splitsign(foundSign->text.c_str()))
+			if(foundSign && sign::splitsign(foundSign->text.c_str()))
 				return false;
 		}
 	}
@@ -607,27 +607,38 @@ bool GameController::MouseUp(int x, int y, unsigned button)
 			if(foundSign) {
 				const char* str = foundSign->text.c_str();
 				char type;
-				int pos = splitsign(str, &type);
+				int pos = sign::splitsign(str, &type);
 				if (pos)
 				{
 					ret = false;
-					if(type == 'c' || type == 't') {
+					if (type == 'c' || type == 't' || type == 's')
+					{
 						char buff[256];
 						strcpy(buff, str+3);
-						buff[pos]=0;
-						int tempSaveID = format::StringToNumber<int>(std::string(buff));
-						if (tempSaveID)
+						buff[pos-3] = 0;
+						switch (str[1])
 						{
-							if (str[1] == 'c')
-								OpenSavePreview(tempSaveID, 0, false);
-							else if (str[1] == 't')
-							{
-								char url[256];
-								sprintf(url, "http://powdertoy.co.uk/Discussions/Thread/View.html?Thread=%i", tempSaveID);
-								OpenURI(url);
-							}
+						case 'c':
+						{
+							int saveID = format::StringToNumber<int>(std::string(buff));
+							if (saveID)
+								OpenSavePreview(saveID, 0, false);
+							break;
 						}
-					} else if(type == 'b') {
+						case 't':
+						{
+							// buff is already confirmed to be a number by sign::splitsign
+							std::stringstream uri;
+							uri << "http://powdertoy.co.uk/Discussions/Thread/View.html?Thread=" << buff;
+							OpenURI(uri.str());
+							break;
+						}
+						case 's':
+							OpenSearch(buff);
+							break;
+						}
+					} else if (type == 'b')
+					{
 						Simulation * sim = gameModel->GetSimulation();
 						sim->create_part(-1, foundSign->x, foundSign->y, PT_SPRK);
 					}
@@ -1073,10 +1084,12 @@ void GameController::SetReplaceModeFlags(int flags)
 	gameModel->GetSimulation()->replaceModeFlags = flags;
 }
 
-void GameController::OpenSearch()
+void GameController::OpenSearch(std::string searchText)
 {
 	if(!search)
 		search = new SearchController(new SearchCallback(this));
+	if (searchText.length())
+		search->DoSearch2(searchText);
 	ui::Engine::Ref().ShowWindow(search->GetView());
 }
 

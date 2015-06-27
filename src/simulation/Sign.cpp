@@ -1,7 +1,6 @@
 #include "Sign.h"
 #include "graphics/Graphics.h"
 #include "simulation/Simulation.h"
-#include "Misc.h"
 
 sign::sign(std::string text_, int x_, int y_, Justification justification_):
 	x(x_),
@@ -35,7 +34,7 @@ std::string sign::getText(Simulation *sim)
 		}
 		else
 		{
-			int pos=splitsign(signText);
+			int pos = splitsign(signText);
 			if (pos)
 			{
 				strcpy(buff, signText+pos+1);
@@ -60,4 +59,50 @@ void sign::pos(std::string signText, int & x0, int & y0, int & w, int & h)
 	x0 = (ju == 2) ? x - w :
 	      (ju == 1) ? x - w/2 : x;
 	y0 = (y > 18) ? y - 18 : y + 4;
+}
+
+int sign::splitsign(const char* str, char * type)
+{
+	if (str[0]=='{' && (str[1]=='c' || str[1]=='t' || str[1]=='b' || str[1]=='s'))
+	{
+		const char* p = str+2;
+		// signs with text arguments
+		if (str[1] == 's')
+		{
+			if (str[2]==':')
+			{
+				p = str+4;
+				while (*p && *p!='|')
+					p++;
+			}
+			else
+				return 0;
+		}
+		// signs with number arguments
+		if (str[1] == 'c' || str[1] == 't')
+		{
+			if (str[2]==':' && str[3]>='0' && str[3]<='9')
+			{
+				p = str+4;
+				while (*p>='0' && *p<='9')
+					p++;
+			}
+			else
+				return 0;
+		}
+
+		if (*p=='|')
+		{
+			int r = p-str;
+			while (*p)
+				p++;
+			if (p[-1] == '}')
+			{
+				if (type)
+					*type = str[1];
+				return r;
+			}
+		}
+	}
+	return 0;
 }

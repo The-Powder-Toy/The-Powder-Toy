@@ -925,7 +925,7 @@ void Renderer::DrawSigns()
 		{
 			char type = 0;
 			std::string text = signs[i].getText(sim);
-			splitsign(signs[i].text.c_str(), &type);
+			sign::splitsign(signs[i].text.c_str(), &type);
 			signs[i].pos(text, x, y, w, h);
 			clearrect(x, y, w+1, h);
 			drawrect(x, y, w+1, h, 192, 192, 192, 255);

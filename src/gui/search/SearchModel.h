@@ -57,7 +57,7 @@ public:
     void SetShowTags(bool show);
     bool GetShowTags();
 	void AddObserver(SearchView * observer);
-	void UpdateSaveList(int pageNumber, std::string query);
+	bool UpdateSaveList(int pageNumber, std::string query);
 	vector<SaveInfo*> GetSaveList();
 	vector<pair<string, int> > GetTagList();
 	string GetLastError() { return lastError; }

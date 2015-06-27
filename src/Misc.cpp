@@ -450,39 +450,6 @@ void membwand(void * destv, void * srcv, size_t destsize, size_t srcsize)
 	}
 }
 
-int splitsign(const char* str, char * type)
-{
-	int r;
-	if (str[0]=='{' && (str[1]=='c' || str[1]=='t' || str[1]=='b'))
-	{
-		const char* p=str+2;
-		if(str[1] != 'b') {
-			if(str[2]==':' && str[3]>='0' && str[3]<='9')
-			{
-				p=str+4;
-				while (*p>='0' && *p<='9')
-					p++;
-			}
-			else
-				return 0;
-		}
-
-		if (*p=='|')
-		{
-			r=p-str;
-			while (*p)
-				p++;
-			if (p[-1]=='}')
-			{
-				if(type)
-					*type = str[1];
-				return r;
-			}
-		}
-	}
-	return 0;
-}
-
 void millisleep(long int t)
 {
 #ifdef WIN

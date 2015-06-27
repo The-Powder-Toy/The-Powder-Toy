@@ -61,10 +61,10 @@ void * SearchModel::updateTagListT()
 	return tagList;
 }
 
-void SearchModel::UpdateSaveList(int pageNumber, std::string query)
+bool SearchModel::UpdateSaveList(int pageNumber, std::string query)
 {
 	//Threading
-	if(!updateSaveListWorking)
+	if (!updateSaveListWorking)
 	{
 		lastQuery = query;
 		lastError = "";
@@ -94,7 +94,9 @@ void SearchModel::UpdateSaveList(int pageNumber, std::string query)
 		updateSaveListFinished = false;
 		updateSaveListWorking = true;
 		pthread_create(&updateSaveListThread, 0, &SearchModel::updateSaveListTHelper, this);
+		return true;
 	}
+	return false;
 }
 
 void SearchModel::SetLoadedSave(SaveInfo * save)

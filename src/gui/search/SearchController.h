@@ -33,6 +33,7 @@ public:
 	SearchView * GetView() { return searchView; }
 	void Exit();
 	void DoSearch(std::string query, bool now = false);
+	void DoSearch2(std::string query);
 	void Refresh();
 	void NextPage();
 	void PrevPage();

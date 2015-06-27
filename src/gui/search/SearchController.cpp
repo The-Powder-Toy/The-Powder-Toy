@@ -63,15 +63,16 @@ void SearchController::Update()
 {
 	if (doRefresh)
 	{
-		nextQueryDone = true;
-		doRefresh = false;
-		ClearSelection();
-		searchModel->UpdateSaveList(searchModel->GetPageNum(), searchModel->GetLastQuery());
+		if (searchModel->UpdateSaveList(searchModel->GetPageNum(), searchModel->GetLastQuery()))
+		{
+			nextQueryDone = true;
+			doRefresh = false;
+		}
 	}
 	else if (!nextQueryDone && nextQueryTime < gettime())
 	{
-		nextQueryDone = true;
-		searchModel->UpdateSaveList(1, nextQuery);
+		if (searchModel->UpdateSaveList(1, nextQuery))
+			nextQueryDone = true;
 	}
 	searchModel->Update();
 	if(activePreview && activePreview->HasExited)
@@ -112,17 +113,21 @@ SearchController::~SearchController()
 void SearchController::DoSearch(std::string query, bool now)
 {
 	nextQuery = query;
-	if(!now)
+	if (!now)
 	{
 		nextQueryTime = gettime()+600;
 		nextQueryDone = false;
 	}
 	else
 	{
-		nextQueryDone = true;
-		searchModel->UpdateSaveList(1, nextQuery);
+		nextQueryDone = searchModel->UpdateSaveList(1, nextQuery);
 	}
-	//searchModel->UpdateSaveList(1, query);
+}
+
+void SearchController::DoSearch2(std::string query)
+{
+	// calls SearchView function to set textbox text, then calls DoSearch
+	searchView->Search(query);
 }
 
 void SearchController::Refresh()
