@@ -1027,6 +1027,14 @@ void GameSave::readOPS(char * data, int dataLength)
 							particles[newIndex].tmp = 1;
 						}
 						break;
+					case PT_DLAY:
+						// correct DLAY temperature in older saves
+						// due to either the +.5f now done in DLAY (higher temps), or rounding errors in the old DLAY code (room temperature temps),
+						// the delay in all DLAY from older versions will always be one greater than it should
+						if (savedVersion < 91)
+						{
+							particles[newIndex].temp = particles[newIndex].temp - 1.0f;
+						}
 					}
 					//note: PSv was used in version 77.0 and every version before, add something in PSv too if the element is that old
 					newIndex++;
