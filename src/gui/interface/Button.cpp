@@ -191,7 +191,7 @@ void Button::OnMouseHover(int x, int y)
 {
 	if(Enabled && toolTip.length()>0 && GetParentWindow())
 	{
-		GetParentWindow()->ToolTip(this, ui::Point(x, y), toolTip);
+		GetParentWindow()->ToolTip(Position, toolTip);
 	}
 }
 

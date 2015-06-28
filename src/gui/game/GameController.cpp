@@ -258,7 +258,8 @@ GameView * GameController::GetView()
 	return gameView;
 }
 
-sign * GameController::GetSignAt(int x, int y){
+sign * GameController::GetSignAt(int x, int y)
+{
 	Simulation * sim = gameModel->GetSimulation();
 	for (std::vector<sign>::reverse_iterator iter = sim->signs.rbegin(), end = sim->signs.rend(); iter != end; ++iter)
 	{
@@ -604,7 +605,8 @@ bool GameController::MouseUp(int x, int y, unsigned button)
 		if (!gameModel->GetActiveTool(0) || gameModel->GetActiveTool(0)->GetIdentifier() != "DEFAULT_UI_SIGN" || button != BUTTON_LEFT) //If it's not a sign tool or you are right/middle clicking
 		{
 			sign * foundSign = GetSignAt(x, y);
-			if(foundSign) {
+			if (foundSign)
+			{
 				const char* str = foundSign->text.c_str();
 				char type;
 				int pos = sign::splitsign(str, &type);
@@ -616,7 +618,7 @@ bool GameController::MouseUp(int x, int y, unsigned button)
 						char buff[256];
 						strcpy(buff, str+3);
 						buff[pos-3] = 0;
-						switch (str[1])
+						switch (type)
 						{
 						case 'c':
 						{
@@ -637,7 +639,8 @@ bool GameController::MouseUp(int x, int y, unsigned button)
 							OpenSearch(buff);
 							break;
 						}
-					} else if (type == 'b')
+					}
+					else if (type == 'b')
 					{
 						Simulation * sim = gameModel->GetSimulation();
 						sim->create_part(-1, foundSign->x, foundSign->y, PT_SPRK);
@@ -1119,7 +1122,7 @@ void GameController::OpenLocalSaveWindow(bool asCurrent)
 				GameController * c;
 			public:
 				LocalSaveCallback(GameController * _c): c(_c) {}
-				virtual  ~LocalSaveCallback() {};
+				virtual  ~LocalSaveCallback() {}
 				virtual void FileSaved(SaveFile* file)
 				{
 					c->gameModel->SetSaveFile(file);

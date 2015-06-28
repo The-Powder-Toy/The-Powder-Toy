@@ -59,14 +59,14 @@ public:
 		{
 			if(toolTip2.length()>0 && GetParentWindow())
 			{
-				GetParentWindow()->ToolTip(this, ui::Point(x, y), toolTip2);
+				GetParentWindow()->ToolTip(Position, toolTip2);
 			}
 		}
 		else if(x < splitPosition)
 		{
 			if(toolTip.length()>0 && GetParentWindow())
 			{
-				GetParentWindow()->ToolTip(this, ui::Point(x, y), toolTip);
+				GetParentWindow()->ToolTip(Position, toolTip);
 			}
 		}
 	}
@@ -1218,9 +1218,10 @@ void GameView::ExitPrompt()
 	new ConfirmPrompt("You are about to quit", "Are you sure you want to exit the game?", new ExitConfirmation());
 }
 
-void GameView::ToolTip(ui::Component * sender, ui::Point mousePosition, std::string toolTip)
+void GameView::ToolTip(ui::Point senderPosition, std::string toolTip)
 {
-	if(sender->Position.Y > Size.Y-17)
+	// buttom button tooltips
+	if (senderPosition.Y > Size.Y-17)
 	{
 		if (selectMode == PlaceSave || selectMode == SelectNone)
 		{
@@ -1228,14 +1229,16 @@ void GameView::ToolTip(ui::Component * sender, ui::Point mousePosition, std::str
 			isButtonTipFadingIn = true;
 		}
 	}
-	else if(sender->Position.X > Size.X-BARSIZE)// < Size.Y-(quickOptionButtons.size()+1)*16)
+	// quickoption and menu tooltips
+	else if(senderPosition.X > Size.X-BARSIZE)// < Size.Y-(quickOptionButtons.size()+1)*16)
 	{
 		this->toolTip = toolTip;
-		toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((char*)toolTip.c_str()), sender->Position.Y+3);
+		toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((char*)toolTip.c_str()), senderPosition.Y+3);
 		if(toolTipPosition.Y+10 > Size.Y-MENUSIZE)
 			toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((char*)toolTip.c_str()), Size.Y-MENUSIZE-10);
 		isToolTipFadingIn = true;
 	}
+	// element tooltips
 	else
 	{
 		this->toolTip = toolTip;
@@ -1635,6 +1638,35 @@ void GameView::OnTick(float dt)
 	{
 		c->DrawLine(toolIndex, c->PointTranslate(drawPoint1), lineSnapCoords(c->PointTranslate(drawPoint1), currentMouse));
 	}
+
+	sign * foundSign = c->GetSignAt(mousePosition.X, mousePosition.Y);
+	if (foundSign)
+	{
+		const char* str = foundSign->text.c_str();
+		char type;
+		int pos = sign::splitsign(str, &type);
+		if (type == 'c' || type == 't' || type == 's')
+		{
+			char buff[256];
+			strcpy(buff, str+3);
+			buff[pos-3] = 0;
+			std::stringstream tooltip;
+			switch (type)
+			{
+			case 'c':
+				tooltip << "Go to save ID:" << buff;
+				break;
+			case 't':
+				tooltip << "Open forum thread " << buff << " in browser";
+				break;
+			case 's':
+				tooltip << "Search for " << buff;
+				break;
+			}
+			ToolTip(ui::Point(0, Size.Y), tooltip.str());
+		}
+	}
+
 	if(introText)
 	{
 		introText -= int(dt)>0?((int)dt < 5? dt:5):1;
