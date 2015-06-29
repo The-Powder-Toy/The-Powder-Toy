@@ -447,7 +447,7 @@ void LuaScriptInterface::initInterfaceAPI()
 		{"showWindow", interface_showWindow},
 		{"closeWindow", interface_closeWindow},
 		{"addComponent", interface_addComponent},
-		{"removeComponent", interface_addComponent},
+		{"removeComponent", interface_removeComponent},
 		{NULL, NULL}
 	};
 	luaL_register(l, "interface", interfaceAPIMethods);
