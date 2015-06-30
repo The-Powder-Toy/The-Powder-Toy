@@ -37,8 +37,8 @@ protected:
 public:
 	virtual ~QuickOption()
 	{
-		//for(std::vector<QuickOptionListener*>::iterator iter = listeners.begin(), end = listeners.end(); iter != end; ++iter)
-		//	delete *iter;
+		for(std::vector<QuickOptionListener*>::iterator iter = listeners.begin(), end = listeners.end(); iter != end; ++iter)
+			delete *iter;
 	}
 
 	std::vector<QuickOptionListener*> GetListeners()

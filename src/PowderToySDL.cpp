@@ -334,6 +334,7 @@ int SDLOpen()
 #elif defined(LIN)
 	SDL_Surface *icon = SDL_CreateRGBSurfaceFrom((void*)app_icon, 48, 48, 24, 144, 0x00FF0000, 0x0000FF00, 0x000000FF, 0);
 	SDL_WM_SetIcon(icon, (Uint8*)app_icon_bitmap);
+	SDL_FreeSurface(icon);
 #endif
 
 	SDL_WM_SetCaption("The Powder Toy", "Powder Toy");

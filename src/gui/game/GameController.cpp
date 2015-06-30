@@ -195,6 +195,10 @@ GameController::~GameController()
 	{
 		delete options;
 	}
+	for(std::vector<DebugInfo*>::iterator iter = debugInfo.begin(), end = debugInfo.end(); iter != end; iter++)
+	{
+		delete *iter;
+	}
 	//deleted here because it refuses to be deleted when deleted from gameModel even with the same code
 	std::deque<Snapshot*> history = gameModel->GetHistory();
 	for(std::deque<Snapshot*>::iterator iter = history.begin(), end = history.end(); iter != end; ++iter)
