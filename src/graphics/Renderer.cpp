@@ -902,7 +902,7 @@ void Renderer::DrawWalls()
 					}
 				}
 
-				if (sim->wtypes[wt].eglow && powered && (render_mode & FIRE_BLEND))
+				if (sim->wtypes[wt].eglow && powered)
 				{
 					// glow if electrified
 					pixel glow = sim->wtypes[wt].eglow;

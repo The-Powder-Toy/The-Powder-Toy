@@ -43,8 +43,8 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 	save->Expand();
 
 	//Align to blockMap
-	blockX = fullX/CELL;
-	blockY = fullY/CELL;
+	blockX = (fullX + CELL/2)/CELL;
+	blockY = (fullY + CELL/2)/CELL;
 	fullX = blockX*CELL;
 	fullY = blockY*CELL;
 
@@ -110,6 +110,14 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 			parts[r>>8] = tempPart;
 			i = r>>8;
 			pmap[y][x] = 0;
+			elementCount[tempPart.type]++;
+		}
+		else if ((r = photons[y][x]))
+		{
+			elementCount[parts[r>>8].type]--;
+			parts[r>>8] = tempPart;
+			i = r>>8;
+			photons[y][x] = 0;
 			elementCount[tempPart.type]++;
 		}
 		//Allocate new particle
