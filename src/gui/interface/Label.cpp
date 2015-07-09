@@ -123,7 +123,7 @@ void Label::updateMultiline()
 		}
 		if (autoHeight)
 		{
-			Size.Y = lines*12;
+			Size.Y = lines*12+3;
 		}
 		textLines = std::string(rawText);
 		delete[] rawText;
@@ -164,7 +164,7 @@ void Label::updateMultiline()
 	{
 		if (autoHeight)
 		{
-			Size.Y = 12;
+			Size.Y = 15;
 		}
 		textLines = std::string("");
 	}

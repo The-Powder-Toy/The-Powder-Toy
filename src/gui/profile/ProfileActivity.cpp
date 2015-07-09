@@ -37,13 +37,13 @@ ProfileActivity::ProfileActivity(std::string username) :
 		SaveAction(ProfileActivity * a) : a(a) {  }
 		void ActionCallback(ui::Button * sender_)
 		{
-			if(!a->loading && !a->saving && a->editable)
+			if (!a->loading && !a->saving && a->editable)
 			{
 				sender_->Enabled = false;
 				sender_->SetText("Saving...");
 				a->saving = true;
-				a->info.Location = ((ui::Textbox*)a->location)->GetText();
-				a->info.Biography = ((ui::Textbox*)a->bio)->GetText();
+				a->info.location = ((ui::Textbox*)a->location)->GetText();
+				a->info.biography = ((ui::Textbox*)a->bio)->GetText();
 				RequestBroker::Ref().Start(Client::Ref().SaveUserInfoAsync(a->info), a);
 			}
 		}
@@ -82,100 +82,88 @@ void ProfileActivity::setUserInfo(UserInfo newInfo)
 
 	info = newInfo;
 
-	if(!info.Biography.length() && !editable)
-		info.Biography = "\bg(no bio)";
+	if (!info.biography.length() && !editable)
+		info.biography = "\bgNot Provided";
+	if (!info.location.length() && !editable)
+		info.location = "\bgNot Provided";
+	if (!info.website.length() && !editable)
+		info.location = "\bgNot Provided";
+	//if (!info.age.length() && !editable)
+	//	info.age = "\bgNot Provided";
 
-	if(!info.Location.length() && !editable)
-		info.Location = "\bg(no location)";
 
-	ui::AvatarButton * avatar = new ui::AvatarButton(ui::Point((Size.X-40)-8, 8), ui::Point(40, 40), info.Username);
-	AddComponent(avatar);
+	ui::ScrollPanel * scrollPanel = new ui::ScrollPanel(ui::Point(1, 1), ui::Point(Size.X-2, Size.Y-16));
+	AddComponent(scrollPanel);
+
+
+	ui::AvatarButton * avatar = new ui::AvatarButton(ui::Point((Size.X-40)-8, 8), ui::Point(40, 40), info.username);
+	scrollPanel->AddChild(avatar);
 
 	int currentY = 5;
-	if(editable)
+	if (editable)
 	{
 		ui::Button * editAvatar = new ui::Button(ui::Point(Size.X - (40 + 16 + 75), currentY), ui::Point(75, 15), "Edit Avatar");
 		editAvatar->SetActionCallback(new EditAvatarAction(this));
-		AddComponent(editAvatar);
+		scrollPanel->AddChild(editAvatar);
 	}
-	ui::Label * title = new ui::Label(ui::Point(4, currentY), ui::Point(Size.X-8-(40+8+75), 15), info.Username);
+	ui::Label * title = new ui::Label(ui::Point(4, currentY), ui::Point(Size.X-8-(40+8+75), 15), info.username);
 	title->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
-	AddComponent(title);
+	scrollPanel->AddChild(title);
 	currentY += 20;
 
 
 	ui::Label * locationTitle = new ui::Label(ui::Point(4, currentY), ui::Point(Size.X-8-(40+8), 15), "Location");
 	locationTitle->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
-	AddComponent(locationTitle);
+	scrollPanel->AddChild(locationTitle);
 	currentY += 17;
 
-	if(editable)
+	if (editable)
 	{
-		ui::Textbox * location = new ui::Textbox(ui::Point(8, currentY), ui::Point(Size.X-16-(40+8), 17), info.Location);
-		location->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
-		AddComponent(location);
-		this->location = location;
-		currentY += 10+location->Size.Y;
+		location = new ui::Textbox(ui::Point(4, currentY), ui::Point(Size.X-8-(40+8), 17), info.location);
 	}
 	else
 	{
-		ui::Label * location = new ui::Label(ui::Point(4, currentY), ui::Point(Size.X-8-(40+8), 12), info.Location);
-		location->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+		location = new ui::Label(ui::Point(4, currentY), ui::Point(Size.X-8-(40+8), 12), info.location);
 		location->SetTextColour(ui::Colour(180, 180, 180));
-		AddComponent(location);
-		this->location = location;
-		currentY += 10+location->Size.Y;
 	}
+	location->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	scrollPanel->AddChild(location);
+	this->location = location;
+	currentY += 10+location->Size.Y;
 	
 	ui::Label * bioTitle = new ui::Label(ui::Point(4, currentY), ui::Point(Size.X-8, 15), "Biography");
 	bioTitle->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
-	AddComponent(bioTitle);
+	scrollPanel->AddChild(bioTitle);
 	currentY += 17;
 
-	if(editable)
+	if (editable)
 	{
-		ui::Textbox * bio = new ui::Textbox(ui::Point(8, currentY), ui::Point(Size.X-16, Size.Y-30-currentY), info.Biography);
-		bio->SetMultiline(true);
-		bio->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
-		bio->Appearance.VerticalAlign = ui::Appearance::AlignTop;
-		AddComponent(bio);
-		currentY += 10+bio->Size.Y;
-		this->bio = bio;
+		bio = new ui::Textbox(ui::Point(8, currentY), ui::Point(Size.X-16, -1), info.biography);
 	}
 	else
 	{
-		ui::Label * bio = new ui::Label(ui::Point(4, currentY), ui::Point(Size.X-8, -1), info.Biography);
-		bio->SetMultiline(true);
+		bio = new ui::Label(ui::Point(4, currentY), ui::Point(Size.X-8, -1), info.biography);
 		bio->SetTextColour(ui::Colour(180, 180, 180));
-		bio->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
-		currentY += 10+bio->Size.Y;
-		if(currentY > Size.Y - 20)
-		{
-			ui::ScrollPanel * scrollPanel = new ui::ScrollPanel(ui::Point(1, bio->Position.Y), ui::Point(Size.X-2, Size.Y-30-bio->Position.Y));
-			AddComponent(scrollPanel);
-			bio->Position = ui::Point(4, 4);
-			scrollPanel->AddChild(bio);
-			scrollPanel->InnerSize = ui::Point(Size.X, bio->Size.Y+8);
-		}
-		else
-		{
-			AddComponent(bio);
-		}
-		this->bio = bio;
 	}
+	bio->SetMultiline(true);
+	bio->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	bio->Appearance.VerticalAlign = ui::Appearance::AlignTop;
+	bio->AutoHeight();
+	scrollPanel->AddChild(bio);
+	currentY += 10+bio->Size.Y;
 
-	//exit(0);
+	scrollPanel->InnerSize = ui::Point(Size.X, currentY);
 }
 
 void ProfileActivity::OnResponseReady(void * userDataPtr, int identifier)
 {
-	if(loading)
+	if (loading)
 	{
 		loading = false;
 		setUserInfo(*(UserInfo*)userDataPtr);
 		delete (UserInfo*)userDataPtr;
 	}
-	else if(saving)
+	else if (saving)
 	{
 		Exit();
 	}
@@ -188,7 +176,13 @@ void ProfileActivity::OnDraw()
 	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 255, 255, 255, 255);
 }
 
-ProfileActivity::~ProfileActivity() {
+void ProfileActivity::OnTryExit(ExitMethod method)
+{
+	Exit();
+}
+
+ProfileActivity::~ProfileActivity()
+{
 	RequestBroker::Ref().DetachRequestListener(this);
 }
 

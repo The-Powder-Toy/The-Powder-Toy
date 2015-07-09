@@ -228,7 +228,7 @@ void PreviewView::commentBoxAutoHeight()
 
 		int oldSize = addCommentBox->Size.Y;
 		addCommentBox->AutoHeight();
-		int newSize = addCommentBox->Size.Y+5;
+		int newSize = addCommentBox->Size.Y+2;
 		addCommentBox->Size.Y = oldSize;
 
 		commentBoxHeight = newSize+22;
@@ -245,7 +245,7 @@ void PreviewView::commentBoxAutoHeight()
 		commentBoxPositionX = (XRES/2)+4;
 		commentBoxPositionY = Size.Y-19;
 		commentBoxSizeX = Size.X-(XRES/2)-48;
-		commentBoxSizeY = 17;
+		commentBoxSizeY = 16;
 	}
 	commentsPanel->Size.Y = Size.Y-commentBoxHeight;
 }

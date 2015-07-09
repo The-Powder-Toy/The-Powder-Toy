@@ -6,10 +6,11 @@
 #include "client/requestbroker/RequestListener.h"
 #include "client/UserInfo.h"
 #include "gui/interface/Window.h"
+#include "gui/interface/Label.h"
 
 class ProfileActivity: public WindowActivity, public RequestListener {
-	ui::Component * location;
-	ui::Component * bio;
+	ui::Label * location;
+	ui::Label * bio;
 	UserInfo info;
 	bool editable;
 	bool loading;
@@ -20,6 +21,7 @@ public:
 	virtual ~ProfileActivity();
 	virtual void OnResponseReady(void * userDataPtr, int identifier);
 	virtual void OnDraw();
+	virtual void OnTryExit(ExitMethod method);
 };
 
 #endif /* PROFILEACTIVITY_H_ */

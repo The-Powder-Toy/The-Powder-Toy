@@ -1271,8 +1271,8 @@ RequestBroker::Request * Client::SaveUserInfoAsync(UserInfo info)
 		virtual ~StatusParser() { }
 	};
 	std::map<std::string, std::string> postData;
-	postData.insert(std::pair<std::string, std::string>("Location", info.Location));
-	postData.insert(std::pair<std::string, std::string>("Biography", info.Biography));
+	postData.insert(std::pair<std::string, std::string>("Location", info.location));
+	postData.insert(std::pair<std::string, std::string>("Biography", info.biography));
 	return new APIRequest("http://" SERVER "/Profile.json", postData, new StatusParser());	
 }
 
@@ -1288,19 +1288,19 @@ RequestBroker::Request * Client::GetUserInfoAsync(std::string username)
 				json::Object objDocument;
 				json::Reader::Read(objDocument, dataStream);
 				json::Object tempUser = objDocument["User"];
-
-				json::Number userIDTemp = tempUser["ID"];
-				json::String usernameTemp = tempUser["Username"];
-				json::String bioTemp = tempUser["Biography"];
-				json::String locationTemp = tempUser["Location"];
-				json::Number ageTemp = tempUser["Age"];
 				
-				return new UserInfo(
-					userIDTemp.Value(),
-					ageTemp.Value(),
-					usernameTemp.Value(),
-					bioTemp.Value(),
-					locationTemp.Value());
+				return new UserInfo(static_cast<json::Number>(tempUser["ID"]),
+									static_cast<json::Number>(tempUser["Age"]),
+									static_cast<json::String>(tempUser["Username"]),
+									static_cast<json::String>(tempUser["Biography"]),
+									static_cast<json::String>(tempUser["Location"]),
+									static_cast<json::String>(tempUser["Website"]),
+									static_cast<json::Number>(tempUser["Saves"]["Count"]),
+									static_cast<json::Number>(tempUser["Saves"]["AverageScore"]),
+									static_cast<json::Number>(tempUser["Saves"]["HighestScore"]),
+									static_cast<json::Number>(tempUser["Forum"]["Topics"]),
+									static_cast<json::Number>(tempUser["Forum"]["Replies"]),
+									static_cast<json::Number>(tempUser["Forum"]["Reputation"]));
 			}
 			catch (json::Exception &e)
 			{
