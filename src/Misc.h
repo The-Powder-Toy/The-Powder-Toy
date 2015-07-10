@@ -54,8 +54,6 @@ void strlist_free(struct strlist **list);
 
 void save_presets(int do_update);
 
-void clean_text(char *text, int vwidth);
-
 void load_presets(void);
 
 void save_string(FILE *f, char *str);
@@ -63,8 +61,6 @@ void save_string(FILE *f, char *str);
 int load_string(FILE *f, char *str, int max);
 
 void strcaturl(char *dst, const char *src);
-
-std::string URLEscape(std::string source);
 
 void strappend(char *dst, const char *src);
 

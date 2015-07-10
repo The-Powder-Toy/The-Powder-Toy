@@ -2,7 +2,8 @@
 #include <iostream>
 #include <stdexcept>
 #include "Config.h"
-#include "Misc.h"
+#include "Format.h"
+//#include "Misc.h"
 #include "gui/interface/Point.h"
 #include "gui/interface/Textbox.h"
 #include "gui/interface/Keys.h"
@@ -138,13 +139,14 @@ void Textbox::cutSelection()
 	{
 		if (getLowerSelectionBound() < 0 || getHigherSelectionBound() > (int)backingText.length())
 			return;
-		ClipboardPush((char*)backingText.substr(getLowerSelectionBound(), getHigherSelectionBound()-getLowerSelectionBound()).c_str());
+		std::string toCopy = backingText.substr(getLowerSelectionBound(), getHigherSelectionBound()-getLowerSelectionBound());
+		ClipboardPush(format::CleanString(toCopy, false, true, false));
 		backingText.erase(backingText.begin()+getLowerSelectionBound(), backingText.begin()+getHigherSelectionBound());
 		cursor = getLowerSelectionBound(); 
 	}
 	else
 	{
-		ClipboardPush((char*)backingText.c_str());
+		ClipboardPush(format::CleanString(backingText, false, true, false));
 		backingText.clear();
 	}
 	ClearSelection();
@@ -186,7 +188,7 @@ void Textbox::selectAll()
 
 void Textbox::pasteIntoSelection()
 {
-	std::string newText = ClipboardPull();
+	std::string newText = format::CleanString(ClipboardPull(), true, true, inputType != Multiline, inputType == Number || inputType == Numeric);
 	if (HasSelection())
 	{
 		if (getLowerSelectionBound() < 0 || getHigherSelectionBound() > (int)backingText.length())
@@ -194,41 +196,26 @@ void Textbox::pasteIntoSelection()
 		backingText.erase(backingText.begin()+getLowerSelectionBound(), backingText.begin()+getHigherSelectionBound());
 		cursor = getLowerSelectionBound();
 	}
-	for (std::string::iterator iter = newText.begin(), end = newText.end(); iter != end; ++iter)
-	{
-		if (!CharacterValid(*iter))
-		{
-			if (inputType == All || inputType == Multiline)
-			{
-				if(*iter == '\n' || *iter == '\r')
-					*iter = ' ';
-				else
-					*iter = '?';
-			}
-			else
-				*iter = '0';
-		}
-	}
 
 	int regionWidth = Size.X;
-	if(Appearance.icon)
+	if (Appearance.icon)
 		regionWidth -= 13;
 	regionWidth -= Appearance.Margin.Left;
 	regionWidth -= Appearance.Margin.Right;
 
-	if(limit!=std::string::npos)
+	if (limit != std::string::npos)
 	{
 		if(limit-backingText.length() >= 0)
 			newText = newText.substr(0, limit-backingText.length());
 		else
 			newText = "";
 	}
-	else if(!multiline && Graphics::textwidth((char*)std::string(backingText+newText).c_str()) > regionWidth)
+	else if (!multiline && Graphics::textwidth((char*)std::string(backingText+newText).c_str()) > regionWidth)
 	{
 		int pLimit = regionWidth - Graphics::textwidth((char*)backingText.c_str());
 		int cIndex = Graphics::CharIndexAtPosition((char *)newText.c_str(), pLimit, 0);
 
-		if(cIndex > 0)
+		if (cIndex > 0)
 			newText = newText.substr(0, cIndex);
 		else
 			newText = "";

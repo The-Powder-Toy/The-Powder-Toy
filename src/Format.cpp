@@ -16,11 +16,9 @@ std::string format::URLEncode(std::string source)
 	std::fill(dst, dst+(source.length()*3)+2, 0);
 
 	char *d;
-	unsigned char *s;
+	for (d = dst; *d; d++) ;
 
-	for (d=dst; *d; d++) ;
-
-	for (s=(unsigned char *)src; *s; s++)
+	for (unsigned char *s = (unsigned char *)src; *s; s++)
 	{
 		if ((*s>='0' && *s<='9') ||
 		        (*s>='a' && *s<='z') ||
@@ -71,57 +69,64 @@ std::string format::UnixtimeToDateMini(time_t unixtime)
 	}
 }
 
-std::string format::CleanString(std::string dirtyString, size_t maxStringLength)
+std::string format::CleanString(std::string dirtyString, bool ascii, bool color, bool newlines, bool numeric)
 {
-	return CleanString(dirtyString, std::string::npos, maxStringLength);
+	for (size_t i = 0; i < dirtyString.size(); i++)
+	{
+		switch(dirtyString[i])
+		{
+		case '\b':
+			if (color)
+			{
+				dirtyString.erase(i, 2);
+				i--;
+			}
+			else
+				i++;
+			break;
+		case '\x0E':
+			if (color)
+			{
+				dirtyString.erase(i, 1);
+				i--;
+			}
+			break;
+		case '\x0F':
+			if (color)
+			{
+				dirtyString.erase(i, 4);
+				i--;
+			}
+			else
+				i += 3;
+			break;
+		case '\r':
+		case '\n':
+			if (newlines)
+				dirtyString[i] = ' ';
+			break;
+		default:
+			// if less than ascii 20 or greater than ascii 126, delete
+			if (numeric && (dirtyString[i] < '0' || dirtyString[i] > '9'))
+			{
+				dirtyString.erase(i, 1);
+				i--;
+			}
+			else if (ascii && (dirtyString[i] < ' ' || dirtyString[i] > '~'))
+			{
+				dirtyString.erase(i, 1);
+				i--;
+			}
+			break;
+		}
+	}
+	return dirtyString;
 }
 
-std::string format::CleanString(std::string dirtyString, size_t maxVisualSize, size_t maxStringLength)
+std::string format::CleanString(char * dirtyData, bool ascii, bool color, bool newlines, bool numeric)
 {
-	std::string newString = dirtyString;
-	if(maxStringLength != std::string::npos && newString.size() > maxStringLength)
-	{
-		newString = newString.substr(0, maxStringLength);
-	}
-	if(maxVisualSize != std::string::npos && newString.size()*10 > maxVisualSize)
-	{
-		newString = newString.substr(0, maxVisualSize/10);
-	}
-	for (unsigned int i = 0; i < newString.size(); i++)
-	{
-		if (!(newString[i]>=' ' && newString[i]<127))	//Clamp to ASCII range
-			newString[i] = '?';							//Replace with "huh" char
-	}
-	return newString;
+	return CleanString(std::string(dirtyData), ascii, color, newlines, numeric);
 }
-
-std::string format::CleanString(char * dirtyData, size_t maxStringLength)
-{
-	return CleanString(dirtyData, std::string::npos, maxStringLength);
-}
-
-std::string format::CleanString(char * dirtyData, size_t maxVisualSize, size_t maxStringLength)
-{
-	char * newData = new char[maxStringLength+1];
-	strncpy(newData, dirtyData, maxStringLength);
-	newData[maxStringLength] = 0;
-
-	std::string newString = std::string(newData);
-	delete[] newData;
-
-	if(maxVisualSize != std::string::npos && newString.size()*10 > maxVisualSize)
-	{
-		newString = newString.substr(0, maxVisualSize/10);
-	}
-	for (unsigned int i = 0; i < newString.size(); i++)
-	{
-		if (!(newString[i]>=' ' && newString[i]<127))	//Clamp to ASCII range
-			newString[i] = '?';							//Replace with "huh" char
-	}
-	return newString;
-}
-
-
 
 std::vector<char> format::VideoBufferToPTI(const VideoBuffer & vidBuf)
 {

@@ -2010,7 +2010,7 @@ std::vector<std::pair<std::string, int> > * Client::GetTags(int start, int count
 	{
 		urlStream << "&Search_Query=";
 		if(query.length())
-			urlStream << URLEscape(query);
+			urlStream << format::URLEncode(query);
 	}
 	
 	data = http_simple_get((char *)urlStream.str().c_str(), &dataStatus, &dataLength);
@@ -2058,17 +2058,17 @@ std::vector<SaveInfo*> * Client::SearchSaves(int start, int count, std::string q
 	{
 		urlStream << "&Search_Query=";
 		if(query.length())
-			urlStream << URLEscape(query);
+			urlStream << format::URLEncode(query);
 		if(sort == "date")
 		{
 			if(query.length())
-				urlStream << URLEscape(" ");
-			urlStream << URLEscape("sort:") << URLEscape(sort);
+				urlStream << format::URLEncode(" ");
+			urlStream << format::URLEncode("sort:") << format::URLEncode(sort);
 		}
 	}
 	if(category.length())
 	{
-		urlStream << "&Category=" << URLEscape(category);
+		urlStream << "&Category=" << format::URLEncode(category);
 	}
 	if(authUser.ID)
 	{

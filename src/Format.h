@@ -26,10 +26,8 @@ namespace format
 	std::string URLEncode(std::string value);
 	std::string UnixtimeToDate(time_t unixtime, std::string dateFomat = "%d %b %Y");
 	std::string UnixtimeToDateMini(time_t unixtime);
-	std::string CleanString(std::string dirtyString, size_t maxVisualSize, size_t maxStringLength);
-	std::string CleanString(std::string dirtyString, size_t maxStringLength = std::string::npos);
-	std::string CleanString(char * dirtyData, size_t maxVisualSize, size_t maxStringLength);
-	std::string CleanString(char * dirtyData, size_t maxStringLength);
+	std::string CleanString(std::string dirtyString, bool ascii, bool color, bool newlines, bool numeric = false);
+	std::string CleanString(char * dirtyData, bool ascii, bool color, bool newlines, bool numeric = false);
 	std::vector<char> VideoBufferToPNG(const VideoBuffer & vidBuf);
 	std::vector<char> VideoBufferToBMP(const VideoBuffer & vidBuf);
 	std::vector<char> VideoBufferToPPM(const VideoBuffer & vidBuf);

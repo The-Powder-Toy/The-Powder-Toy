@@ -1,5 +1,6 @@
 #include <string>
 #include "Config.h"
+#include "Format.h"
 #include "Point.h"
 #include "Label.h"
 #include "Keys.h"
@@ -208,14 +209,15 @@ void Label::OnMouseClick(int x, int y, unsigned button)
 void Label::copySelection()
 {
 	std::string currentText = text;
+	std::string copyText;
 
-	if(selectionIndex1 > selectionIndex0) {
-		ClipboardPush((char*)currentText.substr(selectionIndex0, selectionIndex1-selectionIndex0).c_str());
-	} else if(selectionIndex0 > selectionIndex1) {
-		ClipboardPush((char*)currentText.substr(selectionIndex1, selectionIndex0-selectionIndex1).c_str());
-	} else {
-		ClipboardPush((char*)currentText.c_str());
-	}
+	if (selectionIndex1 > selectionIndex0)
+		copyText = currentText.substr(selectionIndex0, selectionIndex1-selectionIndex0).c_str();
+	else if(selectionIndex0 > selectionIndex1)
+		copyText = currentText.substr(selectionIndex1, selectionIndex0-selectionIndex1).c_str();
+	else
+		copyText = currentText.c_str();
+	ClipboardPush(format::CleanString(copyText, false, true, false));
 }
 
 void Label::OnMouseUp(int x, int y, unsigned button)

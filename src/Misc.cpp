@@ -20,36 +20,6 @@
 #include <mach-o/dyld.h>
 #endif
 
-const static char hex[] = "0123456789ABCDEF";
-std::string URLEscape(std::string source)
-{
-	char * src = (char *)source.c_str();
-	char * dst = (char *)calloc((source.length()*3)+2, 1);
-	char *d;
-	unsigned char *s;
-
-	for (d=dst; *d; d++) ;
-
-	for (s=(unsigned char *)src; *s; s++)
-	{
-		if ((*s>='0' && *s<='9') ||
-		        (*s>='a' && *s<='z') ||
-		        (*s>='A' && *s<='Z'))
-			*(d++) = *s;
-		else
-		{
-			*(d++) = '%';
-			*(d++) = hex[*s>>4];
-			*(d++) = hex[*s&15];
-		}
-	}
-	*d = 0;
-
-	std::string finalString(dst);
-	free(dst);
-	return finalString;
-}
-
 char *exe_name(void)
 {
 #if defined(WIN)
@@ -162,21 +132,6 @@ void strlist_free(struct strlist **list)
 	}
 }
 
-void clean_text(char *text, unsigned int vwidth)
-{
-	if (strlen(text)*10 > vwidth)
-	{
-		text[vwidth/10] = 0;
-	}
-	for (unsigned i = 0; i < strlen(text); i++)
-	{
-		if (! (text[i]>=' ' && text[i]<127))
-		{
-			text[i] = ' ';
-		}
-	}
-}
-
 void save_string(FILE *f, char *str)
 {
 	int li = strlen(str);
@@ -203,6 +158,7 @@ int load_string(FILE *f, char *str, int max)
 	return 0;
 }
 
+const static char hex[] = "0123456789ABCDEF";
 void strcaturl(char *dst, char *src)
 {
 	char *d;

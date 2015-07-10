@@ -517,7 +517,7 @@ void GameSave::readOPS(char * data, int dataLength)
 							{
 								if(strcmp(bson_iterator_key(&signiter), "text")==0 && bson_iterator_type(&signiter)==BSON_STRING)
 								{
-									tempSign.text = format::CleanString(bson_iterator_string(&signiter), 255);
+									tempSign.text = format::CleanString(bson_iterator_string(&signiter), true, true, true).substr(0, 255);
 								}
 								else if(strcmp(bson_iterator_key(&signiter), "justification")==0 && bson_iterator_type(&signiter)==BSON_INT)
 								{
@@ -1713,7 +1713,7 @@ void GameSave::readPSv(char * data, int dataLength)
 			x = 254;
 		memcpy(tempSignText, d+p, x);
 		tempSignText[x] = 0;
-		tempSign.text = tempSignText;
+		tempSign.text = format::CleanString(tempSignText, true, true, true);
 		tempSigns.push_back(tempSign);
 		p += x;
 	}
