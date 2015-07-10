@@ -159,8 +159,6 @@ void Textbox::cutSelection()
 	{
 		text = backingText;
 	}
-	if(actionCallback)
-		actionCallback->TextChangedCallback(this);
 
 	if(multiline)
 		updateMultiline();
@@ -175,6 +173,8 @@ void Textbox::cutSelection()
 	{
 		cursorPositionY = cursorPositionX = 0;
 	}
+	if(actionCallback)
+		actionCallback->TextChangedCallback(this);
 }
 
 void Textbox::selectAll()
@@ -187,18 +187,18 @@ void Textbox::selectAll()
 void Textbox::pasteIntoSelection()
 {
 	std::string newText = ClipboardPull();
-	if(HasSelection())
+	if (HasSelection())
 	{
-		if(getLowerSelectionBound() < 0 || getHigherSelectionBound() > (int)backingText.length())
+		if (getLowerSelectionBound() < 0 || getHigherSelectionBound() > (int)backingText.length())
 			return;
 		backingText.erase(backingText.begin()+getLowerSelectionBound(), backingText.begin()+getHigherSelectionBound());
 		cursor = getLowerSelectionBound();
 	}
-	for(std::string::iterator iter = newText.begin(), end = newText.end(); iter != end; ++iter)
+	for (std::string::iterator iter = newText.begin(), end = newText.end(); iter != end; ++iter)
 	{
-		if(!CharacterValid(*iter))
+		if (!CharacterValid(*iter))
 		{
-			if(inputType == All)
+			if (inputType == All || inputType == Multiline)
 			{
 				if(*iter == '\n' || *iter == '\r')
 					*iter = ' ';
@@ -248,8 +248,6 @@ void Textbox::pasteIntoSelection()
 	{
 		text = backingText;
 	}
-	if(actionCallback)
-		actionCallback->TextChangedCallback(this);
 
 	if(multiline)
 		updateMultiline();
@@ -267,6 +265,8 @@ void Textbox::pasteIntoSelection()
 	{
 		cursorPositionY = cursorPositionX = 0;
 	}
+	if(actionCallback)
+		actionCallback->TextChangedCallback(this);
 }
 
 bool Textbox::CharacterValid(Uint16 character)
@@ -276,6 +276,9 @@ bool Textbox::CharacterValid(Uint16 character)
 		case Number:
 		case Numeric:
 			return (character >= '0' && character <= '9');
+		case Multiline:
+			if (character == '\n')
+				return true;
 		case All:
 		default:
 			return (character >= ' ' && character < 127);
@@ -406,6 +409,8 @@ void Textbox::OnVKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 			}
 			ClearSelection();
 			break;
+		case KEY_RETURN:
+			character = '\n';
 		default:
 			if (CharacterValid(character) && !ReadOnly)
 			{
@@ -418,7 +423,7 @@ void Textbox::OnVKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 				}
 
 				int regionWidth = Size.X;
-				if( Appearance.icon)
+				if (Appearance.icon)
 					regionWidth -= 13;
 				regionWidth -= Appearance.Margin.Left;
 				regionWidth -= Appearance.Margin.Right;
@@ -465,8 +470,6 @@ void Textbox::OnVKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		{
 			text = backingText;
 		}
-		if(actionCallback)
-			actionCallback->TextChangedCallback(this);
 	}
 
 	if(multiline)
@@ -485,6 +488,8 @@ void Textbox::OnVKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 	{
 		cursorPositionY = cursorPositionX = 0;
 	}
+	if (changed && actionCallback)
+		actionCallback->TextChangedCallback(this);
 }
 
 void Textbox::OnMouseClick(int x, int y, unsigned button)

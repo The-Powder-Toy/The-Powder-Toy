@@ -1288,7 +1288,6 @@ RequestBroker::Request * Client::GetUserInfoAsync(std::string username)
 				json::Object objDocument;
 				json::Reader::Read(objDocument, dataStream);
 				json::Object tempUser = objDocument["User"];
-				
 				return new UserInfo(static_cast<json::Number>(tempUser["ID"]),
 									static_cast<json::Number>(tempUser["Age"]),
 									static_cast<json::String>(tempUser["Username"]),

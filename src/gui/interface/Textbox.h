@@ -21,7 +21,7 @@ class Textbox : public Label
 	friend class TextboxAction;
 public:
 	bool ReadOnly;
-	enum ValidInput { All, Numeric, Number };
+	enum ValidInput { All, Multiline, Numeric, Number }; // Numeric doesn't delete trailing 0's
 	Textbox(Point position, Point size, std::string textboxText = "", std::string textboxPlaceholder = "");
 	virtual ~Textbox();
 

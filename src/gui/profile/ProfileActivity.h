@@ -6,11 +6,16 @@
 #include "client/requestbroker/RequestListener.h"
 #include "client/UserInfo.h"
 #include "gui/interface/Window.h"
-#include "gui/interface/Label.h"
 
+namespace ui
+{
+class Label;
+class ScrollPanel;
+}
 class ProfileActivity: public WindowActivity, public RequestListener {
-	ui::Label * location;
-	ui::Label * bio;
+	ui::ScrollPanel *scrollPanel;
+	ui::Label *location;
+	ui::Label *bio;
 	UserInfo info;
 	bool editable;
 	bool loading;
@@ -22,6 +27,8 @@ public:
 	virtual void OnResponseReady(void * userDataPtr, int identifier);
 	virtual void OnDraw();
 	virtual void OnTryExit(ExitMethod method);
+
+	void ResizeArea();
 };
 
 #endif /* PROFILEACTIVITY_H_ */
