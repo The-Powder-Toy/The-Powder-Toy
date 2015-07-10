@@ -33,7 +33,7 @@ int ScrollPanel::GetScrollLimit()
 void ScrollPanel::SetScrollPosition(int position)
 {
 	offsetY = position;
-	ViewportPosition.Y = position;
+	ViewportPosition.Y = -position;
 }
 
 void ScrollPanel::XOnMouseWheelInside(int localx, int localy, int d)

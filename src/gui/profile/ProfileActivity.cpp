@@ -213,6 +213,7 @@ void ProfileActivity::setUserInfo(UserInfo newInfo)
 		bio = new ui::Textbox(ui::Point(4, currentY), ui::Point(Size.X-12, -1), info.biography);
 		((ui::Textbox*)bio)->SetInputType(ui::Textbox::Multiline);
 		((ui::Textbox*)bio)->SetActionCallback(new BioChangedAction(this));
+		((ui::Textbox*)bio)->SetLimit(20000);
 	}
 	else
 		bio = new ui::Label(ui::Point(4, currentY), ui::Point(Size.X-12, -1), info.biography);
@@ -254,7 +255,10 @@ void ProfileActivity::OnTryExit(ExitMethod method)
 
 void ProfileActivity::ResizeArea()
 {
+	int oldSize = scrollPanel->InnerSize.Y;
 	scrollPanel->InnerSize = ui::Point(Size.X, bio->Position.Y + bio->Size.Y + 10);
+	if (oldSize+scrollPanel->ViewportPosition.Y == scrollPanel->Size.Y)
+		scrollPanel->SetScrollPosition(scrollPanel->InnerSize.Y-scrollPanel->Size.Y);
 }
 
 ProfileActivity::~ProfileActivity()
