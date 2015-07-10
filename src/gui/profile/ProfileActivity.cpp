@@ -257,6 +257,7 @@ void ProfileActivity::ResizeArea()
 {
 	int oldSize = scrollPanel->InnerSize.Y;
 	scrollPanel->InnerSize = ui::Point(Size.X, bio->Position.Y + bio->Size.Y + 10);
+	// auto scroll as ScrollPanel size increases
 	if (oldSize+scrollPanel->ViewportPosition.Y == scrollPanel->Size.Y)
 		scrollPanel->SetScrollPosition(scrollPanel->InnerSize.Y-scrollPanel->Size.Y);
 }

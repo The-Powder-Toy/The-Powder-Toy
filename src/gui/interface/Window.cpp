@@ -14,6 +14,7 @@ Window::Window(Point _position, Point _size):
 	okayButton(NULL),
 	cancelButton(NULL),
 	focusedComponent_(NULL),
+	hoverComponent(NULL),
 #ifdef DEBUG
 	debugMode(false),
 #endif
@@ -29,8 +30,6 @@ Window::~Window()
 		if( Components[i] )
 		{
 			delete Components[i];
-			if(Components[i]==focusedComponent_)
-				focusedComponent_ = NULL;
 		}
 	Components.clear();
 }
@@ -75,6 +74,8 @@ void Window::RemoveComponent(Component* c)
 			halt = true;
 			if(Components[i]==focusedComponent_)
 				focusedComponent_ = NULL;
+			if (Components[i] == hoverComponent)
+				hoverComponent = NULL;
 
 			Components.erase(Components.begin() + i);
 
@@ -102,6 +103,8 @@ void Window::RemoveComponent(unsigned idx)
 	// free component and remove it.
 	if(Components[idx]==focusedComponent_)
 		focusedComponent_ = NULL;
+	if (Components[idx] == hoverComponent)
+		hoverComponent = NULL;
 	delete Components[idx];
 	Components.erase(Components.begin() + idx);
 }
@@ -144,12 +147,12 @@ void Window::DoDraw()
 {
 	OnDraw();
 	//draw
-	for(int i = 0, sz = Components.size(); i < sz; ++i)
-		if(Components[i]->Visible)
+	for (int i = 0, sz = Components.size(); i < sz; ++i)
+		if (Components[i]->Visible && ((Components[i] != focusedComponent_ && Components[i] != hoverComponent) || Components[i]->GetParent()))
 		{
-			if(AllowExclusiveDrawing)
+			Point scrpos(Components[i]->Position.X + Position.X, Components[i]->Position.Y + Position.Y);
+			if (AllowExclusiveDrawing)
 			{
-				Point scrpos(Components[i]->Position.X + Position.X, Components[i]->Position.Y + Position.Y);
 				Components[i]->Draw(scrpos);
 			}
 			else
@@ -177,6 +180,31 @@ void Window::DoDraw()
 			}
 #endif
 		}
+	// the component the mouse is hovering over and the focused component are always drawn last
+	if (hoverComponent && hoverComponent->Visible && hoverComponent->GetParent() == NULL)
+	{
+		Point scrpos(hoverComponent->Position.X + Position.X, hoverComponent->Position.Y + Position.Y);
+		if ((scrpos.X + hoverComponent->Size.X >= 0 &&
+		     scrpos.Y + hoverComponent->Size.Y >= 0 &&
+		     scrpos.X < ui::Engine::Ref().GetWidth() &&
+		     scrpos.Y < ui::Engine::Ref().GetHeight()
+		    ) || AllowExclusiveDrawing)
+		{
+			hoverComponent->Draw(scrpos);
+		}
+	}
+	if (focusedComponent_ && focusedComponent_ != hoverComponent && focusedComponent_->Visible && focusedComponent_->GetParent() == NULL)
+	{
+		Point scrpos(focusedComponent_->Position.X + Position.X, focusedComponent_->Position.Y + Position.Y);
+		if ((scrpos.X + focusedComponent_->Size.X >= 0 &&
+		     scrpos.Y + focusedComponent_->Size.Y >= 0 &&
+		     scrpos.X < ui::Engine::Ref().GetWidth() &&
+		     scrpos.Y < ui::Engine::Ref().GetHeight()
+		    ) || AllowExclusiveDrawing)
+		{
+			focusedComponent_->Draw(scrpos);
+		}
+	}
 #ifdef DEBUG
 	if(debugMode)
 	{
@@ -449,6 +477,7 @@ void Window::DoMouseMove(int x_, int y_, int dx, int dy)
 				{
 					Components[i]->OnMouseEnter(local.X, local.Y);
 				}
+				hoverComponent = Components[i];
 			}
 			else if(!halt)
 			{

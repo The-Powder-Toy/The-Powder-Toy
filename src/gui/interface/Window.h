@@ -99,7 +99,8 @@ enum ChromeStyle
 		virtual void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt) {}
 		virtual void OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt) {}
 		std::vector<Component*> Components;
-		Component* focusedComponent_;
+		Component *focusedComponent_;
+		Component *hoverComponent;
 		ChromeStyle chrome;
 
 #ifdef DEBUG
