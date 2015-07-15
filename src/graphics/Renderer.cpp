@@ -1906,26 +1906,23 @@ void Renderer::render_parts()
 							addpixel(nx+nxo, ny+nyo, colr, colg, colb, 255-orbd[r]);
 					}
 				}
-				if (pixel_mode & EFFECT_DBGLINES)
+				if (pixel_mode & EFFECT_DBGLINES && !(display_mode&DISPLAY_PERS))
 				{
-					if (mousePos.X == nx && mousePos.Y == ny && debugLines && !(display_mode&DISPLAY_PERS))//draw lines connecting wifi/portal channels
+					// draw lines connecting wifi/portal channels
+					if (mousePos.X == nx && mousePos.Y == ny && (i == sim->pmap[ny][nx]>>8) && debugLines)
 					{
-						int z;
 						int type = parts[i].type, tmp = (int)((parts[i].temp-73.15f)/100+1), othertmp;
 						if (type == PT_PRTI)
 							type = PT_PRTO;
 						else if (type == PT_PRTO)
 							type = PT_PRTI;
-						for (z = 0; z<NPART; z++)
+						for (int z = 0; z < sim->parts_lastActiveIndex; z++)
 						{
-							if (parts[z].type)
+							if (parts[z].type == type)
 							{
-								if (parts[z].type==type)
-								{
-									othertmp = (int)((parts[z].temp-73.15f)/100+1);
-									if (tmp == othertmp)
-										xor_line(nx,ny,(int)(parts[z].x+0.5f),(int)(parts[z].y+0.5f));
-								}
+								othertmp = (int)((parts[z].temp-73.15f)/100+1);
+								if (tmp == othertmp)
+									xor_line(nx,ny,(int)(parts[z].x+0.5f),(int)(parts[z].y+0.5f));
 							}
 						}
 					}
