@@ -8,7 +8,6 @@ namespace ui {
 
 Button::Button(Point position, Point size, std::string buttonText, std::string toolTip):
 	Component(position, size),
-	Enabled(true),
 	ButtonText(buttonText),
 	toolTip(toolTip),
 	isButtonDown(false),

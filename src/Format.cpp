@@ -106,12 +106,12 @@ std::string format::CleanString(std::string dirtyString, bool ascii, bool color,
 				dirtyString[i] = ' ';
 			break;
 		default:
-			// if less than ascii 20 or greater than ascii 126, delete
 			if (numeric && (dirtyString[i] < '0' || dirtyString[i] > '9'))
 			{
 				dirtyString.erase(i, 1);
 				i--;
 			}
+			// if less than ascii 20 or greater than ascii 126, delete
 			else if (ascii && (dirtyString[i] < ' ' || dirtyString[i] > '~'))
 			{
 				dirtyString.erase(i, 1);

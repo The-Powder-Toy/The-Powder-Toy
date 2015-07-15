@@ -3,7 +3,6 @@
 #include <stdexcept>
 #include "Config.h"
 #include "Format.h"
-//#include "Misc.h"
 #include "gui/interface/Point.h"
 #include "gui/interface/Textbox.h"
 #include "gui/interface/Keys.h"

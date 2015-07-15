@@ -41,7 +41,7 @@ namespace ui
 
 		Point Position;
 		Point Size;
-		bool Locked;
+		bool Enabled;
 		bool Visible;
 
 		ui::Appearance Appearance;

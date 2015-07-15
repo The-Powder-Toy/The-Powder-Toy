@@ -19,7 +19,7 @@ Component::Component(Window* parent_state):
 	menu(NULL),
 	Position(Point(0,0)),
 	Size(Point(0,0)),
-	Locked(false),
+	Enabled(true),
 	Visible(true)
 {
 
@@ -35,7 +35,7 @@ Component::Component(Point position, Point size):
 	menu(NULL),
 	Position(position),
 	Size(size),
-	Locked(false),
+	Enabled(true),
 	Visible(true)
 {
 
@@ -51,7 +51,7 @@ Component::Component():
 	menu(NULL),
 	Position(Point(0,0)),
 	Size(Point(0,0)),
-	Locked(false),
+	Enabled(true),
 	Visible(true)
 {
 

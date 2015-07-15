@@ -24,8 +24,6 @@ public:
 	Button(Point position = Point(0, 0), Point size = Point(0, 0), std::string buttonText = "", std::string toolTip = "");
 	virtual ~Button();
 
-	bool Enabled;
-
 	virtual void OnMouseClick(int x, int y, unsigned int button);
 	virtual void OnMouseUnclick(int x, int y, unsigned int button);
 	//virtual void OnMouseUp(int x, int y, unsigned int button);
