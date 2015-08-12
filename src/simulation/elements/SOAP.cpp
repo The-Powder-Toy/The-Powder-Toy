@@ -102,13 +102,14 @@ int Element_SOAP::update(UPDATE_FUNC_ARGS)
 
 	if (parts[i].ctype&1)
 	{
+		// reset invalid SOAP links
+		if (parts[i].tmp < 0 || parts[i].tmp >= NPART || parts[i].tmp2 < 0 || parts[i].tmp2 >= NPART)
+		{
+			parts[i].tmp = parts[i].tmp2 = parts[i].ctype = 0;
+			return 0;
+		}
 		if (parts[i].temp>FREEZING)
 		{
-			if (parts[i].tmp < 0 || parts[i].tmp >= NPART || parts[i].tmp2 < 0 || parts[i].tmp2 >= NPART)
-			{
-				parts[i].tmp = parts[i].tmp2 = parts[i].ctype = 0;
-				return 0;
-			}
 			if (parts[i].life<=0)
 			{
 				//if only connected on one side
