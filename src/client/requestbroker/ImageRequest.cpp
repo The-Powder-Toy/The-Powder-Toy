@@ -1,5 +1,6 @@
 #include <iostream>
 #include <typeinfo>
+#include <time.h>
 #include "ImageRequest.h"
 #include "graphics/Graphics.h"
 #include "client/HTTP.h"
