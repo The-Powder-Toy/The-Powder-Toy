@@ -102,19 +102,6 @@ public:
 	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position);
 };
 
-class Element_LIGH_Tool: public Tool
-{
-public:
-	Element_LIGH_Tool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int) = NULL):
-		Tool(id, name, description, r, g, b, identifier, textureGen)
-	{ }
-	virtual ~Element_LIGH_Tool() { }
-	virtual void Click(Simulation * sim, Brush * brush, ui::Point position) { }
-	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false);
-	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) { }
-	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position) { }
-};
-
 
 class ElementTool: public Tool
 {
@@ -125,6 +112,19 @@ public:
 	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false);
 	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2);
 	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position);
+};
+
+class Element_LIGH_Tool: public ElementTool
+{
+public:
+	Element_LIGH_Tool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int) = NULL):
+		ElementTool(id, name, description, r, g, b, identifier, textureGen)
+	{ }
+	virtual ~Element_LIGH_Tool() { }
+	virtual void Click(Simulation * sim, Brush * brush, ui::Point position) { }
+	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false);
+	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) { }
+	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position) { }
 };
 
 class Element_TESC_Tool: public ElementTool
