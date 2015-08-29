@@ -146,11 +146,7 @@ public:
 	std::vector<SaveInfo*> * SearchSaves(int start, int count, std::string query, std::string sort, std::string category, int & resultCount);
 	std::vector<std::pair<std::string, int> > * GetTags(int start, int count, std::string query, int & resultCount);
 
-	std::vector<SaveComment*> * GetComments(int saveID, int start, int count);
 	RequestBroker::Request * GetCommentsAsync(int saveID, int start, int count);
-	
-	Thumbnail * GetPreview(int saveID, int saveDate);
-	Thumbnail * GetThumbnail(int saveID, int saveDate);
 
 	SaveInfo * GetSave(int saveID, int saveDate);
 	RequestBroker::Request * GetSaveAsync(int saveID, int saveDate);
@@ -167,6 +163,7 @@ public:
 	std::string GetLastError() {
 		return lastError;
 	}
+	RequestStatus ParseServerReturn(char *result, int status, bool json);
 	void Tick();
 	void Shutdown();
 

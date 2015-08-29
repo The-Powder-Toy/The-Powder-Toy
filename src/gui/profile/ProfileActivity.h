@@ -20,11 +20,15 @@ class ProfileActivity: public WindowActivity, public RequestListener {
 	bool editable;
 	bool loading;
 	bool saving;
+	bool doError;
+	std::string doErrorMessage;
 	void setUserInfo(UserInfo newInfo);
 public:
 	ProfileActivity(std::string username);
 	virtual ~ProfileActivity();
 	virtual void OnResponseReady(void * userDataPtr, int identifier);
+	virtual void OnResponseFailed(int identifier);
+	virtual void OnTick(float dt);
 	virtual void OnDraw();
 	virtual void OnTryExit(ExitMethod method);
 

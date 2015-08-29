@@ -125,7 +125,7 @@ void PreviewController::Report(std::string message)
 		new ErrorMessage("Information", "Report submitted"); //TODO: InfoMessage
 	}
 	else
-		new ErrorMessage("Error", "Unable file report");
+		new ErrorMessage("Error", "Unable file report: " + Client::Ref().GetLastError());
 }
 
 void PreviewController::FavouriteSave()

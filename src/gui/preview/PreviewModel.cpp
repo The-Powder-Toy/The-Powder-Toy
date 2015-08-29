@@ -25,9 +25,9 @@ void PreviewModel::SetFavourite(bool favourite)
 		if (Client::Ref().FavouriteSave(save->id, favourite) == RequestOkay)
 			save->Favourite = favourite;
 		else if (favourite)
-			throw PreviewModelException("Error, could not fav. the save, are you logged in?");
+			throw PreviewModelException("Error, could not fav. the save: " + Client::Ref().GetLastError());
 		else
-			throw PreviewModelException("Error, could not unfav. the save, are you logged in?");
+			throw PreviewModelException("Error, could not unfav. the save: " + Client::Ref().GetLastError());
 		notifySaveChanged();
 	}
 }
@@ -158,7 +158,6 @@ void PreviewModel::OnResponseReady(void * object, int identifier)
 			saveComments = NULL;
 		}
 		saveComments = (std::vector<SaveComment*>*)object;
-		std::cout << object << std::endl;
 		commentsLoaded = true;
 		notifySaveCommentsChanged();
 	}
@@ -185,6 +184,30 @@ void PreviewModel::OnResponseReady(void * object, int identifier)
 	}
 }
 
+void PreviewModel::OnResponseFailed(int identifier)
+{
+	if (identifier == 3)
+	{
+		if (saveComments)
+		{
+			for (size_t i = 0; i < saveComments->size(); i++)
+				delete saveComments->at(i);
+			saveComments->clear();
+			delete saveComments;
+			saveComments = NULL;
+		}
+		saveComments = NULL;
+		commentsLoaded = true;
+		notifySaveCommentsChanged();
+	}
+	else
+	{
+		for (size_t i = 0; i < observers.size(); i++)
+		{
+			observers[i]->SaveLoadingError(Client::Ref().GetLastError());
+		}
+	}
+}
 
 void PreviewModel::Update()
 {

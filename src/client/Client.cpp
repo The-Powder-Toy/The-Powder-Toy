@@ -666,20 +666,86 @@ std::vector<std::pair<std::string, std::string> > Client::GetServerNotifications
 	return serverNotifications;
 }
 
+RequestStatus Client::ParseServerReturn(char *result, int status, bool json)
+{
+	// no server response, return "Malformed Response"
+	if (status == 200 && !result)
+	{
+		status = 603;
+	}
+	if (status == 302)
+		return RequestOkay;
+	if (status != 200)
+	{
+		std::stringstream httperror;
+		httperror << "HTTP Error " << status << ": " << http_ret_text(status);
+		lastError = httperror.str();
+		return RequestFailure;
+	}
+
+	if (json)
+	{
+		std::istringstream datastream(result);
+		json::Object root;
+
+		try
+		{
+			json::Reader::Read(root, datastream);
+			// assume everything is fine if an empty [] is returned
+			if (root.Size() == 0)
+			{
+				return RequestOkay;
+			}
+			json::Number status = root["Status"];
+			if (status != 1)
+			{
+				json::String error = root["Error"];
+				lastError = std::string(error);
+				if (lastError == "")
+					lastError = "Unspecified Error";
+				return RequestFailure;
+			}
+		}
+		catch (std::exception &e)
+		{
+			// sometimes the server returns a 200 with the text "Error: 401"
+			if (!strncmp((const char *)result, "Error: ", 7))
+			{
+				status = atoi(result+7);
+				std::stringstream httperror;
+				httperror << "HTTP Error " << status << ": " << http_ret_text(status);
+				lastError = httperror.str();
+				return RequestFailure;
+			}
+			lastError = "Could not read response";
+			return RequestFailure;
+		}
+	}
+	else
+	{
+		if (strncmp((const char *)result, "OK", 2))
+		{
+			lastError = std::string(result);
+			return RequestFailure;
+		}
+	}
+	return RequestOkay;
+}
+
 void Client::Tick()
 {
 	//Check thumbnail queue
 	RequestBroker::Ref().FlushThumbQueue();
 
 	//Check status on version check request
-	if(versionCheckRequest && http_async_req_status(versionCheckRequest))
+	if (versionCheckRequest && http_async_req_status(versionCheckRequest))
 	{
 		int status;
 		int dataLength;
 		char * data = http_async_req_stop(versionCheckRequest, &status, &dataLength);
 		versionCheckRequest = NULL;
 
-		if(status != 200)
+		if (status != 200)
 		{
 			free(data);
 		}
@@ -725,7 +791,7 @@ void Client::Tick()
 				json::Number stableMinor = stableVersion["Minor"];
 				json::Number stableBuild = stableVersion["Build"];
 				json::String stableFile = stableVersion["File"];
-				if(stableMajor.Value()>SAVE_VERSION || (stableMinor.Value()>MINOR_VERSION && stableMajor.Value()==SAVE_VERSION) || stableBuild.Value()>BUILD_NUM)
+				if (stableMajor.Value()>SAVE_VERSION || (stableMinor.Value()>MINOR_VERSION && stableMajor.Value()==SAVE_VERSION) || stableBuild.Value()>BUILD_NUM)
 				{
 					updateAvailable = true;
 					updateInfo = UpdateInfo(stableMajor.Value(), stableMinor.Value(), stableBuild.Value(), stableFile.Value(), UpdateInfo::Stable);
@@ -738,7 +804,7 @@ void Client::Tick()
 				json::Number betaMinor = betaVersion["Minor"];
 				json::Number betaBuild = betaVersion["Build"];
 				json::String betaFile = betaVersion["File"];
-				if(betaMajor.Value()>SAVE_VERSION || (betaMinor.Value()>MINOR_VERSION && betaMajor.Value()==SAVE_VERSION) || betaBuild.Value()>BUILD_NUM)
+				if (betaMajor.Value()>SAVE_VERSION || (betaMinor.Value()>MINOR_VERSION && betaMajor.Value()==SAVE_VERSION) || betaBuild.Value()>BUILD_NUM)
 				{
 					updateAvailable = true;
 					updateInfo = UpdateInfo(betaMajor.Value(), betaMinor.Value(), betaBuild.Value(), betaFile.Value(), UpdateInfo::Beta);
@@ -749,7 +815,7 @@ void Client::Tick()
 				json::Object snapshotVersion = versions["Snapshot"];
 				json::Number snapshotSnapshot = snapshotVersion["Snapshot"];
 				json::String snapshotFile = snapshotVersion["File"];
-				if(snapshotSnapshot.Value() > SNAPSHOT_ID)
+				if (snapshotSnapshot.Value() > SNAPSHOT_ID)
 				{
 					updateAvailable = true;
 					updateInfo = UpdateInfo(snapshotSnapshot.Value(), snapshotFile.Value(), UpdateInfo::Snapshot);
@@ -835,9 +901,9 @@ void Client::WritePrefs()
 	configFile.open("powder.pref", std::ios::trunc);
 #endif
 	
-	if(configFile)
+	if (configFile)
 	{
-		if(authUser.ID)
+		if (authUser.ID)
 		{
 			configDocument["User"]["ID"] = json::Number(authUser.ID);
 			configDocument["User"]["SessionID"] = json::String(authUser.SessionID);
@@ -904,9 +970,9 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 	int dataLength = 0;
 	std::stringstream userIDStream;
 	userIDStream << authUser.ID;
-	if(authUser.ID)
+	if (authUser.ID)
 	{
-		if(!save.GetGameSave())
+		if (!save.GetGameSave())
 		{
 			lastError = "Empty game save";
 			return RequestFailure;
@@ -915,7 +981,7 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 
 		gameData = save.GetGameSave()->Serialise(gameDataLength);
 
-		if(!gameData)
+		if (!gameData)
 		{
 			lastError = "Cannot upload game save";
 			return RequestFailure;
@@ -933,7 +999,6 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 		const char *const postNames[] = { "Name", "Description", "Data:save.bin", "Publish", NULL };
 		const char *const postDatas[] = { saveName, saveDescription, gameData, (char *)(save.GetPublished()?"Public":"Private") };
 		size_t postLengths[] = { save.GetName().length(), save.GetDescription().length(), gameDataLength, (size_t)(save.GetPublished()?6:7) };
-		//std::cout << postNames[0] << " " << postDatas[0] << " " << postLengths[0] << std::endl;
 		data = http_multipart_post("http://" SERVER "/Save.api", postNames, postDatas, postLengths, userid, NULL, session, &dataStatus, &dataLength);
 
 		delete[] saveDescription;
@@ -946,40 +1011,22 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 		lastError = "Not authenticated";
 		return RequestFailure;
 	}
-	if(data && dataStatus == 200)
+
+	RequestStatus ret = ParseServerReturn(data, dataStatus, false);
+	if (ret == RequestOkay)
 	{
-		if(strncmp((const char *)data, "OK", 2)!=0)
+		int saveID = format::StringToNumber<int>(data+3);
+		if (!saveID)
 		{
-			delete[] gameData;
-			lastError = std::string((const char *)data);
-			free(data);
-			return RequestFailure;
+			lastError = "Server did not return Save ID";
+			ret = RequestFailure;
 		}
 		else
-		{
-			int tempID;
-			std::stringstream saveIDStream((char *)(data+3));
-			saveIDStream >> tempID;
-			if(!tempID)
-			{
-				lastError = "Server did not return Save ID";
-				return RequestFailure;
-			}
-			else
-			{
-				save.SetID(tempID);
-			}
-		}
-		free(data);
-		delete[] gameData;
-		return RequestOkay;
+			save.SetID(saveID);
 	}
-	else if(data)
-	{
-		free(data);
-	}
+	free(data);
 	delete[] gameData;
-	return RequestFailure;
+	return ret;
 }
 
 void Client::MoveStampToFront(std::string stampID)
@@ -1140,26 +1187,23 @@ RequestStatus Client::ExecVote(int saveID, int direction)
 	int dataStatus;
 	char * data;
 	int dataLength = 0;
-	std::stringstream idStream;
-	idStream << saveID;
 
-	if(authUser.ID)
+	if (authUser.ID)
 	{
 		char * directionText = (char*)(direction==1?"Up":"Down");
 		std::string saveIDText = format::NumberToString<int>(saveID);
 		std::string userIDText = format::NumberToString<int>(authUser.ID);
 
 		char *id = new char[saveIDText.length() + 1];
-		std::strcpy (id, saveIDText.c_str());
+		std::strcpy(id, saveIDText.c_str());
 		char *userid = new char[userIDText.length() + 1];
-		std::strcpy (userid, userIDText.c_str());
+		std::strcpy(userid, userIDText.c_str());
 		char *session = new char[authUser.SessionID.length() + 1];
-		std::strcpy (session, authUser.SessionID.c_str());
+		std::strcpy(session, authUser.SessionID.c_str());
 
 		const char *const postNames[] = { "ID", "Action", NULL };
 		const char *const postDatas[] = { id, directionText };
 		size_t postLengths[] = { saveIDText.length(), strlen(directionText) };
-		//std::cout << postNames[0] << " " << postDatas[0] << " " << postLengths[0] << std::endl;
 		data = http_multipart_post("http://" SERVER "/Vote.api", postNames, postDatas, postLengths, userid, NULL, session, &dataStatus, &dataLength);
 
 		delete[] id;
@@ -1171,54 +1215,32 @@ RequestStatus Client::ExecVote(int saveID, int direction)
 		lastError = "Not authenticated";
 		return RequestFailure;
 	}
-	if(data && dataStatus == 200)
-	{
-		if(strncmp((const char *)data, "OK", 2)!=0)
-		{
-			lastError = std::string((const char *)data);
-			free(data);
-			return RequestFailure;
-		}
-		free(data);
-		return RequestOkay;
-	}
-	else if(data)
-	{
-		free(data);
-	}
-	lastError = http_ret_text(dataStatus);
-	return RequestFailure;
+	RequestStatus ret = ParseServerReturn(data, dataStatus, false);
+	return ret;
 }
 
 unsigned char * Client::GetSaveData(int saveID, int saveDate, int & dataLength)
 {
 	lastError = "";
 	int dataStatus;
-	unsigned char * data;
+	char *data;
 	dataLength = 0;
 	std::stringstream urlStream;
-	if(saveDate)
-	{
+	if (saveDate)
 		urlStream << "http://" << STATICSERVER << "/" << saveID << "_" << saveDate << ".cps";
-	}
 	else
-	{
 		urlStream << "http://" << STATICSERVER << "/" << saveID << ".cps";
-	}
 
 	char *url = new char[urlStream.str().length() + 1];
-	std::strcpy (url, urlStream.str().c_str());
-	data = (unsigned char *)http_simple_get(url, &dataStatus, &dataLength);
+	std::strcpy(url, urlStream.str().c_str());
+	data = http_simple_get(url, &dataStatus, &dataLength);
 	delete[] url;
 
-	if(data && dataStatus == 200)
-	{
-		return data;
-	}
-	else if(data)
-	{
-		free(data);
-	}
+	// will always return failure
+	ParseServerReturn(data, dataStatus, false);
+	if (data && dataStatus == 200)
+		return (unsigned char *)data;
+	free(data);
 	return NULL;
 }
 
@@ -1226,9 +1248,10 @@ std::vector<unsigned char> Client::GetSaveData(int saveID, int saveDate)
 {
 	int dataSize;
 	unsigned char * data = GetSaveData(saveID, saveDate, dataSize);
+	if (!data)
+		return std::vector<unsigned char>();
 
 	std::vector<unsigned char> saveData(data, data+dataSize);
-
 	delete[] data;
 	return saveData;
 }
@@ -1241,7 +1264,7 @@ RequestBroker::Request * Client::GetSaveDataAsync(int saveID, int saveDate)
 	} else {
 		urlStream << "http://" << STATICSERVER << "/" << saveID << ".cps";
 	}
-	return new WebRequest(urlStream.str());	
+	return new WebRequest(urlStream.str());
 }
 
 RequestBroker::Request * Client::SaveUserInfoAsync(UserInfo info)
@@ -1273,7 +1296,7 @@ RequestBroker::Request * Client::SaveUserInfoAsync(UserInfo info)
 	std::map<std::string, std::string> postData;
 	postData.insert(std::pair<std::string, std::string>("Location", info.location));
 	postData.insert(std::pair<std::string, std::string>("Biography", info.biography));
-	return new APIRequest("http://" SERVER "/Profile.json", postData, new StatusParser());	
+	return new APIRequest("http://" SERVER "/Profile.json", postData, new StatusParser());
 }
 
 RequestBroker::Request * Client::GetUserInfoAsync(std::string username)
@@ -1340,62 +1363,49 @@ LoginStatus Client::Login(std::string username, std::string password, User & use
 	const char *const postDatas[] = { (char*)username.c_str(), totalHash };
 	size_t postLengths[] = { username.length(), 32 };
 	data = http_multipart_post("http://" SERVER "/Login.json", postNames, postDatas, postLengths, NULL, NULL, NULL, &dataStatus, &dataLength);
-	if(dataStatus == 200 && data)
+	RequestStatus ret = ParseServerReturn(data, dataStatus, true);
+	if (ret == RequestOkay)
 	{
 		try
 		{
 			std::istringstream dataStream(data);
 			json::Object objDocument;
 			json::Reader::Read(objDocument, dataStream);
-			json::Number tempStatus = objDocument["Status"];
-
 			free(data);
-			if(tempStatus.Value() == 1)
+
+			json::Number userIDTemp = objDocument["UserID"];
+			json::String sessionIDTemp = objDocument["SessionID"];
+			json::String sessionKeyTemp = objDocument["SessionKey"];
+			json::String userElevationTemp = objDocument["Elevation"];
+
+			json::Array notificationsArray = objDocument["Notifications"];
+			for (size_t j = 0; j < notificationsArray.Size(); j++)
 			{
-				json::Number userIDTemp = objDocument["UserID"];
-				json::String sessionIDTemp = objDocument["SessionID"];
-				json::String sessionKeyTemp = objDocument["SessionKey"];
-				json::String userElevationTemp = objDocument["Elevation"];
-				
-				json::Array notificationsArray = objDocument["Notifications"];
-				for (size_t j = 0; j < notificationsArray.Size(); j++)
-				{
-					json::String notificationLink = notificationsArray[j]["Link"];
-					json::String notificationText = notificationsArray[j]["Text"];
+				json::String notificationLink = notificationsArray[j]["Link"];
+				json::String notificationText = notificationsArray[j]["Text"];
 
-					std::pair<std::string, std::string> item = std::pair<std::string, std::string>(notificationText.Value(), notificationLink.Value());
-					AddServerNotification(item);
-				}
-
-				user.Username = username;
-				user.ID = userIDTemp.Value();
-				user.SessionID = sessionIDTemp.Value();
-				user.SessionKey = sessionKeyTemp.Value();
-				std::string userElevation = userElevationTemp.Value();
-				if(userElevation == "Admin")
-					user.UserElevation = User::ElevationAdmin;
-				else if(userElevation == "Mod")
-					user.UserElevation = User::ElevationModerator;
-				else
-					user.UserElevation= User::ElevationNone;
-				return LoginOkay;
+				std::pair<std::string, std::string> item = std::pair<std::string, std::string>(notificationText.Value(), notificationLink.Value());
+				AddServerNotification(item);
 			}
+
+			user.Username = username;
+			user.ID = userIDTemp.Value();
+			user.SessionID = sessionIDTemp.Value();
+			user.SessionKey = sessionKeyTemp.Value();
+			std::string userElevation = userElevationTemp.Value();
+			if(userElevation == "Admin")
+				user.UserElevation = User::ElevationAdmin;
+			else if(userElevation == "Mod")
+				user.UserElevation = User::ElevationModerator;
 			else
-			{
-				json::String tempError = objDocument["Error"];
-				lastError = tempError.Value();
-				return LoginError;
-			}
+				user.UserElevation= User::ElevationNone;
+			return LoginOkay;
 		}
 		catch (json::Exception &e)
 		{
 			lastError = "Could not read response";
 			return LoginError;
 		}
-	}
-	else
-	{
-		lastError = http_ret_text(dataStatus);
 	}
 	free(data);
 	return LoginError;
@@ -1419,35 +1429,9 @@ RequestStatus Client::DeleteSave(int saveID)
 		lastError = "Not authenticated";
 		return RequestFailure;
 	}
-	if(dataStatus == 200 && data)
-	{
-		try
-		{
-			std::istringstream dataStream(data);
-			json::Object objDocument;
-			json::Reader::Read(objDocument, dataStream);
-
-			int status = ((json::Number)objDocument["Status"]).Value();
-
-			if(status!=1)
-				goto failure;
-		}
-		catch (json::Exception &e)
-		{
-			lastError = "Could not read response";
-			goto failure;
-		}
-	}
-	else
-	{
-		lastError = http_ret_text(dataStatus);
-		goto failure;
-	}
+	RequestStatus ret = ParseServerReturn(data, dataStatus, true);
 	free(data);
-	return RequestOkay;
-failure:
-	free(data);
-	return RequestFailure;
+	return ret;
 }
 
 RequestStatus Client::AddComment(int saveID, std::string comment)
@@ -1472,40 +1456,9 @@ RequestStatus Client::AddComment(int saveID, std::string comment)
 		lastError = "Not authenticated";
 		return RequestFailure;
 	}
-	if(dataStatus == 200 && data)
-	{
-		try
-		{
-			std::istringstream dataStream(data);
-			json::Object objDocument;
-			json::Reader::Read(objDocument, dataStream);
-
-			int status = ((json::Number)objDocument["Status"]).Value();
-
-			if(status!=1)
-			{
-				lastError = ((json::String)objDocument["Error"]).Value();
-			}
-
-			if(status!=1)
-				goto failure;
-		}
-		catch (json::Exception &e)
-		{
-			lastError = "Could not read response";
-			goto failure;
-		}
-	}
-	else
-	{
-		lastError = http_ret_text(dataStatus);
-		goto failure;
-	}
+	RequestStatus ret = ParseServerReturn(data, dataStatus, true);
 	free(data);
-	return RequestOkay;
-failure:
-	free(data);
-	return RequestFailure;
+	return ret;
 }
 
 RequestStatus Client::FavouriteSave(int saveID, bool favourite)
@@ -1528,38 +1481,9 @@ RequestStatus Client::FavouriteSave(int saveID, bool favourite)
 		lastError = "Not authenticated";
 		return RequestFailure;
 	}
-	if(dataStatus == 200 && data)
-	{
-		try
-		{
-			std::istringstream dataStream(data);
-			json::Object objDocument;
-			json::Reader::Read(objDocument, dataStream);
-
-			int status = ((json::Number)objDocument["Status"]).Value();
-
-			if(status!=1)
-			{
-				lastError = ((json::String)objDocument["Error"]).Value();
-				goto failure;
-			}
-		}
-		catch (json::Exception &e)
-		{
-			lastError = "Could not read response";
-			goto failure;
-		}
-	}
-	else
-	{
-		lastError = http_ret_text(dataStatus);
-		goto failure;
-	}
+	RequestStatus ret = ParseServerReturn(data, dataStatus, true);
 	free(data);
-	return RequestOkay;
-failure:
-	free(data);
-	return RequestFailure;
+	return ret;
 }
 
 RequestStatus Client::ReportSave(int saveID, std::string message)
@@ -1584,38 +1508,9 @@ RequestStatus Client::ReportSave(int saveID, std::string message)
 		lastError = "Not authenticated";
 		return RequestFailure;
 	}
-	if(dataStatus == 200 && data)
-	{
-		try
-		{
-			std::istringstream dataStream(data);
-			json::Object objDocument;
-			json::Reader::Read(objDocument, dataStream);
-
-			int status = ((json::Number)objDocument["Status"]).Value();
-
-			if(status!=1)
-			{
-				lastError = ((json::String)objDocument["Error"]).Value();
-				goto failure;
-			}
-		}
-		catch (json::Exception &e)
-		{
-			lastError = "Could not read response";
-			goto failure;
-		}
-	}
-	else
-	{
-		lastError = http_ret_text(dataStatus);
-		goto failure;
-	}
+	RequestStatus ret = ParseServerReturn(data, dataStatus, true);
 	free(data);
-	return RequestOkay;
-failure:
-	free(data);
-	return RequestFailure;
+	return ret;
 }
 
 RequestStatus Client::UnpublishSave(int saveID)
@@ -1636,44 +1531,16 @@ RequestStatus Client::UnpublishSave(int saveID)
 		lastError = "Not authenticated";
 		return RequestFailure;
 	}
-	if(dataStatus == 200 && data)
-	{
-		try
-		{
-			std::istringstream dataStream(data);
-			json::Object objDocument;
-			json::Reader::Read(objDocument, dataStream);
-
-			int status = ((json::Number)objDocument["Status"]).Value();
-
-			if(status!=1)
-			{
-				lastError = ((json::String)objDocument["Error"]).Value();
-				goto failure;
-			}
-		}
-		catch (json::Exception &e)
-		{
-			lastError = "Could not read response";
-			goto failure;
-		}
-	}
-	else
-	{
-		lastError = http_ret_text(dataStatus);
-		goto failure;
-	}
+	RequestStatus ret = ParseServerReturn(data, dataStatus, true);
 	free(data);
-	return RequestOkay;
-failure:
-	free(data);
-	return RequestFailure;
+	return ret;
 }
 
 RequestStatus Client::PublishSave(int saveID)
 {
 	lastError = "";
 	std::stringstream urlStream;
+	char *data;
 	int dataStatus;
 	urlStream << "http://" << SERVER << "/Browse/View.html?ID=" << saveID << "&Key=" << authUser.SessionKey;
 	if (authUser.ID)
@@ -1683,20 +1550,15 @@ RequestStatus Client::PublishSave(int saveID)
 		const char *const postNames[] = { "ActionPublish", NULL };
 		const char *const postDatas[] = { "" };
 		size_t postLengths[] = { 1 };
-		char *data = http_multipart_post(urlStream.str().c_str(), postNames, postDatas, postLengths, userIDStream.str().c_str(), NULL, authUser.SessionID.c_str(), &dataStatus, NULL);
-		free(data);
-	}
+		data = http_multipart_post(urlStream.str().c_str(), postNames, postDatas, postLengths, userIDStream.str().c_str(), NULL, authUser.SessionID.c_str(), &dataStatus, NULL);	}
 	else
 	{
 		lastError = "Not authenticated";
 		return RequestFailure;
 	}
-	if (dataStatus != 302)
-	{
-		lastError = http_ret_text(dataStatus);
-		return RequestFailure;
-	}
-	return RequestOkay;
+	RequestStatus ret = ParseServerReturn(data, dataStatus, false);
+	free(data);
+	return ret;
 }
 
 SaveInfo * Client::GetSave(int saveID, int saveDate)
@@ -1710,7 +1572,6 @@ SaveInfo * Client::GetSave(int saveID, int saveDate)
 	}
 	char * data;
 	int dataStatus, dataLength;
-	//Save(int _id, int _votesUp, int _votesDown, string _userName, string _name, string description_, string date_, bool published_):
 	if(authUser.ID)
 	{
 		std::stringstream userIDStream;
@@ -1860,48 +1721,6 @@ RequestBroker::Request * Client::GetSaveAsync(int saveID, int saveDate)
 	return new APIRequest(urlStream.str(), new SaveInfoParser());
 }
 
-Thumbnail * Client::GetPreview(int saveID, int saveDate)
-{
-	std::stringstream urlStream;
-	urlStream << "http://" << STATICSERVER  << "/" << saveID;
-	if(saveDate)
-	{
-		urlStream << "_" << saveDate;
-	}
-	urlStream << "_large.pti";
-	pixel * thumbData;
-	char * data;
-	int status, data_size, imgw, imgh;
-	data = http_simple_get((char *)urlStream.str().c_str(), &status, &data_size);
-	if (status == 200 && data)
-	{
-		thumbData = Graphics::ptif_unpack(data, data_size, &imgw, &imgh);
-		if(data)
-		{
-			free(data);
-		}
-		if(thumbData)
-		{
-			return new Thumbnail(saveID, saveDate, thumbData, ui::Point(imgw, imgh));
-			free(thumbData);
-		}
-		else
-		{
-			thumbData = (pixel *)malloc((128*128) * PIXELSIZE);
-			return new Thumbnail(saveID, saveDate, thumbData, ui::Point(128, 128));
-			free(thumbData);
-		}
-	}
-	else
-	{
-		if(data)
-		{
-			free(data);
-		}
-	}
-	return new Thumbnail(saveID, saveDate, (pixel *)malloc((128*128) * PIXELSIZE), ui::Point(128, 128));
-}
-
 RequestBroker::Request * Client::GetCommentsAsync(int saveID, int start, int count)
 {
 	class CommentsParser: public APIResultParser
@@ -1948,53 +1767,6 @@ RequestBroker::Request * Client::GetCommentsAsync(int saveID, int start, int cou
 	std::stringstream urlStream;
 	urlStream << "http://" << SERVER << "/Browse/Comments.json?ID=" << saveID << "&Start=" << start << "&Count=" << count;
 	return new APIRequest(urlStream.str(), new CommentsParser());
-}
-
-std::vector<SaveComment*> * Client::GetComments(int saveID, int start, int count)
-{
-	lastError = "";
-	std::vector<SaveComment*> * commentArray = new std::vector<SaveComment*>();
-
-	std::stringstream urlStream;
-	char * data;
-	int dataStatus, dataLength;
-	urlStream << "http://" << SERVER << "/Browse/Comments.json?ID=" << saveID << "&Start=" << start << "&Count=" << count;
-	data = http_simple_get((char *)urlStream.str().c_str(), &dataStatus, &dataLength);
-	if(dataStatus == 200 && data)
-	{
-		try
-		{
-			std::istringstream dataStream(data);
-			json::Array commentsArray;
-			json::Reader::Read(commentsArray, dataStream);
-
-			for (size_t j = 0; j < commentsArray.Size(); j++)
-			{
-				json::Number tempUserID = commentsArray[j]["UserID"];
-				json::String tempUsername = commentsArray[j]["Username"];
-				json::String tempFormattedUsername = commentsArray[j]["FormattedUsername"];
-				json::String tempComment = commentsArray[j]["Text"];
-				commentArray->push_back(
-							new SaveComment(
-								tempUserID.Value(),
-								tempUsername.Value(),
-								tempFormattedUsername.Value(),
-								tempComment.Value()
-								)
-							);
-			}
-		}
-		catch (json::Exception &e)
-		{
-			lastError = "Could not read response";
-		}
-	}
-	else
-	{
-		lastError = http_ret_text(dataStatus);
-	}
-	free(data);
-	return commentArray;
 }
 
 std::vector<std::pair<std::string, int> > * Client::GetTags(int start, int count, std::string query, int & resultCount)
@@ -2080,7 +1852,8 @@ std::vector<SaveInfo*> * Client::SearchSaves(int start, int count, std::string q
 	{
 		data = http_simple_get((char *)urlStream.str().c_str(), &dataStatus, &dataLength);
 	}
-	if(dataStatus == 200 && data)
+	ParseServerReturn(data, dataStatus, true);
+	if (dataStatus == 200 && data)
 	{
 		try
 		{
@@ -2119,10 +1892,6 @@ std::vector<SaveInfo*> * Client::SearchSaves(int start, int count, std::string q
 			lastError = "Could not read response";
 		}
 	}
-	else
-	{
-		lastError = http_ret_text(dataStatus);
-	}
 	free(data);
 	return saveArray;
 }
@@ -2141,120 +1910,6 @@ void Client::ClearThumbnailRequests()
 	}
 }
 
-Thumbnail * Client::GetThumbnail(int saveID, int saveDate)
-{
-	std::stringstream urlStream;
-	std::stringstream idStream;
-	int i = 0, currentTime = time(NULL);
-	//Check active requests for any "forgotten" requests
-	for(i = 0; i < IMGCONNS; i++)
-	{
-		//If the request is active, and we've received a response
-		if(activeThumbRequests[i] && http_async_req_status(activeThumbRequests[i]))
-		{
-			//If we haven't already, mark the request as completed
-			if(!activeThumbRequestCompleteTimes[i])
-			{
-				activeThumbRequestCompleteTimes[i] = time(NULL);
-			}
-			else if(activeThumbRequestCompleteTimes[i] < (currentTime-2)) //Otherwise, if it completed more than 2 seconds ago, destroy it.
-			{
-				http_async_req_close(activeThumbRequests[i]);
-				activeThumbRequests[i] = NULL;
-				activeThumbRequestTimes[i] = 0;
-				activeThumbRequestCompleteTimes[i] = 0;
-			}
-		}
-	}
-	for(i = 0; i < THUMB_CACHE_SIZE; i++)
-	{
-		if(thumbnailCache[i] && thumbnailCache[i]->ID == saveID && thumbnailCache[i]->Datestamp == saveDate)
-			return thumbnailCache[i];
-	}
-	urlStream << "http://" << STATICSERVER  << "/" << saveID;
-	if(saveDate)
-	{
-		urlStream << "_" << saveDate;
-	}
-	urlStream << "_small.pti";
-	idStream << saveID << ":" << saveDate;
-	std::string idString = idStream.str();
-	bool found = false;
-	for(i = 0; i < IMGCONNS; i++)
-	{
-		if(activeThumbRequests[i] && activeThumbRequestIDs[i] == idString)
-		{
-			found = true;
-			if(http_async_req_status(activeThumbRequests[i]))
-			{
-				pixel * thumbData;
-				char * data;
-				int status, data_size, imgw, imgh;
-				data = http_async_req_stop(activeThumbRequests[i], &status, &data_size);
-				free(activeThumbRequests[i]);
-				activeThumbRequests[i] = NULL;
-				if (status == 200 && data)
-				{
-					thumbData = Graphics::ptif_unpack(data, data_size, &imgw, &imgh);
-					if(data)
-					{
-						free(data);
-					}
-					thumbnailCacheNextID %= THUMB_CACHE_SIZE;
-					if(thumbnailCache[thumbnailCacheNextID])
-					{
-						delete thumbnailCache[thumbnailCacheNextID];
-					}
-					if(thumbData)
-					{
-						thumbnailCache[thumbnailCacheNextID] = new Thumbnail(saveID, saveDate, thumbData, ui::Point(imgw, imgh));
-						free(thumbData);
-					}
-					else
-					{
-						thumbData = (pixel *)malloc((128*128) * PIXELSIZE);
-						thumbnailCache[thumbnailCacheNextID] = new Thumbnail(saveID, saveDate, thumbData, ui::Point(128, 128));
-						free(thumbData);
-					}
-					return thumbnailCache[thumbnailCacheNextID++];
-				}
-				else
-				{
-					if(data)
-					{
-						free(data);
-					}
-					thumbnailCacheNextID %= THUMB_CACHE_SIZE;
-					if(thumbnailCache[thumbnailCacheNextID])
-					{
-						delete thumbnailCache[thumbnailCacheNextID];
-					}
-					thumbData = (pixel *)malloc((128*128) * PIXELSIZE);
-					thumbnailCache[thumbnailCacheNextID] = new Thumbnail(saveID, saveDate, thumbData, ui::Point(128, 128));
-					free(thumbData);
-					return thumbnailCache[thumbnailCacheNextID++];
-				}
-			}
-		}
-	}
-	if(!found)
-	{
-		for(i = 0; i < IMGCONNS; i++)
-		{
-			if(!activeThumbRequests[i])
-			{
-				activeThumbRequests[i] = http_async_req_start(NULL, (char *)urlStream.str().c_str(), NULL, 0, 0);
-				activeThumbRequestTimes[i] = currentTime;
-				activeThumbRequestCompleteTimes[i] = 0;
-				activeThumbRequestIDs[i] = idString;
-				return NULL;
-			}
-		}
-	}
-	//http_async_req_start(http, urlStream.str().c_str(), NULL, 0, 1);
-	return NULL;
-}
-
 std::list<std::string> * Client::RemoveTag(int saveID, std::string tag)
 {
 	lastError = "";
@@ -2262,7 +1917,7 @@ std::list<std::string> * Client::RemoveTag(int saveID, std::string tag)
 	std::stringstream urlStream;
 	char * data = NULL;
 	int dataStatus, dataLength;
-	urlStream << "http://" << SERVER << "/Browse/EditTag.json?Op=delete&ID=" << saveID << "&Tag=" << tag << "&Key=" << authUser.SessionKey;;
+	urlStream << "http://" << SERVER << "/Browse/EditTag.json?Op=delete&ID=" << saveID << "&Tag=" << tag << "&Key=" << authUser.SessionKey;
 	if(authUser.ID)
 	{
 		std::stringstream userIDStream;
@@ -2274,7 +1929,8 @@ std::list<std::string> * Client::RemoveTag(int saveID, std::string tag)
 		lastError = "Not authenticated";
 		return NULL;
 	}
-	if(dataStatus == 200 && data)
+	RequestStatus ret = ParseServerReturn(data, dataStatus, true);
+	if (ret == RequestOkay)
 	{
 		try
 		{
@@ -2282,34 +1938,19 @@ std::list<std::string> * Client::RemoveTag(int saveID, std::string tag)
 			json::Object responseObject;
 			json::Reader::Read(responseObject, dataStream);
 
-			json::Number status = responseObject["Status"];
+			json::Array tagsArray = responseObject["Tags"];
+			tags = new std::list<std::string>();
 
-			if(status.Value()==0)
+			for (size_t j = 0; j < tagsArray.Size(); j++)
 			{
-				json::String error = responseObject["Error"];
-				lastError = error.Value();
-			}
-			else
-			{
-				json::Array tagsArray = responseObject["Tags"];
-
-				tags = new std::list<std::string>();
-
-				for (size_t j = 0; j < tagsArray.Size(); j++)
-				{
-					json::String tempTag = tagsArray[j];
-					tags->push_back(tempTag.Value());
-				}
+				json::String tempTag = tagsArray[j];
+				tags->push_back(tempTag.Value());
 			}
 		}
 		catch (json::Exception &e)
 		{
 			lastError = "Could not read response";
 		}
-	}
-	else
-	{
-		lastError = http_ret_text(dataStatus);
 	}
 	free(data);
 	return tags;
@@ -2334,7 +1975,8 @@ std::list<std::string> * Client::AddTag(int saveID, std::string tag)
 		lastError = "Not authenticated";
 		return NULL;
 	}
-	if(dataStatus == 200 && data)
+	RequestStatus ret = ParseServerReturn(data, dataStatus, true);
+	if (ret == RequestOkay)
 	{
 		try
 		{
@@ -2342,34 +1984,19 @@ std::list<std::string> * Client::AddTag(int saveID, std::string tag)
 			json::Object responseObject;
 			json::Reader::Read(responseObject, dataStream);
 
-			json::Number status = responseObject["Status"];
+			json::Array tagsArray = responseObject["Tags"];
+			tags = new std::list<std::string>();
 
-			if(status.Value()==0)
+			for (size_t j = 0; j < tagsArray.Size(); j++)
 			{
-				json::String error = responseObject["Error"];
-				lastError = error.Value();
-			}
-			else
-			{
-				json::Array tagsArray = responseObject["Tags"];
-
-				tags = new std::list<std::string>();
-
-				for (size_t j = 0; j < tagsArray.Size(); j++)
-				{
-					json::String tempTag = tagsArray[j];
-					tags->push_back(tempTag.Value());
-				}
+				json::String tempTag = tagsArray[j];
+				tags->push_back(tempTag.Value());
 			}
 		}
 		catch (json::Exception &e)
 		{
 			lastError = "Could not read response";
 		}
-	}
-	else
-	{
-		lastError = http_ret_text(dataStatus);
 	}
 	free(data);
 	return tags;

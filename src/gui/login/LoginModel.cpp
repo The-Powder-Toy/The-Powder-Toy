@@ -19,7 +19,7 @@ void LoginModel::Login(string username, string password)
 		loginStatus = true;
 		break;
 	case LoginError:
-		statusText = "Error: " + Client::Ref().GetLastError();
+		statusText = Client::Ref().GetLastError();
 		size_t banStart = statusText.find(". Ban expire in"); //TODO: temporary, remove this when the ban message is fixed
 		if (banStart != statusText.npos)
 			statusText.replace(banStart, 15, ". Login at http://powdertoy.co.uk in order to see the full ban reason. Ban expires in");

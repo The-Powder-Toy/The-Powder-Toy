@@ -6,6 +6,7 @@
 #include "gui/interface/AvatarButton.h"
 #include "gui/interface/ScrollPanel.h"
 #include "gui/interface/Keys.h"
+#include "gui/dialogues/ErrorMessage.h"
 #include "gui/Style.h"
 #include "client/Client.h"
 #include "client/UserInfo.h"
@@ -15,7 +16,9 @@
 ProfileActivity::ProfileActivity(std::string username) :
 	WindowActivity(ui::Point(-1, -1), ui::Point(236, 300)),
 	loading(false),
-	saving(false)
+	saving(false),
+	doError(false),
+	doErrorMessage("")
 {
 	editable = Client::Ref().GetAuthUser().ID && Client::Ref().GetAuthUser().Username == username;
 
@@ -237,6 +240,24 @@ void ProfileActivity::OnResponseReady(void * userDataPtr, int identifier)
 	}
 	else if (saving)
 	{
+		Exit();
+	}
+}
+
+void ProfileActivity::OnResponseFailed(int identifier)
+{
+	doError = true;
+	if (loading)
+		doErrorMessage = "Could not load user info: " + Client::Ref().GetLastError();
+	else if (saving)
+		doErrorMessage = "Could not save user info: " + Client::Ref().GetLastError();
+}
+
+void ProfileActivity::OnTick(float dt)
+{
+	if (doError)
+	{
+		ErrorMessage::Blocking("Error", doErrorMessage);
 		Exit();
 	}
 }

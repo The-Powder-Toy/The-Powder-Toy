@@ -9,4 +9,5 @@ public:
 	virtual ~RequestListener() {}
 
 	virtual void OnResponseReady(void * response, int identifier) {}
+	virtual void OnResponseFailed(int identifier) {}
 };

@@ -38,6 +38,7 @@ RequestBroker::ProcessResponse APIRequest::Process(RequestBroker & rb)
 			int status, data_size;
 			data = http_async_req_stop(HTTPContext, &status, &data_size);
 
+			Client::Ref().ParseServerReturn(data, status, true);
 			if (status == 200 && data)
 			{
 				void * resultObject = Parser->ProcessResponse((unsigned char *)data, data_size);
@@ -51,25 +52,28 @@ RequestBroker::ProcessResponse APIRequest::Process(RequestBroker & rb)
 				}
 				else
 				{
+#ifdef DEBUG
 					std::cout << typeid(*this).name() << " Request for " << URL << " could not be parsed: " << data << std::endl;
+#endif
 					free(data);
 					return RequestBroker::Failed;
 				}
 			}
 			else
 			{
-//#ifdef DEBUG
+#ifdef DEBUG
 				std::cout << typeid(*this).name() << " Request for " << URL << " failed with status " << status << std::endl;
-//#endif	
+#endif
 				free(data);
-
 				return RequestBroker::Failed;
 			}
 		}
 	}
 	else 
 	{
+#ifdef DEBUG
 		std::cout << typeid(*this).name() << " New Request for " << URL << std::endl;
+#endif
 		if(Post)
 		{
 			char ** postNames = new char*[PostData.size() + 1];

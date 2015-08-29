@@ -15,6 +15,7 @@
 #include "gui/interface/ScrollPanel.h"
 #include "gui/interface/AvatarButton.h"
 #include "gui/interface/Keys.h"
+#include "gui/dialogues/ErrorMessage.h"
 
 class PreviewView::LoginAction: public ui::ButtonAction
 {
@@ -68,6 +69,8 @@ PreviewView::PreviewView():
 	submitCommentButton(NULL),
 	addCommentBox(NULL),
 	doOpen(false),
+	doError(false),
+	doErrorMessage(""),
 	showAvatars(true),
 	prevPage(false),
 	commentBoxHeight(20)
@@ -365,6 +368,11 @@ void PreviewView::OnTick(float dt)
 	}
 
 	c->Update();
+	if (doError)
+	{
+		ErrorMessage::Blocking("Error loading save", doErrorMessage);
+		c->Exit();
+	}
 }
 
 void PreviewView::OnTryExit(ExitMethod method)
@@ -528,6 +536,12 @@ void PreviewView::NotifyCommentBoxEnabledChanged(PreviewModel * sender)
 	}
 }
 
+void PreviewView::SaveLoadingError(std::string errorMessage)
+{
+	doError = true;
+	doErrorMessage = errorMessage;
+}
+
 void PreviewView::NotifyCommentsPageChanged(PreviewModel * sender)
 {
 	std::stringstream pageInfoStream;
@@ -609,6 +623,8 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 			commentsPanel->SetScrollPosition(currentY);
 		}
 	}
+	//else if (sender->GetCommentsLoaded())
+	//	ErrorMessage::Blocking("Error loading comments", Client::Ref().GetLastError());
 }
 
 PreviewView::~PreviewView()

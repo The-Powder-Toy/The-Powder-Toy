@@ -945,8 +945,9 @@ int main(int argc, char * argv[])
 			std::string ptsaveArg = arguments["ptsave"];
 			try
 			{
-			if(!ptsaveArg.find("ptsave:"))
-			{
+				if (ptsaveArg.find("ptsave:"))
+					throw std::runtime_error("Invalid save link");
+
 				std::string saveIdPart = "";
 				int saveId;
 				size_t hashPos = ptsaveArg.find('#');
@@ -958,33 +959,30 @@ int main(int argc, char * argv[])
 				{
 					saveIdPart = ptsaveArg.substr(7);
 				}
-				if (saveIdPart.length())
-				{
-#ifdef DEBUG
-					std::cout << "Got Ptsave: id: " <<  saveIdPart << std::endl;
-#endif
-					saveId = format::StringToNumber<int>(saveIdPart);
-					if(!saveId)
-						throw std::runtime_error("Invalid Save ID");
-
-					SaveInfo * newSave = Client::Ref().GetSave(saveId, 0);
-					if (!newSave)
-						throw std::runtime_error("Could not load save");
-					GameSave * newGameSave = new GameSave(Client::Ref().GetSaveData(saveId, 0));
-					newSave->SetGameSave(newGameSave);
-
-					gameController->LoadSave(newSave);
-					delete newSave;
-				}
-				else
-				{
+				if (!saveIdPart.length())
 					throw std::runtime_error("No Save ID");
-				}
-			}
+#ifdef DEBUG
+				std::cout << "Got Ptsave: id: " <<  saveIdPart << std::endl;
+#endif
+				saveId = format::StringToNumber<int>(saveIdPart);
+				if (!saveId)
+					throw std::runtime_error("Invalid Save ID");
+
+				SaveInfo * newSave = Client::Ref().GetSave(saveId, 0);
+				if (!newSave)
+					throw std::runtime_error("Could not load save info");
+				std::vector<unsigned char> saveData = Client::Ref().GetSaveData(saveId, 0);
+				if (!saveData.size())
+					throw std::runtime_error("Could not load save\n" + Client::Ref().GetLastError());
+				GameSave * newGameSave = new GameSave(saveData);
+				newSave->SetGameSave(newGameSave);
+
+				gameController->LoadSave(newSave);
+				delete newSave;
 			}
 			catch (std::exception & e)
 			{
-				new ErrorMessage("Error", "Invalid save link");
+				new ErrorMessage("Error", e.what());
 			}
 		}
 
