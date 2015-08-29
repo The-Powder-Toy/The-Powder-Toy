@@ -210,7 +210,7 @@ void RequestBroker::thumbnailQueueProcessTH()
 				resultStatus = r->Process(*this);
 				if(resultStatus == Duplicate || resultStatus == Failed || resultStatus == Finished)
 				{
-					if (resultStatus == Duplicate || resultStatus == Failed)
+					if ((resultStatus == Duplicate || resultStatus == Failed) && CheckRequestListener(r->Listener))
 						r->Listener.second->OnResponseFailed(r->Identifier);
 					req = activeRequests.erase(req);
 				}
