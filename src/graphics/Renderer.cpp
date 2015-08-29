@@ -951,22 +951,25 @@ void Renderer::DrawSigns()
 			else
 				drawtext(x+3, y+3, text, 0, 191, 255, 255);
 				
-			int x = signs[i].x;
-			int y = signs[i].y;
-			int dx = 1 - signs[i].ju;
-			int dy = (signs[i].y > 18) ? -1 : 1;
-#ifdef OGLR
-			glBegin(GL_LINES);
-			glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-			glVertex2i(x, y);
-			glVertex2i(x+(dx*4), y+(dy*4));
-			glEnd();
-#else
-			for (int j = 0; j < 4; j++)
+			if (signs[i].ju != sign::None)
 			{
-				blendpixel(x, y, 192, 192, 192, 255);
-				x += dx;
-				y += dy;
+				int x = signs[i].x;
+				int y = signs[i].y;
+				int dx = 1 - signs[i].ju;
+				int dy = (signs[i].y > 18) ? -1 : 1;
+#ifdef OGLR
+				glBegin(GL_LINES);
+				glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+				glVertex2i(x, y);
+				glVertex2i(x+(dx*4), y+(dy*4));
+				glEnd();
+#else
+				for (int j = 0; j < 4; j++)
+				{
+					blendpixel(x, y, 192, 192, 192, 255);
+					x += dx;
+					y += dy;
+				}
 			}
 #endif
 		}

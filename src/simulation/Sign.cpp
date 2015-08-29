@@ -56,8 +56,8 @@ void sign::pos(std::string signText, int & x0, int & y0, int & w, int & h)
 {
 	w = Graphics::textwidth(signText.c_str()) + 5;
 	h = 15;
-	x0 = (ju == 2) ? x - w :
-	      (ju == 1) ? x - w/2 : x;
+	x0 = (ju == Right) ? x - w :
+		  (ju == Left) ? x : x - w/2;
 	y0 = (y > 18) ? y - 18 : y + 4;
 }
 
