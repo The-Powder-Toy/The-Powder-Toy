@@ -2765,7 +2765,7 @@ int Simulation::create_part(int p, int x, int y, int tv)
 				&& (!(elements[t].Properties & PROP_NOCTYPEDRAW)))
 			{
 				parts[pmap[y][x]>>8].ctype = t;
-				if (t == PT_LIFE && v < NGOL && drawOn != PT_STOR)
+				if (t == PT_LIFE && v >= 0 && v < NGOL && drawOn != PT_STOR)
 					parts[pmap[y][x]>>8].tmp = v;
 			}
 			else if ((drawOn == PT_DTEC || (drawOn == PT_PSTN && t != PT_FRME) || drawOn == PT_DRAY) && drawOn != t)
@@ -2782,8 +2782,8 @@ int Simulation::create_part(int p, int x, int y, int tv)
 			else if (drawOn == PT_CRAY && drawOn != t)
 			{
 				parts[pmap[y][x]>>8].ctype = t;
-				if (t==PT_LIFE && v<NGOL)
-					parts[pmap[y][x]>>8].tmp2 = v;
+				if (t == PT_LIFE && v >= 0 && v < NGOL)
+					parts[pmap[y][x]>>8].ctype |= v<<8;
 				parts[pmap[y][x]>>8].temp = elements[t].Temperature;
 			}
 			return -1;

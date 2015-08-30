@@ -49,15 +49,15 @@ Element_CRAY::Element_CRAY()
 //#TPT-Directive ElementHeader Element_CRAY static int update(UPDATE_FUNC_ARGS)
 int Element_CRAY::update(UPDATE_FUNC_ARGS)
  {
-	int r, nxx, nyy, docontinue, nxi, nyi, rx, ry;
+	int nxx, nyy, docontinue, nxi, nyi;
 	// set ctype to things that touch it if it doesn't have one already
-	if(parts[i].ctype<=0 || parts[i].ctype>=PT_NUM || !sim->elements[parts[i].ctype].Enabled) {
-		int r, rx, ry;
-		for (rx=-1; rx<2; rx++)
-			for (ry=-1; ry<2; ry++)
+	if (parts[i].ctype<=0 || !sim->elements[parts[i].ctype&0xFF].Enabled)
+	{
+		for (int rx = -1; rx <= 1; rx++)
+			for (int ry = -1; ry <= 1; ry++)
 				if (BOUNDS_CHECK)
 				{
-					r = sim->photons[y+ry][x+rx];
+					int r = sim->photons[y+ry][x+rx];
 					if (!r)
 						r = pmap[y+ry][x+rx];
 					if (!r)
@@ -68,12 +68,15 @@ int Element_CRAY::update(UPDATE_FUNC_ARGS)
 						parts[i].temp = parts[r>>8].temp;
 					}
 				}
-	} else if (parts[i].life==0) { // only fire when life is 0, but nothing sets the life right now
-		for (rx=-1; rx<2; rx++)
-			for (ry=-1; ry<2; ry++)
+	}
+	// only fire when life is 0, but nothing sets the life right now
+	else if (parts[i].life==0)
+	{
+		for (int rx =-1; rx <= 1; rx++)
+			for (int ry = -1; ry <= 1; ry++)
 				if (BOUNDS_CHECK && (rx || ry))
 				{
-					r = pmap[y+ry][x+rx];
+					int r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
 					if ((r&0xFF)==PT_SPRK && parts[r>>8].life==3) { //spark found, start creating
@@ -84,17 +87,15 @@ int Element_CRAY::update(UPDATE_FUNC_ARGS)
 						int partsRemaining = 255;
 						if (parts[i].tmp) //how far it shoots
 							partsRemaining = parts[i].tmp;
-						for (docontinue = 1, nxx = 0, nyy = 0, nxi = rx*-1, nyi = ry*-1; docontinue; nyy+=nyi, nxx+=nxi) {
+						int spacesRemaining = parts[i].tmp2;
+						for (docontinue = 1, nxi = rx*-1, nyi = ry*-1, nxx = spacesRemaining*nxi, nyy = spacesRemaining*nyi; docontinue; nyy+=nyi, nxx+=nxi)
+						{
 							if (!(x+nxi+nxx<XRES && y+nyi+nyy<YRES && x+nxi+nxx >= 0 && y+nyi+nyy >= 0)) {
 								break;
 							}
 							r = pmap[y+nyi+nyy][x+nxi+nxx];
 							if (!sim->IsWallBlocking(x+nxi+nxx, y+nyi+nyy, parts[i].ctype) && (!sim->pmap[y+nyi+nyy][x+nxi+nxx] || createSpark)) { // create, also set color if it has passed through FILT
-								int nr;
-								if (parts[i].ctype == PT_LIFE)
-									nr = sim->create_part(-1, x+nxi+nxx, y+nyi+nyy, parts[i].ctype|(parts[i].tmp2<<8));
-								else
-									nr = sim->create_part(-1, x+nxi+nxx, y+nyi+nyy, parts[i].ctype);
+								int nr = sim->create_part(-1, x+nxi+nxx, y+nyi+nyy, parts[i].ctype);
 								if (nr!=-1) {
 									if (colored)
 										parts[nr].dcolour = colored;

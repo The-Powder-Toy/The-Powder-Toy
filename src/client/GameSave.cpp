@@ -1035,6 +1035,12 @@ void GameSave::readOPS(char * data, int dataLength)
 						{
 							particles[newIndex].temp = particles[newIndex].temp - 1.0f;
 						}
+					case PT_CRAY:
+						if (savedVersion < 91)
+						{
+							if (particles[newIndex].tmp2)
+								particles[newIndex].ctype |= particles[newIndex].tmp2<<8;
+						}
 					}
 					//note: PSv was used in version 77.0 and every version before, add something in PSv too if the element is that old
 					newIndex++;

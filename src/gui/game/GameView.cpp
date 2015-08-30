@@ -2234,6 +2234,9 @@ void GameView::OnDraw()
 					sampleInfo << c->ElementResolve(sample.particle.type, sample.particle.ctype);
 					if (wavelengthGfx)
 						sampleInfo << " (" << ctype << ")";
+					// CRAY and DRAY store extra LIFE info in upper bits of ctype, instead of tmp2
+					else if (sample.particle.type == PT_CRAY || sample.particle.type == PT_DRAY)
+						sampleInfo << " (" << c->ElementResolve(ctype&0xFF, ctype>>8) << ")";
 					else if (c->IsValidElement(ctype))
 						sampleInfo << " (" << c->ElementResolve(ctype, -1) << ")";
 					else
