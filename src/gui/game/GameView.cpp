@@ -161,6 +161,7 @@ GameView::GameView():
 	showDebug(false),
 	wallBrush(false),
 	toolBrush(false),
+	decoBrush(false),
 	windTool(false),
 	toolIndex(0),
 	currentSaveType(0),
@@ -637,6 +638,7 @@ bool GameView::GetPlacingZoom()
 
 void GameView::NotifyActiveToolsChanged(GameModel * sender)
 {
+	decoBrush = false;
 	for (size_t i = 0; i < toolButtons.size(); i++)
 	{
 		Tool * tool = ((ToolAction*)toolButtons[i]->GetActionCallback())->tool;
@@ -647,10 +649,15 @@ void GameView::NotifyActiveToolsChanged(GameModel * sender)
 				windTool = true;
 			else
 				windTool = false;
+
+			if (sender->GetActiveTool(0)->GetIdentifier().find("DEFAULT_DECOR_") != sender->GetActiveTool(0)->GetIdentifier().npos)
+				decoBrush = true;
 		}
 		else if(sender->GetActiveTool(1) == tool)
 		{
 			toolButtons[i]->SetSelectionState(1);	//Secondary
+			if (sender->GetActiveTool(1)->GetIdentifier().find("DEFAULT_DECOR_") != sender->GetActiveTool(1)->GetIdentifier().npos)
+				decoBrush = true;
 		}
 		else if(sender->GetActiveTool(2) == tool)
 		{
@@ -674,15 +681,18 @@ void GameView::NotifyActiveToolsChanged(GameModel * sender)
 
 void GameView::NotifyLastToolChanged(GameModel * sender)
 {
-	if(sender->GetLastTool() && sender->GetLastTool()->GetResolution() == CELL)
-		wallBrush = true;
-	else
-		wallBrush = false;
+	if (sender->GetLastTool())
+	{
+		if (sender->GetLastTool()->GetResolution() == CELL)
+			wallBrush = true;
+		else
+			wallBrush = false;
 
-	if (sender->GetLastTool() && sender->GetLastTool()->GetIdentifier().find("DEFAULT_TOOL_") != sender->GetLastTool()->GetIdentifier().npos)
-		toolBrush = true;
-	else
-		toolBrush = false;
+		if (sender->GetLastTool()->GetIdentifier().find("DEFAULT_TOOL_") != sender->GetLastTool()->GetIdentifier().npos)
+			toolBrush = true;
+		else
+			toolBrush = false;
+	}
 }
 
 void GameView::NotifyToolListChanged(GameModel * sender)
@@ -2057,7 +2067,8 @@ void GameView::OnDraw()
 			}
 			else if(drawMode==DrawFill)// || altBehaviour)
 			{
-				activeBrush->RenderFill(ren, finalCurrentMouse);
+				if (!decoBrush)
+					activeBrush->RenderFill(ren, finalCurrentMouse);
 			}
 			if(drawMode == DrawPoints || drawMode==DrawLine || (drawMode == DrawRect && !isMouseDown))
 			{

@@ -422,7 +422,6 @@ int Simulation::flood_prop(int x, int y, size_t propoffset, PropertyValue propva
 		{
 			cs.pop(x, y);
 			x1 = x2 = x;
-			x1 = x2 = x;
 			while (x1>=CELL)
 			{
 				if (!FloodFillPmapCheck(x1-1, y, parttype) || bitmap[(y*XRES)+x1-1])
@@ -981,6 +980,80 @@ void Simulation::ApplyDecorationBox(int x1, int y1, int x2, int y2, int colR, in
 	for (j=y1; j<=y2; j++)
 		for (i=x1; i<=x2; i++)
 			ApplyDecoration(i, j, colR, colG, colB, colA, mode);
+}
+
+bool Simulation::ColorCompare(Renderer *ren, int x, int y, int replaceR, int replaceG, int replaceB)
+{
+	pixel pix = ren->vid[x+y*WINDOWW];
+	int r = PIXR(pix);
+	int g = PIXG(pix);
+	int b = PIXB(pix);
+	int diff = std::abs(replaceR-r) + std::abs(replaceG-g) + std::abs(replaceB-b);
+	return diff < 15;
+}
+
+void Simulation::ApplyDecorationFill(Renderer *ren, int x, int y, int colR, int colG, int colB, int colA, int replaceR, int replaceG, int replaceB)
+{
+	int x1, x2;
+	char *bitmap = (char*)malloc(XRES*YRES); //Bitmap for checking
+	if (!bitmap)
+		return;
+	memset(bitmap, 0, XRES*YRES);
+
+	if (!ColorCompare(ren, x, y, replaceR, replaceG, replaceB))
+		return;
+
+	try
+	{
+		CoordStack cs;
+		cs.push(x, y);
+		do
+		{
+			cs.pop(x, y);
+			x1 = x2 = x;
+			// go left as far as possible
+			while (x1>0)
+			{
+				if (bitmap[(x1-1)+y*XRES] || !ColorCompare(ren, x1-1, y, replaceR, replaceG, replaceB))
+				{
+					break;
+				}
+				x1--;
+			}
+			// go right as far as possible
+			while (x2<XRES-1)
+			{
+				if (bitmap[(x1+1)+y*XRES] || !ColorCompare(ren, x2+1, y, replaceR, replaceG, replaceB))
+				{
+					break;
+				}
+				x2++;
+			}
+			// fill span
+			for (x=x1; x<=x2; x++)
+			{
+				ApplyDecoration(x, y, colR, colG, colB, colA, DECO_DRAW);
+				bitmap[x+y*XRES] = 1;
+			}
+
+			if (y >= 1)
+				for (x=x1; x<=x2; x++)
+					if (!bitmap[x+(y-1)*XRES] && ColorCompare(ren, x, y-1, replaceR, replaceG, replaceB))
+						cs.push(x, y-1);
+
+			if (y < YRES-1)
+				for (x=x1; x<=x2; x++)
+					if (!bitmap[x+(y+1)*XRES] && ColorCompare(ren, x, y+1, replaceR, replaceG, replaceB))
+						cs.push(x, y+1);
+		} while (cs.getSize() > 0);
+	}
+	catch (std::exception& e)
+	{
+		std::cerr << e.what() << std::endl;
+		free(bitmap);
+		return;
+	}
+	free(bitmap);
 }
 
 int Simulation::Tool(int x, int y, int tool, float strength)

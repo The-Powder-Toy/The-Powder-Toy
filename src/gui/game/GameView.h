@@ -45,6 +45,7 @@ private:
 	bool showDebug;
 	bool wallBrush;
 	bool toolBrush;
+	bool decoBrush;
 	bool windTool;
 	int toolIndex;
 	int currentSaveType;
