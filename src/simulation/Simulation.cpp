@@ -1123,7 +1123,21 @@ int Simulation::CreateWalls(int x, int y, int rx, int ry, int wall, Brush * cBru
 				}
 				if (wall == WL_GRAV || bmap[wallY][wallX] == WL_GRAV)
 					gravWallChanged = true;
-				bmap[wallY][wallX] = wall;
+
+				if (wall == WL_ERASEALL)
+				{
+					for (int i = 0; i < CELL; i++)
+						for (int j = 0; j < CELL; j++)
+						{
+							delete_part(wallX*CELL+i, wallY*CELL+j);
+						}
+					for (int i = signs.size()-1; i >= 0; i--)
+						if (signs[i].x >= wallX*CELL && signs[i].y >= wallY*CELL && signs[i].x <= (wallX+1)*CELL && signs[i].y <= (wallY+1)*CELL)
+							signs.erase(signs.begin()+i);
+					bmap[wallY][wallX] = 0;
+				}
+				else
+					bmap[wallY][wallX] = wall;
 			}
 		}
 	}
@@ -1208,7 +1222,7 @@ int Simulation::FloodWalls(int x, int y, int wall, int bm)
 	int x1, x2, dy = CELL;
 	if (bm==-1)
 	{
-		if (wall==WL_ERASE)
+		if (wall==WL_ERASE || wall==WL_ERASEALL)
 		{
 			bm = bmap[y/CELL][x/CELL];
 			if (!bm)

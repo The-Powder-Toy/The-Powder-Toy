@@ -627,6 +627,42 @@ VideoBuffer * Renderer::WallIcon(int wallID, int width, int height)
 			newTexture->SetPixel(-j+20, j, 0xFF, 0, 0, 255);
 		}
 	}
+	else if (wt == WL_ERASEALL)
+	{
+		for (int j = 0; j < height; j++)
+		{
+			int r = 100, g = 150, b = 50;
+			int rd = 1, gd = -1, bd = -1;
+			for (int i = 0; i < width; i++)
+			{
+				r += 15*rd;
+				g += 15*gd;
+				b += 15*bd;
+				if (r > 200) rd = -1;
+				if (g > 200) gd = -1;
+				if (b > 200) bd = -1;
+				if (r < 15) rd = 1;
+				if (g < 15) gd = 1;
+				if (b < 15) bd = 1;
+				int rc = std::min(150, std::max(0, r));
+				int gc = std::min(200, std::max(0, g));
+				int bc = std::min(200, std::max(0, b));
+				newTexture->SetPixel(i, j, rc, gc, bc, 255);
+			}
+		}
+		for (int j = 3; j < (width-4)/2; j++)
+		{
+			newTexture->SetPixel(j+0, j, 0xFF, 0, 0, 255);
+			newTexture->SetPixel(j+1, j, 0xFF, 0, 0, 255);
+			newTexture->SetPixel(-j+13, j, 0xFF, 0, 0, 255);
+			newTexture->SetPixel(-j+14, j, 0xFF, 0, 0, 255);
+
+			newTexture->SetPixel(j+11, j, 0xFF, 0, 0, 255);
+			newTexture->SetPixel(j+12, j, 0xFF, 0, 0, 255);
+			newTexture->SetPixel(-j+24, j, 0xFF, 0, 0, 255);
+			newTexture->SetPixel(-j+25, j, 0xFF, 0, 0, 255);
+		}
+	}
 	else if(wt == WL_STREAM)
 	{
 		for (j=0; j<height; j++)
