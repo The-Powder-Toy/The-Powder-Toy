@@ -25,6 +25,13 @@ std::string sign::getText(Simulation *sim)
 				pressure = sim->pv[y/CELL][x/CELL];
 			sprintf(buff, "Pressure: %3.2f", pressure);  //...pressure
 		}
+		else if (!strcmp(signText,"{aheat}"))
+		{
+			float aheat = 0.0f;
+			if (x>=0 && x<XRES && y>=0 && y<YRES)
+				aheat = sim->hv[y/CELL][x/CELL];
+			sprintf(buff, "%3.2f", aheat);
+		}
 		else if (!strcmp(signText,"{t}"))
 		{
 			if (x>=0 && x<XRES && y>=0 && y<YRES && sim->pmap[y][x])
