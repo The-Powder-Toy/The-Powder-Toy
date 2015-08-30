@@ -1045,11 +1045,10 @@ void GameView::setToolButtonOffset(int offset)
 	{
 		ToolButton * button = *iter;
 		button->Position.X -= offset;
-		if(button->Position.X <= 0 || (button->Position.X+button->Size.X) > XRES-2) {
+		if (button->Position.X+button->Size.X <= 0 || (button->Position.X+button->Size.X) > XRES-2)
 			button->Visible = false;
-		} else {
+		else
 			button->Visible = true;
-		}
 	}
 }
 
