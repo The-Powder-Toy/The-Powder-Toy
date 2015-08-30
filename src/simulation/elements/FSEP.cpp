@@ -6,7 +6,7 @@ Element_FSEP::Element_FSEP()
 	Name = "FSEP";
 	Colour = PIXPACK(0x63AD5F);
 	MenuVisible = 1;
-	MenuSection = SC_POWDERS;
+	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;
 	
 	Advection = 0.7f;
