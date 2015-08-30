@@ -3063,6 +3063,9 @@ int Simulation::create_part(int p, int x, int y, int tv)
 			case PT_VRSG:
 				parts[i].pavg[1] = 250;
 				break;
+			case PT_CRMC:
+				parts[i].tmp2 = (rand() % 5);
+				break;
 			case PT_STKM:
 			{
 				if (player.spwn == 0)
@@ -3716,6 +3719,14 @@ void Simulation::UpdateParticles(int start, int end)
 							else
 								s = 0;
 						}
+						else if (t == PT_CRMC)
+						{
+							float pres = std::max((pv[y/CELL][x/CELL]+pv[(y-2)/CELL][x/CELL]+pv[(y+2)/CELL][x/CELL]+pv[y/CELL][(x-2)/CELL]+pv[y/CELL][(x+2)/CELL])*2.0f, 0.0f);
+							if (ctemph < pres+elements[PT_CRMC].HighTemperature)
+								s = 0;
+							else
+								t = PT_LAVA;
+						}
 						else
 							s = 0;
 					}
@@ -3761,6 +3772,12 @@ void Simulation::UpdateParticles(int start, int end)
 									// TUNG does its own melting in its update function, so HighTemperatureTransition is not LAVA so it won't be handled by the code for HighTemperatureTransition==PT_LAVA below
 									// However, the threshold is stored in HighTemperature to allow it to be changed from Lua
 									if (pt>=elements[parts[i].ctype].HighTemperature)
+										s = 0;
+								}
+								else if (parts[i].ctype == PT_CRMC)
+								{
+									float pres = std::max((pv[y/CELL][x/CELL]+pv[(y-2)/CELL][x/CELL]+pv[(y+2)/CELL][x/CELL]+pv[y/CELL][(x-2)/CELL]+pv[y/CELL][(x+2)/CELL])*2.0f, 0.0f);
+									if (ctemph >= pres+elements[PT_CRMC].HighTemperature)
 										s = 0;
 								}
 								else if (elements[parts[i].ctype].HighTemperatureTransition == PT_LAVA)
