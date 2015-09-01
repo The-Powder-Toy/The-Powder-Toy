@@ -1,5 +1,4 @@
 #include <vector>
-//#include "Platform.h"
 
 #include "gui/interface/Panel.h"
 

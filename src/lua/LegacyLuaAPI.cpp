@@ -9,7 +9,7 @@
 #include "Format.h"
 #include "LuaScriptInterface.h"
 #include "LuaScriptHelper.h"
-#include "Misc.h"
+#include "Platform.h"
 #include "PowderToy.h"
 
 #include "gui/dialogues/ErrorMessage.h"
@@ -463,7 +463,7 @@ int luacon_keyevent(int key, int modifier, int event)
 		{
 			if (!strcmp(luacon_geterror(), "Error: Script not responding"))
 			{
-				ui::Engine::Ref().LastTick(gettime());
+				ui::Engine::Ref().LastTick(Platform::GetTime());
 				for (int j = i; j <= len-1; j++)
 				{
 					lua_rawgeti(l, -2, j+1);
@@ -516,7 +516,7 @@ int luacon_mouseevent(int mx, int my, int mb, int event, int mouse_wheel)
 		{
 			if (!strcmp(luacon_geterror(), "Error: Script not responding"))
 			{
-				ui::Engine::Ref().LastTick(gettime());
+				ui::Engine::Ref().LastTick(Platform::GetTime());
 				for (int j = i; j <= len-1; j++)
 				{
 					lua_rawgeti(l, -2, j+1);
@@ -567,7 +567,7 @@ int luacon_step(int mx, int my)
 		{
 			if (!strcmp(luacon_geterror(), "Error: Script not responding"))
 			{
-				ui::Engine::Ref().LastTick(gettime());
+				ui::Engine::Ref().LastTick(Platform::GetTime());
 				for (int j = i; j <= len-1; j++)
 				{
 					lua_rawgeti(l, -2, j+1);
@@ -589,17 +589,17 @@ int luacon_step(int mx, int my)
 
 int luacon_eval(const char *command)
 {
-	ui::Engine::Ref().LastTick(gettime());
+	ui::Engine::Ref().LastTick(Platform::GetTime());
 	return luaL_dostring (luacon_ci->l, command);
 }
 
 void luacon_hook(lua_State * l, lua_Debug * ar)
 {
-	if(ar->event == LUA_HOOKCOUNT && gettime()-ui::Engine::Ref().LastTick() > 3000)
+	if(ar->event == LUA_HOOKCOUNT && Platform::GetTime()-ui::Engine::Ref().LastTick() > 3000)
 	{
 		if(ConfirmPrompt::Blocking("Script not responding", "The Lua script may have stopped responding. There might be an infinite loop. Press \"Stop\" to stop it", "Stop"))
 			luaL_error(l, "Error: Script not responding");
-		ui::Engine::Ref().LastTick(gettime());
+		ui::Engine::Ref().LastTick(Platform::GetTime());
 	}
 }
 
@@ -2010,19 +2010,6 @@ int luatpt_screenshot(lua_State* l)
 	Client::Ref().WriteFile(data, filename.str());
 	lua_pushstring(l, filename.str().c_str());
 	return 1;
-}
-
-int luatpt_getclip (lua_State* l)
-{
-	lua_pushstring(l, ClipboardPull().c_str());
-	return 1; 
-}
-
-int luatpt_setclip (lua_State* l)
-{
-	luaL_checktype(l, 1, LUA_TSTRING);
-	ClipboardPush(luaL_optstring(l, 1, ""));
-	return 0;
 }
 
 #endif

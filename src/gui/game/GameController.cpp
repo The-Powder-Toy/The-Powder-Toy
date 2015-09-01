@@ -2,6 +2,7 @@
 #include <queue>
 #include "Config.h"
 #include "Format.h"
+#include "Platform.h"
 #include "GameController.h"
 #include "GameModel.h"
 #include "client/SaveInfo.h"
@@ -636,7 +637,7 @@ bool GameController::MouseUp(int x, int y, unsigned button)
 							// buff is already confirmed to be a number by sign::splitsign
 							std::stringstream uri;
 							uri << "http://powdertoy.co.uk/Discussions/Thread/View.html?Thread=" << buff;
-							OpenURI(uri.str());
+							Platform::OpenURI(uri.str());
 							break;
 						}
 						case 's':
@@ -1525,7 +1526,7 @@ void GameController::NotifyNewNotification(Client * sender, std::pair<std::strin
 
 		virtual void Action()
 		{
-			OpenURI(link);
+			Platform::OpenURI(link);
 		}
 	};
 	gameModel->AddNotification(new LinkNotification(notification.second, notification.first));

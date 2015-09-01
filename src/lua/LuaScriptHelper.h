@@ -128,8 +128,6 @@ int luatpt_getscript(lua_State* l);
 int luatpt_setwindowsize(lua_State* l);
 
 int luatpt_screenshot(lua_State* l);
-int luatpt_getclip(lua_State* l);
-int luatpt_setclip(lua_State* l);
 
 
 #endif /* LUASCRIPTHELPER_H_ */

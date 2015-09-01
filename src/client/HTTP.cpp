@@ -52,7 +52,7 @@
 #include "Misc.h"
 #include "HTTP.h"
 #include "MD5.h"
-#include "Misc.h"
+#include "Platform.h"
 
 #ifdef WIN
 #define PERROR SOCKET_ERROR
@@ -605,7 +605,7 @@ char *http_async_req_stop(void *ctx, int *ret, int *len)
 
 	if (cx->state != HTS_DONE)
 		while (!http_async_req_status(ctx))
-			millisleep(1);
+			Platform::Millisleep(1);
 
 	if (cx->host)
 	{

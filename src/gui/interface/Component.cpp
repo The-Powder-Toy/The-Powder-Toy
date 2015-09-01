@@ -1,4 +1,3 @@
-//#include "Platform.h"
 #include <iostream>
 #include "gui/interface/Component.h"
 #include "gui/interface/Engine.h"

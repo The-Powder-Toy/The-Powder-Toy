@@ -7,6 +7,7 @@
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/login/LoginController.h"
 #include "Controller.h"
+#include "Platform.h"
 
 PreviewController::PreviewController(int saveID, int saveDate, bool instant, ControllerCallback * callback):
 	saveId(saveID),
@@ -150,7 +151,7 @@ void PreviewController::OpenInBrowser()
 {
 	std::stringstream uriStream;
 	uriStream << "http://" << SERVER << "/Browse/View.html?ID=" << saveId;
-	OpenURI(uriStream.str());
+	Platform::OpenURI(uriStream.str());
 }
 
 bool PreviewController::NextCommentPage()

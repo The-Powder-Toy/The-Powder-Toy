@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <sstream>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
@@ -7,62 +6,6 @@
 #include "Config.h"
 #include "Misc.h"
 #include "icondoc.h"
-#ifdef WIN
-#include <shlobj.h>
-#include <shlwapi.h>
-#include <windows.h>
-#else
-#include <unistd.h>
-#include <time.h>
-#include <sys/time.h>
-#endif
-#ifdef MACOSX
-#include <mach-o/dyld.h>
-#endif
-
-char *exe_name(void)
-{
-#if defined(WIN)
-	char *name= (char *)malloc(64);
-	DWORD max=64, res;
-	while ((res = GetModuleFileName(NULL, name, max)) >= max)
-	{
-#elif defined MACOSX
-	char *fn=(char*)malloc(64),*name=(char*)malloc(PATH_MAX);
-	uint32_t max=64, res;
-	if (_NSGetExecutablePath(fn, &max) != 0)
-	{
-		fn = (char*)realloc(fn, max);
-		_NSGetExecutablePath(fn, &max);
-	}
-	if (realpath(fn, name) == NULL)
-	{
-		free(fn);
-		free(name);
-		return NULL;
-	}
-	res = 1;
-#else
-	char fn[64], *name=(char *)malloc(64);
-	size_t max=64, res;
-	sprintf(fn, "/proc/self/exe");
-	memset(name, 0, max);
-	while ((res = readlink(fn, name, max)) >= max-1)
-	{
-#endif
-#ifndef MACOSX
-		max *= 2;
-		name = (char *)realloc(name, max);
-		memset(name, 0, max);
-	}
-#endif
-	if (res <= 0)
-	{
-		free(name);
-		return NULL;
-	}
-	return name;
-}
 
 //Signum function
 int isign(float i) //TODO: INline or macro
@@ -217,34 +160,6 @@ void *file_load(char *fn, int *size)
 	return s;
 }
 
-int cpu_check(void)
-{
-/*#ifdef MACOSX
-	return 0;
-#else
-#ifdef X86
-	unsigned af,bf,cf,df;
-	x86_cpuid(0, af, bf, cf, df);
-	//if (bf==0x68747541 && cf==0x444D4163 && df==0x69746E65)
-	//	amd = 1;
-	x86_cpuid(1, af, bf, cf, df);
-#ifdef X86_SSE
-	if (!(df&(1<<25)))
-		return 1;
-#endif
-#ifdef X86_SSE2
-	if (!(df&(1<<26)))
-		return 1;
-#endif
-#ifdef X86_SSE3
-	if (!(cf&1))
-		return 1;
-#endif
-#endif
-#endif*/
-	return 0;
-}
-
 matrix2d m2d_multiply_m2d(matrix2d m1, matrix2d m2)
 {
 	matrix2d result = {
@@ -352,24 +267,6 @@ void HSV_to_RGB(int h,int s,int v,int *r,int *g,int *b)//convert 0-255(0-360 for
 	*b += m;
 }
 
-void OpenURI(std::string uri) {
-#if defined(WIN)
-	ShellExecute(0, "OPEN", uri.c_str(), NULL, NULL, 0);
-#elif defined(MACOSX)
-	char *cmd = (char*)malloc(7+uri.length());
-	strcpy(cmd, "open ");
-	strappend(cmd, (char*)uri.c_str());
-	system(cmd);
-#elif defined(LIN)
-	char *cmd = (char*)malloc(11+uri.length());
-	strcpy(cmd, "xdg-open ");
-	strappend(cmd, (char*)uri.c_str());
-	system(cmd);
-#else
-	printf("Cannot open browser\n");
-#endif
-}
-
 void RGB_to_HSV(int r,int g,int b,int *h,int *s,int *v)//convert 0-255 RGB values to 0-255(0-360 for H) HSV
 {
 	float rr, gg, bb, a,x,c,d;
@@ -404,33 +301,6 @@ void membwand(void * destv, void * srcv, size_t destsize, size_t srcsize)
 	for(i = 0; i < destsize; i++){
 		dest[i] = dest[i] & src[i%srcsize];
 	}
-}
-
-void millisleep(long int t)
-{
-#ifdef WIN
-	Sleep(t);
-#else
-	struct timespec s;
-	s.tv_sec = t / 1000;
-	s.tv_nsec = (t % 1000) * 10000000;
-	nanosleep(&s, NULL);
-#endif
-}
-
-long unsigned int gettime()
-{
-#ifdef WIN
-	return GetTickCount();
-#elif defined(MACOSX)
-	struct timeval s;
-	gettimeofday(&s, NULL);
-	return (unsigned int)(s.tv_sec * 1000 + s.tv_usec / 1000);
-#else
-	struct timespec s;
-	clock_gettime(CLOCK_MONOTONIC, &s);
-	return s.tv_sec * 1000 + s.tv_nsec / 1000000;
-#endif
 }
 
 vector2d v2d_zero = {0,0};

@@ -12,6 +12,7 @@
 #include "client/UserInfo.h"
 #include "client/requestbroker/RequestListener.h"
 #include "Format.h"
+#include "Platform.h"
 
 ProfileActivity::ProfileActivity(std::string username) :
 	WindowActivity(ui::Point(-1, -1), ui::Point(236, 300)),
@@ -80,7 +81,7 @@ void ProfileActivity::setUserInfo(UserInfo newInfo)
 		EditAvatarAction(ProfileActivity * a) : a(a) {  }
 		void ActionCallback(ui::Button * sender_)
 		{
-			OpenURI("http://" SERVER "/Profile/Avatar.html");
+			Platform::OpenURI("http://" SERVER "/Profile/Avatar.html");
 		}
 	};
 

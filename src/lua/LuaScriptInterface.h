@@ -148,6 +148,16 @@ class LuaScriptInterface: public CommandInterface
 	static int fileSystem_move(lua_State * l);
 	static int fileSystem_copy(lua_State * l);
 
+	void initPlatformAPI();
+	static int platform_platform(lua_State * l);
+	static int platform_build(lua_State * l);
+	static int platform_releaseType(lua_State * l);
+	static int platform_exeName(lua_State * l);
+	static int platform_restart(lua_State * l);
+	static int platform_openLink(lua_State * l);
+	static int platform_clipboardCopy(lua_State * l);
+	static int platform_clipboardPaste(lua_State * l);
+
 public:
 	int tpt_index(lua_State *l);
 	int tpt_newIndex(lua_State *l);

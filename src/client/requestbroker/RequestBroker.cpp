@@ -7,7 +7,7 @@
 #include "RequestListener.h"
 #include "ThumbRenderRequest.h"
 #include "ImageRequest.h"
-#include "Misc.h"
+#include "Platform.h"
 #include "client/Client.h"
 #include "client/GameSave.h"
 #include "graphics/Graphics.h"
@@ -238,7 +238,7 @@ void RequestBroker::thumbnailQueueProcessTH()
 			}
 		}
 		pthread_mutex_unlock(&requestQueueMutex);
-		millisleep(1);
+		Platform::Millisleep(1);
 	}
 	pthread_mutex_lock(&runningMutex);
 	thumbnailQueueRunning = false;

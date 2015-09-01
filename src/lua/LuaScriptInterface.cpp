@@ -23,6 +23,7 @@
 #include "client/HTTP.h"
 #include "client/SaveFile.h"
 #include "Misc.h"
+#include "Platform.h"
 #include "PowderToy.h"
 
 #include "LuaBit.h"
@@ -135,6 +136,7 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	initElementsAPI();
 	initGraphicsAPI();
 	initFileSystemAPI();
+	initPlatformAPI();
 
 	//Old TPT API
 	char tmpname[12];
@@ -200,8 +202,8 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 		{"element",&luatpt_getelement},
 		{"element_func",&luatpt_element_func},
 		{"graphics_func",&luatpt_graphics_func},
-		{"get_clipboard", &luatpt_getclip}, 
-		{"set_clipboard", &luatpt_setclip},
+		{"get_clipboard", &platform_clipboardCopy},
+		{"set_clipboard", &platform_clipboardPaste},
 		{NULL,NULL}
 	};
 
@@ -2948,6 +2950,81 @@ int LuaScriptInterface::fileSystem_copy(lua_State * l)
 	return 1;
 }
 
+void LuaScriptInterface::initPlatformAPI()
+{
+	//Methods
+	struct luaL_Reg platformAPIMethods [] = {
+		{"platform", platform_platform},
+		{"build", platform_build},
+		{"releaseType", platform_releaseType},
+		{"exeName", platform_exeName},
+		{"restart", platform_restart},
+		{"openLink", platform_openLink},
+		{"clipboardCopy", platform_clipboardCopy},
+		{"clipboardPaste", platform_clipboardPaste},
+		{NULL, NULL}
+	};
+	luaL_register(l, "platform", platformAPIMethods);
+
+	//elem shortcut
+	lua_getglobal(l, "platform");
+	lua_setglobal(l, "plat");
+}
+
+int LuaScriptInterface::platform_platform(lua_State * l)
+{
+	lua_pushstring(l, IDENT_PLATFORM);
+	return 1;
+}
+
+int LuaScriptInterface::platform_build(lua_State * l)
+{
+	lua_pushstring(l, IDENT_BUILD);
+	return 1;
+}
+
+int LuaScriptInterface::platform_releaseType(lua_State * l)
+{
+	lua_pushstring(l, IDENT_RELTYPE);
+	return 1;
+}
+
+int LuaScriptInterface::platform_exeName(lua_State * l)
+{
+	char *name = Platform::ExecutableName();
+	if (name)
+		lua_pushstring(l, name);
+	else
+		luaL_error(l, "Error, could not get executable name");
+	return 1;
+}
+
+int LuaScriptInterface::platform_restart(lua_State * l)
+{
+	Platform::DoRestart();
+	return 0;
+}
+
+int LuaScriptInterface::platform_openLink(lua_State * l)
+{
+	const char * uri = luaL_checkstring(l, 1);
+	Platform::OpenURI(uri);
+	return 0;
+}
+
+int LuaScriptInterface::platform_clipboardCopy(lua_State * l)
+{
+	lua_pushstring(l, ClipboardPull().c_str());
+	return 1;
+}
+
+int LuaScriptInterface::platform_clipboardPaste(lua_State * l)
+{
+	luaL_checktype(l, 1, LUA_TSTRING);
+	ClipboardPush(luaL_optstring(l, 1, ""));
+	return 0;
+}
+
 
 bool LuaScriptInterface::OnBrushChanged(int brushType, int rx, int ry)
 {
@@ -3023,7 +3100,7 @@ bool LuaScriptInterface::OnKeyRelease(int key, Uint16 character, bool shift, boo
 
 bool LuaScriptInterface::OnMouseTick()
 {
-	ui::Engine::Ref().LastTick(gettime());
+	ui::Engine::Ref().LastTick(Platform::GetTime());
 	if (luacon_mousedown)
 		return luacon_mouseevent(luacon_mousex, luacon_mousey, luacon_mousebutton, LUACON_MPRESS, 0);
 	return true;
@@ -3034,7 +3111,7 @@ void LuaScriptInterface::OnTick()
 	lua_getglobal(l, "simulation");
 	lua_pushinteger(l, luacon_sim->NUM_PARTS); lua_setfield(l, -2, "NUM_PARTS");
 	lua_pop(l, 1);
-	ui::Engine::Ref().LastTick(gettime());
+	ui::Engine::Ref().LastTick(Platform::GetTime());
 	luacon_step(luacon_mousex, luacon_mousey);
 }
 
@@ -3057,7 +3134,7 @@ int LuaScriptInterface::Command(std::string command)
 			lastCode += "\n";
 		lastCode += command;
 		std::string tmp = "return " + lastCode;
-		ui::Engine::Ref().LastTick(gettime());
+		ui::Engine::Ref().LastTick(Platform::GetTime());
 		luaL_loadbuffer(l, tmp.c_str(), tmp.length(), "@console");
 		if (lua_type(l, -1) != LUA_TFUNCTION)
 		{

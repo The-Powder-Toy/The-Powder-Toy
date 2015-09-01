@@ -32,6 +32,7 @@
 #include "MD5.h"
 #include "graphics/Graphics.h"
 #include "Misc.h"
+#include "Platform.h"
 #include "Update.h"
 #include "HTTP.h"
 
@@ -187,7 +188,7 @@ bool Client::DoInstallation()
 	int returnval;
 	LONG rresult;
 	HKEY newkey;
-	char *currentfilename = exe_name();
+	char *currentfilename = Platform::ExecutableName();
 	char *iconname = NULL;
 	char *opencommand = NULL;
 	char *protocolcommand = NULL;
@@ -352,7 +353,7 @@ bool Client::DoInstallation()
 #elif defined(LIN)
 	#include "icondoc.h"
 
-	std::string filename = exe_name(), pathname = filename.substr(0, filename.rfind('/'));
+	std::string filename = Platform::ExecutableName(), pathname = filename.substr(0, filename.rfind('/'));
 	for (size_t i = 0; i < filename.size(); i++)
 	{
 		if (filename[i] == '\'')

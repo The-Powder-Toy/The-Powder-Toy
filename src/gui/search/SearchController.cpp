@@ -8,7 +8,7 @@
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/preview/PreviewController.h"
 #include "client/Client.h"
-#include "Misc.h"
+#include "Platform.h"
 #include "tasks/Task.h"
 #include "tasks/TaskWindow.h"
 
@@ -69,7 +69,7 @@ void SearchController::Update()
 			doRefresh = false;
 		}
 	}
-	else if (!nextQueryDone && nextQueryTime < gettime())
+	else if (!nextQueryDone && nextQueryTime < Platform::GetTime())
 	{
 		if (searchModel->UpdateSaveList(1, nextQuery))
 			nextQueryDone = true;
@@ -115,7 +115,7 @@ void SearchController::DoSearch(std::string query, bool now)
 	nextQuery = query;
 	if (!now)
 	{
-		nextQueryTime = gettime()+600;
+		nextQueryTime = Platform::GetTime()+600;
 		nextQueryDone = false;
 	}
 	else

@@ -3,7 +3,6 @@
 #include "Appearance.h"
 #include "Point.h"
 #include "Window.h"
-#include "Platform.h"
 
 namespace ui
 {

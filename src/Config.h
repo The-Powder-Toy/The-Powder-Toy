@@ -179,6 +179,15 @@
 #define TH_ENTRY_POINT
 #endif
 
+// old Platform.h stuff, maybe we should have a file for these kinds of things
+typedef unsigned short Uint16;
+
+#ifndef NULL
+# define NULL 0
+#endif
+
+#include <climits>
+
 #define SDEUT
 //#define REALHEAT
 

@@ -7,7 +7,7 @@
 #include "client/HTTP.h"
 #include "client/Client.h"
 #include "Update.h"
-#include "Misc.h"
+#include "Platform.h"
 
 
 class UpdateDownloadTask : public Task
@@ -148,7 +148,7 @@ void UpdateActivity::NotifyError(Task * sender)
 		virtual void ConfirmCallback(ConfirmPrompt::DialogueResult result) {
 			if (result == ConfirmPrompt::ResultOkay)
 			{
-				OpenURI("http://powdertoy.co.uk/Download.html");
+				Platform::OpenURI("http://powdertoy.co.uk/Download.html");
 			}
 			a->Exit();
 		}

@@ -2,6 +2,7 @@
 #include <iostream>
 #include <stdexcept>
 #include "Config.h"
+#include "Platform.h"
 #include "Format.h"
 #include "gui/interface/Point.h"
 #include "gui/interface/Textbox.h"
@@ -280,10 +281,10 @@ void Textbox::Tick(float dt)
 		keyDown = 0;
 		characterDown = 0;
 	}
-	if ((keyDown || characterDown) && repeatTime <= gettime())
+	if ((keyDown || characterDown) && repeatTime <= Platform::GetTime())
 	{
 		OnVKeyPress(keyDown, characterDown, false, false, false);
-		repeatTime = gettime()+30;
+		repeatTime = Platform::GetTime()+30;
 	}
 }
 
@@ -297,7 +298,7 @@ void Textbox::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool 
 {
 	characterDown = character;
 	keyDown = key;
-	repeatTime = gettime()+300;
+	repeatTime = Platform::GetTime()+300;
 	OnVKeyPress(key, character, shift, ctrl, alt);
 }
 
