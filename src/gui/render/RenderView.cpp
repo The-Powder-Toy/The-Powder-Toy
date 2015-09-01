@@ -295,6 +295,11 @@ void RenderView::OnMouseDown(int x, int y, unsigned button)
 		c->Exit();
 }
 
+void RenderView::OnTryExit(ExitMethod method)
+{
+	c->Exit();
+}
+
 void RenderView::NotifyRendererChanged(RenderModel * sender)
 {
 	ren = sender->GetRenderer();

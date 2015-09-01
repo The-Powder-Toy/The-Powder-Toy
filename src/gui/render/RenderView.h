@@ -34,6 +34,7 @@ public:
 	void NotifyColourChanged(RenderModel * sender);
 	void AttachController(RenderController * c_) { c = c_; }
 	void OnMouseDown(int x, int y, unsigned button);
+	void OnTryExit(ExitMethod method);
 	virtual void OnDraw();
 	virtual void OnTick(float dt);
 	virtual void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
