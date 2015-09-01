@@ -1545,9 +1545,9 @@ void Simulation::CreateLine(int x1, int y1, int x2, int y2, int c)
 	for (x=x1; x<=x2; x++)
 	{
 		if (reverseXY)
-			create_part(-2, y, x, c);
+			create_part(-1, y, x, c);
 		else
-			create_part(-2, x, y, c);
+			create_part(-1, x, y, c);
 		e += de;
 		if (e >= 0.5f)
 		{
@@ -1555,9 +1555,9 @@ void Simulation::CreateLine(int x1, int y1, int x2, int y2, int c)
 			if ((y1<y2) ? (y<=y2) : (y>=y2))
 			{
 				if (reverseXY)
-					create_part(-2, y, x, c);
+					create_part(-1, y, x, c);
 				else
-					create_part(-2, x, y, c);
+					create_part(-1, x, y, c);
 			}
 			e -= 1.0f;
 		}
@@ -1864,6 +1864,7 @@ int Simulation::nearest_part(int ci, int t, int max_d)
 	return id;
 }
 
+// unused function
 void Simulation::create_arc(int sx, int sy, int dx, int dy, int midpoints, int variance, int type, int flags)
 {
 	int i;
