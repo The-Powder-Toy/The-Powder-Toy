@@ -123,7 +123,7 @@ std::string format::CleanString(std::string dirtyString, bool ascii, bool color,
 	return dirtyString;
 }
 
-std::string format::CleanString(char * dirtyData, bool ascii, bool color, bool newlines, bool numeric)
+std::string format::CleanString(const char * dirtyData, bool ascii, bool color, bool newlines, bool numeric)
 {
 	return CleanString(std::string(dirtyData), ascii, color, newlines, numeric);
 }

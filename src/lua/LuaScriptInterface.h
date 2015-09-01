@@ -42,10 +42,15 @@ class LuaScriptInterface: public CommandInterface
 	bool currentCommand;
 	TPTScriptInterface * legacy;
 
+	// signs
+	static int simulation_signIndex(lua_State *l);
+	static int simulation_signNewIndex(lua_State *l);
+	static int simulation_newsign(lua_State *l);
+
 	//Simulation
 	static StructProperty * particleProperties;
 	static int particlePropertiesCount;
-	//
+
 	void initSimulationAPI();
 	static void set_map(int x, int y, int width, int height, float value, int mapType);
 	static int simulation_partNeighbours(lua_State * l);

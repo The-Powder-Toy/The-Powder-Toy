@@ -530,6 +530,151 @@ int LuaScriptInterface::interface_closeWindow(lua_State * l)
 	return 0;
 }
 
+//// Begin sim.signs API
+
+int LuaScriptInterface::simulation_signIndex(lua_State *l)
+{
+	std::string key = luaL_checkstring(l, 2);
+
+	//Get Raw Index value for element. Maybe there is a way to get the sign index some other way?
+	lua_pushstring(l, "id");
+	lua_rawget(l, 1);
+	int id = lua_tointeger(l, lua_gettop(l))-1;
+
+	if (id < 0 || id >= MAXSIGNS)
+	{
+		luaL_error(l, "Invalid sign ID (stop messing with things): %i", id);
+		return 0;
+	}
+	if (id >= (int)luacon_sim->signs.size())
+	{
+		return lua_pushnil(l), 1;
+	}
+
+	if (!key.compare("text"))
+		return lua_pushstring(l, luacon_sim->signs[id].text.c_str()), 1;
+	else if (!key.compare("displayText"))
+		return lua_pushstring(l, luacon_sim->signs[id].getText(luacon_sim).c_str()), 1;
+	else if (!key.compare("justification"))
+		return lua_pushnumber(l, (int)luacon_sim->signs[id].ju), 1;
+	else if (!key.compare("x"))
+		return lua_pushnumber(l, luacon_sim->signs[id].x), 1;
+	else if (!key.compare("y"))
+		return lua_pushnumber(l, luacon_sim->signs[id].y), 1;
+	else if (!key.compare("screenX"))
+	{
+		int x, y, w, h;
+		luacon_sim->signs[id].pos(luacon_sim->signs[id].getText(luacon_sim), x, y, w, h);
+		lua_pushnumber(l, x);
+		return 1;
+	}
+	else if (!key.compare("screenY"))
+	{
+		int x, y, w, h;
+		luacon_sim->signs[id].pos(luacon_sim->signs[id].getText(luacon_sim), x, y, w, h);
+		lua_pushnumber(l, y);
+		return 1;
+	}
+	else if (!key.compare("width"))
+	{
+		int x, y, w, h;
+		luacon_sim->signs[id].pos(luacon_sim->signs[id].getText(luacon_sim), x, y, w, h);
+		lua_pushnumber(l, w);
+		return 1;
+	}
+	else if (!key.compare("height"))
+	{
+		int x, y, w, h;
+		luacon_sim->signs[id].pos(luacon_sim->signs[id].getText(luacon_sim), x, y, w, h);
+		lua_pushnumber(l, h);
+		return 1;
+	}
+	else
+		return lua_pushnil(l), 1;
+}
+
+int LuaScriptInterface::simulation_signNewIndex(lua_State *l)
+{
+	std::string key = luaL_checkstring(l, 2);
+
+	//Get Raw Index value for element. Maybe there is a way to get the sign index some other way?
+	lua_pushstring(l, "id");
+	lua_rawget(l, 1);
+	int id = lua_tointeger(l, lua_gettop(l))-1;
+
+	if (id < 0 || id >= MAXSIGNS)
+	{
+		luaL_error(l, "Invalid sign ID (stop messing with things)");
+		return 0;
+	}
+	if (id >= (int)luacon_sim->signs.size())
+	{
+		luaL_error(l, "Sign doesn't exist");
+	}
+
+	if (!key.compare("text"))
+	{
+		const char *temp = luaL_checkstring(l, 3);
+		luacon_sim->signs[id].text = format::CleanString(temp, false, true, true).substr(0, 45);
+		return 0;
+	}
+	else if (!key.compare("justification"))
+	{
+		int ju = luaL_checkinteger(l, 3);
+		if (ju >= 0 && ju <= 3)
+			return luacon_sim->signs[id].ju = (sign::Justification)ju, 1;
+		else
+			luaL_error(l, "Invalid justification");
+		return 0;
+	}
+	else if (!key.compare("x"))
+	{
+		int x = luaL_checkinteger(l, 3);
+		if (x >= 0 && x < XRES)
+			return luacon_sim->signs[id].x = x, 1;
+		else
+			luaL_error(l, "Invalid X coordinate");
+		return 0;
+	}
+	else if (!key.compare("y"))
+	{
+		int y = luaL_checkinteger(l, 3);
+		if (y >= 0 && y < YRES)
+			return luacon_sim->signs[id].y = y, 1;
+		else
+			luaL_error(l, "Invalid Y coordinate");
+		return 0;
+	}
+	else if (!key.compare("displayText") || !key.compare("screenX") || !key.compare("screenY") || !key.compare("width") || !key.compare("height"))
+	{
+		luaL_error(l, "That property can't be directly set");
+	}
+	return 0;
+}
+
+//creates a new sign at the first open index
+int LuaScriptInterface::simulation_newsign(lua_State *l)
+{
+	if (luacon_sim->signs.size() >= MAXSIGNS)
+		return lua_pushnil(l), 1;
+
+	std::string text = format::CleanString(luaL_checkstring(l, 1), false, true, true).substr(0, 45);
+	int x = luaL_checkinteger(l, 2);
+	int y = luaL_checkinteger(l, 3);
+	int ju = luaL_optinteger(l, 4, 1);
+	if (ju < 0 || ju > 3)
+		return luaL_error(l, "Invalid justification");
+	if (x < 0 || x >= XRES)
+		return luaL_error(l, "Invalid X coordinate");
+	if (y < 0 || y >= YRES)
+		return luaL_error(l, "Invalid Y coordinate");
+
+	luacon_sim->signs.push_back(sign(text, x, y, (sign::Justification)ju));
+
+	lua_pushnumber(l, luacon_sim->signs.size());
+	return 1;
+}
+
 //// Begin Simulation API
 
 StructProperty * LuaScriptInterface::particleProperties;
@@ -639,6 +784,26 @@ void LuaScriptInterface::initSimulationAPI()
 		lua_setfield(l, -2, ("FIELD_"+propertyName).c_str());
 		particleProperties[particlePropertiesCount++] = *iter;
 	}
+
+	lua_newtable(l);
+	for (int i = 1; i <= MAXSIGNS; i++)
+	{
+		lua_newtable(l);
+		lua_pushinteger(l, i); //set "id" to table index
+		lua_setfield(l, -2, "id");
+		lua_newtable(l);
+		lua_pushcfunction(l, simulation_signIndex);
+		lua_setfield(l, -2, "__index");
+		lua_pushcfunction(l, simulation_signNewIndex);
+		lua_setfield(l, -2, "__newindex");
+		lua_setmetatable(l, -2);
+		lua_pushinteger(l, i); //table index
+		lua_insert(l, -2); //swap k and v
+		lua_settable(l, -3); //set metatable to signs[i]
+	}
+	lua_pushcfunction(l, simulation_newsign);
+	lua_setfield(l, -2, "new");
+	lua_setfield(l, -2, "signs");
 }
 
 void LuaScriptInterface::set_map(int x, int y, int width, int height, float value, int map) // A function so this won't need to be repeated many times later
