@@ -31,7 +31,7 @@ std::string CommandInterface::FormatCommand(std::string command)
 
 void CommandInterface::Log(LogType type, std::string message)
 {
-	m->Log(message);
+	m->Log(message, type == LogError || type == LogNotice);
 }
 
 int CommandInterface::GetPropertyOffset(std::string key, FormatType & format)

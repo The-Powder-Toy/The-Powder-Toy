@@ -924,13 +924,14 @@ GameSave * GameModel::GetPlaceSave()
 	return placeSave;
 }
 
-void GameModel::Log(string message)
+void GameModel::Log(string message, bool printToFile)
 {
 	consoleLog.push_front(message);
 	if(consoleLog.size()>100)
 		consoleLog.pop_back();
 	notifyLogChanged(message);
-	std::cout << message << std::endl;
+	if (printToFile)
+		std::cout << message << std::endl;
 }
 
 deque<string> GameModel::GetLog()

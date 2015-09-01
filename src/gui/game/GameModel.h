@@ -187,7 +187,7 @@ public:
 	ui::Point GetZoomWindowPosition();
 	void SetClipboard(GameSave * save);
 	void SetPlaceSave(GameSave * save);
-	void Log(string message);
+	void Log(string message, bool printToFile);
 	deque<string> GetLog();
 	GameSave * GetClipboard();
 	GameSave * GetPlaceSave();

@@ -1464,7 +1464,7 @@ void GameController::ParticleDebug(int mode, int x, int y)
 		else
 			logmessage << "Updated particles #" << debug_currentParticle << " through #" << i;
 	}
-	gameModel->Log(logmessage.str());
+	gameModel->Log(logmessage.str(), false);
 
 	sim->UpdateParticles(debug_currentParticle, i);
 	if (i < NPART-1)
