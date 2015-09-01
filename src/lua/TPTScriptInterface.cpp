@@ -560,14 +560,7 @@ AnyType TPTScriptInterface::tptS_reset(std::deque<std::string> * words)
 	}
 	else if (resetStr == "sparks")
 	{
-		for (int i = 0; i < NPART; i++)
-		{
-			if (sim->parts[i].type == PT_SPRK)
-			{
-				sim->parts[i].type = sim->parts[i].ctype;
-				sim->parts[i].life = 4;
-			}
-		}
+		c->ResetSpark();
 	}
 	else if (resetStr == "temp")
 	{
