@@ -180,6 +180,7 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 		{"unregister_keyevent", &luatpt_unregister_keypress},
 		{"input", &luatpt_input},
 		{"message_box", &luatpt_message_box},
+		{"confirm", &luatpt_confirm},
 		{"get_numOfParts", &luatpt_get_numOfParts},
 		{"start_getPartIndex", &luatpt_start_getPartIndex},
 		{"next_getPartIndex", &luatpt_next_getPartIndex},

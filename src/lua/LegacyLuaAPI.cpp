@@ -1691,6 +1691,16 @@ int luatpt_message_box(lua_State* l)
 	return 0;
 }
 
+int luatpt_confirm(lua_State *l)
+{
+	std::string title = std::string(luaL_optstring(l, 1, "Title"));
+	std::string message = std::string(luaL_optstring(l, 2, "Message"));
+	std::string buttonText = std::string(luaL_optstring(l, 3, "Confirm"));
+	bool ret = ConfirmPrompt::Blocking(title, message, buttonText);
+	lua_pushboolean(l, ret ? 1 : 0);
+	return 1;
+}
+
 int luatpt_get_numOfParts(lua_State* l)
 {
 	lua_pushinteger(l, luacon_sim->NUM_PARTS);

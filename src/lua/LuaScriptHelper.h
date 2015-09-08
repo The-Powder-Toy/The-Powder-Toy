@@ -106,6 +106,7 @@ int luatpt_register_mouseclick(lua_State* l);
 int luatpt_unregister_mouseclick(lua_State* l);
 int luatpt_input(lua_State* l);
 int luatpt_message_box(lua_State* l);
+int luatpt_confirm(lua_State* l);
 int luatpt_get_numOfParts(lua_State* l);
 int luatpt_start_getPartIndex(lua_State* l);
 int luatpt_next_getPartIndex(lua_State* l);
