@@ -204,19 +204,19 @@ void FileBrowserActivity::RenameSave(SaveFile * file)
 
 void FileBrowserActivity::loadDirectory(std::string directory, std::string search)
 {
-	for(int i = 0; i < components.size(); i++)
+	for (size_t i = 0; i < components.size(); i++)
 	{
 		RemoveComponent(components[i]);
 		itemList->RemoveChild(components[i]);
 	}
 
-	for(std::vector<ui::Component*>::iterator iter = componentsQueue.begin(), end = componentsQueue.end(); iter != end; ++iter)
+	for (std::vector<ui::Component*>::iterator iter = componentsQueue.begin(), end = componentsQueue.end(); iter != end; ++iter)
 	{
 		delete *iter;
 	}
 	componentsQueue.clear();
 
-	for(std::vector<SaveFile*>::iterator iter = files.begin(), end = files.end(); iter != end; ++iter)
+	for (std::vector<SaveFile*>::iterator iter = files.begin(), end = files.end(); iter != end; ++iter)
 	{
 		delete *iter;
 	}
@@ -239,12 +239,12 @@ void FileBrowserActivity::NotifyDone(Task * task)
 	totalFiles = files.size();
 	delete loadFiles;
 	loadFiles = NULL;
-	if(!files.size())
+	if (!files.size())
 	{
 		progressBar->Visible = false;
 		infoText->Visible = true;
 	}
-	for(int i = 0; i < components.size(); i++)
+	for (size_t i = 0; i < components.size(); i++)
 	{
 		delete components[i];
 	}
@@ -253,7 +253,7 @@ void FileBrowserActivity::NotifyDone(Task * task)
 
 void FileBrowserActivity::OnMouseDown(int x, int y, unsigned button)
 {
-	if(!(x > Position.X && y > Position.Y && y < Position.Y+Size.Y && x < Position.X+Size.X)) //Clicked outside window
+	if (!(x > Position.X && y > Position.Y && y < Position.Y+Size.Y && x < Position.X+Size.X)) //Clicked outside window
 		Exit();
 }
 
@@ -332,6 +332,5 @@ void FileBrowserActivity::OnDraw()
 
 FileBrowserActivity::~FileBrowserActivity()
 {
-	if(callback)
-		delete callback;
+	delete callback;
 }

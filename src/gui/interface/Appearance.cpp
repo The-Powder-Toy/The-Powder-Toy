@@ -4,8 +4,10 @@
 namespace ui
 {
 	Appearance::Appearance():
-		HorizontalAlign(AlignCentre),
+		texture(NULL),
+
 		VerticalAlign(AlignMiddle),
+		HorizontalAlign(AlignCentre),
 	
 		BackgroundHover(20, 20, 20),
 		BackgroundInactive(0, 0, 0),
@@ -25,10 +27,8 @@ namespace ui
 		Margin(1, 4),
 		Border(1),
 	
-		icon(NoIcon),
-
-		texture(NULL)
-	{};
+		icon(NoIcon)
+	{}
 
 	VideoBuffer * Appearance::GetTexture()
 	{
@@ -37,8 +37,7 @@ namespace ui
 
 	void Appearance::SetTexture(VideoBuffer * texture)
 	{
-		if(this->texture)
-			delete this->texture;
+		delete this->texture;
 		if(texture)
 			this->texture = new VideoBuffer(texture);
 		else
@@ -47,8 +46,7 @@ namespace ui
 
 	Appearance::~Appearance()
 	{
-		if(texture)
-			delete texture;
+		delete texture;
 	}
 
 }

@@ -21,8 +21,7 @@ public:
 	};
 	virtual void GenerateBitmap()
 	{
-		if(bitmap)
-			delete[] bitmap;
+		delete[] bitmap;
 		bitmap = new unsigned char[size.X*size.Y];
 		int rx = radius.X;
 		int ry = radius.Y;

@@ -6,6 +6,10 @@ ToolButton::ToolButton(ui::Point position, ui::Point size, std::string text_, st
 {
 	SetSelectionState(-1);
 	Appearance.BorderActive = ui::Colour(255, 0, 0);
+
+	//don't use "..." on elements that have long names
+	buttonDisplayText = ButtonText;
+	Component::TextPosition(buttonDisplayText);
 }
 
 void ToolButton::OnMouseClick(int x, int y, unsigned int button)

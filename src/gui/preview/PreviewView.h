@@ -48,6 +48,8 @@ class PreviewView: public ui::Window {
 	int votesUp;
 	int votesDown;
 	bool doOpen;
+	bool doError;
+	std::string doErrorMessage;
 	bool showAvatars;
 	bool prevPage;
 
@@ -67,6 +69,7 @@ public:
 	void NotifyCommentsChanged(PreviewModel * sender);
 	void NotifyCommentsPageChanged(PreviewModel * sender);
 	void NotifyCommentBoxEnabledChanged(PreviewModel * sender);
+	void SaveLoadingError(std::string errorMessage);
 	virtual void OnDraw();
 	virtual void DoDraw();
 	virtual void OnTick(float dt);

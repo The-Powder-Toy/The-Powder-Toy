@@ -15,6 +15,7 @@
 #include "gui/interface/ScrollPanel.h"
 #include "gui/interface/AvatarButton.h"
 #include "gui/interface/Keys.h"
+#include "gui/dialogues/ErrorMessage.h"
 
 class PreviewView::LoginAction: public ui::ButtonAction
 {
@@ -65,12 +66,14 @@ public:
 PreviewView::PreviewView():
 	ui::Window(ui::Point(-1, -1), ui::Point((XRES/2)+210, (YRES/2)+150)),
 	savePreview(NULL),
-	doOpen(false),
-	addCommentBox(NULL),
 	submitCommentButton(NULL),
-	commentBoxHeight(20),
+	addCommentBox(NULL),
+	doOpen(false),
+	doError(false),
+	doErrorMessage(""),
 	showAvatars(true),
-	prevPage(false)
+	prevPage(false),
+	commentBoxHeight(20)
 {
 	class FavAction: public ui::ButtonAction
 	{
@@ -228,7 +231,7 @@ void PreviewView::commentBoxAutoHeight()
 
 		int oldSize = addCommentBox->Size.Y;
 		addCommentBox->AutoHeight();
-		int newSize = addCommentBox->Size.Y+5;
+		int newSize = addCommentBox->Size.Y+2;
 		addCommentBox->Size.Y = oldSize;
 
 		commentBoxHeight = newSize+22;
@@ -245,7 +248,7 @@ void PreviewView::commentBoxAutoHeight()
 		commentBoxPositionX = (XRES/2)+4;
 		commentBoxPositionY = Size.Y-19;
 		commentBoxSizeX = Size.X-(XRES/2)-48;
-		commentBoxSizeY = 17;
+		commentBoxSizeY = 16;
 	}
 	commentsPanel->Size.Y = Size.Y-commentBoxHeight;
 }
@@ -254,10 +257,10 @@ void PreviewView::DoDraw()
 {
 	Window::DoDraw();
 	Graphics * g = ui::Engine::Ref().g;
-	for(int i = 0; i < commentTextComponents.size(); i++)
+	for (size_t i = 0; i < commentTextComponents.size(); i++)
 	{
 		int linePos = commentTextComponents[i]->Position.Y+commentsPanel->ViewportPosition.Y+commentTextComponents[i]->Size.Y+4;
-		if(linePos > 0 && linePos < Size.Y-commentBoxHeight)
+		if (linePos > 0 && linePos < Size.Y-commentBoxHeight)
 		g->draw_line(
 				Position.X+1+XRES/2,
 				Position.Y+linePos,
@@ -265,7 +268,7 @@ void PreviewView::DoDraw()
 				Position.Y+linePos,
 				255, 255, 255, 100);
 	}
-	if(c->GetDoOpen())
+	if (c->GetDoOpen())
 	{
 		g->fillrect(Position.X+(Size.X/2)-101, Position.Y+(Size.Y/2)-26, 202, 52, 0, 0, 0, 210);
 		g->drawrect(Position.X+(Size.X/2)-100, Position.Y+(Size.Y/2)-25, 200, 50, 255, 255, 255, 180);
@@ -365,6 +368,11 @@ void PreviewView::OnTick(float dt)
 	}
 
 	c->Update();
+	if (doError)
+	{
+		ErrorMessage::Blocking("Error loading save", doErrorMessage);
+		c->Exit();
+	}
 }
 
 void PreviewView::OnTryExit(ExitMethod method)
@@ -408,8 +416,7 @@ void PreviewView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, b
 void PreviewView::NotifySaveChanged(PreviewModel * sender)
 {
 	SaveInfo * save = sender->GetSave();
-	if(savePreview)
-		delete savePreview;
+	delete savePreview;
 	savePreview = NULL;
 	if(save)
 	{
@@ -446,7 +453,7 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 		{
 			savePreview = SaveRenderer::Ref().Render(save->GetGameSave(), false, true);
 
-			if(savePreview && savePreview->Buffer && !(savePreview->Width == XRES/2 && savePreview->Width == YRES/2))
+			if(savePreview && savePreview->Buffer && !(savePreview->Width == XRES/2 && savePreview->Height == YRES/2))
 			{
 				pixel * oldData = savePreview->Buffer;
 				float factorX = ((float)XRES/2)/((float)savePreview->Width);
@@ -529,6 +536,12 @@ void PreviewView::NotifyCommentBoxEnabledChanged(PreviewModel * sender)
 	}
 }
 
+void PreviewView::SaveLoadingError(std::string errorMessage)
+{
+	doError = true;
+	doErrorMessage = errorMessage;
+}
+
 void PreviewView::NotifyCommentsPageChanged(PreviewModel * sender)
 {
 	std::stringstream pageInfoStream;
@@ -540,7 +553,7 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 {
 	std::vector<SaveComment*> * comments = sender->GetComments();
 
-	for(int i = 0; i < commentComponents.size(); i++)
+	for (size_t i = 0; i < commentComponents.size(); i++)
 	{
 		commentsPanel->RemoveChild(commentComponents[i]);
 		delete commentComponents[i];
@@ -549,9 +562,9 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 	commentTextComponents.clear();
 	commentsPanel->InnerSize = ui::Point(0, 0);
 
-	if(comments)
+	if (comments)
 	{
-		for(int i = 0; i < commentComponents.size(); i++)
+		for (size_t i = 0; i < commentComponents.size(); i++)
 		{
 			commentsPanel->RemoveChild(commentComponents[i]);
 			delete commentComponents[i];
@@ -563,10 +576,9 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 		ui::Label * tempUsername;
 		ui::Label * tempComment;
 		ui::AvatarButton * tempAvatar;
-		for(int i = 0; i < comments->size(); i++)
+		for (size_t i = 0; i < comments->size(); i++)
 		{
-			int usernameY = currentY+5, commentY;
-			if(showAvatars)
+			if (showAvatars)
 			{
 				tempAvatar = new ui::AvatarButton(ui::Point(2, currentY+7), ui::Point(26, 26), comments->at(i)->authorName);
 				tempAvatar->SetActionCallback(new AvatarAction(this));
@@ -574,7 +586,7 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 				commentsPanel->AddChild(tempAvatar);
 			}
 
-			if(showAvatars)
+			if (showAvatars)
 				tempUsername = new ui::Label(ui::Point(31, currentY+3), ui::Point(Size.X-((XRES/2) + 13 + 26), 16), comments->at(i)->authorNameFormatted);
 			else
 				tempUsername = new ui::Label(ui::Point(5, currentY+3), ui::Point(Size.X-((XRES/2) + 13), 16), comments->at(i)->authorNameFormatted);
@@ -589,8 +601,7 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 			commentComponents.push_back(tempUsername);
 			commentsPanel->AddChild(tempUsername);
 
-			commentY = currentY+5;
-			if(showAvatars)
+			if (showAvatars)
 				tempComment = new ui::Label(ui::Point(31, currentY+5), ui::Point(Size.X-((XRES/2) + 13 + 26), -1), comments->at(i)->comment);
 			else
 				tempComment = new ui::Label(ui::Point(5, currentY+5), ui::Point(Size.X-((XRES/2) + 13), -1), comments->at(i)->comment);
@@ -612,6 +623,8 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 			commentsPanel->SetScrollPosition(currentY);
 		}
 	}
+	//else if (sender->GetCommentsLoaded())
+	//	ErrorMessage::Blocking("Error loading comments", Client::Ref().GetLastError());
 }
 
 PreviewView::~PreviewView()
@@ -626,7 +639,6 @@ PreviewView::~PreviewView()
 		RemoveComponent(submitCommentButton);
 		delete submitCommentButton;
 	}
-	if(savePreview)
-		delete savePreview;
+	delete savePreview;
 }
 

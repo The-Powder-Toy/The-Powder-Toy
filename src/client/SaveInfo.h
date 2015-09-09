@@ -16,11 +16,19 @@ public:
 	int id;
 	int date;
 	int votesUp, votesDown;
+	int vote;
 	bool Favourite;
 	int Comments;
 	int Views;
 	int Version;
 
+	std::string userName;
+
+	std::string name;
+	std::string Description;
+	bool Published;
+
+	std::list<std::string> tags;
 	GameSave * gameSave;
 
 	SaveInfo(SaveInfo & save);
@@ -30,17 +38,6 @@ public:
 	SaveInfo(int _id, int date_, int _votesUp, int _votesDown, int _vote, std::string _userName, std::string _name, std::string description_, bool published_, std::list<std::string> tags);
 
 	~SaveInfo();
-
-	std::string userName;
-	std::string name;
-
-	std::string Description;
-
-	std::list<std::string> tags;
-
-	int vote;
-
-	bool Published;
 
 	void SetName(std::string name);
 	std::string GetName();

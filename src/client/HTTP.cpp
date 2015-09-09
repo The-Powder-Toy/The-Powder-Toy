@@ -52,7 +52,7 @@
 #include "Misc.h"
 #include "HTTP.h"
 #include "MD5.h"
-#include "Misc.h"
+#include "Platform.h"
 
 #ifdef WIN
 #define PERROR SOCKET_ERROR
@@ -70,6 +70,11 @@
 #define PEINPROGRESS EINPROGRESS
 #define PEALREADY EALREADY
 #define PCLOSE close
+#endif
+
+#ifdef _MSC_VER
+#include <BaseTsd.h> //for SSIZE_T
+typedef SSIZE_T ssize_t;
 #endif
 
 char * userAgent;
@@ -552,8 +557,7 @@ int http_async_req_status(void *ctx)
 			{
 				cx->tptr = 0;
 				cx->tlen = 0;
-				if (cx->tbuf)
-					free(cx->tbuf);
+				free(cx->tbuf);
 				cx->state = HTS_RECV;
 			}
 			cx->last = now;
@@ -601,7 +605,7 @@ char *http_async_req_stop(void *ctx, int *ret, int *len)
 
 	if (cx->state != HTS_DONE)
 		while (!http_async_req_status(ctx))
-			millisleep(1);
+			Platform::Millisleep(1);
 
 	if (cx->host)
 	{
@@ -679,11 +683,9 @@ void http_async_req_close(void *ctx)
 	{
 		cx->keep = 1;
 		tmp = http_async_req_stop(ctx, NULL, NULL);
-		if (tmp)
-			free(tmp);
+		free(tmp);
 	}
-	if (cx->fdhost)
-		free(cx->fdhost);
+	free(cx->fdhost);
 	PCLOSE(cx->fd);
 	free(ctx);
 }
@@ -706,7 +708,6 @@ void http_auth_headers(void *ctx, const char *user, const char *pass, const char
 	char *tmp;
 	int i;
 	unsigned char hash[16];
-	unsigned int m;
 	struct md5_context md5;
 
 	if (user)
@@ -716,7 +717,6 @@ void http_auth_headers(void *ctx, const char *user, const char *pass, const char
 			md5_init(&md5);
 			md5_update(&md5, (unsigned char *)user, strlen(user));
 			md5_update(&md5, (unsigned char *)"-", 1);
-			m = 0;
 
 			md5_update(&md5, (unsigned char *)pass, strlen(pass));
 			md5_final(hash, &md5);
@@ -908,7 +908,7 @@ const char *http_ret_text(int ret)
 		return "Unknown Status Code";
 	}
 }
-char *http_multipart_post(const char *uri, const char *const *names, const char *const *parts, int *plens, const char *user, const char *pass, const char *session_id, int *ret, int *len)
+char *http_multipart_post(const char *uri, const char *const *names, const char *const *parts, size_t *plens, const char *user, const char *pass, const char *session_id, int *ret, int *len)
 {
 	void *ctx;
 	char *data = NULL, *tmp;
@@ -927,7 +927,7 @@ char *http_multipart_post(const char *uri, const char *const *names, const char 
 		{
 			own_plen = 1;
 			for (i=0; names[i]; i++) ;
-			plens = (int *)calloc(i, sizeof(int));
+			plens = (size_t *)calloc(i, sizeof(size_t));
 			for (i=0; names[i]; i++)
 				plens[i] = strlen(parts[i]);
 		}
@@ -938,7 +938,7 @@ retry:
 		memset(map, 0, 62*sizeof(int));
 		for (i=0; names[i]; i++)
 		{
-			for (j=0; j<plens[i]-blen; j++)
+			for (ssize_t j=0; j<(ssize_t)plens[i]-blen; j++)
 				if (!blen || !memcmp(parts[i]+j, boundary, blen))
 				{
 					ch = parts[i][j+blen];
@@ -1085,8 +1085,7 @@ retry:
 	return http_async_req_stop(ctx, ret, len);
 
 fail:
-	if (data)
-		free(data);
+	free(data);
 	if (own_plen)
 		free(plens);
 	if (ret)
@@ -1275,8 +1274,7 @@ retry:
 	return ctx;
 
 fail:
-	if (data)
-		free(data);
+	free(data);
 	if (own_plen)
 		free(plens);
 	//if (ret)

@@ -75,7 +75,7 @@ void TagsView::OnDraw()
 
 void TagsView::NotifyTagsChanged(TagsModel * sender)
 {
-	for(int i = 0; i < tags.size(); i++)
+	for (size_t i = 0; i < tags.size(); i++)
 	{
 		RemoveComponent(tags[i]);
 		delete tags[i];

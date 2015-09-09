@@ -6,9 +6,9 @@
 #include "Task.h"
 
 TaskWindow::TaskWindow(std::string title_, Task * task_, bool closeOnDone):
+	ui::Window(ui::Point(-1, -1), ui::Point(240, 60)),
 	task(task_),
 	title(title_),
-	ui::Window(ui::Point(-1, -1), ui::Point(240, 60)),
 	progress(0),
 	done(false),
 	closeOnDone(closeOnDone),

@@ -35,8 +35,8 @@ public:
 
 LocalSaveActivity::LocalSaveActivity(SaveFile save, FileSavedCallback * callback) :
 	WindowActivity(ui::Point(-1, -1), ui::Point(220, 200)),
-	thumbnail(NULL),
 	save(save),
+	thumbnail(NULL),
 	callback(callback)
 {
 	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 16), "Save to computer:");
@@ -122,7 +122,7 @@ void LocalSaveActivity::saveWrite(std::string finalFilename)
 void LocalSaveActivity::OnDraw()
 {
 	Graphics * g = ui::Engine::Ref().g;
-	g->draw_rgba_image((unsigned char*)save_to_disk_image, 0, 0, 0.7f);
+	g->draw_rgba_image(save_to_disk_image, 0, 0, 0.7f);
 	g->clearrect(Position.X-2, Position.Y-2, Size.X+3, Size.Y+3);
 	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 255, 255, 255, 255);
 
@@ -135,16 +135,13 @@ void LocalSaveActivity::OnDraw()
 
 void LocalSaveActivity::OnResponseReady(void * imagePtr, int identifier)
 {
-	if(thumbnail)
-		delete thumbnail;
+	delete thumbnail;
 	thumbnail = (VideoBuffer*)imagePtr;
 }
 
 LocalSaveActivity::~LocalSaveActivity()
 {
 	RequestBroker::Ref().DetachRequestListener(this);
-	if(thumbnail)
-		delete thumbnail;
-	if(callback)
-		delete callback;
+	delete thumbnail;
+	delete callback;
 }

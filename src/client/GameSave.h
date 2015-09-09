@@ -46,6 +46,7 @@ public:
 	bool paused;
 	int gravityMode;
 	int airMode;
+	int edgeMode;
 	
 	//Signs
 	std::vector<sign> signs;
@@ -62,7 +63,7 @@ public:
 	GameSave(std::vector<unsigned char> data);
 	~GameSave();
 	void setSize(int width, int height);
-	char * Serialise(int & dataSize);
+	char * Serialise(unsigned int & dataSize);
 	std::vector<char> Serialise();
 	void Transform(matrix2d transform, vector2d translate);
 
@@ -99,7 +100,7 @@ private:
 	void read(char * data, int dataSize);
 	void readOPS(char * data, int dataLength);
 	void readPSv(char * data, int dataLength);
-	char * serialiseOPS(int & dataSize);
+	char * serialiseOPS(unsigned int & dataSize);
 	//serialisePSv();
 };
 

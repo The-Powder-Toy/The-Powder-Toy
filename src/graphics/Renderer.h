@@ -41,6 +41,10 @@ typedef struct gcache_item gcache_item;
 class Renderer
 {
 public:
+	Simulation * sim;
+	Graphics * g;
+	gcache_item *graphicscache;
+
 	std::vector<unsigned int> render_modes;
 	unsigned int render_mode;
 	unsigned int colour_mode;
@@ -60,9 +64,6 @@ public:
 	int decorations_enable;
 	bool blackDecorations;
 	bool debugLines;
-	Simulation * sim;
-	Graphics * g;
-	gcache_item *graphicscache;
 	pixel sampleColor;
 
 	//Mouse position for debug information
@@ -98,8 +99,8 @@ public:
 	void SetSample(int x, int y);
 
 #ifdef OGLR
-	void checkShader(GLuint shader, char * shname);
-	void checkProgram(GLuint program, char * progname);
+	void checkShader(GLuint shader, const char * shname);
+	void checkProgram(GLuint program, const char * progname);
 	void loadShaders();
 	GLuint vidBuf,textTexture;
 	GLint prevFbo;

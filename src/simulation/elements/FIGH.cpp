@@ -49,9 +49,14 @@ Element_FIGH::Element_FIGH()
 //#TPT-Directive ElementHeader Element_FIGH static int update(UPDATE_FUNC_ARGS)
 int Element_FIGH::update(UPDATE_FUNC_ARGS)
 {
+	if (parts[i].tmp < 0 || parts[i].tmp >= MAX_FIGHTERS)
+	{
+		sim->kill_part(i);
+		return 1;
+	}
 	playerst* figh = &sim->fighters[(unsigned char)parts[i].tmp];
 
-	unsigned int tarx, tary;
+	int tarx, tary;
 
 	parts[i].tmp2 = 0; //0 - stay in place, 1 - seek a stick man
 
@@ -61,20 +66,20 @@ int Element_FIGH::update(UPDATE_FUNC_ARGS)
 		if (sim->player.spwn && (pow((float)sim->player.legs[2]-x, 2) + pow((float)sim->player.legs[3]-y, 2))<=
 		   (pow((float)sim->player2.legs[2]-x, 2) + pow((float)sim->player2.legs[3]-y, 2)))
 		{
-			tarx = (unsigned int)sim->player.legs[2];
-			tary = (unsigned int)sim->player.legs[3];
+			tarx = (int)sim->player.legs[2];
+			tary = (int)sim->player.legs[3];
 		}
 		else
 		{
-			tarx = (unsigned int)sim->player2.legs[2];
-			tary = (unsigned int)sim->player2.legs[3];
+			tarx = (int)sim->player2.legs[2];
+			tary = (int)sim->player2.legs[3];
 		}
 		parts[i].tmp2 = 1;
 	}
 	else if (sim->player.spwn)
 	{
-		tarx = (unsigned int)sim->player.legs[2];
-		tary = (unsigned int)sim->player.legs[3];
+		tarx = (int)sim->player.legs[2];
+		tary = (int)sim->player.legs[3];
 		parts[i].tmp2 = 1;
 	}
 

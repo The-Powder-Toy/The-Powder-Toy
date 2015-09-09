@@ -78,10 +78,10 @@ public:
 
 RenderView::RenderView():
 	ui::Window(ui::Point(0, 0), ui::Point(XRES, WINDOWH)),
+	ren(NULL),
 	toolTip(""),
 	toolTipPresence(0),
-	isToolTipFadingIn(false),
-	ren(NULL)
+	isToolTipFadingIn(false)
 {
 	ui::Button * presetButton;
 	int presetButtonOffset = 375;
@@ -295,6 +295,11 @@ void RenderView::OnMouseDown(int x, int y, unsigned button)
 		c->Exit();
 }
 
+void RenderView::OnTryExit(ExitMethod method)
+{
+	c->Exit();
+}
+
 void RenderView::NotifyRendererChanged(RenderModel * sender)
 {
 	ren = sender->GetRenderer();
@@ -302,13 +307,13 @@ void RenderView::NotifyRendererChanged(RenderModel * sender)
 
 void RenderView::NotifyRenderChanged(RenderModel * sender)
 {
-	for(int i = 0; i < renderModes.size(); i++)
+	for (size_t i = 0; i < renderModes.size(); i++)
 	{
-		if(renderModes[i]->GetActionCallback())
+		if (renderModes[i]->GetActionCallback())
 		{
 			//Compares bitmasks at the moment, this means that "Point" is always on when other options that depend on it are, this might confuse some users, TODO: get the full list and compare that?
 			RenderModeAction * action = (RenderModeAction *)(renderModes[i]->GetActionCallback());
-			if(action->renderMode  == (sender->GetRenderMode() & action->renderMode))
+			if (action->renderMode  == (sender->GetRenderMode() & action->renderMode))
 			{
 				renderModes[i]->SetChecked(true);
 			}
@@ -322,12 +327,12 @@ void RenderView::NotifyRenderChanged(RenderModel * sender)
 
 void RenderView::NotifyDisplayChanged(RenderModel * sender)
 {
-	for(int i = 0; i < displayModes.size(); i++)
+	for (size_t i = 0; i < displayModes.size(); i++)
 	{
-		if(displayModes[i]->GetActionCallback())
+		if( displayModes[i]->GetActionCallback())
 		{
 			DisplayModeAction * action = (DisplayModeAction *)(displayModes[i]->GetActionCallback());
-			if(action->displayMode  == (sender->GetDisplayMode() & action->displayMode))
+			if (action->displayMode  == (sender->GetDisplayMode() & action->displayMode))
 			{
 				displayModes[i]->SetChecked(true);
 			}
@@ -341,12 +346,12 @@ void RenderView::NotifyDisplayChanged(RenderModel * sender)
 
 void RenderView::NotifyColourChanged(RenderModel * sender)
 {
-	for(int i = 0; i < colourModes.size(); i++)
+	for (size_t i = 0; i < colourModes.size(); i++)
 	{
-		if(colourModes[i]->GetActionCallback())
+		if (colourModes[i]->GetActionCallback())
 		{
 			ColourModeAction * action = (ColourModeAction *)(colourModes[i]->GetActionCallback());
-			if(action->colourMode == sender->GetColourMode())
+			if (action->colourMode == sender->GetColourMode())
 			{
 				colourModes[i]->SetChecked(true);
 			}
@@ -410,7 +415,7 @@ void RenderView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bo
 	}
 }
 
-void RenderView::ToolTip(ui::Component * sender, ui::Point mousePosition, std::string toolTip)
+void RenderView::ToolTip(ui::Point senderPosition, std::string toolTip)
 {
 	this->toolTip = toolTip;
 	this->isToolTipFadingIn = true;

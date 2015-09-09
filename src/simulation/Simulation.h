@@ -20,7 +20,7 @@
 class Snapshot;
 class SimTool;
 class Brush;
-struct SimulationSample;
+class SimulationSample;
 struct matrix2d;
 struct vector2d;
 
@@ -53,6 +53,7 @@ public:
 	int replaceModeFlags;
 
 	char can_move[PT_NUM][PT_NUM];
+	int debug_currentParticle;
 	int parts_lastActiveIndex;
 	int pfree;
 	int NUM_PARTS;
@@ -61,10 +62,11 @@ public:
 	int ISWIRE;
 	int force_stacking_check;
 	int emp_decor;
+	int lightningRecreate;
 	//Stickman
 	playerst player;
 	playerst player2;
-	playerst fighters[256]; //255 is the maximum number of fighters
+	playerst fighters[MAX_FIGHTERS]; //Defined in Stickman.h
 	unsigned char fighcount; //Contains the number of fighters
 	bool gravWallChanged;
 	//Portals and Wifi
@@ -114,6 +116,7 @@ public:
 	int Load(int x, int y, GameSave * save);
 	GameSave * Save();
 	GameSave * Save(int x1, int y1, int x2, int y2);
+	void SaveSimOptions(GameSave * gameSave);
 	SimulationSample GetSample(int x, int y);
 
 	Snapshot * CreateSnapshot();
@@ -130,6 +133,9 @@ public:
 	int eval_move(int pt, int nx, int ny, unsigned *rr);
 	void init_can_move();
 	bool IsWallBlocking(int x, int y, int type);
+	bool IsValidElement(int type) {
+		return (type >= 0 && type < PT_NUM && elements[type].Enabled);
+	}
 	void create_cherenkov_photon(int pp);
 	void create_gain_photon(int pp);
 	void kill_part(int i);
@@ -150,8 +156,10 @@ public:
 	int parts_avg(int ci, int ni, int t);
 	void create_arc(int sx, int sy, int dx, int dy, int midpoints, int variance, int type, int flags);
 	int nearest_part(int ci, int t, int max_d);
-	void update_particles_i(int start, int inc);
-	void update_particles();
+	void UpdateParticles(int start, int end);
+	void SimulateGoL();
+	void CheckStacking();
+	void UpdateSim();
 	void rotate_area(int area_x, int area_y, int area_w, int area_h, int invert);
 	void clear_area(int area_x, int area_y, int area_w, int area_h);
 
@@ -162,6 +170,8 @@ public:
 	void ApplyDecorationPoint(int x, int y, int colR, int colG, int colB, int colA, int mode, Brush * cBrush = NULL);
 	void ApplyDecorationLine(int x1, int y1, int x2, int y2, int colR, int colG, int colB, int colA, int mode, Brush * cBrush = NULL);
 	void ApplyDecorationBox(int x1, int y1, int x2, int y2, int colR, int colG, int colB, int colA, int mode);
+	bool ColorCompare(Renderer *ren, int x, int y, int replaceR, int replaceG, int replaceB);
+	void ApplyDecorationFill(Renderer *ren, int x, int y, int colR, int colG, int colB, int colA, int replaceR, int replaceG, int replaceB);
 
 	//Drawing Tools like HEAT, AIR, and GRAV
 	int Tool(int x, int y, int tool, float strength = 1.0f);
@@ -189,14 +199,12 @@ public:
 
 	int GetParticleType(std::string type);
 
-	void *transform_save(void *odata, int *size, matrix2d transform, vector2d translate);
 	void orbitalparts_get(int block1, int block2, int resblock1[], int resblock2[]);
 	void orbitalparts_set(int *block1, int *block2, int resblock1[], int resblock2[]);
 	int get_wavelength_bin(int *wm);
 	int get_normal(int pt, int x, int y, float dx, float dy, float *nx, float *ny);
 	int get_normal_interp(int pt, float x0, float y0, float dx, float dy, float *nx, float *ny);
 	void clear_sim();
-	void UpdateParticles();
 	Simulation();
 	~Simulation();
 };

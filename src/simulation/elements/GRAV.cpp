@@ -4,7 +4,7 @@ Element_GRAV::Element_GRAV()
 {
 	Identifier = "DEFAULT_PT_GRAV";
 	Name = "GRAV";
-	Colour = PIXPACK(0xFFE0A0);
+	Colour = PIXPACK(0x202020);
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
 	Enabled = 1;

@@ -2,7 +2,6 @@
 
 #include "LuaLuna.h"
 
-#include "gui/interface/Platform.h"
 namespace ui
 {
 	class Window;

@@ -39,7 +39,7 @@ Element_SNOW::Element_SNOW()
 	HighPressureTransition = NT;
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
-	HighTemperature = 273.0f;
+	HighTemperature = 252.05f;
 	HighTemperatureTransition = ST;
 	
 	Update = &Element_SNOW::update;

@@ -19,7 +19,7 @@ public:
 
 	virtual ~Menu()
 	{
-		for(int i = 0; i < tools.size(); i++)
+		for(unsigned int i = 0; i < tools.size(); i++)
 		{
 			delete tools[i];
 		}

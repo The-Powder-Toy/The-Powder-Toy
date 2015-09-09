@@ -295,7 +295,6 @@ void blit2(pixel * vid, int currentScale)
 
 int SDLOpen()
 {
-	SDL_Surface * surface;
 #if defined(WIN) && defined(WINCONSOLE)
 	FILE * console = fopen("CON", "w" );
 #endif
@@ -321,7 +320,7 @@ int SDLOpen()
 	SDL_SysWMinfo SysInfo;
 	SDL_VERSION(&SysInfo.version);
 	if(SDL_GetWMInfo(&SysInfo) <= 0) {
-	    printf("%s : %d\n", SDL_GetError(), SysInfo.window);
+	    printf("%s : %p\n", SDL_GetError(), SysInfo.window);
 	    exit(-1);
 	}
 	HWND WindowHandle = SysInfo.window;
@@ -333,8 +332,9 @@ int SDLOpen()
 	SendMessage(WindowHandle, WM_SETICON, ICON_SMALL, (LPARAM)hIconSmall);
 	SendMessage(WindowHandle, WM_SETICON, ICON_BIG, (LPARAM)hIconBig);
 #elif defined(LIN)
-	SDL_Surface *icon = SDL_CreateRGBSurfaceFrom(app_icon, 16, 16, 32, 64, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
-	SDL_WM_SetIcon(icon, NULL);
+	SDL_Surface *icon = SDL_CreateRGBSurfaceFrom((void*)app_icon, 48, 48, 24, 144, 0x00FF0000, 0x0000FF00, 0x000000FF, 0);
+	SDL_WM_SetIcon(icon, (Uint8*)app_icon_bitmap);
+	SDL_FreeSurface(icon);
 #endif
 
 	SDL_WM_SetCaption("The Powder Toy", "Powder Toy");
@@ -574,12 +574,11 @@ void EventProcess(SDL_Event event)
 
 void EngineProcess()
 {
-	int frameStart = SDL_GetTicks();
-	float frameTime;
-	float frameTimeAvg = 0.0f, correctedFrameTimeAvg = 0.0f;
+	double frameTimeAvg = 0.0f, correctedFrameTimeAvg = 0.0f;
 	SDL_Event event;
 	while(engine->Running())
 	{
+		int frameStart = SDL_GetTicks();
 		if(engine->Broken()) { engine->UnBreak(); break; }
 		event.type = 0;
 		while (SDL_PollEvent(&event))
@@ -595,7 +594,7 @@ void EngineProcess()
 		if(scale != engine->Scale || fullscreen != engine->Fullscreen)
 		{
 			sdl_scrn = SDLSetScreen(engine->Scale, engine->Fullscreen);
-			inputScale = 1.0f/float(scale);
+			inputScale = 1.0f/(float)scale;
 		}
 
 #ifdef OGLI
@@ -607,23 +606,19 @@ void EngineProcess()
 			blit(engine->g->vid);
 #endif
 
-		frameTime = SDL_GetTicks() - frameStart;
-		frameTimeAvg = (frameTimeAvg*(1.0f-0.2f)) + (0.2f*frameTime);
-		if(ui::Engine::Ref().FpsLimit > 2.0f)
+		int frameTime = SDL_GetTicks() - frameStart;
+		frameTimeAvg = frameTimeAvg * 0.8 + frameTime * 0.2;
+		int fpsLimit = ui::Engine::Ref().FpsLimit;
+		if(fpsLimit > 2)
 		{
-			float targetFrameTime = 1000.0f/((float)ui::Engine::Ref().FpsLimit);
-			if(targetFrameTime - frameTimeAvg > 0)
-			{
-				SDL_Delay((targetFrameTime - frameTimeAvg) + 0.5f);
-				frameTime = SDL_GetTicks() - frameStart;//+= (int)(targetFrameTime - frameTimeAvg);
-			}
+			double offset = 1000.0 / fpsLimit - frameTimeAvg;
+			if(offset > 0)
+				SDL_Delay(offset + 0.5);
 		}
-		correctedFrameTimeAvg = (correctedFrameTimeAvg*(1.0f-0.05f)) + (0.05f*frameTime);
-		fps = 1000.0f/correctedFrameTimeAvg;
-		engine->SetFps(fps);
-		frameStart = SDL_GetTicks();
-
-		if(frameStart-lastTick>250)
+		int correctedFrameTime = SDL_GetTicks() - frameStart;
+		correctedFrameTimeAvg = correctedFrameTimeAvg * 0.95 + correctedFrameTime * 0.05;
+		engine->SetFps(1000.0 / correctedFrameTimeAvg);
+		if(frameStart - lastTick > 1000)
 		{
 			//Run client tick every second
 			lastTick = frameStart;
@@ -727,7 +722,7 @@ void BlueScreen(const char * detailMessage){
 
 	std::string errorTitle = "ERROR";
 	std::string errorDetails = "Details: " + std::string(detailMessage);
-	std::string errorHelp = "An unrecoverable fault has occured, please report the error by visiting the website below\n"
+	std::string errorHelp = "An unrecoverable fault has occurred, please report the error by visiting the website below\n"
 		"http://" SERVER;
 	int currentY = 0, width, height;
 	int errorWidth = 0;
@@ -839,7 +834,12 @@ int main(int argc, char * argv[])
 	if(tempScale != 1 && tempScale != 2)
 		tempScale = 1;
 
-	int sdlStatus = SDLOpen();
+	SDLOpen();
+	if (Client::Ref().IsFirstRun() && desktopWidth > WINDOWW*2+50 && desktopHeight > WINDOWH*2+50)
+	{
+		tempScale = 2;
+		Client::Ref().SetPref("Scale", 2);
+	}
 #ifdef WIN
 	LoadWindowPosition(tempScale);
 #endif
@@ -945,12 +945,13 @@ int main(int argc, char * argv[])
 			std::string ptsaveArg = arguments["ptsave"];
 			try
 			{
-			if(!ptsaveArg.find("ptsave:"))
-			{
+				if (ptsaveArg.find("ptsave:"))
+					throw std::runtime_error("Invalid save link");
+
 				std::string saveIdPart = "";
 				int saveId;
-				int hashPos = ptsaveArg.find('#');
-				if(hashPos != std::string::npos)
+				size_t hashPos = ptsaveArg.find('#');
+				if (hashPos != std::string::npos)
 				{
 					saveIdPart = ptsaveArg.substr(7, hashPos-7);
 				}
@@ -958,41 +959,42 @@ int main(int argc, char * argv[])
 				{
 					saveIdPart = ptsaveArg.substr(7);
 				}
-				if(saveIdPart.length())
-				{
-#ifdef DEBUG
-					std::cout << "Got Ptsave: id: " <<  saveIdPart << std::endl;
-#endif
-					saveId = format::StringToNumber<int>(saveIdPart);
-					if(!saveId)
-						throw std::runtime_error("Invalid Save ID");
-
-					SaveInfo * newSave = Client::Ref().GetSave(saveId, 0);
-					GameSave * newGameSave = new GameSave(Client::Ref().GetSaveData(saveId, 0));
-					newSave->SetGameSave(newGameSave);
-					if(!newSave)
-						throw std::runtime_error("Could not load save");
-
-					gameController->LoadSave(newSave);
-					delete newSave;
-				}
-				else
-				{
+				if (!saveIdPart.length())
 					throw std::runtime_error("No Save ID");
-				}
-			}
+#ifdef DEBUG
+				std::cout << "Got Ptsave: id: " <<  saveIdPart << std::endl;
+#endif
+				saveId = format::StringToNumber<int>(saveIdPart);
+				if (!saveId)
+					throw std::runtime_error("Invalid Save ID");
+
+				SaveInfo * newSave = Client::Ref().GetSave(saveId, 0);
+				if (!newSave)
+					throw std::runtime_error("Could not load save info");
+				std::vector<unsigned char> saveData = Client::Ref().GetSaveData(saveId, 0);
+				if (!saveData.size())
+					throw std::runtime_error("Could not load save\n" + Client::Ref().GetLastError());
+				GameSave * newGameSave = new GameSave(saveData);
+				newSave->SetGameSave(newGameSave);
+
+				gameController->LoadSave(newSave);
+				delete newSave;
 			}
 			catch (std::exception & e)
 			{
-				new ErrorMessage("Error", "Invalid save link");
+				new ErrorMessage("Error", e.what());
 			}
 		}
 
+		//initial mouse coords
+		int sdl_x, sdl_y;
+		SDL_GetMouseState(&sdl_x, &sdl_y);
+		engine->onMouseMove(sdl_x*inputScale, sdl_y*inputScale);
 		EngineProcess();
 		
-	#ifdef WIN
+#ifdef WIN
 		SaveWindowPosition();
-	#endif
+#endif
 
 #if !defined(DEBUG) && !defined(_DEBUG)
 	}

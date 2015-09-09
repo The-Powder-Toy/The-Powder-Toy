@@ -18,8 +18,8 @@ public:
 	void Resize(ui::Point newSize);
 
 	int ID, Datestamp;
-	ui::Point Size;
 	pixel * Data;
+	ui::Point Size;
 };
 
 #endif // THUMBNAIL_H

@@ -8,14 +8,14 @@
 
 class ConsoleView;
 class ConsoleModel {
-	int currentCommandIndex;
+	size_t currentCommandIndex;
 	std::vector<ConsoleView*> observers;
 	std::deque<ConsoleCommand> previousCommands;
 	void notifyPreviousCommandsChanged();
 	void notifyCurrentCommandChanged();
 public:
-	int GetCurrentCommandIndex();
-	void SetCurrentCommandIndex(int index);
+	size_t GetCurrentCommandIndex();
+	void SetCurrentCommandIndex(size_t index);
 	ConsoleCommand GetCurrentCommand();
 
 	std::deque<ConsoleCommand> GetPreviousCommands();

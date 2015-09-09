@@ -42,10 +42,15 @@ class LuaScriptInterface: public CommandInterface
 	bool currentCommand;
 	TPTScriptInterface * legacy;
 
+	// signs
+	static int simulation_signIndex(lua_State *l);
+	static int simulation_signNewIndex(lua_State *l);
+	static int simulation_newsign(lua_State *l);
+
 	//Simulation
 	static StructProperty * particleProperties;
 	static int particlePropertiesCount;
-	//
+
 	void initSimulationAPI();
 	static void set_map(int x, int y, int width, int height, float value, int mapType);
 	static int simulation_partNeighbours(lua_State * l);
@@ -77,6 +82,7 @@ class LuaScriptInterface: public CommandInterface
 	static int simulation_decoBox(lua_State * l);
 	static int simulation_decoColor(lua_State * l);
 	static int simulation_clearSim(lua_State * l);
+	static int simulation_clearRect(lua_State * l);
 	static int simulation_resetTemp(lua_State * l);
 	static int simulation_resetPressure(lua_State * l);
 	static int simulation_saveStamp(lua_State * l);
@@ -97,7 +103,9 @@ class LuaScriptInterface: public CommandInterface
 	static int simulation_canMove(lua_State * l);
 	static int simulation_parts(lua_State * l);
 	static int simulation_pmap(lua_State * l);
+	static int simulation_photons(lua_State * l);
 	static int simulation_neighbours(lua_State * l);
+	static int simulation_framerender(lua_State * l);
 
 	//Renderer
 	void initRendererAPI();
@@ -145,6 +153,16 @@ class LuaScriptInterface: public CommandInterface
 	static int fileSystem_move(lua_State * l);
 	static int fileSystem_copy(lua_State * l);
 
+	void initPlatformAPI();
+	static int platform_platform(lua_State * l);
+	static int platform_build(lua_State * l);
+	static int platform_releaseType(lua_State * l);
+	static int platform_exeName(lua_State * l);
+	static int platform_restart(lua_State * l);
+	static int platform_openLink(lua_State * l);
+	static int platform_clipboardCopy(lua_State * l);
+	static int platform_clipboardPaste(lua_State * l);
+
 public:
 	int tpt_index(lua_State *l);
 	int tpt_newIndex(lua_State *l);
@@ -160,6 +178,7 @@ public:
 	virtual bool OnMouseWheel(int x, int y, int d);
 	virtual bool OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
 	virtual bool OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt);
+	virtual bool OnMouseTick();
 	virtual void OnTick();
 	virtual void Init();
 	virtual void SetWindow(ui::Window * window);

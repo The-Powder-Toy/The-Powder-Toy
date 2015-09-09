@@ -28,15 +28,16 @@ void LocalBrowserModel::AddObserver(LocalBrowserView * observer)
 
 void LocalBrowserModel::notifySavesListChanged()
 {
-	for(int i = 0; i < observers.size(); i++)
+	for (size_t i = 0; i < observers.size(); i++)
 	{
 		observers[i]->NotifySavesListChanged(this);
+		observers[i]->NotifyPageChanged(this);
 	}
 }
 
 void LocalBrowserModel::notifyPageChanged()
 {
-	for(int i = 0; i < observers.size(); i++)
+	for (size_t i = 0; i < observers.size(); i++)
 	{
 		observers[i]->NotifyPageChanged(this);
 	}
@@ -49,8 +50,7 @@ SaveFile * LocalBrowserModel::GetSave()
 
 void LocalBrowserModel::SetSave(SaveFile * newStamp)
 {
-	if(stamp)
-		delete stamp;
+	delete stamp;
 	stamp = new SaveFile(*newStamp);
 }
 
@@ -79,10 +79,10 @@ void LocalBrowserModel::UpdateSavesList(int pageNumber)
 
 	stampIDs = Client::Ref().GetStamps((pageNumber-1)*20, 20);
 
-	for(int i = 0; i<stampIDs.size(); i++)
+	for (size_t i = 0; i < stampIDs.size(); i++)
 	{
 		SaveFile * tempSave = Client::Ref().GetStamp(stampIDs[i]);
-		if(tempSave)
+		if (tempSave)
 		{
 			savesList.push_back(tempSave);
 		}
@@ -102,9 +102,9 @@ int LocalBrowserModel::GetPageCount()
 
 void LocalBrowserModel::SelectSave(std::string stampID)
 {
-	for(int i = 0; i < selected.size(); i++)
+	for (size_t i = 0; i < selected.size(); i++)
 	{
-		if(selected[i]==stampID)
+		if (selected[i] == stampID)
 		{
 			return;
 		}
@@ -117,9 +117,9 @@ void LocalBrowserModel::DeselectSave(std::string stampID)
 {
 	bool changed = false;
 restart:
-	for(int i = 0; i < selected.size(); i++)
+	for (size_t i = 0; i < selected.size(); i++)
 	{
-		if(selected[i]==stampID)
+		if (selected[i] == stampID)
 		{
 			selected.erase(selected.begin()+i);
 			changed = true;
@@ -132,7 +132,7 @@ restart:
 
 void LocalBrowserModel::notifySelectedChanged()
 {
-	for(int i = 0; i < observers.size(); i++)
+	for (size_t i = 0; i < observers.size(); i++)
 	{
 		LocalBrowserView* cObserver = observers[i];
 		cObserver->NotifySelectedChanged(this);
@@ -140,7 +140,6 @@ void LocalBrowserModel::notifySelectedChanged()
 }
 
 LocalBrowserModel::~LocalBrowserModel() {
-	if(stamp)
-		delete stamp;
+	delete stamp;
 }
 

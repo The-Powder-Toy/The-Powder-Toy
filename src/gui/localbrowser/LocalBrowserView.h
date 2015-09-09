@@ -7,6 +7,7 @@
 namespace ui
 {
 	class Label;
+	class Textbox;
 	class Button;
 	class SaveButton;
 }
@@ -19,13 +20,20 @@ class LocalBrowserView: public ui::Window {
 	ui::Button * undeleteButton;
 	ui::Button * previousButton;
 	ui::Button * nextButton;
-	ui::Label * infoLabel;
+	ui::Label * pageLabel;
+	ui::Label * pageCountLabel;
+	ui::Textbox * pageTextbox;
 	ui::Button * removeSelected;
+
+	void textChanged();
+	bool changed;
+	unsigned int lastChanged;
+	int pageCount;
 public:
 	LocalBrowserView();
 	//virtual void OnDraw();
 	virtual void OnTick(float dt);
-	void AttachController(LocalBrowserController * c_) { c = c_; };
+	void AttachController(LocalBrowserController * c_) { c = c_; }
 	void NotifyPageChanged(LocalBrowserModel * sender);
 	void NotifySavesListChanged(LocalBrowserModel * sender);
 	void NotifySelectedChanged(LocalBrowserModel * sender);

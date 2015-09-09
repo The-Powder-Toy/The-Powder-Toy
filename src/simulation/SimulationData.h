@@ -55,9 +55,10 @@
 #define WL_GRAV			14
 #define WL_ALLOWENERGY	15
 #define WL_BLOCKAIR		16
+#define WL_ERASEALL		17
 #define WL_FLOODHELPER	255
 
-#define UI_WALLCOUNT 17
+#define UI_WALLCOUNT 18
 
 #define OLD_SPC_AIR 236
 #define SPC_AIR 256

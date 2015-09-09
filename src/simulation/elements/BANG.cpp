@@ -49,7 +49,7 @@ Element_BANG::Element_BANG()
 //#TPT-Directive ElementHeader Element_BANG static int update(UPDATE_FUNC_ARGS)
 int Element_BANG::update(UPDATE_FUNC_ARGS)
  {
-	int r, rx, ry, nb;
+	int r, rx, ry;
 	if(parts[i].tmp==0)
 	{
 		if(parts[i].temp>=673.0f)

@@ -45,7 +45,7 @@ public:
 	}
 	~CoordStack()
 	{
-		if (stack) free(stack);
+		free(stack);
 	}
 	void push(int x, int y)
 	{

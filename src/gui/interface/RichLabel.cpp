@@ -2,7 +2,7 @@
 #include <exception>
 
 #include "RichLabel.h"
-#include "Misc.h"
+#include "Platform.h"
 #include "gui/interface/Point.h"
 #include "gui/interface/Component.h"
 #include "graphics/Graphics.h"
@@ -190,7 +190,7 @@ void RichLabel::OnMouseClick(int x, int y, unsigned button)
 			switch((*iter).action)
 			{
 				case 'a':
-					OpenURI((*iter).actionData);
+					Platform::OpenURI((*iter).actionData);
 				break;
 			}
 		}

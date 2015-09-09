@@ -7,7 +7,7 @@ class VideoBuffer;
 
 namespace format
 {
-	static char hex[] = "0123456789ABCDEF";
+	const static char hex[] = "0123456789ABCDEF";
 
 	template <typename T> std::string NumberToString(T number)
 	{
@@ -26,10 +26,8 @@ namespace format
 	std::string URLEncode(std::string value);
 	std::string UnixtimeToDate(time_t unixtime, std::string dateFomat = "%d %b %Y");
 	std::string UnixtimeToDateMini(time_t unixtime);
-	std::string CleanString(std::string dirtyString, size_t maxVisualSize, size_t maxStringLength);
-	std::string CleanString(std::string dirtyString, size_t maxStringLength = std::string::npos);
-	std::string CleanString(char * dirtyData, size_t maxVisualSize, size_t maxStringLength);
-	std::string CleanString(char * dirtyData, size_t maxStringLength);
+	std::string CleanString(std::string dirtyString, bool ascii, bool color, bool newlines, bool numeric = false);
+	std::string CleanString(const char * dirtyData, bool ascii, bool color, bool newlines, bool numeric = false);
 	std::vector<char> VideoBufferToPNG(const VideoBuffer & vidBuf);
 	std::vector<char> VideoBufferToBMP(const VideoBuffer & vidBuf);
 	std::vector<char> VideoBufferToPPM(const VideoBuffer & vidBuf);

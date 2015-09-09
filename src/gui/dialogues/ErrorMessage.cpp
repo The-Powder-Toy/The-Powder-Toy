@@ -72,7 +72,6 @@ void ErrorMessage::OnDraw()
 }
 
 ErrorMessage::~ErrorMessage() {
-	if(callback)
-		delete callback;
+	delete callback;
 }
 

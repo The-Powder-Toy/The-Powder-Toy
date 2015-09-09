@@ -26,10 +26,10 @@ protected:
 	std::string icon;
 	std::string description;
 	QuickOption(std::string icon, std::string description, GameModel * m, Type type) :
-		icon(icon),
-		description(description),
 		m(m),
-		type(type)
+		type(type),
+		icon(icon),
+		description(description)
 	{
 
 	}
@@ -37,8 +37,8 @@ protected:
 public:
 	virtual ~QuickOption()
 	{
-		//for(std::vector<QuickOptionListener*>::iterator iter = listeners.begin(), end = listeners.end(); iter != end; ++iter)
-		//	delete *iter;
+		for(std::vector<QuickOptionListener*>::iterator iter = listeners.begin(), end = listeners.end(); iter != end; ++iter)
+			delete *iter;
 	}
 
 	std::vector<QuickOptionListener*> GetListeners()

@@ -33,9 +33,9 @@ LoginView::LoginView():
 	loginButton(new ui::Button(ui::Point(200-100, 87-17), ui::Point(100, 17), "Sign in")),
 	cancelButton(new ui::Button(ui::Point(0, 87-17), ui::Point(101, 17), "Sign Out")),
 	titleLabel(new ui::Label(ui::Point(4, 5), ui::Point(200-16, 16), "Server login")),
+	infoLabel(new ui::Label(ui::Point(8, 67), ui::Point(200-16, 16), "")),
 	usernameField(new ui::Textbox(ui::Point(8, 25), ui::Point(200-16, 17), Client::Ref().GetAuthUser().Username, "[username]")),
 	passwordField(new ui::Textbox(ui::Point(8, 46), ui::Point(200-16, 17), "", "[password]")),
-	infoLabel(new ui::Label(ui::Point(8, 67), ui::Point(200-16, 16), "")),
 	targetSize(0, 0)
 {
 	targetSize = Size;

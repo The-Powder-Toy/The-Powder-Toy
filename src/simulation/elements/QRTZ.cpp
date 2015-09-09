@@ -150,21 +150,10 @@ int Element_QRTZ::update(UPDATE_FUNC_ARGS)
 int Element_QRTZ::graphics(GRAPHICS_FUNC_ARGS)
  //QRTZ and PQRT
 {
-	int t = cpart->type, z = cpart->tmp2 - 5;//speckles!
-	/*if (cpart->temp>(ptransitions[t].thv-800.0f))//hotglow for quartz
-	{
-		float frequency = 3.1415/(2*ptransitions[t].thv-(ptransitions[t].thv-800.0f));
-		int q = (cpart->temp>ptransitions[t].thv)?ptransitions[t].thv-(ptransitions[t].thv-800.0f):cpart->temp-(ptransitions[t].thv-800.0f);
-		*colr += sin(frequency*q) * 226 + (z * 16);
-		*colg += sin(frequency*q*4.55 +3.14) * 34 + (z * 16);
-		*colb += sin(frequency*q*2.22 +3.14) * 64 + (z * 16);
-	}
-	else*/
-	{
-		*colr += z * 16;
-		*colg += z * 16;
-		*colb += z * 16;
-	}
+	int z = cpart->tmp2 - 5;//speckles!
+	*colr += z * 16;
+	*colg += z * 16;
+	*colb += z * 16;
 	return 0;
 }
 

@@ -131,6 +131,7 @@ wall_type * LoadWalls(int & wallCount)
 		{PIXPACK(0xFFEE00), PIXPACK(0xAA9900), 4, Renderer::WallIcon, "GRAVITY WALL",	"Gravity wall. Newtonian Gravity has no effect inside a box drawn with this."},
 		{PIXPACK(0xFFAA00), PIXPACK(0xAA5500), 4, Renderer::WallIcon, "ENERGY WALL",	"Allows energy particles, blocks all other particles."},
 		{PIXPACK(0xDCDCDC), PIXPACK(0x000000), 1, Renderer::WallIcon, "AIRBLOCK WALL",	"Allows all particles, but blocks air."},
+		{PIXPACK(0x808080), PIXPACK(0x000000), 0, Renderer::WallIcon, "ERASEALL",		"Erases walls, particles, and signs."},
 	};
 	wallCount = UI_WALLCOUNT;
 	wall_type * wtypesT = (wall_type*)malloc(UI_WALLCOUNT*sizeof(wall_type));

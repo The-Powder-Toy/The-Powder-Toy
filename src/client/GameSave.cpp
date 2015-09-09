@@ -18,15 +18,16 @@ GameSave::GameSave(GameSave & save) :
 waterEEnabled(save.waterEEnabled),
 legacyEnable(save.legacyEnable),
 gravityEnable(save.gravityEnable),
+aheatEnable(save.aheatEnable),
 paused(save.paused),
 gravityMode(save.gravityMode),
-aheatEnable(save.aheatEnable),
 airMode(save.airMode),
+edgeMode(save.edgeMode),
 signs(save.signs),
+palette(save.palette),
 expanded(save.expanded),
 hasOriginalData(save.hasOriginalData),
-originalData(save.originalData),
-palette(save.palette)
+originalData(save.originalData)
 {
 	blockMap = NULL;
 	blockMapPtr = NULL;
@@ -179,6 +180,7 @@ void GameSave::Expand()
 		paused = false;
 		gravityMode = 0;
 		airMode = 0;
+		edgeMode = 0;
 		expanded = true;
 		read(&originalData[0], originalData.size());
 	}
@@ -286,14 +288,14 @@ void GameSave::setSize(int newWidth, int newHeight)
 
 std::vector<char> GameSave::Serialise()
 {
-	int dataSize;
+	unsigned int dataSize;
 	char * data = Serialise(dataSize);
 	std::vector<char> dataVect(data, data+dataSize);
 	delete[] data;
 	return dataVect;
 }
 
-char * GameSave::Serialise(int & dataSize)
+char * GameSave::Serialise(unsigned int & dataSize)
 {
 	return serialiseOPS(dataSize);
 }
@@ -302,7 +304,7 @@ void GameSave::Transform(matrix2d transform, vector2d translate)
 {
 	if(Collapsed())
 		Expand();
-	int i, x, y, nx, ny, width = blockWidth*CELL, height = blockHeight*CELL, newWidth, newHeight, newBlockWidth, newBlockHeight;
+	int x, y, nx, ny, width = blockWidth*CELL, height = blockHeight*CELL, newWidth, newHeight, newBlockWidth, newBlockHeight;
 	vector2d pos, tmp, ctl, cbr, vel;
 	vector2d cornerso[4];
 	// undo any translation caused by rotation
@@ -310,7 +312,7 @@ void GameSave::Transform(matrix2d transform, vector2d translate)
 	cornerso[1] = v2d_new(width-1,0);
 	cornerso[2] = v2d_new(0,height-1);
 	cornerso[3] = v2d_new(width-1,height-1);
-	for (i=0; i<4; i++)
+	for (int i = 0; i < 4; i++)
 	{
 		tmp = m2d_multiply_v2d(transform,cornerso[i]);
 		if (i==0) ctl = cbr = tmp; // top left, bottom right corner
@@ -355,7 +357,7 @@ void GameSave::Transform(matrix2d transform, vector2d translate)
 		fanVelYNew[y] = &fanVelYPtrNew[y*newBlockWidth];
 
 	// rotate and translate signs, parts, walls
-	for (i=0; i < signs.size(); i++)
+	for (size_t i = 0; i < signs.size(); i++)
 	{
 		pos = v2d_new(signs[i].x, signs[i].y);
 		pos = v2d_add(m2d_multiply_v2d(transform,pos),translate);
@@ -369,7 +371,7 @@ void GameSave::Transform(matrix2d transform, vector2d translate)
 		signs[i].x = nx;
 		signs[i].y = ny;
 	}
-	for (i=0; i<particlesCount; i++)
+	for (int i = 0; i < particlesCount; i++)
 	{
 		if (!particles[i].type) continue;
 		pos = v2d_new(particles[i].x, particles[i].y);
@@ -435,9 +437,8 @@ void GameSave::readOPS(char * data, int dataLength)
 	unsigned char * inputData = (unsigned char*)data, *bsonData = NULL, *partsData = NULL, *partsPosData = NULL, *fanData = NULL, *wallData = NULL, *soapLinkData = NULL;
 	unsigned int inputDataLen = dataLength, bsonDataLen = 0, partsDataLen, partsPosDataLen, fanDataLen, wallDataLen, soapLinkDataLen;
 	unsigned partsCount = 0, *partsSimIndex = NULL;
-	int i, x, y, j;
 	int *freeIndices = NULL;
-	int blockX, blockY, blockW, blockH, fullX, fullY, fullW, fullH;
+	unsigned int blockX, blockY, blockW, blockH, fullX, fullY, fullW, fullH;
 	int savedVersion = inputData[4];
 	bson b;
 	bson_iterator iter;
@@ -516,7 +517,7 @@ void GameSave::readOPS(char * data, int dataLength)
 							{
 								if(strcmp(bson_iterator_key(&signiter), "text")==0 && bson_iterator_type(&signiter)==BSON_STRING)
 								{
-									tempSign.text = format::CleanString(bson_iterator_string(&signiter), 255);
+									tempSign.text = format::CleanString(bson_iterator_string(&signiter), true, true, true).substr(0, 45);
 								}
 								else if(strcmp(bson_iterator_key(&signiter), "justification")==0 && bson_iterator_type(&signiter)==BSON_INT)
 								{
@@ -681,6 +682,17 @@ void GameSave::readOPS(char * data, int dataLength)
 				fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
 			}
 		}
+		else if (!strcmp(bson_iterator_key(&iter), "edgeMode"))
+		{
+			if(bson_iterator_type(&iter)==BSON_INT)
+			{
+				edgeMode = bson_iterator_int(&iter);
+			}
+			else
+			{
+				fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
+			}
+		}
 		else if(strcmp(bson_iterator_key(&iter), "palette")==0)
 		{
 			palette.clear();
@@ -704,15 +716,15 @@ void GameSave::readOPS(char * data, int dataLength)
 	//Read wall and fan data
 	if(wallData)
 	{
-		j = 0;
-		if(blockW * blockH > wallDataLen)
+		unsigned int j = 0;
+		if (blockW * blockH > wallDataLen)
 		{
 			fprintf(stderr, "Not enough wall data\n");
 			goto fail;
 		}
-		for(x = 0; x < blockW; x++)
+		for (unsigned int x = 0; x < blockW; x++)
 		{
-			for(y = 0; y < blockH; y++)
+			for (unsigned int y = 0; y < blockH; y++)
 			{
 				if (wallData[y*blockW+x])
 					blockMap[blockY+y][blockX+x] = wallData[y*blockW+x];
@@ -760,19 +772,18 @@ void GameSave::readOPS(char * data, int dataLength)
 					fanVelY[blockY+y][blockX+x] = (fanData[j++]-127.0f)/64.0f;
 				}
 
-				if (blockMap[y][x] < 0 || blockMap[y][x] >= UI_WALLCOUNT)
+				if (blockMap[y][x] >= UI_WALLCOUNT)
 					blockMap[y][x] = 0;
 			}
 		}
 	}
 
 	//Read particle data
-	if(partsData && partsPosData)
+	if (partsData && partsPosData)
 	{
 		int newIndex = 0, fieldDescriptor, tempTemp;
 		int posCount, posTotal, partsPosDataIndex = 0;
-		int saved_x, saved_y;
-		if(fullW * fullH * 3 > partsPosDataLen)
+		if (fullW * fullH * 3 > partsPosDataLen)
 		{
 			fprintf(stderr, "Not enough particle position data\n");
 			goto fail;
@@ -781,11 +792,12 @@ void GameSave::readOPS(char * data, int dataLength)
 		partsSimIndex = (unsigned int*)calloc(NPART, sizeof(unsigned));
 		partsCount = 0;
 
-		i = 0;
+		unsigned int i = 0;
+		unsigned int saved_x, saved_y, x, y;
 		newIndex = 0;
-		for (saved_y=0; saved_y<fullH; saved_y++)
+		for (saved_y = 0; saved_y < fullH; saved_y++)
 		{
-			for (saved_x=0; saved_x<fullW; saved_x++)
+			for (saved_x = 0; saved_x < fullW; saved_x++)
 			{
 				//Read total number of particles at this position
 				posTotal = 0;
@@ -793,10 +805,10 @@ void GameSave::readOPS(char * data, int dataLength)
 				posTotal |= partsPosData[partsPosDataIndex++]<<8;
 				posTotal |= partsPosData[partsPosDataIndex++];
 				//Put the next posTotal particles at this position
-				for (posCount=0; posCount<posTotal; posCount++)
+				for (posCount = 0; posCount < posTotal; posCount++)
 				{
 					particlesCount = newIndex+1;
-					if(newIndex>=NPART)
+					if (newIndex >= NPART)
 					{
 						goto fail;
 					}
@@ -808,15 +820,13 @@ void GameSave::readOPS(char * data, int dataLength)
 					y = saved_y + fullY;
 					fieldDescriptor = partsData[i+1];
 					fieldDescriptor |= partsData[i+2] << 8;
-					if(x >= fullW || x < 0 || y >= fullH || y < 0)
+					if (x >= fullW || y >= fullH)
 					{
 						fprintf(stderr, "Out of range [%d]: %d %d, [%d, %d], [%d, %d]\n", i, x, y, (unsigned)partsData[i+1], (unsigned)partsData[i+2], (unsigned)partsData[i+3], (unsigned)partsData[i+4]);
 						goto fail;
 					}
-					if(partsData[i] >= PT_NUM)
-						partsData[i] = PT_DMND;	//Replace all invalid elements with diamond
 
-					if(newIndex < 0 || newIndex >= NPART)
+					if (newIndex < 0 || newIndex >= NPART)
 						goto fail;
 
 					//Store partsptr index+1 for this saved particle index (0 means not loaded)
@@ -973,12 +983,14 @@ void GameSave::readOPS(char * data, int dataLength)
 							int caddress = restrict_flt(restrict_flt((float)(particles[newIndex].tmp-4), 0.0f, 200.0f)*3, 0.0f, (200.0f*3)-3);
 							particles[newIndex].type = PT_EMBR;
 							particles[newIndex].tmp = 1;
-							particles[newIndex].ctype = (((unsigned char)(firw_data[caddress]))<<16) | (((unsigned char)(firw_data[caddress+1]))<<8) | ((unsigned char)(firw_data[caddress+2]));
+							particles[newIndex].ctype = (((firw_data[caddress]))<<16) | (((firw_data[caddress+1]))<<8) | ((firw_data[caddress+2]));
 						}
 						break;
 					case PT_PSTN:
 						if (savedVersion < 87 && particles[newIndex].ctype)
 							particles[newIndex].life = 1;
+						if (savedVersion < 91)
+							particles[newIndex].temp = 283.15;
 						break;
 					case PT_STKM:
 					case PT_STKM2:
@@ -1008,6 +1020,30 @@ void GameSave::readOPS(char * data, int dataLength)
 						{
 							particles[newIndex].flags |= FLAG_PHOTDECO;
 						}
+						break;
+					case PT_VINE:
+						if (savedVersion < 91)
+						{
+							particles[newIndex].tmp = 1;
+						}
+						break;
+					case PT_DLAY:
+						// correct DLAY temperature in older saves
+						// due to either the +.5f now done in DLAY (higher temps), or rounding errors in the old DLAY code (room temperature temps),
+						// the delay in all DLAY from older versions will always be one greater than it should
+						if (savedVersion < 91)
+						{
+							particles[newIndex].temp = particles[newIndex].temp - 1.0f;
+						}
+					case PT_CRAY:
+						if (savedVersion < 91)
+						{
+							if (particles[newIndex].tmp2)
+							{
+								particles[newIndex].ctype |= particles[newIndex].tmp2<<8;
+								particles[newIndex].tmp2 = 0;
+							}
+						}
 					}
 					//note: PSv was used in version 77.0 and every version before, add something in PSv too if the element is that old
 					newIndex++;
@@ -1016,13 +1052,13 @@ void GameSave::readOPS(char * data, int dataLength)
 		}
 		if (soapLinkData)
 		{
-			int soapLinkDataPos = 0;
-			for (i=0; i<partsCount; i++)
+			unsigned int soapLinkDataPos = 0;
+			for (unsigned int i = 0; i < partsCount; i++)
 			{
 				if (partsSimIndex[i] && particles[partsSimIndex[i]-1].type == PT_SOAP)
 				{
 					// Get the index of the particle forward linked from this one, if present in the save data
-					int linkedIndex = 0;
+					unsigned int linkedIndex = 0;
 					if (soapLinkDataPos+3 > soapLinkDataLen) break;
 					linkedIndex |= soapLinkData[soapLinkDataPos++]<<16;
 					linkedIndex |= soapLinkData[soapLinkDataPos++]<<8;
@@ -1045,7 +1081,7 @@ void GameSave::readOPS(char * data, int dataLength)
 
 	if(tempSigns.size())
 	{
-		for (int i = 0; i < tempSigns.size(); i++)
+		for (size_t i = 0; i < tempSigns.size(); i++)
 		{
 			if(signs.size() == MAXSIGNS)
 				break;
@@ -1056,25 +1092,21 @@ void GameSave::readOPS(char * data, int dataLength)
 fail:
 	//Clean up everything
 	bson_destroy(&b);
-	if(freeIndices)
-		free(freeIndices);
-	if(partsSimIndex)
-		free(partsSimIndex);
+	free(freeIndices);
+	free(partsSimIndex);
 	throw ParseException(ParseException::Corrupt, "Save data corrupt");
 fin:
 	bson_destroy(&b);
-	if(freeIndices)
-		free(freeIndices);
-	if(partsSimIndex)
-		free(partsSimIndex);
+	free(freeIndices);
+	free(partsSimIndex);
 }
 
 void GameSave::readPSv(char * data, int dataLength)
 {
 	unsigned char * d = NULL, * c = (unsigned char *)data;
-	int q,i,j,k,x,y,p=0,*m=NULL, ver, pty, ty, legacy_beta=0, tempGrav = 0;
+	int q,i,j,k,x,y,p=0,*m=NULL, ver, pty, ty, legacy_beta=0;
 	int bx0=0, by0=0, bw, bh, w, h, y0 = 0, x0 = 0;
-	int nf=0, new_format = 0, ttv = 0;
+	int new_format = 0, ttv = 0;
 	int *fp = (int *)malloc(NPART*sizeof(int));
 
 	std::vector<sign> tempSigns;
@@ -1167,7 +1199,7 @@ void GameSave::readPSv(char * data, int dataLength)
 	setSize(bw, bh);
 
 	int bzStatus = 0;
-	if (bzStatus = BZ2_bzBuffToBuffDecompress((char *)d, (unsigned *)&i, (char *)(c+12), dataLength-12, 0, 0))
+	if ((bzStatus = BZ2_bzBuffToBuffDecompress((char *)d, (unsigned *)&i, (char *)(c+12), dataLength-12, 0, 0)))
 	{
 		std::stringstream bzStatusStr;
 		bzStatusStr << bzStatus;
@@ -1274,7 +1306,7 @@ void GameSave::readPSv(char * data, int dataLength)
 						blockMap[y][x]=WL_ALLOWENERGY;
 				}
 
-				if (blockMap[y][x] < 0 || blockMap[y][x] >= UI_WALLCOUNT)
+				if (blockMap[y][x] >= UI_WALLCOUNT)
 					blockMap[y][x] = 0;
 			}
 
@@ -1639,12 +1671,12 @@ void GameSave::readPSv(char * data, int dataLength)
 					int caddress = restrict_flt(restrict_flt((float)(particles[i-1].tmp-4), 0.0f, 200.0f)*3, 0.0f, (200.0f*3)-3);
 					particles[i-1].type = PT_EMBR;
 					particles[i-1].tmp = 1;
-					particles[i-1].ctype = (((unsigned char)(firw_data[caddress]))<<16) | (((unsigned char)(firw_data[caddress+1]))<<8) | ((unsigned char)(firw_data[caddress+2]));
+					particles[i-1].ctype = (((firw_data[caddress]))<<16) | (((firw_data[caddress+1]))<<8) | ((firw_data[caddress+2]));
 				}
 			}
 			if (ver < 88) //fix air blowing stickmen
 				if ((particles[i-1].type == PT_STKM || particles[i-1].type == PT_STKM2 || particles[i-1].type == PT_FIGH) && particles[i-1].ctype == OLD_SPC_AIR)
-					particles[i-1].ctype == SPC_AIR;
+					particles[i-1].ctype = SPC_AIR;
 			if (ver < 89)
 			{
 				if (particles[i-1].type == PT_FILT)
@@ -1659,6 +1691,11 @@ void GameSave::readPSv(char * data, int dataLength)
 					particles[i-1].tmp = particles[i-1].ctype;
 					particles[i-1].ctype = 0;
 				}
+			}
+			if (ver < 91)
+			{
+				if (particles[i-1].type == PT_VINE)
+					particles[i-1].tmp = 1;
 			}
 		}
 	}
@@ -1685,12 +1722,12 @@ void GameSave::readPSv(char * data, int dataLength)
 			x = 254;
 		memcpy(tempSignText, d+p, x);
 		tempSignText[x] = 0;
-		tempSign.text = tempSignText;
+		tempSign.text = format::CleanString(tempSignText, true, true, true).substr(0, 45);
 		tempSigns.push_back(tempSign);
 		p += x;
 	}
 
-	for (i = 0; i < tempSigns.size(); i++)
+	for (size_t i = 0; i < tempSigns.size(); i++)
 	{
 		if(signs.size() == MAXSIGNS)
 			break;
@@ -1736,7 +1773,7 @@ void GameSave::readPSv(char * data, int dataLength)
 	}
 }
 
-char * GameSave::serialiseOPS(int & dataLength)
+char * GameSave::serialiseOPS(unsigned int & dataLength)
 {
 	//Particle *particles = sim->parts;
 	unsigned char *partsData = NULL, *partsPosData = NULL, *fanData = NULL, *wallData = NULL, *finalData = NULL, *outputData = NULL, *soapLinkData = NULL;
@@ -1890,13 +1927,13 @@ char * GameSave::serialiseOPS(int & dataLength)
 				//Store temperature as an offset of 21C(294.15K) or go into a 16byte int and store the whole thing
 				if(fabs(particles[i].temp-294.15f)<127)
 				{
-					tempTemp = (particles[i].temp-294.15f);
+					tempTemp = floor(particles[i].temp-294.15f+0.5f);
 					partsData[partsDataLen++] = tempTemp;
 				}
 				else
 				{
 					fieldDesc |= 1;
-					tempTemp = particles[i].temp;
+					tempTemp = (int)(particles[i].temp+0.5f);
 					partsData[partsDataLen++] = tempTemp;
 					partsData[partsDataLen++] = tempTemp >> 8;
 				}
@@ -1911,7 +1948,7 @@ char * GameSave::serialiseOPS(int & dataLength)
 						life = 0;
 					fieldDesc |= 1 << 1;
 					partsData[partsDataLen++] = life;
-					if(particles[i].life & 0xFF00)
+					if (life & 0xFF00)
 					{
 						fieldDesc |= 1 << 2;
 						partsData[partsDataLen++] = life >> 8;
@@ -2079,6 +2116,7 @@ char * GameSave::serialiseOPS(int & dataLength)
 	bson_append_bool(&b, "paused", paused);
 	bson_append_int(&b, "gravityMode", gravityMode);
 	bson_append_int(&b, "airMode", airMode);
+	bson_append_int(&b, "edgeMode", edgeMode);
 
 	//bson_append_int(&b, "leftSelectedElement", sl);
 	//bson_append_int(&b, "rightSelectedElement", sr);
@@ -2103,17 +2141,17 @@ char * GameSave::serialiseOPS(int & dataLength)
 		bson_append_finish_array(&b);
 	}
 	signsCount = 0;
-	for(i = 0; i < signs.size(); i++)
+	for (size_t i = 0; i < signs.size(); i++)
 	{
 		if(signs[i].text.length() && signs[i].x>=0 && signs[i].x<=fullW && signs[i].y>=0 && signs[i].y<=fullH)
 		{
 			signsCount++;
 		}
 	}
-	if(signsCount)
+	if (signsCount)
 	{
 		bson_append_start_array(&b, "signs");
-		for(i = 0; i < signs.size(); i++)
+		for (size_t i = 0; i < signs.size(); i++)
 		{
 			if(signs[i].text.length() && signs[i].x>=0 && signs[i].x<=fullW && signs[i].y>=0 && signs[i].y<=fullH)
 			{
@@ -2153,7 +2191,7 @@ char * GameSave::serialiseOPS(int & dataLength)
 	if (BZ2_bzBuffToBuffCompress((char*)(outputData+12), &outputDataLen, (char*)finalData, bson_size(&b), 9, 0, 0) != BZ_OK)
 	{
 		puts("Save Error\n");
-		free(outputData);
+		delete [] outputData;
 		dataLength = 0;
 		outputData = NULL;
 		goto fin;
@@ -2166,28 +2204,17 @@ char * GameSave::serialiseOPS(int & dataLength)
 
 fin:
 	bson_destroy(&b);
-	if(partsData)
-		free(partsData);
-	if(wallData)
-		free(wallData);
-	if(fanData)
-		free(fanData);
-	if (elementCount)
-		delete[] elementCount;
-	if (partsSaveIndex)
-		free(partsSaveIndex);
-	if (soapLinkData)
-		free(soapLinkData);
-	if (partsPosData)
-		free(partsPosData);
-	if (partsPosFirstMap)
-		free(partsPosFirstMap);
-	if (partsPosLastMap)
-		free(partsPosLastMap);
-	if (partsPosCount)
-		free(partsPosCount);
-	if (partsPosLink)
-		free(partsPosLink);
+	free(partsData);
+	free(wallData);
+	free(fanData);
+	delete[] elementCount;
+	free(partsSaveIndex);
+	free(soapLinkData);
+	free(partsPosData);
+	free(partsPosFirstMap);
+	free(partsPosLastMap);
+	free(partsPosCount);
+	free(partsPosLink);
 
 	return (char*)outputData;
 }

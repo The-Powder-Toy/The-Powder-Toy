@@ -31,16 +31,16 @@ Element_FRZW::Element_FRZW()
 	Description = "Freeze water. Hybrid liquid formed when Freeze powder melts.";
 	
 	State = ST_LIQUID;
-	Properties = TYPE_LIQUID||PROP_LIFE_DEC;
+	Properties = TYPE_LIQUID | PROP_LIFE_DEC;
 	
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
 	HighPressureTransition = NT;
-	LowTemperature = ITL;
-	LowTemperatureTransition = NT;
-	HighTemperature = 53.0f;
-	HighTemperatureTransition = PT_ICEI;
+	LowTemperature = 53.0f;
+	LowTemperatureTransition = PT_ICEI;
+	HighTemperature = ITH;
+	HighTemperatureTransition = NT;
 	
 	Update = &Element_FRZW::update;
 	

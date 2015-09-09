@@ -14,7 +14,7 @@ public:
 	int ID;
 	std::string Text;
 	bool Enabled;
-	ContextMenuItem(std::string text, int id, bool enabled) : Text(text), ID(id), Enabled(enabled) {}
+	ContextMenuItem(std::string text, int id, bool enabled) : ID(id), Text(text), Enabled(enabled) {}
 };
 
 class ContextMenu: public ui::Window, public ButtonAction {

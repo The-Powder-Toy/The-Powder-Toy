@@ -1,5 +1,6 @@
 #include <iostream>
 #include <typeinfo>
+#include <time.h>
 #include "ImageRequest.h"
 #include "graphics/Graphics.h"
 #include "client/HTTP.h"
@@ -76,8 +77,7 @@ RequestBroker::ProcessResponse ImageRequest::Process(RequestBroker & rb)
 	#ifdef DEBUG
 					std::cout << typeid(*this).name() << " Request for " << URL << " failed with status " << status << std::endl;
 	#endif	
-					if(data)
-						free(data);
+					free(data);
 
 					return RequestBroker::Failed;
 				}
@@ -114,7 +114,7 @@ RequestBroker::ProcessResponse ImageRequest::Process(RequestBroker & rb)
 	if(image)
 	{
 
-		//Create a copy, to seperate from the cache
+		//Create a copy, to separate from the cache
 		std::vector<Request *> children(Children.begin(), Children.end());
 		Children.clear();
 

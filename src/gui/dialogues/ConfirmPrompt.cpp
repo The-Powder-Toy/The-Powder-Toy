@@ -8,7 +8,6 @@ ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, ConfirmDial
 	ui::Window(ui::Point(-1, -1), ui::Point(250, 35)),
 	callback(callback_)
 {
-	int width, height;
 	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 15), title);
 	titleLabel->SetTextColour(style::Colour::WarningTitle);
 	titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
@@ -64,7 +63,6 @@ ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, std::string
 	ui::Window(ui::Point(-1, -1), ui::Point(250, 50)),
 	callback(callback_)
 {
-	int width, height;
 	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 15), title);
 	titleLabel->SetTextColour(style::Colour::WarningTitle);
 	titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
@@ -146,7 +144,6 @@ void ConfirmPrompt::OnDraw()
 }
 
 ConfirmPrompt::~ConfirmPrompt() {
-	if(callback)
-		delete callback;
+	delete callback;
 }
 

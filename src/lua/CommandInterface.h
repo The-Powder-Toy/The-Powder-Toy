@@ -15,9 +15,9 @@ protected:
 	GameController * c;
 public:
 	enum LogType { LogError, LogWarning, LogNotice };
-	enum FormatType { FormatInt, FormatString, FormatChar, FormatFloat };
+	enum FormatType { FormatInt, FormatString, FormatChar, FormatFloat, FormatElement };
 	CommandInterface(GameController * c, GameModel * m);
-	int GetPropertyOffset(std::string key_, FormatType & format);
+	int GetPropertyOffset(std::string key, FormatType & format);
 	int GetParticleType(std::string type);
 	void Log(LogType type, std::string message);
 	//void AttachGameModel(GameModel * m);
@@ -29,7 +29,8 @@ public:
 	virtual bool OnMouseWheel(int x, int y, int d) {return true;}
 	virtual bool OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt) {return true;}
 	virtual bool OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt) {return true;}
-	virtual void OnTick() {}
+	virtual bool OnMouseTick() { return true; }
+	virtual void OnTick() { }
 	virtual int Command(std::string command);
 	virtual std::string FormatCommand(std::string command);
 	std::string GetLastError();

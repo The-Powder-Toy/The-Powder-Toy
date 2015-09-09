@@ -200,7 +200,7 @@ int Element_TRON::new_tronhead(Simulation * sim, int x, int y, int i, int direct
 		sim->parts[i].life = 5;
 	}
 	//give new head our properties
-	sim->parts[np].tmp = 1 | direction<<5 | sim->parts[i].tmp&(TRON_NOGROW|TRON_NODIE|TRON_NORANDOM) | (sim->parts[i].tmp&0xF800);
+	sim->parts[np].tmp = 1 | direction<<5 | (sim->parts[i].tmp&(TRON_NOGROW|TRON_NODIE|TRON_NORANDOM)) | (sim->parts[i].tmp&0xF800);
 	if (np > i)
 		sim->parts[np].tmp |= TRON_WAIT;
 	

@@ -35,7 +35,7 @@ SaveRenderer::SaveRenderer(){
 VideoBuffer * SaveRenderer::Render(GameSave * save, bool decorations, bool fire)
 {
 	int width, height;
-	VideoBuffer * tempThumb;
+	VideoBuffer * tempThumb = NULL;
 	width = save->blockWidth;
 	height = save->blockHeight;
 	bool doCollapse = save->Collapsed();
@@ -140,8 +140,7 @@ VideoBuffer * SaveRenderer::Render(GameSave * save, bool decorations, bool fire)
 			src+=WINDOWW;
 		}
 		tempThumb = new VideoBuffer(pData, width*CELL, height*CELL);
-		if(pData)
-			free(pData);
+		free(pData);
 #endif
 	}
 	if(doCollapse)

@@ -5,6 +5,7 @@
 #include <pthread.h>
 #undef GetUserName //God dammit microsoft!
 #include "TaskListener.h"
+#include "Config.h"
 
 class TaskListener;
 class Task {

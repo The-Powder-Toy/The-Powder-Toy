@@ -13,7 +13,7 @@ Client/Server API:
 
 Interface General:
 	Try to use the "Activity" model for some simpler interfaces instead of code-heavy M-V-C
-	Move interfaces into seperate folder
+	Move interfaces into separate folder
 
 Interface Elements:
 	Vertical Scrolling for Textbox, 

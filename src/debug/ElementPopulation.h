@@ -8,7 +8,7 @@ class ElementPopulationDebug : public DebugInfo
 	Simulation * sim;
 	float maxAverage;
 public:
-	ElementPopulationDebug(Simulation * sim);
-	virtual void Draw(ui::Point position);
+	ElementPopulationDebug(unsigned int id, Simulation * sim);
+	virtual void Draw();
 	virtual ~ElementPopulationDebug();
 };

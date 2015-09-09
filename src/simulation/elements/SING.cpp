@@ -49,7 +49,7 @@ Element_SING::Element_SING()
 //#TPT-Directive ElementHeader Element_SING static int update(UPDATE_FUNC_ARGS)
 int Element_SING::update(UPDATE_FUNC_ARGS)
  {
-	int r, rx, ry, cry, crx, rad, nxi, nxj, nb, j, spawncount;
+	int r, rx, ry, cry, crx, nb, spawncount;
 	int singularity = -parts[i].life;
 	float angle, v;
 
@@ -82,11 +82,9 @@ int Element_SING::update(UPDATE_FUNC_ARGS)
 				}
 			}
 		}
-		spawncount = (parts[i].tmp>255)?255:parts[i].tmp;
-		if (spawncount>=1)
-			spawncount = spawncount/8;
-		spawncount = spawncount*spawncount*M_PI;
-		for (j=0;j<spawncount;j++)
+		spawncount = std::abs(parts[i].tmp);
+		spawncount = (spawncount>255) ? 3019 : std::pow((double)(spawncount/8), 2)*M_PI;
+		for (int j = 0;j < spawncount; j++)
 		{
 			switch(rand()%3)
 			{

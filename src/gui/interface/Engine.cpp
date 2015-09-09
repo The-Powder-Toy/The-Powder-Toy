@@ -1,11 +1,11 @@
 #include <iostream>
 #include <stack>
 #include <cstdio>
+#include <cmath>
 
 #include "Config.h"
-#include "Misc.h"
+#include "Platform.h"
 #include "gui/interface/Window.h"
-#include "gui/interface/Platform.h"
 #include "gui/interface/Engine.h"
 #include "graphics/Graphics.h"
 
@@ -13,41 +13,39 @@ using namespace ui;
 using namespace std;
 
 Engine::Engine():
+	FpsLimit(60.0f),
+	Scale(1),
+	Fullscreen(false),
+	FrameIndex(0),
+	lastBuffer(NULL),
+	prevBuffers(stack<pixel*>()),
+	windows(stack<Window*>()),
+	mousePositions(stack<Point>()),
 	state_(NULL),
-	maxWidth(0),
-	maxHeight(0),
+	windowTargetPosition(0, 0),
+	break_(false),
+	FastQuit(1),
+	lastTick(0),
 	mouseb_(0),
 	mousex_(0),
 	mousey_(0),
 	mousexp_(0),
 	mouseyp_(0),
-	FpsLimit(60.0f),
-	windows(stack<Window*>()),
-	mousePositions(stack<Point>()),
-	lastBuffer(NULL),
-	prevBuffers(stack<pixel*>()),
-	windowTargetPosition(0, 0),
-	FrameIndex(0),
-	Fullscreen(false),
-	Scale(1),
-	FastQuit(1),
-	break_(false),
-	lastTick(0)
+	maxWidth(0),
+	maxHeight(0)
 {
 }
 
 Engine::~Engine()
 {
-	if(state_ != NULL)
-		delete state_;
+	delete state_;
 	//Dispose of any Windows.
 	while(!windows.empty())
 	{
 		delete windows.top();
 		windows.pop();
 	}
-	if (lastBuffer)
-		free(lastBuffer);
+	free(lastBuffer);
 }
 
 void Engine::Begin(int width, int height)
@@ -76,7 +74,7 @@ void Engine::Exit()
 
 void Engine::ShowWindow(Window * window)
 {
-	windowOpenState = 0.0f;
+	windowOpenState = 0;
 	if(window->Position.X==-1)
 	{
 		window->Position.X = (width_-window->Size.X)/2;
@@ -181,23 +179,7 @@ void Engine::Tick()
 		state_->DoTick(dt);
 
 
-	lastTick = gettime();
-	if(windowOpenState<1.0f)
-	{
-		if(lastBuffer)
-		{
-			pixel * vid = g->vid;
-			g->vid = lastBuffer;
-			g->fillrect(0, 0, width_, height_, 0, 0, 0, 5);
-			g->vid = vid;
-
-		}
-		/*if(windowTargetPosition.Y < state_->Position.Y)
-		{
-			state_->Position.Y += windowTargetPosition.Y/20;
-		}*/
-		windowOpenState += 0.05f;//*dt;
-	}
+	lastTick = Platform::GetTime();
 
 	/*if(statequeued_ != NULL)
 	{
@@ -217,12 +199,15 @@ void Engine::Tick()
 
 void Engine::Draw()
 {
-	if(lastBuffer && !(state_->Position.X == 0 && state_->Position.Y == 0 && state_->Size.X == width_ && state_->Size.Y == height_))
+	if(lastBuffer && !(state_ && state_->Position.X == 0 && state_->Position.Y == 0 && state_->Size.X == width_ && state_->Size.Y == height_))
 	{
 		g->Acquire();
 		g->Clear();
 #ifndef OGLI
 		memcpy(g->vid, lastBuffer, (width_ * height_) * PIXELSIZE);
+		if(windowOpenState < 20)
+			windowOpenState++;
+		g->fillrect(0, 0, width_, height_, 0, 0, 0, 255-std::pow(.98, windowOpenState)*255);
 #endif
 	}
 	else

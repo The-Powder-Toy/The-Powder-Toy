@@ -49,7 +49,7 @@ Element_WIRE::Element_WIRE()
 //#TPT-Directive ElementHeader Element_WIRE static int update(UPDATE_FUNC_ARGS)
 int Element_WIRE::update(UPDATE_FUNC_ARGS)
 {
-	int s,r,rx,ry,count=0;	
+	int r,rx,ry,count=0;
 	/*
 	  0:  wire
 	  1:  spark head

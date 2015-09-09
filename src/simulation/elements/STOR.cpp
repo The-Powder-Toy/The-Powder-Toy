@@ -50,6 +50,8 @@ Element_STOR::Element_STOR()
 int Element_STOR::update(UPDATE_FUNC_ARGS)
  {
 	int r, rx, ry, np, rx1, ry1;
+	if (!sim->IsValidElement(parts[i].tmp))
+		parts[i].tmp = 0;
 	if(parts[i].life && !parts[i].tmp)
 		parts[i].life--;
 	for (rx=-2; rx<3; rx++)

@@ -7,12 +7,14 @@
 #include "RequestListener.h"
 #include "ThumbRenderRequest.h"
 #include "ImageRequest.h"
-#include "Misc.h"
+#include "Platform.h"
 #include "client/Client.h"
 #include "client/GameSave.h"
 #include "graphics/Graphics.h"
 
 //Asynchronous Thumbnail render & request processing
+
+unsigned int RequestListener::nextListenerID = 0;
 
 RequestBroker::RequestBroker()
 {
@@ -208,6 +210,8 @@ void RequestBroker::thumbnailQueueProcessTH()
 				resultStatus = r->Process(*this);
 				if(resultStatus == Duplicate || resultStatus == Failed || resultStatus == Finished)
 				{
+					if ((resultStatus == Duplicate || resultStatus == Failed) && CheckRequestListener(r->Listener))
+						r->Listener.second->OnResponseFailed(r->Identifier);
 					req = activeRequests.erase(req);
 				}
 				else
@@ -234,7 +238,7 @@ void RequestBroker::thumbnailQueueProcessTH()
 			}
 		}
 		pthread_mutex_unlock(&requestQueueMutex);
-		millisleep(1);
+		Platform::Millisleep(1);
 	}
 	pthread_mutex_lock(&runningMutex);
 	thumbnailQueueRunning = false;
@@ -265,7 +269,7 @@ bool RequestBroker::CheckRequestListener(ListenerHandle handle)
 
 ListenerHandle RequestBroker::AttachRequestListener(RequestListener * tListener)
 {
-	ListenerHandle handle = ListenerHandle(tListener->ListenerRand, tListener);
+	ListenerHandle handle = ListenerHandle(tListener->ListenerID, tListener);
 	pthread_mutex_lock(&listenersMutex);
 	validListeners.push_back(handle);
 	pthread_mutex_unlock(&listenersMutex);
@@ -282,7 +286,7 @@ void RequestBroker::DetachRequestListener(RequestListener * tListener)
 	std::vector<ListenerHandle>::iterator iter = validListeners.begin();
 	while (iter != validListeners.end())
 	{
-		if(*iter == ListenerHandle(tListener->ListenerRand, tListener))
+		if(*iter == ListenerHandle(tListener->ListenerID, tListener))
 			iter = validListeners.erase(iter);
 		else
 			++iter;
@@ -306,7 +310,7 @@ RequestBroker::Request::~Request()
 		delete (*iter);
 		iter++;
 	}
-	Children.empty();
+	Children.clear();
 }
 void RequestBroker::Request::Cleanup()
 {

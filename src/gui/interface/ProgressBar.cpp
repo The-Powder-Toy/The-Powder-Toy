@@ -5,9 +5,9 @@ using namespace ui;
 
 ProgressBar::ProgressBar(Point position, Point size, int startProgress, std::string startStatus):
 	Component(position, size),
+	progress(0),
 	intermediatePos(0.0f),
-	progressStatus(""),
-	progress(0)
+	progressStatus("")
 {
 	SetStatus(startStatus);
 	SetProgress(startProgress);

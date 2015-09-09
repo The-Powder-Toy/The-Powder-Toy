@@ -78,25 +78,43 @@ int main(int argc, char *argv[])
 	engine = &ui::Engine::Ref();
 	engine->Begin(WINDOWW, WINDOWH);
 
-	GameSave * gameSave = new GameSave(inputFile);
+	GameSave * gameSave = NULL;
+	try
+	{
+		gameSave = new GameSave(inputFile);
+	}
+	catch (ParseException e)
+	{
+		//Render the save again later or something? I don't know
+		if (e.what() == "Save from newer version")
+			throw e;
+	}
 
 	Simulation * sim = new Simulation();
 	Renderer * ren = new Renderer(ui::Engine::Ref().g, sim);
 
-	sim->Load(gameSave);
-
-
-	//Render save
-	ren->decorations_enable = true;
-	ren->blackDecorations = true;
-
-	int frame = 15;
-	while(frame)
+	if (gameSave)
 	{
-		frame--;
-		ren->render_parts();
-		ren->render_fire();
-		ren->clearScreen(1.0f);
+		sim->Load(gameSave);
+
+		//Render save
+		ren->decorations_enable = true;
+		ren->blackDecorations = true;
+
+		int frame = 15;
+		while(frame)
+		{
+			frame--;
+			ren->render_parts();
+			ren->render_fire();
+			ren->clearScreen(1.0f);
+		}
+	}
+	else
+	{
+		int w = Graphics::textwidth("Save file invalid")+16, x = (XRES-w)/2, y = (YRES-24)/2;
+		ren->drawrect(x, y, w, 24, 192, 192, 192, 255);
+		ren->drawtext(x+8, y+8, "Save file invalid", 192, 192, 240, 255);
 	}
 
 	ren->RenderBegin();

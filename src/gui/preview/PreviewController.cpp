@@ -7,12 +7,13 @@
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/login/LoginController.h"
 #include "Controller.h"
+#include "Platform.h"
 
 PreviewController::PreviewController(int saveID, int saveDate, bool instant, ControllerCallback * callback):
-	HasExited(false),
 	saveId(saveID),
 	saveDate(saveDate),
-	loginWindow(NULL)
+	loginWindow(NULL),
+	HasExited(false)
 {
 	previewModel = new PreviewModel();
 	previewView = new PreviewView();
@@ -33,10 +34,10 @@ PreviewController::PreviewController(int saveID, int saveDate, bool instant, Con
 }
 
 PreviewController::PreviewController(int saveID, bool instant, ControllerCallback * callback):
-	HasExited(false),
 	saveId(saveID),
 	saveDate(0),
-	loginWindow(NULL)
+	loginWindow(NULL),
+	HasExited(false)
 {
 	previewModel = new PreviewModel();
 	previewView = new PreviewView();
@@ -125,7 +126,7 @@ void PreviewController::Report(std::string message)
 		new ErrorMessage("Information", "Report submitted"); //TODO: InfoMessage
 	}
 	else
-		new ErrorMessage("Error", "Unable file report");
+		new ErrorMessage("Error", "Unable file report: " + Client::Ref().GetLastError());
 }
 
 void PreviewController::FavouriteSave()
@@ -150,7 +151,7 @@ void PreviewController::OpenInBrowser()
 {
 	std::stringstream uriStream;
 	uriStream << "http://" << SERVER << "/Browse/View.html?ID=" << saveId;
-	OpenURI(uriStream.str());
+	Platform::OpenURI(uriStream.str());
 }
 
 bool PreviewController::NextCommentPage()
@@ -192,7 +193,6 @@ PreviewController::~PreviewController() {
 	Client::Ref().RemoveListener(this);
 	delete previewModel;
 	delete previewView;
-	if(callback)
-		delete callback;
+	delete callback;
 }
 

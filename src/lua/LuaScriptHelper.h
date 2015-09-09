@@ -35,7 +35,6 @@ int luacon_elementread(lua_State* l);
 int luacon_elementwrite(lua_State* l);
 int luacon_transitionread(lua_State* l);
 int luacon_transitionwrite(lua_State* l);
-int luacon_particle_getproperty(const char * key, int * format);
 int luacon_transition_getproperty(const char * key, int * format);
 int luacon_element_getproperty(const char * key, int * format, unsigned int * modified_stuff);
 //int process_command_lua(pixel *vid_buf, char *console, char *console_error);
@@ -107,6 +106,7 @@ int luatpt_register_mouseclick(lua_State* l);
 int luatpt_unregister_mouseclick(lua_State* l);
 int luatpt_input(lua_State* l);
 int luatpt_message_box(lua_State* l);
+int luatpt_confirm(lua_State* l);
 int luatpt_get_numOfParts(lua_State* l);
 int luatpt_start_getPartIndex(lua_State* l);
 int luatpt_next_getPartIndex(lua_State* l);
@@ -129,8 +129,6 @@ int luatpt_getscript(lua_State* l);
 int luatpt_setwindowsize(lua_State* l);
 
 int luatpt_screenshot(lua_State* l);
-int luatpt_getclip(lua_State* l);
-int luatpt_setclip(lua_State* l);
 
 
 #endif /* LUASCRIPTHELPER_H_ */

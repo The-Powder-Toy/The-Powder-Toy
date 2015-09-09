@@ -55,6 +55,7 @@ public:
 	void SetDoOpen(bool doOpen);
 	void Update();
 	virtual void OnResponseReady(void * object, int identifier);
+	virtual void OnResponseFailed(int identifier);
 	virtual ~PreviewModel();
 };
 

@@ -3,60 +3,64 @@
 #include "Client.h"
 
 SaveInfo::SaveInfo(SaveInfo & save):
-		userName(save.userName),
-		name(save.name),
-		Description(save.Description),
-		date(save.date),
-		Published(save.Published),
-		id(save.id),
-		votesUp(save.votesUp),
-		votesDown(save.votesDown),
-		gameSave(NULL),
-		vote(save.vote),
-		Comments(save.Comments),
-		Views(save.Views),
-		Version(save.Version)
+	id(save.id),
+	date(save.date),
+	votesUp(save.votesUp),
+	votesDown(save.votesDown),
+	vote(save.vote),
+	Favourite(false),
+	Comments(save.Comments),
+	Views(save.Views),
+	Version(save.Version),
+	userName(save.userName),
+	name(save.name),
+	Description(save.Description),
+	Published(save.Published),
+	gameSave(NULL)
 {
 	std::list<std::string> tagsSorted = save.tags;
 	tagsSorted.sort();
-	tags=tagsSorted;
-	if(save.gameSave)
+	tags = tagsSorted;
+	if (save.gameSave)
 		gameSave = new GameSave(*save.gameSave);
 }
 
 SaveInfo::SaveInfo(int _id, int _date, int _votesUp, int _votesDown, std::string _userName, std::string _name):
-		id(_id),
-		votesUp(_votesUp),
-		votesDown(_votesDown),
-		userName(_userName),
-		name(_name),
-		Description(""),
-		date(_date),
-		Published(false),
-		gameSave(NULL),
-		vote(0),
-		tags(),
-		Comments(0),
-		Views(0),
-		Version(0)
+	id(_id),
+	date(_date),
+	votesUp(_votesUp),
+	votesDown(_votesDown),
+	vote(0),
+	Favourite(false),
+	Comments(0),
+	Views(0),
+	Version(0),
+	userName(_userName),
+	name(_name),
+	Description(""),
+	Published(false),
+	tags(),
+	gameSave(NULL)
 {
 
 }
 
 SaveInfo::SaveInfo(int _id, int date_, int _votesUp, int _votesDown, int _vote, std::string _userName, std::string _name, std::string description_, bool published_, std::list<std::string> tags_):
-		id(_id),
-		votesUp(_votesUp),
-		votesDown(_votesDown),
-		userName(_userName),
-		name(_name),
-		Description(description_),
-		date(date_),
-		Published(published_),
-		gameSave(NULL),
-		vote(_vote),
-		Comments(0),
-		Views(0),
-		Version(0)
+	id(_id),
+	date(date_),
+	votesUp(_votesUp),
+	votesDown(_votesDown),
+	vote(_vote),
+	Favourite(false),
+	Comments(0),
+	Views(0),
+	Version(0),
+	userName(_userName),
+	name(_name),
+	Description(description_),
+	Published(published_),
+	tags(),
+	gameSave(NULL)
 {
 	std::list<std::string> tagsSorted = tags_;
 	tagsSorted.sort();
@@ -172,7 +176,6 @@ GameSave * SaveInfo::GetGameSave()
 
 void SaveInfo::SetGameSave(GameSave * saveGame)
 {
-	if(gameSave)
-		delete gameSave;
+	delete gameSave;
 	gameSave = saveGame;
 }

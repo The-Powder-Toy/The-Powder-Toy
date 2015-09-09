@@ -5,6 +5,7 @@
 #include "Tool.h"
 #include "graphics/Graphics.h"
 
+class Renderer;
 class DecorationTool: public Tool
 {
 public:
@@ -12,6 +13,7 @@ public:
 	unsigned char Green;
 	unsigned char Blue;
 	unsigned char Alpha;
+	Renderer *ren;
 
 	VideoBuffer * GetIcon(int toolID, int width, int height)
 	{
@@ -56,12 +58,13 @@ public:
 		return newTexture;
 	}
 
-	DecorationTool(int decoMode, string name, string description, int r, int g, int b, std::string identifier):
+	DecorationTool(Renderer *ren_, int decoMode, string name, string description, int r, int g, int b, std::string identifier):
 		Tool(decoMode, name, description, r, g, b, identifier),
 		Red(0),
 		Green(0),
 		Blue(0),
-		Alpha(0)
+		Alpha(0),
+		ren(ren_)
 	{
 	}
 	virtual ~DecorationTool() {}
@@ -75,7 +78,11 @@ public:
 		sim->ApplyDecorationBox(position1.X, position1.Y, position2.X, position2.Y, Red, Green, Blue, Alpha, toolID);
 	}
 	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position) {
-
+		pixel loc = ren->vid[position.X+position.Y*WINDOWW];
+		if (toolID == DECO_CLEAR)
+			sim->ApplyDecorationFill(ren, position.X, position.Y, 0, 0, 0, 0, PIXR(loc), PIXG(loc), PIXB(loc));
+		else
+			sim->ApplyDecorationFill(ren, position.X, position.Y, Red, Green, Blue, Alpha, PIXR(loc), PIXG(loc), PIXB(loc));
 	}
 };
 

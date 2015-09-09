@@ -14,10 +14,10 @@ namespace ui {
 
 AvatarButton::AvatarButton(Point position, Point size, std::string username):
 	Component(position, size),
-	name(username),
-	actionCallback(NULL),
 	avatar(NULL),
-	tried(false)
+	name(username),
+	tried(false),
+	actionCallback(NULL)
 {
 
 }
@@ -25,10 +25,8 @@ AvatarButton::AvatarButton(Point position, Point size, std::string username):
 AvatarButton::~AvatarButton()
 {
 	RequestBroker::Ref().DetachRequestListener(this);
-	if(avatar)
-		delete avatar;
-	if(actionCallback)
-		delete actionCallback;
+	delete avatar;
+	delete actionCallback;
 }
 
 void AvatarButton::Tick(float dt)
@@ -45,8 +43,7 @@ void AvatarButton::OnResponseReady(void * imagePtr, int identifier)
 	VideoBuffer * image = (VideoBuffer*)imagePtr;
 	if(image)
 	{
-		if(avatar)
-			delete avatar;
+		delete avatar;
 		avatar = image;
 	}
 }

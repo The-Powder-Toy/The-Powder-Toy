@@ -22,8 +22,9 @@ private:
 	std::string nextQuery;
 	bool nextQueryDone;
 	bool instantOpen;
+	bool doRefresh;
 	void removeSelectedC();
-	void unpublishSelectedC();
+	void unpublishSelectedC(bool publish);
 public:
 	class OpenCallback;
 	bool HasExited;
@@ -32,8 +33,11 @@ public:
 	SearchView * GetView() { return searchView; }
 	void Exit();
 	void DoSearch(std::string query, bool now = false);
+	void DoSearch2(std::string query);
+	void Refresh();
 	void NextPage();
 	void PrevPage();
+	void SetPage(int page);
 	void ChangeSort();
 	void ShowOwn(bool show);
 	void ShowFavourite(bool show);
@@ -44,7 +48,7 @@ public:
 	void Update();
 	void ClearSelection();
 	void RemoveSelected();
-	void UnpublishSelected();
+	void UnpublishSelected(bool publish);
 	void FavouriteSelected();
 	void ReleaseLoadedSave();
 	SaveInfo * GetLoadedSave();

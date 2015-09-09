@@ -62,7 +62,7 @@ int Element_CLST::update(UPDATE_FUNC_ARGS)
 				{
 					if (!(rand()%1500))
 					{
-						sim->part_change_type(i,x,y,PT_PSTS);
+						sim->create_part(i, x, y, PT_PSTS);
 						sim->kill_part(r>>8);
 					}
 				}

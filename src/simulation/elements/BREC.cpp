@@ -49,7 +49,6 @@ Element_BREC::Element_BREC()
 //#TPT-Directive ElementHeader Element_BREC static int update(UPDATE_FUNC_ARGS)
 int Element_BREC::update(UPDATE_FUNC_ARGS)
 {
-	int np;
 	if (parts[i].life)
 	{
 		if (sim->pv[y/CELL][x/CELL]>10.0f) 
@@ -63,6 +62,22 @@ int Element_BREC::update(UPDATE_FUNC_ARGS)
 		}
 		
 	}
+	for (int rx = -1; rx <= 1; rx++)
+		for (int ry = -1; ry <= 1; ry++)
+		{
+			if (rx || ry)
+			{
+				int r = pmap[y+ry][x+rx];
+				if (!r)
+					continue;
+				if (parts[r>>8].type == PT_LAVA && parts[r>>8].ctype == PT_CLST)
+				{
+					float pres = std::max(sim->pv[y/CELL][x/CELL]*10.0f, 0.0f);
+					if (parts[r>>8].temp >= pres+sim->elements[PT_CRMC].HighTemperature+50.0f)
+						parts[r>>8].ctype = PT_CRMC;
+				}
+			}
+		}
 	return 0;
 }
 

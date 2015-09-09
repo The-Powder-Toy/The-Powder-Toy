@@ -6,7 +6,7 @@ Element_MERC::Element_MERC()
 	Name = "MERC";
 	Colour = PIXPACK(0x736B6D);
 	MenuVisible = 1;
-	MenuSection = SC_ELEC;
+	MenuSection = SC_LIQUID;
 	Enabled = 1;
 	
 	Advection = 0.4f;

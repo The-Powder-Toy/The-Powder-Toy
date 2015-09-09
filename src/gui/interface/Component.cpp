@@ -1,4 +1,3 @@
-//#include "Platform.h"
 #include <iostream>
 #include "gui/interface/Component.h"
 #include "gui/interface/Engine.h"
@@ -12,15 +11,15 @@ using namespace ui;
 Component::Component(Window* parent_state):
 	parentstate_(parent_state),
 	_parent(NULL),
-	Position(Point(0,0)),
-	Size(Point(0,0)),
-	Locked(false),
-	Visible(true),
+	drawn(false),
 	textPosition(0, 0),
 	textSize(0, 0),
 	iconPosition(0, 0),
-	drawn(false),
-	menu(NULL)
+	menu(NULL),
+	Position(Point(0,0)),
+	Size(Point(0,0)),
+	Enabled(true),
+	Visible(true)
 {
 
 }
@@ -28,15 +27,15 @@ Component::Component(Window* parent_state):
 Component::Component(Point position, Point size):
 	parentstate_(0),
 	_parent(NULL),
-	Position(position),
-	Size(size),
-	Locked(false),
-	Visible(true),
+	drawn(false),
 	textPosition(0, 0),
 	textSize(0, 0),
 	iconPosition(0, 0),
-	drawn(false),
-	menu(NULL)
+	menu(NULL),
+	Position(position),
+	Size(size),
+	Enabled(true),
+	Visible(true)
 {
 
 }
@@ -44,15 +43,15 @@ Component::Component(Point position, Point size):
 Component::Component():
 	parentstate_(NULL),
 	_parent(NULL),
-	Position(Point(0,0)),
-	Size(Point(0,0)),
-	Locked(false),
-	Visible(true),
+	drawn(false),
 	textPosition(0, 0),
 	textSize(0, 0),
 	iconPosition(0, 0),
-	drawn(false),
-	menu(NULL)
+	menu(NULL),
+	Position(Point(0,0)),
+	Size(Point(0,0)),
+	Enabled(true),
+	Visible(true)
 {
 
 }
@@ -239,6 +238,5 @@ void Component::OnMouseWheelInside(int localx, int localy, int d)
 
 Component::~Component()
 {
-	if(menu)
-		delete menu;
+	delete menu;
 }

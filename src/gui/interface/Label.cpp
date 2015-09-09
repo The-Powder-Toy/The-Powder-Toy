@@ -1,5 +1,6 @@
 #include <string>
 #include "Config.h"
+#include "Format.h"
 #include "Point.h"
 #include "Label.h"
 #include "Keys.h"
@@ -17,8 +18,7 @@ Label::Label(Point position, Point size, std::string labelText):
 	selectionXH(-1),
 	multiline(false),
 	selecting(false),
-	autoHeight(size.Y==-1?true:false),
-	caret(-1)
+	autoHeight(size.Y==-1?true:false)
 {
 	menu = new ContextMenu(this);
 	menu->AddItem(ContextMenuItem("Copy", 0, true));
@@ -70,7 +70,7 @@ void Label::AutoHeight()
 void Label::updateMultiline()
 {
 	int lines = 1;
-	if(text.length()>0)
+	if (text.length()>0)
 	{
 		char * rawText = new char[text.length()+1];
 		std::copy(text.begin(), text.end(), rawText);
@@ -82,7 +82,7 @@ void Label::updateMultiline()
 		int wordWidth = 0;
 		int lineWidth = 0;
 		char * wordStart = NULL;
-		while(c = rawText[charIndex++])
+		while ((c = rawText[charIndex++]))
 		{
 			switch(c)
 			{
@@ -99,19 +99,19 @@ void Label::updateMultiline()
 					wordWidth += Graphics::CharWidth(c);
 					break;
 			}
-			if(pc == ' ')
+			if (pc == ' ')
 			{
 				wordStart = &rawText[charIndex-2];
 			}
 			if ((c != ' ' || pc == ' ') && lineWidth + wordWidth >= Size.X-(Appearance.Margin.Left+Appearance.Margin.Right))
 			{
-				if(wordStart && *wordStart)
+				if (wordStart && *wordStart)
 				{
 					*wordStart = '\n';
 					if (lineWidth != 0)
 						lineWidth = wordWidth;
 				}
-				else if(!wordStart)
+				else if (!wordStart)
 				{
 					rawText[charIndex-1] = '\n';
 					lineWidth = 0;
@@ -122,9 +122,9 @@ void Label::updateMultiline()
 			}
 			pc = c;
 		}
-		if(autoHeight)
+		if (autoHeight)
 		{
-			Size.Y = lines*12;
+			Size.Y = lines*12+3;
 		}
 		textLines = std::string(rawText);
 		delete[] rawText;
@@ -163,9 +163,9 @@ void Label::updateMultiline()
 	}
 	else
 	{
-		if(autoHeight)
+		if (autoHeight)
 		{
-			Size.Y = 12;
+			Size.Y = 15;
 		}
 		textLines = std::string("");
 	}
@@ -209,14 +209,15 @@ void Label::OnMouseClick(int x, int y, unsigned button)
 void Label::copySelection()
 {
 	std::string currentText = text;
+	std::string copyText;
 
-	if(selectionIndex1 > selectionIndex0) {
-		ClipboardPush((char*)currentText.substr(selectionIndex0, selectionIndex1-selectionIndex0).c_str());
-	} else if(selectionIndex0 > selectionIndex1) {
-		ClipboardPush((char*)currentText.substr(selectionIndex1, selectionIndex0-selectionIndex1).c_str());
-	} else {
-		ClipboardPush((char*)currentText.c_str());
-	}
+	if (selectionIndex1 > selectionIndex0)
+		copyText = currentText.substr(selectionIndex0, selectionIndex1-selectionIndex0).c_str();
+	else if(selectionIndex0 > selectionIndex1)
+		copyText = currentText.substr(selectionIndex1, selectionIndex0-selectionIndex1).c_str();
+	else
+		copyText = currentText.c_str();
+	ClipboardPush(format::CleanString(copyText, false, true, false));
 }
 
 void Label::OnMouseUp(int x, int y, unsigned button)
@@ -281,10 +282,10 @@ void Label::updateSelection()
 {
 	std::string currentText;
 
-	if(selectionIndex0 < 0) selectionIndex0 = 0;
-	if(selectionIndex0 > text.length()) selectionIndex0 = text.length();
-	if(selectionIndex1 < 0) selectionIndex1 = 0;
-	if(selectionIndex1 > text.length()) selectionIndex1 = text.length();
+	if (selectionIndex0 < 0) selectionIndex0 = 0;
+	if (selectionIndex0 > (int)text.length()) selectionIndex0 = text.length();
+	if (selectionIndex1 < 0) selectionIndex1 = 0;
+	if (selectionIndex1 > (int)text.length()) selectionIndex1 = text.length();
 
 	if(selectionIndex0 == -1 || selectionIndex1 == -1)
 	{

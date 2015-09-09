@@ -11,11 +11,10 @@ public:
 		Brush(size_)
 	{
 		SetRadius(size_);
-	};
+	}
 	virtual void GenerateBitmap()
 	{
-		if(bitmap)
-			delete[] bitmap;
+		delete[] bitmap;
 		bitmap = new unsigned char[size.X*size.Y];
 		int rx = radius.X;
 		int ry = radius.Y;
@@ -29,7 +28,7 @@ public:
 		}
 		else
 		{
-			int yTop = ry+1, yBottom, i, j;
+			int yTop = ry+1, yBottom, i;
 			for (i = 0; i <= rx; i++)
 			{
 				while (pow(i-rx,2.0)*pow(ry,2.0) + pow(yTop-ry,2.0)*pow(rx,2.0) <= pow(rx,2.0)*pow(ry,2.0))

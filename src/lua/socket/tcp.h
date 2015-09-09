@@ -4,7 +4,7 @@
 * TCP object
 * LuaSocket toolkit
 *
-* The tcp.h module is basicly a glue that puts together modules buffer.h,
+* The tcp.h module is basically a glue that puts together modules buffer.h,
 * timeout.h socket.h and inet.h to provide the LuaSocket TCP (AF_INET,
 * SOCK_STREAM) support.
 *

@@ -87,7 +87,7 @@ std::vector<StructProperty> Element::GetProperties()
 }
 
 int Element::legacyUpdate(UPDATE_FUNC_ARGS) {
-	int r, rx, ry, rt;
+	int r, rx, ry;
 	int t = parts[i].type;
 	if (t==PT_WTRV) {
 		for (rx=-2; rx<3; rx++)

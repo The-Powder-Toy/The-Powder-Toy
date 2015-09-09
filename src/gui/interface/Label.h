@@ -19,7 +19,6 @@ namespace ui
 
 		std::string text;
 		Colour textColour;
-		int caret;
 		int selectionIndex0;
 		int selectionIndex1;
 

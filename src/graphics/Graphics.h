@@ -35,6 +35,7 @@
 #define PIXG(x) (((x)>>16)&0xFF)
 #define PIXB(x) (((x)>>24)&0xFF)
 #elif defined(PIX32OGL)
+#undef PIXELCHANNELS
 #define PIXELCHANNELS 4
 #define PIXPACK(x) (0xFF000000|((x)&0xFFFFFF))												//32bit ARGB in 32bit int: AARRGGBB
 #define PIXRGB(r,g,b) (0xFF000000|((r)<<16)|((g)<<8)|((b)))
@@ -247,7 +248,7 @@ public:
 	void draw_image(pixel *img, int x, int y, int w, int h, int a);
 	void draw_image(const VideoBuffer & vidBuf, int w, int h, int a);
 	void draw_image(VideoBuffer * vidBuf, int w, int h, int a);
-	void draw_rgba_image(unsigned char *data, int x, int y, float alpha);
+	void draw_rgba_image(const unsigned char *data, int x, int y, float alpha);
 
 	Graphics();
 	~Graphics();

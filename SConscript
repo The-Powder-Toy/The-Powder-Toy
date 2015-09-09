@@ -68,8 +68,10 @@ AddSconsOption('opengl-renderer', False, False, "Build with OpenGL renderer supp
 AddSconsOption('renderer', False, False, "Build the save renderer.")
 
 AddSconsOption('wall', False, False, "Error on all warnings.")
-AddSconsOption('no-warnings', True, False, "Disable all compiler warnings (default).")
+AddSconsOption('no-warnings', False, False, "Disable all compiler warnings.")
 AddSconsOption('nolua', False, False, "Disable Lua.")
+AddSconsOption('luajit', False, False, "Enable LuaJIT")
+AddSconsOption('lua52', False, False, "Compile using lua 5.2")
 AddSconsOption('nofft', False, False, "Disable FFT.")
 AddSconsOption("output", False, True, "Executable output name.")
 
@@ -92,7 +94,9 @@ if msvc and platform != "Windows":
 	FatalError("Error: --msvc only works on windows")
 
 #Create SCons Environment
-if platform == "Windows" and not GetOption('msvc'):
+if GetOption('msvc'):
+	env = Environment(tools = ['default'], ENV = {'PATH' : os.environ['PATH'], 'TMP' : os.environ['TMP']}, TARGET_ARCH = 'x86')
+elif platform == "Windows" and not GetOption('msvc'):
 	env = Environment(tools = ['mingw'], ENV = {'PATH' : os.environ['PATH']})
 else:
 	env = Environment(tools = ['default'], ENV = {'PATH' : os.environ['PATH']})
@@ -102,31 +106,33 @@ if not tool and compilePlatform == "Linux" and compilePlatform != platform:
 	if platform == "Darwin":
 		crossList = ["i686-apple-darwin9", "i686-apple-darwin10"]
 	elif not GetOption('64bit'):
-		crossList = ["mingw32", "i386-mingw32msvc", "i486-mingw32msvc", "i586-mingw32msvc", "i686-mingw32msvc"]
+		crossList = ["mingw32", "i686-w64-mingw32", "i386-mingw32msvc", "i486-mingw32msvc", "i586-mingw32msvc", "i686-mingw32msvc"]
 	else:
-		crossList = ["x86_64-w64-mingw32", "i686-w64-mingw32", "amd64-mingw32msvc"]
+		crossList = ["x86_64-w64-mingw32", "amd64-mingw32msvc"]
 	for i in crossList:
+		#found a cross compiler, set tool here, which will update everything in env later
 		if WhereIs("{0}-g++".format(i)):
-			env['ENV']['PATH'] = "/usr/{0}/bin:{1}".format(i, os.environ['PATH'])
 			tool = i+"-"
 			break
 	if not tool:
 		print("Could not automatically find cross compiler, use --tool to specify manually")
 
 #set tool prefix
-#more things may to be set (http://clam-project.org/clam/trunk/CLAM/scons/sconstools/crossmingw.py), but this works for us
+#more things may need to be set (http://clam-project.org/clam/trunk/CLAM/scons/sconstools/crossmingw.py), but this works for us
 if tool:
 	env['CC'] = tool+env['CC']
 	env['CXX'] = tool+env['CXX']
 	if platform == "Windows":
 		env['RC'] = tool+env['RC']
 	env['STRIP'] = tool+'strip'
+	if os.path.isdir("/usr/{0}/bin".format(tool[:-1])):
+		env['ENV']['PATH'] = "/usr/{0}/bin:{1}".format(tool[:-1], os.environ['PATH'])
 
 #copy environment variables because scons doesn't do this by default
 for var in ["CC","CXX","LD","LIBPATH"]:
 	if var in os.environ:
 		env[var] = os.environ[var]
-		print "copying enviroment variable {0}={1!r}".format(var,os.environ[var])
+		print "copying environment variable {0}={1!r}".format(var,os.environ[var])
 # variables containing several space separated things
 for var in ["CFLAGS","CCFLAGS","CXXFLAGS","LINKFLAGS","CPPDEFINES","CPPPATH"]:
 	if var in os.environ:
@@ -134,7 +140,7 @@ for var in ["CFLAGS","CCFLAGS","CXXFLAGS","LINKFLAGS","CPPDEFINES","CPPPATH"]:
 			env[var] += SCons.Util.CLVar(os.environ[var])
 		else:
 			env[var] = SCons.Util.CLVar(os.environ[var])
-		print "copying enviroment variable {0}={1!r}".format(var,os.environ[var])
+		print "copying environment variable {0}={1!r}".format(var,os.environ[var])
 
 #Used for intro text / executable name, actual bit flags are only set if the --64bit/--32bit command line args are given
 def add32bitflags(env):
@@ -168,6 +174,7 @@ if GetOption("msvc"):
 		env.Append(LIBPATH=['StaticLibs/'])
 	else:
 		env.Append(LIBPATH=['Libraries/'])
+	env.Append(CPPPATH=['includes/'])
 
 #Check 32/64 bit
 def CheckBit(context):
@@ -175,13 +182,13 @@ def CheckBit(context):
 	program = """#include <stdlib.h>
 	#include <stdio.h>
 	int main() {
-	    printf("%d", (int)sizeof(size_t));
-	    return 0;
+		printf("%d", (int)sizeof(size_t));
+		return 0;
 	}
 	"""
 	ret = context.TryCompile(program, '.c')
 	if ret == 0:
-	    return False
+		return False
 	ret = context.TryRun(program, '.c')
 	if ret[1] == '':
 		return False
@@ -249,28 +256,50 @@ def findLibs(env, conf):
 	if not GetOption('nolua') and not GetOption('renderer'):
 		#Look for Lua
 		luaver = "lua5.1"
-		if not conf.CheckLib(['lua5.1', 'lua-5.1', 'lua51', 'lua']):
-			if conf.CheckLib(['lua5.2', 'lua-5.2', 'lua52']):
-				env.Append(CPPDEFINES=["LUA_COMPAT_ALL"])
-				luaver = "lua5.2"
-			elif platform != "Darwin" or not conf.CheckFramework("Lua"):
-				FatalError("lua5.1 development library not found or not installed")
+		if GetOption('luajit'):
+			if not conf.CheckLib(['luajit-5.1', 'luajit5.1', 'luajit', 'libluajit']):
+				FatalError("luajit development library not found or not installed")
+			env.Append(CPPDEFINES=["LUAJIT"])
+			luaver = "luajit"
+		elif GetOption('lua52'):
+			if not conf.CheckLib(['lua5.2', 'lua-5.2', 'lua52', 'lua']):
+				FatalError("lua5.2 development library not found or not installed")
+			env.Append(CPPDEFINES=["LUA_COMPAT_ALL"])
+			luaver = "lua5.2"
+		else:
+			if not conf.CheckLib(['lua5.1', 'lua-5.1', 'lua51', 'lua']):
+				if platform != "Darwin" or not conf.CheckFramework("Lua"):
+					FatalError("lua5.1 development library not found or not installed")
+		foundpkg = False
 		if platform == "Linux":
 			try:
 				env.ParseConfig("pkg-config --cflags {0}".format(luaver))
 				env.ParseConfig("pkg-config --libs {0}".format(luaver))
+				env.Append(CPPDEFINES=["LUA_R_INCL"])
+				foundpkg = True
 			except:
 				pass
-
-		#Look for lua.h
-		if not conf.CheckCHeader('lua.h'):
-			if conf.CheckCHeader('lua5.1/lua.h'):
-				env.Append(CPPDEFINES=["LUA_INC"])
+		if not foundpkg:
+			#Look for lua.h
+			foundheader = False
+			if GetOption('luajit'):
+				foundheader = conf.CheckCHeader('luajit-2.0/lua.h')
+			elif GetOption('lua52'):
+				foundheader = conf.CheckCHeader('lua5.2/lua.h')
 			else:
-				FatalError("lua.h not found")
+				foundheader = conf.CheckCHeader('lua5.1/lua.h')
+			if not foundheader:
+				if conf.CheckCHeader('lua.h'):
+					env.Append(CPPDEFINES=["LUA_R_INCL"])
+				else:
+					FatalError("lua.h not found")
+
+		#needed for static lua compiles (in some cases)
+		if platform == "Linux":
+			conf.CheckLib('dl')
 
 	#Look for fftw
-	if not GetOption('nofft') and not conf.CheckLib(['fftw3f', 'fftw3f-3', 'libfftw3f-3']):
+	if not GetOption('nofft') and not conf.CheckLib(['fftw3f', 'fftw3f-3', 'libfftw3f-3', 'libfftw3f']):
 			FatalError("fftw3f development library not found or not installed")
 
 	#Look for bz2
@@ -282,7 +311,7 @@ def findLibs(env, conf):
 		FatalError("bzip2 headers not found")
 
 	#Look for libz
-	if not conf.CheckLib('z'):
+	if not conf.CheckLib(['z', 'zlib']):
 		FatalError("libz not found or not installed")
 
 	#Look for pthreads
@@ -342,14 +371,14 @@ elif not GetOption('help'):
 	conf.AddTest('CheckBit', CheckBit)
 	if not conf.CheckCC() or not conf.CheckCXX():
 		FatalError("compiler not correctly configured")
-	if platform == compilePlatform and isX86 and not GetOption('32bit') and not GetOption('64bit'):
+	if platform == compilePlatform and isX86 and not GetOption('32bit') and not GetOption('64bit') and not GetOption('msvc'):
 		conf.CheckBit()
 	findLibs(env, conf)
 	env = conf.Finish()
 
 if not msvc:
 	if platform == "Windows":
-		env.Append(CCFLAGS=['-std=gnu++98'])
+		env.Append(CXXFLAGS=['-std=gnu++98'])
 	else:
 		env.Append(CXXFLAGS=['-std=c++98'])
 	env.Append(CXXFLAGS=['-Wno-invalid-offsetof'])
@@ -381,7 +410,8 @@ if isX86:
 if not GetOption('no-sse'):
 	if GetOption('sse'):
 		if msvc:
-			env.Append(CCFLAGS=['/arch:SSE'])
+			if not GetOption('sse2'):
+				env.Append(CCFLAGS=['/arch:SSE'])
 		else:
 			env.Append(CCFLAGS=['-msse'])
 		env.Append(CPPDEFINES=['X86_SSE'])
@@ -425,8 +455,8 @@ elif GetOption('release'):
 
 if GetOption('static'):
 	if not msvc:
-		env.Append(CCFLAGS=['-static-libgcc'])
-		env.Append(LINKFLAGS=['-static-libgcc'])
+		env.Append(CCFLAGS=['-static-libgcc', '-static-libstdc++'])
+		env.Append(LINKFLAGS=['-static-libgcc', '-static-libstdc++'])
 	if platform == "Windows":
 		env.Append(CPPDEFINES=['PTW32_STATIC_LIB'])
 		if not msvc:

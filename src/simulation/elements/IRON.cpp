@@ -49,7 +49,9 @@ Element_IRON::Element_IRON()
 //#TPT-Directive ElementHeader Element_IRON static int update(UPDATE_FUNC_ARGS)
 int Element_IRON::update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry, rt;
+	int r, rx, ry;
+	if (parts[i].life)
+		return 0;
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
@@ -58,19 +60,19 @@ int Element_IRON::update(UPDATE_FUNC_ARGS)
 				switch (r&0xFF)
 				{
 				case PT_SALT:
-					if (!(parts[i].life) && !(rand()%47))
+					if (!(rand()%47))
 						goto succ;
 					break;
 				case PT_SLTW:
-					if (!(parts[i].life) && !(rand()%67))
+					if (!(rand()%67))
 						goto succ;
 					break;
 				case PT_WATR:
-					if (!(parts[i].life) && !(rand()%1200))
+					if (!(rand()%1200))
 						goto succ;
 					break;
 				case PT_O2:
-					if (!(parts[i].life) && !(rand()%250))
+					if (!(rand()%250))
 						goto succ;
 					break;
 				case PT_LO2:

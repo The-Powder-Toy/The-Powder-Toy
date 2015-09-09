@@ -395,6 +395,7 @@ void writeUserPreferences(const char * prefData)
     [prefDataNSString release];
 }
 
+//doesn't work on OS X 10.5 or below
 char * readClipboard()
 {
     NSPasteboard *clipboard = [NSPasteboard generalPasteboard];
@@ -416,6 +417,7 @@ char * readClipboard()
     return clipboardDataCopy;
 }
 
+//doesn't work on OS X 10.5 or below
 void writeClipboard(const char * clipboardData)
 {
     NSPasteboard *clipboard = [NSPasteboard generalPasteboard];

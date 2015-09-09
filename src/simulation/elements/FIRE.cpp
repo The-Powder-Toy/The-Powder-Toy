@@ -17,7 +17,7 @@ Element_FIRE::Element_FIRE()
 	Gravity = -0.1f;
 	Diffusion = 0.00f;
 	HotAir = 0.001f  * CFDS;
-	Falldown = 1;
+	Falldown = 0;
 	
 	Flammable = 0;
 	Explosive = 0;
@@ -92,8 +92,6 @@ int Element_FIRE::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if (sim->bmap[(y+ry)/CELL][(x+rx)/CELL] && sim->bmap[(y+ry)/CELL][(x+rx)/CELL]!=WL_STREAM)
-					continue;
 				rt = r&0xFF;
 				
 				//THRM burning
@@ -146,7 +144,7 @@ int Element_FIRE::update(UPDATE_FUNC_ARGS)
 						sim->pv[y/CELL][x/CELL] += 0.25f * CFDS;
 				}
 			}
-	if (sim->legacy_enable)
+	if (sim->legacy_enable && t!=PT_SPRK) // SPRK has no legacy reactions
 		updateLegacy(UPDATE_FUNC_SUBCALL_ARGS);
 	return 0;
 }
@@ -167,12 +165,16 @@ int Element_FIRE::updateLegacy(UPDATE_FUNC_ARGS) {
 
 				lpv = (int)sim->pv[(y+ry)/CELL][(x+rx)/CELL];
 				if (lpv < 1) lpv = 1;
-				if (t!=PT_SPRK && sim->elements[rt].Meltable  && ((rt!=PT_RBDM && rt!=PT_LRBD) || t!=PT_SPRK) && ((t!=PT_FIRE&&t!=PT_PLSM) || (rt!=PT_METL && rt!=PT_IRON && rt!=PT_ETRD && rt!=PT_PSCN && rt!=PT_NSCN && rt!=PT_NTCT && rt!=PT_PTCT && rt!=PT_BMTL && rt!=PT_BRMT && rt!=PT_SALT && rt!=PT_INWR)) &&sim->elements[rt].Meltable*lpv>(rand()%1000))
+				if (sim->elements[rt].Meltable  && ((rt!=PT_RBDM && rt!=PT_LRBD) || t!=PT_SPRK) && ((t!=PT_FIRE&&t!=PT_PLSM) || (rt!=PT_METL && rt!=PT_IRON && rt!=PT_ETRD && rt!=PT_PSCN && rt!=PT_NSCN && rt!=PT_NTCT && rt!=PT_PTCT && rt!=PT_BMTL && rt!=PT_BRMT && rt!=PT_SALT && rt!=PT_INWR)) &&sim->elements[rt].Meltable*lpv>(rand()%1000))
 				{
 					if (t!=PT_LAVA || parts[i].life>0)
 					{
-						parts[r>>8].ctype = (rt==PT_BRMT)?PT_BMTL:(r&0xFF);
-						parts[r>>8].ctype = (parts[r>>8].ctype==PT_SAND)?PT_GLAS:parts[r>>8].ctype;
+						if (rt==PT_BRMT)
+							parts[r>>8].ctype = PT_BMTL;
+						else if (rt==PT_SAND)
+							parts[r>>8].ctype = PT_GLAS;
+						else
+							parts[r>>8].ctype = rt;
 						sim->part_change_type(r>>8,x+rx,y+ry,PT_LAVA);
 						parts[r>>8].life = rand()%120+240;
 					}
@@ -184,7 +186,7 @@ int Element_FIRE::updateLegacy(UPDATE_FUNC_ARGS) {
 						return 1;
 					}
 				}
-				if (t!=PT_SPRK && (rt==PT_ICEI || rt==PT_SNOW))
+				if (rt==PT_ICEI || rt==PT_SNOW)
 				{
 					parts[r>>8].type = PT_WATR;
 					if (t==PT_FIRE)
@@ -198,7 +200,7 @@ int Element_FIRE::updateLegacy(UPDATE_FUNC_ARGS) {
 						sim->part_change_type(i,x,y,PT_STNE);
 					}
 				}
-				if (t!=PT_SPRK && (rt==PT_WATR || rt==PT_DSTW || rt==PT_SLTW))
+				if (rt==PT_WATR || rt==PT_DSTW || rt==PT_SLTW)
 				{
 					sim->kill_part(r>>8);
 					if (t==PT_FIRE)

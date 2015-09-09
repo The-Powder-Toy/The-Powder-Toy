@@ -18,15 +18,15 @@ SaveButton::SaveButton(Point position, Point size, SaveInfo * save):
 	file(NULL),
 	save(save),
 	thumbnail(NULL),
-	isMouseInside(false),
-	isButtonDown(false),
-	actionCallback(NULL),
-	selectable(false),
-	selected(false),
 	waitingForThumb(false),
 	isMouseInsideAuthor(false),
 	isMouseInsideHistory(false),
-	showVotes(false)
+	showVotes(false),
+	isButtonDown(false),
+	isMouseInside(false),
+	selected(false),
+	selectable(false),
+	actionCallback(NULL)
 {
 	if(save)
 	{
@@ -42,7 +42,7 @@ SaveButton::SaveButton(Point position, Point size, SaveInfo * save):
 
 		votes = format::NumberToString<int>(save->GetVotesUp()-save->GetVotesDown());
 		icon += 0xBB;
-		for (int j = 1; j < votes.length(); j++)
+		for (size_t j = 1; j < votes.length(); j++)
 			icon += 0xBC;
 		icon += 0xB9;
 		icon += 0xBA;
@@ -88,19 +88,19 @@ SaveButton::SaveButton(Point position, Point size, SaveInfo * save):
 
 SaveButton::SaveButton(Point position, Point size, SaveFile * file):
 	Component(position, size),
-	save(NULL),
 	file(file),
+	save(NULL),
 	thumbnail(NULL),
-	isMouseInside(false),
-	isButtonDown(false),
-	actionCallback(NULL),
-	selectable(false),
-	selected(false),
 	wantsDraw(false),
 	waitingForThumb(false),
 	isMouseInsideAuthor(false),
 	isMouseInsideHistory(false),
-	showVotes(false)
+	showVotes(false),
+	isButtonDown(false),
+	isMouseInside(false),
+	selected(false),
+	selectable(false),
+	actionCallback(NULL)
 {
 	if(file)
 	{
@@ -118,14 +118,10 @@ SaveButton::~SaveButton()
 {
 	RequestBroker::Ref().DetachRequestListener(this);
 
-	if(thumbnail)
-		delete thumbnail;
-	if(actionCallback)
-		delete actionCallback;
-	if(save)
-		delete save;
-	if(file)
-		delete file;
+	delete thumbnail;
+	delete actionCallback;
+	delete save;
+	delete file;
 }
 
 void SaveButton::OnResponseReady(void * imagePtr, int identifier)
@@ -133,8 +129,7 @@ void SaveButton::OnResponseReady(void * imagePtr, int identifier)
 	VideoBuffer * image = (VideoBuffer*)imagePtr;
 	if(image)
 	{
-		if(thumbnail)
-			delete thumbnail;
+		delete thumbnail;
 		thumbnail = image;
 		waitingForThumb = false;
 	}
@@ -190,6 +185,8 @@ void SaveButton::Draw(const Point& screenPos)
 		else
 			g->draw_image(thumbnail, screenPos.X+(Size.X-thumbBoxSize.X)/2, screenPos.Y+(Size.Y-21-thumbBoxSize.Y)/2, 255);
 	}
+	else if (file && !file->GetGameSave())
+		g->drawtext(screenPos.X+(Size.X-Graphics::textwidth("Error loading save"))/2, screenPos.Y+(Size.Y-28)/2, "Error loading save", 180, 180, 180, 255);
 	if(save)
 	{
 		if(save->id)
@@ -253,14 +250,14 @@ void SaveButton::Draw(const Point& screenPos)
 			g->drawtext(screenPos.X, screenPos.Y-2, "\xCE", 212, 151, 81, 255);
 		}
 	}
-	if(file)
+	else if (file)
 	{
-		if(isMouseInside)
+		if (isMouseInside)
 			g->drawrect(screenPos.X+(Size.X-thumbBoxSize.X)/2, screenPos.Y+(Size.Y-21-thumbBoxSize.Y)/2, thumbBoxSize.X, thumbBoxSize.Y, 210, 230, 255, 255);
 		else
 			g->drawrect(screenPos.X+(Size.X-thumbBoxSize.X)/2, screenPos.Y+(Size.Y-21-thumbBoxSize.Y)/2, thumbBoxSize.X, thumbBoxSize.Y, 180, 180, 180, 255);
 
-		if(isMouseInside)
+		if (isMouseInside)
 		{
 			g->drawtext(screenPos.X+(Size.X-Graphics::textwidth((char *)name.c_str()))/2, screenPos.Y+Size.Y - 21, name, 255, 255, 255, 255);
 		}

@@ -55,7 +55,7 @@ void ConsoleView::DoKeyPress(int key, Uint16 character, bool shift, bool ctrl, b
 
 void ConsoleView::NotifyPreviousCommandsChanged(ConsoleModel * sender)
 {
-	for(int i = 0; i < commandList.size(); i++)
+	for (size_t i = 0; i < commandList.size(); i++)
 	{
 		RemoveComponent(commandList[i]);
 		delete commandList[i];

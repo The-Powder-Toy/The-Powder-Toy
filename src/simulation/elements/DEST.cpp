@@ -49,14 +49,10 @@ Element_DEST::Element_DEST()
 //#TPT-Directive ElementHeader Element_DEST static int update(UPDATE_FUNC_ARGS)
 int Element_DEST::update(UPDATE_FUNC_ARGS)
  {
-	int r,rx,ry,topv;
-	rx=rand()%5-2;
-	ry=rand()%5-2;
-	if (!BOUNDS_CHECK)
-		return 1;
-
-	r = pmap[y+ry][x+rx];
-	if (!r || (r&0xFF)==PT_DEST || (r&0xFF)==PT_DMND || (r&0xFF)==PT_BCLN  || (r&0xFF)==PT_CLNE  || (r&0xFF)==PT_PCLN  || (r&0xFF)==PT_PBCN)
+	int rx = rand()%5-2;
+	int ry = rand()%5-2;
+	int r = pmap[y+ry][x+rx];
+	if (!r || !BOUNDS_CHECK || (r&0xFF)==PT_DEST || (r&0xFF)==PT_DMND || (r&0xFF)==PT_BCLN  || (r&0xFF)==PT_CLNE  || (r&0xFF)==PT_PCLN  || (r&0xFF)==PT_PBCN)
 		return 0;
 
 	if (parts[i].life<=0 || parts[i].life>37)

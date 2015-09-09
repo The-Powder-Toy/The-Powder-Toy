@@ -21,7 +21,7 @@ class Textbox : public Label
 	friend class TextboxAction;
 public:
 	bool ReadOnly;
-	enum ValidInput { All, Numeric, Number };
+	enum ValidInput { All, Multiline, Numeric, Number }; // Numeric doesn't delete trailing 0's
 	Textbox(Point position, Point size, std::string textboxText = "", std::string textboxPlaceholder = "");
 	virtual ~Textbox();
 
@@ -59,7 +59,7 @@ public:
 protected:
 	ValidInput inputType;
 	size_t limit;
-	int repeatTime;
+	unsigned long repeatTime;
 	int keyDown;
 	Uint16 characterDown;
 	bool mouseDown;
@@ -74,36 +74,6 @@ protected:
 	virtual void pasteIntoSelection();
 };
 
-/*class Textbox : public Component
-{
-	friend class TextboxAction;
-protected:
-	std::string text;
-	std::string displayText;
-	int cursor, cursorPosition;
-	TextboxAction *actionCallback;
-	bool masked;
-	bool border;
-public:
-	Textbox(Point position, Point size, std::string textboxText);
-	virtual ~Textbox();
-
-	virtual void SetText(std::string text);
-	virtual void SetDisplayText(std::string text);
-	std::string GetText();
-	void SetActionCallback(TextboxAction * action) { actionCallback = action; }
-	virtual void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
-
-	void SetHidden(bool hidden) { masked = hidden; }
-	bool GetHidden() { return masked; }
-
-	void SetBorder(bool border) {this->border = border;}
-	
-	void TextPosition();
-
-	virtual void Draw(const Point& screenPos);
-};
-}*/
 }
 
 

@@ -190,22 +190,22 @@ int Element_NEUT::graphics(GRAPHICS_FUNC_ARGS)
 //#TPT-Directive ElementHeader Element_NEUT static int DeutExplosion(Simulation * sim, int n, int x, int y, float temp, int t)
 int Element_NEUT::DeutExplosion(Simulation * sim, int n, int x, int y, float temp, int t)//testing a new deut create part
 {
-	int i, c;
+	int i;
 	n = (n/50);
-	if (n<1) {
+	if (n < 1)
 		n = 1;
-	}
-	if (n>340) {
+	else if (n > 340)
 		n = 340;
-	}
 	
-	for (c=0; c<n; c++) {
+	for (int c = 0; c < n; c++)
+	{
 		i = sim->create_part(-3, x, y, t);
-		if (i > -1)
+		if (i >= 0)
 			sim->parts[i].temp = temp;
-		
-		sim->pv[y/CELL][x/CELL] += 6.0f * CFDS;
+		else if (sim->pfree < 0)
+			break;
 	}
+	sim->pv[y/CELL][x/CELL] += (6.0f * CFDS)*n;
 	return 0;
 }
 

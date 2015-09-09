@@ -56,11 +56,11 @@ bool InBounds(int x, int y)
 int Element_DRAY::update(UPDATE_FUNC_ARGS)
 {
 	int ctype = parts[i].ctype&0xFF, ctypeExtra = parts[i].ctype>>8, copyLength = parts[i].tmp, copySpaces = parts[i].tmp2;
-	if (copySpaces <= 0)
-		copySpaces = 0;
-	if (copyLength <= 0)
-		copyLength = 0;
-	else
+	if (copySpaces < 0)
+		copySpaces = parts[i].tmp2 = 0;
+	if (copyLength < 0)
+		copyLength = parts[i].tmp = 0;
+	else if (copyLength > 0)
 		copySpaces++; //strange hack
 	if (!parts[i].life) // only fire when life is 0, but nothing sets the life right now
 	{

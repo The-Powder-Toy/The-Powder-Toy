@@ -20,7 +20,7 @@
 #ifndef HTTP_H
 #define HTTP_H
 
-static char hexChars[] = "0123456789abcdef";
+static const char hexChars[] = "0123456789abcdef";
 
 void http_init(char *proxy);
 void http_done(void);
@@ -38,7 +38,7 @@ void http_async_get_length(void *ctx, int *total, int *done);
 char *http_async_req_stop(void *ctx, int *ret, int *len);
 void http_async_req_close(void *ctx);
 
-char *http_multipart_post(const char *uri, const char *const *names, const char *const *parts, int *plens, const char *user, const char *pass, const char * session_id, int *ret, int *len);
+char *http_multipart_post(const char *uri, const char *const *names, const char *const *parts, size_t *plens, const char *user, const char *pass, const char * session_id, int *ret, int *len);
 void *http_multipart_post_async(const char *uri, const char *const *names, const char *const *parts, int *plens, const char *user, const char *pass, const char *session_id);
 
 const char *http_ret_text(int ret);

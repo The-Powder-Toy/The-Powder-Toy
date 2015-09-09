@@ -6,7 +6,7 @@
 //
 // Feb. 1996: Creation, losely based on a heavily bugfixed version of Schumacher's resampler in Graphics Gems 3.
 // Oct. 2000: Ported to C++, tweaks.
-// May 2001: Continous to discrete mapping, box filter tweaks.
+// May 2001: Continuous to discrete mapping, box filter tweaks.
 // March 9, 2002: Kaiser filter grabbed from Jonathan Blow's GD magazine mipmap sample code.
 // Sept. 8, 2002: Comments cleaned up a bit.
 // Dec. 31, 2008: v2.2: Bit more cleanup, released as public domain.
@@ -41,7 +41,9 @@ static inline int resampler_range_check(int v, int h) { (void)h; resampler_asser
 
 #define RESAMPLER_DEBUG 0
 
+#ifndef M_PI
 #define M_PI 3.14159265358979323846
+#endif
 
 // Float to int cast with truncation.
 static inline int cast_to_int(Resample_Real i)

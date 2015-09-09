@@ -2,7 +2,6 @@
 
 #include <stack>
 #include "Singleton.h"
-#include "Platform.h"
 #include "graphics/Graphics.h"
 #include "Window.h"
 
@@ -87,7 +86,7 @@ namespace ui
 		//Window* statequeued_;
 		Window* state_;
 		Point windowTargetPosition;
-		float windowOpenState;
+		int windowOpenState;
 
 		bool running_;
 		bool break_;

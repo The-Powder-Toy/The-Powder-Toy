@@ -46,7 +46,7 @@ Element_LIFE::Element_LIFE()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 	
-	Update = NULL;//&Element_LIFE::update;
+	Update = NULL;
 	Graphics = &Element_LIFE::graphics;
 
 	if(!Element_GOL_colourInit)
@@ -61,14 +61,6 @@ Element_LIFE::Element_LIFE()
 		}
 		free(golMenuT);
 	}
-}
-
-//#TPT-Directive ElementHeader Element_LIFE static int update(UPDATE_FUNC_ARGS)
-int Element_LIFE::update(UPDATE_FUNC_ARGS)
-{
-	if (parts[i].tmp <= 0 && parts[i].tmp > NGOL)
-		sim->kill_part(i);
-	return 0;
 }
 
 //#TPT-Directive ElementHeader Element_LIFE static int graphics(GRAPHICS_FUNC_ARGS)

@@ -1,6 +1,5 @@
 #pragma once
 #include <vector>
-//#include "Platform.h"
 
 #include "gui/interface/Point.h"
 #include "gui/interface/Window.h"
