@@ -1635,7 +1635,7 @@ int LuaScriptInterface::simulation_saveStamp(lua_State * l)
 int LuaScriptInterface::simulation_loadStamp(lua_State * l)
 {
 	int i = -1, x, y;
-	SaveFile * tempfile;
+	SaveFile * tempfile = NULL;
 	x = luaL_optint(l,2,0);
 	y = luaL_optint(l,3,0);
 	if (lua_isstring(l, 1)) //Load from 10 char name, or full filename
