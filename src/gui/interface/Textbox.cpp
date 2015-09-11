@@ -146,8 +146,11 @@ void Textbox::cutSelection()
 	}
 	else
 	{
+		if (!backingText.length())
+			return;
 		ClipboardPush(format::CleanString(backingText, false, true, false));
 		backingText.clear();
+		cursor = 0;
 	}
 	ClearSelection();
 
