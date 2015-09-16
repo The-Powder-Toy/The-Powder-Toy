@@ -2255,7 +2255,10 @@ void GameView::OnDraw()
 				sampleInfo << ", Life: " << sample.particle.life;
 				sampleInfo << ", Tmp: " << sample.particle.tmp;
 				sampleInfo << ", Pressure: " << std::fixed << sample.AirPressure;
-				sampleInfo << ", Air: " << std::fixed << sample.AirTemperature -273.15f << " C";
+
+				if (c->GetModel()->GetAHeatEnable()) {
+					sampleInfo << ", Air: " << std::fixed << sample.AirTemperature -273.15f << " C";
+				}
 			}
 			else
 			{
@@ -2279,7 +2282,7 @@ void GameView::OnDraw()
 		else if (sample.isMouseInSim)
 		{
 			sampleInfo << "Empty, Pressure: " << std::fixed << sample.AirPressure;
-			if (showDebug) {
+			if (showDebug && c->GetModel()->GetAHeatEnable()) {
 				sampleInfo << ", Air: " << std::fixed << sample.AirTemperature -273.15f << " C";
 			}
 		}
