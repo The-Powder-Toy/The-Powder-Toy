@@ -61,9 +61,9 @@ LuaWindow::LuaWindow(lua_State * l) :
 	int sizeY = luaL_optinteger(l, 4, 10);
 
 	// We should replace this with errors
-	if (posX < 1)
+	if (posX < 1 && posX != -1)
 		posX = 1;
-	if (posY < 1)
+	if (posY < 1 && posY != -1)
 		posY = 1;
 	if (sizeX < 10)
 		sizeX = 10;
