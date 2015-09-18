@@ -15,8 +15,6 @@ class Tool;
 
 //Because lua only has bindings for C, we're going to have to go outside "outside" the LuaScriptInterface, this means we can only have one instance :(
 
-#define LOCAL_LUA_DIR "Lua"
-
 #define LUACON_MDOWN 1
 #define LUACON_MUP 2
 #define LUACON_MPRESS 3

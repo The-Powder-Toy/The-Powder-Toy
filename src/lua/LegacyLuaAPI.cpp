@@ -1865,92 +1865,70 @@ int luatpt_setfpscap(lua_State* l)
 
 int luatpt_getscript(lua_State* l)
 {
-	char *filedata = NULL, *fileuri = NULL, *filename = NULL, *luacommand = NULL;
-	const char *lastError = NULL;
-	std::string fileauthor = "", fileid = "";
-	int len, ret,run_script;
-	FILE * outputfile;
+	int scriptID = luaL_checkinteger(l, 1);
+	const char *filename = luaL_checkstring(l, 2);
+	int runScript = luaL_optint(l, 3, 0);
+	int confirmPrompt = luaL_optint(l, 4, 1);
 
-	fileauthor = std::string(luaL_optstring(l, 1, ""));
-	fileid = std::string(luaL_optstring(l, 2, ""));
-	run_script = luaL_optint(l, 3, 0);
-	if(!fileauthor.length() || !fileid.length())
+	std::stringstream url;
+	url << "http://starcatcher.us/scripts/main.lua?get=" << scriptID;
+	if (confirmPrompt && !ConfirmPrompt::Blocking("Do you want to install script?", url.str(), "Install"))
+		return 0;
+
+	int ret, len;
+	char *scriptData = http_simple_get(url.str().c_str(), &ret, &len);
+	if (len <= 0 || !filename)
 	{
-		lastError = "Script Author or ID not given";
-		goto fin;
+		free(scriptData);
+		return luaL_error(l, "Server did not return data");
 	}
-	if(!ConfirmPrompt::Blocking("Do you want to install script?", fileid, "Install"))
-		goto fin;
-
-	fileuri = new char[strlen(SCRIPTSERVER)+fileauthor.length()+fileid.length()+44];
-	sprintf(fileuri, "http://" SCRIPTSERVER "/GetScript.api?Author=%s&Filename=%s", fileauthor.c_str(), fileid.c_str());
-
-	//filedata = http_auth_get(fileuri, svf_user_id, NULL, svf_session_id, &ret, &len);
-	filedata = http_auth_get(fileuri, NULL, NULL, NULL, &ret, &len);
-
-	if(len <= 0 || !filedata)
+	if (ret != 200)
 	{
-		lastError = "Server did not return data.";
-		goto fin;
-	}
-	if(ret != 200)
-	{
-		lastError = http_ret_text(ret);
-		goto fin;
+		free(scriptData);
+		return luaL_error(l, http_ret_text(ret));
 	}
 
-	filename = new char[fileauthor.length()+fileid.length()+strlen(PATH_SEP)+strlen(LOCAL_LUA_DIR)+6];
-	sprintf(filename, LOCAL_LUA_DIR PATH_SEP "%s_%s.lua", fileauthor.c_str(), fileid.c_str());
+	if (!strcmp(scriptData, "Invalid script ID\r\n"))
+	{
+		free(scriptData);
+		return luaL_error(l, "Invalid Script ID");
+	}
 
-	Client::Ref().MakeDirectory(LOCAL_LUA_DIR);
-
-	outputfile = fopen(filename, "r");
-	if(outputfile)
+	FILE *outputfile = fopen(filename, "r");
+	if (outputfile)
 	{
 		fclose(outputfile);
 		outputfile = NULL;
-		if(ConfirmPrompt::Blocking("File already exists, overwrite?", filename, "Overwrite"))
+		if (!confirmPrompt || ConfirmPrompt::Blocking("File already exists, overwrite?", filename, "Overwrite"))
 		{
 			outputfile = fopen(filename, "w");
 		}
 		else
 		{
-			goto fin;
+			free(scriptData);
+			return 0;
 		}
 	}
 	else
 	{
 		outputfile = fopen(filename, "w");
 	}
-
-	if(!outputfile)
+	if (!outputfile)
 	{
-		lastError = "Unable to write to file";
-		goto fin;
+		free(scriptData);
+		return luaL_error(l, "Unable to write to file");
 	}
 
-
-	fputs(filedata, outputfile);
+	fputs(scriptData, outputfile);
 	fclose(outputfile);
 	outputfile = NULL;
-	if(run_script)
+	if (runScript)
 	{
-		luacommand = new char[strlen(filename)+20];
-		sprintf(luacommand,"dofile(\"%s\")",filename);
-		luaL_dostring (l, luacommand);
+		std::stringstream luaCommand;
+		luaCommand << "dofile('" << filename << "')";
+		luaL_dostring(l, luaCommand.str().c_str());
 	}
 
-fin:
-	free(filedata);
-	delete[] fileuri;
-	delete[] filename;
-	delete[] luacommand;
-	luacommand = NULL;
-
-	if(lastError)
-	{
-		return luaL_error(l, lastError);
-	}
 	return 0;
 }
 
