@@ -246,12 +246,16 @@ void LocalBrowserView::NotifySelectedChanged(LocalBrowserModel * sender)
 		}
 	}
 
-	if(selected.size())
+	if (selected.size())
 	{
 		removeSelected->Visible = true;
+		pageLabel->Visible = pageCountLabel->Visible = pageTextbox->Visible = false;
 	}
-	else
+	else if (removeSelected->Visible)
+	{
 		removeSelected->Visible = false;
+		pageLabel->Visible = pageCountLabel->Visible = pageTextbox->Visible = true;
+	}
 }
 
 void LocalBrowserView::OnMouseWheel(int x, int y, int d)
