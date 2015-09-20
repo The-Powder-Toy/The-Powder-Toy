@@ -1284,16 +1284,82 @@ void GameView::BeginStampSelection()
 
 void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
-	if(introText > 50)
+	if (introText > 50)
 	{
 		introText = 50;
 	}
 
-	if(selectMode!=SelectNone)
+	// these key events still work when placing / creating stamps
+	switch (key)
 	{
-		if(selectMode==PlaceSave)
+	case KEY_LALT:
+	case KEY_RALT:
+		drawSnap = true;
+		enableAltBehaviour();
+		break;
+	case KEY_LCTRL:
+	case KEY_RCTRL:
+		if (!isMouseDown)
 		{
-			switch(key)
+			if (drawModeReset)
+				drawModeReset = false;
+			else
+				drawPoint1 = currentMouse;
+			if (shift)
+			{
+				if (!toolBrush)
+					drawMode = DrawFill;
+				else
+					drawMode = DrawPoints;
+			}
+			else
+				drawMode = DrawRect;
+		}
+		enableCtrlBehaviour();
+		break;
+	case KEY_LSHIFT:
+	case KEY_RSHIFT:
+		if (!isMouseDown)
+		{
+			if (drawModeReset)
+				drawModeReset = false;
+			else
+				drawPoint1 = currentMouse;
+			if (ctrl)
+			{
+				if (!toolBrush)
+					drawMode = DrawFill;
+				else
+					drawMode = DrawPoints;
+			}
+			else
+				drawMode = DrawLine;
+		}
+		enableShiftBehaviour();
+		break;
+	case ' ': //Space
+		c->SetPaused();
+		break;
+	case 'z':
+		if (ctrl)
+		{
+			c->HistoryRestore();
+		}
+		else
+		{
+			if (drawMode != DrawLine && !windTool)
+				isMouseDown = false;
+			zoomCursorFixed = false;
+			c->SetZoomEnabled(true);
+		}
+		break;
+	}
+
+	if (selectMode != SelectNone)
+	{
+		if (selectMode == PlaceSave)
+		{
+			switch (key)
 			{
 			case KEY_RIGHT:
 			case 'd':
@@ -1330,74 +1396,13 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 				break;
 			}
 		}
-		if(key != ' ' && key != 'z')
+		if (key != ' ' && key != 'z')
 			return;
 	}
 	switch(key)
 	{
-	case KEY_LALT:
-	case KEY_RALT:
-		drawSnap = true;
-		enableAltBehaviour();
-		break;
-	case KEY_LCTRL:
-	case KEY_RCTRL:
-		if(!isMouseDown)
-		{
-			if(drawModeReset)
-				drawModeReset = false;
-			else
-				drawPoint1 = currentMouse;
-			if(shift)
-			{
-				if (!toolBrush)
-					drawMode = DrawFill;
-				else
-					drawMode = DrawPoints;
-			}
-			else
-				drawMode = DrawRect;
-		}
-		enableCtrlBehaviour();
-		break;
-	case KEY_LSHIFT:
-	case KEY_RSHIFT:
-		if(!isMouseDown)
-		{
-			if(drawModeReset)
-				drawModeReset = false;
-			else
-				drawPoint1 = currentMouse;
-			if(ctrl)
-			{
-				if (!toolBrush)
-					drawMode = DrawFill;
-				else
-					drawMode = DrawPoints;
-			}
-			else
-				drawMode = DrawLine;
-		}
-		enableShiftBehaviour();
-		break;
-	case ' ': //Space
-		c->SetPaused();
-		break;
 	case KEY_TAB: //Tab
 		c->ChangeBrush();
-		break;
-	case 'z':
-		if (ctrl)
-		{
-			c->HistoryRestore();
-		}
-		else
-		{
-			if (drawMode != DrawLine && !windTool)
-				isMouseDown = false;
-			zoomCursorFixed = false;
-			c->SetZoomEnabled(true);
-		}
 		break;
 	case '`':
 		c->ShowConsole();
