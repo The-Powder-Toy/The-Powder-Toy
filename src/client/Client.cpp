@@ -786,7 +786,7 @@ void Client::Tick()
 #ifndef IGNORE_UPDATES
 				//Check for updates
 				json::Object versions = objDocument["Updates"];
-#if not defined(BETA) && not defined(SNAPSHOT)
+#if !defined(BETA) && !defined(SNAPSHOT)
 				json::Object stableVersion = versions["Stable"];
 				json::Number stableMajor = stableVersion["Major"];
 				json::Number stableMinor = stableVersion["Minor"];

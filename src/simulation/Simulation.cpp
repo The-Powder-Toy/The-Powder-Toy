@@ -3,27 +3,21 @@
 #include <math.h>
 #if !defined(_MSC_VER)
 #include <strings.h>
-#else
-#include <windows.h>
 #endif
 #include "Config.h"
 #include "Simulation.h"
 #include "Elements.h"
-//#include "ElementFunctions.h"
 #include "Air.h"
 #include "Gravity.h"
 #include "elements/Element.h"
 #include "CoordStack.h"
 
-//#include "graphics/Renderer.h"
-//#include "graphics/Graphics.h"
 #include "Misc.h"
 #include "ToolClasses.h"
 #include "gui/game/Brush.h"
 #include "client/GameSave.h"
 #include "Sample.h"
 #include "Snapshot.h"
-//#include "StorageClasses.h"
 
 #ifdef LUACONSOLE
 #include "lua/LuaScriptInterface.h"
