@@ -2341,10 +2341,7 @@ void GameView::OnDraw()
 				sampleInfo << "#" << sample.ParticleID << ", ";
 			}
 			sampleInfo << "X: " << sample.PositionX << " Y: " << sample.PositionY;
-			if(sample.particle.type)
-			{
-				sampleInfo << ", VX: " << sample.particle.vx << " VY: " << sample.particle.vy;
-			}
+			
 			if (sample.Gravity)
 				sampleInfo << ", GX: " << sample.GravityVelocityX << " GY: " << sample.GravityVelocityY;
 
