@@ -20,7 +20,6 @@
 #include "IntroText.h"
 #include "DecorationTool.h"
 
-
 class SplitButton;
 class SplitButtonAction
 {
@@ -1130,7 +1129,7 @@ void GameView::OnMouseUp(int x, int y, unsigned button)
 	{
 		if (selectMode != SelectNone)
 		{
-			if (button == BUTTON_LEFT && selectPoint1.X != -1 && selectPoint1.Y != -1 && selectPoint2.X != -1 && selectPoint2.Y != -1)
+			if (button == BUTTON_LEFT)
 			{
 				if (selectMode == PlaceSave)
 				{
@@ -1284,33 +1283,33 @@ void GameView::BeginStampSelection()
 
 void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
-	if (introText > 50)
+	if(introText > 50)
 	{
 		introText = 50;
 	}
 
-	if (selectMode != SelectNone)
+	if(selectMode!=SelectNone)
 	{
-		if (selectMode == PlaceSave)
+		if(selectMode==PlaceSave)
 		{
-			switch (key)
+			switch(key)
 			{
 			case KEY_RIGHT:
 			case 'd':
 				c->TranslateSave(ui::Point(1, 0));
-				return;
+				break;
 			case KEY_LEFT:
 			case 'a':
 				c->TranslateSave(ui::Point(-1, 0));
-				return;
+				break;
 			case KEY_UP:
 			case 'w':
 				c->TranslateSave(ui::Point(0, -1));
-				return;
+				break;
 			case KEY_DOWN:
 			case 's':
 				c->TranslateSave(ui::Point(0, 1));
-				return;
+				break;
 			case 'r':
 				if (ctrl && shift)
 				{
@@ -1327,9 +1326,11 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 					//Rotate 90deg
 					c->TransformSave(m2d_new(0,1,-1,0));
 				}
-				return;
+				break;
 			}
 		}
+		if(key != ' ' && key != 'z')
+			return;
 	}
 	switch(key)
 	{
@@ -1340,13 +1341,13 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		break;
 	case KEY_LCTRL:
 	case KEY_RCTRL:
-		if (!isMouseDown)
+		if(!isMouseDown)
 		{
-			if (drawModeReset)
+			if(drawModeReset)
 				drawModeReset = false;
 			else
 				drawPoint1 = currentMouse;
-			if (shift)
+			if(shift)
 			{
 				if (!toolBrush)
 					drawMode = DrawFill;
@@ -1360,13 +1361,13 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		break;
 	case KEY_LSHIFT:
 	case KEY_RSHIFT:
-		if (!isMouseDown)
+		if(!isMouseDown)
 		{
-			if (drawModeReset)
+			if(drawModeReset)
 				drawModeReset = false;
 			else
 				drawPoint1 = currentMouse;
-			if (ctrl)
+			if(ctrl)
 			{
 				if (!toolBrush)
 					drawMode = DrawFill;
@@ -1381,6 +1382,9 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 	case ' ': //Space
 		c->SetPaused();
 		break;
+	case KEY_TAB: //Tab
+		c->ChangeBrush();
+		break;
 	case 'z':
 		if (ctrl)
 		{
@@ -1393,9 +1397,6 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 			zoomCursorFixed = false;
 			c->SetZoomEnabled(true);
 		}
-		break;
-	case KEY_TAB: //Tab
-		c->ChangeBrush();
 		break;
 	case '`':
 		c->ShowConsole();
@@ -1496,7 +1497,7 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		if(ctrl)
 		{
 			selectMode = SelectCopy;
-			selectPoint1 = selectPoint2 = ui::Point(-1, -1);
+			selectPoint1 = ui::Point(-1, -1);
 			buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to copy (right click = cancel)";
 			buttonTipShow = 120;
 		}
@@ -1505,7 +1506,7 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		if(ctrl)
 		{
 			selectMode = SelectCut;
-			selectPoint1 = selectPoint2 = ui::Point(-1, -1);
+			selectPoint1 = ui::Point(-1, -1);
 			buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to copy then cut (right click = cancel)";
 			buttonTipShow = 120;
 		}
@@ -1513,8 +1514,9 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 	case 'v':
 		if(ctrl)
 		{
-			if (c->LoadClipboard());
-				selectPoint1 = selectPoint2 = mousePosition;
+			c->LoadClipboard();
+			selectPoint2 = mousePosition;
+			selectPoint1 = selectPoint2;
 		}
 		break;
 	case 'l':
@@ -1523,13 +1525,16 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		if (stampList.size())
 		{
 			c->LoadStamp(Client::Ref().GetStamp(stampList[0])->GetGameSave());
-			selectPoint1 = selectPoint2 = mousePosition;
+			selectPoint2 = mousePosition;
+			selectPoint1 = selectPoint2;
 			isMouseDown = false;
+			drawMode = DrawPoints;
 			break;
 		}
 	}
 	case 'k':
-		selectPoint1 = selectPoint2 = ui::Point(-1, -1);
+		selectPoint2 = ui::Point(-1, -1);
+		selectPoint1 = selectPoint2;
 		c->OpenStamps();
 		break;
 	case ']':
@@ -2250,6 +2255,10 @@ void GameView::OnDraw()
 				sampleInfo << ", Life: " << sample.particle.life;
 				sampleInfo << ", Tmp: " << sample.particle.tmp;
 				sampleInfo << ", Pressure: " << std::fixed << sample.AirPressure;
+
+				if (c->GetModel()->GetAHeatEnable()) {
+					sampleInfo << ", Air: " << std::fixed << sample.AirTemperature -273.15f << " C";
+				}
 			}
 			else
 			{
@@ -2273,6 +2282,9 @@ void GameView::OnDraw()
 		else if (sample.isMouseInSim)
 		{
 			sampleInfo << "Empty, Pressure: " << std::fixed << sample.AirPressure;
+			if (showDebug && c->GetModel()->GetAHeatEnable()) {
+				sampleInfo << ", Air: " << std::fixed << sample.AirTemperature -273.15f << " C";
+			}
 		}
 		else
 		{
@@ -2328,9 +2340,10 @@ void GameView::OnDraw()
 			{
 				sampleInfo << "#" << sample.ParticleID << ", ";
 			}
-			sampleInfo << "X:" << sample.PositionX << " Y:" << sample.PositionY;
+			sampleInfo << "X: " << sample.PositionX << " Y: " << sample.PositionY;
+			
 			if (sample.Gravity)
-				sampleInfo << " GX: " << sample.GravityVelocityX << " GY: " << sample.GravityVelocityY;
+				sampleInfo << ", GX: " << sample.GravityVelocityX << " GY: " << sample.GravityVelocityY;
 
 			textWidth = Graphics::textwidth((char*)sampleInfo.str().c_str());
 			g->fillrect(XRES-20-textWidth, 27, textWidth+8, 14, 0, 0, 0, alpha*0.5f);
