@@ -2325,12 +2325,15 @@ void GameView::OnDraw()
 			sampleInfo.str(std::string());
 
 			if(sample.particle.type)
-			{
 				sampleInfo << "#" << sample.ParticleID << ", ";
-			}
+
 			sampleInfo << "X:" << sample.PositionX << " Y:" << sample.PositionY;
+
 			if (sample.Gravity)
 				sampleInfo << " GX: " << sample.GravityVelocityX << " GY: " << sample.GravityVelocityY;
+
+			if (c->GetAHeatEnable())
+				sampleInfo << ", AHeat: " << std::fixed << sample.AirTemperature -273.15f << " C";
 
 			textWidth = Graphics::textwidth((char*)sampleInfo.str().c_str());
 			g->fillrect(XRES-20-textWidth, 27, textWidth+8, 14, 0, 0, 0, alpha*0.5f);
