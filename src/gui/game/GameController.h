@@ -57,6 +57,7 @@ public:
 	GameController();
 	~GameController();
 	GameView * GetView();
+  GameModel * GetModel();
 	sign * GetSignAt(int x, int y);
 
 	bool MouseMove(int x, int y, int dx, int dy);
