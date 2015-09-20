@@ -866,6 +866,11 @@ void GameController::ToggleAHeat()
 	gameModel->SetAHeatEnable(!gameModel->GetAHeatEnable());
 }
 
+bool GameController::GetAHeatEnable()
+{
+	return gameModel->GetAHeatEnable();
+}
+
 void GameController::ToggleNewtonianGravity()
 {
 	if (gameModel->GetSimulation()->grav->ngrav_enable)
