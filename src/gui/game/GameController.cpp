@@ -495,11 +495,15 @@ void GameController::DrawPoints(int toolSelection, queue<ui::Point> & pointQueue
 	}
 }
 
-void GameController::LoadClipboard()
+bool GameController::LoadClipboard()
 {
-	gameModel->SetPlaceSave(gameModel->GetClipboard());
-	if(gameModel->GetPlaceSave() && gameModel->GetPlaceSave()->Collapsed())
+	GameSave *clip = gameModel->GetClipboard();
+	if (!clip)
+		return false;
+	gameModel->SetPlaceSave(clip);
+	if (gameModel->GetPlaceSave() && gameModel->GetPlaceSave()->Collapsed())
 		gameModel->GetPlaceSave()->Expand();
+	return true;
 }
 
 void GameController::LoadStamp(GameSave *stamp)

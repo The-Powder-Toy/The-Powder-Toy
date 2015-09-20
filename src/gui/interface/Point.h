@@ -134,10 +134,11 @@ struct Point
 		return (X != v.X || Y != v.Y);
 	}
 
-	inline void operator = (const Point& v)
+	inline Point operator = (const Point& v)
 	{
 		X = v.X;
 		Y = v.Y;
+		return Point(X, Y);
 	}
 
 };

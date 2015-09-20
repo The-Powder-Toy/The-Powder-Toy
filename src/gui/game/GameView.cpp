@@ -1130,7 +1130,7 @@ void GameView::OnMouseUp(int x, int y, unsigned button)
 	{
 		if (selectMode != SelectNone)
 		{
-			if (button == BUTTON_LEFT)
+			if (button == BUTTON_LEFT && selectPoint1.X != -1 && selectPoint1.Y != -1 && selectPoint2.X != -1 && selectPoint2.Y != -1)
 			{
 				if (selectMode == PlaceSave)
 				{
@@ -1496,7 +1496,7 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		if(ctrl)
 		{
 			selectMode = SelectCopy;
-			selectPoint1 = ui::Point(-1, -1);
+			selectPoint1 = selectPoint2 = ui::Point(-1, -1);
 			buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to copy (right click = cancel)";
 			buttonTipShow = 120;
 		}
@@ -1505,7 +1505,7 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		if(ctrl)
 		{
 			selectMode = SelectCut;
-			selectPoint1 = ui::Point(-1, -1);
+			selectPoint1 = selectPoint2 = ui::Point(-1, -1);
 			buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to copy then cut (right click = cancel)";
 			buttonTipShow = 120;
 		}
@@ -1513,9 +1513,8 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 	case 'v':
 		if(ctrl)
 		{
-			c->LoadClipboard();
-			selectPoint2 = mousePosition;
-			selectPoint1 = selectPoint2;
+			if (c->LoadClipboard());
+				selectPoint1 = selectPoint2 = mousePosition;
 		}
 		break;
 	case 'l':
@@ -1524,15 +1523,13 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		if (stampList.size())
 		{
 			c->LoadStamp(Client::Ref().GetStamp(stampList[0])->GetGameSave());
-			selectPoint2 = mousePosition;
-			selectPoint1 = selectPoint2;
+			selectPoint1 = selectPoint2 = mousePosition;
 			isMouseDown = false;
 			break;
 		}
 	}
 	case 'k':
-		selectPoint2 = ui::Point(-1, -1);
-		selectPoint1 = selectPoint2;
+		selectPoint1 = selectPoint2 = ui::Point(-1, -1);
 		c->OpenStamps();
 		break;
 	case ']':
