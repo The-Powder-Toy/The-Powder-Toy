@@ -1289,8 +1289,49 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		introText = 50;
 	}
 
-	// these key events still work when placing / creating stamps
-	switch (key)
+	if (selectMode != SelectNone)
+	{
+		if (selectMode == PlaceSave)
+		{
+			switch (key)
+			{
+			case KEY_RIGHT:
+			case 'd':
+				c->TranslateSave(ui::Point(1, 0));
+				return;
+			case KEY_LEFT:
+			case 'a':
+				c->TranslateSave(ui::Point(-1, 0));
+				return;
+			case KEY_UP:
+			case 'w':
+				c->TranslateSave(ui::Point(0, -1));
+				return;
+			case KEY_DOWN:
+			case 's':
+				c->TranslateSave(ui::Point(0, 1));
+				return;
+			case 'r':
+				if (ctrl && shift)
+				{
+					//Vertical flip
+					c->TransformSave(m2d_new(1,0,0,-1));
+				}
+				else if (!ctrl && shift)
+				{
+					//Horizontal flip
+					c->TransformSave(m2d_new(-1,0,0,1));
+				}
+				else
+				{
+					//Rotate 90deg
+					c->TransformSave(m2d_new(0,1,-1,0));
+				}
+				return;
+			}
+		}
+	}
+	switch(key)
 	{
 	case KEY_LALT:
 	case KEY_RALT:
@@ -1353,54 +1394,6 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 			c->SetZoomEnabled(true);
 		}
 		break;
-	}
-
-	if (selectMode != SelectNone)
-	{
-		if (selectMode == PlaceSave)
-		{
-			switch (key)
-			{
-			case KEY_RIGHT:
-			case 'd':
-				c->TranslateSave(ui::Point(1, 0));
-				break;
-			case KEY_LEFT:
-			case 'a':
-				c->TranslateSave(ui::Point(-1, 0));
-				break;
-			case KEY_UP:
-			case 'w':
-				c->TranslateSave(ui::Point(0, -1));
-				break;
-			case KEY_DOWN:
-			case 's':
-				c->TranslateSave(ui::Point(0, 1));
-				break;
-			case 'r':
-				if (ctrl && shift)
-				{
-					//Vertical flip
-					c->TransformSave(m2d_new(1,0,0,-1));
-				}
-				else if (!ctrl && shift)
-				{
-					//Horizontal flip
-					c->TransformSave(m2d_new(-1,0,0,1));
-				}
-				else
-				{
-					//Rotate 90deg
-					c->TransformSave(m2d_new(0,1,-1,0));
-				}
-				break;
-			}
-		}
-		if (key != ' ' && key != 'z')
-			return;
-	}
-	switch(key)
-	{
 	case KEY_TAB: //Tab
 		c->ChangeBrush();
 		break;
@@ -1534,7 +1527,6 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 			selectPoint2 = mousePosition;
 			selectPoint1 = selectPoint2;
 			isMouseDown = false;
-			drawMode = DrawPoints;
 			break;
 		}
 	}
