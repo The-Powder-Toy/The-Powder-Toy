@@ -2330,7 +2330,7 @@ void GameView::OnDraw()
 			sampleInfo << "X:" << sample.PositionX << " Y:" << sample.PositionY;
 
 			if (sample.Gravity)
-				sampleInfo << " GX: " << sample.GravityVelocityX << " GY: " << sample.GravityVelocityY;
+				sampleInfo << ", GX: " << sample.GravityVelocityX << " GY: " << sample.GravityVelocityY;
 
 			if (c->GetAHeatEnable())
 				sampleInfo << ", AHeat: " << std::fixed << sample.AirTemperature -273.15f << " C";

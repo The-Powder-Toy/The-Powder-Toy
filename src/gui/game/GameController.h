@@ -153,7 +153,7 @@ public:
 	void SwitchGravity();
 	void SwitchAir();
 	void ToggleAHeat();
-    bool GetAHeatEnable();
+	bool GetAHeatEnable();
 	void ToggleNewtonianGravity();
 
 	bool LoadClipboard();
