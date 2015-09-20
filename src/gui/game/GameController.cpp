@@ -149,7 +149,6 @@ GameController::GameController():
 	commandInterface = new TPTScriptInterface(this, gameModel);
 #endif
 
-	commandInterface->OnBrushChanged(gameModel->GetBrushID(), gameModel->GetBrush()->GetRadius().X, gameModel->GetBrush()->GetRadius().X);
 	ActiveToolChanged(0, gameModel->GetActiveTool(0));
 	ActiveToolChanged(1, gameModel->GetActiveTool(1));
 	ActiveToolChanged(2, gameModel->GetActiveTool(2));
@@ -356,14 +355,11 @@ void GameController::AdjustBrushSize(int direction, bool logarithmic, bool xAxis
 		gameModel->GetBrush()->SetRadius(ui::Point(oldSize.X, newSize.Y));
 	else
 		gameModel->GetBrush()->SetRadius(newSize);
-
-	BrushChanged(gameModel->GetBrushID(), gameModel->GetBrush()->GetRadius().X, gameModel->GetBrush()->GetRadius().Y);
 }
 
 void GameController::SetBrushSize(ui::Point newSize)
 {
 	gameModel->GetBrush()->SetRadius(newSize);
-	BrushChanged(gameModel->GetBrushID(), gameModel->GetBrush()->GetRadius().X, gameModel->GetBrush()->GetRadius().Y);
 }
 
 void GameController::AdjustZoomSize(int direction, bool logarithmic)
@@ -574,11 +570,6 @@ void GameController::CutRegion(ui::Point point1, ui::Point point2)
 bool GameController::MouseMove(int x, int y, int dx, int dy)
 {
 	return commandInterface->OnMouseMove(x, y, dx, dy);
-}
-
-bool GameController::BrushChanged(int brushType, int rx, int ry)
-{
-	return commandInterface->OnBrushChanged(brushType, rx, ry);
 }
 
 bool GameController::MouseDown(int x, int y, unsigned button)
@@ -1414,7 +1405,6 @@ void GameController::Vote(int direction)
 void GameController::ChangeBrush()
 {
 	gameModel->SetBrushID(gameModel->GetBrushID()+1);
-	BrushChanged(gameModel->GetBrushID(), gameModel->GetBrush()->GetRadius().X, gameModel->GetBrush()->GetRadius().Y);
 }
 
 void GameController::ClearSim()

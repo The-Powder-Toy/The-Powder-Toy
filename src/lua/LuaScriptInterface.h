@@ -34,7 +34,7 @@ class Tool;
 class TPTScriptInterface;
 class LuaScriptInterface: public CommandInterface
 {
-	int luacon_mousex, luacon_mousey, luacon_mousebutton, luacon_brushx, luacon_brushy;
+	int luacon_mousex, luacon_mousey, luacon_mousebutton;
 	std::string luacon_selectedl, luacon_selectedr, luacon_selectedalt, luacon_selectedreplace;
 	bool luacon_mousedown;
 	bool currentCommand;
@@ -168,7 +168,6 @@ public:
 	ui::Window * Window;
 	lua_State *l;
 	LuaScriptInterface(GameController * c, GameModel * m);
-	virtual bool OnBrushChanged(int brushType, int rx, int ry);
 	virtual bool OnActiveToolChanged(int toolSelection, Tool * tool);
 	virtual bool OnMouseMove(int x, int y, int dx, int dy);
 	virtual bool OnMouseDown(int x, int y, unsigned button);

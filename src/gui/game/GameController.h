@@ -59,7 +59,6 @@ public:
 	GameView * GetView();
 	sign * GetSignAt(int x, int y);
 
-	bool BrushChanged(int brushType, int rx, int ry);
 	bool MouseMove(int x, int y, int dx, int dy);
 	bool MouseDown(int x, int y, unsigned button);
 	bool MouseUp(int x, int y, unsigned button);

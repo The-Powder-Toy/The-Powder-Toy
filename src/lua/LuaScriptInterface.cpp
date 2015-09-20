@@ -92,8 +92,6 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	luacon_mousex(0),
 	luacon_mousey(0),
 	luacon_mousebutton(0),
-	luacon_brushx(0),
-	luacon_brushy(0),
 	luacon_selectedl(""),
 	luacon_selectedr(""),
 	luacon_selectedalt(""),
@@ -380,9 +378,9 @@ int LuaScriptInterface::tpt_index(lua_State *l)
 	if (!key.compare("selectedreplace"))
 		return lua_pushstring(l, luacon_selectedreplace.c_str()), 1;
 	if (!key.compare("brushx"))
-		return lua_pushnumber(l, luacon_brushx), 1;
+		return lua_pushnumber(l, m->GetBrush()->GetRadius().X), 1;
 	if (!key.compare("brushy"))
-		return lua_pushnumber(l, luacon_brushy), 1;
+		return lua_pushnumber(l, m->GetBrush()->GetRadius().Y), 1;
 	if (!key.compare("brushID"))
 		return lua_pushnumber(l, m->GetBrushID()), 1;
 
@@ -426,14 +424,11 @@ int LuaScriptInterface::tpt_newIndex(lua_State *l)
 			luaL_error(l, "Invalid tool identifier: %s", lua_tostring(l, 3));
 	}
 	else if (!key.compare("brushx"))
-		c->SetBrushSize(ui::Point(luaL_checkinteger(l, 3), luacon_brushy));
+		c->SetBrushSize(ui::Point(luaL_checkinteger(l, 3), m->GetBrush()->GetRadius().Y));
 	else if (!key.compare("brushy"))
-		c->SetBrushSize(ui::Point(luacon_brushx, luaL_checkinteger(l, 3)));
+		c->SetBrushSize(ui::Point(m->GetBrush()->GetRadius().X, luaL_checkinteger(l, 3)));
 	else if (!key.compare("brushID"))
-	{
 		m->SetBrushID(luaL_checkinteger(l, 3));
-		c->BrushChanged(m->GetBrushID(), luacon_brushx, luacon_brushy);
-	}
 	else
 	{
 		//if not a special key, set a value in the table
@@ -3189,14 +3184,6 @@ int LuaScriptInterface::platform_clipboardPaste(lua_State * l)
 	luaL_checktype(l, 1, LUA_TSTRING);
 	ClipboardPush(luaL_optstring(l, 1, ""));
 	return 0;
-}
-
-
-bool LuaScriptInterface::OnBrushChanged(int brushType, int rx, int ry)
-{
-	luacon_brushx = rx;
-	luacon_brushy = ry;
-	return true;
 }
 
 bool LuaScriptInterface::OnActiveToolChanged(int toolSelection, Tool * tool)
