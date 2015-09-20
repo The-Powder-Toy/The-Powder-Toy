@@ -2255,10 +2255,6 @@ void GameView::OnDraw()
 				sampleInfo << ", Life: " << sample.particle.life;
 				sampleInfo << ", Tmp: " << sample.particle.tmp;
 				sampleInfo << ", Pressure: " << std::fixed << sample.AirPressure;
-
-				if (c->GetModel()->GetAHeatEnable()) {
-					sampleInfo << ", Air: " << std::fixed << sample.AirTemperature -273.15f << " C";
-				}
 			}
 			else
 			{
@@ -2282,9 +2278,6 @@ void GameView::OnDraw()
 		else if (sample.isMouseInSim)
 		{
 			sampleInfo << "Empty, Pressure: " << std::fixed << sample.AirPressure;
-			if (showDebug && c->GetModel()->GetAHeatEnable()) {
-				sampleInfo << ", Air: " << std::fixed << sample.AirTemperature -273.15f << " C";
-			}
 		}
 		else
 		{
@@ -2341,9 +2334,13 @@ void GameView::OnDraw()
 				sampleInfo << "#" << sample.ParticleID << ", ";
 			}
 			sampleInfo << "X: " << sample.PositionX << " Y: " << sample.PositionY;
-			
+
 			if (sample.Gravity)
 				sampleInfo << ", GX: " << sample.GravityVelocityX << " GY: " << sample.GravityVelocityY;
+
+			if (c->GetAHeatEnable()) {
+				sampleInfo << ", AHeat: " << std::fixed << sample.AirTemperature -273.15f << " C";
+			}
 
 			textWidth = Graphics::textwidth((char*)sampleInfo.str().c_str());
 			g->fillrect(XRES-20-textWidth, 27, textWidth+8, 14, 0, 0, 0, alpha*0.5f);
