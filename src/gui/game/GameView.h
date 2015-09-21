@@ -34,6 +34,7 @@ class GameView: public ui::Window
 {
 private:
 	bool isMouseDown;
+	bool isMouseHeld; // same as isMouseDown but with a frame of lag (to do lines / ending point properly)
 	bool zoomEnabled;
 	bool zoomCursorFixed;
 	bool mouseInZoom;
@@ -68,7 +69,7 @@ private:
 	int screenshotIndex;
 	int recordingIndex;
 
-	queue<ui::Point> pointQueue;
+	ui::Point currentPoint, lastPoint;
 	GameController * c;
 	Renderer * ren;
 	Brush * activeBrush;

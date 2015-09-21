@@ -83,7 +83,7 @@ public:
 	void SetBrushSize(ui::Point newSize);
 	void AdjustZoomSize(int direction, bool logarithmic = false);
 	void ToolClick(int toolSelection, ui::Point point);
-	void DrawPoints(int toolSelection, queue<ui::Point> & pointQueue);
+	void DrawPoints(int toolSelection, ui::Point oldPos, ui::Point newPos, bool held);
 	void DrawRect(int toolSelection, ui::Point point1, ui::Point point2);
 	void DrawLine(int toolSelection, ui::Point point1, ui::Point point2);
 	void DrawFill(int toolSelection, ui::Point point);

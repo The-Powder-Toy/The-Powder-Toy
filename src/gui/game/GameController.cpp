@@ -450,48 +450,28 @@ void GameController::DrawFill(int toolSelection, ui::Point point)
 	activeTool->DrawFill(sim, cBrush, point);
 }
 
-void GameController::DrawPoints(int toolSelection, queue<ui::Point> & pointQueue)
+void GameController::DrawPoints(int toolSelection, ui::Point oldPos, ui::Point newPos, bool held)
 {
 	Simulation * sim = gameModel->GetSimulation();
 	Tool * activeTool = gameModel->GetActiveTool(toolSelection);
 	gameModel->SetLastTool(activeTool);
 	Brush * cBrush = gameModel->GetBrush();
-	if(!activeTool || !cBrush)
+	if (!activeTool || !cBrush)
 	{
-		if(!pointQueue.empty())
-		{
-			while(!pointQueue.empty())
-			{
-				pointQueue.pop();
-			}
-		}
 		return;
 	}
 
 	activeTool->SetStrength(gameModel->GetToolStrength());
-	if(!pointQueue.empty())
+	if (!held)
 	{
-		ui::Point sPoint(0, 0);
-		int size = pointQueue.size();
-		bool first = true;
-		while(!pointQueue.empty())
-		{
-			ui::Point fPoint = pointQueue.front();
-			pointQueue.pop();
-			if(size > 1)
-			{
-				if (!first)
-				{
-					activeTool->DrawLine(sim, cBrush, sPoint, fPoint, true);
-				}
-				first = false;
-			}
-			else
-			{
-				activeTool->Draw(sim, cBrush, fPoint);
-			}
-			sPoint = fPoint;
-		}
+		activeTool->Draw(sim, cBrush, newPos);
+		gameModel->Log("Initial mouse coord at "+ format::NumberToString<int>(newPos.X) + " " + format::NumberToString<int>(newPos.Y), true);
+	}
+	else
+	{
+		gameModel->Log("Previous mouse coord at "+ format::NumberToString<int>(oldPos.X) + " " + format::NumberToString<int>(oldPos.Y), true);
+		gameModel->Log("Current mouse coord at "+ format::NumberToString<int>(newPos.X) + " " + format::NumberToString<int>(newPos.Y), true);
+		activeTool->DrawLine(sim, cBrush, oldPos, newPos, true);
 	}
 }
 

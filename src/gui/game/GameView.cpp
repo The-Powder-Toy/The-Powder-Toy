@@ -150,6 +150,7 @@ public:
 GameView::GameView():
 	ui::Window(ui::Point(0, 0), ui::Point(WINDOWW, WINDOWH)),
 	isMouseDown(false),
+	isMouseHeld(false),
 	zoomEnabled(false),
 	zoomCursorFixed(false),
 	mouseInZoom(false),
@@ -183,7 +184,8 @@ GameView::GameView():
 	recording(false),
 	screenshotIndex(0),
 	recordingIndex(0),
-	pointQueue(queue<ui::Point>()),
+	currentPoint(ui::Point(0, 0)),
+	lastPoint(ui::Point(0, 0)),
 	ren(NULL),
 	activeBrush(NULL),
 	saveSimulationButtonEnabled(false),
@@ -1064,19 +1066,19 @@ void GameView::OnMouseMove(int x, int y, int dx, int dy)
 		if (selectPoint1.X != -1)
 			selectPoint2 = c->PointTranslate(ui::Point(x, y));
 	}
-	else if (isMouseDown)
+	else if (isMouseDown || isMouseHeld)
 	{
 		if (newMouseInZoom == mouseInZoom)
 		{
 			if (drawMode == DrawPoints)
 			{
-				pointQueue.push(ui::Point(c->PointTranslate(ui::Point(x-dx, y-dy))));
-				pointQueue.push(ui::Point(c->PointTranslate(ui::Point(x, y))));
+				currentPoint = mousePosition;
 			}
 		}
 		else if (drawMode == DrawPoints || drawMode == DrawFill)
 		{
 			isMouseDown = false;
+			isMouseHeld = false;
 			c->MouseUp(x, y, 0, 2);
 		}
 	}
@@ -1107,15 +1109,15 @@ void GameView::OnMouseDown(int x, int y, unsigned button)
 			if (button == BUTTON_MIDDLE)
 				toolIndex = 2;
 			isMouseDown = true;
-			if (!pointQueue.size())
-				c->HistorySnapshot();
+			c->HistorySnapshot();
 			if (drawMode == DrawRect || drawMode == DrawLine)
 			{
 				drawPoint1 = c->PointTranslate(ui::Point(x, y));
 			}
 			if (drawMode == DrawPoints)
 			{
-				pointQueue.push(ui::Point(c->PointTranslate(ui::Point(x, y))));
+				lastPoint = currentPoint = c->PointTranslate(ui::Point(x, y));
+				c->DrawPoints(toolIndex, lastPoint, currentPoint, false);
 			}
 		}
 	}
@@ -1128,6 +1130,7 @@ void GameView::OnMouseUp(int x, int y, unsigned button)
 		zoomCursorFixed = true;
 		drawMode = DrawPoints;
 		isMouseDown = false;
+		isMouseHeld = false;
 	}
 	else
 	{
@@ -1392,7 +1395,10 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		else
 		{
 			if (drawMode != DrawLine && !windTool)
+			{
 				isMouseDown = false;
+				isMouseHeld = false;
+			}
 			zoomCursorFixed = false;
 			c->SetZoomEnabled(true);
 		}
@@ -1528,6 +1534,7 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 			c->LoadStamp(Client::Ref().GetStamp(stampList[0])->GetGameSave());
 			selectPoint1 = selectPoint2 = mousePosition;
 			isMouseDown = false;
+			isMouseHeld = false;
 			break;
 		}
 	}
@@ -1616,28 +1623,32 @@ void GameView::OnBlur()
 	disableCtrlBehaviour();
 	disableShiftBehaviour();
 	isMouseDown = false;
+	isMouseHeld = false;
 	drawMode = DrawPoints;
 	c->MouseUp(0, 0, 0, 1); // tell lua that mouse is up (even if it really isn't)
 }
 
 void GameView::OnTick(float dt)
 {
-	if(selectMode==PlaceSave && !placeSaveThumb)
+	if (selectMode==PlaceSave && !placeSaveThumb)
 		selectMode = SelectNone;
-	if(zoomEnabled && !zoomCursorFixed)
+	if (zoomEnabled && !zoomCursorFixed)
 		c->SetZoomPosition(currentMouse);
-	if(drawMode == DrawPoints)
+	if (drawMode == DrawPoints)
 	{
-		if(isMouseDown && pointQueue.empty())
+		if (isMouseDown)
 		{
-			pointQueue.push(ui::Point(c->PointTranslate(currentMouse)));
+			c->DrawPoints(toolIndex, lastPoint, currentPoint, true);
+			lastPoint = currentPoint;
+			isMouseHeld = true;
 		}
-		if(!pointQueue.empty())
+		else if (isMouseHeld)
 		{
-			c->DrawPoints(toolIndex, pointQueue);
+			c->DrawPoints(toolIndex, lastPoint, currentPoint, true);
+			isMouseHeld = false;
 		}
 	}
-	else if(drawMode == DrawFill && isMouseDown)
+	else if (drawMode == DrawFill && isMouseDown)
 	{
 		c->DrawFill(toolIndex, c->PointTranslate(currentMouse));
 	}
@@ -1805,9 +1816,8 @@ void GameView::DoTick(float dt)
 	if (!c->MouseTick())
 	{
 		isMouseDown = false;
+		isMouseHeld = false;
 		drawMode = DrawPoints;
-		while (!pointQueue.empty())
-			pointQueue.pop();
 	}
 	Window::DoTick(dt);
 }
