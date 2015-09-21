@@ -34,7 +34,6 @@ class GameView: public ui::Window
 {
 private:
 	bool isMouseDown;
-	bool isMouseHeld; // same as isMouseDown but with a frame of lag (to do lines / ending point properly)
 	bool zoomEnabled;
 	bool zoomCursorFixed;
 	bool mouseInZoom;
