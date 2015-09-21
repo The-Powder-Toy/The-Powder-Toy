@@ -463,16 +463,9 @@ void GameController::DrawPoints(int toolSelection, ui::Point oldPos, ui::Point n
 
 	activeTool->SetStrength(gameModel->GetToolStrength());
 	if (!held)
-	{
 		activeTool->Draw(sim, cBrush, newPos);
-		gameModel->Log("Initial mouse coord at "+ format::NumberToString<int>(newPos.X) + " " + format::NumberToString<int>(newPos.Y), true);
-	}
 	else
-	{
-		gameModel->Log("Previous mouse coord at "+ format::NumberToString<int>(oldPos.X) + " " + format::NumberToString<int>(oldPos.Y), true);
-		gameModel->Log("Current mouse coord at "+ format::NumberToString<int>(newPos.X) + " " + format::NumberToString<int>(newPos.Y), true);
 		activeTool->DrawLine(sim, cBrush, oldPos, newPos, true);
-	}
 }
 
 bool GameController::LoadClipboard()
