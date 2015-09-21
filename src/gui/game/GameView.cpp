@@ -480,7 +480,7 @@ public:
 	}
 	void MouseEnterCallback(ui::Button * sender)
 	{
-		if(!needsClick && !ui::Engine::Ref().GetMouseButton())
+		if(!needsClick && !v->GetMouseDown())
 			v->c->SetActiveMenu(menuID);
 	}
 	void ActionCallback(ui::Button * sender)
@@ -1075,7 +1075,10 @@ void GameView::OnMouseMove(int x, int y, int dx, int dy)
 			}
 		}
 		else if (drawMode == DrawPoints || drawMode == DrawFill)
+		{
 			isMouseDown = false;
+			c->MouseUp(x, y, 0, 2);
+		}
 	}
 	mouseInZoom = newMouseInZoom;
 }
@@ -1614,6 +1617,7 @@ void GameView::OnBlur()
 	disableShiftBehaviour();
 	isMouseDown = false;
 	drawMode = DrawPoints;
+	c->MouseUp(0, 0, 0, 1); // tell lua that mouse is up (even if it really isn't)
 }
 
 void GameView::OnTick(float dt)
@@ -1773,7 +1777,7 @@ void GameView::DoMouseDown(int x, int y, unsigned button)
 
 void GameView::DoMouseUp(int x, int y, unsigned button)
 {
-	if(c->MouseUp(x, y, button))
+	if(c->MouseUp(x, y, button, 0))
 		Window::DoMouseUp(x, y, button);
 }
 

@@ -3220,13 +3220,29 @@ bool LuaScriptInterface::OnMouseDown(int x, int y, unsigned button)
 	return luacon_mouseevent(x, y, button, LUACON_MDOWN, 0);
 }
 
-bool LuaScriptInterface::OnMouseUp(int x, int y, unsigned button)
+bool LuaScriptInterface::OnMouseUp(int x, int y, unsigned button, char type)
 {
+	luacon_mousebutton = 0;
 	if (button == 3)
 		button = 4;
+
+	// mouse was never down, probably due to fake mouse event
+	if (!luacon_mousedown)
+	{
+		return true;
+	}
+
+	// fake mouseup event, triggered when mouse drawing is canceled due to moving in / out of the zoom window
+	if (type == 2)
+		return luacon_mouseevent(x, y, button, LUACON_MUPZOOM, 0);
+
 	luacon_mousedown = false;
-	luacon_mousebutton = 0;
-	return luacon_mouseevent(x, y, button, LUACON_MUP, 0);
+
+	// fake mouseup event, triggered when user enters another interface while the mouse is down
+	if (type == 1)
+		return luacon_mouseevent(x, y, button, LUACON_MUPALT, 0);
+	else
+		return luacon_mouseevent(x, y, button, LUACON_MUP, 0);
 }
 
 bool LuaScriptInterface::OnMouseWheel(int x, int y, int d)

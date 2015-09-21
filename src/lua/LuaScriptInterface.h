@@ -18,6 +18,8 @@ class Tool;
 #define LUACON_MDOWN 1
 #define LUACON_MUP 2
 #define LUACON_MPRESS 3
+#define LUACON_MUPALT 4
+#define LUACON_MUPZOOM 5
 #define LUACON_KDOWN 1
 #define LUACON_KUP 2
 
@@ -171,7 +173,7 @@ public:
 	virtual bool OnActiveToolChanged(int toolSelection, Tool * tool);
 	virtual bool OnMouseMove(int x, int y, int dx, int dy);
 	virtual bool OnMouseDown(int x, int y, unsigned button);
-	virtual bool OnMouseUp(int x, int y, unsigned button);
+	virtual bool OnMouseUp(int x, int y, unsigned button, char type);
 	virtual bool OnMouseWheel(int x, int y, int d);
 	virtual bool OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
 	virtual bool OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt);
