@@ -159,6 +159,7 @@ GameView::GameView():
 	altBehaviour(false),
 	showHud(true),
 	showDebug(false),
+	delayedActiveMenu(0),
 	wallBrush(false),
 	toolBrush(false),
 	decoBrush(false),
@@ -482,7 +483,7 @@ public:
 	void MouseEnterCallback(ui::Button * sender)
 	{
 		if(!needsClick && !v->GetMouseDown())
-			v->c->SetActiveMenu(menuID);
+			v->SetActiveMenuDelayed(menuID);
 	}
 	void ActionCallback(ui::Button * sender)
 	{
@@ -1081,10 +1082,17 @@ void GameView::OnMouseMove(int x, int y, int dx, int dy)
 		}
 	}
 	mouseInZoom = newMouseInZoom;
+
+	if (delayedActiveMenu)
+	{
+		c->SetActiveMenu(delayedActiveMenu);
+		delayedActiveMenu = 0;
+	}
 }
 
 void GameView::OnMouseDown(int x, int y, unsigned button)
 {
+	ui::Point mouseDownPoint = ui::Point(x, y);
 	if (altBehaviour && !shiftBehaviour && !ctrlBehaviour)
 		button = BUTTON_MIDDLE;
 	if  (!(zoomEnabled && !zoomCursorFixed))
@@ -1093,12 +1101,12 @@ void GameView::OnMouseDown(int x, int y, unsigned button)
 		{
 			if (button == BUTTON_LEFT && selectPoint1.X == -1)
 			{
-				selectPoint1 = c->PointTranslate(ui::Point(x, y));
+				selectPoint1 = c->PointTranslate(mouseDownPoint);
 				selectPoint2 = selectPoint1;
 			}
 			return;
 		}
-		if (currentMouse.X >= 0 && currentMouse.X < XRES && currentMouse.Y >= 0 && currentMouse.Y < YRES)
+		if (mouseDownPoint.X >= 0 && mouseDownPoint.X < XRES && mouseDownPoint.Y >= 0 && mouseDownPoint.Y < YRES)
 		{
 			if (button == BUTTON_LEFT)
 				toolIndex = 0;
@@ -1110,11 +1118,11 @@ void GameView::OnMouseDown(int x, int y, unsigned button)
 			c->HistorySnapshot();
 			if (drawMode == DrawRect || drawMode == DrawLine)
 			{
-				drawPoint1 = c->PointTranslate(ui::Point(x, y));
+				drawPoint1 = c->PointTranslate(mouseDownPoint);
 			}
 			if (drawMode == DrawPoints)
 			{
-				lastPoint = currentPoint = c->PointTranslate(ui::Point(x, y));
+				lastPoint = currentPoint = c->PointTranslate(mouseDownPoint);
 				c->DrawPoints(toolIndex, lastPoint, currentPoint, false);
 			}
 		}

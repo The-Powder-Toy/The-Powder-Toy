@@ -43,6 +43,7 @@ private:
 	bool altBehaviour;
 	bool showHud;
 	bool showDebug;
+	int delayedActiveMenu;
 	bool wallBrush;
 	bool toolBrush;
 	bool decoBrush;
@@ -139,6 +140,7 @@ public:
 	bool GetDebugHUD();
 	bool GetPlacingSave();
 	bool GetPlacingZoom();
+	void SetActiveMenuDelayed(int activeMenu) { delayedActiveMenu = activeMenu; }
 	bool CtrlBehaviour(){ return ctrlBehaviour; }
 	bool ShiftBehaviour(){ return shiftBehaviour; }
 	bool AltBehaviour(){ return altBehaviour; }

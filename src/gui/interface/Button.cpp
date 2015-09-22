@@ -83,19 +83,22 @@ void Button::Draw(const Point& screenPos)
 	ui::Colour borderColour = Appearance.BorderInactive;
 	ui::Colour backgroundColour = Appearance.BackgroundInactive;
 
-	if(Enabled)
+	if (Enabled)
 	{
-		if(isButtonDown || (isTogglable && toggle))
+		if (isMouseInside)
 		{
-			textColour = Appearance.TextActive;
-			borderColour = Appearance.BorderActive;
-			backgroundColour = Appearance.BackgroundActive;
-		}
-		else if (isMouseInside)
-		{
-			textColour = Appearance.TextHover;
-			borderColour = Appearance.BorderHover;
-			backgroundColour = Appearance.BackgroundHover;
+			if (isButtonDown || (isTogglable && toggle))
+			{
+				textColour = Appearance.TextActive;
+				borderColour = Appearance.BorderActive;
+				backgroundColour = Appearance.BackgroundActive;
+			}
+			else
+			{
+				textColour = Appearance.TextHover;
+				borderColour = Appearance.BorderHover;
+				backgroundColour = Appearance.BackgroundHover;
+			}
 		}
 		else
 		{
