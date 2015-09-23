@@ -190,7 +190,6 @@ GameView::GameView():
 	activeBrush(NULL),
 	saveSimulationButtonEnabled(false),
 	drawMode(DrawPoints),
-	drawModeReset(false),
 	drawPoint1(0, 0),
 	drawPoint2(0, 0),
 	selectMode(SelectNone),
@@ -1081,6 +1080,7 @@ void GameView::OnMouseMove(int x, int y, int dx, int dy)
 		else if (drawMode == DrawPoints || drawMode == DrawFill)
 		{
 			isMouseDown = false;
+			drawMode = DrawPoints;
 			c->MouseUp(x, y, 0, 2);
 		}
 	}
@@ -1220,11 +1220,10 @@ void GameView::OnMouseUp(int x, int y, unsigned button)
 				// plop tool stuff (like STKM)
 				c->ToolClick(toolIndex, finalDrawPoint2);
 			}
-			if (drawModeReset)
-			{
-				drawModeReset = false;
-				drawMode = DrawPoints;
-			}
+
+			// update the drawing mode for the next line
+			// since ctrl/shift state may have changed since we started drawing
+			UpdateDrawMode();
 		}
 	}
 }
@@ -1353,47 +1352,14 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 	{
 	case KEY_LALT:
 	case KEY_RALT:
-		drawSnap = true;
 		enableAltBehaviour();
 		break;
 	case KEY_LCTRL:
 	case KEY_RCTRL:
-		if (!isMouseDown)
-		{
-			if (drawModeReset)
-				drawModeReset = false;
-			else
-				drawPoint1 = currentMouse;
-			if (shift)
-			{
-				if (!toolBrush)
-					drawMode = DrawFill;
-				else
-					drawMode = DrawPoints;
-			}
-			else
-				drawMode = DrawRect;
-		}
 		enableCtrlBehaviour();
 		break;
 	case KEY_LSHIFT:
 	case KEY_RSHIFT:
-		if (!isMouseDown)
-		{
-			if (drawModeReset)
-				drawModeReset = false;
-			else
-				drawPoint1 = currentMouse;
-			if (ctrl)
-			{
-				if (!toolBrush)
-					drawMode = DrawFill;
-				else
-					drawMode = DrawPoints;
-			}
-			else
-				drawMode = DrawLine;
-		}
 		enableShiftBehaviour();
 		break;
 	case ' ': //Space
@@ -1595,15 +1561,10 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 
 void GameView::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
-	if (!isMouseDown)
-		drawMode = DrawPoints;
-	else if (drawMode == DrawPoints)
-		drawModeReset = true;
 	switch(key)
 	{
 	case KEY_LALT:
 	case KEY_RALT:
-		drawSnap = false;
 		disableAltBehaviour();
 		break;
 	case KEY_LCTRL:
@@ -1927,7 +1888,9 @@ void GameView::enableShiftBehaviour()
 	if(!shiftBehaviour)
 	{
 		shiftBehaviour = true;
-		if(isMouseDown || (toolBrush && drawMode == DrawPoints))
+		if (!isMouseDown)
+			UpdateDrawMode();
+		if (isMouseDown || (toolBrush && drawMode == DrawPoints))
 			c->SetToolStrength(10.0f);
 	}
 }
@@ -1937,7 +1900,9 @@ void GameView::disableShiftBehaviour()
 	if(shiftBehaviour)
 	{
 		shiftBehaviour = false;
-		if(!ctrlBehaviour)
+		if (!isMouseDown)
+			UpdateDrawMode();
+		if (!ctrlBehaviour)
 			c->SetToolStrength(1.0f);
 		else
 			c->SetToolStrength(.1f);
@@ -1949,41 +1914,36 @@ void GameView::enableAltBehaviour()
 	if(!altBehaviour)
 	{
 		altBehaviour = true;
+		drawSnap = true;
 	}
 }
 
 void GameView::disableAltBehaviour()
 {
-	if(altBehaviour)
+	if (altBehaviour)
 	{
 		altBehaviour = false;
+		drawSnap = false;
 	}
 }
 
-void GameView::enableCtrlBehaviour() {
-	// "Usual" Ctrl-holding behavior uses highlights
-	enableCtrlBehaviour(true);
-}
-
-void GameView::enableCtrlBehaviour(bool isHighlighted)
+void GameView::enableCtrlBehaviour()
 {
 	if(!ctrlBehaviour)
 	{
 		ctrlBehaviour = true;
+		if (!isMouseDown)
+			UpdateDrawMode();
 
 		//Show HDD save & load buttons
-		if (isHighlighted) {
-			saveSimulationButton->Appearance.BackgroundInactive = saveSimulationButton->Appearance.BackgroundHover = ui::Colour(255, 255, 255);
-			saveSimulationButton->Appearance.TextInactive = saveSimulationButton->Appearance.TextHover = ui::Colour(0, 0, 0);
-		}
+		saveSimulationButton->Appearance.BackgroundInactive = saveSimulationButton->Appearance.BackgroundHover = ui::Colour(255, 255, 255);
+		saveSimulationButton->Appearance.TextInactive = saveSimulationButton->Appearance.TextHover = ui::Colour(0, 0, 0);
 
 		saveSimulationButton->Enabled = true;
 		SetSaveButtonTooltips();
 
-		if (isHighlighted) {
-			searchButton->Appearance.BackgroundInactive = searchButton->Appearance.BackgroundHover = ui::Colour(255, 255, 255);
-			searchButton->Appearance.TextInactive = searchButton->Appearance.TextHover = ui::Colour(0, 0, 0);
-		}
+		searchButton->Appearance.BackgroundInactive = searchButton->Appearance.BackgroundHover = ui::Colour(255, 255, 255);
+		searchButton->Appearance.TextInactive = searchButton->Appearance.TextHover = ui::Colour(0, 0, 0);
 
 		searchButton->SetToolTip("Open a simulation from your hard drive.");
 		if (currentSaveType == 2)
@@ -2003,6 +1963,8 @@ void GameView::disableCtrlBehaviour()
 	if(ctrlBehaviour)
 	{
 		ctrlBehaviour = false;
+		if (!isMouseDown)
+			UpdateDrawMode();
 
 		//Hide HDD save & load buttons
 		saveSimulationButton->Appearance.BackgroundInactive = ui::Colour(0, 0, 0);
@@ -2021,6 +1983,23 @@ void GameView::disableCtrlBehaviour()
 		else
 			c->SetToolStrength(10.0f);
 	}
+}
+
+void GameView::UpdateDrawMode()
+{
+	if (ctrlBehaviour && shiftBehaviour)
+	{
+		if (toolBrush)
+			drawMode = DrawPoints;
+		else
+			drawMode = DrawFill;
+	}
+	else if (ctrlBehaviour)
+		drawMode = DrawRect;
+	else if (shiftBehaviour)
+		drawMode = DrawLine;
+	else
+		drawMode = DrawPoints;
 }
 
 void GameView::SetSaveButtonTooltips()

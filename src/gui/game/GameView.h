@@ -97,7 +97,6 @@ private:
 	vector<ToolButton*> colourPresets;
 
 	DrawMode drawMode;
-	bool drawModeReset;
 	ui::Point drawPoint1;
 	ui::Point drawPoint2;
 
@@ -123,10 +122,10 @@ private:
 	void enableShiftBehaviour();
 	void disableShiftBehaviour();
 	void enableCtrlBehaviour();
-	void enableCtrlBehaviour(bool isHighlighted);
 	void disableCtrlBehaviour();
 	void enableAltBehaviour();
 	void disableAltBehaviour();
+	void UpdateDrawMode();
 public:
 	GameView();
 	virtual ~GameView();
