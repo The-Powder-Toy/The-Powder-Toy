@@ -32,6 +32,12 @@ void ToolButton::OnMouseUnclick(int x, int y, unsigned int button)
 	}
 }
 
+void ToolButton::OnMouseUp(int x, int y, unsigned int button)
+{
+	// mouse was unclicked, reset variables in case the unclick happened outside
+	isButtonDown = false;
+}
+
 void ToolButton::Draw(const ui::Point& screenPos)
 {
 	Graphics * g = ui::Engine::Ref().g;

@@ -482,6 +482,9 @@ public:
 	}
 	void MouseEnterCallback(ui::Button * sender)
 	{
+		// don't immediately change the active menu, the actual set is done inside GameView::OnMouseMove
+		// if we change it here it causes components to be removed, which causes the window to stop sending events
+		// and then the previous menusection button never gets sent the OnMouseLeave event and is never unhighlighted
 		if(!needsClick && !v->GetMouseDown())
 			v->SetActiveMenuDelayed(menuID);
 	}
@@ -1083,6 +1086,7 @@ void GameView::OnMouseMove(int x, int y, int dx, int dy)
 	}
 	mouseInZoom = newMouseInZoom;
 
+	// set active menu (delayed)
 	if (delayedActiveMenu)
 	{
 		c->SetActiveMenu(delayedActiveMenu);
@@ -1092,7 +1096,7 @@ void GameView::OnMouseMove(int x, int y, int dx, int dy)
 
 void GameView::OnMouseDown(int x, int y, unsigned button)
 {
-	ui::Point mouseDownPoint = ui::Point(x, y);
+	currentMouse = ui::Point(x, y);
 	if (altBehaviour && !shiftBehaviour && !ctrlBehaviour)
 		button = BUTTON_MIDDLE;
 	if  (!(zoomEnabled && !zoomCursorFixed))
@@ -1101,12 +1105,12 @@ void GameView::OnMouseDown(int x, int y, unsigned button)
 		{
 			if (button == BUTTON_LEFT && selectPoint1.X == -1)
 			{
-				selectPoint1 = c->PointTranslate(mouseDownPoint);
+				selectPoint1 = c->PointTranslate(currentMouse);
 				selectPoint2 = selectPoint1;
 			}
 			return;
 		}
-		if (mouseDownPoint.X >= 0 && mouseDownPoint.X < XRES && mouseDownPoint.Y >= 0 && mouseDownPoint.Y < YRES)
+		if (currentMouse.X >= 0 && currentMouse.X < XRES && currentMouse.Y >= 0 && currentMouse.Y < YRES)
 		{
 			if (button == BUTTON_LEFT)
 				toolIndex = 0;
@@ -1118,11 +1122,11 @@ void GameView::OnMouseDown(int x, int y, unsigned button)
 			c->HistorySnapshot();
 			if (drawMode == DrawRect || drawMode == DrawLine)
 			{
-				drawPoint1 = c->PointTranslate(mouseDownPoint);
+				drawPoint1 = c->PointTranslate(currentMouse);
 			}
 			if (drawMode == DrawPoints)
 			{
-				lastPoint = currentPoint = c->PointTranslate(mouseDownPoint);
+				lastPoint = currentPoint = c->PointTranslate(currentMouse);
 				c->DrawPoints(toolIndex, lastPoint, currentPoint, false);
 			}
 		}
@@ -1131,6 +1135,7 @@ void GameView::OnMouseDown(int x, int y, unsigned button)
 
 void GameView::OnMouseUp(int x, int y, unsigned button)
 {
+	currentMouse = ui::Point(x, y);
 	if (zoomEnabled && !zoomCursorFixed)
 	{
 		zoomCursorFixed = true;
@@ -1184,7 +1189,7 @@ void GameView::OnMouseUp(int x, int y, unsigned button)
 		if (isMouseDown)
 		{
 			isMouseDown = false;
-			ui::Point finalDrawPoint2 = c->PointTranslate(ui::Point(x, y));
+			ui::Point finalDrawPoint2 = c->PointTranslate(currentMouse);
 			if (drawMode == DrawRect || drawMode == DrawLine)
 			{
 				drawPoint2 = finalDrawPoint2;
@@ -1590,15 +1595,9 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 
 void GameView::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
-	if(ctrl && shift && drawMode != DrawPoints)
-		drawMode = DrawFill;
-	else if (ctrl && drawMode != DrawPoints)
-		drawMode = DrawRect;
-	else if (shift && drawMode != DrawPoints)
-		drawMode = DrawLine;
-	else if(!isMouseDown)
+	if (!isMouseDown)
 		drawMode = DrawPoints;
-	else
+	else if (drawMode == DrawPoints)
 		drawModeReset = true;
 	switch(key)
 	{
