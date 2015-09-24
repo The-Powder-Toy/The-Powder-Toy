@@ -673,7 +673,7 @@ bool GameController::KeyPress(int key, Uint16 character, bool shift, bool ctrl, 
 			sim->player2.comm = (int)(sim->player2.comm)|0x04;  //Jump command
 		}
 
-		if((!sim->elementCount[PT_STKM2] || ctrl) && gameView->GetSelectMode() == SelectNone)
+		if (!sim->elementCount[PT_STKM2] || ctrl)
 		{
 			switch(key)
 			{

@@ -1101,6 +1101,7 @@ void GameView::OnMouseDown(int x, int y, unsigned button)
 		button = BUTTON_MIDDLE;
 	if  (!(zoomEnabled && !zoomCursorFixed))
 	{
+		isMouseDown = true;
 		if (selectMode != SelectNone)
 		{
 			if (button == BUTTON_LEFT && selectPoint1.X == -1)
@@ -1118,7 +1119,6 @@ void GameView::OnMouseDown(int x, int y, unsigned button)
 				toolIndex = 1;
 			if (button == BUTTON_MIDDLE)
 				toolIndex = 2;
-			isMouseDown = true;
 			c->HistorySnapshot();
 			if (drawMode == DrawRect || drawMode == DrawLine)
 			{
@@ -1142,8 +1142,9 @@ void GameView::OnMouseUp(int x, int y, unsigned button)
 		drawMode = DrawPoints;
 		isMouseDown = false;
 	}
-	else
+	else if (isMouseDown)
 	{
+		isMouseDown = false;
 		if (selectMode != SelectNone)
 		{
 			if (button == BUTTON_LEFT && selectPoint1.X != -1 && selectPoint1.Y != -1 && selectPoint2.X != -1 && selectPoint2.Y != -1)
@@ -1186,46 +1187,43 @@ void GameView::OnMouseUp(int x, int y, unsigned button)
 			return;
 		}
 
-		if (isMouseDown)
+		ui::Point finalDrawPoint2 = c->PointTranslate(currentMouse);
+		if (drawMode == DrawRect || drawMode == DrawLine)
 		{
-			isMouseDown = false;
-			ui::Point finalDrawPoint2 = c->PointTranslate(currentMouse);
-			if (drawMode == DrawRect || drawMode == DrawLine)
+			drawPoint2 = finalDrawPoint2;
+			if (drawSnap && drawMode == DrawLine)
 			{
-				drawPoint2 = finalDrawPoint2;
-
-				if (drawSnap && drawMode == DrawLine)
-				{
-					finalDrawPoint2 = lineSnapCoords(c->PointTranslate(drawPoint1), drawPoint2);
-				}
-
-				if (drawSnap && drawMode == DrawRect)
-				{
-					finalDrawPoint2 = rectSnapCoords(c->PointTranslate(drawPoint1), drawPoint2);
-				}
-
-				if (drawMode == DrawRect)
-				{
-					c->DrawRect(toolIndex, c->PointTranslate(drawPoint1), finalDrawPoint2);
-				}
-				if (drawMode == DrawLine)
-				{
-					c->DrawLine(toolIndex, c->PointTranslate(drawPoint1), finalDrawPoint2);
-				}
+				finalDrawPoint2 = lineSnapCoords(c->PointTranslate(drawPoint1), drawPoint2);
 			}
-			else if (drawMode == DrawPoints)
+			if (drawSnap && drawMode == DrawRect)
 			{
-				// draw final line
-				c->DrawPoints(toolIndex, lastPoint, finalDrawPoint2, true);
-				// plop tool stuff (like STKM)
-				c->ToolClick(toolIndex, finalDrawPoint2);
+				finalDrawPoint2 = rectSnapCoords(c->PointTranslate(drawPoint1), drawPoint2);
 			}
 
-			// update the drawing mode for the next line
-			// since ctrl/shift state may have changed since we started drawing
-			UpdateDrawMode();
+			if (drawMode == DrawRect)
+			{
+				c->DrawRect(toolIndex, c->PointTranslate(drawPoint1), finalDrawPoint2);
+			}
+			if (drawMode == DrawLine)
+			{
+				c->DrawLine(toolIndex, c->PointTranslate(drawPoint1), finalDrawPoint2);
+			}
 		}
+		else if (drawMode == DrawPoints)
+		{
+			// draw final line
+			c->DrawPoints(toolIndex, lastPoint, finalDrawPoint2, true);
+			// plop tool stuff (like STKM)
+			c->ToolClick(toolIndex, finalDrawPoint2);
+		}
+
+		// update the drawing mode for the next line
+		// since ctrl/shift state may have changed since we started drawing
+		UpdateDrawMode();
 	}
+	// this shouldn't happen, but do this just in case
+	else if (selectMode != SelectNone && button != BUTTON_LEFT)
+		selectMode = SelectNone;
 }
 
 void GameView::ExitPrompt()
@@ -1275,13 +1273,13 @@ void GameView::ToolTip(ui::Point senderPosition, std::string toolTip)
 
 void GameView::OnMouseWheel(int x, int y, int d)
 {
-	if(!d)
+	if (!d)
 		return;
-	if(selectMode!=SelectNone)
+	if (selectMode != SelectNone)
 	{
 		return;
 	}
-	if(zoomEnabled && !zoomCursorFixed)
+	if (zoomEnabled && !zoomCursorFixed)
 	{
 		c->AdjustZoomSize(d);
 	}
@@ -1294,7 +1292,8 @@ void GameView::OnMouseWheel(int x, int y, int d)
 void GameView::BeginStampSelection()
 {
 	selectMode = SelectStamp;
-	selectPoint1 = ui::Point(-1, -1);
+	selectPoint1 = selectPoint2 = ui::Point(-1, -1);
+	isMouseDown = false;
 	buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to create a stamp (right click = cancel)";
 	buttonTipShow = 120;
 }
@@ -1313,19 +1312,15 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 			switch (key)
 			{
 			case KEY_RIGHT:
-			case 'd':
 				c->TranslateSave(ui::Point(1, 0));
 				return;
 			case KEY_LEFT:
-			case 'a':
 				c->TranslateSave(ui::Point(-1, 0));
 				return;
 			case KEY_UP:
-			case 'w':
 				c->TranslateSave(ui::Point(0, -1));
 				return;
 			case KEY_DOWN:
-			case 's':
 				c->TranslateSave(ui::Point(0, 1));
 				return;
 			case 'r':
@@ -1483,6 +1478,7 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		{
 			selectMode = SelectCopy;
 			selectPoint1 = selectPoint2 = ui::Point(-1, -1);
+			isMouseDown = false;
 			buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to copy (right click = cancel)";
 			buttonTipShow = 120;
 		}
@@ -1492,15 +1488,19 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		{
 			selectMode = SelectCut;
 			selectPoint1 = selectPoint2 = ui::Point(-1, -1);
+			isMouseDown = false;
 			buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to copy then cut (right click = cancel)";
 			buttonTipShow = 120;
 		}
 		break;
 	case 'v':
-		if(ctrl)
+		if (ctrl)
 		{
-			if (c->LoadClipboard());
+			if (c->LoadClipboard())
+			{
 				selectPoint1 = selectPoint2 = mousePosition;
+				isMouseDown = false;
+			}
 		}
 		break;
 	case 'l':
@@ -1515,6 +1515,7 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		}
 	}
 	case 'k':
+		selectMode = SelectNone;
 		selectPoint1 = selectPoint2 = ui::Point(-1, -1);
 		c->OpenStamps();
 		break;
@@ -1600,21 +1601,24 @@ void GameView::OnTick(float dt)
 		selectMode = SelectNone;
 	if (zoomEnabled && !zoomCursorFixed)
 		c->SetZoomPosition(currentMouse);
-	if (drawMode == DrawPoints)
+	if (selectMode == SelectNone)
 	{
-		if (isMouseDown)
+		if (drawMode == DrawPoints)
 		{
-			c->DrawPoints(toolIndex, lastPoint, currentPoint, true);
-			lastPoint = currentPoint;
+			if (isMouseDown)
+			{
+				c->DrawPoints(toolIndex, lastPoint, currentPoint, true);
+				lastPoint = currentPoint;
+			}
 		}
-	}
-	else if (drawMode == DrawFill && isMouseDown)
-	{
-		c->DrawFill(toolIndex, c->PointTranslate(currentMouse));
-	}
-	else if (windTool && isMouseDown && drawMode == DrawLine)
-	{
-		c->DrawLine(toolIndex, c->PointTranslate(drawPoint1), lineSnapCoords(c->PointTranslate(drawPoint1), currentMouse));
+		else if (drawMode == DrawFill && isMouseDown)
+		{
+			c->DrawFill(toolIndex, c->PointTranslate(currentMouse));
+		}
+		else if (windTool && isMouseDown && drawMode == DrawLine)
+		{
+			c->DrawLine(toolIndex, c->PointTranslate(drawPoint1), lineSnapCoords(c->PointTranslate(drawPoint1), currentMouse));
+		}
 	}
 
 	sign * foundSign = c->GetSignAt(mousePosition.X, mousePosition.Y);
@@ -1776,6 +1780,7 @@ void GameView::DoTick(float dt)
 	if (!c->MouseTick())
 	{
 		isMouseDown = false;
+		selectMode = SelectNone;
 		drawMode = DrawPoints;
 	}
 	Window::DoTick(dt);
@@ -1888,9 +1893,9 @@ void GameView::enableShiftBehaviour()
 	if(!shiftBehaviour)
 	{
 		shiftBehaviour = true;
-		if (!isMouseDown)
+		if (!isMouseDown || selectMode != SelectNone)
 			UpdateDrawMode();
-		if (isMouseDown || (toolBrush && drawMode == DrawPoints))
+		else if (toolBrush && drawMode == DrawPoints)
 			c->SetToolStrength(10.0f);
 	}
 }
@@ -1900,7 +1905,7 @@ void GameView::disableShiftBehaviour()
 	if(shiftBehaviour)
 	{
 		shiftBehaviour = false;
-		if (!isMouseDown)
+		if (!isMouseDown || selectMode != SelectNone)
 			UpdateDrawMode();
 		if (!ctrlBehaviour)
 			c->SetToolStrength(1.0f);
@@ -1932,7 +1937,7 @@ void GameView::enableCtrlBehaviour()
 	if(!ctrlBehaviour)
 	{
 		ctrlBehaviour = true;
-		if (!isMouseDown)
+		if (!isMouseDown || selectMode != SelectNone)
 			UpdateDrawMode();
 
 		//Show HDD save & load buttons
@@ -1948,7 +1953,7 @@ void GameView::enableCtrlBehaviour()
 		searchButton->SetToolTip("Open a simulation from your hard drive.");
 		if (currentSaveType == 2)
 			((SplitButton*)saveSimulationButton)->SetShowSplit(true);
-		if(isMouseDown || (toolBrush && drawMode == DrawPoints))
+		if ((isMouseDown && selectMode == SelectNone) || (toolBrush && drawMode == DrawPoints))
 		{
 			if(!shiftBehaviour)
 				c->SetToolStrength(.1f);
@@ -1963,7 +1968,7 @@ void GameView::disableCtrlBehaviour()
 	if(ctrlBehaviour)
 	{
 		ctrlBehaviour = false;
-		if (!isMouseDown)
+		if (!isMouseDown || selectMode != SelectNone)
 			UpdateDrawMode();
 
 		//Hide HDD save & load buttons
