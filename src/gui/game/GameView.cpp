@@ -1101,9 +1101,9 @@ void GameView::OnMouseDown(int x, int y, unsigned button)
 		button = BUTTON_MIDDLE;
 	if  (!(zoomEnabled && !zoomCursorFixed))
 	{
-		isMouseDown = true;
 		if (selectMode != SelectNone)
 		{
+			isMouseDown = true;
 			if (button == BUTTON_LEFT && selectPoint1.X == -1)
 			{
 				selectPoint1 = c->PointTranslate(currentMouse);
@@ -1119,6 +1119,7 @@ void GameView::OnMouseDown(int x, int y, unsigned button)
 				toolIndex = 1;
 			if (button == BUTTON_MIDDLE)
 				toolIndex = 2;
+			isMouseDown = true;
 			c->HistorySnapshot();
 			if (drawMode == DrawRect || drawMode == DrawLine)
 			{
@@ -1890,33 +1891,29 @@ void GameView::NotifyPlaceSaveChanged(GameModel * sender)
 
 void GameView::enableShiftBehaviour()
 {
-	if(!shiftBehaviour)
+	if (!shiftBehaviour)
 	{
 		shiftBehaviour = true;
 		if (!isMouseDown || selectMode != SelectNone)
 			UpdateDrawMode();
-		else if (toolBrush && drawMode == DrawPoints)
-			c->SetToolStrength(10.0f);
+		UpdateToolStrength();
 	}
 }
 
 void GameView::disableShiftBehaviour()
 {
-	if(shiftBehaviour)
+	if (shiftBehaviour)
 	{
 		shiftBehaviour = false;
 		if (!isMouseDown || selectMode != SelectNone)
 			UpdateDrawMode();
-		if (!ctrlBehaviour)
-			c->SetToolStrength(1.0f);
-		else
-			c->SetToolStrength(.1f);
+		UpdateToolStrength();
 	}
 }
 
 void GameView::enableAltBehaviour()
 {
-	if(!altBehaviour)
+	if (!altBehaviour)
 	{
 		altBehaviour = true;
 		drawSnap = true;
@@ -1934,11 +1931,12 @@ void GameView::disableAltBehaviour()
 
 void GameView::enableCtrlBehaviour()
 {
-	if(!ctrlBehaviour)
+	if (!ctrlBehaviour)
 	{
 		ctrlBehaviour = true;
 		if (!isMouseDown || selectMode != SelectNone)
 			UpdateDrawMode();
+		UpdateToolStrength();
 
 		//Show HDD save & load buttons
 		saveSimulationButton->Appearance.BackgroundInactive = saveSimulationButton->Appearance.BackgroundHover = ui::Colour(255, 255, 255);
@@ -1953,23 +1951,17 @@ void GameView::enableCtrlBehaviour()
 		searchButton->SetToolTip("Open a simulation from your hard drive.");
 		if (currentSaveType == 2)
 			((SplitButton*)saveSimulationButton)->SetShowSplit(true);
-		if ((isMouseDown && selectMode == SelectNone) || (toolBrush && drawMode == DrawPoints))
-		{
-			if(!shiftBehaviour)
-				c->SetToolStrength(.1f);
-			else
-				c->SetToolStrength(10.0f);
-		}
 	}
 }
 
 void GameView::disableCtrlBehaviour()
 {
-	if(ctrlBehaviour)
+	if (ctrlBehaviour)
 	{
 		ctrlBehaviour = false;
 		if (!isMouseDown || selectMode != SelectNone)
 			UpdateDrawMode();
+		UpdateToolStrength();
 
 		//Hide HDD save & load buttons
 		saveSimulationButton->Appearance.BackgroundInactive = ui::Colour(0, 0, 0);
@@ -1983,10 +1975,6 @@ void GameView::disableCtrlBehaviour()
 		searchButton->SetToolTip("Find & open a simulation. Hold Ctrl to load offline saves.");
 		if (currentSaveType == 2)
 			((SplitButton*)saveSimulationButton)->SetShowSplit(false);
-		if(!shiftBehaviour)
-			c->SetToolStrength(1.0f);
-		else
-			c->SetToolStrength(10.0f);
 	}
 }
 
@@ -2005,6 +1993,16 @@ void GameView::UpdateDrawMode()
 		drawMode = DrawLine;
 	else
 		drawMode = DrawPoints;
+}
+
+void GameView::UpdateToolStrength()
+{
+	if (shiftBehaviour)
+		c->SetToolStrength(10.0f);
+	else if (ctrlBehaviour)
+		c->SetToolStrength(.1f);
+	else
+		c->SetToolStrength(1.0f);
 }
 
 void GameView::SetSaveButtonTooltips()

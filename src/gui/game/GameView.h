@@ -126,6 +126,7 @@ private:
 	void enableAltBehaviour();
 	void disableAltBehaviour();
 	void UpdateDrawMode();
+	void UpdateToolStrength();
 public:
 	GameView();
 	virtual ~GameView();

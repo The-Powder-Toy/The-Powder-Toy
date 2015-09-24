@@ -422,7 +422,7 @@ void GameController::DrawRect(int toolSelection, ui::Point point1, ui::Point poi
 	Brush * cBrush = gameModel->GetBrush();
 	if(!activeTool || !cBrush)
 		return;
-	activeTool->SetStrength(gameModel->GetToolStrength());
+	activeTool->SetStrength(1.0f);
 	activeTool->DrawRect(sim, cBrush, point1, point2);
 }
 
@@ -434,7 +434,7 @@ void GameController::DrawLine(int toolSelection, ui::Point point1, ui::Point poi
 	Brush * cBrush = gameModel->GetBrush();
 	if(!activeTool || !cBrush)
 		return;
-	activeTool->SetStrength(gameModel->GetToolStrength());
+	activeTool->SetStrength(1.0f);
 	activeTool->DrawLine(sim, cBrush, point1, point2);
 }
 
@@ -446,7 +446,7 @@ void GameController::DrawFill(int toolSelection, ui::Point point)
 	Brush * cBrush = gameModel->GetBrush();
 	if(!activeTool || !cBrush)
 		return;
-	activeTool->SetStrength(gameModel->GetToolStrength());
+	activeTool->SetStrength(1.0f);
 	activeTool->DrawFill(sim, cBrush, point);
 }
 
