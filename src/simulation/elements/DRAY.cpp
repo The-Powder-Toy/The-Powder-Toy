@@ -81,6 +81,8 @@ int Element_DRAY::update(UPDATE_FUNC_ARGS)
 						for (int xStep = rx*-1, yStep = ry*-1, xCurrent = x+xStep, yCurrent = y+yStep; ; xCurrent+=xStep, yCurrent+=yStep)
 						{
 							int rr = pmap[yCurrent][xCurrent];
+							if (!rr)
+								rr = sim->photons[yCurrent][xCurrent];
 							if ((!copyLength && (rr&0xFF) == ctype && (ctype != PT_LIFE || parts[rr>>8].ctype == ctypeExtra))
 									|| !(--partsRemaining && InBounds(xCurrent+xStep, yCurrent+yStep)))
 							{
@@ -96,6 +98,12 @@ int Element_DRAY::update(UPDATE_FUNC_ARGS)
 						for (int xStep = rx*-1, yStep = ry*-1, xCurrent = x+xStep, yCurrent = y+yStep; InBounds(xCopyTo, yCopyTo) && --partsRemaining; xCurrent+=xStep, yCurrent+=yStep, xCopyTo+=xStep, yCopyTo+=yStep)
 						{
 							int type = pmap[yCurrent][xCurrent]&0xFF, p;
+							bool isPhot = false;
+							if (!type)
+							{
+								type = sim->photons[yCurrent][xCurrent]&0xFF;
+								isPhot = true;
+							}
 							if (overwrite)
 								sim->delete_part(xCopyTo, yCopyTo);
 							if (type == PT_SPRK) //hack
@@ -108,7 +116,10 @@ int Element_DRAY::update(UPDATE_FUNC_ARGS)
 							{
 								if (type == PT_SPRK)
 									sim->part_change_type(p, xCopyTo, yCopyTo, PT_SPRK);
-								parts[p] = parts[pmap[yCurrent][xCurrent]>>8];
+								if (isPhot)
+									parts[p] = parts[sim->photons[yCurrent][xCurrent]>>8];
+								else
+									parts[p] = parts[pmap[yCurrent][xCurrent]>>8];
 								parts[p].x = xCopyTo;
 								parts[p].y = yCopyTo;
 							}
