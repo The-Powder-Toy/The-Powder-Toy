@@ -1217,14 +1217,14 @@ void GameView::OnMouseUp(int x, int y, unsigned button)
 			// plop tool stuff (like STKM)
 			c->ToolClick(toolIndex, finalDrawPoint2);
 		}
-
-		// update the drawing mode for the next line
-		// since ctrl/shift state may have changed since we started drawing
-		UpdateDrawMode();
 	}
 	// this shouldn't happen, but do this just in case
 	else if (selectMode != SelectNone && button != BUTTON_LEFT)
 		selectMode = SelectNone;
+
+	// update the drawing mode for the next line
+	// since ctrl/shift state may have changed since we started drawing
+	UpdateDrawMode();
 }
 
 void GameView::ExitPrompt()
@@ -1368,10 +1368,7 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		}
 		else
 		{
-			if (drawMode != DrawLine && !windTool)
-			{
-				isMouseDown = false;
-			}
+			isMouseDown = false;
 			zoomCursorFixed = false;
 			c->SetZoomEnabled(true);
 		}
