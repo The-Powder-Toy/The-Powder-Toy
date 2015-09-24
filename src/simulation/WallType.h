@@ -11,6 +11,7 @@ struct wall_type
 	int drawstyle;
 	VideoBuffer * (*textureGen)(int, int, int);
 	const char *name;
+	const char *identifier;
 	const char *descs;
 };
 

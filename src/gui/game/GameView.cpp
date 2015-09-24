@@ -159,7 +159,7 @@ GameView::GameView():
 	altBehaviour(false),
 	showHud(true),
 	showDebug(false),
-	delayedActiveMenu(0),
+	delayedActiveMenu(-1),
 	wallBrush(false),
 	toolBrush(false),
 	decoBrush(false),
@@ -1087,10 +1087,10 @@ void GameView::OnMouseMove(int x, int y, int dx, int dy)
 	mouseInZoom = newMouseInZoom;
 
 	// set active menu (delayed)
-	if (delayedActiveMenu)
+	if (delayedActiveMenu != -1)
 	{
 		c->SetActiveMenu(delayedActiveMenu);
-		delayedActiveMenu = 0;
+		delayedActiveMenu = -1;
 	}
 }
 
