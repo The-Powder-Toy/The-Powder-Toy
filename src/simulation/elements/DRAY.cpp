@@ -78,11 +78,27 @@ int Element_DRAY::update(UPDATE_FUNC_ARGS)
 							continue;
 
 						//figure out where the copying will start/end
+						bool foundParticle = false;
+						bool isEnergy = false;
 						for (int xStep = rx*-1, yStep = ry*-1, xCurrent = x+xStep, yCurrent = y+yStep; ; xCurrent+=xStep, yCurrent+=yStep)
 						{
-							int rr = pmap[yCurrent][xCurrent];
-							if (!rr)
+							int rr;
+							if (!foundParticle)
+							{
+								rr = pmap[yCurrent][xCurrent];
+								if (!rr)
+								{
+									rr = sim->photons[yCurrent][xCurrent];
+									foundParticle = isEnergy = true;
+								}
+								else
+									foundParticle = true;
+							}
+							else if (isEnergy)
 								rr = sim->photons[yCurrent][xCurrent];
+							else
+								rr = pmap[yCurrent][xCurrent];
+
 							if ((!copyLength && (rr&0xFF) == ctype && (ctype != PT_LIFE || parts[rr>>8].ctype == ctypeExtra))
 									|| !(--partsRemaining && InBounds(xCurrent+xStep, yCurrent+yStep)))
 							{
@@ -95,28 +111,39 @@ int Element_DRAY::update(UPDATE_FUNC_ARGS)
 
 						//now, actually copy the particles
 						partsRemaining = copyLength + 1;
+						int type, p;
 						for (int xStep = rx*-1, yStep = ry*-1, xCurrent = x+xStep, yCurrent = y+yStep; InBounds(xCopyTo, yCopyTo) && --partsRemaining; xCurrent+=xStep, yCurrent+=yStep, xCopyTo+=xStep, yCopyTo+=yStep)
 						{
-							int type = pmap[yCurrent][xCurrent]&0xFF, p;
-							bool isPhot = false;
-							if (!type)
-							{
+							if (isEnergy)
 								type = sim->photons[yCurrent][xCurrent]&0xFF;
-								isPhot = true;
-							}
+							else
+								type = pmap[yCurrent][xCurrent]&0xFF;
+
 							if (overwrite)
-								sim->delete_part(xCopyTo, yCopyTo);
+							{
+								if (isEnergy)
+								{
+									if (sim->photons[yCopyTo][xCopyTo])
+										sim->kill_part(sim->photons[yCopyTo][xCopyTo]>>8);
+								}
+								else
+								{
+									if (pmap[yCopyTo][xCopyTo])
+										sim->kill_part(pmap[yCopyTo][xCopyTo]>>8);
+								}
+							}
 							if (type == PT_SPRK) //hack
 								p = sim->create_part(-1, xCopyTo, yCopyTo, PT_METL);
 							else if (type)
 								p = sim->create_part(-1, xCopyTo, yCopyTo, type);
 							else
 								continue;
+
 							if (p >= 0)
 							{
 								if (type == PT_SPRK)
 									sim->part_change_type(p, xCopyTo, yCopyTo, PT_SPRK);
-								if (isPhot)
+								if (isEnergy)
 									parts[p] = parts[sim->photons[yCurrent][xCurrent]>>8];
 								else
 									parts[p] = parts[pmap[yCurrent][xCurrent]>>8];
