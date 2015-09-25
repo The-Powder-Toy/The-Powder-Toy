@@ -34,6 +34,7 @@ class GameView: public ui::Window
 {
 private:
 	bool isMouseDown;
+	bool skipDraw;
 	bool zoomEnabled;
 	bool zoomCursorFixed;
 	bool mouseInZoom;

@@ -150,6 +150,7 @@ public:
 GameView::GameView():
 	ui::Window(ui::Point(0, 0), ui::Point(WINDOWW, WINDOWH)),
 	isMouseDown(false),
+	skipDraw(false),
 	zoomEnabled(false),
 	zoomCursorFixed(false),
 	mouseInZoom(false),
@@ -1077,10 +1078,12 @@ void GameView::OnMouseMove(int x, int y, int dx, int dy)
 				currentPoint = mousePosition;
 				c->DrawPoints(toolIndex, lastPoint, currentPoint, true);
 				lastPoint = currentPoint;
+				skipDraw = true;
 			}
 			else if (drawMode == DrawFill)
 			{
 				c->DrawFill(toolIndex, mousePosition);
+				skipDraw = true;
 			}
 		}
 		else if (drawMode == DrawPoints || drawMode == DrawFill)
@@ -1376,7 +1379,9 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		c->SetPaused();
 		break;
 	case 'z':
-		if (ctrl)
+		if (selectMode != SelectNone && isMouseDown)
+			break;
+		if (ctrl && !isMouseDown)
 		{
 			c->HistoryRestore();
 		}
@@ -1609,11 +1614,16 @@ void GameView::OnBlur()
 
 void GameView::OnTick(float dt)
 {
-	if (selectMode==PlaceSave && !placeSaveThumb)
+	if (selectMode == PlaceSave && !placeSaveThumb)
 		selectMode = SelectNone;
 	if (zoomEnabled && !zoomCursorFixed)
 		c->SetZoomPosition(currentMouse);
-	if (selectMode == SelectNone && isMouseDown)
+
+	if (skipDraw)
+	{
+		skipDraw = false;
+	}
+	else if (selectMode == SelectNone && isMouseDown)
 	{
 		if (drawMode == DrawPoints)
 		{
