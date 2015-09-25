@@ -1075,6 +1075,12 @@ void GameView::OnMouseMove(int x, int y, int dx, int dy)
 			if (drawMode == DrawPoints)
 			{
 				currentPoint = mousePosition;
+				c->DrawPoints(toolIndex, lastPoint, currentPoint, true);
+				lastPoint = currentPoint;
+			}
+			else if (drawMode == DrawFill)
+			{
+				c->DrawFill(toolIndex, mousePosition);
 			}
 		}
 		else if (drawMode == DrawPoints || drawMode == DrawFill)
@@ -1125,10 +1131,14 @@ void GameView::OnMouseDown(int x, int y, unsigned button)
 			{
 				drawPoint1 = c->PointTranslate(currentMouse);
 			}
-			if (drawMode == DrawPoints)
+			else if (drawMode == DrawPoints)
 			{
 				lastPoint = currentPoint = c->PointTranslate(currentMouse);
 				c->DrawPoints(toolIndex, lastPoint, currentPoint, false);
+			}
+			else if (drawMode == DrawFill)
+			{
+				c->DrawFill(toolIndex, c->PointTranslate(currentMouse));
 			}
 		}
 	}
@@ -1216,6 +1226,10 @@ void GameView::OnMouseUp(int x, int y, unsigned button)
 			c->DrawPoints(toolIndex, lastPoint, finalDrawPoint2, true);
 			// plop tool stuff (like STKM)
 			c->ToolClick(toolIndex, finalDrawPoint2);
+		}
+		else if (drawMode == DrawFill)
+		{
+			c->DrawFill(toolIndex, finalDrawPoint2);
 		}
 	}
 	// this shouldn't happen, but do this just in case
@@ -1599,21 +1613,18 @@ void GameView::OnTick(float dt)
 		selectMode = SelectNone;
 	if (zoomEnabled && !zoomCursorFixed)
 		c->SetZoomPosition(currentMouse);
-	if (selectMode == SelectNone)
+	if (selectMode == SelectNone && isMouseDown)
 	{
 		if (drawMode == DrawPoints)
 		{
-			if (isMouseDown)
-			{
-				c->DrawPoints(toolIndex, lastPoint, currentPoint, true);
-				lastPoint = currentPoint;
-			}
+			c->DrawPoints(toolIndex, lastPoint, currentPoint, true);
+			lastPoint = currentPoint;
 		}
-		else if (drawMode == DrawFill && isMouseDown)
+		else if (drawMode == DrawFill)
 		{
 			c->DrawFill(toolIndex, c->PointTranslate(currentMouse));
 		}
-		else if (windTool && isMouseDown && drawMode == DrawLine)
+		else if (windTool && drawMode == DrawLine)
 		{
 			c->DrawLine(toolIndex, c->PointTranslate(drawPoint1), lineSnapCoords(c->PointTranslate(drawPoint1), currentMouse));
 		}
