@@ -137,13 +137,13 @@ Client::Client():
 
 void Client::Initialise(std::string proxyString)
 {
-	if(GetPrefBool("version.update", false)==true)
+	if (GetPrefBool("version.update", false)==true)
 	{
 		SetPref("version.update", false);
 		update_finish();
 	}
 
-	if(proxyString.length())
+	if (proxyString.length())
 		http_init((char*)proxyString.c_str());
 	else
 		http_init(NULL);
@@ -151,7 +151,7 @@ void Client::Initialise(std::string proxyString)
 	//Read stamps library
 	std::ifstream stampsLib;
 	stampsLib.open(STAMPS_DIR PATH_SEP "stamps.def", std::ios::binary);
-	while(!stampsLib.eof())
+	while (!stampsLib.eof())
 	{
 		char data[11];
 		memset(data, 0, 11);
@@ -165,7 +165,7 @@ void Client::Initialise(std::string proxyString)
 	//Begin version check
 	versionCheckRequest = http_async_req_start(NULL, "http://" SERVER "/Startup.json", NULL, 0, 0);
 
-	if(authUser.ID)
+	if (authUser.ID)
 	{
 		std::string idTempString = format::NumberToString<int>(authUser.ID);
 		char *id = new char[idTempString.length() + 1];
@@ -181,6 +181,10 @@ void Client::Initialise(std::string proxyString)
 	// use an alternate update server
 	alternateVersionCheckRequest = http_async_req_start(NULL, "http://" UPDATESERVER "/Startup.json", NULL, 0, 0);
 	usingAltUpdateServer = true;
+	if (authUser.ID)
+	{
+		http_auth_headers(alternateVersionCheckRequest, authUser.Username.c_str(), NULL, NULL);
+	}
 #endif
 }
 
