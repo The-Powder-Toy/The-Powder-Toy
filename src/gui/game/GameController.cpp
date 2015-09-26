@@ -1535,10 +1535,10 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 			std::stringstream updateMessage;
 			updateMessage << "Are you sure you want to run the updater? Please save any changes before updating.\n\nCurrent version:\n ";
 
-#ifdef BETA
-			updateMessage << SAVE_VERSION << "." << MINOR_VERSION << " Beta, Build " << BUILD_NUM;
-#elif defined(SNAPSHOT)
+#ifdef SNAPSHOT
 			updateMessage << "Snapshot " << SNAPSHOT_ID;
+#elif defined(BETA)
+			updateMessage << SAVE_VERSION << "." << MINOR_VERSION << " Beta, Build " << BUILD_NUM;
 #else
 			updateMessage << SAVE_VERSION << "." << MINOR_VERSION << " Stable, Build " << BUILD_NUM;
 #endif

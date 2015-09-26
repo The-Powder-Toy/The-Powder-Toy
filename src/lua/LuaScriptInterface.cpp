@@ -236,6 +236,12 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	lua_setfield(l, tptPropertiesVersion, "minor");
 	lua_pushinteger(l, BUILD_NUM);
 	lua_setfield(l, tptPropertiesVersion, "build");
+#ifdef SNAPSHOT
+	lua_pushinteger(l, SNAPSHOT_ID);
+#else
+	lua_pushinteger(l, 0);
+#endif
+	lua_setfield(l, tptPropertiesVersion, "snapshot");
 	lua_setfield(l, tptProperties, "version");
 
 	lua_sethook(l, &luacon_hook, LUA_MASKCOUNT, 200);

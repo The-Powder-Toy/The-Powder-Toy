@@ -816,11 +816,11 @@ bool Client::CheckUpdate(void *updateRequest, bool checkSession)
 					json::Number stableMinor = stableVersion["Minor"];
 					json::Number stableBuild = stableVersion["Build"];
 					json::String stableFile = stableVersion["File"];
-					json::String changelog = stableVersion["Changelog"];
+					json::String stableChangelog = stableVersion["Changelog"];
 					if (stableMajor.Value()>SAVE_VERSION || (stableMinor.Value()>MINOR_VERSION && stableMajor.Value()==SAVE_VERSION) || stableBuild.Value()>BUILD_NUM)
 					{
 						updateAvailable = true;
-						updateInfo = UpdateInfo(stableMajor.Value(), stableMinor.Value(), stableBuild.Value(), stableFile.Value(), changelog.Value(), UpdateInfo::Stable);
+						updateInfo = UpdateInfo(stableMajor.Value(), stableMinor.Value(), stableBuild.Value(), stableFile.Value(), stableChangelog.Value(), UpdateInfo::Stable);
 					}
 #endif
 
@@ -830,11 +830,11 @@ bool Client::CheckUpdate(void *updateRequest, bool checkSession)
 					json::Number betaMinor = betaVersion["Minor"];
 					json::Number betaBuild = betaVersion["Build"];
 					json::String betaFile = betaVersion["File"];
-					json::String changelog = stableVersion["Changelog"];
+					json::String betaChangelog = betaVersion["Changelog"];
 					if (betaMajor.Value()>SAVE_VERSION || (betaMinor.Value()>MINOR_VERSION && betaMajor.Value()==SAVE_VERSION) || betaBuild.Value()>BUILD_NUM)
 					{
 						updateAvailable = true;
-						updateInfo = UpdateInfo(betaMajor.Value(), betaMinor.Value(), betaBuild.Value(), betaFile.Value(), changelog.Value(), UpdateInfo::Beta);
+						updateInfo = UpdateInfo(betaMajor.Value(), betaMinor.Value(), betaBuild.Value(), betaFile.Value(), betaChangelog.Value(), UpdateInfo::Beta);
 					}
 #endif
 
@@ -842,11 +842,11 @@ bool Client::CheckUpdate(void *updateRequest, bool checkSession)
 					json::Object snapshotVersion = versions["Snapshot"];
 					json::Number snapshotSnapshot = snapshotVersion["Snapshot"];
 					json::String snapshotFile = snapshotVersion["File"];
-					json::String changelog = stableVersion["Changelog"];
+					json::String snapshotChangelog = snapshotVersion["Changelog"];
 					if (snapshotSnapshot.Value() > SNAPSHOT_ID)
 					{
 						updateAvailable = true;
-						updateInfo = UpdateInfo(snapshotSnapshot.Value(), snapshotFile.Value(), changelog.Value(), UpdateInfo::Snapshot);
+						updateInfo = UpdateInfo(snapshotSnapshot.Value(), snapshotFile.Value(), snapshotChangelog.Value(), UpdateInfo::Snapshot);
 					}
 #endif
 

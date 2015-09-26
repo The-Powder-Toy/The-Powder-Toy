@@ -2358,11 +2358,6 @@ void GameView::OnDraw()
 		//FPS and some version info
 		std::stringstream fpsInfo;
 		fpsInfo.precision(2);
-#ifdef SNAPSHOT
-		fpsInfo << "Snapshot " << SNAPSHOT_ID << ", ";
-#elif defined(BETA)
-		fpsInfo << "Beta " << SAVE_VERSION << "." << MINOR_VERSION << "." << BUILD_NUM << ", ";
-#endif
 		fpsInfo << "FPS: " << std::fixed << ui::Engine::Ref().GetFps();
 #ifdef DEBUG
 		fpsInfo << " Delta: " << std::fixed << ui::Engine::Ref().GetDelta();
