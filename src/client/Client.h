@@ -35,14 +35,15 @@ class UpdateInfo
 public:
 	enum BuildType { Stable, Beta, Snapshot };
 	std::string File;
+	std::string Changelog;
 	int Major;
 	int Minor;
 	int Build;
 	int Time;
 	BuildType Type;
-	UpdateInfo() : File(""), Major(0), Minor(0), Build(0), Time(0), Type(Stable) {}
-	UpdateInfo(int major, int minor, int build, std::string file, BuildType type) : File(file), Major(major), Minor(minor), Build(build), Time(0), Type(type) {}
-	UpdateInfo(int time, std::string file, BuildType type) : File(file), Major(0), Minor(0), Build(0), Time(time), Type(type) {}
+	UpdateInfo() : File(""), Changelog(""), Major(0), Minor(0), Build(0), Time(0), Type(Stable) {}
+	UpdateInfo(int major, int minor, int build, std::string file, std::string changelog, BuildType type) : File(file), Changelog(changelog), Major(major), Minor(minor), Build(build), Time(0), Type(type) {}
+	UpdateInfo(int time, std::string file, std::string changelog, BuildType type) : File(file), Changelog(changelog), Major(0), Minor(0), Build(0), Time(time), Type(type) {}
 };
 
 class RequestListener;
@@ -53,6 +54,8 @@ private:
 	std::vector<std::pair<std::string, std::string> > serverNotifications;
 
 	void * versionCheckRequest;
+	void * alternateVersionCheckRequest;
+	bool usingAltUpdateServer;
 	bool updateAvailable;
 	UpdateInfo updateInfo;
 
@@ -165,6 +168,7 @@ public:
 	}
 	RequestStatus ParseServerReturn(char *result, int status, bool json);
 	void Tick();
+	bool CheckUpdate(void *updateRequest, bool checkSession);
 	void Shutdown();
 
 	//Force flushing preferences to file on disk.

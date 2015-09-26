@@ -44,7 +44,7 @@ private:
 		{
 			free(data);
 			errorStream << "Server responded with Status " << status;
-			notifyError("Could not download update");
+			notifyError("Could not download update: " + errorStream.str());
 			return false;
 		}
 		if (!data)
@@ -118,7 +118,11 @@ private:
 
 UpdateActivity::UpdateActivity() {
 	std::stringstream file;
+#ifdef UPDATESERVER
+	file << "http://" << UPDATESERVER << Client::Ref().GetUpdateInfo().File;
+#else
 	file << "http://" << SERVER << Client::Ref().GetUpdateInfo().File;
+#endif
 	updateDownloadTask = new UpdateDownloadTask(file.str(), this);
 	updateWindow = new TaskWindow("Downloading update...", updateDownloadTask, true);
 }
@@ -148,13 +152,19 @@ void UpdateActivity::NotifyError(Task * sender)
 		virtual void ConfirmCallback(ConfirmPrompt::DialogueResult result) {
 			if (result == ConfirmPrompt::ResultOkay)
 			{
+#ifndef UPDATESERVER
 				Platform::OpenURI("http://powdertoy.co.uk/Download.html");
+#endif
 			}
 			a->Exit();
 		}
 		virtual ~ErrorMessageCallback() { }
 	};
+#ifdef UPDATESERVER
+	new ConfirmPrompt("Autoupdate failed", "Please go online to manually download a newer version.\nError: " + sender->GetError(), new ErrorMessageCallback(this));
+#else
 	new ConfirmPrompt("Autoupdate failed", "Please visit the website to download a newer version.\nError: " + sender->GetError(), new ErrorMessageCallback(this));
+#endif
 }
 
 

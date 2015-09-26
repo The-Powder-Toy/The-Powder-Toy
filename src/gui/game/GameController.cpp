@@ -1531,24 +1531,30 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 
 		virtual void Action()
 		{
-			std::string currentVersion, newVersion;
+			UpdateInfo info = Client::Ref().GetUpdateInfo();
+			std::stringstream updateMessage;
+			updateMessage << "Are you sure you want to run the updater? Please save any changes before updating.\n\nCurrent version:\n ";
+
 #ifdef BETA
-			currentVersion = MTOS(SAVE_VERSION) "." MTOS(MINOR_VERSION) " Beta, Build " MTOS(BUILD_NUM);
+			updateMessage << SAVE_VERSION << "." << MINOR_VERSION << " Beta, Build " << BUILD_NUM;
 #elif defined(SNAPSHOT)
-			currentVersion = "Snapshot " MTOS(SNAPSHOT_ID);
+			updateMessage << "Snapshot " << SNAPSHOT_ID;
 #else
-			currentVersion = MTOS(SAVE_VERSION) "." MTOS(MINOR_VERSION) " Stable, Build " MTOS(BUILD_NUM);
+			updateMessage << SAVE_VERSION << "." << MINOR_VERSION << " Stable, Build " << BUILD_NUM;
 #endif
 
-			UpdateInfo info = Client::Ref().GetUpdateInfo();
-			if(info.Type == UpdateInfo::Beta)
-				newVersion = format::NumberToString<int>(info.Major) + " " + format::NumberToString<int>(info.Minor) + " Beta, Build " + format::NumberToString<int>(info.Build);
-			else if(info.Type == UpdateInfo::Snapshot)
-				newVersion = "Snapshot " + format::NumberToString<int>(info.Time);
+			updateMessage << "\nNew version:\n ";
+			if (info.Type == UpdateInfo::Beta)
+				updateMessage << info.Major << " " << info.Minor << " Beta, Build " << info.Build;
+			else if (info.Type == UpdateInfo::Snapshot)
+				updateMessage << "Snapshot " << info.Time;
 			else if(info.Type == UpdateInfo::Stable)
-				newVersion = format::NumberToString<int>(info.Major) + " " + format::NumberToString<int>(info.Minor) + " Stable, Build " + format::NumberToString<int>(info.Build);
+				updateMessage << info.Major << " " << info.Minor << " Stable, Build " << info.Build;
 
-			new ConfirmPrompt("Run Updater", "Are you sure you want to run the updater, please save any changes before updating.\n\nCurrent version:\n " + currentVersion + "\nNew version:\n " + newVersion, new UpdateConfirmation(c));
+			if (info.Changelog.length())
+				updateMessage << "\n\nChangelog:\n" << info.Changelog;
+
+			new ConfirmPrompt("Run Updater", updateMessage.str(), new UpdateConfirmation(c));
 		}
 	};
 

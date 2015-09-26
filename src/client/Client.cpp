@@ -70,6 +70,8 @@ void writeUserPreferences(const char * prefData);
 Client::Client():
 	messageOfTheDay(""),
 	versionCheckRequest(NULL),
+	alternateVersionCheckRequest(NULL),
+	usingAltUpdateServer(false),
 	updateAvailable(false),
 	authUser(0, "")
 {
@@ -135,7 +137,6 @@ Client::Client():
 
 void Client::Initialise(std::string proxyString)
 {
-
 	if(GetPrefBool("version.update", false)==true)
 	{
 		SetPref("version.update", false);
@@ -175,6 +176,12 @@ void Client::Initialise(std::string proxyString)
 		delete[] id;
 		delete[] session;
 	}
+
+#ifdef UPDATESERVER
+	// use an alternate update server
+	alternateVersionCheckRequest = http_async_req_start(NULL, "http://" UPDATESERVER "/Startup.json", NULL, 0, 0);
+	usingAltUpdateServer = true;
+#endif
 }
 
 bool Client::IsFirstRun()
@@ -737,14 +744,26 @@ void Client::Tick()
 {
 	//Check thumbnail queue
 	RequestBroker::Ref().FlushThumbQueue();
+	if (versionCheckRequest)
+	{
+		if (CheckUpdate(versionCheckRequest, true))
+			versionCheckRequest = NULL;
+	}
+	if (alternateVersionCheckRequest)
+	{
+		if (CheckUpdate(alternateVersionCheckRequest, false))
+			alternateVersionCheckRequest = NULL;
+	}
+}
 
+bool Client::CheckUpdate(void *updateRequest, bool checkSession)
+{
 	//Check status on version check request
-	if (versionCheckRequest && http_async_req_status(versionCheckRequest))
+	if (http_async_req_status(updateRequest))
 	{
 		int status;
 		int dataLength;
-		char * data = http_async_req_stop(versionCheckRequest, &status, &dataLength);
-		versionCheckRequest = NULL;
+		char * data = http_async_req_stop(updateRequest, &status, &dataLength);
 
 		if (status != 200)
 		{
@@ -760,10 +779,13 @@ void Client::Tick()
 				json::Reader::Read(objDocument, dataStream);
 
 				//Check session
-				json::Boolean sessionStatus = objDocument["Session"];
-				if(!sessionStatus.Value())
+				if (checkSession)
 				{
-					SetAuthUser(User(0, ""));
+					json::Boolean sessionStatus = objDocument["Session"];
+					if(!sessionStatus.Value())
+					{
+						SetAuthUser(User(0, ""));
+					}
 				}
 
 				//Notifications from server
@@ -779,55 +801,61 @@ void Client::Tick()
 
 
 				//MOTD
-				json::String messageOfTheDay = objDocument["MessageOfTheDay"];
-				this->messageOfTheDay = messageOfTheDay.Value();
-				notifyMessageOfTheDay();
+				if (!usingAltUpdateServer || !checkSession)
+				{
+					json::String messageOfTheDay = objDocument["MessageOfTheDay"];
+					this->messageOfTheDay = messageOfTheDay.Value();
+					notifyMessageOfTheDay();
 
 #ifndef IGNORE_UPDATES
-				//Check for updates
-				json::Object versions = objDocument["Updates"];
+					//Check for updates
+					json::Object versions = objDocument["Updates"];
 #if !defined(BETA) && !defined(SNAPSHOT)
-				json::Object stableVersion = versions["Stable"];
-				json::Number stableMajor = stableVersion["Major"];
-				json::Number stableMinor = stableVersion["Minor"];
-				json::Number stableBuild = stableVersion["Build"];
-				json::String stableFile = stableVersion["File"];
-				if (stableMajor.Value()>SAVE_VERSION || (stableMinor.Value()>MINOR_VERSION && stableMajor.Value()==SAVE_VERSION) || stableBuild.Value()>BUILD_NUM)
-				{
-					updateAvailable = true;
-					updateInfo = UpdateInfo(stableMajor.Value(), stableMinor.Value(), stableBuild.Value(), stableFile.Value(), UpdateInfo::Stable);
-				}
+					json::Object stableVersion = versions["Stable"];
+					json::Number stableMajor = stableVersion["Major"];
+					json::Number stableMinor = stableVersion["Minor"];
+					json::Number stableBuild = stableVersion["Build"];
+					json::String stableFile = stableVersion["File"];
+					json::String changelog = stableVersion["Changelog"];
+					if (stableMajor.Value()>SAVE_VERSION || (stableMinor.Value()>MINOR_VERSION && stableMajor.Value()==SAVE_VERSION) || stableBuild.Value()>BUILD_NUM)
+					{
+						updateAvailable = true;
+						updateInfo = UpdateInfo(stableMajor.Value(), stableMinor.Value(), stableBuild.Value(), stableFile.Value(), changelog.Value(), UpdateInfo::Stable);
+					}
 #endif
 
 #ifdef BETA
-				json::Object betaVersion = versions["Beta"];
-				json::Number betaMajor = betaVersion["Major"];
-				json::Number betaMinor = betaVersion["Minor"];
-				json::Number betaBuild = betaVersion["Build"];
-				json::String betaFile = betaVersion["File"];
-				if (betaMajor.Value()>SAVE_VERSION || (betaMinor.Value()>MINOR_VERSION && betaMajor.Value()==SAVE_VERSION) || betaBuild.Value()>BUILD_NUM)
-				{
-					updateAvailable = true;
-					updateInfo = UpdateInfo(betaMajor.Value(), betaMinor.Value(), betaBuild.Value(), betaFile.Value(), UpdateInfo::Beta);
-				}
+					json::Object betaVersion = versions["Beta"];
+					json::Number betaMajor = betaVersion["Major"];
+					json::Number betaMinor = betaVersion["Minor"];
+					json::Number betaBuild = betaVersion["Build"];
+					json::String betaFile = betaVersion["File"];
+					json::String changelog = stableVersion["Changelog"];
+					if (betaMajor.Value()>SAVE_VERSION || (betaMinor.Value()>MINOR_VERSION && betaMajor.Value()==SAVE_VERSION) || betaBuild.Value()>BUILD_NUM)
+					{
+						updateAvailable = true;
+						updateInfo = UpdateInfo(betaMajor.Value(), betaMinor.Value(), betaBuild.Value(), betaFile.Value(), changelog.Value(), UpdateInfo::Beta);
+					}
 #endif
 
 #ifdef SNAPSHOT
-				json::Object snapshotVersion = versions["Snapshot"];
-				json::Number snapshotSnapshot = snapshotVersion["Snapshot"];
-				json::String snapshotFile = snapshotVersion["File"];
-				if (snapshotSnapshot.Value() > SNAPSHOT_ID)
-				{
-					updateAvailable = true;
-					updateInfo = UpdateInfo(snapshotSnapshot.Value(), snapshotFile.Value(), UpdateInfo::Snapshot);
-				}
+					json::Object snapshotVersion = versions["Snapshot"];
+					json::Number snapshotSnapshot = snapshotVersion["Snapshot"];
+					json::String snapshotFile = snapshotVersion["File"];
+					json::String changelog = stableVersion["Changelog"];
+					if (snapshotSnapshot.Value() > SNAPSHOT_ID)
+					{
+						updateAvailable = true;
+						updateInfo = UpdateInfo(snapshotSnapshot.Value(), snapshotFile.Value(), changelog.Value(), UpdateInfo::Snapshot);
+					}
 #endif
 
-				if(updateAvailable)
-				{
-					notifyUpdateAvailable();
-				}
+					if(updateAvailable)
+					{
+						notifyUpdateAvailable();
+					}
 #endif
+				}
 			}
 			catch (json::Exception &e)
 			{
@@ -836,7 +864,9 @@ void Client::Tick()
 
 			free(data);
 		}
+		return true;
 	}
+	return false;
 }
 
 UpdateInfo Client::GetUpdateInfo()
