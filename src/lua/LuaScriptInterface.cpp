@@ -1434,9 +1434,11 @@ int LuaScriptInterface::simulation_toolLine(lua_State * l)
 
 	if (tool == (int)luacon_sim->tools.size())
 	{
-		Tool *WindTool = luacon_model->GetToolFromIdentifier("DEFAULT_UI_WIND");
-		WindTool->DrawLine(luacon_sim, brushList[brush], ui::Point(x1, y1), ui::Point(x2, y2));
-		return 1;
+		Tool *windTool = luacon_model->GetToolFromIdentifier("DEFAULT_UI_WIND");
+		float oldStrength = windTool->GetStrength();
+		windTool->SetStrength(strength);
+		windTool->DrawLine(luacon_sim, brushList[brush], ui::Point(x1, y1), ui::Point(x2, y2));
+		windTool->SetStrength(oldStrength);
 	}
 	else
 		luacon_sim->ToolLine(x1, y1, x2, y2, tool, brushList[brush], strength);
