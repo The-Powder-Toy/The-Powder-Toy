@@ -1378,6 +1378,11 @@ int LuaScriptInterface::simulation_floodWalls(lua_State * l)
 	int bm = luaL_optint(l,4,-1);
 	if (c < 0 || c >= UI_WALLCOUNT)
 		return luaL_error(l, "Unrecognised wall id '%d'", c);
+	if (c == WL_STREAM)
+	{
+		lua_pushinteger(l, 0);
+		return 1;
+	}
 	int ret = luacon_sim->FloodWalls(x, y, c, bm);
 	lua_pushinteger(l, ret);
 	return 1;
