@@ -86,6 +86,7 @@ bool PreviewController::SubmitComment(std::string comment)
 		}
 		else
 		{
+			previewModel->CommentAdded();
 			previewModel->UpdateComments(1);
 		}
 	}

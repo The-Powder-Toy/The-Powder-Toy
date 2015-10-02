@@ -48,6 +48,7 @@ public:
 	int GetCommentsPageNum();
 	int GetCommentsPageCount();
 	void UpdateComments(int pageNumber);
+	void CommentAdded();
 
 	void AddObserver(PreviewView * observer);
 	void UpdateSave(int saveID, int saveDate);

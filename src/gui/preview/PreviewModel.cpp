@@ -141,6 +141,13 @@ void PreviewModel::UpdateComments(int pageNumber)
 	}
 }
 
+void PreviewModel::CommentAdded()
+{
+	if (save)
+		save->Comments++;
+	commentsTotal++;
+}
+
 void PreviewModel::OnResponseReady(void * object, int identifier)
 {
 	if (identifier == 1)
@@ -166,6 +173,7 @@ void PreviewModel::OnResponseReady(void * object, int identifier)
 		saveComments = (std::vector<SaveComment*>*)object;
 		commentsLoaded = true;
 		notifySaveCommentsChanged();
+		notifyCommentsPageChanged();
 	}
 
 	if (identifier == 1 || identifier == 2)
