@@ -8,7 +8,7 @@ ToolButton::ToolButton(ui::Point position, ui::Point size, std::string text_, st
 	Appearance.BorderActive = ui::Colour(255, 0, 0);
 
 	//don't use "..." on elements that have long names
-	buttonDisplayText = ButtonText;
+	buttonDisplayText = ButtonText.substr(0, 7);
 	Component::TextPosition(buttonDisplayText);
 }
 
