@@ -2,6 +2,7 @@
 #include "gui/Style.h"
 #include "gui/interface/Label.h"
 #include "gui/interface/Button.h"
+#include "gui/interface/ScrollPanel.h"
 #include "PowderToy.h"
 
 ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, ConfirmDialogueCallback * callback_):
@@ -15,13 +16,20 @@ ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, ConfirmDial
 	AddComponent(titleLabel);
 
 
-	ui::Label * messageLabel = new ui::Label(ui::Point(4, 25), ui::Point(Size.X-8, -1), message);
-	messageLabel->SetMultiline(true);
+	ui::ScrollPanel *messagePanel = new ui::ScrollPanel(ui::Point(4, 24), ui::Point(Size.X-8, 206));
+	AddComponent(messagePanel);
+
+	ui::Label * messageLabel = new ui::Label(ui::Point(4, 0), ui::Point(Size.X-28, -1), message);
 	messageLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	messageLabel->Appearance.VerticalAlign = ui::Appearance::AlignTop;
-	AddComponent(messageLabel);
+	messageLabel->SetMultiline(true);
+	messagePanel->AddChild(messageLabel);
 
-	Size.Y += messageLabel->Size.Y+12;
+	messagePanel->InnerSize = ui::Point(messagePanel->Size.X, messageLabel->Size.Y+4);
+
+	if (messageLabel->Size.Y < messagePanel->Size.Y)
+		messagePanel->Size.Y = messageLabel->Size.Y+4;
+	Size.Y += messagePanel->Size.Y+12;
 	Position.Y = (ui::Engine::Ref().GetHeight()-Size.Y)/2;
 
 	class CloseAction: public ui::ButtonAction
@@ -70,13 +78,20 @@ ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, std::string
 	AddComponent(titleLabel);
 
 
-	ui::Label * messageLabel = new ui::Label(ui::Point(4, 25), ui::Point(Size.X-8, -1), message);
-	messageLabel->SetMultiline(true);
+	ui::ScrollPanel *messagePanel = new ui::ScrollPanel(ui::Point(4, 24), ui::Point(Size.X-8, 206));
+	AddComponent(messagePanel);
+
+	ui::Label * messageLabel = new ui::Label(ui::Point(4, 0), ui::Point(Size.X-28, -1), message);
 	messageLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	messageLabel->Appearance.VerticalAlign = ui::Appearance::AlignTop;
-	AddComponent(messageLabel);
+	messageLabel->SetMultiline(true);
+	messagePanel->AddChild(messageLabel);
 
-	Size.Y += messageLabel->Size.Y+12;
+	messagePanel->InnerSize = ui::Point(messagePanel->Size.X, messageLabel->Size.Y+4);
+
+	if (messageLabel->Size.Y < messagePanel->Size.Y)
+		messagePanel->Size.Y = messageLabel->Size.Y+4;
+	Size.Y += messagePanel->Size.Y+12;
 	Position.Y = (ui::Engine::Ref().GetHeight()-Size.Y)/2;
 
 	class CloseAction: public ui::ButtonAction
