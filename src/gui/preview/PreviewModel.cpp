@@ -7,6 +7,7 @@
 
 PreviewModel::PreviewModel():
 	doOpen(false),
+	canOpen(true),
 	save(NULL),
 	saveData(NULL),
 	saveComments(NULL),
@@ -92,6 +93,11 @@ bool PreviewModel::GetDoOpen()
 	return doOpen;
 }
 
+bool PreviewModel::GetCanOpen()
+{
+	return canOpen;
+}
+
 SaveInfo * PreviewModel::GetSave()
 {
 	return save;
@@ -169,11 +175,15 @@ void PreviewModel::OnResponseReady(void * object, int identifier)
 			commentsTotal = save->Comments;
 			try
 			{
-				save->SetGameSave(new GameSave(*saveData));
+				GameSave *gameSave = new GameSave(*saveData);
+				if (gameSave->fromNewerVersion)
+					new ErrorMessage("This save is from a newer version", "Please update TPT in game or at http://powdertoy.co.uk");
+				save->SetGameSave(gameSave);
 			}
 			catch(ParseException &e)
 			{
 				new ErrorMessage("Error", e.what());
+				canOpen = false;
 			}
 			notifySaveChanged();
 			notifyCommentsPageChanged();

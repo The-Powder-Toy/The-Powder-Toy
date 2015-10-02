@@ -51,6 +51,7 @@ originalData(save.originalData)
 		blockHeight = save.blockHeight;
 	}
 	particlesCount = save.particlesCount;
+	fromNewerVersion = false;
 }
 
 GameSave::GameSave(int width, int height)
@@ -63,6 +64,7 @@ GameSave::GameSave(int width, int height)
 	fanVelYPtr = NULL;
 	particles = NULL;
 
+	fromNewerVersion = false;
 	hasOriginalData = false;
 	expanded = true;
 	setSize(width, height);
@@ -81,6 +83,7 @@ GameSave::GameSave(std::vector<char> data)
 	fanVelYPtr = NULL;
 	particles = NULL;
 
+	fromNewerVersion = false;
 	expanded = false;
 	hasOriginalData = true;
 	originalData = data;
@@ -113,6 +116,7 @@ GameSave::GameSave(std::vector<unsigned char> data)
 	fanVelYPtr = NULL;
 	particles = NULL;
 
+	fromNewerVersion = false;
 	expanded = false;
 	hasOriginalData = true;
 	originalData = std::vector<char>(data.begin(), data.end());
@@ -145,6 +149,7 @@ GameSave::GameSave(char * data, int dataSize)
 	fanVelYPtr = NULL;
 	particles = NULL;
 
+	fromNewerVersion = false;
 	expanded = false;
 	hasOriginalData = true;
 	originalData = std::vector<char>(data, data+dataSize);
@@ -246,6 +251,8 @@ void GameSave::read(char * data, int dataSize)
 #ifdef DEBUG
 			std::cout << "Reading OPS..." << std::endl;
 #endif
+			if (data[3] != '1')
+				throw ParseException(ParseException::WrongVersion, "Save format from newer version");
 			readOPS(data, dataSize);
 		}
 		else
@@ -456,15 +463,16 @@ void GameSave::readOPS(char * data, int dataLength)
 	fullH = blockH*CELL;
 
 	//From newer version
-	if(savedVersion > SAVE_VERSION)
-		throw ParseException(ParseException::WrongVersion, "Save from newer version");
+	if (savedVersion > SAVE_VERSION)
+		fromNewerVersion = true;
+		//throw ParseException(ParseException::WrongVersion, "Save from newer version");
 
 	//Incompatible cell size
-	if(inputData[5] > CELL)
+	if (inputData[5] > CELL)
 		throw ParseException(ParseException::InvalidDimensions, "Incorrect CELL size");
 
 	//Too large/off screen
-	if(blockX+blockW > XRES/CELL || blockY+blockH > YRES/CELL)
+	if (blockX+blockW > XRES/CELL || blockY+blockH > YRES/CELL)
 		throw ParseException(ParseException::InvalidDimensions, "Save too large");
 
 	setSize(blockW, blockH);
@@ -476,11 +484,11 @@ void GameSave::readOPS(char * data, int dataLength)
 	
 	//Check for overflows, don't load saves larger than 200MB
 	unsigned int toAlloc = bsonDataLen+1;
-	if(toAlloc > 209715200 || !toAlloc)
+	if (toAlloc > 209715200 || !toAlloc)
 		throw ParseException(ParseException::InvalidDimensions, "Save data too large, refusing");
 		
 	bsonData = (unsigned char*)malloc(toAlloc);
-	if(!bsonData)
+	if (!bsonData)
 		throw ParseException(ParseException::InternalError, "Unable to allocate memory");
 
 	//Make sure bsonData is null terminated, since all string functions need null terminated strings

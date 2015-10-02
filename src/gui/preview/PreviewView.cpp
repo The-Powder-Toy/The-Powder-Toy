@@ -465,6 +465,8 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 				savePreview->Height *= scaleFactor;
 			}
 		}
+		else if (!sender->GetCanOpen())
+			openButton->Enabled = false;
 	}
 	else
 	{
@@ -474,6 +476,8 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 		authorDateLabel->SetText("");
 		saveDescriptionLabel->SetText("");
 		favButton->Enabled = false;
+		if (!sender->GetCanOpen())
+			openButton->Enabled = false;
 	}
 }
 

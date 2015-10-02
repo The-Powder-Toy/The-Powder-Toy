@@ -16,6 +16,7 @@ using namespace std;
 class PreviewView;
 class PreviewModel: RequestListener {
 	bool doOpen;
+	bool canOpen;
 	vector<PreviewView*> observers;
 	SaveInfo * save;
 	std::vector<unsigned char> * saveData;
@@ -52,6 +53,7 @@ public:
 	void UpdateSave(int saveID, int saveDate);
 	void SetFavourite(bool favourite);
 	bool GetDoOpen();
+	bool GetCanOpen();
 	void SetDoOpen(bool doOpen);
 	void Update();
 	virtual void OnResponseReady(void * object, int identifier);

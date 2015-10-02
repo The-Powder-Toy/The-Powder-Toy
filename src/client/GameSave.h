@@ -21,7 +21,7 @@ public:
 	{
 		return message.c_str();
 	}
-	~ParseException() throw() {};
+	~ParseException() throw() {}
 };
 
 class GameSave
@@ -29,6 +29,7 @@ class GameSave
 public:
 	
 	int blockWidth, blockHeight;
+	bool fromNewerVersion;
 
 	//Simulation data
 	//int ** particleMap;
