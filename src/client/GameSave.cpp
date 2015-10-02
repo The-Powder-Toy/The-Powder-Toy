@@ -464,8 +464,10 @@ void GameSave::readOPS(char * data, int dataLength)
 
 	//From newer version
 	if (savedVersion > SAVE_VERSION)
+	{
 		fromNewerVersion = true;
-		//throw ParseException(ParseException::WrongVersion, "Save from newer version");
+		throw ParseException(ParseException::WrongVersion, "Save from newer version");
+	}
 
 	//Incompatible cell size
 	if (inputData[5] > CELL)
