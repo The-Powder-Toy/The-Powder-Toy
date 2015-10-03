@@ -1094,6 +1094,7 @@ SaveFile * Client::GetStamp(std::string stampID)
 		catch (ParseException & e)
 		{
 			std::cerr << "Client: Invalid stamp file, " << stampID << " " << std::string(e.what()) << std::endl;
+			file->SetLoadingError(e.what());
 		}
 	}
 	return file;

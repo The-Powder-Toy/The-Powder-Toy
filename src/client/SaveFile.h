@@ -19,6 +19,8 @@ public:
 	void SetDisplayName(std::string displayName);
 	std::string GetName();
 	void SetFileName(std::string fileName);
+	std::string GetError();
+	void SetLoadingError(std::string error);
 
 	virtual ~SaveFile();
 private:
@@ -26,6 +28,7 @@ private:
 	GameSave * gameSave;
 	std::string filename;
 	std::string displayName;
+	std::string loadingError;
 };
 
 #endif /* SAVEFILE_H_ */

@@ -110,11 +110,14 @@ public:
 	StampsCallback(GameController * cc_) { cc = cc_; }
 	virtual void ControllerExit()
 	{
-		if(cc->localBrowser->GetSave())
+		SaveFile *file = cc->localBrowser->GetSave();
+		if (file)
 		{
-			if (cc->localBrowser->GetMoveToFront())
-				Client::Ref().MoveStampToFront(cc->localBrowser->GetSave()->GetName());
-			cc->LoadStamp(cc->localBrowser->GetSave()->GetGameSave());
+			if (file->GetError().length())
+				new ErrorMessage("Error loading stamp", file->GetError());
+			else if (cc->localBrowser->GetMoveToFront())
+				Client::Ref().MoveStampToFront(file->GetName());
+			cc->LoadStamp(file->GetGameSave());
 		}
 	}
 };

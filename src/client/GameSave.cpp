@@ -466,7 +466,7 @@ void GameSave::readOPS(char * data, int dataLength)
 	if (savedVersion > SAVE_VERSION)
 	{
 		fromNewerVersion = true;
-		throw ParseException(ParseException::WrongVersion, "Save from newer version");
+		//throw ParseException(ParseException::WrongVersion, "Save from newer version");
 	}
 
 	//Incompatible cell size
@@ -719,6 +719,37 @@ void GameSave::readOPS(char * data, int dataLength)
 						palette.push_back(PaletteItem(id, num));
 					}
 				}
+			}
+		}
+		else if (!strcmp(bson_iterator_key(&iter), "minimumVersion"))
+		{
+			if (bson_iterator_type(&iter) == BSON_OBJECT)
+			{
+				int major = INT_MAX, minor = INT_MAX;
+				bson_iterator subiter;
+				bson_iterator_subiterator(&iter, &subiter);
+				while (bson_iterator_next(&subiter))
+				{
+					if (bson_iterator_type(&subiter) == BSON_INT)
+					{
+						if (!strcmp(bson_iterator_key(&subiter), "major"))
+							major = bson_iterator_int(&subiter);
+						else if (!strcmp(bson_iterator_key(&subiter), "minor"))
+							minor = bson_iterator_int(&subiter);
+						else
+							fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
+					}
+				}
+				if (major > SAVE_VERSION || (major == SAVE_VERSION && minor > MINOR_VERSION))
+				{
+					std::stringstream errorMessage;
+					errorMessage << "Save from a newer version: Requires version " << major << "." << minor;
+					throw ParseException(ParseException::WrongVersion, errorMessage.str());
+				}
+			}
+			else
+			{
+				fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
 			}
 		}
 	}
@@ -1783,6 +1814,12 @@ void GameSave::readPSv(char * data, int dataLength)
 	}
 }
 
+// restrict the minimum version this save can be opened with
+#define RESTRICTVERSION(major, minor) if ((major) > minimumMajorVersion || (((major) == minimumMajorVersion && (minor) > minimumMinorVersion))) {\
+	minimumMajorVersion = major;\
+	minimumMinorVersion = minor;\
+}
+
 char * GameSave::serialiseOPS(unsigned int & dataLength)
 {
 	//Particle *particles = sim->parts;
@@ -1794,6 +1831,10 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 	int blockX, blockY, blockW, blockH, fullX, fullY, fullW, fullH;
 	int x, y, i, wallDataFound = 0;
 	int posCount, signsCount;
+	// minimum version this save is compatible with
+	// when building, this number may be increased depending on what elements are used
+	// or what properties are detected
+	int minimumMajorVersion = 90, minimumMinorVersion = 2;
 	bson b;
 
 	std::fill(elementCount, elementCount+PT_NUM, 0);
@@ -2116,6 +2157,10 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 	bson_append_string(&b, "releaseType", IDENT_RELTYPE);
 	bson_append_string(&b, "platform", IDENT_PLATFORM);
 	bson_append_string(&b, "builtType", IDENT_BUILD);
+	bson_append_finish_object(&b);
+	bson_append_start_object(&b, "minimumVersion");
+	bson_append_int(&b, "major", minimumMajorVersion);
+	bson_append_int(&b, "minor", minimumMinorVersion);
 	bson_append_finish_object(&b);
 	
 
