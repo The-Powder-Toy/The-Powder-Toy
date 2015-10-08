@@ -48,7 +48,7 @@ Element_WIFI::Element_WIFI()
 
 //#TPT-Directive ElementHeader Element_WIFI static int update(UPDATE_FUNC_ARGS)
 int Element_WIFI::update(UPDATE_FUNC_ARGS)
- {
+{
 	int r, rx, ry;
 	parts[i].tmp = (int)((parts[i].temp-73.15f)/100+1);
 	if (parts[i].tmp>=CHANNELS) parts[i].tmp = CHANNELS-1;
@@ -83,16 +83,15 @@ int Element_WIFI::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
+#define FREQUENCY 0.0628f
 
 //#TPT-Directive ElementHeader Element_WIFI static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_WIFI::graphics(GRAPHICS_FUNC_ARGS)
-
 {
-	float frequency = 0.0628;
 	int q = (int)((cpart->temp-73.15f)/100+1);
-	*colr = sin(frequency*q + 0) * 127 + 128;
-	*colg = sin(frequency*q + 2) * 127 + 128;
-	*colb = sin(frequency*q + 4) * 127 + 128;
+	*colr = sin(FREQUENCY*q + 0) * 127 + 128;
+	*colg = sin(FREQUENCY*q + 2) * 127 + 128;
+	*colb = sin(FREQUENCY*q + 4) * 127 + 128;
 	*pixel_mode |= EFFECT_DBGLINES;
 	return 0;
 }

@@ -46,6 +46,8 @@ Element_GOO::Element_GOO()
 	
 }
 
+#define ADVECTION 0.1f
+
 //#TPT-Directive ElementHeader Element_GOO static int update(UPDATE_FUNC_ARGS)
 int Element_GOO::update(UPDATE_FUNC_ARGS)
  {
@@ -53,9 +55,8 @@ int Element_GOO::update(UPDATE_FUNC_ARGS)
 		parts[i].life = rand()%80+300;
 	if (parts[i].life)
 	{
-		float advection = 0.1f;
-		parts[i].vx += advection*sim->vx[y/CELL][x/CELL];
-		parts[i].vy += advection*sim->vy[y/CELL][x/CELL];
+		parts[i].vx += ADVECTION*sim->vx[y/CELL][x/CELL];
+		parts[i].vy += ADVECTION*sim->vy[y/CELL][x/CELL];
 	}
 	return 0;
 }

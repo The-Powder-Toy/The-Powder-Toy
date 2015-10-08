@@ -64,7 +64,7 @@ int Element_PUMP::update(UPDATE_FUNC_ARGS)
 
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
-				if ((x+rx)-CELL>=0 && (y+ry)-CELL>0 && (x+rx)+CELL<XRES && (y+ry)+CELL<YRES && !(rx && ry))
+				if (!(rx && ry))
 				{
 					sim->pv[(y/CELL)+ry][(x/CELL)+rx] += 0.1f*((parts[i].temp-273.15)-sim->pv[(y/CELL)+ry][(x/CELL)+rx]);
 				}

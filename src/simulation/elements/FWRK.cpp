@@ -49,7 +49,7 @@ Element_FWRK::Element_FWRK()
 //#TPT-Directive ElementHeader Element_FWRK static int update(UPDATE_FUNC_ARGS)
 int Element_FWRK::update(UPDATE_FUNC_ARGS)
  {
-	if (parts[i].life==0 && ((parts[i].temp>400&&(9+parts[i].temp/40)>rand()%100000&&surround_space)||parts[i].ctype==PT_DUST))
+	 if (parts[i].life == 0 && ((surround_space && parts[i].temp>400 && (9+parts[i].temp/40)>rand()%100000) || parts[i].ctype == PT_DUST))
 	{
 		float gx, gy, multiplier, gmax;
 		int randTmp;

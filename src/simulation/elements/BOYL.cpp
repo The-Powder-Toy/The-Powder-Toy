@@ -58,9 +58,9 @@ int Element_BOYL::update(UPDATE_FUNC_ARGS)
 	if (sim->pv[y / CELL - 1][x / CELL] < limit)
 		sim->pv[y / CELL - 1][x / CELL] += 0.001f*(limit - sim->pv[y / CELL - 1][x / CELL]);
 
-	sim->pv[y / CELL][x / CELL + 1]		+= 0.001f*(limit - sim->pv[y / CELL][x / CELL + 1]);
+	sim->pv[y / CELL][x / CELL + 1]	+= 0.001f*(limit - sim->pv[y / CELL][x / CELL + 1]);
 	sim->pv[y / CELL + 1][x / CELL + 1] += 0.001f*(limit - sim->pv[y / CELL + 1][x / CELL + 1]);
-	sim->pv[y / CELL][x / CELL - 1]		+= 0.001f*(limit - sim->pv[y / CELL][x / CELL - 1]);
+	sim->pv[y / CELL][x / CELL - 1]	+= 0.001f*(limit - sim->pv[y / CELL][x / CELL - 1]);
 	sim->pv[y / CELL - 1][x / CELL - 1] += 0.001f*(limit - sim->pv[y / CELL - 1][x / CELL - 1]);
 
 	for (rx=-1; rx<2; rx++)

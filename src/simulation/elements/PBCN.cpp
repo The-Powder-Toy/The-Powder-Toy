@@ -46,6 +46,8 @@ Element_PBCN::Element_PBCN()
 	Graphics = &Element_PBCN::graphics;
 }
 
+#define ADVECTION 0.1f
+
 //#TPT-Directive ElementHeader Element_PBCN static int update(UPDATE_FUNC_ARGS)
 int Element_PBCN::update(UPDATE_FUNC_ARGS)
 {
@@ -54,9 +56,8 @@ int Element_PBCN::update(UPDATE_FUNC_ARGS)
 		parts[i].tmp2 = rand()%40+80;
 	if (parts[i].tmp2)
 	{
-		float advection = 0.1f;
-		parts[i].vx += advection*sim->vx[y/CELL][x/CELL];
-		parts[i].vy += advection*sim->vy[y/CELL][x/CELL];
+		parts[i].vx += ADVECTION*sim->vx[y/CELL][x/CELL];
+		parts[i].vy += ADVECTION*sim->vy[y/CELL][x/CELL];
 		parts[i].tmp2--;
 		if(!parts[i].tmp2){
 			sim->kill_part(i);

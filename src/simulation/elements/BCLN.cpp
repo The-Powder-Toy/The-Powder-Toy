@@ -46,6 +46,8 @@ Element_BCLN::Element_BCLN()
 	
 }
 
+#define ADVECTION 0.1f
+
 //#TPT-Directive ElementHeader Element_BCLN static int update(UPDATE_FUNC_ARGS)
 int Element_BCLN::update(UPDATE_FUNC_ARGS)
  {
@@ -53,9 +55,8 @@ int Element_BCLN::update(UPDATE_FUNC_ARGS)
 		parts[i].life = rand()%40+80;
 	if (parts[i].life)
 	{
-		float advection = 0.1f;
-		parts[i].vx += advection*sim->vx[y/CELL][x/CELL];
-		parts[i].vy += advection*sim->vy[y/CELL][x/CELL];
+		parts[i].vx += ADVECTION*sim->vx[y/CELL][x/CELL];
+		parts[i].vy += ADVECTION*sim->vy[y/CELL][x/CELL];
 	}
 	if (parts[i].ctype<=0 || parts[i].ctype>=PT_NUM || !sim->elements[parts[i].ctype].Enabled || (parts[i].ctype==PT_LIFE && (parts[i].tmp<0 || parts[i].tmp>=NGOL)))
 	{

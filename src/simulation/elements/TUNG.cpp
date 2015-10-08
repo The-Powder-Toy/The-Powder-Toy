@@ -93,10 +93,11 @@ int Element_TUNG::update(UPDATE_FUNC_ARGS)
 		parts[i].vx += (rand()%100)-50;
 		parts[i].vy += (rand()%100)-50;
 		return 1;
-	} 
+	}
 	parts[i].pavg[0] = parts[i].pavg[1];
 	parts[i].pavg[1] = sim->pv[y/CELL][x/CELL];
-	if (parts[i].pavg[1]-parts[i].pavg[0] > 0.50f || parts[i].pavg[1]-parts[i].pavg[0] < -0.50f)
+	float diff = parts[i].pavg[1] - parts[i].pavg[0];
+	if (diff > 0.50f || diff < -0.50f)
 	{
 		sim->part_change_type(i,x,y,PT_BRMT);
 		parts[i].ctype = PT_TUNG;
