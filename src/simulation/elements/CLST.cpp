@@ -93,10 +93,10 @@ int Element_CLST::update(UPDATE_FUNC_ARGS)
 int Element_CLST::graphics(GRAPHICS_FUNC_ARGS)
 
 {
-	int z = cpart->tmp - 5;//speckles!
-	*colr += z * 16;
-	*colg += z * 16;
-	*colb += z * 16;
+	int z =( cpart->tmp - 5) * 16;//speckles!
+	*colr += z;
+	*colg += z;
+	*colb += z;
 	return 0;
 }
 

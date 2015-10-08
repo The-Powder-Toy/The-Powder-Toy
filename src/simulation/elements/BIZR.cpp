@@ -46,12 +46,13 @@ Element_BIZR::Element_BIZR()
 	Graphics = &Element_BIZR::graphics;
 }
 
+#define BLEND 0.95f
+
 //#TPT-Directive ElementHeader Element_BIZR static int update(UPDATE_FUNC_ARGS)
 int Element_BIZR::update(UPDATE_FUNC_ARGS)
  {
 	int r, rx, ry, nr, ng, nb, na;
 	float tr, tg, tb, ta, mr, mg, mb, ma;
-	float blend;
 	if(parts[i].dcolour){
 		for (rx=-2; rx<3; rx++)
 			for (ry=-2; ry<3; ry++)
@@ -62,7 +63,6 @@ int Element_BIZR::update(UPDATE_FUNC_ARGS)
 						continue;
 					if ((r&0xFF)!=PT_BIZR && (r&0xFF)!=PT_BIZRG  && (r&0xFF)!=PT_BIZRS)
 					{
-						blend = 0.95f;
 						tr = (parts[r>>8].dcolour>>16)&0xFF;
 						tg = (parts[r>>8].dcolour>>8)&0xFF;
 						tb = (parts[r>>8].dcolour)&0xFF;
@@ -73,10 +73,10 @@ int Element_BIZR::update(UPDATE_FUNC_ARGS)
 						mb = (parts[i].dcolour)&0xFF;
 						ma = (parts[i].dcolour>>24)&0xFF;
 						
-						nr = (tr*blend) + (mr*(1-blend));
-						ng = (tg*blend) + (mg*(1-blend));
-						nb = (tb*blend) + (mb*(1-blend));
-						na = (ta*blend) + (ma*(1-blend));
+						nr = (tr*BLEND) + (mr*(1 - BLEND));
+						ng = (tg*BLEND) + (mg*(1 - BLEND));
+						nb = (tb*BLEND) + (mb*(1 - BLEND));
+						na = (ta*BLEND) + (ma*(1 - BLEND));
 						
 						parts[r>>8].dcolour = nr<<16 | ng<<8 | nb | na<<24;
 					}
@@ -91,6 +91,7 @@ int Element_BIZR::graphics(GRAPHICS_FUNC_ARGS)
  //BIZR, BIZRG, BIZRS
 {
 	int x = 0;
+	float brightness = fabs(cpart->vx) + fabs(cpart->vy);
 	if (cpart->ctype&0x3FFFFFFF)
 	{
 		*colg = 0;
@@ -102,17 +103,19 @@ int Element_BIZR::graphics(GRAPHICS_FUNC_ARGS)
 		}
 		for (x=0; x<12; x++)
 			*colg += (cpart->ctype >> (x+9))  & 1;
-		x = *colr+*colg+*colb+1;
-		*colr = *colr*624/x;
-		*colg = *colg*624/x;
-		*colb = *colb*624/x;
+		x = 624 / (*colr + *colg + *colb + 1);
+		*colr *= x;
+		*colg *= x;
+		*colb *= x;
 	}
-	if(fabs(cpart->vx)+fabs(cpart->vy)>0)
+
+	if(brightness>0)
 	{
+		brightness /= 5;
 		*firea = 255;
-		*fireg = *colg/5 * (fabs(cpart->vx)+fabs(cpart->vy));
-		*fireb = *colb/5 * (fabs(cpart->vx)+fabs(cpart->vy));
-		*firer = *colr/5 * (fabs(cpart->vx)+fabs(cpart->vy));
+		*fireg = *colg * brightness;
+		*fireb = *colb * brightness;
+		*firer = *colr * brightness;
 		*pixel_mode |= FIRE_ADD;
 	}
 	*pixel_mode |= PMODE_BLUR;

@@ -70,7 +70,7 @@ int Element_BREC::update(UPDATE_FUNC_ARGS)
 				int r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if (parts[r>>8].type == PT_LAVA && parts[r>>8].ctype == PT_CLST)
+				if ((r&0xFF) == PT_LAVA && parts[r>>8].ctype == PT_CLST)
 				{
 					float pres = std::max(sim->pv[y/CELL][x/CELL]*10.0f, 0.0f);
 					if (parts[r>>8].temp >= pres+sim->elements[PT_CRMC].HighTemperature+50.0f)

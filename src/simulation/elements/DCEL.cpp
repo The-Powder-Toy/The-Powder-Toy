@@ -50,15 +50,10 @@ Element_DCEL::Element_DCEL()
 int Element_DCEL::update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry;
-	float multiplier;
+	float multiplier = 1.0f/1.1f;
 	if (parts[i].life!=0)
 	{
-		float change = parts[i].life > 100 ? 100 : (parts[i].life < 0 ? 0 : parts[i].life);
-		multiplier = 1.0f-(change/100.0f);
-	}
-	else
-	{
-		multiplier = 1.0f/1.1f;
+		multiplier = 1.0f - ((parts[i].life > 100 ? 100 : (parts[i].life < 0 ? 0 : parts[i].life)) / 100.0f);
 	}
 	parts[i].tmp = 0;
 	for (rx=-1; rx<2; rx++)

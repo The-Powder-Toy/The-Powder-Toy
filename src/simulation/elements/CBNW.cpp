@@ -52,13 +52,7 @@ int Element_CBNW::update(UPDATE_FUNC_ARGS)
 	int r, rx, ry;
 	if (sim->pv[y/CELL][x/CELL]<=3)
 	{
-		if(sim->pv[y/CELL][x/CELL]<=-0.5)
-		{
-			sim->part_change_type(i,x,y,PT_CO2);
-			parts[i].ctype = 5;
-			sim->pv[y/CELL][x/CELL] += 0.5f;
-		}
-		else if(!(rand()%4000))
+		if (sim->pv[y/CELL][x/CELL] <= -0.5 || !(rand()%4000))
 		{
 			sim->part_change_type(i,x,y,PT_CO2);
 			parts[i].ctype = 5;

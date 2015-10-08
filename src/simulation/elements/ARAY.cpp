@@ -62,13 +62,15 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 						bool isBlackDeco = false;
 						int destroy = (parts[r>>8].ctype==PT_PSCN)?1:0;
 						int nostop = (parts[r>>8].ctype==PT_INST)?1:0;
-						int colored = 0;
+						int colored = 0, rt;
 						for (docontinue = 1, nxx = 0, nyy = 0, nxi = rx*-1, nyi = ry*-1; docontinue; nyy+=nyi, nxx+=nxi) {
 							if (!(x+nxi+nxx<XRES && y+nyi+nyy<YRES && x+nxi+nxx >= 0 && y+nyi+nyy >= 0)) {
 								break;
 							}
 							r = pmap[y+nyi+nyy][x+nxi+nxx];
-							if (!r) {
+							rt = r & 0xFF;
+							r = r >> 8;
+							if (!rt) {
 								int nr = sim->create_part(-1, x+nxi+nxx, y+nyi+nyy, PT_BRAY);
 								if (nr!=-1) {
 									if (destroy) {//if it came from PSCN
@@ -81,61 +83,52 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 										parts[nr].dcolour = 0xFF000000;
 								}
 							} else if (!destroy) {
-								if ((r&0xFF)==PT_BRAY) {
+								if (rt==PT_BRAY) {
 									//cases for hitting different BRAY modes
-									switch(parts[r>>8].tmp) {
+									switch(parts[r].tmp) {
 									case 0://normal white
 										if (nyy!=0 || nxx!=0) {
-											parts[r>>8].life = 1020;//makes it last a while
-											parts[r>>8].tmp = 1;
-											if (!parts[r>>8].ctype)//and colors it if it isn't already
-												parts[r>>8].ctype = colored;
+											parts[r].life = 1020;//makes it last a while
+											parts[r].tmp = 1;
+											if (!parts[r].ctype)//and colors it if it isn't already
+												parts[r].ctype = colored;
 										}
 									case 2://red bray, stop
 									default://stop any other random tmp mode
 										docontinue = 0;//then stop it
 										break;
 									case 1://long life, reset it
-										parts[r>>8].life = 1020;
+										parts[r].life = 1020;
 										//docontinue = 1;
 										break;
 									}
 									if (isBlackDeco)
-										parts[r>>8].dcolour = 0xFF000000;
-								} else if ((r&0xFF)==PT_FILT) {//get color if passed through FILT
-									if (parts[r>>8].tmp != 6)
+										parts[r].dcolour = 0xFF000000;
+								} else if (rt==PT_FILT) {//get color if passed through FILT
+									if (parts[r].tmp != 6)
 									{
-										colored = Element_FILT::interactWavelengths(&parts[r>>8], colored);
+										colored = Element_FILT::interactWavelengths(&parts[r], colored);
 										if (!colored)
 											break;
 									}
-									isBlackDeco = (parts[r>>8].dcolour==0xFF000000);
-									parts[r>>8].life = 4;
+									isBlackDeco = (parts[r].dcolour==0xFF000000);
+									parts[r].life = 4;
 								//this if prevents BRAY from stopping on certain materials
-								} else if ((r&0xFF)!=PT_STOR && (r&0xFF)!=PT_INWR && ((r&0xFF)!=PT_SPRK || parts[r>>8].ctype!=PT_INWR) && (r&0xFF)!=PT_ARAY && (r&0xFF)!=PT_WIFI && !((r&0xFF)==PT_SWCH && parts[r>>8].life>=10)) {
-									if (nyy!=0 || nxx!=0) {
-										sim->create_part(-1, x+nxi+nxx, y+nyi+nyy, PT_SPRK);
-									}
-									if (!(nostop && parts[r>>8].type==PT_SPRK && parts[r>>8].ctype >= 0 && parts[r>>8].ctype < PT_NUM && (sim->elements[parts[r>>8].ctype].Properties&PROP_CONDUCTS))) {
-										docontinue = 0;
-									} else {
-										docontinue = 1;
-									}
-								} else if((r&0xFF)==PT_STOR) {
-									if(parts[r>>8].tmp)
+								} else if (rt == PT_STOR) {
+									if (parts[r].tmp)
 									{
 										//Cause STOR to release
-										for(ry1 = 1; ry1 >= -1; ry1--){
-											for(rx1 = 0; rx1 >= -1 && rx1 <= 1; rx1 = -rx1-rx1+1){
-												int np = sim->create_part(-1, x+nxi+nxx+rx1, y+nyi+nyy+ry1, parts[r>>8].tmp);
-												if (np!=-1)
+										for (ry1 = 1; ry1 >= -1; ry1--){
+											for (rx1 = 0; rx1 >= -1 && rx1 <= 1; rx1 = -rx1 - rx1 + 1){
+												int np = sim->create_part(-1, x + nxi + nxx + rx1, y + nyi + nyy + ry1, parts[r].tmp);
+												if (np != -1)
 												{
-													parts[np].temp = parts[r>>8].temp;
-													parts[np].life = parts[r>>8].tmp2;
-													parts[np].tmp = parts[r>>8].pavg[0];
-													parts[np].ctype = parts[r>>8].pavg[1];
-													parts[r>>8].tmp = 0;
-													parts[r>>8].life = 10;
+													parts[np].temp = parts[r].temp;
+													parts[np].life = parts[r].tmp2;
+													parts[np].tmp = parts[r].pavg[0];
+													parts[np].ctype = parts[r].pavg[1];
+													parts[r].tmp = 0;
+													parts[r].life = 10;
 													break;
 												}
 											}
@@ -143,27 +136,36 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 									}
 									else
 									{
-										parts[r>>8].life = 10;
+										parts[r].life = 10;
+									}
+								} else if (rt != PT_INWR && (rt != PT_SPRK || parts[r].ctype != PT_INWR) && rt != PT_ARAY && rt != PT_WIFI && !(rt == PT_SWCH && parts[r].life >= 10)) {
+									if (nyy!=0 || nxx!=0) {
+										sim->create_part(-1, x+nxi+nxx, y+nyi+nyy, PT_SPRK);
+									}
+									if (!(nostop && parts[r].type==PT_SPRK && parts[r].ctype >= 0 && parts[r].ctype < PT_NUM && (sim->elements[parts[r].ctype].Properties&PROP_CONDUCTS))) {
+										docontinue = 0;
+									} else {
+										docontinue = 1;
 									}
 								}
 							} else if (destroy) {
-								if ((r&0xFF)==PT_BRAY) {
-									parts[r>>8].tmp = 2;
-									parts[r>>8].life = 1;
+								if (rt==PT_BRAY) {
+									parts[r].tmp = 2;
+									parts[r].life = 1;
 									docontinue = 1;
 									if (isBlackDeco)
-										parts[r>>8].dcolour = 0xFF000000;
+										parts[r].dcolour = 0xFF000000;
 								//this if prevents red BRAY from stopping on certain materials
-								} else if ((r&0xFF)==PT_STOR || (r&0xFF)==PT_INWR || ((r&0xFF)==PT_SPRK && parts[r>>8].ctype==PT_INWR) || (r&0xFF)==PT_ARAY || (r&0xFF)==PT_WIFI || (r&0xFF)==PT_FILT || ((r&0xFF)==PT_SWCH && parts[r>>8].life>=10)) {
-									if((r&0xFF)==PT_STOR)
+								} else if (rt==PT_STOR || rt==PT_INWR || (rt==PT_SPRK && parts[r].ctype==PT_INWR) || rt==PT_ARAY || rt==PT_WIFI || rt==PT_FILT || (rt==PT_SWCH && parts[r].life>=10)) {
+									if(rt==PT_STOR)
 									{
-										parts[r>>8].tmp = 0;
-										parts[r>>8].life = 0;
+										parts[r].tmp = 0;
+										parts[r].life = 0;
 									}
-									else if ((r&0xFF)==PT_FILT)
+									else if (rt==PT_FILT)
 									{
-										isBlackDeco = (parts[r>>8].dcolour==0xFF000000);
-										parts[r>>8].life = 2;
+										isBlackDeco = (parts[r].dcolour==0xFF000000);
+										parts[r].life = 2;
 									}
 									docontinue = 1;
 								} else {

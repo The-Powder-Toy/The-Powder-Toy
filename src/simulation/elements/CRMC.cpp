@@ -57,10 +57,10 @@ int Element_CRMC::update(UPDATE_FUNC_ARGS)
 //#TPT-Directive ElementHeader Element_CRMC static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_CRMC::graphics(GRAPHICS_FUNC_ARGS)
 {
-	int z = cpart->tmp2 - 2;
-	*colr += z * 8;
-	*colg += z * 8;
-	*colb += z * 8;
+	int z = (cpart->tmp2 - 2) * 8;
+	*colr += z;
+	*colg += z;
+	*colb += z;
 	return 0;
 }
 

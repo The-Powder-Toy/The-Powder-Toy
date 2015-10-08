@@ -87,6 +87,7 @@ void Element_SOAP::attach(Particle * parts, int i1, int i2)
 }
 
 #define FREEZING 248.15f
+#define BLEND 0.85f
 
 //#TPT-Directive ElementHeader Element_SOAP static int update(UPDATE_FUNC_ARGS)
 int Element_SOAP::update(UPDATE_FUNC_ARGS)
@@ -94,7 +95,6 @@ int Element_SOAP::update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry, nr, ng, nb, na;
 	float tr, tg, tb, ta;
-	float blend;
 	
 	//0x01 - bubble on/off
 	//0x02 - first mate yes/no
@@ -258,15 +258,14 @@ int Element_SOAP::update(UPDATE_FUNC_ARGS)
 					continue;
 				if ((r&0xFF)!=PT_SOAP)
 				{
-					blend = 0.85f;
 					tr = (parts[r>>8].dcolour>>16)&0xFF;
 					tg = (parts[r>>8].dcolour>>8)&0xFF;
 					tb = (parts[r>>8].dcolour)&0xFF;
 					ta = (parts[r>>8].dcolour>>24)&0xFF;
-					nr = (tr*blend);
-					ng = (tg*blend);
-					nb = (tb*blend);
-					na = (ta*blend);
+					nr = (tr*BLEND);
+					ng = (tg*BLEND);
+					nb = (tb*BLEND);
+					na = (ta*BLEND);
 					parts[r>>8].dcolour = nr<<16 | ng<<8 | nb | na<<24;
 				}
 			}
