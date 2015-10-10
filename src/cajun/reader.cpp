@@ -321,7 +321,13 @@ std::string Reader::MatchString(InputStream& inputStream)
             case 'n':      string.push_back('\n');    break;
             case 'r':      string.push_back('\r');    break;
             case 't':      string.push_back('\t');    break;
-			//case 'u':      string.push_back('\u');    break; // TODO: what do we do with this?
+            // TPT edit: eat \u0000 characters because the TPT font doesn't support them, and if we ignore it the json can't be parsed
+            case 'u': {
+                int eat = 4;
+                while (eat-- && inputStream.EOS() == false && inputStream.Peek() != '"')
+                    inputStream.Get();
+                break;
+            }
             default: {
                std::string sMessage = std::string("Unrecognized escape sequence found in string: \\") + c;
                throw ScanException(sMessage, inputStream.GetLocation());
