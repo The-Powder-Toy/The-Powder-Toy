@@ -149,6 +149,8 @@ void SearchModel::Update()
 			if(!saveList.size())
 			{
 				lastError = Client::Ref().GetLastError();
+				if (lastError == "Unspecified Error")
+					lastError = "";
 			}
 			
 			resultCount = thResultCount;
