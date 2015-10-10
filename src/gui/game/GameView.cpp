@@ -1122,12 +1122,17 @@ void GameView::OnMouseDown(int x, int y, unsigned button)
 		}
 		if (currentMouse.X >= 0 && currentMouse.X < XRES && currentMouse.Y >= 0 && currentMouse.Y < YRES)
 		{
+			// update tool index, set new "last" tool so GameView can detect certain tools properly
 			if (button == BUTTON_LEFT)
 				toolIndex = 0;
 			if (button == BUTTON_RIGHT)
 				toolIndex = 1;
 			if (button == BUTTON_MIDDLE)
 				toolIndex = 2;
+			Tool *lastTool = c->GetActiveTool(toolIndex);
+			c->SetLastTool(lastTool);
+			UpdateDrawMode();
+
 			isMouseDown = true;
 			c->HistorySnapshot();
 			if (drawMode == DrawRect || drawMode == DrawLine)
