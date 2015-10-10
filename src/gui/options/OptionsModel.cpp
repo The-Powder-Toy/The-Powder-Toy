@@ -72,7 +72,7 @@ void OptionsModel::SetAirMode(int airMode)
 
 int OptionsModel::GetEdgeMode()
 {
-	return gModel->GetEdgeMode();
+	return gModel->GetSimulation()->edgeMode;
 }
 void OptionsModel::SetEdgeMode(int edgeMode)
 {
