@@ -729,7 +729,7 @@ RequestStatus Client::ParseServerReturn(char *result, int status, bool json)
 				lastError = httperror.str();
 				return RequestFailure;
 			}
-			lastError = "Could not read response";
+			lastError = std::string("Could not read response: ") + e.what();
 			return RequestFailure;
 		}
 	}
@@ -1439,7 +1439,7 @@ LoginStatus Client::Login(std::string username, std::string password, User & use
 		}
 		catch (json::Exception &e)
 		{
-			lastError = "Could not read response";
+			lastError = std::string("Could not read response: ") + e.what();
 			return LoginError;
 		}
 	}
@@ -1670,7 +1670,7 @@ SaveInfo * Client::GetSave(int saveID, int saveDate)
 		}
 		catch (json::Exception &e)
 		{
-			lastError = "Could not read response";
+			lastError = std::string("Could not read response: ") + e.what();
 			free(data);
 			return NULL;
 		}
@@ -1842,7 +1842,7 @@ std::vector<std::pair<std::string, int> > * Client::GetTags(int start, int count
 		}
 		catch (json::Exception &e)
 		{
-			lastError = "Could not read response";
+			lastError = std::string("Could not read response: ") + e.what();
 		}
 	}
 	else
@@ -1925,7 +1925,7 @@ std::vector<SaveInfo*> * Client::SearchSaves(int start, int count, std::string q
 		}
 		catch (json::Exception &e)
 		{
-			lastError = "Could not read response";
+			lastError = std::string("Could not read response: ") + e.what();
 		}
 	}
 	free(data);
@@ -1985,7 +1985,7 @@ std::list<std::string> * Client::RemoveTag(int saveID, std::string tag)
 		}
 		catch (json::Exception &e)
 		{
-			lastError = "Could not read response";
+			lastError = std::string("Could not read response: ") + e.what();
 		}
 	}
 	free(data);
@@ -2031,7 +2031,7 @@ std::list<std::string> * Client::AddTag(int saveID, std::string tag)
 		}
 		catch (json::Exception &e)
 		{
-			lastError = "Could not read response";
+			lastError = std::string("Could not read response: ") + e.what();
 		}
 	}
 	free(data);
