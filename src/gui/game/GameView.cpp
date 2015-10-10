@@ -2038,46 +2038,58 @@ void GameView::SetSaveButtonTooltips()
 void GameView::OnDraw()
 {
 	Graphics * g = ui::Engine::Ref().g;
-	if(ren)
+	if (ren)
 	{
 		ren->clearScreen(1.0f);
 		ren->RenderBegin();
 		ren->SetSample(c->PointTranslate(currentMouse).X, c->PointTranslate(currentMouse).Y);
-		if(selectMode == SelectNone && (!zoomEnabled || zoomCursorFixed) && activeBrush && (isMouseDown || (currentMouse.X >= 0 && currentMouse.X < XRES && currentMouse.Y >= 0 && currentMouse.Y < YRES)))
+		if (selectMode == SelectNone && (!zoomEnabled || zoomCursorFixed) && activeBrush && (isMouseDown || (currentMouse.X >= 0 && currentMouse.X < XRES && currentMouse.Y >= 0 && currentMouse.Y < YRES)))
 		{
 			ui::Point finalCurrentMouse = c->PointTranslate(currentMouse);
 			ui::Point initialDrawPoint = drawPoint1;
 
-			if(wallBrush)
+			if (wallBrush)
 			{
 				finalCurrentMouse = c->NormaliseBlockCoord(finalCurrentMouse);
 				initialDrawPoint = c->NormaliseBlockCoord(initialDrawPoint);
 			}
 
-			if(drawMode==DrawRect && isMouseDown)
+			if (drawMode == DrawRect && isMouseDown)
 			{
-				if(drawSnap)
+				if (drawSnap)
 				{
 					finalCurrentMouse = rectSnapCoords(c->PointTranslate(initialDrawPoint), finalCurrentMouse);
 				}
+				if (wallBrush)
+				{
+					if (finalCurrentMouse.X > initialDrawPoint.X)
+						finalCurrentMouse.X += CELL-1;
+					else
+						initialDrawPoint.X += CELL-1;
+
+					if (finalCurrentMouse.Y > initialDrawPoint.Y)
+						finalCurrentMouse.Y += CELL-1;
+					else
+						initialDrawPoint.Y += CELL-1;
+				}
 				activeBrush->RenderRect(ren, c->PointTranslate(initialDrawPoint), finalCurrentMouse);
 			}
-			else if(drawMode==DrawLine && isMouseDown)
+			else if (drawMode == DrawLine && isMouseDown)
 			{
-				if(drawSnap)
+				if (drawSnap)
 				{
 					finalCurrentMouse = lineSnapCoords(c->PointTranslate(initialDrawPoint), finalCurrentMouse);
 				}
 				activeBrush->RenderLine(ren, c->PointTranslate(initialDrawPoint), finalCurrentMouse);
 			}
-			else if(drawMode==DrawFill)// || altBehaviour)
+			else if (drawMode == DrawFill)// || altBehaviour)
 			{
 				if (!decoBrush)
 					activeBrush->RenderFill(ren, finalCurrentMouse);
 			}
-			if(drawMode == DrawPoints || drawMode==DrawLine || (drawMode == DrawRect && !isMouseDown))
+			if (drawMode == DrawPoints || drawMode==DrawLine || (drawMode == DrawRect && !isMouseDown))
 			{
-				if(wallBrush)
+				if (wallBrush)
 				{
 					ui::Point finalBrushRadius = c->NormaliseBlockCoord(activeBrush->GetRadius());
 					ren->xor_line(finalCurrentMouse.X-finalBrushRadius.X, finalCurrentMouse.Y-finalBrushRadius.Y, finalCurrentMouse.X+finalBrushRadius.X+CELL-1, finalCurrentMouse.Y-finalBrushRadius.Y);
