@@ -5050,6 +5050,8 @@ Simulation::Simulation():
 	emp_decor(0),
 	lightningRecreate(0),
 	gravWallChanged(false),
+	CGOL(0),
+	GSPEED(1),
 	edgeMode(0),
 	gravityMode(0),
 	legacy_enable(0),

@@ -742,6 +742,7 @@ void LuaScriptInterface::initSimulationAPI()
 		{"neighbours", simulation_neighbours},
 		{"neighbors", simulation_neighbours},
 		{"framerender", simulation_framerender},
+		{"gspeed", simulation_gspeed},
 		{NULL, NULL}
 	};
 	luaL_register(l, "simulation", simulationAPIMethods);
@@ -1978,6 +1979,20 @@ int LuaScriptInterface::simulation_framerender(lua_State * l)
 	if (frames < 0)
 		return luaL_error(l, "Can't simulate a negative number of frames");
 	luacon_sim->framerender = frames;
+	return 0;
+}
+
+int LuaScriptInterface::simulation_gspeed(lua_State * l)
+{
+	if (lua_gettop(l) == 0)
+	{
+		lua_pushinteger(l, luacon_sim->GSPEED);
+		return 1;
+	}
+	int gspeed = luaL_checkinteger(l, 1);
+	if (gspeed < 1)
+		return luaL_error(l, "GSPEED must be at least 1");
+	luacon_sim->GSPEED = gspeed;
 	return 0;
 }
 
