@@ -680,6 +680,7 @@ std::vector<std::pair<std::string, std::string> > Client::GetServerNotifications
 
 RequestStatus Client::ParseServerReturn(char *result, int status, bool json)
 {
+	lastError = "";
 	// no server response, return "Malformed Response"
 	if (status == 200 && !result)
 	{
