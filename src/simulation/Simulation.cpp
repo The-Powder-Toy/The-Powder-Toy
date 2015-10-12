@@ -4492,7 +4492,7 @@ killed:
 										break;
 									}
 									// A particle of a different type, or a wall, was found. Stop trying to move any further horizontally unless the wall should be completely invisible to particles.
-									if (bmap[ny/CELL][nx/CELL]!=WL_STREAM)
+									if ((pmap[ny][nx]&0xFF)!=t || bmap[ny/CELL][nx/CELL]!=WL_STREAM)
 										break;
 								}
 							}
@@ -4542,7 +4542,7 @@ killed:
 									if ((pmap[ny][nx]&0xFF)!=t || bmap[ny/CELL][nx/CELL])
 									{
 										s = do_move(i, clear_x, clear_y, nxf, nyf);
-										if (s || bmap[ny/CELL][nx/CELL]!=WL_STREAM)
+										if (s || (pmap[ny][nx]&0xFF)!=t || bmap[ny/CELL][nx/CELL]!=WL_STREAM)
 											break; // found the edge of the liquid and movement into it succeeded, so stop moving down
 									}
 								}
