@@ -1085,6 +1085,15 @@ void GameSave::readOPS(char * data, int dataLength)
 								particles[newIndex].tmp2 = 0;
 							}
 						}
+					case PT_CONV:
+						if (savedVersion < 92)
+						{
+							if (particles[newIndex].tmp)
+							{
+								particles[newIndex].ctype |= particles[newIndex].tmp<<8;
+								particles[newIndex].tmp = 0;
+							}
+						}
 					}
 					//note: PSv was used in version 77.0 and every version before, add something in PSv too if the element is that old
 					newIndex++;
@@ -1737,6 +1746,17 @@ void GameSave::readPSv(char * data, int dataLength)
 			{
 				if (particles[i-1].type == PT_VINE)
 					particles[i-1].tmp = 1;
+			}
+			if (ver < 92)
+			{
+				if (particles[i-1].type == PT_CONV)
+				{
+					if (particles[i-1].tmp)
+					{
+						particles[i-1].ctype |= particles[i-1].tmp<<8;
+						particles[i-1].tmp = 0;
+					}
+				}
 			}
 		}
 	}

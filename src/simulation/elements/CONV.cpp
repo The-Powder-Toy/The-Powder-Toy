@@ -50,7 +50,8 @@ Element_CONV::Element_CONV()
 int Element_CONV::update(UPDATE_FUNC_ARGS)
  {
 	int r, rx, ry;
-	if (parts[i].ctype<=0 || parts[i].ctype>=PT_NUM || !sim->elements[parts[i].ctype].Enabled || parts[i].ctype==PT_CONV || (parts[i].ctype==PT_LIFE && (parts[i].tmp<0 || parts[i].tmp>=NGOL)))
+	int ctype = parts[i].ctype&0xFF, ctypeExtra = parts[i].ctype>>8;
+	if (ctype<=0 || ctype>=PT_NUM || !sim->elements[ctype].Enabled || ctype==PT_CONV || (ctype==PT_LIFE && (ctypeExtra<0 || ctypeExtra>=NGOL)))
 	{
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
@@ -68,26 +69,25 @@ int Element_CONV::update(UPDATE_FUNC_ARGS)
 					{
 						parts[i].ctype = r&0xFF;
 						if ((r&0xFF)==PT_LIFE)
-							parts[i].tmp = parts[r>>8].ctype;
+							parts[i].ctype |= (parts[r>>8].ctype << 8);
 					}
 				}
 	}
 	else 
 	{
-		bool life = parts[i].ctype==PT_LIFE;
+		int restrictElement = sim->IsValidElement(parts[i].tmp) ? parts[i].tmp : 0;
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
 				if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES)
 				{
 					r = sim->photons[y+ry][x+rx];
-					if (!r)
+					if (!r || (restrictElement && (r&0xFF)!=restrictElement))
 						r = pmap[y+ry][x+rx];
-					if (!r)
+					if (!r || (restrictElement && (r&0xFF)!=restrictElement))
 						continue;
-					if((r&0xFF)!=PT_CONV && (r&0xFF)!=PT_DMND && (r&0xFF)!=parts[i].ctype)
+					if((r&0xFF)!=PT_CONV && (r&0xFF)!=PT_DMND && (r&0xFF)!=ctype)
 					{
-						if (life) sim->create_part(r>>8, x+rx, y+ry, parts[i].ctype|(parts[i].tmp<<8));
-						else sim->create_part(r>>8, x+rx, y+ry, parts[i].ctype);
+						sim->create_part(r>>8, x+rx, y+ry, parts[i].ctype);
 					}
 				}
 	}

@@ -2847,8 +2847,13 @@ int Simulation::create_part(int p, int x, int y, int tv)
 				&& (!(elements[t].Properties & PROP_NOCTYPEDRAW)))
 			{
 				parts[pmap[y][x]>>8].ctype = t;
-				if (t == PT_LIFE && v >= 0 && v < NGOL && drawOn != PT_STOR)
-					parts[pmap[y][x]>>8].tmp = v;
+				if (t == PT_LIFE && v >= 0 && v < NGOL)
+				{
+					if (drawOn == PT_CONV)
+						parts[pmap[y][x]>>8].ctype |= v<<8;
+					else if (drawOn != PT_STOR)
+						parts[pmap[y][x]>>8].tmp = v;
+				}
 			}
 			else if ((drawOn == PT_DTEC || (drawOn == PT_PSTN && t != PT_FRME) || drawOn == PT_DRAY) && drawOn != t)
 			{
