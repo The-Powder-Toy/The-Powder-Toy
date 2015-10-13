@@ -1086,7 +1086,7 @@ void GameSave::readOPS(char * data, int dataLength)
 							}
 						}
 					case PT_CONV:
-						if (savedVersion < 92)
+						if (savedVersion < 91)
 						{
 							if (particles[newIndex].tmp)
 							{
@@ -1746,10 +1746,7 @@ void GameSave::readPSv(char * data, int dataLength)
 			{
 				if (particles[i-1].type == PT_VINE)
 					particles[i-1].tmp = 1;
-			}
-			if (ver < 92)
-			{
-				if (particles[i-1].type == PT_CONV)
+				else if (particles[i-1].type == PT_CONV)
 				{
 					if (particles[i-1].tmp)
 					{
