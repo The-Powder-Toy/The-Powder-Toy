@@ -207,6 +207,11 @@ public:
 	void clear_sim();
 	Simulation();
 	~Simulation();
+
+	bool InBounds(int x, int y)
+	{
+		return (x>=0 && y>=0 && x<XRES && y<YRES);
+	}
 };
 
 #endif /* SIMULATION_H */
