@@ -63,3 +63,5 @@ config.log
 site_scons/site_tools/mfprogram/*.pyc
 site_scons/site_tools/gch/*.pyc
 others*
+
+screenshot_*
