@@ -2278,6 +2278,12 @@ void GameView::OnDraw()
 				sampleInfo << ", Temp: " << std::fixed << sample.particle.temp -273.15f << " C";
 				sampleInfo << ", Life: " << sample.particle.life;
 				sampleInfo << ", Tmp: " << sample.particle.tmp;
+
+				if (sample.particle.type == PT_CRAY || sample.particle.type == PT_DRAY || sample.particle.type == PT_EXOT || sample.particle.type == PT_LIGH || sample.particle.type == PT_SOAP || sample.particle.type == PT_TRON || sample.particle.type == PT_VIBR || sample.particle.type == PT_VIRS || sample.particle.type == PT_WARP) {
+
+					sampleInfo << ", Tmp2: " << sample.particle.tmp2;
+				}
+
 				sampleInfo << ", Pressure: " << std::fixed << sample.AirPressure;
 			}
 			else
