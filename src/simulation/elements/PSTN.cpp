@@ -105,7 +105,8 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 								break;
 							}
 							r = pmap[y+nyy][x+nxx];
-							if((r&0xFF)==PT_PSTN) {
+							if((r&0xFF)==PT_PSTN)
+							{
 								if(parts[r>>8].life)
 									armCount++;
 								else if (armCount)
@@ -119,7 +120,16 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 								{
 									pistonCount += floor((parts[r>>8].temp-268.15)/10);// How many tens of degrees above 0 C, rounded to nearest ten degrees. Can be negative.
 								}
-							} else {
+							}
+							else if (nxx==0 && nyy==0)
+							{
+								// compatibility with BAD THINGS: starting PSTN layered underneath other particles
+								// (in v90, it started scanning from the neighbouring particle, so could not break out of loop at offset=(0,0))
+								pistonCount += floor((parts[i].temp-268.15)/10);
+								continue;
+							}
+							else
+							{
 								pistonEndX = x+nxx;
 								pistonEndY = y+nyy;
 								foundEnd = true;
