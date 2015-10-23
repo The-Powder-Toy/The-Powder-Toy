@@ -2236,26 +2236,28 @@ void GameView::OnDraw()
 			alpha = 50;
 		std::stringstream sampleInfo;
 		sampleInfo.precision(2);
-		if(sample.particle.type)
+
+		int type = sample.particle.type;
+		if (type)
 		{
 			int ctype = sample.particle.ctype;
-			if (sample.particle.type == PT_PIPE || sample.particle.type == PT_PPIP)
+			if (type == PT_PIPE || type == PT_PPIP)
 				ctype = sample.particle.tmp&0xFF;
 
-			if (sample.particle.type == PT_PHOT || sample.particle.type == PT_BIZR || sample.particle.type == PT_BIZRG || sample.particle.type == PT_BIZRS || sample.particle.type == PT_FILT || sample.particle.type == PT_BRAY)
+			if (type == PT_PHOT || type == PT_BIZR || type == PT_BIZRG || type == PT_BIZRS || type == PT_FILT || type == PT_BRAY)
 				wavelengthGfx = ctype;
 
-			if(showDebug)
+			if (showDebug)
 			{
-				if (sample.particle.type == PT_LAVA && c->IsValidElement(ctype))
+				if (type == PT_LAVA && c->IsValidElement(ctype))
 					sampleInfo << "Molten " << c->ElementResolve(ctype, -1);
-				else if ((sample.particle.type == PT_PIPE || sample.particle.type == PT_PPIP) && c->IsValidElement(ctype))
-					sampleInfo << c->ElementResolve(sample.particle.type, -1) << " with " << c->ElementResolve(ctype, (int)sample.particle.pavg[1]);
-				else if (sample.particle.type == PT_LIFE)
-					sampleInfo << c->ElementResolve(sample.particle.type, sample.particle.ctype);
-				else if (sample.particle.type == PT_FILT)
+				else if ((type == PT_PIPE || type == PT_PPIP) && c->IsValidElement(ctype))
+					sampleInfo << c->ElementResolve(type, -1) << " with " << c->ElementResolve(ctype, (int)sample.particle.pavg[1]);
+				else if (type == PT_LIFE)
+					sampleInfo << c->ElementResolve(type, ctype);
+				else if (type == PT_FILT)
 				{
-					sampleInfo << c->ElementResolve(sample.particle.type, sample.particle.ctype);
+					sampleInfo << c->ElementResolve(type, ctype);
 					const char* filtModes[] = {"set colour", "AND", "OR", "subtract colour", "red shift", "blue shift", "no effect", "XOR", "NOT", "old QRTZ scattering"};
 					if (sample.particle.tmp>=0 && sample.particle.tmp<=9)
 						sampleInfo << " (" << filtModes[sample.particle.tmp] << ")";
@@ -2264,11 +2266,11 @@ void GameView::OnDraw()
 				}
 				else
 				{
-					sampleInfo << c->ElementResolve(sample.particle.type, sample.particle.ctype);
+					sampleInfo << c->ElementResolve(type, ctype);
 					if (wavelengthGfx)
 						sampleInfo << " (" << ctype << ")";
 					// Some elements store extra LIFE info in upper bits of ctype, instead of tmp/tmp2
-					else if (sample.particle.type == PT_CRAY || sample.particle.type == PT_DRAY || sample.particle.type == PT_CONV)
+					else if (type == PT_CRAY || type == PT_DRAY || type == PT_CONV)
 						sampleInfo << " (" << c->ElementResolve(ctype&0xFF, ctype>>8) << ")";
 					else if (c->IsValidElement(ctype))
 						sampleInfo << " (" << c->ElementResolve(ctype, -1) << ")";
@@ -2279,23 +2281,22 @@ void GameView::OnDraw()
 				sampleInfo << ", Life: " << sample.particle.life;
 				sampleInfo << ", Tmp: " << sample.particle.tmp;
 
-				if (sample.particle.type == PT_CRAY || sample.particle.type == PT_DRAY || sample.particle.type == PT_EXOT || sample.particle.type == PT_LIGH || sample.particle.type == PT_SOAP || sample.particle.type == PT_TRON || sample.particle.type == PT_VIBR || sample.particle.type == PT_VIRS || sample.particle.type == PT_WARP) {
-
+				// only elements that use .tmp2 show it in the debug HUD
+				if (type == PT_CRAY || type == PT_DRAY || type == PT_EXOT || type == PT_LIGH || type == PT_SOAP || type == PT_TRON || type == PT_VIBR || type == PT_VIRS || type == PT_WARP || type == PT_LCRY || type == PT_CBNW || type == PT_TSNS || type == PT_DTEC || type == PT_PSTN)
 					sampleInfo << ", Tmp2: " << sample.particle.tmp2;
-				}
 
 				sampleInfo << ", Pressure: " << std::fixed << sample.AirPressure;
 			}
 			else
 			{
-				if (sample.particle.type == PT_LAVA && sample.particle.ctype > 0 && sample.particle.ctype < PT_NUM)
-					sampleInfo << "Molten " << c->ElementResolve(sample.particle.ctype, -1);
-				else if ((sample.particle.type == PT_PIPE || sample.particle.type == PT_PPIP) && ctype > 0 && ctype < PT_NUM)
-					sampleInfo << c->ElementResolve(sample.particle.type, -1) << " with " << c->ElementResolve(ctype, (int)sample.particle.pavg[1]);
-				else if (sample.particle.type == PT_LIFE)
-					sampleInfo << c->ElementResolve(sample.particle.type, sample.particle.ctype);
+				if (type == PT_LAVA && c->IsValidElement(ctype))
+					sampleInfo << "Molten " << c->ElementResolve(ctype, -1);
+				else if ((type == PT_PIPE || type == PT_PPIP) && c->IsValidElement(ctype))
+					sampleInfo << c->ElementResolve(type, -1) << " with " << c->ElementResolve(ctype, (int)sample.particle.pavg[1]);
+				else if (type == PT_LIFE)
+					sampleInfo << c->ElementResolve(type, ctype);
 				else
-					sampleInfo << c->ElementResolve(sample.particle.type, sample.particle.ctype);
+					sampleInfo << c->ElementResolve(type, ctype);
 				sampleInfo << ", Temp: " << std::fixed << sample.particle.temp - 273.15f << " C";
 				sampleInfo << ", Pressure: " << std::fixed << sample.AirPressure;
 			}
@@ -2319,7 +2320,7 @@ void GameView::OnDraw()
 		g->drawtext(XRES-16-textWidth, 16, (const char*)sampleInfo.str().c_str(), 255, 255, 255, alpha*0.75f);
 
 #ifndef OGLI
-		if(wavelengthGfx)
+		if (wavelengthGfx)
 		{
 			int i, cr, cg, cb, j, h = 3, x = XRES-19-textWidth, y = 10;
 			int tmp;
@@ -2355,11 +2356,11 @@ void GameView::OnDraw()
 		}
 #endif
 
-		if(showDebug)
+		if (showDebug)
 		{
 			sampleInfo.str(std::string());
 
-			if(sample.particle.type)
+			if (type)
 				sampleInfo << "#" << sample.ParticleID << ", ";
 
 			sampleInfo << "X:" << sample.PositionX << " Y:" << sample.PositionY;
