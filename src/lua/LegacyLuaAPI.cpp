@@ -1901,7 +1901,7 @@ int luatpt_getscript(lua_State* l)
 		outputfile = NULL;
 		if (!confirmPrompt || ConfirmPrompt::Blocking("File already exists, overwrite?", filename, "Overwrite"))
 		{
-			outputfile = fopen(filename, "w");
+			outputfile = fopen(filename, "wb");
 		}
 		else
 		{
@@ -1911,7 +1911,7 @@ int luatpt_getscript(lua_State* l)
 	}
 	else
 	{
-		outputfile = fopen(filename, "w");
+		outputfile = fopen(filename, "wb");
 	}
 	if (!outputfile)
 	{
