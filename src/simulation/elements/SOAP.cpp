@@ -50,13 +50,13 @@ Element_SOAP::Element_SOAP()
 //#TPT-Directive ElementHeader Element_SOAP static void detach(Simulation * sim, int i)
 void Element_SOAP::detach(Simulation * sim, int i)
 {
-	if ((sim->parts[i].ctype&2) == 2 && sim->parts[sim->parts[i].tmp].type == PT_SOAP)
+	if ((sim->parts[i].ctype&2) == 2 && sim->parts[i].tmp >= 0 && sim->parts[i].tmp < NPART && sim->parts[sim->parts[i].tmp].type == PT_SOAP)
 	{
 		if ((sim->parts[sim->parts[i].tmp].ctype&4) == 4)
 			sim->parts[sim->parts[i].tmp].ctype ^= 4;
 	}
 
-	if ((sim->parts[i].ctype&4) == 4 && sim->parts[sim->parts[i].tmp2].type == PT_SOAP)
+	if ((sim->parts[i].ctype&4) == 4 && sim->parts[i].tmp2 >= 0 && sim->parts[i].tmp2 < NPART && sim->parts[sim->parts[i].tmp2].type == PT_SOAP)
 	{
 		if ((sim->parts[sim->parts[i].tmp2].ctype&2) == 2)
 			sim->parts[sim->parts[i].tmp2].ctype ^= 2;
