@@ -1641,7 +1641,10 @@ void GameView::OnTick(float dt)
 		}
 		else if (windTool && drawMode == DrawLine)
 		{
-			c->DrawLine(toolIndex, c->PointTranslate(drawPoint1), lineSnapCoords(c->PointTranslate(drawPoint1), currentMouse));
+			ui::Point drawPoint2 = currentMouse;
+			if (altBehaviour)
+				drawPoint2 = lineSnapCoords(c->PointTranslate(drawPoint1), currentMouse);
+			c->DrawLine(toolIndex, c->PointTranslate(drawPoint1), drawPoint2);
 		}
 	}
 
