@@ -715,9 +715,7 @@ RequestStatus Client::ParseServerReturn(char *result, int status, bool json)
 				json::String error = root["Error"];
 				lastError = std::string(error);
 				if (lastError == "")
-				{
-					return RequestOkay;
-				}
+					lastError = "Unspecified Error";
 				return RequestFailure;
 			}
 		}
