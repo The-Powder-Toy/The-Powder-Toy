@@ -3313,7 +3313,11 @@ bool LuaScriptInterface::OnMouseTick()
 void LuaScriptInterface::OnTick()
 {
 	lua_getglobal(l, "simulation");
-	lua_pushinteger(l, luacon_sim->NUM_PARTS); lua_setfield(l, -2, "NUM_PARTS");
+	if (lua_istable(l, -1))
+	{
+		lua_pushinteger(l, luacon_sim->NUM_PARTS);
+		lua_setfield(l, -2, "NUM_PARTS");
+	}
 	lua_pop(l, 1);
 	ui::Engine::Ref().LastTick(Platform::GetTime());
 	luacon_step(luacon_mousex, luacon_mousey);
