@@ -1100,8 +1100,9 @@ void GameController::OpenLocalSaveWindow(bool asCurrent)
 
 		std::string filename = "";
 		if (gameModel->GetSaveFile())
-			filename = gameModel->GetSaveFile()->GetDisplayName();
+			filename = gameModel->GetSaveFile()->GetName();
 		SaveFile tempSave(filename);
+		tempSave.SetDisplayName(gameModel->GetSaveFile()->GetDisplayName());
 		tempSave.SetGameSave(gameSave);
 
 		if (!asCurrent || !gameModel->GetSaveFile())
@@ -1122,9 +1123,12 @@ void GameController::OpenLocalSaveWindow(bool asCurrent)
 		}
 		else if (gameModel->GetSaveFile())
 		{
+			gameModel->SetSaveFile(&tempSave);
 			Client::Ref().MakeDirectory(LOCAL_SAVE_DIR);
 			if (Client::Ref().WriteFile(gameSave->Serialise(), gameModel->GetSaveFile()->GetName()))
 				new ErrorMessage("Error", "Unable to write save file.");
+			else
+				gameModel->SetInfoTip("Saved Successfully");
 		}
 	}
 }
