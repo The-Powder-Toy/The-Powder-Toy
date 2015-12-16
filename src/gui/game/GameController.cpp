@@ -1098,11 +1098,12 @@ void GameController::OpenLocalSaveWindow(bool asCurrent)
 		sim->SaveSimOptions(gameSave);
 		gameSave->paused = gameModel->GetPaused();
 
-		std::string filename = "";
+		SaveFile tempSave("");
 		if (gameModel->GetSaveFile())
-			filename = gameModel->GetSaveFile()->GetName();
-		SaveFile tempSave(filename);
-		tempSave.SetDisplayName(gameModel->GetSaveFile()->GetDisplayName());
+		{
+			tempSave.SetFileName(gameModel->GetSaveFile()->GetName());
+			tempSave.SetDisplayName(gameModel->GetSaveFile()->GetDisplayName());
+		}
 		tempSave.SetGameSave(gameSave);
 
 		if (!asCurrent || !gameModel->GetSaveFile())
