@@ -1015,11 +1015,13 @@ int LuaScriptInterface::simulation_partProperty(lua_State * l)
 				*((char**)propertyAddress) = strdup(lua_tostring(l, 3));
 				break;
 			case StructProperty::Colour:
-	#if PIXELSIZE == 4
+#if PIXELSIZE == 4
 				*((unsigned int*)propertyAddress) = lua_tointeger(l, 3);
-	#else
+#else
 				*((unsigned short*)propertyAddress) = lua_tointeger(l, 3);
-	#endif
+#endif
+				break;
+			case StructProperty::Removed:
 				break;
 		}
 		return 0;
@@ -2234,10 +2236,14 @@ void LuaScriptInterface::initElementsAPI()
 	SETCONST(l, FLAG_SKIPMOVE);
 	SETCONST(l, FLAG_MOVABLE);
 	SETCONST(l, FLAG_PHOTDECO);
-	SETCONST(l, ST_NONE);
-	SETCONST(l, ST_SOLID);
-	SETCONST(l, ST_LIQUID);
-	SETCONST(l, ST_GAS);
+	lua_pushinteger(l, 0);
+	lua_setfield(l, -2, "ST_NONE");
+	lua_pushinteger(l, 0);
+	lua_setfield(l, -2, "ST_SOLID");
+	lua_pushinteger(l, 0);
+	lua_setfield(l, -2, "ST_LIQUID");
+	lua_pushinteger(l, 0);
+	lua_setfield(l, -2, "ST_GAS");
 
 	SETCONST(l, SC_WALL);
 	SETCONST(l, SC_ELEC);
@@ -2421,9 +2427,11 @@ int LuaScriptInterface::elements_element(lua_State * l)
 						*((unsigned short*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = lua_tointeger(l, -1);
 #endif
 						break;
+					case StructProperty::Removed:
+						break;
 				}
-				lua_pop(l, 1);
 			}
+			lua_pop(l, 1);
 		}
 
 		lua_getfield(l, -1, "Update");
@@ -2497,8 +2505,8 @@ int LuaScriptInterface::elements_element(lua_State * l)
 					lua_pushinteger(l, *((unsigned short*)(((unsigned char*)&luacon_sim->elements[id])+offset)));
 #endif
 					break;
-				default:
-					lua_pushnil(l);
+				case StructProperty::Removed:
+					continue;
 			}
 			lua_setfield(l, -2, (*iter).Name.c_str());
 		}
@@ -2569,6 +2577,8 @@ int LuaScriptInterface::elements_property(lua_State * l)
 #else
 						*((unsigned short*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = luaL_checkinteger(l, 3);
 #endif
+						break;
+					case StructProperty::Removed:
 						break;
 				}
 			}

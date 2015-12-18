@@ -309,8 +309,8 @@ int luacon_element_getproperty(const char * key, int * format, unsigned int * mo
 		*format = 3;
 	}
 	else if (!strcmp(key, "state")) {
-		offset = offsetof(Element, State);
-		*format = 3;
+		offset = 0;
+		*format = -1;
 	}
 	else if (!strcmp(key, "properties")) {
 		offset = offsetof(Element, Properties);
@@ -370,6 +370,8 @@ int luacon_elementread(lua_State* l)
 		tempinteger = *((unsigned char*)(((unsigned char*)&luacon_sim->elements[i])+offset));
 		lua_pushnumber(l, tempinteger);
 		break;
+	default:
+		lua_pushnumber(l, 0);
 	}
 	return 1;
 }
