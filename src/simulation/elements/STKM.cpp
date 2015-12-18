@@ -366,7 +366,7 @@ int Element_STKM::run_stickman(playerst* playerp, UPDATE_FUNC_ARGS) {
 				if (!r && !sim->bmap[(y+ry)/CELL][(x+rx)/CELL])
 					continue;
 				
-				if (sim->elements[r&0xFF].Falldown!=0 || sim->elements[r&0xFF].State == ST_GAS
+				if (sim->elements[r&0xFF].Falldown != 0
 					|| sim->elements[r&0xFF].Properties&TYPE_GAS
 					|| sim->elements[r&0xFF].Properties&TYPE_LIQUID
 					|| (r&0xFF) == PT_NEUT || (r&0xFF) == PT_PHOT)
@@ -412,7 +412,7 @@ int Element_STKM::run_stickman(playerst* playerp, UPDATE_FUNC_ARGS) {
 	{
 		ry -= 2*(rand()%2)+1;
 		r = pmap[ry][rx];
-		if (sim->elements[r&0xFF].State == ST_SOLID)
+		if (sim->elements[r&0xFF].Properties&TYPE_SOLID)
 		{
 			sim->create_part(-1, rx, ry, PT_SPRK);
 			playerp->frames = 0;

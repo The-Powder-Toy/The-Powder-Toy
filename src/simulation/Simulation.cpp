@@ -3624,16 +3624,16 @@ void Simulation::UpdateParticles(int start, int end)
 
 					ctemph = ctempl = pt;
 					// change boiling point with pressure
-					if ((elements[t].State==ST_LIQUID && elements[t].HighTemperatureTransition>-1 && elements[t].HighTemperatureTransition<PT_NUM && elements[elements[t].HighTemperatureTransition].State==ST_GAS)
+					if (((elements[t].Properties&TYPE_LIQUID) && IsValidElement(elements[t].HighTemperatureTransition) && (elements[elements[t].HighTemperatureTransition].Properties&TYPE_GAS))
 					        || t==PT_LNTG || t==PT_SLTW)
 						ctemph -= 2.0f*pv[y/CELL][x/CELL];
-					else if ((elements[t].State==ST_GAS && elements[t].LowTemperatureTransition>-1 && elements[t].LowTemperatureTransition<PT_NUM && elements[elements[t].LowTemperatureTransition].State==ST_LIQUID)
+					else if (((elements[t].Properties&TYPE_GAS) && IsValidElement(elements[t].LowTemperatureTransition) && (elements[elements[t].LowTemperatureTransition].Properties&TYPE_LIQUID))
 					         || t==PT_WTRV)
 						ctempl -= 2.0f*pv[y/CELL][x/CELL];
 					s = 1;
 
 					//A fix for ice with ctype = 0
-					if ((t==PT_ICEI || t==PT_SNOW) && (parts[i].ctype<=0 || parts[i].ctype>=PT_NUM || parts[i].ctype==PT_ICEI || parts[i].ctype==PT_SNOW || !elements[parts[i].ctype].Enabled))
+					if ((t==PT_ICEI || t==PT_SNOW) && (!parts[i].ctype || !IsValidElement(parts[i].ctype) || parts[i].ctype==PT_ICEI || parts[i].ctype==PT_SNOW))
 						parts[i].ctype = PT_WATR;
 
 					if (elements[t].HighTemperatureTransition>-1 && ctemph>=elements[t].HighTemperature)
@@ -3849,7 +3849,7 @@ void Simulation::UpdateParticles(int start, int end)
 							//and I don't feel like checking each one right now
 							parts[i].tmp = 0;
 						}
-						if (elements[t].State==ST_GAS && elements[parts[i].type].State!=ST_GAS)
+						if ((elements[t].Properties&TYPE_GAS) && !(elements[parts[i].type].Properties&TYPE_GAS))
 							pv[y/CELL][x/CELL] += 0.50f;
 
 						if (t == PT_NONE)

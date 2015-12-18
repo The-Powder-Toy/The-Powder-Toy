@@ -165,7 +165,7 @@ int Element_SOAP::update(UPDATE_FUNC_ARGS)
 							if (parts[i].temp>FREEZING)
 							{
 								if (sim->bmap[(y+ry)/CELL][(x+rx)/CELL]
-								    || (r && sim->elements[r&0xFF].State != ST_GAS
+									|| (r && !(sim->elements[r&0xFF].Properties&TYPE_GAS)
 								    && (r&0xFF) != PT_SOAP && (r&0xFF) != PT_GLAS))
 								{
 									detach(sim, i);
