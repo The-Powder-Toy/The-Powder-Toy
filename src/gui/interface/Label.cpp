@@ -233,6 +233,11 @@ void Label::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool al
 	{
 		copySelection();
 	}
+	if(ctrl && key == 'a')
+	{
+		selectAll();
+		return;
+	}
 }
 
 void Label::OnMouseMoved(int localx, int localy, int dx, int dy)
@@ -277,6 +282,13 @@ void Label::ClearSelection()
 	selecting = false;
 	selectionIndex0 = -1;
 	selectionIndex1 = -1;
+	updateSelection();
+}
+
+void Label::selectAll()
+{
+	selectionIndex0 = 0;
+	selectionIndex1 = text.length();
 	updateSelection();
 }
 

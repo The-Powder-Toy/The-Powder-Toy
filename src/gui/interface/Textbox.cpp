@@ -182,13 +182,6 @@ void Textbox::cutSelection()
 		actionCallback->TextChangedCallback(this);
 }
 
-void Textbox::selectAll()
-{
-	selectionIndex0 = 0;
-	selectionIndex1 = text.length();
-	updateSelection();
-}
-
 void Textbox::pasteIntoSelection()
 {
 	std::string newText = format::CleanString(ClipboardPull(), true, true, inputType != Multiline, inputType == Number || inputType == Numeric);
