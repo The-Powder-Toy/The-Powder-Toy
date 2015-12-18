@@ -17,7 +17,7 @@ Element_SMKE::Element_SMKE()
 	Gravity = -0.1f;
 	Diffusion = 0.00f;
 	HotAir = 0.001f	* CFDS;
-	Falldown = 0;
+	Falldown = 1;
 	
 	Flammable = 0;
 	Explosive = 0;
