@@ -2560,7 +2560,7 @@ int LuaScriptInterface::elements_property(lua_State * l)
 						*((unsigned int*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = luaL_checkinteger(l, 3);
 						break;
 					case StructProperty::Float:
-						*((float*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = luaL_checkinteger(l, 3);
+						*((float*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = luaL_checknumber(l, 3);
 						break;
 					case StructProperty::Char:
 						*((char*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = luaL_checkinteger(l, 3);
