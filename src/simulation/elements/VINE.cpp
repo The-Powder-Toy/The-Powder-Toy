@@ -8,7 +8,7 @@ Element_VINE::Element_VINE()
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
 	Enabled = 1;
-	
+
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.95f;
@@ -18,21 +18,20 @@ Element_VINE::Element_VINE()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 20;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 10;
-	
+
 	Weight = 100;
-	
+
 	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 65;
 	Description = "Vine, can grow along WOOD.";
-	
 
 	Properties = TYPE_SOLID;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,9 +40,8 @@ Element_VINE::Element_VINE()
 	LowTemperatureTransition = NT;
 	HighTemperature = 573.0f;
 	HighTemperatureTransition = PT_FIRE;
-	
+
 	Update = &Element_VINE::update;
-	
 }
 
 //#TPT-Directive ElementHeader Element_VINE static int update(UPDATE_FUNC_ARGS)

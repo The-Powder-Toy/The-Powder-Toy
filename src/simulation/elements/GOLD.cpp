@@ -31,7 +31,6 @@ Element_GOLD::Element_GOLD()
 	HeatConduct = 251;
 	Description = "Corrosion resistant metal, will reverse corrosion of iron.";
 
-
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_HOT_GLOW|PROP_LIFE_DEC|PROP_NEUTPASS;
 
 	LowPressure = IPL;
@@ -49,7 +48,7 @@ Element_GOLD::Element_GOLD()
 
 //#TPT-Directive ElementHeader Element_GOLD static int update(UPDATE_FUNC_ARGS)
 int Element_GOLD::update(UPDATE_FUNC_ARGS)
- {
+{
 	int rx, ry, r, rndstore;
 	static int checkCoordsX[] = { -4, 4, 0, 0 };
 	static int checkCoordsY[] = { 0, 0, -4, 4 };

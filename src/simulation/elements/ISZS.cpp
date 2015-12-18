@@ -8,7 +8,7 @@ Element_ISZS::Element_ISZS()
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
 	Enabled = 1;
-	
+
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.90f;
@@ -18,21 +18,20 @@ Element_ISZS::Element_ISZS()
 	Diffusion = 0.00f;
 	HotAir = -0.0007f* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 1;
 	Hardness = 1;
-	
+
 	Weight = 100;
-	
+
 	Temperature = 140.00f;
 	HeatConduct = 251;
 	Description = "Solid form of ISOZ, slowly decays into PHOT.";
-	
 
 	Properties = TYPE_SOLID;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,9 +40,8 @@ Element_ISZS::Element_ISZS()
 	LowTemperatureTransition = NT;
 	HighTemperature = 300.0f;
 	HighTemperatureTransition = PT_ISOZ;
-	
+
 	Update = &Element_ISZS::update;
-	
 }
 
 //#TPT-Directive ElementHeader Element_ISZS static int update(UPDATE_FUNC_ARGS)

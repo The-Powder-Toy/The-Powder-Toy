@@ -8,7 +8,7 @@ Element_PVOD::Element_PVOD()
 	MenuVisible = 1;
 	MenuSection = SC_POWERED;
 	Enabled = 1;
-	
+
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.90f;
@@ -18,21 +18,20 @@ Element_PVOD::Element_PVOD()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 1;
-	
+
 	Weight = 100;
-	
+
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
 	Description = "Powered VOID. When activated, destroys entering particles.";
-	
 
 	Properties = TYPE_SOLID;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,14 +40,14 @@ Element_PVOD::Element_PVOD()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_PVOD::update;
 	Graphics = &Element_PVOD::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_PVOD static int update(UPDATE_FUNC_ARGS)
 int Element_PVOD::update(UPDATE_FUNC_ARGS)
- {
+{
 	int r, rx, ry;
 	if (parts[i].life>0 && parts[i].life!=10)
 		parts[i].life--;

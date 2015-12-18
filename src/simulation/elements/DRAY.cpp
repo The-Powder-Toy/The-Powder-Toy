@@ -30,7 +30,6 @@ Element_DRAY::Element_DRAY()
 	HeatConduct = 0;
 	Description = "Duplicator ray. Replicates a line of particles in front of it.";
 
-
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 
 	LowPressure = IPL;

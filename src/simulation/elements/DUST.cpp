@@ -8,7 +8,7 @@ Element_DUST::Element_DUST()
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
 	Enabled = 1;
-	
+
 	Advection = 0.7f;
 	AirDrag = 0.02f * CFDS;
 	AirLoss = 0.96f;
@@ -18,21 +18,20 @@ Element_DUST::Element_DUST()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 1;
-	
+
 	Flammable = 10;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 30;
-	
+
 	Weight = 85;
-	
+
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
 	Description = "Very light dust. Flammable.";
-	
 
 	Properties = TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,7 +40,7 @@ Element_DUST::Element_DUST()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = NULL;
 	Graphics = NULL;
 }

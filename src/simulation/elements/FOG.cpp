@@ -8,7 +8,7 @@ Element_FOG::Element_FOG()
 	MenuVisible = 1;
 	MenuSection = SC_GAS;
 	Enabled = 1;
-	
+
 	Advection = 0.8f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.4f;
@@ -18,21 +18,20 @@ Element_FOG::Element_FOG()
 	Diffusion = 0.99f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 30;
-	
+
 	Weight = 1;
-	
+
 	Temperature = 243.15f;
 	HeatConduct = 100;
 	Description = "Fog, created when an electric current is passed through RIME.";
-	
 
 	Properties = TYPE_GAS|PROP_LIFE_DEC;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,14 +40,13 @@ Element_FOG::Element_FOG()
 	LowTemperatureTransition = NT;
 	HighTemperature = 373.15f;
 	HighTemperatureTransition = PT_WTRV;
-	
+
 	Update = &Element_FOG::update;
-	
 }
 
 //#TPT-Directive ElementHeader Element_FOG static int update(UPDATE_FUNC_ARGS)
 int Element_FOG::update(UPDATE_FUNC_ARGS)
- {
+{
 	int r, rx, ry;
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)

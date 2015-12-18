@@ -8,7 +8,7 @@ Element_VIRS::Element_VIRS()
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;
 	Enabled = 1;
-	
+
 	Advection = 0.6f;
 	AirDrag = 0.01f * CFDS;
 	AirLoss = 0.98f;
@@ -18,21 +18,20 @@ Element_VIRS::Element_VIRS()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 2;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 20;
-	
+
 	Weight = 31;
-	
+
 	Temperature = 72.0f	+ 273.15f;
 	HeatConduct = 251;
 	Description = "Virus. Turns everything it touches into virus.";
-	
 
 	Properties = TYPE_LIQUID|PROP_DEADLY;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,7 +40,7 @@ Element_VIRS::Element_VIRS()
 	LowTemperatureTransition = PT_VRSS;
 	HighTemperature = 673.0f;
 	HighTemperatureTransition = PT_VRSG;
-	
+
 	Update = &Element_VIRS::update;
 	Graphics = &Element_VIRS::graphics;
 }

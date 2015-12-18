@@ -8,7 +8,7 @@ Element_BOMB::Element_BOMB()
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;
-	
+
 	Advection = 0.6f;
 	AirDrag = 0.01f * CFDS;
 	AirLoss = 0.98f;
@@ -18,21 +18,20 @@ Element_BOMB::Element_BOMB()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 1;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 20;
-	
+
 	Weight = 30;
-	
+
 	Temperature = R_TEMP-2.0f	+273.15f;
 	HeatConduct = 29;
 	Description = "Bomb. Explodes and destroys all surrounding particles when it touches something.";
-	
 
 	Properties = TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC|PROP_SPARKSETTLE;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,16 +40,16 @@ Element_BOMB::Element_BOMB()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_BOMB::update;
 	Graphics = &Element_BOMB::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_BOMB static int update(UPDATE_FUNC_ARGS)
 int Element_BOMB::update(UPDATE_FUNC_ARGS)
- {
+{
 	int r, rx, ry, nb;
-	
+
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)
 			if (BOUNDS_CHECK && (rx || ry))

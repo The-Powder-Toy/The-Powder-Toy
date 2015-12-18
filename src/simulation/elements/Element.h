@@ -37,7 +37,7 @@ public:
 	unsigned char HeatConduct;
 	const char *Description;
 	unsigned int Properties;
-	
+
 	float LowPressure;
 	int LowPressureTransition;
 	float HighPressure;
@@ -50,7 +50,7 @@ public:
 	int (*Update) (UPDATE_FUNC_ARGS);
 	int (*Graphics) (GRAPHICS_FUNC_ARGS);
 	VideoBuffer * (*IconGenerator)(int, int, int);
-	
+
 	Element();
 	virtual ~Element() {}
 	static int defaultGraphics(GRAPHICS_FUNC_ARGS);

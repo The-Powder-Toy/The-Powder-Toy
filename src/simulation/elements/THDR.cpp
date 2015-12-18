@@ -8,7 +8,7 @@ Element_THDR::Element_THDR()
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;
-	
+
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 1.0f;
@@ -18,21 +18,20 @@ Element_THDR::Element_THDR()
 	Diffusion = 0.62f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 0;
-	
+
 	Weight = 1;
-	
+
 	Temperature = 9000.0f		+273.15f;
 	HeatConduct = 1;
 	Description = "Lightning! Very hot, inflicts damage upon most materials, and transfers current to metals.";
-	
 
 	Properties = TYPE_ENERGY;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,7 +40,7 @@ Element_THDR::Element_THDR()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_THDR::update;
 	Graphics = &Element_THDR::graphics;
 }

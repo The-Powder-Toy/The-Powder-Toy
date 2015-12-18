@@ -8,7 +8,7 @@ Element_PCLN::Element_PCLN()
 	MenuVisible = 1;
 	MenuSection = SC_POWERED;
 	Enabled = 1;
-	
+
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.90f;
@@ -18,21 +18,20 @@ Element_PCLN::Element_PCLN()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 1;
-	
+
 	Weight = 100;
-	
+
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
 	Description = "Powered clone. When activated, duplicates any particles it touches.";
-	
 
 	Properties = TYPE_SOLID|PROP_NOCTYPEDRAW;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,7 +40,7 @@ Element_PCLN::Element_PCLN()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_PCLN::update;
 	Graphics = &Element_PCLN::graphics;
 }

@@ -8,7 +8,7 @@ Element_DSTW::Element_DSTW()
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;
 	Enabled = 1;
-	
+
 	Advection = 0.6f;
 	AirDrag = 0.01f * CFDS;
 	AirLoss = 0.98f;
@@ -18,21 +18,20 @@ Element_DSTW::Element_DSTW()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 2;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 20;
-	
+
 	Weight = 30;
-	
+
 	Temperature = R_TEMP-2.0f	+273.15f;
 	HeatConduct = 23;
 	Description = "Distilled water, does not conduct electricity.";
-	
 
 	Properties = TYPE_LIQUID|PROP_NEUTPASS;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,14 +40,13 @@ Element_DSTW::Element_DSTW()
 	LowTemperatureTransition = PT_ICEI;
 	HighTemperature = 373.0f;
 	HighTemperatureTransition = PT_WTRV;
-	
+
 	Update = &Element_DSTW::update;
-	
 }
 
 //#TPT-Directive ElementHeader Element_DSTW static int update(UPDATE_FUNC_ARGS)
 int Element_DSTW::update(UPDATE_FUNC_ARGS)
- {
+{
 	int r, rx, ry;
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)

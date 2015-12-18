@@ -8,7 +8,7 @@ Element_WTRV::Element_WTRV()
 	MenuVisible = 1;
 	MenuSection = SC_GAS;
 	Enabled = 1;
-	
+
 	Advection = 1.0f;
 	AirDrag = 0.01f * CFDS;
 	AirLoss = 0.99f;
@@ -18,21 +18,20 @@ Element_WTRV::Element_WTRV()
 	Diffusion = 0.75f;
 	HotAir = 0.0003f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 4;
-	
+
 	Weight = 1;
-	
+
 	Temperature = R_TEMP+100.0f+273.15f;
 	HeatConduct = 48;
 	Description = "Steam. Produced from hot water.";
-	
 
 	Properties = TYPE_GAS;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,14 +40,13 @@ Element_WTRV::Element_WTRV()
 	LowTemperatureTransition = ST;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_WTRV::update;
-	
 }
 
 //#TPT-Directive ElementHeader Element_WTRV static int update(UPDATE_FUNC_ARGS)
 int Element_WTRV::update(UPDATE_FUNC_ARGS)
- {
+{
 	int r, rx, ry;
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)

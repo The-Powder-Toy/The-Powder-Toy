@@ -8,7 +8,7 @@ Element_DLAY::Element_DLAY()
 	MenuVisible = 1;
 	MenuSection = SC_POWERED;
 	Enabled = 1;
-	
+
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.90f;
@@ -18,21 +18,20 @@ Element_DLAY::Element_DLAY()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 1;
-	
+
 	Weight = 100;
-	
+
 	Temperature = 4.0f+273.15f;
 	HeatConduct = 0;
 	Description = "Conducts with temperature-dependent delay. (use HEAT/COOL).";
-	
 
 	Properties = TYPE_SOLID;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,14 +40,14 @@ Element_DLAY::Element_DLAY()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_DLAY::update;
 	Graphics = &Element_DLAY::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_DLAY static int update(UPDATE_FUNC_ARGS)
 int Element_DLAY::update(UPDATE_FUNC_ARGS)
- {
+{
 	int r, rx, ry, oldl;
 	oldl = parts[i].life;
 	if (parts[i].life>0)

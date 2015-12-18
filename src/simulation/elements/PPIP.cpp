@@ -8,7 +8,7 @@ Element_PPIP::Element_PPIP()
 	MenuVisible = 1;
 	MenuSection = SC_POWERED;
 	Enabled = 1;
-	
+
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.95f;
@@ -18,21 +18,20 @@ Element_PPIP::Element_PPIP()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 0;
-	
+
 	Weight = 100;
-	
+
 	Temperature = 273.15f;
 	HeatConduct = 0;
 	Description = "Powered version of PIPE, use PSCN/NSCN to Activate/Deactivate.";
-	
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,7 +40,7 @@ Element_PPIP::Element_PPIP()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_PIPE::update;
 	Graphics = &Element_PIPE::graphics;
 }

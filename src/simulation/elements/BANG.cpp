@@ -8,7 +8,7 @@ Element_BANG::Element_BANG()
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;
-	
+
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.90f;
@@ -18,21 +18,20 @@ Element_BANG::Element_BANG()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 1;
-	
+
 	Weight = 100;
-	
+
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 88;
 	Description = "TNT, explodes all at once.";
-	
 
 	Properties = TYPE_SOLID | PROP_NEUTPENETRATE;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,14 +40,13 @@ Element_BANG::Element_BANG()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_BANG::update;
-	
 }
 
 //#TPT-Directive ElementHeader Element_BANG static int update(UPDATE_FUNC_ARGS)
 int Element_BANG::update(UPDATE_FUNC_ARGS)
- {
+{
 	int r, rx, ry;
 	if(parts[i].tmp==0)
 	{
@@ -67,7 +65,7 @@ int Element_BANG::update(UPDATE_FUNC_ARGS)
 							parts[i].tmp = 1;
 						}
 					}
-	
+
 	}
 	else if(parts[i].tmp==1)
 	{

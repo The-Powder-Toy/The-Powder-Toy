@@ -8,7 +8,7 @@ Element_SPAWN::Element_SPAWN()
 	MenuVisible = 0;
 	MenuSection = SC_SOLIDS;
 	Enabled = 1;
-	
+
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 1.00f;
@@ -18,21 +18,20 @@ Element_SPAWN::Element_SPAWN()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 1;
-	
+
 	Weight = 100;
-	
+
 	Temperature = R_TEMP+273.15f;
 	HeatConduct = 0;
 	Description = "STKM spawn point.";
-	
 
 	Properties = TYPE_SOLID;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,9 +40,8 @@ Element_SPAWN::Element_SPAWN()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = NULL;
-	
 }
 
 Element_SPAWN::~Element_SPAWN() {}

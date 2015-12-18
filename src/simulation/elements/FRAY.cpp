@@ -8,7 +8,7 @@ Element_FRAY::Element_FRAY()
 	MenuVisible = 1;
 	MenuSection = SC_FORCE;
 	Enabled = 1;
-	
+
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.90f;
@@ -18,21 +18,20 @@ Element_FRAY::Element_FRAY()
 	Diffusion = 0.00f;
 	HotAir = 0.000f  * CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 1;
-	
+
 	Weight = 100;
-	
+
 	Temperature = 20.0f+0.0f +273.15f;
 	HeatConduct = 0;
 	Description = "Force Emitter. Pushes or pulls objects based on its temperature. Use like ARAY.";
-	
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,14 +40,13 @@ Element_FRAY::Element_FRAY()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_FRAY::update;
-	
 }
 
 //#TPT-Directive ElementHeader Element_FRAY static int update(UPDATE_FUNC_ARGS)
 int Element_FRAY::update(UPDATE_FUNC_ARGS)
- {
+{
 	int r, nxx, nyy, len, nxi, nyi, rx, ry;
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)

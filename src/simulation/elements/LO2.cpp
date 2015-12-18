@@ -8,7 +8,7 @@ Element_LO2::Element_LO2()
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;
 	Enabled = 1;
-	
+
 	Advection = 0.6f;
 	AirDrag = 0.01f * CFDS;
 	AirLoss = 0.98f;
@@ -18,21 +18,20 @@ Element_LO2::Element_LO2()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 2;
-	
+
 	Flammable = 5000;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 0;
-	
+
 	Weight = 30;
-	
+
 	Temperature = 80.0f;
 	HeatConduct = 70;
 	Description = "Liquid Oxygen. Very cold. Reacts with fire.";
-	
 
 	Properties = TYPE_LIQUID;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,9 +40,8 @@ Element_LO2::Element_LO2()
 	LowTemperatureTransition = NT;
 	HighTemperature = 90.1f;
 	HighTemperatureTransition = PT_O2;
-	
+
 	Update = NULL;
-	
 }
 
 Element_LO2::~Element_LO2() {}

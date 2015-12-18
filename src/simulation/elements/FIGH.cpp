@@ -8,7 +8,7 @@ Element_FIGH::Element_FIGH()
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;
 	Enabled = 1;
-	
+
 	Advection = 0.5f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.2f;
@@ -18,21 +18,20 @@ Element_FIGH::Element_FIGH()
 	Diffusion = 0.0f;
 	HotAir = 0.00f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 0;
-	
+
 	Weight = 50;
-	
+
 	Temperature = R_TEMP+14.6f+273.15f;
 	HeatConduct = 0;
 	Description = "Fighter. Tries to kill stickmen. You must first give it an element to kill him with.";
-	
 
 	Properties = PROP_NOCTYPEDRAW;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,7 +40,7 @@ Element_FIGH::Element_FIGH()
 	LowTemperatureTransition = NT;
 	HighTemperature = 620.0f;
 	HighTemperatureTransition = PT_FIRE;
-	
+
 	Update = &Element_FIGH::update;
 	Graphics = &Element_STKM::graphics;
 }

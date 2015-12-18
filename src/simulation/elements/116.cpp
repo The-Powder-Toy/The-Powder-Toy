@@ -8,7 +8,7 @@ Element_116::Element_116()
 	MenuVisible = 0;
 	MenuSection = SC_CRACKER2;
 	Enabled = 1;
-	
+
 	Advection = 0.7f;
 	AirDrag = 0.02f * CFDS;
 	AirLoss = 0.96f;
@@ -18,21 +18,20 @@ Element_116::Element_116()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 1;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 30;
-	
+
 	Weight = 85;
-	
+
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
 	Description = "A failed shared velocity test.";
-	
 
 	Properties = TYPE_PART;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,9 +40,8 @@ Element_116::Element_116()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = NULL;
-	
 }
 
 Element_116::~Element_116() {}

@@ -8,7 +8,7 @@ Element_BVBR::Element_BVBR()
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
 	Enabled = 1;
-	
+
 	Advection = 0.3f;
 	AirDrag = 0.02f * CFDS;
 	AirLoss = 0.95f;
@@ -18,21 +18,20 @@ Element_BVBR::Element_BVBR()
 	Diffusion = 0.00f;
 	HotAir = 0.0000f	* CFDS;
 	Falldown = 1;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 0;
-	
+
 	Weight = 67;
-	
+
 	Temperature = 273.15f;
 	HeatConduct = 164;
 	Description = "Broken vibranium.";
-	
 
 	Properties = TYPE_PART|PROP_LIFE_DEC;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,10 +40,9 @@ Element_BVBR::Element_BVBR()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_VIBR::update;
 	Graphics = &Element_VIBR::graphics;
-	
 }
 
 Element_BVBR::~Element_BVBR() {}

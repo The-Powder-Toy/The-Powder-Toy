@@ -8,7 +8,7 @@ Element_SLTW::Element_SLTW()
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;
 	Enabled = 1;
-	
+
 	Advection = 0.6f;
 	AirDrag = 0.01f * CFDS;
 	AirLoss = 0.98f;
@@ -18,21 +18,20 @@ Element_SLTW::Element_SLTW()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 2;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 20;
-	
+
 	Weight = 35;
-	
+
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 75;
 	Description = "Saltwater, conducts electricity, difficult to freeze.";
-	
 
 	Properties = TYPE_LIQUID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_NEUTPENETRATE;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,14 +40,13 @@ Element_SLTW::Element_SLTW()
 	LowTemperatureTransition = PT_ICEI;
 	HighTemperature = 383.0f;
 	HighTemperatureTransition = ST;
-	
+
 	Update = &Element_SLTW::update;
-	
 }
 
 //#TPT-Directive ElementHeader Element_SLTW static int update(UPDATE_FUNC_ARGS)
 int Element_SLTW::update(UPDATE_FUNC_ARGS)
- {
+{
 	int r, rx, ry;
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)

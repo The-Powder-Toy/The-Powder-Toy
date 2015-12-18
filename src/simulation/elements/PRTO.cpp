@@ -8,7 +8,7 @@ Element_PRTO::Element_PRTO()
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;
 	Enabled = 1;
-	
+
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.90f;
@@ -18,21 +18,20 @@ Element_PRTO::Element_PRTO()
 	Diffusion = 0.00f;
 	HotAir = 0.005f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 0;
-	
+
 	Weight = 100;
-	
+
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 0;
 	Description = "Portal OUT. Particles come out here. Also has temperature dependent channels. (same as WIFI)";
-	
 
 	Properties = TYPE_SOLID;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,7 +40,7 @@ Element_PRTO::Element_PRTO()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_PRTO::update;
 	Graphics = &Element_PRTO::graphics;
 }
@@ -56,7 +55,7 @@ Element_PRTO::Element_PRTO()
 
 //#TPT-Directive ElementHeader Element_PRTO static int update(UPDATE_FUNC_ARGS)
 int Element_PRTO::update(UPDATE_FUNC_ARGS)
- {
+{
 	int r, nnx, rx, ry, np, fe = 0;
 	int count = 0;
 	parts[i].tmp = (int)((parts[i].temp-73.15f)/100+1);

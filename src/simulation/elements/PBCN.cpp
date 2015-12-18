@@ -8,7 +8,7 @@ Element_PBCN::Element_PBCN()
 	MenuVisible = 1;
 	MenuSection = SC_POWERED;
 	Enabled = 1;
-	
+
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.97f;
@@ -18,21 +18,20 @@ Element_PBCN::Element_PBCN()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 12;
-	
+
 	Weight = 100;
-	
+
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
 	Description = "Powered breakable clone.";
-	
 
 	Properties = TYPE_SOLID|PROP_NOCTYPEDRAW;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,7 +40,7 @@ Element_PBCN::Element_PBCN()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_PBCN::update;
 	Graphics = &Element_PBCN::graphics;
 }
@@ -144,7 +143,7 @@ int Element_PBCN::update(UPDATE_FUNC_ARGS)
 			}
 		}
 	}
-	
+
 	return 0;
 }
 

@@ -8,7 +8,7 @@ Element_CAUS::Element_CAUS()
 	MenuVisible = 1;
 	MenuSection = SC_GAS;
 	Enabled = 1;
-	
+
 	Advection = 2.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.99f;
@@ -18,21 +18,20 @@ Element_CAUS::Element_CAUS()
 	Diffusion = 1.50f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 0;
-	
+
 	Weight = 1;
-	
+
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
 	Description = "Caustic Gas, acts like ACID.";
-	
 
 	Properties = TYPE_GAS|PROP_DEADLY;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,14 +40,13 @@ Element_CAUS::Element_CAUS()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_CAUS::update;
-	
 }
 
 //#TPT-Directive ElementHeader Element_CAUS static int update(UPDATE_FUNC_ARGS)
 int Element_CAUS::update(UPDATE_FUNC_ARGS)
- {
+{
 	int r, rx, ry;
 	for (rx=-2; rx<3; rx++)
 		for (ry=-2; ry<3; ry++)

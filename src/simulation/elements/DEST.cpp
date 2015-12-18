@@ -8,7 +8,7 @@ Element_DEST::Element_DEST()
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;
-	
+
 	Advection = -0.05f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.95f;
@@ -18,21 +18,20 @@ Element_DEST::Element_DEST()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 1;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 0;
-	
+
 	Weight = 101;
-	
+
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 150;
 	Description = "More destructive Bomb, can break through virtually anything.";
-	
 
 	Properties = TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,14 +40,14 @@ Element_DEST::Element_DEST()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_DEST::update;
 	Graphics = &Element_DEST::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_DEST static int update(UPDATE_FUNC_ARGS)
 int Element_DEST::update(UPDATE_FUNC_ARGS)
- {
+{
 	int rx = rand()%5-2;
 	int ry = rand()%5-2;
 	int r = pmap[y+ry][x+rx];

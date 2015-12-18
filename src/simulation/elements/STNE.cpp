@@ -8,7 +8,7 @@ Element_STNE::Element_STNE()
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
 	Enabled = 1;
-	
+
 	Advection = 0.4f;
 	AirDrag = 0.04f * CFDS;
 	AirLoss = 0.94f;
@@ -18,21 +18,20 @@ Element_STNE::Element_STNE()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 1;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 5;
 	Hardness = 1;
-	
+
 	Weight = 90;
-	
+
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 150;
 	Description = "Heavy particles. Meltable.";
-	
 
 	Properties = TYPE_PART;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,9 +40,8 @@ Element_STNE::Element_STNE()
 	LowTemperatureTransition = NT;
 	HighTemperature = 983.0f;
 	HighTemperatureTransition = PT_LAVA;
-	
+
 	Update = NULL;
-	
 }
 
 Element_STNE::~Element_STNE() {}

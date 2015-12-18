@@ -8,7 +8,7 @@ Element_CO2::Element_CO2()
 	MenuVisible = 1;
 	MenuSection = SC_GAS;
 	Enabled = 1;
-	
+
 	Advection = 2.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.99f;
@@ -18,21 +18,20 @@ Element_CO2::Element_CO2()
 	Diffusion = 1.0f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 1;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 0;
-	
+
 	Weight = 1;
-	
+
 	Temperature = R_TEMP+273.15f;
 	HeatConduct = 88;
 	Description = "Carbon Dioxide. Heavy gas, drifts downwards. Carbonates water and turns to dry ice when cold.";
-	
 
 	Properties = TYPE_GAS;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,14 +40,13 @@ Element_CO2::Element_CO2()
 	LowTemperatureTransition = PT_DRIC;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_CO2::update;
-	
 }
 
 //#TPT-Directive ElementHeader Element_CO2 static int update(UPDATE_FUNC_ARGS)
 int Element_CO2::update(UPDATE_FUNC_ARGS)
- {
+{
 	int r, rx, ry;
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)

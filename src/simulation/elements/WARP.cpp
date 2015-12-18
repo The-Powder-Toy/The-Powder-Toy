@@ -8,7 +8,7 @@ Element_WARP::Element_WARP()
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
 	Enabled = 1;
-	
+
 	Advection = 0.8f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.9f;
@@ -18,21 +18,20 @@ Element_WARP::Element_WARP()
 	Diffusion = 3.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 30;
-	
+
 	Weight = 1;
-	
+
 	Temperature = R_TEMP +273.15f;
 	HeatConduct = 100;
 	Description = "Displaces other elements.";
-	
 
 	Properties = TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,14 +40,14 @@ Element_WARP::Element_WARP()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_WARP::update;
 	Graphics = &Element_WARP::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_WARP static int update(UPDATE_FUNC_ARGS)
 int Element_WARP::update(UPDATE_FUNC_ARGS)
- {
+{
 	int trade, r, rx, ry;
 	if (parts[i].tmp2>2000)
 	{

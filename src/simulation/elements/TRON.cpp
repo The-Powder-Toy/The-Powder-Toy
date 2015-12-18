@@ -8,7 +8,7 @@ Element_TRON::Element_TRON()
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;
 	Enabled = 1;
-	
+
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.90f;
@@ -18,21 +18,20 @@ Element_TRON::Element_TRON()
 	Diffusion = 0.00f;
 	HotAir = 0.000f  * CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 0;
-	
+
 	Weight = 100;
-	
+
 	Temperature = 0.0f;
 	HeatConduct = 40;
 	Description = "Smart particles, Travels in straight lines and avoids obstacles. Grows with time.";
-	
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC|PROP_LIFE_KILL;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,7 +40,7 @@ Element_TRON::Element_TRON()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_TRON::update;
 	Graphics = &Element_TRON::graphics;
 
@@ -90,7 +89,7 @@ void Element_TRON::init_graphics()
 
 //#TPT-Directive ElementHeader Element_TRON static int update(UPDATE_FUNC_ARGS)
 int Element_TRON::update(UPDATE_FUNC_ARGS)
- {
+{
 	if (parts[i].tmp&TRON_WAIT)
 	{
 		parts[i].tmp &= ~TRON_WAIT;
@@ -163,7 +162,7 @@ int Element_TRON::update(UPDATE_FUNC_ARGS)
 
 //#TPT-Directive ElementHeader Element_TRON static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_TRON::graphics(GRAPHICS_FUNC_ARGS)
- {
+{
 	unsigned int col = tron_colours[(cpart->tmp&0xF800)>>11];
 	if(cpart->tmp & TRON_HEAD)
 		*pixel_mode |= PMODE_GLOW;
@@ -203,7 +202,7 @@ int Element_TRON::new_tronhead(Simulation * sim, int x, int y, int i, int direct
 	sim->parts[np].tmp = 1 | direction<<5 | (sim->parts[i].tmp&(TRON_NOGROW|TRON_NODIE|TRON_NORANDOM)) | (sim->parts[i].tmp&0xF800);
 	if (np > i)
 		sim->parts[np].tmp |= TRON_WAIT;
-	
+
 	sim->parts[np].ctype = sim->parts[i].ctype;
 	sim->parts[np].tmp2 = sim->parts[i].tmp2;
 	sim->parts[np].life = sim->parts[i].life + 2;

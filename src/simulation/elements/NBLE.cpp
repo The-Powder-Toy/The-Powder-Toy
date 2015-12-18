@@ -8,7 +8,7 @@ Element_NBLE::Element_NBLE()
 	MenuVisible = 1;
 	MenuSection = SC_GAS;
 	Enabled = 1;
-	
+
 	Advection = 1.0f;
 	AirDrag = 0.01f * CFDS;
 	AirLoss = 0.99f;
@@ -18,21 +18,20 @@ Element_NBLE::Element_NBLE()
 	Diffusion = 0.75f;
 	HotAir = 0.001f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 1;
-	
+
 	Weight = 1;
-	
+
 	Temperature = R_TEMP+2.0f	+273.15f;
 	HeatConduct = 106;
 	Description = "Noble Gas. Diffuses and conductive. Ionizes into plasma when introduced to electricity.";
-	
 
 	Properties = TYPE_GAS|PROP_CONDUCTS|PROP_LIFE_DEC;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,9 +40,8 @@ Element_NBLE::Element_NBLE()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_NBLE::update;
-	
 }
 
 //#TPT-Directive ElementHeader Element_NBLE static int update(UPDATE_FUNC_ARGS)

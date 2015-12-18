@@ -8,7 +8,7 @@ Element_LNTG::Element_LNTG()
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;
 	Enabled = 1;
-	
+
 	Advection = 0.6f;
 	AirDrag = 0.01f * CFDS;
 	AirLoss = 0.98f;
@@ -18,21 +18,20 @@ Element_LNTG::Element_LNTG()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 2;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 0;
-	
+
 	Weight = 30;
-	
+
 	Temperature = 70.15f;
 	HeatConduct = 70;
 	Description = "Liquid Nitrogen. Very cold, disappears whenever it touches anything warmer.";
-	
 
 	Properties = TYPE_LIQUID;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,9 +40,8 @@ Element_LNTG::Element_LNTG()
 	LowTemperatureTransition = PT_NICE;
 	HighTemperature = 77.0f;
 	HighTemperatureTransition = PT_NONE;
-	
+
 	Update = NULL;
-	
 }
 
 Element_LNTG::~Element_LNTG() {}

@@ -30,7 +30,6 @@ Element_GBMB::Element_GBMB()
 	HeatConduct = 29;
 	Description = "Gravity bomb. Sticks to the first object it touches then produces a strong gravity push.";
 
-
 	Properties = TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
 
 	LowPressure = IPL;
@@ -48,7 +47,7 @@ Element_GBMB::Element_GBMB()
 
 //#TPT-Directive ElementHeader Element_GBMB static int update(UPDATE_FUNC_ARGS)
 int Element_GBMB::update(UPDATE_FUNC_ARGS)
- {
+{
 	int rx,ry,r;
 	if (parts[i].life<=0)
 	{

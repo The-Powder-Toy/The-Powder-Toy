@@ -8,7 +8,7 @@ Element_DMG::Element_DMG()
 	MenuVisible = 1;
 	MenuSection = SC_FORCE;
 	Enabled = 1;
-	
+
 	Advection = 0.0f;
 	AirDrag = 0.01f * CFDS;
 	AirLoss = 0.98f;
@@ -18,21 +18,20 @@ Element_DMG::Element_DMG()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 1;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 20;
-	
+
 	Weight = 30;
-	
+
 	Temperature = R_TEMP-2.0f	+273.15f;
 	HeatConduct = 29;
 	Description = "Generates damaging pressure and breaks any elements it hits.";
-	
 
 	Properties = TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC|PROP_SPARKSETTLE;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,18 +40,18 @@ Element_DMG::Element_DMG()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_DMG::update;
 	Graphics = &Element_DMG::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_DMG static int update(UPDATE_FUNC_ARGS)
 int Element_DMG::update(UPDATE_FUNC_ARGS)
- {
+{
 	int r, rr, rx, ry, nxi, nxj, t, dist;
 	int rad = 25;
 	float angle, fx, fy;
-	
+
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)
 			if (BOUNDS_CHECK && (rx || ry))

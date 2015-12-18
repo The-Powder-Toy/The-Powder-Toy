@@ -8,7 +8,7 @@ Element_THRM::Element_THRM()
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;
-	
+
 	Advection = 0.4f;
 	AirDrag = 0.04f * CFDS;
 	AirLoss = 0.94f;
@@ -18,21 +18,20 @@ Element_THRM::Element_THRM()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 1;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 2;
 	Hardness = 2;
-	
+
 	Weight = 90;
-	
+
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 211;
 	Description = "Thermite. Burns at extremely high temperature.";
-	
 
 	Properties = TYPE_PART;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,9 +40,8 @@ Element_THRM::Element_THRM()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = NULL;
-	
 }
 
 Element_THRM::~Element_THRM() {}

@@ -8,7 +8,7 @@ Element_QRTZ::Element_QRTZ()
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
 	Enabled = 1;
-	
+
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.90f;
@@ -18,21 +18,20 @@ Element_QRTZ::Element_QRTZ()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 0;
-	
+
 	Weight = 100;
-	
+
 	Temperature = R_TEMP+273.15f;
 	HeatConduct = 3;
 	Description = "Quartz, breakable mineral. Conducts but becomes brittle at lower temperatures.";
-	
 
 	Properties = TYPE_SOLID|PROP_HOT_GLOW|PROP_LIFE_DEC;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,7 +40,7 @@ Element_QRTZ::Element_QRTZ()
 	LowTemperatureTransition = NT;
 	HighTemperature = 2573.15f;
 	HighTemperatureTransition = PT_LAVA;
-	
+
 	Update = &Element_QRTZ::update;
 	Graphics = &Element_QRTZ::graphics;
 }

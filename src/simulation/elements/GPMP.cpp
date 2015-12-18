@@ -8,7 +8,7 @@ Element_GPMP::Element_GPMP()
 	MenuVisible = 1;
 	MenuSection = SC_POWERED;
 	Enabled = 1;
-	
+
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.90f;
@@ -18,21 +18,20 @@ Element_GPMP::Element_GPMP()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 1;
-	
+
 	Weight = 100;
-	
+
 	Temperature = 0.0f		+273.15f;
 	HeatConduct = 0;
 	Description = "Gravity pump. Changes gravity to its temp when activated. (use HEAT/COOL)";
-	
 
 	Properties = TYPE_SOLID;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,14 +40,14 @@ Element_GPMP::Element_GPMP()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_GPMP::update;
 	Graphics = &Element_GPMP::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_GPMP static int update(UPDATE_FUNC_ARGS)
 int Element_GPMP::update(UPDATE_FUNC_ARGS)
- {
+{
 	int r, rx, ry;
 	if (parts[i].life!=10)
 	{

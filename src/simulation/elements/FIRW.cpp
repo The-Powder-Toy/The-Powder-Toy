@@ -12,7 +12,7 @@ Element_FIRW::Element_FIRW()
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;
-	
+
 	Advection = 0.2f;
 	AirDrag = 0.01f * CFDS;
 	AirLoss = 0.96f;
@@ -22,21 +22,20 @@ Element_FIRW::Element_FIRW()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 1;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 30;
-	
+
 	Weight = 55;
-	
+
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
 	Description = "Fireworks! Colorful, set off by fire.";
-	
 
 	Properties = TYPE_PART|PROP_LIFE_DEC;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -45,14 +44,14 @@ Element_FIRW::Element_FIRW()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_FIRW::update;
 	Graphics = &Element_FIRW::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_FIRW static int update(UPDATE_FUNC_ARGS)
 int Element_FIRW::update(UPDATE_FUNC_ARGS)
- {
+{
 	int r, rx, ry, rt, np;
 	if (parts[i].tmp<=0) {
 		for (rx=-1; rx<2; rx++)

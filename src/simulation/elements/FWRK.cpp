@@ -8,7 +8,7 @@ Element_FWRK::Element_FWRK()
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;
-	
+
 	Advection = 0.4f;
 	AirDrag = 0.01f * CFDS;
 	AirLoss = 0.99f;
@@ -18,21 +18,20 @@ Element_FWRK::Element_FWRK()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 1;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 1;
-	
+
 	Weight = 97;
-	
+
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 100;
 	Description = "Original version of fireworks, activated by heat/neutrons.";
-	
 
 	Properties = TYPE_PART|PROP_LIFE_DEC;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,14 +40,13 @@ Element_FWRK::Element_FWRK()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_FWRK::update;
-	
 }
 
 //#TPT-Directive ElementHeader Element_FWRK static int update(UPDATE_FUNC_ARGS)
 int Element_FWRK::update(UPDATE_FUNC_ARGS)
- {
+{
 	 if (parts[i].life == 0 && ((surround_space && parts[i].temp>400 && (9+parts[i].temp/40)>rand()%100000) || parts[i].ctype == PT_DUST))
 	{
 		float gx, gy, multiplier, gmax;

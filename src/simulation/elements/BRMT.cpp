@@ -8,7 +8,7 @@ Element_BRMT::Element_BRMT()
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
 	Enabled = 1;
-	
+
 	Advection = 0.4f;
 	AirDrag = 0.04f * CFDS;
 	AirLoss = 0.94f;
@@ -18,21 +18,20 @@ Element_BRMT::Element_BRMT()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 1;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 2;
 	Hardness = 2;
-	
+
 	Weight = 90;
-	
+
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 211;
 	Description = "Broken metal. Created when iron rusts or when when metals break from pressure.";
-	
 
 	Properties = TYPE_PART|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_HOT_GLOW;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,14 +40,13 @@ Element_BRMT::Element_BRMT()
 	LowTemperatureTransition = NT;
 	HighTemperature = 1273.0f;
 	HighTemperatureTransition = ST;
-	
+
 	Update = &Element_BRMT::update;
-	
 }
 
 //#TPT-Directive ElementHeader Element_BRMT static int update(UPDATE_FUNC_ARGS)
 int Element_BRMT::update(UPDATE_FUNC_ARGS)
- {
+{
 	int r, rx, ry, tempFactor;
 	if (parts[i].temp > 523.15f)//250.0f+273.15f
 	{

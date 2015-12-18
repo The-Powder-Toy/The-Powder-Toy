@@ -8,7 +8,7 @@ Element_BIZRS::Element_BIZRS()
 	MenuVisible = 1;
 	MenuSection = SC_CRACKER2;
 	Enabled = 1;
-	
+
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.90f;
@@ -18,21 +18,20 @@ Element_BIZRS::Element_BIZRS()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 1;
-	
+
 	Weight = 100;
-	
+
 	Temperature = R_TEMP+300.0f+273.15f;
 	HeatConduct = 251;
 	Description = "Bizarre solid.";
-	
 
 	Properties = TYPE_SOLID;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,7 +40,7 @@ Element_BIZRS::Element_BIZRS()
 	LowTemperatureTransition = PT_BIZR;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_BIZR::update;
 	Graphics = &Element_BIZR::graphics;
 }

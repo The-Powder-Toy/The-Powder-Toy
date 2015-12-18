@@ -8,7 +8,7 @@ Element_SWCH::Element_SWCH()
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
 	Enabled = 1;
-	
+
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.90f;
@@ -18,21 +18,20 @@ Element_SWCH::Element_SWCH()
 	Diffusion = 0.00f;
 	HotAir = 0.000f  * CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 1;
-	
+
 	Weight = 100;
-	
+
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
 	Description = "Only conducts when switched on. (PSCN switches on, NSCN switches off)";
-	
 
 	Properties = TYPE_SOLID;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,7 +40,7 @@ Element_SWCH::Element_SWCH()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_SWCH::update;
 	Graphics = &Element_SWCH::graphics;
 }
@@ -53,7 +52,7 @@ bool isRedBRAY(UPDATE_FUNC_ARGS, int xc, int yc)
 
 //#TPT-Directive ElementHeader Element_SWCH static int update(UPDATE_FUNC_ARGS)
 int Element_SWCH::update(UPDATE_FUNC_ARGS)
- {
+{
 	int r, rt, rx, ry;
 	if (parts[i].life>0 && parts[i].life!=10)
 		parts[i].life--;

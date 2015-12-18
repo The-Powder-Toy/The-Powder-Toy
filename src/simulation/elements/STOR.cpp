@@ -8,7 +8,7 @@ Element_STOR::Element_STOR()
 	MenuVisible = 1;
 	MenuSection = SC_POWERED;
 	Enabled = 1;
-	
+
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.90f;
@@ -18,21 +18,20 @@ Element_STOR::Element_STOR()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 1;
-	
+
 	Weight = 100;
-	
+
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 0;
 	Description = "Captures and stores a single particle. releases when charged with PSCN, also passes to PIPE.";
-	
 
 	Properties = TYPE_SOLID|PROP_NOCTYPEDRAW;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,14 +40,14 @@ Element_STOR::Element_STOR()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_STOR::update;
 	Graphics = &Element_STOR::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_STOR static int update(UPDATE_FUNC_ARGS)
 int Element_STOR::update(UPDATE_FUNC_ARGS)
- {
+{
 	int r, rx, ry, np, rx1, ry1;
 	if (!sim->IsValidElement(parts[i].tmp))
 		parts[i].tmp = 0;

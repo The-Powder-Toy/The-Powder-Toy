@@ -8,7 +8,7 @@ Element_SHLD2::Element_SHLD2()
 	MenuVisible = 0;
 	MenuSection = SC_CRACKER2;
 	Enabled = 1;
-	
+
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 1.00f;
@@ -18,21 +18,20 @@ Element_SHLD2::Element_SHLD2()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 1;
-	
+
 	Weight = 100;
-	
+
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 0;
 	Description = "Shield lvl 2.";
-	
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = 15.0f;
@@ -41,14 +40,13 @@ Element_SHLD2::Element_SHLD2()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_SHLD2::update;
-	
 }
 
 //#TPT-Directive ElementHeader Element_SHLD2 static int update(UPDATE_FUNC_ARGS)
 int Element_SHLD2::update(UPDATE_FUNC_ARGS)
- {
+{
 	int r, nnx, nny, rx, ry, np;
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)

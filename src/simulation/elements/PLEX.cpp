@@ -8,7 +8,7 @@ Element_PLEX::Element_PLEX()
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;
-	
+
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.90f;
@@ -18,21 +18,20 @@ Element_PLEX::Element_PLEX()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 1000;
 	Explosive = 2;
 	Meltable = 50;
 	Hardness = 1;
-	
+
 	Weight = 100;
-	
+
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 88;
 	Description = "Solid pressure sensitive explosive.";
-	
 
 	Properties = TYPE_SOLID | PROP_NEUTPENETRATE;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,9 +40,8 @@ Element_PLEX::Element_PLEX()
 	LowTemperatureTransition = NT;
 	HighTemperature = 673.0f;
 	HighTemperatureTransition = PT_FIRE;
-	
+
 	Update = NULL;
-	
 }
 
 Element_PLEX::~Element_PLEX() {}

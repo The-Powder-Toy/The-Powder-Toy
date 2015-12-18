@@ -8,7 +8,7 @@ Element_NONE::Element_NONE()
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;
 	Enabled = 1;
-	
+
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 1.00f;
@@ -18,21 +18,20 @@ Element_NONE::Element_NONE()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 1;
-	
+
 	Weight = 100;
-	
+
 	Temperature = R_TEMP+273.15f;
 	HeatConduct = 0;
 	Description = "Erases particles.";
-	
 
 	Properties = 0;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,7 +40,7 @@ Element_NONE::Element_NONE()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = NULL;
 	IconGenerator = &Element_NONE::iconGen;
 }

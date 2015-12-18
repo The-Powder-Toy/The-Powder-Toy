@@ -8,7 +8,7 @@ Element_VRSG::Element_VRSG()
 	MenuVisible = 0;
 	MenuSection = SC_GAS;
 	Enabled = 1;
-	
+
 	Advection = 1.0f;
 	AirDrag = 0.01f * CFDS;
 	AirLoss = 0.99f;
@@ -18,21 +18,20 @@ Element_VRSG::Element_VRSG()
 	Diffusion = 0.75f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 500;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 0;
-	
+
 	Weight = 1;
-	
+
 	Temperature = 522.0f + 273.15f;
 	HeatConduct = 251;
 	Description = "Gas Virus. Turns everything it touches into virus.";
-	
 
 	Properties = TYPE_GAS|PROP_DEADLY;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,7 +40,7 @@ Element_VRSG::Element_VRSG()
 	LowTemperatureTransition = PT_VIRS;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_VIRS::update;
 	Graphics = &Element_VRSG::graphics;
 }

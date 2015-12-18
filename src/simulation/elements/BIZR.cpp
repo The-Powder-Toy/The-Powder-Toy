@@ -8,7 +8,7 @@ Element_BIZR::Element_BIZR()
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;
 	Enabled = 1;
-	
+
 	Advection = 0.6f;
 	AirDrag = 0.01f * CFDS;
 	AirLoss = 0.98f;
@@ -18,21 +18,20 @@ Element_BIZR::Element_BIZR()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 2;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 20;
-	
+
 	Weight = 30;
-	
+
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 29;
 	Description = "Bizarre... contradicts the normal state changes. Paints other elements with its deco color.";
-	
 
 	Properties = TYPE_LIQUID;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,7 +40,7 @@ Element_BIZR::Element_BIZR()
 	LowTemperatureTransition = PT_BIZRG;
 	HighTemperature = 400.0f;
 	HighTemperatureTransition = PT_BIZRS;
-	
+
 	Update = &Element_BIZR::update;
 	Graphics = &Element_BIZR::graphics;
 }
@@ -50,7 +49,7 @@ Element_BIZR::Element_BIZR()
 
 //#TPT-Directive ElementHeader Element_BIZR static int update(UPDATE_FUNC_ARGS)
 int Element_BIZR::update(UPDATE_FUNC_ARGS)
- {
+{
 	int r, rx, ry, nr, ng, nb, na;
 	float tr, tg, tb, ta, mr, mg, mb, ma;
 	if(parts[i].dcolour){

@@ -8,7 +8,7 @@ Element_PUMP::Element_PUMP()
 	MenuVisible = 1;
 	MenuSection = SC_POWERED;
 	Enabled = 1;
-	
+
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.95f;
@@ -18,21 +18,20 @@ Element_PUMP::Element_PUMP()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 10;
-	
+
 	Weight = 100;
-	
+
 	Temperature = 273.15f;
 	HeatConduct = 0;
 	Description = "Pressure pump. Changes pressure to its temp when activated. (use HEAT/COOL).";
-	
 
 	Properties = TYPE_SOLID;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,14 +40,14 @@ Element_PUMP::Element_PUMP()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_PUMP::update;
 	Graphics = &Element_PUMP::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_PUMP static int update(UPDATE_FUNC_ARGS)
 int Element_PUMP::update(UPDATE_FUNC_ARGS)
- {
+{
 	int r, rx, ry;
 	if (parts[i].life!=10)
 	{

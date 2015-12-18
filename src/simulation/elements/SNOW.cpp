@@ -8,7 +8,7 @@ Element_SNOW::Element_SNOW()
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
 	Enabled = 1;
-	
+
 	Advection = 0.7f;
 	AirDrag = 0.01f * CFDS;
 	AirLoss = 0.96f;
@@ -18,21 +18,20 @@ Element_SNOW::Element_SNOW()
 	Diffusion = 0.01f;
 	HotAir = -0.00005f* CFDS;
 	Falldown = 1;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 20;
-	
+
 	Weight = 50;
-	
+
 	Temperature = R_TEMP-30.0f+273.15f;
 	HeatConduct = 46;
 	Description = "Light particles. Created when ICE breaks under pressure.";
-	
 
 	Properties = TYPE_PART|PROP_LIFE_DEC|PROP_NEUTPASS;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,9 +40,8 @@ Element_SNOW::Element_SNOW()
 	LowTemperatureTransition = NT;
 	HighTemperature = 252.05f;
 	HighTemperatureTransition = ST;
-	
+
 	Update = &Element_SNOW::update;
-	
 }
 
 //#TPT-Directive ElementHeader Element_SNOW static int update(UPDATE_FUNC_ARGS)

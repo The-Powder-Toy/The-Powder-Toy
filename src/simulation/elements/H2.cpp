@@ -8,7 +8,7 @@ Element_H2::Element_H2()
 	MenuVisible = 1;
 	MenuSection = SC_GAS;
 	Enabled = 1;
-	
+
 	Advection = 2.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.99f;
@@ -18,21 +18,20 @@ Element_H2::Element_H2()
 	Diffusion = 3.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 0;
-	
+
 	Weight = 1;
-	
+
 	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 251;
 	Description = "Hydrogen. Combusts with OXYG to make WATR. Undergoes fusion at high temperature and pressure.";
-	
 
 	Properties = TYPE_GAS;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,9 +40,8 @@ Element_H2::Element_H2()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_H2::update;
-	
 }
 
 //#TPT-Directive ElementHeader Element_H2 static int update(UPDATE_FUNC_ARGS)

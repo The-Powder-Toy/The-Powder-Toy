@@ -8,7 +8,7 @@ Element_NEUT::Element_NEUT()
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
 	Enabled = 1;
-	
+
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 1.00f;
@@ -18,21 +18,20 @@ Element_NEUT::Element_NEUT()
 	Diffusion = 0.01f;
 	HotAir = 0.002f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 0;
-	
+
 	Weight = -1;
-	
+
 	Temperature = R_TEMP+4.0f	+273.15f;
 	HeatConduct = 60;
 	Description = "Neutrons. Interact with matter in odd ways.";
-	
 
 	Properties = TYPE_ENERGY|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,14 +40,14 @@ Element_NEUT::Element_NEUT()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_NEUT::update;
 	Graphics = &Element_NEUT::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_NEUT static int update(UPDATE_FUNC_ARGS)
 int Element_NEUT::update(UPDATE_FUNC_ARGS)
- {
+{
 	int r, rx, ry;
 	int pressureFactor = 3 + (int)sim->pv[y/CELL][x/CELL];
 	for (rx=-1; rx<2; rx++)
@@ -196,7 +195,7 @@ int Element_NEUT::DeutExplosion(Simulation * sim, int n, int x, int y, float tem
 		n = 1;
 	else if (n > 340)
 		n = 340;
-	
+
 	for (int c = 0; c < n; c++)
 	{
 		i = sim->create_part(-3, x, y, t);

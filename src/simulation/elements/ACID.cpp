@@ -8,7 +8,7 @@ Element_ACID::Element_ACID()
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;
 	Enabled = 1;
-	
+
 	Advection = 0.6f;
 	AirDrag = 0.01f * CFDS;
 	AirLoss = 0.98f;
@@ -18,21 +18,20 @@ Element_ACID::Element_ACID()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 2;
-	
+
 	Flammable = 40;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 0;
-	
+
 	Weight = 10;
-	
+
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 34;
 	Description = "Dissolves almost everything.";
-	
 
 	Properties = TYPE_LIQUID|PROP_DEADLY;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,7 +40,7 @@ Element_ACID::Element_ACID()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_ACID::update;
 	Graphics = &Element_ACID::graphics;
 }

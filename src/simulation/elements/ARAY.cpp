@@ -8,7 +8,7 @@ Element_ARAY::Element_ARAY()
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
 	Enabled = 1;
-	
+
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.90f;
@@ -18,21 +18,20 @@ Element_ARAY::Element_ARAY()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 1;
-	
+
 	Weight = 100;
-	
+
 	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 0;
 	Description = "Ray Emitter. Rays create points when they collide.";
-	
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,14 +40,13 @@ Element_ARAY::Element_ARAY()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_ARAY::update;
-	
 }
 
 //#TPT-Directive ElementHeader Element_ARAY static int update(UPDATE_FUNC_ARGS)
 int Element_ARAY::update(UPDATE_FUNC_ARGS)
- {
+{
 	if (!parts[i].life)
 	{
 		for (int rx = -1; rx <= 1; rx++)

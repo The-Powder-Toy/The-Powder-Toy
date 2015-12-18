@@ -8,7 +8,7 @@ Element_SING::Element_SING()
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
 	Enabled = 1;
-	
+
 	Advection = 0.7f;
 	AirDrag = 0.36f * CFDS;
 	AirLoss = 0.96f;
@@ -18,21 +18,20 @@ Element_SING::Element_SING()
 	Diffusion = 0.00f;
 	HotAir = -0.001f	* CFDS;
 	Falldown = 1;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 0;
-	
+
 	Weight = 86;
-	
+
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
 	Description = "Singularity. Creates huge amounts of negative pressure and destroys everything.";
-	
 
 	Properties = TYPE_PART|PROP_LIFE_DEC;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,14 +40,13 @@ Element_SING::Element_SING()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_SING::update;
-	
 }
 
 //#TPT-Directive ElementHeader Element_SING static int update(UPDATE_FUNC_ARGS)
 int Element_SING::update(UPDATE_FUNC_ARGS)
- {
+{
 	int r, rx, ry, cry, crx, nb, spawncount;
 	int singularity = -parts[i].life;
 	float angle, v;

@@ -8,7 +8,7 @@ Element_ANAR::Element_ANAR()
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
 	Enabled = 1;
-	
+
 	Advection = -0.7f;
 	AirDrag = -0.02f * CFDS;
 	AirLoss = 0.96f;
@@ -18,21 +18,20 @@ Element_ANAR::Element_ANAR()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 1;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 30;
-	
+
 	Weight = 85;
-	
+
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
 	Description = "Anti-air. Very light dust, which behaves opposite gravity.";
-	
 
 	Properties = TYPE_PART;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,14 +40,13 @@ Element_ANAR::Element_ANAR()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_ANAR::update;
-	
 }
 
 //#TPT-Directive ElementHeader Element_ANAR static int update(UPDATE_FUNC_ARGS)
 int Element_ANAR::update(UPDATE_FUNC_ARGS)
- {
+{
 	int r, rx, ry;
 	   
 	//if (parts[i].temp >= 0.23)

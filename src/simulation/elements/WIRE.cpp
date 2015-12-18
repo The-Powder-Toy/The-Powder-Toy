@@ -8,7 +8,7 @@ Element_WIRE::Element_WIRE()
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
 	Enabled = 1;
-	
+
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.00f;
@@ -18,21 +18,20 @@ Element_WIRE::Element_WIRE()
 	Diffusion = 0.00f;
 	HotAir = 0.000f  * CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 0;
-	
+
 	Weight = 100;
-	
+
 	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 250;
 	Description = "WireWorld wires, conducts based on a set of GOL-like rules.";
-	
 
 	Properties = TYPE_SOLID;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,7 +40,7 @@ Element_WIRE::Element_WIRE()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_WIRE::update;
 	Graphics = &Element_WIRE::graphics;
 }

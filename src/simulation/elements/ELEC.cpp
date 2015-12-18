@@ -8,7 +8,7 @@ Element_ELEC::Element_ELEC()
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
 	Enabled = 1;
-	
+
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 1.00f;
@@ -18,21 +18,20 @@ Element_ELEC::Element_ELEC()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 0;
-	
+
 	Weight = -1;
-	
+
 	Temperature = R_TEMP+200.0f+273.15f;
 	HeatConduct = 251;
 	Description = "Electrons. Sparks electronics, reacts with NEUT and WATR.";
-	
 
 	Properties = TYPE_ENERGY|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,14 +40,14 @@ Element_ELEC::Element_ELEC()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_ELEC::update;
 	Graphics = &Element_ELEC::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_ELEC static int update(UPDATE_FUNC_ARGS)
 int Element_ELEC::update(UPDATE_FUNC_ARGS)
- {
+{
 	int r, rt, rx, ry, nb, rrx, rry;
 	for (rx=-2; rx<=2; rx++)
 		for (ry=-2; ry<=2; ry++)

@@ -8,7 +8,7 @@ Element_O2::Element_O2()
 	MenuVisible = 1;
 	MenuSection = SC_GAS;
 	Enabled = 1;
-	
+
 	Advection = 2.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.99f;
@@ -18,21 +18,20 @@ Element_O2::Element_O2()
 	Diffusion = 3.0f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 0;
-	
+
 	Weight = 1;
-	
+
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
 	Description = "Oxygen gas. Ignites easily.";
-	
 
 	Properties = TYPE_GAS;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,9 +40,8 @@ Element_O2::Element_O2()
 	LowTemperatureTransition = PT_LO2;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_O2::update;
-	
 }
 
 //#TPT-Directive ElementHeader Element_O2 static int update(UPDATE_FUNC_ARGS)

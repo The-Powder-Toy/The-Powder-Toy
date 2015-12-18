@@ -8,7 +8,7 @@ Element_EMBR::Element_EMBR()
 	MenuVisible = 0;
 	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;
-	
+
 	Advection = 0.4f;
 	AirDrag = 0.001f * CFDS;
 	AirLoss = 0.99f;
@@ -18,21 +18,20 @@ Element_EMBR::Element_EMBR()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 1;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 20;
-	
+
 	Weight = 30;
-	
+
 	Temperature = 500.0f +273.15f;
 	HeatConduct = 29;
 	Description = "Sparks. Formed by explosions.";
-	
 
 	Properties = TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL|PROP_SPARKSETTLE;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,7 +40,7 @@ Element_EMBR::Element_EMBR()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_EMBR::update;
 	Graphics = &Element_EMBR::graphics;
 }

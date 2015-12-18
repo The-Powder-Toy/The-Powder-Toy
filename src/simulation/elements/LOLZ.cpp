@@ -8,7 +8,7 @@ Element_LOLZ::Element_LOLZ()
 	MenuVisible = 1;
 	MenuSection = SC_CRACKER2;
 	Enabled = 1;
-	
+
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.00f;
@@ -18,21 +18,20 @@ Element_LOLZ::Element_LOLZ()
 	Diffusion = 0.0f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 0;
-	
+
 	Weight = 100;
-	
+
 	Temperature = 373.0f;
 	HeatConduct = 40;
 	Description = "Lolz";
-	
 
 	Properties = TYPE_SOLID;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,7 +40,6 @@ Element_LOLZ::Element_LOLZ()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
 }
 
 //#TPT-Directive ElementHeader Element_LOLZ static int RuleTable[9][9]

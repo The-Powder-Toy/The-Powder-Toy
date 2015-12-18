@@ -8,7 +8,7 @@ Element_PROT::Element_PROT()
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
 	Enabled = 1;
-	
+
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 1.00f;
@@ -18,21 +18,20 @@ Element_PROT::Element_PROT()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 0;
-	
+
 	Weight = -1;
-	
+
 	Temperature = R_TEMP+273.15f;
 	HeatConduct = 61;
 	Description = "Protons. Transfer heat to materials, and removes sparks.";
-	
 
 	Properties = TYPE_ENERGY;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,7 +40,7 @@ Element_PROT::Element_PROT()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_PROT::update;
 	Graphics = &Element_PROT::graphics;
 }
@@ -121,7 +120,7 @@ int Element_PROT::update(UPDATE_FUNC_ARGS)
 	if (utype && utype != PT_WIFI)
 		parts[under>>8].temp = restrict_flt(parts[under>>8].temp-(parts[under>>8].temp-parts[i].temp)/4.0f, MIN_TEMP, MAX_TEMP);
  
-	
+
 	//if this proton has collided with another last frame, change it into a heavier element
 	if (parts[i].tmp)
 	{

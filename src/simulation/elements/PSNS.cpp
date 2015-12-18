@@ -8,7 +8,7 @@ Element_PSNS::Element_PSNS()
 	MenuVisible = 1;
 	MenuSection = SC_SENSOR;
 	Enabled = 1;
-	
+
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.96f;
@@ -18,21 +18,20 @@ Element_PSNS::Element_PSNS()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 1;
-	
+
 	Weight = 100;
-	
+
 	Temperature = 277.15f;
 	HeatConduct = 0;
 	Description = "Pressure sensor, creates a spark when the pressure is greater than its temperature.";
-	
 
 	Properties = TYPE_SOLID;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,9 +40,8 @@ Element_PSNS::Element_PSNS()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_PSNS::update;
-	
 }
 
 //#TPT-Directive ElementHeader Element_PSNS static int update(UPDATE_FUNC_ARGS)

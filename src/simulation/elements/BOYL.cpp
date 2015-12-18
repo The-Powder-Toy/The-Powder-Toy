@@ -8,7 +8,7 @@ Element_BOYL::Element_BOYL()
 	MenuVisible = 1;
 	MenuSection = SC_GAS;
 	Enabled = 1;
-	
+
 	Advection = 1.0f;
 	AirDrag = 0.01f * CFDS;
 	AirLoss = 0.99f;
@@ -18,21 +18,20 @@ Element_BOYL::Element_BOYL()
 	Diffusion = 0.18f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 1;
-	
+
 	Weight = 1;
-	
+
 	Temperature = R_TEMP+2.0f	+273.15f;
 	HeatConduct = 42;
 	Description = "Boyle, variable pressure gas. Expands when heated.";
-	
 
 	Properties = TYPE_GAS;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,14 +40,13 @@ Element_BOYL::Element_BOYL()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_BOYL::update;
-	
 }
 
 //#TPT-Directive ElementHeader Element_BOYL static int update(UPDATE_FUNC_ARGS)
 int Element_BOYL::update(UPDATE_FUNC_ARGS)
- {
+{
 	int r, rx, ry;
 	float limit = parts[i].temp / 100;
 	if (sim->pv[y / CELL][x / CELL] < limit)

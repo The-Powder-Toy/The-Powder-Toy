@@ -8,7 +8,7 @@ Element_IGNT::Element_IGNT()
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;
-	
+
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.90f;
@@ -18,21 +18,20 @@ Element_IGNT::Element_IGNT()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 1;
-	
+
 	Weight = 100;
-	
+
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 88;
 	Description = "Ignition cord. Burns slowly with fire and sparks.";
-	
 
 	Properties = TYPE_SOLID | PROP_NEUTPENETRATE | PROP_SPARKSETTLE | PROP_LIFE_KILL;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,14 +40,13 @@ Element_IGNT::Element_IGNT()
 	LowTemperatureTransition = NT;
 	HighTemperature = 673.0f;
 	HighTemperatureTransition = PT_FIRE;
-	
+
 	Update = &Element_IGNT::update;
-	
 }
 
 //#TPT-Directive ElementHeader Element_IGNT static int update(UPDATE_FUNC_ARGS)
 int Element_IGNT::update(UPDATE_FUNC_ARGS)
- {
+{
 	 int r, rx, ry, rt;
 	if(parts[i].tmp==0)
 	{

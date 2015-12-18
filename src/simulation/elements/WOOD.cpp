@@ -8,7 +8,7 @@ Element_WOOD::Element_WOOD()
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
 	Enabled = 1;
-	
+
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.90f;
@@ -18,21 +18,20 @@ Element_WOOD::Element_WOOD()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 20;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 15;
-	
+
 	Weight = 100;
-	
+
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 164;
 	Description = "Wood, flammable.";
-	
 
 	Properties = TYPE_SOLID | PROP_NEUTPENETRATE;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,7 +40,7 @@ Element_WOOD::Element_WOOD()
 	LowTemperatureTransition = NT;
 	HighTemperature = 873.0f;
 	HighTemperatureTransition = PT_FIRE;
-	
+
 	Update = &Element_WOOD::update;
 	Graphics = &Element_WOOD::graphics;
 }

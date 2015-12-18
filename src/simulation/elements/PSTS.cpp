@@ -8,7 +8,7 @@ Element_PSTS::Element_PSTS()
 	MenuVisible = 0;
 	MenuSection = SC_CRACKER;
 	Enabled = 1;
-	
+
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.00f;
@@ -18,21 +18,20 @@ Element_PSTS::Element_PSTS()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 20;
-	
+
 	Weight = 100;
-	
+
 	Temperature = R_TEMP-2.0f	+273.15f;
 	HeatConduct = 29;
 	Description = "Solid form of PSTE.";
-	
 
 	Properties = TYPE_SOLID;
-	
+
 	LowPressure = 0.5f;
 	LowPressureTransition = PT_PSTE;
 	HighPressure = IPH;
@@ -41,9 +40,8 @@ Element_PSTS::Element_PSTS()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = NULL;
-	
 }
 
 Element_PSTS::~Element_PSTS() {}

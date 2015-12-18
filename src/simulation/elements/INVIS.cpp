@@ -8,7 +8,7 @@ Element_INVIS::Element_INVIS()
 	MenuVisible = 1;
 	MenuSection = SC_SENSOR;
 	Enabled = 1;
-	
+
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.90f;
@@ -18,21 +18,20 @@ Element_INVIS::Element_INVIS()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 15;
-	
+
 	Weight = 100;
-	
+
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 164;
 	Description = "Invisible to particles while under pressure.";
-	
 
 	Properties = TYPE_SOLID | PROP_NEUTPASS;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,7 +40,7 @@ Element_INVIS::Element_INVIS()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_INVIS::update;
 	Graphics = &Element_INVIS::graphics;
 }

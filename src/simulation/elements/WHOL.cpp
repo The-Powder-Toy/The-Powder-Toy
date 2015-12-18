@@ -8,7 +8,7 @@ Element_WHOL::Element_WHOL()
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;
 	Enabled = 1;
-	
+
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.95f;
@@ -18,21 +18,20 @@ Element_WHOL::Element_WHOL()
 	Diffusion = 0.00f;
 	HotAir = 0.010f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 0;
-	
+
 	Weight = 100;
-	
+
 	Temperature = R_TEMP-16.0f+273.15f;
 	HeatConduct = 255;
 	Description = "Air vent, creates pressure and pushes other particles away.";
-	
 
 	Properties = TYPE_SOLID;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,9 +40,8 @@ Element_WHOL::Element_WHOL()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = NULL;
-	
 }
 
 Element_WHOL::~Element_WHOL() {}

@@ -8,7 +8,7 @@ Element_ICEI::Element_ICEI()
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
 	Enabled = 1;
-	
+
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.90f;
@@ -18,21 +18,20 @@ Element_ICEI::Element_ICEI()
 	Diffusion = 0.00f;
 	HotAir = -0.0003f* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 20;
-	
+
 	Weight = 100;
-	
+
 	Temperature = R_TEMP-50.0f+273.15f;
 	HeatConduct = 46;
 	Description = "Crushes under pressure. Cools down air.";
-	
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC|PROP_NEUTPASS;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = 0.8f;
@@ -41,9 +40,8 @@ Element_ICEI::Element_ICEI()
 	LowTemperatureTransition = NT;
 	HighTemperature = 252.05f;
 	HighTemperatureTransition = ST;
-	
+
 	Update = &Element_ICEI::update;
-	
 }
 
 //#TPT-Directive ElementHeader Element_ICEI static int update(UPDATE_FUNC_ARGS)

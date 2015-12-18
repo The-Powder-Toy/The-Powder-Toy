@@ -8,7 +8,7 @@ Element_FIRE::Element_FIRE()
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;
-	
+
 	Advection = 0.9f;
 	AirDrag = 0.04f * CFDS;
 	AirLoss = 0.97f;
@@ -18,21 +18,20 @@ Element_FIRE::Element_FIRE()
 	Diffusion = 0.00f;
 	HotAir = 0.001f  * CFDS;
 	Falldown = 1;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 1;
-	
+
 	Weight = 2;
-	
+
 	Temperature = R_TEMP+400.0f+273.15f;
 	HeatConduct = 88;
 	Description = "Ignites flammable materials. Heats air.";
-	
 
 	Properties = TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,14 +40,14 @@ Element_FIRE::Element_FIRE()
 	LowTemperatureTransition = NT;
 	HighTemperature = 2773.0f;
 	HighTemperatureTransition = PT_PLSM;
-	
+
 	Update = &Element_FIRE::update;
 	Graphics = &Element_FIRE::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_FIRE static int update(UPDATE_FUNC_ARGS)
 int Element_FIRE::update(UPDATE_FUNC_ARGS)
- {
+{
 	int r, rx, ry, rt, t = parts[i].type;
 	switch (t)
 	{
@@ -227,12 +226,12 @@ int Element_FIRE::graphics(GRAPHICS_FUNC_ARGS)
 	*colr = (unsigned char)ren->flm_data[caddress];
 	*colg = (unsigned char)ren->flm_data[caddress+1];
 	*colb = (unsigned char)ren->flm_data[caddress+2];
-	
+
 	*firea = 255;
 	*firer = *colr;
 	*fireg = *colg;
 	*fireb = *colb;
-	
+
 	*pixel_mode = PMODE_NONE; //Clear default, don't draw pixel
 	*pixel_mode |= FIRE_ADD;
 	//Returning 0 means dynamic, do not cache

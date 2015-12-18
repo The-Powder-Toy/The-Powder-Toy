@@ -8,7 +8,7 @@ Element_SPNG::Element_SPNG()
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
 	Enabled = 1;
-	
+
 	Advection = 0.00f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.00f;
@@ -18,21 +18,20 @@ Element_SPNG::Element_SPNG()
 	Diffusion = 0.00f;
 	HotAir = 0.000f  * CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 20;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 30;
-	
+
 	Weight = 100;
-	
+
 	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 251;
 	Description = "Sponge, absorbs water. Is not a moving solid.";
-	
 
 	Properties = TYPE_SOLID;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,14 +40,14 @@ Element_SPNG::Element_SPNG()
 	LowTemperatureTransition = NT;
 	HighTemperature = 2730.0f;
 	HighTemperatureTransition = PT_FIRE;
-	
+
 	Update = &Element_SPNG::update;
 	Graphics = &Element_SPNG::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_SPNG static int update(UPDATE_FUNC_ARGS)
 int Element_SPNG::update(UPDATE_FUNC_ARGS)
- {
+{
 	int r, trade, rx, ry, tmp, np;
 	int limit = 50;
 	if (parts[i].life<limit && sim->pv[y/CELL][x/CELL]<=3&&sim->pv[y/CELL][x/CELL]>=-3&&parts[i].temp<=374.0f)

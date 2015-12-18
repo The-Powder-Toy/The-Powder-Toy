@@ -8,7 +8,7 @@ Element_PRTI::Element_PRTI()
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;
 	Enabled = 1;
-	
+
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.90f;
@@ -18,21 +18,20 @@ Element_PRTI::Element_PRTI()
 	Diffusion = 0.00f;
 	HotAir = -0.005f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 0;
-	
+
 	Weight = 100;
-	
+
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 0;
 	Description = "Portal IN. Particles go in here. Also has temperature dependent channels. (same as WIFI)";
-	
 
 	Properties = TYPE_SOLID;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,7 +40,7 @@ Element_PRTI::Element_PRTI()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_PRTI::update;
 	Graphics = &Element_PRTI::graphics;
 }
@@ -56,7 +55,7 @@ Element_PRTI::Element_PRTI()
 
 //#TPT-Directive ElementHeader Element_PRTI static int update(UPDATE_FUNC_ARGS)
 int Element_PRTI::update(UPDATE_FUNC_ARGS)
- {
+{
 	int fe = 0;
 
 	parts[i].tmp = (int)((parts[i].temp-73.15f)/100+1);

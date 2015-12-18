@@ -8,7 +8,7 @@ Element_ISOZ::Element_ISOZ()
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
 	Enabled = 1;
-	
+
 	Advection = 0.6f;
 	AirDrag = 0.01f * CFDS;
 	AirLoss = 0.98f;
@@ -18,21 +18,20 @@ Element_ISOZ::Element_ISOZ()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 2;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 0;
-	
+
 	Weight = 24;
-	
+
 	Temperature = R_TEMP-2.0f	+273.15f;
 	HeatConduct = 29;
 	Description = "Isotope-Z. Radioactive liquid, decays into photons when touching PHOT or under negative pressure.";
-	
 
 	Properties = TYPE_LIQUID|PROP_NEUTPENETRATE;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,9 +40,8 @@ Element_ISOZ::Element_ISOZ()
 	LowTemperatureTransition = PT_ISZS;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_ISOZ::update;
-	
 }
 
 //#TPT-Directive ElementHeader Element_ISOZ static int update(UPDATE_FUNC_ARGS)

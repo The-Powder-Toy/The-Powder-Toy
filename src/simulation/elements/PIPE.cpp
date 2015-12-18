@@ -11,7 +11,7 @@ Element_PIPE::Element_PIPE()
 	MenuVisible = 1;
 	MenuSection = SC_FORCE;
 	Enabled = 1;
-	
+
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.95f;
@@ -21,21 +21,20 @@ Element_PIPE::Element_PIPE()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 0;
-	
+
 	Weight = 100;
-	
+
 	Temperature = 273.15f;
 	HeatConduct = 0;
 	Description = "PIPE, moves particles around. Once the BRCK generates, erase some for the exit. Then the PIPE generates and is usable.";
-	
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = 10.0f;
@@ -44,7 +43,7 @@ Element_PIPE::Element_PIPE()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_PIPE::update;
 	Graphics = &Element_PIPE::graphics;
 
@@ -73,7 +72,7 @@ signed char pos_1_ry[] = {-1, 0, 1,-1, 1,-1, 0, 1};
 
 //#TPT-Directive ElementHeader Element_PIPE static int update(UPDATE_FUNC_ARGS)
 int Element_PIPE::update(UPDATE_FUNC_ARGS)
- {
+{
 	int r, rx, ry, np;
 	int rnd, rndstore;
 	if ((parts[i].tmp&0xFF)>=PT_NUM || !sim->elements[parts[i].tmp&0xFF].Enabled)

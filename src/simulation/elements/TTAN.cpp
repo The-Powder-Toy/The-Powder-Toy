@@ -31,7 +31,6 @@ Element_TTAN::Element_TTAN()
 	HeatConduct = 251;
 	Description = "Titanium. Higher melting temperature than most other metals, blocks all air pressure.";
 
-
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_HOT_GLOW|PROP_LIFE_DEC;
 
 	LowPressure = IPL;
@@ -44,12 +43,11 @@ Element_TTAN::Element_TTAN()
 	HighTemperatureTransition = PT_LAVA;
 
 	Update = &Element_TTAN::update;
-	
 }
 
 //#TPT-Directive ElementHeader Element_TTAN static int update(UPDATE_FUNC_ARGS)
 int Element_TTAN::update(UPDATE_FUNC_ARGS)
- {
+{
 	int rx, ry, ttan = 0;
 	if(nt<=2)
 		ttan = 2;

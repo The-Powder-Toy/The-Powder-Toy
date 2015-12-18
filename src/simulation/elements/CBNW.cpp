@@ -8,7 +8,7 @@ Element_CBNW::Element_CBNW()
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;
 	Enabled = 1;
-	
+
 	Advection = 0.6f;
 	AirDrag = 0.01f * CFDS;
 	AirLoss = 0.98f;
@@ -18,21 +18,20 @@ Element_CBNW::Element_CBNW()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 2;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 20;
-	
+
 	Weight = 30;
-	
+
 	Temperature = R_TEMP-2.0f	+273.15f;
 	HeatConduct = 29;
 	Description = "Carbonated water. Slowly releases CO2.";
-	
 
 	Properties = TYPE_LIQUID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_NEUTPENETRATE;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,7 +40,7 @@ Element_CBNW::Element_CBNW()
 	LowTemperatureTransition = PT_ICEI;
 	HighTemperature = 373.0f;
 	HighTemperatureTransition = PT_WTRV;
-	
+
 	Update = &Element_CBNW::update;
 	Graphics = &Element_CBNW::graphics;
 }

@@ -8,7 +8,7 @@ Element_BTRY::Element_BTRY()
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
 	Enabled = 1;
-	
+
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.90f;
@@ -18,21 +18,20 @@ Element_BTRY::Element_BTRY()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 1;
-	
+
 	Weight = 100;
-	
+
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
 	Description = "Generates infinite electricity.";
-	
 
 	Properties = TYPE_SOLID;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,14 +40,13 @@ Element_BTRY::Element_BTRY()
 	LowTemperatureTransition = NT;
 	HighTemperature = 2273.0f;
 	HighTemperatureTransition = PT_PLSM;
-	
+
 	Update = &Element_BTRY::update;
-	
 }
 
 //#TPT-Directive ElementHeader Element_BTRY static int update(UPDATE_FUNC_ARGS)
 int Element_BTRY::update(UPDATE_FUNC_ARGS)
- {
+{
 	int r, rx, ry, rt;
 	for (rx=-2; rx<3; rx++)
 		for (ry=-2; ry<3; ry++)

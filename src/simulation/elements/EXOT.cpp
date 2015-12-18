@@ -8,7 +8,7 @@ Element_EXOT::Element_EXOT()
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
 	Enabled = 1;
-	
+
 	Advection = 0.3f;
 	AirDrag = 0.02f * CFDS;
 	AirLoss = 0.95f;
@@ -18,21 +18,20 @@ Element_EXOT::Element_EXOT()
 	Diffusion = 0.00f;
 	HotAir = 0.0003f	* CFDS;
 	Falldown = 2;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 2;
-	
+
 	Weight = 46;
-	
+
 	Temperature = R_TEMP-2.0f	+273.15f;
 	HeatConduct = 250;
 	Description = "Exotic matter. Explodes with excess exposure to electrons. Has many other odd reactions.";
-	
 
 	Properties = TYPE_LIQUID|PROP_NEUTPASS;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,7 +40,7 @@ Element_EXOT::Element_EXOT()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_EXOT::update;
 	Graphics = &Element_EXOT::graphics;
 }

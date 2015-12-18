@@ -8,7 +8,7 @@ Element_PLNT::Element_PLNT()
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
 	Enabled = 1;
-	
+
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.95f;
@@ -18,21 +18,20 @@ Element_PLNT::Element_PLNT()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 20;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 10;
-	
+
 	Weight = 100;
-	
+
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 65;
 	Description = "Plant, drinks water and grows.";
-	
 
 	Properties = TYPE_SOLID|PROP_NEUTPENETRATE|PROP_LIFE_DEC;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,14 +40,14 @@ Element_PLNT::Element_PLNT()
 	LowTemperatureTransition = NT;
 	HighTemperature = 573.0f;
 	HighTemperatureTransition = PT_FIRE;
-	
+
 	Update = &Element_PLNT::update;
 	Graphics = &Element_PLNT::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_PLNT static int update(UPDATE_FUNC_ARGS)
 int Element_PLNT::update(UPDATE_FUNC_ARGS)
- {
+{
 	int r, rx, ry, np, rndstore;
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)

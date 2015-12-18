@@ -8,7 +8,7 @@ Element_ACEL::Element_ACEL()
 	MenuVisible = 1;
 	MenuSection = SC_FORCE;
 	Enabled = 1;
-	
+
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.90f;
@@ -18,21 +18,20 @@ Element_ACEL::Element_ACEL()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 1;
-	
+
 	Weight = 100;
-	
+
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
 	Description = "Accelerator, speeds up nearby elements.";
-	
 
 	Properties = TYPE_SOLID;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,14 +40,14 @@ Element_ACEL::Element_ACEL()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_ACEL::update;
 	Graphics = &Element_ACEL::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_ACEL static int update(UPDATE_FUNC_ARGS)
 int Element_ACEL::update(UPDATE_FUNC_ARGS)
- {
+{
 	int r, rx, ry;
 	float multiplier;
 	if (parts[i].life!=0)

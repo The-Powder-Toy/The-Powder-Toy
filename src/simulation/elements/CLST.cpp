@@ -8,7 +8,7 @@ Element_CLST::Element_CLST()
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
 	Enabled = 1;
-	
+
 	Advection = 0.7f;
 	AirDrag = 0.02f * CFDS;
 	AirLoss = 0.94f;
@@ -18,21 +18,20 @@ Element_CLST::Element_CLST()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 1;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 2;
 	Hardness = 2;
-	
+
 	Weight = 55;
-	
+
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
 	Description = "Clay dust. Produces paste when mixed with water.";
-	
 
 	Properties = TYPE_PART;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,14 +40,14 @@ Element_CLST::Element_CLST()
 	LowTemperatureTransition = NT;
 	HighTemperature = 1256.0f;
 	HighTemperatureTransition = PT_LAVA;
-	
+
 	Update = &Element_CLST::update;
 	Graphics = &Element_CLST::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_CLST static int update(UPDATE_FUNC_ARGS)
 int Element_CLST::update(UPDATE_FUNC_ARGS)
- {
+{
 	int r, rx, ry;
 	float cxy = 0;
 	for (rx=-2; rx<3; rx++)

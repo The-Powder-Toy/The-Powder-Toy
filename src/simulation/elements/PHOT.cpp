@@ -8,7 +8,7 @@ Element_PHOT::Element_PHOT()
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
 	Enabled = 1;
-	
+
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 1.00f;
@@ -18,21 +18,20 @@ Element_PHOT::Element_PHOT()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 0;
-	
+
 	Weight = -1;
-	
+
 	Temperature = R_TEMP+900.0f+273.15f;
 	HeatConduct = 251;
 	Description = "Photons. Refracts through glass, scattered by quartz, and color-changed by different elements. Ignites flammable materials.";
-	
 
 	Properties = TYPE_ENERGY|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,14 +40,14 @@ Element_PHOT::Element_PHOT()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_PHOT::update;
 	Graphics = &Element_PHOT::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_PHOT static int update(UPDATE_FUNC_ARGS)
 int Element_PHOT::update(UPDATE_FUNC_ARGS)
- {
+{
 	int r, rx, ry;
 	float rr, rrr;
 	if (!(parts[i].ctype&0x3FFFFFFF)) {

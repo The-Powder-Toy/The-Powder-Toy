@@ -8,7 +8,7 @@ Element_GLOW::Element_GLOW()
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;
 	Enabled = 1;
-	
+
 	Advection = 0.3f;
 	AirDrag = 0.02f * CFDS;
 	AirLoss = 0.98f;
@@ -18,21 +18,20 @@ Element_GLOW::Element_GLOW()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 2;
-	
+
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 2;
-	
+
 	Weight = 40;
-	
+
 	Temperature = R_TEMP+20.0f+273.15f;
 	HeatConduct = 44;
 	Description = "Glow, Glows under pressure.";
-	
 
 	Properties = TYPE_LIQUID|PROP_LIFE_DEC;
-	
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,14 +40,14 @@ Element_GLOW::Element_GLOW()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	
+
 	Update = &Element_GLOW::update;
 	Graphics = &Element_GLOW::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_GLOW static int update(UPDATE_FUNC_ARGS)
 int Element_GLOW::update(UPDATE_FUNC_ARGS)
- {
+{
 	int r, rx, ry;
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)
@@ -83,7 +82,7 @@ int Element_GLOW::graphics(GRAPHICS_FUNC_ARGS)
 	*colr = restrict_flt(64.0f+cpart->temp-(275.13f+32.0f), 0, 255);
 	*colg = restrict_flt(64.0f+cpart->ctype, 0, 255);
 	*colb = restrict_flt(64.0f+cpart->tmp, 0, 255);
-	
+
 	*pixel_mode |= FIRE_ADD;
 	return 0;
 }
