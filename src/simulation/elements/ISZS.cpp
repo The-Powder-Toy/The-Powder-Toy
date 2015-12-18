@@ -30,7 +30,7 @@ Element_ISZS::Element_ISZS()
 	HeatConduct = 251;
 	Description = "Solid form of ISOZ, slowly decays into PHOT.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID;
 	
 	LowPressure = IPL;

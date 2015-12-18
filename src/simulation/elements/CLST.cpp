@@ -30,7 +30,7 @@ Element_CLST::Element_CLST()
 	HeatConduct = 70;
 	Description = "Clay dust. Produces paste when mixed with water.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_PART;
 	
 	LowPressure = IPL;

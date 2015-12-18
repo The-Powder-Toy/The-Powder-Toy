@@ -30,7 +30,7 @@ Element_THRM::Element_THRM()
 	HeatConduct = 211;
 	Description = "Thermite. Burns at extremely high temperature.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_PART;
 	
 	LowPressure = IPL;

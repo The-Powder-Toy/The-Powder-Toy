@@ -30,7 +30,7 @@ Element_ACID::Element_ACID()
 	HeatConduct = 34;
 	Description = "Dissolves almost everything.";
 	
-	State = ST_LIQUID;
+
 	Properties = TYPE_LIQUID|PROP_DEADLY;
 	
 	LowPressure = IPL;

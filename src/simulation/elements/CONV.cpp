@@ -30,7 +30,7 @@ Element_CONV::Element_CONV()
 	HeatConduct = 251;
 	Description = "Solid. Converts everything into whatever it first touches.";
 	
-	State = ST_NONE;
+
 	Properties = TYPE_SOLID|PROP_DRAWONCTYPE|PROP_NOCTYPEDRAW;
 	
 	LowPressure = IPL;

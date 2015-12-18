@@ -30,7 +30,7 @@ Element_116::Element_116()
 	HeatConduct = 70;
 	Description = "A failed shared velocity test.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_PART;
 	
 	LowPressure = IPL;

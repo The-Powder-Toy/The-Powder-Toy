@@ -30,7 +30,7 @@ Element_PVOD::Element_PVOD()
 	HeatConduct = 251;
 	Description = "Powered VOID. When activated, destroys entering particles.";
 	
-	State = ST_NONE;
+
 	Properties = TYPE_SOLID;
 	
 	LowPressure = IPL;

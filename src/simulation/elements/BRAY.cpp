@@ -30,7 +30,7 @@ Element_BRAY::Element_BRAY()
 	HeatConduct = 251;
 	Description = "Ray Point. Rays create points when they collide.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID|PROP_LIFE_DEC|PROP_LIFE_KILL;
 	
 	LowPressure = IPL;

@@ -30,7 +30,7 @@ Element_VIRS::Element_VIRS()
 	HeatConduct = 251;
 	Description = "Virus. Turns everything it touches into virus.";
 	
-	State = ST_LIQUID;
+
 	Properties = TYPE_LIQUID|PROP_DEADLY;
 	
 	LowPressure = IPL;

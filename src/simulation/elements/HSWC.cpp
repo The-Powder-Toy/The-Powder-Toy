@@ -30,7 +30,7 @@ Element_HSWC::Element_HSWC()
 	HeatConduct = 251;
 	Description = "Heat switch. Conducts heat only when activated.";
 	
-	State = ST_NONE;
+
 	Properties = TYPE_SOLID;
 	
 	LowPressure = IPL;

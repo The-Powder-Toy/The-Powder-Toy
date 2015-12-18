@@ -30,7 +30,7 @@ Element_ANAR::Element_ANAR()
 	HeatConduct = 70;
 	Description = "Anti-air. Very light dust, which behaves opposite gravity.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_PART;
 	
 	LowPressure = IPL;

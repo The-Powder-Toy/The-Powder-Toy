@@ -30,7 +30,7 @@ Element_CRMC::Element_CRMC()
 	HeatConduct = 35;
 	Description = "Ceramic. Gets stronger under pressure.";
 
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID | PROP_NEUTPASS;
 
 	LowPressure = IPL;

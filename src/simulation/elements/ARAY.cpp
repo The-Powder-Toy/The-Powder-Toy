@@ -30,7 +30,7 @@ Element_ARAY::Element_ARAY()
 	HeatConduct = 0;
 	Description = "Ray Emitter. Rays create points when they collide.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 	
 	LowPressure = IPL;

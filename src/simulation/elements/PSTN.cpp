@@ -30,7 +30,7 @@ Element_PSTN::Element_PSTN()
 	HeatConduct = 0;
 	Description = "Piston, extends and pushes particles.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID;
 	
 	LowPressure = IPL;

@@ -30,7 +30,7 @@ Element_CAUS::Element_CAUS()
 	HeatConduct = 70;
 	Description = "Caustic Gas, acts like ACID.";
 	
-	State = ST_GAS;
+
 	Properties = TYPE_GAS|PROP_DEADLY;
 	
 	LowPressure = IPL;

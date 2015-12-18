@@ -30,7 +30,7 @@ Element_VINE::Element_VINE()
 	HeatConduct = 65;
 	Description = "Vine, can grow along WOOD.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID;
 	
 	LowPressure = IPL;

@@ -30,7 +30,7 @@ Element_STNE::Element_STNE()
 	HeatConduct = 150;
 	Description = "Heavy particles. Meltable.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_PART;
 	
 	LowPressure = IPL;

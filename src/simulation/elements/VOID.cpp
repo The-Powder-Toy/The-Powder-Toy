@@ -30,7 +30,7 @@ Element_VOID::Element_VOID()
 	HeatConduct = 251;
 	Description = "Hole, will drain away any particles.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID;
 	
 	LowPressure = IPL;

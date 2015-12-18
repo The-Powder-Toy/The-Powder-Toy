@@ -30,7 +30,7 @@ Element_BREC::Element_BREC()
 	HeatConduct = 211;
 	Description = "Broken electronics. Formed from EMP blasts, and when constantly sparked while under pressure, turns to EXOT.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_PART|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_HOT_GLOW;
 	
 	LowPressure = IPL;

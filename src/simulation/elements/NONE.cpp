@@ -30,7 +30,7 @@ Element_NONE::Element_NONE()
 	HeatConduct = 0;
 	Description = "Erases particles.";
 	
-	State = ST_NONE;
+
 	Properties = 0;
 	
 	LowPressure = IPL;

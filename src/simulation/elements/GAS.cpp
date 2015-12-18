@@ -30,7 +30,7 @@ Element_GAS::Element_GAS()
 	HeatConduct = 42;
 	Description = "Diffuses quickly and flammable. Liquefies into OIL under pressure.";
 	
-	State = ST_GAS;
+
 	Properties = TYPE_GAS | PROP_NEUTPASS;
 	
 	LowPressure = IPL;

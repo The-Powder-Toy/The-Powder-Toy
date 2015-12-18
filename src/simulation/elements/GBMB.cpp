@@ -30,7 +30,7 @@ Element_GBMB::Element_GBMB()
 	HeatConduct = 29;
 	Description = "Gravity bomb. Sticks to the first object it touches then produces a strong gravity push.";
 
-	State = ST_NONE;
+
 	Properties = TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
 
 	LowPressure = IPL;

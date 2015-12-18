@@ -30,7 +30,7 @@ Element_LAVA::Element_LAVA()
 	HeatConduct = 60;
 	Description = "Molten lava. Ignites flammable materials. Generated when metals and other materials melt, solidifies when cold.";
 	
-	State = ST_LIQUID;
+
 	Properties = TYPE_LIQUID|PROP_LIFE_DEC;
 	
 	LowPressure = IPL;

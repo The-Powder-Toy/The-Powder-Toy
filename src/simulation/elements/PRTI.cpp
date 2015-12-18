@@ -30,7 +30,7 @@ Element_PRTI::Element_PRTI()
 	HeatConduct = 0;
 	Description = "Portal IN. Particles go in here. Also has temperature dependent channels. (same as WIFI)";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID;
 	
 	LowPressure = IPL;

@@ -30,7 +30,7 @@ Element_FIRE::Element_FIRE()
 	HeatConduct = 88;
 	Description = "Ignites flammable materials. Heats air.";
 	
-	State = ST_GAS;
+
 	Properties = TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL;
 	
 	LowPressure = IPL;

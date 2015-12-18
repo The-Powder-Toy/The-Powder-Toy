@@ -30,7 +30,7 @@ Element_SING::Element_SING()
 	HeatConduct = 70;
 	Description = "Singularity. Creates huge amounts of negative pressure and destroys everything.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_PART|PROP_LIFE_DEC;
 	
 	LowPressure = IPL;

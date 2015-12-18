@@ -30,7 +30,7 @@ Element_BHOL::Element_BHOL()
 	HeatConduct = 255;
 	Description = "Vacuum, sucks in other particles and heats up.";
 	
-	State = ST_NONE;
+
 	Properties = TYPE_SOLID;
 	
 	LowPressure = IPL;

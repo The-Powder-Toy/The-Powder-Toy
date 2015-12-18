@@ -30,7 +30,7 @@ Element_DESL::Element_DESL()
 	HeatConduct = 42;
 	Description = "Liquid diesel. Explodes under high pressure and temperatures.";
 	
-	State = ST_LIQUID;
+
 	Properties = TYPE_LIQUID;
 	
 	LowPressure = IPL;

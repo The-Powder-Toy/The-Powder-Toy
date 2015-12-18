@@ -30,7 +30,7 @@ Element_INST::Element_INST()
 	HeatConduct = 251;
 	Description = "Instantly conducts, PSCN to charge, NSCN to take.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 	
 	LowPressure = IPL;

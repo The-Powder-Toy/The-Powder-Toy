@@ -30,7 +30,7 @@ Element_COAL::Element_COAL()
 	HeatConduct = 200;
 	Description = "Coal, Burns very slowly. Gets red when hot.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID;
 	
 	LowPressure = IPL;

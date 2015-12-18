@@ -30,7 +30,7 @@ Element_GRAV::Element_GRAV()
 	HeatConduct = 70;
 	Description = "Very light dust. Changes colour based on velocity.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_PART;
 	
 	LowPressure = IPL;

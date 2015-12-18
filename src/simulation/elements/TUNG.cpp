@@ -31,7 +31,7 @@ Element_TUNG::Element_TUNG()
 	HeatConduct = 251;
 	Description = "Tungsten. Brittle metal with a very high melting point.";
 
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC;
 
 	LowPressure = IPL;

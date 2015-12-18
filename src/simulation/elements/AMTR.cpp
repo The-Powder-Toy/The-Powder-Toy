@@ -30,7 +30,7 @@ Element_AMTR::Element_AMTR()
 	HeatConduct = 70;
 	Description = "Anti-Matter, destroys a majority of particles.";
 	
-	State = ST_NONE;
+
 	Properties = TYPE_GAS;
 	
 	LowPressure = IPL;

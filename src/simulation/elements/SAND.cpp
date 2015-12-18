@@ -30,7 +30,7 @@ Element_SAND::Element_SAND()
 	HeatConduct = 150;
 	Description = "Sand, Heavy particles. Melts into glass.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_PART;
 	
 	LowPressure = IPL;

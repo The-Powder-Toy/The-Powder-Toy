@@ -30,7 +30,7 @@ Element_PPIP::Element_PPIP()
 	HeatConduct = 0;
 	Description = "Powered version of PIPE, use PSCN/NSCN to Activate/Deactivate.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 	
 	LowPressure = IPL;

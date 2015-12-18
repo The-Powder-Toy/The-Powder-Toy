@@ -30,7 +30,7 @@ Element_MORT::Element_MORT()
 	HeatConduct = 60;
 	Description = "Steam Train.";
 	
-	State = ST_NONE;
+
 	Properties = TYPE_GAS;
 	
 	LowPressure = IPL;

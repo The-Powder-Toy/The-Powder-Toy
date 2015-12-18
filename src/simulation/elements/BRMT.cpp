@@ -30,7 +30,7 @@ Element_BRMT::Element_BRMT()
 	HeatConduct = 211;
 	Description = "Broken metal. Created when iron rusts or when when metals break from pressure.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_PART|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_HOT_GLOW;
 	
 	LowPressure = IPL;

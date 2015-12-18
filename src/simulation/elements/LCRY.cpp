@@ -30,7 +30,7 @@ Element_LCRY::Element_LCRY()
 	HeatConduct = 251;
 	Description = "Liquid Crystal. Changes colour when charged. (PSCN Charges, NSCN Discharges)";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID;
 	
 	LowPressure = IPL;

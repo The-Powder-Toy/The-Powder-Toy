@@ -30,7 +30,7 @@ Element_SWCH::Element_SWCH()
 	HeatConduct = 251;
 	Description = "Only conducts when switched on. (PSCN switches on, NSCN switches off)";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID;
 	
 	LowPressure = IPL;

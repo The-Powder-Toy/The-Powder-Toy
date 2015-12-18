@@ -30,7 +30,7 @@ Element_DCEL::Element_DCEL()
 	HeatConduct = 251;
 	Description = "Decelerator, slows down nearby elements.";
 	
-	State = ST_NONE;
+
 	Properties = TYPE_SOLID;
 	
 	LowPressure = IPL;

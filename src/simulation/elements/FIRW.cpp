@@ -34,7 +34,7 @@ Element_FIRW::Element_FIRW()
 	HeatConduct = 70;
 	Description = "Fireworks! Colorful, set off by fire.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_PART|PROP_LIFE_DEC;
 	
 	LowPressure = IPL;

@@ -30,7 +30,7 @@ Element_DEST::Element_DEST()
 	HeatConduct = 150;
 	Description = "More destructive Bomb, can break through virtually anything.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
 	
 	LowPressure = IPL;

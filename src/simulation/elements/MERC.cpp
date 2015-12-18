@@ -30,7 +30,7 @@ Element_MERC::Element_MERC()
 	HeatConduct = 251;
 	Description = "Mercury. Volume changes with temperature, Conductive.";
 	
-	State = ST_LIQUID;
+
 	Properties = TYPE_LIQUID|PROP_CONDUCTS|PROP_NEUTABSORB|PROP_LIFE_DEC;
 	
 	LowPressure = IPL;

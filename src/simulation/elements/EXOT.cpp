@@ -30,7 +30,7 @@ Element_EXOT::Element_EXOT()
 	HeatConduct = 250;
 	Description = "Exotic matter. Explodes with excess exposure to electrons. Has many other odd reactions.";
 	
-	State = ST_LIQUID;
+
 	Properties = TYPE_LIQUID|PROP_NEUTPASS;
 	
 	LowPressure = IPL;

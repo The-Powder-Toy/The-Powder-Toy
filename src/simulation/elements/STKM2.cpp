@@ -30,7 +30,7 @@ Element_STKM2::Element_STKM2()
 	HeatConduct = 0;
 	Description = "Second stickman. Don't kill him! Control with wasd.";
 	
-	State = ST_NONE;
+
 	Properties = PROP_NOCTYPEDRAW;
 	
 	LowPressure = IPL;

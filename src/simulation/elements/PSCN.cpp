@@ -30,7 +30,7 @@ Element_PSCN::Element_PSCN()
 	HeatConduct = 251;
 	Description = "P-Type Silicon, Will transfer current to any conductor.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC;
 	
 	LowPressure = IPL;

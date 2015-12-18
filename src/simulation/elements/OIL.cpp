@@ -30,7 +30,7 @@ Element_OIL::Element_OIL()
 	HeatConduct = 42;
 	Description = "Flammable, turns into GAS at low pressure or high temperature. Can be formed with NEUT and NITR.";
 	
-	State = ST_LIQUID;
+
 	Properties = TYPE_LIQUID | PROP_NEUTPASS;
 	
 	LowPressure = IPL;

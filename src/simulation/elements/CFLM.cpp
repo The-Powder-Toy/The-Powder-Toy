@@ -35,7 +35,7 @@ Element_CFLM::Element_CFLM()
 	HeatConduct = 88;
 	Description = "Sub-zero flame.";
 	
-	State = ST_GAS;
+
 	Properties = TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL;
 	
 	LowPressure = IPL;

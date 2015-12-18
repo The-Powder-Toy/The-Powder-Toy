@@ -30,7 +30,7 @@ Element_ICEI::Element_ICEI()
 	HeatConduct = 46;
 	Description = "Crushes under pressure. Cools down air.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID|PROP_LIFE_DEC|PROP_NEUTPASS;
 	
 	LowPressure = IPL;

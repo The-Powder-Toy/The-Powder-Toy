@@ -30,7 +30,7 @@ Element_STOR::Element_STOR()
 	HeatConduct = 0;
 	Description = "Captures and stores a single particle. releases when charged with PSCN, also passes to PIPE.";
 	
-	State = ST_NONE;
+
 	Properties = TYPE_SOLID|PROP_NOCTYPEDRAW;
 	
 	LowPressure = IPL;

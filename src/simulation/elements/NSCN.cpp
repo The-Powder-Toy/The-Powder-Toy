@@ -30,7 +30,7 @@ Element_NSCN::Element_NSCN()
 	HeatConduct = 251;
 	Description = "N-Type Silicon, Will not transfer current to P-Type Silicon.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC;
 	
 	LowPressure = IPL;

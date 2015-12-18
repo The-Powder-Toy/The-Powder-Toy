@@ -30,7 +30,7 @@ Element_DMND::Element_DMND()
 	HeatConduct = 186;
 	Description = "Diamond. Indestructible.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID;
 	
 	LowPressure = IPL;

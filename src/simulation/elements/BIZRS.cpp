@@ -30,7 +30,7 @@ Element_BIZRS::Element_BIZRS()
 	HeatConduct = 251;
 	Description = "Bizarre solid.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID;
 	
 	LowPressure = IPL;

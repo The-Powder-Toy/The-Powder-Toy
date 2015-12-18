@@ -30,7 +30,7 @@ Element_METL::Element_METL()
 	HeatConduct = 251;
 	Description = "The basic conductor. Meltable.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_HOT_GLOW;
 	
 	LowPressure = IPL;

@@ -30,7 +30,7 @@ Element_FIGH::Element_FIGH()
 	HeatConduct = 0;
 	Description = "Fighter. Tries to kill stickmen. You must first give it an element to kill him with.";
 	
-	State = ST_NONE;
+
 	Properties = PROP_NOCTYPEDRAW;
 	
 	LowPressure = IPL;

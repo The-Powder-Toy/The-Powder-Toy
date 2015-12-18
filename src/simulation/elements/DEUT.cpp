@@ -30,7 +30,7 @@ Element_DEUT::Element_DEUT()
 	HeatConduct = 251;
 	Description = "Deuterium oxide. Volume changes with temp, radioactive with neutrons.";
 	
-	State = ST_LIQUID;
+
 	Properties = TYPE_LIQUID|PROP_NEUTPASS;
 	
 	LowPressure = IPL;

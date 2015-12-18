@@ -30,7 +30,7 @@ Element_YEST::Element_YEST()
 	HeatConduct = 70;
 	Description = "Yeast, grows when warm (~37C).";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_PART;
 	
 	LowPressure = IPL;

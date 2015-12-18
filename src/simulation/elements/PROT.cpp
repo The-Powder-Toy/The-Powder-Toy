@@ -30,7 +30,7 @@ Element_PROT::Element_PROT()
 	HeatConduct = 61;
 	Description = "Protons. Transfer heat to materials, and removes sparks.";
 	
-	State = ST_GAS;
+
 	Properties = TYPE_ENERGY;
 	
 	LowPressure = IPL;

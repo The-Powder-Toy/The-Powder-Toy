@@ -30,7 +30,7 @@ Element_PLUT::Element_PLUT()
 	HeatConduct = 251;
 	Description = "Heavy particles. Fissile. Generates neutrons under pressure.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_PART|PROP_NEUTPASS|PROP_RADIOACTIVE;
 	
 	LowPressure = IPL;

@@ -30,7 +30,7 @@ Element_146::Element_146()
 	HeatConduct = 40;
 	Description = "Brian 6 S6/B246/3";
 	
-	State = ST_NONE;
+
 	Properties = TYPE_SOLID|PROP_LIFE;
 	
 	LowPressure = IPL;

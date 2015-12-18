@@ -30,7 +30,7 @@ Element_EMP::Element_EMP()
 	HeatConduct = 121;
 	Description = "Electromagnetic pulse. Breaks activated electronics.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 	
 	LowPressure = IPL;

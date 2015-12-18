@@ -30,7 +30,7 @@ Element_BCOL::Element_BCOL()
 	HeatConduct = 150;
 	Description = "Broken Coal. Heavy particles, burns slowly.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_PART;
 	
 	LowPressure = IPL;

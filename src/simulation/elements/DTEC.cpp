@@ -30,7 +30,7 @@ Element_DTEC::Element_DTEC()
 	HeatConduct = 0;
 	Description = "Detector, creates a spark when something with its ctype is nearby.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID;
 	
 	LowPressure = IPL;

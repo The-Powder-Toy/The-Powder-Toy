@@ -30,7 +30,7 @@ Element_WTRV::Element_WTRV()
 	HeatConduct = 48;
 	Description = "Steam. Produced from hot water.";
 	
-	State = ST_GAS;
+
 	Properties = TYPE_GAS;
 	
 	LowPressure = IPL;

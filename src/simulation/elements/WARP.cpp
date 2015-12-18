@@ -30,7 +30,7 @@ Element_WARP::Element_WARP()
 	HeatConduct = 100;
 	Description = "Displaces other elements.";
 	
-	State = ST_GAS;
+
 	Properties = TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL;
 	
 	LowPressure = IPL;

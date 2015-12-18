@@ -30,7 +30,7 @@ Element_DLAY::Element_DLAY()
 	HeatConduct = 0;
 	Description = "Conducts with temperature-dependent delay. (use HEAT/COOL).";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID;
 	
 	LowPressure = IPL;

@@ -30,7 +30,7 @@ Element_PSTS::Element_PSTS()
 	HeatConduct = 29;
 	Description = "Solid form of PSTE.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID;
 	
 	LowPressure = 0.5f;

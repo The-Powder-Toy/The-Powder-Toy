@@ -30,7 +30,7 @@ Element_ACEL::Element_ACEL()
 	HeatConduct = 251;
 	Description = "Accelerator, speeds up nearby elements.";
 	
-	State = ST_NONE;
+
 	Properties = TYPE_SOLID;
 	
 	LowPressure = IPL;

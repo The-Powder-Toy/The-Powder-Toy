@@ -30,7 +30,7 @@ Element_CNCT::Element_CNCT()
 	HeatConduct = 100;
 	Description = "Concrete, stronger than stone.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_PART|PROP_HOT_GLOW;
 	
 	LowPressure = IPL;

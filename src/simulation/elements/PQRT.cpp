@@ -30,7 +30,7 @@ Element_PQRT::Element_PQRT()
 	HeatConduct = 3;
 	Description = "Powdered quartz, broken form of QRTZ.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_PART| PROP_HOT_GLOW;
 	
 	LowPressure = IPL;

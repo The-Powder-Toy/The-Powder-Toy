@@ -30,7 +30,7 @@ Element_NBHL::Element_NBHL()
 	HeatConduct = 186;
 	Description = "Black hole, sucks in particles using gravity. (Requires Newtonian gravity)";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID;
 	
 	LowPressure = IPL;

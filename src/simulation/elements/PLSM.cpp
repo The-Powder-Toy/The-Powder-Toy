@@ -30,7 +30,7 @@ Element_PLSM::Element_PLSM()
 	HeatConduct = 5;
 	Description = "Plasma, extremely hot.";
 	
-	State = ST_NONE;
+
 	Properties = TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL;
 	
 	LowPressure = IPL;

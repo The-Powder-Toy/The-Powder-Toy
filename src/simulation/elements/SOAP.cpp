@@ -30,7 +30,7 @@ Element_SOAP::Element_SOAP()
 	HeatConduct = 29;
 	Description = "Soap. Creates bubbles, washes off deco color, and cures virus.";
 	
-	State = ST_LIQUID;
+
 	Properties = TYPE_LIQUID|PROP_NEUTPENETRATE|PROP_LIFE_DEC;
 	
 	LowPressure = IPL;

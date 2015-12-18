@@ -30,7 +30,7 @@ Element_SALT::Element_SALT()
 	HeatConduct = 110;
 	Description = "Salt, dissolves in water.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_PART;
 	
 	LowPressure = IPL;

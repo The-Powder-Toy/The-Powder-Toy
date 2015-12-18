@@ -30,7 +30,7 @@ Element_FRZW::Element_FRZW()
 	HeatConduct = 29;
 	Description = "Freeze water. Hybrid liquid formed when Freeze powder melts.";
 	
-	State = ST_LIQUID;
+
 	Properties = TYPE_LIQUID | PROP_LIFE_DEC;
 	
 	LowPressure = IPL;

@@ -30,7 +30,7 @@ Element_BRCK::Element_BRCK()
 	HeatConduct = 251;
 	Description = "Brick, breakable building material.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID|PROP_HOT_GLOW;
 	
 	LowPressure = IPL;

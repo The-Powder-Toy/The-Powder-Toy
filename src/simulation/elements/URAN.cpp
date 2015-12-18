@@ -30,7 +30,7 @@ Element_URAN::Element_URAN()
 	HeatConduct = 251;
 	Description = "Heavy particles. Generates heat under pressure.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_PART | PROP_RADIOACTIVE;
 	
 	LowPressure = IPL;

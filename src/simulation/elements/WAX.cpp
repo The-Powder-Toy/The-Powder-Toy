@@ -30,7 +30,7 @@ Element_WAX::Element_WAX()
 	HeatConduct = 44;
 	Description = "Wax. Melts at moderately high temperatures.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID;
 	
 	LowPressure = IPL;

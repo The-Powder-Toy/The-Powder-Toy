@@ -30,7 +30,7 @@ Element_NWHL::Element_NWHL()
 	HeatConduct = 186;
 	Description = "White hole, pushes away other particles with gravity. (Requires Newtonian gravity)";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID;
 	
 	LowPressure = IPL;

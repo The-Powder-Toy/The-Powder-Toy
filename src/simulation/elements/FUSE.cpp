@@ -30,7 +30,7 @@ Element_FUSE::Element_FUSE()
 	HeatConduct = 200;
 	Description = "Burns slowly. Ignites at somewhat high temperatures or with electricity.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID;
 	
 	LowPressure = IPL;

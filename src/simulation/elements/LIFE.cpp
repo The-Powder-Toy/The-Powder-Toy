@@ -34,7 +34,7 @@ Element_LIFE::Element_LIFE()
 	HeatConduct = 40;
 	Description = "Game Of Life! B3/S23";
 	
-	State = ST_NONE;
+
 	Properties = TYPE_SOLID|PROP_LIFE;
 	
 	LowPressure = IPL;

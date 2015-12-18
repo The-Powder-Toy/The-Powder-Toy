@@ -30,7 +30,7 @@ Element_GEL::Element_GEL()
 	HeatConduct = 29;
 	Description = "Gel. A liquid with variable viscosity and heat conductivity.";
 	
-	State = ST_LIQUID;
+
 	Properties = TYPE_LIQUID|PROP_LIFE_DEC|PROP_NEUTPENETRATE;
 	
 	LowPressure = IPL;

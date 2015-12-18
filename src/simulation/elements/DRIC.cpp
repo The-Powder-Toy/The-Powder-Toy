@@ -30,7 +30,7 @@ Element_DRIC::Element_DRIC()
 	HeatConduct = 2;
 	Description = "Dry Ice, formed when CO2 is cooled.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID;
 	
 	LowPressure = IPL;

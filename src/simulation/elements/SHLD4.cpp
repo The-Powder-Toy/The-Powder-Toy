@@ -30,7 +30,7 @@ Element_SHLD4::Element_SHLD4()
 	HeatConduct = 0;
 	Description = "Shield lvl 4.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 	
 	LowPressure = IPL;

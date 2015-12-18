@@ -30,7 +30,7 @@ Element_BTRY::Element_BTRY()
 	HeatConduct = 251;
 	Description = "Generates infinite electricity.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID;
 	
 	LowPressure = IPL;

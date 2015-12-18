@@ -30,7 +30,7 @@ Element_STKM::Element_STKM()
 	HeatConduct = 0;
 	Description = "Stickman. Don't kill him! Control with the arrow keys.";
 	
-	State = ST_NONE;
+
 	Properties = PROP_NOCTYPEDRAW;
 	
 	LowPressure = IPL;

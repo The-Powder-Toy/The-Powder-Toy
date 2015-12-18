@@ -30,7 +30,7 @@ Element_FRAY::Element_FRAY()
 	HeatConduct = 0;
 	Description = "Force Emitter. Pushes or pulls objects based on its temperature. Use like ARAY.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 	
 	LowPressure = IPL;

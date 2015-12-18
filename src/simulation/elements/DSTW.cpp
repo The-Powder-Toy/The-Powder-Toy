@@ -30,7 +30,7 @@ Element_DSTW::Element_DSTW()
 	HeatConduct = 23;
 	Description = "Distilled water, does not conduct electricity.";
 	
-	State = ST_LIQUID;
+
 	Properties = TYPE_LIQUID|PROP_NEUTPASS;
 	
 	LowPressure = IPL;

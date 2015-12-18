@@ -30,7 +30,7 @@ Element_BOMB::Element_BOMB()
 	HeatConduct = 29;
 	Description = "Bomb. Explodes and destroys all surrounding particles when it touches something.";
 	
-	State = ST_NONE;
+
 	Properties = TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC|PROP_SPARKSETTLE;
 	
 	LowPressure = IPL;

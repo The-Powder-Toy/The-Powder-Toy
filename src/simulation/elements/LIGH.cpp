@@ -31,7 +31,7 @@ Element_LIGH::Element_LIGH()
 	HeatConduct = 0;
 	Description = "Lightning. Change the brush size to set the size of the lightning.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID;
 	
 	LowPressure = IPL;

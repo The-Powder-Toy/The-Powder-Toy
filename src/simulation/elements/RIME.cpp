@@ -30,7 +30,7 @@ Element_RIME::Element_RIME()
 	HeatConduct = 100;
 	Description = "Solid, created when steam cools rapidly and goes through sublimation.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID;
 	
 	LowPressure = IPL;

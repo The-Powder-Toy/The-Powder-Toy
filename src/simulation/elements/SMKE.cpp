@@ -30,7 +30,7 @@ Element_SMKE::Element_SMKE()
 	HeatConduct = 88;
 	Description = "Smoke, created by fire.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
 	
 	LowPressure = IPL;

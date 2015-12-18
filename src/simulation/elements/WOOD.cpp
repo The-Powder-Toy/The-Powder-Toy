@@ -30,7 +30,7 @@ Element_WOOD::Element_WOOD()
 	HeatConduct = 164;
 	Description = "Wood, flammable.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID | PROP_NEUTPENETRATE;
 	
 	LowPressure = IPL;

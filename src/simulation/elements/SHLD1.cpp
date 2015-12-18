@@ -30,7 +30,7 @@ Element_SHLD1::Element_SHLD1()
 	HeatConduct = 0;
 	Description = "Shield, spark it to grow.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 	
 	LowPressure = IPL;

@@ -30,7 +30,7 @@ Element_O2::Element_O2()
 	HeatConduct = 70;
 	Description = "Oxygen gas. Ignites easily.";
 	
-	State = ST_GAS;
+
 	Properties = TYPE_GAS;
 	
 	LowPressure = IPL;

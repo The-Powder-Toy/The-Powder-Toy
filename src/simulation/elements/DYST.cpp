@@ -30,7 +30,7 @@ Element_DYST::Element_DYST()
 	HeatConduct = 70;
 	Description = "Dead Yeast.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_PART;
 	
 	LowPressure = IPL;

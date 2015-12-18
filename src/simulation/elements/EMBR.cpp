@@ -30,7 +30,7 @@ Element_EMBR::Element_EMBR()
 	HeatConduct = 29;
 	Description = "Sparks. Formed by explosions.";
 	
-	State = ST_NONE;
+
 	Properties = TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL|PROP_SPARKSETTLE;
 	
 	LowPressure = IPL;

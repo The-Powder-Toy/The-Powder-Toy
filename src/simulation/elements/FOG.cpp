@@ -30,7 +30,7 @@ Element_FOG::Element_FOG()
 	HeatConduct = 100;
 	Description = "Fog, created when an electric current is passed through RIME.";
 	
-	State = ST_GAS;
+
 	Properties = TYPE_GAS|PROP_LIFE_DEC;
 	
 	LowPressure = IPL;

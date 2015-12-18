@@ -30,7 +30,7 @@ Element_LOVE::Element_LOVE()
 	HeatConduct = 40;
 	Description = "Love...";
 	
-	State = ST_GAS;
+
 	Properties = TYPE_SOLID;
 	
 	LowPressure = IPL;

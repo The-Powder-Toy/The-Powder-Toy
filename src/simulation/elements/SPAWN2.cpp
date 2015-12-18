@@ -30,7 +30,7 @@ Element_SPAWN2::Element_SPAWN2()
 	HeatConduct = 0;
 	Description = "STK2 spawn point.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID;
 	
 	LowPressure = IPL;

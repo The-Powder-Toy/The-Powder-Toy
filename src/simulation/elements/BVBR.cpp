@@ -30,7 +30,7 @@ Element_BVBR::Element_BVBR()
 	HeatConduct = 164;
 	Description = "Broken vibranium.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_PART|PROP_LIFE_DEC;
 	
 	LowPressure = IPL;

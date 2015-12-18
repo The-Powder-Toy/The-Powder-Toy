@@ -30,7 +30,7 @@ Element_PSTE::Element_PSTE()
 	HeatConduct = 29;
 	Description = "Colloid, Hardens under pressure.";
 	
-	State = ST_LIQUID;
+
 	Properties = TYPE_LIQUID;
 	
 	LowPressure = IPL;

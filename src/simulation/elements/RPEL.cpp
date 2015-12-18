@@ -30,7 +30,7 @@ Element_RPEL::Element_RPEL()
 	HeatConduct = 0;
 	Description = "Repels or attracts particles based on its temperature.";
 	
-	State = ST_NONE;
+
 	Properties = TYPE_SOLID;
 	
 	LowPressure = IPL;

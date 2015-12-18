@@ -30,7 +30,7 @@ Element_LRBD::Element_LRBD()
 	HeatConduct = 170;
 	Description = "Liquid Rubidium.";
 	
-	State = ST_LIQUID;
+
 	Properties = TYPE_LIQUID|PROP_CONDUCTS|PROP_LIFE_DEC;
 	
 	LowPressure = IPL;

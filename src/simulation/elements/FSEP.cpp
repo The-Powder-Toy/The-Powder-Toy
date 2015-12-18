@@ -30,7 +30,7 @@ Element_FSEP::Element_FSEP()
 	HeatConduct = 70;
 	Description = "Fuse Powder. Burns slowly like FUSE.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_PART;
 	
 	LowPressure = IPL;

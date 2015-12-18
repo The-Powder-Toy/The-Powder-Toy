@@ -30,7 +30,7 @@ Element_MWAX::Element_MWAX()
 	HeatConduct = 44;
 	Description = "Liquid Wax. Hardens into WAX at 45 degrees.";
 	
-	State = ST_LIQUID;
+
 	Properties = TYPE_LIQUID;
 	
 	LowPressure = IPL;

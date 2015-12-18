@@ -30,7 +30,7 @@ Element_ETRD::Element_ETRD()
 	HeatConduct = 251;
 	Description = "Electrode. Creates a surface that allows Plasma arcs. (Use sparingly)";
 	
-	State = ST_NONE;
+
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC;
 	
 	LowPressure = IPL;

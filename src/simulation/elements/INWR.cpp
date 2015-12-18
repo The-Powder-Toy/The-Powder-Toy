@@ -30,7 +30,7 @@ Element_INWR::Element_INWR()
 	HeatConduct = 251;
 	Description = "Insulated Wire. Doesn't conduct to metal or semiconductors.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC;
 	
 	LowPressure = IPL;

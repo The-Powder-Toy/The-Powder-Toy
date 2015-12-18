@@ -30,7 +30,7 @@ Element_TSNS::Element_TSNS()
 	HeatConduct = 0;
 	Description = "Temperature sensor, creates a spark when there's a nearby particle with a greater temperature.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID;
 	
 	LowPressure = IPL;

@@ -30,7 +30,7 @@ Element_WHOL::Element_WHOL()
 	HeatConduct = 255;
 	Description = "Air vent, creates pressure and pushes other particles away.";
 	
-	State = ST_NONE;
+
 	Properties = TYPE_SOLID;
 	
 	LowPressure = IPL;

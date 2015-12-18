@@ -30,7 +30,7 @@ Element_LOLZ::Element_LOLZ()
 	HeatConduct = 40;
 	Description = "Lolz";
 	
-	State = ST_GAS;
+
 	Properties = TYPE_SOLID;
 	
 	LowPressure = IPL;

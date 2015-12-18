@@ -30,7 +30,7 @@ Element_C5::Element_C5()
 	HeatConduct = 88;
 	Description = "Cold explosive, set off by anything cold.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID | PROP_NEUTPENETRATE;
 	
 	LowPressure = IPL;

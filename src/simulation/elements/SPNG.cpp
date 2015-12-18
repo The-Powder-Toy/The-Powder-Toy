@@ -30,7 +30,7 @@ Element_SPNG::Element_SPNG()
 	HeatConduct = 251;
 	Description = "Sponge, absorbs water. Is not a moving solid.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID;
 	
 	LowPressure = IPL;

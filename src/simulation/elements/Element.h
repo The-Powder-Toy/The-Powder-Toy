@@ -36,7 +36,6 @@ public:
 	float Temperature;
 	unsigned char HeatConduct;
 	const char *Description;
-	char State;
 	unsigned int Properties;
 	
 	float LowPressure;

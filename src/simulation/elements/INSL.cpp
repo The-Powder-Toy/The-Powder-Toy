@@ -30,7 +30,7 @@ Element_INSL::Element_INSL()
 	HeatConduct = 0;
 	Description = "Insulator, does not conduct heat and blocks electricity.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID;
 	
 	LowPressure = IPL;

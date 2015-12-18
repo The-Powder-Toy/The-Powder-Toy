@@ -30,7 +30,7 @@ Element_PLEX::Element_PLEX()
 	HeatConduct = 88;
 	Description = "Solid pressure sensitive explosive.";
 	
-	State = ST_SOLID;
+
 	Properties = TYPE_SOLID | PROP_NEUTPENETRATE;
 	
 	LowPressure = IPL;
