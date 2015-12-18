@@ -1963,9 +1963,9 @@ bool Simulation::IsWallBlocking(int x, int y, int type)
 			return true;
 		else if (wall == WL_ALLOWENERGY && !(elements[type].Properties&TYPE_ENERGY))
 			return true;
-		else if (wall == WL_ALLOWLIQUID && elements[type].Falldown!=2)
+		else if (wall == WL_ALLOWLIQUID && !(elements[type].Properties&TYPE_LIQUID))
 			return true;
-		else if (wall == WL_ALLOWSOLID && elements[type].Falldown!=1)
+		else if (wall == WL_ALLOWSOLID && !(elements[type].Properties&TYPE_PART))
 			return true;
 		else if (wall == WL_ALLOWAIR || wall == WL_WALL || wall == WL_WALLELEC)
 			return true;
