@@ -31,7 +31,7 @@ Element_MORT::Element_MORT()
 	Description = "Steam Train.";
 	
 	State = ST_NONE;
-	Properties = TYPE_PART;
+	Properties = TYPE_GAS;
 	
 	LowPressure = IPL;
 	LowPressureTransition = NT;
@@ -48,7 +48,7 @@ Element_MORT::Element_MORT()
 
 //#TPT-Directive ElementHeader Element_MORT static int update(UPDATE_FUNC_ARGS)
 int Element_MORT::update(UPDATE_FUNC_ARGS)
- {
+{
 	sim->create_part(-1, x, y-1, PT_SMKE);
 	return 0;
 }
