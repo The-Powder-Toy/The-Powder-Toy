@@ -37,7 +37,7 @@ SmallKBinomialGenerator::SmallKBinomialGenerator(unsigned int n, float p, unsign
 
 	float *pdf = new float[maxK];
 	// initial values, k=0:
-	float pTerm = std::pow(1.0f-p, n); // the p^k * (1-p)^(n-k) term
+	float pTerm = std::pow(1.0f-p, static_cast<float>(n)); // the p^k * (1-p)^(n-k) term
 	unsigned int coeffN = 1, coeffD = 1; // (N / D) evaluates to the same result as the n!/(k!(n-k)!) term
 	for (unsigned int k=0; k<maxK; k++)
 	{
