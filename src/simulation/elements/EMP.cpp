@@ -43,7 +43,7 @@ Element_EMP::Element_EMP()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_EMP::update;
+	Update = NULL;
 	Graphics = &Element_EMP::graphics;
 }
 
@@ -70,31 +70,6 @@ public:
 		p.temp = restrict_flt(p.temp+getDelta(Probability::randFloat()), MIN_TEMP, MAX_TEMP);
 	}
 };
-
-//#TPT-Directive ElementHeader Element_EMP static int update(UPDATE_FUNC_ARGS)
-int Element_EMP::update(UPDATE_FUNC_ARGS)
-{
-	if (parts[i].life)
-		return 0;
-	for (int rx =- 2; rx <= 2; rx++)
-		for (int ry = -2; ry <= 2; ry++)
-			if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES && (rx || ry))
-			{
-				int r = pmap[y+ry][x+rx];
-				if (!r)
-					continue;
-				if ((r&0xFF)==PT_SPRK && parts[r>>8].life > 0 && parts[r>>8].life < 4)
-				{
-					sim->emp_trigger_count++;
-					sim->emp_decor += 3;
-					if (sim->emp_decor > 40)
-						sim->emp_decor = 40;
-					parts[i].life = 220;
-					return 0;
-				}
-			}
-	return 0;
-}
 
 //#TPT-Directive ElementHeader Element_EMP static int Trigger(Simulation *sim, int triggerCount)
 int Element_EMP::Trigger(Simulation *sim, int triggerCount)

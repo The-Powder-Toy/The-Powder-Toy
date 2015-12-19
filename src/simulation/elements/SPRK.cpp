@@ -239,6 +239,15 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 						if (receiver==PT_NTCT||receiver==PT_PTCT)
 							continue;
 					}
+				case PT_EMP:
+					if (!parts[r>>8].life && parts[i].life > 0 && parts[i].life < 4)
+					{
+						sim->emp_trigger_count++;
+						sim->emp_decor += 3;
+						if (sim->emp_decor > 40)
+							sim->emp_decor = 40;
+						parts[r>>8].life = 220;
+					}
 					break;
 				}
 
