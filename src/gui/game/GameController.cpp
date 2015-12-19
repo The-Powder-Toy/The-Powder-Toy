@@ -892,14 +892,14 @@ void GameController::Update()
 		if (activeTool->GetIdentifier().find("DEFAULT_PT_") != activeTool->GetIdentifier().npos)
 		{
 			int sr = activeTool->GetToolID();
-			if ((sr>0 && sr<PT_NUM && sim->elements[sr].Enabled && sim->elements[sr].Falldown>0) || sr==SPC_AIR || sr == PT_NEUT || sr == PT_PHOT || sr == PT_LIGH)
+			if (sr && sim->IsValidElement(sr))
 				rightSelected = sr;
 		}
 
 		if (!sim->player.spwn)
-			sim->player.elem = rightSelected;
+			Element_STKM::STKM_set_element(sim, &sim->player, rightSelected);
 		if (!sim->player2.spwn)
-			sim->player2.elem = rightSelected;
+			Element_STKM::STKM_set_element(sim, &sim->player2, rightSelected);
 	}
 	if(renderOptions && renderOptions->HasExited)
 	{
