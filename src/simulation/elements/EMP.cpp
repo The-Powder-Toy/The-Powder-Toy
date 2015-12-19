@@ -124,7 +124,7 @@ int Element_EMP::Trigger(Simulation *sim, int triggerCount)
 				{
 					if (rand()%5 < 2)
 						sim->part_change_type(r, rx, ry, PT_BREC);
-					else if (!(rand()%120))
+					else
 						sim->part_change_type(r, rx, ry, PT_NTCT);
 				}
 			}
