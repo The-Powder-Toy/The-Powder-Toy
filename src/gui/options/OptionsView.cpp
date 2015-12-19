@@ -5,10 +5,12 @@
 #else
 	#include <unistd.h>
 #endif
+#ifdef USE_SDL
 #ifdef SDL_INC
 #include "SDL/SDL.h"
 #else
 #include "SDL.h"
+#endif
 #endif
 
 #include "OptionsView.h"
@@ -167,10 +169,12 @@ OptionsView::OptionsView():
 		FullscreenAction(OptionsView * v_){	v = v_;	}
 		virtual void ActionCallback(ui::Checkbox * sender)
 		{
+#ifdef USE_SDL
 #if defined(MACOSX) && !SDL_VERSION_ATLEAST(1, 2, 15)
 			ErrorMessage::Blocking("Error", "fullscreen doesn't work on OS X");
 #else
 			v->c->SetFullscreen(sender->GetChecked());
+#endif
 #endif
 		}
 	};
