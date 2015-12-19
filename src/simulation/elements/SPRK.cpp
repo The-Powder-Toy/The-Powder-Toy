@@ -57,7 +57,6 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 			parts[i].temp = R_TEMP + 273.15f;
 		if (ct<=0 || ct>=PT_NUM || !sim->elements[parts[i].ctype].Enabled)
 			ct = PT_METL;
-		sim->part_change_type(i,x,y,ct);
 		parts[i].ctype = PT_NONE;
 		parts[i].life = 4;
 		if (ct == PT_WATR)
@@ -66,6 +65,7 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 			parts[i].life = 54;
 		else if (ct == PT_SWCH)
 			parts[i].life = 14;
+		sim->part_change_type(i,x,y,ct);
 		return 0;
 	}
 	//Some functions of SPRK based on ctype (what it is on)
@@ -81,13 +81,13 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 	case PT_ETRD:
 		if (parts[i].life==1)
 		{
-			nearp = sim->nearest_part(i, PT_ETRD, -1);
+			nearp = Element_ETRD::nearestSparkablePart(sim, i);
 			if (nearp!=-1 && sim->parts_avg(i, nearp, PT_INSL)!=PT_INSL)
 			{
 				sim->CreateLine(x, y, (int)(parts[nearp].x+0.5f), (int)(parts[nearp].y+0.5f), PT_PLSM);
+				parts[i].life = 20;
 				sim->part_change_type(i,x,y,ct);
 				ct = parts[i].ctype = PT_NONE;
-				parts[i].life = 20;
 				sim->part_change_type(nearp,(int)(parts[nearp].x+0.5f),(int)(parts[nearp].y+0.5f),PT_SPRK);
 				parts[nearp].life = 9;
 				parts[nearp].ctype = PT_ETRD;

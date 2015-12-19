@@ -1851,29 +1851,6 @@ int Simulation::parts_avg(int ci, int ni,int t)
 }
 
 
-int Simulation::nearest_part(int ci, int t, int max_d)
-{
-	int distance = (max_d!=-1)?max_d:MAX_DISTANCE;
-	int ndistance = 0;
-	int id = -1;
-	int i = 0;
-	int cx = (int)parts[ci].x;
-	int cy = (int)parts[ci].y;
-	for (i=0; i<=parts_lastActiveIndex; i++)
-	{
-		if ((parts[i].type==t||(t==-1&&parts[i].type))&&!parts[i].life&&i!=ci)
-		{
-			ndistance = abs(cx-parts[i].x)+abs(cy-parts[i].y);// Faster but less accurate  Older: sqrt(pow(cx-parts[i].x, 2)+pow(cy-parts[i].y, 2));
-			if (ndistance<distance)
-			{
-				distance = ndistance;
-				id = i;
-			}
-		}
-	}
-	return id;
-}
-
 // unused function
 void Simulation::create_arc(int sx, int sy, int dx, int dy, int midpoints, int variance, int type, int flags)
 {
@@ -2686,6 +2663,8 @@ void Simulation::kill_part(int i)//kills particle number i
 	{
 		Element_SOAP::detach(this, i);
 	}
+	else if (parts[i].type == PT_ETRD && parts[i].life == 0)
+		etrd_life0_count--;
 
 	parts[i].type = PT_NONE;
 	parts[i].life = pfree;
@@ -2735,6 +2714,8 @@ void Simulation::part_change_type(int i, int x, int y, int t)//changes the type 
 	}
 	else if (parts[i].type == PT_SOAP)
 		Element_SOAP::detach(this, i);
+	else if (parts[i].type == PT_ETRD && parts[i].life == 0)
+		etrd_life0_count--;
 
 	if (parts[i].type > 0 && parts[i].type < PT_NUM && elementCount[parts[i].type])
 		elementCount[parts[i].type]--;
@@ -2753,6 +2734,8 @@ void Simulation::part_change_type(int i, int x, int y, int t)//changes the type 
 		if (parts[i].tmp >= 0 && parts[i].tmp < MAX_FIGHTERS)
 			Element_STKM::STKM_init_legs(this, &fighters[parts[i].tmp], i);
 	}
+	else if (t == PT_ETRD && parts[i].life == 0)
+		etrd_life0_count++;
 
 	parts[i].type = t;
 	if (elements[t].Properties & TYPE_ENERGY)
@@ -2934,6 +2917,8 @@ int Simulation::create_part(int p, int x, int y, int tv)
 		{
 			Element_SOAP::detach(this, p);
 		}
+		else if (parts[p].type == PT_ETRD && parts[p].life == 0)
+			etrd_life0_count--;
 		i = p;
 	}
 
@@ -3082,6 +3067,9 @@ int Simulation::create_part(int p, int x, int y, int tv)
 				break;
 			case PT_CRMC:
 				parts[i].tmp2 = (rand() % 5);
+				break;
+			case PT_ETRD:
+				etrd_life0_count++;
 				break;
 			case PT_STKM:
 			{
@@ -4820,6 +4808,8 @@ void Simulation::BeforeSim()
 			emp_decor -= emp_decor/25+2;
 		if(emp_decor < 0)
 			emp_decor = 0;
+		etrd_count_valid = false;
+		etrd_life0_count = 0;
 
 		currentTick++;
 
@@ -5083,6 +5073,8 @@ Simulation::Simulation():
 	force_stacking_check(0),
 	emp_decor(0),
 	emp_trigger_count(0),
+	etrd_count_valid(false),
+	etrd_life0_count(0),
 	lightningRecreate(0),
 	gravWallChanged(false),
 	CGOL(0),
