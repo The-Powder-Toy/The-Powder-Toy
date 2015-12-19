@@ -239,6 +239,7 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 						if (receiver==PT_NTCT||receiver==PT_PTCT)
 							continue;
 					}
+					break;
 				case PT_EMP:
 					if (!parts[r>>8].life && parts[i].life > 0 && parts[i].life < 4)
 					{
@@ -248,7 +249,7 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 							sim->emp_decor = 40;
 						parts[r>>8].life = 220;
 					}
-					break;
+					continue;
 				}
 
 				if (pavg == PT_INSL) continue; //Insulation blocks everything past here
