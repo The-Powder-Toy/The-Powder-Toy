@@ -879,9 +879,12 @@ void GameController::Update()
 		gameView->SetSample(gameModel->GetSimulation()->GetSample(pos.X, pos.Y));
 
 	Simulation * sim = gameModel->GetSimulation();
-	sim->UpdateSim();
+	sim->BeforeSim();
 	if (!sim->sys_pause || sim->framerender)
+	{
 		sim->UpdateParticles(0, NPART);
+		sim->AfterSim();
+	}
 
 	//if either STKM or STK2 isn't out, reset it's selected element. Defaults to PT_DUST unless right selected is something else
 	//This won't run if the stickmen dies in a frame, since it respawns instantly
@@ -1459,8 +1462,9 @@ void GameController::ParticleDebug(int mode, int x, int y)
 		sim->debug_currentParticle = i+1;
 	else
 	{
+		sim->Aftersim();
 		sim->framerender = 1;
-		sim->UpdateSim();
+		sim->BeforeSim();
 		sim->framerender = 0;
 		sim->debug_currentParticle = 0;
 	}

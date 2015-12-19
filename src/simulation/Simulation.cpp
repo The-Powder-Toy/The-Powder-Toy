@@ -1912,6 +1912,7 @@ void Simulation::create_arc(int sx, int sy, int dx, int dy, int midpoints, int v
 void Simulation::clear_sim(void)
 {
 	emp_decor = 0;
+	emp_trigger_count = 0;
 	signs.clear();
 	memset(bmap, 0, sizeof(bmap));
 	memset(emap, 0, sizeof(emap));
@@ -4783,7 +4784,7 @@ void Simulation::CheckStacking()
 }
 
 //updates pmap, gol, and some other simulation stuff (but not particles)
-void Simulation::UpdateSim()
+void Simulation::BeforeSim()
 {
 	int i, x, y, t;
 	int lastPartUsed = 0;
@@ -5056,6 +5057,15 @@ void Simulation::UpdateSim()
 	}
 }
 
+void Simulation::AfterSim()
+{
+	if (emp_trigger_count)
+	{
+		Element_EMP::Trigger(this, emp_trigger_count);
+		emp_trigger_count = 0;
+	}
+}
+
 Simulation::~Simulation()
 {
 	delete[] platent;
@@ -5072,6 +5082,7 @@ Simulation::Simulation():
 	ISWIRE(0),
 	force_stacking_check(0),
 	emp_decor(0),
+	emp_trigger_count(0),
 	lightningRecreate(0),
 	gravWallChanged(false),
 	CGOL(0),

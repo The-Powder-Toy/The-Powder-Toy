@@ -1,4 +1,6 @@
 #include "simulation/Elements.h"
+#include "Probability.h"
+
 //#TPT-Directive ElementClass Element_EMP PT_EMP 134
 Element_EMP::Element_EMP()
 {
@@ -45,55 +47,121 @@ Element_EMP::Element_EMP()
 	Graphics = &Element_EMP::graphics;
 }
 
+class DeltaTempGenerator
+{
+protected:
+	float stepSize;
+	unsigned int maxStepCount;
+	Probability::SmallKBinomialGenerator binom;
+public:
+	DeltaTempGenerator(int n, float p, float tempStep) :
+		stepSize(tempStep),
+		// hardcoded limit of 10, to avoid massive lag if someone adds a few zeroes to MAX_TEMP
+		maxStepCount((MAX_TEMP/stepSize < 10) ? ((unsigned int)(MAX_TEMP/stepSize)+1) : 10),
+		binom(n, p, maxStepCount)
+	{}
+	float getDelta(float randFloat)
+	{
+		// randFloat should be a random float between 0 and 1
+		return binom.calc(randFloat) * stepSize;
+	}
+	void apply(Simulation *sim, Particle &p)
+	{
+		p.temp = restrict_flt(p.temp+getDelta(Probability::randFloat()), MIN_TEMP, MAX_TEMP);
+	}
+};
+
 //#TPT-Directive ElementHeader Element_EMP static int update(UPDATE_FUNC_ARGS)
 int Element_EMP::update(UPDATE_FUNC_ARGS)
 {
-	int r,rx,ry,t,n,nx,ny,ntype;
 	if (parts[i].life)
 		return 0;
-	for (rx=-2; rx<3; rx++)
-		for (ry=-2; ry<3; ry++)
+	for (int rx =- 2; rx <= 2; rx++)
+		for (int ry = -2; ry <= 2; ry++)
 			if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES && (rx || ry))
 			{
-				r = pmap[y+ry][x+rx];
+				int r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if ((r&0xFF)==PT_SPRK && parts[r>>8].life>0 && parts[r>>8].life<4)
-					goto ok;
+				if ((r&0xFF)==PT_SPRK && parts[r>>8].life > 0 && parts[r>>8].life < 4)
+				{
+					sim->emp_trigger_count++;
+					sim->emp_decor += 3;
+					if (sim->emp_decor > 40)
+						sim->emp_decor = 40;
+					parts[i].life = 220;
+					return 0;
+				}
 			}
 	return 0;
- ok:
-	parts[i].life=220;
-	sim->emp_decor += 3;
-	if (sim->emp_decor > 40)
-		sim->emp_decor = 40;
-	for (r=0; r<=sim->parts_lastActiveIndex; r++)
+}
+
+//#TPT-Directive ElementHeader Element_EMP static int Trigger(Simulation *sim, int triggerCount)
+int Element_EMP::Trigger(Simulation *sim, int triggerCount)
+{
+	/* Known differences from original one-particle-at-a-time version:
+	 * - SPRK that disappears during a frame (such as SPRK with life==0 on that frame) will not cause destruction around it.
+	 * - SPRK neighbour effects are calculated assuming the SPRK exists and causes destruction around it for the entire frame (so was not turned into BREL/NTCT partway through). This means mass EMP will be more destructive.
+	 * - The chance of a METL particle near sparked semiconductor turning into BRMT within 1 frame is different if triggerCount>2. See comment for prob_breakMETLMore.
+	 * - Probability of centre isElec particle breaking is slightly different (1/48 instead of 1-(1-1/80)*(1-1/120) = just under 1/48).
+	 */
+
+	Particle *parts = sim->parts;
+
+	float prob_changeCenter = Probability::binomial_gte1(triggerCount, 1.0f/48);
+	DeltaTempGenerator temp_center(triggerCount, 1.0f/100, 3000.0f);
+
+	float prob_breakMETL = Probability::binomial_gte1(triggerCount, 1.0f/300);
+	float prob_breakBMTL = Probability::binomial_gte1(triggerCount, 1.0f/160);
+	DeltaTempGenerator temp_metal(triggerCount, 1.0f/280, 3000.0f);
+	/* Probability of breaking from BMTL to BRMT, given that the particle has just broken from METL to BMTL. There is no mathematical reasoning for the numbers used, other than:
+	 * - larger triggerCount should make this more likely, so it should depend on triggerCount instead of being a constant probability
+	 * - triggerCount==1 should make this a chance of 0 (matching previous behaviour)
+	 * - triggerCount==2 should make this a chance of 1/160 (matching previous behaviour)
+	 */
+	// TODO: work out in a more mathematical way what this should be?
+	float prob_breakMETLMore = Probability::binomial_gte1(triggerCount/2, 1.0f/160);
+
+	float prob_randWIFI = Probability::binomial_gte1(triggerCount, 1.0f/8);
+	float prob_breakWIFI = Probability::binomial_gte1(triggerCount, 1.0f/16);
+
+	float prob_breakSWCH = Probability::binomial_gte1(triggerCount, 1.0f/100);
+	DeltaTempGenerator temp_SWCH(triggerCount, 1.0f/100, 2000.0f);
+
+	float prob_breakARAY = Probability::binomial_gte1(triggerCount, 1.0f/60);
+
+	float prob_randDLAY = Probability::binomial_gte1(triggerCount, 1.0f/70);
+
+	for (int r = 0; r <=sim->parts_lastActiveIndex; r++)
 	{
-		t=parts[r].type;
-		rx=parts[r].x;
-		ry=parts[r].y;
+		int t = parts[r].type;
+		int rx = parts[r].x;
+		int ry = parts[r].y;
 		if (t==PT_SPRK || (t==PT_SWCH && parts[r].life!=0 && parts[r].life!=10) || (t==PT_WIRE && parts[r].ctype>0))
 		{
-			int is_elec=0;
+			bool is_elec = false;
 			if (parts[r].ctype==PT_PSCN || parts[r].ctype==PT_NSCN || parts[r].ctype==PT_PTCT ||
 			    parts[r].ctype==PT_NTCT || parts[r].ctype==PT_INST || parts[r].ctype==PT_SWCH || t==PT_WIRE || t==PT_SWCH)
 			{
-				is_elec=1;
-				if (!(rand()%100))
-					parts[r].temp = restrict_flt(parts[r].temp+3000.0f, MIN_TEMP, MAX_TEMP);
-				if (!(rand()%80))
-					sim->part_change_type(r, rx, ry, PT_BREC);
-				else if (!(rand()%120))
-					sim->part_change_type(r, rx, ry, PT_NTCT);
+				is_elec = true;
+				temp_center.apply(sim, parts[r]);
+				if (Probability::randFloat() < prob_changeCenter)
+				{
+					if (rand()%5 < 2)
+						sim->part_change_type(r, rx, ry, PT_BREC);
+					else if (!(rand()%120))
+						sim->part_change_type(r, rx, ry, PT_NTCT);
+				}
 			}
-			for (nx=-2; nx<3; nx++)
-				for (ny=-2; ny<3; ny++)
+			for (int nx =-2; nx <= 3; nx++)
+				for (int ny =-2; ny <= 2; ny++)
 					if (rx+nx>=0 && ry+ny>=0 && rx+nx<XRES && ry+ny<YRES && (rx || ry))
 					{
-						n = pmap[ry+ny][rx+nx];
+						int n = sim->pmap[ry+ny][rx+nx];
 						if (!n)
 							continue;
-						ntype = n&0xFF;
+						int ntype = n&0xFF;
+						n = n >> 8;
 						//Some elements should only be affected by wire/swch, or by a spark on inst/semiconductor
 						//So not affected by spark on metl, watr etc
 						if (is_elec)
@@ -101,30 +169,35 @@ int Element_EMP::update(UPDATE_FUNC_ARGS)
 							switch (ntype)
 							{
 							case PT_METL:
-								if (!(rand()%280))
-									parts[n>>8].temp = restrict_flt(parts[n>>8].temp+3000.0f, MIN_TEMP, MAX_TEMP);
-								if (!(rand()%300))
-									sim->part_change_type(n>>8, rx+nx, ry+ny, PT_BMTL);
-								continue;
+								temp_metal.apply(sim, parts[n]);
+								if (Probability::randFloat() < prob_breakMETL)
+								{
+									sim->part_change_type(n, rx+nx, ry+ny, PT_BMTL);
+									if (Probability::randFloat() < prob_breakMETLMore)
+									{
+										sim->part_change_type(n, rx+nx, ry+ny, PT_BRMT);
+										parts[n].temp = restrict_flt(parts[n].temp+1000.0f, MIN_TEMP, MAX_TEMP);
+									}
+								}
+								break;
 							case PT_BMTL:
-								if (!(rand()%280))
-									parts[n>>8].temp = restrict_flt(parts[n>>8].temp+3000.0f, MIN_TEMP, MAX_TEMP);
-								if (!(rand()%160))
+								temp_metal.apply(sim, parts[n]);
+								if (Probability::randFloat() < prob_breakBMTL)
 								{
-									sim->part_change_type(n>>8, rx+nx, ry+ny, PT_BRMT);
-									parts[n>>8].temp = restrict_flt(parts[n>>8].temp+1000.0f, MIN_TEMP, MAX_TEMP);
+									sim->part_change_type(n, rx+nx, ry+ny, PT_BRMT);
+									parts[n].temp = restrict_flt(parts[n].temp+1000.0f, MIN_TEMP, MAX_TEMP);
 								}
-								continue;
+								break;
 							case PT_WIFI:
-								if (!(rand()%8))
+								if (Probability::randFloat() < prob_randWIFI)
 								{
-									//Randomise channel
-									parts[n>>8].temp = rand()%MAX_TEMP;
+									// Randomize channel
+									parts[n].temp = rand()%MAX_TEMP;
 								}
-								if (!(rand()%16))
+								if (Probability::randFloat() < prob_breakWIFI)
 								{
-									sim->create_part(n>>8, rx+nx, ry+ny, PT_BREC);
-									parts[n>>8].temp = restrict_flt(parts[n>>8].temp+1000.0f, MIN_TEMP, MAX_TEMP);
+									sim->create_part(n, rx+nx, ry+ny, PT_BREC);
+									parts[n].temp = restrict_flt(parts[n].temp+1000.0f, MIN_TEMP, MAX_TEMP);
 								}
 								continue;
 							default:
@@ -134,23 +207,22 @@ int Element_EMP::update(UPDATE_FUNC_ARGS)
 						switch (ntype)
 						{
 						case PT_SWCH:
-							if (!(rand()%100))
-								sim->part_change_type(n>>8, rx+nx, ry+ny, PT_BREC);
-							if (!(rand()%100))
-								parts[n>>8].temp = restrict_flt(parts[n>>8].temp+2000.0f, MIN_TEMP, MAX_TEMP);
+							if (Probability::randFloat() < prob_breakSWCH)
+								sim->part_change_type(n, rx+nx, ry+ny, PT_BREC);
+							temp_SWCH.apply(sim, parts[n]);
 							break;
 						case PT_ARAY:
-							if (!(rand()%60))
+							if (Probability::randFloat() < prob_breakARAY)
 							{
-								sim->create_part(n>>8, rx+nx, ry+ny, PT_BREC);
-								parts[n>>8].temp = restrict_flt(parts[n>>8].temp+1000.0f, MIN_TEMP, MAX_TEMP);
+								sim->create_part(n, rx+nx, ry+ny, PT_BREC);
+								parts[n].temp = restrict_flt(parts[n].temp+1000.0f, MIN_TEMP, MAX_TEMP);
 							}
 							break;
 						case PT_DLAY:
-							if (!(rand()%70))
+							if (Probability::randFloat() < prob_randDLAY)
 							{
-								//Randomise delay
-								parts[n>>8].temp = (rand()%256) + 273.15f;
+								// Randomize delay
+								parts[n].temp = (rand()%256) + 273.15f;
 							}
 							break;
 						default:

@@ -62,6 +62,7 @@ public:
 	int ISWIRE;
 	int force_stacking_check;
 	int emp_decor;
+	int emp_trigger_count;
 	int lightningRecreate;
 	//Stickman
 	playerst player;
@@ -159,7 +160,8 @@ public:
 	void UpdateParticles(int start, int end);
 	void SimulateGoL();
 	void CheckStacking();
-	void UpdateSim();
+	void BeforeSim();
+	void AfterSim();
 	void rotate_area(int area_x, int area_y, int area_w, int area_h, int invert);
 	void clear_area(int area_x, int area_y, int area_w, int area_h);
 
