@@ -54,7 +54,8 @@ int Element_GRVT::update(UPDATE_FUNC_ARGS)
 	if (parts[i].tmp <= -100)
 		parts[i].tmp = -100;
 
-	sim->gravmap[(y/CELL)*(XRES/CELL)+(x/CELL)] = 0.2f*parts[i].tmp;
+	if (sim->grav->gravmask[(y/CELL)*(XRES/CELL)+(x/CELL)])
+		sim->gravmap[(y/CELL)*(XRES/CELL)+(x/CELL)] = 0.2f*parts[i].tmp;
 	return 0;
 }
 

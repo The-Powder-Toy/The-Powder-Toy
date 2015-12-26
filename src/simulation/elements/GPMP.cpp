@@ -61,7 +61,8 @@ int Element_GPMP::update(UPDATE_FUNC_ARGS)
 		if (parts[i].temp<= -256.0+273.15)
 			parts[i].temp = -256.0+273.15;
 
-		sim->gravmap[(y/CELL)*(XRES/CELL)+(x/CELL)] = 0.2f*(parts[i].temp-273.15);
+		if (sim->grav->gravmask[(y/CELL)*(XRES/CELL)+(x/CELL)])
+			sim->gravmap[(y/CELL)*(XRES/CELL)+(x/CELL)] = 0.2f*(parts[i].temp-273.15);
 		for (rx=-2; rx<3; rx++)
 			for (ry=-2; ry<3; ry++)
 				if (BOUNDS_CHECK && (rx || ry))
