@@ -2066,6 +2066,7 @@ void Simulation::init_can_move()
 	can_move[PT_ELEC][PT_EXOT] = 2;
 	can_move[PT_ELEC][PT_GLOW] = 2;
 	can_move[PT_PHOT][PT_LCRY] = 3; //varies according to LCRY life
+	can_move[PT_PHOT][PT_GPMP] = 3;
 
 	can_move[PT_PHOT][PT_BIZR] = 2;
 	can_move[PT_ELEC][PT_BIZR] = 2;
@@ -2108,27 +2109,37 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr)
 	result = can_move[pt][r&0xFF];
 	if (result==3)
 	{
-		if ((pt==PT_PHOT || pt==PT_ELEC) && (r&0xFF)==PT_LCRY)
-			result = (parts[r>>8].life > 5)? 2 : 0;
-		if ((r&0xFF)==PT_INVIS)
+		if ((r&0xFF) == PT_LCRY)
 		{
-			if (pv[ny/CELL][nx/CELL]>4.0f || pv[ny/CELL][nx/CELL]<-4.0f) result = 2;
-			else result = 0;
+			if (pt==PT_PHOT || pt==PT_ELEC)
+				result = (parts[r>>8].life > 5)? 2 : 0;
 		}
-		else if ((r&0xFF)==PT_PVOD)
+		else if ((r&0xFF) == PT_GPMP)
+		{
+			if (pt == PT_PHOT)
+				result = (parts[r>>8].life < 10) ? 2 : 0;
+		}
+		else if ((r&0xFF) == PT_INVIS)
+		{
+			if (pv[ny/CELL][nx/CELL]>4.0f || pv[ny/CELL][nx/CELL]<-4.0f)
+				result = 2;
+			else
+				result = 0;
+		}
+		else if ((r&0xFF) == PT_PVOD)
 		{
 			if (parts[r>>8].life == 10)
 			{
-				if(!parts[r>>8].ctype || (parts[r>>8].ctype==pt)!=(parts[r>>8].tmp&1))
+				if (!parts[r>>8].ctype || (parts[r>>8].ctype==pt)!=(parts[r>>8].tmp&1))
 					result = 1;
 				else
 					result = 0;
 			}
 			else result = 0;
 		}
-		else if ((r&0xFF)==PT_VOID)
+		else if ((r&0xFF) == PT_VOID)
 		{
-			if(!parts[r>>8].ctype || (parts[r>>8].ctype==pt)!=(parts[r>>8].tmp&1))
+			if (!parts[r>>8].ctype || (parts[r>>8].ctype==pt)!=(parts[r>>8].tmp&1))
 				result = 1;
 			else
 				result = 0;
@@ -2252,6 +2263,14 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 
 				create_part(r>>8, x, y, PT_ELEC);
 				return 1;
+			}
+			else if ((r&0xFF) == PT_GPMP)
+			{
+				if (parts[r>>8].life == 0)
+				{
+					part_change_type(i, x, y, PT_GRVT);
+					parts[i].tmp = parts[r>>8].temp - 273.15f;
+				}
 			}
 		}
 		else if (parts[i].type == PT_NEUT)
