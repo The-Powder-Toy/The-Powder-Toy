@@ -1943,7 +1943,7 @@ bool Simulation::IsWallBlocking(int x, int y, int type)
 			return true;
 		else if (wall == WL_ALLOWLIQUID && !(elements[type].Properties&TYPE_LIQUID))
 			return true;
-		else if (wall == WL_ALLOWSOLID && !(elements[type].Properties&TYPE_PART))
+		else if (wall == WL_ALLOWPOWDER && !(elements[type].Properties&TYPE_PART))
 			return true;
 		else if (wall == WL_ALLOWAIR || wall == WL_WALL || wall == WL_WALLELEC)
 			return true;
@@ -2154,17 +2154,7 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr)
 	}
 	if (bmap[ny/CELL][nx/CELL])
 	{
-		if (bmap[ny/CELL][nx/CELL]==WL_ALLOWGAS && !(elements[pt].Properties&TYPE_GAS))// && elements[pt].Falldown!=0 && pt!=PT_FIRE && pt!=PT_SMKE)
-			return 0;
-		if (bmap[ny/CELL][nx/CELL]==WL_ALLOWENERGY && !(elements[pt].Properties&TYPE_ENERGY))// && elements[pt].Falldown!=0 && pt!=PT_FIRE && pt!=PT_SMKE)
-			return 0;
-		if (bmap[ny/CELL][nx/CELL]==WL_ALLOWLIQUID && elements[pt].Falldown!=2)
-			return 0;
-		if (bmap[ny/CELL][nx/CELL]==WL_ALLOWSOLID && elements[pt].Falldown!=1)
-			return 0;
-		if (bmap[ny/CELL][nx/CELL]==WL_ALLOWAIR || bmap[ny/CELL][nx/CELL]==WL_WALL || bmap[ny/CELL][nx/CELL]==WL_WALLELEC)
-			return 0;
-		if (bmap[ny/CELL][nx/CELL]==WL_EWALL && !emap[ny/CELL][nx/CELL])
+		if (IsWallBlocking(nx, ny, pt))
 			return 0;
 		if (bmap[ny/CELL][nx/CELL]==WL_EHOLE && !emap[ny/CELL][nx/CELL] && !(elements[pt].Properties&TYPE_SOLID) && !(elements[r&0xFF].Properties&TYPE_SOLID))
 			return 2;
@@ -3416,8 +3406,8 @@ void Simulation::UpdateParticles(int start, int end)
 			          bmap[y/CELL][x/CELL]==WL_WALLELEC ||
 			          bmap[y/CELL][x/CELL]==WL_ALLOWAIR ||
 			          (bmap[y/CELL][x/CELL]==WL_DESTROYALL) ||
-			          (bmap[y/CELL][x/CELL]==WL_ALLOWLIQUID && elements[t].Falldown!=2) ||
-			          (bmap[y/CELL][x/CELL]==WL_ALLOWSOLID && elements[t].Falldown!=1) ||
+			          (bmap[y/CELL][x/CELL]==WL_ALLOWLIQUID && !(elements[t].Properties&TYPE_LIQUID)) ||
+			          (bmap[y/CELL][x/CELL]==WL_ALLOWPOWDER && !(elements[t].Properties&TYPE_PART)) ||
 			          (bmap[y/CELL][x/CELL]==WL_ALLOWGAS && !(elements[t].Properties&TYPE_GAS)) || //&& elements[t].Falldown!=0 && parts[i].type!=PT_FIRE && parts[i].type!=PT_SMKE && parts[i].type!=PT_CFLM) ||
 			          (bmap[y/CELL][x/CELL]==WL_ALLOWENERGY && !(elements[t].Properties&TYPE_ENERGY)) ||
 					  (bmap[y/CELL][x/CELL]==WL_DETECT && (t==PT_METL || t==PT_SPRK)) ||

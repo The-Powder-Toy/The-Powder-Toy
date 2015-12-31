@@ -48,7 +48,7 @@
 #define WL_DESTROYALL	7
 #define WL_WALL			8
 #define WL_ALLOWAIR		9
-#define WL_ALLOWSOLID	10
+#define WL_ALLOWPOWDER	10
 #define WL_ALLOWALLELEC	11
 #define WL_EHOLE		12
 #define WL_ALLOWGAS		13

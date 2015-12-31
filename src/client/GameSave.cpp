@@ -791,7 +791,7 @@ void GameSave::readOPS(char * data, int dataLength)
 				if (blockMap[y][x]==O_WL_ALLOWAIR)
 					blockMap[y][x]=WL_ALLOWAIR;
 				if (blockMap[y][x]==O_WL_ALLOWSOLID)
-					blockMap[y][x]=WL_ALLOWSOLID;
+					blockMap[y][x]=WL_ALLOWPOWDER;
 				if (blockMap[y][x]==O_WL_ALLOWALLELEC)
 					blockMap[y][x]=WL_ALLOWALLELEC;
 				if (blockMap[y][x]==O_WL_EHOLE)
@@ -1312,7 +1312,7 @@ void GameSave::readPSv(char * data, int dataLength)
 				else if (blockMap[y][x]==9)
 					blockMap[y][x]=WL_ALLOWAIR;
 				else if (blockMap[y][x]==10)
-					blockMap[y][x]=WL_ALLOWSOLID;
+					blockMap[y][x]=WL_ALLOWPOWDER;
 				else if (blockMap[y][x]==11)
 					blockMap[y][x]=WL_ALLOWALLELEC;
 				else if (blockMap[y][x]==12)
@@ -1346,7 +1346,7 @@ void GameSave::readPSv(char * data, int dataLength)
 					else if (blockMap[y][x]==O_WL_ALLOWAIR)
 						blockMap[y][x]=WL_ALLOWAIR;
 					else if (blockMap[y][x]==O_WL_ALLOWSOLID)
-						blockMap[y][x]=WL_ALLOWSOLID;
+						blockMap[y][x]=WL_ALLOWPOWDER;
 					else if (blockMap[y][x]==O_WL_ALLOWALLELEC)
 						blockMap[y][x]=WL_ALLOWALLELEC;
 					else if (blockMap[y][x]==O_WL_EHOLE)
