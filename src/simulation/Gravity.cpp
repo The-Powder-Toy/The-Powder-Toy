@@ -308,6 +308,7 @@ void Gravity::update_grav()
 	{
 		th_gravchanged = 1;
 
+		membwand(th_gravmap, gravmask, (XRES/CELL)*(YRES/CELL)*sizeof(float), (XRES/CELL)*(YRES/CELL)*sizeof(unsigned));
 		//copy gravmap into padded gravmap array
 		for (y=0; y<YRES/CELL; y++)
 		{
@@ -385,6 +386,7 @@ void Gravity::update_grav(void)
 	memset(th_gravx, 0, (XRES/CELL)*(YRES/CELL)*sizeof(float));
 #endif
 	th_gravchanged = 1;
+	membwand(th_gravmap, gravmask, (XRES/CELL)*(YRES/CELL)*sizeof(float), (XRES/CELL)*(YRES/CELL)*sizeof(unsigned));
 	for (i = 0; i < YRES / CELL; i++) {
 		for (j = 0; j < XRES / CELL; j++) {
 #ifdef GRAV_DIFF
