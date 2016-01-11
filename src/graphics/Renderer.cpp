@@ -1412,10 +1412,6 @@ void Renderer::render_parts()
 						firer /= 5;
 						fireg /= 5;
 						fireb /= 5;
-						if (colr + colg + colg < 10)
-							colr = colg = colb = 20;
-						if (firer + fireg + fireg < 35)
-							firer = fireg = fireb = 65;
 					}
 				}
 
