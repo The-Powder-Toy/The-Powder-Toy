@@ -679,6 +679,14 @@ void GameView::NotifyActiveToolsChanged(GameModel * sender)
 	}
 	//need to do this for all tools every time just in case it wasn't caught if you weren't in the menu a tool was changed to
 	c->ActiveToolChanged(0, sender->GetActiveTool(0));
+	if (sender->GetRenderer()->findingElement)
+	{
+		Tool *active = sender->GetActiveTool(0);
+		if (active->GetIdentifier().find("_PT_") == active->GetIdentifier().npos)
+			ren->findingElement = 0;
+		else
+			ren->findingElement = sender->GetActiveTool(0)->GetToolID()%256;
+	}
 	c->ActiveToolChanged(1, sender->GetActiveTool(1));
 	c->ActiveToolChanged(2, sender->GetActiveTool(2));
 	c->ActiveToolChanged(3, sender->GetActiveTool(3));
@@ -1436,7 +1444,16 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		else
 			c->FrameStep();
 #else
-		c->FrameStep();
+		if (ctrl)
+		{
+			Tool *active = c->GetActiveTool(0);
+			if (active->GetIdentifier().find("_PT_") == active->GetIdentifier().npos || ren->findingElement == active->GetToolID())
+				ren->findingElement = 0;
+			else
+				ren->findingElement = active->GetToolID()%256;
+		}
+		else
+			c->FrameStep();
 #endif
 		break;
 	case 'g':
@@ -2398,6 +2415,8 @@ void GameView::OnDraw()
 			fpsInfo << " [SPECIFIC DELETE]";
 		if (ren->GetGridSize())
 			fpsInfo << " [GRID: " << ren->GetGridSize() << "]";
+		if (ren->findingElement)
+			fpsInfo << " [FIND]";
 
 		int textWidth = Graphics::textwidth((char*)fpsInfo.str().c_str());
 		int alpha = 255-introText*5;

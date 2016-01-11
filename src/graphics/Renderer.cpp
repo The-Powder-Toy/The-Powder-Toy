@@ -735,6 +735,12 @@ void Renderer::DrawWalls()
 				pixel pc = PIXPACK(sim->wtypes[wt].colour);
 				pixel gc = PIXPACK(sim->wtypes[wt].eglow);
 
+				if (findingElement)
+				{
+					pc = PIXRGB(PIXR(pc)/10,PIXG(pc)/10,PIXB(pc)/10);
+					gc = PIXRGB(PIXR(gc)/10,PIXG(gc)/10,PIXB(gc)/10);
+				}
+
 				switch (sim->wtypes[wt].drawstyle)
 				{
 				case 0:
@@ -1058,7 +1064,7 @@ void Renderer::render_fire()
 #ifndef OGLR
 	if(!(render_mode & FIREMODE))
 		return;
-	int i,j,x,y,r,g,b;
+	int i,j,x,y,r,g,b,a;
 	for (j=0; j<YRES/CELL; j++)
 		for (i=0; i<XRES/CELL; i++)
 		{
@@ -1068,7 +1074,12 @@ void Renderer::render_fire()
 			if (r || g || b)
 				for (y=-CELL; y<2*CELL; y++)
 					for (x=-CELL; x<2*CELL; x++)
-						addpixel(i*CELL+x, j*CELL+y, r, g, b, fire_alpha[y+CELL][x+CELL]);
+					{
+						a = fire_alpha[y+CELL][x+CELL];
+						if (findingElement)
+							a /= 2;
+						addpixel(i*CELL+x, j*CELL+y, r, g, b, a);
+					}
 			r *= 8;
 			g *= 8;
 			b *= 8;
@@ -1386,6 +1397,28 @@ void Renderer::render_parts()
 					}
 				}
 
+				if (findingElement)
+				{
+					if (findingElement == parts[i].type)
+					{
+						colr = firer = 255;
+						colg = fireg = colb = fireb = 0;
+					}
+					else
+					{
+						colr /= 10;
+						colg /= 10;
+						colb /= 10;
+						firer /= 5;
+						fireg /= 5;
+						fireb /= 5;
+						if (colr + colg + colg < 10)
+							colr = colg = colb = 20;
+						if (firer + fireg + fireg < 35)
+							firer = fireg = fireb = 65;
+					}
+				}
+
 				if (colour_mode & COLOUR_GRAD)
 				{
 					float frequency = 0.05;
@@ -1446,7 +1479,12 @@ void Renderer::render_parts()
 						drawtext(mousePos.X-8-2*(sim->parts[i].life<100)-2*(sim->parts[i].life<10), mousePos.Y-12, buff, 255, 255, 255, 255);
 					}
 
-					if (colour_mode!=COLOUR_HEAT)
+					if (findingElement == t)
+					{
+						colr = 255;
+						colg = colb = 0;
+					}
+					else if (colour_mode != COLOUR_HEAT)
 					{
 						if (cplayer->elem<PT_NUM && cplayer->elem > 0)
 						{
@@ -1470,6 +1508,7 @@ void Renderer::render_parts()
 							colb = 0xFF;
 						}
 					}
+
 #ifdef OGLR
 					glColor4f(((float)colr)/255.0f, ((float)colg)/255.0f, ((float)colb)/255.0f, 1.0f);
 					glBegin(GL_LINE_STRIP);
@@ -1513,7 +1552,18 @@ void Renderer::render_parts()
 					glVertex2f(cplayer->legs[12], cplayer->legs[13]);
 					glEnd();
 #else
-					if (t==PT_STKM2)
+					if (findingElement && findingElement == t)
+					{
+						legr = 255;
+						legg = legb = 0;
+					}
+					else if (colour_mode==COLOUR_HEAT)
+					{
+						legr = colr;
+						legg = colg;
+						legb = colb;
+					}
+					else if (t==PT_STKM2)
 					{
 						legr = 100;
 						legg = 100;
@@ -1526,11 +1576,14 @@ void Renderer::render_parts()
 						legb = 255;
 					}
 
-					if (colour_mode==COLOUR_HEAT)
+					if (findingElement && findingElement != t)
 					{
-						legr = colr;
-						legg = colg;
-						legb = colb;
+						colr /= 10;
+						colg /= 10;
+						colb /= 10;
+						legr /= 10;
+						legg /= 10;
+						legb /= 10;
 					}
 
 					//head
@@ -2359,6 +2412,8 @@ void Renderer::draw_air()
 					c  = PIXRGB(r, g, b);
 				}
 			}
+			if (findingElement)
+				c = PIXRGB(PIXR(c)/10,PIXG(c)/10,PIXB(c)/10);
 			for (j=0; j<CELL; j++)//draws the colors
 				for (i=0; i<CELL; i++)
 					vid[(x*CELL+i) + (y*CELL+j)*(VIDXRES)] = c;
@@ -2484,6 +2539,7 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 	blackDecorations(false),
 	debugLines(false),
 	sampleColor(0xFFFFFFFF),
+	findingElement(0),
 	mousePos(0, 0),
 	zoomWindowPosition(0, 0),
 	zoomScopePosition(0, 0),
