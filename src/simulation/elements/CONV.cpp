@@ -85,7 +85,7 @@ int Element_CONV::update(UPDATE_FUNC_ARGS)
 						continue;
 					if((r&0xFF)!=PT_CONV && (r&0xFF)!=PT_DMND && (r&0xFF)!=ctype)
 					{
-						sim->create_part(r>>8, x+rx, y+ry, parts[i].ctype);
+						sim->create_part(r>>8, x+rx, y+ry, parts[i].ctype&0xFF, parts[i].ctype>>8);
 					}
 				}
 	}

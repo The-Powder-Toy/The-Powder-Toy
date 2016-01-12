@@ -895,7 +895,14 @@ int LuaScriptInterface::simulation_partCreate(lua_State * l)
 		lua_pushinteger(l, -1);
 		return 1;
 	}
-	lua_pushinteger(l, luacon_sim->create_part(newID, lua_tointeger(l, 2), lua_tointeger(l, 3), lua_tointeger(l, 4)));
+	int type = lua_tointeger(l, 4);
+	int v = -1;
+	if (type>>8)
+	{
+		v = type>>8;
+		type = type&0xFF;
+	}
+	lua_pushinteger(l, luacon_sim->create_part(newID, lua_tointeger(l, 2), lua_tointeger(l, 3), type, v));
 	return 1;
 }
 

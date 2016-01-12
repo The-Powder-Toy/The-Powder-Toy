@@ -72,10 +72,10 @@ int Element_CLNE::update(UPDATE_FUNC_ARGS)
 				}
 	}
 	else {
-		if (parts[i].ctype==PT_LIFE) sim->create_part(-1, x+rand()%3-1, y+rand()%3-1, parts[i].ctype|(parts[i].tmp<<8));
+		if (parts[i].ctype==PT_LIFE) sim->create_part(-1, x+rand()%3-1, y+rand()%3-1, PT_LIFE, parts[i].tmp);
 		else if (parts[i].ctype!=PT_LIGH || (rand()%30)==0)
 		{
-			int np = sim->create_part(-1, x+rand()%3-1, y+rand()%3-1, parts[i].ctype);
+			int np = sim->create_part(-1, x+rand()%3-1, y+rand()%3-1, parts[i].ctype&0xFF);
 			if (np>=0)
 			{
 				if (parts[i].ctype==PT_LAVA && parts[i].tmp>0 && parts[i].tmp<PT_NUM && sim->elements[parts[i].tmp].HighTemperatureTransition==PT_LAVA)

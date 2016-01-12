@@ -105,7 +105,7 @@ int Element_PCLN::update(UPDATE_FUNC_ARGS)
 				for (ry = -1; ry < 2; ry++)
 					if (rx || ry)
 					{
-						int r = sim->create_part(-1, x + rx, y + ry, parts[i].ctype);
+						int r = sim->create_part(-1, x + rx, y + ry, PT_PHOT);
 						if (r != -1)
 						{
 							parts[r].vx = rx * 3;
@@ -121,11 +121,11 @@ int Element_PCLN::update(UPDATE_FUNC_ARGS)
 		else if (parts[i].ctype==PT_LIFE)//create life a different way
 			for (rx=-1; rx<2; rx++)
 				for (ry=-1; ry<2; ry++)
-					sim->create_part(-1, x+rx, y+ry, parts[i].ctype|(parts[i].tmp<<8));
+					sim->create_part(-1, x+rx, y+ry, PT_LIFE, parts[i].tmp);
 
 		else if (parts[i].ctype!=PT_LIGH || (rand()%30)==0)
 		{
-			int np = sim->create_part(-1, x+rand()%3-1, y+rand()%3-1, parts[i].ctype);
+			int np = sim->create_part(-1, x+rand()%3-1, y+rand()%3-1, parts[i].ctype&0xFF);
 			if (np>=0)
 			{
 				if (parts[i].ctype==PT_LAVA && parts[i].tmp>0 && parts[i].tmp<PT_NUM && sim->elements[parts[i].tmp].HighTemperatureTransition==PT_LAVA)

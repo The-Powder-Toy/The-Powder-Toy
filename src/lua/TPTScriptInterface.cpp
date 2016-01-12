@@ -452,7 +452,13 @@ AnyType TPTScriptInterface::tptS_create(std::deque<std::string> * words)
 	if(tempPoint.X<0 || tempPoint.Y<0 || tempPoint.Y >= YRES || tempPoint.X >= XRES)
 				throw GeneralException("Invalid position");
 
-	int returnValue = sim->create_part(-1, tempPoint.X, tempPoint.Y, type);
+	int v = -1;
+	if (type>>8)
+	{
+		v = type>>8;
+		type = type&0xFF;
+	}
+	int returnValue = sim->create_part(-1, tempPoint.X, tempPoint.Y, type, v);
 
 	return NumberType(returnValue);
 }

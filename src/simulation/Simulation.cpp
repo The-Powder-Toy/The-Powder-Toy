@@ -576,7 +576,7 @@ int Simulation::FloodINST(int x, int y, int fullc, int cm)
 		// fill span
 		for (x=x1; x<=x2; x++)
 		{
-			if (create_part(-1, x, y, fullc)>=0)
+			if (create_part(-1, x, y, c, fullc>>8)>=0)
 				created_something = 1;
 		}
 
@@ -1440,12 +1440,12 @@ int Simulation::CreatePartFlags(int x, int y, int c, int flags)
 		{
 			delete_part(x, y);
 			if (c!=0)
-				create_part(-2, x, y, c);
+				create_part(-2, x, y, c&0xFF, c>>8);
 		}
 	}
 	//normal draw
 	else
-		if (create_part(-2, x, y, c) == -1)
+		if (create_part(-2, x, y, c&0xFF, c>>8) == -1)
 			return 1;
 	return 0;
 }
@@ -1509,6 +1509,8 @@ void Simulation::CreateLine(int x1, int y1, int x2, int y2, int c)
 	bool reverseXY = abs(y2-y1) > abs(x2-x1);
 	int x, y, dx, dy, sy;
 	float e, de;
+	int v = c>>8;
+	c = c&0xFF;
 	if (reverseXY)
 	{
 		y = x1;
@@ -1539,9 +1541,9 @@ void Simulation::CreateLine(int x1, int y1, int x2, int y2, int c)
 	for (x=x1; x<=x2; x++)
 	{
 		if (reverseXY)
-			create_part(-1, y, x, c);
+			create_part(-1, y, x, c, v);
 		else
-			create_part(-1, x, y, c);
+			create_part(-1, x, y, c, v);
 		e += de;
 		if (e >= 0.5f)
 		{
@@ -1549,9 +1551,9 @@ void Simulation::CreateLine(int x1, int y1, int x2, int y2, int c)
 			if ((y1<y2) ? (y<=y2) : (y>=y2))
 			{
 				if (reverseXY)
-					create_part(-1, y, x, c);
+					create_part(-1, y, x, c, v);
 				else
-					create_part(-1, x, y, c);
+					create_part(-1, x, y, c, v);
 			}
 			e -= 1.0f;
 		}
@@ -2763,19 +2765,16 @@ void Simulation::part_change_type(int i, int x, int y, int t)//changes the type 
 
 //the function for creating a particle, use p=-1 for creating a new particle, -2 is from a brush, or a particle number to replace a particle.
 //tv = Type (8 bits) + Var (24 bits), var is usually 0
-int Simulation::create_part(int p, int x, int y, int tv)
+int Simulation::create_part(int p, int x, int y, int t, int v)
 {
 	int i;
-
-	int t = tv & 0xFF;
-	int v = (tv >> 8) & 0xFFFFFF;
 
 	if (x<0 || y<0 || x>=XRES || y>=YRES)
 		return -1;
 	if (t>=0 && t<PT_NUM && !elements[t].Enabled)
 		return -1;
 
-	if (tv == SPC_AIR)
+	if (t == SPC_AIR)
 	{
 		pv[y/CELL][x/CELL] += 0.03f;
 		if (y+CELL<YRES)
@@ -2788,8 +2787,7 @@ int Simulation::create_part(int p, int x, int y, int tv)
 		}
 		return -1;
 	}
-
-	if (t==PT_SPRK)
+	else if (t==PT_SPRK)
 	{
 		int type = pmap[y][x]&0xFF;
 		int index = pmap[y][x]>>8;
@@ -2818,10 +2816,11 @@ int Simulation::create_part(int p, int x, int y, int tv)
 			parts[index].temp = parts[index].temp+10.0f;
 		return index;
 	}
-	if (t==PT_SPAWN&&elementCount[PT_SPAWN])
+	else if (t==PT_SPAWN && elementCount[PT_SPAWN])
 		return -1;
-	if (t==PT_SPAWN2&&elementCount[PT_SPAWN2])
+	else if (t==PT_SPAWN2 && elementCount[PT_SPAWN2])
 		return -1;
+
 	if (p==-1)//creating from anything but brush
 	{
 		// If there is a particle, only allow creation if the new particle can occupy the same space as the existing particle
@@ -4701,7 +4700,7 @@ void Simulation::SimulateGoL()
 						}
 					}
 					if (creategol<0xFF)
-						create_part(-1, nx, ny, PT_LIFE|((creategol-1)<<8));
+						create_part(-1, nx, ny, PT_LIFE, creategol-1);
 				}
 				else if (grule[golnum][neighbors-1]==0 || grule[golnum][neighbors-1]==2)//subtract 1 because it counted itself
 				{
