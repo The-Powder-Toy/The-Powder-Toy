@@ -1776,12 +1776,15 @@ RequestBroker::Request * Client::GetCommentsAsync(int saveID, int start, int cou
 					json::Number tempUserID = commentsArray[j]["UserID"];
 					json::String tempUsername = commentsArray[j]["Username"];
 					json::String tempFormattedUsername = commentsArray[j]["FormattedUsername"];
+					std::string formattedUsername = tempFormattedUsername.Value();
+					if (formattedUsername == "jacobot" || formattedUsername == "boxmein")
+						formattedUsername = "\bt" + formattedUsername;
 					json::String tempComment = commentsArray[j]["Text"];
 					commentArray->push_back(
 								new SaveComment(
 									tempUserID.Value(),
 									tempUsername.Value(),
-									tempFormattedUsername.Value(),
+									formattedUsername,
 									tempComment.Value()
 									)
 								);
