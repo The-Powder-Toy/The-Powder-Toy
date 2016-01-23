@@ -26,9 +26,9 @@ Element_ETHF::Element_ETHF()
 
 	Weight = 1;
 
-	Temperature = R_TEMP+2.0f	+273.15f;
+	Temperature = R_TEMP+2.0f	+355f;
 	HeatConduct = 42;
-	Description = "etynol fumes";
+	Description = "ethanol fumes";
 
 	Properties = TYPE_GAS | PROP_NEUTPASS;
 
