@@ -231,20 +231,20 @@ def findLibs(env, conf):
 		if not conf.CheckLib('SDLmain'):
 			FatalError("libSDLmain not found or not installed")
 
-	if platform == "Darwin":
-		if not conf.CheckFramework("SDL"):
-			FatalError("SDL framework not found or not installed")
-	elif not GetOption('renderer'):
-		if platform != "Darwin":
-			#Look for SDL
-			if not conf.CheckLib("SDL"):
+	if not GetOption('renderer'):
+		#Look for SDL
+		if not conf.CheckLib("SDL"):
+			if platform == "Darwin":
+				if not conf.CheckFramework("SDL"):
+					FatalError("SDL framework not found or not installed")
+			else:
 				FatalError("SDL development library not found or not installed")
-			if platform == "Linux" or compilePlatform == "Linux":
-				try:
-					env.ParseConfig('sdl-config --cflags')
-					env.ParseConfig('sdl-config --libs')
-				except:
-					pass
+		if platform == "Linux" or compilePlatform == "Linux":
+			try:
+				env.ParseConfig('sdl-config --cflags')
+				env.ParseConfig('sdl-config --libs')
+			except:
+				pass
 
 	#look for SDL.h
 	if not GetOption('renderer') and not conf.CheckCHeader('SDL.h'):
