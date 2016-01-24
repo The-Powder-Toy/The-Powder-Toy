@@ -239,7 +239,7 @@ def findLibs(env, conf):
 					FatalError("SDL framework not found or not installed")
 			else:
 				FatalError("SDL development library not found or not installed")
-		if platform == "Linux" or compilePlatform == "Linux":
+		if platform == "Linux" or (compilePlatform == "Linux" and platform != "Darwin"):
 			try:
 				env.ParseConfig('sdl-config --cflags')
 				env.ParseConfig('sdl-config --libs')
