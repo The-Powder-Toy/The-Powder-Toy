@@ -237,13 +237,15 @@ def findLibs(env, conf):
 
 	if not GetOption('renderer'):
 		#Look for SDL
+		runSdlConfig = platform == "Linux" or compilePlatform == "Linux"
 		if not conf.CheckLib("SDL"):
 			if platform == "Darwin":
 				if not conf.CheckFramework("SDL"):
 					FatalError("SDL framework not found or not installed")
+				runSdlConfig = False
 			else:
 				FatalError("SDL development library not found or not installed")
-		if platform == "Linux" or compilePlatform == "Linux":
+		if runSdlConfig:
 			try:
 				env.ParseConfig('sdl-config --cflags')
 				if GetOption('static'):
