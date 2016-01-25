@@ -19,12 +19,12 @@ Element_ETHL::Element_ETHL()
 	HotAir = 0.0f	* CFDS;
 	Falldown = 2;
 
-	Flammable = 0;
+	Flammable = 100;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 5;
 
-	Weight = 30;
+	Weight = 28;
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 42;
