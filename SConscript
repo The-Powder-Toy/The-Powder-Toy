@@ -127,6 +127,10 @@ if tool:
 	env['STRIP'] = tool+'strip'
 	if os.path.isdir("/usr/{0}/bin".format(tool[:-1])):
 		env['ENV']['PATH'] = "/usr/{0}/bin:{1}".format(tool[:-1], os.environ['PATH'])
+	if platform == "Darwin":
+		sdlconfigpath = "/usr/lib/apple/SDKs/MacOSX10.5.sdk/usr/bin"
+		if os.path.isdir(sdlconfigpath):
+			env['ENV']['PATH'] = "{0}:{1}".format(sdlconfigpath, env['ENV']['PATH'])
 
 #copy environment variables because scons doesn't do this by default
 for var in ["CC","CXX","LD","LIBPATH"]:
@@ -231,20 +235,25 @@ def findLibs(env, conf):
 		if not conf.CheckLib('SDLmain'):
 			FatalError("libSDLmain not found or not installed")
 
-	if platform == "Darwin":
-		if not conf.CheckFramework("SDL"):
-			FatalError("SDL framework not found or not installed")
-	elif not GetOption('renderer'):
-		if platform != "Darwin":
-			#Look for SDL
-			if not conf.CheckLib("SDL"):
+	if not GetOption('renderer'):
+		#Look for SDL
+		runSdlConfig = platform == "Linux" or compilePlatform == "Linux"
+		if not conf.CheckLib("SDL"):
+			if platform == "Darwin":
+				if not conf.CheckFramework("SDL"):
+					FatalError("SDL framework not found or not installed")
+				runSdlConfig = False
+			else:
 				FatalError("SDL development library not found or not installed")
-			if platform == "Linux" or compilePlatform == "Linux":
-				try:
-					env.ParseConfig('sdl-config --cflags')
+		if runSdlConfig:
+			try:
+				env.ParseConfig('sdl-config --cflags')
+				if GetOption('static'):
+					env.ParseConfig('sdl-config --static-libs')
+				else:
 					env.ParseConfig('sdl-config --libs')
-				except:
-					pass
+			except:
+				pass
 
 	#look for SDL.h
 	if not GetOption('renderer') and not conf.CheckCHeader('SDL.h'):

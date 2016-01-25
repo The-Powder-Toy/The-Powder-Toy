@@ -60,10 +60,6 @@ extern "C"
 #else
 #include <dirent.h>
 #endif
-#ifdef MACOSX
-char * readUserPreferences();
-void writeUserPreferences(const char * prefData);
-#endif
 }
 
 
@@ -88,15 +84,9 @@ Client::Client():
 	}
 
 	//Read config
-#ifdef MACOSX
-	char * prefData = readUserPreferences();
-	std::stringstream configFile(prefData);
-	free(prefData);
-#else
 	std::ifstream configFile;
 	configFile.open("powder.pref", std::ios::binary);
-#endif
-	if(configFile)
+	if (configFile)
 	{
 		int fsize = configFile.tellg();
 		configFile.seekg(0, std::ios::end);
@@ -126,9 +116,7 @@ Client::Client():
 				std::cerr << "Error: Could not read data from prefs: " << e.what() << std::endl;
 			}
 		}
-#ifndef MACOSX
 		configFile.close();
-#endif
 		firstRun = false;
 	}
 	else
@@ -930,12 +918,8 @@ void Client::RemoveListener(ClientListener * listener)
 
 void Client::WritePrefs()
 {
-#ifdef MACOSX
-	std::stringstream configFile;
-#else
 	std::ofstream configFile;
 	configFile.open("powder.pref", std::ios::trunc);
-#endif
 	
 	if (configFile)
 	{
@@ -958,15 +942,7 @@ void Client::WritePrefs()
 		}
 		json::Writer::Write(configDocument, configFile);
 
-#ifdef MACOSX
-		std::string prefString = configFile.str();
-
-		char prefData[prefString.length()+1];
-		std::strcpy(prefData, prefString.c_str());
-		writeUserPreferences(prefData);
-#else
 		configFile.close();
-#endif
 	}
 }
 
