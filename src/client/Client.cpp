@@ -51,7 +51,7 @@
 #include "requestbroker/APIResultParser.h"
 
 #include "cajun/reader.h"
-#include "cajun/writer.h"
+#include "json/json.h"
 
 extern "C"
 {
@@ -88,33 +88,30 @@ Client::Client():
 	configFile.open("powder.pref", std::ios::binary);
 	if (configFile)
 	{
-		int fsize = configFile.tellg();
-		configFile.seekg(0, std::ios::end);
-		fsize = configFile.tellg() - (std::streampos)fsize;
-		configFile.seekg(0, std::ios::beg);
-		if(fsize)
+		try
 		{
-			try
-			{
-				json::Reader::Read(configDocument, configFile);
-				authUser.ID = ((json::Number)(configDocument["User"]["ID"])).Value();
-				authUser.SessionID = ((json::String)(configDocument["User"]["SessionID"])).Value();
-				authUser.SessionKey = ((json::String)(configDocument["User"]["SessionKey"])).Value();
-				authUser.Username = ((json::String)(configDocument["User"]["Username"])).Value();
+			preferences.clear();
+			configFile >> preferences;
+			int ID = preferences["User"]["ID"].asInt();
+			std::string Username = preferences["User"]["Username"].asString();
+			std::string SessionID = preferences["User"]["SessionID"].asString();
+			std::string SessionKey = preferences["User"]["SessionKey"].asString();
+			std::string Elevation = preferences["User"]["Elevation"].asString();
 
-				std::string userElevation = ((json::String)(configDocument["User"]["Elevation"])).Value();
-				if(userElevation == "Admin")
-					authUser.UserElevation = User::ElevationAdmin;
-				else if(userElevation == "Mod")
-					authUser.UserElevation = User::ElevationModerator;
-				else
-					authUser.UserElevation = User::ElevationNone;
-			}
-			catch (json::Exception &e)
-			{
-				authUser = User(0, "");
-				std::cerr << "Error: Could not read data from prefs: " << e.what() << std::endl;
-			}
+			authUser.ID = ID;
+			authUser.Username = Username;
+			authUser.SessionID = SessionID;
+			authUser.SessionKey = SessionKey;
+			if (Elevation == "Admin")
+				authUser.UserElevation = User::ElevationAdmin;
+			else if (Elevation == "Mod")
+				authUser.UserElevation = User::ElevationModerator;
+			else
+				authUser.UserElevation = User::ElevationNone;
+		}
+		catch (std::exception &e)
+		{
+			
 		}
 		configFile.close();
 		firstRun = false;
@@ -125,7 +122,7 @@ Client::Client():
 
 void Client::Initialise(std::string proxyString)
 {
-	if (GetPrefBool("version.update", false)==true)
+	if (GetPrefBool("version.update", false))
 	{
 		SetPref("version.update", false);
 		update_finish();
@@ -925,22 +922,22 @@ void Client::WritePrefs()
 	{
 		if (authUser.ID)
 		{
-			configDocument["User"]["ID"] = json::Number(authUser.ID);
-			configDocument["User"]["SessionID"] = json::String(authUser.SessionID);
-			configDocument["User"]["SessionKey"] = json::String(authUser.SessionKey);
-			configDocument["User"]["Username"] = json::String(authUser.Username);
-			if(authUser.UserElevation == User::ElevationAdmin)
-				configDocument["User"]["Elevation"] = json::String("Admin");
-			else if(authUser.UserElevation == User::ElevationModerator)
-				configDocument["User"]["Elevation"] = json::String("Mod");
+			preferences["User"]["ID"] = authUser.ID;
+			preferences["User"]["SessionID"] = authUser.SessionID;
+			preferences["User"]["SessionKey"] = authUser.SessionKey;
+			preferences["User"]["Username"] = authUser.Username;
+			if (authUser.UserElevation == User::ElevationAdmin)
+				preferences["User"]["Elevation"] = "Admin";
+			else if (authUser.UserElevation == User::ElevationModerator)
+				preferences["User"]["Elevation"] = "Mod";
 			else
-				configDocument["User"]["Elevation"] = json::String("None");
+				preferences["User"]["Elevation"] = "None";
 		}
 		else
 		{
-			configDocument["User"] = json::Null();
+			preferences["User"] = Json::nullValue;
 		}
-		json::Writer::Write(configDocument, configFile);
+		configFile << preferences;
 
 		configFile.close();
 	}
@@ -2018,396 +2015,220 @@ std::list<std::string> * Client::AddTag(int saveID, std::string tag)
 	return tags;
 }
 
-std::vector<std::string> Client::explodePropertyString(std::string property)
-{
-	std::vector<std::string> stringArray;
-	std::string current = "";
-	for (std::string::iterator iter = property.begin(); iter != property.end(); ++iter) {
-		if (*iter == '.') {
-			if (current.length() > 0) {
-				stringArray.push_back(current);
-				current = "";
-			}
-		} else {
-			current += *iter;
-		}
-	}
-	if(current.length() > 0)
-		stringArray.push_back(current);
-	return stringArray;
-}
+// powder.pref preference getting / setting functions
 
-std::string Client::GetPrefString(std::string property, std::string defaultValue)
+// Recursively go down the json to get the setting we want
+Json::Value Client::GetPref(Json::Value root, std::string prop, Json::Value defaultValue)
 {
 	try
 	{
-		json::String value = GetPref(property);
-		return value.Value();
+		int dot = prop.find_last_of('.');
+		if (dot == prop.npos)
+			return root.get(prop, defaultValue);
+		else
+			return GetPref(root[prop.substr(0, dot)], prop.substr(dot+1), defaultValue);
 	}
-	catch (json::Exception & e)
+	catch (std::exception & e)
 	{
-
+		return defaultValue;
 	}
-	return defaultValue;
 }
 
-double Client::GetPrefNumber(std::string property, double defaultValue)
+std::string Client::GetPrefString(std::string prop, std::string defaultValue)
 {
 	try
 	{
-		json::Number value = GetPref(property);
-		return value.Value();
+		return GetPref(preferences, prop, defaultValue).asString();
 	}
-	catch (json::Exception & e)
+	catch (std::exception & e)
 	{
-
+		return defaultValue;
 	}
-	return defaultValue;
 }
 
-int Client::GetPrefInteger(std::string property, int defaultValue)
+double Client::GetPrefNumber(std::string prop, double defaultValue)
 {
 	try
 	{
-		std::stringstream defHexInt;
-		defHexInt << std::hex << defaultValue;
-
-		std::string hexString = GetPrefString(property, defHexInt.str());
-		int finalValue = defaultValue;
-
-		std::stringstream hexInt;
-		hexInt << hexString;
-
-		hexInt >> std::hex >> finalValue;
-
-		return finalValue;
+		return GetPref(preferences, prop, defaultValue).asDouble();
 	}
-	catch (json::Exception & e)
+	catch (std::exception & e)
 	{
-
+		return defaultValue;
 	}
-	catch(std::exception & e)
-	{
-
-	}
-	return defaultValue;
 }
 
-unsigned int Client::GetPrefUInteger(std::string property, unsigned int defaultValue)
+int Client::GetPrefInteger(std::string prop, int defaultValue)
 {
 	try
 	{
-		std::stringstream defHexInt;
-		defHexInt << std::hex << defaultValue;
-
-		std::string hexString = GetPrefString(property, defHexInt.str());
-		unsigned int finalValue = defaultValue;
-
-		std::stringstream hexInt;
-		hexInt << hexString;
-
-		hexInt >> std::hex >> finalValue;
-
-		return finalValue;
+		return GetPref(preferences, prop, defaultValue).asInt();
 	}
-	catch (json::Exception & e)
+	catch (std::exception & e)
 	{
-
+		return defaultValue;
 	}
-	catch(std::exception & e)
-	{
-
-	}
-	return defaultValue;
 }
 
-std::vector<std::string> Client::GetPrefStringArray(std::string property)
+unsigned int Client::GetPrefUInteger(std::string prop, unsigned int defaultValue)
 {
 	try
 	{
-		json::Array value = GetPref(property);
-		std::vector<std::string> strArray;
-		for(json::Array::iterator iter = value.Begin(); iter != value.End(); ++iter)
-		{
-			try
-			{
-				json::String cValue = *iter;
-				strArray.push_back(cValue.Value());
-			}
-			catch (json::Exception & e)
-			{
-				
-			}
-		}
-		return strArray;
+		return GetPref(preferences, prop, defaultValue).asUInt();
 	}
-	catch (json::Exception & e)
+	catch (std::exception & e)
+	{
+		return defaultValue;
+	}
+}
+
+bool Client::GetPrefBool(std::string prop, bool defaultValue)
+{
+	try
+	{
+		return GetPref(preferences, prop, defaultValue).asBool();
+	}
+	catch (std::exception & e)
+	{
+		return defaultValue;
+	}
+}
+
+std::vector<std::string> Client::GetPrefStringArray(std::string prop)
+{
+	try
+	{
+		std::vector<std::string> ret;
+		Json::Value arr = GetPref(preferences, prop);
+		for (int i = 0; i < arr.size(); i++)
+			ret.push_back(arr[i].asString());
+		return ret;
+	}
+	catch (std::exception & e)
 	{
 
 	}
 	return std::vector<std::string>();
 }
 
-std::vector<double> Client::GetPrefNumberArray(std::string property)
+std::vector<double> Client::GetPrefNumberArray(std::string prop)
 {
 	try
 	{
-		json::Array value = GetPref(property);
-		std::vector<double> strArray;
-		for(json::Array::iterator iter = value.Begin(); iter != value.End(); ++iter)
-		{
-			try
-			{
-				json::Number cValue = *iter;
-				strArray.push_back(cValue.Value());
-			}
-			catch (json::Exception & e)
-			{
-				
-			}
-		}
-		return strArray;
+		std::vector<double> ret;
+		Json::Value arr = GetPref(preferences, prop);
+		for (int i = 0; i < arr.size(); i++)
+			ret.push_back(arr[i].asDouble());
+		return ret;
 	}
-	catch (json::Exception & e)
+	catch (std::exception & e)
 	{
 
 	}
 	return std::vector<double>();
 }
 
-std::vector<int> Client::GetPrefIntegerArray(std::string property)
+std::vector<int> Client::GetPrefIntegerArray(std::string prop)
 {
 	try
 	{
-		json::Array value = GetPref(property);
-		std::vector<int> intArray;
-		for(json::Array::iterator iter = value.Begin(); iter != value.End(); ++iter)
-		{
-			try
-			{
-				json::String cValue = *iter;
-				int finalValue = 0;
-		
-				std::string hexString = cValue.Value();
-				std::stringstream hexInt;
-				hexInt << std::hex << hexString;
-				hexInt >> finalValue;
-
-				intArray.push_back(finalValue);
-			}
-			catch (json::Exception & e)
-			{
-
-			}
-		}
-		return intArray;
+		std::vector<int> ret;
+		Json::Value arr = GetPref(preferences, prop);
+		for (int i = 0; i < arr.size(); i++)
+			ret.push_back(arr[i].asInt());
+		return ret;
 	}
-	catch (json::Exception & e)
+	catch (std::exception & e)
 	{
 
 	}
 	return std::vector<int>();
 }
 
-std::vector<unsigned int> Client::GetPrefUIntegerArray(std::string property)
+std::vector<unsigned int> Client::GetPrefUIntegerArray(std::string prop)
 {
 	try
 	{
-		json::Array value = GetPref(property);
-		std::vector<unsigned int> intArray;
-		for(json::Array::iterator iter = value.Begin(); iter != value.End(); ++iter)
-		{
-			try
-			{
-				json::String cValue = *iter;
-				unsigned int finalValue = 0;
-		
-				std::string hexString = cValue.Value();
-				std::stringstream hexInt;
-				hexInt << std::hex << hexString;
-				hexInt >> finalValue;
-
-				intArray.push_back(finalValue);
-			}
-			catch (json::Exception & e)
-			{
-
-			}
-		}
-		return intArray;
+		std::vector<unsigned int> ret;
+		Json::Value arr = GetPref(preferences, prop);
+		for (int i = 0; i < arr.size(); i++)
+			ret.push_back(arr[i].asUInt());
+		return ret;
 	}
-	catch (json::Exception & e)
+	catch (std::exception & e)
 	{
 
 	}
 	return std::vector<unsigned int>();
 }
 
-std::vector<bool> Client::GetPrefBoolArray(std::string property)
+std::vector<bool> Client::GetPrefBoolArray(std::string prop)
 {
 	try
 	{
-		json::Array value = GetPref(property);
-		std::vector<bool> strArray;
-		for(json::Array::iterator iter = value.Begin(); iter != value.End(); ++iter)
-		{
-			try
-			{
-				json::Boolean cValue = *iter;
-				strArray.push_back(cValue.Value());
-			}
-			catch (json::Exception & e)
-			{
-				
-			}
-		}
-		return strArray;
+		std::vector<bool> ret;
+		Json::Value arr = GetPref(preferences, prop);
+		for (int i = 0; i < arr.size(); i++)
+			ret.push_back(arr[i].asBool());
+		return ret;
 	}
-	catch (json::Exception & e)
+	catch (std::exception & e)
 	{
 
 	}
 	return std::vector<bool>();
 }
 
-bool Client::GetPrefBool(std::string property, bool defaultValue)
+// Helper preference setting function.
+// To actually save any changes to preferences, we need to directly do preferences[property] = thing
+// any other way will set the value of a copy of preferences, not the original
+// This function will recursively go through and create an object with the property we wanted set,
+// and return it to SetPref to do the actual setting
+Json::Value Client::SetPrefHelper(Json::Value root, std::string prop, Json::Value value)
+{
+	int dot = prop.find(".");
+	if (dot == prop.npos)
+		root[prop] = value;
+	else
+	{
+		Json::Value toSet = GetPref(root, prop.substr(0, dot));
+		toSet = SetPrefHelper(toSet, prop.substr(dot+1), value);
+		root[prop.substr(0, dot)] = toSet;
+	}
+	return root;
+}
+
+void Client::SetPref(std::string prop, Json::Value value)
 {
 	try
 	{
-		json::Boolean value = GetPref(property);
-		return value.Value();
+		int dot = prop.find(".");
+		if (dot == prop.npos)
+			preferences[prop] = value;
+		else
+		{
+			preferences[prop.substr(0, dot)] = SetPrefHelper(preferences[prop.substr(0, dot)], prop.substr(dot+1), value);
+		}
 	}
-	catch (json::Exception & e)
+	catch (std::exception & e)
 	{
 
 	}
-	return defaultValue;
 }
 
-void Client::SetPref(std::string property, std::string value)
+void Client::SetPref(std::string prop, std::vector<Json::Value> value)
 {
-	json::UnknownElement stringValue = json::String(value);
-	SetPref(property, stringValue);
-}
-
-void Client::SetPref(std::string property, double value)
-{
-	json::UnknownElement numberValue = json::Number(value);
-	SetPref(property, numberValue);
-}
-
-void Client::SetPref(std::string property, int value)
-{
-	std::stringstream hexInt;
-	hexInt << std::hex << value;
-	json::UnknownElement intValue = json::String(hexInt.str());
-	SetPref(property, intValue);
-}
-
-void Client::SetPref(std::string property, unsigned int value)
-{
-	std::stringstream hexInt;
-	hexInt << std::hex << value;
-	json::UnknownElement intValue = json::String(hexInt.str());
-	SetPref(property, intValue);
-}
-
-void Client::SetPref(std::string property, std::vector<std::string> value)
-{
-	json::Array newArray;
-	for(std::vector<std::string>::iterator iter = value.begin(); iter != value.end(); ++iter)
+	try
 	{
-		newArray.Insert(json::String(*iter));
+		Json::Value arr;
+		for (int i = 0; i < value.size(); i++)
+		{
+			arr.append(value[i]);
+		}
+		SetPref(prop, arr);
 	}
-	json::UnknownElement newArrayValue = newArray;
-	SetPref(property, newArrayValue);
-}
-
-void Client::SetPref(std::string property, std::vector<double> value)
-{
-	json::Array newArray;
-	for(std::vector<double>::iterator iter = value.begin(); iter != value.end(); ++iter)
+	catch (std::exception & e)
 	{
-		newArray.Insert(json::Number(*iter));
+
 	}
-	json::UnknownElement newArrayValue = newArray;
-	SetPref(property, newArrayValue);
-}
-
-void Client::SetPref(std::string property, std::vector<bool> value)
-{
-	json::Array newArray;
-	for(std::vector<bool>::iterator iter = value.begin(); iter != value.end(); ++iter)
-	{
-		newArray.Insert(json::Boolean(*iter));
-	}
-	json::UnknownElement newArrayValue = newArray;
-	SetPref(property, newArrayValue);
-}
-
-void Client::SetPref(std::string property, std::vector<int> value)
-{
-	json::Array newArray;
-	for(std::vector<int>::iterator iter = value.begin(); iter != value.end(); ++iter)
-	{
-		std::stringstream hexInt;
-		hexInt << std::hex << *iter;
-
-		newArray.Insert(json::String(hexInt.str()));
-	}
-	json::UnknownElement newArrayValue = newArray;
-	SetPref(property, newArrayValue);
-}
-
-void Client::SetPref(std::string property, std::vector<unsigned int> value)
-{
-	json::Array newArray;
-	for(std::vector<unsigned int>::iterator iter = value.begin(); iter != value.end(); ++iter)
-	{
-		std::stringstream hexInt;
-		hexInt << std::hex << *iter;
-
-		newArray.Insert(json::String(hexInt.str()));
-	}
-	json::UnknownElement newArrayValue = newArray;
-	SetPref(property, newArrayValue);
-}
-
-void Client::SetPref(std::string property, bool value)
-{
-	json::UnknownElement boolValue = json::Boolean(value);
-	SetPref(property, boolValue);
-}
-
-json::UnknownElement Client::GetPref(std::string property)
-{
-	std::vector<std::string> pTokens = Client::explodePropertyString(property);
-	const json::UnknownElement & configDocumentCopy = configDocument;
-	json::UnknownElement currentRef = configDocumentCopy;
-	for(std::vector<std::string>::iterator iter = pTokens.begin(); iter != pTokens.end(); ++iter)
-	{
-		currentRef = ((const json::UnknownElement &)currentRef)[*iter];
-	}
-	return currentRef;
-}
-
-void Client::setPrefR(std::deque<std::string> tokens, json::UnknownElement & element, json::UnknownElement & value)
-{
-	if(tokens.size())
-	{
-		std::string token = tokens.front();
-		tokens.pop_front();
-		setPrefR(tokens, element[token], value);
-	}
-	else
-		element = value;
-}
-
-void Client::SetPref(std::string property, json::UnknownElement & value)
-{
-	std::vector<std::string> pTokens = Client::explodePropertyString(property);
-	std::deque<std::string> dTokens(pTokens.begin(), pTokens.end());
-	std::string token = dTokens.front();
-	dTokens.pop_front();
-	setPrefR(dTokens, configDocument[token], value);
 }

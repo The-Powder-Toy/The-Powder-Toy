@@ -11,7 +11,7 @@
 #include "User.h"
 #include "UserInfo.h"
 
-#include "cajun/elements.h"
+#include "json/json.h"
 
 #include "requestbroker/RequestBroker.h"
 
@@ -76,14 +76,15 @@ private:
 	int activeThumbRequestTimes[IMGCONNS];
 	int activeThumbRequestCompleteTimes[IMGCONNS];
 	std::string activeThumbRequestIDs[IMGCONNS];
-	static std::vector<std::string> explodePropertyString(std::string property);
 	void notifyUpdateAvailable();
 	void notifyAuthUserChanged();
 	void notifyMessageOfTheDay();
 	void notifyNewNotification(std::pair<std::string, std::string> notification);
 
-	//Config file handle
-	json::Object configDocument;
+	// internal preferences handling
+	Json::Value preferences;
+	Json::Value GetPref(Json::Value root, std::string prop, Json::Value defaultValue = Json::nullValue);
+	Json::Value SetPrefHelper(Json::Value root, std::string prop, Json::Value value);
 public:
 
 	std::vector<ClientListener*> listeners;
@@ -171,34 +172,22 @@ public:
 	bool CheckUpdate(void *updateRequest, bool checkSession);
 	void Shutdown();
 
-	//Force flushing preferences to file on disk.
+	// preferences functions
 	void WritePrefs();
 
-	std::string GetPrefString(std::string property, std::string defaultValue);
-	double GetPrefNumber(std::string property, double defaultValue);
-	int GetPrefInteger(std::string property, int defaultValue);
-	unsigned int GetPrefUInteger(std::string property, unsigned int defaultValue);
-	std::vector<std::string> GetPrefStringArray(std::string property);
-	std::vector<double> GetPrefNumberArray(std::string property);
-	std::vector<int> GetPrefIntegerArray(std::string property);
-	std::vector<unsigned int> GetPrefUIntegerArray(std::string property);
-	std::vector<bool> GetPrefBoolArray(std::string property);
-	bool GetPrefBool(std::string property, bool defaultValue);
+	std::string GetPrefString(std::string prop, std::string defaultValue);
+	double GetPrefNumber(std::string prop, double defaultValue);
+	int GetPrefInteger(std::string prop, int defaultValue);
+	unsigned int GetPrefUInteger(std::string prop, unsigned int defaultValue);
+	bool GetPrefBool(std::string prop, bool defaultValue);
+	std::vector<std::string> GetPrefStringArray(std::string prop);
+	std::vector<double> GetPrefNumberArray(std::string prop);
+	std::vector<int> GetPrefIntegerArray(std::string prop);
+	std::vector<unsigned int> GetPrefUIntegerArray(std::string prop);
+	std::vector<bool> GetPrefBoolArray(std::string prop);
 
-	void SetPref(std::string property, std::string value);
-	void SetPref(std::string property, double value);
-	void SetPref(std::string property, int value);
-	void SetPref(std::string property, unsigned int value);
-	void SetPref(std::string property, std::vector<std::string> value);
-	void SetPref(std::string property, std::vector<double> value);
-	void SetPref(std::string property, std::vector<int> value);
-	void SetPref(std::string property, std::vector<unsigned int> value);
-	void SetPref(std::string property, std::vector<bool> value);
-	void SetPref(std::string property, bool value);
-
-	json::UnknownElement GetPref(std::string property);
-	void setPrefR(std::deque<std::string> tokens, json::UnknownElement & element, json::UnknownElement & value);
-	void SetPref(std::string property, json::UnknownElement & value);
+	void SetPref(std::string prop, Json::Value value);
+	void SetPref(std::string property, std::vector<Json::Value> value);
 };
 
 #endif // CLIENT_H

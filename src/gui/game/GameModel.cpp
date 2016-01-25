@@ -53,30 +53,24 @@ GameModel::GameModel():
 	ren->SetColourMode(0);
 
 	//Load config into renderer
-	try
+	ren->SetColourMode(Client::Ref().GetPrefUInteger("Renderer.ColourMode", 0));
+
+	tempArray = Client::Ref().GetPrefUIntegerArray("Renderer.DisplayModes");
+	if(tempArray.size())
 	{
-		ren->SetColourMode(Client::Ref().GetPrefUInteger("Renderer.ColourMode", 0));
-
-		vector<unsigned int> tempArray = Client::Ref().GetPrefUIntegerArray("Renderer.DisplayModes");
-		if(tempArray.size())
-		{
-			std::vector<unsigned int> displayModes(tempArray.begin(), tempArray.end());
-			ren->SetDisplayMode(displayModes);
-		}
-
-		tempArray = Client::Ref().GetPrefUIntegerArray("Renderer.RenderModes");
-		if(tempArray.size())
-		{
-			std::vector<unsigned int> renderModes(tempArray.begin(), tempArray.end());
-			ren->SetRenderMode(renderModes);
-		}
-
-		ren->gravityFieldEnabled = Client::Ref().GetPrefBool("Renderer.GravityField", false);
-		ren->decorations_enable = Client::Ref().GetPrefBool("Renderer.Decorations", true);
+		std::vector<unsigned int> displayModes(tempArray.begin(), tempArray.end());
+		ren->SetDisplayMode(displayModes);
 	}
-	catch(json::Exception & e)
+
+	tempArray = Client::Ref().GetPrefUIntegerArray("Renderer.RenderModes");
+	if(tempArray.size())
 	{
+		std::vector<unsigned int> renderModes(tempArray.begin(), tempArray.end());
+		ren->SetRenderMode(renderModes);
 	}
+
+	ren->gravityFieldEnabled = Client::Ref().GetPrefBool("Renderer.GravityField", false);
+	ren->decorations_enable = Client::Ref().GetPrefBool("Renderer.Decorations", true);
 
 	//Load config into simulation
 	edgeMode = Client::Ref().GetPrefInteger("Simulation.EdgeMode", 0);
@@ -143,10 +137,10 @@ GameModel::~GameModel()
 	Client::Ref().SetPref("Renderer.ColourMode", ren->GetColourMode());
 
 	std::vector<unsigned int> displayModes = ren->GetDisplayMode();
-	Client::Ref().SetPref("Renderer.DisplayModes", std::vector<unsigned int>(displayModes.begin(), displayModes.end()));
+	Client::Ref().SetPref("Renderer.DisplayModes", std::vector<Json::Value>(displayModes.begin(), displayModes.end()));
 
 	std::vector<unsigned int> renderModes = ren->GetRenderMode();
-	Client::Ref().SetPref("Renderer.RenderModes", std::vector<unsigned int>(renderModes.begin(), renderModes.end()));
+	Client::Ref().SetPref("Renderer.RenderModes", std::vector<Json::Value>(renderModes.begin(), renderModes.end()));
 
 	Client::Ref().SetPref("Renderer.GravityField", (bool)ren->gravityFieldEnabled);
 	Client::Ref().SetPref("Renderer.Decorations", (bool)ren->decorations_enable);
