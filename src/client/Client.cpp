@@ -684,23 +684,20 @@ RequestStatus Client::ParseServerReturn(char *result, int status, bool json)
 	if (json)
 	{
 		std::istringstream datastream(result);
-		json::Object root;
+		Json::Value root;
 
 		try
 		{
-			json::Reader::Read(root, datastream);
+			datastream >> root;
 			// assume everything is fine if an empty [] is returned
-			if (root.Size() == 0)
+			if (root.size() == 0)
 			{
 				return RequestOkay;
 			}
-			json::Number status = root["Status"];
+			int status = root.get("Status", 1).asInt();
 			if (status != 1)
 			{
-				json::String error = root["Error"];
-				lastError = std::string(error);
-				if (lastError == "")
-					lastError = "Unspecified Error";
+				lastError = root.get("Error", "Unspecified Error").asString();
 				return RequestFailure;
 			}
 		}
@@ -765,27 +762,26 @@ bool Client::CheckUpdate(void *updateRequest, bool checkSession)
 
 			try
 			{
-				json::Object objDocument;
-				json::Reader::Read(objDocument, dataStream);
+				Json::Value objDocument;
+				dataStream >> objDocument;
 
 				//Check session
 				if (checkSession)
 				{
-					json::Boolean sessionStatus = objDocument["Session"];
-					if(!sessionStatus.Value())
+					if (!objDocument["Session"].asBool())
 					{
 						SetAuthUser(User(0, ""));
 					}
 				}
 
 				//Notifications from server
-				json::Array notificationsArray = objDocument["Notifications"];
-				for(size_t j = 0; j < notificationsArray.Size(); j++)
+				Json::Value notificationsArray = objDocument["Notifications"];
+				for(size_t j = 0; j < notificationsArray.size(); j++)
 				{
-					json::String notificationLink = notificationsArray[j]["Link"];
-					json::String notificationText = notificationsArray[j]["Text"];
+					std::string notificationLink = notificationsArray[j]["Link"].asString();
+					std::string notificationText = notificationsArray[j]["Text"].asString();
 
-					std::pair<std::string, std::string> item = std::pair<std::string, std::string>(notificationText.Value(), notificationLink.Value());
+					std::pair<std::string, std::string> item = std::pair<std::string, std::string>(notificationText, notificationLink);
 					AddServerNotification(item);
 				}
 
@@ -793,50 +789,49 @@ bool Client::CheckUpdate(void *updateRequest, bool checkSession)
 				//MOTD
 				if (!usingAltUpdateServer || !checkSession)
 				{
-					json::String messageOfTheDay = objDocument["MessageOfTheDay"];
-					this->messageOfTheDay = messageOfTheDay.Value();
+					this->messageOfTheDay = objDocument["MessageOfTheDay"].asString();
 					notifyMessageOfTheDay();
 
 #ifndef IGNORE_UPDATES
 					//Check for updates
-					json::Object versions = objDocument["Updates"];
+					Json::Value versions = objDocument["Updates"];
 #if !defined(BETA) && !defined(SNAPSHOT)
-					json::Object stableVersion = versions["Stable"];
-					json::Number stableMajor = stableVersion["Major"];
-					json::Number stableMinor = stableVersion["Minor"];
-					json::Number stableBuild = stableVersion["Build"];
-					json::String stableFile = stableVersion["File"];
-					json::String stableChangelog = stableVersion["Changelog"];
-					if (stableMajor.Value()>SAVE_VERSION || (stableMinor.Value()>MINOR_VERSION && stableMajor.Value()==SAVE_VERSION) || stableBuild.Value()>BUILD_NUM)
+					Json::Value stableVersion = versions["Stable"];
+					int stableMajor = stableVersion["Major"].asInt();
+					int stableMinor = stableVersion["Minor"].asInt();
+					int stableBuild = stableVersion["Build"].asInt();
+					std::string stableFile = stableVersion["File"].asString();
+					std::string stableChangelog = stableVersion["Changelog"].asString();
+					if (stableMajor > SAVE_VERSION || (stableMinor > MINOR_VERSION && stableMajor == SAVE_VERSION) || stableBuild > BUILD_NUM)
 					{
 						updateAvailable = true;
-						updateInfo = UpdateInfo(stableMajor.Value(), stableMinor.Value(), stableBuild.Value(), stableFile.Value(), stableChangelog.Value(), UpdateInfo::Stable);
+						updateInfo = UpdateInfo(stableMajor, stableMinor, stableBuild, stableFile, stableChangelog, UpdateInfo::Stable);
 					}
 #endif
 
 #ifdef BETA
-					json::Object betaVersion = versions["Beta"];
-					json::Number betaMajor = betaVersion["Major"];
-					json::Number betaMinor = betaVersion["Minor"];
-					json::Number betaBuild = betaVersion["Build"];
-					json::String betaFile = betaVersion["File"];
-					json::String betaChangelog = betaVersion["Changelog"];
-					if (betaMajor.Value()>SAVE_VERSION || (betaMinor.Value()>MINOR_VERSION && betaMajor.Value()==SAVE_VERSION) || betaBuild.Value()>BUILD_NUM)
+					Json::Value betaVersion = versions["Beta"];
+					int betaMajor = betaVersion["Major"].asInt();
+					int betaMinor = betaVersion["Minor"].asInt();
+					int betaBuild = betaVersion["Build"].asInt();
+					std::string betaFile = betaVersion["File"].asString();
+					std::string betaChangelog = betaVersion["Changelog"].asString();
+					if (betaMajor > SAVE_VERSION || (betaMinor > MINOR_VERSION && betaMajor == SAVE_VERSION) || betaBuild > BUILD_NUM)
 					{
 						updateAvailable = true;
-						updateInfo = UpdateInfo(betaMajor.Value(), betaMinor.Value(), betaBuild.Value(), betaFile.Value(), betaChangelog.Value(), UpdateInfo::Beta);
+						updateInfo = UpdateInfo(betaMajor, betaMinor, betaBuild, betaFile, betaChangelog, UpdateInfo::Beta);
 					}
 #endif
 
 #ifdef SNAPSHOT
-					json::Object snapshotVersion = versions["Snapshot"];
-					json::Number snapshotSnapshot = snapshotVersion["Snapshot"];
-					json::String snapshotFile = snapshotVersion["File"];
-					json::String snapshotChangelog = snapshotVersion["Changelog"];
-					if (snapshotSnapshot.Value() > SNAPSHOT_ID)
+					Json::Value snapshotVersion = versions["Snapshot"];
+					int snapshotSnapshot = snapshotVersion["Snapshot"].asInt();
+					std::string snapshotFile = snapshotVersion["File"].asString();
+					std::string snapshotChangelog = snapshotVersion["Changelog"].asString();
+					if (snapshotSnapshot > SNAPSHOT_ID)
 					{
 						updateAvailable = true;
-						updateInfo = UpdateInfo(snapshotSnapshot.Value(), snapshotFile.Value(), snapshotChangelog.Value(), UpdateInfo::Snapshot);
+						updateInfo = UpdateInfo(snapshotSnapshot, snapshotFile, snapshotChangelog, UpdateInfo::Snapshot);
 					}
 #endif
 
@@ -847,7 +842,7 @@ bool Client::CheckUpdate(void *updateRequest, bool checkSession)
 #endif
 				}
 			}
-			catch (json::Exception &e)
+			catch (std::exception & e)
 			{
 				//Do nothing
 			}
@@ -2022,7 +2017,7 @@ Json::Value Client::GetPref(Json::Value root, std::string prop, Json::Value defa
 {
 	try
 	{
-		int dot = prop.find_last_of('.');
+		int dot = prop.find('.');
 		if (dot == prop.npos)
 			return root.get(prop, defaultValue);
 		else
