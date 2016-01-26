@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <locale>
 #include <fstream>
+#include <stdexcept>
 #include "Config.h"
 #include "Format.h"
 #include "LuaLuna.h"
