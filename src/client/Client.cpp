@@ -50,7 +50,6 @@
 #include "requestbroker/APIRequest.h"
 #include "requestbroker/APIResultParser.h"
 
-#include "cajun/reader.h"
 #include "json/json.h"
 
 extern "C"
@@ -1281,13 +1280,11 @@ RequestBroker::Request * Client::SaveUserInfoAsync(UserInfo info)
 			try
 			{
 				std::istringstream dataStream((char*)data);
-				json::Object objDocument;
-				json::Reader::Read(objDocument, dataStream);
-				json::Number tempStatus = objDocument["Status"];
-
-				return (void*)(tempStatus.Value() == 1);
+				Json::Value objDocument;
+				dataStream >> objDocument;
+				return (void*)(objDocument["Status"].asInt() == 1);
 			}
-			catch (json::Exception &e)
+			catch (std::exception & e)
 			{
 				return 0;
 			}
@@ -1313,23 +1310,23 @@ RequestBroker::Request * Client::GetUserInfoAsync(std::string username)
 			try
 			{
 				std::istringstream dataStream((char*)data);
-				json::Object objDocument;
-				json::Reader::Read(objDocument, dataStream);
-				json::Object tempUser = objDocument["User"];
-				return new UserInfo(static_cast<json::Number>(tempUser["ID"]),
-									static_cast<json::Number>(tempUser["Age"]),
-									static_cast<json::String>(tempUser["Username"]),
-									static_cast<json::String>(tempUser["Biography"]),
-									static_cast<json::String>(tempUser["Location"]),
-									static_cast<json::String>(tempUser["Website"]),
-									static_cast<json::Number>(tempUser["Saves"]["Count"]),
-									static_cast<json::Number>(tempUser["Saves"]["AverageScore"]),
-									static_cast<json::Number>(tempUser["Saves"]["HighestScore"]),
-									static_cast<json::Number>(tempUser["Forum"]["Topics"]),
-									static_cast<json::Number>(tempUser["Forum"]["Replies"]),
-									static_cast<json::Number>(tempUser["Forum"]["Reputation"]));
+				Json::Value objDocument;
+				dataStream >> objDocument;
+				Json::Value tempUser = objDocument["User"];
+				return new UserInfo(tempUser["ID"].asInt(),
+									tempUser["Age"].asInt(),
+									tempUser["Username"].asString(),
+									tempUser["Biography"].asString(),
+									tempUser["Location"].asString(),
+									tempUser["Website"].asString(),
+									tempUser["Saves"]["Count"].asInt(),
+									tempUser["Saves"]["AverageScore"].asInt(),
+									tempUser["Saves"]["HighestScore"].asInt(),
+									tempUser["Forum"]["Topics"].asInt(),
+									tempUser["Forum"]["Replies"].asInt(),
+									tempUser["Forum"]["Reputation"].asInt());
 			}
-			catch (json::Exception &e)
+			catch (std::exception &e)
 			{
 				return 0;
 			}
@@ -1374,30 +1371,30 @@ LoginStatus Client::Login(std::string username, std::string password, User & use
 		try
 		{
 			std::istringstream dataStream(data);
-			json::Object objDocument;
-			json::Reader::Read(objDocument, dataStream);
+			Json::Value objDocument;
+			dataStream >> objDocument;
 			free(data);
 
-			json::Number userIDTemp = objDocument["UserID"];
-			json::String sessionIDTemp = objDocument["SessionID"];
-			json::String sessionKeyTemp = objDocument["SessionKey"];
-			json::String userElevationTemp = objDocument["Elevation"];
+			int userIDTemp = objDocument["UserID"].asInt();
+			std::string sessionIDTemp = objDocument["SessionID"].asString();
+			std::string sessionKeyTemp = objDocument["SessionKey"].asString();
+			std::string userElevationTemp = objDocument["Elevation"].asString();
 
-			json::Array notificationsArray = objDocument["Notifications"];
-			for (size_t j = 0; j < notificationsArray.Size(); j++)
+			Json::Value notificationsArray = objDocument["Notifications"];
+			for (size_t j = 0; j < notificationsArray.size(); j++)
 			{
-				json::String notificationLink = notificationsArray[j]["Link"];
-				json::String notificationText = notificationsArray[j]["Text"];
+				std::string notificationLink = notificationsArray[j]["Link"].asString();
+				std::string notificationText = notificationsArray[j]["Text"].asString();
 
-				std::pair<std::string, std::string> item = std::pair<std::string, std::string>(notificationText.Value(), notificationLink.Value());
+				std::pair<std::string, std::string> item = std::pair<std::string, std::string>(notificationText, notificationLink);
 				AddServerNotification(item);
 			}
 
 			user.Username = username;
-			user.ID = userIDTemp.Value();
-			user.SessionID = sessionIDTemp.Value();
-			user.SessionKey = sessionKeyTemp.Value();
-			std::string userElevation = userElevationTemp.Value();
+			user.ID = userIDTemp;
+			user.SessionID = sessionIDTemp;
+			user.SessionKey = sessionKeyTemp;
+			std::string userElevation = userElevationTemp;
 			if(userElevation == "Admin")
 				user.UserElevation = User::ElevationAdmin;
 			else if(userElevation == "Mod")
@@ -1406,7 +1403,7 @@ LoginStatus Client::Login(std::string username, std::string password, User & use
 				user.UserElevation= User::ElevationNone;
 			return LoginOkay;
 		}
-		catch (json::Exception &e)
+		catch (std::exception &e)
 		{
 			lastError = std::string("Could not read response: ") + e.what();
 			return LoginError;
@@ -1592,52 +1589,39 @@ SaveInfo * Client::GetSave(int saveID, int saveDate)
 		try
 		{
 			std::istringstream dataStream(data);
-			json::Object objDocument;
-			json::Reader::Read(objDocument, dataStream);
+			Json::Value objDocument;
+			dataStream >> objDocument;
 
-			json::Number tempID = objDocument["ID"];
-			json::Number tempScoreUp = objDocument["ScoreUp"];
-			json::Number tempScoreDown = objDocument["ScoreDown"];
-			json::Number tempMyScore = objDocument["ScoreMine"];
-			json::String tempUsername = objDocument["Username"];
-			json::String tempName = objDocument["Name"];
-			json::String tempDescription = objDocument["Description"];
-			json::Number tempDate = objDocument["Date"];
-			json::Boolean tempPublished = objDocument["Published"];
-			json::Boolean tempFavourite = objDocument["Favourite"];
-			json::Number tempComments = objDocument["Comments"];
-			json::Number tempViews = objDocument["Views"];
-			json::Number tempVersion = objDocument["Version"];
+			int tempID = objDocument["ID"].asInt();
+			int tempScoreUp = objDocument["ScoreUp"].asInt();
+			int tempScoreDown = objDocument["ScoreDown"].asInt();
+			int tempMyScore = objDocument["ScoreMine"].asInt();
+			std::string tempUsername = objDocument["Username"].asString();
+			std::string tempName = objDocument["Name"].asString();
+			std::string tempDescription = objDocument["Description"].asString();
+			int tempDate = objDocument["Date"].asInt();
+			bool tempPublished = objDocument["Published"].asBool();
+			bool tempFavourite = objDocument["Favourite"].asBool();
+			int tempComments = objDocument["Comments"].asInt();
+			int tempViews = objDocument["Views"].asInt();
+			int tempVersion = objDocument["Version"].asInt();
 
-			json::Array tagsArray = objDocument["Tags"];
+			Json::Value tagsArray = objDocument["Tags"];
 			std::list<std::string> tempTags;
+			for (size_t j = 0; j < tagsArray.size(); j++)
+				tempTags.push_back(tagsArray[j].asString());
 
-			for (size_t j = 0; j < tagsArray.Size(); j++)
-			{
-				json::String tempTag = tagsArray[j];
-				tempTags.push_back(tempTag.Value());
-			}
-
-			SaveInfo * tempSave = new SaveInfo(
-					tempID.Value(),
-					tempDate.Value(),
-					tempScoreUp.Value(),
-					tempScoreDown.Value(),
-					tempMyScore.Value(),
-					tempUsername.Value(),
-					tempName.Value(),
-					tempDescription.Value(),
-					tempPublished.Value(),
-					tempTags
-					);
-			tempSave->Comments = tempComments.Value();
-			tempSave->Favourite = tempFavourite.Value();
-			tempSave->Views = tempViews.Value();
-			tempSave->Version = tempVersion.Value();
+			SaveInfo * tempSave = new SaveInfo(tempID, tempDate, tempScoreUp, tempScoreDown,
+			                                   tempMyScore, tempUsername, tempName, tempDescription,
+			                                   tempPublished, tempTags);
+			tempSave->Comments = tempComments;
+			tempSave->Favourite = tempFavourite;
+			tempSave->Views = tempViews;
+			tempSave->Version = tempVersion;
 			free(data);
 			return tempSave;
 		}
-		catch (json::Exception &e)
+		catch (std::exception & e)
 		{
 			lastError = std::string("Could not read response: ") + e.what();
 			free(data);
@@ -1668,51 +1652,38 @@ RequestBroker::Request * Client::GetSaveAsync(int saveID, int saveDate)
 			try
 			{
 				std::istringstream dataStream((char*)data);
-				json::Object objDocument;
-				json::Reader::Read(objDocument, dataStream);
+				Json::Value objDocument;
+				dataStream >> objDocument;
 
-				json::Number tempID = objDocument["ID"];
-				json::Number tempScoreUp = objDocument["ScoreUp"];
-				json::Number tempScoreDown = objDocument["ScoreDown"];
-				json::Number tempMyScore = objDocument["ScoreMine"];
-				json::String tempUsername = objDocument["Username"];
-				json::String tempName = objDocument["Name"];
-				json::String tempDescription = objDocument["Description"];
-				json::Number tempDate = objDocument["Date"];
-				json::Boolean tempPublished = objDocument["Published"];
-				json::Boolean tempFavourite = objDocument["Favourite"];
-				json::Number tempComments = objDocument["Comments"];
-				json::Number tempViews = objDocument["Views"];
-				json::Number tempVersion = objDocument["Version"];
+				int tempID = objDocument["ID"].asInt();
+				int tempScoreUp = objDocument["ScoreUp"].asInt();
+				int tempScoreDown = objDocument["ScoreDown"].asInt();
+				int tempMyScore = objDocument["ScoreMine"].asInt();
+				std::string tempUsername = objDocument["Username"].asString();
+				std::string tempName = objDocument["Name"].asString();
+				std::string tempDescription = objDocument["Description"].asString();
+				int tempDate = objDocument["Date"].asInt();
+				bool tempPublished = objDocument["Published"].asBool();
+				bool tempFavourite = objDocument["Favourite"].asBool();
+				int tempComments = objDocument["Comments"].asInt();
+				int tempViews = objDocument["Views"].asInt();
+				int tempVersion = objDocument["Version"].asInt();
 
-				json::Array tagsArray = objDocument["Tags"];
+				Json::Value tagsArray = objDocument["Tags"];
 				std::list<std::string> tempTags;
+				for (size_t j = 0; j < tagsArray.size(); j++)
+					tempTags.push_back(tagsArray[j].asString());
 
-				for (size_t j = 0; j < tagsArray.Size(); j++)
-				{
-					json::String tempTag = tagsArray[j];
-					tempTags.push_back(tempTag.Value());
-				}
-
-				SaveInfo * tempSave = new SaveInfo(
-						tempID.Value(),
-						tempDate.Value(),
-						tempScoreUp.Value(),
-						tempScoreDown.Value(),
-						tempMyScore.Value(),
-						tempUsername.Value(),
-						tempName.Value(),
-						tempDescription.Value(),
-						tempPublished.Value(),
-						tempTags
-						);
-				tempSave->Comments = tempComments.Value();
-				tempSave->Favourite = tempFavourite.Value();
-				tempSave->Views = tempViews.Value();
-				tempSave->Version = tempVersion.Value();
+				SaveInfo * tempSave = new SaveInfo(tempID, tempDate, tempScoreUp, tempScoreDown,
+				                               tempMyScore, tempUsername, tempName, tempDescription,
+				                               tempPublished, tempTags);
+				tempSave->Comments = tempComments;
+				tempSave->Favourite = tempFavourite;
+				tempSave->Views = tempViews;
+				tempSave->Version = tempVersion;
 				return tempSave;
 			}
-			catch (json::Exception &e)
+			catch (std::exception &e)
 			{
 				return NULL;
 			}
@@ -1736,30 +1707,22 @@ RequestBroker::Request * Client::GetCommentsAsync(int saveID, int start, int cou
 			try
 			{
 				std::istringstream dataStream((char*)data);
-				json::Array commentsArray;
-				json::Reader::Read(commentsArray, dataStream);
+				Json::Value commentsArray;
+				dataStream >> commentsArray;
 
-				for (size_t j = 0; j < commentsArray.Size(); j++)
+				for (size_t j = 0; j < commentsArray.size(); j++)
 				{
-					json::Number tempUserID = commentsArray[j]["UserID"];
-					json::String tempUsername = commentsArray[j]["Username"];
-					json::String tempFormattedUsername = commentsArray[j]["FormattedUsername"];
-					std::string formattedUsername = tempFormattedUsername.Value();
-					if (formattedUsername == "jacobot" || formattedUsername == "boxmein")
+					int userID = format::StringToNumber<int>(commentsArray[j]["UserID"].asString());
+					std::string username = commentsArray[j]["Username"].asString();
+					std::string formattedUsername = commentsArray[j]["FormattedUsername"].asString();
+					if (formattedUsername == "jacobot")
 						formattedUsername = "\bt" + formattedUsername;
-					json::String tempComment = commentsArray[j]["Text"];
-					commentArray->push_back(
-								new SaveComment(
-									tempUserID.Value(),
-									tempUsername.Value(),
-									formattedUsername,
-									tempComment.Value()
-									)
-								);
+					std::string comment = commentsArray[j]["Text"].asString();
+					commentArray->push_back(new SaveComment(userID, username, formattedUsername, comment));
 				}
 				return commentArray;
 			}
-			catch (json::Exception &e)
+			catch (std::exception &e)
 			{
 				delete commentArray;
 				return NULL;
@@ -1799,20 +1762,19 @@ std::vector<std::pair<std::string, int> > * Client::GetTags(int start, int count
 		try
 		{
 			std::istringstream dataStream(data);
-			json::Object objDocument;
-			json::Reader::Read(objDocument, dataStream);
+			Json::Value objDocument;
+			dataStream >> objDocument;
 
-			json::Number tempCount = objDocument["TagTotal"];
-			resultCount = tempCount.Value();
-			json::Array tagsArray = objDocument["Tags"];
-			for (size_t j = 0; j < tagsArray.Size(); j++)
+			resultCount = objDocument["TagTotal"].asInt();
+			Json::Value tagsArray = objDocument["Tags"];
+			for (size_t j = 0; j < tagsArray.size(); j++)
 			{
-				json::Number tagCount = tagsArray[j]["Count"];
-				json::String tag = tagsArray[j]["Tag"];
-				tagArray->push_back(std::pair<std::string, int>(tag.Value(), (int)tagCount.Value()));
+				int tagCount = tagsArray[j]["Count"].asInt();
+				std::string tag = tagsArray[j]["Tag"].asString();
+				tagArray->push_back(std::pair<std::string, int>(tag, tagCount));
 			}
 		}
-		catch (json::Exception &e)
+		catch (std::exception & e)
 		{
 			lastError = std::string("Could not read response: ") + e.what();
 		}
@@ -1866,36 +1828,28 @@ std::vector<SaveInfo*> * Client::SearchSaves(int start, int count, std::string q
 		try
 		{
 			std::istringstream dataStream(data);
-			json::Object objDocument;
-			json::Reader::Read(objDocument, dataStream);
+			Json::Value objDocument;
+			dataStream >> objDocument;
 
-			json::Number tempCount = objDocument["Count"];
-			resultCount = tempCount.Value();
-			json::Array savesArray = objDocument["Saves"];
-			for (size_t j = 0; j < savesArray.Size(); j++)
+			resultCount = objDocument["Count"].asInt();
+			Json::Value savesArray = objDocument["Saves"];
+			for (size_t j = 0; j < savesArray.size(); j++)
 			{
-				json::Number tempID = savesArray[j]["ID"];
-				json::Number tempDate = savesArray[j]["Date"];
-				json::Number tempScoreUp = savesArray[j]["ScoreUp"];
-				json::Number tempScoreDown = savesArray[j]["ScoreDown"];
-				json::String tempUsername = savesArray[j]["Username"];
-				json::String tempName = savesArray[j]["Name"];
-				json::Number tempVersion = savesArray[j]["Version"];
-				json::Boolean tempPublished = savesArray[j]["Published"];
-				SaveInfo * tempSaveInfo = new SaveInfo(
-								tempID.Value(),
-								tempDate.Value(),
-								tempScoreUp.Value(),
-								tempScoreDown.Value(),
-								tempUsername.Value(),
-								tempName.Value()
-								);
-				tempSaveInfo->Version = tempVersion.Value();
+				int tempID = savesArray[j]["ID"].asInt();
+				int tempDate = savesArray[j]["Date"].asInt();
+				int tempScoreUp = savesArray[j]["ScoreUp"].asInt();
+				int tempScoreDown = savesArray[j]["ScoreDown"].asInt();
+				std::string tempUsername = savesArray[j]["Username"].asString();
+				std::string tempName = savesArray[j]["Name"].asString();
+				int tempVersion = savesArray[j]["Version"].asInt();
+				bool tempPublished = savesArray[j]["Published"].asBool();
+				SaveInfo * tempSaveInfo = new SaveInfo(tempID, tempDate, tempScoreUp, tempScoreDown, tempUsername, tempName);
+				tempSaveInfo->Version = tempVersion;
 				tempSaveInfo->SetPublished(tempPublished);
 				saveArray->push_back(tempSaveInfo);
 			}
 		}
-		catch (json::Exception &e)
+		catch (std::exception &e)
 		{
 			lastError = std::string("Could not read response: ") + e.what();
 		}
@@ -1943,19 +1897,15 @@ std::list<std::string> * Client::RemoveTag(int saveID, std::string tag)
 		try
 		{
 			std::istringstream dataStream(data);
-			json::Object responseObject;
-			json::Reader::Read(responseObject, dataStream);
+			Json::Value responseObject;
+			dataStream >> responseObject;
 
-			json::Array tagsArray = responseObject["Tags"];
+			Json::Value tagsArray = responseObject["Tags"];
 			tags = new std::list<std::string>();
-
-			for (size_t j = 0; j < tagsArray.Size(); j++)
-			{
-				json::String tempTag = tagsArray[j];
-				tags->push_back(tempTag.Value());
-			}
+			for (size_t j = 0; j < tagsArray.size(); j++)
+				tags->push_back(tagsArray[j].asString());
 		}
-		catch (json::Exception &e)
+		catch (std::exception &e)
 		{
 			lastError = std::string("Could not read response: ") + e.what();
 		}
@@ -1989,19 +1939,15 @@ std::list<std::string> * Client::AddTag(int saveID, std::string tag)
 		try
 		{
 			std::istringstream dataStream(data);
-			json::Object responseObject;
-			json::Reader::Read(responseObject, dataStream);
+			Json::Value responseObject;
+			dataStream >> responseObject;
 
-			json::Array tagsArray = responseObject["Tags"];
+			Json::Value tagsArray = responseObject["Tags"];
 			tags = new std::list<std::string>();
-
-			for (size_t j = 0; j < tagsArray.Size(); j++)
-			{
-				json::String tempTag = tagsArray[j];
-				tags->push_back(tempTag.Value());
-			}
+			for (size_t j = 0; j < tagsArray.size(); j++)
+				tags->push_back(tagsArray[j].asString());
 		}
-		catch (json::Exception &e)
+		catch (std::exception & e)
 		{
 			lastError = std::string("Could not read response: ") + e.what();
 		}
