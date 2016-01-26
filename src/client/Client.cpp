@@ -775,7 +775,7 @@ bool Client::CheckUpdate(void *updateRequest, bool checkSession)
 
 				//Notifications from server
 				Json::Value notificationsArray = objDocument["Notifications"];
-				for(size_t j = 0; j < notificationsArray.size(); j++)
+				for (Json::UInt j = 0; j < notificationsArray.size(); j++)
 				{
 					std::string notificationLink = notificationsArray[j]["Link"].asString();
 					std::string notificationText = notificationsArray[j]["Text"].asString();
@@ -1381,7 +1381,7 @@ LoginStatus Client::Login(std::string username, std::string password, User & use
 			std::string userElevationTemp = objDocument["Elevation"].asString();
 
 			Json::Value notificationsArray = objDocument["Notifications"];
-			for (size_t j = 0; j < notificationsArray.size(); j++)
+			for (Json::UInt j = 0; j < notificationsArray.size(); j++)
 			{
 				std::string notificationLink = notificationsArray[j]["Link"].asString();
 				std::string notificationText = notificationsArray[j]["Text"].asString();
@@ -1608,7 +1608,7 @@ SaveInfo * Client::GetSave(int saveID, int saveDate)
 
 			Json::Value tagsArray = objDocument["Tags"];
 			std::list<std::string> tempTags;
-			for (size_t j = 0; j < tagsArray.size(); j++)
+			for (Json::UInt j = 0; j < tagsArray.size(); j++)
 				tempTags.push_back(tagsArray[j].asString());
 
 			SaveInfo * tempSave = new SaveInfo(tempID, tempDate, tempScoreUp, tempScoreDown,
@@ -1671,7 +1671,7 @@ RequestBroker::Request * Client::GetSaveAsync(int saveID, int saveDate)
 
 				Json::Value tagsArray = objDocument["Tags"];
 				std::list<std::string> tempTags;
-				for (size_t j = 0; j < tagsArray.size(); j++)
+				for (Json::UInt j = 0; j < tagsArray.size(); j++)
 					tempTags.push_back(tagsArray[j].asString());
 
 				SaveInfo * tempSave = new SaveInfo(tempID, tempDate, tempScoreUp, tempScoreDown,
@@ -1710,7 +1710,7 @@ RequestBroker::Request * Client::GetCommentsAsync(int saveID, int start, int cou
 				Json::Value commentsArray;
 				dataStream >> commentsArray;
 
-				for (size_t j = 0; j < commentsArray.size(); j++)
+				for (Json::UInt j = 0; j < commentsArray.size(); j++)
 				{
 					int userID = format::StringToNumber<int>(commentsArray[j]["UserID"].asString());
 					std::string username = commentsArray[j]["Username"].asString();
@@ -1767,7 +1767,7 @@ std::vector<std::pair<std::string, int> > * Client::GetTags(int start, int count
 
 			resultCount = objDocument["TagTotal"].asInt();
 			Json::Value tagsArray = objDocument["Tags"];
-			for (size_t j = 0; j < tagsArray.size(); j++)
+			for (Json::UInt j = 0; j < tagsArray.size(); j++)
 			{
 				int tagCount = tagsArray[j]["Count"].asInt();
 				std::string tag = tagsArray[j]["Tag"].asString();
@@ -1833,7 +1833,7 @@ std::vector<SaveInfo*> * Client::SearchSaves(int start, int count, std::string q
 
 			resultCount = objDocument["Count"].asInt();
 			Json::Value savesArray = objDocument["Saves"];
-			for (size_t j = 0; j < savesArray.size(); j++)
+			for (Json::UInt j = 0; j < savesArray.size(); j++)
 			{
 				int tempID = savesArray[j]["ID"].asInt();
 				int tempDate = savesArray[j]["Date"].asInt();
@@ -1902,7 +1902,7 @@ std::list<std::string> * Client::RemoveTag(int saveID, std::string tag)
 
 			Json::Value tagsArray = responseObject["Tags"];
 			tags = new std::list<std::string>();
-			for (size_t j = 0; j < tagsArray.size(); j++)
+			for (Json::UInt j = 0; j < tagsArray.size(); j++)
 				tags->push_back(tagsArray[j].asString());
 		}
 		catch (std::exception &e)
@@ -1944,7 +1944,7 @@ std::list<std::string> * Client::AddTag(int saveID, std::string tag)
 
 			Json::Value tagsArray = responseObject["Tags"];
 			tags = new std::list<std::string>();
-			for (size_t j = 0; j < tagsArray.size(); j++)
+			for (Json::UInt j = 0; j < tagsArray.size(); j++)
 				tags->push_back(tagsArray[j].asString());
 		}
 		catch (std::exception & e)

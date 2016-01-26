@@ -21,6 +21,7 @@
 #include "icon.h"
 #endif
 #include <signal.h>
+#include <stdexcept>
 
 #ifndef WIN
 #include <unistd.h>
