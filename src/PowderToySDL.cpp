@@ -586,7 +586,9 @@ void DoubleScreenDialog()
 		Client::Ref().SetPref("Scale", 1);
 		engine->SetScale(1);
 		engine->CloseWindow();
+#ifdef WIN
 		LoadWindowPosition(1);
+#endif
 	}
 }
 void EngineProcess()
