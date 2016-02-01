@@ -23,7 +23,7 @@ extern int tptParts, tptPartsMeta, tptElementTransitions, tptPartsCData, tptPart
 void luacon_hook(lua_State *L, lua_Debug *ar);
 int luacon_step(int mx, int my);
 int luacon_mouseevent(int mx, int my, int mb, int event, int mouse_wheel);
-int luacon_keyevent(int key, int modifier, int event);
+int luacon_keyevent(int key, Uint16 character, int modifier, int event);
 int luacon_eval(const char *command);
 const char *luacon_geterror();
 void luacon_close();

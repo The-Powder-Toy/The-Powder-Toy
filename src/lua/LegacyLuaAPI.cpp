@@ -438,7 +438,7 @@ int luacon_elementwrite(lua_State* l)
 }
 
 bool shortcuts = true;
-int luacon_keyevent(int key, int modifier, int event)
+int luacon_keyevent(int key, Uint16 character, int modifier, int event)
 {
 	int kycontinue = 1;
 	lua_State* l=luacon_ci->l;
@@ -456,7 +456,7 @@ int luacon_keyevent(int key, int modifier, int event)
 	for (int i = 1; i <= len && kycontinue; i++)
 	{
 		lua_rawgeti(l, -1, i);
-		lua_pushlstring(l, (const char*)&key, 1);
+		lua_pushlstring(l, (const char*)&character, 1);
 		lua_pushinteger(l, key);
 		lua_pushinteger(l, modifier);
 		lua_pushinteger(l, event);

@@ -3305,7 +3305,7 @@ bool LuaScriptInterface::OnMouseWheel(int x, int y, int d)
 
 bool LuaScriptInterface::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
-	return luacon_keyevent(key, GetModifiers(), LUACON_KDOWN);
+	return luacon_keyevent(key, character, GetModifiers(), LUACON_KDOWN);
 }
 
 bool LuaScriptInterface::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
@@ -3317,7 +3317,7 @@ bool LuaScriptInterface::OnKeyRelease(int key, Uint16 character, bool shift, boo
 		modifiers |= 0x040;
 	if(alt)
 		modifiers |= 0x100;
-	return luacon_keyevent(key, modifiers, LUACON_KUP);
+	return luacon_keyevent(key, character, modifiers, LUACON_KUP);
 }
 
 bool LuaScriptInterface::OnMouseTick()
