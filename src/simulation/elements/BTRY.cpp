@@ -28,7 +28,7 @@ Element_BTRY::Element_BTRY()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "Generates infinite electricity.";
+	Description = "Battery. Generates infinite electricity.";
 
 	Properties = TYPE_SOLID;
 

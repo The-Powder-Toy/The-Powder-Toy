@@ -28,7 +28,7 @@ Element_AMTR::Element_AMTR()
 
 	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 70;
-	Description = "Anti-Matter, destroys a majority of particles.";
+	Description = "Antimatter. Destroys a majority of particles.";
 
 	Properties = TYPE_GAS;
 

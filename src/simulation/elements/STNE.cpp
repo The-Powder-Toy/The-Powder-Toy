@@ -28,7 +28,7 @@ Element_STNE::Element_STNE()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 150;
-	Description = "Heavy particles. Meltable.";
+	Description = "Stones. Heavy particles. Meltable.";
 
 	Properties = TYPE_PART;
 

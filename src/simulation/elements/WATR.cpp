@@ -28,7 +28,7 @@ Element_WATR::Element_WATR()
 
 	Temperature = R_TEMP-2.0f	+273.15f;
 	HeatConduct = 29;
-	Description = "Conducts electricity, freezes, and extinguishes fires.";
+	Description = "Water. Conducts electricity, freezes, and extinguishes fires.";
 
 	Properties = TYPE_LIQUID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_NEUTPASS;
 
