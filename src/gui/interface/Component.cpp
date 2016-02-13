@@ -111,6 +111,56 @@ void Component::TextPosition(std::string displayText)
 	}
 }
 
+void Component::TextPosition(std::wstring displayText)
+{
+
+	textPosition = ui::Point(0, 0);
+
+	int textWidth, textHeight = 10;
+	Graphics::textsize((wchar_t*)displayText.c_str(), textWidth, textHeight);
+	textSize.X = textWidth; textSize.Y = textHeight;
+	textHeight-=3;
+	textWidth-=1;
+	if(Appearance.icon)
+	{
+		textWidth += 13;
+	}
+
+	int textAreaWidth = Size.X-(Appearance.Margin.Right+Appearance.Margin.Left);
+	int textAreaHeight = Size.Y-(Appearance.Margin.Top+Appearance.Margin.Bottom);
+
+	switch(Appearance.VerticalAlign)
+	{
+	case ui::Appearance::AlignTop:
+		textPosition.Y = Appearance.Margin.Top+2;
+		break;
+	case ui::Appearance::AlignMiddle:
+		textPosition.Y = Appearance.Margin.Top+((textAreaHeight-textHeight)/2);
+		break;
+	case ui::Appearance::AlignBottom:
+		textPosition.Y = Size.Y-(textHeight+Appearance.Margin.Bottom);
+		break;
+	}
+
+	switch(Appearance.HorizontalAlign)
+	{
+	case ui::Appearance::AlignLeft:
+		textPosition.X = Appearance.Margin.Left;
+		break;
+	case ui::Appearance::AlignCentre:
+		textPosition.X = Appearance.Margin.Left+((textAreaWidth-textWidth)/2);
+		break;
+	case ui::Appearance::AlignRight:
+		textPosition.X = Size.X-(textWidth+Appearance.Margin.Right);
+		break;
+	}
+	if(Appearance.icon)
+	{
+		iconPosition = textPosition-ui::Point(0, 1);
+		textPosition.X += 15;
+	}
+}
+
 bool Component::IsFocused() const
 {
 	if(parentstate_)

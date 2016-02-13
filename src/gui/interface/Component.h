@@ -47,6 +47,7 @@ namespace ui
 		//virtual void SetAppearance(ui::Appearance);
 		//ui::Appearance GetAppearance();
 		virtual void TextPosition(std::string);
+		virtual void TextPosition(std::wstring);
 		
 		void Refresh();
 
