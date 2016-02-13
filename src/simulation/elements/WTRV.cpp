@@ -28,7 +28,7 @@ Element_WTRV::Element_WTRV()
 
 	Temperature = R_TEMP+100.0f+273.15f;
 	HeatConduct = 48;
-	Description = "Steam. Produced from hot water.";
+	Description = L"Steam. Produced from hot water.";
 
 	Properties = TYPE_GAS;
 

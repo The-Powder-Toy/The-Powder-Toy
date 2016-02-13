@@ -28,7 +28,7 @@ Element_SNOW::Element_SNOW()
 
 	Temperature = R_TEMP-30.0f+273.15f;
 	HeatConduct = 46;
-	Description = "Light particles. Created when ICE breaks under pressure.";
+	Description = L"Light particles. Created when ICE breaks under pressure.";
 
 	Properties = TYPE_PART|PROP_LIFE_DEC|PROP_NEUTPASS;
 

@@ -28,7 +28,7 @@ Element_SHLD4::Element_SHLD4()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 0;
-	Description = "Shield lvl 4.";
+	Description = L"Shield lvl 4.";
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 

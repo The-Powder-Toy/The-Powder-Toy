@@ -30,7 +30,7 @@ Element_ETRD::Element_ETRD()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "Electrode. Creates a surface that allows Plasma arcs. (Use sparingly)";
+	Description = L"Electrode. Creates a surface that allows Plasma arcs. (Use sparingly)";
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC;
 

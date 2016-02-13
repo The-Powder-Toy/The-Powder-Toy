@@ -28,7 +28,7 @@ Element_PCLN::Element_PCLN()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "Powered clone. When activated, duplicates any particles it touches.";
+	Description = L"Powered clone. When activated, duplicates any particles it touches.";
 
 	Properties = TYPE_SOLID|PROP_NOCTYPEDRAW;
 

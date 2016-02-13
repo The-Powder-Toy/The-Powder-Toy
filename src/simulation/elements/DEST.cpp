@@ -28,7 +28,7 @@ Element_DEST::Element_DEST()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 150;
-	Description = "More destructive Bomb, can break through virtually anything.";
+	Description = L"More destructive Bomb, can break through virtually anything.";
 
 	Properties = TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
 

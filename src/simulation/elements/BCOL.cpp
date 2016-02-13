@@ -28,7 +28,7 @@ Element_BCOL::Element_BCOL()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 150;
-	Description = "Broken Coal. Heavy particles, burns slowly.";
+	Description = L"Broken Coal. Heavy particles, burns slowly.";
 
 	Properties = TYPE_PART;
 

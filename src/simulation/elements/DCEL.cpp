@@ -28,7 +28,7 @@ Element_DCEL::Element_DCEL()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "Decelerator, slows down nearby elements.";
+	Description = L"Decelerator, slows down nearby elements.";
 
 	Properties = TYPE_SOLID;
 

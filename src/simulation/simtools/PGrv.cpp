@@ -6,7 +6,7 @@ Tool_PGrv::Tool_PGrv()
 	Identifier = "DEFAULT_TOOL_PGRV";
 	Name = "PGRV";
 	Colour = PIXPACK(0xCCCCFF);
-	Description = "Creates a short-lasting gravity well.";
+	Description = L"Creates a short-lasting gravity well.";
 }
 
 int Tool_PGrv::Perform(Simulation * sim, Particle * cpart, int x, int y, float strength)

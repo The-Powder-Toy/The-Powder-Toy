@@ -28,7 +28,7 @@ Element_YEST::Element_YEST()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
-	Description = "Yeast, grows when warm (~37C).";
+	Description = L"Yeast, grows when warm (~37C).";
 
 	Properties = TYPE_PART;
 

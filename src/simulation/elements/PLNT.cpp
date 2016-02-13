@@ -28,7 +28,7 @@ Element_PLNT::Element_PLNT()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 65;
-	Description = "Plant, drinks water and grows.";
+	Description = L"Plant, drinks water and grows.";
 
 	Properties = TYPE_SOLID|PROP_NEUTPENETRATE|PROP_LIFE_DEC;
 

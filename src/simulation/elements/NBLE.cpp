@@ -28,7 +28,7 @@ Element_NBLE::Element_NBLE()
 
 	Temperature = R_TEMP+2.0f	+273.15f;
 	HeatConduct = 106;
-	Description = "Noble Gas. Diffuses and conductive. Ionizes into plasma when introduced to electricity.";
+	Description = L"Noble Gas. Diffuses and conductive. Ionizes into plasma when introduced to electricity.";
 
 	Properties = TYPE_GAS|PROP_CONDUCTS|PROP_LIFE_DEC;
 

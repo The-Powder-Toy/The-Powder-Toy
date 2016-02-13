@@ -28,7 +28,7 @@ Element_FRZW::Element_FRZW()
 
 	Temperature = 120.0f;
 	HeatConduct = 29;
-	Description = "Freeze water. Hybrid liquid formed when Freeze powder melts.";
+	Description = L"Freeze water. Hybrid liquid formed when Freeze powder melts.";
 
 	Properties = TYPE_LIQUID | PROP_LIFE_DEC;
 

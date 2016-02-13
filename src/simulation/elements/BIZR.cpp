@@ -28,7 +28,7 @@ Element_BIZR::Element_BIZR()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 29;
-	Description = "Bizarre... contradicts the normal state changes. Paints other elements with its deco color.";
+	Description = L"Bizarre... contradicts the normal state changes. Paints other elements with its deco color.";
 
 	Properties = TYPE_LIQUID;
 

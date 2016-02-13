@@ -32,7 +32,7 @@ Element_LIFE::Element_LIFE()
 
 	Temperature = 9000.0f;
 	HeatConduct = 40;
-	Description = "Game Of Life! B3/S23";
+	Description = L"Game Of Life! B3/S23";
 
 	Properties = TYPE_SOLID|PROP_LIFE;
 

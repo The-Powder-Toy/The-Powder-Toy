@@ -28,7 +28,7 @@ Element_ISOZ::Element_ISOZ()
 
 	Temperature = R_TEMP-2.0f	+273.15f;
 	HeatConduct = 29;
-	Description = "Isotope-Z. Radioactive liquid, decays into photons when touching PHOT or under negative pressure.";
+	Description = L"Isotope-Z. Radioactive liquid, decays into photons when touching PHOT or under negative pressure.";
 
 	Properties = TYPE_LIQUID|PROP_NEUTPENETRATE;
 

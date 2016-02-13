@@ -28,7 +28,7 @@ Element_DRAY::Element_DRAY()
 
 	Temperature = R_TEMP + 273.15f;
 	HeatConduct = 0;
-	Description = "Duplicator ray. Replicates a line of particles in front of it.";
+	Description = L"Duplicator ray. Replicates a line of particles in front of it.";
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 

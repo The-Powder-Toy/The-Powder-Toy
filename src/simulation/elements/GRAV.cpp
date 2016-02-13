@@ -28,7 +28,7 @@ Element_GRAV::Element_GRAV()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
-	Description = "Very light dust. Changes colour based on velocity.";
+	Description = L"Very light dust. Changes colour based on velocity.";
 
 	Properties = TYPE_PART;
 

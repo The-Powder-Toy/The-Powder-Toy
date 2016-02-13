@@ -28,7 +28,7 @@ Element_BOYL::Element_BOYL()
 
 	Temperature = R_TEMP+2.0f	+273.15f;
 	HeatConduct = 42;
-	Description = "Boyle, variable pressure gas. Expands when heated.";
+	Description = L"Boyle, variable pressure gas. Expands when heated.";
 
 	Properties = TYPE_GAS;
 

@@ -28,7 +28,7 @@ Element_MORT::Element_MORT()
 
 	Temperature = R_TEMP+4.0f	+273.15f;
 	HeatConduct = 60;
-	Description = "Steam Train.";
+	Description = L"Steam Train.";
 
 	Properties = TYPE_GAS;
 

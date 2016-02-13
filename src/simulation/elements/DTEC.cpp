@@ -28,7 +28,7 @@ Element_DTEC::Element_DTEC()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 0;
-	Description = "Detector, creates a spark when something with its ctype is nearby.";
+	Description = L"Detector, creates a spark when something with its ctype is nearby.";
 
 	Properties = TYPE_SOLID;
 

@@ -28,7 +28,7 @@ Element_FWRK::Element_FWRK()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 100;
-	Description = "Original version of fireworks, activated by heat/neutrons.";
+	Description = L"Original version of fireworks, activated by heat/neutrons.";
 
 	Properties = TYPE_PART|PROP_LIFE_DEC;
 

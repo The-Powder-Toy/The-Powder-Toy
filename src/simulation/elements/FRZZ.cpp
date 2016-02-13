@@ -28,7 +28,7 @@ Element_FRZZ::Element_FRZZ()
 
 	Temperature = 253.15f;
 	HeatConduct = 46;
-	Description = "Freeze powder. When melted, forms ice that always cools. Spreads with regular water.";
+	Description = L"Freeze powder. When melted, forms ice that always cools. Spreads with regular water.";
 
 	Properties = TYPE_PART;
 

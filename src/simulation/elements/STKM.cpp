@@ -28,7 +28,7 @@ Element_STKM::Element_STKM()
 
 	Temperature = R_TEMP+14.6f+273.15f;
 	HeatConduct = 0;
-	Description = "Stickman. Don't kill him! Control with the arrow keys.";
+	Description = L"Stickman. Don't kill him! Control with the arrow keys.";
 
 	Properties = PROP_NOCTYPEDRAW;
 

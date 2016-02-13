@@ -28,7 +28,7 @@ Element_LRBD::Element_LRBD()
 
 	Temperature = R_TEMP+45.0f+273.15f;
 	HeatConduct = 170;
-	Description = "Liquid Rubidium.";
+	Description = L"Liquid Rubidium.";
 
 	Properties = TYPE_LIQUID|PROP_CONDUCTS|PROP_LIFE_DEC;
 

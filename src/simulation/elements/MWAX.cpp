@@ -28,7 +28,7 @@ Element_MWAX::Element_MWAX()
 
 	Temperature = R_TEMP+28.0f+273.15f;
 	HeatConduct = 44;
-	Description = "Liquid Wax. Hardens into WAX at 45 degrees.";
+	Description = L"Liquid Wax. Hardens into WAX at 45 degrees.";
 
 	Properties = TYPE_LIQUID;
 

@@ -28,7 +28,7 @@ Element_BRCK::Element_BRCK()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "Brick, breakable building material.";
+	Description = L"Brick, breakable building material.";
 
 	Properties = TYPE_SOLID|PROP_HOT_GLOW;
 

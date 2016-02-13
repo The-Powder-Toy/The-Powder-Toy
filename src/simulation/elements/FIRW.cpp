@@ -32,7 +32,7 @@ Element_FIRW::Element_FIRW()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
-	Description = "Fireworks! Colorful, set off by fire.";
+	Description = L"Fireworks! Colorful, set off by fire.";
 
 	Properties = TYPE_PART|PROP_LIFE_DEC;
 

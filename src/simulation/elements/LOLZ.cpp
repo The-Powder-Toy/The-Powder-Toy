@@ -28,7 +28,7 @@ Element_LOLZ::Element_LOLZ()
 
 	Temperature = 373.0f;
 	HeatConduct = 40;
-	Description = "Lolz";
+	Description = L"Lolz";
 
 	Properties = TYPE_SOLID;
 

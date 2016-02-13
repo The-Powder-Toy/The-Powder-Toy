@@ -29,7 +29,7 @@ Element_LIGH::Element_LIGH()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 0;
-	Description = "Lightning. Change the brush size to set the size of the lightning.";
+	Description = L"Lightning. Change the brush size to set the size of the lightning.";
 
 	Properties = TYPE_SOLID;
 

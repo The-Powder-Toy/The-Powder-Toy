@@ -28,7 +28,7 @@ Element_PPIP::Element_PPIP()
 
 	Temperature = 273.15f;
 	HeatConduct = 0;
-	Description = "Powered version of PIPE, use PSCN/NSCN to Activate/Deactivate.";
+	Description = L"Powered version of PIPE, use PSCN/NSCN to Activate/Deactivate.";
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 

@@ -28,7 +28,7 @@ Element_SPRK::Element_SPRK()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "Electricity. The basis of all electronics in TPT, travels along wires and other conductive elements.";
+	Description = L"Electricity. The basis of all electronics in TPT, travels along wires and other conductive elements.";
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 

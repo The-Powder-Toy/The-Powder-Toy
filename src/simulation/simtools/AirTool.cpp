@@ -6,7 +6,7 @@ Tool_Air::Tool_Air()
 	Identifier = "DEFAULT_TOOL_AIR";
 	Name = "AIR";
 	Colour = PIXPACK(0xFFFFFF);
-	Description = "Air, creates airflow and pressure.";
+	Description = L"Air, creates airflow and pressure.";
 }
 
 int Tool_Air::Perform(Simulation * sim, Particle * cpart, int x, int y, float strength)

@@ -6,7 +6,7 @@ Tool_Vac::Tool_Vac()
 	Identifier = "DEFAULT_TOOL_VAC";
 	Name = "VAC";
 	Colour = PIXPACK(0x303030);
-	Description = "Vacuum, reduces air pressure.";
+	Description = L"Vacuum, reduces air pressure.";
 }
 
 int Tool_Vac::Perform(Simulation * sim, Particle * cpart, int x, int y, float strength)

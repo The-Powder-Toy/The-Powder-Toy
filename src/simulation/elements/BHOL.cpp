@@ -28,7 +28,7 @@ Element_BHOL::Element_BHOL()
 
 	Temperature = R_TEMP+70.0f+273.15f;
 	HeatConduct = 255;
-	Description = "Vacuum, sucks in other particles and heats up.";
+	Description = L"Vacuum, sucks in other particles and heats up.";
 
 	Properties = TYPE_SOLID;
 

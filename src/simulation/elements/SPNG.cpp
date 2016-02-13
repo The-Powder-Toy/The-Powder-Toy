@@ -28,7 +28,7 @@ Element_SPNG::Element_SPNG()
 
 	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 251;
-	Description = "Sponge, absorbs water. Is not a moving solid.";
+	Description = L"Sponge, absorbs water. Is not a moving solid.";
 
 	Properties = TYPE_SOLID;
 

@@ -28,7 +28,7 @@ Element_H2::Element_H2()
 
 	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 251;
-	Description = "Hydrogen. Combusts with OXYG to make WATR. Undergoes fusion at high temperature and pressure.";
+	Description = L"Hydrogen. Combusts with OXYG to make WATR. Undergoes fusion at high temperature and pressure.";
 
 	Properties = TYPE_GAS;
 

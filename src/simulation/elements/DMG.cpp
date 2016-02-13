@@ -28,7 +28,7 @@ Element_DMG::Element_DMG()
 
 	Temperature = R_TEMP-2.0f	+273.15f;
 	HeatConduct = 29;
-	Description = "Generates damaging pressure and breaks any elements it hits.";
+	Description = L"Generates damaging pressure and breaks any elements it hits.";
 
 	Properties = TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC|PROP_SPARKSETTLE;
 

@@ -28,7 +28,7 @@ Element_VRSG::Element_VRSG()
 
 	Temperature = 522.0f + 273.15f;
 	HeatConduct = 251;
-	Description = "Gas Virus. Turns everything it touches into virus.";
+	Description = L"Gas Virus. Turns everything it touches into virus.";
 
 	Properties = TYPE_GAS|PROP_DEADLY;
 

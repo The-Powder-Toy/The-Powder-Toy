@@ -28,7 +28,7 @@ Element_FILT::Element_FILT()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "Filter for photons, changes the color.";
+	Description = L"Filter for photons, changes the color.";
 
 	Properties = TYPE_SOLID | PROP_NOAMBHEAT | PROP_LIFE_DEC;
 

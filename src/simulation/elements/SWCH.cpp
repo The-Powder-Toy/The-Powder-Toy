@@ -28,7 +28,7 @@ Element_SWCH::Element_SWCH()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "Only conducts when switched on. (PSCN switches on, NSCN switches off)";
+	Description = L"Only conducts when switched on. (PSCN switches on, NSCN switches off)";
 
 	Properties = TYPE_SOLID;
 

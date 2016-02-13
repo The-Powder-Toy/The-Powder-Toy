@@ -28,7 +28,7 @@ Element_PSCN::Element_PSCN()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "P-Type Silicon, Will transfer current to any conductor.";
+	Description = L"P-Type Silicon, Will transfer current to any conductor.";
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC;
 

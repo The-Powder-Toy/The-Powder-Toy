@@ -28,7 +28,7 @@ Element_THRM::Element_THRM()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 211;
-	Description = "Thermite. Burns at extremely high temperature.";
+	Description = L"Thermite. Burns at extremely high temperature.";
 
 	Properties = TYPE_PART;
 

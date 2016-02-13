@@ -28,7 +28,7 @@ Element_COAL::Element_COAL()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 200;
-	Description = "Coal, Burns very slowly. Gets red when hot.";
+	Description = L"Coal, Burns very slowly. Gets red when hot.";
 
 	Properties = TYPE_SOLID;
 

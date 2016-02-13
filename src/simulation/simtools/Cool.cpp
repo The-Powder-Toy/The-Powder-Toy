@@ -5,7 +5,7 @@ Tool_Cool::Tool_Cool()
 	Identifier = "DEFAULT_TOOL_COOL";
 	Name = "COOL";
 	Colour = PIXPACK(0x00DDFF);
-	Description = "Cools the targeted element.";
+	Description = L"Cools the targeted element.";
 }
 
 int Tool_Cool::Perform(Simulation * sim, Particle * cpart, int x, int y, float strength)

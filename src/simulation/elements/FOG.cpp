@@ -28,7 +28,7 @@ Element_FOG::Element_FOG()
 
 	Temperature = 243.15f;
 	HeatConduct = 100;
-	Description = "Fog, created when an electric current is passed through RIME.";
+	Description = L"Fog, created when an electric current is passed through RIME.";
 
 	Properties = TYPE_GAS|PROP_LIFE_DEC;
 

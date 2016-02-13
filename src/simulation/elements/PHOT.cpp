@@ -28,7 +28,7 @@ Element_PHOT::Element_PHOT()
 
 	Temperature = R_TEMP+900.0f+273.15f;
 	HeatConduct = 251;
-	Description = "Photons. Refracts through glass, scattered by quartz, and color-changed by different elements. Ignites flammable materials.";
+	Description = L"Photons. Refracts through glass, scattered by quartz, and color-changed by different elements. Ignites flammable materials.";
 
 	Properties = TYPE_ENERGY|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
 

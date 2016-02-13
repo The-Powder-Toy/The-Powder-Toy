@@ -28,7 +28,7 @@ Element_DRIC::Element_DRIC()
 
 	Temperature = 172.65f;
 	HeatConduct = 2;
-	Description = "Dry Ice, formed when CO2 is cooled.";
+	Description = L"Dry Ice, formed when CO2 is cooled.";
 
 	Properties = TYPE_SOLID;
 

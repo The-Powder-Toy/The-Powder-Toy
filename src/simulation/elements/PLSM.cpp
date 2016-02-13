@@ -28,7 +28,7 @@ Element_PLSM::Element_PLSM()
 
 	Temperature = 10000.0f		+273.15f;
 	HeatConduct = 5;
-	Description = "Plasma, extremely hot.";
+	Description = L"Plasma, extremely hot.";
 
 	Properties = TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL;
 

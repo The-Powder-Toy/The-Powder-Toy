@@ -28,7 +28,7 @@ Element_PSTN::Element_PSTN()
 
 	Temperature = 283.15f;
 	HeatConduct = 0;
-	Description = "Piston, extends and pushes particles.";
+	Description = L"Piston, extends and pushes particles.";
 
 	Properties = TYPE_SOLID;
 

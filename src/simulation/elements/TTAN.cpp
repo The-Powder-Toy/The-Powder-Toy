@@ -29,7 +29,7 @@ Element_TTAN::Element_TTAN()
 
 	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 251;
-	Description = "Titanium. Higher melting temperature than most other metals, blocks all air pressure.";
+	Description = L"Titanium. Higher melting temperature than most other metals, blocks all air pressure.";
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_HOT_GLOW|PROP_LIFE_DEC;
 

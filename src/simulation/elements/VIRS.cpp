@@ -28,7 +28,7 @@ Element_VIRS::Element_VIRS()
 
 	Temperature = 72.0f	+ 273.15f;
 	HeatConduct = 251;
-	Description = "Virus. Turns everything it touches into virus.";
+	Description = L"Virus. Turns everything it touches into virus.";
 
 	Properties = TYPE_LIQUID|PROP_DEADLY;
 

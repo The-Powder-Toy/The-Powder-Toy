@@ -28,7 +28,7 @@ Element_NSCN::Element_NSCN()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "N-Type Silicon, Will not transfer current to P-Type Silicon.";
+	Description = L"N-Type Silicon, Will not transfer current to P-Type Silicon.";
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC;
 

@@ -28,7 +28,7 @@ Element_WARP::Element_WARP()
 
 	Temperature = R_TEMP +273.15f;
 	HeatConduct = 100;
-	Description = "Displaces other elements.";
+	Description = L"Displaces other elements.";
 
 	Properties = TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL;
 

@@ -28,7 +28,7 @@ Element_LOVE::Element_LOVE()
 
 	Temperature = 373.0f;
 	HeatConduct = 40;
-	Description = "Love...";
+	Description = L"Love...";
 
 	Properties = TYPE_SOLID;
 

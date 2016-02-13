@@ -28,7 +28,7 @@ Element_VOID::Element_VOID()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "Hole, will drain away any particles.";
+	Description = L"Hole, will drain away any particles.";
 
 	Properties = TYPE_SOLID;
 

@@ -28,7 +28,7 @@ Element_SALT::Element_SALT()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 110;
-	Description = "Salt, dissolves in water.";
+	Description = L"Salt, dissolves in water.";
 
 	Properties = TYPE_PART;
 

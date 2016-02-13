@@ -28,7 +28,7 @@ Element_PROT::Element_PROT()
 
 	Temperature = R_TEMP+273.15f;
 	HeatConduct = 61;
-	Description = "Protons. Transfer heat to materials, and removes sparks.";
+	Description = L"Protons. Transfer heat to materials, and removes sparks.";
 
 	Properties = TYPE_ENERGY;
 

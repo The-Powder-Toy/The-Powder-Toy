@@ -28,7 +28,7 @@ Element_QRTZ::Element_QRTZ()
 
 	Temperature = R_TEMP+273.15f;
 	HeatConduct = 3;
-	Description = "Quartz, breakable mineral. Conducts but becomes brittle at lower temperatures.";
+	Description = L"Quartz, breakable mineral. Conducts but becomes brittle at lower temperatures.";
 
 	Properties = TYPE_SOLID|PROP_HOT_GLOW|PROP_LIFE_DEC;
 

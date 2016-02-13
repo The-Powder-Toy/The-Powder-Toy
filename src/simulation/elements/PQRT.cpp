@@ -28,7 +28,7 @@ Element_PQRT::Element_PQRT()
 
 	Temperature = R_TEMP+273.15f;
 	HeatConduct = 3;
-	Description = "Powdered quartz, broken form of QRTZ.";
+	Description = L"Powdered quartz, broken form of QRTZ.";
 
 	Properties = TYPE_PART| PROP_HOT_GLOW;
 

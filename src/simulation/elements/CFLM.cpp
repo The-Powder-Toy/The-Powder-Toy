@@ -33,7 +33,7 @@ Element_CFLM::Element_CFLM()
 
 	Temperature = 0.0f;
 	HeatConduct = 88;
-	Description = "Sub-zero flame.";
+	Description = L"Sub-zero flame.";
 
 	Properties = TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL;
 

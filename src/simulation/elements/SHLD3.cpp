@@ -28,7 +28,7 @@ Element_SHLD3::Element_SHLD3()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 0;
-	Description = "Shield lvl 3.";
+	Description = L"Shield lvl 3.";
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 

@@ -28,7 +28,7 @@ Element_ICEI::Element_ICEI()
 
 	Temperature = R_TEMP-50.0f+273.15f;
 	HeatConduct = 46;
-	Description = "Crushes under pressure. Cools down air.";
+	Description = L"Crushes under pressure. Cools down air.";
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC|PROP_NEUTPASS;
 

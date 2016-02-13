@@ -28,7 +28,7 @@ Element_PSTS::Element_PSTS()
 
 	Temperature = R_TEMP-2.0f	+273.15f;
 	HeatConduct = 29;
-	Description = "Solid form of PSTE.";
+	Description = L"Solid form of PSTE.";
 
 	Properties = TYPE_SOLID;
 

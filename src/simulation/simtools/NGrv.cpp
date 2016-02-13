@@ -6,7 +6,7 @@ Tool_NGrv::Tool_NGrv()
 	Identifier = "DEFAULT_TOOL_NGRV";
 	Name = "NGRV";
 	Colour = PIXPACK(0xAACCFF);
-	Description = "Creates a short-lasting negative gravity well.";
+	Description = L"Creates a short-lasting negative gravity well.";
 }
 
 int Tool_NGrv::Perform(Simulation * sim, Particle * cpart, int x, int y, float strength)

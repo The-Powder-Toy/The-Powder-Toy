@@ -28,7 +28,7 @@ Element_BVBR::Element_BVBR()
 
 	Temperature = 273.15f;
 	HeatConduct = 164;
-	Description = "Broken vibranium.";
+	Description = L"Broken vibranium.";
 
 	Properties = TYPE_PART|PROP_LIFE_DEC;
 

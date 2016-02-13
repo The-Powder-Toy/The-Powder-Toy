@@ -28,7 +28,7 @@ Element_116::Element_116()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
-	Description = "A failed shared velocity test.";
+	Description = L"A failed shared velocity test.";
 
 	Properties = TYPE_PART;
 

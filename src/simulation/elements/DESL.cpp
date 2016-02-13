@@ -28,7 +28,7 @@ Element_DESL::Element_DESL()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 42;
-	Description = "Liquid diesel. Explodes under high pressure and temperatures.";
+	Description = L"Liquid diesel. Explodes under high pressure and temperatures.";
 
 	Properties = TYPE_LIQUID;
 

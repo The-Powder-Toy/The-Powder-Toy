@@ -28,7 +28,7 @@ Element_CNCT::Element_CNCT()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 100;
-	Description = "Concrete, stronger than stone.";
+	Description = L"Concrete, stronger than stone.";
 
 	Properties = TYPE_PART|PROP_HOT_GLOW;
 
