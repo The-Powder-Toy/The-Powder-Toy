@@ -24,8 +24,8 @@ protected:
 	GameModel * m;
 	Type type;
 	std::string icon;
-	std::string description;
-	QuickOption(std::string icon, std::string description, GameModel * m, Type type) :
+	std::wstring description;
+	QuickOption(std::string icon, std::wstring description, GameModel * m, Type type) :
 		m(m),
 		type(type),
 		icon(icon),
@@ -59,8 +59,8 @@ public:
 
 	std::string GetIcon() { return icon; }
 	void SetIcon(std::string icon) { this->icon = icon; }
-	std::string GetDescription() { return description; }
-	void SetDescription(std::string description) { this->description = description; }
+	std::wstring GetDescription() { return description; }
+	void SetDescription(std::wstring description) { this->description = description; }
 	void Perform()
 	{
 		perform();

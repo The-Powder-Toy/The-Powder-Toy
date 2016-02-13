@@ -5,7 +5,7 @@ class SandEffectOption: public QuickOption
 {
 public:
 	SandEffectOption(GameModel * m):
-	QuickOption("P", "Sand effect", m, Toggle)
+	QuickOption("P", L"Sand effect", m, Toggle)
 	{
 
 	}
@@ -23,7 +23,7 @@ class DrawGravOption: public QuickOption
 {
 public:
 	DrawGravOption(GameModel * m):
-	QuickOption("G", "Draw gravity field \bg(ctrl+g)", m, Toggle)
+	QuickOption("G", L"Draw gravity field \bg(ctrl+g)", m, Toggle)
 	{
 
 	}
@@ -41,7 +41,7 @@ class DecorationsOption: public QuickOption
 {
 public:
 	DecorationsOption(GameModel * m):
-	QuickOption("D", "Draw decorations \bg(ctrl+b)", m, Toggle)
+	QuickOption("D", L"Draw decorations \bg(ctrl+b)", m, Toggle)
 	{
 
 	}
@@ -59,7 +59,7 @@ class NGravityOption: public QuickOption
 {
 public:
 	NGravityOption(GameModel * m):
-	QuickOption("N", "Newtonian Gravity \bg(n)", m, Toggle)
+	QuickOption("N", L"Newtonian Gravity \bg(n)", m, Toggle)
 	{
 
 	}
@@ -86,7 +86,7 @@ class AHeatOption: public QuickOption
 {
 public:
 	AHeatOption(GameModel * m):
-	QuickOption("A", "Ambient heat \bg(u)", m, Toggle)
+	QuickOption("A", L"Ambient heat \bg(u)", m, Toggle)
 	{
 
 	}
@@ -105,7 +105,7 @@ class ConsoleShowOption: public QuickOption
 	GameController * c;
 public:
 	ConsoleShowOption(GameModel * m, GameController * c_):
-	QuickOption("C", "Show Console \bg(~)", m, Toggle)
+	QuickOption("C", L"Show Console \bg(~)", m, Toggle)
 	{
 		c = c_;
 	}

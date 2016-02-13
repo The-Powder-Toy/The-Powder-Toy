@@ -6,7 +6,7 @@ struct gol_menu
 	const char *name;
 	pixel colour;
 	int goltype;
-	const char *description;
+	const wchar_t *description;
 };
 
 #endif

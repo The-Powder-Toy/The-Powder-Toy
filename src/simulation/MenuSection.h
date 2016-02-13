@@ -4,7 +4,7 @@
 struct menu_section
 {
 	const char *icon;
-	const char *name;
+	const wchar_t *name;
 	int itemcount;
 	int doshow;
 };

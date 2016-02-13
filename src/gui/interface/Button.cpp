@@ -6,7 +6,7 @@
 
 namespace ui {
 
-Button::Button(Point position, Point size, std::string buttonText, std::string toolTip):
+Button::Button(Point position, Point size, std::string buttonText, std::wstring toolTip):
 	Component(position, size),
 	ButtonText(buttonText),
 	toolTip(toolTip),

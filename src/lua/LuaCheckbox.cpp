@@ -28,7 +28,7 @@ LuaCheckbox::LuaCheckbox(lua_State * l) :
 	int sizeY = luaL_optinteger(l, 4, 10);
 	std::string text = luaL_optstring(l, 5, "");
 
-	checkbox = new ui::Checkbox(ui::Point(posX, posY), ui::Point(sizeX, sizeY), text, "");
+	checkbox = new ui::Checkbox(ui::Point(posX, posY), ui::Point(sizeX, sizeY), text, L"");
 	component = checkbox;
 	class ClickAction : public ui::CheckboxAction
 	{

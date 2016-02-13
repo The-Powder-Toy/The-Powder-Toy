@@ -21,7 +21,7 @@ public:
 class Button : public Component
 {
 public:
-	Button(Point position = Point(0, 0), Point size = Point(0, 0), std::string buttonText = "", std::string toolTip = "");
+	Button(Point position = Point(0, 0), Point size = Point(0, 0), std::string buttonText = "", std::wstring toolTip = L"");
 	virtual ~Button();
 
 	virtual void OnMouseClick(int x, int y, unsigned int button);
@@ -47,11 +47,11 @@ public:
 	void SetText(std::string buttonText);
 	void SetIcon(Icon icon);
 	inline std::string GetText() { return ButtonText; }
-	void SetToolTip(std::string newToolTip) { toolTip = newToolTip; }
+	void SetToolTip(std::wstring newToolTip) { toolTip = newToolTip; }
 protected:
 
 	std::string ButtonText;
-	std::string toolTip;
+	std::wstring toolTip;
 	std::string buttonDisplayText;
 
 	bool isButtonDown, isAltButtonDown, state, isMouseInside, isTogglable, toggle;

@@ -6,10 +6,10 @@
 class Menu
 {
 	char icon;
-	string description;
+	wstring description;
 	vector<Tool*> tools;
 public:
-	Menu(char icon_, string description_):
+	Menu(char icon_, wstring description_):
 		icon(icon_),
 		description(description_),
 		tools(vector<Tool*>())
@@ -36,7 +36,7 @@ public:
 		return icon;
 	}
 
-	string GetDescription()
+	wstring GetDescription()
 	{
 		return description;
 	}

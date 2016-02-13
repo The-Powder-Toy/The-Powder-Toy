@@ -12,7 +12,7 @@ struct wall_type
 	VideoBuffer * (*textureGen)(int, int, int);
 	const char *name;
 	const char *identifier;
-	const char *descs;
+	const wchar_t *descs;
 };
 
 #endif

@@ -2,7 +2,7 @@
 
 using namespace ui;
 
-Checkbox::Checkbox(ui::Point position, ui::Point size, std::string text, std::string toolTip):
+Checkbox::Checkbox(ui::Point position, ui::Point size, std::string text, std::wstring toolTip):
 	Component(position, size),
 	text(text),
 	toolTip(toolTip),

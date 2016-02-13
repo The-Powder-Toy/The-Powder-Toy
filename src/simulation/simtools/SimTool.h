@@ -13,7 +13,7 @@ public:
 	const char *Identifier;
 	const char *Name;
 	pixel Colour;
-	const char *Description;
+	const wchar_t *Description;
 	
 	SimTool();
 	virtual ~SimTool() {}
