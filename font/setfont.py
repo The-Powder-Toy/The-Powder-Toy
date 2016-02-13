@@ -8,8 +8,11 @@ sys.setdefaultencoding('UTF-8')
 
 fontchar = codecs.open('fontchar.txt', 'r', 'UTF-8')
 
-charindex = 255
-charhash = {}
+charindex = 0
+ptrcount = 256
+ptrindex = 4615
+lastchar = 255
+ptrline = ""
 fontfile = open('fontsample.h', 'r')
 contents = fontfile.readlines()
 fontfile.close()
@@ -48,20 +51,28 @@ for char in fontchar.read():
             byte = byte << 2 | (bitslice[k] << 1) | bitslice[k]
         line += "0x" + format(byte, '02X') + ", "
         i += 4
+    contents.insert(charindex + 260, line + "\n")
 
-    charhash[char] = charindex
-    contents.insert(charindex + 5, line + "\n")
+    currchar = int(repr(char)[4:8], 16)
+    for i in range(lastchar + 1, currchar):
+        if not ptrcount % 8:
+            ptrline = "    "
+        ptrline += "0x0000, "
+        if ptrcount % 8 == 7:
+            contents.insert(charindex + 262 + ((ptrcount + 1) / 8), ptrline + "\n")
+        ptrcount += 1
+    lastchar = currchar
 
-charcount = charindex - 255
-ptrindex = 4641
-contents.insert(charindex + 39, )
+    ptrindex += 26
+    if not ptrcount % 8:
+        ptrline = "    "
+    ptrline += "0x" + format(ptrindex, '0002X') + ", "
+    if ptrcount % 8 == 7:
+        contents.insert(charindex + 262 + ((ptrcount + 1) / 8), ptrline + "\n")
+    ptrcount += 1
 
 fontfile = open('font.h', 'w')
 fontfile.writelines(contents)
 fontfile.close()
-
-charhashfile = open('charhash.txt', 'w')
-charhashfile.write(repr(charhash))
-charhashfile.close()
 
 fontchar.close()
