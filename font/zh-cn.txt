@@ -1,0 +1,947 @@
+FPS=帧数
+Parts=像素
+GRID=网格线
+Empty=无
+Pressure=压力
+Temp=温度
+Life=Life
+Tmp=Tmp
+Sand effect=粉末渲染模式
+Draw gravity field=显示重力线
+Draw decorations=显示装饰层
+Newtonian Gravity=牛顿万有引力
+Ambient heat=环境热模拟
+Show Console=Lua控制台
+Walls=墙
+Electronics=电子类
+Powered Malterials=可控材料
+Sensors=传感器
+Force=动力材料
+Explosives爆炸物
+Gases=气体
+Liquids=液体
+Powders=粉末
+Solids=固体
+Radioactive=放射性物质
+Special=特殊
+Game Of Life=生命游戏
+Tools=工具
+Decoration tools=装饰工具
+Search of elemnts=搜索元素
+Find&open a simulation=从服务器搜索以及打开一个作品
+Open a simulation from your hard drive=从你的硬盘驱动器打开一个作品
+Reload the simulation=重新打开这个作品
+untitled simulation=作品无题
+Upload the simulation under new name=上传作品到服务器
+Save the simulation to your hard drive=把作品保存在硬盘驱动器
+Like this save=顶
+Dislike this save=踩
+no tags set=无标签
+Erase everthing=新建
+Sign into simulation server=登陆
+Edit profile=编辑用户
+Simulation options=游戏设置
+Renderer options=显示设置
+Pause/Resume the simulation=暂停/继续这个作品
+Search=搜索
+search=搜索
+By votes=以投票排列
+By Own=我的作品
+Press 'p' to take a screenshot=按‘p’截图
+Popular Tags=人气标签
+bomb=炸弹
+nuke=核武器
+explosion=爆炸
+fire=火焰
+laser=激光
+city=城市
+nuclear=原子能
+spark=火花
+plasma=等离子
+realistic=逼真的
+electronic=电子设备
+water=水
+photon=光子
+electronics=电子
+stickman=火柴人
+space=太空
+deut=重水
+engine=引擎
+reactor=反应堆
+explosive=炸弹
+electric=电
+electricity=电力
+power=动力
+bunker=堡垒
+Prev=上一页
+Page * of *=*页中的*页
+Next=下一页
+Date=日期
+Views=投票
+Open=打开
+Fav=至爱
+Report=举报
+Open in browser=通过浏览器打开
+Add Comment=填写评论
+Submit=发送
+Prev=上一页
+Save ID=存档ID
+Next=下一页
+Page * of *=*页中的*页
+Location=定位
+no location=没有定位
+Biography=签名
+no bio=无签名
+Save Browser=浏览存档
+Save to server=上传到服务器
+save name=存档名称
+Publish=发布
+Paused=储存
+Save description=简介
+Cancel=取消
+Save=上传
+Preview=预览
+Publishing info=发布信息
+Save Uploading Rules=保存发布设置
+Error=错误
+You must specify a save name=存档未命名
+Dismiss=关闭
+Save to computer=保存到电脑
+Cancel=取消
+Save=保存
+Sever login=连接到服务器
+Sign Out=登出
+Sign in=登陆
+Edit Abatar=设置头像
+Location=定位
+Biography=签名
+Close=关闭
+Save=保存
+Heat simulation Introduced in version 34 
+Can cause odd behaviour when disables=
+热模拟，在34.0版本后加入，关闭后会有很神奇的效果
+Ambient heat simulation Introduced in version 50
+Can cause odd/broken behavior with many saves=
+环境热，在50.0版本后加入，模拟热辐射
+Newtonian gravity Introduced in version 48
+May cause poor performance on older computer=
+牛顿万有引力，在48.0版本后加入，许多元素需要开启，影响帧数
+Water equalisation Introduced in version 61
+May cause poor performance with a lot of water
+连通器模拟，在61.0版本后加入，大量液体影响帧数
+Air Simulation Mode=气压模拟设定
+On=全部开启
+pressure off=关闭压力
+Velocity off=关闭速度
+Off=全部关闭
+No Update=关闭推演
+Gravity Simulation Mode=重力模拟模式
+Vertical=标准
+Off=关闭
+Radial=中心
+Edge Mode=边界模式
+Void=虚空
+Solid=固体
+Large screen - Double window size for smaller screens=
+大窗口模式-比原来大两倍
+Fullscreen - Fill the entire screen=全屏模式
+Fast Quit - Always exit completey when hitting close=
+快速关闭-点击红叉叉时完全关闭游戏
+Show Avatars - Disable if you have a slow connection=
+是否显示头像-点击头像可以显示这个ID的资料
+Open Date Folder - Open the date and preferences folder=
+打开cmd
+OK=确定
+Adds Special flare effect to some elements=
+对特殊元素添加闪光效果
+Glow effect on some elements=
+加特技
+Makes everthing be drawn like a blob=
+模糊效果
+Glow effect on sparks=
+电火花可以发光
+Fire effect for gasses=
+给气体加特技
+Blur effect for Liquids=
+给液体加特技
+Basic rendering,without this,most things will be inisible=
+粒子渲染，没有它，你就只能看见特技
+Displays pressure as red and blue,and velocity as whit=
+用蓝色和红色显示压力，白色显示速度
+Displays velocity and positive:up/down adds blue，right/left adds red，still pressure adds green=
+显示正压的扩散速度，向上/向下移动为蓝色，左/右为红色，增加压力为绿色
+Displays pressure，red is positive and blue is negative=
+显示压力，正压为红，负压为蓝
+Display the temperature of the air like heat display does=
+显示空气的热成像图
+Enable moving solids,stickman guns,and premium(tm) graphics=
+开启无尽装逼氪金狗眼模式
+Element paths persist on the screen for a while=
+显示元素在屏幕上移动的轨迹
+Gravity lensing，Newtonian Gravity bends light with this on=
+重力透镜，牛顿引力可以弯曲光线
+Displays temperature of the elements,dark blue is coldest,pink is hottest=
+显示热成像图，深蓝色是最冷的，粉红色是最热的
+No special effects at all for anything,overrides all other options and deco=
+无视所有的特效
+Displays the life value of elements in grayscale gradients=
+显示life灰度图，life越高的元素越暗
+Changes colors of elements slightly to show heat diffusing through them=
+在原物质颜色不变的基础上用明暗变化的波纹来显示热量的扩散
+Life display mode preset=
+life显示模式
+Heat gradient display mode preset=
+热传导显示模式
+Fancy display mode preset=
+特效显示模式
+Blob display mode preset=
+模糊显示模式
+Persistent display mode preset=
+轨迹显示模式
+Velocity display mode preset=
+气流显示模式
+Alternative velocity display mode preset=
+速压混合显示模式
+Nothing display mode preset=
+无特效模式
+Heat display mode preset=
+温度显示模式
+Fire display mode preset=
+标准显示模式
+Pressure display mode preset=
+气压显示模式
+1.Allows all particles,but blocks air=
+允许所有粒子通过，阻挡压力
+2.Allows energy particles，blocks all other particles=
+只允许压力和能量形式的粒子通过
+3.Gravity wall,Newtonian Gravity has no eff inside a box drawn with this=
+阻挡万有引力，允许其他一切物质通过
+4.Allows gases,blocks all other particles=
+只允许气体和压力通过
+5.E-Hole，absorbs particles,releases them when powered=
+未通电时会吸收进入其中的物质，通电时释放
+6.Conductor,Allows all particles to pass through and conducts electricty=
+允许所有物质通过，可以传导SPRK
+7.Allows powders,blocks all other particles=
+只允许粉末通过
+8.Allows air,but blocks all particles=
+只允许压力通过
+9.Basic wall,blocks everthing=
+死墙，阻挡一切
+10.Absorbs particles but lets air currents through=
+吸收所有物质，只允许压力通过
+11.Allows liquids,blocks all other particles,Conductive=
+只允许液体、压力通过，可以导电
+12.Fan.Accelerates air . use the line tool to set direction and strength=
+加速气流，使用直线工具来设置方向和强度，不阻挡任何物质
+13.Streamline.set start point of a streamline=
+设置起点，然后指示风向
+14.Detector. Generales electricity when a particle is inside=
+当有物质通过时向直接接触的导体传送电脉冲并发出红光。
+15.E-Wall.Becomes transparent when electricity is connected=
+通电时能通过物质，反之阻挡一切。
+16.Blocks everything.Conductive=
+阻挡一切。导体。
+17.Erases walls=
+清除墙
+
+DRAY=DRAY
+-Dislicator ray.Replicates a line of particles in front of it=
+Duplicator射线，复制一行元素在它前面
+TUNG=TUNG
+-Tungsten.Brittle metal with a very high melting point=
+钨，脆金属，熔点很高
+
+CRAY=CRAY
+-Particle Ray Emitter.Creates a beam of particles set by its ctype,with a range set by tmp=
+物质射线发射器，发射一条与它CTYPE值相同的元素，TMP值修改长度
+
+WWLD=WWLD
+-WireWorld wires,conducts based on a set of GOL-like rules=
+Wire World线，细胞自动机的一种
+
+MERO=MERO
+Mercury.Volume changes with temperature,Conductive=
+汞，体积随温度变化，导体
+
+EMP=EMP
+-Electromagnetic Pulse.Breaks activated electronics=
+EMP，会随机摧毁所有正在工作(通电)的电子产品
+
+ARAY=ARAY
+-Ray Emitter.Rays create points when they collide=
+A射线发射器，激活后发射射线
+
+WIFI=WIFI
+-Wireless transmitter,tranfers spark to any other wifi on the same temperature channet=
+WIFI，能将电火花传输到任何相同频道的wifi
+
+INST=INST
+-Instanlly conducts,PSCN to charge,NSCN to take=
+超导体，PSCN输入，NSCN接收
+
+TESC=TESC
+-Tesla coil! Creates lightning when sparked=
+特斯拉线圈！ 通电时产生闪电
+
+INWR=INWR
+-Insulated Wire.Doesn't conduct to metal or semiconductors=
+绝缘线，只能在P型硅(PSCN)与N型硅(NSCN)之间传递电脉冲
+
+SWCH=SWCH
+-Only conducts when switched on.(PSCN switches on,NSCN switches off)=
+仅当开关打开时导电。PSC)输入电脉冲可以打开开关，NSCN输入电脉冲可以关闭开关
+
+BTRY=BTRY
+-Generates infinite electricity=
+能提供稳定的电脉冲给导电元素
+
+ETRD=ETRD
+-Electrode. Creates a surface that allows Plasma arcs.(Use sparingly)=
+一旦通电，会在相邻两个电极之间产生等离子体
+
+PTCT=PTCT
+-Semi-conductor.Only conducts electricity when cold(Less than 100C)=
+半导体，只有低于100℃时才导电
+
+NTCT=NTCT
+-Semi-conductor.Only conducts electricity when hot(More than 100C)=
+半导体，只有超过100℃时才导电
+
+INSL=INSL
+-Insulator,does not conduct heat and blocks electricity=
+固体，阻隔热量和电脉冲
+
+NSCN=NSCN
+-N-Type Silicon,Will not transfer current to P-Type Silicon=
+N型硅，不会向P型硅(PSCN)传递电脉冲
+
+PSCN=PSCN
+-P-Type Silicon,Will transfer current to any conductor=
+可以电脉冲传导给任何导体
+
+SPRK=SPRK
+-Electricity.The basis of all electronics in TPT, travels along wires and other conductive elements=
+电脉冲，并不是一个真实的粒子，仅仅当点选在导体(除了墙)上时才是可见的
+
+METL=METL
+-The basic conductor.Meltable=
+最基础的导体，可以熔化
+
+Powered Material
+PPIP=PPIP
+-Powered version of PIPE,use PSCN/NSCN to Activate/Deactivate=
+PIPE的可控形式，利用PSCN激活时其中的物质将会运输，用NSCN则会停止其中物质的运输，用INST会使物质向反方向运输
+
+GPMP=GPMP
+
+-Gravity pump. Changes gravity to its temp when activated.(use HEAT/COOL)=
+激活时改变其万有引力为自身温度值，可以使用升温/降温笔(HEAT/COOL)来改变自身温度
+
+PBCN=PBCN
+-Powered breakable clone=
+激活时和可破坏复制体(BCLN)相同，复制与之相接触的物质，但可以被破坏
+
+PUMP=PUMP
+-Pressure pump.Changes pressure to its temp when actiated.(use HEAT/COOL)=
+激活时改变使周围压力值变为自身温度值，自身温度可用升温/降温笔(HEAT/COOL)控制
+
+PVOD=PVOD
+-Powered VOID.When activated,destroys entering particles.
+一旦激活就如同虚空(VOID)一样，吸收一切物质。改变其Ctype值可以令其只吸收特定物质.
+
+
+STOR=STOR
+-Captures and stores a single particle. releases when charges with PSCN,also passes to PIPE=
+吸收一个像素的与之接触的物质，修改它的Ctype值可以使它吸收特定的物质，用PSCN激活后释放，也可以传递给动力管(PIPE)
+
+DLAY=DLAY
+-Conducts with temperature-dependent delay.(use HEAT/COOL)=
+当电脉冲通过延时计时会延迟X帧，X等于延时计的温度，可以使用升温笔(HEAT)和降温笔(COOL)来改变温度
+
+HSWC=HSWC
+-Heat switch, Conducts heat only when activated=
+当激活时才可以导热
+
+PCLN=PCLN
+-Powered clone. When activated,duplicates any particles it touches=
+激活时变得和CLNE一样，可以复制与之接触的物质。也可以通过修改Ctype值来改变复制的物质。
+
+LCRY=LCRY
+-Liquid Crystal. Changes colour when charged.(PSCN Charges,NSCN Discharges)=
+液晶，激活时改变颜色（PSCN激活，NSCN关闭）
+
+Sensors
+PSNS=PSNS
+-Pressure sensor,creates a spark when the pressure is greater that its temperatue=
+可以用HEAT/COOL来改变自身温度，当压力大于其温度值时，压力传感器会发出电脉冲给周围的导电体
+
+TSNS=TSNS
+-Temperature sensor,creates a spark when there's a nearby particle with a greater temperature=
+可以用HEAT/COOL来改变自身温度，当周围有温度比它高的物质时，温度传感器会发出电脉冲给周围的导电体。
+
+DTEC=DTEC
+-Detector, creates a spark when something with its ctype is nearby=
+探测器，当周围有一个ctype值与之相等的元素时产生电流
+
+INVS=INVS
+-Invisible to particles while under pressure=
+当施加压力时隐形，使物质通过
+
+Force
+FRME=FRME
+-Frame,can be used with pistons to push many particles=
+用于增加活塞一次性推动物质的数量
+
+PSTN=PSTN
+-Piston,extends and pushes particles=
+活塞，当用PSCN激活时，活塞会变长，碰到物质后它不会停止而是继续推动物质以上升，使用NSCN激活可以使它缩短
+
+DMG=DMG
+-Generates damaging pressure and break any elements it hits
+对碰到它的物质表面产生一个破坏性的压力
+
+RPEL=RPEL
+-Repels or attracts particles based on its temperature
+和FRAY一样，根据温度来吸引或推开物质
+
+FRAY=FRAY
+-Force Emitter. Pushes or pulls objects based on its temperature. Use like ARAY
+通电后，会沿着电流方向给物体一个力（类似于ARAY），当物质温度大于FRAY的温度时，物质将会被FRAY给吸引，反之，则物质会被FRAY推开
+
+DCEL=DCEL
+-Decelerator,slows down nearby elements=
+减速器，减速能量粒子
+
+ACEL=ACEL
+-Accelerator,speeds up mearby elements
+加速器，加速能量粒子
+
+PIPE=PIPE
+-PIPE，moves particles around.Once the BRCK generates,erase some for the exit.Then the PIPE gentates and is useable=
+PIPE,可用于移动元素。当放置时周围出现一圈BRCK,移除一些BRCK作为PIPE的出口，之后PIPE会自动充能并变得可用
+
+Explosives
+GBMB=GBMB
+-Gravity bomb. Sticks to the first object it touches then produces a strong gravity push=
+碰到物质时会吸附在物质上并产生一个巨大的引力，随后再突然变为巨大的斥力从而破坏物质。
+
+IGNC=IGNC
+-Ignition cord. Burns slowly with fire and sparks=
+导火索，电脉冲或者明火或者达到燃烧点都能点燃
+
+TNT=TNT
+-TNT. Explodes all at once=
+TNT，瞬间爆炸！
+
+C-5=C-5
+-Cold explosive. Set off by anything cold=
+在温度低于-174℃的实体接触时爆炸。对压力不敏感。
+
+BOMB=BOMB
+-Bomb. Explodes and destroys all surrounding particles when it touches something=
+摧毁大部分碰到它的物体，爆炸时在8个像素的范围内产生9725.85℃的高温，同时产生的EMBR
+
+FWRK=FWRK
+-Original version firework. Activated by heat/neutrons=
+原始烟花，由NEUT或者达到燃点时激发，比FIRW升的更高，但火焰苍白
+
+DEST=DEST
+-More destructive Bomb,can break through virtually anything=
+升级版BOMB,几乎可以摧毁任何东西
+
+LIGH=LIGH
+-Lightning. Change the brush size to set the size of the lightning=
+仿真的闪电，改变笔刷大小可以调整闪电大小和威力，可以穿过墙
+
+FIRW=FIRW
+-Firewoks! Colorful,set off by fire=
+五颜六色的烟花！ 用火点燃
+
+CFLM=CFLM
+-Sub-zero flame=
+据对零度的火焰
+
+THRM=THRM
+-Thermite. Burns at extremely high temperature
+铝热剂，燃烧产生巨大的热量
+
+THDR=THDR
+-Lightning！ Very hot，inflicts damage upon most materials,and transfers current to metals=
+很热的类液体物质，高温带电，与物质接触时产生巨大压力
+
+LRBD=LRBD
+-Liquid Rubidium=
+液态铷
+
+RBDM=RBDM
+-Rubidium, Explosive,especially on contact with water.Low
+melting point=
+低熔点，遇水爆炸,可以导电
+
+C-4=C-4
+-Solid pressure sensitive explosive=
+压力敏感型炸药，暴露在高压下、电脉冲或者达到爆炸点都可以引发爆炸
+
+NITR=NITR
+-Nitroglycerin. Pressure sensitive explosive.Mix with CLST to make TNT=
+压力敏感型炸药，压力下、电脉冲、明火都可以引起爆炸,和CLST混合来制造TNT
+
+GUN=GUN
+-Gunpowder.Light dust,explodes on contact with fire or spark=
+以粉末形式爆炸，可以被明火、电脉冲或达到爆炸点引爆
+
+FIRE=FIRE
+-Ignites flammable materials.Heats air=
+明火，用于点燃或加热
+
+Gases
+HYGN=HYGN
+-Hydrogen. Combuste with OXYG wo make WATR. Undergoes fusion at high temperature and pressure=
+与O2燃烧形成WATR,高温高压下聚变
+
+BOYL=BOYL
+-Boyle, varuable pressure gas. Expands when heated=
+加热产生气压
+
+FOG=FOG
+-Fog, created when an electric current is passed through RIME=
+RIME受到电脉冲刺激会形成FOG
+
+CAUS=CAUS
+-Caustic Gas, acts like ACID=
+酸气，特性类似于ACID
+
+CO2=CO2
+-Carbon Dioxide. Heavt gas, drifts downwards. Carbonates water and turn to dry ice when cold=
+高密度气体。真空中会下沉。与水反应生成BUBW，低温下会变成DRIC
+
+OXYG=OXYG
+-Oxygen gas, Ignites easily=
+氧气，高度易燃的气体
+
+SMKE=SMKE
+-Smoke, created by fire=
+火焰冷却到较低温度时会产生烟。可以燃烧
+
+NBLE=NBLE
+-Noble Gas, Diffuses and conductive, Ionizes into plasma when introduced to electricity=
+惰性气体，通电后能电离成等PLSM
+
+PLSM=PLSM
+-Plasma,extremely hot=
+等离子，炽热的气体，9725.85℃
+
+WTRY=WTRY
+-Steam, Produced form hot water=
+水蒸气，水气化后形成
+
+GAS=GAS
+-Diffuses quickly and flammable, Liquefies into OIL under pressure=
+易燃气体，OIL在低压下形成
+
+Liquids
+VIRS=VIRS
+-Virus. Turns everthing it touches into virus=
+病毒，会将其碰触到的所有物质变成VIRS
+
+SOAP=SOAP
+-Soap, Creates bubbles, washes off deco color,and cures virus=
+肥皂，可以产生泡泡，洗去染色以及治愈VIRS的感染
+
+Gel=Gel
+-A liquid with variable bisscosity and heat conductivity-
+能够吸收水分，之后颜色会变深、变得不那么粘稠
+
+PSTR=PSTE
+-Colloid, hardens under pressure=
+胶体，在压力下变硬
+
+BIZR=BIZR
+-Bizarre... contradicts the normal state changes. Paints other elements with its deco color=
+与一般物理规律相反的液体，高温时凝固，低温时汽化,还可以把其他与之相遇的物质染成它的颜色
+
+BUBW=BUBW
+-Carbonated water. Slowly releases CO2=
+苏打水，释放出二氧化碳(CO2)并产生压力
+
+GLOW=GLOW
+-Glow,Glows under pressure=
+荧光液，随状态、压力、温度的变化而改变颜色
+
+LOXY=LOXY
+-Liquid Oxygen. Very cold. Reacts with fire=
+液氧，非常冷。遇火燃烧
+
+DEST=DEST
+-Liquid diesel. Explodes under high pressure and temperature
+柴油，温度达到燃点或压力超过极限时点燃
+
+LN2=LN2
+-Liquid Nitrogen. Very cold,disappears whenever it touches anything warmer=
+液氮，遇到比它热的物质后会消失并产生压力
+
+MWAX=MWAX
+-Liquid Wax. Hardens into WAX at 45 dagrees=
+融化的WAX，可以燃烧，45℃时凝固成WAX
+
+SLTW=SLTW
+-Saltwater, conducts electricity, difficult to freeze=
+盐水，比水具更高沸点和更低的凝固点
+
+DSTW=DSTW
+-Distilled water, does not conduct electricity=
+纯水，不导电
+
+ACID=ACID
+-Dissolves almost everything
+可以腐蚀几乎所有物质
+
+LAVA=LAVA
+-Molten lava. lgnites flammable materials. Generated when metals and other materials melt,dolidifies when cold=
+点燃可以引燃的物体.当金属或其他物体融化时可以产生.寒冷时会融化
+
+OIL=OIL
+-Flammable,turns into GAS at low pressure or high temperature. Can be formed with NEUT and NITR=
+可燃.低压或高温时可产生GAS.NEUT和NITR碰撞可以形成
+
+WATR=WATR
+-Conducts electricity,freezes,and extinguishes fires-
+可以导电，凝固和扑灭火焰
+
+CLST=CLST
+-Clay dust. Produces paste when mixed with water
+粘土砂，和水结合时产生PSTE
+
+BREL=BREL
+-Broken electronics. Formed from EMP blasts, and constantly sparked while under pressure, turn to EXOT=
+使用EMP摧毁电子设备留下的物质,在高压下通电会形成EXOT
+
+PQRT=PQRT
+-Powdered quartz, broken form of QRTZ=
+石英砂,QRTZ粉碎后形成
+
+ANAR=ANAR
+-Anti-air. Very ligh dust, which behaves opposite gravity=
+十分轻的粉尘，它遵循相反的引力/压力/速度定律
+
+GRAY=GRAY
+-Very light dust. Changes colour based on velocity=
+十分轻的粉末，随着速度改变颜色
+
+FRZZ=FRZZ 
+-powder. When melted,forms ice that always cools. Spreads with regular water=
+轻粉末，很冷，能立即冻住水。能将WATR转变成FRZW
+
+BCOL=BCOL
+-Broken Coat. Heavy particles, burns slowly
+=煤渣，重粉末，只能用明火点燃，缓慢燃烧
+
+FSEP=FSEP
+-Fuse Powder. Burns slowly like FUSE=
+燃烧缓慢,特性类似于FUSE
+
+YEST=YEST
+-Yeast,grows when warm (~37C)=
+酵母，在37℃时会繁殖
+
+BGLA=BGLA
+-Broken Glass, heavy particles formed when glass break under pressure. Meltable. Bagels=
+玻璃渣，熔化后能重新变回GLAS
+
+SAND=SAND
+-Sand, Heavy particles. Melts into glass=
+重粉末，熔化后冷却能形成GLAS
+
+BRMT=BRMT
+-Broken metal. Created when iron rusts or when metals break from pressure=
+铁粉，一些金属生锈或暴露在高压下形成
+
+SALT=SALT
+-Salt, dissolves in water=
+盐，可溶于水
+
+CNCT=CNCT
+-Concrete, stronger than stone=
+重粉末，比石粉坚固且更难熔化
+
+SNOW=SNOW
+-Ligh particles. Created when ICE breaks under pressure=
+轻粉末，ICE在压力下破坏形成雪粉
+
+STNE=STNE
+-Heavy particles. Meltable=
+重粉末，会熔化成为岩浆
+
+DUST=DUST
+-Heavy particles. Flammable=
+轻粉末，难燃烧且火焰微弱
+
+Solids
+GOLD=GOLD
+-Corrosion resistant metal, will reverse corrosion of iron=
+金属,抗腐蚀(但通电时会受到酸的腐蚀)，可以保护IRON免受腐蚀
+
+TTAN=TTAN
+-Titanium. Higher melting temperature than most other metals, blocks all air pressure=
+金属固体，坚固的材料。熔点很高，能导电,不传导压力，不论任何厚度都可以阻隔压力
+
+QRTZ=QRTZ
+-Quartz, breakable mineral. Conducts but becomes brittle at lower temperatures=
+较脆的矿物，温度越低越脆
+
+FILT=FILT
+-Fitler for photons, changes the color=
+可以改变PHOT的颜色，颜色随温度变化
+
+SHLD=SHLD
+-Shield, spark it to grow=
+通电时，会自动生长出保护膜
+
+VINE=VINE
+-Vine, can frow along WOOD
+藤蔓，吸水生长,也可以沿木头生长
+
+RIME=RIME
+-Solid,created when steam cools rapidly and goes through sublimation=
+固体，水蒸气快速冷却即可形成
+
+SPNG=SPNG
+-Sponge, absorbs water. Is not a moving solid=
+海绵，可以吸水，但是不能移动
+
+DRIC=DRIC
+-Dry ice, formed when CO2 is cooled=
+干冰，CO2达到凝固点时形成
+
+IRON=IRON
+-Rusts with salt, can be used for electrolysis of WATR=
+被盐等物质腐蚀，可以电解水
+
+FUSE=FUSE
+-Burns slowly. Ignites at somewhat high temperature or with electricity=
+高温下或通电能缓慢燃烧
+
+BRCK=BRCK
+-Brick, breakable building material=
+砖块，易碎的建筑材料
+
+COAL=COAL
+-Coat, Burns very slowly. Gets red when hot=
+煤，非常缓慢的燃烧，高温时变红
+
+NICE=NICE
+-Nitrogen ice, very cold,will melt into LN2 when heated only slightly=
+固态氮，很冷,液氮凝固形成
+
+GLAS=GLAS
+-Glass. Mellable. Shatters under pressure, and refracts photons=
+固体，在压力下会破碎，可以熔化，还可以折射光子
+
+WAX=WAX
+Wax. Melts at moderately high temperatures=
+蜡，加热会融化
+
+BMTL=BMTL
+-Breakable metal. Common conductive building material, can melt and break under pressure=
+脆铁.可以用做建筑材料.可以被融化.高压下被破坏
+
+PLNT=PLNT
+-Plant,drinks water and grows=
+植物，吸收水份生长
+
+WOOD=WOOD
+-Wood, flammable=
+木头，可燃物
+
+ICE=ICE
+-Crushes under pressure. Cools down air=
+在高压下被破坏.可以冷却空气
+
+GOO
+-Deforms and disappears under pressure=
+固体，在压力下会变形消失
+
+Radioactive
+GRVT=GRVT
+-Gravitons. Greate Newtonian Gravity
+会在周围产生引力场
+
+PROT=PROT
+-Protons. Transfer heat to materials,and removes sparks=
+质子.可以传导热量到另一个物体，也可以移除电流
+
+BVBR=BVBR
+-Broken vibranium=
+破碎的VIBR
+
+VIBR=VIBR
+-Vibranium, Stores energy and releases it in violent explosions=
+奈布林,储存能量，超过限度后爆炸
+
+EXOT=EXOT
+-Exotic matter. Explodes with exccess exposure to electrons. Has many other odd reactions=
+奇异物质，当被大量电子轰击时爆炸，有许多古怪的反应
+
+ELEC=ELEC
+-Eletrons. Sparks electronics, reacts with NEUT and WATR=
+电子.可以电击导体，可以跟水和中子起反应
+
+SING=SING
+-Singularity. Creates huge amounts of negative pressure and destroys everything=
+奇点。产生一个巨大的低压并且摧毁一切（并不）碰到它的物体
+
+ISZS=ISZS
+-Solid form of ISOZ,slowly decays into PHOT=
+isoz的固体状态。慢慢的转化为phot
+
+ISOZ=ISOZ
+-Isotope-Z.Redioactive liquid, decays into photons when wouching PHOT or under negative pressure=
+放射性液体，可以被PHOT或负压激发，会释放出更多的光子。
+
+WARP=WARP
+-Displaces other elements=
+会随机将接触到的物质传送出去
+
+DUET=DEUT
+-Deuterium oxide. Volume changes with temp,radioactive with neutrons=
+重水.体积随温度变化而变化.遇到中子时触发放射性反应
+
+AMTR=AMTR
+-Anti-Matter,destroys a majority of particles=
+反物质.摧毁大部分物体
+
+URAN=URAN
+-Heavy particles. Generates heat under pressure=
+重元素.受到压力产生热量
+
+PHOT=PHOT
+-Photons. Refracts through glass, scattered by duartz, and color-changed by different elements.Ignites flammable materials=
+光子，在玻璃中折射，在石英中散射，经过不同元素时会变成不同的颜色。会点燃易燃物质。
+
+PLUT=PLUT
+-Heavy particles. FIssile. Generates neutrons under pressure
+重元素。裂变材料，压力下产生中子
+
+NEUT=NEUT
+-Neutrons. Interact with matter in odd ways
+中子，与许多物质产生有趣的反应
+
+Special
+FIGH=FIGH
+-Fighter. Tries to kill stickmen. You must first give it an element to kill him with=
+打手.会尝试杀掉火柴人.你必须先给他一个元素用来杀掉他
+
+WHOL=WHOL
+-White hole, pushes away other particles with gravity.(Requires Newtonian gravity)=
+白洞.把所有靠近他的物体用引力推开(需要开启牛顿引力)
+
+BHOL=BHOL
+-Black hole,sucks in particles using gravity.(Requires Newtonian gravity)=
+黑洞.用引力吸入物体.(需要开启牛顿引力)
+
+TRON=TRON
+-Smart particles, Travels in straight lines and avoids obstactes.Grows with time=
+
+智能粒子，直线行进并会躲避障碍。随时间变长。
+
+STK2=STK2
+-Second stickman. Don't kill him! Control with wasd=
+火柴人二号，不要杀死他！w a s d控制
+
+PRTO=PRTO
+-Portal OUT. Particles come out here. Also temperature dependent channels. (same as WIFI)=
+和传送门入口配套，物质从这里出来,也有温度形成的频道（和WIFI类似）
+
+PRTI=PRTI
+-Portal IN. Particles go in here. Also has temperature dependent channels.(same as WIFI)=
+可以传送物质和电脉冲，也有温度形成的频道(和Wi-Fi相似)
+
+BCLN=BCLN
+-Breakable Clone=
+可以破坏的CLNE
+
+CONV=CONV
+-Solid. Converts everything into whatever it first touches=
+固体，转化一切碰到他的物体
+
+STKM=STKM
+-Stickman. Don't kill him! Control with the arrow keys=
+火柴人，不要杀掉他！使用方向键来控制其运动
+
+VENT=VENT
+-Air vent, creates pressure and pushes other particles away=
+排气孔,创造正压来把靠近他的物体推走
+
+VACU=VACU
+-Vacuum, sucks in other particles and heats up=
+吸气孔，吞噬被吸引的其他物体，并发出热量
+
+DMND=DMND
+-Diamond. Indestructible=
+钻石.不可摧毁
+
+VOID=VOID
+-Hole,will drain away any particles=
+虚空.吞噬一切物质
+
+CLNE=CLNE
+-Solid. Duplicates any particles it touches=
+固体.复制一切碰到他的物质
+
+Game Of Life
+不翻译
+
+Tools
+1.Sample an element on the screen=
+选取屏幕上的元素
+
+2.Sign, Displays text, Click on a sign to edit it or anywhere else to place a new one=
+气泡.显示信息，点击一个气泡来编辑他或者点击屏幕任意一个地方来放置气泡
+
+PROP=PROP
+-Property Drawing Tool.Use to alter the properties of elements in the field=
+属性笔.在笔刷范围内改变物体的特性
+
+WIND=WIND
+-Creates air movement=
+按住并移动光标可以产生气流
+
+NGRV=NGRV
+-Creates a short-lasting negative gravity well=
+制造一个短暂的斥力场
+
+PGRV=PGRV
+-Creates a short-lasting gravity well=
+制造一个短暂的引力场
+
+VAC=VAC
+-Vacuum, reduces air pressure=
+负压笔.制造负压
+
+AIR=AIR
+-Air, creates airflow and pressure=
+压力笔.制造压力
+
+COOL=COOL
+-Cools the targeted element=
+冷却笔刷内的元素
+
+HEAT=HEAT
+-Heats the targeted element
+加热笔刷内的元素
+
+Decoration tools
+Decoration Presets=装饰颜色
+Pick colour=色彩取样
+Draw decoration(No blending)=涂色工具(不混色)
+Erase any set decoration=橡皮擦
+Smudge tool, blends surrounding deco together=
+渐变工具.把不同的颜色混合在一起
+Colour blending: Divide=增暗
+Colour blending: Multiply=增亮
+Colour blending: Subtract=删除
+Colour blending: Add=增加
+
+Search for elements
+Element Search=搜索元素
