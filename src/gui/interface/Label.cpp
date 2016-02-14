@@ -87,7 +87,7 @@ void Label::updateMultiline()
 			switch(c)
 			{
 				case ' ':
-					lineWidth += Graphics::CharWidth(c);
+					lineWidth += Graphics::CharWidth((wchar_t)c);
 					lineWidth += wordWidth;
 					wordWidth = 0;
 					break;
@@ -96,7 +96,7 @@ void Label::updateMultiline()
 					lines++;
 					break;
 				default:
-					wordWidth += Graphics::CharWidth(c);
+					wordWidth += Graphics::CharWidth((wchar_t)c);
 					break;
 			}
 			if (pc == ' ')
