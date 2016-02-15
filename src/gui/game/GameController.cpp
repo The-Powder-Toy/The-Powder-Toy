@@ -1,4 +1,7 @@
 #include <iostream>
+#include <locale>
+#include <codecvt>
+#include <string>
 #include <queue>
 #include "Config.h"
 #include "Format.h"
@@ -1483,6 +1486,19 @@ std::string GameController::ElementResolve(int type, int ctype)
 	return "";
 }
 
+std::wstring GameController::WElementResolve(int type, int ctype)
+{
+	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+	if(gameModel && gameModel->GetSimulation())
+	{
+		if (type == PT_LIFE && ctype >= 0 && ctype < NGOL && gameModel->GetSimulation()->gmenu)
+			return converter.from_bytes(gameModel->GetSimulation()->gmenu[ctype].name);
+		else if (type >= 0 && type < PT_NUM && gameModel->GetSimulation()->elements)
+			return std::wstring(converter.from_bytes(gameModel->GetSimulation()->elements[type].Name));
+	}
+	return L"";
+}
+
 bool GameController::IsValidElement(int type)
 {
 	if(gameModel && gameModel->GetSimulation())
@@ -1499,6 +1515,15 @@ std::string GameController::WallName(int type)
 		return std::string(gameModel->GetSimulation()->wtypes[type].name);
 	else
 		return "";
+}
+
+std::wstring GameController::WWallName(int type)
+{
+	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+	if(gameModel && gameModel->GetSimulation() && gameModel->GetSimulation()->wtypes && type >= 0 && type < UI_WALLCOUNT)
+		return std::wstring(converter.from_bytes(gameModel->GetSimulation()->wtypes[type].name));
+	else
+		return L"";
 }
 
 void GameController::NotifyAuthUserChanged(Client * sender)

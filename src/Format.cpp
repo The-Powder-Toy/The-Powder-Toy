@@ -1,5 +1,7 @@
 
 #include <ctime>
+#include <locale>
+#include <codecvt>
 #include <string>
 #include <stdexcept>
 #include <iostream>
@@ -126,6 +128,28 @@ std::string format::CleanString(std::string dirtyString, bool ascii, bool color,
 std::string format::CleanString(const char * dirtyData, bool ascii, bool color, bool newlines, bool numeric)
 {
 	return CleanString(std::string(dirtyData), ascii, color, newlines, numeric);
+}
+
+std::string format::WStringToString(std::wstring wcs)
+{
+	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+	return converter.to_bytes(wcs);
+}
+
+std::string format::WStringToString(const wchar_t * wcs)
+{
+	return WStringToString(std::wstring(wcs));
+}
+
+std::wstring format::StringToWString(std::string str)
+{
+	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+	return converter.from_bytes(str);
+}
+
+std::wstring format::StringToWString(const char * str)
+{
+	return StringToWString(std::string(str));
 }
 
 std::vector<char> format::VideoBufferToPTI(const VideoBuffer & vidBuf)

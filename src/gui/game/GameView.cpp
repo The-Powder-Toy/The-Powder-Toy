@@ -2254,7 +2254,7 @@ void GameView::OnDraw()
 			alpha = 255-toolTipPresence*3;
 		if (alpha < 50)
 			alpha = 50;
-		std::stringstream sampleInfo;
+		std::wstringstream sampleInfo;
 		sampleInfo.precision(2);
 
 		int type = sample.particle.type;
@@ -2270,74 +2270,74 @@ void GameView::OnDraw()
 			if (showDebug)
 			{
 				if (type == PT_LAVA && c->IsValidElement(ctype))
-					sampleInfo << "Molten " << c->ElementResolve(ctype, -1);
+					sampleInfo << L"Molten " << c->WElementResolve(ctype, -1);
 				else if ((type == PT_PIPE || type == PT_PPIP) && c->IsValidElement(ctype))
-					sampleInfo << c->ElementResolve(type, -1) << " with " << c->ElementResolve(ctype, (int)sample.particle.pavg[1]);
+					sampleInfo << c->WElementResolve(type, -1) << L" ，内有 " << c->WElementResolve(ctype, (int)sample.particle.pavg[1]);
 				else if (type == PT_LIFE)
-					sampleInfo << c->ElementResolve(type, ctype);
+					sampleInfo << c->WElementResolve(type, ctype);
 				else if (type == PT_FILT)
 				{
-					sampleInfo << c->ElementResolve(type, ctype);
-					const char* filtModes[] = {"set colour", "AND", "OR", "subtract colour", "red shift", "blue shift", "no effect", "XOR", "NOT", "old QRTZ scattering"};
+					sampleInfo << c->WElementResolve(type, ctype);
+					const wchar_t* filtModes[] = {L"设置颜色", L"交", L"并", L"减", L"红移", L"蓝移", L"无效果", L"异或", L"取反", L"旧QRTZ散射"};
 					if (sample.particle.tmp>=0 && sample.particle.tmp<=9)
-						sampleInfo << " (" << filtModes[sample.particle.tmp] << ")";
+						sampleInfo << L" (" << filtModes[sample.particle.tmp] << L")";
 					else
-						sampleInfo << " (unknown mode)";
+						sampleInfo << " (未知模式)";
 				}
 				else
 				{
-					sampleInfo << c->ElementResolve(type, ctype);
+					sampleInfo << c->WElementResolve(type, ctype);
 					if (wavelengthGfx)
-						sampleInfo << " (" << ctype << ")";
+						sampleInfo << L" (" << ctype << L")";
 					// Some elements store extra LIFE info in upper bits of ctype, instead of tmp/tmp2
 					else if (type == PT_CRAY || type == PT_DRAY || type == PT_CONV)
-						sampleInfo << " (" << c->ElementResolve(ctype&0xFF, ctype>>8) << ")";
+						sampleInfo << L" (" << c->WElementResolve(ctype&0xFF, ctype>>8) << L")";
 					else if (c->IsValidElement(ctype))
-						sampleInfo << " (" << c->ElementResolve(ctype, -1) << ")";
+						sampleInfo << L" (" << c->WElementResolve(ctype, -1) << L")";
 					else
-						sampleInfo << " ()";
+						sampleInfo << L" ()";
 				}
-				sampleInfo << ", Temp: " << std::fixed << sample.particle.temp -273.15f << " C";
-				sampleInfo << ", Life: " << sample.particle.life;
-				sampleInfo << ", Tmp: " << sample.particle.tmp;
+				sampleInfo << L", 温度: " << std::fixed << sample.particle.temp -273.15f << L" C";
+				sampleInfo << L", Life: " << sample.particle.life;
+				sampleInfo << L", Tmp: " << sample.particle.tmp;
 
 				// only elements that use .tmp2 show it in the debug HUD
 				if (type == PT_CRAY || type == PT_DRAY || type == PT_EXOT || type == PT_LIGH || type == PT_SOAP || type == PT_TRON || type == PT_VIBR || type == PT_VIRS || type == PT_WARP || type == PT_LCRY || type == PT_CBNW || type == PT_TSNS || type == PT_DTEC || type == PT_PSTN)
-					sampleInfo << ", Tmp2: " << sample.particle.tmp2;
+					sampleInfo << L", Tmp2: " << sample.particle.tmp2;
 
-				sampleInfo << ", Pressure: " << std::fixed << sample.AirPressure;
+				sampleInfo << L", 压强: " << std::fixed << sample.AirPressure;
 			}
 			else
 			{
 				if (type == PT_LAVA && c->IsValidElement(ctype))
-					sampleInfo << "Molten " << c->ElementResolve(ctype, -1);
+					sampleInfo << L"融化的" << c->WElementResolve(ctype, -1);
 				else if ((type == PT_PIPE || type == PT_PPIP) && c->IsValidElement(ctype))
-					sampleInfo << c->ElementResolve(type, -1) << " with " << c->ElementResolve(ctype, (int)sample.particle.pavg[1]);
+					sampleInfo << c->WElementResolve(type, -1) << L", 内有" << c->WElementResolve(ctype, (int)sample.particle.pavg[1]);
 				else if (type == PT_LIFE)
-					sampleInfo << c->ElementResolve(type, ctype);
+					sampleInfo << c->WElementResolve(type, ctype);
 				else
-					sampleInfo << c->ElementResolve(type, ctype);
-				sampleInfo << ", Temp: " << std::fixed << sample.particle.temp - 273.15f << " C";
-				sampleInfo << ", Pressure: " << std::fixed << sample.AirPressure;
+					sampleInfo << c->WElementResolve(type, ctype);
+				sampleInfo << L", 温度: " << std::fixed << sample.particle.temp - 273.15f << L" C";
+				sampleInfo << L", 压强: " << std::fixed << sample.AirPressure;
 			}
 		}
 		else if (sample.WallType)
 		{
-			sampleInfo << c->WallName(sample.WallType);
-			sampleInfo << ", Pressure: " << std::fixed << sample.AirPressure;
+			sampleInfo << c->WWallName(sample.WallType);
+			sampleInfo << L", 压强: " << std::fixed << sample.AirPressure;
 		}
 		else if (sample.isMouseInSim)
 		{
-			sampleInfo << "Empty, Pressure: " << std::fixed << sample.AirPressure;
+			sampleInfo << L"空, 压强: " << std::fixed << sample.AirPressure;
 		}
 		else
 		{
-			sampleInfo << "Empty";
+			sampleInfo << L"空";
 		}
 
-		int textWidth = Graphics::textwidth((char*)sampleInfo.str().c_str());
+		int textWidth = Graphics::textwidth((wchar_t*)sampleInfo.str().c_str());
 		g->fillrect(XRES-20-textWidth, 12, textWidth+8, 15, 0, 0, 0, alpha*0.5f);
-		g->drawtext(XRES-16-textWidth, 16, (const char*)sampleInfo.str().c_str(), 255, 255, 255, alpha*0.75f);
+		g->drawtext(XRES-16-textWidth, 16, (const wchar_t*)sampleInfo.str().c_str(), 255, 255, 255, alpha*0.75f);
 
 #ifndef OGLI
 		if (wavelengthGfx)
@@ -2378,50 +2378,50 @@ void GameView::OnDraw()
 
 		if (showDebug)
 		{
-			sampleInfo.str(std::string());
+			sampleInfo.str(std::wstring());
 
 			if (type)
-				sampleInfo << "#" << sample.ParticleID << ", ";
+				sampleInfo << L"#" << sample.ParticleID << L", ";
 
-			sampleInfo << "X:" << sample.PositionX << " Y:" << sample.PositionY;
+			sampleInfo << L"X:" << sample.PositionX << L" Y:" << sample.PositionY;
 
 			if (sample.Gravity)
-				sampleInfo << ", GX: " << sample.GravityVelocityX << " GY: " << sample.GravityVelocityY;
+				sampleInfo << L", GX: " << sample.GravityVelocityX << L" GY: " << sample.GravityVelocityY;
 
 			if (c->GetAHeatEnable())
-				sampleInfo << ", AHeat: " << std::fixed << sample.AirTemperature -273.15f << " C";
+				sampleInfo << L", AHeat: " << std::fixed << sample.AirTemperature -273.15f << L" C";
 
-			textWidth = Graphics::textwidth((char*)sampleInfo.str().c_str());
+			textWidth = Graphics::textwidth((wchar_t*)sampleInfo.str().c_str());
 			g->fillrect(XRES-20-textWidth, 27, textWidth+8, 14, 0, 0, 0, alpha*0.5f);
-			g->drawtext(XRES-16-textWidth, 30, (const char*)sampleInfo.str().c_str(), 255, 255, 255, alpha*0.75f);
+			g->drawtext(XRES-16-textWidth, 30, (const wchar_t*)sampleInfo.str().c_str(), 255, 255, 255, alpha*0.75f);
 		}
 	}
 
 	if(showHud && introText < 51)
 	{
 		//FPS and some version info
-		std::stringstream fpsInfo;
+		std::wstringstream fpsInfo;
 		fpsInfo.precision(2);
-		fpsInfo << "FPS: " << std::fixed << ui::Engine::Ref().GetFps();
+		fpsInfo << L"帧数: " << std::fixed << ui::Engine::Ref().GetFps();
 #ifdef DEBUG
 		fpsInfo << " Delta: " << std::fixed << ui::Engine::Ref().GetDelta();
 #endif
 
 		if (showDebug)
-			fpsInfo << " Parts: " << sample.NumParts;
+			fpsInfo << L" 粒子数: " << sample.NumParts;
 		if (c->GetReplaceModeFlags()&REPLACE_MODE)
-			fpsInfo << " [REPLACE MODE]";
+			fpsInfo << L" [替换模式]";
 		if (c->GetReplaceModeFlags()&SPECIFIC_DELETE)
-			fpsInfo << " [SPECIFIC DELETE]";
+			fpsInfo << L" [特定删除]";
 		if (ren->GetGridSize())
-			fpsInfo << " [GRID: " << ren->GetGridSize() << "]";
+			fpsInfo << L" [网格: " << ren->GetGridSize() << L"]";
 		if (ren->findingElement)
-			fpsInfo << " [FIND]";
+			fpsInfo << L" [查找]";
 
-		int textWidth = Graphics::textwidth((char*)fpsInfo.str().c_str());
+		int textWidth = Graphics::textwidth((wchar_t*)fpsInfo.str().c_str());
 		int alpha = 255-introText*5;
 		g->fillrect(12, 12, textWidth+8, 15, 0, 0, 0, alpha*0.5);
-		g->drawtext(16, 16, (const char*)fpsInfo.str().c_str(), 32, 216, 255, alpha*0.75);
+		g->drawtext(16, 16, (const wchar_t*)fpsInfo.str().c_str(), 32, 216, 255, alpha*0.75);
 	}
 
 	//Tooltips

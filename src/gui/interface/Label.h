@@ -12,12 +12,12 @@ namespace ui
 	class Label : public Component
 	{
 	protected:
-		std::string textFragments;
-		std::string textLines;
-		std::string displayText;
-		std::string tDisplayText;
+		std::wstring textFragments;
+		std::wstring textLines;
+		std::wstring displayText;
+		std::wstring tDisplayText;
 
-		std::string text;
+		std::wstring text;
 		Colour textColour;
 		int selectionIndex0;
 		int selectionIndex1;
@@ -43,14 +43,18 @@ namespace ui
 	public:
 		//Label(Window* parent_state, std::string labelText);
 		Label(Point position, Point size, std::string labelText);
+		Label(Point position, Point size, std::wstring labelText);
 		//Label(std::string labelText);
 		virtual ~Label();
 
 		virtual void SetMultiline(bool status);
 
 		virtual void SetText(std::string text);
+		virtual void SetText(std::wstring text);
 		virtual void SetDisplayText(std::string newText);
+		virtual void SetDisplayText(std::wstring newText);
 		virtual std::string GetText();
+		virtual std::wstring GetWText();
 
 		virtual bool HasSelection();
 		virtual void ClearSelection();
