@@ -39,7 +39,7 @@ private:
 	std::wstring toolTip2;
 	SplitButtonAction * splitActionCallback;
 public:
-	SplitButton(ui::Point position, ui::Point size, std::string buttonText, std::wstring toolTip, std::wstring toolTip2, int split) :
+	SplitButton(ui::Point position, ui::Point size, std::wstring buttonText, std::wstring toolTip, std::wstring toolTip2, int split) :
 		Button(position, size, buttonText, toolTip),
 		showSplit(true),
 		splitPosition(split),
@@ -170,13 +170,13 @@ GameView::GameView():
 	lastMenu(-1),
 
 	toolTipPresence(0),
-	toolTip(""),
+	toolTip(L""),
 	isToolTipFadingIn(false),
 	toolTipPosition(-1, -1),
 	infoTipPresence(0),
 	infoTip(""),
 	buttonTipShow(0),
-	buttonTip(""),
+	buttonTip(L""),
 	isButtonTipFadingIn(false),
 	introText(2048),
 	introTextMessage(introTextData),
@@ -273,7 +273,7 @@ GameView::GameView():
 				v->c->SaveAsCurrent();
 		}
 	};
-	saveSimulationButton = new SplitButton(ui::Point(currentX, Size.Y-16), ui::Point(150, 15), "[untitled simulation]", L"", L"", 19);
+	saveSimulationButton = new SplitButton(ui::Point(currentX, Size.Y-16), ui::Point(150, 15), L"[未命名模拟]", L"", L"", 19);
 	saveSimulationButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	saveSimulationButton->SetIcon(IconSave);
 	currentX+=151;
@@ -327,7 +327,7 @@ GameView::GameView():
 			v->c->OpenTags();
 		}
 	};
-	tagSimulationButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(227, 15), "[no tags set]", L"Add simulation tags");
+	tagSimulationButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(227, 15), L"[无标签]", L"Add simulation tags");
 	tagSimulationButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	tagSimulationButton->SetIcon(IconTag);
 	currentX+=252;
@@ -364,7 +364,7 @@ GameView::GameView():
 			v->c->OpenProfile();
 		}
 	};
-	loginButton = new SplitButton(ui::Point(Size.X-141, Size.Y-16), ui::Point(92, 15), "[sign in]", L"Sign into simulation server", L"Edit Profile", 19);
+	loginButton = new SplitButton(ui::Point(Size.X-141, Size.Y-16), ui::Point(92, 15), L"[登陆]", L"Sign into simulation server", L"Edit Profile", 19);
 	loginButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	loginButton->SetIcon(IconLogin);
 	((SplitButton*)loginButton)->SetSplitActionCallback(new LoginAction(this));
@@ -428,7 +428,7 @@ GameView::GameView():
 			v->c->OpenElementSearch();
 		}
 	};
-	ui::Button * tempButton = new ui::Button(ui::Point(WINDOWW-16, WINDOWH-32), ui::Point(15, 15), "\xE5", L"Search for elements");
+	ui::Button * tempButton = new ui::Button(ui::Point(WINDOWW-16, WINDOWH-32), ui::Point(15, 15), L"\xE5", L"Search for elements");
 	tempButton->Appearance.Margin = ui::Border(0, 2, 3, 2);
 	tempButton->SetActionCallback(new ElementSearchAction(this));
 	AddComponent(tempButton);
@@ -587,8 +587,8 @@ void GameView::NotifyMenuListChanged(GameModel * sender)
 	vector<Menu*> menuList = sender->GetMenuList();
 	for (int i = (int)menuList.size()-1; i >= 0; i--)
 	{
-		std::string tempString = "";
-		tempString += menuList[i]->GetIcon();
+		std::wstring tempString = L"";
+		tempString += menuList[i]->GetWIcon();
 		ui::Button * tempButton = new ui::Button(ui::Point(WINDOWW-16, currentY), ui::Point(15, 15), tempString, menuList[i]->GetDescription());
 		tempButton->Appearance.Margin = ui::Border(0, 2, 3, 2);
 		tempButton->SetTogglable(true);
@@ -882,7 +882,7 @@ void GameView::NotifyUserChanged(GameModel * sender)
 {
 	if(!sender->GetUser().ID)
 	{
-		loginButton->SetText("[sign in]");
+		loginButton->SetText(L"[登陆]");
 		((SplitButton*)loginButton)->SetShowSplit(false);
 		((SplitButton*)loginButton)->SetRightToolTip(L"Sign in to simulation server");
 	}
@@ -905,7 +905,7 @@ void GameView::NotifyPausedChanged(GameModel * sender)
 
 void GameView::NotifyToolTipChanged(GameModel * sender)
 {
-	toolTip = sender->GetToolTip();
+	toolTip = sender->GetWToolTip();
 }
 
 void GameView::NotifyInfoTipChanged(GameModel * sender)
@@ -991,13 +991,13 @@ void GameView::NotifySaveChanged(GameModel * sender)
 		upVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 0, 0));
 		downVoteButton->Appearance.BorderDisabled = ui::Colour(100, 100, 100);
 		tagSimulationButton->Enabled = false;
-		tagSimulationButton->SetText("[no tags set]");
+		tagSimulationButton->SetText(L"[无标签]");
 		currentSaveType = 2;
 	}
 	else
 	{
 		((SplitButton*)saveSimulationButton)->SetShowSplit(false);
-		saveSimulationButton->SetText("[untitled simulation]");
+		saveSimulationButton->SetText(L"[未命名模拟]");
 		reloadButton->Enabled = false;
 		upVoteButton->Enabled = false;
 		upVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 0, 0));
@@ -1006,7 +1006,7 @@ void GameView::NotifySaveChanged(GameModel * sender)
 		downVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 0, 0));
 		downVoteButton->Appearance.BorderDisabled = ui::Colour(100, 100, 100),
 		tagSimulationButton->Enabled = false;
-		tagSimulationButton->SetText("[no tags set]");
+		tagSimulationButton->SetText(L"[无标签]");
 		currentSaveType = 0;
 	}
 	saveSimulationButton->Enabled = (saveSimulationButtonEnabled || ctrlBehaviour);
@@ -1280,6 +1280,35 @@ void GameView::ToolTip(ui::Point senderPosition, std::string toolTip)
 	{
 		if (selectMode == PlaceSave || selectMode == SelectNone)
 		{
+			buttonTip = format::StringToWString(toolTip);
+			isButtonTipFadingIn = true;
+		}
+	}
+	// quickoption and menu tooltips
+	else if(senderPosition.X > Size.X-BARSIZE)// < Size.Y-(quickOptionButtons.size()+1)*16)
+	{
+		this->toolTip = format::StringToWString(toolTip);
+		toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((wchar_t*)toolTip.c_str()), senderPosition.Y+3);
+		if(toolTipPosition.Y+10 > Size.Y-MENUSIZE)
+			toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((wchar_t*)toolTip.c_str()), Size.Y-MENUSIZE-10);
+		isToolTipFadingIn = true;
+	}
+	// element tooltips
+	else
+	{
+		this->toolTip = format::StringToWString(toolTip);
+		toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((wchar_t*)toolTip.c_str()), Size.Y-MENUSIZE-10);
+		isToolTipFadingIn = true;
+	}
+}
+
+void GameView::ToolTip(ui::Point senderPosition, std::wstring toolTip)
+{
+	// buttom button tooltips
+	if (senderPosition.Y > Size.Y-17)
+	{
+		if (selectMode == PlaceSave || selectMode == SelectNone)
+		{
 			buttonTip = toolTip;
 			isButtonTipFadingIn = true;
 		}
@@ -1288,16 +1317,16 @@ void GameView::ToolTip(ui::Point senderPosition, std::string toolTip)
 	else if(senderPosition.X > Size.X-BARSIZE)// < Size.Y-(quickOptionButtons.size()+1)*16)
 	{
 		this->toolTip = toolTip;
-		toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((char*)toolTip.c_str()), senderPosition.Y+3);
+		toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((wchar_t*)toolTip.c_str()), senderPosition.Y+3);
 		if(toolTipPosition.Y+10 > Size.Y-MENUSIZE)
-			toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((char*)toolTip.c_str()), Size.Y-MENUSIZE-10);
+			toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((wchar_t*)toolTip.c_str()), Size.Y-MENUSIZE-10);
 		isToolTipFadingIn = true;
 	}
 	// element tooltips
 	else
 	{
 		this->toolTip = toolTip;
-		toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((char*)toolTip.c_str()), Size.Y-MENUSIZE-10);
+		toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((wchar_t*)toolTip.c_str()), Size.Y-MENUSIZE-10);
 		isToolTipFadingIn = true;
 	}
 }
@@ -1325,7 +1354,7 @@ void GameView::BeginStampSelection()
 	selectMode = SelectStamp;
 	selectPoint1 = selectPoint2 = ui::Point(-1, -1);
 	isMouseDown = false;
-	buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to create a stamp (right click = cancel)";
+	buttonTip = L"\x0F\xEF\xEF\020Click-and-drag to specify an area to create a stamp (right click = cancel)";
 	buttonTipShow = 120;
 }
 
@@ -1518,7 +1547,7 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 			selectMode = SelectCopy;
 			selectPoint1 = selectPoint2 = ui::Point(-1, -1);
 			isMouseDown = false;
-			buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to copy (right click = cancel)";
+			buttonTip = L"\x0F\xEF\xEF\020Click-and-drag to specify an area to copy (right click = cancel)";
 			buttonTipShow = 120;
 		}
 		break;
@@ -1528,7 +1557,7 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 			selectMode = SelectCut;
 			selectPoint1 = selectPoint2 = ui::Point(-1, -1);
 			isMouseDown = false;
-			buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to copy then cut (right click = cancel)";
+			buttonTip = L"\x0F\xEF\xEF\020Click-and-drag to specify an area to copy then cut (right click = cancel)";
 			buttonTipShow = 120;
 		}
 		break;
@@ -1676,17 +1705,17 @@ void GameView::OnTick(float dt)
 			char buff[256];
 			strcpy(buff, str+3);
 			buff[pos-3] = 0;
-			std::stringstream tooltip;
+			std::wstringstream tooltip;
 			switch (type)
 			{
 			case 'c':
-				tooltip << "Go to save ID:" << buff;
+				tooltip << L"Go to save ID:" << buff;
 				break;
 			case 't':
-				tooltip << "Open forum thread " << buff << " in browser";
+				tooltip << L"Open forum thread " << buff << L" in browser";
 				break;
 			case 's':
-				tooltip << "Search for " << buff;
+				tooltip << L"Search for " << buff;
 				break;
 			}
 			ToolTip(ui::Point(0, Size.Y), tooltip.str());
@@ -2434,14 +2463,14 @@ void GameView::OnDraw()
 	if(toolTipPresence && toolTipPosition.X!=-1 && toolTipPosition.Y!=-1 && toolTip.length())
 	{
 		if (toolTipPosition.Y == Size.Y-MENUSIZE-10)
-			g->drawtext_outline(toolTipPosition.X, toolTipPosition.Y, (char*)toolTip.c_str(), 255, 255, 255, toolTipPresence>51?255:toolTipPresence*5);
+			g->drawtext_outline(toolTipPosition.X, toolTipPosition.Y, (wchar_t*)toolTip.c_str(), 255, 255, 255, toolTipPresence>51?255:toolTipPresence*5);
 		else
-			g->drawtext(toolTipPosition.X, toolTipPosition.Y, (char*)toolTip.c_str(), 255, 255, 255, toolTipPresence>51?255:toolTipPresence*5);
+			g->drawtext(toolTipPosition.X, toolTipPosition.Y, (wchar_t*)toolTip.c_str(), 255, 255, 255, toolTipPresence>51?255:toolTipPresence*5);
 	}
 
 	if(buttonTipShow > 0)
 	{
-		g->drawtext(16, Size.Y-MENUSIZE-24, (char*)buttonTip.c_str(), 255, 255, 255, buttonTipShow>51?255:buttonTipShow*5);
+		g->drawtext(16, Size.Y-MENUSIZE-24, (wchar_t*)buttonTip.c_str(), 255, 255, 255, buttonTipShow>51?255:buttonTipShow*5);
 	}
 
 	//Introduction text

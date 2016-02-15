@@ -5,6 +5,7 @@
 #include "Misc.h"
 #include "Component.h"
 #include "Colour.h"
+#include "Format.h"
 
 namespace ui
 {
@@ -22,6 +23,7 @@ class Button : public Component
 {
 public:
 	Button(Point position = Point(0, 0), Point size = Point(0, 0), std::string buttonText = "", std::wstring toolTip = L"");
+	Button(Point position = Point(0, 0), Point size = Point(0, 0), std::wstring buttonText = L"", std::wstring toolTip = L"");
 	virtual ~Button();
 
 	virtual void OnMouseClick(int x, int y, unsigned int button);
@@ -45,14 +47,16 @@ public:
 	void SetActionCallback(ButtonAction * action);
 	ButtonAction * GetActionCallback() { return actionCallback; }
 	void SetText(std::string buttonText);
+	void SetText(std::wstring buttonText);
 	void SetIcon(Icon icon);
-	inline std::string GetText() { return ButtonText; }
+	inline std::string GetText() { return format::WStringToString(ButtonText); }
+	inline std::wstring GetWText() { return ButtonText; }
 	void SetToolTip(std::wstring newToolTip) { toolTip = newToolTip; }
 protected:
 
-	std::string ButtonText;
+	std::wstring ButtonText;
 	std::wstring toolTip;
-	std::string buttonDisplayText;
+	std::wstring buttonDisplayText;
 
 	bool isButtonDown, isAltButtonDown, state, isMouseInside, isTogglable, toggle;
 	ButtonAction * actionCallback;

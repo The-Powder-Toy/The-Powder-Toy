@@ -1,6 +1,7 @@
 #include "CopyTextButton.h"
 #include "Colour.h"
 #include "gui/Style.h"
+#include "Format.h"
 
 namespace ui
 {
@@ -19,7 +20,7 @@ namespace ui
 	void CopyTextButton::OnMouseClick(int x, int y, unsigned int button)
 	{
 		ui::Button::OnMouseClick(x, y, button);
-		ClipboardPush(ButtonText);
+		ClipboardPush(format::WStringToString(ButtonText));
 
 		copyTextLabel->SetText("Copied!");
 

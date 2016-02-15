@@ -240,7 +240,7 @@ void GameModel::BuildMenus()
 	//Create menus
 	for(int i = 0; i < SC_TOTAL; i++)
 	{
-		menuList.push_back(new Menu((const char)sim->msections[i].icon[0], sim->msections[i].name));
+		menuList.push_back(new Menu((const wchar_t)sim->msections[i].icon[0], sim->msections[i].name));
 	}
 
 	//Build menus from Simulation elements
@@ -960,6 +960,12 @@ void GameModel::RemoveNotification(Notification * notification)
 
 void GameModel::SetToolTip(std::string text)
 {
+	toolTip = format::StringToWString(text);
+	notifyToolTipChanged();
+}
+
+void GameModel::SetToolTip(std::wstring text)
+{
 	toolTip = text;
 	notifyToolTipChanged();
 }
@@ -971,6 +977,11 @@ void GameModel::SetInfoTip(std::string text)
 }
 
 std::string GameModel::GetToolTip()
+{
+	return format::WStringToString(toolTip);
+}
+
+std::wstring GameModel::GetWToolTip()
 {
 	return toolTip;
 }

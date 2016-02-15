@@ -2,6 +2,7 @@
 #include "graphics/Graphics.h"
 #include "graphics/Renderer.h"
 #include "RenderView.h"
+#include "Format.h"
 
 class RenderView::RenderModeAction: public ui::CheckboxAction
 {
@@ -79,7 +80,7 @@ public:
 RenderView::RenderView():
 	ui::Window(ui::Point(0, 0), ui::Point(XRES, WINDOWH)),
 	ren(NULL),
-	toolTip(""),
+	toolTip(L""),
 	toolTipPresence(0),
 	isToolTipFadingIn(false)
 {
@@ -416,6 +417,12 @@ void RenderView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bo
 }
 
 void RenderView::ToolTip(ui::Point senderPosition, std::string toolTip)
+{
+	this->toolTip = format::StringToWString(toolTip);
+	this->isToolTipFadingIn = true;
+}
+
+void RenderView::ToolTip(ui::Point senderPosition, std::wstring toolTip)
 {
 	this->toolTip = toolTip;
 	this->isToolTipFadingIn = true;

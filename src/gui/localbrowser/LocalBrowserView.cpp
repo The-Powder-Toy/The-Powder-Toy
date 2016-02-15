@@ -21,9 +21,9 @@ LocalBrowserView::LocalBrowserView():
 	lastChanged(0),
 	pageCount(0)
 {
-	nextButton = new ui::Button(ui::Point(WINDOWW-52, WINDOWH-18), ui::Point(50, 16), "Next \x95");
-	previousButton = new ui::Button(ui::Point(2, WINDOWH-18), ui::Point(50, 16), "\x96 Prev");
-	undeleteButton = new ui::Button(ui::Point(WINDOWW-122, WINDOWH-18), ui::Point(60, 16), "Rescan");
+	nextButton = new ui::Button(ui::Point(WINDOWW-52, WINDOWH-18), ui::Point(50, 16), L"Next \x95");
+	previousButton = new ui::Button(ui::Point(2, WINDOWH-18), ui::Point(50, 16), L"\x96 Prev");
+	undeleteButton = new ui::Button(ui::Point(WINDOWW-122, WINDOWH-18), ui::Point(60, 16), L"Rescan");
 	AddComponent(nextButton);
 	AddComponent(previousButton);
 	AddComponent(undeleteButton);

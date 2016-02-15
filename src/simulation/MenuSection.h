@@ -3,7 +3,7 @@
 
 struct menu_section
 {
-	const char *icon;
+	const wchar_t *icon;
 	const wchar_t *name;
 	int itemcount;
 	int doshow;

@@ -5,11 +5,11 @@
 
 class Menu
 {
-	char icon;
+	wchar_t icon;
 	wstring description;
 	vector<Tool*> tools;
 public:
-	Menu(char icon_, wstring description_):
+	Menu(wchar_t icon_, wstring description_):
 		icon(icon_),
 		description(description_),
 		tools(vector<Tool*>())
@@ -32,6 +32,11 @@ public:
 	}
 
 	char GetIcon()
+	{
+		return icon;
+	}
+
+	wchar_t GetWIcon()
 	{
 		return icon;
 	}

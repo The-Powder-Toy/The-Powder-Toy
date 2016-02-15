@@ -1,5 +1,3 @@
-#include <locale>
-#include <codecvt>
 #include <string>
 #include "Config.h"
 #include "Format.h"

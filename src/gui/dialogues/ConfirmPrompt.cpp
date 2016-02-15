@@ -48,7 +48,7 @@ ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, ConfirmDial
 	};
 
 
-	ui::Button * cancelButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(Size.X-75, 16), "Cancel");
+	ui::Button * cancelButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(Size.X-75, 16), L"取消");
 	cancelButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	cancelButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	cancelButton->Appearance.BorderInactive = ui::Colour(200, 200, 200);
@@ -56,7 +56,7 @@ ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, ConfirmDial
 	AddComponent(cancelButton);
 	SetCancelButton(cancelButton);
 
-	ui::Button * okayButton = new ui::Button(ui::Point(Size.X-76, Size.Y-16), ui::Point(76, 16), "Continue");
+	ui::Button * okayButton = new ui::Button(ui::Point(Size.X-76, Size.Y-16), ui::Point(76, 16), L"继续");
 	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	okayButton->Appearance.TextInactive = style::Colour::WarningTitle;
@@ -110,7 +110,7 @@ ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, std::string
 	};
 
 
-	ui::Button * cancelButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(Size.X-75, 16), "Cancel");
+	ui::Button * cancelButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(Size.X-75, 16), L"取消");
 	cancelButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	cancelButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	cancelButton->Appearance.BorderInactive = ui::Colour(200, 200, 200);

@@ -115,7 +115,7 @@ void TagsView::NotifyTagsChanged(TagsModel * sender)
 
 			if(sender->GetSave()->GetUserName() == Client::Ref().GetAuthUser().Username || Client::Ref().GetAuthUser().UserElevation == User::ElevationAdmin || Client::Ref().GetAuthUser().UserElevation == User::ElevationModerator)
 			{
-				ui::Button * tempButton = new ui::Button(ui::Point(15, 37+(16*i)), ui::Point(11, 12));
+				ui::Button * tempButton = new ui::Button(ui::Point(15, 37 + (16 * i)), ui::Point(11, 12), L"");
 				tempButton->Appearance.icon = IconDelete;
 				tempButton->Appearance.Border = ui::Border(0);
 				tempButton->Appearance.Margin.Top += 2;

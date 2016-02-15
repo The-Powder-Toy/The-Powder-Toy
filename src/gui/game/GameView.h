@@ -54,13 +54,13 @@ private:
 	int lastMenu;
 
 	int toolTipPresence;
-	std::string toolTip;
+	std::wstring toolTip;
 	bool isToolTipFadingIn;
 	ui::Point toolTipPosition;
 	int infoTipPresence;
 	std::string infoTip;
 	int buttonTipShow;
-	std::string buttonTip;
+	std::wstring buttonTip;
 	bool isButtonTipFadingIn;
 	int introText;
 	std::string introTextMessage;
@@ -183,6 +183,7 @@ public:
 
 
 	virtual void ToolTip(ui::Point senderPosition, std::string toolTip);
+	virtual void ToolTip(ui::Point senderPosition, std::wstring toolTip);
 
 	virtual void OnMouseMove(int x, int y, int dx, int dy);
 	virtual void OnMouseDown(int x, int y, unsigned button);

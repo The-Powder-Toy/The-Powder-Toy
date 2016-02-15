@@ -25,9 +25,9 @@ SearchView::SearchView():
 
 	Client::Ref().AddListener(this);
 
-	nextButton = new ui::Button(ui::Point(WINDOWW-52, WINDOWH-18), ui::Point(50, 16), "Next \x95");
-	previousButton = new ui::Button(ui::Point(2, WINDOWH-18), ui::Point(50, 16), "\x96 Prev");
-	tagsLabel  = new ui::Label(ui::Point(270, WINDOWH-18), ui::Point(WINDOWW-540, 16), "\boPopular Tags:");
+	nextButton = new ui::Button(ui::Point(WINDOWW-52, WINDOWH-18), ui::Point(50, 16), L"Next \x95");
+	previousButton = new ui::Button(ui::Point(2, WINDOWH-18), ui::Point(50, 16), L"\x96 Prev");
+	tagsLabel  = new ui::Label(ui::Point(270, WINDOWH-18), ui::Point(WINDOWW-540, 16), L"\boPopular Tags:");
 	motdLabel  = new ui::RichLabel(ui::Point(51, WINDOWH-18), ui::Point(WINDOWW-102, 16), Client::Ref().GetMessageOfTheDay());
 
 	class PageNumAction : public ui::TextboxAction

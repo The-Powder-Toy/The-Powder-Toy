@@ -73,7 +73,7 @@ ElementSearchActivity::ElementSearchActivity(GameController * gameController, st
 			}
 		};
 
-	ui::Button * closeButton = new ui::Button(ui::Point(0, Size.Y-15), ui::Point((Size.X/2)+1, 15), "Close");
+	ui::Button * closeButton = new ui::Button(ui::Point(0, Size.Y-15), ui::Point((Size.X/2)+1, 15), "¹Ø±Õ");
 	closeButton->SetActionCallback(new CloseAction(this));
 	ui::Button * okButton = new ui::Button(ui::Point(Size.X/2, Size.Y-15), ui::Point(Size.X/2, 15), "OK");
 	okButton->SetActionCallback(new OKAction(this));

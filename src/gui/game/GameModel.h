@@ -74,7 +74,7 @@ private:
 	int edgeMode;
 
 	std::string infoTip;
-	std::string toolTip;
+	std::wstring toolTip;
 	//bool zoomEnabled;
 	void notifyRendererChanged();
 	void notifySimulationChanged();
@@ -120,8 +120,10 @@ public:
 	ui::Colour GetColourSelectorColour();
 
 	void SetToolTip(std::string text);
+	void SetToolTip(std::wstring text);
 	void SetInfoTip(std::string text);
 	std::string GetToolTip();
+	std::wstring GetWToolTip();
 	std::string GetInfoTip();
 
 	void BuildMenus();
