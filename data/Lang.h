@@ -1,16 +1,3 @@
-//Display modes.
-#define TEXT_RENDER_PRESET_ALTV L"Alternative Velocity Display"
-#define TEXT_RENDER_PRESET_VELOCITY L"Velocity Display"
-#define TEXT_RENDER_PRESET_PRESSURE L"Pressure Display"
-#define TEXT_RENDER_PRESET_PERSIST L"Persistent Display"
-#define TEXT_RENDER_PRESET_FIRE L"Fire Display"
-#define TEXT_RENDER_PRESET_BLOB L"Blob Display"
-#define TEXT_RENDER_PRESET_HEAT L"Heat Display"
-#define TEXT_RENDER_PRESET_FANCY L"Fancy Display"
-#define TEXT_RENDER_PRESET_NONE L"Nothing Display"
-#define TEXT_RENDER_PRESET_HEATGRAD L"Heat Gradient Display"
-#define TEXT_RENDER_PRESET_LIFEGRAD L"Life Gradient Display"
-
 //Menu sections.
 #define TEXT_MENU_NAME_WALL L"Walls"
 #define TEXT_MENU_NAME_ELEC L"Electronics"
@@ -277,3 +264,73 @@
 #define TEXT_GOL_STAR_DESC L"Like Star Wars rule: B278/S3456/6"
 #define TEXT_GOL_FROG_DESC L"Frogs: B34/S12/3"
 #define TEXT_GOL_BRAN_DESC L"Brian 6: B246/S6/3"
+
+//Tool descriptions.
+#define TEXT_TOOL_AIR_DESC L"Air, creates airflow and pressure."
+#define TEXT_TOOL_VAC_DESC L"Vacuum, reduces air pressure."
+#define TEXT_TOOL_HEAT_DESC L"Heats the targeted element."
+#define TEXT_TOOL_COOL_DESC L"Cools the targeted element."
+#define TEXT_TOOL_PGRV_DESC L"Creates a short-lasting gravity well."
+#define TEXT_TOOL_NGRV_DESC L"Creates a short-lasting negative gravity well."
+#define TEXT_TOOL_NULL_DESC L"NULL Tool, does NOTHING"
+
+//Decoration tool descriptions.
+#define TEXT_DECO_ADD_DESC L"Colour blending: Add."
+#define TEXT_DECO_SUB_DESC L"Colour blending: Subtract."
+#define TEXT_DECO_MUL_DESC L"Colour blending: Multiply."
+#define TEXT_DECO_DIV_DESC L"Colour blending: Divide."
+#define TEXT_DECO_SMDG_DESC L"Smudge tool, blends surrounding deco together."
+#define TEXT_DECO_CLR_DESC L"Erase any set decoration."
+#define TEXT_DECO_DRAW_DESC L"Draw decoration (No blending)."
+
+//Special Tool descriptions.
+#define TEXT_SPEC_TOOL_WIND_DESC L"Creates air movement."
+#define TEXT_SPEC_TOOL_SIGN_DESC L"Sign. Displays text. Click on a sign to edit it or anywhere else to place a new one."
+#define TEXT_SPEC_TOOL_SMPL_DESC L"Sample an element on the screen."
+#define TEXT_SPEC_TOOL_SMPL_PROP L"Property Drawing Tool. Use to alter the properties of elements in the field." 
+
+//Display modes.
+#define TEXT_RENDER_PRESET_ALTV L"Alternative Velocity Display"
+#define TEXT_RENDER_PRESET_VELOCITY L"Velocity Display"
+#define TEXT_RENDER_PRESET_PRESSURE L"Pressure Display"
+#define TEXT_RENDER_PRESET_PERSIST L"Persistent Display"
+#define TEXT_RENDER_PRESET_FIRE L"Fire Display"
+#define TEXT_RENDER_PRESET_BLOB L"Blob Display"
+#define TEXT_RENDER_PRESET_HEAT L"Heat Display"
+#define TEXT_RENDER_PRESET_FANCY L"Fancy Display"
+#define TEXT_RENDER_PRESET_NONE L"Nothing Display"
+#define TEXT_RENDER_PRESET_HEATGRAD L"Heat Gradient Display"
+#define TEXT_RENDER_PRESET_LIFEGRAD L"Life Gradient Display"
+
+//Quick Options.
+#define TEXT_QUICK_OPT_SAND_DESC L"Sand effect"
+#define TEXT_QUICK_OPT_GGRID_DESC L"Draw gravity field \bg(ctrl+g)"
+#define TEXT_QUICK_OPT_DECO_DESC L"Draw decorations \bg(ctrl+b)"
+#define TEXT_QUICK_OPT_NEWTON_DESC L"Newtonian Gravity \bg(n)"
+#define TEXT_QUICK_OPT_AHEAT_DESC L"Ambient heat \bg(u)"
+#define TEXT_QUICK_OPT_CON_DESC L"Show Console \bg(~)"
+#define TEXT_QUICK_OPT_SAND_DESC L"Sand effect"
+#define TEXT_QUICK_OPT_SAND_DESC L"Sand effect"
+
+//Option infotips.
+#define TEXT_INFOTIP_GGRID_ON L"Gravity Grid: On"
+#define TEXT_INFOTIP_GGRID_OFF L"Gravity Grid: Off"
+#define TEXT_INFOTIP_DECO_ON L"Decorations Layer: On"
+#define TEXT_INFOTIP_DECO_OFF L"Decorations Layer: Off"
+#define TEXT_INFOTIP_NEWTON_ON L"Newtonian Gravity: On"
+#define TEXT_INFOTIP_NEWTON_OFF L"Newtonian Gravity: Off"
+#define TEXT_INFOTIP_AHEAT_ON L"Ambient Heat: On"
+#define TEXT_INFOTIP_AHEAT_OFF L"Ambient Heat: Off"
+#define TEXT_INFOTIP_GRAV_VER L"Gravity: Vertical"
+#define TEXT_INFOTIP_GRAV_OFF L"Gravity: Off"
+#define TEXT_INFOTIP_GRAV_RAD L"Gravity: Radial"
+#define TEXT_INFOTIP_AIR_ON L"Air: On"
+#define TEXT_INFOTIP_AIR_PRESS_OFF L"Air: Pressure Off"
+#define TEXT_INFOTIP_AIR_VELO_OFF L"Air: Velocity Off"
+#define TEXT_INFOTIP_AIR_OFF L"Air: Off"
+#define TEXT_INFOTIP_AIR_NO_UPD L"Air: No Update"
+
+//Element search window.
+#define TEXT_GUI_ELEM_SEARCH_TITLE L"Element Search"
+#define TEXT_GUI_ELEM_SEARCH_BUTTON_CLOSE L"Close"
+#define TEXT_GUI_ELEM_SEARCH_BUTTON_OK L"OK"

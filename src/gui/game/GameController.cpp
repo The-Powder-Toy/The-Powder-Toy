@@ -31,6 +31,7 @@
 #include "debug/DebugParts.h"
 #include "debug/ElementPopulation.h"
 #include "debug/DebugLines.h"
+#include "Lang.h"
 #ifdef LUACONSOLE
 #include "lua/LuaScriptInterface.h"
 #else
@@ -805,13 +806,13 @@ void GameController::SwitchGravity()
 	switch (gameModel->GetSimulation()->gravityMode)
 	{
 	case 0:
-		gameModel->SetInfoTip("Gravity: Vertical");
+		gameModel->SetInfoTip(TEXT_INFOTIP_GRAV_VER);
 		break;
 	case 1:
-		gameModel->SetInfoTip("Gravity: Off");
+		gameModel->SetInfoTip(TEXT_INFOTIP_GRAV_OFF);
 		break;
 	case 2:
-		gameModel->SetInfoTip("Gravity: Radial");
+		gameModel->SetInfoTip(TEXT_INFOTIP_GRAV_RAD);
 		break;
 	}
 }
@@ -823,19 +824,19 @@ void GameController::SwitchAir()
 	switch (gameModel->GetSimulation()->air->airMode)
 	{
 	case 0:
-		gameModel->SetInfoTip("Air: On");
+		gameModel->SetInfoTip(TEXT_INFOTIP_AIR_ON);
 		break;
 	case 1:
-		gameModel->SetInfoTip("Air: Pressure Off");
+		gameModel->SetInfoTip(TEXT_INFOTIP_AIR_PRESS_OFF);
 		break;
 	case 2:
-		gameModel->SetInfoTip("Air: Velocity Off");
+		gameModel->SetInfoTip(TEXT_INFOTIP_AIR_VELO_OFF);
 		break;
 	case 3:
-		gameModel->SetInfoTip("Air: Off");
+		gameModel->SetInfoTip(TEXT_INFOTIP_AIR_OFF);
 		break;
 	case 4:
-		gameModel->SetInfoTip("Air: No Update");
+		gameModel->SetInfoTip(TEXT_INFOTIP_AIR_NO_UPD);
 		break;
 	}
 }

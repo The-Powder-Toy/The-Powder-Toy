@@ -19,6 +19,7 @@ stamps/*
 Saves/*
 scripts/*
 includes/*
+temp/*
 generate
 Makefile.me
 *.xcodeproj

@@ -17,6 +17,7 @@
 #include "QuickOptions.h"
 #include "GameModelException.h"
 #include "Format.h"
+#include "Lang.h"
 
 GameModel::GameModel():
 	clipboard(NULL),
@@ -301,19 +302,19 @@ void GameModel::BuildMenus()
 		menuList[SC_TOOL]->AddTool(tempTool);
 	}
 	//Add special sign and prop tools
-	menuList[SC_TOOL]->AddTool(new WindTool(0, "WIND", L"Creates air movement.", 64, 64, 64, "DEFAULT_UI_WIND"));
+	menuList[SC_TOOL]->AddTool(new WindTool(0, "WIND", TEXT_SPEC_TOOL_WIND_DESC, 64, 64, 64, "DEFAULT_UI_WIND"));
 	menuList[SC_TOOL]->AddTool(new PropertyTool());
 	menuList[SC_TOOL]->AddTool(new SignTool(this));
 	menuList[SC_TOOL]->AddTool(new SampleTool(this));
 
 	//Add decoration tools to menu
-	menuList[SC_DECO]->AddTool(new DecorationTool(ren, DECO_ADD, "ADD", L"Colour blending: Add.", 0, 0, 0, "DEFAULT_DECOR_ADD"));
-	menuList[SC_DECO]->AddTool(new DecorationTool(ren, DECO_SUBTRACT, "SUB", L"Colour blending: Subtract.", 0, 0, 0, "DEFAULT_DECOR_SUB"));
-	menuList[SC_DECO]->AddTool(new DecorationTool(ren, DECO_MULTIPLY, "MUL", L"Colour blending: Multiply.", 0, 0, 0, "DEFAULT_DECOR_MUL"));
-	menuList[SC_DECO]->AddTool(new DecorationTool(ren, DECO_DIVIDE, "DIV", L"Colour blending: Divide." , 0, 0, 0, "DEFAULT_DECOR_DIV"));
-	menuList[SC_DECO]->AddTool(new DecorationTool(ren, DECO_SMUDGE, "SMDG", L"Smudge tool, blends surrounding deco together.", 0, 0, 0, "DEFAULT_DECOR_SMDG"));
-	menuList[SC_DECO]->AddTool(new DecorationTool(ren, DECO_CLEAR, "CLR", L"Erase any set decoration.", 0, 0, 0, "DEFAULT_DECOR_CLR"));
-	menuList[SC_DECO]->AddTool(new DecorationTool(ren, DECO_DRAW, "SET", L"Draw decoration (No blending).", 0, 0, 0, "DEFAULT_DECOR_SET"));
+	menuList[SC_DECO]->AddTool(new DecorationTool(ren, DECO_ADD, "ADD", TEXT_DECO_ADD_DESC, 0, 0, 0, "DEFAULT_DECOR_ADD"));
+	menuList[SC_DECO]->AddTool(new DecorationTool(ren, DECO_SUBTRACT, "SUB", TEXT_DECO_SUB_DESC, 0, 0, 0, "DEFAULT_DECOR_SUB"));
+	menuList[SC_DECO]->AddTool(new DecorationTool(ren, DECO_MULTIPLY, "MUL", TEXT_DECO_MUL_DESC, 0, 0, 0, "DEFAULT_DECOR_MUL"));
+	menuList[SC_DECO]->AddTool(new DecorationTool(ren, DECO_DIVIDE, "DIV", TEXT_DECO_DIV_DESC , 0, 0, 0, "DEFAULT_DECOR_DIV"));
+	menuList[SC_DECO]->AddTool(new DecorationTool(ren, DECO_SMUDGE, "SMDG", TEXT_DECO_SMDG_DESC, 0, 0, 0, "DEFAULT_DECOR_SMDG"));
+	menuList[SC_DECO]->AddTool(new DecorationTool(ren, DECO_CLEAR, "CLR", TEXT_DECO_CLR_DESC, 0, 0, 0, "DEFAULT_DECOR_CLR"));
+	menuList[SC_DECO]->AddTool(new DecorationTool(ren, DECO_DRAW, "SET", TEXT_DECO_DRAW_DESC, 0, 0, 0, "DEFAULT_DECOR_SET"));
 	SetColourSelectorColour(colour); // update tool colors
 	decoToolset[0] = GetToolFromIdentifier("DEFAULT_DECOR_SET");
 	decoToolset[1] = GetToolFromIdentifier("DEFAULT_DECOR_CLR");
@@ -828,9 +829,9 @@ void GameModel::SetDecoration(bool decorationState)
 		notifyDecorationChanged();
 		UpdateQuickOptions();
 		if (decorationState)
-			SetInfoTip("Decorations Layer: On");
+			SetInfoTip(TEXT_INFOTIP_DECO_ON);
 		else
-			SetInfoTip("Decorations Layer: Off");
+			SetInfoTip(TEXT_INFOTIP_DECO_OFF);
 	}
 }
 
@@ -844,9 +845,9 @@ void GameModel::SetAHeatEnable(bool aHeat)
 	sim->aheat_enable = aHeat;
 	UpdateQuickOptions();
 	if (aHeat)
-		SetInfoTip("Ambient Heat: On");
+		SetInfoTip(TEXT_INFOTIP_AHEAT_ON);
 	else
-		SetInfoTip("Ambient Heat: Off");
+		SetInfoTip(TEXT_INFOTIP_AHEAT_OFF);
 }
 
 bool GameModel::GetAHeatEnable()
@@ -858,9 +859,9 @@ void GameModel::ShowGravityGrid(bool showGrid)
 {
 	ren->gravityFieldEnabled = showGrid;
 	if (showGrid)
-		SetInfoTip("Gravity Grid: On");
+		SetInfoTip(TEXT_INFOTIP_GGRID_ON);
 	else
-		SetInfoTip("Gravity Grid: Off");
+		SetInfoTip(TEXT_INFOTIP_GGRID_OFF);
 }
 
 bool GameModel::GetGravityGrid()
