@@ -29,7 +29,7 @@ Element_PSTE::Element_PSTE()
 
 	Temperature = R_TEMP-2.0f	+273.15f;
 	HeatConduct = 29;
-	Description = PT_ELEM_PSTE_DESC;
+	Description = TEXT_ELEM_PSTE_DESC;
 
 	Properties = TYPE_LIQUID;
 

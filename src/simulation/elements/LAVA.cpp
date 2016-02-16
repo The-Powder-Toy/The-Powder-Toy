@@ -29,7 +29,7 @@ Element_LAVA::Element_LAVA()
 
 	Temperature = R_TEMP+1500.0f+273.15f;
 	HeatConduct = 60;
-	Description = PT_ELEM_LAVA_DESC;
+	Description = TEXT_ELEM_LAVA_DESC;
 
 	Properties = TYPE_LIQUID|PROP_LIFE_DEC;
 

@@ -29,7 +29,7 @@ Element_ACEL::Element_ACEL()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = PT_ELEM_ACEL_DESC;
+	Description = TEXT_ELEM_ACEL_DESC;
 
 	Properties = TYPE_SOLID;
 

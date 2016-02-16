@@ -29,7 +29,7 @@ Element_HSWC::Element_HSWC()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = PT_ELEM_HSWC_DESC;
+	Description = TEXT_ELEM_HSWC_DESC;
 
 	Properties = TYPE_SOLID;
 

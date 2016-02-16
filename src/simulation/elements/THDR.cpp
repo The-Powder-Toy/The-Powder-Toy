@@ -29,7 +29,7 @@ Element_THDR::Element_THDR()
 
 	Temperature = 9000.0f		+273.15f;
 	HeatConduct = 1;
-	Description = PT_ELEM_THDR_DESC;
+	Description = TEXT_ELEM_THDR_DESC;
 
 	Properties = TYPE_ENERGY;
 

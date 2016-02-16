@@ -29,7 +29,7 @@ Element_PBCN::Element_PBCN()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = PT_ELEM_PBCN_DESC;
+	Description = TEXT_ELEM_PBCN_DESC;
 
 	Properties = TYPE_SOLID|PROP_NOCTYPEDRAW;
 

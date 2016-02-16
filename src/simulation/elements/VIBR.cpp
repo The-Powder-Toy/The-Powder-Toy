@@ -29,7 +29,7 @@ Element_VIBR::Element_VIBR()
 
 	Temperature = 273.15f;
 	HeatConduct = 251;
-	Description = PT_ELEM_VIBR_DESC;
+	Description = TEXT_ELEM_VIBR_DESC;
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 

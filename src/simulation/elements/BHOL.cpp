@@ -29,7 +29,7 @@ Element_BHOL::Element_BHOL()
 
 	Temperature = R_TEMP+70.0f+273.15f;
 	HeatConduct = 255;
-	Description = PT_ELEM_BHOL_DESC;
+	Description = TEXT_ELEM_BHOL_DESC;
 
 	Properties = TYPE_SOLID;
 

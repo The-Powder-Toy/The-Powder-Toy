@@ -29,7 +29,7 @@ Element_QRTZ::Element_QRTZ()
 
 	Temperature = R_TEMP+273.15f;
 	HeatConduct = 3;
-	Description = PT_ELEM_QRTZ_DESC;
+	Description = TEXT_ELEM_QRTZ_DESC;
 
 	Properties = TYPE_SOLID|PROP_HOT_GLOW|PROP_LIFE_DEC;
 

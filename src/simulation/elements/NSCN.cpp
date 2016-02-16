@@ -29,7 +29,7 @@ Element_NSCN::Element_NSCN()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = PT_ELEM_NSCN_DESC;
+	Description = TEXT_ELEM_NSCN_DESC;
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC;
 

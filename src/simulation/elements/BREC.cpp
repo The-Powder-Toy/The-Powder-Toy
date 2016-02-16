@@ -29,7 +29,7 @@ Element_BREC::Element_BREC()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 211;
-	Description = PT_ELEM_BREC_DESC;
+	Description = TEXT_ELEM_BREC_DESC;
 
 	Properties = TYPE_PART|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_HOT_GLOW;
 

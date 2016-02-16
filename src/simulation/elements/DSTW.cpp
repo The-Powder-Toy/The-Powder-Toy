@@ -29,7 +29,7 @@ Element_DSTW::Element_DSTW()
 
 	Temperature = R_TEMP-2.0f	+273.15f;
 	HeatConduct = 23;
-	Description = PT_ELEM_DSTW_DESC;
+	Description = TEXT_ELEM_DSTW_DESC;
 
 	Properties = TYPE_LIQUID|PROP_NEUTPASS;
 

@@ -34,7 +34,7 @@ Element_CFLM::Element_CFLM()
 
 	Temperature = 0.0f;
 	HeatConduct = 88;
-	Description = PT_ELEM_CFLM_DESC;
+	Description = TEXT_ELEM_CFLM_DESC;
 
 	Properties = TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL;
 

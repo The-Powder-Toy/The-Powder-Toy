@@ -29,7 +29,7 @@ Element_GRAV::Element_GRAV()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
-	Description = PT_ELEM_GRAV_DESC;
+	Description = TEXT_ELEM_GRAV_DESC;
 
 	Properties = TYPE_PART;
 

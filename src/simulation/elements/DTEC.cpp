@@ -29,7 +29,7 @@ Element_DTEC::Element_DTEC()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 0;
-	Description = PT_ELEM_DTEC_DESC;
+	Description = TEXT_ELEM_DTEC_DESC;
 
 	Properties = TYPE_SOLID;
 

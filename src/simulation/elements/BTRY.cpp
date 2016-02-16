@@ -29,7 +29,7 @@ Element_BTRY::Element_BTRY()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = PT_ELEM_BTRY_DESC;
+	Description = TEXT_ELEM_BTRY_DESC;
 
 	Properties = TYPE_SOLID;
 

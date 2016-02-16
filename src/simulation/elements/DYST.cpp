@@ -29,7 +29,7 @@ Element_DYST::Element_DYST()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
-	Description = PT_ELEM_DYST_DESC;
+	Description = TEXT_ELEM_DYST_DESC;
 
 	Properties = TYPE_PART;
 

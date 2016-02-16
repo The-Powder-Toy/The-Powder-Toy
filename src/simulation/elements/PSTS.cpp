@@ -29,7 +29,7 @@ Element_PSTS::Element_PSTS()
 
 	Temperature = R_TEMP-2.0f	+273.15f;
 	HeatConduct = 29;
-	Description = PT_ELEM_PSTS_DESC;
+	Description = TEXT_ELEM_PSTS_DESC;
 
 	Properties = TYPE_SOLID;
 

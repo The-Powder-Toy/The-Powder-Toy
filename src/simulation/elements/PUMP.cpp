@@ -29,7 +29,7 @@ Element_PUMP::Element_PUMP()
 
 	Temperature = 273.15f;
 	HeatConduct = 0;
-	Description = PT_ELEM_PUMP_DESC;
+	Description = TEXT_ELEM_PUMP_DESC;
 
 	Properties = TYPE_SOLID;
 

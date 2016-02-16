@@ -29,7 +29,7 @@ Element_PTCT::Element_PTCT()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = PT_ELEM_PTCT_DESC;
+	Description = TEXT_ELEM_PTCT_DESC;
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC;
 

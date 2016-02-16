@@ -29,7 +29,7 @@ Element_ICEI::Element_ICEI()
 
 	Temperature = R_TEMP-50.0f+273.15f;
 	HeatConduct = 46;
-	Description = PT_ELEM_ICEI_DESC;
+	Description = TEXT_ELEM_ICEI_DESC;
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC|PROP_NEUTPASS;
 

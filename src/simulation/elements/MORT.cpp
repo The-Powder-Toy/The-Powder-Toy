@@ -29,7 +29,7 @@ Element_MORT::Element_MORT()
 
 	Temperature = R_TEMP+4.0f	+273.15f;
 	HeatConduct = 60;
-	Description = PT_ELEM_MORT_DESC;
+	Description = TEXT_ELEM_MORT_DESC;
 
 	Properties = TYPE_GAS;
 

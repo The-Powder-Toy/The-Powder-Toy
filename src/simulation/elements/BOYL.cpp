@@ -29,7 +29,7 @@ Element_BOYL::Element_BOYL()
 
 	Temperature = R_TEMP+2.0f	+273.15f;
 	HeatConduct = 42;
-	Description = PT_ELEM_BOYL_DESC;
+	Description = TEXT_ELEM_BOYL_DESC;
 
 	Properties = TYPE_GAS;
 

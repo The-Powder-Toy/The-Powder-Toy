@@ -29,7 +29,7 @@ Element_RIME::Element_RIME()
 
 	Temperature = 243.15f;
 	HeatConduct = 100;
-	Description = PT_ELEM_RIME_DESC;
+	Description = TEXT_ELEM_RIME_DESC;
 
 	Properties = TYPE_SOLID;
 

@@ -29,7 +29,7 @@ Element_FRME::Element_FRME()
 
 	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 0;
-	Description = PT_ELEM_FRME_DESC;
+	Description = TEXT_ELEM_FRME_DESC;
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 

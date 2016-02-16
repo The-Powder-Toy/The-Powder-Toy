@@ -29,7 +29,7 @@ Element_C5::Element_C5()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 88;
-	Description = PT_ELEM_C5_DESC;
+	Description = TEXT_ELEM_C5_DESC;
 
 	Properties = TYPE_SOLID | PROP_NEUTPENETRATE;
 

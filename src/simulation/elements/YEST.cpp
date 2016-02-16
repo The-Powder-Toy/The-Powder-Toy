@@ -29,7 +29,7 @@ Element_YEST::Element_YEST()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
-	Description = PT_ELEM_YEST_DESC;
+	Description = TEXT_ELEM_YEST_DESC;
 
 	Properties = TYPE_PART;
 

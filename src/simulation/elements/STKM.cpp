@@ -29,7 +29,7 @@ Element_STKM::Element_STKM()
 
 	Temperature = R_TEMP+14.6f+273.15f;
 	HeatConduct = 0;
-	Description = PT_ELEM_STKM_DESC;
+	Description = TEXT_ELEM_STKM_DESC;
 
 	Properties = PROP_NOCTYPEDRAW;
 

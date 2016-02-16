@@ -29,7 +29,7 @@ Element_ISOZ::Element_ISOZ()
 
 	Temperature = R_TEMP-2.0f	+273.15f;
 	HeatConduct = 29;
-	Description = PT_ELEM_ISOZ_DESC;
+	Description = TEXT_ELEM_ISOZ_DESC;
 
 	Properties = TYPE_LIQUID|PROP_NEUTPENETRATE;
 

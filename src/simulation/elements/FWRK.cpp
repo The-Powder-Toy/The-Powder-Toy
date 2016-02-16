@@ -29,7 +29,7 @@ Element_FWRK::Element_FWRK()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 100;
-	Description = PT_ELEM_FWRK_DESC;
+	Description = TEXT_ELEM_FWRK_DESC;
 
 	Properties = TYPE_PART|PROP_LIFE_DEC;
 

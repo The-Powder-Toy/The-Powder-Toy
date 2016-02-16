@@ -29,7 +29,7 @@ Element_IGNT::Element_IGNT()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 88;
-	Description = PT_ELEM_IGNT_DESC;
+	Description = TEXT_ELEM_IGNT_DESC;
 
 	Properties = TYPE_SOLID | PROP_NEUTPENETRATE | PROP_SPARKSETTLE | PROP_LIFE_KILL;
 

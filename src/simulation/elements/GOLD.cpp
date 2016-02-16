@@ -30,7 +30,7 @@ Element_GOLD::Element_GOLD()
 
 	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 251;
-	Description = PT_ELEM_GOLD_DESC;
+	Description = TEXT_ELEM_GOLD_DESC;
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_HOT_GLOW|PROP_LIFE_DEC|PROP_NEUTPASS;
 

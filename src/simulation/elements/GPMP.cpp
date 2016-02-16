@@ -29,7 +29,7 @@ Element_GPMP::Element_GPMP()
 
 	Temperature = 0.0f		+273.15f;
 	HeatConduct = 0;
-	Description = PT_ELEM_GPMP_DESC;
+	Description = TEXT_ELEM_GPMP_DESC;
 
 	Properties = TYPE_SOLID;
 

@@ -29,7 +29,7 @@ Element_VIRS::Element_VIRS()
 
 	Temperature = 72.0f	+ 273.15f;
 	HeatConduct = 251;
-	Description = PT_ELEM_VIRS_DESC;
+	Description = TEXT_ELEM_VIRS_DESC;
 
 	Properties = TYPE_LIQUID|PROP_DEADLY;
 

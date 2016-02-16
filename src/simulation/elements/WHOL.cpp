@@ -29,7 +29,7 @@ Element_WHOL::Element_WHOL()
 
 	Temperature = R_TEMP-16.0f+273.15f;
 	HeatConduct = 255;
-	Description = PT_ELEM_WHOL_DESC;
+	Description = TEXT_ELEM_WHOL_DESC;
 
 	Properties = TYPE_SOLID;
 

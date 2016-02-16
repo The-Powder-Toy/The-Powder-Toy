@@ -29,7 +29,7 @@ Element_GRVT::Element_GRVT()
 
 	Temperature = R_TEMP+273.15f;
 	HeatConduct = 61;
-	Description = PT_ELEM_GRVT_DESC;
+	Description = TEXT_ELEM_GRVT_DESC;
 
 	Properties = TYPE_ENERGY|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
 

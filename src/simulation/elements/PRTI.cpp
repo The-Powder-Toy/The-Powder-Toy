@@ -29,7 +29,7 @@ Element_PRTI::Element_PRTI()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 0;
-	Description = PT_ELEM_PRTI_DESC;
+	Description = TEXT_ELEM_PRTI_DESC;
 
 	Properties = TYPE_SOLID;
 

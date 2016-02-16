@@ -29,7 +29,7 @@ Element_PQRT::Element_PQRT()
 
 	Temperature = R_TEMP+273.15f;
 	HeatConduct = 3;
-	Description = PT_ELEM_PQRT_DESC;
+	Description = TEXT_ELEM_PQRT_DESC;
 
 	Properties = TYPE_PART| PROP_HOT_GLOW;
 

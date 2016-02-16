@@ -29,7 +29,7 @@ Element_AMTR::Element_AMTR()
 
 	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 70;
-	Description = PT_ELEM_AMTR_DESC;
+	Description = TEXT_ELEM_AMTR_DESC;
 
 	Properties = TYPE_GAS;
 

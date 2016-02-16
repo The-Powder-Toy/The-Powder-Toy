@@ -29,7 +29,7 @@ Element_GOO::Element_GOO()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 75;
-	Description = PT_ELEM_GOO_DESC;
+	Description = TEXT_ELEM_GOO_DESC;
 
 	Properties = TYPE_SOLID | PROP_NEUTPENETRATE|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
 

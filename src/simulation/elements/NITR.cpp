@@ -29,7 +29,7 @@ Element_NITR::Element_NITR()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 50;
-	Description = PT_ELEM_NITR_DESC;
+	Description = TEXT_ELEM_NITR_DESC;
 
 	Properties = TYPE_LIQUID;
 

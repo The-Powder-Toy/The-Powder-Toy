@@ -29,7 +29,7 @@ Element_DRAY::Element_DRAY()
 
 	Temperature = R_TEMP + 273.15f;
 	HeatConduct = 0;
-	Description = PT_ELEM_DRAY_DESC;
+	Description = TEXT_ELEM_DRAY_DESC;
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 

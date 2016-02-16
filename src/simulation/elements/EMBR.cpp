@@ -29,7 +29,7 @@ Element_EMBR::Element_EMBR()
 
 	Temperature = 500.0f +273.15f;
 	HeatConduct = 29;
-	Description = PT_ELEM_EMBR_DESC;
+	Description = TEXT_ELEM_EMBR_DESC;
 
 	Properties = TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL|PROP_SPARKSETTLE;
 

@@ -29,7 +29,7 @@ Element_BVBR::Element_BVBR()
 
 	Temperature = 273.15f;
 	HeatConduct = 164;
-	Description = PT_ELEM_BVBR_DESC;
+	Description = TEXT_ELEM_BVBR_DESC;
 
 	Properties = TYPE_PART|PROP_LIFE_DEC;
 

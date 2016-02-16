@@ -29,7 +29,7 @@ Element_PLSM::Element_PLSM()
 
 	Temperature = 10000.0f		+273.15f;
 	HeatConduct = 5;
-	Description = PT_ELEM_PLSM_DESC;
+	Description = TEXT_ELEM_PLSM_DESC;
 
 	Properties = TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL;
 

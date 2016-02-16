@@ -32,7 +32,7 @@ Element_PIPE::Element_PIPE()
 
 	Temperature = 273.15f;
 	HeatConduct = 0;
-	Description = PT_ELEM_PIPE_DESC;
+	Description = TEXT_ELEM_PIPE_DESC;
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 

@@ -33,7 +33,7 @@ Element_FIRW::Element_FIRW()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
-	Description = PT_ELEM_FIRW_DESC;
+	Description = TEXT_ELEM_FIRW_DESC;
 
 	Properties = TYPE_PART|PROP_LIFE_DEC;
 

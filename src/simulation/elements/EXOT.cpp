@@ -29,7 +29,7 @@ Element_EXOT::Element_EXOT()
 
 	Temperature = R_TEMP-2.0f	+273.15f;
 	HeatConduct = 250;
-	Description = PT_ELEM_EXOT_DESC;
+	Description = TEXT_ELEM_EXOT_DESC;
 
 	Properties = TYPE_LIQUID|PROP_NEUTPASS;
 

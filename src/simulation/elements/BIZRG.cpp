@@ -29,7 +29,7 @@ Element_BIZRG::Element_BIZRG()
 
 	Temperature = R_TEMP-200.0f+273.15f;
 	HeatConduct = 42;
-	Description = PT_ELEM_BIZRG_DESC;
+	Description = TEXT_ELEM_BIZRG_DESC;
 
 	Properties = TYPE_GAS;
 

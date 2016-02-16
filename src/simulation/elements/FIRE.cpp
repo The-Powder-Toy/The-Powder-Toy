@@ -29,7 +29,7 @@ Element_FIRE::Element_FIRE()
 
 	Temperature = R_TEMP+400.0f+273.15f;
 	HeatConduct = 88;
-	Description = PT_ELEM_FIRE_DESC;
+	Description = TEXT_ELEM_FIRE_DESC;
 
 	Properties = TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL;
 

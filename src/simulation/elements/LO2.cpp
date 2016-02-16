@@ -29,7 +29,7 @@ Element_LO2::Element_LO2()
 
 	Temperature = 80.0f;
 	HeatConduct = 70;
-	Description = PT_ELEM_LO2_DESC;
+	Description = TEXT_ELEM_LO2_DESC;
 
 	Properties = TYPE_LIQUID;
 

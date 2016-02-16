@@ -29,7 +29,7 @@ Element_GBMB::Element_GBMB()
 
 	Temperature = R_TEMP-2.0f	+273.15f;
 	HeatConduct = 29;
-	Description = PT_ELEM_GBMB_DESC;
+	Description = TEXT_ELEM_GBMB_DESC;
 
 	Properties = TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
 

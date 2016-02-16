@@ -29,7 +29,7 @@ Element_CAUS::Element_CAUS()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
-	Description = PT_ELEM_CAUS_DESC;
+	Description = TEXT_ELEM_CAUS_DESC;
 
 	Properties = TYPE_GAS|PROP_DEADLY;
 

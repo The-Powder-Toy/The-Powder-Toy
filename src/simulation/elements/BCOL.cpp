@@ -29,7 +29,7 @@ Element_BCOL::Element_BCOL()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 150;
-	Description = PT_ELEM_BCOL_DESC;
+	Description = TEXT_ELEM_BCOL_DESC;
 
 	Properties = TYPE_PART;
 

@@ -29,7 +29,7 @@ Element_MERC::Element_MERC()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = PT_ELEM_MERC_DESC;
+	Description = TEXT_ELEM_MERC_DESC;
 
 	Properties = TYPE_LIQUID|PROP_CONDUCTS|PROP_NEUTABSORB|PROP_LIFE_DEC;
 

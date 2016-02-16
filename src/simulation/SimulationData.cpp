@@ -1,4 +1,5 @@
 #include "SimulationData.h"
+#include "Lang.h"
 //#include "ElementFunctions.h"
 #include "ElementGraphics.h"
 #include "Elements.h"
@@ -7,30 +8,30 @@ gol_menu * LoadGOLMenu(int & golMenuCount)
 {
 	gol_menu golMenu[NGOL] =
 	{
-		{"GOL",		PIXPACK(0x0CAC00), 0, L"Game Of Life: Begin 3/Stay 23"},
-		{"HLIF",	PIXPACK(0xFF0000), 1, L"High Life: B36/S23"},
-		{"ASIM",	PIXPACK(0x0000FF), 2, L"Assimilation: B345/S4567"},
-		{"2x2",		PIXPACK(0xFFFF00), 3, L"2x2: B36/S125"},
-		{"DANI",	PIXPACK(0x00FFFF), 4, L"Day and Night: B3678/S34678"},
-		{"AMOE",	PIXPACK(0xFF00FF), 5, L"Amoeba: B357/S1358"},
-		{"MOVE",	PIXPACK(0xFFFFFF), 6, L"'Move' particles. Does not move things.. it is a life type: B368/S245"},
-		{"PGOL",	PIXPACK(0xE05010), 7, L"Pseudo Life: B357/S238"},
-		{"DMOE",	PIXPACK(0x500000), 8, L"Diamoeba: B35678/S5678"},
-		{"34",		PIXPACK(0x500050), 9, L"34: B34/S34"},
-		{"LLIF",	PIXPACK(0x505050), 10, L"Long Life: B345/S5"},
-		{"STAN",	PIXPACK(0x5000FF), 11, L"Stains: B3678/S235678"},
-		{"SEED",	PIXPACK(0xFBEC7D), 12, L"Seeds: B2/S"},
-		{"MAZE",	PIXPACK(0xA8E4A0), 13, L"Maze: B3/S12345"},
-		{"COAG",	PIXPACK(0x9ACD32), 14, L"Coagulations: B378/S235678"},
-		{"WALL",	PIXPACK(0x0047AB), 15, L"Walled cities: B45678/S2345"},
-		{"GNAR",	PIXPACK(0xE5B73B), 16, L"Gnarl: B1/S1"},
-		{"REPL",	PIXPACK(0x259588), 17, L"Replicator: B1357/S1357"},
-		{"MYST",	PIXPACK(0x0C3C00), 18, L"Mystery: B3458/S05678"},
-		{"LOTE",	PIXPACK(0xFF0000), 19, L"Living on the Edge: B37/S3458/4"},
-		{"FRG2",	PIXPACK(0x00FF00), 20, L"Like Frogs rule: B3/S124/3"},
-		{"STAR",	PIXPACK(0x0000FF), 21, L"Like Star Wars rule: B278/S3456/6"},
-		{"FROG",	PIXPACK(0x00AA00), 22, L"Frogs: B34/S12/3"},
-		{"BRAN",	PIXPACK(0xCCCC00), 23, L"Brian 6: B246/S6/3"}
+		{"GOL",		PIXPACK(0x0CAC00), 0, TEXT_GOL_GOL_DESC},
+		{"HLIF",	PIXPACK(0xFF0000), 1, TEXT_GOL_HLIF_DESC},
+		{"ASIM",	PIXPACK(0x0000FF), 2, TEXT_GOL_ASIM_DESC},
+		{"2x2",		PIXPACK(0xFFFF00), 3, TEXT_GOL_2X2_DESC},
+		{"DANI",	PIXPACK(0x00FFFF), 4, TEXT_GOL_DANI_DESC},
+		{"AMOE",	PIXPACK(0xFF00FF), 5, TEXT_GOL_AMOE_DESC},
+		{"MOVE",	PIXPACK(0xFFFFFF), 6, TEXT_GOL_MOVE_DESC},
+		{"PGOL",	PIXPACK(0xE05010), 7, TEXT_GOL_PGOL_DESC},
+		{"DMOE",	PIXPACK(0x500000), 8, TEXT_GOL_DMOE_DESC},
+		{"34",		PIXPACK(0x500050), 9, TEXT_GOL_34_DESC},
+		{"LLIF",	PIXPACK(0x505050), 10, TEXT_GOL_LLIF_DESC},
+		{"STAN",	PIXPACK(0x5000FF), 11, TEXT_GOL_STAN_DESC},
+		{"SEED",	PIXPACK(0xFBEC7D), 12, TEXT_GOL_SEED_DESC},
+		{"MAZE",	PIXPACK(0xA8E4A0), 13, TEXT_GOL_MAZE_DESC},
+		{"COAG",	PIXPACK(0x9ACD32), 14, TEXT_GOL_COAG_DESC},
+		{"WALL",	PIXPACK(0x0047AB), 15, TEXT_GOL_WALL_DESC},
+		{"GNAR",	PIXPACK(0xE5B73B), 16, TEXT_GOL_GNAR_DESC},
+		{"REPL",	PIXPACK(0x259588), 17, TEXT_GOL_REPL_DESC},
+		{"MYST",	PIXPACK(0x0C3C00), 18, TEXT_GOL_MYST_DESC},
+		{"LOTE",	PIXPACK(0xFF0000), 19, TEXT_GOL_LOTE_DESC},
+		{"FRG2",	PIXPACK(0x00FF00), 20, TEXT_GOL_FRG2_DESC},
+		{"STAR",	PIXPACK(0x0000FF), 21, TEXT_GOL_STAR_DESC},
+		{"FROG",	PIXPACK(0x00AA00), 22, TEXT_GOL_FROG_DESC},
+		{"BRAN",	PIXPACK(0xCCCC00), 23, TEXT_GOL_BRAN_DESC}
 	};
 	golMenuCount = NGOL;
 	gol_menu * golMenuT = (gol_menu*)malloc(NGOL*sizeof(gol_menu));
@@ -143,23 +144,23 @@ menu_section * LoadMenus(int & menuCount)
 {
 	menu_section msections[] = //doshow does not do anything currently.
 	{
-		{L"\xC1", L"Walls", 0, 1},
-		{L"\xC2", L"Electronics", 0, 1},
-		{L"\xD6", L"Powered Materials", 0, 1},
-		{L"\x99", L"Sensors", 0, 1},
-		{L"\xE2", L"Force", 0, 1},
-		{L"\xC3", L"Explosives", 0, 1},
-		{L"\xC5", L"Gasses", 0, 1},
-		{L"\xC4", L"Liquids", 0, 1},
-		{L"\xD0", L"Powders", 0, 1},
-		{L"\xD1", L"Solids", 0, 1},
-		{L"\xC6", L"Radioactive", 0, 1},
-		{L"\xCC", L"Special", 0, 1},
-		{L"\xD2", L"Game Of Life", 0, 1},
-		{L"\xD7", L"Tools", 0, 1},
-		{L"\xE4", L"Decoration tools", 0, 1},
-		{L"\xC8", L"Cracker", 0, 0},
-		{L"\xC8", L"Cracker!", 0, 0},
+		{L"\xC1", TEXT_MENU_NAME_WALL, 0, 1},
+		{L"\xC2", TEXT_MENU_NAME_ELEC, 0, 1},
+		{L"\xD6", TEXT_MENU_NAME_POWER, 0, 1},
+		{L"\x99", TEXT_MENU_NAME_SENSOR, 0, 1},
+		{L"\xE2", TEXT_MENU_NAME_FORCE, 0, 1},
+		{L"\xC3", TEXT_MENU_NAME_EXPLD, 0, 1},
+		{L"\xC5", TEXT_MENU_NAME_GAS, 0, 1},
+		{L"\xC4", TEXT_MENU_NAME_LIQUID, 0, 1},
+		{L"\xD0", TEXT_MENU_NAME_POWDER, 0, 1},
+		{L"\xD1", TEXT_MENU_NAME_SOLID, 0, 1},
+		{L"\xC6", TEXT_MENU_NAME_RADIO, 0, 1},
+		{L"\xCC", TEXT_MENU_NAME_SPEC, 0, 1},
+		{L"\xD2", TEXT_MENU_NAME_GOL, 0, 1},
+		{L"\xD7", TEXT_MENU_NAME_TOOL, 0, 1},
+		{L"\xE4", TEXT_MENU_NAME_DECO, 0, 1},
+		{L"\xC8", TEXT_MENU_NAME_CRACK1, 0, 0},
+		{L"\xC8", TEXT_MENU_NAME_CRACK2, 0, 0},
 	};
 	menuCount = SC_TOTAL;
 	menu_section * msectionsT = (menu_section*)malloc(SC_TOTAL*sizeof(menu_section));

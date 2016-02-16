@@ -29,7 +29,7 @@ Element_PHOT::Element_PHOT()
 
 	Temperature = R_TEMP+900.0f+273.15f;
 	HeatConduct = 251;
-	Description = PT_ELEM_PHOT_DESC;
+	Description = TEXT_ELEM_PHOT_DESC;
 
 	Properties = TYPE_ENERGY|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
 

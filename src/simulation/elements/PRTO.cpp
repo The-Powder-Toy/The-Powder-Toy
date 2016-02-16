@@ -29,7 +29,7 @@ Element_PRTO::Element_PRTO()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 0;
-	Description = PT_ELEM_PRTO_DESC;
+	Description = TEXT_ELEM_PRTO_DESC;
 
 	Properties = TYPE_SOLID;
 

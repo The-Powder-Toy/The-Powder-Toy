@@ -29,7 +29,7 @@ Element_116::Element_116()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
-	Description = PT_ELEM_116_DESC;
+	Description = TEXT_ELEM_116_DESC;
 
 	Properties = TYPE_PART;
 

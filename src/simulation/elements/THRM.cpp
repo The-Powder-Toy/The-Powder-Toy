@@ -29,7 +29,7 @@ Element_THRM::Element_THRM()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 211;
-	Description = PT_ELEM_THRM_DESC;
+	Description = TEXT_ELEM_THRM_DESC;
 
 	Properties = TYPE_PART;
 

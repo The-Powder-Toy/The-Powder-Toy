@@ -29,7 +29,7 @@ Element_SMKE::Element_SMKE()
 
 	Temperature = R_TEMP+320.0f+273.15f;
 	HeatConduct = 88;
-	Description = PT_ELEM_SMKE_DESC;
+	Description = TEXT_ELEM_SMKE_DESC;
 
 	Properties = TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
 

@@ -29,7 +29,7 @@ Element_BIZRS::Element_BIZRS()
 
 	Temperature = R_TEMP+300.0f+273.15f;
 	HeatConduct = 251;
-	Description = PT_ELEM_BIZRS_DESC;
+	Description = TEXT_ELEM_BIZRS_DESC;
 
 	Properties = TYPE_SOLID;
 

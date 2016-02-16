@@ -29,7 +29,7 @@ Element_O2::Element_O2()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
-	Description = PT_ELEM_O2_DESC;
+	Description = TEXT_ELEM_O2_DESC;
 
 	Properties = TYPE_GAS;
 

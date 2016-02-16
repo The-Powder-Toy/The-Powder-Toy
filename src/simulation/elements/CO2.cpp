@@ -29,7 +29,7 @@ Element_CO2::Element_CO2()
 
 	Temperature = R_TEMP+273.15f;
 	HeatConduct = 88;
-	Description = PT_ELEM_CO2_DESC;
+	Description = TEXT_ELEM_CO2_DESC;
 
 	Properties = TYPE_GAS;
 

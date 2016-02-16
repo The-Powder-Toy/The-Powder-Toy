@@ -29,7 +29,7 @@ Element_FILT::Element_FILT()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = PT_ELEM_FILT_DESC;
+	Description = TEXT_ELEM_FILT_DESC;
 
 	Properties = TYPE_SOLID | PROP_NOAMBHEAT | PROP_LIFE_DEC;
 

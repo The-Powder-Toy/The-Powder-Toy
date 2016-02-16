@@ -29,7 +29,7 @@ Element_RPEL::Element_RPEL()
 
 	Temperature = 20.0f+0.0f  +273.15f;
 	HeatConduct = 0;
-	Description = PT_ELEM_RPEL_DESC;
+	Description = TEXT_ELEM_RPEL_DESC;
 
 	Properties = TYPE_SOLID;
 

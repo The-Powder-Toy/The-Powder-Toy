@@ -29,7 +29,7 @@ Element_SALT::Element_SALT()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 110;
-	Description = PT_ELEM_SALT_DESC;
+	Description = TEXT_ELEM_SALT_DESC;
 
 	Properties = TYPE_PART;
 

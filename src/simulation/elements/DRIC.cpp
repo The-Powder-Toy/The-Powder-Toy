@@ -29,7 +29,7 @@ Element_DRIC::Element_DRIC()
 
 	Temperature = 172.65f;
 	HeatConduct = 2;
-	Description = PT_ELEM_DRIC_DESC;
+	Description = TEXT_ELEM_DRIC_DESC;
 
 	Properties = TYPE_SOLID;
 

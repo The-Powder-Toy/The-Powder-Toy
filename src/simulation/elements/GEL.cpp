@@ -29,7 +29,7 @@ Element_GEL::Element_GEL()
 
 	Temperature = R_TEMP-2.0f  +273.15f;
 	HeatConduct = 29;
-	Description = PT_ELEM_GEL_DESC;
+	Description = TEXT_ELEM_GEL_DESC;
 
 	Properties = TYPE_LIQUID|PROP_LIFE_DEC|PROP_NEUTPENETRATE;
 

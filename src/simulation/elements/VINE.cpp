@@ -29,7 +29,7 @@ Element_VINE::Element_VINE()
 
 	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 65;
-	Description = PT_ELEM_VINE_DESC;
+	Description = TEXT_ELEM_VINE_DESC;
 
 	Properties = TYPE_SOLID;
 

@@ -29,7 +29,7 @@ Element_CNCT::Element_CNCT()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 100;
-	Description = PT_ELEM_CNCT_DESC;
+	Description = TEXT_ELEM_CNCT_DESC;
 
 	Properties = TYPE_PART|PROP_HOT_GLOW;
 

@@ -29,7 +29,7 @@ Element_SPAWN::Element_SPAWN()
 
 	Temperature = R_TEMP+273.15f;
 	HeatConduct = 0;
-	Description = PT_ELEM_SPAWN_DESC;
+	Description = TEXT_ELEM_SPAWN_DESC;
 
 	Properties = TYPE_SOLID;
 

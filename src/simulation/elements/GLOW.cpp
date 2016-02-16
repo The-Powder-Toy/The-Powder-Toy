@@ -29,7 +29,7 @@ Element_GLOW::Element_GLOW()
 
 	Temperature = R_TEMP+20.0f+273.15f;
 	HeatConduct = 44;
-	Description = PT_ELEM_GLOW_DESC;
+	Description = TEXT_ELEM_GLOW_DESC;
 
 	Properties = TYPE_LIQUID|PROP_LIFE_DEC;
 

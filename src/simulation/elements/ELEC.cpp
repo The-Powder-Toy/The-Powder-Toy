@@ -29,7 +29,7 @@ Element_ELEC::Element_ELEC()
 
 	Temperature = R_TEMP+200.0f+273.15f;
 	HeatConduct = 251;
-	Description = PT_ELEM_ELEC_DESC;
+	Description = TEXT_ELEM_ELEC_DESC;
 
 	Properties = TYPE_ENERGY|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
 

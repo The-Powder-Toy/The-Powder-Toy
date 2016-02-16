@@ -29,7 +29,7 @@ Element_FOG::Element_FOG()
 
 	Temperature = 243.15f;
 	HeatConduct = 100;
-	Description = PT_ELEM_FOG_DESC;
+	Description = TEXT_ELEM_FOG_DESC;
 
 	Properties = TYPE_GAS|PROP_LIFE_DEC;
 

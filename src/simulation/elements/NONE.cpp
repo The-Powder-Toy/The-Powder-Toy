@@ -29,7 +29,7 @@ Element_NONE::Element_NONE()
 
 	Temperature = R_TEMP+273.15f;
 	HeatConduct = 0;
-	Description = PT_ELEM_NONE_DESC;
+	Description = TEXT_ELEM_NONE_DESC;
 
 	Properties = 0;
 

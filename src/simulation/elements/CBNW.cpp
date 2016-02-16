@@ -29,7 +29,7 @@ Element_CBNW::Element_CBNW()
 
 	Temperature = R_TEMP-2.0f	+273.15f;
 	HeatConduct = 29;
-	Description = PT_ELEM_CBNW_DESC;
+	Description = TEXT_ELEM_CBNW_DESC;
 
 	Properties = TYPE_LIQUID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_NEUTPENETRATE;
 

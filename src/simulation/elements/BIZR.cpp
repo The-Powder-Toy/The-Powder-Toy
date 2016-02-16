@@ -29,7 +29,7 @@ Element_BIZR::Element_BIZR()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 29;
-	Description = PT_ELEM_BIZR_DESC;
+	Description = TEXT_ELEM_BIZR_DESC;
 
 	Properties = TYPE_LIQUID;
 

@@ -29,7 +29,7 @@ Element_STOR::Element_STOR()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 0;
-	Description = PT_ELEM_STOR_DESC;
+	Description = TEXT_ELEM_STOR_DESC;
 
 	Properties = TYPE_SOLID|PROP_NOCTYPEDRAW;
 

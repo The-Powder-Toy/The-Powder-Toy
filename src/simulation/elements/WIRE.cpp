@@ -29,7 +29,7 @@ Element_WIRE::Element_WIRE()
 
 	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 250;
-	Description = PT_ELEM_WIRE_DESC;
+	Description = TEXT_ELEM_WIRE_DESC;
 
 	Properties = TYPE_SOLID;
 

@@ -29,7 +29,7 @@ Element_FIGH::Element_FIGH()
 
 	Temperature = R_TEMP+14.6f+273.15f;
 	HeatConduct = 0;
-	Description = PT_ELEM_FIGH_DESC;
+	Description = TEXT_ELEM_FIGH_DESC;
 
 	Properties = PROP_NOCTYPEDRAW;
 

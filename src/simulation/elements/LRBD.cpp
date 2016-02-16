@@ -29,7 +29,7 @@ Element_LRBD::Element_LRBD()
 
 	Temperature = R_TEMP+45.0f+273.15f;
 	HeatConduct = 170;
-	Description = PT_ELEM_LRBD_DESC;
+	Description = TEXT_ELEM_LRBD_DESC;
 
 	Properties = TYPE_LIQUID|PROP_CONDUCTS|PROP_LIFE_DEC;
 

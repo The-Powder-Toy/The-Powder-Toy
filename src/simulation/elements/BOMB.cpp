@@ -29,7 +29,7 @@ Element_BOMB::Element_BOMB()
 
 	Temperature = R_TEMP-2.0f	+273.15f;
 	HeatConduct = 29;
-	Description = PT_ELEM_BOMB_DESC;
+	Description = TEXT_ELEM_BOMB_DESC;
 
 	Properties = TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC|PROP_SPARKSETTLE;
 

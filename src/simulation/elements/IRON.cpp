@@ -29,7 +29,7 @@ Element_IRON::Element_IRON()
 
 	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 251;
-	Description = PT_ELEM_IRON_DESC;
+	Description = TEXT_ELEM_IRON_DESC;
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_HOT_GLOW;
 

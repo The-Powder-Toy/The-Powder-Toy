@@ -29,7 +29,7 @@ Element_NWHL::Element_NWHL()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 186;
-	Description = PT_ELEM_NWHL_DESC;
+	Description = TEXT_ELEM_NWHL_DESC;
 
 	Properties = TYPE_SOLID;
 

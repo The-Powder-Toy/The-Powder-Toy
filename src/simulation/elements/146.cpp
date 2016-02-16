@@ -29,7 +29,7 @@ Element_146::Element_146()
 
 	Temperature = 9000.0f;
 	HeatConduct = 40;
-	Description = PT_ELEM_146_DESC;
+	Description = TEXT_ELEM_146_DESC;
 
 	Properties = TYPE_SOLID|PROP_LIFE;
 

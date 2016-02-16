@@ -29,7 +29,7 @@ Element_FRZZ::Element_FRZZ()
 
 	Temperature = 253.15f;
 	HeatConduct = 46;
-	Description = PT_ELEM_FRZZ_DESC;
+	Description = TEXT_ELEM_FRZZ_DESC;
 
 	Properties = TYPE_PART;
 

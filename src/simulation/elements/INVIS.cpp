@@ -29,7 +29,7 @@ Element_INVIS::Element_INVIS()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 164;
-	Description = PT_ELEM_INVIS_DESC;
+	Description = TEXT_ELEM_INVIS_DESC;
 
 	Properties = TYPE_SOLID | PROP_NEUTPASS;
 

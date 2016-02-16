@@ -29,7 +29,7 @@ Element_BRAY::Element_BRAY()
 
 	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 251;
-	Description = PT_ELEM_BRAY_DESC;
+	Description = TEXT_ELEM_BRAY_DESC;
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC|PROP_LIFE_KILL;
 

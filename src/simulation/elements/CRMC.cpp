@@ -29,7 +29,7 @@ Element_CRMC::Element_CRMC()
 
 	Temperature = R_TEMP+273.15f;
 	HeatConduct = 35;
-	Description = PT_ELEM_CRMC_DESC;
+	Description = TEXT_ELEM_CRMC_DESC;
 
 	Properties = TYPE_SOLID | PROP_NEUTPASS;
 

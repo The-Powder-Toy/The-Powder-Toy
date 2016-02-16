@@ -29,7 +29,7 @@ Element_TSNS::Element_TSNS()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 0;
-	Description = PT_ELEM_TSNS_DESC;
+	Description = TEXT_ELEM_TSNS_DESC;
 
 	Properties = TYPE_SOLID;
 

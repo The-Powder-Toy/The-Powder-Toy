@@ -29,7 +29,7 @@ Element_URAN::Element_URAN()
 
 	Temperature = R_TEMP+30.0f+273.15f;
 	HeatConduct = 251;
-	Description = PT_ELEM_URAN_DESC;
+	Description = TEXT_ELEM_URAN_DESC;
 
 	Properties = TYPE_PART | PROP_RADIOACTIVE;
 

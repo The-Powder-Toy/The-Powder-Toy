@@ -29,7 +29,7 @@ Element_DEST::Element_DEST()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 150;
-	Description = PT_ELEM_DEST_DESC;
+	Description = TEXT_ELEM_DEST_DESC;
 
 	Properties = TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
 

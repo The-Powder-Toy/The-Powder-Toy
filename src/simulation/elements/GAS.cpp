@@ -29,7 +29,7 @@ Element_GAS::Element_GAS()
 
 	Temperature = R_TEMP+2.0f	+273.15f;
 	HeatConduct = 42;
-	Description = PT_ELEM_GAS_DESC;
+	Description = TEXT_ELEM_GAS_DESC;
 
 	Properties = TYPE_GAS | PROP_NEUTPASS;
 

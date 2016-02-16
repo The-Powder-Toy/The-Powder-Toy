@@ -29,7 +29,7 @@ Element_NBLE::Element_NBLE()
 
 	Temperature = R_TEMP+2.0f	+273.15f;
 	HeatConduct = 106;
-	Description = PT_ELEM_NBLE_DESC;
+	Description = TEXT_ELEM_NBLE_DESC;
 
 	Properties = TYPE_GAS|PROP_CONDUCTS|PROP_LIFE_DEC;
 

@@ -29,7 +29,7 @@ Element_DMND::Element_DMND()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 186;
-	Description = PT_ELEM_DMND_DESC;
+	Description = TEXT_ELEM_DMND_DESC;
 
 	Properties = TYPE_SOLID;
 

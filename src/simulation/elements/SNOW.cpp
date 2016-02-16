@@ -29,7 +29,7 @@ Element_SNOW::Element_SNOW()
 
 	Temperature = R_TEMP-30.0f+273.15f;
 	HeatConduct = 46;
-	Description = PT_ELEM_SNOW_DESC;
+	Description = TEXT_ELEM_SNOW_DESC;
 
 	Properties = TYPE_PART|PROP_LIFE_DEC|PROP_NEUTPASS;
 

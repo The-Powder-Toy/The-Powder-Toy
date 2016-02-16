@@ -29,7 +29,7 @@ Element_NICE::Element_NICE()
 
 	Temperature = 35.0f;
 	HeatConduct = 46;
-	Description = PT_ELEM_NICE_DESC;
+	Description = TEXT_ELEM_NICE_DESC;
 
 	Properties = TYPE_SOLID;
 

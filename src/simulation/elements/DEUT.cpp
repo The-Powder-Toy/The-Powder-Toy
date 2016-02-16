@@ -29,7 +29,7 @@ Element_DEUT::Element_DEUT()
 
 	Temperature = R_TEMP-2.0f	+273.15f;
 	HeatConduct = 251;
-	Description = PT_ELEM_DEUT_DESC;
+	Description = TEXT_ELEM_DEUT_DESC;
 
 	Properties = TYPE_LIQUID|PROP_NEUTPASS;
 

@@ -29,7 +29,7 @@ Element_PLNT::Element_PLNT()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 65;
-	Description = PT_ELEM_PLNT_DESC;
+	Description = TEXT_ELEM_PLNT_DESC;
 
 	Properties = TYPE_SOLID|PROP_NEUTPENETRATE|PROP_LIFE_DEC;
 

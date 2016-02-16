@@ -29,7 +29,7 @@ Element_PROT::Element_PROT()
 
 	Temperature = R_TEMP+273.15f;
 	HeatConduct = 61;
-	Description = PT_ELEM_PROT_DESC;
+	Description = TEXT_ELEM_PROT_DESC;
 
 	Properties = TYPE_ENERGY;
 

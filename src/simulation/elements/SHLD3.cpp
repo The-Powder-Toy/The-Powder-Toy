@@ -29,7 +29,7 @@ Element_SHLD3::Element_SHLD3()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 0;
-	Description = PT_ELEM_SHLD3_DESC;
+	Description = TEXT_ELEM_SHLD3_DESC;
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 

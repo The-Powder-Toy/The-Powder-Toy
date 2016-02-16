@@ -29,7 +29,7 @@ Element_OIL::Element_OIL()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 42;
-	Description = PT_ELEM_OIL_DESC;
+	Description = TEXT_ELEM_OIL_DESC;
 
 	Properties = TYPE_LIQUID | PROP_NEUTPASS;
 

@@ -29,7 +29,7 @@ Element_SAND::Element_SAND()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 150;
-	Description = PT_ELEM_SAND_DESC;
+	Description = TEXT_ELEM_SAND_DESC;
 
 	Properties = TYPE_PART;
 

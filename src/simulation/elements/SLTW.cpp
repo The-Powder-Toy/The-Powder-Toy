@@ -29,7 +29,7 @@ Element_SLTW::Element_SLTW()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 75;
-	Description = PT_ELEM_SLTW_DESC;
+	Description = TEXT_ELEM_SLTW_DESC;
 
 	Properties = TYPE_LIQUID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_NEUTPENETRATE;
 

@@ -29,7 +29,7 @@ Element_VRSS::Element_VRSS()
 
 	Temperature = R_TEMP+ 273.15f;
 	HeatConduct = 251;
-	Description = PT_ELEM_VRSS_DESC;
+	Description = TEXT_ELEM_VRSS_DESC;
 
 	Properties = TYPE_SOLID|PROP_DEADLY;
 

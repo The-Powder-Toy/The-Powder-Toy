@@ -29,7 +29,7 @@ Element_LNTG::Element_LNTG()
 
 	Temperature = 70.15f;
 	HeatConduct = 70;
-	Description = PT_ELEM_LNTG_DESC;
+	Description = TEXT_ELEM_LNTG_DESC;
 
 	Properties = TYPE_LIQUID;
 

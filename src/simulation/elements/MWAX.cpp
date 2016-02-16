@@ -29,7 +29,7 @@ Element_MWAX::Element_MWAX()
 
 	Temperature = R_TEMP+28.0f+273.15f;
 	HeatConduct = 44;
-	Description = PT_ELEM_MWAX_DESC;
+	Description = TEXT_ELEM_MWAX_DESC;
 
 	Properties = TYPE_LIQUID;
 

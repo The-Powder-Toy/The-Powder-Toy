@@ -29,7 +29,7 @@ Element_ISZS::Element_ISZS()
 
 	Temperature = 140.00f;
 	HeatConduct = 251;
-	Description = PT_ELEM_ISZS_DESC;
+	Description = TEXT_ELEM_ISZS_DESC;
 
 	Properties = TYPE_SOLID;
 

@@ -29,7 +29,7 @@ Element_VRSG::Element_VRSG()
 
 	Temperature = 522.0f + 273.15f;
 	HeatConduct = 251;
-	Description = PT_ELEM_VRSG_DESC;
+	Description = TEXT_ELEM_VRSG_DESC;
 
 	Properties = TYPE_GAS|PROP_DEADLY;
 

@@ -29,7 +29,7 @@ Element_STNE::Element_STNE()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 150;
-	Description = PT_ELEM_STNE_DESC;
+	Description = TEXT_ELEM_STNE_DESC;
 
 	Properties = TYPE_PART;
 

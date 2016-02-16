@@ -29,7 +29,7 @@ Element_RBDM::Element_RBDM()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 240;
-	Description = PT_ELEM_RBDM_DESC;
+	Description = TEXT_ELEM_RBDM_DESC;
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC;
 

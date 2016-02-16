@@ -29,7 +29,7 @@ Element_WTRV::Element_WTRV()
 
 	Temperature = R_TEMP+100.0f+273.15f;
 	HeatConduct = 48;
-	Description = PT_ELEM_WTRV_DESC;
+	Description = TEXT_ELEM_WTRV_DESC;
 
 	Properties = TYPE_GAS;
 

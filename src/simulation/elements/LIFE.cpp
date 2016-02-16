@@ -33,7 +33,7 @@ Element_LIFE::Element_LIFE()
 
 	Temperature = 9000.0f;
 	HeatConduct = 40;
-	Description = PT_ELEM_LIFE_DESC;
+	Description = TEXT_ELEM_LIFE_DESC;
 
 	Properties = TYPE_SOLID|PROP_LIFE;
 

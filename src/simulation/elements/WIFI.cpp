@@ -29,7 +29,7 @@ Element_WIFI::Element_WIFI()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 0;
-	Description = PT_ELEM_WIFI_DESC;
+	Description = TEXT_ELEM_WIFI_DESC;
 
 	Properties = TYPE_SOLID;
 

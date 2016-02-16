@@ -29,7 +29,7 @@ Element_PSNS::Element_PSNS()
 
 	Temperature = 277.15f;
 	HeatConduct = 0;
-	Description = PT_ELEM_PSNS_DESC;
+	Description = TEXT_ELEM_PSNS_DESC;
 
 	Properties = TYPE_SOLID;
 

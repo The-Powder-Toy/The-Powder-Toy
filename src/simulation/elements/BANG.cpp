@@ -29,7 +29,7 @@ Element_BANG::Element_BANG()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 88;
-	Description = PT_ELEM_BANG_DESC;
+	Description = TEXT_ELEM_BANG_DESC;
 
 	Properties = TYPE_SOLID | PROP_NEUTPENETRATE;
 

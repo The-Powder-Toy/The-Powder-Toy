@@ -29,7 +29,7 @@ Element_COAL::Element_COAL()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 200;
-	Description = PT_ELEM_COAL_DESC;
+	Description = TEXT_ELEM_COAL_DESC;
 
 	Properties = TYPE_SOLID;
 
