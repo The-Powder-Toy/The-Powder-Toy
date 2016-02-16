@@ -22,7 +22,7 @@ Label::Label(Point position, Point size, std::string labelText):
 	autoHeight(size.Y==-1?true:false)
 {
 	menu = new ContextMenu(this);
-	menu->AddItem(ContextMenuItem(TEXT_CONTROL_LABEL_MENU_COPY, 0, true));
+	menu->AddItem(ContextMenuItem(TEXT_CONTROL_MENU_COPY, 0, true));
 }
 
 Label::Label(Point position, Point size, std::wstring labelText):
@@ -38,7 +38,7 @@ Label::Label(Point position, Point size, std::wstring labelText):
 	autoHeight(size.Y==-1?true:false)
 {
 	menu = new ContextMenu(this);
-	menu->AddItem(ContextMenuItem(TEXT_CONTROL_LABEL_MENU_COPY, 0, true));
+	menu->AddItem(ContextMenuItem(TEXT_CONTROL_MENU_COPY, 0, true));
 }
 
 

@@ -92,7 +92,7 @@ ColourPickerActivity::ColourPickerActivity(ui::Colour initialColour, ColourPicke
 		}
 	};
 
-	ui::Button * doneButton = new ui::Button(ui::Point(Size.X-45, Size.Y-23), ui::Point(40, 17), TEXT_CONTROL_COLOUR_BTN_DONE);
+	ui::Button * doneButton = new ui::Button(ui::Point(Size.X-45, Size.Y-23), ui::Point(40, 17), TEXT_GUI_COLOUR_BTN_DONE);
 	doneButton->SetActionCallback(new OkayAction(this));
 	AddComponent(doneButton);
 	SetOkayButton(doneButton);

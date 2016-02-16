@@ -8,6 +8,7 @@
 #include "gui/interface/Textbox.h"
 #include "gui/interface/Keys.h"
 #include "ContextMenu.h"
+#include "Lang.h"
 
 using namespace ui;
 
@@ -29,9 +30,9 @@ Textbox::Textbox(Point position, Point size, std::string textboxText, std::strin
 	cursor = text.length();
 
 	menu->RemoveItem(0);
-	menu->AddItem(ContextMenuItem("Cut", 1, true));
-	menu->AddItem(ContextMenuItem("Copy", 0, true));
-	menu->AddItem(ContextMenuItem("Paste", 2, true));
+	menu->AddItem(ContextMenuItem(TEXT_CONTROL_MENU_CUT, 1, true));
+	menu->AddItem(ContextMenuItem(TEXT_CONTROL_MENU_COPY, 0, true));
+	menu->AddItem(ContextMenuItem(TEXT_CONTROL_MENU_PASTE, 2, true));
 }
 
 Textbox::Textbox(Point position, Point size, std::wstring textboxText, std::wstring textboxPlaceholder):
@@ -52,9 +53,9 @@ Textbox::Textbox(Point position, Point size, std::wstring textboxText, std::wstr
 	cursor = text.length();
 
 	menu->RemoveItem(0);
-	menu->AddItem(ContextMenuItem("Cut", 1, true));
-	menu->AddItem(ContextMenuItem("Copy", 0, true));
-	menu->AddItem(ContextMenuItem("Paste", 2, true));
+	menu->AddItem(ContextMenuItem(TEXT_CONTROL_MENU_CUT, 1, true));
+	menu->AddItem(ContextMenuItem(TEXT_CONTROL_MENU_COPY, 0, true));
+	menu->AddItem(ContextMenuItem(TEXT_CONTROL_MENU_PASTE, 2, true));
 }
 
 Textbox::~Textbox()

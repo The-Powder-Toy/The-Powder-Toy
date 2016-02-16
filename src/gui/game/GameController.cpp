@@ -56,7 +56,7 @@ public:
 			}
 			catch(GameModelException & ex)
 			{
-				new ErrorMessage("Cannot open save", ex.what());
+				new ErrorMessage(TEXT_GAME_CONTROL_OPEN_SAVE_FAIL, format::StringToWString(ex.what()));
 			}
 		}
 	}
@@ -77,7 +77,7 @@ public:
 			}
 			catch(GameModelException & ex)
 			{
-				new ErrorMessage("Cannot open save", ex.what());
+				new ErrorMessage(TEXT_GAME_CONTROL_OPEN_SAVE_FAIL, format::StringToWString(ex.what()));
 			}
 		}
 	}
@@ -116,7 +116,7 @@ public:
 		if (file)
 		{
 			if (file->GetError().length())
-				new ErrorMessage("Error loading stamp", file->GetError());
+				new ErrorMessage(TEXT_GAME_CONTROL_LOAD_STAMP_FAIL, format::StringToWString(file->GetError()));
 			else if (cc->localBrowser->GetMoveToFront())
 				Client::Ref().MoveStampToFront(file->GetName());
 			cc->LoadStamp(file->GetGameSave());
@@ -293,7 +293,7 @@ void GameController::PlaceSave(ui::Point position)
 void GameController::Install()
 {
 #if defined(MACOSX)
-	new InformationMessage("No Installation necessary", "You don't need to install The Powder Toy on Mac OS X", false);
+	new InformationMessage(TEXT_GAME_CONTROL_MAC_INST_TITLE, TEXT_GAME_CONTROL_MAC_INST_MSG, false);
 #elif defined(WIN) || defined(LIN)
 	class InstallConfirmation: public ConfirmDialogueCallback {
 	public:
@@ -304,19 +304,19 @@ void GameController::Install()
 			{
 				if(Client::Ref().DoInstallation())
 				{
-					new InformationMessage("Install Success", "The installation completed!", false);
+					new InformationMessage(TEXT_GAME_CONTROL_INST_SUCC_TITLE, TEXT_GAME_CONTROL_INST_SUCC_MSG, false);
 				}
 				else
 				{
-					new ErrorMessage("Could not install", "The installation did not complete due to an error");
+					new ErrorMessage(TEXT_GAME_CONTROL_INST_FAIL_TITLE, TEXT_GAME_CONTROL_INST_FAIL_MSG);
 				}
 			}
 		}
 		virtual ~InstallConfirmation() { }
 	};
-	new ConfirmPrompt("Install The Powder Toy", "Do you wish to install The Powder Toy on this computer?\nThis allows you to open save files and saves directly from the website.", new InstallConfirmation(this));
+	new ConfirmPrompt(TEXT_GAME_CONTROL_INST_CONF_TITLE, TEXT_GAME_CONTROL_INST_CONF_MSG, new InstallConfirmation(this));
 #else
-	new ErrorMessage("Cannot install", "You cannot install The Powder Toy on this platform");
+	new ErrorMessage(TEXT_GAME_CONTROL_INST_PLAT_FAIL_TITLE, TEXT_GAME_CONTROL_INST_PLAT_FAIL_MSG);
 #endif
 }
 
@@ -527,7 +527,7 @@ std::string GameController::StampRegion(ui::Point point1, ui::Point point2)
 	}
 	else
 	{
-		new ErrorMessage("Could not create stamp", "Error generating save file");
+		new ErrorMessage(TEXT_GAME_CONTROL_CREATE_STAMP_FAIL_TITLE, TEXT_GAME_CONTROL_CREATE_STAMP_FAIL_MSG);
 		return "";
 	}
 }
@@ -1096,7 +1096,7 @@ void GameController::OpenLocalSaveWindow(bool asCurrent)
 	GameSave * gameSave = sim->Save();
 	if(!gameSave)
 	{
-		new ErrorMessage("Error", "Unable to build save.");
+		new ErrorMessage(TEXT_GAME_CONTROL_BUILD_SAVE_FAIL_TITLE, TEXT_GAME_CONTROL_BUILD_SAVE_FAIL_MSG);
 	}
 	else
 	{
@@ -1132,9 +1132,9 @@ void GameController::OpenLocalSaveWindow(bool asCurrent)
 			gameModel->SetSaveFile(&tempSave);
 			Client::Ref().MakeDirectory(LOCAL_SAVE_DIR);
 			if (Client::Ref().WriteFile(gameSave->Serialise(), gameModel->GetSaveFile()->GetName()))
-				new ErrorMessage("Error", "Unable to write save file.");
+				new ErrorMessage(TEXT_GAME_CONTROL_WRITE_SAVE_FAIL_TITLE, TEXT_GAME_CONTROL_WRITE_SAVE_FAIL_MSG);
 			else
-				gameModel->SetInfoTip("Saved Successfully");
+				gameModel->SetInfoTip(TEXT_GAME_CONTROL_SAVE_SUCC_TIP);
 		}
 	}
 }
@@ -1244,7 +1244,7 @@ void GameController::OpenTags()
 	}
 	else
 	{
-		new ErrorMessage("Error", "No save open");
+		new ErrorMessage(TEXT_GAME_CONTROL_TAG_FAIL_TITLE, TEXT_GAME_CONTROL_TAG_FAIL_MSG);
 	}
 }
 
@@ -1304,7 +1304,7 @@ void GameController::OpenSaveWindow()
 		GameSave * gameSave = sim->Save();
 		if(!gameSave)
 		{
-			new ErrorMessage("Error", "Unable to build save.");
+			new ErrorMessage(TEXT_GAME_CONTROL_BUILD_SAVE_FAIL_TITLE, TEXT_GAME_CONTROL_BUILD_SAVE_FAIL_MSG);
 		}
 		else
 		{
@@ -1327,7 +1327,7 @@ void GameController::OpenSaveWindow()
 	}
 	else
 	{
-		new ErrorMessage("Error", "You need to login to upload saves.");
+		new ErrorMessage(TEXT_GAME_CONTROL_UPLOAD_FAIL_TITLE, TEXT_GAME_CONTROL_UPLOAD_FAIL_MSG);
 	}
 }
 
@@ -1352,7 +1352,7 @@ void GameController::SaveAsCurrent()
 		GameSave * gameSave = sim->Save();
 		if(!gameSave)
 		{
-			new ErrorMessage("Error", "Unable to build save.");
+			new ErrorMessage(TEXT_GAME_CONTROL_BUILD_SAVE_FAIL_TITLE, TEXT_GAME_CONTROL_BUILD_SAVE_FAIL_MSG);
 		}
 		else
 		{
@@ -1379,7 +1379,7 @@ void GameController::SaveAsCurrent()
 	}
 	else
 	{
-		new ErrorMessage("Error", "You need to login to upload saves.");
+		new ErrorMessage(TEXT_GAME_CONTROL_UPLOAD_FAIL_TITLE, TEXT_GAME_CONTROL_UPLOAD_FAIL_MSG);
 	}
 }
 
@@ -1399,7 +1399,7 @@ void GameController::Vote(int direction)
 		}
 		catch(GameModelException & ex)
 		{
-			new ErrorMessage("Error while voting", ex.what());
+			new ErrorMessage(TEXT_GAME_CONTROL_VOTE_FAIL, format::StringToWString(ex.what()));
 		}
 	}
 }
@@ -1565,48 +1565,48 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 	{
 		GameController * c;
 	public:
-		UpdateNotification(GameController * c, std::string message) : Notification(message), c(c) {}
+		UpdateNotification(GameController * c, std::wstring message) : Notification(message), c(c) {}
 		virtual ~UpdateNotification() {}
 
 		virtual void Action()
 		{
 			UpdateInfo info = Client::Ref().GetUpdateInfo();
-			std::stringstream updateMessage;
-			updateMessage << "Are you sure you want to run the updater? Please save any changes before updating.\n\nCurrent version:\n ";
+			std::wstringstream updateMessage;
+			updateMessage << TEXT_GAME_CONTROL_UPDATE_CONF;
 
 #ifdef SNAPSHOT
-			updateMessage << "Snapshot " << SNAPSHOT_ID;
+			updateMessage << TEXT_GAME_CONTROL_UPDATE_SNAP << SNAPSHOT_ID;
 #elif defined(BETA)
-			updateMessage << SAVE_VERSION << "." << MINOR_VERSION << " Beta, Build " << BUILD_NUM;
+			updateMessage << SAVE_VERSION << L"." << MINOR_VERSION << TEXT_GAME_CONTROL_UPDATE_BETA << BUILD_NUM;
 #else
-			updateMessage << SAVE_VERSION << "." << MINOR_VERSION << " Stable, Build " << BUILD_NUM;
+			updateMessage << SAVE_VERSION << L"." << MINOR_VERSION << TEXT_GAME_CONTROL_UPDATE_STABLE << BUILD_NUM;
 #endif
 
-			updateMessage << "\nNew version:\n ";
+			updateMessage << TEXT_GAME_CONTROL_UPDATE_NEWVER;
 			if (info.Type == UpdateInfo::Beta)
-				updateMessage << info.Major << " " << info.Minor << " Beta, Build " << info.Build;
+				updateMessage << info.Major << L" " << info.Minor << TEXT_GAME_CONTROL_UPDATE_BETA << info.Build;
 			else if (info.Type == UpdateInfo::Snapshot)
-				updateMessage << "Snapshot " << info.Time;
+				updateMessage << TEXT_GAME_CONTROL_UPDATE_SNAP << info.Time;
 			else if(info.Type == UpdateInfo::Stable)
-				updateMessage << info.Major << " " << info.Minor << " Stable, Build " << info.Build;
+				updateMessage << info.Major << L" " << info.Minor << TEXT_GAME_CONTROL_UPDATE_STABLE << info.Build;
 
 			if (info.Changelog.length())
-				updateMessage << "\n\nChangelog:\n" << info.Changelog;
+				updateMessage << TEXT_GAME_CONTROL_UPDATE_CHANGE << format::StringToWString(info.Changelog);
 
-			new ConfirmPrompt("Run Updater", updateMessage.str(), new UpdateConfirmation(c));
+			new ConfirmPrompt(TEXT_GAME_CONTROL_UPDATE_TITLE, updateMessage.str(), new UpdateConfirmation(c));
 		}
 	};
 
 	switch(sender->GetUpdateInfo().Type)
 	{
 		case UpdateInfo::Snapshot:
-			gameModel->AddNotification(new UpdateNotification(this, std::string("A new snapshot is available - click here to update")));
+			gameModel->AddNotification(new UpdateNotification(this, std::wstring(TEXT_GAME_CONTROL_UPDATE_SNAP_NOTIFY)));
 			break;
 		case UpdateInfo::Stable:
-			gameModel->AddNotification(new UpdateNotification(this, std::string("A new version is available - click here to update")));
+			gameModel->AddNotification(new UpdateNotification(this, std::wstring(TEXT_GAME_CONTROL_UPDATE_BETA_NOTIFY)));
 			break;
 		case UpdateInfo::Beta:
-			gameModel->AddNotification(new UpdateNotification(this, std::string("A new beta is available - click here to update")));
+			gameModel->AddNotification(new UpdateNotification(this, std::wstring(TEXT_GAME_CONTROL_UPDATE_STABLE_NOTIFY)));
 			break;
 	}
 }

@@ -97,7 +97,7 @@
     <OutDir>$(SolutionDir)Build\</OutDir>
     <IncludePath>$(ProjectDir)includes;$(ProjectDir)includes/SDL;$(ProjectDir)includes/lua5.2;$(ProjectDir)data;$(ProjectDir)src;$(ProjectDir)generated;C:\Boost\boost_1_60_0;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)Libraries;$(LibraryPath)</LibraryPath>
-    <TargetName>$(ProjectName)</TargetName>
+    <TargetName>$(ProjectName)-Beta</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Static|Win32'">
     <LinkIncremental>true</LinkIncremental>

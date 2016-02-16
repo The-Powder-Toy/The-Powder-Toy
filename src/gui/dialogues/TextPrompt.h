@@ -12,7 +12,11 @@ public:
 	friend class CloseAction;
 	enum DialogueResult { ResultCancel, ResultOkay };
 	TextPrompt(std::string title, std::string message, std::string text, std::string placeholder, bool multiline, TextDialogueCallback * callback_);
+	TextPrompt(std::wstring title, std::wstring message, std::wstring text, std::wstring placeholder, bool multiline, TextDialogueCallback * callback_);
 	static std::string Blocking(std::string title, std::string message, std::string text, std::string placeholder, bool multiline);
+	static std::string Blocking(std::wstring title, std::wstring message, std::wstring text, std::wstring placeholder, bool multiline);
+	static std::wstring WBlocking(std::string title, std::string message, std::string text, std::string placeholder, bool multiline);
+	static std::wstring WBlocking(std::wstring title, std::wstring message, std::wstring text, std::wstring placeholder, bool multiline);
 	virtual void OnDraw();
 	virtual ~TextPrompt();
 	TextDialogueCallback * callback;

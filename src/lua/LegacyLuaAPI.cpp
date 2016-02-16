@@ -19,6 +19,8 @@
 #include "gui/game/GameModel.h"
 #include "simulation/Simulation.h"
 
+#include "Lang.h"
+
 
 #ifndef FFI
 int luacon_partread(lua_State* l)
@@ -599,7 +601,7 @@ void luacon_hook(lua_State * l, lua_Debug * ar)
 {
 	if(ar->event == LUA_HOOKCOUNT && Platform::GetTime()-ui::Engine::Ref().LastTick() > 3000)
 	{
-		if(ConfirmPrompt::Blocking("Script not responding", "The Lua script may have stopped responding. There might be an infinite loop. Press \"Stop\" to stop it", "Stop"))
+		if(ConfirmPrompt::Blocking(TEXT_LUA_NORESPOND_TITLE, TEXT_LUA_NORESPOND_MSG, TEXT_LUA_NORESPOND_BTN_STOP))
 			luaL_error(l, "Error: Script not responding");
 		ui::Engine::Ref().LastTick(Platform::GetTime());
 	}
@@ -1684,7 +1686,7 @@ int luatpt_confirm(lua_State *l)
 {
 	std::string title = std::string(luaL_optstring(l, 1, "Title"));
 	std::string message = std::string(luaL_optstring(l, 2, "Message"));
-	std::string buttonText = std::string(luaL_optstring(l, 3, "Confirm"));
+	std::wstring buttonText = std::wstring(format::StringToWString(luaL_optstring(l, 3, "Confirm")));
 	bool ret = ConfirmPrompt::Blocking(title, message, buttonText);
 	lua_pushboolean(l, ret ? 1 : 0);
 	return 1;
@@ -1874,7 +1876,7 @@ int luatpt_getscript(lua_State* l)
 
 	std::stringstream url;
 	url << "http://starcatcher.us/scripts/main.lua?get=" << scriptID;
-	if (confirmPrompt && !ConfirmPrompt::Blocking("Do you want to install script?", url.str(), "Install"))
+	if (confirmPrompt && !ConfirmPrompt::Blocking(TEXT_LUA_INSTALL_TITLE, format::StringToWString(url.str()), TEXT_LUA_INSTALL_BTN_INST))
 		return 0;
 
 	int ret, len;
@@ -1901,7 +1903,7 @@ int luatpt_getscript(lua_State* l)
 	{
 		fclose(outputfile);
 		outputfile = NULL;
-		if (!confirmPrompt || ConfirmPrompt::Blocking("File already exists, overwrite?", filename, "Overwrite"))
+		if (!confirmPrompt || ConfirmPrompt::Blocking(TEXT_LUA_OVERWRITE_TITLE, format::StringToWString(filename), TEXT_LUA_OVERWRITE_BTN_WRITE))
 		{
 			outputfile = fopen(filename, "wb");
 		}
