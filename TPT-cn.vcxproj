@@ -95,7 +95,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)Build\</OutDir>
-    <IncludePath>$(ProjectDir)includes;$(ProjectDir)includes/SDL;$(ProjectDir)includes/lua5.2;$(ProjectDir)data;$(ProjectDir)src;$(ProjectDir)generated;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)includes;$(ProjectDir)includes/SDL;$(ProjectDir)includes/lua5.2;$(ProjectDir)data;$(ProjectDir)src;$(ProjectDir)generated;C:\Boost\boost_1_60_0;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)Libraries;$(LibraryPath)</LibraryPath>
     <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>

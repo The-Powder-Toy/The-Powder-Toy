@@ -1,6 +1,5 @@
 #include <ctime>
-#include <locale>
-#include <codecvt>
+#include <boost/locale/encoding_utf.hpp>
 #include <string>
 #include <stdexcept>
 #include <iostream>
@@ -9,6 +8,8 @@
 #include <stdio.h>
 #include "Format.h"
 #include "graphics/Graphics.h"
+
+using boost::locale::conv::utf_to_utf;
 
 std::string format::URLEncode(std::string source)
 {
@@ -131,8 +132,7 @@ std::string format::CleanString(const char * dirtyData, bool ascii, bool color, 
 
 std::string format::WStringToString(std::wstring wcs)
 {
-	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-	return converter.to_bytes(wcs);
+	return utf_to_utf<char>(wcs.c_str(), wcs.c_str() + wcs.size());
 }
 
 std::string format::WStringToString(const wchar_t * wcs)
@@ -142,8 +142,7 @@ std::string format::WStringToString(const wchar_t * wcs)
 
 std::wstring format::StringToWString(std::string str)
 {
-	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-	return converter.from_bytes(str);
+	return utf_to_utf<wchar_t>(str.c_str(), str.c_str() + str.size());
 }
 
 std::wstring format::StringToWString(const char * str)

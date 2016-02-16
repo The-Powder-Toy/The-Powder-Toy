@@ -183,7 +183,8 @@ if GetOption("msvc"):
 	env.Append(CPPPATH=['includes/'])
 	
 if GetOption("zhcn"):
-	env.Append(CPPFLAGS = "/DHAVE_STRUCT_TIMESPEC")
+	env.Append(CPPPATH = "C:/Boost/boost_1_60_0/")
+	env.Append(CCFLAGS=['-finput-charset=GBK'])
 	
 #Check 32/64 bit
 def CheckBit(context):
@@ -543,12 +544,15 @@ if GetOption('output'):
 	programName = GetOption('output')
 else:
 	programName = GetOption('renderer') and "render" or "powder"
+	if GetOption('zhcn'):
+		programName = "TPT-cn"
 	if "BIT" in env and env["BIT"] == 64:
 		programName += "64"
 	if isX86 and GetOption('no-sse'):
 		programName += "-legacy"
 	if platform == "Windows":
-		programName = programName.capitalize()
+		if not GetOption('zhcn'):
+			programName = programName.capitalize()
 		programName += ".exe"
 	elif platform == "Darwin":
 		programName += "-x"
