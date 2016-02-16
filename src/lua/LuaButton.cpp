@@ -1,9 +1,8 @@
 #ifdef LUACONSOLE
 
 #include <iostream>
-#include <locale>
-#include <codecvt>
 #include <string>
+#include "Format.h"
 #include "LuaButton.h"
 #include "LuaScriptInterface.h"
 #include "gui/interface/Button.h"
@@ -31,8 +30,7 @@ LuaButton::LuaButton(lua_State * l) :
 	int sizeY = luaL_optinteger(l, 4, 10);
 	std::string text = luaL_optstring(l, 5, "");
 	std::string toolTipstr = luaL_optstring(l, 6, "");
-	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-	std::wstring toolTip = converter.from_bytes(toolTipstr);
+	std::wstring toolTip = format::StringToWString(toolTipstr);
 
 	button = new ui::Button(ui::Point(posX, posY), ui::Point(sizeX, sizeY), text, toolTip);
 	component = button;

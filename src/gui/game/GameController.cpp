@@ -1,6 +1,4 @@
 #include <iostream>
-#include <locale>
-#include <codecvt>
 #include <string>
 #include <queue>
 #include "Config.h"
@@ -1488,13 +1486,12 @@ std::string GameController::ElementResolve(int type, int ctype)
 
 std::wstring GameController::WElementResolve(int type, int ctype)
 {
-	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 	if(gameModel && gameModel->GetSimulation())
 	{
 		if (type == PT_LIFE && ctype >= 0 && ctype < NGOL && gameModel->GetSimulation()->gmenu)
-			return converter.from_bytes(gameModel->GetSimulation()->gmenu[ctype].name);
+			return format::StringToWString(gameModel->GetSimulation()->gmenu[ctype].name);
 		else if (type >= 0 && type < PT_NUM && gameModel->GetSimulation()->elements)
-			return std::wstring(converter.from_bytes(gameModel->GetSimulation()->elements[type].Name));
+			return std::wstring(format::StringToWString(gameModel->GetSimulation()->elements[type].Name));
 	}
 	return L"";
 }
@@ -1519,9 +1516,8 @@ std::string GameController::WallName(int type)
 
 std::wstring GameController::WWallName(int type)
 {
-	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 	if(gameModel && gameModel->GetSimulation() && gameModel->GetSimulation()->wtypes && type >= 0 && type < UI_WALLCOUNT)
-		return std::wstring(converter.from_bytes(gameModel->GetSimulation()->wtypes[type].name));
+		return std::wstring(format::StringToWString(gameModel->GetSimulation()->wtypes[type].name));
 	else
 		return L"";
 }
