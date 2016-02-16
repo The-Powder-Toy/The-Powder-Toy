@@ -73,6 +73,18 @@ void ContextMenu::SetItem(int id, std::string text)
 	{
 		if (items[i].ID == id)
 		{
+			items[i].Text = format::StringToWString(text);
+			break;
+		}
+	}
+}
+
+void ContextMenu::SetItem(int id, std::wstring text)
+{
+	for (size_t i = 0; i < items.size(); i++)
+	{
+		if (items[i].ID == id)
+		{
 			items[i].Text = text;
 			break;
 		}
