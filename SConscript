@@ -75,6 +75,8 @@ AddSconsOption('lua52', False, False, "Compile using lua 5.2")
 AddSconsOption('nofft', False, False, "Disable FFT.")
 AddSconsOption("output", False, True, "Executable output name.")
 
+AddSconsOption("zhcn", False, False, "Essential flags for Chinese version.")
+
 
 #detect platform automatically, but it can be overrided
 tool = GetOption('tool')
@@ -179,7 +181,10 @@ if GetOption("msvc"):
 	else:
 		env.Append(LIBPATH=['Libraries/'])
 	env.Append(CPPPATH=['includes/'])
-
+	
+if GetOption("zhcn"):
+	env.Append(CPPFLAGS = "/DHAVE_STRUCT_TIMESPEC")
+	
 #Check 32/64 bit
 def CheckBit(context):
 	context.Message('Checking if 64 bit... ')
