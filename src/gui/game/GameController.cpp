@@ -1509,7 +1509,7 @@ bool GameController::IsValidElement(int type)
 std::string GameController::WallName(int type)
 {
 	if(gameModel && gameModel->GetSimulation() && gameModel->GetSimulation()->wtypes && type >= 0 && type < UI_WALLCOUNT)
-		return std::string(gameModel->GetSimulation()->wtypes[type].name);
+		return std::string(format::WStringToString(gameModel->GetSimulation()->wtypes[type].name));
 	else
 		return "";
 }
@@ -1517,7 +1517,7 @@ std::string GameController::WallName(int type)
 std::wstring GameController::WWallName(int type)
 {
 	if(gameModel && gameModel->GetSimulation() && gameModel->GetSimulation()->wtypes && type >= 0 && type < UI_WALLCOUNT)
-		return std::wstring(format::StringToWString(gameModel->GetSimulation()->wtypes[type].name));
+		return std::wstring(gameModel->GetSimulation()->wtypes[type].name);
 	else
 		return L"";
 }
