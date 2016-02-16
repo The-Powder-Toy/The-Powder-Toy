@@ -1,0 +1,1 @@
+#define TPT_ELEM_ACID_DESC L"可以腐蚀几乎所有物质."

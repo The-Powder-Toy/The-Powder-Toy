@@ -494,6 +494,7 @@
     <ClInclude Include="data\icondoc.h" />
     <ClInclude Include="data\images.h" />
     <ClInclude Include="data\IntroText.h" />
+    <ClInclude Include="data\Lang.h" />
     <ClInclude Include="data\Shaders.h" />
     <ClInclude Include="generated\ElementClasses.h" />
     <ClInclude Include="generated\ToolClasses.h" />
