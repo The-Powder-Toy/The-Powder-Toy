@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_ANAR PT_ANAR 113
 Element_ANAR::Element_ANAR()
 {
@@ -28,7 +29,7 @@ Element_ANAR::Element_ANAR()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
-	Description = L"Anti-air. Very light dust, which behaves opposite gravity.";
+	Description = PT_ELEM_ANAR_DESC;
 
 	Properties = TYPE_PART;
 

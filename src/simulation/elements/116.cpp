@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_116 PT_116 116
 Element_116::Element_116()
 {
@@ -28,7 +29,7 @@ Element_116::Element_116()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
-	Description = L"A failed shared velocity test.";
+	Description = PT_ELEM_116_DESC;
 
 	Properties = TYPE_PART;
 

@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_FILT PT_FILT 125
 Element_FILT::Element_FILT()
 {
@@ -28,7 +29,7 @@ Element_FILT::Element_FILT()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = L"可以改变PHOT的颜色, 颜色随温度变化.";
+	Description = PT_ELEM_FILT_DESC;
 
 	Properties = TYPE_SOLID | PROP_NOAMBHEAT | PROP_LIFE_DEC;
 

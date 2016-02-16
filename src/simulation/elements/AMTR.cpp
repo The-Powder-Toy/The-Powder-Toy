@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_AMTR PT_AMTR 72
 Element_AMTR::Element_AMTR()
 {
@@ -28,7 +29,7 @@ Element_AMTR::Element_AMTR()
 
 	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 70;
-	Description = L"Anti-Matter, destroys a majority of particles.";
+	Description = PT_ELEM_AMTR_DESC;
 
 	Properties = TYPE_GAS;
 

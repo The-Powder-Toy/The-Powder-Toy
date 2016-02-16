@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_GLOW PT_GLOW 66
 Element_GLOW::Element_GLOW()
 {
@@ -28,7 +29,7 @@ Element_GLOW::Element_GLOW()
 
 	Temperature = R_TEMP+20.0f+273.15f;
 	HeatConduct = 44;
-	Description = L"Glow, Glows under pressure.";
+	Description = PT_ELEM_GLOW_DESC;
 
 	Properties = TYPE_LIQUID|PROP_LIFE_DEC;
 

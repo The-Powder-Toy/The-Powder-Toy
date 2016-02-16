@@ -174,7 +174,7 @@ GameView::GameView():
 	isToolTipFadingIn(false),
 	toolTipPosition(-1, -1),
 	infoTipPresence(0),
-	infoTip(""),
+	infoTip(L""),
 	buttonTipShow(0),
 	buttonTip(L""),
 	isButtonTipFadingIn(false),
@@ -910,7 +910,7 @@ void GameView::NotifyToolTipChanged(GameModel * sender)
 
 void GameView::NotifyInfoTipChanged(GameModel * sender)
 {
-	infoTip = sender->GetInfoTip();
+	infoTip = sender->GetWInfoTip();
 	infoTipPresence = 120;
 }
 
@@ -2457,7 +2457,7 @@ void GameView::OnDraw()
 	if(infoTipPresence)
 	{
 		int infoTipAlpha = (infoTipPresence>50?50:infoTipPresence)*5;
-		g->drawtext_outline((XRES-Graphics::textwidth((char*)infoTip.c_str()))/2, (YRES/2)-2, (char*)infoTip.c_str(), 255, 255, 255, infoTipAlpha);
+		g->drawtext_outline((XRES-Graphics::textwidth((wchar_t*)infoTip.c_str()))/2, (YRES/2)-2, (wchar_t*)infoTip.c_str(), 255, 255, 255, infoTipAlpha);
 	}
 
 	if(toolTipPresence && toolTipPosition.X!=-1 && toolTipPosition.Y!=-1 && toolTip.length())
@@ -2477,7 +2477,7 @@ void GameView::OnDraw()
 	if(introText)
 	{
 		g->fillrect(0, 0, WINDOWW, WINDOWH, 0, 0, 0, introText>51?102:introText*2);
-		g->drawtext(16, 20, (char*)introTextMessage.c_str(), 255, 255, 255, introText>51?255:introText*5);
+		g->drawtext(16, 20, (wchar_t*)introTextMessage.c_str(), 255, 255, 255, introText>51?255:introText*5);
 	}
 }
 

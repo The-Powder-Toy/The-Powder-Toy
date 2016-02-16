@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_FRZW PT_FRZW 101
 Element_FRZW::Element_FRZW()
 {
@@ -28,7 +29,7 @@ Element_FRZW::Element_FRZW()
 
 	Temperature = 120.0f;
 	HeatConduct = 29;
-	Description = L"Freeze water. Hybrid liquid formed when Freeze powder melts.";
+	Description = PT_ELEM_FRZW_DESC;
 
 	Properties = TYPE_LIQUID | PROP_LIFE_DEC;
 

@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_PRTI PT_PRTI 109
 Element_PRTI::Element_PRTI()
 {
@@ -28,7 +29,7 @@ Element_PRTI::Element_PRTI()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 0;
-	Description = L"Portal IN. Particles go in here. Also has temperature dependent channels. (same as WIFI)";
+	Description = PT_ELEM_PRTI_DESC;
 
 	Properties = TYPE_SOLID;
 

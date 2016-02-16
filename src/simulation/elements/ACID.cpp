@@ -29,7 +29,7 @@ Element_ACID::Element_ACID()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 34;
-	Description = TPT_ELEM_ACID_DESC;
+	Description = PT_ELEM_ACID_DESC;
 
 	Properties = TYPE_LIQUID|PROP_DEADLY;
 

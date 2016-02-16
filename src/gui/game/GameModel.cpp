@@ -972,6 +972,12 @@ void GameModel::SetToolTip(std::wstring text)
 
 void GameModel::SetInfoTip(std::string text)
 {
+	infoTip = format::StringToWString(text);
+	notifyInfoTipChanged();
+}
+
+void GameModel::SetInfoTip(std::wstring text)
+{
 	infoTip = text;
 	notifyInfoTipChanged();
 }
@@ -987,6 +993,11 @@ std::wstring GameModel::GetWToolTip()
 }
 
 std::string GameModel::GetInfoTip()
+{
+	return format::WStringToString(infoTip);
+}
+
+std::wstring GameModel::GetWInfoTip()
 {
 	return infoTip;
 }

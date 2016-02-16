@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_SPAWN PT_SPAWN 118
 Element_SPAWN::Element_SPAWN()
 {
@@ -28,7 +29,7 @@ Element_SPAWN::Element_SPAWN()
 
 	Temperature = R_TEMP+273.15f;
 	HeatConduct = 0;
-	Description = L"STKM spawn point.";
+	Description = PT_ELEM_SPAWN_DESC;
 
 	Properties = TYPE_SOLID;
 

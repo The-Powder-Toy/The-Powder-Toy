@@ -72,12 +72,12 @@ public:
 		if(m->GetSimulation()->grav->ngrav_enable)
 		{
 			m->GetSimulation()->grav->stop_grav_async();
-			m->SetInfoTip("Newtonian Gravity: Off");
+			m->SetInfoTip(L"Newtonian Gravity: Off");
 		}
 		else
 		{
 			m->GetSimulation()->grav->start_grav_async();
-			m->SetInfoTip("Newtonian Gravity: On");
+			m->SetInfoTip(L"Newtonian Gravity: On");
 		}
 	}
 };

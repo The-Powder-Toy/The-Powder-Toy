@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_ISZS PT_ISZS 108
 Element_ISZS::Element_ISZS()
 {
@@ -28,7 +29,7 @@ Element_ISZS::Element_ISZS()
 
 	Temperature = 140.00f;
 	HeatConduct = 251;
-	Description = L"Solid form of ISOZ, slowly decays into PHOT.";
+	Description = PT_ELEM_ISZS_DESC;
 
 	Properties = TYPE_SOLID;
 

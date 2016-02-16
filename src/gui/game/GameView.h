@@ -58,12 +58,12 @@ private:
 	bool isToolTipFadingIn;
 	ui::Point toolTipPosition;
 	int infoTipPresence;
-	std::string infoTip;
+	std::wstring infoTip;
 	int buttonTipShow;
 	std::wstring buttonTip;
 	bool isButtonTipFadingIn;
 	int introText;
-	std::string introTextMessage;
+	std::wstring introTextMessage;
 
 	bool doScreenshot;
 	bool recording;

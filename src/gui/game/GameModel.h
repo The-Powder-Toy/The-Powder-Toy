@@ -73,7 +73,7 @@ private:
 
 	int edgeMode;
 
-	std::string infoTip;
+	std::wstring infoTip;
 	std::wstring toolTip;
 	//bool zoomEnabled;
 	void notifyRendererChanged();
@@ -122,9 +122,11 @@ public:
 	void SetToolTip(std::string text);
 	void SetToolTip(std::wstring text);
 	void SetInfoTip(std::string text);
+	void SetInfoTip(std::wstring text);
 	std::string GetToolTip();
 	std::wstring GetWToolTip();
 	std::string GetInfoTip();
+	std::wstring GetWInfoTip();
 
 	void BuildMenus();
 	void BuildQuickOptionMenu(GameController * controller);
