@@ -10,6 +10,8 @@
 *.pref
 *.lua
 *.sh
+*.xbm
+font/*.bin
 stdout.txt
 stderr.txt
 build*/*
