@@ -73,9 +73,9 @@ ElementSearchActivity::ElementSearchActivity(GameController * gameController, st
 			}
 		};
 
-	ui::Button * closeButton = new ui::Button(ui::Point(0, Size.Y-15), ui::Point((Size.X/2)+1, 15), TEXT_GUI_ELEM_SEARCH_BUTTON_CLOSE);
+	ui::Button * closeButton = new ui::Button(ui::Point(0, Size.Y-15), ui::Point((Size.X/2)+1, 15), TEXT_GUI_ELEM_SEARCH_BTN_CLOSE);
 	closeButton->SetActionCallback(new CloseAction(this));
-	ui::Button * okButton = new ui::Button(ui::Point(Size.X/2, Size.Y-15), ui::Point(Size.X/2, 15), TEXT_GUI_ELEM_SEARCH_BUTTON_OK);
+	ui::Button * okButton = new ui::Button(ui::Point(Size.X/2, Size.Y-15), ui::Point(Size.X/2, 15), TEXT_GUI_ELEM_SEARCH_BTN_OK);
 	okButton->SetActionCallback(new OKAction(this));
 
 	AddComponent(okButton);

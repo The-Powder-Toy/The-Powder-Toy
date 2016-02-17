@@ -11,6 +11,7 @@ class CopyTextButton : public Button
 	ui::Label *copyTextLabel;
 public:
 	CopyTextButton(Point position, Point size, std::string buttonText, Label *copyTextLabel_);
+	CopyTextButton(Point position, Point size, std::wstring buttonText, Label *copyTextLabel_);
 
 	virtual void OnMouseClick(int x, int y, unsigned int button);
 

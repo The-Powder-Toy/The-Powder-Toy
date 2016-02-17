@@ -13,6 +13,7 @@ class DropDownAction
 {
 public:
 	virtual void OptionChanged(DropDown * sender, std::pair<std::string, int> newOption) {}
+	virtual void OptionChanged(DropDown * sender, std::pair<std::wstring, int> newOption) {}
 	virtual ~DropDownAction() {}
 };
 class DropDown: public ui::Component {
@@ -20,15 +21,19 @@ class DropDown: public ui::Component {
 	bool isMouseInside;
 	int optionIndex;
 	DropDownAction * callback;
-	std::vector<std::pair<std::string, int> > options;
+	std::vector<std::pair<std::wstring, int> > options;
 public:
 	DropDown(Point position, Point size);
 	std::pair<std::string, int> GetOption();
+	std::pair<std::wstring, int> GetWOption();
 	void SetOption(int option);
 	void SetOption(std::string option);
+	void SetOption(std::wstring option);
 	void AddOption(std::pair<std::string, int> option);
+	void AddOption(std::pair<std::wstring, int> option);
 	void RemoveOption(std::string option);
-	void SetOptions(std::vector<std::pair<std::string, int> > options);
+	void RemoveOption(std::wstring option);
+	void SetOptions(std::vector<std::pair<std::wstring, int> > options);
 	void SetActionCallback(DropDownAction * action) { callback = action;}
 	virtual void Draw(const Point& screenPos);
 	virtual void OnMouseClick(int x, int y, unsigned int button);

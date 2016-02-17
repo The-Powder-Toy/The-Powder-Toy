@@ -408,7 +408,7 @@ void GameModel::SetVote(int direction)
 		}
 		else
 		{
-			throw GameModelException("Could not vote: "+Client::Ref().GetLastError());
+			throw GameModelException("Could not vote: "+Client::Ref().GetLastError());  //TODO: Chinese?
 		}
 	}
 }

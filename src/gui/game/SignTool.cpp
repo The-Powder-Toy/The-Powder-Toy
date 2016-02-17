@@ -8,6 +8,7 @@
 #include "gui/interface/Textbox.h"
 #include "gui/interface/DropDown.h"
 #include "gui/game/GameModel.h"
+#include "Lang.h"
 
 class SignWindow: public ui::Window
 {
@@ -107,13 +108,13 @@ SignWindow::SignWindow(SignTool * tool_, Simulation * sim_, int signID_, ui::Poi
 	signID(signID_),
 	signPosition(position_)
 {
-	ui::Label * messageLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 15), "New sign");
+	ui::Label * messageLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 15), TEXT_GUI_SIGN_TOOL_TITLE);
 	messageLabel->SetTextColour(style::Colour::InformationTitle);
 	messageLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	messageLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(messageLabel);
 
-	ui::Button * okayButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(Size.X, 16), "OK");
+	ui::Button * okayButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(Size.X, 16), TEXT_GUI_SIGN_TOOL_BTN_OK);
 	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	okayButton->Appearance.BorderInactive = (ui::Colour(200, 200, 200));
@@ -121,21 +122,21 @@ SignWindow::SignWindow(SignTool * tool_, Simulation * sim_, int signID_, ui::Poi
 	AddComponent(okayButton);
 	SetOkayButton(okayButton);
 	
-	ui::Label * tempLabel = new ui::Label(ui::Point(8, 48), ui::Point(40, 15), "Justify:");
+	ui::Label * tempLabel = new ui::Label(ui::Point(8, 48), ui::Point(40, 15), TEXT_GUI_SIGN_TOOL_LABEL_JUSTIFY);
 	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(tempLabel);
 
 	justification = new ui::DropDown(ui::Point(52, 48), ui::Point(50, 16));
 	AddComponent(justification);
-	justification->AddOption(std::pair<std::string, int>("\x9D Left", (int)sign::Left));
-	justification->AddOption(std::pair<std::string, int>("\x9E Middle", (int)sign::Middle));
-	justification->AddOption(std::pair<std::string, int>("\x9F Right", (int)sign::Right));
-	justification->AddOption(std::pair<std::string, int>("   None", (int)sign::None));
+	justification->AddOption(std::pair<std::wstring, int>(TEXT_GUI_SIGN_TOOL_OPT_LEFT, (int)sign::Left));
+	justification->AddOption(std::pair<std::wstring, int>(TEXT_GUI_SIGN_TOOL_OPT_MID, (int)sign::Middle));
+	justification->AddOption(std::pair<std::wstring, int>(TEXT_GUI_SIGN_TOOL_OPT_RIGHT, (int)sign::Right));
+	justification->AddOption(std::pair<std::wstring, int>(TEXT_GUI_SIGN_TOOL_OPT_NONE, (int)sign::None));
 	justification->SetOption(1);
 	justification->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	
-	textField = new ui::Textbox(ui::Point(8, 25), ui::Point(Size.X-16, 17), "", "[message]");
+	textField = new ui::Textbox(ui::Point(8, 25), ui::Point(Size.X-16, 17), L"", TEXT_GUI_SIGN_TOOL_TBOX_HOLDER);
 	textField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	textField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	textField->SetLimit(45);
@@ -145,18 +146,18 @@ SignWindow::SignWindow(SignTool * tool_, Simulation * sim_, int signID_, ui::Poi
 	
 	if(signID!=-1)
 	{
-		messageLabel->SetText("Edit sign");
+		messageLabel->SetText(TEXT_GUI_SIGN_TOOL_LABEL_EDIT);
 
 		textField->SetText(sim->signs[signID].text);
 		justification->SetOption(sim->signs[signID].ju);
 
 		ui::Point position = ui::Point(justification->Position.X+justification->Size.X+3, 48);
-		ui::Button * moveButton = new ui::Button(position, ui::Point(((Size.X-position.X-8)/2)-2, 16), "Move");
+		ui::Button * moveButton = new ui::Button(position, ui::Point(((Size.X-position.X-8)/2)-2, 16), TEXT_GUI_SIGN_TOOL_BTN_MOVE);
 		moveButton->SetActionCallback(new MoveAction(this));
 		AddComponent(moveButton);
 
 		position = ui::Point(justification->Position.X+justification->Size.X+3, 48)+ui::Point(moveButton->Size.X+3, 0);
-		ui::Button * deleteButton = new ui::Button(position, ui::Point((Size.X-position.X-8)-1, 16), "Delete");
+		ui::Button * deleteButton = new ui::Button(position, ui::Point((Size.X-position.X-8)-1, 16), TEXT_GUI_SIGN_TOOL_BTN_DEL);
 		//deleteButton->SetIcon(IconDelete);
 		deleteButton->SetActionCallback(new DeleteAction(this));
 
