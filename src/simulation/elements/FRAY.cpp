@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_FRAY PT_FRAY 159
 Element_FRAY::Element_FRAY()
 {
@@ -28,7 +29,7 @@ Element_FRAY::Element_FRAY()
 
 	Temperature = 20.0f+0.0f +273.15f;
 	HeatConduct = 0;
-	Description = "Force Emitter. Pushes or pulls objects based on its temperature. Use like ARAY.";
+	Description = TEXT_ELEM_FRAY_DESC;
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 

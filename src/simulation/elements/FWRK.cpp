@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_FWRK PT_FWRK 98
 Element_FWRK::Element_FWRK()
 {
@@ -28,7 +29,7 @@ Element_FWRK::Element_FWRK()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 100;
-	Description = "Original version of fireworks, activated by heat/neutrons.";
+	Description = TEXT_ELEM_FWRK_DESC;
 
 	Properties = TYPE_PART|PROP_LIFE_DEC;
 

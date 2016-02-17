@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_PSTN PT_PSTN 168
 Element_PSTN::Element_PSTN()
 {
@@ -28,7 +29,7 @@ Element_PSTN::Element_PSTN()
 
 	Temperature = 283.15f;
 	HeatConduct = 0;
-	Description = "Piston, extends and pushes particles.";
+	Description = TEXT_ELEM_PSTN_DESC;
 
 	Properties = TYPE_SOLID;
 

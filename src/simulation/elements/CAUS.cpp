@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_CAUS PT_CAUS 86
 Element_CAUS::Element_CAUS()
 {
@@ -28,7 +29,7 @@ Element_CAUS::Element_CAUS()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
-	Description = "Caustic Gas, acts like ACID.";
+	Description = TEXT_ELEM_CAUS_DESC;
 
 	Properties = TYPE_GAS|PROP_DEADLY;
 

@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_WHOL PT_WHOL 40
 Element_WHOL::Element_WHOL()
 {
@@ -28,7 +29,7 @@ Element_WHOL::Element_WHOL()
 
 	Temperature = R_TEMP-16.0f+273.15f;
 	HeatConduct = 255;
-	Description = "Air vent, creates pressure and pushes other particles away.";
+	Description = TEXT_ELEM_WHOL_DESC;
 
 	Properties = TYPE_SOLID;
 

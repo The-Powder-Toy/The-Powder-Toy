@@ -1,0 +1,751 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Static|Win32">
+      <Configuration>Static</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Static|x64">
+      <Configuration>Static</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{C9018C1B-38CF-4B77-8B1A-89E0DC71D70E}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Static|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140_xp</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Static|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Static|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Static|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)Build\</OutDir>
+    <IncludePath>$(ProjectDir)includes;$(ProjectDir)includes/SDL;$(ProjectDir)includes/lua5.2;$(ProjectDir)data;$(ProjectDir)src;$(ProjectDir)generated;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)Libraries;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)Build\</OutDir>
+    <IncludePath>$(ProjectDir)includes;$(ProjectDir)includes/SDL;$(ProjectDir)includes/lua5.2;$(ProjectDir)data;$(ProjectDir)src;$(ProjectDir)generated;C:\Boost\boost_1_60_0;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)Libraries;$(LibraryPath)</LibraryPath>
+    <TargetName>$(ProjectName)-Beta</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Static|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)Build\</OutDir>
+    <IncludePath>$(ProjectDir)includes;$(ProjectDir)includes/SDL;$(ProjectDir)includes/lua5.2;$(ProjectDir)data;$(ProjectDir)src;$(ProjectDir)generated;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)Staticlibs;$(LibraryPath)</LibraryPath>
+    <TargetName>$(ProjectName)</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;WIN; X86; X86_SSE2; USE_SDL; STABLE; GRAVFFT; LUACONSOLE; LUA_COMPAT_ALL; IGNORE_UPDATES; _SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level1</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+    </ClCompile>
+    <Link>
+      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <AdditionalDependencies>shell32.lib;ws2_32.lib;SDL.lib;SDLmain.lib;libbz2.lib;pthreadVC2.lib;lua5.2.lib;libfftw3f-3.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;WIN;X86;X86_SSE2;USE_SDL;STABLE;GRAVFFT;LUACONSOLE;LUA_COMPAT_ALL;IGNORE_UPDATES;_SCL_SECURE_NO_WARNINGS;HAVE_STRUCT_TIMESPEC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level1</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+    </ClCompile>
+    <Link>
+      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>shell32.lib;ws2_32.lib;SDL.lib;SDLmain.lib;libbz2.lib;pthreadVC2.lib;lua5.2.lib;libfftw3f-3.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Static|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;WIN;X86;X86_SSE2;USE_SDL;STABLE;GRAVFFT;LUACONSOLE;LUA_COMPAT_ALL;IGNORE_UPDATES;_SCL_SECURE_NO_WARNINGS;HAVE_STRUCT_TIMESPEC;PTW32_STATIC_LIB;ZLIB_WINAPI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <WarningLevel>Level1</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+    </ClCompile>
+    <Link>
+      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>shell32.lib;ws2_32.lib;SDL.lib;SDLmain.lib;libbz2.lib;pthreadVC2.lib;lua5.2.lib;libfftw3f-3.lib;zlib.lib;winmm.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="generated\ElementClasses.cpp" />
+    <ClCompile Include="generated\ToolClasses.cpp" />
+    <ClCompile Include="src\bson\BSON.cpp" />
+    <ClCompile Include="src\client\Client.cpp" />
+    <ClCompile Include="src\client\GameSave.cpp" />
+    <ClCompile Include="src\client\HTTP.cpp" />
+    <ClCompile Include="src\client\MD5.cpp" />
+    <ClCompile Include="src\client\requestbroker\APIRequest.cpp" />
+    <ClCompile Include="src\client\requestbroker\ImageRequest.cpp" />
+    <ClCompile Include="src\client\requestbroker\RequestBroker.cpp" />
+    <ClCompile Include="src\client\requestbroker\ThumbRenderRequest.cpp" />
+    <ClCompile Include="src\client\requestbroker\WebRequest.cpp" />
+    <ClCompile Include="src\client\SaveFile.cpp" />
+    <ClCompile Include="src\client\SaveInfo.cpp" />
+    <ClCompile Include="src\debug\DebugLines.cpp" />
+    <ClCompile Include="src\debug\DebugParts.cpp" />
+    <ClCompile Include="src\debug\ElementPopulation.cpp" />
+    <ClCompile Include="src\Format.cpp" />
+    <ClCompile Include="src\graphics\Graphics.cpp" />
+    <ClCompile Include="src\graphics\OpenGLGraphics.cpp" />
+    <ClCompile Include="src\graphics\RasterGraphics.cpp" />
+    <ClCompile Include="src\graphics\Renderer.cpp" />
+    <ClCompile Include="src\gui\colourpicker\ColourPickerActivity.cpp" />
+    <ClCompile Include="src\gui\console\ConsoleController.cpp" />
+    <ClCompile Include="src\gui\console\ConsoleModel.cpp" />
+    <ClCompile Include="src\gui\console\ConsoleView.cpp" />
+    <ClCompile Include="src\gui\dialogues\ConfirmPrompt.cpp" />
+    <ClCompile Include="src\gui\dialogues\ErrorMessage.cpp" />
+    <ClCompile Include="src\gui\dialogues\InformationMessage.cpp" />
+    <ClCompile Include="src\gui\dialogues\SaveIDMessage.cpp" />
+    <ClCompile Include="src\gui\dialogues\TextPrompt.cpp" />
+    <ClCompile Include="src\gui\elementsearch\ElementSearchActivity.cpp" />
+    <ClCompile Include="src\gui\filebrowser\FileBrowserActivity.cpp" />
+    <ClCompile Include="src\gui\game\Brush.cpp" />
+    <ClCompile Include="src\gui\game\GameController.cpp" />
+    <ClCompile Include="src\gui\game\GameModel.cpp" />
+    <ClCompile Include="src\gui\game\GameView.cpp" />
+    <ClCompile Include="src\gui\game\PropertyTool.cpp" />
+    <ClCompile Include="src\gui\game\SampleTool.cpp" />
+    <ClCompile Include="src\gui\game\SignTool.cpp" />
+    <ClCompile Include="src\gui\game\Tool.cpp" />
+    <ClCompile Include="src\gui\game\ToolButton.cpp" />
+    <ClCompile Include="src\gui\interface\Appearance.cpp" />
+    <ClCompile Include="src\gui\interface\AvatarButton.cpp" />
+    <ClCompile Include="src\gui\interface\Button.cpp" />
+    <ClCompile Include="src\gui\interface\Checkbox.cpp" />
+    <ClCompile Include="src\gui\interface\Component.cpp" />
+    <ClCompile Include="src\gui\interface\ContextMenu.cpp" />
+    <ClCompile Include="src\gui\interface\CopyTextButton.cpp" />
+    <ClCompile Include="src\gui\interface\DropDown.cpp" />
+    <ClCompile Include="src\gui\interface\Engine.cpp" />
+    <ClCompile Include="src\gui\interface\Label.cpp" />
+    <ClCompile Include="src\gui\interface\Panel.cpp" />
+    <ClCompile Include="src\gui\interface\ProgressBar.cpp" />
+    <ClCompile Include="src\gui\interface\RichLabel.cpp" />
+    <ClCompile Include="src\gui\interface\SaveButton.cpp" />
+    <ClCompile Include="src\gui\interface\ScrollPanel.cpp" />
+    <ClCompile Include="src\gui\interface\Slider.cpp" />
+    <ClCompile Include="src\gui\interface\Spinner.cpp" />
+    <ClCompile Include="src\gui\interface\Textbox.cpp" />
+    <ClCompile Include="src\gui\interface\Window.cpp" />
+    <ClCompile Include="src\gui\localbrowser\LocalBrowserController.cpp" />
+    <ClCompile Include="src\gui\localbrowser\LocalBrowserModel.cpp" />
+    <ClCompile Include="src\gui\localbrowser\LocalBrowserView.cpp" />
+    <ClCompile Include="src\gui\login\LoginController.cpp" />
+    <ClCompile Include="src\gui\login\LoginModel.cpp" />
+    <ClCompile Include="src\gui\login\LoginView.cpp" />
+    <ClCompile Include="src\gui\options\OptionsController.cpp" />
+    <ClCompile Include="src\gui\options\OptionsModel.cpp" />
+    <ClCompile Include="src\gui\options\OptionsView.cpp" />
+    <ClCompile Include="src\gui\preview\PreviewController.cpp" />
+    <ClCompile Include="src\gui\preview\PreviewModel.cpp" />
+    <ClCompile Include="src\gui\preview\PreviewView.cpp" />
+    <ClCompile Include="src\gui\profile\ProfileActivity.cpp" />
+    <ClCompile Include="src\gui\render\RenderController.cpp" />
+    <ClCompile Include="src\gui\render\RenderModel.cpp" />
+    <ClCompile Include="src\gui\render\RenderView.cpp" />
+    <ClCompile Include="src\gui\save\LocalSaveActivity.cpp" />
+    <ClCompile Include="src\gui\save\ServerSaveActivity.cpp" />
+    <ClCompile Include="src\gui\search\SearchController.cpp" />
+    <ClCompile Include="src\gui\search\SearchModel.cpp" />
+    <ClCompile Include="src\gui\search\SearchView.cpp" />
+    <ClCompile Include="src\gui\search\Thumbnail.cpp" />
+    <ClCompile Include="src\gui\Style.cpp" />
+    <ClCompile Include="src\gui\tags\TagsController.cpp" />
+    <ClCompile Include="src\gui\tags\TagsModel.cpp" />
+    <ClCompile Include="src\gui\tags\TagsView.cpp" />
+    <ClCompile Include="src\gui\update\UpdateActivity.cpp" />
+    <ClCompile Include="src\json\jsoncpp.cpp" />
+    <ClCompile Include="src\lua\CommandInterface.cpp" />
+    <ClCompile Include="src\lua\LegacyLuaAPI.cpp" />
+    <ClCompile Include="src\lua\LuaBit.cpp" />
+    <ClCompile Include="src\lua\LuaButton.cpp" />
+    <ClCompile Include="src\lua\LuaCheckbox.cpp" />
+    <ClCompile Include="src\lua\LuaCompat.c" />
+    <ClCompile Include="src\lua\LuaComponent.cpp" />
+    <ClCompile Include="src\lua\LuaLabel.cpp" />
+    <ClCompile Include="src\lua\LuaProgressBar.cpp" />
+    <ClCompile Include="src\lua\LuaScriptInterface.cpp" />
+    <ClCompile Include="src\lua\LuaSlider.cpp" />
+    <ClCompile Include="src\lua\LuaTextbox.cpp" />
+    <ClCompile Include="src\lua\LuaWindow.cpp" />
+    <ClCompile Include="src\lua\socket\auxiliar.c" />
+    <ClCompile Include="src\lua\socket\buffer.c" />
+    <ClCompile Include="src\lua\socket\except.c" />
+    <ClCompile Include="src\lua\socket\inet.c" />
+    <ClCompile Include="src\lua\socket\io.c" />
+    <ClCompile Include="src\lua\socket\luasocket.c" />
+    <ClCompile Include="src\lua\socket\options.c" />
+    <ClCompile Include="src\lua\socket\select.c" />
+    <ClCompile Include="src\lua\socket\socket.lua.cpp" />
+    <ClCompile Include="src\lua\socket\tcp.c" />
+    <ClCompile Include="src\lua\socket\timeout.c" />
+    <ClCompile Include="src\lua\socket\udp.c" />
+    <ClCompile Include="src\lua\socket\unix.c" />
+    <ClCompile Include="src\lua\socket\usocket.c" />
+    <ClCompile Include="src\lua\socket\wsocket.c" />
+    <ClCompile Include="src\lua\TPTScriptInterface.cpp" />
+    <ClCompile Include="src\lua\TPTSTypes.cpp" />
+    <ClCompile Include="src\Misc.cpp" />
+    <ClCompile Include="src\Platform.cpp" />
+    <ClCompile Include="src\powdertoyjava\OpenGLCanvasWin32.cpp" />
+    <ClCompile Include="src\powdertoyjava\PowderToyJava.cpp" />
+    <ClCompile Include="src\PowderToyRenderer.cpp" />
+    <ClCompile Include="src\PowderToySDL.cpp" />
+    <ClCompile Include="src\Probability.cpp" />
+    <ClCompile Include="src\resampler\resampler.cpp" />
+    <ClCompile Include="src\simulation\Air.cpp" />
+    <ClCompile Include="src\simulation\elements\116.cpp" />
+    <ClCompile Include="src\simulation\elements\146.cpp" />
+    <ClCompile Include="src\simulation\elements\ACEL.cpp" />
+    <ClCompile Include="src\simulation\elements\ACID.cpp" />
+    <ClCompile Include="src\simulation\elements\AMTR.cpp" />
+    <ClCompile Include="src\simulation\elements\ANAR.cpp" />
+    <ClCompile Include="src\simulation\elements\ARAY.cpp" />
+    <ClCompile Include="src\simulation\elements\BANG.cpp" />
+    <ClCompile Include="src\simulation\elements\BCLN.cpp" />
+    <ClCompile Include="src\simulation\elements\BCOL.cpp" />
+    <ClCompile Include="src\simulation\elements\BGLA.cpp" />
+    <ClCompile Include="src\simulation\elements\BHOL.cpp" />
+    <ClCompile Include="src\simulation\elements\BIZR.cpp" />
+    <ClCompile Include="src\simulation\elements\BIZRG.cpp" />
+    <ClCompile Include="src\simulation\elements\BIZRS.cpp" />
+    <ClCompile Include="src\simulation\elements\BMTL.cpp" />
+    <ClCompile Include="src\simulation\elements\BOMB.cpp" />
+    <ClCompile Include="src\simulation\elements\BOYL.cpp" />
+    <ClCompile Include="src\simulation\elements\BRAY.cpp" />
+    <ClCompile Include="src\simulation\elements\BRCK.cpp" />
+    <ClCompile Include="src\simulation\elements\BREC.cpp" />
+    <ClCompile Include="src\simulation\elements\BRMT.cpp" />
+    <ClCompile Include="src\simulation\elements\BTRY.cpp" />
+    <ClCompile Include="src\simulation\elements\BVBR.cpp" />
+    <ClCompile Include="src\simulation\elements\C5.cpp" />
+    <ClCompile Include="src\simulation\elements\CAUS.cpp" />
+    <ClCompile Include="src\simulation\elements\CBNW.cpp" />
+    <ClCompile Include="src\simulation\elements\CFLM.cpp" />
+    <ClCompile Include="src\simulation\elements\CLNE.cpp" />
+    <ClCompile Include="src\simulation\elements\CLST.cpp" />
+    <ClCompile Include="src\simulation\elements\CNCT.cpp" />
+    <ClCompile Include="src\simulation\elements\CO2.cpp" />
+    <ClCompile Include="src\simulation\elements\COAL.cpp" />
+    <ClCompile Include="src\simulation\elements\CONV.cpp" />
+    <ClCompile Include="src\simulation\elements\CRAY.cpp" />
+    <ClCompile Include="src\simulation\elements\CRMC.cpp" />
+    <ClCompile Include="src\simulation\elements\DCEL.cpp" />
+    <ClCompile Include="src\simulation\elements\DESL.cpp" />
+    <ClCompile Include="src\simulation\elements\DEST.cpp" />
+    <ClCompile Include="src\simulation\elements\DEUT.cpp" />
+    <ClCompile Include="src\simulation\elements\DLAY.cpp" />
+    <ClCompile Include="src\simulation\elements\DMG.cpp" />
+    <ClCompile Include="src\simulation\elements\DMND.cpp" />
+    <ClCompile Include="src\simulation\elements\DRAY.cpp" />
+    <ClCompile Include="src\simulation\elements\DRIC.cpp" />
+    <ClCompile Include="src\simulation\elements\DSTW.cpp" />
+    <ClCompile Include="src\simulation\elements\DTEC.cpp" />
+    <ClCompile Include="src\simulation\elements\DUST.cpp" />
+    <ClCompile Include="src\simulation\elements\DYST.cpp" />
+    <ClCompile Include="src\simulation\elements\ELEC.cpp" />
+    <ClCompile Include="src\simulation\elements\Element.cpp" />
+    <ClCompile Include="src\simulation\elements\EMBR.cpp" />
+    <ClCompile Include="src\simulation\elements\EMP.cpp" />
+    <ClCompile Include="src\simulation\elements\ETRD.cpp" />
+    <ClCompile Include="src\simulation\elements\EXOT.cpp" />
+    <ClCompile Include="src\simulation\elements\FIGH.cpp" />
+    <ClCompile Include="src\simulation\elements\FILT.cpp" />
+    <ClCompile Include="src\simulation\elements\FIRE.cpp" />
+    <ClCompile Include="src\simulation\elements\FIRW.cpp" />
+    <ClCompile Include="src\simulation\elements\FOG.cpp" />
+    <ClCompile Include="src\simulation\elements\FRAY.cpp" />
+    <ClCompile Include="src\simulation\elements\FRME.cpp" />
+    <ClCompile Include="src\simulation\elements\FRZW.cpp" />
+    <ClCompile Include="src\simulation\elements\FRZZ.cpp" />
+    <ClCompile Include="src\simulation\elements\FSEP.cpp" />
+    <ClCompile Include="src\simulation\elements\FUSE.cpp" />
+    <ClCompile Include="src\simulation\elements\FWRK.cpp" />
+    <ClCompile Include="src\simulation\elements\GAS.cpp" />
+    <ClCompile Include="src\simulation\elements\GBMB.cpp" />
+    <ClCompile Include="src\simulation\elements\GEL.cpp" />
+    <ClCompile Include="src\simulation\elements\GLAS.cpp" />
+    <ClCompile Include="src\simulation\elements\GLOW.cpp" />
+    <ClCompile Include="src\simulation\elements\GOLD.cpp" />
+    <ClCompile Include="src\simulation\elements\GOO.cpp" />
+    <ClCompile Include="src\simulation\elements\GPMP.cpp" />
+    <ClCompile Include="src\simulation\elements\GRAV.cpp" />
+    <ClCompile Include="src\simulation\elements\GRVT.cpp" />
+    <ClCompile Include="src\simulation\elements\GUNP.cpp" />
+    <ClCompile Include="src\simulation\elements\H2.cpp" />
+    <ClCompile Include="src\simulation\elements\HSWC.cpp" />
+    <ClCompile Include="src\simulation\elements\ICEI.cpp" />
+    <ClCompile Include="src\simulation\elements\IGNT.cpp" />
+    <ClCompile Include="src\simulation\elements\INSL.cpp" />
+    <ClCompile Include="src\simulation\elements\INST.cpp" />
+    <ClCompile Include="src\simulation\elements\INVIS.cpp" />
+    <ClCompile Include="src\simulation\elements\INWR.cpp" />
+    <ClCompile Include="src\simulation\elements\IRON.cpp" />
+    <ClCompile Include="src\simulation\elements\ISOZ.cpp" />
+    <ClCompile Include="src\simulation\elements\ISZS.cpp" />
+    <ClCompile Include="src\simulation\elements\LAVA.cpp" />
+    <ClCompile Include="src\simulation\elements\LCRY.cpp" />
+    <ClCompile Include="src\simulation\elements\LIFE.cpp" />
+    <ClCompile Include="src\simulation\elements\LIGH.cpp" />
+    <ClCompile Include="src\simulation\elements\LNTG.cpp" />
+    <ClCompile Include="src\simulation\elements\LO2.cpp" />
+    <ClCompile Include="src\simulation\elements\LOLZ.cpp" />
+    <ClCompile Include="src\simulation\elements\LOVE.cpp" />
+    <ClCompile Include="src\simulation\elements\LRBD.cpp" />
+    <ClCompile Include="src\simulation\elements\MERC.cpp" />
+    <ClCompile Include="src\simulation\elements\METL.cpp" />
+    <ClCompile Include="src\simulation\elements\MORT.cpp" />
+    <ClCompile Include="src\simulation\elements\MWAX.cpp" />
+    <ClCompile Include="src\simulation\elements\NBHL.cpp" />
+    <ClCompile Include="src\simulation\elements\NBLE.cpp" />
+    <ClCompile Include="src\simulation\elements\NEUT.cpp" />
+    <ClCompile Include="src\simulation\elements\NICE.cpp" />
+    <ClCompile Include="src\simulation\elements\NITR.cpp" />
+    <ClCompile Include="src\simulation\elements\NONE.cpp" />
+    <ClCompile Include="src\simulation\elements\NSCN.cpp" />
+    <ClCompile Include="src\simulation\elements\NTCT.cpp" />
+    <ClCompile Include="src\simulation\elements\NWHL.cpp" />
+    <ClCompile Include="src\simulation\elements\O2.cpp" />
+    <ClCompile Include="src\simulation\elements\OIL.cpp" />
+    <ClCompile Include="src\simulation\elements\PBCN.cpp" />
+    <ClCompile Include="src\simulation\elements\PCLN.cpp" />
+    <ClCompile Include="src\simulation\elements\PHOT.cpp" />
+    <ClCompile Include="src\simulation\elements\PIPE.cpp" />
+    <ClCompile Include="src\simulation\elements\PLEX.cpp" />
+    <ClCompile Include="src\simulation\elements\PLNT.cpp" />
+    <ClCompile Include="src\simulation\elements\PLSM.cpp" />
+    <ClCompile Include="src\simulation\elements\PLUT.cpp" />
+    <ClCompile Include="src\simulation\elements\PPIP.cpp" />
+    <ClCompile Include="src\simulation\elements\PQRT.cpp" />
+    <ClCompile Include="src\simulation\elements\PROT.cpp" />
+    <ClCompile Include="src\simulation\elements\PRTI.cpp" />
+    <ClCompile Include="src\simulation\elements\PRTO.cpp" />
+    <ClCompile Include="src\simulation\elements\PSCN.cpp" />
+    <ClCompile Include="src\simulation\elements\PSNS.cpp" />
+    <ClCompile Include="src\simulation\elements\PSTE.cpp" />
+    <ClCompile Include="src\simulation\elements\PSTN.cpp" />
+    <ClCompile Include="src\simulation\elements\PSTS.cpp" />
+    <ClCompile Include="src\simulation\elements\PTCT.cpp" />
+    <ClCompile Include="src\simulation\elements\PUMP.cpp" />
+    <ClCompile Include="src\simulation\elements\PVOD.cpp" />
+    <ClCompile Include="src\simulation\elements\QRTZ.cpp" />
+    <ClCompile Include="src\simulation\elements\RBDM.cpp" />
+    <ClCompile Include="src\simulation\elements\RIME.cpp" />
+    <ClCompile Include="src\simulation\elements\RPEL.cpp" />
+    <ClCompile Include="src\simulation\elements\SALT.cpp" />
+    <ClCompile Include="src\simulation\elements\SAND.cpp" />
+    <ClCompile Include="src\simulation\elements\SHLD1.cpp" />
+    <ClCompile Include="src\simulation\elements\SHLD2.cpp" />
+    <ClCompile Include="src\simulation\elements\SHLD3.cpp" />
+    <ClCompile Include="src\simulation\elements\SHLD4.cpp" />
+    <ClCompile Include="src\simulation\elements\SING.cpp" />
+    <ClCompile Include="src\simulation\elements\SLTW.cpp" />
+    <ClCompile Include="src\simulation\elements\SMKE.cpp" />
+    <ClCompile Include="src\simulation\elements\SNOW.cpp" />
+    <ClCompile Include="src\simulation\elements\SOAP.cpp" />
+    <ClCompile Include="src\simulation\elements\SPAWN.cpp" />
+    <ClCompile Include="src\simulation\elements\SPAWN2.cpp" />
+    <ClCompile Include="src\simulation\elements\SPNG.cpp" />
+    <ClCompile Include="src\simulation\elements\SPRK.cpp" />
+    <ClCompile Include="src\simulation\elements\STKM.cpp" />
+    <ClCompile Include="src\simulation\elements\STKM2.cpp" />
+    <ClCompile Include="src\simulation\elements\STNE.cpp" />
+    <ClCompile Include="src\simulation\elements\STOR.cpp" />
+    <ClCompile Include="src\simulation\elements\SWCH.cpp" />
+    <ClCompile Include="src\simulation\elements\TESC.cpp" />
+    <ClCompile Include="src\simulation\elements\THDR.cpp" />
+    <ClCompile Include="src\simulation\elements\THRM.cpp" />
+    <ClCompile Include="src\simulation\elements\TRON.cpp" />
+    <ClCompile Include="src\simulation\elements\TSNS.cpp" />
+    <ClCompile Include="src\simulation\elements\TTAN.cpp" />
+    <ClCompile Include="src\simulation\elements\TUNG.cpp" />
+    <ClCompile Include="src\simulation\elements\URAN.cpp" />
+    <ClCompile Include="src\simulation\elements\VIBR.cpp" />
+    <ClCompile Include="src\simulation\elements\VINE.cpp" />
+    <ClCompile Include="src\simulation\elements\VIRS.cpp" />
+    <ClCompile Include="src\simulation\elements\VOID.cpp" />
+    <ClCompile Include="src\simulation\elements\VRSG.cpp" />
+    <ClCompile Include="src\simulation\elements\VRSS.cpp" />
+    <ClCompile Include="src\simulation\elements\WARP.cpp" />
+    <ClCompile Include="src\simulation\elements\WATR.cpp" />
+    <ClCompile Include="src\simulation\elements\WAX.cpp" />
+    <ClCompile Include="src\simulation\elements\WHOL.cpp" />
+    <ClCompile Include="src\simulation\elements\WIFI.cpp" />
+    <ClCompile Include="src\simulation\elements\WIRE.cpp" />
+    <ClCompile Include="src\simulation\elements\WOOD.cpp" />
+    <ClCompile Include="src\simulation\elements\WTRV.cpp" />
+    <ClCompile Include="src\simulation\elements\YEST.cpp" />
+    <ClCompile Include="src\simulation\Gravity.cpp" />
+    <ClCompile Include="src\simulation\Particle.cpp" />
+    <ClCompile Include="src\simulation\SaveRenderer.cpp" />
+    <ClCompile Include="src\simulation\Sign.cpp" />
+    <ClCompile Include="src\simulation\simtools\AirTool.cpp" />
+    <ClCompile Include="src\simulation\simtools\Cool.cpp" />
+    <ClCompile Include="src\simulation\simtools\Heat.cpp" />
+    <ClCompile Include="src\simulation\simtools\NGrv.cpp" />
+    <ClCompile Include="src\simulation\simtools\PGrv.cpp" />
+    <ClCompile Include="src\simulation\simtools\SimTool.cpp" />
+    <ClCompile Include="src\simulation\simtools\Vac.cpp" />
+    <ClCompile Include="src\simulation\Simulation.cpp" />
+    <ClCompile Include="src\simulation\SimulationData.cpp" />
+    <ClCompile Include="src\tasks\Task.cpp" />
+    <ClCompile Include="src\tasks\TaskWindow.cpp" />
+    <ClCompile Include="src\Update.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="data\font.h" />
+    <ClInclude Include="data\hmap.h" />
+    <ClInclude Include="data\icon.h" />
+    <ClInclude Include="data\icondoc.h" />
+    <ClInclude Include="data\images.h" />
+    <ClInclude Include="data\IntroText.h" />
+    <ClInclude Include="data\Lang.h" />
+    <ClInclude Include="data\Shaders.h" />
+    <ClInclude Include="generated\ElementClasses.h" />
+    <ClInclude Include="generated\ToolClasses.h" />
+    <ClInclude Include="includes\bzlib.h" />
+    <ClInclude Include="includes\dirent.h" />
+    <ClInclude Include="includes\fftw3.h" />
+    <ClInclude Include="includes\lua5.1\lauxlib.h" />
+    <ClInclude Include="includes\lua5.1\lua.h" />
+    <ClInclude Include="includes\lua5.1\luaconf.h" />
+    <ClInclude Include="includes\lua5.1\lualib.h" />
+    <ClInclude Include="includes\lua5.2\lauxlib.h" />
+    <ClInclude Include="includes\lua5.2\lua.h" />
+    <ClInclude Include="includes\lua5.2\luaconf.h" />
+    <ClInclude Include="includes\lua5.2\lualib.h" />
+    <ClInclude Include="includes\pthread.h" />
+    <ClInclude Include="includes\regex.h" />
+    <ClInclude Include="includes\sched.h" />
+    <ClInclude Include="includes\sdl\begin_code.h" />
+    <ClInclude Include="includes\sdl\close_code.h" />
+    <ClInclude Include="includes\sdl\SDL.h" />
+    <ClInclude Include="includes\sdl\SDL_active.h" />
+    <ClInclude Include="includes\sdl\SDL_audio.h" />
+    <ClInclude Include="includes\sdl\SDL_byteorder.h" />
+    <ClInclude Include="includes\sdl\SDL_cdrom.h" />
+    <ClInclude Include="includes\sdl\SDL_config.h" />
+    <ClInclude Include="includes\sdl\SDL_config_amiga.h" />
+    <ClInclude Include="includes\sdl\SDL_config_dreamcast.h" />
+    <ClInclude Include="includes\sdl\SDL_config_macos.h" />
+    <ClInclude Include="includes\sdl\SDL_config_macosx.h" />
+    <ClInclude Include="includes\sdl\SDL_config_minimal.h" />
+    <ClInclude Include="includes\sdl\SDL_config_nds.h" />
+    <ClInclude Include="includes\sdl\SDL_config_os2.h" />
+    <ClInclude Include="includes\sdl\SDL_config_symbian.h" />
+    <ClInclude Include="includes\sdl\SDL_config_win32.h" />
+    <ClInclude Include="includes\sdl\SDL_copying.h" />
+    <ClInclude Include="includes\sdl\SDL_cpuinfo.h" />
+    <ClInclude Include="includes\sdl\SDL_endian.h" />
+    <ClInclude Include="includes\sdl\SDL_error.h" />
+    <ClInclude Include="includes\sdl\SDL_events.h" />
+    <ClInclude Include="includes\sdl\SDL_getenv.h" />
+    <ClInclude Include="includes\sdl\SDL_joystick.h" />
+    <ClInclude Include="includes\sdl\SDL_keyboard.h" />
+    <ClInclude Include="includes\sdl\SDL_keysym.h" />
+    <ClInclude Include="includes\sdl\SDL_loadso.h" />
+    <ClInclude Include="includes\sdl\SDL_main.h" />
+    <ClInclude Include="includes\sdl\SDL_mouse.h" />
+    <ClInclude Include="includes\sdl\SDL_mutex.h" />
+    <ClInclude Include="includes\sdl\SDL_name.h" />
+    <ClInclude Include="includes\sdl\SDL_opengl.h" />
+    <ClInclude Include="includes\sdl\SDL_platform.h" />
+    <ClInclude Include="includes\sdl\SDL_quit.h" />
+    <ClInclude Include="includes\sdl\SDL_rwops.h" />
+    <ClInclude Include="includes\sdl\SDL_stdinc.h" />
+    <ClInclude Include="includes\sdl\SDL_syswm.h" />
+    <ClInclude Include="includes\sdl\SDL_thread.h" />
+    <ClInclude Include="includes\sdl\SDL_timer.h" />
+    <ClInclude Include="includes\sdl\SDL_types.h" />
+    <ClInclude Include="includes\sdl\SDL_version.h" />
+    <ClInclude Include="includes\sdl\SDL_video.h" />
+    <ClInclude Include="includes\zconf.h" />
+    <ClInclude Include="includes\zlib.h" />
+    <ClInclude Include="src\Activity.h" />
+    <ClInclude Include="src\bson\BSON.h" />
+    <ClInclude Include="src\client\Client.h" />
+    <ClInclude Include="src\client\ClientListener.h" />
+    <ClInclude Include="src\client\GameSave.h" />
+    <ClInclude Include="src\client\HTTP.h" />
+    <ClInclude Include="src\client\MD5.h" />
+    <ClInclude Include="src\client\requestbroker\APIRequest.h" />
+    <ClInclude Include="src\client\requestbroker\APIResultParser.h" />
+    <ClInclude Include="src\client\requestbroker\ImageRequest.h" />
+    <ClInclude Include="src\client\requestbroker\RequestBroker.h" />
+    <ClInclude Include="src\client\requestbroker\RequestListener.h" />
+    <ClInclude Include="src\client\requestbroker\ThumbRenderRequest.h" />
+    <ClInclude Include="src\client\requestbroker\WebRequest.h" />
+    <ClInclude Include="src\client\SaveFile.h" />
+    <ClInclude Include="src\client\SaveInfo.h" />
+    <ClInclude Include="src\client\User.h" />
+    <ClInclude Include="src\client\UserInfo.h" />
+    <ClInclude Include="src\Config.h" />
+    <ClInclude Include="src\Controller.h" />
+    <ClInclude Include="src\debug\DebugInfo.h" />
+    <ClInclude Include="src\debug\DebugLines.h" />
+    <ClInclude Include="src\debug\DebugParts.h" />
+    <ClInclude Include="src\debug\ElementPopulation.h" />
+    <ClInclude Include="src\Format.h" />
+    <ClInclude Include="src\graphics\Graphics.h" />
+    <ClInclude Include="src\graphics\OpenGLHeaders.h" />
+    <ClInclude Include="src\graphics\Renderer.h" />
+    <ClInclude Include="src\gui\colourpicker\ColourPickerActivity.h" />
+    <ClInclude Include="src\gui\console\ConsoleCommand.h" />
+    <ClInclude Include="src\gui\console\ConsoleController.h" />
+    <ClInclude Include="src\gui\console\ConsoleModel.h" />
+    <ClInclude Include="src\gui\console\ConsoleView.h" />
+    <ClInclude Include="src\gui\dialogues\ConfirmPrompt.h" />
+    <ClInclude Include="src\gui\dialogues\ErrorMessage.h" />
+    <ClInclude Include="src\gui\dialogues\InformationMessage.h" />
+    <ClInclude Include="src\gui\dialogues\LegacyDialogues.h" />
+    <ClInclude Include="src\gui\dialogues\SaveIDMessage.h" />
+    <ClInclude Include="src\gui\dialogues\TextPrompt.h" />
+    <ClInclude Include="src\gui\elementsearch\ElementSearchActivity.h" />
+    <ClInclude Include="src\gui\filebrowser\FileBrowserActivity.h" />
+    <ClInclude Include="src\gui\game\BitmapBrush.h" />
+    <ClInclude Include="src\gui\game\Brush.h" />
+    <ClInclude Include="src\gui\game\DecorationTool.h" />
+    <ClInclude Include="src\gui\game\EllipseBrush.h" />
+    <ClInclude Include="src\gui\game\GameController.h" />
+    <ClInclude Include="src\gui\game\GameModel.h" />
+    <ClInclude Include="src\gui\game\GameModelException.h" />
+    <ClInclude Include="src\gui\game\GameView.h" />
+    <ClInclude Include="src\gui\game\Menu.h" />
+    <ClInclude Include="src\gui\game\Notification.h" />
+    <ClInclude Include="src\gui\game\QuickOption.h" />
+    <ClInclude Include="src\gui\game\QuickOptions.h" />
+    <ClInclude Include="src\gui\game\RenderPreset.h" />
+    <ClInclude Include="src\gui\game\Tool.h" />
+    <ClInclude Include="src\gui\game\ToolButton.h" />
+    <ClInclude Include="src\gui\game\TriangleBrush.h" />
+    <ClInclude Include="src\gui\interface\Appearance.h" />
+    <ClInclude Include="src\gui\interface\AvatarButton.h" />
+    <ClInclude Include="src\gui\interface\Border.h" />
+    <ClInclude Include="src\gui\interface\Button.h" />
+    <ClInclude Include="src\gui\interface\Checkbox.h" />
+    <ClInclude Include="src\gui\interface\Colour.h" />
+    <ClInclude Include="src\gui\interface\Component.h" />
+    <ClInclude Include="src\gui\interface\ContextMenu.h" />
+    <ClInclude Include="src\gui\interface\CopyTextButton.h" />
+    <ClInclude Include="src\gui\interface\DropDown.h" />
+    <ClInclude Include="src\gui\interface\Engine.h" />
+    <ClInclude Include="src\gui\interface\Keys.h" />
+    <ClInclude Include="src\gui\interface\Label.h" />
+    <ClInclude Include="src\gui\interface\Panel.h" />
+    <ClInclude Include="src\gui\interface\Point.h" />
+    <ClInclude Include="src\gui\interface\ProgressBar.h" />
+    <ClInclude Include="src\gui\interface\RichLabel.h" />
+    <ClInclude Include="src\gui\interface\SaveButton.h" />
+    <ClInclude Include="src\gui\interface\ScrollPanel.h" />
+    <ClInclude Include="src\gui\interface\Slider.h" />
+    <ClInclude Include="src\gui\interface\Spinner.h" />
+    <ClInclude Include="src\gui\interface\Textbox.h" />
+    <ClInclude Include="src\gui\interface\Window.h" />
+    <ClInclude Include="src\gui\localbrowser\LocalBrowserController.h" />
+    <ClInclude Include="src\gui\localbrowser\LocalBrowserModel.h" />
+    <ClInclude Include="src\gui\localbrowser\LocalBrowserModelException.h" />
+    <ClInclude Include="src\gui\localbrowser\LocalBrowserView.h" />
+    <ClInclude Include="src\gui\login\LoginController.h" />
+    <ClInclude Include="src\gui\login\LoginModel.h" />
+    <ClInclude Include="src\gui\login\LoginView.h" />
+    <ClInclude Include="src\gui\options\OptionsController.h" />
+    <ClInclude Include="src\gui\options\OptionsModel.h" />
+    <ClInclude Include="src\gui\options\OptionsView.h" />
+    <ClInclude Include="src\gui\preview\Comment.h" />
+    <ClInclude Include="src\gui\preview\PreviewController.h" />
+    <ClInclude Include="src\gui\preview\PreviewModel.h" />
+    <ClInclude Include="src\gui\preview\PreviewModelException.h" />
+    <ClInclude Include="src\gui\preview\PreviewView.h" />
+    <ClInclude Include="src\gui\profile\ProfileActivity.h" />
+    <ClInclude Include="src\gui\render\RenderController.h" />
+    <ClInclude Include="src\gui\render\RenderModel.h" />
+    <ClInclude Include="src\gui\render\RenderView.h" />
+    <ClInclude Include="src\gui\save\LocalSaveActivity.h" />
+    <ClInclude Include="src\gui\save\ServerSaveActivity.h" />
+    <ClInclude Include="src\gui\search\SearchController.h" />
+    <ClInclude Include="src\gui\search\SearchModel.h" />
+    <ClInclude Include="src\gui\search\SearchView.h" />
+    <ClInclude Include="src\gui\search\Thumbnail.h" />
+    <ClInclude Include="src\gui\Style.h" />
+    <ClInclude Include="src\gui\tags\TagsController.h" />
+    <ClInclude Include="src\gui\tags\TagsModel.h" />
+    <ClInclude Include="src\gui\tags\TagsModelException.h" />
+    <ClInclude Include="src\gui\tags\TagsView.h" />
+    <ClInclude Include="src\gui\update\UpdateActivity.h" />
+    <ClInclude Include="src\json\json-forwards.h" />
+    <ClInclude Include="src\json\json.h" />
+    <ClInclude Include="src\lua\CommandInterface.h" />
+    <ClInclude Include="src\lua\LuaBit.h" />
+    <ClInclude Include="src\lua\LuaButton.h" />
+    <ClInclude Include="src\lua\LuaCheckbox.h" />
+    <ClInclude Include="src\lua\LuaCompat.h" />
+    <ClInclude Include="src\lua\LuaComponent.h" />
+    <ClInclude Include="src\lua\LuaLabel.h" />
+    <ClInclude Include="src\lua\LuaLuna.h" />
+    <ClInclude Include="src\lua\LuaProgressBar.h" />
+    <ClInclude Include="src\lua\LuaScriptHelper.h" />
+    <ClInclude Include="src\lua\LuaScriptInterface.h" />
+    <ClInclude Include="src\lua\LuaSlider.h" />
+    <ClInclude Include="src\lua\LuaTextbox.h" />
+    <ClInclude Include="src\lua\LuaWindow.h" />
+    <ClInclude Include="src\lua\socket\auxiliar.h" />
+    <ClInclude Include="src\lua\socket\buffer.h" />
+    <ClInclude Include="src\lua\socket\except.h" />
+    <ClInclude Include="src\lua\socket\inet.h" />
+    <ClInclude Include="src\lua\socket\io.h" />
+    <ClInclude Include="src\lua\socket\luasocket.h" />
+    <ClInclude Include="src\lua\socket\options.h" />
+    <ClInclude Include="src\lua\socket\select.h" />
+    <ClInclude Include="src\lua\socket\socket.h" />
+    <ClInclude Include="src\lua\socket\socket.lua.h" />
+    <ClInclude Include="src\lua\socket\tcp.h" />
+    <ClInclude Include="src\lua\socket\timeout.h" />
+    <ClInclude Include="src\lua\socket\udp.h" />
+    <ClInclude Include="src\lua\socket\unix.h" />
+    <ClInclude Include="src\lua\socket\usocket.h" />
+    <ClInclude Include="src\lua\socket\wsocket.h" />
+    <ClInclude Include="src\lua\TPTScriptInterface.h" />
+    <ClInclude Include="src\lua\TPTSTypes.h" />
+    <ClInclude Include="src\Misc.h" />
+    <ClInclude Include="src\Platform.h" />
+    <ClInclude Include="src\PowderToy.h" />
+    <ClInclude Include="src\powdertoyjava\OpenGLCanvasMacOS.h" />
+    <ClInclude Include="src\powdertoyjava\OpenGLCanvasWin32.h" />
+    <ClInclude Include="src\powdertoyjava\PowderToyJava.h" />
+    <ClInclude Include="src\Probability.h" />
+    <ClInclude Include="src\resampler\resampler.h" />
+    <ClInclude Include="src\SDLMain.h" />
+    <ClInclude Include="src\simulation\Air.h" />
+    <ClInclude Include="src\simulation\CoordStack.h" />
+    <ClInclude Include="src\simulation\Element.h" />
+    <ClInclude Include="src\simulation\ElementGraphics.h" />
+    <ClInclude Include="src\simulation\Elements.h" />
+    <ClInclude Include="src\simulation\elements\Element.h" />
+    <ClInclude Include="src\simulation\GOLMenu.h" />
+    <ClInclude Include="src\simulation\Gravity.h" />
+    <ClInclude Include="src\simulation\MenuSection.h" />
+    <ClInclude Include="src\simulation\Particle.h" />
+    <ClInclude Include="src\simulation\Sample.h" />
+    <ClInclude Include="src\simulation\SaveRenderer.h" />
+    <ClInclude Include="src\simulation\Sign.h" />
+    <ClInclude Include="src\simulation\simtools\SimTool.h" />
+    <ClInclude Include="src\simulation\Simulation.h" />
+    <ClInclude Include="src\simulation\SimulationData.h" />
+    <ClInclude Include="src\simulation\Snapshot.h" />
+    <ClInclude Include="src\simulation\Stickman.h" />
+    <ClInclude Include="src\simulation\StorageClasses.h" />
+    <ClInclude Include="src\simulation\StructProperty.h" />
+    <ClInclude Include="src\simulation\WallType.h" />
+    <ClInclude Include="src\Singleton.h" />
+    <ClInclude Include="src\tasks\Task.h" />
+    <ClInclude Include="src\tasks\TaskListener.h" />
+    <ClInclude Include="src\tasks\TaskWindow.h" />
+    <ClInclude Include="src\Update.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\graphics\DrawMethodsDef.inc" />
+    <None Include="src\graphics\OpenGLDrawMethods.inl" />
+    <None Include="src\graphics\RasterDrawMethods.inl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resources\powder-res.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_VIBR PT_VIBR 165
 Element_VIBR::Element_VIBR()
 {
@@ -28,7 +29,7 @@ Element_VIBR::Element_VIBR()
 
 	Temperature = 273.15f;
 	HeatConduct = 251;
-	Description = "Vibranium. Stores energy and releases it in violent explosions.";
+	Description = TEXT_ELEM_VIBR_DESC;
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 

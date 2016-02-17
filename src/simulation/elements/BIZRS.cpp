@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_BIZRS PT_BIZRS 105
 Element_BIZRS::Element_BIZRS()
 {
@@ -28,7 +29,7 @@ Element_BIZRS::Element_BIZRS()
 
 	Temperature = R_TEMP+300.0f+273.15f;
 	HeatConduct = 251;
-	Description = "Bizarre solid.";
+	Description = TEXT_ELEM_BIZRS_DESC;
 
 	Properties = TYPE_SOLID;
 

@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_EMBR PT_EMBR 147
 Element_EMBR::Element_EMBR()
 {
@@ -28,7 +29,7 @@ Element_EMBR::Element_EMBR()
 
 	Temperature = 500.0f +273.15f;
 	HeatConduct = 29;
-	Description = "Sparks. Formed by explosions.";
+	Description = TEXT_ELEM_EMBR_DESC;
 
 	Properties = TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL|PROP_SPARKSETTLE;
 

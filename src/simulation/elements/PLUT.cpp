@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_PLUT PT_PLUT 19
 Element_PLUT::Element_PLUT()
 {
@@ -28,7 +29,7 @@ Element_PLUT::Element_PLUT()
 
 	Temperature = R_TEMP+4.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "Heavy particles. Fissile. Generates neutrons under pressure.";
+	Description = TEXT_ELEM_PLUT_DESC;
 
 	Properties = TYPE_PART|PROP_NEUTPASS|PROP_RADIOACTIVE;
 

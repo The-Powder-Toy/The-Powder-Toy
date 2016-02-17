@@ -4,6 +4,7 @@
 #include "Window.h"
 #include "Appearance.h"
 #include "Button.h"
+#include "Format.h"
 
 namespace ui
 {
@@ -12,9 +13,10 @@ class ContextMenuItem
 {
 public:
 	int ID;
-	std::string Text;
+	std::wstring Text;
 	bool Enabled;
-	ContextMenuItem(std::string text, int id, bool enabled) : ID(id), Text(text), Enabled(enabled) {}
+	ContextMenuItem(std::string text, int id, bool enabled) : ID(id), Text(format::StringToWString(text)), Enabled(enabled) {}
+	ContextMenuItem(std::wstring text, int id, bool enabled) : ID(id), Text(text), Enabled(enabled) {}
 };
 
 class ContextMenu: public ui::Window, public ButtonAction {
@@ -30,6 +32,7 @@ public:
 	virtual void AddItem(ContextMenuItem item);
 	virtual void RemoveItem(int id);
 	virtual void SetItem(int id, std::string text);
+	virtual void SetItem(int id, std::wstring text);
 	virtual void Show(ui::Point position);
 	virtual void OnDraw();	
 	virtual void OnMouseDown(int x, int y, unsigned button);

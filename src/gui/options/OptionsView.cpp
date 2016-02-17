@@ -19,11 +19,12 @@
 #include "gui/interface/Label.h"
 #include "gui/interface/DropDown.h"
 #include "gui/dialogues/ErrorMessage.h"
+#include "Lang.h"
 
 OptionsView::OptionsView():
 	ui::Window(ui::Point(-1, -1), ui::Point(300, 330)){
 
-	ui::Label * tempLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 14), "Simulation Options");
+	ui::Label * tempLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 14), TEXT_GUI_SIM_OPT_TITLE);
 	tempLabel->SetTextColour(style::Colour::InformationTitle);
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(tempLabel);
@@ -36,10 +37,10 @@ OptionsView::OptionsView():
 		virtual void ActionCallback(ui::Checkbox * sender){	v->c->SetHeatSimulation(sender->GetChecked()); }
 	};
 
-	heatSimulation = new ui::Checkbox(ui::Point(8, 23), ui::Point(Size.X-6, 16), "Heat simulation \bgIntroduced in version 34", "");
+	heatSimulation = new ui::Checkbox(ui::Point(8, 23), ui::Point(Size.X-6, 16), TEXT_GUI_SIM_OPT_HEATSIM_CHECK, L"");
 	heatSimulation->SetActionCallback(new HeatSimulationAction(this));
 	AddComponent(heatSimulation);
-	tempLabel = new ui::Label(ui::Point(24, heatSimulation->Position.Y+14), ui::Point(Size.X-28, 16), "\bgCan cause odd behaviour when disabled");
+	tempLabel = new ui::Label(ui::Point(24, heatSimulation->Position.Y+14), ui::Point(Size.X-28, 16), TEXT_GUI_SIM_OPT_HEATSIM_LABEL);
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(tempLabel);
 
@@ -51,10 +52,10 @@ OptionsView::OptionsView():
 		virtual void ActionCallback(ui::Checkbox * sender){	v->c->SetAmbientHeatSimulation(sender->GetChecked()); }
 	};
 
-	ambientHeatSimulation = new ui::Checkbox(ui::Point(8, 53), ui::Point(Size.X-6, 16), "Ambient heat simulation \bgIntroduced in version 50", "");
+	ambientHeatSimulation = new ui::Checkbox(ui::Point(8, 53), ui::Point(Size.X-6, 16), TEXT_GUI_SIM_OPT_AHEAT_CHECK, L"");
 	ambientHeatSimulation->SetActionCallback(new AmbientHeatSimulationAction(this));
 	AddComponent(ambientHeatSimulation);
-	tempLabel = new ui::Label(ui::Point(24, ambientHeatSimulation->Position.Y+14), ui::Point(Size.X-28, 16), "\bgCan cause odd / broken behaviour with many saves");
+	tempLabel = new ui::Label(ui::Point(24, ambientHeatSimulation->Position.Y+14), ui::Point(Size.X-28, 16), TEXT_GUI_SIM_OPT_AHEAT_LABEL);
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(tempLabel);
 
@@ -66,10 +67,10 @@ OptionsView::OptionsView():
 		virtual void ActionCallback(ui::Checkbox * sender){	v->c->SetNewtonianGravity(sender->GetChecked()); }
 	};
 
-	newtonianGravity = new ui::Checkbox(ui::Point(8, 83), ui::Point(Size.X-6, 16), "Newtonian gravity \bgIntroduced in version 48", "");
+	newtonianGravity = new ui::Checkbox(ui::Point(8, 83), ui::Point(Size.X-6, 16), TEXT_GUI_SIM_OPT_NEWTON_CHECK, L"");
 	newtonianGravity->SetActionCallback(new NewtonianGravityAction(this));
 	AddComponent(newtonianGravity);
-	tempLabel = new ui::Label(ui::Point(24, newtonianGravity->Position.Y+14), ui::Point(Size.X-28, 16), "\bgMay cause poor performance on older computers");
+	tempLabel = new ui::Label(ui::Point(24, newtonianGravity->Position.Y+14), ui::Point(Size.X-28, 16), TEXT_GUI_SIM_OPT_NEWTON_LABEL);
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(tempLabel);
 
@@ -81,10 +82,10 @@ OptionsView::OptionsView():
 			virtual void ActionCallback(ui::Checkbox * sender){	v->c->SetWaterEqualisation(sender->GetChecked()); }
 		};
 
-	waterEqualisation = new ui::Checkbox(ui::Point(8, 113), ui::Point(Size.X-6, 16), "Water equalisation \bgIntroduced in version 61", "");
+	waterEqualisation = new ui::Checkbox(ui::Point(8, 113), ui::Point(Size.X-6, 16), TEXT_GUI_SIM_OPT_WEQUAL_CHECK, L"");
 	waterEqualisation->SetActionCallback(new WaterEqualisationAction(this));
 	AddComponent(waterEqualisation);
-	tempLabel = new ui::Label(ui::Point(24, waterEqualisation->Position.Y+14), ui::Point(Size.X-28, 16), "\bgMay cause poor performance with a lot of water");
+	tempLabel = new ui::Label(ui::Point(24, waterEqualisation->Position.Y+14), ui::Point(Size.X-28, 16), TEXT_GUI_SIM_OPT_WEQUAL_LABEL);
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(tempLabel);
 
@@ -97,14 +98,14 @@ OptionsView::OptionsView():
 	};
 	airMode = new ui::DropDown(ui::Point(Size.X-88, 146), ui::Point(80, 16));
 	AddComponent(airMode);
-	airMode->AddOption(std::pair<std::string, int>("On", 0));
-	airMode->AddOption(std::pair<std::string, int>("Pressure off", 1));
-	airMode->AddOption(std::pair<std::string, int>("Velocity off", 2));
-	airMode->AddOption(std::pair<std::string, int>("Off", 3));
-	airMode->AddOption(std::pair<std::string, int>("No Update", 4));
+	airMode->AddOption(std::pair<std::wstring, int>(TEXT_GUI_SIM_OPT_AIRMODE_OPT_ON, 0));
+	airMode->AddOption(std::pair<std::wstring, int>(TEXT_GUI_SIM_OPT_AIRMODE_OPT_PRESSOFF, 1));
+	airMode->AddOption(std::pair<std::wstring, int>(TEXT_GUI_SIM_OPT_AIRMODE_OPT_VELOOFF, 2));
+	airMode->AddOption(std::pair<std::wstring, int>(TEXT_GUI_SIM_OPT_AIRMODE_OPT_OFF, 3));
+	airMode->AddOption(std::pair<std::wstring, int>(TEXT_GUI_SIM_OPT_AIRMODE_OPT_NOUPD, 4));
 	airMode->SetActionCallback(new AirModeChanged(this));
 		
-	tempLabel = new ui::Label(ui::Point(8, 146), ui::Point(Size.X-96, 16), "Air Simulation Mode");
+	tempLabel = new ui::Label(ui::Point(8, 146), ui::Point(Size.X-96, 16), TEXT_GUI_SIM_OPT_AIRMODE_LABEL);
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(tempLabel);
 		
@@ -118,12 +119,12 @@ OptionsView::OptionsView():
 		
 	gravityMode = new ui::DropDown(ui::Point(Size.X-88, 166), ui::Point(80, 16));
 	AddComponent(gravityMode);
-	gravityMode->AddOption(std::pair<std::string, int>("Vertical", 0));
-	gravityMode->AddOption(std::pair<std::string, int>("Off", 1));
-	gravityMode->AddOption(std::pair<std::string, int>("Radial", 2));
+	gravityMode->AddOption(std::pair<std::wstring, int>(TEXT_GUI_SIM_OPT_GRAVMODE_OPT_VER, 0));
+	gravityMode->AddOption(std::pair<std::wstring, int>(TEXT_GUI_SIM_OPT_GRAVMODE_OPT_OFF, 1));
+	gravityMode->AddOption(std::pair<std::wstring, int>(TEXT_GUI_SIM_OPT_GRAVMODE_OPT_RAD, 2));
 	gravityMode->SetActionCallback(new GravityModeChanged(this));
 
-	tempLabel = new ui::Label(ui::Point(8, 166), ui::Point(Size.X-96, 16), "Gravity Simulation Mode");
+	tempLabel = new ui::Label(ui::Point(8, 166), ui::Point(Size.X-96, 16), TEXT_GUI_SIM_OPT_GRAVMODE_LABEL);
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(tempLabel);
 
@@ -137,12 +138,12 @@ OptionsView::OptionsView():
 
 	edgeMode = new ui::DropDown(ui::Point(Size.X-88, 186), ui::Point(80, 16));
 	AddComponent(edgeMode);
-	edgeMode->AddOption(std::pair<std::string, int>("Void", 0));
-	edgeMode->AddOption(std::pair<std::string, int>("Solid", 1));
-	edgeMode->AddOption(std::pair<std::string, int>("Loop", 2));
+	edgeMode->AddOption(std::pair<std::wstring, int>(TEXT_GUI_SIM_OPT_EDGEMODE_OPT_VOID, 0));
+	edgeMode->AddOption(std::pair<std::wstring, int>(TEXT_GUI_SIM_OPT_EDGEMODE_OPT_SOLID, 1));
+	edgeMode->AddOption(std::pair<std::wstring, int>(TEXT_GUI_SIM_OPT_EDGEMODE_OPT_LOOP, 2));
 	edgeMode->SetActionCallback(new EdgeModeChanged(this));
 
-	tempLabel = new ui::Label(ui::Point(8, 186), ui::Point(Size.X-96, 16), "Edge Mode");
+	tempLabel = new ui::Label(ui::Point(8, 186), ui::Point(Size.X-96, 16), TEXT_GUI_SIM_OPT_EDGEMODE_LABEL);
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(tempLabel);
 
@@ -154,9 +155,9 @@ OptionsView::OptionsView():
 		virtual void ActionCallback(ui::Checkbox * sender){	v->c->SetScale(sender->GetChecked()); }
 	};
 
-	scale = new ui::Checkbox(ui::Point(8, 210), ui::Point(Size.X-6, 16), "Large screen", "");
+	scale = new ui::Checkbox(ui::Point(8, 210), ui::Point(Size.X-6, 16), TEXT_GUI_SIM_OPT_LARGE_CHECK, L"");
 	scale->SetActionCallback(new ScaleAction(this));
-	tempLabel = new ui::Label(ui::Point(scale->Position.X+Graphics::textwidth(scale->GetText().c_str())+20, scale->Position.Y), ui::Point(Size.X-28, 16), "\bg- Double window size for larger screens");
+	tempLabel = new ui::Label(ui::Point(scale->Position.X+Graphics::textwidth(scale->GetText().c_str())+20, scale->Position.Y), ui::Point(Size.X-28, 16), TEXT_GUI_SIM_OPT_LARGE_LABEL);
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(tempLabel);
 	AddComponent(scale);
@@ -171,7 +172,7 @@ OptionsView::OptionsView():
 		{
 #ifdef USE_SDL
 #if defined(MACOSX) && !SDL_VERSION_ATLEAST(1, 2, 15)
-			ErrorMessage::Blocking("Error", "fullscreen doesn't work on OS X");
+			ErrorMessage::Blocking(TEXT_GUI_SIM_OPT_FULL_ERR_TITLE, TEXT_GUI_SIM_OPT_FULL_ERR_MSG);
 #else
 			v->c->SetFullscreen(sender->GetChecked());
 #endif
@@ -179,9 +180,9 @@ OptionsView::OptionsView():
 		}
 	};
 
-	fullscreen = new ui::Checkbox(ui::Point(8, 230), ui::Point(Size.X-6, 16), "Fullscreen", "");
+	fullscreen = new ui::Checkbox(ui::Point(8, 230), ui::Point(Size.X-6, 16), TEXT_GUI_SIM_OPT_FULL_CHECK, L"");
 	fullscreen->SetActionCallback(new FullscreenAction(this));
-	tempLabel = new ui::Label(ui::Point(fullscreen->Position.X+Graphics::textwidth(fullscreen->GetText().c_str())+20, fullscreen->Position.Y), ui::Point(Size.X-28, 16), "\bg- Fill the entire screen");
+	tempLabel = new ui::Label(ui::Point(fullscreen->Position.X+Graphics::textwidth(fullscreen->GetText().c_str())+20, fullscreen->Position.Y), ui::Point(Size.X-28, 16), TEXT_GUI_SIM_OPT_FULL_LABEL);
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(tempLabel);
 	AddComponent(fullscreen);
@@ -195,9 +196,9 @@ OptionsView::OptionsView():
 		virtual void ActionCallback(ui::Checkbox * sender){	v->c->SetFastQuit(sender->GetChecked()); }
 	};
 
-	fastquit = new ui::Checkbox(ui::Point(8, 250), ui::Point(Size.X-6, 16), "Fast Quit", "");
+	fastquit = new ui::Checkbox(ui::Point(8, 250), ui::Point(Size.X-6, 16), TEXT_GUI_SIM_OPT_QUIT_CHECK, L"");
 	fastquit->SetActionCallback(new FastQuitAction(this));
-	tempLabel = new ui::Label(ui::Point(fastquit->Position.X+Graphics::textwidth(fastquit->GetText().c_str())+20, fastquit->Position.Y), ui::Point(Size.X-28, 16), "\bg- Always exit completely when hitting close");
+	tempLabel = new ui::Label(ui::Point(fastquit->Position.X+Graphics::textwidth(fastquit->GetText().c_str())+20, fastquit->Position.Y), ui::Point(Size.X-28, 16), TEXT_GUI_SIM_OPT_QUIT_LABEL);
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(tempLabel);
 	AddComponent(fastquit);
@@ -210,9 +211,9 @@ OptionsView::OptionsView():
 		virtual void ActionCallback(ui::Checkbox * sender){	v->c->SetShowAvatars(sender->GetChecked()); }
 	};
 
-	showAvatars = new ui::Checkbox(ui::Point(8, 270), ui::Point(Size.X-6, 16), "Show Avatars", "");
+	showAvatars = new ui::Checkbox(ui::Point(8, 270), ui::Point(Size.X-6, 16), TEXT_GUI_SIM_OPT_AVATAR_CHECK, L"");
 	showAvatars->SetActionCallback(new ShowAvatarsAction(this));
-	tempLabel = new ui::Label(ui::Point(showAvatars->Position.X+Graphics::textwidth(showAvatars->GetText().c_str())+20, showAvatars->Position.Y), ui::Point(Size.X-28, 16), "\bg- Disable if you have a slow connection");
+	tempLabel = new ui::Label(ui::Point(showAvatars->Position.X+Graphics::textwidth(showAvatars->GetText().c_str())+20, showAvatars->Position.Y), ui::Point(Size.X-28, 16), TEXT_GUI_SIM_OPT_AVATAR_LABEL);
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(tempLabel);
 	AddComponent(showAvatars);
@@ -238,11 +239,11 @@ OptionsView::OptionsView():
 			delete[] workingDirectory;
 		}
 	};
-	ui::Button * dataFolderButton = new ui::Button(ui::Point(8, Size.Y-38), ui::Point(90, 16), "Open Data Folder");
+	ui::Button * dataFolderButton = new ui::Button(ui::Point(8, Size.Y-38), ui::Point(90, 16), TEXT_GUI_SIM_OPT_FOLDER_BTN);
 	dataFolderButton->SetActionCallback(new DataFolderAction());
 	AddComponent(dataFolderButton);
 
-	tempLabel = new ui::Label(ui::Point(dataFolderButton->Position.X+dataFolderButton->Size.X+3, dataFolderButton->Position.Y), ui::Point(Size.X-28, 16), "\bg- Open the data and preferences folder");
+	tempLabel = new ui::Label(ui::Point(dataFolderButton->Position.X+dataFolderButton->Size.X+3, dataFolderButton->Position.Y), ui::Point(Size.X-28, 16), TEXT_GUI_SIM_OPT_FOLDER_LABEL);
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(tempLabel);
 
@@ -257,7 +258,7 @@ OptionsView::OptionsView():
 		}
 	};
 
-	ui::Button * tempButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(Size.X, 16), "OK");
+	ui::Button * tempButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(Size.X, 16), TEXT_GUI_SIM_OPT_BTN_OK);
 	tempButton->SetActionCallback(new CloseAction(this));
 	AddComponent(tempButton);
 	SetCancelButton(tempButton);

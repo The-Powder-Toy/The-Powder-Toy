@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_STOR PT_STOR 83
 Element_STOR::Element_STOR()
 {
@@ -28,7 +29,7 @@ Element_STOR::Element_STOR()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 0;
-	Description = "Captures and stores a single particle. releases when charged with PSCN, also passes to PIPE.";
+	Description = TEXT_ELEM_STOR_DESC;
 
 	Properties = TYPE_SOLID|PROP_NOCTYPEDRAW;
 

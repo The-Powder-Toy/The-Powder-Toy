@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_LAVA PT_LAVA 6
 Element_LAVA::Element_LAVA()
 {
@@ -28,7 +29,7 @@ Element_LAVA::Element_LAVA()
 
 	Temperature = R_TEMP+1500.0f+273.15f;
 	HeatConduct = 60;
-	Description = "Molten lava. Ignites flammable materials. Generated when metals and other materials melt, solidifies when cold.";
+	Description = TEXT_ELEM_LAVA_DESC;
 
 	Properties = TYPE_LIQUID|PROP_LIFE_DEC;
 

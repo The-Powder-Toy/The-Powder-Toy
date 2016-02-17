@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_INSL PT_INSL 38
 Element_INSL::Element_INSL()
 {
@@ -28,7 +29,7 @@ Element_INSL::Element_INSL()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 0;
-	Description = "Insulator, does not conduct heat and blocks electricity.";
+	Description = TEXT_ELEM_INSL_DESC;
 
 	Properties = TYPE_SOLID;
 

@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_146 PT_146 146
 Element_146::Element_146()
 {
@@ -28,7 +29,7 @@ Element_146::Element_146()
 
 	Temperature = 9000.0f;
 	HeatConduct = 40;
-	Description = "Brian 6 S6/B246/3";
+	Description = TEXT_ELEM_146_DESC;
 
 	Properties = TYPE_SOLID|PROP_LIFE;
 

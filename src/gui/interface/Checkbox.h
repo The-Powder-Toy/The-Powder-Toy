@@ -13,15 +13,18 @@ public:
 	virtual ~CheckboxAction() {}
 };
 class Checkbox: public ui::Component {
-	std::string text;
-	std::string toolTip;
+	std::wstring text;
+	std::wstring toolTip;
 	bool checked;
 	bool isMouseOver;
 	CheckboxAction * actionCallback;
 public:
-	Checkbox(ui::Point position, ui::Point size, std::string text, std::string toolTip);
+	Checkbox(ui::Point position, ui::Point size, std::string text, std::wstring toolTip);
+	Checkbox(ui::Point position, ui::Point size, std::wstring text, std::wstring toolTip);
 	void SetText(std::string text);
+	void SetText(std::wstring text);
 	std::string GetText();
+	std::wstring GetWText();
 	void SetIcon(Icon icon);
 	void Draw(const Point& screenPos);
 	virtual void OnMouseEnter(int x, int y);

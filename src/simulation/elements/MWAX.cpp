@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_MWAX PT_MWAX 34
 Element_MWAX::Element_MWAX()
 {
@@ -28,7 +29,7 @@ Element_MWAX::Element_MWAX()
 
 	Temperature = R_TEMP+28.0f+273.15f;
 	HeatConduct = 44;
-	Description = "Liquid Wax. Hardens into WAX at 45 degrees.";
+	Description = TEXT_ELEM_MWAX_DESC;
 
 	Properties = TYPE_LIQUID;
 

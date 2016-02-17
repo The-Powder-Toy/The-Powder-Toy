@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_BOMB PT_BOMB 129
 Element_BOMB::Element_BOMB()
 {
@@ -28,7 +29,7 @@ Element_BOMB::Element_BOMB()
 
 	Temperature = R_TEMP-2.0f	+273.15f;
 	HeatConduct = 29;
-	Description = "Bomb. Explodes and destroys all surrounding particles when it touches something.";
+	Description = TEXT_ELEM_BOMB_DESC;
 
 	Properties = TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC|PROP_SPARKSETTLE;
 

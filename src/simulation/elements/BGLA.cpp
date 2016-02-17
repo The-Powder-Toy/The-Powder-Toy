@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_BGLA PT_BGLA 47
 Element_BGLA::Element_BGLA()
 {
@@ -28,7 +29,7 @@ Element_BGLA::Element_BGLA()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 150;
-	Description = "Broken Glass, heavy particles formed when glass breaks under pressure. Meltable. Bagels.";
+	Description = TEXT_ELEM_BGLA_DESC;
 
 	Properties = TYPE_PART | PROP_HOT_GLOW;
 

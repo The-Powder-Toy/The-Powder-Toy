@@ -11,7 +11,7 @@ public:
 	GameModelException(string message_): message(message_) {}
 	const char * what() const throw()
 	{
-		return message.c_str();
+		return message.c_str();  //TODO: Chinese?
 	}
 	~GameModelException() throw() {};
 };

@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_DEUT PT_DEUT 95
 Element_DEUT::Element_DEUT()
 {
@@ -28,7 +29,7 @@ Element_DEUT::Element_DEUT()
 
 	Temperature = R_TEMP-2.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "Deuterium oxide. Volume changes with temp, radioactive with neutrons.";
+	Description = TEXT_ELEM_DEUT_DESC;
 
 	Properties = TYPE_LIQUID|PROP_NEUTPASS;
 

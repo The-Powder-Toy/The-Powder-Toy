@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_O2 PT_O2 61
 Element_O2::Element_O2()
 {
@@ -28,7 +29,7 @@ Element_O2::Element_O2()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
-	Description = "Oxygen gas. Ignites easily.";
+	Description = TEXT_ELEM_O2_DESC;
 
 	Properties = TYPE_GAS;
 

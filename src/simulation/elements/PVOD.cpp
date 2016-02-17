@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_PVOD PT_PVOD 84
 Element_PVOD::Element_PVOD()
 {
@@ -28,7 +29,7 @@ Element_PVOD::Element_PVOD()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "Powered VOID. When activated, destroys entering particles.";
+	Description = TEXT_ELEM_PVOD_DESC;
 
 	Properties = TYPE_SOLID;
 

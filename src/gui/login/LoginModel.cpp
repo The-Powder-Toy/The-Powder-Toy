@@ -1,4 +1,6 @@
 #include "LoginModel.h"
+#include "Format.h"
+#include "Lang.h"
 
 LoginModel::LoginModel():
 	currentUser(0, "")
@@ -8,21 +10,21 @@ LoginModel::LoginModel():
 
 void LoginModel::Login(string username, string password)
 {
-	statusText = "Logging in...";
+	statusText = TEXT_GUI_LOGIN_STATUS_LOGGING;
 	loginStatus = false;
 	notifyStatusChanged();
 	LoginStatus status = Client::Ref().Login(username, password, currentUser);
 	switch(status)
 	{
 	case LoginOkay:
-		statusText = "Logged in";
+		statusText = TEXT_GUI_LOGIN_STATUS_LOGGED;
 		loginStatus = true;
 		break;
 	case LoginError:
-		statusText = Client::Ref().GetLastError();
-		size_t banStart = statusText.find(". Ban expire in"); //TODO: temporary, remove this when the ban message is fixed
+		statusText = format::StringToWString(Client::Ref().GetLastError()); //TODO: Chinese?
+		size_t banStart = statusText.find(L". Ban expire in"); //TODO: temporary, remove this when the ban message is fixed
 		if (banStart != statusText.npos)
-			statusText.replace(banStart, 15, ". Login at http://powdertoy.co.uk in order to see the full ban reason. Ban expires in");
+			statusText.replace(banStart, 15, TEXT_GUI_LOGIN_STATUS_BAN);
 		break;
 	}
 	notifyStatusChanged();
@@ -34,6 +36,11 @@ void LoginModel::AddObserver(LoginView * observer)
 }
 
 string LoginModel::GetStatusText()
+{
+	return format::WStringToString(statusText);
+}
+
+wstring LoginModel::GetWStatusText()
 {
 	return statusText;
 }

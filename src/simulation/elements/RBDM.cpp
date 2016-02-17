@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_RBDM PT_RBDM 41
 Element_RBDM::Element_RBDM()
 {
@@ -28,7 +29,7 @@ Element_RBDM::Element_RBDM()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 240;
-	Description = "Rubidium. Explosive, especially on contact with water. Low melting point.";
+	Description = TEXT_ELEM_RBDM_DESC;
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC;
 

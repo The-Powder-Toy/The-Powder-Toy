@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_DCEL PT_DCEL 138
 Element_DCEL::Element_DCEL()
 {
@@ -28,7 +29,7 @@ Element_DCEL::Element_DCEL()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "Decelerator, slows down nearby elements.";
+	Description = TEXT_ELEM_DCEL_DESC;
 
 	Properties = TYPE_SOLID;
 

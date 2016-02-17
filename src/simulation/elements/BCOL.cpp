@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_BCOL PT_BCOL 73
 Element_BCOL::Element_BCOL()
 {
@@ -28,7 +29,7 @@ Element_BCOL::Element_BCOL()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 150;
-	Description = "Broken Coal. Heavy particles, burns slowly.";
+	Description = TEXT_ELEM_BCOL_DESC;
 
 	Properties = TYPE_PART;
 

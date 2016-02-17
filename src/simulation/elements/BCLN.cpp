@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_BCLN PT_BCLN 93
 Element_BCLN::Element_BCLN()
 {
@@ -28,7 +29,7 @@ Element_BCLN::Element_BCLN()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "Breakable Clone.";
+	Description = TEXT_ELEM_BCLN_DESC;
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC|PROP_DRAWONCTYPE|PROP_NOCTYPEDRAW;
 

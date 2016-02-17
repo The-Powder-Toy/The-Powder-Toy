@@ -1,12 +1,13 @@
 #include "ToolClasses.h"
 #include "simulation/Air.h"
+#include "Lang.h"
 //#TPT-Directive ToolClass Tool_Vac TOOL_VAC 3
 Tool_Vac::Tool_Vac()
 {
 	Identifier = "DEFAULT_TOOL_VAC";
 	Name = "VAC";
 	Colour = PIXPACK(0x303030);
-	Description = "Vacuum, reduces air pressure.";
+	Description = TEXT_TOOL_VAC_DESC;
 }
 
 int Tool_Vac::Perform(Simulation * sim, Particle * cpart, int x, int y, float strength)

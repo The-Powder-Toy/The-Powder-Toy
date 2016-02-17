@@ -4,6 +4,7 @@
 #include "gui/interface/Button.h"
 #include "gui/interface/ScrollPanel.h"
 #include "PowderToy.h"
+#include "Lang.h"
 
 ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, ConfirmDialogueCallback * callback_):
 	ui::Window(ui::Point(-1, -1), ui::Point(250, 35)),
@@ -48,7 +49,7 @@ ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, ConfirmDial
 	};
 
 
-	ui::Button * cancelButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(Size.X-75, 16), "Cancel");
+	ui::Button * cancelButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(Size.X-75, 16), TEXT_DIALOG_CONF_PROM_BTN_CANC);
 	cancelButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	cancelButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	cancelButton->Appearance.BorderInactive = ui::Colour(200, 200, 200);
@@ -56,7 +57,7 @@ ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, ConfirmDial
 	AddComponent(cancelButton);
 	SetCancelButton(cancelButton);
 
-	ui::Button * okayButton = new ui::Button(ui::Point(Size.X-76, Size.Y-16), ui::Point(76, 16), "Continue");
+	ui::Button * okayButton = new ui::Button(ui::Point(Size.X-76, Size.Y-16), ui::Point(76, 16), TEXT_DIALOG_CONF_PROM_BTN_OKAY);
 	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	okayButton->Appearance.TextInactive = style::Colour::WarningTitle;
@@ -67,7 +68,7 @@ ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, ConfirmDial
 	ui::Engine::Ref().ShowWindow(this);
 }
 
-ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, std::string buttonText, ConfirmDialogueCallback * callback_):
+ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, std::wstring buttonText, ConfirmDialogueCallback * callback_):
 	ui::Window(ui::Point(-1, -1), ui::Point(250, 50)),
 	callback(callback_)
 {
@@ -110,7 +111,7 @@ ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, std::string
 	};
 
 
-	ui::Button * cancelButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(Size.X-75, 16), "Cancel");
+	ui::Button * cancelButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(Size.X-75, 16), TEXT_DIALOG_CONF_PROM_BTN_CANC);
 	cancelButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	cancelButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	cancelButton->Appearance.BorderInactive = ui::Colour(200, 200, 200);
@@ -129,7 +130,152 @@ ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, std::string
 	ui::Engine::Ref().ShowWindow(this);
 }
 
-bool ConfirmPrompt::Blocking(std::string title, std::string message, std::string buttonText)
+ConfirmPrompt::ConfirmPrompt(std::wstring title, std::wstring message, ConfirmDialogueCallback * callback_):
+	ui::Window(ui::Point(-1, -1), ui::Point(250, 35)),
+	callback(callback_)
+{
+	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 15), title);
+	titleLabel->SetTextColour(style::Colour::WarningTitle);
+	titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	titleLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	AddComponent(titleLabel);
+
+
+	ui::ScrollPanel *messagePanel = new ui::ScrollPanel(ui::Point(4, 24), ui::Point(Size.X-8, 206));
+	AddComponent(messagePanel);
+
+	ui::Label * messageLabel = new ui::Label(ui::Point(4, 0), ui::Point(Size.X-28, -1), message);
+	messageLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	messageLabel->Appearance.VerticalAlign = ui::Appearance::AlignTop;
+	messageLabel->SetMultiline(true);
+	messagePanel->AddChild(messageLabel);
+
+	messagePanel->InnerSize = ui::Point(messagePanel->Size.X, messageLabel->Size.Y+4);
+
+	if (messageLabel->Size.Y < messagePanel->Size.Y)
+		messagePanel->Size.Y = messageLabel->Size.Y+4;
+	Size.Y += messagePanel->Size.Y+12;
+	Position.Y = (ui::Engine::Ref().GetHeight()-Size.Y)/2;
+
+	class CloseAction: public ui::ButtonAction
+	{
+	public:
+		ConfirmPrompt * prompt;
+		DialogueResult result;
+		CloseAction(ConfirmPrompt * prompt_, DialogueResult result_) { prompt = prompt_; result = result_; }
+		void ActionCallback(ui::Button * sender)
+		{
+			ui::Engine::Ref().CloseWindow();
+			if(prompt->callback)
+				prompt->callback->ConfirmCallback(result);
+			prompt->SelfDestruct();
+		}
+	};
+
+
+	ui::Button * cancelButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(Size.X-75, 16), TEXT_DIALOG_CONF_PROM_BTN_CANC);
+	cancelButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	cancelButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	cancelButton->Appearance.BorderInactive = ui::Colour(200, 200, 200);
+	cancelButton->SetActionCallback(new CloseAction(this, ResultCancel));
+	AddComponent(cancelButton);
+	SetCancelButton(cancelButton);
+
+	ui::Button * okayButton = new ui::Button(ui::Point(Size.X-76, Size.Y-16), ui::Point(76, 16), TEXT_DIALOG_CONF_PROM_BTN_OKAY);
+	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	okayButton->Appearance.TextInactive = style::Colour::WarningTitle;
+	okayButton->SetActionCallback(new CloseAction(this, ResultOkay));
+	AddComponent(okayButton);
+	SetOkayButton(okayButton);
+
+	ui::Engine::Ref().ShowWindow(this);
+}
+
+ConfirmPrompt::ConfirmPrompt(std::wstring title, std::wstring message, std::wstring buttonText, ConfirmDialogueCallback * callback_):
+	ui::Window(ui::Point(-1, -1), ui::Point(250, 50)),
+	callback(callback_)
+{
+	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 15), title);
+	titleLabel->SetTextColour(style::Colour::WarningTitle);
+	titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	titleLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	AddComponent(titleLabel);
+
+
+	ui::ScrollPanel *messagePanel = new ui::ScrollPanel(ui::Point(4, 24), ui::Point(Size.X-8, 206));
+	AddComponent(messagePanel);
+
+	ui::Label * messageLabel = new ui::Label(ui::Point(4, 0), ui::Point(Size.X-28, -1), message);
+	messageLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	messageLabel->Appearance.VerticalAlign = ui::Appearance::AlignTop;
+	messageLabel->SetMultiline(true);
+	messagePanel->AddChild(messageLabel);
+
+	messagePanel->InnerSize = ui::Point(messagePanel->Size.X, messageLabel->Size.Y+4);
+
+	if (messageLabel->Size.Y < messagePanel->Size.Y)
+		messagePanel->Size.Y = messageLabel->Size.Y+4;
+	Size.Y += messagePanel->Size.Y+12;
+	Position.Y = (ui::Engine::Ref().GetHeight()-Size.Y)/2;
+
+	class CloseAction: public ui::ButtonAction
+	{
+	public:
+		ConfirmPrompt * prompt;
+		DialogueResult result;
+		CloseAction(ConfirmPrompt * prompt_, DialogueResult result_) { prompt = prompt_; result = result_; }
+		void ActionCallback(ui::Button * sender)
+		{
+			ui::Engine::Ref().CloseWindow();
+			if(prompt->callback)
+				prompt->callback->ConfirmCallback(result);
+			prompt->SelfDestruct();
+		}
+	};
+
+
+	ui::Button * cancelButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(Size.X-75, 16), TEXT_DIALOG_CONF_PROM_BTN_CANC);
+	cancelButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	cancelButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	cancelButton->Appearance.BorderInactive = ui::Colour(200, 200, 200);
+	cancelButton->SetActionCallback(new CloseAction(this, ResultCancel));
+	AddComponent(cancelButton);
+	SetCancelButton(cancelButton);
+
+	ui::Button * okayButton = new ui::Button(ui::Point(Size.X-76, Size.Y-16), ui::Point(76, 16), buttonText);
+	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	okayButton->Appearance.TextInactive = style::Colour::WarningTitle;
+	okayButton->SetActionCallback(new CloseAction(this, ResultOkay));
+	AddComponent(okayButton);
+	SetOkayButton(okayButton);
+
+	ui::Engine::Ref().ShowWindow(this);
+}
+
+bool ConfirmPrompt::Blocking(std::string title, std::string message, std::wstring buttonText)
+{
+	class BlockingPromptCallback: public ConfirmDialogueCallback {
+	public:
+		bool & outputResult;
+		BlockingPromptCallback(bool & output): outputResult(output) {}
+		virtual void ConfirmCallback(ConfirmPrompt::DialogueResult result) {
+			if (result == ConfirmPrompt::ResultOkay)
+				outputResult = true;
+			else
+				outputResult = false;
+			ui::Engine::Ref().Break();
+		}
+		virtual ~BlockingPromptCallback() { }
+	};
+	bool result;
+	new ConfirmPrompt(title, message, buttonText, new BlockingPromptCallback(result));
+	EngineProcess();
+	return result;
+}
+
+bool ConfirmPrompt::Blocking(std::wstring title, std::wstring message, std::wstring buttonText)
 {
 	class BlockingPromptCallback: public ConfirmDialogueCallback {
 	public:

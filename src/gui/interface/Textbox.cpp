@@ -8,6 +8,7 @@
 #include "gui/interface/Textbox.h"
 #include "gui/interface/Keys.h"
 #include "ContextMenu.h"
+#include "Lang.h"
 
 using namespace ui;
 
@@ -15,7 +16,30 @@ Textbox::Textbox(Point position, Point size, std::string textboxText, std::strin
 	Label(position, size, ""),
 	ReadOnly(false),
 	inputType(All),
-	limit(std::string::npos),
+	limit(std::wstring::npos),
+	keyDown(0),
+	characterDown(0),
+	mouseDown(false),
+	masked(false),
+	border(true),
+	actionCallback(NULL)
+{
+	placeHolder = format::StringToWString(textboxPlaceholder);
+
+	SetText(textboxText);
+	cursor = text.length();
+
+	menu->RemoveItem(0);
+	menu->AddItem(ContextMenuItem(TEXT_CONTROL_MENU_CUT, 1, true));
+	menu->AddItem(ContextMenuItem(TEXT_CONTROL_MENU_COPY, 0, true));
+	menu->AddItem(ContextMenuItem(TEXT_CONTROL_MENU_PASTE, 2, true));
+}
+
+Textbox::Textbox(Point position, Point size, std::wstring textboxText, std::wstring textboxPlaceholder):
+	Label(position, size, L""),
+	ReadOnly(false),
+	inputType(All),
+	limit(std::wstring::npos),
 	keyDown(0),
 	characterDown(0),
 	mouseDown(false),
@@ -29,9 +53,9 @@ Textbox::Textbox(Point position, Point size, std::string textboxText, std::strin
 	cursor = text.length();
 
 	menu->RemoveItem(0);
-	menu->AddItem(ContextMenuItem("Cut", 1, true));
-	menu->AddItem(ContextMenuItem("Copy", 0, true));
-	menu->AddItem(ContextMenuItem("Paste", 2, true));
+	menu->AddItem(ContextMenuItem(TEXT_CONTROL_MENU_CUT, 1, true));
+	menu->AddItem(ContextMenuItem(TEXT_CONTROL_MENU_COPY, 0, true));
+	menu->AddItem(ContextMenuItem(TEXT_CONTROL_MENU_PASTE, 2, true));
 }
 
 Textbox::~Textbox()
@@ -53,12 +77,17 @@ void Textbox::SetHidden(bool hidden)
 
 void Textbox::SetPlaceholder(std::string text)
 {
+	placeHolder = format::StringToWString(text);
+}
+
+void Textbox::SetPlaceholder(std::wstring text)
+{
 	placeHolder = text;
 }
 
 void Textbox::SetText(std::string newText)
 {
-	backingText = newText;
+	backingText = format::StringToWString(newText);
 
 	if(masked)
 	{
@@ -73,7 +102,32 @@ void Textbox::SetText(std::string newText)
 
 	if(cursor)
 	{
-		Graphics::PositionAtCharIndex(multiline?((char*)textLines.c_str()):((char*)text.c_str()), cursor, cursorPositionX, cursorPositionY);
+		Graphics::PositionAtCharIndex(multiline?((wchar_t*)textLines.c_str()):((wchar_t*)text.c_str()), cursor, cursorPositionX, cursorPositionY);
+	}
+	else
+	{
+		cursorPositionY = cursorPositionX = 0;
+	}
+}
+
+void Textbox::SetText(std::wstring newText)
+{
+	backingText = newText;
+
+	if(masked)
+	{
+		std::wstring maskedText = std::wstring(newText);
+		std::fill(maskedText.begin(), maskedText.end(), L'\x8D');
+		Label::SetText(maskedText);
+	}
+	else
+		Label::SetText(newText);
+
+	cursor = newText.length();
+
+	if(cursor)
+	{
+		Graphics::PositionAtCharIndex(multiline?((wchar_t*)textLines.c_str()):((wchar_t*)text.c_str()), cursor, cursorPositionX, cursorPositionY);
 	}
 	else
 	{
@@ -103,6 +157,11 @@ size_t Textbox::GetLimit()
 
 std::string Textbox::GetText()
 {
+	return format::WStringToString(backingText);
+}
+
+std::wstring Textbox::GetWText()
+{
 	return backingText;
 }
 
@@ -124,7 +183,7 @@ void Textbox::OnContextMenuAction(int item)
 
 void Textbox::resetCursorPosition()
 {
-	Graphics::PositionAtCharIndex(multiline?((char*)textLines.c_str()):((char*)text.c_str()), cursor, cursorPositionX, cursorPositionY);
+	Graphics::PositionAtCharIndex(multiline?((wchar_t*)textLines.c_str()):((wchar_t*)text.c_str()), cursor, cursorPositionX, cursorPositionY);
 }
 
 void Textbox::TabFocus()
@@ -139,8 +198,8 @@ void Textbox::cutSelection()
 	{
 		if (getLowerSelectionBound() < 0 || getHigherSelectionBound() > (int)backingText.length())
 			return;
-		std::string toCopy = backingText.substr(getLowerSelectionBound(), getHigherSelectionBound()-getLowerSelectionBound());
-		ClipboardPush(format::CleanString(toCopy, false, true, false));
+		std::wstring toCopy = backingText.substr(getLowerSelectionBound(), getHigherSelectionBound()-getLowerSelectionBound());
+		ClipboardPush(format::CleanString(format::WStringToString(toCopy), false, true, false));
 		backingText.erase(backingText.begin()+getLowerSelectionBound(), backingText.begin()+getHigherSelectionBound());
 		cursor = getLowerSelectionBound(); 
 	}
@@ -148,7 +207,7 @@ void Textbox::cutSelection()
 	{
 		if (!backingText.length())
 			return;
-		ClipboardPush(format::CleanString(backingText, false, true, false));
+		ClipboardPush(format::CleanString(format::WStringToString(backingText), false, true, false));
 		backingText.clear();
 		cursor = 0;
 	}
@@ -156,8 +215,8 @@ void Textbox::cutSelection()
 
 	if(masked)
 	{
-		std::string maskedText = std::string(backingText);
-		std::fill(maskedText.begin(), maskedText.end(), '\x8D');
+		std::wstring maskedText = std::wstring(backingText);
+		std::fill(maskedText.begin(), maskedText.end(), L'\x8D');
 		Label::SetText(maskedText);
 	}
 	else
@@ -172,7 +231,7 @@ void Textbox::cutSelection()
 
 	if(cursor)
 	{
-		Graphics::PositionAtCharIndex(multiline?((char*)textLines.c_str()):((char*)text.c_str()), cursor, cursorPositionX, cursorPositionY);
+		Graphics::PositionAtCharIndex(multiline?((wchar_t*)textLines.c_str()):((wchar_t*)text.c_str()), cursor, cursorPositionX, cursorPositionY);
 	}
 	else
 	{
@@ -184,7 +243,7 @@ void Textbox::cutSelection()
 
 void Textbox::pasteIntoSelection()
 {
-	std::string newText = format::CleanString(ClipboardPull(), true, true, inputType != Multiline, inputType == Number || inputType == Numeric);
+	std::wstring newText = format::StringToWString(format::CleanString(ClipboardPull(), true, true, inputType != Multiline, inputType == Number || inputType == Numeric));
 	if (HasSelection())
 	{
 		if (getLowerSelectionBound() < 0 || getHigherSelectionBound() > (int)backingText.length())
@@ -199,22 +258,22 @@ void Textbox::pasteIntoSelection()
 	regionWidth -= Appearance.Margin.Left;
 	regionWidth -= Appearance.Margin.Right;
 
-	if (limit != std::string::npos)
+	if (limit != std::wstring::npos)
 	{
 		if(limit-backingText.length() >= 0)
 			newText = newText.substr(0, limit-backingText.length());
 		else
-			newText = "";
+			newText = L"";
 	}
-	if (!multiline && Graphics::textwidth((char*)std::string(backingText+newText).c_str()) > regionWidth)
+	if (!multiline && Graphics::textwidth((wchar_t*)std::wstring(backingText+newText).c_str()) > regionWidth)
 	{
-		int pLimit = regionWidth - Graphics::textwidth((char*)backingText.c_str());
-		int cIndex = Graphics::CharIndexAtPosition((char *)newText.c_str(), pLimit, 0);
+		int pLimit = regionWidth - Graphics::textwidth((wchar_t*)backingText.c_str());
+		int cIndex = Graphics::CharIndexAtPosition((wchar_t *)newText.c_str(), pLimit, 0);
 
 		if (cIndex > 0)
 			newText = newText.substr(0, cIndex);
 		else
-			newText = "";
+			newText = L"";
 	}
 
 	backingText.insert(cursor, newText);
@@ -223,8 +282,8 @@ void Textbox::pasteIntoSelection()
 
 	if(masked)
 	{
-		std::string maskedText = std::string(backingText);
-		std::fill(maskedText.begin(), maskedText.end(), '\x8D');
+		std::wstring maskedText = std::wstring(backingText);
+		std::fill(maskedText.begin(), maskedText.end(), L'\x8D');
 		Label::SetText(maskedText);
 	}
 	else
@@ -242,7 +301,7 @@ void Textbox::pasteIntoSelection()
 
 	if(cursor)
 	{
-		Graphics::PositionAtCharIndex(multiline?((char*)textLines.c_str()):((char*)text.c_str()), cursor, cursorPositionX, cursorPositionY);
+		Graphics::PositionAtCharIndex(multiline?((wchar_t*)textLines.c_str()):((wchar_t*)text.c_str()), cursor, cursorPositionX, cursorPositionY);
 	}
 	else
 	{
@@ -410,7 +469,7 @@ void Textbox::OnVKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 					regionWidth -= 13;
 				regionWidth -= Appearance.Margin.Left;
 				regionWidth -= Appearance.Margin.Right;
-				if ((limit==std::string::npos || backingText.length() < limit) && (Graphics::textwidth((char*)std::string(backingText+char(character)).c_str()) <= regionWidth || multiline))
+				if ((limit==std::wstring::npos || backingText.length() < limit) && (Graphics::textwidth((wchar_t*)std::wstring(backingText+wchar_t(character)).c_str()) <= regionWidth || multiline))
 				{
 					if (cursor == (int)backingText.length())
 					{
@@ -431,12 +490,12 @@ void Textbox::OnVKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 	catch (std::out_of_range &e)
 	{
 		cursor = 0;
-		backingText = "";
+		backingText = L"";
 	}
 	if (inputType == Number)
 	{
 		//Remove extra preceding 0's
-		while(backingText[0] == '0' && backingText.length()>1)
+		while(backingText[0] == L'0' && backingText.length()>1)
 			backingText.erase(backingText.begin());
 	}
 	if (cursor > (int)backingText.length())
@@ -445,8 +504,8 @@ void Textbox::OnVKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 	{
 		if (masked)
 		{
-			std::string maskedText = std::string(backingText);
-			std::fill(maskedText.begin(), maskedText.end(), '\x8D');
+			std::wstring maskedText = std::wstring(backingText);
+			std::fill(maskedText.begin(), maskedText.end(), L'\x8D');
 			Label::SetText(maskedText);
 		}
 		else
@@ -465,7 +524,7 @@ void Textbox::OnVKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 
 	if(cursor)
 	{
-		Graphics::PositionAtCharIndex(multiline?((char*)textLines.c_str()):((char*)text.c_str()), cursor, cursorPositionX, cursorPositionY);
+		Graphics::PositionAtCharIndex(multiline?((wchar_t*)textLines.c_str()):((wchar_t*)text.c_str()), cursor, cursorPositionX, cursorPositionY);
 	}
 	else
 	{
@@ -481,10 +540,10 @@ void Textbox::OnMouseClick(int x, int y, unsigned button)
 	if(button != BUTTON_RIGHT)
 	{
 		mouseDown = true;
-		cursor = Graphics::CharIndexAtPosition(multiline?((char*)textLines.c_str()):((char*)text.c_str()), x-textPosition.X, y-textPosition.Y);
+		cursor = Graphics::CharIndexAtPosition(multiline?((wchar_t*)textLines.c_str()):((wchar_t*)text.c_str()), x-textPosition.X, y-textPosition.Y);
 		if(cursor)
 		{
-			Graphics::PositionAtCharIndex(multiline?((char*)textLines.c_str()):((char*)text.c_str()), cursor, cursorPositionX, cursorPositionY);
+			Graphics::PositionAtCharIndex(multiline?((wchar_t*)textLines.c_str()):((wchar_t*)text.c_str()), cursor, cursorPositionX, cursorPositionY);
 		}
 		else
 		{
@@ -504,10 +563,10 @@ void Textbox::OnMouseMoved(int localx, int localy, int dx, int dy)
 {
 	if(mouseDown)
 	{
-		cursor = Graphics::CharIndexAtPosition(multiline?((char*)textLines.c_str()):((char*)text.c_str()), localx-textPosition.X, localy-textPosition.Y);
+		cursor = Graphics::CharIndexAtPosition(multiline?((wchar_t*)textLines.c_str()):((wchar_t*)text.c_str()), localx-textPosition.X, localy-textPosition.Y);
 		if(cursor)
 		{
-			Graphics::PositionAtCharIndex(multiline?((char*)textLines.c_str()):((char*)text.c_str()), cursor, cursorPositionX, cursorPositionY);
+			Graphics::PositionAtCharIndex(multiline?((wchar_t*)textLines.c_str()):((wchar_t*)text.c_str()), cursor, cursorPositionX, cursorPositionY);
 		}
 		else
 		{

@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 #include "Probability.h"
 
 //#TPT-Directive ElementClass Element_EMP PT_EMP 134
@@ -30,7 +31,7 @@ Element_EMP::Element_EMP()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 121;
-	Description = "Electromagnetic pulse. Breaks activated electronics.";
+	Description = TEXT_ELEM_EMP_DESC;
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 

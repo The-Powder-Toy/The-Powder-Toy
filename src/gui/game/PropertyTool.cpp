@@ -11,6 +11,7 @@
 #include "gui/interface/DropDown.h"
 #include "gui/interface/Keys.h"
 #include "gui/dialogues/ErrorMessage.h"
+#include "Lang.h"
 
 class PropertyWindow: public ui::Window
 {
@@ -49,13 +50,13 @@ sim(sim_)
 {
 	properties = Particle::GetProperties();
 	
-	ui::Label * messageLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 14), "Edit property");
+	ui::Label * messageLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 14), TEXT_GUI_PROP_TITLE);
 	messageLabel->SetTextColour(style::Colour::InformationTitle);
 	messageLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	messageLabel->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 	AddComponent(messageLabel);
 	
-	ui::Button * okayButton = new ui::Button(ui::Point(0, Size.Y-17), ui::Point(Size.X, 17), "OK");
+	ui::Button * okayButton = new ui::Button(ui::Point(0, Size.Y-17), ui::Point(Size.X, 17), TEXT_GUI_PROP_BTN_OK);
 	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	okayButton->Appearance.BorderInactive = ui::Colour(200, 200, 200);
@@ -82,7 +83,7 @@ sim(sim_)
 	}
 	property->SetOption(Client::Ref().GetPrefInteger("Prop.Type", 0));
 	
-	textField = new ui::Textbox(ui::Point(8, 46), ui::Point(Size.X-16, 16), "", "[value]");
+	textField = new ui::Textbox(ui::Point(8, 46), ui::Point(Size.X-16, 16), L"", TEXT_GUI_PROP_TBOX_HOLDER);
 	textField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	textField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	textField->SetText(Client::Ref().GetPrefString("Prop.Value", ""));
@@ -140,7 +141,7 @@ void PropertyWindow::SetProperty()
 							}
 							if (property->GetOption().first == "type" && (v < 0 || v >= PT_NUM || !sim->elements[v].Enabled))
 							{
-								new ErrorMessage("Could not set property", "Invalid Particle Type");
+								new ErrorMessage(TEXT_GUI_PROP_ERR_TITLE, TEXT_GUI_PROP_TYPE_ERR_MSG);
 								return;
 							}
 						}
@@ -199,13 +200,13 @@ void PropertyWindow::SetProperty()
 				}
 					break;
 				default:
-					new ErrorMessage("Could not set property", "Invalid property");
+					new ErrorMessage(TEXT_GUI_PROP_ERR_TITLE, TEXT_GUI_PROP_PROP_ERR_MSG);
 					return;
 			}
 			tool->propOffset = properties[property->GetOption().second].Offset;
 			tool->propType = properties[property->GetOption().second].Type;
 		} catch (const std::exception& ex) {
-			new ErrorMessage("Could not set property", "Invalid value provided");
+			new ErrorMessage(TEXT_GUI_PROP_ERR_TITLE, TEXT_GUI_PROP_VALUE_ERR_MSG);
 			return;
 		}
 		Client::Ref().SetPref("Prop.Type", property->GetOption().second);

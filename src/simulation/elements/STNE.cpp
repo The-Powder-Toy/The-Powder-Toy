@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_STNE PT_STNE 5
 Element_STNE::Element_STNE()
 {
@@ -28,7 +29,7 @@ Element_STNE::Element_STNE()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 150;
-	Description = "Heavy particles. Meltable.";
+	Description = TEXT_ELEM_STNE_DESC;
 
 	Properties = TYPE_PART;
 

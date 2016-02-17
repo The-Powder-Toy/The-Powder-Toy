@@ -46,12 +46,12 @@ void LocalBrowserController::RemoveSelected()
 		virtual ~RemoveSelectedConfirmation() { }
 	};
 
-	std::stringstream desc;
-	desc << "Are you sure you want to delete " << browserModel->GetSelected().size() << " stamp";
+	std::wstringstream desc;
+	desc << TEXT_GUI_LOCAL_BROWSE_CONF_DELETE_MSG1 << browserModel->GetSelected().size() << TEXT_GUI_LOCAL_BROWSE_CONF_DELETE_MSG2;
 	if(browserModel->GetSelected().size()>1)
-		desc << "s";
-	desc << "?";
-	new ConfirmPrompt("Delete stamps", desc.str(), new RemoveSelectedConfirmation(this));
+		desc << TEXT_GUI_LOCAL_BROWSE_CONF_DELETE_MSG_MULTI;
+	desc << L"?";
+	new ConfirmPrompt(TEXT_GUI_LOCAL_BROWSE_CONF_DELETE_TITLE, desc.str(), new RemoveSelectedConfirmation(this));
 }
 
 void LocalBrowserController::removeSelectedC()
@@ -67,7 +67,7 @@ void LocalBrowserController::removeSelectedC()
 			for (size_t i = 0; i < saves.size(); i++)
 			{
 				std::stringstream saveName;
-				saveName << "Deleting stamp [" << saves[i] << "] ...";
+				saveName << "Deleting stamp [" << saves[i] << "] ..."; //TODO: Chinese?
  				notifyStatus(saveName.str());
  				Client::Ref().DeleteStamp(saves[i]);
 				notifyProgress((float(i+1)/float(saves.size())*100));
@@ -82,7 +82,7 @@ void LocalBrowserController::removeSelectedC()
 	};
 
 	std::vector<std::string> selected = browserModel->GetSelected();
-	new TaskWindow("Removing stamps", new RemoveSavesTask(this, selected));
+	new TaskWindow(TEXT_GUI_LOCAL_BROWSE_CONF_DELETE_WIN_TITLE, new RemoveSavesTask(this, selected)); 
 }
 
 void LocalBrowserController::RescanStamps()
@@ -98,9 +98,9 @@ void LocalBrowserController::RescanStamps()
 		virtual ~RescanConfirmation() { }
 	};
 
-	std::stringstream desc;
-	desc << "Rescanning the stamps folder can find stamps added to the stamps folder or recover stamps when the stamps.def file has been lost or damaged. However, be warned that this will mess up the current sorting order";
-	new ConfirmPrompt("Rescan", desc.str(), new RescanConfirmation(this));
+	std::wstringstream desc;
+	desc << TEXT_GUI_LOCAL_BROWSE_CONF_RESCAN_MSG;
+	new ConfirmPrompt(TEXT_GUI_LOCAL_BROWSE_CONF_RESCAN_TITLE, desc.str(), new RescanConfirmation(this));
 }
 
 void LocalBrowserController::rescanStampsC()

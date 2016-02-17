@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_FIRE PT_FIRE 4
 Element_FIRE::Element_FIRE()
 {
@@ -28,7 +29,7 @@ Element_FIRE::Element_FIRE()
 
 	Temperature = R_TEMP+400.0f+273.15f;
 	HeatConduct = 88;
-	Description = "Ignites flammable materials. Heats air.";
+	Description = TEXT_ELEM_FIRE_DESC;
 
 	Properties = TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL;
 

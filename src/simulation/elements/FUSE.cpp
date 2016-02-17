@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_FUSE PT_FUSE 70
 Element_FUSE::Element_FUSE()
 {
@@ -28,7 +29,7 @@ Element_FUSE::Element_FUSE()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 200;
-	Description = "Burns slowly. Ignites at somewhat high temperatures or with electricity.";
+	Description = TEXT_ELEM_FUSE_DESC;
 
 	Properties = TYPE_SOLID;
 

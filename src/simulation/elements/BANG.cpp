@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_BANG PT_BANG 139
 Element_BANG::Element_BANG()
 {
@@ -28,7 +29,7 @@ Element_BANG::Element_BANG()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 88;
-	Description = "TNT, explodes all at once.";
+	Description = TEXT_ELEM_BANG_DESC;
 
 	Properties = TYPE_SOLID | PROP_NEUTPENETRATE;
 

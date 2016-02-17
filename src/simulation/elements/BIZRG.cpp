@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_BIZRG PT_BIZRG 104
 Element_BIZRG::Element_BIZRG()
 {
@@ -28,7 +29,7 @@ Element_BIZRG::Element_BIZRG()
 
 	Temperature = R_TEMP-200.0f+273.15f;
 	HeatConduct = 42;
-	Description = "Bizarre gas.";
+	Description = TEXT_ELEM_BIZRG_DESC;
 
 	Properties = TYPE_GAS;
 

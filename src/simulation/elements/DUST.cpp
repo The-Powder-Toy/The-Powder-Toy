@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_DUST PT_DUST 1
 Element_DUST::Element_DUST()
 {
@@ -28,7 +29,7 @@ Element_DUST::Element_DUST()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
-	Description = "Very light dust. Flammable.";
+	Description = TEXT_ELEM_DUST_DESC;
 
 	Properties = TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
 

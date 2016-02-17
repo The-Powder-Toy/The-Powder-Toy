@@ -58,7 +58,7 @@ public:
 		return newTexture;
 	}
 
-	DecorationTool(Renderer *ren_, int decoMode, string name, string description, int r, int g, int b, std::string identifier):
+	DecorationTool(Renderer *ren_, int decoMode, string name, wstring description, int r, int g, int b, std::string identifier):
 		Tool(decoMode, name, description, r, g, b, identifier),
 		Red(0),
 		Green(0),

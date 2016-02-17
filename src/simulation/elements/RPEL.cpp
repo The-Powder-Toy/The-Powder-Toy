@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_RPEL PT_RPEL 160
 Element_RPEL::Element_RPEL()
 {
@@ -28,7 +29,7 @@ Element_RPEL::Element_RPEL()
 
 	Temperature = 20.0f+0.0f  +273.15f;
 	HeatConduct = 0;
-	Description = "Repels or attracts particles based on its temperature.";
+	Description = TEXT_ELEM_RPEL_DESC;
 
 	Properties = TYPE_SOLID;
 

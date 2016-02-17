@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_DTEC PT_DTEC 162
 Element_DTEC::Element_DTEC()
 {
@@ -28,7 +29,7 @@ Element_DTEC::Element_DTEC()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 0;
-	Description = "Detector, creates a spark when something with its ctype is nearby.";
+	Description = TEXT_ELEM_DTEC_DESC;
 
 	Properties = TYPE_SOLID;
 

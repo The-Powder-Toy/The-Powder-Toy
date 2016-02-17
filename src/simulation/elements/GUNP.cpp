@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_GUNP PT_GUNP 7
 Element_GUNP::Element_GUNP()
 {
@@ -28,7 +29,7 @@ Element_GUNP::Element_GUNP()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 97;
-	Description = "Gunpowder. Light dust, explodes on contact with fire or spark.";
+	Description = TEXT_ELEM_GUNP_DESC;
 
 	Properties = TYPE_PART;
 

@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_CO2 PT_CO2 80
 Element_CO2::Element_CO2()
 {
@@ -28,7 +29,7 @@ Element_CO2::Element_CO2()
 
 	Temperature = R_TEMP+273.15f;
 	HeatConduct = 88;
-	Description = "Carbon Dioxide. Heavy gas, drifts downwards. Carbonates water and turns to dry ice when cold.";
+	Description = TEXT_ELEM_CO2_DESC;
 
 	Properties = TYPE_GAS;
 

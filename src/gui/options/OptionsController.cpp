@@ -1,5 +1,6 @@
 #include "OptionsController.h"
 #include "gui/dialogues/ErrorMessage.h"
+#include "Lang.h"
 
 OptionsController::OptionsController(GameModel * gModel_, ControllerCallback * callback_):
 	gModel(gModel_),
@@ -67,7 +68,7 @@ void OptionsController::SetScale(bool scale)
 			model->SetScale(scale);
 		else
 		{
-			new ErrorMessage("Screen resolution error", "Your screen size is too small to use this scale mode.");
+			new ErrorMessage(TEXT_GUI_SIM_OPT_LARGE_ERR_TITLE, TEXT_GUI_SIM_OPT_LARGE_ERR_MSG);
 			model->SetScale(false);
 		}
 	}

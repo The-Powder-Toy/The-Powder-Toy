@@ -2,6 +2,7 @@
 #include "gui/Style.h"
 #include "Button.h"
 #include "DropDown.h"
+#include "Format.h"
 
 namespace ui {
 
@@ -16,9 +17,10 @@ public:
 	class ItemSelectedAction: public ButtonAction
 	{
 		DropDownWindow * window;
-		std::string option;
+		std::wstring option;
 	public:
-		ItemSelectedAction(DropDownWindow * window, std::string option): window(window), option(option) { }
+		ItemSelectedAction(DropDownWindow * window, std::string option): window(window), option(format::StringToWString(option)) { }
+		ItemSelectedAction(DropDownWindow * window, std::wstring option): window(window), option(option) { }
 		virtual void ActionCallback(ui::Button *sender)
 		{
 			ui::Engine::Ref().CloseWindow();
@@ -49,6 +51,20 @@ public:
 		g->clearrect(Position.X, Position.Y, Size.X, Size.Y);
 	}
 	void setOption(std::string option)
+	{
+		dropDown->SetOption(format::StringToWString(option));
+		if (dropDown->callback)
+		{
+			size_t optionIndex = 0;
+			for (optionIndex = 0; optionIndex < dropDown->options.size(); optionIndex++)
+			{
+				if(format::StringToWString(option) == dropDown->options[optionIndex].first)
+					break;
+			}
+			dropDown->callback->OptionChanged(dropDown, dropDown->options[optionIndex]);
+		}
+	}
+	void setOption(std::wstring option)
 	{
 		dropDown->SetOption(option);
 		if (dropDown->callback)
@@ -131,12 +147,32 @@ void DropDown::OnMouseLeave(int x, int y)
 	{
 		if(optionIndex!=-1)
 		{
-			return options[optionIndex];
+			return std::pair<std::string, int>(format::WStringToString(options[optionIndex].first),options[optionIndex].second);
 		}
 		return std::pair<std::string, int>("", -1);
 	}
+	std::pair<std::wstring, int> DropDown::GetWOption()
+	{
+		if(optionIndex!=-1)
+		{
+			return options[optionIndex];
+		}
+		return std::pair<std::wstring, int>(L"", -1);
+	}
 	
 	void DropDown::SetOption(std::string option)
+	{
+		for (size_t i = 0; i < options.size(); i++)
+		{
+			if (options[i].first == format::StringToWString(option))
+			{
+				optionIndex = i;
+				TextPosition(options[optionIndex].first);
+				return;
+			}
+		}
+	}
+	void DropDown::SetOption(std::wstring option)
 	{
 		for (size_t i = 0; i < options.size(); i++)
 		{
@@ -164,12 +200,36 @@ void DropDown::OnMouseLeave(int x, int y)
 	{
 		for (size_t i = 0; i < options.size(); i++)
 		{
+			if (options[i] == std::pair<std::wstring, int>(format::StringToWString(option.first),option.second))
+				return;
+		}
+		options.push_back(std::pair<std::wstring, int>(format::StringToWString(option.first),option.second));
+	}
+	void DropDown::AddOption(std::pair<std::wstring, int> option)
+	{
+		for (size_t i = 0; i < options.size(); i++)
+		{
 			if (options[i] == option)
 				return;
 		}
 		options.push_back(option);
 	}
+
 	void DropDown::RemoveOption(std::string option)
+	{
+	start:
+		for (size_t i = 0; i < options.size(); i++)
+		{
+			if (options[i].first == format::StringToWString(option))
+			{
+				if ((int)i == optionIndex)
+					optionIndex = -1;
+				options.erase(options.begin()+i);
+				goto start;
+			}
+		}
+	}
+	void DropDown::RemoveOption(std::wstring option)
 	{
 	start:
 		for (size_t i = 0; i < options.size(); i++)
@@ -183,7 +243,8 @@ void DropDown::OnMouseLeave(int x, int y)
 			}
 		}
 	}
-	void DropDown::SetOptions(std::vector<std::pair<std::string, int> > options)
+
+	void DropDown::SetOptions(std::vector<std::pair<std::wstring, int> > options)
 	{
 		this->options = options;
 	}

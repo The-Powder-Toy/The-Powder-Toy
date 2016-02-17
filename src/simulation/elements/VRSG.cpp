@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_VRSG PT_VRSG 176
 Element_VRSG::Element_VRSG()
 {
@@ -28,7 +29,7 @@ Element_VRSG::Element_VRSG()
 
 	Temperature = 522.0f + 273.15f;
 	HeatConduct = 251;
-	Description = "Gas Virus. Turns everything it touches into virus.";
+	Description = TEXT_ELEM_VRSG_DESC;
 
 	Properties = TYPE_GAS|PROP_DEADLY;
 

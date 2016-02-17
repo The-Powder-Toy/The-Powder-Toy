@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_TRON PT_TRON 143
 Element_TRON::Element_TRON()
 {
@@ -28,7 +29,7 @@ Element_TRON::Element_TRON()
 
 	Temperature = 0.0f;
 	HeatConduct = 40;
-	Description = "Smart particles, Travels in straight lines and avoids obstacles. Grows with time.";
+	Description = TEXT_ELEM_TRON_DESC;
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC|PROP_LIFE_KILL;
 

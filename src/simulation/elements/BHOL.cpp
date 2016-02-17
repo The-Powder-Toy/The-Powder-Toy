@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_BHOL PT_BHOL 39
 Element_BHOL::Element_BHOL()
 {
@@ -28,7 +29,7 @@ Element_BHOL::Element_BHOL()
 
 	Temperature = R_TEMP+70.0f+273.15f;
 	HeatConduct = 255;
-	Description = "Vacuum, sucks in other particles and heats up.";
+	Description = TEXT_ELEM_BHOL_DESC;
 
 	Properties = TYPE_SOLID;
 

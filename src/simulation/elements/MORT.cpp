@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_MORT PT_MORT 77
 Element_MORT::Element_MORT()
 {
@@ -28,7 +29,7 @@ Element_MORT::Element_MORT()
 
 	Temperature = R_TEMP+4.0f	+273.15f;
 	HeatConduct = 60;
-	Description = "Steam Train.";
+	Description = TEXT_ELEM_MORT_DESC;
 
 	Properties = TYPE_GAS;
 

@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 extern "C"
 {
 	#include "hmap.h"
@@ -33,7 +34,7 @@ Element_CFLM::Element_CFLM()
 
 	Temperature = 0.0f;
 	HeatConduct = 88;
-	Description = "Sub-zero flame.";
+	Description = TEXT_ELEM_CFLM_DESC;
 
 	Properties = TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL;
 

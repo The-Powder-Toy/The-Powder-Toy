@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_DMND PT_DMND 28
 Element_DMND::Element_DMND()
 {
@@ -28,7 +29,7 @@ Element_DMND::Element_DMND()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 186;
-	Description = "Diamond. Indestructible.";
+	Description = TEXT_ELEM_DMND_DESC;
 
 	Properties = TYPE_SOLID;
 

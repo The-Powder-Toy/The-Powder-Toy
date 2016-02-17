@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_EXOT PT_EXOT 145
 Element_EXOT::Element_EXOT()
 {
@@ -28,7 +29,7 @@ Element_EXOT::Element_EXOT()
 
 	Temperature = R_TEMP-2.0f	+273.15f;
 	HeatConduct = 250;
-	Description = "Exotic matter. Explodes with excess exposure to electrons. Has many other odd reactions.";
+	Description = TEXT_ELEM_EXOT_DESC;
 
 	Properties = TYPE_LIQUID|PROP_NEUTPASS;
 

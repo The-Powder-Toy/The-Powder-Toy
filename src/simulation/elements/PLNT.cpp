@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_PLNT PT_PLNT 20
 Element_PLNT::Element_PLNT()
 {
@@ -28,7 +29,7 @@ Element_PLNT::Element_PLNT()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 65;
-	Description = "Plant, drinks water and grows.";
+	Description = TEXT_ELEM_PLNT_DESC;
 
 	Properties = TYPE_SOLID|PROP_NEUTPENETRATE|PROP_LIFE_DEC;
 

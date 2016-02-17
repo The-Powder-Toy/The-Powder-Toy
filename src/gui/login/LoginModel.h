@@ -11,7 +11,7 @@ using namespace std;
 class LoginView;
 class LoginModel {
 	vector<LoginView*> observers;
-	string statusText;
+	wstring statusText;
 	bool loginStatus;
 	void notifyStatusChanged();
 	User currentUser;
@@ -20,6 +20,7 @@ public:
 	void Login(string username, string password);
 	void AddObserver(LoginView * observer);
 	string GetStatusText();
+	wstring GetWStatusText();
 	bool GetStatus();
 	User GetUser();
 	virtual ~LoginModel();

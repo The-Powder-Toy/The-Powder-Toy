@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_COAL PT_COAL 59
 Element_COAL::Element_COAL()
 {
@@ -28,7 +29,7 @@ Element_COAL::Element_COAL()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 200;
-	Description = "Coal, Burns very slowly. Gets red when hot.";
+	Description = TEXT_ELEM_COAL_DESC;
 
 	Properties = TYPE_SOLID;
 

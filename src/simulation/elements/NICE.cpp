@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_NICE PT_NICE 51
 Element_NICE::Element_NICE()
 {
@@ -28,7 +29,7 @@ Element_NICE::Element_NICE()
 
 	Temperature = 35.0f;
 	HeatConduct = 46;
-	Description = "Nitrogen Ice. Very cold, will melt into LN2 when heated only slightly.";
+	Description = TEXT_ELEM_NICE_DESC;
 
 	Properties = TYPE_SOLID;
 

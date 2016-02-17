@@ -9,6 +9,7 @@
 #include "simulation/Elements.h"
 #include "simulation/ElementGraphics.h"
 #include "simulation/Air.h"
+#include "Lang.h"
 #ifdef LUACONSOLE
 #include "lua/LuaScriptInterface.h"
 #include "lua/LuaScriptHelper.h"
@@ -2569,44 +2570,44 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 	//Render mode presets. Possibly load from config in future?
 	renderModePresets = new RenderPreset[11];
 
-	renderModePresets[0].Name = "Alternative Velocity Display";
+	renderModePresets[0].Name = TEXT_RENDER_PRESET_ALTV;
 	renderModePresets[0].RenderModes.push_back(RENDER_EFFE);
 	renderModePresets[0].RenderModes.push_back(RENDER_BASC);
 	renderModePresets[0].DisplayModes.push_back(DISPLAY_AIRC);
 
-	renderModePresets[1].Name = "Velocity Display";
+	renderModePresets[1].Name = TEXT_RENDER_PRESET_VELOCITY;
 	renderModePresets[1].RenderModes.push_back(RENDER_EFFE);
 	renderModePresets[1].RenderModes.push_back(RENDER_BASC);
 	renderModePresets[1].DisplayModes.push_back(DISPLAY_AIRV);
 
-	renderModePresets[2].Name = "Pressure Display";
+	renderModePresets[2].Name = TEXT_RENDER_PRESET_PRESSURE;
 	renderModePresets[2].RenderModes.push_back(RENDER_EFFE);
 	renderModePresets[2].RenderModes.push_back(RENDER_BASC);
 	renderModePresets[2].DisplayModes.push_back(DISPLAY_AIRP);
 
-	renderModePresets[3].Name = "Persistent Display";
+	renderModePresets[3].Name = TEXT_RENDER_PRESET_PERSIST;
 	renderModePresets[3].RenderModes.push_back(RENDER_EFFE);
 	renderModePresets[3].RenderModes.push_back(RENDER_BASC);
 	renderModePresets[3].DisplayModes.push_back(DISPLAY_PERS);
 
-	renderModePresets[4].Name = "Fire Display";
+	renderModePresets[4].Name = TEXT_RENDER_PRESET_FIRE;
 	renderModePresets[4].RenderModes.push_back(RENDER_FIRE);
 	renderModePresets[4].RenderModes.push_back(RENDER_SPRK);
 	renderModePresets[4].RenderModes.push_back(RENDER_EFFE);
 	renderModePresets[4].RenderModes.push_back(RENDER_BASC);
 
-	renderModePresets[5].Name = "Blob Display";
+	renderModePresets[5].Name = TEXT_RENDER_PRESET_BLOB;
 	renderModePresets[5].RenderModes.push_back(RENDER_FIRE);
 	renderModePresets[5].RenderModes.push_back(RENDER_SPRK);
 	renderModePresets[5].RenderModes.push_back(RENDER_EFFE);
 	renderModePresets[5].RenderModes.push_back(RENDER_BLOB);
 
-	renderModePresets[6].Name = "Heat Display";
+	renderModePresets[6].Name = TEXT_RENDER_PRESET_HEAT;
 	renderModePresets[6].RenderModes.push_back(RENDER_BASC);
 	renderModePresets[6].DisplayModes.push_back(DISPLAY_AIRH);
 	renderModePresets[6].ColourMode = COLOUR_HEAT;
 
-	renderModePresets[7].Name = "Fancy Display";
+	renderModePresets[7].Name = TEXT_RENDER_PRESET_FANCY;
 	renderModePresets[7].RenderModes.push_back(RENDER_FIRE);
 	renderModePresets[7].RenderModes.push_back(RENDER_SPRK);
 	renderModePresets[7].RenderModes.push_back(RENDER_GLOW);
@@ -2615,14 +2616,14 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 	renderModePresets[7].RenderModes.push_back(RENDER_BASC);
 	renderModePresets[7].DisplayModes.push_back(DISPLAY_WARP);
 
-	renderModePresets[8].Name = "Nothing Display";
+	renderModePresets[8].Name = TEXT_RENDER_PRESET_NONE;
 	renderModePresets[8].RenderModes.push_back(RENDER_BASC);
 
-	renderModePresets[9].Name = "Heat Gradient Display";
+	renderModePresets[9].Name = TEXT_RENDER_PRESET_HEATGRAD;
 	renderModePresets[9].RenderModes.push_back(RENDER_BASC);
 	renderModePresets[9].ColourMode = COLOUR_GRAD;
 
-	renderModePresets[10].Name = "Life Gradient Display";
+	renderModePresets[10].Name = TEXT_RENDER_PRESET_LIFEGRAD;
 	renderModePresets[10].RenderModes.push_back(RENDER_BASC);
 	renderModePresets[10].ColourMode = COLOUR_LIFE;
 

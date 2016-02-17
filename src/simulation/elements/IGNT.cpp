@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_IGNT PT_IGNT 140
 Element_IGNT::Element_IGNT()
 {
@@ -28,7 +29,7 @@ Element_IGNT::Element_IGNT()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 88;
-	Description = "Ignition cord. Burns slowly with fire and sparks.";
+	Description = TEXT_ELEM_IGNT_DESC;
 
 	Properties = TYPE_SOLID | PROP_NEUTPENETRATE | PROP_SPARKSETTLE | PROP_LIFE_KILL;
 

@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_NWHL PT_NWHL 151
 Element_NWHL::Element_NWHL()
 {
@@ -28,7 +29,7 @@ Element_NWHL::Element_NWHL()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 186;
-	Description = "White hole, pushes away other particles with gravity. (Requires Newtonian gravity)";
+	Description = TEXT_ELEM_NWHL_DESC;
 
 	Properties = TYPE_SOLID;
 

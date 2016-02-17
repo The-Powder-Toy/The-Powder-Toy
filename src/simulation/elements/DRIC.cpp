@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_DRIC PT_DRIC 81
 Element_DRIC::Element_DRIC()
 {
@@ -28,7 +29,7 @@ Element_DRIC::Element_DRIC()
 
 	Temperature = 172.65f;
 	HeatConduct = 2;
-	Description = "Dry Ice, formed when CO2 is cooled.";
+	Description = TEXT_ELEM_DRIC_DESC;
 
 	Properties = TYPE_SOLID;
 

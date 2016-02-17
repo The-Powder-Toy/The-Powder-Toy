@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_LCRY PT_LCRY 54
 Element_LCRY::Element_LCRY()
 {
@@ -28,7 +29,7 @@ Element_LCRY::Element_LCRY()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "Liquid Crystal. Changes colour when charged. (PSCN Charges, NSCN Discharges)";
+	Description = TEXT_ELEM_LCRY_DESC;
 
 	Properties = TYPE_SOLID;
 

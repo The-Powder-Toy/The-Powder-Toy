@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_SPNG PT_SPNG 90
 Element_SPNG::Element_SPNG()
 {
@@ -28,7 +29,7 @@ Element_SPNG::Element_SPNG()
 
 	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 251;
-	Description = "Sponge, absorbs water. Is not a moving solid.";
+	Description = TEXT_ELEM_SPNG_DESC;
 
 	Properties = TYPE_SOLID;
 

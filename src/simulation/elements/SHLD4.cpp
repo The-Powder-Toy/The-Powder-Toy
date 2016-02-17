@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_SHLD4 PT_SHLD4 122
 Element_SHLD4::Element_SHLD4()
 {
@@ -28,7 +29,7 @@ Element_SHLD4::Element_SHLD4()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 0;
-	Description = "Shield lvl 4.";
+	Description = TEXT_ELEM_SHLD4_DESC;
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 

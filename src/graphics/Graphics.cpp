@@ -586,7 +586,32 @@ int Graphics::textwidth(const char *s)
 	return x-1;
 }
 
+int Graphics::textwidth(const wchar_t *s)
+{
+	int x = 0;
+	for (; *s; s++)
+	{
+		if(((char)*s)=='\b')
+		{
+			if(!s[1]) break;
+			s++;
+			continue;
+		} else if(*s == '\x0F') {
+			if(!s[1] || !s[2] || !s[3]) break;
+			s+=3;
+			continue;
+		}
+		x += font_data[font_ptrs[(int)(*(wchar_t *)s)]];
+	}
+	return x-1;
+}
+
 int Graphics::CharWidth(unsigned char c)
+{
+	return font_data[font_ptrs[(int)c]];
+}
+
+int Graphics::CharWidth(wchar_t c)
 {
 	return font_data[font_ptrs[(int)c]];
 }
@@ -609,6 +634,29 @@ int Graphics::textnwidth(char *s, int n)
 			continue;
 		}
 		x += font_data[font_ptrs[(int)(*(unsigned char *)s)]];
+		n--;
+	}
+	return x-1;
+}
+
+int Graphics::textnwidth(wchar_t *s, int n)
+{
+	int x = 0;
+	for (; *s; s++)
+	{
+		if (!n)
+			break;
+		if(((char)*s)==L'\b')
+		{
+			if(!s[1]) break;
+			s++;
+			continue;
+		} else if(*s == L'\x0F') {
+			if(!s[1] || !s[2] || !s[3]) break;
+			s+=3;
+			continue;
+		}
+		x += font_data[font_ptrs[(int)(*(wchar_t *)s)]];
 		n--;
 	}
 	return x-1;
@@ -646,6 +694,38 @@ void Graphics::textnpos(char *s, int n, int w, int *cx, int *cy)
 	*cy = y;
 }
 
+void Graphics::textnpos(wchar_t *s, int n, int w, int *cx, int *cy)
+{
+	int x = 0;
+	int y = 0;
+	int wordlen, charspace;
+	while (*s&&n)
+	{
+		wordlen = wcscspn(s,L" .,!?\n");
+		charspace = textwidthx(s, w-x);
+		if (charspace<wordlen && wordlen && w-x<w/3)
+		{
+			x = 0;
+			y += FONT_H+2;
+		}
+		for (; *s && --wordlen>=-1; s++)
+		{
+			if (!n) {
+				break;
+			}
+			x += font_data[font_ptrs[(int)(*(wchar_t *)s)]];
+			if (x>=w)
+			{
+				x = 0;
+				y += FONT_H+2;
+			}
+			n--;
+		}
+	}
+	*cx = x-1;
+	*cy = y;
+}
+
 int Graphics::textwidthx(char *s, int w)
 {
 	int x=0,n=0,cw;
@@ -663,6 +743,31 @@ int Graphics::textwidthx(char *s, int w)
 			continue;
 		}
 		cw = font_data[font_ptrs[(int)(*(unsigned char *)s)]];
+		if (x+(cw/2) >= w)
+			break;
+		x += cw;
+		n++;
+	}
+	return n;
+}
+
+int Graphics::textwidthx(wchar_t *s, int w)
+{
+	int x=0,n=0,cw;
+	for (; *s; s++)
+	{
+		if((char)*s == L'\b')
+		{
+			if(!s[1]) break;
+			s++;
+			continue;
+		} else if (*s == L'\x0F')
+		{
+			if(!s[1] || !s[2] || !s[3]) break;
+			s+=3;
+			continue;
+		}
+		cw = font_data[font_ptrs[(int)(*(wchar_t *)s)]];
 		if (x+(cw/2) >= w)
 			break;
 		x += cw;
@@ -703,6 +808,38 @@ int Graphics::PositionAtCharIndex(char *s, int charIndex, int & positionX, int &
 	return lines;
 }
 
+int Graphics::PositionAtCharIndex(wchar_t *s, int charIndex, int & positionX, int & positionY)
+{
+	int x = 0, y = 0, lines = 1;
+	for (; *s; s++)
+	{
+		if (!charIndex)
+			break;
+		if(*s == L'\n') {
+			lines++;
+			x = 0;
+			y += FONT_H+2;
+			charIndex--;
+			continue;
+		} else if(*s ==L'\b') {
+			if(!s[1]) break;
+			s++;
+			charIndex-=2;
+			continue;
+		} else if(*s == L'\x0F') {
+			if(!s[1] || !s[2] || !s[3]) break;
+			s+=3;
+			charIndex-=4;
+			continue;
+		}
+		x += font_data[font_ptrs[(int)(*(wchar_t *)s)]];
+		charIndex--;
+	}
+	positionX = x;
+	positionY = y;
+	return lines;
+}
+
 int Graphics::CharIndexAtPosition(char *s, int positionX, int positionY)
 {
 	int x=0, y=0,charIndex=0,cw;
@@ -733,6 +870,35 @@ int Graphics::CharIndexAtPosition(char *s, int positionX, int positionY)
 	return charIndex;
 }
 
+int Graphics::CharIndexAtPosition(wchar_t *s, int positionX, int positionY)
+{
+	int x=0, y=0,charIndex=0,cw;
+	for (; *s; s++)
+	{
+		if(*s == L'\n') {
+			x = 0;
+			y += FONT_H+2;
+			charIndex++;
+			continue;
+		} else if(*s == L'\b') {
+			if(!s[1]) break;
+			s++;
+			charIndex+=2;
+			continue;
+		} else if (*s == L'\x0F') {
+			if(!s[1] || !s[2] || !s[3]) break;
+			s+=3;
+			charIndex+=4;
+			continue;
+		}
+		cw = font_data[font_ptrs[(int)(*(wchar_t *)s)]];
+		if ((x+(cw/2) >= positionX && y+FONT_H >= positionY) || y > positionY)
+			break;
+		x += cw;
+		charIndex++;
+	}
+	return charIndex;
+}
 
 int Graphics::textposxy(char *s, int width, int w, int h)
 {
@@ -761,6 +927,35 @@ int Graphics::textposxy(char *s, int width, int w, int h)
 	}
 	return n;
 }
+
+int Graphics::textposxy(wchar_t *s, int width, int w, int h)
+{
+	int x=0,y=0,n=0,cw, wordlen, charspace;
+	while (*s)
+	{
+		wordlen = wcscspn(s,L" .,!?\n");
+		charspace = textwidthx(s, width-x);
+		if (charspace<wordlen && wordlen && width-x<width/3)
+		{
+			x = 0;
+			y += FONT_H+2;
+		}
+		for (; *s && --wordlen>=-1; s++)
+		{
+			cw = font_data[font_ptrs[(int)(*(wchar_t *)s)]];
+			if ((x+(cw/2) >= w && y+6 >= h)||(y+6 >= h+FONT_H+2))
+				return n++;
+			x += cw;
+			if (x>=width) {
+				x = 0;
+				y += FONT_H+2;
+			}
+			n++;
+		}
+	}
+	return n;
+}
+
 int Graphics::textwrapheight(char *s, int width)
 {
 	int x=0, height=FONT_H+2, cw;
@@ -795,6 +990,52 @@ int Graphics::textwrapheight(char *s, int width)
 			else
 			{
 				cw = font_data[font_ptrs[(int)(*(unsigned char *)s)]];
+				if (x+cw>=width)
+				{
+					x = 0;
+					height += FONT_H+2;
+				}
+				x += cw;
+			}
+		}
+	}
+	return height;
+}
+
+int Graphics::textwrapheight(wchar_t *s, int width)
+{
+	int x=0, height=FONT_H+2, cw;
+	int wordlen;
+	int charspace;
+	while (*s)
+	{
+		wordlen = wcscspn(s,L" .,!?\n");
+		charspace = textwidthx(s, width-x);
+		if (charspace<wordlen && wordlen && width-x<width/3)
+		{
+			x = 0;
+			height += FONT_H+2;
+		}
+		for (; *s && --wordlen>=-1; s++)
+		{
+			if (*s == L'\n')
+			{
+				x = 0;
+				height += FONT_H+2;
+			}
+			else if (*s == L'\b')
+			{
+				if(!s[1]) break;
+				s++;
+			}
+			else if (*s == L'\x0F')
+			{
+				if(!s[1] || !s[2] || !s[3]) break;
+				s+=3;
+			}
+			else
+			{
+				cw = font_data[font_ptrs[(int)(*(wchar_t *)s)]];
 				if (x+cw>=width)
 				{
 					x = 0;
@@ -845,6 +1086,44 @@ void Graphics::textsize(const char * s, int & width, int & height)
 	height = cHeight;
 }
 
+void Graphics::textsize(const wchar_t * s, int & width, int & height)
+{
+	if(!wcslen(s))
+	{
+		width = 0;
+		height = FONT_H;
+		return;
+	}
+
+	int cHeight = FONT_H, cWidth = 0, lWidth = 0;
+	for (; *s; s++)
+	{
+		if (*s == L'\n')
+		{
+			cWidth = 0;
+			cHeight += FONT_H+2;
+		}
+		else if (*s == L'\x0F')
+		{
+			if(!s[1] || !s[2] || !s[3]) break;
+			s+=3;
+		}
+		else if (*s == L'\b')
+		{
+			if(!s[1]) break;
+			s++;
+		}
+		else
+		{
+			cWidth += font_data[font_ptrs[(int)(*(wchar_t *)s)]];
+			if(cWidth>lWidth)
+				lWidth = cWidth;
+		}
+	}
+	width = lWidth;
+	height = cHeight;
+}
+
 void Graphics::draw_icon(int x, int y, Icon icon, unsigned char alpha, bool invert)
 {
 	y--;
@@ -872,12 +1151,12 @@ void Graphics::draw_icon(int x, int y, Icon icon, unsigned char alpha, bool inve
 		if(invert)
 		{
 			drawchar(x-11, y+1, 0xCB, 0, 100, 0, alpha);
-			drawtext(x+2, y+1, "Vote", 0, 100, 0, alpha);
+			drawtext(x+2, y+1, L"ͶƱ", 0, 100, 0, alpha);
 		}
 		else
 		{
 			drawchar(x-11, y+1, 0xCB, 0, 187, 18, alpha);
-			drawtext(x+2, y+1, "Vote", 0, 187, 18, alpha);
+			drawtext(x+2, y+1, L"ͶƱ", 0, 187, 18, alpha);
 		}
 		break;
 	case IconVoteDown:

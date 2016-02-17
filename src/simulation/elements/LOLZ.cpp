@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_LOLZ PT_LOLZ 123
 Element_LOLZ::Element_LOLZ()
 {
@@ -28,7 +29,7 @@ Element_LOLZ::Element_LOLZ()
 
 	Temperature = 373.0f;
 	HeatConduct = 40;
-	Description = "Lolz";
+	Description = TEXT_ELEM_LOLZ_DESC;
 
 	Properties = TYPE_SOLID;
 

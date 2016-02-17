@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_PBCN PT_PBCN 153
 Element_PBCN::Element_PBCN()
 {
@@ -28,7 +29,7 @@ Element_PBCN::Element_PBCN()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "Powered breakable clone.";
+	Description = TEXT_ELEM_PBCN_DESC;
 
 	Properties = TYPE_SOLID|PROP_NOCTYPEDRAW;
 

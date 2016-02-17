@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_PLEX PT_PLEX 11
 Element_PLEX::Element_PLEX()
 {
@@ -28,7 +29,7 @@ Element_PLEX::Element_PLEX()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 88;
-	Description = "Solid pressure sensitive explosive.";
+	Description = TEXT_ELEM_PLEX_DESC;
 
 	Properties = TYPE_SOLID | PROP_NEUTPENETRATE;
 

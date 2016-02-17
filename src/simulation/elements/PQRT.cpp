@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_PQRT PT_PQRT 133
 Element_PQRT::Element_PQRT()
 {
@@ -28,7 +29,7 @@ Element_PQRT::Element_PQRT()
 
 	Temperature = R_TEMP+273.15f;
 	HeatConduct = 3;
-	Description = "Powdered quartz, broken form of QRTZ.";
+	Description = TEXT_ELEM_PQRT_DESC;
 
 	Properties = TYPE_PART| PROP_HOT_GLOW;
 

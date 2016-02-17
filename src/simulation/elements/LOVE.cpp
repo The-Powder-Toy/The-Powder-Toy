@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_LOVE PT_LOVE 94
 Element_LOVE::Element_LOVE()
 {
@@ -28,7 +29,7 @@ Element_LOVE::Element_LOVE()
 
 	Temperature = 373.0f;
 	HeatConduct = 40;
-	Description = "Love...";
+	Description = TEXT_ELEM_LOVE_DESC;
 
 	Properties = TYPE_SOLID;
 

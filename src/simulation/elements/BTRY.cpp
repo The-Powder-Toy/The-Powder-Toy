@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_BTRY PT_BTRY 53
 Element_BTRY::Element_BTRY()
 {
@@ -28,7 +29,7 @@ Element_BTRY::Element_BTRY()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "Generates infinite electricity.";
+	Description = TEXT_ELEM_BTRY_DESC;
 
 	Properties = TYPE_SOLID;
 

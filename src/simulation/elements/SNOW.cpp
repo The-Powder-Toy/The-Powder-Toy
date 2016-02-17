@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_SNOW PT_SNOW 16
 Element_SNOW::Element_SNOW()
 {
@@ -28,7 +29,7 @@ Element_SNOW::Element_SNOW()
 
 	Temperature = R_TEMP-30.0f+273.15f;
 	HeatConduct = 46;
-	Description = "Light particles. Created when ICE breaks under pressure.";
+	Description = TEXT_ELEM_SNOW_DESC;
 
 	Properties = TYPE_PART|PROP_LIFE_DEC|PROP_NEUTPASS;
 

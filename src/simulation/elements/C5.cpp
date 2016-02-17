@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_C5 PT_C5 130
 Element_C5::Element_C5()
 {
@@ -28,7 +29,7 @@ Element_C5::Element_C5()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 88;
-	Description = "Cold explosive, set off by anything cold.";
+	Description = TEXT_ELEM_C5_DESC;
 
 	Properties = TYPE_SOLID | PROP_NEUTPENETRATE;
 

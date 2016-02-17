@@ -19,6 +19,7 @@
 #include "QuickOptions.h"
 #include "IntroText.h"
 #include "DecorationTool.h"
+#include "Lang.h"
 
 
 class SplitButton;
@@ -36,10 +37,10 @@ private:
 	bool leftDown;
 	bool showSplit;
 	int splitPosition;
-	std::string toolTip2;
+	std::wstring toolTip2;
 	SplitButtonAction * splitActionCallback;
 public:
-	SplitButton(ui::Point position, ui::Point size, std::string buttonText, std::string toolTip, std::string toolTip2, int split) :
+	SplitButton(ui::Point position, ui::Point size, std::wstring buttonText, std::wstring toolTip, std::wstring toolTip2, int split) :
 		Button(position, size, buttonText, toolTip),
 		showSplit(true),
 		splitPosition(split),
@@ -48,7 +49,7 @@ public:
 	{
 
 	}
-	void SetRightToolTip(std::string tooltip) { toolTip2 = tooltip; }
+	void SetRightToolTip(std::wstring tooltip) { toolTip2 = tooltip; }
 	bool GetShowSplit() { return showSplit; }
 	void SetShowSplit(bool split) { showSplit = split; }
 	SplitButtonAction * GetSplitActionCallback() { return splitActionCallback; }
@@ -102,7 +103,7 @@ public:
 		ui::Button::TextPosition();
 		textPosition.X += 3;
 	}
-	void SetToolTips(std::string newToolTip1, std::string newToolTip2)
+	void SetToolTips(std::wstring newToolTip1, std::wstring newToolTip2)
 	{
 		toolTip = newToolTip1;
 		toolTip2 = newToolTip2;
@@ -170,13 +171,13 @@ GameView::GameView():
 	lastMenu(-1),
 
 	toolTipPresence(0),
-	toolTip(""),
+	toolTip(L""),
 	isToolTipFadingIn(false),
 	toolTipPosition(-1, -1),
 	infoTipPresence(0),
-	infoTip(""),
+	infoTip(L""),
 	buttonTipShow(0),
-	buttonTip(""),
+	buttonTip(L""),
 	isButtonTipFadingIn(false),
 	introText(2048),
 	introTextMessage(introTextData),
@@ -225,7 +226,7 @@ GameView::GameView():
 	scrollBar->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(scrollBar);
 
-	searchButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(17, 15), "", "Find & open a simulation. Hold Ctrl to load offline saves.");  //Open
+	searchButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(17, 15), "", TEXT_GUI_MAIN_BTN_OPEN_TIP);  //Open
 	searchButton->SetIcon(IconOpen);
 	currentX+=18;
 	searchButton->SetTogglable(false);
@@ -246,7 +247,7 @@ GameView::GameView():
 			v->c->OpenSavePreview();
 		}
 	};
-	reloadButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(17, 15), "", "Reload the simulation");
+	reloadButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(17, 15), "", TEXT_GUI_MAIN_BTN_RESET_TIP);
 	reloadButton->SetIcon(IconReload);
 	reloadButton->Appearance.Margin.Left+=2;
 	currentX+=18;
@@ -273,7 +274,7 @@ GameView::GameView():
 				v->c->SaveAsCurrent();
 		}
 	};
-	saveSimulationButton = new SplitButton(ui::Point(currentX, Size.Y-16), ui::Point(150, 15), "[untitled simulation]", "", "", 19);
+	saveSimulationButton = new SplitButton(ui::Point(currentX, Size.Y-16), ui::Point(150, 15), TEXT_GUI_MAIN_BTN_SAVE_TEXT, L"", L"", 19);
 	saveSimulationButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	saveSimulationButton->SetIcon(IconSave);
 	currentX+=151;
@@ -291,7 +292,7 @@ GameView::GameView():
 			v->c->Vote(1);
 		}
 	};
-	upVoteButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(39, 15), "", "Like this save");
+	upVoteButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(39, 15), "", TEXT_GUI_MAIN_BTN_LIKE_TIP);
 	upVoteButton->SetIcon(IconVoteUp);
 	upVoteButton->Appearance.Margin.Top+=2;
 	upVoteButton->Appearance.Margin.Left+=2;
@@ -309,7 +310,7 @@ GameView::GameView():
 			v->c->Vote(-1);
 		}
 	};
-	downVoteButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(15, 15), "", "Dislike this save");
+	downVoteButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(15, 15), "", TEXT_GUI_MAIN_BTN_DISLIKE_TIP);
 	downVoteButton->SetIcon(IconVoteDown);
 	downVoteButton->Appearance.Margin.Bottom+=2;
 	downVoteButton->Appearance.Margin.Left+=2;
@@ -327,7 +328,7 @@ GameView::GameView():
 			v->c->OpenTags();
 		}
 	};
-	tagSimulationButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(227, 15), "[no tags set]", "Add simulation tags");
+	tagSimulationButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(227, 15), TEXT_GUI_MAIN_BTN_TAG_TEXT, TEXT_GUI_MAIN_BTN_TAG_TIP);
 	tagSimulationButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	tagSimulationButton->SetIcon(IconTag);
 	currentX+=252;
@@ -344,7 +345,7 @@ GameView::GameView():
 			v->c->ClearSim();
 		}
 	};
-	clearSimButton = new ui::Button(ui::Point(Size.X-159, Size.Y-16), ui::Point(17, 15), "", "Erase everything");
+	clearSimButton = new ui::Button(ui::Point(Size.X-159, Size.Y-16), ui::Point(17, 15), "", TEXT_GUI_MAIN_BTN_NEW_TIP);
 	clearSimButton->SetIcon(IconNew);
 	clearSimButton->Appearance.Margin.Left+=2;
 	clearSimButton->SetActionCallback(new ClearSimAction(this));
@@ -364,7 +365,7 @@ GameView::GameView():
 			v->c->OpenProfile();
 		}
 	};
-	loginButton = new SplitButton(ui::Point(Size.X-141, Size.Y-16), ui::Point(92, 15), "[sign in]", "Sign into simulation server", "Edit Profile", 19);
+	loginButton = new SplitButton(ui::Point(Size.X-141, Size.Y-16), ui::Point(92, 15), TEXT_GUI_MAIN_BTN_LOGIN_TEXT, TEXT_GUI_MAIN_BTN_LOGIN_TIP1, TEXT_GUI_MAIN_BTN_LOGIN_TIP2, 19);
 	loginButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	loginButton->SetIcon(IconLogin);
 	((SplitButton*)loginButton)->SetSplitActionCallback(new LoginAction(this));
@@ -380,7 +381,7 @@ GameView::GameView():
 			v->c->OpenOptions();
 		}
 	};
-	simulationOptionButton = new ui::Button(ui::Point(Size.X-48, Size.Y-16), ui::Point(15, 15), "", "Simulation options");
+	simulationOptionButton = new ui::Button(ui::Point(Size.X-48, Size.Y-16), ui::Point(15, 15), "", TEXT_GUI_MAIN_BTN_SIM_OPT_TIP);
 	simulationOptionButton->SetIcon(IconSimulationSettings);
 	simulationOptionButton->Appearance.Margin.Left+=2;
 	simulationOptionButton->SetActionCallback(new SimulationOptionAction(this));
@@ -396,7 +397,7 @@ GameView::GameView():
 			v->c->OpenRenderOptions();
 		}
 	};
-	displayModeButton = new ui::Button(ui::Point(Size.X-32, Size.Y-16), ui::Point(15, 15), "", "Renderer options");
+	displayModeButton = new ui::Button(ui::Point(Size.X-32, Size.Y-16), ui::Point(15, 15), "", TEXT_GUI_MAIN_BTN_REN_OPT_TIP);
 	displayModeButton->SetIcon(IconRenderSettings);
 	displayModeButton->Appearance.Margin.Left+=2;
 	displayModeButton->SetActionCallback(new DisplayModeAction(this));
@@ -412,7 +413,7 @@ GameView::GameView():
 			v->c->SetPaused(sender->GetToggleState());
 		}
 	};
-	pauseButton = new ui::Button(ui::Point(Size.X-16, Size.Y-16), ui::Point(15, 15), "", "Pause/Resume the simulation");  //Pause
+	pauseButton = new ui::Button(ui::Point(Size.X-16, Size.Y-16), ui::Point(15, 15), "", TEXT_GUI_MAIN_BTN_PAUSE_TIP);  //Pause
 	pauseButton->SetIcon(IconPause);
 	pauseButton->SetTogglable(true);
 	pauseButton->SetActionCallback(new PauseAction(this));
@@ -428,7 +429,7 @@ GameView::GameView():
 			v->c->OpenElementSearch();
 		}
 	};
-	ui::Button * tempButton = new ui::Button(ui::Point(WINDOWW-16, WINDOWH-32), ui::Point(15, 15), "\xE5", "Search for elements");
+	ui::Button * tempButton = new ui::Button(ui::Point(WINDOWW-16, WINDOWH-32), ui::Point(15, 15), L"\xE5", TEXT_GUI_MAIN_BTN_SEARCH_TIP);
 	tempButton->Appearance.Margin = ui::Border(0, 2, 3, 2);
 	tempButton->SetActionCallback(new ElementSearchAction(this));
 	AddComponent(tempButton);
@@ -443,7 +444,7 @@ GameView::GameView():
 			v->c->OpenColourPicker();
 		}
 	};
-	colourPicker = new ui::Button(ui::Point((XRES/2)-8, YRES+1), ui::Point(16, 16), "", "Pick Colour");
+	colourPicker = new ui::Button(ui::Point((XRES/2)-8, YRES+1), ui::Point(16, 16), "", TEXT_GUI_DECO_BTN_COLORPICK_TIP);
 	colourPicker->SetActionCallback(new ColourPickerAction(this));
 }
 
@@ -587,8 +588,8 @@ void GameView::NotifyMenuListChanged(GameModel * sender)
 	vector<Menu*> menuList = sender->GetMenuList();
 	for (int i = (int)menuList.size()-1; i >= 0; i--)
 	{
-		std::string tempString = "";
-		tempString += menuList[i]->GetIcon();
+		std::wstring tempString = L"";
+		tempString += menuList[i]->GetWIcon();
 		ui::Button * tempButton = new ui::Button(ui::Point(WINDOWW-16, currentY), ui::Point(15, 15), tempString, menuList[i]->GetDescription());
 		tempButton->Appearance.Margin = ui::Border(0, 2, 3, 2);
 		tempButton->SetTogglable(true);
@@ -832,7 +833,7 @@ void GameView::NotifyColourPresetsChanged(GameModel * sender)
 	int i = 0;
 	for(std::vector<ui::Colour>::iterator iter = colours.begin(), end = colours.end(); iter != end; ++iter)
 	{
-		ToolButton * tempButton = new ToolButton(ui::Point(currentX, YRES+1), ui::Point(30, 18), "", "Decoration Presets.");
+		ToolButton * tempButton = new ToolButton(ui::Point(currentX, YRES+1), ui::Point(30, 18), "", TEXT_GUI_DECO_BTN_PRESET_TIP);
 		tempButton->Appearance.BackgroundInactive = *iter;
 		tempButton->SetActionCallback(new ColourPresetAction(this, i));
 
@@ -882,15 +883,15 @@ void GameView::NotifyUserChanged(GameModel * sender)
 {
 	if(!sender->GetUser().ID)
 	{
-		loginButton->SetText("[sign in]");
+		loginButton->SetText(TEXT_GUI_MAIN_BTN_LOGIN_TEXT);
 		((SplitButton*)loginButton)->SetShowSplit(false);
-		((SplitButton*)loginButton)->SetRightToolTip("Sign in to simulation server");
+		((SplitButton*)loginButton)->SetRightToolTip(TEXT_GUI_MAIN_BTN_LOGIN_TIP1);
 	}
 	else
 	{
 		loginButton->SetText(sender->GetUser().Username);
 		((SplitButton*)loginButton)->SetShowSplit(true);
-		((SplitButton*)loginButton)->SetRightToolTip("Edit profile");
+		((SplitButton*)loginButton)->SetRightToolTip(TEXT_GUI_MAIN_BTN_LOGIN_TIP2);
 	}
 	// saveSimulationButtonEnabled = sender->GetUser().ID;
 	saveSimulationButtonEnabled = true;
@@ -905,12 +906,12 @@ void GameView::NotifyPausedChanged(GameModel * sender)
 
 void GameView::NotifyToolTipChanged(GameModel * sender)
 {
-	toolTip = sender->GetToolTip();
+	toolTip = sender->GetWToolTip();
 }
 
 void GameView::NotifyInfoTipChanged(GameModel * sender)
 {
-	infoTip = sender->GetInfoTip();
+	infoTip = sender->GetWInfoTip();
 	infoTipPresence = 120;
 }
 
@@ -967,12 +968,12 @@ void GameView::NotifySaveChanged(GameModel * sender)
 			}
 			else
 			{
-				tagSimulationButton->SetText("[no tags set]");
+				tagSimulationButton->SetText(TEXT_GUI_MAIN_BTN_TAG_TEXT);
 			}
 		}
 		else
 		{
-			tagSimulationButton->SetText("[no tags set]");
+			tagSimulationButton->SetText(TEXT_GUI_MAIN_BTN_TAG_TEXT);
 		}
 		currentSaveType = 1;
 	}
@@ -991,13 +992,13 @@ void GameView::NotifySaveChanged(GameModel * sender)
 		upVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 0, 0));
 		downVoteButton->Appearance.BorderDisabled = ui::Colour(100, 100, 100);
 		tagSimulationButton->Enabled = false;
-		tagSimulationButton->SetText("[no tags set]");
+		tagSimulationButton->SetText(TEXT_GUI_MAIN_BTN_TAG_TEXT);
 		currentSaveType = 2;
 	}
 	else
 	{
 		((SplitButton*)saveSimulationButton)->SetShowSplit(false);
-		saveSimulationButton->SetText("[untitled simulation]");
+		saveSimulationButton->SetText(TEXT_GUI_MAIN_BTN_SAVE_TEXT);
 		reloadButton->Enabled = false;
 		upVoteButton->Enabled = false;
 		upVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 0, 0));
@@ -1006,7 +1007,7 @@ void GameView::NotifySaveChanged(GameModel * sender)
 		downVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 0, 0));
 		downVoteButton->Appearance.BorderDisabled = ui::Colour(100, 100, 100),
 		tagSimulationButton->Enabled = false;
-		tagSimulationButton->SetText("[no tags set]");
+		tagSimulationButton->SetText(TEXT_GUI_MAIN_BTN_TAG_TEXT);
 		currentSaveType = 0;
 	}
 	saveSimulationButton->Enabled = (saveSimulationButtonEnabled || ctrlBehaviour);
@@ -1044,7 +1045,7 @@ void GameView::record()
 			}
 			virtual ~RecordingConfirmation() { }
 		};
-		new ConfirmPrompt("Recording", "You're about to start recording all drawn frames. This may use a load of hard disk space.", new RecordingConfirmation(this));
+		new ConfirmPrompt(TEXT_GUI_REC_CONF_TITLE, TEXT_GUI_REC_CONF_MSG, new RecordingConfirmation(this));
 	}
 }
 
@@ -1270,10 +1271,39 @@ void GameView::ExitPrompt()
 		}
 		virtual ~ExitConfirmation() { }
 	};
-	new ConfirmPrompt("You are about to quit", "Are you sure you want to exit the game?", new ExitConfirmation());
+	new ConfirmPrompt(TEXT_GUI_EXIT_CONF_TITLE, TEXT_GUI_EXIT_CONF_MSG, new ExitConfirmation());
 }
 
 void GameView::ToolTip(ui::Point senderPosition, std::string toolTip)
+{
+	// buttom button tooltips
+	if (senderPosition.Y > Size.Y-17)
+	{
+		if (selectMode == PlaceSave || selectMode == SelectNone)
+		{
+			buttonTip = format::StringToWString(toolTip);
+			isButtonTipFadingIn = true;
+		}
+	}
+	// quickoption and menu tooltips
+	else if(senderPosition.X > Size.X-BARSIZE)// < Size.Y-(quickOptionButtons.size()+1)*16)
+	{
+		this->toolTip = format::StringToWString(toolTip);
+		toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((wchar_t*)toolTip.c_str()), senderPosition.Y+3);
+		if(toolTipPosition.Y+10 > Size.Y-MENUSIZE)
+			toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((wchar_t*)toolTip.c_str()), Size.Y-MENUSIZE-10);
+		isToolTipFadingIn = true;
+	}
+	// element tooltips
+	else
+	{
+		this->toolTip = format::StringToWString(toolTip);
+		toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((wchar_t*)toolTip.c_str()), Size.Y-MENUSIZE-10);
+		isToolTipFadingIn = true;
+	}
+}
+
+void GameView::ToolTip(ui::Point senderPosition, std::wstring toolTip)
 {
 	// buttom button tooltips
 	if (senderPosition.Y > Size.Y-17)
@@ -1288,16 +1318,16 @@ void GameView::ToolTip(ui::Point senderPosition, std::string toolTip)
 	else if(senderPosition.X > Size.X-BARSIZE)// < Size.Y-(quickOptionButtons.size()+1)*16)
 	{
 		this->toolTip = toolTip;
-		toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((char*)toolTip.c_str()), senderPosition.Y+3);
+		toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((wchar_t*)toolTip.c_str()), senderPosition.Y+3);
 		if(toolTipPosition.Y+10 > Size.Y-MENUSIZE)
-			toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((char*)toolTip.c_str()), Size.Y-MENUSIZE-10);
+			toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((wchar_t*)toolTip.c_str()), Size.Y-MENUSIZE-10);
 		isToolTipFadingIn = true;
 	}
 	// element tooltips
 	else
 	{
 		this->toolTip = toolTip;
-		toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((char*)toolTip.c_str()), Size.Y-MENUSIZE-10);
+		toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((wchar_t*)toolTip.c_str()), Size.Y-MENUSIZE-10);
 		isToolTipFadingIn = true;
 	}
 }
@@ -1325,7 +1355,7 @@ void GameView::BeginStampSelection()
 	selectMode = SelectStamp;
 	selectPoint1 = selectPoint2 = ui::Point(-1, -1);
 	isMouseDown = false;
-	buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to create a stamp (right click = cancel)";
+	buttonTip = TEXT_GUI_STAMP_TIP;
 	buttonTipShow = 120;
 }
 
@@ -1518,7 +1548,7 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 			selectMode = SelectCopy;
 			selectPoint1 = selectPoint2 = ui::Point(-1, -1);
 			isMouseDown = false;
-			buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to copy (right click = cancel)";
+			buttonTip = TEXT_GUI_COPY_TIP;
 			buttonTipShow = 120;
 		}
 		break;
@@ -1528,7 +1558,7 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 			selectMode = SelectCut;
 			selectPoint1 = selectPoint2 = ui::Point(-1, -1);
 			isMouseDown = false;
-			buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to copy then cut (right click = cancel)";
+			buttonTip = TEXT_GUI_CUT_TIP;
 			buttonTipShow = 120;
 		}
 		break;
@@ -1676,17 +1706,17 @@ void GameView::OnTick(float dt)
 			char buff[256];
 			strcpy(buff, str+3);
 			buff[pos-3] = 0;
-			std::stringstream tooltip;
+			std::wstringstream tooltip;
 			switch (type)
 			{
 			case 'c':
-				tooltip << "Go to save ID:" << buff;
+				tooltip << TEXT_GUI_SIGN_SAVE_TIP << format::StringToWString(buff);
 				break;
 			case 't':
-				tooltip << "Open forum thread " << buff << " in browser";
+				tooltip << TEXT_GUI_SIGN_THREAD_TIP1 << format::StringToWString(buff) << TEXT_GUI_SIGN_THREAD_TIP2;
 				break;
 			case 's':
-				tooltip << "Search for " << buff;
+				tooltip << TEXT_GUI_SIGN_SEARCH_TIP << format::StringToWString(buff);
 				break;
 			}
 			ToolTip(ui::Point(0, Size.Y), tooltip.str());
@@ -1991,7 +2021,7 @@ void GameView::enableCtrlBehaviour()
 		searchButton->Appearance.BackgroundInactive = searchButton->Appearance.BackgroundHover = ui::Colour(255, 255, 255);
 		searchButton->Appearance.TextInactive = searchButton->Appearance.TextHover = ui::Colour(0, 0, 0);
 
-		searchButton->SetToolTip("Open a simulation from your hard drive.");
+		searchButton->SetToolTip(TEXT_GUI_MAIN_BTN_OPEN_LOCAL_TIP);
 		if (currentSaveType == 2)
 			((SplitButton*)saveSimulationButton)->SetShowSplit(true);
 	}
@@ -2015,7 +2045,7 @@ void GameView::disableCtrlBehaviour()
 		searchButton->Appearance.BackgroundInactive = ui::Colour(0, 0, 0);
 		searchButton->Appearance.BackgroundHover = ui::Colour(20, 20, 20);
 		searchButton->Appearance.TextInactive = searchButton->Appearance.TextHover = ui::Colour(255, 255, 255);
-		searchButton->SetToolTip("Find & open a simulation. Hold Ctrl to load offline saves.");
+		searchButton->SetToolTip(TEXT_GUI_MAIN_BTN_OPEN_TIP);
 		if (currentSaveType == 2)
 			((SplitButton*)saveSimulationButton)->SetShowSplit(false);
 	}
@@ -2051,13 +2081,13 @@ void GameView::UpdateToolStrength()
 void GameView::SetSaveButtonTooltips()
 {
 	if (!Client::Ref().GetAuthUser().ID)
-		((SplitButton*)saveSimulationButton)->SetToolTips("Overwrite the open simulation on your hard drive.", "Save the simulation to your hard drive. Login to save online.");
+		((SplitButton*)saveSimulationButton)->SetToolTips(TEXT_GUI_MAIN_BTN_SAVE_WRITE_TIP, TEXT_GUI_MAIN_BTN_SAVE_UNLOG_TIP);
 	else if (ctrlBehaviour)
-		((SplitButton*)saveSimulationButton)->SetToolTips("Overwrite the open simulation on your hard drive.", "Save the simulation to your hard drive.");
+		((SplitButton*)saveSimulationButton)->SetToolTips(TEXT_GUI_MAIN_BTN_SAVE_WRITE_TIP, TEXT_GUI_MAIN_BTN_SAVE_LOCAL_TIP);
 	else if (((SplitButton*)saveSimulationButton)->GetShowSplit())
-		((SplitButton*)saveSimulationButton)->SetToolTips("Re-upload the current simulation", "Modify simulation properties");
+		((SplitButton*)saveSimulationButton)->SetToolTips(TEXT_GUI_MAIN_BTN_SAVE_REUPL_TIP, TEXT_GUI_MAIN_BTN_SAVE_EDIT_TIP);
 	else
-		((SplitButton*)saveSimulationButton)->SetToolTips("Re-upload the current simulation", "Upload a new simulation. Hold Ctrl to save offline.");
+		((SplitButton*)saveSimulationButton)->SetToolTips(TEXT_GUI_MAIN_BTN_SAVE_REUPL_TIP, TEXT_GUI_MAIN_BTN_SAVE_NEW_TIP);
 }
 
 void GameView::OnDraw()
@@ -2238,13 +2268,13 @@ void GameView::OnDraw()
 
 	if(recording)
 	{
-		std::stringstream sampleInfo;
+		std::wstringstream sampleInfo;
 		sampleInfo << recordingIndex;
-		sampleInfo << ". \x8E REC";
+		sampleInfo << TEXT_GUI_HUD_REC;
 
-		int textWidth = Graphics::textwidth((char*)sampleInfo.str().c_str());
+		int textWidth = Graphics::textwidth((wchar_t*)sampleInfo.str().c_str());
 		g->fillrect(XRES-20-textWidth, 12, textWidth+8, 15, 0, 0, 0, 255*0.5);
-		g->drawtext(XRES-16-textWidth, 16, (const char*)sampleInfo.str().c_str(), 255, 50, 20, 255);
+		g->drawtext(XRES-16-textWidth, 16, (const wchar_t*)sampleInfo.str().c_str(), 255, 50, 20, 255);
 	}
 	else if(showHud)
 	{
@@ -2254,7 +2284,7 @@ void GameView::OnDraw()
 			alpha = 255-toolTipPresence*3;
 		if (alpha < 50)
 			alpha = 50;
-		std::stringstream sampleInfo;
+		std::wstringstream sampleInfo;
 		sampleInfo.precision(2);
 
 		int type = sample.particle.type;
@@ -2270,74 +2300,74 @@ void GameView::OnDraw()
 			if (showDebug)
 			{
 				if (type == PT_LAVA && c->IsValidElement(ctype))
-					sampleInfo << "Molten " << c->ElementResolve(ctype, -1);
+					sampleInfo << TEXT_GUI_HUD_MOLTEN << c->WElementResolve(ctype, -1);
 				else if ((type == PT_PIPE || type == PT_PPIP) && c->IsValidElement(ctype))
-					sampleInfo << c->ElementResolve(type, -1) << " with " << c->ElementResolve(ctype, (int)sample.particle.pavg[1]);
+					sampleInfo << c->WElementResolve(type, -1) << TEXT_GUI_HUD_WITH << c->WElementResolve(ctype, (int)sample.particle.pavg[1]);
 				else if (type == PT_LIFE)
-					sampleInfo << c->ElementResolve(type, ctype);
+					sampleInfo << c->WElementResolve(type, ctype);
 				else if (type == PT_FILT)
 				{
-					sampleInfo << c->ElementResolve(type, ctype);
-					const char* filtModes[] = {"set colour", "AND", "OR", "subtract colour", "red shift", "blue shift", "no effect", "XOR", "NOT", "old QRTZ scattering"};
+					sampleInfo << c->WElementResolve(type, ctype);
+					const wchar_t* filtModes[] = {TEXT_GUI_HUD_FILT_MODE1, TEXT_GUI_HUD_FILT_MODE2, TEXT_GUI_HUD_FILT_MODE3, TEXT_GUI_HUD_FILT_MODE4, TEXT_GUI_HUD_FILT_MODE5, TEXT_GUI_HUD_FILT_MODE6, TEXT_GUI_HUD_FILT_MODE7, TEXT_GUI_HUD_FILT_MODE8, TEXT_GUI_HUD_FILT_MODE9, TEXT_GUI_HUD_FILT_MODE10};
 					if (sample.particle.tmp>=0 && sample.particle.tmp<=9)
-						sampleInfo << " (" << filtModes[sample.particle.tmp] << ")";
+						sampleInfo << L" (" << filtModes[sample.particle.tmp] << L")";
 					else
-						sampleInfo << " (unknown mode)";
+						sampleInfo << TEXT_GUI_HUD_FILT_MODEDK;
 				}
 				else
 				{
-					sampleInfo << c->ElementResolve(type, ctype);
+					sampleInfo << c->WElementResolve(type, ctype);
 					if (wavelengthGfx)
-						sampleInfo << " (" << ctype << ")";
+						sampleInfo << L" (" << ctype << L")";
 					// Some elements store extra LIFE info in upper bits of ctype, instead of tmp/tmp2
 					else if (type == PT_CRAY || type == PT_DRAY || type == PT_CONV)
-						sampleInfo << " (" << c->ElementResolve(ctype&0xFF, ctype>>8) << ")";
+						sampleInfo << L" (" << c->WElementResolve(ctype&0xFF, ctype>>8) << L")";
 					else if (c->IsValidElement(ctype))
-						sampleInfo << " (" << c->ElementResolve(ctype, -1) << ")";
+						sampleInfo << L" (" << c->WElementResolve(ctype, -1) << L")";
 					else
-						sampleInfo << " ()";
+						sampleInfo << L" ()";
 				}
-				sampleInfo << ", Temp: " << std::fixed << sample.particle.temp -273.15f << " C";
-				sampleInfo << ", Life: " << sample.particle.life;
-				sampleInfo << ", Tmp: " << sample.particle.tmp;
+				sampleInfo << TEXT_GUI_HUD_TEMP << std::fixed << sample.particle.temp -273.15f << L" C";
+				sampleInfo << TEXT_GUI_HUD_LIFE << sample.particle.life;
+				sampleInfo << TEXT_GUI_HUD_TMP << sample.particle.tmp;
 
 				// only elements that use .tmp2 show it in the debug HUD
 				if (type == PT_CRAY || type == PT_DRAY || type == PT_EXOT || type == PT_LIGH || type == PT_SOAP || type == PT_TRON || type == PT_VIBR || type == PT_VIRS || type == PT_WARP || type == PT_LCRY || type == PT_CBNW || type == PT_TSNS || type == PT_DTEC || type == PT_PSTN)
-					sampleInfo << ", Tmp2: " << sample.particle.tmp2;
+					sampleInfo << TEXT_GUI_HUD_TMP2 << sample.particle.tmp2;
 
-				sampleInfo << ", Pressure: " << std::fixed << sample.AirPressure;
+				sampleInfo << TEXT_GUI_HUD_PRESS << std::fixed << sample.AirPressure;
 			}
 			else
 			{
 				if (type == PT_LAVA && c->IsValidElement(ctype))
-					sampleInfo << "Molten " << c->ElementResolve(ctype, -1);
+					sampleInfo << TEXT_GUI_HUD_MOLTEN << c->WElementResolve(ctype, -1);
 				else if ((type == PT_PIPE || type == PT_PPIP) && c->IsValidElement(ctype))
-					sampleInfo << c->ElementResolve(type, -1) << " with " << c->ElementResolve(ctype, (int)sample.particle.pavg[1]);
+					sampleInfo << c->WElementResolve(type, -1) << TEXT_GUI_HUD_WITH << c->WElementResolve(ctype, (int)sample.particle.pavg[1]);
 				else if (type == PT_LIFE)
-					sampleInfo << c->ElementResolve(type, ctype);
+					sampleInfo << c->WElementResolve(type, ctype);
 				else
-					sampleInfo << c->ElementResolve(type, ctype);
-				sampleInfo << ", Temp: " << std::fixed << sample.particle.temp - 273.15f << " C";
-				sampleInfo << ", Pressure: " << std::fixed << sample.AirPressure;
+					sampleInfo << c->WElementResolve(type, ctype);
+				sampleInfo << TEXT_GUI_HUD_TEMP << std::fixed << sample.particle.temp - 273.15f << L" C";
+				sampleInfo << TEXT_GUI_HUD_PRESS << std::fixed << sample.AirPressure;
 			}
 		}
 		else if (sample.WallType)
 		{
-			sampleInfo << c->WallName(sample.WallType);
-			sampleInfo << ", Pressure: " << std::fixed << sample.AirPressure;
+			sampleInfo << c->WWallName(sample.WallType);
+			sampleInfo << TEXT_GUI_HUD_PRESS << std::fixed << sample.AirPressure;
 		}
 		else if (sample.isMouseInSim)
 		{
-			sampleInfo << "Empty, Pressure: " << std::fixed << sample.AirPressure;
+			sampleInfo << TEXT_GUI_HUD_EMPTY_AIR << std::fixed << sample.AirPressure;
 		}
 		else
 		{
-			sampleInfo << "Empty";
+			sampleInfo << TEXT_GUI_HUD_EMPTY;
 		}
 
-		int textWidth = Graphics::textwidth((char*)sampleInfo.str().c_str());
+		int textWidth = Graphics::textwidth((wchar_t*)sampleInfo.str().c_str());
 		g->fillrect(XRES-20-textWidth, 12, textWidth+8, 15, 0, 0, 0, alpha*0.5f);
-		g->drawtext(XRES-16-textWidth, 16, (const char*)sampleInfo.str().c_str(), 255, 255, 255, alpha*0.75f);
+		g->drawtext(XRES-16-textWidth, 16, (const wchar_t*)sampleInfo.str().c_str(), 255, 255, 255, alpha*0.75f);
 
 #ifndef OGLI
 		if (wavelengthGfx)
@@ -2378,77 +2408,77 @@ void GameView::OnDraw()
 
 		if (showDebug)
 		{
-			sampleInfo.str(std::string());
+			sampleInfo.str(std::wstring());
 
 			if (type)
-				sampleInfo << "#" << sample.ParticleID << ", ";
+				sampleInfo << TEXT_GUI_HUD_PART_ID << sample.ParticleID << L", ";
 
-			sampleInfo << "X:" << sample.PositionX << " Y:" << sample.PositionY;
+			sampleInfo << TEXT_GUI_HUD_POS_X << sample.PositionX << TEXT_GUI_HUD_POS_Y << sample.PositionY;
 
 			if (sample.Gravity)
-				sampleInfo << ", GX: " << sample.GravityVelocityX << " GY: " << sample.GravityVelocityY;
+				sampleInfo << TEXT_GUI_HUD_GRAV_X << sample.GravityVelocityX << TEXT_GUI_HUD_GRAV_Y << sample.GravityVelocityY;
 
 			if (c->GetAHeatEnable())
-				sampleInfo << ", AHeat: " << std::fixed << sample.AirTemperature -273.15f << " C";
+				sampleInfo << TEXT_GUI_HUD_AHEAT << std::fixed << sample.AirTemperature -273.15f << L" C";
 
-			textWidth = Graphics::textwidth((char*)sampleInfo.str().c_str());
+			textWidth = Graphics::textwidth((wchar_t*)sampleInfo.str().c_str());
 			g->fillrect(XRES-20-textWidth, 27, textWidth+8, 14, 0, 0, 0, alpha*0.5f);
-			g->drawtext(XRES-16-textWidth, 30, (const char*)sampleInfo.str().c_str(), 255, 255, 255, alpha*0.75f);
+			g->drawtext(XRES-16-textWidth, 30, (const wchar_t*)sampleInfo.str().c_str(), 255, 255, 255, alpha*0.75f);
 		}
 	}
 
 	if(showHud && introText < 51)
 	{
 		//FPS and some version info
-		std::stringstream fpsInfo;
+		std::wstringstream fpsInfo;
 		fpsInfo.precision(2);
-		fpsInfo << "FPS: " << std::fixed << ui::Engine::Ref().GetFps();
+		fpsInfo << TEXT_GUI_HUD_FPS << std::fixed << ui::Engine::Ref().GetFps();
 #ifdef DEBUG
-		fpsInfo << " Delta: " << std::fixed << ui::Engine::Ref().GetDelta();
+		fpsInfo << TEXT_GUI_HUD_DELTA << std::fixed << ui::Engine::Ref().GetDelta();
 #endif
 
 		if (showDebug)
-			fpsInfo << " Parts: " << sample.NumParts;
+			fpsInfo << TEXT_GUI_HUD_PARTS << sample.NumParts;
 		if (c->GetReplaceModeFlags()&REPLACE_MODE)
-			fpsInfo << " [REPLACE MODE]";
+			fpsInfo << TEXT_GUI_HUD_REPLACE;
 		if (c->GetReplaceModeFlags()&SPECIFIC_DELETE)
-			fpsInfo << " [SPECIFIC DELETE]";
+			fpsInfo << TEXT_GUI_HUD_SPECDEL;
 		if (ren->GetGridSize())
-			fpsInfo << " [GRID: " << ren->GetGridSize() << "]";
+			fpsInfo << TEXT_GUI_HUD_GRID << ren->GetGridSize() << L"]";
 		if (ren->findingElement)
-			fpsInfo << " [FIND]";
+			fpsInfo <<TEXT_GUI_HUD_FIND;
 
-		int textWidth = Graphics::textwidth((char*)fpsInfo.str().c_str());
+		int textWidth = Graphics::textwidth((wchar_t*)fpsInfo.str().c_str());
 		int alpha = 255-introText*5;
 		g->fillrect(12, 12, textWidth+8, 15, 0, 0, 0, alpha*0.5);
-		g->drawtext(16, 16, (const char*)fpsInfo.str().c_str(), 32, 216, 255, alpha*0.75);
+		g->drawtext(16, 16, (const wchar_t*)fpsInfo.str().c_str(), 32, 216, 255, alpha*0.75);
 	}
 
 	//Tooltips
 	if(infoTipPresence)
 	{
 		int infoTipAlpha = (infoTipPresence>50?50:infoTipPresence)*5;
-		g->drawtext_outline((XRES-Graphics::textwidth((char*)infoTip.c_str()))/2, (YRES/2)-2, (char*)infoTip.c_str(), 255, 255, 255, infoTipAlpha);
+		g->drawtext_outline((XRES-Graphics::textwidth((wchar_t*)infoTip.c_str()))/2, (YRES/2)-2, (wchar_t*)infoTip.c_str(), 255, 255, 255, infoTipAlpha);
 	}
 
 	if(toolTipPresence && toolTipPosition.X!=-1 && toolTipPosition.Y!=-1 && toolTip.length())
 	{
 		if (toolTipPosition.Y == Size.Y-MENUSIZE-10)
-			g->drawtext_outline(toolTipPosition.X, toolTipPosition.Y, (char*)toolTip.c_str(), 255, 255, 255, toolTipPresence>51?255:toolTipPresence*5);
+			g->drawtext_outline(toolTipPosition.X, toolTipPosition.Y, (wchar_t*)toolTip.c_str(), 255, 255, 255, toolTipPresence>51?255:toolTipPresence*5);
 		else
-			g->drawtext(toolTipPosition.X, toolTipPosition.Y, (char*)toolTip.c_str(), 255, 255, 255, toolTipPresence>51?255:toolTipPresence*5);
+			g->drawtext(toolTipPosition.X, toolTipPosition.Y, (wchar_t*)toolTip.c_str(), 255, 255, 255, toolTipPresence>51?255:toolTipPresence*5);
 	}
 
 	if(buttonTipShow > 0)
 	{
-		g->drawtext(16, Size.Y-MENUSIZE-24, (char*)buttonTip.c_str(), 255, 255, 255, buttonTipShow>51?255:buttonTipShow*5);
+		g->drawtext(16, Size.Y-MENUSIZE-24, (wchar_t*)buttonTip.c_str(), 255, 255, 255, buttonTipShow>51?255:buttonTipShow*5);
 	}
 
 	//Introduction text
 	if(introText)
 	{
 		g->fillrect(0, 0, WINDOWW, WINDOWH, 0, 0, 0, introText>51?102:introText*2);
-		g->drawtext(16, 20, (char*)introTextMessage.c_str(), 255, 255, 255, introText>51?255:introText*5);
+		g->drawtext(16, 20, (wchar_t*)introTextMessage.c_str(), 255, 255, 255, introText>51?255:introText*5);
 	}
 }
 

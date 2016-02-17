@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_NITR PT_NITR 8
 Element_NITR::Element_NITR()
 {
@@ -28,7 +29,7 @@ Element_NITR::Element_NITR()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 50;
-	Description = "Nitroglycerin. Pressure sensitive explosive. Mix with CLST to make TNT.";
+	Description = TEXT_ELEM_NITR_DESC;
 
 	Properties = TYPE_LIQUID;
 

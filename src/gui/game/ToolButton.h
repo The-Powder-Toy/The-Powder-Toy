@@ -7,7 +7,7 @@ class ToolButton: public ui::Button
 {
 	int currentSelection;
 public:
-	ToolButton(ui::Point position, ui::Point size, std::string text_, std::string toolTip = "");
+	ToolButton(ui::Point position, ui::Point size, std::string text_, std::wstring toolTip = L"");
 	virtual void OnMouseUnclick(int x, int y, unsigned int button);
 	virtual void OnMouseUp(int x, int y, unsigned int button);
 	virtual void OnMouseClick(int x, int y, unsigned int button);

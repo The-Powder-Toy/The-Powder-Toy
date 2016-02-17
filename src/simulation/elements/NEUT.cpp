@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_NEUT PT_NEUT 18
 Element_NEUT::Element_NEUT()
 {
@@ -28,7 +29,7 @@ Element_NEUT::Element_NEUT()
 
 	Temperature = R_TEMP+4.0f	+273.15f;
 	HeatConduct = 60;
-	Description = "Neutrons. Interact with matter in odd ways.";
+	Description = TEXT_ELEM_NEUT_DESC;
 
 	Properties = TYPE_ENERGY|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
 

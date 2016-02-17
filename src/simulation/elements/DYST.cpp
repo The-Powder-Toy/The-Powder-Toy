@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_DYST PT_DYST 64
 Element_DYST::Element_DYST()
 {
@@ -28,7 +29,7 @@ Element_DYST::Element_DYST()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
-	Description = "Dead Yeast.";
+	Description = TEXT_ELEM_DYST_DESC;
 
 	Properties = TYPE_PART;
 

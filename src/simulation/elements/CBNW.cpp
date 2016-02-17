@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_CBNW PT_CBNW 82
 Element_CBNW::Element_CBNW()
 {
@@ -28,7 +29,7 @@ Element_CBNW::Element_CBNW()
 
 	Temperature = R_TEMP-2.0f	+273.15f;
 	HeatConduct = 29;
-	Description = "Carbonated water. Slowly releases CO2.";
+	Description = TEXT_ELEM_CBNW_DESC;
 
 	Properties = TYPE_LIQUID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_NEUTPENETRATE;
 

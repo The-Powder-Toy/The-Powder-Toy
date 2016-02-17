@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_GPMP PT_GPMP 154
 Element_GPMP::Element_GPMP()
 {
@@ -28,7 +29,7 @@ Element_GPMP::Element_GPMP()
 
 	Temperature = 0.0f		+273.15f;
 	HeatConduct = 0;
-	Description = "Gravity pump. Changes gravity to its temp when activated. (use HEAT/COOL)";
+	Description = TEXT_ELEM_GPMP_DESC;
 
 	Properties = TYPE_SOLID;
 

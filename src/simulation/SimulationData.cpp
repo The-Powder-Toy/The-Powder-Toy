@@ -1,4 +1,5 @@
 #include "SimulationData.h"
+#include "Lang.h"
 //#include "ElementFunctions.h"
 #include "ElementGraphics.h"
 #include "Elements.h"
@@ -7,30 +8,30 @@ gol_menu * LoadGOLMenu(int & golMenuCount)
 {
 	gol_menu golMenu[NGOL] =
 	{
-		{"GOL",		PIXPACK(0x0CAC00), 0, "Game Of Life: Begin 3/Stay 23"},
-		{"HLIF",	PIXPACK(0xFF0000), 1, "High Life: B36/S23"},
-		{"ASIM",	PIXPACK(0x0000FF), 2, "Assimilation: B345/S4567"},
-		{"2x2",		PIXPACK(0xFFFF00), 3, "2x2: B36/S125"},
-		{"DANI",	PIXPACK(0x00FFFF), 4, "Day and Night: B3678/S34678"},
-		{"AMOE",	PIXPACK(0xFF00FF), 5, "Amoeba: B357/S1358"},
-		{"MOVE",	PIXPACK(0xFFFFFF), 6, "'Move' particles. Does not move things.. it is a life type: B368/S245"},
-		{"PGOL",	PIXPACK(0xE05010), 7, "Pseudo Life: B357/S238"},
-		{"DMOE",	PIXPACK(0x500000), 8, "Diamoeba: B35678/S5678"},
-		{"34",		PIXPACK(0x500050), 9, "34: B34/S34"},
-		{"LLIF",	PIXPACK(0x505050), 10, "Long Life: B345/S5"},
-		{"STAN",	PIXPACK(0x5000FF), 11, "Stains: B3678/S235678"},
-		{"SEED",	PIXPACK(0xFBEC7D), 12, "Seeds: B2/S"},
-		{"MAZE",	PIXPACK(0xA8E4A0), 13, "Maze: B3/S12345"},
-		{"COAG",	PIXPACK(0x9ACD32), 14, "Coagulations: B378/S235678"},
-		{"WALL",	PIXPACK(0x0047AB), 15, "Walled cities: B45678/S2345"},
-		{"GNAR",	PIXPACK(0xE5B73B), 16, "Gnarl: B1/S1"},
-		{"REPL",	PIXPACK(0x259588), 17, "Replicator: B1357/S1357"},
-		{"MYST",	PIXPACK(0x0C3C00), 18, "Mystery: B3458/S05678"},
-		{"LOTE",	PIXPACK(0xFF0000), 19, "Living on the Edge: B37/S3458/4"},
-		{"FRG2",	PIXPACK(0x00FF00), 20, "Like Frogs rule: B3/S124/3"},
-		{"STAR",	PIXPACK(0x0000FF), 21, "Like Star Wars rule: B278/S3456/6"},
-		{"FROG",	PIXPACK(0x00AA00), 22, "Frogs: B34/S12/3"},
-		{"BRAN",	PIXPACK(0xCCCC00), 23, "Brian 6: B246/S6/3"}
+		{"GOL",		PIXPACK(0x0CAC00), 0, TEXT_GOL_GOL_DESC},
+		{"HLIF",	PIXPACK(0xFF0000), 1, TEXT_GOL_HLIF_DESC},
+		{"ASIM",	PIXPACK(0x0000FF), 2, TEXT_GOL_ASIM_DESC},
+		{"2x2",		PIXPACK(0xFFFF00), 3, TEXT_GOL_2X2_DESC},
+		{"DANI",	PIXPACK(0x00FFFF), 4, TEXT_GOL_DANI_DESC},
+		{"AMOE",	PIXPACK(0xFF00FF), 5, TEXT_GOL_AMOE_DESC},
+		{"MOVE",	PIXPACK(0xFFFFFF), 6, TEXT_GOL_MOVE_DESC},
+		{"PGOL",	PIXPACK(0xE05010), 7, TEXT_GOL_PGOL_DESC},
+		{"DMOE",	PIXPACK(0x500000), 8, TEXT_GOL_DMOE_DESC},
+		{"34",		PIXPACK(0x500050), 9, TEXT_GOL_34_DESC},
+		{"LLIF",	PIXPACK(0x505050), 10, TEXT_GOL_LLIF_DESC},
+		{"STAN",	PIXPACK(0x5000FF), 11, TEXT_GOL_STAN_DESC},
+		{"SEED",	PIXPACK(0xFBEC7D), 12, TEXT_GOL_SEED_DESC},
+		{"MAZE",	PIXPACK(0xA8E4A0), 13, TEXT_GOL_MAZE_DESC},
+		{"COAG",	PIXPACK(0x9ACD32), 14, TEXT_GOL_COAG_DESC},
+		{"WALL",	PIXPACK(0x0047AB), 15, TEXT_GOL_WALL_DESC},
+		{"GNAR",	PIXPACK(0xE5B73B), 16, TEXT_GOL_GNAR_DESC},
+		{"REPL",	PIXPACK(0x259588), 17, TEXT_GOL_REPL_DESC},
+		{"MYST",	PIXPACK(0x0C3C00), 18, TEXT_GOL_MYST_DESC},
+		{"LOTE",	PIXPACK(0xFF0000), 19, TEXT_GOL_LOTE_DESC},
+		{"FRG2",	PIXPACK(0x00FF00), 20, TEXT_GOL_FRG2_DESC},
+		{"STAR",	PIXPACK(0x0000FF), 21, TEXT_GOL_STAR_DESC},
+		{"FROG",	PIXPACK(0x00AA00), 22, TEXT_GOL_FROG_DESC},
+		{"BRAN",	PIXPACK(0xCCCC00), 23, TEXT_GOL_BRAN_DESC}
 	};
 	golMenuCount = NGOL;
 	gol_menu * golMenuT = (gol_menu*)malloc(NGOL*sizeof(gol_menu));
@@ -114,24 +115,24 @@ wall_type * LoadWalls(int & wallCount)
 {
 	wall_type wtypes[] =
 	{
-		{PIXPACK(0x808080), PIXPACK(0x000000), 0, Renderer::WallIcon, "ERASE",			"DEFAULT_WL_ERASE",	"Erases walls."},
-		{PIXPACK(0xC0C0C0), PIXPACK(0x101010), 0, Renderer::WallIcon, "CONDUCTIVE WALL","DEFAULT_WL_CNDTW",	"Blocks everything. Conductive."},
-		{PIXPACK(0x808080), PIXPACK(0x808080), 0, Renderer::WallIcon, "EWALL",			"DEFAULT_WL_EWALL",	"E-Wall. Becomes transparent when electricity is connected."},
-		{PIXPACK(0xFF8080), PIXPACK(0xFF2008), 1, Renderer::WallIcon, "DETECTOR",		"DEFAULT_WL_DTECT",	"Detector. Generates electricity when a particle is inside."},
-		{PIXPACK(0x808080), PIXPACK(0x000000), 0, Renderer::WallIcon, "STREAMLINE",		"DEFAULT_WL_STRM",	"Streamline. Set start point of a streamline."},
-		{PIXPACK(0x8080FF), PIXPACK(0x000000), 1, Renderer::WallIcon, "FAN",			"DEFAULT_WL_FAN",	"Fan. Accelerates air. Use the line tool to set direction and strength."},
-		{PIXPACK(0xC0C0C0), PIXPACK(0x101010), 2, Renderer::WallIcon, "LIQUID WALL",	"DEFAULT_WL_LIQD",	"Allows liquids, blocks all other particles. Conductive."},
-		{PIXPACK(0x808080), PIXPACK(0x000000), 1, Renderer::WallIcon, "ABSORB WALL",	"DEFAULT_WL_ABSRB",	"Absorbs particles but lets air currents through."},
-		{PIXPACK(0x808080), PIXPACK(0x000000), 3, Renderer::WallIcon, "WALL",			"DEFAULT_WL_WALL",	"Basic wall, blocks everything."},
-		{PIXPACK(0x3C3C3C), PIXPACK(0x000000), 1, Renderer::WallIcon, "AIRONLY WALL",	"DEFAULT_WL_AIR",	"Allows air, but blocks all particles."},
-		{PIXPACK(0x575757), PIXPACK(0x000000), 1, Renderer::WallIcon, "POWDER WALL",	"DEFAULT_WL_POWDR",	"Allows powders, blocks all other particles."},
-		{PIXPACK(0xFFFF22), PIXPACK(0x101010), 2, Renderer::WallIcon, "CONDUCTOR",		"DEFAULT_WL_CNDTR",	"Conductor. Allows all particles to pass through and conducts electricity."},
-		{PIXPACK(0x242424), PIXPACK(0x101010), 0, Renderer::WallIcon, "EHOLE",			"DEFAULT_WL_EHOLE",	"E-Hole. absorbs particles, releases them when powered."},
-		{PIXPACK(0x579777), PIXPACK(0x000000), 1, Renderer::WallIcon, "GAS WALL",		"DEFAULT_WL_GAS",	"Allows gases, blocks all other particles."},
-		{PIXPACK(0xFFEE00), PIXPACK(0xAA9900), 4, Renderer::WallIcon, "GRAVITY WALL",	"DEFAULT_WL_GRVTY",	"Gravity wall. Newtonian Gravity has no effect inside a box drawn with this."},
-		{PIXPACK(0xFFAA00), PIXPACK(0xAA5500), 4, Renderer::WallIcon, "ENERGY WALL",	"DEFAULT_WL_ENRGY",	"Allows energy particles, blocks all other particles."},
-		{PIXPACK(0xDCDCDC), PIXPACK(0x000000), 1, Renderer::WallIcon, "AIRBLOCK WALL",	"DEFAULT_WL_NOAIR",	"Allows all particles, but blocks air."},
-		{PIXPACK(0x808080), PIXPACK(0x000000), 0, Renderer::WallIcon, "ERASEALL",		"DEFAULT_WL_ERASEA","Erases walls, particles, and signs."},
+		{PIXPACK(0x808080), PIXPACK(0x000000), 0, Renderer::WallIcon, TEXT_WALL_ERASE_NAME,	"DEFAULT_WL_ERASE",	TEXT_WALL_ERASE_DESC},
+		{PIXPACK(0xC0C0C0), PIXPACK(0x101010), 0, Renderer::WallIcon, TEXT_WALL_CNDTW_NAME,	"DEFAULT_WL_CNDTW",	TEXT_WALL_CNDTW_DESC},
+		{PIXPACK(0x808080), PIXPACK(0x808080), 0, Renderer::WallIcon, TEXT_WALL_EWALL_NAME,	"DEFAULT_WL_EWALL",	TEXT_WALL_EWALL_DESC},
+		{PIXPACK(0xFF8080), PIXPACK(0xFF2008), 1, Renderer::WallIcon, TEXT_WALL_DTECT_NAME,	"DEFAULT_WL_DTECT",	TEXT_WALL_DTECT_DESC},
+		{PIXPACK(0x808080), PIXPACK(0x000000), 0, Renderer::WallIcon, TEXT_WALL_STRM_NAME,	"DEFAULT_WL_STRM",	TEXT_WALL_STRM_DESC},
+		{PIXPACK(0x8080FF), PIXPACK(0x000000), 1, Renderer::WallIcon, TEXT_WALL_FAN_NAME,	"DEFAULT_WL_FAN",	TEXT_WALL_FAN_DESC},
+		{PIXPACK(0xC0C0C0), PIXPACK(0x101010), 2, Renderer::WallIcon, TEXT_WALL_LIQD_NAME,	"DEFAULT_WL_LIQD",	TEXT_WALL_LIQD_DESC},
+		{PIXPACK(0x808080), PIXPACK(0x000000), 1, Renderer::WallIcon, TEXT_WALL_ABSRB_NAME,	"DEFAULT_WL_ABSRB",	TEXT_WALL_ABSRB_DESC},
+		{PIXPACK(0x808080), PIXPACK(0x000000), 3, Renderer::WallIcon, TEXT_WALL_WALL_NAME,	"DEFAULT_WL_WALL",	TEXT_WALL_WALL_DESC},
+		{PIXPACK(0x3C3C3C), PIXPACK(0x000000), 1, Renderer::WallIcon, TEXT_WALL_AIR_NAME,	"DEFAULT_WL_AIR",	TEXT_WALL_AIR_DESC},
+		{PIXPACK(0x575757), PIXPACK(0x000000), 1, Renderer::WallIcon, TEXT_WALL_POWDR_NAME,	"DEFAULT_WL_POWDR",	TEXT_WALL_POWDR_DESC},
+		{PIXPACK(0xFFFF22), PIXPACK(0x101010), 2, Renderer::WallIcon, TEXT_WALL_CNDTR_NAME,	"DEFAULT_WL_CNDTR",	TEXT_WALL_CNDTR_DESC},
+		{PIXPACK(0x242424), PIXPACK(0x101010), 0, Renderer::WallIcon, TEXT_WALL_EHOLE_NAME,	"DEFAULT_WL_EHOLE",	TEXT_WALL_EHOLE_DESC},
+		{PIXPACK(0x579777), PIXPACK(0x000000), 1, Renderer::WallIcon, TEXT_WALL_GAS_NAME,	"DEFAULT_WL_GAS",	TEXT_WALL_GAS_DESC},
+		{PIXPACK(0xFFEE00), PIXPACK(0xAA9900), 4, Renderer::WallIcon, TEXT_WALL_GRVTY_NAME,	"DEFAULT_WL_GRVTY",	TEXT_WALL_GRVTY_DESC},
+		{PIXPACK(0xFFAA00), PIXPACK(0xAA5500), 4, Renderer::WallIcon, TEXT_WALL_ENRGY_NAME,	"DEFAULT_WL_ENRGY",	TEXT_WALL_ENRGY_DESC},
+		{PIXPACK(0xDCDCDC), PIXPACK(0x000000), 1, Renderer::WallIcon, TEXT_WALL_NOAIR_NAME,	"DEFAULT_WL_NOAIR",	TEXT_WALL_NOAIR_DESC},
+		{PIXPACK(0x808080), PIXPACK(0x000000), 0, Renderer::WallIcon, TEXT_WALL_ERASEA_NAME,"DEFAULT_WL_ERASEA",TEXT_WALL_ERASEA_DESC},
 	};
 	wallCount = UI_WALLCOUNT;
 	wall_type * wtypesT = (wall_type*)malloc(UI_WALLCOUNT*sizeof(wall_type));
@@ -143,23 +144,23 @@ menu_section * LoadMenus(int & menuCount)
 {
 	menu_section msections[] = //doshow does not do anything currently.
 	{
-		{"\xC1", "Walls", 0, 1},
-		{"\xC2", "Electronics", 0, 1},
-		{"\xD6", "Powered Materials", 0, 1},
-		{"\x99", "Sensors", 0, 1},
-		{"\xE2", "Force", 0, 1},
-		{"\xC3", "Explosives", 0, 1},
-		{"\xC5", "Gasses", 0, 1},
-		{"\xC4", "Liquids", 0, 1},
-		{"\xD0", "Powders", 0, 1},
-		{"\xD1", "Solids", 0, 1},
-		{"\xC6", "Radioactive", 0, 1},
-		{"\xCC", "Special", 0, 1},
-		{"\xD2", "Game Of Life", 0, 1},
-		{"\xD7", "Tools", 0, 1},
-		{"\xE4", "Decoration tools", 0, 1},
-		{"\xC8", "Cracker", 0, 0},
-		{"\xC8", "Cracker!", 0, 0},
+		{L"\xC1", TEXT_MENU_NAME_WALL, 0, 1},
+		{L"\xC2", TEXT_MENU_NAME_ELEC, 0, 1},
+		{L"\xD6", TEXT_MENU_NAME_POWER, 0, 1},
+		{L"\x99", TEXT_MENU_NAME_SENSOR, 0, 1},
+		{L"\xE2", TEXT_MENU_NAME_FORCE, 0, 1},
+		{L"\xC3", TEXT_MENU_NAME_EXPLD, 0, 1},
+		{L"\xC5", TEXT_MENU_NAME_GAS, 0, 1},
+		{L"\xC4", TEXT_MENU_NAME_LIQUID, 0, 1},
+		{L"\xD0", TEXT_MENU_NAME_POWDER, 0, 1},
+		{L"\xD1", TEXT_MENU_NAME_SOLID, 0, 1},
+		{L"\xC6", TEXT_MENU_NAME_RADIO, 0, 1},
+		{L"\xCC", TEXT_MENU_NAME_SPEC, 0, 1},
+		{L"\xD2", TEXT_MENU_NAME_GOL, 0, 1},
+		{L"\xD7", TEXT_MENU_NAME_TOOL, 0, 1},
+		{L"\xE4", TEXT_MENU_NAME_DECO, 0, 1},
+		{L"\xC8", TEXT_MENU_NAME_CRACK1, 0, 0},
+		{L"\xC8", TEXT_MENU_NAME_CRACK2, 0, 0},
 	};
 	menuCount = SC_TOTAL;
 	menu_section * msectionsT = (menu_section*)malloc(SC_TOTAL*sizeof(menu_section));

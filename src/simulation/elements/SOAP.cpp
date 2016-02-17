@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_SOAP PT_SOAP 149
 Element_SOAP::Element_SOAP()
 {
@@ -28,7 +29,7 @@ Element_SOAP::Element_SOAP()
 
 	Temperature = R_TEMP-2.0f	+273.15f;
 	HeatConduct = 29;
-	Description = "Soap. Creates bubbles, washes off deco color, and cures virus.";
+	Description = TEXT_ELEM_SOAP_DESC;
 
 	Properties = TYPE_LIQUID|PROP_NEUTPENETRATE|PROP_LIFE_DEC;
 

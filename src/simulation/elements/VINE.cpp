@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_VINE PT_VINE 114
 Element_VINE::Element_VINE()
 {
@@ -28,7 +29,7 @@ Element_VINE::Element_VINE()
 
 	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 65;
-	Description = "Vine, can grow along WOOD.";
+	Description = TEXT_ELEM_VINE_DESC;
 
 	Properties = TYPE_SOLID;
 

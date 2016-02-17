@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_INVIS PT_INVIS 115
 Element_INVIS::Element_INVIS()
 {
@@ -28,7 +29,7 @@ Element_INVIS::Element_INVIS()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 164;
-	Description = "Invisible to particles while under pressure.";
+	Description = TEXT_ELEM_INVIS_DESC;
 
 	Properties = TYPE_SOLID | PROP_NEUTPASS;
 

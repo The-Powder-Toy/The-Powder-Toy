@@ -28,7 +28,7 @@ ElementSearchActivity::ElementSearchActivity(GameController * gameController, st
 	tools(tools),
 	exit(false)
 {
-	ui::Label * title = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 15), "Element Search");
+	ui::Label * title = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 15), TEXT_GUI_ELEM_SEARCH_TITLE);
 	title->SetTextColour(style::Colour::InformationTitle);
 	title->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	AddComponent(title);
@@ -73,9 +73,9 @@ ElementSearchActivity::ElementSearchActivity(GameController * gameController, st
 			}
 		};
 
-	ui::Button * closeButton = new ui::Button(ui::Point(0, Size.Y-15), ui::Point((Size.X/2)+1, 15), "Close");
+	ui::Button * closeButton = new ui::Button(ui::Point(0, Size.Y-15), ui::Point((Size.X/2)+1, 15), TEXT_GUI_ELEM_SEARCH_BTN_CLOSE);
 	closeButton->SetActionCallback(new CloseAction(this));
-	ui::Button * okButton = new ui::Button(ui::Point(Size.X/2, Size.Y-15), ui::Point(Size.X/2, 15), "OK");
+	ui::Button * okButton = new ui::Button(ui::Point(Size.X/2, Size.Y-15), ui::Point(Size.X/2, 15), TEXT_GUI_ELEM_SEARCH_BTN_OK);
 	okButton->SetActionCallback(new OKAction(this));
 
 	AddComponent(okButton);

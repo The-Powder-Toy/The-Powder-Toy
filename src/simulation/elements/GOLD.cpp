@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 #include "simulation/Air.h"
 //#TPT-Directive ElementClass Element_GOLD PT_GOLD 170
 Element_GOLD::Element_GOLD()
@@ -29,7 +30,7 @@ Element_GOLD::Element_GOLD()
 
 	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 251;
-	Description = "Corrosion resistant metal, will reverse corrosion of iron.";
+	Description = TEXT_ELEM_GOLD_DESC;
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_HOT_GLOW|PROP_LIFE_DEC|PROP_NEUTPASS;
 

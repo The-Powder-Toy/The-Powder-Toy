@@ -203,15 +203,25 @@ public:
 
 	//Font/text metrics
 	static int CharIndexAtPosition(char *s, int positionX, int positionY);
+	static int CharIndexAtPosition(wchar_t *s, int positionX, int positionY);
 	static int PositionAtCharIndex(char *s, int charIndex, int & positionX, int & positionY);
+	static int PositionAtCharIndex(wchar_t *s, int charIndex, int & positionX, int & positionY);
 	static int CharWidth(unsigned char c);
+	static int CharWidth(wchar_t c);
 	static int textnwidth(char *s, int n);
+	static int textnwidth(wchar_t *s, int n);
 	static void textnpos(char *s, int n, int w, int *cx, int *cy);
+	static void textnpos(wchar_t *s, int n, int w, int *cx, int *cy);
 	static int textwidthx(char *s, int w);
+	static int textwidthx(wchar_t *s, int w);
 	static int textposxy(char *s, int width, int w, int h);
+	static int textposxy(wchar_t *s, int width, int w, int h);
 	static int textwrapheight(char *s, int width);
+	static int textwrapheight(wchar_t *s, int width);
 	static int textwidth(const char *s);
+	static int textwidth(const wchar_t *s);
 	static void textsize(const char * s, int & width, int & height);
+	static void textsize(const wchar_t * s, int & width, int & height);
 
 	VideoBuffer DumpFrame();
 
@@ -227,8 +237,11 @@ public:
 	void Finalise();
 	//
 	int drawtext_outline(int x, int y, const char *s, int r, int g, int b, int a);
+	int drawtext_outline(int x, int y, const wchar_t *s, int r, int g, int b, int a);
 	int drawtext(int x, int y, const char *s, int r, int g, int b, int a);
 	int drawtext(int x, int y, std::string s, int r, int g, int b, int a);
+	int drawtext(int x, int y, const wchar_t *s, int r, int g, int b, int a);
+	int drawtext(int x, int y, std::wstring s, int r, int g, int b, int a);
 	int drawchar(int x, int y, int c, int r, int g, int b, int a);
 	int addchar(int x, int y, int c, int r, int g, int b, int a);
 

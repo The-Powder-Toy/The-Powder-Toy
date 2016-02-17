@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_CRAY PT_CRAY 167
 Element_CRAY::Element_CRAY()
 {
@@ -28,7 +29,7 @@ Element_CRAY::Element_CRAY()
 
 	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 0;
-	Description = "Particle Ray Emitter. Creates a beam of particles set by its ctype, with a range set by tmp.";
+	Description = TEXT_ELEM_CRAY_DESC;
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 

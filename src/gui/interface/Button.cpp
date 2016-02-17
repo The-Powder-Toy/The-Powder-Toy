@@ -3,10 +3,24 @@
 #include "graphics/Graphics.h"
 #include "Engine.h"
 #include "Misc.h"
+#include "Format.h"
 
 namespace ui {
 
-Button::Button(Point position, Point size, std::string buttonText, std::string toolTip):
+Button::Button(Point position, Point size, std::string buttonText, std::wstring toolTip):
+	Component(position, size),
+	ButtonText(format::StringToWString(buttonText)),
+	toolTip(toolTip),
+	isButtonDown(false),
+	isMouseInside(false),
+	isTogglable(false),
+	toggle(false),
+	actionCallback(NULL)
+{
+	TextPosition();
+}
+
+Button::Button(Point position, Point size, std::wstring buttonText, std::wstring toolTip):
 	Component(position, size),
 	ButtonText(buttonText),
 	toolTip(toolTip),
@@ -24,11 +38,11 @@ void Button::TextPosition()
 	buttonDisplayText = ButtonText;
 	if(buttonDisplayText.length())
 	{
-		if(Graphics::textwidth((char *)buttonDisplayText.c_str()) > Size.X - (Appearance.icon? 22 : 0))
+		if(Graphics::textwidth((wchar_t *)buttonDisplayText.c_str()) > Size.X - (Appearance.icon? 22 : 0))
 		{
-			int position = Graphics::textwidthx((char *)buttonDisplayText.c_str(), Size.X - (Appearance.icon? 38 : 22));
+			int position = Graphics::textwidthx((wchar_t *)buttonDisplayText.c_str(), Size.X - (Appearance.icon? 38 : 22));
 			buttonDisplayText = buttonDisplayText.erase(position, buttonDisplayText.length()-position);
-			buttonDisplayText += "...";
+			buttonDisplayText += L"...";
 		}
 	}
 
@@ -42,6 +56,12 @@ void Button::SetIcon(Icon icon)
 }
 
 void Button::SetText(std::string buttonText)
+{
+	ButtonText = format::StringToWString(buttonText);
+	TextPosition();
+}
+
+void Button::SetText(std::wstring buttonText)
 {
 	ButtonText = buttonText;
 	TextPosition();

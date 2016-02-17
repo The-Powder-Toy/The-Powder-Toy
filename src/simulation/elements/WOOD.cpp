@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_WOOD PT_WOOD 17
 Element_WOOD::Element_WOOD()
 {
@@ -28,7 +29,7 @@ Element_WOOD::Element_WOOD()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 164;
-	Description = "Wood, flammable.";
+	Description = TEXT_ELEM_WOOD_DESC;
 
 	Properties = TYPE_SOLID | PROP_NEUTPENETRATE;
 

@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_DLAY PT_DLAY 79
 Element_DLAY::Element_DLAY()
 {
@@ -28,7 +29,7 @@ Element_DLAY::Element_DLAY()
 
 	Temperature = 4.0f+273.15f;
 	HeatConduct = 0;
-	Description = "Conducts with temperature-dependent delay. (use HEAT/COOL).";
+	Description = TEXT_ELEM_DLAY_DESC;
 
 	Properties = TYPE_SOLID;
 

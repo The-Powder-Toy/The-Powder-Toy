@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_WIRE PT_WIRE 156
 Element_WIRE::Element_WIRE()
 {
@@ -28,7 +29,7 @@ Element_WIRE::Element_WIRE()
 
 	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 250;
-	Description = "WireWorld wires, conducts based on a set of GOL-like rules.";
+	Description = TEXT_ELEM_WIRE_DESC;
 
 	Properties = TYPE_SOLID;
 

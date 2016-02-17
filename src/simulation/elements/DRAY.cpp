@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_DRAY PT_DRAY 178
 Element_DRAY::Element_DRAY()
 {
@@ -28,7 +29,7 @@ Element_DRAY::Element_DRAY()
 
 	Temperature = R_TEMP + 273.15f;
 	HeatConduct = 0;
-	Description = "Duplicator ray. Replicates a line of particles in front of it.";
+	Description = TEXT_ELEM_DRAY_DESC;
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 

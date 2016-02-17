@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_WARP PT_WARP 96
 Element_WARP::Element_WARP()
 {
@@ -28,7 +29,7 @@ Element_WARP::Element_WARP()
 
 	Temperature = R_TEMP +273.15f;
 	HeatConduct = 100;
-	Description = "Displaces other elements.";
+	Description = TEXT_ELEM_WARP_DESC;
 
 	Properties = TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL;
 

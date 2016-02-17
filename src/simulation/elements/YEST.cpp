@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_YEST PT_YEST 63
 Element_YEST::Element_YEST()
 {
@@ -28,7 +29,7 @@ Element_YEST::Element_YEST()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
-	Description = "Yeast, grows when warm (~37C).";
+	Description = TEXT_ELEM_YEST_DESC;
 
 	Properties = TYPE_PART;
 

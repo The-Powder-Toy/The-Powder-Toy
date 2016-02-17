@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_FSEP PT_FSEP 71
 Element_FSEP::Element_FSEP()
 {
@@ -28,7 +29,7 @@ Element_FSEP::Element_FSEP()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
-	Description = "Fuse Powder. Burns slowly like FUSE.";
+	Description = TEXT_ELEM_FSEP_DESC;
 
 	Properties = TYPE_PART;
 

@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_CONV PT_CONV 85
 Element_CONV::Element_CONV()
 {
@@ -28,7 +29,7 @@ Element_CONV::Element_CONV()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "Solid. Converts everything into whatever it first touches.";
+	Description = TEXT_ELEM_CONV_DESC;
 
 	Properties = TYPE_SOLID|PROP_DRAWONCTYPE|PROP_NOCTYPEDRAW;
 

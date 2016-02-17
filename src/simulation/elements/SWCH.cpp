@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_SWCH PT_SWCH 56
 Element_SWCH::Element_SWCH()
 {
@@ -28,7 +29,7 @@ Element_SWCH::Element_SWCH()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "Only conducts when switched on. (PSCN switches on, NSCN switches off)";
+	Description = TEXT_ELEM_SWCH_DESC;
 
 	Properties = TYPE_SOLID;
 

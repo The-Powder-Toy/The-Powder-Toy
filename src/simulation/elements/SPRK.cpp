@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_SPRK PT_SPRK 15
 Element_SPRK::Element_SPRK()
 {
@@ -28,7 +29,7 @@ Element_SPRK::Element_SPRK()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "Electricity. The basis of all electronics in TPT, travels along wires and other conductive elements.";
+	Description = TEXT_ELEM_SPRK_DESC;
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 

@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_BOYL PT_BOYL 141
 Element_BOYL::Element_BOYL()
 {
@@ -28,7 +29,7 @@ Element_BOYL::Element_BOYL()
 
 	Temperature = R_TEMP+2.0f	+273.15f;
 	HeatConduct = 42;
-	Description = "Boyle, variable pressure gas. Expands when heated.";
+	Description = TEXT_ELEM_BOYL_DESC;
 
 	Properties = TYPE_GAS;
 

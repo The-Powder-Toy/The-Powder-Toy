@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_SALT PT_SALT 26
 Element_SALT::Element_SALT()
 {
@@ -28,7 +29,7 @@ Element_SALT::Element_SALT()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 110;
-	Description = "Salt, dissolves in water.";
+	Description = TEXT_ELEM_SALT_DESC;
 
 	Properties = TYPE_PART;
 

@@ -4,6 +4,8 @@
 #include "client/GameSave.h"
 #include "gui/dialogues/ErrorMessage.h"
 #include "PreviewModelException.h"
+#include "Format.h"
+#include "Lang.h"
 
 PreviewModel::PreviewModel():
 	doOpen(false),
@@ -26,7 +28,7 @@ void PreviewModel::SetFavourite(bool favourite)
 		if (Client::Ref().FavouriteSave(save->id, favourite) == RequestOkay)
 			save->Favourite = favourite;
 		else if (favourite)
-			throw PreviewModelException("Error, could not fav. the save: " + Client::Ref().GetLastError());
+			throw PreviewModelException("Error, could not fav. the save: " + Client::Ref().GetLastError()); //TODO: Chinese?
 		else
 			throw PreviewModelException("Error, could not unfav. the save: " + Client::Ref().GetLastError());
 		notifySaveChanged();
@@ -185,12 +187,12 @@ void PreviewModel::OnResponseReady(void * object, int identifier)
 			{
 				GameSave *gameSave = new GameSave(*saveData);
 				if (gameSave->fromNewerVersion)
-					new ErrorMessage("This save is from a newer version", "Please update TPT in game or at http://powdertoy.co.uk");
+					new ErrorMessage(TEXT_GUI_SAVE_PRE_VERSION_ERR_TITLE, TEXT_GUI_SAVE_PRE_VERSION_ERR_MSG);
 				save->SetGameSave(gameSave);
 			}
 			catch(ParseException &e)
 			{
-				new ErrorMessage("Error", e.what());
+				new ErrorMessage(TEXT_GUI_SAVE_PRE_PARSE_ERR_TITLE, format::StringToWString(e.what()));  //TODO: Chinese?
 				canOpen = false;
 			}
 			notifySaveChanged();

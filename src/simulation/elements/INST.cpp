@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_INST PT_INST 106
 Element_INST::Element_INST()
 {
@@ -28,7 +29,7 @@ Element_INST::Element_INST()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "Instantly conducts, PSCN to charge, NSCN to take.";
+	Description = TEXT_ELEM_INST_DESC;
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 

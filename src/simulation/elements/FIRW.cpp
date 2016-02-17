@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 extern "C"
 {
 	#include "hmap.h"
@@ -32,7 +33,7 @@ Element_FIRW::Element_FIRW()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
-	Description = "Fireworks! Colorful, set off by fire.";
+	Description = TEXT_ELEM_FIRW_DESC;
 
 	Properties = TYPE_PART|PROP_LIFE_DEC;
 

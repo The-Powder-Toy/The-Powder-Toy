@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_BRAY PT_BRAY 127
 Element_BRAY::Element_BRAY()
 {
@@ -28,7 +29,7 @@ Element_BRAY::Element_BRAY()
 
 	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 251;
-	Description = "Ray Point. Rays create points when they collide.";
+	Description = TEXT_ELEM_BRAY_DESC;
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC|PROP_LIFE_KILL;
 

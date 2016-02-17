@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_VOID PT_VOID 22
 Element_VOID::Element_VOID()
 {
@@ -28,7 +29,7 @@ Element_VOID::Element_VOID()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "Hole, will drain away any particles.";
+	Description = TEXT_ELEM_VOID_DESC;
 
 	Properties = TYPE_SOLID;
 

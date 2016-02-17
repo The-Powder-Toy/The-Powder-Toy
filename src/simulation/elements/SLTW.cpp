@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_SLTW PT_SLTW 27
 Element_SLTW::Element_SLTW()
 {
@@ -28,7 +29,7 @@ Element_SLTW::Element_SLTW()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 75;
-	Description = "Saltwater, conducts electricity, difficult to freeze.";
+	Description = TEXT_ELEM_SLTW_DESC;
 
 	Properties = TYPE_LIQUID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_NEUTPENETRATE;
 

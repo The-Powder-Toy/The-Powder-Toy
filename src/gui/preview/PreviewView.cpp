@@ -16,6 +16,7 @@
 #include "gui/interface/AvatarButton.h"
 #include "gui/interface/Keys.h"
 #include "gui/dialogues/ErrorMessage.h"
+#include "Lang.h"
 
 class PreviewView::LoginAction: public ui::ButtonAction
 {
@@ -88,7 +89,7 @@ PreviewView::PreviewView():
 
 	showAvatars = Client::Ref().GetPrefBool("ShowAvatars", true);
 
-	favButton = new ui::Button(ui::Point(50, Size.Y-19), ui::Point(51, 19), "Fav");
+	favButton = new ui::Button(ui::Point(50, Size.Y-19), ui::Point(51, 19), TEXT_GUI_SAVE_PRE_FAV_BTN);
 	favButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	favButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	favButton->SetIcon(IconFavourite);
 	favButton->SetActionCallback(new FavAction(this));
@@ -113,10 +114,10 @@ PreviewView::PreviewView():
 		ReportAction(PreviewView * v_){ v = v_; }
 		virtual void ActionCallback(ui::Button * sender)
 		{
-			new TextPrompt("Report Save", "Things to consider when reporting:\n\bw1)\bg When reporting stolen saves, please include the ID of the original save.\n\bw2)\bg Do not waste staff time with fake or bogus reports, doing so may result in a ban.", "", "[reason]", true, new ReportPromptCallback(v));
+			new TextPrompt(TEXT_GUI_SAVE_PRE_REPORT_PROM_TITLE, TEXT_GUI_SAVE_PRE_REPORT_PROM_MSG, L"", TEXT_GUI_SAVE_PRE_REPORT_PROM_HOLDER, true, new ReportPromptCallback(v));
 		}
 	};
-	reportButton = new ui::Button(ui::Point(100, Size.Y-19), ui::Point(51, 19), "Report");
+	reportButton = new ui::Button(ui::Point(100, Size.Y-19), ui::Point(51, 19), TEXT_GUI_SAVE_PRE_REPORT_BTN);
 	reportButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	reportButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	reportButton->SetIcon(IconReport);
 	reportButton->SetActionCallback(new ReportAction(this));
@@ -133,7 +134,7 @@ PreviewView::PreviewView():
 			v->c->DoOpen();
 		}
 	};
-	openButton = new ui::Button(ui::Point(0, Size.Y-19), ui::Point(51, 19), "Open");
+	openButton = new ui::Button(ui::Point(0, Size.Y-19), ui::Point(51, 19), TEXT_GUI_SAVE_PRE_OPEN_BTN);
 	openButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	openButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	openButton->SetIcon(IconOpen);
 	openButton->SetActionCallback(new OpenAction(this));
@@ -150,7 +151,7 @@ PreviewView::PreviewView():
 		}
 	};
 
-	browserOpenButton = new ui::Button(ui::Point((XRES/2)-107, Size.Y-19), ui::Point(108, 19), "Open in browser");
+	browserOpenButton = new ui::Button(ui::Point((XRES/2)-107, Size.Y-19), ui::Point(108, 19), TEXT_GUI_SAVE_PRE_OPEN_WEB_BTN);
 	browserOpenButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	browserOpenButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	browserOpenButton->SetIcon(IconOpen);
 	browserOpenButton->SetActionCallback(new BrowserOpenAction(this));
@@ -194,7 +195,7 @@ PreviewView::PreviewView():
 	viewsLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(viewsLabel);
 	
-	pageInfo = new ui::Label(ui::Point((XRES/2) + 85, Size.Y+1), ui::Point(70, 16), "Page 1 of 1");
+	pageInfo = new ui::Label(ui::Point((XRES/2) + 85, Size.Y+1), ui::Point(70, 16), TEXT_GUI_SAVE_PRE_PAGE_INFO);
 	pageInfo->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	AddComponent(pageInfo);
 
@@ -206,14 +207,14 @@ void PreviewView::AttachController(PreviewController * controller)
 {
 	c = controller;
 
-	int textWidth = Graphics::textwidth("Click the box below to copy the save ID");
-	saveIDLabel = new ui::Label(ui::Point((Size.X-textWidth-20)/2, Size.Y+5), ui::Point(textWidth+20, 16), "Click the box below to copy the save ID");
+	int textWidth = Graphics::textwidth(TEXT_GUI_SAVE_PRE_COPY_LABEL);
+	saveIDLabel = new ui::Label(ui::Point((Size.X-textWidth-20)/2, Size.Y+5), ui::Point(textWidth+20, 16), TEXT_GUI_SAVE_PRE_COPY_LABEL);
 	saveIDLabel->SetTextColour(ui::Colour(150, 150, 150));
 	saveIDLabel->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	AddComponent(saveIDLabel);
 
 	textWidth = Graphics::textwidth(format::NumberToString<int>(c->SaveID()).c_str());
-	saveIDLabel2 = new ui::Label(ui::Point((Size.X-textWidth-20)/2-37, Size.Y+22), ui::Point(40, 16), "Save ID:");
+	saveIDLabel2 = new ui::Label(ui::Point((Size.X-textWidth-20)/2-37, Size.Y+22), ui::Point(40, 16), TEXT_GUI_SAVE_PRE_ID_LABEL);
 	AddComponent(saveIDLabel2);
 	
 	saveIDButton = new ui::CopyTextButton(ui::Point((Size.X-textWidth-10)/2, Size.Y+20), ui::Point(textWidth+10, 18), format::NumberToString<int>(c->SaveID()), saveIDLabel);
@@ -272,7 +273,7 @@ void PreviewView::DoDraw()
 	{
 		g->fillrect(Position.X+(Size.X/2)-101, Position.Y+(Size.Y/2)-26, 202, 52, 0, 0, 0, 210);
 		g->drawrect(Position.X+(Size.X/2)-100, Position.Y+(Size.Y/2)-25, 200, 50, 255, 255, 255, 180);
-		g->drawtext(Position.X+(Size.X/2)-(Graphics::textwidth("Loading save...")/2), Position.Y+(Size.Y/2)-5, "Loading save...", style::Colour::InformationTitle.Red, style::Colour::InformationTitle.Green, style::Colour::InformationTitle.Blue, 255);
+		g->drawtext(Position.X+(Size.X/2)-(Graphics::textwidth(TEXT_GUI_SAVE_PRE_LOAD_INFO)/2), Position.Y+(Size.Y/2)-5, TEXT_GUI_SAVE_PRE_LOAD_INFO, style::Colour::InformationTitle.Red, style::Colour::InformationTitle.Green, style::Colour::InformationTitle.Blue, 255);
 	}
 	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 255, 255, 255, 255);
 
@@ -370,7 +371,7 @@ void PreviewView::OnTick(float dt)
 	c->Update();
 	if (doError)
 	{
-		ErrorMessage::Blocking("Error loading save", doErrorMessage);
+		ErrorMessage::Blocking(TEXT_GUI_SAVE_PRE_LOAD_ERR_TITLE, format::StringToWString(doErrorMessage)); //TODO: Chinese?
 		c->Exit();
 	}
 }
@@ -425,27 +426,27 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 		saveNameLabel->SetText(save->name);
 		if(showAvatars) {
 			avatarButton->SetUsername(save->userName);
-			authorDateLabel->SetText("\bw" + save->userName + " \bgDate:\bw " + format::UnixtimeToDateMini(save->date));
+			authorDateLabel->SetText(L"\bw" + format::StringToWString(save->userName) + TEXT_GUI_SAVE_PRE_SAVE_INFO_DATE + format::StringToWString(format::UnixtimeToDateMini(save->date)));
 		}
 		else
 		{
-			authorDateLabel->SetText("\bgAuthor:\bw " + save->userName + " \bgDate:\bw " + format::UnixtimeToDateMini(save->date));
+			authorDateLabel->SetText(TEXT_GUI_SAVE_PRE_SAVE_INFO_AUTHOR + format::StringToWString(save->userName) + TEXT_GUI_SAVE_PRE_SAVE_INFO_DATE + format::StringToWString(format::UnixtimeToDateMini(save->date)));
 		}
-		viewsLabel->SetText("\bgViews:\bw " + format::NumberToString<int>(save->Views));
+		viewsLabel->SetText(TEXT_GUI_SAVE_PRE_SAVE_INFO_VIEW + format::StringToWString(format::NumberToString<int>(save->Views)));
 		saveDescriptionLabel->SetText(save->Description);
 		if(save->Favourite)
 		{
 			favButton->Enabled = true;
-			favButton->SetText("Unfav");
+			favButton->SetText(TEXT_GUI_SAVE_PRE_UNFAV_BTN);
 		}
 		else if(Client::Ref().GetAuthUser().ID)
 		{
 			favButton->Enabled = true;
-			favButton->SetText("Fav");
+			favButton->SetText(TEXT_GUI_SAVE_PRE_FAV_BTN);
 		}
 		else
 		{
-			favButton->SetText("Fav");
+			favButton->SetText(TEXT_GUI_SAVE_PRE_FAV_BTN);
 			favButton->Enabled = false;
 		}
 
@@ -488,13 +489,13 @@ void PreviewView::submitComment()
 		std::string comment = std::string(addCommentBox->GetText());
 		submitCommentButton->Enabled = false;
 		addCommentBox->SetText("");
-		addCommentBox->SetPlaceholder("Submitting comment"); //This doesn't appear to ever show since no separate thread is created
+		addCommentBox->SetPlaceholder(TEXT_GUI_SAVE_PRE_COMMENT_HOLDER_SUBMIT); //This doesn't appear to ever show since no separate thread is created
 		FocusComponent(NULL);
 
 		if (!c->SubmitComment(comment))
 			addCommentBox->SetText(comment);
 
-		addCommentBox->SetPlaceholder("Add comment");
+		addCommentBox->SetPlaceholder(TEXT_GUI_SAVE_PRE_COMMENT_HOLDER_ADD);
 		submitCommentButton->Enabled = true;
 
 		commentBoxAutoHeight();
@@ -522,19 +523,19 @@ void PreviewView::NotifyCommentBoxEnabledChanged(PreviewModel * sender)
 		commentBoxSizeX = Size.X-(XRES/2)-48;
 		commentBoxSizeY = 17;
 
-		addCommentBox = new ui::Textbox(ui::Point((XRES/2)+4, Size.Y-19), ui::Point(Size.X-(XRES/2)-48, 17), "", "Add Comment");
+		addCommentBox = new ui::Textbox(ui::Point((XRES/2)+4, Size.Y-19), ui::Point(Size.X-(XRES/2)-48, 17), L"", TEXT_GUI_SAVE_PRE_COMMENT_HOLDER_ADD);
 		addCommentBox->SetActionCallback(new AutoCommentSizeAction(this));
 		addCommentBox->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 		addCommentBox->SetMultiline(true);
 		AddComponent(addCommentBox);
-		submitCommentButton = new ui::Button(ui::Point(Size.X-40, Size.Y-19), ui::Point(40, 19), "Submit");
+		submitCommentButton = new ui::Button(ui::Point(Size.X-40, Size.Y-19), ui::Point(40, 19), TEXT_GUI_SAVE_PRE_COMMENT_BTN_SUBMIT);
 		submitCommentButton->SetActionCallback(new SubmitCommentAction(this));
 		//submitCommentButton->Enabled = false;
 		AddComponent(submitCommentButton);
 	}
 	else
 	{
-		submitCommentButton = new ui::Button(ui::Point(XRES/2, Size.Y-19), ui::Point(Size.X-(XRES/2), 19), "Login to comment");
+		submitCommentButton = new ui::Button(ui::Point(XRES/2, Size.Y-19), ui::Point(Size.X-(XRES/2), 19), TEXT_GUI_SAVE_PRE_COMMENT_BTN_LOGIN);
 		submitCommentButton->SetActionCallback(new LoginAction(this));
 		AddComponent(submitCommentButton);
 	}
@@ -548,8 +549,8 @@ void PreviewView::SaveLoadingError(std::string errorMessage)
 
 void PreviewView::NotifyCommentsPageChanged(PreviewModel * sender)
 {
-	std::stringstream pageInfoStream;
-	pageInfoStream << "Page " << sender->GetCommentsPageNum() << " of " << sender->GetCommentsPageCount();
+	std::wstringstream pageInfoStream;
+	pageInfoStream << TEXT_GUI_SAVE_PRE_PAGE_INFO1 << sender->GetCommentsPageNum() << TEXT_GUI_SAVE_PRE_PAGE_INFO2 << sender->GetCommentsPageCount() << TEXT_GUI_SAVE_PRE_PAGE_INFO3;
 	pageInfo->SetText(pageInfoStream.str());
 }
 

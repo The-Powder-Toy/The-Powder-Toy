@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_CLNE PT_CLNE 9
 Element_CLNE::Element_CLNE()
 {
@@ -28,7 +29,7 @@ Element_CLNE::Element_CLNE()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "Solid. Duplicates any particles it touches.";
+	Description = TEXT_ELEM_CLNE_DESC;
 
 	Properties = TYPE_SOLID|PROP_DRAWONCTYPE|PROP_NOCTYPEDRAW;
 

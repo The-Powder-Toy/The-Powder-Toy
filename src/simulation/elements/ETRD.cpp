@@ -1,5 +1,6 @@
 #include <algorithm>
 #include "simulation/Elements.h"
+#include "Lang.h"
 
 //#TPT-Directive ElementClass Element_ETRD PT_ETRD 50
 Element_ETRD::Element_ETRD()
@@ -30,7 +31,7 @@ Element_ETRD::Element_ETRD()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "Electrode. Creates a surface that allows Plasma arcs. (Use sparingly)";
+	Description = TEXT_ELEM_ETRD_DESC;
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC;
 

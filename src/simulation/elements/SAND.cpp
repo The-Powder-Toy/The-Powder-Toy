@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_SAND PT_SAND 44
 Element_SAND::Element_SAND()
 {
@@ -28,7 +29,7 @@ Element_SAND::Element_SAND()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 150;
-	Description = "Sand, Heavy particles. Melts into glass.";
+	Description = TEXT_ELEM_SAND_DESC;
 
 	Properties = TYPE_PART;
 

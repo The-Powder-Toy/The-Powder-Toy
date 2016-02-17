@@ -35,7 +35,7 @@ public:
 	int Weight;
 	float Temperature;
 	unsigned char HeatConduct;
-	const char *Description;
+	const wchar_t *Description;
 	unsigned int Properties;
 
 	float LowPressure;

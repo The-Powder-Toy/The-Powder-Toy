@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_CNCT PT_CNCT 24
 Element_CNCT::Element_CNCT()
 {
@@ -28,7 +29,7 @@ Element_CNCT::Element_CNCT()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 100;
-	Description = "Concrete, stronger than stone.";
+	Description = TEXT_ELEM_CNCT_DESC;
 
 	Properties = TYPE_PART|PROP_HOT_GLOW;
 

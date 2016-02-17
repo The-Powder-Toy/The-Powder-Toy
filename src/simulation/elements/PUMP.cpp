@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_PUMP PT_PUMP 97
 Element_PUMP::Element_PUMP()
 {
@@ -28,7 +29,7 @@ Element_PUMP::Element_PUMP()
 
 	Temperature = 273.15f;
 	HeatConduct = 0;
-	Description = "Pressure pump. Changes pressure to its temp when activated. (use HEAT/COOL).";
+	Description = TEXT_ELEM_PUMP_DESC;
 
 	Properties = TYPE_SOLID;
 

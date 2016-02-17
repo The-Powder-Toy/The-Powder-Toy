@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_STKM PT_STKM 55
 Element_STKM::Element_STKM()
 {
@@ -28,7 +29,7 @@ Element_STKM::Element_STKM()
 
 	Temperature = R_TEMP+14.6f+273.15f;
 	HeatConduct = 0;
-	Description = "Stickman. Don't kill him! Control with the arrow keys.";
+	Description = TEXT_ELEM_STKM_DESC;
 
 	Properties = PROP_NOCTYPEDRAW;
 

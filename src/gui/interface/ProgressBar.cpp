@@ -1,5 +1,6 @@
 #include "ProgressBar.h"
 #include "gui/Style.h"
+#include "Format.h"
 
 using namespace ui;
 
@@ -7,7 +8,17 @@ ProgressBar::ProgressBar(Point position, Point size, int startProgress, std::str
 	Component(position, size),
 	progress(0),
 	intermediatePos(0.0f),
-	progressStatus("")
+	progressStatus(L"")
+{
+	SetStatus(startStatus);
+	SetProgress(startProgress);
+}
+
+ProgressBar::ProgressBar(Point position, Point size, int startProgress, std::wstring startStatus):
+	Component(position, size),
+	progress(0),
+	intermediatePos(0.0f),
+	progressStatus(L"")
 {
 	SetStatus(startStatus);
 	SetProgress(startProgress);
@@ -27,10 +38,20 @@ int ProgressBar::GetProgress()
 
 void ProgressBar::SetStatus(std::string status)
 {
+	progressStatus = format::StringToWString(status);
+}
+
+void ProgressBar::SetStatus(std::wstring status)
+{
 	progressStatus = status;
 }
 
 std::string ProgressBar::GetStatus()
+{
+	return format::WStringToString(progressStatus);
+}
+
+std::wstring ProgressBar::GetWStatus()
 {
 	return progressStatus;
 }

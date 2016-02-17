@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_NONE PT_NONE 0
 Element_NONE::Element_NONE()
 {
@@ -28,7 +29,7 @@ Element_NONE::Element_NONE()
 
 	Temperature = R_TEMP+273.15f;
 	HeatConduct = 0;
-	Description = "Erases particles.";
+	Description = TEXT_ELEM_NONE_DESC;
 
 	Properties = 0;
 

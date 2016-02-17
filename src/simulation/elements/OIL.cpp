@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_OIL PT_OIL 3
 Element_OIL::Element_OIL()
 {
@@ -28,7 +29,7 @@ Element_OIL::Element_OIL()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 42;
-	Description = "Flammable, turns into GAS at low pressure or high temperature. Can be formed with NEUT and NITR.";
+	Description = TEXT_ELEM_OIL_DESC;
 
 	Properties = TYPE_LIQUID | PROP_NEUTPASS;
 

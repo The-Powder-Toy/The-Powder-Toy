@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_FOG PT_FOG 92
 Element_FOG::Element_FOG()
 {
@@ -28,7 +29,7 @@ Element_FOG::Element_FOG()
 
 	Temperature = 243.15f;
 	HeatConduct = 100;
-	Description = "Fog, created when an electric current is passed through RIME.";
+	Description = TEXT_ELEM_FOG_DESC;
 
 	Properties = TYPE_GAS|PROP_LIFE_DEC;
 

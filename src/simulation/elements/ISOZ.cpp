@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_ISOZ PT_ISOZ 107
 Element_ISOZ::Element_ISOZ()
 {
@@ -28,7 +29,7 @@ Element_ISOZ::Element_ISOZ()
 
 	Temperature = R_TEMP-2.0f	+273.15f;
 	HeatConduct = 29;
-	Description = "Isotope-Z. Radioactive liquid, decays into photons when touching PHOT or under negative pressure.";
+	Description = TEXT_ELEM_ISOZ_DESC;
 
 	Properties = TYPE_LIQUID|PROP_NEUTPENETRATE;
 

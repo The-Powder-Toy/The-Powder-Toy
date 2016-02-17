@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_RIME PT_RIME 91
 Element_RIME::Element_RIME()
 {
@@ -28,7 +29,7 @@ Element_RIME::Element_RIME()
 
 	Temperature = 243.15f;
 	HeatConduct = 100;
-	Description = "Solid, created when steam cools rapidly and goes through sublimation.";
+	Description = TEXT_ELEM_RIME_DESC;
 
 	Properties = TYPE_SOLID;
 

@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_CLST PT_CLST 155
 Element_CLST::Element_CLST()
 {
@@ -28,7 +29,7 @@ Element_CLST::Element_CLST()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
-	Description = "Clay dust. Produces paste when mixed with water.";
+	Description = TEXT_ELEM_CLST_DESC;
 
 	Properties = TYPE_PART;
 

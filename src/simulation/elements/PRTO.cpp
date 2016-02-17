@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_PRTO PT_PRTO 110
 Element_PRTO::Element_PRTO()
 {
@@ -28,7 +29,7 @@ Element_PRTO::Element_PRTO()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 0;
-	Description = "Portal OUT. Particles come out here. Also has temperature dependent channels. (same as WIFI)";
+	Description = TEXT_ELEM_PRTO_DESC;
 
 	Properties = TYPE_SOLID;
 

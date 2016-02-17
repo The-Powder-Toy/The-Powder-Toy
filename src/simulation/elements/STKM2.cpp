@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_STKM2 PT_STKM2 128
 Element_STKM2::Element_STKM2()
 {
@@ -28,7 +29,7 @@ Element_STKM2::Element_STKM2()
 
 	Temperature = R_TEMP+14.6f+273.15f;
 	HeatConduct = 0;
-	Description = "Second stickman. Don't kill him! Control with wasd.";
+	Description = TEXT_ELEM_STKM2_DESC;
 
 	Properties = PROP_NOCTYPEDRAW;
 

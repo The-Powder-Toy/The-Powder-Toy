@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_NBHL PT_NBHL 150
 Element_NBHL::Element_NBHL()
 {
@@ -28,7 +29,7 @@ Element_NBHL::Element_NBHL()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 186;
-	Description = "Black hole, sucks in particles using gravity. (Requires Newtonian gravity)";
+	Description = TEXT_ELEM_NBHL_DESC;
 
 	Properties = TYPE_SOLID;
 

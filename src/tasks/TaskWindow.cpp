@@ -4,15 +4,44 @@
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/Style.h"
 #include "Task.h"
+#include "Format.h"
+#include "Lang.h"
 
 TaskWindow::TaskWindow(std::string title_, Task * task_, bool closeOnDone):
+	ui::Window(ui::Point(-1, -1), ui::Point(240, 60)),
+	task(task_),
+	title(format::StringToWString(title_)),
+	progress(0),
+	done(false),
+	closeOnDone(closeOnDone),
+	progressStatus(L"0%")
+{
+
+	ui::Label * tempLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 15), title);
+	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	tempLabel->SetTextColour(style::Colour::WarningTitle);
+	AddComponent(tempLabel);
+
+	statusLabel = new ui::Label(ui::Point(4, 23), ui::Point(Size.X-8, 15), "");
+	statusLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	statusLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	AddComponent(statusLabel);
+
+	ui::Engine::Ref().ShowWindow(this);
+
+	task->AddTaskListener(this);
+	task->Start();
+}
+
+TaskWindow::TaskWindow(std::wstring title_, Task * task_, bool closeOnDone):
 	ui::Window(ui::Point(-1, -1), ui::Point(240, 60)),
 	task(task_),
 	title(title_),
 	progress(0),
 	done(false),
 	closeOnDone(closeOnDone),
-	progressStatus("0%")
+	progressStatus(L"0%")
 {
 
 	ui::Label * tempLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 15), title);
@@ -39,7 +68,7 @@ void TaskWindow::NotifyStatus(Task * task)
 
 void TaskWindow::NotifyError(Task * task)
 {
-	new ErrorMessage("Error", task->GetError());
+	new ErrorMessage(TEXT_CONTROL_TASKWIN_ERR_TITLE, format::StringToWString(task->GetError()));
 	done = true;
 }
 
@@ -62,14 +91,14 @@ void TaskWindow::Exit()
 void TaskWindow::NotifyProgress(Task * task)
 {
 	progress = task->GetProgress();
-	std::stringstream pStream;
+	std::wstringstream pStream;
 	if(progress>-1)
 	{
-		pStream << progress << "%";
+		pStream << progress << L"%";
 	}
 	else
 	{
-		pStream << "Please wait...";
+		pStream << TEXT_CONTROL_TASKWIN_PROG_WAIT;
 	}
 	progressStatus = pStream.str();
 }

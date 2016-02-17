@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_LRBD PT_LRBD 42
 Element_LRBD::Element_LRBD()
 {
@@ -28,7 +29,7 @@ Element_LRBD::Element_LRBD()
 
 	Temperature = R_TEMP+45.0f+273.15f;
 	HeatConduct = 170;
-	Description = "Liquid Rubidium.";
+	Description = TEXT_ELEM_LRBD_DESC;
 
 	Properties = TYPE_LIQUID|PROP_CONDUCTS|PROP_LIFE_DEC;
 

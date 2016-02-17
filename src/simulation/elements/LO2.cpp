@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_LO2 PT_LO2 60
 Element_LO2::Element_LO2()
 {
@@ -28,7 +29,7 @@ Element_LO2::Element_LO2()
 
 	Temperature = 80.0f;
 	HeatConduct = 70;
-	Description = "Liquid Oxygen. Very cold. Reacts with fire.";
+	Description = TEXT_ELEM_LO2_DESC;
 
 	Properties = TYPE_LIQUID;
 

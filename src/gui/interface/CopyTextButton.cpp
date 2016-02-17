@@ -1,6 +1,8 @@
 #include "CopyTextButton.h"
 #include "Colour.h"
 #include "gui/Style.h"
+#include "Format.h"
+#include "Lang.h"
 
 namespace ui
 {
@@ -16,12 +18,24 @@ namespace ui
 		Appearance.BackgroundActive = style::Colour::InactiveBackground;
 	}
 
+	CopyTextButton::CopyTextButton(Point position, Point size, std::wstring buttonText, Label *copyTextLabel_):
+		Button(position, size, buttonText)
+	{
+		copyTextLabel = copyTextLabel_;
+		Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
+		Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+		Appearance.TextInactive = ui::Colour(150, 150, 150);
+		Appearance.TextActive = ui::Colour(230, 255, 230);
+		Appearance.BorderActive = ui::Colour(230, 255, 230);
+		Appearance.BackgroundActive = style::Colour::InactiveBackground;
+	}
+
 	void CopyTextButton::OnMouseClick(int x, int y, unsigned int button)
 	{
 		ui::Button::OnMouseClick(x, y, button);
-		ClipboardPush(ButtonText);
+		ClipboardPush(format::WStringToString(ButtonText));
 
-		copyTextLabel->SetText("Copied!");
+		copyTextLabel->SetText(TEXT_CONTROL_COPYBTN_TIP);
 
 		Appearance.TextInactive = ui::Colour(180, 230, 180);
 		Appearance.TextHover = ui::Colour(180, 230, 180);

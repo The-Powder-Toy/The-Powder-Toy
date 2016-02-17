@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_VRSS PT_VRSS 175
 Element_VRSS::Element_VRSS()
 {
@@ -28,7 +29,7 @@ Element_VRSS::Element_VRSS()
 
 	Temperature = R_TEMP+ 273.15f;
 	HeatConduct = 251;
-	Description = "Solid Virus. Turns everything it touches into virus.";
+	Description = TEXT_ELEM_VRSS_DESC;
 
 	Properties = TYPE_SOLID|PROP_DEADLY;
 

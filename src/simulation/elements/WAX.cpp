@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_WAX PT_WAX 33
 Element_WAX::Element_WAX()
 {
@@ -28,7 +29,7 @@ Element_WAX::Element_WAX()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 44;
-	Description = "Wax. Melts at moderately high temperatures.";
+	Description = TEXT_ELEM_WAX_DESC;
 
 	Properties = TYPE_SOLID;
 

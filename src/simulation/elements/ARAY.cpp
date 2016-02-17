@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_ARAY PT_ARAY 126
 Element_ARAY::Element_ARAY()
 {
@@ -28,7 +29,7 @@ Element_ARAY::Element_ARAY()
 
 	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 0;
-	Description = "Ray Emitter. Rays create points when they collide.";
+	Description = TEXT_ELEM_ARAY_DESC;
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 

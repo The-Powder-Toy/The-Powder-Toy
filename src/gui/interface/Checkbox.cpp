@@ -1,8 +1,20 @@
 #include "Checkbox.h"
+#include "Format.h"
 
 using namespace ui;
 
-Checkbox::Checkbox(ui::Point position, ui::Point size, std::string text, std::string toolTip):
+Checkbox::Checkbox(ui::Point position, ui::Point size, std::string text, std::wstring toolTip):
+	Component(position, size),
+	text(format::StringToWString(text)),
+	toolTip(toolTip),
+	checked(false),
+	isMouseOver(false),
+	actionCallback(NULL)
+{
+
+}
+
+Checkbox::Checkbox(ui::Point position, ui::Point size, std::wstring text, std::wstring toolTip):
 	Component(position, size),
 	text(text),
 	toolTip(toolTip),
@@ -15,10 +27,20 @@ Checkbox::Checkbox(ui::Point position, ui::Point size, std::string text, std::st
 
 void Checkbox::SetText(std::string text)
 {
+	this->text = format::StringToWString(text);
+}
+
+void Checkbox::SetText(std::wstring text)
+{
 	this->text = text;
 }
 
 std::string Checkbox::GetText()
+{
+	return format::WStringToString(text);
+}
+
+std::wstring Checkbox::GetWText()
 {
 	return text;
 }

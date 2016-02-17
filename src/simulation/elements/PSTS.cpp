@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_PSTS PT_PSTS 112
 Element_PSTS::Element_PSTS()
 {
@@ -28,7 +29,7 @@ Element_PSTS::Element_PSTS()
 
 	Temperature = R_TEMP-2.0f	+273.15f;
 	HeatConduct = 29;
-	Description = "Solid form of PSTE.";
+	Description = TEXT_ELEM_PSTS_DESC;
 
 	Properties = TYPE_SOLID;
 

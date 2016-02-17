@@ -1,7 +1,7 @@
 #include "ToolButton.h"
 #include "gui/interface/Keys.h"
 
-ToolButton::ToolButton(ui::Point position, ui::Point size, std::string text_, std::string toolTip):
+ToolButton::ToolButton(ui::Point position, ui::Point size, std::string text_, std::wstring toolTip):
 	ui::Button(position, size, text_, toolTip)
 {
 	SetSelectionState(-1);

@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_FIGH PT_FIGH 158
 Element_FIGH::Element_FIGH()
 {
@@ -28,7 +29,7 @@ Element_FIGH::Element_FIGH()
 
 	Temperature = R_TEMP+14.6f+273.15f;
 	HeatConduct = 0;
-	Description = "Fighter. Tries to kill stickmen. You must first give it an element to kill him with.";
+	Description = TEXT_ELEM_FIGH_DESC;
 
 	Properties = PROP_NOCTYPEDRAW;
 

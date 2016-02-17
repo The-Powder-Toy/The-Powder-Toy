@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_ICEI PT_ICEI 13
 Element_ICEI::Element_ICEI()
 {
@@ -28,7 +29,7 @@ Element_ICEI::Element_ICEI()
 
 	Temperature = R_TEMP-50.0f+273.15f;
 	HeatConduct = 46;
-	Description = "Crushes under pressure. Cools down air.";
+	Description = TEXT_ELEM_ICEI_DESC;
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC|PROP_NEUTPASS;
 

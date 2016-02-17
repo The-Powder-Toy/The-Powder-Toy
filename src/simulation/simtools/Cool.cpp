@@ -1,11 +1,12 @@
 #include "ToolClasses.h"
+#include "Lang.h"
 //#TPT-Directive ToolClass Tool_Cool TOOL_COOL 1
 Tool_Cool::Tool_Cool()
 {
 	Identifier = "DEFAULT_TOOL_COOL";
 	Name = "COOL";
 	Colour = PIXPACK(0x00DDFF);
-	Description = "Cools the targeted element.";
+	Description = TEXT_TOOL_COOL_DESC;
 }
 
 int Tool_Cool::Perform(Simulation * sim, Particle * cpart, int x, int y, float strength)

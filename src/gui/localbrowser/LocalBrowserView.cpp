@@ -15,15 +15,17 @@
 #include "LocalBrowserModel.h"
 #include "LocalBrowserModelException.h"
 
+#include "Lang.h"
+
 LocalBrowserView::LocalBrowserView():
 	ui::Window(ui::Point(0, 0), ui::Point(WINDOWW, WINDOWH)),
 	changed(false),
 	lastChanged(0),
 	pageCount(0)
 {
-	nextButton = new ui::Button(ui::Point(WINDOWW-52, WINDOWH-18), ui::Point(50, 16), "Next \x95");
-	previousButton = new ui::Button(ui::Point(2, WINDOWH-18), ui::Point(50, 16), "\x96 Prev");
-	undeleteButton = new ui::Button(ui::Point(WINDOWW-122, WINDOWH-18), ui::Point(60, 16), "Rescan");
+	nextButton = new ui::Button(ui::Point(WINDOWW-52, WINDOWH-18), ui::Point(50, 16), TEXT_GUI_LOCAL_BROWSE_BTN_NEXT);
+	previousButton = new ui::Button(ui::Point(2, WINDOWH-18), ui::Point(50, 16), TEXT_GUI_LOCAL_BROWSE_BTN_PREV);
+	undeleteButton = new ui::Button(ui::Point(WINDOWW-122, WINDOWH-18), ui::Point(60, 16), TEXT_GUI_LOCAL_BROWSE_BTN_SCAN);
 	AddComponent(nextButton);
 	AddComponent(previousButton);
 	AddComponent(undeleteButton);
@@ -41,7 +43,7 @@ LocalBrowserView::LocalBrowserView():
 	pageTextbox = new ui::Textbox(ui::Point(283, WINDOWH-18), ui::Point(41, 16), "");
 	pageTextbox->SetActionCallback(new PageNumAction(this));
 	pageTextbox->SetInputType(ui::Textbox::Number);
-	pageLabel = new ui::Label(ui::Point(0, WINDOWH-18), ui::Point(30, 16), "Page"); //page [TEXTBOX] of y
+	pageLabel = new ui::Label(ui::Point(0, WINDOWH-18), ui::Point(30, 16), TEXT_GUI_LOCAL_BROWSE_LABEL_PAGE); //page [TEXTBOX] of y
 	pageLabel->Appearance.HorizontalAlign = ui::Appearance::AlignRight;
 	pageCountLabel = new ui::Label(ui::Point(WINDOWW/2+6, WINDOWH-18), ui::Point(50, 16), "");
 	pageCountLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
@@ -100,7 +102,7 @@ LocalBrowserView::LocalBrowserView():
 		}
 	};
 
-	removeSelected = new ui::Button(ui::Point(((WINDOWW-100)/2), WINDOWH-18), ui::Point(100, 16), "Delete");
+	removeSelected = new ui::Button(ui::Point(((WINDOWW-100)/2), WINDOWH-18), ui::Point(100, 16), TEXT_GUI_LOCAL_BROWSE_BTN_DEL);
 	removeSelected->Visible = false;
 	removeSelected->SetActionCallback(new RemoveSelectedAction(this));
 	AddComponent(removeSelected);

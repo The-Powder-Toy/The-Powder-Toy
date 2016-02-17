@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_VIRS PT_VIRS 174
 Element_VIRS::Element_VIRS()
 {
@@ -28,7 +29,7 @@ Element_VIRS::Element_VIRS()
 
 	Temperature = 72.0f	+ 273.15f;
 	HeatConduct = 251;
-	Description = "Virus. Turns everything it touches into virus.";
+	Description = TEXT_ELEM_VIRS_DESC;
 
 	Properties = TYPE_LIQUID|PROP_DEADLY;
 

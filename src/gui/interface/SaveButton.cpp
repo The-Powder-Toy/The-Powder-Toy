@@ -10,6 +10,7 @@
 #include "Format.h"
 #include "ContextMenu.h"
 #include "Keys.h"
+#include "Lang.h"
 
 namespace ui {
 
@@ -186,7 +187,7 @@ void SaveButton::Draw(const Point& screenPos)
 			g->draw_image(thumbnail, screenPos.X+(Size.X-thumbBoxSize.X)/2, screenPos.Y+(Size.Y-21-thumbBoxSize.Y)/2, 255);
 	}
 	else if (file && !file->GetGameSave())
-		g->drawtext(screenPos.X+(Size.X-Graphics::textwidth("Error loading save"))/2, screenPos.Y+(Size.Y-28)/2, "Error loading save", 180, 180, 180, 255);
+		g->drawtext(screenPos.X+(Size.X-Graphics::textwidth(TEXT_CONTROL_SAVEBTN_LOAD_ERR))/2, screenPos.Y+(Size.Y-28)/2, TEXT_CONTROL_SAVEBTN_LOAD_ERR, 180, 180, 180, 255);
 	if(save)
 	{
 		if(save->id)
@@ -307,17 +308,17 @@ void SaveButton::AddContextMenu(int menuType)
 	if (menuType == 0) //Save browser
 	{
 		menu = new ContextMenu(this);
-		menu->AddItem(ContextMenuItem("Open", 0, true));
-		menu->AddItem(ContextMenuItem("Select", 1, true));
-		menu->AddItem(ContextMenuItem("View History", 2, true));
-		menu->AddItem(ContextMenuItem("More by this user", 3, true));
+		menu->AddItem(ContextMenuItem(TEXT_CONTROL_SAVEBTN_MENU_OPEN, 0, true));
+		menu->AddItem(ContextMenuItem(TEXT_CONTROL_SAVEBTN_MENU_SEL, 1, true));
+		menu->AddItem(ContextMenuItem(TEXT_CONTROL_SAVEBTN_MENU_HIS, 2, true));
+		menu->AddItem(ContextMenuItem(TEXT_CONTROL_SAVEBTN_MENU_USER, 3, true));
 	}
 	else if (menuType == 1) //Local save browser
 	{
 		menu = new ContextMenu(this);
-		menu->AddItem(ContextMenuItem("Open", 0, true));
-		menu->AddItem(ContextMenuItem("Rename", 2, true));
-		menu->AddItem(ContextMenuItem("Delete", 3, true));
+		menu->AddItem(ContextMenuItem(TEXT_CONTROL_SAVEBTN_MENU_LOCAL_OPEN, 0, true));
+		menu->AddItem(ContextMenuItem(TEXT_CONTROL_SAVEBTN_MENU_LOCAL_RENAME, 2, true));
+		menu->AddItem(ContextMenuItem(TEXT_CONTROL_SAVEBTN_MENU_LOCAL_DEL, 3, true));
 	}
 }
 
@@ -408,9 +409,9 @@ void SaveButton::DoSelection()
 	if(menu)
 	{
 		if(selected)
-			menu->SetItem(1, "Deselect");
+			menu->SetItem(1, TEXT_CONTROL_SAVEBTN_MENU_DESEL);
 		else
-			menu->SetItem(1, "Select");
+			menu->SetItem(1, TEXT_CONTROL_SAVEBTN_MENU_SEL);
 	}
 	if(selectable && actionCallback)
 		actionCallback->SelectedCallback(this);

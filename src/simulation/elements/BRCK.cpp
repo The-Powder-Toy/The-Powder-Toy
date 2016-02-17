@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_BRCK PT_BRCK 67
 Element_BRCK::Element_BRCK()
 {
@@ -28,7 +29,7 @@ Element_BRCK::Element_BRCK()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "Brick, breakable building material.";
+	Description = TEXT_ELEM_BRCK_DESC;
 
 	Properties = TYPE_SOLID|PROP_HOT_GLOW;
 

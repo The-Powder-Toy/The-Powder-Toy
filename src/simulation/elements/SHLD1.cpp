@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_SHLD1 PT_SHLD1 119
 Element_SHLD1::Element_SHLD1()
 {
@@ -28,7 +29,7 @@ Element_SHLD1::Element_SHLD1()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 0;
-	Description = "Shield, spark it to grow.";
+	Description = TEXT_ELEM_SHLD1_DESC;
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 

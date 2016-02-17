@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_THDR PT_THDR 48
 Element_THDR::Element_THDR()
 {
@@ -28,7 +29,7 @@ Element_THDR::Element_THDR()
 
 	Temperature = 9000.0f		+273.15f;
 	HeatConduct = 1;
-	Description = "Lightning! Very hot, inflicts damage upon most materials, and transfers current to metals.";
+	Description = TEXT_ELEM_THDR_DESC;
 
 	Properties = TYPE_ENERGY;
 

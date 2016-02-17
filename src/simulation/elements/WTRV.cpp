@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_WTRV PT_WTRV 23
 Element_WTRV::Element_WTRV()
 {
@@ -28,7 +29,7 @@ Element_WTRV::Element_WTRV()
 
 	Temperature = R_TEMP+100.0f+273.15f;
 	HeatConduct = 48;
-	Description = "Steam. Produced from hot water.";
+	Description = TEXT_ELEM_WTRV_DESC;
 
 	Properties = TYPE_GAS;
 

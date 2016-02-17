@@ -1,6 +1,8 @@
 #ifdef LUACONSOLE
 
 #include <iostream>
+#include <string>
+#include "Format.h"
 #include "LuaButton.h"
 #include "LuaScriptInterface.h"
 #include "gui/interface/Button.h"
@@ -27,7 +29,8 @@ LuaButton::LuaButton(lua_State * l) :
 	int sizeX = luaL_optinteger(l, 3, 10);
 	int sizeY = luaL_optinteger(l, 4, 10);
 	std::string text = luaL_optstring(l, 5, "");
-	std::string toolTip = luaL_optstring(l, 6, "");
+	std::string toolTipstr = luaL_optstring(l, 6, "");
+	std::wstring toolTip = format::StringToWString(toolTipstr);
 
 	button = new ui::Button(ui::Point(posX, posY), ui::Point(sizeX, sizeY), text, toolTip);
 	component = button;

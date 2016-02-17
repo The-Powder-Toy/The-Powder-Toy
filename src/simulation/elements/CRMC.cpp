@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_CRMC PT_CRMC 179
 Element_CRMC::Element_CRMC()
 {
@@ -28,7 +29,7 @@ Element_CRMC::Element_CRMC()
 
 	Temperature = R_TEMP+273.15f;
 	HeatConduct = 35;
-	Description = "Ceramic. Gets stronger under pressure.";
+	Description = TEXT_ELEM_CRMC_DESC;
 
 	Properties = TYPE_SOLID | PROP_NEUTPASS;
 

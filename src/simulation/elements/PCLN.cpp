@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_PCLN PT_PCLN 74
 Element_PCLN::Element_PCLN()
 {
@@ -28,7 +29,7 @@ Element_PCLN::Element_PCLN()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "Powered clone. When activated, duplicates any particles it touches.";
+	Description = TEXT_ELEM_PCLN_DESC;
 
 	Properties = TYPE_SOLID|PROP_NOCTYPEDRAW;
 

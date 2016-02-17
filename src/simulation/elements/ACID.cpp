@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_ACID PT_ACID 21
 Element_ACID::Element_ACID()
 {
@@ -28,7 +29,7 @@ Element_ACID::Element_ACID()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 34;
-	Description = "Dissolves almost everything.";
+	Description = TEXT_ELEM_ACID_DESC;
 
 	Properties = TYPE_LIQUID|PROP_DEADLY;
 

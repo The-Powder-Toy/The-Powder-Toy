@@ -15,6 +15,8 @@
 #include "gui/dialogues/TextPrompt.h"
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/dialogues/ErrorMessage.h"
+#include "Format.h"
+#include "Lang.h"
 
 class Thumbnail;
 
@@ -123,13 +125,13 @@ FileBrowserActivity::FileBrowserActivity(std::string directory, FileSelectedCall
 	totalFiles(0)
 {
 
-	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 18), "Save Browser");
+	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 18), TEXT_GUI_SAVE_BROWSE_TITLE);
 	titleLabel->SetTextColour(style::Colour::WarningTitle);
 	titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	titleLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(titleLabel);
 
-	ui::Textbox * textField = new ui::Textbox(ui::Point(8, 25), ui::Point(Size.X-16, 16), "", "[search]");
+	ui::Textbox * textField = new ui::Textbox(ui::Point(8, 25), ui::Point(Size.X-16, 16), L"", TEXT_GUI_SAVE_BROWSE_TBOX_HOLDER);
 	textField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	textField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	textField->SetActionCallback(new SearchAction(this));
@@ -139,10 +141,10 @@ FileBrowserActivity::FileBrowserActivity(std::string directory, FileSelectedCall
 	itemList = new ui::ScrollPanel(ui::Point(4, 45), ui::Point(Size.X-8, Size.Y-53));
 	AddComponent(itemList);
 
-	progressBar = new ui::ProgressBar(ui::Point((Size.X-200)/2, 45+(Size.Y-66)/2), ui::Point(200, 17));
+	progressBar = new ui::ProgressBar(ui::Point((Size.X-200)/2, 45+(Size.Y-66)/2), ui::Point(200, 17), 0, L"");
 	AddComponent(progressBar);
 
-	infoText = new ui::Label(ui::Point((Size.X-200)/2, 45+(Size.Y-66)/2), ui::Point(200, 17), "No saves found");
+	infoText = new ui::Label(ui::Point((Size.X-200)/2, 45+(Size.Y-66)/2), ui::Point(200, 17), TEXT_GUI_SAVE_BROWSE_INFO_NOSAVE);
 	AddComponent(infoText);
 
 	filesX = 4;
@@ -178,8 +180,8 @@ void FileBrowserActivity::SelectSave(SaveFile * file)
 
 void FileBrowserActivity::DeleteSave(SaveFile * file)
 {
-	std::string deleteMessage = "Are you sure you want to delete " + file->GetDisplayName() + ".cps?";
-	if (ConfirmPrompt::Blocking("Delete Save", deleteMessage))
+	std::wstring deleteMessage = TEXT_GUI_SAVE_BROWSE_CONF_DELETE_MSG1 + format::StringToWString(file->GetDisplayName()) + TEXT_GUI_SAVE_BROWSE_CONF_DELETE_MSG2;
+	if (ConfirmPrompt::Blocking(TEXT_GUI_SAVE_BROWSE_CONF_DELETE_TITLE, deleteMessage))
 	{
 		remove(file->GetName().c_str());
 		loadDirectory(directory, "");
@@ -188,18 +190,18 @@ void FileBrowserActivity::DeleteSave(SaveFile * file)
 
 void FileBrowserActivity::RenameSave(SaveFile * file)
 {
-	std::string newName = TextPrompt::Blocking("Rename", "Change save name", file->GetDisplayName(), "", 0);
+	std::string newName = TextPrompt::Blocking(TEXT_GUI_SAVE_BROWSE_PROM_RENAME_TITLE, TEXT_GUI_SAVE_BROWSE_PROM_RENAME_MSG, format::StringToWString(file->GetDisplayName()), L"", 0);
 	if (newName.length())
 	{
 		newName = directory + PATH_SEP + newName + ".cps";
 		int ret = rename(file->GetName().c_str(), newName.c_str());
 		if (ret)
-			ErrorMessage::Blocking("Error", "Could not rename file");
+			ErrorMessage::Blocking(TEXT_GUI_SAVE_BROWSE_PROM_RENAME_FILE_ERR_TITLE, TEXT_GUI_SAVE_BROWSE_PROM_RENAME_FILE_ERR_MSG);
 		else
 			loadDirectory(directory, "");
 	}
 	else
-		ErrorMessage::Blocking("Error", "No save name given");
+		ErrorMessage::Blocking(TEXT_GUI_SAVE_BROWSE_PROM_RENAME_NAME_ERR_TITLE, TEXT_GUI_SAVE_BROWSE_PROM_RENAME_NAME_ERR_MSG);
 }
 
 void FileBrowserActivity::loadDirectory(std::string directory, std::string search)
@@ -225,7 +227,7 @@ void FileBrowserActivity::loadDirectory(std::string directory, std::string searc
 	infoText->Visible = false;
 	progressBar->Visible = true;
 	progressBar->SetProgress(-1);
-	progressBar->SetStatus("Loading files");
+	progressBar->SetStatus(TEXT_GUI_SAVE_BROWSE_PROGBAR_LOAD);
 	loadFiles = new LoadFilesTask(directory, search);
 	loadFiles->AddTaskListener(this);
 	loadFiles->Start();
@@ -302,7 +304,7 @@ void FileBrowserActivity::OnTick(float dt)
 		saveButton->AddContextMenu(1);
 		saveButton->Tick(dt);
 		saveButton->SetActionCallback(new SaveSelectedAction(this));
-		progressBar->SetStatus("Rendering thumbnails");
+		progressBar->SetStatus(TEXT_GUI_SAVE_BROWSE_PROGBAR_RENDER);
 		progressBar->SetProgress((float(totalFiles-files.size())/float(totalFiles))*100.0f);
 		componentsQueue.push_back(saveButton);
 		fileX++;

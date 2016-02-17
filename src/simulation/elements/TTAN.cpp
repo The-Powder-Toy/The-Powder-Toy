@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 #include "simulation/Air.h"
 //#TPT-Directive ElementClass Element_TTAN PT_TTAN 144
 Element_TTAN::Element_TTAN()
@@ -29,7 +30,7 @@ Element_TTAN::Element_TTAN()
 
 	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 251;
-	Description = "Titanium. Higher melting temperature than most other metals, blocks all air pressure.";
+	Description = TEXT_ELEM_TTAN_DESC;
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_HOT_GLOW|PROP_LIFE_DEC;
 

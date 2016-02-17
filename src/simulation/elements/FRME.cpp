@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_FRME PT_FRME 169
 Element_FRME::Element_FRME()
 {
@@ -28,7 +29,7 @@ Element_FRME::Element_FRME()
 
 	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 0;
-	Description = "Frame, can be used with pistons to push many particles.";
+	Description = TEXT_ELEM_FRME_DESC;
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 

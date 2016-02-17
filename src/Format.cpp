@@ -1,5 +1,5 @@
-
 #include <ctime>
+#include <boost/locale/encoding_utf.hpp>
 #include <string>
 #include <stdexcept>
 #include <iostream>
@@ -8,6 +8,8 @@
 #include <stdio.h>
 #include "Format.h"
 #include "graphics/Graphics.h"
+
+using boost::locale::conv::utf_to_utf;
 
 std::string format::URLEncode(std::string source)
 {
@@ -126,6 +128,26 @@ std::string format::CleanString(std::string dirtyString, bool ascii, bool color,
 std::string format::CleanString(const char * dirtyData, bool ascii, bool color, bool newlines, bool numeric)
 {
 	return CleanString(std::string(dirtyData), ascii, color, newlines, numeric);
+}
+
+std::string format::WStringToString(std::wstring wcs)
+{
+	return utf_to_utf<char>(wcs.c_str(), wcs.c_str() + wcs.size());
+}
+
+std::string format::WStringToString(const wchar_t * wcs)
+{
+	return WStringToString(std::wstring(wcs));
+}
+
+std::wstring format::StringToWString(std::string str)
+{
+	return utf_to_utf<wchar_t>(str.c_str(), str.c_str() + str.size());
+}
+
+std::wstring format::StringToWString(const char * str)
+{
+	return StringToWString(std::string(str));
 }
 
 std::vector<char> format::VideoBufferToPTI(const VideoBuffer & vidBuf)

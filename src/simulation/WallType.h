@@ -10,9 +10,9 @@ struct wall_type
 	pixel eglow; // if emap set, add this to fire glow
 	int drawstyle;
 	VideoBuffer * (*textureGen)(int, int, int);
-	const char *name;
+	const wchar_t *name;
 	const char *identifier;
-	const char *descs;
+	const wchar_t *descs;
 };
 
 #endif

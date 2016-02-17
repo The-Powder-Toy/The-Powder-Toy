@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_GRVT PT_GRVT 177
 Element_GRVT::Element_GRVT()
 {
@@ -28,7 +29,7 @@ Element_GRVT::Element_GRVT()
 
 	Temperature = R_TEMP+273.15f;
 	HeatConduct = 61;
-	Description = "Gravitons. Create Newtonian Gravity.";
+	Description = TEXT_ELEM_GRVT_DESC;
 
 	Properties = TYPE_ENERGY|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
 

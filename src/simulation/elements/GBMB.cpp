@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_GBMB PT_GBMB 157
 Element_GBMB::Element_GBMB()
 {
@@ -28,7 +29,7 @@ Element_GBMB::Element_GBMB()
 
 	Temperature = R_TEMP-2.0f	+273.15f;
 	HeatConduct = 29;
-	Description = "Gravity bomb. Sticks to the first object it touches then produces a strong gravity push.";
+	Description = TEXT_ELEM_GBMB_DESC;
 
 	Properties = TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
 

@@ -28,7 +28,7 @@ Element::Element():
 
 	Temperature(273.15f),
 	HeatConduct(128),
-	Description("No description"),
+	Description(L"No description"),
 
 	Properties(TYPE_SOLID),
 

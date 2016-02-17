@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_GAS PT_GAS 10
 Element_GAS::Element_GAS()
 {
@@ -28,7 +29,7 @@ Element_GAS::Element_GAS()
 
 	Temperature = R_TEMP+2.0f	+273.15f;
 	HeatConduct = 42;
-	Description = "Diffuses quickly and flammable. Liquefies into OIL under pressure.";
+	Description = TEXT_ELEM_GAS_DESC;
 
 	Properties = TYPE_GAS | PROP_NEUTPASS;
 

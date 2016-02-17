@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_BMTL PT_BMTL 29
 Element_BMTL::Element_BMTL()
 {
@@ -28,7 +29,7 @@ Element_BMTL::Element_BMTL()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "Breakable metal. Common conductive building material, can melt and break under pressure.";
+	Description = TEXT_ELEM_BMTL_DESC;
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_HOT_GLOW;
 

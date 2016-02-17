@@ -2,13 +2,15 @@
 #define NOTIFICATION_H_
 
 #include <string>
+#include "Format.h"
 
 class Notification
 {
 public:
-	Notification(std::string message) : Message(message) {}
+	Notification(std::string message) : Message(format::StringToWString(message)) {}
+	Notification(std::wstring message) : Message(message) {}
 	virtual ~Notification() {};
-	std::string Message;
+	std::wstring Message;
 
 	virtual void Action() { }
 };

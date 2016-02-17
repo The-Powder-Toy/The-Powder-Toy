@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_PPIP PT_PPIP 161
 Element_PPIP::Element_PPIP()
 {
@@ -28,7 +29,7 @@ Element_PPIP::Element_PPIP()
 
 	Temperature = 273.15f;
 	HeatConduct = 0;
-	Description = "Powered version of PIPE, use PSCN/NSCN to Activate/Deactivate.";
+	Description = TEXT_ELEM_PPIP_DESC;
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 

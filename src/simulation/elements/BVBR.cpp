@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_BVBR PT_BVBR 166
 Element_BVBR::Element_BVBR()
 {
@@ -28,7 +29,7 @@ Element_BVBR::Element_BVBR()
 
 	Temperature = 273.15f;
 	HeatConduct = 164;
-	Description = "Broken vibranium.";
+	Description = TEXT_ELEM_BVBR_DESC;
 
 	Properties = TYPE_PART|PROP_LIFE_DEC;
 

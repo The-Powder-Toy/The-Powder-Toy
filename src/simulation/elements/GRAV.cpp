@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_GRAV PT_GRAV 102
 Element_GRAV::Element_GRAV()
 {
@@ -28,7 +29,7 @@ Element_GRAV::Element_GRAV()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
-	Description = "Very light dust. Changes colour based on velocity.";
+	Description = TEXT_ELEM_GRAV_DESC;
 
 	Properties = TYPE_PART;
 

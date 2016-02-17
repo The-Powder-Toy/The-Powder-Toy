@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_H2 PT_H2 148
 Element_H2::Element_H2()
 {
@@ -28,7 +29,7 @@ Element_H2::Element_H2()
 
 	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 251;
-	Description = "Hydrogen. Combusts with OXYG to make WATR. Undergoes fusion at high temperature and pressure.";
+	Description = TEXT_ELEM_H2_DESC;
 
 	Properties = TYPE_GAS;
 

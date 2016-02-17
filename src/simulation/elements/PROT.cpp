@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_PROT PT_PROT 173
 Element_PROT::Element_PROT()
 {
@@ -28,7 +29,7 @@ Element_PROT::Element_PROT()
 
 	Temperature = R_TEMP+273.15f;
 	HeatConduct = 61;
-	Description = "Protons. Transfer heat to materials, and removes sparks.";
+	Description = TEXT_ELEM_PROT_DESC;
 
 	Properties = TYPE_ENERGY;
 

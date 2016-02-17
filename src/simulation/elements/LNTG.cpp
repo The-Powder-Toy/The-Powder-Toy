@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_LNTG PT_LNTG 37
 Element_LNTG::Element_LNTG()
 {
@@ -28,7 +29,7 @@ Element_LNTG::Element_LNTG()
 
 	Temperature = 70.15f;
 	HeatConduct = 70;
-	Description = "Liquid Nitrogen. Very cold, disappears whenever it touches anything warmer.";
+	Description = TEXT_ELEM_LNTG_DESC;
 
 	Properties = TYPE_LIQUID;
 

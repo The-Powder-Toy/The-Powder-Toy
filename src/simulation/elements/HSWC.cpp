@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_HSWC PT_HSWC 75
 Element_HSWC::Element_HSWC()
 {
@@ -28,7 +29,7 @@ Element_HSWC::Element_HSWC()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "Heat switch. Conducts heat only when activated.";
+	Description = TEXT_ELEM_HSWC_DESC;
 
 	Properties = TYPE_SOLID;
 

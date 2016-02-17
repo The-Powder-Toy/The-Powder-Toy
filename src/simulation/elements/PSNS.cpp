@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 //#TPT-Directive ElementClass Element_PSNS PT_PSNS 172
 Element_PSNS::Element_PSNS()
 {
@@ -28,7 +29,7 @@ Element_PSNS::Element_PSNS()
 
 	Temperature = 277.15f;
 	HeatConduct = 0;
-	Description = "Pressure sensor, creates a spark when the pressure is greater than its temperature.";
+	Description = TEXT_ELEM_PSNS_DESC;
 
 	Properties = TYPE_SOLID;
 

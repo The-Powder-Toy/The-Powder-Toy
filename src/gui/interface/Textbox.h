@@ -23,12 +23,16 @@ public:
 	bool ReadOnly;
 	enum ValidInput { All, Multiline, Numeric, Number }; // Numeric doesn't delete trailing 0's
 	Textbox(Point position, Point size, std::string textboxText = "", std::string textboxPlaceholder = "");
+	Textbox(Point position, Point size, std::wstring textboxText = L"", std::wstring textboxPlaceholder = L"");
 	virtual ~Textbox();
 
 	virtual void SetText(std::string text);
+	virtual void SetText(std::wstring text);
 	virtual std::string GetText();
+	virtual std::wstring GetWText();
 
 	virtual void SetPlaceholder(std::string text);
+	virtual void SetPlaceholder(std::wstring text);
 
 	void SetBorder(bool border) { this->border = border; }
 	void SetHidden(bool hidden);
@@ -66,8 +70,8 @@ protected:
 	bool masked, border;
 	int cursor, cursorPositionX, cursorPositionY;
 	TextboxAction *actionCallback;
-	std::string backingText;
-	std::string placeHolder;
+	std::wstring backingText;
+	std::wstring placeHolder;
 
 	virtual void cutSelection();
 	virtual void pasteIntoSelection();

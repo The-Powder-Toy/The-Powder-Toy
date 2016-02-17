@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 
 //#TPT-Directive ElementClass Element_LIGH PT_LIGH 87
 Element_LIGH::Element_LIGH()
@@ -29,7 +30,7 @@ Element_LIGH::Element_LIGH()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 0;
-	Description = "Lightning. Change the brush size to set the size of the lightning.";
+	Description = TEXT_ELEM_LIGH_DESC;
 
 	Properties = TYPE_SOLID;
 

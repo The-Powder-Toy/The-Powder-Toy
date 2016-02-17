@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include "Lang.h"
 
 bool Element_GOL_colourInit = false;
 pixel Element_GOL_colour[NGOL];
@@ -32,7 +33,7 @@ Element_LIFE::Element_LIFE()
 
 	Temperature = 9000.0f;
 	HeatConduct = 40;
-	Description = "Game Of Life! B3/S23";
+	Description = TEXT_ELEM_LIFE_DESC;
 
 	Properties = TYPE_SOLID|PROP_LIFE;
 
