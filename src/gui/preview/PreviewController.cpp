@@ -8,6 +8,8 @@
 #include "gui/login/LoginController.h"
 #include "Controller.h"
 #include "Platform.h"
+#include "Format.h"
+#include "Lang.h"
 
 PreviewController::PreviewController(int saveID, int saveDate, bool instant, ControllerCallback * callback):
 	saveId(saveID),
@@ -124,10 +126,10 @@ void PreviewController::Report(std::string message)
 	if(Client::Ref().ReportSave(saveId, message) == RequestOkay)
 	{
 		Exit();
-		new ErrorMessage("Information", "Report submitted"); //TODO: InfoMessage
+		new ErrorMessage(TEXT_GUI_SAVE_PRE_REPORT_INFO_TITLE, TEXT_GUI_SAVE_PRE_REPORT_INFO_MSG); //TODO: InfoMessage
 	}
 	else
-		new ErrorMessage("Error", "Unable file report: " + Client::Ref().GetLastError());
+		new ErrorMessage(TEXT_GUI_SAVE_PRE_REPORT_ERR_TITLE, TEXT_GUI_SAVE_PRE_REPORT_ERR_MSG + format::StringToWString(Client::Ref().GetLastError()));
 }
 
 void PreviewController::FavouriteSave()
@@ -143,7 +145,7 @@ void PreviewController::FavouriteSave()
 		}
 		catch (PreviewModelException & e)
 		{
-			new ErrorMessage("Error", e.what());
+			new ErrorMessage(TEXT_GUI_SAVE_PRE_FAV_ERR_TITLE, format::StringToWString(e.what()));
 		}
 	}
 }

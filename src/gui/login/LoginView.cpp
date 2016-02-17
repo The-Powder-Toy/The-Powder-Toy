@@ -5,6 +5,8 @@
 #include "gui/interface/Textbox.h"
 #include "gui/interface/Keys.h"
 #include "gui/Style.h"
+#include "Format.h"
+#include "Lang.h"
 
 class LoginView::LoginAction : public ui::ButtonAction
 {
@@ -30,12 +32,12 @@ public:
 
 LoginView::LoginView():
 	ui::Window(ui::Point(-1, -1), ui::Point(200, 87)),
-	loginButton(new ui::Button(ui::Point(200-100, 87-17), ui::Point(100, 17), "Sign in")),
-	cancelButton(new ui::Button(ui::Point(0, 87-17), ui::Point(101, 17), "Sign Out")),
-	titleLabel(new ui::Label(ui::Point(4, 5), ui::Point(200-16, 16), "Server login")),
+	loginButton(new ui::Button(ui::Point(200-100, 87-17), ui::Point(100, 17), TEXT_GUI_LOGIN_BTN_LOGIN)),
+	cancelButton(new ui::Button(ui::Point(0, 87-17), ui::Point(101, 17), TEXT_GUI_LOGIN_BTN_CANCEL)),
+	titleLabel(new ui::Label(ui::Point(4, 5), ui::Point(200-16, 16), TEXT_GUI_LOGIN_TITLE)),
 	infoLabel(new ui::Label(ui::Point(8, 67), ui::Point(200-16, 16), "")),
-	usernameField(new ui::Textbox(ui::Point(8, 25), ui::Point(200-16, 17), Client::Ref().GetAuthUser().Username, "[username]")),
-	passwordField(new ui::Textbox(ui::Point(8, 46), ui::Point(200-16, 17), "", "[password]")),
+	usernameField(new ui::Textbox(ui::Point(8, 25), ui::Point(200-16, 17), format::StringToWString(Client::Ref().GetAuthUser().Username), TEXT_GUI_LOGIN_TBOX_USER_HOLDER)),
+	passwordField(new ui::Textbox(ui::Point(8, 46), ui::Point(200-16, 17), L"", TEXT_GUI_LOGIN_TBOX_PASS_HOLDER)),
 	targetSize(0, 0)
 {
 	targetSize = Size;
