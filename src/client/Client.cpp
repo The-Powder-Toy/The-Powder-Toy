@@ -1544,7 +1544,7 @@ RequestStatus Client::PublishSave(int saveID)
 	std::stringstream urlStream;
 	char *data;
 	int dataStatus;
-	urlStream << "http://" << SERVER << "/Browse/View.html?ID=" << saveID << "&Key=" << authUser.SessionKey;
+	urlStream << "http://" << SERVER << "/Browse/View.json?ID=" << saveID << "&Key=" << authUser.SessionKey;
 	if (authUser.ID)
 	{
 		std::stringstream userIDStream;
@@ -1558,7 +1558,7 @@ RequestStatus Client::PublishSave(int saveID)
 		lastError = "Not authenticated";
 		return RequestFailure;
 	}
-	RequestStatus ret = ParseServerReturn(data, dataStatus, false);
+	RequestStatus ret = ParseServerReturn(data, dataStatus, true);
 	free(data);
 	return ret;
 }
