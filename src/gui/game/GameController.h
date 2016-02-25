@@ -132,9 +132,6 @@ public:
 	void PlaceSave(ui::Point position);
 	void ClearSim();
 	void ReloadSim();
-#ifdef PARTICLEDEBUG
-	void ParticleDebug(int mode, int x, int y);
-#endif
 	void Vote(int direction);
 	void ChangeBrush();
 	void ShowConsole();

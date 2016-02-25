@@ -30,6 +30,7 @@
 #include "debug/DebugParts.h"
 #include "debug/ElementPopulation.h"
 #include "debug/DebugLines.h"
+#include "debug/ParticleDebug.h"
 #ifdef LUACONSOLE
 #include "lua/LuaScriptInterface.h"
 #else
@@ -162,6 +163,7 @@ GameController::GameController():
 	debugInfo.push_back(new DebugParts(0x1, gameModel->GetSimulation()));
 	debugInfo.push_back(new ElementPopulationDebug(0x2, gameModel->GetSimulation()));
 	debugInfo.push_back(new DebugLines(0x4, gameView, this));
+	debugInfo.push_back(new ParticleDebug(0x8, gameModel->GetSimulation(), gameModel));
 }
 
 GameController::~GameController()
@@ -639,7 +641,7 @@ bool GameController::MouseWheel(int x, int y, int d)
 bool GameController::KeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
 	bool ret = commandInterface->OnKeyPress(key, character, shift, ctrl, alt);
-	if(ret)
+	if (ret)
 	{
 		Simulation * sim = gameModel->GetSimulation();
 		if (key == KEY_RIGHT)
@@ -691,6 +693,13 @@ bool GameController::KeyPress(int key, Uint16 character, bool shift, bool ctrl, 
 				break;
 			}
 		}
+
+		for(std::vector<DebugInfo*>::iterator iter = debugInfo.begin(), end = debugInfo.end(); iter != end; iter++)
+		{
+			if ((*iter)->ID & debugFlags)
+				if (!(*iter)->KeyPress(key, character, shift, ctrl, alt, gameView->GetMousePosition()))
+					ret = false;
+		}
 	}
 	return ret;
 }
@@ -698,7 +707,7 @@ bool GameController::KeyPress(int key, Uint16 character, bool shift, bool ctrl, 
 bool GameController::KeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
 	bool ret = commandInterface->OnKeyRelease(key, character, shift, ctrl, alt);
-	if(ret)
+	if (ret)
 	{
 		Simulation * sim = gameModel->GetSimulation();
 		if (key == KEY_RIGHT || key == KEY_LEFT)
@@ -1424,52 +1433,6 @@ void GameController::ReloadSim()
 		gameModel->SetSaveFile(gameModel->GetSaveFile());
 	}
 }
-
-#ifdef PARTICLEDEBUG
-void GameController::ParticleDebug(int mode, int x, int y)
-{
-	Simulation *sim = gameModel->GetSimulation();
-	int debug_currentParticle = sim->debug_currentParticle;
-	int i;
-	std::stringstream logmessage;
-
-	if (mode == 0)
-	{
-		if (!sim->NUM_PARTS)
-			return;
-		i = debug_currentParticle;
-		while (i < NPART && !sim->parts[i].type)
-			i++;
-		if (i == NPART)
-			logmessage << "End of particles reached, updated sim";
-		else
-			logmessage << "Updated particle #" << i;
-	}
-	else if (mode == 1)
-	{
-		if (x < 0 || x >= XRES || y < 0 || y >= YRES || !(i = (sim->pmap[y][x]>>8)) || i < debug_currentParticle)
-		{
-			i = NPART;
-			logmessage << "Updated particles from #" << debug_currentParticle << " to end, updated sim";
-		}
-		else
-			logmessage << "Updated particles #" << debug_currentParticle << " through #" << i;
-	}
-	gameModel->Log(logmessage.str(), false);
-
-	sim->UpdateParticles(debug_currentParticle, i);
-	if (i < NPART-1)
-		sim->debug_currentParticle = i+1;
-	else
-	{
-		sim->Aftersim();
-		sim->framerender = 1;
-		sim->BeforeSim();
-		sim->framerender = 0;
-		sim->debug_currentParticle = 0;
-	}
-}
-#endif
 
 std::string GameController::ElementResolve(int type, int ctype)
 {
