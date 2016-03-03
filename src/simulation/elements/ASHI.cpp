@@ -1,10 +1,10 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_SAND PT_ASHI 199
+//#TPT-Directive ElementClass Element_ASHI PT_ASHI 199
 Element_ASHI::Element_ASHI()
 {
 	Identifier = "DEFAULT_PT_ASHI";
 	Name = "ASH";
-	Colour = PIXPACK(0xFFD090);
+	Colour = PIXPACK(0xb2beb5);
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
 	Enabled = 1;

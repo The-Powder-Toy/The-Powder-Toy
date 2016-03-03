@@ -4,7 +4,7 @@ Element_MTHN::Element_MTHN()
 {
 	Identifier = "DEFAULT_PT_MTHN";
 	Name = "MTHN";
-	Colour = PIXPACK(0x5070FF);
+	Colour = PIXPACK(0x82AB29);
 	MenuVisible = 1;
 	MenuSection = SC_GAS;
 	Enabled = 1;
@@ -44,4 +44,4 @@ Element_MTHN::Element_MTHN()
 	Update = NULL;
 }
 
-Element_H2::~Element_H2() {}
+Element_MTHN::~Element_MTHN() {}

@@ -4,7 +4,7 @@ Element_COPR::Element_COPR()
 {
 	Identifier = "DEFAULT_PT_COPR";
 	Name = "COPR";
-	Colour = PIXPACK(0x404060);
+	Colour = PIXPACK(0xC87533);
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
 	Enabled = 1;

@@ -1,10 +1,10 @@
 #include "simulation/Elements.h"
 //#TPT-Directive ElementClass Element_UINS PT_UINS 338
-Element_INSL::Element_INSL()
+Element_UINS::Element_UINS()
 {
 	Identifier = "DEFAULT_PT_UINS";
 	Name = "UINS";
-	Colour = PIXPACK(0x9EA3B6);
+	Colour = PIXPACK(0x9EA3F1);
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
 	Enabled = 1;
@@ -44,4 +44,4 @@ Element_INSL::Element_INSL()
 	Update = NULL;
 }
 
-Element_INSL::~Element_INSL() {}
+Element_UINS::~Element_UINS() {}
