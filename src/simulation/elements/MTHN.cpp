@@ -19,7 +19,7 @@ Element_MTHN::Element_MTHN()
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
 
-	Flammable = 4;
+	Flammable = 20;
 	Explosive = 20;
 	Meltable = 0;
 	Hardness = 0;
