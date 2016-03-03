@@ -21,10 +21,10 @@ Element_ASHI::Element_ASHI()
 
 	Flammable = 0;
 	Explosive = 0;
-	Meltable = 5;
-	Hardness = 1;
+	Meltable = 0;
+	Hardness = 30;
 
-	Weight = 90;
+	Weight = 50;
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 150;
@@ -34,8 +34,8 @@ Element_ASHI::Element_ASHI()
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
-	HighPressure = IPH;
-	HighPressureTransition = NT;
+	HighPressure = 20;
+	HighPressureTransition = PT_BCOL;
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = ITL;

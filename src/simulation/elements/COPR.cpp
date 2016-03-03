@@ -27,7 +27,7 @@ Element_COPR::Element_COPR()
 	Weight = 100;
 
 	Temperature = R_TEMP+0.0f	+273.15f;
-	HeatConduct = 500;
+	HeatConduct = 300;
 	Description = "Copper. Very good heat conduit";
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_HOT_GLOW;
