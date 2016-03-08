@@ -30,7 +30,9 @@
 
 //#define IGNORE_UPDATES //uncomment this for mods, to not get any update notifications
 
+#if !(defined(MACOSX) && defined(DEBUG))
 #define HIGH_QUALITY_RESAMPLE			//High quality image resampling, slower but much higher quality than my terribad linear interpolation
+#endif
 
 #if defined(SNAPSHOT)
 #define IDENT_RELTYPE "S"
