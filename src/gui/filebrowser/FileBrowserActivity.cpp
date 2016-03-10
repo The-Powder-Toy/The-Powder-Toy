@@ -137,6 +137,7 @@ FileBrowserActivity::FileBrowserActivity(std::string directory, FileSelectedCall
 	FocusComponent(textField);
 
 	itemList = new ui::ScrollPanel(ui::Point(4, 45), ui::Point(Size.X-8, Size.Y-53));
+	itemList->Visible = false;
 	AddComponent(itemList);
 
 	progressBar = new ui::ProgressBar(ui::Point((Size.X-200)/2, 45+(Size.Y-66)/2), ui::Point(200, 17));
@@ -223,6 +224,7 @@ void FileBrowserActivity::loadDirectory(std::string directory, std::string searc
 	files.clear();
 
 	infoText->Visible = false;
+	itemList->Visible = false;
 	progressBar->Visible = true;
 	progressBar->SetProgress(-1);
 	progressBar->SetStatus("Loading files");
@@ -244,6 +246,8 @@ void FileBrowserActivity::NotifyDone(Task * task)
 		progressBar->Visible = false;
 		infoText->Visible = true;
 	}
+	else
+		itemList->Visible = true;
 	for (size_t i = 0; i < components.size(); i++)
 	{
 		delete components[i];
