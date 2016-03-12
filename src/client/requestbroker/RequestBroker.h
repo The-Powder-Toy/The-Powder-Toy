@@ -4,8 +4,7 @@
 #include <utility>
 #include <deque>
 #include <string>
-#include <pthread.h>
-#undef GetUserName //God dammit microsoft!
+#include "common/tpt-thread.h"
 
 #include "Config.h"
 #include "Singleton.h"

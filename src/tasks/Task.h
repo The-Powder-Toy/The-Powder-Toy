@@ -2,8 +2,7 @@
 #define TASK_H_
 
 #include <string>
-#include <pthread.h>
-#undef GetUserName //God dammit microsoft!
+#include "common/tpt-thread.h"s
 #include "TaskListener.h"
 #include "Config.h"
 

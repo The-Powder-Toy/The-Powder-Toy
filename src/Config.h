@@ -174,12 +174,6 @@
 #define TPT_INLINE inline
 #endif
 
-#if defined(WIN) && defined(__GNUC__)
-#define TH_ENTRY_POINT __attribute__((force_align_arg_pointer)) 
-#else
-#define TH_ENTRY_POINT
-#endif
-
 // old Platform.h stuff, maybe we should have a file for these kinds of things
 typedef unsigned short Uint16;
 

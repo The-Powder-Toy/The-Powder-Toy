@@ -1,9 +1,6 @@
 #include "Graphics.h"
 #include "font.h"
-#include <pthread.h>
-#ifdef GetUserName
-#undef GetUserName //God dammit microsoft!
-#endif
+#include "common/tpt-thread.h"
 #ifdef OGLI
 
 static pthread_mutex_t gMutex = PTHREAD_MUTEX_INITIALIZER;

@@ -1,8 +1,7 @@
 #ifndef GRAVITY_H
 #define GRAVITY_H
 
-#include <pthread.h>
-#undef GetUserName //God dammit microsoft!
+#include "common/tpt-thread.h"
 #include "Config.h"
 #include "Simulation.h"
 

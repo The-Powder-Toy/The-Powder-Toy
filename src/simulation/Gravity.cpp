@@ -1,7 +1,6 @@
 #include <cmath>
 #include <sys/types.h>
-#include <pthread.h>
-#undef GetUserName //God dammit microsoft!
+#include "common/tpt-thread.h"
 #include "Config.h"
 #include "Gravity.h"
 //#include "powder.h"

@@ -3,8 +3,7 @@
 
 #include <vector>
 #include <string>
-#include <pthread.h>
-#undef GetUserName //God dammit microsoft!
+#include "common/tpt-thread.h"
 #include <cmath>
 #include "client/SaveInfo.h"
 #include "SearchView.h"
