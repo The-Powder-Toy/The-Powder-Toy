@@ -2403,27 +2403,22 @@ int Simulation::do_move(int i, int x, int y, float nxf, float nyf)
 	int nx = (int)(nxf+0.5f), ny = (int)(nyf+0.5f), result;
 	if (edgeMode == 2)
 	{
-		float diffx = 0.0f, diffy = 0.0f;
-		if (nx < CELL)
-			diffx = XRES-CELL*2;
-		if (nx >= XRES-CELL)
-			diffx = -(XRES-CELL*2);
-		if (ny < CELL)
-			diffy = YRES-CELL*2;
-		if (ny >= YRES-CELL)
-			diffy = -(YRES-CELL*2);
-		if (diffx || diffy)
-		{
-			nxf += diffx;
-			nyf += diffy;
-			nx = (int)(nxf+0.5f);
-			ny = (int)(nyf+0.5f);
+		bool x_ok = (nx >= CELL && nx < XRES-CELL);
+		bool y_ok = (ny >= CELL && ny < YRES-CELL);
+		if (!x_ok)
+			nxf = remainder_p(nxf-CELL, XRES-CELL*2.5f)+CELL;
+		if (!y_ok)
+			nyf = remainder_p(nyf-CELL, YRES-CELL*2.5f)+CELL;
+		nx = (int)(nxf+0.5f);
+		ny = (int)(nyf+0.5f);
 
+		/*if (!x_ok || !y_ok)
+		{
 			//make sure there isn't something blocking it on the other side
 			//only needed if this if statement is moved after the try_move (like my mod)
 			//if (!eval_move(t, nx, ny, NULL) || (t == PT_PHOT && pmap[ny][nx]))
 			//	return -1;
-		}
+		}*/
 	}
 	if (parts[i].type == PT_NONE)
 		return 0;
@@ -4081,14 +4076,12 @@ killed:
 					fin_y = (int)(fin_yf+0.5f);
 					if (edgeMode == 2)
 					{
-						if (fin_x < CELL)
-							fin_xf += XRES-CELL*2;
-						if (fin_x >= XRES-CELL)
-							fin_xf -= XRES-CELL*2;
-						if (fin_y < CELL)
-							fin_yf += YRES-CELL*2;
-						if (fin_y >= YRES-CELL)
-							fin_yf -= YRES-CELL*2;
+						bool x_ok = (fin_x >= CELL && fin_x < XRES-CELL);
+						bool y_ok = (fin_y >= CELL && fin_y < YRES-CELL);
+						if (!x_ok)
+							fin_xf = remainder_p(fin_xf-CELL, XRES-CELL*2.5f)+CELL;
+						if (!y_ok)
+							fin_yf = remainder_p(fin_yf-CELL, YRES-CELL*2.5f)+CELL;
 						fin_x = (int)(fin_xf+0.5f);
 						fin_y = (int)(fin_yf+0.5f);
 					}
@@ -4134,22 +4127,22 @@ killed:
 				int ny = (int)((float)parts[i].y+0.5f);
 				if (edgeMode == 2)
 				{
-					int diffx = 0, diffy = 0;
-					if (nx < CELL)
-						diffx = XRES-CELL*2;
-					if (nx >= XRES-CELL)
-						diffx = -(XRES-CELL*2);
-					if (ny < CELL)
-						diffy = YRES-CELL*2;
-					if (ny >= YRES-CELL)
-						diffy = -(YRES-CELL*2);
-					if (diffx || diffy) //when moving from left to right stickmen might be able to fall through solid things, fix with "eval_move(t, nx+diffx, ny+diffy, NULL)" but then they die instead
+					bool x_ok = (nx >= CELL && nx < XRES-CELL);
+					bool y_ok = (ny >= CELL && ny < YRES-CELL);
+					int oldnx = nx, oldny = ny;
+					if (!x_ok)
 					{
-						parts[i].x += diffx;
-						parts[i].y += diffy;
-						nx += diffx;
-						ny += diffy;
+						parts[i].x = remainder_p(parts[i].x-CELL, XRES-CELL*2.5f)+CELL;
+						nx = (int)((float)parts[i].x+0.5f);
+					}
+					if (!y_ok)
+					{
+						parts[i].y = remainder_p(parts[i].y-CELL, YRES-CELL*2.5f)+CELL;
+						ny = (int)((float)parts[i].y+0.5f);
+					}
 
+					if (!x_ok || !y_ok) //when moving from left to right stickmen might be able to fall through solid things, fix with "eval_move(t, nx+diffx, ny+diffy, NULL)" but then they die instead
+					{
 						//adjust stickmen legs
 						playerst* stickman = NULL;
 						int t = parts[i].type;
@@ -4163,9 +4156,12 @@ killed:
 						if (stickman)
 							for (int i = 0; i < 16; i+=2)
 							{
-								stickman->legs[i] += diffx;
-								stickman->legs[i+1] += diffy;
+								stickman->legs[i] += (nx-oldnx)+.5f;
+								stickman->legs[i+1] += (ny-oldny)+.5f;
+								stickman->accs[i/2] *= .95f;
 							}
+						parts[i].vy *= .95f;
+						parts[i].vx *= .95f;
 					}
 				}
 				if (ny!=y || nx!=x)

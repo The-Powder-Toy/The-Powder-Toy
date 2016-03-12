@@ -215,6 +215,16 @@ public:
 	{
 		return (x>=0 && y>=0 && x<XRES && y<YRES);
 	}
+
+	// these don't really belong anywhere at the moment, so go here for loop edge mode
+	static int remainder_p(int x, int y)
+	{
+		return (x % y) + (x>=0 ? 0 : y);
+	}
+	static float remainder_p(float x, float y)
+	{
+		return std::fmod(x, y) + (x>=0 ? 0 : y);
+	}
 };
 
 #endif /* SIMULATION_H */
