@@ -42,6 +42,7 @@ Element_AMTR::Element_AMTR()
 	HighTemperatureTransition = NT;
 
 	Update = &Element_AMTR::update;
+	Graphics = &Element_AMTR::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_AMTR static int update(UPDATE_FUNC_ARGS)
@@ -74,5 +75,13 @@ int Element_AMTR::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
+
+//#TPT-Directive ElementHeader Element_AMTR static int graphics(GRAPHICS_FUNC_ARGS)
+int Element_AMTR::graphics(GRAPHICS_FUNC_ARGS)
+{
+	// don't render AMTR as a gas
+	// this function just overrides the default graphics
+	return 1;
+}
 
 Element_AMTR::~Element_AMTR() {}
