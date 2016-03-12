@@ -2,7 +2,7 @@
 #define TASK_H_
 
 #include <string>
-#include "common/tpt-thread.h"s
+#include "common/tpt-thread.h"
 #include "TaskListener.h"
 #include "Config.h"
 
