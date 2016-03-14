@@ -808,19 +808,20 @@ bool Client::CheckUpdate(void *updateRequest, bool checkSession)
 					}
 #endif
 
-#ifdef BETA
-					Json::Value betaVersion = versions["Beta"];
-					int betaMajor = betaVersion["Major"].asInt();
-					int betaMinor = betaVersion["Minor"].asInt();
-					int betaBuild = betaVersion["Build"].asInt();
-					std::string betaFile = betaVersion["File"].asString();
-					std::string betaChangelog = betaVersion["Changelog"].asString();
-					if (betaMajor > SAVE_VERSION || (betaMinor > MINOR_VERSION && betaMajor == SAVE_VERSION) || betaBuild > BUILD_NUM)
+					if (!updateAvailable)
 					{
-						updateAvailable = true;
-						updateInfo = UpdateInfo(betaMajor, betaMinor, betaBuild, betaFile, betaChangelog, UpdateInfo::Beta);
+						Json::Value betaVersion = versions["Beta"];
+						int betaMajor = betaVersion["Major"].asInt();
+						int betaMinor = betaVersion["Minor"].asInt();
+						int betaBuild = betaVersion["Build"].asInt();
+						std::string betaFile = betaVersion["File"].asString();
+						std::string betaChangelog = betaVersion["Changelog"].asString();
+						if (betaMajor > SAVE_VERSION || (betaMinor > MINOR_VERSION && betaMajor == SAVE_VERSION) || betaBuild > BUILD_NUM)
+						{
+							updateAvailable = true;
+							updateInfo = UpdateInfo(betaMajor, betaMinor, betaBuild, betaFile, betaChangelog, UpdateInfo::Beta);
+						}
 					}
-#endif
 
 #ifdef SNAPSHOT
 					Json::Value snapshotVersion = versions["Snapshot"];
