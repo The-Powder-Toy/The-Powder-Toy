@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include "Download.h"
 #include "DownloadManager.h"
-#include "http.h"
+#include "HTTP.h"
 
 Download::Download(std::string uri_, bool keepAlive):
 	http(NULL),

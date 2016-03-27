@@ -1,6 +1,6 @@
 #include "DownloadManager.h"
 #include "Download.h"
-#include "http.h"
+#include "HTTP.h"
 #include "Config.h"
 #include "Platform.h"
 
