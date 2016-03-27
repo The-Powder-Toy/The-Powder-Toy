@@ -3,7 +3,7 @@
 #ifdef OGLI
 #include "graphics/OpenGLHeaders.h" 
 #endif
-#include "Singleton.h"
+#include "common/Singleton.h"
 
 class GameSave;
 class VideoBuffer;

@@ -58,12 +58,13 @@ PreviewController::PreviewController(int saveID, bool instant, ControllerCallbac
 
 void PreviewController::Update()
 {
-	if(loginWindow && loginWindow->HasExited == true)
+	previewModel->Update();
+	if (loginWindow && loginWindow->HasExited == true)
 	{
 		delete loginWindow;
 		loginWindow = NULL;
 	}
-	if(previewModel->GetDoOpen() && previewModel->GetSave() && previewModel->GetSave()->GetGameSave())
+	if (previewModel->GetDoOpen() && previewModel->GetSaveInfo() && previewModel->GetSaveInfo()->GetGameSave())
 	{
 		Exit();
 	}
@@ -104,9 +105,9 @@ void PreviewController::NotifyAuthUserChanged(Client * sender)
 	previewModel->SetCommentBoxEnabled(sender->GetAuthUser().ID);
 }
 
-SaveInfo * PreviewController::GetSave()
+SaveInfo * PreviewController::GetSaveInfo()
 {
-	return previewModel->GetSave();
+	return previewModel->GetSaveInfo();
 }
 
 bool PreviewController::GetDoOpen()
@@ -132,11 +133,11 @@ void PreviewController::Report(std::string message)
 
 void PreviewController::FavouriteSave()
 {
-	if(previewModel->GetSave() && Client::Ref().GetAuthUser().ID)
+	if(previewModel->GetSaveInfo() && Client::Ref().GetAuthUser().ID)
 	{
 		try
 		{
-			if(previewModel->GetSave()->Favourite)
+			if(previewModel->GetSaveInfo()->Favourite)
 				previewModel->SetFavourite(false);
 			else
 				previewModel->SetFavourite(true);

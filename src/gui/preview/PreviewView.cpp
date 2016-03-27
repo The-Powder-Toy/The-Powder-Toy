@@ -415,7 +415,7 @@ void PreviewView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, b
 
 void PreviewView::NotifySaveChanged(PreviewModel * sender)
 {
-	SaveInfo * save = sender->GetSave();
+	SaveInfo * save = sender->GetSaveInfo();
 	delete savePreview;
 	savePreview = NULL;
 	if(save)
@@ -598,7 +598,7 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 			tempUsername->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
 			if (Client::Ref().GetAuthUser().ID && Client::Ref().GetAuthUser().Username == comments->at(i)->authorName)
 				tempUsername->SetTextColour(ui::Colour(255, 255, 100));
-			else if (sender->GetSave() && sender->GetSave()->GetUserName() == comments->at(i)->authorName)
+			else if (sender->GetSaveInfo() && sender->GetSaveInfo()->GetUserName() == comments->at(i)->authorName)
 				tempUsername->SetTextColour(ui::Colour(255, 100, 100));
 			currentY += 16;
 

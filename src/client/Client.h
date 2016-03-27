@@ -6,7 +6,7 @@
 #include <list>
 
 #include "Config.h"
-#include "Singleton.h"
+#include "common/Singleton.h"
 
 #include "User.h"
 #include "UserInfo.h"

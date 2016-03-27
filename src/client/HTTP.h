@@ -20,7 +20,11 @@
 #ifndef HTTP_H
 #define HTTP_H
 
+#include <map>
+#include <string>
+
 static const char hexChars[] = "0123456789abcdef";
+static long http_timeout = 15;
 
 void http_init(char *proxy);
 void http_done(void);
@@ -37,7 +41,11 @@ int http_async_req_status(void *ctx);
 void http_async_get_length(void *ctx, int *total, int *done);
 char *http_async_req_stop(void *ctx, int *ret, int *len);
 void http_async_req_close(void *ctx);
+void http_force_close(void *ctx);
 
+std::string FindBoundary(std::map<std::string, std::string>, std::string boundary);
+std::string GetMultipartMessage(std::map<std::string, std::string>, std::string boundary);
+void http_add_multipart_header(void *ctx, std::string boundary);
 char *http_multipart_post(const char *uri, const char *const *names, const char *const *parts, size_t *plens, const char *user, const char *pass, const char * session_id, int *ret, int *len);
 void *http_multipart_post_async(const char *uri, const char *const *names, const char *const *parts, int *plens, const char *user, const char *pass, const char *session_id);
 

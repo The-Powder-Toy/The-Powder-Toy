@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stack>
-#include "Singleton.h"
+#include "common/Singleton.h"
 #include "graphics/Graphics.h"
 #include "Window.h"
 

@@ -68,11 +68,11 @@ public:
 	SaveOpenCallback(GameController * cc_) { cc = cc_; }
 	virtual void ControllerExit()
 	{
-		if(cc->activePreview->GetDoOpen() && cc->activePreview->GetSave())
+		if(cc->activePreview->GetDoOpen() && cc->activePreview->GetSaveInfo())
 		{
 			try
 			{
-				cc->LoadSave(cc->activePreview->GetSave());
+				cc->LoadSave(cc->activePreview->GetSaveInfo());
 			}
 			catch(GameModelException & ex)
 			{

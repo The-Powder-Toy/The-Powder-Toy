@@ -30,7 +30,7 @@ public:
 	void Report(std::string message);
 	void ShowLogin();
 	bool GetDoOpen();
-	SaveInfo * GetSave();
+	SaveInfo * GetSaveInfo();
 	PreviewView * GetView() { return previewView; }
 	void Update();
 	void FavouriteSave();

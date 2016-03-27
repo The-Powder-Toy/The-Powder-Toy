@@ -1,5 +1,6 @@
 #include <cmath>
 #include "PreviewModel.h"
+#include "Format.h"
 #include "client/Client.h"
 #include "client/GameSave.h"
 #include "gui/dialogues/ErrorMessage.h"
@@ -8,7 +9,7 @@
 PreviewModel::PreviewModel():
 	doOpen(false),
 	canOpen(true),
-	save(NULL),
+	saveInfo(NULL),
 	saveData(NULL),
 	saveComments(NULL),
 	commentBoxEnabled(false),
@@ -21,10 +22,10 @@ PreviewModel::PreviewModel():
 
 void PreviewModel::SetFavourite(bool favourite)
 {
-	if(save)
+	if (saveInfo)
 	{
-		if (Client::Ref().FavouriteSave(save->id, favourite) == RequestOkay)
-			save->Favourite = favourite;
+		if (Client::Ref().FavouriteSave(saveInfo->id, favourite) == RequestOkay)
+			saveInfo->Favourite = favourite;
 		else if (favourite)
 			throw PreviewModelException("Error, could not fav. the save: " + Client::Ref().GetLastError());
 		else
@@ -49,37 +50,48 @@ void PreviewModel::SetCommentBoxEnabled(bool enabledState)
 
 void PreviewModel::UpdateSave(int saveID, int saveDate)
 {
-	this->tSaveID = saveID;
-	this->tSaveDate = saveDate;
+	this->saveID = saveID;
+	this->saveDate = saveDate;
 
-	if (save)
+	if (saveInfo)
 	{
-		delete save;
-		save = NULL;
+		delete saveInfo;
+		saveInfo = NULL;
 	}
 	if (saveData)
 	{
 		delete saveData;
 		saveData = NULL;
 	}
-	if (saveComments)
-	{
-		for (size_t i = 0; i < saveComments->size(); i++)
-			delete saveComments->at(i);
-		saveComments->clear();
-		delete saveComments;
-		saveComments = NULL;
-	}
+	ClearComments();
 	notifySaveChanged();
 	notifySaveCommentsChanged();
 
-	RequestBroker::Ref().Start(Client::Ref().GetSaveDataAsync(saveID, saveDate), this, 1);
-	RequestBroker::Ref().Start(Client::Ref().GetSaveAsync(saveID, saveDate), this, 2);
+	std::stringstream urlStream;
+	if (saveDate)
+		urlStream << "http://" << STATICSERVER << "/" << saveID << "_" << saveDate << ".cps";
+	else
+		urlStream << "http://" << STATICSERVER << "/" << saveID << ".cps";
+	saveDataDownload = new Download(urlStream.str());
+	saveDataDownload->Start();
+
+	urlStream.str("");
+	urlStream << "http://" << SERVER  << "/Browse/View.json?ID=" << saveID;
+	if (saveDate)
+		urlStream << "&Date=" << saveDate;
+	saveInfoDownload = new Download(urlStream.str());
+	saveInfoDownload->AuthHeaders(format::NumberToString(Client::Ref().GetAuthUser().ID), Client::Ref().GetAuthUser().SessionID);
+	saveInfoDownload->Start();
 
 	if (!GetDoOpen())
 	{
 		commentsLoaded = false;
-		RequestBroker::Ref().Start(Client::Ref().GetCommentsAsync(saveID, (commentsPageNumber-1)*20, 20), this, 3);
+
+		urlStream.str("");
+		urlStream << "http://" << SERVER << "/Browse/Comments.json?ID=" << saveID << "&Start=" << (commentsPageNumber-1)*20 << "&Count=20";
+		commentsDownload = new Download(urlStream.str());
+		commentsDownload->AuthHeaders(format::NumberToString(Client::Ref().GetAuthUser().ID), Client::Ref().GetAuthUser().SessionID);
+		commentsDownload->Start();
 	}
 }
 
@@ -98,9 +110,9 @@ bool PreviewModel::GetCanOpen()
 	return canOpen;
 }
 
-SaveInfo * PreviewModel::GetSave()
+SaveInfo * PreviewModel::GetSaveInfo()
 {
-	return save;
+	return saveInfo;
 }
 
 int PreviewModel::GetCommentsPageNum()
@@ -123,18 +135,17 @@ void PreviewModel::UpdateComments(int pageNumber)
 	if (commentsLoaded)
 	{
 		commentsLoaded = false;
-		if (saveComments)
-		{
-			for (size_t i = 0; i < saveComments->size(); i++)
-				delete saveComments->at(i);
-			saveComments->clear();
-			delete saveComments;
-			saveComments = NULL;
-		}
+		ClearComments();
 
 		commentsPageNumber = pageNumber;
 		if (!GetDoOpen())
-			RequestBroker::Ref().Start(Client::Ref().GetCommentsAsync(tSaveID, (commentsPageNumber-1)*20, 20), this, 3);
+		{
+			std::stringstream urlStream;
+			urlStream << "http://" << SERVER << "/Browse/Comments.json?ID=" << saveID << "&Start=" << (commentsPageNumber-1)*20 << "&Count=20";
+			commentsDownload = new Download(urlStream.str());
+			commentsDownload->AuthHeaders(format::NumberToString(Client::Ref().GetAuthUser().ID).c_str(), Client::Ref().GetAuthUser().SessionID.c_str());
+			commentsDownload->Start();
+		}
 
 		notifySaveCommentsChanged();
 		notifyCommentsPageChanged();
@@ -143,93 +154,186 @@ void PreviewModel::UpdateComments(int pageNumber)
 
 void PreviewModel::CommentAdded()
 {
-	if (save)
-		save->Comments++;
+	if (saveInfo)
+		saveInfo->Comments++;
 	commentsTotal++;
 }
 
-void PreviewModel::OnResponseReady(void * object, int identifier)
+void PreviewModel::OnSaveReady()
 {
-	if (identifier == 1)
+	commentsTotal = saveInfo->Comments;
+	try
 	{
-		delete saveData;
-		saveData = (std::vector<unsigned char>*)object;
+		GameSave *gameSave = new GameSave(*saveData);
+		if (gameSave->fromNewerVersion)
+			new ErrorMessage("This save is from a newer version", "Please update TPT in game or at http://powdertoy.co.uk");
+		saveInfo->SetGameSave(gameSave);
 	}
-	if (identifier == 2)
+	catch(ParseException &e)
 	{
-		delete save;
-		save = (SaveInfo*)object;
+		new ErrorMessage("Error", e.what());
+		canOpen = false;
 	}
-	if (identifier == 3)
-	{
-		if (saveComments)
-		{
-			for (size_t i = 0; i < saveComments->size(); i++)
-				delete saveComments->at(i);
-			saveComments->clear();
-			delete saveComments;
-			saveComments = NULL;
-		}
-		saveComments = (std::vector<SaveComment*>*)object;
-		commentsLoaded = true;
+	notifySaveChanged();
+	notifyCommentsPageChanged();
+	//make sure author name comments are red
+	if (commentsLoaded)
 		notifySaveCommentsChanged();
-		notifyCommentsPageChanged();
-	}
+}
 
-	if (identifier == 1 || identifier == 2)
+void PreviewModel::ClearComments()
+{
+	if (saveComments)
 	{
-		if (save && saveData)
-		{
-			commentsTotal = save->Comments;
-			try
-			{
-				GameSave *gameSave = new GameSave(*saveData);
-				if (gameSave->fromNewerVersion)
-					new ErrorMessage("This save is from a newer version", "Please update TPT in game or at http://powdertoy.co.uk");
-				save->SetGameSave(gameSave);
-			}
-			catch(ParseException &e)
-			{
-				new ErrorMessage("Error", e.what());
-				canOpen = false;
-			}
-			notifySaveChanged();
-			notifyCommentsPageChanged();
-			//make sure author name comments are red
-			if (commentsLoaded)
-				notifySaveCommentsChanged();
-		}
+		for (size_t i = 0; i < saveComments->size(); i++)
+			delete saveComments->at(i);
+		saveComments->clear();
+		delete saveComments;
+		saveComments = NULL;
 	}
 }
 
-void PreviewModel::OnResponseFailed(int identifier)
+bool PreviewModel::ParseSaveInfo(char * saveInfoResponse)
 {
-	if (identifier == 3)
+	delete saveInfo;
+
+	try
 	{
-		if (saveComments)
-		{
-			for (size_t i = 0; i < saveComments->size(); i++)
-				delete saveComments->at(i);
-			saveComments->clear();
-			delete saveComments;
-			saveComments = NULL;
-		}
-		saveComments = NULL;
-		commentsLoaded = true;
-		notifySaveCommentsChanged();
+		std::istringstream dataStream(saveInfoResponse);
+		Json::Value objDocument;
+		dataStream >> objDocument;
+
+		int tempID = objDocument["ID"].asInt();
+		int tempScoreUp = objDocument["ScoreUp"].asInt();
+		int tempScoreDown = objDocument["ScoreDown"].asInt();
+		int tempMyScore = objDocument["ScoreMine"].asInt();
+		std::string tempUsername = objDocument["Username"].asString();
+		std::string tempName = objDocument["Name"].asString();
+		std::string tempDescription = objDocument["Description"].asString();
+		int tempDate = objDocument["Date"].asInt();
+		bool tempPublished = objDocument["Published"].asBool();
+		bool tempFavourite = objDocument["Favourite"].asBool();
+		int tempComments = objDocument["Comments"].asInt();
+		int tempViews = objDocument["Views"].asInt();
+		int tempVersion = objDocument["Version"].asInt();
+
+		Json::Value tagsArray = objDocument["Tags"];
+		std::list<std::string> tempTags;
+		for (Json::UInt j = 0; j < tagsArray.size(); j++)
+			tempTags.push_back(tagsArray[j].asString());
+
+		saveInfo = new SaveInfo(tempID, tempDate, tempScoreUp, tempScoreDown,
+		                        tempMyScore, tempUsername, tempName, tempDescription,
+		                        tempPublished, tempTags);
+		saveInfo->Comments = tempComments;
+		saveInfo->Favourite = tempFavourite;
+		saveInfo->Views = tempViews;
+		saveInfo->Version = tempVersion;
+		return true;
 	}
-	else
+	catch (std::exception &e)
 	{
-		for (size_t i = 0; i < observers.size(); i++)
+		saveInfo = NULL;
+		return false;
+	}
+}
+
+bool PreviewModel::ParseComments(char *commentsResponse)
+{
+	ClearComments();
+	saveComments = new std::vector<SaveComment*>();
+	try
+	{
+		std::istringstream dataStream(commentsResponse);
+		Json::Value commentsArray;
+		dataStream >> commentsArray;
+
+		for (Json::UInt j = 0; j < commentsArray.size(); j++)
 		{
-			observers[i]->SaveLoadingError(Client::Ref().GetLastError());
+			int userID = format::StringToNumber<int>(commentsArray[j]["UserID"].asString());
+			std::string username = commentsArray[j]["Username"].asString();
+			std::string formattedUsername = commentsArray[j]["FormattedUsername"].asString();
+			if (formattedUsername == "jacobot")
+				formattedUsername = "\bt" + formattedUsername;
+			std::string comment = commentsArray[j]["Text"].asString();
+			saveComments->push_back(new SaveComment(userID, username, formattedUsername, comment));
 		}
+		return true;
+	}
+	catch (std::exception &e)
+	{
+		return false;
 	}
 }
 
 void PreviewModel::Update()
 {
+	if (saveDataDownload && saveDataDownload->CheckDone())
+	{
+		int status, length;
+		char *ret = saveDataDownload->Finish(&length, &status);
 
+		Client::Ref().ParseServerReturn(NULL, status, true);
+		if (status == 200 && ret)
+		{
+			delete saveData;
+			saveData = new std::vector<unsigned char>(ret, ret+length);
+			if (saveInfo && saveData)
+				OnSaveReady();
+		}
+		else
+		{
+			for (size_t i = 0; i < observers.size(); i++)
+			{
+				observers[i]->SaveLoadingError(Client::Ref().GetLastError());
+			}
+		}
+		saveDataDownload = NULL;
+	}
+
+	if (saveInfoDownload && saveInfoDownload->CheckDone())
+	{
+		int status;
+		char *ret = saveInfoDownload->Finish(NULL, &status);
+
+		Client::Ref().ParseServerReturn(NULL, status, true);
+		if (status == 200 && ret)
+		{
+			if (ParseSaveInfo(ret))
+			{
+				if (saveInfo && saveData)
+					OnSaveReady();
+			}
+			else
+			{
+				for (size_t i = 0; i < observers.size(); i++)
+					observers[i]->SaveLoadingError("Could not parse save info");
+			}
+		}
+		else
+		{
+			for (size_t i = 0; i < observers.size(); i++)
+				observers[i]->SaveLoadingError(Client::Ref().GetLastError());
+		}
+		saveInfoDownload = NULL;
+	}
+
+	if (commentsDownload && commentsDownload->CheckDone())
+	{
+		int status;
+		char *ret = commentsDownload->Finish(NULL, &status);
+		ClearComments();
+
+		Client::Ref().ParseServerReturn(NULL, status, true);
+		if (status == 200 && ret)
+			ParseComments(ret);
+
+		commentsLoaded = true;
+		notifySaveCommentsChanged();
+		notifyCommentsPageChanged();
+
+		commentsDownload = NULL;
+	}
 }
 
 std::vector<SaveComment*> * PreviewModel::GetComments()
@@ -281,14 +385,13 @@ void PreviewModel::AddObserver(PreviewView * observer)
 
 PreviewModel::~PreviewModel()
 {
-	RequestBroker::Ref().DetachRequestListener(this);
-	delete save;
+	if (saveDataDownload)
+		saveDataDownload->Cancel();
+	if (saveInfoDownload)
+		saveInfoDownload->Cancel();
+	if (commentsDownload)
+		commentsDownload->Cancel();
+	delete saveInfo;
 	delete saveData;
-	if (saveComments)
-	{
-		for (size_t i = 0; i < saveComments->size(); i++)
-			delete saveComments->at(i);
-		saveComments->clear();
-		delete saveComments;
-	}
+	ClearComments();
 }

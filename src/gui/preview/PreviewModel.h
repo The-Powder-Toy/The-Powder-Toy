@@ -3,21 +3,20 @@
 
 #include <vector>
 #include <iostream>
-#include "common/tpt-thread.h"
 #include "PreviewView.h"
 #include "client/SaveInfo.h"
 #include "gui/preview/Comment.h"
 #include "gui/search/Thumbnail.h"
-#include "client/requestbroker/RequestListener.h"
+#include "client/Download.h"
 
 using namespace std;
 
 class PreviewView;
-class PreviewModel: RequestListener {
+class PreviewModel {
 	bool doOpen;
 	bool canOpen;
 	vector<PreviewView*> observers;
-	SaveInfo * save;
+	SaveInfo * saveInfo;
 	std::vector<unsigned char> * saveData;
 	std::vector<SaveComment*> * saveComments;
 	void notifySaveChanged();
@@ -25,11 +24,12 @@ class PreviewModel: RequestListener {
 	void notifyCommentsPageChanged();
 	void notifyCommentBoxEnabledChanged();
 
-	//Background retrieval
-	int tSaveID;
-	int tSaveDate;
+	Download * saveDataDownload;
+	Download * saveInfoDownload;
+	Download * commentsDownload;
+	int saveID;
+	int saveDate;
 
-	//
 	bool commentBoxEnabled;
 	bool commentsLoaded;
 	int commentsTotal;
@@ -37,7 +37,7 @@ class PreviewModel: RequestListener {
 
 public:
 	PreviewModel();
-	SaveInfo * GetSave();
+	SaveInfo * GetSaveInfo();
 	std::vector<SaveComment*> * GetComments();
 
 	bool GetCommentBoxEnabled();
@@ -56,8 +56,10 @@ public:
 	bool GetCanOpen();
 	void SetDoOpen(bool doOpen);
 	void Update();
-	virtual void OnResponseReady(void * object, int identifier);
-	virtual void OnResponseFailed(int identifier);
+	void ClearComments();
+	void OnSaveReady();
+	bool ParseSaveInfo(char * saveInfoResponse);
+	bool ParseComments(char * commentsResponse);
 	virtual ~PreviewModel();
 };
 

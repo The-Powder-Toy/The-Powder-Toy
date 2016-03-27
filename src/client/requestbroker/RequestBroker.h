@@ -7,7 +7,7 @@
 #include "common/tpt-thread.h"
 
 #include "Config.h"
-#include "Singleton.h"
+#include "common/Singleton.h"
 
 class GameSave;
 class VideoBuffer;
