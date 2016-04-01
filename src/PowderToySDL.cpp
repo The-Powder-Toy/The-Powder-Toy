@@ -1,3 +1,5 @@
+int depth3d = 0;
+
 #ifdef USE_SDL
 
 #include <map>
@@ -67,7 +69,6 @@ SDL_SysWMinfo sdl_wminfo;
 Atom XA_CLIPBOARD, XA_TARGETS, XA_UTF8_STRING;
 #endif
 
-int depth3d = 0;
 std::string clipboardText = "";
 
 int desktopWidth = 1280, desktopHeight = 1024;
