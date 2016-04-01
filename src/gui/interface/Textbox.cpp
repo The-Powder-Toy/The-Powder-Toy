@@ -256,8 +256,10 @@ bool Textbox::CharacterValid(Uint16 character)
 {
 	switch(inputType)
 	{
-		case Number:
 		case Numeric:
+			if (character == '-' && cursor == 0 && backingText[0] != '-')
+				return true;
+		case Number:
 			return (character >= '0' && character <= '9');
 		case Multiline:
 			if (character == '\n')
