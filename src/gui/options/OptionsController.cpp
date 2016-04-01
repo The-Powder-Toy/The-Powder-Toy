@@ -4,6 +4,7 @@
 OptionsController::OptionsController(GameModel * gModel_, ControllerCallback * callback_):
 	gModel(gModel_),
 	callback(callback_),
+	temp_3ddepth(depth3d),
 	HasExited(false)
 {
 	view = new OptionsView();
@@ -81,18 +82,33 @@ void OptionsController::SetFastQuit(bool fastquit)
 	model->SetFastQuit(fastquit);
 }
 
+void OptionsController::Set3dDepth(int depth)
+{
+	temp_3ddepth = depth;
+}
+
 OptionsView * OptionsController::GetView()
 {
 	return view;
 }
 
+#ifdef SDL_INC
+#include "SDL/SDL.h"
+#else
+#include "SDL.h"
+#endif
 void OptionsController::Exit()
 {
-	if(ui::Engine::Ref().GetWindow() == view)
+	if (ui::Engine::Ref().GetWindow() == view)
 	{
 		ui::Engine::Ref().CloseWindow();
 	}
-	if(callback)
+	depth3d = temp_3ddepth;
+	if (depth3d)
+		SDL_ShowCursor(0);
+	else
+		SDL_ShowCursor(1);
+	if (callback)
 		callback->ControllerExit();
 	HasExited = true;
 }

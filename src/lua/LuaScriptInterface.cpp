@@ -2019,6 +2019,7 @@ void LuaScriptInterface::initRendererAPI()
 		{"decorations", renderer_decorations}, //renderer_debugHUD
 		{"grid", renderer_grid},
 		{"debugHUD", renderer_debugHUD},
+		{"depth3d", renderer_depth3d},
 		{NULL, NULL}
 	};
 	luaL_register(l, "renderer", rendererAPIMethods);
@@ -2197,6 +2198,18 @@ int LuaScriptInterface::renderer_debugHUD(lua_State * l)
 	}
 	int debug = luaL_optint(l, 1, -1);
 	luacon_controller->SetDebugHUD(debug);
+	return 0;
+}
+
+int LuaScriptInterface::renderer_depth3d(lua_State * l)
+{
+	int acount = lua_gettop(l);
+	if (acount == 0)
+	{
+		lua_pushnumber(l, depth3d);
+		return 1;
+	}
+	depth3d = luaL_optint(l, 1, 2);
 	return 0;
 }
 

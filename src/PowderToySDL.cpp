@@ -47,6 +47,7 @@ extern "C" {
 
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/dialogues/ConfirmPrompt.h"
+#include "gui/dialogues/InformationMessage.h"
 #include "gui/interface/Keys.h"
 #include "gui/Style.h"
 
@@ -66,6 +67,7 @@ SDL_SysWMinfo sdl_wminfo;
 Atom XA_CLIPBOARD, XA_TARGETS, XA_UTF8_STRING;
 #endif
 
+int depth3d = 0;
 std::string clipboardText = "";
 
 int desktopWidth = 1280, desktopHeight = 1024;
@@ -193,10 +195,78 @@ void blit()
 	SDL_GL_SwapBuffers();
 }
 #else
+int mousex = 0, mousey = 0;
+void DrawPixel(pixel * vid, pixel color, int x, int y)
+{
+	if (x >= 0 && x < WINDOWW && y >= 0 && y < WINDOWH)
+		vid[x+y*WINDOWW] = color;
+}
+
+void DrawCursor(pixel * vid)
+{
+	//vid[100+100*WINDOWW] = 255<<24|PIXRGB(100, 0, 100);
+	for (int j = 1; j <= 9; j++)
+	{
+		for (int i = 0; i <= j; i++)
+		{
+			if (i == 0 || i == j)
+				DrawPixel(vid, 0xFFFFFFFF, mousex+i, mousey+j);
+			else
+				DrawPixel(vid, 0xFF000000, mousex+i, mousey+j);
+		}
+	}
+	DrawPixel(vid, 0xFFFFFFFF, mousex, mousey+10);
+	for (int i = 0; i < 5; i++)
+	{
+		DrawPixel(vid, 0xFF000000, mousex+1+i, mousey+10);
+		DrawPixel(vid, 0xFFFFFFFF, mousex+6+i, mousey+10);
+	}
+	DrawPixel(vid, 0xFFFFFFFF, mousex, mousey+11);
+	DrawPixel(vid, 0xFF000000, mousex+1, mousey+11);
+	DrawPixel(vid, 0xFF000000, mousex+2, mousey+11);
+	DrawPixel(vid, 0xFFFFFFFF, mousex+3, mousey+11);
+	DrawPixel(vid, 0xFF000000, mousex+4, mousey+11);
+	DrawPixel(vid, 0xFF000000, mousex+5, mousey+11);
+	DrawPixel(vid, 0xFFFFFFFF, mousex+6, mousey+11);
+
+	DrawPixel(vid, 0xFFFFFFFF, mousex, mousey+12);
+	DrawPixel(vid, 0xFF000000, mousex+1, mousey+12);
+	DrawPixel(vid, 0xFFFFFFFF, mousex+2, mousey+12);
+	DrawPixel(vid, 0xFFFFFFFF, mousex+4, mousey+12);
+	DrawPixel(vid, 0xFF000000, mousex+5, mousey+12);
+	DrawPixel(vid, 0xFF000000, mousex+6, mousey+12);
+	DrawPixel(vid, 0xFFFFFFFF, mousex+7, mousey+12);
+
+	DrawPixel(vid, 0xFFFFFFFF, mousex, mousey+13);
+	DrawPixel(vid, 0xFFFFFFFF, mousex+1, mousey+13);
+	DrawPixel(vid, 0xFFFFFFFF, mousex+4, mousey+13);
+	DrawPixel(vid, 0xFF000000, mousex+5, mousey+13);
+	DrawPixel(vid, 0xFF000000, mousex+6, mousey+13);
+	DrawPixel(vid, 0xFFFFFFFF, mousex+7, mousey+13);
+
+	DrawPixel(vid, 0xFFFFFFFF, mousex, mousey+14);
+	for (int i = 0; i < 2; i++)
+	{
+		DrawPixel(vid, 0xFFFFFFFF, mousex+5, mousey+14+i);
+		DrawPixel(vid, 0xFF000000, mousex+6, mousey+14+i);
+		DrawPixel(vid, 0xFF000000, mousex+7, mousey+14+i);
+		DrawPixel(vid, 0xFFFFFFFF, mousex+8, mousey+14+i);
+
+		DrawPixel(vid, 0xFFFFFFFF, mousex+6, mousey+16+i);
+		DrawPixel(vid, 0xFF000000, mousex+7, mousey+16+i);
+		DrawPixel(vid, 0xFF000000, mousex+8, mousey+16+i);
+		DrawPixel(vid, 0xFFFFFFFF, mousex+9, mousey+16+i);
+	}
+
+	DrawPixel(vid, 0xFFFFFFFF, mousex+7, mousey+18);
+	DrawPixel(vid, 0xFFFFFFFF, mousex+8, mousey+18);
+}
 void blit(pixel * vid)
 {
 	if(sdl_scrn)
 	{
+		if (depth3d)
+			DrawCursor(vid);
 		pixel * src = vid;
 		int j, x = 0, y = 0, w = WINDOWW, h = WINDOWH, pitch = WINDOWW;
 		pixel *dst;
@@ -208,16 +278,24 @@ void blit(pixel * vid)
 		{
 			//pixel format conversion
 			int i;
-			pixel px;
+			pixel px, lastpx, nextpx;
 			SDL_PixelFormat *fmt = sdl_scrn->format;
 			for (j=0; j<h; j++)
 			{
 				for (i=0; i<w; i++)
 				{
 					px = src[i];
-					dst[i] = ((PIXR(px)>>fmt->Rloss)<<fmt->Rshift)|
-							((PIXG(px)>>fmt->Gloss)<<fmt->Gshift)|
-							((PIXB(px)>>fmt->Bloss)<<fmt->Bshift);
+					if (depth3d)
+					{
+						// not supported properly, but give them some effect anyway
+						lastpx = i >= depth3d && i < w+depth3d ? src[i-depth3d] : 0;
+						nextpx = i >= -depth3d && i < w-depth3d ? src[i+depth3d] : 0;
+						dst[i] = ((PIXR(lastpx)>>fmt->Rloss)<<fmt->Rshift)|
+							((PIXG(nextpx)>>fmt->Gloss)<<fmt->Gshift)|
+							((PIXB(nextpx)>>fmt->Bloss)<<fmt->Bshift);
+					}
+					else
+						dst[i] = src[i];
 				}
 				dst+=sdl_scrn->pitch/PIXELSIZE;
 				src+=pitch;
@@ -225,9 +303,30 @@ void blit(pixel * vid)
 		}
 		else
 		{
+			int i;
+			pixel px, lastpx, nextpx;
 			for (j=0; j<h; j++)
 			{
-				memcpy(dst, src, w*PIXELSIZE);
+				for (i=0; i<w; i++)
+			
+				{
+					px = src[i];
+					if (depth3d)
+					{
+						lastpx = i >= depth3d && i < w+depth3d ? src[i-depth3d] : 0;
+						nextpx = i >= -depth3d && i < w-depth3d ? src[i+depth3d] : 0;
+						float redshift = PIXB(lastpx)*.3f + PIXG(lastpx)*.3f;
+						if (redshift > 255*.3f)
+							redshift = 255*.3f;
+						float blueshift = PIXR(nextpx)*.3f + PIXG(nextpx)*.3f;
+						if (blueshift > 255*.3f)
+							blueshift = 255*.3f;
+						dst[i] = PIXRGB((int)(PIXR(lastpx)*.69f+redshift), (int)(PIXG(nextpx)*.3f), (int)(PIXB(nextpx)*.69f+blueshift));
+					}
+					else
+						dst[i] = src[i];
+				}
+				//memcpy(dst, src, w*PIXELSIZE);
 				dst+=sdl_scrn->pitch/PIXELSIZE;
 				src+=pitch;
 			}
@@ -241,9 +340,12 @@ void blit2(pixel * vid, int currentScale)
 {
 	if(sdl_scrn)
 	{
+		if (depth3d)
+			DrawCursor(vid);
 		pixel * src = vid;
 		int j, x = 0, y = 0, w = WINDOWW, h = WINDOWH, pitch = WINDOWW;
 		pixel *dst;
+		pixel px, lastpx, nextpx;
 		int i,k;
 		if (SDL_MUSTLOCK(sdl_scrn))
 			if (SDL_LockSurface(sdl_scrn)<0)
@@ -252,7 +354,6 @@ void blit2(pixel * vid, int currentScale)
 		if (SDL_MapRGB(sdl_scrn->format,0x33,0x55,0x77)!=PIXPACK(0x335577))
 		{
 			//pixel format conversion
-			pixel px;
 			SDL_PixelFormat *fmt = sdl_scrn->format;
 			for (j=0; j<h; j++)
 			{
@@ -261,9 +362,15 @@ void blit2(pixel * vid, int currentScale)
 					for (i=0; i<w; i++)
 					{
 						px = src[i];
-						px = ((PIXR(px)>>fmt->Rloss)<<fmt->Rshift)|
-							((PIXG(px)>>fmt->Gloss)<<fmt->Gshift)|
-							((PIXB(px)>>fmt->Bloss)<<fmt->Bshift);
+						if (depth3d)
+						{
+							// not supported properly, but give them some effect anyway
+							lastpx = i >= depth3d/2 && i < w+depth3d/2 ? src[i-depth3d/2] : 0;
+							nextpx = i >= -depth3d/2 && i < w-depth3d/2 ? src[i+depth3d/2] : 0;
+							px = ((PIXR(lastpx)>>fmt->Rloss)<<fmt->Rshift)|
+								((PIXG(nextpx)>>fmt->Gloss)<<fmt->Gshift)|
+								((PIXB(nextpx)>>fmt->Bloss)<<fmt->Bshift);
+						}
 						dst[i*2]=px;
 						dst[i*2+1]=px;
 					}
@@ -280,8 +387,21 @@ void blit2(pixel * vid, int currentScale)
 				{
 					for (i=0; i<w; i++)
 					{
-						dst[i*2]=src[i];
-						dst[i*2+1]=src[i];
+						px = src[i];
+						if (depth3d)
+						{
+							lastpx = i >= depth3d/2 && i < w+depth3d/2 ? src[i-depth3d/2] : 0;
+							nextpx = i >= -depth3d/2 && i < w-depth3d/2 ? src[i+depth3d/2] : 0;
+							float redshift = PIXB(lastpx)*.3f + PIXG(lastpx)*.3f;
+							if (redshift > 255*.3f)
+								redshift = 255*.3f;
+							float blueshift = PIXR(nextpx)*.3f + PIXG(nextpx)*.3f;
+							if (blueshift > 255*.3f)
+								blueshift = 255*.3f;
+							px = PIXRGB((int)(PIXR(lastpx)*.69f+redshift), (int)(PIXG(nextpx)*.3f), (int)(PIXB(nextpx)*.69f+blueshift));
+						}
+						dst[i*2] = px;
+						dst[i*2+1] = px;
 					}
 					dst+=sdl_scrn->pitch/PIXELSIZE;
 				}
@@ -488,6 +608,8 @@ void EventProcess(SDL_Event event)
 		break;
 	case SDL_MOUSEMOTION:
 		engine->onMouseMove(event.motion.x*inputScale, event.motion.y*inputScale);
+		mousex = event.motion.x*inputScale;
+		mousey = event.motion.y*inputScale;
 		break;
 	case SDL_MOUSEBUTTONDOWN:
 		if (event.button.button == SDL_BUTTON_WHEELUP)
@@ -502,10 +624,14 @@ void EventProcess(SDL_Event event)
 		{
 			engine->onMouseClick(event.motion.x*inputScale, event.motion.y*inputScale, event.button.button);
 		}
+		mousex = event.motion.x*inputScale;
+		mousey = event.motion.y*inputScale;
 		break;
 	case SDL_MOUSEBUTTONUP:
 		if (event.button.button != SDL_BUTTON_WHEELUP && event.button.button != SDL_BUTTON_WHEELDOWN)
 			engine->onMouseUnclick(event.motion.x*inputScale, event.motion.y*inputScale, event.button.button);
+		mousex = event.motion.x*inputScale;
+		mousey = event.motion.y*inputScale;
 		break;
 #ifdef OGLI
 	case SDL_VIDEORESIZE:
@@ -591,6 +717,25 @@ void DoubleScreenDialog()
 #endif
 	}
 }
+
+void ThreeDeeDialog()
+{
+	std::stringstream message;
+	message << "We hear your requests, everyone has been asking for a 3D version of TPT. It has long been rejected as 'impossible', but that just isn't true. Many hours of work have been put into finally making a full 3D TPT a reality. ";
+	message << "\nUpon hitting 'Confirm', 3D mode will enable.";
+	if (ConfirmPrompt::Blocking("Enable 3D Mode", message.str()))
+	{
+		depth3d = -3;
+		SDL_ShowCursor(0);
+		new InformationMessage("Success!", "3D Mode enabled!\nYou may disable this at any time in simulation settings for compatibility with 2D saves. I hope you brought your glasses!", false);
+	}
+	else
+	{
+		ErrorMessage::Blocking("Not using 3D Mode", "You make TPT sad");
+	}
+}
+
+bool show3dDialog = true;
 void EngineProcess()
 {
 	double frameTimeAvg = 0.0f, correctedFrameTimeAvg = 0.0f;
@@ -647,6 +792,11 @@ void EngineProcess()
 		{
 			showDoubleScreenDialog = false;
 			DoubleScreenDialog();
+		}
+		if (show3dDialog)
+		{
+			show3dDialog = false;
+			ThreeDeeDialog();
 		}
 	}
 #ifdef DEBUG
