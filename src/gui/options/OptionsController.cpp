@@ -92,10 +92,12 @@ OptionsView * OptionsController::GetView()
 	return view;
 }
 
+#ifdef USE_SDL
 #ifdef SDL_INC
 #include "SDL/SDL.h"
 #else
 #include "SDL.h"
+#endif
 #endif
 void OptionsController::Exit()
 {
@@ -104,10 +106,12 @@ void OptionsController::Exit()
 		ui::Engine::Ref().CloseWindow();
 	}
 	depth3d = temp_3ddepth;
+#ifdef USE_SDL
 	if (depth3d)
 		SDL_ShowCursor(0);
 	else
 		SDL_ShowCursor(1);
+#endif
 	if (callback)
 		callback->ControllerExit();
 	HasExited = true;
