@@ -80,9 +80,9 @@ int Element_VIBR::update(UPDATE_FUNC_ARGS) {
 	else //if it is exploding
 	{
 		//Release sparks before explode
+		rndstore = rand();
 		if (parts[i].life < 300)
 		{
-			rndstore = rand();
 			rx = rndstore%3-1;
 			ry = (rndstore>>2)%3-1;
 			rndstore = rndstore >> 4;
