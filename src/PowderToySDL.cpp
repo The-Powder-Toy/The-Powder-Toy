@@ -1,5 +1,3 @@
-int depth3d = 0;
-
 #ifdef USE_SDL
 
 #include <map>
@@ -49,7 +47,6 @@ extern "C" {
 
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/dialogues/ConfirmPrompt.h"
-#include "gui/dialogues/InformationMessage.h"
 #include "gui/interface/Keys.h"
 #include "gui/Style.h"
 
@@ -202,7 +199,7 @@ void DrawPixel(pixel * vid, pixel color, int x, int y)
 	if (x >= 0 && x < WINDOWW && y >= 0 && y < WINDOWH)
 		vid[x+y*WINDOWW] = color;
 }
-
+// draws a custom cursor, used to make 3D mode work properly (normal cursor ruins the effect)
 void DrawCursor(pixel * vid)
 {
 	for (int j = 0; j <= 9; j++)
@@ -263,8 +260,9 @@ void DrawCursor(pixel * vid)
 }
 void blit(pixel * vid)
 {
-	if(sdl_scrn)
+	if (sdl_scrn)
 	{
+		int depth3d = ui::Engine::Ref().Get3dDepth();
 		if (depth3d)
 			DrawCursor(vid);
 		pixel * src = vid;
@@ -346,8 +344,9 @@ void blit(pixel * vid)
 }
 void blit2(pixel * vid, int currentScale)
 {
-	if(sdl_scrn)
+	if (sdl_scrn)
 	{
+		int depth3d = ui::Engine::Ref().Get3dDepth();
 		if (depth3d)
 			DrawCursor(vid);
 		pixel * src = vid;
@@ -497,6 +496,11 @@ SDL_Surface * SDLSetScreen(int newScale, bool newFullscreen)
 	surface = SDL_SetVideoMode(WINDOWW * newScale, WINDOWH * newScale, 32, SDL_OPENGL | SDL_RESIZABLE | (newFullscreen?SDL_FULLSCREEN:0));
 #endif
 	return surface;
+}
+
+void SetCursorEnabled(int enabled)
+{
+	SDL_ShowCursor(enabled);
 }
 
 std::map<std::string, std::string> readArguments(int argc, char * argv[])
@@ -738,24 +742,6 @@ void DoubleScreenDialog()
 	}
 }
 
-void ThreeDeeDialog()
-{
-	std::stringstream message;
-	message << "We hear your requests, everyone has been asking for a 3D version of TPT. It has long been rejected as 'impossible', but that just isn't true. Many hours of work have been put into finally making a full 3D TPT a reality. ";
-	message << "\nUpon hitting 'Confirm', 3D mode will enable.";
-	if (ConfirmPrompt::Blocking("Enable 3D Mode", message.str()))
-	{
-		depth3d = -3;
-		SDL_ShowCursor(0);
-		new InformationMessage("Success!", "3D Mode enabled!\nYou may disable this at any time in simulation settings for compatibility with 2D saves. I hope you brought your glasses!", false);
-	}
-	else
-	{
-		ErrorMessage::Blocking("Not using 3D Mode", "You make TPT sad");
-	}
-}
-
-bool show3dDialog = true;
 void EngineProcess()
 {
 	double frameTimeAvg = 0.0f, correctedFrameTimeAvg = 0.0f;
@@ -812,11 +798,6 @@ void EngineProcess()
 		{
 			showDoubleScreenDialog = false;
 			DoubleScreenDialog();
-		}
-		if (show3dDialog)
-		{
-			show3dDialog = false;
-			ThreeDeeDialog();
 		}
 	}
 #ifdef DEBUG

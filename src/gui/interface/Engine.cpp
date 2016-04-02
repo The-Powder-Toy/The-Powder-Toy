@@ -16,6 +16,7 @@ Engine::Engine():
 	FpsLimit(60.0f),
 	Scale(1),
 	Fullscreen(false),
+	Depth3d(0),
 	FrameIndex(0),
 	lastBuffer(NULL),
 	prevBuffers(stack<pixel*>()),

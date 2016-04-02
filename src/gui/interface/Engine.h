@@ -4,6 +4,7 @@
 #include "common/Singleton.h"
 #include "graphics/Graphics.h"
 #include "Window.h"
+#include "PowderToy.h"
 
 namespace ui
 {
@@ -45,6 +46,8 @@ namespace ui
 		inline bool GetFullscreen() { return Fullscreen; }
 		void SetScale(int scale) { Scale = scale; }
 		inline int GetScale() { return Scale; }
+		void Set3dDepth(int depth3d) { Depth3d = depth3d; if (Depth3d) SetCursorEnabled(0); else SetCursorEnabled(1);}
+		inline int Get3dDepth() { return Depth3d; }
 		void SetFastQuit(bool fastquit) { FastQuit = fastquit; }
 		inline bool GetFastQuit() {return FastQuit; }
 
@@ -74,6 +77,7 @@ namespace ui
 		Graphics * g;
 		int Scale;
 		bool Fullscreen;
+		int Depth3d;
 
 		unsigned int FrameIndex;
 	private:

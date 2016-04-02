@@ -2206,10 +2206,13 @@ int LuaScriptInterface::renderer_depth3d(lua_State * l)
 	int acount = lua_gettop(l);
 	if (acount == 0)
 	{
-		lua_pushnumber(l, depth3d);
+		lua_pushnumber(l, ui::Engine::Ref().Get3dDepth());
 		return 1;
 	}
-	depth3d = luaL_optint(l, 1, 2);
+	int depth3d = luaL_optint(l, 1, -3);
+	if (depth3d < -30 || depth3d > 30)
+		return luaL_error(l, "3D depth is too large");
+	ui::Engine::Ref().Set3dDepth(depth3d);
 	return 0;
 }
 

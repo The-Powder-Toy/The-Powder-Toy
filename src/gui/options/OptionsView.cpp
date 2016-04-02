@@ -225,12 +225,12 @@ OptionsView::OptionsView():
 		DepthAction(OptionsView * v_) { v = v_; }
 		virtual void TextChangedCallback(ui::Textbox * sender) { v->c->Set3dDepth(format::StringToNumber<int>(sender->GetText())); }
 	};
-	depthTextbox = new ui::Textbox(ui::Point(8, Size.Y-58), ui::Point(25, 16), format::NumberToString<int>(depth3d));
+	depthTextbox = new ui::Textbox(ui::Point(8, Size.Y-58), ui::Point(25, 16), format::NumberToString<int>(ui::Engine::Ref().Get3dDepth()));
 	depthTextbox->SetInputType(ui::Textbox::Numeric);
 	depthTextbox->SetActionCallback(new DepthAction(this));
 	AddComponent(depthTextbox);
 
-	tempLabel = new ui::Label(ui::Point(depthTextbox->Position.X+depthTextbox->Size.X+3, depthTextbox->Position.Y), ui::Point(Size.X-28, 16), "\bg- Change the depth of the 3d effect");
+	tempLabel = new ui::Label(ui::Point(depthTextbox->Position.X+depthTextbox->Size.X+3, depthTextbox->Position.Y), ui::Point(Size.X-28, 16), "\bg- Change the depth of the 3d glasses effect");
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(tempLabel);
 

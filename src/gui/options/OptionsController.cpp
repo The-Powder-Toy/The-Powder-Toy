@@ -4,15 +4,14 @@
 OptionsController::OptionsController(GameModel * gModel_, ControllerCallback * callback_):
 	gModel(gModel_),
 	callback(callback_),
-	temp_3ddepth(depth3d),
 	HasExited(false)
 {
+	this->depth3d = ui::Engine::Ref().Get3dDepth();
 	view = new OptionsView();
 	model = new OptionsModel(gModel);
 	model->AddObserver(view);
 
 	view->AttachController(this);
-
 }
 
 void OptionsController::SetHeatSimulation(bool state)
@@ -84,7 +83,7 @@ void OptionsController::SetFastQuit(bool fastquit)
 
 void OptionsController::Set3dDepth(int depth)
 {
-	temp_3ddepth = depth;
+	depth3d = depth;
 }
 
 OptionsView * OptionsController::GetView()
@@ -92,26 +91,14 @@ OptionsView * OptionsController::GetView()
 	return view;
 }
 
-#ifdef USE_SDL
-#ifdef SDL_INC
-#include "SDL/SDL.h"
-#else
-#include "SDL.h"
-#endif
-#endif
 void OptionsController::Exit()
 {
 	if (ui::Engine::Ref().GetWindow() == view)
 	{
 		ui::Engine::Ref().CloseWindow();
 	}
-	depth3d = temp_3ddepth;
-#ifdef USE_SDL
-	if (depth3d)
-		SDL_ShowCursor(0);
-	else
-		SDL_ShowCursor(1);
-#endif
+	// only update on close, it would be hard to edit if the changes were live
+	ui::Engine::Ref().Set3dDepth(depth3d);
 	if (callback)
 		callback->ControllerExit();
 	HasExited = true;

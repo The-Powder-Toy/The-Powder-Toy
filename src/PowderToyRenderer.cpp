@@ -21,6 +21,7 @@ void EngineProcess() {}
 void ClipboardPush(std::string) {}
 std::string ClipboardPull() { return ""; }
 int GetModifiers() { return 0; }
+void SetCursorEnabled(int enabled) {}
 
 void readFile(std::string filename, std::vector<char> & storage)
 {
