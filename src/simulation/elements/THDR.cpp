@@ -30,7 +30,7 @@ Element_THDR::Element_THDR()
 	HeatConduct = 1;
 	Description = "Lightning! Very hot, inflicts damage upon most materials, and transfers current to metals.";
 
-	Properties = TYPE_ENERGY;
+	Properties = TYPE_PART;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
