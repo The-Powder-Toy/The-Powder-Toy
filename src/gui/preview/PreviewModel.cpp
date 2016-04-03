@@ -12,6 +12,8 @@ PreviewModel::PreviewModel():
 	saveInfo(NULL),
 	saveData(NULL),
 	saveComments(NULL),
+	saveDataDownload(NULL),
+	commentsDownload(NULL),
 	commentBoxEnabled(false),
 	commentsLoaded(false),
 	commentsTotal(0),

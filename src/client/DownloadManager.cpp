@@ -9,8 +9,8 @@ DownloadManager::DownloadManager():
 	lastUsed(time(NULL)),
 	managerRunning(false),
 	managerShutdown(false),
-	downloads(NULL),
-	downloadsAddQueue(NULL)
+	downloads(std::vector<Download*>()),
+	downloadsAddQueue(std::vector<Download*>())
 {
 	pthread_mutex_init(&downloadLock, NULL);
 	pthread_mutex_init(&downloadAddLock, NULL);

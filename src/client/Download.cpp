@@ -9,13 +9,13 @@ Download::Download(std::string uri_, bool keepAlive):
 	downloadData(NULL),
 	downloadSize(0),
 	downloadStatus(0),
-	downloadFinished(false),
-	downloadCanceled(false),
-	downloadStarted(false),
 	postData(""),
 	postDataBoundary(""),
 	userID(""),
-	userSession("")
+	userSession(""),
+	downloadFinished(false),
+	downloadCanceled(false),
+	downloadStarted(false)
 {
 	uri = std::string(uri_);
 	DownloadManager::Ref().AddDownload(this);

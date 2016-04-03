@@ -24,7 +24,7 @@
 #include <string>
 
 static const char hexChars[] = "0123456789abcdef";
-static long http_timeout = 15;
+static const long http_timeout = 15;
 
 void http_init(char *proxy);
 void http_done(void);
