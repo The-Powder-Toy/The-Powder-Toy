@@ -42,19 +42,6 @@ int Tool_Mix::Perform(Simulation * sim, Particle * cpart, int x, int y, float st
 	sim->pmap[newY][newX] = thisPart;
 	sim->parts[thisPart>>8].x = newX;
 	sim->parts[thisPart>>8].y = newY;
-
-	/*if(!cpart)
-		return 0;
-	if (cpart->type == PT_PUMP || cpart->type == PT_GPMP)
-		cpart->temp += strength*.1f;
-	else
-		cpart->temp += strength*2.0f;
-
-	if (cpart->temp > MAX_TEMP)
-		cpart->temp = MAX_TEMP;
-	else if (cpart->temp < 0)
-		cpart->temp = 0;
-	return 1;*/
 }
 
 Tool_Mix::~Tool_Mix() {}
