@@ -1492,6 +1492,7 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		break;
 	case 'n':
 		c->ToggleNewtonianGravity();
+		break;
 	case '=':
 		if(ctrl)
 			c->ResetSpark();
