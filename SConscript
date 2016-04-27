@@ -388,7 +388,9 @@ if not msvc:
 		env.Append(CXXFLAGS=['-std=gnu++98'])
 	else:
 		env.Append(CXXFLAGS=['-std=c++98'])
-	env.Append(CXXFLAGS=['-Wno-invalid-offsetof', '-Wno-unused-result'])
+	env.Append(CXXFLAGS=['-Wno-invalid-offsetof'])
+	if platform == "Linux":
+		env.Append(CXXFLAGS=['-Wno-unused-result'])
 
 
 #Add platform specific flags and defines

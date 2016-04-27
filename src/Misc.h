@@ -54,10 +54,6 @@ void save_presets(int do_update);
 
 void load_presets(void);
 
-void save_string(FILE *f, char *str);
-
-int load_string(FILE *f, char *str, int max);
-
 void strcaturl(char *dst, const char *src);
 
 void strappend(char *dst, const char *src);

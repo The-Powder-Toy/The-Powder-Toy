@@ -75,32 +75,6 @@ void strlist_free(struct strlist **list)
 	}
 }
 
-void save_string(FILE *f, char *str)
-{
-	int li = strlen(str);
-	unsigned char lb[2];
-	lb[0] = li;
-	lb[1] = li >> 8;
-	fwrite(lb, 2, 1, f);
-	fwrite(str, li, 1, f);
-}
-
-int load_string(FILE *f, char *str, int max)
-{
-	int li;
-	unsigned char lb[2];
-	fread(lb, 2, 1, f);
-	li = lb[0] | (lb[1] << 8);
-	if (li > max)
-	{
-		str[0] = 0;
-		return 1;
-	}
-	fread(str, li, 1, f);
-	str[li] = 0;
-	return 0;
-}
-
 const static char hex[] = "0123456789ABCDEF";
 void strcaturl(char *dst, char *src)
 {
@@ -155,8 +129,13 @@ void *file_load(char *fn, int *size)
 		fclose(f);
 		return NULL;
 	}
-	fread(s, *size, 1, f);
+	int readsize = fread(s, *size, 1, f);
 	fclose(f);
+	if (readsize != *size)
+	{
+		free(s);
+		return NULL;
+	}
 	return s;
 }
 
