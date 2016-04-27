@@ -348,7 +348,7 @@ bool Client::DoInstallation()
 #elif defined(LIN)
 	#include "icondoc.h"
 
-	int success == 1;
+	int success = 1;
 	std::string filename = Platform::ExecutableName(), pathname = filename.substr(0, filename.rfind('/'));
 	for (size_t i = 0; i < filename.size(); i++)
 	{
