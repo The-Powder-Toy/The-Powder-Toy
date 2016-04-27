@@ -3333,7 +3333,7 @@ bool LuaScriptInterface::OnKeyRelease(int key, Uint16 character, bool shift, boo
 		modifiers |= 0x040;
 	if(alt)
 		modifiers |= 0x100;
-	return luacon_keyevent(key, character, modifiers, LUACON_KUP);
+	return luacon_keyevent(key, key < 256 ? key : 0, modifiers, LUACON_KUP);
 }
 
 bool LuaScriptInterface::OnMouseTick()
