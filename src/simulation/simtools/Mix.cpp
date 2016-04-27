@@ -17,7 +17,7 @@ int Tool_Mix::Perform(Simulation * sim, Particle * cpart, int x, int y, float st
 	if(rand() % 100 != 0)
 		return 0;
 
-	int distance = strength * 10;
+	int distance = (int)(std::pow(strength, .5) * 10);
 
 	if(!(sim->elements[thisPart&0xFF].Properties & TYPE_PART))
 		return 0;
@@ -42,6 +42,8 @@ int Tool_Mix::Perform(Simulation * sim, Particle * cpart, int x, int y, float st
 	sim->pmap[newY][newX] = thisPart;
 	sim->parts[thisPart>>8].x = newX;
 	sim->parts[thisPart>>8].y = newY;
+
+	return 1;
 }
 
 Tool_Mix::~Tool_Mix() {}
