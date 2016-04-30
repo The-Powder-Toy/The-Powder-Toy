@@ -42,15 +42,18 @@ void ParticleDebug::Debug(int mode, int x, int y)
 	}
 	model->Log(logmessage.str(), false);
 
+	if (sim->debug_currentParticle == 0)
+	{
+		sim->framerender = 1;
+		sim->BeforeSim();
+		sim->framerender = 0;
+	}
 	sim->UpdateParticles(debug_currentParticle, i);
 	if (i < NPART-1)
 		sim->debug_currentParticle = i+1;
 	else
 	{
 		sim->AfterSim();
-		sim->framerender = 1;
-		sim->BeforeSim();
-		sim->framerender = 0;
 		sim->debug_currentParticle = 0;
 	}
 }
