@@ -1012,8 +1012,8 @@ void Renderer::DrawSigns()
 					x += dx;
 					y += dy;
 				}
-			}
 #endif
+			}
 		}
 #ifdef OGLR
 	glTranslated(0, -MENUSIZE, 0);

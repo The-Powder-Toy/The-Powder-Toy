@@ -187,13 +187,13 @@ std::string ClipboardPull()
 	return clipboardText;
 }
 
+int mousex = 0, mousey = 0;
 #ifdef OGLI
 void blit()
 {
 	SDL_GL_SwapBuffers();
 }
 #else
-int mousex = 0, mousey = 0;
 void DrawPixel(pixel * vid, pixel color, int x, int y)
 {
 	if (x >= 0 && x < WINDOWW && y >= 0 && y < WINDOWH)
