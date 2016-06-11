@@ -28,7 +28,7 @@ Element_URAN::Element_URAN()
 
 	Temperature = R_TEMP+30.0f+273.15f;
 	HeatConduct = 251;
-	Description = "Heavy particles. Generates heat under pressure.";
+	Description = "Uranium. Heavy particles. Generates heat under pressure.";
 
 	Properties = TYPE_PART | PROP_RADIOACTIVE;
 

@@ -28,7 +28,7 @@ Element_CONV::Element_CONV()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "Solid. Converts everything into whatever it first touches.";
+	Description = "Converter. Converts everything into whatever it first touches.";
 
 	Properties = TYPE_SOLID|PROP_DRAWONCTYPE|PROP_NOCTYPEDRAW;
 

@@ -28,7 +28,7 @@ Element_CLNE::Element_CLNE()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "Solid. Duplicates any particles it touches.";
+	Description = "Clone. Duplicates any particles it touches.";
 
 	Properties = TYPE_SOLID|PROP_DRAWONCTYPE|PROP_NOCTYPEDRAW;
 
