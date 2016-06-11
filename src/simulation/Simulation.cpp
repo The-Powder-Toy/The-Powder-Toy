@@ -167,7 +167,7 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 		}
 	}
 	parts_lastActiveIndex = NPART-1;
-	force_stacking_check = 1;
+	force_stacking_check = true;
 	Element_PPIP::ppip_changed = 1;
 	for (size_t i = 0; i < save->signs.size() && signs.size() < MAXSIGNS; i++)
 	{
@@ -332,8 +332,9 @@ Snapshot * Simulation::CreateSnapshot()
 
 void Simulation::Restore(const Snapshot & snap)
 {
-	parts_lastActiveIndex = NPART-1; 
+	parts_lastActiveIndex = NPART-1;
 	elementRecount = true;
+	force_stacking_check = true;
 
 	std::copy(snap.AirPressure.begin(), snap.AirPressure.end(), &pv[0][0]);
 	std::copy(snap.AirVelocityX.begin(), snap.AirVelocityX.end(), &vx[0][0]);
@@ -4717,7 +4718,7 @@ void Simulation::SimulateGoL()
 void Simulation::CheckStacking()
 {
 	bool excessive_stacking_found = false;
-	force_stacking_check = 0;
+	force_stacking_check = false;
 	for (int y = 0; y < YRES; y++)
 	{
 		for (int x = 0; x < XRES; x++)
@@ -5074,7 +5075,7 @@ Simulation::Simulation():
 	replaceModeFlags(0),
 	debug_currentParticle(0),
 	ISWIRE(0),
-	force_stacking_check(0),
+	force_stacking_check(false),
 	emp_decor(0),
 	emp_trigger_count(0),
 	etrd_count_valid(false),

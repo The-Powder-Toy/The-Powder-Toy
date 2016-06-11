@@ -60,7 +60,7 @@ public:
 	bool elementRecount;
 	int elementCount[PT_NUM];
 	int ISWIRE;
-	int force_stacking_check;
+	bool force_stacking_check;
 	int emp_decor;
 	int emp_trigger_count;
 	bool etrd_count_valid;
