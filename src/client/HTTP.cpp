@@ -946,7 +946,7 @@ std::string FindBoundary(std::map<std::string, std::string> parts, std::string b
 	for (std::map<std::string, std::string>::iterator iter = parts.begin(); iter != parts.end(); iter++)
 	{
 		// loop through every character in each part and search for the substring, adding 1 to map for every character found (character after the substring)
-		for (ssize_t j = 0; j < (ssize_t)((*iter).second.length())-blen; j++)
+		for (ssize_t j = 0; j < (ssize_t)((*iter).second.length()-blen); j++)
 			if (!blen || (*iter).second.substr(j, blen) == boundary)
 			{
 				unsigned char ch = (*iter).second[j+blen];
