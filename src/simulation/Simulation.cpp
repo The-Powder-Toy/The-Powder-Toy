@@ -336,6 +336,17 @@ void Simulation::Restore(const Snapshot & snap)
 	elementRecount = true;
 	force_stacking_check = true;
 
+
+        // restore the gravity map only if it's enabled.
+
+        if (grav->ngrav_enable) {
+                std::copy(snap.GravVelocityX.begin(), snap.GravVelocityX.end(), gravx);
+                std::copy(snap.GravVelocityY.begin(), snap.GravVelocityY.end(), gravy);
+                std::copy(snap.GravValue.begin(), snap.GravValue.end(), gravp);
+                std::copy(snap.GravMap.begin(), snap.GravMap.end(), gravmap);
+        }
+
+
 	std::copy(snap.AirPressure.begin(), snap.AirPressure.end(), &pv[0][0]);
 	std::copy(snap.AirVelocityX.begin(), snap.AirVelocityX.end(), &vx[0][0]);
 	std::copy(snap.AirVelocityY.begin(), snap.AirVelocityY.end(), &vy[0][0]);
@@ -343,10 +354,6 @@ void Simulation::Restore(const Snapshot & snap)
 	std::copy(snap.Particles.begin(), snap.Particles.end(), parts);
 	std::copy(snap.PortalParticles.begin(), snap.PortalParticles.end(), &portalp[0][0][0]);
 	std::copy(snap.WirelessData.begin(), snap.WirelessData.end(), &wireless[0][0]);
-	std::copy(snap.GravVelocityX.begin(), snap.GravVelocityX.end(), gravx);
-	std::copy(snap.GravVelocityY.begin(), snap.GravVelocityY.end(), gravy);
-	std::copy(snap.GravValue.begin(), snap.GravValue.end(), gravp);
-	std::copy(snap.GravMap.begin(), snap.GravMap.end(), gravmap);
 	std::copy(snap.BlockMap.begin(), snap.BlockMap.end(), &bmap[0][0]);
 	std::copy(snap.ElecMap.begin(), snap.ElecMap.end(), &emap[0][0]);
 	std::copy(snap.FanVelocityX.begin(), snap.FanVelocityX.end(), &fvx[0][0]);
