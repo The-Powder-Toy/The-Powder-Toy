@@ -17,6 +17,7 @@
 #include "gui/dialogues/TextPrompt.h"
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/game/GameModel.h"
+#include "gui/interface/Keys.h"
 #include "simulation/Simulation.h"
 
 
@@ -440,6 +441,8 @@ int luacon_elementwrite(lua_State* l)
 bool shortcuts = true;
 int luacon_keyevent(int key, Uint16 character, int modifier, int event)
 {
+	if (key == 306)
+		return 0;
 	int kycontinue = 1;
 	lua_State* l=luacon_ci->l;
 	lua_pushstring(l, "keyfunctions");
@@ -456,7 +459,10 @@ int luacon_keyevent(int key, Uint16 character, int modifier, int event)
 	for (int i = 1; i <= len && kycontinue; i++)
 	{
 		lua_rawgeti(l, -1, i);
-		lua_pushlstring(l, (const char*)&character, 1);
+		if ((modifier & KEY_MOD_CONTROL) && (character < ' ' || character > '~'))
+			lua_pushlstring(l, (const char*)&key, 1);
+		else
+			lua_pushlstring(l, (const char*)&character, 1);
 		lua_pushinteger(l, key);
 		lua_pushinteger(l, modifier);
 		lua_pushinteger(l, event);
