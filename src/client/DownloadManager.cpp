@@ -38,7 +38,11 @@ void DownloadManager::Shutdown()
 	managerShutdown = true;
 	pthread_mutex_unlock(&downloadAddLock);
 	pthread_mutex_unlock(&downloadLock);
-	pthread_join(downloadThread, NULL);
+
+	// Avoid SIGSEGV in case of downloadThread being NULL
+
+	if (downloadThread)
+		pthread_join(downloadThread, NULL);
 }
 
 //helper function for download
