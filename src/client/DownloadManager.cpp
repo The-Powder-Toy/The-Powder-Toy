@@ -38,7 +38,7 @@ void DownloadManager::Shutdown()
 	managerShutdown = true;
 	pthread_mutex_unlock(&downloadAddLock);
 	pthread_mutex_unlock(&downloadLock);
-	if (downloadThread)
+	if (downloadThread != 0)
 		pthread_join(downloadThread, NULL);
 }
 
