@@ -28,7 +28,7 @@ Element_STOR::Element_STOR()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 0;
-	Description = "Captures and stores a single particle. releases when charged with PSCN, also passes to PIPE.";
+	Description = "Storage. Captures and stores a single particle. Releases when charged with PSCN, also passes to PIPE.";
 
 	Properties = TYPE_SOLID|PROP_NOCTYPEDRAW;
 
