@@ -441,8 +441,6 @@ int luacon_elementwrite(lua_State* l)
 bool shortcuts = true;
 int luacon_keyevent(int key, Uint16 character, int modifier, int event)
 {
-	if (key == 306)
-		return 0;
 	int kycontinue = 1;
 	lua_State* l=luacon_ci->l;
 	lua_pushstring(l, "keyfunctions");
