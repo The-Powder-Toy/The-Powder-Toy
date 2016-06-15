@@ -129,9 +129,9 @@ void ElementSearchActivity::searchTools(std::string query)
 		ToolButton * tempButton;
 
 		if(tempTexture)
-			tempButton = new ToolButton(current+viewPosition, ui::Point(30, 18), "", tool->GetDescription());
+			tempButton = new ToolButton(current+viewPosition, ui::Point(30, 18), "", tool->GetIdentifier(), tool->GetDescription());
 		else
-			tempButton = new ToolButton(current+viewPosition, ui::Point(30, 18), tool->GetName(), tool->GetDescription());
+			tempButton = new ToolButton(current+viewPosition, ui::Point(30, 18), tool->GetName(), tool->GetIdentifier(), tool->GetDescription());
 
 		tempButton->Appearance.SetTexture(tempTexture);
 		tempButton->Appearance.BackgroundInactive = ui::Colour(tool->colRed, tool->colGreen, tool->colBlue);

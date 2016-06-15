@@ -1,5 +1,6 @@
 #include <sstream>
 #include <iomanip>
+#include <algorithm>
 
 #include "Config.h"
 #include "gui/Style.h"
@@ -19,6 +20,7 @@
 #include "QuickOptions.h"
 #include "IntroText.h"
 #include "DecorationTool.h"
+#include "Favorite.h"
 
 
 class SplitButton;
@@ -536,11 +538,27 @@ public:
 	void ActionCallback(ui::Button * sender_)
 	{
 		ToolButton *sender = (ToolButton*)sender_;
-		if (v->CtrlBehaviour() && v->AltBehaviour() && !v->ShiftBehaviour())
-			if (tool->GetIdentifier().find("DEFAULT_PT_") != tool->GetIdentifier().npos)
-				sender->SetSelectionState(3);
-		if(sender->GetSelectionState() >= 0 && sender->GetSelectionState() <= 3)
-			v->c->SetActiveTool(sender->GetSelectionState(), tool);
+		if (v->ShiftBehaviour() && !v->CtrlBehaviour() && !v->AltBehaviour())
+		{
+			if (Favorite::Ref().IsFavorite(tool->GetIdentifier()) && sender->GetSelectionState() == 1)
+				Favorite::Ref().GetFavoritesList()->erase(std::remove(Favorite::Ref().GetFavoritesList()->begin(), Favorite::Ref().GetFavoritesList()->end(),
+					tool->GetIdentifier()), Favorite::Ref().GetFavoritesList()->end());
+			else if (sender->GetSelectionState() == 0)
+				Favorite::Ref().GetFavoritesList()->push_back(tool->GetIdentifier());
+			else if (sender->GetSelectionState() == 2)
+				v->c->SetActiveMenu(SC_FAVORITES);
+
+			v->c->GetModel()->BuildFavoritesMenu();
+		}
+		else
+		{
+			if (v->CtrlBehaviour() && v->AltBehaviour() && !v->ShiftBehaviour())
+				if (tool->GetIdentifier().find("DEFAULT_PT_") != tool->GetIdentifier().npos)
+					sender->SetSelectionState(3);
+
+			if (sender->GetSelectionState() >= 0 && sender->GetSelectionState() <= 3)
+				v->c->SetActiveTool(sender->GetSelectionState(), tool);
+		}
 	}
 };
 
@@ -740,9 +758,9 @@ void GameView::NotifyToolListChanged(GameModel * sender)
 			tempTexture = ((DecorationTool*)toolList[i])->GetIcon(toolList[i]->GetToolID(), 26, 14);
 
 		if(tempTexture)
-			tempButton = new ToolButton(ui::Point(currentX, YRES+1), ui::Point(30, 18), "", toolList[i]->GetDescription());
+			tempButton = new ToolButton(ui::Point(currentX, YRES+1), ui::Point(30, 18), "", toolList[i]->GetIdentifier(), toolList[i]->GetDescription());
 		else
-			tempButton = new ToolButton(ui::Point(currentX, YRES+1), ui::Point(30, 18), toolList[i]->GetName(), toolList[i]->GetDescription());
+			tempButton = new ToolButton(ui::Point(currentX, YRES+1), ui::Point(30, 18), toolList[i]->GetName(), toolList[i]->GetIdentifier(), toolList[i]->GetDescription());
 
 		//currentY -= 17;
 		currentX -= 31;
@@ -832,7 +850,7 @@ void GameView::NotifyColourPresetsChanged(GameModel * sender)
 	int i = 0;
 	for(std::vector<ui::Colour>::iterator iter = colours.begin(), end = colours.end(); iter != end; ++iter)
 	{
-		ToolButton * tempButton = new ToolButton(ui::Point(currentX, YRES+1), ui::Point(30, 18), "", "Decoration Presets.");
+		ToolButton * tempButton = new ToolButton(ui::Point(currentX, YRES+1), ui::Point(30, 18), "", "", "Decoration Presets.");
 		tempButton->Appearance.BackgroundInactive = *iter;
 		tempButton->SetActionCallback(new ColourPresetAction(this, i));
 
