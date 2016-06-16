@@ -548,7 +548,7 @@ public:
 			else if (sender->GetSelectionState() == 2)
 				v->c->SetActiveMenu(SC_FAVORITES);
 
-			v->c->GetModel()->BuildFavoritesMenu();
+			v->c->RebuildFavoritesMenu();
 		}
 		else
 		{

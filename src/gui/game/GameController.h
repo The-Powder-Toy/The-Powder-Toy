@@ -57,7 +57,6 @@ public:
 	GameController();
 	~GameController();
 	GameView * GetView();
-	GameModel * GetModel();
 	sign * GetSignAt(int x, int y);
 
 	bool MouseMove(int x, int y, int dx, int dy);
@@ -104,6 +103,7 @@ public:
 	void SetDebugFlags(unsigned int flags) { debugFlags = flags; }
 	void SetActiveMenu(int menuID);
 	std::vector<Menu*> GetMenuList();
+	void RebuildFavoritesMenu();
 	Tool * GetActiveTool(int selection);
 	void SetActiveTool(int toolSelection, Tool * tool);
 	void SetLastTool(Tool * tool);
