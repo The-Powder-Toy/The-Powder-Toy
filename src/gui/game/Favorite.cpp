@@ -1,4 +1,4 @@
-﻿#include "Favorite.h"
+#include "Favorite.h"
 #include <algorithm>
 
 std::vector<std::string> *favoritesList;

@@ -1,4 +1,4 @@
-﻿#ifndef FAVORITE_H
+#ifndef FAVORITE_H
 #define FAVORITE_H
 
 #include <string>
