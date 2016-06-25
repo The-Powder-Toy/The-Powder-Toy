@@ -538,11 +538,13 @@ public:
 	void ActionCallback(ui::Button * sender_)
 	{
 		ToolButton *sender = (ToolButton*)sender_;
-		if (v->ShiftBehaviour() && !v->CtrlBehaviour() && !v->AltBehaviour())
+		if (v->ShiftBehaviour() && v->CtrlBehaviour() && !v->AltBehaviour())
 		{
 			if (Favorite::Ref().IsFavorite(tool->GetIdentifier()) && sender->GetSelectionState() == 1)
+			{
 				Favorite::Ref().GetFavoritesList()->erase(std::remove(Favorite::Ref().GetFavoritesList()->begin(), Favorite::Ref().GetFavoritesList()->end(),
 					tool->GetIdentifier()), Favorite::Ref().GetFavoritesList()->end());
+			}
 			else if (sender->GetSelectionState() == 0)
 				Favorite::Ref().GetFavoritesList()->push_back(tool->GetIdentifier());
 			else if (sender->GetSelectionState() == 2)
@@ -728,7 +730,6 @@ void GameView::NotifyLastToolChanged(GameModel * sender)
 
 void GameView::NotifyToolListChanged(GameModel * sender)
 {
-	lastOffset = 0;
 	int currentX = WINDOWW-56;
 	for (size_t i = 0; i < menuButtons.size(); i++)
 	{
@@ -795,6 +796,11 @@ void GameView::NotifyToolListChanged(GameModel * sender)
 	}
 	if (sender->GetActiveMenu() != SC_DECO)
 		lastMenu = sender->GetActiveMenu();
+
+	// don't reset scroll back to 0
+	int origOffset = lastOffset;
+	lastOffset = 0;
+	setToolButtonOffset(origOffset);
 }
 
 void GameView::NotifyColourSelectorVisibilityChanged(GameModel * sender)

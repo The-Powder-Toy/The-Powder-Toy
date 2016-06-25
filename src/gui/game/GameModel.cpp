@@ -166,6 +166,8 @@ GameModel::~GameModel()
 
 	for (size_t i = 0; i < menuList.size(); i++)
 	{
+		if (i == SC_FAVORITES)
+			menuList[i]->ClearTools();
 		delete menuList[i];
 	}
 	for (std::vector<Tool*>::iterator iter = extraElementTools.begin(), end = extraElementTools.end(); iter != end; ++iter)
@@ -370,12 +372,12 @@ void GameModel::BuildFavoritesMenu()
 {
 	menuList[SC_FAVORITES]->ClearTools();
 
-	for (int i = 0; i < menuList.size(); i++)
+	for (size_t i = 0; i < menuList.size(); i++)
 	{
 		if (i == SC_FAVORITES) 
 			continue;
 
-		for (int j = 0; j < menuList[i]->GetToolList().size(); j++)
+		for (size_t j = 0; j < menuList[i]->GetToolList().size(); j++)
 		{
 			if (Favorite::Ref().IsFavorite(menuList[i]->GetToolList()[j]->GetIdentifier()))
 			{
