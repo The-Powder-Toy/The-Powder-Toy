@@ -125,6 +125,7 @@ public:
 	std::string GetInfoTip();
 
 	void BuildMenus();
+	void BuildFavoritesMenu();
 	void BuildQuickOptionMenu(GameController * controller);
 
 	std::deque<Snapshot*> GetHistory();

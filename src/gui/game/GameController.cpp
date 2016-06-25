@@ -1045,6 +1045,11 @@ std::vector<Menu*> GameController::GetMenuList()
 	return gameModel->GetMenuList();
 }
 
+void GameController::RebuildFavoritesMenu()
+{
+	gameModel->BuildFavoritesMenu();
+}
+
 void GameController::ActiveToolChanged(int toolSelection, Tool *tool)
 {
 	commandInterface->OnActiveToolChanged(toolSelection, tool);

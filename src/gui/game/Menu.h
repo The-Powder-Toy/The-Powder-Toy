@@ -45,6 +45,11 @@ public:
 	{
 		tools.push_back(tool_);
 	}
+
+	void ClearTools()
+	{
+		tools.clear();
+	}
 };
 
 

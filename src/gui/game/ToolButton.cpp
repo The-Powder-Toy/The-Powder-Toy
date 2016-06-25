@@ -1,11 +1,14 @@
 #include "ToolButton.h"
 #include "gui/interface/Keys.h"
+#include "Favorite.h"
 
-ToolButton::ToolButton(ui::Point position, ui::Point size, std::string text_, std::string toolTip):
-	ui::Button(position, size, text_, toolTip)
+ToolButton::ToolButton(ui::Point position, ui::Point size, std::string text_, std::string toolIdentifier, std::string toolTip):
+	ui::Button(position, size, text_, toolTip),
+	toolIdentifier(toolIdentifier)
 {
 	SetSelectionState(-1);
 	Appearance.BorderActive = ui::Colour(255, 0, 0);
+	Appearance.BorderFavorite = ui::Colour(255, 255, 0);
 
 	//don't use "..." on elements that have long names
 	buttonDisplayText = ButtonText.substr(0, 7);
@@ -55,6 +58,10 @@ void ToolButton::Draw(const ui::Point& screenPos)
 	if (isMouseInside && currentSelection == -1)
 	{
 		g->drawrect(screenPos.X, screenPos.Y, Size.X, Size.Y, Appearance.BorderActive.Red, Appearance.BorderActive.Green, Appearance.BorderActive.Blue, Appearance.BorderActive.Alpha);
+	}
+	else if (Favorite::Ref().IsFavorite(toolIdentifier) && currentSelection == -1)
+	{
+		g->drawrect(screenPos.X, screenPos.Y, Size.X, Size.Y, Appearance.BorderFavorite.Red, Appearance.BorderFavorite.Green, Appearance.BorderFavorite.Blue, Appearance.BorderFavorite.Alpha);
 	}
 	else
 	{

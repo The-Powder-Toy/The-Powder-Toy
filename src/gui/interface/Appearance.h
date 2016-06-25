@@ -38,6 +38,7 @@ namespace ui
 		ui::Colour BorderHover;
 		ui::Colour BorderInactive;
 		ui::Colour BorderActive;
+		ui::Colour BorderFavorite;
 		ui::Colour BorderDisabled;
 		
 		ui::Border Margin;

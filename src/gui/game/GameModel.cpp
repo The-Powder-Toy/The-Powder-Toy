@@ -17,6 +17,7 @@
 #include "QuickOptions.h"
 #include "GameModelException.h"
 #include "Format.h"
+#include "Favorite.h"
 
 GameModel::GameModel():
 	clipboard(NULL),
@@ -80,6 +81,11 @@ GameModel::GameModel():
 		sim->grav->start_grav_async();
 	sim->aheat_enable =  Client::Ref().GetPrefInteger("Simulation.AmbientHeat", 0);
 	sim->pretty_powder =  Client::Ref().GetPrefInteger("Simulation.PrettyPowder", 0);
+
+	//Load favorites
+	std::vector<std::string> favoritesList = Client::Ref().GetPrefStringArray("Favorites");
+
+	Favorite::Ref().SetFavoritesList(favoritesList);
 
 	//Load last user
 	if(Client::Ref().GetAuthUser().ID)
@@ -155,6 +161,8 @@ GameModel::~GameModel()
 	Client::Ref().SetPref("Decoration.Green", (int)colour.Green);
 	Client::Ref().SetPref("Decoration.Blue", (int)colour.Blue);
 	Client::Ref().SetPref("Decoration.Alpha", (int)colour.Alpha);
+
+	Client::Ref().SetPref("Favorites", std::vector<Json::Value>(Favorite::Ref().GetFavoritesList()->begin(), Favorite::Ref().GetFavoritesList()->end()));
 
 	for (size_t i = 0; i < menuList.size(); i++)
 	{
@@ -348,6 +356,36 @@ void GameModel::BuildMenus()
 		toolList = menuList[activeMenu]->GetToolList();
 	else
 		toolList = std::vector<Tool*>();
+
+	notifyMenuListChanged();
+	notifyToolListChanged();
+	notifyActiveToolsChanged();
+	notifyLastToolChanged();
+
+	//Build menu for favorites
+	BuildFavoritesMenu();
+}
+
+void GameModel::BuildFavoritesMenu()
+{
+	menuList[SC_FAVORITES]->ClearTools();
+
+	for (int i = 0; i < menuList.size(); i++)
+	{
+		if (i == SC_FAVORITES) 
+			continue;
+
+		for (int j = 0; j < menuList[i]->GetToolList().size(); j++)
+		{
+			if (Favorite::Ref().IsFavorite(menuList[i]->GetToolList()[j]->GetIdentifier()))
+			{
+				menuList[SC_FAVORITES]->AddTool(menuList[i]->GetToolList()[j]);
+			}
+		}
+	}
+
+	if (activeMenu == SC_FAVORITES)
+		toolList = menuList[SC_FAVORITES]->GetToolList();
 
 	notifyMenuListChanged();
 	notifyToolListChanged();
