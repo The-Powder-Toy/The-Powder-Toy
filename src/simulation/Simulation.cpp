@@ -2786,7 +2786,7 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 		}
 		return -1;
 	}
-		else if (t==PT_SPRK)
+	else if (t==PT_SPRK)
 	{
 		int type = pmap[y][x]&0xFF;
 		int index = pmap[y][x]>>8;
