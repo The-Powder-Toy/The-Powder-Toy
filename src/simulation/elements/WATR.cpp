@@ -69,7 +69,7 @@ int Element_WATR::update(UPDATE_FUNC_ARGS)
 	
 	float color;
 	int rx, ry, r, rndstore;
-	unsigned long col, cola, col1, col2, lop, lop2, tem, tem2, tem3, tem4;
+	unsigned long col, cola, col1, col2, lop, lop2, tem, tem2, tem3;
 	static int checkCoordsX[] = { -4, 4, 0, 0 };
 	static int checkCoordsY[] = { 0, 0, -4, 4 };
 	//Find nearby rusted iron (BMTL with tmp 1+)
