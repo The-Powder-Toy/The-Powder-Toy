@@ -47,6 +47,23 @@ Element_WTRV::Element_WTRV()
 //#TPT-Directive ElementHeader Element_WTRV static int update(UPDATE_FUNC_ARGS)
 int Element_WTRV::update(UPDATE_FUNC_ARGS)
 {
+		if ((parts[i].dcolour & 0xFF000000) == 0xFF000000 )
+		{
+			static int pcol, pcolr, pcolg, pcolb;
+			pcolr = ((parts[i].dcolour >> 16) & 0xFF);
+			pcolg = ((parts[i].dcolour >> 8) & 0xFF);
+			pcolb = ((parts[i].dcolour) & 0xFF);
+			pcolr += 20;
+			pcolg += 20;
+			pcolb += 20;
+
+			if (pcolr > 255) { pcolr = 255; }
+			if (pcolg > 255) { pcolg = 255; }
+			if (pcolb > 255) { pcolb = 255; }
+
+			parts[i].dcolour = (0xFD000000) | (pcolr << 16) | (pcolg << 8) | (pcolb);
+		}
+
 	int r, rx, ry;
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)

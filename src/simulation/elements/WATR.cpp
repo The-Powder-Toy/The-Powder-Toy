@@ -47,7 +47,79 @@ Element_WATR::Element_WATR()
 //#TPT-Directive ElementHeader Element_WATR static int update(UPDATE_FUNC_ARGS)
 int Element_WATR::update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry;
+	
+	if ((parts[i].dcolour & 0xFF000000) == 0xFD000000)
+	{
+		static int pcol, pcolr, pcolg, pcolb;
+		pcolr = ((parts[i].dcolour >> 16) & 0xFF);
+		pcolg = ((parts[i].dcolour >> 8) & 0xFF);
+		pcolb = ((parts[i].dcolour) & 0xFF);
+		pcolr -= 20;
+		pcolg -= 20;
+		pcolb -= 20;
+
+		if (pcolr < 0) { pcolr = 0; }
+		if (pcolg < 0) { pcolg = 0; }
+		if (pcolb < 0) { pcolb = 0; }
+
+		parts[i].dcolour = (0xFF000000) | (pcolr << 16) | (pcolg << 8) | (pcolb);
+	}
+	
+	
+	
+	float color;
+	int rx, ry, r, rndstore;
+	unsigned long col, cola, col1, col2, lop, lop2, tem, tem2, tem3, tem4;
+	static int checkCoordsX[] = { -4, 4, 0, 0 };
+	static int checkCoordsY[] = { 0, 0, -4, 4 };
+	//Find nearby rusted iron (BMTL with tmp 1+)
+	for (int j = 0; j < 8; j++){
+		rndstore = rand();
+		rx = (rndstore % 9) - 4;
+		rndstore >>= 4;
+		ry = (rndstore % 9) - 4;
+		if ((!rx != !ry) && BOUNDS_CHECK) {
+			r = pmap[y + ry][x + rx];
+			if (!r) continue;
+			if ((r & 0xFF) == PT_WATR) {
+				col = parts[i].dcolour;
+				if (col & 0xFF000000 != 0xFF000000)
+				{
+					col = 0xFF2030D0;
+					parts[r >> 8].dcolour = col;
+					parts[i].dcolour = col;
+
+				}
+					
+				col = 0;
+						col1 = (parts[r >> 8].dcolour);
+						col2 = (parts[i].dcolour);
+
+						for (lop = 0; lop < 3; lop++)
+						{
+
+							tem = (col1 & 0x000000FF);
+							tem2 = (col2 & 0x000000FF);
+							color = ((tem + tem2) / 2.0f);
+							int tem3 = int(color + 0.5);
+							tem3 = (tem3 << (lop * 8));
+							col = (col | tem3);
+							col1 = (col1 >> 8);
+							col2 = (col2 >> 8);
+
+						}
+
+						col = (col | 0xFF000000);
+						parts[r >> 8].dcolour = col;
+						parts[i].dcolour = col;
+
+					
+				}
+			}
+		}
+	
+
+
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
