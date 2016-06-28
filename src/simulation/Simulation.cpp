@@ -2692,8 +2692,6 @@ void Simulation::part_change_type(int i, int x, int y, int t)//changes the type 
 		kill_part(i);
 		return;
 	}
-
-
 	else if ((t == PT_STKM || t == PT_STKM2 || t == PT_SPAWN || t == PT_SPAWN2) && elementCount[t])
 	{
 		kill_part(i);
@@ -2788,9 +2786,7 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 		}
 		return -1;
 	}
-	
-
-	else if (t==PT_SPRK)
+		else if (t==PT_SPRK)
 	{
 		int type = pmap[y][x]&0xFF;
 		int index = pmap[y][x]>>8;
@@ -2806,7 +2802,6 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 		}
 		if (!(type == PT_INST || (elements[type].Properties&PROP_CONDUCTS)) || parts[index].life!=0)
 			return -1;
-
 		if (p == -2 && type == PT_INST)
 		{
 			FloodINST(x, y, PT_SPRK, PT_INST);
