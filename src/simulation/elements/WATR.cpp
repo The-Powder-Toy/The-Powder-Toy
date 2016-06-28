@@ -91,7 +91,7 @@ int Element_WATR::update(UPDATE_FUNC_ARGS)
 
 				}
 					
-				col = 0;
+						col = 0;
 						col1 = (parts[r >> 8].dcolour);
 						col2 = (parts[i].dcolour);
 
