@@ -654,7 +654,6 @@ void GameModel::SetSaveFile(SaveFile * newSave)
 		{
 			sim->grav->stop_grav_async();
 		}
-		sim->SetEdgeMode(0);
 		sim->clear_sim();
 		ren->ClearAccumulation();
 		sim->Load(saveData);

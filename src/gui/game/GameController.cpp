@@ -1351,7 +1351,7 @@ void GameController::SaveAsCurrent()
 		GameController * c;
 	public:
 		SaveUploadedCallback(GameController * _c): c(_c) {}
-		virtual  ~SaveUploadedCallback() {};
+		virtual  ~SaveUploadedCallback() {}
 		virtual void SaveUploaded(SaveInfo save)
 		{
 			c->LoadSave(&save);
