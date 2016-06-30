@@ -2847,6 +2847,8 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 		{
 			//If an element has the PROP_DRAWONCTYPE property, and the element being drawn to it does not have PROP_NOCTYPEDRAW (Also some special cases), set the element's ctype
 			int drawOn = pmap[y][x]&0xFF;
+			if (drawOn == t)
+				return -1;
 			if (((elements[drawOn].Properties & PROP_DRAWONCTYPE) ||
 				 (drawOn == PT_STOR && !(elements[t].Properties & TYPE_SOLID)) ||
 				 (drawOn == PT_PCLN && t != PT_PSCN && t != PT_NSCN) ||
@@ -2862,7 +2864,7 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 						parts[pmap[y][x]>>8].tmp = v;
 				}
 			}
-			else if ((drawOn == PT_DTEC || (drawOn == PT_PSTN && t != PT_FRME) || drawOn == PT_DRAY) && drawOn != t)
+			else if (drawOn == PT_DTEC || (drawOn == PT_PSTN && t != PT_FRME) || drawOn == PT_DRAY)
 			{
 				parts[pmap[y][x]>>8].ctype = t;
 				if (t == PT_LIFE && v >= 0 && v < NGOL)
@@ -2873,7 +2875,7 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 						parts[pmap[y][x]>>8].ctype |= v<<8;
 				}
 			}
-			else if (drawOn == PT_CRAY && drawOn != t)
+			else if (drawOn == PT_CRAY)
 			{
 				parts[pmap[y][x]>>8].ctype = t;
 				if (t == PT_LIFE && v >= 0 && v < NGOL)
