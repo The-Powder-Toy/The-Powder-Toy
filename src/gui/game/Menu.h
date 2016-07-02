@@ -8,11 +8,13 @@ class Menu
 	char icon;
 	string description;
 	vector<Tool*> tools;
+	bool visible;
 public:
-	Menu(char icon_, string description_):
+	Menu(char icon_, string description_, int visible_):
 		icon(icon_),
 		description(description_),
-		tools(vector<Tool*>())
+		tools(vector<Tool*>()),
+		visible(visible_ ? true : false)
 	{
 
 	}
@@ -39,6 +41,11 @@ public:
 	string GetDescription()
 	{
 		return description;
+	}
+
+	bool GetVisible()
+	{
+		return visible;
 	}
 
 	void AddTool(Tool * tool_)

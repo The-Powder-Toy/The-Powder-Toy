@@ -607,15 +607,18 @@ void GameView::NotifyMenuListChanged(GameModel * sender)
 	vector<Menu*> menuList = sender->GetMenuList();
 	for (int i = (int)menuList.size()-1; i >= 0; i--)
 	{
-		std::string tempString = "";
-		tempString += menuList[i]->GetIcon();
-		ui::Button * tempButton = new ui::Button(ui::Point(WINDOWW-16, currentY), ui::Point(15, 15), tempString, menuList[i]->GetDescription());
-		tempButton->Appearance.Margin = ui::Border(0, 2, 3, 2);
-		tempButton->SetTogglable(true);
-		tempButton->SetActionCallback(new MenuAction(this, i));
-		currentY-=16;
-		AddComponent(tempButton);
-		menuButtons.push_back(tempButton);
+		if (menuList[i]->GetVisible())
+		{
+			std::string tempString = "";
+			tempString += menuList[i]->GetIcon();
+			ui::Button * tempButton = new ui::Button(ui::Point(WINDOWW-16, currentY), ui::Point(15, 15), tempString, menuList[i]->GetDescription());
+			tempButton->Appearance.Margin = ui::Border(0, 2, 3, 2);
+			tempButton->SetTogglable(true);
+			tempButton->SetActionCallback(new MenuAction(this, i));
+			currentY-=16;
+			AddComponent(tempButton);
+			menuButtons.push_back(tempButton);
+		}
 	}
 }
 
