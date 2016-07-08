@@ -1458,7 +1458,7 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		if (ctrl)
 		{
 			Tool *active = c->GetActiveTool(0);
-			if (active->GetIdentifier().find("_PT_") == active->GetIdentifier().npos || ren->findingElement == active->GetToolID())
+			if (active->GetIdentifier().find("_PT_") == active->GetIdentifier().npos || ren->findingElement == active->GetToolID()%256)
 				ren->findingElement = 0;
 			else
 				ren->findingElement = active->GetToolID()%256;
