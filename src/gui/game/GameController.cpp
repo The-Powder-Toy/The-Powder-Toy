@@ -1537,6 +1537,8 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 
 #ifdef SNAPSHOT
 			updateMessage << "Snapshot " << SNAPSHOT_ID;
+#elif MOD_ID > 0
+			updateMessage << "Mod version " << SNAPSHOT_ID;
 #elif defined(BETA)
 			updateMessage << SAVE_VERSION << "." << MINOR_VERSION << " Beta, Build " << BUILD_NUM;
 #else
@@ -1547,7 +1549,11 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 			if (info.Type == UpdateInfo::Beta)
 				updateMessage << info.Major << " " << info.Minor << " Beta, Build " << info.Build;
 			else if (info.Type == UpdateInfo::Snapshot)
+#if MOD_ID > 0
+				updateMessage << "Mod version " << info.Time;
+#else
 				updateMessage << "Snapshot " << info.Time;
+#endif
 			else if(info.Type == UpdateInfo::Stable)
 				updateMessage << info.Major << " " << info.Minor << " Stable, Build " << info.Build;
 
