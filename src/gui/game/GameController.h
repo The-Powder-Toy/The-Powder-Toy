@@ -103,6 +103,7 @@ public:
 	void SetDebugFlags(unsigned int flags) { debugFlags = flags; }
 	void SetActiveMenu(int menuID);
 	std::vector<Menu*> GetMenuList();
+	int GetNumMenus(bool onlyEnabled);
 	void RebuildFavoritesMenu();
 	Tool * GetActiveTool(int selection);
 	void SetActiveTool(int toolSelection, Tool * tool);

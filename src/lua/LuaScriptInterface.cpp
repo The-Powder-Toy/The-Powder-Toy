@@ -188,6 +188,8 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 		{"newtonian_gravity", &luatpt_gravity},
 		{"ambient_heat", &luatpt_airheat},
 		{"active_menu", &luatpt_active_menu},
+		{"menu_enabled", &luatpt_menu_enabled},
+		{"num_menus", &luatpt_num_menus},
 		{"decorations_enable", &luatpt_decorations_enable},
 		{"display_mode", &luatpt_cmode_set},
 		{"throw_error", &luatpt_error},

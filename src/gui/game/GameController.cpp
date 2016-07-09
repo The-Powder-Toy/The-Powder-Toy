@@ -1045,6 +1045,21 @@ std::vector<Menu*> GameController::GetMenuList()
 	return gameModel->GetMenuList();
 }
 
+int GameController::GetNumMenus(bool onlyEnabled)
+{
+	int count = 0;
+	if (onlyEnabled)
+	{
+		std::vector<Menu*> menuList = gameModel->GetMenuList();
+		for (std::vector<Menu*>::iterator it = menuList.begin(), end = menuList.end(); it != end; ++it)
+			if ((*it)->GetVisible())
+				count++;
+	}
+	else
+		count = gameModel->GetMenuList().size();
+	return count;
+}
+
 void GameController::RebuildFavoritesMenu()
 {
 	gameModel->BuildFavoritesMenu();

@@ -1800,6 +1800,30 @@ int luatpt_active_menu(lua_State* l)
 	return 0;
 }
 
+int luatpt_menu_enabled(lua_State* l)
+{
+	int menusection = luaL_checkint(l, 1);
+	if (menusection < 0 || menusection >= SC_TOTAL)
+		return luaL_error(l, "Invalid menu");
+	int acount = lua_gettop(l);
+	if (acount == 1)
+	{
+		lua_pushboolean(l, luacon_sim->msections[menusection].doshow);
+		return 1;
+	}
+	luaL_checktype(l, 2, LUA_TBOOLEAN);
+	int enabled = lua_toboolean(l, 2);
+	luacon_sim->msections[menusection].doshow = enabled;
+	luacon_model->BuildMenus();
+	return 0;
+}
+
+int luatpt_num_menus(lua_State* l)
+{
+	lua_pushinteger(l, luacon_controller->GetNumMenus(true));
+	return 1;
+}
+
 int luatpt_decorations_enable(lua_State* l)
 {
 	int acount = lua_gettop(l);
