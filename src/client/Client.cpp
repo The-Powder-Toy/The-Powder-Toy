@@ -829,10 +829,10 @@ bool Client::CheckUpdate(void *updateRequest, bool checkSession)
 					int snapshotSnapshot = snapshotVersion["Snapshot"].asInt();
 					std::string snapshotFile = snapshotVersion["File"].asString();
 					std::string snapshotChangelog = snapshotVersion["Changelog"].asString();
-					//if (snapshotSnapshot > SNAPSHOT_ID)
+					if (snapshotSnapshot > SNAPSHOT_ID)
 					{
 						updateAvailable = true;
-						updateInfo = UpdateInfo(2, snapshotFile, snapshotChangelog, UpdateInfo::Snapshot);
+						updateInfo = UpdateInfo(snapshotSnapshot, snapshotFile, snapshotChangelog, UpdateInfo::Snapshot);
 					}
 #endif
 
