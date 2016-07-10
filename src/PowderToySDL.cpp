@@ -735,7 +735,6 @@ void DoubleScreenDialog()
 	{
 		Client::Ref().SetPref("Scale", 1);
 		engine->SetScale(1);
-		engine->CloseWindow();
 #ifdef WIN
 		LoadWindowPosition(1);
 #endif
@@ -1013,7 +1012,7 @@ int main(int argc, char * argv[])
 		tempScale = 1;
 
 	SDLOpen();
-	if (Client::Ref().IsFirstRun() && desktopWidth > WINDOWW*2+50 && desktopHeight > WINDOWH*2+50)
+	//if (Client::Ref().IsFirstRun() && desktopWidth > WINDOWW*2+50 && desktopHeight > WINDOWH*2+50)
 	{
 		tempScale = 2;
 		Client::Ref().SetPref("Scale", 2);
