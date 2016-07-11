@@ -209,12 +209,16 @@ def CheckBit(context):
 def CheckFramework(context, framework):
 	import SCons.Conftest
 	#Extreme hack, TODO: maybe think of a better one (like replicating CheckLib here) or at least just fix the message
-	ret = SCons.Conftest.CheckLib(context, ['m" -framework {0}"'.format(framework)], autoadd = 0)
+	oldLinkFlags = context.env.Append(LINKFLAGS=["-framework", framework])
+	context.Display("Checking for Darwin Framework {0}...".format(framework))
+	ret = SCons.Conftest.CheckLib(context, ["m"], autoadd = 0)
 	context.did_show_result = 1
 	if not ret:
 		context.env.Append(LINKFLAGS=["-framework", framework])
 		if framework != "Cocoa":
 			env.Append(CPPPATH=['/Library/Frameworks/{0}.framework/Headers/'.format(framework)])
+	else:
+		context.env.Replace(LINKFLAGS=oldLinkFlags)
 	return not ret
 
 #function that finds libraries and appends them to LIBS
@@ -324,7 +328,7 @@ def findLibs(env, conf):
 	#Look for pthreads
 	if not conf.CheckLib(['pthread', 'pthreadVC2']):
 		FatalError("pthreads development library not found or not installed")
-	
+
 	if msvc:
 		if not conf.CheckHeader('dirent.h') or not conf.CheckHeader('fftw3.h') or not conf.CheckHeader('pthread.h') or not conf.CheckHeader('zlib.h'):
 			FatalError("Required headers not found")
@@ -332,7 +336,7 @@ def findLibs(env, conf):
 		#Look for libm
 		if not conf.CheckLib('m'):
 			FatalError("libm not found or not installed")
-	
+
 	#Look for OpenGL libraries
 	if GetOption('opengl'):
 		if platform == "Linux":
@@ -342,7 +346,7 @@ def findLibs(env, conf):
 				env.ParseConfig('pkg-config --libs glew gl glu')
 			except:
 				FatalError(sys.exc_info()[0])
-				
+
 		elif platform == "Windows":
 			if not conf.CheckLib('opengl32'):
 				FatalError("opengl32 not found or not installed")
@@ -351,7 +355,7 @@ def findLibs(env, conf):
 		elif platform == "Darwin":
 			if not conf.CheckFramework("OpenGL"):
 				FatalError("OpenGL framework not found or not installed")
-		
+
 	if platform == "Linux":
 		if not conf.CheckLib('X11'):
 			FatalError("X11 development library not found or not installed")
