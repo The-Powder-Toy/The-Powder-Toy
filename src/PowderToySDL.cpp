@@ -1043,7 +1043,7 @@ int main(int argc, char * argv[])
 	SDL_GL_SetAttribute (SDL_GL_DOUBLEBUFFER, 1);
 	//glScaled(2.0f, 2.0f, 1.0f);
 #endif
-#if defined(OGLI)
+#if defined(OGLI) && !defined(MACOSX)
 	int status = glewInit();
 	if(status != GLEW_OK)
 	{

@@ -1,6 +1,8 @@
 #ifdef MACOSX
 
-#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= __MAC_OS_X_VERSION_10_9
+#include <OpenGL/glu.h>
+#elif __MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
 #include <OpenGL/gl3.h>
 #include <OpenGL/glu.h>
 #else

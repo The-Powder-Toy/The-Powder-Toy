@@ -10,12 +10,36 @@ Graphics::Graphics():
 {
 //	if(gMutex == TMPMUT)
 //		pthread_mutex_init (&gMutex, NULL);
-	Reset();
+	LoadDefaults();
+	InitialiseTextures();
 	
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	
 	//Texture for main UI
+
+}
+
+void Graphics::LoadDefaults()
+{
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+
+	//glOrtho(0, WINDOWW*sdl_scale, 0, WINDOWH*sdl_scale, -1, 1);
+	glOrtho(0, WINDOWW*sdl_scale, WINDOWH*sdl_scale, 0, -1, 1);
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	//glRasterPos2i(0, WINDOWH);
+	glRasterPos2i(0, 0);
+	glPixelZoom(1, 1);
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+}
+
+void Graphics::InitialiseTextures() 
+{
 	glEnable(GL_TEXTURE_2D);
 	
 	glGenTextures(1, &vidBuf);
@@ -39,6 +63,11 @@ Graphics::Graphics():
 	glDisable(GL_TEXTURE_2D);
 }
 
+void Graphics::DestroyTextures()
+{
+	//Todo...
+}
+
 void Graphics::Acquire()
 {
 	pthread_mutex_lock(&gMutex);
@@ -55,18 +84,9 @@ Graphics::~Graphics()
 
 void Graphics::Reset()
 {
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-
-	//glOrtho(0, WINDOWW*sdl_scale, 0, WINDOWH*sdl_scale, -1, 1);
-	glOrtho(0, WINDOWW*sdl_scale, WINDOWH*sdl_scale, 0, -1, 1);
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-
-	//glRasterPos2i(0, WINDOWH);
-	glRasterPos2i(0, 0);
-	glPixelZoom(1, 1);
+	LoadDefaults();
+	DestroyTextures();
+	InitialiseTextures();
 }
 
 void Graphics::Clear()

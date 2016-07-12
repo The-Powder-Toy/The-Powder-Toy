@@ -188,6 +188,9 @@ public:
 	//OpenGL specific instance variables
 	GLuint vidBuf, textTexture;
 	void Reset();
+	void LoadDefaults();
+	void InitialiseTextures();
+	void DestroyTextures();
  #endif
 
 	//Common graphics methods in Graphics.cpp
