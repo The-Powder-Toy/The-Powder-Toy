@@ -279,11 +279,11 @@ void blit(pixel * vid)
 			unsigned int red, green, blue;
 			pixel px, lastpx, nextpx;
 			SDL_PixelFormat *fmt = sdl_scrn->format;
-			for (j=0; j<h; j++)
+			if(depth3d)
 			{
-				for (i=0; i<w; i++)
+				for (j=0; j<h; j++)
 				{
-					if (depth3d)
+					for (i=0; i<w; i++)
 					{
 						lastpx = i >= depth3d && i < w+depth3d ? src[i-depth3d] : 0;
 						nextpx = i >= -depth3d && i < w-depth3d ? src[i+depth3d] : 0;
@@ -296,28 +296,37 @@ void blit(pixel * vid)
 						red = ((int)(PIXR(lastpx)*.69f+redshift*.3f)>>fmt->Rloss)<<fmt->Rshift;
 						green = ((int)(PIXG(nextpx)*.3f)>>fmt->Gloss)<<fmt->Gshift;
 						blue = ((int)(PIXB(nextpx)*.69f+blueshift*.3f)>>fmt->Bloss)<<fmt->Bshift;
+						dst[i] = red|green|blue;
 					}
-					else
+					dst+=sdl_scrn->pitch/PIXELSIZE;
+					src+=pitch;
+				}
+			}
+			else
+			{
+				for (j=0; j<h; j++)
+				{
+					for (i=0; i<w; i++)
 					{
 						px = src[i];
 						red = (PIXR(px)>>fmt->Rloss)<<fmt->Rshift;
 						green = (PIXG(px)>>fmt->Gloss)<<fmt->Gshift;
 						blue = (PIXB(px)>>fmt->Bloss)<<fmt->Bshift;
+						dst[i] = red|green|blue;
 					}
-					dst[i] = red|green|blue;
+					dst+=sdl_scrn->pitch/PIXELSIZE;
+					src+=pitch;
 				}
-				dst+=sdl_scrn->pitch/PIXELSIZE;
-				src+=pitch;
 			}
 		}
 		else
 		{
 			int i;
-			for (j=0; j<h; j++)
+			if(depth3d)
 			{
-				if (depth3d)
+				pixel lastpx, nextpx;
+				for (j=0; j<h; j++)
 				{
-					pixel lastpx, nextpx;
 					for (i=0; i<w; i++)
 					{
 						lastpx = i >= depth3d && i < w+depth3d ? src[i-depth3d] : 0;
@@ -330,11 +339,18 @@ void blit(pixel * vid)
 							blueshift = 255;
 						dst[i] = PIXRGB((int)(PIXR(lastpx)*.69f+redshift*.3f), (int)(PIXG(nextpx)*.3f), (int)(PIXB(nextpx)*.69f+blueshift*.3f));
 					}
+					dst+=sdl_scrn->pitch/PIXELSIZE;
+					src+=pitch;
 				}
-				else
+			}
+			else
+			{
+				for (j=0; j<h; j++)
+				{
 					memcpy(dst, src, w*PIXELSIZE);
-				dst+=sdl_scrn->pitch/PIXELSIZE;
-				src+=pitch;
+					dst+=sdl_scrn->pitch/PIXELSIZE;
+					src+=pitch;
+				}
 			}
 		}
 		if (SDL_MUSTLOCK(sdl_scrn))
