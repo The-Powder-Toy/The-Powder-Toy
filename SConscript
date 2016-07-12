@@ -62,6 +62,7 @@ AddSconsOption('native', False, False, "Enable optimizations specific to your cp
 AddSconsOption('release', True, False, "Enable loop / compiling optimizations (default).")
 
 AddSconsOption('debugging', False, False, "Compile with debug symbols.")
+AddSconsOption('symbols', False, False, "Preserve (don't strip) symbols")
 AddSconsOption('static', False, False, "Compile statically.")
 AddSconsOption('opengl', False, False, "Build with OpenGL interface support.")
 AddSconsOption('opengl-renderer', False, False, "Build with OpenGL renderer support (turns on --opengl).") #Note: this has nothing to do with --renderer, only tells the game to render particles with opengl
@@ -560,7 +561,7 @@ def strip():
 		os.system("{0} {1}/{2}".format(env['STRIP'] if 'STRIP' in env else "strip", GetOption('builddir'), programName))
 	except:
 		print("Couldn't strip binary")
-if not GetOption('debugging') and not GetOption('clean') and not GetOption('help') and not msvc:
+if not GetOption('debugging') and not GetOption('symbols') and not GetOption('clean') and not GetOption('help') and not msvc:
 	atexit.register(strip)
 
 #Long command line fix for mingw on windows
