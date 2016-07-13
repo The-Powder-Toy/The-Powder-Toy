@@ -14,9 +14,12 @@ int Tool_Mix::Perform(Simulation * sim, Particle * cpart, int x, int y, float st
 	if(!thisPart)
 		return 0;
 
+	if(rand() % 100 != 0)
+		return 0;
+
 	int distance = (int)(std::pow(strength, .5f) * 10);
 
-	if(!(sim->elements[thisPart&0xFF].Properties & (TYPE_PART | TYPE_LIQUID)))
+	if(!(sim->elements[thisPart&0xFF].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS)))
 		return 0;
 
 	int newX = x + (rand() % distance) - (distance/2);
@@ -29,7 +32,7 @@ int Tool_Mix::Perform(Simulation * sim, Particle * cpart, int x, int y, float st
 	if(!thatPart)
 		return 0;
 
-	if(!(sim->elements[thatPart&0xFF].Properties & (TYPE_PART | TYPE_LIQUID)))
+	if(!(sim->elements[thatPart&0xFF].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS)))
 		return 0;
 
 	sim->pmap[y][x] = thatPart;
