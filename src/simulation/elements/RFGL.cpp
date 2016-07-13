@@ -79,7 +79,6 @@ int Element_RFGL::update(UPDATE_FUNC_ARGS)
 					{
 						parts[r>>8].temp -= restrict_flt(parts[r>>8].temp - 40.0f, 273.15f + 2.0f - (parts[i].tmp - 60.0f), MAX_TEMP);
 						parts[i].temp = restrict_flt(parts[i].temp + 40.0f, 0, 343.15f);
-						//sim->part_change_type(i, x, y, PT_WATR);
 					}
 				}
 			}
