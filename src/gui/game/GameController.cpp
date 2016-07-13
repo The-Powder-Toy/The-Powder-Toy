@@ -293,7 +293,7 @@ void GameController::PlaceSave(ui::Point position)
 void GameController::Install()
 {
 #if defined(MACOSX)
-	new InformationMessage("No Installation necessary", "You don't need to install The Powder Toy on Mac OS X", false);
+	new InformationMessage("No installation necessary", "You don't need to install The Powder Toy on OS X", false);
 #elif defined(WIN) || defined(LIN)
 	class InstallConfirmation: public ConfirmDialogueCallback {
 	public:
@@ -304,7 +304,7 @@ void GameController::Install()
 			{
 				if(Client::Ref().DoInstallation())
 				{
-					new InformationMessage("Install Success", "The installation completed!", false);
+					new InformationMessage("Success", "Installation completed", false);
 				}
 				else
 				{
@@ -527,7 +527,7 @@ std::string GameController::StampRegion(ui::Point point1, ui::Point point2)
 	}
 	else
 	{
-		new ErrorMessage("Could not create stamp", "Error generating save file");
+		new ErrorMessage("Error saving stamp", "Error generating save file");
 		return "";
 	}
 }
