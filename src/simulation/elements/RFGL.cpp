@@ -72,13 +72,13 @@ int Element_RFGL::update(UPDATE_FUNC_ARGS)
 				{
 					if (pressure > 20 && parts[i].temp > 273.15f + 2.0f - (pressure - 20.0f) && sim->elements[r&0xFF].HeatConduct)
 					{
-						parts[r>>8].temp += 80.0f;
-						parts[i].temp -= 80.0f;
+						parts[r>>8].temp = restrict_flt(parts[r>>8].temp + 80.0f, 0.0f, MAX_TEMP);
+						parts[i].temp = restrict_flt(parts[i].temp - 80.0f, 0.0f, MAX_TEMP);
 					}
 					else if (parts[i].life == 0 && parts[r>>8].temp > 273.15f + 2.0f - (parts[i].tmp - 20.0f) && sim->elements[r&0xFF].HeatConduct)
 					{
 						parts[r>>8].temp -= restrict_flt(parts[r>>8].temp - 40.0f, 273.15f + 2.0f - (parts[i].tmp - 60.0f), MAX_TEMP);
-						parts[i].temp = restrict_flt(parts[i].temp + 40.0f, 0, 343.15f);
+						parts[i].temp = restrict_flt(parts[i].temp + 40.0f, 0.0f, 343.15f);
 					}
 				}
 			}
