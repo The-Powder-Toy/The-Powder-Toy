@@ -4,7 +4,7 @@ Element_RFGL::Element_RFGL()
 {
 	Identifier = "DEFAULT_PT_RFGL";
 	Name = "RFGL";
-	Colour = PIXPACK(0x90C3D4);
+	Colour = PIXPACK(0x72D2D4);
 	MenuVisible = 0;
 	MenuSection = SC_LIQUID;
 	Enabled = 1;
