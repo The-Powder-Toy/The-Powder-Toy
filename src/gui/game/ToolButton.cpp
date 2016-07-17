@@ -59,13 +59,13 @@ void ToolButton::Draw(const ui::Point& screenPos)
 	{
 		g->drawrect(screenPos.X, screenPos.Y, Size.X, Size.Y, Appearance.BorderActive.Red, Appearance.BorderActive.Green, Appearance.BorderActive.Blue, Appearance.BorderActive.Alpha);
 	}
-	else if (Favorite::Ref().IsFavorite(toolIdentifier) && currentSelection == -1)
-	{
-		g->drawrect(screenPos.X, screenPos.Y, Size.X, Size.Y, Appearance.BorderFavorite.Red, Appearance.BorderFavorite.Green, Appearance.BorderFavorite.Blue, Appearance.BorderFavorite.Alpha);
-	}
 	else
 	{
 		g->drawrect(screenPos.X, screenPos.Y, Size.X, Size.Y, Appearance.BorderInactive.Red, Appearance.BorderInactive.Green, Appearance.BorderInactive.Blue, Appearance.BorderInactive.Alpha);
+	}
+	if (Favorite::Ref().IsFavorite(toolIdentifier) && currentSelection == -1)
+	{
+		g->drawtext(screenPos.X, screenPos.Y, "\xE8", Appearance.BorderFavorite.Red, Appearance.BorderFavorite.Green, Appearance.BorderFavorite.Blue, Appearance.BorderFavorite.Alpha);
 	}
 
 	if (totalColour<544)

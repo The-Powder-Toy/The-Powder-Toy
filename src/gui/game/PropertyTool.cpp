@@ -48,13 +48,13 @@ tool(tool_),
 sim(sim_)
 {
 	properties = Particle::GetProperties();
-	
+
 	ui::Label * messageLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 14), "Edit property");
 	messageLabel->SetTextColour(style::Colour::InformationTitle);
 	messageLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	messageLabel->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 	AddComponent(messageLabel);
-	
+
 	ui::Button * okayButton = new ui::Button(ui::Point(0, Size.Y-17), ui::Point(Size.X, 17), "OK");
 	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
@@ -62,7 +62,7 @@ sim(sim_)
 	okayButton->SetActionCallback(new OkayAction(this));
 	AddComponent(okayButton);
 	SetOkayButton(okayButton);
-	
+
 	class PropertyChanged: public ui::DropDownAction
 	{
 		PropertyWindow * w;
@@ -81,14 +81,14 @@ sim(sim_)
 		property->AddOption(std::pair<std::string, int>(properties[i].Name, i));
 	}
 	property->SetOption(Client::Ref().GetPrefInteger("Prop.Type", 0));
-	
+
 	textField = new ui::Textbox(ui::Point(8, 46), ui::Point(Size.X-16, 16), "", "[value]");
 	textField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	textField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	textField->SetText(Client::Ref().GetPrefString("Prop.Value", ""));
 	AddComponent(textField);
 	FocusComponent(textField);
-	
+
 	ui::Engine::Ref().ShowWindow(this);
 }
 
@@ -120,7 +120,7 @@ void PropertyWindow::SetProperty()
 						buffer << std::hex << value.substr(1);
 						buffer >> v;
 					}
-					else 
+					else
 					{
 						if(properties[property->GetOption().second].Type == StructProperty::ParticleType)
 						{
@@ -140,7 +140,7 @@ void PropertyWindow::SetProperty()
 							}
 							if (property->GetOption().first == "type" && (v < 0 || v >= PT_NUM || !sim->elements[v].Enabled))
 							{
-								new ErrorMessage("Could not set property", "Invalid Particle Type");
+								new ErrorMessage("Could not set property", "Invalid particle type");
 								return;
 							}
 						}
@@ -176,7 +176,7 @@ void PropertyWindow::SetProperty()
 						buffer << std::hex << value.substr(1);
 						buffer >> v;
 					}
-					else 
+					else
 					{
 						std::stringstream buffer(value);
 						buffer.exceptions(std::stringstream::failbit | std::stringstream::badbit);
@@ -222,7 +222,7 @@ void PropertyWindow::OnTryExit(ExitMethod method)
 void PropertyWindow::OnDraw()
 {
 	Graphics * g = ui::Engine::Ref().g;
-	
+
 	g->clearrect(Position.X-2, Position.Y-2, Size.X+3, Size.Y+3);
 	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 200, 200, 200, 255);
 }

@@ -48,9 +48,20 @@ Element_MERC::Element_MERC()
 int Element_MERC::update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry, trade, np;
-	int maxtmp = ((10000/(parts[i].temp + 1))-1);
-	if ((10000%((int)parts[i].temp+1))>rand()%((int)parts[i].temp+1))
+	const int absorbScale = 10000;// max number of particles that can be condensed into one
+	int maxtmp = ((absorbScale/(parts[i].temp + 1))-1);
+	if ((absorbScale%((int)parts[i].temp+1))>rand()%((int)parts[i].temp+1))
 		maxtmp ++;
+
+	if (parts[i].tmp < 0)
+	{
+		parts[i].tmp = 0;
+	}
+	if (parts[i].tmp > absorbScale)
+	{
+		parts[i].tmp = absorbScale;
+	}
+
 	if (parts[i].tmp < maxtmp)
 	{
 		for (rx=-1; rx<2; rx++)

@@ -4,6 +4,7 @@
 #include "PreviewView.h"
 #include "PreviewModel.h"
 #include "PreviewModelException.h"
+#include "gui/dialogues/InformationMessage.h"
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/login/LoginController.h"
 #include "Controller.h"
@@ -82,7 +83,7 @@ bool PreviewController::SubmitComment(std::string comment)
 		RequestStatus status = Client::Ref().AddComment(saveId, comment);
 		if(status != RequestOkay)
 		{
-			new ErrorMessage("Error Submitting comment", Client::Ref().GetLastError());
+			new ErrorMessage("Error submitting comment", Client::Ref().GetLastError());
 			return false;
 		}
 		else
@@ -125,10 +126,10 @@ void PreviewController::Report(std::string message)
 	if(Client::Ref().ReportSave(saveId, message) == RequestOkay)
 	{
 		Exit();
-		new ErrorMessage("Information", "Report submitted"); //TODO: InfoMessage
+		new InformationMessage("Information", "Report submitted", false);
 	}
 	else
-		new ErrorMessage("Error", "Unable file report: " + Client::Ref().GetLastError());
+		new ErrorMessage("Error", "Unable to file report: " + Client::Ref().GetLastError());
 }
 
 void PreviewController::FavouriteSave()
@@ -197,4 +198,3 @@ PreviewController::~PreviewController() {
 	delete previewView;
 	delete callback;
 }
-

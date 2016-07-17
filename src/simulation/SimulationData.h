@@ -14,8 +14,8 @@
 #define SC_SPECIAL 11
 #define SC_LIFE 12
 #define SC_TOOL 13
-#define SC_DECO 14
-#define SC_FAVORITES 15
+#define SC_FAVORITES 14
+#define SC_DECO 15
 #define SC_CRACKER 16
 #define SC_CRACKER2 17
 #define SC_TOTAL 16
