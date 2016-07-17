@@ -7,7 +7,7 @@
 #include <windows.h>
 #else
 #include <unistd.h>
-#include <time.h>
+#include <ctime>
 #include <sys/time.h>
 #endif
 #ifdef MACOSX

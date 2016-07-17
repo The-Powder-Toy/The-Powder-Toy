@@ -1,12 +1,12 @@
-#include <stdlib.h>
+#include <cstdlib>
 #include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>
 #include <map>
 #include <iomanip>
-#include <time.h>
-#include <stdio.h>
+#include <ctime>
+#include <cstdio>
 #include <deque>
 #include <fstream>
 #include <dirent.h>

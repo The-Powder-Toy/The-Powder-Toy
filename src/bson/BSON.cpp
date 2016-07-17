@@ -15,11 +15,11 @@
  *    limitations under the License.
  */
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <time.h>
-#include <limits.h>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
+#include <ctime>
+#include <climits>
 
 #include "BSON.h"
 

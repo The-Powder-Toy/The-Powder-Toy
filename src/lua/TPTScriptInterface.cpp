@@ -2,11 +2,11 @@
 #include <iostream>
 #include <string>
 #include <deque>
-#include <string.h>
+#include <cstring>
 #ifdef MACOSX
 #include <strings.h>
 #endif
-#include <stdlib.h>
+#include <cstdlib>
 #include "TPTScriptInterface.h"
 #include "gui/game/GameModel.h"
 #include "simulation/Air.h"

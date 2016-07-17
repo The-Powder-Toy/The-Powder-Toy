@@ -22,16 +22,16 @@
 
 #include <string>
 #include <sstream>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #ifndef WIN
 #include <sys/param.h>
 #endif
 #if !defined(MACOSX) && !defined(BSD)
 #include <malloc.h>
 #endif
-#include <time.h>
+#include <ctime>
 #ifdef WIN
 #define _WIN32_WINNT 0x0501
 //#include <iphlpapi.h>

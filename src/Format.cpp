@@ -5,7 +5,7 @@
 #include <iostream>
 #include <iterator>
 #include <zlib.h>
-#include <stdio.h>
+#include <cstdio>
 #include "Format.h"
 #include "graphics/Graphics.h"
 

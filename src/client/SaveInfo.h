@@ -4,7 +4,7 @@
 #include <list>
 #include <vector>
 #include <string>
-#include <stdlib.h>
+#include <cstdlib>
 #include <iostream>
 
 class GameSave;

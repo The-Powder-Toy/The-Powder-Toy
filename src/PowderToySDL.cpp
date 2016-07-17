@@ -2,7 +2,7 @@
 
 #include <map>
 #include <string>
-#include <time.h>
+#include <ctime>
 #ifdef SDL_INC
 #include "SDL/SDL.h"
 #else

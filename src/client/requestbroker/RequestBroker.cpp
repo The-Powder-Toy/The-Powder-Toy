@@ -2,7 +2,7 @@
 #include <iostream>
 #include <typeinfo>
 #include <sstream>
-#include <time.h>
+#include <ctime>
 #include "RequestBroker.h"
 #include "RequestListener.h"
 #include "ThumbRenderRequest.h"
