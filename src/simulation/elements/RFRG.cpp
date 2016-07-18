@@ -9,14 +9,14 @@ Element_RFRG::Element_RFRG()
 	MenuSection = SC_GAS;
 	Enabled = 1;
 
-	Advection = 1.5f;
+	Advection = 1.2f;
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.99f;
 	Loss = 0.30f;
 	Collision = -0.1f;
 	Gravity = 0.0f;
 	Diffusion = 1.3f;
-	HotAir = 0.0003f * CFDS;
+	HotAir = 0.0001f * CFDS;
 	Falldown = 0;
 
 	Flammable = 0;
@@ -27,7 +27,7 @@ Element_RFRG::Element_RFRG()
 	Weight = 1;
 
 	Temperature = R_TEMP + 273.15f;
-	HeatConduct = 1;
+	HeatConduct = 3;
 	Description = "Refrigerant. Liquifies and transfers heat to other particles under pressure.";
 
 	Properties = TYPE_GAS|PROP_DEADLY;
@@ -47,11 +47,11 @@ Element_RFRG::Element_RFRG()
 //#TPT-Directive ElementHeader Element_RFRG static int update(UPDATE_FUNC_ARGS)
 int Element_RFRG::update(UPDATE_FUNC_ARGS)
 {
-    if (sim->pv[y/CELL][x/CELL] > 20) {
-        parts[i].temp += (sim->pv[y/CELL][x/CELL] - 20.0f) / 2.0f;
-		if (parts[i].temp >= 273.15f + 70.0f)
+    if (sim->pv[y/CELL][x/CELL] > 15) {
+        parts[i].temp += (sim->pv[y/CELL][x/CELL] - 15.0f) / 2.0f;
+		if (parts[i].temp >= 343.15f)
 			sim->part_change_type(i, x, y, PT_RFGL);
-			parts[i].life = 40;
+			parts[i].life = 20;
     }
 
 	return 0;

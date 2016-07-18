@@ -4,7 +4,7 @@ Element_RFGL::Element_RFGL()
 {
 	Identifier = "DEFAULT_PT_RFGL";
 	Name = "RFGL";
-	Colour = PIXPACK(0x72D2D4);
+	Colour = PIXPACK(0x84C2CF);
 	MenuVisible = 0;
 	MenuSection = SC_LIQUID;
 	Enabled = 1;
@@ -38,8 +38,8 @@ Element_RFGL::Element_RFGL()
 	HighPressureTransition = NT;
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
-	HighTemperature = 333.15f;
-	HighTemperatureTransition = PT_RFRG;
+	HighTemperature = ITH;
+	HighTemperatureTransition = NT;
 
 	Update = &Element_RFGL::update;
 }
@@ -54,6 +54,9 @@ int Element_RFGL::update(UPDATE_FUNC_ARGS)
 	if (pressure > -1 && pressure < 15 && parts[i].life > 0)
 		parts[i].life --;
 
+	if (parts[i].temp >= 323.15f + (pressure * 6.0f))
+		sim->part_change_type(i, x, y, PT_RFRG);
+
 	int r, rx, ry;
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)
@@ -64,9 +67,9 @@ int Element_RFGL::update(UPDATE_FUNC_ARGS)
 					continue;
 				if ((r&0xFF) == PT_RFGL)
 				{
-					float avgtemp = (parts[r>>8].temp + parts[i].temp) / 2;
-					parts[r>>8].temp = avgtemp;
-					parts[i].temp = avgtemp;
+					float avgTemp = (parts[r>>8].temp + parts[i].temp) / 2;
+					parts[r>>8].temp = avgTemp;
+					parts[i].temp = avgTemp;
 				}
 				else
 				{
