@@ -1,8 +1,8 @@
 #include <cmath>
 #include <iostream>
 #include <vector>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include "Config.h"
 #include "Renderer.h"
 #include "Graphics.h"

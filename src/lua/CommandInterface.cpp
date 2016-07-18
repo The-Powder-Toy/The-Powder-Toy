@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include <string.h>
+#include <cstring>
 #if !defined(WIN) || defined(__GNUC__)
 #include <strings.h>
 #endif

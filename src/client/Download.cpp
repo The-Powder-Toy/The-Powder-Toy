@@ -1,4 +1,4 @@
-#include <stdlib.h>
+#include <cstdlib>
 #include "Download.h"
 #include "DownloadManager.h"
 #include "HTTP.h"

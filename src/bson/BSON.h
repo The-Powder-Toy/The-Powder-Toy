@@ -21,11 +21,11 @@
 #ifndef _BSON_H_
 #define _BSON_H_
 
-#include <time.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <stdarg.h>
+#include <ctime>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
+#include <cstdarg>
 #include "Config.h"
 
 #if defined(LIN) || defined(USE_STDINT)

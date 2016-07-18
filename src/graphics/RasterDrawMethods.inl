@@ -1,5 +1,5 @@
 #include "font.h"
-#include <math.h>
+#include <cmath>
 
 int PIXELMETHODS_CLASS::drawtext_outline(int x, int y, const char *s, int r, int g, int b, int a)
 {

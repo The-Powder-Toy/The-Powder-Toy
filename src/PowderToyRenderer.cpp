@@ -1,6 +1,6 @@
 #if defined(RENDERER)
 
-#include <time.h>
+#include <ctime>
 #include <iostream>
 #include <sstream>
 #include <string>

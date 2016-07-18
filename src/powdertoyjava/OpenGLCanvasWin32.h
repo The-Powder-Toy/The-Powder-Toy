@@ -2,7 +2,7 @@
 #import <jawt_md.h>
 
 #include <windows.h>
-#include <assert.h>
+#include <cassert>
 #include <gl/gl.h>
 
 int defaultPixelFormat(PIXELFORMATDESCRIPTOR* pfd);

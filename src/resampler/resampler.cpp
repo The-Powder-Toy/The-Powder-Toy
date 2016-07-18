@@ -12,11 +12,11 @@
 // Dec. 31, 2008: v2.2: Bit more cleanup, released as public domain.
 // June 4, 2012: v2.21: Switched to unlicense.org, integrated GCC fixes supplied by Peter Nagy <petern@crytek.com>, Anteru at anteru.net, and clay@coge.net, 
 // added Codeblocks project (for testing with MinGW and GCC), VS2008 static code analysis pass.
-#include <stdlib.h>
-#include <math.h>
-#include <float.h>
-#include <assert.h>
-#include <string.h>
+#include <cstdlib>
+#include <cmath>
+#include <cfloat>
+#include <cassert>
+#include <cstring>
 #include "resampler.h"
 
 #define resampler_assert assert

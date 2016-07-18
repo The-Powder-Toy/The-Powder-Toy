@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include <cstdio>
 #ifdef WIN
 	#include <direct.h>
 	#define getcwd _getcwd
