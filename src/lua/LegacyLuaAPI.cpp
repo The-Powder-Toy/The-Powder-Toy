@@ -1820,7 +1820,14 @@ int luatpt_menu_enabled(lua_State* l)
 
 int luatpt_num_menus(lua_State* l)
 {
-	lua_pushinteger(l, luacon_controller->GetNumMenus(true));
+	int acount = lua_gettop(l);
+	bool onlyEnabled = true;
+	if (acount > 0)
+	{
+		luaL_checktype(l, 1, LUA_TBOOLEAN);
+		onlyEnabled = lua_toboolean(l, 1);
+	}
+	lua_pushinteger(l, luacon_controller->GetNumMenus(onlyEnabled));
 	return 1;
 }
 
