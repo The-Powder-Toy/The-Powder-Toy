@@ -10,6 +10,7 @@
 #include "gui/interface/Button.h"
 #include "gui/interface/Colour.h"
 #include "gui/interface/Keys.h"
+#include "gui/interface/Mouse.h"
 #include "gui/interface/Slider.h"
 #include "gui/search/Thumbnail.h"
 #include "simulation/SaveRenderer.h"
@@ -1142,13 +1143,13 @@ void GameView::OnMouseDown(int x, int y, unsigned button)
 {
 	currentMouse = ui::Point(x, y);
 	if (altBehaviour && !shiftBehaviour && !ctrlBehaviour)
-		button = BUTTON_MIDDLE;
+		button = SDL_BUTTON_MIDDLE;
 	if  (!(zoomEnabled && !zoomCursorFixed))
 	{
 		if (selectMode != SelectNone)
 		{
 			isMouseDown = true;
-			if (button == BUTTON_LEFT && selectPoint1.X == -1)
+			if (button == SDL_BUTTON_LEFT && selectPoint1.X == -1)
 			{
 				selectPoint1 = c->PointTranslate(currentMouse);
 				selectPoint2 = selectPoint1;
@@ -1158,11 +1159,11 @@ void GameView::OnMouseDown(int x, int y, unsigned button)
 		if (currentMouse.X >= 0 && currentMouse.X < XRES && currentMouse.Y >= 0 && currentMouse.Y < YRES)
 		{
 			// update tool index, set new "last" tool so GameView can detect certain tools properly
-			if (button == BUTTON_LEFT)
+			if (button == SDL_BUTTON_LEFT)
 				toolIndex = 0;
-			if (button == BUTTON_RIGHT)
+			if (button == SDL_BUTTON_RIGHT)
 				toolIndex = 1;
-			if (button == BUTTON_MIDDLE)
+			if (button == SDL_BUTTON_MIDDLE)
 				toolIndex = 2;
 			Tool *lastTool = c->GetActiveTool(toolIndex);
 			c->SetLastTool(lastTool);
@@ -1201,7 +1202,7 @@ void GameView::OnMouseUp(int x, int y, unsigned button)
 		isMouseDown = false;
 		if (selectMode != SelectNone)
 		{
-			if (button == BUTTON_LEFT && selectPoint1.X != -1 && selectPoint1.Y != -1 && selectPoint2.X != -1 && selectPoint2.Y != -1)
+			if (button == SDL_BUTTON_LEFT && selectPoint1.X != -1 && selectPoint1.Y != -1 && selectPoint2.X != -1 && selectPoint2.Y != -1)
 			{
 				if (selectMode == PlaceSave)
 				{
@@ -1276,7 +1277,7 @@ void GameView::OnMouseUp(int x, int y, unsigned button)
 		}
 	}
 	// this shouldn't happen, but do this just in case
-	else if (selectMode != SelectNone && button != BUTTON_LEFT)
+	else if (selectMode != SelectNone && button != SDL_BUTTON_LEFT)
 		selectMode = SelectNone;
 
 	// update the drawing mode for the next line
@@ -1369,16 +1370,16 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		{
 			switch (key)
 			{
-			case KEY_RIGHT:
+			case SDLK_RIGHT:
 				c->TranslateSave(ui::Point(1, 0));
 				return;
-			case KEY_LEFT:
+			case SDLK_LEFT:
 				c->TranslateSave(ui::Point(-1, 0));
 				return;
-			case KEY_UP:
+			case SDLK_UP:
 				c->TranslateSave(ui::Point(0, -1));
 				return;
-			case KEY_DOWN:
+			case SDLK_DOWN:
 				c->TranslateSave(ui::Point(0, 1));
 				return;
 			case 'r':
@@ -1403,16 +1404,16 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 	}
 	switch(key)
 	{
-	case KEY_LALT:
-	case KEY_RALT:
+	case SDLK_LALT:
+	case SDLK_RALT:
 		enableAltBehaviour();
 		break;
-	case KEY_LCTRL:
-	case KEY_RCTRL:
+	case SDLK_LCTRL:
+	case SDLK_RCTRL:
 		enableCtrlBehaviour();
 		break;
-	case KEY_LSHIFT:
-	case KEY_RSHIFT:
+	case SDLK_LSHIFT:
+	case SDLK_RSHIFT:
 		enableShiftBehaviour();
 		break;
 	case ' ': //Space
@@ -1432,20 +1433,20 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 			c->SetZoomEnabled(true);
 		}
 		break;
-	case KEY_TAB: //Tab
+	case SDLK_TAB: //Tab
 		c->ChangeBrush();
 		break;
 	case '`':
 		c->ShowConsole();
 		break;
 	case 'p':
-	case KEY_F2:
+	case SDLK_F2:
 		screenshot();
 		break;
-	case KEY_F3:
+	case SDLK_F3:
 		SetDebugHUD(!GetDebugHUD());
 		break;
-	case KEY_F5:
+	case SDLK_F5:
 		c->ReloadSim();
 		break;
 	case 'r':
@@ -1477,7 +1478,7 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		else
 			c->AdjustGridSize(1);
 		break;
-	case KEY_F1:
+	case SDLK_F1:
 		if(!introText)
 			introText = 8047;
 		else
@@ -1510,7 +1511,7 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 	case 'y':
 		c->SwitchAir();
 		break;
-	case KEY_ESCAPE:
+	case SDLK_ESCAPE:
 	case 'q':
 		ExitPrompt();
 		break;
@@ -1597,10 +1598,10 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 			break;
 		}
 		//fancy case switch without break
-	case KEY_INSERT:
+	case SDLK_INSERT:
 		c->SetReplaceModeFlags(c->GetReplaceModeFlags()^REPLACE_MODE);
 		break;
-	case KEY_DELETE:
+	case SDLK_DELETE:
 		c->SetReplaceModeFlags(c->GetReplaceModeFlags()^SPECIFIC_DELETE);
 		break;
 	}
@@ -1617,16 +1618,16 @@ void GameView::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bo
 {
 	switch(key)
 	{
-	case KEY_LALT:
-	case KEY_RALT:
+	case SDLK_LALT:
+	case SDLK_RALT:
 		disableAltBehaviour();
 		break;
-	case KEY_LCTRL:
-	case KEY_RCTRL:
+	case SDLK_LCTRL:
+	case SDLK_RCTRL:
 		disableCtrlBehaviour();
 		break;
-	case KEY_LSHIFT:
-	case KEY_RSHIFT:
+	case SDLK_LSHIFT:
+	case SDLK_RSHIFT:
 		disableShiftBehaviour();
 		break;
 	case 'z':

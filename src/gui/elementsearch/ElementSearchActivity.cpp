@@ -188,13 +188,13 @@ void ElementSearchActivity::OnTick(float dt)
 
 void ElementSearchActivity::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
-	if(key == KEY_ENTER || key == KEY_RETURN)
+	if (key == SDLK_KP_ENTER || key == SDLK_RETURN)
 	{
 		if(firstResult)
 			gameController->SetActiveTool(0, firstResult);
 		exit = true;
 	}
-	if(key == KEY_ESCAPE)
+	if (key == SDLK_ESCAPE)
 	{
 		exit = true;
 	}

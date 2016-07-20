@@ -457,7 +457,7 @@ int luacon_keyevent(int key, Uint16 character, int modifier, int event)
 	for (int i = 1; i <= len && kycontinue; i++)
 	{
 		lua_rawgeti(l, -1, i);
-		if ((modifier & KEY_MOD_CONTROL) && (character < ' ' || character > '~') && key < 256)
+		if ((modifier & KMOD_CTRL) && (character < ' ' || character > '~') && key < 256)
 			lua_pushlstring(l, (const char*)&key, 1);
 		else
 			lua_pushlstring(l, (const char*)&character, 1);

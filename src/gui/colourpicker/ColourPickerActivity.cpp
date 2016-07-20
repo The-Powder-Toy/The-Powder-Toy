@@ -243,7 +243,7 @@ void ColourPickerActivity::OnMouseUp(int x, int y, unsigned button)
 
 void ColourPickerActivity::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
-	if (key == KEY_TAB)
+	if (key == SDLK_TAB)
 	{
 		if (rValue->IsFocused())
 			gValue->TabFocus();

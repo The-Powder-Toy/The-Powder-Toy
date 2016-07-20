@@ -28,23 +28,23 @@ void ConsoleView::DoKeyPress(int key, Uint16 character, bool shift, bool ctrl, b
 {
 	switch(key)
 	{
-	case KEY_ESCAPE:
+	case SDLK_ESCAPE:
 	case '`':
 		if (character != '~')
 			c->CloseConsole();
 		else
 			Window::DoKeyPress(key, character, shift, ctrl, alt);
 		break;
-	case KEY_RETURN:
-	case KEY_ENTER:
+	case SDLK_RETURN:
+	case SDLK_KP_ENTER:
 		c->EvaluateCommand(commandField->GetText());
 		commandField->SetText("");
 		commandField->SetDisplayText("");
 		break;
-	case KEY_DOWN:
+	case SDLK_DOWN:
 		c->NextCommand();
 		break;
-	case KEY_UP:
+	case SDLK_UP:
 		c->PreviousCommand();
 		break;
 	default:

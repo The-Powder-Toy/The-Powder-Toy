@@ -587,24 +587,24 @@ SDLKey MapNumpad(SDLKey key)
 {
 	switch(key)
 	{
-	case KEY_NUM_UP:
-		return KEY_UP;
-	case KEY_NUM_DOWN:
-		return KEY_DOWN;
-	case KEY_NUM_RIGHT:
-		return KEY_RIGHT;
-	case KEY_NUM_LEFT:
-		return KEY_LEFT;
-	case KEY_NUM_HOME:
-		return KEY_HOME;
-	case KEY_NUM_END:
-		return KEY_END;
-	case KEY_NUM_PERIOD:
-		return KEY_DELETE;
-	case KEY_NUM_INS:
-	case KEY_NUM_PGUP:
-	case KEY_NUM_PGDOWN:
-		return KEY_UNKNOWN;
+	case SDLK_KP8:
+		return SDLK_UP;
+	case SDLK_KP2:
+		return SDLK_DOWN;
+	case SDLK_KP6:
+		return SDLK_RIGHT;
+	case SDLK_KP4:
+		return SDLK_LEFT;
+	case SDLK_KP7:
+		return SDLK_HOME;
+	case SDLK_KP1:
+		return SDLK_END;
+	case SDLK_KP_PERIOD:
+		return SDLK_DELETE;
+	case SDLK_KP0:
+	case SDLK_KP9:
+	case SDLK_KP3:
+		return SDLK_UNKNOWN;
 	default:
 		return key;
 	}
@@ -641,10 +641,10 @@ void EventProcess(SDL_Event event)
 			engine->Exit();
 		break;
 	case SDL_KEYDOWN:
-		engine->onKeyPress(event.key.keysym.sym, event.key.keysym.unicode, event.key.keysym.mod&KEY_MOD_SHIFT, event.key.keysym.mod&KEY_MOD_CONTROL, event.key.keysym.mod&KEY_MOD_ALT);
+		engine->onKeyPress(event.key.keysym.sym, event.key.keysym.unicode, event.key.keysym.mod&KMOD_SHIFT, event.key.keysym.mod&KMOD_CTRL, event.key.keysym.mod&KMOD_ALT);
 		break;
 	case SDL_KEYUP:
-		engine->onKeyRelease(event.key.keysym.sym, event.key.keysym.unicode, event.key.keysym.mod&KEY_MOD_SHIFT, event.key.keysym.mod&KEY_MOD_CONTROL, event.key.keysym.mod&KEY_MOD_ALT);
+		engine->onKeyRelease(event.key.keysym.sym, event.key.keysym.unicode, event.key.keysym.mod&KMOD_SHIFT, event.key.keysym.mod&KMOD_CTRL, event.key.keysym.mod&KMOD_ALT);
 		break;
 	case SDL_MOUSEMOTION:
 		engine->onMouseMove(event.motion.x*inputScale, event.motion.y*inputScale);
