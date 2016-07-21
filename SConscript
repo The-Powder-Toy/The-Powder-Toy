@@ -184,17 +184,17 @@ if GetOption("msvc"):
 #Check 32/64 bit
 def CheckBit(context):
 	context.Message('Checking if 64 bit... ')
-	program = """#include <stdlib.h>
-	#include <stdio.h>
+	program = """#include <cstdlib>
+	#include <cstdio>
 	int main() {
 		printf("%d", (int)sizeof(size_t));
 		return 0;
 	}
 	"""
-	ret = context.TryCompile(program, '.c')
+	ret = context.TryCompile(program, '.cpp')
 	if ret == 0:
 		return False
-	ret = context.TryRun(program, '.c')
+	ret = context.TryRun(program, '.cpp')
 	if ret[1] == '':
 		return False
 	context.Result(int(ret[1]) == 8)
