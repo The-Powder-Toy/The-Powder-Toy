@@ -54,7 +54,7 @@ void SampleTool::Draw(Simulation * sim, Brush * brush, ui::Point position)
 				for(std::vector<Tool*>::iterator iter = elementTools.begin(), end = elementTools.end(); iter != end; ++iter)
 				{
 					Tool * elementTool = *iter;
-					if(elementTool && elementTool->GetToolID() == particleCtype)
+					if(elementTool && elementTool->GetToolID()/256 == particleCtype)
 						gameModel->SetActiveTool(0, elementTool);
 				}
 			}
