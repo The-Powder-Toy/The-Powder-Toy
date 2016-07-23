@@ -65,12 +65,12 @@
 #define SPC_AIR 256
 
 #define DECO_DRAW	0
-#define DECO_ADD	1
-#define DECO_SUBTRACT	2
-#define DECO_MULTIPLY	3
-#define DECO_DIVIDE	4
-#define DECO_SMUDGE 5
-#define DECO_CLEAR	6
+#define DECO_CLEAR	1
+#define DECO_ADD	2
+#define DECO_SUBTRACT	3
+#define DECO_MULTIPLY	4
+#define DECO_DIVIDE	5
+#define DECO_SMUDGE 6
 
 //Old IDs for GOL types
 #define GT_GOL 78
