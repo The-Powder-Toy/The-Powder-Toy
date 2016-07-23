@@ -612,7 +612,10 @@ void GameView::NotifyMenuListChanged(GameModel * sender)
 		{
 			std::string tempString = "";
 			tempString += menuList[i]->GetIcon();
-			ui::Button * tempButton = new ui::Button(ui::Point(WINDOWW-16, currentY), ui::Point(15, 15), tempString, menuList[i]->GetDescription());
+			std::string description = menuList[i]->GetDescription();
+			if (i == SC_FAVORITES && Favorite::Ref().GetFavoritesList()->size() == 0)
+				description += " (Use ctrl+shift+click to favorite an element)";
+			ui::Button * tempButton = new ui::Button(ui::Point(WINDOWW-16, currentY), ui::Point(15, 15), tempString, description);
 			tempButton->Appearance.Margin = ui::Border(0, 2, 3, 2);
 			tempButton->SetTogglable(true);
 			tempButton->SetActionCallback(new MenuAction(this, i));
