@@ -265,7 +265,7 @@ void Window::DoTick(float dt)
 void Window::DoKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
 #ifdef DEBUG
-	if (key == KEY_TAB && ctrl)
+	if (key == SDLK_TAB && ctrl)
 		debugMode = !debugMode;
 	if (debugMode)
 	{
@@ -273,38 +273,38 @@ void Window::DoKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool a
 		{
 			if (shift)
 			{
-				if (key == KEY_UP)
+				if (key == SDLK_UP)
 					focusedComponent_->Size.Y--;
-				if (key == KEY_DOWN)
+				if (key == SDLK_DOWN)
 					focusedComponent_->Size.Y++;
-				if (key == KEY_LEFT)
+				if (key == SDLK_LEFT)
 					focusedComponent_->Size.X--;
-				if (key == KEY_RIGHT)
+				if (key == SDLK_RIGHT)
 					focusedComponent_->Size.X++;
 			}
 			if (ctrl)
 			{
-				if (key == KEY_UP)
+				if (key == SDLK_UP)
 					focusedComponent_->Size.Y++;
-				if (key == KEY_DOWN)
+				if (key == SDLK_DOWN)
 					focusedComponent_->Size.Y--;
-				if (key == KEY_LEFT)
+				if (key == SDLK_LEFT)
 					focusedComponent_->Size.X++;
-				if (key == KEY_RIGHT)
+				if (key == SDLK_RIGHT)
 					focusedComponent_->Size.X--;
 			}
 			if (!shift)
 			{
-				if (key == KEY_UP)
+				if (key == SDLK_UP)
 					focusedComponent_->Position.Y--;
-				if (key == KEY_DOWN)
+				if (key == SDLK_DOWN)
 					focusedComponent_->Position.Y++;
-				if (key == KEY_LEFT)
+				if (key == SDLK_LEFT)
 					focusedComponent_->Position.X--;
-				if (key == KEY_RIGHT)
+				if (key == SDLK_RIGHT)
 					focusedComponent_->Position.X++;
 			}
-			if (key == KEY_DELETE)
+			if (key == SDLK_DELETE)
 			{
 				RemoveComponent(focusedComponent_);
 				halt = false;
@@ -314,35 +314,35 @@ void Window::DoKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool a
 		{
 			if (shift)
 			{
-				if (key == KEY_UP)
+				if (key == SDLK_UP)
 					Size.Y--;
-				if (key == KEY_DOWN)
+				if (key == SDLK_DOWN)
 					Size.Y++;
-				if (key == KEY_LEFT)
+				if (key == SDLK_LEFT)
 					Size.X--;
-				if (key == KEY_RIGHT)
+				if (key == SDLK_RIGHT)
 					Size.X++;
 			}
 			if (ctrl)
 			{
-				if (key == KEY_UP)
+				if (key == SDLK_UP)
 					Size.Y++;
-				if (key == KEY_DOWN)
+				if (key == SDLK_DOWN)
 					Size.Y--;
-				if (key == KEY_LEFT)
+				if (key == SDLK_LEFT)
 					Size.X++;
-				if (key == KEY_RIGHT)
+				if (key == SDLK_RIGHT)
 					Size.X--;
 			}
 			if (!shift)
 			{
-				if (key == KEY_UP)
+				if (key == SDLK_UP)
 					Position.Y--;
-				if (key == KEY_DOWN)
+				if (key == SDLK_DOWN)
 					Position.Y++;
-				if( key == KEY_LEFT)
+				if( key == SDLK_LEFT)
 					Position.X--;
-				if (key == KEY_RIGHT)
+				if (key == SDLK_RIGHT)
 					Position.X++;
 			}
 		}
@@ -359,10 +359,10 @@ void Window::DoKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool a
 	if (!stop)
 		OnKeyPress(key, character, shift, ctrl, alt);
 	
-	if (key == KEY_ESCAPE)
+	if (key == SDLK_ESCAPE)
 		OnTryExit(Escape);
 
-	if (key == KEY_ENTER || key == KEY_RETURN)
+	if (key == SDLK_KP_ENTER || key == SDLK_RETURN)
 		OnTryOkay(Enter);
 
 	if (destruct)

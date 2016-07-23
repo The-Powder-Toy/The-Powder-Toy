@@ -4,6 +4,7 @@
 #include "Point.h"
 #include "Label.h"
 #include "Keys.h"
+#include "Mouse.h"
 #include "ContextMenu.h"
 
 using namespace ui;
@@ -188,7 +189,7 @@ void Label::OnContextMenuAction(int item)
 
 void Label::OnMouseClick(int x, int y, unsigned button)
 {
-	if(button == BUTTON_RIGHT)
+	if(button == SDL_BUTTON_RIGHT)
 	{
 		if(menu)
 			menu->Show(GetScreenPos() + ui::Point(x, y));

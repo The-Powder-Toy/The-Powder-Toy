@@ -236,9 +236,9 @@ void PropertyWindow::OnDraw()
 
 void PropertyWindow::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
-	if (key == KEY_UP)
+	if (key == SDLK_UP)
 		property->SetOption(property->GetOption().second-1);
-	else if (key == KEY_DOWN)
+	else if (key == SDLK_DOWN)
 		property->SetOption(property->GetOption().second+1);
 }
 

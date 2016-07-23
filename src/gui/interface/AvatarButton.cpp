@@ -9,6 +9,7 @@
 #include "graphics/Graphics.h"
 #include "ContextMenu.h"
 #include "Keys.h"
+#include "Mouse.h"
 
 namespace ui {
 
@@ -79,7 +80,7 @@ void AvatarButton::OnContextMenuAction(int item)
 
 void AvatarButton::OnMouseClick(int x, int y, unsigned int button)
 {
-	if(button == BUTTON_RIGHT)
+	if(button == SDL_BUTTON_RIGHT)
 	{
 		if(menu)
 			menu->Show(GetScreenPos() + ui::Point(x, y));

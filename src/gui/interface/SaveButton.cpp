@@ -10,6 +10,7 @@
 #include "Format.h"
 #include "ContextMenu.h"
 #include "Keys.h"
+#include "Mouse.h"
 
 namespace ui {
 
@@ -343,7 +344,7 @@ void SaveButton::OnContextMenuAction(int item)
 
 void SaveButton::OnMouseClick(int x, int y, unsigned int button)
 {
-	if(button == BUTTON_RIGHT)
+	if(button == SDL_BUTTON_RIGHT)
 	{
 		if(menu)
 			menu->Show(GetScreenPos() + ui::Point(x, y));

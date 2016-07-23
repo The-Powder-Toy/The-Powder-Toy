@@ -519,6 +519,11 @@ void SetCursorEnabled(int enabled)
 	SDL_ShowCursor(enabled);
 }
 
+unsigned int GetTicks()
+{
+	return SDL_GetTicks();
+}
+
 std::map<std::string, std::string> readArguments(int argc, char * argv[])
 {
 	std::map<std::string, std::string> arguments;

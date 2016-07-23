@@ -134,8 +134,8 @@ void TagsView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 {
 	switch(key)
 	{
-	case KEY_ENTER:
-	case KEY_RETURN:
+	case SDLK_KP_ENTER:
+	case SDLK_RETURN:
 		if(IsFocused(tagInput))
 		{
 			addTag();

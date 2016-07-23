@@ -1,5 +1,6 @@
 #include "ToolButton.h"
 #include "gui/interface/Keys.h"
+#include "gui/interface/Mouse.h"
 #include "Favorite.h"
 
 ToolButton::ToolButton(ui::Point position, ui::Point size, std::string text_, std::string toolIdentifier, std::string toolTip):
@@ -25,11 +26,11 @@ void ToolButton::OnMouseUnclick(int x, int y, unsigned int button)
 	if(isButtonDown)
 	{
 		isButtonDown = false;
-		if(button == BUTTON_LEFT)
+		if(button == SDL_BUTTON_LEFT)
 			SetSelectionState(0);
-		if(button == BUTTON_RIGHT)
+		if(button == SDL_BUTTON_RIGHT)
 			SetSelectionState(1);
-		if(button == BUTTON_MIDDLE)
+		if(button == SDL_BUTTON_MIDDLE)
 			SetSelectionState(2);
 		DoAction();
 	}
