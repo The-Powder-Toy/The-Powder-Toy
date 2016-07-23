@@ -193,6 +193,13 @@ void PropertyWindow::SetProperty()
 					std::stringstream buffer(value);
 					buffer.exceptions(std::stringstream::failbit | std::stringstream::badbit);
 					buffer >> tool->propValue.Float;
+					if (properties[property->GetOption().second].Name == "temp" && value.length())
+					{
+						if (value.substr(value.length()-1) == "C")
+							tool->propValue.Float += 273.15;
+						else if (value.substr(value.length()-1) == "F")
+							tool->propValue.Float = (tool->propValue.Float-32.0f)*5/9+273.15f;
+					}
 #ifdef DEBUG
 					std::cout << "Got float value " << tool->propValue.Float << std::endl;
 #endif
