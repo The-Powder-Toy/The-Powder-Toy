@@ -233,9 +233,11 @@ void GameModel::BuildMenus()
 		activeToolIdentifiers[3] = regularToolset[3]->GetIdentifier();
 
 	//Empty current menus
-	for(std::vector<Menu*>::iterator iter = menuList.begin(), end = menuList.end(); iter != end; ++iter)
+	for (size_t i = 0; i < menuList.size(); i++)
 	{
-		delete *iter;
+		if (i == SC_FAVORITES)
+			menuList[i]->ClearTools();
+		delete menuList[i];
 	}
 	menuList.clear();
 	toolList.clear();
