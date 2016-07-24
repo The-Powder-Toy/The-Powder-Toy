@@ -1854,7 +1854,7 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 	// minimum version this save is compatible with
 	// when building, this number may be increased depending on what elements are used
 	// or what properties are detected
-	int minimumMajorVersion = 90, minimumMinorVersion = 2;
+	int minimumMajorVersion = 90, minimumMinorVersion = 4;
 	bson b;
 
 	std::fill(elementCount, elementCount+PT_NUM, 0);
