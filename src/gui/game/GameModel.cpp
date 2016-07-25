@@ -82,10 +82,7 @@ GameModel::GameModel():
 	sim->aheat_enable =  Client::Ref().GetPrefInteger("Simulation.AmbientHeat", 0);
 	sim->pretty_powder =  Client::Ref().GetPrefInteger("Simulation.PrettyPowder", 0);
 
-	//Load favorites
-	std::vector<std::string> favoritesList = Client::Ref().GetPrefStringArray("Favorites");
-
-	Favorite::Ref().SetFavoritesList(favoritesList);
+	Favorite::Ref().LoadFavoritesFromPrefs();
 
 	//Load last user
 	if(Client::Ref().GetAuthUser().ID)
@@ -162,7 +159,7 @@ GameModel::~GameModel()
 	Client::Ref().SetPref("Decoration.Blue", (int)colour.Blue);
 	Client::Ref().SetPref("Decoration.Alpha", (int)colour.Alpha);
 
-	Client::Ref().SetPref("Favorites", std::vector<Json::Value>(Favorite::Ref().GetFavoritesList()->begin(), Favorite::Ref().GetFavoritesList()->end()));
+	Favorite::Ref().SaveFavoritesToPrefs();
 
 	for (size_t i = 0; i < menuList.size(); i++)
 	{
@@ -374,7 +371,7 @@ void GameModel::BuildFavoritesMenu()
 {
 	menuList[SC_FAVORITES]->ClearTools();
 
-	for (size_t i = 0; i < menuList.size(); i++)
+	/*for (size_t i = 0; i < menuList.size(); i++)
 	{
 		if (i == SC_FAVORITES) 
 			continue;
@@ -386,6 +383,21 @@ void GameModel::BuildFavoritesMenu()
 				menuList[SC_FAVORITES]->AddTool(menuList[i]->GetToolList()[j]);
 			}
 		}
+	}
+	for (size_t i = 0; i < extraElementTools.size(); i++)
+	{
+		if (Favorite::Ref().IsFavorite(extraElementTools[i]->GetIdentifier()))
+		{
+			menuList[SC_FAVORITES]->AddTool(extraElementTools[i]);
+		}
+	}*/
+	
+	std::vector<std::string> favList = Favorite::Ref().GetFavoritesList();
+	for (size_t i = 0; i < favList.size(); i++)
+	{
+		Tool *tool = GetToolFromIdentifier(favList[i]);
+		if (tool)
+			menuList[SC_FAVORITES]->AddTool(tool);
 	}
 
 	if (activeMenu == SC_FAVORITES)
