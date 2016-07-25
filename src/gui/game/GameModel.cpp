@@ -370,27 +370,6 @@ void GameModel::BuildMenus()
 void GameModel::BuildFavoritesMenu()
 {
 	menuList[SC_FAVORITES]->ClearTools();
-
-	/*for (size_t i = 0; i < menuList.size(); i++)
-	{
-		if (i == SC_FAVORITES) 
-			continue;
-
-		for (size_t j = 0; j < menuList[i]->GetToolList().size(); j++)
-		{
-			if (Favorite::Ref().IsFavorite(menuList[i]->GetToolList()[j]->GetIdentifier()))
-			{
-				menuList[SC_FAVORITES]->AddTool(menuList[i]->GetToolList()[j]);
-			}
-		}
-	}
-	for (size_t i = 0; i < extraElementTools.size(); i++)
-	{
-		if (Favorite::Ref().IsFavorite(extraElementTools[i]->GetIdentifier()))
-		{
-			menuList[SC_FAVORITES]->AddTool(extraElementTools[i]);
-		}
-	}*/
 	
 	std::vector<std::string> favList = Favorite::Ref().GetFavoritesList();
 	for (size_t i = 0; i < favList.size(); i++)

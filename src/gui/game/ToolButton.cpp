@@ -64,7 +64,7 @@ void ToolButton::Draw(const ui::Point& screenPos)
 	{
 		g->drawrect(screenPos.X, screenPos.Y, Size.X, Size.Y, Appearance.BorderInactive.Red, Appearance.BorderInactive.Green, Appearance.BorderInactive.Blue, Appearance.BorderInactive.Alpha);
 	}
-	if (Favorite::Ref().IsFavorite(toolIdentifier) && currentSelection == -1)
+	if (Favorite::Ref().IsFavorite(toolIdentifier))
 	{
 		g->drawtext(screenPos.X, screenPos.Y, "\xE8", Appearance.BorderFavorite.Red, Appearance.BorderFavorite.Green, Appearance.BorderFavorite.Blue, Appearance.BorderFavorite.Alpha);
 	}
