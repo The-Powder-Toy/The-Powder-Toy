@@ -2115,6 +2115,15 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 				partsData[fieldDescLoc] = fieldDesc;
 				partsData[fieldDescLoc+1] = fieldDesc>>8;
 
+				if (particles[i].type == PT_RPEL && particles[i].ctype)
+				{
+					RESTRICTVERSION(91, 4);
+				}
+				else if (particles[i].type == PT_NWHL && particles[i].tmp)
+				{
+					RESTRICTVERSION(91, 5);
+				}
+
 				//Get the pmap entry for the next particle in the same position
 				i = partsPosLink[i];
 			}
