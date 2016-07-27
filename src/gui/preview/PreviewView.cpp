@@ -113,7 +113,7 @@ PreviewView::PreviewView():
 		ReportAction(PreviewView * v_){ v = v_; }
 		virtual void ActionCallback(ui::Button * sender)
 		{
-			new TextPrompt("Report Save", "Things to consider when reporting:\n\bw1)\bg When reporting stolen saves, please include the ID of the original save.\n\bw2)\bg Do not ask for saves to be removed from front page unless they break the rules.\n\bw3)\bg You may report saves because of comments or tags too (including your own saves)", "", "[reason]", true, new ReportPromptCallback(v));
+			new TextPrompt("Report Save", "Things to consider when reporting:\n\bw1)\bg When reporting stolen saves, please include the ID of the original save.\n\bw2)\bg Do not ask for saves to be removed from front page unless they break the rules.\n\bw3)\bg You may report saves for comments or tags too (including your own saves)", "", "[reason]", true, new ReportPromptCallback(v));
 		}
 	};
 	reportButton = new ui::Button(ui::Point(100, Size.Y-19), ui::Point(51, 19), "Report");
