@@ -100,13 +100,16 @@ int Element_GEL::update(UPDATE_FUNC_ARGS)
 					}
 					break;
 				case PT_SPNG:
-					if (parts[i].tmp<100 && ((parts[r>>8].life+1)>parts[i].tmp))
+					// Concentration diffusion
+					if (parts[r>>8].life>0 && parts[i].tmp<100 && ((parts[r>>8].life+1)>parts[i].tmp))
 					{
+						// SPNG -> GEL
 						parts[r>>8].life--;
 						parts[i].tmp++;
 					}
-					else if ((parts[r>>8].life+1)<parts[i].tmp)//Concentration diffusion
+					else if (parts[i].tmp>0 && (parts[r>>8].life+1)<parts[i].tmp)
 					{
+						// SPNG <- GEL (saturation limit of SPNG is ignored here)
 						parts[r>>8].life++;
 						parts[i].tmp--;
 					}

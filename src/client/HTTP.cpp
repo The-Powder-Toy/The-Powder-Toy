@@ -25,6 +25,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <cctype>
 #ifndef WIN
 #include <sys/param.h>
 #endif
@@ -352,7 +353,7 @@ static void process_header(struct http_ctx *cx, char *str)
 			cx->state = HTS_DONE;
 		return;
 	}
-	if (!strncmp(str, "HTTP/", 5))
+	if (!strncmp(str, "http/", 5))
 	{
 		p = strchr(str, ' ');
 		if (!p)
@@ -365,13 +366,13 @@ static void process_header(struct http_ctx *cx, char *str)
 		cx->ret = atoi(p);
 		return;
 	}
-	if (!strncmp(str, "Content-Length: ", 16))
+	if (!strncmp(str, "content-length: ", 16))
 	{
 		str = eatwhitespace(str+16);
 		cx->contlen = atoi(str);
 		return;
 	}
-	if (!strncmp(str, "Transfer-Encoding: ", 19))
+	if (!strncmp(str, "transfer-encoding: ", 19))
 	{
 		str = eatwhitespace(str+19);
 		if(!strncmp(str, "chunked", 8))
@@ -380,7 +381,7 @@ static void process_header(struct http_ctx *cx, char *str)
 		}
 		return;
 	}
-	if (!strncmp(str, "Connection: ", 12))
+	if (!strncmp(str, "connection: ", 12))
 	{
 		str = eatwhitespace(str+12);
 		if(!strncmp(str, "close", 6))
@@ -427,7 +428,7 @@ static void process_byte(struct http_ctx *cx, char ch)
 				cx->hlen *= 2;
 				cx->hbuf = (char *)realloc(cx->hbuf, cx->hlen);
 			}
-			cx->hbuf[cx->hptr++] = ch;
+			cx->hbuf[cx->hptr++] = tolower(ch);
 		}
 	}
 }

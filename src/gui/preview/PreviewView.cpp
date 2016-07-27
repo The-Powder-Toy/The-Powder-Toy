@@ -113,7 +113,7 @@ PreviewView::PreviewView():
 		ReportAction(PreviewView * v_){ v = v_; }
 		virtual void ActionCallback(ui::Button * sender)
 		{
-			new TextPrompt("Report Save", "Things to consider when reporting:\n\bw1)\bg When reporting stolen saves, please include the ID of the original save.\n\bw2)\bg Do not ask for saves to be removed from front page unless they break the rules.\n\bw3)\bg You may report saves for comments too (including your own saves)", "", "[reason]", true, new ReportPromptCallback(v));
+			new TextPrompt("Report Save", "Things to consider when reporting:\n\bw1)\bg When reporting stolen saves, please include the ID of the original save.\n\bw2)\bg Do not ask for saves to be removed from front page unless they break the rules.\n\bw3)\bg You may report saves for comments or tags too (including your own saves)", "", "[reason]", true, new ReportPromptCallback(v));
 		}
 	};
 	reportButton = new ui::Button(ui::Point(100, Size.Y-19), ui::Point(51, 19), "Report");
@@ -193,7 +193,7 @@ PreviewView::PreviewView():
 	viewsLabel->Appearance.HorizontalAlign = ui::Appearance::AlignRight;
 	viewsLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(viewsLabel);
-	
+
 	pageInfo = new ui::Label(ui::Point((XRES/2) + 85, Size.Y+1), ui::Point(70, 16), "Page 1 of 1");
 	pageInfo->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	AddComponent(pageInfo);
@@ -215,7 +215,7 @@ void PreviewView::AttachController(PreviewController * controller)
 	textWidth = Graphics::textwidth(format::NumberToString<int>(c->SaveID()).c_str());
 	saveIDLabel2 = new ui::Label(ui::Point((Size.X-textWidth-20)/2-37, Size.Y+22), ui::Point(40, 16), "Save ID:");
 	AddComponent(saveIDLabel2);
-	
+
 	saveIDButton = new ui::CopyTextButton(ui::Point((Size.X-textWidth-10)/2, Size.Y+20), ui::Point(textWidth+10, 18), format::NumberToString<int>(c->SaveID()), saveIDLabel);
 	AddComponent(saveIDButton);
 }
@@ -645,4 +645,3 @@ PreviewView::~PreviewView()
 	}
 	delete savePreview;
 }
-

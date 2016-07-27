@@ -5,6 +5,7 @@
 #include "gui/interface/Keys.h"
 #include "gui/game/Tool.h"
 #include "gui/Style.h"
+#include "gui/game/Favorite.h"
 #include "gui/game/GameController.h"
 
 class ElementSearchActivity::ToolAction: public ui::ButtonAction
@@ -26,6 +27,9 @@ ElementSearchActivity::ElementSearchActivity(GameController * gameController, st
 	firstResult(NULL),
 	gameController(gameController),
 	tools(tools),
+	shiftPressed(false),
+	ctrlPressed(false),
+	altPressed(false),
 	exit(false)
 {
 	ui::Label * title = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 15), "Element Search");
@@ -167,7 +171,18 @@ void ElementSearchActivity::searchTools(std::string query)
 
 void ElementSearchActivity::SetActiveTool(int selectionState, Tool * tool)
 {
-	gameController->SetActiveTool(selectionState, tool);
+	if (ctrlPressed && shiftPressed && !altPressed)
+	{
+		Favorite::Ref().AddFavorite(tool->GetIdentifier());
+		gameController->RebuildFavoritesMenu();
+	}
+	else if (ctrlPressed && altPressed && !shiftPressed &&
+	         tool->GetIdentifier().find("DEFAULT_PT_") != tool->GetIdentifier().npos)
+	{
+		gameController->SetActiveTool(3, tool);
+	}
+	else
+		gameController->SetActiveTool(selectionState, tool);
 	exit = true;
 }
 
@@ -188,15 +203,46 @@ void ElementSearchActivity::OnTick(float dt)
 
 void ElementSearchActivity::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
-	if (key == SDLK_KP_ENTER || key == SDLK_RETURN)
+	switch (key)
 	{
+	case SDLK_KP_ENTER:
+	case SDLK_RETURN:
 		if(firstResult)
 			gameController->SetActiveTool(0, firstResult);
+	case SDLK_ESCAPE:
 		exit = true;
+		break;
+	case SDLK_LSHIFT:
+	case SDLK_RSHIFT:
+		shiftPressed = true;
+		break;
+	case SDLK_LCTRL:
+	case SDLK_RCTRL:
+		ctrlPressed = true;
+		break;
+	case SDLK_LALT:
+	case SDLK_RALT:
+		altPressed = true;
+		break;
 	}
-	if (key == SDLK_ESCAPE)
+}
+
+void ElementSearchActivity::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+{
+	switch (key)
 	{
-		exit = true;
+	case SDLK_LSHIFT:
+	case SDLK_RSHIFT:
+		shiftPressed = false;
+		break;
+	case SDLK_LCTRL:
+	case SDLK_RCTRL:
+		ctrlPressed = false;
+		break;
+	case SDLK_LALT:
+	case SDLK_RALT:
+		altPressed = false;
+		break;
 	}
 }
 
