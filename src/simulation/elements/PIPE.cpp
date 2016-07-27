@@ -278,9 +278,11 @@ int Element_PIPE::update(UPDATE_FUNC_ARGS)
 //#TPT-Directive ElementHeader Element_PIPE static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_PIPE::graphics(GRAPHICS_FUNC_ARGS)
 {
-	int t = cpart->tmp & 0xFF;;
+	int t = cpart->tmp & 0xFF;
 	if (t>0 && t<PT_NUM && ren->sim->elements[t].Enabled)
 	{
+		if (t == PT_STKM || t == PT_STKM2 || t == PT_FIGH)
+			return 0;
 		if (ren->graphicscache[t].isready)
 		{
 			*pixel_mode = ren->graphicscache[t].pixel_mode;

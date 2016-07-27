@@ -542,12 +542,9 @@ public:
 		if (v->ShiftBehaviour() && v->CtrlBehaviour() && !v->AltBehaviour())
 		{
 			if (Favorite::Ref().IsFavorite(tool->GetIdentifier()) && sender->GetSelectionState() == 1)
-			{
-				Favorite::Ref().GetFavoritesList()->erase(std::remove(Favorite::Ref().GetFavoritesList()->begin(), Favorite::Ref().GetFavoritesList()->end(),
-					tool->GetIdentifier()), Favorite::Ref().GetFavoritesList()->end());
-			}
+				Favorite::Ref().RemoveFavorite(tool->GetIdentifier());
 			else if (sender->GetSelectionState() == 0)
-				Favorite::Ref().GetFavoritesList()->push_back(tool->GetIdentifier());
+				Favorite::Ref().AddFavorite(tool->GetIdentifier());
 			else if (sender->GetSelectionState() == 2)
 				v->c->SetActiveMenu(SC_FAVORITES);
 
@@ -613,7 +610,7 @@ void GameView::NotifyMenuListChanged(GameModel * sender)
 			std::string tempString = "";
 			tempString += menuList[i]->GetIcon();
 			std::string description = menuList[i]->GetDescription();
-			if (i == SC_FAVORITES && Favorite::Ref().GetFavoritesList()->size() == 0)
+			if (i == SC_FAVORITES && Favorite::Ref().AnyFavorites())
 				description += " (Use ctrl+shift+click to favorite an element)";
 			ui::Button * tempButton = new ui::Button(ui::Point(WINDOWW-16, currentY), ui::Point(15, 15), tempString, description);
 			tempButton->Appearance.Margin = ui::Border(0, 2, 3, 2);

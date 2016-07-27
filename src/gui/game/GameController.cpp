@@ -283,11 +283,11 @@ sign * GameController::GetSignAt(int x, int y)
 
 void GameController::PlaceSave(ui::Point position)
 {
-	if(gameModel->GetPlaceSave())
+	if (gameModel->GetPlaceSave())
 	{
+		HistorySnapshot();
 		gameModel->GetSimulation()->Load(position.X, position.Y, gameModel->GetPlaceSave());
 		gameModel->SetPaused(gameModel->GetPlaceSave()->paused | gameModel->GetPaused());
-		HistorySnapshot();
 	}
 }
 

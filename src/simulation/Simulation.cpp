@@ -1920,8 +1920,10 @@ void Simulation::clear_sim(void)
 	fighcount = 0;
 	player.spwn = 0;
 	player.spawnID = -1;
+	player.rocketBoots = false;
 	player2.spwn = 0;
 	player2.spawnID = -1;
+	player2.rocketBoots = false;
 	//memset(pers_bg, 0, WINDOWW*YRES*PIXELSIZE);
 	//memset(fire_r, 0, sizeof(fire_r));
 	//memset(fire_g, 0, sizeof(fire_g));
