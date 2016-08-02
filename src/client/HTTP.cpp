@@ -1022,7 +1022,7 @@ std::string GetMultipartMessage(std::map<std::string, std::string> parts, std::s
 // add the header needed to make POSTS work
 void http_add_multipart_header(void *ctx, std::string boundary)
 {
-	std::string header = "multipart/form-data, boundary=" + boundary;
+	std::string header = "multipart/form-data; boundary=" + boundary;
 	http_async_add_header(ctx, "Content-type", header.c_str());
 }
 
@@ -1192,7 +1192,7 @@ retry:
 	if (data)
 	{
 		tmp = (char *)malloc(32+strlen((char *)boundary));
-		sprintf(tmp, "multipart/form-data, boundary=%s", boundary);
+		sprintf(tmp, "multipart/form-data; boundary=%s", boundary);
 		http_async_add_header(ctx, "Content-type", tmp);
 		free(tmp);
 		free(data);
@@ -1380,7 +1380,7 @@ retry:
 	if (data)
 	{
 		tmp = (char *)malloc(32+strlen((char *)boundary));
-		sprintf(tmp, "multipart/form-data, boundary=%s", boundary);
+		sprintf(tmp, "multipart/form-data; boundary=%s", boundary);
 		http_async_add_header(ctx, "Content-type", tmp);
 		free(tmp);
 		free(data);
