@@ -48,6 +48,8 @@
 
 #define BOUNDS_CHECK true
 
+#define REAL_BOUNDS_CHECK(x, y) (x >= 0 && x < XRES && y >= 0 && x < YRES)
+
 #define OLD_PT_WIND 147
 
 //#define PT_NUM  161
