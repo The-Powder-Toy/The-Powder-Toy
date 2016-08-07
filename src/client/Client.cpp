@@ -991,6 +991,13 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 			lastError = "Cannot upload game save";
 			return RequestFailure;
 		}
+#ifdef SNAPSHOT
+		else if (save.gameSave->fromNewerVersion && save.GetPublished())
+		{
+			lastError = "Cannot publish save";
+			return RequestFailure;
+		}
+#endif
 
 		char *saveName = new char[save.GetName().length() + 1];
 		std::strcpy (saveName, save.GetName().c_str());

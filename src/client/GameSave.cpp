@@ -740,7 +740,11 @@ void GameSave::readOPS(char * data, int dataLength)
 							fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
 					}
 				}
+#ifdef SNAPSHOT
+				if (major > FUTURE_SAVE_VERSION || (major == FUTURE_SAVE_VERSION && minor > FUTURE_MINOR_VERSION))
+#else
 				if (major > SAVE_VERSION || (major == SAVE_VERSION && minor > MINOR_VERSION))
+#endif
 				{
 					std::stringstream errorMessage;
 					errorMessage << "Save from a newer version: Requires version " << major << "." << minor;
@@ -2123,6 +2127,13 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 				{
 					RESTRICTVERSION(91, 5);
 				}
+#ifdef SNAPSHOT
+				if (particles[i].type == PT_E180 || particles[i].type == PT_E181)
+				{
+					RESTRICTVERSION(92, 0);
+					fromNewerVersion = true;
+				}
+#endif
 
 				//Get the pmap entry for the next particle in the same position
 				i = partsPosLink[i];

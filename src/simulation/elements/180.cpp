@@ -8,7 +8,7 @@ Element_E180::Element_E180()
 	Colour = PIXPACK(0xCB6351);
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
-#ifdef DEBUG
+#if defined(DEBUG) || defined(SNAPSHOT)
 	Enabled = 1;
 #else
 	Enabled = 0;

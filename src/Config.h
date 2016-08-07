@@ -33,6 +33,11 @@
 #ifndef MOD_ID
 #define MOD_ID 0
 #endif
+
+#ifdef SNAPSHOT
+#define FUTURE_SAVE_VERSION 92
+#define FUTURE_MINOR_VERSION 0
+#endif
 //VersionInfoEnd
 
 //#define IGNORE_UPDATES //uncomment this for mods, to not get any update notifications
