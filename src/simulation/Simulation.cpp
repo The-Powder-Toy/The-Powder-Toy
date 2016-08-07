@@ -2044,6 +2044,10 @@ void Simulation::init_can_move()
 			can_move[movingType][PT_VIBR] = 1;
 			can_move[movingType][PT_BVBR] = 1;
 		}
+
+		//E181 cannot be displaced by other powders
+		if (elements[movingType].Properties & TYPE_PART)
+			can_move[movingType][PT_E181] = 0;
 	}
 	//a list of lots of things PHOT can move through
 	// TODO: replace with property
