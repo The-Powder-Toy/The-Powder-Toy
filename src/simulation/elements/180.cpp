@@ -1,14 +1,18 @@
 #include "simulation/Elements.h"
 #include "simulation/Air.h"
-//#TPT-Directive ElementClass Element_COPR PT_COPR 180
-Element_COPR::Element_COPR()
+//#TPT-Directive ElementClass Element_E180 PT_E180 180
+Element_E180::Element_E180()
 {
-	Identifier = "DEFAULT_PT_COPR";
-	Name = "COPR";
+	Identifier = "DEFAULT_PT_E180";
+	Name = "E180";
 	Colour = PIXPACK(0xCB6351);
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
+#ifdef DEBUG
 	Enabled = 1;
+#else
+	Enabled = 0;
+#endif
 
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
@@ -29,7 +33,7 @@ Element_COPR::Element_COPR()
 
 	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 251;
-	Description = "Copper";
+	Description = "Experimental element, high thermal conductivity";
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_HOT_GLOW|PROP_LIFE_DEC;
 
@@ -42,11 +46,11 @@ Element_COPR::Element_COPR()
 	HighTemperature = 1356.15f;
 	HighTemperatureTransition = PT_LAVA;
 
-	Update = &Element_COPR::update;
+	Update = &Element_E180::update;
 }
 
-//#TPT-Directive ElementHeader Element_COPR static int update(UPDATE_FUNC_ARGS)
-int Element_COPR::update(UPDATE_FUNC_ARGS)
+//#TPT-Directive ElementHeader Element_E180 static int update(UPDATE_FUNC_ARGS)
+int Element_E180::update(UPDATE_FUNC_ARGS)
 {
 	const int rad = 4;
 	int rx, ry, rry, rrx, r, count = 0;
@@ -57,7 +61,7 @@ int Element_COPR::update(UPDATE_FUNC_ARGS)
 			rrx = rx * rad;
 			if (REAL_BOUNDS_CHECK(x+rrx, y+rry)) {
 				r = pmap[y+rry][x+rrx];
-				if(r && (sim->elements[r&0xFF].HeatConduct > 0 || (r&0xFF) == PT_COPR)) {
+				if(r && (sim->elements[r&0xFF].HeatConduct > 0 || (r&0xFF) == PT_E180)) {
 					count++;
 					tempAgg += parts[r>>8].temp;
 				}
@@ -74,7 +78,7 @@ int Element_COPR::update(UPDATE_FUNC_ARGS)
 				rrx = rx * rad;
 				if (REAL_BOUNDS_CHECK(x+rrx, y+rry)) {
 					r = pmap[y+rry][x+rrx];
-					if(r && (sim->elements[r&0xFF].HeatConduct > 0 || (r&0xFF) == PT_COPR)) {
+					if(r && (sim->elements[r&0xFF].HeatConduct > 0 || (r&0xFF) == PT_E180)) {
 						parts[r>>8].temp = parts[i].temp;
 					}
 				}
@@ -86,4 +90,4 @@ int Element_COPR::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_COPR::~Element_COPR() {}
+Element_E180::~Element_E180() {}
