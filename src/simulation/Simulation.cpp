@@ -2030,6 +2030,7 @@ void Simulation::init_can_move()
 		can_move[movingType][PT_FIGH] = 0;
 		//INVS behaviour varies with pressure
 		can_move[movingType][PT_INVIS] = 3;
+		can_move[movingType][PT_PINVS] = 3;
 		//stop CNCT from being displaced by other particles
 		can_move[movingType][PT_CNCT] = 0;
 		//VOID and PVOD behaviour varies with powered state and ctype
@@ -2057,7 +2058,7 @@ void Simulation::init_can_move()
 		 || destinationType == PT_CLNE || destinationType == PT_PCLN || destinationType == PT_BCLN || destinationType == PT_PBCN
 		 || destinationType == PT_WATR || destinationType == PT_DSTW || destinationType == PT_SLTW || destinationType == PT_GLOW
 		 || destinationType == PT_ISOZ || destinationType == PT_ISZS || destinationType == PT_QRTZ || destinationType == PT_PQRT
-		 || destinationType == PT_H2)
+		 || destinationType == PT_H2 || destinationType == PT_PINVS)
 			can_move[PT_PHOT][destinationType] = 2;
 		if (destinationType != PT_DMND && destinationType != PT_INSL && destinationType != PT_VOID && destinationType != PT_PVOD && destinationType != PT_VIBR && destinationType != PT_BVBR && destinationType != PT_PRTI && destinationType != PT_PRTO)
 		{
@@ -2074,6 +2075,7 @@ void Simulation::init_can_move()
 	can_move[PT_DEST][PT_PBCN] = 0;
 
 	can_move[PT_NEUT][PT_INVIS] = 2;
+	can_move[PT_NEUT][PT_PINVS] = 2;
 	can_move[PT_ELEC][PT_LCRY] = 2;
 	can_move[PT_ELEC][PT_EXOT] = 2;
 	can_move[PT_ELEC][PT_GLOW] = 2;
@@ -2134,6 +2136,13 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr)
 		else if ((r&0xFF) == PT_INVIS)
 		{
 			if (pv[ny/CELL][nx/CELL]>4.0f || pv[ny/CELL][nx/CELL]<-4.0f)
+				result = 2;
+			else
+				result = 0;
+		}
+		else if ((r&0xFF) == PT_PINVS)
+		{	
+			if (parts[r>>8].life == 10)
 				result = 2;
 			else
 				result = 0;
@@ -2252,6 +2261,14 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 					parts[i].ctype = 0;
 				}
 			}
+			else if ((r&0xFF) == PT_PINVS)
+			{
+				if (parts[r>>8].life != 10)
+				{
+					part_change_type(i,x,y,PT_NEUT);
+					parts[i].ctype = 0;
+				}
+			}
 			else if ((r&0xFF)==PT_BIZR || (r&0xFF)==PT_BIZRG || (r&0xFF)==PT_BIZRS)
 			{
 				part_change_type(i, x, y, PT_ELEC);
@@ -2291,7 +2308,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 		}
 		else if (parts[i].type == PT_PROT)
 		{
-			if ((r&0xFF) == PT_INVIS)
+			if ((r&0xFF) == PT_INVIS || (r&0xFF) == PT_PINVS)
 				part_change_type(i, x, y, PT_NEUT);
 		}
 		else if ((parts[i].type == PT_BIZR || parts[i].type == PT_BIZRG))
@@ -4855,7 +4872,7 @@ void Simulation::BeforeSim()
 				{
 					// Particles are sometimes allowed to go inside INVS and FILT
 					// To make particles collide correctly when inside these elements, these elements must not overwrite an existing pmap entry from particles inside them
-					if (!pmap[y][x] || (t!=PT_INVIS && t!= PT_FILT))
+					if (!pmap[y][x] || (t!=PT_INVIS && t!= PT_FILT && t!= PT_PINVS))
 						pmap[y][x] = t|(i<<8);
 					// (there are a few exceptions, including energy particles - currently no limit on stacking those)
 					if (t!=PT_THDR && t!=PT_EMBR && t!=PT_FIGH && t!=PT_PLSM)
