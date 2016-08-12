@@ -200,6 +200,7 @@ typedef int bson_bool_t;
 typedef struct {
     const char *cur;
     bson_bool_t first;
+	const char *last;
 } bson_iterator;
 
 typedef struct {
@@ -643,6 +644,19 @@ void bson_init( bson *b );
  * @return BSON_OK or BSON_ERROR.
  */
 int bson_init_data( bson *b , char *data );
+
+
+/**
+ * Initialize a BSON object, point its data pointer 
+ * to the provided char*, and initialize the size
+ *
+ * @param b the BSON object to initialize.
+ * @param data the raw BSON data.
+ * @param size the size of the BSON data.
+ * 
+ * @return BSON_OK or BSON_ERROR.
+ */
+int bson_init_data_size( bson *b , char *data , int size );
 
 /**
  * Initialize a BSON object, and point its data

@@ -68,6 +68,13 @@ int bson_copy( bson *out, const bson *in ) {
 
 int bson_init_data( bson *b, char *data ) {
     b->data = data;
+	b->dataSize = INT_MAX; // no overflow detection for bson_iterator_next
+    return BSON_OK;
+}
+
+int bson_init_data_size( bson *b, char *data, int size ) {
+    b->data = data;
+	b->dataSize = size; // used for overflow detection for bson_iterator_next
     return BSON_OK;
 }
 
@@ -292,11 +299,13 @@ void bson_print_raw( const char *data , int depth ) {
 void bson_iterator_init( bson_iterator *i, const bson *b ) {
     i->cur = b->data + 4;
     i->first = 1;
+	i->last = b->data + b->dataSize;
 }
 
 void bson_iterator_from_buffer( bson_iterator *i, const char *buffer ) {
     i->cur = buffer + 4;
     i->first = 1;
+	i->last = NULL;
 }
 
 bson_type bson_find( bson_iterator *it, const bson *obj, const char *name ) {
@@ -309,6 +318,8 @@ bson_type bson_find( bson_iterator *it, const bson *obj, const char *name ) {
 }
 
 bson_bool_t bson_iterator_more( const bson_iterator *i ) {
+	if (i->last && i->cur >= i->last)
+		return BSON_EOO;
     return *( i->cur );
 }
 
@@ -377,6 +388,8 @@ bson_type bson_iterator_next( bson_iterator *i ) {
 
     i->cur += 1 + strlen( i->cur + 1 ) + 1 + ds;
 
+	if (i->last && i->cur >= i->last)
+		return BSON_EOO;
     return ( bson_type )( *i->cur );
 }
 

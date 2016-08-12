@@ -506,7 +506,7 @@ void GameSave::readOPS(char * data, int dataLength)
 		throw ParseException(ParseException::Corrupt, "Unable to decompress");
 
 	set_bson_err_handler(bson_error_handler);
-	bson_init_data(&b, (char*)bsonData);
+	bson_init_data_size(&b, (char*)bsonData, bsonDataLen);
 	bson_iterator_init(&iter, &b);
 
 	std::vector<sign> tempSigns;
