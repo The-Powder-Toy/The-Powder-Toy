@@ -439,6 +439,11 @@ void GameSave::Transform(matrix2d transform, vector2d translate)
 	fanVelYPtr = (float*)fanVelYPtrNew;
 }
 
+void bson_error_handler(const char *err)
+{
+	throw ParseException(ParseException::Corrupt, "BSON error when parsing save");
+}
+
 void GameSave::readOPS(char * data, int dataLength)
 {
 	unsigned char * inputData = (unsigned char*)data, *bsonData = NULL, *partsData = NULL, *partsPosData = NULL, *fanData = NULL, *wallData = NULL, *soapLinkData = NULL;
@@ -500,6 +505,7 @@ void GameSave::readOPS(char * data, int dataLength)
 	if (BZ2_bzBuffToBuffDecompress((char*)bsonData, &bsonDataLen, (char*)(inputData+12), inputDataLen-12, 0, 0))
 		throw ParseException(ParseException::Corrupt, "Unable to decompress");
 
+	set_bson_err_handler(bson_error_handler);
 	bson_init_data(&b, (char*)bsonData);
 	bson_iterator_init(&iter, &b);
 
