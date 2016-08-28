@@ -905,6 +905,16 @@ void GameModel::FrameStep(int frames)
 	sim->framerender += frames;
 }
 
+void GameModel::CompleteDebugUpdateParticles()
+{
+    if(sim->debug_currentParticle > 0)
+    {
+        sim->UpdateParticles(sim->debug_currentParticle, NPART);
+        sim->AfterSim();
+        sim->debug_currentParticle = 0;
+    }
+}
+
 void GameModel::ClearSimulation()
 {
 	//Load defaults
