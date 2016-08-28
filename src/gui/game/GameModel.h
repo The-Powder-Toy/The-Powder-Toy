@@ -164,7 +164,7 @@ public:
 	void SetAHeatEnable(bool aHeat);
 	bool GetGravityGrid();
 	void ShowGravityGrid(bool showGrid);
-    void CompleteDebugUpdateParticles();
+	void CompleteDebugUpdateParticles();
 	void ClearSimulation();
 	vector<Menu*> GetMenuList();
 	vector<QuickOption*> GetQuickOptions();

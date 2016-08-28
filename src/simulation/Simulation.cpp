@@ -1902,7 +1902,7 @@ void Simulation::create_arc(int sx, int sy, int dx, int dy, int midpoints, int v
 
 void Simulation::clear_sim(void)
 {
-    debug_currentParticle = 0;
+	debug_currentParticle = 0;
 	emp_decor = 0;
 	emp_trigger_count = 0;
 	signs.clear();

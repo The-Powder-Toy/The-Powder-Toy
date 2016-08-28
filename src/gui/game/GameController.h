@@ -1,4 +1,4 @@
- #ifndef GAMECONTROLLER_H
+#ifndef GAMECONTROLLER_H
 #define GAMECONTROLLER_H
 
 #include <queue>
@@ -132,7 +132,7 @@ public:
 	void OpenElementSearch();
 	void OpenColourPicker();
 	void PlaceSave(ui::Point position);
-    void CompleteDebugUpdateParticles();
+	void CompleteDebugUpdateParticles();
 	void ClearSim();
 	void ReloadSim();
 	void Vote(int direction);

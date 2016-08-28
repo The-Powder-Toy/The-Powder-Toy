@@ -907,12 +907,12 @@ void GameModel::FrameStep(int frames)
 
 void GameModel::CompleteDebugUpdateParticles()
 {
-    if(sim->debug_currentParticle > 0)
-    {
-        sim->UpdateParticles(sim->debug_currentParticle, NPART);
-        sim->AfterSim();
-        sim->debug_currentParticle = 0;
-    }
+	if(sim->debug_currentParticle > 0)
+	{
+		sim->UpdateParticles(sim->debug_currentParticle, NPART);
+		sim->AfterSim();
+		sim->debug_currentParticle = 0;
+	}
 }
 
 void GameModel::ClearSimulation()
