@@ -843,6 +843,13 @@ void GameModel::SetUser(User user)
 
 void GameModel::SetPaused(bool pauseState)
 {
+	if(sim->debug_currentParticle > 0)
+	{
+		sim->UpdateParticles(sim->debug_currentParticle, NPART);
+		sim->AfterSim();
+		sim->debug_currentParticle = 0;
+	}
+
 	sim->sys_pause = pauseState?1:0;
 	notifyPausedChanged();
 }
@@ -903,16 +910,6 @@ bool GameModel::GetGravityGrid()
 void GameModel::FrameStep(int frames)
 {
 	sim->framerender += frames;
-}
-
-void GameModel::CompleteDebugUpdateParticles()
-{
-	if(sim->debug_currentParticle > 0)
-	{
-		sim->UpdateParticles(sim->debug_currentParticle, NPART);
-		sim->AfterSim();
-		sim->debug_currentParticle = 0;
-	}
 }
 
 void GameModel::ClearSimulation()

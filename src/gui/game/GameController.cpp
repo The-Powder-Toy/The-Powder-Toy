@@ -1437,11 +1437,6 @@ void GameController::ChangeBrush()
 	gameModel->SetBrushID(gameModel->GetBrushID()+1);
 }
 
-void GameController::CompleteDebugUpdateParticles()
-{
-	gameModel->CompleteDebugUpdateParticles();
-}
-
 void GameController::ClearSim()
 {
 	gameModel->SetSave(NULL);

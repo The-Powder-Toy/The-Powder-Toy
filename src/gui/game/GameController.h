@@ -132,7 +132,6 @@ public:
 	void OpenElementSearch();
 	void OpenColourPicker();
 	void PlaceSave(ui::Point position);
-	void CompleteDebugUpdateParticles();
 	void ClearSim();
 	void ReloadSim();
 	void Vote(int direction);

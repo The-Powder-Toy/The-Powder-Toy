@@ -1417,11 +1417,8 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		enableShiftBehaviour();
 		break;
 	case ' ': //Space
-	{
-		c->CompleteDebugUpdateParticles();
 		c->SetPaused();
 		break;
-	}
 	case 'z':
 		if (selectMode != SelectNone && isMouseDown)
 			break;
