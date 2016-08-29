@@ -843,7 +843,7 @@ void GameModel::SetUser(User user)
 
 void GameModel::SetPaused(bool pauseState)
 {
-	if(sim->debug_currentParticle > 0)
+	if(!pauseState && sim->debug_currentParticle > 0)
 	{
 		sim->UpdateParticles(sim->debug_currentParticle, NPART);
 		sim->AfterSim();
