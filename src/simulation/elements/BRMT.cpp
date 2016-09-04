@@ -28,7 +28,7 @@ Element_BRMT::Element_BRMT()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 211;
-	Description = "Broken metal. Created when iron rusts or when when metals break from pressure.";
+	Description = "Broken metal. Created when iron rusts or when metals break from pressure.";
 
 	Properties = TYPE_PART|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_HOT_GLOW;
 
