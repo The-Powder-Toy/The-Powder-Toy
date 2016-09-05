@@ -384,7 +384,7 @@ bool Client::DoInstallation()
 "Comment=Physics sandbox game\n"
 "MimeType=x-scheme-handler/ptsave;\n"
 "NoDisplay=true\n"
-"Categories=Game\n";
+"Categories=Game;Simulation\n";
 	std::stringstream protocolfiledata;
 	protocolfiledata << protocolfiledata_tmp << "Exec=" << filename <<" ptsave %u\nPath=" << pathname << "\n";
 	f = fopen("powdertoy-tpt-ptsave.desktop", "wb");
@@ -401,7 +401,7 @@ bool Client::DoInstallation()
 "Comment=Physics sandbox game\n"
 "MimeType=application/vnd.powdertoy.save;\n"
 "NoDisplay=true\n"
-"Categories=Game\n";
+"Categories=Game;Simulation\n";
 	std::stringstream desktopfiledata;
 	desktopfiledata << desktopfiledata_tmp << "Exec=" << filename <<" open %f\nPath=" << pathname << "\n";
 	f = fopen("powdertoy-tpt.desktop", "wb");

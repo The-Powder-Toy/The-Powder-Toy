@@ -2,9 +2,8 @@
 Version=1.0
 Encoding=UTF-8
 Name=Powder Toy
-GenericName=Physics sandbox game
-Comment=Simulates air pressure and velocity, heat, gravity interactions between different substances.
+Comment=Physics sandbox game
 Exec=powder
 Icon=powder
 Type=Application
-Categories=Game;Amusement;
+Categories=Game;Simulation;
