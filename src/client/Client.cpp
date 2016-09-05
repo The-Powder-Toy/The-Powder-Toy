@@ -384,9 +384,10 @@ bool Client::DoInstallation()
 "Comment=Physics sandbox game\n"
 "MimeType=x-scheme-handler/ptsave;\n"
 "NoDisplay=true\n"
-"Categories=Game;Simulation\n";
+"Categories=Game;Simulation\n"
+"Icon=powdertoy.png\n";
 	std::stringstream protocolfiledata;
-	protocolfiledata << protocolfiledata_tmp << "Exec=" << filename <<" ptsave %u\nPath=" << pathname << "\n";
+	protocolfiledata << protocolfiledata_tmp << "Exec=" << filename << " ptsave %u\nPath=" << pathname << "\n";
 	f = fopen("powdertoy-tpt-ptsave.desktop", "wb");
 	if (!f)
 		return 0;
@@ -394,23 +395,43 @@ bool Client::DoInstallation()
 	fclose(f);
 	success = system("xdg-desktop-menu install powdertoy-tpt-ptsave.desktop");
 
-	const char *desktopfiledata_tmp =
+	const char *desktopopenfiledata_tmp =
 "[Desktop Entry]\n"
 "Type=Application\n"
 "Name=Powder Toy\n"
 "Comment=Physics sandbox game\n"
 "MimeType=application/vnd.powdertoy.save;\n"
 "NoDisplay=true\n"
-"Categories=Game;Simulation\n";
+"Categories=Game;Simulation\n"
+"Icon=powdertoy.png\n";
+	std::stringstream desktopopenfiledata;
+	desktopopenfiledata << desktopopenfiledata_tmp << "Exec=" << filename << " open %f\nPath=" << pathname << "\n";
+	f = fopen("powdertoy-tpt-open.desktop", "wb");
+	if (!f)
+		return 0;
+	fwrite(desktopopenfiledata.str().c_str(), 1, strlen(desktopopenfiledata.str().c_str()), f);
+	fclose(f);
+	success = system("xdg-mime install powdertoy-save.xml") && success;
+	success = system("xdg-desktop-menu install powdertoy-tpt-open.desktop") && success;
+
+	const char *desktopfiledata_tmp =
+"[Desktop Entry]\n"
+"Version=1.0\n"
+"Encoding=UTF-8\n"
+"Name=Powder Toy\n"
+"Type=Application\n"
+"Comment=Physics sandbox game\n"
+"Categories=Game;Simulation\n"
+"Icon=powdertoy.png\n";
 	std::stringstream desktopfiledata;
-	desktopfiledata << desktopfiledata_tmp << "Exec=" << filename <<" open %f\nPath=" << pathname << "\n";
+	desktopfiledata << desktopfiledata_tmp << "Exec=" << filename << "\nPath=" << pathname << "\n";
 	f = fopen("powdertoy-tpt.desktop", "wb");
 	if (!f)
 		return 0;
 	fwrite(desktopfiledata.str().c_str(), 1, strlen(desktopfiledata.str().c_str()), f);
 	fclose(f);
-	success = system("xdg-mime install powdertoy-save.xml") && success;
 	success = system("xdg-desktop-menu install powdertoy-tpt.desktop") && success;
+
 	f = fopen("powdertoy-save-32.png", "wb");
 	if (!f)
 		return 0;
@@ -421,15 +442,23 @@ bool Client::DoInstallation()
 		return 0;
 	fwrite(icon_doc_16_png, 1, sizeof(icon_doc_16_png), f);
 	fclose(f);
+	f = fopen("powdertoy.png", "wb");
+	if (!f)
+		return 0;
+	fwrite(icon_desktop_48_png, 1, sizeof(icon_desktop_48_png), f);
+	fclose(f);
 	success = system("xdg-icon-resource install --noupdate --context mimetypes --size 32 powdertoy-save-32.png application-vnd.powdertoy.save") && success;
 	success = system("xdg-icon-resource install --noupdate --context mimetypes --size 16 powdertoy-save-16.png application-vnd.powdertoy.save") && success;
+	success = system("xdg-icon-resource install --noupdate --novendor --size 48 powdertoy.png") && success;	
 	success = system("xdg-icon-resource forceupdate") && success;
-	success = system("xdg-mime default powdertoy-tpt.desktop application/vnd.powdertoy.save") && success;
+	success = system("xdg-mime default powdertoy-tpt-open.desktop application/vnd.powdertoy.save") && success;
 	success = system("xdg-mime default powdertoy-tpt-ptsave.desktop x-scheme-handler/ptsave") && success;
+	unlink("powdertoy.png");
 	unlink("powdertoy-save-32.png");
 	unlink("powdertoy-save-16.png");
 	unlink("powdertoy-save.xml");
 	unlink("powdertoy-tpt.desktop");
+	unlink("powdertoy-tpt-open.desktop");
 	unlink("powdertoy-tpt-ptsave.desktop");
 	return !success;
 #elif defined MACOSX
