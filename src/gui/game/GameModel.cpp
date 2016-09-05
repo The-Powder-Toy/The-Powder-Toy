@@ -843,6 +843,13 @@ void GameModel::SetUser(User user)
 
 void GameModel::SetPaused(bool pauseState)
 {
+	if(!pauseState && sim->debug_currentParticle > 0)
+	{
+		sim->UpdateParticles(sim->debug_currentParticle, NPART);
+		sim->AfterSim();
+		sim->debug_currentParticle = 0;
+	}
+
 	sim->sys_pause = pauseState?1:0;
 	notifyPausedChanged();
 }
