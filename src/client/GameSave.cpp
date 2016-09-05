@@ -2134,7 +2134,7 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 					RESTRICTVERSION(91, 5);
 				}
 #ifdef SNAPSHOT
-				if (particles[i].type == PT_E180 || particles[i].type == PT_E181)
+				if (particles[i].type == PT_E180 || particles[i].type == PT_E181 || particles[i].type == PT_E182)
 				{
 					RESTRICTVERSION(92, 0);
 					fromNewerVersion = true;
