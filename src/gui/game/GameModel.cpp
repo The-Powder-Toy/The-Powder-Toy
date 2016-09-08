@@ -843,6 +843,16 @@ void GameModel::SetUser(User user)
 
 void GameModel::SetPaused(bool pauseState)
 {
+	if (!pauseState && sim->debug_currentParticle > 0)
+	{
+		std::stringstream logmessage;
+		logmessage << "Updated particles from #" << sim->debug_currentParticle << " to end due to unpause";
+		sim->UpdateParticles(sim->debug_currentParticle, NPART);
+		sim->AfterSim();
+		sim->debug_currentParticle = 0;
+		Log(logmessage.str(), false);
+	}
+
 	sim->sys_pause = pauseState?1:0;
 	notifyPausedChanged();
 }

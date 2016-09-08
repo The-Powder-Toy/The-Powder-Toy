@@ -1,4 +1,4 @@
- #ifndef GAMECONTROLLER_H
+#ifndef GAMECONTROLLER_H
 #define GAMECONTROLLER_H
 
 #include <queue>

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Encoding=UTF-8
+Name=Powder Toy
+Comment=Physics sandbox game
+Exec=powder
+Icon=powder
+Type=Application
+Categories=Game;Simulation;
