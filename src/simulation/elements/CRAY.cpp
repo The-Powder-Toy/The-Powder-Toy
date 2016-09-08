@@ -98,7 +98,8 @@ int Element_CRAY::update(UPDATE_FUNC_ARGS)
 									if (colored)
 										parts[nr].dcolour = colored;
 									parts[nr].temp = parts[i].temp;
-									parts[nr].life = parts[i].life;
+									if (parts[i].life>0)
+										parts[nr].life = parts[i].life;
 									if(!--partsRemaining)
 										docontinue = 0;
 								}
