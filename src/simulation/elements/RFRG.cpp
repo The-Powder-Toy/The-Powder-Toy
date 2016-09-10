@@ -47,13 +47,15 @@ Element_RFRG::Element_RFRG()
 //#TPT-Directive ElementHeader Element_RFRG static int update(UPDATE_FUNC_ARGS)
 int Element_RFRG::update(UPDATE_FUNC_ARGS)
 {
-    if (sim->pv[y/CELL][x/CELL] > 15) {
-        parts[i].temp += (sim->pv[y/CELL][x/CELL] - 15.0f) / 2.0f;
-	if (parts[i].temp >= 343.15f) {
-	    sim->part_change_type(i, x, y, PT_RFGL);
-	    parts[i].life = 20;
-        }
-    }
+	if (sim->pv[y/CELL][x/CELL] > 15)
+	{
+		parts[i].temp += (sim->pv[y/CELL][x/CELL] - 15.0f) / 2.0f;
+		if (parts[i].temp >= 343.15f)
+		{
+			sim->part_change_type(i, x, y, PT_RFGL);
+			parts[i].life = 20;
+		}
+	}
 
 	return 0;
 }

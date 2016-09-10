@@ -32,7 +32,7 @@ Element_RFGL::Element_RFGL()
 
 	Properties = TYPE_LIQUID|PROP_DEADLY;
 
-    LowPressure = IPL;
+	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
 	HighPressureTransition = NT;
