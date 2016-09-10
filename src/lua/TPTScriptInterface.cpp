@@ -80,48 +80,53 @@ ValueType TPTScriptInterface::testType(std::string word)
 		return TypeFunction;
 	else if (word == "quit")
 		return TypeFunction;
+
 	//Basic type
-			for (i = 0; i < word.length(); i++)
-			{
-				if (!(rawWord[i] >= '0' && rawWord[i] <= '9') && !(rawWord[i] == '-' && !i))
-				{
-					if (rawWord[i] == '.' && rawWord[i+1])
-						goto parseFloat;
-					else if (rawWord[i] == ',' && rawWord[i+1] >= '0' && rawWord[i+1] <= '9')
-						goto parsePoint;
-					else if ((rawWord[i] == '#' || (i && rawWord[i-1] == '0' && rawWord[i] == 'x')) &&
-						((rawWord[i+1] >= '0' && rawWord[i+1] <= '9')
-						|| (rawWord[i+1] >= 'a' && rawWord[i+1] <= 'f')
-						|| (rawWord[i+1] >= 'A' && rawWord[i+1] <= 'F')))
-						goto parseNumberHex;
-					else
-						goto parseString;
-				}
-			}
-			return TypeNumber;
-	parseFloat:
-			for (i++; i < word.length(); i++)
-				if (!((rawWord[i] >= '0' && rawWord[i] <= '9') || (rawWord[i] >= 'a' && rawWord[i] <= 'f') || (rawWord[i] >= 'A' && rawWord[i] <= 'F')))
-				{
-					goto parseString;
-				}
-			return TypeFloat;
-	parseNumberHex:
-			for (i++; i < word.length(); i++)
-				if (!((rawWord[i] >= '0' && rawWord[i] <= '9') || (rawWord[i] >= 'a' && rawWord[i] <= 'f') || (rawWord[i] >= 'A' && rawWord[i] <= 'F')))
-				{
-					goto parseString;
-				}
-			return TypeNumber;
-	parsePoint:
-			for (i++; i < word.length(); i++)
-				if (!(rawWord[i] >= '0' && rawWord[i] <= '9'))
-				{
-					goto parseString;
-				}
-			return TypePoint;
-	parseString:
-			return TypeString;
+	for (i = 0; i < word.length(); i++)
+	{
+		if (!(rawWord[i] >= '0' && rawWord[i] <= '9') && !(rawWord[i] == '-' && !i))
+		{
+			if (rawWord[i] == '.' && rawWord[i+1])
+				goto parseFloat;
+			else if (rawWord[i] == ',' && rawWord[i+1] >= '0' && rawWord[i+1] <= '9')
+				goto parsePoint;
+			else if ((rawWord[i] == '#' || (i && rawWord[i-1] == '0' && rawWord[i] == 'x')) &&
+				((rawWord[i+1] >= '0' && rawWord[i+1] <= '9')
+				|| (rawWord[i+1] >= 'a' && rawWord[i+1] <= 'f')
+				|| (rawWord[i+1] >= 'A' && rawWord[i+1] <= 'F')))
+				goto parseNumberHex;
+			else
+				goto parseString;
+		}
+	}
+	return TypeNumber;
+
+parseFloat:
+	for (i++; i < word.length(); i++)
+		if (!((rawWord[i] >= '0' && rawWord[i] <= '9')))
+		{
+			goto parseString;
+		}
+	return TypeFloat;
+
+parseNumberHex:
+	for (i++; i < word.length(); i++)
+		if (!((rawWord[i] >= '0' && rawWord[i] <= '9') || (rawWord[i] >= 'a' && rawWord[i] <= 'f') || (rawWord[i] >= 'A' && rawWord[i] <= 'F')))
+		{
+			goto parseString;
+		}
+	return TypeNumber;
+
+parsePoint:
+	for (i++; i < word.length(); i++)
+		if (!(rawWord[i] >= '0' && rawWord[i] <= '9'))
+		{
+			goto parseString;
+		}
+	return TypePoint;
+
+parseString:
+	return TypeString;
 }
 
 int TPTScriptInterface::parseNumber(char * stringData)
