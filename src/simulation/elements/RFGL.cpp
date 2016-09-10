@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_RFGL PT_RFGL 181
+//#TPT-Directive ElementClass Element_RFGL PT_RFGL 184
 Element_RFGL::Element_RFGL()
 {
 	Identifier = "DEFAULT_PT_RFGL";

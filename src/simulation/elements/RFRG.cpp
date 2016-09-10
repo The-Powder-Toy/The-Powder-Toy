@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_RFRG PT_RFRG 180
+//#TPT-Directive ElementClass Element_RFRG PT_RFRG 183
 Element_RFRG::Element_RFRG()
 {
 	Identifier = "DEFAULT_PT_RFRG";
