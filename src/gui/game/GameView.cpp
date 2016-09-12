@@ -1509,7 +1509,14 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 			}
 		break;
 	case 'y':
-		c->SwitchAir();
+		if (ctrl)
+		{
+			c->HistoryForward();
+		}
+		else
+		{
+			c->SwitchAir();
+		}
 		break;
 	case SDLK_ESCAPE:
 	case 'q':
