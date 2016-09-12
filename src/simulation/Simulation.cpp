@@ -4272,7 +4272,7 @@ killed:
 						kill_part(i);
 						continue;
 					}
-					r = pmap[fin_y][fin_x];
+					r = pmap[fin_y % YRES][fin_x % XRES];
 
 					if (((r&0xFF)==PT_PIPE || (r&0xFF) == PT_PPIP) && !(parts[r>>8].tmp&0xFF))
 					{
