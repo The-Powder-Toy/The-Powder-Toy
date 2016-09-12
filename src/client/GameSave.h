@@ -76,7 +76,9 @@ public:
 	void setSize(int width, int height);
 	char * Serialise(unsigned int & dataSize);
 	std::vector<char> Serialise();
+	void Translate(vector2d translate);
 	void Transform(matrix2d transform, vector2d translate);
+	void Transform(matrix2d transform, vector2d translate, int newWidth, int newHeight);
 
 	void Expand();
 	void Collapse();

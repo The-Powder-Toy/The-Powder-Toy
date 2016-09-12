@@ -544,9 +544,8 @@ void GameController::LoadStamp(GameSave *stamp)
 
 void GameController::TranslateSave(ui::Point point)
 {
-	matrix2d transform = m2d_identity;
 	vector2d translate = v2d_new(point.X, point.Y);
-	gameModel->GetPlaceSave()->Transform(transform, translate);
+	gameModel->GetPlaceSave()->Translate(translate);
 	gameModel->SetPlaceSave(gameModel->GetPlaceSave());
 }
 
