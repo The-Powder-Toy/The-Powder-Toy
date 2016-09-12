@@ -54,7 +54,7 @@ int Element_RFGL::update(UPDATE_FUNC_ARGS)
 	if (pressure > -1 && pressure < 15 && parts[i].life > 0)
 		parts[i].life --;
 
-	if (parts[i].temp >= 323.15f + (pressure * 6.0f))
+	if (parts[i].temp >= 363.15f + (pressure * 6.0f))
 		sim->part_change_type(i, x, y, PT_RFRG);
 
 	int r, rx, ry;
@@ -65,7 +65,7 @@ int Element_RFGL::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if ((r&0xFF) == PT_RFGL)
+				if ((r&0xFF) == PT_RFGL || (r&0xFF) == PT_RFRG)
 				{
 					float avgTemp = (parts[r>>8].temp + parts[i].temp) / 2;
 					parts[r>>8].temp = avgTemp;
@@ -78,10 +78,10 @@ int Element_RFGL::update(UPDATE_FUNC_ARGS)
 						parts[r>>8].temp = restrict_flt(parts[r>>8].temp + 80.0f, 0.0f, MAX_TEMP);
 						parts[i].temp = restrict_flt(parts[i].temp - 80.0f, 0.0f, MAX_TEMP);
 					}
-					else if (parts[i].life == 0 && parts[r>>8].temp > 273.15f + 2.0f - (parts[i].tmp - 20.0f) && sim->elements[r&0xFF].HeatConduct)
+					else if (parts[i].life == 0 && parts[r>>8].temp > 273.15f - 50.0f - (parts[i].tmp - 20.0f) && sim->elements[r&0xFF].HeatConduct)
 					{
-						parts[r>>8].temp -= restrict_flt(parts[r>>8].temp - 40.0f, 273.15f + 2.0f - (parts[i].tmp - 60.0f), MAX_TEMP);
-						parts[i].temp = restrict_flt(parts[i].temp + 40.0f, 0.0f, 343.15f);
+						parts[r>>8].temp = restrict_flt(parts[r>>8].temp - 80.0f, 273.15f - 50.0f - (parts[i].tmp - 20.0f), MAX_TEMP);
+						parts[i].temp = restrict_flt(parts[i].temp + 80.0f, 0.0f, 383.15f);
 					}
 				}
 			}
