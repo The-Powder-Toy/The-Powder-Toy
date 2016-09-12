@@ -73,6 +73,7 @@ public:
 
 	void HistoryRestore();
 	void HistorySnapshot();
+	void HistoryForward();
 
 	void AdjustGridSize(int direction);
 	void InvertAirSim();

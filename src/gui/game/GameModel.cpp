@@ -28,6 +28,7 @@ GameModel::GameModel():
 	currentFile(NULL),
 	currentUser(0, ""),
 	toolStrength(1.0f),
+	historyPosition(0),
 	activeColourPreset(0),
 	colourSelector(false),
 	colour(255, 0, 0, 255),
@@ -423,9 +424,20 @@ std::deque<Snapshot*> GameModel::GetHistory()
 {
 	return history;
 }
+
+unsigned int GameModel::GetHistoryPosition()
+{
+	return historyPosition;
+}
+
 void GameModel::SetHistory(std::deque<Snapshot*> newHistory)
 {
 	history = newHistory;
+}
+
+void GameModel::SetHistoryPosition(unsigned int newHistoryPosition)
+{
+	historyPosition = newHistoryPosition;
 }
 
 void GameModel::SetVote(int direction)
