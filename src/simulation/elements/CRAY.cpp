@@ -67,7 +67,6 @@ int Element_CRAY::update(UPDATE_FUNC_ARGS)
 					}
 				}
 	}
-	// only fire when life is 0, but nothing sets the life right now
 	else
 	{
 		for (int rx =-1; rx <= 1; rx++)
