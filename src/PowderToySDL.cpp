@@ -50,6 +50,8 @@ extern "C" {
 
 using namespace std;
 
+#define INCLUDE_SYSWM
+#include "SDLCompat.h"
 #if defined(USE_SDL) && defined(LIN) && defined(SDL_VIDEO_DRIVER_X11)
 SDL_SysWMinfo sdl_wminfo;
 Atom XA_CLIPBOARD, XA_TARGETS, XA_UTF8_STRING;
