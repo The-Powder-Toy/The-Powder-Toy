@@ -37,7 +37,7 @@ Element_E182::Element_E182()
 
 	Weight = 90;
 
-	Temperature = R_TEMP+4.0f	+273.15f;
+	Temperature = R_TEMP+4.0f+273.15f;
 	HeatConduct = 251;
 	Description = "Experimental element. Some kind of nuclear fuel";
 
@@ -62,6 +62,7 @@ int Element_E182::update(UPDATE_FUNC_ARGS)
 	const int cooldown = 15;
 	const int limit = 5;
 	int r, s;
+	r = sim->photons[y][x];
 	if(parts[i].tmp < limit && !parts[i].life)
 	{
 		if (!(rand()%10000) && !parts[i].tmp)
@@ -76,7 +77,7 @@ int Element_E182::update(UPDATE_FUNC_ARGS)
 			}
 		}
 
-		r = sim->photons[y][x];
+		
 		if (r && !(rand()%100)) {
 			s = sim->create_part(-3, x, y, PT_NEUT);
 			if(s >= 0) {
@@ -91,6 +92,15 @@ int Element_E182::update(UPDATE_FUNC_ARGS)
 				parts[s].vy = parts[r>>8].vy;
 			}
 		}
+	}
+	if(parts[i].tmp2 >= 20) {
+		parts[i].type = PT_PLUT;
+		parts[i].temp = (parts[i].temp+600.0f)/2.0f;
+		return 1;
+	}
+	if(parts[r>>8].type == PT_PROT) {
+		parts[i].tmp2 ++;
+		sim->kill_part(r>>8);
 	}
 	return 0;
 }
