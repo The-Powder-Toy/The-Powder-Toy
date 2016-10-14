@@ -1,17 +1,11 @@
 #include <cstdio>
 #ifdef WIN
-	#include <direct.h>
-	#define getcwd _getcwd
+#include <direct.h>
+#define getcwd _getcwd
 #else
-	#include <unistd.h>
+#include <unistd.h>
 #endif
-#ifdef USE_SDL
-#ifdef SDL_INC
-#include "SDL/SDL.h"
-#else
-#include "SDL.h"
-#endif
-#endif
+#include "SDLCompat.h"
 
 #include "OptionsView.h"
 #include "Format.h"

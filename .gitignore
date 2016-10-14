@@ -46,6 +46,7 @@ Makefile.me
 *.lastbuildstate
 *.unsuccessfulbuild
 *.pdb
+*.db
 *.sublime-*
 *.project
 *.cproject

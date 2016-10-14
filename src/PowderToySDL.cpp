@@ -3,15 +3,11 @@
 #include <map>
 #include <string>
 #include <ctime>
-#ifdef SDL_INC
-#include "SDL/SDL.h"
-#else
-#include "SDL.h"
-#endif
 #ifdef WIN
 #define _WIN32_WINNT 0x0501	//Necessary for some macros and functions, tells windows.h to include functions only available in Windows XP or later
 #include <direct.h>
 #endif
+#include "SDLCompat.h"
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -54,13 +50,6 @@ extern "C" {
 
 using namespace std;
 
-#if defined(WIN) || defined(LIN)
-#ifdef SDL_INC
-#include <SDL/SDL_syswm.h>
-#else
-#include <SDL_syswm.h>
-#endif
-#endif
 #if defined(USE_SDL) && defined(LIN) && defined(SDL_VIDEO_DRIVER_X11)
 SDL_SysWMinfo sdl_wminfo;
 Atom XA_CLIPBOARD, XA_TARGETS, XA_UTF8_STRING;

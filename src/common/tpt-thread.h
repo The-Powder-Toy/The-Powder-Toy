@@ -8,6 +8,11 @@
 #define TH_ENTRY_POINT
 #endif
 
+// fix 'timespec' error in VS 2015
+#if defined(_MSC_VER) && (_MSC_VER >= 1900)
+#define _TIMESPEC_DEFINED 1
+#endif
+
 #include <pthread.h>
 #undef GetUserName
 
