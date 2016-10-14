@@ -645,38 +645,49 @@ bool GameController::KeyPress(int key, Uint16 character, bool shift, bool ctrl, 
 	if (ret)
 	{
 		Simulation * sim = gameModel->GetSimulation();
-		if (key == SDLK_RIGHT)
+		if (!gameView->GetPlacingSave())
 		{
-			sim->player.comm = (int)(sim->player.comm)|0x02;  //Go right command
-		}
-		if (key == SDLK_LEFT)
-		{
-			sim->player.comm = (int)(sim->player.comm)|0x01;  //Go left command
-		}
-		if (key == SDLK_DOWN && ((int)(sim->player.comm)&0x08)!=0x08)
-		{
-			sim->player.comm = (int)(sim->player.comm)|0x08;  //Use element command
-		}
-		if (key == SDLK_UP && ((int)(sim->player.comm)&0x04)!=0x04)
-		{
-			sim->player.comm = (int)(sim->player.comm)|0x04;  //Jump command
+			// Go right command
+			if (key == SDLK_RIGHT)
+			{
+				sim->player.comm = (int)(sim->player.comm)|0x02;
+			}
+			// Go left command
+			if (key == SDLK_LEFT)
+			{
+				sim->player.comm = (int)(sim->player.comm)|0x01;
+			}
+			// Use element command
+			if (key == SDLK_DOWN && ((int)(sim->player.comm)&0x08)!=0x08)
+			{
+				sim->player.comm = (int)(sim->player.comm)|0x08;
+			}
+			// Jump command
+			if (key == SDLK_UP && ((int)(sim->player.comm)&0x04)!=0x04)
+			{
+				sim->player.comm = (int)(sim->player.comm)|0x04;
+			}
 		}
 
+		// Go right command
 		if (key == SDLK_d)
 		{
-			sim->player2.comm = (int)(sim->player2.comm)|0x02;  //Go right command
+			sim->player2.comm = (int)(sim->player2.comm)|0x02;
 		}
+		// Go left command
 		if (key == SDLK_a)
 		{
-			sim->player2.comm = (int)(sim->player2.comm)|0x01;  //Go left command
+			sim->player2.comm = (int)(sim->player2.comm)|0x01;
 		}
+		// Use element command
 		if (key == SDLK_s && ((int)(sim->player2.comm)&0x08)!=0x08)
 		{
-			sim->player2.comm = (int)(sim->player2.comm)|0x08;  //Use element command
+			sim->player2.comm = (int)(sim->player2.comm)|0x08;
 		}
+		// Jump command
 		if (key == SDLK_w && ((int)(sim->player2.comm)&0x04)!=0x04)
 		{
-			sim->player2.comm = (int)(sim->player2.comm)|0x04;  //Jump command
+			sim->player2.comm = (int)(sim->player2.comm)|0x04;
 		}
 
 		if (!sim->elementCount[PT_STKM2] || ctrl)
