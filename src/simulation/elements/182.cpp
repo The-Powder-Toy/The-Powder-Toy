@@ -94,7 +94,7 @@ int Element_E182::update(UPDATE_FUNC_ARGS)
 		}
 	}
 	if(parts[i].tmp2 >= 20) {
-		parts[i].type = PT_PLUT;
+		sim->part_change_type(i,x,y,PT_PLUT)
 		parts[i].temp = (parts[i].temp+600.0f)/2.0f;
 		return 1;
 	}
