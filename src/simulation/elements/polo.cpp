@@ -1,11 +1,5 @@
 #include "simulation/Elements.h"
 //#TPT-Directive ElementClass Element_POLO PT_POLO 182
-
-/*
-TODO: 
-	- "muted version" a powder created by mixing E182 with ? that is weaker
-*/
-
 Element_POLO::Element_POLO()
 {
 	Identifier = "DEFAULT_PT_POLO";
@@ -32,7 +26,7 @@ Element_POLO::Element_POLO()
 
 	Weight = 90;
 
-	Temperature = 388.15f; //Thanks google!
+	Temperature = 388.15f; 
 	HeatConduct = 251;
 	Description = "Polonium, highly radioactive and deadly to STKM";
 
