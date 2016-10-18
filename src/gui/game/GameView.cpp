@@ -1137,6 +1137,45 @@ void GameView::OnMouseMove(int x, int y, int dx, int dy)
 		c->SetActiveMenu(delayedActiveMenu);
 		delayedActiveMenu = -1;
 	}
+
+	if(toolButtons.size())
+	{
+		int totalWidth = (toolButtons[0]->Size.X+1)*toolButtons.size();
+		int scrollSize = (int)(((float)(XRES-BARSIZE))/((float)totalWidth) * ((float)XRES-BARSIZE));
+		if (scrollSize>XRES-1)
+			scrollSize = XRES-1;
+		if(totalWidth > XRES-15)
+		{
+			int mouseX = x;
+			if(mouseX > XRES)
+				mouseX = XRES;
+			//if (mouseX < 15) //makes scrolling a little nicer at edges but apparently if you put hundreds of elements in a menu it makes the end not show ...
+			//	mouseX = 15;
+
+			scrollBar->Position.X = (int)(((float)mouseX/((float)XRES))*(float)(XRES-scrollSize));
+
+			float overflow = totalWidth-(XRES-BARSIZE), mouseLocation = float(XRES-3)/float(mouseX-(XRES-2)); //mouseLocation adjusted slightly in case you have 200 elements in one menu
+			setToolButtonOffset(overflow/mouseLocation);
+
+			//Ensure that mouseLeave events are make their way to the buttons should they move from underneath the mouse pointer
+			if(toolButtons[0]->Position.Y < y && toolButtons[0]->Position.Y+toolButtons[0]->Size.Y > y)
+			{
+				for(vector<ToolButton*>::iterator iter = toolButtons.begin(), end = toolButtons.end(); iter!=end; ++iter)
+				{
+					ToolButton * button = *iter;
+					if(button->Position.X < x && button->Position.X+button->Size.X > x)
+						button->OnMouseEnter(x, y);
+					else
+						button->OnMouseLeave(x, y);
+				}
+			}
+		}
+		else
+		{
+			scrollBar->Position.X = 1;
+		}
+		scrollBar->Size.X=scrollSize;
+	}
 }
 
 void GameView::OnMouseDown(int x, int y, unsigned button)
@@ -1760,45 +1799,6 @@ void GameView::DoMouseMove(int x, int y, int dx, int dy)
 {
 	if(c->MouseMove(x, y, dx, dy))
 		Window::DoMouseMove(x, y, dx, dy);
-
-	if(toolButtons.size())
-	{
-		int totalWidth = (toolButtons[0]->Size.X+1)*toolButtons.size();
-		int scrollSize = (int)(((float)(XRES-BARSIZE))/((float)totalWidth) * ((float)XRES-BARSIZE));
-		if (scrollSize>XRES-1)
-			scrollSize = XRES-1;
-		if(totalWidth > XRES-15)
-		{
-			int mouseX = x;
-			if(mouseX > XRES)
-				mouseX = XRES;
-			//if (mouseX < 15) //makes scrolling a little nicer at edges but apparently if you put hundreds of elements in a menu it makes the end not show ...
-			//	mouseX = 15;
-
-			scrollBar->Position.X = (int)(((float)mouseX/((float)XRES))*(float)(XRES-scrollSize));
-
-			float overflow = totalWidth-(XRES-BARSIZE), mouseLocation = float(XRES-3)/float(mouseX-(XRES-2)); //mouseLocation adjusted slightly in case you have 200 elements in one menu
-			setToolButtonOffset(overflow/mouseLocation);
-
-			//Ensure that mouseLeave events are make their way to the buttons should they move from underneath the mouse pointer
-			if(toolButtons[0]->Position.Y < y && toolButtons[0]->Position.Y+toolButtons[0]->Size.Y > y)
-			{
-				for(vector<ToolButton*>::iterator iter = toolButtons.begin(), end = toolButtons.end(); iter!=end; ++iter)
-				{
-					ToolButton * button = *iter;
-					if(button->Position.X < x && button->Position.X+button->Size.X > x)
-						button->OnMouseEnter(x, y);
-					else
-						button->OnMouseLeave(x, y);
-				}
-			}
-		}
-		else
-		{
-			scrollBar->Position.X = 1;
-		}
-		scrollBar->Size.X=scrollSize;
-	}
 }
 
 void GameView::DoMouseDown(int x, int y, unsigned button)
