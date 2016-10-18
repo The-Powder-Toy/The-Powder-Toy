@@ -227,9 +227,9 @@ def findLibs(env, conf):
 	#Windows specific libs
 	if platform == "Windows":
 		if msvc:
-			libChecks = ['shell32', 'wsock32', 'user32', 'Advapi32']
+			libChecks = ['shell32', 'wsock32', 'user32', 'Advapi32', 'ws2_32']
 			if GetOption('static'):
-				libChecks += ['msvcrt', 'dxguid']
+				libChecks += ['libcmt', 'dxguid']
 			for i in libChecks:
 				if not conf.CheckLib(i):
 					FatalError("Error: some windows libraries not found or not installed, make sure your compiler is set up correctly")
@@ -402,13 +402,13 @@ if not msvc:
 if platform == "Windows":
 	env.Append(CPPDEFINES=["WIN", "_WIN32_WINNT=0x0501"])
 	if msvc:
-		env.Append(CCFLAGS=['/Gm', '/Zi', '/EHsc']) #enable minimal rebuild, enable exceptions
+		env.Append(CCFLAGS=['/Gm', '/Zi', '/EHsc', '/FS']) #enable minimal rebuild, enable exceptions, allow -j to work in debug builds
 		env.Append(LINKFLAGS=['/SUBSYSTEM:WINDOWS', '/OPT:REF', '/OPT:ICF'])
 		if GetOption('static'):
 			env.Append(CCFLAGS=['/GL']) #whole program optimization (linker may freeze indefinitely without this)
-			env.Append(LINKFLAGS=['/NODEFAULTLIB:LIBCMT.lib', '/LTCG'])
-		else:
-			env.Append(LINKFLAGS=['/NODEFAULTLIB:msvcrt.lib'])
+			env.Append(LINKFLAGS=['/NODEFAULTLIB:msvcrt.lib', '/LTCG'])
+		elif not GetOption('debugging'):
+			env.Append(LINKFLAGS=['/NODEFAULTLIB:msvcrtd.lib'])
 	else:
 		env.Append(LINKFLAGS=['-mwindows'])
 elif platform == "Linux":
@@ -471,7 +471,9 @@ elif GetOption('release'):
 if GetOption('static'):
 	if platform == "Windows":
 		env.Append(CPPDEFINES=['PTW32_STATIC_LIB'])
-		if not msvc:
+		if msvc:
+			env.Append(CPPDEFINES=['ZLIB_WINAPI'])
+		else:
 			env.Append(LINKFLAGS=['-Wl,-Bstatic'])
 
 
