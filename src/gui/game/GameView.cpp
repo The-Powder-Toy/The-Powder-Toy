@@ -201,8 +201,7 @@ GameView::GameView():
 	selectPoint2(0, 0),
 	currentMouse(0, 0),
 	mousePosition(0, 0),
-	placeSaveThumb(NULL),
-	lastOffset(0)
+	placeSaveThumb(NULL)
 {
 
 	int currentX = 1;
@@ -734,7 +733,6 @@ void GameView::NotifyLastToolChanged(GameModel * sender)
 
 void GameView::NotifyToolListChanged(GameModel * sender)
 {
-	int currentX = WINDOWW-56;
 	for (size_t i = 0; i < menuButtons.size(); i++)
 	{
 		if (((MenuAction*)menuButtons[i]->GetActionCallback())->menuID==sender->GetActiveMenu())
@@ -753,6 +751,7 @@ void GameView::NotifyToolListChanged(GameModel * sender)
 	}
 	toolButtons.clear();
 	vector<Tool*> toolList = sender->GetToolList();
+	int currentX = 0;
 	for (size_t i = 0; i < toolList.size(); i++)
 	{
 		VideoBuffer * tempTexture = toolList[i]->GetTexture(26, 14);
@@ -801,10 +800,7 @@ void GameView::NotifyToolListChanged(GameModel * sender)
 	if (sender->GetActiveMenu() != SC_DECO)
 		lastMenu = sender->GetActiveMenu();
 
-	// don't reset scroll back to 0
-	int origOffset = lastOffset;
-	lastOffset = 0;
-	setToolButtonOffset(origOffset);
+	updateToolButtonScroll();
 }
 
 void GameView::NotifyColourSelectorVisibilityChanged(GameModel * sender)
@@ -1076,20 +1072,58 @@ void GameView::record()
 	}
 }
 
-void GameView::setToolButtonOffset(int offset)
+void GameView::updateToolButtonScroll()
 {
-	int offset_ = offset;
-	offset = offset-lastOffset;
-	lastOffset = offset_;
-
-	for(vector<ToolButton*>::iterator iter = toolButtons.begin(), end = toolButtons.end(); iter!=end; ++iter)
+	if(toolButtons.size())
 	{
-		ToolButton * button = *iter;
-		button->Position.X -= offset;
-		if (button->Position.X+button->Size.X <= 0 || (button->Position.X+button->Size.X) > XRES-2)
-			button->Visible = false;
+		int x = currentMouse.X, y = currentMouse.Y;
+		int newInitialX = WINDOWW-56;
+		int totalWidth = (toolButtons[0]->Size.X+1)*toolButtons.size();
+		int scrollSize = (int)(((float)(XRES-BARSIZE))/((float)totalWidth) * ((float)XRES-BARSIZE));
+		if (scrollSize>XRES-1)
+			scrollSize = XRES-1;
+		if(totalWidth > XRES-15)
+		{
+			int mouseX = x;
+			if(mouseX > XRES)
+				mouseX = XRES;
+			//if (mouseX < 15) //makes scrolling a little nicer at edges but apparently if you put hundreds of elements in a menu it makes the end not show ...
+			//	mouseX = 15;
+
+			scrollBar->Position.X = (int)(((float)mouseX/((float)XRES))*(float)(XRES-scrollSize));
+
+			float overflow = totalWidth-(XRES-BARSIZE), mouseLocation = float(XRES-3)/float((XRES-2)-mouseX); //mouseLocation adjusted slightly in case you have 200 elements in one menu
+
+			newInitialX += overflow/mouseLocation;
+		}
 		else
-			button->Visible = true;
+		{
+			scrollBar->Position.X = 1;
+		}
+		scrollBar->Size.X=scrollSize;
+		int offsetDelta = toolButtons[0]->Position.X - newInitialX;
+		for(vector<ToolButton*>::iterator iter = toolButtons.begin(), end = toolButtons.end(); iter!=end; ++iter)
+		{
+			ToolButton * button = *iter;
+			button->Position.X -= offsetDelta;
+			if (button->Position.X+button->Size.X <= 0 || (button->Position.X+button->Size.X) > XRES-2)
+				button->Visible = false;
+			else
+				button->Visible = true;
+		}
+
+		//Ensure that mouseLeave events are make their way to the buttons should they move from underneath the mouse pointer
+		if(toolButtons[0]->Position.Y < y && toolButtons[0]->Position.Y+toolButtons[0]->Size.Y > y)
+		{
+			for(vector<ToolButton*>::iterator iter = toolButtons.begin(), end = toolButtons.end(); iter!=end; ++iter)
+			{
+				ToolButton * button = *iter;
+				if(button->Position.X < x && button->Position.X+button->Size.X > x)
+					button->OnMouseEnter(x, y);
+				else
+					button->OnMouseLeave(x, y);
+			}
+		}
 	}
 }
 
@@ -1138,44 +1172,7 @@ void GameView::OnMouseMove(int x, int y, int dx, int dy)
 		delayedActiveMenu = -1;
 	}
 
-	if(toolButtons.size())
-	{
-		int totalWidth = (toolButtons[0]->Size.X+1)*toolButtons.size();
-		int scrollSize = (int)(((float)(XRES-BARSIZE))/((float)totalWidth) * ((float)XRES-BARSIZE));
-		if (scrollSize>XRES-1)
-			scrollSize = XRES-1;
-		if(totalWidth > XRES-15)
-		{
-			int mouseX = x;
-			if(mouseX > XRES)
-				mouseX = XRES;
-			//if (mouseX < 15) //makes scrolling a little nicer at edges but apparently if you put hundreds of elements in a menu it makes the end not show ...
-			//	mouseX = 15;
-
-			scrollBar->Position.X = (int)(((float)mouseX/((float)XRES))*(float)(XRES-scrollSize));
-
-			float overflow = totalWidth-(XRES-BARSIZE), mouseLocation = float(XRES-3)/float(mouseX-(XRES-2)); //mouseLocation adjusted slightly in case you have 200 elements in one menu
-			setToolButtonOffset(overflow/mouseLocation);
-
-			//Ensure that mouseLeave events are make their way to the buttons should they move from underneath the mouse pointer
-			if(toolButtons[0]->Position.Y < y && toolButtons[0]->Position.Y+toolButtons[0]->Size.Y > y)
-			{
-				for(vector<ToolButton*>::iterator iter = toolButtons.begin(), end = toolButtons.end(); iter!=end; ++iter)
-				{
-					ToolButton * button = *iter;
-					if(button->Position.X < x && button->Position.X+button->Size.X > x)
-						button->OnMouseEnter(x, y);
-					else
-						button->OnMouseLeave(x, y);
-				}
-			}
-		}
-		else
-		{
-			scrollBar->Position.X = 1;
-		}
-		scrollBar->Size.X=scrollSize;
-	}
+	updateToolButtonScroll();
 }
 
 void GameView::OnMouseDown(int x, int y, unsigned button)
