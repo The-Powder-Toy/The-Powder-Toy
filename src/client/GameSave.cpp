@@ -1056,6 +1056,11 @@ void GameSave::readOPS(char * data, int dataLength)
 								particles[newIndex].tmp = 6;
 							particles[newIndex].ctype = 0;
 						}
+						if (savedVersion < 92)
+						{
+							if (particles[newIndex].tmp==4 || particles[newIndex].tmp==5)
+								particles[newIndex].ctype = 0;
+						}
 						break;
 					case PT_QRTZ:
 					case PT_PQRT:
@@ -1767,6 +1772,11 @@ void GameSave::readPSv(char * data, int dataLength)
 						particles[i-1].tmp = 0;
 					}
 				}
+			}
+			if (ver < 92)
+			{
+				if (particles[i-1].tmp==4 || particles[i-1].tmp==5)
+					particles[i-1].ctype = 0;
 			}
 		}
 	}
