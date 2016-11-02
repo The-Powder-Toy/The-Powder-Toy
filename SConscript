@@ -400,10 +400,10 @@ if not msvc:
 
 #Add platform specific flags and defines
 if platform == "Windows":
-	env.Append(CPPDEFINES=["WIN", "_WIN32_WINNT=0x0501"])
+	env.Append(CPPDEFINES=["WIN", "_WIN32_WINNT=0x0501", "_USING_V110_SDK71_"])
 	if msvc:
 		env.Append(CCFLAGS=['/Gm', '/Zi', '/EHsc', '/FS']) #enable minimal rebuild, enable exceptions, allow -j to work in debug builds
-		env.Append(LINKFLAGS=['/SUBSYSTEM:WINDOWS', '/OPT:REF', '/OPT:ICF'])
+		env.Append(LINKFLAGS=['/SUBSYSTEM:WINDOWS,"5.01"', '/OPT:REF', '/OPT:ICF'])
 		if GetOption('static'):
 			env.Append(CCFLAGS=['/GL']) #whole program optimization (linker may freeze indefinitely without this)
 			env.Append(LINKFLAGS=['/NODEFAULTLIB:msvcrt.lib', '/LTCG'])
@@ -529,13 +529,14 @@ sources = Glob("src/*.cpp") + Glob("src/*/*.cpp") + Glob("src/*/*/*.cpp") + Glob
 if not GetOption('nolua') and not GetOption('renderer'):
 	sources += Glob("src/lua/socket/*.c") + Glob("src/lua/LuaCompat.c")
 
-if platform == "Windows" and not msvc:
+if platform == "Windows":
 	sources += env.RES('resources/powder-res.rc')
-	sources = filter(lambda source: not 'src\\simulation\\Gravity.cpp' in str(source), sources)
-	sources = filter(lambda source: not 'src/simulation/Gravity.cpp' in str(source), sources)
-	envCopy = env.Clone()
-	envCopy.Append(CCFLAGS='-mstackrealign')
-	sources += envCopy.Object('src/simulation/Gravity.cpp')
+	if not not msvc:
+		sources = filter(lambda source: not 'src\\simulation\\Gravity.cpp' in str(source), sources)
+		sources = filter(lambda source: not 'src/simulation/Gravity.cpp' in str(source), sources)
+		envCopy = env.Clone()
+		envCopy.Append(CCFLAGS='-mstackrealign')
+		sources += envCopy.Object('src/simulation/Gravity.cpp')
 elif platform == "Darwin":
 	sources += ["src/SDLMain.m"]
 
