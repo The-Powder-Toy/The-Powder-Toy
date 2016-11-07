@@ -113,6 +113,16 @@ int Element_FILT::interactWavelengths(Particle* cpart, int origWl)
 			int t3 = ((origWl & 0xFF0000)>>16)+(rand()%5)-2;
 			return (origWl & 0xFF000000) | (t3<<16) | (t2<<8) | t1;
 		}
+		case 10:
+			{
+				long long int lsb = filtWl & (-filtWl);
+				return (origWl * lsb) & 0x3FFFFFFF; //red shift
+			}
+		case 11:
+			{
+				long long int lsb = filtWl & (-filtWl);
+				return (origWl / lsb) & 0x3FFFFFFF; // blue shift
+			}
 		default:
 			return filtWl;
 	}
