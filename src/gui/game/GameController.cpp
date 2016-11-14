@@ -239,6 +239,7 @@ void GameController::HistoryRestore()
 	if (historyPosition == history.size())
 	{
 		Snapshot * newSnap = gameModel->GetSimulation()->CreateSnapshot();
+		delete gameModel->GetRedoHistory();
 		gameModel->SetRedoHistory(newSnap);
 	}
 	Snapshot * snap = history[newHistoryPosition];
@@ -271,6 +272,8 @@ void GameController::HistorySnapshot()
 		history.push_back(newSnap);
 		gameModel->SetHistory(history);
 		gameModel->SetHistoryPosition(std::min((size_t)historyPosition+1, history.size()));
+		delete gameModel->GetRedoHistory();
+		gameModel->SetRedoHistory(NULL);
 	}
 }
 
