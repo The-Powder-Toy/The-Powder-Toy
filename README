@@ -12,6 +12,12 @@ The Powder Toy is a free physics sandbox game, which simulates air pressure and 
 
 There is a Lua API - you can automate your work or even make plugins for the game. The Powder Toy is free and the source code is distributed under the GNU General Public License, so you can modify the game yourself or help with development. TPT is compiled using scons.
 
+Build instructions:
+---------------------------------------------------------------------------
+sudo apt-get install build-essential libsdl1.2-dev libbz2-dev zlib1g-dev liblua5.1.0-dev git scons libfftw3-dev
+scons
+
+For a list of flags for `scons`, see http://powdertoy.co.uk/Wiki/W/Scons_command_line_flags.html`
 
 Thanks:
 ---------------------------------------------------------------------------
