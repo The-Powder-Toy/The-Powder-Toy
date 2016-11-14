@@ -260,7 +260,7 @@ void GameController::HistorySnapshot()
 			history.pop_back();
 			delete snap;
 		}
-		if (history.size() >= 1)
+		if (history.size() >= gameModel->GetUndoHistoryLimit())
 		{
 			Snapshot * snap = history.front();
 			history.pop_front();

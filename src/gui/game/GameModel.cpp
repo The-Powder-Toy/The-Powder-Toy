@@ -134,6 +134,11 @@ GameModel::GameModel():
 	colourPresets.push_back(ui::Colour(0, 255, 0));
 	colourPresets.push_back(ui::Colour(0, 0, 255));
 	colourPresets.push_back(ui::Colour(0, 0, 0));
+
+	undoHistoryLimit = Client::Ref().GetPrefInteger("UndoHistoryLimit", 1);
+	// cap due to memory usage (this is about 3.4GB of RAM)
+	if (undoHistoryLimit > 200)
+		undoHistoryLimit = 200;
 }
 
 GameModel::~GameModel()
@@ -160,6 +165,8 @@ GameModel::~GameModel()
 	Client::Ref().SetPref("Decoration.Green", (int)colour.Green);
 	Client::Ref().SetPref("Decoration.Blue", (int)colour.Blue);
 	Client::Ref().SetPref("Decoration.Alpha", (int)colour.Alpha);
+
+	Client::Ref().SetPref("UndoHistoryLimit", undoHistoryLimit);
 
 	Favorite::Ref().SaveFavoritesToPrefs();
 
@@ -449,6 +456,16 @@ Snapshot * GameModel::GetRedoHistory()
 void GameModel::SetRedoHistory(Snapshot * redo)
 {
 	redoHistory = redo;
+}
+
+unsigned int GameModel::GetUndoHistoryLimit()
+{
+	return undoHistoryLimit;
+}
+
+void GameModel::SetUndoHistoryLimit(unsigned int undoHistoryLimit_)
+{
+	undoHistoryLimit = undoHistoryLimit_;
 }
 
 void GameModel::SetVote(int direction)

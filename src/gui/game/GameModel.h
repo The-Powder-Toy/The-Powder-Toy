@@ -67,6 +67,7 @@ private:
 	std::deque<Snapshot*> history;
 	Snapshot *redoHistory;
 	unsigned int historyPosition;
+	unsigned int undoHistoryLimit;
 
 	size_t activeColourPreset;
 	std::vector<ui::Colour> colourPresets;
@@ -136,6 +137,8 @@ public:
 	void SetHistoryPosition(unsigned int newHistoryPosition);
 	Snapshot * GetRedoHistory();
 	void SetRedoHistory(Snapshot * redo);
+	unsigned int GetUndoHistoryLimit();
+	void SetUndoHistoryLimit(unsigned int undoHistoryLimit_);
 
 	void UpdateQuickOptions();
 
