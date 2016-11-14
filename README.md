@@ -1,4 +1,5 @@
-#The Powder Toy - July 2016
+The Powder Toy - July 2016
+==========================
 
 Get the latest version here: http://powdertoy.co.uk/Download.html
 
@@ -14,12 +15,11 @@ There is a Lua API - you can automate your work or even make plugins for the gam
 
 Build instructions
 ===========================================================================
-```
-sudo apt-get install build-essential libsdl1.2-dev libbz2-dev zlib1g-dev liblua5.1.0-dev git scons libfftw3-dev
-scons
-```
 
-For a list of flags for `scons`, see http://powdertoy.co.uk/Wiki/W/Scons_command_line_flags.html`
+    sudo apt-get install build-essential libsdl1.2-dev libbz2-dev zlib1g-dev liblua5.1.0-dev git scons libfftw3-dev
+    scons
+
+For a list of flags for `scons`, see http://powdertoy.co.uk/Wiki/W/Scons_command_line_flags.html.
 
 Thanks
 ===========================================================================
@@ -98,7 +98,7 @@ Controls
 
 
 
-Command Line:
+Command Line
 ---------------------------------------------------------------------------
 
 | Command                  |                                                                |
