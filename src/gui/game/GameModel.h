@@ -65,6 +65,7 @@ private:
 	User currentUser;
 	float toolStrength;
 	std::deque<Snapshot*> history;
+	Snapshot *redoHistory;
 	unsigned int historyPosition;
 
 	size_t activeColourPreset;
@@ -133,6 +134,8 @@ public:
 	unsigned int GetHistoryPosition();
 	void SetHistory(std::deque<Snapshot*> newHistory);
 	void SetHistoryPosition(unsigned int newHistoryPosition);
+	Snapshot * GetRedoHistory();
+	void SetRedoHistory(Snapshot * redo);
 
 	void UpdateQuickOptions();
 
