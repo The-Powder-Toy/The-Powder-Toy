@@ -83,7 +83,6 @@ Controls
 | ]                       | Increase brush size                                             |
 | Alt + [                 | Decrease brush size by 1                                        |
 | Alt + ]                 | Increase brush size by 1                                        |
-| ----------------------- |                                                                 |
 | Ctrl + C/V/X            | Copy/Paste/Cut                                                  |
 | Ctrl + Z                | Undo                                                            |
 | Ctrl + Cursor drag      | Rectangle                                                       |
@@ -102,6 +101,8 @@ Controls
 Command Line:
 ---------------------------------------------------------------------------
 
+| Command                  |                                                                |
+| ------------------------ | -------------------------------------------------------------- |
 | scale:1                  | Normal window resolution                                       |
 | scale:2                  | Doubled window resolution                                      |
 | kiosk                    | Fullscreen mode                                                |
