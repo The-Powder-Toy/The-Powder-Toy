@@ -1006,8 +1006,10 @@ void Simulation::ApplyDecorationFill(Renderer *ren, int x, int y, int colR, int 
 		return;
 	memset(bitmap, 0, XRES*YRES);
 
-	if (!ColorCompare(ren, x, y, replaceR, replaceG, replaceB))
+	if (!ColorCompare(ren, x, y, replaceR, replaceG, replaceB)) {
+		free(bitmap);
 		return;
+	}
 
 	try
 	{

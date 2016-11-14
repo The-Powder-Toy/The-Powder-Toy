@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <cstdio>
+#include <cassert>
 #ifdef WIN
 #include <shlobj.h>
 #include <shlwapi.h>
@@ -31,7 +32,9 @@ char *ExecutableName(void)
 	uint32_t max = 64, res;
 	if (_NSGetExecutablePath(fn, &max) != 0)
 	{
-		fn = (char*)realloc(fn, max);
+		char *realloced_fn = (char*)realloc(fn, max);
+		assert(realloced_fn != NULL);
+		fn = realloced_fn;
 		_NSGetExecutablePath(fn, &max);
 	}
 	if (realpath(fn, name) == NULL)
@@ -51,7 +54,9 @@ char *ExecutableName(void)
 #endif
 #ifndef MACOSX
 		max *= 2;
-		name = (char *)realloc(name, max);
+		char* realloced_name = (char *)realloc(name, max);
+		assert(realloced_name != NULL);
+		name = realloced_name;
 		memset(name, 0, max);
 	}
 #endif
