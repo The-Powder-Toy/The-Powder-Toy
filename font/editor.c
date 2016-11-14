@@ -397,6 +397,7 @@ int main(int argc, char *argv[])
 #endif
 	fwrite(font, CELLW*CELLH, 256, f);
 	fclose(f);
+	free(vid_buf);
 
 	return 0;
 }
