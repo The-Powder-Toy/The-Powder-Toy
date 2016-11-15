@@ -51,6 +51,7 @@ public:
 		{
 			try
 			{
+				cc->HistorySnapshot();
 				cc->gameModel->SetSave(cc->search->GetLoadedSave());
 				cc->search->ReleaseLoadedSave();
 			}
@@ -73,6 +74,7 @@ public:
 		{
 			try
 			{
+				cc->HistorySnapshot();
 				cc->LoadSave(cc->activePreview->GetSaveInfo());
 			}
 			catch(GameModelException & ex)
@@ -1252,6 +1254,7 @@ void GameController::OpenLocalBrowse()
 		virtual  ~LocalSaveOpenCallback() {};
 		virtual void FileSelected(SaveFile* file)
 		{
+			c->HistorySnapshot();
 			c->LoadSaveFile(file);
 			delete file;
 		}
@@ -1488,6 +1491,7 @@ void GameController::ChangeBrush()
 
 void GameController::ClearSim()
 {
+	HistorySnapshot();
 	gameModel->SetSave(NULL);
 	gameModel->ClearSimulation();
 }
@@ -1496,10 +1500,12 @@ void GameController::ReloadSim()
 {
 	if(gameModel->GetSave() && gameModel->GetSave()->GetGameSave())
 	{
+		HistorySnapshot();
 		gameModel->SetSave(gameModel->GetSave());
 	}
 	else if(gameModel->GetSaveFile() && gameModel->GetSaveFile()->GetGameSave())
 	{
+		HistorySnapshot();
 		gameModel->SetSaveFile(gameModel->GetSaveFile());
 	}
 }

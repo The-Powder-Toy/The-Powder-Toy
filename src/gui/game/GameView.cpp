@@ -1035,7 +1035,6 @@ void GameView::NotifySaveChanged(GameModel * sender)
 	}
 	saveSimulationButton->Enabled = (saveSimulationButtonEnabled || ctrlBehaviour);
 	SetSaveButtonTooltips();
-	c->HistorySnapshot();
 }
 
 void GameView::NotifyBrushChanged(GameModel * sender)
