@@ -77,6 +77,10 @@ int Element_CAUS::update(UPDATE_FUNC_ARGS)
 					}
 				}
 			}
+	if(parts[i].temp<=10.0f && sim->pv[x/CELL][y/CELL]>=50.0f)
+	{
+		sim->part_change_type(i,x,y,PT_ACID);
+	}
 	return 0;
 }
 
