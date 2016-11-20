@@ -67,3 +67,8 @@ int Element_LSNS::update(UPDATE_FUNC_ARGS)
 				}
 			}
 	}
+        return 0;
+}
+
+
+Element_LSNS::~Element_LSNS() {}
