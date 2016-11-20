@@ -38,8 +38,8 @@ Element_RFGL::Element_RFGL()
 	HighPressureTransition = NT;
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
-	HighTemperature = ITH;
-	HighTemperatureTransition = NT;
+	HighTemperature = 333.15f;
+	HighTemperatureTransition = PT_RFRG;
 
 	Update = &Element_RFGL::update;
 }
@@ -47,16 +47,34 @@ Element_RFGL::Element_RFGL()
 //#TPT-Directive ElementHeader Element_RFGL static int update(UPDATE_FUNC_ARGS)
 int Element_RFGL::update(UPDATE_FUNC_ARGS)
 {
-	float boil=243.35f;
 	float pressure=sim->pv[x/CELL][y/CELL];
-	if(pressure>=-50.0f && pressure<=50.0f)
+	float heatTransfer=0.0f;
+	if(pressure>=0.0f && pressure<=20.0f)
 	{
-		boil+=(pressure/0.5f);
+		heatTransfer-=pressure;
 	}
-	if(parts[i].temp >= boil)
-	{
-		sim->part_change_type(i,x,y,PT_RFRG);
+	if(pressure>=20.1f){
+		heatTransfer+=pressure;
 	}
+	int r, rx, ry;
+	for (rx=-1; rx<2; rx++)
+		for (ry=-1; ry<2; ry++)
+			if (BOUNDS_CHECK && (rx || ry))
+			{
+				r = pmap[y+ry][x+rx];
+				if (!r)
+					continue;
+				if ((r&0xFF)!=PT_RFGL)
+				{
+					parts[r>>8].temp+=heatTransfer;
+					if(pressure>=0.0f && pressure<=20.0f)
+					{
+						parts[i].temp+=parts[r>>8].temp;
+					}
+				}
+			}
+		
+		
 
 	return 0;
 }
