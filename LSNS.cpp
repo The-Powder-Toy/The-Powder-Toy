@@ -77,7 +77,7 @@ int Element_LSNS::update(UPDATE_FUNC_ARGS)
 					r = sim->photons[y+ry][x+rx];
 				if(!r)
 					continue;
-				if ((r&0xFF)!=PT_LSNS && (r&0xFF)!=PT_METL && parts[r>>8].temp > parts[i].temp)
+				if (parts[r>>8].life > parts[i].temp)
 					parts[i].life = 1;
 			}
 	return 0;
