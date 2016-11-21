@@ -40,7 +40,7 @@ Element_LSNS::Element_LSNS()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_DTEC::update;
+	Update = &Element_LSNS::update;
 }
 int Element_LSNS::update(UPDATE_FUNC_ARGS)
 {
