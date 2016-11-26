@@ -14,7 +14,7 @@ Element_MTHN::Element_MTHN()
 	Loss = 0.30f;
 	Collision = -0.1f;
 	Gravity = 0.0f;
-	Diffusion = 0.75f;
+	Diffusion = 0.1f;
 	HotAir = 0.001f	* CFDS;
 	Falldown = 0;
 
@@ -27,7 +27,7 @@ Element_MTHN::Element_MTHN()
 
 	Temperature = R_TEMP+2.0f	+273.15f;
 	HeatConduct = 106;
-	Description = "Methane. Diffuses quickly. Burns in contact with OXYG"
+	Description = "Methane. Burns in contact with OXYG."
 
 	Properties = TYPE_GAS|PROP_CONDUCTS|PROP_LIFE_DEC;
 
