@@ -45,9 +45,9 @@ Element_CHNG::Element_CHNG()
 int Element_CHNG::update(UPDATE_FUNC_ARGS)
 {
 	if(parts[i].life==0)
-  {
+        {
 	  sim->part_change_type(i,x,y,parts[i].ctype);
-  }
+        }
 	return 0;
 }
 
