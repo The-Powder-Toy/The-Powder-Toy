@@ -57,6 +57,8 @@ int Element_MTHN::update(UPDATE_FUNC_ARGS)
 				if((r&0xFF)==PT_OXYG)
 				{
 				 sim->part_change_type(i,x,y,PT_FIRE);
+				 parts[i].temp=3000.0f;
+				 sim->pv[x/CELL][y/CELL]=10.0f;
 				}
 			}
 }
