@@ -235,22 +235,23 @@ GameController::~GameController()
 void GameController::HistoryRestore()
 {
 	std::deque<Snapshot*> history = gameModel->GetHistory();
-	if (!history.size())
-		return;
-	unsigned int historyPosition = gameModel->GetHistoryPosition();
-	unsigned int newHistoryPosition = std::max((int)historyPosition-1, 0);
-	// When undoing, save the current state as a final redo
-	// This way ctrl+y will always bring you back to the point right before your last ctrl+z
-	if (historyPosition == history.size())
+	if (history.size())
 	{
-		Snapshot * newSnap = gameModel->GetSimulation()->CreateSnapshot();
-		delete gameModel->GetRedoHistory();
-		gameModel->SetRedoHistory(newSnap);
+		unsigned int historyPosition = gameModel->GetHistoryPosition();
+		unsigned int newHistoryPosition = std::max((int)historyPosition-1, 0);
+		// When undoing, save the current state as a final redo
+		// This way ctrl+y will always bring you back to the point right before your last ctrl+z
+		if (historyPosition == history.size())
+		{
+			Snapshot * newSnap = gameModel->GetSimulation()->CreateSnapshot();
+			delete gameModel->GetRedoHistory();
+			gameModel->SetRedoHistory(newSnap);
+		}
+		Snapshot * snap = history[newHistoryPosition];
+		gameModel->GetSimulation()->Restore(*snap);
+		gameModel->SetHistory(history);
+		gameModel->SetHistoryPosition(newHistoryPosition);
 	}
-	Snapshot * snap = history[newHistoryPosition];
-	gameModel->GetSimulation()->Restore(*snap);
-	gameModel->SetHistory(history);
-	gameModel->SetHistoryPosition(newHistoryPosition);
 }
 
 void GameController::HistorySnapshot()
@@ -261,32 +262,29 @@ void GameController::HistorySnapshot()
 		return;
 
 	std::deque<Snapshot*> history = gameModel->GetHistory();
-	if (history.size())
+	unsigned int historyPosition = gameModel->GetHistoryPosition();
+	Snapshot * newSnap = gameModel->GetSimulation()->CreateSnapshot();
+	if (newSnap)
 	{
-		unsigned int historyPosition = gameModel->GetHistoryPosition();
-		Snapshot * newSnap = gameModel->GetSimulation()->CreateSnapshot();
-		if (newSnap)
+		while (historyPosition < history.size())
 		{
-			while (historyPosition < history.size())
-			{
-				Snapshot * snap = history.back();
-				history.pop_back();
-				delete snap;
-			}
-			if (history.size() >= gameModel->GetUndoHistoryLimit())
-			{
-				Snapshot * snap = history.front();
-				history.pop_front();
-				delete snap;
-				if (historyPosition > history.size())
-					historyPosition--;
-			}
-			history.push_back(newSnap);
-			gameModel->SetHistory(history);
-			gameModel->SetHistoryPosition(std::min((size_t)historyPosition+1, history.size()));
-			delete gameModel->GetRedoHistory();
-			gameModel->SetRedoHistory(NULL);
+			Snapshot * snap = history.back();
+			history.pop_back();
+			delete snap;
 		}
+		if (history.size() >= gameModel->GetUndoHistoryLimit())
+		{
+			Snapshot * snap = history.front();
+			history.pop_front();
+			delete snap;
+			if (historyPosition > history.size())
+				historyPosition--;
+		}
+		history.push_back(newSnap);
+		gameModel->SetHistory(history);
+		gameModel->SetHistoryPosition(std::min((size_t)historyPosition+1, history.size()));
+		delete gameModel->GetRedoHistory();
+		gameModel->SetRedoHistory(NULL);
 	}
 }
 
