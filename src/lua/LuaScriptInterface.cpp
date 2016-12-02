@@ -1915,8 +1915,7 @@ int BrushClosure(lua_State * l)
 	int sizeY = lua_tointeger(l, lua_upvalueindex(6));
 	int x = lua_tointeger(l, lua_upvalueindex(7));
 	int y = lua_tointeger(l, lua_upvalueindex(8));
-	float strength = lua_tonumber(l, lua_upvalueindex(9));
-	unsigned char *bitmap = (unsigned char *)lua_touserdata(l, lua_upvalueindex(10));
+	unsigned char *bitmap = (unsigned char *)lua_touserdata(l, lua_upvalueindex(9));
 	
 	
 	int yield_x, yield_y;
@@ -1949,8 +1948,7 @@ int BrushClosure(lua_State * l)
 	
 	lua_pushnumber(l, yield_x);
 	lua_pushnumber(l, yield_y);
-	lua_pushnumber(l, strength);
-	return 3;
+	return 2;
 }
 
 int LuaScriptInterface::simulation_brush(lua_State * l)
@@ -1958,19 +1956,34 @@ int LuaScriptInterface::simulation_brush(lua_State * l)
 	// see Simulation::ToolBrush
 	int positionX = luaL_checkint(l, 1);
 	int positionY = luaL_checkint(l, 2);
-	Brush * cBrush = luacon_model->GetBrush();
-	int radiusX = cBrush->GetRadius().X, radiusY = cBrush->GetRadius().Y, sizeX = cBrush->GetSize().X, sizeY = cBrush->GetSize().Y;
+	int brushradiusX = luaL_checkint(l, 3);
+	int brushradiusY = luaL_checkint(l, 4);
+	int brushID = luaL_checkint(l, 5);
+	
+	vector<Brush *> brushList = luacon_model->GetBrushList();
+	if (brushID < 0 || brushID >= (int)brushList.size())
+		return luaL_error(l, "Invalid brush id '%d'", brushID);
+	
+	ui::Point tempRadius = brushList[brushID]->GetRadius();
+	brushList[brushID]->SetRadius(ui::Point(brushradiusX, brushradiusY));
 	lua_pushnumber(l, positionX);
 	lua_pushnumber(l, positionY);
+	int radiusX = brushList[brushID]->GetRadius().X;
+	int radiusY = brushList[brushID]->GetRadius().Y;
+	int sizeX = brushList[brushID]->GetSize().X;
+	int sizeY = brushList[brushID]->GetSize().Y;
 	lua_pushnumber(l, radiusX);
 	lua_pushnumber(l, radiusY);
 	lua_pushnumber(l, sizeX);
 	lua_pushnumber(l, sizeY);
 	lua_pushnumber(l, 0);
 	lua_pushnumber(l, 0);
-	lua_pushnumber(l, luacon_model->GetToolStrength());
-	lua_pushlightuserdata(l, cBrush->GetBitmap());
-	lua_pushcclosure(l, BrushClosure, 10);
+	int bitmapSize = sizeX * sizeY;
+	void *bitmapCopy = lua_newuserdata(l, bitmapSize);
+	memcpy(bitmapCopy, brushList[brushID]->GetBitmap(), bitmapSize);
+	brushList[brushID]->SetRadius(tempRadius);
+	
+	lua_pushcclosure(l, BrushClosure, 9);
 	return 1;
 }
 
