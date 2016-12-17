@@ -41,8 +41,15 @@ Element_DUST::Element_DUST()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = NULL;
+	Update =&Element_DUST::update;
 	Graphics = NULL;
+}
+int Element_DUST::update(UPDATE_FUNC_ARGS)
+{
+	if(!parts[i].life)
+	{
+		sim->part_change_type(i,x,y,parts[i].ctype);
+	}
 }
 
 Element_DUST::~Element_DUST() {}
