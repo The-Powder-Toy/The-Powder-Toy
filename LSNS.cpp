@@ -82,7 +82,6 @@ int Element_LSNS::update(UPDATE_FUNC_ARGS)
 			}
 	return 0;
 	
-	parts[i].life = parts[i].tmp //random thing
 }
 
 
