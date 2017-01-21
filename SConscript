@@ -402,10 +402,9 @@ if not msvc:
 if platform == "Windows":
 	env.Append(CPPDEFINES=["WIN", "_WIN32_WINNT=0x0501", "_USING_V110_SDK71_"])
 	if msvc:
-		env.Append(CCFLAGS=['/Gm', '/Zi', '/EHsc', '/FS']) #enable minimal rebuild, enable exceptions, allow -j to work in debug builds
+		env.Append(CCFLAGS=['/Gm', '/Zi', '/EHsc', '/FS', '/GS']) #enable minimal rebuild, ?, enable exceptions, allow -j to work in debug builds, enable security check
 		env.Append(LINKFLAGS=['/SUBSYSTEM:WINDOWS,"5.01"', '/OPT:REF', '/OPT:ICF'])
 		if GetOption('static'):
-			env.Append(CCFLAGS=['/GL']) #whole program optimization (linker may freeze indefinitely without this)
 			env.Append(LINKFLAGS=['/NODEFAULTLIB:msvcrt.lib', '/LTCG'])
 		elif not GetOption('debugging'):
 			env.Append(LINKFLAGS=['/NODEFAULTLIB:msvcrtd.lib'])
@@ -458,7 +457,7 @@ if GetOption('debugging'):
 		env.Append(CPPDEFINES=['DEBUG'])
 elif GetOption('release'):
 	if msvc:
-		env.Append(CCFLAGS=['/O2', '/fp:fast'])
+		env.Append(CCFLAGS=['/O2', '/Oy-', '/fp:fast'])
 		if GetOption('static'):
 			env.Append(CCFLAGS=['/MT'])
 		else:
