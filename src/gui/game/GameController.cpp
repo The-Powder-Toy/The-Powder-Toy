@@ -144,6 +144,7 @@ GameController::GameController():
 
 	gameView->AttachController(this);
 	gameModel->AddObserver(gameView);
+	gameModel->SetAllowHistory();
 
 	gameView->SetDebugHUD(Client::Ref().GetPrefBool("Renderer.DebugMode", false));
 
@@ -250,6 +251,11 @@ void GameController::HistoryRestore()
 
 void GameController::HistorySnapshot()
 {
+	// callbacks during initialization create two empty snapshots on startup
+	// Prevent that from happening here
+	if (!gameModel->GetAllowHistory())
+		return;
+
 	std::deque<Snapshot*> history = gameModel->GetHistory();
 	unsigned int historyPosition = gameModel->GetHistoryPosition();
 	Snapshot * newSnap = gameModel->GetSimulation()->CreateSnapshot();

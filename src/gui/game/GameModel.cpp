@@ -28,6 +28,7 @@ GameModel::GameModel():
 	currentFile(NULL),
 	currentUser(0, ""),
 	toolStrength(1.0f),
+	allowHistory(false),
 	redoHistory(NULL),
 	historyPosition(0),
 	activeColourPreset(0),

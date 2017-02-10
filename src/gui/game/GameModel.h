@@ -64,6 +64,7 @@ private:
 	Tool * regularToolset[4];
 	User currentUser;
 	float toolStrength;
+	bool allowHistory;
 	std::deque<Snapshot*> history;
 	Snapshot *redoHistory;
 	unsigned int historyPosition;
@@ -131,6 +132,8 @@ public:
 	void BuildFavoritesMenu();
 	void BuildQuickOptionMenu(GameController * controller);
 
+	bool GetAllowHistory() { return allowHistory; }
+	void SetAllowHistory() { allowHistory = true; }
 	std::deque<Snapshot*> GetHistory();
 	unsigned int GetHistoryPosition();
 	void SetHistory(std::deque<Snapshot*> newHistory);
