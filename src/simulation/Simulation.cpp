@@ -320,7 +320,7 @@ Snapshot * Simulation::CreateSnapshot()
 	snap->AirVelocityX.insert(snap->AirVelocityX.begin(), &vx[0][0], &vx[0][0]+((XRES/CELL)*(YRES/CELL)));
 	snap->AirVelocityY.insert(snap->AirVelocityY.begin(), &vy[0][0], &vy[0][0]+((XRES/CELL)*(YRES/CELL)));
 	snap->AmbientHeat.insert(snap->AmbientHeat.begin(), &hv[0][0], &hv[0][0]+((XRES/CELL)*(YRES/CELL)));
-	snap->Particles.insert(snap->Particles.begin(), parts, parts+NPART);
+	snap->Particles.insert(snap->Particles.begin(), parts, parts+parts_lastActiveIndex+1);
 	snap->PortalParticles.insert(snap->PortalParticles.begin(), &portalp[0][0][0], &portalp[CHANNELS-1][8-1][80-1]);
 	snap->WirelessData.insert(snap->WirelessData.begin(), &wireless[0][0], &wireless[CHANNELS-1][2-1]);
 	snap->GravVelocityX.insert(snap->GravVelocityX.begin(), gravx, gravx+((XRES/CELL)*(YRES/CELL)));
@@ -348,7 +348,11 @@ void Simulation::Restore(const Snapshot & snap)
 	std::copy(snap.AirVelocityX.begin(), snap.AirVelocityX.end(), &vx[0][0]);
 	std::copy(snap.AirVelocityY.begin(), snap.AirVelocityY.end(), &vy[0][0]);
 	std::copy(snap.AmbientHeat.begin(), snap.AmbientHeat.end(), &hv[0][0]);
+	for (int i = 0; i < NPART; i++)
+		parts[i].type = 0;
 	std::copy(snap.Particles.begin(), snap.Particles.end(), parts);
+	parts_lastActiveIndex = NPART-1;
+	RecalcFreeParticles();
 	std::copy(snap.PortalParticles.begin(), snap.PortalParticles.end(), &portalp[0][0][0]);
 	std::copy(snap.WirelessData.begin(), snap.WirelessData.end(), &wireless[0][0]);
 	if (grav->ngrav_enable)
@@ -4744,6 +4748,99 @@ void Simulation::SimulateGoL()
 	//memset(gol2, 0, sizeof(gol2));
 }
 
+void Simulation::RecalcFreeParticles()
+{
+	int x, y, t;
+	int lastPartUsed = 0;
+	int lastPartUnused = -1;
+
+	memset(pmap, 0, sizeof(pmap));
+	memset(pmap_count, 0, sizeof(pmap_count));
+	memset(photons, 0, sizeof(photons));
+
+	NUM_PARTS = 0;
+	//the particle loop that resets the pmap/photon maps every frame, to update them.
+	for (int i = 0; i <= parts_lastActiveIndex; i++)
+	{
+		if (parts[i].type)
+		{
+			t = parts[i].type;
+			x = (int)(parts[i].x+0.5f);
+			y = (int)(parts[i].y+0.5f);
+			if (x>=0 && y>=0 && x<XRES && y<YRES)
+			{
+				if (elements[t].Properties & TYPE_ENERGY)
+					photons[y][x] = t|(i<<8);
+				else
+				{
+					// Particles are sometimes allowed to go inside INVS and FILT
+					// To make particles collide correctly when inside these elements, these elements must not overwrite an existing pmap entry from particles inside them
+					if (!pmap[y][x] || (t!=PT_INVIS && t!= PT_FILT))
+						pmap[y][x] = t|(i<<8);
+					// (there are a few exceptions, including energy particles - currently no limit on stacking those)
+					if (t!=PT_THDR && t!=PT_EMBR && t!=PT_FIGH && t!=PT_PLSM)
+						pmap_count[y][x]++;
+				}
+			}
+			lastPartUsed = i;
+			NUM_PARTS ++;
+
+			//decrease particle life
+			if (!sys_pause || framerender)
+			{
+				if (t<0 || t>=PT_NUM || !elements[t].Enabled)
+				{
+					kill_part(i);
+					continue;
+				}
+
+				if (elementRecount)
+					elementCount[t]++;
+
+				unsigned int elem_properties = elements[t].Properties;
+				if (parts[i].life>0 && (elem_properties&PROP_LIFE_DEC))
+				{
+					// automatically decrease life
+					parts[i].life--;
+					if (parts[i].life<=0 && (elem_properties&(PROP_LIFE_KILL_DEC|PROP_LIFE_KILL)))
+					{
+						// kill on change to no life
+						kill_part(i);
+						continue;
+					}
+				}
+				else if (parts[i].life<=0 && (elem_properties&PROP_LIFE_KILL))
+				{
+					// kill if no life
+					kill_part(i);
+					continue;
+				}
+			}
+		}
+		else
+		{
+			if (lastPartUnused<0) pfree = i;
+			else parts[lastPartUnused].life = i;
+			lastPartUnused = i;
+		}
+	}
+	if (lastPartUnused == -1)
+	{
+		if (parts_lastActiveIndex>=NPART-1)
+			pfree = -1;
+		else
+			pfree = parts_lastActiveIndex+1;
+	}
+	else
+	{
+		if (parts_lastActiveIndex>=NPART-1)
+			parts[lastPartUnused].life = -1;
+		else
+			parts[lastPartUnused].life = parts_lastActiveIndex+1;
+	}
+	parts_lastActiveIndex = lastPartUsed;
+}
+
 void Simulation::CheckStacking()
 {
 	bool excessive_stacking_found = false;
@@ -4808,15 +4905,7 @@ void Simulation::CheckStacking()
 //updates pmap, gol, and some other simulation stuff (but not particles)
 void Simulation::BeforeSim()
 {
-	int i, x, y, t;
-	int lastPartUsed = 0;
-	int lastPartUnused = -1;
-#ifdef MT
-	int pt = 0, pc = 0;
-	pthread_t *InterThreads;
-#endif
-
-	if(!sys_pause||framerender)
+	if (!sys_pause||framerender)
 	{
 		air->update_air();
 
@@ -4854,91 +4943,15 @@ void Simulation::BeforeSim()
 	sandcolour = (int)(20.0f*sin((float)sandcolour_frame*(M_PI/180.0f)));
 	sandcolour_frame = (sandcolour_frame+1)%360;
 
-	memset(pmap, 0, sizeof(pmap));
-	memset(pmap_count, 0, sizeof(pmap_count));
-	memset(photons, 0, sizeof(photons));
-	NUM_PARTS = 0;
-	for (i=0; i<=parts_lastActiveIndex; i++)//the particle loop that resets the pmap/photon maps every frame, to update them.
-	{
-		if (parts[i].type)
-		{
-			t = parts[i].type;
-			x = (int)(parts[i].x+0.5f);
-			y = (int)(parts[i].y+0.5f);
-			if (x>=0 && y>=0 && x<XRES && y<YRES)
-			{
-				if (elements[t].Properties & TYPE_ENERGY)
-					photons[y][x] = t|(i<<8);
-				else
-				{
-					// Particles are sometimes allowed to go inside INVS and FILT
-					// To make particles collide correctly when inside these elements, these elements must not overwrite an existing pmap entry from particles inside them
-					if (!pmap[y][x] || (t!=PT_INVIS && t!= PT_FILT))
-						pmap[y][x] = t|(i<<8);
-					// (there are a few exceptions, including energy particles - currently no limit on stacking those)
-					if (t!=PT_THDR && t!=PT_EMBR && t!=PT_FIGH && t!=PT_PLSM)
-						pmap_count[y][x]++;
-				}
-			}
-			lastPartUsed = i;
-			NUM_PARTS ++;
+	RecalcFreeParticles();
 
-			//decrease particle life
-			if (!sys_pause || framerender)
-			{
-				if (t<0 || t>=PT_NUM || !elements[t].Enabled)
-				{
-					kill_part(i);
-					continue;
-				}
-
-				if (elementRecount)
-					elementCount[t]++;
-
-				unsigned int elem_properties = elements[t].Properties;
-				if (parts[i].life>0 && (elem_properties&PROP_LIFE_DEC))
-				{
-					// automatically decrease life
-					parts[i].life--;
-					if (parts[i].life<=0 && (elem_properties&(PROP_LIFE_KILL_DEC|PROP_LIFE_KILL)))
-					{
-						// kill on change to no life
-						kill_part(i);
-						continue;
-					}
-				}
-				else if (parts[i].life<=0 && (elem_properties&PROP_LIFE_KILL))
-				{
-					// kill if no life
-					kill_part(i);
-					continue;
-				}
-			}
-		}
-		else
-		{
-			if (lastPartUnused<0) pfree = i;
-			else parts[lastPartUnused].life = i;
-			lastPartUnused = i;
-		}
-	}
-	if (lastPartUnused==-1)
-	{
-		if (parts_lastActiveIndex>=NPART-1) pfree = -1;
-		else pfree = parts_lastActiveIndex+1;
-	}
-	else
-	{
-		if (parts_lastActiveIndex>=NPART-1) parts[lastPartUnused].life = -1;
-		else parts[lastPartUnused].life = parts_lastActiveIndex+1;
-	}
-	parts_lastActiveIndex = lastPartUsed;
-	if  (!sys_pause || framerender)
+	if (!sys_pause || framerender)
 	{
 		// decrease wall conduction, make walls block air and ambient heat
-		for (y=0; y<YRES/CELL; y++)
+		int x, y;
+		for (y = 0; y < YRES/CELL; y++)
 		{
-			for (x=0; x<XRES/CELL; x++)
+			for (x = 0; x < XRES/CELL; x++)
 			{
 				if (emap[y][x])
 					emap[y][x] --;
@@ -5042,7 +5055,7 @@ void Simulation::BeforeSim()
 		// update PPIP tmp?
 		if (Element_PPIP::ppip_changed)
 		{
-			for (i=0; i<=parts_lastActiveIndex; i++)
+			for (int i = 0; i <= parts_lastActiveIndex; i++)
 			{
 				if (parts[i].type==PT_PPIP)
 				{
@@ -5061,7 +5074,7 @@ void Simulation::BeforeSim()
 		}
 
 		// wifi channel reseting
-		if (ISWIRE>0)
+		if (ISWIRE > 0)
 		{
 			for (int q = 0; q < (int)(MAX_TEMP-73.15f)/100+2; q++)
 			{

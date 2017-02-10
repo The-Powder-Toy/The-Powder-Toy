@@ -13,9 +13,6 @@ public:
 	std::vector<float> AmbientHeat;
 
 	std::vector<Particle> Particles;
-	std::vector<Particle> PortalParticles;
-
-	std::vector<int> WirelessData;
 
 	std::vector<float> GravVelocityX;
 	std::vector<float> GravVelocityY;
@@ -28,6 +25,9 @@ public:
 	std::vector<float> FanVelocityX;
 	std::vector<float> FanVelocityY;
 
+
+	std::vector<Particle> PortalParticles;
+	std::vector<int> WirelessData;
 	std::vector<playerst> stickmen;
 	std::vector<sign> signs;
 
@@ -37,8 +37,6 @@ public:
 		AirVelocityY(),
 		AmbientHeat(),
 		Particles(),
-		PortalParticles(),
-		WirelessData(),
 		GravVelocityX(),
 		GravVelocityY(),
 		GravValue(),
@@ -47,6 +45,8 @@ public:
 		ElecMap(),
 		FanVelocityX(),
 		FanVelocityY(),
+		PortalParticles(),
+		WirelessData(),
 		stickmen(),
 		signs()
 	{
