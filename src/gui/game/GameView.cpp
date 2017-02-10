@@ -1460,7 +1460,10 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 			break;
 		if (ctrl && !isMouseDown)
 		{
-			c->HistoryRestore();
+			if (shift)
+				c->HistoryForward();
+			else
+				c->HistoryRestore();
 		}
 		else
 		{
