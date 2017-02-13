@@ -122,6 +122,8 @@ private:
 	// push onto the Lua stack a userdata containing a pointer to T object
 	static int new_T(lua_State * L)
 	{
+		if (!lua_gettop(L))
+			return 0;
 		lua_remove(L, 1);   // use classname:new(), instead of classname.new()
 
 		T *obj = new T(L);  // call constructor for T objects
