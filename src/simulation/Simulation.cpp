@@ -2077,6 +2077,7 @@ void Simulation::init_can_move()
 			can_move[PT_PROT][destinationType] = 2;
 			can_move[PT_GRVT][destinationType] = 2;
 		}
+		can_move[PT_E185][destinationType] = 2;
 	}
 
 	//other special cases that weren't covered above
@@ -3169,6 +3170,14 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 			case PT_ELEC:
 			{
 				float a = (rand()%360)*3.14159f/180.0f;
+				parts[i].life = 680;
+				parts[i].vx = 2.0f*cosf(a);
+				parts[i].vy = 2.0f*sinf(a);
+				break;
+			}
+			case PT_E185:
+			{
+				float a = (rand()%8) * 0.78540f;
 				parts[i].life = 680;
 				parts[i].vx = 2.0f*cosf(a);
 				parts[i].vy = 2.0f*sinf(a);
