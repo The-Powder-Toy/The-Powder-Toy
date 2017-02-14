@@ -63,7 +63,8 @@ int Element_CONV::update(UPDATE_FUNC_ARGS)
 					if ((r&0xFF)!=PT_CLNE && (r&0xFF)!=PT_PCLN &&
 					    (r&0xFF)!=PT_BCLN && (r&0xFF)!=PT_STKM &&
 					    (r&0xFF)!=PT_PBCN && (r&0xFF)!=PT_STKM2 &&
-					    (r&0xFF)!=PT_CONV && (r&0xFF)<PT_NUM)
+					    (r&0xFF)!=PT_CONV && (r&0xFF)!=PT_E185 &&
+						(r&0xFF)<PT_NUM)
 					{
 						parts[i].ctype = r&0xFF;
 						if ((r&0xFF)==PT_LIFE)
@@ -83,7 +84,7 @@ int Element_CONV::update(UPDATE_FUNC_ARGS)
 						r = pmap[y+ry][x+rx];
 					if (!r || (restrictElement && (r&0xFF)!=restrictElement))
 						continue;
-					if((r&0xFF)!=PT_CONV && (r&0xFF)!=PT_DMND && (r&0xFF)!=ctype)
+					if((r&0xFF)!=PT_CONV && (r&0xFF)!=PT_DMND && (r&0xFF)!=PT_E185 && (r&0xFF)!=ctype)
 					{
 						sim->create_part(r>>8, x+rx, y+ry, parts[i].ctype&0xFF, parts[i].ctype>>8);
 					}
