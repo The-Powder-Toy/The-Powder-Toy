@@ -84,7 +84,11 @@ int Element_X001::update(UPDATE_FUNC_ARGS)
 					parts[s].temp = parts[i].temp;
 				}
 				if ((r & 0xFF) == PT_X001 && !(rand()%40))
+				{
+					if (rand()%4)
+						parts[i].tmp = 0;
 					parts[r>>8].tmp = 0;
+				}
 			}
 	return 0;
 }
