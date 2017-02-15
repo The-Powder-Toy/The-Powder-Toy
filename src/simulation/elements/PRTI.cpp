@@ -76,8 +76,6 @@ int Element_PRTI::update(UPDATE_FUNC_ARGS)
 			if (!r || (!(sim->elements[r&0xFF].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY)) && (r&0xFF)!=PT_SPRK && (r&0xFF)!=PT_STOR))
 			{
 				r = sim->photons[y+ry][x+rx];
-				if (!r && (r&0xFF) != PT_E185)
-					continue;
 			}
 
 			if ((r&0xFF)==PT_STKM || (r&0xFF)==PT_STKM2 || (r&0xFF)==PT_FIGH)
@@ -87,6 +85,8 @@ int Element_PRTI::update(UPDATE_FUNC_ARGS)
 				Element_SOAP::detach(sim, r>>8);
 
 			for (int nnx=0; nnx<80; nnx++)
+				if (!r && (r&0xFF) != PT_E185)
+					continue;
 				if (!sim->portalp[parts[i].tmp][count][nnx].type)
 				{
 					if ((r&0xFF) == PT_STOR)
