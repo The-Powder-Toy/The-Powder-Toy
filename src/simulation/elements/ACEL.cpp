@@ -67,7 +67,7 @@ int Element_ACEL::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if(!r)
 					r = sim->photons[y+ry][x+rx];
-				if (!r || (r&0xFF) != PT_E185)
+				if (!r || (r&0xFF) == PT_E185)
 					continue;
 				if(sim->elements[r&0xFF].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY))
 				{
