@@ -11,7 +11,7 @@ Element_X001::Element_X001()
 {
 	Identifier = "DEFAULT_PT_X001";
 	Name = "X001";
-	Colour = PIXPACK(0x506030);
+	Colour = PIXPACK(0x80C030);
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
 #if defined(DEBUG) || defined(SNAPSHOT)
