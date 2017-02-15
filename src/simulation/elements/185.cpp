@@ -7,7 +7,11 @@ Element_E185::Element_E185()
 	Colour = PIXPACK(0x20FF90);
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
+#if defined(DEBUG) || defined(SNAPSHOT)
 	Enabled = 1;
+#else
+	Enabled = 0;
+#endif
 
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
@@ -28,7 +32,7 @@ Element_E185::Element_E185()
 
 	Temperature = R_TEMP+273.15f;
 	HeatConduct = 0;
-	Description = "Experimental photon.";
+	Description = "Experimental element: like photons.";
 
 	Properties = TYPE_ENERGY|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
 
