@@ -59,11 +59,11 @@ Element_X001::Element_X001()
 //#TPT-Directive ElementHeader Element_X001 static int update(UPDATE_FUNC_ARGS)
 int Element_X001::update(UPDATE_FUNC_ARGS)
 {
+	int r, rx, ry, rr;
 	for (rx=-2; rx<3; rx++)
 		for (ry=-2; ry<3; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
 			{
-				int r, rr;
 				r = pmap[y+ry][x+rx];
 				rr = sim->photons[y][x];
 				if (!(rand()%6000) && !parts[i].tmp)
