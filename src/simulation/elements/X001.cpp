@@ -83,7 +83,7 @@ int Element_X001::update(UPDATE_FUNC_ARGS)
 			if (BOUNDS_CHECK && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				if ((r & 0xFF) == PT_X001 && !(rand()%40))
+				if ((r & 0xFF) == PT_E182 && !(rand()%40))
 				{
 					if (rand()%4)
 						parts[i].tmp = 0;
