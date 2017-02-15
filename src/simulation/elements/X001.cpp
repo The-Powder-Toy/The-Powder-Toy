@@ -59,7 +59,7 @@ Element_X001::Element_X001()
 //#TPT-Directive ElementHeader Element_X001 static int update(UPDATE_FUNC_ARGS)
 int Element_X001::update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry, rr;
+	int r, s, rx, ry, rr;
 	for (rx=-2; rx<3; rx++)
 		for (ry=-2; ry<3; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
