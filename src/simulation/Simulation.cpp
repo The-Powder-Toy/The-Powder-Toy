@@ -2236,6 +2236,8 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 			for ( nnx=0; nnx<80; nnx++)
 				if (!portalp[parts[r>>8].tmp][count][nnx].type)
 				{
+					if (parts[i].type == E185)
+						break;
 					portalp[parts[r>>8].tmp][count][nnx] = parts[i];
 					parts[i].type=PT_NONE;
 					break;
