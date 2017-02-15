@@ -1970,6 +1970,8 @@ bool Simulation::IsWallBlocking(int x, int y, int type)
 			return true;
 		else if (wall == WL_EWALL && !emap[y/CELL][x/CELL])
 			return true;
+		else if (type == PT_E185)
+			return true;
 	}
 	return false;
 }
