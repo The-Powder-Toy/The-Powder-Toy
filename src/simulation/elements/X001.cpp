@@ -60,29 +60,29 @@ Element_X001::Element_X001()
 int Element_X001::update(UPDATE_FUNC_ARGS)
 {
 	int r, s, rx, ry, rr;
+	if (!(rand()%8000) && !parts[i].tmp)
+	{
+		s = sim->create_part(-3, x, y, PT_ELEC);
+		if (s >= 0)
+		{
+			parts[i].tmp = 1;
+			parts[i].temp += 10;
+			parts[s].temp = parts[i].temp;
+		}
+	}
+	rr = sim->photons[y][x];
+	if (rr && !(rand()%80)) {
+		s = sim->create_part(-3, x, y, PT_ELEC);
+		parts[i].tmp = 1;
+		parts[i].temp += 10;
+		parts[rr>>8].temp = parts[i].temp;
+		parts[s].temp = parts[i].temp;
+	}
 	for (rx=-2; rx<3; rx++)
 		for (ry=-2; ry<3; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				rr = sim->photons[y][x];
-				if (!(rand()%6000) && !parts[i].tmp)
-				{
-					s = sim->create_part(-3, x, y, PT_ELEC);
-					if (s >= 0)
-					{
-						parts[i].tmp = 1;
-						parts[i].temp += 10;
-						parts[s].temp = parts[i].temp;
-					}
-				}
-				if (rr && !(rand()%80)) {
-					s = sim->create_part(-3, x, y, PT_ELEC);
-					parts[i].tmp = 1;
-					parts[i].temp += 10;
-					parts[rr>>8].temp = parts[i].temp;
-					parts[s].temp = parts[i].temp;
-				}
 				if ((r & 0xFF) == PT_X001 && !(rand()%40))
 				{
 					if (rand()%4)
