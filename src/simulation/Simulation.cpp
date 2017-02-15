@@ -2108,6 +2108,9 @@ void Simulation::init_can_move()
 	can_move[PT_THDR][PT_THDR] = 2;
 	can_move[PT_EMBR][PT_EMBR] = 2;
 	can_move[PT_TRON][PT_SWCH] = 3;
+	
+	can_move[PT_ELEC][PT_E182] = 2;
+	can_move[PT_ELEC][PT_X001] = 2;
 }
 
 /*
