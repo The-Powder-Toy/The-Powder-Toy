@@ -1,5 +1,5 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_X001 PT_X001 255
+//#TPT-Directive ElementClass Element_X001 PT_X001 185
 
 /*
 TODO: 
@@ -63,16 +63,28 @@ int Element_X001::update(UPDATE_FUNC_ARGS)
 		for (ry=-2; ry<3; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
 			{
+				int r, rr;
 				r = pmap[y+ry][x+rx];
-				if (3>(rand()%200) && (r&0xFF)==PT_E182)
+				rr = sim->photons[y][x];
+				if (!(rand()%6000) && !parts[i].tmp)
 				{
-					if (!(rand()%50))
-						s = sim->create_part(-3, x, y, PT_ELEC);
-					r = sim->photons[y][x];
-					if (r)
-						s = sim->create_part(-3, x, y, PT_ELEC);
-					parts[r>>8].tmp = 0;
+					s = sim->create_part(-3, x, y, PT_ELEC);
+					if (s >= 0)
+					{
+						parts[i].tmp = 1;
+						parts[i].temp += 10;
+						parts[s].temp = parts[i].temp;
+					}
 				}
+				if (rr && !(rand()%80)) {
+					s = sim->create_part(-3, x, y, PT_ELEC);
+					parts[i].tmp = 1;
+					parts[i].temp += 10;
+					parts[rr>>8].temp = parts[i].temp;
+					parts[s].temp = parts[i].temp;
+				}
+				if ((r & 0xFF) == PT_X001 && !(rand()%40))
+					parts[r>>8].tmp = 0;
 			}
 	return 0;
 }
