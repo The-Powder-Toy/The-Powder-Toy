@@ -1958,7 +1958,9 @@ bool Simulation::IsWallBlocking(int x, int y, int type)
 	if (bmap[y/CELL][x/CELL])
 	{
 		int wall = bmap[y/CELL][x/CELL];
-		if (wall == WL_ALLOWGAS && !(elements[type].Properties&TYPE_GAS))
+		if (type == PT_E185)
+			return false;
+		else if (wall == WL_ALLOWGAS && !(elements[type].Properties&TYPE_GAS))
 			return true;
 		else if (wall == WL_ALLOWENERGY && !(elements[type].Properties&TYPE_ENERGY))
 			return true;
@@ -1969,8 +1971,6 @@ bool Simulation::IsWallBlocking(int x, int y, int type)
 		else if (wall == WL_ALLOWAIR || wall == WL_WALL || wall == WL_WALLELEC)
 			return true;
 		else if (wall == WL_EWALL && !emap[y/CELL][x/CELL])
-			return true;
-		else if (type == PT_E185)
 			return true;
 	}
 	return false;
