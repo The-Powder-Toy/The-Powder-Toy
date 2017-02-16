@@ -69,6 +69,7 @@ int Element_X001::update(UPDATE_FUNC_ARGS)
 			s = sim->create_part(-3, x, y, PT_ELEC);
 			if (s >= 0)
 			{
+				parts[i].life = cooldown;
 				parts[i].tmp = 1;
 				parts[i].temp += 10;
 				parts[s].temp = parts[i].temp;
@@ -80,6 +81,7 @@ int Element_X001::update(UPDATE_FUNC_ARGS)
 				s = sim->create_part(-3, x, y, PT_ELEC);
 			else
 				s = sim->create_part(-3, x, y, PT_X002);
+			parts[i].life = cooldown;
 			parts[i].tmp ++;
 			parts[i].temp += 10;
 			parts[rr>>8].temp = parts[i].temp;
