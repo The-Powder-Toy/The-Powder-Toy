@@ -83,7 +83,8 @@ int Element_E182::update(UPDATE_FUNC_ARGS)
 			if (s) parts[i].tmp --;
 			sim->kill_part(r >> 8);
 		}
-		if (r && !(rand()%100)) {
+		else if (r && !(rand()%100))
+		{
 			s = sim->create_part(-3, x, y, PT_NEUT);
 			if(s >= 0) {
 				parts[i].temp = ((parts[i].temp + parts[r>>8].temp + parts[r>>8].temp) + 600.0f) / 3.0f;
