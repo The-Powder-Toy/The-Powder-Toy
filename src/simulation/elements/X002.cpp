@@ -98,8 +98,8 @@ int Element_X002::update(UPDATE_FUNC_ARGS)
 				sim->create_part(r>>8, x, y, PT_PHOT);
 				r2 = (rand()%228+128)/127.0f;
 				r3 = (rand()%360)*3.14159f/180.0f;
-				parts[i].vx = rr*cosf(r2);
-				parts[i].vy = rr*sinf(r3);
+				parts[i].vx = r2*cosf(r3);
+				parts[i].vy = r2*sinf(r3);
 			}
 			else
 			{
