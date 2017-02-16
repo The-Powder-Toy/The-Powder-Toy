@@ -60,26 +60,31 @@ Element_X001::Element_X001()
 int Element_X001::update(UPDATE_FUNC_ARGS)
 {
 	int r, s, rx, ry, rr;
-	if (!(rand()%8000) && !parts[i].tmp)
+	const int cooldown = 15;
+	const int limit = 10;
+	if(parts[i].tmp < limit && !parts[i].life)
 	{
-		s = sim->create_part(-3, x, y, PT_ELEC);
-		if (s >= 0)
+		if (!(rand()%8000) && !parts[i].tmp)
 		{
-			parts[i].tmp = 1;
+			s = sim->create_part(-3, x, y, PT_ELEC);
+			if (s >= 0)
+			{
+				parts[i].tmp = 1;
+				parts[i].temp += 10;
+				parts[s].temp = parts[i].temp;
+			}
+		}
+		rr = sim->photons[y][x];
+		if (rr && !(rand()%80)) {
+			if (rand() % 3)
+				s = sim->create_part(-3, x, y, PT_ELEC);
+			else
+				s = sim->create_part(-3, x, y, PT_X002);
+			parts[i].tmp ++;
 			parts[i].temp += 10;
+			parts[rr>>8].temp = parts[i].temp;
 			parts[s].temp = parts[i].temp;
 		}
-	}
-	rr = sim->photons[y][x];
-	if (rr && !(rand()%80)) {
-		if (rand() % 3)
-			s = sim->create_part(-3, x, y, PT_ELEC);
-		else
-			s = sim->create_part(-3, x, y, PT_X002);
-		parts[i].tmp = 1;
-		parts[i].temp += 10;
-		parts[rr>>8].temp = parts[i].temp;
-		parts[s].temp = parts[i].temp;
 	}
 	for (rx=-2; rx<3; rx++)
 		for (ry=-2; ry<3; ry++)
@@ -100,6 +105,11 @@ int Element_X001::update(UPDATE_FUNC_ARGS)
 //#TPT-Directive ElementHeader Element_X001 static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_X001::graphics(GRAPHICS_FUNC_ARGS)
 {
+	if(cpart->tmp >= 10) {
+		*colr = 0x70;
+		*colg = 0x70;
+		*colb = 0x70;
+	}
 	return 0;
 }
 
