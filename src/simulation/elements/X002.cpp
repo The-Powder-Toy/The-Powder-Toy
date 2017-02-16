@@ -53,6 +53,7 @@ Element_X002::Element_X002()
 int Element_X002::update(UPDATE_FUNC_ARGS)
 {
 	int r, s, slife;
+	float r2, r3;
 	if (!(rand()%60))
 	{
 		s = sim->create_part(-3, x, y, PT_ELEC);
@@ -81,6 +82,31 @@ int Element_X002::update(UPDATE_FUNC_ARGS)
 	case PT_FILT:
 		sim->part_change_type(i, x, y, PT_PHOT);
 		parts[i].ctype = 0x3FFFFFFF;
+		break;
+	case PT_ISOZ:
+	case PT_ISZS:
+		if (!(rand()%40))
+		{
+			slife = parts[i].life;
+			if (slife)
+				parts[i].life = slife + 50;
+			else
+				parts[i].life = 0;
+
+			if (rand()%20)
+			{
+				sim->create_part(r>>8, x, y, PT_PHOT);
+				r2 = (rand()%228+128)/127.0f;
+				r3 = (rand()%360)*3.14159f/180.0f;
+				parts[i].vx = rr*cosf(r2);
+				parts[i].vy = rr*sinf(r3);
+			}
+			else
+			{
+				sim->create_part(r>>8, x, y, PT_X002);
+			}
+		}
+		break;
 	default:
 		break;
 	}
