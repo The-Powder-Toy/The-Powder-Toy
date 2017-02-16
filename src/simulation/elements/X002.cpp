@@ -83,6 +83,13 @@ int Element_X002::update(UPDATE_FUNC_ARGS)
 		sim->part_change_type(i, x, y, PT_PHOT);
 		parts[i].ctype = 0x3FFFFFFF;
 		break;
+	case PT_EXOT:
+		if (!(rand()%3))
+		{
+			sim->part_change_type(r>>8, x, y, PT_ISOZ);
+			parts[r>>8].temp += 300;
+		}
+		break;
 	case PT_ISOZ:
 	case PT_ISZS:
 		if (!(rand()%40))
