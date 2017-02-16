@@ -52,7 +52,7 @@ Element_X002::Element_X002()
 //#TPT-Directive ElementHeader Element_X002 static int update(UPDATE_FUNC_ARGS)
 int Element_X002::update(UPDATE_FUNC_ARGS)
 {
-	int s;
+	int r, s, slife;
 	if (!(rand()%60))
 	{
 		s = sim->create_part(-3, x, y, PT_ELEC);
@@ -62,6 +62,27 @@ int Element_X002::update(UPDATE_FUNC_ARGS)
 			parts[s].temp = parts[i].temp;
 			sim->pv[y/CELL][x/CELL] += 1.5f;
 		}
+	}
+	r = pmap[y][x];
+	switch (r&0xFF)
+	{
+	case PT_O2:
+		if (!(rand()%20))
+		{
+			sim->create_part(r>>8, x, y, PT_PLSM);
+			s = sim->create_part(-3, x, y, PT_X002);
+			slife = parts[i].life;
+			if (slife)
+				parts[s].life = slife + 30;
+			else
+				parts[s].life = 0;
+		}
+		break;
+	case PT_FILT:
+		sim->part_change_type(r>>8, x, y, PT_PHOT);
+		parts[r>>8].ctype = 0x3FFFFFFF;
+	default:
+		break;
 	}
 	return 0;
 }
