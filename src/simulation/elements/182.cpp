@@ -81,7 +81,7 @@ int Element_E182::update(UPDATE_FUNC_ARGS)
 		{
 			s = parts[i].tmp;
 			if (s) parts[i].tmp --;
-			sim->kill_part(r >> 8);
+			// sim->kill_part(r >> 8);
 		}
 		else if (r && !(rand()%100))
 		{
