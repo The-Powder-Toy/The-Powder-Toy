@@ -41,7 +41,7 @@ Element_E182::Element_E182()
 	HeatConduct = 251;
 	Description = "Experimental element. Some kind of nuclear fuel";
 
-	Properties = PROP_NEUTPASS|PROP_RADIOACTIVE|PROP_LIFE_DEC;
+	Properties = TYPE_PART|PROP_NEUTPASS|PROP_RADIOACTIVE|PROP_LIFE_DEC;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

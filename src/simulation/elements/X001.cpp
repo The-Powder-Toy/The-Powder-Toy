@@ -41,7 +41,7 @@ Element_X001::Element_X001()
 	HeatConduct = 251;
 	Description = "Experimental element.";
 
-	Properties = PROP_NEUTPASS|PROP_RADIOACTIVE|PROP_LIFE_DEC;
+	Properties = TYPE_PART|PROP_NEUTPASS|PROP_RADIOACTIVE|PROP_LIFE_DEC;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
