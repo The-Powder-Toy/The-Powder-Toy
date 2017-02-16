@@ -95,11 +95,12 @@ int Element_X002::update(UPDATE_FUNC_ARGS)
 
 			if (rand()%20)
 			{
-				sim->create_part(r>>8, x, y, PT_PHOT);
+				s = r>>8;
+				sim->create_part(s, x, y, PT_PHOT);
 				r2 = (rand()%228+128)/127.0f;
 				r3 = (rand()%360)*3.14159f/180.0f;
-				parts[i].vx = r2*cosf(r3);
-				parts[i].vy = r2*sinf(r3);
+				parts[s].vx = r2*cosf(r3);
+				parts[s].vy = r2*sinf(r3);
 			}
 			else
 			{
