@@ -52,6 +52,7 @@ Element_X002::Element_X002()
 //#TPT-Directive ElementHeader Element_X002 static int update(UPDATE_FUNC_ARGS)
 int Element_X002::update(UPDATE_FUNC_ARGS)
 {
+	int s
 	if (!(rand()%60))
 	{
 		s = sim->create_part(-3, x, y, PT_ELEC);
