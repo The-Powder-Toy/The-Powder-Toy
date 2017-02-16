@@ -2121,6 +2121,8 @@ void Simulation::init_can_move()
 	can_move[PT_X002][PT_CO2] = 2;
 	can_move[PT_X002][PT_O2] = 2;
 	can_move[PT_X002][PT_FILT] = 2;
+	can_move[PT_X002][PT_ISOZ] = 2;
+	can_move[PT_X002][PT_ISZS] = 2;
 }
 
 /*
