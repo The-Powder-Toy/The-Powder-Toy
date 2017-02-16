@@ -52,11 +52,12 @@ Element_X002::Element_X002()
 //#TPT-Directive ElementHeader Element_X002 static int update(UPDATE_FUNC_ARGS)
 int Element_X002::update(UPDATE_FUNC_ARGS)
 {
-	int s
+	int s;
 	if (!(rand()%60))
 	{
 		s = sim->create_part(-3, x, y, PT_ELEC);
-		if(s >= 0) {
+		if(s >= 0)
+		{
 			parts[i].temp += 400.0f;
 			parts[s].temp = parts[i].temp;
 			sim->pv[y/CELL][x/CELL] += 1.5f;
