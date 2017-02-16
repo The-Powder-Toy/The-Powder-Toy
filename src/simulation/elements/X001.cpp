@@ -76,6 +76,12 @@ int Element_X001::update(UPDATE_FUNC_ARGS)
 			}
 		}
 		rr = sim->photons[y][x];
+		if ((rr & 0xFF) == PT_NEUT && !(rand()%16))
+		{
+			s = parts[i].tmp;
+			parts[i].tmp = s < 2 ? 0 : s - 2;
+			sim->kill_part(rr >> 8);
+		}
 		if (rr && !(rand()%80)) {
 			if (rand() % 3)
 				s = sim->create_part(-3, x, y, PT_ELEC);
