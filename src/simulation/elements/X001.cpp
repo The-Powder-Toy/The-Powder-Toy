@@ -62,7 +62,7 @@ int Element_X001::update(UPDATE_FUNC_ARGS)
 	int r, s, rx, ry, rr;
 	const int cooldown = 15;
 	const int limit = 10;
-	r = sim->photons[y][x];
+	rr = sim->photons[y][x];
 	if(parts[i].tmp < limit && !parts[i].life)
 	{
 		if (!(rand()%8000) && !parts[i].tmp)
