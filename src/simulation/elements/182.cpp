@@ -62,6 +62,7 @@ int Element_E182::update(UPDATE_FUNC_ARGS)
 	const int cooldown = 15;
 	const int limit = 5;
 	int r, s;
+	r = sim->photons[y][x];
 	if(parts[i].tmp < limit && !parts[i].life)
 	{
 		if (!(rand()%10000) && !parts[i].tmp)
@@ -76,14 +77,7 @@ int Element_E182::update(UPDATE_FUNC_ARGS)
 			}
 		}
 
-		r = sim->photons[y][x];
-		if ((r & 0xFF) == PT_ELEC && !(rand()%16))
-		{
-			s = parts[i].tmp;
-			if (s) parts[i].tmp --;
-			// sim->kill_part(r >> 8);
-		}
-		else if (r && !(rand()%100))
+		if (r && (r & 0xFF) != PT_ELEC && !(rand()%100))
 		{
 			s = sim->create_part(-3, x, y, PT_NEUT);
 			if(s >= 0) {
@@ -98,6 +92,11 @@ int Element_E182::update(UPDATE_FUNC_ARGS)
 				parts[s].vy = parts[r>>8].vy;
 			}
 		}
+	}
+	if ((r & 0xFF) == PT_ELEC && !(rand()%25))
+	{
+		s = parts[i].tmp;
+		if (s) parts[i].tmp --;
 	}
 	return 0;
 }
