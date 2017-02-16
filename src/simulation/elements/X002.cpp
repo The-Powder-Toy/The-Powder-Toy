@@ -79,8 +79,8 @@ int Element_X002::update(UPDATE_FUNC_ARGS)
 		}
 		break;
 	case PT_FILT:
-		sim->part_change_type(r>>8, x, y, PT_PHOT);
-		parts[r>>8].ctype = 0x3FFFFFFF;
+		sim->part_change_type(i, x, y, PT_PHOT);
+		parts[i].ctype = 0x3FFFFFFF;
 	default:
 		break;
 	}
