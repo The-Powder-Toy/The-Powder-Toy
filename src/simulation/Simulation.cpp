@@ -2111,6 +2111,10 @@ void Simulation::init_can_move()
 	
 	can_move[PT_ELEC][PT_E182] = 2;
 	can_move[PT_ELEC][PT_X001] = 2;
+
+	can_move[PT_X002][PT_E182] = 2;
+	can_move[PT_X002][PT_X001] = 2;
+	can_move[PT_X002][PT_URAN] = 2;
 }
 
 /*
@@ -3170,6 +3174,7 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 				break;
 			}
 			case PT_ELEC:
+			case PT_X002:
 			{
 				float a = (rand()%360)*3.14159f/180.0f;
 				parts[i].life = 680;
