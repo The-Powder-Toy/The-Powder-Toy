@@ -32,9 +32,9 @@ Element_X002::Element_X002()
 
 	Temperature = R_TEMP+200.0f+273.15f;
 	HeatConduct = 251;
-	Description = "X002trons. Sparks X002tronics, reacts with NEUT and WATR.";
+	Description = "Experimental element.";
 
-	Properties = TYPE_ENERGY|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
+	Properties = TYPE_ENERGY|PROP_LIFE_DEC|PROP_RADIOACTIVE|PROP_LIFE_KILL_DEC;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
