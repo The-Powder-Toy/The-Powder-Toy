@@ -34,7 +34,7 @@ Element_E187::Element_E187()
 	HeatConduct = 29;
 	Description = "Experimental element. like ISOZ.";
 
-	Properties = TYPE_LIQUID;
+	Properties = TYPE_LIQUID | PROP_LIFE_DEC;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
@@ -65,6 +65,7 @@ int Element_E187::update(UPDATE_FUNC_ARGS)
 			parts[s].vy = r2*sinf(r3);
 			parts[i].life = cooldown;
 			parts[i].tmp = 1;
+			parts[s].life = rand()%480+480;
 			parts[s].tmp = 0x1;
 			parts[s].temp = parts[i].temp + 20;
 		}
@@ -77,6 +78,8 @@ int Element_E187::update(UPDATE_FUNC_ARGS)
 			parts[s].vx = r2*cosf(r3);
 			parts[s].vy = r2*sinf(r3);
 			parts[i].life = cooldown;
+			parts[i].tmp = 1;
+			parts[s].life = rand()%480+480;
 			parts[s].tmp = 0x1;
 			parts[s].temp = parts[i].temp + 20;
 		}
