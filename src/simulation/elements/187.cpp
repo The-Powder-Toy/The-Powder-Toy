@@ -52,9 +52,7 @@ Element_E187::Element_E187()
 //#TPT-Directive ElementHeader Element_E187 static int update(UPDATE_FUNC_ARGS)
 int Element_E187::update(UPDATE_FUNC_ARGS)
 { // for both ISZS and ISOZ
-	int r, s, rx, ry, stmp;
-	float r2, r3;
-	const int cooldown = 15;
+	int r, rx, ry, stmp;
 	switch (parts[i].ctype) {
 	case 0:
 		if (!parts[i].life)
@@ -62,12 +60,12 @@ int Element_E187::update(UPDATE_FUNC_ARGS)
 			stmp = parts[i].tmp;
 			if (!(rand()%10000) && !(stmp & 1))
 			{
-				Element_E187::createPhotons(i, x, y, stmp);
+				Element_E187::createPhotons(sim, i, x, y, stmp, parts);
 			}
 			r = sim->photons[y][x];
 			if ((r & 0xFF) == PT_PHOT && !(rand()%100))
 			{
-				Element_E187::createPhotons(i, x, y, stmp);
+				Element_E187::createPhotons(sim, i, x, y, stmp, parts);
 			}
 		}
 		break;
@@ -107,9 +105,12 @@ int Element_E187::graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
-//#TPT-Directive ElementHeader Element_E187 static int createPhotons(int i, int x, int y, int tmp)
-int Element_E187::createPhotons(int i, int x, int y, int tmp)
+//#TPT-Directive ElementHeader Element_E187 static int createPhotons(Simulation* sim, int i, int x, int y, int tmp, Particle *parts)
+int Element_E187::createPhotons(Simulation* sim, int i, int x, int y, int tmp, Particle *parts)
 {
+	int r, s;
+	float r2, r3;
+	const int cooldown = 15;
 	s = sim->create_part(-3, x, y, PT_PHOT);
 	if(s >= 0) {
 		r2 = (rand()%128+128)/127.0f;
