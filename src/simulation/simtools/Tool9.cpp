@@ -1,23 +1,24 @@
 #include "ToolClasses.h"
 #include "simulation/Simulation.h"
-//#TPT-Directive ToolClass Tool_Tool7 TOOL_TOOL7 7
-Tool_Tool7::Tool_Tool7()
+//#TPT-Directive ToolClass Tool_Tool9 TOOL_TOOL9 9
+Tool_Tool9::Tool_Tool9()
 {
-	Identifier = "DEFAULT_TOOL_TOOL7";
-	Name = "T7";
+	Identifier = "DEFAULT_TOOL_TOOL9";
+	Name = "T9";
 	Colour = PIXPACK(0xEE22EE);
 	Description = "Experimental tool.";
 }
 
-int Tool_Tool7::Perform(Simulation * sim, Particle * cpart, int x, int y, float strength)
+int Tool_Tool9::Perform(Simulation * sim, Particle * cpart, int x, int y, float strength)
 {
+	int s;
 	int r = sim->pmap[y][x];
 	switch (r & 0xFF)
 	{
 		case PT_E187:
 			if (rand() % 100 != 0)
 				return 0;
-			sim->parts[r>>8].ctype = 1;
+			sim->parts[r>>8].tmp |= 1;
 		break;
 		default:
 			return 0;
@@ -25,4 +26,4 @@ int Tool_Tool7::Perform(Simulation * sim, Particle * cpart, int x, int y, float 
 	return 1;
 }
 
-Tool_Tool7::~Tool_Tool7() {}
+Tool_Tool9::~Tool_Tool9() {}
