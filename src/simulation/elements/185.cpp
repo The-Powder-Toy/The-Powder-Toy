@@ -85,15 +85,16 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 			if (rand() % 3)
 				s = sim->create_part(-3, x, y, rr);
 			else
-			{
 				s = sim->create_part(-3, x, y, PT_E186);
-				parts[s].ctype = rr;
-			}
 			parts[i].life = cooldown;
 			parts[i].tmp ++;
 			parts[i].temp += 10;
 			parts[rr>>8].temp = parts[i].temp;
-			parts[s].temp = parts[i].temp;
+			if (s >= 0)
+			{
+				parts[s].ctype = rr & 0xFF;
+				parts[s].temp = parts[i].temp;
+			}
 		}
 	}
 	if ((rr & 0xFF) == PT_NEUT && !(rand()%10))
