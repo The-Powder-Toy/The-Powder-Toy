@@ -34,7 +34,7 @@ Element_E187::Element_E187()
 	HeatConduct = 29;
 	Description = "Experimental element. like ISOZ.";
 
-	Properties = TYPE_LIQUID | PROP_LIFE_DEC;
+	Properties = TYPE_LIQUID | PROP_LIFE_DEC | PROP_NOSLOWDOWN | PROP_TRANSPARENT;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
