@@ -83,7 +83,12 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 		if (rr && (rr & 0xFF) != PT_NEUT && !(rand()%80))
 		{
 			if (rand() % 3)
-				s = sim->create_part(-3, x, y, rr);
+			{
+				if (!sctype)
+					s = sim->create_part(-3, x, y, PT_ELEC);
+				else
+					s = sim->create_part(-3, x, y, sctype);
+			}
 			else
 				s = sim->create_part(-3, x, y, PT_E186);
 			parts[i].life = cooldown;
