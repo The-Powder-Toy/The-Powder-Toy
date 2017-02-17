@@ -70,17 +70,18 @@ int Element_E187::update(UPDATE_FUNC_ARGS)
 		}
 		break;
 	case 1:
-		for (rx=-2; rx<3; rx++)
-			for (ry=-2; ry<3; ry++)
-				if (BOUNDS_CHECK)
-				{
-					r = pmap[y+ry][x+rx];
-					if ((r & 0xFF) == PT_E187 && !parts[r>>8].ctype && !(rand()%200))
+		if (parts[i].tmp)
+			for (rx=-2; rx<3; rx++)
+				for (ry=-2; ry<3; ry++)
+					if (BOUNDS_CHECK)
 					{
-						parts[r>>8].tmp &= 0xFFFFFFFE;
-						sim->pv[y/CELL][x/CELL] += 3.0f;
+						r = pmap[y+ry][x+rx];
+						if ((r & 0xFF) == PT_E187 && !parts[r>>8].ctype && !(rand()%200))
+						{
+							parts[r>>8].tmp &= 0xFFFFFFFE;
+							sim->pv[y/CELL][x/CELL] += 3.0f;
+						}
 					}
-				}
 		break;
 	default:
 		break;
@@ -94,8 +95,8 @@ int Element_E187::graphics(GRAPHICS_FUNC_ARGS)
 	switch(cpart->ctype) {
 	case 1:
 		*colr = 0xFF;
-		*colg = 0xD0;
-		*colb = 0x60;
+		*colg = 0x80;
+		*colb = 0xBB;
 		break;
 	case 0:
 	default:
