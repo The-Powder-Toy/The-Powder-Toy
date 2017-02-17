@@ -60,6 +60,7 @@ int Element_E187::update(UPDATE_FUNC_ARGS)
 		r3 = (rand()%360)*3.1415926f/180.0f;
 		parts[s].vx = r2*cosf(r3);
 		parts[s].vy = r2*sinf(r3);
+		parts[i].tmp = 1;
 		parts[s].tmp = 0x1;
 	}
 	r = sim->photons[y][x];
