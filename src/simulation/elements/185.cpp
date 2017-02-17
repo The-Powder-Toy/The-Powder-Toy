@@ -59,7 +59,7 @@ Element_E185::Element_E185()
 //#TPT-Directive ElementHeader Element_E185 static int update(UPDATE_FUNC_ARGS)
 int Element_E185::update(UPDATE_FUNC_ARGS)
 {
-	int r, s, rx, ry, rr;
+	int r, s, rx, ry, rr, sctype;
 	const int cooldown = 15;
 	const int limit = 10;
 	rr = sim->photons[y][x];
