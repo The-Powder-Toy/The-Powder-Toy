@@ -65,9 +65,9 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 	rr = sim->photons[y][x];
 	if(parts[i].tmp < limit && !parts[i].life)
 	{
+		sctype = parts[i].ctype;
 		if (!(rand()%8000) && !parts[i].tmp)
 		{
-			sctype = parts[i].ctype;
 			if (!sctype)
 				s = sim->create_part(-3, x, y, PT_ELEC);
 			else
@@ -97,7 +97,7 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 			parts[rr>>8].temp = parts[i].temp;
 			if (s >= 0)
 			{
-				parts[s].ctype = rr & 0xFF;
+				parts[s].ctype = sctype;
 				parts[s].temp = parts[i].temp;
 			}
 		}
