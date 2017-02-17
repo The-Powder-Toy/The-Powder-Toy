@@ -2072,7 +2072,7 @@ void Simulation::init_can_move()
 		 || destinationType == PT_ISOZ || destinationType == PT_ISZS || destinationType == PT_QRTZ || destinationType == PT_PQRT
 		 || destinationType == PT_H2)
 			can_move[PT_PHOT][destinationType] = 2;
-		if (destinationType != PT_DMND && destinationType != PT_INSL && destinationType != PT_VOID && destinationType != PT_PVOD && destinationType != PT_VIBR && destinationType != PT_BVBR && destinationType != PT_PRTI && destinationType != PT_PRTO)
+		if (destinationType != PT_DMND && destinationType != PT_INSL && destinationType != PT_VOID && destinationType != PT_PVOD && destinationType != PT_VIBR && destinationType != PT_BVBR && destinationType != PT_PRTI && destinationType != PT_PRTO && destinationType != PT_E187)
 		{
 			can_move[PT_PROT][destinationType] = 2;
 			can_move[PT_GRVT][destinationType] = 2;
@@ -2110,20 +2110,22 @@ void Simulation::init_can_move()
 	can_move[PT_TRON][PT_SWCH] = 3;
 	
 	can_move[PT_ELEC][PT_E182] = 2;
-	can_move[PT_ELEC][PT_X001] = 2;
+	can_move[PT_ELEC][PT_E185] = 2;
 
-	can_move[PT_X002][PT_E182] = 2;
-	can_move[PT_X002][PT_X001] = 2;
-	can_move[PT_X002][PT_URAN] = 2;
-	can_move[PT_X002][PT_H2] = 2;
-	can_move[PT_X002][PT_PLSM] = 2;
-	can_move[PT_X002][PT_NBLE] = 2;
-	can_move[PT_X002][PT_CO2] = 2;
-	can_move[PT_X002][PT_O2] = 2;
-	can_move[PT_X002][PT_FILT] = 2;
-	can_move[PT_X002][PT_ISOZ] = 2;
-	can_move[PT_X002][PT_ISZS] = 2;
-	can_move[PT_X002][PT_EXOT] = 2;
+	can_move[PT_E186][PT_E182] = 2;
+	can_move[PT_E186][PT_E185] = 2;
+	can_move[PT_E186][PT_URAN] = 2;
+	can_move[PT_E186][PT_H2] = 2;
+	can_move[PT_E186][PT_PLSM] = 2;
+	can_move[PT_E186][PT_NBLE] = 2;
+	can_move[PT_E186][PT_CO2] = 2;
+	can_move[PT_E186][PT_O2] = 2;
+	can_move[PT_E186][PT_FILT] = 2;
+	can_move[PT_E186][PT_ISOZ] = 2;
+	can_move[PT_E186][PT_ISZS] = 2;
+	can_move[PT_E186][PT_EXOT] = 2;
+	
+	can_move[PT_PHOT][PT_E187] = 2;
 }
 
 /*
@@ -3183,7 +3185,7 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 				break;
 			}
 			case PT_ELEC:
-			case PT_X002:
+			case PT_E186:
 			{
 				float a = (rand()%360)*3.14159f/180.0f;
 				parts[i].life = 680;
