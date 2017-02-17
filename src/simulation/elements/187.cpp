@@ -62,6 +62,7 @@ int Element_E187::update(UPDATE_FUNC_ARGS)
 		parts[s].vy = r2*sinf(r3);
 		parts[i].tmp = 1;
 		parts[s].tmp = 0x1;
+		parts[s].temp = parts[i].temp + 20;
 	}
 	r = sim->photons[y][x];
 	if ((r & 0xFF) == PT_PHOT && !(rand()%100))
@@ -72,6 +73,7 @@ int Element_E187::update(UPDATE_FUNC_ARGS)
 		parts[s].vx = r2*cosf(r3);
 		parts[s].vy = r2*sinf(r3);
 		parts[s].tmp = 0x1;
+		parts[s].temp = parts[i].temp + 20;
 	}
 	return 0;
 }
