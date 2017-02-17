@@ -53,27 +53,33 @@ int Element_E187::update(UPDATE_FUNC_ARGS)
 { // for both ISZS and ISOZ
 	int r, s;
 	float r2, r3;
-	if (!(rand()%10000) && !parts[i].tmp)
+	const int cooldown = 15;
+	if (!parts[i].life)
 	{
-		s = sim->create_part(-3, x, y, PT_PHOT);
-		r2 = (rand()%228+128)/127.0f;
-		r3 = (rand()%360)*3.1415926f/180.0f;
-		parts[s].vx = r2*cosf(r3);
-		parts[s].vy = r2*sinf(r3);
-		parts[i].tmp = 1;
-		parts[s].tmp = 0x1;
-		parts[s].temp = parts[i].temp + 20;
-	}
-	r = sim->photons[y][x];
-	if ((r & 0xFF) == PT_PHOT && !(rand()%100))
-	{
-		s = sim->create_part(-3, x, y, PT_PHOT);
-		r2 = (rand()%228+128)/127.0f;
-		r3 = (rand()%360)*3.1415926f/180.0f;
-		parts[s].vx = r2*cosf(r3);
-		parts[s].vy = r2*sinf(r3);
-		parts[s].tmp = 0x1;
-		parts[s].temp = parts[i].temp + 20;
+		if (!(rand()%10000) && !parts[i].tmp)
+		{
+			s = sim->create_part(-3, x, y, PT_PHOT);
+			r2 = (rand()%128+128)/127.0f;
+			r3 = (rand()%360)*3.1415926f/180.0f;
+			parts[s].vx = r2*cosf(r3);
+			parts[s].vy = r2*sinf(r3);
+			parts[i].life = cooldown;
+			parts[i].tmp = 1;
+			parts[s].tmp = 0x1;
+			parts[s].temp = parts[i].temp + 20;
+		}
+		r = sim->photons[y][x];
+		if ((r & 0xFF) == PT_PHOT && !(rand()%100))
+		{
+			s = sim->create_part(-3, x, y, PT_PHOT);
+			r2 = (rand()%128+128)/127.0f;
+			r3 = (rand()%360)*3.1415926f/180.0f;
+			parts[s].vx = r2*cosf(r3);
+			parts[s].vy = r2*sinf(r3);
+			parts[i].life = cooldown;
+			parts[s].tmp = 0x1;
+			parts[s].temp = parts[i].temp + 20;
+		}
 	}
 	return 0;
 }
