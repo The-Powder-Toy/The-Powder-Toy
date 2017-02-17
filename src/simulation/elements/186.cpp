@@ -52,11 +52,15 @@ Element_E186::Element_E186()
 //#TPT-Directive ElementHeader Element_E186 static int update(UPDATE_FUNC_ARGS)
 int Element_E186::update(UPDATE_FUNC_ARGS)
 {
-	int r, s, slife;
+	int r, s, slife, sctype;
 	float r2, r3;
 	if (!(rand()%60))
 	{
-		s = sim->create_part(-3, x, y, PT_ELEC);
+		sctype = parts[i].ctype;
+		if (!sctype)
+			s = sim->create_part(-3, x, y, PT_ELEC);
+		else
+			s = sim->create_part(-3, x, y, sctype);
 		if(s >= 0)
 		{
 			parts[i].temp += 400.0f;
