@@ -4820,7 +4820,6 @@ void Simulation::SimulateLLoops()
 					kill_part(r>>8);
 					continue;
 				}
-				gol[ny][nx] = golnum;
 				
 				int adxp = ((nx+1+XRES-3*CELL)%(XRES-2*CELL))+CELL;
 				int adyp = ((ny+1+YRES-3*CELL)%(YRES-2*CELL))+CELL;
@@ -4828,6 +4827,7 @@ void Simulation::SimulateLLoops()
 				int adyn = ((ny-1+YRES-3*CELL)%(YRES-2*CELL))+CELL;
 
 				gol2[ny][nx][0] ++;
+				gol[ny][nx] = golnum;
 
 				gol2[adyp][nx][0] ++;
 				gol2[adyp][nx][1] = golnum;
@@ -4857,13 +4857,15 @@ void Simulation::SimulateLLoops()
 				{
 					//Find which type we can try and create
 					
-					if (matchedgol >= 0)
+					if (matchedgol)
 						create_part(-1, nx, ny, PT_LIFE, matchedgol - 1);
 				}
 				else if (matchedgol)
 				{
 					parts[r>>8].ctype = matchedgol - 1;
-				} else {
+				}
+				else
+				{
 					kill_part(r>>8);
 				}
 				for (int z = 0; z < 5; z++)
