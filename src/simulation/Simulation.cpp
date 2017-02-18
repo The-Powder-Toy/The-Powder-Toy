@@ -4815,7 +4815,8 @@ void Simulation::SimulateLLoops()
 			if ((r&0xFF)==PT_LIFE)
 			{
 				int golnum = parts[r>>8].ctype + 1;
-				if (golnum<=0 || golnum>=8) {
+				if (golnum<=0 || golnum>=8)
+				{
 					kill_part(r>>8);
 					continue;
 				}
@@ -4836,7 +4837,7 @@ void Simulation::SimulateLLoops()
 				gol2[adyn][nx][3] = golnum;
 				gol2[ny][adxp][0] ++;
 				gol2[ny][adxp][4] = golnum;
-				}
+				
 			}
 		}
 	}
