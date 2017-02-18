@@ -75,7 +75,7 @@ GameModel::GameModel():
 
 	ren->gravityFieldEnabled = Client::Ref().GetPrefBool("Renderer.GravityField", false);
 	ren->decorations_enable = Client::Ref().GetPrefBool("Renderer.Decorations", true);
-	ren->extraLoopsCA = Client::Ref().GetPrefBool("Renderer.LangtonsLoops", false);
+	sim->extraLoopsCA = Client::Ref().GetPrefBool("Renderer.LangtonsLoops", false);
 
 	//Load config into simulation
 	edgeMode = Client::Ref().GetPrefInteger("Simulation.EdgeMode", 0);
@@ -156,7 +156,7 @@ GameModel::~GameModel()
 
 	Client::Ref().SetPref("Renderer.GravityField", (bool)ren->gravityFieldEnabled);
 	Client::Ref().SetPref("Renderer.Decorations", (bool)ren->decorations_enable);
-	Client::Ref().SetPref("Renderer.LangtonsLoops", (bool)ren->extraLoopsCA);
+	Client::Ref().SetPref("Renderer.LangtonsLoops", (bool)sim->extraLoopsCA);
 	Client::Ref().SetPref("Renderer.DebugMode", ren->debugLines); //These two should always be equivalent, even though they are different things
 
 	Client::Ref().SetPref("Simulation.EdgeMode", edgeMode);
@@ -927,7 +927,7 @@ bool GameModel::GetDecoration()
 
 void GameModel::SetLLCA(bool m)
 {
-	ren->extraLoopsCA = (m?1:0);
+	sim->extraLoopsCA = (m?1:0);
 	if (m)
 		SetInfoTip("Extra Cellular automaton mode: On");
 	else
@@ -936,7 +936,7 @@ void GameModel::SetLLCA(bool m)
 
 bool GameModel::GetLLCA()
 {
-	return ren->extraLoopsCA?true:false;
+	return sim->extraLoopsCA?true:false;
 }
 
 void GameModel::SetAHeatEnable(bool aHeat)
