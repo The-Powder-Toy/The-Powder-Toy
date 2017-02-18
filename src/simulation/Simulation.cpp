@@ -4826,30 +4826,16 @@ void Simulation::SimulateLLoops()
 				int adxn = ((nx-1+XRES-3*CELL)%(XRES-2*CELL))+CELL;
 				int adyn = ((ny-1+YRES-3*CELL)%(YRES-2*CELL))+CELL;
 
-				int rtn = pmap[adyn][nx];
-				int rte = pmap[ny][adxp];
-				int rts = pmap[adyp][nx];
-				int rtw = pmap[ny][adxn];
-				
-				if ((rtn&0xFF)==PT_LIFE)
-				{
-					gol2[ny][nx][0] ++;
-					gol2[ny][nx][1] = parts[rtn>>8].ctype;
-				}
-				if ((rte&0xFF)==PT_LIFE)
-				{
-					gol2[ny][nx][0] ++;
-					gol2[ny][nx][2] = parts[rte>>8].ctype;
-				}
-				if ((rts&0xFF)==PT_LIFE)
-				{
-					gol2[ny][nx][0] ++;
-					gol2[ny][nx][3] = parts[rts>>8].ctype;
-				}
-				if ((rtw&0xFF)==PT_LIFE)
-				{
-					gol2[ny][nx][0] ++;
-					gol2[ny][nx][4] = parts[rtw>>8].ctype;
+				gol2[ny][nx][0] ++;
+
+				gol2[adyp][nx][0] ++;
+				gol2[adyp][nx][1] = golnum;
+				gol2[ny][adxn][0] ++;
+				gol2[ny][adxn][2] = golnum;
+				gol2[adyn][nx][0] ++;
+				gol2[adyn][nx][3] = golnum;
+				gol2[ny][adxp][0] ++;
+				gol2[ny][adxp][4] = golnum;
 				}
 			}
 		}
@@ -5210,7 +5196,7 @@ void Simulation::BeforeSim()
 		// GSPEED is frames per generation
 		if (elementCount[PT_LIFE]>0 && ++CGOL>=GSPEED)
 		{
-			if (extraLoopsCA)
+			if (!extraLoopsCA)
 			{
 				SimulateGoL();
 			}
