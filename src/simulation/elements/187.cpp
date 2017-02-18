@@ -40,8 +40,8 @@ Element_E187::Element_E187()
 	LowPressureTransition = NT;
 	HighPressure = IPH;
 	HighPressureTransition = NT;
-	LowTemperature = ITL;
-	LowTemperatureTransition = NT;
+	LowTemperature = 160.0f;
+	LowTemperatureTransition = PT_E188;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
