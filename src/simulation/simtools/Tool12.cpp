@@ -16,6 +16,7 @@ int Tool_Tool12::Perform(Simulation * sim, Particle * cpart, int x, int y, float
 	switch (r & 0xFF)
 	{
 		case PT_E187:
+		case PT_E188:
 			if (rand() % 100 != 0)
 				return 0;
 			sim->parts[r>>8].tmp &= 0xFFFFFFFD;
