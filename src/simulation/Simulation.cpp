@@ -4793,7 +4793,7 @@ void Simulation::SimulateLLoops()
 		int ne = ruletable[i][2];
 		int ns = ruletable[i][3];
 		int nw = ruletable[i][4];
-		int nc2 = ruletable[i][4];
+		int nc2 = ruletable[i][5];
 		lloopsrule[nc][nn][ne][ns][nw] = nc2;
 		lloopsrule[nc][ne][ns][nw][nn] = nc2;
 		lloopsrule[nc][ns][nw][nn][ne] = nc2;
