@@ -4788,7 +4788,16 @@ void Simulation::SimulateLLoops()
 	}
 	for (int i = 1; i < 219; i++)
 	{
-		lloopsrule[ruletable[i][0]][ruletable[i][1]][ruletable[i][2]][ruletable[i][3]][ruletable[i][4]] = ruletable[i][5];
+		int nc = ruletable[i][0];
+		int nn = ruletable[i][1];
+		int ne = ruletable[i][2];
+		int ns = ruletable[i][3];
+		int nw = ruletable[i][4];
+		int nc2 = ruletable[i][4];
+		lloopsrule[nc][nn][ne][ns][nw] = nc2;
+		lloopsrule[nc][ne][ns][nw][nn] = nc2;
+		lloopsrule[nc][ns][nw][nn][ne] = nc2;
+		lloopsrule[nc][nw][nn][ne][ns] = nc2;
 	}
 	CGOL=0;
 	//TODO: maybe this should only loop through active particles
