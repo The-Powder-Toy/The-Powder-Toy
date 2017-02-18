@@ -2309,7 +2309,7 @@ void GameView::OnDraw()
 				else
 				{
 					sampleInfo << c->ElementResolve(type, ctype);
-					if (wavelengthGfx || type == PT_E187)
+					if (wavelengthGfx || type == PT_E187 || type == PT_E188)
 						sampleInfo << " (" << ctype << ")";
 					// Some elements store extra LIFE info in upper bits of ctype, instead of tmp/tmp2
 					else if (type == PT_CRAY || type == PT_DRAY || type == PT_CONV)
