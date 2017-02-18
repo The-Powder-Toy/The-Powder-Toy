@@ -82,6 +82,7 @@ public:
 	int GSPEED;
 	unsigned char gol[YRES][XRES];
 	unsigned short gol2[YRES][XRES][9];
+	unsigned char lloopsrule[8][8][8][8][8];
 	//Air sim
 	float (*vx)[XRES/CELL];
 	float (*vy)[XRES/CELL];
