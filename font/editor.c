@@ -35,7 +35,7 @@ void blendpixel(unsigned *vid, int x, int y, int r, int g, int b, int a)
 	vid[y*XRES+x] = (r<<16)|(g<<8)|b;
 }
 
-int drawchar(unsigned *vid, int x, int y, int c, int r, int g, int b)
+int drawchar(unsigned *vid, int x, int y, unsigned char c, int r, int g, int b)
 {
 	int i, j;
 	if (color[c])
@@ -50,7 +50,7 @@ int drawchar(unsigned *vid, int x, int y, int c, int r, int g, int b)
 	return x + width[c];
 }
 
-int drawtext(unsigned *vid, int x, int y, char *s, int r, int g, int b)
+int drawtext(unsigned *vid, int x, int y, const char *s, int r, int g, int b)
 {
 	for (; *s; s++)
 		x = drawchar(vid, x, y, *s, r, g, b);
@@ -205,11 +205,11 @@ int sdl_poll()
  *                      MAIN PROGRAM                       *
  ***********************************************************/
 
-char *tag = "(c) 2008 Stanislaw Skowronek";
+const char *tag = "(c) 2008 Stanislaw Skowronek";
 
 int main(int argc, char *argv[])
 {
-	unsigned *vid_buf = calloc(XRES*YRES, sizeof(unsigned));
+	unsigned *vid_buf = (unsigned*)calloc(XRES*YRES, sizeof(unsigned));
 	int x, y, b = 0, lb, c = 0xA0, i, j, dc = 0;
 	int mode = 0;
 	char hex[18] = "";
