@@ -118,3 +118,21 @@ public:
 		c->ShowConsole();
 	}
 };
+
+class LangtonsLoopsOption: public QuickOption
+{
+public:
+	LangtonsLoopsOption(GameModel * m):
+	QuickOption("L", "Langton's Loops Cellular automaton", m, Toggle)
+	{
+
+	}
+	virtual bool GetToggle() 
+	{
+		return m->GetLLCA();
+	}
+	virtual void perform()
+	{
+		m->SetLLCA(!m->GetLLCA());
+	}
+};
