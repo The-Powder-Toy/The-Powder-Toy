@@ -5210,7 +5210,7 @@ void Simulation::BeforeSim()
 		// GSPEED is frames per generation
 		if (elementCount[PT_LIFE]>0 && ++CGOL>=GSPEED)
 		{
-			if (ren->extraLoopsCA)
+			if (extraLoopsCA)
 			{
 				SimulateGoL();
 			}
