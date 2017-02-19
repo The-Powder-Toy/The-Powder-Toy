@@ -84,6 +84,7 @@ public:
 	unsigned short gol2[YRES][XRES][9];
 	unsigned char lloopsrule[8][8][8][8][8];
 	int extraLoopsCA;
+	int extraLoopsType;
 	//Air sim
 	float (*vx)[XRES/CELL];
 	float (*vy)[XRES/CELL];
