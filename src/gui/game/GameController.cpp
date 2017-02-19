@@ -284,20 +284,19 @@ void GameController::HistorySnapshot()
 void GameController::HistoryForward()
 {
 	std::deque<Snapshot*> history = gameModel->GetHistory();
-	if (history.size())
-	{
-		unsigned int historyPosition = gameModel->GetHistoryPosition();
-		unsigned int newHistoryPosition = std::min((size_t)historyPosition+1, history.size());
-		Snapshot *snap;
-		if (newHistoryPosition == history.size())
-			snap = gameModel->GetRedoHistory();
-		else
-			snap = history[newHistoryPosition];
-		if (!snap)
-			return;
-		gameModel->GetSimulation()->Restore(*snap);
-		gameModel->SetHistoryPosition(newHistoryPosition);
-	}
+	if (!history.size())
+		return;
+	unsigned int historyPosition = gameModel->GetHistoryPosition();
+	unsigned int newHistoryPosition = std::min((size_t)historyPosition+1, history.size());
+	Snapshot *snap;
+	if (newHistoryPosition == history.size())
+		snap = gameModel->GetRedoHistory();
+	else
+		snap = history[newHistoryPosition];
+	if (!snap)
+		return;
+	gameModel->GetSimulation()->Restore(*snap);
+	gameModel->SetHistoryPosition(newHistoryPosition);
 }
 
 GameView * GameController::GetView()
