@@ -4765,29 +4765,31 @@ void Simulation::SimulateGoL()
 
 void Simulation::SimulateLLoops()
 {
-	int z, x1,x2,x3,x4,x5;
+	int z,z2, x1,x2,x3,x4,x5;
 	if (extraLoopsType)
 	{
-		z = 8;
-		for (x1 = 0; x1 < 8; x1++)
+		z = 8; z2 = 8;
+	}
+	else
+	{
+		z = 2; z2 = 0;
+	}
+	for (x1 = 0; x1 < 8; x1++)
+	{
+		for (x2 = 0; x2 < 8; x2++)
 		{
-			for (x2 = 0; x2 < 8; x2++)
+			for (x3 = 0; x3 < 8; x3++)
 			{
-				for (x3 = 0; x3 < 8; x3++)
+				for (x4 = 0; x4 < 8; x4++)
 				{
-					for (x4 = 0; x4 < 8; x4++)
+					for (x5 = 0; x5 < 8; x5++)
 					{
-						for (x5 = 0; x5 < 8; x5++)
-						{
-							lloopsrule[x1][x2][x3][x4][x5] = z;
-						}
+						lloopsrule[x1][x2][x3][x4][x5] = z2;
 					}
 				}
 			}
 		}
 	}
-	else
-		z = 2;
 	int ruletable[219][6] = {
 		{0,0,0,0,0,0},{0,0,0,0,1,2},{0,0,0,0,2,0},{0,0,0,0,3,0},{0,0,0,0,5,0},{0,0,0,0,6,3},{0,0,0,0,7,1},{0,0,0,1,1,2},{0,0,0,1,2,2},{0,0,0,1,3,2},{0,0,0,2,1,2},
 		{0,0,0,2,2,0},{0,0,0,2,3,0},{0,0,0,2,6,2},{0,0,0,2,7,2},{0,0,0,3,2,0},{0,0,0,5,2,5},{0,0,0,6,2,2},{0,0,0,7,2,2},{0,0,1,0,2,2},{0,0,1,1,2,0},{0,0,2,0,2,0},
@@ -4825,7 +4827,6 @@ void Simulation::SimulateLLoops()
 	}
 	if (extraLoopsType)
 	{
-		z = 8;
 		for (x1 = 0; x1 < 8; x1++)
 		{
 			for (x2 = 0; x2 < 8; x2++)
@@ -4836,6 +4837,8 @@ void Simulation::SimulateLLoops()
 					{
 						for (x5 = 0; x5 < 8; x5++)
 						{
+							if (lloopsrule[x1][x2][x3][x4][x5] != 8)
+								continue;
 							int xsh = ((0xD6 >> x2) & 1) + ((0xD6 >> x3) & 1) + ((0xD6 >> x4) & 1) + ((0xD6 >> x5) & 1);
 							switch (x1)
 							{
@@ -4855,7 +4858,7 @@ void Simulation::SimulateLLoops()
 									break;
 								case 2:
 									if ((x2 == 3)||(x3 == 3)||(x4 == 3)||(x5 == 3))
-										lloopsrule[x1][x2][x3][x4][x5] = 3;
+										lloopsrule[x1][x2][x3][x4][x5] = 1;
 									else if ((x2 == 2)||(x3 == 2)||(x4 == 2)||(x5 == 2))
 										lloopsrule[x1][x2][x3][x4][x5] = 2;
 									break;
