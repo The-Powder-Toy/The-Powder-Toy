@@ -311,6 +311,7 @@ void Simulation::SaveSimOptions(GameSave * gameSave)
 	gameSave->waterEEnabled = water_equal_test;
 	gameSave->gravityEnable = grav->ngrav_enable;
 	gameSave->aheatEnable = aheat_enable;
+	gameSave->sextraLoopsCA = extraLoopsCA;
 }
 
 Snapshot * Simulation::CreateSnapshot()
