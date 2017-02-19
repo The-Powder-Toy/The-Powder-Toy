@@ -45,35 +45,35 @@ Element_VSNS::Element_VSNS()
 
 int Element_VSNS::update(UPDATE_FUNC_ARGS)
 {
-  int r,rx,ry;
-  for(rx=-1;rx<2;rx++)
-  {
-    for(ry=-1;ry<2;ry++)
-    {
-      if((BOUNDS_CHECK)&&(rx||ry))
-      {
-        r = pmap[y+ry][x+rx];
-        if(!r)
-        {
-          continue;
-        }
-        v = parts[r>>8].vx + parts[r>>8].vy;
-        if((v >= parts[i].temp/10))
-        {
-          if(parts[i].ctype == r&0xFF)
-          {
-            parts[i].life=1;
-          }
-          else if(!parts[i].ctype)
-          {
-            parts[i].life=1;
-          };
-        }
-        if(parts[i].life)
-        {
-          parts[i].life=0;
-          rt = r&0xFF;
-          if (sim->parts_avg(i,r>>8,PT_INSL) != PT_INSL)
+	int r,rx,ry;
+	for(rx=-1;rx<2;rx++)
+	{
+		for(ry=-1;ry<2;ry++)
+		{
+			if((BOUNDS_CHECK)&&(rx||ry))
+			{
+				r = pmap[y+ry][x+rx];
+				if(!r)
+				{
+					continue;
+				}
+					v = parts[r>>8].vx + parts[r>>8].vy;
+				if((v >= parts[i].temp/10))
+				{
+					if(parts[i].ctype == r&0xFF)
+					{
+						parts[i].life=1;
+					}
+					else if(!parts[i].ctype)
+					{
+						parts[i].life=1;
+					};
+				}
+				if(parts[i].life)
+				{
+					parts[i].life=0;
+					rt = r&0xFF;
+					if (sim->parts_avg(i,r>>8,PT_INSL) != PT_INSL)
 					{
 						if ((sim->elements[rt].Properties&PROP_CONDUCTS) && !(rt==PT_WATR||rt==PT_SLTW||rt==PT_NTCT||rt==PT_PTCT||rt==PT_INWR) && parts[r>>8].life==0)
 						{
@@ -82,11 +82,11 @@ int Element_VSNS::update(UPDATE_FUNC_ARGS)
 							sim->part_change_type(r>>8,x+rx,y+ry,PT_SPRK);
 						}
 					}
-        }
-      }
-    }
-  }
-  return 0;
+				}
+			}
+		}
+	}
+	return 0;
 }
 
 Element_VSNS::~Element_VSNS() {}
