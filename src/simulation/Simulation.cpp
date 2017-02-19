@@ -4774,7 +4774,7 @@ void Simulation::SimulateLLoops()
 	{
 		z = 2; z2 = 0;
 	}
-	switch (extraLoopsType > 1)
+	switch (extraLoopsType)
 	{
 		case 0:
 		case 1:
