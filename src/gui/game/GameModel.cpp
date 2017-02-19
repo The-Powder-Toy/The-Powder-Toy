@@ -137,7 +137,7 @@ GameModel::GameModel():
 	colourPresets.push_back(ui::Colour(0, 0, 255));
 	colourPresets.push_back(ui::Colour(0, 0, 0));
 
-	undoHistoryLimit = Client::Ref().GetPrefInteger("UndoHistoryLimit", 1);
+	undoHistoryLimit = Client::Ref().GetPrefInteger("Simulation.UndoHistoryLimit", 5);
 	// cap due to memory usage (this is about 3.4GB of RAM)
 	if (undoHistoryLimit > 200)
 		undoHistoryLimit = 200;
@@ -169,7 +169,7 @@ GameModel::~GameModel()
 	Client::Ref().SetPref("Decoration.Blue", (int)colour.Blue);
 	Client::Ref().SetPref("Decoration.Alpha", (int)colour.Alpha);
 
-	Client::Ref().SetPref("UndoHistoryLimit", undoHistoryLimit);
+	Client::Ref().SetPref("Simulation.UndoHistoryLimit", undoHistoryLimit);
 
 	Favorite::Ref().SaveFavoritesToPrefs();
 
