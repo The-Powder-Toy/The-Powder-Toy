@@ -57,7 +57,7 @@ int Element_VSNS::update(UPDATE_FUNC_ARGS)
 				{
 					continue;
 				}
-					v = parts[r>>8].vx + parts[r>>8].vy;
+				v = parts[r>>8].vx + parts[r>>8].vy;
 				if((v >= parts[i].temp/10))
 				{
 					if(parts[i].ctype == r&0xFF)
