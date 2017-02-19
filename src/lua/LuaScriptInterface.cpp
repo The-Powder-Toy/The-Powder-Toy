@@ -749,6 +749,7 @@ void LuaScriptInterface::initSimulationAPI()
 		{"neighbors", simulation_neighbours},
 		{"framerender", simulation_framerender},
 		{"gspeed", simulation_gspeed},
+		{"CAType", simulation_CAType},
 		{NULL, NULL}
 	};
 	luaL_register(l, "simulation", simulationAPIMethods);
@@ -2078,6 +2079,29 @@ int LuaScriptInterface::simulation_gspeed(lua_State * l)
 	if (gspeed < 1)
 		return luaL_error(l, "GSPEED must be at least 1");
 	luacon_sim->GSPEED = gspeed;
+	return 0;
+}
+
+int LuaScriptInterface::simulation_CAType(lua_State * l)
+{
+	if (lua_gettop(l) == 0)
+	{
+		if (luacon_sim->extraLoopsCA)
+			lua_pushinteger(l, luacon_sim->extraLoopsType + 1);
+		else
+			lua_pushinteger(l, 0);
+		return 1;
+	}
+	int m = luaL_checkinteger(l, 1);
+	if (m < 0 || m > 2)
+		return luaL_error(l, "Invalid CA type");
+	if (m > 0)
+	{
+		luacon_sim->extraLoopsCA = 1;
+		luacon_sim->extraLoopsType = m - 1;
+	}
+	else
+		luacon_sim->extraLoopsCA = 0;
 	return 0;
 }
 
