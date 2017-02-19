@@ -233,6 +233,8 @@ GameController::~GameController()
 void GameController::HistoryRestore()
 {
 	std::deque<Snapshot*> history = gameModel->GetHistory();
+	if (!history.size())
+		return;
 	unsigned int historyPosition = gameModel->GetHistoryPosition();
 	unsigned int newHistoryPosition = std::max((int)historyPosition-1, 0);
 	// When undoing, save the current state as a final redo
