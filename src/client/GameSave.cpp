@@ -19,6 +19,7 @@ waterEEnabled(save.waterEEnabled),
 legacyEnable(save.legacyEnable),
 gravityEnable(save.gravityEnable),
 aheatEnable(save.aheatEnable),
+sextraLoopsCA(save.sextraLoopsCA),
 paused(save.paused),
 gravityMode(save.gravityMode),
 airMode(save.airMode),
@@ -182,6 +183,7 @@ void GameSave::Expand()
 		legacyEnable = false;
 		gravityEnable = false;
 		aheatEnable = false;
+		sextraLoopsCA = false;
 		paused = false;
 		gravityMode = 0;
 		airMode = 0;
@@ -648,6 +650,17 @@ void GameSave::readOPS(char * data, int dataLength)
 			if(bson_iterator_type(&iter)==BSON_BOOL)
 			{
 				aheatEnable = bson_iterator_bool(&iter);
+			}
+			else
+			{
+				fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
+			}
+		}
+		else if(!strcmp(bson_iterator_key(&iter), "sextraLoopsCA_Enable"))
+		{
+			if(bson_iterator_type(&iter)==BSON_BOOL)
+			{
+				sextraLoopsCA = bson_iterator_bool(&iter);
 			}
 			else
 			{
@@ -2215,6 +2228,7 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 	bson_append_bool(&b, "legacyEnable", legacyEnable);
 	bson_append_bool(&b, "gravityEnable", gravityEnable);
 	bson_append_bool(&b, "aheat_enable", aheatEnable);
+	bson_append_bool(&b, "sextraLoopsCA_Enable", sextraLoopsCA);
 	bson_append_bool(&b, "paused", paused);
 	bson_append_int(&b, "gravityMode", gravityMode);
 	bson_append_int(&b, "airMode", airMode);
