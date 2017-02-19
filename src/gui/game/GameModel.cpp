@@ -643,6 +643,7 @@ void GameModel::SetSave(SaveInfo * newSave)
 		sim->legacy_enable = saveData->legacyEnable;
 		sim->water_equal_test = saveData->waterEEnabled;
 		sim->aheat_enable = saveData->aheatEnable;
+		sim->extraLoopsCA = saveData->sextraLoopsCA;
 		if(saveData->gravityEnable)
 			sim->grav->start_grav_async();
 		else
@@ -683,6 +684,7 @@ void GameModel::SetSaveFile(SaveFile * newSave)
 		sim->legacy_enable = saveData->legacyEnable;
 		sim->water_equal_test = saveData->waterEEnabled;
 		sim->aheat_enable = saveData->aheatEnable;
+		sim->extraLoopsCA = saveData->sextraLoopsCA;
 		if(saveData->gravityEnable && !sim->grav->ngrav_enable)
 		{
 			sim->grav->start_grav_async();
