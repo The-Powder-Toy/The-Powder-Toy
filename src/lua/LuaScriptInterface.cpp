@@ -2093,7 +2093,7 @@ int LuaScriptInterface::simulation_CAType(lua_State * l)
 		return 1;
 	}
 	int m = luaL_checkinteger(l, 1);
-	if (m < 0 || m > 2)
+	if (m < 0 || m > 3)
 		return luaL_error(l, "Invalid CA type");
 	if (m > 0)
 	{
