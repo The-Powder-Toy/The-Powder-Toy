@@ -8,6 +8,8 @@
 #include <direct.h>
 #endif
 #include "SDLCompat.h"
+#include <xmmintrin.h>
+#include <pmmintrin.h>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -1081,6 +1083,9 @@ int main(int argc, char * argv[])
 	signal(SIGILL, SigHandler);
 	signal(SIGABRT, SigHandler);
 #endif
+
+	_MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
+	_MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
 
 	GameController * gameController = NULL;
 #if !defined(DEBUG) && !defined(_DEBUG)
