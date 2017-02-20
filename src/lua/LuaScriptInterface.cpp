@@ -1574,10 +1574,14 @@ int LuaScriptInterface::simulation_decoColor(lua_State * l)
 		b = luaL_optint(l, 3, 255);
 		a = luaL_optint(l, 4, 255);
 
-		if (r < 0) r = 0; if (r > 255) r = 255;
-		if (g < 0) g = 0; if (g > 255) g = 255;
-		if (b < 0) b = 0; if (b > 255) b = 255;
-		if (a < 0) a = 0; if (a > 255) a = 255;
+		if (r < 0) r = 0;
+		if (r > 255) r = 255;
+		if (g < 0) g = 0;
+		if (g > 255) g = 255;
+		if (b < 0) b = 0;
+		if (b > 255) b = 255;
+		if (a < 0) a = 0;
+		if (a > 255) a = 255;
 
 		color = (a << 24) + PIXRGB(r, g, b);
 	}
