@@ -530,7 +530,7 @@ if not GetOption('nolua') and not GetOption('renderer'):
 
 if platform == "Windows":
 	sources += env.RES('resources/powder-res.rc')
-	if not not msvc:
+	if not msvc:
 		sources = filter(lambda source: not 'src\\simulation\\Gravity.cpp' in str(source), sources)
 		sources = filter(lambda source: not 'src/simulation/Gravity.cpp' in str(source), sources)
 		envCopy = env.Clone()

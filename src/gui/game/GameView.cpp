@@ -100,9 +100,9 @@ public:
 			return;
 		SetToolTip(x, y);
 	}
-	virtual void TextPosition()
+	virtual void TextPosition(std::string ButtonText)
 	{
-		ui::Button::TextPosition();
+		ui::Button::TextPosition(ButtonText);
 		textPosition.X += 3;
 	}
 	void SetToolTips(std::string newToolTip1, std::string newToolTip2)

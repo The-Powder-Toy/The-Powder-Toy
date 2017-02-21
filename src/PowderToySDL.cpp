@@ -8,6 +8,14 @@
 #include <direct.h>
 #endif
 #include "SDLCompat.h"
+
+#ifdef X86_SSE
+#include <xmmintrin.h>
+#endif
+#ifdef X86_SSE3
+#include <pmmintrin.h>
+#endif
+
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -1080,6 +1088,14 @@ int main(int argc, char * argv[])
 	signal(SIGFPE, SigHandler);
 	signal(SIGILL, SigHandler);
 	signal(SIGABRT, SigHandler);
+#endif
+
+#ifdef X86_SSE
+	_MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
+#endif
+#ifdef X86_SSE3
+	_MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
+#error test
 #endif
 
 	GameController * gameController = NULL;

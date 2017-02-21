@@ -34,7 +34,7 @@ public:
 
 	virtual void Draw(const Point& screenPos);
 
-	virtual void TextPosition();
+	virtual void TextPosition(std::string);
 	inline bool GetState() { return state; }
 	virtual void DoAction(); //action of button what ever it may be
 	virtual void DoAltAction(); //action of button what ever it may be
