@@ -46,6 +46,7 @@ Element_VSNS::Element_VSNS()
 int Element_VSNS::update(UPDATE_FUNC_ARGS)
 {
 	int r,rx,ry;
+	float v;
 	for(rx=-1;rx<2;rx++)
 	{
 		for(ry=-1;ry<2;ry++)
