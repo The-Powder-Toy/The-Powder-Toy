@@ -32,7 +32,7 @@ void ConsoleModel::SetCurrentCommandIndex(size_t index)
 
 ConsoleCommand ConsoleModel::GetCurrentCommand()
 {
-	if(currentCommandIndex < 0 || currentCommandIndex >= previousCommands.size())
+	if (currentCommandIndex >= previousCommands.size())
 	{
 		return ConsoleCommand("", 0, "");
 	}

@@ -202,10 +202,7 @@ void Textbox::pasteIntoSelection()
 
 	if (limit != std::string::npos)
 	{
-		if(limit-backingText.length() >= 0)
-			newText = newText.substr(0, limit-backingText.length());
-		else
-			newText = "";
+		newText = newText.substr(0, limit-backingText.length());
 	}
 	if (!multiline && Graphics::textwidth((char*)std::string(backingText+newText).c_str()) > regionWidth)
 	{
