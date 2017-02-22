@@ -39,7 +39,7 @@ Element_E185::Element_E185()
 
 	Temperature = R_TEMP+4.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "Experimental element.";
+	Description = "Experimental element. Some kind of nuclear fuel.";
 
 	Properties = TYPE_PART|PROP_NEUTPASS|PROP_RADIOACTIVE|PROP_LIFE_DEC;
 
@@ -61,7 +61,7 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 {
 	int r, s, rx, ry, rr, sctype, stmp;
 	const int cooldown = 15;
-	const int limit = 10;
+	const int limit = 20;
 	rr = sim->photons[y][x];
 	stmp = parts[i].tmp;
 	if(stmp < limit && !parts[i].life)
