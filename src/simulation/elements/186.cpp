@@ -66,11 +66,20 @@ int Element_E186::update(UPDATE_FUNC_ARGS)
 			parts[i].temp += 400.0f;
 			parts[s].temp = parts[i].temp;
 			sim->pv[y/CELL][x/CELL] += 1.5f;
+			if (sctype == PT_GRVT)
+				parts[s].tmp = 0;
 		}
 	}
 	r = pmap[y][x];
 	switch (r&0xFF)
 	{
+	case PT_PLSM:
+		if (!(rand()%30))
+		{
+			sim->create_part(r>>8, x, y, PT_PLSM);
+			parts[s].ctype = PT_NBLE;
+		}
+		break;
 	case PT_O2:
 		if (!(rand()%20))
 		{
@@ -117,6 +126,13 @@ int Element_E186::update(UPDATE_FUNC_ARGS)
 			{
 				sim->create_part(r>>8, x, y, PT_E186);
 			}
+		}
+		break;
+	case PT_TUNG:
+	case PT_BRMT:
+		if ((r & 0xFF) == PT_TUNG && parts[r >> 8].ctype == PT_TUNG && !(rand()%50))
+		{
+			sim->part_change_type(r>>8, x, y, PT_E187);
 		}
 		break;
 	default:
