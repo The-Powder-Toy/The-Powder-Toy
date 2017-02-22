@@ -32,7 +32,7 @@ Element_E187::Element_E187()
 
 	Temperature = R_TEMP-2.0f	+273.15f;
 	HeatConduct = 29;
-	Description = "Experimental element. like ISOZ.";
+	Description = "Experimental element. acts like ISOZ.";
 
 	Properties = TYPE_LIQUID | PROP_LIFE_DEC | PROP_NOSLOWDOWN | PROP_TRANSPARENT;
 

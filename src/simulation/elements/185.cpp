@@ -59,14 +59,15 @@ Element_E185::Element_E185()
 //#TPT-Directive ElementHeader Element_E185 static int update(UPDATE_FUNC_ARGS)
 int Element_E185::update(UPDATE_FUNC_ARGS)
 {
-	int r, s, rx, ry, rr, sctype;
+	int r, s, rx, ry, rr, sctype, stmp;
 	const int cooldown = 15;
 	const int limit = 10;
 	rr = sim->photons[y][x];
-	if(parts[i].tmp < limit && !parts[i].life)
+	stmp = parts[i].tmp;
+	if(stmp < limit && !parts[i].life)
 	{
 		sctype = parts[i].ctype;
-		if (!(rand()%140) && !(rand()%100) && !parts[i].tmp)
+		if (!(rand()%140) && !(rand()%100) && !stmp)
 		{
 			if (!sctype)
 				s = sim->create_part(-3, x, y, PT_ELEC);
@@ -80,7 +81,7 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 				parts[s].temp = parts[i].temp;
 			}
 		}
-		if (rr && (rr & 0xFF) != PT_NEUT && !(rand()%80))
+		if (rr && (rr & 0xFF) != PT_NEUT && !(rand()%80) && ((stmp - 10) < rand() % 10))
 		{
 			if (rand() % 10)
 			{
@@ -93,7 +94,8 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 				s = sim->create_part(-3, x, y, PT_E186);
 			parts[i].life = cooldown;
 			parts[i].tmp ++;
-			parts[i].temp += 10;
+			parts[i].temp += (stmp >= 10) ? (stmp - 8) * 10 : 10;
+
 			parts[rr>>8].temp = parts[i].temp;
 			if (s >= 0)
 			{
@@ -105,7 +107,7 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 	if ((rr & 0xFF) == PT_NEUT && !(rand()%10))
 	{
 		s = parts[i].tmp;
-		if (s) parts[i].tmp --;
+		parts[i].tmp -= s > 0 ? (s >> 3) + 1 : 0;
 	}
 	for (rx=-2; rx<3; rx++)
 		for (ry=-2; ry<3; ry++)
@@ -126,10 +128,14 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 //#TPT-Directive ElementHeader Element_E185 static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_E185::graphics(GRAPHICS_FUNC_ARGS)
 {
-	if(cpart->tmp >= 10) {
+	if (cpart->tmp >= 20) {
 		*colr = 0x70;
 		*colg = 0x70;
 		*colb = 0x70;
+	} else if (cpart->tmp >= 10) {
+		*colr = 0x78;
+		*colg = 0x98;
+		*colb = 0x50;
 	}
 	return 0;
 }

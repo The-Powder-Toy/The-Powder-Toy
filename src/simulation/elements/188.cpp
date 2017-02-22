@@ -32,7 +32,7 @@ Element_E188::Element_E188()
 
 	Temperature = 140.00f;
 	HeatConduct = 251;
-	Description = "Experimental element. like ISZS and E187.";
+	Description = "Experimental element. acts like ISZS and E187.";
 
 	Properties = TYPE_SOLID | PROP_LIFE_DEC | PROP_NOSLOWDOWN | PROP_TRANSPARENT;
 
