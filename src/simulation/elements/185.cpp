@@ -81,7 +81,7 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 				parts[s].temp = parts[i].temp;
 			}
 		}
-		if (rr && (rr & 0xFF) != PT_NEUT && !(rand()%80) && ((stmp - 10) < rand() % 10))
+		if (rr && (rr & 0xFF) != PT_NEUT && !(rand()%80) && ((stmp - 11) < rand() % 10))
 		{
 			if (rand() % 10)
 			{
