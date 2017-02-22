@@ -2121,6 +2121,8 @@ void Simulation::init_can_move()
 	can_move[PT_E186][PT_ISOZ] = 2;
 	can_move[PT_E186][PT_ISZS] = 2;
 	can_move[PT_E186][PT_EXOT] = 2;
+	can_move[PT_E186][PT_TUNG] = 2;
+	can_move[PT_E186][PT_BMTL] = 2;
 	
 }
 
@@ -2186,6 +2188,13 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr)
 		else if (pt == PT_TRON && (r&0xFF) == PT_SWCH)
 		{
 			if (parts[r>>8].life >= 10)
+				return 2;
+			else
+				return 0;
+		}
+		else if (pt == PT_E186 && (r&0xFF) == PT_BRMT)
+		{
+			if (parts[r>>8].ctype == PT_TUNG)
 				return 2;
 			else
 				return 0;
