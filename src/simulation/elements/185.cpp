@@ -79,6 +79,8 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 				parts[i].tmp = 1;
 				parts[i].temp += 10;
 				parts[s].temp = parts[i].temp;
+				if (sctype == PT_GRVT)
+					parts[s].tmp = 0;
 			}
 		}
 		if (rr && (rr & 0xFF) != PT_NEUT && !(rand()%80) && ((stmp - 11) < rand() % 10))
@@ -101,6 +103,8 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 			{
 				parts[s].ctype = sctype;
 				parts[s].temp = parts[i].temp;
+				if (sctype == PT_GRVT)
+					parts[s].tmp = 0;
 			}
 		}
 	}
