@@ -132,7 +132,7 @@ int Element_E186::update(UPDATE_FUNC_ARGS)
 	case PT_BRMT:
 		if (((r & 0xFF) == PT_TUNG || parts[r >> 8].ctype == PT_TUNG) && !(rand()%50))
 		{
-			sim->part_change_type(r>>8, x, y, PT_E187);
+			sim->create_part(r>>8, x, y, PT_E187);
 		}
 		break;
 	default:
