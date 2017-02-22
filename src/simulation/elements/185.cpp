@@ -82,7 +82,7 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 		}
 		if (rr && (rr & 0xFF) != PT_NEUT && !(rand()%80))
 		{
-			if (rand() % 3)
+			if (rand() % 10)
 			{
 				if (!sctype)
 					s = sim->create_part(-3, x, y, PT_ELEC);
