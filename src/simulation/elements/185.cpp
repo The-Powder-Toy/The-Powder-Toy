@@ -66,7 +66,7 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 	if(parts[i].tmp < limit && !parts[i].life)
 	{
 		sctype = parts[i].ctype;
-		if (!(rand()%14000) && !parts[i].tmp)
+		if (!(rand()%140) && !(rand()%100) && !parts[i].tmp)
 		{
 			if (!sctype)
 				s = sim->create_part(-3, x, y, PT_ELEC);
