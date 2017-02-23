@@ -54,9 +54,9 @@ int Element_E186::update(UPDATE_FUNC_ARGS)
 {
 	int r, s, slife, sctype;
 	float r2, r3;
+	sctype = parts[i].ctype;
 	if (!(rand()%60))
 	{
-		sctype = parts[i].ctype;
 		if (!sctype)
 			s = sim->create_part(-3, x, y, PT_ELEC);
 		else
@@ -71,72 +71,90 @@ int Element_E186::update(UPDATE_FUNC_ARGS)
 		}
 	}
 	r = pmap[y][x];
-	switch (r&0xFF)
+	if (r)
 	{
-	case PT_PLSM:
-		if (!(rand()%30))
+		switch (r&0xFF)
 		{
-			sim->create_part(r>>8, x, y, PT_PLSM);
-			parts[s].ctype = PT_NBLE;
-		}
-		break;
-	case PT_O2:
-		if (!(rand()%20))
-		{
-			sim->create_part(r>>8, x, y, PT_PLSM);
-			s = sim->create_part(-3, x, y, PT_E186);
-			slife = parts[i].life;
-			if (slife)
-				parts[s].life = slife + 30;
-			else
-				parts[s].life = 0;
-		}
-		break;
-	case PT_FILT:
-		sim->part_change_type(i, x, y, PT_PHOT);
-		parts[i].ctype = 0x3FFFFFFF;
-		break;
-	case PT_EXOT:
-		if (!(rand()%3))
-		{
-			sim->part_change_type(r>>8, x, y, PT_ISOZ);
-			parts[r>>8].temp += 300;
-		}
-		break;
-	case PT_ISOZ:
-	case PT_ISZS:
-		if (!(rand()%40))
-		{
-			slife = parts[i].life;
-			if (slife)
-				parts[i].life = slife + 50;
-			else
-				parts[i].life = 0;
+		case PT_PLSM:
+			if (!(rand()%30))
+			{
+				sim->create_part(r>>8, x, y, PT_PLSM);
+				parts[s].ctype = PT_NBLE;
+			}
+			break;
+		case PT_O2:
+			if (!(rand()%20))
+			{
+				sim->create_part(r>>8, x, y, PT_PLSM);
+				s = sim->create_part(-3, x, y, PT_E186);
+				slife = parts[i].life;
+				if (slife)
+					parts[s].life = slife + 30;
+				else
+					parts[s].life = 0;
+			}
+			break;
+		case PT_FILT:
+			sim->part_change_type(i, x, y, PT_PHOT);
+			parts[i].ctype = 0x3FFFFFFF;
+			break;
+		case PT_EXOT:
+			if (!(rand()%3))
+			{
+				sim->part_change_type(r>>8, x, y, PT_ISOZ);
+				parts[r>>8].temp += 300;
+			}
+			break;
+		case PT_ISOZ:
+		case PT_ISZS:
+			if (!(rand()%40))
+			{
+				slife = parts[i].life;
+				if (slife)
+					parts[i].life = slife + 50;
+				else
+					parts[i].life = 0;
 
-			if (rand()%20)
-			{
-				s = r>>8;
-				sim->create_part(s, x, y, PT_PHOT);
-				r2 = (rand()%228+128)/127.0f;
-				r3 = (rand()%360)*3.14159f/180.0f;
-				parts[s].vx = r2*cosf(r3);
-				parts[s].vy = r2*sinf(r3);
+				if (rand()%20)
+				{
+					s = r>>8;
+					sim->create_part(s, x, y, PT_PHOT);
+					r2 = (rand()%228+128)/127.0f;
+					r3 = (rand()%360)*3.14159f/180.0f;
+					parts[s].vx = r2*cosf(r3);
+					parts[s].vy = r2*sinf(r3);
+				}
+				else
+				{
+					sim->create_part(r>>8, x, y, PT_E186);
+				}
 			}
-			else
+			break;
+		case PT_TUNG:
+		case PT_BRMT:
+			if (((r & 0xFF) == PT_TUNG || parts[r >> 8].ctype == PT_TUNG) && !(rand()%50))
 			{
-				sim->create_part(r>>8, x, y, PT_E186);
+				sim->create_part(r>>8, x, y, PT_E187);
 			}
+			break;
+		default:
+			break;
 		}
-		break;
-	case PT_TUNG:
-	case PT_BRMT:
-		if (((r & 0xFF) == PT_TUNG || parts[r >> 8].ctype == PT_TUNG) && !(rand()%50))
+	}
+	else
+	{
+		int rx = rand()%3 - 1;
+		int ry = rand()%3 - 1;
+		if (BOUNDS_CHECK && 2 > rand()%5)
 		{
-			sim->create_part(r>>8, x, y, PT_E187);
+			r = sim->photons[y + ry][x + rx];
+			s = parts[i].ctype;
+			if ((r&0xFF) == PT_NEUT && (s == PT_PROT || s == PT_GRVT))
+			{
+				sim->part_change_type(r>>8, x, y, s);
+				parts[i].ctype = PT_NEUT;
+			}
 		}
-		break;
-	default:
-		break;
 	}
 	return 0;
 }
