@@ -58,7 +58,8 @@ int Element_VIRS::update(UPDATE_FUNC_ARGS)
 		if (!parts[i].pavg[0])
 		{
 			sim->part_change_type(i,x,y,parts[i].tmp2);
-			parts[i].tmp2 = 0;
+			parts[i].tmp2 = parts[i].tmp3;
+			parts[i].tmp3 = 0;
 			parts[i].pavg[0] = 0;
 			parts[i].pavg[1] = 0;
 		}
@@ -112,6 +113,7 @@ int Element_VIRS::update(UPDATE_FUNC_ARGS)
 				{
 					if (!(rndstore & 0x7))
 					{
+						parts[r>>8].tmp3 = parts[r>>8].tmp2;
 						parts[r>>8].tmp2 = (r&0xFF);
 						parts[r>>8].pavg[0] = 0;
 						if (parts[i].pavg[1])

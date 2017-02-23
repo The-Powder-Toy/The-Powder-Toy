@@ -303,6 +303,7 @@ int Element_PIPE::graphics(GRAPHICS_FUNC_ARGS)
 			tpart.life = cpart->tmp2;
 			tpart.tmp = cpart->pavg[0];
 			tpart.ctype = cpart->pavg[1];
+			tpart.tmp2 = cpart->tmp3;
 			if (t == PT_PHOT && tpart.ctype == 0x40000000)
 				tpart.ctype = 0x3FFFFFFF;
 
@@ -355,6 +356,7 @@ void Element_PIPE::transfer_pipe_to_part(Simulation * sim, Particle *pipe, Parti
 	part->life = pipe->tmp2;
 	part->tmp = pipe->pavg[0];
 	part->ctype = pipe->pavg[1];
+	part->tmp2 = pipe->tmp3;
 	pipe->tmp &= ~0xFF;
 
 	if (!(sim->elements[part->type].Properties & TYPE_ENERGY))
@@ -364,7 +366,7 @@ void Element_PIPE::transfer_pipe_to_part(Simulation * sim, Particle *pipe, Parti
 	}
 	else if (part->type == PT_PHOT && part->ctype == 0x40000000)
 		part->ctype = 0x3FFFFFFF;
-	part->tmp2 = 0;
+	part->tmp3 = 0;
 	part->flags = 0;
 	part->dcolour = 0;
 }
@@ -377,6 +379,7 @@ void Element_PIPE::transfer_part_to_pipe(Particle *part, Particle *pipe)
 	pipe->tmp2 = part->life;
 	pipe->pavg[0] = part->tmp;
 	pipe->pavg[1] = part->ctype;
+	pipe->tmp3 = part->tmp2;
 }
 
 //#TPT-Directive ElementHeader Element_PIPE static void transfer_pipe_to_pipe(Particle *src, Particle *dest)
@@ -387,6 +390,7 @@ void Element_PIPE::transfer_pipe_to_pipe(Particle *src, Particle *dest)
 	dest->tmp2 = src->tmp2;
 	dest->pavg[0] = src->pavg[0];
 	dest->pavg[1] = src->pavg[1];
+	dest->tmp3 = src->tmp3;
 	src->tmp &= ~0xFF;
 }
 
