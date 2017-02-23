@@ -76,10 +76,29 @@ int Element_E187::update(UPDATE_FUNC_ARGS)
 					if (BOUNDS_CHECK)
 					{
 						r = pmap[y+ry][x+rx];
-						if ((r & 0xFF) == PT_E187 && !parts[r>>8].ctype && !(rand()%200))
+						if (!r)
+							break;
+						switch (r & 0xFF)
 						{
-							parts[r>>8].tmp &= 0xFFFFFFFE;
-							sim->pv[y/CELL][x/CELL] += 3.0f;
+						case PT_E187:
+							if (!parts[r>>8].ctype && !(rand()%200))
+							{
+								parts[r>>8].tmp &= 0xFFFFFFFE;
+								sim->pv[y/CELL][x/CELL] += 3.0f;
+							}
+							break;
+						case PT_LAVA:
+							int rt = r >> 8;
+							if (!parts[rt].ctype == PT_TUNG && parts[i].temp > 9300 && !(rand()%100))
+							{
+								sim->create_part(rt, x, y, PT_E187);
+								parts[rt].temp = MAX_TEMP;
+								parts[rt].ctype = parts[i].ctype;
+								parts[rt].tmp = parts[i].tmp & 0xFFFFFFFE;
+								sim->pv[y/CELL][x/CELL] += 20.0f;
+							}
+						default:
+							break;
 						}
 					}
 		break;
