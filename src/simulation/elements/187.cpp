@@ -84,7 +84,7 @@ int Element_E187::update(UPDATE_FUNC_ARGS)
 								parts[rt].tmp = parts[i].tmp & 0xFFFFFFFE;
 								sim->pv[y/CELL][x/CELL] += 20.0f;
 							}
-							else if (parts[rt].type == PT_BHOL)
+							else if (parts[rt].type == PT_NBHL)
 								sim->kill_part(rt);
 						}
 		}
