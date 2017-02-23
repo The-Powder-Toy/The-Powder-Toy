@@ -73,6 +73,8 @@ int Element_E187::update(UPDATE_FUNC_ARGS)
 						if (BOUNDS_CHECK)
 						{
 							r = pmap[y+ry][x+rx];
+							if (!r)
+								continue;
 							rt = r >> 8;
 							if (parts[rt].type == PT_LAVA && parts[rt].ctype == PT_TUNG && !(rand() & 15))
 							{
@@ -82,6 +84,8 @@ int Element_E187::update(UPDATE_FUNC_ARGS)
 								parts[rt].tmp = parts[i].tmp & 0xFFFFFFFE;
 								sim->pv[y/CELL][x/CELL] += 20.0f;
 							}
+							else if (parts[rt].type == PT_BHOL)
+								sim->kill_part(rt);
 						}
 		}
 		break;
