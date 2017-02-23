@@ -52,7 +52,7 @@ Element_E187::Element_E187()
 //#TPT-Directive ElementHeader Element_E187 static int update(UPDATE_FUNC_ARGS)
 int Element_E187::update(UPDATE_FUNC_ARGS)
 { // for both ISZS and ISOZ
-	int r, rx, ry, stmp, stmp2;
+	int r, rx, ry, stmp, stmp2, rt;
 	switch (parts[i].ctype) {
 	case 0:
 		if (!parts[i].life)
@@ -88,7 +88,7 @@ int Element_E187::update(UPDATE_FUNC_ARGS)
 							}
 							break;
 						case PT_LAVA:
-							int rt = r >> 8;
+							rt = r >> 8;
 							if (!parts[rt].ctype == PT_TUNG && parts[i].temp > 9300 && !(rand()%100))
 							{
 								sim->create_part(rt, x, y, PT_E187);
@@ -100,6 +100,7 @@ int Element_E187::update(UPDATE_FUNC_ARGS)
 									parts[rt].tmp &= 0xFFFFFFFE;
 								sim->pv[y/CELL][x/CELL] += 20.0f;
 							}
+							break;
 						default:
 							break;
 						}
