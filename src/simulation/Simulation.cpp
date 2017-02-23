@@ -2985,6 +2985,7 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 	parts[i].temp = elements[t].Temperature;
 	parts[i].tmp = 0;
 	parts[i].tmp2 = 0;
+	parts[i].tmp3 = 0;
 	parts[i].dcolour = 0;
 	parts[i].flags = 0;
 	if (t == PT_GLAS || t == PT_QRTZ || t == PT_TUNG)
@@ -4318,6 +4319,7 @@ killed:
 						parts[r>>8].tmp2 = parts[i].life;
 						parts[r>>8].pavg[0] = parts[i].tmp;
 						parts[r>>8].pavg[1] = parts[i].ctype;
+						parts[r>>8].tmp3 = parts[i].tmp2;
 						kill_part(i);
 						continue;
 					}
