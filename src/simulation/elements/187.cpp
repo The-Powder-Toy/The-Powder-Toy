@@ -68,13 +68,13 @@ int Element_E187::update(UPDATE_FUNC_ARGS)
 				Element_E187::createPhotons(sim, i, x, y, stmp, parts);
 			}
 			if (parts[i].temp > 9300)
-				for (rx=-2; rx<3; rx++)
-					for (ry=-2; ry<3; ry++)
+				for (rx=-1; rx<2; rx++)
+					for (ry=-1; ry<2; ry++)
 						if (BOUNDS_CHECK)
 						{
 							r = pmap[y+ry][x+rx];
 							rt = r >> 8;
-							if (parts[rt].type == PT_LAVA && parts[rt].ctype == PT_TUNG && !(rand()%100))
+							if (parts[rt].type == PT_LAVA && parts[rt].ctype == PT_TUNG && !(rand() & 15))
 							{
 								sim->create_part(rt, x, y, PT_E187);
 								parts[rt].temp = MAX_TEMP;
