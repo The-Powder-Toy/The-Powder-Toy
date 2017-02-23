@@ -68,6 +68,20 @@ int Element_E187::update(UPDATE_FUNC_ARGS)
 				Element_E187::createPhotons(sim, i, x, y, stmp, parts);
 			}
 		}
+		for (rx=-2; rx<3; rx++)
+			for (ry=-2; ry<3; ry++)
+				if (BOUNDS_CHECK)
+				{
+					r = pmap[y+ry][x+rx];
+					rt = r >> 8;
+					if (parts[rt].type == PT_LAVA && parts[rt].ctype == PT_TUNG && parts[i].temp > 9300 && !(rand()%100))
+					{
+						sim->create_part(rt, x, y, PT_E187);
+						parts[rt].temp = MAX_TEMP;
+						parts[rt].tmp = parts[i].tmp & 0xFFFFFFFE;
+						sim->pv[y/CELL][x/CELL] += 20.0f;
+					}
+				}
 		break;
 	case 1:
 		if (parts[i].tmp)
@@ -85,20 +99,6 @@ int Element_E187::update(UPDATE_FUNC_ARGS)
 							{
 								parts[r>>8].tmp &= 0xFFFFFFFE;
 								sim->pv[y/CELL][x/CELL] += 3.0f;
-							}
-							break;
-						case PT_LAVA:
-							rt = r >> 8;
-							if (!parts[rt].ctype == PT_TUNG && parts[i].temp > 9300 && !(rand()%100))
-							{
-								sim->create_part(rt, x, y, PT_E187);
-								parts[rt].temp = MAX_TEMP;
-								stmp2 = parts[i].ctype;
-								parts[rt].ctype = stmp2;
-								parts[rt].tmp = parts[i].tmp;
-								if (!stmp2)
-									parts[rt].tmp &= 0xFFFFFFFE;
-								sim->pv[y/CELL][x/CELL] += 20.0f;
 							}
 							break;
 						default:
