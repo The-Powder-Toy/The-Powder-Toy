@@ -52,7 +52,7 @@ Element_E187::Element_E187()
 //#TPT-Directive ElementHeader Element_E187 static int update(UPDATE_FUNC_ARGS)
 int Element_E187::update(UPDATE_FUNC_ARGS)
 { // for both ISZS and ISOZ
-	int r, rx, ry, stmp;
+	int r, rx, ry, stmp, stmp2;
 	switch (parts[i].ctype) {
 	case 0:
 		if (!parts[i].life)
@@ -93,8 +93,11 @@ int Element_E187::update(UPDATE_FUNC_ARGS)
 							{
 								sim->create_part(rt, x, y, PT_E187);
 								parts[rt].temp = MAX_TEMP;
-								parts[rt].ctype = parts[i].ctype;
-								parts[rt].tmp = parts[i].tmp & 0xFFFFFFFE;
+								stmp2 = parts[i].ctype;
+								parts[rt].ctype = stmp2;
+								parts[rt].tmp = parts[i].tmp;
+								if (!stmp2)
+									parts[rt].tmp &= 0xFFFFFFFE;
 								sim->pv[y/CELL][x/CELL] += 20.0f;
 							}
 						default:
