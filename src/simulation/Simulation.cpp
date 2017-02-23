@@ -2122,8 +2122,8 @@ void Simulation::init_can_move()
 	can_move[PT_E186][PT_ISZS] = 2;
 	can_move[PT_E186][PT_EXOT] = 2;
 	can_move[PT_E186][PT_TUNG] = 2;
+	can_move[PT_E186][PT_INVIS] = 2;
 	can_move[PT_E186][PT_BRMT] = 3;
-	
 }
 
 /*
