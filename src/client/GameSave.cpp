@@ -1016,6 +1016,14 @@ void GameSave::readOPS(char * data, int dataLength)
 						pavg |= (((unsigned)partsData[i++]) << 8);
 						particles[newIndex].pavg[1] = (float)pavg;
 					}
+					
+					//Read tmp3
+					if(fieldDescriptor & 0x4000)
+					{
+						if(i+1 >= partsDataLen) goto fail;
+						particles[newIndex].tmp3 = partsData[i++];
+						particles[newIndex].tmp3 |= (((unsigned)partsData[i++]) << 8);
+					}
 
 					//Particle specific parsing:
 					switch(particles[newIndex].type)
@@ -2132,6 +2140,14 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 					partsData[partsDataLen++] = ((int)particles[i].pavg[0])>>8;
 					partsData[partsDataLen++] = (int)particles[i].pavg[1];
 					partsData[partsDataLen++] = ((int)particles[i].pavg[1])>>8;
+				}
+				
+				//Tmp3 (optional), 2 bytes
+				if (particles[i].tmp3)
+				{
+					fieldDesc |= 1 << 14;
+					partsData[partsDataLen++] = (particles[i].tmp3 /* & 0x00FF */);
+					partsData[partsDataLen++] = (particles[i].tmp3 /* & 0xFF00 */) >> 8;
 				}
 
 				//Write the field descriptor
