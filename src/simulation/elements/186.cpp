@@ -137,6 +137,8 @@ int Element_E186::update(UPDATE_FUNC_ARGS)
 				sim->create_part(r>>8, x, y, PT_E187);
 			}
 			break;
+		case PT_INVIS:
+			parts[i].ctype = PT_NEUT;
 		default:
 			break;
 		}
