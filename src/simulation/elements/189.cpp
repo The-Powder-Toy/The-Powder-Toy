@@ -133,7 +133,9 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			parts[ri].flags |= FLAG_SKIPMOVE;
 		parts[ri].vx = ((float)rvx) * rdif / 16.0f;
 		parts[ri].vy = ((float)rvy) * rdif / 16.0f;
-		parts[ri].ctype = parts[i].ctype;
+		rtmp = parts[i].ctype & 0x3FFFFFFF;
+		if (rtmp)
+			parts[ri].ctype = rtmp;
 		parts[ri].temp = parts[i].temp;
 		break;
 	}
