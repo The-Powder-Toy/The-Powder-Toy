@@ -239,7 +239,7 @@ int Element_TRON::trymovetron(Simulation * sim, int x, int y, int dir, int i, in
 				r = sim->pmap[ty][tx];
 				if (canmovetron(sim, r, j+k-1) && !sim->bmap[(ty)/CELL][(tx)/CELL] && ty > CELL && tx > CELL && ty < YRES-CELL && tx < XRES-CELL)
 				{
-					if (j == (len-k))//there is a safe path, so we can break out
+					if (j == (len-k) || (r&0xFF) == PT_E189)//there is a safe path, so we can break out
 						return len+1;
 					count++;
 				}
@@ -251,7 +251,7 @@ int Element_TRON::trymovetron(Simulation * sim, int x, int y, int dir, int i, in
 				r = sim->pmap[ty][tx];
 				if (canmovetron(sim, r, j+k-1) && !sim->bmap[(ty)/CELL][(tx)/CELL] && ty > CELL && tx > CELL && ty < YRES-CELL && tx < XRES-CELL)
 				{
-					if (j == (len-k))
+					if (j == (len-k) || (r&0xFF) == PT_E189)
 						return len+1;
 					count++;
 				}
