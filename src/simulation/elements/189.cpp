@@ -53,6 +53,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 	int tron_rx[4] = {-1, 0, 1, 0};
 	int tron_ry[4] = { 0,-1, 0, 1};
 	int rx, ry, ttan = 0, rlife = parts[i].life, direction, r, ri, rtmp, rctype;
+	int dirch;
 	float rvx, rvy, rdif;
 	rtmp = parts[i].tmp;
 	
@@ -84,12 +85,13 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			if ((r & 0xFF) == PT_E189 && parts[r >> 8].life == 3)
 			{
 				ri = r >> 8;
-				parts[ri].tmp  = rtmp;
+				dirch = (parts[ri].tmp >> 17) & 0x3;
+				parts[ri].tmp = (rtmp & 0x1FF9F) | (dirch << 17) | ((direction + dirch) & 3) << 0x20;
 				if (ri > i)
 					sim->parts[ri].tmp |= 0x04;
 				parts[ri].tmp2 = parts[i].tmp2;
 			}
-			rtmp = 0;
+			rtmp &= 0x60000;
 		}
 		parts[i].tmp = rtmp;
 		break;
