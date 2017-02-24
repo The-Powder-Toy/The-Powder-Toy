@@ -189,6 +189,16 @@ int Element_TRON::graphics(GRAPHICS_FUNC_ARGS)
 //#TPT-Directive ElementHeader Element_TRON static int new_tronhead(Simulation * sim, int x, int y, int i, int direction)
 int Element_TRON::new_tronhead(Simulation * sim, int x, int y, int i, int direction)
 {
+	int r = sim->pmap[y][x];
+	if ((r & 0xFF) == PT_E189)
+	{
+		int ri = r >> 8;
+		sim->parts[ri].tmp = 1 | direction<<5 | (sim->parts[i].tmp & 0x1F80A);
+		if (ri > i)
+			sim->parts[ri].tmp |= TRON_WAIT;
+		sim->parts[ri].tmp2 = sim->parts[i].tmp2;
+		return -1;
+	}
 	int np = sim->create_part(-1, x , y ,PT_TRON);
 	if (np==-1)
 		return -1;
@@ -259,6 +269,8 @@ int Element_TRON::trymovetron(Simulation * sim, int x, int y, int dir, int i, in
 bool Element_TRON::canmovetron(Simulation * sim, int r, int len)
 {
 	if (!r || ((r&0xFF) == PT_SWCH && sim->parts[r>>8].life >= 10) || ((r&0xFF) == PT_INVIS && sim->parts[r>>8].tmp == 1))
+		return true;
+	if ((r&0xFF) == PT_E189 && sim->parts[r>>8].tmp == 2)
 		return true;
 	if ((((sim->elements[r&0xFF].Properties & PROP_LIFE_KILL_DEC) && sim->parts[r>>8].life > 0)|| ((sim->elements[r&0xFF].Properties & PROP_LIFE_KILL) && (sim->elements[r&0xFF].Properties & PROP_LIFE_DEC))) && sim->parts[r>>8].life < len)
 		return true;
