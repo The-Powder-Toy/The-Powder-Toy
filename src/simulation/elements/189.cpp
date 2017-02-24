@@ -29,9 +29,9 @@ Element_E189::Element_E189()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 0;
-	Description = "Experimental element.";
+	Description = "Experimental element. has multi-purpose.";
 
-	Properties = TYPE_SOLID;
+	Properties = TYPE_SOLID | PROP_NOSLOWDOWN | PROP_TRANSPARENT;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
@@ -53,10 +53,12 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 	int tron_rx[4] = {-1, 0, 1, 0};
 	int tron_ry[4] = { 0,-1, 0, 1};
 	int rx, ry, ttan = 0, rlife = parts[i].life, direction, r, ri, rtmp;
+	float rvx, rvy, rdif;
+	rtmp = parts[i].tmp;
 	
 	switch (rlife)
 	{
-	case 0:
+	case 0: // acts like TTAN
 	case 1:
 		if (nt<=2)
 			ttan = 2;
@@ -72,8 +74,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 				}
 			}
 		break;
-	case 2:
-		rtmp = parts[i].tmp;
+	case 2: // TRON input
 		if (rtmp & 0x04)
 			rtmp &= ~0x04;
 		else if (rtmp & 0x01)
@@ -92,8 +93,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 		}
 		parts[i].tmp = rtmp;
 		break;
-	case 3:
-		rtmp = parts[i].tmp;
+	case 3: // TRON output
 		if (rtmp & 0x04)
 			rtmp &= ~0x04;
 		else if (rtmp & 0x01)
@@ -117,6 +117,24 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			rtmp = 0;
 		}
 		parts[i].tmp = rtmp;
+		break;
+	case 4: // photon laser
+		if (!rtmp)
+			break;
+
+		rvx = ((rtmp ^ 0x08) & 0x0F) - 0x08;
+		rvy = (((rtmp >> 4) ^ 0x08) & 0x0F) - 0x08;
+		rdif = (float)((((rtmp >> 8) ^ 0x80) & 0xFF) - 0x80);
+
+		ri = sim->create_part(-3, x + rvx, y + rvy, PT_PHOT);
+		if (ri < 0)
+			break;
+		if (ri > i)
+			parts[ri].flags |= FLAG_SKIPMOVE;
+		parts[ri].vx = ((float)rvx) * rdif / 16.0f;
+		parts[ri].vy = ((float)rvy) * rdif / 16.0f;
+		parts[ri].ctype = parts[i].ctype;
+		parts[ri].temp = parts[i].temp;
 		break;
 	}
 	
@@ -149,6 +167,9 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 		break;
 	case 3:
 		*colr = 0x99; *colg = 0xCC; *colb = 0x70;
+		break;
+	case 4:
+		*colr = 0x70; *colg = 0x20; *colb = 0x88;
 		break;
 	}
 	return 0;
