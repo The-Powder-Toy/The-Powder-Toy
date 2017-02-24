@@ -135,12 +135,12 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 		parts[ri].vy = ((float)rvy) * rdif / 16.0f;
 		rctype = parts[i].ctype;
 		rtmp = rctype & 0x3FFFFFFF;
+		rctype >>= 30;
 		if (rtmp)
 			parts[ri].ctype = rtmp;
-		if (rtmp & 0x40000000)
-			parts[ri].tmp2 = 1;
 		parts[ri].temp = parts[i].temp;
 		parts[ri].life = parts[i].tmp2;
+		parts[ri].tmp = parts[i].ctype & 3;
 		
 		break;
 	}
