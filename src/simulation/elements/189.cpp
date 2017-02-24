@@ -52,7 +52,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 {
 	int tron_rx[4] = {-1, 0, 1, 0};
 	int tron_ry[4] = { 0,-1, 0, 1};
-	int rx, ry, ttan = 0, rlife = parts[i].life, direction, r, ri, rtmp;
+	int rx, ry, ttan = 0, rlife = parts[i].life, direction, r, ri, rtmp, rctype;
 	float rvx, rvy, rdif;
 	rtmp = parts[i].tmp;
 	
@@ -133,10 +133,15 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			parts[ri].flags |= FLAG_SKIPMOVE;
 		parts[ri].vx = ((float)rvx) * rdif / 16.0f;
 		parts[ri].vy = ((float)rvy) * rdif / 16.0f;
-		rtmp = parts[i].ctype & 0x3FFFFFFF;
+		rctype = parts[i].ctype;
+		rtmp = rctype & 0x3FFFFFFF;
 		if (rtmp)
 			parts[ri].ctype = rtmp;
+		if (rtmp & 0x40000000)
+			parts[ri].tmp2 = 1;
 		parts[ri].temp = parts[i].temp;
+		parts[ri].life = parts[i].tmp2;
+		
 		break;
 	}
 	
