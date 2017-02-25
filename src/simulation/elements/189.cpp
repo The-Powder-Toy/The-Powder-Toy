@@ -113,8 +113,8 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 				if (r)
 				{
 					direction = direction ^ 0x2 // bitwise xor
-					ry = y - tron_ry[direction];
-					rx = x - tron_rx[direction];
+					ry = y + tron_ry[direction];
+					rx = x + tron_rx[direction];
 					r = pmap[ry][rx];
 				}
 				if (r)
