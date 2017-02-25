@@ -106,30 +106,33 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			r = pmap[ry][rx];
 			if (r)
 			{
-				direction = (direction + (rand()%2) * 2 + 1) % 4
+				direction = (direction + (rand()%2) * 2 + 1) % 4;
 				ry = y + tron_ry[direction];
 				rx = x + tron_rx[direction];
 				r = pmap[ry][rx];
 				if (r)
 				{
-					direction = direction ^ 0x2 // bitwise xor
+					direction = direction ^ 0x2; // bitwise xor
 					ry = y + tron_ry[direction];
 					rx = x + tron_rx[direction];
 					r = pmap[ry][rx];
 				}
 				if (r)
+				{
+					parts[i].tmp = 0;
 					break;
+				}
 			}
 			if (!r)
 			{
 				ri = sim->create_part(-1, rx, ry, PT_TRON);
 				if (ri >= 0)
 				{
-					sim->parts[ri].life = 5;
-					sim->parts[ri].tmp  = rtmp & 0x1FF9F | (direction << 5);
+					parts[ri].life = 5;
+					parts[ri].tmp  = rtmp & 0x1FF9F | (direction << 5);
 					if (ri > i)
-						sim->parts[ri].tmp |= 0x04;
-					sim->parts[ri].tmp2 = parts[i].tmp2;
+						parts[ri].tmp |= 0x04;
+					parts[ri].tmp2 = parts[i].tmp2;
 				}
 			}
 			rtmp = 0;
@@ -140,8 +143,8 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 		if (!rtmp)
 			break;
 
-		rvx = ((rtmp ^ 0x08) & 0x0F) - 0x08;
-		rvy = (((rtmp >> 4) ^ 0x08) & 0x0F) - 0x08;
+		rvx = (float)(((rtmp ^ 0x08) & 0x0F) - 0x08);
+		rvy = (float)((((rtmp >> 4) ^ 0x08) & 0x0F) - 0x08);
 		rdif = (float)((((rtmp >> 8) ^ 0x80) & 0xFF) - 0x80);
 
 		ri = sim->create_part(-3, x + rvx, y + rvy, PT_PHOT);
@@ -149,8 +152,8 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			break;
 		if (ri > i)
 			parts[ri].flags |= FLAG_SKIPMOVE;
-		parts[ri].vx = ((float)rvx) * rdif / 16.0f;
-		parts[ri].vy = ((float)rvy) * rdif / 16.0f;
+		parts[ri].vx = rvx * rdif / 16.0f;
+		parts[ri].vy = rvy * rdif / 16.0f;
 		rctype = parts[i].ctype;
 		rtmp = rctype & 0x3FFFFFFF;
 		rctype >>= 30;
@@ -160,6 +163,24 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 		parts[ri].life = parts[i].tmp2;
 		parts[ri].tmp = parts[i].ctype & 3;
 		
+		break;
+	case 5: // photons direction changer
+		rvx = (float)(((rtmp ^ 0x80) & 0xFF) - 0x80) / 16.0f;
+		rvy = (float)((((rtmp >> 8) ^ 0x80) & 0xFF) - 0x80) / 16.0f;
+		r = sim->photons[y][x];
+		if (r)
+			break;
+		ri = r>>8;
+		if (rtmp & 0x10000)
+		{
+			parts[ri].vx *= rvx;
+			parts[ri].vy *= rvy;
+		}
+		else
+		{
+			parts[ri].vx = rvx;
+			parts[ri].vy = rvy;
+		}
 		break;
 	}
 	
@@ -195,6 +216,9 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 		break;
 	case 4:
 		*colr = 0x70; *colg = 0x20; *colb = 0x88;
+		break;
+	case 5:
+		*colr = 0x90; *colg = 0x40; *colb = 0xA8;
 		break;
 	}
 	return 0;
