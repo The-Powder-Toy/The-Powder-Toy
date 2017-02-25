@@ -147,7 +147,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 		rvy = (float)((((rtmp >> 4) ^ 0x08) & 0x0F) - 0x08);
 		rdif = (float)((((rtmp >> 8) ^ 0x80) & 0xFF) - 0x80);
 
-		ri = sim->create_part(-3, x + rvx, y + rvy, PT_PHOT);
+		ri = sim->create_part(-3, x + (int)rvx, y + (int)rvy, PT_PHOT);
 		if (ri < 0)
 			break;
 		if (ri > i)
@@ -379,11 +379,13 @@ void Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* p
 void Element_E189::createPhotons(Simulation* sim, int i, int x, int y, Particle* part_phot, Particle* part_E189)
 {
 	int rtmp = part_E189->tmp, ri;
+	if (!rtmp)
+		return;
 	float rvx = (float)(((rtmp ^ 0x08) & 0x0F) - 0x08);
 	float rvy = (float)((((rtmp >> 4) ^ 0x08) & 0x0F) - 0x08);
 	float rdif = (float)((((rtmp >> 8) ^ 0x80) & 0xFF) - 0x80);
 	
-	ri = sim->create_part(-3, x + rvx, y + rvy, PT_PHOT);
+	ri = sim->create_part(-3, x + (int)(rvx + part_phot->vx + 0.5f), y + (int)(rvy + part_phot->vy + 0.5f), PT_PHOT);
 	if (ri < 0)
 		return;
 	if (ri > i)
