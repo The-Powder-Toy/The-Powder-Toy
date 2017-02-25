@@ -129,7 +129,7 @@ int Element_DTEC::update(UPDATE_FUNC_ARGS)
 								break;
 							if (ntmp == 4)
 							{
-								parts[r>>8].ctype &= 0x20;
+								parts[r>>8].ctype &= 0xE0;
 								parts[r>>8].ctype |= tempPhotWl;
 							}
 							else

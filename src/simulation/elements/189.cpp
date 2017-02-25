@@ -319,10 +319,37 @@ int Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* pa
 			part_phot->ctype = (~part_phot->ctype) & mask; // Invert colours
 		break;
 	case 4:
-		if (rct & 0x20)
-			part_phot->ctype >>= (rct & 0x1F); // blue shift
-		else
+		ctype = part_phot->ctype;
+		switch ((rct >> 5) & 7)
+		{
+		case 0:
 			part_phot->ctype <<= (rct & 0x1F); // red shift
+			break;
+		case 1:
+			part_phot->ctype >>= (rct & 0x1F); // blue shift
+			break;
+		case 2:
+			r1 = (rct & 0x1F) % 30;
+			part_phot->ctype = (ctype << r1) | (ctype >> (30 - r1)); // rotate red shift
+			break;
+		case 3:
+			r1 = (rct & 0x1F) % 30;
+			part_phot->ctype = (ctype >> r1) | (ctype << (30 - r1)); // rotate blue shift
+			break;
+		case 4:
+			part_phot->ctype &= ~(1 << (rct & 0x1F)); // set flag 0
+			break;
+		case 5:
+			part_phot->ctype |=  (1 << (rct & 0x1F)); // set flag 1
+			break;
+		case 6:
+			part_phot->ctype ^=  (1 << (rct & 0x1F)); // toggle flag
+			break;
+		case 7:
+			if (rand() & 1) // random toggle flag
+				part_phot->ctype ^=  (1 << (rct & 0x1F));
+			break;
+		}
 		part_phot->ctype &= mask;
 		break;
 	case 5:
