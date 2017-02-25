@@ -266,7 +266,7 @@ int Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* pa
 {
 	int rtmp = part_E189->tmp, rct = part_E189->ctype, mask = 0x3FFFFFFF;
 	int ctype, r1;
-	float rvx, rvy, rvx2, rvy2;
+	float rvx, rvy, rvx2, rvy2, rdif;
 	long long int lsb;
 	rvx = (float)(((rtmp ^ 0x80) & 0xFF) - 0x80) / 16.0f;
 	rvy = (float)((((rtmp >> 8) ^ 0x80) & 0xFF) - 0x80) / 16.0f;
@@ -288,9 +288,14 @@ int Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* pa
 		break;
 	case 3:
 		rvx2 = rvx * 0.39269908f;
-		rvy2 = hypotf(part_phot->vx, part_phot->vy);
-		part_phot->vx = rvy2 * cosf(rvx2);
-		part_phot->vy = rvy2 * sinf(rvx2);
+		rdif = hypotf(part_phot->vx, part_phot->vy);
+		if (rtmp & 0x100)
+		{
+			rvy2 = atan2f(part_phot->vy, part_phot->vx);
+			rvx2 = rvx2 - rvy2;
+		}
+		part_phot->vx = rdif * cosf(rvx2);
+		part_phot->vy = rdif * sinf(rvx2);
 		break;
 	}
 	switch (rtmp >> 18)
