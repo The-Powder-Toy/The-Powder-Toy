@@ -112,11 +112,11 @@ int Element_TRON::update(UPDATE_FUNC_ARGS)
 
 		//check in front
 		//do sight check
-		firstE189 = Element_TRON::checkE189(sim,x,y,originaldir,i);
+		firstE189 = Element_TRON::checkE189(sim,x,y,originaldir);
 		secondE189dir = (originaldir + ((rand()%2)*2)+1) % 4;
-		secondE189 = Element_TRON::checkE189(sim,x,y,secondE189dir,i);
+		secondE189 = Element_TRON::checkE189(sim,x,y,secondE189dir);
 		lastE189dir = (secondE189dir + 2) % 4;
-		lastE189 = Element_TRON::checkE189(sim,x,y,lastE189dir,i);
+		lastE189 = Element_TRON::checkE189(sim,x,y,lastE189dir);
 		if (firstE189)
 		{
 			direction = originaldir;
@@ -299,12 +299,12 @@ bool Element_TRON::canmovetron(Simulation * sim, int r, int len)
 	return false;
 }
 
-//#TPT-Directive ElementHeader Element_TRON static bool checkE189(Simulation * sim, int x, int y, int dir, int i)
-bool Element_TRON::checkE189(Simulation * sim, int x, int y, int dir, int i)
+//#TPT-Directive ElementHeader Element_TRON static bool checkE189(Simulation * sim, int x, int y, int dir)
+bool Element_TRON::checkE189(Simulation * sim, int x, int y, int dir)
 {
 	int rx = x + tron_rx[dir];
 	int ry = y + tron_ry[dir];
-	r = sim->pmap[ry][rx];
+	int r = sim->pmap[ry][rx];
 	if ((r&0xFF) == PT_E189 && sim->parts[r>>8].life == 2)
 	{
 		return true;
