@@ -2318,7 +2318,8 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 					Element_E189::interactDir(this, i, x, y, &parts[i], &parts[r>>8]);
 					break;
 				case 7:
-					Element_E189::createPhotons(this, i, x, y, &parts[i], &parts[r>>8]);
+					if (!(parts[i].flags & FLAG_SKIPMOVE))
+						Element_E189::createPhotons(this, i, x, y, &parts[i], &parts[r>>8]);
 					break;
 				}
 			}
