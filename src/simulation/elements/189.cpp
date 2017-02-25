@@ -264,8 +264,8 @@ VideoBuffer * Element_E189::iconGen(int toolID, int width, int height)
 	return newTexture;
 }
 
-//#TPT-Directive ElementHeader Element_E189 static int interactDir(Simulation* sim, int i, int x, int y, Particle* part_phot, Particle* part_E189)
-int Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* part_phot, Particle* part_E189) // photons direction/type changer
+//#TPT-Directive ElementHeader Element_E189 static void interactDir(Simulation* sim, int i, int x, int y, Particle* part_phot, Particle* part_E189)
+void Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* part_phot, Particle* part_E189) // photons direction/type changer
 {
 	int rtmp = part_E189->tmp, rct = part_E189->ctype, mask = 0x3FFFFFFF;
 	int ctype, r1;
@@ -375,8 +375,8 @@ int Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* pa
 	}
 }
 
-//#TPT-Directive ElementHeader Element_E189 static int createPhotons(Simulation* sim, int i, int x, int y, Particle* part_phot, Particle* part_E189)
-int Element_E189::createPhotons(Simulation* sim, int i, int x, int y, Particle* part_phot, Particle* part_E189)
+//#TPT-Directive ElementHeader Element_E189 static void createPhotons(Simulation* sim, int i, int x, int y, Particle* part_phot, Particle* part_E189)
+void Element_E189::createPhotons(Simulation* sim, int i, int x, int y, Particle* part_phot, Particle* part_E189)
 {
 	int rtmp = part_E189->tmp, ri;
 	float rvx = (float)(((rtmp ^ 0x08) & 0x0F) - 0x08);
@@ -385,7 +385,7 @@ int Element_E189::createPhotons(Simulation* sim, int i, int x, int y, Particle* 
 	
 	ri = sim->create_part(-3, x + rvx, y + rvy, PT_PHOT);
 	if (ri < 0)
-		break;
+		return;
 	if (ri > i)
 		sim->parts[ri].flags |= FLAG_SKIPMOVE;
 	sim->parts[ri].vx = rvx * rdif / 16.0f;
