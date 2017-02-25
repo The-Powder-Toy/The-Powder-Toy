@@ -326,8 +326,10 @@ int Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* pa
 			ctype = part_phot->ctype;
 			r1 = rand();
 			r1 += (rand() << 15);
-			if (rct & mask == ctype & mask)
+			if ((r1 ^ ctype) & mask == 0)
 				rct = 0;
+			else
+				rct = r1;
 		}
 		part_phot->ctype ^= rct; // XOR colours
 		break;
