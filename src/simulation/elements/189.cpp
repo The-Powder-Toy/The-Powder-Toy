@@ -333,7 +333,7 @@ int Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* pa
 		break;
 	case 6:
 		sim->part_change_type(i, x, y, rct & 0xFF);
-		part_E189->tmp = part_E189->ctype >> 8;
+		part_phot->tmp = part_E189->ctype >> 8;
 		break;
 	}
 }
