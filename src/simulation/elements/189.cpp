@@ -53,7 +53,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 	int tron_rx[4] = {-1, 0, 1, 0};
 	int tron_ry[4] = { 0,-1, 0, 1};
 	int rx, ry, ttan = 0, rlife = parts[i].life, direction, r, ri, rtmp, rctype;
-	int dirch;
+	int dirch, rsign;
 	float rvx, rvy, rdif;
 	rtmp = parts[i].tmp;
 	
@@ -104,13 +104,29 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			ry = y + tron_ry[direction];
 			rx = x + tron_rx[direction];
 			r = pmap[ry][rx];
+			if (r)
+			{
+				direction = (direction + (rand()%2) * 2 + 1) % 4
+				ry = y + tron_ry[direction];
+				rx = x + tron_rx[direction];
+				r = pmap[ry][rx];
+				if (r)
+				{
+					direction = direction ^ 0x2 // bitwise xor
+					ry = y - tron_ry[direction];
+					rx = x - tron_rx[direction];
+					r = pmap[ry][rx];
+				}
+				if (r)
+					break;
+			}
 			if (!r)
 			{
 				ri = sim->create_part(-1, rx, ry, PT_TRON);
 				if (ri >= 0)
 				{
 					sim->parts[ri].life = 5;
-					sim->parts[ri].tmp  = rtmp;
+					sim->parts[ri].tmp  = rtmp & 0x1FF9F | (direction << 5);
 					if (ri > i)
 						sim->parts[ri].tmp |= 0x04;
 					sim->parts[ri].tmp2 = parts[i].tmp2;
