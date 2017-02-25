@@ -2294,7 +2294,7 @@ void GameView::OnDraw()
 			
 			if (type == PT_E189)
 			{
-				if (partlife == 4)
+				if (partlife == 4 || partlife == 7)
 					wavelengthGfx = (ctype&0x3FFFFFFF);
 				if (partlife == 5)
 				{
