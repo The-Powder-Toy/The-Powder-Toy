@@ -82,7 +82,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 		{
 			direction = (rtmp >> 5) & 0x3;
 			r = pmap[y + tron_ry[direction]][x + tron_rx[direction]];
-			if ((r & 0xFF) == PT_E189 && (parts[r >> 8].life & 2 == 2))
+			if ((r & 0xFF) == PT_E189 && (parts[r >> 8].life & 2) == 2)
 			{
 				ri = r >> 8;
 				dirch = (parts[ri].tmp >> 17) & 0x3;

@@ -98,6 +98,7 @@ int Element_TRON::update(UPDATE_FUNC_ARGS)
 	if (parts[i].tmp&TRON_HEAD)
 	{
 		int firstdircheck = 0,seconddir,seconddircheck = 0,lastdir,lastdircheck = 0;
+		int firstE189dir, secondE189, secondE189dir, lastE189, lastE189dir;
 		int direction = (parts[i].tmp>>5 & 0x3);
 		int originaldir = direction;
 
@@ -111,6 +112,27 @@ int Element_TRON::update(UPDATE_FUNC_ARGS)
 
 		//check in front
 		//do sight check
+		firstE189 = Element_TRON::checkE189(sim,x,y,originaldir,i);
+		secondE189dir = (originaldir + ((rand()%2)*2)+1) % 4;
+		secondE189 = Element_TRON::checkE189(sim,x,y,secondE189dir,i);
+		lastE189dir = (secondE189dir + 2) % 4;
+		lastE189 = Element_TRON::checkE189(sim,x,y,lastE189dir,i);
+		if (firstE189)
+		{
+			direction = originaldir;
+			goto E189checked;
+		}
+		else if (secondE189)
+		{
+			direction = secondE189dir;
+			goto E189checked;
+		}
+		else if (lastE189)
+		{
+			direction = lastE189dir;
+			goto E189checked;
+		}
+		
 		firstdircheck = Element_TRON::trymovetron(sim,x,y,direction,i,parts[i].tmp2);
 		if (firstdircheck < parts[i].tmp2)
 		{
@@ -137,6 +159,8 @@ int Element_TRON::update(UPDATE_FUNC_ARGS)
 			direction = seconddir;
 		if (lastdircheck > seconddircheck && lastdircheck > firstdircheck)
 			direction = lastdir;
+
+		E189checked:
 		//now try making new head, even if it fails
 		if (Element_TRON::new_tronhead(sim,x + tron_rx[direction],y + tron_ry[direction],i,direction) == -1)
 		{
@@ -193,7 +217,8 @@ int Element_TRON::new_tronhead(Simulation * sim, int x, int y, int i, int direct
 	if ((r & 0xFF) == PT_E189)
 	{
 		int ri = r >> 8;
-		sim->parts[ri].tmp = 1 | direction<<5 | (sim->parts[i].tmp & 0x1F80A);
+		sim->parts[ri].tmp &= 0x60000;
+		sim->parts[ri].tmp |= 1 | direction<<5 | (sim->parts[i].tmp & 0x1F80A);
 		if (ri > i)
 			sim->parts[ri].tmp |= TRON_WAIT;
 		sim->parts[ri].tmp2 = sim->parts[i].tmp2;
@@ -233,9 +258,6 @@ int Element_TRON::trymovetron(Simulation * sim, int x, int y, int dir, int i, in
 		r = sim->pmap[ry][rx];
 		if (canmovetron(sim, r, k-1) && !sim->bmap[(ry)/CELL][(rx)/CELL] && ry > CELL && rx > CELL && ry < YRES-CELL && rx < XRES-CELL)
 		{
-			if ((r&0xFF) == PT_E189)
-				return len+2;
-			count++;
 			for (tx = rx - tron_ry[dir] , ty = ry - tron_rx[dir], j=1; abs(tx-rx) < (len-k) && abs(ty-ry) < (len-k); tx-=tron_ry[dir],ty-=tron_rx[dir],j++)
 			{
 				r = sim->pmap[ty][tx];
@@ -272,10 +294,21 @@ bool Element_TRON::canmovetron(Simulation * sim, int r, int len)
 {
 	if (!r || ((r&0xFF) == PT_SWCH && sim->parts[r>>8].life >= 10) || ((r&0xFF) == PT_INVIS && sim->parts[r>>8].tmp == 1))
 		return true;
-	if ((r&0xFF) == PT_E189 && sim->parts[r>>8].tmp == 2)
-		return true;
 	if ((((sim->elements[r&0xFF].Properties & PROP_LIFE_KILL_DEC) && sim->parts[r>>8].life > 0)|| ((sim->elements[r&0xFF].Properties & PROP_LIFE_KILL) && (sim->elements[r&0xFF].Properties & PROP_LIFE_DEC))) && sim->parts[r>>8].life < len)
 		return true;
+	return false;
+}
+
+//#TPT-Directive ElementHeader Element_TRON static bool checkE189(Simulation * sim, int x, int y, int dir, int i)
+bool Element_TRON::checkE189(Simulation * sim, int x, int y, int dir, int i)
+{
+	int rx = x + tron_rx[dir];
+	int ry = y + tron_ry[dir];
+	r = sim->pmap[ry][rx];
+	if ((r&0xFF) == PT_E189 && sim->parts[r>>8].life == 2)
+	{
+		return true;
+	}
 	return false;
 }
 
