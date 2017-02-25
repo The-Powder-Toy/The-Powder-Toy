@@ -165,6 +165,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 		
 		break;
 	case 5: // reserved for Simulation.cpp
+	case 7:
 		break;
 	case 6: // heater
 		for (rx=-1; rx<2; rx++) {
@@ -227,6 +228,8 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 			*colr = 0xFF; *colg = 0x99; *colb = 0x99;
 		}
 		break;
+	case 7:
+		*colr = 0x52; *colg = 0x52; *colb = 0x52;
 	}
 	return 0;
 }
@@ -370,6 +373,30 @@ int Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* pa
 		part_phot->tmp = part_E189->ctype >> 8;
 		break;
 	}
+}
+
+//#TPT-Directive ElementHeader Element_E189 static int createPhotons(Simulation* sim, int i, int x, int y, Particle* part_phot, Particle* part_E189)
+int Element_E189::createPhotons(Simulation* sim, int i, int x, int y, Particle* part_phot, Particle* part_E189)
+{
+	int rtmp = part_E189->tmp, ri;
+	float rvx = (float)(((rtmp ^ 0x08) & 0x0F) - 0x08);
+	float rvy = (float)((((rtmp >> 4) ^ 0x08) & 0x0F) - 0x08);
+	float rdif = (float)((((rtmp >> 8) ^ 0x80) & 0xFF) - 0x80);
+	
+	ri = sim->create_part(-3, x + rvx, y + rvy, PT_PHOT);
+	if (ri < 0)
+		break;
+	if (ri > i)
+		parts[ri].flags |= FLAG_SKIPMOVE;
+	parts[ri].vx = rvx * rdif / 16.0f;
+	parts[ri].vy = rvy * rdif / 16.0f;
+	parts[ri].temp = part_phot->temp;
+	parts[ri].tmp  = part_phot->tmp;
+	parts[ri].life = part_E189->tmp2;
+	if (part_E189->ctype)
+		parts[ri].ctype = part_E189->ctype;
+	else
+		parts[ri].ctype = part_phot->ctype;
 }
 
 Element_E189::~Element_E189() {}
