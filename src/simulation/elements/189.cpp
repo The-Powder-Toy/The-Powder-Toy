@@ -54,7 +54,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 	int tron_ry[4] = { 0,-1, 0, 1};
 	int rx, ry, ttan = 0, rlife = parts[i].life, direction, r, ri, rtmp, rctype;
 	int rsign;
-	float rvx, rvy, rdif;
+	float rvx, rvy, rvx2, rvy2, rdif;
 	rtmp = parts[i].tmp;
 	
 	switch (rlife)
@@ -168,20 +168,33 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 		rvx = (float)(((rtmp ^ 0x80) & 0xFF) - 0x80) / 16.0f;
 		rvy = (float)((((rtmp >> 8) ^ 0x80) & 0xFF) - 0x80) / 16.0f;
 		r = sim->photons[y][x];
-		if (r)
+		if (!r)
 			break;
 		ri = r>>8;
-		if (rtmp & 0x10000)
+		switch ((rtmp >> 16) & 3)
 		{
-			parts[ri].vx *= rvx;
-			parts[ri].vy *= rvy;
-		}
-		else
-		{
+		case 0:
 			parts[ri].vx = rvx;
 			parts[ri].vy = rvy;
+			break;
+		case 1:
+			parts[ri].vx += rvx;
+			parts[ri].vy += rvy;
+			break;
+		case 2:
+			rvx2 = parts[ri].vx;
+			rvy2 = parts[ri].vy;
+			parts[ri].vx = rvx2 * rvx - rvy2 * rvy;
+			parts[ri].vy = rvx2 * rvy + rvy2 * rvx;
+			break;
+		case 3:
+			rvx2 = rvx * 0.39269908f;
+			rdif = hypotf(parts[ri].vx, parts[ri].vy);
+			parts[ri].vx = rdif * cosf(rvx2);
+			parts[ri].vy = rdif * sinf(rvx2);
+			break;
 		}
-		if (rtmp & 0x20000)
+		if (rtmp & 0x40000)
 			sim->part_change_type(ri, rx, ry, parts[i].ctype & 0xFF);
 		break;
 	case 6: // heater
