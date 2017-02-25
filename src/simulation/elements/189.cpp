@@ -315,9 +315,9 @@ int Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* pa
 		break;
 	case 4:
 		if (rct & 0x20)
-			part_phot->ctype >>= (lsb & 0x1F); // blue shift
+			part_phot->ctype >>= (rct & 0x1F); // blue shift
 		else
-			part_phot->ctype <<= (lsb & 0x1F); // red shift
+			part_phot->ctype <<= (rct & 0x1F); // red shift
 		part_phot->ctype &= mask;
 		break;
 	case 5:
