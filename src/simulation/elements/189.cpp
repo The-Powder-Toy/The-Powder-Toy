@@ -387,16 +387,16 @@ int Element_E189::createPhotons(Simulation* sim, int i, int x, int y, Particle* 
 	if (ri < 0)
 		break;
 	if (ri > i)
-		parts[ri].flags |= FLAG_SKIPMOVE;
-	parts[ri].vx = rvx * rdif / 16.0f;
-	parts[ri].vy = rvy * rdif / 16.0f;
-	parts[ri].temp = part_phot->temp;
-	parts[ri].tmp  = part_phot->tmp;
-	parts[ri].life = part_E189->tmp2;
+		sim->parts[ri].flags |= FLAG_SKIPMOVE;
+	sim->parts[ri].vx = rvx * rdif / 16.0f;
+	sim->parts[ri].vy = rvy * rdif / 16.0f;
+	sim->parts[ri].temp = part_phot->temp;
+	sim->parts[ri].tmp  = part_phot->tmp;
+	sim->parts[ri].life = part_E189->tmp2;
 	if (part_E189->ctype)
-		parts[ri].ctype = part_E189->ctype;
+		sim->parts[ri].ctype = part_E189->ctype;
 	else
-		parts[ri].ctype = part_phot->ctype;
+		sim->parts[ri].ctype = part_phot->ctype;
 }
 
 Element_E189::~Element_E189() {}
