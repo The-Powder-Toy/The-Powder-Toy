@@ -2310,6 +2310,13 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 					parts[i].tmp = parts[r>>8].temp - 273.15f;
 				}
 			}
+			else if ((r&0xFF) == PT_E189)
+			{
+				if (parts[r>>8].life == 5)
+				{
+					Element_E189::interactDir(this, i, x, y, &parts[i], &parts[r>>8]);
+				}
+			}
 		}
 		else if (parts[i].type == PT_NEUT)
 		{
