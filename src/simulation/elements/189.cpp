@@ -54,7 +54,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 	int tron_ry[4] = { 0,-1, 0, 1};
 	int rx, ry, ttan = 0, rlife = parts[i].life, direction, r, ri, rtmp, rctype;
 	int rsign;
-	float rvx, rvy, rvx2, rvy2, rdif;
+	float rvx, rvy, rdif;
 	rtmp = parts[i].tmp;
 	
 	switch (rlife)
@@ -164,38 +164,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 		parts[ri].tmp = parts[i].ctype & 3;
 		
 		break;
-	case 5: // photons direction/type changer
-		rvx = (float)(((rtmp ^ 0x80) & 0xFF) - 0x80) / 16.0f;
-		rvy = (float)((((rtmp >> 8) ^ 0x80) & 0xFF) - 0x80) / 16.0f;
-		r = sim->photons[y][x];
-		if (!r)
-			break;
-		ri = r>>8;
-		switch ((rtmp >> 16) & 3)
-		{
-		case 0:
-			parts[ri].vx = rvx;
-			parts[ri].vy = rvy;
-			break;
-		case 1:
-			parts[ri].vx += rvx;
-			parts[ri].vy += rvy;
-			break;
-		case 2:
-			rvx2 = parts[ri].vx;
-			rvy2 = parts[ri].vy;
-			parts[ri].vx = rvx2 * rvx - rvy2 * rvy;
-			parts[ri].vy = rvx2 * rvy + rvy2 * rvx;
-			break;
-		case 3:
-			rvx2 = rvx * 0.39269908f;
-			rdif = hypotf(parts[ri].vx, parts[ri].vy);
-			parts[ri].vx = rdif * cosf(rvx2);
-			parts[ri].vy = rdif * sinf(rvx2);
-			break;
-		}
-		if (rtmp & 0x40000)
-			sim->part_change_type(ri, rx, ry, parts[i].ctype & 0xFF);
+	case 5: // reserved for Simulation.cpp
 		break;
 	case 6: // heater
 		for (rx=-1; rx<2; rx++) {
@@ -290,6 +259,83 @@ VideoBuffer * Element_E189::iconGen(int toolID, int width, int height)
 	}
 	
 	return newTexture;
+}
+
+//#TPT-Directive ElementHeader Element_E189 static int interactDir(Simulation* sim, int i, int x, int y, Particle* part_phot, Particle* part_E189)
+int Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* part_phot, Particle* part_E189) // photons direction/type changer
+{
+	int rtmp = part_E189->tmp, rct = part_E189->ctype, mask = 0x3FFFFFFF;
+	int ctype, r1;
+	float rvx, rvy, rvx2, rvy2;
+	long long int lsb;
+	rvx = (float)(((rtmp ^ 0x80) & 0xFF) - 0x80) / 16.0f;
+	rvy = (float)((((rtmp >> 8) ^ 0x80) & 0xFF) - 0x80) / 16.0f;
+	switch ((rtmp >> 16) & 3)
+	{
+	case 0:
+		part_phot->vx = rvx;
+		part_phot->vy = rvy;
+		break;
+	case 1:
+		part_phot->vx += rvx;
+		part_phot->vy += rvy;
+		break;
+	case 2:
+		rvx2 = part_phot->vx;
+		rvy2 = part_phot->vy;
+		part_phot->vx = rvx2 * rvx - rvy2 * rvy;
+		part_phot->vy = rvx2 * rvy + rvy2 * rvx;
+		break;
+	case 3:
+		rvx2 = rvx * 0.39269908f;
+		rvy2 = hypotf(part_phot->vx, part_phot->vy);
+		part_phot->vx = rvy2 * cosf(rvx2);
+		part_phot->vy = rvy2 * sinf(rvx2);
+		break;
+	}
+	switch (rtmp >> 18)
+	{
+	case 0: // Assign Colour
+		if (rct)
+			part_phot->ctype = rct;
+		break;
+	case 1: // Filter Colour
+		if (rct)
+			part_phot->ctype &= rct;
+		break;
+	case 2: // Add Colour
+		if (rct)
+			part_phot->ctype |= rct;
+		break;
+	case 3: // Subtract colour
+		if (rct)
+			part_phot->ctype &= ~rct;
+		else
+			part_phot->ctype = (~part_phot->ctype) & mask; // Invert colours
+		break;
+	case 4:
+		if (rct & 0x20)
+			part_phot->ctype >>= (lsb & 0x1F); // blue shift
+		else
+			part_phot->ctype <<= (lsb & 0x1F); // red shift
+		part_phot->ctype &= mask;
+		break;
+	case 5:
+		if (!rct) // random wavelength
+		{
+			ctype = part_phot->ctype;
+			r1 = rand();
+			r1 += (rand() << 15);
+			if (rct & mask == ctype & mask)
+				rct = 0;
+		}
+		part_phot->ctype ^= rct; // XOR colours
+		break;
+	case 6:
+		sim->part_change_type(i, x, y, rct & 0xFF);
+		part_E189->tmp = part_E189->ctype >> 8;
+		break;
+	}
 }
 
 Element_E189::~Element_E189() {}
