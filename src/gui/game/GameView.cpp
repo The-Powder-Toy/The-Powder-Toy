@@ -2283,11 +2283,28 @@ void GameView::OnDraw()
 		if (type)
 		{
 			int ctype = sample.particle.ctype;
+			int partlife = sample.particle.life;
+			int parttmp = sample.particle.tmp;
+			int partint = 0;
 			if (type == PT_PIPE || type == PT_PPIP)
 				ctype = sample.particle.tmp&0xFF;
 
 			if (type == PT_PHOT || type == PT_BIZR || type == PT_BIZRG || type == PT_BIZRS || type == PT_FILT || type == PT_BRAY)
 				wavelengthGfx = (ctype&0x3FFFFFFF);
+			
+			if (type == PT_E189)
+			{
+				if (partlife == 4)
+					wavelengthGfx = (ctype&0x3FFFFFFF);
+				if (partlife == 5)
+				{
+					int partfilt = parttmp >> 18;
+					if (partfilt >= 0 && partfilt <= 5 && partfilt != 4)
+						wavelengthGfx = (ctype&0x3FFFFFFF);
+					if (partfilt == 4)
+						partint = 1;
+				}
+			}
 
 			if (showDebug)
 			{
@@ -2301,15 +2318,15 @@ void GameView::OnDraw()
 				{
 					sampleInfo << c->ElementResolve(type, ctype);
 					const char* filtModes[] = {"set colour", "AND", "OR", "subtract colour", "red shift", "blue shift", "no effect", "XOR", "NOT", "old QRTZ scattering", "variable red shift", "variable blue shift"};
-					if (sample.particle.tmp>=0 && sample.particle.tmp<=11)
-						sampleInfo << " (" << filtModes[sample.particle.tmp] << ")";
+					if (parttmp>=0 && parttmp<=11)
+						sampleInfo << " (" << filtModes[parttmp] << ")";
 					else
 						sampleInfo << " (unknown mode)";
 				}
 				else
 				{
 					sampleInfo << c->ElementResolve(type, ctype);
-					if (wavelengthGfx || type == PT_E187 || type == PT_E188)
+					if (wavelengthGfx || type == PT_E187 || type == PT_E188 || partint)
 						sampleInfo << " (" << ctype << ")";
 					// Some elements store extra LIFE info in upper bits of ctype, instead of tmp/tmp2
 					else if (type == PT_CRAY || type == PT_DRAY || type == PT_CONV)
@@ -2320,11 +2337,12 @@ void GameView::OnDraw()
 						sampleInfo << " ()";
 				}
 				sampleInfo << ", Temp: " << std::fixed << sample.particle.temp -273.15f << " C";
-				sampleInfo << ", Life: " << sample.particle.life;
-				sampleInfo << ", Tmp: " << sample.particle.tmp;
+				sampleInfo << ", Life: " << partlife;
+				sampleInfo << ", Tmp: " << parttmp;
 
 				// only elements that use .tmp2 show it in the debug HUD
-				if (type == PT_CRAY || type == PT_DRAY || type == PT_EXOT || type == PT_LIGH || type == PT_SOAP || type == PT_TRON || type == PT_VIBR || type == PT_VIRS || type == PT_WARP || type == PT_LCRY || type == PT_CBNW || type == PT_TSNS || type == PT_DTEC || type == PT_PSTN)
+				if (type == PT_CRAY || type == PT_DRAY || type == PT_EXOT || type == PT_LIGH || type == PT_SOAP || type == PT_TRON || type == PT_VIBR || type == PT_VIRS
+				 || type == PT_WARP || type == PT_LCRY || type == PT_CBNW || type == PT_TSNS || type == PT_DTEC || type == PT_PSTN || type == PT_E189)
 					sampleInfo << ", Tmp2: " << sample.particle.tmp2;
 
 				sampleInfo << ", Pressure: " << std::fixed << sample.AirPressure;
