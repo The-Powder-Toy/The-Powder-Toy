@@ -181,12 +181,12 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 		break;
 	case 8: // acts like VIBR
 		r = sim->photons[y][x];
+		rndstore = rand();
 		if (r)
 		{
 			parts[i].tmp += 2;
 			if (parts[r>>8].temp > 370.0f)
 				parts[i].tmp += (int)parts[r>>8].temp - 369;
-			rndstore = rand();
 			if (3 > (rndstore & 0xF))
 				sim->kill_part(r>>8);
 			rndstore >>= 4;
