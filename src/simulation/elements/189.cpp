@@ -168,9 +168,12 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 	case 7:
 		break;
 	case 6: // heater
-		for (rx=-1; rx<2; rx++) {
-			for (ry=-1; ry<2; ry++) {
-				if ((!rx != !ry) && BOUNDS_CHECK) {
+		for (rx=-1; rx<2; rx++)
+		{
+			for (ry=-1; ry<2; ry++)
+			{
+				if ((!rx != !ry) && BOUNDS_CHECK)
+				{
 					r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
@@ -203,6 +206,18 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			sim->pv[y/CELL][x/CELL]++;
 		}
 		// Neighbor check loop
+		for (rx=-1; rx<2; rx++)
+			for (ry=-1; ry<2; ry++)
+				if (BOUNDS_CHECK && (!rx != !ry))
+				{
+					r = pmap[y+ry][x+rx];
+					if (sim->elements[r&0xFF].HeatConduct > 0)
+					{
+						transfer = (int)(parts[r>>8].temp - 273.15f);
+						parts[r>>8].tmp += transfer;
+						parts[r>>8].temp -= (float)transfer;
+					}
+				}
 		for (trade = 0; trade < 9; trade++)
 		{
 			if (trade%2)
