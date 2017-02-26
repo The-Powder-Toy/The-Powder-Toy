@@ -262,6 +262,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			parts[i].life = 750;
 			parts[i].tmp2 = 0;
 		}
+		parts[i].temp += 12;
 		trade = 5;
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
@@ -271,7 +272,6 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 					{
 						rndstore = rand(); trade = 0;
 					}
-					parts[i].temp += 12;
 					r = pmap[y+ry][x+rx];
 					if (!r || (r&0xFF) == PT_DMND || (r&0xFF) == PT_E189 || (r&0xFF) == PT_VIBR || (r&0xFF) == PT_BVBR)
 						continue;
@@ -353,6 +353,8 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 	case 9:
 		*colr = *colg = *colb = 0xFF;
 		*firea = 90; *firer = *colr; *fireg = *colg; *fireb = *colb;
+		*pixel_mode = PMODE_NONE;
+		*pixel_mode |= FIRE_BLEND;
 		break;
 	}
 	return 0;
