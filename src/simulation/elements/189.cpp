@@ -277,9 +277,9 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						continue;
 					if (!(rndstore & 0x7))
 					{
-						sim->part_change_type(r, x+rx, y+ry, PT_E189);
-						parts[r].life = 8;
-						parts[r].tmp = 21000;
+						sim->part_change_type(r>>8, x+rx, y+ry, PT_E189);
+						parts[r>>8].life = 8;
+						parts[r>>8].tmp = 21000;
 					}
 					trade++; rndstore >>= 3;
 				}
