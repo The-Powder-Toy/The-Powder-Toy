@@ -353,11 +353,15 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 			pexc1 ++;
 		ptmp = pexc1 << 5;
 		*colr += ptmp;
-		*colg += ptmp;
+		if (pexc1 < 6)
+			*colg += ptmp;
+		else
+			*colg = 0xFF;
 		*colb += ptmp;
 		break;
 	case 9:
-		*colr = *colg = *colb = 0xFF;
+		*colr = *colb = 255 - (int)(0.0091f * cpart->temp);
+		*colg = 0xFF;
 		*firea = 90; *firer = *colr; *fireg = *colg; *fireb = *colb;
 		*pixel_mode = PMODE_NONE;
 		*pixel_mode |= FIRE_BLEND;
