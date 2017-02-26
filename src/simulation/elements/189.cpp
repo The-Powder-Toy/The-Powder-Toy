@@ -273,13 +273,14 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						rndstore = rand(); trade = 0;
 					}
 					r = pmap[y+ry][x+rx];
-					if (!r || (r&0xFF) == PT_DMND || (r&0xFF) == PT_VIBR || (r&0xFF) == PT_BVBR)
-						continue;
-					if ((r&0xFF) == PT_E189 && parts[r>>8].life == 8)
+					if ((r&0xFF) == PT_E189)
 					{
-						parts[r>>8].tmp += 1000;
+						if (parts[r>>8].life == 8)
+							parts[r>>8].tmp += 1000;
 						continue;
 					}
+					if (!r || (r&0xFF) == PT_DMND || (r&0xFF) == PT_VIBR || (r&0xFF) == PT_BVBR)
+						continue;
 					if (!(rndstore & 0x7))
 					{
 						sim->part_change_type(r>>8, x+rx, y+ry, PT_E189);
