@@ -180,6 +180,12 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 				}
 		break;
 	case 8: // acts like VIBR
+		if (parts[i].tmp > 20000)
+		{
+			sim->emp_trigger_count += 2;
+			parts[i].life = 9;
+			parts[i].temp = 0;
+		}
 		r = sim->photons[y][x];
 		rndstore = rand();
 		if (r)
@@ -248,6 +254,34 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 		if (parts[i].tmp < 0)
 			parts[i].tmp = 0; // only preventing because negative tmp doesn't save
 		break;
+	case 9: // VIBR-like explosion
+		if (parts[i].temp >= 9600)
+		{
+			sim->part_change_type(i, x, y, PT_VIBR);
+			parts[i].temp = MAX_TEMP;
+			parts[i].life = 750;
+		}
+		trade = 5;
+		for (rx=-1; rx<2; rx++)
+			for (ry=-1; ry<2; ry++)
+				if (BOUNDS_CHECK && (rx || ry))
+				{
+					if (trade >= 5)
+					{
+						rndstore = rand(); trade = 0;
+					}
+					parts[i].temp += 12;
+					r = pmap[y+ry][x+rx];
+					if (!r || (r&0xFF) == PT_DMND || (r&0xFF) == PT_E189 || (r&0xFF) == PT_VIBR || (r&0xFF) == PT_BVBR)
+						continue;
+					if (!(rndstore & 0x7))
+					{
+						sim->part_change_type(r, x+rx, y+ry, PT_E189);
+						parts[r].life = 8;
+						parts[r].tmp = 21000;
+					}
+					trade++; rndstore >>= 3;
+				}
 	}
 	
 	if(ttan>=2) {
@@ -314,6 +348,10 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 		*colr += ptmp;
 		*colg += ptmp;
 		*colb += ptmp;
+		break;
+	case 9:
+		*colr = *colg = *colb = 0xFF;
+		*firea = 90; *firer = *colr; *fireg = *colg; *fireb = *colb;
 		break;
 	}
 	return 0;
