@@ -53,7 +53,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 	int tron_rx[4] = {-1, 0, 1, 0};
 	int tron_ry[4] = { 0,-1, 0, 1};
 	int rx, ry, ttan = 0, rlife = parts[i].life, direction, r, ri, rtmp, rctype;
-	int rsign;
+	int rsign, rndstore, trade, transfer;
 	float rvx, rvy, rdif;
 	rtmp = parts[i].tmp;
 	
@@ -179,6 +179,61 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 				}
 			}
 		}
+		break;
+	case 8: // acts like VIBR
+		r = sim->photons[y][x];
+		if (r)
+		{
+			parts[i].tmp += 2;
+			if (parts[r>>8].temp > 370.0f)
+				parts[i].tmp += (int)parts[r>>8].temp - 369;
+			rndstore = rand();
+			if (3 > (rndstore & 0xF))
+				sim->kill_part(r>>8);
+			rndstore >>= 4;
+		}
+		// Pressure absorption code
+		if (sim->pv[y/CELL][x/CELL] > 2.5)
+		{
+			parts[i].tmp += 10;
+			sim->pv[y/CELL][x/CELL]--;
+		}
+		else if (sim->pv[y/CELL][x/CELL] < -2.5)
+		{
+			sim->pv[y/CELL][x/CELL]++;
+		}
+		// Neighbor check loop
+		for (trade = 0; trade < 9; trade++)
+		{
+			if (trade%2)
+				rndstore = rand();
+			rx = rndstore%7-3;
+			rndstore >>= 3;
+			ry = rndstore%7-3;
+			rndstore >>= 3;
+			if (BOUNDS_CHECK && (rx || ry))
+			{
+				r = pmap[y+ry][x+rx];
+				bool not_self = (r&0xFF) != PT_E189 || parts[r>>8].life != 8;
+				if ((r&0xFF) != PT_VIBR && (r&0xFF) != PT_BVBR && not_self)
+					continue;
+				if (not_self)
+				{
+					parts[r>>8].tmp += parts[i].tmp;
+					parts[i].tmp = 0;
+					break;
+				}
+				if (parts[i].tmp > parts[r>>8].tmp)
+				{
+					transfer = parts[i].tmp - parts[r>>8].tmp;
+					parts[r>>8].tmp += transfer/2;
+					parts[i].tmp -= transfer/2;
+					break;
+				}
+			}
+		}
+		if (parts[i].tmp < 0)
+			parts[i].tmp = 0; // only preventing because negative tmp doesn't save
 		break;
 	}
 	
