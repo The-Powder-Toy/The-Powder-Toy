@@ -348,7 +348,7 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 		ppos = (nx & 3) | ((ny & 3) << 2);
 		pexc1 = ptmp >> 4;
 		if (pexc1 > 5)
-			pexc1 = 5;
+			pexc1 = 6;
 		else if ((ptmp & 0x0F) > excitedtable[ppos])
 			pexc1 ++;
 		ptmp = pexc1 << 5;
