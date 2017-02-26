@@ -248,6 +248,8 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 //#TPT-Directive ElementHeader Element_E189 static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 {
+	static char excitedtable [16] = {  0, 8, 2,10,12, 4,14, 6, 3,11, 1, 9,15, 7,13, 5 };
+	int ptmp, ppos, pexc1;
 	switch(cpart->life)
 	{
 	case 0:
@@ -285,6 +287,19 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 		break;
 	case 7:
 		*colr = 0x52; *colg = 0x52; *colb = 0x52;
+	case 8:
+		*colr = 0x06; *colg = 0x52; *colb = 0x06;
+		ptmp = cpart->tmp >> 3;
+		ppos = (nx & 3) | ((ny & 3) << 2);
+		pexc1 = ptmp >> 4;
+		if (pexc1 > 5)
+			pexc1 = 5;
+		else if ((ptmp & 0x0F) > excitedtable[ppos])
+			pexc1 ++;
+		ptmp = pexc1 << 5;
+		*colr += ptmp;
+		*colg += ptmp;
+		*colb += ptmp;
 	}
 	return 0;
 }
