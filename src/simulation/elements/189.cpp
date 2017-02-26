@@ -260,6 +260,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			sim->part_change_type(i, x, y, PT_VIBR);
 			parts[i].temp = MAX_TEMP;
 			parts[i].life = 750;
+			parts[i].tmp2 = 0;
 		}
 		trade = 5;
 		for (rx=-1; rx<2; rx++)
