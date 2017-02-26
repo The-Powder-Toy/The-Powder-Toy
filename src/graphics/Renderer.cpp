@@ -1188,6 +1188,7 @@ void Renderer::prepare_alpha(int size, float intensity)
 void Renderer::render_parts()
 {
 	int deca, decr, decg, decb, cola, colr, colg, colb, firea, firer, fireg, fireb, pixel_mode, q, i, t, nx, ny, x, y, caddress;
+	int deca2;
 	int orbd[4] = {0, 0, 0, 0}, orbl[4] = {0, 0, 0, 0};
 	float gradv, flicker;
 	Particle * parts;
@@ -1381,18 +1382,21 @@ void Renderer::render_parts()
 				//Apply decoration colour
 				if(!(colour_mode & ~COLOUR_GRAD) && decorations_enable && deca)
 				{
+					deca2 = deca;
+					if (deca >= 255)
+						deca2 = 256;
 					if(!(pixel_mode & NO_DECO))
 					{
-						colr = (deca*decr + (255-deca)*colr) >> 8;
-						colg = (deca*decg + (255-deca)*colg) >> 8;
-						colb = (deca*decb + (255-deca)*colb) >> 8;
+						colr = (deca2*decr + (255-deca)*colr) >> 8;
+						colg = (deca2*decg + (255-deca)*colg) >> 8;
+						colb = (deca2*decb + (255-deca)*colb) >> 8;
 					}
 
 					if(pixel_mode & DECO_FIRE)
 					{
-						firer = (deca*decr + (255-deca)*firer) >> 8;
-						fireg = (deca*decg + (255-deca)*fireg) >> 8;
-						fireb = (deca*decb + (255-deca)*fireb) >> 8;
+						firer = (deca2*decr + (255-deca)*firer) >> 8;
+						fireg = (deca2*decg + (255-deca)*fireg) >> 8;
+						fireb = (deca2*decb + (255-deca)*fireb) >> 8;
 					}
 				}
 
