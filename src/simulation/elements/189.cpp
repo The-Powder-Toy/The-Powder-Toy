@@ -212,7 +212,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 					if (sim->elements[r&0xFF].HeatConduct > 0)
 					{
 						transfer = (int)(parts[r>>8].temp - 273.15f);
-						parts[r>>8].tmp += transfer;
+						parts[i].tmp += transfer;
 						parts[r>>8].temp -= (float)transfer;
 					}
 				}
@@ -227,7 +227,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			if (BOUNDS_CHECK && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				bool not_self = (r&0xFF) != PT_E189 || parts[r>>8].life != 8;
+				bool not_self = !((r&0xFF) == PT_E189 && parts[r>>8].life == 8);
 				if ((r&0xFF) != PT_VIBR && (r&0xFF) != PT_BVBR && not_self)
 					continue;
 				if (not_self)
