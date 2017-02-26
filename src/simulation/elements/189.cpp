@@ -287,6 +287,7 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 		break;
 	case 7:
 		*colr = 0x52; *colg = 0x52; *colb = 0x52;
+		break;
 	case 8:
 		*colr = 0x06; *colg = 0x52; *colb = 0x06;
 		ptmp = cpart->tmp >> 3;
@@ -300,6 +301,7 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 		*colr += ptmp;
 		*colg += ptmp;
 		*colb += ptmp;
+		break;
 	}
 	return 0;
 }
