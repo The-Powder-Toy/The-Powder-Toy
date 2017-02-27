@@ -48,7 +48,7 @@ Element_SPRK::Element_SPRK()
 //#TPT-Directive ElementHeader Element_SPRK static int update(UPDATE_FUNC_ARGS)
 int Element_SPRK::update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry, nearp, pavg, ct = parts[i].ctype, sender, receiver, ravg;
+	int r, rx, ry, nearp, pavg, ct = parts[i].ctype, sender, receiver; // ravg;
 	Element_FIRE::update(UPDATE_FUNC_SUBCALL_ARGS);
 
 	if (parts[i].life<=0)
