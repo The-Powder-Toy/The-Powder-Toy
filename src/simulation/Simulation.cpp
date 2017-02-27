@@ -1910,6 +1910,7 @@ void Simulation::clear_sim(void)
 	debug_currentParticle = 0;
 	emp_decor = 0;
 	emp_trigger_count = 0;
+	emp2_trigger_count = 0;
 	signs.clear();
 	memset(bmap, 0, sizeof(bmap));
 	memset(emap, 0, sizeof(emap));
@@ -5399,6 +5400,11 @@ void Simulation::AfterSim()
 		Element_EMP::Trigger(this, emp_trigger_count);
 		emp_trigger_count = 0;
 	}
+	if (emp2_trigger_count)
+	{
+		Element_E189::EMPTrigger(this, emp_trigger_count);
+		emp2_trigger_count = 0;
+	}
 }
 
 Simulation::~Simulation()
@@ -5418,6 +5424,7 @@ Simulation::Simulation():
 	force_stacking_check(false),
 	emp_decor(0),
 	emp_trigger_count(0),
+	emp2_trigger_count(0),
 	etrd_count_valid(false),
 	etrd_life0_count(0),
 	lightningRecreate(0),

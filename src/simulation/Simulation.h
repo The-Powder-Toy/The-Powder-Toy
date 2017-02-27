@@ -63,6 +63,7 @@ public:
 	bool force_stacking_check;
 	int emp_decor;
 	int emp_trigger_count;
+	int emp2_trigger_count;
 	bool etrd_count_valid;
 	int etrd_life0_count;
 	int lightningRecreate;
