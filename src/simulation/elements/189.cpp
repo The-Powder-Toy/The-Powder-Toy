@@ -563,16 +563,16 @@ int Element_E189::EMPTrigger(Simulation *sim, int triggerCount)
 		{
 		case PT_METL:
 			if (Probability::randFloat() < prob_breakMETL)
-				sim->part_change_type(n, rx+nx, ry+ny, PT_BMTL);
+				sim->part_change_type(r, rx, ry, PT_BMTL);
 			break;
 		case PT_BMTL:
 			if (Probability::randFloat() < prob_breakMETL)
-				sim->part_change_type(n, rx+nx, ry+ny, PT_BRMT);
+				sim->part_change_type(r, rx, ry, PT_BRMT);
 			break;
 		case PT_CLNE:
 		case PT_PCLN:
 			if (Probability::randFloat() < prob_breakMETL)
-				sim->part_change_type(n, rx+nx, ry+ny, PT_BCLN);
+				sim->part_change_type(r, rx, ry, PT_BCLN);
 			break;
 		case PT_E189:
 			switch (parts[r].life)
