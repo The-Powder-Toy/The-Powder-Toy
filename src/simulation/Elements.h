@@ -34,6 +34,7 @@
 #define PROP_NOCTYPEDRAW	0x100000 // 2^20 When this element is drawn upon with, do not set ctype (like BCLN for CLNE)
 #define PROP_NOSLOWDOWN		0x200000 // 2^21
 #define PROP_TRANSPARENT	0x400000 // 2^22
+#define PROP_NODESTRUCT		0x800000 // 2^22
 
 #define FLAG_STAGNANT	0x1
 #define FLAG_SKIPMOVE  0x2 // skip movement for one frame, only implemented for PHOT
