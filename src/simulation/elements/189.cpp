@@ -1,5 +1,7 @@
 #include "simulation/Elements.h"
 #include "simulation/Air.h"
+#include "Probability.h"
+
 //#TPT-Directive ElementClass Element_E189 PT_E189 189
 Element_E189::Element_E189()
 {
@@ -261,6 +263,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			parts[i].temp = MAX_TEMP;
 			parts[i].life = 750;
 			parts[i].tmp2 = 0;
+			sim->emp2_trigger_count ++;
 		}
 		parts[i].temp += 12;
 		trade = 5;
@@ -535,6 +538,86 @@ void Element_E189::createPhotons(Simulation* sim, int i, int x, int y, Particle*
 		sim->parts[ri].ctype = part_E189->ctype;
 	else
 		sim->parts[ri].ctype = part_phot->ctype;
+}
+
+//#TPT-Directive ElementHeader Element_E189 static int EMPTrigger(Simulation *sim, int triggerCount)
+int Element_E189::EMPTrigger(Simulation *sim, int triggerCount)
+{
+	int t, ct, rx, ry, r1;
+	Particle *parts = sim->parts;
+	
+	float prob_breakPInsulator = Probability::binomial_gte1(triggerCount, 1.0f/200);
+	float prob_breakTRONPortal = Probability::binomial_gte1(triggerCount, 1.0f/160);
+	float prob_randLaser = Probability::binomial_gte1(triggerCount, 1.0f/40);
+	float prob_breakLaser = Probability::binomial_gte1(triggerCount, 1.0f/120);
+	float prob_breakDChanger = Probability::binomial_gte1(triggerCount, 1.0f/160);
+	float prob_breakHeater = Probability::binomial_gte1(triggerCount, 1.0f/100);
+	float prob_breakMETL = Probability::binomial_gte1(triggerCount, 1.0f/300);
+
+	for (int r = 0; r <=sim->parts_lastActiveIndex; r++)
+	{
+		t = parts[r].type;
+		rx = parts[r].x;
+		ry = parts[r].y;
+		switch ( t )
+		{
+		case PT_METL:
+			if (Probability::randFloat() < prob_breakMETL)
+				sim->part_change_type(n, rx+nx, ry+ny, PT_BMTL);
+			break;
+		case PT_BMTL:
+			if (Probability::randFloat() < prob_breakMETL)
+				sim->part_change_type(n, rx+nx, ry+ny, PT_BRMT);
+			break;
+		case PT_CLNE:
+		case PT_PCLN:
+			if (Probability::randFloat() < prob_breakMETL)
+				sim->part_change_type(n, rx+nx, ry+ny, PT_BCLN);
+			break;
+		case PT_E189:
+			switch (parts[r].life)
+			{
+			case 0:
+			case 1:
+				if (Probability::randFloat() < prob_breakPInsulator)
+				{
+					parts[r].life = 8;
+					parts[r].tmp = 21000;
+				}
+				break;
+			case 2:
+			case 3:
+				if (Probability::randFloat() < prob_breakTRONPortal)
+				{
+					sim->create_part(r, rx, ry, PT_PLSM);
+				}
+				break;
+			case 4:
+			case 7:
+				if (Probability::randFloat() < prob_randLaser)
+				{
+					parts[r].ctype += (rand() << 15) + rand();
+					parts[r].tmp = (parts[r].tmp + rand()) & 0x0000FFFF;
+				}
+				if (Probability::randFloat() < prob_breakLaser)
+				{
+					sim->create_part(r, rx, ry, PT_BRMT);
+				}
+				break;
+			case 5:
+				if (Probability::randFloat() < prob_breakDChanger)
+				{
+					sim->create_part(r, rx, ry, PT_BGLA);
+				}
+			case 6:
+				if (Probability::randFloat() < prob_breakHeater)
+				{
+					sim->create_part(r, rx, ry, PT_PLSM);
+				}
+			}
+			break;
+		}
+	}
 }
 
 Element_E189::~Element_E189() {}

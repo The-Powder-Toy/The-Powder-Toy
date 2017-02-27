@@ -50,7 +50,7 @@ int Element_VIRS::update(UPDATE_FUNC_ARGS)
 {
 	//pavg[0] measures how many frames until it is cured (0 if still actively spreading and not being cured)
 	//pavg[1] measures how many frames until it dies
-	int r, rx, ry, rndstore = rand();
+	int r, rx, ry, rndstore = rand(), rlife;
 	if (parts[i].pavg[0])
 	{
 		parts[i].pavg[0] -= (rndstore & 0x1) ? 0:1;
@@ -85,6 +85,7 @@ int Element_VIRS::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
+				rlife = parts[r>>8].life;
 
 				//spread "being cured" state
 				if (parts[r>>8].pavg[0] && ((r&0xFF) == PT_VIRS || (r&0xFF) == PT_VRSS || (r&0xFF) == PT_VRSG))
@@ -109,7 +110,7 @@ int Element_VIRS::update(UPDATE_FUNC_ARGS)
 					}
 				}
 				//transforms things into virus here
-				else if ((r&0xFF) != PT_VIRS && (r&0xFF) != PT_VRSS && (r&0xFF) != PT_VRSG && (r&0xFF) != PT_DMND)
+				else if ((r&0xFF) != PT_VIRS && (r&0xFF) != PT_VRSS && (r&0xFF) != PT_VRSG && (r&0xFF) != PT_DMND && ((r&0xFF) != PT_E189 || (rlife&~0x1) != 0x8))
 				{
 					if (!(rndstore & 0x7))
 					{
