@@ -282,7 +282,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 							parts[r>>8].tmp += 1000;
 						continue;
 					}
-					if (!r || (r&0xFF) == PT_DMND || (r&0xFF) == PT_VIBR || (r&0xFF) == PT_BVBR)
+					if (!r || (r&0xFF) == PT_DMND || (r&0xFF) == PT_VIBR || (r&0xFF) == PT_BVBR || (r&0xFF) == PT_WARP)
 						continue;
 					if (!(rndstore & 0x7))
 					{
@@ -568,10 +568,14 @@ int Element_E189::EMPTrigger(Simulation *sim, int triggerCount)
 				sim->part_change_type(r, rx, ry, PT_BMTL);
 			break;
 		case PT_BMTL:
+		case PT_PIPE:
+		case PT_PPIP:
 			if (Probability::randFloat() < prob_breakElectronics)
 				sim->part_change_type(r, rx, ry, PT_BRMT);
 			break;
 		case PT_GLAS:
+		case PT_LCRY:
+		case PT_FILT:
 			if (Probability::randFloat() < prob_breakElectronics)
 				sim->part_change_type(r, rx, ry, PT_BGLA);
 			break;
@@ -581,12 +585,23 @@ int Element_E189::EMPTrigger(Simulation *sim, int triggerCount)
 			break;
 		case PT_TTAN:
 		case PT_GOLD:
+		case PT_VOID:
+		case PT_PVOD:
+		case PT_CONV:
 			if (Probability::randFloat() < prob_breakElectronics)
 			{
 				sim->part_change_type(r, rx, ry, PT_E189);
 				parts[r].life = 8;
 				parts[r].tmp = 21000;
 			}
+			break;
+		case PT_CRMC:
+			if (Probability::randFloat() < prob_breakElectronics)
+				sim->part_change_type(r, rx, ry, PT_CLST);
+			break;
+		case PT_BRCK:
+			if (Probability::randFloat() < prob_breakElectronics)
+				sim->part_change_type(r, rx, ry, PT_STNE);
 			break;
 		case PT_PSCN:
 		case PT_NSCN:
@@ -638,6 +653,7 @@ int Element_E189::EMPTrigger(Simulation *sim, int triggerCount)
 				{
 					sim->create_part(r, rx, ry, PT_BGLA);
 				}
+				break;
 			case 6:
 				if (Probability::randFloat() < prob_breakHeater)
 				{
