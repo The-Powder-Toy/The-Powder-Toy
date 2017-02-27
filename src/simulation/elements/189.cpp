@@ -381,6 +381,9 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 		*pixel_mode = PMODE_NONE;
 		*pixel_mode |= FIRE_BLEND;
 		break;
+	case 10:
+		*colr = 0xBC; *colg = 0x00; *colb = 0xBC;
+		break;
 	}
 	return 0;
 }
