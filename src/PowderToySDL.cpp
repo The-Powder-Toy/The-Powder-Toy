@@ -1095,7 +1095,6 @@ int main(int argc, char * argv[])
 #endif
 #ifdef X86_SSE3
 	_MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
-#error test
 #endif
 
 	GameController * gameController = NULL;
