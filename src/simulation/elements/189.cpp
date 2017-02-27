@@ -292,6 +292,18 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 					}
 					trade++; rndstore >>= 3;
 				}
+		break;
+	case 10:
+		for (int rx = -1; rx <= 1; rx++)
+			for (int ry = -1; ry <= 1; ry++)
+				if (BOUNDS_CHECK && (rx || ry))
+				{
+					int r = pmap[y+ry][x+rx];
+					if (!r)
+						continue;
+					if ((r&0xFF) == PT_SPRK && parts[r>>8].life == 3)
+						sim->E189_pause = true;
+				}
 	}
 	
 	if(ttan>=2) {
