@@ -2325,7 +2325,13 @@ void GameView::OnDraw()
 				}
 				else
 				{
-					sampleInfo << c->ElementResolve(type, ctype);
+					if (type == PT_E189 && partlife >= 0 && partlife <= 10)
+					{
+						const char* E189Modes[] = {"PRINS", "PRINS", "TRONI", "TRONO", "LASER", "DIRCH", "HEATER", "PHTD", "VIBR2", "VIBR2", "DEBUG"};
+						sampleInfo << E189Modes[partlife];
+					}
+					else
+						sampleInfo << c->ElementResolve(type, ctype);
 					if (wavelengthGfx || type == PT_E187 || type == PT_E188 || partint)
 						sampleInfo << " (" << ctype << ")";
 					// Some elements store extra LIFE info in upper bits of ctype, instead of tmp/tmp2
@@ -2355,6 +2361,11 @@ void GameView::OnDraw()
 					sampleInfo << c->ElementResolve(type, -1) << " with " << c->ElementResolve(ctype, (int)sample.particle.pavg[1]);
 				else if (type == PT_LIFE)
 					sampleInfo << c->ElementResolve(type, ctype);
+				else if (type == PT_E189 && partlife >= 0 && partlife <= 10)
+				{
+					const char* E189Modes[] = {"PRINS", "PRINS", "TRONI", "TRONO", "LASER", "DIRCH", "HEATER", "PHTD", "VIBR2", "VIBR2", "DEBUG"};
+					sampleInfo << E189Modes[partlife];
+				}
 				else
 					sampleInfo << c->ElementResolve(type, ctype);
 				sampleInfo << ", Temp: " << std::fixed << sample.particle.temp - 273.15f << " C";
