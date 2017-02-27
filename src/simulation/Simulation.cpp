@@ -1911,6 +1911,7 @@ void Simulation::clear_sim(void)
 	emp_decor = 0;
 	emp_trigger_count = 0;
 	emp2_trigger_count = 0;
+	E189_pause = 0;
 	signs.clear();
 	memset(bmap, 0, sizeof(bmap));
 	memset(emap, 0, sizeof(emap));
