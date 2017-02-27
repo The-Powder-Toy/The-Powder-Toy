@@ -571,6 +571,23 @@ int Element_E189::EMPTrigger(Simulation *sim, int triggerCount)
 			if (Probability::randFloat() < prob_breakElectronics)
 				sim->part_change_type(r, rx, ry, PT_BRMT);
 			break;
+		case PT_GLAS:
+			if (Probability::randFloat() < prob_breakElectronics)
+				sim->part_change_type(r, rx, ry, PT_BGLA);
+			break;
+		case PT_QRTZ:
+			if (Probability::randFloat() < prob_breakElectronics)
+				sim->part_change_type(r, rx, ry, PT_PQRT);
+			break;
+		case PT_TTAN:
+		case PT_GOLD:
+			if (Probability::randFloat() < prob_breakElectronics)
+			{
+				sim->part_change_type(r, rx, ry, PT_E189);
+				parts[r].life = 8;
+				parts[r].tmp = 21000;
+			}
+			break;
 		case PT_PSCN:
 		case PT_NSCN:
 		case PT_PTCT:
