@@ -5402,7 +5402,7 @@ void Simulation::AfterSim()
 	}
 	if (emp2_trigger_count)
 	{
-		Element_E189::EMPTrigger(this, emp_trigger_count);
+		Element_E189::EMPTrigger(this, emp2_trigger_count);
 		emp2_trigger_count = 0;
 	}
 }

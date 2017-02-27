@@ -552,7 +552,7 @@ int Element_E189::EMPTrigger(Simulation *sim, int triggerCount)
 	float prob_breakLaser = Probability::binomial_gte1(triggerCount, 1.0f/120);
 	float prob_breakDChanger = Probability::binomial_gte1(triggerCount, 1.0f/160);
 	float prob_breakHeater = Probability::binomial_gte1(triggerCount, 1.0f/100);
-	float prob_breakMETL = Probability::binomial_gte1(triggerCount, 1.0f/300);
+	float prob_breakElectronics = Probability::binomial_gte1(triggerCount, 1.0f/300);
 
 	for (int r = 0; r <=sim->parts_lastActiveIndex; r++)
 	{
@@ -561,17 +561,28 @@ int Element_E189::EMPTrigger(Simulation *sim, int triggerCount)
 		ry = parts[r].y;
 		switch ( t )
 		{
+		case PT_DMND:
+			break
 		case PT_METL:
-			if (Probability::randFloat() < prob_breakMETL)
+			if (Probability::randFloat() < prob_breakElectronics)
 				sim->part_change_type(r, rx, ry, PT_BMTL);
 			break;
 		case PT_BMTL:
-			if (Probability::randFloat() < prob_breakMETL)
+			if (Probability::randFloat() < prob_breakElectronics)
 				sim->part_change_type(r, rx, ry, PT_BRMT);
+			break;
+		case PT_PSCN:
+		case PT_NSCN:
+		case PT_PTCT:
+		case PT_NTCT:
+		case PT_SWCH:
+		case PT_WIFI:
+			if (Probability::randFloat() < prob_breakElectronics)
+				sim->part_change_type(r, rx, ry, PT_BREC);
 			break;
 		case PT_CLNE:
 		case PT_PCLN:
-			if (Probability::randFloat() < prob_breakMETL)
+			if (Probability::randFloat() < prob_breakElectronics)
 				sim->part_change_type(r, rx, ry, PT_BCLN);
 			break;
 		case PT_E189:
