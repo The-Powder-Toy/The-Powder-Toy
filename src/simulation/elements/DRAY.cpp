@@ -137,7 +137,7 @@ int Element_DRAY::update(UPDATE_FUNC_ARGS)
 								}
 								else
 								{
-									if (pmap[yCopyTo][xCopyTo] && pmap[yCopyTo][xCopyTo] != PT_DMND)
+									if (pmap[yCopyTo][xCopyTo] && (pmap[yCopyTo][xCopyTo] & 0xFF) != PT_DMND)
 										sim->kill_part(pmap[yCopyTo][xCopyTo]>>8);
 								}
 							}
