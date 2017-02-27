@@ -110,7 +110,7 @@ int Element_VIRS::update(UPDATE_FUNC_ARGS)
 					}
 				}
 				//transforms things into virus here
-				else if ((r&0xFF) != PT_VIRS && (r&0xFF) != PT_VRSS && (r&0xFF) != PT_VRSG && (r&0xFF) != PT_DMND && ((r&0xFF) != PT_E189 || (rlife&~0x1) != 0x8))
+				else if ((r&0xFF) != PT_VIRS && (r&0xFF) != PT_VRSS && (r&0xFF) != PT_VRSG && !(sim->elements[r&0xFF].Properties & PROP_NODESTRUCT) && ((r&0xFF) != PT_E189 || (rlife&~0x1) != 0x8))
 				{
 					if (!(rndstore & 0x7))
 					{

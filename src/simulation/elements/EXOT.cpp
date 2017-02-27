@@ -94,7 +94,7 @@ int Element_EXOT::update(UPDATE_FUNC_ARGS)
 					}
 				}
 				if (parts[i].tmp > 245 && parts[i].life > 1337)
-					if (rt!=PT_EXOT && rt!=PT_BREC && rt!=PT_DMND && rt!=PT_CLNE && rt!=PT_PRTI && rt!=PT_PRTO && rt!=PT_PCLN && rt!=PT_VOID && rt!=PT_NBHL && rt!=PT_WARP)
+					if (rt!=PT_EXOT && rt!=PT_BREC && !(sim->elements[rt].Properties & PROP_NODESTRUCT) && rt!=PT_CLNE && rt!=PT_PRTI && rt!=PT_PRTO && rt!=PT_PCLN && rt!=PT_VOID && rt!=PT_NBHL && rt!=PT_WARP)
 					{
 						sim->create_part(i, x, y, rt);
 						return 1;

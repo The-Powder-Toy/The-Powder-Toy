@@ -137,8 +137,9 @@ int Element_DRAY::update(UPDATE_FUNC_ARGS)
 								}
 								else
 								{
-									if (pmap[yCopyTo][xCopyTo] && (pmap[yCopyTo][xCopyTo] & 0xFF) != PT_DMND)
-										sim->kill_part(pmap[yCopyTo][xCopyTo]>>8);
+									int r2 = pmap[yCopyTo][xCopyTo];
+									if (r2 && !(sim->elements[r2 & 0xFF].Properties & PROP_NODESTRUCT))
+										sim->kill_part(r2>>8);
 								}
 							}
 							if (type == PT_SPRK) // spark hack

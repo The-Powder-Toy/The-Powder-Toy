@@ -134,6 +134,8 @@ int Element_LIGH::update(UPDATE_FUNC_ARGS)
 						parts[r>>8].life-=powderful/100;
 					break;
 				default:
+					if (sim->elements[rt].Properties & PROP_NODESTRUCT)
+						continue;
 					break;
 				}
 				if ((sim->elements[r&0xFF].Properties&PROP_CONDUCTS) && parts[r>>8].life==0)

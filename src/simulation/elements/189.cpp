@@ -55,7 +55,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 	int tron_rx[4] = {-1, 0, 1, 0};
 	int tron_ry[4] = { 0,-1, 0, 1};
 	int rx, ry, ttan = 0, rlife = parts[i].life, direction, r, ri, rtmp, rctype;
-	int rsign, rndstore, trade, transfer;
+	int rsign, rndstore, trade, transfer, rt;
 	float rvx, rvy, rdif;
 	rtmp = parts[i].tmp;
 	
@@ -276,14 +276,15 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						rndstore = rand(); trade = 0;
 					}
 					r = pmap[y+ry][x+rx];
-					if ((r&0xFF) == PT_E189)
+					rt = r & 0xFF;
+					if (!r || (sim->elements[rt].Properties & PROP_NODESTRUCT) || rt == PT_VIBR || rt == PT_BVBR || rt == PT_WARP)
+						continue;
+					if (rt == PT_E189)
 					{
 						if (parts[r>>8].life == 8)
 							parts[r>>8].tmp += 1000;
 						continue;
 					}
-					if (!r || (r&0xFF) == PT_DMND || (r&0xFF) == PT_VIBR || (r&0xFF) == PT_BVBR || (r&0xFF) == PT_WARP)
-						continue;
 					if (!(rndstore & 0x7))
 					{
 						sim->part_change_type(r>>8, x+rx, y+ry, PT_E189);
