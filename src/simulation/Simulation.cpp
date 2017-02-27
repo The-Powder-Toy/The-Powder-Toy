@@ -5405,6 +5405,11 @@ void Simulation::AfterSim()
 		Element_E189::EMPTrigger(this, emp2_trigger_count);
 		emp2_trigger_count = 0;
 	}
+	if (E189_pause)
+	{
+		E189_pause = false;
+		sys_pause = true;
+	}
 }
 
 Simulation::~Simulation()
@@ -5437,6 +5442,7 @@ Simulation::Simulation():
 	aheat_enable(0),
 	water_equal_test(0),
 	sys_pause(0),
+	E189_pause(0),
 	framerender(0),
 	pretty_powder(0),
 	sandcolour_frame(0)
