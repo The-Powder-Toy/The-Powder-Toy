@@ -65,6 +65,7 @@ int Element_SWCH::update(UPDATE_FUNC_ARGS)
 					continue;
 				int pavg = sim->parts_avg(i,r>>8,PT_INSL);
 				if (pavg != PT_INSL && pavg != PT_INDI)
+				{
 					rt = r&0xFF;
 					if (rt==PT_SWCH)
 					{
