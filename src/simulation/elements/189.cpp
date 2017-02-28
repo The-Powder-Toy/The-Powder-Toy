@@ -303,8 +303,14 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 					if (!r)
 						continue;
 					if ((r&0xFF) == PT_SPRK && parts[r>>8].life == 3)
-						sim->E189_pause = true;
+					{
+						if (rtmp & 1)
+							sim->E189_pause |= 2;
+						else
+							sim->E189_pause |= 1;
+					}
 				}
+		break;
 	case 11:
 		for (int rx = -1; rx <= 1; rx++)
 			for (int ry = -1; ry <= 1; ry++)
