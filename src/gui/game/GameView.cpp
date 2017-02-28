@@ -2294,7 +2294,7 @@ void GameView::OnDraw()
 			
 			if (type == PT_E189)
 			{
-				if (partlife == 4 || partlife == 7)
+				if (partlife == 4 || partlife == 7 || partlife == 11)
 					wavelengthGfx = (ctype&0x3FFFFFFF);
 				if (partlife == 5)
 				{
@@ -2327,7 +2327,7 @@ void GameView::OnDraw()
 				{
 					if (type == PT_E189 && partlife >= 0 && partlife <= 10)
 					{
-						const char* E189Modes[] = {"PRINS", "PRINS", "TRONI", "TRONO", "LASER", "DIRCH", "HEATER", "PHTD", "VIBR2", "VIBR2", "DEBUG"};
+						const char* E189Modes[] = {"PRINS", "PRINS", "TRONI", "TRONO", "LASER", "DIRCH", "HEATER", "PHTD", "VIBR2", "VIBR2", "DEBUG", "PHTEM"};
 						sampleInfo << E189Modes[partlife];
 					}
 					else
@@ -2363,7 +2363,7 @@ void GameView::OnDraw()
 					sampleInfo << c->ElementResolve(type, ctype);
 				else if (type == PT_E189 && partlife >= 0 && partlife <= 10)
 				{
-					const char* E189Modes[] = {"PRINS", "PRINS", "TRONI", "TRONO", "LASER", "DIRCH", "HEATER", "PHTD", "VIBR2", "VIBR2", "DEBUG"};
+					const char* E189Modes[] = {"PRINS", "PRINS", "TRONI", "TRONO", "LASER", "DIRCH", "HEATER", "PHTD", "VIBR2", "VIBR2", "DEBUG", "PHTEM"};
 					sampleInfo << E189Modes[partlife];
 				}
 				else
