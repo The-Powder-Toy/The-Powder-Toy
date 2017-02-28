@@ -3284,6 +3284,11 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 				parts[i].tmp2 = 4;
 				break;
 			}
+			case PT_E189:
+			{
+				parts[i].life = v;
+				break;
+			}
 			default:
 				break;
 		}
