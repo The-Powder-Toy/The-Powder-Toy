@@ -319,6 +319,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						parts[ri].vx = (float)(-3 * rx);
 						parts[ri].vy = (float)(-3 * ry);
 						parts[ri].life = parts[i].tmp2;
+						parts[ri].temp = parts[i].temp;
 
 						rtmp = parts[i].ctype & 0x3FFFFFFF;
 						if (rtmp)
