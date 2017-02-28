@@ -305,6 +305,23 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 					if ((r&0xFF) == PT_SPRK && parts[r>>8].life == 3)
 						sim->E189_pause = true;
 				}
+	case 11:
+		for (int rx = -1; rx <= 1; rx++)
+			for (int ry = -1; ry <= 1; ry++)
+				if (BOUNDS_CHECK && (rx || ry))
+				{
+					int r = pmap[y+ry][x+rx];
+					if (!r)
+						continue;
+					if ((r&0xFF) == PT_SPRK && parts[r>>8].life == 3)
+					{
+						ri = sim->create_part(-3, x-rx, y-ry, PT_PHOT);
+						parts[ri].vx = (float)(-3 * rx);
+						parts[ri].vy = (float)(-3 * ry);
+						if (ri > i)
+							parts[r].flags |= FLAG_SKIPMOVE;
+					}
+				}
 	}
 	
 	if(ttan>=2) {
@@ -384,6 +401,9 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 		break;
 	case 10:
 		*colr = 0xBC; *colg = 0x00; *colb = 0xBC;
+		break;
+	case 11:
+		*colr = 0x90; *colg = 0x40; *colb = 0xA8;
 		break;
 	}
 	return 0;
@@ -530,8 +550,8 @@ void Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* p
 	}
 }
 
-//#TPT-Directive ElementHeader Element_E189 static void createPhotons(Simulation* sim, int i, int x, int y, Particle* part_phot, Particle* part_E189)
-void Element_E189::createPhotons(Simulation* sim, int i, int x, int y, Particle* part_phot, Particle* part_E189)
+//#TPT-Directive ElementHeader Element_E189 static void duplicatePhotons(Simulation* sim, int i, int x, int y, Particle* part_phot, Particle* part_E189)
+void Element_E189::duplicatePhotons(Simulation* sim, int i, int x, int y, Particle* part_phot, Particle* part_E189)
 {
 	int rtmp = part_E189->tmp, ri;
 	if (!rtmp)
@@ -654,6 +674,7 @@ int Element_E189::EMPTrigger(Simulation *sim, int triggerCount)
 				break;
 			case 4:
 			case 7:
+			case 11:
 				if (Probability::randFloat() < prob_randLaser)
 				{
 					parts[r].ctype += (rand() << 15) + rand();
