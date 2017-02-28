@@ -2855,6 +2855,11 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 			parts[index].ctype = PT_DUST;
 			return index;
 		}
+		if (p == -2 && type == PT_E189 && parts[index].life == 10)
+		{
+			E189_pause &= ~2;
+			return index;
+		}
 		if (p==-2 && ((elements[type].Properties & PROP_DRAWONCTYPE) || type==PT_CRAY))
 		{
 			parts[index].ctype = PT_SPRK;
@@ -2865,11 +2870,6 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 		if (p == -2 && type == PT_INST)
 		{
 			FloodINST(x, y, PT_SPRK, PT_INST);
-			return index;
-		}
-		if (p == -2 && type == PT_E189 && parts[index].life == 10)
-		{
-			E189_pause &= ~2;
 			return index;
 		}
 		parts[index].type = PT_SPRK;
