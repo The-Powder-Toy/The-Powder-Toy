@@ -2867,6 +2867,11 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 			FloodINST(x, y, PT_SPRK, PT_INST);
 			return index;
 		}
+		if (p == -2 && type == PT_E189 && parts[index].life == 11)
+		{
+			E189_pause &= ~2;
+			return index;
+		}
 		parts[index].type = PT_SPRK;
 		parts[index].life = 4;
 		parts[index].ctype = type;
@@ -5082,7 +5087,7 @@ void Simulation::RecalcFreeParticles()
 			NUM_PARTS ++;
 
 			//decrease particle life
-			if (!sys_pause || framerender)
+			if (!sys_pause && !(E189_pause & 2) || framerender)
 			{
 				if (t<0 || t>=PT_NUM || !elements[t].Enabled)
 				{
@@ -5201,7 +5206,7 @@ void Simulation::CheckStacking()
 //updates pmap, gol, and some other simulation stuff (but not particles)
 void Simulation::BeforeSim()
 {
-	if (!sys_pause||framerender)
+	if (!sys_pause && !(E189_pause & 2) || framerender)
 	{
 		air->update_air();
 
@@ -5241,7 +5246,7 @@ void Simulation::BeforeSim()
 
 	RecalcFreeParticles();
 
-	if (!sys_pause || framerender)
+	if (!sys_pause && !(E189_pause & 2) || framerender)
 	{
 		// decrease wall conduction, make walls block air and ambient heat
 		int x, y;
@@ -5409,10 +5414,10 @@ void Simulation::AfterSim()
 		Element_E189::EMPTrigger(this, emp2_trigger_count);
 		emp2_trigger_count = 0;
 	}
-	if (E189_pause)
+	if (E189_pause & 1)
 	{
-		E189_pause = false;
 		sys_pause = true;
+		E189_pause &= ~1;
 	}
 }
 
