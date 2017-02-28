@@ -130,8 +130,8 @@ int Element_PCLN::update(UPDATE_FUNC_ARGS)
 			{
 				if (parts[i].ctype==PT_LAVA && parts[i].tmp>0 && parts[i].tmp<PT_NUM && sim->elements[parts[i].tmp].HighTemperatureTransition==PT_LAVA)
 					parts[np].ctype = parts[i].tmp;
-				else if (parts[i].ctype==PT_E189)
-					parts[np].life = parts[i].tmp;
+				// else if (parts[i].ctype==PT_E189) // failed
+				//	parts[np].life = parts[i].tmp;
 			}
 		}
 	}
