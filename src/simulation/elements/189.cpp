@@ -318,8 +318,14 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						ri = sim->create_part(-3, x-rx, y-ry, PT_PHOT);
 						parts[ri].vx = (float)(-3 * rx);
 						parts[ri].vy = (float)(-3 * ry);
+						parts[ri].life = parts[i].life;
+
+						rtmp = parts[i].ctype & 0x3FFFFFFF;
+						if (rtmp)
+							parts[ri].ctype = rtmp;
+
 						if (ri > i)
-							parts[r].flags |= FLAG_SKIPMOVE;
+							parts[ri].flags |= FLAG_SKIPMOVE;
 					}
 				}
 	}
