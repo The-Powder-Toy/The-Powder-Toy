@@ -939,7 +939,7 @@ void GameController::Update()
 
 	Simulation * sim = gameModel->GetSimulation();
 	sim->BeforeSim();
-	if (!sim->sys_pause || sim->framerender)
+	if (!sim->sys_pause && !(sim->E189_pause & 2) || sim->framerender)
 	{
 		sim->UpdateParticles(0, NPART);
 		sim->AfterSim();
