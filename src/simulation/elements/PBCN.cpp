@@ -135,10 +135,12 @@ int Element_PBCN::update(UPDATE_FUNC_ARGS)
 			else if (parts[i].ctype!=PT_LIGH || !(rand()%30))
 			{
 				int np = sim->create_part(-1, x+rand()%3-1, y+rand()%3-1, parts[i].ctype&0xFF);
-				if (np>-1)
+				if (np>=0)
 				{
 					if (parts[i].ctype==PT_LAVA && parts[i].tmp>0 && parts[i].tmp<PT_NUM && sim->elements[parts[i].tmp].HighTemperatureTransition==PT_LAVA)
 						parts[np].ctype = parts[i].tmp;
+					else if (parts[i].ctype==PT_E189)
+						parts[np].life = parts[i].tmp;
 				}
 			}
 		}
