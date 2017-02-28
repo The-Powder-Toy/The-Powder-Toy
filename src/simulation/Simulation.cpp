@@ -2867,7 +2867,7 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 			FloodINST(x, y, PT_SPRK, PT_INST);
 			return index;
 		}
-		if (p == -2 && type == PT_E189 && parts[index].life == 11)
+		if (p == -2 && type == PT_E189 && parts[index].life == 10)
 		{
 			E189_pause &= ~2;
 			return index;
