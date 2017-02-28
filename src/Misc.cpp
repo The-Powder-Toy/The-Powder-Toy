@@ -131,7 +131,7 @@ void *file_load(char *fn, int *size)
 	}
 	int readsize = fread(s, *size, 1, f);
 	fclose(f);
-	if (readsize != *size)
+	if (readsize != 1)
 	{
 		free(s);
 		return NULL;
