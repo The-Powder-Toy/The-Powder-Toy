@@ -456,7 +456,7 @@ VideoBuffer * Element_E189::iconGen(int toolID, int width, int height)
 void Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* part_phot, Particle* part_E189) // photons direction/type changer
 {
 	int rtmp = part_E189->tmp, rct = part_E189->ctype, mask = 0x3FFFFFFF;
-	int ctype, r1;
+	int ctype, r1, r2;
 	float rvx, rvy, rvx2, rvy2, rdif;
 	long long int lsb;
 	rvx = (float)(((rtmp ^ 0x80) & 0xFF) - 0x80) / 16.0f;
@@ -539,6 +539,35 @@ void Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* p
 		case 7:
 			if (rand() & 1) // random toggle flag
 				part_phot->ctype ^=  (1 << (rct & 0x1F));
+			break;
+		case 8: // reversing wavelength from "Hacker's Delight"
+			r1 = part_phot->ctype;
+			r2 = (r1 << 15) | (r1 >> 15); // wavelength rotate 15
+			r1 = (r2 ^ (r2>>10)) & 0x000F801F; // swap 10
+			r2 ^= (r1 | (r1<<10));
+			r1 = (r2 ^ (r2>> 3)) & 0x06318C63; // swap 3
+			r2 ^= (r1 | (r1<< 3));
+			r1 = (r2 ^ (r2>> 1)) & 0x1294A529; // swap 1
+			part_phot->ctype = (r1 | (r1<< 1)) ^ r2;
+			break;
+		case 15: // get "extraLoopsCA" info, without pause state
+			if (!sim->extraLoopsCA)
+				r1 = 0x1;
+			else
+				r1 = 0x2 << sim->extraLoopsType;
+			if (sim->elementCount[PT_LOVE] > 0)
+				r1 |= 0x10;
+			if (sim->elementCount[PT_LOLZ] > 0)
+				r1 |= 0x20;
+			if (sim->elementCount[PT_WIRE] > 0)
+				r1 |= 0x40;
+			if (sim->elementCount[PT_LIFE] > 0)
+				r1 |= 0x80;
+			if (sim->player.spwn)
+				r1 |= 0x100;
+			if (sim->player2.spwn)
+				r1 |= 0x200;
+			part_phot->ctype = r1;
 			break;
 		}
 		part_phot->ctype &= mask;
