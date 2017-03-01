@@ -567,6 +567,14 @@ void Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* p
 				r1 |= 0x100;
 			if (sim->player2.spwn)
 				r1 |= 0x200;
+			if (sim->elementCount[PT_WIFI] > 0)
+				r1 |= 0x400;
+			if (sim->elementCount[PT_DMND] > 0)
+				r1 |= 0x800;
+			if (sim->elementCount[PT_INSL] > 0)
+				r1 |= 0x1000;
+			if (sim->elementCount[PT_INDI] > 0)
+				r1 |= 0x2000;
 			part_phot->ctype = r1;
 			break;
 		}
