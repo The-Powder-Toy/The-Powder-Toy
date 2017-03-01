@@ -511,7 +511,7 @@ void Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* p
 		break;
 	case 4:
 		ctype = part_phot->ctype;
-		switch ((rct >> 5) & 7)
+		switch ((rct >> 5) & 15)
 		{
 		case 0:
 			part_phot->ctype <<= (rct & 0x1F); // red shift
