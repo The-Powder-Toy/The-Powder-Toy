@@ -2325,9 +2325,9 @@ void GameView::OnDraw()
 				}
 				else
 				{
-					if (type == PT_E189 && partlife >= 0 && partlife <= 11)
+					if (type == PT_E189 && partlife >= 0 && partlife <= 12)
 					{
-						const char* E189Modes[] = {"PRINS", "PRINS", "TRONI", "TRONO", "LASER", "DIRCH", "HEATER", "PHTD", "VIBR2", "VIBR2", "DEBUG", "PHTEM"};
+						const char* E189Modes[] = {"PRINS", "PRINS", "TRONI", "TRONO", "LASER", "DIRCH", "HEATER", "PHTD", "VIBR2", "VIBR2", "DEBUG", "PHTEM", "SPREFL"};
 						sampleInfo << E189Modes[partlife];
 					}
 					else
@@ -2361,9 +2361,9 @@ void GameView::OnDraw()
 					sampleInfo << c->ElementResolve(type, -1) << " with " << c->ElementResolve(ctype, (int)sample.particle.pavg[1]);
 				else if (type == PT_LIFE)
 					sampleInfo << c->ElementResolve(type, ctype);
-				else if (type == PT_E189 && partlife >= 0 && partlife <= 11)
+				else if (type == PT_E189 && partlife >= 0 && partlife <= 12)
 				{
-					const char* E189Modes[] = {"PRINS", "PRINS", "TRONI", "TRONO", "LASER", "DIRCH", "HEATER", "PHTD", "VIBR2", "VIBR2", "DEBUG", "PHTEM"};
+					const char* E189Modes[] = {"PRINS", "PRINS", "TRONI", "TRONO", "LASER", "DIRCH", "HEATER", "PHTD", "VIBR2", "VIBR2", "DEBUG", "PHTEM", "SPREFL"};
 					sampleInfo << E189Modes[partlife];
 				}
 				else
