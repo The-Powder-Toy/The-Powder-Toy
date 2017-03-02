@@ -31,7 +31,7 @@ int TPTScriptInterface::Command(std::string command)
 	char * delimitPtr = rawCommand;
 	for (;;)
 	{
-		while (*delimitPtr == ' ' || *delimitPtr == '\0')
+		while (*delimitPtr != ' ' && *delimitPtr != '\0')
 			delimitPtr++;
 		if (delimitPtr != currentCommand)
 		{
