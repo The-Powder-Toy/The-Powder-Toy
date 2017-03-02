@@ -45,7 +45,7 @@ int TPTScriptInterface::Command(std::string command)
 		{
 			tempChar = delimitPtr[0];
 			delimitPtr[0] = 0;
-			cout << std::string(currentWord) << endl;
+			words.push_back(std::string(currentWord)); // not cout
 			currentWord = delimitPtr + 1;
 		}
 		if (tempChar == '\0')
