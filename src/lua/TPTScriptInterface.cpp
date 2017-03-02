@@ -37,7 +37,7 @@ int TPTScriptInterface::Command(std::string command)
 		{
 			if (*currentCommand == '(')
 				nestedLevel++;
-			else if (delimitPtr[-1] == ')' && nestedLevel)
+			if (delimitPtr[-1] == ')' && nestedLevel)
 				nestedLevel--;
 		}
 		if (!nestedLevel)
