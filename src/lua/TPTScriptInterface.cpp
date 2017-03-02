@@ -94,7 +94,7 @@ ValueType TPTScriptInterface::testType(std::string word)
 	else if (word == "quit")
 		return TypeFunction;
 
-	if (rawWord[0] == "(" && rawWord[word.length() - 1] == ")")
+	if (rawWord[0] == '(' && rawWord[word.length() - 1] == ')')
 		return TypeParenthesized;
 	
 	//Basic type
