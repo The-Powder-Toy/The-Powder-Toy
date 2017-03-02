@@ -346,7 +346,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						continue;
 					if (rt == PT_SPRK && parts[r>>8].life == 3)
 						parts[i].tmp ^= 1;
-					if (sim->elements[rt].Properties&PROP_CONDUCTS && parts[r>>8].life==0)
+					if (parts[i].tmp && sim->elements[rt].Properties&PROP_CONDUCTS && parts[r>>8].life==0)
 					{
 						parts[r>>8].life = 4;
 						parts[r>>8].ctype = rt;
