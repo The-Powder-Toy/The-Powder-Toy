@@ -66,15 +66,15 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 	stmp = parts[i].tmp;
 	if (parts[i].tmp2 & 1)
 	{
-		if (parts[i].life == 1) {
+		if (parts[i].life <= 1) {
 			for (s = parts[i].tmp; s > 0; s--)
 			{
 				rr = sim->create_part(-1, x + rand()%7-3, y + rand()%7-3, PT_E185);
 				if (rr >= 0)
 				{
-					parts[rr].tmp  = 5;
+					parts[rr].tmp  = rand() % 5 + 2;
 					parts[rr].tmp2 = 1;
-					parts[rr].life = 10;
+					parts[rr].life = rand() % 16 + 3;
 				}
 			}
 			sim->kill_part(i);
