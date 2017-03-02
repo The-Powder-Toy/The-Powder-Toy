@@ -46,6 +46,11 @@ int TPTScriptInterface::Command(std::string command)
 			words.push_back(std::string(currentWord));
 			currentWord = delimitPtr + 1;
 		}
+		if (*delimitPtr == '\0')
+		{
+			words.push_back(std::string(currentWord));
+			break;
+		}
 		currentCommand = ++delimitPtr;
 	}
 	while(!words.empty())
