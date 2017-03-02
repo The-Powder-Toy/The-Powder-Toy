@@ -335,6 +335,25 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 							parts[ri].flags |= FLAG_SKIPMOVE;
 					}
 				}
+	case 12: // SPRK reflector
+		for (int rx = -1; rx <= 1; rx++)
+			for (int ry = -1; ry <= 1; ry++)
+				if (BOUNDS_CHECK && (rx || ry))
+				{
+					int r = pmap[y+ry][x+rx];
+					rt = r & 0xFF;
+					if (!r)
+						continue;
+					if (rt == PT_SPRK && parts[r>>8].life == 3)
+						parts[i].tmp ^= 1;
+					if (sim->elements[rt].Properties&PROP_CONDUCTS && parts[r>>8].life==0)
+					{
+						parts[r>>8].life = 4;
+						parts[r>>8].ctype = rt;
+						sim->part_change_type(r>>8,x+rx,y+ry,PT_SPRK);
+					}
+				}
+		break;
 	}
 	
 	if(ttan>=2) {
@@ -417,6 +436,9 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 		break;
 	case 11:
 		*colr = 0x90; *colg = 0x40; *colb = 0xA8;
+		break;
+	case 12:
+		*colr = 0xBF; *colg = 0xFF; *colb = 0x05;
 		break;
 	}
 	return 0;

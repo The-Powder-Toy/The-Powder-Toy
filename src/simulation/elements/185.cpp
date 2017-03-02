@@ -39,7 +39,7 @@ Element_E185::Element_E185()
 
 	Temperature = R_TEMP+4.0f	+273.15f;
 	HeatConduct = 251;
-	Description = "Experimental element. Some kind of nuclear fuel.";
+	Description = "Experimental element. Some kind of nuclear fuel, or replicating powder";
 
 	Properties = TYPE_PART|PROP_NEUTPASS|PROP_RADIOACTIVE|PROP_LIFE_DEC;
 
@@ -64,67 +64,86 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 	const int limit = 20;
 	rr = sim->photons[y][x];
 	stmp = parts[i].tmp;
-	if(stmp < limit && !parts[i].life)
+	if (parts[i].tmp2 & 1)
 	{
-		sctype = parts[i].ctype;
-		if (!(rand()%140) && !(rand()%100) && !stmp)
-		{
-			if (!sctype)
-				s = sim->create_part(-3, x, y, PT_ELEC);
-			else
-				s = sim->create_part(-3, x, y, sctype);
-			if (s >= 0)
+		if (parts[i].life == 1) {
+			for (s = parts[i].tmp; s > 0; s--)
 			{
-				parts[i].life = cooldown;
-				parts[i].tmp = 1;
-				parts[i].temp += 10;
-				parts[s].temp = parts[i].temp;
-				if (sctype == PT_GRVT)
-					parts[s].tmp = 0;
+				rr = sim->create_part(-1, x + rand()%7-3, y + rand()%7-3, PT_E185);
+				if (rr >= 0)
+				{
+					parts[rr].tmp  = 5;
+					parts[rr].tmp2 = 1;
+					parts[rr].life = 10;
+				}
 			}
+			sim->kill_part(i);
 		}
-		if (rr && (rr & 0xFF) != PT_NEUT && !(rand()%80) && ((stmp - 11) < rand() % 10))
+	}
+	else
+	{
+		if (stmp < limit && !parts[i].life)
 		{
-			if (rand() % 10)
+			sctype = parts[i].ctype;
+			if (!(rand()%140) && !(rand()%100) && !stmp)
 			{
 				if (!sctype)
 					s = sim->create_part(-3, x, y, PT_ELEC);
 				else
 					s = sim->create_part(-3, x, y, sctype);
-			}
-			else
-				s = sim->create_part(-3, x, y, PT_E186);
-			parts[i].life = cooldown;
-			parts[i].tmp ++;
-			parts[i].temp += (stmp >= 10) ? (stmp - 8) * 10 : 10;
-
-			parts[rr>>8].temp = parts[i].temp;
-			if (s >= 0)
-			{
-				parts[s].ctype = sctype;
-				parts[s].temp = parts[i].temp;
-				if (sctype == PT_GRVT)
-					parts[s].tmp = 0;
-			}
-		}
-	}
-	if ((rr & 0xFF) == PT_NEUT && !(rand()%10))
-	{
-		s = parts[i].tmp;
-		parts[i].tmp -= s > 0 ? (s >> 3) + 1 : 0;
-	}
-	for (rx=-2; rx<3; rx++)
-		for (ry=-2; ry<3; ry++)
-			if (BOUNDS_CHECK && (rx || ry))
-			{
-				r = pmap[y+ry][x+rx];
-				if ((r & 0xFF) == PT_E182 && !(rand()%40))
+				if (s >= 0)
 				{
-					if (rand()%4)
-						parts[i].tmp = 0;
-					parts[r>>8].tmp = 0;
+					parts[i].life = cooldown;
+					parts[i].tmp = 1;
+					parts[i].temp += 10;
+					parts[s].temp = parts[i].temp;
+					if (sctype == PT_GRVT)
+						parts[s].tmp = 0;
 				}
 			}
+			if (rr && (rr & 0xFF) != PT_NEUT && !(rand()%80) && ((stmp - 11) < rand() % 10))
+			{
+				if (rand() % 10)
+				{
+					if (!sctype)
+						s = sim->create_part(-3, x, y, PT_ELEC);
+					else
+						s = sim->create_part(-3, x, y, sctype);
+				}
+				else
+					s = sim->create_part(-3, x, y, PT_E186);
+				parts[i].life = cooldown;
+				parts[i].tmp ++;
+				parts[i].temp += (stmp >= 10) ? (stmp - 8) * 10 : 10;
+
+				parts[rr>>8].temp = parts[i].temp;
+				if (s >= 0)
+				{
+					parts[s].ctype = sctype;
+					parts[s].temp = parts[i].temp;
+					if (sctype == PT_GRVT)
+						parts[s].tmp = 0;
+				}
+			}
+		}
+		if ((rr & 0xFF) == PT_NEUT && !(rand()%10))
+		{
+			s = parts[i].tmp;
+			parts[i].tmp -= s > 0 ? (s >> 3) + 1 : 0;
+		}
+		for (rx=-2; rx<3; rx++)
+			for (ry=-2; ry<3; ry++)
+				if (BOUNDS_CHECK && (rx || ry))
+				{
+					r = pmap[y+ry][x+rx];
+					if ((r & 0xFF) == PT_E182 && !(rand()%40))
+					{
+						if (rand()%4)
+							parts[i].tmp = 0;
+						parts[r>>8].tmp = 0;
+					}
+				}
+	}
 	return 0;
 }
 
@@ -132,7 +151,11 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 //#TPT-Directive ElementHeader Element_E185 static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_E185::graphics(GRAPHICS_FUNC_ARGS)
 {
-	if (cpart->tmp >= 20) {
+	if (cpart->tmp2 & 1) {
+		*colr = 0xFF;
+		*colg = 0xA0;
+		*colb = 0x00;
+	} else if (cpart->tmp >= 20) {
 		*colr = 0x70;
 		*colg = 0x70;
 		*colb = 0x70;
