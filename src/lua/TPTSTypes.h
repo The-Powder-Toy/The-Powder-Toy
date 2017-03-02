@@ -56,7 +56,7 @@ public:
 			return "Null";
 		case TypeFunction:
 			return "Function";
-		case Parenthesized:
+		case TypeParenthesized:
 			return "Parenthesized";
 		default:
 			return "Unknown";
@@ -78,7 +78,7 @@ public:
 			return "Null";
 		case TypeFunction:
 			return "Function";
-		case Parenthesized:
+		case TypeParenthesized:
 			return "Parenthesized";
 		default:
 			return "Unknown";
