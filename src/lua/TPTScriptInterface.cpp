@@ -21,6 +21,7 @@ int TPTScriptInterface::Command(std::string command)
 	std::deque<std::string> words;
 	std::deque<AnyType> commandWords;
 	int retCode, nestedLevel = 0;
+	char tempChar;
 
 	//Split command into words, put them on the stack
 	char * rawCommand;
@@ -42,11 +43,12 @@ int TPTScriptInterface::Command(std::string command)
 		}
 		if (!nestedLevel)
 		{
+			tempChar = delimitPtr[0];
 			delimitPtr[0] = 0;
-			words.push_back(std::string(currentWord));
+			cout << std::string(currentWord) << endl;
 			currentWord = delimitPtr + 1;
 		}
-		if (*delimitPtr == '\0')
+		if (tempChar == '\0')
 		{
 			if (nestedLevel)
 				words.push_back(std::string(currentWord));
