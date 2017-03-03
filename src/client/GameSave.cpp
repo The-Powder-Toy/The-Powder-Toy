@@ -1022,13 +1022,6 @@ void GameSave::readOPS(char * data, int dataLength)
 					{
 						if(i >= partsDataLen) goto fail;
 						int tempDesc = partsData[i++], tempData;
-						if (tempDesc & 0x4)
-						{
-							if(i+1 >= partsDataLen) goto fail;
-							tempData = (((unsigned)partsData[i++]) << 24);
-							tempData |= (((unsigned)partsData[i++]) << 16);
-							particles[newIndex].tmp2 |= tempData;
-						}
 						switch (tempDesc & 0x3)
 						{
 							case 0: break;
@@ -1050,6 +1043,13 @@ void GameSave::readOPS(char * data, int dataLength)
 								tempData |= (((unsigned)partsData[i++]) << 16);
 								particles[newIndex].tmp3 = tempData;
 								break;
+						}
+						if (tempDesc & 0x4)
+						{
+							if(i+1 >= partsDataLen) goto fail;
+							tempData = (((unsigned)partsData[i++]) << 24);
+							tempData |= (((unsigned)partsData[i++]) << 16);
+							particles[newIndex].tmp2 |= tempData;
 						}
 					}
 
@@ -2173,7 +2173,7 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 				}
 				
 				// Tmp3 and extra data (optional), varies
-				if ((particles[i].tmp2 & 0xFFFF0000) || particles[i].tmp3)
+				if (particles[i].tmp3 || (particles[i].tmp2 & 0xFFFF0000))
 				{
 					fieldDesc |= 1 << 14;
 					ExtraData = (unsigned)particles[i].tmp3;
@@ -2196,10 +2196,11 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 						else
 							desc2Data |= 1;
 					}
-					if (ExtraData = particles[i].tmp2 >> 16) // if tmp2 >= 2 ** 16
+					ExtraData = (unsigned)(particles[i].tmp2 >> 16);
+					if (ExtraData) // if tmp2 >= 2 ** 16
 					{
-						partsData[partsDataLen++] = (ExtraData >> 24) & 0x00FF;
-						partsData[partsDataLen++] = (ExtraData >> 16) & 0x00FF;
+						partsData[partsDataLen++] = (ExtraData >> 8) & 0x00FF;
+						partsData[partsDataLen++] = ExtraData & 0x00FF;
 						desc2Data |= 4;
 					}
 					partsData[desc2Pos] = desc2Data;
