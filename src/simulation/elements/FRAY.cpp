@@ -48,11 +48,10 @@ Element_FRAY::Element_FRAY()
 int Element_FRAY::update(UPDATE_FUNC_ARGS)
 {
 	int curlen;
-	if(parts[i].tmp > 0) {
+	if(parts[i].tmp > 0)
 		curlen = parts[i].tmp;
-	} else {
+	else
 		curlen = 10;
-	}
 	int r, nxx, nyy, len, nxi, nyi, rx, ry;
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)
