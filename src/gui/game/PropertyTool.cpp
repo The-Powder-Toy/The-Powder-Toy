@@ -93,7 +93,7 @@ sim(sim_)
 	ui::Engine::Ref().ShowWindow(this);
 }
 
-int PropertyWindow::convertFromHex(const char * str);
+int PropertyWindow::convertFromHex(const char * str)
 {
 	int r = 0;
 	char s;
