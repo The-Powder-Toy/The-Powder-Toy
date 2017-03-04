@@ -440,6 +440,31 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 	case 12:
 		*colr = 0xBF; *colg = 0xFF; *colb = 0x05;
 		break;
+	case 13:
+		if (cpart->tmp2 & 0x1)
+		{
+			ptmp = cpart->ctype;
+			*colr = *colg = *colb = 0;
+			for (x=0; x<12; x++) {
+				*colr += (wl >> (x+18)) & 1;
+				*colb += (wl >>  x)     & 1;
+			}
+			for (x=0; x<12; x++)
+				*colg += (wl >> (x+9))  & 1;
+
+			x = 624/(*colr+*colg+*colb+1);
+			*colr *= x; *colg *= x; *colb *= x;
+			*cola = (~cpart->tmp) & 0xFF;
+		}
+		else
+		{
+			ptmp = cpart->ctype ^ (cpart->tmp << 16);
+			*cola = (ptmp >> 24) & 0xFF;
+			*colr = (ptmp >> 16) & 0xFF;
+			*colg = (ptmp >> 8) & 0xFF;
+			*colb = ptmp & 0xFF;
+		}
+		break;
 	}
 	return 0;
 }
