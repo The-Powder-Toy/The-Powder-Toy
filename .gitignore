@@ -67,3 +67,4 @@ site_scons/site_tools/gch/*.pyc
 others*
 
 screenshot_*
+*.sublime*
