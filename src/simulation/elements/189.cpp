@@ -455,7 +455,7 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 
 			x = 624/(*colr+*colg+*colb+1);
 			*colr *= x; *colg *= x; *colb *= x;
-			*cola = (~cpart->tmp) & 0xFF;
+			*cola = ~(cpart->tmp) & 0xFF;
 		}
 		else
 		{
@@ -464,6 +464,7 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 			*colr = (ptmp >> 16) & 0xFF;
 			*colg = (ptmp >> 8) & 0xFF;
 			*colb = ptmp & 0xFF;
+			*pixel_mode = FIRE_BLEND;
 		}
 		break;
 	}
