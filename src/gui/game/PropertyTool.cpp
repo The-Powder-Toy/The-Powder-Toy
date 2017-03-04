@@ -21,6 +21,7 @@ public:
 	Simulation *sim;
 	std::vector<StructProperty> properties;
 	PropertyWindow(PropertyTool *tool_, Simulation *sim);
+	int convertFromHex(const char * str);
 	void SetProperty();
 	virtual void OnDraw();
 	virtual void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
@@ -92,6 +93,26 @@ sim(sim_)
 	ui::Engine::Ref().ShowWindow(this);
 }
 
+int PropertyWindow::convertFromHex(const char * str);
+{
+	int r = 0;
+	char s;
+	while (s = *(str++))
+	{
+		r *= 10;
+		if (s >= '0' && s <= '9')
+			r += s & 0x0F;
+		else if (s >= 'A' && s <= 'F' || s >= 'a' && s <= 'f')
+			r += (s & 0x07) + 9;
+		else
+		{
+			std::exception err;
+			throw err;
+		}
+	}
+	return r;
+}
+
 void PropertyWindow::SetProperty()
 {
 	if(property->GetOption().second!=-1 && textField->GetText().length() > 0)
@@ -107,18 +128,12 @@ void PropertyWindow::SetProperty()
 					if(value.length() > 2 && value.substr(0, 2) == "0x")
 					{
 						//0xC0FFEE
-						std::stringstream buffer;
-						buffer.exceptions(std::stringstream::failbit | std::stringstream::badbit);
-						buffer << std::hex << value.substr(2);
-						buffer >> v;
+						v = convertFromHex(value.substr(2).c_str());
 					}
 					else if(value.length() > 1 && value[0] == '#')
 					{
 						//#C0FFEE
-						std::stringstream buffer;
-						buffer.exceptions(std::stringstream::failbit | std::stringstream::badbit);
-						buffer << std::hex << value.substr(1);
-						buffer >> v;
+						v = convertFromHex(value.substr(1).c_str());
 					}
 					else
 					{
