@@ -465,7 +465,8 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 			*colg = (ptmp >> 8) & 0xFF;
 			*colb = ptmp & 0xFF;
 		}
-		*pixel_mode = FIRE_BLEND;
+		*pixel_mode &= ~PMODE;
+		*pixel_mode |= PMODE_BLEND;
 		break;
 	}
 	return 0;
