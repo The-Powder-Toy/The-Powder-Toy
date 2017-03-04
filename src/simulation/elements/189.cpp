@@ -446,11 +446,11 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 			ptmp = cpart->ctype;
 			*colr = *colg = *colb = 0;
 			for (x=0; x<12; x++) {
-				*colr += (wl >> (x+18)) & 1;
-				*colb += (wl >>  x)     & 1;
+				*colr += (ptmp >> (x+18)) & 1;
+				*colb += (ptmp >> x)     & 1;
 			}
 			for (x=0; x<12; x++)
-				*colg += (wl >> (x+9))  & 1;
+				*colg += (ptmp >> (x+9))  & 1;
 
 			x = 624/(*colr+*colg+*colb+1);
 			*colr *= x; *colg *= x; *colb *= x;
