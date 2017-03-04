@@ -443,6 +443,7 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 	case 13:
 		if (cpart->tmp2 & 0x1)
 		{
+			int x;
 			ptmp = cpart->ctype;
 			*colr = *colg = *colb = 0;
 			for (x=0; x<12; x++) {
