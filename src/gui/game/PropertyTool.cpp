@@ -99,7 +99,7 @@ int PropertyWindow::convertFromHex(const char * str)
 	char s;
 	while (s = *(str++))
 	{
-		r *= 10;
+		r *= 16;
 		if (s >= '0' && s <= '9')
 			r += s & 0x0F;
 		else if (s >= 'A' && s <= 'F' || s >= 'a' && s <= 'f')
