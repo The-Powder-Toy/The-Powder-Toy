@@ -2305,7 +2305,12 @@ void GameView::OnDraw()
 						partint = 1;
 				}
 				if (partlife == 13)
-					partint = 1;
+				{
+					if (sample.particle.tmp2 & 0x1)
+						wavelengthGfx = (ctype&0x3FFFFFFF);
+					else
+						partint = 1;
+				}
 			}
 
 			if (showDebug)
