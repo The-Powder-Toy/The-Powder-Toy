@@ -505,7 +505,7 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 					break;
 				case 5:
 					tmpr = cc;
-					tmpg = 0.0f
+					tmpg = 0.0f;
 					tmpb = cc * (6.0f - hh);
 					break;
 				}
