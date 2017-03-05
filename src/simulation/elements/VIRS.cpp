@@ -50,14 +50,14 @@ int Element_VIRS::update(UPDATE_FUNC_ARGS)
 {
 	//pavg[0] measures how many frames until it is cured (0 if still actively spreading and not being cured)
 	//pavg[1] measures how many frames until it dies
-	int r, rx, ry, rndstore = rand(), rlife, rt;
+	int r, rx, ry, rndstore = rand(), rlife;
 	if (parts[i].pavg[0])
 	{
 		parts[i].pavg[0] -= (rndstore & 0x1) ? 0:1;
 		//has been cured, so change back into the original element
 		if (!parts[i].pavg[0])
 		{
-			rt = parts[r>>8].tmp2;
+			int rt = parts[r>>8].tmp2;
 			if ((rt >> 16) == 1)
 			{
 				sim->part_change_type(i,x,y,PT_E189);
@@ -122,11 +122,13 @@ int Element_VIRS::update(UPDATE_FUNC_ARGS)
 					if (!(rndstore & 0x7))
 					{
 						parts[r>>8].tmp3 = parts[r>>8].tmp2;
-						rt = r&0xFF;
-						if (rt == PT_E189)
-							parts[r>>8].tmp2 = 0x10000 | parts[r>>8].life;
-						else
-							parts[r>>8].tmp2 = (r&0xFF);
+						{
+							int rt = r&0xFF;
+							if (rt == PT_E189)
+								parts[r>>8].tmp2 = 0x10000 | parts[r>>8].life;
+							else
+								parts[r>>8].tmp2 = (r&0xFF);
+						}
 						parts[r>>8].pavg[0] = 0;
 						if (parts[i].pavg[1])
 							parts[r>>8].pavg[1] = parts[i].pavg[1] + 1;
