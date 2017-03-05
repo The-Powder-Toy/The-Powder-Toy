@@ -441,8 +441,16 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 		*colr = 0xBF; *colg = 0xFF; *colb = 0x05;
 		break;
 	case 13:
-		if (cpart->tmp2 & 0x1)
+		switch (cpart->tmp2 & 0x3)
 		{
+		case 0:
+			ptmp = cpart->ctype ^ (cpart->tmp << 16);
+			*cola = (ptmp >> 24) & 0xFF;
+			*colr = (ptmp >> 16) & 0xFF;
+			*colg = (ptmp >> 8) & 0xFF;
+			*colb = ptmp & 0xFF;
+			break;
+		case 1:
 			int x;
 			ptmp = cpart->ctype;
 			*colr = *colg = *colb = 0;
@@ -456,14 +464,57 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 			x = 624/(*colr+*colg+*colb+1);
 			*colr *= x; *colg *= x; *colb *= x;
 			*cola = ~(cpart->tmp) & 0xFF;
-		}
-		else
-		{
-			ptmp = cpart->ctype ^ (cpart->tmp << 16);
-			*cola = (ptmp >> 24) & 0xFF;
-			*colr = (ptmp >> 16) & 0xFF;
-			*colg = (ptmp >> 8) & 0xFF;
-			*colb = ptmp & 0xFF;
+			break;
+		case 2:
+			{
+				ptmp = cpart->ctype;
+				float tmpr, tmpg, tmpb;
+				float hh, ss, vv, cc;
+				ppos = (ptmp >> 16) % 0x600;
+				hh = (float)ppos / 256.0f;
+				ss = (float)((ptmp >> 8) & 0xFF) / 255.0f;
+				vv = (float)(ptmp & 0xFF);
+				cc = vv * ss;
+				pexc1 = (int)(vv - cc);
+				switch (ppos >> 8)
+				{
+				case 0:
+					tmpr = cc;
+					tmpg = cc * hh;
+					tmpb = 0.0f;
+					break;
+				case 1:
+					tmpr = cc * (2.0f - hh);
+					tmpg = cc;
+					tmpb = 0.0f;
+					break;
+				case 2:
+					tmpr = 0.0f;
+					tmpg = cc;
+					tmpb = cc * (hh - 2.0f);
+					break;
+				case 3:
+					tmpr = 0.0f;
+					tmpg = cc * (4.0f - hh);
+					tmpb = cc;
+					break;
+				case 4:
+					tmpr = cc * (hh - 4.0f);
+					tmpg = 0.0f;
+					tmpb = cc;
+					break;
+				case 5:
+					tmpr = cc;
+					tmpg = 0.0f
+					tmpb = cc * (6.0f - hh);
+					break;
+				}
+				*colr = (int)tmpr + pexc1;
+				*colg = (int)tmpg + pexc1;
+				*colb = (int)tmpb + pexc1;
+				*cola = ~(cpart->tmp) & 0xFF;
+				break;
+			}
 		}
 		*pixel_mode &= ~PMODE;
 		*pixel_mode |= PMODE_BLEND;
