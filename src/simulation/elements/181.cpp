@@ -7,7 +7,7 @@ Element_E181::Element_E181()
 	Colour = PIXPACK(0xF0F0A0);
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
-#if defined(DEBUG) || defined(SNAPSHOT)
+#if (defined(DEBUG) || defined(SNAPSHOT)) && MOD_ID == 0
 	Enabled = 1;
 #else
 	Enabled = 0;
