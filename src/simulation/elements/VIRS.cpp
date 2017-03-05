@@ -57,7 +57,7 @@ int Element_VIRS::update(UPDATE_FUNC_ARGS)
 		//has been cured, so change back into the original element
 		if (!parts[i].pavg[0])
 		{
-			int rt = parts[r>>8].tmp2;
+			int rt = parts[i].tmp2;
 			if ((rt >> 16) == 1)
 			{
 				sim->part_change_type(i,x,y,PT_E189);
