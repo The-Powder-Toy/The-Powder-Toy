@@ -168,6 +168,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 		break;
 	case 5: // reserved for Simulation.cpp
 	case 7:
+	case 13: // decoration only, no update function
 		break;
 	case 6: // heater
 		for (rx=-1; rx<2; rx++)
@@ -471,6 +472,8 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 				float tmpr, tmpg, tmpb;
 				float hh, ss, vv, cc;
 				ppos = (ptmp >> 16) % 0x600;
+				if (ppos < 0)
+					ppos += 0x600;
 				hh = (float)ppos / 256.0f;
 				ss = (float)((ptmp >> 8) & 0xFF) / 255.0f;
 				vv = (float)(ptmp & 0xFF);
