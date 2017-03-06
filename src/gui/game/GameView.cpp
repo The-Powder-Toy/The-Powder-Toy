@@ -163,6 +163,7 @@ GameView::GameView():
 	altBehaviour(false),
 	showHud(true),
 	showDebug(false),
+	showDebugState(0),
 	delayedActiveMenu(-1),
 	wallBrush(false),
 	toolBrush(false),
@@ -1592,6 +1593,12 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 			buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to copy then cut (right click = cancel)";
 			buttonTipShow = 120;
 		}
+		else if (showDebug)
+		{
+			showDebugState ++;
+			if (showDebugState >= 10)
+				showDebugState = 0;
+		}
 		break;
 	case 'v':
 		if (ctrl)
@@ -2277,6 +2284,7 @@ void GameView::OnDraw()
 		if (alpha < 50)
 			alpha = 50;
 		std::stringstream sampleInfo;
+		std::stringstream tempStream;
 		sampleInfo.precision(2);
 
 		int type = sample.particle.type;
@@ -2350,13 +2358,41 @@ void GameView::OnDraw()
 						sampleInfo << " ()";
 				}
 				sampleInfo << ", Temp: " << std::fixed << sample.particle.temp -273.15f << " C";
-				sampleInfo << ", Life: " << partlife;
-				sampleInfo << ", Tmp: " << parttmp;
+				if (!showDebugState)
+				{
+					sampleInfo << ", Life: " << partlife;
+					sampleInfo << ", Tmp: " << parttmp;
 
-				// only elements that use .tmp2 show it in the debug HUD
-				if (type == PT_CRAY || type == PT_DRAY || type == PT_EXOT || type == PT_LIGH || type == PT_SOAP || type == PT_TRON || type == PT_VIBR || type == PT_VIRS
-				 || type == PT_WARP || type == PT_LCRY || type == PT_CBNW || type == PT_TSNS || type == PT_DTEC || type == PT_PSTN || type == PT_E189)
-					sampleInfo << ", Tmp2: " << sample.particle.tmp2;
+					// only elements that use .tmp2 show it in the debug HUD
+					if (type == PT_CRAY || type == PT_DRAY || type == PT_EXOT || type == PT_LIGH || type == PT_SOAP || type == PT_TRON || type == PT_VIBR || type == PT_VIRS
+					 || type == PT_WARP || type == PT_LCRY || type == PT_CBNW || type == PT_TSNS || type == PT_DTEC || type == PT_PSTN || type == PT_E189)
+						sampleInfo << ", Tmp2: " << sample.particle.tmp2;
+				}
+				else
+				{
+					switch (showDebugState)
+					{
+						case 1: sampleInfo << ", Life: " << partlife; break;
+						case 2: sampleInfo << ", Ctype: " << ctype; break;
+						case 3:
+							sampleInfo << ", Vx: " << std::fixed << sample.particle.vx;
+							sampleInfo << ", Vy: " << std::fixed << sample.particle.vy;
+						break;
+						case 4: sampleInfo << ", Tmp: " << parttmp; break;
+						case 5: sampleInfo << ", Tmp2: " << sample.particle.tmp2; break;
+						case 6: sampleInfo << ", Tmp3: " << sample.particle.tmp3; break;
+						case 7: sampleInfo << ", Tmp4: " << sample.particle.tmp4; break;
+						case 8:
+							tempStream << std::setw(8) << std::setfill ('0') << std::hex << sample.particle.dcolour;
+							sampleInfo << ", Dcolor: 0x" << tempStream.str();
+							tempStream.str("");
+						break;
+						case 9:
+							sampleInfo << ", Pavg[0]: " << std::fixed << sample.particle.pavg[0];
+							sampleInfo << ", Pavg[1]: " << std::fixed << sample.particle.pavg[1];
+						break;
+					}
+				}
 
 				sampleInfo << ", Pressure: " << std::fixed << sample.AirPressure;
 			}
