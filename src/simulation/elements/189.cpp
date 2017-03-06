@@ -505,6 +505,7 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 		break;
 	case 14:
 		switch (cpart->tmp2 >> 24)
+		{
 		case 0:
 			Element_E189::HSV2RGB (cpart->ctype, colr, colg, colb);
 			*cola = ~(cpart->tmp2 >> 16) & 0xFF;
