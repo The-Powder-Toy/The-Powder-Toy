@@ -2267,6 +2267,9 @@ void GameView::OnDraw()
 		}
 	}
 
+	static const char* E189Modes[] = {"PRINS", "PRINS", "TRONI", "TRONO", "LASER", "DIRCH", "HEATER", "PHTD", "VIBR2", "VIBR2", "DEBUG", "PHTEM", "SPREFL", "DECOR", "DECO2"};
+	// also const static char* E189Modes[]
+	
 	if(recording)
 	{
 		std::stringstream sampleInfo;
@@ -2306,7 +2309,7 @@ void GameView::OnDraw()
 			{
 				if (partlife == 4 || partlife == 7 || partlife == 11)
 					wavelengthGfx = (ctype&0x3FFFFFFF);
-				if (partlife == 5)
+				else if (partlife == 5)
 				{
 					int partfilt = parttmp >> 18;
 					if (partfilt >= 0 && partfilt <= 5 && partfilt != 4)
@@ -2314,15 +2317,19 @@ void GameView::OnDraw()
 					if (partfilt == 4)
 						partint = 1;
 				}
-				if (partlife == 13)
+				else if (partlife == 13)
 				{
 					if ((sample.particle.tmp2 & 0x3) == 0x1)
 						wavelengthGfx = (ctype&0x3FFFFFFF);
 					else
 						partint = 1;
 				}
+				else if (partlife == 14)
+				{
+					partint = 1;
+				}
 			}
-
+			
 			if (showDebug)
 			{
 				if (type == PT_LAVA && c->IsValidElement(ctype))
@@ -2344,7 +2351,6 @@ void GameView::OnDraw()
 				{
 					if (type == PT_E189 && partlife >= 0 && partlife <= 13)
 					{
-						const char* E189Modes[] = {"PRINS", "PRINS", "TRONI", "TRONO", "LASER", "DIRCH", "HEATER", "PHTD", "VIBR2", "VIBR2", "DEBUG", "PHTEM", "SPREFL", "DECOR"};
 						sampleInfo << E189Modes[partlife];
 					}
 					else
@@ -2411,7 +2417,6 @@ void GameView::OnDraw()
 					sampleInfo << c->ElementResolve(type, ctype);
 				else if (type == PT_E189 && partlife >= 0 && partlife <= 13)
 				{
-					const char* E189Modes[] = {"PRINS", "PRINS", "TRONI", "TRONO", "LASER", "DIRCH", "HEATER", "PHTD", "VIBR2", "VIBR2", "DEBUG", "PHTEM", "SPREFL", "DECOR"};
 					sampleInfo << E189Modes[partlife];
 				}
 				else
