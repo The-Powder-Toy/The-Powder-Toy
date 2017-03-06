@@ -515,9 +515,9 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 			float freqr = 0.024543693f * (float)((ptmp >> 16) & 0xFF);
 			float freqg = 0.024543693f * (float)((ptmp >>  8) & 0xFF);
 			float freqb = 0.024543693f * (float)( ptmp & 0xFF );
-			*colr = 128 + (int)(127.5f * sinf(freqr));
-			*colg = 128 + (int)(127.5f * sinf(freqg));
-			*colb = 128 + (int)(127.5f * sinf(freqb));
+			*colr = (int)(128.0f + 127.5f * sinf(freqr));
+			*colg = (int)(128.0f + 127.5f * sinf(freqg));
+			*colb = (int)(128.0f + 127.5f * sinf(freqb));
 			break;
 		}
 		*pixel_mode &= ~PMODE;
