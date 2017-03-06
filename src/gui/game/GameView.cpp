@@ -2279,7 +2279,7 @@ void GameView::OnDraw()
 	}
 	else if(showHud)
 	{
-		const char* E189Modes[] = {"PRINS", "PRINS", "TRONI", "TRONO", "LASER", "DIRCH", "HEATER", "PHTD", "VIBR2", "VIBR2", "DEBUG", "PHTEM", "SPREFL", "DECOR", "DECO2"};
+		static const char* E189Modes[] = {"PRINS", "PRINS", "TRONI", "TRONO", "LASER", "DIRCH", "HEATER", "PHTD", "VIBR2", "VIBR2", "DEBUG", "PHTEM", "SPREFL", "DECOR", "DECO2"};
 		//Draw info about simulation under cursor
 		int wavelengthGfx = 0, alpha = 255;
 		if (toolTipPosition.Y < 120)
