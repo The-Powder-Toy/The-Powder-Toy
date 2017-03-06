@@ -445,7 +445,18 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 		switch (cpart->tmp2 & 0x3)
 		{
 		case 0:
-			ptmp = cpart->ctype ^ (cpart->tmp << 16);
+			ptmp = cpart->ctype;
+			if (cpart->tmp2 & 0x4)
+			{
+				unsigned int pcolor = cpart->tmp;
+				if ((pcolor >> 24) > (rand() % 255)) // (pcolor >>> 24) > (randint (between 0 and 254 include))
+				{
+					ptmp &= 0xFF000000;
+					ptmp |= pcolor & 0x00FFFFFF;
+				}
+			}
+			else
+				ptmp ^= (cpart->tmp << 16);
 			*cola = (ptmp >> 24) & 0xFF;
 			*colr = (ptmp >> 16) & 0xFF;
 			*colg = (ptmp >> 8) & 0xFF;
