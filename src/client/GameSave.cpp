@@ -2305,6 +2305,7 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 	bson_append_int(&b, "gravityMode", gravityMode);
 	bson_append_int(&b, "airMode", airMode);
 	bson_append_int(&b, "edgeMode", edgeMode);
+	bson_append_int(&b, "modId", -1795768144);
 
 	//bson_append_int(&b, "leftSelectedElement", sl);
 	//bson_append_int(&b, "rightSelectedElement", sr);
