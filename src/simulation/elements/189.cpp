@@ -356,10 +356,20 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 				}
 		break;
 	case 14: // dynamic decoration (DECO2)
-		rtmp = (parts[i].tmp & 0xFFFF) + (parts[i].tmp2 & 0xFFFF);
-		rctype = (parts[i].ctype >> 16) + (parts[i].tmp >> 16) + (rtmp >> 16);
-		parts[i].tmp2 = (parts[i].tmp2 & ~0xFFFF) | (rtmp & 0xFFFF);
-		parts[i].ctype = (parts[i].ctype & 0xFFFF) | ((rctype % 0x0600) << 16);
+		switch (parts[i].tmp2 >> 24)
+		{
+		case 0:
+			rtmp = (parts[i].tmp & 0xFFFF) + (parts[i].tmp2 & 0xFFFF);
+			rctype = (parts[i].ctype >> 16) + (parts[i].tmp >> 16) + (rtmp >> 16);
+			parts[i].tmp2 = (parts[i].tmp2 & ~0xFFFF) | (rtmp & 0xFFFF);
+			parts[i].ctype = (parts[i].ctype & 0xFFFF) | ((rctype % 0x0600) << 16);
+			break;
+		case 1:
+			rtmp  =  (parts[i].ctype & 0x7F7F7F) + (parts[i].tmp & 0x7F7F7F);
+			rtmp += ((parts[i].ctype & 0x808080) + (parts[i].tmp & 0x808080)) & 0x808080;
+			parts[i].ctype = (parts[i].ctype & 0xFF000000) | rtmp;
+			break;
+		}
 		break;
 	}
 	
@@ -494,8 +504,22 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 		*pixel_mode |= PMODE_BLEND;
 		break;
 	case 14:
-		Element_E189::HSV2RGB (cpart->ctype, colr, colg, colb);
-		*cola = ~(cpart->tmp2 >> 16) & 0xFF;
+		switch (cpart->tmp2 >> 24)
+		case 0:
+			Element_E189::HSV2RGB (cpart->ctype, colr, colg, colb);
+			*cola = ~(cpart->tmp2 >> 16) & 0xFF;
+			break;
+		case 1:
+			ptmp = cpart->ctype;
+			*cola = (ptmp >> 24) & 0xFF;
+			float freqr = 0.024543693f * (float)((ptmp >> 16) & 0xFF);
+			float freqg = 0.024543693f * (float)((ptmp >>  8) & 0xFF);
+			float freqb = 0.024543693f * (float)( ptmp & 0xFF );
+			*colr = 128 + (int)(127.5f * sinf(freqr));
+			*colg = 128 + (int)(127.5f * sinf(freqg));
+			*colb = 128 + (int)(127.5f * sinf(freqb));
+			break;
+		}
 		*pixel_mode &= ~PMODE;
 		*pixel_mode |= PMODE_BLEND;
 		break;
