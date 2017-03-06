@@ -34,6 +34,10 @@
 #define MOD_ID 0
 #endif
 
+#ifndef MOD_ID_2
+#define MOD_ID_2 1017640403
+#endif
+
 #ifdef SNAPSHOT
 #define FUTURE_SAVE_VERSION 92
 #define FUTURE_MINOR_VERSION 0
