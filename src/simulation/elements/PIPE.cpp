@@ -305,7 +305,6 @@ int Element_PIPE::graphics(GRAPHICS_FUNC_ARGS)
 			tpart.ctype = cpart->pavg[1];
 			tpart.tmp2 = cpart->tmp3;
 			tpart.tmp3 = cpart->tmp4;
-			tpart.dcolour = cpart->cdcolour;
 			if (t == PT_PHOT && tpart.ctype == 0x40000000)
 				tpart.ctype = 0x3FFFFFFF;
 
@@ -372,7 +371,7 @@ void Element_PIPE::transfer_pipe_to_part(Simulation * sim, Particle *pipe, Parti
 		part->ctype = 0x3FFFFFFF;
 	part->tmp4 = 0;
 	part->flags = 0;
-	part->dcolour = 0;
+	part->cdcolour = 0;
 }
 
 //#TPT-Directive ElementHeader Element_PIPE static void transfer_part_to_pipe(Particle *part, Particle *pipe)
