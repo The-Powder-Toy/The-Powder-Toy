@@ -1617,7 +1617,11 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 	switch(sender->GetUpdateInfo().Type)
 	{
 		case UpdateInfo::Snapshot:
+#if MOD_ID > 0
+			gameModel->AddNotification(new UpdateNotification(this, std::string("A new mod update is available - click here to update")));
+#else
 			gameModel->AddNotification(new UpdateNotification(this, std::string("A new snapshot is available - click here to update")));
+#endif
 			break;
 		case UpdateInfo::Stable:
 			gameModel->AddNotification(new UpdateNotification(this, std::string("A new version is available - click here to update")));

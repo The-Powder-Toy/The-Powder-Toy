@@ -31,6 +31,8 @@ static const char *introTextData =
 	"\bt" MTOS(SAVE_VERSION) "." MTOS(MINOR_VERSION) "." MTOS(BUILD_NUM) " " IDENT_PLATFORM " "
 #ifdef SNAPSHOT
 	"SNAPSHOT " MTOS(SNAPSHOT_ID) " "
+#elif MOD_ID > 0
+	"MODVER " MTOS(SNAPSHOT_ID) " "
 #endif
 #ifdef X86
 	"X86 "
