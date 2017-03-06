@@ -1051,6 +1051,20 @@ void GameSave::readOPS(char * data, int dataLength)
 							tempData |= (((unsigned)partsData[i++]) << 16);
 							particles[newIndex].tmp2 |= tempData;
 						}
+						if (tempDesc & 0x8)
+						{
+							if(i+1 >= partsDataLen) goto fail;
+							tempData = ((unsigned)partsData[i++]) << 8;
+							tempData |= (unsigned)partsData[i++];
+							particles[newIndex].tmp4 |= tempData;
+							if (tempDesc & 0x10)
+							{
+								if(i+1 >= partsDataLen) goto fail;
+								tempData = ((unsigned)partsData[i++]) << 24;
+								tempData |= ((unsigned)partsData[i++]) << 16;
+								particles[newIndex].tmp4 |= tempData;
+							}
+						}
 					}
 
 					//Particle specific parsing:
@@ -2173,7 +2187,7 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 				}
 				
 				// Tmp3 and extra data (optional), varies
-				if (particles[i].tmp3 || (particles[i].tmp2 & 0xFFFF0000))
+				if (particles[i].tmp3 || particles[i].tmp4 || (particles[i].tmp2 & 0xFFFF0000))
 				{
 					fieldDesc |= 1 << 14;
 					ExtraData = (unsigned)particles[i].tmp3;
@@ -2202,6 +2216,20 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 						partsData[partsDataLen++] = (ExtraData >> 8) & 0x00FF;
 						partsData[partsDataLen++] = ExtraData & 0x00FF;
 						desc2Data |= 4;
+					}
+					ExtraData = (unsigned)(particles[i].tmp4);
+					if (ExtraData)
+					{
+						partsData[partsDataLen++] = (ExtraData >> 8) & 0x00FF;
+						partsData[partsDataLen++] = ExtraData & 0x00FF;
+						desc2Data |= 8;
+						if (ExtraData & 0xFFFF0000)
+						{
+							partsData[partsDataLen++] = (ExtraData >> 24) & 0x00FF;
+							partsData[partsDataLen++] = (ExtraData >> 16) & 0x00FF;
+							desc2Data |= 16;
+						}
+
 					}
 					partsData[desc2Pos] = desc2Data;
 				}
