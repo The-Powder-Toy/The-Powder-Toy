@@ -147,6 +147,8 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 													parts[np].tmp = parts[r].pavg[0];
 													parts[np].ctype = parts[r].pavg[1];
 													parts[np].tmp2 = parts[r].tmp3;
+													parts[np].tmp3 = parts[r].tmp4;
+													parts[np].dcolour = parts[r].cdcolour;
 													parts[r].tmp = 0;
 													parts[r].life = 10;
 													break;

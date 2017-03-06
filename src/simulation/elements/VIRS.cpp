@@ -65,8 +65,8 @@ int Element_VIRS::update(UPDATE_FUNC_ARGS)
 			}
 			else
 				sim->part_change_type(i,x,y,rt);
-			parts[i].tmp2 = parts[i].tmp3;
-			parts[i].tmp3 = 0;
+			parts[i].tmp2 = parts[i].tmp4;
+			parts[i].tmp4 = 0;
 			parts[i].pavg[0] = 0;
 			parts[i].pavg[1] = 0;
 		}
@@ -121,7 +121,7 @@ int Element_VIRS::update(UPDATE_FUNC_ARGS)
 				{
 					if (!(rndstore & 0x7))
 					{
-						parts[r>>8].tmp3 = parts[r>>8].tmp2;
+						parts[r>>8].tmp4 = parts[r>>8].tmp2;
 						{
 							int rt = r&0xFF;
 							if (rt == PT_E189)
