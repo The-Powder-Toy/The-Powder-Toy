@@ -819,6 +819,12 @@ int Element_E189::EMPTrigger(Simulation *sim, int triggerCount)
 					parts[r].tmp = 21000;
 				}
 				break;
+			case 12:
+				if (Probability::randFloat() < prob_breakElectronics)
+				{
+					sim->part_change_type(r, rx, ry, PT_BREC);
+				}
+				break;
 			case 2:
 			case 3:
 				if (Probability::randFloat() < prob_breakTRONPortal)
