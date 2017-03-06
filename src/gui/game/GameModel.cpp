@@ -156,7 +156,7 @@ GameModel::~GameModel()
 
 	Client::Ref().SetPref("Renderer.GravityField", (bool)ren->gravityFieldEnabled);
 	Client::Ref().SetPref("Renderer.Decorations", (bool)ren->decorations_enable);
-	Client::Ref().SetPref("Renderer.LangtonsLoops", (bool)sim->extraLoopsCA);
+	Client::Ref().SetPref("Simulation.LangtonsLoops", (bool)sim->extraLoopsCA);
 	Client::Ref().SetPref("Renderer.DebugMode", ren->debugLines); //These two should always be equivalent, even though they are different things
 
 	Client::Ref().SetPref("Simulation.EdgeMode", edgeMode);
