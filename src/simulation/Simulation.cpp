@@ -4350,7 +4350,7 @@ killed:
 						parts[r>>8].pavg[1] = parts[i].ctype;
 						parts[r>>8].tmp3 = parts[i].tmp2;
 						parts[r>>8].tmp4 = parts[i].tmp3;
-						parts[r>>8].dcolour = parts[i].cdcolour;
+						parts[r>>8].cdcolour = parts[i].dcolour;
 						kill_part(i);
 						continue;
 					}
