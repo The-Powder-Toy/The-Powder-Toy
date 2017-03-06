@@ -34,6 +34,9 @@ static const char *introTextData =
 #elif MOD_ID > 0
 	"MODVER " MTOS(SNAPSHOT_ID) " "
 #endif
+#elif MOD_ID_2 > 0
+	"MOD "
+#endif
 #ifdef X86
 	"X86 "
 #endif
