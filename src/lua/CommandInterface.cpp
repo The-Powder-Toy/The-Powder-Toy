@@ -57,6 +57,11 @@ int CommandInterface::GetPropertyOffset(std::string key, FormatType & format)
 		offset = offsetof(Particle, temp);
 		format = FormatFloat;
 	}
+	else if (!key.compare("tmp4"))
+	{
+		offset = offsetof(Particle, tmp4);
+		format = FormatInt;
+	}
 	else if (!key.compare("tmp3"))
 	{
 		offset = offsetof(Particle, tmp3);
