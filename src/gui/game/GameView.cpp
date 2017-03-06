@@ -1574,6 +1574,14 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		else
 			c->ResetAir();
 		break;
+	case 'm':
+		if (showDebug)
+		{
+			showDebugState ++;
+			if (showDebugState >= 11)
+				showDebugState = 0;
+		}
+		break;
 	case 'c':
 		if(ctrl)
 		{
@@ -1592,12 +1600,6 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 			isMouseDown = false;
 			buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to copy then cut (right click = cancel)";
 			buttonTipShow = 120;
-		}
-		else if (showDebug)
-		{
-			showDebugState ++;
-			if (showDebugState >= 10)
-				showDebugState = 0;
 		}
 		break;
 	case 'v':
@@ -2372,22 +2374,25 @@ void GameView::OnDraw()
 				{
 					switch (showDebugState)
 					{
-						case 1: sampleInfo << ", Life: " << partlife; break;
-						case 2: sampleInfo << ", Ctype: " << ctype; break;
-						case 3:
+						case 1:
+							sampleInfo << ", Type: " << (type == PT_E189 ? (0x10000 | partlife) : type);
+						break;
+						case 2: sampleInfo << ", Life: " << partlife; break;
+						case 3: sampleInfo << ", Ctype: " << ctype; break;
+						case 4:
 							sampleInfo << ", Vx: " << std::fixed << sample.particle.vx;
 							sampleInfo << ", Vy: " << std::fixed << sample.particle.vy;
 						break;
-						case 4: sampleInfo << ", Tmp: " << parttmp; break;
-						case 5: sampleInfo << ", Tmp2: " << sample.particle.tmp2; break;
-						case 6: sampleInfo << ", Tmp3: " << sample.particle.tmp3; break;
-						case 7: sampleInfo << ", Tmp4: " << sample.particle.tmp4; break;
-						case 8:
+						case 5: sampleInfo << ", Tmp: " << parttmp; break;
+						case 6: sampleInfo << ", Tmp2: " << sample.particle.tmp2; break;
+						case 7: sampleInfo << ", Tmp3: " << sample.particle.tmp3; break;
+						case 8: sampleInfo << ", Tmp4: " << sample.particle.tmp4; break;
+						case 9:
 							tempStream << std::setw(8) << std::setfill ('0') << std::hex << sample.particle.dcolour;
 							sampleInfo << ", Dcolor: 0x" << tempStream.str();
 							tempStream.str("");
 						break;
-						case 9:
+						case 10:
 							sampleInfo << ", Pavg[0]: " << std::fixed << sample.particle.pavg[0];
 							sampleInfo << ", Pavg[1]: " << std::fixed << sample.particle.pavg[1];
 						break;
