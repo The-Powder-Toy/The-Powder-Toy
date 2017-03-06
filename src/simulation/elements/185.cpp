@@ -14,7 +14,7 @@ Element_E185::Element_E185()
 	Colour = PIXPACK(0x80C030);
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
-#if defined(DEBUG) || defined(SNAPSHOT)
+#if (defined(DEBUG) || defined(SNAPSHOT)) && MOD_ID == 0
 	Enabled = 1;
 #else
 	Enabled = 0;
