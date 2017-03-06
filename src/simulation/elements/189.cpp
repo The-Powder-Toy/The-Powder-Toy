@@ -355,6 +355,12 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 					}
 				}
 		break;
+	case 14: // dynamic decoration (DECO2)
+		rtmp = (parts[i].tmp & 0xFFFF) + (parts[i].tmp2 & 0xFFFF);
+		rctype = (parts[i].ctype >> 16) + (parts[i].tmp >> 16) + (rtmp >> 16);
+		parts[i].tmp2 = (parts[i].tmp2 & ~0xFFFF) | (rtmp & 0xFFFF);
+		parts[i].ctype = (parts[i].ctype & 0xFFFF) | ((rctype % 0x0600) << 16);
+		break;
 	}
 	
 	if(ttan>=2) {
@@ -479,63 +485,76 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 			break;
 		case 2:
 			{
-				ptmp = cpart->ctype;
-				float tmpr, tmpg, tmpb;
-				float hh, ss, vv, cc;
-				ppos = (ptmp >> 16) % 0x600;
-				if (ppos < 0)
-					ppos += 0x600;
-				hh = (float)ppos / 256.0f;
-				ss = (float)((ptmp >> 8) & 0xFF) / 255.0f;
-				vv = (float)(ptmp & 0xFF);
-				cc = vv * ss;
-				pexc1 = (int)(vv - cc);
-				switch (ppos >> 8)
-				{
-				case 0:
-					tmpr = cc;
-					tmpg = cc * hh;
-					tmpb = 0.0f;
-					break;
-				case 1:
-					tmpr = cc * (2.0f - hh);
-					tmpg = cc;
-					tmpb = 0.0f;
-					break;
-				case 2:
-					tmpr = 0.0f;
-					tmpg = cc;
-					tmpb = cc * (hh - 2.0f);
-					break;
-				case 3:
-					tmpr = 0.0f;
-					tmpg = cc * (4.0f - hh);
-					tmpb = cc;
-					break;
-				case 4:
-					tmpr = cc * (hh - 4.0f);
-					tmpg = 0.0f;
-					tmpb = cc;
-					break;
-				case 5:
-					tmpr = cc;
-					tmpg = 0.0f;
-					tmpb = cc * (6.0f - hh);
-					break;
-				}
-				*colr = (int)tmpr + pexc1;
-				*colg = (int)tmpg + pexc1;
-				*colb = (int)tmpb + pexc1;
-				*cola = ~(cpart->tmp) & 0xFF;
-				break;
+			Element_E189::HSV2RGB (cpart->ctype, colr, colg, colb);
+			*cola = ~(cpart->tmp) & 0xFF;
+			break;
 			}
 		}
+		*pixel_mode &= ~PMODE;
+		*pixel_mode |= PMODE_BLEND;
+		break;
+	case 14:
+		Element_E189::HSV2RGB (cpart->ctype, colr, colg, colb);
+		*cola = ~(cpart->tmp2 >> 16) & 0xFF;
 		*pixel_mode &= ~PMODE;
 		*pixel_mode |= PMODE_BLEND;
 		break;
 	}
 	return 0;
 }
+
+//#TPT-Directive ElementHeader Element_E189 static void HSV2RGB(int ctype, int *r, int *g, int *b)
+void Element_E189::HSV2RGB (int ctype, int *r, int *g, int *b)
+{
+	int ptmp = ctype;
+	float tmpr, tmpg, tmpb;
+	float hh, ss, vv, cc;
+	int phue = (ptmp >> 16) % 0x600;
+	if (phue < 0)
+		phue += 0x600;
+	hh = (float)phue / 256.0f;
+	ss = (float)((ptmp >> 8) & 0xFF) / 255.0f;
+	vv = (float)(ptmp & 0xFF);
+	cc = vv * ss;
+	int p_add = (int)(vv - cc);
+	switch (phue >> 8)
+	{
+	case 0:
+		tmpr = cc;
+		tmpg = cc * hh;
+		tmpb = 0.0f;
+		break;
+	case 1:
+		tmpr = cc * (2.0f - hh);
+		tmpg = cc;
+		tmpb = 0.0f;
+		break;
+	case 2:
+		tmpr = 0.0f;
+		tmpg = cc;
+		tmpb = cc * (hh - 2.0f);
+		break;
+	case 3:
+		tmpr = 0.0f;
+		tmpg = cc * (4.0f - hh);
+		tmpb = cc;
+		break;
+	case 4:
+		tmpr = cc * (hh - 4.0f);
+		tmpg = 0.0f;
+		tmpb = cc;
+		break;
+	case 5:
+		tmpr = cc;
+		tmpg = 0.0f;
+		tmpb = cc * (6.0f - hh);
+		break;
+	}
+	*r = (int)tmpr + p_add;
+	*g = (int)tmpg + p_add;
+	*b = (int)tmpb + p_add;
+}
+
 
 //#TPT-Directive ElementHeader Element_E189 static VideoBuffer * iconGen(int, int, int)
 VideoBuffer * Element_E189::iconGen(int toolID, int width, int height)
