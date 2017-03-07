@@ -374,7 +374,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			rtmp ++;
 			if (parts[i].tmp3 <= rtmp)
 			{
-				rtmp = parts[i].tmp
+				rtmp = parts[i].tmp;
 				parts[i].tmp = parts[i].ctype;
 				parts[i].ctype = rtmp;
 				rtmp = 0;
@@ -523,6 +523,7 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 			*cola = ~(cpart->tmp2 >> 16) & 0xFF;
 			break;
 		case 1:
+			{
 			ptmp = cpart->ctype;
 			*cola = (ptmp >> 24) & 0xFF;
 			float freqr = 0.024543693f * (float)((ptmp >> 16) & 0xFF);
@@ -532,6 +533,7 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 			*colg = (int)(128.0f + 127.5f * sinf(freqg));
 			*colb = (int)(128.0f + 127.5f * sinf(freqb));
 			break;
+			}
 		case 2:
 			ptmp = cpart->ctype;
 			*cola = (ptmp >> 24) & 0xFF;
