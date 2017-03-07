@@ -365,9 +365,21 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			parts[i].ctype = (parts[i].ctype & 0xFFFF) | ((rctype % 0x0600) << 16);
 			break;
 		case 1:
-			rtmp  =  (parts[i].ctype & 0x7F7F7F) + (parts[i].tmp & 0x7F7F7F);
-			rtmp += ((parts[i].ctype & 0x808080) + (parts[i].tmp & 0x808080)) & 0x808080;
-			parts[i].ctype = (parts[i].ctype & 0xFF000000) | rtmp;
+			rtmp  = (parts[i].ctype & 0x7F7F7F7F) + (parts[i].tmp & 0x7F7F7F7F);
+			rtmp ^= (parts[i].ctype ^ parts[i].tmp) & 0x80808080;
+			parts[i].ctype = rtmp;
+			break;
+		case 2:
+			rtmp = parts[i].tmp2 & 0x00FFFFFF;
+			rtmp ++;
+			if (parts[i].tmp3 <= rtmp)
+			{
+				rtmp = parts[i].tmp
+				parts[i].tmp = parts[i].ctype;
+				parts[i].ctype = rtmp;
+				rtmp = 0;
+			}
+			parts[i].tmp2 = 0x02000000 | rtmp;
 			break;
 		}
 		break;
@@ -519,6 +531,13 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 			*colr = (int)(128.0f + 127.5f * sinf(freqr));
 			*colg = (int)(128.0f + 127.5f * sinf(freqg));
 			*colb = (int)(128.0f + 127.5f * sinf(freqb));
+			break;
+		case 2:
+			ptmp = cpart->ctype;
+			*cola = (ptmp >> 24) & 0xFF;
+			*colr = (ptmp >> 16) & 0xFF;
+			*colg = (ptmp >> 8) & 0xFF;
+			*colb = ptmp & 0xFF; 
 			break;
 		}
 		*pixel_mode &= ~PMODE;
