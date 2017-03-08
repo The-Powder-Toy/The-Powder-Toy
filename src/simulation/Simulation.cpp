@@ -2130,7 +2130,7 @@ void Simulation::init_can_move()
 	can_move[PT_E186][PT_INVIS] = 2;
 	can_move[PT_E186][PT_BRMT] = 3;
 	
-	can_move[PT_E189][PT_PROT] = 3;
+	can_move[PT_PROT][PT_E189] = 3;
 }
 
 /*
@@ -2199,19 +2199,19 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr)
 			else
 				return 0;
 		}
-		else if (pt == PT_E186 && (r&0xFF) == PT_BRMT)
-		{
-			if (parts[r>>8].ctype == PT_TUNG)
-				return 2;
-			else
-				return 0;
-		}
 		else if ((r&0xFF) == PT_E189)
 		{
 			if (parts[r>>8].life >= 15)
 				return 0;
 			else
 				return 2;
+		}
+		else if (pt == PT_E186 && (r&0xFF) == PT_BRMT)
+		{
+			if (parts[r>>8].ctype == PT_TUNG)
+				return 2;
+			else
+				return 0;
 		}
 	}
 	if (bmap[ny/CELL][nx/CELL])
