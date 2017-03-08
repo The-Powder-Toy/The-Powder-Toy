@@ -782,6 +782,8 @@ void Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* p
 		break;
 	case 7: // photon scattering
 		sim->part_change_type(i, x, y, PT_E186);
+		if (rct & 1)
+			part_phot->ctype = 0x1F<<(rand()%26);
 		part_phot->tmp2 = part_phot->ctype;
 		part_phot->ctype = 0x100;
 		rdif = ((float)(rand()%321+192)) / 128.0f; // 1.5 ~ 4 pixels (approx)
