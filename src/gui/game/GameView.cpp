@@ -2312,7 +2312,7 @@ void GameView::OnDraw()
 					int partfilt = parttmp >> 18;
 					if (partfilt >= 0 && partfilt <= 5 && partfilt != 4)
 						wavelengthGfx = (ctype&0x3FFFFFFF);
-					if (partfilt == 4)
+					if (partfilt == 4 || partfilt == 7)
 						partint = 1;
 				}
 				else if (partlife == 13)
