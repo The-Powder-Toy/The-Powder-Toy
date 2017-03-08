@@ -545,6 +545,9 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 		*pixel_mode &= ~PMODE;
 		*pixel_mode |= PMODE_BLEND;
 		break;
+	case 15:
+		*colr = 0x9F; *colg = 0x05; *colb = 0x00;
+		break;
 	}
 	return 0;
 }
