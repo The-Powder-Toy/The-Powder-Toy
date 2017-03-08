@@ -75,7 +75,7 @@ GameModel::GameModel():
 
 	ren->gravityFieldEnabled = Client::Ref().GetPrefBool("Renderer.GravityField", false);
 	ren->decorations_enable = Client::Ref().GetPrefBool("Renderer.Decorations", true);
-	sim->extraLoopsCA = Client::Ref().GetPrefBool("Renderer.LangtonsLoops", false);
+	sim->extraLoopsCA = Client::Ref().GetPrefBool("Simulation.LangtonsLoops", false);
 
 	//Load config into simulation
 	edgeMode = Client::Ref().GetPrefInteger("Simulation.EdgeMode", 0);
