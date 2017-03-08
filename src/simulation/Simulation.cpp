@@ -2131,6 +2131,7 @@ void Simulation::init_can_move()
 	can_move[PT_E186][PT_BRMT] = 3;
 	
 	can_move[PT_PROT][PT_E189] = 3;
+	can_move[PT_PROT][PT_E185] = 3;
 }
 
 /*
@@ -2201,7 +2202,9 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr)
 		}
 		else if ((r&0xFF) == PT_E189)
 		{
-			if (parts[r>>8].life >= 15)
+			if (parts[r>>8].life == 7 && pt == PT_E186)
+				return 0;
+			else if (parts[r>>8].life >= 15 && pt == PT_PROT)
 				return 0;
 			else
 				return 2;
