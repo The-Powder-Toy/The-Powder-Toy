@@ -970,7 +970,7 @@ int Element_E189::AddCharacter(Simulation *sim, int x, int y, int c, int rgb)
 				ba = *(rp++);
 				bn = 8;
 			}
-			if (ba)
+			if (ba & 3)
 			{
 				xi = x + i; yj = y + j;
 				_r = sim->pmap[yj][xi];
