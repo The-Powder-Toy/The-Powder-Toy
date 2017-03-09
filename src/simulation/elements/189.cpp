@@ -1107,7 +1107,7 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 				break;
 				case 20: // function call (stack push)
 					if (call_ptr >= 5)
-						throw "stack overflow!"
+						throw "stack overflow!";
 					calls[call_ptr][0] = (short)(x+ix);
 					calls[call_ptr][1] = (short)(y+iy);
 					calls[call_ptr][2] = (short)ix;
