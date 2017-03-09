@@ -213,7 +213,7 @@ void PropertyWindow::SetProperty()
 					else if(vlen >= 2 && vlen <= 6 && value[0] == '"' && value[value.length()-1] == '"')
 					{
 						//#C0FFEE
-						v = convertFromChar__(value.substr(1, vlen - 2));
+						v = convertFromChar__(value.substr(1, vlen - 2).c_str());
 					}
 					else
 					{
