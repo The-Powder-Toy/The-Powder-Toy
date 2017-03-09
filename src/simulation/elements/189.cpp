@@ -310,7 +310,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 							sim->E189_pause |= 2;
 						else
 							sim->E189_pause |= 1;
-						if (rtmp & 2)
+						if ((rtmp & 2) && (rx != ry))
 							Element_E189::InsertText(sim, i, x, y, -rx, -ry);
 					}
 				}
