@@ -997,7 +997,7 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 	int call_ptr = 0;
 	short calls [5][4]; /* dynamic */
 	it_r = it_g = it_b = 255;
-	__itl1: for (;;)
+	for (;;)
 	{
 		x += ix; y += iy;
 		int r = sim->pmap[y][x];
@@ -1115,7 +1115,7 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 				break;
 				case 21: // function return (stack pop)
 					if (call_ptr <= 0)
-						break __itl1;
+						goto __break_loop_1;
 					call_ptr --;
 					x  = (int)(calls[call_ptr][0]);
 					y  = (int)(calls[call_ptr][1]);
@@ -1194,6 +1194,7 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 			}
 		}
 	}
+	__break_loop_1:
 }
 
 Element_E189::~Element_E189() {}
