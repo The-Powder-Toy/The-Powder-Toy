@@ -1005,7 +1005,7 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 		if ((r&0xFF) != PT_E189) // if not "E189" break loop
 			break;
 		pack = sim->parts[r>>8].life;
-		chr_1 = sim->parts[r].ctype;
+		chr_1 = sim->parts[r>>8].ctype;
 		if (pack & ~0x1 == 0x2) // if "tron portal"
 		{
 			if (pack == 2) // if "tron input"
