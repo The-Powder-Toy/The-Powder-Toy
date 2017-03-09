@@ -315,7 +315,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 					}
 				}
 		break;
-	case 11:
+	case 11: // photons emitter
 		for (int rx = -1; rx <= 1; rx++)
 			for (int ry = -1; ry <= 1; ry++)
 				if (BOUNDS_CHECK && (rx || ry))
@@ -974,9 +974,9 @@ int Element_E189::AddCharacter(Simulation *sim, int x, int y, int c, int rgb)
 				xi = x + i; yj = y + j;
 				_r = sim->pmap[yj][xi];
 				if (_r)
-					_r = sim->create_part(r>>8, xi, yj, PT_E189, 13);
+					_r = sim->create_part(_r>>8, xi, yj, PT_E189, 13);
 				else
-					_r = sim->create_part(  -1, xi, yj, PT_E189, 13); // type = 65549 (0x0001000D)
+					_r = sim->create_part(   -1, xi, yj, PT_E189, 13); // type = 65549 (0x0001000D)
 				if (_r >= 0)
 				{
 					sim->parts[_r].ctype = ((ba & 3) * 0x55000000) | (rgb & 0x00FFFFFF);
@@ -988,20 +988,24 @@ int Element_E189::AddCharacter(Simulation *sim, int x, int y, int c, int rgb)
 	return x + w;
 }
 
-//#TPT-Directive ElementHeader Element_E189 static void InsertText(Simulation *sim, int x, int y, int ix, int iy)
+//#TPT-Directive ElementHeader Element_E189 static void InsertText(Simulation *sim, int i, int x, int y, int ix, int iy)
 void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int iy)
 {
-	int ct_x = (parts[i].ctype & 0xFFFF), ct_y = ((parts[i].ctype >> 16) & 0xFFFF);
+	int ct_x = (sim->parts[i].ctype & 0xFFFF), ct_y = ((sim->parts[i].ctype >> 16) & 0xFFFF);
 	int it_x = ct_x, it_r, it_g, it_b, chr1, esc = 0, pack, bkup;
 	int oldr, oldg, oldb;
+	int call_ptr = 0;
+	short calls [5][4]; /* dynamic */
 	it_r = it_g = it_b = 255;
+	__itl1:
 	for (;;)
 	{
 		x += ix; y += iy;
 		int r = sim->pmap[y][x];
 		if ((r&0xFF) != PT_E189)
 			break;
-		pack = parts[r>>8].life;
+		pack = sim->parts[r>>8].life;
+		chr1 = sim->parts[r].ctype;
 		if (pack & 0x2 == 0x2)
 		{
 			if (pack == 2)
@@ -1021,13 +1025,115 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 			}
 			continue;
 		}
+		if (pack == 12)
+		{
+			switch (chr1 & 31)
+			{
+				case 0: ix = 1; iy = 0; break; // go east
+				case 1: ix = 0; iy =-1; break; // go north
+				case 2: ix =-1; iy = 0; break; // go west
+				case 3: ix = 0; iy = 1; break; // go south
+				case 4: // turn clockwise
+					chr1 = ix; ix = iy; iy = -chr1;
+				break;
+				case 5: // turn counter clockwise
+					chr1 = ix; ix = -iy; iy = chr1;
+				break;
+				case 6: /* "/" reflect */
+					chr1 = ix; ix = iy; iy = chr1;
+				break;
+				case 7: /* "\" reflect */
+					chr1 = ix; ix = -iy; iy = -chr1;
+				break;
+				case 8: /* "|" reflect */
+					ix = -ix;
+				break;
+				case 9: /* "-" reflect */
+					iy = -iy;
+				break;
+				case 10: /* turn 180 */
+					ix = -ix; iy = -iy;
+				break;
+				case 11: /* random turn */
+					pack = (rand() & 1) * 2 - 1;
+					chr1 = ix; ix = iy * pack; iy = chr1 * pack;
+				break;
+				case 12: /* random straight */
+					pack = (rand() & 1) * 2 - 1;
+					ix *= pack; iy *= pack;
+				break;
+				case 13: /* random dir. */
+				{
+					int turn_rx[4] = {-1, 0, 1, 0};
+					int turn_ry[4] = { 0,-1, 0, 1};
+					chr1 = (rand() & 3);
+					ix = turn_rx[chr1]; iy = turn_ry[chr1];
+				}
+				case 14: // random vertical
+					ix = 0; iy = (rand() & 1) * 2 - 1;
+				break;
+				case 15: // random horizontal
+					iy = 0; ix = (rand() & 1) * 2 - 1;
+				break;
+				case 16: // trampoline
+					x += ix; y += iy;
+				break;
+				case 17: // trampoline 2
+					x += ix * 2; y += iy * 2;
+				break;
+				case 18: // trampoline 3 ... N
+					r = sim->pmap[y+iy][x+ix];
+					if ((r & 0xFF) == PT_E189)
+					{
+						chr1 = sim->parts[r>>8].life;
+						if (chr1 & 0x2 == 0x2)
+							chr1 += 2; // trampoline 4, 5
+						else if (chr1 == 12)
+							chr1 = sim->parts[r>>8].ctype; // trampoline N
+						else
+							chr1 = 3; // trampoline 3
+					}
+					else
+						chr1 = 3;
+					x += ix * chr1; y += iy * chr1;
+				break;
+				case 19: // random dir. w/o backward
+					pack = rand() % 3;
+					if (pack)
+					{
+						pack = pack * 2 - 3;
+						chr1 = ix; ix = iy * pack; iy = chr1 * pack;
+					}
+				break;
+				case 20: // function call (stack push)
+					if (call_ptr >= 5)
+						throw "stack overflow!"
+					calls[call_ptr][0] = (short)(x+ix);
+					calls[call_ptr][1] = (short)(y+iy);
+					calls[call_ptr][2] = (short)ix;
+					calls[call_ptr][3] = (short)iy;
+					call_ptr ++;
+				break;
+				case 21: // function return (stack pop)
+					if (call_ptr <= 0)
+						break __itl1;
+					call_ptr --;
+					x  = (int)(calls[call_ptr][0]);
+					y  = (int)(calls[call_ptr][1]);
+					ix = (int)(calls[call_ptr][2]);
+					iy = (int)(calls[call_ptr][3]);
+				break;
+				}
+			continue;
+		}
 		if (pack != 10)
 			break;
-		chr1 = parts[r].ctype;
 		if (!esc)
 		{
 			switch (chr1)
 			{
+			case 0: // no operation
+				break;
 			case 10: // "\n": newline
 				ct_x = it_x;
 				ct_y += FONT_H+2; // usually 12 pixels
