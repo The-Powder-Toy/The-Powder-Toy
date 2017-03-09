@@ -1194,7 +1194,7 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 			}
 		}
 	}
-	__break_loop_1:
+	__break_loop_1:;
 }
 
 Element_E189::~Element_E189() {}
