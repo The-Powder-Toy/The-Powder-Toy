@@ -1005,7 +1005,7 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 			break;
 		pack = sim->parts[r>>8].life;
 		chr_1 = sim->parts[r].ctype;
-		if (pack & 0x2 == 0x2)
+		if (pack & ~0x1 == 0x2)
 		{
 			if (pack == 2)
 			{
@@ -1085,7 +1085,7 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 					if ((r & 0xFF) == PT_E189)
 					{
 						chr_1 = sim->parts[r>>8].life;
-						if (chr_1 & 0x2 == 0x2)
+						if (chr_1 & ~0x1 == 0x2)
 							chr_1 += 2; // trampoline 4, 5
 						else if (chr_1 == 12)
 							chr_1 = sim->parts[r>>8].ctype; // trampoline N
