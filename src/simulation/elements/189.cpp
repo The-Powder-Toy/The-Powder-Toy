@@ -1,6 +1,7 @@
 #include "simulation/Elements.h"
 #include "simulation/Air.h"
 #include "Probability.h"
+#include "font.h"
 
 //#TPT-Directive ElementClass Element_E189 PT_E189 189
 Element_E189::Element_E189()
@@ -309,6 +310,8 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 							sim->E189_pause |= 2;
 						else
 							sim->E189_pause |= 1;
+						if (rtmp & 2)
+							Element_E189::InsertText(sim, i, x, y, -rx, -ry);
 					}
 				}
 		break;
@@ -948,6 +951,142 @@ int Element_E189::EMPTrigger(Simulation *sim, int triggerCount)
 				}
 			}
 			break;
+		}
+	}
+}
+
+//#TPT-Directive ElementHeader Element_E189 static int AddCharacter(Simulation *sim, int x, int y, int c, int rgb)
+int Element_E189::AddCharacter(Simulation *sim, int x, int y, int c, int rgb)
+{
+	int i, j, w, bn = 0, ba = 0, _r, xi, yj;
+	unsigned char *rp = font_data + font_ptrs[c];
+	w = *(rp++);
+	for (j=0; j<FONT_H; j++)
+		for (i=0; i<w; i++)
+		{
+			if (!bn)
+			{
+				ba = *(rp++);
+				bn = 8;
+			}
+			if (ba)
+			{
+				xi = x + i; yj = y + j;
+				_r = sim->pmap[yj][xi];
+				if (_r)
+					_r = sim->create_part(r>>8, xi, yj, PT_E189, 13);
+				else
+					_r = sim->create_part(  -1, xi, yj, PT_E189, 13); // type = 65549 (0x0001000D)
+				if (_r >= 0)
+				{
+					sim->parts[_r].ctype = ((ba & 3) * 0x55000000) | (rgb & 0x00FFFFFF);
+				}
+			}
+			ba >>= 2;
+			bn -= 2;
+		}
+	return x + w;
+}
+
+//#TPT-Directive ElementHeader Element_E189 static void InsertText(Simulation *sim, int x, int y, int ix, int iy)
+void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int iy)
+{
+	int ct_x = (parts[i].ctype & 0xFFFF), ct_y = ((parts[i].ctype >> 16) & 0xFFFF);
+	int it_x = ct_x, it_r, it_g, it_b, chr1, esc = 0, pack, bkup;
+	int oldr, oldg, oldb;
+	it_r = it_g = it_b = 255;
+	for (;;)
+	{
+		x += ix; y += iy;
+		int r = sim->pmap[y][x];
+		if ((r&0xFF) != PT_E189)
+			break;
+		pack = parts[r>>8].life;
+		if (pack & 0x2 == 0x2)
+		{
+			if (pack == 2)
+			{
+				if (esc == 0)
+					esc = 5;
+				else if (esc = 1)
+					bkup = 1;
+			}
+			else
+			{
+				if (esc = 1)
+				{
+					it_r = oldr; it_g = oldg; it_b = oldb;
+				}
+				esc = 0;
+			}
+			continue;
+		}
+		if (pack != 10)
+			break;
+		chr1 = parts[r].ctype;
+		if (!esc)
+		{
+			switch (chr1)
+			{
+			case 10: // "\n": newline
+				ct_x = it_x;
+				ct_y += FONT_H+2; // usually 12 pixels
+				break;
+			case 15:
+				esc = 1;
+				bkup = 0;
+				break;
+			case 256:
+				esc = 2;
+				break;
+			case 257:
+				esc = 3;
+				break;
+			case 258:
+				esc = 4;
+				break;
+			default:
+				ct_x = Element_E189::AddCharacter(Simulation *sim, ct_x, ct_y, chr1, (it_r << 16) | (it_g << 8) | it_b);
+			}
+		}
+		else
+		{
+			switch (esc)
+			{
+			case 1: // set color
+				if (bkup)
+				{
+					oldr = it_r; oldg = it_g; oldb = it_b;
+				}
+				it_r = (chr_1 >> 16) & 0xFF;
+				it_g = (chr_1 >> 8) & 0xFF;
+				it_b =  chr_1 & 0xFF;
+				esc = 0;
+				break;
+			case 2: // set location (fixed)
+				ct_x =  chr_1 & 0xFFFF;
+				ct_y = (chr_1 >> 16) & 0xFFFF;
+				esc = 0;
+				break;
+			case 3: // reinitial location
+				it_x =  chr_1 & 0xFFFF;
+				ct_x =  it_x;
+				ct_y = (chr_1 >> 16) & 0xFFFF;
+				esc = 0;
+				break;
+			case 4: // set location (relative)
+				ct_x += (signed short)( chr_1 & 0xFFFF);
+				ct_y += (signed short)((chr_1 >> 16) & 0xFFFF);
+				esc = 0;
+				break;
+			case 5: // packed
+				pack = (it_r << 16) | (it_g << 8) | it_b;
+				ct_x = Element_E189::AddCharacter(Simulation *sim, ct_x, ct_y, chr1 & 0xFF, pack);
+				ct_x = Element_E189::AddCharacter(Simulation *sim, ct_x, ct_y, (chr1 >> 8) & 0xFF, pack);
+				ct_x = Element_E189::AddCharacter(Simulation *sim, ct_x, ct_y, (chr1 >> 16) & 0xFF, pack);
+				ct_x = Element_E189::AddCharacter(Simulation *sim, ct_x, ct_y, (chr1 >> 24) & 0xFF, pack);
+				break;
+			}
 		}
 	}
 }
