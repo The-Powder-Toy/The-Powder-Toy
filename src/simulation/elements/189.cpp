@@ -991,6 +991,7 @@ int Element_E189::AddCharacter(Simulation *sim, int x, int y, int c, int rgb)
 //#TPT-Directive ElementHeader Element_E189 static void InsertText(Simulation *sim, int i, int x, int y, int ix, int iy)
 void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int iy)
 {
+	// simulation, index, position (x2), direction (x2)
 	int ct_x = (sim->parts[i].ctype & 0xFFFF), ct_y = ((sim->parts[i].ctype >> 16) & 0xFFFF);
 	int it_x = ct_x, it_r, it_g, it_b, chr_1, esc = 0, pack, bkup;
 	int oldr, oldg, oldb;
@@ -1001,13 +1002,13 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 	{
 		x += ix; y += iy;
 		int r = sim->pmap[y][x];
-		if ((r&0xFF) != PT_E189)
+		if ((r&0xFF) != PT_E189) // if not "E189" break loop
 			break;
 		pack = sim->parts[r>>8].life;
 		chr_1 = sim->parts[r].ctype;
-		if (pack & ~0x1 == 0x2)
+		if (pack & ~0x1 == 0x2) // if "tron portal"
 		{
-			if (pack == 2)
+			if (pack == 2) // if "tron input"
 			{
 				if (esc == 0)
 					esc = 5;
@@ -1024,9 +1025,9 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 			}
 			continue;
 		}
-		if (pack == 12)
+		if (pack == 12) // if "spark reflector"
 		{
-			switch (chr_1 & 31)
+			switch (chr_1 & 31) // chr_1 : initial ctype
 			{
 				case 0: ix = 1; iy = 0; break; // go east
 				case 1: ix = 0; iy =-1; break; // go north
