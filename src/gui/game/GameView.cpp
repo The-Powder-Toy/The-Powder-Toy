@@ -2297,6 +2297,7 @@ void GameView::OnDraw()
 			int partlife = sample.particle.life;
 			int parttmp = sample.particle.tmp;
 			int partint = 0;
+			int partstr = 0;
 			if (type == PT_PIPE || type == PT_PPIP)
 				ctype = sample.particle.tmp&0xFF;
 
@@ -2325,6 +2326,10 @@ void GameView::OnDraw()
 				else if (partlife == 14)
 				{
 					partint = 1;
+				}
+				else if (partlife == 10)
+				{
+					partstr = 1;
 				}
 			}
 			
@@ -2358,6 +2363,18 @@ void GameView::OnDraw()
 					// Some elements store extra LIFE info in upper bits of ctype, instead of tmp/tmp2
 					else if (type == PT_CRAY || type == PT_DRAY || type == PT_CONV)
 						sampleInfo << " (" << c->ElementResolve(ctype&0xFF, ctype>>8) << ")";
+					else if (partstr)
+					{
+						sampleInfo << " (\"";
+						int tmp_ctype = ctype;
+						for (ii = 0; ii < 4; ii++)
+						{
+							unsigned char tmp_char = (tmp_ctype >> (ii * 8)) & 0xFF;
+							if (tmp_char >= ' ' && tmp_char <= '~')
+								sampleInfo << tmp_char;
+						}
+						sampleInfo << "\", " << ctype << ")";
+					}
 					else if (c->IsValidElement(ctype))
 						sampleInfo << " (" << c->ElementResolve(ctype, -1) << ")";
 					else
