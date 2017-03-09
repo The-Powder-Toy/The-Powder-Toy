@@ -1108,7 +1108,10 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 				break;
 				case 20: // function call (stack push)
 					if (call_ptr >= 5)
+					{
 						std::cerr << "stack overflow!" << std::endl;
+						return;
+					}
 					calls[call_ptr][0] = (short)(x+ix);
 					calls[call_ptr][1] = (short)(y+iy);
 					calls[call_ptr][2] = (short)ix;
@@ -1196,7 +1199,8 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 			}
 		}
 	}
-	__break_loop_1:;
+	__break_loop_1:
+	std::cout << "output complete!" << std::endl;
 }
 
 Element_E189::~Element_E189() {}
