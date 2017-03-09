@@ -2121,7 +2121,7 @@ int LuaScriptInterface::simulation_createDebugComponent (lua_State * l)
 	}
 	if (lua_isstring(l, 1))
 	{
-		const unsigned char * __str = luaL_checkstring(l, 1);
+		const char * __str = luaL_checkstring(l, 1);
 		int __x = luaL_checkinteger(l, 2);
 		int __y = luaL_checkinteger(l, 3);
 		int __dx = luaL_checkinteger(l, 4);
@@ -2134,7 +2134,7 @@ int LuaScriptInterface::simulation_createDebugComponent (lua_State * l)
 		{
 			i = luacon_sim->create_part(-1, __x++, __y, PT_E189, 10);
 			if (i < 0) break;
-			luacon_sim->parts[i].ctype = (int)(*__str);
+			luacon_sim->parts[i].ctype = (int)(*__str & 0xFF);
 			__str++;
 		}
 	}
