@@ -1151,7 +1151,7 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 				esc = 4;
 				break;
 			default:
-				ct_x = Element_E189::AddCharacter(Simulation *sim, ct_x, ct_y, chr_1, (it_r << 16) | (it_g << 8) | it_b);
+				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, chr_1, (it_r << 16) | (it_g << 8) | it_b);
 			}
 		}
 		else
@@ -1186,10 +1186,10 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 				break;
 			case 5: // packed
 				pack = (it_r << 16) | (it_g << 8) | it_b;
-				ct_x = Element_E189::AddCharacter(Simulation *sim, ct_x, ct_y, chr_1 & 0xFF, pack);
-				ct_x = Element_E189::AddCharacter(Simulation *sim, ct_x, ct_y, (chr_1 >> 8) & 0xFF, pack);
-				ct_x = Element_E189::AddCharacter(Simulation *sim, ct_x, ct_y, (chr_1 >> 16) & 0xFF, pack);
-				ct_x = Element_E189::AddCharacter(Simulation *sim, ct_x, ct_y, (chr_1 >> 24) & 0xFF, pack);
+				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, chr_1 & 0xFF, pack);
+				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, (chr_1 >> 8) & 0xFF, pack);
+				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, (chr_1 >> 16) & 0xFF, pack);
+				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, (chr_1 >> 24) & 0xFF, pack);
 				break;
 			}
 		}
