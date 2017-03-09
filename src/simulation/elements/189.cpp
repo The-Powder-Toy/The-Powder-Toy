@@ -2,6 +2,7 @@
 #include "simulation/Air.h"
 #include "Probability.h"
 #include "font.h"
+#include <iostream>
 
 //#TPT-Directive ElementClass Element_E189 PT_E189 189
 Element_E189::Element_E189()
@@ -1107,7 +1108,7 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 				break;
 				case 20: // function call (stack push)
 					if (call_ptr >= 5)
-						throw "stack overflow!";
+						std::cerr << "stack overflow!" << std::endl;
 					calls[call_ptr][0] = (short)(x+ix);
 					calls[call_ptr][1] = (short)(y+iy);
 					calls[call_ptr][2] = (short)ix;
