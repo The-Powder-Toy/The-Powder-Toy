@@ -257,7 +257,8 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 
 	luaL_dostring (l, "ffi = require(\"ffi\")\n\
 ffi.cdef[[\n\
-typedef struct { int type; int life, ctype; float x, y, vx, vy; float temp; float pavg[2]; int flags; int tmp; int tmp2, tmp3; unsigned int dcolour; } particle;\n\
+typedef struct { int type; int life, ctype; float x, y, vx, vy; float temp; float pavg[2]; int flags; int tmp; int tmp2, tmp3, tmp4; unsigned int dcolour;\
+unsigned int cdcolour; } particle;\n\
 ]]\n\
 tpt.parts = ffi.cast(\"particle *\", tpt.partsdata)\n\
 ffi = nil\n\
@@ -750,6 +751,8 @@ void LuaScriptInterface::initSimulationAPI()
 		{"framerender", simulation_framerender},
 		{"gspeed", simulation_gspeed},
 		{"CAType", simulation_CAType},
+		{"createDebugComponent", simulation_createDebugComponent},
+		{"createDComp", simulation_createDebugComponent},
 		{NULL, NULL}
 	};
 	luaL_register(l, "simulation", simulationAPIMethods);
@@ -2106,6 +2109,35 @@ int LuaScriptInterface::simulation_CAType(lua_State * l)
 	}
 	else
 		luacon_sim->extraLoopsCA = 0;
+	return 0;
+}
+
+int LuaScriptInterface::simulation_createDebugComponent (lua_State * l)
+{
+	int i;
+	if (lua_gettop(l) < 5)
+	{
+		return luaL_error(l, "Invalid argument length");
+	}
+	if (lua_isstring(l, 1))
+	{
+		const unsigned char * __str = luaL_checkstring(l, 1);
+		int __x = luaL_checkinteger(l, 2);
+		int __y = luaL_checkinteger(l, 3);
+		int __dx = luaL_checkinteger(l, 4);
+		int __dy = luaL_checkinteger(l, 5);
+		luacon_sim->create_part(-1, __x++, __y, PT_METL);
+		i = luacon_sim->create_part(-1, __x++, __y, PT_E189, 10);
+		if (i >= 0)
+			luacon_sim->parts[i].ctype = (__dx & 0xFFFF) | (__dy << 16);
+		while (*__str)
+		{
+			i = luacon_sim->create_part(-1, __x++, __y, PT_E189, 10);
+			if (i < 0) break;
+			luacon_sim->parts[i].ctype = (int)(*__str);
+			__str++;
+		}
+	}
 	return 0;
 }
 

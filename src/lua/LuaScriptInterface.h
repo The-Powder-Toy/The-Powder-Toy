@@ -109,6 +109,7 @@ class LuaScriptInterface: public CommandInterface
 	static int simulation_framerender(lua_State * l);
 	static int simulation_gspeed(lua_State * l);
 	static int simulation_CAType(lua_State * l);
+	static int simulation_createDebugComponent(lua_State * l);
 
 	//Renderer
 	void initRendererAPI();
