@@ -2130,6 +2130,7 @@ int LuaScriptInterface::simulation_createDebugComponent (lua_State * l)
 		i = luacon_sim->create_part(-1, __x++, __y, PT_E189, 10);
 		if (i >= 0)
 			luacon_sim->parts[i].ctype = (__dx & 0xFFFF) | (__dy << 16);
+			luacon_sim->parts[i].tmp |= 0x2;
 		while (*__str)
 		{
 			i = luacon_sim->create_part(-1, __x++, __y, PT_E189, 10);
