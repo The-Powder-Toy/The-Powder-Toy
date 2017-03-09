@@ -1016,7 +1016,7 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 			}
 			else
 			{
-				if (esc = 1)
+				if (esc == 1)
 				{
 					it_r = oldr; it_g = oldg; it_b = oldb;
 				}
