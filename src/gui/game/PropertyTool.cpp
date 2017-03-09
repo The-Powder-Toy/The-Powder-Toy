@@ -153,6 +153,11 @@ void PropertyWindow::SetProperty()
 					{
 						//#C0FFEE
 						v = convertFromChar__(value.substr(1, vlen - 2).c_str());
+						if (property->GetOption().first == "type" && (v < 0 || v >= PT_NUM || !sim->elements[v].Enabled))
+						{
+							new ErrorMessage("Could not set property", "Invalid particle type");
+							return;
+						}
 					}
 					else
 					{
