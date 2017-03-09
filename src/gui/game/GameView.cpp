@@ -2367,7 +2367,7 @@ void GameView::OnDraw()
 					{
 						sampleInfo << " (\"";
 						int tmp_ctype = ctype;
-						for (ii = 0; ii < 4; ii++)
+						for (int ii = 0; ii < 4; ii++)
 						{
 							unsigned char tmp_char = (tmp_ctype >> (ii * 8)) & 0xFF;
 							if (tmp_char >= ' ' && tmp_char <= '~')

@@ -22,6 +22,7 @@ public:
 	std::vector<StructProperty> properties;
 	PropertyWindow(PropertyTool *tool_, Simulation *sim);
 	int convertFromHex(const char * str);
+	int convertFromChar__(const char * str);
 	void SetProperty();
 	virtual void OnDraw();
 	virtual void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
@@ -113,27 +114,45 @@ int PropertyWindow::convertFromHex(const char * str)
 	return r;
 }
 
+int PropertyWindow::convertFromChar__(const char * str)
+{
+	int r = 0, b = 0;
+	char s;
+	while (s = *(str++))
+	{
+		r |= (s & 0xFF) << b; // (s & 0xFF) * (256 ** N), N = 0, 1, 2, ...
+		b += 8;
+	}
+	return r;
+}
+
 void PropertyWindow::SetProperty()
 {
 	if(property->GetOption().second!=-1 && textField->GetText().length() > 0)
 	{
 		std::string value = textField->GetText();
 		try {
+			int vlen = value.length();
 			switch(properties[property->GetOption().second].Type)
 			{
 				case StructProperty::Integer:
 				case StructProperty::ParticleType:
 				{
 					int v;
-					if(value.length() > 2 && value.substr(0, 2) == "0x")
+					if(vlen > 2 && value.substr(0, 2) == "0x")
 					{
 						//0xC0FFEE
 						v = convertFromHex(value.substr(2).c_str());
 					}
-					else if(value.length() > 1 && value[0] == '#')
+					else if(vlen > 1 && value[0] == '#')
 					{
 						//#C0FFEE
 						v = convertFromHex(value.substr(1).c_str());
+					}
+					else if(vlen >= 2 && vlen <= 6 && value[0] == '"' && value[value.length()-1] == '"')
+					{
+						//#C0FFEE
+						v = convertFromChar__(value.substr(1, vlen - 2).c_str());
 					}
 					else
 					{
@@ -175,7 +194,7 @@ void PropertyWindow::SetProperty()
 				case StructProperty::UInteger:
 				{
 					unsigned int v;
-					if(value.length() > 2 && value.substr(0, 2) == "0x")
+					if(vlen > 2 && value.substr(0, 2) == "0x")
 					{
 						//0xC0FFEE
 						std::stringstream buffer;
@@ -183,13 +202,18 @@ void PropertyWindow::SetProperty()
 						buffer << std::hex << value.substr(2);
 						buffer >> v;
 					}
-					else if(value.length() > 1 && value[0] == '#')
+					else if(vlen > 1 && value[0] == '#')
 					{
 						//#C0FFEE
 						std::stringstream buffer;
 						buffer.exceptions(std::stringstream::failbit | std::stringstream::badbit);
 						buffer << std::hex << value.substr(1);
 						buffer >> v;
+					}
+					else if(vlen >= 2 && vlen <= 6 && value[0] == '"' && value[value.length()-1] == '"')
+					{
+						//#C0FFEE
+						v = convertFromChar__(value.substr(1, vlen - 2));
 					}
 					else
 					{
