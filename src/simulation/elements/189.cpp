@@ -1440,7 +1440,7 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 			case 268: // print number
 				chr_1 = (int)counter;
 				pack = (it_r << 16) | (it_g << 8) | it_b;
-				if (pack < 0)
+				if (chr_1 < 0)
 				{
 					chr_1 = -chr_1; ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, '-', pack);
 				}
