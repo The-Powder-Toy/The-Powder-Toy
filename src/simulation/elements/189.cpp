@@ -980,7 +980,7 @@ int Element_E189::AddCharacter(Simulation *sim, int x, int y, int c, int rgb)
 					{
 						if (~ba & 3) // ba & 3 != 3, also only ba == 1 or ba == 2
 						{
-							int k = sim->parts[r>>8].ctype;
+							int k = sim->parts[_r>>8].ctype;
 							int olda = (k >> 24) & 0xFF;
 							int oldr = (olda * ((k >> 16) & 0xFF)) >> 8;
 							int oldg = (olda * ((k >> 8) & 0xFF)) >> 8;
@@ -989,7 +989,7 @@ int Element_E189::AddCharacter(Simulation *sim, int x, int y, int c, int rgb)
 							int newr = (olda * ((rgb >> 16) & 0xFF) + (0xFF - olda) * oldr) & ~0xFF;
 							int newg = (olda * ((rgb >> 8) & 0xFF) + (0xFF - olda) * oldg) & 0xFF00;
 							int newb = (olda * (rgb & 0xFF) + (0xFF - olda) * oldb) >> 8;
-							sim->parts[r>>8].ctype = 0xFF000000 | newr << 8 | newg | newb;
+							sim->parts[_r>>8].ctype = 0xFF000000 | newr << 8 | newg | newb;
 						}
 						else
 							sim->parts[_r].ctype = 0xFF000000 | (rgb & 0x00FFFFFF);
@@ -998,7 +998,7 @@ int Element_E189::AddCharacter(Simulation *sim, int x, int y, int c, int rgb)
 						_r = sim->create_part(_r>>8, xi, yj, PT_E189, 13);
 				}
 				else
-					_r = sim->create_part(   -1, xi, yj, PT_E189, 13); // type = 65549 (0x0001000D)
+					_r = sim->create_part(-1, xi, yj, PT_E189, 13); // type = 65549 (0x0001000D)
 				if (_r >= 0)
 				{
 					sim->parts[_r].ctype = ((ba & 3) * 0x55000000) | (rgb & 0x00FFFFFF);
