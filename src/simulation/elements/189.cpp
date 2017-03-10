@@ -1303,7 +1303,7 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 				case 43: // swap counter / stack
 					pack = (int)calls[call_ptr-1][0];
 					calls[call_ptr-1][0] = counter;
-					counter = (int)pack;
+					counter = (short)pack;
 				break;
 				}
 			continue;
