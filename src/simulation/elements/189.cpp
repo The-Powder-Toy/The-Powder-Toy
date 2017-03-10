@@ -352,13 +352,14 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						continue;
 					if (rt == PT_SPRK && parts[r>>8].life == 3)
 					{
-						if ((rtmp & ~0x2) == 0x0)
-							parts[i].tmp ^= 1;
-						else if ((rtmp & 0x3) == 0x2)
+						switch (rtmp & 0x3)
 						{
+						case 0: parts[i].tmp = 1; break;
+						case 1: parts[i].tmp = 0; break;
+						case 2:
 							rr = pmap[y-ry][x-rx];
 							if ((rr & 0xFF) == PT_E189)
-								sim->parts_kill(rr >> 8);
+								sim->kill_part(rr >> 8);
 							else
 							{
 								ri = sim->create_part(-1,x-rx,y-ry,PT_E189,12);
