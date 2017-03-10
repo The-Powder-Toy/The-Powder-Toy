@@ -1444,11 +1444,10 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 				{
 					chr_1 = -chr_1; ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, '-', pack);
 				}
-				while (chr_1)
-				{
+				do {
 					ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, '0' + chr_1 % 10, pack); // note: ascii '0' not number 0
 					chr_1 /= 10;
-				}
+				} while (chr_1);
 				break;
 			default:
 				if (chr_1 >= 0 && chr_1 <= 255)
