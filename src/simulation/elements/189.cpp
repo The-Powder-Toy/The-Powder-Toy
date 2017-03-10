@@ -1395,31 +1395,31 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 			case 260: // random ASCII
 				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, (rand() % 95 + ' '), (it_r << 16) | (it_g << 8) | it_b);
 				break;
-			case 260: // random number
+			case 261: // random number
 				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, (rand() % 10 + '0'), (it_r << 16) | (it_g << 8) | it_b);
 				break;
-			case 261: // random uppercase
+			case 262: // random uppercase
 				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, (rand() % 26 + 'A'), (it_r << 16) | (it_g << 8) | it_b);
 				break;
-			case 262: // random lowercase
+			case 263: // random lowercase
 				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, (rand() % 26 + 'a'), (it_r << 16) | (it_g << 8) | it_b);
 				break;
-			case 263: // random mixed alphabet
+			case 264: // random mixed alphabet
 				pack = rand();
 				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, ((pack >> 1) % 26 + ((pack % 2) << 5) + 'A'), (it_r << 16) | (it_g << 8) | it_b);
 				break;
-			case 264: // random mixed alphanumeric
+			case 265: // random mixed alphanumeric
 				pack = rand() % 62;
 				pack += ((pack > 36) ? 29 : (pack > 10) ? 87 : '0');
 				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, pack, (it_r << 16) | (it_g << 8) | it_b);
 				break;
-			case 265:
+			case 266:
 				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, counter & 0xFF, (it_r << 16) | (it_g << 8) | it_b);
 				break;
-			case 266:
+			case 267:
 				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, calls[call_ptr-1][0] & 0xFF, (it_r << 16) | (it_g << 8) | it_b);
 				break;
-			case 267: // print number
+			case 268: // print number
 				chr_1 = (int)counter;
 				pack = (it_r << 16) | (it_g << 8) | it_b;
 				if (pack < 0)
