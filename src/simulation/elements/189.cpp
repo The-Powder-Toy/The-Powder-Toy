@@ -57,7 +57,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 	int tron_rx[4] = {-1, 0, 1, 0};
 	int tron_ry[4] = { 0,-1, 0, 1};
 	int rx, ry, ttan = 0, rlife = parts[i].life, direction, r, ri, rtmp, rctype;
-	int rsign, rndstore, trade, transfer, rt;
+	int rr, rndstore, trade, transfer, rt;
 	float rvx, rvy, rdif;
 	rtmp = parts[i].tmp;
 	
@@ -347,11 +347,28 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 				{
 					int r = pmap[y+ry][x+rx];
 					rt = r & 0xFF;
+					rtmp = parts[i].tmp;
 					if (!r)
 						continue;
 					if (rt == PT_SPRK && parts[r>>8].life == 3)
-						parts[i].tmp ^= 1;
-					if (parts[i].tmp && sim->elements[rt].Properties&PROP_CONDUCTS && parts[r>>8].life==0)
+					{
+						if ((rtmp & ~0x2) == 0x0)
+							parts[i].tmp ^= 1;
+						else if ((rtmp & 0x3) == 0x2)
+						{
+							rr = pmap[y-ry][x-rx];
+							if ((rr & 0xFF) == PT_E189)
+								sim->parts_kill(rr >> 8);
+							else
+							{
+								ri = sim->create_part(-1,x-rx,y-ry,PT_E189,12);
+								if (ri >= 0)
+									parts[ri].tmp = 3;
+							}
+							break;
+						}
+					}
+					if ((rtmp & 0x2) && sim->elements[rt].Properties & PROP_CONDUCTS && parts[r>>8].life == 0)
 					{
 						parts[r>>8].life = 4;
 						parts[r>>8].ctype = rt;
