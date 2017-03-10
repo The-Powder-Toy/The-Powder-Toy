@@ -1454,7 +1454,7 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 				if (chr_1 >= 0 && chr_1 <= 255)
 					ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, chr_1, (it_r << 16) | (it_g << 8) | it_b);
 				else
-					std::cerr << "Invalid character" << std::endl
+					std::cerr << "Invalid character" << std::endl;
 			}
 		}
 		else
