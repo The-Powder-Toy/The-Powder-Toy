@@ -1376,6 +1376,46 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 						errflag = 1; call_ptr = 0;
 					}
 				break;
+				case 50: // get red channel
+					counter = it_r;
+				break;
+				case 51: // set red channel
+					it_r = counter;
+				break;
+				case 52: // get green channel
+					counter = it_g;
+				break;
+				case 53: // set green channel
+					it_g = counter;
+				break;
+				case 54: // get blue channel
+					counter = it_b;
+				break;
+				case 55: // set blue channel
+					it_b = counter;
+				break;
+				case 56: // get parameter
+					r = sim->pmap[y+iy][x+ix];
+					pack = sim->parts[r>>8].life;
+					if ((r & 0xFF) == PT_E189 && pack == 12)
+					{
+						x += ix; y += iy;
+						counter = calls[fp + sim->parts[r>>8].ctype][0];
+					}
+					else
+						counter = calls[fp][0];
+				break;
+				case 57: // set parameter
+					r = sim->pmap[y+iy][x+ix];
+					pack = sim->parts[r>>8].life;
+					if ((r & 0xFF) == PT_E189 && pack == 12)
+					{
+						x += ix; y += iy;
+						calls[fp + sim->parts[r>>8].ctype][0] = counter;
+					}
+					else
+						calls[fp][0] = counter;
+				break;
 				default:
 					std::cerr << "Invalid opcode" << std::endl;
 				return;
