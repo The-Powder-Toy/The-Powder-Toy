@@ -985,7 +985,7 @@ int Element_E189::AddCharacter(Simulation *sim, int x, int y, int c, int rgb)
 							int oldr = (olda * ((k >> 16) & 0xFF)) >> 8;
 							int oldg = (olda * ((k >> 8) & 0xFF)) >> 8;
 							int oldb = (olda * (k & 0xFF)) >> 8;
-							olda = ba * 0x55;
+							olda = (ba & 3) * 0x55;
 							int newr = (olda * ((rgb >> 16) & 0xFF) + (0xFF - olda) * oldr) & ~0xFF;
 							int newg = (olda * ((rgb >> 8) & 0xFF) + (0xFF - olda) * oldg) & 0xFF00;
 							int newb = (olda * (rgb & 0xFF) + (0xFF - olda) * oldb) >> 8;
