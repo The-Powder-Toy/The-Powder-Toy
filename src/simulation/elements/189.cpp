@@ -1377,7 +1377,7 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 					}
 				break;
 				default:
-					std::cerr << "Invalid opcode" << std::endl
+					std::cerr << "Invalid opcode" << std::endl;
 				return;
 				}
 			continue;
