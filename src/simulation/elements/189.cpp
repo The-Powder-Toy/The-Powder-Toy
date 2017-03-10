@@ -975,7 +975,28 @@ int Element_E189::AddCharacter(Simulation *sim, int x, int y, int c, int rgb)
 				xi = x + i; yj = y + j;
 				_r = sim->pmap[yj][xi];
 				if (_r)
-					_r = sim->create_part(_r>>8, xi, yj, PT_E189, 13);
+				{
+					if ((_r&0xFF) == PT_E189 && sim->parts[r>>8].life == 13)
+					{
+						if (~ba & 3) // ba & 3 != 3, also only ba == 1 or ba == 2
+						{
+							int k = sim->parts[r>>8].ctype;
+							int olda = (k >> 24) & 0xFF;
+							int oldr = (olda * ((k >> 16) & 0xFF)) >> 8;
+							int oldg = (olda * ((k >> 8) & 0xFF)) >> 8;
+							int oldb = (olda * (k & 0xFF)) >> 8;
+							olda = ba * 0x55;
+							int newr = (olda * ((rgb >> 16) & 0xFF) + (0xFF - olda) * oldr) & ~0xFF;
+							int newg = (olda * ((rgb >> 8) & 0xFF) + (0xFF - olda) * oldg) & 0xFF00;
+							int newb = (olda * (rgb & 0xFF) + (0xFF - olda) * oldb) >> 8;
+							sim->parts[r>>8].ctype = 0xFF000000 | newr << 8 | newg | newb;
+						}
+						else
+							sim->parts[_r].ctype = 0xFF000000 | (rgb & 0x00FFFFFF);
+					}
+					else if (!(sim->elements[_r>>8].Properties & PROP_NODESTRUCT))
+						_r = sim->create_part(_r>>8, xi, yj, PT_E189, 13);
+				}
 				else
 					_r = sim->create_part(   -1, xi, yj, PT_E189, 13); // type = 65549 (0x0001000D)
 				if (_r >= 0)
@@ -1371,11 +1392,45 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 			case 259: // random character
 				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, (rand() & 0xFF), (it_r << 16) | (it_g << 8) | it_b);
 				break;
-			case 260:
+			case 260: // random ASCII
+				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, (rand() % 95 + ' '), (it_r << 16) | (it_g << 8) | it_b);
+				break;
+			case 260: // random number
+				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, (rand() % 10 + '0'), (it_r << 16) | (it_g << 8) | it_b);
+				break;
+			case 261: // random uppercase
+				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, (rand() % 26 + 'A'), (it_r << 16) | (it_g << 8) | it_b);
+				break;
+			case 262: // random lowercase
+				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, (rand() % 26 + 'a'), (it_r << 16) | (it_g << 8) | it_b);
+				break;
+			case 263: // random mixed alphabet
+				pack = rand();
+				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, ((pack >> 1) % 26 + ((pack % 2) << 5) + 'A'), (it_r << 16) | (it_g << 8) | it_b);
+				break;
+			case 264: // random mixed alphanumeric
+				pack = rand() % 62;
+				pack += ((pack > 36) ? 29 : (pack > 10) ? 87 : '0');
+				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, pack, (it_r << 16) | (it_g << 8) | it_b);
+				break;
+			case 265:
 				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, counter & 0xFF, (it_r << 16) | (it_g << 8) | it_b);
 				break;
-			case 261:
+			case 266:
 				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, calls[call_ptr-1][0] & 0xFF, (it_r << 16) | (it_g << 8) | it_b);
+				break;
+			case 267: // print number
+				chr_1 = (int)counter;
+				pack = (it_r << 16) | (it_g << 8) | it_b;
+				if (pack < 0)
+				{
+					chr_1 = -chr_1; ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, '-', pack);
+				}
+				while (chr_1)
+				{
+					ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, chr_1 % 10, pack);
+					chr_1 /= 10;
+				}
 				break;
 			default:
 				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, chr_1, (it_r << 16) | (it_g << 8) | it_b);
