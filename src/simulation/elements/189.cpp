@@ -1016,7 +1016,8 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 	// simulation, index, position (x2), direction (x2)
 	int ct_x = (sim->parts[i].ctype & 0xFFFF), ct_y = ((sim->parts[i].ctype >> 16) & 0xFFFF);
 	int it_x = ct_x, it_r, it_g, it_b, chr_1, esc = 0, pack, bkup, errflag = 0, cfptr;
-	int oldr, oldg, oldb, call_ptr = 0;
+	int oldr, oldg, oldb, call_ptr = 0, tmp = 0;
+	char __digits[5];
 	short counter = 0;
 	short calls[128][5]; /* dynamic */
 	it_r = it_g = it_b = 255;
@@ -1485,9 +1486,11 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 					chr_1 = -chr_1; ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, '-', pack);
 				}
 				do {
-					ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, '0' + chr_1 % 10, pack); // note: ascii '0' not number 0
+					__digits[tmp++] = '0' + chr_1 % 10; // note: ascii '0' not number 0
 					chr_1 /= 10;
 				} while (chr_1);
+				while (tmp)
+					ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, __digits[--tmp], pack);
 				break;
 			case 269: // random punctuation (exclude space)
 				pack = rand() & 31;
