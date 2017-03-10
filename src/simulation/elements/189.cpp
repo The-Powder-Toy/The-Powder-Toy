@@ -976,7 +976,7 @@ int Element_E189::AddCharacter(Simulation *sim, int x, int y, int c, int rgb)
 				_r = sim->pmap[yj][xi];
 				if (_r)
 				{
-					if ((_r&0xFF) == PT_E189 && sim->parts[r>>8].life == 13)
+					if ((_r&0xFF) == PT_E189 && sim->parts[_r>>8].life == 13)
 					{
 						if (~ba & 3) // ba & 3 != 3, also only ba == 1 or ba == 2
 						{
