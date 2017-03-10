@@ -912,6 +912,11 @@ int Element_E189::EMPTrigger(Simulation *sim, int triggerCount)
 		case PT_SWCH:
 		case PT_WIFI:
 		case PT_SPRK:
+		case PT_PSNS:
+		case PT_TSNS:
+		case PT_DTEC:
+		case PT_FRME:
+		case PT_PSTN:
 			if (Probability::randFloat() < prob_breakElectronics)
 				sim->part_change_type(r, rx, ry, PT_BREC);
 			break;
