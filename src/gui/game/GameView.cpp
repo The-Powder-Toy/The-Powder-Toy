@@ -2323,7 +2323,7 @@ void GameView::OnDraw()
 					else
 						partint = 1;
 				}
-				else if (partlife == 14)
+				else if (partlife & ~0x2 == 0xC)
 				{
 					partint = 1;
 				}
