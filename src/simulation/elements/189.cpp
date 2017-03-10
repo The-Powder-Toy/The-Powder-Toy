@@ -369,7 +369,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 							break;
 						}
 					}
-					if ((rtmp & 0x2) && sim->elements[rt].Properties & PROP_CONDUCTS && parts[r>>8].life == 0)
+					if ((rtmp & 0x1) && sim->elements[rt].Properties & PROP_CONDUCTS && parts[r>>8].life == 0)
 					{
 						parts[r>>8].life = 4;
 						parts[r>>8].ctype = rt;
