@@ -1361,6 +1361,9 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 				case 47: // if stack top and counter is not equal then trampoline
 					if (calls[call_ptr-1][0] != counter) { x += ix; y += iy; }
 				break;
+				default:
+					std::cerr << "Invalid opcode" << std::endl
+				return;
 				}
 			continue;
 		}
@@ -1428,12 +1431,15 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 				}
 				while (chr_1)
 				{
-					ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, chr_1 % 10, pack);
+					ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, '0' + chr_1 % 10, pack); // note: ascii '0' not number 0
 					chr_1 /= 10;
 				}
 				break;
 			default:
-				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, chr_1, (it_r << 16) | (it_g << 8) | it_b);
+				if (chr_1 >= 0 && chr_1 <= 255)
+					ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, chr_1, (it_r << 16) | (it_g << 8) | it_b);
+				else
+					std::cerr << "Invalid character" << std::endl
 			}
 		}
 		else
