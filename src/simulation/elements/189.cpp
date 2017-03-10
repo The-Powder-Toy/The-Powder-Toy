@@ -1185,9 +1185,26 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 					if (!errflag) { x += ix; y += iy; }
 				break;
 				case 28: // if counter is non-zero then trampoline
+					r = sim->pmap[y+iy][x+ix];
+					if ((r & 0xFF) == PT_E189)
+					{
+						pack = sim->parts[r>>8].life;
+						if (pack & ~0x1 == 0x2)
+						{
+							x += ix; y += iy;
+						}
+					}
 					if (counter) { x += ix; y += iy; }
 				break;
 				case 29: // if counter is zero then trampoline
+					if ((r & 0xFF) == PT_E189)
+					{
+						pack = sim->parts[r>>8].life;
+						if (pack & ~0x1 == 0x2)
+						{
+							x += ix; y += iy;
+						}
+					}
 					if (!counter) { x += ix; y += iy; }
 				break;
 				case 30: // counter increment by 1
@@ -1202,9 +1219,15 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 					{
 						pack = sim->parts[r>>8].life;
 						if (pack == 12)
+						{
+							x += ix; y += iy;
 							counter = (short)sim->parts[r>>8].ctype;
+						}
 						else if (pack & ~0x1 == 0x2)
+						{
+							x += ix; y += iy;
 							errflag = pack & 0x1;
+						}
 					}
 				break;
 				case 33: // toggle error flag
@@ -1304,6 +1327,18 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 					pack = (int)calls[call_ptr-1][0];
 					calls[call_ptr-1][0] = counter;
 					counter = (short)pack;
+				break;
+				case 44: // if stack top less than counter then trampoline
+					if (calls[call_ptr-1][0] < counter) { x += ix; y += iy; }
+				break;
+				case 45: // if counter less than stack top then trampoline
+					if (calls[call_ptr-1][0] > counter) { x += ix; y += iy; }
+				break;
+				case 46: // if stack top and counter is equal then trampoline
+					if (calls[call_ptr-1][0] == counter) { x += ix; y += iy; }
+				break;
+				case 47: // if stack top and counter is not equal then trampoline
+					if (calls[call_ptr-1][0] != counter) { x += ix; y += iy; }
 				break;
 				}
 			continue;
