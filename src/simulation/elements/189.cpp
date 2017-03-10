@@ -994,10 +994,10 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 {
 	// simulation, index, position (x2), direction (x2)
 	int ct_x = (sim->parts[i].ctype & 0xFFFF), ct_y = ((sim->parts[i].ctype >> 16) & 0xFFFF);
-	int it_x = ct_x, it_r, it_g, it_b, chr_1, esc = 0, pack, bkup;
-	int oldr, oldg, oldb;
-	int call_ptr = 0;
-	short calls [5][4]; /* dynamic */
+	int it_x = ct_x, it_r, it_g, it_b, chr_1, esc = 0, pack, bkup, errflag = 0, cfptr;
+	int oldr, oldg, oldb, call_ptr = 0;
+	short counter = 0;
+	short calls[128][5]; /* dynamic */
 	it_r = it_g = it_b = 255;
 	for (;;)
 	{
@@ -1028,7 +1028,7 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 		}
 		if (pack == 12) // if "spark reflector"
 		{
-			switch (chr_1 & 31) // chr_1 : initial ctype
+			switch (chr_1 & 63) // chr_1 : initial ctype
 			{
 				case 0: ix = 1; iy = 0; break; // go east
 				case 1: ix = 0; iy =-1; break; // go north
@@ -1107,25 +1107,203 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 					}
 				break;
 				case 20: // function call (stack push)
-					if (call_ptr >= 5)
+					if (call_ptr >= 128)
 					{
 						std::cerr << "stack overflow!" << std::endl;
-						return;
+						errflag = 1;
+						call_ptr = 0;
+						x  = (int)(calls[0][0]);
+						y  = (int)(calls[0][1]);
+						ix = (int)(calls[0][2]);
+						iy = (int)(calls[0][3]);
+						cfptr = -1;
 					}
-					calls[call_ptr][0] = (short)(x+ix);
-					calls[call_ptr][1] = (short)(y+iy);
-					calls[call_ptr][2] = (short)ix;
-					calls[call_ptr][3] = (short)iy;
-					call_ptr ++;
+					else
+					{
+						calls[call_ptr][0] = (short)(x+ix);
+						calls[call_ptr][1] = (short)(y+iy);
+						calls[call_ptr][2] = (short)ix;
+						calls[call_ptr][3] = (short)iy;
+						calls[call_ptr][4] = (short)cfptr;
+						cfptr = call_ptr++;
+					}
 				break;
 				case 21: // function return (stack pop)
 					if (call_ptr <= 0)
 						goto __break_loop_1;
-					call_ptr --;
+					call_ptr = cfptr;
 					x  = (int)(calls[call_ptr][0]);
 					y  = (int)(calls[call_ptr][1]);
 					ix = (int)(calls[call_ptr][2]);
 					iy = (int)(calls[call_ptr][3]);
+					cfptr = (int)(calls[call_ptr][4]);
+				break;
+				case 22: // push color data (stack push)
+					if (call_ptr < 128)
+					{
+						calls[call_ptr][0] = (short)it_r;
+						calls[call_ptr][1] = (short)it_g;
+						calls[call_ptr][2] = (short)it_b;
+						call_ptr++;
+					}
+					else
+					{
+						std::cerr << "stack overflow!" << std::endl;
+						errflag = 1; call_ptr = 0;
+					}
+				break;
+				case 23: // pop color data (stack pop)
+					if (call_ptr <= 0)
+						goto __break_loop_1;
+					call_ptr --;
+					it_r = (int)(calls[call_ptr][0]);
+					it_g = (int)(calls[call_ptr][1]);
+					it_b = (int)(calls[call_ptr][2]);
+				break;
+				case 24: // push counter register
+					if (call_ptr < 128)
+					{
+						calls[call_ptr][0] = counter;
+						call_ptr++;
+					}
+					else
+					{
+						std::cerr << "stack overflow!" << std::endl;
+						errflag = 1; call_ptr = 0;
+					}
+				break;
+				case 25: // pop counter register
+					if (call_ptr <= 0)
+						goto __break_loop_1;
+					call_ptr --;
+					counter = (int)(calls[call_ptr][0]);
+				break;
+				case 26: // if stack overflow then trampoline
+					if (errflag) { x += ix; y += iy; }
+				break;
+				case 27: // if stack not overflow then trampoline
+					if (!errflag) { x += ix; y += iy; }
+				break;
+				case 28: // if counter is non-zero then trampoline
+					if (counter) { x += ix; y += iy; }
+				break;
+				case 29: // if counter is zero then trampoline
+					if (!counter) { x += ix; y += iy; }
+				break;
+				case 30: // counter increment by 1
+					counter++;
+				break;
+				case 31: // counter decrement by 1
+					counter--;
+				break;
+				case 32: // set counter value / set error flag
+					r = sim->pmap[y+iy][x+ix];
+					if ((r & 0xFF) == PT_E189)
+					{
+						pack = sim->parts[r>>8].life;
+						if (pack == 12)
+							counter = (short)sim->parts[r>>8].ctype;
+						else if (pack & ~0x1 == 0x2)
+							errflag = pack & 0x1;
+					}
+				break;
+				case 33: // toggle error flag
+					errflag = !errflag;
+				break;
+				case 34: // push from stack
+					call_ptr = (call_ptr + 1) % 128;
+				break;
+				case 35: // pop from stack
+					call_ptr = (call_ptr + 127) % 128;
+				break;
+				case 36: // add constant
+					r = sim->pmap[y+iy][x+ix];
+					pack = sim->parts[r>>8].life;
+					if ((r & 0xFF) == PT_E189 && pack == 12)
+					{
+						x += ix; y += iy;
+						counter += (short)sim->parts[r>>8].ctype;
+					}
+					else
+						counter += calls[call_ptr-1][0];
+				break;
+				case 37: // subtract constant
+					r = sim->pmap[y+iy][x+ix];
+					pack = sim->parts[r>>8].life;
+					if ((r & 0xFF) == PT_E189 && pack == 12)
+					{
+						x += ix; y += iy;
+						counter -= (short)sim->parts[r>>8].ctype;
+					}
+					else
+						counter -= calls[call_ptr-1][0];
+				break;
+				case 38: // multiply constant
+					r = sim->pmap[y+iy][x+ix];
+					pack = sim->parts[r>>8].life;
+					if ((r & 0xFF) == PT_E189 && pack == 12)
+					{
+						x += ix; y += iy;
+						counter *= (short)sim->parts[r>>8].ctype;
+					}
+					else
+						counter *= calls[call_ptr-1][0];
+				break;
+				case 39: // bitwise and
+					r = sim->pmap[y+iy][x+ix];
+					pack = sim->parts[r>>8].life;
+					if ((r & 0xFF) == PT_E189 && pack == 12)
+					{
+						x += ix; y += iy;
+						counter &= (short)sim->parts[r>>8].ctype;
+					}
+					else
+						counter &= calls[call_ptr-1][0];
+				break;
+				case 40: // bitwise or
+					r = sim->pmap[y+iy][x+ix];
+					pack = sim->parts[r>>8].life;
+					if ((r & 0xFF) == PT_E189 && pack == 12)
+					{
+						x += ix; y += iy;
+						counter |= (short)sim->parts[r>>8].ctype;
+					}
+					else
+						counter |= calls[call_ptr-1][0];
+				break;
+				case 41: // bitwise xor
+					r = sim->pmap[y+iy][x+ix];
+					pack = sim->parts[r>>8].life;
+					if ((r & 0xFF) == PT_E189 && pack == 12)
+					{
+						x += ix; y += iy;
+						counter ^= (short)sim->parts[r>>8].ctype;
+					}
+					else
+						counter ^= calls[call_ptr-1][0];
+				break;
+				case 42: // bitwise shift
+					r = sim->pmap[y+iy][x+ix];
+					pack = sim->parts[r>>8].life;
+					if ((r & 0xFF) == PT_E189 && pack == 12)
+					{
+						x += ix; y += iy;
+						pack = sim->parts[r>>8].ctype;
+					}
+					else
+						pack = calls[call_ptr-1][0];
+					switch ((pack >> 4) & 3)
+					{
+						case 0: counter = counter << (pack & 0xF); break;
+						case 1: counter = (signed short)counter >> (pack & 0xF); break;
+						case 2: counter = (unsigned short)counter >> (pack & 0xF); break;
+						case 3: counter = (counter << (pack & 0xF)) | ((unsigned short)counter >> (-pack & 0xF)); break;
+					}
+				break;
+				case 43: // swap counter / stack
+					pack = (int)calls[call_ptr-1][0];
+					calls[call_ptr-1][0] = counter;
+					counter = (int)pack;
 				break;
 				}
 			continue;
@@ -1154,6 +1332,15 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 				break;
 			case 258:
 				esc = 4;
+				break;
+			case 259: // random character
+				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, (rand() & 0xFF), (it_r << 16) | (it_g << 8) | it_b);
+				break;
+			case 260:
+				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, counter & 0xFF, (it_r << 16) | (it_g << 8) | it_b);
+				break;
+			case 261:
+				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, calls[call_ptr-1][0] & 0xFF, (it_r << 16) | (it_g << 8) | it_b);
 				break;
 			default:
 				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, chr_1, (it_r << 16) | (it_g << 8) | it_b);
