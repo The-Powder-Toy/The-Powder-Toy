@@ -1400,10 +1400,10 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 					if ((r & 0xFF) == PT_E189 && pack == 12)
 					{
 						x += ix; y += iy;
-						counter = calls[fp + sim->parts[r>>8].ctype][0];
+						counter = calls[cfptr + sim->parts[r>>8].ctype][0];
 					}
 					else
-						counter = calls[fp][0];
+						counter = calls[cfptr][0];
 				break;
 				case 57: // set parameter
 					r = sim->pmap[y+iy][x+ix];
@@ -1411,10 +1411,10 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 					if ((r & 0xFF) == PT_E189 && pack == 12)
 					{
 						x += ix; y += iy;
-						calls[fp + sim->parts[r>>8].ctype][0] = counter;
+						calls[cfptr + sim->parts[r>>8].ctype][0] = counter;
 					}
 					else
-						calls[fp][0] = counter;
+						calls[cfptr][0] = counter;
 				break;
 				default:
 					std::cerr << "Invalid opcode" << std::endl;
@@ -1488,6 +1488,11 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 					ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, '0' + chr_1 % 10, pack); // note: ascii '0' not number 0
 					chr_1 /= 10;
 				} while (chr_1);
+				break;
+			case 269: // random punctuation (exclude space)
+				pack = rand() & 31;
+				pack += ((pack < 15) ? '!' : (pack < 22) ? 43 : (pack < 28) ? 69 : 95);
+				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, pack, (it_r << 16) | (it_g << 8) | it_b);
 				break;
 			default:
 				if (chr_1 >= 0 && chr_1 <= 255)
