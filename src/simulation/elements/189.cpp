@@ -1039,7 +1039,7 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 			break;
 		pack = sim->parts[r>>8].life;
 		chr_1 = sim->parts[r>>8].ctype;
-		if (pack & ~0x1 == 0x2) // if "tron portal"
+		if ((pack & ~0x1) == 0x2) // if "tron portal"
 		{
 			if (pack == 2) // if "tron input"
 			{
@@ -1255,7 +1255,7 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 							x += ix; y += iy;
 							counter = (short)sim->parts[r>>8].ctype;
 						}
-						else if (pack & ~0x1 == 0x2)
+						else if ((pack & ~0x1) == 0x2)
 						{
 							x += ix; y += iy;
 							errflag = pack & 0x1;
