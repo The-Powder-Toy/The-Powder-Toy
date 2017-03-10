@@ -1361,6 +1361,21 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 				case 47: // if stack top and counter is not equal then trampoline
 					if (calls[call_ptr-1][0] != counter) { x += ix; y += iy; }
 				break;
+				case 48: // set random value
+					 counter = rand();
+				break;
+				case 49: // push random value
+					if (call_ptr < 128)
+					{
+						calls[call_ptr][0] = rand();
+						call_ptr++;
+					}
+					else
+					{
+						std::cerr << "stack overflow!" << std::endl;
+						errflag = 1; call_ptr = 0;
+					}
+				break;
 				default:
 					std::cerr << "Invalid opcode" << std::endl
 				return;
