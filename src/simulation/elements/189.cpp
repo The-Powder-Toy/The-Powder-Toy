@@ -982,9 +982,19 @@ int Element_E189::AddCharacter(Simulation *sim, int x, int y, int c, int rgb)
 						{
 							int k = sim->parts[_r>>8].ctype;
 							int olda = (k >> 24) & 0xFF;
-							int oldr = (olda * ((k >> 16) & 0xFF)) >> 8;
-							int oldg = (olda * ((k >> 8) & 0xFF)) >> 8;
-							int oldb = (olda * (k & 0xFF)) >> 8;
+							int oldr, oldg, oldb;
+							if (olda == 255)
+							{
+								oldr = (k >> 16) & 0xFF;
+								oldg = (k >> 8) & 0xFF;
+								oldb = k & 0xFF;
+							}
+							else
+							{
+								oldr = (olda * ((k >> 16) & 0xFF)) >> 8;
+								oldg = (olda * ((k >> 8) & 0xFF)) >> 8;
+								oldb = (olda * (k & 0xFF)) >> 8;
+							}
 							olda = (ba & 3) * 0x55;
 							int newr = (olda * ((rgb >> 16) & 0xFF) + (0xFF - olda) * oldr) & ~0xFF;
 							int newg = (olda * ((rgb >> 8) & 0xFF) + (0xFF - olda) * oldg) & 0xFF00;
@@ -1485,10 +1495,12 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 				{
 					chr_1 = -chr_1; ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, '-', pack);
 				}
-				do {
+				do
+				{
 					__digits[tmp++] = '0' + chr_1 % 10; // note: ascii '0' not number 0
 					chr_1 /= 10;
-				} while (chr_1);
+				}
+				while (chr_1);
 				while (tmp)
 					ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, __digits[--tmp], pack);
 				break;
