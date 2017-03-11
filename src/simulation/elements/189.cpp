@@ -864,7 +864,7 @@ int Element_E189::EMPTrigger(Simulation *sim, int triggerCount)
 		switch ( t )
 		{
 		case PT_DMND:
-		case PT_INSL:
+		case PT_INDI:
 			break;
 		case PT_METL:
 			if (Probability::randFloat() < prob_breakElectronics)
