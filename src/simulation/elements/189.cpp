@@ -415,7 +415,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 				if (BOUNDS_CHECK && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
-					if ((r & 0xFF) == PT_SPRK && parts[r>>8].ctype == PT_PSCN)
+					if ((r & 0xFF) == PT_SPRK && parts[r>>8].ctype == PT_PSCN && parts[r>>8].life == 3)
 						PSCNCount ++;
 				}
 		rtmp = parts[i].tmp;
