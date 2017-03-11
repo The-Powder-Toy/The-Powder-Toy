@@ -2204,7 +2204,7 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr)
 		{
 			if (parts[r>>8].life == 7 && pt == PT_E186)
 				return 0;
-			else if (parts[r>>8].life >= 15 && pt == PT_PROT)
+			else if (parts[r>>8].life == 15 && pt == PT_PROT)
 				return 0;
 			else
 				return 2;
