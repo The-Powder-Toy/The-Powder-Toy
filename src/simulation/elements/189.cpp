@@ -169,8 +169,9 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 		
 		break;
 	case 5: // reserved for Simulation.cpp
-	case 7:
+	case 7: // reserved for Simulation.cpp
 	case 13: // decoration only, no update function
+	case 15: // reserved for Simulation.cpp
 		break;
 	case 6: // heater
 		for (rx=-1; rx<2; rx++)
@@ -302,7 +303,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			for (int ry = -1; ry <= 1; ry++)
 				if (BOUNDS_CHECK && (rx || ry))
 				{
-					int r = pmap[y+ry][x+rx];
+					r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
 					if ((r&0xFF) == PT_SPRK && parts[r>>8].life == 3)
@@ -321,7 +322,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			for (int ry = -1; ry <= 1; ry++)
 				if (BOUNDS_CHECK && (rx || ry))
 				{
-					int r = pmap[y+ry][x+rx];
+					r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
 					if ((r&0xFF) == PT_SPRK && parts[r>>8].life == 3)
@@ -345,7 +346,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			for (int ry = -1; ry <= 1; ry++)
 				if (BOUNDS_CHECK && (rx || ry))
 				{
-					int r = pmap[y+ry][x+rx];
+					r = pmap[y+ry][x+rx];
 					rt = r & 0xFF;
 					rtmp = parts[i].tmp;
 					if (!r)
@@ -405,6 +406,37 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			break;
 		}
 		break;
+	case 16:
+		if (parts[i].tmp2)
+			parts[i].tmp2 --;
+		int PSCNCount = 0;
+		for (int rx = -2; rx <= 2; rx++)
+			for (int ry = -2; ry <= 2; ry++)
+				if (BOUNDS_CHECK && (rx || ry))
+				{
+					r = pmap[y+ry][x+rx];
+					if ((r & 0xFF) == PT_SPRK && parts[r>>8].ctype == PT_PSCN)
+						PSCNCount ++;
+				}
+		rtmp = parts[i].tmp;
+		if ((rtmp & 3) != 3)
+		{
+			if (PSCNCount > rtmp & 3) // N-input logic gate
+				parts[i].tmp2 = 10;
+		}
+		else if (PSCNCount & 1)
+			parts[i].tmp2 = 10; // XOR gate
+		if (!(parts[i].tmp & 4) == (parts[i].tmp2 > 0 && parts[i].tmp2 < 10))
+		{
+			for (int rx = -2; rx <= 2; rx++)
+				for (int ry = -2; ry <= 2; ry++)
+					if (BOUNDS_CHECK && (rx || ry))
+					{
+						r = pmap[y+ry][x+rx];
+						if ((r & 0xFF) == PT_NSCN && parts[r>>8].life == 0)
+							sim->part_change_type(r>>8,x+rx,y+ry,PT_SPRK);
+					}
+		}
 	}
 	
 	if(ttan>=2) {
@@ -568,6 +600,7 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 		*pixel_mode |= PMODE_BLEND;
 		break;
 	case 15:
+	case 16:
 		*colr = 0x9F; *colg = 0x05; *colb = 0x00;
 		break;
 	}
