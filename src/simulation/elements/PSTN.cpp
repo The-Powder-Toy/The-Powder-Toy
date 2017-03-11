@@ -51,7 +51,7 @@ int Element_PSTN::tempParts[XRES];
 #define PISTON_INACTIVE		0x00
 #define PISTON_RETRACT		0x01
 #define PISTON_EXTEND		0x02
-#define MAX_FRAME			0x0F
+#define DEFAULT_MAX_FRAME	0x0F
 #define DEFAULT_LIMIT		0x1F
 #define DEFAULT_ARM_LIMIT	0xFF
 
@@ -62,6 +62,7 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
  		return 0;
  	int maxSize = parts[i].tmp ? parts[i].tmp : DEFAULT_LIMIT;
  	int armLimit = parts[i].tmp2 ? parts[i].tmp2 : DEFAULT_ARM_LIMIT;
+	int maxFrame = parts[i].tmp3 ? parts[i].tmp3 : DEFAULT_MAX_FRAME;
  	int state = 0;
 	int r, nxx, nyy, nxi, nyi, rx, ry;
 	int directionX = 0, directionY = 0;
@@ -90,7 +91,7 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 					r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if ((r&0xFF) == PT_PSTN || ((r&0xFF) == PT_E189 && parts[r>>8].life == 12))
+					if ((r&0xFF) == PT_PSTN || ((r&0xFF) == PT_E189 && parts[r>>8].life == 12 && (parts[r>>8].tmp & 4)))
 					{
 						bool movedPiston = false;
 						bool foundEnd = false;
@@ -121,7 +122,7 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 									pistonCount += floor((parts[r>>8].temp-268.15)/10);// How many tens of degrees above 0 C, rounded to nearest ten degrees. Can be negative.
 								}
 							}
-							else if(!E189Push && ((r&0xFF) == PT_E189 && parts[r>>8].life == 12))
+							else if(!E189Push && ((r&0xFF) == PT_E189 && parts[r>>8].life == 12 && (parts[r>>8].tmp & 4)))
 							{
 								pistonCount += floor((parts[r>>8].temp-268.15)/10);
 								E189Push = true;
@@ -146,7 +147,7 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 								if(armCount+pistonCount > armLimit)
 									pistonCount = armLimit-armCount;
 								if(pistonCount > 0) {
-									newSpace = MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY, maxSize, pistonCount, false, parts[i].ctype, true);
+									newSpace = MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY, maxSize, pistonCount, false, parts[i].ctype, true, maxFrame);
 									if(newSpace && !E189Push) {
 										//Create new piston section
 										for(int j = 0; j < newSpace; j++) {
@@ -167,7 +168,7 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 								if(pistonCount > armCount)
 									pistonCount = armCount;
 								if(armCount && pistonCount > 0) {
-									MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY, maxSize, pistonCount, true, parts[i].ctype, true);
+									MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY, maxSize, pistonCount, true, parts[i].ctype, true, maxFrame);
 									movedPiston = true;
 								}
 							}
@@ -216,20 +217,20 @@ int Element_PSTN::CanMoveStack(Simulation * sim, int stackX, int stackY, int dir
 		return 0;
 }
 
-//#TPT-Directive ElementHeader Element_PSTN static int MoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int maxSize, int amount, bool retract, int block, bool sticky, int callDepth = 0)
-int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int maxSize, int amount, bool retract, int block, bool sticky, int callDepth)
+//#TPT-Directive ElementHeader Element_PSTN static int MoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int maxSize, int amount, bool retract, int block, bool sticky, int maxFrame, int callDepth = 0, int stickylimited = 0)
+int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int maxSize, int amount, bool retract, int block, bool sticky, int maxFrame, int callDepth, int stickylimit)
 {
 	bool foundParts = false;
-	int posX, posY, r, spaces = 0, currentPos = 0;
+	int posX, posY, r, spaces = 0, currentPos = 0, tempvar;
 	r = sim->pmap[stackY][stackX];
 	if(!callDepth && (r&0xFF) == PT_FRME) {
 		int newY = !!directionX, newX = !!directionY;
 		int realDirectionX = retract?-directionX:directionX;
 		int realDirectionY = retract?-directionY:directionY;
-		int maxRight = MAX_FRAME, maxLeft = MAX_FRAME;
+		int maxRight = maxFrame, maxLeft = maxFrame;
 
 		//check if we can push all the FRME
-		for(int c = retract; c < MAX_FRAME; c++) {
+		for(int c = retract; c < maxFrame; c++) {
 			posY = stackY + (c*newY);
 			posX = stackX + (c*newX);
 			if (posX < XRES && posY < YRES && posX >= 0 && posY >= 0 && (sim->pmap[posY][posX]&0xFF) == PT_FRME) {
@@ -241,7 +242,7 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 				break;
 			}
 		}
-		for(int c = 1; c < MAX_FRAME; c++) {
+		for(int c = 1; c < maxFrame; c++) {
 			posY = stackY - (c*newY);
 			posX = stackX - (c*newX);
 			if (posX < XRES && posY < YRES && posX >= 0 && posY >= 0 && (sim->pmap[posY][posX]&0xFF) == PT_FRME) {
@@ -258,19 +259,22 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 		for(int c = 1; c < maxRight; c++) {
 			posY = stackY + (c*newY);
 			posX = stackX + (c*newX);
-			MoveStack(sim, posX, posY, directionX, directionY, maxSize, amount, retract, block, !sim->parts[sim->pmap[posY][posX]>>8].tmp, 1);
+			tempvar = sim->pmap[posY][posX]>>8;
+			MoveStack(sim, posX, posY, directionX, directionY, maxSize, amount, retract, block, !tempvar, maxFrame, 1, sim->parts[tempvar].tmp >= 2 ? sim->parts[tempvar].tmp2 : 0);
 		}
 		for(int c = 1; c < maxLeft; c++) {
 			posY = stackY - (c*newY);
 			posX = stackX - (c*newX);
-			MoveStack(sim, posX, posY, directionX, directionY, maxSize, amount, retract, block, !sim->parts[sim->pmap[posY][posX]>>8].tmp, 1);
+			tempvar = sim->pmap[posY][posX]>>8
+			MoveStack(sim, posX, posY, directionX, directionY, maxSize, amount, retract, block, !tempvar, maxFrame, 1, sim->parts[tempvar].tmp >= 2 ? sim->parts[tempvar].tmp2 : 0);
 		}
 
 		//Remove arm section if retracting with FRME
 		if (retract)
 			for(int j = 1; j <= amount; j++)
 				sim->kill_part(sim->pmap[stackY+(directionY*-j)][stackX+(directionX*-j)]>>8);
-		return MoveStack(sim, stackX, stackY, directionX, directionY, maxSize, amount, retract, block, !sim->parts[sim->pmap[stackY][stackX]>>8].tmp, 1);
+		tempvar = sim->pmap[stackY][stackX]>>8;
+		return MoveStack(sim, stackX, stackY, directionX, directionY, maxSize, amount, retract, block, !tempvar, maxFrame, 1, sim->parts[tempvar].tmp >= 2 ? sim->parts[tempvar].tmp2 : 0);
 	}
 	if(retract){
 		//Remove arm section if retracting without FRME
@@ -283,12 +287,15 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 				break;
 			}
 			r = sim->pmap[posY][posX];
-			if(!r || (r&0xFF) == block || (!sticky && (r&0xFF) != PT_FRME)) {
+			if (!r || (r&0xFF) == block)
+				break;
+			if (!sticky && (r&0xFF) != PT_FRME && stickylimit <= 0) {
 				break;
 			} else {
 				foundParts = true;
 				tempParts[currentPos++] = r>>8;
 			}
+			stickylimit--;
 		}
 		if(foundParts) {
 			//Move particles
