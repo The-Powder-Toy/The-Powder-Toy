@@ -109,7 +109,7 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 							{
 								if(parts[r>>8].life)
 									armCount++;
-								else if (armCount)
+								else if (armCount || E189Push)
 								{
 									pistonEndX = x+nxx;
 									pistonEndY = y+nyy;
