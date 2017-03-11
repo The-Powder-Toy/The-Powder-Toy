@@ -265,7 +265,7 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 		for(int c = 1; c < maxLeft; c++) {
 			posY = stackY - (c*newY);
 			posX = stackX - (c*newX);
-			tempvar = sim->pmap[posY][posX]>>8
+			tempvar = sim->pmap[posY][posX]>>8;
 			MoveStack(sim, posX, posY, directionX, directionY, maxSize, amount, retract, block, !tempvar, maxFrame, 1, sim->parts[tempvar].tmp >= 2 ? sim->parts[tempvar].tmp2 : 0);
 		}
 
