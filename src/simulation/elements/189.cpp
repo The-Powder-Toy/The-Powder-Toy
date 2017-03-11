@@ -434,7 +434,11 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 					{
 						r = pmap[y+ry][x+rx];
 						if ((r & 0xFF) == PT_NSCN && parts[r>>8].life == 0)
+						{
+							parts[r>>8].life = 4;
+							parts[r>>8].ctype = PT_NSCN;
 							sim->part_change_type(r>>8,x+rx,y+ry,PT_SPRK);
+						}
 					}
 		}
 	}
