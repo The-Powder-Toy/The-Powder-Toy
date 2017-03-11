@@ -864,10 +864,15 @@ int Element_E189::EMPTrigger(Simulation *sim, int triggerCount)
 		switch ( t )
 		{
 		case PT_DMND:
+		case PT_INSL:
 			break;
 		case PT_METL:
 			if (Probability::randFloat() < prob_breakElectronics)
 				sim->part_change_type(r, rx, ry, PT_BMTL);
+			break;
+		case PT_COAL:
+			if (Probability::randFloat() < prob_breakElectronics)
+				sim->part_change_type(r, rx, ry, PT_BCOL);
 			break;
 		case PT_BMTL:
 		case PT_PIPE:
@@ -892,8 +897,7 @@ int Element_E189::EMPTrigger(Simulation *sim, int triggerCount)
 		case PT_CONV:
 			if (Probability::randFloat() < prob_breakElectronics)
 			{
-				sim->part_change_type(r, rx, ry, PT_E189);
-				parts[r].life = 8;
+				sim->part_change_type(r, rx, ry, PT_E189, 8);
 				parts[r].tmp = 21000;
 			}
 			break;
@@ -924,6 +928,15 @@ int Element_E189::EMPTrigger(Simulation *sim, int triggerCount)
 		case PT_PCLN:
 			if (Probability::randFloat() < prob_breakElectronics)
 				sim->part_change_type(r, rx, ry, PT_BCLN);
+			break;
+		case PT_SPNG:
+		case PT_BTRY:
+			if (Probability::randFloat() < prob_breakElectronics)
+				sim->create_part(r, rx, ry, PT_PLSM);
+			break;
+		case PT_VIBR:
+			if (Probability::randFloat() < prob_breakElectronics * 0.2)
+				sim->part_change_type(r, rx, ry, PT_BVBR);
 			break;
 		case PT_E189:
 			switch (parts[r].life)
