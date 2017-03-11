@@ -121,7 +121,7 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 									pistonCount += floor((parts[r>>8].temp-268.15)/10);// How many tens of degrees above 0 C, rounded to nearest ten degrees. Can be negative.
 								}
 							}
-							if(!E189Push && ((r&0xFF) == PT_E189 && parts[r>>8].life == 12))
+							else if(!E189Push && ((r&0xFF) == PT_E189 && parts[r>>8].life == 12))
 							{
 								pistonCount += floor((parts[r>>8].temp-268.15)/10);
 								E189Push = true;
