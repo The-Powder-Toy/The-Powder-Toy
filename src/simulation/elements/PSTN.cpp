@@ -221,7 +221,7 @@ int Element_PSTN::CanMoveStack(Simulation * sim, int stackX, int stackY, int dir
 int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int maxSize, int amount, bool retract, int block, bool sticky, int maxFrame, int callDepth, int stickylimit)
 {
 	bool foundParts = false;
-	int posX, posY, r, spaces = 0, currentPos = 0, tempvar;
+	int posX, posY, r, spaces = 0, currentPos = 0, tempvar, tempvar2;
 	r = sim->pmap[stackY][stackX];
 	if(!callDepth && (r&0xFF) == PT_FRME) {
 		int newY = !!directionX, newX = !!directionY;
@@ -260,13 +260,14 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 			posY = stackY + (c*newY);
 			posX = stackX + (c*newX);
 			tempvar = sim->pmap[posY][posX]>>8;
-			MoveStack(sim, posX, posY, directionX, directionY, maxSize, amount, retract, block, !tempvar, maxFrame, 1, sim->parts[tempvar].tmp >= 2 ? sim->parts[tempvar].tmp2 : 0);
+			tempvar2 = sim->parts[tempvar].tmp;
+			MoveStack(sim, posX, posY, directionX, directionY, maxSize, amount, retract, block, !tempvar2, maxFrame, 1, tempvar2 >= 2 ? sim->parts[tempvar].tmp2 : 0);
 		}
 		for(int c = 1; c < maxLeft; c++) {
 			posY = stackY - (c*newY);
 			posX = stackX - (c*newX);
 			tempvar = sim->pmap[posY][posX]>>8;
-			MoveStack(sim, posX, posY, directionX, directionY, maxSize, amount, retract, block, !tempvar, maxFrame, 1, sim->parts[tempvar].tmp >= 2 ? sim->parts[tempvar].tmp2 : 0);
+			MoveStack(sim, posX, posY, directionX, directionY, maxSize, amount, retract, block, !tempvar2, maxFrame, 1, tempvar2 >= 2 ? sim->parts[tempvar].tmp2 : 0);
 		}
 
 		//Remove arm section if retracting with FRME
@@ -274,7 +275,7 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 			for(int j = 1; j <= amount; j++)
 				sim->kill_part(sim->pmap[stackY+(directionY*-j)][stackX+(directionX*-j)]>>8);
 		tempvar = sim->pmap[stackY][stackX]>>8;
-		return MoveStack(sim, stackX, stackY, directionX, directionY, maxSize, amount, retract, block, !tempvar, maxFrame, 1, sim->parts[tempvar].tmp >= 2 ? sim->parts[tempvar].tmp2 : 0);
+		return MoveStack(sim, stackX, stackY, directionX, directionY, maxSize, amount, retract, block, !tempvar2, maxFrame, 1, tempvar2 >= 2 ? sim->parts[tempvar].tmp2 : 0);
 	}
 	if(retract){
 		//Remove arm section if retracting without FRME
@@ -295,7 +296,7 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 				foundParts = true;
 				tempParts[currentPos++] = r>>8;
 			}
-			stickylimit--;
+			stickylimit && stickylimit--;
 		}
 		if(foundParts) {
 			//Move particles
