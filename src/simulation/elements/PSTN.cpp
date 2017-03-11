@@ -82,6 +82,7 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 				}
 	}
 	if(state == PISTON_EXTEND || state == PISTON_RETRACT) {
+		bool E189Push = false;
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
 				if (BOUNDS_CHECK && (rx || ry) && (!rx || !ry))
@@ -89,7 +90,7 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 					r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if ((r&0xFF) == PT_PSTN)
+					if ((r&0xFF) == PT_PSTN || ((r&0xFF) == PT_E189 && parts[r>>8].life == 12))
 					{
 						bool movedPiston = false;
 						bool foundEnd = false;
@@ -120,6 +121,11 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 									pistonCount += floor((parts[r>>8].temp-268.15)/10);// How many tens of degrees above 0 C, rounded to nearest ten degrees. Can be negative.
 								}
 							}
+							if(!E189Push && ((r&0xFF) == PT_E189 && parts[r>>8].life == 12))
+							{
+								pistonCount += floor((parts[r>>8].temp-268.15)/10);
+								E189Push = true;
+							}
 							else if (nxx==0 && nyy==0)
 							{
 								// compatibility with BAD THINGS: starting PSTN layered underneath other particles
@@ -141,7 +147,7 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 									pistonCount = armLimit-armCount;
 								if(pistonCount > 0) {
 									newSpace = MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY, maxSize, pistonCount, false, parts[i].ctype, true);
-									if(newSpace) {
+									if(newSpace && !E189Push) {
 										//Create new piston section
 										for(int j = 0; j < newSpace; j++) {
 											int nr = sim->create_part(-3, pistonEndX+(nxi*j), pistonEndY+(nyi*j), PT_PSTN);
