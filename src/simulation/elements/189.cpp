@@ -897,7 +897,7 @@ int Element_E189::EMPTrigger(Simulation *sim, int triggerCount)
 		case PT_CONV:
 			if (Probability::randFloat() < prob_breakElectronics)
 			{
-				sim->part_change_type(r, rx, ry, PT_E189, 8);
+				sim->create_part(r, rx, ry, PT_E189, 8);
 				parts[r].tmp = 21000;
 			}
 			break;
