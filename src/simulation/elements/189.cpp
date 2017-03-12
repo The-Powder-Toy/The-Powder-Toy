@@ -946,6 +946,10 @@ int Element_E189::EMPTrigger(Simulation *sim, int triggerCount)
 			if (Probability::randFloat() < prob_breakElectronics)
 				sim->part_change_type(r, rx, ry, PT_STNE);
 			break;
+		case PT_DLAY:
+			if (Probability::randFloat() < prob_breakElectronics)
+				parts[n].temp = (rand()%512) + 274.15f; // Randomize delay
+			break;
 		case PT_PSCN:
 		case PT_NSCN:
 		case PT_PTCT:
@@ -972,8 +976,12 @@ int Element_E189::EMPTrigger(Simulation *sim, int triggerCount)
 				sim->create_part(r, rx, ry, PT_PLSM);
 			break;
 		case PT_VIBR:
+			parts[r].life = 1000;
 			if (Probability::randFloat() < prob_breakElectronics * 0.2)
 				sim->part_change_type(r, rx, ry, PT_BVBR);
+			break;
+		case PT_BVBR:
+			parts[r].life = 1000;
 			break;
 		case PT_E189:
 			switch (parts[r].life)
