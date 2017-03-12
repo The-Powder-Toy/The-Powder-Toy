@@ -419,6 +419,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 		}
 		break;
 	case 16:
+		int PSCNCount;
 		switch (parts[i].ctype)
 		{
 		case 0: // logic gate
@@ -437,7 +438,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						}
 			}
 
-			int PSCNCount = 0;
+			PSCNCount = 0;
 			for (int rx = -2; rx <= 2; rx++)
 				for (int ry = -2; ry <= 2; ry++)
 					if (BOUNDS_CHECK && (rx || ry))
