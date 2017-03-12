@@ -2326,7 +2326,7 @@ void GameView::OnDraw()
 					else
 						partint = 1;
 				}
-				else if (partlife == 12 || partlife == 14)
+				else if (partlife == 12 || partlife == 14 || partlife == 16)
 				{
 					partint = 1;
 				}
