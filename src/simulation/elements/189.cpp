@@ -491,9 +491,37 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 		case 2: // insulate->conduct counter
 			if (parts[i].tmp2)
 			{
-				parts[i].tmp2 = 0;
-				if (!--parts[i].tmp)
-					sim->create_part(i, x, y, PT_METL);
+				if (!--parts[i].tmp2)
+				{
+					parts[i].tmp--;
+				}
+			}
+			else if (!parts[i].tmp)
+				sim->create_part(i, x, y, PT_METL);
+			for (int rx = -2; rx <= 2; rx++)
+				for (int ry = -2; ry <= 2; ry++)
+					if (BOUNDS_CHECK && (rx || ry))
+					{
+						r = pmap[y+ry][x+rx];
+						if ((r & 0xFF) == PT_SPRK && parts[r>>8].ctype == PT_PSCN && parts[r>>8].life == 3)
+						{
+							parts[i].tmp2 = 5;
+							goto break1;
+						}
+					}
+			break;
+		case 3: // flip-flop
+			if (parts[i].tmp >= 2)
+			{
+				for (int rx = -2; rx <= 2; rx++)
+					for (int ry = -2; ry <= 2; ry++)
+						if (BOUNDS_CHECK && (rx || ry))
+						{
+							r = pmap[y+ry][x+rx];
+							if ((r & 0xFF) == PT_NSCN)
+								sim->create_part(-1,x+rx,y+ry,PT_SPRK);
+						}
+				parts[i].tmp = 0;
 			}
 			for (int rx = -2; rx <= 2; rx++)
 				for (int ry = -2; ry <= 2; ry++)
@@ -502,10 +530,11 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						r = pmap[y+ry][x+rx];
 						if ((r & 0xFF) == PT_SPRK && parts[r>>8].ctype == PT_PSCN && parts[r>>8].life == 3)
 						{
-							parts[i].tmp2 = 1;
+							parts[i].tmp ++;
 							goto break1;
 						}
 					}
+			break;
 		}
 	}
 	
