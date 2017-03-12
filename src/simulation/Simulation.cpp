@@ -2202,8 +2202,14 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr)
 		}
 		else if ((r&0xFF) == PT_E189)
 		{
-			if (parts[r>>8].life == 7 && pt == PT_E186)
-				return 2;
+			if (pt == PT_E186)
+			{
+				if (parts[r>>8].life == 7)
+					return 2; // corrected code
+				if (parts[r>>8].life == 16)
+					return 1;
+				return 0;
+			}
 			else if (parts[r>>8].life == 15 && pt == PT_PROT)
 				return 0;
 			else
@@ -2434,6 +2440,14 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 	{
 		if (parts[i].life>0)
 			return 0;
+	}
+	else if(parts[i].type == PT_E189)
+	{
+		if (parts[i].life>0)
+		{
+			kill_part(i);
+			return 0;
+		}
 	}
 
 	if ((bmap[y/CELL][x/CELL]==WL_EHOLE && !emap[y/CELL][x/CELL]) && !(bmap[ny/CELL][nx/CELL]==WL_EHOLE && !emap[ny/CELL][nx/CELL]))
