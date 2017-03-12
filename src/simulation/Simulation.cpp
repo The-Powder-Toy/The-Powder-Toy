@@ -2446,11 +2446,8 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 	}
 	else if(parts[i].type == PT_E189)
 	{
-		if (parts[i].life>0)
-		{
-			kill_part(i);
-			return 0;
-		}
+		kill_part(i);
+		return 0;
 	}
 
 	if ((bmap[y/CELL][x/CELL]==WL_EHOLE && !emap[y/CELL][x/CELL]) && !(bmap[ny/CELL][nx/CELL]==WL_EHOLE && !emap[ny/CELL][nx/CELL]))
