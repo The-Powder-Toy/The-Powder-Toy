@@ -419,38 +419,93 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 		}
 		break;
 	case 16:
-		if (parts[i].tmp2)
-			parts[i].tmp2 --;
-
-		if (!(parts[i].tmp & 4) == (parts[i].tmp2 > 0))
+		switch (parts[i].ctype)
 		{
+		case 0: // logic gate
+			if (parts[i].tmp2)
+				parts[i].tmp2 --;
+
+			if (!(parts[i].tmp & 4) == (parts[i].tmp2 > 0))
+			{
+				for (int rx = -2; rx <= 2; rx++)
+					for (int ry = -2; ry <= 2; ry++)
+						if (BOUNDS_CHECK && (rx || ry))
+						{
+							r = pmap[y+ry][x+rx];
+							if ((r & 0xFF) == PT_NSCN) /* && parts[r>>8].life == 0 */
+								sim->create_part(-1,x+rx,y+ry,PT_SPRK);
+						}
+			}
+
+			int PSCNCount = 0;
 			for (int rx = -2; rx <= 2; rx++)
 				for (int ry = -2; ry <= 2; ry++)
 					if (BOUNDS_CHECK && (rx || ry))
 					{
 						r = pmap[y+ry][x+rx];
-						if ((r & 0xFF) == PT_NSCN) /* && parts[r>>8].life == 0 */
-							sim->create_part(-1,x+rx,y+ry,PT_SPRK);
+						if ((r & 0xFF) == PT_SPRK && parts[r>>8].ctype == PT_PSCN && parts[r>>8].life == 3)
+							PSCNCount ++;
+						if ((r & 0xFF) == PT_INWR && parts[r>>8].life == 0)
+							PSCNCount ++;
+					}
+			rtmp = parts[i].tmp;
+			if ((rtmp & 3) != 3)
+			{
+				if (PSCNCount > (rtmp & 3)) // N-input logic gate
+					parts[i].tmp2 = 9;
+			}
+			else if (PSCNCount & 1)
+				parts[i].tmp2 = 9; // XOR gate
+			break;
+		case 1: // conduct->insulate counter
+			if (parts[i].tmp)
+			{
+				if (parts[i].tmp2)
+				{
+					for (int rx = -2; rx <= 2; rx++)
+						for (int ry = -2; ry <= 2; ry++)
+							if (BOUNDS_CHECK && (rx || ry))
+							{
+								r = pmap[y+ry][x+rx];
+								if ((r & 0xFF) == PT_NSCN)
+									sim->create_part(-1,x+rx,y+ry,PT_SPRK);
+							}
+					parts[i].tmp2 = 0;
+					parts[i].tmp--;
+				}
+				for (int rx = -2; rx <= 2; rx++)
+					for (int ry = -2; ry <= 2; ry++)
+						if (BOUNDS_CHECK && (rx || ry))
+						{
+							r = pmap[y+ry][x+rx];
+							if ((r & 0xFF) == PT_SPRK && parts[r>>8].ctype == PT_PSCN && parts[r>>8].life == 3)
+							{
+								parts[i].tmp2 = 1;
+								goto break1;
+							}
+						}
+			}
+			break1:
+			break;
+		case 2: // insulate->conduct counter
+			if (parts[i].tmp2)
+			{
+				parts[i].tmp2 = 0;
+				if (!--parts[i].tmp)
+					sim->create_part(i, x, y, PT_METL);
+			}
+			for (int rx = -2; rx <= 2; rx++)
+				for (int ry = -2; ry <= 2; ry++)
+					if (BOUNDS_CHECK && (rx || ry))
+					{
+						r = pmap[y+ry][x+rx];
+						if ((r & 0xFF) == PT_SPRK && parts[r>>8].ctype == PT_PSCN && parts[r>>8].life == 3)
+						{
+							parts[i].tmp2 = 1;
+							goto break1;
+						}
 					}
 		}
-
-		int PSCNCount = 0;
-		for (int rx = -2; rx <= 2; rx++)
-			for (int ry = -2; ry <= 2; ry++)
-				if (BOUNDS_CHECK && (rx || ry))
-				{
-					r = pmap[y+ry][x+rx];
-					if ((r & 0xFF) == PT_SPRK && parts[r>>8].ctype == PT_PSCN && parts[r>>8].life == 3)
-						PSCNCount ++;
-				}
-		rtmp = parts[i].tmp;
-		if ((rtmp & 3) != 3)
-		{
-			if (PSCNCount > (rtmp & 3)) // N-input logic gate
-				parts[i].tmp2 = 9;
-		}
-		else if (PSCNCount & 1)
-			parts[i].tmp2 = 9; // XOR gate
 	}
 	
 	if(ttan>=2) {
