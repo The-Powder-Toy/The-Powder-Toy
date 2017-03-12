@@ -186,9 +186,13 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 				}
 		break;
 	case 8: // acts like VIBR
+		rr = parts[i].tmp2;
 		if (parts[i].tmp > 20000)
 		{
 			sim->emp_trigger_count += 2;
+			sim->emp_decor += 3;
+			if (sim->emp_decor > 40)
+				sim->emp_decor = 40;
 			parts[i].life = 9;
 			parts[i].temp = 0;
 		}
@@ -244,8 +248,16 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 					continue;
 				if (not_self)
 				{
-					parts[r>>8].tmp += parts[i].tmp;
-					parts[i].tmp = 0;
+					if (rr & 1)
+					{
+						parts[i].tmp += parts[r>>8].tmp;
+						parts[r>>8].tmp = 0;
+					}
+					else
+					{
+						parts[r>>8].tmp += parts[i].tmp;
+						parts[i].tmp = 0;
+					}
 					break;
 				}
 				if (parts[i].tmp > parts[r>>8].tmp)
@@ -948,7 +960,7 @@ int Element_E189::EMPTrigger(Simulation *sim, int triggerCount)
 			break;
 		case PT_DLAY:
 			if (Probability::randFloat() < prob_breakElectronics)
-				parts[n].temp = (rand()%512) + 274.15f; // Randomize delay
+				parts[r].temp = (rand()%512) + 274.15f; // Randomize delay
 			break;
 		case PT_PSCN:
 		case PT_NSCN:
@@ -976,12 +988,15 @@ int Element_E189::EMPTrigger(Simulation *sim, int triggerCount)
 				sim->create_part(r, rx, ry, PT_PLSM);
 			break;
 		case PT_VIBR:
-			parts[r].life = 1000;
 			if (Probability::randFloat() < prob_breakElectronics * 0.2)
 				sim->part_change_type(r, rx, ry, PT_BVBR);
 			break;
 		case PT_BVBR:
-			parts[r].life = 1000;
+			if (Probability::randFloat() < prob_breakElectronics * 0.1)
+			{
+				sim->part_change_type(r, rx, ry, PT_VIBR);
+				parts[r].life = 1000;
+			}
 			break;
 		case PT_E189:
 			switch (parts[r].life)
