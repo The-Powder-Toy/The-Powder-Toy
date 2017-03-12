@@ -950,8 +950,11 @@ void Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* p
 		part_phot->ctype = 0x100;
 		rdif = ((float)(rand()%321+192)) / 128.0f; // 1.5 ~ 4 pixels (approx)
 		rvx2 = ((float)(rand()& 0x7fff)) * 1.9174760e-4f; // RAND_MAX is at least 32767 on all platforms
-		part_phot->vx = rdif*cosf(rvx2);
-		part_phot->vy = rdif*sinf(rvx2);
+		if (!(rct & 2))
+		{
+			part_phot->vx = rdif*cosf(rvx2);
+			part_phot->vy = rdif*sinf(rvx2);
+		}
 		break;
 	}
 }
