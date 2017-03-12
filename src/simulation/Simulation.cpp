@@ -2206,14 +2206,17 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr)
 			{
 				if (parts[r>>8].life == 7)
 					return 2; // corrected code
-				if (parts[r>>8].life == 16)
+				if (parts[r>>8].life == 17)
 					return 1;
 				return 0;
 			}
-			else if (parts[r>>8].life == 15 && pt == PT_PROT)
-				return 0;
-			else
-				return 0;
+			else if (pt == PT_PROT)
+			{
+				if (parts[r>>8].life == 15)
+					return 0;
+				else
+					return 2; // corrected code
+			}
 		}
 		else if (pt == PT_E186 && (r&0xFF) == PT_BRMT)
 		{
