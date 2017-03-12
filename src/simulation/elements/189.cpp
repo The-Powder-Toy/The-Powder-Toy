@@ -434,7 +434,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 		rtmp = parts[i].tmp;
 		if ((rtmp & 3) != 3)
 		{
-			if (PSCNCount > rtmp & 3) // N-input logic gate
+			if (PSCNCount > (rtmp & 3)) // N-input logic gate
 				parts[i].tmp2 = 9;
 		}
 		else if (PSCNCount & 1)
