@@ -706,9 +706,9 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 		break;
 	case 17:
 		if ((nx ^ (ny << 1)) & 3)
-			*colr = 0x9B; *colg = 0x40; *colb = 0x00;
+			{ *colr = 0x9B; *colg = 0x40; *colb = 0x00; }
 		else
-			*colr = 0xAA; *colg = 0x55; *colb = 0x10;
+			{ *colr = 0xAA; *colg = 0x55; *colb = 0x10; }
 		break;
 	}
 	return 0;
