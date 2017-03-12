@@ -409,6 +409,19 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 	case 16:
 		if (parts[i].tmp2)
 			parts[i].tmp2 --;
+
+		if (!(parts[i].tmp & 4) == (parts[i].tmp2 > 0))
+		{
+			for (int rx = -2; rx <= 2; rx++)
+				for (int ry = -2; ry <= 2; ry++)
+					if (BOUNDS_CHECK && (rx || ry))
+					{
+						r = pmap[y+ry][x+rx];
+						if ((r & 0xFF) == PT_NSCN) /* && parts[r>>8].life == 0 */
+							sim->create_part(-1,x+rx,y+ry,PT_SPRK);
+					}
+		}
+
 		int PSCNCount = 0;
 		for (int rx = -2; rx <= 2; rx++)
 			for (int ry = -2; ry <= 2; ry++)
@@ -422,25 +435,10 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 		if ((rtmp & 3) != 3)
 		{
 			if (PSCNCount > rtmp & 3) // N-input logic gate
-				parts[i].tmp2 = 10;
+				parts[i].tmp2 = 9;
 		}
 		else if (PSCNCount & 1)
-			parts[i].tmp2 = 10; // XOR gate
-		if (!(parts[i].tmp & 4) == (parts[i].tmp2 > 0 && parts[i].tmp2 < 10))
-		{
-			for (int rx = -2; rx <= 2; rx++)
-				for (int ry = -2; ry <= 2; ry++)
-					if (BOUNDS_CHECK && (rx || ry))
-					{
-						r = pmap[y+ry][x+rx];
-						if ((r & 0xFF) == PT_NSCN && parts[r>>8].life == 0)
-						{
-							parts[r>>8].life = 4;
-							parts[r>>8].ctype = PT_NSCN;
-							sim->part_change_type(r>>8,x+rx,y+ry,PT_SPRK);
-						}
-					}
-		}
+			parts[i].tmp2 = 9; // XOR gate
 	}
 	
 	if(ttan>=2) {
@@ -604,8 +602,10 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 		*pixel_mode |= PMODE_BLEND;
 		break;
 	case 15:
-	case 16:
 		*colr = 0x9F; *colg = 0x05; *colb = 0x00;
+		break;
+	case 16:
+		*colr = 0xAA; *colg = 0x05; *colb = 0x10;
 		break;
 	}
 	return 0;
@@ -987,6 +987,7 @@ int Element_E189::EMPTrigger(Simulation *sim, int triggerCount)
 				}
 				break;
 			case 12:
+			case 16:
 				if (Probability::randFloat() < prob_breakElectronics)
 				{
 					sim->part_change_type(r, rx, ry, PT_BREC);
