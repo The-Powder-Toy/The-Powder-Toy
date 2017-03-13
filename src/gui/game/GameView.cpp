@@ -2280,8 +2280,8 @@ void GameView::OnDraw()
 	else if(showHud)
 	{
 		static const char* E189Modes[] = {
-			"PRSINS", "PRSINS", "TRONI", "TRONO", "LASER", "DIRCH", "HEATER", "PHTDUP", "VIBR2",
-			"VIBR2", "DEBUG", "PHTEM", "SPREFL", "DECOR", "DECO2", "PRTINS", "LOGICG", "PHDIOD"
+			"PRSINS", "PRSINS", "TRONI", "TRONO", "LASER", "DIRCH", "HEATER", "PHTDUP", "VIBR2", "VIBR2",
+			"DEBUG", "PHTEM", "SPREFL", "DECOR", "DECO2", "PRTINS", "LOGICG", "PHDIOD", "DECO3"
 		};
 		//Draw info about simulation under cursor
 		int wavelengthGfx = 0, alpha = 255;
@@ -2326,7 +2326,7 @@ void GameView::OnDraw()
 					else
 						partint = 1;
 				}
-				else if (partlife == 12 || partlife == 14 || partlife == 16)
+				else if (partlife == 12 || partlife == 14 || partlife == 16 || partlife == 18)
 				{
 					partint = 1;
 				}
