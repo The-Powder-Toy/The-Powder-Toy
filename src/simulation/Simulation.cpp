@@ -2439,7 +2439,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 	}
 	else if (parts[i].type == PT_CNCT)
 	{
-		if (y<ny && ((pmap[y+1][x] & 0xFF) == PT_CNCT) //check below CNCT for another CNCT
+		if (y<ny && (pmap[y+1][x] & 0xFF) == PT_CNCT) // check below CNCT for another CNCT
 			return 0;
 		if ((pmap[y][x+1]&0xFF) == PT_E191 || (pmap[y][x-1]&0xFF) == PT_E191)
 			return 0;
