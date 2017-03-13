@@ -535,6 +535,29 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						}
 					}
 			break;
+		case 4: // virus curer
+			for (int rx = -1; rx < 2; rx++)
+				for (int ry = -1; ry < 2; ry++)
+					if (BOUNDS_CHECK && (rx || ry))
+					{
+						r = pmap[y+ry][x+rx];
+						if ((r & 0xFF) == PT_SPRK)
+							goto break2;
+					}
+			break;
+		break2:
+			for (rtmp = 0; rtmp < 4; rtmp++)
+			{
+				if (BOUNDS_CHECK)
+				{
+					rx = tron_rx[rtmp];
+					ry = tron_ry[rtmp];
+					r = pmap[y+ry][x+rx];
+					if ((r&0xFF) == PT_VIRS || (r&0xFF) == PT_VRSS || (r&0xFF) == PT_VRSG) // if is virus
+						parts[r>>8].pavg[0] = 10;
+				}
+			}
+			break;
 		}
 	}
 	
