@@ -19,6 +19,9 @@ int Tool_Displace::Perform(Simulation * sim, Particle * cpart, int x, int y, flo
 		return 0;
 
 	int distance = (int)(std::pow(strength, .5f) * 10);
+
+	if (!(distance & 1))
+		distance ++;
 	
 	int newX = x + (rand() % distance) - (distance/2);
 	int newY = y + (rand() % distance) - (distance/2);
