@@ -2283,7 +2283,7 @@ void GameView::OnDraw()
 			"PRSINS", "PRSINS", "TRONI", "TRONO", "LASER", "DIRCH", "HEATER", "PHTDUP", "VIBR2", "VIBR2",
 			"DEBUG", "PHTEM", "SPREFL", "DECOR", "DECO2", "PRTINS", "LOGICG", "PHDIOD", "DECO3"
 		};
-		static const int* E189IntM[] = {0x00055000};
+		static const int E189IntM[] = {0x00055000};
 		//Draw info about simulation under cursor
 		int wavelengthGfx = 0, alpha = 255;
 		if (toolTipPosition.Y < 120)
