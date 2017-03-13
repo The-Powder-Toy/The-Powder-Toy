@@ -2204,7 +2204,7 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr)
 		{
 			if (pt == PT_E186)
 			{
-				if (parts[r>>8].life == 7)
+				if (parts[r>>8].life == 5)
 					return 2; // corrected code
 				if (parts[r>>8].life == 17)
 					return 1;
@@ -2444,7 +2444,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 		if (parts[i].life>0)
 			return 0;
 	}
-	else if(parts[i].type == PT_E189)
+	else if(parts[i].type == PT_E186 && (r&0xFF) == PT_E189)
 	{
 		kill_part(i);
 		return 0;
