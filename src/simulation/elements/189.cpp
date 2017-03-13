@@ -541,6 +541,8 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 					if (BOUNDS_CHECK && (rx || ry))
 					{
 						r = pmap[y+ry][x+rx];
+						if ((r & 0xFF) == PT_E189 && parts[r>>8].life == 16)
+							r = pmap[y+2*ry][x+2*rx];
 						if ((r & 0xFF) == PT_SPRK)
 							goto break2;
 					}
