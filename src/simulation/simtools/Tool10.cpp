@@ -11,20 +11,7 @@ Tool_Tool10::Tool_Tool10()
 
 int Tool_Tool10::Perform(Simulation * sim, Particle * cpart, int x, int y, float strength)
 {
-	int s;
-	int r = sim->pmap[y][x];
-	switch (r & 0xFF)
-	{
-		case PT_E187:
-		case PT_E188:
-			if (rand() % 100 != 0)
-				return 0;
-			sim->parts[r>>8].tmp &= 0xFFFFFFFE;
-		break;
-		default:
-			return 0;
-	}
-	return 1;
+	/* freed */
 }
 
 Tool_Tool10::~Tool_Tool10() {}

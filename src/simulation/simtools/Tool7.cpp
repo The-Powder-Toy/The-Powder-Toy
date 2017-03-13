@@ -1,29 +1,45 @@
 #include "ToolClasses.h"
 #include "simulation/Simulation.h"
-//#TPT-Directive ToolClass Tool_Tool7 TOOL_TOOL7 7
-Tool_Tool7::Tool_Tool7()
+//#TPT-Directive ToolClass Tool_Displace TOOL_DISPLACE 7
+Tool_Displace::Tool_Displace()
 {
-	Identifier = "DEFAULT_TOOL_TOOL7";
-	Name = "T7";
+	Identifier = "DEFAULT_TOOL_DISPLACE";
+	Name = "DSPL";
 	Colour = PIXPACK(0xEE22EE);
-	Description = "Experimental tool.";
+	Description = "Displace tool.";
 }
 
-int Tool_Tool7::Perform(Simulation * sim, Particle * cpart, int x, int y, float strength)
+int Tool_Displace::Perform(Simulation * sim, Particle * cpart, int x, int y, float strength)
 {
-	int r = sim->pmap[y][x];
-	switch (r & 0xFF)
+	int thisPart = sim->pmap[y][x];
+	if(!thisPart)
+		return 0;
+
+	if(rand() % 100 != 0)
+		return 0;
+
+	int distance = (int)(std::pow(strength, .5f) * 10);
+	
+	int newX = x + (rand() % distance) - (distance/2);
+	int newY = y + (rand() % distance) - (distance/2);
+	
+	if(newX < 0 || newY < 0 || newX >= XRES || newY >= YRES)
+		return 0;
+
+	int thatPart = sim->pmap[newY][newX];
+
+	if (!sim->IsWallBlocking(newX, newY, thisPart))
 	{
-		case PT_E187:
-		case PT_E188:
-			if (rand() % 100 != 0)
-				return 0;
-			sim->parts[r>>8].ctype = 1;
-		break;
-		default:
-			return 0;
+		sim->pmap[y][x] = thatPart;
+		sim->pmap[newY][newX] = thisPart;
+		sim->parts[thisPart>>8].x = newX;
+		sim->parts[thisPart>>8].y = newY;
+		if (thatPart)
+		{
+			sim->parts[thatPart>>8].x = x;
+			sim->parts[thatPart>>8].y = y;
+		}
 	}
-	return 1;
 }
 
-Tool_Tool7::~Tool_Tool7() {}
+Tool_Displace::~Tool_Displace() {}
