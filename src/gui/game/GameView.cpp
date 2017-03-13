@@ -2283,6 +2283,7 @@ void GameView::OnDraw()
 			"PRSINS", "PRSINS", "TRONI", "TRONO", "LASER", "DIRCH", "HEATER", "PHTDUP", "VIBR2", "VIBR2",
 			"DEBUG", "PHTEM", "SPREFL", "DECOR", "DECO2", "PRTINS", "LOGICG", "PHDIOD", "DECO3"
 		};
+		static const int* E189IntM = {0x00055000};
 		//Draw info about simulation under cursor
 		int wavelengthGfx = 0, alpha = 255;
 		if (toolTipPosition.Y < 120)
@@ -2326,7 +2327,7 @@ void GameView::OnDraw()
 					else
 						partint = 1;
 				}
-				else if (partlife == 12 || partlife == 14 || partlife == 16 || partlife == 18)
+				else if (partlife >= 0 && partlife < 32 && (E189IntM[partlife >> 5] >> (partlife & 0x1F)) & 1)
 				{
 					partint = 1;
 				}
