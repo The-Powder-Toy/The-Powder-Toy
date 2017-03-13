@@ -57,12 +57,15 @@ int Element_E186::update(UPDATE_FUNC_ARGS)
 	sctype = parts[i].ctype;
 	if (sctype & 0x100)
 	{
-		slife = parts[i].life;
-		r = pmap[y][x];
-		if ((r & 0xFF) != PT_E189)
+		if (!(sctype & 0x80))
 		{
-			sim->part_change_type(i, x, y, PT_PHOT);
-			parts[i].ctype = parts[i].tmp2; // restore wavelength
+			slife = parts[i].life;
+			r = pmap[y][x];
+			if ((r & 0xFF) != PT_E189)
+			{
+				sim->part_change_type(i, x, y, PT_PHOT);
+				parts[i].ctype = parts[i].tmp2; // restore wavelength
+			}
 		}
 		return 0;
 	}
