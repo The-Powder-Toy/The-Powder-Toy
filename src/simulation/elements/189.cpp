@@ -702,12 +702,12 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 		*colr = 0x9F; *colg = 0x05; *colb = 0x00;
 		break;
 	case 16:
-		*colr = 0xAA; *colg = 0x05; *colb = 0x10;
 		if (cpart->ctype == 3 && cpart->tmp)
 		{
 			*colr = 0xFF; *colg = 0x5A; *colb = 0x65;
 			return 0;
 		}
+		*colr = 0xAA; *colg = 0x05; *colb = 0x10;
 		break;
 	case 17:
 		if ((nx ^ (ny << 1)) & 3)
