@@ -2133,7 +2133,7 @@ void Simulation::init_can_move()
 	can_move[PT_PROT][PT_E189] = 3;
 	can_move[PT_E186][PT_E189] = 3;
 	
-	can_move[PT_CNCT][PT_E191] = 0;
+	// can_move[PT_CNCT][PT_E191] = 0;
 }
 
 /*
