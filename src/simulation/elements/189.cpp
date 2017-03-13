@@ -1105,7 +1105,7 @@ int Element_E189::EMPTrigger(Simulation *sim, int triggerCount)
 			break;
 		case PT_PCLN:
 			if (Probability::randFloat() < prob_breakElectronics)
-				sim->part_change_type(r, rx, ry, PT_PBLN);
+				sim->part_change_type(r, rx, ry, PT_PBCN);
 			break;
 		case PT_SPNG:
 		case PT_BTRY:
