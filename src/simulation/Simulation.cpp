@@ -2456,7 +2456,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 	}
 	else if (parts[i].type == PT_E191)
 	{
-		if (pmap[y-1][x]&0xFF) == PT_CNCT && ((pmap[y][x+1]&0xFF) == PT_CNCT || (pmap[y][x-1]&0xFF) == PT_CNCT))
+		if ((pmap[y-1][x]&0xFF) == PT_CNCT && ((pmap[y][x+1]&0xFF) == PT_CNCT || (pmap[y][x-1]&0xFF) == PT_CNCT))
 			return 0;
 	}
 
