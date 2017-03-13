@@ -30,7 +30,7 @@ Element_PCLN::Element_PCLN()
 	HeatConduct = 251;
 	Description = "Powered clone. When activated, duplicates any particles it touches.";
 
-	Properties = TYPE_SOLID|PROP_NOCTYPEDRAW | PROP_TRANSPARENT;
+	Properties = TYPE_SOLID|PROP_NOCTYPEDRAW | PROP_TRANSPARENT | PROP_CLONE;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
