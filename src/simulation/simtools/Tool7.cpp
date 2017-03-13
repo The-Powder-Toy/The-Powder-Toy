@@ -28,7 +28,7 @@ int Tool_Displace::Perform(Simulation * sim, Particle * cpart, int x, int y, flo
 
 	int thatPart = sim->pmap[newY][newX];
 
-	if (!sim->IsWallBlocking(newX, newY, thisPart))
+	if (!sim->IsWallBlocking(newX, newY, thisPart & 0xFF))
 	{
 		sim->pmap[y][x] = thatPart;
 		sim->pmap[newY][newX] = thisPart;
@@ -39,7 +39,10 @@ int Tool_Displace::Perform(Simulation * sim, Particle * cpart, int x, int y, flo
 			sim->parts[thatPart>>8].x = x;
 			sim->parts[thatPart>>8].y = y;
 		}
+		return 1;
 	}
+	
+	return 0;
 }
 
 Tool_Displace::~Tool_Displace() {}
