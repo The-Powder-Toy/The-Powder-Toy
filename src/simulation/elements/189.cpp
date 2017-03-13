@@ -703,6 +703,11 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 		break;
 	case 16:
 		*colr = 0xAA; *colg = 0x05; *colb = 0x10;
+		if (cpart->ctype == 3 && cpart->tmp)
+		{
+			*colr = 0xFF; *colg = 0x5A; *colb = 0x65;
+			return 0;
+		}
 		break;
 	case 17:
 		if ((nx ^ (ny << 1)) & 3)
