@@ -2440,9 +2440,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 	else if (parts[i].type == PT_CNCT)
 	{
 		rr = (pmap[y+1][x] & 0xFF);
-		if (y<ny && (rr == PT_CNCT || rr == PT_E191)) // check below CNCT for another CNCT
-			return 0;
-		if ((pmap[y][x+1]&0xFF) == PT_E191 || (pmap[y][x-1]&0xFF) == PT_E191)
+		if (y<ny && (rr == PT_CNCT)) // check below CNCT for another CNCT
 			return 0;
 	}
 	else if(parts[i].type == PT_GBMB)
@@ -2454,11 +2452,6 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 	{
 		kill_part(i);
 		return 0;
-	}
-	else if (parts[i].type == PT_E191)
-	{
-		if ((pmap[y-1][x]&0xFF) == PT_CNCT && ((pmap[y][x+1]&0xFF) == PT_CNCT || (pmap[y][x-1]&0xFF) == PT_CNCT))
-			return 0;
 	}
 
 	if ((bmap[y/CELL][x/CELL]==WL_EHOLE && !emap[y/CELL][x/CELL]) && !(bmap[ny/CELL][nx/CELL]==WL_EHOLE && !emap[ny/CELL][nx/CELL]))
