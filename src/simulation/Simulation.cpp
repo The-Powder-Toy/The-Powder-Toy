@@ -2241,6 +2241,7 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr)
 int Simulation::try_move(int i, int x, int y, int nx, int ny)
 {
 	unsigned r, e;
+	int rr;
 
 	if (x==nx && y==ny)
 		return 1;
@@ -2454,7 +2455,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 	}
 	else if (parts[i].type == PT_E191)
 	{
-		if (y>ny && (pmap[y-1][x]&0xFF) == PT_CNCT)
+		if ((pmap[y][x+1]&0xFF) == PT_CNCT || (pmap[y][x-1]&0xFF) == PT_CNCT)
 			return 0;
 	}
 
