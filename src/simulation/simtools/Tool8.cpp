@@ -16,7 +16,7 @@ int Tool_Tool8::Perform(Simulation * sim, Particle * cpart, int x, int y, float 
 		int i1 = sim->create_part(-1, x, y, PT_E189, 13);
 		if (i1 >= 0)
 		{
-			cpart->ctype = 0xFF000000 | ((x & 0xFF) << 16) | ((y & 0xFF) << 8) | ((x * y) & 0xFF);
+			sim->parts[i1].ctype = 0xFF000000 | ((x & 0xFF) << 16) | ((y & 0xFF) << 8) | ((x * y) & 0xFF);
 		}
 	}
 }
