@@ -87,11 +87,9 @@ int Element_PCLN::update(UPDATE_FUNC_ARGS)
 					if (!r)
 						continue;
 					rt = r&0xFF;
-					if (rt!=PT_CLNE && rt!=PT_PCLN &&
-					    rt!=PT_BCLN &&  rt!=PT_SPRK &&
-					    rt!=PT_NSCN && rt!=PT_PSCN &&
-					    rt!=PT_STKM && rt!=PT_STKM2 &&
-					    rt!=PT_PBCN && rt<PT_NUM)
+					if (!(sim->elements[rt].Properties & PROP_CLONE) &&
+					    rt!=PT_SPRK && rt!=PT_NSCN && rt!=PT_PSCN &&
+					    rt!=PT_STKM && rt!=PT_STKM2 && rt<PT_NUM)
 					{
 						parts[i].ctype = rt;
 						if (rt==PT_LIFE || rt==PT_LAVA)
