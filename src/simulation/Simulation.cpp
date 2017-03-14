@@ -5405,6 +5405,29 @@ void Simulation::BeforeSim()
 				}
 			}
 		}
+		
+		if(elementCount[PT_E189] > 0)
+		{
+			for (int nx = 0; nx < XRES; nx++)
+			{
+				for (int ny = 0; ny < YRES; ny++)
+				{
+					int r = pmap[ny][nx];
+					if (!r)
+						continue;
+					if(parts[r>>8].type == PT_E189)
+					{
+						switch (parts[r>>8].life)
+						{
+							case 16:
+								if (parts[r>>8].tmp2) // use "tmp2" attribute for life value, because "life", "ctype" and "tmp" attributes is used for other purpose.
+									parts[r>>8].tmp2--;
+								break;
+						}
+					}
+				}
+			}
+		}
 
 		// update PPIP tmp?
 		if (Element_PPIP::ppip_changed)
