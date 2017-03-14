@@ -635,10 +635,11 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 				{
 					if (!(rndstore&7))
 					{
+						r = pmap[y+ry][x+rx];
 						if ((r & 0xFF) == PT_MERC)
-							parts[r].tmp += parts[i].tmp;
+							parts[r>>8].tmp += parts[i].tmp;
 						else if ((r & 0xFF) == PT_DEUT)
-							parts[r].life += parts[i].tmp;
+							parts[r>>8].life += parts[i].tmp;
 						else if ((r & 0xFF) == PT_YEST)
 						{
 							if (parts[i].tmp >= 0)
