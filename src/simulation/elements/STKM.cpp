@@ -388,15 +388,36 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 				{
 					if (parts[r].life == 16 && parts[r].ctype == 5)
 					{
-						switch (parts[r].tmp >> 6)
+						int sur_part_tmp = parts[r].tmp >> 6;
+						if (sur_part_tmp > 0)
 						{
-							case 1:
-							if (parts[i].life<100)
-								parts[i].life ++;
-							break;
-							case 2:
-								parts[i].life --;
-							break;
+							sur_part_tmp--; // is temporary variable, not global
+							int inc_life = (sur_part_tmp & 1) ? 1 : -1;
+							bool inc_life_cond;
+							switch (sur_part_tmp >> 1)
+							{
+								case 0:
+									inc_life_cond = true;
+								break;
+								case 1:
+									inc_life_cond = (parts[i].type == PT_STKM);
+								break;
+								case 2:
+									inc_life_cond = (parts[i].type == PT_STKM2);
+								break;
+								case 3:
+									int part_i_type = parts[i].type;
+									inc_life_cond = (part_i_type == PT_STKM || part_i_type == PT_STKM2);
+								break;
+								case 4:
+									inc_life_cond = (parts[i].type == PT_FIGH);
+								break;
+							}
+							if (inc_life_cond)
+							{
+								if (inc_life < 0 || parts[i].life < 100)
+									parts[i].life += inc_life;
+							}
 						}
 					}
 				}
