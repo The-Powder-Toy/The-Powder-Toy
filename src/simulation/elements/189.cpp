@@ -577,6 +577,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						goto break1;
 					}
 				}
+		break;
 	}
 	
 	if(ttan>=2) {
