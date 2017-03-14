@@ -424,8 +424,6 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 		switch (parts[i].ctype)
 		{
 		case 0: // logic gate
-			if (parts[i].tmp2)
-				parts[i].tmp2 --;
 
 			if (!(parts[i].tmp & 4) == (parts[i].tmp2 > 0))
 			{
@@ -462,7 +460,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 		case 1: // conduct->insulate counter
 			if (parts[i].tmp)
 			{
-				if (parts[i].tmp2)
+				if (parts[i].tmp2 == 1)
 				{
 					for (int rx = -2; rx <= 2; rx++)
 						for (int ry = -2; ry <= 2; ry++)
@@ -472,7 +470,6 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 								if ((r & 0xFF) == PT_NSCN)
 									sim->create_part(-1,x+rx,y+ry,PT_SPRK);
 							}
-					parts[i].tmp2 = 0;
 					parts[i].tmp--;
 				}
 				for (int rx = -2; rx <= 2; rx++)
@@ -482,7 +479,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 							r = pmap[y+ry][x+rx];
 							if ((r & 0xFF) == PT_SPRK && parts[r>>8].ctype == PT_PSCN && parts[r>>8].life == 3)
 							{
-								parts[i].tmp2 = 1;
+								parts[i].tmp2 = 2;
 								goto break1;
 							}
 						}
@@ -492,10 +489,8 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 		case 2: // insulate->conduct counter
 			if (parts[i].tmp2)
 			{
-				if (!--parts[i].tmp2)
-				{
+				if (parts[i].tmp2 == 1)
 					parts[i].tmp--;
-				}
 			}
 			else if (!parts[i].tmp)
 				sim->create_part(i, x, y, PT_METL);
@@ -506,7 +501,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						r = pmap[y+ry][x+rx];
 						if ((r & 0xFF) == PT_SPRK && parts[r>>8].ctype == PT_PSCN && parts[r>>8].life == 3)
 						{
-							parts[i].tmp2 = 5;
+							parts[i].tmp2 = 6;
 							goto break1;
 						}
 					}
@@ -562,6 +557,33 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			}
 			break;
 		case 5:
+			for (int rx = -1; rx < 2; rx++)
+				for (int ry = -1; ry < 2; ry++)
+					if (BOUNDS_CHECK && (rx || ry))
+					{
+						r = pmap[y+ry][x+rx];
+						if ((r & 0xFF) == PT_SPRK)
+						{
+							parts[i].tmp2 = 2;
+							goto break2b;
+						}
+					}
+		break2b:
+			if (parts[i].tmp2 == 1)
+			{
+				for (rtmp = 0; rtmp < 4; rtmp++)
+				{
+					if (BOUNDS_CHECK)
+					{
+						rx = tron_rx[rtmp];
+						ry = tron_ry[rtmp];
+						r = pmap[y+ry][x+rx];
+						if ((r&0xFF) == PT_E189 && parts[r>>8].life == 16 && parts[r>>8].ctype == 5 && !parts[r>>8].tmp2)
+							parts[r>>8].tmp2 = 2;
+					}
+				}
+				parts[i].tmp = ((parts[i].tmp >> 3) & 0x7) | ((parts[i].tmp & 0x7) << 3);
+			}
 			break;
 		}
 		break;
