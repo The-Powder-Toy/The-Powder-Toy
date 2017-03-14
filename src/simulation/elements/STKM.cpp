@@ -406,8 +406,10 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 									inc_life_cond = (parts[i].type == PT_STKM2);
 								break;
 								case 3:
+								{
 									int part_i_type = parts[i].type;
 									inc_life_cond = (part_i_type == PT_STKM || part_i_type == PT_STKM2);
+								}
 								break;
 								case 4:
 									inc_life_cond = (parts[i].type == PT_FIGH);
