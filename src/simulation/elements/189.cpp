@@ -447,7 +447,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						r = pmap[y+ry][x+rx];
 						if ((r & 0xFF) == PT_SPRK && parts[r>>8].ctype == PT_PSCN && parts[r>>8].life == 3)
 							PSCNCount ++;
-						if ((r & 0xFF) == PT_INWR && parts[r>>8].life == 0)
+						if ((r & 0xFF) == PT_E189 && parts[r>>8].life == 19 && parts[r>>8].tmp)
 							PSCNCount ++;
 					}
 			rtmp = parts[i].tmp;
@@ -562,6 +562,21 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			}
 			break;
 		}
+		break;
+	case 19:
+		if (parts[i].tmp)
+			--parts[i].tmp;
+		for (int rx = -2; rx <= 2; rx++)
+			for (int ry = -2; ry <= 2; ry++)
+				if (BOUNDS_CHECK && (rx || ry))
+				{
+					r = pmap[y+ry][x+rx];
+					if ((r & 0xFF) == PT_SPRK && parts[r>>8].ctype == PT_PSCN && parts[r>>8].life == 3)
+					{
+						parts[i].tmp = 9;
+						goto break1;
+					}
+				}
 	}
 	
 	if(ttan>=2) {
@@ -745,6 +760,9 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 		*colr = cpart->ctype;
 		*colg = cpart->tmp;
 		*colb = cpart->tmp2;
+	}
+	case 19:
+		*colr = 0xFF; *colg = 0x44; *colb = 0x22;
 	}
 	return 0;
 }
