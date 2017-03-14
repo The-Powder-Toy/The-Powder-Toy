@@ -70,7 +70,7 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 	int r, rx, ry;
 	int t = parts[i].type;
 	float pp, d;
-	float dt = 0.9;///(FPSB*FPSB);  //Delta time in square
+	float dt = 0.9;// /(FPSB*FPSB);  //Delta time in square
 	float gvx, gvy;
 	float gx, gy, dl, dr;
 	float rocketBootsHeadEffect = 0.35f;
@@ -383,6 +383,24 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 					else parts[i].life *= 0.9f;
 					sim->kill_part(r>>8);
 				}
+				
+				if ((r&0xFF) == PT_E189)
+				{
+					if (parts[r].life == 16 && parts[r].ctype == 5)
+					{
+						switch (parts[r].tmp >> 6)
+						{
+							case 1:
+							if (parts[i].life<100)
+								parts[i].life ++;
+							break;
+							case 2:
+								parts[i].life --;
+							break;
+						}
+					}
+				}
+				
 				if (sim->bmap[(ry+y)/CELL][(rx+x)/CELL]==WL_FAN)
 					playerp->elem = SPC_AIR;
 				else if (sim->bmap[(ry+y)/CELL][(rx+x)/CELL]==WL_EHOLE)
