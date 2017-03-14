@@ -447,7 +447,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						r = pmap[y+ry][x+rx];
 						if ((r & 0xFF) == PT_SPRK && parts[r>>8].ctype == PT_PSCN && parts[r>>8].life == 3)
 							PSCNCount ++;
-						if ((r & 0xFF) == PT_E189 && parts[r>>8].life == 19 && parts[r>>8].tmp > 0 && parts[r>>8].tmp < (9 + ((r>>8) > i)))
+						if ((r & 0xFF) == PT_E189 && parts[r>>8].life == 19 && ((r>>8) > i) ? (parts[r>>8].tmp) : (parts[r>>8].tmp2))
 							PSCNCount ++;
 					}
 			rtmp = parts[i].tmp;
@@ -564,6 +564,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 		}
 		break;
 	case 19:
+		parts[i].tmp2 = parts[i].tmp;
 		if (parts[i].tmp)
 			--parts[i].tmp;
 		for (int rx = -2; rx <= 2; rx++)
@@ -574,9 +575,10 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 					if ((r & 0xFF) == PT_SPRK && parts[r>>8].ctype == PT_PSCN && parts[r>>8].life == 3)
 					{
 						parts[i].tmp = 9;
-						goto break1;
+						goto break3;
 					}
 				}
+		break3:
 		break;
 	}
 	
