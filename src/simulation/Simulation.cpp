@@ -2223,7 +2223,7 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr)
 				else
 					return 2; // corrected code
 			}
-			if (parts[r>>8].life == 18 && parts[r>>8].ctype == 5)
+			if (parts[r>>8].life == 16 && parts[r>>8].ctype == 5)
 			{
 				int tmp_flag = parts[r>>8].tmp;
 				if ((tmp_flag & 1) && pt == PT_STKM)
