@@ -2356,7 +2356,7 @@ void GameView::OnDraw()
 				}
 				else
 				{
-					if (type == PT_E189 && partlife >= 0 && partlife <= 17)
+					if (type == PT_E189 && partlife >= 0 && partlife <= 19)
 					{
 						sampleInfo << E189Modes[partlife];
 					}
@@ -2434,7 +2434,7 @@ void GameView::OnDraw()
 					sampleInfo << c->ElementResolve(type, -1) << " with " << c->ElementResolve(ctype, (int)sample.particle.pavg[1]);
 				else if (type == PT_LIFE)
 					sampleInfo << c->ElementResolve(type, ctype);
-				else if (type == PT_E189 && partlife >= 0 && partlife <= 17)
+				else if (type == PT_E189 && partlife >= 0 && partlife <= 19)
 				{
 					sampleInfo << E189Modes[partlife];
 				}
