@@ -445,7 +445,8 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						r = pmap[y+ry][x+rx];
 						if ((r & 0xFF) == PT_SPRK && parts[r>>8].ctype == PT_PSCN && parts[r>>8].life == 3)
 							PSCNCount ++;
-						if ((r & 0xFF) == PT_E189 && parts[r>>8].life == 19 && ((r>>8) > i) ? (parts[r>>8].tmp) : (parts[r>>8].tmp2))
+						rr = ((r>>8) > i) ? (parts[r>>8].tmp) : (parts[r>>8].tmp2);
+						if ((r & 0xFF) == PT_E189 && parts[r>>8].life == 19 && !rr)
 							PSCNCount ++;
 					}
 			rtmp = parts[i].tmp;
