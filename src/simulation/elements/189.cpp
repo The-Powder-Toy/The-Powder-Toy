@@ -583,7 +583,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 							parts[r>>8].tmp2 = 3;
 					}
 				}
-				parts[i].tmp = ((parts[i].tmp >> 3) & 0x7) | ((parts[i].tmp & 0x7) << 3);
+				parts[i].tmp = (parts[i].tmp & ~0x3F) | ((parts[i].tmp >> 3) & 0x7) | ((parts[i].tmp & 0x7) << 3);
 			}
 			break;
 		}
