@@ -605,6 +605,58 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 				}
 		break3:
 		break;
+	case 20: // particle emitter
+		for (int rx = -2; rx <= 2; rx++)
+			for (int ry = -2; ry <= 2; ry++)
+				if (BOUNDS_CHECK && (rx || ry))
+				{
+					r = pmap[y+ry][x+rx];
+					if ((r & 0xFF) == PT_SPRK && parts[r>>8].ctype == PT_PSCN && parts[r>>8].life == 3)
+					{
+						if (!(parts[i].ctype&0xFF))
+							goto break3;
+						if (parts[i].ctype!=PT_LIGH || (rand()%30)==0)
+						{
+							rx = x+rand()%3-1;
+							ry = y+rand()%3-1;
+							int np = sim->create_part(-1, x+rx, y+ry, parts[i].ctype&0xFF, parts[i].ctype>>8);
+							if (np >= 0) { parts[np].vx = rx; parts[np].vy = ry; }
+						}
+						goto break3;
+					}
+				}
+		break;
+	case 21: // MERC/DEUT/YEST expander, exclude E185 "replicating powder"
+		rndstore = rand(), trade = 5;
+		for (int rx = -1; rx < 2; rx++)
+			for (int ry = -1; ry < 2; ry++)
+			{
+				if (BOUNDS_CHECK && (rx || ry))
+				{
+					if (!(rndstore&7))
+					{
+						if ((r & 0xFF) == PT_MERC)
+							parts[r].tmp += parts[i].tmp;
+						else if ((r & 0xFF) == PT_DEUT)
+							parts[r].life += parts[i].tmp;
+						else if ((r & 0xFF) == PT_YEST)
+						{
+							if (parts[i].tmp >= 0)
+								parts[r>>8].temp = 315;
+							else
+								sim->kill_part(r>>8);
+						}
+					}
+					if (!--trade)
+					{
+						trade = 5;
+						rndstore = rand();
+					}
+					else
+						rndstore >>= 3;
+				}
+			}
+		break;
 	}
 	
 	if(ttan>=2) {
@@ -796,6 +848,12 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 		break;
 	case 19:
 		*colr = 0xFF; *colg = 0x44; *colb = 0x22;
+		break;
+	case 20:
+		*colr = 0xFF; *colg = 0xCC; *colb = 0x11;
+		break;
+	case 21:
+		*colr = 0x77; *colg = 0x70; *colb = 0x70;
 		break;
 	}
 	return 0;
