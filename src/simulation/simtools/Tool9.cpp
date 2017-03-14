@@ -13,7 +13,7 @@ int Tool_Tool9::Perform(Simulation * sim, Particle * cpart, int x, int y, float 
 {
 	double multipler = 25.0 / 4096.0;
 	double cx = -2.632083113783302 + x * multipler;
-	double cy = -1.171875 + x * multipler;
+	double cy = -1.171875 + y * multipler;
 	double zx = cx, zy = cy;
 	double zx2 = zx * zx, zy2 = zy * zy;
 	// formula: z <-> z**2 + c
