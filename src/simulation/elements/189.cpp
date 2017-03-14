@@ -562,14 +562,14 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 					if (BOUNDS_CHECK && (rx || ry))
 					{
 						r = pmap[y+ry][x+rx];
-						if ((r & 0xFF) == PT_SPRK)
+						if ((r & 0xFF) == PT_SPRK && parts[r>>8].life == 3)
 						{
-							parts[i].tmp2 = 2;
+							parts[i].tmp2 = 3;
 							goto break2b;
 						}
 					}
 		break2b:
-			if (parts[i].tmp2 == 1)
+			if (parts[i].tmp2 == 2)
 			{
 				for (rtmp = 0; rtmp < 4; rtmp++)
 				{
@@ -579,7 +579,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						ry = tron_ry[rtmp];
 						r = pmap[y+ry][x+rx];
 						if ((r&0xFF) == PT_E189 && parts[r>>8].life == 16 && parts[r>>8].ctype == 5 && !parts[r>>8].tmp2)
-							parts[r>>8].tmp2 = 2;
+							parts[r>>8].tmp2 = 3;
 					}
 				}
 				parts[i].tmp = ((parts[i].tmp >> 3) & 0x7) | ((parts[i].tmp & 0x7) << 3);
@@ -773,6 +773,11 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 		if (cpart->ctype == 3 && cpart->tmp)
 		{
 			*colr = 0xFF; *colg = 0x5A; *colb = 0x65;
+			return 0;
+		}
+		if (cpart->tmp2)
+		{
+			*colr = 0x65; *colg = 0xFF; *colb = 0x5A;
 			return 0;
 		}
 		*colr = 0xAA; *colg = 0x05; *colb = 0x10;
