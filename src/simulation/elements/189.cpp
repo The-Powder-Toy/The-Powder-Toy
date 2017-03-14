@@ -761,9 +761,10 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 		*colr = cpart->ctype;
 		*colg = cpart->tmp;
 		*colb = cpart->tmp2;
-	}
+		break;
 	case 19:
 		*colr = 0xFF; *colg = 0x44; *colb = 0x22;
+		break;
 	}
 	return 0;
 }
