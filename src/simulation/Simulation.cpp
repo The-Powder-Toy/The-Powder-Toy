@@ -5419,6 +5419,9 @@ void Simulation::BeforeSim()
 					{
 						switch (parts[r>>8].life)
 						{
+							case 13:
+							case 18:
+								break;
 							case 16:
 								if (parts[r>>8].tmp2) // use "tmp2" attribute for life value, because "life", "ctype" and "tmp" attributes is used for other purpose.
 									parts[r>>8].tmp2--;
