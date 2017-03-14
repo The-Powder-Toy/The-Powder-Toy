@@ -66,7 +66,9 @@ int Element_BOMB::update(UPDATE_FUNC_ARGS)
 					for (nxj=-rad; nxj<=rad; nxj++)
 						for (nxi=-rad; nxi<=rad; nxi++)
 							if ((pow((float)nxi,2))/(pow((float)rad,2))+(pow((float)nxj,2))/(pow((float)rad,2))<=1)
-								if (!(sim->elements[ pmap[y+nxj][x+nxi]&0xFF ].Properties & (PROP_NODESTRUCT|PROP_CLONE)) && (pmap[y+nxj][x+nxi]&0xFF)!=PT_VIBR)
+							{
+								int rr = pmap[y+nxj][x+nxi];
+								if (!(sim->elements[ rr&0xFF ].Properties & (PROP_NODESTRUCT|PROP_CLONE)) && (rr&0xFF)!=PT_VIBR && ((rr&0xFF)!=PT_E189 || (parts[rr].life&~0x1)==8))
 								{
 									sim->delete_part(x+nxi, y+nxj);
 									sim->pv[(y+nxj)/CELL][(x+nxi)/CELL] += 0.1f;
@@ -78,6 +80,7 @@ int Element_BOMB::update(UPDATE_FUNC_ARGS)
 										parts[nb].temp = MAX_TEMP;
 									}
 								}
+							}
 					for (nxj=-(rad+1); nxj<=(rad+1); nxj++)
 						for (nxi=-(rad+1); nxi<=(rad+1); nxi++)
 							if ((pow((float)nxi,2))/(pow((float)(rad+1),2))+(pow((float)nxj,2))/(pow((float)(rad+1),2))<=1 && !(pmap[y+nxj][x+nxi]&0xFF))
