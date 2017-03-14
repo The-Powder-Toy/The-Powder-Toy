@@ -545,10 +545,10 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						if ((r & 0xFF) == PT_E189 && parts[r>>8].life == 16)
 							r = pmap[y+2*ry][x+2*rx];
 						if ((r & 0xFF) == PT_SPRK)
-							goto break2;
+							goto break2a;
 					}
 			break;
-		break2:
+		break2a:
 			for (rtmp = 0; rtmp < 4; rtmp++)
 			{
 				if (BOUNDS_CHECK)
@@ -560,6 +560,8 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						parts[r>>8].pavg[0] = 10;
 				}
 			}
+			break;
+		case 5:
 			break;
 		}
 		break;
