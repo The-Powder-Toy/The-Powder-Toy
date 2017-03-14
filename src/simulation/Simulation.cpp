@@ -2132,6 +2132,10 @@ void Simulation::init_can_move()
 	
 	can_move[PT_PROT][PT_E189] = 3;
 	can_move[PT_E186][PT_E189] = 3;
+
+	can_move[PT_STKM][PT_E189] = 3;
+	can_move[PT_STKM2][PT_E189] = 3;
+	can_move[PT_FIGH][PT_E189] = 3;
 	
 	// can_move[PT_CNCT][PT_E191] = 0;
 }
@@ -2219,6 +2223,17 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr)
 				else
 					return 2; // corrected code
 			}
+			if (parts[r>>8].life == 18 && parts[r>>8].ctype == 5)
+			{
+				int tmp_flag = parts[r>>8].tmp;
+				if ((tmp_flag & 1) && pt == PT_STKM)
+					return 2;
+				if ((tmp_flag & 2) && pt == PT_STKM2)
+					return 2;
+				if ((tmp_flag & 4) && pt == PT_FIGH)
+					return 2;
+			}
+			return 0; // otherwise
 		}
 		else if (pt == PT_E186 && (r&0xFF) == PT_BRMT)
 		{
