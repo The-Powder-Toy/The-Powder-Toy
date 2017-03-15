@@ -592,7 +592,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 		case 7:
 			{
 				int ii;
-				if (parts[i].tmp2 == 1)
+				if (parts[i].tmp2 == 2)
 				{
 					for (ii = 0; ii < 4; ii++)
 					{
@@ -617,9 +617,9 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						if ((ry & 0xFF) == PT_SPRK && parts[ry>>8].life == 3) rr |= 2;
 					}
 				}
-				if (rr)
+				if (rr && !((rctype & 1) && tmp))
 				{
-					parts[i].tmp = rr; parts[i].tmp2 = 2;
+					parts[i].tmp = rr; parts[i].tmp2 = 3;
 				}
 			}
 			break;
