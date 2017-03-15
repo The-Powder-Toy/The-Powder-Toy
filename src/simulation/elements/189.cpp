@@ -1146,7 +1146,7 @@ void Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* p
 	}
 	else
 	{
-		switch (rtmp & 0x003FFFFF)
+		switch (rtmp & 7)
 		{
 			case 0: // no photons operation
 				break;
@@ -1183,8 +1183,11 @@ void Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* p
 				}
 				break;
 			case 5: // random "energy" particle
-				sim->create_part(i, x, y, PT_E186);
+				sim->part_change_type(i, x, y, PT_E186);
 				sim->parts[i].life = 0x101;
+				break;
+			case 6: // random "energy" particle
+				sim->kill_part(i); // photons absorber
 				break;
 		}
 	}
