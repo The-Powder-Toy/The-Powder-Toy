@@ -55,16 +55,29 @@ int Element_E186::update(UPDATE_FUNC_ARGS)
 	int r, s, slife, sctype;
 	float r2, r3;
 	sctype = parts[i].ctype;
-	if (sctype & 0x100)
+	if (sctype >= 0x100) // don't create SPC_AIR particle
 	{
-		if (!(sctype & 0x80))
+		r = pmap[y][x];
+		if ((r & 0xFF) != PT_E189)
 		{
 			slife = parts[i].life;
-			r = pmap[y][x];
-			if ((r & 0xFF) != PT_E189)
+			switch (sctype - 0x100)
 			{
+			case 0:
 				sim->part_change_type(i, x, y, PT_PHOT);
 				parts[i].ctype = parts[i].tmp2; // restore wavelength
+				break;
+			case 1:
+				switch (rand() & 3)
+				{
+					case 0: sim->create_part(i, x, y, PT_PHOT); break;
+					case 1: sim->create_part(i, x, y, PT_ELEC); break;
+					case 2: sim->create_part(i, x, y, PT_NEUT); break;
+					case 3:
+						sim->create_part(i, x, y, PT_GRVT); parts[i].tmp = 0;
+					break;
+				}
+				break;
 			}
 		}
 		return 0;
@@ -94,6 +107,13 @@ int Element_E186::update(UPDATE_FUNC_ARGS)
 			{
 				sim->create_part(r>>8, x, y, PT_PLSM);
 				parts[s].ctype = PT_NBLE;
+			}
+			break;
+		case PT_CO2:
+			if (!(rand()%10))
+			{
+				parts[r>>8].temp = MAX_TEMP;
+				sim->pv[y/CELL][x/CELL] += 256.0f;
 			}
 			break;
 		case PT_O2:

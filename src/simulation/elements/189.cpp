@@ -54,8 +54,9 @@ Element_E189::Element_E189()
 //#TPT-Directive ElementHeader Element_E189 static int update(UPDATE_FUNC_ARGS)
 int Element_E189::update(UPDATE_FUNC_ARGS)
 {
-	int tron_rx[4] = {-1, 0, 1, 0};
-	int tron_ry[4] = { 0,-1, 0, 1};
+	static int tron_rx[4] = {-1, 0, 1, 0};
+	static int tron_ry[4] = { 0,-1, 0, 1};
+	static int osc_r1 [4] = { 1,-1, 2,-2};
 	int rx, ry, ttan = 0, rlife = parts[i].life, direction, r, ri, rtmp, rctype;
 	int rr, rndstore, trade, transfer, rt;
 	float rvx, rvy, rdif;
@@ -421,7 +422,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 		break;
 	case 16:
 		int PSCNCount;
-		switch (parts[i].ctype)
+		switch (rctype = parts[i].ctype)
 		{
 		case 0: // logic gate
 
@@ -569,6 +570,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 							goto break2b;
 						}
 					}
+			// break;
 		break2b:
 			if (parts[i].tmp2 == 2)
 			{
@@ -586,8 +588,44 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 				parts[i].tmp = (parts[i].tmp & ~0x3F) | ((parts[i].tmp >> 3) & 0x7) | ((parts[i].tmp & 0x7) << 3);
 			}
 			break;
+		case 6: // wire crossing
+		case 7:
+			{
+				int ii;
+				if (parts[i].tmp2 == 1)
+				{
+					for (ii = 0; ii < 4; ii++)
+					{
+						if (BOUNDS_CHECK)
+						{
+							r = osc_r1[ii], rtmp = parts[i].tmp;
+							if (rtmp & 1 << (rctype & 1))
+								sim->create_part(-1, x+r, y, PT_SPRK);
+							if (rtmp & 2 >> (rctype & 1))
+								sim->create_part(-1, x, y+r, PT_SPRK);
+						}
+					}
+				}
+				for (rr = ii = 0; ii < 4; ii++)
+				{
+					if (BOUNDS_CHECK)
+					{
+						r = osc_r1[ii];
+						rx = pmap[y][x+r];
+						ry = pmap[y+r][x];
+						if ((rx & 0xFF) == PT_SPRK && parts[rx>>8].life == 3) rr |= 1;
+						if ((ry & 0xFF) == PT_SPRK && parts[ry>>8].life == 3) rr |= 2;
+					}
+				}
+				if (rr)
+				{
+					parts[i].tmp = rr; parts[i].tmp2 = 2;
+				}
+			}
+			break;
 		}
 		break;
+			
 	case 19:
 		parts[i].tmp2 = parts[i].tmp;
 		if (parts[i].tmp)
@@ -950,158 +988,205 @@ void Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* p
 	int ctype, r1, r2;
 	float rvx, rvy, rvx2, rvy2, rdif;
 	long long int lsb;
-	rvx = (float)(((rtmp ^ 0x80) & 0xFF) - 0x80) / 16.0f;
-	rvy = (float)((((rtmp >> 8) ^ 0x80) & 0xFF) - 0x80) / 16.0f;
-	switch ((rtmp >> 16) & 3)
+	if (!((rtmp >> 22) & 1))
 	{
-	case 0:
-		part_phot->vx = rvx;
-		part_phot->vy = rvy;
-		break;
-	case 1:
-		part_phot->vx += rvx;
-		part_phot->vy += rvy;
-		break;
-	case 2:
-		rvx2 = part_phot->vx;
-		rvy2 = part_phot->vy;
-		part_phot->vx = rvx2 * rvx - rvy2 * rvy;
-		part_phot->vy = rvx2 * rvy + rvy2 * rvx;
-		break;
-	case 3:
-		rvx2 = rvx * 0.39269908f;
-		rdif = hypotf(part_phot->vx, part_phot->vy);
-		if (rtmp & 0x100)
-		{
-			rvy2 = atan2f(part_phot->vy, part_phot->vx);
-			rvx2 = rvx2 - rvy2;
-		}
-		part_phot->vx = rdif * cosf(rvx2);
-		part_phot->vy = rdif * sinf(rvx2);
-		break;
-	}
-	switch (rtmp >> 18)
-	{
-	case 0: // Assign Colour
-		if (rct)
-			part_phot->ctype = rct;
-		break;
-	case 1: // Filter Colour
-		if (rct)
-			part_phot->ctype &= rct;
-		break;
-	case 2: // Add Colour
-		if (rct)
-			part_phot->ctype |= rct;
-		break;
-	case 3: // Subtract colour
-		if (rct)
-			part_phot->ctype &= ~rct;
-		else
-			part_phot->ctype = (~part_phot->ctype) & mask; // Invert colours
-		break;
-	case 4:
-		ctype = part_phot->ctype;
-		switch ((rct >> 5) & 15)
+		rvx = (float)(((rtmp ^ 0x80) & 0xFF) - 0x80) / 16.0f;
+		rvy = (float)((((rtmp >> 8) ^ 0x80) & 0xFF) - 0x80) / 16.0f;
+		switch ((rtmp >> 16) & 3)
 		{
 		case 0:
-			part_phot->ctype <<= (rct & 0x1F); // red shift
+			part_phot->vx = rvx;
+			part_phot->vy = rvy;
 			break;
 		case 1:
-			part_phot->ctype >>= (rct & 0x1F); // blue shift
+			part_phot->vx += rvx;
+			part_phot->vy += rvy;
 			break;
 		case 2:
-			r1 = (rct & 0x1F) % 30;
-			part_phot->ctype = (ctype << r1) | (ctype >> (30 - r1)); // rotate red shift
+			rvx2 = part_phot->vx;
+			rvy2 = part_phot->vy;
+			part_phot->vx = rvx2 * rvx - rvy2 * rvy;
+			part_phot->vy = rvx2 * rvy + rvy2 * rvx;
 			break;
 		case 3:
-			r1 = (rct & 0x1F) % 30;
-			part_phot->ctype = (ctype >> r1) | (ctype << (30 - r1)); // rotate blue shift
+			rvx2 = rvx * 0.39269908f;
+			rdif = hypotf(part_phot->vx, part_phot->vy);
+			if (rtmp & 0x100)
+			{
+				rvy2 = atan2f(part_phot->vy, part_phot->vx);
+				rvx2 = rvx2 - rvy2;
+			}
+			part_phot->vx = rdif * cosf(rvx2);
+			part_phot->vy = rdif * sinf(rvx2);
+			break;
+		}
+		switch (rtmp >> 18)
+		{
+		case 0: // Assign Colour
+			if (rct)
+				part_phot->ctype = rct;
+			break;
+		case 1: // Filter Colour
+			if (rct)
+				part_phot->ctype &= rct;
+			break;
+		case 2: // Add Colour
+			if (rct)
+				part_phot->ctype |= rct;
+			break;
+		case 3: // Subtract colour
+			if (rct)
+				part_phot->ctype &= ~rct;
+			else
+				part_phot->ctype = (~part_phot->ctype) & mask; // Invert colours
 			break;
 		case 4:
-			part_phot->ctype &= ~(1 << (rct & 0x1F)); // set flag 0
+			ctype = part_phot->ctype;
+			switch ((rct >> 5) & 15)
+			{
+			case 0:
+				part_phot->ctype <<= (rct & 0x1F); // red shift
+				break;
+			case 1:
+				part_phot->ctype >>= (rct & 0x1F); // blue shift
+				break;
+			case 2:
+				r1 = (rct & 0x1F) % 30;
+				part_phot->ctype = (ctype << r1) | (ctype >> (30 - r1)); // rotate red shift
+				break;
+			case 3:
+				r1 = (rct & 0x1F) % 30;
+				part_phot->ctype = (ctype >> r1) | (ctype << (30 - r1)); // rotate blue shift
+				break;
+			case 4:
+				part_phot->ctype &= ~(1 << (rct & 0x1F)); // set flag 0
+				break;
+			case 5:
+				part_phot->ctype |=  (1 << (rct & 0x1F)); // set flag 1
+				break;
+			case 6:
+				part_phot->ctype ^=  (1 << (rct & 0x1F)); // toggle flag
+				break;
+			case 7:
+				if (rand() & 1) // random toggle flag
+					part_phot->ctype ^=  (1 << (rct & 0x1F));
+				break;
+			case 8: // reversing wavelength from "Hacker's Delight"
+				r1 = part_phot->ctype;
+				r2 = (r1 << 15) | (r1 >> 15); // wavelength rotate 15
+				r1 = (r2 ^ (r2>>10)) & 0x000F801F; // swap 10
+				r2 ^= (r1 | (r1<<10));
+				r1 = (r2 ^ (r2>> 3)) & 0x06318C63; // swap 3
+				r2 ^= (r1 | (r1<< 3));
+				r1 = (r2 ^ (r2>> 1)) & 0x1294A529; // swap 1
+				part_phot->ctype = (r1 | (r1<< 1)) ^ r2;
+				break;
+			case 15: // get "extraLoopsCA" info, without pause state
+				if (!sim->extraLoopsCA)
+					r1 = 0x1;
+				else
+					r1 = 0x2 << sim->extraLoopsType;
+				if (sim->elementCount[PT_LOVE] > 0)
+					r1 |= 0x10;
+				if (sim->elementCount[PT_LOLZ] > 0)
+					r1 |= 0x20;
+				if (sim->elementCount[PT_WIRE] > 0)
+					r1 |= 0x40;
+				if (sim->elementCount[PT_LIFE] > 0)
+					r1 |= 0x80;
+				if (sim->player.spwn)
+					r1 |= 0x100;
+				if (sim->player2.spwn)
+					r1 |= 0x200;
+				if (sim->elementCount[PT_WIFI] > 0)
+					r1 |= 0x400;
+				if (sim->elementCount[PT_DMND] > 0)
+					r1 |= 0x800;
+				if (sim->elementCount[PT_INSL] > 0)
+					r1 |= 0x1000;
+				if (sim->elementCount[PT_INDI] > 0)
+					r1 |= 0x2000;
+				part_phot->ctype = r1;
+				break;
+			}
+			part_phot->ctype &= mask;
 			break;
 		case 5:
-			part_phot->ctype |=  (1 << (rct & 0x1F)); // set flag 1
+			if (!rct) // random wavelength
+			{
+				ctype = part_phot->ctype;
+				r1 = rand();
+				r1 += (rand() << 15);
+				if ((r1 ^ ctype) & mask == 0)
+					rct = 0;
+				else
+					rct = r1;
+			}
+			part_phot->ctype ^= rct; // XOR colours
 			break;
 		case 6:
-			part_phot->ctype ^=  (1 << (rct & 0x1F)); // toggle flag
+			sim->part_change_type(i, x, y, rct & 0xFF);
+			part_phot->tmp = part_E189->ctype >> 8;
 			break;
-		case 7:
-			if (rand() & 1) // random toggle flag
-				part_phot->ctype ^=  (1 << (rct & 0x1F));
-			break;
-		case 8: // reversing wavelength from "Hacker's Delight"
-			r1 = part_phot->ctype;
-			r2 = (r1 << 15) | (r1 >> 15); // wavelength rotate 15
-			r1 = (r2 ^ (r2>>10)) & 0x000F801F; // swap 10
-			r2 ^= (r1 | (r1<<10));
-			r1 = (r2 ^ (r2>> 3)) & 0x06318C63; // swap 3
-			r2 ^= (r1 | (r1<< 3));
-			r1 = (r2 ^ (r2>> 1)) & 0x1294A529; // swap 1
-			part_phot->ctype = (r1 | (r1<< 1)) ^ r2;
-			break;
-		case 15: // get "extraLoopsCA" info, without pause state
-			if (!sim->extraLoopsCA)
-				r1 = 0x1;
-			else
-				r1 = 0x2 << sim->extraLoopsType;
-			if (sim->elementCount[PT_LOVE] > 0)
-				r1 |= 0x10;
-			if (sim->elementCount[PT_LOLZ] > 0)
-				r1 |= 0x20;
-			if (sim->elementCount[PT_WIRE] > 0)
-				r1 |= 0x40;
-			if (sim->elementCount[PT_LIFE] > 0)
-				r1 |= 0x80;
-			if (sim->player.spwn)
-				r1 |= 0x100;
-			if (sim->player2.spwn)
-				r1 |= 0x200;
-			if (sim->elementCount[PT_WIFI] > 0)
-				r1 |= 0x400;
-			if (sim->elementCount[PT_DMND] > 0)
-				r1 |= 0x800;
-			if (sim->elementCount[PT_INSL] > 0)
-				r1 |= 0x1000;
-			if (sim->elementCount[PT_INDI] > 0)
-				r1 |= 0x2000;
-			part_phot->ctype = r1;
+		case 7: // photon scattering
+			sim->part_change_type(i, x, y, PT_E186);
+			if (rct & 1)
+				part_phot->ctype = 0x1F<<(rand()%26);
+			part_phot->tmp2 = part_phot->ctype;
+			part_phot->ctype = 0x100;
+			rdif = ((float)(rand()%321+192)) / 128.0f; // 1.5 ~ 4 pixels (approx)
+			rvx2 = ((float)(rand()& 0x7fff)) * 1.9174760e-4f; // RAND_MAX is at least 32767 on all platforms
+			if (!(rct & 2))
+			{
+				part_phot->vx = rdif*cosf(rvx2);
+				part_phot->vy = rdif*sinf(rvx2);
+			}
 			break;
 		}
-		part_phot->ctype &= mask;
-		break;
-	case 5:
-		if (!rct) // random wavelength
+	}
+	else
+	{
+		switch (rtmp & 0x003FFFFF)
 		{
-			ctype = part_phot->ctype;
-			r1 = rand();
-			r1 += (rand() << 15);
-			if ((r1 ^ ctype) & mask == 0)
-				rct = 0;
-			else
-				rct = r1;
+			case 0: // no photons operation
+				break;
+			case 1: // 50% turn left
+				if (rand & 1)
+				{
+					rdif = part_phot->vx;
+					part_phot->vx = part_phot->vy;
+					part_phot->vy = -rdif;
+				}
+				break;
+			case 2: // 50% turn right
+				if (rand & 1)
+				{
+					rdif = part_phot->vx;
+					part_phot->vx = -part_phot->vy;
+					part_phot->vy = rdif;
+				}
+				break;
+			case 3: // 50% turn left, 50% turn right
+				rvx = part_phot->vx;
+				rvy = (rand() & 1) ? 1.0 : -1.0;
+				part_phot->vx =  rvy * part_phot->vy;
+				part_phot->vy = -rvy * rdif;
+				break;
+			case 4: // turn left + go straight + turn right = 100%
+				r1 = rand() % 3;
+				if (r1)
+				{
+					rvx = part_phot->vx;
+					rvy = (r1 & 1) ? 1.0 : -1.0;
+					part_phot->vx =  rvy * part_phot->vy;
+					part_phot->vy = -rvy * rdif;
+				}
+				break;
+			case 5: // random "energy" particle
+				sim->create_part(i, x, y, PT_E186);
+				parts[i].life = 0x101;
+				break;
 		}
-		part_phot->ctype ^= rct; // XOR colours
-		break;
-	case 6:
-		sim->part_change_type(i, x, y, rct & 0xFF);
-		part_phot->tmp = part_E189->ctype >> 8;
-		break;
-	case 7: // photon scattering
-		sim->part_change_type(i, x, y, PT_E186);
-		if (rct & 1)
-			part_phot->ctype = 0x1F<<(rand()%26);
-		part_phot->tmp2 = part_phot->ctype;
-		part_phot->ctype = 0x100;
-		rdif = ((float)(rand()%321+192)) / 128.0f; // 1.5 ~ 4 pixels (approx)
-		rvx2 = ((float)(rand()& 0x7fff)) * 1.9174760e-4f; // RAND_MAX is at least 32767 on all platforms
-		if (!(rct & 2))
-		{
-			part_phot->vx = rdif*cosf(rvx2);
-			part_phot->vy = rdif*sinf(rvx2);
-		}
-		break;
 	}
 }
 
