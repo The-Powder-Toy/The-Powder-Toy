@@ -617,7 +617,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						if ((ry & 0xFF) == PT_SPRK && parts[ry>>8].life == 3) rr |= 2;
 					}
 				}
-				if (rr && !((rctype & 1) && rtmp))
+				if (rr && !((rctype & 1) && parts[i].tmp2))
 				{
 					parts[i].tmp = rr; parts[i].tmp2 = 3;
 				}
