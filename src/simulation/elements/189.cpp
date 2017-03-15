@@ -665,7 +665,10 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 					}
 				}
 		break;
-	case 21: // MERC/DEUT/YEST expander, exclude E185 "replicating powder"
+	case 21:
+	/* MERC/DEUT/YEST expander, or SPNG "water releaser".
+	 * note: exclude E185 "replicating powder"
+	 */
 		rndstore = rand(), trade = 5;
 		for (int rx = -1; rx < 2; rx++)
 			for (int ry = -1; ry < 2; ry++)
@@ -686,6 +689,15 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 								parts[r>>8].temp = 303.0f + (rtmp > 28 ? 28 : (float)rtmp * 0.5f);
 							else if (-rtmp > (rand()&31))
 								sim->kill_part(r>>8);
+						}
+						else if ((r & 0xFF) == PT_SPNG)
+						{
+							if (parts[r>>8].life > 0)
+							{
+								rr = sim->create_part(-1, x-rx, y-ry, PT_WATR);
+								if (rr >= 0)
+									parts[r>>8].life --;
+							}
 						}
 					}
 					if (!--trade)
