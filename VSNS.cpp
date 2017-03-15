@@ -44,6 +44,7 @@ Element_VSNS::Element_VSNS()
 	Update = &Element_VSNS::update;
 }
 
+//#TPT-Directive ElementHeader Element_VSNS static int update(UPDATE_FUNC_ARGS)
 int Element_VSNS::update(UPDATE_FUNC_ARGS)
 {
 	int r,rx,ry;
