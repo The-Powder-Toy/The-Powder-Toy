@@ -36,6 +36,7 @@
 #define PROP_TRANSPARENT	0x400000  // 2^22 Photons (PHOT) pass through
 #define PROP_NODESTRUCT		0x800000  // 2^23 Indestructible property
 #define PROP_CLONE			0x1000000 // 2^24 Makes elements clone things that touch it
+#define PROP_NOWAVELENGTHS	0x2000000 // 2^25 Energy particle without wavelengths
 
 #define FLAG_STAGNANT	0x1
 #define FLAG_SKIPMOVE  0x2 // skip movement for one frame, only implemented for PHOT
