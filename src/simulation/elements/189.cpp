@@ -681,8 +681,9 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 							parts[r>>8].life += parts[i].tmp;
 						else if ((r & 0xFF) == PT_YEST)
 						{
+							rtmp = parts[i].tmp;
 							if (parts[i].tmp > 0)
-								parts[r>>8].temp = 315;
+								parts[r>>8].temp = 303 + (rtmp > 14 ? 14 : rtmp);
 							else if (parts[i].tmp < 0)
 								sim->kill_part(r>>8);
 						}
