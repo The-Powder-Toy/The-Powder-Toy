@@ -656,9 +656,9 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 							goto break3;
 						if ((rctype & 0xFF) != PT_LIGH || !(rand() & 7))
 						{
-							rx = x+rand()%3-1;
-							ry = y+rand()%3-1;
-							int np = sim->create_part(-1, rx, ry, rctype & 0xFF, rctype >> 8);
+							rx = rand()%3-1;
+							ry = rand()%3-1;
+							int np = sim->create_part(-1, x+rx, y+ry, rctype & 0xFF, rctype >> 8);
 							if (np >= 0) { parts[np].vx = rx; parts[np].vy = ry; }
 						}
 						goto break3;
