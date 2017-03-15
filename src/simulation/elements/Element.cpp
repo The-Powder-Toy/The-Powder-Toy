@@ -40,7 +40,7 @@ Element::Element():
 	LowTemperatureTransition(NT),
 	HighTemperature(ITH),
 	HighTemperatureTransition(NT),
-	PhotonReflectWavelengths(0xFFFFFFFF)
+	PhotonReflectWavelengths(0xFFFFFFFF),
 
 	Update(NULL),
 	Graphics(&Element::defaultGraphics),
