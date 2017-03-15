@@ -386,42 +386,7 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 				
 				if ((r&0xFF) == PT_E189)
 				{
-					if (parts[r].life == 16 && parts[r].ctype == 5)
-					{
-						int sur_part_tmp = parts[r].tmp >> 6;
-						if (sur_part_tmp > 0)
-						{
-							sur_part_tmp--; // is temporary variable, not global
-							int inc_life = (sur_part_tmp & 1) ? 1 : -1;
-							bool inc_life_cond;
-							switch (sur_part_tmp >> 1)
-							{
-								case 0:
-									inc_life_cond = true;
-								break;
-								case 1:
-									inc_life_cond = (parts[i].type == PT_STKM);
-								break;
-								case 2:
-									inc_life_cond = (parts[i].type == PT_STKM2);
-								break;
-								case 3:
-								{
-									int part_i_type = parts[i].type;
-									inc_life_cond = (part_i_type == PT_STKM || part_i_type == PT_STKM2);
-								}
-								break;
-								case 4:
-									inc_life_cond = (parts[i].type == PT_FIGH);
-								break;
-							}
-							if (inc_life_cond)
-							{
-								if (inc_life < 0 || parts[i].life < 100)
-									parts[i].life += inc_life;
-							}
-						}
-					}
+					STKM_set_life_1(sim, r>>8, i);
 				}
 				
 				if (sim->bmap[(ry+y)/CELL][(rx+x)/CELL]==WL_FAN)
@@ -642,6 +607,9 @@ void Element_STKM::STKM_interact(Simulation *sim, playerst *playerp, int i, int 
 
 		if (sim->elements[r&0xFF].Properties&PROP_RADIOACTIVE)
 			sim->parts[i].life -= 1;
+		
+		if ((r&0xFF) == PT_E189)
+			STKM_set_life_1(sim, r>>8, i);
 
 		if ((r&0xFF)==PT_PRTI && sim->parts[i].type)
 		{
@@ -727,5 +695,45 @@ void Element_STKM::STKM_set_element(Simulation *sim, playerst *playerp, int elem
 		playerp->elem = PT_LIGH;
 }
 
+//#TPT-Directive ElementHeader Element_STKM static void STKM_set_life_1(Simulation *sim, int s, int i)
+void Element_STKM::STKM_set_life_1(Simulation *sim, int s, int i)
+{
+	if (sim->parts[s].life == 16 && sim->parts[s].ctype == 5)
+	{
+		int sur_part_tmp = sim->parts[s].tmp >> 6;
+		if (sur_part_tmp > 0)
+		{
+			sur_part_tmp--; // is temporary variable, not global
+			int inc_life = (sur_part_tmp & 1) ? 1 : -1;
+			bool inc_life_cond;
+			switch (sur_part_tmp >> 1)
+			{
+				case 0:
+					inc_life_cond = true;
+				break;
+				case 1:
+					inc_life_cond = (sim->parts[i].type == PT_STKM);
+				break;
+				case 2:
+					inc_life_cond = (sim->parts[i].type == PT_STKM2);
+				break;
+				case 3:
+				{
+					int part_i_type = sim->parts[i].type;
+					inc_life_cond = (part_i_type == PT_STKM || part_i_type == PT_STKM2);
+				}
+				break;
+				case 4:
+					inc_life_cond = (sim->parts[i].type == PT_FIGH);
+				break;
+			}
+			if (inc_life_cond)
+			{
+				if (inc_life < 0 || sim->parts[i].life < 100)
+					sim->parts[i].life += inc_life;
+			}
+		}
+	}
+}
 
 Element_STKM::~Element_STKM() {}
