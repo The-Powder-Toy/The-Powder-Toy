@@ -649,15 +649,16 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 				if (BOUNDS_CHECK && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
-					if ((r & 0xFF) == PT_SPRK && parts[r>>8].ctype == PT_PSCN && parts[r>>8].life == 3)
+					rctype = parts[i].ctype;
+					if ((r & 0xFF) == PT_SPRK && parts[r>>8].life == 3)
 					{
-						if (!(parts[i].ctype&0xFF))
+						if (!(rctype & 0xFF))
 							goto break3;
-						if (parts[i].ctype!=PT_LIGH || (rand()%30)==0)
+						if ((rctype & 0xFF) != PT_LIGH || !(rand() & 7))
 						{
 							rx = x+rand()%3-1;
 							ry = y+rand()%3-1;
-							int np = sim->create_part(-1, x+rx, y+ry, parts[i].ctype&0xFF, parts[i].ctype>>8);
+							int np = sim->create_part(-1, rx, ry, rctype & 0xFF, rctype >> 8);
 							if (np >= 0) { parts[np].vx = rx; parts[np].vy = ry; }
 						}
 						goto break3;
@@ -680,9 +681,9 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 							parts[r>>8].life += parts[i].tmp;
 						else if ((r & 0xFF) == PT_YEST)
 						{
-							if (parts[i].tmp >= 0)
+							if (parts[i].tmp > 0)
 								parts[r>>8].temp = 315;
-							else
+							else if (parts[i].tmp < 0)
 								sim->kill_part(r>>8);
 						}
 					}
