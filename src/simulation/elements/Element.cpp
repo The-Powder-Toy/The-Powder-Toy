@@ -83,6 +83,7 @@ std::vector<StructProperty> Element::GetProperties()
 	properties.push_back(StructProperty("LowTemperatureTransition",		StructProperty::Integer,	offsetof(Element, LowTemperatureTransition)));
 	properties.push_back(StructProperty("HighTemperature",				StructProperty::Float,		offsetof(Element, HighTemperature)));
 	properties.push_back(StructProperty("HighTemperatureTransition",	StructProperty::Integer,	offsetof(Element, HighTemperatureTransition)));
+	properties.push_back(StructProperty("PhotonReflectWavelengths",		StructProperty::Integer,	offsetof(Element, PhotonReflectWavelengths)));
 	return properties;
 }
 
