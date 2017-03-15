@@ -1183,8 +1183,8 @@ void Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* p
 				}
 				break;
 			case 5: // random "energy" particle
+				part_phot->life = 0x101;
 				sim->part_change_type(i, x, y, PT_E186);
-				sim->parts[i].life = 0x101;
 				break;
 			case 6: // random "energy" particle
 				sim->kill_part(i); // photons absorber
