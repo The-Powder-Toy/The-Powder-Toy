@@ -1151,7 +1151,7 @@ void Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* p
 			case 0: // no photons operation
 				break;
 			case 1: // 50% turn left
-				if (rand & 1)
+				if (rand() & 1)
 				{
 					rdif = part_phot->vx;
 					part_phot->vx = part_phot->vy;
@@ -1159,7 +1159,7 @@ void Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* p
 				}
 				break;
 			case 2: // 50% turn right
-				if (rand & 1)
+				if (rand() & 1)
 				{
 					rdif = part_phot->vx;
 					part_phot->vx = -part_phot->vy;
