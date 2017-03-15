@@ -5406,6 +5406,7 @@ void Simulation::BeforeSim()
 			}
 		}
 		
+		// make E189 work
 		if(elementCount[PT_E189] > 0)
 		{
 			for (int nx = 0; nx < XRES; nx++)
