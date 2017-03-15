@@ -428,8 +428,8 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 
 			if (!(parts[i].tmp & 4) == (parts[i].tmp2 > 0))
 			{
-				for (int rx = -2; rx <= 2; rx++)
-					for (int ry = -2; ry <= 2; ry++)
+				for (rx = -2; rx <= 2; rx++)
+					for (ry = -2; ry <= 2; ry++)
 						if (BOUNDS_CHECK && (rx || ry))
 						{
 							r = pmap[y+ry][x+rx];
@@ -439,8 +439,8 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			}
 
 			PSCNCount = 0;
-			for (int rx = -2; rx <= 2; rx++)
-				for (int ry = -2; ry <= 2; ry++)
+			for (rx = -2; rx <= 2; rx++)
+				for (ry = -2; ry <= 2; ry++)
 					if (BOUNDS_CHECK && (rx || ry))
 					{
 						r = pmap[y+ry][x+rx];
@@ -464,8 +464,8 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			{
 				if (parts[i].tmp2 == 1)
 				{
-					for (int rx = -2; rx <= 2; rx++)
-						for (int ry = -2; ry <= 2; ry++)
+					for (rx = -2; rx <= 2; rx++)
+						for (ry = -2; ry <= 2; ry++)
 							if (BOUNDS_CHECK && (rx || ry))
 							{
 								r = pmap[y+ry][x+rx];
@@ -474,8 +474,8 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 							}
 					parts[i].tmp--;
 				}
-				for (int rx = -2; rx <= 2; rx++)
-					for (int ry = -2; ry <= 2; ry++)
+				for (rx = -2; rx <= 2; rx++)
+					for (ry = -2; ry <= 2; ry++)
 						if (BOUNDS_CHECK && (rx || ry))
 						{
 							r = pmap[y+ry][x+rx];
@@ -496,8 +496,8 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			}
 			else if (!parts[i].tmp)
 				sim->create_part(i, x, y, PT_METL);
-			for (int rx = -2; rx <= 2; rx++)
-				for (int ry = -2; ry <= 2; ry++)
+			for (rx = -2; rx <= 2; rx++)
+				for (ry = -2; ry <= 2; ry++)
 					if (BOUNDS_CHECK && (rx || ry))
 					{
 						r = pmap[y+ry][x+rx];
@@ -511,8 +511,8 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 		case 3: // flip-flop
 			if (parts[i].tmp >= 2)
 			{
-				for (int rx = -2; rx <= 2; rx++)
-					for (int ry = -2; ry <= 2; ry++)
+				for (rx = -2; rx <= 2; rx++)
+					for (ry = -2; ry <= 2; ry++)
 						if (BOUNDS_CHECK && (rx || ry))
 						{
 							r = pmap[y+ry][x+rx];
@@ -521,8 +521,8 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						}
 				parts[i].tmp = 0;
 			}
-			for (int rx = -2; rx <= 2; rx++)
-				for (int ry = -2; ry <= 2; ry++)
+			for (rx = -2; rx <= 2; rx++)
+				for (ry = -2; ry <= 2; ry++)
 					if (BOUNDS_CHECK && (rx || ry))
 					{
 						r = pmap[y+ry][x+rx];
@@ -534,8 +534,8 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 					}
 			break;
 		case 4: // virus curer
-			for (int rx = -1; rx < 2; rx++)
-				for (int ry = -1; ry < 2; ry++)
+			for (rx = -1; rx < 2; rx++)
+				for (ry = -1; ry < 2; ry++)
 					if (BOUNDS_CHECK && (rx || ry))
 					{
 						r = pmap[y+ry][x+rx];
@@ -550,8 +550,8 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			{
 				if (BOUNDS_CHECK)
 				{
-					int rx = tron_rx[rtmp];
-					int ry = tron_ry[rtmp];
+					rx = tron_rx[rtmp];
+					ry = tron_ry[rtmp];
 					r = pmap[y+ry][x+rx];
 					if ((r&0xFF) == PT_VIRS || (r&0xFF) == PT_VRSS || (r&0xFF) == PT_VRSG) // if is virus
 						parts[r>>8].pavg[0] = 10;
@@ -559,8 +559,8 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			}
 			break;
 		case 5:
-			for (int rx = -1; rx < 2; rx++)
-				for (int ry = -1; ry < 2; ry++)
+			for (rx = -1; rx < 2; rx++)
+				for (ry = -1; ry < 2; ry++)
 					if (BOUNDS_CHECK && (rx || ry))
 					{
 						r = pmap[y+ry][x+rx];
@@ -617,7 +617,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						if ((ry & 0xFF) == PT_SPRK && parts[ry>>8].life == 3) rr |= 2;
 					}
 				}
-				if (rr && !((rctype & 1) && tmp))
+				if (rr && !((rctype & 1) && rtmp))
 				{
 					parts[i].tmp = rr; parts[i].tmp2 = 3;
 				}
