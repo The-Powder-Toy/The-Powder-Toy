@@ -33,6 +33,7 @@ public:
 	int Meltable;
 	int Hardness;
 	int Weight;
+	int PhotonReflectWavelengths;
 	float Temperature;
 	unsigned char HeatConduct;
 	const char *Description;

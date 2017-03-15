@@ -18,6 +18,7 @@ Element_COAL::Element_COAL()
 	Diffusion = 0.0f;
 	HotAir = 0.0f	* CFDS;
 	Falldown = 0;
+	PhotonReflectWavelengths = 0x00000000;
 
 	Flammable = 0;
 	Explosive = 0;
