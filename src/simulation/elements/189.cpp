@@ -550,8 +550,8 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			{
 				if (BOUNDS_CHECK)
 				{
-					rx = tron_rx[rtmp];
-					ry = tron_ry[rtmp];
+					int rx = tron_rx[rtmp];
+					int ry = tron_ry[rtmp];
 					r = pmap[y+ry][x+rx];
 					if ((r&0xFF) == PT_VIRS || (r&0xFF) == PT_VRSS || (r&0xFF) == PT_VRSG) // if is virus
 						parts[r>>8].pavg[0] = 10;
@@ -1184,7 +1184,7 @@ void Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* p
 				break;
 			case 5: // random "energy" particle
 				sim->create_part(i, x, y, PT_E186);
-				parts[i].life = 0x101;
+				sim->parts[i].life = 0x101;
 				break;
 		}
 	}
