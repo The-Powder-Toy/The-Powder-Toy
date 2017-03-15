@@ -70,12 +70,20 @@ int Element_E186::update(UPDATE_FUNC_ARGS)
 			case 1:
 				switch (rand() & 3)
 				{
-					case 0: sim->create_part(i, x, y, PT_PHOT); break;
-					case 1: sim->create_part(i, x, y, PT_ELEC); break;
-					case 2: sim->create_part(i, x, y, PT_NEUT); break;
+					case 0:
+						sim->part_change_type(i, x, y, PT_PHOT);
+						parts[i].ctype = 0x3FFFFFFF;
+						break;
+					case 1:
+						sim->part_change_type(i, x, y, PT_ELEC);
+						break;
+					case 2:
+						sim->part_change_type(i, x, y, PT_NEUT);
+						break;
 					case 3:
-						sim->create_part(i, x, y, PT_GRVT); parts[i].tmp = 0;
-					break;
+						sim->part_change_type(i, x, y, PT_GRVT);
+						parts[i].tmp = 0;
+						break;
 				}
 				break;
 			}
