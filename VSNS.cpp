@@ -73,7 +73,7 @@ int Element_VSNS::update(UPDATE_FUNC_ARGS)
 				if(parts[i].life)
 				{
 					parts[i].life=0;
-					rt = r&0xFF;
+					int rt = r&0xFF;
 					if (sim->parts_avg(i,r>>8,PT_INSL) != PT_INSL)
 					{
 						if ((sim->elements[rt].Properties&PROP_CONDUCTS) && !(rt==PT_WATR||rt==PT_SLTW||rt==PT_NTCT||rt==PT_PTCT||rt==PT_INWR) && parts[r>>8].life==0)
