@@ -251,12 +251,12 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 				if (not_self)
 				{
 					if (rr & 1)
-					{
+					{ // VIBR2 <- VIBR
 						parts[i].tmp += parts[r>>8].tmp;
 						parts[r>>8].tmp = 0;
 					}
 					else
-					{
+					{ // VIBR2 -> VIBR
 						parts[r>>8].tmp += parts[i].tmp;
 						parts[i].tmp = 0;
 					}
