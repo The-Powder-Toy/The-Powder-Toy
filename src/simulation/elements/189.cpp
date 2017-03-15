@@ -682,9 +682,9 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						else if ((r & 0xFF) == PT_YEST)
 						{
 							rtmp = parts[i].tmp;
-							if (parts[i].tmp > 0)
-								parts[r>>8].temp = 303 + (rtmp > 14 ? 14 : rtmp);
-							else if (parts[i].tmp < 0)
+							if (rtmp > 0)
+								parts[r>>8].temp = 303.0f + (rtmp > 28 ? 28 : (float)rtmp * 0.5f);
+							else if (-rtmp > (rand()&31))
 								sim->kill_part(r>>8);
 						}
 					}
