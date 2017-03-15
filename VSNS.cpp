@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+//#TPT-Directive ElementClass Element_VSNS PT_VSNS 185
 Element_VSNS::Element_VSNS()
 {
 	Identifier = "DEFAULT_PT_VSNS";
