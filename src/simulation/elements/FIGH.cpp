@@ -90,9 +90,9 @@ int Element_FIGH::update(UPDATE_FUNC_ARGS)
 	case 1:
 		if ((pow(float(tarx-x), 2) + pow(float(tary-y), 2))<600)
 		{
-			if (figh->elem == PT_LIGH || figh->elem == PT_NEUT 
+			if (!(sim->E189_FIGH_pause & 2) && (figh->elem == PT_LIGH || figh->elem == PT_NEUT 
 			    || sim->elements[figh->elem].Properties&(PROP_DEADLY|PROP_RADIOACTIVE)
-			    || sim->elements[figh->elem].Temperature>=323 || sim->elements[figh->elem].Temperature<=243)
+			    || sim->elements[figh->elem].Temperature>=323 || sim->elements[figh->elem].Temperature<=243))
 				figh->comm = (int)figh->comm | 0x08;
 		}
 		else if (tarx<x)

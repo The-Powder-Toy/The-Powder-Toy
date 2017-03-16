@@ -625,6 +625,19 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 				}
 			}
 			break;
+		case 8: // FIGH stopper
+			for (rx = -1; rx < 2; rx++)
+				for (ry = -1; ry < 2; ry++)
+					if (BOUNDS_CHECK && (rx || ry))
+					{
+						r = pmap[y+ry][x+rx];
+						if ((r & 0xFF) == PT_SPRK && parts[r>>8].life == 3)
+						{
+							E189_pause |= parts[i].tmp ? 8 : 4;
+							goto break1;
+						}
+					}
+			break;
 		}
 		break;
 			
