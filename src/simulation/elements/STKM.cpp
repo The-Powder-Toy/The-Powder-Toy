@@ -570,6 +570,8 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 	if (!parts[i].type)
 		return 1;
 
+	if (playerp->elem == PT_FIGH && !(sim->E189_FIGH_pause & 8))
+		playerp->elem = playerp->pelem;
 	parts[i].ctype = playerp->elem;
 	return 0;
 }
