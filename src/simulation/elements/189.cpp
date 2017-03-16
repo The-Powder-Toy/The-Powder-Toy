@@ -315,8 +315,8 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 				}
 		break;
 	case 10:
-		for (int rx = -1; rx <= 1; rx++)
-			for (int ry = -1; ry <= 1; ry++)
+		for (rx = -1; rx <= 1; rx++)
+			for (ry = -1; ry <= 1; ry++)
 				if (BOUNDS_CHECK && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
@@ -334,8 +334,8 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 				}
 		break;
 	case 11: // photons emitter
-		for (int rx = -1; rx <= 1; rx++)
-			for (int ry = -1; ry <= 1; ry++)
+		for (rx = -1; rx <= 1; rx++)
+			for (ry = -1; ry <= 1; ry++)
 				if (BOUNDS_CHECK && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
@@ -634,7 +634,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						if ((r & 0xFF) == PT_SPRK && parts[r>>8].life == 3)
 						{
 							rtmp = parts[i].tmp;
-							E189_pause |= (rtmp < 2 ? (rtmp > 0 ? rtmp : 0) : 2);
+							sim->E189_pause |= (rtmp < 2 ? (rtmp > 0 ? rtmp : 0) : 2);
 							goto break1;
 						}
 					}
