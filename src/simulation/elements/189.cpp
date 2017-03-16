@@ -166,7 +166,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			parts[ri].ctype = rtmp;
 		parts[ri].temp = parts[i].temp;
 		parts[ri].life = parts[i].tmp2;
-		parts[ri].tmp = parts[i].ctype & 3;
+		parts[ri].tmp = rctype & 3;
 		
 		break;
 	case 5: // reserved for Simulation.cpp
