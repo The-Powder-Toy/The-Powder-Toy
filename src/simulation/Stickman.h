@@ -7,6 +7,7 @@ struct playerst
 	char comm;           //command cell
 	char pcomm;          //previous command
 	int elem;            //element power
+	int pelem;           //previous element power
 	float legs[16];      //legs' positions
 	float accs[8];       //accelerations
 	char spwn;           //if stick man was spawned
