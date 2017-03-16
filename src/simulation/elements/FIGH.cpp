@@ -95,6 +95,8 @@ int Element_FIGH::update(UPDATE_FUNC_ARGS)
 			    || sim->elements[figh->elem].Properties&(PROP_DEADLY|PROP_RADIOACTIVE)
 			    || sim->elements[figh->elem].Temperature>=323 || sim->elements[figh->elem].Temperature<=243))
 				figh->comm = (int)figh->comm | 0x08;
+			if (figh->elem == PT_FIGH && (sim->E189_FIGH_pause & 0x0F) == 0x0E)
+				figh->comm = (int)figh->comm | 0x08;
 		}
 		else if (tarx<x)
 		{
