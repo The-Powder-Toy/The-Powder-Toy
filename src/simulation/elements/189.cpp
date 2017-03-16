@@ -173,7 +173,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 	case 7: // reserved for Simulation.cpp
 	case 13: // decoration only, no update function
 	case 15: // reserved for Simulation.cpp
-	case 17: // reserved for E186.cpp
+	case 17: // reserved for 186.cpp and Simulation.cpp
 	case 18: // decoration only, no update function
 		break;
 	case 6: // heater
