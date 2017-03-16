@@ -175,6 +175,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 	case 15: // reserved for Simulation.cpp
 	case 17: // reserved for 186.cpp and Simulation.cpp
 	case 18: // decoration only, no update function
+	case 22: // reserved for Simulation.cpp
 		break;
 	case 6: // heater
 		for (rx=-1; rx<2; rx++)
@@ -908,6 +909,12 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 		break;
 	case 21:
 		*colr = 0x77; *colg = 0x70; *colb = 0x70;
+		break;
+	case 22:
+		if (!(((nx + ny) & 3) && ((nx - ny) & 3)))
+			{ *colr = 0xEE; *colg = 0xEE; *colb = 0xEE; }
+		else
+			{ *colr = 0x8C; *colg = 0x8C; *colb = 0x8C; }
 		break;
 	}
 	return 0;
