@@ -1730,6 +1730,10 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 				case 'v':
 					showDebugState = 4;
 				break;
+				case 'x':
+					usingHexadecimal = !usingHexadecimal;
+					alternateState = 1;
+				break;
 				case '-':
 					if (debugPrecision) { debugPrecision --; }
 					alternateState = 1;
