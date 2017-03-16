@@ -1721,6 +1721,9 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 				case 'l':
 					showDebugState = 2;
 				break;
+				case 'n':
+					showDebugState = 0;
+				break;
 				case 'p':
 					showDebugState = 10;
 				break;
