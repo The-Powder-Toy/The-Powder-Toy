@@ -1687,6 +1687,21 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 	}
 	else
 	{
+		switch(key)
+		{
+		case SDLK_LALT:
+		case SDLK_RALT:
+			enableAltBehaviour();
+			break;
+		case SDLK_LCTRL:
+		case SDLK_RCTRL:
+			enableCtrlBehaviour();
+			break;
+		case SDLK_LSHIFT:
+		case SDLK_RSHIFT:
+			enableShiftBehaviour();
+			break;
+		}
 		old_alt = alternateState;
 		alternateState = 0;
 		switch (old_alt)
