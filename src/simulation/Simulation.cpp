@@ -1912,6 +1912,7 @@ void Simulation::clear_sim(void)
 	emp_trigger_count = 0;
 	emp2_trigger_count = 0;
 	E189_pause = 0;
+	E189_FIGH_pause = 0;
 	signs.clear();
 	memset(bmap, 0, sizeof(bmap));
 	memset(emap, 0, sizeof(emap));
@@ -5551,6 +5552,7 @@ Simulation::Simulation():
 	water_equal_test(0),
 	sys_pause(0),
 	E189_pause(0),
+	E189_FIGH_pause(0),
 	framerender(0),
 	pretty_powder(0),
 	sandcolour_frame(0)

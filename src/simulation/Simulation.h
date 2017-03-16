@@ -114,6 +114,7 @@ public:
 	int water_equal_test;
 	int sys_pause;
 	int E189_pause;
+	int E189_FIGH_pause;
 	int framerender;
 	int pretty_powder;
 	int sandcolour;
