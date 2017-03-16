@@ -646,8 +646,8 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 		parts[i].tmp2 = parts[i].tmp;
 		if (parts[i].tmp)
 			--parts[i].tmp;
-		for (int rx = -2; rx <= 2; rx++)
-			for (int ry = -2; ry <= 2; ry++)
+		for (rx = -2; rx <= 2; rx++)
+			for (ry = -2; ry <= 2; ry++)
 				if (BOUNDS_CHECK && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
@@ -660,8 +660,8 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 		break3:
 		break;
 	case 20: // particle emitter
-		for (int rx = -2; rx <= 2; rx++)
-			for (int ry = -2; ry <= 2; ry++)
+		for (rx = -2; rx <= 2; rx++)
+			for (ry = -2; ry <= 2; ry++)
 				if (BOUNDS_CHECK && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
@@ -686,8 +686,8 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 	 * note: exclude E185 "replicating powder"
 	 */
 		rndstore = rand(), trade = 5;
-		for (int rx = -1; rx < 2; rx++)
-			for (int ry = -1; ry < 2; ry++)
+		for (rx = -1; rx < 2; rx++)
+			for (ry = -1; ry < 2; ry++)
 			{
 				if (BOUNDS_CHECK && (rx || ry))
 				{
