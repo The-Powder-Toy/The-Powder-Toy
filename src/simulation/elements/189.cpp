@@ -633,7 +633,8 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						r = pmap[y+ry][x+rx];
 						if ((r & 0xFF) == PT_SPRK && parts[r>>8].life == 3)
 						{
-							E189_pause |= parts[i].tmp ? 8 : 4;
+							rtmp = parts[i].tmp;
+							E189_pause |= (rtmp < 2 ? (rtmp > 0 ? rtmp : 0) : 2);
 							goto break1;
 						}
 					}
