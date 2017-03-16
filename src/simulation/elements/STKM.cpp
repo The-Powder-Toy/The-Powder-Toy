@@ -384,7 +384,7 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 					sim->kill_part(r>>8);
 				}
 				
-				if ((r&0xFF) == PT_E189)
+				if ((r&0xFF) == PT_E189 && !(rand()&3)) // condition: rand % 4 == 0
 				{
 					STKM_set_life_1(sim, r>>8, i);
 				}
