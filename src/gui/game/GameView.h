@@ -53,7 +53,6 @@ private:
 	int toolIndex;
 	int currentSaveType;
 	int lastMenu;
-	int alternateState;
 	int debugPrecision;
 	bool usingHexadecimal;
 
@@ -132,6 +131,7 @@ private:
 	void UpdateDrawMode();
 	void UpdateToolStrength();
 public:
+	int alternateState;
 	GameView();
 	virtual ~GameView();
 
