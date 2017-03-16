@@ -2076,17 +2076,17 @@ void Simulation::init_can_move()
 			can_move[PT_PROT][destinationType] = 2;
 			can_move[PT_GRVT][destinationType] = 2;
 		}
-		if (elements[destinationType].Properties & PROP_NODESTRUCT)
+		if (elements[destinationType].Properties & (PROP_NODESTRUCT|PROP_CLONE))
 			can_move[PT_DEST][destinationType] = 0;
 	}
 	
 
 	//other special cases that weren't covered above
 	// can_move[PT_DEST][PT_DMND] = 0;
-	can_move[PT_DEST][PT_CLNE] = 0;
-	can_move[PT_DEST][PT_PCLN] = 0;
-	can_move[PT_DEST][PT_BCLN] = 0;
-	can_move[PT_DEST][PT_PBCN] = 0;
+	// can_move[PT_DEST][PT_CLNE] = 0;
+	// can_move[PT_DEST][PT_PCLN] = 0;
+	// can_move[PT_DEST][PT_BCLN] = 0;
+	// can_move[PT_DEST][PT_PBCN] = 0;
 
 	can_move[PT_NEUT][PT_INVIS] = 2;
 	can_move[PT_ELEC][PT_LCRY] = 2;
