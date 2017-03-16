@@ -728,7 +728,7 @@ bool GameController::KeyPress(int key, Uint16 character, bool shift, bool ctrl, 
 			sim->player2.comm = (int)(sim->player2.comm)|0x04;
 		}
 
-		if (!sim->elementCount[PT_STKM2] || ctrl)
+		if (!gameView->alternateState && (!sim->elementCount[PT_STKM2] || ctrl))
 		{
 			switch(key)
 			{
