@@ -424,7 +424,7 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 					for (int k = -4; k < 5; k++)
 						sim->create_part(-2, rx + 3*((((int)playerp->pcomm)&0x02) == 0x02) - 3*((((int)playerp->pcomm)&0x01) == 0x01)+j, ry+k, SPC_AIR);
 			}
-			else if (playerp->elem==PT_LIGH && playerp->frames<30)//limit lightning creation rate
+			else if ((playerp->elem==PT_LIGH || playerp->elem==PT_FIGH) && playerp->frames<30)//limit lightning and fighter creation rate
 				np = -1;
 			else
 				np = sim->create_part(-1, rx, ry, playerp->elem);
