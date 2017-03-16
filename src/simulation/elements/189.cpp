@@ -634,7 +634,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						if ((r & 0xFF) == PT_SPRK && parts[r>>8].life == 3)
 						{
 							rtmp = parts[i].tmp;
-							sim->E189_pause |= 4 << (rtmp < 3 ? (rtmp > 0 ? rtmp : 0) : 3);
+							sim->E189_pause |= 4 << (rtmp < 5 ? (rtmp > 0 ? rtmp : 0) : 5);
 							goto break1;
 						}
 					}
