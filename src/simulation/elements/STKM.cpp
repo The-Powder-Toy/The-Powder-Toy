@@ -687,7 +687,7 @@ void Element_STKM::STKM_set_element(Simulation *sim, playerst *playerp, int elem
 	    || sim->elements[element].Properties&TYPE_LIQUID
 	    || sim->elements[element].Properties&TYPE_ENERGY
 	    || element == PT_LOLZ || element == PT_LOVE || element == SPC_AIR
-		|| (element == PT_FIGH && (sim->E189_FIGH_pause & 8)))
+	    || (element == PT_FIGH && (sim->E189_FIGH_pause & 8)))
 	{
 		if (!playerp->rocketBoots || element != PT_PLSM)
 			playerp->elem = element;
