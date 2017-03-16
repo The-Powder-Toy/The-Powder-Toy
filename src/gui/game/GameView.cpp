@@ -164,6 +164,9 @@ GameView::GameView():
 	showHud(true),
 	showDebug(false),
 	showDebugState(0),
+	alternateState(0),
+	debugPrecision(2),
+	usingHexadecimal(false),
 	delayedActiveMenu(-1),
 	wallBrush(false),
 	toolBrush(false),
@@ -1401,271 +1404,331 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		introText = 50;
 	}
 
-	if (selectMode != SelectNone)
+	if (!alternateState)
 	{
-		if (selectMode == PlaceSave)
+		if (selectMode != SelectNone)
 		{
-			switch (key)
+			if (selectMode == PlaceSave)
 			{
-			case SDLK_RIGHT:
-				c->TranslateSave(ui::Point(1, 0));
-				return;
-			case SDLK_LEFT:
-				c->TranslateSave(ui::Point(-1, 0));
-				return;
-			case SDLK_UP:
-				c->TranslateSave(ui::Point(0, -1));
-				return;
-			case SDLK_DOWN:
-				c->TranslateSave(ui::Point(0, 1));
-				return;
-			case 'r':
-				if (ctrl && shift)
+				switch (key)
 				{
-					//Vertical flip
-					c->TransformSave(m2d_new(1,0,0,-1));
+				case SDLK_RIGHT:
+					c->TranslateSave(ui::Point(1, 0));
+					return;
+				case SDLK_LEFT:
+					c->TranslateSave(ui::Point(-1, 0));
+					return;
+				case SDLK_UP:
+					c->TranslateSave(ui::Point(0, -1));
+					return;
+				case SDLK_DOWN:
+					c->TranslateSave(ui::Point(0, 1));
+					return;
+				case 'r':
+					if (ctrl && shift)
+					{
+						//Vertical flip
+						c->TransformSave(m2d_new(1,0,0,-1));
+					}
+					else if (!ctrl && shift)
+					{
+						//Horizontal flip
+						c->TransformSave(m2d_new(-1,0,0,1));
+					}
+					else
+					{
+						//Rotate 90deg
+						c->TransformSave(m2d_new(0,1,-1,0));
+					}
+					return;
 				}
-				else if (!ctrl && shift)
-				{
-					//Horizontal flip
-					c->TransformSave(m2d_new(-1,0,0,1));
-				}
-				else
-				{
-					//Rotate 90deg
-					c->TransformSave(m2d_new(0,1,-1,0));
-				}
-				return;
 			}
 		}
-	}
-	switch(key)
-	{
-	case SDLK_LALT:
-	case SDLK_RALT:
-		enableAltBehaviour();
-		break;
-	case SDLK_LCTRL:
-	case SDLK_RCTRL:
-		enableCtrlBehaviour();
-		break;
-	case SDLK_LSHIFT:
-	case SDLK_RSHIFT:
-		enableShiftBehaviour();
-		break;
-	case ' ': //Space
-		c->SetPaused();
-		break;
-	case 'z':
-		if (selectMode != SelectNone && isMouseDown)
+		switch(key)
+		{
+		case SDLK_LALT:
+		case SDLK_RALT:
+			enableAltBehaviour();
 			break;
-		if (ctrl && !isMouseDown)
-		{
-			if (shift)
-				c->HistoryForward();
+		case SDLK_LCTRL:
+		case SDLK_RCTRL:
+			enableCtrlBehaviour();
+			break;
+		case SDLK_LSHIFT:
+		case SDLK_RSHIFT:
+			enableShiftBehaviour();
+			break;
+		case ' ': //Space
+			c->SetPaused();
+			break;
+		case 'z':
+			if (selectMode != SelectNone && isMouseDown)
+				break;
+			if (ctrl && !isMouseDown)
+			{
+				if (shift)
+					c->HistoryForward();
+				else
+					c->HistoryRestore();
+			}
 			else
-				c->HistoryRestore();
-		}
-		else
-		{
-			isMouseDown = false;
-			zoomCursorFixed = false;
-			c->SetZoomEnabled(true);
-		}
-		break;
-	case SDLK_TAB: //Tab
-		c->ChangeBrush();
-		break;
-	case '`':
-		c->ShowConsole();
-		break;
-	case 'p':
-	case SDLK_F2:
-		screenshot();
-		break;
-	case SDLK_F3:
-		SetDebugHUD(!GetDebugHUD());
-		break;
-	case SDLK_F5:
-		c->ReloadSim();
-		break;
-	case 'r':
-		if (ctrl)
+			{
+				isMouseDown = false;
+				zoomCursorFixed = false;
+				c->SetZoomEnabled(true);
+			}
+			break;
+		case SDLK_TAB: //Tab
+			c->ChangeBrush();
+			break;
+		case '`':
+			c->ShowConsole();
+			break;
+		case 'p':
+		case SDLK_F2:
+			screenshot();
+			break;
+		case SDLK_F3:
+			SetDebugHUD(!GetDebugHUD());
+			break;
+		case SDLK_F5:
 			c->ReloadSim();
-		else
-			record();
-		break;
-	case 'e':
-		c->OpenElementSearch();
-		break;
-	case 'f':
-		if (ctrl)
-		{
-			Tool *active = c->GetActiveTool(0);
-			if (active->GetIdentifier().find("_PT_") == active->GetIdentifier().npos || ren->findingElement == active->GetToolID()%256)
-				ren->findingElement = 0;
+			break;
+		case 'r':
+			if (ctrl)
+				c->ReloadSim();
 			else
-				ren->findingElement = active->GetToolID()%256;
-		}
-		else
-			c->FrameStep();
-		break;
-	case 'g':
-		if (ctrl)
-			c->ShowGravityGrid();
-		else if(shift)
-			c->AdjustGridSize(-1);
-		else
-			c->AdjustGridSize(1);
-		break;
-	case SDLK_F1:
-		if(!introText)
-			introText = 8047;
-		else
-			introText = 0;
-		break;
-	case 'h':
-		if(ctrl)
-		{
+				record();
+			break;
+		case 'e':
+			c->OpenElementSearch();
+			break;
+		case 'f':
+			if (ctrl)
+			{
+				Tool *active = c->GetActiveTool(0);
+				if (active->GetIdentifier().find("_PT_") == active->GetIdentifier().npos || ren->findingElement == active->GetToolID()%256)
+					ren->findingElement = 0;
+				else
+					ren->findingElement = active->GetToolID()%256;
+			}
+			else
+				c->FrameStep();
+			break;
+		case 'g':
+			if (ctrl)
+				c->ShowGravityGrid();
+			else if(shift)
+				c->AdjustGridSize(-1);
+			else
+				c->AdjustGridSize(1);
+			break;
+		case SDLK_F1:
 			if(!introText)
 				introText = 8047;
 			else
 				introText = 0;
-		}
-		else
-			showHud = !showHud;
-		break;
-	case 'b':
-		if(ctrl)
-			c->SetDecoration();
-		else
-			if (colourPicker->GetParentWindow())
-				c->SetActiveMenu(lastMenu);
+			break;
+		case 'h':
+			if(ctrl)
+			{
+				if(!introText)
+					introText = 8047;
+				else
+					introText = 0;
+			}
+			else
+				showHud = !showHud;
+			break;
+		case 'b':
+			if(ctrl)
+				c->SetDecoration();
+			else
+				if (colourPicker->GetParentWindow())
+					c->SetActiveMenu(lastMenu);
+				else
+				{
+					c->SetDecoration(true);
+					c->SetPaused(true);
+					c->SetActiveMenu(SC_DECO);
+				}
+			break;
+		case 'y':
+			if (ctrl)
+			{
+				c->HistoryForward();
+			}
 			else
 			{
-				c->SetDecoration(true);
-				c->SetPaused(true);
-				c->SetActiveMenu(SC_DECO);
+				c->SwitchAir();
 			}
-		break;
-	case 'y':
-		if (ctrl)
-		{
-			c->HistoryForward();
-		}
-		else
-		{
-			c->SwitchAir();
-		}
-		break;
-	case SDLK_ESCAPE:
-	case 'q':
-		ExitPrompt();
-		break;
-	case 'u':
-		c->ToggleAHeat();
-		break;
-	case 'n':
-		c->ToggleNewtonianGravity();
-		break;
-	case '=':
-		if(ctrl)
-			c->ResetSpark();
-		else
-			c->ResetAir();
-		break;
-	case 'm':
-		if (showDebug)
-		{
-			showDebugState ++;
-			if (showDebugState >= 11)
-				showDebugState = 0;
-		}
-		break;
-	case 'c':
-		if(ctrl)
-		{
-			selectMode = SelectCopy;
-			selectPoint1 = selectPoint2 = ui::Point(-1, -1);
-			isMouseDown = false;
-			buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to copy (right click = cancel)";
-			buttonTipShow = 120;
-		}
-		break;
-	case 'x':
-		if(ctrl)
-		{
-			selectMode = SelectCut;
-			selectPoint1 = selectPoint2 = ui::Point(-1, -1);
-			isMouseDown = false;
-			buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to copy then cut (right click = cancel)";
-			buttonTipShow = 120;
-		}
-		break;
-	case 'v':
-		if (ctrl)
-		{
-			if (c->LoadClipboard())
+			break;
+		case SDLK_ESCAPE:
+		case 'q':
+			ExitPrompt();
+			break;
+		case 'u':
+			c->ToggleAHeat();
+			break;
+		case 'n':
+			c->ToggleNewtonianGravity();
+			break;
+		case '=':
+			if(ctrl)
+				c->ResetSpark();
+			else
+				c->ResetAir();
+			break;
+		case 'm':
+			if (showDebug)
 			{
+				showDebugState ++;
+				if (showDebugState >= 11)
+					showDebugState = 0;
+			}
+			break;
+		case 'c':
+			if(ctrl)
+			{
+				selectMode = SelectCopy;
+				selectPoint1 = selectPoint2 = ui::Point(-1, -1);
+				isMouseDown = false;
+				buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to copy (right click = cancel)";
+				buttonTipShow = 120;
+			}
+			else
+			{
+				alternateState = 2;
+			}
+			break;
+		case 'x':
+			if(ctrl)
+			{
+				selectMode = SelectCut;
+				selectPoint1 = selectPoint2 = ui::Point(-1, -1);
+				isMouseDown = false;
+				buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to copy then cut (right click = cancel)";
+				buttonTipShow = 120;
+			}
+			else
+			{
+				alternateState = 1;
+			}
+			break;
+		case 'v':
+			if (ctrl)
+			{
+				if (c->LoadClipboard())
+				{
+					selectPoint1 = selectPoint2 = mousePosition;
+					isMouseDown = false;
+				}
+			}
+			else
+			{
+				alternateState = 3;
+			}
+			break;
+		case 'l':
+		{
+			std::vector<std::string> stampList = Client::Ref().GetStamps(0, 1);
+			if (stampList.size())
+			{
+				c->LoadStamp(Client::Ref().GetStamp(stampList[0])->GetGameSave());
 				selectPoint1 = selectPoint2 = mousePosition;
 				isMouseDown = false;
+				break;
 			}
 		}
-		break;
-	case 'l':
-	{
-		std::vector<std::string> stampList = Client::Ref().GetStamps(0, 1);
-		if (stampList.size())
-		{
-			c->LoadStamp(Client::Ref().GetStamp(stampList[0])->GetGameSave());
-			selectPoint1 = selectPoint2 = mousePosition;
-			isMouseDown = false;
+		case 'k':
+			selectMode = SelectNone;
+			selectPoint1 = selectPoint2 = ui::Point(-1, -1);
+			c->OpenStamps();
 			break;
-		}
-	}
-	case 'k':
-		selectMode = SelectNone;
-		selectPoint1 = selectPoint2 = ui::Point(-1, -1);
-		c->OpenStamps();
-		break;
-	case ']':
-		if(zoomEnabled && !zoomCursorFixed)
-			c->AdjustZoomSize(1, !alt);
-		else
-			c->AdjustBrushSize(1, !alt, shiftBehaviour, ctrlBehaviour);
-		break;
-	case '[':
-		if(zoomEnabled && !zoomCursorFixed)
-			c->AdjustZoomSize(-1, !alt);
-		else
-			c->AdjustBrushSize(-1, !alt, shiftBehaviour, ctrlBehaviour);
-		break;
-	case 'i':
-		if(ctrl)
-			c->Install();
-		else
-			c->InvertAirSim();
-		break;
-	case ';':
-		if (ctrl)
-		{
+		case ']':
+			if(zoomEnabled && !zoomCursorFixed)
+				c->AdjustZoomSize(1, !alt);
+			else
+				c->AdjustBrushSize(1, !alt, shiftBehaviour, ctrlBehaviour);
+			break;
+		case '[':
+			if(zoomEnabled && !zoomCursorFixed)
+				c->AdjustZoomSize(-1, !alt);
+			else
+				c->AdjustBrushSize(-1, !alt, shiftBehaviour, ctrlBehaviour);
+			break;
+		case 'i':
+			if(ctrl)
+				c->Install();
+			else
+				c->InvertAirSim();
+			break;
+		case ';':
+			if (ctrl)
+			{
+				c->SetReplaceModeFlags(c->GetReplaceModeFlags()^SPECIFIC_DELETE);
+				break;
+			}
+			//fancy case switch without break
+		case SDLK_INSERT:
+			c->SetReplaceModeFlags(c->GetReplaceModeFlags()^REPLACE_MODE);
+			break;
+		case SDLK_DELETE:
 			c->SetReplaceModeFlags(c->GetReplaceModeFlags()^SPECIFIC_DELETE);
 			break;
 		}
-		//fancy case switch without break
-	case SDLK_INSERT:
-		c->SetReplaceModeFlags(c->GetReplaceModeFlags()^REPLACE_MODE);
-		break;
-	case SDLK_DELETE:
-		c->SetReplaceModeFlags(c->GetReplaceModeFlags()^SPECIFIC_DELETE);
-		break;
-	}
 
-	if (shift && showDebug && key == '1')
-		c->LoadRenderPreset(10);
-	else if(key >= '0' && key <= '9')
+		if (shift && showDebug && key == '1')
+			c->LoadRenderPreset(10);
+		else if(key >= '0' && key <= '9')
+		{
+			c->LoadRenderPreset(key-'0');
+		}
+	}
+	else
 	{
-		c->LoadRenderPreset(key-'0');
+		old_alt = alternateState;
+		alternateState = 0;
+		switch (old_alt)
+		{
+		case 1:
+			switch (key)
+			{
+				case 'c':
+					showDebugState = 3;
+				break;
+				case 'd':
+					showDebugState = (shift ? 12 : 9);
+				break;
+				case 'f':
+					showDebugState = 11;
+				break;
+				case 'l':
+					showDebugState = 2;
+				break;
+				case 'p':
+					showDebugState = 10;
+				break;
+				case 't':
+					showDebugState = (shift ? 5 : 1);
+				break;
+				case 'v':
+					showDebugState = 4;
+				break;
+				case '-':
+					if (precision) { precision --; }
+					alternateState = 1;
+				break;
+				case '=':
+					precision ++; alternateState = 1;
+				break;
+			}
+			break;
+		case 2:
+			break;
+		case 3:
+			break;
+		}
 	}
 }
 
@@ -2293,7 +2356,7 @@ void GameView::OnDraw()
 			alpha = 50;
 		std::stringstream sampleInfo;
 		std::stringstream tempStream;
-		sampleInfo.precision(2);
+		sampleInfo.precision(debugPrecision);
 
 		int type = sample.particle.type;
 		if (type)
@@ -2398,30 +2461,73 @@ void GameView::OnDraw()
 				}
 				else
 				{
+					bool multi_var = false;
 					switch (showDebugState)
 					{
 						case 1:
-							sampleInfo << ", Type: " << (type == PT_E189 ? (0x10000 | partlife) : type);
+						{
+							sampleInfo << ", Type: ";
+							// int tempType = (type == PT_E189 ? (0x10000 | partlife) : type);
+							tempvar = type;
+						}
 						break;
-						case 2: sampleInfo << ", Life: " << partlife; break;
-						case 3: sampleInfo << ", Ctype: " << ctype; break;
+						case 2:
+							sampleInfo << ", Life: "; 
+							tempvar = partlife;
+						break;
+						case 3:
+							sampleInfo << ", Ctype: ";
+							tempvar = ctype;
+						break;
 						case 4:
 							sampleInfo << ", Vx: " << std::fixed << sample.particle.vx;
 							sampleInfo << ", Vy: " << std::fixed << sample.particle.vy;
+							multi_var = true;
 						break;
-						case 5: sampleInfo << ", Tmp: " << parttmp; break;
-						case 6: sampleInfo << ", Tmp2: " << sample.particle.tmp2; break;
-						case 7: sampleInfo << ", Tmp3: " << sample.particle.tmp3; break;
-						case 8: sampleInfo << ", Tmp4: " << sample.particle.tmp4; break;
+						case 5:
+							sampleInfo << ", Tmp: ";
+							tempvar = parttmp;
+						break;
+						case 6:
+							sampleInfo << ", Tmp2: ";
+							tempvar = sample.particle.tmp2;
+						break;
+						case 7:
+							sampleInfo << ", Tmp3: ";
+							tempvar = sample.particle.tmp3;
+						break;
+						case 8:
+							sampleInfo << ", Tmp4: ";
+							tempvar = sample.particle.tmp4;
+						break;
 						case 9:
-							tempStream << std::setw(8) << std::setfill ('0') << std::hex << sample.particle.dcolour;
-							sampleInfo << ", Dcolor: 0x" << tempStream.str();
-							tempStream.str("");
+							sampleInfo << ", Dcolor: ";
+							tempvar = sample.particle.dcolour;
 						break;
 						case 10:
 							sampleInfo << ", Pavg[0]: " << std::fixed << sample.particle.pavg[0];
 							sampleInfo << ", Pavg[1]: " << std::fixed << sample.particle.pavg[1];
+							multi_var = true;
 						break;
+						case 11:
+							sampleInfo << ", Flags: ";
+							tempvar = sample.particle.flags;
+						break;
+						case 12:
+							sampleInfo << ", cdcolor: ";
+							tempvar = sample.particle.cdcolour;
+						break;
+					}
+					if (!multi_var)
+					{
+						if (usingHexadecimal)
+						{
+							tempStream << std::setw(8) << std::setfill ('0') << std::hex << tempvar;
+							sampleInfo << "0x" << tempStream.str();
+							tempStream.str("");
+						}
+						else
+							sampleInfo << sample.particle.tempvar;
 					}
 				}
 
