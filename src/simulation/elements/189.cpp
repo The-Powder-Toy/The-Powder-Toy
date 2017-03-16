@@ -639,6 +639,23 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						}
 					}
 			break;
+		case 9:
+			rt = 1 & (sim->E189_FIGH_pause >> (rtmp & 0x1F));
+			for (rr = 0; rr < 4; rr++)
+				if (BOUNDS_CHECK)
+				{
+					rx = tron_rx[rr];
+					ry = tron_ry[rr];
+					r = pmap[y+ry][x+rx];
+					if ((r & 0xFF) == PT_SWCH)
+					{
+						if (rt)
+							parts[r>>8].life = 10;
+						else if (parts[r>>8].life >= 10)
+							parts[r>>8].life = 9;
+					}
+				}
+			break;
 		}
 		break;
 			
@@ -926,9 +943,9 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 		break;
 	case 22:
 		if (!(((nx + ny) & 3) && ((nx - ny) & 3)))
-			{ *colr = 0xEE; *colg = 0xEE; *colb = 0xEE; }
+			{ *colr = *colg = *colb = 0xEE; }
 		else
-			{ *colr = 0x8C; *colg = 0x8C; *colb = 0x8C; }
+			{ *colr = *colg = *colb = 0x8C; }
 		break;
 	}
 	return 0;
