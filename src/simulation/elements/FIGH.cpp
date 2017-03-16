@@ -60,26 +60,29 @@ int Element_FIGH::update(UPDATE_FUNC_ARGS)
 	parts[i].tmp2 = 0; //0 - stay in place, 1 - seek a stick man
 
 	//Set target cords
-	if (sim->player2.spwn)
+	if (!sim->FIGH_pause)
 	{
-		if (sim->player.spwn && (pow((float)sim->player.legs[2]-x, 2) + pow((float)sim->player.legs[3]-y, 2))<=
-		   (pow((float)sim->player2.legs[2]-x, 2) + pow((float)sim->player2.legs[3]-y, 2)))
+		if (sim->player2.spwn)
+		{
+			if (sim->player.spwn && (pow((float)sim->player.legs[2]-x, 2) + pow((float)sim->player.legs[3]-y, 2))<=
+			   (pow((float)sim->player2.legs[2]-x, 2) + pow((float)sim->player2.legs[3]-y, 2)))
+			{
+				tarx = (int)sim->player.legs[2];
+				tary = (int)sim->player.legs[3];
+			}
+			else
+			{
+				tarx = (int)sim->player2.legs[2];
+				tary = (int)sim->player2.legs[3];
+			}
+			parts[i].tmp2 = 1;
+		}
+		else if (sim->player.spwn)
 		{
 			tarx = (int)sim->player.legs[2];
 			tary = (int)sim->player.legs[3];
+			parts[i].tmp2 = 1;
 		}
-		else
-		{
-			tarx = (int)sim->player2.legs[2];
-			tary = (int)sim->player2.legs[3];
-		}
-		parts[i].tmp2 = 1;
-	}
-	else if (sim->player.spwn)
-	{
-		tarx = (int)sim->player.legs[2];
-		tary = (int)sim->player.legs[3];
-		parts[i].tmp2 = 1;
 	}
 
 	switch (parts[i].tmp2)
