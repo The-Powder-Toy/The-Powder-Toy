@@ -1,6 +1,7 @@
 #include "simulation/Elements.h"
- Element_LSNS::Element_LSNS()
- {
+//#TPT-Directive ElementClass Element_LSNS PT_LSNS 185
+Element_LSNS::Element_LSNS()
+{
 	Identifier = "DEFAULT_PT_LSNS";
  	Name = "LSNS";
  	Colour = PIXPACK(0x336699);
@@ -41,7 +42,9 @@
  	HighTemperatureTransition = NT;
  
  	Update = &Element_LSNS::update;
- }
+}
+
+//#TPT-Directive ElementHeader Element_LSNS static int update(UPDATE_FUNC_ARGS)
 int Element_LSNS::update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry, rt, rd = parts[i].tmp2;
