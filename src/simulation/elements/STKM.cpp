@@ -686,14 +686,18 @@ void Element_STKM::STKM_set_element(Simulation *sim, playerst *playerp, int elem
 	    || sim->elements[element].Properties&TYPE_GAS
 	    || sim->elements[element].Properties&TYPE_LIQUID
 	    || sim->elements[element].Properties&TYPE_ENERGY
-	    || element == PT_LOLZ || element == PT_LOVE || element == SPC_AIR
-	    || (element == PT_FIGH && (sim->E189_FIGH_pause & 8)))
+	    || element == PT_LOLZ || element == PT_LOVE || element == SPC_AIR)
 	{
 		if (!playerp->rocketBoots || element != PT_PLSM)
 			playerp->elem = element;
 	}
 	if (element == PT_TESC || element == PT_LIGH)
 		playerp->elem = PT_LIGH;
+	if (playerp->elem != PT_FIGH && element == PT_FIGH && (sim->E189_FIGH_pause & 8))
+	{
+		playerp->pelem = playerp->elem;
+		playerp->elem = PT_FIGH;
+	}
 }
 
 //#TPT-Directive ElementHeader Element_STKM static void STKM_set_life_1(Simulation *sim, int s, int i)
