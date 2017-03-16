@@ -1731,11 +1731,11 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 					showDebugState = 4;
 				break;
 				case '-':
-					if (precision) { precision --; }
+					if (debugPrecision) { debugPrecision --; }
 					alternateState = 1;
 				break;
 				case '=':
-					precision ++; alternateState = 1;
+					debugPrecision ++; alternateState = 1;
 				break;
 			}
 			break;

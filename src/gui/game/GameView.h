@@ -53,6 +53,9 @@ private:
 	int toolIndex;
 	int currentSaveType;
 	int lastMenu;
+	int alternateState;
+	int debugPrecision;
+	bool usingHexadecimal;
 
 	int toolTipPresence;
 	std::string toolTip;
