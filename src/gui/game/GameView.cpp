@@ -2462,6 +2462,7 @@ void GameView::OnDraw()
 				else
 				{
 					bool multi_var = false;
+					int tempvar;
 					switch (showDebugState)
 					{
 						case 1:
