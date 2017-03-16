@@ -649,9 +649,10 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 					r = pmap[y+ry][x+rx];
 					if ((r & 0xFF) == PT_SWCH)
 					{
+						rtmp = parts[r>>8].life;
 						if (rt)
 							parts[r>>8].life = 10;
-						else if (parts[r>>8].life >= 10)
+						else if (rtmp >= 10)
 							parts[r>>8].life = 9;
 					}
 				}
