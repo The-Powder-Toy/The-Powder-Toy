@@ -2131,6 +2131,9 @@ void Simulation::init_can_move()
 	can_move[PT_E186][PT_BRMT] = 3;
 	
 	can_move[PT_PROT][PT_E189] = 3;
+	can_move[PT_GRVT][PT_E189] = 3;
+	can_move[PT_NEUT][PT_E189] = 3;
+	can_move[PT_ELEC][PT_E189] = 3;
 	can_move[PT_E186][PT_E189] = 3;
 
 	can_move[PT_STKM][PT_E189] = 3;
@@ -2208,24 +2211,34 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr)
 		}
 		else if ((r&0xFF) == PT_E189)
 		{
-			if (pt == PT_E186)
+			int rlife = parts[r>>8].life, tmp_flag = parts[r>>8].tmp;
+			switch (pt)
 			{
-				if (parts[r>>8].life == 5)
+			case PT_E186:
+				if (rlife == 5)
 					return 2; // corrected code
-				if (parts[r>>8].life == 17)
+				if (rlife == 17)
 					return 1;
 				return 0;
-			}
-			else if (pt == PT_PROT)
-			{
-				if (parts[r>>8].life == 15)
+			case PT_PROT:
+				if (rlife == 15)
 					return 0;
-				else
-					return 2; // corrected code
+				return 2; // corrected code
+			case PT_NEUT:
+				if (rlife == 22 && (tmp_flag & 1))
+					return 2;
+				return 0;
+			case PT_ELEC:
+				if (rlife == 22 && (tmp_flag & 2))
+					return 2;
+				return 0;
+			case PT_GRVT:
+				if (rlife == 22 && (tmp_flag & 4))
+					return 0;
+				return 2;
 			}
-			if (parts[r>>8].life == 16 && parts[r>>8].ctype == 5)
+			if (rlife == 16 && parts[r>>8].ctype == 5)
 			{
-				int tmp_flag = parts[r>>8].tmp;
 				if ((tmp_flag & 1) && pt == PT_STKM)
 					return 2;
 				if ((tmp_flag & 2) && pt == PT_STKM2)
