@@ -746,13 +746,13 @@ bool GameController::KeyPress(int key, Uint16 character, bool shift, bool ctrl, 
 				}
 			}
 		}
-
-		for(std::vector<DebugInfo*>::iterator iter = debugInfo.begin(), end = debugInfo.end(); iter != end; iter++)
-		{
-			if ((*iter)->ID & debugFlags)
-				if (!(*iter)->KeyPress(key, character, shift, ctrl, alt, gameView->GetMousePosition()))
-					ret = false;
-		}
+	}
+		
+	for(std::vector<DebugInfo*>::iterator iter = debugInfo.begin(), end = debugInfo.end(); iter != end; iter++)
+	{
+		if ((*iter)->ID & debugFlags)
+			if (!(*iter)->KeyPress(key, character, shift, ctrl, alt, gameView->GetMousePosition()))
+				ret = false;
 	}
 	return ret;
 }
