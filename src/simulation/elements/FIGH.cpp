@@ -60,7 +60,7 @@ int Element_FIGH::update(UPDATE_FUNC_ARGS)
 	parts[i].tmp2 = 0; //0 - stay in place, 1 - seek a stick man
 
 	//Set target cords
-	if (!sim->FIGH_pause)
+	if (!(sim->E189_FIGH_pause & 1))
 	{
 		if (sim->player2.spwn)
 		{
