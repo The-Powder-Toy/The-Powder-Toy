@@ -83,7 +83,7 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 	playerp->frames++;
 
 	//Temperature handling
-	if (parts[i].temp<243)
+	if (parts[i].temp<243 && !(sim->E189_FIGH_pause & 16))
 		parts[i].life -= 1;
 	if ((parts[i].temp<309.6f) && (parts[i].temp>=243))
 		parts[i].temp += 1;
@@ -367,21 +367,25 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 				if (!r && !sim->bmap[(y+ry)/CELL][(x+rx)/CELL])
 					continue;
 				
-				STKM_set_element(sim, playerp, r&0xFF);
-				if ((r&0xFF) == PT_PLNT && parts[i].life<100) //Plant gives him 5 HP
+				if (!(sim->E189_FIGH_pause & 32))
+					STKM_set_element(sim, playerp, r&0xFF);
+				if (!(sim->E189_FIGH_pause & 16))
 				{
-					if (parts[i].life<=95)
-						parts[i].life += 5;
-					else
-						parts[i].life = 100;
-					sim->kill_part(r>>8);
-				}
+					if ((r&0xFF) == PT_PLNT && parts[i].life<100) //Plant gives him 5 HP
+					{
+						if (parts[i].life<=95)
+							parts[i].life += 5;
+						else
+							parts[i].life = 100;
+						sim->kill_part(r>>8);
+					}
 
-				if ((r&0xFF) == PT_NEUT)
-				{
-					if (parts[i].life<=100) parts[i].life -= (102-parts[i].life)/2;
-					else parts[i].life *= 0.9f;
-					sim->kill_part(r>>8);
+					if ((r&0xFF) == PT_NEUT)
+					{
+						if (parts[i].life<=100) parts[i].life -= (102-parts[i].life)/2;
+						else parts[i].life *= 0.9f;
+						sim->kill_part(r>>8);
+					}
 				}
 				
 				if ((r&0xFF) == PT_E189 && !(rand()&3)) // condition: rand % 4 == 0
@@ -585,30 +589,33 @@ void Element_STKM::STKM_interact(Simulation *sim, playerst *playerp, int i, int 
 	r = sim->pmap[y][x];
 	if (r)
 	{
-		if ((r&0xFF)==PT_SPRK && playerp->elem!=PT_LIGH) //If on charge
+		if (!(sim->E189_FIGH_pause & 16))
 		{
-			sim->parts[i].life -= (int)(rand()*20/RAND_MAX)+32;
-		}
-
-		if (sim->elements[r&0xFF].HeatConduct && ((r&0xFF)!=PT_HSWC||sim->parts[r>>8].life==10) && ((playerp->elem!=PT_LIGH && sim->parts[r>>8].temp>=323) || sim->parts[r>>8].temp<=243) && (!playerp->rocketBoots || (r&0xFF)!=PT_PLSM))
-		{
-			sim->parts[i].life -= 2;
-			playerp->accs[3] -= 1;
-		}
-			
-		if (sim->elements[r&0xFF].Properties&PROP_DEADLY)
-			switch (r&0xFF)
+			if ((r&0xFF)==PT_SPRK && playerp->elem!=PT_LIGH) //If on charge
 			{
-				case PT_ACID:
-					sim->parts[i].life -= 5;
-					break;
-				default:
-					sim->parts[i].life -= 1;
-					break;
+				sim->parts[i].life -= (int)(rand()*20/RAND_MAX)+32;
 			}
 
-		if (sim->elements[r&0xFF].Properties&PROP_RADIOACTIVE)
-			sim->parts[i].life -= 1;
+			if (sim->elements[r&0xFF].HeatConduct && ((r&0xFF)!=PT_HSWC||sim->parts[r>>8].life==10) && ((playerp->elem!=PT_LIGH && sim->parts[r>>8].temp>=323) || sim->parts[r>>8].temp<=243) && (!playerp->rocketBoots || (r&0xFF)!=PT_PLSM))
+			{
+				sim->parts[i].life -= 2;
+				playerp->accs[3] -= 1;
+			}
+				
+			if (sim->elements[r&0xFF].Properties&PROP_DEADLY)
+				switch (r&0xFF)
+				{
+					case PT_ACID:
+						sim->parts[i].life -= 5;
+						break;
+					default:
+						sim->parts[i].life -= 1;
+						break;
+				}
+
+			if (sim->elements[r&0xFF].Properties&PROP_RADIOACTIVE)
+				sim->parts[i].life -= 1;
+		}
 		
 		if ((r&0xFF) == PT_E189)
 			STKM_set_life_1(sim, r>>8, i);
