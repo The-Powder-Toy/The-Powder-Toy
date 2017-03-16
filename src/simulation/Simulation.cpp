@@ -5519,7 +5519,7 @@ void Simulation::AfterSim()
 		if (E189_pause & 1)
 			sys_pause = true;
 		if (E189_pause & 0x3C)
-			E189_FIGH_pause ^= (E189_pause >> 2) & 7;
+			E189_FIGH_pause ^= (E189_pause >> 2) & 0x0F;
 		E189_pause &= ~0x3D;
 	}
 }
