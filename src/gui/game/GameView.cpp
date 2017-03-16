@@ -2543,7 +2543,7 @@ void GameView::OnDraw()
 							tempStream.str("");
 						}
 						else
-							sampleInfo << sample.particle.tempvar;
+							sampleInfo << tempvar;
 					}
 				}
 
