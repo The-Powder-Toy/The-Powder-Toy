@@ -5514,10 +5514,13 @@ void Simulation::AfterSim()
 		Element_E189::EMPTrigger(this, emp2_trigger_count);
 		emp2_trigger_count = 0;
 	}
-	if (E189_pause & 1)
+	if (E189_pause)
 	{
-		sys_pause = true;
-		E189_pause &= ~1;
+		if (E189_pause & 1)
+			sys_pause = true;
+		if (E189_pause & 0x1C)
+			E189_FIGH_pause ^= (E189_pause >> 2) & 7;
+		E189_pause &= ~0x1D;
 	}
 }
 
