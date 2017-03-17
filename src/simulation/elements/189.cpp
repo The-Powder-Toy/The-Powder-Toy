@@ -49,6 +49,7 @@ Element_E189::Element_E189()
 	Update = &Element_E189::update;
 	Graphics = &Element_E189::graphics;
 	IconGenerator = &Element_E189::iconGen;
+	// Notice: Exotic solid!
 }
 
 //#TPT-Directive ElementHeader Element_E189 static int update(UPDATE_FUNC_ARGS)
