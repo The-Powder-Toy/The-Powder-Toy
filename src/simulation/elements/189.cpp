@@ -50,6 +50,7 @@ Element_E189::Element_E189()
 	Graphics = &Element_E189::graphics;
 	IconGenerator = &Element_E189::iconGen;
 	// Notice: Exotic solid!
+	// Properties without PROP_LIFE_DEC and PROP_LIFE_KILL_DEC, has reason.
 }
 
 //#TPT-Directive ElementHeader Element_E189 static int update(UPDATE_FUNC_ARGS)
