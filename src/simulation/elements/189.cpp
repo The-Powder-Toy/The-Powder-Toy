@@ -176,6 +176,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 	case 17: // reserved for 186.cpp and Simulation.cpp
 	case 18: // decoration only, no update function
 	case 22: // reserved for Simulation.cpp
+	case 23: // reserved for stickmans
 		break;
 	case 6: // heater
 		for (rx=-1; rx<2; rx++)
@@ -1205,7 +1206,7 @@ void Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* p
 	}
 	else
 	{
-		switch (rtmp & 7)
+		switch (rtmp & 0x0F)
 		{
 			case 0: // no photons operation
 				break;
@@ -1245,8 +1246,24 @@ void Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* p
 				part_phot->ctype = 0x101;
 				sim->part_change_type(i, x, y, PT_E186);
 				break;
-			case 6:
-				sim->kill_part(i); // photons absorber
+			case 6: // photons absorber
+				sim->kill_part(i);
+				break;
+			case 7: // PHOT->NEUT
+				part_phot->ctype = 0x102;
+				sim->part_change_type(i, x, y, PT_E186);
+				break;
+			case 8: // PHOT->ELEC
+				part_phot->ctype = 0x103;
+				sim->part_change_type(i, x, y, PT_E186);
+				break;
+			case 9: // PHOT->PROT
+				part_phot->ctype = 0x104;
+				sim->part_change_type(i, x, y, PT_E186);
+				break;
+			case 10: // PHOT->GRVT
+				part_phot->ctype = 0x105;
+				sim->part_change_type(i, x, y, PT_E186);
 				break;
 		}
 	}
