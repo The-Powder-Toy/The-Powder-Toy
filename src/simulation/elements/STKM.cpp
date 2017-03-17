@@ -626,7 +626,10 @@ void Element_STKM::STKM_interact(Simulation *sim, playerst *playerp, int i, int 
 		{
 			STKM_set_life_1(sim, r>>8, i);
 			if (sim->parts[r>>8].life == 23)
-				playerp->accs[3] -= 1;
+			{
+				playerp->accs[3 + ((playerp->__flags & 1) << 2)] -= 1; // hackish?
+				playerp->__flags ^= 1;
+			}
 		}
 
 		if ((r&0xFF)==PT_PRTI && sim->parts[i].type)
