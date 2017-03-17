@@ -80,7 +80,7 @@ int Element_LSNS::update(UPDATE_FUNC_ARGS)
 					r = sim->photons[y+ry][x+rx];
 				if(!r)
 					continue;
-				if (parts[r>>8].life > parts[i].temp)
+				if (parts[r>>8].life > parts[i].temp+273.15)
 					parts[i].life = 1;
 			}
 	return 0;
