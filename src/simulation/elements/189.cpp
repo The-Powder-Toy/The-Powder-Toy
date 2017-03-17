@@ -949,7 +949,7 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 			{ *colr = *colg = *colb = 0x8C; }
 		break;
 	case 23:
-		if (nx ^ ny & 2)
+		if ((nx ^ ny) & 2)
 			{ *colr = 0xEE; *colg = 0xB2; *colb = 0x66; }
 		else
 			{ *colr = 0xAA; *colg = 0x80; *colb = 0x48; }
