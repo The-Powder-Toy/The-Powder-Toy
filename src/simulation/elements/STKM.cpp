@@ -625,7 +625,7 @@ void Element_STKM::STKM_interact(Simulation *sim, playerst *playerp, int i, int 
 		if ((r&0xFF) == PT_E189)
 		{
 			STKM_set_life_1(sim, r>>8, i);
-			if (sim->parts[s].life == 23)
+			if (sim->parts[r>>8].life == 23)
 				playerp->accs[3] --
 		}
 
