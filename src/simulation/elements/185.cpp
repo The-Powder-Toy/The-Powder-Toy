@@ -152,8 +152,12 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 				if ((r & 0xFF) == PT_SOAP)
 				{
 					sim->part_change_type(exot_id, exot_pos_x, exot_pos_y, PT_SPNG);
-					sim->part_change_type(r, x + rx, y + ry, PT_SPNG);
+					sim->part_change_type(r >> 8, x + rx, y + ry, PT_SPNG);
 					break;
+				}
+				else if ((r & 0xFF) == PT_CAUS)
+				{
+					sim->part_change_type(r >> 8, x + rx, y + ry, PT_BOYL);
 				}
 			}
 		}
