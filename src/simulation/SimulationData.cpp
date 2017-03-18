@@ -149,7 +149,7 @@ menu_section * LoadMenus(int & menuCount)
 		{"\x99", "Sensors", 0, 1},
 		{"\xE2", "Force", 0, 1},
 		{"\xC3", "Explosives", 0, 1},
-		{"\xC5", "Gasses", 0, 1},
+		{"\xC5", "Gases", 0, 1},
 		{"\xC4", "Liquids", 0, 1},
 		{"\xD0", "Powders", 0, 1},
 		{"\xD1", "Solids", 0, 1},
