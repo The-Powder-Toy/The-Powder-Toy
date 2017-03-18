@@ -681,7 +681,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 					rx = tron_rx[rr];
 					ry = tron_ry[rr];
 					r = pmap[y+ry][x+rx];
-					if ((r & 0xFF) == PT_SPRK)
+					if ((r & 0xFF) == PT_SPRK && parts[r>>8].life == 3)
 					{
 						rii = sim->create_part(-1, x-rx, y-ry, PT_E189, 24);
 						parts[rii].tmp   = parts[ri].tmp;
