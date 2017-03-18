@@ -802,7 +802,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			r = rr = pmap[y_src][x_src]; // override "rr" variable
 			while (rtmp--)
 			{
-				if (r) // if exist
+				if (r) // if particle exist
 				{
 					rt = r & 0xFF;
 					x_copyTo = x_src + rx_dest;
