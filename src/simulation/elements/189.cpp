@@ -60,7 +60,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 	static int tron_ry[4] = { 0,-1, 0, 1};
 	static int osc_r1 [4] = { 1,-1, 2,-2};
 	int rx, ry, ttan = 0, rlife = parts[i].life, direction, r, ri, rtmp, rctype;
-	int rr, rndstore, trade, transfer, rt;
+	int rr, rndstore, trade, transfer, rt, rii;
 	float rvx, rvy, rdif;
 	rtmp = parts[i].tmp;
 	
@@ -660,6 +660,41 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 					}
 				}
 			break;
+		case 10:
+			for (rr = 0; rr < 4; rr++)
+				if (BOUNDS_CHECK)
+				{
+					rx = tron_rx[rr];
+					ry = tron_ry[rr];
+					r = pmap[y+ry][x+rx];
+					if ((r & 0xFF) == PT_E189 && parts[r>>8].life == 17)
+					{
+						direction = rr; ri = r>>8;
+						goto break2c;
+					}
+				}
+			break;
+		break2c:
+			for (rr = 0; rr < 4; rr++)
+				if (BOUNDS_CHECK)
+				{
+					rx = tron_rx[rr];
+					ry = tron_ry[rr];
+					r = pmap[y+ry][x+rx];
+					if ((r & 0xFF) == PT_SPRK)
+					{
+						rii = sim->create_part(-1, x-rx, y-ry, PT_E189, 24);
+						parts[rii].tmp   = parts[ri].tmp;
+						parts[rii].tmp2  = parts[ri].tmp2;
+						parts[rii].tmp3  = parts[i].tmp;
+						parts[rii].ctype = direction | (rr ^ 2) << 2;
+						if (rii > i)
+							parts[rii].flags |= FLAG_SKIPMOVE; // set wait flag
+						break;
+					}
+				}
+			break;
+		// case 11: reserved for E189's life = 24.
 		}
 		break;
 			
@@ -746,6 +781,64 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						rndstore >>= 3;
 				}
 			}
+		break;
+	case 24: // moving duplicator particle
+		if (parts[i].flags & FLAG_SKIPMOVE);
+			parts[i].flags &= ~FLAG_SKIPMOVE; // clear wait flag
+		else if (BOUNDS_CHECK)
+		{
+			/* definition:
+			 *   tmp = length, tmp2 = total distance
+			 * first step: like DRAY action
+			 */
+			rctype = parts[i].ctype;
+			rr   = parts[i].tmp2;
+			rtmp = parts[i].tmp;
+			rtmp = rtmp > rr ? rr : rtmp;
+			rx = tron_rx[(rctype>>2) & 3], ry = tron_ry[(rctype>>2) & 3];
+			int x_src = x + rx, y_src = y + ry, rx_dest = rx * rr, ry_dest = ry * rr;
+			int x_copyTo, y_copyTo;
+
+			r = rr = pmap[y_src][x_src]; // override "rr" variable
+			while (rtmp--)
+			{
+				rt = r & 0xFF;
+				x_copyTo = x_src + rx_dest;
+				y_copyTo = y_src + ry_dest;
+				rii = sim->create_part(-1, x_copyTo, y_copyTo, (rt == PT_SPRK) ? PT_METL : rt); // spark hack
+				if (rii >= 0)
+				{
+					if (rt == PT_SPRK)
+						sim->part_change_type(rii, x_copyTo, y_copyTo, PT_SPRK); // restore type for spark hack
+					parts[p] = parts[r>>8]; // duplicating all properties?
+					parts[p].x = x_copyTo; // restore X coordinates
+					parts[p].y = y_copyTo; // restore Y coordinates
+				}
+				x_src += rx, y_src += ry;
+				r = pmap[y_src][x_src];
+			}
+			
+			rx_dest = x + tron_rx[rctype & 3], ry_dest = y + tron_ry[rctype & 3]; // override 2 variables (variable renaming?)
+			if (parts[i].tmp3)
+			{
+				if (!(--parts[i].tmp3))
+				{
+					sim->kill_part(i); break;
+				}
+			}
+			else if ((rr&0xFF) == PT_E189 && parts[rii = rr>>8].life == 16 && parts[rii].ctype == 11)
+			{
+				sim->kill_part(i); break;
+			}
+			if (!sim->InBounds(rx_dest, ry_dest) || pmap[ry_dest][rx_dest]) // if out of boundary
+				sim->kill_part(i);
+			else
+			{
+				sim->pmap[y][x] = 0; // what stacked particle?
+				sim->pmap[ry_dest][rx_dest] = (i << 8) | PT_E189; // actual is particle's index shift left by 8 plus particle's type
+				
+			}
+		}
 		break;
 	}
 	
@@ -957,6 +1050,9 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 		else
 			{ *colr = 0xAA; *colg = 0x80; *colb = 0x48; }
 	}
+	case 24:
+		*colr = 0xF0; *colg = 0xF0; *colb = 0x78;
+		break;
 	return 0;
 }
 
