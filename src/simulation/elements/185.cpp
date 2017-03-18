@@ -223,6 +223,13 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 				sim->create_part(r>>8, x+rx, y+ry, PT_LAVA);
 				parts[r>>8].ctype = PT_DMND;
 				break;
+			case PT_EMP:
+				if (!(rand() % 1000) && parts[i].temp >= 2000)
+				{
+					sim->create_part(r>>8, x+rx, y+ry, PT_E189, 8);
+					parts[r>>8].tmp = 21000;
+				}
+				return 0;
 			case PT_GAS:
 			case PT_OIL:
 				sim->create_part(r>>8, x+rx, y+ry, PT_NITR);
@@ -250,6 +257,9 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 				sim->create_part(i, x, y, PT_PLUT);
 				sim->create_part(r>>8, x+rx, y+ry, PT_PLUT);
 				return 0;
+			case PT_TESC:
+				sim->create_part(r>>8, x+rx, y+ry, PT_EMP);
+				break;
 				
 			// particle's type is PT_DMND and PT_INDI are indestructible.
 			}
