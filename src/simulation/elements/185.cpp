@@ -149,17 +149,22 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 			{
 				rx = rand()%5-2; ry = rand()%5-2;
 				r = pmap[y+ry][x+rx];
-				if ((r & 0xFF) == PT_SOAP)
+				switch (r & 0xFF)
 				{
+				case PT_SALT:
+					sim->part_change_type(exot_id, exot_pos_x, exot_pos_y, PT_SOAP);
+					sim->part_change_type(r >> 8, x + rx, y + ry, PT_SOAP);
+					goto E185_eol_1;
+				case PT_SOAP:
 					sim->part_change_type(exot_id, exot_pos_x, exot_pos_y, PT_SPNG);
 					sim->part_change_type(r >> 8, x + rx, y + ry, PT_SPNG);
+					goto E185_eol_1;
+				case PT_CAUS:
+					sim->part_change_type(r >> 8, x + rx, y + ry, PT_BOYL);
 					break;
 				}
-				else if ((r & 0xFF) == PT_CAUS)
-				{
-					sim->part_change_type(r >> 8, x + rx, y + ry, PT_BOYL);
-				}
 			}
+			E185_eol_1:
 		}
 		else if ((rr & 0xFF) == PT_NEUT && !(rand()%10))
 		{
