@@ -60,13 +60,13 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 	static int tron_ry[4] = { 0,-1, 0, 1};
 	static int osc_r1 [4] = { 1,-1, 2,-2};
 	int rx, ry, ttan = 0, rlife = parts[i].life, direction, r, ri, rtmp, rctype;
-	int rr, rndstore, trade, transfer, rt, rii;
+	int rr, rndstore, trade, transfer, rt, rii, rrx, rry;
 	float rvx, rvy, rdif;
 	rtmp = parts[i].tmp;
 	
 	switch (rlife)
 	{
-	case 0: // acts like TTAN
+	case 0: // acts like TTAN [压力绝缘体]
 	case 1:
 		if (nt<=2)
 			ttan = 2;
@@ -82,7 +82,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 				}
 			}
 		break;
-	case 2: // TRON input
+	case 2: // TRON input ["智能粒子" 的传送门入口]
 		if (rtmp & 0x04)
 			rtmp &= ~0x04;
 		else if (rtmp & 0x01)
@@ -102,7 +102,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 		}
 		parts[i].tmp = rtmp;
 		break;
-	case 3: // TRON output
+	case 3: // TRON output ["智能粒子" 的传送门出口]
 		if (rtmp & 0x04)
 			rtmp &= ~0x04;
 		else if (rtmp & 0x01)
@@ -146,7 +146,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 		}
 		parts[i].tmp = rtmp;
 		break;
-	case 4: // photon laser
+	case 4: // photon laser [激光器]
 		if (!rtmp)
 			break;
 
@@ -179,6 +179,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 	case 18: // decoration only, no update function
 	case 22: // reserved for Simulation.cpp
 	case 23: // reserved for stickmans
+	case 25: // reserved for E189's life = 16, ctype = 10.
 		break;
 	case 6: // heater
 		for (rx=-1; rx<2; rx++)
@@ -192,7 +193,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						parts[r>>8].temp = parts[i].temp;
 				}
 		break;
-	case 8: // acts like VIBR
+	case 8: // acts like VIBR [振金]
 		rr = parts[i].tmp2;
 		if (parts[i].tmp > 20000)
 		{
@@ -317,7 +318,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 					trade++; rndstore >>= 3;
 				}
 		break;
-	case 10:
+	case 10: // electronics debugger [电子产品调试]
 		for (rx = -1; rx <= 1; rx++)
 			for (ry = -1; ry <= 1; ry++)
 				if (BOUNDS_CHECK && (rx || ry))
@@ -487,11 +488,11 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 							if ((r & 0xFF) == PT_SPRK && parts[r>>8].ctype == PT_PSCN && parts[r>>8].life == 3)
 							{
 								parts[i].tmp2 = 2;
-								goto break1;
+								goto break1a;
 							}
 						}
 			}
-			break1:
+			break1a:
 			break;
 		case 2: // insulate->conduct counter
 			if (parts[i].tmp2)
@@ -509,7 +510,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						if ((r & 0xFF) == PT_SPRK && parts[r>>8].ctype == PT_PSCN && parts[r>>8].life == 3)
 						{
 							parts[i].tmp2 = 6;
-							goto break1;
+							goto break1a;
 						}
 					}
 			break;
@@ -534,7 +535,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						if ((r & 0xFF) == PT_SPRK && parts[r>>8].ctype == PT_PSCN && parts[r>>8].life == 3)
 						{
 							parts[i].tmp ++;
-							goto break1;
+							goto break1a;
 						}
 					}
 			break;
@@ -638,7 +639,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						{
 							rtmp = parts[i].tmp;
 							sim->E189_pause |= 4 << (rtmp < 5 ? (rtmp > 0 ? rtmp : 0) : 5);
-							goto break1;
+							goto break1a;
 						}
 					}
 			break;
@@ -667,32 +668,49 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 					rx = tron_rx[rr];
 					ry = tron_ry[rr];
 					r = pmap[y+ry][x+rx];
-					if ((r & 0xFF) == PT_E189 && parts[r>>8].life == 17)
-					{
-						direction = rr; ri = r>>8;
-						goto break2c;
-					}
-				}
-			break;
-		break2c:
-			for (rr = 0; rr < 4; rr++)
-				if (BOUNDS_CHECK)
-				{
-					rx = tron_rx[rr];
-					ry = tron_ry[rr];
-					r = pmap[y+ry][x+rx];
 					if ((r & 0xFF) == PT_SPRK && parts[r>>8].life == 3)
 					{
-						rii = sim->create_part(-1, x-rx, y-ry, PT_E189, 24);
-						parts[rii].tmp   = parts[ri].tmp;
-						parts[rii].tmp2  = parts[ri].tmp2;
-						parts[rii].tmp3  = parts[i].tmp;
-						parts[rii].ctype = direction | (rr << 2);
-						if (rii > i)
-							parts[rii].flags |= FLAG_SKIPMOVE; // set wait flag
+						direction = rr;
+						for (rr = 0; rr < 4; rr++) // reset "rr" variable
+							if (BOUNDS_CHECK)
+							{
+								rrx = tron_rx[rr];
+								rry = tron_ry[rr];
+								ri = pmap[y+rry][x+rrx];
+								if ((ri & 0xFF) == PT_E189 && parts[ri>>8].life == 17)
+								{
+									rii = sim->create_part(-1, x-rx, y-ry, PT_E189, 24);
+									rtmp = (direction << 2) | rr;
+									if (rii >= 0)
+									{
+										parts[rii].ctype = rtmp;
+										parts[rii].tmp = parts[ri>>8].tmp;
+										parts[rii].tmp2 = parts[ri>>8].tmp2;
+										parts[rii].tmp3 = parts[i].tmp;
+										if (rii > i)
+											parts[rii].flags |= FLAG_SKIPMOVE;
+									}
+									r = pmap[y-rry][x-rrx]; // variable "r" value override
+									if ((r & 0xFF) == PT_E189 && parts[r>>8].life == 25)
+									{
+										rii = sim->create_part(-1, x-rx-rrx, y-ry-rry, PT_E189, 24);
+										if (rii >= 0)
+										{
+											parts[rii].ctype = rtmp ^ 2;
+											parts[rii].tmp = parts[ri>>8].tmp;
+											parts[rii].tmp2 = parts[ri>>8].tmp2;
+											parts[rii].tmp3 = parts[r].tmp;
+											if (rii > i)
+												parts[rii].flags |= FLAG_SKIPMOVE;
+										}
+									}
+									goto break1b;
+								}
+							}
 						break;
 					}
 				}
+			break1b:
 			break;
 		// case 11: reserved for E189's life = 24.
 		}
@@ -794,7 +812,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			rctype = parts[i].ctype;
 			rr   = parts[i].tmp2;
 			rtmp = parts[i].tmp;
-			rtmp = rtmp > rr ? rr : rtmp;
+			rtmp = rtmp > rr ? rr : (rtmp <= 0 ? rr : rtmp);
 			rx = tron_rx[(rctype>>2) & 3], ry = tron_ry[(rctype>>2) & 3];
 			int x_src = x + rx, y_src = y + ry, rx_dest = rx * rr, ry_dest = ry * rr;
 			int x_copyTo, y_copyTo;
@@ -807,6 +825,8 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 					rt = r & 0xFF;
 					x_copyTo = x_src + rx_dest;
 					y_copyTo = y_src + ry_dest;
+					if (!sim->InBounds(x_copyTo, y_copyTo))
+						break;
 					rii = sim->create_part(-1, x_copyTo, y_copyTo, (rt == PT_SPRK) ? PT_METL : rt); // spark hack
 					if (rii >= 0)
 					{
@@ -1055,6 +1075,9 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 			{ *colr = 0xAA; *colg = 0x80; *colb = 0x48; }
 	case 24:
 		*colr = 0xF0; *colg = 0xF0; *colb = 0x78;
+		break;
+	case 25:
+		*colr = 0xF0; *colg = 0xA8; *colb = 0x20;
 		break;
 	}
 	return 0;
