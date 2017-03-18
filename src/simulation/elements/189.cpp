@@ -361,8 +361,8 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 					}
 				}
 	case 12: // SPRK reflector
-		for (int rx = -1; rx <= 1; rx++)
-			for (int ry = -1; ry <= 1; ry++)
+		for (rx = -1; rx <= 1; rx++)
+			for (ry = -1; ry <= 1; ry++)
 				if (BOUNDS_CHECK && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
@@ -783,7 +783,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			}
 		break;
 	case 24: // moving duplicator particle
-		if (parts[i].flags & FLAG_SKIPMOVE);
+		if (parts[i].flags & FLAG_SKIPMOVE)
 			parts[i].flags &= ~FLAG_SKIPMOVE; // clear wait flag
 		else if (BOUNDS_CHECK)
 		{
@@ -810,9 +810,9 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 				{
 					if (rt == PT_SPRK)
 						sim->part_change_type(rii, x_copyTo, y_copyTo, PT_SPRK); // restore type for spark hack
-					parts[p] = parts[r>>8]; // duplicating all properties?
-					parts[p].x = x_copyTo; // restore X coordinates
-					parts[p].y = y_copyTo; // restore Y coordinates
+					parts[rii] = parts[r>>8]; // duplicating all properties?
+					parts[rii].x = x_copyTo; // restore X coordinates
+					parts[rii].y = y_copyTo; // restore Y coordinates
 				}
 				x_src += rx, y_src += ry;
 				r = pmap[y_src][x_src];
@@ -1049,10 +1049,10 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 			{ *colr = 0xEE; *colg = 0xB2; *colb = 0x66; }
 		else
 			{ *colr = 0xAA; *colg = 0x80; *colb = 0x48; }
-	}
 	case 24:
 		*colr = 0xF0; *colg = 0xF0; *colb = 0x78;
 		break;
+	}
 	return 0;
 }
 
