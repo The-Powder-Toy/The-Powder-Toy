@@ -687,7 +687,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						parts[rii].tmp   = parts[ri].tmp;
 						parts[rii].tmp2  = parts[ri].tmp2;
 						parts[rii].tmp3  = parts[i].tmp;
-						parts[rii].ctype = direction | (rr ^ 2) << 2;
+						parts[rii].ctype = direction | (rr << 2);
 						if (rii > i)
 							parts[rii].flags |= FLAG_SKIPMOVE; // set wait flag
 						break;
@@ -802,20 +802,23 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			r = rr = pmap[y_src][x_src]; // override "rr" variable
 			while (rtmp--)
 			{
-				rt = r & 0xFF;
-				x_copyTo = x_src + rx_dest;
-				y_copyTo = y_src + ry_dest;
-				rii = sim->create_part(-1, x_copyTo, y_copyTo, (rt == PT_SPRK) ? PT_METL : rt); // spark hack
-				if (rii >= 0)
+				if (r) // if exist
 				{
-					if (rt == PT_SPRK)
-						sim->part_change_type(rii, x_copyTo, y_copyTo, PT_SPRK); // restore type for spark hack
-					parts[rii] = parts[r>>8]; // duplicating all properties?
-					parts[rii].x = x_copyTo; // restore X coordinates
-					parts[rii].y = y_copyTo; // restore Y coordinates
+					rt = r & 0xFF;
+					x_copyTo = x_src + rx_dest;
+					y_copyTo = y_src + ry_dest;
+					rii = sim->create_part(-1, x_copyTo, y_copyTo, (rt == PT_SPRK) ? PT_METL : rt); // spark hack
+					if (rii >= 0)
+					{
+						if (rt == PT_SPRK)
+							sim->part_change_type(rii, x_copyTo, y_copyTo, PT_SPRK); // restore type for spark hack
+						parts[rii] = parts[r>>8]; // duplicating all properties?
+						parts[rii].x = x_copyTo; // restore X coordinates
+						parts[rii].y = y_copyTo; // restore Y coordinates
+					}
+					x_src += rx, y_src += ry;
+					r = pmap[y_src][x_src];
 				}
-				x_src += rx, y_src += ry;
-				r = pmap[y_src][x_src];
 			}
 			
 			rx_dest = x + tron_rx[rctype & 3], ry_dest = y + tron_ry[rctype & 3]; // override 2 variables (variable renaming?)
