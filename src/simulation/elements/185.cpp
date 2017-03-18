@@ -156,8 +156,11 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 					sim->part_change_type(r >> 8, x + rx, y + ry, PT_SOAP);
 					goto E185_eol_1;
 				case PT_SOAP:
-					sim->part_change_type(exot_id, exot_pos_x, exot_pos_y, PT_SPNG);
-					sim->part_change_type(r >> 8, x + rx, y + ry, PT_SPNG);
+					if (sim->pv[y/CELL][x/CELL] >= 10)
+					{
+						sim->part_change_type(exot_id, exot_pos_x, exot_pos_y, PT_SPNG);
+						sim->part_change_type(r >> 8, x + rx, y + ry, PT_SPNG);
+					}
 					goto E185_eol_1;
 				case PT_CAUS:
 					sim->part_change_type(r >> 8, x + rx, y + ry, PT_BOYL);
