@@ -816,9 +816,9 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						parts[rii].x = x_copyTo; // restore X coordinates
 						parts[rii].y = y_copyTo; // restore Y coordinates
 					}
-					x_src += rx, y_src += ry;
-					r = pmap[y_src][x_src];
 				}
+				x_src += rx, y_src += ry;
+				r = pmap[y_src][x_src];
 			}
 			
 			rx_dest = x + tron_rx[rctype & 3], ry_dest = y + tron_ry[rctype & 3]; // override 2 variables (variable renaming?)
