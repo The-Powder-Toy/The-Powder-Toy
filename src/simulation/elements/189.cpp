@@ -699,7 +699,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 											parts[rii].ctype = rtmp ^ 2;
 											parts[rii].tmp = parts[ri>>8].tmp;
 											parts[rii].tmp2 = parts[ri>>8].tmp2;
-											parts[rii].tmp3 = parts[r].tmp;
+											parts[rii].tmp3 = parts[r>>8].tmp; // fixed overflow?
 											if (rii > i)
 												parts[rii].flags |= FLAG_SKIPMOVE;
 										}
