@@ -1073,6 +1073,7 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 			{ *colr = 0xEE; *colg = 0xB2; *colb = 0x66; }
 		else
 			{ *colr = 0xAA; *colg = 0x80; *colb = 0x48; }
+		break;
 	case 24:
 		*colr = 0xF0; *colg = 0xF0; *colb = 0x78;
 		break;
