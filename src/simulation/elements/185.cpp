@@ -207,7 +207,7 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 						case 2: parts[r>>8].ctype = PT_SWCH; break;
 					}
 					break;
-				case 0:
+				case 0: // actual is PT_NONE
 				case PT_STNE:
 				case PT_PLUT:
 					parts[r>>8].ctype = PT_BRCK;
@@ -218,6 +218,10 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 				sim->create_part(r>>8, x+rx, y+ry, PT_LAVA);
 				parts[r>>8].ctype = PT_DMND;
 				break;
+			case PT_GAS:
+			case PT_OIL:
+				sim->create_part(r>>8, x+rx, y+ry, PT_NITR);
+				break;
 			case PT_GEL:
 				sim->part_change_type(r>>8, x+rx, y+ry, PT_SPNG);
 				parts[r>>8].life = parts[r>>8].tmp;
@@ -226,14 +230,23 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 			case PT_ISZS:
 				sim->create_part(r>>8, x+rx, y+ry, PT_EXOT);
 				break;
+			case PT_NITR:
+				if (parts[r>>8].temp < 75)
+					sim->part_change_type(r>>8, x+rx, y+ry, PT_LNTG);
+				break;
 			case PT_PLNT:
 				sim->part_change_type(exot_id, exot_pos_x, exot_pos_y, PT_VIRS);
 				parts[exot_id].tmp2 = PT_EXOT;
+				return 0;
+			case PT_PLSM:
+				sim->create_part(i, x, y, PT_PLSM);
 				return 0;
 			case PT_URAN:
 				sim->create_part(i, x, y, PT_PLUT);
 				sim->create_part(r>>8, x+rx, y+ry, PT_PLUT);
 				return 0;
+				
+			// particle's type is PT_DMND and PT_INDI are indestructible.
 			}
 		}
 	}
