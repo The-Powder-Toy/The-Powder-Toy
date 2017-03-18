@@ -817,9 +817,12 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			int x_src = x + rx, y_src = y + ry, rx_dest = rx * rr, ry_dest = ry * rr;
 			int x_copyTo, y_copyTo;
 
-			r = rr = pmap[y_src][x_src]; // override "rr" variable
+			rr = pmap[y_src][x_src]; // override "rr" variable
 			while (rtmp--)
 			{
+				if (!sim->InBounds(x_src, y_src))
+					break;
+				r = pmap[y_src][x_src];
 				if (r) // if particle exist
 				{
 					rt = r & 0xFF;
@@ -838,7 +841,6 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 					}
 				}
 				x_src += rx, y_src += ry;
-				r = pmap[y_src][x_src];
 			}
 			
 			rx_dest = x + tron_rx[rctype & 3], ry_dest = y + tron_ry[rctype & 3]; // override 2 variables (variable renaming?)
