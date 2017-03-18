@@ -4756,13 +4756,17 @@ int Simulation::GetParticleType(std::string type)
 	if (strcasecmp(txt,"C4")==0) i = PT_PLEX;
 	else if (strcasecmp(txt,"C5")==0) i = PT_C5;
 	else if (strcasecmp(txt,"NONE")==0) i = PT_NONE;
-	for (i=1; i<PT_NUM; i++) {
-		if (strcasecmp(txt, elements[i].Name)==0 && strlen(elements[i].Name) && elements[i].Enabled)
-		{
-			return i;
+	else
+	{
+		for (i=1; i<PT_NUM; i++) {
+			if (strcasecmp(txt, elements[i].Name)==0 && strlen(elements[i].Name) && elements[i].Enabled)
+			{
+				return i;
+			}
 		}
+		return -1;
 	}
-	return -1;
+	return i;
 }
 
 void Simulation::SimulateGoL()
