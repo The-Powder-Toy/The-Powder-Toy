@@ -157,7 +157,14 @@ int Element_E186::update(UPDATE_FUNC_ARGS)
 		case PT_EXOT:
 			if (!(rand()%3))
 			{
-				sim->part_change_type(r>>8, x, y, PT_ISOZ);
+				if (rand()&1)
+					sim->part_change_type(r>>8, x, y, PT_ISOZ);
+				else
+				{
+					sim->part_change_type(r>>8, x, y, PT_WARP);
+					parts[r>>8].life = 1000;
+					parts[r>>8].tmp2 = 10000;
+				}
 				parts[r>>8].temp += 300;
 			}
 			break;
@@ -195,6 +202,10 @@ int Element_E186::update(UPDATE_FUNC_ARGS)
 			break;
 		case PT_INVIS:
 			parts[i].ctype = PT_NEUT;
+		case PT_SPNG:
+			sim->part_change_type(r>>8, x, y, PT_GEL);
+			parts[r>>8].tmp = parts[r>>8].life;
+			break;
 		default:
 			break;
 		}

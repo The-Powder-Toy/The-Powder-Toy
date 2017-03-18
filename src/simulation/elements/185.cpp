@@ -59,7 +59,7 @@ Element_E185::Element_E185()
 //#TPT-Directive ElementHeader Element_E185 static int update(UPDATE_FUNC_ARGS)
 int Element_E185::update(UPDATE_FUNC_ARGS)
 {
-	int r, s, rx, ry, rr, sctype, stmp, trade, exot_id, exot_pos_x, exot_pos_y;
+	int r, s, rx, ry, rr, sctype, stmp, trade, exot_id, exot_pos_x, exot_pos_y, prev_type = 0;
 	const int cooldown = 15;
 	const int limit = 20;
 	rr = sim->photons[y][x];
@@ -137,8 +137,27 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 				exot_id = r >> 8;
 				goto E185_HasExot;
 			}
+			else if ((r & 0xFF) == PT_CO2)
+				exot_pos_x = x + rx;
+				exot_pos_y = y + ry;
+				exot_id = r >> 8;
+				prev_type = r & 0xFF;
 		}
-		if ((rr & 0xFF) == PT_NEUT && !(rand()%10))
+		if (prev_type == PT_CO2)
+		{
+			for (trade = 0; trade < 6; trade ++)
+			{
+				rx = rand()%5-2; ry = rand()%5-2;
+				r = pmap[y+ry][x+rx];
+				if ((r & 0xFF) == PT_SOAP)
+				{
+					sim->part_change_type(exot_id, exot_pos_x, exot_pos_y, PT_SPNG);
+					sim->part_change_type(r, x + rx, y + ry, PT_SPNG);
+					break;
+				}
+			}
+		}
+		else if ((rr & 0xFF) == PT_NEUT && !(rand()%10))
 		{
 			s = parts[i].tmp;
 			parts[i].tmp -= s > 0 ? (s >> 3) + 1 : 0;
@@ -163,22 +182,54 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 			r = pmap[y+ry][x+rx];
 			switch (r & 0xFF)
 			{
+			case PT_DUST:
+				sim->part_change_type(r>>8, x+rx, y+ry, PT_FWRK);
+				break;
 			case PT_LAVA:
 				stmp = parts[r>>8].ctype;
 				switch (stmp) // LAVA's ctype
 				{
-				case PT_SALT:
-					sim->create_part(r, x+rx, y+ry, PT_ACID);
+				case PT_CLST:
+					parts[r>>8].ctype = PT_CNCT;
 					break;
+				case PT_SALT:
+					sim->create_part(r>>8, x+rx, y+ry, PT_ACID);
+					break;
+				case PT_SAND:
+					switch (rand() % 3)
+					{
+						case 0: parts[r>>8].ctype = PT_PSCN; break;
+						case 1: parts[r>>8].ctype = PT_NSCN; break;
+						case 2: parts[r>>8].ctype = PT_SWCH; break;
+					}
+					break;
+				case 0:
 				case PT_STNE:
+				case PT_PLUT:
 					parts[r>>8].ctype = PT_BRCK;
 					break;
 				}
 				break;
+			case PT_BCOL:
+				sim->create_part(r>>8, x+rx, y+ry, PT_LAVA);
+				parts[r>>8].ctype = PT_DMND;
+				break;
+			case PT_GEL:
+				sim->part_change_type(r>>8, x+rx, y+ry, PT_SPNG);
+				parts[r>>8].life = parts[r>>8].tmp;
+				break;
+			case PT_ISOZ:
+			case PT_ISZS:
+				sim->create_part(r>>8, x+rx, y+ry, PT_EXOT);
+				break;
+			case PT_PLNT:
+				sim->part_change_type(exot_id, exot_pos_x, exot_pos_y, PT_VIRS);
+				parts[exot_id].tmp2 = PT_EXOT;
+				return 0;
 			case PT_URAN:
 				sim->create_part(i, x, y, PT_PLUT);
-				sim->create_part(r, x+rx, y+ry, PT_PLUT);
-				break;
+				sim->create_part(r>>8, x+rx, y+ry, PT_PLUT);
+				return 0;
 			}
 		}
 	}
