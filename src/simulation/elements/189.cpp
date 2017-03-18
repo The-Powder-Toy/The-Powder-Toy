@@ -818,7 +818,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			int x_copyTo, y_copyTo;
 
 			rr = pmap[y_src][x_src]; // override "rr" variable
-			while (sim->InBounds(x_src, y_src) || rtmp--)
+			while (sim->InBounds(x_src, y_src) && rtmp--)
 			{
 				r = pmap[y_src][x_src];
 				if (r) // if particle exist
