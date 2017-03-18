@@ -59,7 +59,7 @@ Element_E185::Element_E185()
 //#TPT-Directive ElementHeader Element_E185 static int update(UPDATE_FUNC_ARGS)
 int Element_E185::update(UPDATE_FUNC_ARGS)
 {
-	int r, s, rx, ry, rr, sctype, stmp;
+	int r, s, rx, ry, rr, sctype, stmp, trade, exot_id, exot_pos_x, exot_pos_y;
 	const int cooldown = 15;
 	const int limit = 20;
 	rr = sim->photons[y][x];
@@ -126,6 +126,18 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 				}
 			}
 		}
+		for (trade = 0; trade < 6; trade ++)
+		{
+			rx = rand()%5-2; ry = rand()%5-2;
+			r = pmap[y+ry][x+rx];
+			if ((r & 0xFF) == PT_EXOT)
+			{
+				exot_pos_x = x + rx;
+				exot_pos_y = y + ry;
+				exot_id = r >> 8;
+				goto E185_HasExot;
+			}
+		}
 		if ((rr & 0xFF) == PT_NEUT && !(rand()%10))
 		{
 			s = parts[i].tmp;
@@ -143,6 +155,32 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 						parts[r>>8].tmp = 0;
 					}
 				}
+		return 0;
+		E185_HasExot:
+		for (trade = 0; trade < 6; trade ++)
+		{
+			rx = rand()%5-2; ry = rand()%5-2;
+			r = pmap[y+ry][x+rx];
+			switch (r & 0xFF)
+			{
+			case PT_LAVA:
+				stmp = parts[r>>8].ctype;
+				switch (stmp) // LAVA's ctype
+				{
+				case PT_SALT:
+					sim->create_part(r, x+rx, y+ry, PT_ACID);
+					break;
+				case PT_STNE:
+					parts[r>>8].ctype = PT_BRCK;
+					break;
+				}
+				break;
+			case PT_URAN:
+				sim->create_part(i, x, y, PT_PLUT);
+				sim->create_part(r, x+rx, y+ry, PT_PLUT);
+				break;
+			}
+		}
 	}
 	return 0;
 }
