@@ -836,7 +836,8 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			{
 				sim->pmap[y][x] = 0; // what stacked particle?
 				sim->pmap[ry_dest][rx_dest] = (i << 8) | PT_E189; // actual is particle's index shift left by 8 plus particle's type
-				
+				parts[i].x = rx_dest;
+				parts[i].y = ry_dest;
 			}
 		}
 		break;
