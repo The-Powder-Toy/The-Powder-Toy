@@ -2190,4 +2190,97 @@ void Element_E189::InsertText(Simulation *sim, int i, int x, int y, int ix, int 
 	std::cout << "output complete!" << std::endl;
 }
 
+//#TPT-Directive ElementHeader Element_E189 static void FloodButton(Simulation *sim, int i, int x, int y)
+void Element_E189::FloodButton(Simulation *sim, int i, int x, int y)
+{
+	int coord_stack_limit = XRES*YRES;
+	unsigned short (*coord_stack)[2];
+	int coord_stack_size = 0;
+	int x1, x2, r;
+	
+	coord_stack = new unsigned short[coord_stack_limit][2];
+	coord_stack[coord_stack_size][0] = x;
+	coord_stack[coord_stack_size][1] = y;
+	coord_stack_size++;
+	
+	if ((parts[i].type != PT_E189) || (parts[i].life != 26) || parts[i].tmp)
+	{
+		delete[] coord_stack;
+		return 0;
+	}
+	
+	do
+	{
+		coord_stack_size--;
+		x = coord_stack[coord_stack_size][0];
+		y = coord_stack[coord_stack_size][1];
+		x1 = x2 = x;
+		
+		// go left as far as possible
+		while (x1 >= 0)
+		{
+			r = pmap[y][x1-1];
+			if ((r&0xFF) != PT_E189 && parts[r>>8].life == 26)
+			{
+				break;
+			}
+			x1--;
+		}
+		// go right as far as possible
+		while (x2 < XRES)
+		{
+			r = pmap[y][x2+1];
+			if ((r&0xFF) != PT_E189 && parts[r>>8].life == 26)
+			{
+				break;
+			}
+			x2++;
+		}
+		
+		// fill span
+		for (x=x1; x<=x2; x++)
+		{
+			r = pmap[y][x]>>8;
+			parts[r].tmp = 1;
+			// parts[r].flags |= 0x80000000;
+		}
+		
+		// add adjacent pixels to stack
+		if (y >= 1)
+			for (x=x1-1; x<=x2+1; x++)
+			{
+				r = pmap[y-1][x];
+				if ((r&0xFF) == PT_E189 && parts[r>>8].life == 26 && !parts[r>>8].tmp)
+				{
+					coord_stack[coord_stack_size][0] = x;
+					coord_stack[coord_stack_size][1] = y-1;
+					coord_stack_size++;
+					if (coord_stack_size>=coord_stack_limit)
+					{
+						delete[] coord_stack;
+						return;
+					}
+				}
+			}
+		if (y < YRES-1)
+			for (x=x1-1; x<=x2+1; x++)
+			{
+				r = pmap[y+1][x];
+				if ((r&0xFF) == PT_E189 && parts[r>>8].life == 26 && !parts[r>>8].tmp)
+				{
+					coord_stack[coord_stack_size][0] = x;
+					coord_stack[coord_stack_size][1] = y+1;
+					coord_stack_size++;
+					if (coord_stack_size>=coord_stack_limit)
+					{
+						delete[] coord_stack;
+						return;
+					}
+				}
+			}
+		
+	} while (coord_stack_size>0);
+	delete[] coord_stack;
+}
+
 Element_E189::~Element_E189() {}
