@@ -864,6 +864,22 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			}
 		}
 		break;
+	case 26: // button
+		if (rtmp)
+		{
+			parts[i].tmp = 0;
+			for (rx = -1; rx <= 1; rx++)
+				for (ry = -1; ry <= 1; ry++)
+				{
+					r = pmap[y+ry][x+rx];
+					if ((sim->elements[r&0xFF].Properties & PROP_CONDUCTS) && parts[r>>8].life == 0)
+					{
+						parts[r>>8].life = 4;
+						parts[r>>8].ctype = r&0xFF;
+						sim->part_change_type(r>>8,x+rx,y+ry,PT_SPRK);
+					}
+				}
+		}
 	}
 	
 	if(ttan>=2) {
@@ -1070,7 +1086,7 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 		break;
 	case 23:
 		if ((nx ^ ny) & 2)
-			{ *colr = 0xEE; *colg = 0xB2; *colb = 0x66; }
+			{ ptmp = cpart->ctype; }
 		else
 			{ *colr = 0xAA; *colg = 0x80; *colb = 0x48; }
 		break;
@@ -1079,6 +1095,13 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 		break;
 	case 25:
 		*colr = 0xF0; *colg = 0xA8; *colb = 0x20;
+		break;
+	case 26:
+		ptmp = cpart->tmp;
+		if (ptmp)
+			{ *colr = 0xF0; *colg = 0xE9; *colb = 0xE0; }
+		else
+			{ *colr = 0x78; *colg = 0x74; *colb = 0x70; }
 		break;
 	}
 	return 0;
