@@ -271,7 +271,13 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 				break;
 			case PT_ISOZ:
 			case PT_ISZS:
-				sim->create_part(r>>8, x+rx, y+ry, PT_EXOT);
+				if (parts[r>>8].temp < 2000 || rand() % 100)
+					sim->create_part(r>>8, x+rx, y+ry, PT_EXOT);
+				else
+				{
+					sim->part_change_type(r>>8, x+rx, y+ry, PT_LAVA);
+					parts[r>>8].ctype = PT_CONV;
+				}
 				break;
 			case PT_NITR:
 				if (parts[r>>8].temp < 75)
