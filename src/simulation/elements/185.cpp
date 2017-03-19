@@ -148,16 +148,19 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 			case PT_YEST:
 				if (stmp >= 16)
 				{
-					if (rand() % 100)
+					if (rand() % 10)
 					{
-						sim->part_change_type(i, x, y, PT_YEST);
-						parts[i].temp = parts[exot_id].temp;
-					}
-					else
-					{
-						sim->part_change_type(exot_id, exot_pos_x, exot_pos_y, PT_E189);
-						parts[exot_id].tmp = 5;
-						parts[exot_id].tmp2 = 1;
+						if (rand() % 100)
+						{
+							sim->part_change_type(i, x, y, PT_YEST);
+							parts[i].temp = parts[exot_id].temp;
+						}
+						else
+						{
+							sim->part_change_type(exot_id, exot_pos_x, exot_pos_y, PT_E185); // not E189
+							parts[exot_id].tmp = 5;
+							parts[exot_id].tmp2 = 1;
+						}
 					}
 				}
 				else
