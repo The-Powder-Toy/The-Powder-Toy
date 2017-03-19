@@ -62,7 +62,7 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 	int r, s, rx, ry, rr, sctype, stmp, trade, exot_id, exot_pos_x, exot_pos_y, prev_type = 0;
 	const int cooldown = 15;
 	const int limit = 20;
-	float tempTemp;
+	float tempTemp, tempPress;
 	rr = sim->photons[y][x];
 	stmp = parts[i].tmp;
 	if (parts[i].tmp2 & 1)
@@ -261,6 +261,14 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 					parts[r>>8].tmp = 21000;
 				}
 				return 0;
+			case PT_ETRD:
+				tempPress = sim->pv[y/CELL][x/CELL];
+				if (!(rand() % 10) && parts[i].temp >= 7000 && tempPress < -10.0f && tempPress > -20.0f)
+				{
+					sim->part_change_type(r>>8, x+rx, y+ry, PT_CONV);
+					parts[r>>8].ctype = PT_CONV;
+				}
+				return 0;
 			case PT_GAS:
 			case PT_OIL:
 				sim->create_part(r>>8, x+rx, y+ry, PT_NITR);
@@ -271,13 +279,7 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 				break;
 			case PT_ISOZ:
 			case PT_ISZS:
-				if (parts[r>>8].temp < 2000 || rand() % 100)
-					sim->create_part(r>>8, x+rx, y+ry, PT_EXOT);
-				else
-				{
-					sim->part_change_type(r>>8, x+rx, y+ry, PT_LAVA);
-					parts[r>>8].ctype = PT_CONV;
-				}
+				sim->create_part(r>>8, x+rx, y+ry, PT_EXOT);
 				break;
 			case PT_NITR:
 				if (parts[r>>8].temp < 75)
