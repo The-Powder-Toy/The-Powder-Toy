@@ -2984,6 +2984,15 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 		{
 			//If an element has the PROP_DRAWONCTYPE property, and the element being drawn to it does not have PROP_NOCTYPEDRAW (Also some special cases), set the element's ctype
 			int drawOn = pmap[y][x]&0xFF;
+			if (drawOn == PT_E189)
+			{
+				int E189ID = pmap[y][x]>>8;
+				if (parts[E189ID].life == 26 && !parts[E189ID].tmp)
+				{
+					Element_E189::FloodButton(this, E189ID, x, y);
+					return -1;
+				}
+			}
 			if (drawOn == t)
 				return -1;
 			if (((elements[drawOn].Properties & PROP_DRAWONCTYPE) ||
@@ -3018,15 +3027,6 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 				if (t == PT_LIFE && v >= 0 && v < NGOL)
 					parts[pmap[y][x]>>8].ctype |= v<<8;
 				parts[pmap[y][x]>>8].temp = elements[t].Temperature;
-			}
-			else if (drawOn == PT_E189)
-			{
-				int E189ID = pmap[y][x]>>8;
-				if (parts[E189ID].life == 26 && !parts[E189ID].tmp)
-				{
-					Element_E189::FloodButton(this, E189ID, x, y);
-					return -1;
-				}
 			}
 			return -1;
 		}
