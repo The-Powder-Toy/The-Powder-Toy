@@ -265,7 +265,7 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 				tempPress = sim->pv[y/CELL][x/CELL];
 				if (!(rand() % 10) && parts[i].temp >= 7000 && tempPress < -10.0f && tempPress > -20.0f)
 				{
-					sim->part_change_type(r>>8, x+rx, y+ry, PT_CONV);
+					sim->part_change_type(r>>8, x+rx, y+ry, PT_LAVA);
 					parts[r>>8].ctype = PT_CONV;
 				}
 				return 0;
