@@ -127,8 +127,9 @@ int Element_E186::update(UPDATE_FUNC_ARGS)
 		case PT_PLSM:
 			if (!(rand()%30))
 			{
-				sim->create_part(r>>8, x, y, PT_PLSM);
-				parts[s].ctype = PT_NBLE;
+				s = sim->create_part(r>>8, x, y, PT_PLSM);
+				if (s >= 0)
+					parts[s].ctype = PT_NBLE;
 			}
 			break;
 		case PT_CO2:
@@ -210,6 +211,12 @@ int Element_E186::update(UPDATE_FUNC_ARGS)
 		case PT_SPNG:
 			sim->part_change_type(r>>8, x, y, PT_GEL);
 			parts[r>>8].tmp = parts[r>>8].life;
+			break;
+		case PT_VRSS:
+			sim->create_part(r>>8, x, y, PT_CLNE);
+			break;
+		case PT_VIRS:
+			sim->create_part(r>>8, x, y, PT_BCLN);
 			break;
 		default:
 			break;
