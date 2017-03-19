@@ -2114,6 +2114,7 @@ void Simulation::init_can_move()
 	
 	can_move[PT_ELEC][PT_E182] = 2;
 	can_move[PT_ELEC][PT_E185] = 2;
+	can_move[PT_E185][PT_YEST] = 0; // moving type = "E185", type at destination = yeast
 
 	can_move[PT_E186][PT_E182] = 2;
 	can_move[PT_E186][PT_E185] = 2;
