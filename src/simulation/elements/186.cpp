@@ -213,16 +213,16 @@ int Element_E186::update(UPDATE_FUNC_ARGS)
 			parts[r>>8].tmp = parts[r>>8].life;
 			break;
 		/* viruses has replication? */
-		case PT_VRSS: // if is infected EXOT
-			if (parts[i].tmp2 == PT_EXOT)
+		case PT_VRSS:
+			if (parts[i].tmp2 == PT_EXOT) // if is infected EXOT
 				sim->create_part(r>>8, x, y, PT_CLNE);
-			else if (parts[i].tmp2 == PT_ETRD)
+			else if (parts[i].tmp2 == PT_ETRD) // if is infected ETRD
 				sim->create_part(r>>8, x, y, PT_PCLN);
 			break;
-		case PT_VIRS: // if is infected EXOT
-			if (parts[i].tmp2 == PT_EXOT)
+		case PT_VIRS:
+			if (parts[i].tmp2 == PT_EXOT) // if is infected EXOT
 				sim->create_part(r>>8, x, y, PT_BCLN);
-			else if (parts[i].tmp2 == PT_ETRD)
+			else if (parts[i].tmp2 == PT_ETRD) // if is infected ETRD
 				sim->create_part(r>>8, x, y, PT_PBCN);
 			break;
 		default:

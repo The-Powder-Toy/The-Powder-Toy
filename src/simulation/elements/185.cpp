@@ -231,16 +231,16 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 				case PT_CLST:
 					parts[r>>8].ctype = PT_CNCT;
 					break;
-				case PT_SALT:
-					sim->create_part(r>>8, x+rx, y+ry, PT_ACID);
-					break;
-				case PT_SAND:
+				case PT_GLAS:
 					switch (rand() % 3)
 					{
-						case 0: parts[r>>8].ctype = PT_PSCN; break;
-						case 1: parts[r>>8].ctype = PT_NSCN; break;
-						case 2: parts[r>>8].ctype = PT_SWCH; break;
+						case 0: parts[r>>8].ctype = PT_QRTZ; break;
+						case 1: parts[r>>8].ctype = PT_FILT; break;
+						case 2: parts[r>>8].ctype = PT_LCRY; break;
 					}
+					break;
+				case PT_SALT:
+					sim->create_part(r>>8, x+rx, y+ry, PT_ACID);
 					break;
 				case 0: // actual is PT_NONE
 				case PT_STNE:
@@ -253,6 +253,7 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 				sim->create_part(r>>8, x+rx, y+ry, PT_LAVA);
 				parts[r>>8].ctype = PT_DMND;
 				break;
+			// case PT_EXOT: 2 exotic matters and E185
 			case PT_EMP:
 				if (!(rand() % 1000) && parts[i].temp >= 2000)
 				{
@@ -283,6 +284,18 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 			case PT_PLSM:
 				sim->create_part(i, x, y, PT_PLSM);
 				return 0;
+			case PT_SAND:
+				if (parts[r>>8].temp >= 1750)
+				{
+					sim->part_change_type(r>>8, x+rx, y+ry, PT_LAVA);
+					switch (rand() % 3)
+					{
+						case 0: parts[r>>8].ctype = PT_PSCN; break;
+						case 1: parts[r>>8].ctype = PT_NSCN; break;
+						case 2: parts[r>>8].ctype = PT_SWCH; break;
+					}
+				}
+				break;
 			case PT_TESC:
 				sim->create_part(r>>8, x+rx, y+ry, PT_EMP);
 				break;
