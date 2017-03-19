@@ -60,6 +60,7 @@ Element_E185::Element_E185()
 int Element_E185::update(UPDATE_FUNC_ARGS)
 {
 	int r, s, rx, ry, rr, sctype, stmp, trade, exot_id, exot_pos_x, exot_pos_y, prev_type = 0;
+	int rrx, rry, rrr;
 	const int cooldown = 15;
 	const int limit = 20;
 	float tempTemp, tempPress;
@@ -166,6 +167,30 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 				else
 				{
 					sim->part_change_type(exot_id, exot_pos_x, exot_pos_y, PT_DYST);
+				}
+			case PT_LAVA:
+				switch (parts[r>>8].ctype)
+				{
+					case PT_SWCH:
+						for (trade = 0; trade < 6; trade ++)
+						{
+							rx = rand()%5-2; ry = rand()%5-2; rrr = pmap[y+ry][x+rx];
+							if ((rrr & 0xFF) == PT_LAVA && parts[rrr>>8].ctype == PT_BMTL)
+							{
+								prev_type = PT_BMTL;
+								parts[rrr>>8].ctype = PT_WIFI;
+							}
+						}
+						if (prev_type == PT_BMTL)
+							parts[r>>8].ctype = PT_WIFI;
+					break;
+					case PT_WIFI:
+						tempPress = sim->pv[y/CELL][x/CELL];
+						if (tempPress >= 30)
+							parts[r>>8].ctype = PT_PRTO;
+						else if (tempPress <= -30)
+							parts[r>>8].ctype = PT_PRTI;
+					break;
 				}
 			}
 		}
