@@ -5184,7 +5184,11 @@ void Simulation::RecalcFreeParticles()
 				if (parts[i].life>0 && (elem_properties&PROP_LIFE_DEC))
 				{
 					// automatically decrease life
-					parts[i].life--;
+					if (parts[i].life!=10 || (elem_properties&PROP_POWERED))
+					{
+						// kill on change to no life
+						parts[i].life--;
+					}
 					if (parts[i].life<=0 && (elem_properties&(PROP_LIFE_KILL_DEC|PROP_LIFE_KILL)))
 					{
 						// kill on change to no life
