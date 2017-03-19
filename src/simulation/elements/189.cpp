@@ -2254,7 +2254,7 @@ void Element_E189::FloodButton(Simulation *sim, int i, int x, int y)
 		while (x1 >= 0)
 		{
 			r = pmap[y][x1-1];
-			if ((r&0xFF) != PT_E189 && parts[r>>8].life == 26)
+			if ((r&0xFF) != PT_E189 || parts[r>>8].life != 26)
 			{
 				break;
 			}
@@ -2264,7 +2264,7 @@ void Element_E189::FloodButton(Simulation *sim, int i, int x, int y)
 		while (x2 < XRES)
 		{
 			r = pmap[y][x2+1];
-			if ((r&0xFF) != PT_E189 && parts[r>>8].life == 26)
+			if ((r&0xFF) != PT_E189 || parts[r>>8].life != 26)
 			{
 				break;
 			}
