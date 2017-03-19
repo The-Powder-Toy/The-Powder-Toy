@@ -62,16 +62,19 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 	int r, s, rx, ry, rr, sctype, stmp, trade, exot_id, exot_pos_x, exot_pos_y, prev_type = 0;
 	const int cooldown = 15;
 	const int limit = 20;
+	float tempTemp;
 	rr = sim->photons[y][x];
 	stmp = parts[i].tmp;
 	if (parts[i].tmp2 & 1)
 	{
+		tempTemp = parts[i].temp;
 		if (parts[i].life <= 1) {
 			for (s = parts[i].tmp; s > 0; s--)
 			{
 				rr = sim->create_part(-1, x + rand()%7-3, y + rand()%7-3, PT_E185);
 				if (rr >= 0)
 				{
+					parts[rr].temp = tempTemp;
 					parts[rr].tmp  = rand() % 5 + 2;
 					parts[rr].tmp2 = 1;
 					parts[rr].life = rand() % 16 + 3;
@@ -130,18 +133,38 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 		{
 			rx = rand()%5-2; ry = rand()%5-2;
 			r = pmap[y+ry][x+rx];
+			exot_pos_x = x + rx;
+			exot_pos_y = y + ry;
+			exot_id = r >> 8;
 			if ((r & 0xFF) == PT_EXOT)
 			{
-				exot_pos_x = x + rx;
-				exot_pos_y = y + ry;
-				exot_id = r >> 8;
 				goto E185_HasExot;
 			}
-			else if ((r & 0xFF) == PT_CO2)
-				exot_pos_x = x + rx;
-				exot_pos_y = y + ry;
-				exot_id = r >> 8;
-				prev_type = r & 0xFF;
+			switch (r & 0xFF)
+			{
+			case PT_CO2:
+				prev_type = PT_CO2;
+				break;
+			case PT_YEST:
+				if (stmp >= 16)
+				{
+					if (rand() % 100)
+					{
+						sim->part_change_type(i, x, y, PT_YEST);
+						parts[i].temp = parts[exot_id].temp;
+					}
+					else
+					{
+						sim->part_change_type(exot_id, exot_pos_x, exot_pos_y, PT_E189);
+						parts[exot_id].tmp = 5;
+						parts[exot_id].tmp2 = 1;
+					}
+				}
+				else
+				{
+					sim->part_change_type(exot_id, exot_pos_x, exot_pos_y, PT_DYST);
+				}
+			}
 		}
 		if (prev_type == PT_CO2)
 		{
@@ -256,13 +279,13 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 			case PT_PLSM:
 				sim->create_part(i, x, y, PT_PLSM);
 				return 0;
+			case PT_TESC:
+				sim->create_part(r>>8, x+rx, y+ry, PT_EMP);
+				break;
 			case PT_URAN:
 				sim->create_part(i, x, y, PT_PLUT);
 				sim->create_part(r>>8, x+rx, y+ry, PT_PLUT);
 				return 0;
-			case PT_TESC:
-				sim->create_part(r>>8, x+rx, y+ry, PT_EMP);
-				break;
 				
 			// particle's type is PT_DMND and PT_INDI are indestructible.
 			}
