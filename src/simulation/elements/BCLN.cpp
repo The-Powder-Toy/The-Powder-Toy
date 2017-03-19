@@ -70,7 +70,7 @@ int Element_BCLN::update(UPDATE_FUNC_ARGS)
 						continue;
 					rt = r&0xFF;
 					if (!(sim->elements[rt].Properties & PROP_CLONE)
-						&& rt!=PT_STKM && rt!=PT_STKM2 && rt<PT_NUM)
+						&& rt!=PT_STKM && rt!=PT_STKM2 && rt!=PT_E186 && rt<PT_NUM)
 					{
 						parts[i].ctype = rt;
 						if (rt==PT_LIFE || rt==PT_LAVA)
