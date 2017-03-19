@@ -216,10 +216,14 @@ int Element_E186::update(UPDATE_FUNC_ARGS)
 		case PT_VRSS: // if is infected EXOT
 			if (parts[i].tmp2 == PT_EXOT)
 				sim->create_part(r>>8, x, y, PT_CLNE);
+			else if (parts[i].tmp2 == PT_ETRD)
+				sim->create_part(r>>8, x, y, PT_PCLN);
 			break;
 		case PT_VIRS: // if is infected EXOT
 			if (parts[i].tmp2 == PT_EXOT)
 				sim->create_part(r>>8, x, y, PT_BCLN);
+			else if (parts[i].tmp2 == PT_ETRD)
+				sim->create_part(r>>8, x, y, PT_PBCN);
 			break;
 		default:
 			break;
