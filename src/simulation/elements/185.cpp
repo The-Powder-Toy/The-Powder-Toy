@@ -191,6 +191,7 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 				}
 			}
 			E185_eol_1:
+			;
 		}
 		else if ((rr & 0xFF) == PT_NEUT && !(rand()%10))
 		{
