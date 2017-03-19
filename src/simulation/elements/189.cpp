@@ -867,18 +867,21 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 	case 26: // button
 		if (rtmp)
 		{
-			parts[i].tmp = 0;
-			for (rx = -1; rx <= 1; rx++)
-				for (ry = -1; ry <= 1; ry++)
-				{
-					r = pmap[y+ry][x+rx];
-					if ((sim->elements[r&0xFF].Properties & PROP_CONDUCTS) && parts[r>>8].life == 0)
+			if (rtmp == 8)
+			{
+				for (rx = -1; rx <= 1; rx++)
+					for (ry = -1; ry <= 1; ry++)
 					{
-						parts[r>>8].life = 4;
-						parts[r>>8].ctype = r&0xFF;
-						sim->part_change_type(r>>8,x+rx,y+ry,PT_SPRK);
+						r = pmap[y+ry][x+rx];
+						if ((sim->elements[r&0xFF].Properties & PROP_CONDUCTS) && parts[r>>8].life == 0)
+						{
+							parts[r>>8].life = 4;
+							parts[r>>8].ctype = r&0xFF;
+							sim->part_change_type(r>>8,x+rx,y+ry,PT_SPRK);
+						}
 					}
-				}
+			}
+			parts[i].tmp --;
 		}
 	}
 	
@@ -1098,10 +1101,15 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 		break;
 	case 26:
 		ptmp = cpart->tmp;
-		if (ptmp)
-			{ *colr = 0xF0; *colg = 0xE9; *colb = 0xE0; }
+		if (ptmp < 0) ptmp = 0;
+		if (ptmp < 7)
+		{
+			*colr = 0x78 + ((ptmp * 0x89) >> 3);
+			*colg = 0x74 + ((ptmp * 0x10B) >> 4);
+			*colb = 0x70 + (ptmp << 4);
+		}
 		else
-			{ *colr = 0x78; *colg = 0x74; *colb = 0x70; }
+			{ *colr = 0xF0; *colg = 0xE8; *colb = 0xE0; }
 		break;
 	}
 	return 0;
@@ -2221,6 +2229,9 @@ void Element_E189::FloodButton(Simulation *sim, int i, int x, int y)
 	int coord_stack_size = 0;
 	int x1, x2, r;
 	
+	Particle * parts = sim->parts;
+	int (*pmap)[XRES] = sim->pmap;
+	
 	coord_stack = new unsigned short[coord_stack_limit][2];
 	coord_stack[coord_stack_size][0] = x;
 	coord_stack[coord_stack_size][1] = y;
@@ -2229,7 +2240,7 @@ void Element_E189::FloodButton(Simulation *sim, int i, int x, int y)
 	if ((parts[i].type != PT_E189) || (parts[i].life != 26) || parts[i].tmp)
 	{
 		delete[] coord_stack;
-		return 0;
+		return;
 	}
 	
 	do
@@ -2264,7 +2275,7 @@ void Element_E189::FloodButton(Simulation *sim, int i, int x, int y)
 		for (x=x1; x<=x2; x++)
 		{
 			r = pmap[y][x]>>8;
-			parts[r].tmp = 1;
+			parts[r].tmp = 8;
 			// parts[r].flags |= 0x80000000;
 		}
 		
