@@ -2919,10 +2919,18 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 			parts[index].ctype = PT_DUST;
 			return index;
 		}
-		if (p == -2 && type == PT_E189 && parts[index].life == 10)
+		if (p == -2 && type == PT_E189)
 		{
-			E189_pause &= ~2;
-			return index;
+			if (parts[index].life == 10)
+			{
+				E189_pause &= ~2;
+				return index;
+			}
+			else if (parts[index].life == 26 && !parts[index].tmp)
+			{
+				Element_E189::FloodButton(this, index, x, y);
+				return index;
+			}
 		}
 		if (p==-2 && ((elements[type].Properties & PROP_DRAWONCTYPE) || type==PT_CRAY))
 		{
@@ -3010,6 +3018,15 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 				if (t == PT_LIFE && v >= 0 && v < NGOL)
 					parts[pmap[y][x]>>8].ctype |= v<<8;
 				parts[pmap[y][x]>>8].temp = elements[t].Temperature;
+			}
+			else if (drawOn == PT_E189)
+			{
+				int E189ID = pmap[y][x]>>8;
+				if (parts[E189ID].life == 26 && !parts[E189ID].tmp)
+				{
+					Element_E189::FloodButton(this, E189ID, x, y);
+					return -1;
+				}
 			}
 			return -1;
 		}
