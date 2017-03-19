@@ -148,7 +148,7 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 			case PT_YEST:
 				if (stmp >= 16)
 				{
-					if (rand() % 10)
+					if (!(rand() % 10))
 					{
 						if (rand() % 100)
 						{
