@@ -55,15 +55,14 @@ int Element_FIGH::update(UPDATE_FUNC_ARGS)
 	}
 	playerst* figh = &sim->fighters[(unsigned char)parts[i].tmp];
 
-	int tarx, tary;
+	int tarx, tary, __parent;
 
 	parts[i].tmp2 = 0; //0 - stay in place, 1 - seek a stick man
-
-	if ((sim->E189_FIGH_pause & 0x40) && (figh->parentStickman >= 0))
-		return 0;
 	
 	//Set target cords
-	if (!(sim->E189_FIGH_pause & 1))
+	if ((sim->E189_FIGH_pause & 0x40) && (figh->parentStickman >= 0))
+		parts[i].tmp2 = 2;
+	else if (!(sim->E189_FIGH_pause & 1))
 	{
 		if (sim->player2.spwn)
 		{
@@ -138,11 +137,15 @@ int Element_FIGH::update(UPDATE_FUNC_ARGS)
 				figh->comm = (int)figh->comm | 0x04;
 		}
 		break;
+	case 2:
+		__parent = figh->parentStickman;
+		sim->fighters[__parent].comm = figh->comm;
 	default:
 		figh->comm = 0;
 		break;
 	}
 
+	
 	figh->pcomm = figh->comm;
 
 	Element_STKM::run_stickman(figh, UPDATE_FUNC_SUBCALL_ARGS);
