@@ -140,8 +140,8 @@ int Element_FIGH::update(UPDATE_FUNC_ARGS)
 		break;
 	case 2:
 		__parent = figh->parentStickman;
-		sim->fighters[__parent].comm = figh->comm;
-		sim->fighters[__parent].pcomm = figh->pcomm;
+		figh->comm = sim->fighters[__parent].comm;
+		figh->pcomm = sim->fighters[__parent].pcomm;
 	default:
 		figh->comm = 0;
 		figh->pcomm = 0;
