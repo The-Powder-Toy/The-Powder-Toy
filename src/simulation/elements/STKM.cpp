@@ -74,9 +74,9 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 		r = playerp->firstChild;
 		while (r >= 0)
 		{
-			sim->fighters[r].comm = playerp.comm;
-			sim->fighters[r].pcomm = playerp.pcomm;
-			Element_STKM::run_stickman(&sim->fighters[r], UPDATE_FUNC_SUBCALL_ARGS)
+			sim->fighters[r].comm = playerp->comm;
+			sim->fighters[r].pcomm = playerp->pcomm;
+			Element_STKM::run_stickman(&sim->fighters[r], UPDATE_FUNC_SUBCALL_ARGS);
 			r = sim->fighters[r].nextStickman;
 		}
 	}
