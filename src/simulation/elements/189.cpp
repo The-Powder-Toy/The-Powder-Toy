@@ -646,7 +646,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						{
 							rtmp = parts[i].tmp;
 							if (rtmp >= 0)
-								sim->E189_FIGH_pause_check |= 1 << (rtmp < 5 ? (rtmp > 0 ? rtmp : 0) : 5);
+								sim->E189_FIGH_pause_check |= 1 << (rtmp < 6 ? (rtmp > 0 ? rtmp : 0) : 6);
 							else
 								sim->E189_pause |= 4;
 							goto break1a;
