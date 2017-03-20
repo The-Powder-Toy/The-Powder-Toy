@@ -157,7 +157,7 @@ void Element_FIGH::removeFIGHNode(Simulation *sim, int i)
 
 	playerst* parent_s = NULL;
 
-	tmp = (unsigned char)(parts[i].tmp);
+	tmp = (unsigned char)(sim->parts[i].tmp);
 	prev_f = sim->fighters[tmp].prevStickman;
 	next_f = sim->fighters[tmp].nextStickman;
 	parent_f = sim->fighters[tmp].parentStickman;
