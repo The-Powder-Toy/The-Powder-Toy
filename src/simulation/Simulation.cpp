@@ -2357,38 +2357,38 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 				}
 			}
 			else {
-			switch (r&0xFF)
-			{
-			case PT_INVIS:
-				if (pv[ny/CELL][nx/CELL]<=4.0f && pv[ny/CELL][nx/CELL]>=-4.0f)
+				switch (r&0xFF)
 				{
-					part_change_type(i,x,y,PT_NEUT);
+				case PT_INVIS:
+					if (pv[ny/CELL][nx/CELL]<=4.0f && pv[ny/CELL][nx/CELL]>=-4.0f)
+					{
+						part_change_type(i,x,y,PT_NEUT);
+						parts[i].ctype = 0;
+					}
+					break;
+				case PT_BIZR: case PT_BIZRG: case PT_BIZRS:
+					part_change_type(i, x, y, PT_ELEC);
 					parts[i].ctype = 0;
-				}
-				break;
-			case PT_BIZR: case PT_BIZRG: case PT_BIZRS:
-				part_change_type(i, x, y, PT_ELEC);
-				parts[i].ctype = 0;
-				break;
-			case PT_H2:
-				if (!(parts[i].tmp&0x1))
-				{
-					part_change_type(i, x, y, PT_PROT);
-					parts[i].ctype = 0;
-					parts[i].tmp2 = 0x1;
+					break;
+				case PT_H2:
+					if (!(parts[i].tmp&0x1))
+					{
+						part_change_type(i, x, y, PT_PROT);
+						parts[i].ctype = 0;
+						parts[i].tmp2 = 0x1;
 
-					create_part(r>>8, x, y, PT_ELEC);
-					return 1;
+						create_part(r>>8, x, y, PT_ELEC);
+						return 1;
+					}
+					break;
+				case PT_GPMP:
+					if (parts[r>>8].life == 0)
+					{
+						part_change_type(i, x, y, PT_GRVT);
+						parts[i].tmp = parts[r>>8].temp - 273.15f;
+					}
+					break;
 				}
-				break;
-			case PT_GPMP:
-				if (parts[r>>8].life == 0)
-				{
-					part_change_type(i, x, y, PT_GRVT);
-					parts[i].tmp = parts[r>>8].temp - 273.15f;
-				}
-				break;
-			}
 			}
 		}
 		else if (parts[i].type == PT_NEUT)
