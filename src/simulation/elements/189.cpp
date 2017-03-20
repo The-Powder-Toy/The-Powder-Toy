@@ -328,11 +328,14 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						continue;
 					if ((r&0xFF) == PT_SPRK && parts[r>>8].life == 3)
 					{
-						if (rtmp & 1)
-							sim->E189_pause |= 2;
-						else
-							sim->E189_pause |= 1;
-						if ((rtmp & 2) && (rx != ry))
+						switch (rtmp & 3)
+						{
+						case 0: sim->E189_pause |=  0x01; break;
+						case 1: sim->E189_pause |=  0x02; break;
+						case 2: sim->E189_pause |=  0x08; break;
+						case 3: sim->E189_pause &= ~0x08; break;
+						}
+						if ((rtmp & 4) && (rx != ry))
 							Element_E189::InsertText(sim, i, x, y, -rx, -ry);
 					}
 				}
