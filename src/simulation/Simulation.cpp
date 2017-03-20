@@ -5249,55 +5249,58 @@ void Simulation::CheckStacking()
 {
 	bool excessive_stacking_found = false;
 	force_stacking_check = false;
-	for (int y = 0; y < YRES; y++)
+	if (!no_generating_BHOL)
 	{
-		for (int x = 0; x < XRES; x++)
+		for (int y = 0; y < YRES; y++)
 		{
-			// Use a threshold, since some particle stacking can be normal (e.g. BIZR + FILT)
-			// Setting pmap_count[y][x] > NPART means BHOL will form in that spot
-			if (pmap_count[y][x]>5)
+			for (int x = 0; x < XRES; x++)
 			{
-				if (bmap[y/CELL][x/CELL]==WL_EHOLE)
+				// Use a threshold, since some particle stacking can be normal (e.g. BIZR + FILT)
+				// Setting pmap_count[y][x] > NPART means BHOL will form in that spot
+				if (pmap_count[y][x]>5)
 				{
-					// Allow more stacking in E-hole
-					if (pmap_count[y][x]>1500)
+					if (bmap[y/CELL][x/CELL]==WL_EHOLE)
+					{
+						// Allow more stacking in E-hole
+						if (pmap_count[y][x]>1500)
+						{
+							pmap_count[y][x] = pmap_count[y][x] + NPART;
+							excessive_stacking_found = 1;
+						}
+					}
+					else if (pmap_count[y][x]>1500 || (rand()%1600)<=(pmap_count[y][x]+100))
 					{
 						pmap_count[y][x] = pmap_count[y][x] + NPART;
-						excessive_stacking_found = 1;
+						excessive_stacking_found = true;
 					}
-				}
-				else if (pmap_count[y][x]>1500 || (rand()%1600)<=(pmap_count[y][x]+100))
-				{
-					pmap_count[y][x] = pmap_count[y][x] + NPART;
-					excessive_stacking_found = true;
 				}
 			}
 		}
-	}
-	if (excessive_stacking_found)
-	{
-		for (int i = 0; i <= parts_lastActiveIndex; i++)
+		if (excessive_stacking_found)
 		{
-			if (parts[i].type)
+			for (int i = 0; i <= parts_lastActiveIndex; i++)
 			{
-				int t = parts[i].type;
-				int x = (int)(parts[i].x+0.5f);
-				int y = (int)(parts[i].y+0.5f);
-				if (x>=0 && y>=0 && x<XRES && y<YRES && !(elements[t].Properties&TYPE_ENERGY))
+				if (parts[i].type)
 				{
-					if (pmap_count[y][x]>=NPART)
+					int t = parts[i].type;
+					int x = (int)(parts[i].x+0.5f);
+					int y = (int)(parts[i].y+0.5f);
+					if (x>=0 && y>=0 && x<XRES && y<YRES && !(elements[t].Properties&TYPE_ENERGY))
 					{
-						if (pmap_count[y][x]>NPART)
+						if (pmap_count[y][x]>=NPART)
 						{
-							create_part(i, x, y, PT_NBHL);
-							parts[i].temp = MAX_TEMP;
-							parts[i].tmp = pmap_count[y][x]-NPART;//strength of grav field
-							if (parts[i].tmp>51200) parts[i].tmp = 51200;
-							pmap_count[y][x] = NPART;
-						}
-						else
-						{
-							kill_part(i);
+							if (pmap_count[y][x]>NPART)
+							{
+								create_part(i, x, y, PT_NBHL);
+								parts[i].temp = MAX_TEMP;
+								parts[i].tmp = pmap_count[y][x]-NPART;//strength of grav field
+								if (parts[i].tmp>51200) parts[i].tmp = 51200;
+								pmap_count[y][x] = NPART;
+							}
+							else
+							{
+								kill_part(i);
+							}
 						}
 					}
 				}
@@ -5548,9 +5551,14 @@ void Simulation::AfterSim()
 	{
 		if (E189_pause & 1)
 			sys_pause = true;
-		if (E189_pause & 0x000000FC)
-			E189_FIGH_pause ^= (E189_pause >> 2) & 0x3F;
-		E189_pause &= ~0x000000FD;
+		if (E189_pause & 4)
+			no_generating_BHOL = !no_generating_BHOL;
+		E189_pause &= ~0x00000005;
+	}
+	if (E189_FIGH_pause_check)
+	{
+		E189_FIGH_pause ^= E189_FIGH_pause_check;
+		E189_FIGH_pause_check = 0;
 	}
 }
 
@@ -5576,6 +5584,7 @@ Simulation::Simulation():
 	etrd_life0_count(0),
 	lightningRecreate(0),
 	gravWallChanged(false),
+	no_generating_BHOL(false),
 	CGOL(0),
 	GSPEED(1),
 	edgeMode(0),
@@ -5585,6 +5594,7 @@ Simulation::Simulation():
 	water_equal_test(0),
 	sys_pause(0),
 	E189_pause(0),
+	E189_FIGH_pause_check(0),
 	E189_FIGH_pause(0),
 	framerender(0),
 	pretty_powder(0),

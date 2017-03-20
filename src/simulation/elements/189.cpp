@@ -650,7 +650,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			if (rtmp >= 0)
 				rt = 1 & (sim->E189_FIGH_pause >> (rtmp & 0x1F));
 			else
-				rt = (int)sim->no_generating_BHOL;
+				rt = (int)(sim->no_generating_BHOL);
 			for (rr = 0; rr < 4; rr++)
 				if (BOUNDS_CHECK)
 				{

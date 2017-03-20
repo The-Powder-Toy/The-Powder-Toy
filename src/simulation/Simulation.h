@@ -114,12 +114,14 @@ public:
 	int water_equal_test;
 	int sys_pause;
 	int E189_pause;
+	int E189_FIGH_pause_check;
 	int E189_FIGH_pause;
 	int framerender;
 	int pretty_powder;
 	int sandcolour;
 	int sandcolour_frame;
 	int DEFAULT_PT_NUM;
+	bool no_generating_BHOL;
 
 	int Load(GameSave * save);
 	int Load(int x, int y, GameSave * save);
