@@ -51,6 +51,7 @@ public:
 		{
 			try
 			{
+				cc->HistorySnapshot();
 				cc->gameModel->SetSave(cc->search->GetLoadedSave());
 				cc->search->ReleaseLoadedSave();
 			}
@@ -73,6 +74,7 @@ public:
 		{
 			try
 			{
+				cc->HistorySnapshot();
 				cc->LoadSave(cc->activePreview->GetSaveInfo());
 			}
 			catch(GameModelException & ex)
@@ -144,7 +146,6 @@ GameController::GameController():
 
 	gameView->AttachController(this);
 	gameModel->AddObserver(gameView);
-	gameModel->SetAllowHistory();
 
 	gameView->SetDebugHUD(Client::Ref().GetPrefBool("Renderer.DebugMode", false));
 
@@ -253,11 +254,6 @@ void GameController::HistoryRestore()
 
 void GameController::HistorySnapshot()
 {
-	// callbacks during initialization create two empty snapshots on startup
-	// Prevent that from happening here
-	if (!gameModel->GetAllowHistory())
-		return;
-
 	std::deque<Snapshot*> history = gameModel->GetHistory();
 	unsigned int historyPosition = gameModel->GetHistoryPosition();
 	Snapshot * newSnap = gameModel->GetSimulation()->CreateSnapshot();
@@ -288,6 +284,8 @@ void GameController::HistorySnapshot()
 void GameController::HistoryForward()
 {
 	std::deque<Snapshot*> history = gameModel->GetHistory();
+	if (!history.size())
+		return;
 	unsigned int historyPosition = gameModel->GetHistoryPosition();
 	unsigned int newHistoryPosition = std::min((size_t)historyPosition+1, history.size());
 	Snapshot *snap;
@@ -1255,6 +1253,7 @@ void GameController::OpenLocalBrowse()
 		virtual  ~LocalSaveOpenCallback() {};
 		virtual void FileSelected(SaveFile* file)
 		{
+			c->HistorySnapshot();
 			c->LoadSaveFile(file);
 			delete file;
 		}
@@ -1491,6 +1490,7 @@ void GameController::ChangeBrush()
 
 void GameController::ClearSim()
 {
+	HistorySnapshot();
 	gameModel->SetSave(NULL);
 	gameModel->ClearSimulation();
 }
@@ -1499,10 +1499,12 @@ void GameController::ReloadSim()
 {
 	if(gameModel->GetSave() && gameModel->GetSave()->GetGameSave())
 	{
+		HistorySnapshot();
 		gameModel->SetSave(gameModel->GetSave());
 	}
 	else if(gameModel->GetSaveFile() && gameModel->GetSaveFile()->GetGameSave())
 	{
+		HistorySnapshot();
 		gameModel->SetSaveFile(gameModel->GetSaveFile());
 	}
 }
