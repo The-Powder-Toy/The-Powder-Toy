@@ -131,7 +131,7 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 
 	initSimulationAPI();
 	initInterfaceAPI();
-	initStickmanAPIAPI();
+	initStickmanAPI();
 	initRendererAPI();
 	initElementsAPI();
 	initGraphicsAPI();
