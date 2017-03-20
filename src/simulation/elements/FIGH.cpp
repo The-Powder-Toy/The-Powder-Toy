@@ -146,4 +146,41 @@ int Element_FIGH::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
+//#TPT-Directive ElementHeader Element_FIGH static void removeFIGHNode(Simulation *sim, int i)
+void Element_FIGH::removeFIGHNode(Simulation *sim, int i)
+{
+	int prev_f, next_f, parent_f;
+	unsigned char tmp;
+
+	playerst* parent_s = NULL;
+
+	tmp = (unsigned char)(parts[i].tmp);
+	prev_f = sim->fighters[tmp].prevStickman;
+	next_f = sim->fighters[tmp].nextStickman;
+	parent_f = sim->fighters[tmp].parentStickman;
+	
+	if (parent_f >= 0 && parent_f < MAX_FIGHTERS)
+		parent_s = &sim->fighters[(unsigned char)parent_f];
+	else if (parent_f == MAX_FIGHTERS)
+		parent_s = &sim->player;
+	else if (parent_f == MAX_FIGHTERS + 1)
+		parent_s = &sim->player2;
+	
+	if (prev_f >= 0) // if previous (non-first) fighter is exist
+		sim->fighters[(unsigned char)prev_f].nextStickman = next_f;
+	else if (parent_s != NULL)
+	{
+		parent_s->firstChild = next_f;
+	}
+
+	if (next_f >= 0) // if next (non-last) fighter is exist
+		sim->fighters[(unsigned char)next_f].prevStickman = prev_f;
+	else if (parent_s != NULL)
+	{
+		parent_s->lastChild = prev_f;
+	}
+	
+	Element_STKM::removeSTKMChilds(sim, &sim->fighters[tmp]);
+}
+
 Element_FIGH::~Element_FIGH() {}
