@@ -218,7 +218,7 @@ int Element_TRON::new_tronhead(Simulation * sim, int x, int y, int i, int direct
 	if ((r & 0xFF) == PT_E189)
 	{
 		int ri = r >> 8;
-		sim->parts[ri].tmp &= 0x60000;
+		sim->parts[ri].tmp &= 0xE0000;
 		sim->parts[ri].tmp |= 1 | direction<<5 | (sim->parts[i].tmp & 0x1F80A);
 		if (ri > i)
 			sim->parts[ri].tmp |= TRON_WAIT;
