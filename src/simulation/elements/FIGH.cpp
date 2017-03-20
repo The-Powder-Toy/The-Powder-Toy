@@ -136,17 +136,18 @@ int Element_FIGH::update(UPDATE_FUNC_ARGS)
 			    || sim->eval_move(PT_FIGH, 2*figh->legs[12]-figh->legs[14], figh->legs[13]+5, NULL))
 				figh->comm = (int)figh->comm | 0x04;
 		}
+		figh->pcomm = figh->comm;
 		break;
 	case 2:
 		__parent = figh->parentStickman;
 		sim->fighters[__parent].comm = figh->comm;
+		sim->fighters[__parent].pcomm = figh->pcomm;
 	default:
 		figh->comm = 0;
+		figh->pcomm = 0;
 		break;
 	}
 
-	
-	figh->pcomm = figh->comm;
 
 	Element_STKM::run_stickman(figh, UPDATE_FUNC_SUBCALL_ARGS);
 	return 0;
