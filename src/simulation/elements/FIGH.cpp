@@ -59,6 +59,9 @@ int Element_FIGH::update(UPDATE_FUNC_ARGS)
 
 	parts[i].tmp2 = 0; //0 - stay in place, 1 - seek a stick man
 
+	if ((sim->E189_FIGH_pause & 0x40) && (figh->parentStickman >= 0))
+		return 0;
+	
 	//Set target cords
 	if (!(sim->E189_FIGH_pause & 1))
 	{
