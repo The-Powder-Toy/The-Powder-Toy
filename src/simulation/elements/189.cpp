@@ -697,7 +697,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 										parts[rii].tmp2 = parts[ri>>8].tmp2;
 										parts[rii].tmp3 = parts[i].tmp;
 										if (rii > i)
-											parts[rii].flags |= FLAG_SKIPMOVE;
+											parts[rii].flags |= FLAG_SKIPMOVE; // set wait flag
 									}
 									r = pmap[y-rry][x-rrx]; // variable "r" value override
 									if ((r & 0xFF) == PT_E189 && parts[r>>8].life == 25)
@@ -710,7 +710,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 											parts[rii].tmp2 = parts[ri>>8].tmp2;
 											parts[rii].tmp3 = parts[r>>8].tmp; // fixed overflow?
 											if (rii > i)
-												parts[rii].flags |= FLAG_SKIPMOVE;
+												parts[rii].flags |= FLAG_SKIPMOVE; // set wait flag
 										}
 									}
 									goto break1b;
