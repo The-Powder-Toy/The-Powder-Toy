@@ -67,7 +67,7 @@ int Element_STKM::graphics(GRAPHICS_FUNC_ARGS)
 
 //#TPT-Directive ElementHeader Element_STKM static int run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
-	int r, rx, ry;
+	int r, rx, ry, new_FIGH_id;
 	int t = parts[i].type;
 	float pp, d;
 	float dt = 0.9;// /(FPSB*FPSB);  //Delta time in square
@@ -479,6 +479,19 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 					parts[np].vx -= -gvy*(5*((((int)playerp->pcomm)&0x02) == 0x02) - 5*(((int)(playerp->pcomm)&0x01) == 0x01));
 					parts[np].vy -= gvx*(5*((((int)playerp->pcomm)&0x02) == 0x02) - 5*(((int)(playerp->pcomm)&0x01) == 0x01));
 					parts[i].vx -= (sim->elements[(int)playerp->elem].Weight*parts[np].vx)/1000;
+					if (playerp->elem == PT_FIGH)
+					{
+						new_FIGH_id = parts[np].tmp;
+						if (playerp->firstChild < 0)
+							playerp->firstChild = new_FIGH_id;
+						playerp->lastChild = new_FIGH_id;
+						if (parts[i].type == PT_FIGH)
+							sim->fighters[new_FIGH_id].parentStickman = parts[i].tmp;
+						else if (parts[i].type == PT_STKM)
+							sim->fighters[new_FIGH_id].parentStickman = MAX_FIGHTERS;
+						else if (parts[i].type == PT_STKM2)
+							sim->fighters[new_FIGH_id].parentStickman = MAX_FIGHTERS + 1;
+					}
 				}
 				playerp->frames = 0;
 			}
@@ -699,6 +712,11 @@ void Element_STKM::STKM_init_legs(Simulation * sim, playerst *playerp, int i)
 	playerp->pcomm = 0;
 	playerp->frames = 0;
 	playerp->__flags = 0;
+	playerp->parentStickman = -1;
+	playerp->firstChild = -1;
+	playerp->prevStickman = -1;
+	playerp->nextStickman = -1;
+	playerp->lastChild = -1;
 }
 
 //#TPT-Directive ElementHeader Element_STKM static void STKM_set_element(Simulation *sim, playerst *playerp, int element)
