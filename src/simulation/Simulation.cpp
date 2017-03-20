@@ -2343,6 +2343,19 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 			}
 			else if ((r&0xFF) == PT_FILT)
 				parts[i].ctype = Element_FILT::interactWavelengths(&parts[r>>8], parts[i].ctype);
+			else if ((r&0xFF) == PT_E189)
+			{
+				switch (parts[r>>8].life)
+				{
+				case 5:
+					Element_E189::interactDir(this, i, x, y, &parts[i], &parts[r>>8]);
+					break;
+				case 7:
+					if (!(parts[i].flags & FLAG_SKIPMOVE))
+						Element_E189::duplicatePhotons(this, i, x, y, &parts[i], &parts[r>>8]);
+					break;
+				}
+			}
 			else if ((r&0xFF) == PT_INVIS)
 			{
 				if (pv[ny/CELL][nx/CELL]<=4.0f && pv[ny/CELL][nx/CELL]>=-4.0f)
@@ -2371,19 +2384,6 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 				{
 					part_change_type(i, x, y, PT_GRVT);
 					parts[i].tmp = parts[r>>8].temp - 273.15f;
-				}
-			}
-			else if ((r&0xFF) == PT_E189)
-			{
-				switch (parts[r>>8].life)
-				{
-				case 5:
-					Element_E189::interactDir(this, i, x, y, &parts[i], &parts[r>>8]);
-					break;
-				case 7:
-					if (!(parts[i].flags & FLAG_SKIPMOVE))
-						Element_E189::duplicatePhotons(this, i, x, y, &parts[i], &parts[r>>8]);
-					break;
 				}
 			}
 		}
