@@ -638,13 +638,19 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						if ((r & 0xFF) == PT_SPRK && parts[r>>8].life == 3)
 						{
 							rtmp = parts[i].tmp;
-							sim->E189_pause |= 4 << (rtmp < 5 ? (rtmp > 0 ? rtmp : 0) : 5);
+							if (rtmp >= 0)
+								sim->E189_FIGH_pause_check |= 1 << (rtmp < 5 ? (rtmp > 0 ? rtmp : 0) : 5);
+							else
+								sim->E189_pause |= 4;
 							goto break1a;
 						}
 					}
 			break;
 		case 9:
-			rt = 1 & (sim->E189_FIGH_pause >> (rtmp & 0x1F));
+			if (rtmp >= 0)
+				rt = 1 & (sim->E189_FIGH_pause >> (rtmp & 0x1F));
+			else
+				rt = (int)sim->no_generating_BHOL;
 			for (rr = 0; rr < 4; rr++)
 				if (BOUNDS_CHECK)
 				{
