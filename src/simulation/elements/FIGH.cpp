@@ -54,7 +54,7 @@ int Element_FIGH::update(UPDATE_FUNC_ARGS)
 		return 1;
 	}
 	playerst* figh = &sim->fighters[(unsigned char)parts[i].tmp];
-	playerst* parent_s = NULL
+	playerst* parent_s = NULL;
 
 	int tarx, tary, __parent;
 
