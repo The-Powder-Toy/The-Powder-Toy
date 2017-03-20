@@ -2356,7 +2356,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 					break;
 				}
 			}
-			else {
+			else if (!(E189_pause & 0x8)) {
 				switch (r&0xFF)
 				{
 				case PT_INVIS:
