@@ -67,7 +67,7 @@ int Element_STKM::graphics(GRAPHICS_FUNC_ARGS)
 
 //#TPT-Directive ElementHeader Element_STKM static int run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
-	int r, rx, ry, new_FIGH_id;
+	int r, rx, ry, old_FIGH_id, new_FIGH_id;
 	int t = parts[i].type;
 	float pp, d;
 	float dt = 0.9;// /(FPSB*FPSB);  //Delta time in square
@@ -481,10 +481,15 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 					parts[i].vx -= (sim->elements[(int)playerp->elem].Weight*parts[np].vx)/1000;
 					if (playerp->elem == PT_FIGH)
 					{
+						old_FIGH_id = playerp->lastChild;
 						new_FIGH_id = parts[np].tmp;
+						playerp->lastChild = new_FIGH_id;
 						if (playerp->firstChild < 0)
 							playerp->firstChild = new_FIGH_id;
-						playerp->lastChild = new_FIGH_id;
+						else {
+							sim->fighters[new_FIGH_id].prevStickman = old_FIGH_id;
+							sim->fighters[old_FIGH_id].nextStickman = new_FIGH_id;
+						}
 						if (parts[i].type == PT_FIGH)
 							sim->fighters[new_FIGH_id].parentStickman = parts[i].tmp;
 						else if (parts[i].type == PT_STKM)
