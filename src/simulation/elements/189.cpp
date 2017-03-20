@@ -366,41 +366,44 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 					}
 				}
 	case 12: // SPRK reflector
-		for (rx = -1; rx <= 1; rx++)
-			for (ry = -1; ry <= 1; ry++)
-				if (BOUNDS_CHECK && (rx || ry))
-				{
-					r = pmap[y+ry][x+rx];
-					rt = r & 0xFF;
-					rtmp = parts[i].tmp;
-					if (!r)
-						continue;
-					if (rt == PT_SPRK && parts[r>>8].life == 3)
+		if (!(rtmp & 0x4))
+		{
+			for (rx = -1; rx <= 1; rx++)
+				for (ry = -1; ry <= 1; ry++)
+					if (BOUNDS_CHECK && (rx || ry))
 					{
-						switch (rtmp & 0x3)
+						r = pmap[y+ry][x+rx];
+						rt = r & 0xFF;
+						rtmp = parts[i].tmp;
+						if (!r)
+							continue;
+						if (rt == PT_SPRK && parts[r>>8].life == 3)
 						{
-						case 0: parts[i].tmp = 1; break;
-						case 1: parts[i].tmp = 0; break;
-						case 2:
-							rr = pmap[y-ry][x-rx];
-							if ((rr & 0xFF) == PT_E189)
-								sim->kill_part(rr >> 8);
-							else
+							switch (rtmp & 0x3)
 							{
-								ri = sim->create_part(-1,x-rx,y-ry,PT_E189,12);
-								if (ri >= 0)
-									parts[ri].tmp = 3;
+							case 0: parts[i].tmp = 1; break;
+							case 1: parts[i].tmp = 0; break;
+							case 2:
+								rr = pmap[y-ry][x-rx];
+								if ((rr & 0xFF) == PT_E189)
+									sim->kill_part(rr >> 8);
+								else
+								{
+									ri = sim->create_part(-1,x-rx,y-ry,PT_E189,12);
+									if (ri >= 0)
+										parts[ri].tmp = 3;
+								}
+								break;
 							}
-							break;
+						}
+						if ((rtmp & 0x1) && sim->elements[rt].Properties & PROP_CONDUCTS && parts[r>>8].life == 0)
+						{
+							parts[r>>8].life = 4;
+							parts[r>>8].ctype = rt;
+							sim->part_change_type(r>>8,x+rx,y+ry,PT_SPRK);
 						}
 					}
-					if ((rtmp & 0x1) && sim->elements[rt].Properties & PROP_CONDUCTS && parts[r>>8].life == 0)
-					{
-						parts[r>>8].life = 4;
-						parts[r>>8].ctype = rt;
-						sim->part_change_type(r>>8,x+rx,y+ry,PT_SPRK);
-					}
-				}
+		}
 		break;
 	case 14: // dynamic decoration (DECO2)
 		switch (parts[i].tmp2 >> 24)
