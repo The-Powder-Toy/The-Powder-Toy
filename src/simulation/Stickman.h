@@ -16,6 +16,10 @@ struct playerst
 	bool rocketBoots;
 	int spawnID;         //id of the SPWN particle that spawns it
 	int parentStickman;
+	int firstChild;
+	int prevChild;
+	int nextChild;
+	int lastChild;
 };
 
 #endif
