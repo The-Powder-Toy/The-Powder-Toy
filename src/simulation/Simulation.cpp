@@ -2779,10 +2779,12 @@ void Simulation::kill_part(int i)//kills particle number i
 	if (parts[i].type == PT_STKM)
 	{
 		player.spwn = 0;
+		Element_STKM::removeSTKMChilds(this, &player);
 	}
 	else if (parts[i].type == PT_STKM2)
 	{
 		player2.spwn = 0;
+		Element_STKM::removeSTKMChilds(this, &player2);
 	}
 	else if (parts[i].type == PT_SPAWN)
 	{
@@ -2798,6 +2800,7 @@ void Simulation::kill_part(int i)//kills particle number i
 	{
 		fighters[(unsigned char)parts[i].tmp].spwn = 0;
 		fighcount--;
+		Element_FIGH::removeFIGHNode(this, i);
 	}
 	else if (parts[i].type == PT_SOAP)
 	{
@@ -2834,9 +2837,15 @@ void Simulation::part_change_type(int i, int x, int y, int t)//changes the type 
 	}
 
 	if (parts[i].type == PT_STKM)
+	{
 		player.spwn = 0;
+		Element_STKM::removeSTKMChilds(this, &player);
+	}
 	else if (parts[i].type == PT_STKM2)
+	{
 		player2.spwn = 0;
+		Element_STKM::removeSTKMChilds(this, &player2);
+	}
 	else if (parts[i].type == PT_SPAWN)
 	{
 		if (player.spawnID == i)
@@ -2851,6 +2860,7 @@ void Simulation::part_change_type(int i, int x, int y, int t)//changes the type 
 	{
 		fighters[(unsigned char)parts[i].tmp].spwn = 0;
 		fighcount--;
+		Element_FIGH::removeFIGHNode(this, i);
 	}
 	else if (parts[i].type == PT_SOAP)
 		Element_SOAP::detach(this, i);
@@ -3064,15 +3074,18 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 		if (parts[p].type == PT_STKM)
 		{
 			player.spwn = 0;
+			Element_STKM::removeSTKMChilds(this, &player);
 		}
 		else if (parts[p].type == PT_STKM2)
 		{
 			player2.spwn = 0;
+			Element_STKM::removeSTKMChilds(this, &player2);
 		}
 		else if (parts[p].type == PT_FIGH)
 		{
 			fighters[(unsigned char)parts[p].tmp].spwn = 0;
 			fighcount--;
+			Element_FIGH::removeFIGHNode(this, p);
 		}
 		else if (parts[p].type == PT_SOAP)
 		{
