@@ -131,6 +131,7 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 
 	initSimulationAPI();
 	initInterfaceAPI();
+	initStickmanAPIAPI();
 	initRendererAPI();
 	initElementsAPI();
 	initGraphicsAPI();
@@ -2140,6 +2141,100 @@ int LuaScriptInterface::simulation_createDebugComponent (lua_State * l)
 		}
 	}
 	return 0;
+}
+
+void LuaScriptInterface::initStickmanAPI()
+{
+	//Methods
+	struct luaL_Reg rendererAPIMethods [] = {
+		{"parent", stickman_parent},
+		{"firstChild", stickman_firstChild},
+		{"lastChild", stickman_lastChild},
+		{"previousSibling", stickman_previousSibling},
+		{"nextSibling", stickman_nextSibling},
+		{NULL, NULL}
+	};
+	luaL_register(l, "stickman", rendererAPIMethods);
+}
+
+void LuaScriptInterface::get_stickman_ptr (int id, playerst* st)
+{
+	if (stickmanID >= 0 && stickmanID < MAX_FIGHTERS)
+		*st = &luacon_sim->fighters;
+	else if (stickmanID == 100)
+		*st = &luacon_sim->player;
+	else if (stickmanID == 101)
+		*st = &luacon_sim->player2;
+}
+
+int LuaScriptInterface::stickman_parent(lua_State * l)
+{
+	if (lua_gettop(l) < 1)
+		return luaL_error(l, "Invalid argument length");
+	int stickmanID = luaL_checkinteger(l, 1);
+	playerst* stickman = NULL;
+	get_stickman_ptr();
+	if (stickman == NULL)
+		lua_pushinteger(l, -1);
+	else
+		lua_pushinteger(l, stickman->parentStickman);
+	return 1;
+}
+
+int LuaScriptInterface::stickman_firstChild(lua_State * l)
+{
+	if (lua_gettop(l) < 1)
+		return luaL_error(l, "Invalid argument length");
+	int stickmanID = luaL_checkinteger(l, 1);
+	playerst* stickman = NULL;
+	get_stickman_ptr();
+	if (stickman == NULL)
+		lua_pushinteger(l, -1);
+	else
+		lua_pushinteger(l, stickman->firstChild);
+	return 1;
+}
+
+int LuaScriptInterface::stickman_lastChild(lua_State * l)
+{
+	if (lua_gettop(l) < 1)
+		return luaL_error(l, "Invalid argument length");
+	int stickmanID = luaL_checkinteger(l, 1);
+	playerst* stickman = NULL;
+	get_stickman_ptr();
+	if (stickman == NULL)
+		lua_pushinteger(l, -1);
+	else
+		lua_pushinteger(l, stickman->lastChild);
+	return 1;
+}
+
+int LuaScriptInterface::stickman_previousSibling(lua_State * l)
+{
+	if (lua_gettop(l) < 1)
+		return luaL_error(l, "Invalid argument length");
+	int stickmanID = luaL_checkinteger(l, 1);
+	playerst* stickman = NULL;
+	get_stickman_ptr();
+	if (stickman == NULL)
+		lua_pushinteger(l, -1);
+	else
+		lua_pushinteger(l, stickman->prevStickman);
+	return 1;
+}
+
+int LuaScriptInterface::stickman_nextSibling(lua_State * l)
+{
+	if (lua_gettop(l) < 1)
+		return luaL_error(l, "Invalid argument length");
+	int stickmanID = luaL_checkinteger(l, 1);
+	playerst* stickman = NULL;
+	get_stickman_ptr();
+	if (stickman == NULL)
+		lua_pushinteger(l, -1);
+	else
+		lua_pushinteger(l, stickman->nextStickman);
+	return 1;
 }
 
 //// Begin Renderer API
