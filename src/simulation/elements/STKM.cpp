@@ -801,7 +801,7 @@ void Element_STKM::STKM_set_life_1(Simulation *sim, int s, int i)
 //#TPT-Directive ElementHeader Element_STKM static void removeSTKMChilds(Simulation *sim, playerst* player)
 void Element_STKM::removeSTKMChilds(Simulation *sim, playerst* player)
 {
-	int child_f = player.firstChild;
+	int child_f = player->firstChild;
 	while (child_f >= 0)
 	{
 		sim->fighters[child_f].parentStickman = -1;
