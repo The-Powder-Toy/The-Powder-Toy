@@ -54,6 +54,7 @@ int Element_FIGH::update(UPDATE_FUNC_ARGS)
 		return 1;
 	}
 	playerst* figh = &sim->fighters[(unsigned char)parts[i].tmp];
+	playerst* parent_s = NULL
 
 	int tarx, tary, __parent;
 
@@ -140,8 +141,14 @@ int Element_FIGH::update(UPDATE_FUNC_ARGS)
 		break;
 	case 2:
 		__parent = figh->parentStickman;
-		figh->comm = sim->fighters[__parent].comm;
-		figh->pcomm = sim->fighters[__parent].pcomm;
+		if (__parent < MAX_FIGHTERS)
+			parent_s = &sim->fighters[__parent];
+		else if (__parent == MAX_FIGHTERS)
+			parent_s = &sim->player;
+		else if (__parent == MAX_FIGHTERS + 1)
+			parent_s = &sim->player2;
+		figh->comm = parent_s->comm;
+		figh->pcomm = parent_s->pcomm;
 	default:
 		figh->comm = 0;
 		figh->pcomm = 0;

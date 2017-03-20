@@ -69,6 +69,7 @@ int Element_STKM::graphics(GRAPHICS_FUNC_ARGS)
 int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 	int r, rx, ry, old_FIGH_id, new_FIGH_id;
 	int t = parts[i].type;
+	/*
 	if (sim->E189_FIGH_pause & 0x40) // recursive tree
 	{
 		r = playerp->firstChild;
@@ -80,6 +81,7 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 			r = sim->fighters[r].nextStickman;
 		}
 	}
+	*/
 	float pp, d;
 	float dt = 0.9;// /(FPSB*FPSB);  //Delta time in square
 	float gvx, gvy;
