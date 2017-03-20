@@ -17,8 +17,8 @@ struct playerst
 	int spawnID;         //id of the SPWN particle that spawns it
 	int parentStickman;
 	int firstChild;
-	int prevChild;
-	int nextChild;
+	int prevStickman;
+	int nextStickman;
 	int lastChild;
 };
 
