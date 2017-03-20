@@ -267,6 +267,7 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 			posY = stackY - (c*newY);
 			posX = stackX - (c*newX);
 			tempvar = sim->pmap[posY][posX]>>8;
+			tempvar2 = sim->parts[tempvar].tmp;
 			MoveStack(sim, posX, posY, directionX, directionY, maxSize, amount, retract, block, !tempvar2, maxFrame, 1, tempvar2 >= 2 ? sim->parts[tempvar].tmp2 : 0);
 		}
 
@@ -275,6 +276,7 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 			for(int j = 1; j <= amount; j++)
 				sim->kill_part(sim->pmap[stackY+(directionY*-j)][stackX+(directionX*-j)]>>8);
 		tempvar = sim->pmap[stackY][stackX]>>8;
+		tempvar2 = sim->parts[tempvar].tmp;
 		return MoveStack(sim, stackX, stackY, directionX, directionY, maxSize, amount, retract, block, !tempvar2, maxFrame, 1, tempvar2 >= 2 ? sim->parts[tempvar].tmp2 : 0);
 	}
 	if(retract){
