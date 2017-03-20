@@ -15,6 +15,7 @@ struct playerst
 	unsigned int frames; //frames since last particle spawn - used when spawning LIGH
 	bool rocketBoots;
 	int spawnID;         //id of the SPWN particle that spawns it
+	int parentStickman;
 };
 
 #endif
