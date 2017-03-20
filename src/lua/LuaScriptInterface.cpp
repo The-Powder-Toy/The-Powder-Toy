@@ -2151,6 +2151,7 @@ void LuaScriptInterface::initStickmanAPI()
 		{"firstChild", stickman_firstChild},
 		{"lastChild", stickman_lastChild},
 		{"previousSibling", stickman_previousSibling},
+		{"prevSibling", stickman_previousSibling},
 		{"nextSibling", stickman_nextSibling},
 		{NULL, NULL}
 	};

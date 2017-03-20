@@ -111,6 +111,15 @@ class LuaScriptInterface: public CommandInterface
 	static int simulation_CAType(lua_State * l);
 	static int simulation_createDebugComponent(lua_State * l);
 
+	//Stickman attributes
+	void initStickmanAPI();
+	void get_stickman_ptr(int id, playerst* st);
+	static int stickman_parent(lua_State * l);
+	static int stickman_firstChild(lua_State * l);
+	static int stickman_lastChild(lua_State * l);
+	static int stickman_previousSibling(lua_State * l);
+	static int stickman_nextSibling(lua_State * l);
+	
 	//Renderer
 	void initRendererAPI();
 	static int renderer_renderModes(lua_State * l);
