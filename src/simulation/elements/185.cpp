@@ -88,13 +88,20 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 	{
 		if (stmp < limit && !parts[i].life)
 		{
-			sctype = parts[i].ctype;
+			sctype = parts[i].ctype & 0xFF; // don't create SPC_AIR
 			if (!(rand()%140) && !(rand()%100) && !stmp)
 			{
 				if (!sctype)
 					s = sim->create_part(-3, x, y, PT_ELEC);
+				else if (sim->elements[sctype].Properties & TYPE_ENERGY)
+					s = sim->create_part(-3, x, y, sctype);
 				else
-					s = sim->create_part((sctype == PT_WARP ? -1 : -3), x, y, sctype);
+				{
+					rx = rand() % 5 - 2;
+					ry = rand() % 5 - 2;
+					if (sim->IsWallBlocking(x+rx, y+ry, sctype))
+						s = sim->create_part(-3, x, y, sctype);
+				}
 				if (s >= 0)
 				{
 					parts[i].life = cooldown;
@@ -113,7 +120,7 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 				{
 					if (!sctype)
 						s = sim->create_part(-3, x, y, PT_ELEC);
-					else
+					else if (sim->elements[sctype].Properties & TYPE_ENERGY)
 						s = sim->create_part(-3, x, y, sctype);
 				}
 				else
