@@ -94,7 +94,7 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 				if (!sctype)
 					s = sim->create_part(-3, x, y, PT_ELEC);
 				else
-					s = sim->create_part(-3, x, y, sctype);
+					s = sim->create_part((sctype == PT_WARP ? -1 : -3), x, y, sctype);
 				if (s >= 0)
 				{
 					parts[i].life = cooldown;
