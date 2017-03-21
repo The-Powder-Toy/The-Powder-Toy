@@ -2154,6 +2154,8 @@ void LuaScriptInterface::initStickmanAPI()
 		{"prevSibling", stickman_previousSibling},
 		{"nextSibling", stickman_nextSibling},
 		{"flags", stickman_flags},
+		{"toElementID", stickman_toElementID},
+		{"fromElementID", stickman_fromElementID},
 		{NULL, NULL}
 	};
 	luaL_register(l, "stickman", rendererAPIMethods);
