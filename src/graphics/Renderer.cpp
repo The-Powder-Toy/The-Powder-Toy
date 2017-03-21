@@ -1406,6 +1406,7 @@ void Renderer::render_parts()
 					{
 						colr = firer = 255;
 						colg = fireg = colb = fireb = 0;
+						cola = 255;
 					}
 					else
 					{
