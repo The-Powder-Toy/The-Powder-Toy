@@ -1364,7 +1364,7 @@ void Renderer::render_parts()
 						q_float = sqrt((float)sim->parts[i].life);
 					else
 						q_float = (float)sim->parts[i].life;
-					colr = colg = colb = sin(gradv*q) * 100 + 128;
+					colr = colg = colb = sin(gradv*q_float) * 100 + 128;
 					cola = 255;
 					if(pixel_mode & (FIREMODE | PMODE_GLOW))
 						pixel_mode = (pixel_mode & ~(FIREMODE|PMODE_GLOW)) | PMODE_BLUR;
