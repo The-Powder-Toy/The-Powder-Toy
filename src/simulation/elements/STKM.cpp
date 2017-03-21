@@ -416,7 +416,7 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 					{
 						ctype = parts[r>>8].ctype;
 						if (ctype && (sim->IsValidElement(ctype) || ctype == SPC_AIR))
-							STKM_set_element(ctype);
+							STKM_set_element(sim, playerp, ctype);
 					}
 				}
 
