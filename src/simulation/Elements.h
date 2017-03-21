@@ -38,6 +38,9 @@
 #define PROP_CLONE			0x1000000 // 2^24 Makes elements clone things that touch it
 #define PROP_NOWAVELENGTHS	0x2000000 // 2^25 Energy particle without wavelengths
 
+// second properties flag:
+#define PROP_CANSLOWDOWN	0x200000
+
 #define FLAG_STAGNANT	0x1
 #define FLAG_SKIPMOVE  0x2 // skip movement for one frame, only implemented for PHOT
 #define FLAG_WATEREQUAL 0x4 //if a liquid was already checked during equalization
