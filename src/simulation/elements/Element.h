@@ -38,6 +38,7 @@ public:
 	unsigned char HeatConduct;
 	const char *Description;
 	unsigned int Properties;
+	unsigned int Properties2;
 
 	float LowPressure;
 	int LowPressureTransition;

@@ -31,6 +31,7 @@ Element::Element():
 	Description("No description"),
 
 	Properties(TYPE_SOLID),
+	Properties2(0),
 
 	LowPressure(IPL),
 	LowPressureTransition(NT),
