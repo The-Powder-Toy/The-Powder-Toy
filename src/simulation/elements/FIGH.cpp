@@ -75,14 +75,16 @@ int Element_FIGH::update(UPDATE_FUNC_ARGS)
 	//Set target cords
 	if (__parent >= 0)
 	{
-		if (sim->E189_FIGH_pause & 0x40)
+		switch ((sim->E189_FIGH_pause >> 6) & 3)
 		{
+		case 1:
 			// using parent's command
 			parts[i].tmp2 = 2;
 			goto FIGH_break1;
-		}
-		if (sim->E189_FIGH_pause & 0x80)
-		{
+		case 2:
+			if (__parent >= MAX_FIGHTERS)
+				goto FIGH_break1;
+		case 3:
 			// seek parent stick man
 			tarx = (int)(parent_s->legs[2]);
 			tary = (int)(parent_s->legs[3]);
