@@ -2273,6 +2273,44 @@ int LuaScriptInterface::stickman_flags(lua_State * l)
 	return 0;
 }
 
+int LuaScriptInterface::stickman_toElementID(lua_State * l)
+{
+	if (lua_gettop(l) < 1)
+		return luaL_error(l, "Invalid argument length");
+	int stickmanID = luaL_checkinteger(l, 1);
+	playerst* stickman = NULL;
+	stickman = get_stickman_ptr(stickmanID);
+	if (stickman == NULL)
+		lua_pushinteger(l, -1);
+	else
+		lua_pushinteger(l, stickman->self_ID);
+	return 1;
+}
+
+int LuaScriptInterface::stickman_fromElementID(lua_State * l)
+{
+	if (lua_gettop(l) < 1)
+		return luaL_error(l, "Invalid argument length");
+	int ElementID = luaL_checkinteger(l, 1), type;
+
+	if (ElementID < 0 || ElementID >= NPART)
+	{
+		lua_pushinteger(l, -1);
+		return 1;
+	}
+
+	type = luacon_sim->parts[ElementID].type;
+	if (type == PT_STKM)
+		lua_pushinteger(l, MAX_FIGHTERS);
+	else if (type == PT_STKM2)
+		lua_pushinteger(l, MAX_FIGHTERS+1);
+	else if (type == PT_FIGH)
+		lua_pushinteger(l, luacon_sim->parts[ElementID].tmp);
+	else
+		lua_pushinteger(l, -1);
+	return 1;
+}
+
 //// Begin Renderer API
 
 void LuaScriptInterface::initRendererAPI()
