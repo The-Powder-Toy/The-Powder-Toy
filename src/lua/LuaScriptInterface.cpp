@@ -2166,6 +2166,7 @@ playerst* LuaScriptInterface::get_stickman_ptr (int stickmanID)
 		return &luacon_sim->player;
 	else if (stickmanID == 101)
 		return &luacon_sim->player2;
+	return NULL;
 }
 
 int LuaScriptInterface::stickman_parent(lua_State * l)
