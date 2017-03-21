@@ -20,6 +20,7 @@ struct playerst
 	int prevStickman;
 	int nextStickman;
 	int lastChild;
+	int self_ID;
 };
 
 #endif
