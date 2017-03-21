@@ -733,8 +733,8 @@ void Element_STKM::STKM_init_legs(Simulation * sim, playerst *playerp, int i)
 	playerp->legs[14] = x+3;
 	playerp->legs[15] = y+12;
 
-	for (int i = 0; i < 8; i++)
-		playerp->accs[i] = 0;
+	for (int j = 0; j < 8; j++)
+		playerp->accs[j] = 0;
 	playerp->comm = 0;
 	playerp->pcomm = 0;
 	playerp->frames = 0;
@@ -744,6 +744,7 @@ void Element_STKM::STKM_init_legs(Simulation * sim, playerst *playerp, int i)
 	playerp->prevStickman = -1;
 	playerp->nextStickman = -1;
 	playerp->lastChild = -1;
+	playerp->self_ID = i;
 }
 
 //#TPT-Directive ElementHeader Element_STKM static void STKM_set_element(Simulation *sim, playerst *playerp, int element)
