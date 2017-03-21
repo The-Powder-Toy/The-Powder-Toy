@@ -405,12 +405,20 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 						sim->kill_part(r>>8);
 					}
 				}
-				
-				if ((r&0xFF) == PT_E189 && !(rand()&3)) // condition: rand % 4 == 0
+
+				if ((r&0xFF) == PT_E189)
 				{
-					STKM_set_life_1(sim, r>>8, i);
+					if (!(rand()&3)) // condition: rand % 4 == 0
+					{
+						STKM_set_life_1(sim, r>>8, i);
+					}
+					if (!(sim->E189_FIGH_pause & 32))
+					{
+						if (parts[r>>8].ctype && sim->IsValidElement(parts[r>>8].ctype) || parts[r>>8].ctype == SPC_AIR)
+							STKM_set_element(parts[r>>8].ctype);
+					}
 				}
-				
+
 				if (sim->bmap[(ry+y)/CELL][(rx+x)/CELL]==WL_FAN)
 					playerp->elem = SPC_AIR;
 				else if (sim->bmap[(ry+y)/CELL][(rx+x)/CELL]==WL_EHOLE)
