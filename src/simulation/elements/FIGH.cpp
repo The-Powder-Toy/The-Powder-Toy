@@ -88,7 +88,7 @@ int Element_FIGH::update(UPDATE_FUNC_ARGS)
 			goto FIGH_break1;
 		}
 	}
-	else if (!(sim->E189_FIGH_pause & 1))
+	if (!(sim->E189_FIGH_pause & 1))
 	{
 		if (sim->player2.spwn)
 		{
