@@ -67,7 +67,7 @@ int Element_STKM::graphics(GRAPHICS_FUNC_ARGS)
 
 //#TPT-Directive ElementHeader Element_STKM static int run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
-	int r, rx, ry, old_FIGH_id, new_FIGH_id;
+	int r, rx, ry, old_FIGH_id, new_FIGH_id, ctype;
 	int t = parts[i].type;
 	/*
 	if (sim->E189_FIGH_pause & 0x40) // recursive tree
@@ -414,8 +414,9 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 					}
 					if (!(sim->E189_FIGH_pause & 32))
 					{
-						if (parts[r>>8].ctype && sim->IsValidElement(parts[r>>8].ctype) || parts[r>>8].ctype == SPC_AIR)
-							STKM_set_element(parts[r>>8].ctype);
+						ctype = parts[r>>8].ctype;
+						if (ctype && sim->IsValidElement(ctype) || ctype == SPC_AIR)
+							STKM_set_element(ctype);
 					}
 				}
 
