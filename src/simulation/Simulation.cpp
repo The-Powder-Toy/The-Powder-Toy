@@ -2245,14 +2245,23 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr)
 					return 0;
 				return 2;
 			}
-			if (rlife == 16 && parts[r>>8].ctype == 5)
+			switch (rlife)
 			{
-				if ((tmp_flag & 1) && pt == PT_STKM)
+			case 16:
+				if (parts[r>>8].ctype == 5)
+				{
+					if ((tmp_flag & 1) && pt == PT_STKM)
+						return 2;
+					if ((tmp_flag & 2) && pt == PT_STKM2)
+						return 2;
+					if ((tmp_flag & 4) && pt == PT_FIGH)
+						return 2;
+				}
+				break;
+			case 27: 
+				if ((tmp_flag & 1) && (pt == PT_STKM || pt == PT_STKM2 || pt == PT_FIGH))
 					return 2;
-				if ((tmp_flag & 2) && pt == PT_STKM2)
-					return 2;
-				if ((tmp_flag & 4) && pt == PT_FIGH)
-					return 2;
+				break;
 			}
 			return 0; // otherwise
 		}
