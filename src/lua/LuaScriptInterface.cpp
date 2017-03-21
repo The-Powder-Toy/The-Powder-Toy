@@ -2156,6 +2156,27 @@ void LuaScriptInterface::initStickmanAPI()
 		{NULL, NULL}
 	};
 	luaL_register(l, "stickman", rendererAPIMethods);
+
+	SETCONST(l, MAX_FIGHTERS);
+
+	lua_pushinteger(l, 0x00000001);
+	lua_setfield(l, -2, "FIGHTER_NO_CMD");
+	lua_pushinteger(l, 0x00000002);
+	lua_setfield(l, -2, "NO_SPIT");
+	lua_pushinteger(l, 0x00000004);
+	lua_setfield(l, -2, "SPIT_ALL");
+	lua_pushinteger(l, 0x00000006);
+	lua_setfield(l, -2, "SPIT_FIGH_ONLY");
+	lua_pushinteger(l, 0x00000008);
+	lua_setfield(l, -2, "SPIT_FIGH_ENABLE");
+	lua_pushinteger(l, 0x00000010);
+	lua_setfield(l, -2, "NO_SET_LIFE");
+	lua_pushinteger(l, 0x00000020);
+	lua_setfield(l, -2, "NO_SET_ELEM");
+	lua_pushinteger(l, 0x00000040);
+	lua_setfield(l, -2, "USE_PARENT_CMD");
+	lua_pushinteger(l, 0x00000080);
+	lua_setfield(l, -2, "SEEK_PARENT");
 }
 
 playerst* LuaScriptInterface::get_stickman_ptr (int stickmanID)
