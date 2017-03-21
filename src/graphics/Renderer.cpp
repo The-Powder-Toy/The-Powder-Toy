@@ -1460,7 +1460,7 @@ void Renderer::render_parts()
 				}
 				if(pixel_mode & PSPEC_STICKMAN)
 				{
-					int legr, legg, legb;
+					int legr, legg, legb, cplayer_elem;
 					playerst *cplayer;
 					if(t==PT_STKM)
 						cplayer = &sim->player;
@@ -1485,9 +1485,12 @@ void Renderer::render_parts()
 					}
 					else if (colour_mode != COLOUR_HEAT)
 					{
-						if (cplayer->elem<PT_NUM && cplayer->elem > 0)
+						cplayer_elem = cplayer->elem;
+						if (cplayer_elem == PT_FIGH)
+							cplayer_elem = cplayer->pelem;
+						if (cplayer_elem<PT_NUM && cplayer_elem > 0)
 						{
-							if (cplayer->elem == SPC_AIR)
+							if (cplayer_elem == SPC_AIR)
 							{
 								colr = PIXR(0x8080FF);
 								colg = PIXG(0x8080FF);
