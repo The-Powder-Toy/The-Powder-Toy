@@ -1498,9 +1498,9 @@ void Renderer::render_parts()
 							}
 							else
 							{
-								colr = PIXR(elements[cplayer->elem].Colour);
-								colg = PIXG(elements[cplayer->elem].Colour);
-								colb = PIXB(elements[cplayer->elem].Colour);
+								colr = PIXR(elements[cplayer_elem].Colour);
+								colg = PIXG(elements[cplayer_elem].Colour);
+								colb = PIXB(elements[cplayer_elem].Colour);
 							}
 						}
 						else
