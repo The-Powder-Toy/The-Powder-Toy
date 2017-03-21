@@ -103,6 +103,8 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 					parts[s].temp = parts[i].temp;
 					if (sctype == PT_GRVT)
 						parts[s].tmp = 0;
+					else if (sctype == PT_WARP)
+						parts[s].tmp2 = 3000 + rand() % 10000;
 				}
 			}
 			if (rr && (rr & 0xFF) != PT_NEUT && !(rand()%80) && ((stmp - 11) < rand() % 10))
