@@ -2317,7 +2317,7 @@ int LuaScriptInterface::stickman_fromElementID(lua_State * l)
 int LuaScriptInterface::stickman_lastUnused(lua_State * l)
 {
 	int fcount = 0;
-	while (fcount < MAX_FIGHTERS && fcount < (sim->fighcount+1) && fighters[fcount].spwn==1) fcount++;
+	while (fcount < MAX_FIGHTERS && fcount < (luacon_sim->fighcount+1) && fighters[fcount].spwn==1) fcount++;
 	if (fcount < MAX_FIGHTERS && fighters[fcount].spwn==0)
 		lua_pushinteger(l, fcount);
 	else
