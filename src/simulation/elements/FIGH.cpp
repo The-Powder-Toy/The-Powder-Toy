@@ -60,13 +60,32 @@ int Element_FIGH::update(UPDATE_FUNC_ARGS)
 
 	parts[i].tmp2 = 0;
 		// tmp2:
-		// 0 - stay in place,
-		// 1 - seek a stick man
-		// 2 - from parent
+		//   0 - stay in place
+		//   1 - seek a stick man
+		//   2 - from parent command
+	
+	__parent = figh->parentStickman;
+	if (__parent < MAX_FIGHTERS)
+		parent_s = &sim->fighters[__parent];
+	else if (__parent == MAX_FIGHTERS)
+		parent_s = &sim->player;
+	else if (__parent == MAX_FIGHTERS + 1)
+		parent_s = &sim->player2;
 	
 	//Set target cords
-	if ((sim->E189_FIGH_pause & 0x40) && (figh->parentStickman >= 0))
-		parts[i].tmp2 = 2;
+	if (__parent >= 0)
+	{
+		if (sim->E189_FIGH_pause & 0x40)
+		{
+			parts[i].tmp2 = 2;
+		}
+		else (sim->E189_FIGH_pause & 0x80)
+		{
+			tarx = (int)(parent_s->legs[2]);
+			tary = (int)(parent_s->legs[3]);
+			parts[i].tmp2 = 1;
+		}
+	}
 	else if (!(sim->E189_FIGH_pause & 1))
 	{
 		if (sim->player2.spwn)
@@ -144,13 +163,6 @@ int Element_FIGH::update(UPDATE_FUNC_ARGS)
 		figh->pcomm = figh->comm;
 		break;
 	case 2:
-		__parent = figh->parentStickman;
-		if (__parent < MAX_FIGHTERS)
-			parent_s = &sim->fighters[__parent];
-		else if (__parent == MAX_FIGHTERS)
-			parent_s = &sim->player;
-		else if (__parent == MAX_FIGHTERS + 1)
-			parent_s = &sim->player2;
 		figh->comm = parent_s->comm;
 		figh->pcomm = parent_s->pcomm;
 		break;
