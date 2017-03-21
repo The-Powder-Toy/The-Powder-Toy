@@ -1190,7 +1190,7 @@ void Renderer::render_parts()
 	int deca, decr, decg, decb, cola, colr, colg, colb, firea, firer, fireg, fireb, pixel_mode, q, i, t, nx, ny, x, y, caddress;
 	int deca2;
 	int orbd[4] = {0, 0, 0, 0}, orbl[4] = {0, 0, 0, 0};
-	float gradv, flicker;
+	float gradv, flicker, q_float;
 	Particle * parts;
 	Element *elements;
 	if(!sim)
@@ -1361,9 +1361,9 @@ void Renderer::render_parts()
 				{
 					gradv = 0.4f;
 					if (!(sim->parts[i].life<5))
-						q = sqrt((float)sim->parts[i].life);
+						q_float = sqrt((float)sim->parts[i].life);
 					else
-						q = sim->parts[i].life;
+						q_float = (float)sim->parts[i].life;
 					colr = colg = colb = sin(gradv*q) * 100 + 128;
 					cola = 255;
 					if(pixel_mode & (FIREMODE | PMODE_GLOW))
