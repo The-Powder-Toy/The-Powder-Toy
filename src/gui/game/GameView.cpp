@@ -1710,7 +1710,7 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 			switch (key)
 			{
 				case 'c':
-					showDebugState = 3;
+					showDebugState = (shift ? 13 : 3);
 				break;
 				case 'd':
 					showDebugState = (shift ? 12 : 9);
@@ -2539,6 +2539,11 @@ void GameView::OnDraw()
 						case 12:
 							sampleInfo << ", cdcolor: ";
 							tempvar = sample.particle.cdcolour;
+						break;
+						case 13:
+							sampleInfo << ", X: " << std::fixed << sample.particle.x;
+							sampleInfo << ", Y: " << std::fixed << sample.particle.y;
+							multi_var = true;
 						break;
 					}
 					if (!multi_var)
