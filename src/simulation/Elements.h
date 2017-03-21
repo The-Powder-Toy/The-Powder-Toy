@@ -39,7 +39,7 @@
 #define PROP_NOWAVELENGTHS	0x2000000 // 2^25 Energy particle without wavelengths
 
 // second properties flag:
-#define PROP_CANSLOWDOWN	0x200000
+// #define PROP_NOSLOWDOWN		0x200000
 
 #define FLAG_STAGNANT	0x1
 #define FLAG_SKIPMOVE  0x2 // skip movement for one frame, only implemented for PHOT
