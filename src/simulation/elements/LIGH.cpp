@@ -126,12 +126,12 @@ int Element_LIGH::update(UPDATE_FUNC_ARGS)
 						parts[r>>8].life = 99;
 					break;
 				case PT_STKM:
-					if (sim->player.elem!=PT_LIGH)
-						parts[r>>8].life-=powderful/100;
+					if (sim->player.elem!=PT_LIGH && !(sim->E189_FIGH_pause & 16))
+						parts[r>>8].life -= powderful/100;
 					break;
 				case PT_STKM2:
-					if (sim->player2.elem!=PT_LIGH)
-						parts[r>>8].life-=powderful/100;
+					if (sim->player2.elem!=PT_LIGH && !(sim->E189_FIGH_pause & 16))
+						parts[r>>8].life -= powderful/100;
 					break;
 				default:
 					if (sim->elements[rt].Properties & PROP_NODESTRUCT)
