@@ -67,7 +67,7 @@ int Element_STKM::graphics(GRAPHICS_FUNC_ARGS)
 
 //#TPT-Directive ElementHeader Element_STKM static int run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
-	int r, rx, ry, old_FIGH_id, new_FIGH_id, ctype;
+	int r, rx, ry, ctype;
 	int t = parts[i].type;
 	/*
 	if (sim->E189_FIGH_pause & 0x40) // recursive tree
@@ -502,23 +502,7 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 					parts[np].vy -= gvx*(5*((((int)playerp->pcomm)&0x02) == 0x02) - 5*(((int)(playerp->pcomm)&0x01) == 0x01));
 					parts[i].vx -= (sim->elements[(int)playerp->elem].Weight*parts[np].vx)/1000;
 					if (playerp->elem == PT_FIGH)
-					{
-						old_FIGH_id = playerp->lastChild;
-						new_FIGH_id = parts[np].tmp;
-						playerp->lastChild = new_FIGH_id;
-						if (playerp->firstChild < 0)
-							playerp->firstChild = new_FIGH_id;
-						else {
-							sim->fighters[new_FIGH_id].prevStickman = old_FIGH_id;
-							sim->fighters[old_FIGH_id].nextStickman = new_FIGH_id;
-						}
-						if (parts[i].type == PT_FIGH)
-							sim->fighters[new_FIGH_id].parentStickman = parts[i].tmp;
-						else if (parts[i].type == PT_STKM)
-							sim->fighters[new_FIGH_id].parentStickman = MAX_FIGHTERS;
-						else if (parts[i].type == PT_STKM2)
-							sim->fighters[new_FIGH_id].parentStickman = MAX_FIGHTERS + 1;
-					}
+						createSTKMChild(sim, playerp, i, np)
 				}
 				playerp->frames = 0;
 			}
@@ -811,14 +795,35 @@ void Element_STKM::STKM_set_life_1(Simulation *sim, int s, int i)
 
 
 //#TPT-Directive ElementHeader Element_STKM static void removeSTKMChilds(Simulation *sim, playerst* player)
-void Element_STKM::removeSTKMChilds(Simulation *sim, playerst* player)
+void Element_STKM::removeSTKMChilds(Simulation *sim, playerst* playerp)
 {
-	int child_f = player->firstChild;
+	int child_f = playerp->firstChild;
 	while (child_f >= 0)
 	{
 		sim->fighters[child_f].parentStickman = -1;
 		child_f = sim->fighters[child_f].nextStickman;
 	}
+}
+
+//#TPT-Directive ElementHeader Element_STKM static void createSTKMChild(Simulation *sim, playerst* player, int i, int np)
+void Element_STKM::createSTKMChild(Simulation *sim, playerst* playerp, int i, int np)
+{
+	int old_FIGH_id, new_FIGH_id;
+	old_FIGH_id = playerp->lastChild;
+	new_FIGH_id = sim->parts[np].tmp;
+	playerp->lastChild = new_FIGH_id;
+	if (playerp->firstChild < 0)
+		playerp->firstChild = new_FIGH_id;
+	else {
+		sim->fighters[new_FIGH_id].prevStickman = old_FIGH_id;
+		sim->fighters[old_FIGH_id].nextStickman = new_FIGH_id;
+	}
+	if (sim->parts[i].type == PT_FIGH)
+		sim->fighters[new_FIGH_id].parentStickman = sim->parts[i].tmp;
+	else if (sim->parts[i].type == PT_STKM)
+		sim->fighters[new_FIGH_id].parentStickman = MAX_FIGHTERS;
+	else if (sim->parts[i].type == PT_STKM2)
+		sim->fighters[new_FIGH_id].parentStickman = MAX_FIGHTERS + 1;
 }
 
 Element_STKM::~Element_STKM() {}
