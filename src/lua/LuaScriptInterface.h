@@ -113,7 +113,7 @@ class LuaScriptInterface: public CommandInterface
 
 	//Stickman attributes
 	void initStickmanAPI();
-	void get_stickman_ptr(int id, playerst* st);
+	static playerst* get_stickman_ptr(int id);
 	static int stickman_parent(lua_State * l);
 	static int stickman_firstChild(lua_State * l);
 	static int stickman_lastChild(lua_State * l);

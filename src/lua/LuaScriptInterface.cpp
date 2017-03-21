@@ -2158,14 +2158,14 @@ void LuaScriptInterface::initStickmanAPI()
 	luaL_register(l, "stickman", rendererAPIMethods);
 }
 
-void LuaScriptInterface::get_stickman_ptr (int id, playerst* st)
+playerst* LuaScriptInterface::get_stickman_ptr (int stickmanID)
 {
 	if (stickmanID >= 0 && stickmanID < MAX_FIGHTERS)
-		*st = &luacon_sim->fighters;
+		return &luacon_sim->fighters[stickmanID];
 	else if (stickmanID == 100)
-		*st = &luacon_sim->player;
+		return &luacon_sim->player;
 	else if (stickmanID == 101)
-		*st = &luacon_sim->player2;
+		return &luacon_sim->player2;
 }
 
 int LuaScriptInterface::stickman_parent(lua_State * l)
@@ -2174,7 +2174,7 @@ int LuaScriptInterface::stickman_parent(lua_State * l)
 		return luaL_error(l, "Invalid argument length");
 	int stickmanID = luaL_checkinteger(l, 1);
 	playerst* stickman = NULL;
-	get_stickman_ptr();
+	stickman = get_stickman_ptr(stickmanID);
 	if (stickman == NULL)
 		lua_pushinteger(l, -1);
 	else
@@ -2188,7 +2188,7 @@ int LuaScriptInterface::stickman_firstChild(lua_State * l)
 		return luaL_error(l, "Invalid argument length");
 	int stickmanID = luaL_checkinteger(l, 1);
 	playerst* stickman = NULL;
-	get_stickman_ptr();
+	stickman = get_stickman_ptr(stickmanID);
 	if (stickman == NULL)
 		lua_pushinteger(l, -1);
 	else
@@ -2202,7 +2202,7 @@ int LuaScriptInterface::stickman_lastChild(lua_State * l)
 		return luaL_error(l, "Invalid argument length");
 	int stickmanID = luaL_checkinteger(l, 1);
 	playerst* stickman = NULL;
-	get_stickman_ptr();
+	stickman = get_stickman_ptr(stickmanID);
 	if (stickman == NULL)
 		lua_pushinteger(l, -1);
 	else
@@ -2216,7 +2216,7 @@ int LuaScriptInterface::stickman_previousSibling(lua_State * l)
 		return luaL_error(l, "Invalid argument length");
 	int stickmanID = luaL_checkinteger(l, 1);
 	playerst* stickman = NULL;
-	get_stickman_ptr();
+	stickman = get_stickman_ptr(stickmanID);
 	if (stickman == NULL)
 		lua_pushinteger(l, -1);
 	else
@@ -2230,7 +2230,7 @@ int LuaScriptInterface::stickman_nextSibling(lua_State * l)
 		return luaL_error(l, "Invalid argument length");
 	int stickmanID = luaL_checkinteger(l, 1);
 	playerst* stickman = NULL;
-	get_stickman_ptr();
+	stickman = get_stickman_ptr(stickmanID);
 	if (stickman == NULL)
 		lua_pushinteger(l, -1);
 	else
