@@ -181,6 +181,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 	case 22: // reserved for Simulation.cpp
 	case 23: // reserved for stickmans
 	case 25: // reserved for E189's life = 16, ctype = 10.
+	case 27: // reserved for stickmans
 		break;
 	case 6: // heater
 		for (rx=-1; rx<2; rx++)
@@ -1123,6 +1124,9 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 		}
 		else
 			{ *colr = 0xF0; *colg = 0xE8; *colb = 0xE0; }
+		break;
+	case 27:
+		*colr = 0x20; *colg = 0x33; *colb = 0xCC;
 		break;
 	}
 	return 0;
