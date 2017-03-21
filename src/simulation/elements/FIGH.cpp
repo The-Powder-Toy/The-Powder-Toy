@@ -58,7 +58,11 @@ int Element_FIGH::update(UPDATE_FUNC_ARGS)
 
 	int tarx, tary, __parent;
 
-	parts[i].tmp2 = 0; //0 - stay in place, 1 - seek a stick man
+	parts[i].tmp2 = 0;
+		// tmp2:
+		// 0 - stay in place,
+		// 1 - seek a stick man
+		// 2 - from parent
 	
 	//Set target cords
 	if ((sim->E189_FIGH_pause & 0x40) && (figh->parentStickman >= 0))
@@ -149,6 +153,7 @@ int Element_FIGH::update(UPDATE_FUNC_ARGS)
 			parent_s = &sim->player2;
 		figh->comm = parent_s->comm;
 		figh->pcomm = parent_s->pcomm;
+		break;
 	default:
 		figh->comm = 0;
 		figh->pcomm = 0;
