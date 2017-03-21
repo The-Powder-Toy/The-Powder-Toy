@@ -78,12 +78,14 @@ int Element_FIGH::update(UPDATE_FUNC_ARGS)
 		if (sim->E189_FIGH_pause & 0x40)
 		{
 			parts[i].tmp2 = 2;
+			goto FIGH_break1;
 		}
-		else (sim->E189_FIGH_pause & 0x80)
+		else if (sim->E189_FIGH_pause & 0x80)
 		{
 			tarx = (int)(parent_s->legs[2]);
 			tary = (int)(parent_s->legs[3]);
 			parts[i].tmp2 = 1;
+			goto FIGH_break1;
 		}
 	}
 	else if (!(sim->E189_FIGH_pause & 1))
@@ -110,6 +112,7 @@ int Element_FIGH::update(UPDATE_FUNC_ARGS)
 			parts[i].tmp2 = 1;
 		}
 	}
+	FIGH_break1:
 
 	switch (parts[i].tmp2)
 	{
