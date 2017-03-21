@@ -2153,10 +2153,11 @@ void LuaScriptInterface::initStickmanAPI()
 		{"previousSibling", stickman_previousSibling},
 		{"prevSibling", stickman_previousSibling},
 		{"nextSibling", stickman_nextSibling},
+		{"flags", stickman_flags},
 		{NULL, NULL}
 	};
 	luaL_register(l, "stickman", rendererAPIMethods);
-
+	
 	SETCONST(l, MAX_FIGHTERS);
 
 	lua_pushinteger(l, 0x00000001);
@@ -2258,6 +2259,18 @@ int LuaScriptInterface::stickman_nextSibling(lua_State * l)
 	else
 		lua_pushinteger(l, stickman->nextStickman);
 	return 1;
+}
+
+int LuaScriptInterface::stickman_flags(lua_State * l)
+{
+	if (lua_gettop(l) < 1)
+	{
+		lua_pushinteger(l, luacon_sim->E189_FIGH_pause);
+		return 1;
+	}
+	int flags = luaL_checkinteger(l, 1);
+	luacon_sim->E189_FIGH_pause = flags;
+	return 0;
 }
 
 //// Begin Renderer API
