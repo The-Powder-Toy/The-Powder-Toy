@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+	<mime-info xmlns='http://www.freedesktop.org/standards/shared-mime-info'>
+	<mime-type type="application/vnd.powdertoy.save">
+		<comment>Powder Toy save</comment>
+		<glob pattern=*.cps/>
+		<glob pattern=*.stm/>
+	</mime-type>"
+</mime-info>
