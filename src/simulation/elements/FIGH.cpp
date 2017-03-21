@@ -77,11 +77,13 @@ int Element_FIGH::update(UPDATE_FUNC_ARGS)
 	{
 		if (sim->E189_FIGH_pause & 0x40)
 		{
+			// using parent's command
 			parts[i].tmp2 = 2;
 			goto FIGH_break1;
 		}
-		else if (sim->E189_FIGH_pause & 0x80)
+		if (sim->E189_FIGH_pause & 0x80)
 		{
+			// seek parent stick man
 			tarx = (int)(parent_s->legs[2]);
 			tary = (int)(parent_s->legs[3]);
 			parts[i].tmp2 = 1;
