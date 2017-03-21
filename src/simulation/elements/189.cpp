@@ -400,6 +400,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						if ((rtmp & 0x1) && sim->elements[rt].Properties & PROP_CONDUCTS && parts[r>>8].life == 0)
 						{
 							parts[r>>8].life = 4;
+							parts[r>>8].cdcolour = parts[r>>8].ctype;
 							parts[r>>8].ctype = rt;
 							sim->part_change_type(r>>8,x+rx,y+ry,PT_SPRK);
 						}
@@ -891,7 +892,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						{
 							parts[r>>8].life = 4;
 							parts[r>>8].ctype = r&0xFF;
-							sim->part_change_type(r>>8,x+rx,y+ry,PT_SPRK);
+							sim->create_part(r>>8, x+rx, y+ry, PT_SPRK);
 						}
 					}
 			}
