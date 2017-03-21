@@ -76,6 +76,7 @@ std::vector<StructProperty> Element::GetProperties()
 	properties.push_back(StructProperty("Description",					StructProperty::String,		offsetof(Element, Description)));
 	properties.push_back(StructProperty("State",						StructProperty::Removed,	0));
 	properties.push_back(StructProperty("Properties",					StructProperty::Integer,	offsetof(Element, Properties)));
+	properties.push_back(StructProperty("SecondProperties",				StructProperty::Integer,	offsetof(Element, Properties2)));
 	properties.push_back(StructProperty("LowPressure",					StructProperty::Float,		offsetof(Element, LowPressure)));
 	properties.push_back(StructProperty("LowPressureTransition",		StructProperty::Integer,	offsetof(Element, LowPressureTransition)));
 	properties.push_back(StructProperty("HighPressure",					StructProperty::Float,		offsetof(Element, HighPressure)));
