@@ -412,7 +412,7 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 					{
 						STKM_set_life_1(sim, r>>8, i);
 					}
-					if (!(sim->E189_FIGH_pause & 32))
+					if (parts[r>>8].life == 27 && !(sim->E189_FIGH_pause & 32))
 					{
 						ctype = parts[r>>8].ctype;
 						if (ctype && (sim->IsValidElement(ctype) || ctype == SPC_AIR))
