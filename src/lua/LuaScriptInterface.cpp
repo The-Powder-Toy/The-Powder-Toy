@@ -2156,6 +2156,7 @@ void LuaScriptInterface::initStickmanAPI()
 		{"flags", stickman_flags},
 		{"toElementID", stickman_toElementID},
 		{"fromElementID", stickman_fromElementID},
+		{"lastUnused", stickman_lastUnused},
 		{NULL, NULL}
 	};
 	luaL_register(l, "stickman", rendererAPIMethods);
@@ -2308,6 +2309,17 @@ int LuaScriptInterface::stickman_fromElementID(lua_State * l)
 		lua_pushinteger(l, MAX_FIGHTERS+1);
 	else if (type == PT_FIGH)
 		lua_pushinteger(l, luacon_sim->parts[ElementID].tmp);
+	else
+		lua_pushinteger(l, -1);
+	return 1;
+}
+
+int LuaScriptInterface::stickman_lastUnused(lua_State * l)
+{
+	int fcount = 0;
+	while (fcount < MAX_FIGHTERS && fcount < (sim->fighcount+1) && fighters[fcount].spwn==1) fcount++;
+	if (fcount < MAX_FIGHTERS && fighters[fcount].spwn==0)
+		lua_pushinteger(l, fcount);
 	else
 		lua_pushinteger(l, -1);
 	return 1;

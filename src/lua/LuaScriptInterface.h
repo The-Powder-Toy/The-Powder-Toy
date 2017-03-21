@@ -122,6 +122,7 @@ class LuaScriptInterface: public CommandInterface
 	static int stickman_flags(lua_State * l);
 	static int stickman_toElementID(lua_State * l);
 	static int stickman_fromElementID(lua_State * l);
+	static int stickman_lastUnused(lua_State * l);
 	
 	//Renderer
 	void initRendererAPI();
