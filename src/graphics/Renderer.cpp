@@ -1360,10 +1360,12 @@ void Renderer::render_parts()
 				else if(colour_mode & COLOUR_LIFE)
 				{
 					gradv = 0.4f;
-					if (!(sim->parts[i].life<5))
+					if (sim->parts[i].life >= 5)
 						q_float = sqrt((float)sim->parts[i].life) + 2.25f;
-					else
+					else if (sim->parts[i].life > -5)
 						q_float = (float)sim->parts[i].life;
+					else
+						q_float = -sqrt((float)sim->parts[i].life) - 2.25f;
 					colr = colg = colb = sin(gradv*q_float) * 100 + 128;
 					cola = 255;
 					if(pixel_mode & (FIREMODE | PMODE_GLOW))
