@@ -811,13 +811,13 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 							{
 								rr = pmap[y-ry][x-rx];
 								rt = rr & 0xFF;
-								if (rt == PT_WATR || rt == PT_DSTW || rt == PT_SLTW || rt == PT_CNBW)
+								if (rt == PT_WATR || rt == PT_DSTW || rt == PT_SLTW || rt == PT_CBNW)
 								{
 									if(!(rand()%3))
 										sim->create_part(rr>>8, x+rx, y+ry, PT_O2);
 									else
 										sim->create_part(rr>>8, x+rx, y+ry, PT_H2);
-									if (rt == PT_CNBW)
+									if (rt == PT_CBNW)
 									{
 										rrx = rand() % 5 - 2;
 										rry = rand() % 5 - 2;
