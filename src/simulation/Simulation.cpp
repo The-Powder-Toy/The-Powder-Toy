@@ -2098,12 +2098,12 @@ void Simulation::init_can_move()
 	can_move[PT_PHOT][PT_LCRY] = 3; //varies according to LCRY life
 	can_move[PT_PHOT][PT_GPMP] = 3;
 
-	can_move[PT_PHOT][PT_BIZR] = 2;
+	// can_move[PT_PHOT][PT_BIZR] = 2;
 	can_move[PT_ELEC][PT_BIZR] = 2;
-	can_move[PT_PHOT][PT_BIZRG] = 2;
+	// can_move[PT_PHOT][PT_BIZRG] = 2;
 	can_move[PT_ELEC][PT_BIZRG] = 2;
 	can_move[PT_PHOT][PT_BIZRS] = 2;
-	can_move[PT_ELEC][PT_BIZRS] = 2;
+	// can_move[PT_ELEC][PT_BIZRS] = 2;
 	can_move[PT_BIZR][PT_FILT] = 2;
 	can_move[PT_BIZRG][PT_FILT] = 2;
 
