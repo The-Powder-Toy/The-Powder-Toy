@@ -2283,7 +2283,7 @@ int LuaScriptInterface::stickman_toElementID(lua_State * l)
 	int stickmanID = luaL_checkinteger(l, 1);
 	playerst* stickman = NULL;
 	stickman = get_stickman_ptr(stickmanID);
-	if (stickman == NULL)
+	if (stickman == NULL || !(stickman->spwn))
 		lua_pushinteger(l, -1);
 	else
 		lua_pushinteger(l, stickman->self_ID);
