@@ -117,6 +117,8 @@ int Element_E186::update(UPDATE_FUNC_ARGS)
 			sim->pv[y/CELL][x/CELL] += 1.5f;
 			if (sctype == PT_GRVT)
 				parts[s].tmp = 0;
+			else if (sctype == PT_WARP)
+				parts[s].tmp2 = 3000 + rand() % 10000;
 		}
 	}
 	r = pmap[y][x];
