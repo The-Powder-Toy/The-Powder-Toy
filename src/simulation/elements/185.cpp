@@ -102,7 +102,7 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 					if (sim->IsWallBlocking(x+rx, y+ry, sctype))
 						s = -1; // it's wall blocked
 					else
-						s = sim->create_part(-3, x, y, sctype);
+						s = sim->create_part(-1, x, y, sctype);
 				}
 				if (s >= 0)
 				{
@@ -116,7 +116,7 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 						parts[s].tmp2 = 3000 + rand() % 10000;
 				}
 			}
-			if (rr && (rr & 0xFF) != PT_NEUT && !(rand()%80) && ((stmp - 11) < rand() % 10))
+			if (rr && ((rr & 0xFF) == PT_ELEC || (rr & 0xFF) == PT_E186) && !(rand()%80) && ((stmp - 11) < rand() % 10))
 			{
 				if (rand() % 10)
 				{
