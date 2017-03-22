@@ -118,6 +118,7 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 			}
 			if (rr && ((rr & 0xFF) == PT_ELEC || (rr & 0xFF) == PT_E186) && !(rand()%80) && ((stmp - 11) < rand() % 10))
 			{
+				s = -1;
 				if (rand() % 10)
 				{
 					if (!sctype)
