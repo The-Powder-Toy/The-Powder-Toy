@@ -61,6 +61,7 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 {
 	int r, s, rx, ry, rr, sctype, stmp, trade, exot_id, exot_pos_x, exot_pos_y, prev_type = 0;
 	int rrx, rry, rrr;
+	bool is_warp;
 	const int cooldown = 15;
 	const int limit = 20;
 	float tempTemp, tempPress;
@@ -89,7 +90,8 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 		if (stmp < limit && !parts[i].life)
 		{
 			sctype = parts[i].ctype & 0xFF; // don't create SPC_AIR
-			if (!(rand()%140) && !(rand()%100) && !stmp)
+			is_warp = (sctype == PT_WARP);
+			if (!(rand()%140) && ((is_warp && (parts[i].temp > 1000) ? 5 : 1) > rand()%100) && !stmp)
 			{
 				if (!sctype)
 					s = sim->create_part(-3, x, y, PT_ELEC);
@@ -112,7 +114,7 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 					parts[s].temp = parts[i].temp;
 					if (sctype == PT_GRVT)
 						parts[s].tmp = 0;
-					else if (sctype == PT_WARP)
+					else if (is_warp)
 						parts[s].tmp2 = 3000 + rand() % 10000;
 				}
 			}
