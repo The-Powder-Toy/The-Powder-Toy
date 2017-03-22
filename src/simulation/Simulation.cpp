@@ -2072,7 +2072,7 @@ void Simulation::init_can_move()
 	// TODO: replace with property
 	for (destinationType = 0; destinationType < PT_NUM; destinationType++)
 	{
-		if (destinationType == PT_PHOT || destinationType == PT_INVIS || destinationType == PT_H2 || elements[destinationType].Properties&PROP_TRANSPARENT)
+		if (destinationType == PT_PHOT || elements[destinationType].Properties&PROP_TRANSPARENT)
 			can_move[PT_PHOT][destinationType] = 2;
 		if (destinationType != PT_DMND && destinationType != PT_INSL && destinationType != PT_INDI && destinationType != PT_VOID && destinationType != PT_PVOD && destinationType != PT_VIBR && destinationType != PT_BVBR && destinationType != PT_PRTI && destinationType != PT_PRTO && destinationType != PT_E187 && destinationType != PT_E188)
 		{
