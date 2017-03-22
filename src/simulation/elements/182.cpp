@@ -5,6 +5,7 @@
 TODO: 
 	- Molten version
 	- "muted version" a powder created by mixing E182 with ? that is weaker
+	- "stronger version" a powder created by mixing E182 with E185 that is stronger?
 */
 
 Element_E182::Element_E182()
