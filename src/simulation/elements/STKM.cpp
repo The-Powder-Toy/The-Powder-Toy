@@ -502,7 +502,7 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 					parts[np].vy -= gvx*(5*((((int)playerp->pcomm)&0x02) == 0x02) - 5*(((int)(playerp->pcomm)&0x01) == 0x01));
 					parts[i].vx -= (sim->elements[(int)playerp->elem].Weight*parts[np].vx)/1000;
 					if (playerp->elem == PT_FIGH)
-						createSTKMChild(sim, playerp, i, np)
+						createSTKMChild(sim, playerp, i, np);
 				}
 				playerp->frames = 0;
 			}
