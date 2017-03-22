@@ -102,7 +102,7 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 					if (sim->IsWallBlocking(x+rx, y+ry, sctype))
 						s = -1; // it's wall blocked
 					else
-						s = sim->create_part(-1, x, y, sctype);
+						s = sim->create_part(-1, x+rx, y+ry, sctype);
 				}
 				if (s >= 0)
 				{
