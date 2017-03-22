@@ -86,6 +86,7 @@ public:
 	unsigned char lloopsrule[8][8][8][8][8];
 	int extraLoopsCA;
 	int extraLoopsType;
+	int INVS_hardness_tmp;
 	//Air sim
 	float (*vx)[XRES/CELL];
 	float (*vy)[XRES/CELL];

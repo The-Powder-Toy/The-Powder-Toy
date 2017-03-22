@@ -5579,11 +5579,26 @@ void Simulation::AfterSim()
 	}
 	if (E189_pause)
 	{
-		if (E189_pause & 1)
-			sys_pause = true;
-		if (E189_pause & 4)
-			no_generating_BHOL = !no_generating_BHOL;
-		E189_pause &= ~0x00000005;
+		if (E189_pause & 0x0001)
+			sys_pause = true; // set pause state
+		if (E189_pause & 0x0004)
+			no_generating_BHOL = !no_generating_BHOL; // toggle BHOL generation
+		if (E189_pause & 0x0010)
+			elements[PT_PHOT].Properties2 ^= PROP_NOSLOWDOWN; // toggle PHOT's slowed down flag
+		if (E189_pause & 0x0020)
+		{
+			elements[PT_INVIS].Properties ^= PROP_NODESTRUCT; // toggle INVS's indestructibility
+			if (elements[PT_INVIS].Properties & PROP_NODESTRUCT)
+			{
+				INVS_hardness_tmp = elements[PT_INVIS].Hardness;
+				elements[PT_INVIS].Hardness = 0;
+			}
+			else
+			{
+				elements[PT_INVIS].Hardness = INVS_hardness_tmp;
+			}
+		}
+		E189_pause &= ~0x00000035;
 	}
 	if (E189_FIGH_pause_check)
 	{
