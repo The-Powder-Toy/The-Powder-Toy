@@ -1464,6 +1464,12 @@ void Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* p
 				part_phot->ctype = 0x105;
 				sim->part_change_type(i, x, y, PT_E186);
 				break;
+			case 11: // PHOT (tmp: 0 -> 1)
+				part_phot->tmp |= 0x1;
+				break;
+			case 12: // PHOT (tmp: 1 -> 0)
+				part_phot->tmp &= ~0x1;
+				break;
 		}
 	}
 }
