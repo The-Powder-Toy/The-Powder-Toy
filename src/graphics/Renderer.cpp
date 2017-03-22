@@ -1361,7 +1361,7 @@ void Renderer::render_parts()
 				{
 					gradv = 0.4f;
 					if (!(sim->parts[i].life<5))
-						q_float = sqrt((float)sim->parts[i].life);
+						q_float = sqrt((float)sim->parts[i].life) + 2.25f;
 					else
 						q_float = (float)sim->parts[i].life;
 					colr = colg = colb = sin(gradv*q_float) * 100 + 128;
