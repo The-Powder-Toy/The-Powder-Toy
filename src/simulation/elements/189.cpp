@@ -330,14 +330,16 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						continue;
 					if ((r&0xFF) == PT_SPRK && parts[r>>8].life == 3)
 					{
-						switch (rtmp & 3)
+						switch (rtmp & 0x0F)
 						{
 							case 0: sim->E189_pause |=  0x01; break;
 							case 1: sim->E189_pause |=  0x02; break;
 							case 2: sim->E189_pause |=  0x08; break;
 							case 3: sim->E189_pause &= ~0x08; break;
+							case 4: sim->E189_pause |=  0x10; break;
+							case 5: sim->E189_pause |=  0x20; break;
 						}
-						if ((rtmp & 4) && (rx != ry))
+						if ((rtmp & 0x10) && (rx != ry))
 							Element_E189::InsertText(sim, i, x, y, -rx, -ry);
 					}
 				}
