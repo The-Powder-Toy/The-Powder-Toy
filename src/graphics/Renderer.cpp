@@ -1408,7 +1408,9 @@ void Renderer::render_parts()
 						colg = fireg = colb = fireb = 0;
 						if (findingElement == PT_WARP)
 						{
-							cola = 255; pixel_mode = PMODE_FLAT;
+							cola = 255;
+							pixel_mode &= ~PMODE;
+							pixel_mode |= PMODE_FLAT;
 						}
 					}
 					else
