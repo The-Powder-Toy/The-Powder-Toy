@@ -30,7 +30,7 @@ Element_FILT::Element_FILT()
 	HeatConduct = 251;
 	Description = "Filter for photons, changes the color.";
 
-	Properties = TYPE_SOLID | PROP_NOAMBHEAT | PROP_LIFE_DEC | PROP_TRANSPARENT;
+	Properties = TYPE_SOLID | PROP_NOAMBHEAT | PROP_LIFE_DEC | PROP_TRANSPARENT | PROP_INVISIBLE;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
