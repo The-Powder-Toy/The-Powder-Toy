@@ -2220,6 +2220,28 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr)
 		else if ((r&0xFF) == PT_E189)
 		{
 			int rlife = parts[r>>8].life, tmp_flag = parts[r>>8].tmp;
+			switch (rlife)
+			{
+			case 16:
+				if (parts[r>>8].ctype == 5)
+				{
+					if ((tmp_flag & 1) && pt == PT_STKM)
+						return 2;
+					if ((tmp_flag & 2) && pt == PT_STKM2)
+						return 2;
+					if ((tmp_flag & 4) && pt == PT_FIGH)
+						return 2;
+				}
+				break;
+			case 27: 
+				if ((tmp_flag & 1) && (pt == PT_STKM || pt == PT_STKM2 || pt == PT_FIGH))
+					return 2;
+				break;
+			case 28: 
+				if (elements[pt].Properties & TYPE_ENERGY)
+					return 2;
+				break;
+			}
 			switch (pt)
 			{
 			case PT_E186:
@@ -2244,24 +2266,6 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr)
 				if (rlife == 22 && (tmp_flag & 4))
 					return 0;
 				return 2;
-			}
-			switch (rlife)
-			{
-			case 16:
-				if (parts[r>>8].ctype == 5)
-				{
-					if ((tmp_flag & 1) && pt == PT_STKM)
-						return 2;
-					if ((tmp_flag & 2) && pt == PT_STKM2)
-						return 2;
-					if ((tmp_flag & 4) && pt == PT_FIGH)
-						return 2;
-				}
-				break;
-			case 27: 
-				if ((tmp_flag & 1) && (pt == PT_STKM || pt == PT_STKM2 || pt == PT_FIGH))
-					return 2;
-				break;
 			}
 			return 0; // otherwise
 		}
