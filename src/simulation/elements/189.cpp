@@ -791,7 +791,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 					{
 						r = pmap[y+ry][x+rx];
 						rr = ((r>>8) > i) ? (parts[r>>8].tmp) : (parts[r>>8].tmp2);
-						if ((r & 0xFF) == PT_E189 && parts[r>>8].life == 19 && !rr)
+						if ((r & 0xFF) == PT_E189 && parts[r>>8].life == 19 && rr == 9)
 						{
 							parts[i].tmp2 = 2;
 							goto break1a;
