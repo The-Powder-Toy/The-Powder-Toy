@@ -1006,6 +1006,24 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 					}
 				}
 		break;
+	case 29:
+		for (rr = 0; rr < 4; rr++)
+			if (BOUNDS_CHECK)
+			{
+				rx = tron_rx[rr];
+				ry = tron_ry[rr];
+				r = pmap[y-ry][x-rx];
+				if ((r & 0xFF) == PT_SPRK && parts[r>>8].life == 3)
+				{
+					r = sim->create_part (-1, x+rx, y+ry, PT_TRON);
+					if (r >= 0) {
+						r &= ~0x1006A; // clear direction data and custom flags
+						r |= rr << 5; // set direction data
+						r |= ((rtmp & 1) << 1) | ((rtmp & 2) << 2) | ((rtmp & 4) << 14); // set custom flags
+					}
+				}
+			}
+		break;
 	}
 	
 	if(ttan>=2) {
