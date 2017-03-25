@@ -736,7 +736,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 				ry = (rndstore&2)-1;
 				if (parts[i].tmp2 == 1)
 				{
-					for (rii = 0; rii < 2; rii++)
+					for (rii = 1; rii <= 2; rii++)
 					{
 						if (BOUNDS_CHECK)
 						{
