@@ -89,7 +89,9 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 		{
 			rr = (rtmp >> 5) & ((rtmp >> 19 & 1) - 1);
 			direction = (rr + (rtmp >> 17)) & 0x3;
-			r = pmap[ry = y + tron_ry[direction]][rx = x + tron_rx[direction]];
+			rx = x + tron_rx[direction];
+			ry = y + tron_ry[direction];
+			r = pmap[ry][rx];
 			rii = parts[r >> 8].life;
 			if ((r & 0xFF) == PT_E189 && ((rii & ~0x1) == 2 || rii == 30))
 			{
