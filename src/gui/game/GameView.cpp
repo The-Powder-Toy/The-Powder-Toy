@@ -2367,7 +2367,8 @@ void GameView::OnDraw()
 		static const char* E189Modes[] = {
 			"PRSINS", "PRSINS", "TRONI", "TRONO", "LASER", "DIRCH", "HEATER", "PHTDUP", "VIBR2", "VIBR2",
 			"DEBUG", "PHTEM", "SPREFL", "DECOR", "DECO2", "PRTINS", "LOGICG", "PHDIOD", "DECO3", "NOTGIN",
-			"PARTEM", "EXPANDER", "EN_REFL", "STKMJ", "MOV_DRAY", "EXT_DRAY", "BUTTON", "STKSET", "RAY_REFL"
+			"PARTEM", "EXPANDER", "EN_REFL", "STKMJ", "MOV_DRAY", "EXT_DRAY", "BUTTON", "STKSET", "RAY_REFL", "TRONE",
+			"TRONF"
 		};
 		static const int E189IntM[] = {0x01055000};
 		//Draw info about simulation under cursor
@@ -2442,7 +2443,7 @@ void GameView::OnDraw()
 				}
 				else
 				{
-					if (type == PT_E189 && partlife >= 0 && partlife <= 27)
+					if (type == PT_E189 && partlife >= 0 && partlife <= 30)
 					{
 						sampleInfo << E189Modes[partlife];
 					}
@@ -2569,7 +2570,7 @@ void GameView::OnDraw()
 					sampleInfo << c->ElementResolve(type, -1) << " with " << c->ElementResolve(ctype, (int)sample.particle.pavg[1]);
 				else if (type == PT_LIFE)
 					sampleInfo << c->ElementResolve(type, ctype);
-				else if (type == PT_E189 && partlife >= 0 && partlife <= 27)
+				else if (type == PT_E189 && partlife >= 0 && partlife <= 30)
 				{
 					sampleInfo << E189Modes[partlife];
 				}
