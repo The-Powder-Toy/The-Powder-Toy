@@ -2370,7 +2370,7 @@ void GameView::OnDraw()
 			"PARTEM", "EXPANDER", "EN_REFL", "STKMJ", "MOV_DRAY", "EXT_DRAY", "BUTTON", "STKSET", "RAY_REFL", "TRONE",
 			"TRONF"
 		};
-		static const int E189IntM[] = {0x01055000};
+		static const int E189IntM[] = {0x41055000};
 		//Draw info about simulation under cursor
 		int wavelengthGfx = 0, alpha = 255;
 		if (toolTipPosition.Y < 120)
