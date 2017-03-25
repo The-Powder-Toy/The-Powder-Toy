@@ -1038,9 +1038,12 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 				{
 					r = sim->create_part (-1, x+rx, y+ry, PT_TRON);
 					if (r >= 0) {
-						r &= ~0x1006A; // clear direction data and custom flags
-						r |= rr << 5; // set direction data
-						r |= ((rtmp & 1) << 1) | ((rtmp & 2) << 2) | ((rtmp & 4) << 14); // set custom flags
+						rtmp = parts[r].tmp;
+						rtmp &= ~0x1006A; // clear direction data and custom flags
+						rtmp |= rr << 5; // set direction data
+						rtmp |= ((rtmp & 1) << 1) | ((rtmp & 2) << 2) | ((rtmp & 4) << 14); // set custom flags
+						if (ri > i) rtmp |= 0x04;
+						parts[r].tmp = rtmp;
 					}
 				}
 			}
