@@ -89,7 +89,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 		{
 			rr = (rtmp >> 5) & ((rtmp >> 19 & 1) - 1);
 			direction = (rr + (rtmp >> 17)) & 0x3;
-			r = pmap[y + tron_ry[direction]][x + tron_rx[direction]];
+			r = pmap[ry = y + tron_ry[direction]][rx = x + tron_rx[direction]];
 			rii = parts[r >> 8].life;
 			if ((r & 0xFF) == PT_E189 && ((rii & ~0x1) == 2 || rii == 30))
 			{
@@ -99,6 +99,10 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 				if (ri > i)
 					sim->parts[ri].tmp |= 0x04;
 				parts[ri].tmp2 = parts[i].tmp2;
+			}
+			else if ((r & 0xFF) == PT_METL || (r & 0xFF) == PT_PSCN || (r & 0xFF) == PT_NSCN)
+			{
+				sim->create_part(-1, rx, ry, PT_SPRK);
 			}
 			rtmp &= 0xE0000;
 		}
