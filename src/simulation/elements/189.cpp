@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+﻿#include "simulation/Elements.h"
 #include "simulation/Air.h"
 #include "Probability.h"
 #include "font.h"
@@ -775,12 +775,12 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						if (BOUNDS_CHECK && (rx || ry))
 						{
 							r = pmap[y+ry][x+rx];
-							if ((r & 0xFF) == PT_PSCN)
-								sim->create_part(r>>8,x+rx,y+ry,PT_NSCN);
 							if ((r & 0xFF) == PT_NSCN)
+								sim->create_part(r>>8,x+rx,y+ry,PT_PSCN);
+							if ((r & 0xFF) == PT_PSCN)
 							{
 								parts[r>>8].life = 4;
-								parts[r>>8].ctype = PT_PSCN;
+								parts[r>>8].ctype = PT_NSCN;
 								sim->part_change_type(r>>8,x+rx,y+ry,PT_SPRK);
 							}
 						}
