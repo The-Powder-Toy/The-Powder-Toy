@@ -855,7 +855,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 					if (!(rndstore&7))
 					{
 						r = pmap[y+ry][x+rx];
-						if (!rx != !ry)
+						if ((r & 0xFF) == PT_TRON && !(rx && ry)) // (!(rx && ry)) equivalent to (!rx || !ry)
 						{
 							rr = pmap[y-ry][x-rx];
 							rt = rr & 0xFF;
