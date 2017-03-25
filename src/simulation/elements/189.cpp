@@ -90,10 +90,11 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			rr = (rtmp >> 5) & ((rtmp >> 19 & 1) - 1);
 			direction = (rr + (rtmp >> 17)) & 0x3;
 			r = pmap[y + tron_ry[direction]][x + tron_rx[direction]];
-			if ((r & 0xFF) == PT_E189 && (parts[r >> 8].life & ~0x1) == 2)
+			rii = parts[r >> 8].life;
+			if ((r & 0xFF) == PT_E189 && ((rii & ~0x1) == 2 || rii == 30))
 			{
 				ri = r >> 8;
-				parts[ri].tmp &= 0xE0000;
+				parts[ri].tmp &= ((rii & 16) << 12) | 0xE0000;
 				parts[ri].tmp |= (rtmp & 0x1FF9F) | (direction << 5);
 				if (ri > i)
 					sim->parts[ri].tmp |= 0x04;
@@ -1006,7 +1007,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 					}
 				}
 		break;
-	case 29:
+	case 29: // TRON emitter
 		for (rr = 0; rr < 4; rr++)
 			if (BOUNDS_CHECK)
 			{
@@ -1023,6 +1024,28 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 					}
 				}
 			}
+		break;
+	case 30: // TRON filter
+		if (rtmp & 0x04)
+			rtmp &= ~0x04;
+		else if (rtmp & 0x01)
+		{
+			rr = (rtmp >> 5) & ((rtmp >> 19 & 1) - 1);
+			direction = (rr + (rtmp >> 17)) & 0x3;
+			r = pmap[y + tron_ry[direction]][x + tron_rx[direction]];
+			rii = parts[r >> 8].life;
+			if ((r & 0xFF) == PT_E189 && rii == 3)
+			{
+				ri = r >> 8;
+				parts[ri].tmp &= 0xE0000;
+				parts[ri].tmp |= (rtmp & 0x1000B) | (direction << 5);
+				if (ri > i)
+					sim->parts[ri].tmp |= 0x04;
+				parts[ri].tmp2 = parts[i].tmp2;
+			}
+			rtmp &= 0x1E0000;
+		}
+		parts[i].tmp = rtmp;
 		break;
 	}
 	
