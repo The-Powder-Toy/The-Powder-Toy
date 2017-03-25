@@ -2369,6 +2369,10 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 					if (!(parts[i].flags & FLAG_SKIPMOVE))
 						Element_E189::duplicatePhotons(this, i, x, y, &parts[i], &parts[r>>8]);
 					break;
+				case 28:
+					part_change_type(i, x, y, parts[r>>8].ctype);
+					parts[i].tmp = parts[i].tmp2 = 0;
+					break;
 				}
 			}
 			else if (!(E189_pause & 0x8)) {
