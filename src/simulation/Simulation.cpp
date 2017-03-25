@@ -2237,10 +2237,6 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr)
 				if ((tmp_flag & 1) && (pt == PT_STKM || pt == PT_STKM2 || pt == PT_FIGH))
 					return 2;
 				break;
-			case 28: 
-				if (elements[pt].Properties & TYPE_ENERGY)
-					return 2;
-				break;
 			}
 			switch (pt)
 			{
@@ -2368,10 +2364,6 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 				case 7:
 					if (!(parts[i].flags & FLAG_SKIPMOVE))
 						Element_E189::duplicatePhotons(this, i, x, y, &parts[i], &parts[r>>8]);
-					break;
-				case 28:
-					part_change_type(i, x, y, parts[r>>8].ctype);
-					parts[i].tmp = parts[i].tmp2 = 0;
 					break;
 				}
 			}
