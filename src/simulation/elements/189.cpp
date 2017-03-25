@@ -402,7 +402,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						if ((rtmp & 0x1) && sim->elements[rt].Properties & PROP_CONDUCTS && parts[r>>8].life == 0)
 						{
 							parts[r>>8].life = 4;
-							parts[r>>8].cdcolour = parts[r>>8].ctype;
+							// parts[r>>8].cdcolour = parts[r>>8].ctype;
 							parts[r>>8].ctype = rt;
 							sim->part_change_type(r>>8,x+rx,y+ry,PT_SPRK);
 						}
@@ -766,6 +766,37 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 					parts[i].tmp = rr; parts[i].tmp2 = 2;
 				}
 			}
+			break;
+		case 13:
+			if (parts[i].tmp2 == 1)
+			{
+				for (rx = -2; rx <= 2; rx++)
+					for (ry = -2; ry <= 2; ry++)
+						if (BOUNDS_CHECK && (rx || ry))
+						{
+							r = pmap[y+ry][x+rx];
+							if ((r & 0xFF) == PT_PSCN)
+								sim->create_part(r>>8,x+rx,y+ry,PT_NSCN);
+							if ((r & 0xFF) == PT_NSCN)
+							{
+								parts[r>>8].life = 4;
+								parts[r>>8].ctype = PT_PSCN;
+								sim->part_change_type(r>>8,x+rx,y+ry,PT_SPRK);
+							}
+						}
+			}
+			for (rx = -2; rx <= 2; rx++)
+				for (ry = -2; ry <= 2; ry++)
+					if (BOUNDS_CHECK && (rx || ry))
+					{
+						r = pmap[y+ry][x+rx];
+						rr = ((r>>8) > i) ? (parts[r>>8].tmp) : (parts[r>>8].tmp2);
+						if ((r & 0xFF) == PT_E189 && parts[r>>8].life == 19 && !rr)
+						{
+							parts[i].tmp2 = 2;
+							goto break1a;
+						}
+					}
 			break;
 		}
 		break;
