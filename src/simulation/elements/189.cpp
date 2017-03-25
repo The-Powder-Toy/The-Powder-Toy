@@ -608,14 +608,13 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 		case 6: // wire crossing
 		case 7:
 			{
-				int ii;
 				if (parts[i].tmp2 == 2)
 				{
-					for (ii = 0; ii < 4; ii++)
+					for (rii = 0; rii < 4; rii++)
 					{
 						if (BOUNDS_CHECK)
 						{
-							r = osc_r1[ii], rtmp = parts[i].tmp;
+							r = osc_r1[rii], rtmp = parts[i].tmp;
 							if (rtmp & 1 << (rctype & 1))
 								sim->create_part(-1, x+r, y, PT_SPRK);
 							if (rtmp & 2 >> (rctype & 1))
@@ -623,11 +622,11 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						}
 					}
 				}
-				for (rr = ii = 0; ii < 4; ii++)
+				for (rr = rii = 0; rii < 4; rii++)
 				{
 					if (BOUNDS_CHECK)
 					{
-						r = osc_r1[ii];
+						r = osc_r1[rii];
 						rx = pmap[y][x+r];
 						ry = pmap[y+r][x];
 						if ((rx & 0xFF) == PT_SPRK && parts[rx>>8].life == 3) rr |= 1;
@@ -730,6 +729,44 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			break1b:
 			break;
 		// case 11: reserved for E189's life = 24.
+		case 12:
+			{
+				rndstore = rand();
+				rx = (rndstore&1)*2-1;
+				ry = (rndstore&2)-1;
+				if (parts[i].tmp2 == 2)
+				{
+					for (rii = 0; rii < 2; rii++)
+					{
+						if (BOUNDS_CHECK)
+						{
+							rtmp = parts[i].tmp;
+							rrx = pmap[y][x+rx*rii];
+							rry = pmap[y+ry*rii][x];
+							if ((rry & 0xFF) == PT_NSCN && parts[rry>>8].life == 0 && (rtmp & 1))
+								sim->create_part(rry, x, y+ry*rii, PT_SPRK);
+							if ((rrx & 0xFF) == PT_NSCN && parts[rrx>>8].life == 0 && (rtmp & 2))
+								sim->create_part(rrx, x+rx*rii, y, PT_SPRK);
+						}
+					}
+				}
+				for (rr = rii = 0; rii < 4; rii++)
+				{
+					if (BOUNDS_CHECK)
+					{
+						r = osc_r1[rii];
+						rx = pmap[y][x+r];
+						ry = pmap[y+r][x];
+						if ((rx & 0xFF) == PT_SPRK && parts[rx>>8].life == 3 && parts[rx>>8].ctype == PT_PSCN) rr |= 1;
+						if ((ry & 0xFF) == PT_SPRK && parts[ry>>8].life == 3 && parts[ry>>8].ctype == PT_PSCN) rr |= 2;
+					}
+				}
+				if (rr && !((rctype & 1) && parts[i].tmp2))
+				{
+					parts[i].tmp = rr; parts[i].tmp2 = 3;
+				}
+			}
+			break;
 		}
 		break;
 			
