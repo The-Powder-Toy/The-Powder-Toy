@@ -852,26 +852,26 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			{
 				if (BOUNDS_CHECK && (rx || ry))
 				{
-					if (!(rndstore&7))
+					r = pmap[y+ry][x+rx];
+					if ((r & 0xFF) == PT_TRON && !(rx && ry)) // (!(rx && ry)) equivalent to (!rx || !ry)
 					{
-						r = pmap[y+ry][x+rx];
-						if ((r & 0xFF) == PT_TRON && !(rx && ry)) // (!(rx && ry)) equivalent to (!rx || !ry)
+						rr = pmap[y-ry][x-rx];
+						rt = rr & 0xFF;
+						rr >>= 8;
+						if (parts[rr].life == 30)
 						{
-							rr = pmap[y-ry][x-rx];
-							rt = rr & 0xFF;
-							rr >>= 8;
-							if (parts[rr].life == 30)
+							if ((parts[rr].tmp >> 20) == 3)
 							{
-								if ((parts[rr].tmp >> 20) == 3)
-								{
-									parts[rr].ctype &= ~0x1F;
-									parts[rr].ctype |= (parts[r>>8].tmp >> 11) & 0x1F;
-								}
-								else
-									parts[rr].ctype = (parts[r>>8].tmp >> 7) & 0x1FF;
+								parts[rr].ctype &= ~0x1F;
+								parts[rr].ctype |= (parts[r>>8].tmp >> 11) & 0x1F;
 							}
+							else
+								parts[rr].ctype = (parts[r>>8].tmp >> 7) & 0x1FF;
 						}
-						else
+					}
+					else
+					{
+						if (!(rndstore&7))
 						{
 							switch (r & 0xFF)
 							{
@@ -920,14 +920,14 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 								break;
 							}
 						}
+						if (!--trade)
+						{
+							trade = 5;
+							rndstore = rand();
+						}
+						else
+							rndstore >>= 3;
 					}
-					if (!--trade)
-					{
-						trade = 5;
-						rndstore = rand();
-					}
-					else
-						rndstore >>= 3;
 				}
 			}
 		break;
