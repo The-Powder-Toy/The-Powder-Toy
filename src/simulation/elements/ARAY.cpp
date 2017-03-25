@@ -90,17 +90,28 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 							}
 							else if (rt == PT_E189 && parts[r].life == 28)
 							{
-								if (parts[r].tmp & 1)
-								{ // turn left
-									tmp =  nxi;
-									nxi =  nyi;
-									nyi = -tmp;
-								}
-								else
-								{ // turn right
+								switch (parts[r].tmp & 3)
+								{
+								case 0: // turn right
 									tmp =  nxi;
 									nxi = -nyi;
 									nyi =  tmp;
+									break;
+								case 1: // turn left
+									tmp =  nxi;
+									nxi =  nyi;
+									nyi = -tmp;
+									break;
+								case 2: // "/" reflect
+									tmp =  nxi;
+									nxi =  nyi;
+									nyi =  tmp;
+									break;
+								case 3: // "\" reflect
+									tmp =  nxi;
+									nxi = -nyi;
+									nyi = -tmp;
+									break;
 								}
 							}
 							else if (!destroy)
