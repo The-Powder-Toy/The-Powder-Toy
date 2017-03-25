@@ -1063,15 +1063,15 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 				rctype = (rtmp >> 7) & 0x1FF;
 				switch (rt & 7)
 				{
-					case 0: rctype  = rrx; break; // set color
+					case 0: rctype  = rrx; break; // set colour
 					case 1: rctype += rrx; break; // hue shift (add)
 					case 2: rctype -= rrx; break; // hue shift (subtract)
 					case 3: // if color is / isn't ... then pass through
-						if ((((rctype >> 4) & 0x1F) == rrx) != ((rrx >> 5) & 1)) // rightmost 5 bits xor 6th bit
+						if ((((rctype >> 4) & 0x1F) == rrx) == ((rrx >> 5) & 1)) // rightmost 5 bits xnor 6th bit
 							rtmp = 0;
 					break;
 				}
-				parts[ri].tmp |= (rtmp & 0x1009F) | ((rctype % 360) << 7) | (direction << 5);
+				parts[ri].tmp |= (rtmp & 0x1009F) | ((rctype % 368) << 7) | (direction << 5); // colour modulo 368, rather than 360
 				if (ri > i)
 					sim->parts[ri].tmp |= 0x04;
 				parts[ri].tmp2 = parts[i].tmp2;
