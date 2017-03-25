@@ -734,7 +734,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 				rndstore = rand();
 				rx = (rndstore&1)*2-1;
 				ry = (rndstore&2)-1;
-				if (parts[i].tmp2 == 2)
+				if (parts[i].tmp2 == 1)
 				{
 					for (rii = 0; rii < 2; rii++)
 					{
@@ -763,7 +763,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 				}
 				if (rr && !((rctype & 1) && parts[i].tmp2))
 				{
-					parts[i].tmp = rr; parts[i].tmp2 = 3;
+					parts[i].tmp = rr; parts[i].tmp2 = 2;
 				}
 			}
 			break;
