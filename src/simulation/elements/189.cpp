@@ -94,7 +94,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			if ((r & 0xFF) == PT_E189 && ((rii & ~0x1) == 2 || rii == 30))
 			{
 				ri = r >> 8;
-				parts[ri].tmp &= ((rii & 16) << 12) | 0xE0000;
+				parts[ri].tmp &= (rii == 30 ? 0x700000 : 0) | 0xE0000;
 				parts[ri].tmp |= (rtmp & 0x1FF9F) | (direction << 5);
 				if (ri > i)
 					sim->parts[ri].tmp |= 0x04;
@@ -842,7 +842,8 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 				}
 		break;
 	case 21:
-	/* MERC/DEUT/YEST expander, or SPNG "water releaser".
+	/* MERC/DEUT/YEST expander, or SPNG "water releaser",
+	 *   or TRON detector.
 	 * note: exclude E185 "replicating powder"
 	 */
 		rndstore = rand(), trade = 5;
@@ -884,10 +885,11 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 								rt = rr & 0xFF;
 								if (rt == PT_WATR || rt == PT_DSTW || rt == PT_SLTW || rt == PT_CBNW)
 								{
+									rr >>= 8;
 									if(!(rand()%3))
-										sim->part_change_type(rr>>8, x-rx, y-ry, PT_O2);
+										sim->part_change_type(rr, x-rx, y-ry, PT_O2);
 									else
-										sim->part_change_type(rr>>8, x-rx, y-ry, PT_H2);
+										sim->part_change_type(rr, x-rx, y-ry, PT_H2);
 									if (rt == PT_CBNW)
 									{
 										rrx = rand() % 5 - 2;
@@ -895,6 +897,24 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 										sim->create_part(-1, x+rrx, y+rry, PT_CO2);
 									}
 									parts[r>>8].tmp --;
+								}
+							}
+							break;
+						case PT_TRON: // TRON color detector
+							if (!rx != !ry)
+							{
+								rr = pmap[y-ry][x-rx];
+								rt = rr & 0xFF;
+								rr >>= 8;
+								if (parts[rr].life == 30)
+								{
+									if ((parts[rr].tmp >> 20) == 2)
+									{
+										parts[rr].ctype &= ~0x1F;
+										parts[rr].ctype |= parts[r>>8].tmp >> 11;
+									}
+									else
+										parts[rr].ctype = parts[r>>8].tmp >> 7;
 								}
 							}
 							break;
@@ -1034,16 +1054,29 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			direction = (rr + (rtmp >> 17)) & 0x3;
 			r = pmap[y + tron_ry[direction]][x + tron_rx[direction]];
 			rii = parts[r >> 8].life;
+			rt = rtmp >> 20;
+			rrx = parts[i].ctype;
 			if ((r & 0xFF) == PT_E189 && rii == 3)
 			{
 				ri = r >> 8;
 				parts[ri].tmp &= 0xE0000;
-				parts[ri].tmp |= (rtmp & 0x1000B) | (direction << 5);
+				rctype = (rtmp >> 7) & 0x1FF;
+				switch (rt & 7)
+				{
+					case 0: rctype  = rrx; break; // set color
+					case 1: rctype += rrx; break; // hue shift (add)
+					case 2: rctype -= rrx; break; // hue shift (subtract)
+					case 3: // if color is / isn't ... then pass through
+						if ((((rctype >> 4) & 0x1F) == rrx) != ((rrx >> 5) & 1)) // rightmost 5 bits xor 6th bit
+							rtmp = 0;
+					break;
+				}
+				parts[ri].tmp |= (rtmp & 0x1009F) | ((rctype % 360) << 7) | (direction << 5);
 				if (ri > i)
 					sim->parts[ri].tmp |= 0x04;
 				parts[ri].tmp2 = parts[i].tmp2;
 			}
-			rtmp &= 0x1E0000;
+			rtmp &= 0x7E0000;
 		}
 		parts[i].tmp = rtmp;
 		break;
@@ -1277,6 +1310,15 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 		break;
 	case 27:
 		*colr = 0x20; *colg = 0x33; *colb = 0xCC;
+		break;
+	case 28:
+		*colr = 0xFF; *colg = 0xDD; *colb = 0x80;
+		break;
+	case 29:
+		*colr = 0xD4; *colg = 0xE7; *colb = 0x08;
+		break;
+	case 30:
+		*colr = 0x70; *colg = 0x99; *colb = 0xCC;
 		break;
 	}
 	return 0;
