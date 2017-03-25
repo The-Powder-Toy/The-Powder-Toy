@@ -61,7 +61,7 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 						bool isBlackDeco = false;
 						int destroy = (parts[r>>8].ctype==PT_PSCN) ? 1 : 0;
 						int nostop = (parts[r>>8].ctype==PT_INST) ? 1 : 0;
-						int colored = 0, rt;
+						int colored = 0, rt, tmp;
 						for (int docontinue = 1, nxx = 0, nyy = 0, nxi = rx*-1, nyi = ry*-1; docontinue; nyy+=nyi, nxx+=nxi)
 						{
 							if (!(x+nxi+nxx<XRES && y+nyi+nyy<YRES && x+nxi+nxx >= 0 && y+nyi+nyy >= 0))
@@ -86,6 +86,21 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 									parts[nr].temp = parts[i].temp;
 									if (isBlackDeco)
 										parts[nr].dcolour = 0xFF000000;
+								}
+							}
+							else if (rt == PT_E189 && parts[r].life == 28)
+							{
+								if (parts[r].tmp & 1)
+								{ // turn left
+									tmp =  nxi;
+									nxi =  nyi;
+									nyi = -tmp;
+								}
+								else
+								{ // turn right
+									tmp =  nxi;
+									nxi = -nyi;
+									nyi =  tmp;
 								}
 							}
 							else if (!destroy)
