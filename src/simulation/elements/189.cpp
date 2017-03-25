@@ -1071,7 +1071,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 							rtmp = 0;
 					break;
 				}
-				parts[ri].tmp |= (rtmp & 0x1009F) | ((rctype % 368) << 7) | (direction << 5); // colour modulo 368, rather than 360
+				parts[ri].tmp |= (rtmp & 0x1009F) | (((rctype % 368 + 368) % 368) << 7) | (direction << 5); // colour modulo 368, rather than 360
 				if (ri > i)
 					sim->parts[ri].tmp |= 0x04;
 				parts[ri].tmp2 = parts[i].tmp2;
