@@ -992,6 +992,20 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			}
 			parts[i].tmp --;
 		}
+		break;
+	case 28: // ARAY/BRAY reflector
+		for (rx = -1; rx < 2; rx++)
+			for (ry = -1; ry < 2; ry++)
+				if (BOUNDS_CHECK && (rx || ry))
+				{
+					r = pmap[y+ry][x+rx];
+					if ((r & 0xFF) == PT_SPRK && parts[r>>8].life == 3)
+					{
+						parts[i].tmp ^= 1;
+						goto break3;
+					}
+				}
+		break;
 	}
 	
 	if(ttan>=2) {
