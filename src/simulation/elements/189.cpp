@@ -1,4 +1,4 @@
-﻿#include "simulation/Elements.h"
+#include "simulation/Elements.h"
 #include "simulation/Air.h"
 #include "Probability.h"
 #include "font.h"
