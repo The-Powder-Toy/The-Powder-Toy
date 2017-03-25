@@ -855,69 +855,70 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 					if (!(rndstore&7))
 					{
 						r = pmap[y+ry][x+rx];
-						switch (r & 0xFF)
+						if (!rx != !ry)
 						{
-						case PT_MERC:
-							parts[r>>8].tmp += parts[i].tmp;
-							break;
-						case PT_DEUT:
-							parts[r>>8].life += parts[i].tmp;
-							break;
-						case PT_YEST:
-							rtmp = parts[i].tmp;
-							if (rtmp > 0)
-								parts[r>>8].temp = 303.0f + (rtmp > 28 ? 28 : (float)rtmp * 0.5f);
-							else if (-rtmp > (rand()&31))
-								sim->kill_part(r>>8);
-							break;
-						case PT_SPNG:
-							if (parts[r>>8].life > 0)
+							rr = pmap[y-ry][x-rx];
+							rt = rr & 0xFF;
+							rr >>= 8;
+							if (parts[rr].life == 30)
 							{
-								rr = sim->create_part(-1, x-rx, y-ry, PT_WATR);
-								if (rr >= 0)
-									parts[r>>8].life --;
-							}
-							break;
-						case PT_VIBR:
-							if (parts[r>>8].tmp > 0)
-							{
-								rr = pmap[y-ry][x-rx];
-								rt = rr & 0xFF;
-								if (rt == PT_WATR || rt == PT_DSTW || rt == PT_SLTW || rt == PT_CBNW)
+								if ((parts[rr].tmp >> 20) == 3)
 								{
-									rr >>= 8;
-									if(!(rand()%3))
-										sim->part_change_type(rr, x-rx, y-ry, PT_O2);
-									else
-										sim->part_change_type(rr, x-rx, y-ry, PT_H2);
-									if (rt == PT_CBNW)
-									{
-										rrx = rand() % 5 - 2;
-										rry = rand() % 5 - 2;
-										sim->create_part(-1, x+rrx, y+rry, PT_CO2);
-									}
-									parts[r>>8].tmp --;
+									parts[rr].ctype &= ~0x1F;
+									parts[rr].ctype |= (parts[r>>8].tmp >> 11) & 0x1F;
 								}
+								else
+									parts[rr].ctype = (parts[r>>8].tmp >> 7) & 0x1FF;
 							}
-							break;
-						case PT_TRON: // TRON color detector
-							if (!rx != !ry)
+						}
+						else
+						{
+							switch (r & 0xFF)
 							{
-								rr = pmap[y-ry][x-rx];
-								rt = rr & 0xFF;
-								rr >>= 8;
-								if (parts[rr].life == 30)
+							case PT_MERC:
+								parts[r>>8].tmp += parts[i].tmp;
+								break;
+							case PT_DEUT:
+								parts[r>>8].life += parts[i].tmp;
+								break;
+							case PT_YEST:
+								rtmp = parts[i].tmp;
+								if (rtmp > 0)
+									parts[r>>8].temp = 303.0f + (rtmp > 28 ? 28 : (float)rtmp * 0.5f);
+								else if (-rtmp > (rand()&31))
+									sim->kill_part(r>>8);
+								break;
+							case PT_SPNG:
+								if (parts[r>>8].life > 0)
 								{
-									if ((parts[rr].tmp >> 20) == 3)
-									{
-										parts[rr].ctype &= ~0x1F;
-										parts[rr].ctype |= (parts[r>>8].tmp >> 11) & 0x1F;
-									}
-									else
-										parts[rr].ctype = (parts[r>>8].tmp >> 7) & 0x1FF;
+									rr = sim->create_part(-1, x-rx, y-ry, PT_WATR);
+									if (rr >= 0)
+										parts[r>>8].life --;
 								}
+								break;
+							case PT_VIBR:
+								if (parts[r>>8].tmp > 0)
+								{
+									rr = pmap[y-ry][x-rx];
+									rt = rr & 0xFF;
+									if (rt == PT_WATR || rt == PT_DSTW || rt == PT_SLTW || rt == PT_CBNW)
+									{
+										rr >>= 8;
+										if(!(rand()%3))
+											sim->part_change_type(rr, x-rx, y-ry, PT_O2);
+										else
+											sim->part_change_type(rr, x-rx, y-ry, PT_H2);
+										if (rt == PT_CBNW)
+										{
+											rrx = rand() % 5 - 2;
+											rry = rand() % 5 - 2;
+											sim->create_part(-1, x+rrx, y+rry, PT_CO2);
+										}
+										parts[r>>8].tmp --;
+									}
+								}
+								break;
 							}
-							break;
 						}
 					}
 					if (!--trade)
