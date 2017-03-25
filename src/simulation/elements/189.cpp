@@ -911,10 +911,10 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 									if ((parts[rr].tmp >> 20) == 3)
 									{
 										parts[rr].ctype &= ~0x1F;
-										parts[rr].ctype |= parts[r>>8].tmp >> 11;
+										parts[rr].ctype |= (parts[r>>8].tmp >> 11) & 0x1F;
 									}
 									else
-										parts[rr].ctype = parts[r>>8].tmp >> 7;
+										parts[rr].ctype = (parts[r>>8].tmp >> 7) & 0x1FF;
 								}
 							}
 							break;
