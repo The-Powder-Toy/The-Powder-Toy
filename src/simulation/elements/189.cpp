@@ -1042,7 +1042,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						rtmp &= ~0x1006A; // clear direction data and custom flags
 						rtmp |= rr << 5; // set direction data
 						rtmp |= ((rtmp & 1) << 1) | ((rtmp & 2) << 2) | ((rtmp & 4) << 14); // set custom flags
-						if (ri > i) rtmp |= 0x04;
+						if (r > i) rtmp |= 0x04;
 						parts[r].tmp = rtmp;
 					}
 				}
