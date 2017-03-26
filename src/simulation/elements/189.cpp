@@ -1080,7 +1080,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 					{
 						ri = r >> 8;
 						parts[ri].tmp &= 0xE0000;
-						parts[ri].tmp |= (rtmp & 0x1FF9F) || (rr << 5);
+						parts[ri].tmp |= (rtmp & 0x1FF9F) | (rr << 5);
 						if (ri > i)
 							sim->parts[ri].tmp |= 0x04;
 						parts[ri].tmp2 = parts[i].tmp2;
