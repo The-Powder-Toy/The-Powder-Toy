@@ -90,6 +90,7 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 							}
 							else if (rt == PT_E189 && parts[r].life == 28)
 							{
+								nxx += nxi; nyy += nyi;
 								switch (parts[r].tmp & 3)
 								{
 								case 0: // turn right
@@ -113,6 +114,7 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 									nyi = -tmp;
 									break;
 								}
+								nxx -= nxi; nyy -= nyi;
 							}
 							else if (!destroy)
 							{
