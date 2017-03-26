@@ -93,9 +93,17 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			ry = y + tron_ry[direction];
 			r = pmap[ry][rx];
 			rii = parts[r >> 8].life;
-			if ((r & 0xFF) == PT_E189 && ((rii & ~0x1) == 2 || rii == 30))
+			rrx = rii >> 1;
+			if ((r & 0xFF) == PT_E189 && (rrx == 1 || rrx == 15))
 			{
 				ri = r >> 8;
+				if (rii == 31) // delay
+				{
+					if (parts[ri].tmp3)
+						goto break1c;
+					else
+						parts[ri].tmp3 = parts[ri].ctype;
+				}
 				parts[ri].tmp &= (rii == 30 ? 0x700000 : 0) | 0xE0000;
 				parts[ri].tmp |= (rtmp & 0x1FF9F) | (direction << 5);
 				if (ri > i)
@@ -106,6 +114,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			{
 				sim->create_part(-1, rx, ry, PT_SPRK);
 			}
+		break1c:
 			rtmp &= 0xE0000;
 		}
 		parts[i].tmp = rtmp;
@@ -1067,7 +1076,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 				for (rr = 0; rr < 4; rr++)
 				{
 					r = pmap[y + tron_ry[rr]][x + tron_rx[rr]];
-					if ((r & 0xFF) == PT_E189 && (parts[r >> 8].life & ~0x1) == 2)
+					if ((r & 0xFF) == PT_E189 && parts[r >> 8].life == 3)
 					{
 						parts[ri].tmp &= 0xE0000;
 						parts[ri].tmp |= (rtmp & 0x1FF9F) || (rr << 5);
@@ -1104,6 +1113,28 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 				parts[ri].tmp2 = parts[i].tmp2;
 			}
 			rtmp &= 0x7E0000;
+		}
+		parts[i].tmp = rtmp;
+		break;
+	case 31: // TRON delay
+		if (parts[i].tmp3)
+			parts[i].tmp3--;
+		else if (rtmp & 0x04)
+			rtmp &= ~0x04;
+		else if (rtmp & 0x01)
+		{
+			rr = (rtmp >> 5) & ((rtmp >> 19 & 1) - 1);
+			direction = (rr + (rtmp >> 17)) & 0x3;
+			r = pmap[y + tron_ry[direction]][x + tron_rx[direction]];
+			rii = parts[r >> 8].life;
+			if ((r & 0xFF) == PT_E189 && (rii & ~0x1) == 2)
+			{
+				ri = r >> 8;
+				parts[ri].tmp |= (rtmp & 0x1FF9F) | (direction << 5);
+				if (ri > i)
+					sim->parts[ri].tmp |= 0x04;
+			}
+			rtmp &= 0xE0000;
 		}
 		parts[i].tmp = rtmp;
 		break;
@@ -1346,6 +1377,9 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 		break;
 	case 30:
 		*colr = 0x70; *colg = 0x99; *colb = 0xCC;
+		break;
+	case 31:
+		*colr = 0x99; *colg = 0x70; *colb = 0xD0;
 		break;
 	}
 	return 0;
