@@ -1117,10 +1117,10 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 		parts[i].tmp = rtmp;
 		break;
 	case 31: // TRON delay
-		if (parts[i].tmp3)
-			parts[i].tmp3--;
-		else if (rtmp & 0x04)
+		if (rtmp & 0x04)
 			rtmp &= ~0x04;
+		else if (parts[i].tmp3)
+			parts[i].tmp3--;
 		else if (rtmp & 0x01)
 		{
 			rr = (rtmp >> 5) & ((rtmp >> 19 & 1) - 1);
@@ -1133,6 +1133,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 				parts[ri].tmp |= (rtmp & 0x1FF9F) | (direction << 5);
 				if (ri > i)
 					sim->parts[ri].tmp |= 0x04;
+				parts[ri].tmp2 = parts[i].tmp2;
 			}
 			rtmp &= 0xE0000;
 		}
