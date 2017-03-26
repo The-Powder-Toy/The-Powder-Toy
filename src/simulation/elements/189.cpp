@@ -1071,6 +1071,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 		{
 			rt = rtmp >> 20;
 			rrx = parts[i].ctype;
+			ri = r >> 8;
 			if (rt == 4) // TRON splitter
 			{
 				for (rr = 0; rr < 4; rr++)
@@ -1094,7 +1095,6 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			rii = parts[r >> 8].life;
 			if ((r & 0xFF) == PT_E189 && rii == 3)
 			{
-				ri = r >> 8;
 				parts[ri].tmp &= 0xE0000;
 				rctype = (rtmp >> 7) & 0x1FF;
 				switch (rt & 7)
