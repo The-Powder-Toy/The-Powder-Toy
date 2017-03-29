@@ -103,6 +103,10 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 
 	//Death
 	pressure = sim->pv[y/CELL][x/CELL];
+	if (pressure < 0.0f && sim->E189_FIGH_pause & 0x100)
+	{
+		pressure = -pressure;
+	}
 	if (parts[i].life<1 || (pressure>=4.5f && !(sim->E189_FIGH_pause & 16) && playerp->elem != SPC_AIR) ) //If his HP is less than 0 or there is very big wind...
 	{
 		if (playerp->elem != PT_FIGH)
