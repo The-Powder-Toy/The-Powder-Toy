@@ -2181,6 +2181,8 @@ void LuaScriptInterface::initStickmanAPI()
 	lua_setfield(l, -2, "USE_PARENT_CMD");
 	lua_pushinteger(l, 0x00000080);
 	lua_setfield(l, -2, "SEEK_PARENT");
+	lua_pushinteger(l, 0x00000100);
+	lua_setfield(l, -2, "VACUUM_KILL");
 }
 
 playerst* LuaScriptInterface::get_stickman_ptr (int stickmanID)
