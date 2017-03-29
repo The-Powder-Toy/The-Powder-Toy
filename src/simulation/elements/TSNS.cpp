@@ -81,7 +81,7 @@ int Element_TSNS::update(UPDATE_FUNC_ARGS)
 					r = sim->photons[y+ry][x+rx];
 				if(!r)
 					continue;
-				if ((r&0xFF)!=PT_TSNS && (r&0xFF)!=PT_METL && parts[r>>8].temp > parts[i].temp)
+				if ((r&0xFF)!=PT_TSNS && (r&0xFF)!=PT_METL && !(parts[i].tmp3 & 1) == (parts[r>>8].temp > parts[i].temp))
 					parts[i].life = 1;
 			}
 	return 0;
