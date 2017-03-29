@@ -91,7 +91,7 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 
 	//Death
 	pressure = sim->pv[y/CELL][x/CELL];
-	if (pressure < 0.0f && sim->E189_FIGH_pause & 0x100)
+	if (pressure < 0.0f && (sim->E189_FIGH_pause & 0x100))
 	{
 		pressure = -pressure;
 	}

@@ -7,7 +7,7 @@ Element_PINS::Element_PINS()
 	Name = "UMPI";
 	Colour = PIXPACK(0x939699);
 	MenuVisible = 1;
-	MenuSection = SC_SOLIDS;
+	MenuSection = SC_SPECIAL;
 	Enabled = 1;
 
 	Advection = 0.0f;
