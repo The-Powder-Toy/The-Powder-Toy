@@ -45,6 +45,7 @@ Element_PINS::Element_PINS()
 	Update = &Element_PINS::update;
 }
 
+//#TPT-Directive ElementHeader Element_PINS static int update(UPDATE_FUNC_ARGS)
 int Element_PINS::update(UPDATE_FUNC_ARGS)
 {
 	int rx, ry, ttan = 0;
