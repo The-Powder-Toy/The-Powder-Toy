@@ -4,7 +4,7 @@
 Element_PINS::Element_PINS()
 {
 	Identifier = "DEFAULT_PT_PINS";
-	Name = "PINS";
+	Name = "UMPI";
 	Colour = PIXPACK(0x939699);
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
@@ -29,7 +29,7 @@ Element_PINS::Element_PINS()
 
 	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 251;
-	Description = "Blocks all air pressure.";
+	Description = "Unmeltable pressure insulator. blocks all air pressure.";
 
 	Properties = TYPE_SOLID;
 
