@@ -252,6 +252,22 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 						parts[r>>8].life = 220;
 					}
 					continue;
+				case PT_PINVIS:
+					if (sender == PT_PSCN)
+					{
+						// Instantly activate PINV
+						PropertyValue PINVIS_VALUE;
+						PINVIS_VALUE.Integer = 1;
+						sim->flood_prop(x+rx, y+ry, offsetof(Particle, tmp), PINVIS_VALUE, StructProperty::Integer);
+					}
+					else if (sender == PT_NSCN)
+					{
+						// Instantly deactivate PINV
+						PropertyValue PINVIS_VALUE;
+						PINVIS_VALUE.Integer = 0;
+						sim->flood_prop(x+rx, y+ry, offsetof(Particle, tmp), PINVIS_VALUE, StructProperty::Integer);
+					}
+					continue;
 				}
 
 				if (pavg == PT_INSL || pavg == PT_INDI) continue; //Insulation blocks everything past here
