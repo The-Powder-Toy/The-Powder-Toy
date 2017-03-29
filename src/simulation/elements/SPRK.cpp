@@ -49,7 +49,7 @@ Element_SPRK::Element_SPRK()
 //#TPT-Directive ElementHeader Element_SPRK static int update(UPDATE_FUNC_ARGS)
 int Element_SPRK::update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry, nearp, pavg, ct = parts[i].ctype, sender, receiver; // ravg;
+	int r, rx, ry, nearp, pavg, ct = parts[i].ctype, sender, receiver, tmp; // ravg;
 	Element_FIRE::update(UPDATE_FUNC_SUBCALL_ARGS);
 
 	if (parts[i].life<=0)
@@ -253,19 +253,28 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 					}
 					continue;
 				case PT_PINVIS:
-					if (sender == PT_PSCN)
+					tmp = parts[r>>8].tmp;
+					if (parts[i].life<4)
 					{
-						// Instantly activate PINV
-						PropertyValue PINVIS_VALUE;
-						PINVIS_VALUE.Integer = 1;
-						sim->flood_prop(x+rx, y+ry, offsetof(Particle, tmp), PINVIS_VALUE, StructProperty::Integer);
-					}
-					else if (sender == PT_NSCN)
-					{
-						// Instantly deactivate PINV
-						PropertyValue PINVIS_VALUE;
-						PINVIS_VALUE.Integer = 0;
-						sim->flood_prop(x+rx, y+ry, offsetof(Particle, tmp), PINVIS_VALUE, StructProperty::Integer);
+						if (tmp) // also PROP_PTOGGLE, Maybe?
+						{
+							if (sender == PT_NSCN)
+							{
+								// Instantly deactivate PINV
+								PropertyValue PINVIS_VALUE;
+								PINVIS_VALUE.Integer = 0;
+								sim->flood_prop(x+rx, y+ry, offsetof(Particle, tmp), PINVIS_VALUE, StructProperty::Integer);
+							}
+						else
+						{
+							if (sender == PT_PSCN)
+							{
+								// Instantly activate PINV
+								PropertyValue PINVIS_VALUE;
+								PINVIS_VALUE.Integer = 1;
+								sim->flood_prop(x+rx, y+ry, offsetof(Particle, tmp), PINVIS_VALUE, StructProperty::Integer);
+							}
+						}
 					}
 					continue;
 				}
