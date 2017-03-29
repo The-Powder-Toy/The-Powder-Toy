@@ -42,8 +42,31 @@ Element_PINS::Element_PINS()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_TTAN::update;
+	Update = &Element_PINS::update;
 }
 
+int Element_PINS::update(UPDATE_FUNC_ARGS)
+{
+	int rx, ry, ttan = 0;
+	if(nt<=2)
+		ttan = 2;
+	else if(parts[i].tmp)
+		ttan = 2;
+	else if(nt<=6)
+		for (rx=-1; rx<2; rx++) {
+			for (ry=-1; ry<2; ry++) {
+				if ((!rx != !ry) && BOUNDS_CHECK) {
+					if((pmap[y+ry][x+rx]&0xFF)==PT_PINS)
+						ttan++;
+				}
+			}
+		}
+
+	if(ttan>=2) {
+		sim->air->bmap_blockair[y/CELL][x/CELL] = 1;
+		sim->air->bmap_blockairh[y/CELL][x/CELL] = 0x8;
+	}
+	return 0;
+}
 
 Element_PINS::~Element_PINS() {}
