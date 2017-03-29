@@ -265,6 +265,7 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 								PINVIS_VALUE.Integer = 0;
 								sim->flood_prop(x+rx, y+ry, offsetof(Particle, tmp), PINVIS_VALUE, StructProperty::Integer);
 							}
+						}
 						else
 						{
 							if (sender == PT_PSCN)
