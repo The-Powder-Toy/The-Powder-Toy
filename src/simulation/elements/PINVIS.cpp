@@ -82,7 +82,8 @@ int Element_PINVIS::update(UPDATE_FUNC_ARGS)
 
 	parts[i].ctype &= 0x0FFF;
 	int PINVIS_channel = parts[i].ctype;
-	parts[i].tmp = 1 & (wireless2[PINVIS_channel >> 5][0] >> (PINVIS_channel & 0x1F));
+	parts[i].tmp = 1 & (sim->wireless2[PINVIS_channel >> 5][0] >> (PINVIS_channel & 0x1F));
+	return 0;
 }
 
 
