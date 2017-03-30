@@ -290,7 +290,7 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 				break;
 			}
 			r = sim->pmap[posY][posX];
-			if (!r || (r&0xFF) == block || ((r&0xFF) == PT_INDI && (parts[r>>8].tmp & 1)))
+			if (!r || (r&0xFF) == block || ((r&0xFF) == PT_INDI && (sim->parts[r>>8].tmp & 1)))
 				break;
 			if (!sticky && (r&0xFF) != PT_FRME && stickylimit <= 0) {
 				break;
