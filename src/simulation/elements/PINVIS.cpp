@@ -42,12 +42,14 @@ Element_PINVIS::Element_PINVIS()
 	HighTemperatureTransition = NT;
 
 	Update = &Element_PINVIS::update;
-	Graphics = &Element_PINVIS::graphics;
+	Graphics = &Element_INVIS::graphics;
 }
 
 //#TPT-Directive ElementHeader Element_PINVIS static int update(UPDATE_FUNC_ARGS)
 int Element_PINVIS::update(UPDATE_FUNC_ARGS)
 {
+#if 0
+// test failed
 	int r, rx, ry;
 	if (parts[i].life!=10)
 	{
@@ -73,21 +75,14 @@ int Element_PINVIS::update(UPDATE_FUNC_ARGS)
 				}
 	}
 	return 0;
-}
+#endif
 
-//#TPT-Directive ElementHeader Element_PINVIS static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_PINVIS::graphics(GRAPHICS_FUNC_ARGS)
-{
-	//pv[ny/CELL][nx/CELL]>4.0f || pv[ny/CELL][nx/CELL]<-4.0f
-	if(cpart->life >= 10)
-	{
-		*cola = 100;
-		*colr = 15;
-		*colg = 0;
-		*colb = 150;
-		*pixel_mode = PMODE_BLEND;
-	} 
-	return 0;
+	// wireless2[][0] - whether channel is active on this frame
+	// for wireless2[][1] - see SPRK.cpp and Simulation.cpp
+
+	parts[i].ctype &= 0x0FFF;
+	int PINVIS_channel = parts[i].ctype;
+	parts[i].tmp = 1 & (wireless2[PINVIS_channel >> 5][0] >> (PINVIS_channel & 0x1F));
 }
 
 

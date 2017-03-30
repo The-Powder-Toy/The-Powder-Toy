@@ -5565,6 +5565,15 @@ void Simulation::BeforeSim()
 			}
 			ISWIRE--;
 		}
+		
+		if (ISWIRE2 > 0)
+		{
+			for (int q = 0; q < 128; q++) // 128 * 32 = 4096 channels
+			{
+				wireless2[q][0] = wireless2[q][1];
+			}
+			ISWIRE--;
+		}
 
 		// spawn STKM and STK2
 		if (!player.spwn && player.spawnID >= 0)
@@ -5632,6 +5641,7 @@ Simulation::Simulation():
 	replaceModeFlags(0),
 	debug_currentParticle(0),
 	ISWIRE(0),
+	ISWIRE2(0),
 	force_stacking_check(false),
 	emp_decor(0),
 	emp_trigger_count(0),
