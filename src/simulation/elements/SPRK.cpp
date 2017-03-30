@@ -253,28 +253,22 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 					}
 					continue;
 				case PT_PINVIS:
-					tmp = parts[r>>8].tmp;
+					tmp = parts[r>>8].life;
 					if (parts[i].life<4)
 					{
-						if (tmp) // also PROP_PTOGGLE, Maybe?
+						if (sender == PT_PSCN)
 						{
-							if (sender == PT_NSCN)
-							{
-								// Instantly deactivate PINV
-								PropertyValue PINVIS_VALUE;
-								PINVIS_VALUE.Integer = 0;
-								sim->flood_prop(x+rx, y+ry, offsetof(Particle, tmp), PINVIS_VALUE, StructProperty::Integer);
-							}
+							// Instantly activate PINV
+							PropertyValue PINVIS_VALUE;
+							PINVIS_VALUE.Integer = 10;
+							sim->flood_prop(x+rx, y+ry, offsetof(Particle, life), PINVIS_VALUE, StructProperty::Integer);
 						}
-						else
+						else if (sender == PT_NSCN && tmp >= 10)
 						{
-							if (sender == PT_PSCN)
-							{
-								// Instantly activate PINV
-								PropertyValue PINVIS_VALUE;
-								PINVIS_VALUE.Integer = 1;
-								sim->flood_prop(x+rx, y+ry, offsetof(Particle, tmp), PINVIS_VALUE, StructProperty::Integer);
-							}
+							// Instantly deactivate PINV
+							PropertyValue PINVIS_VALUE;
+							PINVIS_VALUE.Integer = 9;
+							sim->flood_prop(x+rx, y+ry, offsetof(Particle, life), PINVIS_VALUE, StructProperty::Integer);
 						}
 					}
 					continue;

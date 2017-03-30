@@ -2049,6 +2049,7 @@ void Simulation::init_can_move()
 		can_move[movingType][PT_FIGH] = 0;
 		//INVS behaviour varies with pressure
 		can_move[movingType][PT_INVIS] = 3;
+		can_move[movingType][PT_PINVIS] = 3;
 		//stop CNCT from being displaced by other particles
 		can_move[movingType][PT_CNCT] = 0;
 		//VOID and PVOD behaviour varies with powered state and ctype
@@ -2188,6 +2189,13 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr)
 		else if ((r&0xFF) == PT_INVIS)
 		{
 			if (pv[ny/CELL][nx/CELL]>4.0f || pv[ny/CELL][nx/CELL]<-4.0f)
+				result = 2;
+			else
+				result = 0;
+		}
+		else if ((r&0xFF) == PT_PINVIS)
+		{
+			if (parts[r>>8].life >= 10)
 				result = 2;
 			else
 				result = 0;
