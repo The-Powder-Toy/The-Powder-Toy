@@ -2423,6 +2423,10 @@ void GameView::OnDraw()
 					partstr = 1;
 				}
 			}
+			else if (type == PT_PINVIS)
+			{
+				partint = 1;
+			}
 			
 			if (showDebug)
 			{
