@@ -2195,7 +2195,7 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr)
 		}
 		else if ((r&0xFF) == PT_PINVIS)
 		{
-			if (parts[r>>8].life >= 10)
+			if (parts[r>>8].tmp)
 				result = 2;
 			else
 				result = 0;

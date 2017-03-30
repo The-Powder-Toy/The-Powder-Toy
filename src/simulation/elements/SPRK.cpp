@@ -253,7 +253,7 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 					}
 					continue;
 				case PT_PINVIS:
-					tmp = parts[r>>8].ctype;
+					tmp = parts[r>>8].ctype & 0x0FFF;
 					// wireless2[][1] - whether channel should be active on next frame
 					// for wireless2[][0] - see PINVIS.cpp and Simulation.cpp
 					if (parts[i].life<4)
