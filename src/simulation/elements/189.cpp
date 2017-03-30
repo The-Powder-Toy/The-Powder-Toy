@@ -691,6 +691,14 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						else if (rtmp >= 10)
 							parts[r>>8].life = 9;
 					}
+					else if ((r & 0xFF) == PT_LCRY)
+					{
+						rtmp = parts[r>>8].tmp;
+						if (rt && rtmp == 0)
+							parts[r>>8].tmp = 2;
+						if (!rt && rtmp == 3)
+							parts[r>>8].tmp = 1;
+					}
 				}
 			break;
 		case 10:
