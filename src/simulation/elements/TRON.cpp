@@ -215,7 +215,7 @@ int Element_TRON::graphics(GRAPHICS_FUNC_ARGS)
 int Element_TRON::new_tronhead(Simulation * sim, int x, int y, int i, int direction)
 {
 	int r = sim->pmap[y][x];
-	if ((r & 0xFF) == PT_E189)
+	if ((r & 0xFF) == PT_E189 && parts[r>>8].life == 2)
 	{
 		int ri = r >> 8;
 		sim->parts[ri].tmp &= 0xE0000;
