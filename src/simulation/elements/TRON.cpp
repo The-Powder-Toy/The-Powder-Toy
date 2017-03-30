@@ -105,6 +105,9 @@ int Element_TRON::update(UPDATE_FUNC_ARGS)
 
 		//random turn
 		int random = rand()%340;
+
+		// approximately 97 in 32768 turn left,
+		// approximately 97 in 32768 turn right.
 		if ((random==1 || random==3) && !(parts[i].tmp & TRON_NORANDOM))
 		{
 			//randomly turn left(3) or right(1)
@@ -215,7 +218,7 @@ int Element_TRON::graphics(GRAPHICS_FUNC_ARGS)
 int Element_TRON::new_tronhead(Simulation * sim, int x, int y, int i, int direction)
 {
 	int r = sim->pmap[y][x];
-	if ((r & 0xFF) == PT_E189 && parts[r>>8].life == 2)
+	if ((r & 0xFF) == PT_E189 && sim->parts[r>>8].life == 2)
 	{
 		int ri = r >> 8;
 		sim->parts[ri].tmp &= 0xE0000;
