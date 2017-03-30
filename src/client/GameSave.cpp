@@ -28,7 +28,7 @@ signs(save.signs),
 palette(save.palette),
 expanded(save.expanded),
 hasOriginalData(save.hasOriginalData),
-originalData(save.originalData),
+originalData(save.originalData)
 {
 	blockMap = NULL;
 	blockMapPtr = NULL;
