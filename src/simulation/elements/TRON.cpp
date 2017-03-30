@@ -98,8 +98,8 @@ int Element_TRON::update(UPDATE_FUNC_ARGS)
 	if (parts[i].tmp&TRON_HEAD)
 	{
 		int firstdircheck = 0,seconddir,seconddircheck = 0,lastdir,lastdircheck = 0;
-		int firstE189, secondE189, lastE189;
-		bool secondE189dir, lastE189dir;
+		bool firstE189, secondE189, lastE189;
+		int secondE189dir, lastE189dir;
 		int direction = (parts[i].tmp>>5 & 0x3);
 		int originaldir = direction;
 
