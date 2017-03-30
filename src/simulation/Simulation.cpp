@@ -312,6 +312,7 @@ void Simulation::SaveSimOptions(GameSave * gameSave)
 	gameSave->gravityEnable = grav->ngrav_enable;
 	gameSave->aheatEnable = aheat_enable;
 	gameSave->sextraLoopsCA = extraLoopsCA;
+	gameSave->PINV_wireless = wireless2;
 }
 
 Snapshot * Simulation::CreateSnapshot()
@@ -1931,6 +1932,7 @@ void Simulation::clear_sim(void)
 		memset(fvy, 0, sizeof(fvy));
 	memset(photons, 0, sizeof(photons));
 	memset(wireless, 0, sizeof(wireless));
+	memset(wireless2, 0, sizeof(wireless2));
 	memset(gol2, 0, sizeof(gol2));
 	memset(portalp, 0, sizeof(portalp));
 	memset(fighters, 0, sizeof(fighters));
@@ -1943,6 +1945,7 @@ void Simulation::clear_sim(void)
 	player2.spwn = 0;
 	player2.spawnID = -1;
 	player2.rocketBoots = false;
+
 	//memset(pers_bg, 0, WINDOWW*YRES*PIXELSIZE);
 	//memset(fire_r, 0, sizeof(fire_r));
 	//memset(fire_g, 0, sizeof(fire_g));
