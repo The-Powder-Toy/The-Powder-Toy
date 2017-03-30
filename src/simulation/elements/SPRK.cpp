@@ -263,14 +263,14 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 							// Instantly activate PINV
 							
 							sim->ISWIRE2 = 1;
-							sim->wireless[tmp >> 5][1] |= 1 << (tmp & 0x1F);
+							sim->wireless2[tmp >> 5][1] |= 1 << (tmp & 0x1F);
 						}
 						else if (sender == PT_NSCN)
 						{
 							// Instantly deactivate PINV
 							
 							sim->ISWIRE2 = 1;
-							sim->wireless[tmp >> 5][1] &= ~(1 << (tmp & 0x1F));
+							sim->wireless2[tmp >> 5][1] &= ~(1 << (tmp & 0x1F));
 						}
 					}
 					continue;
