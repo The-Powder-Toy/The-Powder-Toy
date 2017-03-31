@@ -2589,7 +2589,7 @@ int Simulation::do_move(int i, int x, int y, float nxf, float nyf)
 		parts[i].y = nyf;
 		if (ny!=y || nx!=x)
 		{
-			pmap_remove (i, x, y);
+			pmap_remove (i, x, y, PT_PINVIS);
 			if (nx<CELL || nx>=XRES-CELL || ny<CELL || ny>=YRES-CELL)//kill_part if particle is out of bounds
 			{
 				kill_part(i);
@@ -2791,7 +2791,7 @@ void Simulation::kill_part(int i)//kills particle number i
 	int x = (int)(parts[i].x+0.5f);
 	int y = (int)(parts[i].y+0.5f);
 	if (x>=0 && y>=0 && x<XRES && y<YRES) {
-		pmap_remove ((unsigned int)i, x, y);
+		pmap_remove ((unsigned int)i, x, y, PT_PINVIS);
 	}
 
 	if (parts[i].type == PT_NONE)
@@ -2911,7 +2911,7 @@ void Simulation::part_change_type(int i, int x, int y, int t)//changes the type 
 		etrd_life0_count++;
 
 	parts[i].type = t;
-	pmap_remove(i, x, y);
+	pmap_remove(i, x, y, PT_PINVIS);
 	pmap_add(i, x, y, t);
 }
 
@@ -3079,7 +3079,7 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 	{
 		int oldX = (int)(parts[p].x+0.5f);
 		int oldY = (int)(parts[p].y+0.5f);
-		pmap_remove(p, oldX, oldY);
+		pmap_remove(p, oldX, oldY, PT_PINVIS);
 		
 		if (parts[p].type == PT_STKM)
 		{
@@ -4367,7 +4367,7 @@ killed:
 				}
 				if (ny!=y || nx!=x)
 				{
-					pmap_remove (i, x, y);
+					pmap_remove (i, x, y, PT_PINVIS);
 					if (nx<CELL || nx>=XRES-CELL || ny<CELL || ny>=YRES-CELL)
 					{
 						kill_part(i);

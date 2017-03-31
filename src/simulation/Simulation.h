@@ -161,12 +161,12 @@ public:
 		else if ((!pmap[y][x] || elements[t].Properties & PROP_INVISIBLE))
 			pmap[y][x] = t|(i<<8);
 	}
-	inline void pmap_remove(unsigned int i, int x, int y)
+	inline void pmap_remove(unsigned int i, int x, int y, int _pt_pinvis)
 	{
 		// NB: all arguments are assumed to be within bounds
 		if ((pmap[y][x]>>8)==i)
 			pmap[y][x] = 0;
-		else if ((pmap[y][x]&0xFF)==PT_PINVIS && (unsigned int)(parts[pmap[y][x]>>8].tmp4>>8)==i)
+		else if ((pmap[y][x]&0xFF)==_pt_pinvis && (unsigned int)(parts[pmap[y][x]>>8].tmp4>>8)==i)
 			parts[pmap[y][x]>>8].tmp4 = 0;
 		else if ((photons[y][x]>>8)==i)
 			photons[y][x] = 0;
