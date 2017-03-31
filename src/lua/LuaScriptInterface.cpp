@@ -2583,6 +2583,8 @@ void LuaScriptInterface::initElementsAPI()
 	SETCONST(l, PROP_CLONE);
 	SETCONST(l, PROP_NOWAVELENGTHS);
 	SETCONST(l, PROP_INVISIBLE);
+	lua_pushinteger(l, PROP_UNLIMSTACKING);
+	lua_setfield(l, -2, "PROP_UNLIMITED_STACKING");
 	
 	// second property flags
 	// SETCONST(l, PROP_NOSLOWDOWN);
