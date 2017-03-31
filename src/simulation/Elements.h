@@ -38,6 +38,7 @@
 #define PROP_CLONE			0x1000000  // 2^24 Makes elements clone things that touch it
 #define PROP_NOWAVELENGTHS	0x2000000  // 2^25 Energy particle without wavelengths
 #define PROP_INVISIBLE		0x4000000  // 2^26 Invisible elements
+#define PROP_UNLIMSTACKING	0x8000000  // 2^27 Currently no limit on stacking
 
 // second properties flag:
 // #define PROP_NOSLOWDOWN		0x200000
