@@ -312,7 +312,7 @@ void Simulation::SaveSimOptions(GameSave * gameSave)
 	gameSave->gravityEnable = grav->ngrav_enable;
 	gameSave->aheatEnable = aheat_enable;
 	gameSave->sextraLoopsCA = extraLoopsCA;
-	gameSave->PINV_wireless = wireless2;
+	// gameSave->PINV_wireless = wireless2;
 }
 
 Snapshot * Simulation::CreateSnapshot()
@@ -1932,7 +1932,7 @@ void Simulation::clear_sim(void)
 		memset(fvy, 0, sizeof(fvy));
 	memset(photons, 0, sizeof(photons));
 	memset(wireless, 0, sizeof(wireless));
-	memset(wireless2, 0, sizeof(wireless2));
+	// memset(wireless2, 0, sizeof(wireless2));
 	memset(gol2, 0, sizeof(gol2));
 	memset(portalp, 0, sizeof(portalp));
 	memset(fighters, 0, sizeof(fighters));
@@ -5569,6 +5569,7 @@ void Simulation::BeforeSim()
 			ISWIRE--;
 		}
 		
+#if 0
 		if (ISWIRE2 > 0)
 		{
 			for (int q = 0; q < 128; q++) // 128 * 32 = 4096 channels
@@ -5577,6 +5578,7 @@ void Simulation::BeforeSim()
 			}
 			ISWIRE--;
 		}
+#endif
 
 		// spawn STKM and STK2
 		if (!player.spwn && player.spawnID >= 0)
