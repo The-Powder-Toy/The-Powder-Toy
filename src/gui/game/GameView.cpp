@@ -2442,20 +2442,23 @@ void GameView::OnDraw()
 					else
 						sampleInfo << " (unknown mode)";
 				}
-				else if (type == PT_PINVIS && ctype != type && c->IsValidElement(ctype))
+				else if (type == PT_PINVIS)
 				{
-					int c_ctype = (sample.cparticle)->ctype;
-					sampleInfo << c->ElementResolve(type, -1) << " with " << c->ElementResolve(ctype, c_ctype);
-					if (ctype != PT_LIFE)
+					ctype = sample.particle.tmp4 & 0xFF;
+					if (ctype && ctype != type && c->IsValidElement(ctype))
 					{
-						ctype = sample.particle.tmp4 & 0xFF;
-						if (ctype == PT_PHOT || ctype == PT_BIZR || ctype == PT_BIZRG || ctype == PT_BIZRS || ctype == PT_FILT || ctype == PT_BRAY)
+						int c_ctype = (sample.cparticle)->ctype;
+						sampleInfo << c->ElementResolve(type, -1) << " with " << c->ElementResolve(ctype, c_ctype);
+						if (ctype != PT_LIFE)
 						{
-							sampleInfo << " (" << c_ctype << ")";
-						}
-						else
-						{
-							sampleInfo << " (" << c->ElementResolve(c_ctype, -1) << ")";
+							if (ctype == PT_PHOT || ctype == PT_BIZR || ctype == PT_BIZRG || ctype == PT_BIZRS || ctype == PT_FILT || ctype == PT_BRAY)
+							{
+								sampleInfo << " (" << c_ctype << ")";
+							}
+							else
+							{
+								sampleInfo << " (" << c->ElementResolve(c_ctype, -1) << ")";
+							}
 						}
 					}
 				}
@@ -2592,10 +2595,13 @@ void GameView::OnDraw()
 				{
 					sampleInfo << E189Modes[partlife];
 				}
-				else if (type == PT_PINVIS && ctype != type && c->IsValidElement(ctype))
+				else if (type == PT_PINVIS)
 				{
 					ctype = sample.particle.tmp4 & 0xFF;
-					sampleInfo << c->ElementResolve(type, -1) << " with " << c->ElementResolve(ctype, (sample.cparticle)->ctype);
+					if (ctype && ctype != type && c->IsValidElement(ctype))
+					{
+						sampleInfo << c->ElementResolve(type, -1) << " with " << c->ElementResolve(ctype, (sample.cparticle)->ctype);
+					}
 				}
 				else
 					sampleInfo << c->ElementResolve(type, ctype);
