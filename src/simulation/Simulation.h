@@ -152,6 +152,8 @@ public:
 	}
 	void create_cherenkov_photon(int pp);
 	void create_gain_photon(int pp);
+	void pmap_add(int i, int x, int y, int t)
+	void pmap_remove(unsigned int i, int x, int y)
 	void kill_part(int i);
 	bool FloodFillPmapCheck(int x, int y, int type);
 	int flood_prop(int x, int y, size_t propoffset, PropertyValue propvalue, StructProperty::PropertyType proptype);
