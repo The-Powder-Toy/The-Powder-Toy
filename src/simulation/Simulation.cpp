@@ -5219,7 +5219,7 @@ void Simulation::RecalcFreeParticles()
 
 					// (there are a few exceptions, including energy particles - currently no limit on stacking those)
 
-					if (elements[t].Properties & PROP_UNLIMSTACKING) // (t!=PT_THDR && t!=PT_EMBR && t!=PT_FIGH && t!=PT_PLSM)
+					if (!(elements[t].Properties & PROP_UNLIMSTACKING)) // (t!=PT_THDR && t!=PT_EMBR && t!=PT_FIGH && t!=PT_PLSM)
 						pmap_count[y][x]++;
 				}
 			}
