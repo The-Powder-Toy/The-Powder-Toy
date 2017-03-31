@@ -2607,7 +2607,7 @@ void GameView::OnDraw()
 						sampleInfo << c->ElementResolve(type, -1) << " with " << c->ElementResolve(ctype, (sample.cparticle)->ctype);
 					}
 					else
-						sampleInfo << c->ElementResolve(type, ctype)
+						sampleInfo << c->ElementResolve(type, ctype);
 				}
 				else
 					sampleInfo << c->ElementResolve(type, ctype);
