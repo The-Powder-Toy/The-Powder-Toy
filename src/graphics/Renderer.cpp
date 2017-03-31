@@ -1232,6 +1232,9 @@ void Renderer::render_parts()
 		if (sim->parts[i].type && sim->parts[i].type >= 0 && sim->parts[i].type < PT_NUM) {
 			t = sim->parts[i].type;
 
+			if (t == PT_PINVIS && parts[i].tmp4 && (parts[i].tmp4>>8)<i)
+				continue;
+
 			nx = (int)(sim->parts[i].x+0.5f);
 			ny = (int)(sim->parts[i].y+0.5f);
 #ifdef OGLR
@@ -1241,6 +1244,10 @@ void Renderer::render_parts()
 
 			if(nx >= XRES || nx < 0 || ny >= YRES || ny < 0)
 				continue;
+			
+			if ((sim->pmap[ny][nx]&0xFF) == PT_PINVIS)
+				sim->parts[sim->pmap[ny][nx]>>8].tmp4 = t|(i<<8);
+
 			if((sim->photons[ny][nx]&0xFF) && !(sim->elements[t].Properties & TYPE_ENERGY) && t!=PT_STKM && t!=PT_STKM2 && t!=PT_FIGH)
 				continue;
 

@@ -509,6 +509,7 @@ SimulationSample Simulation::GetSample(int x, int y)
 		{
 			sample.particle = parts[pmap[y][x]>>8];
 			sample.ParticleID = pmap[y][x]>>8;
+			sample.cparticle = &(parts[sample.particle.tmp4>>8]);
 		}
 		if (bmap[y/CELL][x/CELL])
 		{
@@ -2202,7 +2203,7 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr)
 		}
 		else if ((r&0xFF) == PT_PINVIS)
 		{
-			if (parts[r>>8].tmp)
+			if (parts[r>>8].life >= 10)
 				result = 2;
 			else
 				result = 0;
