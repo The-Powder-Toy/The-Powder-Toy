@@ -49,7 +49,7 @@ public:
 	int gravityMode;
 	int airMode;
 	int edgeMode;
-	int PINV_wireless[128][2];
+	// int PINV_wireless[128][2];
 	
 	//Signs
 	std::vector<sign> signs;
