@@ -2254,7 +2254,8 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 						desc2Data |= 4;
 					}
 					ExtraData = (unsigned)(particles[i].tmp4);
-					if (ExtraData)
+					//Don't save tmp4 for PINV
+					if (ExtraData && particles[i].type != PT_PINVIS)
 					{
 						partsData[partsDataLen++] = (ExtraData >> 8) & 0x00FF;
 						partsData[partsDataLen++] = ExtraData & 0x00FF;
