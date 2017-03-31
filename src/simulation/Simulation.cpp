@@ -2786,25 +2786,6 @@ int Simulation::get_normal_interp(int pt, float x0, float y0, float dx, float dy
 	return get_normal(pt, x, y, dx, dy, nx, ny);
 }
 
-void Simulation::pmap_add(int i, int x, int y, int t)
-{
-	// NB: all arguments are assumed to be within bounds
-	if (elements[t].Properties & TYPE_ENERGY)
-		photons[y][x] = t|(i<<8);
-	else if ((!pmap[y][x] || elements[t].Properties))
-		pmap[y][x] = t|(i<<8);
-}
-void Simulation::pmap_remove(unsigned int i, int x, int y)
-{
-	// NB: all arguments are assumed to be within bounds
-	if ((pmap[y][x]>>8)==i)
-		pmap[y][x] = 0;
-	else if ((pmap[y][x]&0xFF)==PT_PINVIS && (unsigned int)(parts[pmap[y][x]>>8].tmp4>>8)==i)
-		parts[pmap[y][x]>>8].tmp4 = 0;
-	else if ((photons[y][x]>>8)==i)
-		photons[y][x] = 0;
-}
-
 void Simulation::kill_part(int i)//kills particle number i
 {
 	int x = (int)(parts[i].x+0.5f);
