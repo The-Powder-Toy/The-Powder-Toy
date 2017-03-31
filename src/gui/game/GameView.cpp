@@ -2462,7 +2462,9 @@ void GameView::OnDraw()
 						}
 					}
 					else
-						sampleInfo << c->ElementResolve(type, ctype)
+					{
+						sampleInfo << c->ElementResolve(type, ctype) << " (" << c->ElementResolve(ctype, -1) << ")";
+					}
 				}
 				else
 				{
