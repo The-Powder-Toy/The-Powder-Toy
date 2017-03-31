@@ -2172,6 +2172,10 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr)
 	r = pmap[ny][nx];
 	if (r)
 		r = (r&~0xFF) | parts[r>>8].type;
+	// modified code
+	if ((r&0xFF) == PT_PINVIS && parts[r>>8].tmp4)
+		r = parts[r>>8].tmp4;
+
 	if (rr)
 		*rr = r;
 	if (pt>=PT_NUM || (r&0xFF)>=PT_NUM)
@@ -2584,8 +2588,7 @@ int Simulation::do_move(int i, int x, int y, float nxf, float nyf)
 		parts[i].y = nyf;
 		if (ny!=y || nx!=x)
 		{
-			if ((pmap[y][x]>>8)==i) pmap[y][x] = 0;
-			else if ((photons[y][x]>>8)==i) photons[y][x] = 0;
+			pmap_remove (i, x, y);
 			if (nx<CELL || nx>=XRES-CELL || ny<CELL || ny>=YRES-CELL)//kill_part if particle is out of bounds
 			{
 				kill_part(i);
@@ -2593,6 +2596,8 @@ int Simulation::do_move(int i, int x, int y, float nxf, float nyf)
 			}
 			if (elements[t].Properties & TYPE_ENERGY)
 				photons[ny][nx] = t|(i<<8);
+			else if (t && (pmap[ny][nx]&0xFF) == PT_PINVIS)
+				parts[pmap[ny][nx]>>8].tmp4 = t|(i<<8);
 			else if (t)
 				pmap[ny][nx] = t|(i<<8);
 		}
@@ -2780,15 +2785,31 @@ int Simulation::get_normal_interp(int pt, float x0, float y0, float dx, float dy
 	return get_normal(pt, x, y, dx, dy, nx, ny);
 }
 
+void Simulation::pmap_add(int i, int x, int y, int t)
+{
+	// NB: all arguments are assumed to be within bounds
+	if (elements[t].Properties & TYPE_ENERGY)
+		photons[y][x] = t|(i<<8);
+	else if ((!pmap[y][x] || elements[t].Properties))
+		pmap[y][x] = t|(i<<8);
+}
+void Simulation::pmap_remove(unsigned int i, int x, int y)
+{
+	// NB: all arguments are assumed to be within bounds
+	if ((pmap[y][x]>>8)==i)
+		pmap[y][x] = 0;
+	else if ((pmap[y][x]&0xFF)==PT_PINVIS && (unsigned int)(parts[pmap[y][x]>>8].tmp4>>8)==i)
+		parts[pmap[y][x]>>8].tmp4 = 0;
+	else if ((photons[y][x]>>8)==i)
+		photons[y][x] = 0;
+}
+
 void Simulation::kill_part(int i)//kills particle number i
 {
 	int x = (int)(parts[i].x+0.5f);
 	int y = (int)(parts[i].y+0.5f);
 	if (x>=0 && y>=0 && x<XRES && y<YRES) {
-		if ((pmap[y][x]>>8)==i)
-			pmap[y][x] = 0;
-		else if ((photons[y][x]>>8)==i)
-			photons[y][x] = 0;
+		pmap_remove ((unsigned int)i, x, y);
 	}
 
 	if (parts[i].type == PT_NONE)
@@ -2908,18 +2929,8 @@ void Simulation::part_change_type(int i, int x, int y, int t)//changes the type 
 		etrd_life0_count++;
 
 	parts[i].type = t;
-	if (elements[t].Properties & TYPE_ENERGY)
-	{
-		photons[y][x] = t|(i<<8);
-		if ((pmap[y][x]>>8)==i)
-			pmap[y][x] = 0;
-	}
-	else
-	{
-		pmap[y][x] = t|(i<<8);
-		if ((photons[y][x]>>8)==i)
-			photons[y][x] = 0;
-	}
+	pmap_remove(i, x, y);
+	pmap_add(i, x, y, t);
 }
 
 //the function for creating a particle, use p=-1 for creating a new particle, -2 is from a brush, or a particle number to replace a particle.
@@ -3086,11 +3097,8 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 	{
 		int oldX = (int)(parts[p].x+0.5f);
 		int oldY = (int)(parts[p].y+0.5f);
-		if ((pmap[oldY][oldX]>>8)==p)
-			pmap[oldY][oldX] = 0;
-		if ((photons[oldY][oldX]>>8)==p)
-			photons[oldY][oldX] = 0;
-
+		pmap_remove(p, oldX, oldY);
+		
 		if (parts[p].type == PT_STKM)
 		{
 			player.spwn = 0;
@@ -4377,8 +4385,7 @@ killed:
 				}
 				if (ny!=y || nx!=x)
 				{
-					if ((pmap[y][x]>>8)==i) pmap[y][x] = 0;
-					else if ((photons[y][x]>>8)==i) photons[y][x] = 0;
+					pmap_remove (i, x, y);
 					if (nx<CELL || nx>=XRES-CELL || ny<CELL || ny>=YRES-CELL)
 					{
 						kill_part(i);
@@ -5194,7 +5201,7 @@ void Simulation::SimulateLLoops()
 
 void Simulation::RecalcFreeParticles()
 {
-	int x, y, t;
+	int x, y, t, tt;
 	int lastPartUsed = 0;
 	int lastPartUnused = -1;
 
@@ -5213,14 +5220,21 @@ void Simulation::RecalcFreeParticles()
 			y = (int)(parts[i].y+0.5f);
 			if (x>=0 && y>=0 && x<XRES && y<YRES)
 			{
+				
+				if (t == PT_PINVIS && (parts[i].tmp2>>8) >= i)
+					parts[i].tmp4 = 0;
+
 				if (elements[t].Properties & TYPE_ENERGY)
 					photons[y][x] = t|(i<<8);
 				else
 				{
 					// Particles are sometimes allowed to go inside INVS and FILT
 					// To make particles collide correctly when inside these elements, these elements must not overwrite an existing pmap entry from particles inside them
-					if (!(pmap[y][x] && (elements[t].Properties & PROP_INVISIBLE)))
+					if (!pmap[y][x] || ( !(elements[t].Properties & PROP_INVISIBLE) && !(tt = (pmap[y][x]&0xFF) == PT_PINVIS) ))
 						pmap[y][x] = t|(i<<8);
+					else if (tt)
+						parts[pmap[y][x]>>8].tmp4 = t|(i<<8);
+
 					// (there are a few exceptions, including energy particles - currently no limit on stacking those)
 					if (t!=PT_THDR && t!=PT_EMBR && t!=PT_FIGH && t!=PT_PLSM)
 						pmap_count[y][x]++;
