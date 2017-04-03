@@ -162,9 +162,9 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 									continue;
 								}
 							}
-							else if (noturn >= 2)
+							else
 							{
-								if (rt == PT_INSL || rt == PT_INDI)
+								if (noturn >= 2 && (rt == PT_INSL || rt == PT_INDI))
 									break;
 								continue;
 							}
