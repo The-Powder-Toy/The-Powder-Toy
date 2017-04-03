@@ -198,6 +198,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 	case 23: // reserved for stickmans
 	case 25: // reserved for E189's life = 16, ctype = 10.
 	case 27: // reserved for stickmans
+	case 32: // reserved for ARAY / BRAY
 		break;
 	case 6: // heater
 		for (rx=-1; rx<2; rx++)
@@ -1390,6 +1391,9 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 		break;
 	case 31:
 		*colr = 0x99; *colg = 0x70; *colb = 0xD0;
+		break;
+	case 32:
+		*colr = 0xFF; *colg = 0x00; *colb = 0xFF;
 		break;
 	}
 	return 0;
