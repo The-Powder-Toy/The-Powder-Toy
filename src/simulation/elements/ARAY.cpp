@@ -119,7 +119,7 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 								{
 									if (noturn)
 										continue;
-									if (max_turn)
+									if (!max_turn)
 										break;
 									nxx += nxi; nyy += nyi;
 									switch (parts[r].tmp & 7)
