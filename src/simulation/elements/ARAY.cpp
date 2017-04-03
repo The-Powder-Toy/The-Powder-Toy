@@ -47,6 +47,8 @@ Element_ARAY::Element_ARAY()
 //#TPT-Directive ElementHeader Element_ARAY static int update(UPDATE_FUNC_ARGS)
 int Element_ARAY::update(UPDATE_FUNC_ARGS)
 {
+	int r_life;
+	int noturn = 0;
 	if (!parts[i].life)
 	{
 		for (int rx = -1; rx <= 1; rx++)
@@ -61,7 +63,7 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 						bool isBlackDeco = false;
 						int destroy = (parts[r>>8].ctype==PT_PSCN) ? 1 : 0;
 						int nostop = (parts[r>>8].ctype==PT_INST) ? 1 : 0;
-						int colored = 0, rt, tmp;
+						int colored = 0, rt, tmp, tmp2;
 						int max_turn = parts[i].tmp;
 						if (max_turn <= 0)
 							max_turn = 256;
@@ -91,50 +93,82 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 										parts[nr].dcolour = 0xFF000000;
 								}
 							}
-							else if (rt == PT_E189 && parts[r].life == 28)
+							else if (rt == PT_E189)
 							{
-								if (max_turn)
-									break;
-								nxx += nxi; nyy += nyi;
-								switch (parts[r].tmp & 7)
+								r_life = parts[r].life;
+								if (r_life == 32)
 								{
-								case 0: // turn right
-									tmp =  nxi;
-									nxi = -nyi;
-									nyi =  tmp;
-									break;
-								case 1: // turn left
-									tmp =  nxi;
-									nxi =  nyi;
-									nyi = -tmp;
-									break;
-								case 2: // "/" reflect
-									tmp =  nxi;
-									nxi =  nyi;
-									nyi =  tmp;
-									break;
-								case 3: // "\" reflect
-									tmp =  nxi;
-									nxi = -nyi;
-									nyi = -tmp;
-									break;
-								case 4: // go "/\"
-									nxi = 0; nyi = -1;
-									break;
-								case 5: // go "\/"
-									nxi = 0; nyi = 1;
-									break;
-								case 6: // go ">"
-									nxi = 1; nyi = 0;
-									break;
-								case 7: // go "<"
-									nxi = -1; nyi = 0;
-									break;
+									tmp  = parts[r].tmp;
+									tmp2 = parts[r].tmp2;
+									if (!tmp2)
+									{
+										noturn = (tmp >> (2 * noturn)) & 0x3;
+										if (noturn == 3)
+											break;
+									}
+									else if (tmp2 == 1)
+									{
+										tmp2 = nostop | (destroy << 1);
+										tmp2 = (tmp >> (2 * tmp2));
+										nostop = tmp2 & 0x1;
+										destroy = (tmp2 >> 1) & 0x1;
+									}
+									continue;	
 								}
-								nxx -= nxi; nyy -= nyi;
-								max_turn--;
+								else if (r_life == 28)
+								{
+									if (noturn)
+										continue;
+									if (max_turn)
+										break;
+									nxx += nxi; nyy += nyi;
+									switch (parts[r].tmp & 7)
+									{
+									case 0: // turn right
+										tmp =  nxi;
+										nxi = -nyi;
+										nyi =  tmp;
+										break;
+									case 1: // turn left
+										tmp =  nxi;
+										nxi =  nyi;
+										nyi = -tmp;
+										break;
+									case 2: // "/" reflect
+										tmp =  nxi;
+										nxi =  nyi;
+										nyi =  tmp;
+										break;
+									case 3: // "\" reflect
+										tmp =  nxi;
+										nxi = -nyi;
+										nyi = -tmp;
+										break;
+									case 4: // go "/\"
+										nxi = 0; nyi = -1;
+										break;
+									case 5: // go "\/"
+										nxi = 0; nyi = 1;
+										break;
+									case 6: // go ">"
+										nxi = 1; nyi = 0;
+										break;
+									case 7: // go "<"
+										nxi = -1; nyi = 0;
+										break;
+									}
+									nxx -= nxi; nyy -= nyi;
+									max_turn--;
+									continue;
+								}
 							}
-							else if (!destroy)
+							else if (noturn >= 2)
+							{
+								if (rt == PT_INSL || rt == PT_INDI)
+									break;
+								continue;
+							}
+							if (!destroy)
 							{
 								if (rt == PT_BRAY)
 								{
