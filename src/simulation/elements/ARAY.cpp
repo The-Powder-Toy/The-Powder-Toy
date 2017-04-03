@@ -91,6 +91,7 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 									if (isBlackDeco)
 										parts[nr].dcolour = 0xFF000000;
 								}
+								continue;
 							}
 							else if (rt == PT_E189)
 							{
