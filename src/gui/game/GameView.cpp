@@ -2370,7 +2370,7 @@ void GameView::OnDraw()
 			"PARTEM", "EXPANDER", "EN_REFL", "STKMJ", "MOV_DRAY", "EXT_DRAY", "BUTTON", "STKSET", "RAY_REFL", "TRONE",
 			"TRONF", "TRONDL"
 		};
-		static const int E189IntM[] = {0x81055000};
+		static const int E189IntM[] = {0x81055000, 0x00000000};
 		//Draw info about simulation under cursor
 		int wavelengthGfx = 0, alpha = 255;
 		if (toolTipPosition.Y < 120)
@@ -2415,7 +2415,7 @@ void GameView::OnDraw()
 					else
 						partint = 1;
 				}
-				else if (partlife >= 0 && partlife < 32 && (E189IntM[partlife >> 5] >> (partlife & 0x1F)) & 1)
+				else if (partlife >= 0 && partlife < 64 && (E189IntM[partlife >> 5] >> (partlife & 0x1F)) & 1)
 				{
 					partint = 1;
 				}
@@ -2455,9 +2455,13 @@ void GameView::OnDraw()
 							{
 								sampleInfo << " (" << c_ctype << ")";
 							}
-							else
+							else if (ctype != PT_PIPE && ctype != PT_PPIP)
 							{
 								sampleInfo << " (" << c->ElementResolve(c_ctype, -1) << ")";
+							}
+							else
+							{
+								sampleInfo << " (" << c->ElementResolve((sample.cparticle)->tmp, (int)((sample.cparticle)-pavg[1])) << ")";
 							}
 						}
 					}
@@ -2468,9 +2472,16 @@ void GameView::OnDraw()
 				}
 				else
 				{
-					if (type == PT_E189 && partlife >= 0 && partlife <= 31)
+					if (type == PT_E189)
 					{
-						sampleInfo << E189Modes[partlife];
+						if (partlife >= 0 && partlife <= 31)
+						{
+							sampleInfo << E189Modes[partlife];
+						}
+						else
+						{
+							sampleInfo << "E189F" << partlife;
+						}
 					}
 					else
 						sampleInfo << c->ElementResolve(type, ctype);
@@ -2595,9 +2606,16 @@ void GameView::OnDraw()
 					sampleInfo << c->ElementResolve(type, -1) << " with " << c->ElementResolve(ctype, (int)sample.particle.pavg[1]);
 				else if (type == PT_LIFE)
 					sampleInfo << c->ElementResolve(type, ctype);
-				else if (type == PT_E189 && partlife >= 0 && partlife <= 31)
+				else if (type == PT_E189)
 				{
-					sampleInfo << E189Modes[partlife];
+					if (partlife >= 0 && partlife <= 31)
+					{
+						sampleInfo << E189Modes[partlife];
+					}
+					else
+					{
+						sampleInfo << "E189F" << partlife;
+					}
 				}
 				else if (type == PT_PINVIS)
 				{
