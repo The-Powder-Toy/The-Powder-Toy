@@ -48,7 +48,6 @@ Element_ARAY::Element_ARAY()
 int Element_ARAY::update(UPDATE_FUNC_ARGS)
 {
 	int r_life;
-	int noturn = 0;
 	if (!parts[i].life)
 	{
 		for (int rx = -1; rx <= 1; rx++)
@@ -63,7 +62,7 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 						bool isBlackDeco = false;
 						int destroy = (parts[r>>8].ctype==PT_PSCN) ? 1 : 0;
 						int nostop = (parts[r>>8].ctype==PT_INST) ? 1 : 0;
-						int colored = 0, rt, tmp, tmp2;
+						int colored = 0, noturn = 0, rt, tmp, tmp2;
 						int max_turn = parts[i].tmp;
 						if (max_turn <= 0)
 							max_turn = 256;
@@ -162,12 +161,12 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 									continue;
 								}
 							}
-							else
+							else if (noturn >= 2)
 							{
-								if (noturn >= 2 && (rt == PT_INSL || rt == PT_INDI))
+								if (rt == PT_INSL || rt == PT_INDI)
 									break;
 								continue;
-							}
+							} 
 							if (!destroy)
 							{
 								if (rt == PT_BRAY)
