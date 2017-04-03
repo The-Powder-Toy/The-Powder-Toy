@@ -2461,7 +2461,7 @@ void GameView::OnDraw()
 							}
 							else
 							{
-								sampleInfo << " (" << c->ElementResolve((sample.cparticle)->tmp, (int)((sample.cparticle)-pavg[1])) << ")";
+								sampleInfo << " (" << c->ElementResolve((sample.cparticle)->tmp, (int)((sample.cparticle)->pavg[1])) << ")";
 							}
 						}
 					}
