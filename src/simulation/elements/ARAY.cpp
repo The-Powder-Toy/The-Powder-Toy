@@ -63,7 +63,7 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 						int destroy = (parts[r>>8].ctype==PT_PSCN) ? 1 : 0;
 						int nostop = (parts[r>>8].ctype==PT_INST) ? 1 : 0;
 						int colored = 0, noturn = 0, rt, tmp, tmp2;
-						int max_turn = parts[i].tmp;
+						int max_turn = parts[i].tmp, tmpz = 0;
 						if (max_turn <= 0)
 							max_turn = 256;
 						for (int docontinue = 1, nxx = 0, nyy = 0, nxi = rx*-1, nyi = ry*-1; docontinue; nyy+=nyi, nxx+=nxi)
@@ -113,6 +113,7 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 										nostop = tmp2 & 0x1;
 										destroy = (tmp2 >> 1) & 0x1;
 									}
+									tmpz = 1;
 									continue;	
 								}
 								else if (r_life == 28)
@@ -159,6 +160,7 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 									}
 									nxx -= nxi; nyy -= nyi;
 									max_turn--;
+									tmpz = 1;
 									continue;
 								}
 							}
@@ -177,7 +179,7 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 									{
 									// normal white
 									case 0:
-										if (nyy != 0 || nxx !=0)
+										if (!tmpz && (nyy != 0 || nxx != 0))
 										{
 											parts[r].life = 1020; // makes it last a while
 											parts[r].tmp = 1;
@@ -283,6 +285,7 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 									docontinue = 0;
 								}
 							}
+							tmpz = 0;
 						}
 					}
 					//parts[i].life = 4;
