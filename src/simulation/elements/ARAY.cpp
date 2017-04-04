@@ -100,21 +100,24 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 								{
 									tmp  = parts[r].tmp;
 									tmp2 = parts[r].tmp2;
-									if (!tmp2)
+									switch (tmp2)
 									{
+									case 0:
 										noturn = (tmp >> (2 * noturn)) & 0x3;
 										if (noturn == 3)
-											break;
-									}
-									else if (tmp2 == 1)
-									{
+											goto break1a;
+										break;
+									case 1:
 										tmp2 = nostop | (destroy << 1);
 										tmp2 = (tmp >> (2 * tmp2));
 										nostop = tmp2 & 0x1;
 										destroy = (tmp2 >> 1) & 0x1;
+										break;
 									}
 									tmpz = 1;
-									continue;	
+									continue;
+								break1a:
+									break;
 								}
 								else if (r_life == 28)
 								{
