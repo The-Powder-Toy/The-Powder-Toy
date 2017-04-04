@@ -160,7 +160,6 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 									}
 									nxx -= nxi; nyy -= nyi;
 									max_turn--;
-									tmpz = 1;
 									continue;
 								}
 							}
@@ -254,6 +253,7 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 									else
 										docontinue = 1;
 								}
+								tmpz = 0;
 							}
 							else if (destroy)
 							{
@@ -285,7 +285,6 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 									docontinue = 0;
 								}
 							}
-							tmpz = 0;
 						}
 					}
 					//parts[i].life = 4;
