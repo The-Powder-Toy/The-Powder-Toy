@@ -44,10 +44,13 @@ Element_ARAY::Element_ARAY()
 	Update = &Element_ARAY::update;
 }
 
+//#TPT-Directive ElementHeader Element_ARAY static int temp_z1[5];
+int Element_ARAY::temp_z1[5];
+
 //#TPT-Directive ElementHeader Element_ARAY static int update(UPDATE_FUNC_ARGS)
 int Element_ARAY::update(UPDATE_FUNC_ARGS)
 {
-	int r_life;
+	int r_life, swap;
 	if (!parts[i].life)
 	{
 		for (int rx = -1; rx <= 1; rx++)
@@ -62,6 +65,7 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 						bool isBlackDeco = false;
 						int destroy = (parts[r>>8].ctype==PT_PSCN) ? 1 : 0;
 						int nostop = (parts[r>>8].ctype==PT_INST) ? 1 : 0;
+						int spc_conduct = 0, ray_less = 0;
 						int colored = 0, noturn = 0, rt, tmp, tmp2;
 						int max_turn = parts[i].tmp, tmpz = 0;
 						if (max_turn <= 0)
@@ -74,8 +78,11 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 							r = pmap[y+nyi+nyy][x+nxi+nxx];
 							rt = r & 0xFF;
 							r = r >> 8;
+							
 							if (!rt)
 							{
+								if (ray_less)
+									continue;
 								int nr = sim->create_part(-1, x+nxi+nxx, y+nyi+nyy, PT_BRAY);
 								if (nr != -1)
 								{
@@ -103,15 +110,49 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 									switch (tmp2)
 									{
 									case 0:
+										temp_z1[0] = noturn;
 										noturn = (tmp >> (2 * noturn)) & 0x3;
 										if (noturn == 3)
 											goto break1a;
 										break;
 									case 1:
-										tmp2 = nostop | (destroy << 1);
+										temp_z1[1] = tmp2 = nostop | (destroy << 1);
 										tmp2 = (tmp >> (2 * tmp2));
 										nostop = tmp2 & 0x1;
 										destroy = (tmp2 >> 1) & 0x1;
+										break;
+									case 2:
+										temp_z1[2] = spc_conduct;
+										spc_conduct = tmp;
+										break;
+									case 3:
+										temp_z1[3] = ray_less;
+										ray_less = ((tmp ^ 1) >> ray_less) & 0x1;
+										break;
+									case 4:
+										tmpz = 4;
+										tmp2 = tmp & 3;
+										if (tmp & 4)
+										{
+											swap = tmpz;
+											tmpz = tmp2;
+											tmp2 = swap;
+										}
+										temp_z1[tmpz] = temp_z1[tmp2];
+										break;
+									case 5:
+										if (tmp & 1)
+											noturn = temp_z1[0];
+										if (tmp & 2)
+										{
+											tmp2 = temp_z1[1];
+											nostop = tmp2 & 0x1;
+											destroy = (tmp2 >> 1) & 0x1;
+										}
+										if (tmp & 4)
+											spc_conduct = temp_z1[2];
+										if (tmp & 8)
+											ray_less = temp_z1[3];
 										break;
 									}
 									tmpz = 1;
@@ -170,6 +211,15 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 							{
 								if (rt == PT_INSL || rt == PT_INDI)
 									break;
+								if (spc_conduct)
+								{
+									if (rt != PT_INWR && (rt != PT_SPRK || parts[r].ctype != PT_INWR))
+										sim->create_part(-1, x+nxi+nxx, y+nyi+nyy, PT_SPRK);
+									if (spc_conduct == 1)
+										break;
+									if (!(spc_conduct == 2 && parts[r].type==PT_SPRK && parts[r].ctype >= 0 && parts[r].ctype < PT_NUM && (sim->elements[parts[r].ctype].Properties&PROP_CONDUCTS)))
+										break;
+								}
 								continue;
 							} 
 							if (!destroy)
