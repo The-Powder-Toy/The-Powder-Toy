@@ -217,7 +217,7 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 										sim->create_part(-1, x+nxi+nxx, y+nyi+nyy, PT_SPRK);
 									if (spc_conduct == 1)
 										break;
-									if (!(spc_conduct == 2 && parts[r].type==PT_SPRK && parts[r].ctype >= 0 && parts[r].ctype < PT_NUM && (sim->elements[parts[r].ctype].Properties&PROP_CONDUCTS)))
+									if (spc_conduct == 2 && !(parts[r].type==PT_SPRK && parts[r].ctype >= 0 && parts[r].ctype < PT_NUM && (sim->elements[parts[r].ctype].Properties&PROP_CONDUCTS)))
 										break;
 								}
 								continue;
