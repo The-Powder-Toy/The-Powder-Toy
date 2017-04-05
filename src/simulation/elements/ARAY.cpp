@@ -211,7 +211,7 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 							{
 								if (rt == PT_INSL || rt == PT_INDI)
 									break;
-								if (spc_conduct)
+								if (spc_conduct > 0)
 								{
 									if (rt != PT_INWR && (rt != PT_SPRK || parts[r].ctype != PT_INWR))
 										sim->create_part(-1, x+nxi+nxx, y+nyi+nyy, PT_SPRK);
