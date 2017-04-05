@@ -2423,6 +2423,10 @@ void GameView::OnDraw()
 				{
 					partstr = 1;
 				}
+				else if (partlife == 27)
+				{
+					ctype &= 0x1FF;
+				}
 			}
 			
 			if (showDebug)
