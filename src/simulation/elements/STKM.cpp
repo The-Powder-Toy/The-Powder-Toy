@@ -408,8 +408,14 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 					if (parts[r>>8].life == 27 && !(sim->E189_FIGH_pause & 32))
 					{
 						ctype = parts[r>>8].ctype;
+						int xctype = ctype >> 9;
+						ctype &= 0x1FF;
 						if (ctype && (sim->IsValidElement(ctype) || ctype == SPC_AIR))
 							STKM_set_element(sim, playerp, ctype);
+						if (xctype == 1 || xctype == 2)
+						{
+							playerp->rocketBoots = xctype == 1 ? false : true;
+						}
 					}
 				}
 
