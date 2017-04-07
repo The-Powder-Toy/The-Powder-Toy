@@ -1180,6 +1180,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 		parts[i].tmp = rtmp;
 		break;
 	case 33: // Second Wi-Fi
+		rr = (1 << (parts[i].tmp2 & 0x1F));
 		parts[i].tmp = (int)((parts[i].temp-73.15f)/100+1);
 		if (parts[i].tmp>=CHANNELS) parts[i].tmp = CHANNELS-1;
 		else if (parts[i].tmp<0) parts[i].tmp = 0;
@@ -1192,7 +1193,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						continue;
 					// wireless[][0] - whether channel is active on this frame
 					// wireless[][1] - whether channel should be active on next frame
-					if (sim->wireless2[parts[i].tmp][0])
+					if (sim->wireless2[parts[i].tmp][0] & rr)
 					{
 						if (((r&0xFF)==PT_NSCN||(r&0xFF)==PT_PSCN||(r&0xFF)==PT_INWR)&&parts[r>>8].life==0 && sim->wireless2[parts[i].tmp][0])
 						{
@@ -1203,7 +1204,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 					}
 					if ((r&0xFF)==PT_SPRK && parts[r>>8].ctype!=PT_NSCN && parts[r>>8].life>=3)
 					{
-						sim->wireless2[parts[i].tmp][1] = 1;
+						sim->wireless2[parts[i].tmp][1] |= rr;
 						sim->ISWIRE2 = 2;
 					}
 				}
