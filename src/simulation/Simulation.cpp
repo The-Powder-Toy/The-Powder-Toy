@@ -5566,6 +5566,16 @@ void Simulation::BeforeSim()
 			ISWIRE--;
 		}
 		
+		if (ISWIRE2 > 0)
+		{
+			for (int q = 0; q < (int)(MAX_TEMP-73.15f)/100+2; q++)
+			{
+				wireless2[q][0] = wireless2[q][1];
+				wireless2[q][1] = 0;
+			}
+			ISWIRE--;
+		}
+		
 #if 0
 		if (ISWIRE2 > 0)
 		{

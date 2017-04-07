@@ -823,6 +823,36 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 						}
 					}
 			break;
+		case 14:
+		case 15:
+			if (parts[i].tmp2 == 1)
+			{
+				rdif = (parts[i].tmp == PT_PSCN) ? 100.0f : -100.0f;
+				for (rx = -1; rx <= 1; rx++)
+					for (ry = -1; ry <= 1; ry++)
+						if (BOUNDS_CHECK && (rx || ry))
+						{
+							r = pmap[y+ry][x+rx];
+							if (rctype == 14 ? (r & 0xFF) == PT_WIFI : ((r & 0xFF) == PT_E189 && parts[r>>8].life == 33) )
+							{
+								parts[r>>8].temp = restrict_flt(parts[r>>8].temp + rdif, MIN_TEMP, MAX_TEMP);
+							}
+						}
+				parts[i].tmp = 0; // PT_NONE ( or clear .tmp )
+			}
+			for (rx = -2; rx <= 2; rx++)
+				for (ry = -2; ry <= 2; ry++)
+					if (BOUNDS_CHECK && (rx || ry))
+					{
+						r = pmap[y+ry][x+rx];
+						if ((r & 0xFF) == PT_SPRK && parts[r>>8].life == 3)
+						{
+							parts[i].tmp = parts[r>>8].ctype;
+							parts[i].tmp2 = 2;
+							goto break1a;
+						}
+					}
+			break;
 		}
 		break;
 			
@@ -1149,6 +1179,35 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 		}
 		parts[i].tmp = rtmp;
 		break;
+	case 33: // Second Wi-Fi
+		parts[i].tmp = (int)((parts[i].temp-73.15f)/100+1);
+		if (parts[i].tmp>=CHANNELS) parts[i].tmp = CHANNELS-1;
+		else if (parts[i].tmp<0) parts[i].tmp = 0;
+		for (rx=-1; rx<2; rx++)
+			for (ry=-1; ry<2; ry++)
+				if (BOUNDS_CHECK && (rx || ry))
+				{
+					r = pmap[y+ry][x+rx];
+					if (!r)
+						continue;
+					// wireless[][0] - whether channel is active on this frame
+					// wireless[][1] - whether channel should be active on next frame
+					if (sim->wireless2[parts[i].tmp][0])
+					{
+						if (((r&0xFF)==PT_NSCN||(r&0xFF)==PT_PSCN||(r&0xFF)==PT_INWR)&&parts[r>>8].life==0 && sim->wireless2[parts[i].tmp][0])
+						{
+							parts[r>>8].ctype = r&0xFF;
+							sim->part_change_type(r>>8,x+rx,y+ry,PT_SPRK);
+							parts[r>>8].life = 4;
+						}
+					}
+					if ((r&0xFF)==PT_SPRK && parts[r>>8].ctype!=PT_NSCN && parts[r>>8].life>=3)
+					{
+						sim->wireless2[parts[i].tmp][1] = 1;
+						sim->ISWIRE2 = 2;
+					}
+				}
+		break;
 	}
 	
 	if(ttan>=2) {
@@ -1394,6 +1453,12 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 		break;
 	case 32:
 		*colr = 0xFF; *colg = 0x00; *colb = 0xFF;
+		break;
+	case 33:
+		int q = (int)((cpart->temp-73.15f)/100+1);
+		*colr = sin(FREQUENCY*q + 0) * 127 + 128;
+		*colg = sin(FREQUENCY*q + 2) * 127 + 128;
+		*colb = sin(FREQUENCY*q + 4) * 127 + 128;
 		break;
 	}
 	return 0;

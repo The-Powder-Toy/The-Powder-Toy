@@ -79,6 +79,7 @@ public:
 	int portal_rx[8];
 	int portal_ry[8];
 	int wireless[CHANNELS][2];
+	int wireless2[CHANNELS][2];
 	// int wireless2[128][2];
 	//Gol sim
 	int CGOL;
