@@ -1180,7 +1180,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 		parts[i].tmp = rtmp;
 		break;
 	case 33: // Second Wi-Fi
-		rr = (1 << (parts[i].tmp2 & 0x1F));
+		rr = (1 << (parts[i].ctype & 0x1F));
 		parts[i].tmp = (int)((parts[i].temp-73.15f)/100+1);
 		if (parts[i].tmp>=CHANNELS) parts[i].tmp = CHANNELS-1;
 		else if (parts[i].tmp<0) parts[i].tmp = 0;
