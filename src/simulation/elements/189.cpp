@@ -828,8 +828,8 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 			if (parts[i].tmp2 == 1)
 			{
 				rdif = (parts[i].tmp == PT_PSCN) ? 100.0f : -100.0f;
-				for (rx = -1; rx <= 1; rx++)
-					for (ry = -1; ry <= 1; ry++)
+				for (rx = -2; rx <= 2; rx++)
+					for (ry = -2; ry <= 2; ry++)
 						if (BOUNDS_CHECK && (rx || ry))
 						{
 							r = pmap[y+ry][x+rx];
