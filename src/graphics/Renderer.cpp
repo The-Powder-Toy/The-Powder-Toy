@@ -2025,7 +2025,7 @@ void Renderer::render_parts()
 							type = PT_PRTO;
 						else if (type == PT_PRTO)
 							type = PT_PRTI;
-						for (int z = 0; z < sim->parts_lastActiveIndex; z++)
+						for (int z = 0; z <= sim->parts_lastActiveIndex; z++)
 						{
 							if (parts[z].type == type)
 							{
