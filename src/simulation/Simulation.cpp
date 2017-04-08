@@ -5575,7 +5575,7 @@ void Simulation::BeforeSim()
 				wireless2[q][0] = wireless2[q][1];
 				wireless2[q][1] = 0;
 			}
-			ISWIRE--;
+			ISWIRE2--;
 		}
 		
 #if 0
