@@ -25,7 +25,10 @@ bool Favorite::AnyFavorites()
 
 void Favorite::AddFavorite(std::string identifier)
 {
-	favoritesList.push_back(identifier);
+	if (!IsFavorite(identifier))
+	{
+		favoritesList.push_back(identifier);
+	}
 }
 
 void Favorite::RemoveFavorite(std::string identifier)
