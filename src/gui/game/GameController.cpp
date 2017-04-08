@@ -855,6 +855,7 @@ void GameController::ResetSpark()
 				sim->kill_part(i);
 		}
 	memset(sim->wireless, 0, sizeof(sim->wireless));
+	memset(sim->wireless2, 0, sizeof(sim->wireless2));
 }
 
 void GameController::SwitchGravity()
