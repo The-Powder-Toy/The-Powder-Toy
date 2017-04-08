@@ -28,6 +28,7 @@ public:
 
 	std::vector<Particle> PortalParticles;
 	std::vector<int> WirelessData;
+	std::vector<int> Wireless2Data;
 	std::vector<playerst> stickmen;
 	std::vector<sign> signs;
 
@@ -47,6 +48,7 @@ public:
 		FanVelocityY(),
 		PortalParticles(),
 		WirelessData(),
+		Wireless2Data(),
 		stickmen(),
 		signs()
 	{

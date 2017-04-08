@@ -325,6 +325,7 @@ Snapshot * Simulation::CreateSnapshot()
 	snap->Particles.insert(snap->Particles.begin(), parts, parts+parts_lastActiveIndex+1);
 	snap->PortalParticles.insert(snap->PortalParticles.begin(), &portalp[0][0][0], &portalp[CHANNELS-1][8-1][80-1]);
 	snap->WirelessData.insert(snap->WirelessData.begin(), &wireless[0][0], &wireless[CHANNELS-1][2-1]);
+	snap->Wireless2Data.insert(snap->Wireless2Data.begin(), &wireless2[0][0], &wireless2[CHANNELS-1][2-1]);
 	snap->GravVelocityX.insert(snap->GravVelocityX.begin(), gravx, gravx+((XRES/CELL)*(YRES/CELL)));
 	snap->GravVelocityY.insert(snap->GravVelocityY.begin(), gravy, gravy+((XRES/CELL)*(YRES/CELL)));
 	snap->GravValue.insert(snap->GravValue.begin(), gravp, gravp+((XRES/CELL)*(YRES/CELL)));
@@ -357,6 +358,7 @@ void Simulation::Restore(const Snapshot & snap)
 	RecalcFreeParticles();
 	std::copy(snap.PortalParticles.begin(), snap.PortalParticles.end(), &portalp[0][0][0]);
 	std::copy(snap.WirelessData.begin(), snap.WirelessData.end(), &wireless[0][0]);
+	std::copy(snap.Wireless2Data.begin(), snap.Wireless2Data.end(), &wireless2[0][0]);
 	if (grav->ngrav_enable)
 	{
 		std::copy(snap.GravVelocityX.begin(), snap.GravVelocityX.end(), gravx);
@@ -1933,7 +1935,7 @@ void Simulation::clear_sim(void)
 		memset(fvy, 0, sizeof(fvy));
 	memset(photons, 0, sizeof(photons));
 	memset(wireless, 0, sizeof(wireless));
-	// memset(wireless2, 0, sizeof(wireless2));
+	memset(wireless2, 0, sizeof(wireless2));
 	memset(gol2, 0, sizeof(gol2));
 	memset(portalp, 0, sizeof(portalp));
 	memset(fighters, 0, sizeof(fighters));
