@@ -1456,10 +1456,13 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 		*colr = 0xFF; *colg = 0x00; *colb = 0xFF;
 		break;
 	case 33:
+		{
+		static float FREQUENCY = 0.0628f;
 		int q = (int)((cpart->temp-73.15f)/100+1);
 		*colr = sin(FREQUENCY*q + 0) * 127 + 128;
 		*colg = sin(FREQUENCY*q + 2) * 127 + 128;
 		*colb = sin(FREQUENCY*q + 4) * 127 + 128;
+		}
 		break;
 	}
 	return 0;
