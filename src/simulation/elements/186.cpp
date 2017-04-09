@@ -104,150 +104,150 @@ int Element_E186::update(UPDATE_FUNC_ARGS)
 		}
 		return 0;
 	}
-	if (Element_E185.Enabled)
+	if (sim->elements[PT_E186].Enabled)
 	{
-	if (!(rand()%60))
-	{
-		if (!sctype)
-			s = sim->create_part(-3, x, y, PT_ELEC);
-		else
-			s = sim->create_part(-3, x, y, sctype);
-		if(s >= 0)
+		if (!(rand()%60))
 		{
-			parts[i].temp += 400.0f;
-			parts[s].temp = parts[i].temp;
-			sim->pv[y/CELL][x/CELL] += 1.5f;
-			if (sctype == PT_GRVT)
-				parts[s].tmp = 0;
-			else if (sctype == PT_WARP)
-				parts[s].tmp2 = 3000 + rand() % 10000;
+			if (!sctype)
+				s = sim->create_part(-3, x, y, PT_ELEC);
+			else
+				s = sim->create_part(-3, x, y, sctype);
+			if(s >= 0)
+			{
+				parts[i].temp += 400.0f;
+				parts[s].temp = parts[i].temp;
+				sim->pv[y/CELL][x/CELL] += 1.5f;
+				if (sctype == PT_GRVT)
+					parts[s].tmp = 0;
+				else if (sctype == PT_WARP)
+					parts[s].tmp2 = 3000 + rand() % 10000;
+			}
 		}
-	}
-	r = pmap[y][x];
-	if (r)
-	{
-		switch (r&0xFF)
+		r = pmap[y][x];
+		if (r)
 		{
-		case PT_PLSM:
-			if (!(rand()%30))
+			switch (r&0xFF)
 			{
-				s = sim->create_part(r>>8, x, y, PT_PLSM);
-				if (s >= 0)
-					parts[s].ctype = PT_NBLE;
-			}
-			break;
-		case PT_CO2:
-			if (!(rand()%10))
-			{
-				parts[r>>8].temp = MAX_TEMP;
-				sim->pv[y/CELL][x/CELL] += 256.0f;
-			}
-			break;
-		case PT_O2:
-			if (!(rand()%20))
-			{
-				sim->create_part(r>>8, x, y, PT_PLSM);
-				s = sim->create_part(-3, x, y, PT_E186);
-				slife = parts[i].life;
-				if (slife)
-					parts[s].life = slife + 30;
-				else
-					parts[s].life = 0;
-			}
-			break;
-		case PT_FILT:
-			sim->part_change_type(i, x, y, PT_PHOT);
-			parts[i].ctype = 0x3FFFFFFF;
-			break;
-		case PT_EXOT:
-			if (!(rand()%3))
-			{
-				if (rand()&1)
+			case PT_PLSM:
+				if (!(rand()%30))
 				{
-					if (rand()%100)
-						sim->part_change_type(r>>8, x, y, PT_ISOZ);
+					s = sim->create_part(r>>8, x, y, PT_PLSM);
+					if (s >= 0)
+						parts[s].ctype = PT_NBLE;
+				}
+				break;
+			case PT_CO2:
+				if (!(rand()%10))
+				{
+					parts[r>>8].temp = MAX_TEMP;
+					sim->pv[y/CELL][x/CELL] += 256.0f;
+				}
+				break;
+			case PT_O2:
+				if (!(rand()%20))
+				{
+					sim->create_part(r>>8, x, y, PT_PLSM);
+					s = sim->create_part(-3, x, y, PT_E186);
+					slife = parts[i].life;
+					if (slife)
+						parts[s].life = slife + 30;
 					else
-						sim->part_change_type(r>>8, x, y, PT_E187);
+						parts[s].life = 0;
 				}
-				else
+				break;
+			case PT_FILT:
+				sim->part_change_type(i, x, y, PT_PHOT);
+				parts[i].ctype = 0x3FFFFFFF;
+				break;
+			case PT_EXOT:
+				if (!(rand()%3))
 				{
-					sim->part_change_type(r>>8, x, y, PT_WARP);
-					parts[r>>8].life = 1000;
-					parts[r>>8].tmp2 = 10000;
+					if (rand()&1)
+					{
+						if (rand()%100)
+							sim->part_change_type(r>>8, x, y, PT_ISOZ);
+						else
+							sim->part_change_type(r>>8, x, y, PT_E187);
+					}
+					else
+					{
+						sim->part_change_type(r>>8, x, y, PT_WARP);
+						parts[r>>8].life = 1000;
+						parts[r>>8].tmp2 = 10000;
+					}
+					parts[r>>8].temp += 300;
 				}
-				parts[r>>8].temp += 300;
-			}
-			break;
-		case PT_ISOZ:
-		case PT_ISZS:
-			if (!(rand()%40))
-			{
-				slife = parts[i].life;
-				if (slife)
-					parts[i].life = slife + 50;
-				else
-					parts[i].life = 0;
+				break;
+			case PT_ISOZ:
+			case PT_ISZS:
+				if (!(rand()%40))
+				{
+					slife = parts[i].life;
+					if (slife)
+						parts[i].life = slife + 50;
+					else
+						parts[i].life = 0;
 
-				if (rand()%20)
-				{
-					s = r>>8;
-					sim->create_part(s, x, y, PT_PHOT);
-					r2 = (rand()%228+128)/127.0f;
-					r3 = (rand()%360)*3.14159f/180.0f;
-					parts[s].vx = r2*cosf(r3);
-					parts[s].vy = r2*sinf(r3);
+					if (rand()%20)
+					{
+						s = r>>8;
+						sim->create_part(s, x, y, PT_PHOT);
+						r2 = (rand()%228+128)/127.0f;
+						r3 = (rand()%360)*3.14159f/180.0f;
+						parts[s].vx = r2*cosf(r3);
+						parts[s].vy = r2*sinf(r3);
+					}
+					else
+					{
+						sim->create_part(r>>8, x, y, PT_E186);
+					}
 				}
-				else
+				break;
+			case PT_TUNG:
+			case PT_BRMT:
+				if (((r & 0xFF) == PT_TUNG || parts[r >> 8].ctype == PT_TUNG) && !(rand()%50))
 				{
-					sim->create_part(r>>8, x, y, PT_E186);
+					sim->create_part(r>>8, x, y, PT_E187);
 				}
-			}
-			break;
-		case PT_TUNG:
-		case PT_BRMT:
-			if (((r & 0xFF) == PT_TUNG || parts[r >> 8].ctype == PT_TUNG) && !(rand()%50))
-			{
-				sim->create_part(r>>8, x, y, PT_E187);
-			}
-			break;
-		case PT_INVIS:
-			parts[i].ctype = PT_NEUT;
-		case PT_SPNG:
-			sim->part_change_type(r>>8, x, y, PT_GEL);
-			parts[r>>8].tmp = parts[r>>8].life;
-			break;
-		/* viruses has replication? */
-		case PT_VRSS:
-			if (parts[i].tmp2 == PT_EXOT) // if is infected EXOT
-				sim->create_part(r>>8, x, y, PT_CLNE);
-			else if (parts[i].tmp2 == PT_ETRD) // if is infected ETRD
-				sim->create_part(r>>8, x, y, PT_PCLN);
-			break;
-		case PT_VIRS:
-			if (parts[i].tmp2 == PT_EXOT) // if is infected EXOT
-				sim->create_part(r>>8, x, y, PT_BCLN);
-			else if (parts[i].tmp2 == PT_ETRD) // if is infected ETRD
-				sim->create_part(r>>8, x, y, PT_PBCN);
-			break;
-		default:
-			break;
-		}
-	}
-	else
-	{
-		int rx = rand()%3 - 1;
-		int ry = rand()%3 - 1;
-		if (BOUNDS_CHECK && 2 > rand()%5)
-		{
-			r = sim->photons[y + ry][x + rx];
-			s = parts[i].ctype;
-			if ((r&0xFF) == PT_NEUT && (s == PT_PROT || s == PT_GRVT))
-			{
-				sim->part_change_type(r>>8, x, y, s);
+				break;
+			case PT_INVIS:
 				parts[i].ctype = PT_NEUT;
+			case PT_SPNG:
+				sim->part_change_type(r>>8, x, y, PT_GEL);
+				parts[r>>8].tmp = parts[r>>8].life;
+				break;
+			/* viruses has replication? */
+			case PT_VRSS:
+				if (parts[i].tmp2 == PT_EXOT) // if is infected EXOT
+					sim->create_part(r>>8, x, y, PT_CLNE);
+				else if (parts[i].tmp2 == PT_ETRD) // if is infected ETRD
+					sim->create_part(r>>8, x, y, PT_PCLN);
+				break;
+			case PT_VIRS:
+				if (parts[i].tmp2 == PT_EXOT) // if is infected EXOT
+					sim->create_part(r>>8, x, y, PT_BCLN);
+				else if (parts[i].tmp2 == PT_ETRD) // if is infected ETRD
+					sim->create_part(r>>8, x, y, PT_PBCN);
+				break;
+			default:
+				break;
 			}
 		}
-	}
+		else
+		{
+			int rx = rand()%3 - 1;
+			int ry = rand()%3 - 1;
+			if (BOUNDS_CHECK && 2 > rand()%5)
+			{
+				r = sim->photons[y + ry][x + rx];
+				s = parts[i].ctype;
+				if ((r&0xFF) == PT_NEUT && (s == PT_PROT || s == PT_GRVT))
+				{
+					sim->part_change_type(r>>8, x, y, s);
+					parts[i].ctype = PT_NEUT;
+				}
+			}
+		}
 	}
 	return 0;
 }
