@@ -104,7 +104,7 @@ int Element_E186::update(UPDATE_FUNC_ARGS)
 		}
 		return 0;
 	}
-	if (sim->elements[PT_E186].Enabled)
+	if (sim->elements[PT_E185].Enabled)
 	{
 		if (!(rand()%60))
 		{
