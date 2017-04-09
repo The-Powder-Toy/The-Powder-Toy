@@ -1975,6 +1975,12 @@ int Element_E189::EMPTrigger(Simulation *sim, int triggerCount)
 				{
 					sim->create_part(r, rx, ry, PT_PLSM);
 				}
+			case 33:
+				if (Probability::randFloat() < prob_breakElectronics)
+				{
+					sim->part_change_type(r, rx, ry, PT_WIFI);
+					parts[r].ctype = 0;
+				}
 			}
 			break;
 		}
