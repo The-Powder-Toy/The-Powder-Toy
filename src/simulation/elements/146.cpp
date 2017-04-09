@@ -28,9 +28,9 @@ Element_146::Element_146()
 
 	Temperature = 9000.0f;
 	HeatConduct = 40;
-	Description = "Brian 6 S6/B246/3";
+	Description = "Freed element."; // "Brian 6 S6/B246/3";
 
-	Properties = TYPE_SOLID|PROP_LIFE;
+	Properties = TYPE_SOLID /* |PROP_LIFE */;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
