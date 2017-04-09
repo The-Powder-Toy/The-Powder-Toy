@@ -5635,7 +5635,9 @@ void Simulation::AfterSim()
 				elements[PT_INVIS].Hardness = INVS_hardness_tmp;
 			}
 		}
-		E189_pause &= ~0x00000035;
+		if (E189_pause & 0x0040)
+			Element_PHOT::ignite_flammable = !Element_PHOT::ignite_flammable;
+		E189_pause &= ~0x00000075;
 	}
 	if (E189_FIGH_pause_check)
 	{
