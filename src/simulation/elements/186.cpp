@@ -104,6 +104,7 @@ int Element_E186::update(UPDATE_FUNC_ARGS)
 		}
 		return 0;
 	}
+#if (defined(DEBUG) || defined(SNAPSHOT)) && MOD_ID == 0
 	if (!(rand()%60))
 	{
 		if (!sctype)
@@ -246,6 +247,7 @@ int Element_E186::update(UPDATE_FUNC_ARGS)
 			}
 		}
 	}
+#endif
 	return 0;
 }
 
