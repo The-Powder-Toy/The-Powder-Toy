@@ -12,7 +12,11 @@ Element_E189::Element_E189()
 	Colour = PIXPACK(0xFFB060);
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;
+#if defined(DEBUG) || defined(SNAPSHOT)
 	Enabled = 1;
+#else
+	Enabled = 0;
+#endif
 
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
