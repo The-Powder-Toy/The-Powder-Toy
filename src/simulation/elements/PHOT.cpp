@@ -46,6 +46,8 @@ Element_PHOT::Element_PHOT()
 	Graphics = &Element_PHOT::graphics;
 }
 
+#define ignite_flammable (true)
+
 //#TPT-Directive ElementHeader Element_PHOT static int update(UPDATE_FUNC_ARGS)
 int Element_PHOT::update(UPDATE_FUNC_ARGS)
 {
