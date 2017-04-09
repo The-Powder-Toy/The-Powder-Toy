@@ -359,6 +359,7 @@ int Element_E189::update(UPDATE_FUNC_ARGS)
 							case 3: sim->E189_pause &= ~0x08; break;
 							case 4: sim->E189_pause |=  0x10; break;
 							case 5: sim->E189_pause |=  0x20; break;
+							case 6: sim->E189_pause |=  0x40; break;
 						}
 						if ((rtmp & 0x10) && (rx != ry))
 							Element_E189::InsertText(sim, i, x, y, -rx, -ry);
