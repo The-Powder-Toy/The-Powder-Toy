@@ -41,6 +41,7 @@
 #define PROP_UNLIMSTACKING	0x8000000  // 2^27 Currently no limit on stacking
 
 // second properties flag:
+#define PROP_ENERGY_PART	0x00000001
 // #define PROP_NOSLOWDOWN		0x200000
 
 #define FLAG_STAGNANT	0x1
