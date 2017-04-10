@@ -258,6 +258,8 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 		{
 			rx = rand()%5-2; ry = rand()%5-2;
 			r = pmap[y+ry][x+rx];
+			if (sim->elements[r&0xFF].Properties & PROP_NODESTRUCT)
+				continue; // particle's type is PT_DMND and PT_INDI are indestructible.
 			switch (r & 0xFF)
 			{
 			case PT_DUST:
@@ -350,8 +352,6 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 				sim->create_part(i, x, y, PT_PLUT);
 				sim->create_part(r>>8, x+rx, y+ry, PT_PLUT);
 				return 0;
-				
-			// particle's type is PT_DMND and PT_INDI are indestructible.
 			}
 		}
 	}

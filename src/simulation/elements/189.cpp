@@ -1834,6 +1834,8 @@ int Element_E189::EMPTrigger(Simulation *sim, int triggerCount)
 	for (int r = 0; r <=sim->parts_lastActiveIndex; r++)
 	{
 		t = parts[r].type;
+		if (sim->elements[t].Properties & PROP_NODESTRUCT)
+			continue; // particle's type is PT_DMND and PT_INDI are indestructible.
 		rx = parts[r].x;
 		ry = parts[r].y;
 		switch ( t )
