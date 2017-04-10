@@ -136,6 +136,12 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 
 	gvx += sim->gravx[((int)parts[i].y/CELL)*(XRES/CELL)+((int)parts[i].x/CELL)];
 	gvy += sim->gravy[((int)parts[i].y/CELL)*(XRES/CELL)+((int)parts[i].x/CELL)];
+	
+	if (sim->E189_FIGH_pause & 0x200) // anti-gravity ?
+	{
+		gvx = -gvx;
+		gvy = -gvy;
+	}
 
 	float rbx = gvx;
 	float rby = gvy;
