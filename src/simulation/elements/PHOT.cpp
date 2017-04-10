@@ -31,7 +31,7 @@ Element_PHOT::Element_PHOT()
 	Description = "Photons. Refracts through glass, scattered by quartz, and color-changed by different elements. Ignites flammable materials.";
 
 	Properties = TYPE_ENERGY|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
-	Properties2 = 0;
+	Properties2 = PROP_ENERGY_PART;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
