@@ -1527,7 +1527,7 @@ void Renderer::render_parts()
 						}
 					}
 					
-					int STKM_grav_mult (STKM_grav_flag ? (-3) : (+3))
+					int STKM_grav_mult (STKM_grav_flag ? (-3) : (+3));
 
 #ifdef OGLR
 					glColor4f(((float)colr)/255.0f, ((float)colg)/255.0f, ((float)colb)/255.0f, 1.0f);
