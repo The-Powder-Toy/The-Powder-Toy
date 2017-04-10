@@ -1012,11 +1012,12 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 					for (ry = -1; ry <= 1; ry++)
 					{
 						r = pmap[y+ry][x+rx];
-						if ((sim->elements[r&0xFF].Properties & PROP_CONDUCTS) && parts[r>>8].life == 0)
+						rt = r & 0xFF;
+						if (((sim->elements[rt].Properties & PROP_CONDUCTS) && !(rt==PT_WATR||rt==PT_SLTW||rt==PT_NTCT||rt==PT_PTCT||rt==PT_INWR)) && parts[r>>8].life == 0)
 						{
 							parts[r>>8].life = 4;
 							parts[r>>8].ctype = r&0xFF;
-							sim->create_part(r>>8, x+rx, y+ry, PT_SPRK);
+							sim->part_change_type(r>>8, x+rx, y+ry, PT_SPRK);
 						}
 					}
 			}
