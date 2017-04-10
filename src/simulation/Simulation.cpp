@@ -2065,7 +2065,7 @@ void Simulation::init_can_move()
 		can_move[movingType][PT_EMBR] = 0;
 		can_move[PT_EMBR][movingType] = 0;
 		//Energy particles move through VIBR and BVBR, so it can absorb them
-		if (elements[movingType].Properties & TYPE_ENERGY)
+		if (elements[movingType].Properties2 & PROP_ENERGY_PART)
 		{
 			can_move[movingType][PT_VIBR] = 1;
 			can_move[movingType][PT_BVBR] = 1;
@@ -2488,7 +2488,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 	}
 	else if (((r&0xFF)==PT_VIBR || (r&0xFF)==PT_BVBR))
 	{
-		if ((elements[parts[i].type].Properties & TYPE_ENERGY))
+		if ((elements[parts[i].type].Properties2 & PROP_ENERGY_PART))
 		{
 			parts[r>>8].tmp += 20;
 			kill_part(i);
