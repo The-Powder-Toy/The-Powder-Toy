@@ -1475,6 +1475,7 @@ void Renderer::render_parts()
 				}
 				if(pixel_mode & PSPEC_STICKMAN)
 				{
+					int STKM_grav_flag = sim->E189_FIGH_pause & 0x200;
 					int legr, legg, legb, cplayer_elem;
 					playerst *cplayer;
 					if(t==PT_STKM)
@@ -1490,7 +1491,7 @@ void Renderer::render_parts()
 					{
 						char buff[12];  //Buffer for HP
 						sprintf(buff, "%3d", sim->parts[i].life);  //Show HP
-						drawtext(mousePos.X-8-2*(sim->parts[i].life<100)-2*(sim->parts[i].life<10), mousePos.Y-12, buff, 255, 255, 255, 255);
+						drawtext(mousePos.X-8-2*(sim->parts[i].life<100)-2*(sim->parts[i].life<10), mousePos.Y+ (STKM_grav_flag? (+6) : (-12)), buff, 255, 255, 255, 255);
 					}
 
 					if (findingElement == t)
@@ -1525,6 +1526,8 @@ void Renderer::render_parts()
 							colb = 0xFF;
 						}
 					}
+					
+					int STKM_grav_mult (STKM_grav_flag ? (-3) : (+3))
 
 #ifdef OGLR
 					glColor4f(((float)colr)/255.0f, ((float)colg)/255.0f, ((float)colb)/255.0f, 1.0f);
@@ -1556,13 +1559,13 @@ void Renderer::render_parts()
 							glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 					}
 
-					glVertex2f(nx, ny+3);
+					glVertex2f(nx, ny+STKM_grav_mult);
 					glVertex2f(cplayer->legs[0], cplayer->legs[1]);
 
 					glVertex2f(cplayer->legs[0], cplayer->legs[1]);
 					glVertex2f(cplayer->legs[4], cplayer->legs[5]);
 
-					glVertex2f(nx, ny+3);
+					glVertex2f(nx, ny+STKM_grav_mult);
 					glVertex2f(cplayer->legs[8], cplayer->legs[9]);
 
 					glVertex2f(cplayer->legs[8], cplayer->legs[9]);
@@ -1619,9 +1622,9 @@ void Renderer::render_parts()
 						draw_line(nx+2, ny-2, nx+2, ny+2, colr, colg, colb, 255);
 					}
 					//legs
-					draw_line(nx, ny+3, cplayer->legs[0], cplayer->legs[1], legr, legg, legb, 255);
+					draw_line(nx, ny+STKM_grav_mult, cplayer->legs[0], cplayer->legs[1], legr, legg, legb, 255);
 					draw_line(cplayer->legs[0], cplayer->legs[1], cplayer->legs[4], cplayer->legs[5], legr, legg, legb, 255);
-					draw_line(nx, ny+3, cplayer->legs[8], cplayer->legs[9], legr, legg, legb, 255);
+					draw_line(nx, ny+STKM_grav_mult, cplayer->legs[8], cplayer->legs[9], legr, legg, legb, 255);
 					draw_line(cplayer->legs[8], cplayer->legs[9], cplayer->legs[12], cplayer->legs[13], legr, legg, legb, 255);
 					if (cplayer->rocketBoots)
 					{
