@@ -2384,6 +2384,8 @@ void GameView::OnDraw()
 
 	showDebugBack:
 		int type = sample_particle->type;
+		bool hasPartner = false;
+		int partnerID;
 		if (type)
 		{
 			int ctype = sample_particle->ctype;
@@ -2454,6 +2456,8 @@ void GameView::OnDraw()
 					if (ctype && ctype != type && c->IsValidElement(ctype))
 					{
 						sampleInfo << c->ElementResolve(type, -1) << " with ";
+						hasPartner = true;
+						partnerID = sample_particle->tmp4 >> 8;
 						sample_particle = sample.cparticle;
 						goto showDebugBack;
 					}
@@ -2687,7 +2691,14 @@ void GameView::OnDraw()
 			sampleInfo.str(std::string());
 
 			if (type)
-				sampleInfo << "#" << sample.ParticleID << ", ";
+			{
+				sampleInfo << "#" << sample.ParticleID;
+				if (hasPartner)
+				{
+					sampleInfo << " and #" << partnerID;
+				}
+				sampleInfo << ", ";
+			}
 
 			sampleInfo << "X:" << sample.PositionX << " Y:" << sample.PositionY;
 
