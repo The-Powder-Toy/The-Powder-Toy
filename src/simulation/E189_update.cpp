@@ -587,9 +587,17 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 						{
 							r = osc_r1[rii], rtmp = parts[i].tmp;
 							if (rtmp & 1 << (rctype & 1))
-								sim->create_part(-1, x+r, y, PT_SPRK);
+							{
+								rx = pmap[y][x+r];
+								if (elements[rx&0xFF].Properties&PROP_CONDUCTS)
+									conductTo(sim, rx, x+r, y, parts);
+							}
 							if (rtmp & 2 >> (rctype & 1))
-								sim->create_part(-1, x, y+r, PT_SPRK);
+							{
+								ry = pmap[y+r][x];
+								if (elements[ry&0xFF].Properties&PROP_CONDUCTS)
+									conductTo(sim, ry, x, y+r, parts);
+							}
 						}
 					}
 				}
