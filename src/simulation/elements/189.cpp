@@ -670,6 +670,7 @@ int Element_E189::EMPTrigger(Simulation *sim, int triggerCount)
 			continue; // particle's type is PT_DMND and PT_INDI are indestructible.
 		rx = parts[r].x;
 		ry = parts[r].y;
+
 		switch ( t )
 		{
 		case PT_DMND:
@@ -701,18 +702,29 @@ int Element_E189::EMPTrigger(Simulation *sim, int triggerCount)
 			break;
 		case PT_TTAN:
 		case PT_GOLD:
-		case PT_VOID:
-		case PT_PVOD:
-		case PT_CONV:
 			if (Probability::randFloat() < prob_breakElectronics)
 			{
 				sim->create_part(r, rx, ry, PT_E189, 8);
 				parts[r].tmp = 21000;
 			}
 			break;
+		case PT_VOID:
+		case PT_PVOD:
+		case PT_CONV:
+			if (Probability::randFloat() < prob_breakElectronics)
+			{
+				sim->create_part(r, rx, ry, PT_WARP);
+				parts[r].tmp2 = 6000;
+			}
+			break;
 		case PT_CRMC:
 			if (Probability::randFloat() < prob_breakElectronics)
-				sim->part_change_type(r, rx, ry, PT_CLST);
+			{
+				if (rand() & 1)
+					sim->part_change_type(r, rx, ry, PT_CLST);
+				else
+					sim->part_change_type(r, rx, ry, PT_PQRT);
+			}
 			break;
 		case PT_BRCK:
 			if (Probability::randFloat() < prob_breakElectronics)
@@ -722,20 +734,30 @@ int Element_E189::EMPTrigger(Simulation *sim, int triggerCount)
 			if (Probability::randFloat() < prob_breakElectronics)
 				parts[r].temp = (rand()%512) + 274.15f; // Randomize delay
 			break;
-		case PT_PSCN:
-		case PT_NSCN:
-		case PT_PTCT:
-		case PT_NTCT:
-		case PT_SWCH:
-		case PT_WIFI:
-		case PT_SPRK:
-		case PT_PSNS:
-		case PT_TSNS:
+		case PT_EMP:
+			if (triggerCount > rand() % 1000)
+				sim->part_change_type(r, rx, ry, PT_BREC);
+			break;
+		case PT_PSCN: case PT_NSCN:
+		case PT_PTCT: case PT_NTCT:
+		case PT_SWCH: case PT_SPRK:
+		case PT_PSNS: case PT_TSNS:
 		case PT_DTEC:
-		case PT_FRME:
-		case PT_PSTN:
+		case PT_FRME: case PT_PSTN:
 			if (Probability::randFloat() < prob_breakElectronics)
 				sim->part_change_type(r, rx, ry, PT_BREC);
+			break;
+		case PT_WIFI:
+		case PT_PRTI: case PT_PRTO:
+			if (Probability::randFloat() < prob_breakElectronics)
+			{
+				// Randomize channel
+				parts[r].temp = rand()%MAX_TEMP;
+			}
+			else if (prob_breakTRONPortal)
+			{
+				sim->part_change_type(r, rx, ry, WARP);
+			}
 			break;
 		case PT_CLNE:
 			if (Probability::randFloat() < prob_breakElectronics)
@@ -744,6 +766,14 @@ int Element_E189::EMPTrigger(Simulation *sim, int triggerCount)
 		case PT_PCLN:
 			if (Probability::randFloat() < prob_breakElectronics)
 				sim->part_change_type(r, rx, ry, PT_PBCN);
+			break;
+		case PT_BCLN:
+			if (triggerCount > rand() % 1000)
+				parts[r].life = rand()%40+80;
+			break;
+		case PT_PBCN:
+			if (triggerCount > rand() % 1000)
+				parts[r].tmp2 = rand()%40+80;
 			break;
 		case PT_SPNG:
 		case PT_BTRY:
