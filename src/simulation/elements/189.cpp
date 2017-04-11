@@ -1,8 +1,6 @@
 #include "simulation/Elements.h"
 #include "simulation/E189_update.h"
 #include "Probability.h"
-#include "font.h"
-#include <iostream>
 
 //#TPT-Directive ElementClass Element_E189 PT_E189 189
 Element_E189::Element_E189()
@@ -756,7 +754,7 @@ int Element_E189::EMPTrigger(Simulation *sim, int triggerCount)
 			}
 			else if (prob_breakTRONPortal)
 			{
-				sim->part_change_type(r, rx, ry, WARP);
+				sim->part_change_type(r, rx, ry, PT_WARP);
 			}
 			break;
 		case PT_CLNE:
@@ -850,70 +848,6 @@ int Element_E189::EMPTrigger(Simulation *sim, int triggerCount)
 			break;
 		}
 	}
-}
-
-//#TPT-Directive ElementHeader Element_E189 static int AddCharacter(Simulation *sim, int x, int y, int c, int rgb)
-int Element_E189::AddCharacter(Simulation *sim, int x, int y, int c, int rgb)
-{
-	int i, j, w, bn = 0, ba = 0, _r, xi, yj;
-	unsigned char *rp = font_data + font_ptrs[c];
-	w = *(rp++);
-	for (j=0; j<FONT_H; j++)
-		for (i=0; i<w; i++)
-		{
-			if (!bn)
-			{
-				ba = *(rp++);
-				bn = 8;
-			}
-			if (ba & 3)
-			{
-				xi = x + i; yj = y + j;
-				_r = sim->pmap[yj][xi];
-				if (_r)
-				{
-					if ((_r&0xFF) == PT_E189 && sim->parts[_r>>8].life == 13)
-					{
-						if (~ba & 3) // ba & 3 != 3, also only ba == 1 or ba == 2
-						{
-							int k = sim->parts[_r>>8].ctype;
-							int olda = (k >> 24) & 0xFF;
-							int oldr, oldg, oldb;
-							if (olda == 255)
-							{
-								oldr = (k >> 16) & 0xFF;
-								oldg = (k >> 8) & 0xFF;
-								oldb = k & 0xFF;
-							}
-							else
-							{
-								oldr = (olda * ((k >> 16) & 0xFF)) >> 8;
-								oldg = (olda * ((k >> 8) & 0xFF)) >> 8;
-								oldb = (olda * (k & 0xFF)) >> 8;
-							}
-							olda = (ba & 3) * 0x55;
-							int newr = (olda * ((rgb >> 16) & 0xFF) + (0xFF - olda) * oldr) & ~0xFF;
-							int newg = (olda * ((rgb >> 8) & 0xFF) + (0xFF - olda) * oldg) & 0xFF00;
-							int newb = (olda * (rgb & 0xFF) + (0xFF - olda) * oldb) >> 8;
-							sim->parts[_r>>8].ctype = 0xFF000000 | newr << 8 | newg | newb;
-						}
-						else
-							sim->parts[_r].ctype = 0xFF000000 | (rgb & 0x00FFFFFF);
-					}
-					else if (!(sim->elements[_r>>8].Properties & PROP_NODESTRUCT))
-						_r = sim->create_part(_r>>8, xi, yj, PT_E189, 13);
-				}
-				else
-					_r = sim->create_part(-1, xi, yj, PT_E189, 13); // type = 65549 (0x0001000D)
-				if (_r >= 0)
-				{
-					sim->parts[_r].ctype = ((ba & 3) * 0x55000000) | (rgb & 0x00FFFFFF);
-				}
-			}
-			ba >>= 2;
-			bn -= 2;
-		}
-	return x + w;
 }
 
 //#TPT-Directive ElementHeader Element_E189 static void FloodButton(Simulation *sim, int i, int x, int y)
