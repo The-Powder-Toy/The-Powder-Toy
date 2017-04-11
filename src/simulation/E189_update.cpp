@@ -373,7 +373,7 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 								break;
 							}
 						}
-						if ((rtmp & 0x1) && sim->elements[rt].Properties & PROP_CONDUCTS && parts[r>>8].life == 0)
+						if ((rtmp & 0x1) && sim->elements[rt].Properties & PROP_CONDUCTS)
 						{
 							conductTo (sim, r, x+rx, y+ry, parts);
 						}
@@ -730,9 +730,9 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 							rtmp = parts[i].tmp;
 							rrx = pmap[y][x+rx*rii];
 							rry = pmap[y+ry*rii][x];
-							if ((rry & 0xFF) == PT_NSCN && parts[rry>>8].life == 0 && (rtmp & 1))
+							if ((rry & 0xFF) == PT_NSCN && (rtmp & 1))
 								conductTo (sim, rry, x, y+ry*rii, parts);
-							if ((rrx & 0xFF) == PT_NSCN && parts[rrx>>8].life == 0 && (rtmp & 2))
+							if ((rrx & 0xFF) == PT_NSCN && (rtmp & 2))
 								conductTo (sim, rrx, x+rx*rii, y, parts);
 						}
 					}
@@ -1019,7 +1019,7 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 					{
 						r = pmap[y+ry][x+rx];
 						rt = r & 0xFF;
-						if (((sim->elements[rt].Properties & PROP_CONDUCTS) && !(rt==PT_WATR||rt==PT_SLTW||rt==PT_NTCT||rt==PT_PTCT||rt==PT_INWR)) && parts[r>>8].life == 0)
+						if (((sim->elements[rt].Properties & PROP_CONDUCTS) && !(rt==PT_WATR||rt==PT_SLTW||rt==PT_NTCT||rt==PT_PTCT||rt==PT_INWR)))
 						{
 							conductTo (sim, r, x+rx, y+ry, parts);
 						}
@@ -1155,7 +1155,7 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 					// wireless[][1] - whether channel should be active on next frame
 					if (sim->wireless2[parts[i].tmp][rii] & rr)
 					{
-						if (((r&0xFF)==PT_NSCN||(r&0xFF)==PT_PSCN||(r&0xFF)==PT_INWR)&&parts[r>>8].life==0 && sim->wireless2[parts[i].tmp][rii])
+						if (((r&0xFF)==PT_NSCN||(r&0xFF)==PT_PSCN||(r&0xFF)==PT_INWR) && sim->wireless2[parts[i].tmp][rii])
 						{
 							conductTo (sim, r, x+rx, y+ry, parts);
 						}
