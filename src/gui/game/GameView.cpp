@@ -2364,6 +2364,7 @@ void GameView::OnDraw()
 	}
 	else if(showHud)
 	{
+		Particle * sample_particle = &(sample.particle);
 		static const char* E189Modes[] = {
 			"PRSINS", "PRSINS", "TRONI", "TRONO", "LASER", "DIRCH", "HEATER", "PHTDUP", "VIBR2", "VIBR2",
 			"DEBUG", "PHTEM", "SPREFL", "DECOR", "DECO2", "PRTINS", "LOGICG", "PHDIOD", "DECO3", "NOTGIN",
@@ -2381,17 +2382,18 @@ void GameView::OnDraw()
 		std::stringstream tempStream;
 		sampleInfo.precision(debugPrecision);
 
-		int type = sample.particle.type;
+	showDebugBack:
+		int type = sample_particle->type;
 		if (type)
 		{
-			int ctype = sample.particle.ctype;
+			int ctype = sample_particle->ctype;
 			int partctype = ctype;
-			int partlife = sample.particle.life;
-			int parttmp = sample.particle.tmp;
+			int partlife = sample_particle->life;
+			int parttmp = sample_particle->tmp;
 			int partint = 0;
 			int partstr = 0;
 			if (type == PT_PIPE || type == PT_PPIP)
-				ctype = sample.particle.tmp&0xFF;
+				ctype = sample_particle->tmp&0xFF;
 
 			if (type == PT_PHOT || type == PT_BIZR || type == PT_BIZRG || type == PT_BIZRS || type == PT_FILT || type == PT_BRAY)
 				wavelengthGfx = (ctype&0x3FFFFFFF);
@@ -2410,7 +2412,7 @@ void GameView::OnDraw()
 				}
 				else if (partlife == 13)
 				{
-					if ((sample.particle.tmp2 & 0x3) == 0x1)
+					if ((sample_particle->tmp2 & 0x3) == 0x1)
 						wavelengthGfx = (ctype&0x3FFFFFFF);
 					else
 						partint = 1;
@@ -2434,7 +2436,7 @@ void GameView::OnDraw()
 				if (type == PT_LAVA && c->IsValidElement(ctype))
 					sampleInfo << "Molten " << c->ElementResolve(ctype, -1);
 				else if ((type == PT_PIPE || type == PT_PPIP) && c->IsValidElement(ctype))
-					sampleInfo << c->ElementResolve(type, -1) << " with " << c->ElementResolve(ctype, (int)sample.particle.pavg[1]);
+					sampleInfo << c->ElementResolve(type, -1) << " with " << c->ElementResolve(ctype, (int)sample_particle->pavg[1]);
 				else if (type == PT_LIFE)
 					sampleInfo << c->ElementResolve(type, ctype);
 				else if (type == PT_FILT)
@@ -2448,26 +2450,12 @@ void GameView::OnDraw()
 				}
 				else if (type == PT_PINVIS)
 				{
-					ctype = sample.particle.tmp4 & 0xFF;
+					ctype = sample_particle->tmp4 & 0xFF;
 					if (ctype && ctype != type && c->IsValidElement(ctype))
 					{
-						int c_ctype = (sample.cparticle)->ctype;
-						sampleInfo << c->ElementResolve(type, -1) << " with " << c->ElementResolve(ctype, c_ctype);
-						if (ctype != PT_LIFE)
-						{
-							if (ctype == PT_PHOT || ctype == PT_BIZR || ctype == PT_BIZRG || ctype == PT_BIZRS || ctype == PT_FILT || ctype == PT_BRAY)
-							{
-								sampleInfo << " (" << c_ctype << ")";
-							}
-							else if (ctype != PT_PIPE && ctype != PT_PPIP)
-							{
-								sampleInfo << " (" << c->ElementResolve(c_ctype, -1) << ")";
-							}
-							else
-							{
-								sampleInfo << " (" << c->ElementResolve((sample.cparticle)->tmp, (int)((sample.cparticle)->pavg[1])) << ")";
-							}
-						}
+						sampleInfo << c->ElementResolve(type, -1) << " with ";
+						sample_particle = sample.cparticle;
+						goto showDebugBack;
 					}
 					else
 					{
@@ -2511,7 +2499,7 @@ void GameView::OnDraw()
 					else
 						sampleInfo << " ()";
 				}
-				sampleInfo << ", Temp: " << std::fixed << sample.particle.temp -273.15f << " C";
+				sampleInfo << ", Temp: " << std::fixed << sample_particle->temp -273.15f << " C";
 				if (!showDebugState)
 				{
 					sampleInfo << ", Life: " << partlife;
@@ -2520,7 +2508,7 @@ void GameView::OnDraw()
 					// only elements that use .tmp2 show it in the debug HUD
 					if (type == PT_CRAY || type == PT_DRAY || type == PT_EXOT || type == PT_LIGH || type == PT_SOAP || type == PT_TRON || type == PT_VIBR || type == PT_VIRS
 					 || type == PT_WARP || type == PT_LCRY || type == PT_CBNW || type == PT_TSNS || type == PT_DTEC || type == PT_PSTN || type == PT_E189)
-						sampleInfo << ", Tmp2: " << sample.particle.tmp2;
+						sampleInfo << ", Tmp2: " << sample_particle->tmp2;
 				}
 				else
 				{
@@ -2544,8 +2532,8 @@ void GameView::OnDraw()
 							tempvar = partctype;
 						break;
 						case 4:
-							sampleInfo << ", Vx: " << std::fixed << sample.particle.vx;
-							sampleInfo << ", Vy: " << std::fixed << sample.particle.vy;
+							sampleInfo << ", Vx: " << std::fixed << sample_particle->vx;
+							sampleInfo << ", Vy: " << std::fixed << sample_particle->vy;
 							multi_var = true;
 						break;
 						case 5:
@@ -2554,36 +2542,36 @@ void GameView::OnDraw()
 						break;
 						case 6:
 							sampleInfo << ", Tmp2: ";
-							tempvar = sample.particle.tmp2;
+							tempvar = sample_particle->tmp2;
 						break;
 						case 7:
 							sampleInfo << ", Tmp3: ";
-							tempvar = sample.particle.tmp3;
+							tempvar = sample_particle->tmp3;
 						break;
 						case 8:
 							sampleInfo << ", Tmp4: ";
-							tempvar = sample.particle.tmp4;
+							tempvar = sample_particle->tmp4;
 						break;
 						case 9:
 							sampleInfo << ", Dcolor: ";
-							tempvar = sample.particle.dcolour;
+							tempvar = sample_particle->dcolour;
 						break;
 						case 10:
-							sampleInfo << ", Pavg[0]: " << std::fixed << sample.particle.pavg[0];
-							sampleInfo << ", Pavg[1]: " << std::fixed << sample.particle.pavg[1];
+							sampleInfo << ", Pavg[0]: " << std::fixed << sample_particle->pavg[0];
+							sampleInfo << ", Pavg[1]: " << std::fixed << sample_particle->pavg[1];
 							multi_var = true;
 						break;
 						case 11:
 							sampleInfo << ", Flags: ";
-							tempvar = sample.particle.flags;
+							tempvar = sample_particle->flags;
 						break;
 						case 12:
 							sampleInfo << ", cdcolor: ";
-							tempvar = sample.particle.cdcolour;
+							tempvar = sample_particle->cdcolour;
 						break;
 						case 13:
-							sampleInfo << ", X: " << std::fixed << sample.particle.x;
-							sampleInfo << ", Y: " << std::fixed << sample.particle.y;
+							sampleInfo << ", X: " << std::fixed << sample_particle->x;
+							sampleInfo << ", Y: " << std::fixed << sample_particle->y;
 							multi_var = true;
 						break;
 					}
@@ -2607,7 +2595,7 @@ void GameView::OnDraw()
 				if (type == PT_LAVA && c->IsValidElement(ctype))
 					sampleInfo << "Molten " << c->ElementResolve(ctype, -1);
 				else if ((type == PT_PIPE || type == PT_PPIP) && c->IsValidElement(ctype))
-					sampleInfo << c->ElementResolve(type, -1) << " with " << c->ElementResolve(ctype, (int)sample.particle.pavg[1]);
+					sampleInfo << c->ElementResolve(type, -1) << " with " << c->ElementResolve(ctype, (int)sample_particle->pavg[1]);
 				else if (type == PT_LIFE)
 					sampleInfo << c->ElementResolve(type, ctype);
 				else if (type == PT_E189)
@@ -2623,17 +2611,19 @@ void GameView::OnDraw()
 				}
 				else if (type == PT_PINVIS)
 				{
-					ctype = sample.particle.tmp4 & 0xFF;
+					ctype = sample_particle->tmp4 & 0xFF;
 					if (ctype && ctype != type && c->IsValidElement(ctype))
 					{
-						sampleInfo << c->ElementResolve(type, -1) << " with " << c->ElementResolve(ctype, (sample.cparticle)->ctype);
+						sampleInfo << c->ElementResolve(type, -1) << " with ";
+						sample_particle = sample.cparticle;
+						goto showDebugBack;
 					}
 					else
 						sampleInfo << c->ElementResolve(type, partctype);
 				}
 				else
 					sampleInfo << c->ElementResolve(type, ctype);
-				sampleInfo << ", Temp: " << std::fixed << sample.particle.temp - 273.15f << " C";
+				sampleInfo << ", Temp: " << std::fixed << sample_particle->temp - 273.15f << " C";
 				sampleInfo << ", Pressure: " << std::fixed << sample.AirPressure;
 			}
 		}
