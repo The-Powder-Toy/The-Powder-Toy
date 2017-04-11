@@ -2382,10 +2382,10 @@ void GameView::OnDraw()
 		std::stringstream tempStream;
 		sampleInfo.precision(debugPrecision);
 
+		bool tpt_hasPartner = false;
+		int partnerID;
 	showDebugBack:
 		int type = sample_particle->type;
-		bool hasPartner = false;
-		int partnerID;
 		if (type)
 		{
 			int ctype = sample_particle->ctype;
@@ -2453,14 +2453,11 @@ void GameView::OnDraw()
 				else if (type == PT_PINVIS)
 				{
 					ctype = sample_particle->tmp4 & 0xFF;
-					if (ctype && ctype != type && c->IsValidElement(ctype))
+					if (ctype && ctype != type && c->IsValidElement(ctype) && !tpt_hasPartner)
 					{
 						sampleInfo << c->ElementResolve(type, -1) << " with ";
-						if (!hasPartner)
-						{
-							partnerID = sample_particle->tmp4 >> 8;
-							hasPartner = true;
-						}
+						partnerID = sample_particle->tmp4 >> 8;
+						tpt_hasPartner = true;
 						sample_particle = sample.cparticle;
 						goto showDebugBack;
 					}
@@ -2619,10 +2616,11 @@ void GameView::OnDraw()
 				else if (type == PT_PINVIS)
 				{
 					ctype = sample_particle->tmp4 & 0xFF;
-					if (ctype && ctype != type && c->IsValidElement(ctype))
+					if (ctype && ctype != type && c->IsValidElement(ctype) && !tpt_hasPartner)
 					{
 						sampleInfo << c->ElementResolve(type, -1) << " with ";
-						sample_particle = sample.cparticle;
+						partnerID = sample_particle->tmp4 >> 8;
+						tpt_hasPartner = true;
 						goto showDebugBack;
 					}
 					else
@@ -2696,7 +2694,7 @@ void GameView::OnDraw()
 			if (type)
 			{
 				sampleInfo << "#" << sample.ParticleID;
-				if (hasPartner)
+				if (tpt_hasPartner)
 				{
 					sampleInfo << " and #" << partnerID;
 				}
