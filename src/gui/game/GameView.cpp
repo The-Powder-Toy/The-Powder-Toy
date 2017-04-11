@@ -2619,8 +2619,9 @@ void GameView::OnDraw()
 					if (ctype && ctype != type && c->IsValidElement(ctype) && !tpt_hasPartner)
 					{
 						sampleInfo << c->ElementResolve(type, -1) << " with ";
-						partnerID = sample_particle->tmp4 >> 8;
+						// partnerID = sample_particle->tmp4 >> 8;
 						tpt_hasPartner = true;
+						sample_particle = sample.cparticle;
 						goto showDebugBack;
 					}
 					else
