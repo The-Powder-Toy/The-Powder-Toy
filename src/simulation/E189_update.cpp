@@ -154,7 +154,7 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 	case 32: // reserved for ARAY / BRAY
 		break;
 	case 6: // heater
-		if (!legacy_enable) //if heat sim is on
+		if (!sim->legacy_enable) //if heat sim is on
 		{
 			for (rx=-1; rx<2; rx++)
 				for (ry=-1; ry<2; ry++)
@@ -589,13 +589,13 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 							if (rtmp & 1 << (rctype & 1))
 							{
 								rx = pmap[y][x+r];
-								if (elements[rx&0xFF].Properties&PROP_CONDUCTS)
+								if (sim->elements[rx&0xFF].Properties&PROP_CONDUCTS)
 									conductTo(sim, rx, x+r, y, parts);
 							}
 							if (rtmp & 2 >> (rctype & 1))
 							{
 								ry = pmap[y+r][x];
-								if (elements[ry&0xFF].Properties&PROP_CONDUCTS)
+								if (sim->elements[ry&0xFF].Properties&PROP_CONDUCTS)
 									conductTo(sim, ry, x, y+r, parts);
 							}
 						}
