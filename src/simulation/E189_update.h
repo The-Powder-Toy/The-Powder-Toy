@@ -9,6 +9,7 @@ public:
 	E189_Update();
 	virtual ~E189_Update();
 	static int update(UPDATE_FUNC_ARGS);
+	static int InsertText(Simulation *sim, int i, int x, int y, int ix, int iy);
 	static void conductTo (Simulation* sim, int r, int x, int y, Particle *parts) // Inline or macro?
 	{
 		if (!parts[r>>8].life)

@@ -314,7 +314,7 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 							case 6: sim->E189_pause |=  0x40; break;
 						}
 						if ((rtmp & 0x10) && (rx != ry))
-							Element_E189::InsertText(sim, i, x, y, -rx, -ry);
+							E189_Update::InsertText(sim, i, x, y, -rx, -ry);
 					}
 				}
 		break;
