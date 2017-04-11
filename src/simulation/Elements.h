@@ -42,6 +42,7 @@
 
 // second properties flag:
 #define PROP_ENERGY_PART	0x00000001
+#define PROP_ELEC_HEATING	0x00000002 // Electricity heating effect
 // #define PROP_NOSLOWDOWN		0x200000
 
 #define FLAG_STAGNANT	0x1
