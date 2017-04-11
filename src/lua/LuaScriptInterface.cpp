@@ -2590,6 +2590,7 @@ void LuaScriptInterface::initElementsAPI()
 	
 	// second property flags
 	SETCONST(l, PROP_ENERGY_PART);
+	SETCONST(l, PROP_ELEC_HEATING);
 	// SETCONST(l, PROP_NOSLOWDOWN);
 
 	SETCONST(l, FLAG_STAGNANT);
