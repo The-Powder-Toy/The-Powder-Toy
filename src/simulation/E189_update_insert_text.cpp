@@ -441,41 +441,41 @@ void E189_Update::InsertText(Simulation *sim, int i, int x, int y, int ix, int i
 				esc = 4;
 				break;
 			case 259: // random character
-				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, (rand() & 0xFF), (it_r << 16) | (it_g << 8) | it_b);
+				ct_x = E189_Update::AddCharacter(sim, ct_x, ct_y, (rand() & 0xFF), (it_r << 16) | (it_g << 8) | it_b);
 				break;
 			case 260: // random ASCII
-				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, (rand() % 95 + ' '), (it_r << 16) | (it_g << 8) | it_b);
+				ct_x = E189_Update::AddCharacter(sim, ct_x, ct_y, (rand() % 95 + ' '), (it_r << 16) | (it_g << 8) | it_b);
 				break;
 			case 261: // random number
-				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, (rand() % 10 + '0'), (it_r << 16) | (it_g << 8) | it_b);
+				ct_x = E189_Update::AddCharacter(sim, ct_x, ct_y, (rand() % 10 + '0'), (it_r << 16) | (it_g << 8) | it_b);
 				break;
 			case 262: // random uppercase
-				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, (rand() % 26 + 'A'), (it_r << 16) | (it_g << 8) | it_b);
+				ct_x = E189_Update::AddCharacter(sim, ct_x, ct_y, (rand() % 26 + 'A'), (it_r << 16) | (it_g << 8) | it_b);
 				break;
 			case 263: // random lowercase
-				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, (rand() % 26 + 'a'), (it_r << 16) | (it_g << 8) | it_b);
+				ct_x = E189_Update::AddCharacter(sim, ct_x, ct_y, (rand() % 26 + 'a'), (it_r << 16) | (it_g << 8) | it_b);
 				break;
 			case 264: // random mixed alphabet
 				pack = rand();
-				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, ((pack >> 1) % 26 + ((pack % 2) << 5) + 'A'), (it_r << 16) | (it_g << 8) | it_b);
+				ct_x = E189_Update::AddCharacter(sim, ct_x, ct_y, ((pack >> 1) % 26 + ((pack % 2) << 5) + 'A'), (it_r << 16) | (it_g << 8) | it_b);
 				break;
 			case 265: // random mixed alphanumeric
 				pack = rand() % 62;
 				pack += ((pack > 36) ? 29 : (pack > 10) ? 87 : '0');
-				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, pack, (it_r << 16) | (it_g << 8) | it_b);
+				ct_x = E189_Update::AddCharacter(sim, ct_x, ct_y, pack, (it_r << 16) | (it_g << 8) | it_b);
 				break;
 			case 266:
-				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, counter & 0xFF, (it_r << 16) | (it_g << 8) | it_b);
+				ct_x = E189_Update::AddCharacter(sim, ct_x, ct_y, counter & 0xFF, (it_r << 16) | (it_g << 8) | it_b);
 				break;
 			case 267:
-				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, calls[call_ptr-1][0] & 0xFF, (it_r << 16) | (it_g << 8) | it_b);
+				ct_x = E189_Update::AddCharacter(sim, ct_x, ct_y, calls[call_ptr-1][0] & 0xFF, (it_r << 16) | (it_g << 8) | it_b);
 				break;
 			case 268: // print number
 				chr_1 = (int)counter;
 				pack = (it_r << 16) | (it_g << 8) | it_b;
 				if (chr_1 < 0)
 				{
-					chr_1 = -chr_1; ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, '-', pack);
+					chr_1 = -chr_1; ct_x = E189_Update::AddCharacter(sim, ct_x, ct_y, '-', pack);
 				}
 				do
 				{
@@ -484,16 +484,16 @@ void E189_Update::InsertText(Simulation *sim, int i, int x, int y, int ix, int i
 				}
 				while (chr_1);
 				while (tmp)
-					ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, __digits[--tmp], pack);
+					ct_x = E189_Update::AddCharacter(sim, ct_x, ct_y, __digits[--tmp], pack);
 				break;
 			case 269: // random punctuation (exclude space)
 				pack = rand() & 31;
 				pack += ((pack < 15) ? '!' : (pack < 22) ? 43 : (pack < 28) ? 69 : 95);
-				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, pack, (it_r << 16) | (it_g << 8) | it_b);
+				ct_x = E189_Update::AddCharacter(sim, ct_x, ct_y, pack, (it_r << 16) | (it_g << 8) | it_b);
 				break;
 			default:
 				if (chr_1 >= 0 && chr_1 <= 255)
-					ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, chr_1, (it_r << 16) | (it_g << 8) | it_b);
+					ct_x = E189_Update::AddCharacter(sim, ct_x, ct_y, chr_1, (it_r << 16) | (it_g << 8) | it_b);
 				else
 					std::cerr << "Invalid character" << std::endl;
 			}
@@ -530,10 +530,10 @@ void E189_Update::InsertText(Simulation *sim, int i, int x, int y, int ix, int i
 				break;
 			case 5: // packed
 				pack = (it_r << 16) | (it_g << 8) | it_b;
-				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, chr_1 & 0xFF, pack);
-				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, (chr_1 >> 8) & 0xFF, pack);
-				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, (chr_1 >> 16) & 0xFF, pack);
-				ct_x = Element_E189::AddCharacter(sim, ct_x, ct_y, (chr_1 >> 24) & 0xFF, pack);
+				ct_x = E189_Update::AddCharacter(sim, ct_x, ct_y, chr_1 & 0xFF, pack);
+				ct_x = E189_Update::AddCharacter(sim, ct_x, ct_y, (chr_1 >> 8) & 0xFF, pack);
+				ct_x = E189_Update::AddCharacter(sim, ct_x, ct_y, (chr_1 >> 16) & 0xFF, pack);
+				ct_x = E189_Update::AddCharacter(sim, ct_x, ct_y, (chr_1 >> 24) & 0xFF, pack);
 				break;
 			}
 		}
@@ -542,8 +542,6 @@ void E189_Update::InsertText(Simulation *sim, int i, int x, int y, int ix, int i
 	std::cout << "output complete!" << std::endl;
 }
 
-
-//#TPT-Directive ElementHeader Element_E189 static int AddCharacter(Simulation *sim, int x, int y, int c, int rgb)
 int E189_Update::AddCharacter(Simulation *sim, int x, int y, int c, int rgb)
 {
 	int i, j, w, bn = 0, ba = 0, _r, xi, yj;
