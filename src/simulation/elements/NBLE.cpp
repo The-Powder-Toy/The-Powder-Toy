@@ -32,6 +32,7 @@ Element_NBLE::Element_NBLE()
 	Description = "Noble Gas. Diffuses and conductive. Ionizes into plasma when introduced to electricity.";
 
 	Properties = TYPE_GAS|PROP_CONDUCTS|PROP_LIFE_DEC;
+	Properties2 |= PROP_ELEC_HEATING;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

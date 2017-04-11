@@ -31,6 +31,7 @@ Element_BRMT::Element_BRMT()
 	Description = "Broken metal. Created when iron rusts or when metals break from pressure.";
 
 	Properties = TYPE_PART|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_HOT_GLOW;
+	Properties2 |= PROP_ELEC_HEATING;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
