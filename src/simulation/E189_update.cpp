@@ -154,16 +154,19 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 	case 32: // reserved for ARAY / BRAY
 		break;
 	case 6: // heater
-		for (rx=-1; rx<2; rx++)
-			for (ry=-1; ry<2; ry++)
-				if ((!rx != !ry) && BOUNDS_CHECK)
-				{
-					r = pmap[y+ry][x+rx];
-					if (!r)
-						continue;
-					if (sim->elements[r&0xFF].HeatConduct > 0)
-						parts[r>>8].temp = parts[i].temp;
-				}
+		if (!legacy_enable) //if heat sim is on
+		{
+			for (rx=-1; rx<2; rx++)
+				for (ry=-1; ry<2; ry++)
+					if ((!rx != !ry) && BOUNDS_CHECK)
+					{
+						r = pmap[y+ry][x+rx];
+						if (!r)
+							continue;
+						if (sim->elements[r&0xFF].HeatConduct > 0)
+							parts[r>>8].temp = parts[i].temp;
+					}
+		}
 		break;
 	case 8: // acts like VIBR [振金]
 		rr = parts[i].tmp2;
