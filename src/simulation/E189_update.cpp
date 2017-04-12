@@ -342,6 +342,7 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 							parts[ri].flags |= FLAG_SKIPMOVE;
 					}
 				}
+		break;
 	case 12: // SPRK reflector
 		if (!(rtmp & 0x4))
 		{
