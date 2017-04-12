@@ -2396,7 +2396,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 					break;
 				case 7:
 					if (!(parts[i].flags & FLAG_SKIPMOVE))
-						Element_E189::duplicatePhotons(this, i, x, y, &parts[i], &parts[r>>8]);
+						Element_E189::duplicatePhotons(this, i, nx, ny, &parts[i], &parts[r>>8]);
 					break;
 				}
 			}
