@@ -598,11 +598,19 @@ int E189_Update::AddCharacter(Simulation *sim, int x, int y, int c, int rgb)
 							sim->parts[_r].ctype = 0xFF000000 | (rgb & 0x00FFFFFF);
 					}
 					else if (!(sim->elements[_rt].Properties & PROP_NODESTRUCT))
-						_r = sim->create_part(_r, xi, yj, PT_E189, 13);
+					{
+						goto _E189_recreatePixel;
+					}
 				}
 				else
-					_r = sim->create_part(-1, xi, yj, PT_E189, 13); // type = 65549 (0x0001000D)
-				if (_r >= 0)
+				{
+				_E189_recreatePixel:
+					if (!Element_E189::useDefaultPart)
+						_r = sim->create_part(-1, xi, yj, PT_E189, 13); // type = 65549 (0x0001000D)
+					else
+						_r = sim->create_part(-1, xi, yj, color_parts[ba & 3]);
+				}
+				if (!Element_E189::useDefaultPart && _r >= 0)
 				{
 					sim->parts[_r].ctype = ((ba & 3) * 0x55000000) | (rgb & 0x00FFFFFF);
 				}
