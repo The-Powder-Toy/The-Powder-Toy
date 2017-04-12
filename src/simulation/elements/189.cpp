@@ -515,6 +515,10 @@ void Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* p
 					r1 |= 0x1000;
 				if (sim->elementCount[PT_INDI] > 0)
 					r1 |= 0x2000;
+				if (sim->elementCount[PT_PINS] > 0)
+					r1 |= 0x4000;
+				if (sim->elementCount[PT_PINVIS] > 0)
+					r1 |= 0x8000;
 				part_phot->ctype = r1;
 				break;
 			}
