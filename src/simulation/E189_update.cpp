@@ -800,6 +800,22 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 						}
 				parts[i].tmp = 0; // PT_NONE ( or clear .tmp )
 			}
+			goto continue1a;
+		case 16:
+			if (parts[i].tmp2 == 1)
+			{
+				for (rx = -2; rx <= 2; rx++)
+					for (ry = -2; ry <= 2; ry++)
+						if (BOUNDS_CHECK && (rx || ry))
+						{
+							r = pmap[y+ry][x+rx];
+							if ((r & 0xFF) == PT_PSNS || (r & 0xFF) == PT_TSNS || (r & 0xFF) == PT_DTEC)
+							{
+								parts[r>>8].tmp3 ^= 1;
+							}
+						}
+			}
+		continue1a:
 			for (rx = -2; rx <= 2; rx++)
 				for (ry = -2; ry <= 2; ry++)
 					if (BOUNDS_CHECK && (rx || ry))
