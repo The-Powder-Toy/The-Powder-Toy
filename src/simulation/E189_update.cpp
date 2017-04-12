@@ -303,7 +303,7 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 						continue;
 					if ((r&0xFF) == PT_SPRK && parts[r>>8].life == 3)
 					{
-						switch (rtmp & 0x0F)
+						switch (rtmp & 0x3F)
 						{
 							case 0: sim->E189_pause |=  0x01; break;
 							case 1: sim->E189_pause |=  0x02; break;
@@ -313,7 +313,7 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 							case 5: sim->E189_pause |=  0x20; break;
 							case 6: sim->E189_pause |=  0x40; break;
 						}
-						if ((rtmp & 0x10) && (rx != ry))
+						if ((rtmp & 0x7E) == 0x40 && (rx != ry))
 							E189_Update::InsertText(sim, i, x, y, -rx, -ry);
 					}
 				}
