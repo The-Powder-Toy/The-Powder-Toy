@@ -1771,27 +1771,42 @@ inline int Simulation::is_wire_off(int x, int y)
 
 int Simulation::get_wavelength_bin(int *wm)
 {
-	int i, w0=30, wM=0;
+	int i, w0, wM, r;
 
-	if (!*wm)
+	if (!(*wm & 0x3FFFFFFF))
 		return -1;
 
+#ifdef __GNUC__
+	w0 = __builtin_ctz(*wm | 0xC0000000);
+	wM = 31 - __builtin_clz(*wm & 0x3FFFFFFF);
+#else
 	for (i=0; i<30; i++)
-		if (*wm & (1<<i)) {
+		if (*wm & (1<<i))
+		{
 			if (i < w0)
 				w0 = i;
 			if (i > wM)
 				wM = i;
 		}
+#endif
 
-	if (wM-w0 < 5)
-		return (wM+w0)/2;
+	if (wM - w0 < 5)
+		return wM + w0;
 
-	i = rand() % (wM-w0-3);
+	r = rand();
+	i = (r >> 1) % (wM-w0-4);
 	i += w0;
 
-	*wm &= 0x1F << i;
-	return i + 2;
+	if (r & 1)
+	{
+		*wm &= 0x1F << i;
+		return (i + 2) * 2;
+	}
+	else
+	{
+		*wm &= 0xF << i;
+		return (i + 2) * 2 - 1;
+	}
 }
 
 void Simulation::set_emap(int x, int y)
@@ -2372,6 +2387,34 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 			}
 			else if ((r&0xFF) == PT_FILT)
 				parts[i].ctype = Element_FILT::interactWavelengths(&parts[r>>8], parts[i].ctype);
+  		else if ((r&0xFF) == PT_C5)
+			{
+				if (parts[r>>8].life > 0 && (parts[r>>8].ctype & parts[i].ctype & 0xFFFFFFC0))
+				{
+					float vx = ((parts[r>>8].tmp << 16) >> 16) / 255.0f;
+					float vy = (parts[r>>8].tmp >> 16) / 255.0f;
+					float vn = parts[i].vx * parts[i].vx + parts[i].vy * parts[i].vy;
+					parts[i].ctype = (parts[r>>8].ctype & parts[i].ctype) >> 6;
+					parts[r>>8].life = 0;
+					parts[r>>8].ctype = 0;
+					// add momentum of photons to each other
+					parts[i].vx += vx;
+					parts[i].vy += vy;
+					// normalize velocity to original value
+					vn /= parts[i].vx * parts[i].vx + parts[i].vy * parts[i].vy;
+					vn = sqrtf(vn);
+					parts[i].vx *= vn;
+					parts[i].vy *= vn;
+				}
+				else if(!parts[r>>8].ctype && parts[i].ctype & 0xFFFFFFC0)
+				{
+					parts[r>>8].life = 1;
+					parts[r>>8].ctype = parts[i].ctype;
+					parts[r>>8].tmp = (0xFFFF & (int)(parts[i].vx * 255.0f)) | (0xFFFF0000 & (int)(parts[i].vy * 16711680.0f));
+					parts[r>>8].tmp2 = (0xFFFF & (int)((parts[i].x - x) * 255.0f)) | (0xFFFF0000 & (int)((parts[i].y - y) * 16711680.0f));
+					kill_part(i);
+				}
+			}
 			else if ((r&0xFF) == PT_E189)
 			{
 				switch (parts[r>>8].life)
@@ -2422,7 +2465,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 		}
 		else if (parts[i].type == PT_NEUT)
 		{
-			if ((r&0xFF) == PT_GLAS)
+			if ((r&0xFF) == PT_GLAS || (r&0xFF) == PT_BGLA)
 				if (rand() < RAND_MAX/10)
 					create_cherenkov_photon(i);
 		}
@@ -2672,7 +2715,7 @@ int Simulation::is_blocking(int t, int x, int y)
 	if (t & REFRACT) {
 		if (x<0 || y<0 || x>=XRES || y>=YRES)
 			return 0;
-		if ((pmap[y][x] & 0xFF) == PT_GLAS)
+		if ((pmap[y][x] & 0xFF) == PT_GLAS || (pmap[y][x] & 0xFF) == PT_BGLA)
 			return 1;
 		return 0;
 	}
@@ -3508,7 +3551,7 @@ void Simulation::create_cherenkov_photon(int pp)//photons from NEUT going throug
 
 	nx = (int)(parts[pp].x + 0.5f);
 	ny = (int)(parts[pp].y + 0.5f);
-	if ((pmap[ny][nx] & 0xFF) != PT_GLAS)
+	if ((pmap[ny][nx] & 0xFF) != PT_GLAS && (pmap[ny][nx] & 0xFF) != PT_BGLA)
 		return;
 
 	if (hypotf(parts[pp].vx, parts[pp].vy) < 1.44f)
@@ -4395,7 +4438,9 @@ killed:
 					{
 						int rt = pmap[fin_y][fin_x] & 0xFF;
 						int lt = pmap[y][x] & 0xFF;
-						if ((rt==PT_GLAS && lt!=PT_GLAS) || (rt!=PT_GLAS && lt==PT_GLAS))
+						int rt_glas = (rt == PT_GLAS) || (rt == PT_BGLA);
+						int lt_glas = (lt == PT_GLAS) || (lt == PT_BGLA);
+						if ((rt_glas && !lt_glas) || (lt_glas && !rt_glas))
 						{
 							if (!get_normal_interp(REFRACT|t, parts[i].x, parts[i].y, parts[i].vx, parts[i].vy, &nrx, &nry)) {
 								kill_part(i);
@@ -4408,11 +4453,11 @@ killed:
 								kill_part(i);
 								continue;
 							}
-							nn = GLASS_IOR - GLASS_DISP*(r-15)/15.0f;
+							nn = GLASS_IOR - GLASS_DISP*(r-30)/30.0f;
 							nn *= nn;
 							nrx = -nrx;
 							nry = -nry;
-							if (rt==PT_GLAS && lt!=PT_GLAS)
+							if (rt_glas && !lt_glas)
 								nn = 1.0f/nn;
 							ct1 = parts[i].vx*nrx + parts[i].vy*nry;
 							ct2 = 1.0f - (nn*nn)*(1.0f-(ct1*ct1));
@@ -4493,17 +4538,35 @@ killed:
 						*/
 					}
 
-					if (get_normal_interp(t, parts[i].x, parts[i].y, parts[i].vx, parts[i].vy, &nrx, &nry)) {
-						dp = nrx*parts[i].vx + nry*parts[i].vy;
-						parts[i].vx -= 2.0f*dp*nrx;
-						parts[i].vy -= 2.0f*dp*nry;
+					if (get_normal_interp(t, parts[i].x, parts[i].y, parts[i].vx, parts[i].vy, &nrx, &nry))
+					{
+						if ((r & 0xFF) == PT_CRMC)
+						{
+							float r = (rand() % 101 - 50) * 0.01f, rx, ry, anrx, anry;
+							r = r * r * r;
+							rx = cosf(r); ry = sinf(r);
+							anrx = rx * nrx + ry * nry;
+							anry = rx * nry - ry * nrx;
+							dp = anrx*parts[i].vx + anry*parts[i].vy;
+							parts[i].vx -= 2.0f*dp*anrx;
+							parts[i].vy -= 2.0f*dp*anry;
+						}
+						else
+						{
+							dp = nrx*parts[i].vx + nry*parts[i].vy;
+							parts[i].vx -= 2.0f*dp*nrx;
+							parts[i].vy -= 2.0f*dp*nry;
+						}
 						// leave the actual movement until next frame so that reflection of fast particles and refraction happen correctly
-					} else {
+					}
+					else
+					{
 						if (t!=PT_NEUT)
 							kill_part(i);
 						continue;
 					}
-					if (!(parts[i].ctype&0x3FFFFFFF) && t == PT_PHOT) {
+					if (!(parts[i].ctype&0x3FFFFFFF) && t == PT_PHOT)
+					{
 						kill_part(i);
 						continue;
 					}
