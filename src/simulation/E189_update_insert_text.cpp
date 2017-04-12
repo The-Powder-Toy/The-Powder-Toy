@@ -561,7 +561,7 @@ void E189_Update::InsertText(Simulation *sim, int i, int x, int y, int ix, int i
 
 int E189_Update::AddCharacter(Simulation *sim, int x, int y, int c, int rgb)
 {
-	static int color_parts = { PT_NONE, PT_TUNG, PT_SHLD, PT_NWHL }; // particle colors
+	static int color_parts[4] = { PT_NONE, PT_TUNG, PT_SHLD1, PT_NWHL }; // particle colors
 	
 	int i, j, w, bn = 0, ba = 0, _r, xi, yj, _rt;
 	unsigned char *rp = font_data + font_ptrs[c];
