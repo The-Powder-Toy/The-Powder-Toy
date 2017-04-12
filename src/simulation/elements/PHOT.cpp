@@ -79,7 +79,7 @@ int Element_PHOT::update(UPDATE_FUNC_ARGS)
 						sim->pv[y/CELL][x/CELL] -= 15.0f * CFDS;
 					}
 				}
-				else if((r&0xFF) == PT_QRTZ && !ry && !rx)//if on QRTZ
+				else if(((r&0xFF) == PT_QRTZ || (r&0xFF) == PT_PQRT) && !ry && !rx)//if on QRTZ
 				{
 					float a = (rand()%360)*3.14159f/180.0f;
 					parts[i].vx = 3.0f*cosf(a);
@@ -87,6 +87,15 @@ int Element_PHOT::update(UPDATE_FUNC_ARGS)
 					if(parts[i].ctype == 0x3FFFFFFF)
 						parts[i].ctype = 0x1F<<(rand()%26);
 					parts[i].life++; //Delay death
+				}
+				else if((r&0xFF) == PT_BGLA && !ry && !rx)//if on BGLA
+				{
+					float a = (rand()%101 - 50) * 0.001f;
+					float rx = cosf(a), ry = sinf(a), vx, vy;
+					vx = rx * parts[i].vx + ry * parts[i].vy;
+					vy = rx * parts[i].vy - ry * parts[i].vx;
+					parts[i].vx = vx;
+					parts[i].vy = vy;
 				}
 				else if ((r&0xFF) == PT_FILT && parts[r>>8].tmp==9)
 				{
