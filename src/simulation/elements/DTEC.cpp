@@ -48,7 +48,7 @@ Element_DTEC::Element_DTEC()
 int Element_DTEC::update(UPDATE_FUNC_ARGS)
 {
 	static char DTEC_ntztable[32] = { 0, 1, 2,24, 3,19, 6,25, 22, 4,20,10,16, 7,12,26,  31,23,18, 5,21, 9,15,11, 30,17, 8,14,29,13,28,27};
-	int r, rx, ry, rt, rd = parts[i].tmp2;
+	int r, rx, ry, rt, rd = parts[i].tmp2, pavg;
 	if (rd > 25) parts[i].tmp2 = rd = 25;
 	if (parts[i].life)
 	{
@@ -61,7 +61,8 @@ int Element_DTEC::update(UPDATE_FUNC_ARGS)
 					if (!r)
 						continue;
 					rt = r&0xFF;
-					if (sim->parts_avg(i,r>>8,PT_INSL) != PT_INSL)
+					pavg = sim->parts_avg(i,r>>8,PT_INSL);
+					if (pavg != PT_INSL && pavg != PT_INDI)
 					{
 						if ((sim->elements[rt].Properties&PROP_CONDUCTS) && !(rt==PT_WATR||rt==PT_SLTW||rt==PT_NTCT||rt==PT_PTCT||rt==PT_INWR) && parts[r>>8].life==0)
 						{
