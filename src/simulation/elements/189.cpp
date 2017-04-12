@@ -55,6 +55,9 @@ Element_E189::Element_E189()
 	// Properties without PROP_LIFE_DEC and PROP_LIFE_KILL_DEC, has reason.
 }
 
+//#TPT-Directive ElementHeader Element_E189 static bool useDefaultPart
+bool Element_E189::useDefaultPart = false;
+
 //#TPT-Directive ElementHeader Element_E189 static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 {
