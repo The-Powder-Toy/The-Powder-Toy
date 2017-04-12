@@ -83,7 +83,7 @@ int Element_PHOT::update(UPDATE_FUNC_ARGS)
 						sim->pv[y/CELL][x/CELL] -= 15.0f * CFDS;
 					}
 				}
-				else if(((r&0xFF) == PT_QRTZ || (r&0xFF) == PT_PQRT) && !ry && !rx)//if on QRTZ
+				else if(((r&0xFF) == PT_QRTZ || (r&0xFF) == PT_PQRT) && !ry && !rx) //if on QRTZ or PQRT
 				{
 					float a = (rand()%360)*3.14159f/180.0f;
 					parts[i].vx = 3.0f*cosf(a);
