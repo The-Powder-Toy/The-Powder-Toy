@@ -2558,7 +2558,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 		if (parts[i].life>0)
 			return 0;
 	}
-	else if(parts[i].type == PT_E186 && (r&0xFF) == PT_E189)
+	else if(parts[i].type == PT_E186 && (r&0xFF) == PT_E189) // PT_E189 (life=17) eats PT_E186
 	{
 		kill_part(i);
 		return 0;
