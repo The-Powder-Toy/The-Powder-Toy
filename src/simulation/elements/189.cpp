@@ -634,7 +634,7 @@ void Element_E189::duplicatePhotons(Simulation* sim, int i, int x, int y, Partic
 	float rvy = (float)((((rtmp >> 4) ^ 0x08) & 0x0F) - 0x08);
 	float rdif = (float)((((rtmp >> 8) ^ 0x80) & 0xFF) - 0x80);
 	
-	ri = sim->create_part(-3, (int)((float)x + (float)rvx + (float)part_phot->vx + 0.5f), (int)((float)y + (float)rvy + (float)part_phot->vy + 0.5f), PT_PHOT);
+	ri = sim->create_part(-3, x, y, PT_PHOT);
 	if (ri < 0)
 		return;
 	if (ri > i)
