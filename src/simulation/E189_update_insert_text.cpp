@@ -5,10 +5,12 @@
 
 void E189_Update::InsertText(Simulation *sim, int i, int x, int y, int ix, int iy)
 {
+	Element_E189::useDefaultPart = false;
+	int tab_size = 80;
 	// simulation, index, position (x2), direction (x2)
 	int ct_x = (sim->parts[i].ctype & 0xFFFF), ct_y = ((sim->parts[i].ctype >> 16) & 0xFFFF);
 	int it_x = ct_x, it_r, it_g, it_b, chr_1, esc = 0, pack, bkup, errflag = 0, cfptr;
-	int oldr, oldg, oldb, call_ptr = 0, tmp = 0;
+	int oldr, oldg, oldb, call_ptr = 0, tmp = 0, diff;
 	char __digits[5];
 	short counter = 0;
 	short calls[128][5]; /* dynamic */
@@ -491,6 +493,17 @@ void E189_Update::InsertText(Simulation *sim, int i, int x, int y, int ix, int i
 				pack += ((pack < 15) ? '!' : (pack < 22) ? 43 : (pack < 28) ? 69 : 95);
 				ct_x = E189_Update::AddCharacter(sim, ct_x, ct_y, pack, (it_r << 16) | (it_g << 8) | it_b);
 				break;
+			case 270:
+				Element_E189::useDefaultPart = !Element_E189::useDefaultPart;
+				break;
+			case 271: // horizontal tab
+				diff = (ct_x - it_x) % tab_size;
+				if (diff < 0) diff += tab_size; // can be non-branch
+				ct_x += tab_size - diff;
+				break;
+			case 272: // set horizontal tab size
+				esc = 6;
+				break;
 			default:
 				if (chr_1 >= 0 && chr_1 <= 255)
 					ct_x = E189_Update::AddCharacter(sim, ct_x, ct_y, chr_1, (it_r << 16) | (it_g << 8) | it_b);
@@ -534,6 +547,10 @@ void E189_Update::InsertText(Simulation *sim, int i, int x, int y, int ix, int i
 				ct_x = E189_Update::AddCharacter(sim, ct_x, ct_y, (chr_1 >> 8) & 0xFF, pack);
 				ct_x = E189_Update::AddCharacter(sim, ct_x, ct_y, (chr_1 >> 16) & 0xFF, pack);
 				ct_x = E189_Update::AddCharacter(sim, ct_x, ct_y, (chr_1 >> 24) & 0xFF, pack);
+				break;
+			case 6: // set location (relative)
+				tab_size = chr_1;
+				esc = 0;
 				break;
 			}
 		}
