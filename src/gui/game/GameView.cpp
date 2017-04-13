@@ -2400,6 +2400,8 @@ void GameView::OnDraw()
 			if (type == PT_PHOT || type == PT_BIZR || type == PT_BIZRG || type == PT_BIZRS || type == PT_FILT || type == PT_BRAY || type == PT_C5)
 				wavelengthGfx = (ctype&0x3FFFFFFF);
 			
+			if (type == PT_GLOW || type == PT_SOAP || type == PT_WIRE || type == PT_E187 || type == PT_E188) partint = 1;
+			
 			if (type == PT_E189)
 			{
 				if (partlife == 4 || partlife == 7 || partlife == 11)
@@ -2481,7 +2483,7 @@ void GameView::OnDraw()
 					}
 					else
 						sampleInfo << c->ElementResolve(type, ctype);
-					if (wavelengthGfx || type == PT_E187 || type == PT_E188 || partint)
+					if (wavelengthGfx || partint)
 						sampleInfo << " (" << ctype << ")";
 					// Some elements store extra LIFE info in upper bits of ctype, instead of tmp/tmp2
 					else if (type == PT_CRAY || type == PT_DRAY || type == PT_CONV)
