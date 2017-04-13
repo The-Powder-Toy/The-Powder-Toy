@@ -859,6 +859,62 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 						}
 			}
 			goto continue1a;
+		case 18:
+			if (parts[i].tmp2 == 1)
+			{
+				for (rx = -1; rx < 2; rx++)
+					for (ry = -1; ry < 2; ry++)
+						if (BOUNDS_CHECK && (rx || ry))
+						{
+							nx = x + rx; ny = y + ry;
+							r = pmap[ny][nx];
+							if ((r & 0xFF) == PT_FILT)
+							{
+								rrx = parts[r>>8].ctype;
+								rry = parts[i].tmp;
+								switch (rry) // rry = sender type
+								{
+								// rrx = wavelengths
+								case PT_PSCN:
+									rrx &= ~0x1;
+								case PT_NSCN:
+									rrx |= 0x1;
+									break;
+								case PT_INWR:
+									rrx ^= 0x1;
+									break;
+								case PT_PTCT:
+									rrx <<= 1;
+									break;
+								case PT_NTCT:
+									// for 29-bit FILT data
+									rrx = (rrx >> 1) & 0x0FFFFFFF;
+									break;
+								case PT_INST:
+									rry = (rrx ^ (rrx>>28)) & 0x00000001; // swap 28
+									rrx ^= (r1 | (r1<< 28));
+									rry = (rrx ^ (rrx>>18)) & 0x000003FE; // swap 18
+									rrx ^= (r1 | (r1<< 18));
+									rry = (rrx ^ (rrx>> 6)) & 0x00381C0E; // swap 6
+									rrx ^= (r1 | (r1<<  6));
+									rry = (rrx ^ (rrx>> 2)) & 0x02492492; // swap 2
+									parts[r>>8].ctype = rry ^ (r1 | (r1 << 2));
+									goto continue1b;
+								}
+								rrx &= 0x1FFFFFFF;
+								rrx |= 0x20000000;
+							continue1b:
+								while (BOUNDS_CHECK && (
+									(r & 0xFF) == PT_FILT
+								)) // check another FILT
+								{
+									parts[r>>8].ctype = rrx;
+									r = pmap[ny += ry][nx += rx];
+								}
+							}
+						}
+			}
+			goto continue1a;
 		continue1a:
 			for (rx = -2; rx <= 2; rx++)
 				for (ry = -2; ry <= 2; ry++)
