@@ -559,7 +559,7 @@ void Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* p
 	}
 	else
 	{
-		switch (rtmp & 0x0F)
+		switch (rtmp & 0x1F)
 		{
 			case 0: // no photons operation
 				break;
@@ -623,6 +623,15 @@ void Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* p
 				break;
 			case 12: // PHOT (tmp: 1 -> 0)
 				part_phot->tmp &= ~0x1;
+				break;
+			case 13: // set PHOT life
+				part_phot->life = part_E189->ctype;
+				break;
+			case 14: // PHOT life extender (positive)
+				part_phot->life += part_E189->ctype;
+				break;
+			case 15: // PHOT life extender (negative)
+				part_phot->life -= part_E189->ctype;
 				break;
 		}
 	}
