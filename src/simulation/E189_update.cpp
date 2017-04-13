@@ -843,7 +843,7 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 								case PT_INWR:
 									// for 29-bit FILT data
 									rrx &= 0x1FFFFFFF;
-									rrx = (rrx >> 1) | (rrx << 28)
+									rrx = (rrx >> 1) | (rrx << 28);
 									break;
 								}
 								rrx &= 0x1FFFFFFF;
