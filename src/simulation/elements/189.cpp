@@ -633,6 +633,26 @@ void Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* p
 			case 15: // PHOT life extender (negative)
 				part_phot->life -= part_E189->ctype;
 				break;
+			case 16: // speed to wavelength converter
+				rvx = part_phot->vx;
+				rvy = part_phot->vy;
+				rdif = rvx * rvx + rvy * rvy;
+				ctype = part_phot->ctype;
+				
+				if (rdif > 18.0f && (ctype & 0xFFFFFFC0))
+				{
+					part_phot->ctype >>= 6;
+					part_phot->vx *= 0.5f;
+					part_phot->vy *= 0.5f;
+				}
+				else if (rdif <= 4.5f && (ctype &= 0x00FFFFFF))
+				{
+					part_phot->ctype = ctype << 6;
+					part_phot->vx *= 2.0f;
+					part_phot->vy *= 2.0f;
+				}
+				
+				break;
 		}
 	}
 }
