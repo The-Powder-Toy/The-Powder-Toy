@@ -667,7 +667,7 @@ void Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* p
 						r2--; r3++;
 					}
 #endif
-					multipler = powf(0.5f, r1 * 0.5f);
+					multipler = powf(0.5f, r3 * 0.5f);
 					part_phot->vx = rvx * multipler;
 					part_phot->vy = rvy * multipler;
 				}
@@ -686,7 +686,7 @@ void Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* p
 						r2++; r3++;
 					}
 #endif
-					multipler = powf(2.0f, r1 * 0.5f);
+					multipler = powf(2.0f, r3 * 0.5f);
 					ctype &= mask;
 					part_phot->vx = rvx * multipler;
 					part_phot->vy = rvy * multipler;
