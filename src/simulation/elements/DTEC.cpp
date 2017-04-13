@@ -47,14 +47,14 @@ Element_DTEC::Element_DTEC()
 //#TPT-Directive ElementHeader Element_DTEC static int update(UPDATE_FUNC_ARGS)
 int Element_DTEC::update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry, rt, rd = parts[i].tmp2, pavg;
+	int r, rx, ry, rt, rd = parts[i].tmp2, pavg, tmp;
 	int nx, ny, ntmp;
 	if (rd > 25) parts[i].tmp2 = rd = 25;
 
-	rt = parts[i].tmp3 & 1;
-	if (!rt != !parts[i].life) // if ( tmp3 == 0 and detected ) or ( tmp3 == 1 and undetected )
+	tmp = parts[i].tmp3 & 1;
+	if (parts[i].life) // if ( tmp3 == 0 and detected ) or ( tmp3 == 1 and undetected )
 	{
-		parts[i].life = rt;
+		parts[i].life = tmp;
 		for (rx=-2; rx<3; rx++)
 			for (ry=-2; ry<3; ry++)
 				if (BOUNDS_CHECK && (rx || ry))
@@ -94,6 +94,7 @@ int Element_DTEC::update(UPDATE_FUNC_ARGS)
 					photonWl = parts[r>>8].ctype;
 				}
 			}
+	parts[i].life ^= tmp;
 	if (setFilt)
 	{
 		int tempPhotWl;
