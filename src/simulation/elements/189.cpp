@@ -394,7 +394,7 @@ VideoBuffer * Element_E189::iconGen(int toolID, int width, int height)
 void Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* part_phot, Particle* part_E189) // photons direction/type changer
 {
 	int rtmp = part_E189->tmp, rct = part_E189->ctype, mask = 0x3FFFFFFF;
-	int ctype, r1, r2;
+	int ctype, r1, r2, r3;
 	float rvx, rvy, rvx2, rvy2, rdif, multipler = 1.0f;
 	long long int lsb;
 	if (!((rtmp >> 22) & 1))
@@ -654,37 +654,35 @@ void Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* p
 				r2 = ((r1 - 0x40cba592) >> 23); // 0x40cba592: for (9 / sqrt(2))
 				if (r2 > 0)
 				{
-// <CODE_PART>
+#ifdef __GNUC__
+					r1 = (31 - __builtin_clz (ctype)) / 3;
+					r3 = (r1 > r2 ? r1 : r2);
+#else
+					r3 = 0;
 					while (r2 && (ctype & 0xFFFFFFF8))
 					{
 						ctype >>= 3;
-						multipler *= 2.0f;
+						r3++;
 					}
-// </CODE_PART>
-#if 0
-				// if defined __GNUC__, also use:
-					r1 = (31 - __builtin_clz (ctype)) / 3;
-					r1 = (r1 > r2 ? r1 : r2);
-					multipler = powf(2.0f, r1);
 #endif
+					multipler = powf(2.0f, r1 * 0.5f);
 					part_phot->vx = rvx * multipler;
 					part_phot->vy = rvy * multipler;
 				}
 				else (r2 < 0)
 				{
-// <CODE_PART>
+#ifdef __GNUC__
+					r1 = (32 - __builtin_ctz (ctype)) / 3;
+					r3 = (r1 > r2 ? r1 : r2);
+#else
+					r3 = 0;
 					while (r2 && (ctype & 0x07FFFFFF))
 					{
 						ctype <<= 3;
-						multipler *= 0.5f; // (1 / 2.0f)
+						r3++;
 					}
-// </CODE_PART>
-#if 0
-				// if defined __GNUC__, also use:
-					r1 = (32 - __builtin_ctz (ctype)) / 3;
-					r1 = (r1 > r2 ? r1 : r2);
-					multipler = powf(0.5f, r1);
 #endif
+					multipler = powf(0.5f, r1 * 0.5f);
 					ctype &= mask;
 					part_phot->vx = rvx * multipler;
 					part_phot->vy = rvy * multipler;
