@@ -48,6 +48,7 @@ Element_DTEC::Element_DTEC()
 int Element_DTEC::update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry, rt, rd = parts[i].tmp2, pavg;
+	int nx, ny, ntmp;
 	if (rd > 25) parts[i].tmp2 = rd = 25;
 
 	rt = parts[i].tmp3 & 1;
@@ -100,7 +101,6 @@ int Element_DTEC::update(UPDATE_FUNC_ARGS)
 		tempPhotWl = __builtin_ctz(photonWl) & 0x1F;
 #else
 		static char DTEC_ntztable[32] = { 0, 1, 2,24, 3,19, 6,25, 22, 4,20,10,16, 7,12,26,  31,23,18, 5,21, 9,15,11, 30,17, 8,14,29,13,28,27};
-		int nx, ny, ntmp;
 		// from "Hacker's Delight"
 		tempPhotWl = (photonWl & -photonWl)*0x04D7651F;
 		tempPhotWl = DTEC_ntztable[(tempPhotWl >> 27) & 31];
