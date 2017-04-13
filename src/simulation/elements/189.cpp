@@ -676,7 +676,7 @@ void Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* p
 					// red shift and accelerate
 #ifdef __GNUC__
 					r1 = (29 - __builtin_ctz (ctype)) / 3;
-					r3 = (r1 < r2 ? r1 : r2);
+					r3 = (r1 < -r2 ? r1 : -r2);
 					ctype <<= 3 * r3;
 #else
 					r3 = 0;
