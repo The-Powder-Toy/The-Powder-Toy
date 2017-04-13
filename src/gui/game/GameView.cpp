@@ -2407,7 +2407,7 @@ void GameView::OnDraw()
 				else if (partlife == 5)
 				{
 					int partfilt = parttmp >> 18;
-					if (partfilt >= 0 && partfilt <= 5 && partfilt != 4)
+					if (partfilt >= 0 && partfilt <= 5 && partfilt != 4 || (partfilt & 0x10))
 						wavelengthGfx = (ctype&0x3FFFFFFF);
 					if (partfilt == 4 || partfilt == 7)
 						partint = 1;
