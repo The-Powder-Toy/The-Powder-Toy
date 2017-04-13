@@ -97,7 +97,7 @@ int Element_DTEC::update(UPDATE_FUNC_ARGS)
 	{
 		int tempPhotWl;
 #ifdef __GNUC__
-		tempPhotWl = __builtin_ctz(photonWl);
+		tempPhotWl = __builtin_ctz(photonWl) & 0x1F;
 #else
 		static char DTEC_ntztable[32] = { 0, 1, 2,24, 3,19, 6,25, 22, 4,20,10,16, 7,12,26,  31,23,18, 5,21, 9,15,11, 30,17, 8,14,29,13,28,27};
 		int nx, ny, ntmp;
