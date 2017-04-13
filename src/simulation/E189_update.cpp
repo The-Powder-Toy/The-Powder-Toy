@@ -892,13 +892,13 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 									break;
 								case PT_INST:
 									rry = (rrx ^ (rrx>>28)) & 0x00000001; // swap 28
-									rrx ^= (r1 | (r1<< 28));
+									rrx ^= (rry| (rry<<28));
 									rry = (rrx ^ (rrx>>18)) & 0x000003FE; // swap 18
-									rrx ^= (r1 | (r1<< 18));
+									rrx ^= (rry| (rry<<18));
 									rry = (rrx ^ (rrx>> 6)) & 0x00381C0E; // swap 6
-									rrx ^= (r1 | (r1<<  6));
+									rrx ^= (rry| (rry<< 6));
 									rry = (rrx ^ (rrx>> 2)) & 0x02492492; // swap 2
-									parts[r>>8].ctype = rry ^ (r1 | (r1 << 2));
+									parts[r>>8].ctype = rry ^ (rry | (rry << 2));
 									goto continue1b;
 								}
 								rrx &= 0x1FFFFFFF;

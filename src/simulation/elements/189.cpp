@@ -640,7 +640,7 @@ void Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* p
 				{
 					part_phot->life -= part_E189->ctype;
 					if (part_phot->life < 0)
-						sim->kill_part(i)
+						sim->kill_part(i);
 				}
 				break;
 			case 16: // velocity to wavelength converter
@@ -669,7 +669,7 @@ void Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* p
 					part_phot->vx = rvx * multipler;
 					part_phot->vy = rvy * multipler;
 				}
-				else (r2 < 0)
+				else if (r2 < 0)
 				{
 #ifdef __GNUC__
 					r1 = (29 - __builtin_ctz (ctype)) / 3;
