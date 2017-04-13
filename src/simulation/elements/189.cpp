@@ -654,6 +654,7 @@ void Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* p
 				r2 = ((r1 - 0x40cba592) >> 23); // 0x40cba592: for (9 / sqrt(2))
 				if (r2 > 0)
 				{
+					// blue shift and decelerate
 #ifdef __GNUC__
 					r1 = (31 - __builtin_clz (ctype)) / 3;
 					r3 = (r1 > r2 ? r1 : r2);
@@ -662,15 +663,16 @@ void Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* p
 					while (r2 && (ctype & 0xFFFFFFF8))
 					{
 						ctype >>= 3;
-						r3++;
+						r2--; r3++;
 					}
 #endif
-					multipler = powf(2.0f, r1 * 0.5f);
+					multipler = powf(0.5f, r1 * 0.5f);
 					part_phot->vx = rvx * multipler;
 					part_phot->vy = rvy * multipler;
 				}
 				else if (r2 < 0)
 				{
+					// red shift and accelerate
 #ifdef __GNUC__
 					r1 = (29 - __builtin_ctz (ctype)) / 3;
 					r3 = (r1 > r2 ? r1 : r2);
@@ -679,10 +681,10 @@ void Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* p
 					while (r2 && (ctype & 0x07FFFFFF))
 					{
 						ctype <<= 3;
-						r3++;
+						r2++; r3++;
 					}
 #endif
-					multipler = powf(0.5f, r1 * 0.5f);
+					multipler = powf(2.0f, r1 * 0.5f);
 					ctype &= mask;
 					part_phot->vx = rvx * multipler;
 					part_phot->vy = rvy * multipler;
