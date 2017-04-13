@@ -54,7 +54,7 @@ int Element_DTEC::update(UPDATE_FUNC_ARGS)
 	tmp = parts[i].tmp3 & 1;
 	if (parts[i].life) // if ( tmp3 == 0 and detected ) or ( tmp3 == 1 and undetected )
 	{
-		parts[i].life = tmp;
+		parts[i].life = 0;
 		for (rx=-2; rx<3; rx++)
 			for (ry=-2; ry<3; ry++)
 				if (BOUNDS_CHECK && (rx || ry))
