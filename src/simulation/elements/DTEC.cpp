@@ -47,7 +47,6 @@ Element_DTEC::Element_DTEC()
 //#TPT-Directive ElementHeader Element_DTEC static int update(UPDATE_FUNC_ARGS)
 int Element_DTEC::update(UPDATE_FUNC_ARGS)
 {
-	static char DTEC_ntztable[32] = { 0, 1, 2,24, 3,19, 6,25, 22, 4,20,10,16, 7,12,26,  31,23,18, 5,21, 9,15,11, 30,17, 8,14,29,13,28,27};
 	int r, rx, ry, rt, rd = parts[i].tmp2, pavg;
 	if (rd > 25) parts[i].tmp2 = rd = 25;
 
@@ -96,10 +95,16 @@ int Element_DTEC::update(UPDATE_FUNC_ARGS)
 			}
 	if (setFilt)
 	{
+		int tempPhotWl;
+#ifdef __GNUC__
+		tempPhotWl = __builtin_ctz(photonWl);
+#else
+		static char DTEC_ntztable[32] = { 0, 1, 2,24, 3,19, 6,25, 22, 4,20,10,16, 7,12,26,  31,23,18, 5,21, 9,15,11, 30,17, 8,14,29,13,28,27};
 		int nx, ny, ntmp;
 		// from "Hacker's Delight"
-		int tempPhotWl = (photonWl & -photonWl)*0x04D7651F;
+		tempPhotWl = (photonWl & -photonWl)*0x04D7651F;
 		tempPhotWl = DTEC_ntztable[(tempPhotWl >> 27) & 31];
+#endif
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
 				if (BOUNDS_CHECK && (rx || ry))
