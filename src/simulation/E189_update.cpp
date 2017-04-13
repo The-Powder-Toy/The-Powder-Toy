@@ -13,7 +13,7 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 	static int tron_ry[4] = { 0,-1, 0, 1};
 	static int osc_r1 [4] = { 1,-1, 2,-2};
 	int rx, ry, ttan = 0, rlife = parts[i].life, direction, r, ri, rtmp, rctype;
-	int rr, rndstore, trade, transfer, rt, rii, rrx, rry;
+	int rr, rndstore, trade, transfer, rt, rii, rrx, rry, nx, ny;
 	float rvx, rvy, rdif;
 	rtmp = parts[i].tmp;
 	
@@ -816,6 +816,49 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 							}
 						}
 			}
+			goto continue1a;
+		case 17:
+			if (parts[i].tmp2 == 1)
+			{
+				for (rx = -1; rx < 2; rx++)
+					for (ry = -1; ry < 2; ry++)
+						if (BOUNDS_CHECK && (rx || ry))
+						{
+							nx = x + rx; ny = y + ry;
+							r = pmap[ny][nx];
+							if ((r & 0xFF) == PT_FILT)
+							{
+								rrx = parts[r>>8].ctype;
+								rry = parts[i].tmp;
+								switch (rry) // rry = sender type
+								{
+								// rrx = wavelengths
+								case PT_PSCN: case PT_NSCN:
+									rrx += (rry == PT_PSCN) ? 1 : -1;
+									break;
+								case PT_INST:
+									rrx <<= 1;
+									rrx |= (rrx >> 29) & 1; // for 29-bit FILT data
+									break;
+								case PT_INWR:
+									// for 29-bit FILT data
+									rrx &= 0x1FFFFFFF;
+									rrx = (rrx >> 1) | (rrx << 28)
+									break;
+								}
+								rrx &= 0x1FFFFFFF;
+								rrx |= 0x20000000;
+								while (BOUNDS_CHECK && (
+									(r & 0xFF) == PT_FILT
+								)) // check another FILT
+								{
+									parts[r>>8].ctype = rrx;
+									r = pmap[ny += ry][nx += rx];
+								}
+							}
+						}
+			}
+			goto continue1a;
 		continue1a:
 			for (rx = -2; rx <= 2; rx++)
 				for (ry = -2; ry <= 2; ry++)
@@ -977,7 +1020,7 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 			rtmp = rtmp > rr ? rr : (rtmp <= 0 ? rr : rtmp);
 			rx = tron_rx[(rctype>>2) & 3], ry = tron_ry[(rctype>>2) & 3];
 			int x_src = x + rx, y_src = y + ry, rx_dest = rx * rr, ry_dest = ry * rr;
-			int x_copyTo, y_copyTo;
+			// int x_copyTo, y_copyTo;
 
 			rr = pmap[y_src][x_src]; // override "rr" variable
 			while (sim->InBounds(x_src, y_src) && rtmp--)
@@ -986,18 +1029,18 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 				if (r) // if particle exist
 				{
 					rt = r & 0xFF;
-					x_copyTo = x_src + rx_dest;
-					y_copyTo = y_src + ry_dest;
-					if (!sim->InBounds(x_copyTo, y_copyTo))
+					nx = x_src + rx_dest;
+					ny = y_src + ry_dest;
+					if (!sim->InBounds(nx, ny))
 						break;
-					rii = sim->create_part(-1, x_copyTo, y_copyTo, (rt == PT_SPRK) ? PT_METL : rt); // spark hack
+					rii = sim->create_part(-1, nx, ny, (rt == PT_SPRK) ? PT_METL : rt); // spark hack
 					if (rii >= 0)
 					{
 						if (rt == PT_SPRK)
-							sim->part_change_type(rii, x_copyTo, y_copyTo, PT_SPRK); // restore type for spark hack
+							sim->part_change_type(rii, nx, ny, PT_SPRK); // restore type for spark hack
 						parts[rii] = parts[r>>8]; // duplicating all properties?
-						parts[rii].x = x_copyTo; // restore X coordinates
-						parts[rii].y = y_copyTo; // restore Y coordinates
+						parts[rii].x = nx; // restore X coordinates
+						parts[rii].y = ny; // restore Y coordinates
 					}
 				}
 				x_src += rx, y_src += ry;
