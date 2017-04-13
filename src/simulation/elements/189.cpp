@@ -395,7 +395,7 @@ void Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* p
 {
 	int rtmp = part_E189->tmp, rct = part_E189->ctype, mask = 0x3FFFFFFF;
 	int ctype, r1, r2;
-	float rvx, rvy, rvx2, rvy2, rdif;
+	float rvx, rvy, rvx2, rvy2, rdif, multipler = 1.0f;
 	long long int lsb;
 	if (!((rtmp >> 22) & 1))
 	{
@@ -628,30 +628,68 @@ void Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* p
 				part_phot->life = part_E189->ctype;
 				break;
 			case 14: // PHOT life extender (positive)
-				part_phot->life += part_E189->ctype;
+				if (part_phot->life > 0)
+				{
+					part_phot->life += part_E189->ctype;
+					if (part_phot->life < 0)
+						part_phot->life = 0;
+				}
 				break;
 			case 15: // PHOT life extender (negative)
-				part_phot->life -= part_E189->ctype;
+				if (part_phot->life > 0)
+				{
+					part_phot->life -= part_E189->ctype;
+					if (part_phot->life < 0)
+						sim->kill_part(i)
+				}
 				break;
-			case 16: // speed to wavelength converter
+			case 16: // velocity to wavelength converter
 				rvx = part_phot->vx;
 				rvy = part_phot->vy;
 				rdif = rvx * rvx + rvy * rvy;
 				ctype = part_phot->ctype;
-				
-				if (rdif > 18.0f && (ctype & 0xFFFFFFC0))
+				// int's length is 32-bit
+				// float's length is 32-bit
+				r1 = * (int*) &rdif; // r1 = "bit level hack"
+				r2 = ((r1 - 0x40cba592) >> 23); // 0x40cba592: for (9 / sqrt(2))
+				if (r2 > 0)
 				{
-					part_phot->ctype >>= 6;
-					part_phot->vx *= 0.5f;
-					part_phot->vy *= 0.5f;
+// <CODE_PART>
+					while (r2 && (ctype & 0xFFFFFFF8))
+					{
+						ctype >>= 3;
+						multipler *= 2.0f;
+					}
+// </CODE_PART>
+#if 0
+				// if defined __GNUC__, also use:
+					r1 = (31 - __builtin_clz (ctype)) / 3;
+					r1 = (r1 > r2 ? r1 : r2);
+					multipler = powf(2.0f, r1);
+#endif
+					part_phot->vx = rvx * multipler;
+					part_phot->vy = rvy * multipler;
 				}
-				else if (rdif <= 4.5f && (ctype &= 0x00FFFFFF))
+				else (r2 < 0)
 				{
-					part_phot->ctype = ctype << 6;
-					part_phot->vx *= 2.0f;
-					part_phot->vy *= 2.0f;
+// <CODE_PART>
+					while (r2 && (ctype & 0x07FFFFFF))
+					{
+						ctype <<= 3;
+						multipler *= 0.5f; // (1 / 2.0f)
+					}
+// </CODE_PART>
+#if 0
+				// if defined __GNUC__, also use:
+					r1 = (32 - __builtin_ctz (ctype)) / 3;
+					r1 = (r1 > r2 ? r1 : r2);
+					multipler = powf(0.5f, r1);
+#endif
+					ctype &= mask;
+					part_phot->vx = rvx * multipler;
+					part_phot->vy = rvy * multipler;
 				}
-				
+				part_phot->ctype = ctype;
 				break;
 		}
 	}
