@@ -50,9 +50,11 @@ int Element_DTEC::update(UPDATE_FUNC_ARGS)
 	static char DTEC_ntztable[32] = { 0, 1, 2,24, 3,19, 6,25, 22, 4,20,10,16, 7,12,26,  31,23,18, 5,21, 9,15,11, 30,17, 8,14,29,13,28,27};
 	int r, rx, ry, rt, rd = parts[i].tmp2, pavg;
 	if (rd > 25) parts[i].tmp2 = rd = 25;
-	if (!parts[i].life == (parts[i].tmp3 & 1))
+
+	rt = parts[i].tmp3 & 1;
+	if (!rt != !parts[i].life) // if ( tmp3 == 0 and detected ) or ( tmp3 == 1 and undetected )
 	{
-		parts[i].life = 0;
+		parts[i].life = rt;
 		for (rx=-2; rx<3; rx++)
 			for (ry=-2; ry<3; ry++)
 				if (BOUNDS_CHECK && (rx || ry))
