@@ -54,7 +54,6 @@ int Element_INVIS::update(UPDATE_FUNC_ARGS)
 	else
 		pressureResistance = 4.0f;
 
-
 	if (sim->pv[y/CELL][x/CELL]>pressureResistance || sim->pv[y/CELL][x/CELL]<-pressureResistance)
 		parts[i].tmp = 1;
 	else
