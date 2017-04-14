@@ -292,6 +292,7 @@ int Element_E189::graphics(GRAPHICS_FUNC_ARGS)
 		*colr = 0x99; *colg = 0x70; *colb = 0xD0;
 		break;
 	case 32:
+	case 34:
 		*colr = 0xFF; *colg = 0x00; *colb = 0xFF;
 		break;
 	case 33:
