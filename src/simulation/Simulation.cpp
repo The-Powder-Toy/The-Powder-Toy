@@ -2146,7 +2146,13 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr)
 		}
 		else if ((r&0xFF) == PT_INVIS)
 		{
-			if (pv[ny/CELL][nx/CELL]>4.0f || pv[ny/CELL][nx/CELL]<-4.0f)
+			float pressureResistance = 0.0f;
+			if (parts[r>>8].tmp2 != 0)
+				pressureResistance = (float) parts[r>>8].tmp2;
+			else
+				pressureResistance = 4.0f;
+
+			if (pv[ny/CELL][nx/CELL]>pressureResistance || pv[ny/CELL][nx/CELL]<-pressureResistance)
 				result = 2;
 			else
 				result = 0;
@@ -2259,7 +2265,12 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 				parts[i].ctype = Element_FILT::interactWavelengths(&parts[r>>8], parts[i].ctype);
 			else if ((r&0xFF) == PT_INVIS)
 			{
-				if (pv[ny/CELL][nx/CELL]<=4.0f && pv[ny/CELL][nx/CELL]>=-4.0f)
+				float pressureResistance = 0.0f;
+				if (parts[r>>8].tmp2 != 0)
+					pressureResistance = (float) parts[r>>8].tmp2;
+				else
+					pressureResistance = 4.0f;
+				if (pv[ny/CELL][nx/CELL]<=pressureResistance && pv[ny/CELL][nx/CELL]>=-pressureResistance)
 				{
 					part_change_type(i,x,y,PT_NEUT);
 					parts[i].ctype = 0;

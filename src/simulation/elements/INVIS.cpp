@@ -6,7 +6,7 @@ Element_INVIS::Element_INVIS()
 	Name = "INVS";
 	Colour = PIXPACK(0x00CCCC);
 	MenuVisible = 1;
-	MenuSection = SC_SENSOR;
+	MenuSection = SC_SPECIAL;
 	Enabled = 1;
 
 	Advection = 0.0f;
@@ -48,7 +48,14 @@ Element_INVIS::Element_INVIS()
 //#TPT-Directive ElementHeader Element_INVIS static int update(UPDATE_FUNC_ARGS)
 int Element_INVIS::update(UPDATE_FUNC_ARGS)
 {
-	if (sim->pv[y/CELL][x/CELL]>4.0f || sim->pv[y/CELL][x/CELL]<-4.0f)
+	float pressureResistance = 0.0f;
+	if (parts[i].tmp2 != 0)
+		pressureResistance = (float) parts[i].tmp2;
+	else
+		pressureResistance = 4.0f;
+
+
+	if (sim->pv[y/CELL][x/CELL]>pressureResistance || sim->pv[y/CELL][x/CELL]<-pressureResistance)
 		parts[i].tmp = 1;
 	else
 		parts[i].tmp = 0;
