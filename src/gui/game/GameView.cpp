@@ -2369,9 +2369,10 @@ void GameView::OnDraw()
 			"PRSINS", "PRSINS", "TRONI", "TRONO", "LASER", "DIRCH", "HEATER", "PHTDUP", "VIBR2", "VIBR2",
 			"DEBUG", "PHTEM", "SPREFL", "DECOR", "DECO2", "PRTINS", "LOGICG", "PHDIOD", "DECO3", "NOTGIN",
 			"PARTEM", "EXPANDER", "EN_REFL", "STKMJ", "MOV_DRAY", "EXT_DRAY", "BUTTON", "STKSET", "RAY_REFL", "TRONE",
-			"TRONF", "TRONDL", "E189F32", "WIFI2"
+			"TRONF", "TRONDL", "E189F32", "WIFI2", "FILTINC"
 		};
-		static const int E189IntM[] = {0x81055000, 0x00000002};
+		const int maxE189Type = 34;
+		static const int E189IntM[] = {0x81055000, 0x00000006};
 		//Draw info about simulation under cursor
 		int wavelengthGfx = 0, alpha = 255;
 		if (toolTipPosition.Y < 120)
@@ -2473,7 +2474,7 @@ void GameView::OnDraw()
 				{
 					if (type == PT_E189)
 					{
-						if (partlife >= 0 && partlife <= 33)
+						if (partlife >= 0 && partlife <= maxE189Type)
 						{
 							sampleInfo << E189Modes[partlife];
 						}
@@ -2607,7 +2608,7 @@ void GameView::OnDraw()
 					sampleInfo << c->ElementResolve(type, ctype);
 				else if (type == PT_E189)
 				{
-					if (partlife >= 0 && partlife <= 33)
+					if (partlife >= 0 && partlife <= maxE189Type)
 					{
 						sampleInfo << E189Modes[partlife];
 					}

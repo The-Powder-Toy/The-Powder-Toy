@@ -13,7 +13,7 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 	static int tron_ry[4] = { 0,-1, 0, 1};
 	static int osc_r1 [4] = { 1,-1, 2,-2};
 	int rx, ry, ttan = 0, rlife = parts[i].life, direction, r, ri, rtmp, rctype;
-	int rr, rndstore, trade, transfer, rt, rii, rrx, rry, nx, ny;
+	int rr, rndstore, trade, transfer, rt, rii, rrx, rry, nx, ny, pavg;
 	float rvx, rvy, rdif;
 	rtmp = parts[i].tmp;
 	
@@ -826,6 +826,8 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 						{
 							nx = x + rx; ny = y + ry;
 							r = pmap[ny][nx];
+							if (!r)
+								continue;
 							if ((r & 0xFF) == PT_FILT)
 							{
 								rrx = parts[r>>8].ctype;
@@ -855,6 +857,24 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 									parts[r>>8].ctype = rrx;
 									r = pmap[ny += ry][nx += rx];
 								}
+								break;
+							}
+							else if ((r & 0xFF) == PT_CRAY)
+							{
+								for (;;)
+								{
+									r = pmap[ny += ry][nx += rx];
+									if (!r)
+									{
+										sim->create_part(-1, nx, ny, PT_INWR);
+										break;
+									}
+									else if ((r&0xFF) == PT_INWR)
+										sim->kill_part(r>>8);
+									else
+										break;
+								}
+								break;
 							}
 						}
 			}
@@ -868,6 +888,8 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 						{
 							nx = x + rx; ny = y + ry;
 							r = pmap[ny][nx];
+							if (!r)
+								continue;
 							if ((r & 0xFF) == PT_FILT)
 							{
 								rrx = parts[r>>8].ctype;
@@ -921,7 +943,9 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 					if (BOUNDS_CHECK && (rx || ry))
 					{
 						r = pmap[y+ry][x+rx];
-						if ((r & 0xFF) == PT_SPRK && parts[r>>8].life == 3)
+						if (!r) continue;
+						pavg = sim->parts_avg(i,r>>8,PT_INSL);
+						if ((pavg != PT_INSL && pavg != PT_INDI) && (r & 0xFF) == PT_SPRK && parts[r>>8].life == 3)
 						{
 							parts[i].tmp = parts[r>>8].ctype;
 							parts[i].tmp2 = 2;
@@ -1280,6 +1304,28 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 					{
 						sim->wireless2[parts[i].tmp][rii+1] |= rr;
 						sim->ISWIRE2 = 2;
+					}
+				}
+		break;
+	case 34: // Sub-frame filter incrementer
+		for (rx = -1; rx < 2; rx++)
+			for (ry = -1; ry < 2; ry++)
+				if (BOUNDS_CHECK && (rx || ry))
+				{
+					nx = x + rx; ny = y + ry;
+					r = pmap[ny][nx];
+					if ((r & 0xFF) == PT_FILT)
+					{
+						rr = parts[r>>8].ctype + parts[i].ctype;
+						rr &= 0x1FFFFFFF;
+						rr |= 0x20000000;
+						while (BOUNDS_CHECK && (
+							(r & 0xFF) == PT_FILT
+						)) // check another FILT
+						{
+							parts[r>>8].ctype = rr;
+							r = pmap[ny += ry][nx += rx];
+						}
 					}
 				}
 		break;
