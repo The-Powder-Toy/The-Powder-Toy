@@ -56,7 +56,7 @@ Element_LIFE::Element_LIFE()
 		gol_menu * golMenuT = LoadGOLMenu(golMenuCount);
 		for(int i = 0; i < golMenuCount && i < NGOL; i++)
 		{
-			Element_GOL_colour[i] = golMenuT[i].colour;
+			Element_LIFE::Element_GOL_colour[i] = golMenuT[i].colour;
 		}
 		free(golMenuT);
 	}
