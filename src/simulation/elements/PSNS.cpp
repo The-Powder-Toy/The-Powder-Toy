@@ -62,7 +62,7 @@ int Element_PSNS::update(UPDATE_FUNC_ARGS)
 					int pavg = sim->parts_avg(i,r>>8,PT_INSL);
 					if (pavg != PT_INSL && pavg != PT_INDI)
 					{
-						if ((sim->elements[rt].Properties&(PROP_CONDUCTS|PROP_INSULATED) == PROP_CONDUCTS) /* && !(rt==PT_WATR||rt==PT_SLTW||rt==PT_NTCT||rt==PT_PTCT||rt==PT_INWR) */  && parts[r>>8].life==0)
+						if ((sim->elements[rt].Properties&(PROP_CONDUCTS|PROP_INSULATED)) == PROP_CONDUCTS /* && !(rt==PT_WATR||rt==PT_SLTW||rt==PT_NTCT||rt==PT_PTCT||rt==PT_INWR) */  && parts[r>>8].life==0)
 						{
 							parts[r>>8].life = 4;
 							parts[r>>8].ctype = rt;
