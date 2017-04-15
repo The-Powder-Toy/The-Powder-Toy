@@ -374,7 +374,7 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 								break;
 							}
 						}
-						if ((rtmp & 0x1) && (sim->elements[rt].Properties & (PROP_CONDUCTS|PROP_INSULATED) == PROP_CONDUCTS))
+						if ((rtmp & 0x1) && (sim->elements[rt].Properties & (PROP_CONDUCTS|PROP_INSULATED)) == PROP_CONDUCTS)
 						{
 							conductTo (sim, r, x+rx, y+ry, parts);
 						}
@@ -1199,7 +1199,7 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 					{
 						r = pmap[y+ry][x+rx];
 						rt = r & 0xFF;
-						if (sim->elements[rt].Properties & (PROP_CONDUCTS|PROP_INSULATED) == PROP_CONDUCTS)
+						if ((sim->elements[rt].Properties & (PROP_CONDUCTS|PROP_INSULATED)) == PROP_CONDUCTS)
 						{
 							conductTo (sim, r, x+rx, y+ry, parts);
 						}
