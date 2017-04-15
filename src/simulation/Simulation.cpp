@@ -2964,7 +2964,7 @@ void Simulation::part_change_type(int i, int x, int y, int t)//changes the type 
 //tv = Type (8 bits) + Var (24 bits), var is usually 0
 int Simulation::create_part(int p, int x, int y, int t, int v)
 {
-	int i, retcode, E189ID;
+	int i, retcode, E189ID, drawOn;
 
 	if (x<0 || y<0 || x>=XRES || y>=YRES)
 		return -1;
@@ -3005,7 +3005,7 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 				Element_E189::FloodButton(this, index, x, y);
 				return index;
 			}
-			else if (part[index].life == 35)
+			else if (parts[index].life == 35)
 			{
 				E189ID = retcode = index;
 				goto drawOnE189Ctype;
@@ -3062,7 +3062,7 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 		if (pmap[y][x])
 		{
 			//If an element has the PROP_DRAWONCTYPE property, and the element being drawn to it does not have PROP_NOCTYPEDRAW (Also some special cases), set the element's ctype
-			int drawOn = pmap[y][x]&0xFF;
+			/* int */ drawOn = pmap[y][x]&0xFF;
 			if (drawOn == PT_E189)
 			{
 				E189ID = pmap[y][x]>>8;

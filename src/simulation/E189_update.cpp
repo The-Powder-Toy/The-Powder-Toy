@@ -1381,7 +1381,7 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 				r = pmap[y-ry][x-rx];
 				if ((r & 0xFF) == PT_SPRK && parts[r>>8].life == 3)
 				{
-					rry = parts[r>>8].ctype === PT_INST ? 1 : 0;
+					rry = parts[r>>8].ctype == PT_INST ? 1 : 0;
 					docontinue = 1;
 					do
 					{
