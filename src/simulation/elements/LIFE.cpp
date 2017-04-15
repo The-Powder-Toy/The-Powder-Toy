@@ -1,7 +1,7 @@
 #include "simulation/Elements.h"
 
 bool Element_GOL_colourInit = false;
-pixel Element_GOL_colour[NGOL];
+// pixel Element_GOL_colour[NGOL];
 
 //#TPT-Directive ElementClass Element_LIFE PT_LIFE 78
 Element_LIFE::Element_LIFE()
@@ -61,6 +61,9 @@ Element_LIFE::Element_LIFE()
 		free(golMenuT);
 	}
 }
+
+//#TPT-Directive ElementHeader Element_LIFE static pixel Element_GOL_colour[NGOL];
+pixel Element_LIFE::Element_GOL_colour[NGOL];
 
 //#TPT-Directive ElementHeader Element_LIFE static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_LIFE::graphics(GRAPHICS_FUNC_ARGS)
