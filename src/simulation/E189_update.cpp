@@ -359,8 +359,8 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 						{
 							switch (rtmp & 0x3)
 							{
-							case 0: parts[i].tmp = 1; break;
-							case 1: parts[i].tmp = 0; break;
+							case 0: case 1:
+								parts[i].tmp ^= 1; break;
 							case 2:
 								rr = pmap[y-ry][x-rx];
 								if ((rr & 0xFF) == PT_E189)
