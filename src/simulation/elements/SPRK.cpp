@@ -297,7 +297,7 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 						goto conduct;
 					continue;
 				case PT_SWCH:
-					if (receiver==PT_PSCN||receiver==PT_NSCN||receiver==PT_WATR||receiver==PT_SLTW||receiver==PT_NTCT||receiver==PT_PTCT||receiver==PT_INWR)
+					if (receiver==PT_PSCN||receiver==PT_NSCN|| (elements[receiver].Properties&PROP_INSULATED) /* receiver==PT_WATR||receiver==PT_SLTW||receiver==PT_NTCT||receiver==PT_PTCT||receiver==PT_INWR */)
 						continue;
 					break;
 				case PT_ETRD:

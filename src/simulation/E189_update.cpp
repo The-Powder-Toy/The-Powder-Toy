@@ -355,7 +355,7 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 						rtmp = parts[i].tmp;
 						if (!r)
 							continue;
-						if (rt == PT_SPRK && parts[r>>8].life == 3)
+						if (rt == PT_SPRK && !(sim->elements[rt].Properties & PROP_INSULATED) && parts[r>>8].life == 3)
 						{
 							switch (rtmp & 0x3)
 							{
@@ -374,7 +374,7 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 								break;
 							}
 						}
-						if ((rtmp & 0x1) && sim->elements[rt].Properties & PROP_CONDUCTS)
+						if ((rtmp & 0x1) && (sim->elements[rt].Properties & (PROP_CONDUCTS|PROP_INSULATED) == PROP_CONDUCTS))
 						{
 							conductTo (sim, r, x+rx, y+ry, parts);
 						}
@@ -953,6 +953,46 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 						}
 					}
 			break;
+		case 19: // universal conducts?
+			if (parts[i].tmp2 == 1)
+			{
+				for (rx = -1; rx < 2; rx++)
+					for (ry = -1; ry < 2; ry++)
+						if (BOUNDS_CHECK && (!rx || !ry))
+						{
+							r = pmap[y+ry][x+rx];
+							if (!r)
+								continue;
+							pavg = sim->parts_avg(i,r>>8,PT_INSL);
+							if (pavg != PT_INSL && pavg != PT_INDI)
+							{
+								if ((r & 0xFF) == PT_INST)
+								{
+									sim->FloodINST(x+rx,y+ry,PT_SPRK,PT_INST);
+								}
+								else if (sim->elements[r].Properties & PROP_CONDUCTS)
+								{
+									conductTo (sim, r, x+rx, y+ry, parts);
+								}
+							}
+						}
+			}
+			goto continue1c;
+		continue1c:
+			for (rx = -2; rx <= 2; rx++)
+				for (ry = -2; ry <= 2; ry++)
+					if (BOUNDS_CHECK && (!rx || !ry))
+					{
+						r = pmap[y+ry][x+rx];
+						if (!r) continue;
+						pavg = sim->parts_avg(i,r>>8,PT_INSL);
+						if ((pavg != PT_INSL && pavg != PT_INDI) && (r & 0xFF) == PT_SPRK && parts[r>>8].life == 3)
+						{
+							parts[i].tmp2 = 2;
+							goto break1a;
+						}
+					}
+			break;
 		}
 		break;
 			
@@ -1159,7 +1199,7 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 					{
 						r = pmap[y+ry][x+rx];
 						rt = r & 0xFF;
-						if (((sim->elements[rt].Properties & PROP_CONDUCTS) && !(rt==PT_WATR||rt==PT_SLTW||rt==PT_NTCT||rt==PT_PTCT||rt==PT_INWR)))
+						if (sim->elements[rt].Properties & (PROP_CONDUCTS|PROP_INSULATED) == PROP_CONDUCTS)
 						{
 							conductTo (sim, r, x+rx, y+ry, parts);
 						}
