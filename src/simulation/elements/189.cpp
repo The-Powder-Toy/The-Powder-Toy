@@ -61,9 +61,6 @@ bool Element_E189::useDefaultPart = false;
 //#TPT-Directive ElementHeader Element_E189 static pixel tempPartColor
 pixel Element_E189::tempPartColor;
 
-//#TPT-Directive ElementHeader Element_E189 static int graphics(GRAPHICS_FUNC_ARGS)
-
-
 //#TPT-Directive ElementHeader Element_E189 static void HSV2RGB(int ctype, int *r, int *g, int *b)
 void Element_E189::HSV2RGB (int ctype, int *r, int *g, int *b)
 {
