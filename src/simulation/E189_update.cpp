@@ -15,6 +15,7 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 	int rx, ry, ttan = 0, rlife = parts[i].life, direction, r, ri, rtmp, rctype;
 	int rr, rndstore, trade, transfer, rt, rii, rrx, rry, nx, ny, pavg;
 	float rvx, rvy, rdif;
+	int docontinue;
 	rtmp = parts[i].tmp;
 	
 	switch (rlife)
@@ -1368,6 +1369,38 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 						}
 					}
 				}
+		break;
+	case 35:
+		nx = x; ny = y;
+		rrx = parts[i].ctype;
+		for (rr = 0; rr < 4; rr++)
+			if (BOUNDS_CHECK)
+			{
+				rx = tron_rx[rr];
+				ry = tron_ry[rr];
+				r = pmap[y-ry][x-rx];
+				if ((r & 0xFF) == PT_SPRK && parts[r>>8].life == 3)
+				{
+					rry = parts[r>>8].ctype === PT_INST ? 1 : 0;
+					docontinue = 1;
+					do
+					{
+						nx += rx; ny += ry;
+						if (!sim->InBounds(nx, ny))
+							break;
+						r = pmap[ny][nx];
+						if (!r || (r&0xFF) == PT_INWR || (r&0xFF) == PT_SPRK && parts[r>>8].ctype == PT_INWR) // if it's empty or insulated wire
+							continue;
+						if ((r&0xFF) == PT_CRAY || (r&0xFF) == PT_DRAY || (r&0xFF) == PT_E189 && parts[r>>8].life == 35)
+						{
+							parts[r>>8].ctype = rrx;
+						}
+						else if ((r&0xFF) == PT_INSL || (r&0xFF) == PT_INDI)
+							break;
+						docontinue = rry;
+					} while (docontinue);
+				}
+			}
 		break;
 	}
 	

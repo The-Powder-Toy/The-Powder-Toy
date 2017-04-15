@@ -2964,7 +2964,7 @@ void Simulation::part_change_type(int i, int x, int y, int t)//changes the type 
 //tv = Type (8 bits) + Var (24 bits), var is usually 0
 int Simulation::create_part(int p, int x, int y, int t, int v)
 {
-	int i;
+	int i, retcode, E189ID;
 
 	if (x<0 || y<0 || x>=XRES || y>=YRES)
 		return -1;
@@ -3004,6 +3004,11 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 			{
 				Element_E189::FloodButton(this, index, x, y);
 				return index;
+			}
+			else if (part[index].life == 35)
+			{
+				E189ID = retcode = index;
+				goto drawOnE189Ctype;
 			}
 		}
 		if (p==-2 && ((elements[type].Properties & PROP_DRAWONCTYPE) || type==PT_CRAY))
@@ -3060,11 +3065,20 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 			int drawOn = pmap[y][x]&0xFF;
 			if (drawOn == PT_E189)
 			{
-				int E189ID = pmap[y][x]>>8;
+				E189ID = pmap[y][x]>>8;
 				if (parts[E189ID].life == 26 && !parts[E189ID].tmp)
 				{
 					Element_E189::FloodButton(this, E189ID, x, y);
 					return -1;
+				}
+				else if (parts[E189ID].life == 35)
+				{
+					retcode = -1;
+				drawOnE189Ctype:
+					parts[pmap[y][x]>>8].ctype = t;
+					if (t == PT_LIFE && v >= 0 && v < NGOL)
+						parts[pmap[y][x]>>8].ctype |= v << 8;
+					return retcode;
 				}
 			}
 			if (drawOn == t)
