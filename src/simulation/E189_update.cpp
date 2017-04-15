@@ -355,7 +355,7 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 						rtmp = parts[i].tmp;
 						if (!r)
 							continue;
-						if (rt == PT_SPRK && ( !(sim->elements[parts[r>>8].ctype].Properties & PROP_INSULATED) ) && parts[r>>8].life == 3)
+						if (rt == PT_SPRK && ( !(rtmp & 8) == !(sim->elements[parts[r>>8].ctype].Properties & PROP_INSULATED) ) && parts[r>>8].life == 3)
 						{
 							switch (rtmp & 0x3)
 							{
