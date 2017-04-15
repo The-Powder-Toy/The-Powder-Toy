@@ -253,16 +253,15 @@ int E189_Update::graphics(GRAPHICS_FUNC_ARGS)
 		ppos = cpart->ctype >> 8;
 		if (ptmp > 0 && ptmp < PT_NUM && ren->sim->elements[ptmp].Enabled)
 		{
-			if (ppos >= 0 && ppos < NGOL)
+			tempPartColor = ren->sim->elements[ptmp].Colour;
+			*colr = PIXR(tempPartColor);
+			*colg = PIXG(tempPartColor);
+			*colb = PIXB(tempPartColor);
+			
+			// some special cases:
+			if (ptmp == PT_LIFE && ppos >= 0 && ppos < NGOL)
 			{
 				tempPartColor = Element_LIFE::Element_GOL_colour[ppos];
-				*colr = PIXR(tempPartColor);
-				*colg = PIXG(tempPartColor);
-				*colb = PIXB(tempPartColor);
-			}
-			else
-			{
-				tempPartColor = ren->sim->elements[ptmp].Colour;
 				*colr = PIXR(tempPartColor);
 				*colg = PIXG(tempPartColor);
 				*colb = PIXB(tempPartColor);
