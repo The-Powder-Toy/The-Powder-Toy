@@ -1,6 +1,8 @@
 #include "simulation/Elements.h"
 #include "simulation/E189_update.h"
 
+pixel tempPartColor;
+
 int E189_Update::graphics(GRAPHICS_FUNC_ARGS)
 {
 	static char excitedtable [16] = {  0, 8, 2,10,12, 4,14, 6, 3,11, 1, 9,15, 7,13, 5 };
@@ -253,7 +255,7 @@ int E189_Update::graphics(GRAPHICS_FUNC_ARGS)
 		{
 			if (ppos >= 0 && ppos < NGOL)
 			{
-				tempPartColor = Element_GOL_colour[ppos];
+				tempPartColor = Element_LIFE::Element_GOL_colour[ppos];
 				*colr = PIXR(tempPartColor);
 				*colg = PIXG(tempPartColor);
 				*colb = PIXB(tempPartColor);
