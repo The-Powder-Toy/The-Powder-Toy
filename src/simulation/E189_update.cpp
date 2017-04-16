@@ -648,25 +648,35 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 					rx = tron_rx[rr];
 					ry = tron_ry[rr];
 					r = pmap[y+ry][x+rx];
-					if ((r & 0xFF) == PT_SWCH)
+					switch (r & 0xFF)
 					{
+					case PT_SPRK:
+						if (!rt && parts[r>>8].ctype == PT_SWCH)
+						{
+							parts[r>>8].life = 9;
+							parts[r>>8].ctype = PT_NONE;
+							sim->part_change_type(r>>8, rx, ry, PT_SWCH);
+						}
+						break;
+					case PT_SWCH:
+					case PT_HSWC:
 						rtmp = parts[r>>8].life;
 						if (rt)
 							parts[r>>8].life = 10;
 						else if (rtmp >= 10)
 							parts[r>>8].life = 9;
-					}
-					else if ((r & 0xFF) == PT_LCRY)
-					{
+						break;
+					case PT_LCRY:
 						rtmp = parts[r>>8].tmp;
 						if (rt && rtmp == 0)
 							parts[r>>8].tmp = 2;
 						if (!rt && rtmp == 3)
 							parts[r>>8].tmp = 1;
+						break;
 					}
 				}
 			break;
-		case 10:
+		case 10: // with E189's life=17 (and life=25)
 			for (rr = 0; rr < 4; rr++)
 				if (BOUNDS_CHECK)
 				{
@@ -682,7 +692,7 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 								rrx = tron_rx[rr];
 								rry = tron_ry[rr];
 								ri = pmap[y+rry][x+rrx];
-								if ((ri & 0xFF) == PT_E189 && parts[ri>>8].life == 17)
+								if ((ri & 0xFF) == PT_E189 && parts[ri>>8].life == 17) // using "PHOT diode"
 								{
 									rii = sim->create_part(-1, x-rx, y-ry, PT_E189, 24);
 									rtmp = (direction << 2) | rr;
