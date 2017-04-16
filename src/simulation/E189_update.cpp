@@ -436,7 +436,7 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 			}
 			parts[i].tmp -= (rii > 0 ? 0x100 : 0)
 
-			PSCNCount = 0;
+			// PSCNCount = 0;
 			for (rx = -2; rx <= 2; rx++)
 				for (ry = -2; ry <= 2; ry++)
 					if (BOUNDS_CHECK && (rx || ry))
@@ -452,7 +452,7 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 							else if (parts[r>>8].ctype == PT_BMTL)
 							{
 								// INWRCount ++;
-								parts[i].tmp |= 0x40;
+								parts[i].tmp |= (8 * 0x100);
 							}
 						}
 					}
