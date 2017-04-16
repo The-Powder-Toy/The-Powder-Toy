@@ -411,11 +411,19 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 		}
 		break;
 	case 16:
-		int PSCNCount;
+		int conductive;
 		switch (rctype = parts[i].ctype)
 		{
 		case 0: // logic gate
-			if (!(parts[i].tmp & 4) == (parts[i].tmp2 > 0))
+			rii = rtmp & ~0xFF;
+			switch (rtmp & 3)
+			{
+				case 0: conductive =  rii ||  parts[i].tmp2; break;
+				case 1: conductive =  rii &&  parts[i].tmp2; break;
+				case 2: conductive = ~rii &&  parts[i].tmp2; break;
+				case 3: conductive = !rii != !parts[i].tmp2; break;
+			}
+			if (!(rtmp & 4) == conductive)
 			{
 				for (rx = -2; rx <= 2; rx++)
 					for (ry = -2; ry <= 2; ry++)
@@ -426,6 +434,7 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 								conductTo (sim, r, x+rx, y+ry, parts);
 						}
 			}
+			parts[i].tmp -= (rii > 0 ? 0x100 : 0)
 
 			PSCNCount = 0;
 			for (rx = -2; rx <= 2; rx++)
@@ -433,22 +442,20 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 					if (BOUNDS_CHECK && (rx || ry))
 					{
 						r = pmap[y+ry][x+rx];
-						if ((r & 0xFF) == PT_SPRK && parts[r>>8].ctype == PT_PSCN && parts[r>>8].life == 3)
-							PSCNCount ++;
-						rr = ((r>>8) > i) ? (parts[r>>8].tmp) : (parts[r>>8].tmp2);
-						if ((r & 0xFF) == PT_E189 && parts[r>>8].life == 19 && (!rr != !(parts[r>>8].tmp3)))
-							PSCNCount ++;
+						if ((r & 0xFF) == PT_SPRK && parts[r>>8].life == 3)
+						{
+							if (parts[r>>8].ctype == PT_PSCN)
+							{
+								// PSCNCount ++;
+								parts[i].tmp2 = 8 + 1;
+							}
+							else if (parts[r>>8].ctype == PT_BMTL)
+							{
+								// INWRCount ++;
+								parts[i].tmp |= 0x40;
+							}
+						}
 					}
-			rtmp = parts[i].tmp;
-			rii = rtmp & ~0x7;
-
-			if ((rtmp & 3) != 3)
-			{
-				if (PSCNCount > (rtmp & 3)) // N-input logic gate
-					parts[i].tmp2 = 9;
-			}
-			else if (PSCNCount & 1)
-				parts[i].tmp2 = 9; // XOR gate (a bit buggy)
 			break;
 		case 1: // conduct->insulate counter
 			if (parts[i].tmp)
