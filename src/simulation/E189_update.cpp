@@ -443,11 +443,12 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 						if ((r & 0xFF) == PT_SPRK && parts[r>>8].ctype == PT_PSCN && parts[r>>8].life == 3)
 							PSCNCount ++;
 						rr = ((r>>8) > i) ? (parts[r>>8].tmp) : (parts[r>>8].tmp2);
-						if ((r & 0xFF) == PT_E189 && parts[r>>8].life == 19 && !rr)
+						if ((r & 0xFF) == PT_E189 && parts[r>>8].life == 19 && rr == 9)
 							PSCNCount ++;
 					}
 			parts[i].tmp &= 0xFFFF;
 			parts[i].tmp |= PSCNCount << 16;
+			break;
 		case 1: // conduct->insulate counter
 			if (parts[i].tmp)
 			{
