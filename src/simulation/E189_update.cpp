@@ -418,7 +418,7 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 			PSCNCount = rtmp >> 16; /* parts[i].tmp >> 16 */
 			if (!parts[i].tmp2)
 			{
-				rii = (rtmp & 3) == 3 ? (PSCNCount & 1) : (rtmp & 3 < PSCNCount);
+				rii = (rtmp & 3) == 3 ? (PSCNCount & 1) : ((rtmp & 3) < PSCNCount);
 				if (rtmp & 4)
 					rii = !rii;
 				if (rii)
@@ -443,7 +443,7 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 						if ((r & 0xFF) == PT_SPRK && parts[r>>8].ctype == PT_PSCN && parts[r>>8].life == 3)
 							PSCNCount ++;
 						rr = ((r>>8) > i) ? (parts[r>>8].tmp) : (parts[r>>8].tmp2);
-						if ((r & 0xFF) == PT_E189 && parts[r>>8].life == 19 && rr == 9)
+						if ((r & 0xFF) == PT_E189 && parts[r>>8].life == 19 && rr < 9)
 							PSCNCount ++;
 					}
 			parts[i].tmp &= 0xFFFF;
