@@ -176,7 +176,7 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 									parts[r].ctype = modProp;
 									if (!nostop)
 										goto break1a;
-									break;
+									continue;
 								case 28:
 									if (noturn)
 										continue;
