@@ -6,7 +6,7 @@ pixel tempPartColor;
 int E189_Update::graphics(GRAPHICS_FUNC_ARGS)
 {
 	static char excitedtable [16] = {  0, 8, 2,10,12, 4,14, 6, 3,11, 1, 9,15, 7,13, 5 };
-	int ptmp, ppos, pexc1;
+	int ptmp, ppos, pexc1, temp;
 	switch(cpart->life)
 	{
 	case 0:
@@ -163,12 +163,23 @@ int E189_Update::graphics(GRAPHICS_FUNC_ARGS)
 			*colr = 0xFF; *colg = 0x5A; *colb = 0x65;
 			return 0;
 		}
+		temp = !cpart->ctype && (cpart->tmp & 0x100);
 		if (cpart->tmp2)
 		{
 			*colr = 0x65; *colg = 0xFF; *colb = 0x5A;
+			if (temp)
+			{
+				ptmp  = *colg;
+				*colg = *colb;
+				*colb =  ptmp;
+			}
 			return 0;
 		}
 		*colr = 0xAA; *colg = 0x05; *colb = 0x10;
+		if (temp)
+		{
+			*colg = *colr - *colg;
+		}
 		break;
 	case 17:
 		if ((nx ^ (ny << 1)) & 3)

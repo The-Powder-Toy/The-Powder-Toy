@@ -788,7 +788,9 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 								sim->create_part(r>>8,x+rx,y+ry,PT_PSCN);
 							if ((r & 0xFF) == PT_PSCN)
 							{
-								conductTo (sim, r, x+rx, y+ry, parts);
+								parts[r>>8].ctype = PT_NSCN; // for different type
+								sim->part_change_type(r>>8, x, y, PT_SPRK);
+								parts[r>>8].life = 4;
 							}
 						}
 			}
@@ -1047,10 +1049,10 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 							goto break3;
 						if ((rctype & 0xFF) != PT_LIGH || !(rand() & 7))
 						{
-							rx = rand()%3-1;
-							ry = rand()%3-1;
-							int np = sim->create_part(-1, x+rx, y+ry, rctype & 0xFF, rctype >> 8);
-							if (np >= 0) { parts[np].vx = rx; parts[np].vy = ry; }
+							// rx = rand()%3-1;
+							// ry = rand()%3-1;
+							int np = sim->create_part(-1, x-rx, y-ry, rctype & 0xFF, rctype >> 8);
+							if (np >= 0) { parts[np].vx = -rx; parts[np].vy = -ry; }
 						}
 						goto break3;
 					}
