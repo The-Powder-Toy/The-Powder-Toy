@@ -420,7 +420,7 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 			{
 				case 0: conductive =  rii ||  parts[i].tmp2; break;
 				case 1: conductive =  rii &&  parts[i].tmp2; break;
-				case 2: conductive = ~rii &&  parts[i].tmp2; break;
+				case 2: conductive = !rii &&  parts[i].tmp2; break;
 				case 3: conductive = !rii != !parts[i].tmp2; break;
 			}
 			if (!(rtmp & 4) == conductive)
