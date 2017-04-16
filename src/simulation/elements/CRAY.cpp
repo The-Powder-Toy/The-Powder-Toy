@@ -49,7 +49,7 @@ int Element_CRAY::update(UPDATE_FUNC_ARGS)
 {
 	int nxx, nyy, docontinue, nxi, nyi;
 	// set ctype to things that touch it if it doesn't have one already
-	if (parts[i].ctype<=0 || !sim->elements[parts[i].ctype&0xFF].Enabled)
+	if (!(parts[i].tmp3 & 1) && (parts[i].ctype<=0 || !sim->elements[parts[i].ctype&0xFF].Enabled))
 	{
 		for (int rx = -1; rx <= 1; rx++)
 			for (int ry = -1; ry <= 1; ry++)
