@@ -3075,9 +3075,9 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 				{
 					retcode = -1;
 				drawOnE189Ctype:
-					parts[pmap[y][x]>>8].ctype = t;
+					parts[E189ID].ctype = t;
 					if (t == PT_LIFE && v >= 0 && v < NGOL)
-						parts[pmap[y][x]>>8].ctype |= v << 8;
+						parts[E189ID].ctype |= v << 8;
 					return retcode;
 				}
 			}
