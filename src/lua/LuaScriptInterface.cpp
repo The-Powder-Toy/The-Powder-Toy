@@ -697,6 +697,7 @@ void LuaScriptInterface::initSimulationAPI()
 		{"partNeighbors", simulation_partNeighbours},
 		{"partChangeType", simulation_partChangeType},
 		{"partCreate", simulation_partCreate},
+		{"partCreate2", simulation_partCreate2},
 		{"partProperty", simulation_partProperty},
 		{"partPosition", simulation_partPosition},
 		{"partID", simulation_partID},
@@ -914,6 +915,18 @@ int LuaScriptInterface::simulation_partCreate(lua_State * l)
 		type = type&0xFF;
 	}
 	lua_pushinteger(l, luacon_sim->create_part(newID, lua_tointeger(l, 2), lua_tointeger(l, 3), type, v));
+	return 1;
+}
+
+int LuaScriptInterface::simulation_partCreate2(lua_State * l)
+{
+	int newID = lua_tointeger(l, 1);
+	if(newID >= NPART || newID < -3)
+	{
+		lua_pushinteger(l, -1);
+		return 1;
+	}
+	lua_pushinteger(l, luacon_sim->create_part(newID, lua_tointeger(l, 2), lua_tointeger(l, 3), lua_tointeger(l, 4), lua_tointeger(l, 5)));
 	return 1;
 }
 
