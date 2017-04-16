@@ -415,20 +415,26 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 		switch (rctype = parts[i].ctype)
 		{
 		case 0: // logic gate
-
-			if (!(parts[i].tmp & 4) == (parts[i].tmp2 > 0))
+			PSCNCount = rtmp >> 16; /* parts[i].tmp >> 16 */
+			if (!parts[i].tmp2)
 			{
-				for (rx = -2; rx <= 2; rx++)
-					for (ry = -2; ry <= 2; ry++)
-						if (BOUNDS_CHECK && (rx || ry))
-						{
-							r = pmap[y+ry][x+rx];
-							if ((r & 0xFF) == PT_NSCN) /* && parts[r>>8].life == 0 */
-								conductTo (sim, r, x+rx, y+ry, parts);
-						}
+				rii = (rtmp & 3) == 3 ? (PSCNCount & 1) : (rtmp & 3 < PSCNCount);
+				if (rtmp & 4)
+					rii = !rii;
+				if (rii)
+				{
+					for (rx = -2; rx <= 2; rx++)
+						for (ry = -2; ry <= 2; ry++)
+							if (BOUNDS_CHECK && (rx || ry))
+							{
+								r = pmap[y+ry][x+rx];
+								if ((r & 0xFF) == PT_NSCN) /* && parts[r>>8].life == 0 */
+									conductTo (sim, r, x+rx, y+ry, parts);
+							}
+				}
+				PSCNCount = 0;
+				parts[i].tmp2 = 8;
 			}
-
-			PSCNCount = 0;
 			for (rx = -2; rx <= 2; rx++)
 				for (ry = -2; ry <= 2; ry++)
 					if (BOUNDS_CHECK && (rx || ry))
@@ -440,15 +446,8 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 						if ((r & 0xFF) == PT_E189 && parts[r>>8].life == 19 && !rr)
 							PSCNCount ++;
 					}
-			rtmp = parts[i].tmp;
-			if ((rtmp & 3) != 3)
-			{
-				if (PSCNCount > (rtmp & 3)) // N-input logic gate
-					parts[i].tmp2 = 9;
-			}
-			else if (PSCNCount & 1)
-				parts[i].tmp2 = 9; // XOR gate
-			break;
+			parts[i].tmp &= 0xFFFF;
+			parts[i].tmp |= PSCNCount << 16;
 		case 1: // conduct->insulate counter
 			if (parts[i].tmp)
 			{
