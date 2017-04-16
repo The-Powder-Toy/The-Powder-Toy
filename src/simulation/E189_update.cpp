@@ -434,28 +434,30 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 								conductTo (sim, r, x+rx, y+ry, parts);
 						}
 			}
-			parts[i].tmp -= (rii > 0 ? 0x100 : 0)
+			parts[i].tmp -= (rii > 0 ? 0x100 : 0);
 
 			// PSCNCount = 0;
-			for (rx = -2; rx <= 2; rx++)
-				for (ry = -2; ry <= 2; ry++)
-					if (BOUNDS_CHECK && (rx || ry))
-					{
-						r = pmap[y+ry][x+rx];
-						if ((r & 0xFF) == PT_SPRK && parts[r>>8].life == 3)
+			{
+				for (rx = -2; rx <= 2; rx++)
+					for (ry = -2; ry <= 2; ry++)
+						if (BOUNDS_CHECK && (rx || ry))
 						{
-							if (parts[r>>8].ctype == PT_PSCN)
+							r = pmap[y+ry][x+rx];
+							if ((r & 0xFF) == PT_SPRK && parts[r>>8].life == 3)
 							{
-								// PSCNCount ++;
-								parts[i].tmp2 = 8 + 1;
-							}
-							else if (parts[r>>8].ctype == PT_BMTL)
-							{
-								// INWRCount ++;
-								parts[i].tmp |= (8 * 0x100);
+								if (parts[r>>8].ctype == PT_PSCN)
+								{
+									// PSCNCount ++;
+									parts[i].tmp2 = 8 + 1;
+								}
+								else if (parts[r>>8].ctype == PT_BMTL)
+								{
+									// INWRCount ++;
+									parts[i].tmp |= (8 * 0x100);
+								}
 							}
 						}
-					}
+			}
 			break;
 		case 1: // conduct->insulate counter
 			if (parts[i].tmp)
