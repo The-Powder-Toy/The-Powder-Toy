@@ -51,6 +51,8 @@ int Element_ARAY::temp_z1[5];
 int Element_ARAY::update(UPDATE_FUNC_ARGS)
 {
 	int r_life, swap;
+	int  modProp;
+	bool modFlag;
 	if (!parts[i].life)
 	{
 		for (int rx = -1; rx <= 1; rx++)
@@ -70,10 +72,14 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 						int max_turn = parts[i].tmp, tmpz = 0;
 						if (max_turn <= 0)
 							max_turn = 256;
+						modFlag = false;
 						for (int docontinue = 1, nxx = 0, nyy = 0, nxi = rx*-1, nyi = ry*-1; docontinue; nyy+=nyi, nxx+=nxi)
 						{
 							if (!(x+nxi+nxx<XRES && y+nyi+nyy<YRES && x+nxi+nxx >= 0 && y+nyi+nyy >= 0))
+							{
+							break1a:
 								break;
+							}
 
 							r = pmap[y+nyi+nyy][x+nxi+nxx];
 							rt = r & 0xFF;
@@ -103,8 +109,9 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 							else if (rt == PT_E189)
 							{
 								r_life = parts[r].life;
-								if (r_life == 32)
+								switch (r_life)
 								{
+								case 32:
 									tmp  = parts[r].tmp;
 									tmp2 = parts[r].tmp2;
 									switch (tmp2)
@@ -113,7 +120,9 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 										temp_z1[0] = noturn;
 										noturn = (tmp >> (2 * noturn)) & 0x3;
 										if (noturn == 3)
+										{
 											goto break1a;
+										}
 										break;
 									case 1:
 										temp_z1[1] = tmp2 = nostop | (destroy << 1);
@@ -157,15 +166,22 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 									}
 									tmpz = 1;
 									continue;
-								break1a:
+								case 35:
+									if (!modFlag)
+									{
+										modFlag = true;
+										modProp = parts[r].ctype;
+										continue;
+									}
+									parts[r].ctype = modProp;
+									if (!nostop)
+										goto break1a;
 									break;
-								}
-								else if (r_life == 28)
-								{
+								case 28:
 									if (noturn)
 										continue;
 									if (!max_turn)
-										break;
+										goto break1a;
 									nxx += nxi; nyy += nyi;
 									switch (parts[r].tmp & 7)
 									{
@@ -297,6 +313,11 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 										parts[r].life = 10;
 									}
 								// this if prevents BRAY from stopping on certain materials
+								}
+								else if (modFlag && (rt == PT_CRAY || rt == PT_DRAY))
+								{
+									parts[r].ctype = modProp;
+									docontinue = nostop;
 								}
 								else if (rt != PT_INWR && (rt != PT_SPRK || parts[r].ctype != PT_INWR) && rt != PT_ARAY && rt != PT_WIFI && !(rt == PT_SWCH && parts[r].life >= 10))
 								{
