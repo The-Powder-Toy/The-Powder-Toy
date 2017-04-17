@@ -83,7 +83,7 @@ int Element_CONV::update(UPDATE_FUNC_ARGS)
 						r = pmap[y+ry][x+rx];
 					if (!r || (restrictElement && (r&0xFF)!=restrictElement))
 						continue;
-					if((r&0xFF)!=PT_CONV && !(sim->elements[r&0xFF].Properties & PROP_NODESTRUCT2) && (r&0xFF)!=ctype)
+					if((r&0xFF)!=PT_CONV && !(sim->elements[r&0xFF].Properties2 & PROP_NODESTRUCT) && (r&0xFF)!=ctype)
 					{
 						sim->create_part(r>>8, x+rx, y+ry, parts[i].ctype&0xFF, parts[i].ctype>>8);
 					}
