@@ -5315,7 +5315,7 @@ void Simulation::RecalcFreeParticles()
 				{
 					// Particles are sometimes allowed to go inside INVS and FILT
 					// To make particles collide correctly when inside these elements, these elements must not overwrite an existing pmap entry from particles inside them
-					if (!pmap[y][x] || ( !(elements[t].Properties & PROP_INVISIBLE) && !(tt = (pmap[y][x]&0xFF) == PT_PINVIS) ))
+					if (!pmap[y][x] || ( !(elements[t].Properties2 & PROP_INVISIBLE) && !(tt = (pmap[y][x]&0xFF) == PT_PINVIS) ))
 						pmap[y][x] = t|(i<<8);
 					else if (tt)
 						parts[pmap[y][x]>>8].tmp4 = t|(i<<8);

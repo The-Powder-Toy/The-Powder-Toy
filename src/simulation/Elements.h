@@ -32,18 +32,21 @@
 #define PROP_NOAMBHEAT		0x40000    // 2^18 Don't transfer or receive heat from ambient heat.
 #define PROP_DRAWONCTYPE	0x80000    // 2^19 Set its ctype to another element if the element is drawn upon it (like what CLNE does)
 #define PROP_NOCTYPEDRAW	0x100000   // 2^20 When this element is drawn upon with, do not set ctype (like BCLN for CLNE)
-#define PROP_NOSLOWDOWN		0x200000   // 2^21 Photons (PHOT) without slowed down
-#define PROP_TRANSPARENT	0x400000   // 2^22 Photons (PHOT) pass through
-#define PROP_NODESTRUCT		0x800000   // 2^23 Indestructible property
-#define PROP_CLONE			0x1000000  // 2^24 Makes elements clone things that touch it
-#define PROP_NOWAVELENGTHS	0x2000000  // 2^25 Energy particle without wavelengths
-#define PROP_INVISIBLE		0x4000000  // 2^26 Invisible elements
-#define PROP_UNLIMSTACKING	0x8000000  // 2^27 Currently no limit on stacking
+// 2^21 reserved
+#define PROP_NOSLOWDOWN		0x2000000   // 2^24 Photons (PHOT) without slowed down
+#define PROP_TRANSPARENT	0x4000000   // 2^25 Photons (PHOT) pass through
+#define PROP_UNLIMSTACKING	0x8000000   // 2^27 Currently no limit on stacking
+#define PROP_INSULATED		0x10000000
+#define PROP_DRAWONCTYPE2	0x20000000
 
 // second properties flag:
-#define PROP_ENERGY_PART	0x00000001
-#define PROP_ELEC_HEATING	0x00000002 // Electricity heating effect
-// #define PROP_NOSLOWDOWN		0x200000
+#define PROP_ENERGY_PART		0x00000001
+#define PROP_ELEC_HEATING		0x00000002  // Electricity heating effect
+#define PROP_NOWAVELENGTHS		0x00000004  // Energy particle without wavelengths
+#define PROP_NODESTRUCT			0x00008000  // 2^15 Indestructible property
+#define PROP_CLONE				0x00010000  // 2^16 Makes elements clone things that touch it
+// #define PROP_NOSLOWDOWN		0x02000000
+#define PROP_INVISIBLE			0x04000000
 
 #define FLAG_STAGNANT	0x1
 #define FLAG_SKIPMOVE  0x2 // skip movement for one frame, only implemented for PHOT

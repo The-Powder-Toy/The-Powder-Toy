@@ -159,7 +159,7 @@ public:
 		// NB: all arguments are assumed to be within bounds
 		if (elements[t].Properties & TYPE_ENERGY)
 			photons[y][x] = t|(i<<8);
-		else if ((!pmap[y][x] || elements[t].Properties & PROP_INVISIBLE))
+		else if ((!pmap[y][x] || elements[t].Properties2 & PROP_INVISIBLE))
 			pmap[y][x] = t|(i<<8);
 	}
 	inline void pmap_remove(unsigned int i, int x, int y, int _pt_pinvis)
