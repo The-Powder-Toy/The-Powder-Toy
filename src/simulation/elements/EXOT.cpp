@@ -95,7 +95,7 @@ int Element_EXOT::update(UPDATE_FUNC_ARGS)
 				}
 				if (parts[i].tmp > 245 && parts[i].life > 1337)
 					if (rt!=PT_EXOT && rt!=PT_BREC && !(sim->elements[rt].Properties2 & (PROP_NODESTRUCT | PROP_UNBREAKABLECLONE)) && rt!=PT_PRTI && rt!=PT_PRTO && rt!=PT_VOID && rt!=PT_NBHL && rt!=PT_WARP &&
-						!(rt==PT_SPRK && (sim->elements[r >> 8].Properties2 & PROP_NODESTRUCT)))
+						!(rt==PT_SPRK && (sim->elements[parts[r>>8].ctype].Properties2 & PROP_NODESTRUCT)))
 					{
 						sim->create_part(i, x, y, rt);
 						return 1;

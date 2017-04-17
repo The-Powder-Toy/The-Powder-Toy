@@ -112,7 +112,7 @@ int Element_SING::update(UPDATE_FUNC_ARGS)
 				if (!r)
 					continue;
 				if (!(sim->elements[r&0xFF].Properties2 & PROP_NODESTRUCT) && 
-					((r&0xFF) != PT_SPRK || !(sim->elements[r>>8].Properties2 & PROP_NODESTRUCT)) && !(rand()%3))
+					((r&0xFF) != PT_SPRK || !(sim->elements[parts[r>>8].ctype].Properties2 & PROP_NODESTRUCT)) && !(rand()%3))
 				{
 					if ((r&0xFF)==PT_SING && parts[r>>8].life >10)
 					{

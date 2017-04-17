@@ -58,7 +58,7 @@ int Element_BOMB::update(UPDATE_FUNC_ARGS)
 				if (!r)
 					continue;
 				if ((r&0xFF)!=PT_BOMB && (r&0xFF)!=PT_EMBR && !(sim->elements[r&0xFF].Properties2 & (PROP_NODESTRUCT|PROP_CLONE)) && (r&0xFF)!=PT_VIBR
-					&& ((r&0xFF)!=PT_SPRK || (sim->elements[r>>8].Properties2 & PROP_NODESTRUCT)))
+					&& ((r&0xFF)!=PT_SPRK || !(sim->elements[parts[r>>8].ctype].Properties2 & PROP_NODESTRUCT)))
 				{
 					int rad = 8;
 					int nxi;
@@ -70,7 +70,7 @@ int Element_BOMB::update(UPDATE_FUNC_ARGS)
 							{
 								int rr = pmap[y+nxj][x+nxi];
 								if (!(sim->elements[ rr&0xFF ].Properties2 & (PROP_NODESTRUCT|PROP_CLONE)) && (rr&0xFF)!=PT_VIBR && ((rr&0xFF)!=PT_E189 || (parts[rr >> 8].life&~0x1)!=8)
-									&& ((rr&0xFF)!=PT_SPRK || (sim->elements[rr >> 8].Properties2 & PROP_NODESTRUCT)))
+									&& ((rr&0xFF)!=PT_SPRK || !(sim->elements[parts[rr>>8].ctype].Properties2 & PROP_NODESTRUCT)))
 								{
 									sim->delete_part(x+nxi, y+nxj);
 									sim->pv[(y+nxj)/CELL][(x+nxi)/CELL] += 0.1f;

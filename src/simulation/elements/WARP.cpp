@@ -66,7 +66,7 @@ int Element_WARP::update(UPDATE_FUNC_ARGS)
 			if (!r)
 				continue;
 			if ((r&0xFF)!=PT_WARP&&(r&0xFF)!=PT_STKM&&(r&0xFF)!=PT_STKM2&&!(sim->elements[r&0xFF].Properties2 & (PROP_NODESTRUCT|PROP_CLONE))
-				&& ((r&0xFF)!=PT_SPRK || !(sim->elements[r>>8].Properties2 & PROP_NODESTRUCT)))
+				&& ((r&0xFF)!=PT_SPRK || !(sim->elements[parts[r>>8].ctype].Properties2 & PROP_NODESTRUCT)))
 			{
 				parts[i].x = parts[r>>8].x;
 				parts[i].y = parts[r>>8].y;
