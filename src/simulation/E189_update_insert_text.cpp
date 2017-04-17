@@ -614,7 +614,7 @@ int E189_Update::AddCharacter(Simulation *sim, int x, int y, int c, int rgb)
 						else
 							sim->parts[_ri].ctype = 0xFF000000 | (rgb & 0x00FFFFFF);
 					}
-					else if (!(sim->elements[_rt].Properties & PROP_NODESTRUCT))
+					else if (!(sim->elements[_rt].Properties2 & PROP_NODESTRUCT))
 					{
 						goto _E189_recreatePixel;
 					}

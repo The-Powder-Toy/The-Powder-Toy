@@ -2125,7 +2125,7 @@ void Simulation::init_can_move()
 			can_move[PT_PROT][destinationType] = 2;
 			can_move[PT_GRVT][destinationType] = 2;
 		}
-		if (elements[destinationType].Properties & (PROP_NODESTRUCT|PROP_CLONE))
+		if (elements[destinationType].Properties2 & (PROP_NODESTRUCT|PROP_CLONE))
 			can_move[PT_DEST][destinationType] = 0;
 	}
 	
@@ -5725,8 +5725,8 @@ void Simulation::AfterSim()
 			elements[PT_PHOT].Properties2 ^= PROP_NOSLOWDOWN; // toggle PHOT's slowed down flag
 		if (E189_pause & 0x0020)
 		{
-			elements[PT_INVIS].Properties ^= PROP_NODESTRUCT; // toggle INVS's indestructibility
-			if (elements[PT_INVIS].Properties & PROP_NODESTRUCT)
+			elements[PT_INVIS].Properties2 ^= PROP_NODESTRUCT; // toggle INVS's indestructibility
+			if (elements[PT_INVIS].Properties2 & PROP_NODESTRUCT)
 			{
 				INVS_hardness_tmp = elements[PT_INVIS].Hardness;
 				elements[PT_INVIS].Hardness = 0;

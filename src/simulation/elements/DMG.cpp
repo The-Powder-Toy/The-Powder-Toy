@@ -59,7 +59,7 @@ int Element_DMG::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if ((r&0xFF)!=PT_DMG && (r&0xFF)!=PT_EMBR && !(sim->elements[r&0xFF].Properties & (PROP_NODESTRUCT|PROP_CLONE)))
+				if ((r&0xFF)!=PT_DMG && (r&0xFF)!=PT_EMBR && !(sim->elements[r&0xFF].Properties2 & (PROP_NODESTRUCT|PROP_CLONE)))
 				{
 					sim->kill_part(i);
 					for (nxj=-rad; nxj<=rad; nxj++)

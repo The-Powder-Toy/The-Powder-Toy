@@ -30,7 +30,8 @@ Element_INDI::Element_INDI()
 	HeatConduct = 0;
 	Description = "Indestructible Insulator.";
 
-	Properties = TYPE_SOLID | PROP_NODESTRUCT;
+	Properties = TYPE_SOLID;
+	Properties2 = PROP_NODESTRUCT;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

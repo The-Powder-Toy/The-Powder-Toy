@@ -58,9 +58,6 @@ Element_E189::Element_E189()
 //#TPT-Directive ElementHeader Element_E189 static bool useDefaultPart
 bool Element_E189::useDefaultPart = false;
 
-//#TPT-Directive ElementHeader Element_E189 static pixel tempPartColor
-pixel Element_E189::tempPartColor;
-
 //#TPT-Directive ElementHeader Element_E189 static void HSV2RGB(int ctype, int *r, int *g, int *b)
 void Element_E189::HSV2RGB (int ctype, int *r, int *g, int *b)
 {
@@ -494,7 +491,7 @@ int Element_E189::EMPTrigger(Simulation *sim, int triggerCount)
 	for (int r = 0; r <=sim->parts_lastActiveIndex; r++)
 	{
 		t = parts[r].type;
-		if (sim->elements[t].Properties & PROP_NODESTRUCT)
+		if (sim->elements[t].Properties2 & PROP_NODESTRUCT)
 			continue; // particle's type is PT_DMND and PT_INDI are indestructible.
 		rx = parts[r].x;
 		ry = parts[r].y;
@@ -587,7 +584,7 @@ int Element_E189::EMPTrigger(Simulation *sim, int triggerCount)
 			}
 			break;
 		case PT_SPRK:
-			if (!(sim->elements[parts[r].ctype].Properties & PROP_NODESTRUCT) &&
+			if (!(sim->elements[parts[r].ctype].Properties2 & PROP_NODESTRUCT) &&
 			    (Probability::randFloat() < prob_breakElectronics))
 				sim->part_change_type(r, rx, ry, PT_BREC);
 			break;

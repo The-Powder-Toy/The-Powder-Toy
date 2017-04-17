@@ -138,7 +138,7 @@ int Element_DRAY::update(UPDATE_FUNC_ARGS)
 								else
 								{
 									int r2 = pmap[yCopyTo][xCopyTo];
-									if (r2 && !(sim->elements[r2 & 0xFF].Properties & PROP_NODESTRUCT))
+									if (r2 && !(sim->elements[r2 & 0xFF].Properties2 & PROP_NODESTRUCT))
 										sim->kill_part(r2>>8);
 								}
 							}

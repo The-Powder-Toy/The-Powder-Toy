@@ -65,7 +65,7 @@ int Element_WARP::update(UPDATE_FUNC_ARGS)
 			r = pmap[y+ry][x+rx];
 			if (!r)
 				continue;
-			if ((r&0xFF)!=PT_WARP&&(r&0xFF)!=PT_STKM&&(r&0xFF)!=PT_STKM2&&!(sim->elements[r&0xFF].Properties & (PROP_NODESTRUCT|PROP_CLONE)))
+			if ((r&0xFF)!=PT_WARP&&(r&0xFF)!=PT_STKM&&(r&0xFF)!=PT_STKM2&&!(sim->elements[r&0xFF].Properties2 & (PROP_NODESTRUCT|PROP_CLONE)))
 			{
 				parts[i].x = parts[r>>8].x;
 				parts[i].y = parts[r>>8].y;

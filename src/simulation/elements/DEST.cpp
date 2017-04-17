@@ -51,7 +51,7 @@ int Element_DEST::update(UPDATE_FUNC_ARGS)
 	int rx = rand()%5-2;
 	int ry = rand()%5-2;
 	int r = pmap[y+ry][x+rx];
-	if (!r || !BOUNDS_CHECK || (r&0xFF)==PT_DEST || (sim->elements[r&0xFF].Properties & (PROP_NODESTRUCT|PROP_CLONE)))
+	if (!r || !BOUNDS_CHECK || (r&0xFF)==PT_DEST || (sim->elements[r&0xFF].Properties2 & (PROP_NODESTRUCT|PROP_CLONE)))
 		return 0;
 
 	if (parts[i].life<=0 || parts[i].life>37)

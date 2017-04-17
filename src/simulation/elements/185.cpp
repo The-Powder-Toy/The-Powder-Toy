@@ -258,7 +258,7 @@ int Element_E185::update(UPDATE_FUNC_ARGS)
 		{
 			rx = rand()%5-2; ry = rand()%5-2;
 			r = pmap[y+ry][x+rx];
-			if (sim->elements[r&0xFF].Properties & PROP_NODESTRUCT)
+			if (sim->elements[r&0xFF].Properties2 & PROP_NODESTRUCT)
 				continue; // particle's type is PT_DMND and PT_INDI are indestructible.
 			switch (r & 0xFF)
 			{

@@ -61,7 +61,7 @@ int Element_GBMB::update(UPDATE_FUNC_ARGS)
 						continue;
 					if((r&0xFF)!=PT_BOMB && (r&0xFF)!=PT_GBMB &&
 					   (r&0xFF)!=PT_CLNE && (r&0xFF)!=PT_PCLN &&
-					   !(sim->elements[r&0xFF].Properties & PROP_NODESTRUCT))
+					   !(sim->elements[r&0xFF].Properties2 & PROP_NODESTRUCT))
 					{
 						parts[i].life=60;
 						break;

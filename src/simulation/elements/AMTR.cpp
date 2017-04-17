@@ -57,7 +57,7 @@ int Element_AMTR::update(UPDATE_FUNC_ARGS)
 				if (!r)
 					continue;
 				rt = r&0xFF;
-				if (rt!=PT_AMTR && !(sim->elements[rt].Properties & PROP_NODESTRUCT) && rt!=PT_CLNE && rt!=PT_PCLN
+				if (rt!=PT_AMTR && !(sim->elements[rt].Properties2 & PROP_NODESTRUCT) && rt!=PT_CLNE && rt!=PT_PCLN
 				    && rt!=PT_VOID && rt!=PT_BHOL && rt!=PT_NBHL && rt!=PT_PRTI && rt!=PT_PRTO)
 				{
 					parts[i].life++;
