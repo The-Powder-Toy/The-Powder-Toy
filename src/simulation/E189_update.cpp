@@ -1413,7 +1413,7 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 						r = pmap[ny][nx];
 						if (!r || (r&0xFF) == PT_INWR || (r&0xFF) == PT_SPRK && parts[r>>8].ctype == PT_INWR) // if it's empty or insulated wire
 							continue;
-						if ((r&0xFF) == PT_CRAY || (r&0xFF) == PT_DRAY || (r&0xFF) == PT_E189 && parts[r>>8].life == 35)
+						if ((sim->elements[r&0xFF].Properties2 & PROP_DRAWONCTYPE) || (r&0xFF) == PT_E189 && parts[r>>8].life == 35)
 						{
 							parts[r>>8].ctype = rrx;
 						}
