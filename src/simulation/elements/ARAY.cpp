@@ -231,6 +231,10 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 								{
 									if (rt != PT_INWR && (rt != PT_SPRK || parts[r].ctype != PT_INWR))
 									{
+										if (spc_conduct == 3)
+										{
+											break;
+										}
 										sim->create_part(-1, x+nxi+nxx, y+nyi+nyy, PT_SPRK);
 										if (spc_conduct == 1)
 											break;
@@ -314,7 +318,7 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 									}
 								// this if prevents BRAY from stopping on certain materials
 								}
-								else if (modFlag && (rt == PT_CRAY || rt == PT_DRAY))
+								else if (modFlag && (sim->elements[rt].Properties2 & PROP_DRAWONCTYPE))
 								{
 									parts[r].ctype = modProp;
 									docontinue = nostop;

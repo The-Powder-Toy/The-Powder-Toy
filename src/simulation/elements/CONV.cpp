@@ -31,6 +31,7 @@ Element_CONV::Element_CONV()
 	Description = "Converter. Converts everything into whatever it first touches.";
 
 	Properties = TYPE_SOLID|PROP_DRAWONCTYPE|PROP_NOCTYPEDRAW;
+	Properties2 = PROP_DRAWONCTYPE;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
