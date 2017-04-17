@@ -42,6 +42,7 @@
 #define PROP_ENERGY_PART		0x00000001
 #define PROP_ELEC_HEATING		0x00000002  // Electricity heating effect
 #define PROP_NOWAVELENGTHS		0x00000004  // Energy particle without wavelengths
+#define PROP_UNBREAKABLECLONE	0x00004000  // 2^14
 #define PROP_NODESTRUCT			0x00008000  // 2^15 Indestructible property
 #define PROP_CLONE				0x00010000  // 2^16 Makes elements clone things that touch it
 // #define PROP_DRAWONCTYPE		0x00080000

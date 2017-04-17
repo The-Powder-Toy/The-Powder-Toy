@@ -277,7 +277,7 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 					}
 					r = pmap[y+ry][x+rx];
 					rt = r & 0xFF;
-					if (!r || (sim->elements[rt].Properties2 & PROP_NODESTRUCT) || rt == PT_VIBR || rt == PT_BVBR || rt == PT_WARP)
+					if (!r || (sim->elements[rt].Properties2 & PROP_NODESTRUCT) || rt == PT_VIBR || rt == PT_BVBR || rt == PT_WARP || rt == PT_SPRK)
 						continue;
 					if (rt == PT_E189)
 					{

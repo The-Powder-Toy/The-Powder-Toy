@@ -2136,6 +2136,7 @@ void Simulation::init_can_move()
 	// can_move[PT_DEST][PT_PCLN] = 0;
 	// can_move[PT_DEST][PT_BCLN] = 0;
 	// can_move[PT_DEST][PT_PBCN] = 0;
+	can_move[PT_DEST][PT_SPRK] = 3;
 
 	can_move[PT_NEUT][PT_INVIS] = 2;
 	can_move[PT_ELEC][PT_LCRY] = 2;
@@ -2325,6 +2326,13 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr)
 		else if (pt == PT_E186 && (r&0xFF) == PT_BRMT)
 		{
 			if (parts[r>>8].ctype == PT_TUNG)
+				return 2;
+			else
+				return 0;
+		}
+		else if (pt == PT_DEST && (r&0xFF) == PT_SPRK)
+		{
+			if (elements[parts[r>>8].ctype].Properties2 & PROP_NODESTRUCT)
 				return 2;
 			else
 				return 0;
