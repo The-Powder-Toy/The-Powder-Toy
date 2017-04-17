@@ -301,7 +301,7 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 						continue;
 					break;
 				case PT_ETRD:
-					if (receiver==PT_METL||receiver==PT_BMTL||receiver==PT_BRMT||receiver==PT_LRBD||receiver==PT_RBDM||receiver==PT_PSCN||receiver==PT_NSCN)
+					if (receiver==PT_METL||receiver==PT_BMTL||receiver==PT_BRMT||receiver==PT_LRBD||receiver==PT_RBDM||receiver==PT_PSCN||receiver==PT_NSCN||receiver==PT_INDC)
 						goto conduct;
 					continue;
 				case PT_NTCT:
@@ -323,7 +323,7 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 				switch (receiver)
 				{
 				case PT_QRTZ:
-					if ((sender==PT_NSCN||sender==PT_METL||sender==PT_PSCN||sender==PT_QRTZ) && (parts[r>>8].temp<173.15||sim->pv[(y+ry)/CELL][(x+rx)/CELL]>8))
+					if ((sender==PT_NSCN||sender==PT_METL||sender==PT_PSCN||sender==PT_QRTZ||receiver==PT_INDC) && (parts[r>>8].temp<173.15||sim->pv[(y+ry)/CELL][(x+rx)/CELL]>8))
 						goto conduct;
 					continue;
 				case PT_NTCT:
