@@ -37,7 +37,6 @@
 #define PROP_TRANSPARENT	0x4000000   // 2^25 Photons (PHOT) pass through
 #define PROP_UNLIMSTACKING	0x8000000   // 2^27 Currently no limit on stacking
 #define PROP_INSULATED		0x10000000
-#define PROP_DRAWONCTYPE2	0x20000000
 
 // second properties flag:
 #define PROP_ENERGY_PART		0x00000001
@@ -45,6 +44,7 @@
 #define PROP_NOWAVELENGTHS		0x00000004  // Energy particle without wavelengths
 #define PROP_NODESTRUCT			0x00008000  // 2^15 Indestructible property
 #define PROP_CLONE				0x00010000  // 2^16 Makes elements clone things that touch it
+// #define PROP_DRAWONCTYPE		0x00080000
 // #define PROP_NOSLOWDOWN		0x02000000
 #define PROP_INVISIBLE			0x04000000
 
