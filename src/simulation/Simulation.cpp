@@ -5734,15 +5734,15 @@ void Simulation::AfterSim()
 		if (E189_pause & 0x0020)
 		{
 			elements[PT_INVIS].Properties2 ^= PROP_NODESTRUCT; // toggle INVS's indestructibility
-			if (elements[PT_INVIS].Properties2 & PROP_NODESTRUCT)
-			{
-				INVS_hardness_tmp = elements[PT_INVIS].Hardness;
-				elements[PT_INVIS].Hardness = 0;
-			}
-			else
-			{
-				elements[PT_INVIS].Hardness = INVS_hardness_tmp;
-			}
+			// if (elements[PT_INVIS].Properties2 & PROP_NODESTRUCT)
+			// {
+			// 	INVS_hardness_tmp = elements[PT_INVIS].Hardness;
+			//	elements[PT_INVIS].Hardness = 0;
+			// }
+			// else
+			// {
+			//	elements[PT_INVIS].Hardness = INVS_hardness_tmp;
+			// }
 		}
 		if (E189_pause & 0x0040)
 			Element_PHOT::ignite_flammable = !Element_PHOT::ignite_flammable;
