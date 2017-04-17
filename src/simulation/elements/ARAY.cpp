@@ -231,20 +231,28 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 								{
 									if (rt != PT_INWR && (rt != PT_SPRK || parts[r].ctype != PT_INWR))
 									{
-										if (spc_conduct == 3)
+										switch (spc_conduct)
 										{
-											if (rt != PT_INST)
-												sim->create_part (-1, x+nxi+nxx, y+nyi+nyy, PT_SPRK);
+										case 1:
+											sim->create_part(-1, x+nxi+nxx, y+nyi+nyy, PT_SPRK);
+											goto break1a;
+										case 2:
+											sim->create_part(-1, x+nxi+nxx, y+nyi+nyy, PT_SPRK);
+											if (!(parts[r].type==PT_SPRK && parts[r].ctype >= 0 && parts[r].ctype < PT_NUM && (sim->elements[parts[r].ctype].Properties&PROP_CONDUCTS)))
+												goto break1a;
+										case 3:
+											sim->create_part(-1, x+nxi+nxx, y+nyi+nyy, PT_SPRK);
+											break;
+										case 4:
+											if (rt == PT_INST)
+											{
+												docontinue = nostop;
+												sim->FloodINST(x+nxi+nxx, y+nyi+nyy, PT_SPRK, PT_INST);
+											}
 											else
-												sim->FloodINST (x+nxi+nxx, y+nyi+nyy, PT_SPRK, PT_INST);
-											docontinue = nostop;
+												sim->create_part(-1, x+nxi+nxx, y+nyi+nyy, PT_SPRK);
 											continue;
 										}
-										sim->create_part(-1, x+nxi+nxx, y+nyi+nyy, PT_SPRK);
-										if (spc_conduct == 1)
-											break;
-										if (spc_conduct == 2 && !(parts[r].type==PT_SPRK && parts[r].ctype >= 0 && parts[r].ctype < PT_NUM && (sim->elements[parts[r].ctype].Properties&PROP_CONDUCTS)))
-											break;
 									}
 								}
 								continue;

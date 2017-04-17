@@ -390,7 +390,7 @@ void Element_E189::interactDir(Simulation* sim, int i, int x, int y, Particle* p
 				if (part_phot->life > 0)
 				{
 					part_phot->life -= part_E189->ctype;
-					if (part_phot->life < 0)
+					if (part_phot->life <= 0)
 						sim->kill_part(i);
 				}
 				break;
