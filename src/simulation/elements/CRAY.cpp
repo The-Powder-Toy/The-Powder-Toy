@@ -114,7 +114,7 @@ int Element_CRAY::update(UPDATE_FUNC_ARGS)
 								parts[r>>8].life = 4;
 							} else if ((r&0xFF) == PT_CRAY || nostop) {
 								docontinue = 1;
-							} else if(destroy && r && !(sim->elements[r&0xFF].Properties2 & PROP_NODESTRUCT2)) {
+							} else if(destroy && r && !(sim->elements[r&0xFF].Properties2 & PROP_NODESTRUCT)) {
 								sim->kill_part(r>>8);
 								if(!--partsRemaining)
 									docontinue = 0;
