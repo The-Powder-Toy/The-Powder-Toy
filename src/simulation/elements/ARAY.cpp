@@ -237,7 +237,8 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 												sim->create_part (-1, x+nxi+nxx, y+nyi+nyy, PT_SPRK);
 											else
 												sim->FloodINST (x+nxi+nxx, y+nyi+nyy, PT_SPRK, PT_INST);
-											break;
+											docontinue = nostop;
+											continue;
 										}
 										sim->create_part(-1, x+nxi+nxx, y+nyi+nyy, PT_SPRK);
 										if (spc_conduct == 1)
