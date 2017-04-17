@@ -4528,7 +4528,7 @@ killed:
 						continue;
 					}
 
-					if (!(elements[t].Properties & PROP_NOWAVELENGTHS))
+					if (!(elements[t].Properties2 & PROP_NOWAVELENGTHS))
 					{
 						// this should be replaced with a particle type attribute ("photwl" or something)
 						parts[i].ctype &= elements[r&0xFF].PhotonReflectWavelengths;

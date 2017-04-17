@@ -34,7 +34,8 @@ Element_E186::Element_E186()
 	HeatConduct = 251;
 	Description = "Experimental element.";
 
-	Properties = TYPE_ENERGY|PROP_LIFE_DEC|PROP_RADIOACTIVE|PROP_LIFE_KILL_DEC | PROP_NOWAVELENGTHS;
+	Properties = TYPE_ENERGY|PROP_LIFE_DEC|PROP_RADIOACTIVE|PROP_LIFE_KILL_DEC;
+	Properties2 = PROP_NOWAVELENGTHS;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
