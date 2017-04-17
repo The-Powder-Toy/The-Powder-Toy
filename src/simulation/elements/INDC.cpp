@@ -1,6 +1,6 @@
 #include "simulation/Elements.h"
 //#TPT-Directive ElementClass Element_INDC PT_INDC 193
-Element_INDI::Element_INDI()
+Element_INDC::Element_INDC()
 {
 	Identifier = "DEFAULT_PT_INDC";
 	Name = "INDC";
