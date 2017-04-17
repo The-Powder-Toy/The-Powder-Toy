@@ -233,6 +233,10 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 									{
 										if (spc_conduct == 3)
 										{
+											if (rt != PT_INST)
+												sim->create_part (-1, x+nxi+nxx, y+nyi+nyy, PT_SPRK);
+											else
+												sim->FloodINST (x+nxi+nxx, y+nyi+nyy, PT_SPRK, PT_INST);
 											break;
 										}
 										sim->create_part(-1, x+nxi+nxx, y+nyi+nyy, PT_SPRK);
