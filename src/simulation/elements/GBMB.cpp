@@ -60,7 +60,7 @@ int Element_GBMB::update(UPDATE_FUNC_ARGS)
 					if(!r)
 						continue;
 					if((r&0xFF)!=PT_BOMB && (r&0xFF)!=PT_GBMB &&
-					   !(sim->elements[r&0xFF].Properties2 & (PROP_NODESTRUCT | PROP_UNBREAKABLECLONE))
+					   !(sim->elements[r&0xFF].Properties2 & (PROP_NODESTRUCT | PROP_UNBREAKABLECLONE)))
 					{
 						parts[i].life=60;
 						break;

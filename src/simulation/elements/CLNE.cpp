@@ -30,7 +30,8 @@ Element_CLNE::Element_CLNE()
 	HeatConduct = 251;
 	Description = "Clone. Duplicates any particles it touches.";
 
-	Properties = TYPE_SOLID|PROP_DRAWONCTYPE|PROP_NOCTYPEDRAW | PROP_TRANSPARENT | PROP_CLONE;
+	Properties = TYPE_SOLID|PROP_DRAWONCTYPE|PROP_NOCTYPEDRAW | PROP_TRANSPARENT;
+	Properties2 = PROP_CLONE | PROP_UNBREAKABLECLONE;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
