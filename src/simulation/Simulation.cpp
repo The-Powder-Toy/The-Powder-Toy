@@ -2333,9 +2333,9 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr)
 		else if (pt == PT_DEST && (r&0xFF) == PT_SPRK)
 		{
 			if (elements[parts[r>>8].ctype].Properties2 & PROP_NODESTRUCT)
-				return 2;
-			else
 				return 0;
+			else
+				return 1;
 		}
 	}
 	if (bmap[ny/CELL][nx/CELL])
