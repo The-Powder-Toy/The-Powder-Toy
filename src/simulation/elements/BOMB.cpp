@@ -58,7 +58,7 @@ int Element_BOMB::update(UPDATE_FUNC_ARGS)
 				if (!r)
 					continue;
 				if ((r&0xFF)!=PT_BOMB && (r&0xFF)!=PT_EMBR && !(sim->elements[r&0xFF].Properties2 & (PROP_NODESTRUCT|PROP_CLONE)) && (r&0xFF)!=PT_VIBR
-					&& (rt!=PT_SPRK || (sim->elements[r>>8].Properties2 & PROP_NODESTRUCT)))
+					&& ((r&0xFF)!=PT_SPRK || (sim->elements[r>>8].Properties2 & PROP_NODESTRUCT)))
 				{
 					int rad = 8;
 					int nxi;
