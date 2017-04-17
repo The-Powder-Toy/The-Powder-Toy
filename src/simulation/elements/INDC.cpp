@@ -4,9 +4,9 @@ Element_INDC::Element_INDC()
 {
 	Identifier = "DEFAULT_PT_INDC";
 	Name = "INDC";
-	Colour = PIXPACK(0x404060);
+	Colour = PIXPACK(0x6F6F8F);
 	MenuVisible = 1;
-	MenuSection = SC_SPECIAL;
+	MenuSection = SC_ELEC;
 	Enabled = 1;
 
 	Advection = 0.0f;
