@@ -84,7 +84,7 @@ int Element_CONV::update(UPDATE_FUNC_ARGS)
 					if (!r || (restrictElement && (r&0xFF)!=restrictElement))
 						continue;
 					if((r&0xFF)!=PT_CONV && !(sim->elements[r&0xFF].Properties2 & PROP_NODESTRUCT) && (r&0xFF)!=ctype
-						& ((rr&0xFF)!=PT_SPRK || (sim->elements[r >> 8].Properties2 & PROP_NODESTRUCT)))
+						& ((r&0xFF)!=PT_SPRK || (sim->elements[r >> 8].Properties2 & PROP_NODESTRUCT)))
 					{
 						sim->create_part(r>>8, x+rx, y+ry, parts[i].ctype&0xFF, parts[i].ctype>>8);
 					}
