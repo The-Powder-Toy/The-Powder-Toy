@@ -1,7 +1,9 @@
 //#include <cstdlib>
 #include <cmath>
 #include <math.h>
-#if !defined(_MSC_VER)
+#ifdef _MSC_VER
+#include <intrin.h>
+#else
 #include <strings.h>
 #endif
 #include "Config.h"
@@ -1769,6 +1771,26 @@ inline int Simulation::is_wire_off(int x, int y)
 	return (bmap[y][x]==WL_DETECT || bmap[y][x]==WL_EWALL || bmap[y][x]==WL_ALLOWLIQUID || bmap[y][x]==WL_WALLELEC || bmap[y][x]==WL_ALLOWALLELEC || bmap[y][x]==WL_EHOLE) && emap[y][x]<8;
 }
 
+// implement __builtin_ctz and __builtin_clz on msvc
+#ifdef _MSC_VER
+unsigned msvc_ctz(unsigned a)
+{
+	unsigned long i;
+	_BitScanForward(&i, a);
+	return i;
+}
+
+unsigned msvc_clz(unsigned a)
+{
+	unsigned long i;
+	_BitScanReverse(&i, a);
+	return 31 - i;
+}
+
+#define __builtin_ctz msvc_ctz
+#define __builtin_clz msvc_clz
+#endif
+
 int Simulation::get_wavelength_bin(int *wm)
 {
 	int i, w0, wM, r;
@@ -1776,11 +1798,13 @@ int Simulation::get_wavelength_bin(int *wm)
 	if (!(*wm & 0x3FFFFFFF))
 		return -1;
 
-#ifdef __GNUC__
+#if defined(__GNUC__) || defined(_MSVC_VER)
 	w0 = __builtin_ctz(*wm | 0xC0000000);
 	wM = 31 - __builtin_clz(*wm & 0x3FFFFFFF);
 #else
-	for (i=0; i<30; i++)
+	w0 = 30;
+	wM = 0;
+	for (i = 0; i < 30; i++)
 		if (*wm & (1<<i))
 		{
 			if (i < w0)
