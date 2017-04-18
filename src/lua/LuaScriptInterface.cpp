@@ -1921,18 +1921,20 @@ int BrushClosure(lua_State * l)
 	int yield_x, yield_y;
 	while (true)
 	{
-		if (!(y < sizeY)) return 0;
+		if (!(y < sizeY))
+			return 0;
 		if (x < sizeX)
 		{
 			bool yield_coords = false;
-			if(bitmap[(y*sizeX)+x] && (positionX+(x-radiusX) >= 0 && positionY+(y-radiusY) >= 0 && positionX+(x-radiusX) < XRES && positionY+(y-radiusY) < YRES))
+			if (bitmap[(y*sizeX)+x] && (positionX+(x-radiusX) >= 0 && positionY+(y-radiusY) >= 0 && positionX+(x-radiusX) < XRES && positionY+(y-radiusY) < YRES))
 			{
 				yield_coords = true;
 				yield_x = positionX+(x-radiusX);
 				yield_y = positionY+(y-radiusY);
 			}
 			x++;
-			if (yield_coords) break;
+			if (yield_coords)
+				break;
 		}
 		else
 		{
@@ -1953,12 +1955,22 @@ int BrushClosure(lua_State * l)
 
 int LuaScriptInterface::simulation_brush(lua_State * l)
 {
-	// see Simulation::ToolBrush
+	int argCount = lua_gettop(l);
 	int positionX = luaL_checkint(l, 1);
 	int positionY = luaL_checkint(l, 2);
-	int brushradiusX = luaL_checkint(l, 3);
-	int brushradiusY = luaL_checkint(l, 4);
-	int brushID = luaL_checkint(l, 5);
+	int brushradiusX, brushradiusY;
+	if (argCount >= 4 || !luacon_model->GetBrush())
+	{
+		brushradiusX = luaL_checkint(l, 3);
+		brushradiusY = luaL_checkint(l, 4);
+	}
+	else
+	{
+		ui::Point size = luacon_model->GetBrush()->GetSize();
+		brushradiusX = size.X;
+		brushradiusY = size.Y;
+	}
+	int brushID = luaL_optint(l, 5, luacon_model->GetBrushID());
 	
 	vector<Brush *> brushList = luacon_model->GetBrushList();
 	if (brushID < 0 || brushID >= (int)brushList.size())
