@@ -1295,7 +1295,19 @@ void Renderer::render_parts()
 #if !defined(RENDERER) && defined(LUACONSOLE)
 						if (lua_gr_func[t])
 						{
-							luacon_graphicsReplacement(this, &(sim->parts[i]), nx, ny, &pixel_mode, &cola, &colr, &colg, &colb, &firea, &firer, &fireg, &fireb, i);
+							if (luacon_graphicsReplacement(this, &(sim->parts[i]), nx, ny, &pixel_mode, &cola, &colr, &colg, &colb, &firea, &firer, &fireg, &fireb, i))
+							{
+								graphicscache[t].isready = 1;
+								graphicscache[t].pixel_mode = pixel_mode;
+								graphicscache[t].cola = cola;
+								graphicscache[t].colr = colr;
+								graphicscache[t].colg = colg;
+								graphicscache[t].colb = colb;
+								graphicscache[t].firea = firea;
+								graphicscache[t].firer = firer;
+								graphicscache[t].fireg = fireg;
+								graphicscache[t].fireb = fireb;
+							}
 						}
 						else if ((*(elements[t].Graphics))(this, &(sim->parts[i]), nx, ny, &pixel_mode, &cola, &colr, &colg, &colb, &firea, &firer, &fireg, &fireb)) //That's a lot of args, a struct might be better
 #else

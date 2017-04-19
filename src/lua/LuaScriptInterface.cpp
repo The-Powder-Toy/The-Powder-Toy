@@ -1937,25 +1937,26 @@ int BrushClosure(lua_State * l)
 	int sizeY = lua_tointeger(l, lua_upvalueindex(6));
 	int x = lua_tointeger(l, lua_upvalueindex(7));
 	int y = lua_tointeger(l, lua_upvalueindex(8));
-	float strength = lua_tonumber(l, lua_upvalueindex(9));
-	unsigned char *bitmap = (unsigned char *)lua_touserdata(l, lua_upvalueindex(10));
+	unsigned char *bitmap = (unsigned char *)lua_touserdata(l, lua_upvalueindex(9));
 	
 	
 	int yield_x, yield_y;
 	while (true)
 	{
-		if (!(y < sizeY)) return 0;
+		if (!(y < sizeY))
+			return 0;
 		if (x < sizeX)
 		{
 			bool yield_coords = false;
-			if(bitmap[(y*sizeX)+x] && (positionX+(x-radiusX) >= 0 && positionY+(y-radiusY) >= 0 && positionX+(x-radiusX) < XRES && positionY+(y-radiusY) < YRES))
+			if (bitmap[(y*sizeX)+x] && (positionX+(x-radiusX) >= 0 && positionY+(y-radiusY) >= 0 && positionX+(x-radiusX) < XRES && positionY+(y-radiusY) < YRES))
 			{
 				yield_coords = true;
 				yield_x = positionX+(x-radiusX);
 				yield_y = positionY+(y-radiusY);
 			}
 			x++;
-			if (yield_coords) break;
+			if (yield_coords)
+				break;
 		}
 		else
 		{
@@ -1971,28 +1972,52 @@ int BrushClosure(lua_State * l)
 	
 	lua_pushnumber(l, yield_x);
 	lua_pushnumber(l, yield_y);
-	lua_pushnumber(l, strength);
-	return 3;
+	return 2;
 }
 
 int LuaScriptInterface::simulation_brush(lua_State * l)
 {
-	// see Simulation::ToolBrush
+	int argCount = lua_gettop(l);
 	int positionX = luaL_checkint(l, 1);
 	int positionY = luaL_checkint(l, 2);
-	Brush * cBrush = luacon_model->GetBrush();
-	int radiusX = cBrush->GetRadius().X, radiusY = cBrush->GetRadius().Y, sizeX = cBrush->GetSize().X, sizeY = cBrush->GetSize().Y;
+	int brushradiusX, brushradiusY;
+	if (argCount >= 4 || !luacon_model->GetBrush())
+	{
+		brushradiusX = luaL_checkint(l, 3);
+		brushradiusY = luaL_checkint(l, 4);
+	}
+	else
+	{
+		ui::Point size = luacon_model->GetBrush()->GetSize();
+		brushradiusX = size.X;
+		brushradiusY = size.Y;
+	}
+	int brushID = luaL_optint(l, 5, luacon_model->GetBrushID());
+	
+	vector<Brush *> brushList = luacon_model->GetBrushList();
+	if (brushID < 0 || brushID >= (int)brushList.size())
+		return luaL_error(l, "Invalid brush id '%d'", brushID);
+	
+	ui::Point tempRadius = brushList[brushID]->GetRadius();
+	brushList[brushID]->SetRadius(ui::Point(brushradiusX, brushradiusY));
 	lua_pushnumber(l, positionX);
 	lua_pushnumber(l, positionY);
+	int radiusX = brushList[brushID]->GetRadius().X;
+	int radiusY = brushList[brushID]->GetRadius().Y;
+	int sizeX = brushList[brushID]->GetSize().X;
+	int sizeY = brushList[brushID]->GetSize().Y;
 	lua_pushnumber(l, radiusX);
 	lua_pushnumber(l, radiusY);
 	lua_pushnumber(l, sizeX);
 	lua_pushnumber(l, sizeY);
 	lua_pushnumber(l, 0);
 	lua_pushnumber(l, 0);
-	lua_pushnumber(l, luacon_model->GetToolStrength());
-	lua_pushlightuserdata(l, cBrush->GetBitmap());
-	lua_pushcclosure(l, BrushClosure, 10);
+	int bitmapSize = sizeX * sizeY * sizeof(unsigned char);
+	void *bitmapCopy = lua_newuserdata(l, bitmapSize);
+	memcpy(bitmapCopy, brushList[brushID]->GetBitmap(), bitmapSize);
+	brushList[brushID]->SetRadius(tempRadius);
+	
+	lua_pushcclosure(l, BrushClosure, 9);
 	return 1;
 }
 
