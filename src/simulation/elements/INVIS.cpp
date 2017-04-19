@@ -49,15 +49,15 @@ Element_INVIS::Element_INVIS()
 int Element_INVIS::update(UPDATE_FUNC_ARGS)
 {
 	float pressureResistance = 0.0f;
-	if (parts[i].tmp2 != 0)
-		pressureResistance = (float) parts[i].tmp2;
+	if (parts[i].tmp > 0)
+		pressureResistance = (float) parts[i].tmp;
 	else
 		pressureResistance = 4.0f;
 
-	if (sim->pv[y/CELL][x/CELL]>pressureResistance || sim->pv[y/CELL][x/CELL]<-pressureResistance)
-		parts[i].tmp = 1;
+	if (sim->pv[y/CELL][x/CELL] < -pressureResistance || sim->pv[y/CELL][x/CELL] > pressureResistance)
+		parts[i].tmp2 = 1;
 	else
-		parts[i].tmp = 0;
+		parts[i].tmp2 = 0;
 	return 0;
 }
 
@@ -65,7 +65,7 @@ int Element_INVIS::update(UPDATE_FUNC_ARGS)
 int Element_INVIS::graphics(GRAPHICS_FUNC_ARGS)
 {
 	//pv[ny/CELL][nx/CELL]>4.0f || pv[ny/CELL][nx/CELL]<-4.0f
-	if(cpart->tmp)
+	if(cpart->tmp2)
 	{
 		*cola = 100;
 		*colr = 15;

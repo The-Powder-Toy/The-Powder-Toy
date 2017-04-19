@@ -48,7 +48,7 @@ Element_FRAY::Element_FRAY()
 int Element_FRAY::update(UPDATE_FUNC_ARGS)
 {
 	int curlen;
-	if(parts[i].tmp > 0)
+	if (parts[i].tmp > 0)
 		curlen = parts[i].tmp;
 	else
 		curlen = 10;
