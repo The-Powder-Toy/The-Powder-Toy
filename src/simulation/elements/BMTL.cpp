@@ -69,7 +69,7 @@ int Element_BMTL::update(UPDATE_FUNC_ARGS)
 	else if (parts[i].tmp==1 && !(rand()%1000))
 	{
 		parts[i].tmp = 0;
-		sim->part_change_type(i,x,y,PT_BRMT);
+		sim->part_change_type(i,x,y, (parts[i].tmp3 & 1) ? PT_IRON : PT_BRMT);
 	}
 	return 0;
 }
