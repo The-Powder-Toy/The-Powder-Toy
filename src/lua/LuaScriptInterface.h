@@ -111,6 +111,7 @@ class LuaScriptInterface: public CommandInterface
 	static int simulation_gspeed(lua_State * l);
 	static int simulation_CAType(lua_State * l);
 	static int simulation_createDebugComponent(lua_State * l);
+	static int simulation_breakable_wall_count(lua_State * l);
 
 	//Stickman attributes
 	void initStickmanAPI();

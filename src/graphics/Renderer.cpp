@@ -557,6 +557,15 @@ VideoBuffer * Renderer::WallIcon(int wallID, int width, int height)
 				else
 					newTexture->SetPixel(i, j, 0x20, 0x20, 0x20, 255);
 	}
+	else if (wtypes[wt].drawstyle==5)
+	{
+		for (j=0; j<height; j++)
+			for (i=0; i<width; i++)
+				if ((i << 1 ^ j) & 3)
+					newTexture->SetPixel(i, j, PIXR(pc), PIXG(pc), PIXB(pc), 255);
+				else
+					newTexture->SetPixel(i, j, PIXR(gc), PIXG(gc), PIXB(gc), 255);
+	}
 
 	// special rendering for some walls
 	if (wt==WL_EWALL)
@@ -858,6 +867,14 @@ void Renderer::DrawWalls()
 							else
 								vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = PIXPACK(0x202020);
 					break;
+				case 5:
+					for (int j = 0; j < CELL; j++)
+						for (int i = 0; i < CELL; i++)
+							if ((i << 1 ^ j) & 3)
+								vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = pc;
+							else 
+								vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = gc;
+					break;
 				}
 
 				// when in blob view, draw some blobs...
@@ -939,6 +956,14 @@ void Renderer::DrawWalls()
 								else
 									// looks bad if drawing black blobs
 									vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = PIXPACK(0x202020);
+						break;
+					case 5:
+						for (int j = 0; j < CELL; j++)
+							for (int i = 0; i < CELL; i++)
+								if ((i << 1 ^ j) & 3)
+									vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = pc;
+								else 
+									drawblob((x*CELL+i), (y*CELL+j), PIXR(gc), PIXG(gc), PIXB(gc));
 						break;
 					}
 				}

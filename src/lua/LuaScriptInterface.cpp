@@ -755,6 +755,7 @@ void LuaScriptInterface::initSimulationAPI()
 		{"CAType", simulation_CAType},
 		{"createDebugComponent", simulation_createDebugComponent},
 		{"createDComp", simulation_createDebugComponent},
+		{"breakable_wall_count", simulation_breakable_wall_count},
 		{NULL, NULL}
 	};
 	luaL_register(l, "simulation", simulationAPIMethods);
@@ -1901,6 +1902,12 @@ int LuaScriptInterface::simulation_canMove(lua_State * l)
 		luacon_sim->can_move[movingElement][destinationElement] = luaL_checkint(l, 3);
 		return 0;
 	}
+}
+
+int LuaScriptInterface::simulation_breakable_wall_count(lua_State * l)
+{
+	lua_pushnumber(l, luacon_sim->breakable_wall_count);
+	return 1;
 }
 
 int PartsClosure(lua_State * l)

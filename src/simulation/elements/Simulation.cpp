@@ -195,14 +195,6 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 		{
 			if(save->blockMap[saveBlockY][saveBlockX])
 			{
-				if (bmap[saveBlockY+blockY][saveBlockX+blockX] == WL_BREAKABLE_WALL)
-				{
-					breakable_wall_count--;
-				}
-				if (save->blockMap[saveBlockY][saveBlockX] == WL_BREAKABLE_WALL)
-				{
-					breakable_wall_count++;
-				}
 				bmap[saveBlockY+blockY][saveBlockX+blockX] = save->blockMap[saveBlockY][saveBlockX];
 				fvx[saveBlockY+blockY][saveBlockX+blockX] = save->fanVelX[saveBlockY][saveBlockX];
 				fvy[saveBlockY+blockY][saveBlockX+blockX] = save->fanVelY[saveBlockY][saveBlockX];
@@ -1198,7 +1190,6 @@ int Simulation::CreateWalls(int x, int y, int rx, int ry, int wall, Brush * cBru
 	y = y/CELL;
 	x -= rx;
 	y -= ry;
-
 	for (int wallX = x; wallX <= x+rx+rx; wallX++)
 	{
 		for (int wallY = y; wallY <= y+ry+ry; wallY++)
@@ -1224,15 +1215,6 @@ int Simulation::CreateWalls(int x, int y, int rx, int ry, int wall, Brush * cBru
 				}
 				if (wall == WL_GRAV || bmap[wallY][wallX] == WL_GRAV)
 					gravWallChanged = true;
-
-				if (bmap[wallY][wallX] == WL_BREAKABLE_WALL)
-				{
-					breakable_wall_count--;
-				}
-				if (wall == WL_BREAKABLE_WALL)
-				{
-					breakable_wall_count++;
-				}
 
 				if (wall == WL_ERASEALL)
 				{
@@ -1976,7 +1958,6 @@ void Simulation::clear_sim(void)
 	emp2_trigger_count = 0;
 	E189_pause = 0;
 	E189_FIGH_pause = 0;
-	breakable_wall_count = 0;
 	signs.clear();
 	memset(bmap, 0, sizeof(bmap));
 	memset(emap, 0, sizeof(emap));
@@ -5538,36 +5519,6 @@ void Simulation::BeforeSim()
 				air->bmap_blockairh[y][x] = (bmap[y][x]==WL_WALL || bmap[y][x]==WL_BREAKABLE_WALL || bmap[y][x]==WL_WALLELEC || bmap[y][x]==WL_BLOCKAIR || bmap[y][x]==WL_GRAV || (bmap[y][x]==WL_EWALL && !emap[y][x])) ? 0x8:0;
 			}
 		}
-		
-		int tmp_count = breakable_wall_count, xx, yy;
-		if (breakable_wall_count >= 0)
-		{
-			for (y = 0; y < YRES/CELL; y++)
-			{
-				for (x = 0; x < XRES/CELL; x++)
-				{
-					if (!tmp_count)
-						goto bwall_count_end;
-					if (bmap[y][x] == WL_BREAKABLE_WALL)
-					{
-						tmp_count--;
-						if (pv[y][x] > 4.0f || pv[y][x] < -4.0f)
-						{
-							breakable_wall_count--;
-							bmap[y][x] = 0;
-							for (yy = 0; yy < CELL; yy++)
-							{
-								for (xx = 0; xx < CELL; xx++)
-								{
-									create_part(-1, x*CELL+xx, y*CELL+yy, PT_STNE);
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	bwall_count_end:
 
 		// check for stacking and create BHOL if found
 		if (force_stacking_check || (rand()%10)==0)

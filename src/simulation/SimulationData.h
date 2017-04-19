@@ -62,6 +62,8 @@
 #define WL_BLOCKAIR		16
 #define WL_ERASEALL		17
 
+#define WL_BREAKABLE_WALL	18
+
 #define WL_FLOODHELPER	255
 
 #define UI_WALLCOUNT 18

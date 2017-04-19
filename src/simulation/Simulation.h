@@ -89,7 +89,7 @@ public:
 	unsigned char lloopsrule[8][8][8][8][8];
 	int extraLoopsCA;
 	int extraLoopsType;
-	int INVS_hardness_tmp;
+	// int INVS_hardness_tmp; // unused
 	//Air sim
 	float (*vx)[XRES/CELL];
 	float (*vy)[XRES/CELL];
@@ -105,6 +105,7 @@ public:
 	unsigned char emap[YRES/CELL][XRES/CELL];
 	float fvx[YRES/CELL][XRES/CELL];
 	float fvy[YRES/CELL][XRES/CELL];
+	int breakable_wall_count;
 	//Particles
 	Particle parts[NPART];
 	int pmap[YRES][XRES];
