@@ -1133,6 +1133,7 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 										}
 										parts[r>>8].tmp --;
 									}
+								}
 								break;
 							case PT_GOLD:
 								rr = pmap[y-ry][x-rx];
