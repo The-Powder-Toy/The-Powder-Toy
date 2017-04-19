@@ -1075,7 +1075,7 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 						rr = pmap[y-ry][x-rx];
 						rt = rr & 0xFF;
 						rr >>= 8;
-						if (parts[rr].life == 30)
+						if (rt == PT_E189 && parts[rr].life == 30)
 						{
 							if ((parts[rr].tmp >> 20) == 3)
 							{
@@ -1133,6 +1133,13 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 										}
 										parts[r>>8].tmp --;
 									}
+								break;
+							case PT_GOLD:
+								rr = pmap[y-ry][x-rx];
+								rt = rr & 0xFF;
+								if (rt == PT_BMTL || rt == PT_BRMT)
+								{
+									sim->part_change_type(rr >> 8, x-rx, y-ry, PT_IRON);
 								}
 								break;
 							}
