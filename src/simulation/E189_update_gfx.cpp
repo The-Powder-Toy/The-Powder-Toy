@@ -3,11 +3,30 @@
 
 pixel tempPartColor;
 
+#define NUM_SPC 36;
+
+pixel special_colors [NUM_SPC] = {
+	PIXPACK(0x999999), PIXPACK(0x9C9C9C), PIXPACK(0xFA9999), PIXPACK(0x99CC70), PIXPACK(0x702088),
+	PIXPACK(0x9040A8), PIXPACK(0xFF9999), PIXPACK(0x525252), PIXPACK(0x065206), PIXPACK(0xD2FFCF), //  10
+	PIXPACK(0xBC00BC), PIXPACK(0x9040A8), PIXPACK(0xBFFF05), PIXPACK(0xFF33FF), PIXPACK(0xFF22FF),
+	PIXPACK(0x9F0500), PIXPACK(0xAA0510), PIXPACK(0x9B4000), PIXPACK(0xEC00EC), PIXPACK(0xFF4422), //  20
+	PIXPACK(0xFFCC11), PIXPACK(0x777070), PIXPACK(0x8C868C), PIXPACK(0xAA8048), PIXPACK(0xF0F078),
+	PIXPACK(0xF0A820), PIXPACK(0xF0E8E0), PIXPACK(0x2033CC), PIXPACK(0xFFDD80), PIXPACK(0xD4E708), //  30
+	PIXPACK(0x7099CC), PIXPACK(0x9970D0), PIXPACK(0xFF00FF), PIXPACK(0x40A060), PIXPACK(0xFF00FF),
+	PIXPACK(0xF9F906)
+}
+
 int E189_Update::graphics(GRAPHICS_FUNC_ARGS)
 {
 	static char excitedtable [16] = {  0, 8, 2,10,12, 4,14, 6, 3,11, 1, 9,15, 7,13, 5 };
 	int ptmp, ppos, pexc1, temp;
-	switch(cpart->life)
+	int clife = cpart->life;
+	if (clife >= 0 && clife < NUM_SPC) // pre-decoration
+	{
+		tempPartColor = special_colors[clife];
+		*colr = PIXR(tempPartColor); *colg = PIXG(tempPartColor); *colb = PIXB(tempPartColor); 
+	}
+	switch(clife)
 	{
 	case 0:
 	case 1:
@@ -15,38 +34,14 @@ int E189_Update::graphics(GRAPHICS_FUNC_ARGS)
 		{
 			*colr = 0x66; *colg = 0x66; *colb = 0x66;
 		}
-		else
-		{
-			*colr = 0x99; *colg = 0x99; *colb = 0x99;
-		}
-		break;
-	case 2:
-		*colr = 0xFA; *colg = 0x99; *colb = 0x99;
-		break;
-	case 3:
-		*colr = 0x99; *colg = 0xCC; *colb = 0x70;
-		break;
-	case 4:
-		*colr = 0x70; *colg = 0x20; *colb = 0x88;
-		break;
-	case 5:
-		*colr = 0x90; *colg = 0x40; *colb = 0xA8;
 		break;
 	case 6:
 		if ((nx ^ ny) & 1) 
 		{
 			*colr = 0xDC; *colg = 0x66; *colb = 0x66;
 		}
-		else
-		{
-			*colr = 0xFF; *colg = 0x99; *colb = 0x99;
-		}
-		break;
-	case 7:
-		*colr = 0x52; *colg = 0x52; *colb = 0x52;
 		break;
 	case 8:
-		*colr = 0x06; *colg = 0x52; *colb = 0x06;
 		ptmp = cpart->tmp >> 3;
 		ppos = (nx & 3) | ((ny & 3) << 2);
 		pexc1 = ptmp >> 4;
@@ -64,19 +59,10 @@ int E189_Update::graphics(GRAPHICS_FUNC_ARGS)
 		break;
 	case 9:
 		*colr = *colb = 255 - (int)(0.0091f * cpart->temp);
-		*colg = 0xFF;
+		// *colg = 0xFF;
 		*firea = 90; *firer = *colr; *fireg = *colg; *fireb = *colb;
 		*pixel_mode = PMODE_NONE;
 		*pixel_mode |= FIRE_BLEND;
-		break;
-	case 10:
-		*colr = 0xBC; *colg = 0x00; *colb = 0xBC;
-		break;
-	case 11:
-		*colr = 0x90; *colg = 0x40; *colb = 0xA8;
-		break;
-	case 12:
-		*colr = 0xBF; *colg = 0xFF; *colb = 0x05;
 		break;
 	case 13:
 		switch (cpart->tmp2 & 0x3)
@@ -154,9 +140,6 @@ int E189_Update::graphics(GRAPHICS_FUNC_ARGS)
 		*pixel_mode &= ~PMODE;
 		*pixel_mode |= PMODE_BLEND;
 		break;
-	case 15:
-		*colr = 0x9F; *colg = 0x05; *colb = 0x00;
-		break;
 	case 16:
 		if (cpart->ctype == 3 && cpart->tmp)
 		{
@@ -175,16 +158,13 @@ int E189_Update::graphics(GRAPHICS_FUNC_ARGS)
 			}
 			return 0;
 		}
-		*colr = 0xAA; *colg = 0x05; *colb = 0x10;
 		if (temp)
 		{
 			*colg = *colr - *colg;
 		}
 		break;
 	case 17:
-		if ((nx ^ (ny << 1)) & 3)
-			{ *colr = 0x9B; *colg = 0x40; *colb = 0x00; }
-		else
+		if ( !((nx ^ (ny << 1)) & 3) )
 			{ *colr = 0xAA; *colg = 0x55; *colb = 0x10; }
 		break;
 	case 18:
@@ -192,32 +172,13 @@ int E189_Update::graphics(GRAPHICS_FUNC_ARGS)
 		*colg = cpart->tmp;
 		*colb = cpart->tmp2;
 		break;
-	case 19:
-		*colr = 0xFF; *colg = 0x44; *colb = 0x22;
-		break;
-	case 20:
-		*colr = 0xFF; *colg = 0xCC; *colb = 0x11;
-		break;
-	case 21:
-		*colr = 0x77; *colg = 0x70; *colb = 0x70;
-		break;
 	case 22:
 		if (!(((nx + ny) & 3) && ((nx - ny) & 3)))
 			{ *colr = *colg = *colb = 0xEE; }
-		else
-			{ *colr = *colg = *colb = 0x8C; }
 		break;
 	case 23:
 		if ((nx ^ ny) & 2)
 			{ *colr = 0xEE; *colg = 0xB2; *colb = 0x66; }
-		else
-			{ *colr = 0xAA; *colg = 0x80; *colb = 0x48; }
-		break;
-	case 24:
-		*colr = 0xF0; *colg = 0xF0; *colb = 0x78;
-		break;
-	case 25:
-		*colr = 0xF0; *colg = 0xA8; *colb = 0x20;
 		break;
 	case 26:
 		ptmp = cpart->tmp;
@@ -228,27 +189,6 @@ int E189_Update::graphics(GRAPHICS_FUNC_ARGS)
 			*colg = 0x74 + ((ptmp * 0x10B) >> 4);
 			*colb = 0x70 + (ptmp << 4);
 		}
-		else
-			{ *colr = 0xF0; *colg = 0xE8; *colb = 0xE0; }
-		break;
-	case 27:
-		*colr = 0x20; *colg = 0x33; *colb = 0xCC;
-		break;
-	case 28:
-		*colr = 0xFF; *colg = 0xDD; *colb = 0x80;
-		break;
-	case 29:
-		*colr = 0xD4; *colg = 0xE7; *colb = 0x08;
-		break;
-	case 30:
-		*colr = 0x70; *colg = 0x99; *colb = 0xCC;
-		break;
-	case 31:
-		*colr = 0x99; *colg = 0x70; *colb = 0xD0;
-		break;
-	case 32:
-	case 34:
-		*colr = 0xFF; *colg = 0x00; *colb = 0xFF;
 		break;
 	case 33:
 		{
@@ -267,18 +207,21 @@ int E189_Update::graphics(GRAPHICS_FUNC_ARGS)
 			tempPartColor = ren->sim->elements[ptmp].Colour;
 			
 			// some special cases:
-			if (ptmp == PT_LIFE && ppos >= 0 && ppos < NGOL)
+			switch (ptmp)
 			{
-				tempPartColor = Element_LIFE::Element_GOL_colour[ppos];
+			case PT_LIFE:
+				if (ppos >= 0 && ppos < NGOL)
+					tempPartColor = Element_LIFE::Element_GOL_colour[ppos];
+				break;
+			case PT_E189:
+				if (ppos >= 0 && ppos < NUM_SPC)
+					tempPartColor = special_colors[ppos];
+				break;
 			}
 			
 			*colr = PIXR(tempPartColor);
 			*colg = PIXG(tempPartColor);
 			*colb = PIXB(tempPartColor);
-		}
-		else
-		{
-			*colr = 0xFF; *colg = 0xFF; *colb = 0x00;
 		}
 		break;
 	}
