@@ -1522,6 +1522,15 @@ std::string GameController::ElementResolve(int type, int ctype)
 	return "";
 }
 
+float GameController::sim_max_pressure_resolve()
+{
+	if(gameModel && gameModel->GetSimulation())
+	{
+		return gameModel->GetSimulation()->sim_max_pressure;
+	}
+	return 0;
+}
+
 bool GameController::IsValidElement(int type)
 {
 	if(gameModel && gameModel->GetSimulation())

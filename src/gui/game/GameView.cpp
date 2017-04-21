@@ -164,6 +164,7 @@ GameView::GameView():
 	showHud(true),
 	showDebug(false),
 	showDebugState(0),
+	showDebugStateFlags(0),
 	alternateState(0),
 	debugPrecision(2),
 	usingHexadecimal(false),
@@ -1725,7 +1726,10 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 					showDebugState = 0;
 				break;
 				case 'p':
-					showDebugState = 10;
+					if (shift)
+						showDebugState = 10;
+					else
+						showDebugStateFlags ^= 0x00000001;
 				break;
 				case 't':
 					showDebugState = (shift ? 5 : 1);
@@ -2726,6 +2730,20 @@ void GameView::OnDraw()
 			textWidth = Graphics::textwidth((char*)sampleInfo.str().c_str());
 			g->fillrect(XRES-20-textWidth, 27, textWidth+8, 14, 0, 0, 0, alpha*0.5f);
 			g->drawtext(XRES-16-textWidth, 30, (const char*)sampleInfo.str().c_str(), 255, 255, 255, alpha*0.75f);
+			
+			int __currPosY = 43;
+			
+			if (showDebugStateFlags & 0x00000001)
+			{
+				sampleInfo.str(std::string());
+
+				sampleInfo << "sim_max_pressure = " << c->sim_max_pressure_resolve();
+
+				textWidth = Graphics::textwidth((char*)sampleInfo.str().c_str());
+				g->fillrect(XRES-20-textWidth, currPosY, textWidth+8, 15, 0, 0, 0, alpha*0.5f);
+				g->drawtext(XRES-16-textWidth, currPosY + 3, (const char*)sampleInfo.str().c_str(), 255, 255, 255, alpha*0.75f);
+				__currPosY += 15;
+			}
 		}
 	}
 

@@ -313,6 +313,16 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 							case 4: sim->E189_pause |=  0x10; break;
 							case 5: sim->E189_pause |=  0x20; break;
 							case 6: sim->E189_pause |=  0x40; break;
+							case 7:
+								sim->sim_max_pressure += 0.25f;
+								if (sim->sim_max_pressure > 256.0f)
+									sim->sim_max_pressure = 256.0f;
+							break;
+							case 8:
+								sim->sim_max_pressure -= 0.25f;
+								if (sim->sim_max_pressure < 0.0f)
+									sim->sim_max_pressure = 0.0f;
+							break;
 						}
 						if ((rtmp & 0x7E) == 0x40 && (rx != ry))
 							E189_Update::InsertText(sim, i, x, y, -rx, -ry);

@@ -45,6 +45,7 @@ private:
 	bool showHud;
 	bool showDebug;
 	int showDebugState;
+	int showDebugStateFlags;
 	int delayedActiveMenu;
 	bool wallBrush;
 	bool toolBrush;
