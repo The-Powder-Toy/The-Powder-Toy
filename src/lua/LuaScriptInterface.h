@@ -112,6 +112,8 @@ class LuaScriptInterface: public CommandInterface
 	static int simulation_CAType(lua_State * l);
 	static int simulation_createDebugComponent(lua_State * l);
 	static int simulation_breakable_wall_count(lua_State * l);
+	static int simulation_setCustomGOLRule(lua_State * l);
+	static int simulation_setCustomGOLGrad(lua_State * l);
 
 	//Stickman attributes
 	void initStickmanAPI();
@@ -180,6 +182,7 @@ class LuaScriptInterface: public CommandInterface
 	static int platform_exeName(lua_State * l);
 	static int platform_restart(lua_State * l);
 	static int platform_openLink(lua_State * l);
+	static int platform_openMyTool(lua_State * l);
 	static int platform_clipboardCopy(lua_State * l);
 	static int platform_clipboardPaste(lua_State * l);
 

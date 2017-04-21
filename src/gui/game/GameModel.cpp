@@ -74,7 +74,6 @@ GameModel::GameModel():
 
 	ren->gravityFieldEnabled = Client::Ref().GetPrefBool("Renderer.GravityField", false);
 	ren->decorations_enable = Client::Ref().GetPrefBool("Renderer.Decorations", true);
-	sim->extraLoopsCA = Client::Ref().GetPrefBool("Simulation.LangtonsLoops", false);
 
 	//Load config into simulation
 	edgeMode = Client::Ref().GetPrefInteger("Simulation.EdgeMode", 0);
@@ -84,6 +83,8 @@ GameModel::GameModel():
 		sim->grav->start_grav_async();
 	sim->aheat_enable =  Client::Ref().GetPrefInteger("Simulation.AmbientHeat", 0);
 	sim->pretty_powder =  Client::Ref().GetPrefInteger("Simulation.PrettyPowder", 0);
+	sim->extraLoopsCA = Client::Ref().GetPrefBool("Simulation.LangtonsLoops", false);
+	sim->extraLoopsType = Client::Ref().GetPrefInteger("Simulation.LangtonsLoops", 0);
 
 	Favorite::Ref().LoadFavoritesFromPrefs();
 
@@ -156,6 +157,7 @@ GameModel::~GameModel()
 	Client::Ref().SetPref("Renderer.GravityField", (bool)ren->gravityFieldEnabled);
 	Client::Ref().SetPref("Renderer.Decorations", (bool)ren->decorations_enable);
 	Client::Ref().SetPref("Simulation.LangtonsLoops", (bool)sim->extraLoopsCA);
+	Client::Ref().SetPref("Simulation.ExtraLoopsType", (int)sim->extraLoopsType);
 	Client::Ref().SetPref("Renderer.DebugMode", ren->debugLines); //These two should always be equivalent, even though they are different things
 
 	Client::Ref().SetPref("Simulation.EdgeMode", edgeMode);

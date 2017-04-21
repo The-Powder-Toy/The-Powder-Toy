@@ -5562,7 +5562,7 @@ void Simulation::BeforeSim()
 					if (bmap[y][x] == WL_BREAKABLE_WALL)
 					{
 						tmp_count--;
-						if (pv[y][x] > 4.0f || pv[y][x] < -4.0f)
+						if (pv[y][x] > sim_max_pressure || pv[y][x] < -sim_max_pressure)
 						{
 							breakable_wall_count--;
 							bmap[y][x] = 0;
@@ -5933,6 +5933,8 @@ Simulation::Simulation():
 
 	player.comm = 0;
 	player2.comm = 0;
+	
+	sim_max_pressure = 4.0f; // on breakable wall
 
 	init_can_move();
 	clear_sim();

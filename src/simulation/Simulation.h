@@ -106,6 +106,7 @@ public:
 	float fvx[YRES/CELL][XRES/CELL];
 	float fvy[YRES/CELL][XRES/CELL];
 	int breakable_wall_count;
+	float sim_max_pressure;
 	//Particles
 	Particle parts[NPART];
 	int pmap[YRES][XRES];

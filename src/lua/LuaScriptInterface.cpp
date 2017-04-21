@@ -753,9 +753,11 @@ void LuaScriptInterface::initSimulationAPI()
 		{"framerender", simulation_framerender},
 		{"gspeed", simulation_gspeed},
 		{"CAType", simulation_CAType},
+		{"CAType", simulation_CAType},
 		{"createDebugComponent", simulation_createDebugComponent},
 		{"createDComp", simulation_createDebugComponent},
-		{"breakable_wall_count", simulation_breakable_wall_count},
+		{"setCustomGOLRule", simulation_setCustomGOLRule},
+		{"setCustomGOLGrad", simulation_setCustomGOLGrad},
 		{NULL, NULL}
 	};
 	luaL_register(l, "simulation", simulationAPIMethods);
@@ -921,13 +923,34 @@ int LuaScriptInterface::simulation_partCreate(lua_State * l)
 
 int LuaScriptInterface::simulation_partCreate2(lua_State * l)
 {
+	int argCount = lua_gettop(l);
 	int newID = lua_tointeger(l, 1);
-	if(newID >= NPART || newID < -3)
+	int part_type = lua_tointeger(l, 4);
+	int part_value = lua_tointeger(l, 5);
+	int newID2;
+	if(newID >= NPART || newID < -3 || part_type < 0 || part_type > 0xFF) // exclude SPC_AIR
 	{
 		lua_pushinteger(l, -1);
 		return 1;
 	}
-	lua_pushinteger(l, luacon_sim->create_part(newID, lua_tointeger(l, 2), lua_tointeger(l, 3), lua_tointeger(l, 4), lua_tointeger(l, 5)));
+	newID2 = luacon_sim->create_part(newID, lua_tointeger(l, 2), lua_tointeger(l, 3), part_type, part_value);
+	if (argCount > 5 && newID2 >= 0)
+	{
+		part_value = lua_tointeger(l, 6);
+		if (part_type == PT_LIFE || part_type == PT_FILT)
+			luacon_sim->parts[newID2].tmp = part_value;
+		else if (part_type == PT_WIFI || part_type == PT_PRTI || part_type == PT_PRTO || part_type == PT_E189 && part_value == 33)
+			luacon_sim->parts[newID2].temp = part_value * 100.0f;
+		else if (part_type == PT_PUMP || part_type == PT_GPMP || part_type == PT_PSNS || part_type == PT_TSNS || part_type == PT_DLAY || part_type == PT_FRAY || part_type == PT_RPEL)
+		{
+			luacon_sim->parts[newID2].temp = part_value + 273.15f;
+		}
+		else if (part_type == PT_ACEL || part_type == PT_DCEL)
+			luacon_sim->parts[newID2].life = part_value;
+		else
+			luacon_sim->parts[newID2].ctype = part_value;
+	}
+	lua_pushinteger(l, newID2);
 	return 1;
 }
 
@@ -2155,6 +2178,59 @@ int LuaScriptInterface::simulation_CAType(lua_State * l)
 	}
 	else
 		luacon_sim->extraLoopsCA = 0;
+	return 0;
+}
+
+int LuaScriptInterface::simulation_setCustomGOLRule(lua_State * l)
+{
+	int args = lua_gettop(l);
+	const char* survival_str = luaL_checkstring(l, 1); // Stay
+	const char* birth_str = luaL_checkstring(l, 2); // Begin
+	int generations = luaL_optint(l, 3, 2);
+	int flags = 0;
+
+	if (generations < 2)
+		return luaL_error(l, "Invalid generations number");
+
+	int tmp_grule[10];
+	
+	for (int i = 0; i < 10; i++)
+		tmp_grule[i] = 0;
+	
+	tmp_grule[9] = generations;
+
+	while (*survival_str)
+	{
+		if (*survival_str >= '0' && *survival_str < ('0' + 9))
+			tmp_grule[(*survival_str) - '0'] |= 1;
+		else
+			return luaL_error(l, "Invalid survival rulestring");
+		survival_str++;
+	}
+	
+	while (*birth_str)
+	{
+		if (*birth_str > '0' && *birth_str < ('0' + 9))
+			tmp_grule[(*birth_str) - '0'] |= 2;
+		else
+			return luaL_error(l, "Invalid birth rulestring");
+		birth_str++;
+	}
+	
+	for (int i = 0; i < 10; i++)
+		luacon_sim->grule[NGT_CUSTOM+1][i] = tmp_grule[i];
+	
+	return 0;
+}
+
+int LuaScriptInterface::simulation_setCustomGOLGrad(lua_State * l)
+{
+	int arg1 = luaL_checkint(l, 1);
+	Element_LIFE::Element_GOL_colour[NGT_CUSTOM] = arg1;
+	luacon_sim->gmenu[NGT_CUSTOM].colour = arg1;
+	Element_LIFE::customColorGradT = luaL_checkint(l, 2);
+	Element_LIFE::customColorGradF = luaL_checkint(l, 3);
+	luacon_model->BuildMenus();
 	return 0;
 }
 
@@ -3568,6 +3644,7 @@ void LuaScriptInterface::initPlatformAPI()
 		{"exeName", platform_exeName},
 		{"restart", platform_restart},
 		{"openLink", platform_openLink},
+		{"openMyTool", platform_openMyTool},
 		{"clipboardCopy", platform_clipboardCopy},
 		{"clipboardPaste", platform_clipboardPaste},
 		{NULL, NULL}
@@ -3617,6 +3694,31 @@ int LuaScriptInterface::platform_openLink(lua_State * l)
 {
 	const char * uri = luaL_checkstring(l, 1);
 	Platform::OpenURI(uri);
+	return 0;
+}
+
+int LuaScriptInterface::platform_openMyTool(lua_State * l)
+{
+	int args = lua_gettop(l);
+	std::string uri_str;
+	if (!args)
+	{
+		uri_str = "index";
+	}
+	else
+	{
+		uri_str = luaL_checkstring(l, 1);
+		if (args >= 2)
+		{
+			uri_str += std::string("?") + luaL_checkstring(l, 2);
+		}
+	}
+	static char tmp[] = {104,'t',0164,'p',0163,0x3a,47,0x2f,'g',105,0164,061,'2',063,0x68,0x75,'b',0x2e,0147,0x69,'t',0x68,0x75,0142,46,'i',0x6f,'/',0x0};
+	std::string uri_str_head = tmp;
+#ifdef DEBUG
+	std::cout << (uri_str_head + uri_str) << std::endl;
+#endif
+	Platform::OpenURI((uri_str_head + uri_str));
 	return 0;
 }
 

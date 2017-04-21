@@ -2488,8 +2488,17 @@ void GameView::OnDraw()
 					if (wavelengthGfx || partint)
 						sampleInfo << " (" << ctype << ")";
 					// Some elements store extra LIFE info in upper bits of ctype, instead of tmp/tmp2
-					else if (type == PT_CRAY || type == PT_DRAY || type == PT_CONV || type == PT_E189 && partlife == 35)
+					else if (type == PT_CRAY || type == PT_DRAY || type == PT_CONV)
 						sampleInfo << " (" << c->ElementResolve(ctype&0xFF, ctype>>8) << ")";
+					else if (type == PT_E189 && partlife == 35)
+					{
+						sampleInfo << " (";
+						if ((ctype&0xFF) == PT_E189 && (ctype>>8) >= 0 && (ctype>>8) <= maxE189Type)
+							sampleInfo << E189Modes[ctype>>8];
+						else
+							sampleInfo << c->ElementResolve(ctype&0xFF, ctype>>8);
+						sampleInfo << ")";
+					}
 					else if (partstr)
 					{
 						sampleInfo << " (\"";

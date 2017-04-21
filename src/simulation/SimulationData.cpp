@@ -30,7 +30,8 @@ gol_menu * LoadGOLMenu(int & golMenuCount)
 		{"FRG2",	PIXPACK(0x00FF00), 20, "Like Frogs rule: B3/S124/3"},
 		{"STAR",	PIXPACK(0x0000FF), 21, "Like Star Wars rule: B278/S3456/6"},
 		{"FROG",	PIXPACK(0x00AA00), 22, "Frogs: B34/S12/3"},
-		{"BRAN",	PIXPACK(0xCCCC00), 23, "Brian 6: B246/S6/3"}
+		{"BRAN",	PIXPACK(0xCCCC00), 23, "Brian 6: B246/S6/3"},
+		{"CUST",	PIXPACK(0x0070CF), 24, "Custom GOL rule"},
 	};
 	golMenuCount = NGOL;
 	gol_menu * golMenuT = (gol_menu*)malloc(NGOL*sizeof(gol_menu));
@@ -68,6 +69,7 @@ int * LoadGOLRules(int & golRuleCount)
 		{0,0,2,1,1,1,1,2,2,6},//STAR
 		{0,1,1,2,2,0,0,0,0,3},//FROG
 		{0,0,2,0,2,0,3,0,0,3},//BRAN
+		{0,0,0,0,0,0,0,0,0,2},//custom (using Lua or "E189" element)
 	};
 	golRuleCount = NGOL+1;
 	int * golRulesT = (int*)malloc((golRuleCount*10)*sizeof(int));
@@ -103,6 +105,7 @@ int * LoadGOLTypes(int & golTypeCount)
 		GT_STAR,
 		GT_FROG,
 		GT_BRAN,
+		-1,
 	};
 	golTypeCount = NGOL;
 	int * golTypesT = (int*)malloc((golTypeCount)*sizeof(int));

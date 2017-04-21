@@ -66,7 +66,7 @@
 
 #define WL_FLOODHELPER	255
 
-#define UI_WALLCOUNT 18
+#define UI_WALLCOUNT 19
 
 #define OLD_SPC_AIR 236
 #define SPC_AIR 256
@@ -130,6 +130,7 @@
 #define NGT_STAR 21
 #define NGT_FROG 22
 #define NGT_BRAN 23
+#define NGT_CUSTOM 24
 
 //replace mode / specific delete flags
 #define REPLACE_MODE 0x1

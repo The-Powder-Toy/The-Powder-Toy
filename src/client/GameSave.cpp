@@ -1777,13 +1777,17 @@ void GameSave::readPSv(char * data, int dataLength)
 			}
 			if(ver<52 && (ty==PT_CLNE || ty==PT_PCLN || ty==PT_BCLN)){
 				//Replace old GOL ctypes in clone
+				int tty = particles[i-1].ctype;
+				if (tty < 78)
+					goto ignoreOldGOLCheck;
 				for (gnum = 0; gnum<NGOL; gnum++){
-					if (particles[i-1].ctype==goltype[gnum])
+					if (tty == goltype[gnum])
 					{
-						particles[i-1].ctype = PT_LIFE;
+						tty = PT_LIFE;
 						particles[i-1].tmp = gnum;
 					}
 				}
+			ignoreOldGOLCheck:;
 			}
 			if(ty==PT_LCRY){
 				if(ver<67)
