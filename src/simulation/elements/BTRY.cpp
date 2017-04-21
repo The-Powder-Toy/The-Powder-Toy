@@ -47,7 +47,7 @@ Element_BTRY::Element_BTRY()
 //#TPT-Directive ElementHeader Element_BTRY static int update(UPDATE_FUNC_ARGS)
 int Element_BTRY::update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry, rt;
+	int r, rx, ry, rt, pavg;
 	for (rx=-2; rx<3; rx++)
 		for (ry=-2; ry<3; ry++)
 			if (BOUNDS_CHECK && (rx || ry) && abs(rx)+abs(ry)<4)
@@ -56,9 +56,10 @@ int Element_BTRY::update(UPDATE_FUNC_ARGS)
 				if (!r)
 					continue;
 				rt = (r&0xFF);
-				if (sim->parts_avg(i,r>>8,PT_INSL) != PT_INSL)
+				pavg = sim->parts_avg(i,r>>8,PT_INSL);
+				if (pavg != PT_INSL && pavg != PT_INDI)
 				{
-					if ((sim->elements[rt].Properties&PROP_CONDUCTS) && !(rt==PT_WATR||rt==PT_SLTW||rt==PT_NTCT||rt==PT_PTCT||rt==PT_INWR) && parts[r>>8].life==0)
+					if ((sim->elements[rt].Properties&(PROP_CONDUCTS|PROP_INSULATED)) == PROP_CONDUCTS /* && !(rt==PT_WATR||rt==PT_SLTW||rt==PT_NTCT||rt==PT_PTCT||rt==PT_INWR) */ && parts[r>>8].life==0)
 					{
 						parts[r>>8].life = 4;
 						parts[r>>8].ctype = rt;

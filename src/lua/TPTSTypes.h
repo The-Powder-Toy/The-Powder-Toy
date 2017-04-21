@@ -5,7 +5,7 @@
 #include <typeinfo>
 #include "gui/interface/Point.h"
 
-enum ValueType { TypeNumber, TypeFloat, TypePoint, TypeString, TypeNull, TypeFunction };
+enum ValueType { TypeNumber, TypeFloat, TypePoint, TypeString, TypeNull, TypeFunction, TypeParenthesized };
 typedef union { int num; float numf; std::string* str; ui::Point* pt; } ValueValue;
 
 class GeneralException
@@ -56,6 +56,8 @@ public:
 			return "Null";
 		case TypeFunction:
 			return "Function";
+		case TypeParenthesized:
+			return "Parenthesized";
 		default:
 			return "Unknown";
 		}
@@ -76,6 +78,8 @@ public:
 			return "Null";
 		case TypeFunction:
 			return "Function";
+		case TypeParenthesized:
+			return "Parenthesized";
 		default:
 			return "Unknown";
 		}

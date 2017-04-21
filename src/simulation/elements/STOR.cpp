@@ -69,6 +69,9 @@ int Element_STOR::update(UPDATE_FUNC_ARGS)
 					parts[i].tmp2 = parts[r>>8].life;
 					parts[i].pavg[0] = parts[r>>8].tmp;
 					parts[i].pavg[1] = parts[r>>8].ctype;
+					parts[i].tmp3 = parts[r>>8].tmp2;
+					parts[i].tmp4 = parts[r>>8].tmp3;
+					parts[i].cdcolour = parts[r>>8].dcolour;
 					sim->kill_part(r>>8);
 				}
 				if(parts[i].tmp && (r&0xFF)==PT_SPRK && parts[r>>8].ctype==PT_PSCN && parts[r>>8].life>0 && parts[r>>8].life<4)
@@ -82,6 +85,9 @@ int Element_STOR::update(UPDATE_FUNC_ARGS)
 								parts[np].life = parts[i].tmp2;
 								parts[np].tmp = parts[i].pavg[0];
 								parts[np].ctype = parts[i].pavg[1];
+								parts[np].tmp2 = parts[i].tmp3;
+								parts[np].tmp3 = parts[i].tmp4;
+								parts[np].dcolour = parts[i].cdcolour;
 								parts[i].tmp = 0;
 								parts[i].life = 10;
 								break;

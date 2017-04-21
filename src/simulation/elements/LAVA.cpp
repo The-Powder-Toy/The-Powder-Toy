@@ -18,6 +18,7 @@ Element_LAVA::Element_LAVA()
 	Diffusion = 0.00f;
 	HotAir = 0.0003f	* CFDS;
 	Falldown = 2;
+	PhotonReflectWavelengths = 0x3FF00000;
 
 	Flammable = 0;
 	Explosive = 0;

@@ -31,6 +31,7 @@ Element_CONV::Element_CONV()
 	Description = "Converter. Converts everything into whatever it first touches.";
 
 	Properties = TYPE_SOLID|PROP_DRAWONCTYPE|PROP_NOCTYPEDRAW;
+	Properties2 = PROP_DRAWONCTYPE;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
@@ -60,9 +61,8 @@ int Element_CONV::update(UPDATE_FUNC_ARGS)
 						r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if ((r&0xFF)!=PT_CLNE && (r&0xFF)!=PT_PCLN &&
-					    (r&0xFF)!=PT_BCLN && (r&0xFF)!=PT_STKM &&
-					    (r&0xFF)!=PT_PBCN && (r&0xFF)!=PT_STKM2 &&
+					if (!(sim->elements[r&0xFF].Properties & PROP_CLONE) &&
+					    (r&0xFF)!=PT_STKM && (r&0xFF)!=PT_STKM2 &&
 					    (r&0xFF)!=PT_CONV && (r&0xFF)<PT_NUM)
 					{
 						parts[i].ctype = r&0xFF;
@@ -83,7 +83,8 @@ int Element_CONV::update(UPDATE_FUNC_ARGS)
 						r = pmap[y+ry][x+rx];
 					if (!r || (restrictElement && (r&0xFF)!=restrictElement))
 						continue;
-					if((r&0xFF)!=PT_CONV && (r&0xFF)!=PT_DMND && (r&0xFF)!=ctype)
+					if((r&0xFF)!=PT_CONV && !(sim->elements[r&0xFF].Properties2 & PROP_NODESTRUCT) && (r&0xFF)!=ctype
+						& ((r&0xFF)!=PT_SPRK || !(sim->elements[parts[r>>8].ctype].Properties2 & PROP_NODESTRUCT)))
 					{
 						sim->create_part(r>>8, x+rx, y+ry, parts[i].ctype&0xFF, parts[i].ctype>>8);
 					}

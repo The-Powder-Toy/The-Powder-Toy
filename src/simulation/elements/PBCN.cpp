@@ -30,7 +30,8 @@ Element_PBCN::Element_PBCN()
 	HeatConduct = 251;
 	Description = "Powered breakable clone.";
 
-	Properties = TYPE_SOLID|PROP_NOCTYPEDRAW;
+	Properties = TYPE_SOLID|PROP_NOCTYPEDRAW | PROP_TRANSPARENT;
+	Properties2 = PROP_CLONE;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
@@ -74,11 +75,9 @@ int Element_PBCN::update(UPDATE_FUNC_ARGS)
 					if (!r)
 						continue;
 					rt = r&0xFF;
-					if (rt!=PT_CLNE && rt!=PT_PCLN &&
-					    rt!=PT_BCLN &&  rt!=PT_SPRK &&
-					    rt!=PT_NSCN && rt!=PT_PSCN &&
-					    rt!=PT_STKM && rt!=PT_STKM2 &&
-					    rt!=PT_PBCN && rt<PT_NUM)
+					if (!(sim->elements[rt].Properties & PROP_CLONE) &&
+					    rt!=PT_SPRK && rt!=PT_NSCN && rt!=PT_PSCN &&
+					    rt!=PT_STKM && rt!=PT_STKM2 && rt<PT_NUM)
 					{
 						parts[i].ctype = rt;
 						if (rt==PT_LIFE || rt==PT_LAVA)
@@ -135,10 +134,12 @@ int Element_PBCN::update(UPDATE_FUNC_ARGS)
 			else if (parts[i].ctype!=PT_LIGH || !(rand()%30))
 			{
 				int np = sim->create_part(-1, x+rand()%3-1, y+rand()%3-1, parts[i].ctype&0xFF);
-				if (np>-1)
+				if (np>=0)
 				{
 					if (parts[i].ctype==PT_LAVA && parts[i].tmp>0 && parts[i].tmp<PT_NUM && sim->elements[parts[i].tmp].HighTemperatureTransition==PT_LAVA)
 						parts[np].ctype = parts[i].tmp;
+					// else if (parts[i].ctype==PT_E189) // failed
+					//	parts[np].life = parts[i].tmp;
 				}
 			}
 		}

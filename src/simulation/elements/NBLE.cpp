@@ -18,6 +18,7 @@ Element_NBLE::Element_NBLE()
 	Diffusion = 0.75f;
 	HotAir = 0.001f	* CFDS;
 	Falldown = 0;
+	PhotonReflectWavelengths = 0x3FFF8000;
 
 	Flammable = 0;
 	Explosive = 0;
@@ -31,6 +32,7 @@ Element_NBLE::Element_NBLE()
 	Description = "Noble Gas. Diffuses and conductive. Ionizes into plasma when introduced to electricity.";
 
 	Properties = TYPE_GAS|PROP_CONDUCTS|PROP_LIFE_DEC;
+	Properties2 |= PROP_ELEC_HEATING;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

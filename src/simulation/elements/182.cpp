@@ -5,6 +5,7 @@
 TODO: 
 	- Molten version
 	- "muted version" a powder created by mixing E182 with ? that is weaker
+	- "stronger version" a powder created by mixing E182 with E185 that is stronger?
 */
 
 Element_E182::Element_E182()
@@ -41,7 +42,7 @@ Element_E182::Element_E182()
 	HeatConduct = 251;
 	Description = "Experimental element. Some kind of nuclear fuel";
 
-	Properties = PROP_NEUTPASS|PROP_RADIOACTIVE|PROP_LIFE_DEC;
+	Properties = TYPE_PART|PROP_NEUTPASS|PROP_RADIOACTIVE|PROP_LIFE_DEC;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
@@ -62,6 +63,7 @@ int Element_E182::update(UPDATE_FUNC_ARGS)
 	const int cooldown = 15;
 	const int limit = 5;
 	int r, s;
+	r = sim->photons[y][x];
 	if(parts[i].tmp < limit && !parts[i].life)
 	{
 		if (!(rand()%10000) && !parts[i].tmp)
@@ -76,8 +78,8 @@ int Element_E182::update(UPDATE_FUNC_ARGS)
 			}
 		}
 
-		r = sim->photons[y][x];
-		if (r && !(rand()%100)) {
+		if (r && (r & 0xFF) != PT_ELEC && !(rand()%100))
+		{
 			s = sim->create_part(-3, x, y, PT_NEUT);
 			if(s >= 0) {
 				parts[i].temp = ((parts[i].temp + parts[r>>8].temp + parts[r>>8].temp) + 600.0f) / 3.0f;
@@ -91,6 +93,11 @@ int Element_E182::update(UPDATE_FUNC_ARGS)
 				parts[s].vy = parts[r>>8].vy;
 			}
 		}
+	}
+	if ((r & 0xFF) == PT_ELEC && !(rand()%25))
+	{
+		s = parts[i].tmp;
+		if (s) parts[i].tmp --;
 	}
 	return 0;
 }

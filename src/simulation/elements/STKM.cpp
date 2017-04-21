@@ -67,10 +67,11 @@ int Element_STKM::graphics(GRAPHICS_FUNC_ARGS)
 
 //#TPT-Directive ElementHeader Element_STKM static int run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
-	int r, rx, ry;
+	int r, rx, ry, ctype;
 	int t = parts[i].type;
-	float pp, d;
-	float dt = 0.9;///(FPSB*FPSB);  //Delta time in square
+
+	float pp, d, pressure;
+	float dt = 0.9;// /(FPSB*FPSB);  //Delta time in square
 	float gvx, gvy;
 	float gx, gy, dl, dr;
 	float rocketBootsHeadEffect = 0.35f;
@@ -78,26 +79,36 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 	float rocketBootsHeadEffectV = 0.3f;// stronger acceleration vertically, to counteract gravity
 	float rocketBootsFeetEffectV = 0.45f;
 
-	if (parts[i].ctype && sim->IsValidElement(parts[i].ctype))
+	if (parts[i].ctype && (sim->IsValidElement(parts[i].ctype) || parts[i].ctype == SPC_AIR))
 		STKM_set_element(sim, playerp, parts[i].ctype);
 	playerp->frames++;
 
 	//Temperature handling
-	if (parts[i].temp<243)
+	if (parts[i].temp<243 && !(sim->E189_FIGH_pause & 16))
 		parts[i].life -= 1;
 	if ((parts[i].temp<309.6f) && (parts[i].temp>=243))
 		parts[i].temp += 1;
 
 	//Death
-	if (parts[i].life<1 || (sim->pv[y/CELL][x/CELL]>=4.5f && playerp->elem != SPC_AIR) ) //If his HP is less than 0 or there is very big wind...
+	pressure = sim->pv[y/CELL][x/CELL];
+	if (pressure < 0.0f && (sim->E189_FIGH_pause & 0x100))
 	{
-		for (r=-2; r<=1; r++)
+		pressure = -pressure;
+	}
+	if (parts[i].life<1 || (pressure>=4.5f && !(sim->E189_FIGH_pause & 16) && playerp->elem != SPC_AIR) ) //If his HP is less than 0 or there is very big wind...
+	{
+		if (playerp->elem != PT_FIGH)
 		{
-			sim->create_part(-1, x+r, y-2, playerp->elem);
-			sim->create_part(-1, x+r+1, y+2, playerp->elem);
-			sim->create_part(-1, x-2, y+r+1, playerp->elem);
-			sim->create_part(-1, x+2, y+r, playerp->elem);
+			for (r=-2; r<=1; r++)
+			{
+				sim->create_part(-1, x+r, y-2, playerp->elem);
+				sim->create_part(-1, x+r+1, y+2, playerp->elem);
+				sim->create_part(-1, x-2, y+r+1, playerp->elem);
+				sim->create_part(-1, x+2, y+r, playerp->elem);
+			}
 		}
+		else
+			sim->create_part(-1, x, y, playerp->elem);
 		sim->kill_part(i);  //Kill him
 		return 1;
 	}
@@ -125,6 +136,12 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 
 	gvx += sim->gravx[((int)parts[i].y/CELL)*(XRES/CELL)+((int)parts[i].x/CELL)];
 	gvy += sim->gravy[((int)parts[i].y/CELL)*(XRES/CELL)+((int)parts[i].x/CELL)];
+	
+	if (sim->E189_FIGH_pause & 0x200) // anti-gravity ?
+	{
+		gvx = -gvx;
+		gvy = -gvy;
+	}
 
 	float rbx = gvx;
 	float rby = gvy;
@@ -367,22 +384,47 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 				if (!r && !sim->bmap[(y+ry)/CELL][(x+rx)/CELL])
 					continue;
 				
-				STKM_set_element(sim, playerp, r&0xFF);
-				if ((r&0xFF) == PT_PLNT && parts[i].life<100) //Plant gives him 5 HP
+				if (!(sim->E189_FIGH_pause & 32))
+					STKM_set_element(sim, playerp, r&0xFF);
+				if (!(sim->E189_FIGH_pause & 16))
 				{
-					if (parts[i].life<=95)
-						parts[i].life += 5;
-					else
-						parts[i].life = 100;
-					sim->kill_part(r>>8);
+					if ((r&0xFF) == PT_PLNT && parts[i].life<100) //Plant gives him 5 HP
+					{
+						if (parts[i].life<=95)
+							parts[i].life += 5;
+						else
+							parts[i].life = 100;
+						sim->kill_part(r>>8);
+					}
+
+					if ((r&0xFF) == PT_NEUT)
+					{
+						if (parts[i].life<=100) parts[i].life -= (102-parts[i].life)/2;
+						else parts[i].life *= 0.9f;
+						sim->kill_part(r>>8);
+					}
 				}
 
-				if ((r&0xFF) == PT_NEUT)
+				if ((r&0xFF) == PT_E189)
 				{
-					if (parts[i].life<=100) parts[i].life -= (102-parts[i].life)/2;
-					else parts[i].life *= 0.9f;
-					sim->kill_part(r>>8);
+					if (!(rand()&3)) // condition: rand % 4 == 0
+					{
+						STKM_set_life_1(sim, r>>8, i);
+					}
+					if (parts[r>>8].life == 27 && !(sim->E189_FIGH_pause & 32))
+					{
+						ctype = parts[r>>8].ctype;
+						int xctype = ctype >> 9;
+						ctype &= 0x1FF;
+						if (ctype && (sim->IsValidElement(ctype) || ctype == SPC_AIR))
+							STKM_set_element(sim, playerp, ctype);
+						if (xctype == 1 || xctype == 2)
+						{
+							playerp->rocketBoots = xctype == 1 ? false : true;
+						}
+					}
 				}
+
 				if (sim->bmap[(ry+y)/CELL][(rx+x)/CELL]==WL_FAN)
 					playerp->elem = SPC_AIR;
 				else if (sim->bmap[(ry+y)/CELL][(rx+x)/CELL]==WL_EHOLE)
@@ -418,7 +460,7 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 					for (int k = -4; k < 5; k++)
 						sim->create_part(-2, rx + 3*((((int)playerp->pcomm)&0x02) == 0x02) - 3*((((int)playerp->pcomm)&0x01) == 0x01)+j, ry+k, SPC_AIR);
 			}
-			else if (playerp->elem==PT_LIGH && playerp->frames<30)//limit lightning creation rate
+			else if ((playerp->elem==PT_LIGH || playerp->elem==PT_FIGH) && playerp->frames<30)//limit lightning and fighter creation rate
 				np = -1;
 			else
 				np = sim->create_part(-1, rx, ry, playerp->elem);
@@ -464,6 +506,8 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 					parts[np].vx -= -gvy*(5*((((int)playerp->pcomm)&0x02) == 0x02) - 5*(((int)(playerp->pcomm)&0x01) == 0x01));
 					parts[np].vy -= gvx*(5*((((int)playerp->pcomm)&0x02) == 0x02) - 5*(((int)(playerp->pcomm)&0x01) == 0x01));
 					parts[i].vx -= (sim->elements[(int)playerp->elem].Weight*parts[np].vx)/1000;
+					if (playerp->elem == PT_FIGH)
+						createSTKMChild(sim, playerp, i, np);
 				}
 				playerp->frames = 0;
 			}
@@ -564,6 +608,8 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 	if (!parts[i].type)
 		return 1;
 
+	if (playerp->elem == PT_FIGH && !(sim->E189_FIGH_pause & 8))
+		playerp->elem = playerp->pelem;
 	parts[i].ctype = playerp->elem;
 	return 0;
 }
@@ -577,30 +623,43 @@ void Element_STKM::STKM_interact(Simulation *sim, playerst *playerp, int i, int 
 	r = sim->pmap[y][x];
 	if (r)
 	{
-		if ((r&0xFF)==PT_SPRK && playerp->elem!=PT_LIGH) //If on charge
+		if (!(sim->E189_FIGH_pause & 16))
 		{
-			sim->parts[i].life -= (int)(rand()*20/RAND_MAX)+32;
-		}
-
-		if (sim->elements[r&0xFF].HeatConduct && ((r&0xFF)!=PT_HSWC||sim->parts[r>>8].life==10) && ((playerp->elem!=PT_LIGH && sim->parts[r>>8].temp>=323) || sim->parts[r>>8].temp<=243) && (!playerp->rocketBoots || (r&0xFF)!=PT_PLSM))
-		{
-			sim->parts[i].life -= 2;
-			playerp->accs[3] -= 1;
-		}
-			
-		if (sim->elements[r&0xFF].Properties&PROP_DEADLY)
-			switch (r&0xFF)
+			if ((r&0xFF)==PT_SPRK && playerp->elem!=PT_LIGH) //If on charge
 			{
-				case PT_ACID:
-					sim->parts[i].life -= 5;
-					break;
-				default:
-					sim->parts[i].life -= 1;
-					break;
+				sim->parts[i].life -= (int)(rand()*20/RAND_MAX)+32;
 			}
 
-		if (sim->elements[r&0xFF].Properties&PROP_RADIOACTIVE)
-			sim->parts[i].life -= 1;
+			if (sim->elements[r&0xFF].HeatConduct && ((r&0xFF)!=PT_HSWC||sim->parts[r>>8].life==10) && ((playerp->elem!=PT_LIGH && sim->parts[r>>8].temp>=323) || sim->parts[r>>8].temp<=243) && (!playerp->rocketBoots || (r&0xFF)!=PT_PLSM))
+			{
+				sim->parts[i].life -= 2;
+				playerp->accs[3] -= 1;
+			}
+				
+			if (sim->elements[r&0xFF].Properties&PROP_DEADLY)
+				switch (r&0xFF)
+				{
+					case PT_ACID:
+						sim->parts[i].life -= 5;
+						break;
+					default:
+						sim->parts[i].life -= 1;
+						break;
+				}
+
+			if (sim->elements[r&0xFF].Properties&PROP_RADIOACTIVE)
+				sim->parts[i].life -= 1;
+		}
+		
+		if ((r&0xFF) == PT_E189)
+		{
+			STKM_set_life_1(sim, r>>8, i);
+			if (sim->parts[r>>8].life == 23)
+			{
+				playerp->accs[3 + ((playerp->__flags & 1) << 2)] -= 1; // hackish?
+				playerp->__flags ^= 1;
+			}
+		}
 
 		if ((r&0xFF)==PT_PRTI && sim->parts[i].type)
 		{
@@ -663,11 +722,18 @@ void Element_STKM::STKM_init_legs(Simulation * sim, playerst *playerp, int i)
 	playerp->legs[14] = x+3;
 	playerp->legs[15] = y+12;
 
-	for (int i = 0; i < 8; i++)
-		playerp->accs[i] = 0;
+	for (int j = 0; j < 8; j++)
+		playerp->accs[j] = 0;
 	playerp->comm = 0;
 	playerp->pcomm = 0;
 	playerp->frames = 0;
+	playerp->__flags = 0;
+	playerp->parentStickman = -1;
+	playerp->firstChild = -1;
+	playerp->prevStickman = -1;
+	playerp->nextStickman = -1;
+	playerp->lastChild = -1;
+	playerp->self_ID = i;
 }
 
 //#TPT-Directive ElementHeader Element_STKM static void STKM_set_element(Simulation *sim, playerst *playerp, int element)
@@ -684,7 +750,85 @@ void Element_STKM::STKM_set_element(Simulation *sim, playerst *playerp, int elem
 	}
 	if (element == PT_TESC || element == PT_LIGH)
 		playerp->elem = PT_LIGH;
+	if (playerp->elem != PT_FIGH && element == PT_FIGH && (sim->E189_FIGH_pause & 8))
+	{
+		playerp->pelem = playerp->elem;
+		playerp->elem = PT_FIGH;
+	}
 }
 
+//#TPT-Directive ElementHeader Element_STKM static void STKM_set_life_1(Simulation *sim, int s, int i)
+void Element_STKM::STKM_set_life_1(Simulation *sim, int s, int i)
+{
+	if (sim->parts[s].life == 16 && sim->parts[s].ctype == 5)
+	{
+		int sur_part_tmp = sim->parts[s].tmp >> 6;
+		if (sur_part_tmp > 0)
+		{
+			sur_part_tmp--; // is temporary variable, not global
+			int inc_life = (sur_part_tmp & 1) ? 1 : -1;
+			bool inc_life_cond;
+			switch (sur_part_tmp >> 1)
+			{
+				case 0:
+					inc_life_cond = true;
+				break;
+				case 1:
+					inc_life_cond = (sim->parts[i].type == PT_STKM);
+				break;
+				case 2:
+					inc_life_cond = (sim->parts[i].type == PT_STKM2);
+				break;
+				case 3:
+				{
+					int part_i_type = sim->parts[i].type;
+					inc_life_cond = (part_i_type == PT_STKM || part_i_type == PT_STKM2);
+				}
+				break;
+				case 4:
+					inc_life_cond = (sim->parts[i].type == PT_FIGH);
+				break;
+			}
+			if (inc_life_cond)
+			{
+				if (inc_life < 0 || sim->parts[i].life < 100)
+					sim->parts[i].life += inc_life;
+			}
+		}
+	}
+}
+
+
+//#TPT-Directive ElementHeader Element_STKM static void removeSTKMChilds(Simulation *sim, playerst* player)
+void Element_STKM::removeSTKMChilds(Simulation *sim, playerst* playerp)
+{
+	int child_f = playerp->firstChild;
+	while (child_f >= 0)
+	{
+		sim->fighters[child_f].parentStickman = -1;
+		child_f = sim->fighters[child_f].nextStickman;
+	}
+}
+
+//#TPT-Directive ElementHeader Element_STKM static void createSTKMChild(Simulation *sim, playerst* player, int i, int np)
+void Element_STKM::createSTKMChild(Simulation *sim, playerst* playerp, int i, int np)
+{
+	int old_FIGH_id, new_FIGH_id;
+	old_FIGH_id = playerp->lastChild;
+	new_FIGH_id = sim->parts[np].tmp;
+	playerp->lastChild = new_FIGH_id;
+	if (playerp->firstChild < 0)
+		playerp->firstChild = new_FIGH_id;
+	else {
+		sim->fighters[new_FIGH_id].prevStickman = old_FIGH_id;
+		sim->fighters[old_FIGH_id].nextStickman = new_FIGH_id;
+	}
+	if (sim->parts[i].type == PT_FIGH)
+		sim->fighters[new_FIGH_id].parentStickman = sim->parts[i].tmp;
+	else if (sim->parts[i].type == PT_STKM)
+		sim->fighters[new_FIGH_id].parentStickman = MAX_FIGHTERS;
+	else if (sim->parts[i].type == PT_STKM2)
+		sim->fighters[new_FIGH_id].parentStickman = MAX_FIGHTERS + 1;
+}
 
 Element_STKM::~Element_STKM() {}

@@ -31,6 +31,7 @@ Element_IRON::Element_IRON()
 	Description = "Rusts with salt, can be used for electrolysis of WATR.";
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_HOT_GLOW;
+	Properties2 |= PROP_ELEC_HEATING;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

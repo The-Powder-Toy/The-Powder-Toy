@@ -30,7 +30,7 @@ Element_NTCT::Element_NTCT()
 	HeatConduct = 251;
 	Description = "Semi-conductor. Only conducts electricity when hot. (More than 100C)";
 
-	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC;
+	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC | PROP_INSULATED;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

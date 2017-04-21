@@ -48,7 +48,7 @@ Element_DLAY::Element_DLAY()
 //#TPT-Directive ElementHeader Element_DLAY static int update(UPDATE_FUNC_ARGS)
 int Element_DLAY::update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry, oldl;
+	int r, rx, ry, oldl, pavg;
 	oldl = parts[i].life;
 	if (parts[i].life>0)
 		parts[i].life--;
@@ -59,7 +59,8 @@ int Element_DLAY::update(UPDATE_FUNC_ARGS)
 			if (BOUNDS_CHECK && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				if (!r || sim->parts_avg(r>>8, i,PT_INSL)==PT_INSL)
+				pavg = sim->parts_avg(r>>8, i,PT_INSL);
+				if (!r || pavg==PT_INSL || pavg==PT_INDI)
 					continue;
 				if ((r&0xFF)==PT_SPRK && parts[i].life==0 && parts[r>>8].life>0 && parts[r>>8].life<4 && parts[r>>8].ctype==PT_PSCN)
 				{

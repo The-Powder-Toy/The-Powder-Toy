@@ -31,6 +31,7 @@ Element_NEUT::Element_NEUT()
 	Description = "Neutrons. Interact with matter in odd ways.";
 
 	Properties = TYPE_ENERGY|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
+	Properties2 = PROP_ENERGY_PART | PROP_NOSLOWDOWN;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

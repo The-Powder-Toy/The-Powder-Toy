@@ -30,7 +30,8 @@ Element_INVIS::Element_INVIS()
 	HeatConduct = 164;
 	Description = "Invisible to particles while under pressure.";
 
-	Properties = TYPE_SOLID | PROP_NEUTPASS;
+	Properties = TYPE_SOLID | PROP_NEUTPASS | PROP_TRANSPARENT;
+	Properties2 = PROP_INVISIBLE;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

@@ -31,6 +31,7 @@ Element_DMND::Element_DMND()
 	Description = "Diamond. Indestructible.";
 
 	Properties = TYPE_SOLID;
+	Properties2 = PROP_NODESTRUCT;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

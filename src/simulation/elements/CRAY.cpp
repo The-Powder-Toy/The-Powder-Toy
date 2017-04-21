@@ -31,6 +31,7 @@ Element_CRAY::Element_CRAY()
 	Description = "Particle Ray Emitter. Creates a beam of particles set by its ctype, with a range set by tmp.";
 
 	Properties = TYPE_SOLID;
+	Properties2 = PROP_DRAWONCTYPE;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
@@ -114,7 +115,7 @@ int Element_CRAY::update(UPDATE_FUNC_ARGS)
 								parts[r>>8].life = 4;
 							} else if ((r&0xFF) == PT_CRAY || nostop) {
 								docontinue = 1;
-							} else if(destroy && r && ((r&0xFF) != PT_DMND)) {
+							} else if(destroy && r && !(sim->elements[r&0xFF].Properties2 & PROP_NODESTRUCT)) {
 								sim->kill_part(r>>8);
 								if(!--partsRemaining)
 									docontinue = 0;

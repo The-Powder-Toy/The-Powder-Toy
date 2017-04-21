@@ -169,6 +169,8 @@ public:
 	void SetPaused(bool pauseState);
 	bool GetDecoration();
 	void SetDecoration(bool decorationState);
+	bool GetLLCA();
+	void SetLLCA(bool m);
 	bool GetAHeatEnable();
 	void SetAHeatEnable(bool aHeat);
 	bool GetGravityGrid();

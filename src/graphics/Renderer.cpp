@@ -557,6 +557,15 @@ VideoBuffer * Renderer::WallIcon(int wallID, int width, int height)
 				else
 					newTexture->SetPixel(i, j, 0x20, 0x20, 0x20, 255);
 	}
+	else if (wtypes[wt].drawstyle==5)
+	{
+		for (j=0; j<height; j++)
+			for (i=0; i<width; i++)
+				if ((i << 1 ^ j) & 3)
+					newTexture->SetPixel(i, j, PIXR(pc), PIXG(pc), PIXB(pc), 255);
+				else
+					newTexture->SetPixel(i, j, PIXR(gc), PIXG(gc), PIXB(gc), 255);
+	}
 
 	// special rendering for some walls
 	if (wt==WL_EWALL)
@@ -858,6 +867,14 @@ void Renderer::DrawWalls()
 							else
 								vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = PIXPACK(0x202020);
 					break;
+				case 5:
+					for (int j = 0; j < CELL; j++)
+						for (int i = 0; i < CELL; i++)
+							if ((i << 1 ^ j) & 3)
+								vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = pc;
+							else 
+								vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = gc;
+					break;
 				}
 
 				// when in blob view, draw some blobs...
@@ -939,6 +956,14 @@ void Renderer::DrawWalls()
 								else
 									// looks bad if drawing black blobs
 									vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = PIXPACK(0x202020);
+						break;
+					case 5:
+						for (int j = 0; j < CELL; j++)
+							for (int i = 0; i < CELL; i++)
+								if ((i << 1 ^ j) & 3)
+									vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = pc;
+								else 
+									drawblob((x*CELL+i), (y*CELL+j), PIXR(gc), PIXG(gc), PIXB(gc));
 						break;
 					}
 				}
@@ -1188,8 +1213,9 @@ void Renderer::prepare_alpha(int size, float intensity)
 void Renderer::render_parts()
 {
 	int deca, decr, decg, decb, cola, colr, colg, colb, firea, firer, fireg, fireb, pixel_mode, q, i, t, nx, ny, x, y, caddress;
+	int deca2;
 	int orbd[4] = {0, 0, 0, 0}, orbl[4] = {0, 0, 0, 0};
-	float gradv, flicker;
+	float gradv, flicker, q_float;
 	Particle * parts;
 	Element *elements;
 	if(!sim)
@@ -1231,6 +1257,9 @@ void Renderer::render_parts()
 		if (sim->parts[i].type && sim->parts[i].type >= 0 && sim->parts[i].type < PT_NUM) {
 			t = sim->parts[i].type;
 
+			if (t == PT_PINVIS && parts[i].tmp4 && (parts[i].tmp4>>8)<i)
+				continue;
+
 			nx = (int)(sim->parts[i].x+0.5f);
 			ny = (int)(sim->parts[i].y+0.5f);
 #ifdef OGLR
@@ -1240,6 +1269,10 @@ void Renderer::render_parts()
 
 			if(nx >= XRES || nx < 0 || ny >= YRES || ny < 0)
 				continue;
+			
+			if ((sim->pmap[ny][nx]&0xFF) == PT_PINVIS)
+				sim->parts[sim->pmap[ny][nx]>>8].tmp4 = t|(i<<8);
+
 			if((sim->photons[ny][nx]&0xFF) && !(sim->elements[t].Properties & TYPE_ENERGY) && t!=PT_STKM && t!=PT_STKM2 && t!=PT_FIGH)
 				continue;
 
@@ -1371,11 +1404,14 @@ void Renderer::render_parts()
 				else if(colour_mode & COLOUR_LIFE)
 				{
 					gradv = 0.4f;
-					if (!(sim->parts[i].life<5))
-						q = sqrt((float)sim->parts[i].life);
+					q = sim->parts[i].life;
+					if (sim->parts[i].life >= 5)
+						q_float = sqrt((float)q) + 2.25f;
+					else if (sim->parts[i].life > -5)
+						q_float = (float)q;
 					else
-						q = sim->parts[i].life;
-					colr = colg = colb = sin(gradv*q) * 100 + 128;
+						q_float = -sqrt((float)q) - 2.25f;
+					colr = colg = colb = sin(gradv*q_float) * 100 + 128;
 					cola = 255;
 					if(pixel_mode & (FIREMODE | PMODE_GLOW))
 						pixel_mode = (pixel_mode & ~(FIREMODE|PMODE_GLOW)) | PMODE_BLUR;
@@ -1393,18 +1429,21 @@ void Renderer::render_parts()
 				//Apply decoration colour
 				if(!(colour_mode & ~COLOUR_GRAD) && decorations_enable && deca)
 				{
+					deca2 = deca;
+					if (deca >= 255)
+						deca2 = 256;
 					if(!(pixel_mode & NO_DECO))
 					{
-						colr = (deca*decr + (255-deca)*colr) >> 8;
-						colg = (deca*decg + (255-deca)*colg) >> 8;
-						colb = (deca*decb + (255-deca)*colb) >> 8;
+						colr = (deca2*decr + (255-deca)*colr) >> 8;
+						colg = (deca2*decg + (255-deca)*colg) >> 8;
+						colb = (deca2*decb + (255-deca)*colb) >> 8;
 					}
 
 					if(pixel_mode & DECO_FIRE)
 					{
-						firer = (deca*decr + (255-deca)*firer) >> 8;
-						fireg = (deca*decg + (255-deca)*fireg) >> 8;
-						fireb = (deca*decb + (255-deca)*fireb) >> 8;
+						firer = (deca2*decr + (255-deca)*firer) >> 8;
+						fireg = (deca2*decg + (255-deca)*fireg) >> 8;
+						fireb = (deca2*decb + (255-deca)*fireb) >> 8;
 					}
 				}
 
@@ -1414,6 +1453,12 @@ void Renderer::render_parts()
 					{
 						colr = firer = 255;
 						colg = fireg = colb = fireb = 0;
+						if (findingElement == PT_WARP)
+						{
+							cola = 255;
+							pixel_mode &= ~PMODE;
+							pixel_mode |= PMODE_FLAT;
+						}
 					}
 					else
 					{
@@ -1468,7 +1513,8 @@ void Renderer::render_parts()
 				}
 				if(pixel_mode & PSPEC_STICKMAN)
 				{
-					int legr, legg, legb;
+					int STKM_grav_flag = sim->E189_FIGH_pause & 0x200;
+					int legr, legg, legb, cplayer_elem;
 					playerst *cplayer;
 					if(t==PT_STKM)
 						cplayer = &sim->player;
@@ -1483,7 +1529,7 @@ void Renderer::render_parts()
 					{
 						char buff[12];  //Buffer for HP
 						sprintf(buff, "%3d", sim->parts[i].life);  //Show HP
-						drawtext(mousePos.X-8-2*(sim->parts[i].life<100)-2*(sim->parts[i].life<10), mousePos.Y-12, buff, 255, 255, 255, 255);
+						drawtext(mousePos.X-8-2*(sim->parts[i].life<100)-2*(sim->parts[i].life<10), mousePos.Y+ (STKM_grav_flag? (+6) : (-12)), buff, 255, 255, 255, 255);
 					}
 
 					if (findingElement == t)
@@ -1493,9 +1539,12 @@ void Renderer::render_parts()
 					}
 					else if (colour_mode != COLOUR_HEAT)
 					{
-						if (cplayer->elem<PT_NUM && cplayer->elem > 0)
+						cplayer_elem = cplayer->elem;
+						if (cplayer_elem == PT_FIGH)
+							cplayer_elem = cplayer->pelem;
+						if (cplayer_elem<PT_NUM && cplayer_elem > 0)
 						{
-							if (cplayer->elem == SPC_AIR)
+							if (cplayer_elem == SPC_AIR)
 							{
 								colr = PIXR(0x8080FF);
 								colg = PIXG(0x8080FF);
@@ -1503,9 +1552,9 @@ void Renderer::render_parts()
 							}
 							else
 							{
-								colr = PIXR(elements[cplayer->elem].Colour);
-								colg = PIXG(elements[cplayer->elem].Colour);
-								colb = PIXB(elements[cplayer->elem].Colour);
+								colr = PIXR(elements[cplayer_elem].Colour);
+								colg = PIXG(elements[cplayer_elem].Colour);
+								colb = PIXB(elements[cplayer_elem].Colour);
 							}
 						}
 						else
@@ -1515,6 +1564,8 @@ void Renderer::render_parts()
 							colb = 0xFF;
 						}
 					}
+					
+					int STKM_grav_mult = (STKM_grav_flag ? (-3) : (+3));
 
 #ifdef OGLR
 					glColor4f(((float)colr)/255.0f, ((float)colg)/255.0f, ((float)colb)/255.0f, 1.0f);
@@ -1546,13 +1597,13 @@ void Renderer::render_parts()
 							glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 					}
 
-					glVertex2f(nx, ny+3);
+					glVertex2f(nx, ny+STKM_grav_mult);
 					glVertex2f(cplayer->legs[0], cplayer->legs[1]);
 
 					glVertex2f(cplayer->legs[0], cplayer->legs[1]);
 					glVertex2f(cplayer->legs[4], cplayer->legs[5]);
 
-					glVertex2f(nx, ny+3);
+					glVertex2f(nx, ny+STKM_grav_mult);
 					glVertex2f(cplayer->legs[8], cplayer->legs[9]);
 
 					glVertex2f(cplayer->legs[8], cplayer->legs[9]);
@@ -1609,9 +1660,9 @@ void Renderer::render_parts()
 						draw_line(nx+2, ny-2, nx+2, ny+2, colr, colg, colb, 255);
 					}
 					//legs
-					draw_line(nx, ny+3, cplayer->legs[0], cplayer->legs[1], legr, legg, legb, 255);
+					draw_line(nx, ny+STKM_grav_mult, cplayer->legs[0], cplayer->legs[1], legr, legg, legb, 255);
 					draw_line(cplayer->legs[0], cplayer->legs[1], cplayer->legs[4], cplayer->legs[5], legr, legg, legb, 255);
-					draw_line(nx, ny+3, cplayer->legs[8], cplayer->legs[9], legr, legg, legb, 255);
+					draw_line(nx, ny+STKM_grav_mult, cplayer->legs[8], cplayer->legs[9], legr, legg, legb, 255);
 					draw_line(cplayer->legs[8], cplayer->legs[9], cplayer->legs[12], cplayer->legs[13], legr, legg, legb, 255);
 					if (cplayer->rocketBoots)
 					{
