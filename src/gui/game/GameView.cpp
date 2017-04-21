@@ -1791,7 +1791,7 @@ void GameView::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bo
 		disableShiftBehaviour();
 		break;
 	case 'z':
-		if(!zoomCursorFixed && !alt)
+		if(!alternateState && !zoomCursorFixed && !alt)
 			c->SetZoomEnabled(false);
 		break;
 	}
