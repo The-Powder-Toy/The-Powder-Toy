@@ -977,10 +977,10 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 					}
 			break;
 		case 19: // universal conducts?
-			if (parts[i].tmp2 == 1)
+			if (parts[i].tmp2 == 2)
 			{
-				for (rx = -1; rx < 2; rx++)
-					for (ry = -1; ry < 2; ry++)
+				for (rx = -2; rx <= 2; rx++)
+					for (ry = -2; ry <= 2; ry++)
 						if (BOUNDS_CHECK && (!rx || !ry))
 						{
 							r = pmap[y+ry][x+rx];
@@ -1000,8 +1000,9 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 							}
 						}
 			}
-			goto continue1c;
-		continue1c:
+			if (parts[i].tmp2) break;
+			// goto continue1c;
+		// continue1c:
 			for (rx = -2; rx <= 2; rx++)
 				for (ry = -2; ry <= 2; ry++)
 					if (BOUNDS_CHECK && (!rx || !ry))
@@ -1011,7 +1012,7 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 						pavg = sim->parts_avg(i,r>>8,PT_INSL);
 						if ((pavg != PT_INSL && pavg != PT_INDI) && (r & 0xFF) == PT_SPRK && parts[r>>8].life == 3)
 						{
-							parts[i].tmp2 = 2;
+							parts[i].tmp2 = 3;
 							goto break1a;
 						}
 					}
