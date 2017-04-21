@@ -1596,7 +1596,7 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 				buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to copy (right click = cancel)";
 				buttonTipShow = 120;
 			}
-			else
+			else if (showDebug)
 			{
 				alternateState = 2;
 			}
@@ -1610,7 +1610,7 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 				buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to copy then cut (right click = cancel)";
 				buttonTipShow = 120;
 			}
-			else
+			else if (showDebug)
 			{
 				alternateState = 1;
 			}
@@ -1624,7 +1624,7 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 					isMouseDown = false;
 				}
 			}
-			else
+			else if (showDebug)
 			{
 				alternateState = 3;
 			}
@@ -1715,6 +1715,10 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 				break;
 				case 'd':
 					showDebugState = (shift ? 12 : 9);
+				case 'e':
+					showDebugStateFlags += 0x04;
+					if (showDebugStateFlags & 0x0C)
+						showDebugStateFlags &= ~0x0C;
 				break;
 				case 'f':
 					showDebugState = 11;
@@ -1726,16 +1730,19 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 					showDebugState = 0;
 				break;
 				case 'p':
-					if (shift)
+					if (!shift)
 						showDebugState = 10;
 					else
-						showDebugStateFlags ^= 0x00000001;
+						showDebugStateFlags ^= 0x01;
 				break;
 				case 't':
 					showDebugState = (shift ? 5 : 1);
 				break;
 				case 'v':
-					showDebugState = 4;
+					if (!shift)
+						showDebugState = 4;
+					else
+						showDebugStateFlags ^= 0x02;
 				break;
 				case 'x':
 					usingHexadecimal = !usingHexadecimal;
@@ -2520,7 +2527,18 @@ void GameView::OnDraw()
 					else
 						sampleInfo << " ()";
 				}
-				sampleInfo << ", Temp: " << std::fixed << sample_particle->temp -273.15f << " C";
+				sampleInfo << ", Temp: ";
+				switch ((showDebugStateFlags >> 2) & 3)
+				{
+				case 1:
+					sampleInfo << std::fixed << sample_particle->temp << " K";
+					break;
+				case 2:
+					sampleInfo << std::fixed << (((sample_particle->temp -273.15f) *9/5) + 32) << " F";
+					break;
+				default:
+					sampleInfo << std::fixed << sample_particle->temp -273.15f << " C";
+				}
 				if (!showDebugState)
 				{
 					sampleInfo << ", Life: " << partlife;
@@ -2731,17 +2749,33 @@ void GameView::OnDraw()
 			g->fillrect(XRES-20-textWidth, 27, textWidth+8, 14, 0, 0, 0, alpha*0.5f);
 			g->drawtext(XRES-16-textWidth, 30, (const char*)sampleInfo.str().c_str(), 255, 255, 255, alpha*0.75f);
 			
-			int __currPosY = 43;
+			int __currPosY = 41; // 27 + 14
+			int tempValue;
 			
 			if (showDebugStateFlags & 0x00000001)
 			{
 				sampleInfo.str(std::string());
 
-				sampleInfo << "sim_max_pressure = " << c->sim_max_pressure_resolve();
+				tempValue = ren->sim->breakable_wall_count; // using "Renderer", actually not "Renderer"
+				if (tempValue)
+					sampleInfo << "breakable_wall_count: " << tempValue << ",";
+				sampleInfo << "sim_max_pressure: " << std::fixed << c->sim_max_pressure_resolve();
 
 				textWidth = Graphics::textwidth((char*)sampleInfo.str().c_str());
-				g->fillrect(XRES-20-textWidth, currPosY, textWidth+8, 15, 0, 0, 0, alpha*0.5f);
-				g->drawtext(XRES-16-textWidth, currPosY + 3, (const char*)sampleInfo.str().c_str(), 255, 255, 255, alpha*0.75f);
+				g->fillrect(XRES-20-textWidth, __currPosY, textWidth+8, 15, 0, 0, 0, alpha*0.5f);
+				g->drawtext(XRES-16-textWidth, __currPosY + 3, (const char*)sampleInfo.str().c_str(), 255, 255, 255, alpha*0.75f);
+				__currPosY += 15;
+			}
+			if ((showDebugStateFlags & 0x00000002) && sample.isMouseInSim)
+			{
+				sampleInfo.str(std::string());
+
+				sampleInfo << "Air velocity X: " << sample.AirVelocityX << ",";
+				sampleInfo << "velocity Y: " << sample.AirVelocityY;
+
+				textWidth = Graphics::textwidth((char*)sampleInfo.str().c_str());
+				g->fillrect(XRES-20-textWidth, __currPosY, textWidth+8, 15, 0, 0, 0, alpha*0.5f);
+				g->drawtext(XRES-16-textWidth, __currPosY + 3, (const char*)sampleInfo.str().c_str(), 255, 255, 255, alpha*0.75f);
 				__currPosY += 15;
 			}
 		}
@@ -2759,6 +2793,8 @@ void GameView::OnDraw()
 
 		if (showDebug)
 			fpsInfo << " Parts: " << sample.NumParts;
+		if (alternateState)
+			fpsInfo << " [ALT: " << alternateState << "]";
 		if (c->GetReplaceModeFlags()&REPLACE_MODE)
 			fpsInfo << " [REPLACE MODE]";
 		if (c->GetReplaceModeFlags()&SPECIFIC_DELETE)
@@ -2772,6 +2808,9 @@ void GameView::OnDraw()
 		int alpha = 255-introText*5;
 		g->fillrect(12, 12, textWidth+8, 15, 0, 0, 0, alpha*0.5);
 		g->drawtext(16, 16, (const char*)fpsInfo.str().c_str(), 32, 216, 255, alpha*0.75);
+		
+		fpsInfo.str(std::string());
+		
 	}
 
 	//Tooltips
