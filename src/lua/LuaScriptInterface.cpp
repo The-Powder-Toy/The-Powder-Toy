@@ -753,7 +753,7 @@ void LuaScriptInterface::initSimulationAPI()
 		{"framerender", simulation_framerender},
 		{"gspeed", simulation_gspeed},
 		{"CAType", simulation_CAType},
-		{"CAType", simulation_CAType},
+		// {"CAType", simulation_CAType}, // remove repeated
 		{"createDebugComponent", simulation_createDebugComponent},
 		{"createDComp", simulation_createDebugComponent},
 		{"setCustomGOLRule", simulation_setCustomGOLRule},
