@@ -84,7 +84,7 @@ GameModel::GameModel():
 	sim->aheat_enable =  Client::Ref().GetPrefInteger("Simulation.AmbientHeat", 0);
 	sim->pretty_powder =  Client::Ref().GetPrefInteger("Simulation.PrettyPowder", 0);
 	sim->extraLoopsCA = Client::Ref().GetPrefBool("Simulation.LangtonsLoops", false);
-	sim->extraLoopsType = Client::Ref().GetPrefInteger("Simulation.LangtonsLoops", 0);
+	sim->extraLoopsType = Client::Ref().GetPrefInteger("Simulation.ExtraLoopsType", 0);
 
 	Favorite::Ref().LoadFavoritesFromPrefs();
 
