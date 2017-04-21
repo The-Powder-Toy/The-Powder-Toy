@@ -1717,8 +1717,8 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 					showDebugState = (shift ? 12 : 9);
 				case 'e':
 					showDebugStateFlags += 0x04;
-					if (showDebugStateFlags & 0x0C)
-						showDebugStateFlags &= ~0x0C;
+					if ((showDebugStateFlags & 0x0C) == 0x0C)
+						showDebugStateFlags -= 0x0C;
 				break;
 				case 'f':
 					showDebugState = 11;
