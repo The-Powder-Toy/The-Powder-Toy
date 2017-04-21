@@ -1715,10 +1715,6 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 				break;
 				case 'd':
 					showDebugState = (shift ? 12 : 9);
-				case 'e':
-					showDebugStateFlags += 0x04;
-					if ((showDebugStateFlags & 0x0C) == 0x0C)
-						showDebugStateFlags -= 0x0C;
 				break;
 				case 'f':
 					showDebugState = 11;
@@ -1736,7 +1732,14 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 						showDebugStateFlags ^= 0x01;
 				break;
 				case 't':
-					showDebugState = (shift ? 5 : 1);
+					if (!alt)
+						showDebugState = (shift ? 5 : 1);
+					else
+					{
+						int tmp = (showDebugState >> 2) + (shift ? 2 : 1);
+						showDebugStateFlags &= ~0x0C;
+						showDebugStateFlags |= tmp << 2;
+					}
 				break;
 				case 'v':
 					if (!shift)
@@ -1755,6 +1758,12 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 				case '=':
 					debugPrecision ++; alternateState = 1;
 				break;
+			}
+			if(key >= '0' && key <= '9')
+			{
+				alternateState = (key - '0') + 4;
+				if (shift)
+					alternateState += 10;
 			}
 			break;
 		case 2:
@@ -2758,7 +2767,7 @@ void GameView::OnDraw()
 
 				tempValue = ren->sim->breakable_wall_count; // using "Renderer", actually not "Renderer"
 				if (tempValue)
-					sampleInfo << "breakable_wall_count: " << tempValue << ",";
+					sampleInfo << "breakable_wall_count: " << tempValue << ", ";
 				sampleInfo << "sim_max_pressure: " << std::fixed << c->sim_max_pressure_resolve();
 
 				textWidth = Graphics::textwidth((char*)sampleInfo.str().c_str());
@@ -2770,7 +2779,7 @@ void GameView::OnDraw()
 			{
 				sampleInfo.str(std::string());
 
-				sampleInfo << "Air velocity X: " << sample.AirVelocityX << ",";
+				sampleInfo << "Air velocity X: " << sample.AirVelocityX << ", ";
 				sampleInfo << "velocity Y: " << sample.AirVelocityY;
 
 				textWidth = Graphics::textwidth((char*)sampleInfo.str().c_str());
