@@ -230,7 +230,7 @@ Element_PSTN::StackData Element_PSTN::CanMoveStack(Simulation * sim, int stackX,
 //#TPT-Directive ElementHeader Element_PSTN static int MoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int maxSize, int amount, bool retract, int block, bool sticky, int maxFrame, int callDepth = 0, int stickylimited = 0)
 int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int maxSize, int amount, bool retract, int block, bool sticky, int maxFrame, int callDepth, int stickylimit)
 {
-	bool foundParts = false;
+	// bool foundParts = false;
 	int posX, posY, r, spaces = 0, currentPos = 0, tempvar, tempvar2;
 	r = sim->pmap[stackY][stackX];
 	if(!callDepth && (r&0xFF) == PT_FRME) {
@@ -290,11 +290,11 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 		return MoveStack(sim, stackX, stackY, directionX, directionY, maxSize, amount, retract, block, !tempvar2, maxFrame, 1, tempvar2 >= 2 ? sim->parts[tempvar].tmp2 : 0);
 	}
 	if(retract){
+		bool foundParts = false;
 		//Remove arm section if retracting without FRME
 		if (!callDepth)
 			for(int j = 1; j <= amount; j++)
 				sim->kill_part(sim->pmap[stackY+(directionY*-j)][stackX+(directionX*-j)]>>8);
-		bool foundEnd = false;
 		int currentPos = 0;
 		for(posX = stackX, posY = stackY; currentPos < maxSize && currentPos < XRES-1; posX += directionX, posY += directionY) {
 			if (!(posX < XRES && posY < YRES && posX >= 0 && posY >= 0)) {
@@ -324,8 +324,6 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 			}
 			return amount;
 		}
-		if(!foundParts && foundEnd)
-			return amount;
 	} else {
 		StackData stackData = CanMoveStack(sim, stackX, stackY, directionX, directionY, maxSize, amount, retract, block);
 		int currentPos = stackData.pushed + stackData.spaces;

@@ -47,6 +47,11 @@ Element_FRAY::Element_FRAY()
 //#TPT-Directive ElementHeader Element_FRAY static int update(UPDATE_FUNC_ARGS)
 int Element_FRAY::update(UPDATE_FUNC_ARGS)
 {
+	int curlen;
+	if (parts[i].tmp > 0)
+		curlen = parts[i].tmp;
+	else
+		curlen = 10;
 	int r, nxx, nyy, len, nxi, nyi, rx, ry;
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)
@@ -57,7 +62,7 @@ int Element_FRAY::update(UPDATE_FUNC_ARGS)
 					continue;
 				if ((r&0xFF)==PT_SPRK) {
 					for (nxx = 0, nyy = 0, nxi = rx*-1, nyi = ry*-1, len = 0; ; nyy+=nyi, nxx+=nxi, len++) {
-						if (!(x+nxi+nxx<XRES && y+nyi+nyy<YRES && x+nxi+nxx >= 0 && y+nyi+nyy >= 0) || len>10) {
+						if (!(x+nxi+nxx<XRES && y+nyi+nyy<YRES && x+nxi+nxx >= 0 && y+nyi+nyy >= 0) || len>curlen) {
 							break;
 						}
 						r = pmap[y+nyi+nyy][x+nxi+nxx];
