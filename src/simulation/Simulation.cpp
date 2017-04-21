@@ -2486,10 +2486,11 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 				}
 			}
 			else if (!(E189_pause & 0x8)) {
+				float pressureResistance;
 				switch (r&0xFF)
 				{
 				case PT_INVIS:
-					float pressureResistance = 0.0f;
+					pressureResistance = 0.0f;
 					if (parts[r>>8].tmp > 0)
 						pressureResistance = (float)parts[r>>8].tmp;
 					else
