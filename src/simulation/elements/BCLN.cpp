@@ -30,7 +30,7 @@ Element_BCLN::Element_BCLN()
 	HeatConduct = 251;
 	Description = "Breakable Clone.";
 
-	Properties = TYPE_SOLID|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC|PROP_DRAWONCTYPE|PROP_NOCTYPEDRAW;
+	Properties = TYPE_SOLID|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC|PROP_DRAWONCTYPE|PROP_NOCTYPEDRAW | PROP_TRANSPARENT;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

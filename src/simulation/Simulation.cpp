@@ -313,6 +313,7 @@ void Simulation::SaveSimOptions(GameSave * gameSave)
 	gameSave->waterEEnabled = water_equal_test;
 	gameSave->gravityEnable = grav->ngrav_enable;
 	gameSave->aheatEnable = aheat_enable;
+	gameSave->sextraLoopsCA = extraLoopsCA;
 }
 
 Snapshot * Simulation::CreateSnapshot()
@@ -2107,13 +2108,9 @@ void Simulation::init_can_move()
 	// TODO: replace with property
 	for (destinationType = 0; destinationType < PT_NUM; destinationType++)
 	{
-		if (destinationType == PT_GLAS || destinationType == PT_PHOT || destinationType == PT_FILT || destinationType == PT_INVIS
-		 || destinationType == PT_CLNE || destinationType == PT_PCLN || destinationType == PT_BCLN || destinationType == PT_PBCN
-		 || destinationType == PT_WATR || destinationType == PT_DSTW || destinationType == PT_SLTW || destinationType == PT_GLOW
-		 || destinationType == PT_ISOZ || destinationType == PT_ISZS || destinationType == PT_QRTZ || destinationType == PT_PQRT
-		 || destinationType == PT_H2   || destinationType == PT_BGLA || destinationType == PT_C5)
+		if (destinationType == PT_PHOT || destinationType == PT_INVIS || destinationType == PT_H2 || elements[destinationType].Properties&PROP_TRANSPARENT)
 			can_move[PT_PHOT][destinationType] = 2;
-		if (destinationType != PT_DMND && destinationType != PT_INSL && destinationType != PT_VOID && destinationType != PT_PVOD && destinationType != PT_VIBR && destinationType != PT_BVBR && destinationType != PT_PRTI && destinationType != PT_PRTO)
+		if (destinationType != PT_DMND && destinationType != PT_INSL && destinationType != PT_VOID && destinationType != PT_PVOD && destinationType != PT_VIBR && destinationType != PT_BVBR && destinationType != PT_PRTI && destinationType != PT_PRTO && destinationType != PT_E187 && destinationType != PT_E188)
 		{
 			can_move[PT_PROT][destinationType] = 2;
 			can_move[PT_GRVT][destinationType] = 2;
@@ -2149,6 +2146,25 @@ void Simulation::init_can_move()
 	can_move[PT_THDR][PT_THDR] = 2;
 	can_move[PT_EMBR][PT_EMBR] = 2;
 	can_move[PT_TRON][PT_SWCH] = 3;
+	
+	can_move[PT_ELEC][PT_E182] = 2;
+	can_move[PT_ELEC][PT_E185] = 2;
+
+	can_move[PT_E186][PT_E182] = 2;
+	can_move[PT_E186][PT_E185] = 2;
+	can_move[PT_E186][PT_URAN] = 2;
+	can_move[PT_E186][PT_H2] = 2;
+	can_move[PT_E186][PT_PLSM] = 2;
+	can_move[PT_E186][PT_NBLE] = 2;
+	can_move[PT_E186][PT_CO2] = 2;
+	can_move[PT_E186][PT_O2] = 2;
+	can_move[PT_E186][PT_FILT] = 2;
+	can_move[PT_E186][PT_ISOZ] = 2;
+	can_move[PT_E186][PT_ISZS] = 2;
+	can_move[PT_E186][PT_EXOT] = 2;
+	can_move[PT_E186][PT_TUNG] = 2;
+	can_move[PT_E186][PT_INVIS] = 2;
+	can_move[PT_E186][PT_BRMT] = 3;
 }
 
 /*
@@ -2219,6 +2235,13 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr)
 		else if (pt == PT_TRON && (r&0xFF) == PT_SWCH)
 		{
 			if (parts[r>>8].life >= 10)
+				return 2;
+			else
+				return 0;
+		}
+		else if (pt == PT_E186 && (r&0xFF) == PT_BRMT)
+		{
+			if (parts[r>>8].ctype == PT_TUNG)
 				return 2;
 			else
 				return 0;
@@ -3247,6 +3270,7 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 				break;
 			}
 			case PT_ELEC:
+			case PT_E186:
 			{
 				float a = (rand()%360)*3.14159f/180.0f;
 				parts[i].life = 680;
@@ -4215,7 +4239,7 @@ killed:
 					//block if particle can't move (0), or some special cases where it returns 1 (can_move = 3 but returns 1 meaning particle will be eaten)
 					//also photons are still blocked (slowed down) by any particle (even ones it can move through), and absorb wall also blocks particles
 					int eval = eval_move(t, fin_x, fin_y, NULL);
-					if (!eval || (can_move[t][pmap[fin_y][fin_x]&0xFF] == 3 && eval == 1) || (t == PT_PHOT && pmap[fin_y][fin_x]) || bmap[fin_y/CELL][fin_x/CELL]==WL_DESTROYALL || closedEholeStart!=(bmap[fin_y/CELL][fin_x/CELL] == WL_EHOLE && !emap[fin_y/CELL][fin_x/CELL]))
+					if (!eval || (can_move[t][pmap[fin_y][fin_x]&0xFF] == 3 && eval == 1) || (t == PT_PHOT && pmap[fin_y][fin_x] && !(elements[pmap[fin_y][fin_x]&0xFF].Properties & PROP_NOSLOWDOWN)) || bmap[fin_y/CELL][fin_x/CELL]==WL_DESTROYALL || closedEholeStart!=(bmap[fin_y/CELL][fin_x/CELL] == WL_EHOLE && !emap[fin_y/CELL][fin_x/CELL]))
 					{
 						// found an obstacle
 						clear_xf = fin_xf-dx;
@@ -4851,6 +4875,258 @@ void Simulation::SimulateGoL()
 	//memset(gol2, 0, sizeof(gol2));
 }
 
+void Simulation::SimulateLLoops()
+{
+	int z,z2, x1,x2,x3,x4,x5, rbegin, rend;
+	if (extraLoopsType)
+	{
+		z = 8; z2 = 8;
+	}
+	else
+	{
+		z = 2; z2 = 0;
+	}
+	switch (extraLoopsType)
+	{
+		case 0:
+		case 1:
+			rbegin = 0; rend = 218;
+			break;
+		default:
+			rbegin = 218; rend = 475;
+			break;
+	}
+	for (x1 = 0; x1 < 8; x1++)
+	{
+		for (x2 = 0; x2 < 8; x2++)
+		{
+			for (x3 = 0; x3 < 8; x3++)
+			{
+				for (x4 = 0; x4 < 8; x4++)
+				{
+					for (x5 = 0; x5 < 8; x5++)
+					{
+						lloopsrule[x1][x2][x3][x4][x5] = z2;
+					}
+				}
+			}
+		}
+	}
+	int ruletable[][6] = {
+		{0,0,0,0,1,2},{0,0,0,0,2,0},{0,0,0,0,3,0},{0,0,0,0,5,0},{0,0,0,0,6,3},{0,0,0,0,7,1},{0,0,0,1,1,2},{0,0,0,1,2,2},{0,0,0,1,3,2},{0,0,0,2,1,2},{0,0,0,2,2,0},
+		{0,0,0,2,3,0},{0,0,0,2,6,2},{0,0,0,2,7,2},{0,0,0,3,2,0},{0,0,0,5,2,5},{0,0,0,6,2,2},{0,0,0,7,2,2},{0,0,1,0,2,2},{0,0,1,1,2,0},{0,0,2,0,2,0},{0,0,2,0,3,0},
+		{0,0,2,0,5,0},{0,0,2,1,2,5},{0,0,2,2,2,0},{0,0,2,3,2,2},{0,0,5,2,2,2},{0,1,2,3,2,1},{0,1,2,4,2,1},{0,1,2,5,2,5},{0,1,2,6,2,1},{0,1,2,7,2,1},{0,1,2,7,5,1},
+		{0,1,4,2,2,1},{0,1,4,3,2,1},{0,1,4,4,2,1},{0,1,4,7,2,1},{0,1,6,2,5,1},{0,1,7,2,2,1},{0,1,7,2,5,5},{0,1,7,5,2,1},{0,1,7,6,2,1},{0,1,7,7,2,1},{0,2,5,2,7,1},
+		{1,0,0,0,1,1},{1,0,0,0,6,1},{1,0,0,0,7,7},{1,0,0,1,1,1},{1,0,0,1,2,1},{1,0,0,2,1,1},{1,0,0,2,4,4},{1,0,0,2,7,7},{1,0,0,5,1,1},{1,0,1,0,1,1},{1,0,1,1,1,1},
+		{1,0,1,2,4,4},{1,0,1,2,7,7},{1,0,2,0,2,6},{1,0,2,1,2,1},{1,0,2,2,1,1},{1,0,2,2,4,4},{1,0,2,2,6,3},{1,0,2,2,7,7},{1,0,2,3,2,7},{1,0,2,4,2,4},{1,0,2,6,2,6},
+		{1,0,2,6,4,4},{1,0,2,6,7,7},{1,0,2,7,1,0},{1,0,2,7,2,7},{1,0,5,4,2,7},{1,1,1,1,2,1},{1,1,1,2,2,1},{1,1,1,2,4,4},{1,1,1,2,5,1},{1,1,1,2,6,1},{1,1,1,2,7,7},
+		{1,1,1,5,2,z},{1,1,2,1,2,1},{1,1,2,2,2,1},{1,1,2,2,4,4},{1,1,2,2,5,1},{1,1,2,2,7,7},{1,1,2,3,2,1},{1,1,2,4,2,4},{1,1,2,6,2,1},{1,1,2,7,2,7},{1,1,3,2,2,1},
+		{1,2,2,2,4,4},{1,2,2,2,7,7},{1,2,2,4,3,4},{1,2,2,5,4,7},{1,2,3,2,4,4},{1,2,3,2,7,7},{1,2,4,2,5,5},{1,2,4,2,6,7},{1,2,5,2,7,5},{2,0,0,0,1,2},{2,0,0,0,2,2},
+		{2,0,0,0,4,2},{2,0,0,0,7,1},{2,0,0,1,2,2},{2,0,0,1,5,2},{2,0,0,2,1,2},{2,0,0,2,2,2},{2,0,0,2,3,2},{2,0,0,2,4,2},{2,0,0,2,5,0},{2,0,0,2,6,2},{2,0,0,2,7,2},
+		{2,0,0,3,2,6},{2,0,0,4,2,3},{2,0,0,5,1,7},{2,0,0,5,2,2},{2,0,0,5,7,5},{2,0,0,7,2,2},{2,0,1,0,2,2},{2,0,1,1,2,2},{2,0,1,2,2,2},{2,0,1,4,2,2},{2,0,1,7,2,2},
+		{2,0,2,0,2,2},{2,0,2,0,3,2},{2,0,2,0,5,2},{2,0,2,0,7,3},{2,0,2,1,2,2},{2,0,2,1,5,2},{2,0,2,2,1,2},{2,0,2,2,2,2},{2,0,2,2,7,2},{2,0,2,3,2,1},{2,0,2,4,2,2},
+		{2,0,2,4,5,2},{2,0,2,5,2,0},{2,0,2,5,5,2},{2,0,2,6,2,2},{2,0,2,7,2,2},{2,0,3,1,2,2},{2,0,3,2,1,6},{2,0,3,2,2,6},{2,0,3,4,2,2},{2,0,4,2,2,2},{2,0,5,1,2,2},
+		{2,0,5,2,1,2},{2,0,5,2,2,2},{2,0,5,5,2,1},{2,0,5,7,2,5},{2,0,6,2,2,2},{2,0,6,7,2,2},{2,0,7,1,2,2},{2,0,7,2,2,2},{2,0,7,4,2,2},{2,0,7,7,2,2},{2,1,1,2,2,2},
+		{2,1,1,2,6,1},{2,1,2,2,2,2},{2,1,2,2,4,2},{2,1,2,2,6,2},{2,1,2,2,7,2},{2,1,4,2,2,2},{2,1,5,2,2,2},{2,1,6,2,2,2},{2,1,7,2,2,2},{2,2,2,2,7,2},{2,2,2,4,4,2},
+		{2,2,2,4,6,2},{2,2,2,7,6,2},{2,2,2,7,7,2},{3,0,0,0,1,3},{3,0,0,0,2,2},{3,0,0,0,4,1},{3,0,0,0,7,6},{3,0,0,1,2,3},{3,0,0,4,2,1},{3,0,0,6,2,2},{3,0,1,0,2,1},
+		{3,0,1,2,2,0},{3,0,2,5,1,1},{4,0,1,1,2,0},{4,0,1,2,2,0},{4,0,1,2,5,0},{4,0,2,1,2,0},{4,0,2,2,2,1},{4,0,2,3,2,6},{4,0,2,5,2,0},{4,0,3,2,2,1},{5,0,0,0,2,2},
+		{5,0,0,2,1,5},{5,0,0,2,2,5},{5,0,0,2,3,2},{5,0,0,2,7,2},{5,0,0,5,2,0},{5,0,2,0,2,2},{5,0,2,1,2,2},{5,0,2,1,5,2},{5,0,2,2,2,0},{5,0,2,2,4,4},{5,0,2,7,2,2},
+		{5,1,2,1,2,2},{5,1,2,2,2,0},{5,1,2,4,2,2},{5,1,2,7,2,2},{6,0,0,0,1,1},{6,0,0,0,2,1},{6,0,2,1,2,0},{6,1,2,1,2,5},{6,1,2,1,3,1},{6,1,2,2,2,5},{7,0,0,0,7,7},
+		{7,0,1,1,2,0},{7,0,1,2,2,0},{7,0,1,2,5,0},{7,0,2,1,2,0},{7,0,2,2,2,1},{7,0,2,2,5,1},{7,0,2,3,2,1},{7,0,2,5,2,5},{7,0,2,7,2,0},{0,0,0,0,1,2},{0,0,0,0,4,3},
+		{0,0,0,1,2,2},{0,0,0,1,5,2},{0,0,0,2,1,2},{0,0,0,2,4,2},{0,0,0,4,2,2},{0,0,0,4,5,2},{0,0,0,7,5,2},{0,0,1,0,2,2},{0,0,2,1,4,1},{0,0,2,1,7,1},{0,0,2,3,2,2},
+		{0,1,1,2,2,1},{0,1,2,1,2,1},{0,1,2,3,2,1},{0,1,2,4,2,1},{0,1,2,4,5,1},{0,1,2,5,2,6},{0,1,2,6,2,6},{0,1,2,7,2,1},{0,1,2,7,5,1},{0,1,3,4,2,1},{0,1,3,7,2,1},
+		{0,1,4,2,2,1},{0,1,4,2,5,1},{0,1,4,3,2,1},{0,1,4,3,5,1},{0,1,4,4,2,1},{0,1,4,6,2,1},{0,1,7,2,2,1},{0,1,7,2,5,1},{0,1,7,5,6,1},{0,1,7,6,2,1},{0,1,7,7,2,1},
+		{1,0,0,0,1,1},{1,0,0,1,2,1},{1,0,0,2,1,1},{1,0,0,2,4,4},{1,0,0,2,7,7},{1,0,1,2,1,1},{1,0,1,2,4,4},{1,0,1,2,7,7},{1,0,2,0,2,1},{1,0,2,1,1,1},{1,0,2,1,2,1},
+		{1,0,2,1,3,1},{1,0,2,2,1,1},{1,0,2,2,4,4},{1,0,2,2,7,7},{1,0,2,3,2,4},{1,0,2,4,1,4},{1,0,2,4,2,4},{1,0,2,4,3,4},{1,0,2,5,1,1},{1,0,2,5,2,7},{1,0,2,5,4,3},
+		{1,0,2,5,7,7},{1,0,2,7,1,7},{1,0,2,7,2,7},{1,0,2,7,3,5},{1,0,5,1,2,1},{1,0,5,4,2,4},{1,0,5,7,2,7},{1,0,6,2,1,1},{1,0,6,2,4,4},{1,0,6,2,7,7},{1,1,1,1,2,1},
+		{1,1,1,2,2,1},{1,1,1,2,4,4},{1,1,1,2,5,1},{1,1,1,2,7,7},{1,1,1,6,2,1},{1,1,2,1,2,1},{1,1,2,1,3,1},{1,1,2,1,5,1},{1,1,2,2,2,1},{1,1,2,2,4,4},{1,1,2,2,7,7},
+		{1,1,2,3,2,1},{1,1,2,4,2,4},{1,1,2,4,3,4},{1,1,2,5,2,7},{1,1,2,5,4,3},{1,1,2,5,7,7},{1,1,2,6,2,6},{1,1,2,7,2,7},{1,1,2,7,3,5},{1,1,3,2,2,1},{1,1,3,3,2,1},
+		{1,1,5,4,2,4},{1,1,5,7,2,7},{1,1,6,2,4,4},{1,1,6,2,7,7},{1,2,2,2,4,4},{1,2,2,2,7,7},{1,2,2,4,3,4},{1,2,2,7,3,7},{1,2,3,2,4,4},{1,2,3,2,7,7},{1,2,4,2,6,6},
+		{1,2,4,3,3,3},{1,2,6,2,7,6},{2,0,0,0,1,2},{2,0,0,0,2,2},{2,0,0,0,4,2},{2,0,0,0,5,2},{2,0,0,0,6,0},{2,0,0,0,7,1},{2,0,0,1,2,2},{2,0,0,1,5,2},{2,0,0,2,1,2},
+		{2,0,0,2,2,2},{2,0,0,2,3,2},{2,0,0,2,4,2},{2,0,0,2,6,0},{2,0,0,2,7,2},{2,0,0,3,2,4},{2,0,0,4,2,3},{2,0,0,4,5,2},{2,0,0,5,4,5},{2,0,0,5,7,5},{2,0,0,6,2,0},
+		{2,0,0,7,2,2},{2,0,0,7,5,2},{2,0,1,0,2,2},{2,0,1,1,2,2},{2,0,1,2,2,2},{2,0,1,4,2,2},{2,0,1,7,2,2},{2,0,2,0,2,2},{2,0,2,0,3,2},{2,0,2,0,5,2},{2,0,2,0,6,5},
+		{2,0,2,0,7,3},{2,0,2,1,2,2},{2,0,2,1,5,2},{2,0,2,2,1,2},{2,0,2,2,2,2},{2,0,2,2,3,2},{2,0,2,3,2,3},{2,0,2,4,2,2},{2,0,2,4,5,2},{2,0,2,5,2,5},{2,0,2,6,2,0},
+		{2,0,2,6,5,0},{2,0,2,7,2,2},{2,0,2,7,5,2},{2,0,3,1,2,2},{2,0,3,2,2,2},{2,0,3,4,2,2},{2,0,3,4,5,2},{2,0,3,7,2,2},{2,0,4,1,2,2},{2,0,4,2,2,2},{2,0,4,4,2,2},
+		{2,0,5,1,2,2},{2,0,5,4,2,5},{2,0,5,7,2,5},{2,0,6,1,2,5},{2,0,6,2,1,2},{2,0,6,4,2,5},{2,0,6,7,2,5},{2,0,7,1,2,2},{2,0,7,2,2,2},{2,0,7,7,2,2},{2,1,1,2,2,2},
+		{2,1,2,2,2,2},{2,1,2,2,3,2},{2,1,2,2,4,2},{2,1,2,2,7,2},{2,1,2,3,2,3},{2,1,3,2,2,2},{2,1,4,2,2,2},{2,1,6,2,2,2},{2,1,7,2,2,2},{2,2,2,2,4,2},{2,2,2,2,7,2},
+		{2,2,2,3,4,2},{2,2,2,3,7,2},{2,2,2,4,3,2},{2,2,2,4,4,2},{2,2,2,7,3,2},{2,2,2,7,7,2},{2,2,3,2,4,3},{2,2,3,2,7,3},{3,0,0,0,1,3},{3,0,0,0,2,2},{3,0,0,0,3,2},
+		{3,0,0,0,4,3},{3,0,0,0,7,4},{3,0,0,1,2,3},{3,0,0,3,2,2},{3,0,0,4,2,1},{3,0,1,0,2,1},{3,0,1,2,5,0},{3,0,2,1,2,3},{3,0,2,4,2,3},{3,0,2,5,2,1},{3,0,2,7,2,3},
+		{3,0,3,3,2,1},{3,1,2,1,2,3},{3,1,2,4,2,3},{3,1,2,5,2,1},{3,1,2,7,2,3},{3,2,4,2,4,3},{3,2,4,2,5,1},{3,2,4,2,7,3},{3,2,5,2,7,1},{3,2,7,2,7,3},{4,0,0,0,0,1},
+		{4,0,0,0,2,1},{4,0,1,0,2,0},{4,0,1,1,2,0},{4,0,1,2,2,0},{4,0,1,2,5,0},{4,0,1,6,2,0},{4,0,2,1,2,0},{4,0,2,1,5,0},{4,0,2,2,2,1},{4,0,2,3,2,1},{4,0,2,6,2,6},
+		{4,0,3,1,2,0},{4,0,3,2,2,1},{5,0,0,0,2,5},{5,0,0,1,2,5},{5,0,0,2,1,5},{5,0,0,2,3,2},{5,0,0,2,4,5},{5,0,0,2,7,5},{5,0,0,4,2,5},{5,0,0,7,2,5},{5,0,2,0,2,2},
+		{5,0,2,0,5,2},{5,0,2,1,2,5},{5,0,2,1,5,2},{5,0,2,4,2,5},{5,0,2,7,2,5},{5,0,3,1,2,0},{6,0,2,0,2,2},{6,0,2,1,2,2},{6,0,2,2,2,0},{6,0,2,4,2,2},{6,0,2,7,2,2},
+		{6,1,2,2,2,0},{6,2,2,2,4,0},{6,2,2,2,7,0},{7,0,1,0,2,0},{7,0,1,1,2,0},{7,0,1,2,2,0},{7,0,1,2,5,0},{7,0,1,6,2,0},{7,0,2,1,2,0},{7,0,2,1,5,0},{7,0,2,2,2,1},
+		{7,0,2,3,2,0},{7,0,2,6,2,6},{7,0,3,1,2,0}
+	};
+	for (int i = rbegin; i < rend; i++)
+	{
+		int nc = ruletable[i][0];
+		int nn = ruletable[i][1];
+		int ne = ruletable[i][2];
+		int ns = ruletable[i][3];
+		int nw = ruletable[i][4];
+		int nc2 = ruletable[i][5];
+		lloopsrule[nc][nn][ne][ns][nw] = nc2;
+		lloopsrule[nc][ne][ns][nw][nn] = nc2;
+		lloopsrule[nc][ns][nw][nn][ne] = nc2;
+		lloopsrule[nc][nw][nn][ne][ns] = nc2;
+	}
+	if (extraLoopsType)
+	{
+		for (x1 = 0; x1 < 8; x1++)
+		{
+			for (x2 = 0; x2 < 8; x2++)
+			{
+				for (x3 = 0; x3 < 8; x3++)
+				{
+					for (x4 = 0; x4 < 8; x4++)
+					{
+						for (x5 = 0; x5 < 8; x5++)
+						{
+							if (lloopsrule[x1][x2][x3][x4][x5] != 8)
+								continue;
+							int xsh = ((0xD6 >> x2) & 1) + ((0xD6 >> x3) & 1) + ((0xD6 >> x4) & 1) + ((0xD6 >> x5) & 1);
+							switch (x1)
+							{
+								case 0:
+									if (((x2 == 1)||(x3 == 1)||(x4 == 1)||(x5 == 1)) && xsh > 1)
+										lloopsrule[x1][x2][x3][x4][x5] = 1;
+									else
+										lloopsrule[x1][x2][x3][x4][x5] = 0;
+									break;
+								case 1:
+									if (((x2 == 7)||(x3 == 7)||(x4 == 7)||(x5 == 7)) && xsh > 1)
+										lloopsrule[x1][x2][x3][x4][x5] = 7;
+									else if (((x2 == 6)||(x3 == 6)||(x4 == 6)||(x5 == 6)) && xsh > 1)
+										lloopsrule[x1][x2][x3][x4][x5] = 6;
+									else if (((x2 == 4)||(x3 == 4)||(x4 == 4)||(x5 == 4)) && xsh > 1)
+										lloopsrule[x1][x2][x3][x4][x5] = 4;
+									break;
+								case 2:
+									if ((x2 == 3)||(x3 == 3)||(x4 == 3)||(x5 == 3))
+										lloopsrule[x1][x2][x3][x4][x5] = 1;
+									else if ((x2 == 2)||(x3 == 2)||(x4 == 2)||(x5 == 2))
+										lloopsrule[x1][x2][x3][x4][x5] = 2;
+									break;
+								case 4: case 6: case 7:
+									if (((x2 == 0)||(x3 == 0)||(x4 == 0)||(x5 == 0)) && xsh > 1)
+										lloopsrule[x1][x2][x3][x4][x5] = 0;
+									break;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	CGOL=0;
+	//TODO: maybe this should only loop through active particles
+	for (int ny = CELL; ny < YRES-CELL; ny++)
+	{
+		//go through every particle and set neighbor map
+		for (int nx = CELL; nx < XRES-CELL; nx++)
+		{
+			int r = pmap[ny][nx];
+			if (!r)
+			{
+				gol[ny][nx] = 0;
+				continue;
+			}
+			if ((r&0xFF)==PT_LIFE)
+			{
+				int golnum = parts[r>>8].ctype + 1;
+				if (golnum<=0 || golnum>=9)
+				{
+					kill_part(r>>8);
+					continue;
+				}
+				
+				int adxp = ((nx+1+XRES-3*CELL)%(XRES-2*CELL))+CELL;
+				int adyp = ((ny+1+YRES-3*CELL)%(YRES-2*CELL))+CELL;
+				int adxn = ((nx-1+XRES-3*CELL)%(XRES-2*CELL))+CELL;
+				int adyn = ((ny-1+YRES-3*CELL)%(YRES-2*CELL))+CELL;
+
+				gol2[ny][nx][0] ++;
+				gol[ny][nx] = golnum;
+
+				gol2[adyp][nx][0] ++;
+				gol2[adyp][nx][1] = golnum;
+				gol2[ny][adxn][0] ++;
+				gol2[ny][adxn][2] = golnum;
+				gol2[adyn][nx][0] ++;
+				gol2[adyn][nx][3] = golnum;
+				gol2[ny][adxp][0] ++;
+				gol2[ny][adxp][4] = golnum;
+				
+			}
+		}
+	}
+	for (int ny = CELL; ny < YRES-CELL; ny++)
+	{
+		//go through every particle again, but check neighbor map, then update particles
+		for (int nx = CELL; nx < XRES-CELL; nx++)
+		{
+			int r = pmap[ny][nx];
+			if (r && (r&0xFF)!=PT_LIFE)
+				continue;
+			int neighbors = gol2[ny][nx][0];
+			if (neighbors)
+			{
+				x1 = gol[ny][nx];
+				x2 = gol2[ny][nx][1];
+				x3 = gol2[ny][nx][2];
+				x4 = gol2[ny][nx][3];
+				x5 = gol2[ny][nx][4];
+				int matchedgol;
+				// if (extraLoopsType)
+				// {
+					if (x1 == 8)
+						matchedgol = 0;
+					else if ((x2 == 8) || (x3 == 8) || (x4 == 8) || (x5 == 8))
+					{
+						switch (x1)
+						{
+							case 0: case 1:
+								if (1 & (0x00FC >> x2 | 0x00FC >> x3 | 0x00FC >> x4 | 0x00FC >> x5))
+									matchedgol = 8;
+								else
+									matchedgol = x1;
+							break;
+							case 2: case 3: case 5:
+								matchedgol = 0;
+							break;
+							case 4: case 6: case 7:
+								matchedgol = 1;
+							break;
+						}
+					}
+					else
+						 matchedgol = lloopsrule[x1][x2][x3][x4][x5];
+				// }
+				if (!r)
+				{
+					//Find which type we can try and create
+					
+					if (matchedgol)
+						create_part(-1, nx, ny, PT_LIFE, matchedgol - 1);
+				}
+				else if (matchedgol)
+				{
+					parts[r>>8].ctype = matchedgol - 1;
+				}
+				else
+				{
+					kill_part(r>>8);
+				}
+				for (int z = 0; z < 5; z++)
+					gol2[ny][nx][z] = 0;//this improves performance A LOT compared to the memset.
+			}
+			//we still need to kill things with 0 neighbors (higher state life)
+		}
+	}
+	//memset(gol2, 0, sizeof(gol2));
+}
+
 void Simulation::RecalcFreeParticles()
 {
 	int x, y, t;
@@ -5173,7 +5449,14 @@ void Simulation::BeforeSim()
 		// GSPEED is frames per generation
 		if (elementCount[PT_LIFE]>0 && ++CGOL>=GSPEED)
 		{
-			SimulateGoL();
+			if (!extraLoopsCA)
+			{
+				SimulateGoL();
+			}
+			else
+			{
+				SimulateLLoops();
+			}
 		}
 
 		// wifi channel reseting

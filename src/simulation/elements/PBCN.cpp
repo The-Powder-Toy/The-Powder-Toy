@@ -30,7 +30,7 @@ Element_PBCN::Element_PBCN()
 	HeatConduct = 251;
 	Description = "Powered breakable clone.";
 
-	Properties = TYPE_SOLID|PROP_NOCTYPEDRAW;
+	Properties = TYPE_SOLID|PROP_NOCTYPEDRAW | PROP_TRANSPARENT;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

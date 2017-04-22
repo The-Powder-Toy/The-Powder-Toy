@@ -44,6 +44,7 @@ public:
 	bool legacyEnable;
 	bool gravityEnable;
 	bool aheatEnable;
+	bool sextraLoopsCA;
 	bool paused;
 	int gravityMode;
 	int airMode;

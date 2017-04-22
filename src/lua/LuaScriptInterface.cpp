@@ -749,6 +749,7 @@ void LuaScriptInterface::initSimulationAPI()
 		{"neighbors", simulation_neighbours},
 		{"framerender", simulation_framerender},
 		{"gspeed", simulation_gspeed},
+		{"CAType", simulation_CAType},
 		{NULL, NULL}
 	};
 	luaL_register(l, "simulation", simulationAPIMethods);
@@ -2110,6 +2111,29 @@ int LuaScriptInterface::simulation_gspeed(lua_State * l)
 	return 0;
 }
 
+int LuaScriptInterface::simulation_CAType(lua_State * l)
+{
+	if (lua_gettop(l) == 0)
+	{
+		if (luacon_sim->extraLoopsCA)
+			lua_pushinteger(l, luacon_sim->extraLoopsType + 1);
+		else
+			lua_pushinteger(l, 0);
+		return 1;
+	}
+	int m = luaL_checkinteger(l, 1);
+	if (m < 0 || m > 3)
+		return luaL_error(l, "Invalid CA type");
+	if (m > 0)
+	{
+		luacon_sim->extraLoopsCA = 1;
+		luacon_sim->extraLoopsType = m - 1;
+	}
+	else
+		luacon_sim->extraLoopsCA = 0;
+	return 0;
+}
+
 //// Begin Renderer API
 
 void LuaScriptInterface::initRendererAPI()
@@ -2360,6 +2384,8 @@ void LuaScriptInterface::initElementsAPI()
 	SETCONST(l, PROP_NOAMBHEAT);
 	SETCONST(l, PROP_DRAWONCTYPE);
 	SETCONST(l, PROP_NOCTYPEDRAW);
+	SETCONST(l, PROP_NOSLOWDOWN);
+	SETCONST(l, PROP_TRANSPARENT);
 	SETCONST(l, FLAG_STAGNANT);
 	SETCONST(l, FLAG_SKIPMOVE);
 	SETCONST(l, FLAG_MOVABLE);

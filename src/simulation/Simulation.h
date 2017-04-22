@@ -82,6 +82,9 @@ public:
 	int GSPEED;
 	unsigned char gol[YRES][XRES];
 	unsigned short gol2[YRES][XRES][9];
+	unsigned char lloopsrule[8][8][8][8][8];
+	int extraLoopsCA;
+	int extraLoopsType;
 	//Air sim
 	float (*vx)[XRES/CELL];
 	float (*vy)[XRES/CELL];
@@ -160,6 +163,7 @@ public:
 	void create_arc(int sx, int sy, int dx, int dy, int midpoints, int variance, int type, int flags);
 	void UpdateParticles(int start, int end);
 	void SimulateGoL();
+	void SimulateLLoops();
 	void RecalcFreeParticles();
 	void CheckStacking();
 	void BeforeSim();
