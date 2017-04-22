@@ -903,7 +903,7 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 								case PT_PTCT: // int's size is 32-bits
 #if defined(__GNUC__) || defined(_MSVC_VER)
 									rrx <<= 3;
-									rrx ^= 0x80000000 >> __builtin_clz(~rrx); // increment reversed int.
+									rrx ^= (signed int)0x80000000 >> __builtin_clz(~rrx); // increment reversed int.
 									rrx >>= 3;
 #else
 									tmp_r = 0x10000000;
@@ -918,7 +918,7 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 								case PT_NTCT: // int's size is 32-bits
 #if defined(__GNUC__) || defined(_MSVC_VER)
 									rrx <<= 3;
-									rrx ^= 0x80000000 >> __builtin_clz(rrx | 1); // decrement reversed int.
+									rrx ^= (signed int)0x80000000 >> __builtin_clz(rrx | 1); // decrement reversed int.
 									// __builtin_clz(0x00000000) is undefined.
 									rrx >>= 3;
 #else
