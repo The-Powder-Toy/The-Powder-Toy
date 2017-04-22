@@ -2285,7 +2285,7 @@ void GameView::OnDraw()
 			if (type == PT_PIPE || type == PT_PPIP)
 				ctype = sample.particle.tmp&0xFF;
 
-			if (type == PT_PHOT || type == PT_BIZR || type == PT_BIZRG || type == PT_BIZRS || type == PT_FILT || type == PT_BRAY)
+			if (type == PT_PHOT || type == PT_BIZR || type == PT_BIZRG || type == PT_BIZRS || type == PT_FILT || type == PT_BRAY || type == PT_C5)
 				wavelengthGfx = (ctype&0x3FFFFFFF);
 
 			if (showDebug)
