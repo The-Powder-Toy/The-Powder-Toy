@@ -4959,9 +4959,8 @@ int Simulation::GetParticleType(std::string type)
 		{
 			return i;
 		}
-		return -1;
 	}
-	return i;
+	return -1;
 }
 
 void Simulation::SimulateGoL()

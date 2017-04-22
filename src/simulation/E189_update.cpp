@@ -2,6 +2,25 @@
 #include "simulation/Air.h"
 #include "simulation/E189_update.h"
 
+#ifdef _MSC_VER
+unsigned msvc_ctz(unsigned a)
+{
+	unsigned long i;
+	_BitScanForward(&i, a);
+	return i;
+}
+
+unsigned msvc_clz(unsigned a)
+{
+	unsigned long i;
+	_BitScanReverse(&i, a);
+	return 31 - i;
+}
+
+#define __builtin_ctz msvc_ctz
+#define __builtin_clz msvc_clz
+#endif
+
 E189_Update::E189_Update()
 {
 	// null constructor
@@ -14,6 +33,7 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 	static int osc_r1 [4] = { 1,-1, 2,-2};
 	int rx, ry, ttan = 0, rlife = parts[i].life, direction, r, ri, rtmp, rctype;
 	int rr, rndstore, trade, transfer, rt, rii, rrx, rry, nx, ny, pavg;
+	int tmp_r;
 	float rvx, rvy, rdif;
 	int docontinue;
 	rtmp = parts[i].tmp;
@@ -576,13 +596,13 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 						r = pmap[y+ry][x+rx];
 						if ((r & 0xFF) == PT_SPRK && parts[r>>8].life == 3)
 						{
-							parts[i].tmp2 = 3;
+							parts[i].tmp2 = 10;
 							goto break2b;
 						}
 					}
 			// break;
 		break2b:
-			if (parts[i].tmp2 == 2)
+			if (parts[i].tmp2 == 9)
 			{
 				for (rtmp = 0; rtmp < 4; rtmp++)
 				{
@@ -880,6 +900,37 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 									rrx &= 0x1FFFFFFF;
 									rrx = (rrx >> 1) | (rrx << 28);
 									break;
+								case PT_PTCT: // int's size is 32-bits
+#if defined(__GNUC__) || defined(_MSVC_VER)
+									rrx <<= 3;
+									rrx ^= 0x80000000 >> __builtin_clz(~rrx); // increment reversed int.
+									rrx >>= 3;
+#else
+									tmp_r = 0x10000000;
+									while (tmp_r)
+									{
+										rrx ^= tmp_r;
+										if ((rrx & tmp_r)) break;
+										tmp_r >>= 1;
+									}
+#endif
+									break;
+								case PT_NTCT: // int's size is 32-bits
+#if defined(__GNUC__) || defined(_MSVC_VER)
+									rrx <<= 3;
+									rrx ^= 0x80000000 >> __builtin_clz(rrx | 1); // decrement reversed int.
+									// __builtin_clz(0x00000000) is undefined.
+									rrx >>= 3;
+#else
+									tmp_r = 0x10000000;
+									while (tmp_r)
+									{
+										rrx ^= tmp_r;
+										if (!(rrx & tmp_r)) break;
+										tmp_r >>= 1;
+									}
+#endif
+									break;
 								}
 								rrx &= 0x1FFFFFFF;
 								rrx |= 0x20000000;
@@ -923,8 +974,9 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 							r = pmap[ny][nx];
 							if (!r)
 								continue;
-							if ((r & 0xFF) == PT_FILT)
+							switch (r & 0xFF)
 							{
+							case PT_FILT:
 								rrx = parts[r>>8].ctype;
 								rry = parts[i].tmp;
 								switch (rry) // rry = sender type
@@ -966,6 +1018,16 @@ int E189_Update::update(UPDATE_FUNC_ARGS)
 									parts[r>>8].ctype = rrx;
 									r = pmap[ny += ry][nx += rx];
 								}
+								break;
+							case PT_PUMP: case PT_GPMP:
+								rrx = r & 0xFF;
+								rdif = (parts[i].tmp == PT_PSCN) ? 1.0f : -1.0f;
+								while (BOUNDS_CHECK && (r & 0xFF) == rrx) // check another pumps
+								{
+									parts[r>>8].temp += rdif;
+									r = pmap[ny += ry][nx += rx];
+								}
+								break;
 							}
 						}
 			}
