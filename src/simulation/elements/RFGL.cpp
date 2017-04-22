@@ -38,8 +38,8 @@ Element_RFGL::Element_RFGL()
 	HighPressureTransition = NT;
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
-	HighTemperature = ITH;
-	HighTemperatureTransition = NT;
+	HighTemperature = 333.15f;
+	HighTemperatureTransition = PT_RFRG;
 
 	Update = &Element_RFGL::update;
 }
@@ -47,16 +47,15 @@ Element_RFGL::Element_RFGL()
 //#TPT-Directive ElementHeader Element_RFGL static int update(UPDATE_FUNC_ARGS)
 int Element_RFGL::update(UPDATE_FUNC_ARGS)
 {
-	float pressure = sim->pv[y/CELL][x/CELL];
-	if (pressure > parts[i].tmp)
-		parts[i].tmp = (int)pressure;
-
-	if (pressure > -1 && pressure < 15 && parts[i].life > 0)
-		parts[i].life --;
-
-	if (parts[i].temp >= 363.15f + (pressure * 6.0f))
-		sim->part_change_type(i, x, y, PT_RFRG);
-
+	float pressure=sim->pv[x/CELL][y/CELL];
+	float heatTransfer=0.0f;
+	if(pressure>=0.0f && pressure<=20.0f)
+	{
+		heatTransfer-=pressure;
+	}
+	if(pressure>=20.1f){
+		heatTransfer+=pressure;
+	}
 	int r, rx, ry;
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)
@@ -65,26 +64,17 @@ int Element_RFGL::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if ((r&0xFF) == PT_RFGL || (r&0xFF) == PT_RFRG)
+				if ((r&0xFF)!=PT_RFGL)
 				{
-					float avgTemp = (parts[r>>8].temp + parts[i].temp) / 2;
-					parts[r>>8].temp = avgTemp;
-					parts[i].temp = avgTemp;
-				}
-				else
-				{
-					if (pressure > 20 && parts[i].temp > 273.15f + 2.0f - (pressure - 20.0f) && sim->elements[r&0xFF].HeatConduct)
+					parts[r>>8].temp+=heatTransfer;
+					if(pressure>=0.0f && pressure<=20.0f)
 					{
-						parts[r>>8].temp = restrict_flt(parts[r>>8].temp + 80.0f, 0.0f, MAX_TEMP);
-						parts[i].temp = restrict_flt(parts[i].temp - 80.0f, 0.0f, MAX_TEMP);
-					}
-					else if (parts[i].life == 0 && parts[r>>8].temp > 273.15f - 50.0f - (parts[i].tmp - 20.0f) && sim->elements[r&0xFF].HeatConduct)
-					{
-						parts[r>>8].temp = restrict_flt(parts[r>>8].temp - 80.0f, 273.15f - 50.0f - (parts[i].tmp - 20.0f), MAX_TEMP);
-						parts[i].temp = restrict_flt(parts[i].temp + 80.0f, 0.0f, 383.15f);
+						parts[i].temp+=parts[r>>8].temp;
 					}
 				}
 			}
+		
+		
 
 	return 0;
 }
