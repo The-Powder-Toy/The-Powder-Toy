@@ -296,7 +296,7 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 		}
 		else
 		{
-			newValue = GetParticleType(((StringType)value).Value());
+			newValue = m->GetSimulation()->GetParticleType(((StringType)value).Value());
 			if (newValue < 0 || newValue >= PT_NUM)
 			{
 				// TODO: add element CAKE to invalidate this
@@ -386,7 +386,7 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 		if (selector.GetType() == TypeNumber)
 			type = ((NumberType)selector).Value();
 		else if (selector.GetType() == TypeString)
-			type = GetParticleType(((StringType)selector).Value());
+			type = m->GetSimulation()->GetParticleType(((StringType)selector).Value());
 
 		if (type<0 || type>=PT_NUM)
 			throw GeneralException("Invalid particle type");
@@ -446,7 +446,7 @@ AnyType TPTScriptInterface::tptS_create(std::deque<std::string> * words)
 	if(createType.GetType() == TypeNumber)
 		type = ((NumberType)createType).Value();
 	else if(createType.GetType() == TypeString)
-		type = GetParticleType(((StringType)createType).Value());
+		type = m->GetSimulation()->GetParticleType(((StringType)createType).Value());
 	else
 		throw GeneralException("Invalid type");
 
