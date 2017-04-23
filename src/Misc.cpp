@@ -6,6 +6,7 @@
 #include "Config.h"
 #include "Misc.h"
 #include "icondoc.h"
+#include "common/tpt-minmax.h"
 
 //Signum function
 int isign(float i) //TODO: INline or macro
@@ -252,10 +253,10 @@ void RGB_to_HSV(int r,int g,int b,int *h,int *s,int *v)//convert 0-255 RGB value
 	rr = r/255.0f;//normalize values
 	gg = g/255.0f;
 	bb = b/255.0f;
-	a = fmin(rr,gg);
-	a = fmin(a,bb);
-	x = fmax(rr,gg);
-	x = fmax(x,bb);
+	a = std::min(rr,gg);
+	a = std::min(a,bb);
+	x = std::max(rr,gg);
+	x = std::max(x,bb);
 	if (a==x)//greyscale
 	{
 		*h = 0;

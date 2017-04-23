@@ -13,6 +13,7 @@
 #include "client/Client.h"
 #include "client/GameSave.h"
 #include "client/SaveFile.h"
+#include "common/tpt-minmax.h"
 #include "gui/game/DecorationTool.h"
 #include "QuickOptions.h"
 #include "GameModelException.h"
@@ -119,10 +120,10 @@ GameModel::GameModel():
 	}
 
 	//Set default decoration colour
-	unsigned char colourR = min(Client::Ref().GetPrefInteger("Decoration.Red", 200), 255);
-	unsigned char colourG = min(Client::Ref().GetPrefInteger("Decoration.Green", 100), 255);
-	unsigned char colourB = min(Client::Ref().GetPrefInteger("Decoration.Blue", 50), 255);
-	unsigned char colourA = min(Client::Ref().GetPrefInteger("Decoration.Alpha", 255), 255);
+	unsigned char colourR = std::min(Client::Ref().GetPrefInteger("Decoration.Red", 200), 255);
+	unsigned char colourG = std::min(Client::Ref().GetPrefInteger("Decoration.Green", 100), 255);
+	unsigned char colourB = std::min(Client::Ref().GetPrefInteger("Decoration.Blue", 50), 255);
+	unsigned char colourA = std::min(Client::Ref().GetPrefInteger("Decoration.Alpha", 255), 255);
 
 	SetColourSelectorColour(ui::Colour(colourR, colourG, colourB, colourA));
 

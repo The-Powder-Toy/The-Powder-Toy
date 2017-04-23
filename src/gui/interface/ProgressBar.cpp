@@ -1,4 +1,5 @@
 #include "ProgressBar.h"
+#include "common/tpt-minmax.h"
 #include "gui/Style.h"
 
 using namespace ui;

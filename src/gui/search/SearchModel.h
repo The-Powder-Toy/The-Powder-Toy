@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include "common/tpt-minmax.h"
 #include "common/tpt-thread.h"
 #include <cmath>
 #include "client/SaveInfo.h"
@@ -63,9 +64,9 @@ public:
 	int GetPageCount()
 	{
 		if (!showOwn && !showFavourite && currentSort == "best" && lastQuery == "")
-			return max(1, (int)(ceil(resultCount/20.0f))+1); //add one for front page (front page saves are repeated twice)
+			return std::max(1, (int)(ceil(resultCount/20.0f))+1); //add one for front page (front page saves are repeated twice)
 		else
-			return max(1, (int)(ceil(resultCount/20.0f)));
+			return std::max(1, (int)(ceil(resultCount/20.0f)));
 	}
 	int GetPageNum() { return currentPage; }
 	std::string GetLastQuery() { return lastQuery; }

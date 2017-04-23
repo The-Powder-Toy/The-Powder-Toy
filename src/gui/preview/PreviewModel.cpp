@@ -3,6 +3,7 @@
 #include "Format.h"
 #include "client/Client.h"
 #include "client/GameSave.h"
+#include "common/tpt-minmax.h"
 #include "gui/dialogues/ErrorMessage.h"
 #include "PreviewModelException.h"
 
@@ -124,7 +125,7 @@ int PreviewModel::GetCommentsPageNum()
 
 int PreviewModel::GetCommentsPageCount()
 {
-	return max(1, (int)(ceil(commentsTotal/20.0f)));
+	return std::max(1, (int)(ceil(commentsTotal/20.0f)));
 }
 
 bool PreviewModel::GetCommentsLoaded()

@@ -1,4 +1,5 @@
 #include <sstream>
+#include "common/tpt-minmax.h"
 #include "gui/interface/Label.h"
 #include "TaskWindow.h"
 #include "gui/dialogues/ErrorMessage.h"
