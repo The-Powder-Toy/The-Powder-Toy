@@ -20,7 +20,8 @@ int TPTScriptInterface::Command(std::string command)
 	lastError = "";
 	std::deque<std::string> words;
 	std::deque<AnyType> commandWords;
-	int retCode;
+	int retCode, nestedLevel = 0;
+	char tempChar;
 
 	//Split command into words, put them on the stack
 	char * rawCommand;
@@ -28,13 +29,33 @@ int TPTScriptInterface::Command(std::string command)
 	memcpy(rawCommand, (char*)command.c_str(), command.length());
 	char * currentWord = rawCommand;
 	char * currentCommand = rawCommand;
-	while((currentCommand = strchr(currentCommand, ' ')))
+	char * delimitPtr = rawCommand;
+	for (;;)
 	{
-		currentCommand[0] = 0;
-		words.push_back(std::string(currentWord));
-		currentWord = ++currentCommand;
+		while (*delimitPtr != ' ' && *delimitPtr != '\0')
+			delimitPtr++;
+		if (delimitPtr != currentCommand)
+		{
+			if (*currentCommand == '(')
+				nestedLevel++;
+			if (delimitPtr[-1] == ')' && nestedLevel)
+				nestedLevel--;
+		}
+		if (!nestedLevel)
+		{
+			tempChar = delimitPtr[0];
+			delimitPtr[0] = 0;
+			words.push_back(std::string(currentWord)); // not cout
+			currentWord = delimitPtr + 1;
+		}
+		if (tempChar == '\0')
+		{
+			if (nestedLevel)
+				words.push_back(std::string(currentWord));
+			break;
+		}
+		currentCommand = ++delimitPtr;
 	}
-	words.push_back(std::string(currentWord));
 	while(!words.empty())
 	{
 		try
@@ -81,6 +102,9 @@ ValueType TPTScriptInterface::testType(std::string word)
 	else if (word == "quit")
 		return TypeFunction;
 
+	if (rawWord[0] == '(' && rawWord[word.length() - 1] == ')')
+		return TypeParenthesized;
+	
 	//Basic type
 	for (i = 0; i < word.length(); i++)
 	{
@@ -166,6 +190,11 @@ int TPTScriptInterface::parseNumber(char * stringData)
 	return currentNumber;
 }
 
+std::string TPTScriptInterface::unparenthesize(std::string stringData)
+{
+	return stringData.substr(1, stringData.length() - 2);
+}
+
 AnyType TPTScriptInterface::eval(std::deque<std::string> * words)
 {
 	if(words->size() < 1)
@@ -203,6 +232,8 @@ AnyType TPTScriptInterface::eval(std::deque<std::string> * words)
 	}
 	case TypeString:
 		return StringType(word);
+	case TypeParenthesized:
+		return StringType(unparenthesize(word));
 	default:
 		break;
 	}

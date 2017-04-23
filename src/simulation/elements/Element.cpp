@@ -31,6 +31,7 @@ Element::Element():
 	Description("No description"),
 
 	Properties(TYPE_SOLID),
+	Properties2(PROP_NOSLOWDOWN),
 
 	LowPressure(IPL),
 	LowPressureTransition(NT),
@@ -40,6 +41,7 @@ Element::Element():
 	LowTemperatureTransition(NT),
 	HighTemperature(ITH),
 	HighTemperatureTransition(NT),
+	PhotonReflectWavelengths(0xFFFFFFFF),
 
 	Update(NULL),
 	Graphics(&Element::defaultGraphics),
@@ -74,6 +76,7 @@ std::vector<StructProperty> Element::GetProperties()
 	properties.push_back(StructProperty("Description",					StructProperty::String,		offsetof(Element, Description)));
 	properties.push_back(StructProperty("State",						StructProperty::Removed,	0));
 	properties.push_back(StructProperty("Properties",					StructProperty::Integer,	offsetof(Element, Properties)));
+	properties.push_back(StructProperty("SecondProperties",				StructProperty::Integer,	offsetof(Element, Properties2)));
 	properties.push_back(StructProperty("LowPressure",					StructProperty::Float,		offsetof(Element, LowPressure)));
 	properties.push_back(StructProperty("LowPressureTransition",		StructProperty::Integer,	offsetof(Element, LowPressureTransition)));
 	properties.push_back(StructProperty("HighPressure",					StructProperty::Float,		offsetof(Element, HighPressure)));
@@ -82,6 +85,7 @@ std::vector<StructProperty> Element::GetProperties()
 	properties.push_back(StructProperty("LowTemperatureTransition",		StructProperty::Integer,	offsetof(Element, LowTemperatureTransition)));
 	properties.push_back(StructProperty("HighTemperature",				StructProperty::Float,		offsetof(Element, HighTemperature)));
 	properties.push_back(StructProperty("HighTemperatureTransition",	StructProperty::Integer,	offsetof(Element, HighTemperatureTransition)));
+	properties.push_back(StructProperty("PhotonReflectWavelengths",		StructProperty::Integer,	offsetof(Element, PhotonReflectWavelengths)));
 	return properties;
 }
 

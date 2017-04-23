@@ -1,7 +1,7 @@
 #include "simulation/Elements.h"
 
 bool Element_GOL_colourInit = false;
-pixel Element_GOL_colour[NGOL];
+// pixel Element_GOL_colour[NGOL];
 
 //#TPT-Directive ElementClass Element_LIFE PT_LIFE 78
 Element_LIFE::Element_LIFE()
@@ -56,17 +56,26 @@ Element_LIFE::Element_LIFE()
 		gol_menu * golMenuT = LoadGOLMenu(golMenuCount);
 		for(int i = 0; i < golMenuCount && i < NGOL; i++)
 		{
-			Element_GOL_colour[i] = golMenuT[i].colour;
+			Element_LIFE::Element_GOL_colour[i] = golMenuT[i].colour;
 		}
 		free(golMenuT);
 	}
 }
+
+//#TPT-Directive ElementHeader Element_LIFE static pixel Element_GOL_colour[NGOL];
+pixel Element_LIFE::Element_GOL_colour[NGOL];
+
+//#TPT-Directive ElementHeader Element_LIFE static pixel customColorGradF;
+pixel Element_LIFE::customColorGradF = PIXPACK(0xFF00FF);
+//#TPT-Directive ElementHeader Element_LIFE static pixel customColorGradT;
+pixel Element_LIFE::customColorGradT = PIXPACK(0x330033);
 
 //#TPT-Directive ElementHeader Element_LIFE static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_LIFE::graphics(GRAPHICS_FUNC_ARGS)
 
 {
 	pixel pc;
+	int golstates, currstate;
 	if (cpart->ctype==NGT_LOTE)//colors for life states
 	{
 		if (cpart->tmp==2)
@@ -110,8 +119,27 @@ int Element_LIFE::graphics(GRAPHICS_FUNC_ARGS)
 		else
 			pc = PIXRGB(255, 255, 0);
 	}
+	else if (cpart->ctype==NGT_CUSTOM)
+	{
+		golstates = ren->sim->grule[cpart->ctype+1][9];
+		currstate = cpart->tmp;
+		if (currstate >= golstates - 1)
+			goto default_part;
+		pc = customColorGradF;
+		*colr = PIXR(pc); *colg = PIXG(pc); *colb = PIXB(pc);
+		if (golstates > 3)
+		{
+			float multipler = (float)(golstates - 2 - currstate) / (float)(golstates - 3);
+			pc = customColorGradT;
+			*colr -= (int)(*colr - PIXR(pc)) * multipler;
+			*colg -= (int)(*colg - PIXG(pc)) * multipler;
+			*colb -= (int)(*colb - PIXB(pc)) * multipler;
+		}
+		return 0;
+	}
 	else if (cpart->ctype >= 0 && cpart->ctype < NGOL)
 	{
+	default_part:
 		pc = Element_GOL_colour[cpart->ctype];
 	}
 	else

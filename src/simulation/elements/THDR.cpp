@@ -30,7 +30,7 @@ Element_THDR::Element_THDR()
 	HeatConduct = 1;
 	Description = "Lightning! Very hot, inflicts damage upon most materials, and transfers current to metals.";
 
-	Properties = TYPE_PART;
+	Properties = TYPE_PART | PROP_UNLIMSTACKING;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
@@ -65,7 +65,7 @@ int Element_THDR::update(UPDATE_FUNC_ARGS)
 					parts[r>>8].life = 4;
 					kill=true;
 				}
-				else if (rt!=PT_CLNE&&rt!=PT_THDR&&rt!=PT_SPRK&&rt!=PT_DMND&&rt!=PT_FIRE)
+				else if (rt!=PT_CLNE&&rt!=PT_THDR&&rt!=PT_SPRK&&!(sim->elements[r&0xFF].Properties2 & PROP_NODESTRUCT)&&rt!=PT_FIRE)
 				{
 					sim->pv[y/CELL][x/CELL] += 100.0f;
 					if (sim->legacy_enable&&1>(rand()%200))

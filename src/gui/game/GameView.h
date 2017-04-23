@@ -44,6 +44,8 @@ private:
 	bool altBehaviour;
 	bool showHud;
 	bool showDebug;
+	int showDebugState;
+	int showDebugStateFlags;
 	int delayedActiveMenu;
 	bool wallBrush;
 	bool toolBrush;
@@ -52,6 +54,8 @@ private:
 	int toolIndex;
 	int currentSaveType;
 	int lastMenu;
+	int debugPrecision;
+	bool usingHexadecimal;
 
 	int toolTipPresence;
 	std::string toolTip;
@@ -128,6 +132,7 @@ private:
 	void UpdateDrawMode();
 	void UpdateToolStrength();
 public:
+	int alternateState;
 	GameView();
 	virtual ~GameView();
 

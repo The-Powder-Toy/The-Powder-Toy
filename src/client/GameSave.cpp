@@ -20,6 +20,7 @@ waterEEnabled(save.waterEEnabled),
 legacyEnable(save.legacyEnable),
 gravityEnable(save.gravityEnable),
 aheatEnable(save.aheatEnable),
+sextraLoopsCA(save.sextraLoopsCA),
 paused(save.paused),
 gravityMode(save.gravityMode),
 airMode(save.airMode),
@@ -179,6 +180,13 @@ void GameSave::Expand()
 	{
 		InitVars();
 		expanded = true;
+/*
+		for (int i = 0; i < 128; i++)
+		{
+			PINV_wireless[i][0] = 0;
+			PINV_wireless[i][1] = 0;
+		}
+*/
 		read(&originalData[0], originalData.size());
 	}
 }
@@ -446,6 +454,7 @@ void GameSave::readOPS(char * data, int dataLength)
 	unsigned char *pressData = NULL, *vxData = NULL, *vyData = NULL;//, *ambientData = NULL;
 	unsigned int inputDataLen = dataLength, bsonDataLen = 0, partsDataLen, partsPosDataLen, fanDataLen, wallDataLen, soapLinkDataLen;
 	unsigned int pressDataLen, vxDataLen, vyDataLen;
+
 	unsigned partsCount = 0, *partsSimIndex = NULL;
 	int *freeIndices = NULL;
 	unsigned int blockX, blockY, blockW, blockH, fullX, fullY, fullW, fullH;
@@ -652,6 +661,26 @@ void GameSave::readOPS(char * data, int dataLength)
 				fprintf(stderr, "Invalid datatype of soap data: %d[%d] %d[%d] %d[%d]\n", bson_iterator_type(&iter), bson_iterator_type(&iter)==BSON_BINDATA, (unsigned char)bson_iterator_bin_type(&iter), ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER, bson_iterator_bin_len(&iter), bson_iterator_bin_len(&iter)>0);
 			}
 		}
+/*
+		else if(strcmp(bson_iterator_key(&iter), "PINV_wireless")==0)
+		{
+			if(bson_iterator_type(&iter)==BSON_BINDATA && ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER && (soapLinkDataLen = bson_iterator_bin_len(&iter)) > 0)
+			{
+				PINV_wireless_data = (unsigned char *)bson_iterator_bin_data(&iter);
+				for (int __i = 0; __i < 128; __i++)
+				{
+					int __j = __i * sizeof(int);
+					PINV_wireless[__i][0] = PINV_wireless[__i][1] =
+					((PINV_wireless_data[__j+3] & 0xFF) << 24) | ((PINV_wireless_data[__j+2] & 0xFF) << 16) |
+					((PINV_wireless_data[__j+1] & 0xFF) <<  8) |  (PINV_wireless_data[__j  ] & 0xFF);
+				}
+			}
+			else
+			{
+				fprintf(stderr, "Invalid datatype of PINV_wireless data: %d[%d] %d[%d] %d[%d]\n", bson_iterator_type(&iter), bson_iterator_type(&iter)==BSON_BINDATA, (unsigned char)bson_iterator_bin_type(&iter), ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER, bson_iterator_bin_len(&iter), bson_iterator_bin_len(&iter)>0);
+			}
+		}
+*/
 		else if(strcmp(bson_iterator_key(&iter), "legacyEnable")==0)
 		{
 			if(bson_iterator_type(&iter)==BSON_BOOL)
@@ -679,6 +708,17 @@ void GameSave::readOPS(char * data, int dataLength)
 			if(bson_iterator_type(&iter)==BSON_BOOL)
 			{
 				aheatEnable = bson_iterator_bool(&iter);
+			}
+			else
+			{
+				fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
+			}
+		}
+		else if(!strcmp(bson_iterator_key(&iter), "sextraLoopsCA_Enable"))
+		{
+			if(bson_iterator_type(&iter)==BSON_BOOL)
+			{
+				sextraLoopsCA = bson_iterator_bool(&iter);
 			}
 			else
 			{
@@ -1096,6 +1136,56 @@ void GameSave::readOPS(char * data, int dataLength)
 						pavg = partsData[i++];
 						pavg |= (((unsigned)partsData[i++]) << 8);
 						particles[newIndex].pavg[1] = (float)pavg;
+					}
+					
+					//Read tmp3 and extra data
+					if(fieldDescriptor & 0x4000)
+					{
+						if(i >= partsDataLen) goto fail;
+						int tempDesc = partsData[i++], tempData;
+						switch (tempDesc & 0x3)
+						{
+							case 0: break;
+							case 1:
+								if(i >= partsDataLen) goto fail;
+								particles[newIndex].tmp3 = ((unsigned)partsData[i++]);
+								break;
+							case 2:
+								if(i+1 >= partsDataLen) goto fail;
+								tempData = ((unsigned)partsData[i++]);
+								tempData |= (((unsigned)partsData[i++]) << 8);
+								particles[newIndex].tmp3 = tempData;
+								break;
+							case 3:
+								if(i+3 >= partsDataLen) goto fail;
+								tempData = ((unsigned)partsData[i++]);
+								tempData |= (((unsigned)partsData[i++]) << 8);
+								tempData |= (((unsigned)partsData[i++]) << 24);
+								tempData |= (((unsigned)partsData[i++]) << 16);
+								particles[newIndex].tmp3 = tempData;
+								break;
+						}
+						if (tempDesc & 0x4)
+						{
+							if(i+1 >= partsDataLen) goto fail;
+							tempData = (((unsigned)partsData[i++]) << 24);
+							tempData |= (((unsigned)partsData[i++]) << 16);
+							particles[newIndex].tmp2 |= tempData;
+						}
+						if (tempDesc & 0x8)
+						{
+							if(i+1 >= partsDataLen) goto fail;
+							tempData = ((unsigned)partsData[i++]) << 8;
+							tempData |= (unsigned)partsData[i++];
+							particles[newIndex].tmp4 |= tempData;
+							if (tempDesc & 0x10)
+							{
+								if(i+1 >= partsDataLen) goto fail;
+								tempData = ((unsigned)partsData[i++]) << 24;
+								tempData |= ((unsigned)partsData[i++]) << 16;
+								particles[newIndex].tmp4 |= tempData;
+							}
+						}
 					}
 
 					//Particle specific parsing:
@@ -1773,13 +1863,17 @@ void GameSave::readPSv(char * data, int dataLength)
 			}
 			if(ver<52 && (ty==PT_CLNE || ty==PT_PCLN || ty==PT_BCLN)){
 				//Replace old GOL ctypes in clone
+				int tty = particles[i-1].ctype;
+				if (tty < 78)
+					goto ignoreOldGOLCheck;
 				for (gnum = 0; gnum<NGOL; gnum++){
-					if (particles[i-1].ctype==goltype[gnum])
+					if (tty == goltype[gnum])
 					{
-						particles[i-1].ctype = PT_LIFE;
+						tty = PT_LIFE;
 						particles[i-1].tmp = gnum;
 					}
 				}
+			ignoreOldGOLCheck:;
 			}
 			if(ty==PT_LCRY){
 				if(ver<67)
@@ -2096,6 +2190,7 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 	partsDataLen = 0;
 	partsSaveIndex = (unsigned int *)calloc(NPART, sizeof(unsigned));
 	partsCount = 0;
+	unsigned long ExtraData;
 	for (y=0;y<fullH;y++)
 	{
 		for (x=0;x<fullW;x++)
@@ -2108,6 +2203,7 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 			{
 				unsigned short fieldDesc = 0;
 				int fieldDescLoc = 0, tempTemp, vTemp;
+				int desc2Pos = 0, desc2Data = 0;
 
 				//Turn pmap entry into a particles index
 				i = i>>8;
@@ -2239,6 +2335,55 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 					partsData[partsDataLen++] = (int)particles[i].pavg[1];
 					partsData[partsDataLen++] = ((int)particles[i].pavg[1])>>8;
 				}
+				
+				// Tmp3 and extra data (optional), varies
+				if (particles[i].tmp3 || particles[i].tmp4 || (particles[i].tmp2 & 0xFFFF0000))
+				{
+					fieldDesc |= 1 << 14;
+					ExtraData = (unsigned)particles[i].tmp3;
+					desc2Pos = partsDataLen++;
+					if (ExtraData) // if tmp3 exists
+					{
+						partsData[partsDataLen++] = ExtraData & 0x00FF;
+						if (ExtraData & 0xFFFFFF00)
+						{
+							partsData[partsDataLen++] = (ExtraData >> 8) & 0x00FF;
+							if (ExtraData & 0xFFFF0000)
+							{
+								partsData[partsDataLen++] = (ExtraData >> 24) & 0x00FF;
+								partsData[partsDataLen++] = (ExtraData >> 16) & 0x00FF;
+								desc2Data |= 3;
+							}
+							else
+								desc2Data |= 2;
+						}
+						else
+							desc2Data |= 1;
+					}
+					ExtraData = (unsigned)(particles[i].tmp2 >> 16);
+					if (ExtraData) // if tmp2 >= 2 ** 16
+					{
+						partsData[partsDataLen++] = (ExtraData >> 8) & 0x00FF;
+						partsData[partsDataLen++] = ExtraData & 0x00FF;
+						desc2Data |= 4;
+					}
+					ExtraData = (unsigned)(particles[i].tmp4);
+					//Don't save tmp4 for PINV
+					if (ExtraData && particles[i].type != PT_PINVIS)
+					{
+						partsData[partsDataLen++] = (ExtraData >> 8) & 0x00FF;
+						partsData[partsDataLen++] = ExtraData & 0x00FF;
+						desc2Data |= 8;
+						if (ExtraData & 0xFFFF0000)
+						{
+							partsData[partsDataLen++] = (ExtraData >> 24) & 0x00FF;
+							partsData[partsDataLen++] = (ExtraData >> 16) & 0x00FF;
+							desc2Data |= 16;
+						}
+
+					}
+					partsData[desc2Pos] = desc2Data;
+				}
 
 				//Write the field descriptor
 				partsData[fieldDescLoc] = fieldDesc;
@@ -2320,6 +2465,7 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 	bson_append_int(&b, "buildNum", BUILD_NUM);
 	bson_append_int(&b, "snapshotId", SNAPSHOT_ID);
 	bson_append_int(&b, "modId", MOD_ID);
+	bson_append_int(&b, "modId2", MOD_ID_2);
 	bson_append_string(&b, "releaseType", IDENT_RELTYPE);
 	bson_append_string(&b, "platform", IDENT_PLATFORM);
 	bson_append_string(&b, "builtType", IDENT_BUILD);
@@ -2334,6 +2480,7 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 	bson_append_bool(&b, "legacyEnable", legacyEnable);
 	bson_append_bool(&b, "gravityEnable", gravityEnable);
 	bson_append_bool(&b, "aheat_enable", aheatEnable);
+	bson_append_bool(&b, "sextraLoopsCA_Enable", sextraLoopsCA);
 	bson_append_bool(&b, "paused", paused);
 	bson_append_int(&b, "gravityMode", gravityMode);
 	bson_append_int(&b, "airMode", airMode);
@@ -2392,6 +2539,23 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 		}
 		bson_append_finish_array(&b);
 	}
+/*
+	if (elementCount[PT_PINVIS])
+	{
+		PINV_wireless_data = (unsigned char*)malloc(128 * sizeof(int));
+		for (int __i = 0; i < 128; __i++)
+		{
+			int __j = __i * sizeof(int);
+			PINV_wireless_data[__j  ] =  PINV_wireless[__i][0]      & 0xFF;
+			PINV_wireless_data[__j+1] = (PINV_wireless[__i][0]>> 8) & 0xFF;
+			PINV_wireless_data[__j+2] = (PINV_wireless[__i][0]>>16) & 0xFF;
+			PINV_wireless_data[__j+3] = (PINV_wireless[__i][0]>>24) & 0xFF;
+		}
+		bson_append_binary(&b, "PINV_wireless", BSON_BIN_USER, (const char *)PINV_wireless_data, 128 * sizeof(int));
+		free(PINV_wireless_data);
+		// PINV_wireless_data = NULL;
+	}
+*/
 	bson_finish(&b);
 #ifdef DEBUG
 	bson_print(&b);

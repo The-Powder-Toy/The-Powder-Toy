@@ -81,6 +81,12 @@ int Element_FIRE::update(UPDATE_FUNC_ARGS)
 			}
 		}
 		break;
+	case PT_LAVA:
+		switch (parts[i].ctype)
+		{
+			
+		}
+		break;
 	default:
 		break;
 	}

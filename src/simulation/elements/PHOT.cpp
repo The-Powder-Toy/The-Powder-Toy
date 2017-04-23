@@ -31,6 +31,7 @@ Element_PHOT::Element_PHOT()
 	Description = "Photons. Refracts through glass, scattered by quartz, and color-changed by different elements. Ignites flammable materials.";
 
 	Properties = TYPE_ENERGY|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
+	Properties2 = PROP_ENERGY_PART;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
@@ -45,6 +46,9 @@ Element_PHOT::Element_PHOT()
 	Graphics = &Element_PHOT::graphics;
 }
 
+//#TPT-Directive ElementHeader Element_PHOT static int ignite_flammable
+int Element_PHOT::ignite_flammable = 1;
+
 //#TPT-Directive ElementHeader Element_PHOT static int update(UPDATE_FUNC_ARGS)
 int Element_PHOT::update(UPDATE_FUNC_ARGS)
 {
@@ -54,7 +58,7 @@ int Element_PHOT::update(UPDATE_FUNC_ARGS)
 		sim->kill_part(i);
 		return 1;
 	}
-	if (parts[i].temp > 506)
+	if (ignite_flammable && parts[i].temp > 506)
 		if (!(rand()%10)) Element_FIRE::update(UPDATE_FUNC_SUBCALL_ARGS);
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)
@@ -79,7 +83,7 @@ int Element_PHOT::update(UPDATE_FUNC_ARGS)
 						sim->pv[y/CELL][x/CELL] -= 15.0f * CFDS;
 					}
 				}
-				else if(((r&0xFF) == PT_QRTZ || (r&0xFF) == PT_PQRT) && !ry && !rx)//if on QRTZ
+				else if(((r&0xFF) == PT_QRTZ || (r&0xFF) == PT_PQRT) && !ry && !rx) //if on QRTZ or PQRT
 				{
 					float a = (rand()%360)*3.14159f/180.0f;
 					parts[i].vx = 3.0f*cosf(a);

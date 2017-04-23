@@ -18,6 +18,7 @@ Element_PLUT::Element_PLUT()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 1;
+	PhotonReflectWavelengths = 0x001FCE00;
 
 	Flammable = 0;
 	Explosive = 0;

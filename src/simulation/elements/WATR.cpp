@@ -30,7 +30,7 @@ Element_WATR::Element_WATR()
 	HeatConduct = 29;
 	Description = "Water. Conducts electricity, freezes, and extinguishes fires.";
 
-	Properties = TYPE_LIQUID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_NEUTPASS;
+	Properties = TYPE_LIQUID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_NEUTPASS | PROP_TRANSPARENT | PROP_INSULATED;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

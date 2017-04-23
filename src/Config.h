@@ -34,13 +34,17 @@
 #define MOD_ID 0
 #endif
 
+#ifndef MOD_ID_2
+#define MOD_ID_2 1017640403
+#endif
+
 #ifdef SNAPSHOT
 #define FUTURE_SAVE_VERSION 92
 #define FUTURE_MINOR_VERSION 0
 #endif
 //VersionInfoEnd
 
-//#define IGNORE_UPDATES //uncomment this for mods, to not get any update notifications
+#define IGNORE_UPDATES //uncomment this for mods, to not get any update notifications
 
 #if !(defined(MACOSX) && defined(DEBUG))
 #define HIGH_QUALITY_RESAMPLE			//High quality image resampling, slower but much higher quality than my terribad linear interpolation
@@ -143,7 +147,7 @@
 #define AIR_VLOSS 0.999f
 #define AIR_PLOSS 0.9999f
 
-#define NGOL 24
+#define NGOL 25
 
 #define CIRCLE_BRUSH 0
 #define SQUARE_BRUSH 1

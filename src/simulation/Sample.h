@@ -9,6 +9,7 @@ class SimulationSample
 {
 public:
 	Particle particle;
+	Particle * cparticle;
 	int ParticleID;
 	int PositionX, PositionY;
 	float AirPressure;

@@ -47,9 +47,12 @@ Element_DTEC::Element_DTEC()
 //#TPT-Directive ElementHeader Element_DTEC static int update(UPDATE_FUNC_ARGS)
 int Element_DTEC::update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry, rt, rd = parts[i].tmp2;
+	int r, rx, ry, rt, rd = parts[i].tmp2, pavg, tmp;
+	int nx, ny, ntmp;
 	if (rd > 25) parts[i].tmp2 = rd = 25;
-	if (parts[i].life)
+
+	tmp = parts[i].tmp3 & 1;
+	if (parts[i].life) // if ( tmp3 == 0 and detected ) or ( tmp3 == 1 and undetected )
 	{
 		parts[i].life = 0;
 		for (rx=-2; rx<3; rx++)
@@ -60,9 +63,10 @@ int Element_DTEC::update(UPDATE_FUNC_ARGS)
 					if (!r)
 						continue;
 					rt = r&0xFF;
-					if (sim->parts_avg(i,r>>8,PT_INSL) != PT_INSL)
+					pavg = sim->parts_avg(i,r>>8,PT_INSL);
+					if (pavg != PT_INSL && pavg != PT_INDI)
 					{
-						if ((sim->elements[rt].Properties&PROP_CONDUCTS) && !(rt==PT_WATR||rt==PT_SLTW||rt==PT_NTCT||rt==PT_PTCT||rt==PT_INWR) && parts[r>>8].life==0)
+						if ((sim->elements[rt].Properties&(PROP_CONDUCTS|PROP_INSULATED)) == PROP_CONDUCTS /* && !(rt==PT_WATR||rt==PT_SLTW||rt==PT_NTCT||rt==PT_PTCT||rt==PT_INWR) */  && parts[r>>8].life==0)
 						{
 							parts[r>>8].life = 4;
 							parts[r>>8].ctype = rt;
@@ -90,9 +94,18 @@ int Element_DTEC::update(UPDATE_FUNC_ARGS)
 					photonWl = parts[r>>8].ctype;
 				}
 			}
+	parts[i].life ^= tmp;
 	if (setFilt)
 	{
-		int nx, ny;
+		int tempPhotWl;
+#ifdef __GNUC__
+		tempPhotWl = __builtin_ctz(photonWl) & 0x1F;
+#else
+		static char DTEC_ntztable[32] = { 0, 1, 2,24, 3,19, 6,25, 22, 4,20,10,16, 7,12,26,  31,23,18, 5,21, 9,15,11, 30,17, 8,14,29,13,28,27};
+		// from "Hacker's Delight"
+		tempPhotWl = (photonWl & -photonWl)*0x04D7651F;
+		tempPhotWl = DTEC_ntztable[(tempPhotWl >> 27) & 31];
+#endif
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
 				if (BOUNDS_CHECK && (rx || ry))
@@ -102,14 +115,42 @@ int Element_DTEC::update(UPDATE_FUNC_ARGS)
 						continue;
 					nx = x+rx;
 					ny = y+ry;
-					while ((r&0xFF)==PT_FILT)
+					if ((r&0xFF)==PT_FILT)
 					{
-						parts[r>>8].ctype = photonWl;
-						nx += rx;
-						ny += ry;
-						if (nx<0 || ny<0 || nx>=XRES || ny>=YRES)
-							break;
-						r = pmap[ny][nx];
+						while ((r&0xFF)==PT_FILT)
+						{
+							parts[r>>8].ctype = photonWl;
+							nx += rx;
+							ny += ry;
+							if (nx<0 || ny<0 || nx>=XRES || ny>=YRES)
+								break;
+							r = pmap[ny][nx];
+						}
+					}
+					else
+					{
+						while ((r&0xFF)==PT_E189)
+						{
+							if (parts[r>>8].life != 5)
+								break;
+							ntmp = parts[r>>8].tmp>>18;
+							if (ntmp < 0 || ntmp > 5)
+								break;
+							if (ntmp == 4)
+							{
+								parts[r>>8].ctype &= 0x1E0;
+								parts[r>>8].ctype |= tempPhotWl;
+							}
+							else
+							{
+								parts[r>>8].ctype = photonWl;
+							}
+							nx += rx;
+							ny += ry;
+							if (nx<0 || ny<0 || nx>=XRES || ny>=YRES)
+								break;
+							r = pmap[ny][nx];
+						}
 					}
 				}
 	}

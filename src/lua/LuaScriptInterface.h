@@ -56,6 +56,7 @@ class LuaScriptInterface: public CommandInterface
 	static int simulation_partNeighbours(lua_State * l);
 	static int simulation_partChangeType(lua_State * l);
 	static int simulation_partCreate(lua_State * l);
+	static int simulation_partCreate2(lua_State * l);
 	static int simulation_partProperty(lua_State * l);
 	static int simulation_partPosition(lua_State * l);
 	static int simulation_partID(lua_State * l);
@@ -108,7 +109,25 @@ class LuaScriptInterface: public CommandInterface
 	static int simulation_neighbours(lua_State * l);
 	static int simulation_framerender(lua_State * l);
 	static int simulation_gspeed(lua_State * l);
+	static int simulation_CAType(lua_State * l);
+	static int simulation_createDebugComponent(lua_State * l);
+	static int simulation_breakable_wall_count(lua_State * l);
+	static int simulation_setCustomGOLRule(lua_State * l);
+	static int simulation_setCustomGOLGrad(lua_State * l);
 
+	//Stickman attributes
+	void initStickmanAPI();
+	static playerst* get_stickman_ptr(int id);
+	static int stickman_parent(lua_State * l);
+	static int stickman_firstChild(lua_State * l);
+	static int stickman_lastChild(lua_State * l);
+	static int stickman_previousSibling(lua_State * l);
+	static int stickman_nextSibling(lua_State * l);
+	static int stickman_flags(lua_State * l);
+	static int stickman_toElementID(lua_State * l);
+	static int stickman_fromElementID(lua_State * l);
+	static int stickman_lastUnused(lua_State * l);
+	
 	//Renderer
 	void initRendererAPI();
 	static int renderer_renderModes(lua_State * l);
@@ -163,6 +182,7 @@ class LuaScriptInterface: public CommandInterface
 	static int platform_exeName(lua_State * l);
 	static int platform_restart(lua_State * l);
 	static int platform_openLink(lua_State * l);
+	static int platform_openMyTool(lua_State * l);
 	static int platform_clipboardCopy(lua_State * l);
 	static int platform_clipboardPaste(lua_State * l);
 

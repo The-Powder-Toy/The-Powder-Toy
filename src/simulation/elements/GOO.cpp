@@ -18,6 +18,7 @@ Element_GOO::Element_GOO()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
+	PhotonReflectWavelengths = 0x3FFAAA00;
 
 	Flammable = 0;
 	Explosive = 0;

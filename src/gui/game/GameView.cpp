@@ -163,6 +163,11 @@ GameView::GameView():
 	altBehaviour(false),
 	showHud(true),
 	showDebug(false),
+	showDebugState(0),
+	showDebugStateFlags(0),
+	alternateState(0),
+	debugPrecision(2),
+	usingHexadecimal(false),
 	delayedActiveMenu(-1),
 	wallBrush(false),
 	toolBrush(false),
@@ -1399,263 +1404,373 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		introText = 50;
 	}
 
-	if (selectMode != SelectNone)
+	if (!alternateState)
 	{
-		if (selectMode == PlaceSave)
+		if (selectMode != SelectNone)
 		{
-			switch (key)
+			if (selectMode == PlaceSave)
 			{
-			case SDLK_RIGHT:
-				c->TranslateSave(ui::Point(1, 0));
-				return;
-			case SDLK_LEFT:
-				c->TranslateSave(ui::Point(-1, 0));
-				return;
-			case SDLK_UP:
-				c->TranslateSave(ui::Point(0, -1));
-				return;
-			case SDLK_DOWN:
-				c->TranslateSave(ui::Point(0, 1));
-				return;
-			case 'r':
-				if (ctrl && shift)
+				switch (key)
 				{
-					//Vertical flip
-					c->TransformSave(m2d_new(1,0,0,-1));
+				case SDLK_RIGHT:
+					c->TranslateSave(ui::Point(1, 0));
+					return;
+				case SDLK_LEFT:
+					c->TranslateSave(ui::Point(-1, 0));
+					return;
+				case SDLK_UP:
+					c->TranslateSave(ui::Point(0, -1));
+					return;
+				case SDLK_DOWN:
+					c->TranslateSave(ui::Point(0, 1));
+					return;
+				case 'r':
+					if (ctrl && shift)
+					{
+						//Vertical flip
+						c->TransformSave(m2d_new(1,0,0,-1));
+					}
+					else if (!ctrl && shift)
+					{
+						//Horizontal flip
+						c->TransformSave(m2d_new(-1,0,0,1));
+					}
+					else
+					{
+						//Rotate 90deg
+						c->TransformSave(m2d_new(0,1,-1,0));
+					}
+					return;
 				}
-				else if (!ctrl && shift)
-				{
-					//Horizontal flip
-					c->TransformSave(m2d_new(-1,0,0,1));
-				}
-				else
-				{
-					//Rotate 90deg
-					c->TransformSave(m2d_new(0,1,-1,0));
-				}
-				return;
 			}
 		}
-	}
-	switch(key)
-	{
-	case SDLK_LALT:
-	case SDLK_RALT:
-		enableAltBehaviour();
-		break;
-	case SDLK_LCTRL:
-	case SDLK_RCTRL:
-		enableCtrlBehaviour();
-		break;
-	case SDLK_LSHIFT:
-	case SDLK_RSHIFT:
-		enableShiftBehaviour();
-		break;
-	case ' ': //Space
-		c->SetPaused();
-		break;
-	case 'z':
-		if (selectMode != SelectNone && isMouseDown)
+		switch(key)
+		{
+		case SDLK_LALT:
+		case SDLK_RALT:
+			enableAltBehaviour();
 			break;
-		if (ctrl && !isMouseDown)
-		{
-			if (shift)
-				c->HistoryForward();
+		case SDLK_LCTRL:
+		case SDLK_RCTRL:
+			enableCtrlBehaviour();
+			break;
+		case SDLK_LSHIFT:
+		case SDLK_RSHIFT:
+			enableShiftBehaviour();
+			break;
+		case ' ': //Space
+			c->SetPaused();
+			break;
+		case 'z':
+			if (selectMode != SelectNone && isMouseDown)
+				break;
+			if (ctrl && !isMouseDown)
+			{
+				if (shift)
+					c->HistoryForward();
+				else
+					c->HistoryRestore();
+			}
 			else
-				c->HistoryRestore();
-		}
-		else
-		{
-			isMouseDown = false;
-			zoomCursorFixed = false;
-			c->SetZoomEnabled(true);
-		}
-		break;
-	case SDLK_TAB: //Tab
-		c->ChangeBrush();
-		break;
-	case '`':
-		c->ShowConsole();
-		break;
-	case 'p':
-	case SDLK_F2:
-		screenshot();
-		break;
-	case SDLK_F3:
-		SetDebugHUD(!GetDebugHUD());
-		break;
-	case SDLK_F5:
-		c->ReloadSim();
-		break;
-	case 'r':
-		if (ctrl)
+			{
+				isMouseDown = false;
+				zoomCursorFixed = false;
+				c->SetZoomEnabled(true);
+			}
+			break;
+		case SDLK_TAB: //Tab
+			c->ChangeBrush();
+			break;
+		case '`':
+			c->ShowConsole();
+			break;
+		case 'p':
+		case SDLK_F2:
+			screenshot();
+			break;
+		case SDLK_F3:
+			SetDebugHUD(!GetDebugHUD());
+			break;
+		case SDLK_F5:
 			c->ReloadSim();
-		else
-			record();
-		break;
-	case 'e':
-		c->OpenElementSearch();
-		break;
-	case 'f':
-		if (ctrl)
-		{
-			Tool *active = c->GetActiveTool(0);
-			if (active->GetIdentifier().find("_PT_") == active->GetIdentifier().npos || ren->findingElement == active->GetToolID()%256)
-				ren->findingElement = 0;
+			break;
+		case 'r':
+			if (ctrl)
+				c->ReloadSim();
 			else
-				ren->findingElement = active->GetToolID()%256;
-		}
-		else
-			c->FrameStep();
-		break;
-	case 'g':
-		if (ctrl)
-			c->ShowGravityGrid();
-		else if(shift)
-			c->AdjustGridSize(-1);
-		else
-			c->AdjustGridSize(1);
-		break;
-	case SDLK_F1:
-		if(!introText)
-			introText = 8047;
-		else
-			introText = 0;
-		break;
-	case 'h':
-		if(ctrl)
-		{
+				record();
+			break;
+		case 'e':
+			c->OpenElementSearch();
+			break;
+		case 'f':
+			if (ctrl)
+			{
+				Tool *active = c->GetActiveTool(0);
+				if (active->GetIdentifier().find("_PT_") == active->GetIdentifier().npos || ren->findingElement == active->GetToolID()%256)
+					ren->findingElement = 0;
+				else
+					ren->findingElement = active->GetToolID()%256;
+			}
+			else
+				c->FrameStep();
+			break;
+		case 'g':
+			if (ctrl)
+				c->ShowGravityGrid();
+			else if(shift)
+				c->AdjustGridSize(-1);
+			else
+				c->AdjustGridSize(1);
+			break;
+		case SDLK_F1:
 			if(!introText)
 				introText = 8047;
 			else
 				introText = 0;
-		}
-		else
-			showHud = !showHud;
-		break;
-	case 'b':
-		if(ctrl)
-			c->SetDecoration();
-		else
-			if (colourPicker->GetParentWindow())
-				c->SetActiveMenu(lastMenu);
+			break;
+		case 'h':
+			if(ctrl)
+			{
+				if(!introText)
+					introText = 8047;
+				else
+					introText = 0;
+			}
+			else
+				showHud = !showHud;
+			break;
+		case 'b':
+			if(ctrl)
+				c->SetDecoration();
+			else
+				if (colourPicker->GetParentWindow())
+					c->SetActiveMenu(lastMenu);
+				else
+				{
+					c->SetDecoration(true);
+					c->SetPaused(true);
+					c->SetActiveMenu(SC_DECO);
+				}
+			break;
+		case 'y':
+			if (ctrl)
+			{
+				c->HistoryForward();
+			}
 			else
 			{
-				c->SetDecoration(true);
-				c->SetPaused(true);
-				c->SetActiveMenu(SC_DECO);
+				c->SwitchAir();
 			}
-		break;
-	case 'y':
-		if (ctrl)
-		{
-			c->HistoryForward();
-		}
-		else
-		{
-			c->SwitchAir();
-		}
-		break;
-	case SDLK_ESCAPE:
-	case 'q':
-		ExitPrompt();
-		break;
-	case 'u':
-		c->ToggleAHeat();
-		break;
-	case 'n':
-		c->ToggleNewtonianGravity();
-		break;
-	case '=':
-		if(ctrl)
-			c->ResetSpark();
-		else
-			c->ResetAir();
-		break;
-	case 'c':
-		if(ctrl)
-		{
-			selectMode = SelectCopy;
-			selectPoint1 = selectPoint2 = ui::Point(-1, -1);
-			isMouseDown = false;
-			buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to copy (right click = cancel)";
-			buttonTipShow = 120;
-		}
-		break;
-	case 'x':
-		if(ctrl)
-		{
-			selectMode = SelectCut;
-			selectPoint1 = selectPoint2 = ui::Point(-1, -1);
-			isMouseDown = false;
-			buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to copy then cut (right click = cancel)";
-			buttonTipShow = 120;
-		}
-		break;
-	case 'v':
-		if (ctrl)
-		{
-			if (c->LoadClipboard())
+			break;
+		case SDLK_ESCAPE:
+		case 'q':
+			ExitPrompt();
+			break;
+		case 'u':
+			c->ToggleAHeat();
+			break;
+		case 'n':
+			c->ToggleNewtonianGravity();
+			break;
+		case '=':
+			if(ctrl)
+				c->ResetSpark();
+			else
+				c->ResetAir();
+			break;
+		case 'm':
+			if (showDebug)
 			{
+				showDebugState ++;
+				if (showDebugState >= 11)
+					showDebugState = 0;
+			}
+			break;
+		case 'c':
+			if(ctrl)
+			{
+				selectMode = SelectCopy;
+				selectPoint1 = selectPoint2 = ui::Point(-1, -1);
+				isMouseDown = false;
+				buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to copy (right click = cancel)";
+				buttonTipShow = 120;
+			}
+			else if (showDebug)
+			{
+				alternateState = 2;
+			}
+			break;
+		case 'x':
+			if(ctrl)
+			{
+				selectMode = SelectCut;
+				selectPoint1 = selectPoint2 = ui::Point(-1, -1);
+				isMouseDown = false;
+				buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to copy then cut (right click = cancel)";
+				buttonTipShow = 120;
+			}
+			else if (showDebug)
+			{
+				alternateState = 1;
+			}
+			break;
+		case 'v':
+			if (ctrl)
+			{
+				if (c->LoadClipboard())
+				{
+					selectPoint1 = selectPoint2 = mousePosition;
+					isMouseDown = false;
+				}
+			}
+			else if (showDebug)
+			{
+				alternateState = 3;
+			}
+			break;
+		case 'l':
+		{
+			std::vector<std::string> stampList = Client::Ref().GetStamps(0, 1);
+			if (stampList.size())
+			{
+				c->LoadStamp(Client::Ref().GetStamp(stampList[0])->GetGameSave());
 				selectPoint1 = selectPoint2 = mousePosition;
 				isMouseDown = false;
+				break;
 			}
 		}
-		break;
-	case 'l':
-	{
-		std::vector<std::string> stampList = Client::Ref().GetStamps(0, 1);
-		if (stampList.size())
-		{
-			c->LoadStamp(Client::Ref().GetStamp(stampList[0])->GetGameSave());
-			selectPoint1 = selectPoint2 = mousePosition;
-			isMouseDown = false;
+		case 'k':
+			selectMode = SelectNone;
+			selectPoint1 = selectPoint2 = ui::Point(-1, -1);
+			c->OpenStamps();
 			break;
-		}
-	}
-	case 'k':
-		selectMode = SelectNone;
-		selectPoint1 = selectPoint2 = ui::Point(-1, -1);
-		c->OpenStamps();
-		break;
-	case ']':
-		if(zoomEnabled && !zoomCursorFixed)
-			c->AdjustZoomSize(1, !alt);
-		else
-			c->AdjustBrushSize(1, !alt, shiftBehaviour, ctrlBehaviour);
-		break;
-	case '[':
-		if(zoomEnabled && !zoomCursorFixed)
-			c->AdjustZoomSize(-1, !alt);
-		else
-			c->AdjustBrushSize(-1, !alt, shiftBehaviour, ctrlBehaviour);
-		break;
-	case 'i':
-		if(ctrl)
-			c->Install();
-		else
-			c->InvertAirSim();
-		break;
-	case ';':
-		if (ctrl)
-		{
+		case ']':
+			if(zoomEnabled && !zoomCursorFixed)
+				c->AdjustZoomSize(1, !alt);
+			else
+				c->AdjustBrushSize(1, !alt, shiftBehaviour, ctrlBehaviour);
+			break;
+		case '[':
+			if(zoomEnabled && !zoomCursorFixed)
+				c->AdjustZoomSize(-1, !alt);
+			else
+				c->AdjustBrushSize(-1, !alt, shiftBehaviour, ctrlBehaviour);
+			break;
+		case 'i':
+			if(ctrl)
+				c->Install();
+			else
+				c->InvertAirSim();
+			break;
+		case ';':
+			if (ctrl)
+			{
+				c->SetReplaceModeFlags(c->GetReplaceModeFlags()^SPECIFIC_DELETE);
+				break;
+			}
+			//fancy case switch without break
+		case SDLK_INSERT:
+			c->SetReplaceModeFlags(c->GetReplaceModeFlags()^REPLACE_MODE);
+			break;
+		case SDLK_DELETE:
 			c->SetReplaceModeFlags(c->GetReplaceModeFlags()^SPECIFIC_DELETE);
 			break;
 		}
-		//fancy case switch without break
-	case SDLK_INSERT:
-		c->SetReplaceModeFlags(c->GetReplaceModeFlags()^REPLACE_MODE);
-		break;
-	case SDLK_DELETE:
-		c->SetReplaceModeFlags(c->GetReplaceModeFlags()^SPECIFIC_DELETE);
-		break;
-	}
 
-	if (shift && showDebug && key == '1')
-		c->LoadRenderPreset(10);
-	else if(key >= '0' && key <= '9')
+		if (shift && showDebug && key == '1')
+			c->LoadRenderPreset(10);
+		else if(key >= '0' && key <= '9')
+		{
+			c->LoadRenderPreset(key-'0');
+		}
+	}
+	else
 	{
-		c->LoadRenderPreset(key-'0');
+		int old_alt = alternateState;
+		switch(key)
+		{
+		case SDLK_LALT:
+		case SDLK_RALT:
+			enableAltBehaviour();
+			break;
+		case SDLK_LCTRL:
+		case SDLK_RCTRL:
+			enableCtrlBehaviour();
+			break;
+		case SDLK_LSHIFT:
+		case SDLK_RSHIFT:
+			enableShiftBehaviour();
+			break;
+		default:
+			alternateState = 0;
+		}
+		switch (old_alt)
+		{
+		case 1:
+			switch (key)
+			{
+				case 'c':
+					showDebugState = (shift ? 13 : 3);
+				break;
+				case 'd':
+					showDebugState = (shift ? 12 : 9);
+				break;
+				case 'f':
+					showDebugState = 11;
+				break;
+				case 'l':
+					showDebugState = 2;
+				break;
+				case 'n':
+					showDebugState = 0;
+				break;
+				case 'p':
+					if (!shift)
+						showDebugState = 10;
+					else
+						showDebugStateFlags ^= 0x01;
+				break;
+				case 't':
+					if (!alt)
+						showDebugState = (shift ? 5 : 1);
+					else
+					{
+						int tmp = (showDebugState >> 2) + (shift ? 2 : 1);
+						showDebugStateFlags &= ~0x0C;
+						showDebugStateFlags |= tmp << 2;
+					}
+				break;
+				case 'v':
+					if (!shift)
+						showDebugState = 4;
+					else
+						showDebugStateFlags ^= 0x02;
+				break;
+				case 'x':
+					usingHexadecimal = !usingHexadecimal;
+					alternateState = 1;
+				break;
+				case '-':
+					if (debugPrecision) { debugPrecision --; }
+					alternateState = 1;
+				break;
+				case '=':
+					debugPrecision ++; alternateState = 1;
+				break;
+			}
+			if(key >= '0' && key <= '9')
+			{
+				alternateState = (key - '0') + 4;
+				if (shift)
+					alternateState += 10;
+			}
+			break;
+		case 2:
+			break;
+		case 3:
+			break;
+		}
 	}
 }
 
@@ -1676,7 +1791,7 @@ void GameView::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bo
 		disableShiftBehaviour();
 		break;
 	case 'z':
-		if(!zoomCursorFixed && !alt)
+		if(!alternateState && !zoomCursorFixed && !alt)
 			c->SetZoomEnabled(false);
 		break;
 	}
@@ -2256,7 +2371,7 @@ void GameView::OnDraw()
 			}
 		}
 	}
-
+	
 	if(recording)
 	{
 		std::stringstream sampleInfo;
@@ -2269,6 +2384,15 @@ void GameView::OnDraw()
 	}
 	else if(showHud)
 	{
+		Particle * sample_particle = &(sample.particle);
+		static const char* E189Modes[] = {
+			"PRSINS", "PRSINS", "TRONI", "TRONO", "LASER", "DIRCH", "HEATER", "PHTDUP", "VIBR2", "VIBR2",
+			"DEBUG", "PHTEM", "SPREFL", "DECOR", "DECO2", "PRTINS", "LOGICG", "PHDIOD", "DECO3", "NOTGIN",
+			"PARTEM", "EXPANDER", "EN_REFL", "STKMJ", "MOV_DRAY", "EXT_DRAY", "BUTTON", "STKSET", "RAY_REFL", "TRONE",
+			"TRONF", "TRONDL", "E189F32", "WIFI2", "FILTINC", "RNMRAY"
+		};
+		const int maxE189Type = 35;
+		static const int E189IntM[] = {0x81055000, 0x00000006};
 		//Draw info about simulation under cursor
 		int wavelengthGfx = 0, alpha = 255;
 		if (toolTipPosition.Y < 120)
@@ -2276,55 +2400,241 @@ void GameView::OnDraw()
 		if (alpha < 50)
 			alpha = 50;
 		std::stringstream sampleInfo;
-		sampleInfo.precision(2);
+		std::stringstream tempStream;
+		sampleInfo.precision(debugPrecision);
 
-		int type = sample.particle.type;
+		bool tpt_hasPartner = false;
+		int partnerID;
+	showDebugBack:
+		int type = sample_particle->type;
 		if (type)
 		{
-			int ctype = sample.particle.ctype;
+			int ctype = sample_particle->ctype;
+			int partctype = ctype;
+			int partlife = sample_particle->life;
+			int parttmp = sample_particle->tmp;
+			int partint = 0;
+			int partstr = 0;
 			if (type == PT_PIPE || type == PT_PPIP)
-				ctype = sample.particle.tmp&0xFF;
+				ctype = sample_particle->tmp&0xFF;
 
 			if (type == PT_PHOT || type == PT_BIZR || type == PT_BIZRG || type == PT_BIZRS || type == PT_FILT || type == PT_BRAY || type == PT_C5)
 				wavelengthGfx = (ctype&0x3FFFFFFF);
-
+			
+			if (type == PT_GLOW || type == PT_SOAP || type == PT_WIRE || type == PT_E187 || type == PT_E188) partint = 1;
+			
+			if (type == PT_E189)
+			{
+				if (partlife == 4 || partlife == 7 || partlife == 11)
+					wavelengthGfx = (ctype&0x3FFFFFFF);
+				else if (partlife == 5)
+				{
+					int partfilt = parttmp >> 18;
+					int partfilt2 = parttmp & 0x1F;
+					if (partfilt >= 0 && partfilt <= 5 && partfilt != 4)
+						wavelengthGfx = (ctype&0x3FFFFFFF);
+					if (partfilt == 4 || partfilt == 7 || (partfilt & 0x10) && ((0x0000E000 >> partfilt2) & 1))
+						partint = 1;
+				}
+				else if (partlife == 13)
+				{
+					if ((sample_particle->tmp2 & 0x3) == 0x1)
+						wavelengthGfx = (ctype&0x3FFFFFFF);
+					else
+						partint = 1;
+				}
+				else if (partlife >= 0 && partlife < 64 && (E189IntM[partlife >> 5] >> (partlife & 0x1F)) & 1)
+				{
+					partint = 1;
+				}
+				else if (partlife == 10)
+				{
+					partstr = 1;
+				}
+				else if (partlife == 27)
+				{
+					ctype &= 0x1FF;
+				}
+			}
+			
 			if (showDebug)
 			{
 				if (type == PT_LAVA && c->IsValidElement(ctype))
 					sampleInfo << "Molten " << c->ElementResolve(ctype, -1);
 				else if ((type == PT_PIPE || type == PT_PPIP) && c->IsValidElement(ctype))
-					sampleInfo << c->ElementResolve(type, -1) << " with " << c->ElementResolve(ctype, (int)sample.particle.pavg[1]);
+					sampleInfo << c->ElementResolve(type, -1) << " with " << c->ElementResolve(ctype, (int)sample_particle->pavg[1]);
 				else if (type == PT_LIFE)
 					sampleInfo << c->ElementResolve(type, ctype);
 				else if (type == PT_FILT)
 				{
 					sampleInfo << c->ElementResolve(type, ctype);
 					const char* filtModes[] = {"set colour", "AND", "OR", "subtract colour", "red shift", "blue shift", "no effect", "XOR", "NOT", "old QRTZ scattering", "variable red shift", "variable blue shift"};
-					if (sample.particle.tmp>=0 && sample.particle.tmp<=11)
-						sampleInfo << " (" << filtModes[sample.particle.tmp] << ")";
+					if (parttmp>=0 && parttmp<=11)
+						sampleInfo << " (" << filtModes[parttmp] << ")";
 					else
 						sampleInfo << " (unknown mode)";
 				}
+				else if (type == PT_PINVIS)
+				{
+					ctype = sample_particle->tmp4 & 0xFF;
+					if (ctype && ctype != type && c->IsValidElement(ctype) && !tpt_hasPartner)
+					{
+						sampleInfo << c->ElementResolve(type, -1) << " with ";
+						partnerID = sample_particle->tmp4 >> 8;
+						tpt_hasPartner = true;
+						sample_particle = sample.cparticle;
+						goto showDebugBack;
+					}
+					else
+					{
+						sampleInfo << c->ElementResolve(type, partctype) << " (" << c->ElementResolve(partctype, -1) << ")";
+					}
+				}
 				else
 				{
-					sampleInfo << c->ElementResolve(type, ctype);
-					if (wavelengthGfx)
+					if (type == PT_E189)
+					{
+						if (partlife >= 0 && partlife <= maxE189Type)
+						{
+							sampleInfo << E189Modes[partlife];
+						}
+						else
+						{
+							sampleInfo << "E189F" << partlife;
+						}
+					}
+					else
+						sampleInfo << c->ElementResolve(type, ctype);
+					if (wavelengthGfx || partint)
 						sampleInfo << " (" << ctype << ")";
 					// Some elements store extra LIFE info in upper bits of ctype, instead of tmp/tmp2
 					else if (type == PT_CRAY || type == PT_DRAY || type == PT_CONV)
 						sampleInfo << " (" << c->ElementResolve(ctype&0xFF, ctype>>8) << ")";
+					else if (type == PT_E189 && partlife == 35)
+					{
+						sampleInfo << " (";
+						if ((ctype&0xFF) == PT_E189 && (ctype>>8) >= 0 && (ctype>>8) <= maxE189Type)
+							sampleInfo << E189Modes[ctype>>8];
+						else
+							sampleInfo << c->ElementResolve(ctype&0xFF, ctype>>8);
+						sampleInfo << ")";
+					}
+					else if (partstr)
+					{
+						sampleInfo << " (\"";
+						int tmp_ctype = ctype;
+						for (int ii = 0; ii < 4; ii++)
+						{
+							unsigned char tmp_char = (tmp_ctype >> (ii * 8)) & 0xFF;
+							if (tmp_char >= ' ' && tmp_char <= '~')
+								sampleInfo << tmp_char;
+						}
+						sampleInfo << "\", " << ctype << ")";
+					}
 					else if (c->IsValidElement(ctype))
 						sampleInfo << " (" << c->ElementResolve(ctype, -1) << ")";
 					else
 						sampleInfo << " ()";
 				}
-				sampleInfo << ", Temp: " << std::fixed << sample.particle.temp -273.15f << " C";
-				sampleInfo << ", Life: " << sample.particle.life;
-				sampleInfo << ", Tmp: " << sample.particle.tmp;
+				sampleInfo << ", Temp: ";
+				switch ((showDebugStateFlags >> 2) & 3)
+				{
+				case 1:
+					sampleInfo << std::fixed << sample_particle->temp << " K";
+					break;
+				case 2:
+					sampleInfo << std::fixed << (((sample_particle->temp -273.15f) *9/5) + 32) << " F";
+					break;
+				default:
+					sampleInfo << std::fixed << sample_particle->temp -273.15f << " C";
+				}
+				if (!showDebugState)
+				{
+					sampleInfo << ", Life: " << partlife;
+					sampleInfo << ", Tmp: " << parttmp;
 
-				// only elements that use .tmp2 show it in the debug HUD
-				if (type == PT_CRAY || type == PT_DRAY || type == PT_EXOT || type == PT_LIGH || type == PT_SOAP || type == PT_TRON || type == PT_VIBR || type == PT_VIRS || type == PT_WARP || type == PT_LCRY || type == PT_CBNW || type == PT_TSNS || type == PT_DTEC || type == PT_PSTN)
-					sampleInfo << ", Tmp2: " << sample.particle.tmp2;
+					// only elements that use .tmp2 show it in the debug HUD
+					if (type == PT_CRAY || type == PT_DRAY || type == PT_EXOT || type == PT_LIGH || type == PT_SOAP || type == PT_TRON || type == PT_VIBR || type == PT_VIRS
+					 || type == PT_WARP || type == PT_LCRY || type == PT_CBNW || type == PT_TSNS || type == PT_DTEC || type == PT_PSTN || type == PT_E189)
+						sampleInfo << ", Tmp2: " << sample_particle->tmp2;
+				}
+				else
+				{
+					bool multi_var = false;
+					int tempvar;
+					switch (showDebugState)
+					{
+						case 1:
+						{
+							sampleInfo << ", Type: ";
+							// int tempType = (type == PT_E189 ? (0x10000 | partlife) : type);
+							tempvar = type;
+						}
+						break;
+						case 2:
+							sampleInfo << ", Life: "; 
+							tempvar = partlife;
+						break;
+						case 3:
+							sampleInfo << ", Ctype: ";
+							tempvar = partctype;
+						break;
+						case 4:
+							sampleInfo << ", Vx: " << std::fixed << sample_particle->vx;
+							sampleInfo << ", Vy: " << std::fixed << sample_particle->vy;
+							multi_var = true;
+						break;
+						case 5:
+							sampleInfo << ", Tmp: ";
+							tempvar = parttmp;
+						break;
+						case 6:
+							sampleInfo << ", Tmp2: ";
+							tempvar = sample_particle->tmp2;
+						break;
+						case 7:
+							sampleInfo << ", Tmp3: ";
+							tempvar = sample_particle->tmp3;
+						break;
+						case 8:
+							sampleInfo << ", Tmp4: ";
+							tempvar = sample_particle->tmp4;
+						break;
+						case 9:
+							sampleInfo << ", Dcolor: ";
+							tempvar = sample_particle->dcolour;
+						break;
+						case 10:
+							sampleInfo << ", Pavg[0]: " << std::fixed << sample_particle->pavg[0];
+							sampleInfo << ", Pavg[1]: " << std::fixed << sample_particle->pavg[1];
+							multi_var = true;
+						break;
+						case 11:
+							sampleInfo << ", Flags: ";
+							tempvar = sample_particle->flags;
+						break;
+						case 12:
+							sampleInfo << ", cdcolor: ";
+							tempvar = sample_particle->cdcolour;
+						break;
+						case 13:
+							sampleInfo << ", X: " << std::fixed << sample_particle->x;
+							sampleInfo << ", Y: " << std::fixed << sample_particle->y;
+							multi_var = true;
+						break;
+					}
+					if (!multi_var)
+					{
+						if (usingHexadecimal)
+						{
+							tempStream << std::setw(8) << std::setfill ('0') << std::hex << tempvar;
+							sampleInfo << "0x" << tempStream.str();
+							tempStream.str("");
+						}
+						else
+							sampleInfo << tempvar;
+					}
+				}
 
 				sampleInfo << ", Pressure: " << std::fixed << sample.AirPressure;
 			}
@@ -2333,12 +2643,37 @@ void GameView::OnDraw()
 				if (type == PT_LAVA && c->IsValidElement(ctype))
 					sampleInfo << "Molten " << c->ElementResolve(ctype, -1);
 				else if ((type == PT_PIPE || type == PT_PPIP) && c->IsValidElement(ctype))
-					sampleInfo << c->ElementResolve(type, -1) << " with " << c->ElementResolve(ctype, (int)sample.particle.pavg[1]);
+					sampleInfo << c->ElementResolve(type, -1) << " with " << c->ElementResolve(ctype, (int)sample_particle->pavg[1]);
 				else if (type == PT_LIFE)
 					sampleInfo << c->ElementResolve(type, ctype);
+				else if (type == PT_E189)
+				{
+					if (partlife >= 0 && partlife <= maxE189Type)
+					{
+						sampleInfo << E189Modes[partlife];
+					}
+					else
+					{
+						sampleInfo << "E189F" << partlife;
+					}
+				}
+				else if (type == PT_PINVIS)
+				{
+					ctype = sample_particle->tmp4 & 0xFF;
+					if (ctype && ctype != type && c->IsValidElement(ctype) && !tpt_hasPartner)
+					{
+						sampleInfo << c->ElementResolve(type, -1) << " with ";
+						// partnerID = sample_particle->tmp4 >> 8;
+						tpt_hasPartner = true;
+						sample_particle = sample.cparticle;
+						goto showDebugBack;
+					}
+					else
+						sampleInfo << c->ElementResolve(type, partctype);
+				}
 				else
 					sampleInfo << c->ElementResolve(type, ctype);
-				sampleInfo << ", Temp: " << std::fixed << sample.particle.temp - 273.15f << " C";
+				sampleInfo << ", Temp: " << std::fixed << sample_particle->temp - 273.15f << " C";
 				sampleInfo << ", Pressure: " << std::fixed << sample.AirPressure;
 			}
 		}
@@ -2402,7 +2737,14 @@ void GameView::OnDraw()
 			sampleInfo.str(std::string());
 
 			if (type)
-				sampleInfo << "#" << sample.ParticleID << ", ";
+			{
+				sampleInfo << "#" << sample.ParticleID;
+				if (tpt_hasPartner)
+				{
+					sampleInfo << " and #" << partnerID;
+				}
+				sampleInfo << ", ";
+			}
 
 			sampleInfo << "X:" << sample.PositionX << " Y:" << sample.PositionY;
 
@@ -2415,6 +2757,36 @@ void GameView::OnDraw()
 			textWidth = Graphics::textwidth((char*)sampleInfo.str().c_str());
 			g->fillrect(XRES-20-textWidth, 27, textWidth+8, 14, 0, 0, 0, alpha*0.5f);
 			g->drawtext(XRES-16-textWidth, 30, (const char*)sampleInfo.str().c_str(), 255, 255, 255, alpha*0.75f);
+			
+			int __currPosY = 41; // 27 + 14
+			int tempValue;
+			
+			if (showDebugStateFlags & 0x00000001)
+			{
+				sampleInfo.str(std::string());
+
+				tempValue = ren->sim->breakable_wall_count; // using "Renderer", actually not "Renderer"
+				if (tempValue)
+					sampleInfo << "breakable_wall_count: " << tempValue << ", ";
+				sampleInfo << "sim_max_pressure: " << std::fixed << c->sim_max_pressure_resolve();
+
+				textWidth = Graphics::textwidth((char*)sampleInfo.str().c_str());
+				g->fillrect(XRES-20-textWidth, __currPosY, textWidth+8, 15, 0, 0, 0, alpha*0.5f);
+				g->drawtext(XRES-16-textWidth, __currPosY + 3, (const char*)sampleInfo.str().c_str(), 255, 255, 255, alpha*0.75f);
+				__currPosY += 15;
+			}
+			if ((showDebugStateFlags & 0x00000002) && sample.isMouseInSim)
+			{
+				sampleInfo.str(std::string());
+
+				sampleInfo << "Air velocity X: " << sample.AirVelocityX << ", ";
+				sampleInfo << "velocity Y: " << sample.AirVelocityY;
+
+				textWidth = Graphics::textwidth((char*)sampleInfo.str().c_str());
+				g->fillrect(XRES-20-textWidth, __currPosY, textWidth+8, 15, 0, 0, 0, alpha*0.5f);
+				g->drawtext(XRES-16-textWidth, __currPosY + 3, (const char*)sampleInfo.str().c_str(), 255, 255, 255, alpha*0.75f);
+				__currPosY += 15;
+			}
 		}
 	}
 
@@ -2430,6 +2802,8 @@ void GameView::OnDraw()
 
 		if (showDebug)
 			fpsInfo << " Parts: " << sample.NumParts;
+		if (alternateState)
+			fpsInfo << " [ALT: " << alternateState << "]";
 		if (c->GetReplaceModeFlags()&REPLACE_MODE)
 			fpsInfo << " [REPLACE MODE]";
 		if (c->GetReplaceModeFlags()&SPECIFIC_DELETE)
@@ -2443,6 +2817,9 @@ void GameView::OnDraw()
 		int alpha = 255-introText*5;
 		g->fillrect(12, 12, textWidth+8, 15, 0, 0, 0, alpha*0.5);
 		g->drawtext(16, 16, (const char*)fpsInfo.str().c_str(), 32, 216, 255, alpha*0.75);
+		
+		fpsInfo.str(std::string());
+		
 	}
 
 	//Tooltips

@@ -18,6 +18,7 @@ Element_PLNT::Element_PLNT()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
+	PhotonReflectWavelengths = 0x0007C000;
 
 	Flammable = 20;
 	Explosive = 0;

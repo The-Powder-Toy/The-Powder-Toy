@@ -681,73 +681,76 @@ bool GameController::KeyPress(int key, Uint16 character, bool shift, bool ctrl, 
 	if (ret)
 	{
 		Simulation * sim = gameModel->GetSimulation();
-		if (!gameView->GetPlacingSave())
+		if (!gameView->alternateState)
 		{
-			// Go right command
-			if (key == SDLK_RIGHT)
+			if (!gameView->GetPlacingSave())
 			{
-				sim->player.comm = (int)(sim->player.comm)|0x02;
+				// Go right command
+				if (key == SDLK_RIGHT)
+				{
+					sim->player.comm = (int)(sim->player.comm)|0x02;
+				}
+				// Go left command
+				if (key == SDLK_LEFT)
+				{
+					sim->player.comm = (int)(sim->player.comm)|0x01;
+				}
+				// Use element command
+				if (key == SDLK_DOWN && ((int)(sim->player.comm)&0x08)!=0x08)
+				{
+					sim->player.comm = (int)(sim->player.comm)|0x08;
+				}
+				// Jump command
+				if (key == SDLK_UP && ((int)(sim->player.comm)&0x04)!=0x04)
+				{
+					sim->player.comm = (int)(sim->player.comm)|0x04;
+				}
+			}
+
+			// Go right command
+			if (key == SDLK_d)
+			{
+				sim->player2.comm = (int)(sim->player2.comm)|0x02;
 			}
 			// Go left command
-			if (key == SDLK_LEFT)
+			if (key == SDLK_a)
 			{
-				sim->player.comm = (int)(sim->player.comm)|0x01;
+				sim->player2.comm = (int)(sim->player2.comm)|0x01;
 			}
 			// Use element command
-			if (key == SDLK_DOWN && ((int)(sim->player.comm)&0x08)!=0x08)
+			if (key == SDLK_s && ((int)(sim->player2.comm)&0x08)!=0x08)
 			{
-				sim->player.comm = (int)(sim->player.comm)|0x08;
+				sim->player2.comm = (int)(sim->player2.comm)|0x08;
 			}
 			// Jump command
-			if (key == SDLK_UP && ((int)(sim->player.comm)&0x04)!=0x04)
+			if (key == SDLK_w && ((int)(sim->player2.comm)&0x04)!=0x04)
 			{
-				sim->player.comm = (int)(sim->player.comm)|0x04;
+				sim->player2.comm = (int)(sim->player2.comm)|0x04;
+			}
+
+			if (!sim->elementCount[PT_STKM2] || ctrl)
+			{
+				switch(key)
+				{
+				case 'w':
+					SwitchGravity();
+					break;
+				case 'd':
+					gameView->SetDebugHUD(!gameView->GetDebugHUD());
+					break;
+				case 's':
+					gameView->BeginStampSelection();
+					break;
+				}
 			}
 		}
-
-		// Go right command
-		if (key == SDLK_d)
-		{
-			sim->player2.comm = (int)(sim->player2.comm)|0x02;
-		}
-		// Go left command
-		if (key == SDLK_a)
-		{
-			sim->player2.comm = (int)(sim->player2.comm)|0x01;
-		}
-		// Use element command
-		if (key == SDLK_s && ((int)(sim->player2.comm)&0x08)!=0x08)
-		{
-			sim->player2.comm = (int)(sim->player2.comm)|0x08;
-		}
-		// Jump command
-		if (key == SDLK_w && ((int)(sim->player2.comm)&0x04)!=0x04)
-		{
-			sim->player2.comm = (int)(sim->player2.comm)|0x04;
-		}
-
-		if (!sim->elementCount[PT_STKM2] || ctrl)
-		{
-			switch(key)
-			{
-			case 'w':
-				SwitchGravity();
-				break;
-			case 'd':
-				gameView->SetDebugHUD(!gameView->GetDebugHUD());
-				break;
-			case 's':
-				gameView->BeginStampSelection();
-				break;
-			}
-		}
-
-		for(std::vector<DebugInfo*>::iterator iter = debugInfo.begin(), end = debugInfo.end(); iter != end; iter++)
-		{
-			if ((*iter)->ID & debugFlags)
-				if (!(*iter)->KeyPress(key, character, shift, ctrl, alt, gameView->GetMousePosition()))
-					ret = false;
-		}
+	}
+		
+	for(std::vector<DebugInfo*>::iterator iter = debugInfo.begin(), end = debugInfo.end(); iter != end; iter++)
+	{
+		if ((*iter)->ID & debugFlags)
+			if (!(*iter)->KeyPress(key, character, shift, ctrl, alt, gameView->GetMousePosition()))
+				ret = false;
 	}
 	return ret;
 }
@@ -852,6 +855,7 @@ void GameController::ResetSpark()
 				sim->kill_part(i);
 		}
 	memset(sim->wireless, 0, sizeof(sim->wireless));
+	memset(sim->wireless2, 0, sizeof(sim->wireless2));
 }
 
 void GameController::SwitchGravity()
@@ -937,7 +941,7 @@ void GameController::Update()
 
 	Simulation * sim = gameModel->GetSimulation();
 	sim->BeforeSim();
-	if (!sim->sys_pause || sim->framerender)
+	if (!sim->sys_pause && !(sim->E189_pause & 2) || sim->framerender)
 	{
 		sim->UpdateParticles(0, NPART);
 		sim->AfterSim();
@@ -1516,6 +1520,15 @@ std::string GameController::ElementResolve(int type, int ctype)
 			return std::string(gameModel->GetSimulation()->elements[type].Name);
 	}
 	return "";
+}
+
+float GameController::sim_max_pressure_resolve()
+{
+	if(gameModel && gameModel->GetSimulation())
+	{
+		return gameModel->GetSimulation()->sim_max_pressure;
+	}
+	return 0;
 }
 
 bool GameController::IsValidElement(int type)

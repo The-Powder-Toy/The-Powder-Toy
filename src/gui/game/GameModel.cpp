@@ -84,6 +84,8 @@ GameModel::GameModel():
 		sim->grav->start_grav_async();
 	sim->aheat_enable =  Client::Ref().GetPrefInteger("Simulation.AmbientHeat", 0);
 	sim->pretty_powder =  Client::Ref().GetPrefInteger("Simulation.PrettyPowder", 0);
+	sim->extraLoopsCA = Client::Ref().GetPrefBool("Simulation.LangtonsLoops", false);
+	sim->extraLoopsType = Client::Ref().GetPrefInteger("Simulation.ExtraLoopsType", 0);
 
 	Favorite::Ref().LoadFavoritesFromPrefs();
 
@@ -155,6 +157,8 @@ GameModel::~GameModel()
 
 	Client::Ref().SetPref("Renderer.GravityField", (bool)ren->gravityFieldEnabled);
 	Client::Ref().SetPref("Renderer.Decorations", (bool)ren->decorations_enable);
+	Client::Ref().SetPref("Simulation.LangtonsLoops", (bool)sim->extraLoopsCA);
+	Client::Ref().SetPref("Simulation.ExtraLoopsType", (int)sim->extraLoopsType);
 	Client::Ref().SetPref("Renderer.DebugMode", ren->debugLines); //These two should always be equivalent, even though they are different things
 
 	Client::Ref().SetPref("Simulation.EdgeMode", edgeMode);
@@ -218,6 +222,7 @@ void GameModel::BuildQuickOptionMenu(GameController * controller)
 	quickOptions.push_back(new NGravityOption(this));
 	quickOptions.push_back(new AHeatOption(this));
 	quickOptions.push_back(new ConsoleShowOption(this, controller));
+	quickOptions.push_back(new LangtonsLoopsOption(this));
 
 	notifyQuickOptionsChanged();
 	UpdateQuickOptions();
@@ -640,6 +645,8 @@ void GameModel::SetSave(SaveInfo * newSave)
 		sim->legacy_enable = saveData->legacyEnable;
 		sim->water_equal_test = saveData->waterEEnabled;
 		sim->aheat_enable = saveData->aheatEnable;
+		sim->extraLoopsCA = saveData->sextraLoopsCA;
+		// sim->wireless2 = saveData->PINV_wireless;
 		if(saveData->gravityEnable)
 			sim->grav->start_grav_async();
 		else
@@ -680,6 +687,8 @@ void GameModel::SetSaveFile(SaveFile * newSave)
 		sim->legacy_enable = saveData->legacyEnable;
 		sim->water_equal_test = saveData->waterEEnabled;
 		sim->aheat_enable = saveData->aheatEnable;
+		sim->extraLoopsCA = saveData->sextraLoopsCA;
+		// sim->wireless2 = saveData->PINV_wireless;
 		if(saveData->gravityEnable && !sim->grav->ngrav_enable)
 		{
 			sim->grav->start_grav_async();
@@ -920,6 +929,20 @@ void GameModel::SetDecoration(bool decorationState)
 bool GameModel::GetDecoration()
 {
 	return ren->decorations_enable?true:false;
+}
+
+void GameModel::SetLLCA(bool m)
+{
+	sim->extraLoopsCA = (m?1:0);
+	if (m)
+		SetInfoTip("Extra Cellular automaton mode: On");
+	else
+		SetInfoTip("Extra Cellular automaton mode: Off");
+}
+
+bool GameModel::GetLLCA()
+{
+	return sim->extraLoopsCA?true:false;
 }
 
 void GameModel::SetAHeatEnable(bool aHeat)

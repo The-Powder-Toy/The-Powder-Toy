@@ -30,7 +30,8 @@ gol_menu * LoadGOLMenu(int & golMenuCount)
 		{"FRG2",	PIXPACK(0x00FF00), 20, "Like Frogs rule: B3/S124/3"},
 		{"STAR",	PIXPACK(0x0000FF), 21, "Like Star Wars rule: B278/S3456/6"},
 		{"FROG",	PIXPACK(0x00AA00), 22, "Frogs: B34/S12/3"},
-		{"BRAN",	PIXPACK(0xCCCC00), 23, "Brian 6: B246/S6/3"}
+		{"BRAN",	PIXPACK(0xCCCC00), 23, "Brian 6: B246/S6/3"},
+		{"CUST",	PIXPACK(0x0070CF), 24, "Custom GOL rule"},
 	};
 	golMenuCount = NGOL;
 	gol_menu * golMenuT = (gol_menu*)malloc(NGOL*sizeof(gol_menu));
@@ -68,6 +69,7 @@ int * LoadGOLRules(int & golRuleCount)
 		{0,0,2,1,1,1,1,2,2,6},//STAR
 		{0,1,1,2,2,0,0,0,0,3},//FROG
 		{0,0,2,0,2,0,3,0,0,3},//BRAN
+		{0,0,0,0,0,0,0,0,0,2},//custom (using Lua or "E189" element)
 	};
 	golRuleCount = NGOL+1;
 	int * golRulesT = (int*)malloc((golRuleCount*10)*sizeof(int));
@@ -103,6 +105,7 @@ int * LoadGOLTypes(int & golTypeCount)
 		GT_STAR,
 		GT_FROG,
 		GT_BRAN,
+		-1,
 	};
 	golTypeCount = NGOL;
 	int * golTypesT = (int*)malloc((golTypeCount)*sizeof(int));
@@ -132,6 +135,7 @@ wall_type * LoadWalls(int & wallCount)
 		{PIXPACK(0xFFAA00), PIXPACK(0xAA5500), 4, Renderer::WallIcon, "ENERGY WALL",	"DEFAULT_WL_ENRGY",	"Allows energy particles, blocks all other particles."},
 		{PIXPACK(0xDCDCDC), PIXPACK(0x000000), 1, Renderer::WallIcon, "AIRBLOCK WALL",	"DEFAULT_WL_NOAIR",	"Allows all particles, but blocks air."},
 		{PIXPACK(0x808080), PIXPACK(0x000000), 0, Renderer::WallIcon, "ERASEALL",		"DEFAULT_WL_ERASEA","Erases walls, particles, and signs."},
+		{PIXPACK(0x808080), PIXPACK(0x80C0FF), 5, Renderer::WallIcon, "BREAKABLE WALL",	"DEFAULT_WL_BRWALL","Breakable wall, but allows air."},
 	};
 	wallCount = UI_WALLCOUNT;
 	wall_type * wtypesT = (wall_type*)malloc(UI_WALLCOUNT*sizeof(wall_type));

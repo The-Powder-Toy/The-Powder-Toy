@@ -51,7 +51,8 @@ int Element_DEST::update(UPDATE_FUNC_ARGS)
 	int rx = rand()%5-2;
 	int ry = rand()%5-2;
 	int r = pmap[y+ry][x+rx];
-	if (!r || !BOUNDS_CHECK || (r&0xFF)==PT_DEST || (r&0xFF)==PT_DMND || (r&0xFF)==PT_BCLN  || (r&0xFF)==PT_CLNE  || (r&0xFF)==PT_PCLN  || (r&0xFF)==PT_PBCN)
+	if (!r || !BOUNDS_CHECK || (r&0xFF)==PT_DEST || (sim->elements[r&0xFF].Properties2 & (PROP_NODESTRUCT|PROP_CLONE))
+		|| ( (r&0xFF)==PT_SPRK && (sim->elements[parts[r>>8].ctype].Properties2 & PROP_NODESTRUCT) ))
 		return 0;
 
 	if (parts[i].life<=0 || parts[i].life>37)

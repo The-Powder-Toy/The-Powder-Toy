@@ -33,10 +33,12 @@ public:
 	int Meltable;
 	int Hardness;
 	int Weight;
+	int PhotonReflectWavelengths;
 	float Temperature;
 	unsigned char HeatConduct;
 	const char *Description;
 	unsigned int Properties;
+	unsigned int Properties2;
 
 	float LowPressure;
 	int LowPressureTransition;

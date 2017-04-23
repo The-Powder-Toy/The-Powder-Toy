@@ -146,6 +146,7 @@ public:
 	ui::Point PointTranslate(ui::Point point);
 	ui::Point NormaliseBlockCoord(ui::Point point);
 	std::string ElementResolve(int type, int ctype);
+	float sim_max_pressure_resolve();
 	bool IsValidElement(int type);
 	std::string WallName(int type);
 

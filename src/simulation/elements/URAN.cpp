@@ -18,6 +18,7 @@ Element_URAN::Element_URAN()
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 1;
+	PhotonReflectWavelengths = 0x003FC000;
 
 	Flammable = 0;
 	Explosive = 0;
