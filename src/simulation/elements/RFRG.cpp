@@ -28,14 +28,14 @@ Element_RFRG::Element_RFRG()
 
 	Temperature = R_TEMP + 273.15f;
 	HeatConduct = 3;
-	Description = "Refrigerant. Liquifies and transfers heat to other particles under pressure.";
+	Description = "Refrigerant. Heats up and liquifies under pressure.";
 
 	Properties = TYPE_GAS|PROP_DEADLY;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
-	HighPressure = IPH;
-	HighPressureTransition = NT;
+	HighPressure = 2;
+	HighPressureTransition = PT_RFGL;
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
@@ -47,16 +47,15 @@ Element_RFRG::Element_RFRG()
 //#TPT-Directive ElementHeader Element_RFRG static int update(UPDATE_FUNC_ARGS)
 int Element_RFRG::update(UPDATE_FUNC_ARGS)
 {
-	if (sim->pv[y/CELL][x/CELL] > 15)
-	{
-		parts[i].temp += (sim->pv[y/CELL][x/CELL] - 15.0f) / 2.0f;
-		if (parts[i].temp >= 343.15f)
-		{
-			sim->part_change_type(i, x, y, PT_RFGL);
-			parts[i].life = 20;
-		}
-	}
-
+	float new_pressure = sim->pv[y/CELL][x/CELL];
+	float *old_pressure = (float *)&parts[i].tmp;
+	
+	// * 0 bar seems to be pressure value -256 in TPT, see Air.cpp. Also, 1 bar seems to be pressure value 0.
+	//   With those two values we can set up our pressure scale which states that ... the highest pressure
+	//   we can achieve in TPT is 2 bar. That's not particularly realistic, but good enough for TPT.
+	
+	parts[i].temp = restrict_flt(parts[i].temp * ((new_pressure + 257.f) / (*old_pressure + 257.f)), 0, MAX_TEMP);
+	*old_pressure = new_pressure;
 	return 0;
 }
 
