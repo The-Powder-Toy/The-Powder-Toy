@@ -38,6 +38,9 @@ public:
 	unsigned char ** blockMap;
 	float ** fanVelX;
 	float ** fanVelY;
+	float ** pressure;
+	float ** velocityX;
+	float ** velocityY;
 	
 	//Simulation Options
 	bool waterEEnabled;
@@ -99,6 +102,10 @@ private:
 
 	std::vector<char> originalData;
 
+	void InitData();
+	void InitVars();
+	template <typename T> T ** Allocate2DArray(int blockWidth, int blockHeight, T defaultVal);
+	template <typename T> void Deallocate2DArray(T ***array, int blockHeight);
 	void dealloc();
 	void read(char * data, int dataSize);
 	void readOPS(char * data, int dataLength);

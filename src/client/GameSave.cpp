@@ -30,14 +30,8 @@ expanded(save.expanded),
 hasOriginalData(save.hasOriginalData),
 originalData(save.originalData)
 {
-	blockMap = NULL;
-	blockMapPtr = NULL;
-	fanVelX = NULL;
-	fanVelXPtr = NULL;
-	fanVelY = NULL;
-	fanVelYPtr = NULL;
-	particles = NULL;
-	if(save.expanded)
+	InitData();
+	if (save.expanded)
 	{
 		setSize(save.blockWidth, save.blockHeight);
 
@@ -45,6 +39,12 @@ originalData(save.originalData)
 		std::copy(save.blockMapPtr, save.blockMapPtr+(blockHeight*blockWidth), blockMapPtr);
 		std::copy(save.fanVelXPtr, save.fanVelXPtr+(blockHeight*blockWidth), fanVelXPtr);
 		std::copy(save.fanVelYPtr, save.fanVelYPtr+(blockHeight*blockWidth), fanVelYPtr);
+		for (int j = 0; j < blockHeight; j++)
+		{
+			std::copy(save.pressure[j], save.pressure[j]+blockWidth, pressure[j]);
+			std::copy(save.velocityX[j], save.velocityX[j]+blockWidth, velocityX[j]);
+			std::copy(save.velocityY[j], save.velocityY[j]+blockWidth, velocityY[j]);
+		}
 	}
 	else
 	{
@@ -52,27 +52,12 @@ originalData(save.originalData)
 		blockHeight = save.blockHeight;
 	}
 	particlesCount = save.particlesCount;
-	fromNewerVersion = false;
-/*
-	for (int i = 0; i < 128; i++)
-	{
-		PINV_wireless[i][0] = 0;
-		PINV_wireless[i][1] = 0;
-	}
-*/
 }
 
 GameSave::GameSave(int width, int height)
 {
-	blockMap = NULL;
-	blockMapPtr = NULL;
-	fanVelX = NULL;
-	fanVelXPtr = NULL;
-	fanVelY = NULL;
-	fanVelYPtr = NULL;
-	particles = NULL;
-
-	fromNewerVersion = false;
+	InitData();
+	InitVars();
 	hasOriginalData = false;
 	expanded = true;
 	setSize(width, height);
@@ -83,15 +68,8 @@ GameSave::GameSave(std::vector<char> data)
 	blockWidth = 0;
 	blockHeight = 0;
 
-	blockMap = NULL;
-	blockMapPtr = NULL;
-	fanVelX = NULL;
-	fanVelXPtr = NULL;
-	fanVelY = NULL;
-	fanVelYPtr = NULL;
-	particles = NULL;
-
-	fromNewerVersion = false;
+	InitData();
+	InitVars();
 	expanded = false;
 	hasOriginalData = true;
 	originalData = data;
@@ -116,15 +94,8 @@ GameSave::GameSave(std::vector<unsigned char> data)
 	blockWidth = 0;
 	blockHeight = 0;
 
-	blockMap = NULL;
-	blockMapPtr = NULL;
-	fanVelX = NULL;
-	fanVelXPtr = NULL;
-	fanVelY = NULL;
-	fanVelYPtr = NULL;
-	particles = NULL;
-
-	fromNewerVersion = false;
+	InitData();
+	InitVars();
 	expanded = false;
 	hasOriginalData = true;
 	originalData = std::vector<char>(data.begin(), data.end());
@@ -149,15 +120,8 @@ GameSave::GameSave(char * data, int dataSize)
 	blockWidth = 0;
 	blockHeight = 0;
 
-	blockMap = NULL;
-	blockMapPtr = NULL;
-	fanVelX = NULL;
-	fanVelXPtr = NULL;
-	fanVelY = NULL;
-	fanVelYPtr = NULL;
-	particles = NULL;
-
-	fromNewerVersion = false;
+	InitData();
+	InitVars();
 	expanded = false;
 	hasOriginalData = true;
 	originalData = std::vector<char>(data, data+dataSize);
@@ -177,6 +141,33 @@ GameSave::GameSave(char * data, int dataSize)
 	//Collapse();
 }
 
+void GameSave::InitData()
+{
+	blockMap = NULL;
+	blockMapPtr = NULL;
+	fanVelX = NULL;
+	fanVelXPtr = NULL;
+	fanVelY = NULL;
+	fanVelYPtr = NULL;
+	particles = NULL;
+	pressure = NULL;
+	velocityX = NULL;
+	velocityY = NULL;
+	fromNewerVersion = false;
+}
+
+void GameSave::InitVars()
+{
+	waterEEnabled = false;
+	legacyEnable = false;
+	gravityEnable = false;
+	aheatEnable = false;
+	paused = false;
+	gravityMode = 0;
+	airMode = 0;
+	edgeMode = 0;
+}
+
 bool GameSave::Collapsed()
 {
 	return !expanded;
@@ -186,15 +177,7 @@ void GameSave::Expand()
 {
 	if(hasOriginalData && !expanded)
 	{
-		waterEEnabled = false;
-		legacyEnable = false;
-		gravityEnable = false;
-		aheatEnable = false;
-		sextraLoopsCA = false;
-		paused = false;
-		gravityMode = 0;
-		airMode = 0;
-		edgeMode = 0;
+		InitVars();
 		expanded = true;
 /*
 		for (int i = 0; i < 128; i++)
@@ -212,41 +195,7 @@ void GameSave::Collapse()
 	if(expanded && hasOriginalData)
 	{
 		expanded = false;
-		if(particles)
-		{
-			delete[] particles;
-			particles = NULL;
-		}
-		if(blockMap)
-		{
-			delete[] blockMap;
-			blockMap = NULL;
-		}
-		if(blockMapPtr)
-		{
-			delete[] blockMapPtr;
-			blockMapPtr = NULL;
-		}
-		if(fanVelX)
-		{
-			delete[] fanVelX;
-			fanVelX = NULL;
-		}
-		if(fanVelXPtr)
-		{
-			delete[] fanVelXPtr;
-			fanVelXPtr = NULL;
-		}
-		if(fanVelY)
-		{
-			delete[] fanVelY;
-			fanVelY = NULL;
-		}
-		if(fanVelYPtr)
-		{
-			delete[] fanVelYPtr;
-			fanVelYPtr = NULL;
-		}
+		dealloc();
 		signs.clear();
 	}
 }
@@ -283,6 +232,18 @@ void GameSave::read(char * data, int dataSize)
 	}
 }
 
+template <typename T>
+T ** GameSave::Allocate2DArray(int blockWidth, int blockHeight, T defaultVal)
+{
+	T ** temp = new T*[blockHeight];
+	for (int y = 0; y < blockHeight; y++)
+	{
+		temp[y] = new T[blockWidth];
+		std::fill(&temp[y][0], &temp[y][0]+blockWidth, defaultVal);
+	}
+	return temp;
+}
+
 void GameSave::setSize(int newWidth, int newHeight)
 {
 	this->blockWidth = newWidth;
@@ -307,6 +268,10 @@ void GameSave::setSize(int newWidth, int newHeight)
 	fanVelY = new float*[blockHeight];
 	for(int y = 0; y < blockHeight; y++)
 		fanVelY[y] = &fanVelYPtr[y*blockWidth];
+
+	pressure = Allocate2DArray<float>(blockWidth, blockHeight, 0.0f);
+	velocityX = Allocate2DArray<float>(blockWidth, blockHeight, 0.0f);
+	velocityY = Allocate2DArray<float>(blockWidth, blockHeight, 0.0f);
 }
 
 std::vector<char> GameSave::Serialise()
@@ -357,6 +322,9 @@ void GameSave::Transform(matrix2d transform, vector2d translate)
 	unsigned char ** blockMapNew;
 	float ** fanVelXNew;
 	float ** fanVelYNew;
+	float ** pressureNew;
+	float ** velocityXNew;
+	float ** velocityYNew;
 
 	float * fanVelXPtrNew;
 	float * fanVelYPtrNew;
@@ -378,6 +346,9 @@ void GameSave::Transform(matrix2d transform, vector2d translate)
 	fanVelYNew = new float*[newBlockHeight];
 	for(int y = 0; y < newBlockHeight; y++)
 		fanVelYNew[y] = &fanVelYPtrNew[y*newBlockWidth];
+	pressureNew = Allocate2DArray<float>(newBlockWidth, newBlockHeight, 0.0f);
+	velocityXNew = Allocate2DArray<float>(newBlockWidth, newBlockHeight, 0.0f);
+	velocityYNew = Allocate2DArray<float>(newBlockWidth, newBlockHeight, 0.0f);
 
 	// rotate and translate signs, parts, walls
 	for (size_t i = 0; i < signs.size(); i++)
@@ -433,14 +404,27 @@ void GameSave::Transform(matrix2d transform, vector2d translate)
 					fanVelYNew[ny][nx] = vel.y;
 				}
 			}
+			pressureNew[ny][nx] = pressure[y][x];
+			velocityXNew[ny][nx] = velocityX[y][x];
+			velocityYNew[ny][nx] = velocityY[y][x];
 		}
-	//ndata = build_save(size,0,0,nw,nh,blockMapNew,vxn,vyn,pvn,fanVelXNew,fanVelYNew,signst,partst);
+
+	for (int j = 0; j < blockHeight; j++)
+	{
+		delete[] pressure[j];
+		delete[] velocityX[j];
+		delete[] velocityY[j];
+	}
+
 	blockWidth = newBlockWidth;
 	blockHeight = newBlockHeight;
 
 	delete[] blockMap;
 	delete[] fanVelX;
 	delete[] fanVelY;
+	delete[] pressure;
+	delete[] velocityX;
+	delete[] velocityY;
 
 	delete[] blockMapPtr;
 	delete[] fanVelXPtr;
@@ -449,6 +433,9 @@ void GameSave::Transform(matrix2d transform, vector2d translate)
 	blockMap = blockMapNew;
 	fanVelX = fanVelXNew;
 	fanVelY = fanVelYNew;
+	pressure = pressureNew;
+	velocityX = velocityXNew;
+	velocityY = velocityYNew;
 
 	blockMapPtr = (unsigned char*)blockMapPtrNew;
 	fanVelXPtr = (float*)fanVelXPtrNew;
@@ -462,9 +449,11 @@ void bson_error_handler(const char *err)
 
 void GameSave::readOPS(char * data, int dataLength)
 {
-	unsigned char * inputData = (unsigned char*)data, *bsonData = NULL, *partsData = NULL, *partsPosData = NULL, *fanData = NULL, *wallData = NULL, *soapLinkData = NULL;
+	unsigned char *inputData = (unsigned char*)data, *bsonData = NULL, *partsData = NULL, *partsPosData = NULL, *fanData = NULL, *wallData = NULL, *soapLinkData = NULL;
+	unsigned char *pressData = NULL, *vxData = NULL, *vyData = NULL;//, *ambientData = NULL;
 	unsigned int inputDataLen = dataLength, bsonDataLen = 0, partsDataLen, partsPosDataLen, fanDataLen, wallDataLen, soapLinkDataLen;
-	// unsigned char * PINV_wireless_data;
+	unsigned int pressDataLen, vxDataLen, vyDataLen;
+
 	unsigned partsCount = 0, *partsSimIndex = NULL;
 	int *freeIndices = NULL;
 	unsigned int blockX, blockY, blockW, blockH, fullX, fullY, fullW, fullH;
@@ -614,6 +603,39 @@ void GameSave::readOPS(char * data, int dataLength)
 			else
 			{
 				fprintf(stderr, "Invalid datatype of wall data: %d[%d] %d[%d] %d[%d]\n", bson_iterator_type(&iter), bson_iterator_type(&iter)==BSON_BINDATA, (unsigned char)bson_iterator_bin_type(&iter), ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER, bson_iterator_bin_len(&iter), bson_iterator_bin_len(&iter)>0);
+			}
+		}
+		else if (!strcmp(bson_iterator_key(&iter), "pressMap"))
+		{
+			if(bson_iterator_type(&iter)==BSON_BINDATA && ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER && (pressDataLen = bson_iterator_bin_len(&iter)) > 0)
+			{
+				pressData = (unsigned char*)bson_iterator_bin_data(&iter);
+			}
+			else
+			{
+				fprintf(stderr, "Invalid datatype of pressure data: %d[%d] %d[%d] %d[%d]\n", bson_iterator_type(&iter), bson_iterator_type(&iter)==BSON_BINDATA, (unsigned char)bson_iterator_bin_type(&iter), ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER, bson_iterator_bin_len(&iter), bson_iterator_bin_len(&iter)>0);
+			}
+		}
+		else if (!strcmp(bson_iterator_key(&iter), "vxMap"))
+		{
+			if(bson_iterator_type(&iter)==BSON_BINDATA && ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER && (vxDataLen = bson_iterator_bin_len(&iter)) > 0)
+			{
+				vxData = (unsigned char*)bson_iterator_bin_data(&iter);
+			}
+			else
+			{
+				fprintf(stderr, "Invalid datatype of vx data: %d[%d] %d[%d] %d[%d]\n", bson_iterator_type(&iter), bson_iterator_type(&iter)==BSON_BINDATA, (unsigned char)bson_iterator_bin_type(&iter), ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER, bson_iterator_bin_len(&iter), bson_iterator_bin_len(&iter)>0);
+			}
+		}
+		else if (!strcmp(bson_iterator_key(&iter), "vyMap"))
+		{
+			if(bson_iterator_type(&iter)==BSON_BINDATA && ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER && (vyDataLen = bson_iterator_bin_len(&iter)) > 0)
+			{
+				vyData = (unsigned char*)bson_iterator_bin_data(&iter);
+			}
+			else
+			{
+				fprintf(stderr, "Invalid datatype of vy data: %d[%d] %d[%d] %d[%d]\n", bson_iterator_type(&iter), bson_iterator_type(&iter)==BSON_BINDATA, (unsigned char)bson_iterator_bin_type(&iter), ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER, bson_iterator_bin_len(&iter), bson_iterator_bin_len(&iter)>0);
 			}
 		}
 		else if(strcmp(bson_iterator_key(&iter), "fanMap")==0)
@@ -873,6 +895,69 @@ void GameSave::readOPS(char * data, int dataLength)
 
 				if (blockMap[y][x] >= UI_WALLCOUNT)
 					blockMap[y][x] = 0;
+			}
+		}
+	}
+
+	//Read pressure data
+	if (pressData)
+	{
+		unsigned int j = 0;
+		unsigned char i, i2;
+		if (blockW * blockH > pressDataLen)
+		{
+			fprintf(stderr, "Not enough pressure data\n");
+			goto fail;
+		}
+		for (unsigned int x = 0; x < blockW; x++)
+		{
+			for (unsigned int y = 0; y < blockH; y++)
+			{
+				i = pressData[j++];
+				i2 = pressData[j++];
+				pressure[blockY+y][blockX+x] = ((i+(i2<<8))/128.0f)-256;
+			}
+		}
+	}
+
+	//Read vx data
+	if (vxData)
+	{
+		unsigned int j = 0;
+		unsigned char i, i2;
+		if (blockW * blockH > vxDataLen)
+		{
+			fprintf(stderr, "Not enough vx data\n");
+			goto fail;
+		}
+		for (unsigned int x = 0; x < blockW; x++)
+		{
+			for (unsigned int y = 0; y < blockH; y++)
+			{
+				i = vxData[j++];
+				i2 = vxData[j++];
+				velocityX[blockY+y][blockX+x] = ((i+(i2<<8))/128.0f)-256;
+			}
+		}
+	}
+
+	//Read vy data
+	if (vyData)
+	{
+		unsigned int j = 0;
+		unsigned char i, i2;
+		if (blockW * blockH > vyDataLen)
+		{
+			fprintf(stderr, "Not enough vy data\n");
+			goto fail;
+		}
+		for (unsigned int x = 0; x < blockW; x++)
+		{
+			for (unsigned int y = 0; y < blockH; y++)
+			{
+				i = vyData[j++];
+				i2 = vyData[j++];
+				velocityY[blockY+y][blockX+x] = ((i+(i2<<8))/128.0f)-256;
 			}
 		}
 	}
@@ -1956,11 +2041,12 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 {
 	//Particle *particles = sim->parts;
 	unsigned char *partsData = NULL, *partsPosData = NULL, *fanData = NULL, *wallData = NULL, *finalData = NULL, *outputData = NULL, *soapLinkData = NULL;
-//	unsigned char *PINV_wireless_data = NULL;
+	unsigned char *pressData = NULL, *vxData = NULL, *vyData = NULL;//, *ambientData = NULL;
 	unsigned *partsPosLink = NULL, *partsPosFirstMap = NULL, *partsPosCount = NULL, *partsPosLastMap = NULL;
 	unsigned partsCount = 0, *partsSaveIndex = NULL;
 	unsigned *elementCount = new unsigned[PT_NUM];
-	unsigned int partsDataLen, partsPosDataLen, fanDataLen, wallDataLen, finalDataLen, outputDataLen, soapLinkDataLen;
+	unsigned int partsDataLen, partsPosDataLen, fanDataLen, wallDataLen,finalDataLen, outputDataLen, soapLinkDataLen;
+	unsigned int pressDataLen = 0, vxDataLen = 0, vyDataLen = 0;//, ambientDataLen = 0;
 	int blockX, blockY, blockW, blockH, fullX, fullY, fullW, fullH;
 	int x, y, i, wallDataFound = 0;
 	int posCount, signsCount;
@@ -1991,11 +2077,34 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 	wallDataLen = blockW*blockH;
 	fanData = (unsigned char*)malloc((blockW*blockH)*2);
 	fanDataLen = 0;
+	pressData = (unsigned char*)malloc((blockW*blockH)*2);
+	vxData = (unsigned char*)malloc((blockW*blockH)*2);
+	vyData = (unsigned char*)malloc((blockW*blockH)*2);
+	if (!wallData || !fanData || !pressData || !vxData || !vyData)
+	{
+		puts("Save Error, out of memory\n");
+		outputData = NULL;
+		goto fin;
+	}
 	for(x = blockX; x < blockX+blockW; x++)
 	{
 		for(y = blockY; y < blockY+blockH; y++)
 		{
 			wallData[(y-blockY)*blockW+(x-blockX)] = blockMap[y][x];
+
+			//save pressure and x/y velocity grids
+			float pres = std::max(-255.0f,std::min(255.0f,pressure[y][x]))+256.0f;
+			float velX = std::max(-255.0f,std::min(255.0f,velocityX[y][x]))+256.0f;
+			float velY = std::max(-255.0f,std::min(255.0f,velocityY[y][x]))+256.0f;
+			pressData[pressDataLen++] = (unsigned char)((int)(pres*128)&0xFF);
+			pressData[pressDataLen++] = (unsigned char)((int)(pres*128)>>8);
+
+			vxData[vxDataLen++] = (unsigned char)((int)(velX*128)&0xFF);
+			vxData[vxDataLen++] = (unsigned char)((int)(velX*128)>>8);
+
+			vyData[vyDataLen++] = (unsigned char)((int)(velY*128)&0xFF);
+			vyData[vyDataLen++] = (unsigned char)((int)(velY*128)>>8);
+
 			if(blockMap[y][x] && !wallDataFound)
 				wallDataFound = 1;
 			if(blockMap[y][x]==WL_FAN)
@@ -2379,17 +2488,23 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 	//bson_append_int(&b, "leftSelectedElement", sl);
 	//bson_append_int(&b, "rightSelectedElement", sr);
 	//bson_append_int(&b, "activeMenu", active_menu);
-	if(partsData)
+	if (partsData)
 		bson_append_binary(&b, "parts", BSON_BIN_USER, (const char *)partsData, partsDataLen);
-	if(partsPosData)
+	if (partsPosData)
 		bson_append_binary(&b, "partsPos", BSON_BIN_USER, (const char *)partsPosData, partsPosDataLen);
-	if(wallData)
+	if (wallData)
 		bson_append_binary(&b, "wallMap", BSON_BIN_USER, (const char *)wallData, wallDataLen);
-	if(fanData)
+	if (fanData)
 		bson_append_binary(&b, "fanMap", BSON_BIN_USER, (const char *)fanData, fanDataLen);
-	if(soapLinkData)
+	if (pressData)
+		bson_append_binary(&b, "pressMap", (char)BSON_BIN_USER, (const char*)pressData, pressDataLen);
+	if (vxData)
+		bson_append_binary(&b, "vxMap", (char)BSON_BIN_USER, (const char*)vxData, vxDataLen);
+	if (vyData)
+		bson_append_binary(&b, "vyMap", (char)BSON_BIN_USER, (const char*)vyData, vyDataLen);
+	if (soapLinkData)
 		bson_append_binary(&b, "soapLinks", BSON_BIN_USER, (const char *)soapLinkData, soapLinkDataLen);
-	if(partsData && palette.size())
+	if (partsData && palette.size())
 	{
 		bson_append_start_array(&b, "palette");
 		for(std::vector<PaletteItem>::iterator iter = palette.begin(), end = palette.end(); iter != end; ++iter)
@@ -2481,6 +2596,9 @@ fin:
 	bson_destroy(&b);
 	free(partsData);
 	free(wallData);
+	free(pressData);
+	free(vxData);
+	free(vyData);
 	free(fanData);
 	delete[] elementCount;
 	free(partsSaveIndex);
@@ -2492,6 +2610,19 @@ fin:
 	free(partsPosLink);
 
 	return (char*)outputData;
+}
+
+// deallocates a pointer to a 2D array and sets it to NULL
+template <typename T>
+void GameSave::Deallocate2DArray(T ***array, int blockHeight)
+{
+	if (*array)
+	{
+		for (int y = 0; y < blockHeight; y++)
+			delete[] (*array)[y];
+		delete[] (*array);
+		*array = NULL;
+	}
 }
 
 void GameSave::dealloc()
@@ -2531,6 +2662,9 @@ void GameSave::dealloc()
 		delete[] fanVelYPtr;
 		fanVelYPtr = NULL;
 	}
+	Deallocate2DArray<float>(&pressure, blockHeight);
+	Deallocate2DArray<float>(&velocityX, blockHeight);
+	Deallocate2DArray<float>(&velocityY, blockHeight);
 }
 
 GameSave::~GameSave()
