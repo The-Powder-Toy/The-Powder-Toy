@@ -3169,6 +3169,7 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 				break;
 			case PT_DTEC:
 			case PT_TSNS:
+			case PT_LSNS:
 				parts[i].tmp2 = 2;
 				break;
 			case PT_VINE:
