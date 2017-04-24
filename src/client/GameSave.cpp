@@ -36,11 +36,11 @@ originalData(save.originalData)
 		setSize(save.blockWidth, save.blockHeight);
 
 		std::copy(save.particles, save.particles+NPART, particles);
-		std::copy(save.blockMapPtr, save.blockMapPtr+(blockHeight*blockWidth), blockMapPtr);
-		std::copy(save.fanVelXPtr, save.fanVelXPtr+(blockHeight*blockWidth), fanVelXPtr);
-		std::copy(save.fanVelYPtr, save.fanVelYPtr+(blockHeight*blockWidth), fanVelYPtr);
 		for (int j = 0; j < blockHeight; j++)
 		{
+			std::copy(save.blockMap[j], save.blockMap[j]+blockWidth, blockMap[j]);
+			std::copy(save.fanVelX[j], save.fanVelX[j]+blockWidth, fanVelX[j]);
+			std::copy(save.fanVelY[j], save.fanVelY[j]+blockWidth, fanVelY[j]);
 			std::copy(save.pressure[j], save.pressure[j]+blockWidth, pressure[j]);
 			std::copy(save.velocityX[j], save.velocityX[j]+blockWidth, velocityX[j]);
 			std::copy(save.velocityY[j], save.velocityY[j]+blockWidth, velocityY[j]);
@@ -144,11 +144,8 @@ GameSave::GameSave(char * data, int dataSize)
 void GameSave::InitData()
 {
 	blockMap = NULL;
-	blockMapPtr = NULL;
 	fanVelX = NULL;
-	fanVelXPtr = NULL;
 	fanVelY = NULL;
-	fanVelYPtr = NULL;
 	particles = NULL;
 	pressure = NULL;
 	velocityX = NULL;
@@ -245,23 +242,9 @@ void GameSave::setSize(int newWidth, int newHeight)
 	particlesCount = 0;
 	particles = new Particle[NPART];
 
-	blockMapPtr = new unsigned char[blockHeight*blockWidth];
-	std::fill(blockMapPtr, blockMapPtr+(blockHeight*blockWidth), 0);
-	fanVelXPtr = new float[(blockHeight)*(blockWidth)];
-	std::fill(fanVelXPtr, fanVelXPtr+((blockHeight)*(blockWidth)), 0.0f);
-	fanVelYPtr = new float[(blockHeight)*(blockWidth)];
-	std::fill(fanVelYPtr, fanVelYPtr+((blockHeight)*(blockWidth)), 0.0f);
-
-	blockMap = new unsigned char*[blockHeight];
-	for(int y = 0; y < blockHeight; y++)
-		blockMap[y] = &blockMapPtr[y*blockWidth];
-	fanVelX = new float*[blockHeight];
-	for(int y = 0; y < blockHeight; y++)
-		fanVelX[y] = &fanVelXPtr[y*(blockWidth)];
-	fanVelY = new float*[blockHeight];
-	for(int y = 0; y < blockHeight; y++)
-		fanVelY[y] = &fanVelYPtr[y*blockWidth];
-
+	blockMap = Allocate2DArray<unsigned char>(blockWidth, blockHeight, 0);
+	fanVelX = Allocate2DArray<float>(blockWidth, blockHeight, 0.0f);
+	fanVelY = Allocate2DArray<float>(blockWidth, blockHeight, 0.0f);
 	pressure = Allocate2DArray<float>(blockWidth, blockHeight, 0.0f);
 	velocityX = Allocate2DArray<float>(blockWidth, blockHeight, 0.0f);
 	velocityY = Allocate2DArray<float>(blockWidth, blockHeight, 0.0f);
@@ -319,26 +302,9 @@ void GameSave::Transform(matrix2d transform, vector2d translate)
 	float ** velocityXNew;
 	float ** velocityYNew;
 
-	float * fanVelXPtrNew;
-	float * fanVelYPtrNew;
-	unsigned char * blockMapPtrNew;
-
-	blockMapPtrNew = new unsigned char[newBlockHeight*newBlockWidth];
-	std::fill(blockMapPtrNew, blockMapPtrNew+(newBlockHeight*newBlockWidth), 0);
-	fanVelXPtrNew = new float[newBlockHeight*newBlockWidth];
-	std::fill(fanVelXPtrNew, fanVelXPtrNew+(newBlockHeight*newBlockWidth), 0.0f);
-	fanVelYPtrNew = new float[(newBlockHeight)*(newBlockWidth)];
-	std::fill(fanVelYPtrNew, fanVelYPtrNew+(newBlockHeight*newBlockWidth), 0.0f);
-
-	blockMapNew = new unsigned char*[newBlockHeight];
-	for(int y = 0; y < newBlockHeight; y++)
-		blockMapNew[y] = &blockMapPtrNew[y*newBlockWidth];
-	fanVelXNew = new float*[newBlockHeight];
-	for(int y = 0; y < newBlockHeight; y++)
-		fanVelXNew[y] = &fanVelXPtrNew[y*newBlockWidth];
-	fanVelYNew = new float*[newBlockHeight];
-	for(int y = 0; y < newBlockHeight; y++)
-		fanVelYNew[y] = &fanVelYPtrNew[y*newBlockWidth];
+	blockMapNew = Allocate2DArray<unsigned char>(newBlockWidth, newBlockHeight, 0);
+	fanVelXNew = Allocate2DArray<float>(newBlockWidth, newBlockHeight, 0.0f);
+	fanVelYNew = Allocate2DArray<float>(newBlockWidth, newBlockHeight, 0.0f);
 	pressureNew = Allocate2DArray<float>(newBlockWidth, newBlockHeight, 0.0f);
 	velocityXNew = Allocate2DArray<float>(newBlockWidth, newBlockHeight, 0.0f);
 	velocityYNew = Allocate2DArray<float>(newBlockWidth, newBlockHeight, 0.0f);
@@ -404,6 +370,9 @@ void GameSave::Transform(matrix2d transform, vector2d translate)
 
 	for (int j = 0; j < blockHeight; j++)
 	{
+		delete[] blockMap[j];
+		delete[] fanVelX[j];
+		delete[] fanVelY[j];
 		delete[] pressure[j];
 		delete[] velocityX[j];
 		delete[] velocityY[j];
@@ -419,20 +388,12 @@ void GameSave::Transform(matrix2d transform, vector2d translate)
 	delete[] velocityX;
 	delete[] velocityY;
 
-	delete[] blockMapPtr;
-	delete[] fanVelXPtr;
-	delete[] fanVelYPtr;
-
 	blockMap = blockMapNew;
 	fanVelX = fanVelXNew;
 	fanVelY = fanVelYNew;
 	pressure = pressureNew;
 	velocityX = velocityXNew;
 	velocityY = velocityYNew;
-
-	blockMapPtr = (unsigned char*)blockMapPtrNew;
-	fanVelXPtr = (float*)fanVelXPtrNew;
-	fanVelYPtr = (float*)fanVelYPtrNew;
 }
 
 void bson_error_handler(const char *err)
@@ -2464,41 +2425,14 @@ void GameSave::Deallocate2DArray(T ***array, int blockHeight)
 
 void GameSave::dealloc()
 {
-	if(particles)
+	if (particles)
 	{
 		delete[] particles;
 		particles = NULL;
 	}
-	if(blockMap)
-	{
-		delete[] blockMap;
-		blockMap = NULL;
-	}
-	if(blockMapPtr)
-	{
-		delete[] blockMapPtr;
-		blockMapPtr = NULL;
-	}
-	if(fanVelX)
-	{
-		delete[] fanVelX;
-		fanVelX = NULL;
-	}
-	if(fanVelXPtr)
-	{
-		delete[] fanVelXPtr;
-		fanVelXPtr = NULL;
-	}
-	if(fanVelY)
-	{
-		delete[] fanVelY;
-		fanVelY = NULL;
-	}
-	if(fanVelYPtr)
-	{
-		delete[] fanVelYPtr;
-		fanVelYPtr = NULL;
-	}
+	Deallocate2DArray<unsigned char>(&blockMap, blockHeight);
+	Deallocate2DArray<float>(&fanVelX, blockHeight);
+	Deallocate2DArray<float>(&fanVelY, blockHeight);
 	Deallocate2DArray<float>(&pressure, blockHeight);
 	Deallocate2DArray<float>(&velocityX, blockHeight);
 	Deallocate2DArray<float>(&velocityY, blockHeight);
