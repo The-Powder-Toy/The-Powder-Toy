@@ -406,6 +406,51 @@ void bson_error_handler(const char *err)
 	throw ParseException(ParseException::Corrupt, "BSON error when parsing save");
 }
 
+void checkBsonFieldUser(bson_iterator iter, const char *field, unsigned char **data, unsigned int *fieldLen)
+{
+	if (!strcmp(bson_iterator_key(&iter), field))
+	{
+		if (bson_iterator_type(&iter)==BSON_BINDATA && ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER && (*fieldLen = bson_iterator_bin_len(&iter)) > 0)
+		{
+			*data = (unsigned char*)bson_iterator_bin_data(&iter);
+		}
+		else
+		{
+			fprintf(stderr, "Invalid datatype for %s: %d[%d] %d[%d] %d[%d]\n", field, bson_iterator_type(&iter), bson_iterator_type(&iter)==BSON_BINDATA, (unsigned char)bson_iterator_bin_type(&iter), ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER, bson_iterator_bin_len(&iter), bson_iterator_bin_len(&iter)>0);
+		}
+	}
+}
+
+void checkBsonFieldBool(bson_iterator iter, const char *field, bool *flag)
+{
+	if (!strcmp(bson_iterator_key(&iter), field))
+	{
+		if (bson_iterator_type(&iter) == BSON_BOOL)
+		{
+			*flag = bson_iterator_bool(&iter);
+		}
+		else
+		{
+			fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
+		}
+	}
+}
+
+void checkBsonFieldInt(bson_iterator iter, const char *field, int *setting)
+{
+	if (!strcmp(bson_iterator_key(&iter), field))
+	{
+		if (bson_iterator_type(&iter) == BSON_INT)
+		{
+			*setting = bson_iterator_int(&iter);
+		}
+		else
+		{
+			fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
+		}
+	}
+}
+
 void GameSave::readOPS(char * data, int dataLength)
 {
 	unsigned char *inputData = (unsigned char*)data, *bsonData = NULL, *partsData = NULL, *partsPosData = NULL, *fanData = NULL, *wallData = NULL, *soapLinkData = NULL;
@@ -475,39 +520,56 @@ void GameSave::readOPS(char * data, int dataLength)
 
 	std::vector<sign> tempSigns;
 
-	while(bson_iterator_next(&iter))
+	while (bson_iterator_next(&iter))
 	{
-		if(strcmp(bson_iterator_key(&iter), "signs")==0)
+		checkBsonFieldUser(iter, "parts", &partsData, &partsDataLen);
+		checkBsonFieldUser(iter, "partsPos", &partsPosData, &partsPosDataLen);
+		checkBsonFieldUser(iter, "wallMap", &wallData, &wallDataLen);
+		checkBsonFieldUser(iter, "pressMap", &pressData, &pressDataLen);
+		checkBsonFieldUser(iter, "vxMap", &vxData, &vxDataLen);
+		checkBsonFieldUser(iter, "vyMap", &vyData, &vyDataLen);
+		checkBsonFieldUser(iter, "ambientMap", &ambientData, &ambientDataLen);
+		checkBsonFieldUser(iter, "fanMap", &fanData, &fanDataLen);
+		checkBsonFieldUser(iter, "soapLinks", &soapLinkData, &soapLinkDataLen);
+		checkBsonFieldBool(iter, "legacyEnable", &legacyEnable);
+		checkBsonFieldBool(iter, "gravityEnable", &gravityEnable);
+		checkBsonFieldBool(iter, "aheat_enable", &aheatEnable);
+		checkBsonFieldBool(iter, "waterEEnabled", &waterEEnabled);
+		checkBsonFieldBool(iter, "paused", &paused);
+		checkBsonFieldInt(iter, "gravityMode", &gravityMode);
+		checkBsonFieldInt(iter, "airMode", &airMode);
+		checkBsonFieldInt(iter, "edgeMode", &edgeMode);
+		if (!strcmp(bson_iterator_key(&iter), "signs"))
 		{
-			if(bson_iterator_type(&iter)==BSON_ARRAY)
+			if (bson_iterator_type(&iter)==BSON_ARRAY)
 			{
 				bson_iterator subiter;
 				bson_iterator_subiterator(&iter, &subiter);
-				while(bson_iterator_next(&subiter))
+				while (bson_iterator_next(&subiter))
 				{
-					if(strcmp(bson_iterator_key(&subiter), "sign")==0)
+					if (!strcmp(bson_iterator_key(&subiter), "sign"))
 					{
-						if(bson_iterator_type(&subiter)==BSON_OBJECT)
+						if (bson_iterator_type(&subiter) == BSON_OBJECT)
 						{
 							bson_iterator signiter;
 							bson_iterator_subiterator(&subiter, &signiter);
 
 							sign tempSign("", 0, 0, sign::Left);
-							while(bson_iterator_next(&signiter))
+							while (bson_iterator_next(&signiter))
 							{
-								if(strcmp(bson_iterator_key(&signiter), "text")==0 && bson_iterator_type(&signiter)==BSON_STRING)
+								if (!strcmp(bson_iterator_key(&signiter), "text") && bson_iterator_type(&signiter) == BSON_STRING)
 								{
 									tempSign.text = format::CleanString(bson_iterator_string(&signiter), true, true, true).substr(0, 45);
 								}
-								else if(strcmp(bson_iterator_key(&signiter), "justification")==0 && bson_iterator_type(&signiter)==BSON_INT)
+								else if (!strcmp(bson_iterator_key(&signiter), "justification") && bson_iterator_type(&signiter) == BSON_INT)
 								{
 									tempSign.ju = (sign::Justification)bson_iterator_int(&signiter);
 								}
-								else if(strcmp(bson_iterator_key(&signiter), "x")==0 && bson_iterator_type(&signiter)==BSON_INT)
+								else if (!strcmp(bson_iterator_key(&signiter), "x") && bson_iterator_type(&signiter) == BSON_INT)
 								{
 									tempSign.x = bson_iterator_int(&signiter)+fullX;
 								}
-								else if(strcmp(bson_iterator_key(&signiter), "y")==0 && bson_iterator_type(&signiter)==BSON_INT)
+								else if (!strcmp(bson_iterator_key(&signiter), "y") && bson_iterator_type(&signiter) == BSON_INT)
 								{
 									tempSign.y = bson_iterator_int(&signiter)+fullY;
 								}
@@ -530,203 +592,16 @@ void GameSave::readOPS(char * data, int dataLength)
 				fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
 			}
 		}
-		else if(strcmp(bson_iterator_key(&iter), "parts")==0)
-		{
-			if(bson_iterator_type(&iter)==BSON_BINDATA && ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER && (partsDataLen = bson_iterator_bin_len(&iter)) > 0)
-			{
-				partsData = (unsigned char*)bson_iterator_bin_data(&iter);
-			}
-			else
-			{
-				fprintf(stderr, "Invalid datatype of particle data: %d[%d] %d[%d] %d[%d]\n", bson_iterator_type(&iter), bson_iterator_type(&iter)==BSON_BINDATA, (unsigned char)bson_iterator_bin_type(&iter), ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER, bson_iterator_bin_len(&iter), bson_iterator_bin_len(&iter)>0);
-			}
-		}
-		if(strcmp(bson_iterator_key(&iter), "partsPos")==0)
-		{
-			if(bson_iterator_type(&iter)==BSON_BINDATA && ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER && (partsPosDataLen = bson_iterator_bin_len(&iter)) > 0)
-			{
-				partsPosData = (unsigned char*)bson_iterator_bin_data(&iter);
-			}
-			else
-			{
-				fprintf(stderr, "Invalid datatype of particle position data: %d[%d] %d[%d] %d[%d]\n", bson_iterator_type(&iter), bson_iterator_type(&iter)==BSON_BINDATA, (unsigned char)bson_iterator_bin_type(&iter), ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER, bson_iterator_bin_len(&iter), bson_iterator_bin_len(&iter)>0);
-			}
-		}
-		else if(strcmp(bson_iterator_key(&iter), "wallMap")==0)
-		{
-			if(bson_iterator_type(&iter)==BSON_BINDATA && ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER && (wallDataLen = bson_iterator_bin_len(&iter)) > 0)
-			{
-				wallData = (unsigned char*)bson_iterator_bin_data(&iter);
-			}
-			else
-			{
-				fprintf(stderr, "Invalid datatype of wall data: %d[%d] %d[%d] %d[%d]\n", bson_iterator_type(&iter), bson_iterator_type(&iter)==BSON_BINDATA, (unsigned char)bson_iterator_bin_type(&iter), ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER, bson_iterator_bin_len(&iter), bson_iterator_bin_len(&iter)>0);
-			}
-		}
-		else if (!strcmp(bson_iterator_key(&iter), "pressMap"))
-		{
-			if(bson_iterator_type(&iter)==BSON_BINDATA && ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER && (pressDataLen = bson_iterator_bin_len(&iter)) > 0)
-			{
-				pressData = (unsigned char*)bson_iterator_bin_data(&iter);
-			}
-			else
-			{
-				fprintf(stderr, "Invalid datatype of pressure data: %d[%d] %d[%d] %d[%d]\n", bson_iterator_type(&iter), bson_iterator_type(&iter)==BSON_BINDATA, (unsigned char)bson_iterator_bin_type(&iter), ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER, bson_iterator_bin_len(&iter), bson_iterator_bin_len(&iter)>0);
-			}
-		}
-		else if (!strcmp(bson_iterator_key(&iter), "vxMap"))
-		{
-			if(bson_iterator_type(&iter)==BSON_BINDATA && ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER && (vxDataLen = bson_iterator_bin_len(&iter)) > 0)
-			{
-				vxData = (unsigned char*)bson_iterator_bin_data(&iter);
-			}
-			else
-			{
-				fprintf(stderr, "Invalid datatype of vx data: %d[%d] %d[%d] %d[%d]\n", bson_iterator_type(&iter), bson_iterator_type(&iter)==BSON_BINDATA, (unsigned char)bson_iterator_bin_type(&iter), ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER, bson_iterator_bin_len(&iter), bson_iterator_bin_len(&iter)>0);
-			}
-		}
-		else if (!strcmp(bson_iterator_key(&iter), "vyMap"))
-		{
-			if(bson_iterator_type(&iter)==BSON_BINDATA && ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER && (vyDataLen = bson_iterator_bin_len(&iter)) > 0)
-			{
-				vyData = (unsigned char*)bson_iterator_bin_data(&iter);
-			}
-			else
-			{
-				fprintf(stderr, "Invalid datatype of vy data: %d[%d] %d[%d] %d[%d]\n", bson_iterator_type(&iter), bson_iterator_type(&iter)==BSON_BINDATA, (unsigned char)bson_iterator_bin_type(&iter), ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER, bson_iterator_bin_len(&iter), bson_iterator_bin_len(&iter)>0);
-			}
-		}
-		else if (!strcmp(bson_iterator_key(&iter), "ambientMap"))
-		{
-			if(bson_iterator_type(&iter)==BSON_BINDATA && ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER && (ambientDataLen = bson_iterator_bin_len(&iter)) > 0)
-			{
-				ambientData = (unsigned char*)bson_iterator_bin_data(&iter);
-			}
-			else
-			{
-				fprintf(stderr, "Invalid datatype of vy data: %d[%d] %d[%d] %d[%d]\n", bson_iterator_type(&iter), bson_iterator_type(&iter)==BSON_BINDATA, (unsigned char)bson_iterator_bin_type(&iter), ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER, bson_iterator_bin_len(&iter), bson_iterator_bin_len(&iter)>0);
-			}
-		}
-		else if(strcmp(bson_iterator_key(&iter), "fanMap")==0)
-		{
-			if(bson_iterator_type(&iter)==BSON_BINDATA && ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER && (fanDataLen = bson_iterator_bin_len(&iter)) > 0)
-			{
-				fanData = (unsigned char*)bson_iterator_bin_data(&iter);
-			}
-			else
-			{
-				fprintf(stderr, "Invalid datatype of fan data: %d[%d] %d[%d] %d[%d]\n", bson_iterator_type(&iter), bson_iterator_type(&iter)==BSON_BINDATA, (unsigned char)bson_iterator_bin_type(&iter), ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER, bson_iterator_bin_len(&iter), bson_iterator_bin_len(&iter)>0);
-			}
-		}
-		else if(strcmp(bson_iterator_key(&iter), "soapLinks")==0)
-		{
-			if(bson_iterator_type(&iter)==BSON_BINDATA && ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER && (soapLinkDataLen = bson_iterator_bin_len(&iter)) > 0)
-			{
-				soapLinkData = (unsigned char *)bson_iterator_bin_data(&iter);
-			}
-			else
-			{
-				fprintf(stderr, "Invalid datatype of soap data: %d[%d] %d[%d] %d[%d]\n", bson_iterator_type(&iter), bson_iterator_type(&iter)==BSON_BINDATA, (unsigned char)bson_iterator_bin_type(&iter), ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER, bson_iterator_bin_len(&iter), bson_iterator_bin_len(&iter)>0);
-			}
-		}
-		else if(strcmp(bson_iterator_key(&iter), "legacyEnable")==0)
-		{
-			if(bson_iterator_type(&iter)==BSON_BOOL)
-			{
-				legacyEnable = bson_iterator_bool(&iter);
-			}
-			else
-			{
-				fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
-			}
-		}
-		else if(strcmp(bson_iterator_key(&iter), "gravityEnable")==0)
-		{
-			if(bson_iterator_type(&iter)==BSON_BOOL)
-			{
-				gravityEnable = bson_iterator_bool(&iter);
-			}
-			else
-			{
-				fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
-			}
-		}
-		else if(!strcmp(bson_iterator_key(&iter), "aheat_enable"))
-		{
-			if(bson_iterator_type(&iter)==BSON_BOOL)
-			{
-				aheatEnable = bson_iterator_bool(&iter);
-			}
-			else
-			{
-				fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
-			}
-		}
-		else if(strcmp(bson_iterator_key(&iter), "waterEEnabled")==0)
-		{
-			if(bson_iterator_type(&iter)==BSON_BOOL)
-			{
-				waterEEnabled = bson_iterator_bool(&iter);
-			}
-			else
-			{
-				fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
-			}
-		}
-		else if(strcmp(bson_iterator_key(&iter), "paused")==0)
-		{
-			if(bson_iterator_type(&iter)==BSON_BOOL)
-			{
-				paused = bson_iterator_bool(&iter);
-			}
-			else
-			{
-				fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
-			}
-		}
-		else if(strcmp(bson_iterator_key(&iter), "gravityMode")==0)
-		{
-			if(bson_iterator_type(&iter)==BSON_INT)
-			{
-				gravityMode = bson_iterator_int(&iter);
-			}
-			else
-			{
-				fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
-			}
-		}
-		else if(strcmp(bson_iterator_key(&iter), "airMode")==0)
-		{
-			if(bson_iterator_type(&iter)==BSON_INT)
-			{
-				airMode = bson_iterator_int(&iter);
-			}
-			else
-			{
-				fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
-			}
-		}
-		else if (!strcmp(bson_iterator_key(&iter), "edgeMode"))
-		{
-			if(bson_iterator_type(&iter)==BSON_INT)
-			{
-				edgeMode = bson_iterator_int(&iter);
-			}
-			else
-			{
-				fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
-			}
-		}
-		else if(strcmp(bson_iterator_key(&iter), "palette")==0)
+		else if (!strcmp(bson_iterator_key(&iter), "palette"))
 		{
 			palette.clear();
-			if(bson_iterator_type(&iter)==BSON_ARRAY)
+			if (bson_iterator_type(&iter) == BSON_ARRAY)
 			{
 				bson_iterator subiter;
 				bson_iterator_subiterator(&iter, &subiter);
-				while(bson_iterator_next(&subiter))
+				while (bson_iterator_next(&subiter))
 				{
-					if(bson_iterator_type(&subiter)==BSON_INT)
+					if (bson_iterator_type(&subiter) == BSON_INT)
 					{
 						std::string id = std::string(bson_iterator_key(&subiter));
 						int num = bson_iterator_int(&subiter);
