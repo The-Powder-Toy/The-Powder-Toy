@@ -6,6 +6,7 @@
 #include "Config.h"
 #include "Misc.h"
 
+#include "bson/BSON.h"
 #include "simulation/Sign.h"
 #include "simulation/Particle.h"
 
@@ -101,6 +102,9 @@ private:
 
 	void InitData();
 	void InitVars();
+	void CheckBsonFieldUser(bson_iterator iter, const char *field, unsigned char **data, unsigned int *fieldLen);
+	void CheckBsonFieldBool(bson_iterator iter, const char *field, bool *flag);
+	void CheckBsonFieldInt(bson_iterator iter, const char *field, int *setting);
 	template <typename T> T ** Allocate2DArray(int blockWidth, int blockHeight, T defaultVal);
 	template <typename T> void Deallocate2DArray(T ***array, int blockHeight);
 	void dealloc();

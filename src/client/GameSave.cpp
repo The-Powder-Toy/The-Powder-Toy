@@ -6,7 +6,6 @@
 #include <bzlib.h>
 #include "Config.h"
 #include "Format.h"
-#include "bson/BSON.h"
 #include "GameSave.h"
 #include "simulation/SimulationData.h"
 #include "ElementClasses.h"
@@ -406,7 +405,7 @@ void bson_error_handler(const char *err)
 	throw ParseException(ParseException::Corrupt, "BSON error when parsing save");
 }
 
-void checkBsonFieldUser(bson_iterator iter, const char *field, unsigned char **data, unsigned int *fieldLen)
+void GameSave::CheckBsonFieldUser(bson_iterator iter, const char *field, unsigned char **data, unsigned int *fieldLen)
 {
 	if (!strcmp(bson_iterator_key(&iter), field))
 	{
@@ -421,7 +420,7 @@ void checkBsonFieldUser(bson_iterator iter, const char *field, unsigned char **d
 	}
 }
 
-void checkBsonFieldBool(bson_iterator iter, const char *field, bool *flag)
+void GameSave::CheckBsonFieldBool(bson_iterator iter, const char *field, bool *flag)
 {
 	if (!strcmp(bson_iterator_key(&iter), field))
 	{
@@ -436,7 +435,7 @@ void checkBsonFieldBool(bson_iterator iter, const char *field, bool *flag)
 	}
 }
 
-void checkBsonFieldInt(bson_iterator iter, const char *field, int *setting)
+void GameSave::CheckBsonFieldInt(bson_iterator iter, const char *field, int *setting)
 {
 	if (!strcmp(bson_iterator_key(&iter), field))
 	{
@@ -522,23 +521,23 @@ void GameSave::readOPS(char * data, int dataLength)
 
 	while (bson_iterator_next(&iter))
 	{
-		checkBsonFieldUser(iter, "parts", &partsData, &partsDataLen);
-		checkBsonFieldUser(iter, "partsPos", &partsPosData, &partsPosDataLen);
-		checkBsonFieldUser(iter, "wallMap", &wallData, &wallDataLen);
-		checkBsonFieldUser(iter, "pressMap", &pressData, &pressDataLen);
-		checkBsonFieldUser(iter, "vxMap", &vxData, &vxDataLen);
-		checkBsonFieldUser(iter, "vyMap", &vyData, &vyDataLen);
-		checkBsonFieldUser(iter, "ambientMap", &ambientData, &ambientDataLen);
-		checkBsonFieldUser(iter, "fanMap", &fanData, &fanDataLen);
-		checkBsonFieldUser(iter, "soapLinks", &soapLinkData, &soapLinkDataLen);
-		checkBsonFieldBool(iter, "legacyEnable", &legacyEnable);
-		checkBsonFieldBool(iter, "gravityEnable", &gravityEnable);
-		checkBsonFieldBool(iter, "aheat_enable", &aheatEnable);
-		checkBsonFieldBool(iter, "waterEEnabled", &waterEEnabled);
-		checkBsonFieldBool(iter, "paused", &paused);
-		checkBsonFieldInt(iter, "gravityMode", &gravityMode);
-		checkBsonFieldInt(iter, "airMode", &airMode);
-		checkBsonFieldInt(iter, "edgeMode", &edgeMode);
+		CheckBsonFieldUser(iter, "parts", &partsData, &partsDataLen);
+		CheckBsonFieldUser(iter, "partsPos", &partsPosData, &partsPosDataLen);
+		CheckBsonFieldUser(iter, "wallMap", &wallData, &wallDataLen);
+		CheckBsonFieldUser(iter, "pressMap", &pressData, &pressDataLen);
+		CheckBsonFieldUser(iter, "vxMap", &vxData, &vxDataLen);
+		CheckBsonFieldUser(iter, "vyMap", &vyData, &vyDataLen);
+		CheckBsonFieldUser(iter, "ambientMap", &ambientData, &ambientDataLen);
+		CheckBsonFieldUser(iter, "fanMap", &fanData, &fanDataLen);
+		CheckBsonFieldUser(iter, "soapLinks", &soapLinkData, &soapLinkDataLen);
+		CheckBsonFieldBool(iter, "legacyEnable", &legacyEnable);
+		CheckBsonFieldBool(iter, "gravityEnable", &gravityEnable);
+		CheckBsonFieldBool(iter, "aheat_enable", &aheatEnable);
+		CheckBsonFieldBool(iter, "waterEEnabled", &waterEEnabled);
+		CheckBsonFieldBool(iter, "paused", &paused);
+		CheckBsonFieldInt(iter, "gravityMode", &gravityMode);
+		CheckBsonFieldInt(iter, "airMode", &airMode);
+		CheckBsonFieldInt(iter, "edgeMode", &edgeMode);
 		if (!strcmp(bson_iterator_key(&iter), "signs"))
 		{
 			if (bson_iterator_type(&iter)==BSON_ARRAY)
