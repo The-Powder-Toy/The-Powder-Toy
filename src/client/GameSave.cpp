@@ -44,6 +44,7 @@ originalData(save.originalData)
 			std::copy(save.pressure[j], save.pressure[j]+blockWidth, pressure[j]);
 			std::copy(save.velocityX[j], save.velocityX[j]+blockWidth, velocityX[j]);
 			std::copy(save.velocityY[j], save.velocityY[j]+blockWidth, velocityY[j]);
+			std::copy(save.ambientHeat[j], save.ambientHeat[j]+blockWidth, ambientHeat[j]);
 		}
 	}
 	else
@@ -150,7 +151,9 @@ void GameSave::InitData()
 	pressure = NULL;
 	velocityX = NULL;
 	velocityY = NULL;
+	ambientHeat = NULL;
 	fromNewerVersion = false;
+	hasAmbientHeat = false;
 }
 
 void GameSave::InitVars()
@@ -248,6 +251,7 @@ void GameSave::setSize(int newWidth, int newHeight)
 	pressure = Allocate2DArray<float>(blockWidth, blockHeight, 0.0f);
 	velocityX = Allocate2DArray<float>(blockWidth, blockHeight, 0.0f);
 	velocityY = Allocate2DArray<float>(blockWidth, blockHeight, 0.0f);
+	ambientHeat = Allocate2DArray<float>(blockWidth, blockHeight, 0.0f);
 }
 
 std::vector<char> GameSave::Serialise()
@@ -296,11 +300,7 @@ void GameSave::Transform(matrix2d transform, vector2d translate)
 	newBlockHeight = newHeight/CELL;
 
 	unsigned char ** blockMapNew;
-	float ** fanVelXNew;
-	float ** fanVelYNew;
-	float ** pressureNew;
-	float ** velocityXNew;
-	float ** velocityYNew;
+	float **fanVelXNew, **fanVelYNew, **pressureNew, **velocityXNew, **velocityYNew, **ambientHeatNew;
 
 	blockMapNew = Allocate2DArray<unsigned char>(newBlockWidth, newBlockHeight, 0);
 	fanVelXNew = Allocate2DArray<float>(newBlockWidth, newBlockHeight, 0.0f);
@@ -308,6 +308,7 @@ void GameSave::Transform(matrix2d transform, vector2d translate)
 	pressureNew = Allocate2DArray<float>(newBlockWidth, newBlockHeight, 0.0f);
 	velocityXNew = Allocate2DArray<float>(newBlockWidth, newBlockHeight, 0.0f);
 	velocityYNew = Allocate2DArray<float>(newBlockWidth, newBlockHeight, 0.0f);
+	ambientHeatNew = Allocate2DArray<float>(newBlockWidth, newBlockHeight, 0.0f);
 
 	// rotate and translate signs, parts, walls
 	for (size_t i = 0; i < signs.size(); i++)
@@ -366,6 +367,7 @@ void GameSave::Transform(matrix2d transform, vector2d translate)
 			pressureNew[ny][nx] = pressure[y][x];
 			velocityXNew[ny][nx] = velocityX[y][x];
 			velocityYNew[ny][nx] = velocityY[y][x];
+			ambientHeatNew[ny][nx] = ambientHeat[y][x];
 		}
 
 	for (int j = 0; j < blockHeight; j++)
@@ -376,6 +378,7 @@ void GameSave::Transform(matrix2d transform, vector2d translate)
 		delete[] pressure[j];
 		delete[] velocityX[j];
 		delete[] velocityY[j];
+		delete[] ambientHeat[j];
 	}
 
 	blockWidth = newBlockWidth;
@@ -387,6 +390,7 @@ void GameSave::Transform(matrix2d transform, vector2d translate)
 	delete[] pressure;
 	delete[] velocityX;
 	delete[] velocityY;
+	delete[] ambientHeat;
 
 	blockMap = blockMapNew;
 	fanVelX = fanVelXNew;
@@ -394,6 +398,7 @@ void GameSave::Transform(matrix2d transform, vector2d translate)
 	pressure = pressureNew;
 	velocityX = velocityXNew;
 	velocityY = velocityYNew;
+	ambientHeat = ambientHeatNew;
 }
 
 void bson_error_handler(const char *err)
@@ -404,9 +409,9 @@ void bson_error_handler(const char *err)
 void GameSave::readOPS(char * data, int dataLength)
 {
 	unsigned char *inputData = (unsigned char*)data, *bsonData = NULL, *partsData = NULL, *partsPosData = NULL, *fanData = NULL, *wallData = NULL, *soapLinkData = NULL;
-	unsigned char *pressData = NULL, *vxData = NULL, *vyData = NULL;//, *ambientData = NULL;
+	unsigned char *pressData = NULL, *vxData = NULL, *vyData = NULL, *ambientData = NULL;
 	unsigned int inputDataLen = dataLength, bsonDataLen = 0, partsDataLen, partsPosDataLen, fanDataLen, wallDataLen, soapLinkDataLen;
-	unsigned int pressDataLen, vxDataLen, vyDataLen;
+	unsigned int pressDataLen, vxDataLen, vyDataLen, ambientDataLen;
 	unsigned partsCount = 0, *partsSimIndex = NULL;
 	int *freeIndices = NULL;
 	unsigned int blockX, blockY, blockW, blockH, fullX, fullY, fullW, fullH;
@@ -585,6 +590,17 @@ void GameSave::readOPS(char * data, int dataLength)
 			if(bson_iterator_type(&iter)==BSON_BINDATA && ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER && (vyDataLen = bson_iterator_bin_len(&iter)) > 0)
 			{
 				vyData = (unsigned char*)bson_iterator_bin_data(&iter);
+			}
+			else
+			{
+				fprintf(stderr, "Invalid datatype of vy data: %d[%d] %d[%d] %d[%d]\n", bson_iterator_type(&iter), bson_iterator_type(&iter)==BSON_BINDATA, (unsigned char)bson_iterator_bin_type(&iter), ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER, bson_iterator_bin_len(&iter), bson_iterator_bin_len(&iter)>0);
+			}
+		}
+		else if (!strcmp(bson_iterator_key(&iter), "ambientMap"))
+		{
+			if(bson_iterator_type(&iter)==BSON_BINDATA && ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER && (ambientDataLen = bson_iterator_bin_len(&iter)) > 0)
+			{
+				ambientData = (unsigned char*)bson_iterator_bin_data(&iter);
 			}
 			else
 			{
@@ -882,6 +898,27 @@ void GameSave::readOPS(char * data, int dataLength)
 				velocityY[blockY+y][blockX+x] = ((i+(i2<<8))/128.0f)-256;
 			}
 		}
+	}
+
+	//Read ambient data
+	if (ambientData)
+	{
+		unsigned int i = 0, tempTemp;
+		if (blockW * blockH > ambientDataLen)
+		{
+			fprintf(stderr, "Not enough ambient data\n");
+			goto fail;
+		}
+		for (unsigned int x = 0; x < blockW; x++)
+		{
+			for (unsigned int y = 0; y < blockH; y++)
+			{
+				tempTemp = ambientData[i++];
+				tempTemp |= (((unsigned)ambientData[i++]) << 8);
+				ambientHeat[blockY+y][blockX+x] = tempTemp;
+			}
+		}
+		hasAmbientHeat = true;
 	}
 
 	//Read particle data
@@ -1909,12 +1946,12 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 {
 	//Particle *particles = sim->parts;
 	unsigned char *partsData = NULL, *partsPosData = NULL, *fanData = NULL, *wallData = NULL, *finalData = NULL, *outputData = NULL, *soapLinkData = NULL;
-	unsigned char *pressData = NULL, *vxData = NULL, *vyData = NULL;//, *ambientData = NULL;
+	unsigned char *pressData = NULL, *vxData = NULL, *vyData = NULL, *ambientData = NULL;
 	unsigned *partsPosLink = NULL, *partsPosFirstMap = NULL, *partsPosCount = NULL, *partsPosLastMap = NULL;
 	unsigned partsCount = 0, *partsSaveIndex = NULL;
 	unsigned *elementCount = new unsigned[PT_NUM];
 	unsigned int partsDataLen, partsPosDataLen, fanDataLen, wallDataLen,finalDataLen, outputDataLen, soapLinkDataLen;
-	unsigned int pressDataLen = 0, vxDataLen = 0, vyDataLen = 0;//, ambientDataLen = 0;
+	unsigned int pressDataLen = 0, vxDataLen = 0, vyDataLen = 0, ambientDataLen = 0;
 	int blockX, blockY, blockW, blockH, fullX, fullY, fullW, fullH;
 	int x, y, i, wallDataFound = 0;
 	int posCount, signsCount;
@@ -1948,7 +1985,8 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 	pressData = (unsigned char*)malloc((blockW*blockH)*2);
 	vxData = (unsigned char*)malloc((blockW*blockH)*2);
 	vyData = (unsigned char*)malloc((blockW*blockH)*2);
-	if (!wallData || !fanData || !pressData || !vxData || !vyData)
+	ambientData = (unsigned char*)malloc((blockW*blockH)*2);
+	if (!wallData || !fanData || !pressData || !vxData || !vyData || !ambientData)
 	{
 		puts("Save Error, out of memory\n");
 		outputData = NULL;
@@ -1972,6 +2010,10 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 
 			vyData[vyDataLen++] = (unsigned char)((int)(velY*128)&0xFF);
 			vyData[vyDataLen++] = (unsigned char)((int)(velY*128)>>8);
+
+			int tempTemp = (int)(ambientHeat[y][x]+0.5f);
+			ambientData[ambientDataLen++] = tempTemp;
+			ambientData[ambientDataLen++] = tempTemp >> 8;
 
 			if(blockMap[y][x] && !wallDataFound)
 				wallDataFound = 1;
@@ -2317,6 +2359,8 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 		bson_append_binary(&b, "vxMap", (char)BSON_BIN_USER, (const char*)vxData, vxDataLen);
 	if (vyData)
 		bson_append_binary(&b, "vyMap", (char)BSON_BIN_USER, (const char*)vyData, vyDataLen);
+	if (ambientData && this->aheatEnable)
+		bson_append_binary(&b, "ambientMap", (char)BSON_BIN_USER, (const char*)ambientData, ambientDataLen);
 	if (soapLinkData)
 		bson_append_binary(&b, "soapLinks", BSON_BIN_USER, (const char *)soapLinkData, soapLinkDataLen);
 	if (partsData && palette.size())
@@ -2397,6 +2441,7 @@ fin:
 	free(pressData);
 	free(vxData);
 	free(vyData);
+	free(ambientData);
 	free(fanData);
 	delete[] elementCount;
 	free(partsSaveIndex);
@@ -2436,6 +2481,7 @@ void GameSave::dealloc()
 	Deallocate2DArray<float>(&pressure, blockHeight);
 	Deallocate2DArray<float>(&velocityX, blockHeight);
 	Deallocate2DArray<float>(&velocityY, blockHeight);
+	Deallocate2DArray<float>(&ambientHeat, blockHeight);
 }
 
 GameSave::~GameSave()

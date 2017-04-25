@@ -202,6 +202,8 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 			pv[saveBlockY+blockY][saveBlockX+blockX] = save->pressure[saveBlockY][saveBlockX];
 			vx[saveBlockY+blockY][saveBlockX+blockX] = save->velocityX[saveBlockY][saveBlockX];
 			vy[saveBlockY+blockY][saveBlockX+blockX] = save->velocityY[saveBlockY][saveBlockX];
+			if (save->hasAmbientHeat)
+				hv[saveBlockY+blockY][saveBlockX+blockX] = save->ambientHeat[saveBlockY][saveBlockX];
 		}
 	}
 
@@ -302,9 +304,11 @@ GameSave * Simulation::Save(int fullX, int fullY, int fullX2, int fullY2)
 			newSave->pressure[saveBlockY][saveBlockX] = pv[saveBlockY+blockY][saveBlockX+blockX];
 			newSave->velocityX[saveBlockY][saveBlockX] = vx[saveBlockY+blockY][saveBlockX+blockX];
 			newSave->velocityY[saveBlockY][saveBlockX] = vy[saveBlockY+blockY][saveBlockX+blockX];
+			newSave->ambientHeat[saveBlockY][saveBlockX] = hv[saveBlockY+blockY][saveBlockX+blockX];
 		}
 	}
 
+	SaveSimOptions(newSave);
 	return newSave;
 }
 
