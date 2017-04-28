@@ -11,7 +11,7 @@ public:
 	ItemSelectedAction(ContextMenu * window, int itemID): window(window), item(itemID) { }
 	virtual void ActionCallback(ui::Button *sender)
 	{
-		window->ActionCallback(sender, item);
+		window->ActionCallbackItem(sender, item);
 	}
 };
 
@@ -55,7 +55,7 @@ void ContextMenu::Show(ui::Point position)
 	ui::Engine::Ref().ShowWindow(this);
 }
 
-void ContextMenu::ActionCallback(ui::Button *sender, int item)
+void ContextMenu::ActionCallbackItem(ui::Button *sender, int item)
 {
 	ui::Engine::Ref().CloseWindow();
 	Halt();

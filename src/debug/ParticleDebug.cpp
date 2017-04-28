@@ -15,7 +15,7 @@ ParticleDebug::ParticleDebug(unsigned int id, Simulation * sim, GameModel * mode
 void ParticleDebug::Debug(int mode, int x, int y)
 {
 	int debug_currentParticle = sim->debug_currentParticle;
-	int i;
+	int i = 0;
 	std::stringstream logmessage;
 
 	if (mode == 0)

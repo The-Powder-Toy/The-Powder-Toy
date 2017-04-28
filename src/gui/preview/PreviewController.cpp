@@ -32,6 +32,7 @@ PreviewController::PreviewController(int saveID, int saveDate, bool instant, Con
 	Client::Ref().AddListener(this);
 
 	this->callback = callback;
+	(void)saveDate; //pretend this is used
 }
 
 PreviewController::PreviewController(int saveID, bool instant, ControllerCallback * callback):
@@ -55,6 +56,7 @@ PreviewController::PreviewController(int saveID, bool instant, ControllerCallbac
 	Client::Ref().AddListener(this);
 
 	this->callback = callback;
+	(void)saveDate; //pretend this is used
 }
 
 void PreviewController::Update()

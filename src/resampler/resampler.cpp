@@ -339,7 +339,7 @@ static double bessel0(double x)
    return sum;
 }
 
-static const Resample_Real KAISER_ALPHA = 4.0;
+//static const Resample_Real KAISER_ALPHA = 4.0;
 static double kaiser(double alpha, double half_width, double x)
 {
    const double ratio = (x / half_width);

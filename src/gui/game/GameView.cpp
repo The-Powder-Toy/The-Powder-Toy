@@ -1861,10 +1861,9 @@ void GameView::NotifyNotificationsChanged(GameModel * sender)
 {
 	class NotificationButtonAction : public ui::ButtonAction
 	{
-		GameView * v;
 		Notification * notification;
 	public:
-		NotificationButtonAction(GameView * v, Notification * notification) : v(v), notification(notification) { }
+		NotificationButtonAction(Notification * notification) : notification(notification) { }
 		void ActionCallback(ui::Button * sender)
 		{
 			notification->Action();
@@ -1901,7 +1900,7 @@ void GameView::NotifyNotificationsChanged(GameModel * sender)
 	{
 		int width = (Graphics::textwidth((*iter)->Message.c_str()))+8;
 		ui::Button * tempButton = new ui::Button(ui::Point(XRES-width-22, currentY), ui::Point(width, 15), (*iter)->Message);
-		tempButton->SetActionCallback(new NotificationButtonAction(this, *iter));
+		tempButton->SetActionCallback(new NotificationButtonAction(*iter));
 		tempButton->Appearance.BorderInactive = style::Colour::WarningTitle;
 		tempButton->Appearance.TextInactive = style::Colour::WarningTitle;
 		tempButton->Appearance.BorderHover = ui::Colour(255, 175, 0);

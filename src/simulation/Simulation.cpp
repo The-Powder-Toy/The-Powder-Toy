@@ -1970,10 +1970,8 @@ void Simulation::clear_sim(void)
 	pfree = 0;
 	parts_lastActiveIndex = 0;
 	memset(pmap, 0, sizeof(pmap));
-	if(fvx)
-		memset(fvx, 0, sizeof(fvx));
-	if(fvy)
-		memset(fvy, 0, sizeof(fvy));
+	memset(fvx, 0, sizeof(fvx));
+	memset(fvy, 0, sizeof(fvy));
 	memset(photons, 0, sizeof(photons));
 	memset(wireless, 0, sizeof(wireless));
 	memset(gol2, 0, sizeof(gol2));

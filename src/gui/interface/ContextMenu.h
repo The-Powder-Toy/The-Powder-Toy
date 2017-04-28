@@ -20,13 +20,12 @@ public:
 class ContextMenu: public ui::Window, public ButtonAction {
 	std::vector<Button*> buttons;
 	std::vector<ContextMenuItem> items;
-	bool isMouseInside;
 	ui::Component * source;
 public:
 	ui::Appearance Appearance;
 	class ItemSelectedAction;
 	ContextMenu(Component * source);
-	virtual void ActionCallback(ui::Button *sender, int item);
+	virtual void ActionCallbackItem(ui::Button *sender, int item);
 	virtual void AddItem(ContextMenuItem item);
 	virtual void RemoveItem(int id);
 	virtual void SetItem(int id, std::string text);
