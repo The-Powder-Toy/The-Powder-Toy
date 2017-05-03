@@ -156,15 +156,6 @@ def add64bitflags(env):
 		env.Append(LINKFLAGS=['-Wl,--stack=16777216'])
 	env.Append(CPPDEFINES=['_64BIT'])
 	env["BIT"] = 64
-#add 32/64 bit defines before configuration
-if GetOption('64bit'):
-	env.Append(LINKFLAGS=['-m64'])
-	env.Append(CCFLAGS=['-m64'])
-	add64bitflags(env)
-elif GetOption('32bit'):
-	env.Append(LINKFLAGS=['-m32'])
-	env.Append(CCFLAGS=['-m32'])
-	add32bitflags(env)
 
 if GetOption('universal'):
 	if platform != "Darwin":
