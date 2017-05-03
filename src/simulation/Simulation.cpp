@@ -3069,6 +3069,9 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 				parts[i].tmp = -1;
 				parts[i].tmp2 = -1;
 				break;
+			case PT_WATR:
+				parts[i].dcolour = 0xFF2030D0;
+				break;
 			case PT_ACID: case PT_CAUS:
 				parts[i].life = 75;
 				break;
