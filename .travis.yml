@@ -1,0 +1,41 @@
+language: cpp
+
+compiler:
+  - gcc
+  #- clang
+
+os:
+  - linux
+  - osx
+
+addons:
+  apt:
+    packages:
+      - libsdl1.2-dev
+      - liblua5.1-0-dev
+      - libfftw3-dev
+
+before_install:
+  - if [ $TRAVIS_OS_NAME == 'osx' ]; then
+      brew update;
+      brew install sdl scons lua51;
+      wget 'ftp://ftp.fftw.org/pub/fftw/fftw-3.2.2.tar.gz' -O /tmp/fftw.tar.gz;
+      tar xvf /tmp/fftw.tar.gz;
+      cd fftw-3.2.2 && ./configure --enable-float --prefix=$HOME/opt && make && make install;
+      export LIBPATH="$HOME/opt/lib/";
+      export CPPPATH="$HOME/opt/include/";
+      cd ..;
+    fi
+
+script:
+  - if [ $TRAVIS_OS_NAME == 'osx' ]; then
+      scons -j2 -e --mac;
+    else
+      scons -j2;
+    fi
+
+matrix:
+  fast_finish: true
+
+notifications:
+  email: false
