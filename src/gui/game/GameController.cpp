@@ -564,7 +564,7 @@ std::string GameController::StampRegion(ui::Point point1, ui::Point point2)
 	}
 	else
 	{
-		new ErrorMessage("Could not create stamp", "Error generating save file");
+		new ErrorMessage("Error saving stamp", "Error generating save file");
 		return "";
 	}
 }
