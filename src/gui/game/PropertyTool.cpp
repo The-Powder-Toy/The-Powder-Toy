@@ -122,27 +122,14 @@ void PropertyWindow::SetProperty()
 					}
 					else
 					{
-						if(properties[property->GetOption().second].Type == StructProperty::ParticleType)
+						int type;
+						if (properties[property->GetOption().second].Type == StructProperty::ParticleType && (type = sim->GetParticleType(value)) != -1)
 						{
-							int type = sim->GetParticleType(value);
-							if(type != -1)
-							{
+							v = type;
+							
 #ifdef DEBUG
-								std::cout << "Got type from particle name" << std::endl;
+							std::cout << "Got type from particle name" << std::endl;
 #endif
-								v = type;
-							}
-							else
-							{
-								std::stringstream buffer(value);
-								buffer.exceptions(std::stringstream::failbit | std::stringstream::badbit);
-								buffer >> v;
-							}
-							if (property->GetOption().first == "type" && (v < 0 || v >= PT_NUM || !sim->elements[v].Enabled))
-							{
-								new ErrorMessage("Could not set property", "Invalid particle type");
-								return;
-							}
 						}
 						else
 						{
@@ -151,9 +138,17 @@ void PropertyWindow::SetProperty()
 							buffer >> v;
 						}
 					}
+						
+					if (properties[property->GetOption().second].Type == StructProperty::ParticleType && (v < 0 || v >= PT_NUM || !sim->elements[v].Enabled))
+					{
+						new ErrorMessage("Could not set property", "Invalid particle type");
+						return;
+					}
+						
 #ifdef DEBUG
 					std::cout << "Got int value " << v << std::endl;
 #endif
+
 					tool->propValue.Integer = v;
 					break;
 				}
