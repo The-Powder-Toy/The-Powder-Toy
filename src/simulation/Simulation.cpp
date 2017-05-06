@@ -2987,6 +2987,8 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 				parts[pmap[y][x]>>8].ctype = t;
 				if (t == PT_LIFE && v >= 0 && v < NGOL)
 					parts[pmap[y][x]>>8].ctype |= v<<8;
+				if (t == PT_LIGH)
+					parts[pmap[y][x]>>8].ctype |= 30<<8;
 				parts[pmap[y][x]>>8].temp = elements[t].Temperature;
 			}
 			return -1;
