@@ -332,7 +332,7 @@ GameView::GameView():
 	tagSimulationButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(227, 15), "[no tags set]", "Add simulation tags");
 	tagSimulationButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	tagSimulationButton->SetIcon(IconTag);
-	currentX+=252;
+	//currentX+=252;
 	tagSimulationButton->SetActionCallback(new TagSimulationAction(this));
 	AddComponent(tagSimulationButton);
 
@@ -2433,9 +2433,9 @@ void GameView::OnDraw()
 			fpsInfo << " [REPLACE MODE]";
 		if (c->GetReplaceModeFlags()&SPECIFIC_DELETE)
 			fpsInfo << " [SPECIFIC DELETE]";
-		if (ren->GetGridSize())
+		if (ren && ren->GetGridSize())
 			fpsInfo << " [GRID: " << ren->GetGridSize() << "]";
-		if (ren->findingElement)
+		if (ren && ren->findingElement)
 			fpsInfo << " [FIND]";
 
 		int textWidth = Graphics::textwidth((char*)fpsInfo.str().c_str());

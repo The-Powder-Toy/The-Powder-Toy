@@ -185,7 +185,7 @@ int Element_PIPE::update(UPDATE_FUNC_ARGS)
 			{
 				rndstore = rand();
 				rnd = rndstore&7;
-				rndstore = rndstore>>3;
+				//rndstore = rndstore>>3;
 				rx = pos_1_rx[rnd];
 				ry = pos_1_ry[rnd];
 				if (BOUNDS_CHECK)

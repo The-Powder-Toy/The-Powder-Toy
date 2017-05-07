@@ -140,7 +140,7 @@ void ColourPickerActivity::OnMouseMove(int x, int y, int dx, int dy)
 	if(valueMouseDown)
 	{
 		x -= Position.X+5;
-		y -= Position.Y+5;
+		//y -= Position.Y+5;
 
 		currentValue = x;
 
@@ -230,7 +230,7 @@ void ColourPickerActivity::OnMouseUp(int x, int y, unsigned button)
 		valueMouseDown = false;
 
 		x -= Position.X+5;
-		y -= Position.Y+5;
+		//y -= Position.Y+5;
 
 		currentValue = x;
 

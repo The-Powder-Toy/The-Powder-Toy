@@ -211,7 +211,6 @@ public:
 	static int textnwidth(char *s, int n);
 	static void textnpos(char *s, int n, int w, int *cx, int *cy);
 	static int textwidthx(char *s, int w);
-	static int textposxy(char *s, int width, int w, int h);
 	static int textwrapheight(char *s, int width);
 	static int textwidth(const char *s);
 	static void textsize(const char * s, int & width, int & height);

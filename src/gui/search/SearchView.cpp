@@ -466,8 +466,8 @@ void SearchView::NotifyTagListChanged(SearchModel * sender)
 	int savesY = 4, buttonPadding = 1;
 	int buttonAreaHeight, buttonYOffset;
 
-	int tagWidth, tagHeight, tagX = 0, tagY = 0, tagsX = 6, tagsY = 4, tagPadding = 1;
-	int tagAreaWidth, tagAreaHeight, tagXOffset, tagYOffset;
+	int tagWidth = 0, tagHeight = 0, tagX = 0, tagY = 0, tagsX = 6, tagsY = 4, tagPadding = 1;
+	int tagAreaWidth, tagAreaHeight, tagXOffset = 0, tagYOffset = 0;
 
 	vector<pair<string, int> > tags = sender->GetTagList();
 

@@ -734,33 +734,6 @@ int Graphics::CharIndexAtPosition(char *s, int positionX, int positionY)
 }
 
 
-int Graphics::textposxy(char *s, int width, int w, int h)
-{
-	int x=0,y=0,n=0,cw, wordlen, charspace;
-	while (*s)
-	{
-		wordlen = strcspn(s," .,!?\n");
-		charspace = textwidthx(s, width-x);
-		if (charspace<wordlen && wordlen && width-x<width/3)
-		{
-			x = 0;
-			y += FONT_H+2;
-		}
-		for (; *s && --wordlen>=-1; s++)
-		{
-			cw = font_data[font_ptrs[(int)(*(unsigned char *)s)]];
-			if ((x+(cw/2) >= w && y+6 >= h)||(y+6 >= h+FONT_H+2))
-				return n++;
-			x += cw;
-			if (x>=width) {
-				x = 0;
-				y += FONT_H+2;
-			}
-			n++;
-		}
-	}
-	return n;
-}
 int Graphics::textwrapheight(char *s, int width)
 {
 	int x=0, height=FONT_H+2, cw;

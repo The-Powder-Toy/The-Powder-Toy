@@ -59,7 +59,7 @@ void DownloadManager::Start()
 
 void DownloadManager::Update()
 {
-	unsigned int numActiveDownloads;
+	unsigned int numActiveDownloads = 0;
 	while (!managerShutdown)
 	{
 		pthread_mutex_lock(&downloadAddLock);

@@ -272,8 +272,8 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 		throw GeneralException("Invalid property");
 
 	//Selector
-	int newValue;
-	float newValuef;
+	int newValue = 0;
+	float newValuef = 0.0f;
 	if (value.GetType() == TypeNumber)
 	{
 		newValuef = newValue = ((NumberType)value).Value();

@@ -95,7 +95,7 @@ void Renderer::RenderBegin()
 	{
 		std::copy(persistentVid, persistentVid+(VIDXRES*YRES), vid);
 	}
-	pixel * oldVid;
+	pixel * oldVid = NULL;
 	if(display_mode & DISPLAY_WARP)
 	{
 		oldVid = vid;
@@ -1028,6 +1028,8 @@ void Renderer::render_gravlensing(pixel * source)
 	pixel t;
 	pixel *src = source;
 	pixel *dst = vid;
+	if (!dst)
+		return;
 	for(nx = 0; nx < XRES; nx++)
 	{
 		for(ny = 0; ny < YRES; ny++)
@@ -2361,7 +2363,7 @@ void Renderer::draw_air()
 	float (*hv)[XRES/CELL] = sim->air->hv;
 	float (*vx)[XRES/CELL] = sim->air->vx;
 	float (*vy)[XRES/CELL] = sim->air->vy;
-	pixel c;
+	pixel c = 0;
 	for (y=0; y<YRES/CELL; y++)
 		for (x=0; x<XRES/CELL; x++)
 		{
