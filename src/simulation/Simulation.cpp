@@ -305,6 +305,7 @@ GameSave * Simulation::Save(int fullX, int fullY, int fullX2, int fullY2)
 			newSave->velocityX[saveBlockY][saveBlockX] = vx[saveBlockY+blockY][saveBlockX+blockX];
 			newSave->velocityY[saveBlockY][saveBlockX] = vy[saveBlockY+blockY][saveBlockX+blockX];
 			newSave->ambientHeat[saveBlockY][saveBlockX] = hv[saveBlockY+blockY][saveBlockX+blockX];
+			newSave->hasAmbientHeat = true;
 		}
 	}
 
