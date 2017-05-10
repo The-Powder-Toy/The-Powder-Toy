@@ -4954,7 +4954,7 @@ void Simulation::RecalcFreeParticles()
 			parts[lastPartUnused].life = parts_lastActiveIndex+1;
 	}
 	parts_lastActiveIndex = lastPartUsed;
-	if (elementRecount && !sys_pause || framerender)
+	if (elementRecount && (!sys_pause || framerender))
 		elementRecount = false;
 }
 
