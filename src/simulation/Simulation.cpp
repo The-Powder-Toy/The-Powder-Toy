@@ -4954,6 +4954,8 @@ void Simulation::RecalcFreeParticles()
 			parts[lastPartUnused].life = parts_lastActiveIndex+1;
 	}
 	parts_lastActiveIndex = lastPartUsed;
+	if (elementRecount)
+		elementRecount = false;
 }
 
 void Simulation::CheckStacking()
