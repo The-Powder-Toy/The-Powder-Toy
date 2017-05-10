@@ -198,7 +198,7 @@ int Element_FIRE::updateLegacy(UPDATE_FUNC_ARGS) {
 				}
 				if (rt==PT_ICEI || rt==PT_SNOW)
 				{
-					parts[r>>8].type = PT_WATR;
+					sim->part_change_type(r>>8, x+rx, y+ry, PT_WATR);
 					if (t==PT_FIRE)
 					{
 						sim->kill_part(i);
