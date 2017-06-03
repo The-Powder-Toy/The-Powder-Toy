@@ -38,7 +38,7 @@ Element_SOAP::Element_SOAP()
 	HighPressureTransition = NT;
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
-	HighTemperature = ITL;
+	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
 	Update = &Element_SOAP::update;
