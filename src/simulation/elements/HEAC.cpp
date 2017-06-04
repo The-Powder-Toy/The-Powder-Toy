@@ -29,7 +29,7 @@ Element_HEAC::Element_HEAC()
 
 	Temperature = R_TEMP+273.15f;
 	HeatConduct = 251;
-	Description = "Rapid heat conductor";
+	Description = "Rapid heat conductor.";
 
 	Properties = TYPE_SOLID;
 
