@@ -1753,7 +1753,7 @@ RequestBroker::Request * Client::GetCommentsAsync(int saveID, int start, int cou
 					int userID = format::StringToNumber<int>(commentsArray[j]["UserID"].asString());
 					std::string username = commentsArray[j]["Username"].asString();
 					std::string formattedUsername = commentsArray[j]["FormattedUsername"].asString();
-					if (formattedUsername == "jacobot")
+					if (formattedUsername == "jacobot" || formattedUsername == "Mrprocom")
 						formattedUsername = "\bt" + formattedUsername;
 					std::string comment = commentsArray[j]["Text"].asString();
 					commentArray->push_back(new SaveComment(userID, username, formattedUsername, comment));
