@@ -1,17 +1,13 @@
 #include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_E181 PT_E181 181
-Element_E181::Element_E181()
+//#TPT-Directive ElementClass Element_SAWD PT_SAWD 181
+Element_SAWD::Element_SAWD()
 {
-	Identifier = "DEFAULT_PT_E181";
-	Name = "E181";
+	Identifier = "DEFAULT_PT_SAWD";
+	Name = "SAWD";
 	Colour = PIXPACK(0xF0F0A0);
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
-#if (defined(DEBUG) || defined(SNAPSHOT)) && MOD_ID == 0
 	Enabled = 1;
-#else
-	Enabled = 0;
-#endif
 
 	Advection = 0.7f;
 	AirDrag = 0.02f * CFDS;
@@ -32,9 +28,9 @@ Element_E181::Element_E181()
 
 	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
-	Description = "Experimental element, floats on water";
+	Description = "Sawdust. Floats on water";
 
-	Properties = TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
+	Properties = TYPE_PART;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
@@ -49,4 +45,4 @@ Element_E181::Element_E181()
 	Graphics = NULL;
 }
 
-Element_E181::~Element_E181() {}
+Element_SAWD::~Element_SAWD() {}

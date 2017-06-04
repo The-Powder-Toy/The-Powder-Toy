@@ -2110,7 +2110,7 @@ void Simulation::init_can_move()
 
 		//E181 cannot be displaced by other powders
 		if (elements[movingType].Properties & TYPE_PART)
-			can_move[movingType][PT_E181] = 0;
+			can_move[movingType][PT_SAWD] = 0;
 	}
 	//a list of lots of things PHOT can move through
 	// TODO: replace with property
@@ -2262,6 +2262,12 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 
 	if (!e) //if no movement
 	{
+		if ((r&0xFF) == PT_WOOD)
+		{
+			float vel = std::sqrt(std::pow(parts[i].vx, 2) + std::pow(parts[i].vy, 2));
+			if (vel > 5)
+				part_change_type(r>>8, nx, ny, PT_SAWD);
+		}
 		if (!(elements[parts[i].type].Properties & TYPE_ENERGY))
 			return 0;
 		if (!legacy_enable && parts[i].type==PT_PHOT && r)//PHOT heat conduction
@@ -2272,7 +2278,8 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 			if ((r & 0xFF) < PT_NUM && elements[r&0xFF].HeatConduct && ((r&0xFF)!=PT_HSWC||parts[r>>8].life==10) && (r&0xFF)!=PT_FILT)
 				parts[i].temp = parts[r>>8].temp = restrict_flt((parts[r>>8].temp+parts[i].temp)/2, MIN_TEMP, MAX_TEMP);
 		}
-		else if ((parts[i].type==PT_NEUT || parts[i].type==PT_ELEC) && ((r&0xFF)==PT_CLNE || (r&0xFF)==PT_PCLN || (r&0xFF)==PT_BCLN || (r&0xFF)==PT_PBCN)) {
+		else if ((parts[i].type==PT_NEUT || parts[i].type==PT_ELEC) && ((r&0xFF)==PT_CLNE || (r&0xFF)==PT_PCLN || (r&0xFF)==PT_BCLN || (r&0xFF)==PT_PBCN))
+		{
 			if (!parts[r>>8].ctype)
 				parts[r>>8].ctype = parts[i].type;
 		}
