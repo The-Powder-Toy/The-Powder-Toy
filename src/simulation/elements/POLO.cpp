@@ -45,37 +45,36 @@ Element_POLO::Element_POLO()
 	Graphics = &Element_POLO::graphics;
 }
 
+#define COOLDOWN 15
+#define LIMIT 5
+
 //#TPT-Directive ElementHeader Element_POLO static int update(UPDATE_FUNC_ARGS)
 int Element_POLO::update(UPDATE_FUNC_ARGS)
 {
-	const int cooldown = 15;
-	const int limit = 5;
-
 	int r = sim->photons[y][x];
-	if (parts[i].tmp < limit && !parts[i].life)
+	if (parts[i].tmp < LIMIT && !parts[i].life)
 	{
-		if (!(rand()%1000) &&!parts[i].tmp)
+		if (!(rand()%10000) && !parts[i].tmp)
 		{
 			int s = sim->create_part(-3, x, y, PT_NEUT);
 			if (s >= 0)
 			{
-				parts[i].life = cooldown;
-				parts[i].tmp ++;
+				parts[i].life = COOLDOWN;
+				parts[i].tmp++;
 
 				parts[i].temp = ((parts[i].temp + parts[s].temp) + 600.0f) / 2.0f;
 				parts[s].temp = parts[i].temp;
 			}
 		}
 
-		
-		if (!(rand()%10000))
+		if (r && !(rand()%100))
 		{
 			int s = sim->create_part(-3, x, y, PT_NEUT);
 			if (s >= 0)
 			{
 				parts[i].temp = ((parts[i].temp + parts[r>>8].temp + parts[r>>8].temp) + 600.0f) / 3.0f;
-				parts[i].life = cooldown;
-				parts[i].tmp ++;
+				parts[i].life = COOLDOWN;
+				parts[i].tmp++;
 
 				parts[r>>8].temp = parts[i].temp;
 
@@ -85,7 +84,7 @@ int Element_POLO::update(UPDATE_FUNC_ARGS)
 			}
 		}
 	}
-	if (parts[i].tmp2 >= 20)
+	if (parts[i].tmp2 >= 6)
 	{
 		sim->part_change_type(i,x,y,PT_PLUT);
 		parts[i].temp = (parts[i].temp+600.0f)/2.0f;
@@ -93,20 +92,12 @@ int Element_POLO::update(UPDATE_FUNC_ARGS)
 	}
 	if (parts[r>>8].type == PT_PROT)
 	{
-		parts[i].tmp2 ++;
+		parts[i].tmp2++;
 		sim->kill_part(r>>8);
 	}
 	if (parts[i].temp < 388.15f)
 	{
-		if (parts[i].temp >= 388.15f-0.2f)
-		{
-			parts[i].temp += 0.2f;
-		}
-		else
-		{
-			//no overheating!
-			parts[i].temp += 388.15f-parts[i].temp;
-		}
+		parts[i].temp += 0.2f;
 	}
 	return 0;
 }
@@ -114,12 +105,14 @@ int Element_POLO::update(UPDATE_FUNC_ARGS)
 //#TPT-Directive ElementHeader Element_POLO static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_POLO::graphics(GRAPHICS_FUNC_ARGS)
 {
-	if (cpart->tmp >= 5)
+	if (cpart->tmp >= LIMIT)
 	{
 		*colr = 0x70;
 		*colg = 0x70;
 		*colb = 0x70;
 	}
+	else
+		*pixel_mode |= PMODE_GLOW;
 
 	return 0;
 }
