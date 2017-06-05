@@ -91,7 +91,7 @@ int Element_PCLN::update(UPDATE_FUNC_ARGS)
 					    rt!=PT_BCLN &&  rt!=PT_SPRK &&
 					    rt!=PT_NSCN && rt!=PT_PSCN &&
 					    rt!=PT_STKM && rt!=PT_STKM2 &&
-					    rt!=PT_PBCN && rt<PT_NUM)
+					    rt!=PT_PBCN && rt!=PT_E185 && rt<PT_NUM)
 					{
 						parts[i].ctype = rt;
 						if (rt==PT_LIFE || rt==PT_LAVA)

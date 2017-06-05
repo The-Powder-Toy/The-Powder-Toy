@@ -87,6 +87,9 @@ int Element_PRTI::update(UPDATE_FUNC_ARGS)
 				Element_SOAP::detach(sim, r>>8);
 
 			for (int nnx=0; nnx<80; nnx++)
+			{
+				if ((r&0xFF) == PT_E185)
+					continue;
 				if (!sim->portalp[parts[i].tmp][count][nnx].type)
 				{
 					if ((r&0xFF) == PT_STOR)
@@ -109,6 +112,7 @@ int Element_PRTI::update(UPDATE_FUNC_ARGS)
 						break;
 					}
 				}
+			}
 		}
 	}
 

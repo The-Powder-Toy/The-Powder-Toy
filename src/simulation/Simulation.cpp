@@ -2008,7 +2008,9 @@ bool Simulation::IsWallBlocking(int x, int y, int type)
 	if (bmap[y/CELL][x/CELL])
 	{
 		int wall = bmap[y/CELL][x/CELL];
-		if (wall == WL_ALLOWGAS && !(elements[type].Properties&TYPE_GAS))
+		if (type == PT_E185)
+			return false;
+		else if (wall == WL_ALLOWGAS && !(elements[type].Properties&TYPE_GAS))
 			return true;
 		else if (wall == WL_ALLOWENERGY && !(elements[type].Properties&TYPE_ENERGY))
 			return true;
@@ -2127,6 +2129,7 @@ void Simulation::init_can_move()
 			can_move[PT_PROT][destinationType] = 2;
 			can_move[PT_GRVT][destinationType] = 2;
 		}
+		can_move[PT_E185][destinationType] = 2;
 	}
 
 	//other special cases that weren't covered above
@@ -2298,6 +2301,8 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 			for ( nnx=0; nnx<80; nnx++)
 				if (!portalp[parts[r>>8].tmp][count][nnx].type)
 				{
+					if (parts[i].type == PT_E185)
+						break;
 					portalp[parts[r>>8].tmp][count][nnx] = parts[i];
 					parts[i].type=PT_NONE;
 					break;
@@ -3273,6 +3278,14 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 				parts[i].vy = 2.0f*sinf(a);
 				break;
 			}
+			case PT_E185:
+			{
+				float a = (rand()%8) * 0.78540f;
+				parts[i].life = 680;
+				parts[i].vx = 2.0f*cosf(a);
+				parts[i].vy = 2.0f*sinf(a);
+				break;
+			}
 			case PT_NEUT:
 			{
 				float r = (rand()%128+128)/127.0f;
@@ -3519,7 +3532,7 @@ void Simulation::UpdateParticles(int start, int end)
 
 			//this kills any particle out of the screen, or in a wall where it isn't supposed to go
 			if (x<CELL || y<CELL || x>=XRES-CELL || y>=YRES-CELL ||
-			        (bmap[y/CELL][x/CELL] &&
+			        ((t!=PT_E185) && bmap[y/CELL][x/CELL] &&
 			         (bmap[y/CELL][x/CELL]==WL_WALL ||
 			          bmap[y/CELL][x/CELL]==WL_WALLELEC ||
 			          bmap[y/CELL][x/CELL]==WL_ALLOWAIR ||
