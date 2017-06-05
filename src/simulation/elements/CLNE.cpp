@@ -71,7 +71,12 @@ int Element_CLNE::update(UPDATE_FUNC_ARGS)
 					}
 				}
 	}
-	else {
+	if(parts[i].tmp2)
+	{
+		parts[i].tmp2--;
+	}
+	if(!parts[i].tmp2)
+	{
 		if (parts[i].ctype==PT_LIFE) sim->create_part(-1, x+rand()%3-1, y+rand()%3-1, PT_LIFE, parts[i].tmp);
 		else if (parts[i].ctype!=PT_LIGH || (rand()%30)==0)
 		{
@@ -82,6 +87,7 @@ int Element_CLNE::update(UPDATE_FUNC_ARGS)
 					parts[np].ctype = parts[i].tmp;
 			}
 		}
+	        }
 	}
 	return 0;
 }
