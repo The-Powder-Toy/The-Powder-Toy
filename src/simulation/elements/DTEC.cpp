@@ -104,7 +104,36 @@ int Element_DTEC::update(UPDATE_FUNC_ARGS)
 					ny = y+ry;
 					while ((r&0xFF)==PT_FILT)
 					{
-						parts[r>>8].ctype = photonWl;
+						//.tmp sets direction in which DTEC sets FILT ctypes (left to right, top to bottom, tmp range 1-9)
+						if(parts[i].tmp)
+						{
+							switch(parts[i].tmp)
+							{
+								case 1:
+									yep = pmap[y-1][x-1];     //'yep' is the FILT to set
+								case 2:
+									yep = pmap[y-1][x];
+								case 3:
+									yep = pmap[y-1][x+1];
+								case 4:
+									yep = pmap[y][x+1];
+								case 5:
+									yep = pmap[y+1][x+1];
+								case 6:
+									yep = pmap[y+1][x];
+								case 7:
+									yep = pmap[y+1][x-1];
+								case 8:
+									yep = pmap[y][x-1];
+								default:
+									yep = r;
+							}
+							parts[yep>>8].ctype = photonWl;
+						}
+						else
+						{
+							parts[r>>8].ctype = photonWl;
+						}
 						nx += rx;
 						ny += ry;
 						if (nx<0 || ny<0 || nx>=XRES || ny>=YRES)
