@@ -2108,7 +2108,7 @@ void Simulation::init_can_move()
 			can_move[movingType][PT_BVBR] = 1;
 		}
 
-		//E181 cannot be displaced by other powders
+		//SAWD cannot be displaced by other powders
 		if (elements[movingType].Properties & TYPE_PART)
 			can_move[movingType][PT_SAWD] = 0;
 	}
