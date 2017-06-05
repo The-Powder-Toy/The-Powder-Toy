@@ -8,7 +8,7 @@ Element_LSNS::Element_LSNS()
  	MenuVisible = 1;
  	MenuSection = SC_SENSOR;
  	Enabled = 1;
- 
+
  	Advection = 0.0f;
  	AirDrag = 0.00f * CFDS;
  	AirLoss = 0.96f;
@@ -18,20 +18,20 @@ Element_LSNS::Element_LSNS()
  	Diffusion = 0.00f;
  	HotAir = 0.000f	* CFDS;
  	Falldown = 0;
- 
+
  	Flammable = 0;
  	Explosive = 0;
  	Meltable = 0;
  	Hardness = 1;
- 
+
  	Weight = 100;
- 
- 	Temperature = R_TEMP+0.0f	+273.15f;
+
+ 	Temperature = 4.0f + 273.15f;
  	HeatConduct = 0;
- 	Description = "Life sensor. Creates a spark when the life is higher than the temp.";
- 
+ 	Description = "Life sensor, creates a spark when there's a nearby particle with a life higher than its temperature.";
+
  	Properties = TYPE_SOLID;
- 
+
  	LowPressure = IPL;
  	LowPressureTransition = NT;
  	HighPressure = IPH;
@@ -40,7 +40,7 @@ Element_LSNS::Element_LSNS()
  	LowTemperatureTransition = NT;
  	HighTemperature = ITH;
  	HighTemperatureTransition = NT;
- 
+
  	Update = &Element_LSNS::update;
 }
 
