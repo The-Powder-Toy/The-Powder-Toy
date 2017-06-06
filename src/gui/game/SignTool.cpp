@@ -121,17 +121,17 @@ SignWindow::SignWindow(SignTool * tool_, Simulation * sim_, int signID_, ui::Poi
 	AddComponent(okayButton);
 	SetOkayButton(okayButton);
 	
-	ui::Label * tempLabel = new ui::Label(ui::Point(8, 48), ui::Point(40, 15), "Justify:");
+	ui::Label * tempLabel = new ui::Label(ui::Point(8, 48), ui::Point(40, 15), "Pointer:");
 	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(tempLabel);
 
 	justification = new ui::DropDown(ui::Point(52, 48), ui::Point(50, 16));
 	AddComponent(justification);
-	justification->AddOption(std::pair<std::string, int>("\x9D Left", (int)sign::Left));
+	justification->AddOption(std::pair<std::string, int>("\xA0 Left", (int)sign::Left));
 	justification->AddOption(std::pair<std::string, int>("\x9E Middle", (int)sign::Middle));
 	justification->AddOption(std::pair<std::string, int>("\x9F Right", (int)sign::Right));
-	justification->AddOption(std::pair<std::string, int>("   None", (int)sign::None));
+	justification->AddOption(std::pair<std::string, int>("\x9D None", (int)sign::None));
 	justification->SetOption(1);
 	justification->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	
