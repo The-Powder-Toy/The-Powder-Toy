@@ -286,4 +286,5 @@ void Engine::onClose()
 {
 	if(state_)
 		state_->DoExit();
+	running_ = false;
 }
