@@ -93,7 +93,7 @@ void LoginView::OnTryExit(ExitMethod method)
 void LoginView::NotifyStatusChanged(LoginModel * sender)
 {
 	if (infoLabel->Visible)
-		targetSize.Y -= infoLabel->Size.Y+2;
+		targetSize.Y = 87;
 	infoLabel->SetText(sender->GetStatusText());
 	infoLabel->AutoHeight();
 	if (sender->GetStatusText().length())
