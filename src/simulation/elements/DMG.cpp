@@ -30,7 +30,7 @@ Element_DMG::Element_DMG()
 	HeatConduct = 29;
 	Description = "Generates damaging pressure and breaks any elements it hits.";
 
-	Properties = TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC|PROP_SPARKSETTLE;
+	Properties = TYPE_PART|PROP_SPARKSETTLE;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

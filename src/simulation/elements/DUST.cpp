@@ -30,7 +30,7 @@ Element_DUST::Element_DUST()
 	HeatConduct = 70;
 	Description = "Very light dust. Flammable.";
 
-	Properties = TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
+	Properties = TYPE_PART;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

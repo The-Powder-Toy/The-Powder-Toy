@@ -30,7 +30,7 @@ Element_SNOW::Element_SNOW()
 	HeatConduct = 46;
 	Description = "Light particles. Created when ICE breaks under pressure.";
 
-	Properties = TYPE_PART|PROP_LIFE_DEC|PROP_NEUTPASS;
+	Properties = TYPE_PART|PROP_NEUTPASS;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
