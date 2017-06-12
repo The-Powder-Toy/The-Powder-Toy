@@ -164,6 +164,12 @@ int Element_NEUT::update(UPDATE_FUNC_ARGS)
 					if (!(rand()%20))
 						parts[r>>8].life = 1500;
 					break;
+				case PT_RFRG:
+					if (rand()%2)
+						sim->create_part(r>>8, x+rx, y+ry, PT_GAS);
+					else
+						sim->create_part(r>>8, x+rx, y+ry, PT_CAUS);
+					break;
 				default:
 					break;
 				}
