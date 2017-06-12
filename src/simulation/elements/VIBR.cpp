@@ -97,8 +97,8 @@ int Element_VIBR::update(UPDATE_FUNC_ARGS) {
 		//Release all heat
 		if (parts[i].life < 500)
 		{
-			rx = rndstore%7-1;
-			ry = (rndstore>>3)%7-1;
+			rx = rndstore%7-3;
+			ry = (rndstore>>3)%7-3;
 			if(BOUNDS_CHECK)
 			{
 				r = pmap[y+ry][x+rx];
