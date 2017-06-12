@@ -3922,7 +3922,7 @@ void Simulation::UpdateParticles(int start, int end)
 									if (ctemph >= pres+elements[PT_CRMC].HighTemperature)
 										s = 0;
 								}
-								else if (elements[parts[i].ctype].HighTemperatureTransition == PT_LAVA)
+								else if (elements[parts[i].ctype].HighTemperatureTransition == PT_LAVA || parts[i].ctype == PT_HEAC)
 								{
 									if (pt >= elements[parts[i].ctype].HighTemperature)
 										s = 0;

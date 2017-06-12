@@ -23,7 +23,7 @@ Element_HEAC::Element_HEAC()
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 1;
-	Hardness = 50;
+	Hardness = 0;
 
 	Weight = 100;
 
@@ -39,7 +39,8 @@ Element_HEAC::Element_HEAC()
 	HighPressureTransition = NT;
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
-	HighTemperature = ITH;
+	// can't melt by normal heat conduction, this is used by other elements for special melting behavior
+	HighTemperature = 1887.15f;
 	HighTemperatureTransition = NT;
 
 	Update = &Element_HEAC::update;
