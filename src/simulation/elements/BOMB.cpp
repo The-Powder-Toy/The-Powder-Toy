@@ -48,7 +48,7 @@ Element_BOMB::Element_BOMB()
 //#TPT-Directive ElementHeader Element_BOMB static int update(UPDATE_FUNC_ARGS)
 int Element_BOMB::update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry, nb;
+	int r, rx, ry, rt, nb;
 
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)
@@ -57,16 +57,20 @@ int Element_BOMB::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if ((r&0xFF)!=PT_BOMB && (r&0xFF)!=PT_EMBR && (r&0xFF)!=PT_DMND && (r&0xFF)!=PT_CLNE && (r&0xFF)!=PT_PCLN && (r&0xFF)!=PT_BCLN && (r&0xFF)!=PT_VIBR)
+				rt = r&0xFF;
+				if (rt!=PT_BOMB && rt!=PT_EMBR && rt!=PT_DMND && rt!=PT_CLNE && rt!=PT_PCLN && rt!=PT_BCLN && rt!=PT_VIBR)
 				{
-					int rad = 8;
-					int nxi;
-					int nxj;
+					int rad = 8, nt;
+					int nxi, nxj;
 					pmap[y][x] = 0;
 					for (nxj=-rad; nxj<=rad; nxj++)
 						for (nxi=-rad; nxi<=rad; nxi++)
 							if ((pow((float)nxi,2))/(pow((float)rad,2))+(pow((float)nxj,2))/(pow((float)rad,2))<=1)
-								if ((pmap[y+nxj][x+nxi]&0xFF)!=PT_DMND && (pmap[y+nxj][x+nxi]&0xFF)!=PT_CLNE && (pmap[y+nxj][x+nxi]&0xFF)!=PT_PCLN && (pmap[y+nxj][x+nxi]&0xFF)!=PT_BCLN && (pmap[y+nxj][x+nxi]&0xFF)!=PT_VIBR)
+							{
+								if (!pmap[y+nxj][x+nxi])
+									continue;
+								nt = pmap[y+nxj][x+nxi]&0xFF;
+								if (nt!=PT_DMND && nt!=PT_CLNE && nt!=PT_PCLN && nt!=PT_BCLN && nt!=PT_VIBR)
 								{
 									sim->kill_part(pmap[y+nxj][x+nxi]>>8);
 									sim->pv[(y+nxj)/CELL][(x+nxi)/CELL] += 0.1f;
@@ -78,6 +82,7 @@ int Element_BOMB::update(UPDATE_FUNC_ARGS)
 										parts[nb].temp = MAX_TEMP;
 									}
 								}
+							}
 					for (nxj=-(rad+1); nxj<=(rad+1); nxj++)
 						for (nxi=-(rad+1); nxi<=(rad+1); nxi++)
 							if ((pow((float)nxi,2))/(pow((float)(rad+1),2))+(pow((float)nxj,2))/(pow((float)(rad+1),2))<=1 && !(pmap[y+nxj][x+nxi]&0xFF))
