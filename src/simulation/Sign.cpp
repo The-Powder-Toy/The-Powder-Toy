@@ -30,7 +30,7 @@ std::string sign::getText(Simulation *sim)
 			float aheat = 0.0f;
 			if (x>=0 && x<XRES && y>=0 && y<YRES)
 				aheat = sim->hv[y/CELL][x/CELL];
-			sprintf(buff, "%3.2f", aheat);
+			sprintf(buff, "%3.2f", aheat-273.15);
 		}
 		else if (!strcmp(signText,"{t}"))
 		{
