@@ -105,7 +105,7 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 			{
 				tempPart.ctype = partMap[tempPart.ctype];
 			}
-		if (tempPart.type == PT_PIPE || tempPart.type == PT_PPIP)
+		if (tempPart.type == PT_PIPE || tempPart.type == PT_PPIP || tempPart.type == PT_STOR)
 		{
 			tempPart.tmp = partMap[tempPart.tmp&0xFF] | (tempPart.tmp&~0xFF);
 		}
