@@ -62,16 +62,19 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 		for(std::vector<GameSave::PaletteItem>::iterator iter = save->palette.begin(), end = save->palette.end(); iter != end; ++iter)
 		{
 			GameSave::PaletteItem pi = *iter;
-			//This makes it only apply to lua elements (greater than the default number of elements), because if not it glitches for default elements when they change name
-			if(pi.second >= DEFAULT_PT_NUM && pi.second < PT_NUM)
+			if (pi.second > 0 && pi.second < PT_NUM)
 			{
-				int myId = 0;//pi.second;
-				for(int i = 0; i < PT_NUM; i++)
+				int myId = 0;
+				for (int i = 0; i < PT_NUM; i++)
 				{
-					if(elements[i].Enabled && elements[i].Identifier == pi.first)
+					if (elements[i].Enabled && elements[i].Identifier == pi.first)
 						myId = i;
 				}
-				partMap[pi.second] = myId;
+				// if this is a custom element, set the ID to the ID we found when comparing identifiers in the palette map
+				// set type to 0 if we couldn't find an element with that identifier present when loading,
+				//  unless this is a default element, in which case keep the current ID, because otherwise when an element is renamed it wouldn't show up anymore in older saves
+				if (myId != 0 || pi.first.find("DEFAULT_PT_") != 0)
+					partMap[pi.second] = myId;
 			}
 		}
 	}
@@ -105,6 +108,11 @@ int Simulation::Load(int fullX, int fullY, GameSave * save)
 		if (tempPart.type == PT_PIPE || tempPart.type == PT_PPIP)
 		{
 			tempPart.tmp = partMap[tempPart.tmp&0xFF] | (tempPart.tmp&~0xFF);
+		}
+		if (tempPart.type == PT_VIRS || tempPart.type == PT_VRSG || tempPart.type == PT_VRSS)
+		{
+			if (tempPart.tmp2 > 0 && tempPart.tmp2 < PT_NUM)
+				tempPart.tmp2 = partMap[tempPart.tmp2];
 		}
 
 		//Replace existing
@@ -271,7 +279,7 @@ GameSave * Simulation::Save(int fullX, int fullY, int fullX2, int fullY2)
 
 	if(storedParts)
 	{
-		for(int i = DEFAULT_PT_NUM; i < PT_NUM; i++)
+		for(int i = 0; i < PT_NUM; i++)
 		{
 			if(elements[i].Enabled && elementCount[i])
 			{
@@ -5320,7 +5328,6 @@ Simulation::Simulation():
 	free(platentT);
 
 	std::vector<Element> elementList = GetElements();
-	DEFAULT_PT_NUM = elementList.size();
 	for(int i = 0; i < PT_NUM; i++)
 	{
 		if (i < (int)elementList.size())
