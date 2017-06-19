@@ -2195,7 +2195,7 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr)
 		switch (r&0xFF)
 		{
 		case PT_LCRY:
-			if (pt==PT_PHOT || pt==PT_ELEC)
+			if (pt==PT_PHOT)
 				result = (parts[r>>8].life > 5)? 2 : 0;
 			break;
 		case PT_GPMP:

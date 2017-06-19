@@ -9,7 +9,7 @@ Element_HEAC::Element_HEAC()
 	Name = "HEAC";
 	Colour = PIXPACK(0xCB6351);
 	MenuVisible = 1;
-	MenuSection = SC_SPECIAL;
+	MenuSection = SC_SOLIDS;
 	Enabled = 1;
 
 	Advection = 0.0f;
