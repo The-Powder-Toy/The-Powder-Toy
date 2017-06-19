@@ -3353,6 +3353,9 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 		parts[i].tmp2 = 4;
 		break;
 	}
+	case PT_FILT:
+		parts[i].tmp = v;
+		break;
 	default:
 		break;
 	}
