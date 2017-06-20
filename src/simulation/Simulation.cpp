@@ -2788,11 +2788,9 @@ void Simulation::kill_part(int i)//kills particle number i
 	{
 	case PT_STKM:
 		player.spwn = 0;
-		Element_STKM::removeSTKMChilds(this, &player);
 		break;
 	case PT_STKM2:
 		player2.spwn = 0;
-		Element_STKM::removeSTKMChilds(this, &player2);
 		break;
 	case PT_SPAWN:
 		if (player.spawnID == i)
@@ -2805,7 +2803,6 @@ void Simulation::kill_part(int i)//kills particle number i
 	case PT_FIGH:
 		fighters[(unsigned char)parts[i].tmp].spwn = 0;
 		fighcount--;
-		Element_FIGH::removeFIGHNode(this, i);
 		break;
 	case PT_SOAP:
 		Element_SOAP::detach(this, i);
@@ -2813,6 +2810,7 @@ void Simulation::kill_part(int i)//kills particle number i
 	case PT_ETRD:
 		if (parts[i].life == 0)
 			etrd_life0_count--;
+		break;
 	}
 
 	parts[i].type = PT_NONE;
