@@ -2784,35 +2784,34 @@ void Simulation::kill_part(int i)//kills particle number i
 
 	if(parts[i].type > 0 && parts[i].type < PT_NUM && elementCount[parts[i].type])
 		elementCount[parts[i].type]--;
-	if (parts[i].type == PT_STKM)
+	switch (parts[i].type)
 	{
+	case PT_STKM:
 		player.spwn = 0;
-	}
-	else if (parts[i].type == PT_STKM2)
-	{
+		break;
+	case PT_STKM2:
 		player2.spwn = 0;
-	}
-	else if (parts[i].type == PT_SPAWN)
-	{
+		break;
+	case PT_SPAWN:
 		if (player.spawnID == i)
 			player.spawnID = -1;
-	}
-	else if (parts[i].type == PT_SPAWN2)
-	{
+		break;
+	case PT_SPAWN2:
 		if (player2.spawnID == i)
 			player2.spawnID = -1;
-	}
-	else if (parts[i].type == PT_FIGH)
-	{
+		break;
+	case PT_FIGH:
 		fighters[(unsigned char)parts[i].tmp].spwn = 0;
 		fighcount--;
-	}
-	else if (parts[i].type == PT_SOAP)
-	{
+		break;
+	case PT_SOAP:
 		Element_SOAP::detach(this, i);
+		break;
+	case PT_ETRD:
+		if (parts[i].life == 0)
+			etrd_life0_count--;
+		break;
 	}
-	else if (parts[i].type == PT_ETRD && parts[i].life == 0)
-		etrd_life0_count--;
 
 	parts[i].type = PT_NONE;
 	parts[i].life = pfree;
