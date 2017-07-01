@@ -141,6 +141,10 @@ int Element_NEUT::update(UPDATE_FUNC_ARGS)
 					if (!(rand()%20))
 						sim->create_part(r>>8, x+rx, y+ry, PT_WOOD);
 					break;
+				case PT_BCOL:
+					if (!(rand()%20))
+						sim->create_part(r>>8, x+rx, y+ry, PT_SAWD);
+					break;
 				case PT_DUST:
 					if (!(rand()%20))
 						sim->part_change_type(r>>8, x+rx, y+ry, PT_FWRK);

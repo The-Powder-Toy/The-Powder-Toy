@@ -26,11 +26,11 @@ Element_SAWD::Element_SAWD()
 
 	Weight = 18;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
+	Temperature = R_TEMP+273.15f;
 	HeatConduct = 70;
 	Description = "Sawdust. Floats on water.";
 
-	Properties = TYPE_PART;
+	Properties = TYPE_PART | PROP_NEUTPASS;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
