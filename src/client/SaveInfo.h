@@ -14,7 +14,8 @@ class SaveInfo
 private:
 public:
 	int id;
-	int date;
+	int createdDate;
+	int updatedDate;
 	int votesUp, votesDown;
 	int vote;
 	bool Favourite;
@@ -33,9 +34,9 @@ public:
 
 	SaveInfo(SaveInfo & save);
 
-	SaveInfo(int _id, int _date, int _votesUp, int _votesDown, std::string _userName, std::string _name);
+	SaveInfo(int _id, int _createdDate, int _updatedDate, int _votesUp, int _votesDown, std::string _userName, std::string _name);
 
-	SaveInfo(int _id, int date_, int _votesUp, int _votesDown, int _vote, std::string _userName, std::string _name, std::string description_, bool published_, std::list<std::string> tags);
+	SaveInfo(int _id, int _createdDate, int _updatedDate, int _votesUp, int _votesDown, int _vote, std::string _userName, std::string _name, std::string description_, bool published_, std::list<std::string> tags);
 
 	~SaveInfo();
 

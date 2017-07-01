@@ -1637,7 +1637,8 @@ SaveInfo * Client::GetSave(int saveID, int saveDate)
 			std::string tempUsername = objDocument["Username"].asString();
 			std::string tempName = objDocument["Name"].asString();
 			std::string tempDescription = objDocument["Description"].asString();
-			int tempDate = objDocument["Date"].asInt();
+			int tempCreatedDate = objDocument["DateCreated"].asInt();
+			int tempUpdatedDate = objDocument["Date"].asInt();
 			bool tempPublished = objDocument["Published"].asBool();
 			bool tempFavourite = objDocument["Favourite"].asBool();
 			int tempComments = objDocument["Comments"].asInt();
@@ -1649,9 +1650,9 @@ SaveInfo * Client::GetSave(int saveID, int saveDate)
 			for (Json::UInt j = 0; j < tagsArray.size(); j++)
 				tempTags.push_back(tagsArray[j].asString());
 
-			SaveInfo * tempSave = new SaveInfo(tempID, tempDate, tempScoreUp, tempScoreDown,
-			                                   tempMyScore, tempUsername, tempName, tempDescription,
-			                                   tempPublished, tempTags);
+			SaveInfo * tempSave = new SaveInfo(tempID, tempCreatedDate, tempUpdatedDate, tempScoreUp, 
+			                                   tempScoreDown, tempMyScore, tempUsername, tempName,
+			                                   tempDescription, tempPublished, tempTags);
 			tempSave->Comments = tempComments;
 			tempSave->Favourite = tempFavourite;
 			tempSave->Views = tempViews;
@@ -1700,7 +1701,8 @@ RequestBroker::Request * Client::GetSaveAsync(int saveID, int saveDate)
 				std::string tempUsername = objDocument["Username"].asString();
 				std::string tempName = objDocument["Name"].asString();
 				std::string tempDescription = objDocument["Description"].asString();
-				int tempDate = objDocument["Date"].asInt();
+				int tempCreatedDate = objDocument["DateCreated"].asInt();
+				int tempUpdatedDate = objDocument["Date"].asInt();
 				bool tempPublished = objDocument["Published"].asBool();
 				bool tempFavourite = objDocument["Favourite"].asBool();
 				int tempComments = objDocument["Comments"].asInt();
@@ -1712,9 +1714,9 @@ RequestBroker::Request * Client::GetSaveAsync(int saveID, int saveDate)
 				for (Json::UInt j = 0; j < tagsArray.size(); j++)
 					tempTags.push_back(tagsArray[j].asString());
 
-				SaveInfo * tempSave = new SaveInfo(tempID, tempDate, tempScoreUp, tempScoreDown,
-				                               tempMyScore, tempUsername, tempName, tempDescription,
-				                               tempPublished, tempTags);
+				SaveInfo * tempSave = new SaveInfo(tempID, tempCreatedDate, tempUpdatedDate, tempScoreUp,
+				                                   tempScoreDown, tempMyScore, tempUsername, tempName,
+				                                   tempDescription, tempPublished, tempTags);
 				tempSave->Comments = tempComments;
 				tempSave->Favourite = tempFavourite;
 				tempSave->Views = tempViews;
@@ -1874,14 +1876,15 @@ std::vector<SaveInfo*> * Client::SearchSaves(int start, int count, std::string q
 			for (Json::UInt j = 0; j < savesArray.size(); j++)
 			{
 				int tempID = savesArray[j]["ID"].asInt();
-				int tempDate = savesArray[j]["Date"].asInt();
+				int tempCreatedDate = savesArray[j]["Created"].asInt();
+				int tempUpdatedDate = savesArray[j]["Updated"].asInt();
 				int tempScoreUp = savesArray[j]["ScoreUp"].asInt();
 				int tempScoreDown = savesArray[j]["ScoreDown"].asInt();
 				std::string tempUsername = savesArray[j]["Username"].asString();
 				std::string tempName = savesArray[j]["Name"].asString();
 				int tempVersion = savesArray[j]["Version"].asInt();
 				bool tempPublished = savesArray[j]["Published"].asBool();
-				SaveInfo * tempSaveInfo = new SaveInfo(tempID, tempDate, tempScoreUp, tempScoreDown, tempUsername, tempName);
+				SaveInfo * tempSaveInfo = new SaveInfo(tempID, tempCreatedDate, tempUpdatedDate, tempScoreUp, tempScoreDown, tempUsername, tempName);
 				tempSaveInfo->Version = tempVersion;
 				tempSaveInfo->SetPublished(tempPublished);
 				saveArray->push_back(tempSaveInfo);

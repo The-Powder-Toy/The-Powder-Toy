@@ -213,7 +213,8 @@ bool PreviewModel::ParseSaveInfo(char * saveInfoResponse)
 		std::string tempUsername = objDocument["Username"].asString();
 		std::string tempName = objDocument["Name"].asString();
 		std::string tempDescription = objDocument["Description"].asString();
-		int tempDate = objDocument["Date"].asInt();
+		int tempCreatedDate = objDocument["DateCreated"].asInt();
+		int tempUpdatedDate = objDocument["Date"].asInt();
 		bool tempPublished = objDocument["Published"].asBool();
 		bool tempFavourite = objDocument["Favourite"].asBool();
 		int tempComments = objDocument["Comments"].asInt();
@@ -225,9 +226,9 @@ bool PreviewModel::ParseSaveInfo(char * saveInfoResponse)
 		for (Json::UInt j = 0; j < tagsArray.size(); j++)
 			tempTags.push_back(tagsArray[j].asString());
 
-		saveInfo = new SaveInfo(tempID, tempDate, tempScoreUp, tempScoreDown,
-		                        tempMyScore, tempUsername, tempName, tempDescription,
-		                        tempPublished, tempTags);
+		saveInfo = new SaveInfo(tempID, tempCreatedDate, tempUpdatedDate, tempScoreUp,
+		                        tempScoreDown, tempMyScore, tempUsername, tempName,
+		                        tempDescription, tempPublished, tempTags);
 		saveInfo->Comments = tempComments;
 		saveInfo->Favourite = tempFavourite;
 		saveInfo->Views = tempViews;

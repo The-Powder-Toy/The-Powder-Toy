@@ -4,7 +4,8 @@
 
 SaveInfo::SaveInfo(SaveInfo & save):
 	id(save.id),
-	date(save.date),
+	createdDate(save.createdDate),
+	updatedDate(save.updatedDate),
 	votesUp(save.votesUp),
 	votesDown(save.votesDown),
 	vote(save.vote),
@@ -25,9 +26,10 @@ SaveInfo::SaveInfo(SaveInfo & save):
 		gameSave = new GameSave(*save.gameSave);
 }
 
-SaveInfo::SaveInfo(int _id, int _date, int _votesUp, int _votesDown, std::string _userName, std::string _name):
+SaveInfo::SaveInfo(int _id, int _createdDate, int _updatedDate, int _votesUp, int _votesDown, std::string _userName, std::string _name):
 	id(_id),
-	date(_date),
+	createdDate(_createdDate),
+	updatedDate(_updatedDate),
 	votesUp(_votesUp),
 	votesDown(_votesDown),
 	vote(0),
@@ -45,9 +47,10 @@ SaveInfo::SaveInfo(int _id, int _date, int _votesUp, int _votesDown, std::string
 
 }
 
-SaveInfo::SaveInfo(int _id, int date_, int _votesUp, int _votesDown, int _vote, std::string _userName, std::string _name, std::string description_, bool published_, std::list<std::string> tags_):
+SaveInfo::SaveInfo(int _id, int _createdDate, int _updatedDate, int _votesUp, int _votesDown, int _vote, std::string _userName, std::string _name, std::string description_, bool published_, std::list<std::string> tags_):
 	id(_id),
-	date(date_),
+	createdDate(_createdDate),
+	updatedDate(_updatedDate),
 	votesUp(_votesUp),
 	votesDown(_votesDown),
 	vote(_vote),

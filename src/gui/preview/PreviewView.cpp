@@ -497,13 +497,19 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 		votesUp = save->votesUp;
 		votesDown = save->votesDown;
 		saveNameLabel->SetText(save->name);
-		if(showAvatars) {
+		std::string dateType;
+		if (save->updatedDate == save->createdDate)
+			dateType = "Created:";
+		else
+			dateType = "Updated:";
+		if (showAvatars)
+		{
 			avatarButton->SetUsername(save->userName);
-			authorDateLabel->SetText("\bw" + save->userName + " \bgDate:\bw " + format::UnixtimeToDateMini(save->date));
+			authorDateLabel->SetText("\bw" + save->userName + " \bg" + dateType + " \bw" + format::UnixtimeToDateMini(save->updatedDate));
 		}
 		else
 		{
-			authorDateLabel->SetText("\bgAuthor:\bw " + save->userName + " \bgDate:\bw " + format::UnixtimeToDateMini(save->date));
+			authorDateLabel->SetText("\bgAuthor:\bw " + save->userName + " \bg" + dateType + " \bw" + format::UnixtimeToDateMini(save->updatedDate));
 		}
 		if (Client::Ref().GetAuthUser().ID && save->userName == Client::Ref().GetAuthUser().Username)
 			userIsAuthor = true;
