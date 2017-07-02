@@ -233,6 +233,20 @@ bool PreviewModel::ParseSaveInfo(char * saveInfoResponse)
 		saveInfo->Favourite = tempFavourite;
 		saveInfo->Views = tempViews;
 		saveInfo->Version = tempVersion;
+
+		// This is a workaround for a bug on the TPT server where the wrong 404 save is returned
+		// Redownload the .cps file for a fixed version of the 404 save
+		if (tempID == 404 && this->saveID != 404)
+		{
+			if (saveDataDownload)
+				saveDataDownload->Cancel();
+			delete saveData;
+			saveData = NULL;
+			std::stringstream urlStream;
+			urlStream << "http://" << STATICSERVER << "/2157797.cps";
+			saveDataDownload = new Download(urlStream.str());
+			saveDataDownload->Start();
+		}
 		return true;
 	}
 	catch (std::exception &e)
