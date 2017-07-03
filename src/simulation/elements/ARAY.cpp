@@ -30,7 +30,7 @@ Element_ARAY::Element_ARAY()
 	HeatConduct = 0;
 	Description = "Ray Emitter. Rays create points when they collide.";
 
-	Properties = TYPE_SOLID|PROP_LIFE_DEC;
+	Properties = TYPE_SOLID;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
@@ -202,7 +202,6 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 							}
 						}
 					}
-					//parts[i].life = 4;
 				}
 	}
 	return 0;
