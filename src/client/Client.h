@@ -85,9 +85,24 @@ private:
 	Json::Value preferences;
 	Json::Value GetPref(Json::Value root, std::string prop, Json::Value defaultValue = Json::nullValue);
 	Json::Value SetPrefHelper(Json::Value root, std::string prop, Json::Value value);
+
+	// Save stealing info
+	Json::Value authors;
+
 public:
 
 	std::vector<ClientListener*> listeners;
+
+	// Save stealing info
+	void MergeStampAuthorInfo(Json::Value linksToAdd);
+	void MergeAuthorInfo(Json::Value linksToAdd);
+	void OverwriteAuthorInfo(Json::Value overwrite) { authors = overwrite; }
+	void SaveAuthorInfo(Json::Value *saveInto);
+	void ClearAuthorInfo() { authors.clear(); }
+	bool IsAuthorsEmpty() { return authors.size() == 0; }
+#if defined(DEBUG) || defined(SNAPSHOT)
+	std::string GetAuthorString() { return authors.toStyledString(); }
+#endif
 
 	UpdateInfo GetUpdateInfo();
 

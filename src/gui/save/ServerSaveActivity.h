@@ -37,6 +37,7 @@ public:
 	virtual void OnTick(float dt);
 	virtual ~ServerSaveActivity();
 protected:
+	void AddAuthorInfo();
 	virtual void NotifyDone(Task * task);
 	VideoBuffer * thumbnail;
 	SaveInfo save;

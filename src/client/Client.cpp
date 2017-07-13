@@ -1011,13 +1011,14 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 			lastError = "Empty game save";
 			return RequestFailure;
 		}
+
 		save.SetID(0);
 
 		gameData = save.GetGameSave()->Serialise(gameDataLength);
 
 		if (!gameData)
 		{
-			lastError = "Cannot upload game save";
+			lastError = "Cannot serialize game save";
 			return RequestFailure;
 		}
 #ifdef SNAPSHOT
@@ -1141,14 +1142,29 @@ std::string Client::AddStamp(GameSave * saveData)
 	saveID
 	<< std::setw(8) << std::setfill('0') << std::hex << lastStampTime
 	<< std::setw(2) << std::setfill('0') << std::hex << lastStampName;
+	std::string filename = std::string(STAMPS_DIR PATH_SEP + saveID.str()+".stm").c_str();
 
 	MakeDirectory(STAMPS_DIR);
+	
+	Json::Value stampInfo;
+	stampInfo["type"] = "stamp";
+	stampInfo["username"] = authUser.Username;
+	stampInfo["name"] = filename;
+	stampInfo["date"] = (Json::Value::UInt64)time(NULL);
+	if (authors.size() != 0)
+	{
+		// This is a stamp, always append full authorship info (even if same user)
+		stampInfo["links"].append(Client::Ref().authors);
+	}
+	saveData->authors = stampInfo;
 
 	unsigned int gameDataLength;
 	char * gameData = saveData->Serialise(gameDataLength);
+	if (gameData == NULL)
+		return "";
 
 	std::ofstream stampStream;
-	stampStream.open(std::string(STAMPS_DIR PATH_SEP + saveID.str()+".stm").c_str(), std::ios::binary);
+	stampStream.open(filename.c_str(), std::ios::binary);
 	stampStream.write((const char *)gameData, gameDataLength);
 	stampStream.close();
 
@@ -1995,6 +2011,73 @@ std::list<std::string> * Client::AddTag(int saveID, std::string tag)
 	}
 	free(data);
 	return tags;
+}
+
+// stamp-specific wrapper for MergeAuthorInfo
+// also used for clipboard and lua stamps
+void Client::MergeStampAuthorInfo(Json::Value stampAuthors)
+{
+	if (stampAuthors.size())
+	{
+		// when loading stamp/clipboard, only append info to authorship info (since we aren't replacing the save)
+		// unless there is nothing loaded currently, then set authors directly
+		if (authors.size())
+		{
+			if (authors["username"] != stampAuthors["username"])
+			{
+				// Don't add if it's exactly the same
+				if (stampAuthors["links"].size() != 1 || stampAuthors["links"][0] != Client::Ref().authors)
+				{
+					// 2nd arg of MergeAuthorInfo needs to be an array 
+					Json::Value toAdd;
+					toAdd.append(stampAuthors);
+					MergeAuthorInfo(toAdd);
+				}
+			}
+			else if (stampAuthors["links"].size())
+			{
+				MergeAuthorInfo(stampAuthors["links"]);
+			}
+		}
+		else
+			authors = stampAuthors;
+	}
+}
+
+// linksToAdd is an array (NOT an object) of links to add to authors["links"]
+void Client::MergeAuthorInfo(Json::Value linksToAdd)
+{
+	for (Json::Value::ArrayIndex i = 0; i < linksToAdd.size(); i++)
+	{
+		// link is the same exact json we have open, don't do anything
+		if (linksToAdd[i] == authors)
+			return;
+
+		bool hasLink = false;
+		for (Json::Value::ArrayIndex j = 0; j < authors["links"].size(); j++)
+		{
+			// check everything in authors["links"] to see if it's the same json as what we are already adding
+			if (authors["links"][j] == linksToAdd[i])
+				hasLink = true;
+		}
+		if (!hasLink)
+			authors["links"].append(linksToAdd[i]);
+	}
+}
+
+// load current authors information into a json value (when saving everything: stamps, clipboard, local saves, and online saves)
+void Client::SaveAuthorInfo(Json::Value *saveInto)
+{
+	if (authors.size() != 0)
+	{
+		// Different username? Save full original save info
+		if (authors["username"] != (*saveInto)["username"])
+			(*saveInto)["links"].append(authors);
+		// This is probalby the same save
+		// Don't append another layer of links, just keep existing links
+		else if (authors["links"].size())
+			(*saveInto)["links"] = authors["links"];
+	}
 }
 
 // powder.pref preference getting / setting functions

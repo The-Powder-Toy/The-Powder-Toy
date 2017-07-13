@@ -22,6 +22,7 @@
 #include "gui/game/Tool.h"
 #include "LuaScriptHelper.h"
 #include "client/HTTP.h"
+#include "client/GameSave.h"
 #include "client/SaveFile.h"
 #include "Misc.h"
 #include "Platform.h"
@@ -1593,6 +1594,7 @@ int LuaScriptInterface::simulation_decoColor(lua_State * l)
 int LuaScriptInterface::simulation_clearSim(lua_State * l)
 {
 	luacon_sim->clear_sim();
+	Client::Ref().ClearAuthorInfo();
 	return 0;
 }
 
@@ -1672,7 +1674,7 @@ int LuaScriptInterface::simulation_loadStamp(lua_State * l)
 		const char * filename = luaL_optstring(l, 1, "");
 		tempfile = Client::Ref().GetStamp(filename);
 	}
-	if (!tempfile && lua_isnumber(l, 1)) //Load from stamp ID
+	if ((!tempfile || !tempfile->GetGameSave()) && lua_isnumber(l, 1)) //Load from stamp ID
 	{
 		i = luaL_optint(l, 1, 0);
 		int stampCount = Client::Ref().GetStampsCount();
@@ -1687,6 +1689,12 @@ int LuaScriptInterface::simulation_loadStamp(lua_State * l)
 		{
 			//luacon_sim->sys_pause = (tempfile->GetGameSave()->paused | luacon_model->GetPaused())?1:0;
 			lua_pushinteger(l, 1);
+
+			if (tempfile->GetGameSave()->authors.size())
+			{
+				tempfile->GetGameSave()->authors["type"] = "luastamp";
+				Client::Ref().MergeStampAuthorInfo(tempfile->GetGameSave()->authors);
+			}
 		}
 		else
 			lua_pushnil(l);

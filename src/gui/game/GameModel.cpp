@@ -1,24 +1,28 @@
-#include "gui/interface/Engine.h"
 #include "GameModel.h"
 #include "GameView.h"
-#include "simulation/Simulation.h"
-#include "simulation/Air.h"
 #include "ToolClasses.h"
-#include "graphics/Renderer.h"
-#include "gui/interface/Point.h"
 #include "Brush.h"
 #include "EllipseBrush.h"
 #include "TriangleBrush.h"
 #include "BitmapBrush.h"
-#include "client/Client.h"
-#include "client/GameSave.h"
-#include "client/SaveFile.h"
-#include "common/tpt-minmax.h"
-#include "gui/game/DecorationTool.h"
 #include "QuickOptions.h"
 #include "GameModelException.h"
 #include "Format.h"
 #include "Favorite.h"
+
+#include "client/Client.h"
+#include "client/GameSave.h"
+#include "client/SaveFile.h"
+#include "common/tpt-minmax.h"
+#include "graphics/Renderer.h"
+#include "simulation/Air.h"
+#include "simulation/Simulation.h"
+#include "simulation/Snapshot.h"
+
+#include "gui/game/DecorationTool.h"
+#include "gui/interface/Engine.h"
+#include "gui/interface/Point.h"
+
 
 GameModel::GameModel():
 	clipboard(NULL),
@@ -581,9 +585,6 @@ int GameModel::GetActiveMenu()
 //Get an element tool from an element ID
 Tool * GameModel::GetElementTool(int elementID)
 {
-#ifdef DEBUG
-	std::cout << elementID << std::endl;
-#endif
 	for(std::vector<Tool*>::iterator iter = elementTools.begin(), end = elementTools.end(); iter != end; ++iter)
 	{
 		if((*iter)->GetToolID() == elementID)
@@ -647,7 +648,28 @@ void GameModel::SetSave(SaveInfo * newSave)
 			sim->grav->stop_grav_async();
 		sim->clear_sim();
 		ren->ClearAccumulation();
-		sim->Load(saveData);
+		if (!sim->Load(saveData))
+		{
+			// This save was created before logging existed
+			// Add in the correct info
+			if (saveData->authors.size() == 0)
+			{
+				saveData->authors["type"] = "save";
+				saveData->authors["id"] = newSave->id;
+				saveData->authors["username"] = newSave->userName;
+				saveData->authors["title"] = newSave->name;
+				saveData->authors["description"] = newSave->Description;
+				saveData->authors["published"] = newSave->Published;
+				saveData->authors["date"] = newSave->updatedDate;
+			}
+			// This save was probably just created, and we didn't know the ID when creating it
+			// Update with the proper ID
+			else if (saveData->authors.get("id", -1) == 0)
+			{
+				saveData->authors["id"] = newSave->id;
+			}
+			Client::Ref().OverwriteAuthorInfo(saveData->authors);
+		}
 	}
 	notifySaveChanged();
 	UpdateQuickOptions();
@@ -691,7 +713,10 @@ void GameModel::SetSaveFile(SaveFile * newSave)
 		}
 		sim->clear_sim();
 		ren->ClearAccumulation();
-		sim->Load(saveData);
+		if (!sim->Load(saveData))
+		{
+			Client::Ref().OverwriteAuthorInfo(saveData->authors);
+		}
 	}
 	
 	notifySaveChanged();
@@ -968,6 +993,7 @@ void GameModel::ClearSimulation()
 
 	sim->clear_sim();
 	ren->ClearAccumulation();
+	Client::Ref().ClearAuthorInfo();
 
 	notifySaveChanged();
 	UpdateQuickOptions();

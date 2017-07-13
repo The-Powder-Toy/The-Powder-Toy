@@ -52,6 +52,7 @@ originalData(save.originalData)
 		blockHeight = save.blockHeight;
 	}
 	particlesCount = save.particlesCount;
+	authors = save.authors;
 }
 
 GameSave::GameSave(int width, int height)
@@ -73,9 +74,6 @@ GameSave::GameSave(std::vector<char> data)
 	expanded = false;
 	hasOriginalData = true;
 	originalData = data;
-#ifdef DEBUG
-	std::cout << "Creating Collapsed save from data" << std::endl;
-#endif
 	try
 	{
 		Expand();
@@ -99,9 +97,6 @@ GameSave::GameSave(std::vector<unsigned char> data)
 	expanded = false;
 	hasOriginalData = true;
 	originalData = std::vector<char>(data.begin(), data.end());
-#ifdef DEBUG
-	std::cout << "Creating Collapsed save from data" << std::endl;
-#endif
 	try
 	{
 		Expand();
@@ -153,6 +148,7 @@ void GameSave::InitData()
 	ambientHeat = NULL;
 	fromNewerVersion = false;
 	hasAmbientHeat = false;
+	authors.clear();
 }
 
 void GameSave::InitVars()
@@ -198,16 +194,10 @@ void GameSave::read(char * data, int dataSize)
 	{
 		if ((data[0]==0x66 && data[1]==0x75 && data[2]==0x43) || (data[0]==0x50 && data[1]==0x53 && data[2]==0x76))
 		{
-#ifdef DEBUG
-			std::cout << "Reading PSv..." << std::endl;
-#endif
 			readPSv(data, dataSize);
 		}
 		else if(data[0] == 'O' && data[1] == 'P' && data[2] == 'S')
 		{
-#ifdef DEBUG
-			std::cout << "Reading OPS..." << std::endl;
-#endif
 			if (data[3] != '1')
 				throw ParseException(ParseException::WrongVersion, "Save format from newer version");
 			readOPS(data, dataSize);
@@ -257,6 +247,8 @@ std::vector<char> GameSave::Serialise()
 {
 	unsigned int dataSize;
 	char * data = Serialise(dataSize);
+	if (data == NULL)
+		return std::vector<char>();
 	std::vector<char> dataVect(data, data+dataSize);
 	delete[] data;
 	return dataVect;
@@ -638,6 +630,20 @@ void GameSave::readOPS(char * data, int dataLength)
 					errorMessage << "Save from a newer version: Requires version " << major << "." << minor;
 					throw ParseException(ParseException::WrongVersion, errorMessage.str());
 				}
+			}
+			else
+			{
+				fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
+			}
+		}
+		else if (!strcmp(bson_iterator_key(&iter), "authors"))
+		{
+			if (bson_iterator_type(&iter) == BSON_OBJECT)
+			{
+				// we need to clear authors because the save may be read multiple times in the stamp browser (loading and rendering twice)
+				// seems inefficient ...
+				authors.clear();
+				ConvertBsonToJson(&iter, &authors);
 			}
 			else
 			{
@@ -1128,6 +1134,38 @@ fin:
 	bson_destroy(&b);
 	free(freeIndices);
 	free(partsSimIndex);
+}
+
+void GameSave::ConvertBsonToJson(bson_iterator *iter, Json::Value *j)
+{
+	bson_iterator subiter;
+	bson_iterator_subiterator(iter, &subiter);
+	while (bson_iterator_next(&subiter))
+	{
+		std::string key = bson_iterator_key(&subiter);
+		if (bson_iterator_type(&subiter) == BSON_STRING)
+			(*j)[key] = bson_iterator_string(&subiter);
+		else if (bson_iterator_type(&subiter) == BSON_BOOL)
+			(*j)[key] = bson_iterator_bool(&subiter);
+		else if (bson_iterator_type(&subiter) == BSON_INT)
+			(*j)[key] = bson_iterator_int(&subiter);
+		else if (bson_iterator_type(&subiter) == BSON_LONG)
+			(*j)[key] = (Json::Value::Int64)bson_iterator_long(&subiter);
+		else if (bson_iterator_type(&subiter) == BSON_ARRAY)
+		{
+			bson_iterator arrayiter;
+			bson_iterator_subiterator(&subiter, &arrayiter);
+			while (bson_iterator_next(&arrayiter))
+			{
+				if (bson_iterator_type(&arrayiter) == BSON_OBJECT && !strcmp(bson_iterator_key(&arrayiter), "part"))
+				{
+					Json::Value tempPart;
+					ConvertBsonToJson(&arrayiter, &tempPart);
+					(*j)["links"].append(tempPart);
+				}
+			}
+		}
+	}
 }
 
 void GameSave::readPSv(char * data, int dataLength)
@@ -2277,10 +2315,14 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 		}
 		bson_append_finish_array(&b);
 	}
-	bson_finish(&b);
-#ifdef DEBUG
-	bson_print(&b);
-#endif
+	if (authors.size())
+	{
+		bson_append_start_object(&b, "authors");
+		ConvertJsonToBson(&b, authors);
+		bson_append_finish_object(&b);
+	}
+	if (bson_finish(&b) == BSON_ERROR)
+		goto fin;
 
 	finalData = (unsigned char *)bson_data(&b);
 	finalDataLen = bson_size(&b);
@@ -2333,6 +2375,38 @@ fin:
 	free(partsPosLink);
 
 	return (char*)outputData;
+}
+
+// converts a json object to bson
+void GameSave::ConvertJsonToBson(bson *b, Json::Value j)
+{
+	Json::Value::Members members = j.getMemberNames();
+	for (Json::Value::Members::iterator iter = members.begin(), end = members.end(); iter != end; ++iter)
+	{
+		std::string member = *iter;
+		if (j[member].isString())
+			bson_append_string(b, member.c_str(), j[member].asCString());
+		else if (j[member].isBool())
+			bson_append_bool(b, member.c_str(), j[member].asBool());
+		else if (j[member].isInt() || j[member].isUInt())
+			bson_append_int(b, member.c_str(), j[member].asInt());
+		else if (j[member].isInt64() || j[member].isUInt64())
+			bson_append_long(b, member.c_str(), j[member].asInt64());
+		else if (j[member].isArray())
+		{
+			bson_append_start_array(b, member.c_str());
+			for (Json::Value::ArrayIndex i = 0; i < j[member].size(); i++)
+			{
+				// only supports objects here because that is all we need
+				if (!j[member][i].isObject())
+					continue;
+				bson_append_start_object(b, "part");
+				ConvertJsonToBson(b, j[member][i]);
+				bson_append_finish_object(b);
+			}
+			bson_append_finish_array(b);
+		}
+	}
 }
 
 // deallocates a pointer to a 2D array and sets it to NULL

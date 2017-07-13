@@ -199,7 +199,9 @@ ServerSaveActivity::ServerSaveActivity(SaveInfo save, bool saveNow, ServerSaveAc
 	titleLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(titleLabel);
 
-	saveUploadTask = new SaveUploadTask(save);
+	AddAuthorInfo();
+
+	saveUploadTask = new SaveUploadTask(this->save);
 	saveUploadTask->AddTaskListener(this);
 	saveUploadTask->Start();
 }
@@ -255,6 +257,20 @@ void ServerSaveActivity::Save()
 	}
 }
 
+void ServerSaveActivity::AddAuthorInfo()
+{
+	Json::Value serverSaveInfo;
+	serverSaveInfo["type"] = "save";
+	serverSaveInfo["id"] = save.GetID();
+	serverSaveInfo["username"] = Client::Ref().GetAuthUser().Username;
+	serverSaveInfo["title"] = save.GetName();
+	serverSaveInfo["description"] = save.GetDescription();
+	serverSaveInfo["published"] = save.GetPublished();
+	serverSaveInfo["date"] = (Json::Value::UInt64)time(NULL);
+	Client::Ref().SaveAuthorInfo(&serverSaveInfo);
+	save.GetGameSave()->authors = serverSaveInfo;
+}
+
 void ServerSaveActivity::saveUpload()
 {
 	save.SetName(nameField->GetText());
@@ -263,6 +279,7 @@ void ServerSaveActivity::saveUpload()
 	save.SetUserName(Client::Ref().GetAuthUser().Username);
 	save.SetID(0);
 	save.GetGameSave()->paused = pausedCheckbox->GetChecked();
+	AddAuthorInfo();
 
 	if(Client::Ref().UploadSave(save) != RequestOkay)
 	{
