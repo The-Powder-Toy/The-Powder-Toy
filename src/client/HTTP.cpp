@@ -304,7 +304,7 @@ void *http_async_req_start(void *ctx, const char *uri, const char *data, int dle
 	{
 		if (!dlen)
 			dlen = strlen(data);
-		cx->txd = (char *)malloc(dlen);
+		cx->txd = (char *)malloc(dlen+1);
 		memcpy(cx->txd, data, dlen);
 		cx->txdl = dlen;
 	}
