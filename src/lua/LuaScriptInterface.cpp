@@ -898,7 +898,12 @@ int LuaScriptInterface::simulation_partChangeType(lua_State * l)
 int LuaScriptInterface::simulation_partCreate(lua_State * l)
 {
 	int newID = lua_tointeger(l, 1);
-	if(newID >= NPART || newID < -3)
+	if (newID >= NPART || newID < -3)
+	{
+		lua_pushinteger(l, -1);
+		return 1;
+	}
+	if (newID >= 0 && !luacon_sim->parts[newID].type)
 	{
 		lua_pushinteger(l, -1);
 		return 1;
