@@ -2631,7 +2631,6 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 	renderModePresets[7].RenderModes.push_back(RENDER_BLUR);
 	renderModePresets[7].RenderModes.push_back(RENDER_EFFE);
 	renderModePresets[7].RenderModes.push_back(RENDER_BASC);
-	renderModePresets[7].DisplayModes.push_back(DISPLAY_WARP);
 
 	renderModePresets[8].Name = "Nothing Display";
 	renderModePresets[8].RenderModes.push_back(RENDER_BASC);
