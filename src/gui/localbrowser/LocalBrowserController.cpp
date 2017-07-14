@@ -166,16 +166,15 @@ void LocalBrowserController::SetMoveToFront(bool move)
 
 void LocalBrowserController::Exit()
 {
-	if(ui::Engine::Ref().GetWindow() == browserView)
-		ui::Engine::Ref().CloseWindow();
+	browserView->CloseActiveWindow();
 	if(callback)
 		callback->ControllerExit();
 	HasDone = true;
 }
 
-LocalBrowserController::~LocalBrowserController() {
-	if(ui::Engine::Ref().GetWindow() == browserView)
-		ui::Engine::Ref().CloseWindow();
+LocalBrowserController::~LocalBrowserController()
+{
+	browserView->CloseActiveWindow();
 	delete callback;
 	delete browserModel;
 	delete browserView;

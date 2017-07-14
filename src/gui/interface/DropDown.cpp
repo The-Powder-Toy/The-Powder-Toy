@@ -1,7 +1,9 @@
 #include <iostream>
+#include "graphics/Graphics.h"
 #include "gui/Style.h"
 #include "Button.h"
 #include "DropDown.h"
+#include "gui/interface/Window.h"
 
 namespace ui {
 
@@ -21,7 +23,7 @@ public:
 		ItemSelectedAction(DropDownWindow * window, std::string option): window(window), option(option) { }
 		virtual void ActionCallback(ui::Button *sender)
 		{
-			ui::Engine::Ref().CloseWindow();
+			window->CloseActiveWindow();
 			window->setOption(option);
 			window->SelfDestruct();
 		}
@@ -45,7 +47,7 @@ public:
 	}
 	virtual void OnDraw()
 	{
-		Graphics * g = ui::Engine::Ref().g;
+		Graphics * g = GetGraphics();
 		g->clearrect(Position.X, Position.Y, Size.X, Size.Y);
 	}
 	void setOption(std::string option)
@@ -64,7 +66,7 @@ public:
 	}
 	virtual void OnTryExit(ExitMethod method)
 	{
-		ui::Engine::Ref().CloseWindow();
+		CloseActiveWindow();
 		SelfDestruct();
 	}
 	virtual ~DropDownWindow() {}
@@ -81,7 +83,7 @@ DropDown::DropDown(Point position, Point size):
 void DropDown::OnMouseClick(int x, int y, unsigned int button)
 {
 	DropDownWindow * newWindow = new DropDownWindow(this);
-	ui::Engine::Ref().ShowWindow(newWindow);
+	newWindow->MakeActiveWindow();
 }
 
 void DropDown::Draw(const Point& screenPos)
@@ -92,7 +94,7 @@ void DropDown::Draw(const Point& screenPos)
 			TextPosition(options[optionIndex].first);
 		drawn = true;
 	}
-	Graphics * g = ui::Engine::Ref().g;
+	Graphics * g = GetGraphics();
 	Point Position = screenPos;
 
 	ui::Colour textColour = Appearance.TextInactive;

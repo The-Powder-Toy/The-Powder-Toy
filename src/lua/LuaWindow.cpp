@@ -606,8 +606,7 @@ int LuaWindow::onKeyRelease(lua_State * l)
 
 LuaWindow::~LuaWindow()
 {
-	if(ui::Engine::Ref().GetWindow() == window)
-		ui::Engine::Ref().CloseWindow();
+	window->CloseActiveWindow();
 	delete window;
 }
 #endif

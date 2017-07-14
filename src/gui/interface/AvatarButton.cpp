@@ -3,7 +3,6 @@
 
 #include "AvatarButton.h"
 #include "Format.h"
-#include "Engine.h"
 #include "client/Client.h"
 #include "client/requestbroker/RequestBroker.h"
 #include "graphics/Graphics.h"
@@ -51,7 +50,7 @@ void AvatarButton::OnResponseReady(void * imagePtr, int identifier)
 
 void AvatarButton::Draw(const Point& screenPos)
 {
-	Graphics * g = ui::Engine::Ref().g;
+	Graphics * g = GetGraphics();
 
 	if(avatar)
 	{

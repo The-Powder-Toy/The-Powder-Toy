@@ -1,4 +1,6 @@
 #include "Checkbox.h"
+#include "graphics/Graphics.h"
+#include "gui/interface/Window.h"
 
 using namespace ui;
 
@@ -70,7 +72,7 @@ void Checkbox::OnMouseLeave(int x, int y)
 
 void Checkbox::Draw(const Point& screenPos)
 {
-	Graphics * g = Engine::Ref().g;
+	Graphics * g = GetGraphics();
 	if(checked)
 	{
 		g->fillrect(screenPos.X+5, screenPos.Y+5, 6, 6, 255, 255, 255, 255);

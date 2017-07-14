@@ -224,9 +224,8 @@ GameController::~GameController()
 		delete *iter;
 	}
 	delete gameModel;
-	if (ui::Engine::Ref().GetWindow() == gameView)
+	if (gameView->CloseActiveWindow())
 	{
-		ui::Engine::Ref().CloseWindow();
 		delete gameView;
 	}
 }
@@ -835,8 +834,7 @@ void GameController::Tick()
 
 void GameController::Exit()
 {
-	if(ui::Engine::Ref().GetWindow() == gameView)
-		ui::Engine::Ref().CloseWindow();
+	gameView->CloseActiveWindow();
 	HasDone = true;
 }
 
@@ -1365,7 +1363,7 @@ void GameController::OpenOptions()
 
 void GameController::ShowConsole()
 {
-	if(!console)
+	if (!console)
 		console = new ConsoleController(NULL, commandInterface);
 	if (console->GetView() != ui::Engine::Ref().GetWindow())
 		ui::Engine::Ref().ShowWindow(console->GetView());
@@ -1373,10 +1371,9 @@ void GameController::ShowConsole()
 
 void GameController::HideConsole()
 {
-	if(!console)
+	if (!console)
 		return;
-	if (console->GetView() == ui::Engine::Ref().GetWindow())
-		ui::Engine::Ref().CloseWindow();
+	console->GetView()->CloseActiveWindow();
 }
 
 void GameController::OpenRenderOptions()

@@ -4,7 +4,6 @@
 #include "SaveButton.h"
 #include "client/SaveInfo.h"
 #include "graphics/Graphics.h"
-#include "Engine.h"
 #include "client/requestbroker/RequestBroker.h"
 #include "simulation/SaveRenderer.h"
 #include "Format.h"
@@ -165,7 +164,7 @@ void SaveButton::Tick(float dt)
 
 void SaveButton::Draw(const Point& screenPos)
 {
-	Graphics * g = ui::Engine::Ref().g;
+	Graphics * g = GetGraphics();
 	float scaleFactor;
 	ui::Point thumbBoxSize(0, 0);
 

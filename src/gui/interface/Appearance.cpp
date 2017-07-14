@@ -1,5 +1,6 @@
 #include <iostream>
 #include "Appearance.h"
+#include "graphics/Graphics.h"
 
 namespace ui
 {

@@ -175,7 +175,7 @@ std::string RichLabel::GetText()
 
 void RichLabel::Draw(const Point& screenPos)
 {
-	Graphics * g = ui::Engine::Ref().g;
+	Graphics * g = GetGraphics();
 	ui::Colour textColour = Appearance.TextInactive;
 	g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, displayText, textColour.Red, textColour.Green, textColour.Blue, 255);
 }

@@ -26,17 +26,11 @@ public:
 	}
 	virtual void Show()
 	{
-		if(ui::Engine::Ref().GetWindow() != this)
-		{
-			ui::Engine::Ref().ShowWindow(this);
-		}
+		MakeActiveWindow();
 	}
 	virtual void Hide()
 	{
-		if(ui::Engine::Ref().GetWindow() == this)
-		{
-			ui::Engine::Ref().CloseWindow();
-		}
+		CloseActiveWindow();
 	}
 	virtual ~WindowActivity() {}
 };

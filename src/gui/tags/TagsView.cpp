@@ -1,6 +1,7 @@
 #include "client/Client.h"
 #include "TagsView.h"
 
+#include "graphics/Graphics.h"
 #include "gui/dialogues/ErrorMessage.h"
 #include "TagsController.h"
 #include "TagsModel.h"
@@ -68,7 +69,7 @@ TagsView::TagsView():
 
 void TagsView::OnDraw()
 {
-	Graphics * g = ui::Engine::Ref().g;
+	Graphics * g = GetGraphics();
 	g->clearrect(Position.X-2, Position.Y-2, Size.X+3, Size.Y+3);
 	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 255, 255, 255, 255);
 }

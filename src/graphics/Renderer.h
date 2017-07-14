@@ -7,13 +7,11 @@
 #endif
 
 #include "Config.h"
-#include "client/Client.h"
 #include "Graphics.h"
 #include "gui/interface/Point.h"
-#include "gui/game/RenderPreset.h"
 
+class RenderPreset;
 class Simulation;
-
 class Graphics;
 
 struct gcache_item

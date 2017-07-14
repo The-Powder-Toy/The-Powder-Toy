@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Slider.h"
 #include "Colour.h"
+#include "graphics/Graphics.h"
 
 namespace ui {
 
@@ -104,7 +105,7 @@ void Slider::SetSteps(int steps)
 
 void Slider::Draw(const Point& screenPos)
 {
-	Graphics * g = Engine::Ref().g;
+	Graphics * g = GetGraphics();
 	//g->drawrect(screenPos.X, screenPos.Y, Size.X, Size.Y, 255, 255, 255, 255);
 
 	if(bgGradient)

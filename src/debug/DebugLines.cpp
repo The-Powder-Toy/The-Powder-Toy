@@ -1,5 +1,4 @@
 #include "DebugLines.h"
-#include "gui/interface/Engine.h"
 #include "gui/game/GameView.h"
 #include "gui/game/GameController.h"
 
@@ -13,7 +12,7 @@ DebugLines::DebugLines(unsigned int id, GameView * view, GameController * contro
 
 void DebugLines::Draw()
 {
-	Graphics * g = ui::Engine::Ref().g;
+	Graphics * g = view->GetGraphics();
 
 	if (view->GetDrawingLine())
 	{

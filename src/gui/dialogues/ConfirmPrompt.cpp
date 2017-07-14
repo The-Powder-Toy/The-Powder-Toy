@@ -1,7 +1,8 @@
 #include "ConfirmPrompt.h"
 #include "gui/Style.h"
-#include "gui/interface/Label.h"
 #include "gui/interface/Button.h"
+#include "gui/interface/Engine.h"
+#include "gui/interface/Label.h"
 #include "gui/interface/ScrollPanel.h"
 #include "PowderToy.h"
 
@@ -40,7 +41,7 @@ ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, ConfirmDial
 		CloseAction(ConfirmPrompt * prompt_, DialogueResult result_) { prompt = prompt_; result = result_; }
 		void ActionCallback(ui::Button * sender)
 		{
-			ui::Engine::Ref().CloseWindow();
+			prompt->CloseActiveWindow();
 			if(prompt->callback)
 				prompt->callback->ConfirmCallback(result);
 			prompt->SelfDestruct();
@@ -64,7 +65,7 @@ ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, ConfirmDial
 	AddComponent(okayButton);
 	SetOkayButton(okayButton);
 
-	ui::Engine::Ref().ShowWindow(this);
+	MakeActiveWindow();
 }
 
 ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, std::string buttonText, ConfirmDialogueCallback * callback_):
@@ -102,7 +103,7 @@ ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, std::string
 		CloseAction(ConfirmPrompt * prompt_, DialogueResult result_) { prompt = prompt_; result = result_; }
 		void ActionCallback(ui::Button * sender)
 		{
-			ui::Engine::Ref().CloseWindow();
+			prompt->CloseActiveWindow();
 			if(prompt->callback)
 				prompt->callback->ConfirmCallback(result);
 			prompt->SelfDestruct();
@@ -126,7 +127,7 @@ ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, std::string
 	AddComponent(okayButton);
 	SetOkayButton(okayButton);
 
-	ui::Engine::Ref().ShowWindow(this);
+	MakeActiveWindow();
 }
 
 bool ConfirmPrompt::Blocking(std::string title, std::string message, std::string buttonText)
@@ -152,7 +153,7 @@ bool ConfirmPrompt::Blocking(std::string title, std::string message, std::string
 
 void ConfirmPrompt::OnDraw()
 {
-	Graphics * g = ui::Engine::Ref().g;
+	Graphics * g = GetGraphics();
 
 	g->clearrect(Position.X-2, Position.Y-2, Size.X+3, Size.Y+3);
 	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 200, 200, 200, 255);

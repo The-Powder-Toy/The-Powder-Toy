@@ -1,4 +1,5 @@
 #include <iostream>
+#include "graphics/Graphics.h"
 #include "gui/interface/Component.h"
 #include "gui/interface/Engine.h"
 #include "gui/interface/Point.h"
@@ -165,6 +166,11 @@ Point Component::GetScreenPos()
 		newPos += GetParent()->Position + GetParent()->ViewportPosition;
 	newPos += Position;
 	return newPos;
+}
+
+Graphics * Component::GetGraphics()
+{
+	return parentstate_->GetGraphics();
 }
 
 // ***** OVERRIDEABLES *****

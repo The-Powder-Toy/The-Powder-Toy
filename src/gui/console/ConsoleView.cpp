@@ -91,7 +91,7 @@ void ConsoleView::NotifyCurrentCommandChanged(ConsoleModel * sender)
 
 void ConsoleView::OnDraw()
 {
-	Graphics * g = ui::Engine::Ref().g;
+	Graphics * g = GetGraphics();
 	g->fillrect(Position.X, Position.Y, Size.X, Size.Y, 0, 0, 0, 110);
 	g->draw_line(Position.X, Position.Y+Size.Y-16, Position.X+Size.X, Position.Y+Size.Y-16, 255, 255, 255, 160);
 	g->draw_line(Position.X, Position.Y+Size.Y, Position.X+Size.X, Position.Y+Size.Y, 255, 255, 255, 200);

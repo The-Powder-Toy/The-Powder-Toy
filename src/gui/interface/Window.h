@@ -1,10 +1,12 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
+#include <string>
 #include <vector>
+#include "Config.h"
 #include "gui/interface/Point.h"
-#include "Engine.h"
 
+class Graphics;
 namespace ui
 {
 
@@ -78,6 +80,10 @@ namespace ui
 		enum OkayMethod { Enter, OkayButton };
 		enum ExitMethod { MouseOutside, Escape, ExitButton };
 
+		void MakeActiveWindow();
+		bool CloseActiveWindow();
+		Graphics * GetGraphics();
+		
 	protected:
 		ui::Button * okayButton;
 		ui::Button * cancelButton;

@@ -1,7 +1,7 @@
 #include <vector>
 
 #include "gui/interface/Panel.h"
-
+#include "gui/interface/Engine.h"
 #include "gui/interface/Point.h"
 #include "gui/interface/Window.h"
 #include "gui/interface/Component.h"

@@ -1,5 +1,6 @@
 #include "gui/Style.h"
 #include "SaveIDMessage.h"
+#include "graphics/Graphics.h"
 #include "gui/interface/Button.h"
 #include "gui/interface/CopyTextButton.h"
 #include "gui/interface/Label.h"
@@ -38,7 +39,7 @@ SaveIDMessage::SaveIDMessage(int id):
 		DismissAction(SaveIDMessage * message_) { message = message_; }
 		void ActionCallback(ui::Button * sender)
 		{
-			ui::Engine::Ref().CloseWindow();
+			message->CloseActiveWindow();
 			message->SelfDestruct();
 		}
 	};
@@ -50,12 +51,12 @@ SaveIDMessage::SaveIDMessage(int id):
 	AddComponent(okayButton);
 	SetCancelButton(okayButton);
 	
-	ui::Engine::Ref().ShowWindow(this);
+	MakeActiveWindow();
 }
 
 void SaveIDMessage::OnDraw()
 {
-	Graphics * g = ui::Engine::Ref().g;
+	Graphics * g = GetGraphics();
 
 	g->clearrect(Position.X-2, Position.Y-2, Size.X+3, Size.Y+3);
 	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 200, 200, 200, 255);
@@ -63,7 +64,7 @@ void SaveIDMessage::OnDraw()
 
 void SaveIDMessage::OnTryExit(ExitMethod method)
 {
-	ui::Engine::Ref().CloseWindow();
+	CloseActiveWindow();
 	SelfDestruct();
 }
 

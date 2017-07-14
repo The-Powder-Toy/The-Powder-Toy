@@ -3,7 +3,7 @@
 #include "common/tpt-thread.h"
 #include "Config.h"
 #include "Gravity.h"
-//#include "powder.h"
+#include "Misc.h"
 
 void Gravity::bilinear_interpolation(float *src, float *dst, int sw, int sh, int rw, int rh)
 {

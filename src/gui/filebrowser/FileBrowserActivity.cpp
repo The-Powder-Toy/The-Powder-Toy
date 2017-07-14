@@ -327,7 +327,7 @@ void FileBrowserActivity::OnTick(float dt)
 
 void FileBrowserActivity::OnDraw()
 {
-	Graphics * g = ui::Engine::Ref().g;
+	Graphics * g = GetGraphics();
 
 	//Window Background+Outline
 	g->clearrect(Position.X-2, Position.Y-2, Size.X+4, Size.Y+4);

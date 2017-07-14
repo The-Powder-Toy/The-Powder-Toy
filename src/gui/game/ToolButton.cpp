@@ -1,4 +1,5 @@
 #include "ToolButton.h"
+#include "graphics/Graphics.h"
 #include "gui/interface/Keys.h"
 #include "gui/interface/Mouse.h"
 #include "Favorite.h"
@@ -44,7 +45,7 @@ void ToolButton::OnMouseUp(int x, int y, unsigned int button)
 
 void ToolButton::Draw(const ui::Point& screenPos)
 {
-	Graphics * g = ui::Engine::Ref().g;
+	Graphics * g = GetGraphics();
 	int totalColour = Appearance.BackgroundInactive.Blue + (3*Appearance.BackgroundInactive.Green) + (2*Appearance.BackgroundInactive.Red);
 
 	if (Appearance.GetTexture())

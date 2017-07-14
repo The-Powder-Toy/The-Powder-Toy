@@ -3,8 +3,9 @@
 
 #include "Border.h"
 #include "Colour.h"
-#include "graphics/Graphics.h"
+#include "graphics/Icons.h"
 
+class VideoBuffer;
 namespace ui
 {
 	class Appearance

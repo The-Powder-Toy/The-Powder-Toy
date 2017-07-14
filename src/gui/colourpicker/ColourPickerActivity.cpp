@@ -258,7 +258,7 @@ void ColourPickerActivity::OnKeyPress(int key, Uint16 character, bool shift, boo
 
 void ColourPickerActivity::OnDraw()
 {
-	Graphics * g = ui::Engine::Ref().g;
+	Graphics * g = GetGraphics();
 	//g->clearrect(Position.X-2, Position.Y-2, Size.X+3, Size.Y+3);
 	g->fillrect(Position.X-2, Position.Y-2, Size.X+3, Size.Y+3, 0, 0, 0, currentAlpha);
 	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 255, 255, 255, 255);

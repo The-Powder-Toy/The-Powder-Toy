@@ -1,6 +1,7 @@
 #include "gui/Style.h"
 #include "ErrorMessage.h"
 #include "gui/interface/Button.h"
+#include "gui/interface/Engine.h"
 #include "gui/interface/Label.h"
 #include "PowderToy.h"
 
@@ -30,7 +31,7 @@ ErrorMessage::ErrorMessage(std::string title, std::string message,  ErrorMessage
 		DismissAction(ErrorMessage * message_) { message = message_; }
 		void ActionCallback(ui::Button * sender)
 		{
-			ui::Engine::Ref().CloseWindow();
+			message->CloseActiveWindow();
 			if(message->callback)
 				message->callback->DismissCallback();
 			message->SelfDestruct();
@@ -46,7 +47,7 @@ ErrorMessage::ErrorMessage(std::string title, std::string message,  ErrorMessage
 	SetOkayButton(okayButton);
 	SetCancelButton(okayButton);
 	
-	ui::Engine::Ref().ShowWindow(this);
+	MakeActiveWindow();
 }
 
 void ErrorMessage::Blocking(std::string title, std::string message)
@@ -65,7 +66,7 @@ void ErrorMessage::Blocking(std::string title, std::string message)
 
 void ErrorMessage::OnDraw()
 {
-	Graphics * g = ui::Engine::Ref().g;
+	Graphics * g = GetGraphics();
 
 	g->clearrect(Position.X-2, Position.Y-2, Size.X+3, Size.Y+3);
 	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 200, 200, 200, 255);

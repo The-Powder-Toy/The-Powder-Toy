@@ -1,5 +1,6 @@
 #include "ProgressBar.h"
 #include "common/tpt-minmax.h"
+#include "graphics/Graphics.h"
 #include "gui/Style.h"
 
 using namespace ui;
@@ -38,7 +39,7 @@ std::string ProgressBar::GetStatus()
 
 void ProgressBar::Draw(const Point & screenPos)
 {
-	Graphics * g = ui::Engine::Ref().g;
+	Graphics * g = GetGraphics();
 
 	ui::Colour progressBarColour = style::Colour::WarningTitle;
 

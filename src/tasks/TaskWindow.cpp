@@ -1,6 +1,7 @@
 #include <sstream>
 #include "common/tpt-minmax.h"
 #include "gui/interface/Label.h"
+#include "gui/interface/Engine.h"
 #include "TaskWindow.h"
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/Style.h"
@@ -27,7 +28,7 @@ TaskWindow::TaskWindow(std::string title_, Task * task_, bool closeOnDone):
 	statusLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(statusLabel);
 
-	ui::Engine::Ref().ShowWindow(this);
+	MakeActiveWindow();
 
 	task->AddTaskListener(this);
 	task->Start();
@@ -53,9 +54,8 @@ void TaskWindow::NotifyDone(Task * task)
 
 void TaskWindow::Exit()
 {
-	if(ui::Engine::Ref().GetWindow()==this)
+	if (CloseActiveWindow())
 	{
-		ui::Engine::Ref().CloseWindow();
 		SelfDestruct();
 	}
 }
@@ -87,7 +87,7 @@ void TaskWindow::OnTick(float dt)
 
 void TaskWindow::OnDraw()
 {
-	Graphics * g = ui::Engine::Ref().g;
+	Graphics * g = GetGraphics();
 	g->clearrect(Position.X-2, Position.Y-2, Size.X+3, Size.Y+3);
 	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 255, 255, 255, 255);
 

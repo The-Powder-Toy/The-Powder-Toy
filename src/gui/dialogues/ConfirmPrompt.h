@@ -1,6 +1,7 @@
 #ifndef CONFIRMPROMPT_H_
 #define CONFIRMPROMPT_H_
 
+#include <string>
 #include "gui/interface/Window.h"
 
 class ConfirmDialogueCallback;

@@ -1,5 +1,6 @@
 #include "OptionsController.h"
 #include "gui/dialogues/ErrorMessage.h"
+#include "gui/interface/Engine.h"
 
 OptionsController::OptionsController(GameModel * gModel_, ControllerCallback * callback_):
 	gModel(gModel_),
@@ -93,10 +94,7 @@ OptionsView * OptionsController::GetView()
 
 void OptionsController::Exit()
 {
-	if (ui::Engine::Ref().GetWindow() == view)
-	{
-		ui::Engine::Ref().CloseWindow();
-	}
+	view->CloseActiveWindow();
 	// only update on close, it would be hard to edit if the changes were live
 	ui::Engine::Ref().Set3dDepth(depth3d);
 	if (callback)
@@ -105,11 +103,9 @@ void OptionsController::Exit()
 }
 
 
-OptionsController::~OptionsController() {
-	if(ui::Engine::Ref().GetWindow() == view)
-	{
-		ui::Engine::Ref().CloseWindow();
-	}
+OptionsController::~OptionsController()
+{
+	view->CloseActiveWindow();
 	delete model;
 	delete view;
 	delete callback;

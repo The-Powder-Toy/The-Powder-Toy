@@ -365,7 +365,7 @@ void RenderView::NotifyColourChanged(RenderModel * sender)
 
 void RenderView::OnDraw()
 {
-	Graphics * g = ui::Engine::Ref().g;
+	Graphics * g = GetGraphics();
 	g->clearrect(-1, -1, WINDOWW+1, WINDOWH+1);
 	if(ren)
 	{

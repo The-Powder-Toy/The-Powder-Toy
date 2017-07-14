@@ -1,5 +1,6 @@
 #include <iostream>
 #include "Window.h"
+#include "Engine.h"
 #include "Keys.h"
 #include "Component.h"
 #include "gui/interface/Point.h"
@@ -116,6 +117,27 @@ bool Window::IsFocused(const Component* c) const
 void Window::FocusComponent(Component* c)
 {
 	this->focusedComponent_ = c;
+}
+
+void Window::MakeActiveWindow()
+{
+	if (Engine::Ref().GetWindow() != this)
+		Engine::Ref().ShowWindow(this);
+}
+
+bool Window::CloseActiveWindow()
+{
+	if (Engine::Ref().GetWindow() == this)
+	{
+		Engine::Ref().CloseWindow();
+		return true;
+	}
+	return false;
+}
+
+Graphics * Window::GetGraphics()
+{
+	return Engine::Ref().g;
 }
 
 void Window::DoExit()

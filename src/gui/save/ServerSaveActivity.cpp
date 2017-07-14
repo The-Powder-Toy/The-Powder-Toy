@@ -1,4 +1,5 @@
 #include "ServerSaveActivity.h"
+#include "graphics/Graphics.h"
 #include "gui/interface/Label.h"
 #include "gui/interface/Textbox.h"
 #include "gui/interface/Button.h"
@@ -358,7 +359,7 @@ void ServerSaveActivity::OnTick(float dt)
 
 void ServerSaveActivity::OnDraw()
 {
-	Graphics * g = ui::Engine::Ref().g;
+	Graphics * g = GetGraphics();
 	g->draw_rgba_image(save_to_server_image, -10, 0, 0.7f);
 	g->clearrect(Position.X-2, Position.Y-2, Size.X+3, Size.Y+3);
 	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 255, 255, 255, 255);

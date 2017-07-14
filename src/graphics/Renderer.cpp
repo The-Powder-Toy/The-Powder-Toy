@@ -4,8 +4,10 @@
 #include <cstdio>
 #include <cstdlib>
 #include "Config.h"
+#include "Misc.h"
 #include "Renderer.h"
 #include "Graphics.h"
+#include "gui/game/RenderPreset.h"
 #include "simulation/Elements.h"
 #include "simulation/ElementGraphics.h"
 #include "simulation/Air.h"

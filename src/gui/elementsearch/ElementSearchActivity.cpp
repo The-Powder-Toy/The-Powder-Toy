@@ -188,7 +188,7 @@ void ElementSearchActivity::SetActiveTool(int selectionState, Tool * tool)
 
 void ElementSearchActivity::OnDraw()
 {
-	Graphics * g = ui::Engine::Ref().g;
+	Graphics * g = GetGraphics();
 	g->clearrect(Position.X-2, Position.Y-2, Size.X+3, Size.Y+3);
 	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 255, 255, 255, 255);
 

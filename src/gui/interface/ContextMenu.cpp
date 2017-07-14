@@ -1,5 +1,6 @@
 #include "ContextMenu.h"
 #include "common/tpt-minmax.h"
+#include "graphics/Graphics.h"
 
 using namespace ui;
 
@@ -52,20 +53,21 @@ void ContextMenu::Show(ui::Point position)
 		currentY += 15;
 	}
 
-	ui::Engine::Ref().ShowWindow(this);
+	MakeActiveWindow();
 }
 
 void ContextMenu::ActionCallbackItem(ui::Button *sender, int item)
 {
-	ui::Engine::Ref().CloseWindow();
+	CloseActiveWindow();
 	Halt();
 	source->OnContextMenuAction(item);
 }
 
 void ContextMenu::OnMouseDown(int x, int y, unsigned button)
 {
-	if(!(x > Position.X && y > Position.Y && y < Position.Y+Size.Y && x < Position.X+Size.X)) //Clicked outside window
-		ui::Engine::Ref().CloseWindow();
+	// Clicked outside window
+	if (!(x > Position.X && y > Position.Y && y < Position.Y+Size.Y && x < Position.X+Size.X))
+		CloseActiveWindow();
 }
 
 void ContextMenu::SetItem(int id, std::string text)
@@ -99,7 +101,7 @@ void ContextMenu::AddItem(ContextMenuItem item)
 
 void ContextMenu::OnDraw()
 {
-	Graphics * g = ui::Engine::Ref().g;
+	Graphics * g = GetGraphics();
 	g->fillrect(Position.X, Position.Y, Size.X, Size.Y, 100, 100, 100, 255);
 	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, Appearance.BackgroundInactive.Red, Appearance.BackgroundInactive.Green, Appearance.BackgroundInactive.Blue, Appearance.BackgroundInactive.Alpha);
 }

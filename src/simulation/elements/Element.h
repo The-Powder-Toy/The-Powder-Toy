@@ -1,13 +1,14 @@
 #ifndef ELEMENTCLASS_H
 #define ELEMENTCLASS_H
 
+#include "graphics/Pixel.h"
 #include "simulation/Simulation.h"
-#include "graphics/Renderer.h"
 #include "simulation/Elements.h"
 #include "simulation/StructProperty.h"
 
 class Simulation;
 class Renderer;
+class VideoBuffer;
 struct Particle;
 class Element
 {

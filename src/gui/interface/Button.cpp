@@ -1,7 +1,7 @@
 #include <iostream>
 #include "gui/interface/Button.h"
+#include "gui/interface/Window.h"
 #include "graphics/Graphics.h"
-#include "Engine.h"
 #include "Misc.h"
 
 namespace ui {
@@ -75,7 +75,7 @@ void Button::Draw(const Point& screenPos)
 		TextPosition(ButtonText);
 		drawn = true;
 	}
-	Graphics * g = ui::Engine::Ref().g;
+	Graphics * g = GetGraphics();
 	Point Position = screenPos;
 	ui::Colour bgColour(0, 0, 0);
 

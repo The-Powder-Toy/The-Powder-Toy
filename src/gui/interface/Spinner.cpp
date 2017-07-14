@@ -1,6 +1,7 @@
 #include <cmath>
 #include <iostream>
 #include "Spinner.h"
+#include "graphics/Graphics.h"
 
 using namespace ui;
 
@@ -20,7 +21,7 @@ void Spinner::Tick(float dt)
 }
 void Spinner::Draw(const Point& screenPos)
 {
-	Graphics * g = ui::Engine::Ref().g;
+	Graphics * g = GetGraphics();
 	int baseX = screenPos.X+(Size.X/2);
 	int baseY = screenPos.Y+(Size.Y/2);
 	int lineInner = (Size.X/2);

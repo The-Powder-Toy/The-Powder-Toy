@@ -1,4 +1,5 @@
 #include "RenderModel.h"
+#include "gui/game/RenderPreset.h"
 
 RenderModel::RenderModel():
 	renderer(NULL)

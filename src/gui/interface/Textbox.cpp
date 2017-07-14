@@ -4,6 +4,7 @@
 #include "Config.h"
 #include "Platform.h"
 #include "Format.h"
+#include "graphics/Graphics.h"
 #include "gui/interface/Point.h"
 #include "gui/interface/Textbox.h"
 #include "gui/interface/Keys.h"
@@ -532,7 +533,7 @@ void Textbox::Draw(const Point& screenPos)
 {
 	Label::Draw(screenPos);
 
-	Graphics * g = Engine::Ref().g;
+	Graphics * g = GetGraphics();
 	if(IsFocused())
 	{
 		if(border) g->drawrect(screenPos.X, screenPos.Y, Size.X, Size.Y, 255, 255, 255, 255);
@@ -694,7 +695,7 @@ void Textbox::Draw(const Point& screenPos)
 		TextPosition();
 		drawn = true;
 	}
-	Graphics * g = Engine::Ref().g;
+	Graphics * g = GetGraphics();
 	if(IsFocused())
 	{
 		if(border) g->drawrect(screenPos.X, screenPos.Y, Size.X, Size.Y, 255, 255, 255, 255);

@@ -1,9 +1,11 @@
 #pragma once
 
+#include <string>
+#include "Config.h"
 #include "Appearance.h"
 #include "Point.h"
-#include "Window.h"
 
+class Graphics;
 namespace ui
 {
 	class ContextMenu;
@@ -26,6 +28,7 @@ namespace ui
 		ui::Point textSize;
 		ui::Point iconPosition;
 		ui::ContextMenu * menu;
+		Graphics * GetGraphics();
 	public:
 		Component(Window* parent_state);
 		Component(Point position, Point size);

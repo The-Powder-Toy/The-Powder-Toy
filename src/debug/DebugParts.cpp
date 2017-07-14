@@ -1,7 +1,8 @@
+#include <iomanip>
+#include <sstream>
 #include "DebugParts.h"
 #include "gui/interface/Engine.h"
 #include "simulation/Simulation.h"
-#include <iomanip>
 
 DebugParts::DebugParts(unsigned int id, Simulation * sim):
 	DebugInfo(id),

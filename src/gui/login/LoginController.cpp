@@ -27,21 +27,16 @@ User LoginController::GetUser()
 
 void LoginController::Exit()
 {
-	if(ui::Engine::Ref().GetWindow() == loginView)
-	{
-		ui::Engine::Ref().CloseWindow();
-	}
+	loginView->CloseActiveWindow();
 	Client::Ref().SetAuthUser(loginModel->GetUser());
 	if(callback)
 		callback->ControllerExit();
 	HasExited = true;
 }
 
-LoginController::~LoginController() {
-	if(ui::Engine::Ref().GetWindow() == loginView)
-	{
-		ui::Engine::Ref().CloseWindow();
-	}
+LoginController::~LoginController()
+{
+	loginView->CloseActiveWindow();
 	delete loginModel;
 	delete loginView;
 }

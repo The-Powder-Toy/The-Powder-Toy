@@ -329,7 +329,7 @@ void PreviewView::CheckComment()
 void PreviewView::DoDraw()
 {
 	Window::DoDraw();
-	Graphics * g = ui::Engine::Ref().g;
+	Graphics * g = GetGraphics();
 	for (size_t i = 0; i < commentTextComponents.size(); i++)
 	{
 		int linePos = commentTextComponents[i]->Position.Y+commentsPanel->ViewportPosition.Y+commentTextComponents[i]->Size.Y+4;
@@ -353,7 +353,7 @@ void PreviewView::DoDraw()
 
 void PreviewView::OnDraw()
 {
-	Graphics * g = ui::Engine::Ref().g;
+	Graphics * g = GetGraphics();
 
 	//Window Background+Outline
 	g->clearrect(Position.X-2, Position.Y-2, Size.X+4, Size.Y+4);

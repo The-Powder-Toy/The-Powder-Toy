@@ -20,6 +20,7 @@ using namespace std;
 
 class GameView;
 class GameController;
+class SaveFile;
 class Simulation;
 class Renderer;
 

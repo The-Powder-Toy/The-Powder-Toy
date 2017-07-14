@@ -14,6 +14,7 @@ namespace ui
 
 class Task;
 class Thumbnail;
+class VideoBuffer;
 class ServerSaveActivity: public WindowActivity, public RequestListener, public TaskListener
 {
 public:

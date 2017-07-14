@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 
+#include "graphics/Pixel.h"
 #include "gui/interface/Point.h"
 #include "gui/interface/Window.h"
 #include "gui/interface/Component.h"
