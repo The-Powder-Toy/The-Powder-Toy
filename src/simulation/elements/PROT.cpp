@@ -127,15 +127,17 @@ int Element_PROT::update(UPDATE_FUNC_ARGS)
 		int newID, element;
 		if (parts[i].tmp > 500000)
 			element = PT_SING; //particle accelerators are known to create earth-destroying black holes
-		else if (parts[i].tmp > 500)
+		else if (parts[i].tmp > 700)
 			element = PT_PLUT;
-		else if (parts[i].tmp > 320)
+		else if (parts[i].tmp > 420)
 			element = PT_URAN;
-		else if (parts[i].tmp > 150)
+		else if (parts[i].tmp > 310)
+			element = PT_POLO
+		else if (parts[i].tmp > 250)
 			element = PT_PLSM;
-		else if (parts[i].tmp > 50)
+		else if (parts[i].tmp > 100)
 			element = PT_O2;
-		else if (parts[i].tmp > 20)
+		else if (parts[i].tmp > 50)
 			element = PT_CO2;
 		else
 			element = PT_NBLE;
