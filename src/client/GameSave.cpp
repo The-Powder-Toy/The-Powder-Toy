@@ -2395,7 +2395,12 @@ std::set<int> GetNestedSaveIDs(Json::Value j)
 		{
 			for (Json::Value::ArrayIndex i = 0; i < j[member].size(); i++)
 			{
-				// only supports objects here because that is all we need
+				// only supports objects and ints here because that is all we need
+				if (j[member][i].isInt())
+				{
+					saveIDs.insert(j[member][i].asInt());
+					continue;
+				}
 				if (!j[member][i].isObject())
 					continue;
 				std::set<int> nestedSaveIDs = GetNestedSaveIDs(j[member][i]);
@@ -2427,7 +2432,12 @@ void GameSave::ConvertJsonToBson(bson *b, Json::Value j, int depth)
 			std::set<int> saveIDs = std::set<int>();
 			for (Json::Value::ArrayIndex i = 0; i < j[member].size(); i++)
 			{
-				// only supports objects here because that is all we need
+				// only supports objects and ints here because that is all we need
+				if (j[member][i].isInt())
+				{
+					saveIDs.insert(j[member][i].asInt());
+					continue;
+				}
 				if (!j[member][i].isObject())
 					continue;
 				if (depth > 4)
