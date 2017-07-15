@@ -242,11 +242,14 @@ void GameController::HistoryRestore()
 	if (historyPosition == history.size())
 	{
 		Snapshot * newSnap = gameModel->GetSimulation()->CreateSnapshot();
+		if (newSnap)
+			newSnap->Authors = Client::Ref().GetAuthorInfo();
 		delete gameModel->GetRedoHistory();
 		gameModel->SetRedoHistory(newSnap);
 	}
 	Snapshot * snap = history[newHistoryPosition];
 	gameModel->GetSimulation()->Restore(*snap);
+	Client::Ref().OverwriteAuthorInfo(snap->Authors);
 	gameModel->SetHistory(history);
 	gameModel->SetHistoryPosition(newHistoryPosition);
 }
@@ -258,6 +261,7 @@ void GameController::HistorySnapshot()
 	Snapshot * newSnap = gameModel->GetSimulation()->CreateSnapshot();
 	if (newSnap)
 	{
+		newSnap->Authors = Client::Ref().GetAuthorInfo();
 		while (historyPosition < history.size())
 		{
 			Snapshot * snap = history.back();
@@ -295,6 +299,7 @@ void GameController::HistoryForward()
 	if (!snap)
 		return;
 	gameModel->GetSimulation()->Restore(*snap);
+	Client::Ref().OverwriteAuthorInfo(snap->Authors);
 	gameModel->SetHistoryPosition(newHistoryPosition);
 }
 

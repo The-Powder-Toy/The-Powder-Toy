@@ -97,12 +97,10 @@ public:
 	void MergeStampAuthorInfo(Json::Value linksToAdd);
 	void MergeAuthorInfo(Json::Value linksToAdd);
 	void OverwriteAuthorInfo(Json::Value overwrite) { authors = overwrite; }
+	Json::Value GetAuthorInfo() { return authors; }
 	void SaveAuthorInfo(Json::Value *saveInto);
 	void ClearAuthorInfo() { authors.clear(); }
 	bool IsAuthorsEmpty() { return authors.size() == 0; }
-#if defined(DEBUG) || defined(SNAPSHOT)
-	std::string GetAuthorString() { return authors.toStyledString(); }
-#endif
 
 	UpdateInfo GetUpdateInfo();
 

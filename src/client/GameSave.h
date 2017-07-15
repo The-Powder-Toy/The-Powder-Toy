@@ -116,7 +116,7 @@ private:
 	void readOPS(char * data, int dataLength);
 	void readPSv(char * data, int dataLength);
 	char * serialiseOPS(unsigned int & dataSize);
-	void ConvertJsonToBson(bson *b, Json::Value j);
+	void ConvertJsonToBson(bson *b, Json::Value j, int depth = 0);
 	void ConvertBsonToJson(bson_iterator *b, Json::Value *j);
 };
 

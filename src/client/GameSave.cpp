@@ -3,6 +3,7 @@
 #include <sstream>
 #include <cmath>
 #include <vector>
+#include <set>
 #include <bzlib.h>
 #include "Config.h"
 #include "Format.h"
@@ -1134,38 +1135,6 @@ fin:
 	bson_destroy(&b);
 	free(freeIndices);
 	free(partsSimIndex);
-}
-
-void GameSave::ConvertBsonToJson(bson_iterator *iter, Json::Value *j)
-{
-	bson_iterator subiter;
-	bson_iterator_subiterator(iter, &subiter);
-	while (bson_iterator_next(&subiter))
-	{
-		std::string key = bson_iterator_key(&subiter);
-		if (bson_iterator_type(&subiter) == BSON_STRING)
-			(*j)[key] = bson_iterator_string(&subiter);
-		else if (bson_iterator_type(&subiter) == BSON_BOOL)
-			(*j)[key] = bson_iterator_bool(&subiter);
-		else if (bson_iterator_type(&subiter) == BSON_INT)
-			(*j)[key] = bson_iterator_int(&subiter);
-		else if (bson_iterator_type(&subiter) == BSON_LONG)
-			(*j)[key] = (Json::Value::Int64)bson_iterator_long(&subiter);
-		else if (bson_iterator_type(&subiter) == BSON_ARRAY)
-		{
-			bson_iterator arrayiter;
-			bson_iterator_subiterator(&subiter, &arrayiter);
-			while (bson_iterator_next(&arrayiter))
-			{
-				if (bson_iterator_type(&arrayiter) == BSON_OBJECT && !strcmp(bson_iterator_key(&arrayiter), "part"))
-				{
-					Json::Value tempPart;
-					ConvertBsonToJson(&arrayiter, &tempPart);
-					(*j)["links"].append(tempPart);
-				}
-			}
-		}
-	}
 }
 
 void GameSave::readPSv(char * data, int dataLength)
@@ -2377,8 +2346,68 @@ fin:
 	return (char*)outputData;
 }
 
+void GameSave::ConvertBsonToJson(bson_iterator *iter, Json::Value *j)
+{
+	bson_iterator subiter;
+	bson_iterator_subiterator(iter, &subiter);
+	while (bson_iterator_next(&subiter))
+	{
+		std::string key = bson_iterator_key(&subiter);
+		if (bson_iterator_type(&subiter) == BSON_STRING)
+			(*j)[key] = bson_iterator_string(&subiter);
+		else if (bson_iterator_type(&subiter) == BSON_BOOL)
+			(*j)[key] = bson_iterator_bool(&subiter);
+		else if (bson_iterator_type(&subiter) == BSON_INT)
+			(*j)[key] = bson_iterator_int(&subiter);
+		else if (bson_iterator_type(&subiter) == BSON_LONG)
+			(*j)[key] = (Json::Value::Int64)bson_iterator_long(&subiter);
+		else if (bson_iterator_type(&subiter) == BSON_ARRAY)
+		{
+			bson_iterator arrayiter;
+			bson_iterator_subiterator(&subiter, &arrayiter);
+			while (bson_iterator_next(&arrayiter))
+			{
+				if (bson_iterator_type(&arrayiter) == BSON_OBJECT && !strcmp(bson_iterator_key(&arrayiter), "part"))
+				{
+					Json::Value tempPart;
+					ConvertBsonToJson(&arrayiter, &tempPart);
+					(*j)["links"].append(tempPart);
+				}
+				else if (bson_iterator_type(&arrayiter) == BSON_INT && !strcmp(bson_iterator_key(&arrayiter), "saveID"))
+				{
+					(*j)["links"].append(bson_iterator_int(&arrayiter));
+				}
+			}
+		}
+	}
+}
+
+std::set<int> GetNestedSaveIDs(Json::Value j)
+{
+	Json::Value::Members members = j.getMemberNames();
+	std::set<int> saveIDs = std::set<int>();
+	for (Json::Value::Members::iterator iter = members.begin(), end = members.end(); iter != end; ++iter)
+	{
+		std::string member = *iter;
+		if (member == "id")
+			saveIDs.insert(j[member].asInt());
+		else if (j[member].isArray())
+		{
+			for (Json::Value::ArrayIndex i = 0; i < j[member].size(); i++)
+			{
+				// only supports objects here because that is all we need
+				if (!j[member][i].isObject())
+					continue;
+				std::set<int> nestedSaveIDs = GetNestedSaveIDs(j[member][i]);
+				saveIDs.insert(nestedSaveIDs.begin(), nestedSaveIDs.end());
+			}
+		}
+	}
+	return saveIDs;
+}
+
 // converts a json object to bson
-void GameSave::ConvertJsonToBson(bson *b, Json::Value j)
+void GameSave::ConvertJsonToBson(bson *b, Json::Value j, int depth)
 {
 	Json::Value::Members members = j.getMemberNames();
 	for (Json::Value::Members::iterator iter = members.begin(), end = members.end(); iter != end; ++iter)
@@ -2395,14 +2424,27 @@ void GameSave::ConvertJsonToBson(bson *b, Json::Value j)
 		else if (j[member].isArray())
 		{
 			bson_append_start_array(b, member.c_str());
+			std::set<int> saveIDs = std::set<int>();
 			for (Json::Value::ArrayIndex i = 0; i < j[member].size(); i++)
 			{
 				// only supports objects here because that is all we need
 				if (!j[member][i].isObject())
 					continue;
-				bson_append_start_object(b, "part");
-				ConvertJsonToBson(b, j[member][i]);
-				bson_append_finish_object(b);
+				if (depth > 4)
+				{
+					std::set<int> nestedSaveIDs = GetNestedSaveIDs(j[member][i]);
+					saveIDs.insert(nestedSaveIDs.begin(), nestedSaveIDs.end());
+				}
+				else
+				{
+					bson_append_start_object(b, "part");
+					ConvertJsonToBson(b, j[member][i], depth+1);
+					bson_append_finish_object(b);
+				}
+			}
+			for (std::set<int>::iterator iter = saveIDs.begin(), end = saveIDs.end(); iter != end; ++iter)
+			{
+				bson_append_int(b, "saveID", *iter);
 			}
 			bson_append_finish_array(b);
 		}

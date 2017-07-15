@@ -266,7 +266,7 @@ void ServerSaveActivity::AddAuthorInfo()
 	serverSaveInfo["username"] = Client::Ref().GetAuthUser().Username;
 	serverSaveInfo["title"] = save.GetName();
 	serverSaveInfo["description"] = save.GetDescription();
-	serverSaveInfo["published"] = save.GetPublished();
+	serverSaveInfo["published"] = (int)save.GetPublished();
 	serverSaveInfo["date"] = (Json::Value::UInt64)time(NULL);
 	Client::Ref().SaveAuthorInfo(&serverSaveInfo);
 	save.GetGameSave()->authors = serverSaveInfo;

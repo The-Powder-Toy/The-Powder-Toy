@@ -659,7 +659,7 @@ void GameModel::SetSave(SaveInfo * newSave)
 				saveData->authors["username"] = newSave->userName;
 				saveData->authors["title"] = newSave->name;
 				saveData->authors["description"] = newSave->Description;
-				saveData->authors["published"] = newSave->Published;
+				saveData->authors["published"] = (int)newSave->Published;
 				saveData->authors["date"] = newSave->updatedDate;
 			}
 			// This save was probably just created, and we didn't know the ID when creating it
