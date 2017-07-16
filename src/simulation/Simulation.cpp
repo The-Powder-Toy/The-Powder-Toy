@@ -4419,24 +4419,8 @@ killed:
 						continue;
 					}
 
-					// this should be replaced with a particle type attribute ("photwl" or something)
-					if ((r & 0xFF) == PT_PSCN) parts[i].ctype  = 0x00000000;
-					else if ((r & 0xFF) == PT_NSCN) parts[i].ctype  = 0x00000000;
-					else if ((r & 0xFF) == PT_SPRK) parts[i].ctype  = 0x00000000;
-					else if ((r & 0xFF) == PT_COAL) parts[i].ctype  = 0x00000000;
-					else if ((r & 0xFF) == PT_BCOL) parts[i].ctype  = 0x00000000;
-					else if ((r & 0xFF) == PT_PLEX) parts[i].ctype &= 0x1F00003E;
-					else if ((r & 0xFF) == PT_NITR) parts[i].ctype &= 0x0007C000;
-					else if ((r & 0xFF) == PT_NBLE) parts[i].ctype &= 0x3FFF8000;
-					else if ((r & 0xFF) == PT_LAVA) parts[i].ctype &= 0x3FF00000;
-					else if ((r & 0xFF) == PT_ACID) parts[i].ctype &= 0x1FE001FE;
-					else if ((r & 0xFF) == PT_DUST) parts[i].ctype &= 0x3FFFFFC0;
-					else if ((r & 0xFF) == PT_SNOW) parts[i].ctype &= 0x03FFFFFF;
-					else if ((r & 0xFF) == PT_GOO)  parts[i].ctype &= 0x3FFAAA00;
-					else if ((r & 0xFF) == PT_PLNT) parts[i].ctype &= 0x0007C000;
-					else if ((r & 0xFF) == PT_PLUT) parts[i].ctype &= 0x001FCE00;
-					else if ((r & 0xFF) == PT_URAN) parts[i].ctype &= 0x003FC000;
-					else if ((r & 0xFF) == PT_GOLD) parts[i].ctype &= 0x3C038100;
+					if (r&0xFF)
+						parts[i].ctype &= elements[r&0xFF].PhotonReflectWavelengths;
 
 					if (get_normal_interp(t, parts[i].x, parts[i].y, parts[i].vx, parts[i].vy, &nrx, &nry))
 					{

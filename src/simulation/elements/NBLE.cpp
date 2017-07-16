@@ -23,6 +23,7 @@ Element_NBLE::Element_NBLE()
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 1;
+	PhotonReflectWavelengths = 0x3FFF8000;
 
 	Weight = 1;
 

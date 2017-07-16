@@ -23,6 +23,7 @@ Element_PLUT::Element_PLUT()
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 0;
+	PhotonReflectWavelengths = 0x001FCE00;
 
 	Weight = 90;
 

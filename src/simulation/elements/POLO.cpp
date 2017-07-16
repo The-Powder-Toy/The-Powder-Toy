@@ -23,6 +23,7 @@ Element_POLO::Element_POLO()
 	Explosive = 0;
 	Meltable = 1;
 	Hardness = 0;
+	PhotonReflectWavelengths = 0x000FF200;
 
 	Weight = 90;
 

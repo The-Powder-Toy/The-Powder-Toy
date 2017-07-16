@@ -23,6 +23,7 @@ Element_NITR::Element_NITR()
 	Explosive = 2;
 	Meltable = 0;
 	Hardness = 3;
+	PhotonReflectWavelengths = 0x0007C000;
 
 	Weight = 23;
 

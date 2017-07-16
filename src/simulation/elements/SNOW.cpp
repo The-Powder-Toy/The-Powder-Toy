@@ -23,6 +23,7 @@ Element_SNOW::Element_SNOW()
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 20;
+	PhotonReflectWavelengths = 0x03FFFFFF;
 
 	Weight = 50;
 

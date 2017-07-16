@@ -23,6 +23,7 @@ Element_BCOL::Element_BCOL()
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 2;
+	PhotonReflectWavelengths = 0x00000000;
 
 	Weight = 90;
 

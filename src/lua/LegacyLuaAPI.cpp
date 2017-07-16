@@ -288,6 +288,12 @@ int luacon_element_getproperty(const char * key, int * format, unsigned int * mo
 		offset = offsetof(Element, Hardness);
 		*format = 0;
 	}
+	// Not sure if this should be enabled
+	// Also, needs a new format type for unsigned ints
+	/*else if (!strcmp(key, "photonreflectwavelengths")) {
+		offset = offsetof(Element, PhotonReflectWavelengths);
+		*format = ;
+	}*/
 	else if (!strcmp(key, "menu")) {
 		offset = offsetof(Element, MenuVisible);
 		*format = 0;

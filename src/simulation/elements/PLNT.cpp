@@ -23,6 +23,7 @@ Element_PLNT::Element_PLNT()
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 10;
+	PhotonReflectWavelengths = 0x0007C000;
 
 	Weight = 100;
 

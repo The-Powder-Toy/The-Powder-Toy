@@ -33,6 +33,8 @@ public:
 	int Explosive;
 	int Meltable;
 	int Hardness;
+	// Photon wavelengths are ANDed with this value when a photon hits an element, meaning that only wavelengths present in both this value and the original photon will remain in the reflected photon
+	unsigned int PhotonReflectWavelengths;
 	int Weight;
 	float Temperature;
 	unsigned char HeatConduct;

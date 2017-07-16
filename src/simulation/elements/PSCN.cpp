@@ -23,6 +23,7 @@ Element_PSCN::Element_PSCN()
 	Explosive = 0;
 	Meltable = 1;
 	Hardness = 1;
+	PhotonReflectWavelengths = 0x00000000;
 
 	Weight = 100;
 
