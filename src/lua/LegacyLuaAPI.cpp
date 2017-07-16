@@ -32,8 +32,6 @@ int luacon_partread(lua_State* l)
 
 	if (i < 0 || i >= NPART)
 		return luaL_error(l, "Out of range");
-	if (!luacon_sim->parts[i].type)
-		return luaL_error(l, "dead particle");
 	if (offset == -1)
 	{
 		if (!key.compare("id"))
@@ -71,7 +69,7 @@ int luacon_partwrite(lua_State* l)
 	if (i < 0 || i >= NPART)
 		return luaL_error(l, "Out of range");
 	if (!luacon_sim->parts[i].type)
-		return luaL_error(l, "dead particle");
+		return luaL_error(l, "Dead particle");
 	if (offset == -1)
 		return luaL_error(l, "Invalid property");
 
@@ -94,16 +92,8 @@ int luacon_partwrite(lua_State* l)
 int luacon_partsread(lua_State* l)
 {
 	int i = luaL_optinteger(l, 2, 0);
-
-	if (i<0 || i>=NPART)
-	{
+	if (i < 0 || i >= NPART)
 		return luaL_error(l, "array index out of bounds");
-	}
-	
-	if (!luacon_sim->parts[i].type)
-	{
-		return luaL_error(l, "dead particle");
-	}
 
 	lua_rawgeti(l, LUA_REGISTRYINDEX, tptPart);
 	cIndex = i;
