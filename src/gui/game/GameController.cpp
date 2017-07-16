@@ -331,7 +331,7 @@ void GameController::PlaceSave(ui::Point position)
 		{
 			gameModel->SetPaused(placeSave->paused | gameModel->GetPaused());
 			// if this is a clipboard and there is no author info, don't do anything
-			if (Client::Ref().IsAuthorsEmpty() || placeSave->authors["type"] != "clipboard")
+			if (placeSave->authors.size() && (Client::Ref().IsAuthorsEmpty() || placeSave->authors["type"] != "clipboard"))
 				Client::Ref().MergeStampAuthorInfo(placeSave->authors);
 		}
 	}
