@@ -637,6 +637,7 @@ void GameSave::readOPS(char * data, int dataLength)
 				fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
 			}
 		}
+#ifndef RENDERER
 		else if (!strcmp(bson_iterator_key(&iter), "authors"))
 		{
 			if (bson_iterator_type(&iter) == BSON_OBJECT)
@@ -651,6 +652,7 @@ void GameSave::readOPS(char * data, int dataLength)
 				fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
 			}
 		}
+#endif
 	}
 
 	//Read wall and fan data
@@ -2389,7 +2391,7 @@ std::set<int> GetNestedSaveIDs(Json::Value j)
 	for (Json::Value::Members::iterator iter = members.begin(), end = members.end(); iter != end; ++iter)
 	{
 		std::string member = *iter;
-		if (member == "id")
+		if (member == "id" && j[member].isInt())
 			saveIDs.insert(j[member].asInt());
 		else if (j[member].isArray())
 		{
