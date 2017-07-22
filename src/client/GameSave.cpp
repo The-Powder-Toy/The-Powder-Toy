@@ -1082,6 +1082,12 @@ void GameSave::readOPS(char * data, int dataLength)
 							}
 						}
 						break;
+					case PT_CLNE:
+					case PT_BCLN:
+						if (savedVersion < 88)
+						{
+							particles[newIndex].flags |= FLAG_OLDCLNE;
+						}
 					}
 					//note: PSv was used in version 77.0 and every version before, add something in PSv too if the element is that old
 					newIndex++;
