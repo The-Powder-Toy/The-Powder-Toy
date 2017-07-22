@@ -2932,7 +2932,7 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 			parts[index].ctype = PT_DUST;
 			return index;
 		}
-		if (p==-2 && ((elements[type].Properties & PROP_DRAWONCTYPE) || type==PT_CRAY))
+		if (p==-2 && ((elements[type].Properties & PROP_DRAWONCTYPE) || type==PT_CRAY) && !((type==PT_CLNE || type==PT_BCLN) && parts[pmap[y][x]>>8].flags & FLAG_OLDCLNE))
 		{
 			parts[index].ctype = PT_SPRK;
 			return index;
