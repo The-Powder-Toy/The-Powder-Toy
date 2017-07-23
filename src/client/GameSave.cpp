@@ -2138,7 +2138,6 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 				{
 					RESTRICTVERSION(91, 5);
 				}
-#ifdef SNAPSHOT
 				if (particles[i].type == PT_HEAC || particles[i].type == PT_SAWD || particles[i].type == PT_POLO
 						|| particles[i].type == PT_RFRG || particles[i].type == PT_RFGL || particles[i].type == PT_LSNS)
 				{
@@ -2150,7 +2149,6 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 					RESTRICTVERSION(92, 0);
 					fromNewerVersion = true;
 				}
-#endif
 
 				//Get the pmap entry for the next particle in the same position
 				i = partsPosLink[i];

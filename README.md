@@ -1,4 +1,4 @@
-The Powder Toy - July 2016
+The Powder Toy - July 2017
 ==========================
 
 Get the latest version here: http://powdertoy.co.uk/Download.html
@@ -85,6 +85,7 @@ Controls
 | Alt + ]                 | Increase brush size by 1                                        |
 | Ctrl + C/V/X            | Copy/Paste/Cut                                                  |
 | Ctrl + Z                | Undo                                                            |
+| Ctrl + Y                | Redo                                                            |
 | Ctrl + Cursor drag      | Rectangle                                                       |
 | Shift + Cursor drag     | Line                                                            |
 | Middle click            | Sample element                                                  |
