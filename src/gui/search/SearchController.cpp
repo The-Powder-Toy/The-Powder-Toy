@@ -262,7 +262,7 @@ void SearchController::removeSelectedC()
 				if (Client::Ref().DeleteSave(saves[i])!=RequestOkay)
 				{
  					std::stringstream saveIDF;
-					saveIDF << "\boFailed to delete [" << saves[i] << "]: " << Client::Ref().GetLastError();
+					saveIDF << "Failed to delete [" << saves[i] << "]: " << Client::Ref().GetLastError();
 					notifyError(saveIDF.str());
 					c->Refresh();
 					return false;
@@ -345,9 +345,9 @@ void SearchController::unpublishSelectedC(bool publish)
 				{
 					std::stringstream error;
 					if (publish) // uses html page so error message will be spam
-						error << "\boFailed to publish [" << saves[i] << "], is this save yours?";
+						error << "Failed to publish [" << saves[i] << "], is this save yours?";
 					else
-						error << "\boFailed to unpublish [" << saves[i] << "]: " + Client::Ref().GetLastError();
+						error << "Failed to unpublish [" << saves[i] << "]: " + Client::Ref().GetLastError();
 					notifyError(error.str());
 					c->Refresh();
 					return false;
@@ -380,7 +380,7 @@ void SearchController::FavouriteSelected()
 				if (Client::Ref().FavouriteSave(saves[i], true)!=RequestOkay)
 				{
 					std::stringstream saveIDF;
-					saveIDF << "\boFailed to favourite [" << saves[i] << "]: " + Client::Ref().GetLastError();
+					saveIDF << "Failed to favourite [" << saves[i] << "]: " + Client::Ref().GetLastError();
 					notifyError(saveIDF.str());
 					return false;
 				}
@@ -405,7 +405,7 @@ void SearchController::FavouriteSelected()
 				if (Client::Ref().FavouriteSave(saves[i], false)!=RequestOkay)
 				{
 					std::stringstream saveIDF;
-					saveIDF << "\boFailed to unfavourite [" << saves[i] << "]: " + Client::Ref().GetLastError();
+					saveIDF << "Failed to unfavourite [" << saves[i] << "]: " + Client::Ref().GetLastError();
 					notifyError(saveIDF.str());
 					return false;
 				}
