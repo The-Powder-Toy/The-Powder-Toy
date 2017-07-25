@@ -50,7 +50,10 @@ Element_HEAC::Element_HEAC()
 
 //#TPT-Directive ElementHeader Element_HEAC struct IsInsulator
 struct Element_HEAC::IsInsulator : public std::binary_function<Simulation*,int,bool> {
-  bool operator() (Simulation* a, int b) {return b && a->elements[b].HeatConduct == 0;}
+  bool operator() (Simulation* a, int b)
+  {
+	  return b && (a->elements[b&0xFF].HeatConduct == 0 || ((b&0xFF) == PT_HSWC && a->parts[b>>8].life != 10));
+  }
 };
 //#TPT-Directive ElementHeader Element_HEAC static IsInsulator isInsulator
 Element_HEAC::IsInsulator Element_HEAC::isInsulator = Element_HEAC::IsInsulator();
@@ -94,11 +97,11 @@ bool Element_HEAC::CheckLine(Simulation* sim, int x1, int y1, int x2, int y2, Bi
 	{
 		if (reverseXY)
 		{
-			if (func(sim, sim->pmap[x][y]&0xFF)) return true;
+			if (func(sim, sim->pmap[x][y])) return true;
 		}
 		else
 		{
-			if (func(sim, sim->pmap[y][x]&0xFF)) return true;
+			if (func(sim, sim->pmap[y][x])) return true;
 		}
 		e += de;
 		if (e >= 0.5f)
@@ -108,11 +111,11 @@ bool Element_HEAC::CheckLine(Simulation* sim, int x1, int y1, int x2, int y2, Bi
 			{
 				if (reverseXY)
 				{
-					if (func(sim, sim->pmap[x][y]&0xFF)) return true;
+					if (func(sim, sim->pmap[x][y])) return true;
 				}
 				else
 				{
-					if (func(sim, sim->pmap[y][x]&0xFF)) return true;
+					if (func(sim, sim->pmap[y][x])) return true;
 				}
 			}
 			e -= 1.0f;
@@ -136,13 +139,13 @@ int Element_HEAC::update(UPDATE_FUNC_ARGS)
 			if (x+rrx >= 0 && x+rrx < XRES && y+rry >= 0 && y+rry < YRES && !Element_HEAC::CheckLine<Element_HEAC::IsInsulator>(sim, x, y, x+rrx, y+rry, isInsulator))
 			{
 				r = pmap[y+rry][x+rrx];
-				if (r && sim->elements[r&0xFF].HeatConduct > 0 && (parts[r>>8].type != PT_HSWC || parts[r>>8].life == 10))
+				if (r && sim->elements[r&0xFF].HeatConduct > 0 && ((r&0xFF) != PT_HSWC || parts[r>>8].life == 10))
 				{
 					count++;
 					tempAgg += parts[r>>8].temp;
 				}
 				r = sim->photons[y+rry][x+rrx];
-				if (r && sim->elements[r&0xFF].HeatConduct > 0 && (parts[r>>8].type != PT_HSWC || parts[r>>8].life == 10))
+				if (r && sim->elements[r&0xFF].HeatConduct > 0 && ((r&0xFF) != PT_HSWC || parts[r>>8].life == 10))
 				{
 					count++;
 					tempAgg += parts[r>>8].temp;
@@ -164,12 +167,12 @@ int Element_HEAC::update(UPDATE_FUNC_ARGS)
 				if (x+rrx >= 0 && x+rrx < XRES && y+rry >= 0 && y+rry < YRES && !Element_HEAC::CheckLine<Element_HEAC::IsInsulator>(sim, x, y, x+rrx, y+rry, isInsulator))
 				{
 					r = pmap[y+rry][x+rrx];
-					if (r && sim->elements[r&0xFF].HeatConduct > 0 && (parts[r>>8].type != PT_HSWC || parts[r>>8].life == 10))
+					if (r && sim->elements[r&0xFF].HeatConduct > 0 && ((r&0xFF) != PT_HSWC || parts[r>>8].life == 10))
 					{
 						parts[r>>8].temp = parts[i].temp;
 					}
 					r = sim->photons[y+rry][x+rrx];
-					if (r && sim->elements[r&0xFF].HeatConduct > 0 && (parts[r>>8].type != PT_HSWC || parts[r>>8].life == 10))
+					if (r && sim->elements[r&0xFF].HeatConduct > 0 && ((r&0xFF) != PT_HSWC || parts[r>>8].life == 10))
 					{
 						parts[r>>8].temp = parts[i].temp;
 					}
