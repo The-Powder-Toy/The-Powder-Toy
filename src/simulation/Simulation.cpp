@@ -3256,7 +3256,7 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 	case PT_FIGH:
 	{
 		unsigned char fcount = 0;
-		while (fcount < MAX_FIGHTERS && fcount < (fighcount+1) && fighters[fcount].spwn==1) fcount++;
+		while (fcount < MAX_FIGHTERS && fighters[fcount].spwn==1) fcount++;
 		if (fcount < MAX_FIGHTERS && fighters[fcount].spwn == 0)
 		{
 			parts[i].life = 100;
