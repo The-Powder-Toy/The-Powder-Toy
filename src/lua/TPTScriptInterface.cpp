@@ -392,7 +392,6 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 			throw GeneralException("Invalid particle type");
 		if (type==0)
 			throw GeneralException("Cannot set properties of particles that do not exist");
-		std::cout << propertyOffset << std::endl;
 		switch(propertyFormat)
 		{
 		case FormatInt:
