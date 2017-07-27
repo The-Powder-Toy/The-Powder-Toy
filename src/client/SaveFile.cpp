@@ -6,7 +6,7 @@
 SaveFile::SaveFile(SaveFile & save):
 	thumbnail(NULL),
 	gameSave(NULL),
-	filename(save.filename),
+	fileName(save.fileName),
 	displayName(save.displayName),
 	loadingError(save.loadingError)
 {
@@ -18,7 +18,7 @@ SaveFile::SaveFile(SaveFile & save):
 
 Thumbnail * SaveFile::GetThumbnail()
 {
-	return thumbnail;
+	return (thumbnail);
 }
 
 void SaveFile::SetThumbnail(Thumbnail * thumb)
@@ -29,7 +29,7 @@ void SaveFile::SetThumbnail(Thumbnail * thumb)
 SaveFile::SaveFile(std::string filename):
 	thumbnail(NULL),
 	gameSave(NULL),
-	filename(filename),
+	fileName(filename),
 	displayName(filename),
 	loadingError("")
 {
@@ -38,7 +38,7 @@ SaveFile::SaveFile(std::string filename):
 
 GameSave * SaveFile::GetGameSave()
 {
-	return gameSave;
+	return (gameSave);
 }
 
 void SaveFile::SetGameSave(GameSave * save)
@@ -48,17 +48,17 @@ void SaveFile::SetGameSave(GameSave * save)
 
 std::string SaveFile::GetName()
 {
-	return filename;
+	return (fileName);
 }
 
 void SaveFile::SetFileName(std::string fileName)
 {
-	this->filename = fileName;
+	this->fileName = fileName;
 }
 
 std::string SaveFile::GetDisplayName()
 {
-	return displayName;
+	return (displayName);
 }
 
 void SaveFile::SetDisplayName(std::string displayName)
@@ -68,7 +68,7 @@ void SaveFile::SetDisplayName(std::string displayName)
 
 std::string SaveFile::GetError()
 {
-	return loadingError;
+	return (loadingError);
 }
 
 void SaveFile::SetLoadingError(std::string error)
