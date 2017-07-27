@@ -97,10 +97,10 @@ public:
 	void MergeStampAuthorInfo(Json::Value linksToAdd);
 	void MergeAuthorInfo(Json::Value linksToAdd);
 	void OverwriteAuthorInfo(Json::Value overwrite) { authors = overwrite; }
-	Json::Value GetAuthorInfo() { return authors; }
+	Json::Value GetAuthorInfo() { return (authors); }
 	void SaveAuthorInfo(Json::Value *saveInto);
 	void ClearAuthorInfo() { authors.clear(); }
-	bool IsAuthorsEmpty() { return authors.size() == 0; }
+	bool IsAuthorsEmpty() { return (authors.size() == 0); }
 
 	UpdateInfo GetUpdateInfo();
 
@@ -178,7 +178,7 @@ public:
 	std::list<std::string> * RemoveTag(int saveID, std::string tag); //TODO RequestStatus
 	std::list<std::string> * AddTag(int saveID, std::string tag);
 	std::string GetLastError() {
-		return lastError;
+		return (lastError);
 	}
 	RequestStatus ParseServerReturn(char *result, int status, bool json);
 	void Tick();
