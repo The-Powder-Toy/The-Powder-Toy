@@ -12,7 +12,7 @@ Tool::Tool(int id, string name, string description, int r, int g, int b, std::st
 	toolName(name),
 	toolDescription(description),
 	strength(1.0f),
-	resolution(1),
+	blocky(false),
 	identifier(identifier),
 	colRed(r),
 	colGreen(g),
@@ -72,7 +72,7 @@ void ElementTool::DrawFill(Simulation * sim, Brush * brush, ui::Point position) 
 WallTool::WallTool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int)):
 Tool(id, name, description, r, g, b, identifier, textureGen)
 {
-	resolution = CELL;
+	blocky = true;
 }
 WallTool::~WallTool() {}
 void WallTool::Draw(Simulation * sim, Brush * brush, ui::Point position) {
