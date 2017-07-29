@@ -118,8 +118,8 @@
 #define YRES	384
 #define NPART XRES*YRES
 
-#define XCNTR   306
-#define YCNTR   192
+#define XCNTR   XRES/2
+#define YCNTR   YRES/2
 
 #define WINDOWW (XRES+BARSIZE)
 #define WINDOWH (YRES+MENUSIZE)
