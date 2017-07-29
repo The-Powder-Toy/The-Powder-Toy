@@ -1731,10 +1731,10 @@ void GameView::OnTick(float dt)
 		}
 	}
 
-	sign * foundSign = c->GetSignAt(mousePosition.X, mousePosition.Y);
-	if (foundSign)
+	int foundSignID = c->GetSignAt(mousePosition.X, mousePosition.Y);
+	if (foundSignID != -1)
 	{
-		const char* str = foundSign->text.c_str();
+		const char* str = c->GetSignText(foundSignID).c_str();;
 		char type = '\0';
 		int pos = sign::splitsign(str, &type);
 		if (type == 'c' || type == 't' || type == 's')

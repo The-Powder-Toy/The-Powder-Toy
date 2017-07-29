@@ -128,7 +128,7 @@ public:
 
 GameController::GameController():
 	firstTick(true),
-	foundSign(NULL),
+	foundSignID(-1),
 	activePreview(NULL),
 	search(NULL),
 	renderOptions(NULL),
@@ -308,17 +308,23 @@ GameView * GameController::GetView()
 	return gameView;
 }
 
-sign * GameController::GetSignAt(int x, int y)
+int GameController::GetSignAt(int x, int y)
 {
 	Simulation * sim = gameModel->GetSimulation();
-	for (std::vector<sign>::reverse_iterator iter = sim->signs.rbegin(), end = sim->signs.rend(); iter != end; ++iter)
+	for (int i = sim->signs.size()-1; i >= 0; i--)
 	{
 		int signx, signy, signw, signh;
-		(*iter).pos((*iter).getText(sim), signx, signy, signw, signh);
+		sim->signs[i].pos(sim->signs[i].getText(sim), signx, signy, signw, signh);
 		if (x>=signx && x<=signx+signw && y>=signy && y<=signy+signh)
-			return &(*iter);
+			return i;
 	}
-	return NULL;
+	return -1;
+}
+
+// assumed to already be a valid sign
+std::string GameController::GetSignText(int signID)
+{
+	return gameModel->GetSimulation()->signs[signID].text;
 }
 
 void GameController::PlaceSave(ui::Point position)
@@ -619,9 +625,13 @@ bool GameController::MouseDown(int x, int y, unsigned button)
 		y = point.Y;
 		if (!gameModel->GetActiveTool(0) || gameModel->GetActiveTool(0)->GetIdentifier() != "DEFAULT_UI_SIGN" || button != SDL_BUTTON_LEFT) //If it's not a sign tool or you are right/middle clicking
 		{
-			foundSign = GetSignAt(x, y);
-			if(foundSign && sign::splitsign(foundSign->text.c_str()))
-				return false;
+			foundSignID = GetSignAt(x, y);
+			if (foundSignID != -1)
+			{
+				sign foundSign = gameModel->GetSimulation()->signs[foundSignID];
+				if (sign::splitsign(foundSign.text.c_str()))
+					return false;
+			}
 		}
 	}
 	return ret;
@@ -632,17 +642,18 @@ bool GameController::MouseUp(int x, int y, unsigned button, char type)
 	bool ret = commandInterface->OnMouseUp(x, y, button, type);
 	if (type)
 		return ret;
-	if (ret && foundSign && y<YRES && x<XRES && !gameView->GetPlacingSave())
+	if (ret && foundSignID != -1 && y<YRES && x<XRES && !gameView->GetPlacingSave())
 	{
 		ui::Point point = gameModel->AdjustZoomCoords(ui::Point(x, y));
 		x = point.X;
 		y = point.Y;
 		if (!gameModel->GetActiveTool(0) || gameModel->GetActiveTool(0)->GetIdentifier() != "DEFAULT_UI_SIGN" || button != SDL_BUTTON_LEFT) //If it's not a sign tool or you are right/middle clicking
 		{
-			sign * foundSign = GetSignAt(x, y);
-			if (foundSign)
+			int foundSignID = GetSignAt(x, y);
+			if (foundSignID != -1)
 			{
-				const char* str = foundSign->text.c_str();
+				sign foundSign = gameModel->GetSimulation()->signs[foundSignID];
+				const char* str = foundSign.text.c_str();
 				char type;
 				int pos = sign::splitsign(str, &type);
 				if (pos)
@@ -678,13 +689,13 @@ bool GameController::MouseUp(int x, int y, unsigned button, char type)
 					else if (type == 'b')
 					{
 						Simulation * sim = gameModel->GetSimulation();
-						sim->create_part(-1, foundSign->x, foundSign->y, PT_SPRK);
+						sim->create_part(-1, foundSign.x, foundSign.y, PT_SPRK);
 					}
 				}
 			}
 		}
 	}
-	foundSign = NULL;
+	foundSignID = -1;
 	return ret;
 }
 

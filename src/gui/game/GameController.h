@@ -30,7 +30,7 @@ class GameController: public ClientListener
 {
 private:
 	bool firstTick;
-	sign * foundSign;
+	int foundSignID;
 
 	PreviewController * activePreview;
 	GameView * gameView;
@@ -57,7 +57,8 @@ public:
 	GameController();
 	~GameController();
 	GameView * GetView();
-	sign * GetSignAt(int x, int y);
+	int GetSignAt(int x, int y);
+	std::string GetSignText(int signID);
 
 	bool MouseMove(int x, int y, int dx, int dy);
 	bool MouseDown(int x, int y, unsigned button);
