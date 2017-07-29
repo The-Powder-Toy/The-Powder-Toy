@@ -2346,7 +2346,7 @@ fin:
 	return (char*)outputData;
 }
 
-void GameSave::ConvertBsonToJson(bson_iterator *iter, Json::Value *j)
+void GameSave::ConvertBsonToJson(bson_iterator *iter, Json::Value *j, int depth)
 {
 	bson_iterator subiter;
 	bson_iterator_subiterator(iter, &subiter);
@@ -2360,23 +2360,28 @@ void GameSave::ConvertBsonToJson(bson_iterator *iter, Json::Value *j)
 		else if (bson_iterator_type(&subiter) == BSON_INT)
 			(*j)[key] = bson_iterator_int(&subiter);
 		else if (bson_iterator_type(&subiter) == BSON_LONG)
-			(*j)[key] = (Json::Value::Int64)bson_iterator_long(&subiter);
-		else if (bson_iterator_type(&subiter) == BSON_ARRAY)
+			(*j)[key] = (Json::Value::UInt64)bson_iterator_long(&subiter);
+		else if (bson_iterator_type(&subiter) == BSON_ARRAY && depth < 5)
 		{
 			bson_iterator arrayiter;
 			bson_iterator_subiterator(&subiter, &arrayiter);
+			int length = 0, length2 = 0;
 			while (bson_iterator_next(&arrayiter))
 			{
 				if (bson_iterator_type(&arrayiter) == BSON_OBJECT && !strcmp(bson_iterator_key(&arrayiter), "part"))
 				{
 					Json::Value tempPart;
-					ConvertBsonToJson(&arrayiter, &tempPart);
+					ConvertBsonToJson(&arrayiter, &tempPart, depth + 1);
 					(*j)["links"].append(tempPart);
+					length++;
 				}
 				else if (bson_iterator_type(&arrayiter) == BSON_INT && !strcmp(bson_iterator_key(&arrayiter), "saveID"))
 				{
 					(*j)["links"].append(bson_iterator_int(&arrayiter));
 				}
+				length2++;
+				if (length > (int)(40 / std::pow(depth+1, 2)) || length2 > 50)
+					break;
 			}
 		}
 	}
@@ -2422,14 +2427,15 @@ void GameSave::ConvertJsonToBson(bson *b, Json::Value j, int depth)
 			bson_append_string(b, member.c_str(), j[member].asCString());
 		else if (j[member].isBool())
 			bson_append_bool(b, member.c_str(), j[member].asBool());
-		else if (j[member].isInt() || j[member].isUInt())
+		else if (j[member].type() == Json::intValue)
 			bson_append_int(b, member.c_str(), j[member].asInt());
-		else if (j[member].isInt64() || j[member].isUInt64())
+		else if (j[member].type() == Json::uintValue)
 			bson_append_long(b, member.c_str(), j[member].asInt64());
 		else if (j[member].isArray())
 		{
 			bson_append_start_array(b, member.c_str());
 			std::set<int> saveIDs = std::set<int>();
+			int length = 0;
 			for (Json::Value::ArrayIndex i = 0; i < j[member].size(); i++)
 			{
 				// only supports objects and ints here because that is all we need
@@ -2440,7 +2446,7 @@ void GameSave::ConvertJsonToBson(bson *b, Json::Value j, int depth)
 				}
 				if (!j[member][i].isObject())
 					continue;
-				if (depth > 4)
+				if (depth > 4 || length > (int)(40 / std::pow(depth+1, 2)))
 				{
 					std::set<int> nestedSaveIDs = GetNestedSaveIDs(j[member][i]);
 					saveIDs.insert(nestedSaveIDs.begin(), nestedSaveIDs.end());
@@ -2451,6 +2457,7 @@ void GameSave::ConvertJsonToBson(bson *b, Json::Value j, int depth)
 					ConvertJsonToBson(b, j[member][i], depth+1);
 					bson_append_finish_object(b);
 				}
+				length++;
 			}
 			for (std::set<int>::iterator iter = saveIDs.begin(), end = saveIDs.end(); iter != end; ++iter)
 			{
