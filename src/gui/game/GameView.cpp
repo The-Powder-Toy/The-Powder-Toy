@@ -1735,7 +1735,7 @@ void GameView::OnTick(float dt)
 	if (foundSign)
 	{
 		const char* str = foundSign->text.c_str();
-		char type;
+		char type = '\0';
 		int pos = sign::splitsign(str, &type);
 		if (type == 'c' || type == 't' || type == 's')
 		{
