@@ -80,8 +80,13 @@ int Element_FUSE::update(UPDATE_FUNC_ARGS)
 					continue;
 				if ((r&0xFF)==PT_SPRK || (parts[i].temp>=(273.15+700.0f) && !(rand()%20)))
 				{
-					if (parts[i].life > 40)
-						parts[i].life = 39;
+					if (parts[i].tmp2 > 0 && parts[r>>8].life==3)
+						parts[i].tmp2--;
+					else if (parts[i].tmp2 > 0 && parts[r>>8].temp<273.15+700.0f)
+						break;
+					else
+						if (parts[i].life > 40)
+							parts[i].life = 39;
 				}
 			}
 	return 0;
