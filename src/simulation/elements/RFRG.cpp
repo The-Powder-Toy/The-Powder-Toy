@@ -28,7 +28,7 @@ Element_RFRG::Element_RFRG()
 
 	Temperature = R_TEMP + 273.15f;
 	HeatConduct = 3;
-	Description = "Refrigerant. Heats up and liquifies under pressure.";
+	Description = "Refrigerant. Heats up and liquefies under pressure.";
 
 	Properties = TYPE_GAS|PROP_DEADLY;
 
