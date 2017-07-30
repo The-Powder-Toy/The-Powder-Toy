@@ -67,12 +67,11 @@ int Element_BOMB::update(UPDATE_FUNC_ARGS)
 						for (nxi=-rad; nxi<=rad; nxi++)
 							if ((pow((float)nxi,2))/(pow((float)rad,2))+(pow((float)nxj,2))/(pow((float)rad,2))<=1)
 							{
-								if (!pmap[y+nxj][x+nxi])
-									continue;
 								nt = pmap[y+nxj][x+nxi]&0xFF;
 								if (nt!=PT_DMND && nt!=PT_CLNE && nt!=PT_PCLN && nt!=PT_BCLN && nt!=PT_VIBR)
 								{
-									sim->kill_part(pmap[y+nxj][x+nxi]>>8);
+									if (nt)
+										sim->kill_part(pmap[y+nxj][x+nxi]>>8);
 									sim->pv[(y+nxj)/CELL][(x+nxi)/CELL] += 0.1f;
 									nb = sim->create_part(-3, x+nxi, y+nxj, PT_EMBR);
 									if (nb!=-1)
