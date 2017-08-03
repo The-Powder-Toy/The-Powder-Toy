@@ -33,6 +33,7 @@ public:
 	void Clear();
 	void ClearAirH();
 	void Invert();
+	void RecalculateBlockAirMaps();
 	Air(Simulation & sim);
 };
 

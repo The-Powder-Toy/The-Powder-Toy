@@ -352,6 +352,31 @@ void Air::Invert()
 		}
 }
 
+// called when loading saves / stamps to ensure nothing "leaks" the first frame
+void Air::RecalculateBlockAirMaps()
+{
+	for (int i = 0; i <= sim.parts_lastActiveIndex; i++)
+	{
+		int type = sim.parts[i].type;
+		// Real TTAN would only block if there was enough TTAN
+		// but it would be more expensive and complicated to actually check that
+		// so just block for a frame, if it wasn't supposed to block it will continue allowing air next frame
+		if (type == PT_TTAN)
+		{
+			int x = ((int)(sim.parts[i].x+0.5f))/CELL, y = ((int)(sim.parts[i].y+0.5f))/CELL;
+			bmap_blockair[y][x] = 1;
+			bmap_blockairh[y][x] = 0x8;
+		}
+		// mostly accurate insulator blocking, besides checking GEL
+		else if ((type == PT_HSWC && sim.parts[i].life != 10) || sim.elements[type].HeatConduct <= (rand()%250))
+		{
+			int x = ((int)(sim.parts[i].x+0.5f))/CELL, y = ((int)(sim.parts[i].y+0.5f))/CELL;
+			if (!(bmap_blockairh[y][x]&0x8))
+				bmap_blockairh[y][x]++;
+		}
+	}
+}
+
 Air::Air(Simulation & simulation):
 	sim(simulation),
 	airMode(0),
