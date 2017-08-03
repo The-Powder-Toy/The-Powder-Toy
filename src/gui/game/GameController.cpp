@@ -327,13 +327,13 @@ std::string GameController::GetSignText(int signID)
 	return gameModel->GetSimulation()->signs[signID].text;
 }
 
-void GameController::PlaceSave(ui::Point position)
+void GameController::PlaceSave(ui::Point position, bool includePressure)
 {
 	GameSave *placeSave = gameModel->GetPlaceSave();
 	if (placeSave)
 	{
 		HistorySnapshot();
-		if (!gameModel->GetSimulation()->Load(position.X, position.Y, placeSave))
+		if (!gameModel->GetSimulation()->Load(position.X, position.Y, placeSave, includePressure))
 		{
 			gameModel->SetPaused(placeSave->paused | gameModel->GetPaused());
 			Client::Ref().MergeStampAuthorInfo(placeSave->authors);
@@ -567,10 +567,10 @@ void GameController::ToolClick(int toolSelection, ui::Point point)
 	activeTool->Click(sim, cBrush, point);
 }
 
-std::string GameController::StampRegion(ui::Point point1, ui::Point point2)
+std::string GameController::StampRegion(ui::Point point1, ui::Point point2, bool includePressure)
 {
 	GameSave * newSave;
-	newSave = gameModel->GetSimulation()->Save(point1.X, point1.Y, point2.X, point2.Y);
+	newSave = gameModel->GetSimulation()->Save(point1.X, point1.Y, point2.X, point2.Y, includePressure);
 	if(newSave)
 	{
 		newSave->paused = gameModel->GetPaused();
@@ -586,10 +586,10 @@ std::string GameController::StampRegion(ui::Point point1, ui::Point point2)
 	}
 }
 
-void GameController::CopyRegion(ui::Point point1, ui::Point point2)
+void GameController::CopyRegion(ui::Point point1, ui::Point point2, bool includePressure)
 {
 	GameSave * newSave;
-	newSave = gameModel->GetSimulation()->Save(point1.X, point1.Y, point2.X, point2.Y);
+	newSave = gameModel->GetSimulation()->Save(point1.X, point1.Y, point2.X, point2.Y, includePressure);
 	if(newSave)
 	{
 		Json::Value clipboardInfo;
@@ -604,9 +604,9 @@ void GameController::CopyRegion(ui::Point point1, ui::Point point2)
 	}
 }
 
-void GameController::CutRegion(ui::Point point1, ui::Point point2)
+void GameController::CutRegion(ui::Point point1, ui::Point point2, bool includePressure)
 {
-	CopyRegion(point1, point2);
+	CopyRegion(point1, point2, includePressure);
 	gameModel->GetSimulation()->clear_area(point1.X, point1.Y, point2.X-point1.X, point2.Y-point1.Y);
 }
 

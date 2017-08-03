@@ -114,10 +114,10 @@ public:
 	int sandcolour;
 	int sandcolour_frame;
 
-	int Load(GameSave * save);
-	int Load(int x, int y, GameSave * save);
-	GameSave * Save();
-	GameSave * Save(int x1, int y1, int x2, int y2);
+	int Load(GameSave * save, bool includePressure = true);
+	int Load(int x, int y, GameSave * save, bool includePressure = true);
+	GameSave * Save(bool includePressure = true);
+	GameSave * Save(int x1, int y1, int x2, int y2, bool includePressure = true);
 	void SaveSimOptions(GameSave * gameSave);
 	SimulationSample GetSample(int x, int y);
 

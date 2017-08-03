@@ -1253,7 +1253,7 @@ void GameView::OnMouseUp(int x, int y, unsigned button)
 						if (thumbY+(placeSaveThumb->Height) >= YRES)
 							thumbY = YRES-placeSaveThumb->Height;
 
-						c->PlaceSave(ui::Point(thumbX, thumbY));
+						c->PlaceSave(ui::Point(thumbX, thumbY), !shiftBehaviour);
 					}
 				}
 				else
@@ -1263,11 +1263,11 @@ void GameView::OnMouseUp(int x, int y, unsigned button)
 					int x1 = (selectPoint2.X<selectPoint1.X) ? selectPoint2.X : selectPoint1.X;
 					int y1 = (selectPoint2.Y<selectPoint1.Y) ? selectPoint2.Y : selectPoint1.Y;
 					if (selectMode ==SelectCopy)
-						c->CopyRegion(ui::Point(x1, y1), ui::Point(x2, y2));
+						c->CopyRegion(ui::Point(x1, y1), ui::Point(x2, y2), !shiftBehaviour);
 					else if (selectMode == SelectCut)
-						c->CutRegion(ui::Point(x1, y1), ui::Point(x2, y2));
+						c->CutRegion(ui::Point(x1, y1), ui::Point(x2, y2), !shiftBehaviour);
 					else if (selectMode == SelectStamp)
-						c->StampRegion(ui::Point(x1, y1), ui::Point(x2, y2));
+						c->StampRegion(ui::Point(x1, y1), ui::Point(x2, y2), !shiftBehaviour);
 				}
 			}
 			selectMode = SelectNone;

@@ -89,9 +89,9 @@ public:
 	void DrawRect(int toolSelection, ui::Point point1, ui::Point point2);
 	void DrawLine(int toolSelection, ui::Point point1, ui::Point point2);
 	void DrawFill(int toolSelection, ui::Point point);
-	std::string StampRegion(ui::Point point1, ui::Point point2);
-	void CopyRegion(ui::Point point1, ui::Point point2);
-	void CutRegion(ui::Point point1, ui::Point point2);
+	std::string StampRegion(ui::Point point1, ui::Point point2, bool includePressure);
+	void CopyRegion(ui::Point point1, ui::Point point2, bool includePressure);
+	void CutRegion(ui::Point point1, ui::Point point2, bool includePressure);
 	void Update();
 	void SetPaused(bool pauseState);
 	void SetPaused();
@@ -133,7 +133,7 @@ public:
 	void OpenStamps();
 	void OpenElementSearch();
 	void OpenColourPicker();
-	void PlaceSave(ui::Point position);
+	void PlaceSave(ui::Point position, bool includePressure);
 	void ClearSim();
 	void ReloadSim();
 	void Vote(int direction);
