@@ -47,20 +47,18 @@ Element_RFRG::Element_RFRG()
 //#TPT-Directive ElementHeader Element_RFRG static int update(UPDATE_FUNC_ARGS)
 int Element_RFRG::update(UPDATE_FUNC_ARGS)
 {
-	float new_pressure = sim->pv[y/CELL][x/CELL];
-	float *old_pressure = (float *)&parts[i].tmp;
-	if (std::isnan(*old_pressure))
-	{
-		*old_pressure = new_pressure;
-		return 0;
-	}
+	// * I guess it could be 23 or something but I'll just leave it at 20 for now.
+	#define RFRG_PRESSURE_PRECISION 20
 	
+	float new_pressure = sim->pv[y/CELL][x/CELL];
+	float old_pressure = (float)parts[i].tmp / (1 << RFRG_PRESSURE_PRECISION);
+
 	// * 0 bar seems to be pressure value -256 in TPT, see Air.cpp. Also, 1 bar seems to be pressure value 0.
 	//   With those two values we can set up our pressure scale which states that ... the highest pressure
 	//   we can achieve in TPT is 2 bar. That's not particularly realistic, but good enough for TPT.
 	
-	parts[i].temp = restrict_flt(parts[i].temp * ((new_pressure + 257.f) / (*old_pressure + 257.f)), 0, MAX_TEMP);
-	*old_pressure = new_pressure;
+	parts[i].temp = restrict_flt(parts[i].temp * ((new_pressure + 257.f) / (old_pressure + 257.f)), 0, MAX_TEMP);
+	parts[i].tmp = restrict_flt(new_pressure, -256, 256) * (1 << RFRG_PRESSURE_PRECISION);
 	return 0;
 }
 
