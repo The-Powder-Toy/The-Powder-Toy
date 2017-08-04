@@ -49,6 +49,8 @@ SaveIDMessage::SaveIDMessage(int id):
 	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	okayButton->SetActionCallback(new DismissAction(this));
 	AddComponent(okayButton);
+	// This button has multiple personalities
+	SetOkayButton(okayButton);
 	SetCancelButton(okayButton);
 	
 	MakeActiveWindow();
