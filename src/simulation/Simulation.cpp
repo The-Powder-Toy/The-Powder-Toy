@@ -540,7 +540,7 @@ SimulationSample Simulation::GetSample(int x, int y)
 		{
 			sample.WallType = bmap[y/CELL][x/CELL];
 		}
-		sample.AirPressure = (int)air->bmap_blockair[y/CELL][x/CELL];
+		sample.AirPressure = pv[y/CELL][x/CELL];
 		sample.AirTemperature = hv[y/CELL][x/CELL];
 		sample.AirVelocityX = vx[y/CELL][x/CELL];
 		sample.AirVelocityY = vy[y/CELL][x/CELL];
