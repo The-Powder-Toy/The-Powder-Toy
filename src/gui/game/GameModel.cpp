@@ -664,7 +664,7 @@ void GameModel::SetSave(SaveInfo * newSave)
 			}
 			// This save was probably just created, and we didn't know the ID when creating it
 			// Update with the proper ID
-			else if (saveData->authors.get("id", -1) == 0)
+			else if (saveData->authors.get("id", -1) == 0 || saveData->authors.get("id", -1) == -1)
 			{
 				saveData->authors["id"] = newSave->id;
 			}
