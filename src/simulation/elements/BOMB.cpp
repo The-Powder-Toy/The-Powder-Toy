@@ -68,21 +68,22 @@ int Element_BOMB::update(UPDATE_FUNC_ARGS)
 							if ((pow((float)nxi,2))/(pow((float)rad,2))+(pow((float)nxj,2))/(pow((float)rad,2))<=1)
 							{
 								int ynxj = y + nxj, xnxi = x + nxi;
-								if (((ynxj > 0) && (ynxj < YRES)) && ((xnxi > 0) && (xnxi < XRES)))
+								
+								if ((ynxj < 0) || (ynxj >= YRES) || (xnxi <= 0) || (xnxi >= XRES))
+									continue;
+								
+								nt = pmap[ynxj][xnxi]&0xFF;
+								if (nt!=PT_DMND && nt!=PT_CLNE && nt!=PT_PCLN && nt!=PT_BCLN && nt!=PT_VIBR)
 								{
-									nt = pmap[ynxj][xnxi]&0xFF;
-									if (nt!=PT_DMND && nt!=PT_CLNE && nt!=PT_PCLN && nt!=PT_BCLN && nt!=PT_VIBR)
+									if (nt)
+										sim->kill_part(pmap[ynxj][xnxi]>>8);
+									sim->pv[(ynxj)/CELL][(xnxi)/CELL] += 0.1f;
+									nb = sim->create_part(-3, xnxi, ynxj, PT_EMBR);
+									if (nb!=-1)
 									{
-										if (nt)
-											sim->kill_part(pmap[ynxj][xnxi]>>8);
-										sim->pv[(ynxj)/CELL][(xnxi)/CELL] += 0.1f;
-										nb = sim->create_part(-3, xnxi, ynxj, PT_EMBR);
-										if (nb!=-1)
-										{
-											parts[nb].tmp = 2;
-											parts[nb].life = 2;
-											parts[nb].temp = MAX_TEMP;
-										}
+										parts[nb].tmp = 2;
+										parts[nb].life = 2;
+										parts[nb].temp = MAX_TEMP;
 									}
 								}
 							}
