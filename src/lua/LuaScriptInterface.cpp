@@ -765,6 +765,7 @@ void LuaScriptInterface::initSimulationAPI()
 		{"neighbors", simulation_neighbours},
 		{"framerender", simulation_framerender},
 		{"gspeed", simulation_gspeed},
+		{"takeSnapshot", simulation_takeSnapshot},
 		{NULL, NULL}
 	};
 	luaL_register(l, "simulation", simulationAPIMethods);
@@ -2140,6 +2141,12 @@ int LuaScriptInterface::simulation_gspeed(lua_State * l)
 	if (gspeed < 1)
 		return luaL_error(l, "GSPEED must be at least 1");
 	luacon_sim->GSPEED = gspeed;
+	return 0;
+}
+
+int LuaScriptInterface::simulation_takeSnapshot(lua_State * l)
+{
+	luacon_controller->HistorySnapshot();
 	return 0;
 }
 
