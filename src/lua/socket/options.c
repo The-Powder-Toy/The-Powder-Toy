@@ -5,6 +5,7 @@
 * RCS ID: $Id: options.c,v 1.6 2005/11/20 07:20:23 diego Exp $
 \*=========================================================================*/
 #include <string.h> 
+#include <stdlib.h>
 
 #include "auxiliar.h"
 #include "options.h"
@@ -31,9 +32,10 @@ int opt_meth_setoption(lua_State *L, p_opt opt, p_socket ps)
     while (opt->name && strcmp(name, opt->name))
         opt++;
     if (!opt->func) {
-        char msg[45];
+        char* msg = malloc(30+strlen(name));
         sprintf(msg, "unsupported option `%.35s'", name);
         luaL_argerror(L, 2, msg);
+        free(msg);
     }
     return opt->func(L, ps);
 }
