@@ -1204,9 +1204,7 @@ void Client::RescanStamps()
 		{
 			if(strncmp(entry->d_name, "..", 3) && strncmp(entry->d_name, ".", 2) && strstr(entry->d_name, ".stm") && strlen(entry->d_name) == 14)
 			{
-				char stampname[11];
-				strncpy(stampname, entry->d_name, 10);
-				stampIDs.push_front(stampname);
+				stampIDs.push_front(std::string(entry->d_name).substr(0, 10));
 			}
 		}
 		closedir(directory);
