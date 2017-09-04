@@ -2032,4 +2032,14 @@ int luatpt_screenshot(lua_State* l)
 	return 1;
 }
 
+int luatpt_record(lua_State* l)
+{
+	if (!lua_isboolean(l, -1))
+		return luaL_typerror(l, 1, lua_typename(l, LUA_TBOOLEAN));
+	bool record = lua_toboolean(l, -1);
+	int recordingFolder = luacon_controller->Record(record);
+	lua_pushinteger(l, recordingFolder);
+	return 1;
+}
+
 #endif

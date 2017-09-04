@@ -66,8 +66,9 @@ private:
 	std::string introTextMessage;
 
 	bool doScreenshot;
-	bool recording;
 	int screenshotIndex;
+	bool recording;
+	int recordingFolder;
 	int recordingIndex;
 
 	ui::Point currentPoint, lastPoint;
@@ -117,7 +118,6 @@ private:
 	void SetSaveButtonTooltips();
 
 	void screenshot();
-	void record();
 
 	void enableShiftBehaviour();
 	void disableShiftBehaviour();
@@ -147,6 +147,7 @@ public:
 	void ExitPrompt();
 	SelectMode GetSelectMode() { return selectMode; }
 	void BeginStampSelection();
+	int Record(bool record);
 
 	//all of these are only here for one debug lines
 	bool GetMouseDown() { return isMouseDown; }

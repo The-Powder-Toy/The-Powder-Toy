@@ -149,6 +149,7 @@ public:
 	std::string ElementResolve(int type, int ctype);
 	bool IsValidElement(int type);
 	std::string WallName(int type);
+	int Record(bool record);
 
 	void ResetAir();
 	void ResetSpark();

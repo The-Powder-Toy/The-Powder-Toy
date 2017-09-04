@@ -18,6 +18,7 @@ Saves/*
 scripts/*
 generated/*
 includes/*
+recordings/
 font/*
 generate
 Makefile.me

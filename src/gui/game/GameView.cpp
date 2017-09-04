@@ -186,8 +186,9 @@ GameView::GameView():
 	introTextMessage(introTextData),
 
 	doScreenshot(false),
-	recording(false),
 	screenshotIndex(0),
+	recording(false),
+	recordingFolder(0),
 	recordingIndex(0),
 	currentPoint(ui::Point(0, 0)),
 	lastPoint(ui::Point(0, 0)),
@@ -1044,28 +1045,31 @@ void GameView::screenshot()
 	doScreenshot = true;
 }
 
-void GameView::record()
+int GameView::Record(bool record)
 {
-	if(recording)
+	if (!record)
 	{
 		recording = false;
+		recordingIndex = 0;
+		recordingFolder = 0;
 	}
-	else
+	else if (!recording)
 	{
-		class RecordingConfirmation: public ConfirmDialogueCallback {
-		public:
-			GameView * v;
-			RecordingConfirmation(GameView * v): v(v) {}
-			virtual void ConfirmCallback(ConfirmPrompt::DialogueResult result) {
-				if (result == ConfirmPrompt::ResultOkay)
-				{
-					v->recording = true;
-				}
-			}
-			virtual ~RecordingConfirmation() { }
-		};
-		new ConfirmPrompt("Recording", "You're about to start recording all drawn frames. This may use a load of hard disk space.", new RecordingConfirmation(this));
+		// block so that the return value is correct
+		bool record = ConfirmPrompt::Blocking("Recording", "You're about to start recording all drawn frames. This will use a load of disk space.");
+		if (record)
+		{
+			time_t startTime = time(NULL);
+			recordingFolder = startTime;
+			std::stringstream recordingDir;
+			recordingDir << "recordings" << PATH_SEP << recordingFolder;
+			Client::Ref().MakeDirectory("recordings");
+			Client::Ref().MakeDirectory(recordingDir.str().c_str());
+			recording = true;
+			recordingIndex = 0;
+		}
 	}
+	return recordingFolder;
 }
 
 void GameView::updateToolButtonScroll()
@@ -1496,8 +1500,6 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 	case 'r':
 		if (ctrl)
 			c->ReloadSim();
-		else
-			record();
 		break;
 	case 'e':
 		c->OpenElementSearch();
@@ -2233,6 +2235,7 @@ void GameView::OnDraw()
 			std::vector<char> data = format::VideoBufferToPPM(screenshot);
 
 			std::stringstream filename;
+			filename << "recordings" << PATH_SEP << recordingFolder << PATH_SEP;
 			filename << "frame_";
 			filename << std::setfill('0') << std::setw(6) << (recordingIndex++);
 			filename << ".ppm";
