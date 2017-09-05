@@ -269,7 +269,7 @@ def findLibs(env, conf):
 		#Look for Lua
 		luaver = "lua5.1"
 		if GetOption('luajit'):
-			if not conf.CheckLib(['luajit-5.1', 'luajit5.1', 'luajit', 'libluajit']):
+			if not conf.CheckLib(['luajit-5.1', 'luajit5.1', 'luajit2.0', 'luajit', 'libluajit']):
 				FatalError("luajit development library not found or not installed")
 			env.Append(CPPDEFINES=["LUAJIT"])
 			luaver = "luajit"

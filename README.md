@@ -1,4 +1,4 @@
-The Powder Toy - July 2017
+The Powder Toy - September 2017
 ==========================
 
 Get the latest version here: http://powdertoy.co.uk/Download.html
