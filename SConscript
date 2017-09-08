@@ -134,7 +134,7 @@ if tool:
 			env['ENV']['PATH'] = "{0}:{1}".format(sdlconfigpath, env['ENV']['PATH'])
 
 #copy environment variables because scons doesn't do this by default
-for var in ["CC","CXX","LD","LIBPATH"]:
+for var in ["CC","CXX","LD","LIBPATH","STRIP"]:
 	if var in os.environ:
 		env[var] = os.environ[var]
 		print "copying environment variable {0}={1!r}".format(var,os.environ[var])
