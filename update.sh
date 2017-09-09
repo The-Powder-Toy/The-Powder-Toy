@@ -1,0 +1,9 @@
+#!/bin/bash
+echo making directory in ~/ called .tpt...
+mkdir ~/.tptupdater
+cd ~/.tptupdater
+echo cloning tpt git...
+git clone https://github.com/ThePowderToy/The-Powder-Toy.git
+cd The-Powder-Toy
+echo starting compilation for arm...
+scons --no-sse -j 4
