@@ -210,7 +210,8 @@ def CheckBit(context):
 def CheckFramework(context, framework):
 	import SCons.Conftest
 	#Extreme hack, TODO: maybe think of a better one (like replicating CheckLib here) or at least just fix the message
-	oldLinkFlags = context.env.Append(LINKFLAGS=["-framework", framework])
+	oldLinkFlags = env["LINKFLAGS"]
+	context.env.Append(LINKFLAGS=["-framework", framework])
 	context.Display("Checking for Darwin Framework {0}...".format(framework))
 	ret = SCons.Conftest.CheckLib(context, ["m"], autoadd = 0)
 	context.did_show_result = 1
