@@ -416,6 +416,8 @@ elif platform == "Linux":
 elif platform == "Darwin":
 	env.Append(CPPDEFINES=['MACOSX'])
 	#env.Append(LINKFLAGS=['-headerpad_max_install_names']) #needed in some cross compiles
+	if GetOption('luajit'):
+		env.Append(LINKFLAGS=['-pagezero_size=10000, '-image_base=100000000']
 
 
 #Add architecture flags and defines
