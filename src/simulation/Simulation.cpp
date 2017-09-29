@@ -4002,6 +4002,11 @@ void Simulation::UpdateParticles(int start, int end)
 						}
 						else
 							part_change_type(i,x,y,t);
+						// part_change_type could refuse to change the type and kill the particle
+						// for example, changing type to STKM but one already exists
+						// we need to account for that to not cause simulation corruption issues
+						if (parts[i].type == PT_NONE)
+							goto killed;
 
 						if (t==PT_FIRE || t==PT_PLSM || t==PT_CFLM)
 							parts[i].life = rand()%50+120;
@@ -4131,6 +4136,11 @@ void Simulation::UpdateParticles(int start, int end)
 			{
 				parts[i].life = 0;
 				part_change_type(i,x,y,t);
+				// part_change_type could refuse to change the type and kill the particle
+				// for example, changing type to STKM but one already exists
+				// we need to account for that to not cause simulation corruption issues
+				if (parts[i].type == PT_NONE)
+					goto killed;
 				if (t==PT_FIRE)
 					parts[i].life = rand()%50+120;
 				if (t==PT_NONE)
