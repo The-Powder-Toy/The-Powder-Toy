@@ -207,6 +207,7 @@ PreviewView::PreviewView():
 	AddComponent(commentsPanel);
 
 	swearWords.insert("fuck");
+	swearWords.insert("bitch");
 	swearWords.insert("shit ");
 	swearWords.insert("asshole");
 	swearWords.insert("dick");
