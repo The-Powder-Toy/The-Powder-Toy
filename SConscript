@@ -472,7 +472,7 @@ elif GetOption('release'):
 
 if GetOption('static'):
 	if platform == "Windows":
-		env.Append(CPPDEFINES=['PTW32_STATIC_LIB'])
+		env.Append(CPPDEFINES=['_PTW32_STATIC_LIB'])
 		if msvc:
 			env.Append(CPPDEFINES=['ZLIB_WINAPI'])
 		else:
