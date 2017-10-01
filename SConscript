@@ -403,7 +403,7 @@ if not msvc:
 if platform == "Windows":
 	env.Append(CPPDEFINES=["WIN", "_WIN32_WINNT=0x0501", "_USING_V110_SDK71_"])
 	if msvc:
-		env.Append(CCFLAGS=['/Gm', '/Zi', '/EHsc', '/FS', '/GS']) #enable minimal rebuild, ?, enable exceptions, allow -j to work in debug builds, enable security check
+		env.Append(CCFLAGS=['/Gm', '/Zi', '/EHsc', '/FS', '/GS', '/D_SCL_SECURE_NO_WARNINGS']) #enable minimal rebuild, ?, enable exceptions, allow -j to work in debug builds, enable security check, disable warnings for 'std::copy'
 		env.Append(LINKFLAGS=['/SUBSYSTEM:WINDOWS,"5.01"', '/OPT:REF', '/OPT:ICF'])
 		if GetOption('static'):
 			env.Append(LINKFLAGS=['/NODEFAULTLIB:msvcrt.lib', '/LTCG'])
