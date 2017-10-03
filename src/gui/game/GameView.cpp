@@ -203,7 +203,8 @@ GameView::GameView():
 	selectPoint2(0, 0),
 	currentMouse(0, 0),
 	mousePosition(0, 0),
-	placeSaveThumb(NULL)
+	placeSaveThumb(NULL),
+	placeSaveOffset(0, 0)
 {
 
 	int currentX = 1;
@@ -1244,8 +1245,8 @@ void GameView::OnMouseUp(int x, int y, unsigned button)
 				{
 					if (placeSaveThumb && y <= WINDOWH-BARSIZE)
 					{
-						int thumbX = selectPoint2.X - (placeSaveThumb->Width/2);
-						int thumbY = selectPoint2.Y - (placeSaveThumb->Height/2);
+						int thumbX = selectPoint2.X - ((placeSaveThumb->Width-placeSaveOffset.X)/2);
+						int thumbY = selectPoint2.Y - ((placeSaveThumb->Height-placeSaveOffset.Y)/2);
 
 						if (thumbX < 0)
 							thumbX = 0;
@@ -1947,6 +1948,7 @@ void GameView::NotifyLogChanged(GameModel * sender, string entry)
 void GameView::NotifyPlaceSaveChanged(GameModel * sender)
 {
 	delete placeSaveThumb;
+	placeSaveOffset = ui::Point(0, 0);
 	if(sender->GetPlaceSave())
 	{
 		placeSaveThumb = SaveRenderer::Ref().Render(sender->GetPlaceSave());
@@ -2164,8 +2166,8 @@ void GameView::OnDraw()
 			{
 				if(placeSaveThumb && selectPoint2.X!=-1)
 				{
-					int thumbX = selectPoint2.X - (placeSaveThumb->Width/2) + CELL/2;
-					int thumbY = selectPoint2.Y - (placeSaveThumb->Height/2) + CELL/2;
+					int thumbX = selectPoint2.X - ((placeSaveThumb->Width-placeSaveOffset.X)/2) + CELL/2;
+					int thumbY = selectPoint2.Y - ((placeSaveThumb->Height-placeSaveOffset.Y)/2) + CELL/2;
 
 					ui::Point thumbPos = c->NormaliseBlockCoord(ui::Point(thumbX, thumbY));
 

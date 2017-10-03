@@ -260,13 +260,14 @@ char * GameSave::Serialise(unsigned int & dataSize)
 	return serialiseOPS(dataSize);
 }
 
-void GameSave::Translate(vector2d translate)
+vector2d GameSave::Translate(vector2d translate)
 {
-	if(Collapsed())
+	if (Collapsed())
 		Expand();
 	int nx, ny;
 	vector2d pos;
 	float minx = 0, miny = 0, maxx = 0, maxy = 0;
+	// determine minimum and maximum position of all particles / signs
 	for (size_t i = 0; i < signs.size(); i++)
 	{
 		pos = v2d_new(signs[i].x, signs[i].y);
@@ -298,23 +299,18 @@ void GameSave::Translate(vector2d translate)
 		if (ny > maxy)
 			maxy = ny;
 	}
+	// determine whether corrections are needed. If moving in this direction would delete stuff, expand the save
 	vector2d backCorrection = v2d_new(
-		(minx < 0) ? (-floor(minx / 4)) : 0,
-		(miny < 0) ? (-floor(miny / 4)) : 0
+		(minx < 0) ? (-floor(minx / CELL)) : 0,
+		(miny < 0) ? (-floor(miny / CELL)) : 0
 	);
 	int blockBoundsX = int(maxx / CELL) + 1, blockBoundsY = int(maxy / CELL) + 1;
 	vector2d frontCorrection = v2d_new(
 		(blockBoundsX > blockWidth) ? (blockBoundsX - blockWidth) : 0,
 		(blockBoundsY > blockHeight) ? (blockBoundsY - blockHeight) : 0
 	);
-	if (frontCorrection.x < backCorrection.x)
-		frontCorrection.x = backCorrection.x;
-	else
-		backCorrection.x = frontCorrection.x;
-	if (frontCorrection.y < backCorrection.y)
-		frontCorrection.y = backCorrection.y;
-	else
-		backCorrection.y = frontCorrection.y;
+
+	// get new width based on corrections
 	int newWidth = (blockWidth + backCorrection.x + frontCorrection.x) * CELL;
 	int newHeight = (blockHeight + backCorrection.y + frontCorrection.y) * CELL;
 	if (newWidth > XRES)
@@ -322,11 +318,16 @@ void GameSave::Translate(vector2d translate)
 	if (newHeight > YRES)
 		frontCorrection.y = backCorrection.y = 0;
 
+	// call Transform to do the transformation we wanted when calling this function
 	translate = v2d_add(translate, v2d_multiply_float(backCorrection, CELL));
 	Transform(m2d_identity, translate,
 		(blockWidth + backCorrection.x + frontCorrection.x) * CELL,
 		(blockHeight + backCorrection.y + frontCorrection.y) * CELL
 	);
+
+	// return how much we corrected. This is used to offset the position of the current stamp
+	// otherwise it would attempt to recenter it with the current height
+	return v2d_add(v2d_multiply_float(backCorrection, -CELL), v2d_multiply_float(frontCorrection, CELL));
 }
 
 void GameSave::Transform(matrix2d transform, vector2d translate)
