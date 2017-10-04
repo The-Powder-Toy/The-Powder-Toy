@@ -9,14 +9,14 @@ if GetOption('clean'):
 	try:
 		shutil.rmtree(".sconf_temp/")
 	except:
-		print "couldn't remove .sconf_temp/"
+		print("couldn't remove .sconf_temp/")
 
 	try:
 		shutil.rmtree("generated/")
 	except:
-		print "couldn't remove generated/"
+		print("couldn't remove generated/")
 
 	try:
 		os.remove(".sconsign.dblite")
 	except:
-		print "couldn't remove .sconsign.dblite"
+		print("couldn't remove .sconsign.dblite")
