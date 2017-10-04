@@ -3,7 +3,7 @@ import sys
 if sys.version_info[0] >= 3:
 	def execfile(path):
 		with open(path, 'r') as f:
-			exec(f)
+			exec(f.read())
 
 if not GetOption('clean'):
 	execfile("generator.py")
