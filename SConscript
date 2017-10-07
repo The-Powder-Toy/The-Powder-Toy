@@ -405,6 +405,7 @@ if platform == "Windows":
 	if msvc:
 		env.Append(CCFLAGS=['/Gm', '/Zi', '/EHsc', '/FS', '/GS']) #enable minimal rebuild, ?, enable exceptions, allow -j to work in debug builds, enable security check
 		env.Append(LINKFLAGS=['/SUBSYSTEM:WINDOWS,"5.01"', '/OPT:REF', '/OPT:ICF'])
+		env.Append(CPPDEFINES=['_SCL_SECURE_NO_WARNINGS']) #Disable warnings about 'std::print'
 		if GetOption('static'):
 			env.Append(LINKFLAGS=['/NODEFAULTLIB:msvcrt.lib', '/LTCG'])
 		elif not GetOption('debugging'):
