@@ -16,4 +16,11 @@
 #include <pthread.h>
 #undef GetUserName
 
+// Fix deprecation warnings with recent pthread versions on Windows
+#ifdef _PTW32_STATIC
+#if PTW32_VERSION < 1, 1, 0, 0
+#define PTW32_STATIC
+#endif
+#endif
+
 #endif
