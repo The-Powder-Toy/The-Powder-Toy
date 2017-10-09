@@ -18,7 +18,7 @@
 
 // Fix deprecation warnings with recent pthread versions on Windows
 #ifdef _PTW32_STATIC_LIB
-#if PTW32_VERSION < 1, 1, 0, 0
+#if PTW32_VERSION =< 2, 8, 0, 0
 #define PTW32_STATIC_LIB
 #endif
 #endif
