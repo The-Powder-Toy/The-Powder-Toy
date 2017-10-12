@@ -269,7 +269,7 @@ def findLibs(env, conf):
 	if not GetOption('nolua') and not GetOption('renderer'):
 		#Look for Lua
 		if platform == "FreeBSD":
-			luaver = "lua-51"
+			luaver = "lua-5.1"
 		else:
 			luaver = "lua5.1"
 		if GetOption('luajit'):
@@ -282,7 +282,7 @@ def findLibs(env, conf):
 				FatalError("lua5.2 development library not found or not installed")
 			env.Append(CPPDEFINES=["LUA_COMPAT_ALL"])
 			if platform == "FreeBSD":
-				luaver = "lua-52"
+				luaver = "lua-5.2"
 			else:
 				luaver = "lua5.2"
 		else:
