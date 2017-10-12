@@ -59,7 +59,7 @@ AddSconsOption('sse', True, False, "Enable SSE optimizations (default).")
 AddSconsOption('sse2', True, False, "Enable SSE2 optimizations (default).")
 AddSconsOption('sse3', False, False, "Enable SSE3 optimizations.")
 AddSconsOption('native', False, False, "Enable optimizations specific to your cpu.")
-AddSconsOption('release', True, False, "Enable loop / compiling optimizations (default).")
+AddSconsOption('release', False, False, "Enable loop / compiling optimizations.")
 
 AddSconsOption('debugging', False, False, "Compile with debug symbols.")
 AddSconsOption('symbols', False, False, "Preserve (don't strip) symbols")
@@ -79,7 +79,7 @@ AddSconsOption("output", False, True, "Executable output name.")
 
 #detect platform automatically, but it can be overrided
 tool = GetOption('tool')
-isX86 = platform.machine() in ["AMD64", "i386", "i686", "x86", "x86_64"]
+isX86 = platform.machine() in ["amd64", "AMD64", "i386", "i686", "x86", "x86_64"]
 platform = compilePlatform = platform.system()
 if GetOption('win'):
 	platform = "Windows"
@@ -87,7 +87,7 @@ elif GetOption('lin'):
 	platform = "Linux"
 elif GetOption('mac'):
 	platform = "Darwin"
-elif compilePlatform not in ["Linux", "Windows", "Darwin"]:
+elif compilePlatform not in ["Linux", "Windows", "Darwin", "FreeBSD"]:
 	FatalError("Unknown platform: {0}".format(platform))
 
 msvc = GetOption('msvc')
@@ -98,9 +98,9 @@ if msvc and platform != "Windows":
 if GetOption('msvc'):
 	env = Environment(tools=['default'], ENV={'PATH' : os.environ['PATH'], 'TMP' : os.environ['TMP']}, TARGET_ARCH='x86')
 elif platform == "Windows" and not GetOption('msvc'):
-	env = Environment(tools=['mingw'], ENV={'PATH' : os.environ['PATH']})
+	env = Environment(tools=['mingw'], ENV=os.environ)
 else:
-	env = Environment(tools=['default'], ENV={'PATH' : os.environ['PATH']})
+	env = Environment(tools=['default'], ENV=os.environ)
 
 #attempt to automatically find cross compiler
 if not tool and compilePlatform == "Linux" and compilePlatform != platform:
@@ -243,7 +243,7 @@ def findLibs(env, conf):
 
 	if not GetOption('renderer'):
 		#Look for SDL
-		runSdlConfig = platform == "Linux" or compilePlatform == "Linux"
+		runSdlConfig = platform == "Linux" or compilePlatform == "Linux" or platform == "FreeBSD":
 		if platform == "Darwin" and conf.CheckFramework("SDL"):
 			runSdlConfig = False
 		elif not conf.CheckLib("SDL"):
@@ -268,7 +268,10 @@ def findLibs(env, conf):
 
 	if not GetOption('nolua') and not GetOption('renderer'):
 		#Look for Lua
-		luaver = "lua5.1"
+		if platform == "FreeBSD":
+			luaver = "lua-51"
+		else:
+			luaver = "lua5.1"
 		if GetOption('luajit'):
 			if not conf.CheckLib(['luajit-5.1', 'luajit5.1', 'luajit2.0', 'luajit', 'libluajit']):
 				FatalError("luajit development library not found or not installed")
@@ -278,13 +281,16 @@ def findLibs(env, conf):
 			if not conf.CheckLib(['lua5.2', 'lua-5.2', 'lua52', 'lua']):
 				FatalError("lua5.2 development library not found or not installed")
 			env.Append(CPPDEFINES=["LUA_COMPAT_ALL"])
-			luaver = "lua5.2"
+			if platform == "FreeBSD":
+				luaver = "lua-52"
+			else:
+				luaver = "lua5.2"
 		else:
 			if not conf.CheckLib(['lua5.1', 'lua-5.1', 'lua51', 'lua']):
 				if platform != "Darwin" or not conf.CheckFramework("Lua"):
 					FatalError("lua5.1 development library not found or not installed")
 		foundpkg = False
-		if platform == "Linux":
+		if platform == "Linux" or platform == "FreeBSD":
 			try:
 				env.ParseConfig("pkg-config --cflags {0}".format(luaver))
 				env.ParseConfig("pkg-config --libs {0}".format(luaver))
@@ -298,9 +304,9 @@ def findLibs(env, conf):
 			if GetOption('luajit'):
 				foundheader = conf.CheckCHeader('luajit-2.0/lua.h')
 			elif GetOption('lua52'):
-				foundheader = conf.CheckCHeader('lua5.2/lua.h')
+				foundheader = conf.CheckCHeader('lua5.2/lua.h') or conf.CheckCHeader('lua52/lua.h')
 			else:
-				foundheader = conf.CheckCHeader('lua5.1/lua.h')
+				foundheader = conf.CheckCHeader('lua5.1/lua.h') or conf.CheckCHeader('lua51/lua.h')
 			if not foundheader:
 				if conf.CheckCHeader('lua.h'):
 					env.Append(CPPDEFINES=["LUA_R_INCL"])
@@ -341,7 +347,7 @@ def findLibs(env, conf):
 
 	#Look for OpenGL libraries
 	if GetOption('opengl'):
-		if platform == "Linux":
+		if platform == "Linux" or platform == "FreeBSD":
 			if not conf.CheckLib('GL'):
 				FatalError("libGL not found or not installed")
 			try:
@@ -358,7 +364,7 @@ def findLibs(env, conf):
 			if not conf.CheckFramework("OpenGL"):
 				FatalError("OpenGL framework not found or not installed")
 
-	if platform == "Linux":
+	if platform == "Linux" or platform == "FreeBSD":
 		if not conf.CheckLib('X11'):
 			FatalError("X11 development library not found or not installed")
 
@@ -412,7 +418,7 @@ if platform == "Windows":
 			env.Append(LINKFLAGS=['/NODEFAULTLIB:msvcrtd.lib'])
 	else:
 		env.Append(LINKFLAGS=['-mwindows'])
-elif platform == "Linux":
+elif platform == "Linux" or platform == "FreeBSD":
 	env.Append(CPPDEFINES=['LIN'])
 elif platform == "Darwin":
 	env.Append(CPPDEFINES=['MACOSX'])
