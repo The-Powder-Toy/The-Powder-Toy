@@ -243,7 +243,7 @@ def findLibs(env, conf):
 
 	if not GetOption('renderer'):
 		#Look for SDL
-		runSdlConfig = platform == "Linux" or compilePlatform == "Linux" or platform == "FreeBSD":
+		runSdlConfig = platform == "Linux" or compilePlatform == "Linux" or platform == "FreeBSD"
 		if platform == "Darwin" and conf.CheckFramework("SDL"):
 			runSdlConfig = False
 		elif not conf.CheckLib("SDL"):
