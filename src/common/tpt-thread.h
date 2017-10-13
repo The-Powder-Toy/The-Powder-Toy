@@ -17,8 +17,8 @@
 #undef GetUserName
 
 // Fix deprecation warnings with recent pthread versions on Windows
-#ifdef _PTW32_STATIC_LIB
-#if PTW32_VERSION =< 2, 8, 0, 0
+#if defined(_PTW32_STATIC_LIB) && defined(WIN)
+#if PTW32_VERSION <= 2, 8, 0, 0
 #define PTW32_STATIC_LIB
 #endif
 #endif
