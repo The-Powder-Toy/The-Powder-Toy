@@ -473,7 +473,7 @@ elif GetOption('release'):
 
 if GetOption('static'):
 	if platform == "Windows":
-		if compilePlatform == "Windows":
+		if compilePlatform == "Windows" and not msvc:
 			env.Append(CPPDEFINES=['_PTW32_STATIC_LIB'])
 		else:
 			env.Append(CPPDEFINES=['PTW32_STATIC_LIB'])
