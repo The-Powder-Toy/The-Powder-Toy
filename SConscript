@@ -96,7 +96,7 @@ if msvc and platform != "Windows":
 
 #Create SCons Environment
 if GetOption('msvc'):
-	env = Environment(tools=['default'], ENV={'PATH' : os.environ['PATH'], 'TMP' : os.environ['TMP']}, TARGET_ARCH='x86')
+	env = Environment(tools=['default'], ENV=os.environ, TARGET_ARCH='x86')
 elif platform == "Windows" and not GetOption('msvc'):
 	env = Environment(tools=['mingw'], ENV=os.environ)
 else:
