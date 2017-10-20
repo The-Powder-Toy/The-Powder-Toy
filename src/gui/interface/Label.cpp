@@ -19,7 +19,7 @@ Label::Label(Point position, Point size, std::string labelText):
 	selectionIndex1(-1),
 	selectionXL(-1),
 	selectionXH(-1),
-	multiline(false),
+	multiline(true),
 	selecting(false),
 	autoHeight(size.Y==-1?true:false)
 {
