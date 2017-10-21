@@ -963,6 +963,26 @@ bool GameModel::GetAHeatEnable()
 	return sim->aheat_enable;
 }
 
+void GameModel::SetNewtonianGravity(bool newtonainGravity)
+{
+    if (newtonainGravity)
+    {
+        sim->grav->start_grav_async();
+        SetInfoTip("Newtonian Gravity: On");
+    }
+    else
+    {
+        sim->grav->stop_grav_async();
+        SetInfoTip("Newtonian Gravity: Off");
+    }
+    UpdateQuickOptions();
+}
+
+bool GameModel::GetNewtonianGrvity()
+{
+    return sim->grav->ngrav_enable;
+}
+
 void GameModel::ShowGravityGrid(bool showGrid)
 {
 	ren->gravityFieldEnabled = showGrid;
