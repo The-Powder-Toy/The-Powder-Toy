@@ -41,6 +41,7 @@ namespace ui
 		virtual void copySelection();
 	public:
 		//Label(Window* parent_state, std::string labelText);
+		Label(Point position, Point size, std::string labelText, bool multilineEnabled);
 		Label(Point position, Point size, std::string labelText);
 		//Label(std::string labelText);
 		virtual ~Label();
