@@ -11,22 +11,6 @@
 
 using namespace ui;
 
-Label::Label(Point position, Point size, std::string labelText, bool multilineEnabled):
-	Component(position, size),
-	text(labelText),
-	textColour(255, 255, 255),
-	selectionIndex0(-1),
-	selectionIndex1(-1),
-	selectionXL(-1),
-	selectionXH(-1),
-	multiline(multilineEnabled),
-	selecting(false),
-	autoHeight(size.Y==-1?true:false)
-{
-	menu = new ContextMenu(this);
-	menu->AddItem(ContextMenuItem("Copy", 0, true));
-}
-
 Label::Label(Point position, Point size, std::string labelText):
 	Component(position, size),
 	text(labelText),
@@ -35,7 +19,7 @@ Label::Label(Point position, Point size, std::string labelText):
 	selectionIndex1(-1),
 	selectionXL(-1),
 	selectionXH(-1),
-	multiline(true),
+	multiline(false),
 	selecting(false),
 	autoHeight(size.Y==-1?true:false)
 {

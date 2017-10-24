@@ -13,29 +13,6 @@
 
 using namespace ui;
 
-Textbox::Textbox(Point position, Point size, std::string textboxText, std::string textboxPlaceholder, bool multilineEnabled):
-	Label(position, size, "",multilineEnabled),
-	ReadOnly(false),
-	inputType(All),
-	limit(std::string::npos),
-	keyDown(0),
-	characterDown(0),
-	mouseDown(false),
-	masked(false),
-	border(true),
-	actionCallback(NULL)
-{
-	placeHolder = textboxPlaceholder;
-
-	SetText(textboxText);
-	cursor = text.length();
-
-	menu->RemoveItem(0);
-	menu->AddItem(ContextMenuItem("Cut", 1, true));
-	menu->AddItem(ContextMenuItem("Copy", 0, true));
-	menu->AddItem(ContextMenuItem("Paste", 2, true));
-}
-
 Textbox::Textbox(Point position, Point size, std::string textboxText, std::string textboxPlaceholder):
 	Label(position, size, ""),
 	ReadOnly(false),
@@ -58,6 +35,7 @@ Textbox::Textbox(Point position, Point size, std::string textboxText, std::strin
 	menu->AddItem(ContextMenuItem("Copy", 0, true));
 	menu->AddItem(ContextMenuItem("Paste", 2, true));
 }
+
 
 Textbox::~Textbox()
 {

@@ -16,6 +16,7 @@ ConsoleView::ConsoleView():
 		}
 	};
 	commandField = new ui::Textbox(ui::Point(0, Size.Y-16), ui::Point(Size.X, 16), "");
+	commandField->SetMultiline(true);
 	commandField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	commandField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	commandField->SetActionCallback(new CommandHighlighter(this));
