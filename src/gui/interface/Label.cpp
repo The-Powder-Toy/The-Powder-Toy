@@ -414,9 +414,10 @@ void Label::Draw(const Point& screenPos)
 		}
 	}
 
-	/*Highlighting*/
+	
 	if(multiline)
 	{
+		/*Highlighting*/
 		if(selectionXL != -1 && selectionXH != -1)
 		{
 			if(selectionLineH - selectionLineL > 0)
@@ -433,9 +434,11 @@ void Label::Draw(const Point& screenPos)
 			}
 			g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, cDisplayText, textColour.Red, textColour.Green, textColour.Blue, 255);
 		}
+		/*Drawing text*/
 		else
 		{
-			int L = 129;
+
+			int L = 129;//Size.X/(Graphics::CharWidth('W')*1.5);
 			/*Multiline Display: Break apart string*/
 			if(cDisplayText.length() > L){
 				std::vector<std::string> multiLineArray;	//store substrings
