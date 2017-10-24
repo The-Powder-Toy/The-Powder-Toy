@@ -36,6 +36,7 @@ Textbox::Textbox(Point position, Point size, std::string textboxText, std::strin
 	menu->AddItem(ContextMenuItem("Paste", 2, true));
 }
 
+
 Textbox::~Textbox()
 {
 	delete actionCallback;
