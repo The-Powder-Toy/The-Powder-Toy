@@ -1,5 +1,6 @@
 #include "ConsoleView.h"
 #include "gui/interface/Keys.h"
+#include "math.h"
 
 ConsoleView::ConsoleView():
 	ui::Window(ui::Point(0, 0), ui::Point(WINDOWW, 150)),
@@ -18,7 +19,7 @@ ConsoleView::ConsoleView():
 	commandField = new ui::Textbox(ui::Point(0, Size.Y-16), ui::Point(Size.X, 16), "");
 	commandField->SetMultiline(true);
 	commandField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
-	commandField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	commandField->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 	commandField->SetActionCallback(new CommandHighlighter(this));
 	AddComponent(commandField);
 	FocusComponent(commandField);
@@ -65,42 +66,31 @@ void ConsoleView::NotifyPreviousCommandsChanged(ConsoleModel * sender)
 	commandList.clear();
 	std::deque<ConsoleCommand> commands = sender->GetPreviousCommands();
 	
-	/*Edit 1 below*/
+	int currentY = Size.Y - 16;
 	int numLines = 0;
-	int numSpace = 0;
-	int index = commands.size() - 1;
-	if (index>0)
-	{
-		int totalY = 10 * commands[index].Command.size();
-		numLines = totalY / (Size.X / 2) + 2;
-	}
-	int currentY = Size.Y - 16 * numLines;
-	/*end edit 1*/
 
 	if(commands.size())
 		for(int i = commands.size()-1; i >= 0; i--)
 		{
-			if(currentY <= 0)
+			/*account for multiline*/
+			double totalY = 5 * commands[i].Command.size(); //width of a single char = 5 pixels. Multiply this by total num of characters in the string to get total length of the string in pixels
+			numLines = ceil(totalY / (Size.X / 2)); // number of lines = total length of string (in pixels) / pixel width of the window
+			currentY -= 16 * numLines;
+			/*end account for multiline*/
+
+			if(currentY <= 0) //i.e. we're off screen now (hence done and nothing left to print)
 				break;
 			ui::Label * tempLabel = new ui::Label(ui::Point(Size.X/2, currentY), ui::Point(Size.X/2, 16), commands[i].ReturnValue); //remove the '/2' to get rid of console feedback display
-			tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+			tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 			tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 			commandList.push_back(tempLabel);
 			AddComponent(tempLabel);
 			tempLabel = new ui::Label(ui::Point(0, currentY), ui::Point(Size.X/2, 16), commands[i].Command);
-			tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+			tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 			tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+			tempLabel->SetMultiline(true);
 			commandList.push_back(tempLabel);
 			AddComponent(tempLabel);
-
-			/*edit 2 below*/
-			if (i>0)
-			{
-				int totalY = 10 * commands[i - 1].Command.size();
-				numSpace = totalY / (Size.X / 2) + 1;
-			}
-			currentY -= 16 * numSpace;
-			/*end edit 2*/
 		}
 }
 

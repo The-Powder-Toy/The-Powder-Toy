@@ -435,21 +435,22 @@ void Label::Draw(const Point& screenPos)
 		}
 		else
 		{
+			int L = 129;
 			/*Multiline Display: Break apart string*/
-			if(cDisplayText.length() > 40){
+			if(cDisplayText.length() > L){
 				std::vector<std::string> multiLineArray;	//store substrings
 				std::string oldText(cDisplayText); 		//convert to std::string
 				int i = 0;
 		
 				/*Break apart into substrings every screen width*/
 				while(i < cDisplayText.length()){
-					multiLineArray.push_back(oldText.substr(i,40));
-					i = i + 40;
+					multiLineArray.push_back(oldText.substr(i,L));
+					i = i + L;
 				}		
 		
 				/*Print to screen, shifting downwards for each substring*/
 				for(int i = 0;i<multiLineArray.size();i++){
-					g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y + (i*16), multiLineArray[i].c_str()/*cDisplayText*/, textColour.Red, textColour.Green, textColour.Blue, 255);
+					g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y + (i*13), multiLineArray[i].c_str(), textColour.Red, textColour.Green, textColour.Blue, 255);
 				}
 			}
 			else{
