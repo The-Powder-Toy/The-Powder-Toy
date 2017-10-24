@@ -56,6 +56,7 @@ namespace ui
 		virtual void ClearSelection();
 		virtual void selectAll();
 		virtual void AutoHeight();
+		int GetMultilineStatus();	//should be bool, but having trouble with strict type system
 
 		void SetTextColour(Colour textColour) { this->textColour = textColour; }
 

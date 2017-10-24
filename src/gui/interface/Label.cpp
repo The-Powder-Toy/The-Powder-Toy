@@ -47,6 +47,16 @@ void Label::SetMultiline(bool status)
 	}
 }
 
+int Label::GetMultilineStatus(void)
+{
+	if(multiline){
+		return 1;
+	}
+	else{
+		return 0;
+	}
+}
+
 void Label::SetText(std::string text)
 {
 	this->text = text;

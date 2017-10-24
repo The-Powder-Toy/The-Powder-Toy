@@ -25,6 +25,7 @@ ConsoleView::ConsoleView():
 	commandField->SetBorder(false);
 }
 
+/*Console Event Listener for various Key Command Presses*/
 void ConsoleView::DoKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
 	switch(key)
@@ -81,7 +82,7 @@ void ConsoleView::NotifyPreviousCommandsChanged(ConsoleModel * sender)
 		{
 			if(currentY <= 0)
 				break;
-			ui::Label * tempLabel = new ui::Label(ui::Point(Size.X/2, currentY), ui::Point(Size.X/2, 16), commands[i].ReturnValue);
+			ui::Label * tempLabel = new ui::Label(ui::Point(Size.X/2, currentY), ui::Point(Size.X/2, 16), commands[i].ReturnValue); //remove the '/2' to get rid of console feedback display
 			tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 			tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 			commandList.push_back(tempLabel);
@@ -115,12 +116,16 @@ void ConsoleView::OnDraw()
 	Graphics * g = GetGraphics();
 	g->fillrect(Position.X, Position.Y, Size.X, Size.Y, 0, 0, 0, 110);
 	g->draw_line(Position.X, Position.Y+Size.Y-16, Position.X+Size.X, Position.Y+Size.Y-16, 255, 255, 255, 160);
-	//g->draw_line(Position.X, Position.Y+Size.Y, Position.X+Size.X, Position.Y+Size.Y, 255, 255, 255, 200);
 
-	/*new bottom line - edit 3*/
-	double totalY = 4.04 * commandField->GetText().size();
-	int numSpace = 16*(int(totalY) / Size.X);
-	g->draw_line(Position.X, Position.Y + Size.Y + numSpace, Position.X + Size.X, Position.Y + Size.Y + numSpace, 255, 255, 255, 200);
+	if(commandField->GetMultilineStatus() == 0){
+		g->draw_line(Position.X, Position.Y+Size.Y, Position.X+Size.X, Position.Y+Size.Y, 255, 255, 255, 200);
+	}
+	else{
+		/*Redraw bottom line of console text box to conform to multiline*/
+		double totalY = 4.04 * commandField->GetText().size();
+		int numSpace = 16*(int(totalY) / Size.X);
+		g->draw_line(Position.X, Position.Y + Size.Y + numSpace, Position.X + Size.X, Position.Y + Size.Y + numSpace, 255, 255, 255, 200);
+	}
 }
 
 ConsoleView::~ConsoleView() {
