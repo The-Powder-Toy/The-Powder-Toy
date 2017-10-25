@@ -73,8 +73,8 @@ void ConsoleView::NotifyPreviousCommandsChanged(ConsoleModel * sender)
 		for(int i = commands.size()-1; i >= 0; i--)
 		{
 			/*account for multiline*/
-			double lineWidth = (double)GetPixelWidth(commands[i].Command);
-			numLines = ceil(lineWidth / (Size.X / 2));
+			double totalY = 5 * commands[i].Command.size(); //width of a single char = 5 pixels. Multiply this by total num of characters in the string to get total length of the string in pixels
+			numLines = ceil(totalY / (Size.X / 2)); // number of lines = total length of string (in pixels) / pixel width of the window
 			currentY -= 16 * numLines;
 			/*end account for multiline*/
 
