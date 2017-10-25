@@ -457,7 +457,7 @@ void Label::Draw(const Point& screenPos)
 				}
 			}
 			else{
-				g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y,cDisplayText, textColour.Red, textColour.Green, textColour.Blue, 255);
+				g->drawtext(screenPos.X+textPosition.X, screenPos.Y + textPosition.Y + 1,cDisplayText, textColour.Red, textColour.Green, textColour.Blue, 255);
 			}
 		}
 	} else {

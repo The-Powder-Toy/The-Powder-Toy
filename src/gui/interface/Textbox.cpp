@@ -532,13 +532,14 @@ void Textbox::OnMouseMoved(int localx, int localy, int dx, int dy)
 
 void Textbox::Draw(const Point& screenPos)
 {
-	Label::Draw(screenPos);
+	Label::Draw(screenPos);		//Draw Text
 
+	/*Draw Cursor*/
 	Graphics * g = GetGraphics();
 	if(IsFocused())
 	{
 		if(border) g->drawrect(screenPos.X, screenPos.Y, Size.X, Size.Y, 255, 255, 255, 255);
-		g->draw_line(screenPos.X+textPosition.X+cursorPositionX, screenPos.Y-2+textPosition.Y+cursorPositionY, screenPos.X+textPosition.X+cursorPositionX, screenPos.Y+9+textPosition.Y+cursorPositionY, 255, 255, 255, 255);
+		g->draw_line(screenPos.X+textPosition.X+cursorPositionX, screenPos.Y+textPosition.Y+cursorPositionY, screenPos.X+textPosition.X+cursorPositionX, screenPos.Y+9+textPosition.Y+cursorPositionY, 255, 255, 255, 255);
 	}
 	else
 	{
