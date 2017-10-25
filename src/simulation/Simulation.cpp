@@ -5281,15 +5281,15 @@ Simulation::Simulation():
 	pretty_powder(0),
 	sandcolour_frame(0)
 {
-    int tportal_rx[] = {-1, 0, 1, 1, 1, 0,-1,-1};
-    int tportal_ry[] = {-1,-1,-1, 0, 1, 1, 1, 0};
-    
-    memcpy(portal_rx, tportal_rx, sizeof(tportal_rx));   
-    memcpy(portal_ry, tportal_ry, sizeof(tportal_ry));
+	int tportal_rx[] = {-1, 0, 1, 1, 1, 0,-1,-1};
+	int tportal_ry[] = {-1,-1,-1, 0, 1, 1, 1, 0};
 
-    currentTick = 0;
-    std::fill(elementCount, elementCount+PT_NUM, 0);
-    elementRecount = true;
+	memcpy(portal_rx, tportal_rx, sizeof(tportal_rx));
+	memcpy(portal_ry, tportal_ry, sizeof(tportal_ry));
+
+	currentTick = 0;
+	std::fill(elementCount, elementCount+PT_NUM, 0);
+	elementRecount = true;
 
 	//Create and attach gravity simulation
 	grav = new Gravity();
