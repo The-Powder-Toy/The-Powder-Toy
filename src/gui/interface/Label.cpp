@@ -1,4 +1,7 @@
 #include <string>
+#include <vector>
+#include <tgmath.h>
+#include <cmath>
 #include "Config.h"
 #include "Format.h"
 #include "Point.h"
@@ -44,6 +47,16 @@ void Label::SetMultiline(bool status)
 	else
 	{
 		TextPosition(text);
+	}
+}
+
+int Label::GetMultilineStatus(void)
+{
+	if(multiline){
+		return 1;
+	}
+	else{
+		return 0;
 	}
 }
 
@@ -401,8 +414,10 @@ void Label::Draw(const Point& screenPos)
 		}
 	}
 
+	
 	if(multiline)
 	{
+		/*Highlighting*/
 		if(selectionXL != -1 && selectionXH != -1)
 		{
 			if(selectionLineH - selectionLineL > 0)
@@ -419,9 +434,31 @@ void Label::Draw(const Point& screenPos)
 			}
 			g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, cDisplayText, textColour.Red, textColour.Green, textColour.Blue, 255);
 		}
+		/*Drawing text*/
 		else
 		{
-			g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, cDisplayText, textColour.Red, textColour.Green, textColour.Blue, 255);
+
+/*Hardcoded needs improvement*/			int L = 140;//129;//Size.X/(Graphics::CharWidth('W')*1.5);
+			/*Multiline Display: Break apart string*/
+			if(cDisplayText.length() > L){
+				std::vector<std::string> multiLineArray;	//store substrings
+				std::string oldText(cDisplayText); 		//convert to std::string
+				int i = 0;
+		
+				/*Break apart into substrings every screen width*/
+				while(i < cDisplayText.length()){
+					multiLineArray.push_back(oldText.substr(i,L));
+					i = i + L;
+				}		
+		
+				/*Print to screen, shifting downwards for each substring*/
+				for(int i = 0;i<multiLineArray.size();i++){
+					g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y + (i*13), multiLineArray[i].c_str(), textColour.Red, textColour.Green, textColour.Blue, 255);
+				}
+			}
+			else{
+				g->drawtext(screenPos.X+textPosition.X, screenPos.Y + textPosition.Y + 1,cDisplayText, textColour.Red, textColour.Green, textColour.Blue, 255);
+			}
 		}
 	} else {
 		if(selectionXL != -1 && selectionXH != -1)

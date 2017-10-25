@@ -1,11 +1,15 @@
 #ifndef WINDOW_H
 #define WINDOW_H
-
+#include "gui/interface/Button.h"
+#include "gui/interface/Label.h"
+#include "graphics/Graphics.h"
+#include <stdio.h>
 #include <string>
 #include <vector>
 #include "Config.h"
 #include "gui/interface/Point.h"
-
+#include <iostream>
+#include <math.h>
 class Graphics;
 namespace ui
 {
@@ -51,8 +55,21 @@ namespace ui
 
 		// Remove a component from window. NOTE: This WILL free component from memory.
 		void RemoveComponent(unsigned idx);
+		ui::Label *toolTipLabel;
+		//ui::Point toolTipPosition;
+		//std::string toolTip;
+		
 
-		virtual void ToolTip(ui::Point senderPosition, std::string toolTip) {}
+		/* Allow for tool-tips in the search screen */
+		virtual void ToolTip(ui::Point senderPosition, std::string toolTip)
+		{
+
+			RemoveComponent(toolTipLabel);
+			Graphics *g = GetGraphics();
+
+			toolTipLabel = new ui::Label(ui::Point(0, Size.Y), ui::Point(Size.X, (15)), toolTip.c_str());
+			AddComponent(toolTipLabel);
+		}
 
 		virtual void DoInitialized();
 		virtual void DoExit();

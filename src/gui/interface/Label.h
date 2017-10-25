@@ -41,6 +41,7 @@ namespace ui
 		virtual void copySelection();
 	public:
 		//Label(Window* parent_state, std::string labelText);
+
 		Label(Point position, Point size, std::string labelText);
 		//Label(std::string labelText);
 		virtual ~Label();
@@ -55,6 +56,7 @@ namespace ui
 		virtual void ClearSelection();
 		virtual void selectAll();
 		virtual void AutoHeight();
+		int GetMultilineStatus();	//should be bool, but having trouble with strict type system
 
 		void SetTextColour(Colour textColour) { this->textColour = textColour; }
 
