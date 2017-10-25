@@ -438,7 +438,7 @@ void Label::Draw(const Point& screenPos)
 		else
 		{
 
-			int L = 129;//Size.X/(Graphics::CharWidth('W')*1.5);
+/*Hardcoded needs improvement*/			int L = 129;//Size.X/(Graphics::CharWidth('W')*1.5);
 			/*Multiline Display: Break apart string*/
 			if(cDisplayText.length() > L){
 				std::vector<std::string> multiLineArray;	//store substrings

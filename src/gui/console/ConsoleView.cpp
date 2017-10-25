@@ -73,8 +73,8 @@ void ConsoleView::NotifyPreviousCommandsChanged(ConsoleModel * sender)
 		for(int i = commands.size()-1; i >= 0; i--)
 		{
 			/*account for multiline*/
-			double totalY = 5 * commands[i].Command.size(); //width of a single char = 5 pixels. Multiply this by total num of characters in the string to get total length of the string in pixels
-			numLines = ceil(totalY / (Size.X / 2)); // number of lines = total length of string (in pixels) / pixel width of the window
+			double lineWidth = (double)GetPixelWidth(commands[i].Command);
+			numLines = ceil(lineWidth / (Size.X / 2));
 			currentY -= 16 * numLines;
 			/*end account for multiline*/
 
@@ -112,10 +112,22 @@ void ConsoleView::OnDraw()
 	}
 	else{
 		/*Redraw bottom line of console text box to conform to multiline*/
-		double totalY = 4.04 * commandField->GetText().size();
-		int numSpace = 16*(int(totalY) / Size.X);
+		//double totalY = 4.04 * commandField->GetText().size();
+		//int numSpace = 16*(int(totalY) / Size.X);
+		int lineWidth = GetPixelWidth(commandField->GetText());
+		int numSpace = 12 * (lineWidth / Size.X);
 		g->draw_line(Position.X, Position.Y + Size.Y + numSpace, Position.X + Size.X, Position.Y + Size.Y + numSpace, 255, 255, 255, 200);
 	}
+}
+
+int ConsoleView::GetPixelWidth(std::string str)
+{
+	int lineWidth = 0;
+	for (int i = 0; i < str.size(); i++)
+	{
+		lineWidth += Graphics::CharWidth(str[i]);
+	}
+	return lineWidth;
 }
 
 ConsoleView::~ConsoleView() {

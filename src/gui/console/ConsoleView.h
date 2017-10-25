@@ -24,6 +24,7 @@ public:
 	void AttachController(ConsoleController * c_) { c = c_; }
 	void NotifyPreviousCommandsChanged(ConsoleModel * sender);
 	void NotifyCurrentCommandChanged(ConsoleModel * sender);
+	int GetPixelWidth(std::string str);
 	virtual ~ConsoleView();
 };
 
