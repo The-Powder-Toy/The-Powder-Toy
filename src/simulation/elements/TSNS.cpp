@@ -84,7 +84,7 @@ int Element_TSNS::update(UPDATE_FUNC_ARGS)
 					continue;
 				if ((r&0xFF)!=PT_TSNS && (r&0xFF)!=PT_METL && parts[r>>8].temp > parts[i].temp)
 					parts[i].life = 1;
-				if ((r & 0xFF) != PT_FILT && ((r&0xFF) != PT_TSNS))
+				if ((r & 0xFF) != PT_FILT && ((r&0xFF) != PT_TSNS && parts[i].tmp == 1))
 				{
 					setFilt = true;
 					photonWl = parts[r >> 8].temp;
