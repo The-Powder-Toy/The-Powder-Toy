@@ -1711,7 +1711,7 @@ int luatpt_get_numOfParts(lua_State* l)
 int luatpt_start_getPartIndex(lua_State* l)
 {
 	getPartIndex_curIdx = -1;
-	return 1;
+	return 0;
 }
 
 int luatpt_next_getPartIndex(lua_State* l)
