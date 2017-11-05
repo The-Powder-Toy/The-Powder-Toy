@@ -49,6 +49,8 @@ Element_HSWC::Element_HSWC()
 int Element_HSWC::update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry;
+	int tsense = 0;
+	bool bl1 = false;
 	if (parts[i].life!=10)
 	{
 		if (parts[i].life>0)
@@ -69,6 +71,14 @@ int Element_HSWC::update(UPDATE_FUNC_ARGS)
 							parts[i].life = 9;
 						else if (parts[r>>8].life==0)
 							parts[r>>8].life = 10;
+					}
+					if (parts[i].tmp == 1 && (r & 0xFF) == PT_FILT && (r & 0xFF) != PT_HSWC)
+					{
+						bl1 = true;
+						tsense = parts[r >> 8].ctype - 0x10000000;
+					}
+					if (bl1) {
+						parts[i].temp = tsense;
 					}
 				}
 	}
