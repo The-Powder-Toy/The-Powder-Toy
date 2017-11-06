@@ -63,7 +63,7 @@ int Element_HSWC::update(UPDATE_FUNC_ARGS)
 				if (BOUNDS_CHECK && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
-					if (!r)
+					if (parts[i].tmp == 1 && !r)
 						r = sim->photons[y + ry][x + rx];
 					if (!r)
 						continue;
