@@ -64,6 +64,8 @@ int Element_HSWC::update(UPDATE_FUNC_ARGS)
 				{
 					r = pmap[y+ry][x+rx];
 					if (!r)
+						r = sim->photons[y + ry][x + rx];
+					if (!r)
 						continue;
 					if ((r&0xFF)==PT_HSWC)
 					{
@@ -77,7 +79,7 @@ int Element_HSWC::update(UPDATE_FUNC_ARGS)
 						bl1 = true;
 						tsense = parts[r >> 8].ctype - 0x10000000;
 					}
-					if (bl1 && tsense >= 0.0f) {
+					if (bl1 && tsense >= 0) {
 						parts[i].temp = tsense;
 					}
 				}
