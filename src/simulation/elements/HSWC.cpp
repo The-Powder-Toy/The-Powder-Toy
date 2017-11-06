@@ -77,7 +77,7 @@ int Element_HSWC::update(UPDATE_FUNC_ARGS)
 						bl1 = true;
 						tsense = parts[r >> 8].ctype - 0x10000000;
 					}
-					if (bl1) {
+					if (bl1 && tsense >= 0.0f) {
 						parts[i].temp = tsense;
 					}
 				}
