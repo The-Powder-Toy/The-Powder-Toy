@@ -72,7 +72,7 @@ int Element_HSWC::update(UPDATE_FUNC_ARGS)
 						else if (parts[r>>8].life==0)
 							parts[r>>8].life = 10;
 					}
-					if (parts[i].tmp == 1 && (r & 0xFF) == PT_FILT && (r & 0xFF) != PT_HSWC)
+					if (parts[i].tmp == 1 && (r & 0xFF) == PT_FILT || (r & 0xFF) == PT_PHOT || (r & 0xFF) == PT_BRAY && (r & 0xFF) != PT_HSWC)
 					{
 						bl1 = true;
 						tsense = parts[r >> 8].ctype - 0x10000000;
