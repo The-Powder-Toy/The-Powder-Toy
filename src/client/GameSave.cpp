@@ -2,6 +2,7 @@
 #include <iostream>
 #include <sstream>
 #include <cmath>
+#include <climits>
 #include <vector>
 #include <set>
 #include <bzlib.h>
@@ -592,12 +593,12 @@ void GameSave::readOPS(char * data, int dataLength)
 	bsonDataLen |= ((unsigned)inputData[9]) << 8;
 	bsonDataLen |= ((unsigned)inputData[10]) << 16;
 	bsonDataLen |= ((unsigned)inputData[11]) << 24;
-	
+
 	//Check for overflows, don't load saves larger than 200MB
 	unsigned int toAlloc = bsonDataLen+1;
 	if (toAlloc > 209715200 || !toAlloc)
 		throw ParseException(ParseException::InvalidDimensions, "Save data too large, refusing");
-		
+
 	bsonData = (unsigned char*)malloc(toAlloc);
 	if (!bsonData)
 		throw ParseException(ParseException::InternalError, "Unable to allocate memory");
@@ -1329,10 +1330,10 @@ void GameSave::readPSv(char * data, int dataLength)
 	i |= ((unsigned)c[9])<<8;
 	i |= ((unsigned)c[10])<<16;
 	i |= ((unsigned)c[11])<<24;
-	
+
 	if(i > 209715200 || !i)
 		throw ParseException(ParseException::InvalidDimensions, "Save data too large");
-	
+
 	d = (unsigned char *)malloc(i);
 	if (!d)
 		throw ParseException(ParseException::Corrupt, "Cannot allocate memory");
@@ -1411,7 +1412,7 @@ void GameSave::readPSv(char * data, int dataLength)
 				if (ver>=44)
 				{
 					/* The numbers used to save walls were changed, starting in v44.
-					 * The new numbers are ignored for older versions due to some corruption of bmap in saves from older versions. 
+					 * The new numbers are ignored for older versions due to some corruption of bmap in saves from older versions.
 					 */
 					if (blockMap[y][x]==O_WL_WALLELEC)
 						blockMap[y][x]=WL_WALLELEC;
@@ -2321,7 +2322,7 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 	bson_append_int(&b, "major", minimumMajorVersion);
 	bson_append_int(&b, "minor", minimumMinorVersion);
 	bson_append_finish_object(&b);
-	
+
 
 	bson_append_bool(&b, "waterEEnabled", waterEEnabled);
 	bson_append_bool(&b, "legacyEnable", legacyEnable);

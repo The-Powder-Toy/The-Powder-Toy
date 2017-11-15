@@ -163,18 +163,6 @@
 #define GLASS_IOR		1.9
 #define GLASS_DISP		0.07
 
-#if defined(_MSC_VER)
-#if _MSC_VER < 1800
-#define fmin min
-#define fminf min
-#define fmax max
-#define fmaxf max
-#else
-#include <algorithm>
-#endif
-#endif
-
 #define SDEUT
-//#define REALHEAT
 
 #endif /* CONFIG_H */
