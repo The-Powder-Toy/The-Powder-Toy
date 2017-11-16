@@ -163,10 +163,6 @@
 #define GLASS_IOR		1.9
 #define GLASS_DISP		0.07
 
-//some compatibility stuff for non-standard compilers
-#if defined(WIN) && !defined(strcasecmp)
-#define strcasecmp stricmp
-#endif
 #if defined(_MSC_VER)
 #if _MSC_VER < 1800
 #define fmin min
@@ -177,21 +173,6 @@
 #include <algorithm>
 #endif
 #endif
-
-#if defined(_MSC_VER)
-#define TPT_INLINE _inline
-#else
-#define TPT_INLINE inline
-#endif
-
-// old Platform.h stuff, maybe we should have a file for these kinds of things
-typedef unsigned short Uint16;
-
-#ifndef NULL
-# define NULL 0
-#endif
-
-#include <climits>
 
 #define SDEUT
 //#define REALHEAT

@@ -26,7 +26,8 @@
 #include <cstring>
 #include <cstdio>
 #include <cstdarg>
-#include "Config.h"
+#include <climits>
+#include "common/tpt-inline.h"
 
 #if defined(LIN) || defined(USE_STDINT)
 #include <sys/types.h>
@@ -647,13 +648,13 @@ int bson_init_data( bson *b , char *data );
 
 
 /**
- * Initialize a BSON object, point its data pointer 
+ * Initialize a BSON object, point its data pointer
  * to the provided char*, and initialize the size
  *
  * @param b the BSON object to initialize.
  * @param data the raw BSON data.
  * @param size the size of the BSON data.
- * 
+ *
  * @return BSON_OK or BSON_ERROR.
  */
 int bson_init_data_size( bson *b , char *data , int size );
