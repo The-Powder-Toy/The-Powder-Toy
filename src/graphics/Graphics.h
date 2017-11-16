@@ -9,6 +9,7 @@
 #include "OpenGLHeaders.h"
 #endif
 #include "Config.h"
+#include "common/tpt-inline.h"
 #include "Pixel.h"
 #include "Icons.h"
 

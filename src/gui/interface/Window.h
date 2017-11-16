@@ -3,7 +3,7 @@
 
 #include <string>
 #include <vector>
-#include "Config.h"
+#include "common/tpt-compat.h"
 #include "gui/interface/Point.h"
 
 class Graphics;
@@ -83,7 +83,7 @@ namespace ui
 		void MakeActiveWindow();
 		bool CloseActiveWindow();
 		Graphics * GetGraphics();
-		
+
 	protected:
 		ui::Button * okayButton;
 		ui::Button * cancelButton;
@@ -95,7 +95,7 @@ namespace ui
 		virtual void OnFocus() {}
 		virtual void OnBlur() {}
 
-		virtual void OnTryExit(ExitMethod); 
+		virtual void OnTryExit(ExitMethod);
 		virtual void OnTryOkay(OkayMethod);
 
 		virtual void OnMouseMove(int x, int y, int dx, int dy) {}

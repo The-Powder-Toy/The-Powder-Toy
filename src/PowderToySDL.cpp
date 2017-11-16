@@ -3,6 +3,7 @@
 #include <map>
 #include <string>
 #include <ctime>
+#include <climits>
 #ifdef WIN
 #define _WIN32_WINNT 0x0501	//Necessary for some macros and functions, tells windows.h to include functions only available in Windows XP or later
 #include <direct.h>
@@ -34,7 +35,7 @@
 #include <ApplicationServices/ApplicationServices.h>
 extern "C" {
 	char * readClipboard();
-	void writeClipboard(const char * clipboardData);	
+	void writeClipboard(const char * clipboardData);
 }
 #endif
 
@@ -779,7 +780,7 @@ void EngineProcess()
 
 		engine->Tick();
 		engine->Draw();
-		
+
 		if(scale != engine->Scale || fullscreen != engine->Fullscreen)
 		{
 			sdl_scrn = SDLSetScreen(engine->Scale, engine->Fullscreen);
@@ -844,7 +845,7 @@ bool LoadWindowPosition(int scale)
 
 		int savedWindowX = Client::Ref().GetPrefInteger("WindowX", INT_MAX);
 		int savedWindowY = Client::Ref().GetPrefInteger("WindowY", INT_MAX);
-		
+
 		// Center the window on the primary desktop by default
 		int newWindowX = (desktopWidth - windowW) / 2;
 		int newWindowY = (desktopHeight - windowH) / 2;
@@ -878,7 +879,7 @@ bool LoadWindowPosition(int scale)
 				}
 			}
 		}
-		
+
 		SetWindowPos(sysInfo.window, 0, newWindowX, newWindowY, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER);
 
 		// True if we didn't use the default, i.e. the position was valid
@@ -921,7 +922,7 @@ void BlueScreen(const char * detailMessage){
 	int currentY = 0, width, height;
 	int errorWidth = 0;
 	Graphics::textsize(errorHelp.c_str(), errorWidth, height);
-	
+
 	engine->g->drawtext((engine->GetWidth()/2)-(errorWidth/2), ((engine->GetHeight()/2)-100) + currentY, errorTitle.c_str(), 255, 255, 255, 255);
 	Graphics::textsize(errorTitle.c_str(), width, height);
 	currentY += height + 4;
@@ -933,9 +934,9 @@ void BlueScreen(const char * detailMessage){
 	engine->g->drawtext((engine->GetWidth()/2)-(errorWidth/2), ((engine->GetHeight()/2)-100) + currentY, errorHelp.c_str(), 255, 255, 255, 255);
 	Graphics::textsize(errorTitle.c_str(), width, height);
 	currentY += height + 4;
-	
+
 	//Death loop
-	SDL_Event event;	
+	SDL_Event event;
 	while(true)
 	{
 		while (SDL_PollEvent(&event))
@@ -975,7 +976,7 @@ int main(int argc, char * argv[])
 #if defined(_DEBUG) && defined(_MSC_VER)
 	_CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_DEBUG);
 #endif
-	currentWidth = WINDOWW; 
+	currentWidth = WINDOWW;
 	currentHeight = WINDOWH;
 
 
@@ -1013,7 +1014,7 @@ int main(int argc, char * argv[])
 		if(arguments["proxy"] == "false")
 		{
 			proxyString = "";
-			Client::Ref().SetPref("Proxy", "");	
+			Client::Ref().SetPref("Proxy", "");
 		}
 		else
 		{
@@ -1065,7 +1066,7 @@ int main(int argc, char * argv[])
 		XA_TARGETS = XInternAtom(sdl_wminfo.info.x11.display, "TARGETS", 1);
 		XA_UTF8_STRING = XInternAtom(sdl_wminfo.info.x11.display, "UTF8_STRING", 1);
 		sdl_wminfo.info.x11.unlock_func();
-	} 
+	}
 	else
 	{
 		fprintf(stderr, "X11 setup failed, X11 window info not found");
@@ -1203,7 +1204,7 @@ int main(int argc, char * argv[])
 		SDL_GetMouseState(&sdl_x, &sdl_y);
 		engine->onMouseMove(sdl_x*inputScale, sdl_y*inputScale);
 		EngineProcess();
-		
+
 #ifdef WIN
 		SaveWindowPosition();
 #endif
@@ -1215,7 +1216,7 @@ int main(int argc, char * argv[])
 		BlueScreen(e.what());
 	}
 #endif
-	
+
 	Client::Ref().SetPref("Scale", ui::Engine::Ref().GetScale());
 	ui::Engine::Ref().CloseWindow();
 	delete gameController;
