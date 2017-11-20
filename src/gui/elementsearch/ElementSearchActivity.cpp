@@ -30,7 +30,9 @@ ElementSearchActivity::ElementSearchActivity(GameController * gameController, st
 	shiftPressed(false),
 	ctrlPressed(false),
 	altPressed(false),
-	exit(false)
+	exit(false),
+	toolTip(""),
+	isToolTipFadingIn(false)
 {
 	ui::Label * title = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 15), "Element Search");
 	title->SetTextColour(style::Colour::InformationTitle);
@@ -193,12 +195,28 @@ void ElementSearchActivity::OnDraw()
 	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 255, 255, 255, 255);
 
 	g->drawrect(Position.X+searchField->Position.X, Position.Y+searchField->Position.Y+searchField->Size.Y+8, searchField->Size.X, Size.Y-(searchField->Position.Y+searchField->Size.Y+8)-23, 255, 255, 255, 180);
+	if (toolTipPresence && toolTip.length())
+	{
+		g->drawtext(10, Size.Y+70, (char*)toolTip.c_str(), 255, 255, 255, toolTipPresence>51?255:toolTipPresence*5);
+	}
 }
 
 void ElementSearchActivity::OnTick(float dt)
 {
 	if (exit)
 		Exit();
+	if (isToolTipFadingIn)
+	{
+		isToolTipFadingIn = false;
+		if (toolTipPresence < 120)
+			toolTipPresence += int(dt*2)>1?int(dt*2):2;
+	}
+	if (toolTipPresence>0)
+	{
+		toolTipPresence -= int(dt)>0?int(dt):1;
+		if (toolTipPresence<0)
+			toolTipPresence = 0;
+	}
 }
 
 void ElementSearchActivity::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
@@ -244,6 +262,12 @@ void ElementSearchActivity::OnKeyRelease(int key, Uint16 character, bool shift, 
 		altPressed = false;
 		break;
 	}
+}
+
+void ElementSearchActivity::ToolTip(ui::Point senderPosition, std::string toolTip)
+{
+	this->toolTip = toolTip;
+	this->isToolTipFadingIn = true;
 }
 
 ElementSearchActivity::~ElementSearchActivity() {
