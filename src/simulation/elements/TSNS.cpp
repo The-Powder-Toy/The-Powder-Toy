@@ -47,7 +47,7 @@ Element_TSNS::Element_TSNS()
 //#TPT-Directive ElementHeader Element_TSNS static int update(UPDATE_FUNC_ARGS)
 int Element_TSNS::update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry, rt, rd = parts[i].tmp2, photonWl = 0, nx, ny;
+	int r, rx, ry, rt, rd = parts[i].tmp2;
 	if (rd > 25) parts[i].tmp2 = rd = 25;
 	if (parts[i].life)
 	{
@@ -71,6 +71,8 @@ int Element_TSNS::update(UPDATE_FUNC_ARGS)
 					}
 				}
 	}
+	bool setFilt = false;
+	int photonWl = 0;
 	for (rx = -rd; rx<rd + 1; rx++)
 		for (ry = -rd; ry<rd + 1; ry++)
 			if (x + rx >= 0 && y + ry >= 0 && x + rx<XRES && y + ry<YRES && (rx || ry))
@@ -82,30 +84,35 @@ int Element_TSNS::update(UPDATE_FUNC_ARGS)
 					continue;
 				if ((r & 0xFF) != PT_TSNS && (r & 0xFF) != PT_METL && parts[r >> 8].temp > parts[i].temp)
 					parts[i].life = 1;
-				if (parts[i].tmp == 1 && ((r & 0xFF) != PT_TSNS && (r & 0xFF) != PT_FILT))
+				if (parts[i].tmp == 1 && (r & 0xFF) != PT_TSNS && (r & 0xFF) != PT_FILT)
 				{
+					setFilt = true;
 					photonWl = parts[r >> 8].temp;
-					for (rx = -1; rx<2; rx++)
-						for (ry = -1; ry<2; ry++)
-							if (BOUNDS_CHECK && (rx || ry))
-							{
-								r = pmap[y + ry][x + rx];
-								if (!r)
-									continue;
-								nx = x + rx;
-								ny = y + ry;
-								while ((r & 0xFF) == PT_FILT)
-								{
-									parts[r >> 8].ctype = 0x10000000 + photonWl;
-									nx += rx;
-									ny += ry;
-									if (nx<0 || ny<0 || nx >= XRES || ny >= YRES)
-										break;
-									r = pmap[ny][nx];
-								}
-							}
 				}
 			}
+	if (setFilt)
+	{
+		int nx, ny;
+		for (rx = -1; rx<2; rx++)
+			for (ry = -1; ry<2; ry++)
+				if (BOUNDS_CHECK && (rx || ry))
+				{
+					r = pmap[y + ry][x + rx];
+					if (!r)
+						continue;
+					nx = x + rx;
+					ny = y + ry;
+					while ((r & 0xFF) == PT_FILT)
+					{
+						parts[r >> 8].ctype = 0x10000000 + photonWl;
+						nx += rx;
+						ny += ry;
+						if (nx<0 || ny<0 || nx >= XRES || ny >= YRES)
+							break;
+						r = pmap[ny][nx];
+					}
+				}
+	}
 	return 0;
 }
 
