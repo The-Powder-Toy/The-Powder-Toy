@@ -1,4 +1,6 @@
+#include "common/tpt-minmax.h"
 #include "simulation/Elements.h"
+
 //#TPT-Directive ElementClass Element_FIRE PT_FIRE 4
 Element_FIRE::Element_FIRE()
 {

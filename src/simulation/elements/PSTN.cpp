@@ -1,4 +1,6 @@
+#include "common/tpt-minmax.h"
 #include "simulation/Elements.h"
+
 //#TPT-Directive ElementClass Element_PSTN PT_PSTN 168
 Element_PSTN::Element_PSTN()
 {
