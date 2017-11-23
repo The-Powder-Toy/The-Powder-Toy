@@ -144,7 +144,7 @@ void Textbox::cutSelection()
 		std::string toCopy = backingText.substr(getLowerSelectionBound(), getHigherSelectionBound()-getLowerSelectionBound());
 		ClipboardPush(format::CleanString(toCopy, false, true, false));
 		backingText.erase(backingText.begin()+getLowerSelectionBound(), backingText.begin()+getHigherSelectionBound());
-		cursor = getLowerSelectionBound(); 
+		cursor = getLowerSelectionBound();
 	}
 	else
 	{
@@ -278,7 +278,8 @@ void Textbox::Tick(float dt)
 		keyDown = 0;
 		characterDown = 0;
 	}
-	if ((keyDown || characterDown) && repeatTime <= Platform::GetTime())
+	unsigned long time_pls = Platform::GetTime();
+	if ((keyDown || characterDown) && repeatTime <= time_pls)
 	{
 		OnVKeyPress(keyDown, characterDown, false, false, false);
 		repeatTime = Platform::GetTime()+30;
