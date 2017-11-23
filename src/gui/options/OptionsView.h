@@ -19,7 +19,7 @@ class OptionsView: public ui::Window {
 	ui::DropDown * airMode;
 	ui::DropDown * gravityMode;
 	ui::DropDown * edgeMode;
-	ui::Checkbox * scale;
+	ui::Textbox  * scale;
 	ui::Checkbox * fullscreen;
 	ui::Checkbox * fastquit;
 	ui::Checkbox * showAvatars;

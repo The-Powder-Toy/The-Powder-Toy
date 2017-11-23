@@ -35,8 +35,6 @@ public:
 	void SetFullscreen(bool fullscreen);
 	bool GetFastQuit();
 	void SetFastQuit(bool fastquit);
-	bool GetScale();
-	void SetScale(bool scale);
 	virtual ~OptionsModel();
 };
 

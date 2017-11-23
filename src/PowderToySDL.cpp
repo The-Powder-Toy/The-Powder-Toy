@@ -369,7 +369,7 @@ void blit2(pixel * vid, int currentScale)
 		int j, x = 0, y = 0, w = WINDOWW, h = WINDOWH, pitch = WINDOWW;
 		pixel *dst;
 		pixel px, lastpx, nextpx;
-		int i,k;
+		int i,k,sx;
 		if (SDL_MUSTLOCK(sdl_scrn))
 			if (SDL_LockSurface(sdl_scrn)<0)
 				return;
@@ -406,8 +406,8 @@ void blit2(pixel * vid, int currentScale)
 							green = (PIXG(px)>>fmt->Gloss)<<fmt->Gshift;
 							blue = (PIXB(px)>>fmt->Bloss)<<fmt->Bshift;
 						}
-						dst[i*2] = red|green|blue;
-						dst[i*2+1] = red|green|blue;
+						for (sx=0; sx<currentScale; sx++)
+							dst[i*currentScale+sx] = red|green|blue;
 					}
 					dst+=sdl_scrn->pitch/PIXELSIZE;
 				}
@@ -435,8 +435,8 @@ void blit2(pixel * vid, int currentScale)
 								blueshift = 255;
 							px = PIXRGB((int)(PIXR(lastpx)*.69f+redshift*.3f), (int)(PIXG(nextpx)*.3f), (int)(PIXB(nextpx)*.69f+blueshift*.3f));
 						}
-						dst[i*2] = px;
-						dst[i*2+1] = px;
+						for (sx=0; sx<currentScale; sx++)
+							dst[i*currentScale+sx] = px;
 					}
 					dst+=sdl_scrn->pitch/PIXELSIZE;
 				}
@@ -790,7 +790,7 @@ void EngineProcess()
 #ifdef OGLI
 		blit();
 #else
-		if(engine->Scale==2)
+		if(engine->Scale > 1)
 			blit2(engine->g->vid, engine->Scale);
 		else
 			blit(engine->g->vid);
@@ -945,7 +945,7 @@ void BlueScreen(const char * detailMessage){
 #ifdef OGLI
 		blit();
 #else
-		if(engine->Scale==2)
+		if(engine->Scale > 1)
 			blit2(engine->g->vid, engine->Scale);
 		else
 			blit(engine->g->vid);
@@ -1029,10 +1029,12 @@ int main(int argc, char * argv[])
 
 	Client::Ref().Initialise(proxyString);
 
-	if(tempScale != 1 && tempScale != 2)
+	// TODO: maybe bind the maximum allowed scale to screen size somehow
+	if(tempScale < 1 || tempScale > 10)
 		tempScale = 1;
 
 	SDLOpen();
+	// TODO: mabe make a nice loop that automagically finds the optimal scale
 	if (Client::Ref().IsFirstRun() && desktopWidth > WINDOWW*2+50 && desktopHeight > WINDOWH*2+50)
 	{
 		tempScale = 2;
@@ -1150,7 +1152,7 @@ int main(int argc, char * argv[])
 #ifdef OGLI
 			blit();
 #else
-			if(engine->Scale==2)
+			if(engine->Scale > 1)
 				blit2(engine->g->vid, engine->Scale);
 			else
 				blit(engine->g->vid);
