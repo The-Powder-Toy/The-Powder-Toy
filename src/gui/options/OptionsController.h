@@ -14,7 +14,7 @@ class OptionsController {
 	OptionsView * view;
 	OptionsModel * model;
 	ControllerCallback * callback;
-	int depth3d, newScale;
+	int depth3d;
 public:
 	bool HasExited;
 	OptionsController(GameModel * gModel_, ControllerCallback * callback_);

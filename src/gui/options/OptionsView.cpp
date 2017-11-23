@@ -142,15 +142,29 @@ OptionsView::OptionsView():
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(tempLabel);
 
-	class ScaleAction: public ui::TextboxAction
+	class ScaleAction: public ui::DropDownAction
 	{
 		OptionsView * v;
 	public:
-		ScaleAction(OptionsView * v_) { v = v_; }
-		virtual void TextChangedCallback(ui::Textbox * sender) { v->c->SetScale(format::StringToNumber<int>(sender->GetText())); }
+		ScaleAction(OptionsView * v): v(v) { }
+		virtual void OptionChanged(ui::DropDown * sender, std::pair<std::string, int> option) { v->c->SetScale(option.second); }
 	};
-	scale = new ui::Textbox(ui::Point(8, 210), ui::Point(25, 16), format::NumberToString<int>(ui::Engine::Ref().GetScale()));
-	scale->SetInputType(ui::Textbox::Numeric);
+	scale = new ui::DropDown(ui::Point(8, 210), ui::Point(40, 16));
+	{
+		int current_scale = ui::Engine::Ref().GetScale();
+		int ix_scale = 1;
+		bool current_scale_valid = false;
+		do
+		{
+			if (current_scale == ix_scale)
+				current_scale_valid = true;
+			scale->AddOption(std::pair<std::string, int>(format::NumberToString<int>(ix_scale), ix_scale));
+			ix_scale += 1;
+		}
+		while (ui::Engine::Ref().GetMaxWidth() >= ui::Engine::Ref().GetWidth() * ix_scale && ui::Engine::Ref().GetMaxHeight() >= ui::Engine::Ref().GetHeight() * ix_scale);
+		if (!current_scale_valid)
+			scale->AddOption(std::pair<std::string, int>("current", current_scale));
+	}
 	scale->SetActionCallback(new ScaleAction(this));
 	AddComponent(scale);
 
@@ -286,6 +300,7 @@ void OptionsView::NotifySettingsChanged(OptionsModel * sender)
 	airMode->SetOption(sender->GetAirMode());
 	gravityMode->SetOption(sender->GetGravityMode());
 	edgeMode->SetOption(sender->GetEdgeMode());
+	scale->SetOption(sender->GetScale());
 	fullscreen->SetChecked(sender->GetFullscreen());
 	fastquit->SetChecked(sender->GetFastQuit());
 	showAvatars->SetChecked(sender->GetShowAvatars());

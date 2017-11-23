@@ -9,7 +9,6 @@ OptionsController::OptionsController(GameModel * gModel_, ControllerCallback * c
 	HasExited(false)
 {
 	this->depth3d = ui::Engine::Ref().Get3dDepth();
-	this->newScale = ui::Engine::Ref().GetScale();
 	view = new OptionsView();
 	model = new OptionsModel(gModel);
 	model->AddObserver(view);
@@ -64,7 +63,7 @@ void OptionsController::SetShowAvatars(bool showAvatars)
 
 void OptionsController::SetScale(int scale)
 {
-	newScale = scale;
+	model->SetScale(scale);
 }
 
 void OptionsController::SetFastQuit(bool fastquit)
@@ -87,21 +86,6 @@ void OptionsController::Exit()
 	view->CloseActiveWindow();
 	// only update on close, it would be hard to edit if the changes were live
 	ui::Engine::Ref().Set3dDepth(depth3d);
-
-	{
-		if (newScale < 1)
-			newScale = 1;
-		bool reduced_scale = false;
-		while (!(ui::Engine::Ref().GetMaxWidth() >= ui::Engine::Ref().GetWidth() * newScale && ui::Engine::Ref().GetMaxHeight() >= ui::Engine::Ref().GetHeight() * newScale) && newScale > 1)
-		{
-			newScale -= 1;
-			reduced_scale = true;
-		}
-		if (reduced_scale)
-			new ErrorMessage("Screen resolution error", "Your screen size is too small to use this scale mode. Using largest available scale.");
-		ui::Engine::Ref().SetScale(newScale);
-		Client::Ref().SetPref("Scale", newScale);
-	}
 
 	if (callback)
 		callback->ControllerExit();
