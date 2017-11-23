@@ -17,6 +17,7 @@
 #define Simulation_CoordStack_h
 
 #include "Config.h" // for XRES and YRES
+#include <cstdlib>
 #include <exception>
 
 class CoordStackOverflowException: public std::exception
@@ -27,7 +28,7 @@ public:
 	{
 		return "Maximum number of entries in the coordinate stack was exceeded";
 	}
-	~CoordStackOverflowException() throw() {};
+	~CoordStackOverflowException() throw() {}
 };
 
 class CoordStack
