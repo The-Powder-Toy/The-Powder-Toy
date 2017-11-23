@@ -1,4 +1,4 @@
-The Powder Toy - September 2017
+The Powder Toy - November 2017
 ==========================
 
 Get the latest version here: http://powdertoy.co.uk/Download.html
@@ -104,8 +104,7 @@ Command Line
 
 | Command                  |                                                                |
 | ------------------------ | -------------------------------------------------------------- |
-| scale:1                  | Normal window resolution                                       |
-| scale:2                  | Doubled window resolution                                      |
+| scale:<size>             | Change window scale                                            |
 | kiosk                    | Fullscreen mode                                                |
 | proxy:server[:port]      | Proxy server to use [Example: proxy:wwwcache.lancs.ac.uk:8080] |
 | open <file>              | Opens the file as a stamp or game save                         |
