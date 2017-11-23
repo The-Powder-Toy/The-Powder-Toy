@@ -1,4 +1,3 @@
-//#include <cstdlib>
 #include <cmath>
 #include <math.h>
 #ifdef _MSC_VER
@@ -6,20 +5,21 @@
 #else
 #include <strings.h>
 #endif
-#include "Config.h"
-#include "Simulation.h"
-#include "Elements.h"
 #include "Air.h"
-#include "Gravity.h"
-#include "elements/Element.h"
+#include "Config.h"
 #include "CoordStack.h"
+#include "Elements.h"
+#include "elements/Element.h"
+#include "Gravity.h"
+#include "Sample.h"
+#include "Simulation.h"
+#include "Snapshot.h"
 
 #include "Misc.h"
 #include "ToolClasses.h"
-#include "gui/game/Brush.h"
 #include "client/GameSave.h"
-#include "Sample.h"
-#include "Snapshot.h"
+#include "common/tpt-minmax.h"
+#include "gui/game/Brush.h"
 
 #ifdef LUACONSOLE
 #include "lua/LuaScriptInterface.h"
