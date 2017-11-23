@@ -41,6 +41,7 @@ def AddSconsOption(name, default, hasArgs, help):
 AddSconsOption('win', False, False, "Target Windows.")
 AddSconsOption('lin', False, False, "Target Linux.")
 AddSconsOption('mac', False, False, "Target Mac OS X.")
+AddSconsOption('bsd', False, False, "Target FreeBSD.")
 AddSconsOption('msvc', False, False, "Use the Microsoft Visual Studio compiler.")
 AddSconsOption("tool", False, True, "Tool prefix appended before gcc/g++.")
 
@@ -79,7 +80,7 @@ AddSconsOption("output", False, True, "Executable output name.")
 
 #detect platform automatically, but it can be overrided
 tool = GetOption('tool')
-isX86 = platform.machine() in ["AMD64", "i386", "i686", "x86", "x86_64"]
+isX86 = platform.machine() in ["amd64", "AMD64", "i386", "i686", "x86", "x86_64"]
 platform = compilePlatform = platform.system()
 if GetOption('win'):
 	platform = "Windows"
@@ -87,7 +88,9 @@ elif GetOption('lin'):
 	platform = "Linux"
 elif GetOption('mac'):
 	platform = "Darwin"
-elif compilePlatform not in ["Linux", "Windows", "Darwin"]:
+elif GetOption('bsd'):
+	platform = "FreeBSD"
+elif compilePlatform not in ["Linux", "Windows", "Darwin", "FreeBSD"]:
 	FatalError("Unknown platform: {0}".format(platform))
 
 msvc = GetOption('msvc')
@@ -100,7 +103,7 @@ if GetOption('msvc'):
 elif platform == "Windows" and not GetOption('msvc'):
 	env = Environment(tools=['mingw'], ENV={'PATH' : os.environ['PATH']})
 else:
-	env = Environment(tools=['default'], ENV={'PATH' : os.environ['PATH']})
+	env = Environment(tools=['default'], ENV=os.environ)
 
 #attempt to automatically find cross compiler
 if not tool and compilePlatform == "Linux" and compilePlatform != platform:
@@ -243,7 +246,7 @@ def findLibs(env, conf):
 
 	if not GetOption('renderer'):
 		#Look for SDL
-		runSdlConfig = platform == "Linux" or compilePlatform == "Linux"
+		runSdlConfig = platform == "Linux" or compilePlatform == "Linux" or platform == "FreeBSD"
 		if platform == "Darwin" and conf.CheckFramework("SDL"):
 			runSdlConfig = False
 		elif not conf.CheckLib("SDL"):
@@ -284,7 +287,7 @@ def findLibs(env, conf):
 				if platform != "Darwin" or not conf.CheckFramework("Lua"):
 					FatalError("lua5.1 development library not found or not installed")
 		foundpkg = False
-		if platform == "Linux":
+		if platform == "Linux" or platform == "FreeBSD":
 			try:
 				env.ParseConfig("pkg-config --cflags {0}".format(luaver))
 				env.ParseConfig("pkg-config --libs {0}".format(luaver))
@@ -341,7 +344,7 @@ def findLibs(env, conf):
 
 	#Look for OpenGL libraries
 	if GetOption('opengl'):
-		if platform == "Linux":
+		if platform == "Linux" or platform == "FreeBSD":
 			if not conf.CheckLib('GL'):
 				FatalError("libGL not found or not installed")
 			try:
@@ -358,7 +361,7 @@ def findLibs(env, conf):
 			if not conf.CheckFramework("OpenGL"):
 				FatalError("OpenGL framework not found or not installed")
 
-	if platform == "Linux":
+	if platform == "Linux" or platform == "FreeBSD":
 		if not conf.CheckLib('X11'):
 			FatalError("X11 development library not found or not installed")
 
@@ -412,7 +415,7 @@ if platform == "Windows":
 			env.Append(LINKFLAGS=['/NODEFAULTLIB:msvcrtd.lib'])
 	else:
 		env.Append(LINKFLAGS=['-mwindows'])
-elif platform == "Linux":
+elif platform == "Linux" or platform == "FreeBSD":
 	env.Append(CPPDEFINES=['LIN'])
 elif platform == "Darwin":
 	env.Append(CPPDEFINES=['MACOSX'])
