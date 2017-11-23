@@ -27,12 +27,13 @@ ElementSearchActivity::ElementSearchActivity(GameController * gameController, st
 	firstResult(NULL),
 	gameController(gameController),
 	tools(tools),
+	toolTip(""),
+	toolTipPresence(0),
 	shiftPressed(false),
 	ctrlPressed(false),
 	altPressed(false),
-	exit(false),
-	toolTip(""),
-	isToolTipFadingIn(false)
+	isToolTipFadingIn(false),
+	exit(false)
 {
 	ui::Label * title = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 15), "Element Search");
 	title->SetTextColour(style::Colour::InformationTitle);
@@ -211,7 +212,7 @@ void ElementSearchActivity::OnTick(float dt)
 		if (toolTipPresence < 120)
 			toolTipPresence += int(dt*2)>1?int(dt*2):2;
 	}
-	if (toolTipPresence>0)
+	else if (toolTipPresence>0)
 	{
 		toolTipPresence -= int(dt)>0?int(dt):1;
 		if (toolTipPresence<0)
