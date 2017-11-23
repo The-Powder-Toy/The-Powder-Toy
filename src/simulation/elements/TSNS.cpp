@@ -26,7 +26,7 @@ Element_TSNS::Element_TSNS()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
+	Temperature = R_TEMP + 273.15f;
 	HeatConduct = 0;
 	Description = "Temperature sensor, creates a spark when there's a nearby particle with a greater temperature.";
 
@@ -47,42 +47,73 @@ Element_TSNS::Element_TSNS()
 //#TPT-Directive ElementHeader Element_TSNS static int update(UPDATE_FUNC_ARGS)
 int Element_TSNS::update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry, rt, rd = parts[i].tmp2;
-	if (rd > 25) parts[i].tmp2 = rd = 25;
+	int rd = parts[i].tmp2;
+	if (rd > 25)
+		parts[i].tmp2 = rd = 25;
 	if (parts[i].life)
 	{
 		parts[i].life = 0;
-		for (rx=-2; rx<3; rx++)
-			for (ry=-2; ry<3; ry++)
+		for (int rx = -2; rx <= 2; rx++)
+			for (int ry = -2; ry <= 2; ry++)
 				if (BOUNDS_CHECK && (rx || ry))
 				{
-					r = pmap[y+ry][x+rx];
+					int r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					rt = r&0xFF;
-					if (sim->parts_avg(i,r>>8,PT_INSL) != PT_INSL)
+					int rt = r&0xFF;
+					if (sim->parts_avg(i, r>>8, PT_INSL) != PT_INSL)
 					{
-						if ((sim->elements[rt].Properties&PROP_CONDUCTS) && !(rt==PT_WATR||rt==PT_SLTW||rt==PT_NTCT||rt==PT_PTCT||rt==PT_INWR) && parts[r>>8].life==0)
+						if ((sim->elements[rt].Properties&PROP_CONDUCTS) && !(rt == PT_WATR || rt == PT_SLTW || rt == PT_NTCT || rt == PT_PTCT || rt == PT_INWR) && parts[r>>8].life == 0)
 						{
 							parts[r>>8].life = 4;
 							parts[r>>8].ctype = rt;
-							sim->part_change_type(r>>8,x+rx,y+ry,PT_SPRK);
+							sim->part_change_type(r>>8, x+rx, y+ry, PT_SPRK);
 						}
 					}
 				}
 	}
-	for (rx=-rd; rx<rd+1; rx++)
-		for (ry=-rd; ry<rd+1; ry++)
-			if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+	bool setFilt = false;
+	int photonWl = 0;
+	for (int rx = -rd; rx <= rd; rx++)
+		for (int ry = -rd; ry <= rd; ry++)
+			if (x + rx >= 0 && y + ry >= 0 && x + rx < XRES && y + ry < YRES && (rx || ry))
 			{
-				r = pmap[y+ry][x+rx];
-				if(!r)
+				int r = pmap[y+ry][x+rx];
+				if (!r)
 					r = sim->photons[y+ry][x+rx];
-				if(!r)
+				if (!r)
 					continue;
-				if ((r&0xFF)!=PT_TSNS && (r&0xFF)!=PT_METL && parts[r>>8].temp > parts[i].temp)
+				if ((r&0xFF) != PT_TSNS && (r&0xFF) != PT_METL && parts[r>>8].temp > parts[i].temp)
 					parts[i].life = 1;
+				if (parts[i].tmp == 1 && (r&0xFF) != PT_TSNS && (r&0xFF) != PT_FILT)
+				{
+					setFilt = true;
+					photonWl = parts[r>>8].temp;
+				}
 			}
+	if (setFilt)
+	{
+		int nx, ny;
+		for (int rx = -1; rx <= 1; rx++)
+			for (int ry = -1; ry <= 1; ry++)
+				if (BOUNDS_CHECK && (rx || ry))
+				{
+					int r = pmap[y+ry][x+rx];
+					if (!r)
+						continue;
+					nx = x + rx;
+					ny = y + ry;
+					while ((r & 0xFF) == PT_FILT)
+					{
+						parts[r>>8].ctype = 0x10000000 + photonWl;
+						nx += rx;
+						ny += ry;
+						if (nx < 0 || ny < 0 || nx >= XRES || ny >= YRES)
+							break;
+						r = pmap[ny][nx];
+					}
+				}
+	}
 	return 0;
 }
 
