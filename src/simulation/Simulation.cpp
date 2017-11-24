@@ -334,7 +334,7 @@ GameSave * Simulation::Save(int fullX, int fullY, int fullX2, int fullY2, bool i
 			}
 		}
 		// fix SOAP links using soapList, a map of new particle ID -> old particle ID
-		// loop through every old particle (loaded from save), and convert .tmp / .tmp2
+		// loop through every new particle (saved into the save), and convert .tmp / .tmp2
 		for (std::map<unsigned int, unsigned int>::iterator iter = soapList.begin(), end = soapList.end(); iter != end; ++iter)
 		{
 			int i = (*iter).second;
