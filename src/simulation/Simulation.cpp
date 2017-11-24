@@ -80,7 +80,9 @@ int Simulation::Load(int fullX, int fullY, GameSave * save, bool includePressure
 	}
 
 	int i;
-	for(int n = 0; n < NPART && n < save->particlesCount; n++)
+	// Map of soap particles loaded into this save, old ID -> new ID
+	std::map<unsigned int, unsigned int> soapList;
+	for (int n = 0; n < NPART && n < save->particlesCount; n++)
 	{
 		Particle tempPart = save->particles[n];
 		tempPart.x += (float)fullX;
@@ -183,10 +185,44 @@ int Simulation::Load(int fullX, int fullY, GameSave * save, bool includePressure
 				}
 			}
 		}
+		else if (parts[i].type == PT_SOAP)
+		{
+			soapList.insert(std::pair<unsigned int, unsigned int>(n, i));
+		}
 	}
 	parts_lastActiveIndex = NPART-1;
 	force_stacking_check = true;
 	Element_PPIP::ppip_changed = 1;
+
+	// fix SOAP links using soapList, a map of old particle ID -> new particle ID
+	// loop through every old particle (loaded from save), and convert .tmp / .tmp2
+	for (std::map<unsigned int, unsigned int>::iterator iter = soapList.begin(), end = soapList.end(); iter != end; ++iter)
+	{
+		int i = (*iter).second;
+		if ((parts[i].ctype & 0x2) == 2)
+		{
+			std::map<unsigned int, unsigned int>::iterator n = soapList.find(parts[i].tmp);
+			if (n != end)
+				parts[i].tmp = n->second;
+			else
+			{
+				parts[i].tmp = 0;
+				parts[i].ctype ^= 2;
+			}
+		}
+		if ((parts[i].ctype & 0x4) == 4)
+		{
+			std::map<unsigned int, unsigned int>::iterator n = soapList.find(parts[i].tmp2);
+			if (n != end)
+				parts[i].tmp2 = n->second;
+			else
+			{
+				parts[i].tmp2 = 0;
+				parts[i].ctype ^= 4;
+			}
+		}
+	}
+
 	for (size_t i = 0; i < save->signs.size() && signs.size() < MAXSIGNS; i++)
 	{
 		if (save->signs[i].text[0])
@@ -262,18 +298,22 @@ GameSave * Simulation::Save(int fullX, int fullY, int fullX2, int fullY2, bool i
 	int storedParts = 0;
 	int elementCount[PT_NUM];
 	std::fill(elementCount, elementCount+PT_NUM, 0);
-	for(int i = 0; i < NPART; i++)
+	// Map of soap particles loaded into this save, new ID -> old ID
+	std::map<unsigned int, unsigned int> soapList;
+	for (int i = 0; i < NPART; i++)
 	{
 		int x, y;
 		x = int(parts[i].x + 0.5f);
 		y = int(parts[i].y + 0.5f);
-		if(parts[i].type && x >= fullX && y >= fullY && x <= fullX2 && y <= fullY2)
+		if (parts[i].type && x >= fullX && y >= fullY && x <= fullX2 && y <= fullY2)
 		{
 			Particle tempPart = parts[i];
 			tempPart.x -= blockX*CELL;
 			tempPart.y -= blockY*CELL;
-			if(elements[tempPart.type].Enabled)
+			if (elements[tempPart.type].Enabled)
 			{
+				if (tempPart.type == PT_SOAP)
+					soapList.insert(std::pair<unsigned int, unsigned int>(i, storedParts));
 				*newSave << tempPart;
 				storedParts++;
 				elementCount[tempPart.type]++;
@@ -281,13 +321,41 @@ GameSave * Simulation::Save(int fullX, int fullY, int fullX2, int fullY2, bool i
 		}
 	}
 
-	if(storedParts)
+	if (storedParts)
 	{
-		for(int i = 0; i < PT_NUM; i++)
+		for (int i = 0; i < PT_NUM; i++)
 		{
-			if(elements[i].Enabled && elementCount[i])
+			if (elements[i].Enabled && elementCount[i])
 			{
 				newSave->palette.push_back(GameSave::PaletteItem(elements[i].Identifier, i));
+			}
+		}
+		// fix SOAP links using soapList, a map of new particle ID -> old particle ID
+		// loop through every old particle (loaded from save), and convert .tmp / .tmp2
+		for (std::map<unsigned int, unsigned int>::iterator iter = soapList.begin(), end = soapList.end(); iter != end; ++iter)
+		{
+			int i = (*iter).second;
+			if ((newSave->particles[i].ctype & 0x2) == 2)
+			{
+				std::map<unsigned int, unsigned int>::iterator n = soapList.find(newSave->particles[i].tmp);
+				if (n != end)
+					newSave->particles[i].tmp = n->second;
+				else
+				{
+					newSave->particles[i].tmp = 0;
+					newSave->particles[i].ctype ^= 2;
+				}
+			}
+			if ((newSave->particles[i].ctype & 0x4) == 4)
+			{
+				std::map<unsigned int, unsigned int>::iterator n = soapList.find(newSave->particles[i].tmp2);
+				if (n != end)
+					newSave->particles[i].tmp2 = n->second;
+				else
+				{
+					newSave->particles[i].tmp2 = 0;
+					newSave->particles[i].ctype ^= 4;
+				}
 			}
 		}
 	}
