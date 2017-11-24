@@ -32,6 +32,7 @@ public:
 	
 	int blockWidth, blockHeight;
 	bool fromNewerVersion;
+	bool hasPressure;
 	bool hasAmbientHeat;
 
 	//Simulation data

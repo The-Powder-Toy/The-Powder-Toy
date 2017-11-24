@@ -16,22 +16,24 @@ extern "C"
 	#include "hmap.h"
 }
 
-GameSave::GameSave(GameSave & save) :
-waterEEnabled(save.waterEEnabled),
-legacyEnable(save.legacyEnable),
-gravityEnable(save.gravityEnable),
-aheatEnable(save.aheatEnable),
-paused(save.paused),
-gravityMode(save.gravityMode),
-airMode(save.airMode),
-edgeMode(save.edgeMode),
-signs(save.signs),
-palette(save.palette),
-expanded(save.expanded),
-hasOriginalData(save.hasOriginalData),
-originalData(save.originalData)
+GameSave::GameSave(GameSave & save):
+	waterEEnabled(save.waterEEnabled),
+	legacyEnable(save.legacyEnable),
+	gravityEnable(save.gravityEnable),
+	aheatEnable(save.aheatEnable),
+	paused(save.paused),
+	gravityMode(save.gravityMode),
+	airMode(save.airMode),
+	edgeMode(save.edgeMode),
+	signs(save.signs),
+	palette(save.palette),
+	expanded(save.expanded),
+	hasOriginalData(save.hasOriginalData),
+	originalData(save.originalData)
 {
 	InitData();
+	hasPressure = save.hasPressure;
+	hasAmbientHeat = save.hasAmbientHeat;
 	if (save.expanded)
 	{
 		setSize(save.blockWidth, save.blockHeight);
@@ -149,6 +151,7 @@ void GameSave::InitData()
 	velocityY = NULL;
 	ambientHeat = NULL;
 	fromNewerVersion = false;
+	hasPressure = false;
 	hasAmbientHeat = false;
 	authors.clear();
 }
@@ -843,6 +846,7 @@ void GameSave::readOPS(char * data, int dataLength)
 				pressure[blockY+y][blockX+x] = ((i+(i2<<8))/128.0f)-256;
 			}
 		}
+		hasPressure = true;
 	}
 
 	//Read vx data
