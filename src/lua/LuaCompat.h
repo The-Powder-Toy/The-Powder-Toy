@@ -25,8 +25,6 @@ extern "C"
 #endif
 
 #if LUA_VERSION_NUM >= 502
-#define luaL_getn(L,i)		lua_rawlen(L, (i))
-
 LUALIB_API int (luaL_typerror) (lua_State *L, int narg, const char *tname);
 #else
 LUALIB_API void (lua_pushglobaltable) (lua_State *L);
