@@ -50,7 +50,7 @@ int Element_PSNS::update(UPDATE_FUNC_ARGS)
 	int r, rx, ry, rt, rd = parts[i].tmp2;
 	float photonWl = 0.0f;
 	bool setFilt = false;
-	if (parts[i].tmp == 0 && (sim->pv[y/CELL][x/CELL] > parts[i].temp-273.15f))
+	if (sim->pv[y/CELL][x/CELL] > parts[i].temp-273.15f)
 	{
 		parts[i].life = 0;
 		for (rx=-2; rx<3; rx++)
@@ -72,19 +72,11 @@ int Element_PSNS::update(UPDATE_FUNC_ARGS)
 					}
 				}
 	}
-	else if (parts[i].tmp == 1) {
+	if (parts[i].tmp == 1) 
+	{
 		parts[i].life = 0;
-		for (rx = -2; rx < 3; rx++)
-			for (ry = -2; ry < 3; ry++)
-				if (BOUNDS_CHECK && (rx || ry))
-				{
-					r = pmap[y + ry][x + rx];
-					if (!r)
-						continue;
-					rt = r & 0xFF;
-					setFilt = true;
-					photonWl = sim->pv[y / CELL][x / CELL];
-				}
+		setFilt = true;
+		photonWl = sim->pv[y / CELL][x / CELL];
 		if (setFilt)
 		{
 			int nx, ny;
@@ -99,7 +91,7 @@ int Element_PSNS::update(UPDATE_FUNC_ARGS)
 						ny = y + ry;
 						while ((r & 0xFF) == PT_FILT)
 						{
-							parts[r >> 8].ctype = 0x10000000 + roundl(photonWl)+256;
+							parts[r >> 8].ctype = 0x10000000 + roundl(photonWl) + 256;
 							nx += rx;
 							ny += ry;
 							if (nx < 0 || ny < 0 || nx >= XRES || ny >= YRES)
