@@ -1,5 +1,6 @@
 #include <sstream>
 #include <iostream>
+#include <algorithm>
 #include "FileBrowserActivity.h"
 #include "gui/interface/Label.h"
 #include "gui/interface/Textbox.h"
@@ -58,7 +59,7 @@ class LoadFilesTask: public Task
 	virtual bool doWork()
 	{
 		std::vector<std::string> files = Client::Ref().DirectorySearch(directory, search, ".cps");
-
+		sort(files.rbegin(), files.rend());
 
 		notifyProgress(-1);
 		for(std::vector<std::string>::iterator iter = files.begin(), end = files.end(); iter != end; ++iter)
