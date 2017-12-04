@@ -123,7 +123,7 @@ int Simulation::Load(int fullX, int fullY, GameSave * save, bool includePressure
 			elementCount[parts[r>>8].type]--;
 			parts[r>>8] = tempPart;
 			i = r>>8;
-			pmap[y][x] = 0;
+			pmap[y][x] = tempPart.type | i<<8;
 			elementCount[tempPart.type]++;
 		}
 		else if ((r = photons[y][x]))
@@ -131,7 +131,7 @@ int Simulation::Load(int fullX, int fullY, GameSave * save, bool includePressure
 			elementCount[parts[r>>8].type]--;
 			parts[r>>8] = tempPart;
 			i = r>>8;
-			photons[y][x] = 0;
+			photons[y][x] = tempPart.type | i<<8;
 			elementCount[tempPart.type]++;
 		}
 		//Allocate new particle
@@ -141,9 +141,10 @@ int Simulation::Load(int fullX, int fullY, GameSave * save, bool includePressure
 				break;
 			i = pfree;
 			pfree = parts[i].life;
-			if (i>parts_lastActiveIndex) parts_lastActiveIndex = i;
+			if (i > parts_lastActiveIndex)
+				parts_lastActiveIndex = i;
 			parts[i] = tempPart;
-
+			pmap[y][x] = tempPart.type | i<<8;
 			elementCount[tempPart.type]++;
 		}
 
