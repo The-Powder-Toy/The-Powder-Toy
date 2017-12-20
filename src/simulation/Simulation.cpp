@@ -123,7 +123,6 @@ int Simulation::Load(int fullX, int fullY, GameSave * save, bool includePressure
 			elementCount[parts[r>>8].type]--;
 			parts[r>>8] = tempPart;
 			i = r>>8;
-			pmap[y][x] = tempPart.type | i<<8;
 			elementCount[tempPart.type]++;
 		}
 		else if ((r = photons[y][x]))
@@ -131,7 +130,6 @@ int Simulation::Load(int fullX, int fullY, GameSave * save, bool includePressure
 			elementCount[parts[r>>8].type]--;
 			parts[r>>8] = tempPart;
 			i = r>>8;
-			photons[y][x] = tempPart.type | i<<8;
 			elementCount[tempPart.type]++;
 		}
 		//Allocate new particle
@@ -144,7 +142,6 @@ int Simulation::Load(int fullX, int fullY, GameSave * save, bool includePressure
 			if (i > parts_lastActiveIndex)
 				parts_lastActiveIndex = i;
 			parts[i] = tempPart;
-			pmap[y][x] = tempPart.type | i<<8;
 			elementCount[tempPart.type]++;
 		}
 
@@ -194,6 +191,7 @@ int Simulation::Load(int fullX, int fullY, GameSave * save, bool includePressure
 	parts_lastActiveIndex = NPART-1;
 	force_stacking_check = true;
 	Element_PPIP::ppip_changed = 1;
+	RecalcFreeParticles(false);
 
 	// fix SOAP links using soapList, a map of old particle ID -> new particle ID
 	// loop through every old particle (loaded from save), and convert .tmp / .tmp2
