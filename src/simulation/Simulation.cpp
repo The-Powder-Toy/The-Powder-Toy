@@ -203,22 +203,16 @@ int Simulation::Load(int fullX, int fullY, GameSave * save, bool includePressure
 			std::map<unsigned int, unsigned int>::iterator n = soapList.find(parts[i].tmp);
 			if (n != end)
 				parts[i].tmp = n->second;
-			else
-			{
-				parts[i].tmp = 0;
-				parts[i].ctype ^= 2;
-			}
+			// sometimes the proper SOAP isn't found. It should remove the link, but seems to break some saves
+			// so just ignore it
 		}
 		if ((parts[i].ctype & 0x4) == 4)
 		{
 			std::map<unsigned int, unsigned int>::iterator n = soapList.find(parts[i].tmp2);
 			if (n != end)
 				parts[i].tmp2 = n->second;
-			else
-			{
-				parts[i].tmp2 = 0;
-				parts[i].ctype ^= 4;
-			}
+			// sometimes the proper SOAP isn't found. It should remove the link, but seems to break some saves
+			// so just ignore it
 		}
 	}
 
