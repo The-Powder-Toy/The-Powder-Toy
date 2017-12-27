@@ -59,7 +59,11 @@ class LoadFilesTask: public Task
 	virtual bool doWork()
 	{
 		std::vector<std::string> files = Client::Ref().DirectorySearch(directory, search, ".cps");
-		sort(files.rbegin(), files.rend());
+		std::sort(files.rbegin(), files.rend(), [](std::string a, std::string b) {
+			std::transform(a.begin(), a.end(), a.begin(), ::tolower);
+			std::transform(b.begin(), b.end(), b.begin(), ::tolower);
+			return a < b;
+		});
 
 		notifyProgress(-1);
 		for(std::vector<std::string>::iterator iter = files.begin(), end = files.end(); iter != end; ++iter)
