@@ -26,6 +26,17 @@ public:
 	~ParseException() throw() {}
 };
 
+struct BuildException: public std::exception {
+	std::string message;
+public:
+	BuildException(std::string message_): message(message_) {}
+	const char * what() const throw()
+	{
+		return message.c_str();
+	}
+	~BuildException() throw() {}
+};
+
 class GameSave
 {
 public:

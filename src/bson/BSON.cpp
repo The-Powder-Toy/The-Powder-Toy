@@ -664,7 +664,8 @@ int bson_finish( bson *b ) {
 }
 
 void bson_destroy( bson *b ) {
-	bson_free( b->data );
+	if (b->data)
+		bson_free( b->data );
 	b->err = 0;
 	b->data = 0;
 	b->cur = 0;
