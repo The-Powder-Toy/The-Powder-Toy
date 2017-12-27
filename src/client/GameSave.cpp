@@ -1235,13 +1235,12 @@ void GameSave::readOPS(char * data, int dataLength)
 	}
 }
 
-void GameSave::readPSv(char * data, int dataLength)
+void GameSave::readPSv(char * saveDataChar, int dataLength)
 {
-	unsigned char * d = NULL, * c = (unsigned char *)data;
-	int q,i,j,k,x,y,p=0,*m=NULL, ver, pty, ty, legacy_beta=0;
+	unsigned char * saveData = (unsigned char *)saveDataChar;
+	int q,j,k,x,y,p=0, ver, pty, ty, legacy_beta=0;
 	int bx0=0, by0=0, bw, bh, w, h, y0 = 0, x0 = 0;
 	int new_format = 0, ttv = 0;
-	int *fp = (int *)malloc(NPART*sizeof(int));
 
 	std::vector<sign> tempSigns;
 	char tempSignText[255];
@@ -1263,22 +1262,19 @@ void GameSave::readPSv(char * data, int dataLength)
 
 	std::vector<Element> elements = GetElements();
 
-	try
-	{
-
 	//New file header uses PSv, replacing fuC. This is to detect if the client uses a new save format for temperatures
 	//This creates a problem for old clients, that display and "corrupt" error instead of a "newer version" error
 
 	if (dataLength<16)
 		throw ParseException(ParseException::Corrupt, "No save data");
-	if (!(c[2]==0x43 && c[1]==0x75 && c[0]==0x66) && !(c[2]==0x76 && c[1]==0x53 && c[0]==0x50))
+	if (!(saveData[2]==0x43 && saveData[1]==0x75 && saveData[0]==0x66) && !(saveData[2]==0x76 && saveData[1]==0x53 && saveData[0]==0x50))
 		throw ParseException(ParseException::Corrupt, "Unknown format");
-	if (c[2]==0x76 && c[1]==0x53 && c[0]==0x50) {
+	if (saveData[2]==0x76 && saveData[1]==0x53 && saveData[0]==0x50) {
 		new_format = 1;
 	}
-	if (c[4]>SAVE_VERSION)
+	if (saveData[4]>SAVE_VERSION)
 		throw ParseException(ParseException::WrongVersion, "Save from newer version");
-	ver = c[4];
+	ver = saveData[4];
 
 	if (ver<34)
 	{
@@ -1287,26 +1283,26 @@ void GameSave::readPSv(char * data, int dataLength)
 	else
 	{
 		if (ver>=44) {
-			legacyEnable = c[3]&0x01;
-			paused = (c[3]>>1)&0x01;
+			legacyEnable = saveData[3]&0x01;
+			paused = (saveData[3]>>1)&0x01;
 			if (ver>=46) {
-				gravityMode = ((c[3]>>2)&0x03);// | ((c[3]>>2)&0x01);
-				airMode = ((c[3]>>4)&0x07);// | ((c[3]>>4)&0x02) | ((c[3]>>4)&0x01);
+				gravityMode = ((saveData[3]>>2)&0x03);// | ((c[3]>>2)&0x01);
+				airMode = ((saveData[3]>>4)&0x07);// | ((c[3]>>4)&0x02) | ((c[3]>>4)&0x01);
 			}
 			if (ver>=49) {
-				gravityEnable = ((c[3]>>7)&0x01);
+				gravityEnable = ((saveData[3]>>7)&0x01);
 			}
 		} else {
-			if (c[3]==1||c[3]==0) {
-				legacyEnable = c[3];
+			if (saveData[3]==1||saveData[3]==0) {
+				legacyEnable = saveData[3];
 			} else {
 				legacy_beta = 1;
 			}
 		}
 	}
 
-	bw = c[6];
-	bh = c[7];
+	bw = saveData[6];
+	bh = saveData[7];
 	if (bx0+bw > XRES/CELL)
 		bx0 = XRES/CELL - bw;
 	if (by0+bh > YRES/CELL)
@@ -1316,30 +1312,31 @@ void GameSave::readPSv(char * data, int dataLength)
 	if (by0 < 0)
 		by0 = 0;
 
-	if (c[5]!=CELL || bx0+bw>XRES/CELL || by0+bh>YRES/CELL)
+	if (saveData[5]!=CELL || bx0+bw>XRES/CELL || by0+bh>YRES/CELL)
 		throw ParseException(ParseException::InvalidDimensions, "Save too large");
-	i = (unsigned)c[8];
-	i |= ((unsigned)c[9])<<8;
-	i |= ((unsigned)c[10])<<16;
-	i |= ((unsigned)c[11])<<24;
+	int size = (unsigned)saveData[8];
+	size |= ((unsigned)saveData[9])<<8;
+	size |= ((unsigned)saveData[10])<<16;
+	size |= ((unsigned)saveData[11])<<24;
 
-	if(i > 209715200 || !i)
+	if (size > 209715200 || !size)
 		throw ParseException(ParseException::InvalidDimensions, "Save data too large");
 
-	d = (unsigned char *)malloc(i);
-	if (!d)
+	auto dataPtr = std::unique_ptr<unsigned char[]>(new unsigned char[size]);
+	unsigned char *data = dataPtr.get();
+	if (!data)
 		throw ParseException(ParseException::Corrupt, "Cannot allocate memory");
 
 	setSize(bw, bh);
 
 	int bzStatus = 0;
-	if ((bzStatus = BZ2_bzBuffToBuffDecompress((char *)d, (unsigned *)&i, (char *)(c+12), dataLength-12, 0, 0)))
+	if ((bzStatus = BZ2_bzBuffToBuffDecompress((char *)data, (unsigned *)&size, (char *)(saveData+12), dataLength-12, 0, 0)))
 	{
 		std::stringstream bzStatusStr;
 		bzStatusStr << bzStatus;
 		throw ParseException(ParseException::Corrupt, "Cannot decompress: " + bzStatusStr.str());
 	}
-	dataLength = i;
+	dataLength = size;
 
 #ifdef DEBUG
 	std::cout << "Parsing " << dataLength << " bytes of data, version " << ver << std::endl;
@@ -1358,22 +1355,27 @@ void GameSave::readPSv(char * data, int dataLength)
 		gravityMode = 0;
 		airMode = 0;
 	}
-	m = (int *)calloc(XRES*YRES, sizeof(int));
+
+	auto particleIDMapPtr = std::unique_ptr<int[]>(new int[XRES*YRES]);
+	int *particleIDMap = particleIDMapPtr.get();
+	std::fill(&particleIDMap[0], &particleIDMap[XRES*YRES], 0);
+	if (!particleIDMap)
+		throw ParseException(ParseException::Corrupt, "Cannot allocate memory");
 
 	// load the required air state
 	for (y=by0; y<by0+bh; y++)
 		for (x=bx0; x<bx0+bw; x++)
 		{
-			if (d[p])
+			if (data[p])
 			{
 				//In old saves, ignore walls created by sign tool bug
 				//Not ignoring other invalid walls or invalid walls in new saves, so that any other bugs causing them are easier to notice, find and fix
-				if (ver>=44 && ver<71 && d[p]==O_WL_SIGN)
+				if (ver>=44 && ver<71 && data[p]==O_WL_SIGN)
 				{
 					p++;
 					continue;
 				}
-				blockMap[y][x] = d[p];
+				blockMap[y][x] = data[p];
 				if (blockMap[y][x]==1)
 					blockMap[y][x]=WL_WALL;
 				else if (blockMap[y][x]==2)
@@ -1448,23 +1450,23 @@ void GameSave::readPSv(char * data, int dataLength)
 		}
 	for (y=by0; y<by0+bh; y++)
 		for (x=bx0; x<bx0+bw; x++)
-			if (d[(y-by0)*bw+(x-bx0)]==4||(ver>=44 && d[(y-by0)*bw+(x-bx0)]==O_WL_FAN))
+			if (data[(y-by0)*bw+(x-bx0)]==4||(ver>=44 && data[(y-by0)*bw+(x-bx0)]==O_WL_FAN))
 			{
 				if (p >= dataLength)
 					throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
-				fanVelX[y][x] = (d[p++]-127.0f)/64.0f;
+				fanVelX[y][x] = (data[p++]-127.0f)/64.0f;
 			}
 	for (y=by0; y<by0+bh; y++)
 		for (x=bx0; x<bx0+bw; x++)
-			if (d[(y-by0)*bw+(x-bx0)]==4||(ver>=44 && d[(y-by0)*bw+(x-bx0)]==O_WL_FAN))
+			if (data[(y-by0)*bw+(x-bx0)]==4||(ver>=44 && data[(y-by0)*bw+(x-bx0)]==O_WL_FAN))
 			{
 				if (p >= dataLength)
 					throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
-				fanVelY[y][x] = (d[p++]-127.0f)/64.0f;
+				fanVelY[y][x] = (data[p++]-127.0f)/64.0f;
 			}
 
 	// load the particle map
-	i = 0;
+	int i = 0;
 	k = 0;
 	pty = p;
 	for (y=y0; y<y0+h; y++)
@@ -1472,7 +1474,7 @@ void GameSave::readPSv(char * data, int dataLength)
 		{
 			if (p >= dataLength)
 				throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
-			j=d[p++];
+			j=data[p++];
 			if (j >= PT_NUM) {
 				//TODO: Possibly some server side translation
 				j = PT_DUST;//throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
@@ -1493,7 +1495,7 @@ void GameSave::readPSv(char * data, int dataLength)
 					particles[k].ctype = 0x47FFFF;
 				particles[k].x = (float)x;
 				particles[k].y = (float)y;
-				m[(x-x0)+(y-y0)*w] = k+1;
+				particleIDMap[(x-x0)+(y-y0)*w] = k+1;
 				particlesCount = ++k;
 			}
 		}
@@ -1501,7 +1503,7 @@ void GameSave::readPSv(char * data, int dataLength)
 	// load particle properties
 	for (j=0; j<w*h; j++)
 	{
-		i = m[j];
+		i = particleIDMap[j];
 		if (i)
 		{
 			i--;
@@ -1509,8 +1511,8 @@ void GameSave::readPSv(char * data, int dataLength)
 				throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
 			if (i < NPART)
 			{
-				particles[i].vx = (d[p++]-127.0f)/16.0f;
-				particles[i].vy = (d[p++]-127.0f)/16.0f;
+				particles[i].vx = (data[p++]-127.0f)/16.0f;
+				particles[i].vy = (data[p++]-127.0f)/16.0f;
 			}
 			else
 				p += 2;
@@ -1518,7 +1520,7 @@ void GameSave::readPSv(char * data, int dataLength)
 	}
 	for (j=0; j<w*h; j++)
 	{
-		i = m[j];
+		i = particleIDMap[j];
 		if (i)
 		{
 			if (ver>=44) {
@@ -1526,8 +1528,8 @@ void GameSave::readPSv(char * data, int dataLength)
 					throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
 				}
 				if (i <= NPART) {
-					ttv = (d[p++])<<8;
-					ttv |= (d[p++]);
+					ttv = (data[p++])<<8;
+					ttv |= (data[p++]);
 					particles[i-1].life = ttv;
 				} else {
 					p+=2;
@@ -1536,7 +1538,7 @@ void GameSave::readPSv(char * data, int dataLength)
 				if (p >= dataLength)
 					throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
 				if (i <= NPART)
-					particles[i-1].life = d[p++]*4;
+					particles[i-1].life = data[p++]*4;
 				else
 					p++;
 			}
@@ -1545,15 +1547,15 @@ void GameSave::readPSv(char * data, int dataLength)
 	if (ver>=44) {
 		for (j=0; j<w*h; j++)
 		{
-			i = m[j];
+			i = particleIDMap[j];
 			if (i)
 			{
 				if (p >= dataLength) {
 					throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
 				}
 				if (i <= NPART) {
-					ttv = (d[p++])<<8;
-					ttv |= (d[p++]);
+					ttv = (data[p++])<<8;
+					ttv |= (data[p++]);
 					particles[i-1].tmp = ttv;
 					if (ver<53 && !particles[i-1].tmp)
 						for (q = 1; q<=NGOL; q++) {
@@ -1574,14 +1576,14 @@ void GameSave::readPSv(char * data, int dataLength)
 	if (ver>=53) {
 		for (j=0; j<w*h; j++)
 		{
-			i = m[j];
-			ty = d[pty+j];
+			i = particleIDMap[j];
+			ty = data[pty+j];
 			if (i && (ty==PT_PBCN || (ty==PT_TRON && ver>=77)))
 			{
 				if (p >= dataLength)
 					throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
 				if (i <= NPART)
-					particles[i-1].tmp2 = d[p++];
+					particles[i-1].tmp2 = data[p++];
 				else
 					p++;
 			}
@@ -1590,7 +1592,7 @@ void GameSave::readPSv(char * data, int dataLength)
 	//Read ALPHA component
 	for (j=0; j<w*h; j++)
 	{
-		i = m[j];
+		i = particleIDMap[j];
 		if (i)
 		{
 			if (ver>=49) {
@@ -1598,7 +1600,7 @@ void GameSave::readPSv(char * data, int dataLength)
 					throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
 				}
 				if (i <= NPART) {
-					particles[i-1].dcolour = d[p++]<<24;
+					particles[i-1].dcolour = data[p++]<<24;
 				} else {
 					p++;
 				}
@@ -1608,7 +1610,7 @@ void GameSave::readPSv(char * data, int dataLength)
 	//Read RED component
 	for (j=0; j<w*h; j++)
 	{
-		i = m[j];
+		i = particleIDMap[j];
 		if (i)
 		{
 			if (ver>=49) {
@@ -1616,7 +1618,7 @@ void GameSave::readPSv(char * data, int dataLength)
 					throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
 				}
 				if (i <= NPART) {
-					particles[i-1].dcolour |= d[p++]<<16;
+					particles[i-1].dcolour |= data[p++]<<16;
 				} else {
 					p++;
 				}
@@ -1626,7 +1628,7 @@ void GameSave::readPSv(char * data, int dataLength)
 	//Read GREEN component
 	for (j=0; j<w*h; j++)
 	{
-		i = m[j];
+		i = particleIDMap[j];
 		if (i)
 		{
 			if (ver>=49) {
@@ -1634,7 +1636,7 @@ void GameSave::readPSv(char * data, int dataLength)
 					throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
 				}
 				if (i <= NPART) {
-					particles[i-1].dcolour |= d[p++]<<8;
+					particles[i-1].dcolour |= data[p++]<<8;
 				} else {
 					p++;
 				}
@@ -1644,7 +1646,7 @@ void GameSave::readPSv(char * data, int dataLength)
 	//Read BLUE component
 	for (j=0; j<w*h; j++)
 	{
-		i = m[j];
+		i = particleIDMap[j];
 		if (i)
 		{
 			if (ver>=49) {
@@ -1652,7 +1654,7 @@ void GameSave::readPSv(char * data, int dataLength)
 					throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
 				}
 				if (i <= NPART) {
-					particles[i-1].dcolour |= d[p++];
+					particles[i-1].dcolour |= data[p++];
 				} else {
 					p++;
 				}
@@ -1661,8 +1663,8 @@ void GameSave::readPSv(char * data, int dataLength)
 	}
 	for (j=0; j<w*h; j++)
 	{
-		i = m[j];
-		ty = d[pty+j];
+		i = particleIDMap[j];
+		ty = data[pty+j];
 		if (i)
 		{
 			if (ver>=34&&legacy_beta==0)
@@ -1675,18 +1677,18 @@ void GameSave::readPSv(char * data, int dataLength)
 				{
 					if (ver>=42) {
 						if (new_format) {
-							ttv = (d[p++])<<8;
-							ttv |= (d[p++]);
+							ttv = (data[p++])<<8;
+							ttv |= (data[p++]);
 							if (particles[i-1].type==PT_PUMP) {
 								particles[i-1].temp = ttv + 0.15;//fix PUMP saved at 0, so that it loads at 0.
 							} else {
 								particles[i-1].temp = ttv;
 							}
 						} else {
-							particles[i-1].temp = (d[p++]*((MAX_TEMP+(-MIN_TEMP))/255))+MIN_TEMP;
+							particles[i-1].temp = (data[p++]*((MAX_TEMP+(-MIN_TEMP))/255))+MIN_TEMP;
 						}
 					} else {
-						particles[i-1].temp = ((d[p++]*((O_MAX_TEMP+(-O_MIN_TEMP))/255))+O_MIN_TEMP)+273;
+						particles[i-1].temp = ((data[p++]*((O_MAX_TEMP+(-O_MIN_TEMP))/255))+O_MIN_TEMP)+273;
 					}
 				}
 				else
@@ -1706,14 +1708,14 @@ void GameSave::readPSv(char * data, int dataLength)
 	for (j=0; j<w*h; j++)
 	{
 		int gnum = 0;
-		i = m[j];
-		ty = d[pty+j];
+		i = particleIDMap[j];
+		ty = data[pty+j];
 		if (i && (ty==PT_CLNE || (ty==PT_PCLN && ver>=43) || (ty==PT_BCLN && ver>=44) || (ty==PT_SPRK && ver>=21) || (ty==PT_LAVA && ver>=34) || (ty==PT_PIPE && ver>=43) || (ty==PT_LIFE && ver>=51) || (ty==PT_PBCN && ver>=52) || (ty==PT_WIRE && ver>=55) || (ty==PT_STOR && ver>=59) || (ty==PT_CONV && ver>=60)))
 		{
 			if (p >= dataLength)
 				throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
 			if (i <= NPART)
-				particles[i-1].ctype = d[p++];
+				particles[i-1].ctype = data[p++];
 			else
 				p++;
 		}
@@ -1843,26 +1845,27 @@ void GameSave::readPSv(char * data, int dataLength)
 	}
 
 	if (p >= dataLength)
-		goto version1;
-	j = d[p++];
+		throw ParseException(ParseException::Corrupt, "Ran past data buffer");
+
+	j = data[p++];
 	for (i=0; i<j; i++)
 	{
 		if (p+6 > dataLength)
 			throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
-		x = d[p++];
-		x |= ((unsigned)d[p++])<<8;
+		x = data[p++];
+		x |= ((unsigned)data[p++])<<8;
 		tempSign.x = x+x0;
-		x = d[p++];
-		x |= ((unsigned)d[p++])<<8;
+		x = data[p++];
+		x |= ((unsigned)data[p++])<<8;
 		tempSign.y = x+y0;
-		x = d[p++];
+		x = data[p++];
 		tempSign.ju = (sign::Justification)x;
-		x = d[p++];
+		x = data[p++];
 		if (p+x > dataLength)
 			throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
 		if(x>254)
 			x = 254;
-		memcpy(tempSignText, d+p, x);
+		memcpy(tempSignText, data+p, x);
 		tempSignText[x] = 0;
 		tempSign.text = format::CleanString(tempSignText, true, true, true).substr(0, 45);
 		tempSigns.push_back(tempSign);
@@ -1874,44 +1877,6 @@ void GameSave::readPSv(char * data, int dataLength)
 		if(signs.size() == MAXSIGNS)
 			break;
 		signs.push_back(tempSigns[i]);
-	}
-
-	}
-	catch(ParseException & e)
-	{
-		if (m)
-		{
-			free(m);
-			m = 0;
-		}
-		if (d)
-		{
-			free(d);
-			d = 0;
-		}
-		if (fp)
-		{
-			free(fp);
-			fp = 0;
-		}
-		throw;
-	}
-
-	version1:
-	if (m)
-	{
-		free(m);
-		m = 0;
-	}
-	if (d)
-	{
-		free(d);
-		d = 0;
-	}
-	if (fp)
-	{
-		free(fp);
-		fp = 0;
 	}
 }
 
