@@ -509,11 +509,6 @@ void GameSave::Transform(matrix2d transform, vector2d translate, vector2d transl
 	ambientHeat = ambientHeatNew;
 }
 
-void bson_error_handler(const char *err)
-{
-	throw ParseException(ParseException::Corrupt, "BSON error when parsing save");
-}
-
 void GameSave::CheckBsonFieldUser(bson_iterator iter, const char *field, unsigned char **data, unsigned int *fieldLen)
 {
 	if (!strcmp(bson_iterator_key(&iter), field))
@@ -565,12 +560,16 @@ void GameSave::readOPS(char * data, int dataLength)
 	unsigned char *pressData = NULL, *vxData = NULL, *vyData = NULL, *ambientData = NULL;
 	unsigned int inputDataLen = dataLength, bsonDataLen = 0, partsDataLen, partsPosDataLen, fanDataLen, wallDataLen, soapLinkDataLen;
 	unsigned int pressDataLen, vxDataLen, vyDataLen, ambientDataLen;
-	unsigned partsCount = 0, *partsSimIndex = NULL;
-	int *freeIndices = NULL;
+	unsigned partsCount = 0;
 	unsigned int blockX, blockY, blockW, blockH, fullX, fullY, fullW, fullH;
 	int savedVersion = inputData[4];
+
 	bson b;
+	b.data = NULL;
 	bson_iterator iter;
+	auto bson_deleter = [](bson * b) { bson_destroy(b); };
+	// Use unique_ptr with a custom deleter to ensure that bson_destroy is called even when an exception is thrown
+	std::unique_ptr<bson, decltype(bson_deleter)> b_ptr(&b, bson_deleter);
 
 	//Block sizes
 	blockX = 0;
@@ -619,10 +618,13 @@ void GameSave::readOPS(char * data, int dataLength)
 	//(bson_iterator_key returns a pointer into bsonData, which is then used with strcmp)
 	bsonData[bsonDataLen] = 0;
 
-	if (BZ2_bzBuffToBuffDecompress((char*)bsonData, &bsonDataLen, (char*)(inputData+12), inputDataLen-12, 0, 0))
-		throw ParseException(ParseException::Corrupt, "Unable to decompress");
+	int bz2ret;
+	if ((bz2ret = BZ2_bzBuffToBuffDecompress((char*)bsonData, &bsonDataLen, (char*)(inputData+12), inputDataLen-12, 0, 0)) != BZ_OK)
+	{
+		throw ParseException(ParseException::Corrupt, "Unable to decompress (ret " + format::NumberToString<int>(bz2ret) + ")");
+	}
 
-	set_bson_err_handler(bson_error_handler);
+	set_bson_err_handler([](const char* err) { throw ParseException(ParseException::Corrupt, "BSON error when parsing save: " + std::string(err)); });
 	bson_init_data_size(&b, (char*)bsonData, bsonDataLen);
 	bson_iterator_init(&iter, &b);
 
@@ -776,10 +778,7 @@ void GameSave::readOPS(char * data, int dataLength)
 	{
 		unsigned int j = 0;
 		if (blockW * blockH > wallDataLen)
-		{
-			fprintf(stderr, "Not enough wall data\n");
-			goto fail;
-		}
+			throw ParseException(ParseException::Corrupt, "Not enough wall data");
 		for (unsigned int x = 0; x < blockW; x++)
 		{
 			for (unsigned int y = 0; y < blockH; y++)
@@ -842,10 +841,7 @@ void GameSave::readOPS(char * data, int dataLength)
 		unsigned int j = 0;
 		unsigned char i, i2;
 		if (blockW * blockH > pressDataLen)
-		{
-			fprintf(stderr, "Not enough pressure data\n");
-			goto fail;
-		}
+			throw ParseException(ParseException::Corrupt, "Not enough pressure data");
 		for (unsigned int x = 0; x < blockW; x++)
 		{
 			for (unsigned int y = 0; y < blockH; y++)
@@ -864,10 +860,7 @@ void GameSave::readOPS(char * data, int dataLength)
 		unsigned int j = 0;
 		unsigned char i, i2;
 		if (blockW * blockH > vxDataLen)
-		{
-			fprintf(stderr, "Not enough vx data\n");
-			goto fail;
-		}
+			throw ParseException(ParseException::Corrupt, "Not enough vx data");
 		for (unsigned int x = 0; x < blockW; x++)
 		{
 			for (unsigned int y = 0; y < blockH; y++)
@@ -885,10 +878,7 @@ void GameSave::readOPS(char * data, int dataLength)
 		unsigned int j = 0;
 		unsigned char i, i2;
 		if (blockW * blockH > vyDataLen)
-		{
-			fprintf(stderr, "Not enough vy data\n");
-			goto fail;
-		}
+			throw ParseException(ParseException::Corrupt, "Not enough vy data");
 		for (unsigned int x = 0; x < blockW; x++)
 		{
 			for (unsigned int y = 0; y < blockH; y++)
@@ -905,10 +895,7 @@ void GameSave::readOPS(char * data, int dataLength)
 	{
 		unsigned int i = 0, tempTemp;
 		if (blockW * blockH > ambientDataLen)
-		{
-			fprintf(stderr, "Not enough ambient data\n");
-			goto fail;
-		}
+			throw ParseException(ParseException::Corrupt, "Not enough ambient heat data");
 		for (unsigned int x = 0; x < blockW; x++)
 		{
 			for (unsigned int y = 0; y < blockH; y++)
@@ -927,12 +914,8 @@ void GameSave::readOPS(char * data, int dataLength)
 		int newIndex = 0, fieldDescriptor, tempTemp;
 		int posCount, posTotal, partsPosDataIndex = 0;
 		if (fullW * fullH * 3 > partsPosDataLen)
-		{
-			fprintf(stderr, "Not enough particle position data\n");
-			goto fail;
-		}
+			throw ParseException(ParseException::Corrupt, "Not enough particle position data");
 
-		partsSimIndex = (unsigned int*)calloc(NPART, sizeof(unsigned));
 		partsCount = 0;
 
 		unsigned int i = 0;
@@ -951,29 +934,18 @@ void GameSave::readOPS(char * data, int dataLength)
 				for (posCount = 0; posCount < posTotal; posCount++)
 				{
 					particlesCount = newIndex+1;
-					if (newIndex >= NPART)
-					{
-						goto fail;
-					}
-
 					//i+3 because we have 4 bytes of required fields (type (1), descriptor (2), temp (1))
 					if (i+3 >= partsDataLen)
-						goto fail;
+						throw ParseException(ParseException::Corrupt, "Ran past particle data buffer");
 					x = saved_x + fullX;
 					y = saved_y + fullY;
 					fieldDescriptor = partsData[i+1];
 					fieldDescriptor |= partsData[i+2] << 8;
 					if (x >= fullW || y >= fullH)
-					{
-						fprintf(stderr, "Out of range [%d]: %d %d, [%d, %d], [%d, %d]\n", i, x, y, (unsigned)partsData[i+1], (unsigned)partsData[i+2], (unsigned)partsData[i+3], (unsigned)partsData[i+4]);
-						goto fail;
-					}
+						throw ParseException(ParseException::Corrupt, "Particle out of range");
 
 					if (newIndex < 0 || newIndex >= NPART)
-						goto fail;
-
-					//Store partsptr index+1 for this saved particle index (0 means not loaded)
-					partsSimIndex[partsCount++] = newIndex+1;
+						throw ParseException(ParseException::Corrupt, "Too many particles");
 
 					//Clear the particle, ready for our new properties
 					memset(&(particles[newIndex]), 0, sizeof(Particle));
@@ -1002,12 +974,15 @@ void GameSave::readOPS(char * data, int dataLength)
 					//Read life
 					if(fieldDescriptor & 0x02)
 					{
-						if(i >= partsDataLen) goto fail;
+						if (i >= partsDataLen)
+							throw ParseException(ParseException::Corrupt, "Ran past particle data buffer while loading life");
 						particles[newIndex].life = partsData[i++];
+						//i++;
 						//Read 2nd byte
 						if(fieldDescriptor & 0x04)
 						{
-							if(i >= partsDataLen) goto fail;
+							if (i >= partsDataLen)
+								throw ParseException(ParseException::Corrupt, "Ran past particle data buffer while loading life");
 							particles[newIndex].life |= (((unsigned)partsData[i++]) << 8);
 						}
 					}
@@ -1015,17 +990,20 @@ void GameSave::readOPS(char * data, int dataLength)
 					//Read tmp
 					if(fieldDescriptor & 0x08)
 					{
-						if(i >= partsDataLen) goto fail;
+						if (i >= partsDataLen)
+							throw ParseException(ParseException::Corrupt, "Ran past particle data buffer while loading tmp");
 						particles[newIndex].tmp = partsData[i++];
 						//Read 2nd byte
 						if(fieldDescriptor & 0x10)
 						{
-							if(i >= partsDataLen) goto fail;
+							if (i >= partsDataLen)
+								throw ParseException(ParseException::Corrupt, "Ran past particle data buffer while loading tmp");
 							particles[newIndex].tmp |= (((unsigned)partsData[i++]) << 8);
 							//Read 3rd and 4th bytes
 							if(fieldDescriptor & 0x1000)
 							{
-								if(i+1 >= partsDataLen) goto fail;
+								if (i+1 >= partsDataLen)
+									throw ParseException(ParseException::Corrupt, "Ran past particle data buffer while loading tmp");
 								particles[newIndex].tmp |= (((unsigned)partsData[i++]) << 24);
 								particles[newIndex].tmp |= (((unsigned)partsData[i++]) << 16);
 							}
@@ -1035,12 +1013,14 @@ void GameSave::readOPS(char * data, int dataLength)
 					//Read ctype
 					if(fieldDescriptor & 0x20)
 					{
-						if(i >= partsDataLen) goto fail;
+						if (i >= partsDataLen)
+							throw ParseException(ParseException::Corrupt, "Ran past particle data buffer while loading ctype");
 						particles[newIndex].ctype = partsData[i++];
 						//Read additional bytes
 						if(fieldDescriptor & 0x200)
 						{
-							if(i+2 >= partsDataLen) goto fail;
+							if (i+2 >= partsDataLen)
+								throw ParseException(ParseException::Corrupt, "Ran past particle data buffer while loading ctype");
 							particles[newIndex].ctype |= (((unsigned)partsData[i++]) << 24);
 							particles[newIndex].ctype |= (((unsigned)partsData[i++]) << 16);
 							particles[newIndex].ctype |= (((unsigned)partsData[i++]) << 8);
@@ -1050,7 +1030,8 @@ void GameSave::readOPS(char * data, int dataLength)
 					//Read dcolour
 					if(fieldDescriptor & 0x40)
 					{
-						if(i+3 >= partsDataLen) goto fail;
+						if (i+3 >= partsDataLen)
+							throw ParseException(ParseException::Corrupt, "Ran past particle data buffer while loading deco");
 						particles[newIndex].dcolour = (((unsigned)partsData[i++]) << 24);
 						particles[newIndex].dcolour |= (((unsigned)partsData[i++]) << 16);
 						particles[newIndex].dcolour |= (((unsigned)partsData[i++]) << 8);
@@ -1060,25 +1041,29 @@ void GameSave::readOPS(char * data, int dataLength)
 					//Read vx
 					if(fieldDescriptor & 0x80)
 					{
-						if(i >= partsDataLen) goto fail;
+						if (i >= partsDataLen)
+							throw ParseException(ParseException::Corrupt, "Ran past particle data buffer while loading vx");
 						particles[newIndex].vx = (partsData[i++]-127.0f)/16.0f;
 					}
 
 					//Read vy
 					if(fieldDescriptor & 0x100)
 					{
-						if(i >= partsDataLen) goto fail;
+						if (i >= partsDataLen)
+							throw ParseException(ParseException::Corrupt, "Ran past particle data buffer while loading vy");
 						particles[newIndex].vy = (partsData[i++]-127.0f)/16.0f;
 					}
 
 					//Read tmp2
 					if(fieldDescriptor & 0x400)
 					{
-						if(i >= partsDataLen) goto fail;
+						if (i >= partsDataLen)
+							throw ParseException(ParseException::Corrupt, "Ran past particle data buffer while loading tmp2");
 						particles[newIndex].tmp2 = partsData[i++];
 						if(fieldDescriptor & 0x800)
 						{
-							if(i >= partsDataLen) goto fail;
+							if (i >= partsDataLen)
+								throw ParseException(ParseException::Corrupt, "Ran past particle data buffer while loading tmp2");
 							particles[newIndex].tmp2 |= (((unsigned)partsData[i++]) << 8);
 						}
 					}
@@ -1086,7 +1071,8 @@ void GameSave::readOPS(char * data, int dataLength)
 					//Read pavg
 					if(fieldDescriptor & 0x2000)
 					{
-						if(i+3 >= partsDataLen) goto fail;
+						if (i+3 >= partsDataLen)
+							throw ParseException(ParseException::Corrupt, "Ran past particle data buffer while loading pavg");
 						int pavg;
 						pavg = partsData[i++];
 						pavg |= (((unsigned)partsData[i++]) << 8);
@@ -1202,39 +1188,43 @@ void GameSave::readOPS(char * data, int dataLength)
 					}
 					//note: PSv was used in version 77.0 and every version before, add something in PSv too if the element is that old
 					newIndex++;
+					partsCount++;
 				}
 			}
 		}
-		if (soapLinkData)
-		{
-			unsigned int soapLinkDataPos = 0;
-			for (unsigned int i = 0; i < partsCount; i++)
-			{
-				if (partsSimIndex[i] && particles[partsSimIndex[i]-1].type == PT_SOAP)
-				{
-					// Get the index of the particle forward linked from this one, if present in the save data
-					unsigned int linkedIndex = 0;
-					if (soapLinkDataPos+3 > soapLinkDataLen) break;
-					linkedIndex |= soapLinkData[soapLinkDataPos++]<<16;
-					linkedIndex |= soapLinkData[soapLinkDataPos++]<<8;
-					linkedIndex |= soapLinkData[soapLinkDataPos++];
-					// All indexes in soapLinkData and partsSimIndex have 1 added to them (0 means not saved/loaded)
-					if (!linkedIndex || linkedIndex-1>=partsCount || !partsSimIndex[linkedIndex-1])
-						continue;
-					linkedIndex = partsSimIndex[linkedIndex-1]-1;
-					newIndex = partsSimIndex[i]-1;
 
-					//Attach the two particles
-					particles[newIndex].ctype |= 2;
-					particles[newIndex].tmp = linkedIndex;
-					particles[linkedIndex].ctype |= 4;
-					particles[linkedIndex].tmp2 = newIndex;
-				}
+		if (i != partsDataLen)
+			throw ParseException(ParseException::Corrupt, "Didn't reach end of particle data buffer");
+	}
+
+	if (soapLinkData)
+	{
+		unsigned int soapLinkDataPos = 0;
+		for (unsigned int i = 0; i < partsCount; i++)
+		{
+			if (particles[i].type == PT_SOAP)
+			{
+				// Get the index of the particle forward linked from this one, if present in the save data
+				unsigned int linkedIndex = 0;
+				if (soapLinkDataPos+3 > soapLinkDataLen) break;
+				linkedIndex |= soapLinkData[soapLinkDataPos++]<<16;
+				linkedIndex |= soapLinkData[soapLinkDataPos++]<<8;
+				linkedIndex |= soapLinkData[soapLinkDataPos++];
+				// All indexes in soapLinkData and partsSimIndex have 1 added to them (0 means not saved/loaded)
+				if (!linkedIndex || linkedIndex-1 >= partsCount)
+					continue;
+				linkedIndex = linkedIndex-1;
+
+				//Attach the two particles
+				particles[i].ctype |= 2;
+				particles[i].tmp = linkedIndex;
+				particles[linkedIndex].ctype |= 4;
+				particles[linkedIndex].tmp2 = i;
 			}
 		}
 	}
 
-	if(tempSigns.size())
+	if (tempSigns.size())
 	{
 		for (size_t i = 0; i < tempSigns.size(); i++)
 		{
@@ -1243,17 +1233,6 @@ void GameSave::readOPS(char * data, int dataLength)
 			signs.push_back(tempSigns[i]);
 		}
 	}
-	goto fin;
-fail:
-	//Clean up everything
-	bson_destroy(&b);
-	free(freeIndices);
-	free(partsSimIndex);
-	throw ParseException(ParseException::Corrupt, "Save data corrupt");
-fin:
-	bson_destroy(&b);
-	free(freeIndices);
-	free(partsSimIndex);
 }
 
 void GameSave::readPSv(char * data, int dataLength)
@@ -2315,6 +2294,7 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 	// Use unique_ptr with a custom deleter to ensure that bson_destroy is called even when an exception is thrown
 	std::unique_ptr<bson, decltype(bson_deleter)> b_ptr(&b, bson_deleter);
 
+	set_bson_err_handler([](const char* err) { throw BuildException("BSON error when parsing save: " + std::string(err)); });
 	bson_init(&b);
 	bson_append_start_object(&b, "origin");
 	bson_append_int(&b, "majorVersion", SAVE_VERSION);
