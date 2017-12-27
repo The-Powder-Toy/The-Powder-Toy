@@ -2416,17 +2416,27 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 					float vx = ((parts[r>>8].tmp << 16) >> 16) / 255.0f;
 					float vy = (parts[r>>8].tmp >> 16) / 255.0f;
 					float vn = parts[i].vx * parts[i].vx + parts[i].vy * parts[i].vy;
-					parts[i].ctype = (parts[r>>8].ctype & parts[i].ctype) >> 6;
+					// if the resulting velocity would be 0, that would cause division by 0 inside the else
+					// shoot the photon off at a 90 degree angle instead (probably particle order dependent)
+					if (parts[i].vx + vx == 0 && parts[i].vy + vy == 0)
+					{
+						parts[i].vx = vy;
+						parts[i].vy = -vx;
+					}
+					else
+					{
+						parts[i].ctype = (parts[r>>8].ctype & parts[i].ctype) >> 6;
+						// add momentum of photons to each other
+						parts[i].vx += vx;
+						parts[i].vy += vy;
+						// normalize velocity to original value
+						vn /= parts[i].vx * parts[i].vx + parts[i].vy * parts[i].vy;
+						vn = sqrtf(vn);
+						parts[i].vx *= vn;
+						parts[i].vy *= vn;
+					}
 					parts[r>>8].life = 0;
 					parts[r>>8].ctype = 0;
-					// add momentum of photons to each other
-					parts[i].vx += vx;
-					parts[i].vy += vy;
-					// normalize velocity to original value
-					vn /= parts[i].vx * parts[i].vx + parts[i].vy * parts[i].vy;
-					vn = sqrtf(vn);
-					parts[i].vx *= vn;
-					parts[i].vy *= vn;
 				}
 				else if(!parts[r>>8].ctype && parts[i].ctype & 0xFFFFFFC0)
 				{
