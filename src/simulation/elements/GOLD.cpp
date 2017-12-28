@@ -91,7 +91,7 @@ int Element_GOLD::update(UPDATE_FUNC_ARGS)
 	{
 		if (!(rand()%7))
 		{
-			sim->kill_part(sim->photons[y][x]>>8);
+			sim->kill_part(ID(sim->photons[y][x]));
 		}
 	}
 	return 0;

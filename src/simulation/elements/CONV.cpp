@@ -48,7 +48,7 @@ Element_CONV::Element_CONV()
 int Element_CONV::update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry;
-	int ctype = parts[i].ctype&0xFF, ctypeExtra = parts[i].ctype>>8;
+	int ctype = parts[i].ctype&0xFF, ctypeExtra = ID(parts[i].ctype);
 	if (ctype<=0 || ctype>=PT_NUM || !sim->elements[ctype].Enabled || ctype==PT_CONV || (ctype==PT_LIFE && (ctypeExtra<0 || ctypeExtra>=NGOL)))
 	{
 		for (rx=-1; rx<2; rx++)
@@ -67,7 +67,7 @@ int Element_CONV::update(UPDATE_FUNC_ARGS)
 					{
 						parts[i].ctype = r&0xFF;
 						if ((r&0xFF)==PT_LIFE)
-							parts[i].ctype |= (parts[ID(r)].ctype << 8);
+							parts[i].ctype |= PMAPID(parts[ID(r)].ctype);
 					}
 				}
 	}
@@ -85,7 +85,7 @@ int Element_CONV::update(UPDATE_FUNC_ARGS)
 						continue;
 					if((r&0xFF)!=PT_CONV && (r&0xFF)!=PT_DMND && (r&0xFF)!=ctype)
 					{
-						sim->create_part(ID(r), x+rx, y+ry, parts[i].ctype&0xFF, parts[i].ctype>>8);
+						sim->create_part(ID(r), x+rx, y+ry, parts[i].ctype&0xFF, ID(parts[i].ctype));
 					}
 				}
 	}

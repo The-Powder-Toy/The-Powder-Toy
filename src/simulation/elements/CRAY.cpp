@@ -92,7 +92,7 @@ int Element_CRAY::update(UPDATE_FUNC_ARGS)
 							}
 							r = pmap[y+nyi+nyy][x+nxi+nxx];
 							if (!sim->IsWallBlocking(x+nxi+nxx, y+nyi+nyy, parts[i].ctype&0xFF) && (!sim->pmap[y+nyi+nyy][x+nxi+nxx] || createSpark)) { // create, also set color if it has passed through FILT
-								int nr = sim->create_part(-1, x+nxi+nxx, y+nyi+nyy, parts[i].ctype&0xFF, parts[i].ctype>>8);
+								int nr = sim->create_part(-1, x+nxi+nxx, y+nyi+nyy, parts[i].ctype&0xFF, ID(parts[i].ctype));
 								if (nr!=-1) {
 									if (colored)
 										parts[nr].dcolour = colored;

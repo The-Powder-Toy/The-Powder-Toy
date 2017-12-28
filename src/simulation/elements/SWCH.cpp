@@ -47,7 +47,7 @@ Element_SWCH::Element_SWCH()
 
 bool isRedBRAY(UPDATE_FUNC_ARGS, int xc, int yc)
 {
-	return (pmap[yc][xc]&0xFF) == PT_BRAY && parts[pmap[yc][xc]>>8].tmp == 2;
+	return (pmap[yc][xc]&0xFF) == PT_BRAY && parts[ID(pmap[yc][xc])].tmp == 2;
 }
 
 //#TPT-Directive ElementHeader Element_SWCH static int update(UPDATE_FUNC_ARGS)

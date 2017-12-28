@@ -52,7 +52,7 @@ Element_HEAC::Element_HEAC()
 struct Element_HEAC::IsInsulator : public std::binary_function<Simulation*,int,bool> {
   bool operator() (Simulation* a, int b)
   {
-	  return b && (a->elements[b&0xFF].HeatConduct == 0 || ((b&0xFF) == PT_HSWC && a->parts[b>>8].life != 10));
+	  return b && (a->elements[b&0xFF].HeatConduct == 0 || ((b&0xFF) == PT_HSWC && a->parts[ID(b)].life != 10));
   }
 };
 //#TPT-Directive ElementHeader Element_HEAC static IsInsulator isInsulator

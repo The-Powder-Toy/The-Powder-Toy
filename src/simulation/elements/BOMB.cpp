@@ -76,7 +76,7 @@ int Element_BOMB::update(UPDATE_FUNC_ARGS)
 								if (nt!=PT_DMND && nt!=PT_CLNE && nt!=PT_PCLN && nt!=PT_BCLN && nt!=PT_VIBR)
 								{
 									if (nt)
-										sim->kill_part(pmap[ynxj][xnxi]>>8);
+										sim->kill_part(ID(pmap[ynxj][xnxi]));
 									sim->pv[(ynxj)/CELL][(xnxi)/CELL] += 0.1f;
 									nb = sim->create_part(-3, xnxi, ynxj, PT_EMBR);
 									if (nb!=-1)

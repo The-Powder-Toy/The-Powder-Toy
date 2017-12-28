@@ -75,29 +75,29 @@ int Element_DMG::update(UPDATE_FUNC_ARGS)
 										angle = atan2((float)nxj, nxi);
 										fx = cos(angle) * 7.0f;
 										fy = sin(angle) * 7.0f;
-										parts[rr>>8].vx += fx;
-										parts[rr>>8].vy += fy;
+										parts[ID(rr)].vx += fx;
+										parts[ID(rr)].vy += fy;
 										sim->vx[(y+nxj)/CELL][(x+nxi)/CELL] += fx;
 										sim->vy[(y+nxj)/CELL][(x+nxi)/CELL] += fy;
 										sim->pv[(y+nxj)/CELL][(x+nxi)/CELL] += 1.0f;
 										t = rr&0xFF;
 										if (t && sim->elements[t].HighPressureTransition>-1 && sim->elements[t].HighPressureTransition<PT_NUM)
-											sim->part_change_type(rr>>8, x+nxi, y+nxj, sim->elements[t].HighPressureTransition);
+											sim->part_change_type(ID(rr), x+nxi, y+nxj, sim->elements[t].HighPressureTransition);
 										else if (t == PT_BMTL)
-											sim->part_change_type(rr>>8, x+nxi, y+nxj, PT_BRMT);
+											sim->part_change_type(ID(rr), x+nxi, y+nxj, PT_BRMT);
 										else if (t == PT_GLAS)
-											sim->part_change_type(rr>>8, x+nxi, y+nxj, PT_BGLA);
+											sim->part_change_type(ID(rr), x+nxi, y+nxj, PT_BGLA);
 										else if (t == PT_COAL)
-											sim->part_change_type(rr>>8, x+nxi, y+nxj, PT_BCOL);
+											sim->part_change_type(ID(rr), x+nxi, y+nxj, PT_BCOL);
 										else if (t == PT_QRTZ)
-											sim->part_change_type(rr>>8, x+nxi, y+nxj, PT_PQRT);
+											sim->part_change_type(ID(rr), x+nxi, y+nxj, PT_PQRT);
 										else if (t == PT_TUNG)
 										{
-											sim->part_change_type(rr>>8, x+nxi, y+nxj, PT_BRMT);
-											parts[rr>>8].ctype = PT_TUNG;
+											sim->part_change_type(ID(rr), x+nxi, y+nxj, PT_BRMT);
+											parts[ID(rr)].ctype = PT_TUNG;
 										}
 										else if (t == PT_WOOD)
-											sim->part_change_type(rr>>8, x+nxi, y+nxj, PT_SAWD);
+											sim->part_change_type(ID(rr), x+nxi, y+nxj, PT_SAWD);
 									}
 								}
 							}

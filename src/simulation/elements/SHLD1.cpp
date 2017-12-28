@@ -68,7 +68,7 @@ int Element_SHLD1::update(UPDATE_FUNC_ARGS)
 							if (!pmap[y+ry+nny][x+rx+nnx])
 							{
 								sim->create_part(-1,x+rx+nnx,y+ry+nny,PT_SHLD1);
-								//parts[pmap[y+ny+nny][x+nx+nnx]>>8].life=7;
+								//parts[ID(pmap[y+ny+nny][x+nx+nnx])].life=7;
 							}
 						}
 				}
