@@ -63,14 +63,14 @@ int Element_WIFI::update(UPDATE_FUNC_ARGS)
 				// wireless[][1] - whether channel should be active on next frame
 				if (sim->wireless[parts[i].tmp][0])
 				{
-					if (((r&0xFF)==PT_NSCN||(r&0xFF)==PT_PSCN||(r&0xFF)==PT_INWR)&&parts[ID(r)].life==0 && sim->wireless[parts[i].tmp][0])
+					if ((TYP(r)==PT_NSCN||TYP(r)==PT_PSCN||TYP(r)==PT_INWR)&&parts[ID(r)].life==0 && sim->wireless[parts[i].tmp][0])
 					{
-						parts[ID(r)].ctype = r&0xFF;
+						parts[ID(r)].ctype = TYP(r);
 						sim->part_change_type(ID(r),x+rx,y+ry,PT_SPRK);
 						parts[ID(r)].life = 4;
 					}
 				}
-				if ((r&0xFF)==PT_SPRK && parts[ID(r)].ctype!=PT_NSCN && parts[ID(r)].life>=3)
+				if (TYP(r)==PT_SPRK && parts[ID(r)].ctype!=PT_NSCN && parts[ID(r)].life>=3)
 				{
 					sim->wireless[parts[i].tmp][1] = 1;
 					sim->ISWIRE = 2;

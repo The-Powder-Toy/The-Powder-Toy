@@ -59,7 +59,7 @@ int Element_CLNE::update(UPDATE_FUNC_ARGS)
 						r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					rt = r&0xFF;
+					rt = TYP(r);
 					if (rt!=PT_CLNE && rt!=PT_PCLN &&
 					    rt!=PT_BCLN && rt!=PT_STKM &&
 					    rt!=PT_PBCN && rt!=PT_STKM2 &&

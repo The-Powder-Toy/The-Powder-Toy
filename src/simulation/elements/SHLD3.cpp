@@ -64,12 +64,12 @@ int Element_SHLD3::update(UPDATE_FUNC_ARGS)
 					}
 					continue;
 				}
-				if ((r&0xFF)==PT_SHLD1 && parts[i].life>3)
+				if (TYP(r)==PT_SHLD1 && parts[i].life>3)
 				{
 					sim->part_change_type(ID(r),x+rx,y+ry,PT_SHLD2);
 					parts[ID(r)].life=7;
 				}
-				else if ((r&0xFF)==PT_SPRK&&parts[i].life==0)
+				else if (TYP(r)==PT_SPRK&&parts[i].life==0)
 				{
 					if (3>rand()%500)
 					{

@@ -56,7 +56,7 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 					int r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if ((r&0xFF) == PT_SPRK && parts[ID(r)].life == 3)
+					if (TYP(r) == PT_SPRK && parts[ID(r)].life == 3)
 					{
 						bool isBlackDeco = false;
 						int destroy = (parts[ID(r)].ctype==PT_PSCN) ? 1 : 0;
@@ -68,7 +68,7 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 								break;
 
 							r = pmap[y+nyi+nyy][x+nxi+nxx];
-							rt = r & 0xFF;
+							rt = TYP(r);
 							r = ID(r);
 							if (!rt)
 							{

@@ -57,7 +57,7 @@ int Element_ELEC::update(UPDATE_FUNC_ARGS)
 					r = sim->photons[y+ry][x+rx];
 				if (!r)
 					continue;
-				rt = r&0xFF;
+				rt = TYP(r);
 				switch (rt)
 				{
 				case PT_GLAS:

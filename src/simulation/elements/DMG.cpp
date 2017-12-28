@@ -59,7 +59,7 @@ int Element_DMG::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if ((r&0xFF)!=PT_DMG && (r&0xFF)!=PT_EMBR && (r&0xFF)!=PT_DMND && (r&0xFF)!=PT_CLNE && (r&0xFF)!=PT_PCLN && (r&0xFF)!=PT_BCLN)
+				if (TYP(r)!=PT_DMG && TYP(r)!=PT_EMBR && TYP(r)!=PT_DMND && TYP(r)!=PT_CLNE && TYP(r)!=PT_PCLN && TYP(r)!=PT_BCLN)
 				{
 					sim->kill_part(i);
 					for (nxj=-rad; nxj<=rad; nxj++)
@@ -80,7 +80,7 @@ int Element_DMG::update(UPDATE_FUNC_ARGS)
 										sim->vx[(y+nxj)/CELL][(x+nxi)/CELL] += fx;
 										sim->vy[(y+nxj)/CELL][(x+nxi)/CELL] += fy;
 										sim->pv[(y+nxj)/CELL][(x+nxi)/CELL] += 1.0f;
-										t = rr&0xFF;
+										t = TYP(rr);
 										if (t && sim->elements[t].HighPressureTransition>-1 && sim->elements[t].HighPressureTransition<PT_NUM)
 											sim->part_change_type(ID(rr), x+nxi, y+nxj, sim->elements[t].HighPressureTransition);
 										else if (t == PT_BMTL)

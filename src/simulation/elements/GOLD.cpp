@@ -62,7 +62,7 @@ int Element_GOLD::update(UPDATE_FUNC_ARGS)
 		if ((!rx != !ry) && BOUNDS_CHECK) {
 			r = pmap[y+ry][x+rx];
 			if(!r) continue;
-			if((r&0xFF)==PT_BMTL && parts[ID(r)].tmp)
+			if(TYP(r)==PT_BMTL && parts[ID(r)].tmp)
 			{
 				parts[ID(r)].tmp = 0;
 				sim->part_change_type(ID(r), x+rx, y+ry, PT_IRON);
@@ -78,7 +78,7 @@ int Element_GOLD::update(UPDATE_FUNC_ARGS)
 			if (BOUNDS_CHECK) {
 				r = pmap[y+ry][x+rx];
 				if(!r) continue;
-				if((r&0xFF)==PT_SPRK && parts[ID(r)].life && parts[ID(r)].life<4)
+				if(TYP(r)==PT_SPRK && parts[ID(r)].life && parts[ID(r)].life<4)
 				{
 					sim->part_change_type(i, x, y, PT_SPRK);
 					parts[i].life = 4;

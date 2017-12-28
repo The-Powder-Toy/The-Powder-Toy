@@ -74,7 +74,7 @@ int Element_PUMP::update(UPDATE_FUNC_ARGS)
 					r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if ((r&0xFF)==PT_PUMP)
+					if (TYP(r)==PT_PUMP)
 					{
 						if (parts[ID(r)].life<10&&parts[ID(r)].life>0)
 							parts[i].life = 9;

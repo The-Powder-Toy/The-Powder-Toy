@@ -65,14 +65,14 @@ int Element_HSWC::update(UPDATE_FUNC_ARGS)
 						r = sim->photons[y + ry][x + rx];
 					if (!r)
 						continue;
-					if ((r&0xFF)==PT_HSWC)
+					if (TYP(r)==PT_HSWC)
 					{
 						if (parts[ID(r)].life<10&&parts[ID(r)].life>0)
 							parts[i].life = 9;
 						else if (parts[ID(r)].life==0)
 							parts[ID(r)].life = 10;
 					}
-					if (parts[i].tmp == 1 && ((r&0xFF) == PT_FILT || (r&0xFF) == PT_PHOT || (r&0xFF) == PT_BRAY))
+					if (parts[i].tmp == 1 && (TYP(r) == PT_FILT || TYP(r) == PT_PHOT || TYP(r) == PT_BRAY))
 					{
 						parts[i].temp = parts[ID(r)].ctype - 0x10000000;
 					}

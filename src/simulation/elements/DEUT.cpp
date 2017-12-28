@@ -65,7 +65,7 @@ int Element_DEUT::update(UPDATE_FUNC_ARGS)
 					r = pmap[y+ry][x+rx];
 					if (!r || (parts[i].life >=maxlife))
 						continue;
-					if ((r&0xFF)==PT_DEUT&& !(rand()%3))
+					if (TYP(r)==PT_DEUT&& !(rand()%3))
 					{
 						// If neighbour life+1 fits in the free capacity for this particle, absorb neighbour
 						// Condition is written in this way so that large neighbour life values don't cause integer overflow
@@ -105,7 +105,7 @@ trade:
 			r = pmap[y+ry][x+rx];
 			if (!r)
 				continue;
-			if ((r&0xFF)==PT_DEUT&&(parts[i].life>parts[ID(r)].life)&&parts[i].life>0)//diffusion
+			if (TYP(r)==PT_DEUT&&(parts[i].life>parts[ID(r)].life)&&parts[i].life>0)//diffusion
 			{
 				int temp = parts[i].life - parts[ID(r)].life;
 				if (temp ==1)

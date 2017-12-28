@@ -163,14 +163,14 @@ int Element_SOAP::update(UPDATE_FUNC_ARGS)
 							if (parts[i].temp>FREEZING)
 							{
 								if (sim->bmap[(y+ry)/CELL][(x+rx)/CELL]
-									|| (r && !(sim->elements[r&0xFF].Properties&TYPE_GAS)
-								    && (r&0xFF) != PT_SOAP && (r&0xFF) != PT_GLAS))
+									|| (r && !(sim->elements[TYP(r)].Properties&TYPE_GAS)
+								    && TYP(r) != PT_SOAP && TYP(r) != PT_GLAS))
 								{
 									detach(sim, i);
 									continue;
 								}
 							}
-							if ((r&0xFF) == PT_SOAP)
+							if (TYP(r) == PT_SOAP)
 							{
 								if (parts[ID(r)].ctype == 1)
 								{
@@ -237,7 +237,7 @@ int Element_SOAP::update(UPDATE_FUNC_ARGS)
 					r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if ((r&0xFF) == PT_OIL)
+					if (TYP(r) == PT_OIL)
 					{
 						float ax, ay;
 						ax = (parts[i].vx*0.5f + parts[ID(r)].vx)/2;
@@ -254,7 +254,7 @@ int Element_SOAP::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if ((r&0xFF)!=PT_SOAP)
+				if (TYP(r)!=PT_SOAP)
 				{
 					tr = (parts[ID(r)].dcolour>>16)&0xFF;
 					tg = (parts[ID(r)].dcolour>>8)&0xFF;

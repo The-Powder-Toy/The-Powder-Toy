@@ -57,16 +57,17 @@ int Element_ACID::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if ((r&0xFF)!=PT_ACID && (r&0xFF)!=PT_CAUS)
+				int rt = TYP(r);
+				if (rt != PT_ACID && rt != PT_CAUS)
 				{
-					if ((r&0xFF)==PT_PLEX || (r&0xFF)==PT_NITR || (r&0xFF)==PT_GUNP || (r&0xFF)==PT_RBDM || (r&0xFF)==PT_LRBD)
+					if (rt == PT_PLEX || rt == PT_NITR || rt == PT_GUNP || rt == PT_RBDM || rt == PT_LRBD)
 					{
 						sim->part_change_type(i,x,y,PT_FIRE);
 						sim->part_change_type(ID(r),x+rx,y+ry,PT_FIRE);
 						parts[i].life = 4;
 						parts[ID(r)].life = 4;
 					}
-					else if ((r&0xFF)==PT_WTRV)
+					else if (rt == PT_WTRV)
 					{
 						if(!(rand()%250))
 						{
@@ -75,11 +76,11 @@ int Element_ACID::update(UPDATE_FUNC_ARGS)
 							sim->kill_part(ID(r));
 						}
 					}
-					else if (((r&0xFF)!=PT_CLNE && (r&0xFF)!=PT_PCLN && sim->elements[r&0xFF].Hardness>(rand()%1000))&&parts[i].life>=50)
+					else if ((rt != PT_CLNE && rt != PT_PCLN && sim->elements[rt].Hardness>(rand()%1000))&&parts[i].life>=50)
 					{
 						if (sim->parts_avg(i, ID(r),PT_GLAS)!= PT_GLAS)//GLAS protects stuff from acid
 						{
-							float newtemp = ((60.0f-(float)sim->elements[r&0xFF].Hardness))*7.0f;
+							float newtemp = ((60.0f-(float)sim->elements[rt].Hardness))*7.0f;
 							if(newtemp < 0){
 								newtemp = 0;
 							}
@@ -104,10 +105,10 @@ int Element_ACID::update(UPDATE_FUNC_ARGS)
 			r = pmap[y+ry][x+rx];
 			if (!r)
 				continue;
-			if ((r&0xFF)==PT_ACID && (parts[i].life>parts[ID(r)].life) && parts[i].life>0)//diffusion
+			if (TYP(r) == PT_ACID && (parts[i].life > parts[ID(r)].life) && parts[i].life>0)//diffusion
 			{
 				int temp = parts[i].life - parts[ID(r)].life;
-				if (temp==1)
+				if (temp == 1)
 				{
 					parts[ID(r)].life++;
 					parts[i].life--;

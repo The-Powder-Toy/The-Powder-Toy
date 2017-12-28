@@ -73,7 +73,7 @@ int Element_PBCN::update(UPDATE_FUNC_ARGS)
 						r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					rt = r&0xFF;
+					rt = TYP(r);
 					if (rt!=PT_CLNE && rt!=PT_PCLN &&
 					    rt!=PT_BCLN &&  rt!=PT_SPRK &&
 					    rt!=PT_NSCN && rt!=PT_PSCN &&
@@ -99,7 +99,7 @@ int Element_PBCN::update(UPDATE_FUNC_ARGS)
 					r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if ((r&0xFF)==PT_PBCN)
+					if (TYP(r)==PT_PBCN)
 					{
 						if (parts[ID(r)].life<10&&parts[ID(r)].life>0)
 							parts[i].life = 9;

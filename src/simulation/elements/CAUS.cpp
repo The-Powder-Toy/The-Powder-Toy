@@ -54,7 +54,7 @@ int Element_CAUS::update(UPDATE_FUNC_ARGS)
 				int r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if ((r&0xFF) == PT_GAS)
+				if (TYP(r) == PT_GAS)
 				{
 					if (sim->pv[(y+ry)/CELL][(x+rx)/CELL] > 3)
 					{
@@ -62,14 +62,14 @@ int Element_CAUS::update(UPDATE_FUNC_ARGS)
 						sim->part_change_type(i, x, y, PT_RFRG);
 					}
 				}
-				else if ((r&0xFF) != PT_ACID && (r&0xFF) != PT_CAUS && (r&0xFF) != PT_RFRG && (r&0xFF) != PT_RFGL)
+				else if (TYP(r) != PT_ACID && TYP(r) != PT_CAUS && TYP(r) != PT_RFRG && TYP(r) != PT_RFGL)
 				{
-					if (((r&0xFF) != PT_CLNE && (r&0xFF) != PT_PCLN && sim->elements[r&0xFF].Hardness > (rand()%1000)) && parts[i].life >= 50)
+					if ((TYP(r) != PT_CLNE && TYP(r) != PT_PCLN && sim->elements[TYP(r)].Hardness > (rand()%1000)) && parts[i].life >= 50)
 					{
 						// GLAS protects stuff from acid
 						if (sim->parts_avg(i, ID(r),PT_GLAS) != PT_GLAS)
 						{
-							float newtemp = ((60.0f - (float)sim->elements[r&0xFF].Hardness)) * 7.0f;
+							float newtemp = ((60.0f - (float)sim->elements[TYP(r)].Hardness)) * 7.0f;
 							if (newtemp < 0)
 								newtemp = 0;
 							parts[i].temp += newtemp;

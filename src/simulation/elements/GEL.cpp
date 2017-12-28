@@ -62,7 +62,7 @@ int Element_GEL::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				rt = r&0xFF;
+				rt = TYP(r);
 				//Desaturation
 				switch (rt)
 				{

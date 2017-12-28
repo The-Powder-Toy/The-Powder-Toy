@@ -59,9 +59,9 @@ int Element_GBMB::update(UPDATE_FUNC_ARGS)
 					r = pmap[y+ry][x+rx];
 					if(!r)
 						continue;
-					if((r&0xFF)!=PT_BOMB && (r&0xFF)!=PT_GBMB &&
-					   (r&0xFF)!=PT_CLNE && (r&0xFF)!=PT_PCLN &&
-					   (r&0xFF)!=PT_DMND)
+					if(TYP(r)!=PT_BOMB && TYP(r)!=PT_GBMB &&
+					   TYP(r)!=PT_CLNE && TYP(r)!=PT_PCLN &&
+					   TYP(r)!=PT_DMND)
 					{
 						parts[i].life=60;
 						break;

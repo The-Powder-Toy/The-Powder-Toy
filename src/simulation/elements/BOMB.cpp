@@ -57,7 +57,7 @@ int Element_BOMB::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				rt = r&0xFF;
+				rt = TYP(r);
 				if (rt!=PT_BOMB && rt!=PT_EMBR && rt!=PT_DMND && rt!=PT_CLNE && rt!=PT_PCLN && rt!=PT_BCLN && rt!=PT_VIBR)
 				{
 					int rad = 8, nt;

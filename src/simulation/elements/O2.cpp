@@ -56,7 +56,7 @@ int Element_O2::update(UPDATE_FUNC_ARGS)
 				if (!r)
 					continue;
 
-				if ((r&0xFF)==PT_FIRE)
+				if (TYP(r)==PT_FIRE)
 				{
 					parts[ID(r)].temp+=(rand()%100);
 					if(parts[ID(r)].tmp&0x01)
@@ -67,7 +67,7 @@ int Element_O2::update(UPDATE_FUNC_ARGS)
 					parts[i].temp+=(rand()%100);
 					parts[i].tmp |= 2;
 				}
-				else if ((r&0xFF)==PT_PLSM && !(parts[ID(r)].tmp&4))
+				else if (TYP(r)==PT_PLSM && !(parts[ID(r)].tmp&4))
 				{
 					sim->create_part(i,x,y,PT_FIRE);
 					parts[i].temp+=(rand()%100);

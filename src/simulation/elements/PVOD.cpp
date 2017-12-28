@@ -58,7 +58,7 @@ int Element_PVOD::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if ((r&0xFF)==PT_SPRK)
+				if (TYP(r)==PT_SPRK)
 				{
 					if (parts[ID(r)].life>0 && parts[ID(r)].life<4)
 					{
@@ -68,7 +68,7 @@ int Element_PVOD::update(UPDATE_FUNC_ARGS)
 							parts[i].life = 9;
 					}
 				}
-				else if ((r&0xFF)==PT_PVOD)
+				else if (TYP(r)==PT_PVOD)
 				{
 					if (parts[i].life==10&&parts[ID(r)].life<10&&parts[ID(r)].life>0)
 						parts[i].life = 9;

@@ -68,7 +68,7 @@ int Element_DRAY::update(UPDATE_FUNC_ARGS)
 				if (BOUNDS_CHECK && (rx || ry))
 				{
 					int r = pmap[y+ry][x+rx];
-					if ((r&0xFF) == PT_SPRK && parts[ID(r)].life == 3) //spark found, start creating
+					if (TYP(r) == PT_SPRK && parts[ID(r)].life == 3) //spark found, start creating
 					{
 						bool overwrite = parts[ID(r)].ctype == PT_PSCN;
 						int partsRemaining = copyLength, xCopyTo, yCopyTo; //positions where the line will start being copied at

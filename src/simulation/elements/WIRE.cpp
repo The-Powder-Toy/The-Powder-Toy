@@ -74,14 +74,14 @@ int Element_WIRE::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if ((r&0xFF)==PT_SPRK && parts[ID(r)].life==3 && parts[ID(r)].ctype==PT_PSCN)
+				if (TYP(r)==PT_SPRK && parts[ID(r)].life==3 && parts[ID(r)].ctype==PT_PSCN)
 				{
 					parts[i].ctype=1;
 					return 0;
 				}
-				else if ((r&0xFF)==PT_NSCN && parts[i].tmp==1)
+				else if (TYP(r)==PT_NSCN && parts[i].tmp==1)
 					sim->create_part(-1, x+rx, y+ry, PT_SPRK);
-				else if ((r&0xFF)==PT_WIRE && parts[ID(r)].tmp==1 && !parts[i].tmp)
+				else if (TYP(r)==PT_WIRE && parts[ID(r)].tmp==1 && !parts[i].tmp)
 					count++;
 			}
 		}

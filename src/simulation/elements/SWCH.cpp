@@ -64,7 +64,7 @@ int Element_SWCH::update(UPDATE_FUNC_ARGS)
 				if (!r)
 					continue;
 				if (sim->parts_avg(i,ID(r),PT_INSL)!=PT_INSL) {
-					rt = r&0xFF;
+					rt = TYP(r);
 					if (rt==PT_SWCH)
 					{
 						if (parts[i].life>=10&&parts[ID(r)].life<10&&parts[ID(r)].life>0)

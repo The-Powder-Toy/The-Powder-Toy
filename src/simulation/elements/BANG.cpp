@@ -60,7 +60,7 @@ int Element_BANG::update(UPDATE_FUNC_ARGS)
 						r = pmap[y+ry][x+rx];
 						if (!r)
 							continue;
-						if ((r&0xFF)==PT_FIRE || (r&0xFF)==PT_PLSM || (r&0xFF)==PT_SPRK || (r&0xFF)==PT_LIGH)
+						if (TYP(r)==PT_FIRE || TYP(r)==PT_PLSM || TYP(r)==PT_SPRK || TYP(r)==PT_LIGH)
 						{
 							parts[i].tmp = 1;
 						}

@@ -85,7 +85,7 @@ int Element_LIGH::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				rt = r&0xFF;
+				rt = TYP(r);
 				if ((surround_space || sim->elements[rt].Explosive) &&
 				    (rt!=PT_SPNG || parts[ID(r)].life==0) &&
 					sim->elements[rt].Flammable && (sim->elements[rt].Flammable + (int)(sim->pv[(y+ry)/CELL][(x+rx)/CELL]*10.0f))>(rand()%1000))
@@ -144,10 +144,10 @@ int Element_LIGH::update(UPDATE_FUNC_ARGS)
 				default:
 					break;
 				}
-				if ((sim->elements[r&0xFF].Properties&PROP_CONDUCTS) && parts[ID(r)].life==0)
+				if ((sim->elements[TYP(r)].Properties&PROP_CONDUCTS) && parts[ID(r)].life==0)
 					sim->create_part(ID(r),x+rx,y+ry,PT_SPRK);
 				sim->pv[y/CELL][x/CELL] += powderful/400;
-				if (sim->elements[r&0xFF].HeatConduct) parts[ID(r)].temp = restrict_flt(parts[ID(r)].temp+powderful/1.3, MIN_TEMP, MAX_TEMP);
+				if (sim->elements[TYP(r)].HeatConduct) parts[ID(r)].temp = restrict_flt(parts[ID(r)].temp+powderful/1.3, MIN_TEMP, MAX_TEMP);
 			}
 	if (parts[i].tmp2==3)
 	{
@@ -259,7 +259,7 @@ int Element_LIGH::contact_part(Simulation * sim, int i, int tp)
 				r = sim->pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if ((r&0xFF)==tp)
+				if (TYP(r)==tp)
 					return ID(r);
 			}
 	return -1;
@@ -287,7 +287,7 @@ bool Element_LIGH::create_LIGH(Simulation * sim, int x, int y, int c, int temp, 
 	else if (x >= 0 && x < XRES && y >= 0 && y < YRES)
 	{
 		int r = sim->pmap[y][x];
-		if ((((r&0xFF)==PT_VOID || ((r&0xFF)==PT_PVOD && sim->parts[ID(r)].life >= 10)) && (!sim->parts[ID(r)].ctype || (sim->parts[ID(r)].ctype==c)!=(sim->parts[ID(r)].tmp&1))) || (r&0xFF)==PT_BHOL || (r&0xFF)==PT_NBHL) // VOID, PVOD, VACU, and BHOL eat LIGH here
+		if (((TYP(r)==PT_VOID || (TYP(r)==PT_PVOD && sim->parts[ID(r)].life >= 10)) && (!sim->parts[ID(r)].ctype || (sim->parts[ID(r)].ctype==c)!=(sim->parts[ID(r)].tmp&1))) || TYP(r)==PT_BHOL || TYP(r)==PT_NBHL) // VOID, PVOD, VACU, and BHOL eat LIGH here
 			return true;
 	}
 	else return true;

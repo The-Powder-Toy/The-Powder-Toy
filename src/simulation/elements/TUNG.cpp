@@ -60,7 +60,7 @@ int Element_TUNG::update(UPDATE_FUNC_ARGS)
 				if (BOUNDS_CHECK && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
-					if((r&0xFF) == PT_O2)
+					if(TYP(r) == PT_O2)
 					{
 						splode = true;
 					}

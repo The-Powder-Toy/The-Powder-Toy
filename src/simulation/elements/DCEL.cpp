@@ -64,7 +64,7 @@ int Element_DCEL::update(UPDATE_FUNC_ARGS)
 					r = sim->photons[y+ry][x+rx];
 				if (!r)
 					continue;
-				if (sim->elements[r&0xFF].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY))
+				if (sim->elements[TYP(r)].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY))
 				{
 					parts[ID(r)].vx *= multiplier;
 					parts[ID(r)].vy *= multiplier;

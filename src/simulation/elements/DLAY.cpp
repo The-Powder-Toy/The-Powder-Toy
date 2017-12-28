@@ -61,11 +61,11 @@ int Element_DLAY::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r || sim->parts_avg(ID(r), i,PT_INSL)==PT_INSL)
 					continue;
-				if ((r&0xFF)==PT_SPRK && parts[i].life==0 && parts[ID(r)].life>0 && parts[ID(r)].life<4 && parts[ID(r)].ctype==PT_PSCN)
+				if (TYP(r)==PT_SPRK && parts[i].life==0 && parts[ID(r)].life>0 && parts[ID(r)].life<4 && parts[ID(r)].ctype==PT_PSCN)
 				{
 					parts[i].life = (int)(parts[i].temp-273.15f+0.5f);
 				}
-				else if ((r&0xFF)==PT_DLAY)
+				else if (TYP(r)==PT_DLAY)
 				{
 					if (!parts[i].life)
 					{
@@ -83,7 +83,7 @@ int Element_DLAY::update(UPDATE_FUNC_ARGS)
 							parts[ID(r)].life++;
 					}
 				}
-				else if((r&0xFF)==PT_NSCN && oldl==1)
+				else if(TYP(r)==PT_NSCN && oldl==1)
 				{
 					sim->create_part(-1, x+rx, y+ry, PT_SPRK);
 				}

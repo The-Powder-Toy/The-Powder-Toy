@@ -119,7 +119,7 @@ int Element_ETRD::nearestSparkablePart(Simulation *sim, int targetId)
 				if (sim->InBounds(checkPos.X, checkPos.Y) && checkDistance <= foundDistance)
 				{
 					int r = sim->pmap[checkPos.Y][checkPos.X];
-					if (r && (r&0xFF) == PT_ETRD && !parts[ID(r)].life && ID(r) != targetId && checkDistance < foundDistance)
+					if (r && TYP(r) == PT_ETRD && !parts[ID(r)].life && ID(r) != targetId && checkDistance < foundDistance)
 					{
 						foundDistance = checkDistance;
 						foundI = ID(r);

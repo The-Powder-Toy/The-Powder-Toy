@@ -60,9 +60,9 @@ int Element_CRAY::update(UPDATE_FUNC_ARGS)
 						r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if ((r&0xFF)!=PT_CRAY && (r&0xFF)!=PT_PSCN && (r&0xFF)!=PT_INST && (r&0xFF)!=PT_METL && (r&0xFF)!=PT_SPRK && (r&0xFF)<PT_NUM)
+					if (TYP(r)!=PT_CRAY && TYP(r)!=PT_PSCN && TYP(r)!=PT_INST && TYP(r)!=PT_METL && TYP(r)!=PT_SPRK && TYP(r)<PT_NUM)
 					{
-						parts[i].ctype = r&0xFF;
+						parts[i].ctype = TYP(r);
 						parts[i].temp = parts[ID(r)].temp;
 					}
 				}
@@ -76,7 +76,7 @@ int Element_CRAY::update(UPDATE_FUNC_ARGS)
 					int r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if ((r&0xFF)==PT_SPRK && parts[ID(r)].life==3) { //spark found, start creating
+					if (TYP(r)==PT_SPRK && parts[ID(r)].life==3) { //spark found, start creating
 						unsigned int colored = 0;
 						bool destroy = parts[ID(r)].ctype==PT_PSCN;
 						bool nostop = parts[ID(r)].ctype==PT_INST;
@@ -102,7 +102,7 @@ int Element_CRAY::update(UPDATE_FUNC_ARGS)
 									if(!--partsRemaining)
 										docontinue = 0;
 								}
-							} else if ((r&0xFF)==PT_FILT) { // get color if passed through FILT
+							} else if (TYP(r)==PT_FILT) { // get color if passed through FILT
 								if (parts[ID(r)].dcolour == 0xFF000000)
 									colored = 0xFF000000;
 								else if (parts[ID(r)].tmp==0)
@@ -112,9 +112,9 @@ int Element_CRAY::update(UPDATE_FUNC_ARGS)
 								else if (colored==0xFF000000)
 									colored = 0;
 								parts[ID(r)].life = 4;
-							} else if ((r&0xFF) == PT_CRAY || nostop) {
+							} else if (TYP(r) == PT_CRAY || nostop) {
 								docontinue = 1;
-							} else if(destroy && r && ((r&0xFF) != PT_DMND)) {
+							} else if(destroy && r && (TYP(r) != PT_DMND)) {
 								sim->kill_part(ID(r));
 								if(!--partsRemaining)
 									docontinue = 0;

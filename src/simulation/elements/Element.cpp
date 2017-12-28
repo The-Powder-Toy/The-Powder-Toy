@@ -99,12 +99,12 @@ int Element::legacyUpdate(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if (((r&0xFF)==PT_WATR||(r&0xFF)==PT_DSTW||(r&0xFF)==PT_SLTW) && 1>(rand()%1000))
+					if ((TYP(r)==PT_WATR||TYP(r)==PT_DSTW||TYP(r)==PT_SLTW) && 1>(rand()%1000))
 					{
 						sim->part_change_type(i,x,y,PT_WATR);
 						sim->part_change_type(ID(r),x+rx,y+ry,PT_WATR);
 					}
-					if (((r&0xFF)==PT_ICEI || (r&0xFF)==PT_SNOW) && 1>(rand()%1000))
+					if ((TYP(r)==PT_ICEI || TYP(r)==PT_SNOW) && 1>(rand()%1000))
 					{
 						sim->part_change_type(i,x,y,PT_WATR);
 						if (1>(rand()%1000))
@@ -121,7 +121,7 @@ int Element::legacyUpdate(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if (((r&0xFF)==PT_FIRE || (r&0xFF)==PT_LAVA) && 1>(rand()%10))
+					if ((TYP(r)==PT_FIRE || TYP(r)==PT_LAVA) && 1>(rand()%10))
 					{
 						sim->part_change_type(i,x,y,PT_WTRV);
 					}
@@ -136,7 +136,7 @@ int Element::legacyUpdate(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if (((r&0xFF)==PT_FIRE || (r&0xFF)==PT_LAVA) && 1>(rand()%10))
+					if ((TYP(r)==PT_FIRE || TYP(r)==PT_LAVA) && 1>(rand()%10))
 					{
 						if (rand()%4==0) sim->part_change_type(i,x,y,PT_SALT);
 						else sim->part_change_type(i,x,y,PT_WTRV);
@@ -152,7 +152,7 @@ int Element::legacyUpdate(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if (((r&0xFF)==PT_FIRE || (r&0xFF)==PT_LAVA) && 1>(rand()%10))
+					if ((TYP(r)==PT_FIRE || TYP(r)==PT_LAVA) && 1>(rand()%10))
 					{
 						sim->part_change_type(i,x,y,PT_WTRV);
 					}
@@ -166,7 +166,7 @@ int Element::legacyUpdate(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if (((r&0xFF)==PT_WATR || (r&0xFF)==PT_DSTW) && 1>(rand()%1000))
+					if ((TYP(r)==PT_WATR || TYP(r)==PT_DSTW) && 1>(rand()%1000))
 					{
 						sim->part_change_type(i,x,y,PT_ICEI);
 						sim->part_change_type(ID(r),x+rx,y+ry,PT_ICEI);
@@ -181,12 +181,12 @@ int Element::legacyUpdate(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if (((r&0xFF)==PT_WATR || (r&0xFF)==PT_DSTW) && 1>(rand()%1000))
+					if ((TYP(r)==PT_WATR || TYP(r)==PT_DSTW) && 1>(rand()%1000))
 					{
 						sim->part_change_type(i,x,y,PT_ICEI);
 						sim->part_change_type(ID(r),x+rx,y+ry,PT_ICEI);
 					}
-					if (((r&0xFF)==PT_WATR || (r&0xFF)==PT_DSTW) && 15>(rand()%1000))
+					if ((TYP(r)==PT_WATR || TYP(r)==PT_DSTW) && 15>(rand()%1000))
 						sim->part_change_type(i,x,y,PT_WATR);
 				}
 	}

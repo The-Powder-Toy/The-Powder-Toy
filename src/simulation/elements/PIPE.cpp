@@ -101,7 +101,7 @@ int Element_PIPE::update(UPDATE_FUNC_ARGS)
 					if (BOUNDS_CHECK && (rx || ry))
 					{
 						r = pmap[y+ry][x+rx];
-						if ((r&0xFF) == PT_BRCK)
+						if (TYP(r) == PT_BRCK)
 						{
 							if (parts[i].tmp & PPIP_TMPFLAG_PAUSED)
 								parts[ID(r)].tmp = 0;
@@ -146,7 +146,7 @@ int Element_PIPE::update(UPDATE_FUNC_ARGS)
 						r = pmap[y+ry][x+rx];
 						if (!r)
 							continue;
-						if (((r&0xFF)==PT_PIPE || (r&0xFF) == PT_PPIP)&&parts[ID(r)].ctype==1)
+						if ((TYP(r)==PT_PIPE || TYP(r) == PT_PPIP)&&parts[ID(r)].ctype==1)
 						{
 							parts[ID(r)].ctype = (((parts[i].ctype)%3)+2);//reverse
 							parts[ID(r)].life = 6;
@@ -160,7 +160,7 @@ int Element_PIPE::update(UPDATE_FUNC_ARGS)
 							neighborcount ++;
 							lastneighbor = ID(r);
 						}
-						else if (((r&0xFF)==PT_PIPE || (r&0xFF) == PT_PPIP)&&parts[ID(r)].ctype!=(((parts[i].ctype-1)%3)+2))
+						else if ((TYP(r)==PT_PIPE || TYP(r) == PT_PPIP)&&parts[ID(r)].ctype!=(((parts[i].ctype-1)%3)+2))
 						{
 							neighborcount ++;
 							lastneighbor = ID(r);
@@ -202,14 +202,14 @@ int Element_PIPE::update(UPDATE_FUNC_ARGS)
 						}
 					}
 					//try eating particle at entrance
-					else if ((parts[i].tmp&0xFF) == 0 && (sim->elements[r&0xFF].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY)))
+					else if ((parts[i].tmp&0xFF) == 0 && (sim->elements[TYP(r)].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY)))
 					{
-						if ((r&0xFF)==PT_SOAP)
+						if (TYP(r)==PT_SOAP)
 							Element_SOAP::detach(sim, ID(r));
 						transfer_part_to_pipe(parts+(ID(r)), parts+i);
 						sim->kill_part(ID(r));
 					}
-					else if ((parts[i].tmp&0xFF) == 0 && (r&0xFF)==PT_STOR && parts[ID(r)].tmp>0 && sim->IsValidElement(parts[ID(r)].tmp) && (sim->elements[parts[ID(r)].tmp].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY)))
+					else if ((parts[i].tmp&0xFF) == 0 && TYP(r)==PT_STOR && parts[ID(r)].tmp>0 && sim->IsValidElement(parts[ID(r)].tmp) && (sim->elements[parts[ID(r)].tmp].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY)))
 					{
 						// STOR stores properties in the same places as PIPE does
 						transfer_pipe_to_pipe(parts+(ID(r)), parts+i);
@@ -258,7 +258,7 @@ int Element_PIPE::update(UPDATE_FUNC_ARGS)
 					if (BOUNDS_CHECK && (rx || ry))
 					{
 						r = pmap[y+ry][x+rx];
-						if (((r&0xFF)==PT_PIPE || (r&0xFF) == PT_PPIP) && parts[i].ctype==1 && parts[i].life )
+						if ((TYP(r)==PT_PIPE || TYP(r) == PT_PPIP) && parts[i].ctype==1 && parts[i].life )
 							issingle = 0;
 					}
 			if (issingle)
@@ -415,7 +415,7 @@ void Element_PIPE::pushParticle(Simulation * sim, int i, int count, int original
 				r = sim->pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				else if (((r&0xFF)==PT_PIPE || (r&0xFF) == PT_PPIP) && sim->parts[ID(r)].ctype!=notctype && (sim->parts[ID(r)].tmp&0xFF)==0)
+				else if ((TYP(r)==PT_PIPE || TYP(r) == PT_PPIP) && sim->parts[ID(r)].ctype!=notctype && (sim->parts[ID(r)].tmp&0xFF)==0)
 				{
 					transfer_pipe_to_pipe(sim->parts+i, sim->parts+(ID(r)));
 					if (ID(r) > original)
@@ -423,7 +423,7 @@ void Element_PIPE::pushParticle(Simulation * sim, int i, int count, int original
 					count++;
 					pushParticle(sim, ID(r),count,original);
 				}
-				else if ((r&0xFF) == PT_PRTI) //Pass particles into PRTI for a pipe speed increase
+				else if (TYP(r) == PT_PRTI) //Pass particles into PRTI for a pipe speed increase
 				{
 					int portaltmp = sim->parts[ID(r)].tmp;
 					if (portaltmp >= CHANNELS)
@@ -445,7 +445,7 @@ void Element_PIPE::pushParticle(Simulation * sim, int i, int count, int original
 	{
 		int coords = 7 - ((sim->parts[i].tmp>>10)&7);
 		r = sim->pmap[y+ pos_1_ry[coords]][x+ pos_1_rx[coords]];
-		if (((r&0xFF)==PT_PIPE || (r&0xFF) == PT_PPIP) && sim->parts[ID(r)].ctype!=notctype && (sim->parts[ID(r)].tmp&0xFF)==0)
+		if ((TYP(r)==PT_PIPE || TYP(r) == PT_PPIP) && sim->parts[ID(r)].ctype!=notctype && (sim->parts[ID(r)].tmp&0xFF)==0)
 		{
 			transfer_pipe_to_pipe(sim->parts+i, sim->parts+(ID(r)));
 			if (ID(r) > original)
@@ -453,7 +453,7 @@ void Element_PIPE::pushParticle(Simulation * sim, int i, int count, int original
 			count++;
 			pushParticle(sim, ID(r),count,original);
 		}
-		else if ((r&0xFF) == PT_PRTI) //Pass particles into PRTI for a pipe speed increase
+		else if (TYP(r) == PT_PRTI) //Pass particles into PRTI for a pipe speed increase
 		{
 			int portaltmp = sim->parts[ID(r)].tmp;
 			if (portaltmp >= CHANNELS)
@@ -468,7 +468,7 @@ void Element_PIPE::pushParticle(Simulation * sim, int i, int count, int original
 					break;
 				}
 		}
-		else if ((r&0xFF) == PT_NONE) //Move particles out of pipe automatically, much faster at ends
+		else if (TYP(r) == PT_NONE) //Move particles out of pipe automatically, much faster at ends
 		{
 			rx = pos_1_rx[coords];
 			ry = pos_1_ry[coords];

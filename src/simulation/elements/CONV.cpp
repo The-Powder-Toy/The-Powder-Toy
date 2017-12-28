@@ -60,13 +60,14 @@ int Element_CONV::update(UPDATE_FUNC_ARGS)
 						r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if ((r&0xFF)!=PT_CLNE && (r&0xFF)!=PT_PCLN &&
-					    (r&0xFF)!=PT_BCLN && (r&0xFF)!=PT_STKM &&
-					    (r&0xFF)!=PT_PBCN && (r&0xFF)!=PT_STKM2 &&
-					    (r&0xFF)!=PT_CONV && (r&0xFF)<PT_NUM)
+					int rt = TYP(r);
+					if (rt != PT_CLNE && rt != PT_PCLN &&
+					    rt != PT_BCLN && rt != PT_STKM &&
+					    rt != PT_PBCN && rt != PT_STKM2 &&
+					    rt != PT_CONV && rt < PT_NUM)
 					{
-						parts[i].ctype = r&0xFF;
-						if ((r&0xFF)==PT_LIFE)
+						parts[i].ctype = rt;
+						if (rt == PT_LIFE)
 							parts[i].ctype |= PMAPID(parts[ID(r)].ctype);
 					}
 				}
@@ -79,11 +80,11 @@ int Element_CONV::update(UPDATE_FUNC_ARGS)
 				if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES)
 				{
 					r = sim->photons[y+ry][x+rx];
-					if (!r || (restrictElement && (r&0xFF)!=restrictElement))
+					if (!r || (restrictElement && TYP(r) != restrictElement))
 						r = pmap[y+ry][x+rx];
-					if (!r || (restrictElement && (r&0xFF)!=restrictElement))
+					if (!r || (restrictElement && TYP(r) != restrictElement))
 						continue;
-					if((r&0xFF)!=PT_CONV && (r&0xFF)!=PT_DMND && (r&0xFF)!=ctype)
+					if (TYP(r) != PT_CONV && TYP(r) != PT_DMND && TYP(r) != ctype)
 					{
 						sim->create_part(ID(r), x+rx, y+ry, parts[i].ctype&0xFF, ID(parts[i].ctype));
 					}

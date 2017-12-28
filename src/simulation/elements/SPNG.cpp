@@ -58,7 +58,7 @@ int Element_SPNG::update(UPDATE_FUNC_ARGS)
 				if (BOUNDS_CHECK && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
-					switch (r&0xFF)
+					switch TYP(r)
 					{
 					case PT_WATR:
 					case PT_DSTW:
@@ -119,7 +119,7 @@ int Element_SPNG::update(UPDATE_FUNC_ARGS)
 			r = pmap[y+ry][x+rx];
 			if (!r)
 				continue;
-			if ((r&0xFF)==PT_SPNG&&(parts[i].life>parts[ID(r)].life)&&parts[i].life>0)//diffusion
+			if (TYP(r)==PT_SPNG&&(parts[i].life>parts[ID(r)].life)&&parts[i].life>0)//diffusion
 			{
 				tmp = parts[i].life - parts[ID(r)].life;
 				if (tmp ==1)
@@ -147,7 +147,7 @@ int Element_SPNG::update(UPDATE_FUNC_ARGS)
 					r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if ((r&0xFF)==PT_FIRE)
+					if (TYP(r)==PT_FIRE)
 					{
 						tmp++;
 						if (parts[ID(r)].life>60)

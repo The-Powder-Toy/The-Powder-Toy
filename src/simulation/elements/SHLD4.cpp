@@ -65,12 +65,12 @@ int Element_SHLD4::update(UPDATE_FUNC_ARGS)
 					continue;
 
 				}
-				if ((r&0xFF)==PT_SHLD2 && parts[i].life>3)
+				if (TYP(r)==PT_SHLD2 && parts[i].life>3)
 				{
 					sim->part_change_type(ID(r),x+rx,y+ry,PT_SHLD3);
 					parts[ID(r)].life = 7;
 				}
-				else if ((r&0xFF)==PT_SPRK&&parts[i].life==0)
+				else if (TYP(r)==PT_SPRK&&parts[i].life==0)
 					for ( nnx=-1; nnx<2; nnx++)
 						for ( nny=-1; nny<2; nny++)
 						{

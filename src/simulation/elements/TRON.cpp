@@ -258,9 +258,9 @@ int Element_TRON::trymovetron(Simulation * sim, int x, int y, int dir, int i, in
 //#TPT-Directive ElementHeader Element_TRON static bool canmovetron(Simulation * sim, int r, int len)
 bool Element_TRON::canmovetron(Simulation * sim, int r, int len)
 {
-	if (!r || ((r&0xFF) == PT_SWCH && sim->parts[ID(r)].life >= 10) || ((r&0xFF) == PT_INVIS && sim->parts[ID(r)].tmp2 == 1))
+	if (!r || (TYP(r) == PT_SWCH && sim->parts[ID(r)].life >= 10) || (TYP(r) == PT_INVIS && sim->parts[ID(r)].tmp2 == 1))
 		return true;
-	if ((((sim->elements[r&0xFF].Properties & PROP_LIFE_KILL_DEC) && sim->parts[ID(r)].life > 0)|| ((sim->elements[r&0xFF].Properties & PROP_LIFE_KILL) && (sim->elements[r&0xFF].Properties & PROP_LIFE_DEC))) && sim->parts[ID(r)].life < len)
+	if ((((sim->elements[TYP(r)].Properties & PROP_LIFE_KILL_DEC) && sim->parts[ID(r)].life > 0)|| ((sim->elements[TYP(r)].Properties & PROP_LIFE_KILL) && (sim->elements[TYP(r)].Properties & PROP_LIFE_DEC))) && sim->parts[ID(r)].life < len)
 		return true;
 	return false;
 }

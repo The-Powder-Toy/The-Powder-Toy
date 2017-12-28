@@ -368,8 +368,8 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 				if (!r && !sim->bmap[(y+ry)/CELL][(x+rx)/CELL])
 					continue;
 				
-				STKM_set_element(sim, playerp, r&0xFF);
-				if ((r&0xFF) == PT_PLNT && parts[i].life<100) //Plant gives him 5 HP
+				STKM_set_element(sim, playerp, TYP(r));
+				if (TYP(r) == PT_PLNT && parts[i].life<100) //Plant gives him 5 HP
 				{
 					if (parts[i].life<=95)
 						parts[i].life += 5;
@@ -378,7 +378,7 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 					sim->kill_part(ID(r));
 				}
 
-				if ((r&0xFF) == PT_NEUT)
+				if (TYP(r) == PT_NEUT)
 				{
 					if (parts[i].life<=100) parts[i].life -= (102-parts[i].life)/2;
 					else parts[i].life *= 0.9f;
@@ -390,7 +390,7 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 					playerp->rocketBoots = false;
 				else if (sim->bmap[(ry+y)/CELL][(rx+x)/CELL]==WL_GRAV /* && parts[i].type!=PT_FIGH */)
 					playerp->rocketBoots = true;
-				if ((r&0xFF)==PT_PRTI)
+				if (TYP(r)==PT_PRTI)
 					Element_STKM::STKM_interact(sim, playerp, i, rx, ry);
 				if (!parts[i].type)//STKM_interact may kill STKM
 					return 1;
@@ -405,7 +405,7 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 	{
 		ry -= 2*(rand()%2)+1;
 		r = pmap[ry][rx];
-		if (sim->elements[r&0xFF].Properties&TYPE_SOLID)
+		if (sim->elements[TYP(r)].Properties&TYPE_SOLID)
 		{
 			sim->create_part(-1, rx, ry, PT_SPRK);
 			playerp->frames = 0;
@@ -578,18 +578,18 @@ void Element_STKM::STKM_interact(Simulation *sim, playerst *playerp, int i, int 
 	r = sim->pmap[y][x];
 	if (r)
 	{
-		if ((r&0xFF)==PT_SPRK && playerp->elem!=PT_LIGH) //If on charge
+		if (TYP(r)==PT_SPRK && playerp->elem!=PT_LIGH) //If on charge
 		{
 			sim->parts[i].life -= (int)(rand()*20/RAND_MAX)+32;
 		}
 
-		if (sim->elements[r&0xFF].HeatConduct && ((r&0xFF)!=PT_HSWC||sim->parts[ID(r)].life==10) && ((playerp->elem!=PT_LIGH && sim->parts[ID(r)].temp>=323) || sim->parts[ID(r)].temp<=243) && (!playerp->rocketBoots || (r&0xFF)!=PT_PLSM))
+		if (sim->elements[TYP(r)].HeatConduct && (TYP(r)!=PT_HSWC||sim->parts[ID(r)].life==10) && ((playerp->elem!=PT_LIGH && sim->parts[ID(r)].temp>=323) || sim->parts[ID(r)].temp<=243) && (!playerp->rocketBoots || TYP(r)!=PT_PLSM))
 		{
 			sim->parts[i].life -= 2;
 			playerp->accs[3] -= 1;
 		}
 			
-		if (sim->elements[r&0xFF].Properties&PROP_DEADLY)
+		if (sim->elements[TYP(r)].Properties&PROP_DEADLY)
 			switch (r&0xFF)
 			{
 				case PT_ACID:
@@ -600,10 +600,10 @@ void Element_STKM::STKM_interact(Simulation *sim, playerst *playerp, int i, int 
 					break;
 			}
 
-		if (sim->elements[r&0xFF].Properties&PROP_RADIOACTIVE)
+		if (sim->elements[TYP(r)].Properties&PROP_RADIOACTIVE)
 			sim->parts[i].life -= 1;
 
-		if ((r&0xFF)==PT_PRTI && sim->parts[i].type)
+		if (TYP(r)==PT_PRTI && sim->parts[i].type)
 		{
 			int nnx, count=1;//gives rx=0, ry=1 in update_PRTO
 			sim->parts[ID(r)].tmp = (int)((sim->parts[ID(r)].temp-73.15f)/100+1);
@@ -621,7 +621,7 @@ void Element_STKM::STKM_interact(Simulation *sim, playerst *playerp, int i, int 
 					break;
 				}
 		}
-		if (((r&0xFF)==PT_BHOL || (r&0xFF)==PT_NBHL) && sim->parts[i].type)
+		if ((TYP(r)==PT_BHOL || TYP(r)==PT_NBHL) && sim->parts[i].type)
 		{
 			if (!sim->legacy_enable)
 			{
@@ -629,7 +629,7 @@ void Element_STKM::STKM_interact(Simulation *sim, playerst *playerp, int i, int 
 			}
 			sim->kill_part(i);
 		}
-		if (((r&0xFF)==PT_VOID || ((r&0xFF)==PT_PVOD && sim->parts[ID(r)].life==10)) && (!sim->parts[ID(r)].ctype || (sim->parts[ID(r)].ctype==sim->parts[i].type)!=(sim->parts[ID(r)].tmp&1)) && sim->parts[i].type)
+		if ((TYP(r)==PT_VOID || (TYP(r)==PT_PVOD && sim->parts[ID(r)].life==10)) && (!sim->parts[ID(r)].ctype || (sim->parts[ID(r)].ctype==sim->parts[i].type)!=(sim->parts[ID(r)].tmp&1)) && sim->parts[i].type)
 		{
 			sim->kill_part(i);
 		}

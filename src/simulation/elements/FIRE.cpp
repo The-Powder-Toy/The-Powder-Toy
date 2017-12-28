@@ -93,7 +93,7 @@ int Element_FIRE::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				rt = r&0xFF;
+				rt = TYP(r);
 				
 				//THRM burning
 				if (rt==PT_THRM && (t==PT_FIRE || t==PT_PLSM || t==PT_LAVA))
@@ -184,7 +184,7 @@ int Element_FIRE::updateLegacy(UPDATE_FUNC_ARGS) {
 					continue;
 				if (sim->bmap[(y+ry)/CELL][(x+rx)/CELL] && sim->bmap[(y+ry)/CELL][(x+rx)/CELL]!=WL_STREAM)
 					continue;
-				rt = r&0xFF;
+				rt = TYP(r);
 
 				lpv = (int)sim->pv[(y+ry)/CELL][(x+rx)/CELL];
 				if (lpv < 1) lpv = 1;

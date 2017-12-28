@@ -70,7 +70,7 @@ int Element_QRTZ::update(UPDATE_FUNC_ARGS)
 					r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					else if ((r&0xFF)==PT_SLTW && !(rand()%500))
+					else if (TYP(r)==PT_SLTW && !(rand()%500))
 					{
 						sim->kill_part(ID(r));
 						parts[i].tmp++;
@@ -122,7 +122,7 @@ int Element_QRTZ::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				else if ((r&0xFF)==PT_QRTZ && (parts[i].tmp>parts[ID(r)].tmp) && parts[ID(r)].tmp>=0)
+				else if (TYP(r)==PT_QRTZ && (parts[i].tmp>parts[ID(r)].tmp) && parts[ID(r)].tmp>=0)
 				{
 					tmp = parts[i].tmp - parts[ID(r)].tmp;
 					if (tmp ==1)
