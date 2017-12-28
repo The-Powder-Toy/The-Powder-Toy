@@ -67,14 +67,14 @@ int Element_HSWC::update(UPDATE_FUNC_ARGS)
 						continue;
 					if ((r&0xFF)==PT_HSWC)
 					{
-						if (parts[r>>8].life<10&&parts[r>>8].life>0)
+						if (parts[ID(r)].life<10&&parts[ID(r)].life>0)
 							parts[i].life = 9;
-						else if (parts[r>>8].life==0)
-							parts[r>>8].life = 10;
+						else if (parts[ID(r)].life==0)
+							parts[ID(r)].life = 10;
 					}
 					if (parts[i].tmp == 1 && ((r&0xFF) == PT_FILT || (r&0xFF) == PT_PHOT || (r&0xFF) == PT_BRAY))
 					{
-						parts[i].temp = parts[r>>8].ctype - 0x10000000;
+						parts[i].temp = parts[ID(r)].ctype - 0x10000000;
 					}
 				}
 	}

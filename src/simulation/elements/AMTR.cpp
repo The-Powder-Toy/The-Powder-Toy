@@ -66,9 +66,9 @@ int Element_AMTR::update(UPDATE_FUNC_ARGS)
 						return 1;
 					}
 					if (!(rand()%10))
-						sim->create_part(r>>8, x+rx, y+ry, PT_PHOT);
+						sim->create_part(ID(r), x+rx, y+ry, PT_PHOT);
 					else
-						sim->kill_part(r>>8);
+						sim->kill_part(ID(r));
 					sim->pv[y/CELL][x/CELL] -= 2.0f;
 				}
 			}

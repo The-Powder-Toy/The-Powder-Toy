@@ -146,8 +146,8 @@ int Element_SOAP::update(UPDATE_FUNC_ARGS)
 						r = pmap[y+ry][x+rx];
 						if (!r)
 							continue;
-						if ((parts[r>>8].type == PT_SOAP) && (parts[r>>8].ctype&1) && !(parts[r>>8].ctype&4))
-							Element_SOAP::attach(parts, i, r>>8);
+						if ((parts[ID(r)].type == PT_SOAP) && (parts[ID(r)].ctype&1) && !(parts[ID(r)].ctype&4))
+							Element_SOAP::attach(parts, i, ID(r));
 					}
 		}
 		else
@@ -172,25 +172,25 @@ int Element_SOAP::update(UPDATE_FUNC_ARGS)
 							}
 							if ((r&0xFF) == PT_SOAP)
 							{
-								if (parts[r>>8].ctype == 1)
+								if (parts[ID(r)].ctype == 1)
 								{
 									int buf = parts[i].tmp;
 
-									parts[i].tmp = r>>8;
+									parts[i].tmp = ID(r);
 									if (parts[buf].type == PT_SOAP)
-										parts[buf].tmp2 = r>>8;
-									parts[r>>8].tmp2 = i;
-									parts[r>>8].tmp = buf;
-									parts[r>>8].ctype = 7;
+										parts[buf].tmp2 = ID(r);
+									parts[ID(r)].tmp2 = i;
+									parts[ID(r)].tmp = buf;
+									parts[ID(r)].ctype = 7;
 								}
-								else if (parts[r>>8].ctype == 7 && parts[i].tmp != r>>8 && parts[i].tmp2 != r>>8)
+								else if (parts[ID(r)].ctype == 7 && parts[i].tmp != ID(r) && parts[i].tmp2 != ID(r))
 								{
 									if (parts[parts[i].tmp].type == PT_SOAP)
-										parts[parts[i].tmp].tmp2 = parts[r>>8].tmp2;
-									if (parts[parts[r>>8].tmp2].type == PT_SOAP)
-										parts[parts[r>>8].tmp2].tmp = parts[i].tmp;
-									parts[r>>8].tmp2 = i;
-									parts[i].tmp = r>>8;
+										parts[parts[i].tmp].tmp2 = parts[ID(r)].tmp2;
+									if (parts[parts[ID(r)].tmp2].type == PT_SOAP)
+										parts[parts[ID(r)].tmp2].tmp = parts[i].tmp;
+									parts[ID(r)].tmp2 = i;
+									parts[i].tmp = ID(r);
 								}
 							}
 						}
@@ -240,10 +240,10 @@ int Element_SOAP::update(UPDATE_FUNC_ARGS)
 					if ((r&0xFF) == PT_OIL)
 					{
 						float ax, ay;
-						ax = (parts[i].vx*0.5f + parts[r>>8].vx)/2;
-						ay = ((parts[i].vy-0.1f)*0.5f + parts[r>>8].vy)/2;
-						parts[i].vx = parts[r>>8].vx = ax;
-						parts[i].vy = parts[r>>8].vy = ay;
+						ax = (parts[i].vx*0.5f + parts[ID(r)].vx)/2;
+						ay = ((parts[i].vy-0.1f)*0.5f + parts[ID(r)].vy)/2;
+						parts[i].vx = parts[ID(r)].vx = ax;
+						parts[i].vy = parts[ID(r)].vy = ay;
 					}
 				}
 	}
@@ -256,15 +256,15 @@ int Element_SOAP::update(UPDATE_FUNC_ARGS)
 					continue;
 				if ((r&0xFF)!=PT_SOAP)
 				{
-					tr = (parts[r>>8].dcolour>>16)&0xFF;
-					tg = (parts[r>>8].dcolour>>8)&0xFF;
-					tb = (parts[r>>8].dcolour)&0xFF;
-					ta = (parts[r>>8].dcolour>>24)&0xFF;
+					tr = (parts[ID(r)].dcolour>>16)&0xFF;
+					tg = (parts[ID(r)].dcolour>>8)&0xFF;
+					tb = (parts[ID(r)].dcolour)&0xFF;
+					ta = (parts[ID(r)].dcolour>>24)&0xFF;
 					nr = (tr*BLEND);
 					ng = (tg*BLEND);
 					nb = (tb*BLEND);
 					na = (ta*BLEND);
-					parts[r>>8].dcolour = nr<<16 | ng<<8 | nb | na<<24;
+					parts[ID(r)].dcolour = nr<<16 | ng<<8 | nb | na<<24;
 				}
 			}
 

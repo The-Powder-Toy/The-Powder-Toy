@@ -62,7 +62,7 @@ int Element_PLNT::update(UPDATE_FUNC_ARGS)
 				case PT_WATR:
 					if (!(rand()%50))
 					{
-						np = sim->create_part(r>>8,x+rx,y+ry,PT_PLNT);
+						np = sim->create_part(ID(r),x+rx,y+ry,PT_PLNT);
 						if (np<0) continue;
 						parts[np].life = 0;
 					}
@@ -78,7 +78,7 @@ int Element_PLNT::update(UPDATE_FUNC_ARGS)
 				case PT_CO2:
 					if (!(rand()%50))
 					{
-						sim->kill_part(r>>8);
+						sim->kill_part(ID(r));
 						parts[i].life = rand()%60 + 60;
 					}
 					break;

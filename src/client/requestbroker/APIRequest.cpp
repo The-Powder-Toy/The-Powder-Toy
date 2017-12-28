@@ -98,12 +98,12 @@ RequestBroker::ProcessResponse APIRequest::Process(RequestBroker & rb)
 			}
 			postNames[i] = NULL;
 
-			if(Client::Ref().GetAuthUser().ID)
+			if(Client::Ref().GetAuthUser().UserID)
 			{
 				User user = Client::Ref().GetAuthUser();
 				char userName[12];
 				char *userSession = new char[user.SessionID.length() + 1];
-				std::strcpy(userName, format::NumberToString<int>(user.ID).c_str());
+				std::strcpy(userName, format::NumberToString<int>(user.UserID).c_str());
 				std::strcpy(userSession, user.SessionID.c_str());
 				HTTPContext = http_multipart_post_async((char*)URL.c_str(), postNames, postData, postLength, userName, NULL, userSession);
 				delete[] userSession;
@@ -117,12 +117,12 @@ RequestBroker::ProcessResponse APIRequest::Process(RequestBroker & rb)
 		else
 		{
 			HTTPContext = http_async_req_start(NULL, (char *)URL.c_str(), NULL, 0, 0);
-			if(Client::Ref().GetAuthUser().ID)
+			if(Client::Ref().GetAuthUser().UserID)
 			{
 				User user = Client::Ref().GetAuthUser();
 				char userName[12];
 				char *userSession = new char[user.SessionID.length() + 1];
-				std::strcpy(userName, format::NumberToString<int>(user.ID).c_str());
+				std::strcpy(userName, format::NumberToString<int>(user.UserID).c_str());
 				std::strcpy(userSession, user.SessionID.c_str());
 				http_auth_headers(HTTPContext, userName, NULL, userSession);
 				delete[] userSession;

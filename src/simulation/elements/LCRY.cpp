@@ -92,9 +92,9 @@ int Element_LCRY::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if ((r&0xFF)==PT_LCRY && parts[r>>8].tmp == check)
+				if ((r&0xFF)==PT_LCRY && parts[ID(r)].tmp == check)
 				{
-					parts[r>>8].tmp = setto;
+					parts[ID(r)].tmp = setto;
 				}
 			}
 	return 0;

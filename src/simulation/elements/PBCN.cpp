@@ -82,7 +82,7 @@ int Element_PBCN::update(UPDATE_FUNC_ARGS)
 					{
 						parts[i].ctype = rt;
 						if (rt==PT_LIFE || rt==PT_LAVA)
-							parts[i].tmp = parts[r>>8].ctype;
+							parts[i].tmp = parts[ID(r)].ctype;
 					}
 				}
 	if (parts[i].life!=10)
@@ -101,10 +101,10 @@ int Element_PBCN::update(UPDATE_FUNC_ARGS)
 						continue;
 					if ((r&0xFF)==PT_PBCN)
 					{
-						if (parts[r>>8].life<10&&parts[r>>8].life>0)
+						if (parts[ID(r)].life<10&&parts[ID(r)].life>0)
 							parts[i].life = 9;
-						else if (parts[r>>8].life==0)
-							parts[r>>8].life = 10;
+						else if (parts[ID(r)].life==0)
+							parts[ID(r)].life = 10;
 					}
 				}
 		if (parts[i].ctype>0 && parts[i].ctype<PT_NUM && sim->elements[parts[i].ctype].Enabled)

@@ -84,27 +84,27 @@ int Element_PRTI::update(UPDATE_FUNC_ARGS)
 				continue;// Handling these is a bit more complicated, and is done in STKM_interact()
 
 			if ((r&0xFF) == PT_SOAP)
-				Element_SOAP::detach(sim, r>>8);
+				Element_SOAP::detach(sim, ID(r));
 
 			for (int nnx=0; nnx<80; nnx++)
 				if (!sim->portalp[parts[i].tmp][count][nnx].type)
 				{
 					if ((r&0xFF) == PT_STOR)
 					{
-						if (sim->IsValidElement(parts[r>>8].tmp) && (sim->elements[parts[r>>8].tmp].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY)))
+						if (sim->IsValidElement(parts[ID(r)].tmp) && (sim->elements[parts[ID(r)].tmp].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY)))
 						{
 							// STOR uses same format as PIPE, so we can use this function to do the transfer
-							Element_PIPE::transfer_pipe_to_part(sim, parts+(r>>8), &sim->portalp[parts[i].tmp][count][nnx]);
+							Element_PIPE::transfer_pipe_to_part(sim, parts+(ID(r)), &sim->portalp[parts[i].tmp][count][nnx]);
 							break;
 						}
 					}
 					else
 					{
-						sim->portalp[parts[i].tmp][count][nnx] = parts[r>>8];
+						sim->portalp[parts[i].tmp][count][nnx] = parts[ID(r)];
 						if ((r&0xFF) == PT_SPRK)
-							sim->part_change_type(r>>8,x+rx,y+ry,parts[r>>8].ctype);
+							sim->part_change_type(ID(r),x+rx,y+ry,parts[ID(r)].ctype);
 						else
-							sim->kill_part(r>>8);
+							sim->kill_part(ID(r));
 						fe = 1;
 						break;
 					}

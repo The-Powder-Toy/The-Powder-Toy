@@ -62,7 +62,7 @@ int Element_ANAR::update(UPDATE_FUNC_ARGS)
 				{
 					sim->part_change_type(i,x,y,PT_CFLM);
 					parts[i].life = rand()%150+50;
-					parts[r>>8].temp = parts[i].temp = 0;
+					parts[ID(r)].temp = parts[i].temp = 0;
 					sim->pv[y/CELL][x/CELL] -= 0.5;
 				}
 			}

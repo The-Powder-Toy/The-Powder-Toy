@@ -71,13 +71,13 @@ int Element_BOYL::update(UPDATE_FUNC_ARGS)
 				if ((r&0xFF)==PT_WATR)
 				{
 					if (!(rand()%30))
-						sim->part_change_type(r>>8,x+rx,y+ry,PT_FOG);
+						sim->part_change_type(ID(r),x+rx,y+ry,PT_FOG);
 				}
 				else if ((r&0xFF)==PT_O2)
 				{
 					if (!(rand()%9))
 					{
-						sim->kill_part(r>>8);
+						sim->kill_part(ID(r));
 						sim->part_change_type(i,x,y,PT_WATR);
 						sim->pv[y/CELL][x/CELL] += 4.0;
 					}

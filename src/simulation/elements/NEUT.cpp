@@ -59,7 +59,7 @@ int Element_NEUT::update(UPDATE_FUNC_ARGS)
 				{
 				case PT_WATR:
 					if (3>(rand()%20))
-						sim->part_change_type(r>>8,x+rx,y+ry,PT_DSTW);
+						sim->part_change_type(ID(r),x+rx,y+ry,PT_DSTW);
 				case PT_ICEI:
 				case PT_SNOW:
 					parts[i].vx *= 0.995;
@@ -70,18 +70,18 @@ int Element_NEUT::update(UPDATE_FUNC_ARGS)
 					{
 						if (!(rand()%3))
 						{
-							sim->create_part(r>>8, x+rx, y+ry, rand()%3 ? PT_LAVA : PT_URAN);
-							parts[r>>8].temp = MAX_TEMP;
-							if (parts[r>>8].type==PT_LAVA) {
-								parts[r>>8].tmp = 100;
-								parts[r>>8].ctype = PT_PLUT;
+							sim->create_part(ID(r), x+rx, y+ry, rand()%3 ? PT_LAVA : PT_URAN);
+							parts[ID(r)].temp = MAX_TEMP;
+							if (parts[ID(r)].type==PT_LAVA) {
+								parts[ID(r)].tmp = 100;
+								parts[ID(r)].ctype = PT_PLUT;
 							}
 						}
 						else
 						{
-							sim->create_part(r>>8, x+rx, y+ry, PT_NEUT);
-							parts[r>>8].vx = 0.25f*parts[r>>8].vx + parts[i].vx;
-							parts[r>>8].vy = 0.25f*parts[r>>8].vy + parts[i].vy;
+							sim->create_part(ID(r), x+rx, y+ry, PT_NEUT);
+							parts[ID(r)].vx = 0.25f*parts[ID(r)].vx + parts[i].vx;
+							parts[ID(r)].vy = 0.25f*parts[ID(r)].vy + parts[i].vy;
 						}
 						sim->pv[y/CELL][x/CELL] += 10.0f * CFDS; //Used to be 2, some people said nukes weren't powerful enough
 						Element_FIRE::update(UPDATE_FUNC_SUBCALL_ARGS);
@@ -89,21 +89,21 @@ int Element_NEUT::update(UPDATE_FUNC_ARGS)
 					break;
 #ifdef SDEUT
 				case PT_DEUT:
-					if ((pressureFactor+1+(parts[r>>8].life/100))>(rand()%1000))
+					if ((pressureFactor+1+(parts[ID(r)].life/100))>(rand()%1000))
 					{
-						DeutExplosion(sim, parts[r>>8].life, x+rx, y+ry, restrict_flt(parts[r>>8].temp + parts[r>>8].life*500.0f, MIN_TEMP, MAX_TEMP), PT_NEUT);
-						sim->kill_part(r>>8);
+						DeutExplosion(sim, parts[ID(r)].life, x+rx, y+ry, restrict_flt(parts[ID(r)].temp + parts[ID(r)].life*500.0f, MIN_TEMP, MAX_TEMP), PT_NEUT);
+						sim->kill_part(ID(r));
 					}
 					break;
 #else
 				case PT_DEUT:
 					if ((pressureFactor+1)>(rand()%1000))
 					{
-						create_part(r>>8, x+rx, y+ry, PT_NEUT);
-						parts[r>>8].vx = 0.25f*parts[r>>8].vx + parts[i].vx;
-						parts[r>>8].vy = 0.25f*parts[r>>8].vy + parts[i].vy;
-						parts[r>>8].life --;
-						parts[r>>8].temp = restrict_flt(parts[r>>8].temp + parts[r>>8].life*17.0f, MIN_TEMP, MAX_TEMP);
+						create_part(ID(r), x+rx, y+ry, PT_NEUT);
+						parts[ID(r)].vx = 0.25f*parts[ID(r)].vx + parts[i].vx;
+						parts[ID(r)].vy = 0.25f*parts[ID(r)].vy + parts[i].vy;
+						parts[ID(r)].life --;
+						parts[ID(r)].temp = restrict_flt(parts[ID(r)].temp + parts[ID(r)].life*17.0f, MIN_TEMP, MAX_TEMP);
 						pv[y/CELL][x/CELL] += 6.0f * CFDS;
 
 					}
@@ -111,51 +111,51 @@ int Element_NEUT::update(UPDATE_FUNC_ARGS)
 #endif
 				case PT_GUNP:
 					if (3>(rand()%200))
-						sim->part_change_type(r>>8,x+rx,y+ry,PT_DUST);
+						sim->part_change_type(ID(r),x+rx,y+ry,PT_DUST);
 					break;
 				case PT_DYST:
 					if (3>(rand()%200))
-						sim->part_change_type(r>>8,x+rx,y+ry,PT_YEST);
+						sim->part_change_type(ID(r),x+rx,y+ry,PT_YEST);
 					break;
 				case PT_YEST:
-					sim->part_change_type(r>>8,x+rx,y+ry,PT_DYST);
+					sim->part_change_type(ID(r),x+rx,y+ry,PT_DYST);
 					break;
 				case PT_PLEX:
 					if (3>(rand()%200))
-						sim->part_change_type(r>>8,x+rx,y+ry,PT_GOO);
+						sim->part_change_type(ID(r),x+rx,y+ry,PT_GOO);
 					break;
 				case PT_NITR:
 					if (3>(rand()%200))
-						sim->part_change_type(r>>8,x+rx,y+ry,PT_DESL);
+						sim->part_change_type(ID(r),x+rx,y+ry,PT_DESL);
 					break;
 				case PT_PLNT:
 					if (!(rand()%20))
-						sim->create_part(r>>8, x+rx, y+ry, PT_WOOD);
+						sim->create_part(ID(r), x+rx, y+ry, PT_WOOD);
 					break;
 				case PT_DESL:
 				case PT_OIL:
 					if (3>(rand()%200))
-						sim->part_change_type(r>>8,x+rx,y+ry,PT_GAS);
+						sim->part_change_type(ID(r),x+rx,y+ry,PT_GAS);
 					break;
 				case PT_COAL:
 					if (!(rand()%20))
-						sim->create_part(r>>8, x+rx, y+ry, PT_WOOD);
+						sim->create_part(ID(r), x+rx, y+ry, PT_WOOD);
 					break;
 				case PT_BCOL:
 					if (!(rand()%20))
-						sim->create_part(r>>8, x+rx, y+ry, PT_SAWD);
+						sim->create_part(ID(r), x+rx, y+ry, PT_SAWD);
 					break;
 				case PT_DUST:
 					if (!(rand()%20))
-						sim->part_change_type(r>>8, x+rx, y+ry, PT_FWRK);
+						sim->part_change_type(ID(r), x+rx, y+ry, PT_FWRK);
 					break;
 				case PT_FWRK:
 					if (!(rand()%20))
-						parts[r>>8].ctype = PT_DUST;
+						parts[ID(r)].ctype = PT_DUST;
 					break;
 				case PT_ACID:
 					if (!(rand()%20))
-						sim->create_part(r>>8, x+rx, y+ry, PT_ISOZ);
+						sim->create_part(ID(r), x+rx, y+ry, PT_ISOZ);
 					break;
 				case PT_TTAN:
 					if (!(rand()%20))
@@ -166,13 +166,13 @@ int Element_NEUT::update(UPDATE_FUNC_ARGS)
 					break;
 				case PT_EXOT:
 					if (!(rand()%20))
-						parts[r>>8].life = 1500;
+						parts[ID(r)].life = 1500;
 					break;
 				case PT_RFRG:
 					if (rand()%2)
-						sim->create_part(r>>8, x+rx, y+ry, PT_GAS);
+						sim->create_part(ID(r), x+rx, y+ry, PT_GAS);
 					else
-						sim->create_part(r>>8, x+rx, y+ry, PT_CAUS);
+						sim->create_part(ID(r), x+rx, y+ry, PT_CAUS);
 					break;
 				default:
 					break;

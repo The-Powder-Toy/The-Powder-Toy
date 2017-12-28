@@ -1463,7 +1463,7 @@ int luatpt_textwidth(lua_State* l)
 
 int luatpt_get_name(lua_State* l)
 {
-	if (luacon_model->GetUser().ID)
+	if (luacon_model->GetUser().UserID)
 	{
 		lua_pushstring(l, luacon_model->GetUser().Username.c_str());
 		return 1;

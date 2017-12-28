@@ -375,14 +375,14 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 						parts[i].life += 5;
 					else
 						parts[i].life = 100;
-					sim->kill_part(r>>8);
+					sim->kill_part(ID(r));
 				}
 
 				if ((r&0xFF) == PT_NEUT)
 				{
 					if (parts[i].life<=100) parts[i].life -= (102-parts[i].life)/2;
 					else parts[i].life *= 0.9f;
-					sim->kill_part(r>>8);
+					sim->kill_part(ID(r));
 				}
 				if (sim->bmap[(ry+y)/CELL][(rx+x)/CELL]==WL_FAN)
 					playerp->elem = SPC_AIR;
@@ -583,7 +583,7 @@ void Element_STKM::STKM_interact(Simulation *sim, playerst *playerp, int i, int 
 			sim->parts[i].life -= (int)(rand()*20/RAND_MAX)+32;
 		}
 
-		if (sim->elements[r&0xFF].HeatConduct && ((r&0xFF)!=PT_HSWC||sim->parts[r>>8].life==10) && ((playerp->elem!=PT_LIGH && sim->parts[r>>8].temp>=323) || sim->parts[r>>8].temp<=243) && (!playerp->rocketBoots || (r&0xFF)!=PT_PLSM))
+		if (sim->elements[r&0xFF].HeatConduct && ((r&0xFF)!=PT_HSWC||sim->parts[ID(r)].life==10) && ((playerp->elem!=PT_LIGH && sim->parts[ID(r)].temp>=323) || sim->parts[ID(r)].temp<=243) && (!playerp->rocketBoots || (r&0xFF)!=PT_PLSM))
 		{
 			sim->parts[i].life -= 2;
 			playerp->accs[3] -= 1;
@@ -606,17 +606,17 @@ void Element_STKM::STKM_interact(Simulation *sim, playerst *playerp, int i, int 
 		if ((r&0xFF)==PT_PRTI && sim->parts[i].type)
 		{
 			int nnx, count=1;//gives rx=0, ry=1 in update_PRTO
-			sim->parts[r>>8].tmp = (int)((sim->parts[r>>8].temp-73.15f)/100+1);
-			if (sim->parts[r>>8].tmp>=CHANNELS) sim->parts[r>>8].tmp = CHANNELS-1;
-			else if (sim->parts[r>>8].tmp<0) sim->parts[r>>8].tmp = 0;
+			sim->parts[ID(r)].tmp = (int)((sim->parts[ID(r)].temp-73.15f)/100+1);
+			if (sim->parts[ID(r)].tmp>=CHANNELS) sim->parts[ID(r)].tmp = CHANNELS-1;
+			else if (sim->parts[ID(r)].tmp<0) sim->parts[ID(r)].tmp = 0;
 			for (nnx=0; nnx<80; nnx++)
-				if (!sim->portalp[sim->parts[r>>8].tmp][count][nnx].type)
+				if (!sim->portalp[sim->parts[ID(r)].tmp][count][nnx].type)
 				{
-					sim->portalp[sim->parts[r>>8].tmp][count][nnx] = sim->parts[i];
+					sim->portalp[sim->parts[ID(r)].tmp][count][nnx] = sim->parts[i];
 					sim->kill_part(i);
 					//stop new STKM/fighters being created to replace the ones in the portal:
 					playerp->spwn = 1;
-					if (sim->portalp[sim->parts[r>>8].tmp][count][nnx].type==PT_FIGH)
+					if (sim->portalp[sim->parts[ID(r)].tmp][count][nnx].type==PT_FIGH)
 						sim->fighcount++;
 					break;
 				}
@@ -625,11 +625,11 @@ void Element_STKM::STKM_interact(Simulation *sim, playerst *playerp, int i, int 
 		{
 			if (!sim->legacy_enable)
 			{
-				sim->parts[r>>8].temp = restrict_flt(sim->parts[r>>8].temp+sim->parts[i].temp/2, MIN_TEMP, MAX_TEMP);
+				sim->parts[ID(r)].temp = restrict_flt(sim->parts[ID(r)].temp+sim->parts[i].temp/2, MIN_TEMP, MAX_TEMP);
 			}
 			sim->kill_part(i);
 		}
-		if (((r&0xFF)==PT_VOID || ((r&0xFF)==PT_PVOD && sim->parts[r>>8].life==10)) && (!sim->parts[r>>8].ctype || (sim->parts[r>>8].ctype==sim->parts[i].type)!=(sim->parts[r>>8].tmp&1)) && sim->parts[i].type)
+		if (((r&0xFF)==PT_VOID || ((r&0xFF)==PT_PVOD && sim->parts[ID(r)].life==10)) && (!sim->parts[ID(r)].ctype || (sim->parts[ID(r)].ctype==sim->parts[i].type)!=(sim->parts[ID(r)].tmp&1)) && sim->parts[i].type)
 		{
 			sim->kill_part(i);
 		}

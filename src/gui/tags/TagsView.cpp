@@ -57,7 +57,7 @@ TagsView::TagsView():
 	addButton->SetActionCallback(new AddTagAction(this));
 	AddComponent(addButton);
 
-	if (!Client::Ref().GetAuthUser().ID)
+	if (!Client::Ref().GetAuthUser().UserID)
 		addButton->Enabled = false;
 
 	title = new ui::Label(ui::Point(5, 5), ui::Point(185, 28), "Manage tags:    \bgTags are only to \nbe used to improve search results");

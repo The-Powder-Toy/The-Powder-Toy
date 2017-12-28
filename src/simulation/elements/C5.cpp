@@ -56,12 +56,12 @@ int Element_C5::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if (((r&0xFF)!=PT_C5 && parts[r>>8].temp<100 && sim->elements[r&0xFF].HeatConduct && ((r&0xFF)!=PT_HSWC||parts[r>>8].life==10)) || (r&0xFF)==PT_CFLM)
+				if (((r&0xFF)!=PT_C5 && parts[ID(r)].temp<100 && sim->elements[r&0xFF].HeatConduct && ((r&0xFF)!=PT_HSWC||parts[ID(r)].life==10)) || (r&0xFF)==PT_CFLM)
 				{
 					if (!(rand()%6))
 					{
 						sim->part_change_type(i,x,y,PT_CFLM);
-						parts[r>>8].temp = parts[i].temp = 0;
+						parts[ID(r)].temp = parts[i].temp = 0;
 						parts[i].life = rand()%150+50;
 						sim->pv[y/CELL][x/CELL] += 1.5;
 					}

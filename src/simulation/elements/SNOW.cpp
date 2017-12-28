@@ -63,7 +63,7 @@ int Element_SNOW::update(UPDATE_FUNC_ARGS)
 				if (((r&0xFF)==PT_SALT || (r&0xFF)==PT_SLTW) && !(rand()%333))
 				{
 					sim->part_change_type(i,x,y,PT_SLTW);
-					sim->part_change_type(r>>8,x+rx,y+ry,PT_SLTW);
+					sim->part_change_type(ID(r),x+rx,y+ry,PT_SLTW);
 				}
 			}
 	return 0;

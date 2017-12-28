@@ -69,10 +69,10 @@ int Element_DEUT::update(UPDATE_FUNC_ARGS)
 					{
 						// If neighbour life+1 fits in the free capacity for this particle, absorb neighbour
 						// Condition is written in this way so that large neighbour life values don't cause integer overflow
-						if (parts[r>>8].life <= maxlife - parts[i].life - 1)
+						if (parts[ID(r)].life <= maxlife - parts[i].life - 1)
 						{
-							parts[i].life += parts[r>>8].life + 1;
-							sim->kill_part(r>>8);
+							parts[i].life += parts[ID(r)].life + 1;
+							sim->kill_part(ID(r));
 						}
 					}
 				}
@@ -105,17 +105,17 @@ trade:
 			r = pmap[y+ry][x+rx];
 			if (!r)
 				continue;
-			if ((r&0xFF)==PT_DEUT&&(parts[i].life>parts[r>>8].life)&&parts[i].life>0)//diffusion
+			if ((r&0xFF)==PT_DEUT&&(parts[i].life>parts[ID(r)].life)&&parts[i].life>0)//diffusion
 			{
-				int temp = parts[i].life - parts[r>>8].life;
+				int temp = parts[i].life - parts[ID(r)].life;
 				if (temp ==1)
 				{
-					parts[r>>8].life ++;
+					parts[ID(r)].life ++;
 					parts[i].life --;
 				}
 				else if (temp>0)
 				{
-					parts[r>>8].life += temp/2;
+					parts[ID(r)].life += temp/2;
 					parts[i].life -= temp/2;
 				}
 			}

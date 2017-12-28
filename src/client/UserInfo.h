@@ -6,7 +6,7 @@
 class UserInfo
 {
 public:
-	int ID;
+	int UserID;
 	int age;
 	std::string username;
 	std::string biography;
@@ -22,7 +22,7 @@ public:
 	int reputation;
 
 	UserInfo(int id, int age, std::string username, std::string biography, std::string location, std::string website, int saveCount, float averageScore, int highestScore, int topicCount, int topicReplies, int reputation):
-		ID(id),
+		UserID(id),
 		age(age),
 		username(username),
 		biography(biography),

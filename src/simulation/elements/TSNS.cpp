@@ -61,13 +61,13 @@ int Element_TSNS::update(UPDATE_FUNC_ARGS)
 					if (!r)
 						continue;
 					int rt = r&0xFF;
-					if (sim->parts_avg(i, r>>8, PT_INSL) != PT_INSL)
+					if (sim->parts_avg(i, ID(r), PT_INSL) != PT_INSL)
 					{
-						if ((sim->elements[rt].Properties&PROP_CONDUCTS) && !(rt == PT_WATR || rt == PT_SLTW || rt == PT_NTCT || rt == PT_PTCT || rt == PT_INWR) && parts[r>>8].life == 0)
+						if ((sim->elements[rt].Properties&PROP_CONDUCTS) && !(rt == PT_WATR || rt == PT_SLTW || rt == PT_NTCT || rt == PT_PTCT || rt == PT_INWR) && parts[ID(r)].life == 0)
 						{
-							parts[r>>8].life = 4;
-							parts[r>>8].ctype = rt;
-							sim->part_change_type(r>>8, x+rx, y+ry, PT_SPRK);
+							parts[ID(r)].life = 4;
+							parts[ID(r)].ctype = rt;
+							sim->part_change_type(ID(r), x+rx, y+ry, PT_SPRK);
 						}
 					}
 				}
@@ -83,12 +83,12 @@ int Element_TSNS::update(UPDATE_FUNC_ARGS)
 					r = sim->photons[y+ry][x+rx];
 				if (!r)
 					continue;
-				if ((r&0xFF) != PT_TSNS && (r&0xFF) != PT_METL && parts[r>>8].temp > parts[i].temp)
+				if ((r&0xFF) != PT_TSNS && (r&0xFF) != PT_METL && parts[ID(r)].temp > parts[i].temp)
 					parts[i].life = 1;
 				if (parts[i].tmp == 1 && (r&0xFF) != PT_TSNS && (r&0xFF) != PT_FILT)
 				{
 					setFilt = true;
-					photonWl = parts[r>>8].temp;
+					photonWl = parts[ID(r)].temp;
 				}
 			}
 	if (setFilt)
@@ -105,7 +105,7 @@ int Element_TSNS::update(UPDATE_FUNC_ARGS)
 					ny = y + ry;
 					while ((r & 0xFF) == PT_FILT)
 					{
-						parts[r>>8].ctype = 0x10000000 + photonWl;
+						parts[ID(r)].ctype = 0x10000000 + photonWl;
 						nx += rx;
 						ny += ry;
 						if (nx < 0 || ny < 0 || nx >= XRES || ny >= YRES)

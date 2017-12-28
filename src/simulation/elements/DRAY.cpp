@@ -68,12 +68,12 @@ int Element_DRAY::update(UPDATE_FUNC_ARGS)
 				if (BOUNDS_CHECK && (rx || ry))
 				{
 					int r = pmap[y+ry][x+rx];
-					if ((r&0xFF) == PT_SPRK && parts[r>>8].life == 3) //spark found, start creating
+					if ((r&0xFF) == PT_SPRK && parts[ID(r)].life == 3) //spark found, start creating
 					{
-						bool overwrite = parts[r>>8].ctype == PT_PSCN;
+						bool overwrite = parts[ID(r)].ctype == PT_PSCN;
 						int partsRemaining = copyLength, xCopyTo, yCopyTo; //positions where the line will start being copied at
 
-						if (parts[r>>8].ctype == PT_INWR && rx && ry) // INWR doesn't spark from diagonals
+						if (parts[ID(r)].ctype == PT_INWR && rx && ry) // INWR doesn't spark from diagonals
 							continue;
 
 						//figure out where the copying will start/end

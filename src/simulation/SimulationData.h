@@ -128,6 +128,11 @@
 #define REPLACE_MODE 0x1
 #define SPECIFIC_DELETE 0x2
 
+#define ID(r) ((r)>>8)
+#define TYP(r) ((r)&0xFF)
+#define PMAP(id, typ) ((id)<<8 | ((typ)&0xFF))
+#define PMAPID(id) ((id)<<8)
+
 #ifndef SIMULATIONDATA_H
 #define SIMULATIONDATA_H
 

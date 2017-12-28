@@ -62,10 +62,10 @@ int Element_BIZR::update(UPDATE_FUNC_ARGS)
 						continue;
 					if ((r&0xFF)!=PT_BIZR && (r&0xFF)!=PT_BIZRG  && (r&0xFF)!=PT_BIZRS)
 					{
-						tr = (parts[r>>8].dcolour>>16)&0xFF;
-						tg = (parts[r>>8].dcolour>>8)&0xFF;
-						tb = (parts[r>>8].dcolour)&0xFF;
-						ta = (parts[r>>8].dcolour>>24)&0xFF;
+						tr = (parts[ID(r)].dcolour>>16)&0xFF;
+						tg = (parts[ID(r)].dcolour>>8)&0xFF;
+						tb = (parts[ID(r)].dcolour)&0xFF;
+						ta = (parts[ID(r)].dcolour>>24)&0xFF;
 						
 						mr = (parts[i].dcolour>>16)&0xFF;
 						mg = (parts[i].dcolour>>8)&0xFF;
@@ -77,7 +77,7 @@ int Element_BIZR::update(UPDATE_FUNC_ARGS)
 						nb = (tb*BLEND) + (mb*(1 - BLEND));
 						na = (ta*BLEND) + (ma*(1 - BLEND));
 						
-						parts[r>>8].dcolour = nr<<16 | ng<<8 | nb | na<<24;
+						parts[ID(r)].dcolour = nr<<16 | ng<<8 | nb | na<<24;
 					}
 				}
 	}

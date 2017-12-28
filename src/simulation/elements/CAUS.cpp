@@ -58,7 +58,7 @@ int Element_CAUS::update(UPDATE_FUNC_ARGS)
 				{
 					if (sim->pv[(y+ry)/CELL][(x+rx)/CELL] > 3)
 					{
-						sim->part_change_type(r>>8, x+rx, y+ry, PT_RFRG);
+						sim->part_change_type(ID(r), x+rx, y+ry, PT_RFRG);
 						sim->part_change_type(i, x, y, PT_RFRG);
 					}
 				}
@@ -67,14 +67,14 @@ int Element_CAUS::update(UPDATE_FUNC_ARGS)
 					if (((r&0xFF) != PT_CLNE && (r&0xFF) != PT_PCLN && sim->elements[r&0xFF].Hardness > (rand()%1000)) && parts[i].life >= 50)
 					{
 						// GLAS protects stuff from acid
-						if (sim->parts_avg(i, r>>8,PT_GLAS) != PT_GLAS)
+						if (sim->parts_avg(i, ID(r),PT_GLAS) != PT_GLAS)
 						{
 							float newtemp = ((60.0f - (float)sim->elements[r&0xFF].Hardness)) * 7.0f;
 							if (newtemp < 0)
 								newtemp = 0;
 							parts[i].temp += newtemp;
 							parts[i].life--;
-							sim->kill_part(r>>8);
+							sim->kill_part(ID(r));
 						}
 					}
 					else if (parts[i].life <= 50)

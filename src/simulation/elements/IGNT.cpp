@@ -58,7 +58,7 @@ int Element_IGNT::update(UPDATE_FUNC_ARGS)
 					if (!r)
 						continue;
 					rt = r&0xFF;
-					if (rt==PT_FIRE || rt==PT_PLSM || rt==PT_SPRK || rt==PT_LIGH || (rt==PT_IGNT && parts[r>>8].life==1))
+					if (rt==PT_FIRE || rt==PT_PLSM || rt==PT_SPRK || rt==PT_LIGH || (rt==PT_IGNT && parts[ID(r)].life==1))
 					{
 						parts[i].tmp = 1;
 					}

@@ -86,9 +86,9 @@ int Element_VIRS::update(UPDATE_FUNC_ARGS)
 					continue;
 
 				//spread "being cured" state
-				if (parts[r>>8].pavg[0] && ((r&0xFF) == PT_VIRS || (r&0xFF) == PT_VRSS || (r&0xFF) == PT_VRSG))
+				if (parts[ID(r)].pavg[0] && ((r&0xFF) == PT_VIRS || (r&0xFF) == PT_VRSS || (r&0xFF) == PT_VRSG))
 				{
-					parts[i].pavg[0] = parts[r>>8].pavg[0] + ((rndstore & 0x3) ? 2:1);
+					parts[i].pavg[0] = parts[ID(r)].pavg[0] + ((rndstore & 0x3) ? 2:1);
 					return 0;
 				}
 				//soap cures virus
@@ -96,7 +96,7 @@ int Element_VIRS::update(UPDATE_FUNC_ARGS)
 				{
 					parts[i].pavg[0] += 10;
 					if (!(rndstore & 0x3))
-						sim->kill_part(r>>8);
+						sim->kill_part(ID(r));
 					return 0;
 				}
 				else if ((r&0xFF) == PT_PLSM)
@@ -112,18 +112,18 @@ int Element_VIRS::update(UPDATE_FUNC_ARGS)
 				{
 					if (!(rndstore & 0x7))
 					{
-						parts[r>>8].tmp2 = (r&0xFF);
-						parts[r>>8].pavg[0] = 0;
+						parts[ID(r)].tmp2 = (r&0xFF);
+						parts[ID(r)].pavg[0] = 0;
 						if (parts[i].pavg[1])
-							parts[r>>8].pavg[1] = parts[i].pavg[1] + 1;
+							parts[ID(r)].pavg[1] = parts[i].pavg[1] + 1;
 						else
-							parts[r>>8].pavg[1] = 0;
-						if (parts[r>>8].temp < 305.0f)
-							sim->part_change_type(r>>8, x+rx, y+ry, PT_VRSS);
-						else if (parts[r>>8].temp > 673.0f)
-							sim->part_change_type(r>>8, x+rx, y+ry, PT_VRSG);
+							parts[ID(r)].pavg[1] = 0;
+						if (parts[ID(r)].temp < 305.0f)
+							sim->part_change_type(ID(r), x+rx, y+ry, PT_VRSS);
+						else if (parts[ID(r)].temp > 673.0f)
+							sim->part_change_type(ID(r), x+rx, y+ry, PT_VRSG);
 						else
-							sim->part_change_type(r>>8, x+rx, y+ry, PT_VIRS);
+							sim->part_change_type(ID(r), x+rx, y+ry, PT_VIRS);
 					}
 					rndstore >>= 3;
 				}

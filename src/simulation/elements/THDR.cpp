@@ -58,11 +58,11 @@ int Element_THDR::update(UPDATE_FUNC_ARGS)
 				if (!r)
 					continue;
 				rt = r&0xFF;
-				if ((sim->elements[r&0xFF].Properties&PROP_CONDUCTS) && parts[r>>8].life==0 && !(rt==PT_WATR||rt==PT_SLTW) && parts[r>>8].ctype!=PT_SPRK)
+				if ((sim->elements[r&0xFF].Properties&PROP_CONDUCTS) && parts[ID(r)].life==0 && !(rt==PT_WATR||rt==PT_SLTW) && parts[ID(r)].ctype!=PT_SPRK)
 				{
-					parts[r>>8].ctype = parts[r>>8].type;
-					sim->part_change_type(r>>8,x+rx,y+ry,PT_SPRK);
-					parts[r>>8].life = 4;
+					parts[ID(r)].ctype = parts[ID(r)].type;
+					sim->part_change_type(ID(r),x+rx,y+ry,PT_SPRK);
+					parts[ID(r)].life = 4;
 					kill=true;
 				}
 				else if (rt!=PT_CLNE&&rt!=PT_THDR&&rt!=PT_SPRK&&rt!=PT_DMND&&rt!=PT_FIRE)

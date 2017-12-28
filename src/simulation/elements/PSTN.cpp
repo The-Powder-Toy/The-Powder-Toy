@@ -88,8 +88,8 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 					r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if ((r&0xFF)==PT_SPRK && parts[r>>8].life==3) {
-						if(parts[r>>8].ctype == PT_PSCN)
+					if ((r&0xFF)==PT_SPRK && parts[ID(r)].life==3) {
+						if(parts[ID(r)].ctype == PT_PSCN)
 							state = PISTON_EXTEND;
 						else
 							state = PISTON_RETRACT;
@@ -121,7 +121,7 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 							r = pmap[y+nyy][x+nxx];
 							if((r&0xFF)==PT_PSTN)
 							{
-								if(parts[r>>8].life)
+								if(parts[ID(r)].life)
 									armCount++;
 								else if (armCount)
 								{
@@ -132,7 +132,7 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 								}
 								else
 								{
-									pistonCount += floor((parts[r>>8].temp-268.15)/10);// How many tens of degrees above 0 C, rounded to nearest ten degrees. Can be negative.
+									pistonCount += floor((parts[ID(r)].temp-268.15)/10);// How many tens of degrees above 0 C, rounded to nearest ten degrees. Can be negative.
 								}
 							}
 							else if (nxx==0 && nyy==0)
@@ -214,7 +214,7 @@ Element_PSTN::StackData Element_PSTN::CanMoveStack(Simulation * sim, int stackX,
 		else
 		{
 			if (currentPos - spaces < maxSize && (!retract || ((r&0xFF) == PT_FRME && posX == stackX && posY == stackY)))
-				tempParts[currentPos++] = r>>8;
+				tempParts[currentPos++] = ID(r);
 			else
 				return StackData(currentPos - spaces, spaces);
 		}
@@ -293,7 +293,7 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 				break;
 			} else {
 				foundParts = true;
-				tempParts[currentPos++] = r>>8;
+				tempParts[currentPos++] = ID(r);
 			}
 		}
 		if(foundParts) {

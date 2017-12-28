@@ -102,13 +102,13 @@ int Element::legacyUpdate(UPDATE_FUNC_ARGS) {
 					if (((r&0xFF)==PT_WATR||(r&0xFF)==PT_DSTW||(r&0xFF)==PT_SLTW) && 1>(rand()%1000))
 					{
 						sim->part_change_type(i,x,y,PT_WATR);
-						sim->part_change_type(r>>8,x+rx,y+ry,PT_WATR);
+						sim->part_change_type(ID(r),x+rx,y+ry,PT_WATR);
 					}
 					if (((r&0xFF)==PT_ICEI || (r&0xFF)==PT_SNOW) && 1>(rand()%1000))
 					{
 						sim->part_change_type(i,x,y,PT_WATR);
 						if (1>(rand()%1000))
-							sim->part_change_type(r>>8,x+rx,y+ry,PT_WATR);
+							sim->part_change_type(ID(r),x+rx,y+ry,PT_WATR);
 					}
 				}
 	}
@@ -169,7 +169,7 @@ int Element::legacyUpdate(UPDATE_FUNC_ARGS) {
 					if (((r&0xFF)==PT_WATR || (r&0xFF)==PT_DSTW) && 1>(rand()%1000))
 					{
 						sim->part_change_type(i,x,y,PT_ICEI);
-						sim->part_change_type(r>>8,x+rx,y+ry,PT_ICEI);
+						sim->part_change_type(ID(r),x+rx,y+ry,PT_ICEI);
 					}
 				}
 	}
@@ -184,7 +184,7 @@ int Element::legacyUpdate(UPDATE_FUNC_ARGS) {
 					if (((r&0xFF)==PT_WATR || (r&0xFF)==PT_DSTW) && 1>(rand()%1000))
 					{
 						sim->part_change_type(i,x,y,PT_ICEI);
-						sim->part_change_type(r>>8,x+rx,y+ry,PT_ICEI);
+						sim->part_change_type(ID(r),x+rx,y+ry,PT_ICEI);
 					}
 					if (((r&0xFF)==PT_WATR || (r&0xFF)==PT_DSTW) && 15>(rand()%1000))
 						sim->part_change_type(i,x,y,PT_WATR);

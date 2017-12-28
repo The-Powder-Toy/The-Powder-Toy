@@ -21,7 +21,7 @@ ProfileActivity::ProfileActivity(std::string username) :
 	doError(false),
 	doErrorMessage("")
 {
-	editable = Client::Ref().GetAuthUser().ID && Client::Ref().GetAuthUser().Username == username;
+	editable = Client::Ref().GetAuthUser().UserID && Client::Ref().GetAuthUser().Username == username;
 
 
 	class CloseAction: public ui::ButtonAction

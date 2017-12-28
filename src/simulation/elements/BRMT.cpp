@@ -64,12 +64,12 @@ int Element_BRMT::update(UPDATE_FUNC_ARGS)
 					{
 						if(rand()%2)
 						{
-							sim->create_part(r>>8, x+rx, y+ry, PT_THRM);
+							sim->create_part(ID(r), x+rx, y+ry, PT_THRM);
 						}
 						else
 							sim->create_part(i, x, y, PT_THRM);
-						//part_change_type(r>>8,x+rx,y+ry,PT_BMTL);
-						//parts[r>>8].tmp=(parts[i].tmp<=7)?parts[i].tmp=1:parts[i].tmp-(rand()%5);//rand()/(RAND_MAX/300)+100;
+						//part_change_type(ID(r),x+rx,y+ry,PT_BMTL);
+						//parts[ID(r)].tmp=(parts[i].tmp<=7)?parts[i].tmp=1:parts[i].tmp-(rand()%5);//rand()/(RAND_MAX/300)+100;
 					}
 				}
 	}

@@ -99,16 +99,16 @@ int Element_FIRE::update(UPDATE_FUNC_ARGS)
 				if (rt==PT_THRM && (t==PT_FIRE || t==PT_PLSM || t==PT_LAVA))
 				{
 					if (!(rand()%500)) {
-						sim->part_change_type(r>>8,x+rx,y+ry,PT_LAVA);
-						parts[r>>8].ctype = PT_BMTL;
-						parts[r>>8].temp = 3500.0f;
+						sim->part_change_type(ID(r),x+rx,y+ry,PT_LAVA);
+						parts[ID(r)].ctype = PT_BMTL;
+						parts[ID(r)].temp = 3500.0f;
 						sim->pv[(y+ry)/CELL][(x+rx)/CELL] += 50.0f;
 					} else {
-						sim->part_change_type(r>>8,x+rx,y+ry,PT_LAVA);
-						parts[r>>8].life = 400;
-						parts[r>>8].ctype = PT_THRM;
-						parts[r>>8].temp = 3500.0f;
-						parts[r>>8].tmp = 20;
+						sim->part_change_type(ID(r),x+rx,y+ry,PT_LAVA);
+						parts[ID(r)].life = 400;
+						parts[ID(r)].ctype = PT_THRM;
+						parts[ID(r)].temp = 3500.0f;
+						parts[ID(r)].tmp = 20;
 					}
 					continue;
 				}
@@ -117,15 +117,15 @@ int Element_FIRE::update(UPDATE_FUNC_ARGS)
 				{
 					if ((t==PT_FIRE || t==PT_PLSM))
 					{
-						if (parts[r>>8].life>100 && !(rand()%500)) {
-							parts[r>>8].life = 99;
+						if (parts[ID(r)].life>100 && !(rand()%500)) {
+							parts[ID(r)].life = 99;
 						}
 					}
 					else if (t==PT_LAVA)
 					{
 						if (parts[i].ctype == PT_IRON && !(rand()%500)) {
 							parts[i].ctype = PT_METL;
-							sim->kill_part(r>>8);
+							sim->kill_part(ID(r));
 						}
 					}
 				}
@@ -133,21 +133,21 @@ int Element_FIRE::update(UPDATE_FUNC_ARGS)
 				if (t == PT_LAVA)
 				{
 					// LAVA(CLST) + LAVA(PQRT) + high enough temp = LAVA(CRMC) + LAVA(CRMC)
-					if (parts[i].ctype == PT_QRTZ && rt == PT_LAVA && parts[r>>8].ctype == PT_CLST)
+					if (parts[i].ctype == PT_QRTZ && rt == PT_LAVA && parts[ID(r)].ctype == PT_CLST)
 					{
 						float pres = std::max(sim->pv[y/CELL][x/CELL]*10.0f, 0.0f);
 						if (parts[i].temp >= pres+sim->elements[PT_CRMC].HighTemperature+50.0f)
 						{
 							parts[i].ctype = PT_CRMC;
-							parts[r>>8].ctype = PT_CRMC;
+							parts[ID(r)].ctype = PT_CRMC;
 						}
 					}
 					else if (rt == PT_HEAC && parts[i].ctype == PT_HEAC)
 					{
-						if (parts[r>>8].temp > sim->elements[PT_HEAC].HighTemperature && rand()%200)
+						if (parts[ID(r)].temp > sim->elements[PT_HEAC].HighTemperature && rand()%200)
 						{
-							sim->part_change_type(r>>8, x+rx, y+ry, PT_LAVA);
-							parts[r>>8].ctype = PT_HEAC;
+							sim->part_change_type(ID(r), x+rx, y+ry, PT_LAVA);
+							parts[ID(r)].ctype = PT_HEAC;
 						}
 					}
 				}
@@ -157,12 +157,12 @@ int Element_FIRE::update(UPDATE_FUNC_ARGS)
 				    //exceptions, t is the thing causing the spark and rt is what's burning
 				    (t != PT_SPRK || (rt != PT_RBDM && rt != PT_LRBD && rt != PT_INSL)) &&
 				    (t != PT_PHOT || rt != PT_INSL) &&
-				    (rt != PT_SPNG || parts[r>>8].life == 0))
+				    (rt != PT_SPNG || parts[ID(r)].life == 0))
 				{
-					sim->part_change_type(r>>8, x+rx, y+ry, PT_FIRE);
-					parts[r>>8].temp = restrict_flt(sim->elements[PT_FIRE].Temperature + (sim->elements[rt].Flammable/2), MIN_TEMP, MAX_TEMP);
-					parts[r>>8].life = rand()%80+180;
-					parts[r>>8].tmp = parts[r>>8].ctype = 0;
+					sim->part_change_type(ID(r), x+rx, y+ry, PT_FIRE);
+					parts[ID(r)].temp = restrict_flt(sim->elements[PT_FIRE].Temperature + (sim->elements[rt].Flammable/2), MIN_TEMP, MAX_TEMP);
+					parts[ID(r)].life = rand()%80+180;
+					parts[ID(r)].tmp = parts[ID(r)].ctype = 0;
 					if (sim->elements[rt].Explosive)
 						sim->pv[y/CELL][x/CELL] += 0.25f * CFDS;
 				}
@@ -193,13 +193,13 @@ int Element_FIRE::updateLegacy(UPDATE_FUNC_ARGS) {
 					if (t!=PT_LAVA || parts[i].life>0)
 					{
 						if (rt==PT_BRMT)
-							parts[r>>8].ctype = PT_BMTL;
+							parts[ID(r)].ctype = PT_BMTL;
 						else if (rt==PT_SAND)
-							parts[r>>8].ctype = PT_GLAS;
+							parts[ID(r)].ctype = PT_GLAS;
 						else
-							parts[r>>8].ctype = rt;
-						sim->part_change_type(r>>8,x+rx,y+ry,PT_LAVA);
-						parts[r>>8].life = rand()%120+240;
+							parts[ID(r)].ctype = rt;
+						sim->part_change_type(ID(r),x+rx,y+ry,PT_LAVA);
+						parts[ID(r)].life = rand()%120+240;
 					}
 					else
 					{
@@ -211,7 +211,7 @@ int Element_FIRE::updateLegacy(UPDATE_FUNC_ARGS) {
 				}
 				if (rt==PT_ICEI || rt==PT_SNOW)
 				{
-					sim->part_change_type(r>>8, x+rx, y+ry, PT_WATR);
+					sim->part_change_type(ID(r), x+rx, y+ry, PT_WATR);
 					if (t==PT_FIRE)
 					{
 						sim->kill_part(i);
@@ -225,7 +225,7 @@ int Element_FIRE::updateLegacy(UPDATE_FUNC_ARGS) {
 				}
 				if (rt==PT_WATR || rt==PT_DSTW || rt==PT_SLTW)
 				{
-					sim->kill_part(r>>8);
+					sim->kill_part(ID(r));
 					if (t==PT_FIRE)
 					{
 						sim->kill_part(i);

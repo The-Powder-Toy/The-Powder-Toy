@@ -61,7 +61,7 @@ int Element_DSTW::update(UPDATE_FUNC_ARGS)
 						sim->part_change_type(i,x,y,PT_SLTW);
 						// on average, convert 3 DSTW to SLTW before SALT turns into SLTW
 						if (!(rand()%3))
-							sim->part_change_type(r>>8,x+rx,y+ry,PT_SLTW);
+							sim->part_change_type(ID(r),x+rx,y+ry,PT_SLTW);
 					}
 					break;
 				case PT_SLTW:
@@ -85,7 +85,7 @@ int Element_DSTW::update(UPDATE_FUNC_ARGS)
 					}
 					break;
 				case PT_FIRE:
-					sim->kill_part(r>>8);
+					sim->kill_part(ID(r));
 					if(!(rand()%30)){
 						sim->kill_part(i);
 						return 1;

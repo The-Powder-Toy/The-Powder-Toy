@@ -426,7 +426,7 @@ void SearchView::CheckAccess()
 			favButton->DoAction();
 	}
 	
-	if (Client::Ref().GetAuthUser().ID)
+	if (Client::Ref().GetAuthUser().UserID)
 	{
 		ownButton->Enabled = true;
 		favButton->Enabled = true;
@@ -591,7 +591,7 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 	{
 		nextButton->Enabled = true;
 		previousButton->Enabled = true;
-		if (Client::Ref().GetAuthUser().ID)
+		if (Client::Ref().GetAuthUser().UserID)
 			favButton->Enabled = true;
 	}
 	if (!sender->GetSavesLoaded() || favButton->GetToggleState())
@@ -601,7 +601,7 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 	}
 	else
 	{
-		if (Client::Ref().GetAuthUser().ID)
+		if (Client::Ref().GetAuthUser().UserID)
 			ownButton->Enabled = true;
 		sortButton->Enabled = true;
 	}
@@ -701,7 +701,7 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 						saves[i]);
 			saveButton->AddContextMenu(0);
 			saveButton->SetActionCallback(new SaveOpenAction(this));
-			if(Client::Ref().GetAuthUser().ID)
+			if(Client::Ref().GetAuthUser().UserID)
 				saveButton->SetSelectable(true);
 			if (saves[i]->GetUserName() == Client::Ref().GetAuthUser().Username || Client::Ref().GetAuthUser().UserElevation == User::ElevationAdmin || Client::Ref().GetAuthUser().UserElevation == User::ElevationModerator)
 				saveButton->SetShowVotes(true);

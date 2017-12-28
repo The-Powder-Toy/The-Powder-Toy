@@ -97,7 +97,7 @@ PreviewView::PreviewView():
 	favButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	favButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	favButton->SetIcon(IconFavourite);
 	favButton->SetActionCallback(new FavAction(this));
-	favButton->Enabled = Client::Ref().GetAuthUser().ID?true:false;
+	favButton->Enabled = Client::Ref().GetAuthUser().UserID?true:false;
 	AddComponent(favButton);
 
 	class ReportPromptCallback: public TextDialogueCallback {
@@ -125,7 +125,7 @@ PreviewView::PreviewView():
 	reportButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	reportButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	reportButton->SetIcon(IconReport);
 	reportButton->SetActionCallback(new ReportAction(this));
-	reportButton->Enabled = Client::Ref().GetAuthUser().ID?true:false;
+	reportButton->Enabled = Client::Ref().GetAuthUser().UserID?true:false;
 	AddComponent(reportButton);
 
 	class OpenAction: public ui::ButtonAction
@@ -512,7 +512,7 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 		{
 			authorDateLabel->SetText("\bgAuthor:\bw " + save->userName + " \bg" + dateType + " \bw" + format::UnixtimeToDateMini(save->updatedDate));
 		}
-		if (Client::Ref().GetAuthUser().ID && save->userName == Client::Ref().GetAuthUser().Username)
+		if (Client::Ref().GetAuthUser().UserID && save->userName == Client::Ref().GetAuthUser().Username)
 			userIsAuthor = true;
 		else
 			userIsAuthor = false;
@@ -523,7 +523,7 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 			favButton->Enabled = true;
 			favButton->SetText("Unfav");
 		}
-		else if(Client::Ref().GetAuthUser().ID)
+		else if(Client::Ref().GetAuthUser().UserID)
 		{
 			favButton->Enabled = true;
 			favButton->SetText("Fav");
@@ -687,7 +687,7 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 				tempUsername = new ui::Label(ui::Point(5, currentY+3), ui::Point(Size.X-((XRES/2) + 13), 16), comments->at(i)->authorNameFormatted);
 			tempUsername->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 			tempUsername->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
-			if (Client::Ref().GetAuthUser().ID && Client::Ref().GetAuthUser().Username == comments->at(i)->authorName)
+			if (Client::Ref().GetAuthUser().UserID && Client::Ref().GetAuthUser().Username == comments->at(i)->authorName)
 				tempUsername->SetTextColour(ui::Colour(255, 255, 100));
 			else if (sender->GetSaveInfo() && sender->GetSaveInfo()->GetUserName() == comments->at(i)->authorName)
 				tempUsername->SetTextColour(ui::Colour(255, 100, 100));

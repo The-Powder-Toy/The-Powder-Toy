@@ -67,7 +67,7 @@ int Element_CONV::update(UPDATE_FUNC_ARGS)
 					{
 						parts[i].ctype = r&0xFF;
 						if ((r&0xFF)==PT_LIFE)
-							parts[i].ctype |= (parts[r>>8].ctype << 8);
+							parts[i].ctype |= (parts[ID(r)].ctype << 8);
 					}
 				}
 	}
@@ -85,7 +85,7 @@ int Element_CONV::update(UPDATE_FUNC_ARGS)
 						continue;
 					if((r&0xFF)!=PT_CONV && (r&0xFF)!=PT_DMND && (r&0xFF)!=ctype)
 					{
-						sim->create_part(r>>8, x+rx, y+ry, parts[i].ctype&0xFF, parts[i].ctype>>8);
+						sim->create_part(ID(r), x+rx, y+ry, parts[i].ctype&0xFF, parts[i].ctype>>8);
 					}
 				}
 	}

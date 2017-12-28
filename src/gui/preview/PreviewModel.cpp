@@ -83,7 +83,7 @@ void PreviewModel::UpdateSave(int saveID, int saveDate)
 	if (saveDate)
 		urlStream << "&Date=" << saveDate;
 	saveInfoDownload = new Download(urlStream.str());
-	saveInfoDownload->AuthHeaders(format::NumberToString(Client::Ref().GetAuthUser().ID), Client::Ref().GetAuthUser().SessionID);
+	saveInfoDownload->AuthHeaders(format::NumberToString(Client::Ref().GetAuthUser().UserID), Client::Ref().GetAuthUser().SessionID);
 	saveInfoDownload->Start();
 
 	if (!GetDoOpen())
@@ -93,7 +93,7 @@ void PreviewModel::UpdateSave(int saveID, int saveDate)
 		urlStream.str("");
 		urlStream << "http://" << SERVER << "/Browse/Comments.json?ID=" << saveID << "&Start=" << (commentsPageNumber-1)*20 << "&Count=20";
 		commentsDownload = new Download(urlStream.str());
-		commentsDownload->AuthHeaders(format::NumberToString(Client::Ref().GetAuthUser().ID), Client::Ref().GetAuthUser().SessionID);
+		commentsDownload->AuthHeaders(format::NumberToString(Client::Ref().GetAuthUser().UserID), Client::Ref().GetAuthUser().SessionID);
 		commentsDownload->Start();
 	}
 }
@@ -146,7 +146,7 @@ void PreviewModel::UpdateComments(int pageNumber)
 			std::stringstream urlStream;
 			urlStream << "http://" << SERVER << "/Browse/Comments.json?ID=" << saveID << "&Start=" << (commentsPageNumber-1)*20 << "&Count=20";
 			commentsDownload = new Download(urlStream.str());
-			commentsDownload->AuthHeaders(format::NumberToString(Client::Ref().GetAuthUser().ID).c_str(), Client::Ref().GetAuthUser().SessionID.c_str());
+			commentsDownload->AuthHeaders(format::NumberToString(Client::Ref().GetAuthUser().UserID).c_str(), Client::Ref().GetAuthUser().SessionID.c_str());
 			commentsDownload->Start();
 		}
 

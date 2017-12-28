@@ -11,13 +11,13 @@ public:
 	{
 		ElevationAdmin, ElevationModerator, ElevationNone
 	};
-	int ID;
+	int UserID;
 	std::string Username;
 	std::string SessionID;
 	std::string SessionKey;
 	Elevation UserElevation;
 	User(int id, std::string username):
-		ID(id),
+		UserID(id),
 		Username(username),
 		SessionID(""),
 		SessionKey(""),

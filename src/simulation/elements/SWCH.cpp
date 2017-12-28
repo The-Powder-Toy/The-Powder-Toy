@@ -63,19 +63,19 @@ int Element_SWCH::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if (sim->parts_avg(i,r>>8,PT_INSL)!=PT_INSL) {
+				if (sim->parts_avg(i,ID(r),PT_INSL)!=PT_INSL) {
 					rt = r&0xFF;
 					if (rt==PT_SWCH)
 					{
-						if (parts[i].life>=10&&parts[r>>8].life<10&&parts[r>>8].life>0)
+						if (parts[i].life>=10&&parts[ID(r)].life<10&&parts[ID(r)].life>0)
 							parts[i].life = 9;
-						else if (parts[i].life==0&&parts[r>>8].life>=10)
+						else if (parts[i].life==0&&parts[ID(r)].life>=10)
 						{
 							//Set to other particle's life instead of 10, otherwise spark loops form when SWCH is sparked while turning on
-							parts[i].life = parts[r>>8].life;
+							parts[i].life = parts[ID(r)].life;
 						}
 					}
-					else if (rt==PT_SPRK && parts[i].life==10 && parts[r>>8].life>0 && parts[r>>8].ctype!=PT_PSCN && parts[r>>8].ctype!=PT_NSCN) {
+					else if (rt==PT_SPRK && parts[i].life==10 && parts[ID(r)].life>0 && parts[ID(r)].ctype!=PT_PSCN && parts[ID(r)].ctype!=PT_NSCN) {
 						sim->part_change_type(i,x,y,PT_SPRK);
 						parts[i].ctype = PT_SWCH;
 						parts[i].life = 4;

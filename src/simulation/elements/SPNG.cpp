@@ -66,7 +66,7 @@ int Element_SPNG::update(UPDATE_FUNC_ARGS)
 						if (parts[i].life<limit && 500>rand()%absorbChanceDenom)
 						{
 							parts[i].life++;
-							sim->kill_part(r>>8);
+							sim->kill_part(ID(r));
 						}
 						break;
 					case PT_SLTW:
@@ -74,23 +74,23 @@ int Element_SPNG::update(UPDATE_FUNC_ARGS)
 						{
 							parts[i].life++;
 							if (rand()%4)
-								sim->kill_part(r>>8);
+								sim->kill_part(ID(r));
 							else
-								sim->part_change_type(r>>8, x+rx, y+ry, PT_SALT);
+								sim->part_change_type(ID(r), x+rx, y+ry, PT_SALT);
 						}
 						break;
 					case PT_CBNW:
 						if (parts[i].life<limit && 100>rand()%absorbChanceDenom)
 						{
 							parts[i].life++;
-							sim->part_change_type(r>>8, x+rx, y+ry, PT_CO2);
+							sim->part_change_type(ID(r), x+rx, y+ry, PT_CO2);
 						}
 						break;
 					case PT_PSTE:
 						if (parts[i].life<limit && 20>rand()%absorbChanceDenom)
 						{
 							parts[i].life++;
-							sim->create_part(r>>8, x+rx, y+ry, PT_CLST);
+							sim->create_part(ID(r), x+rx, y+ry, PT_CLST);
 						}
 						break;
 					default:
@@ -119,18 +119,18 @@ int Element_SPNG::update(UPDATE_FUNC_ARGS)
 			r = pmap[y+ry][x+rx];
 			if (!r)
 				continue;
-			if ((r&0xFF)==PT_SPNG&&(parts[i].life>parts[r>>8].life)&&parts[i].life>0)//diffusion
+			if ((r&0xFF)==PT_SPNG&&(parts[i].life>parts[ID(r)].life)&&parts[i].life>0)//diffusion
 			{
-				tmp = parts[i].life - parts[r>>8].life;
+				tmp = parts[i].life - parts[ID(r)].life;
 				if (tmp ==1)
 				{
-					parts[r>>8].life ++;
+					parts[ID(r)].life ++;
 					parts[i].life --;
 					trade = 9;
 				}
 				else if (tmp>0)
 				{
-					parts[r>>8].life += tmp/2;
+					parts[ID(r)].life += tmp/2;
 					parts[i].life -= tmp/2;
 					trade = 9;
 				}
@@ -150,10 +150,10 @@ int Element_SPNG::update(UPDATE_FUNC_ARGS)
 					if ((r&0xFF)==PT_FIRE)
 					{
 						tmp++;
-						if (parts[r>>8].life>60)
-							parts[r>>8].life -= parts[r>>8].life/60;
-						else if (parts[r>>8].life>2)
-							parts[r>>8].life--;
+						if (parts[ID(r)].life>60)
+							parts[ID(r)].life -= parts[ID(r)].life/60;
+						else if (parts[ID(r)].life>2)
+							parts[ID(r)].life--;
 					}
 				}
 	}

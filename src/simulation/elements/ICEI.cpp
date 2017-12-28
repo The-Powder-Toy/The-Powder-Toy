@@ -64,14 +64,14 @@ int Element_ICEI::update(UPDATE_FUNC_ARGS)
 					if (parts[i].temp > sim->elements[PT_SLTW].LowTemperature && !(rand()%200))
 					{
 						sim->part_change_type(i,x,y,PT_SLTW);
-						sim->part_change_type(r>>8,x+rx,y+ry,PT_SLTW);
+						sim->part_change_type(ID(r),x+rx,y+ry,PT_SLTW);
 						return 0;
 					}
 				}
 				else if (((r&0xFF)==PT_FRZZ) && !(rand()%200))
 				{
-					sim->part_change_type(r>>8,x+rx,y+ry,PT_ICEI);
-					parts[r>>8].ctype = PT_FRZW;
+					sim->part_change_type(ID(r),x+rx,y+ry,PT_ICEI);
+					parts[ID(r)].ctype = PT_FRZW;
 				}
 			}
 	return 0;

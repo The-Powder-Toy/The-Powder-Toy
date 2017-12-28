@@ -39,7 +39,7 @@ void * SearchModel::updateSaveListT()
 	std::string category = "";
 	if(showFavourite)
 		category = "Favourites";
-	if(showOwn && Client::Ref().GetAuthUser().ID)
+	if(showOwn && Client::Ref().GetAuthUser().UserID)
 		category = "by:"+Client::Ref().GetAuthUser().Username;
 	vector<SaveInfo*> * saveList = Client::Ref().SearchSaves((currentPage-1)*20, 20, lastQuery, currentSort=="new"?"date":"votes", category, thResultCount);
 

@@ -66,8 +66,8 @@ int Element_SHLD3::update(UPDATE_FUNC_ARGS)
 				}
 				if ((r&0xFF)==PT_SHLD1 && parts[i].life>3)
 				{
-					sim->part_change_type(r>>8,x+rx,y+ry,PT_SHLD2);
-					parts[r>>8].life=7;
+					sim->part_change_type(ID(r),x+rx,y+ry,PT_SHLD2);
+					parts[ID(r)].life=7;
 				}
 				else if ((r&0xFF)==PT_SPRK&&parts[i].life==0)
 				{

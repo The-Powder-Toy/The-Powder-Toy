@@ -58,20 +58,20 @@ int Element_STOR::update(UPDATE_FUNC_ARGS)
 			if (BOUNDS_CHECK && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				if ((r>>8)>=NPART || !r)
+				if ((ID(r))>=NPART || !r)
 					continue;
 				if (!parts[i].tmp && !parts[i].life && (r&0xFF)!=PT_STOR && !(sim->elements[(r&0xFF)].Properties&TYPE_SOLID) && (!parts[i].ctype || (r&0xFF)==parts[i].ctype))
 				{
 					if ((r&0xFF) == PT_SOAP)
-						Element_SOAP::detach(sim, r>>8);
-					parts[i].tmp = parts[r>>8].type;
-					parts[i].temp = parts[r>>8].temp;
-					parts[i].tmp2 = parts[r>>8].life;
-					parts[i].pavg[0] = parts[r>>8].tmp;
-					parts[i].pavg[1] = parts[r>>8].ctype;
-					sim->kill_part(r>>8);
+						Element_SOAP::detach(sim, ID(r));
+					parts[i].tmp = parts[ID(r)].type;
+					parts[i].temp = parts[ID(r)].temp;
+					parts[i].tmp2 = parts[ID(r)].life;
+					parts[i].pavg[0] = parts[ID(r)].tmp;
+					parts[i].pavg[1] = parts[ID(r)].ctype;
+					sim->kill_part(ID(r));
 				}
-				if(parts[i].tmp && (r&0xFF)==PT_SPRK && parts[r>>8].ctype==PT_PSCN && parts[r>>8].life>0 && parts[r>>8].life<4)
+				if(parts[i].tmp && (r&0xFF)==PT_SPRK && parts[ID(r)].ctype==PT_PSCN && parts[ID(r)].life>0 && parts[ID(r)].life<4)
 				{
 					for(ry1 = 1; ry1 >= -1; ry1--){
 						for(rx1 = 0; rx1 >= -1 && rx1 <= 1; rx1 = -rx1-rx1+1){ // Oscillate the X starting at 0, 1, -1, 3, -5, etc (Though stop at -1)

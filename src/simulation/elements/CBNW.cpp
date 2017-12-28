@@ -99,18 +99,18 @@ int Element_CBNW::update(UPDATE_FUNC_ARGS)
 				{
 					if(!parts[i].tmp)
 					{
-						if (parts[r>>8].tmp)
+						if (parts[ID(r)].tmp)
 						{
-							parts[i].tmp = parts[r>>8].tmp;
-							if((r>>8)>i) //If the other particle hasn't been life updated
+							parts[i].tmp = parts[ID(r)].tmp;
+							if((ID(r))>i) //If the other particle hasn't been life updated
 								parts[i].tmp--;
 						}
 					}
-					else if(!parts[r>>8].tmp)
+					else if(!parts[ID(r)].tmp)
 					{
-						parts[r>>8].tmp = parts[i].tmp;
-						if((r>>8)>i) //If the other particle hasn't been life updated
-							parts[r>>8].tmp++;
+						parts[ID(r)].tmp = parts[i].tmp;
+						if((ID(r))>i) //If the other particle hasn't been life updated
+							parts[ID(r)].tmp++;
 					}
 				}
 				else if ((r&0xFF)==PT_RBDM||(r&0xFF)==PT_LRBD)
@@ -122,8 +122,8 @@ int Element_CBNW::update(UPDATE_FUNC_ARGS)
 						parts[i].ctype = PT_WATR;
 					}
 				}
-				else if ((r&0xFF)==PT_FIRE && parts[r>>8].ctype!=PT_WATR){
-					sim->kill_part(r>>8);
+				else if ((r&0xFF)==PT_FIRE && parts[ID(r)].ctype!=PT_WATR){
+					sim->kill_part(ID(r));
 					if(!(rand()%50)){
 						sim->kill_part(i);
 						return 1;

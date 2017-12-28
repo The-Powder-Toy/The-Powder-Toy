@@ -162,7 +162,7 @@ void SearchController::ChangeSort()
 
 void SearchController::ShowOwn(bool show)
 {
-	if(Client::Ref().GetAuthUser().ID)
+	if(Client::Ref().GetAuthUser().UserID)
 	{
 		searchModel->SetShowFavourite(false);
 		searchModel->SetShowOwn(show);
@@ -174,7 +174,7 @@ void SearchController::ShowOwn(bool show)
 
 void SearchController::ShowFavourite(bool show)
 {
-	if(Client::Ref().GetAuthUser().ID)
+	if(Client::Ref().GetAuthUser().UserID)
 	{
 		searchModel->SetShowOwn(false);
 		searchModel->SetShowFavourite(show);
@@ -186,7 +186,7 @@ void SearchController::ShowFavourite(bool show)
 
 void SearchController::Selected(int saveID, bool selected)
 {
-	if(!Client::Ref().GetAuthUser().ID)
+	if(!Client::Ref().GetAuthUser().UserID)
 		return;
 
 	if(selected)
