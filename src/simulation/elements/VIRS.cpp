@@ -128,7 +128,7 @@ int Element_VIRS::update(UPDATE_FUNC_ARGS)
 					rndstore >>= 3;
 				}
 				//protons make VIRS last forever
-				else if ((sim->photons[y+ry][x+rx]&0xFF) == PT_PROT)
+				else if (TYP(sim->photons[y+ry][x+rx]) == PT_PROT)
 				{
 					parts[i].pavg[1] = 0;
 				}

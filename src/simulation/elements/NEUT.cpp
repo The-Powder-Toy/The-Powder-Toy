@@ -55,7 +55,7 @@ int Element_NEUT::update(UPDATE_FUNC_ARGS)
 			if (BOUNDS_CHECK)
 			{
 				r = pmap[y+ry][x+rx];
-				switch (r&0xFF)
+				switch (TYP(r))
 				{
 				case PT_WATR:
 					if (3>(rand()%20))

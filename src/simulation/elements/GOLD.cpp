@@ -87,7 +87,7 @@ int Element_GOLD::update(UPDATE_FUNC_ARGS)
 			}
 		}
 	}
-	if ((sim->photons[y][x]&0xFF) == PT_NEUT)
+	if (TYP(sim->photons[y][x]) == PT_NEUT)
 	{
 		if (!(rand()%7))
 		{

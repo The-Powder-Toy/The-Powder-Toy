@@ -50,7 +50,7 @@ int Element_PROT::update(UPDATE_FUNC_ARGS)
 {
 	sim->pv[y/CELL][x/CELL] -= .003f;
 	int under = pmap[y][x];
-	int utype = under & 0xFF;
+	int utype = TYP(under);
 	int uID = ID(under);
 	switch (utype)
 	{
@@ -150,7 +150,7 @@ int Element_PROT::update(UPDATE_FUNC_ARGS)
 	}
 	//collide with other protons to make heavier materials
 	int ahead = sim->photons[y][x];
-	if (ID(ahead) != i && (ahead&0xFF) == PT_PROT)
+	if (ID(ahead) != i && TYP(ahead) == PT_PROT)
 	{
 		float velocity1 = powf(parts[i].vx, 2.0f)+powf(parts[i].vy, 2.0f);
 		float velocity2 = powf(parts[ID(ahead)].vx, 2.0f)+powf(parts[ID(ahead)].vy, 2.0f);

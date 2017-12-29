@@ -47,7 +47,7 @@ Element_SWCH::Element_SWCH()
 
 bool isRedBRAY(UPDATE_FUNC_ARGS, int xc, int yc)
 {
-	return (pmap[yc][xc]&0xFF) == PT_BRAY && parts[ID(pmap[yc][xc])].tmp == 2;
+	return TYP(pmap[yc][xc]) == PT_BRAY && parts[ID(pmap[yc][xc])].tmp == 2;
 }
 
 //#TPT-Directive ElementHeader Element_SWCH static int update(UPDATE_FUNC_ARGS)
@@ -83,7 +83,7 @@ int Element_SWCH::update(UPDATE_FUNC_ARGS)
 				}
 			}
 	//turn SWCH on/off from two red BRAYS. There must be one either above or below, and one either left or right to work, and it can't come from the side, it must be a diagonal beam
-	if (!(pmap[y-1][x-1]&0xFF) && !(pmap[y-1][x+1]&0xFF) && (isRedBRAY(UPDATE_FUNC_SUBCALL_ARGS, x, y-1) || isRedBRAY(UPDATE_FUNC_SUBCALL_ARGS, x, y+1)) && (isRedBRAY(UPDATE_FUNC_SUBCALL_ARGS, x+1, y) || isRedBRAY(UPDATE_FUNC_SUBCALL_ARGS, x-1, y)))
+	if (!TYP(pmap[y-1][x-1]) && !TYP(pmap[y-1][x+1]) && (isRedBRAY(UPDATE_FUNC_SUBCALL_ARGS, x, y-1) || isRedBRAY(UPDATE_FUNC_SUBCALL_ARGS, x, y+1)) && (isRedBRAY(UPDATE_FUNC_SUBCALL_ARGS, x+1, y) || isRedBRAY(UPDATE_FUNC_SUBCALL_ARGS, x-1, y)))
 	{
 		if (parts[i].life == 10)
 			parts[i].life = 9;

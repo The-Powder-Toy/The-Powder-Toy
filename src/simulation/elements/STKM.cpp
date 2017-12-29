@@ -590,7 +590,7 @@ void Element_STKM::STKM_interact(Simulation *sim, playerst *playerp, int i, int 
 		}
 			
 		if (sim->elements[TYP(r)].Properties&PROP_DEADLY)
-			switch (r&0xFF)
+			switch (TYP(r))
 			{
 				case PT_ACID:
 					sim->parts[i].life -= 5;

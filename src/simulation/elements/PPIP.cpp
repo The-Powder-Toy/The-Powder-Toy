@@ -83,7 +83,7 @@ void Element_PPIP::flood_trigger(Simulation * sim, int x, int y, int sparkedBy)
 	else if (sparkedBy==PT_NSCN) prop = PPIP_TMPFLAG_TRIGGER_OFF << 3;
 	else if (sparkedBy==PT_INST) prop = PPIP_TMPFLAG_TRIGGER_REVERSE << 3;
 
-	if (prop==0 || (pmap[y][x]&0xFF)!=PT_PPIP || (parts[ID(pmap[y][x])].tmp & prop))
+	if (prop==0 || TYP(pmap[y][x])!=PT_PPIP || (parts[ID(pmap[y][x])].tmp & prop))
 		return;
 
 	coord_stack = new unsigned short[coord_stack_limit][2];
@@ -100,7 +100,7 @@ void Element_PPIP::flood_trigger(Simulation * sim, int x, int y, int sparkedBy)
 		// go left as far as possible
 		while (x1>=CELL)
 		{
-			if ((pmap[y][x1-1]&0xFF)!=PT_PPIP)
+			if (TYP(pmap[y][x1-1]) != PT_PPIP)
 			{
 				break;
 			}
@@ -109,7 +109,7 @@ void Element_PPIP::flood_trigger(Simulation * sim, int x, int y, int sparkedBy)
 		// go right as far as possible
 		while (x2<XRES-CELL)
 		{
-			if ((pmap[y][x2+1]&0xFF)!=PT_PPIP)
+			if (TYP(pmap[y][x2+1]) != PT_PPIP)
 			{
 				break;
 			}
@@ -128,7 +128,7 @@ void Element_PPIP::flood_trigger(Simulation * sim, int x, int y, int sparkedBy)
 		// Don't need to check x bounds here, because already limited to [CELL, XRES-CELL]
 		if (y>=CELL+1)
 			for (x=x1-1; x<=x2+1; x++)
-			if ((pmap[y-1][x]&0xFF)==PT_PPIP && !(parts[ID(pmap[y-1][x])].tmp & prop))
+			if (TYP(pmap[y-1][x]) == PT_PPIP && !(parts[ID(pmap[y-1][x])].tmp & prop))
 			{
 				coord_stack[coord_stack_size][0] = x;
 				coord_stack[coord_stack_size][1] = y-1;
@@ -141,7 +141,7 @@ void Element_PPIP::flood_trigger(Simulation * sim, int x, int y, int sparkedBy)
 			}
 		if (y<YRES-CELL-1)
 			for (x=x1-1; x<=x2+1; x++)
-				if ((pmap[y+1][x]&0xFF)==PT_PPIP && !(parts[ID(pmap[y+1][x])].tmp & prop))
+				if (TYP(pmap[y+1][x]) == PT_PPIP && !(parts[ID(pmap[y+1][x])].tmp & prop))
 				{
 					coord_stack[coord_stack_size][0] = x;
 					coord_stack[coord_stack_size][1] = y+1;

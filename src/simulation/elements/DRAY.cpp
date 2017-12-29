@@ -54,7 +54,7 @@ bool InBounds(int x, int y)
 //#TPT-Directive ElementHeader Element_DRAY static int update(UPDATE_FUNC_ARGS)
 int Element_DRAY::update(UPDATE_FUNC_ARGS)
 {
-	int ctype = parts[i].ctype&0xFF, ctypeExtra = ID(parts[i].ctype), copyLength = parts[i].tmp, copySpaces = parts[i].tmp2;
+	int ctype = TYP(parts[i].ctype), ctypeExtra = ID(parts[i].ctype), copyLength = parts[i].tmp, copySpaces = parts[i].tmp2;
 	if (copySpaces < 0)
 		copySpaces = parts[i].tmp2 = 0;
 	if (copyLength < 0)
@@ -106,7 +106,7 @@ int Element_DRAY::update(UPDATE_FUNC_ARGS)
 							//  1: if .tmp isn't set, and the element in this spot is the ctype, then stop
 							//  2: if .tmp is set, stop when the length limit reaches 0
 							//  3. Stop when we are out of bounds
-							if ((!copyLength && (rr&0xFF) == ctype && (ctype != PT_LIFE || parts[ID(rr)].ctype == ctypeExtra))
+							if ((!copyLength && TYP(rr) == ctype && (ctype != PT_LIFE || parts[ID(rr)].ctype == ctypeExtra))
 									|| !(--partsRemaining && InBounds(xCurrent+xStep, yCurrent+yStep)))
 							{
 								copyLength -= partsRemaining;
@@ -123,9 +123,9 @@ int Element_DRAY::update(UPDATE_FUNC_ARGS)
 						{
 							// get particle to copy
 							if (isEnergy)
-								type = sim->photons[yCurrent][xCurrent]&0xFF;
+								type = TYP(sim->photons[yCurrent][xCurrent]);
 							else
-								type = pmap[yCurrent][xCurrent]&0xFF;
+								type = TYP(pmap[yCurrent][xCurrent]);
 
 							// if sparked by PSCN, overwrite whatever is in the target location, instead of just ignoring it
 							if (overwrite)

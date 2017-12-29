@@ -75,7 +75,7 @@ int Element_STOR::update(UPDATE_FUNC_ARGS)
 				{
 					for(ry1 = 1; ry1 >= -1; ry1--){
 						for(rx1 = 0; rx1 >= -1 && rx1 <= 1; rx1 = -rx1-rx1+1){ // Oscillate the X starting at 0, 1, -1, 3, -5, etc (Though stop at -1)
-							np = sim->create_part(-1,x+rx1,y+ry1,parts[i].tmp&0xFF);
+							np = sim->create_part(-1,x+rx1,y+ry1,TYP(parts[i].tmp));
 							if (np!=-1)
 							{
 								parts[np].temp = parts[i].temp;

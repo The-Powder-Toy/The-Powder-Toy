@@ -90,7 +90,7 @@ int Element_O2::update(UPDATE_FUNC_ARGS)
 				parts[j].temp = MAX_TEMP;
 				parts[j].tmp = 0x1;
 			}
-			rx = x+rand()%3-1, ry = y+rand()%3-1, r = pmap[ry][rx]&0xFF;
+			rx = x+rand()%3-1, ry = y+rand()%3-1, r = TYP(pmap[ry][rx]);
 			if (sim->can_move[PT_PLSM][r] || r == PT_O2)
 			{
 				j = sim->create_part(-3,rx,ry,PT_PLSM);
