@@ -52,13 +52,13 @@
 
 // Change this to change the amount of bits used to store type in pmap (and a few elements such as PIPE and CRAY)
 #define PMAPBITS 8
-#define PMAPMASK ((2<<(PMAPBITS-1))-1)
+#define PMAPMASK ((1<<PMAPBITS)-1)
 #define ID(r) ((r)>>PMAPBITS)
 #define TYP(r) ((r)&PMAPMASK)
 #define PMAP(id, typ) ((id)<<PMAPBITS | ((typ)&PMAPMASK))
 #define PMAPID(id) ((id)<<PMAPBITS)
 
-#define PT_NUM	256
+#define PT_NUM	(1<<PMAPBITS)
 
 struct playerst;
 
