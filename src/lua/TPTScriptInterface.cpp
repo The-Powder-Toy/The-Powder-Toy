@@ -457,10 +457,10 @@ AnyType TPTScriptInterface::tptS_create(std::deque<std::string> * words)
 				throw GeneralException("Invalid position");
 
 	int v = -1;
-	if (type>>8)
+	if (ID(type))
 	{
-		v = type>>8;
-		type = type&0xFF;
+		v = ID(type);
+		type = TYP(type);
 	}
 	int returnValue = sim->create_part(-1, tempPoint.X, tempPoint.Y, type, v);
 

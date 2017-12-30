@@ -35,7 +35,7 @@ std::string sign::getText(Simulation *sim)
 		else if (!strcmp(signText,"{t}"))
 		{
 			if (x>=0 && x<XRES && y>=0 && y<YRES && sim->pmap[y][x])
-				sprintf(buff, "Temp: %4.2f", sim->parts[sim->pmap[y][x]>>8].temp-273.15);  //...temperature
+				sprintf(buff, "Temp: %4.2f", sim->parts[ID(sim->pmap[y][x])].temp-273.15);  //...temperature
 			else
 				sprintf(buff, "Temp: 0.00");  //...temperature
 		}

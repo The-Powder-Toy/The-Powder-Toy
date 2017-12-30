@@ -1146,11 +1146,11 @@ int luatpt_set_property(lua_State* l)
 			if (i>=XRES || y>=YRES)
 				return luaL_error(l, "Coordinates out of range (%d,%d)", i, y);
 			r = luacon_sim->pmap[y][i];
-			if (!r || (partsel && partsel != (r&0xFF)))
+			if (!r || (partsel && partsel != TYP(r)))
 				r = luacon_sim->photons[y][i];
-			if (!r || (partsel && partsel != (r&0xFF)))
+			if (!r || (partsel && partsel != TYP(r)))
 				return 0;
-			i = r>>8;
+			i = ID(r);
 		}
 		if (i < 0 || i >= NPART)
 			return luaL_error(l, "Invalid particle ID '%d'", i);
@@ -1295,7 +1295,7 @@ int luatpt_get_property(lua_State* l)
 				return luaL_error(l, "Particle does not exist");
 			}
 		}
-		i = r>>8;
+		i = ID(r);
 	}
 	else if (y != -1)
 		return luaL_error(l, "Coordinates out of range (%d,%d)", i, y);

@@ -153,15 +153,15 @@ void Element_LIGH_Tool::DrawLine(Simulation * sim, Brush * brush, ui::Point posi
 
 void Element_TESC_Tool::DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) {
 	int radiusInfo = brush->GetRadius().X*4+brush->GetRadius().Y*4+7;
-	sim->CreateBox(position1.X, position1.Y, position2.X, position2.Y, toolID | (radiusInfo << 8));
+	sim->CreateBox(position1.X, position1.Y, position2.X, position2.Y, toolID | PMAPID(radiusInfo));
 }
 void Element_TESC_Tool::DrawFill(Simulation * sim, Brush * brush, ui::Point position) {
 	int radiusInfo = brush->GetRadius().X*4+brush->GetRadius().Y*4+7;
-	sim->FloodParts(position.X, position.Y, toolID | (radiusInfo << 8), -1);
+	sim->FloodParts(position.X, position.Y, toolID | PMAPID(radiusInfo), -1);
 }
 
 
 void PlopTool::Click(Simulation * sim, Brush * brush, ui::Point position)
 {
-	sim->create_part(-2, position.X, position.Y, toolID&0xFF, toolID>>8);
+	sim->create_part(-2, position.X, position.Y, TYP(toolID), ID(toolID));
 }

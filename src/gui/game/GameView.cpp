@@ -2293,7 +2293,7 @@ void GameView::OnDraw()
 		{
 			int ctype = sample.particle.ctype;
 			if (type == PT_PIPE || type == PT_PPIP)
-				ctype = sample.particle.tmp&0xFF;
+				ctype = TYP(sample.particle.tmp);
 
 			if (type == PT_PHOT || type == PT_BIZR || type == PT_BIZRG || type == PT_BIZRS || type == PT_FILT || type == PT_BRAY || type == PT_C5)
 				wavelengthGfx = (ctype&0x3FFFFFFF);
@@ -2322,7 +2322,7 @@ void GameView::OnDraw()
 						sampleInfo << " (" << ctype << ")";
 					// Some elements store extra LIFE info in upper bits of ctype, instead of tmp/tmp2
 					else if (type == PT_CRAY || type == PT_DRAY || type == PT_CONV)
-						sampleInfo << " (" << c->ElementResolve(ctype&0xFF, ctype>>8) << ")";
+						sampleInfo << " (" << c->ElementResolve(TYP(type), ID(ctype)) << ")";
 					else if (c->IsValidElement(ctype))
 						sampleInfo << " (" << c->ElementResolve(ctype, -1) << ")";
 					else
