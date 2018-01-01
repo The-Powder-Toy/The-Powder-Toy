@@ -165,7 +165,7 @@ void Client::Initialise(std::string proxyString)
 	// use an alternate update server
 	alternateVersionCheckRequest = http_async_req_start(NULL, "http://" UPDATESERVER "/Startup.json", NULL, 0, 0);
 	usingAltUpdateServer = true;
-	if (authUser.ID)
+	if (authUser.UserID)
 	{
 		http_auth_headers(alternateVersionCheckRequest, authUser.Username.c_str(), NULL, NULL);
 	}
