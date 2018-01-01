@@ -51,7 +51,7 @@
 #define OLD_PT_WIND 147
 
 // Change this to change the amount of bits used to store type in pmap (and a few elements such as PIPE and CRAY)
-#define PMAPBITS 8
+#define PMAPBITS 9
 #define PMAPMASK ((1<<PMAPBITS)-1)
 #define ID(r) ((r)>>PMAPBITS)
 #define TYP(r) ((r)&PMAPMASK)

@@ -28,6 +28,7 @@ GameSave::GameSave(GameSave & save):
 	edgeMode(save.edgeMode),
 	signs(save.signs),
 	palette(save.palette),
+	pmapbits(save.pmapbits),
 	expanded(save.expanded),
 	hasOriginalData(save.hasOriginalData),
 	originalData(save.originalData)
@@ -141,6 +142,7 @@ GameSave::GameSave(char * data, int dataSize)
 	//Collapse();
 }
 
+// Called on every new GameSave, including the copy constructor
 void GameSave::InitData()
 {
 	blockMap = NULL;
@@ -157,6 +159,7 @@ void GameSave::InitData()
 	authors.clear();
 }
 
+// Called on every new GameSave, except the copy constructor
 void GameSave::InitVars()
 {
 	waterEEnabled = false;
@@ -168,6 +171,7 @@ void GameSave::InitVars()
 	airMode = 0;
 	edgeMode = 0;
 	translated.x = translated.y = 0;
+	pmapbits = 8; // default to 8 bits for older saves
 }
 
 bool GameSave::Collapsed()
@@ -563,6 +567,7 @@ void GameSave::readOPS(char * data, int dataLength)
 	unsigned partsCount = 0;
 	unsigned int blockX, blockY, blockW, blockH, fullX, fullY, fullW, fullH;
 	int savedVersion = inputData[4];
+	bool fakeNewerVersion = false; // used for development builds only
 
 	bson b;
 	b.data = NULL;
@@ -649,6 +654,7 @@ void GameSave::readOPS(char * data, int dataLength)
 		CheckBsonFieldInt(iter, "gravityMode", &gravityMode);
 		CheckBsonFieldInt(iter, "airMode", &airMode);
 		CheckBsonFieldInt(iter, "edgeMode", &edgeMode);
+		CheckBsonFieldInt(iter, "pmapbits", &pmapbits);
 		if (!strcmp(bson_iterator_key(&iter), "signs"))
 		{
 			if (bson_iterator_type(&iter)==BSON_ARRAY)
@@ -739,7 +745,7 @@ void GameSave::readOPS(char * data, int dataLength)
 							fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
 					}
 				}
-#ifdef SNAPSHOT
+#if defined(SNAPSHOT) || defined(DEBUG)
 				if (major > FUTURE_SAVE_VERSION || (major == FUTURE_SAVE_VERSION && minor > FUTURE_MINOR_VERSION))
 #else
 				if (major > SAVE_VERSION || (major == SAVE_VERSION && minor > MINOR_VERSION))
@@ -749,6 +755,10 @@ void GameSave::readOPS(char * data, int dataLength)
 					errorMessage << "Save from a newer version: Requires version " << major << "." << minor;
 					throw ParseException(ParseException::WrongVersion, errorMessage.str());
 				}
+#if defined(SNAPSHOT) || defined(DEBUG)
+				else if (major > SAVE_VERSION || (major == SAVE_VERSION && minor > MINOR_VERSION))
+					fakeNewerVersion = true;
+#endif
 			}
 			else
 			{
@@ -955,6 +965,10 @@ void GameSave::readOPS(char * data, int dataLength)
 					particles[newIndex].x = x;
 					particles[newIndex].y = y;
 					i+=3;
+
+					// Read type (2nd byte)
+					if (fieldDescriptor & 0x4000)
+						particles[newIndex].type |= (((unsigned)partsData[i++]) << 8);
 
 					//Read temp
 					if(fieldDescriptor & 0x01)
@@ -1183,6 +1197,16 @@ void GameSave::readOPS(char * data, int dataLength)
 								particles[newIndex].ctype |= particles[newIndex].tmp<<8;
 								particles[newIndex].tmp = 0;
 							}
+						}
+						break;
+					case PT_PIPE:
+					case PT_PPIP:
+						if (savedVersion < 93 && !fakeNewerVersion)
+						{
+							if (particles[newIndex].ctype == 1)
+								particles[newIndex].tmp |= 0x00020000; //PFLAG_INITIALIZING
+							particles[newIndex].tmp |= (particles[newIndex].ctype-1)<<18;
+							particles[newIndex].ctype = particles[newIndex].tmp&0xFF;
 						}
 						break;
 					}
@@ -1841,6 +1865,14 @@ void GameSave::readPSv(char * saveDataChar, int dataLength)
 					}
 				}
 			}
+			// Version 93.0
+			if (particles[i-1].type == PT_PIPE || particles[i-1].type == PT_PPIP)
+			{
+				if (particles[i-1].ctype == 1)
+					particles[i-1].tmp |= 0x00020000; //PFLAG_INITIALIZING
+				particles[i-1].tmp |= (particles[i-1].ctype-1)<<18;
+				particles[i-1].ctype = particles[i-1].tmp&0xFF;
+			}
 		}
 	}
 
@@ -2020,9 +2052,11 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 
 	//Copy parts data
 	/* Field descriptor format:
-	 |		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|		0		|
-									|	   pavg		|	 tmp[3+4]	|	tmp2[2]		|		tmp2	|	ctype[2]	|		vy		|		vx		|	dcololour	|	ctype[1]	|		tmp[2]	|		tmp[1]	|		life[2]	|		life[1]	|	temp dbl len|
+	 |      0       |      14       |      13       |      12       |      11       |      10       |       9       |       8       |       7       |       6       |       5       |       4       |       3       |       2       |       1       |       0       |
+	 |   RESERVED   |    type[2]    |     pavg      |   tmp[3+4]    |   tmp2[2]     |     tmp2      |   ctype[2]    |      vy       |      vx       |  decorations  |   ctype[1]    |    tmp[2]     |    tmp[1]     |    life[2]    |    life[1]    | temp dbl len  |
 	 life[2] means a second byte (for a 16 bit field) if life[1] is present
+	 last bit is reserved. If necessary, use it to signify that fieldDescriptor will have another byte
+	 That way, if we ever need a 17th bit, we won't have to change the save format
 	 */
 	auto partsData = std::unique_ptr<unsigned char[]>(new unsigned char[NPART * (sizeof(Particle)+1)]);
 	unsigned int partsDataLen = 0;
@@ -2056,6 +2090,15 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 				//Location of the field descriptor
 				fieldDescLoc = partsDataLen++;
 				partsDataLen++;
+
+				// Extra type byte if necessary
+				if (particles[i].type & 0xFF00)
+				{
+					partsData[partsDataLen++] = particles[i].type >> 8;
+					fieldDesc |= 1 << 14;
+					RESTRICTVERSION(93, 0);
+					fromNewerVersion = true; // TODO: remove on 93.0 release
+				}
 
 				//Extra Temperature (2nd byte optional, 1st required), 1 to 2 bytes
 				//Store temperature as an offset of 21C(294.15K) or go into a 16byte int and store the whole thing
@@ -2193,12 +2236,33 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 						|| particles[i].type == PT_RFRG || particles[i].type == PT_RFGL || particles[i].type == PT_LSNS)
 				{
 					RESTRICTVERSION(92, 0);
-					fromNewerVersion = true;
 				}
 				else if ((particles[i].type == PT_FRAY || particles[i].type == PT_INVIS) && particles[i].tmp)
 				{
 					RESTRICTVERSION(92, 0);
-					fromNewerVersion = true;
+				}
+				else if (particles[i].type == PT_PIPE || particles[i].type == PT_PPIP)
+				{
+					RESTRICTVERSION(93, 0);
+					fromNewerVersion = true; // TODO: remove on 93.0 release
+				}
+				if (PMAPBITS > 8)
+				{
+					if (Simulation::TypeInCtype(particles[i].type) && particles[i].ctype > 0xFF)
+					{
+						RESTRICTVERSION(93, 0);
+						fromNewerVersion = true; // TODO: remove on 93.0 release
+					}
+					else if (Simulation::TypeInTmp(particles[i].type) && particles[i].tmp > 0xFF)
+					{
+						RESTRICTVERSION(93, 0);
+						fromNewerVersion = true; // TODO: remove on 93.0 release
+					}
+					else if (Simulation::TypeInTmp2(particles[i].type) && particles[i].tmp2 > 0xFF)
+					{
+						RESTRICTVERSION(93, 0);
+						fromNewerVersion = true; // TODO: remove on 93.0 release
+					}
 				}
 
 				//Get the pmap entry for the next particle in the same position
@@ -2286,9 +2350,7 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 	bson_append_int(&b, "airMode", airMode);
 	bson_append_int(&b, "edgeMode", edgeMode);
 
-	//bson_append_int(&b, "leftSelectedElement", sl);
-	//bson_append_int(&b, "rightSelectedElement", sr);
-	//bson_append_int(&b, "activeMenu", active_menu);
+	bson_append_int(&b, "pmapbits", pmapbits);
 	if (partsData && partsDataLen)
 	{
 		bson_append_binary(&b, "parts", BSON_BIN_USER, (const char *)partsData.get(), partsDataLen);

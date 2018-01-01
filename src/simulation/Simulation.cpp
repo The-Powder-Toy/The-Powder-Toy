@@ -33,7 +33,7 @@ int Simulation::Load(GameSave * save, bool includePressure)
 
 int Simulation::Load(int fullX, int fullY, GameSave * save, bool includePressure)
 {
-	int blockX, blockY, x, y, r;
+	int x, y, r;
 
 	if (!save)
 		return 1;
@@ -47,10 +47,11 @@ int Simulation::Load(int fullX, int fullY, GameSave * save, bool includePressure
 	}
 
 	//Align to blockMap
-	blockX = (fullX + CELL/2)/CELL;
-	blockY = (fullY + CELL/2)/CELL;
+	int blockX = (fullX + CELL/2)/CELL;
+	int blockY = (fullY + CELL/2)/CELL;
 	fullX = blockX*CELL;
 	fullY = blockY*CELL;
+	unsigned int pmapmask = (1<<save->pmapbits)-1;
 
 	int partMap[PT_NUM];
 	for(int i = 0; i < PT_NUM; i++)
@@ -102,16 +103,27 @@ int Simulation::Load(int fullX, int fullY, GameSave * save, bool includePressure
 		if (!elements[tempPart.type].Enabled)
 			continue;
 
-		if (tempPart.ctype > 0 && tempPart.ctype < PT_NUM)
-			if (tempPart.type == PT_CLNE || tempPart.type == PT_PCLN || tempPart.type == PT_BCLN || tempPart.type == PT_PBCN || tempPart.type == PT_STOR || tempPart.type == PT_CONV || tempPart.type == PT_STKM || tempPart.type == PT_STKM2 || tempPart.type == PT_FIGH || tempPart.type == PT_LAVA || tempPart.type == PT_SPRK || tempPart.type == PT_PSTN || tempPart.type == PT_CRAY || tempPart.type == PT_DTEC || tempPart.type == PT_DRAY)
-			{
-				tempPart.ctype = partMap[tempPart.ctype];
-			}
-		if (tempPart.type == PT_PIPE || tempPart.type == PT_PPIP || tempPart.type == PT_STOR)
+		// These store type in ctype, but are special because they store extra information in the bits after type
+		if (tempPart.type == PT_CRAY || tempPart.type == PT_DRAY || tempPart.type == PT_CONV)
 		{
-			tempPart.tmp = partMap[TYP(tempPart.tmp)] | (tempPart.tmp&~PMAPMASK);
+			int ctype = tempPart.ctype & pmapmask;
+			int extra = tempPart.ctype >> save->pmapbits;
+			if (ctype >= 0 && ctype < PT_NUM)
+				ctype = partMap[ctype];
+			tempPart.ctype = PMAP(extra, ctype);
 		}
-		if (tempPart.type == PT_VIRS || tempPart.type == PT_VRSG || tempPart.type == PT_VRSS)
+		else if (tempPart.ctype > 0 && tempPart.ctype < PT_NUM && TypeInCtype(tempPart.type))
+		{
+			tempPart.ctype = partMap[tempPart.ctype];
+		}
+		// also stores extra bits past type (only STOR right now)
+		if (TypeInTmp(tempPart.type))
+		{
+			int tmp = tempPart.tmp & pmapmask;
+			int extra = tempPart.tmp >> save->pmapbits;
+			tempPart.tmp = PMAP(extra, tmp);
+		}
+		if (TypeInTmp2(tempPart.type))
 		{
 			if (tempPart.tmp2 > 0 && tempPart.tmp2 < PT_NUM)
 				tempPart.tmp2 = partMap[tempPart.tmp2];
@@ -145,30 +157,27 @@ int Simulation::Load(int fullX, int fullY, GameSave * save, bool includePressure
 			elementCount[tempPart.type]++;
 		}
 
-		if (parts[i].type == PT_STKM)
+		switch (parts[i].type)
 		{
+		case PT_STKM:
 			Element_STKM::STKM_init_legs(this, &player, i);
 			player.spwn = 1;
 			player.elem = PT_DUST;
 			player.rocketBoots = false;
-		}
-		else if (parts[i].type == PT_STKM2)
-		{
+			break;
+		case PT_STKM2:
 			Element_STKM::STKM_init_legs(this, &player2, i);
 			player2.spwn = 1;
 			player2.elem = PT_DUST;
 			player2.rocketBoots = false;
-		}
-		else if (parts[i].type == PT_SPAWN)
-		{
+			break;
+		case PT_SPAWN:
 			player.spawnID = i;
-		}
-		else if (parts[i].type == PT_SPAWN2)
-		{
+			break;
+		case PT_SPAWN2:
 			player2.spawnID = i;
-		}
-		else if (parts[i].type == PT_FIGH)
-		{
+			break;
+		case PT_FIGH:
 			for (int fcount = 0; fcount < MAX_FIGHTERS; fcount++)
 			{
 				if(!fighters[fcount].spwn)
@@ -182,11 +191,28 @@ int Simulation::Load(int fullX, int fullY, GameSave * save, bool includePressure
 					break;
 				}
 			}
-		}
-		else if (parts[i].type == PT_SOAP)
-		{
+			break;
+		case PT_SOAP:
 			soapList.insert(std::pair<unsigned int, unsigned int>(n, i));
+			break;
 		}
+
+		/*if (save->pmapbits != PMAPBITS)
+		{
+			unsigned int pmapmask = (1<<save->pmapbits)-1;
+			if (parts[i].type == PT_CRAY || parts[i].type == PT_DRAY || parts[i].type == PT_CONV)
+			{
+				int type = parts[i].ctype & pmapmask;
+				int data = parts[i].ctype >> save->pmapbits;
+				parts[i].ctype = PMAP(data, type);
+			}
+			else if (parts[i].type == PT_PIPE || parts[i].type == PT_PPIP)
+			{
+				int type = parts[i].tmp & pmapmask;
+				int data = parts[i].tmp >> save->pmapbits;
+				parts[i].tmp = PMAP(data, type);
+			}
+		}*/
 	}
 	parts_lastActiveIndex = NPART-1;
 	force_stacking_check = true;
@@ -254,6 +280,25 @@ int Simulation::Load(int fullX, int fullY, GameSave * save, bool includePressure
 	air->RecalculateBlockAirMaps();
 
 	return 0;
+}
+
+bool Simulation::TypeInCtype(int el)
+{
+	return el == PT_CLNE || el == PT_PCLN || el == PT_BCLN || el == PT_PBCN ||
+	        el == PT_STOR || el == PT_CONV || el == PT_STKM || el == PT_STKM2 ||
+	        el == PT_FIGH || el == PT_LAVA || el == PT_SPRK || el == PT_PSTN ||
+	        el == PT_CRAY || el == PT_DTEC || el == PT_DRAY || el == PT_PIPE ||
+			el == PT_PPIP;
+}
+
+bool Simulation::TypeInTmp(int el)
+{
+	return el == PT_STOR;
+}
+
+bool Simulation::TypeInTmp2(int el)
+{
+	return el == PT_VIRS || el == PT_VRSG || el == PT_VRSS;
 }
 
 GameSave * Simulation::Save(bool includePressure)
@@ -390,6 +435,7 @@ GameSave * Simulation::Save(int fullX, int fullY, int fullX2, int fullY2, bool i
 	}
 
 	SaveSimOptions(newSave);
+	newSave->pmapbits = PMAPBITS;
 	return newSave;
 }
 
@@ -2983,7 +3029,7 @@ void Simulation::part_change_type(int i, int x, int y, int t)//changes the type 
 }
 
 //the function for creating a particle, use p=-1 for creating a new particle, -2 is from a brush, or a particle number to replace a particle.
-//tv = Type (8 bits) + Var (24 bits), var is usually 0
+//tv = Type (PMAPBITS bits) + Var (32-PMAPBITS bits), var is usually 0
 int Simulation::create_part(int p, int x, int y, int t, int v)
 {
 	int i;
@@ -4503,9 +4549,9 @@ killed:
 					}
 					r = pmap[fin_y][fin_x];
 
-					if ((TYP(r)==PT_PIPE || TYP(r) == PT_PPIP) && !TYP(parts[ID(r)].tmp))
+					if ((TYP(r)==PT_PIPE || TYP(r) == PT_PPIP) && !TYP(parts[ID(r)].ctype))
 					{
-						parts[ID(r)].tmp =  (parts[ID(r)].tmp&~PMAPMASK) | parts[i].type;
+						parts[ID(r)].ctype =  parts[i].type;
 						parts[ID(r)].temp = parts[i].temp;
 						parts[ID(r)].tmp2 = parts[i].life;
 						parts[ID(r)].pavg[0] = parts[i].tmp;
