@@ -56,7 +56,7 @@ Element_PIPE::Element_PIPE()
 // 0x00001C00 forward single pixel pipe direction
 // 0x00002000 will transfer like a single pixel pipe when in reverse mode
 // 0x0001C000 reverse single pixel pipe direction
-// 0x00060000 PIPE color data stored here
+// 0x000E0000 PIPE color data stored here
 
 #define PFLAG_NORMALSPEED            0x00010000
 #define PFLAG_INITIALIZING           0x00020000 // colors haven't been set yet

@@ -2526,9 +2526,10 @@ int LuaScriptInterface::elements_allocate(lua_State * l)
 	}
 
 	int newID = -1;
-	for(int i = PT_NUM-1; i >= 0; i--)
+	// Start out at 255 so that lua element IDs are still one byte (better save compatibility)
+	for (int i = PT_NUM >= 255 ? 255 : PT_NUM; i >= 0; i--)
 	{
-		if(!luacon_sim->elements[i].Enabled)
+		if (!luacon_sim->elements[i].Enabled)
 		{
 			newID = i;
 			luacon_sim->elements[i] = Element();
@@ -2537,8 +2538,23 @@ int LuaScriptInterface::elements_allocate(lua_State * l)
 			break;
 		}
 	}
+	// If not enough space, then we start with the new maimum ID
+	if (newID == -1)
+	{
+		for (int i = PT_NUM-1; i >= 255; i--)
+		{
+			if (!luacon_sim->elements[i].Enabled)
+			{
+				newID = i;
+				luacon_sim->elements[i] = Element();
+				luacon_sim->elements[i].Enabled = true;
+				luacon_sim->elements[i].Identifier = strdup(identifier.c_str());
+				break;
+			}
+		}
+	}
 
-	if(newID != -1)
+	if (newID != -1)
 	{	
 		lua_getglobal(l, "elements");
 		lua_pushinteger(l, newID);

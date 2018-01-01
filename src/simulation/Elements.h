@@ -60,6 +60,13 @@
 
 #define PT_NUM	(1<<PMAPBITS)
 
+#if PMAPBITS > 16
+#error PMAPBITS is too large
+#endif
+#if ((XRES*YRES)<<PMAPBITS) > 0x100000000L
+#error not enough space in pmap
+#endif
+
 struct playerst;
 
 #include "ElementClasses.h"

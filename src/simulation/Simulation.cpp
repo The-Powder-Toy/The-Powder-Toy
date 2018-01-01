@@ -196,23 +196,6 @@ int Simulation::Load(int fullX, int fullY, GameSave * save, bool includePressure
 			soapList.insert(std::pair<unsigned int, unsigned int>(n, i));
 			break;
 		}
-
-		/*if (save->pmapbits != PMAPBITS)
-		{
-			unsigned int pmapmask = (1<<save->pmapbits)-1;
-			if (parts[i].type == PT_CRAY || parts[i].type == PT_DRAY || parts[i].type == PT_CONV)
-			{
-				int type = parts[i].ctype & pmapmask;
-				int data = parts[i].ctype >> save->pmapbits;
-				parts[i].ctype = PMAP(data, type);
-			}
-			else if (parts[i].type == PT_PIPE || parts[i].type == PT_PPIP)
-			{
-				int type = parts[i].tmp & pmapmask;
-				int data = parts[i].tmp >> save->pmapbits;
-				parts[i].tmp = PMAP(data, type);
-			}
-		}*/
 	}
 	parts_lastActiveIndex = NPART-1;
 	force_stacking_check = true;
@@ -288,7 +271,7 @@ bool Simulation::TypeInCtype(int el)
 	        el == PT_STOR || el == PT_CONV || el == PT_STKM || el == PT_STKM2 ||
 	        el == PT_FIGH || el == PT_LAVA || el == PT_SPRK || el == PT_PSTN ||
 	        el == PT_CRAY || el == PT_DTEC || el == PT_DRAY || el == PT_PIPE ||
-			el == PT_PPIP;
+	        el == PT_PPIP;
 }
 
 bool Simulation::TypeInTmp(int el)
