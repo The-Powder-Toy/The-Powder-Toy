@@ -359,15 +359,25 @@ int Element_PIPE::graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
-//#TPT-Directive ElementHeader Element_PIPE static void transfer_pipe_to_part(Simulation * sim, Particle *pipe, Particle *part)
-void Element_PIPE::transfer_pipe_to_part(Simulation * sim, Particle *pipe, Particle *part)
+//#TPT-Directive ElementHeader Element_PIPE static void transfer_pipe_to_part(Simulation * sim, Particle *pipe, Particle *part, bool STOR=false)
+void Element_PIPE::transfer_pipe_to_part(Simulation * sim, Particle *pipe, Particle *part, bool STOR)
 {
-	part->type = TYP(pipe->ctype);
+	// STOR also calls this function to move particles from STOR to PRTI
+	// PIPE was changed, so now PIPE and STOR don't use the same particle storage format
+	if (STOR)
+	{
+		part->type = TYP(pipe->tmp);
+		pipe->tmp = 0;
+	}
+	else
+	{
+		part->type = TYP(pipe->ctype);
+		pipe->ctype = 0;
+	}
 	part->temp = pipe->temp;
 	part->life = pipe->tmp2;
 	part->tmp = pipe->pavg[0];
 	part->ctype = pipe->pavg[1];
-	pipe->ctype = 0;
 
 	if (!(sim->elements[part->type].Properties & TYPE_ENERGY))
 	{
