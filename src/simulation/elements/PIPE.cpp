@@ -220,7 +220,7 @@ int Element_PIPE::update(UPDATE_FUNC_ARGS)
 					else if (!TYP(parts[i].ctype) && TYP(r)==PT_STOR && parts[ID(r)].tmp>0 && sim->IsValidElement(parts[ID(r)].tmp) && (sim->elements[parts[ID(r)].tmp].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY)))
 					{
 						// STOR stores properties in the same places as PIPE does
-						transfer_pipe_to_pipe(parts+(ID(r)), parts+i);
+						transfer_pipe_to_pipe(parts+(ID(r)), parts+i, true);
 					}
 				}
 			}
@@ -401,15 +401,24 @@ void Element_PIPE::transfer_part_to_pipe(Particle *part, Particle *pipe)
 	pipe->pavg[1] = part->ctype;
 }
 
-//#TPT-Directive ElementHeader Element_PIPE static void transfer_pipe_to_pipe(Particle *src, Particle *dest)
-void Element_PIPE::transfer_pipe_to_pipe(Particle *src, Particle *dest)
+//#TPT-Directive ElementHeader Element_PIPE static void transfer_pipe_to_pipe(Particle *src, Particle *dest, bool STOR=false)
+void Element_PIPE::transfer_pipe_to_pipe(Particle *src, Particle *dest, bool STOR)
 {
-	dest->ctype = src->ctype;
+	// STOR to PIPE
+	if (STOR)
+	{
+		dest->ctype = src->tmp;
+		src->tmp = 0;
+	}
+	else
+	{
+		dest->ctype = src->ctype;	
+		src->ctype = 0;
+	}
 	dest->temp = src->temp;
 	dest->tmp2 = src->tmp2;
 	dest->pavg[0] = src->pavg[0];
 	dest->pavg[1] = src->pavg[1];
-	src->ctype = 0;
 }
 
 //#TPT-Directive ElementHeader Element_PIPE static void pushParticle(Simulation * sim, int i, int count, int original)
