@@ -5200,7 +5200,8 @@ void Simulation::BeforeSim()
 	sandcolour = (int)(20.0f*sin((float)sandcolour_frame*(M_PI/180.0f)));
 	sandcolour_frame = (sandcolour_frame+1)%360;
 
-	RecalcFreeParticles(true);
+	if (debug_currentParticle == 0)
+		RecalcFreeParticles(true);
 
 	if (!sys_pause || framerender)
 	{
