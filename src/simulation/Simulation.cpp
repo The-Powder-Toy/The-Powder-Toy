@@ -485,6 +485,7 @@ void Simulation::Restore(const Snapshot & snap)
 		std::copy(snap.GravValue.begin(), snap.GravValue.end(), gravp);
 		std::copy(snap.GravMap.begin(), snap.GravMap.end(), gravmap);
 	}
+	gravWallChanged = true;
 	std::copy(snap.BlockMap.begin(), snap.BlockMap.end(), &bmap[0][0]);
 	std::copy(snap.ElecMap.begin(), snap.ElecMap.end(), &emap[0][0]);
 	std::copy(snap.FanVelocityX.begin(), snap.FanVelocityX.end(), &fvx[0][0]);
