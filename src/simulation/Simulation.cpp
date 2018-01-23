@@ -3485,9 +3485,6 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 	case PT_FILT:
 		parts[i].tmp = v;
 		break;
-	case PT_RAYT:
-		parts[i].life = -1;
-		parts[i].tmp = -1;
 	default:
 		break;
 	}

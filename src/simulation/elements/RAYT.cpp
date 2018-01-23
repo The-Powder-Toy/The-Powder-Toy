@@ -56,7 +56,7 @@ Element_RAYT::Element_RAYT() {
 //#TPT-Directive ElementHeader Element_RAYT static int update(UPDATE_FUNC_ARGS)
 int Element_RAYT::update(UPDATE_FUNC_ARGS) {
 	int rx, ry, r = 0;
-	if (parts[i].life == -1 && parts[i].tmp == -1) {
+	if (parts[i].life == 0 && parts[i].tmp == 0) {
 		for (rx=-2; rx<3; rx++) {
 			for (ry=-2; ry<3; ry++) {
 				r = pmap[y+ry][x+rx];
