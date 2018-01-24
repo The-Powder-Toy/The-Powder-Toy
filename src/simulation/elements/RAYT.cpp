@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+
 //#TPT-Directive ElementClass Element_RAYT PT_RAYT 186
 Element_RAYT::Element_RAYT() {
 	Identifier = "DEFAULT_PT_RAYT";
@@ -56,56 +57,66 @@ Element_RAYT::Element_RAYT() {
 //#TPT-Directive ElementHeader Element_RAYT static int update(UPDATE_FUNC_ARGS)
 int Element_RAYT::update(UPDATE_FUNC_ARGS) {
 	int rx, ry, r = 0;
-	if (parts[i].life == 0 && parts[i].tmp == 0) {
-		for (rx=-2; rx<3; rx++) {
-			for (ry=-2; ry<3; ry++) {
+	for (rx=-2; rx<3; rx++) {
+		for (ry=-2; ry<3; ry++) {
+			if (BOUNDS_CHECK && (rx || ry) && x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES) {
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				int type = TYP(r);
-				if (type == PT_SPRK || type == PT_METL || type == PT_NSCN || type == PT_PSCN || type == PT_INSL) {
-					parts[i].life = rx;
-					parts[i].tmp = ry;
-					return 0;
-				}
-			}
-		}
-	} else {
-		// Stolen from DRAY
-		bool foundParticle = false;
-		bool isEnergy = false;
-		int p = 0;
-		for (int xStep = parts[i].life*-1, yStep = parts[i].tmp*-1, xCurrent = x+xStep, yCurrent = y+yStep; ; xCurrent+=xStep, yCurrent+=yStep) {
-			int rr;
-			// haven't found a particle yet, keep looking for one
-			// the first particle it sees decides whether it will copy energy particles or not
-			if (!foundParticle) {
-				rr = pmap[yCurrent][xCurrent];
-				if (!rr) {
-					rr = sim->photons[yCurrent][xCurrent];
-					if (rr) {
-						foundParticle = isEnergy = true;
-						p = rr;
-						break;
+
+				int rt = TYP(r);
+				if ((sim->elements[rt].Properties&PROP_CONDUCTS) && !(rt==PT_WATR||rt==PT_SLTW||rt==PT_NTCT||rt==PT_PTCT||rt==PT_INWR) && parts[ID(r)].life==0) {
+					// Stolen from DRAY
+					bool foundParticle = false;
+					bool isEnergy = false;
+					int p = 0;
+					for (int xStep = rx*-1, yStep = ry*-1, xCurrent = x+xStep, yCurrent = y+yStep; ; xCurrent+=xStep, yCurrent+=yStep) {
+						int rr;
+						if (!(xCurrent>=0 && yCurrent>=0 && xCurrent<XRES && yCurrent<YRES)) {
+							break; // We're out of bounds! Oops!
+						}
+						// haven't found a particle yet, keep looking for one
+						if (!foundParticle) {
+							rr = pmap[yCurrent][xCurrent];
+							if (!rr) {
+								rr = sim->photons[yCurrent][xCurrent];
+									if (rr) {
+										foundParticle = isEnergy = true;
+										goto checks;
+										break;
+									}
+							} else {
+								foundParticle = true;
+								checks:
+								if (parts[i].ctype == PT_NONE && TYP(rr) != PT_NONE) {
+									parts[ID(r)].life = 4;
+									parts[ID(r)].ctype = rt;
+									sim->part_change_type(ID(r),x+rx,y+ry,PT_SPRK);
+								}
+								if (isEnergy) {
+									if ((parts[i].tmp2 & 1) && ((TYP(rr) == TYP(parts[i].ctype)) xor (parts[i].tmp2 & (1 << 1)))) {
+										if (sim->parts_avg(i,ID(r),PT_INSL) != PT_INSL) {
+											parts[ID(r)].life = 4;
+											parts[ID(r)].ctype = rt;
+											sim->part_change_type(ID(r),x+rx,y+ry,PT_SPRK);
+										}
+									} else {
+										break;
+									}
+								}
+								if ((TYP(rr) == TYP(parts[i].ctype)) xor (parts[i].tmp2 & (1 << 1))) {
+									if (sim->parts_avg(i,ID(r),PT_INSL) != PT_INSL) {
+										parts[ID(r)].life = 4;
+										parts[ID(r)].ctype = rt;
+										sim->part_change_type(ID(r),x+rx,y+ry,PT_SPRK);
+									}
+								}
+								break;
+							}
+						}
 					}
-				} else {
-					foundParticle = true;
-					p = rr;
-					break;
 				}
-			}
-		}
-		if (foundParticle == true) {
-			if (isEnergy) {
-				if ((parts[i].tmp2 & 1) && ((TYP(p) == TYP(parts[i].ctype)) xor (parts[i].tmp2 & (1 << 1)))) {
-					sim->part_change_type(ID(pmap[y+parts[i].tmp][x+parts[i].life]),x+parts[i].life,y+parts[i].tmp,PT_SPRK);
-					return 0;
-				} else {
-					return 0;
-				}
-			}
-			if ((TYP(p) == TYP(parts[i].ctype)) xor (parts[i].tmp2 & (1 << 1))) {
-				sim->part_change_type(ID(pmap[y+parts[i].tmp][x+parts[i].life]),x+parts[i].life,y+parts[i].tmp,PT_SPRK);
+				continue;
 			}
 		}
 	}
