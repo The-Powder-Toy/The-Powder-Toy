@@ -1481,7 +1481,15 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		break;
 	case 'p':
 	case SDLK_F2:
-		screenshot();
+		if (ctrl)
+		{
+			if (shift)
+				c->SetActiveTool(1, "DEFAULT_UI_PROPERTY");
+			else
+				c->SetActiveTool(0, "DEFAULT_UI_PROPERTY");
+		}
+		else
+			screenshot();
 		break;
 	case SDLK_F3:
 		SetDebugHUD(!GetDebugHUD());

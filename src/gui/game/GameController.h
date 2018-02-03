@@ -109,6 +109,7 @@ public:
 	void RebuildFavoritesMenu();
 	Tool * GetActiveTool(int selection);
 	void SetActiveTool(int toolSelection, Tool * tool);
+	void SetActiveTool(int toolSelection, std::string identifier);
 	void SetLastTool(Tool * tool);
 	int GetReplaceModeFlags();
 	void SetReplaceModeFlags(int flags);
