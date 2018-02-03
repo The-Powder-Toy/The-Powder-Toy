@@ -1274,8 +1274,8 @@ void Simulation::ToolLine(int x1, int y1, int x2, int y2, int tool, Brush * cBru
 void Simulation::ToolBox(int x1, int y1, int x2, int y2, int tool, float strength)
 {
 	int brushX, brushY;
-	brushX = ((x1 + x2) >> 1);
-	brushY = ((y1 + y2) >> 1);
+	brushX = ((x1 + x2) / 2);
+	brushY = ((y1 + y2) / 2);
 	int i, j;
 	if (x1>x2)
 	{
