@@ -17,7 +17,7 @@ public:
 	
 	SimTool();
 	virtual ~SimTool() {}
-	virtual int Perform(Simulation * sim, Particle * cpart, int x, int y, float strength) { return 0; }
+	virtual int Perform(Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength) { return 0; }
 };
 
 #endif

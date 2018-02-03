@@ -9,7 +9,7 @@ Tool_Air::Tool_Air()
 	Description = "Air, creates airflow and pressure.";
 }
 
-int Tool_Air::Perform(Simulation * sim, Particle * cpart, int x, int y, float strength)
+int Tool_Air::Perform(Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength)
 {
 	sim->air->pv[y/CELL][x/CELL] += strength*0.05f;
 
