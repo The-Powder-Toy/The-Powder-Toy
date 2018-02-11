@@ -18,6 +18,7 @@
 #include "Misc.h"
 #include "ToolClasses.h"
 #include "client/GameSave.h"
+#include "common/tpt-compat.h"
 #include "common/tpt-minmax.h"
 #include "gui/game/Brush.h"
 

@@ -238,7 +238,7 @@ def findLibs(env, conf):
 			if not conf.CheckLib('mingw32') or not conf.CheckLib('ws2_32'):
 				FatalError("Error: some windows libraries not found or not installed, make sure your compiler is set up correctly")
 
-		if not conf.CheckLib('SDLmain'):
+		if not GetOption('renderer') and not conf.CheckLib('SDLmain'):
 			FatalError("libSDLmain not found or not installed")
 
 	if not GetOption('renderer'):
@@ -407,7 +407,11 @@ if platform == "Windows":
 	env.Append(CPPDEFINES=["WIN", "_WIN32_WINNT=0x0501", "_USING_V110_SDK71_"])
 	if msvc:
 		env.Append(CCFLAGS=['/Gm', '/Zi', '/EHsc', '/FS', '/GS']) #enable minimal rebuild, ?, enable exceptions, allow -j to work in debug builds, enable security check
-		env.Append(LINKFLAGS=['/SUBSYSTEM:WINDOWS,"5.01"', '/OPT:REF', '/OPT:ICF'])
+		if GetOption('renderer'):
+			env.Append(LINKFLAGS=['/SUBSYSTEM:CONSOLE'])
+		else:
+			env.Append(LINKFLAGS=['/SUBSYSTEM:WINDOWS,"5.01"'])
+		env.Append(LINKFLAGS=['/OPT:REF', '/OPT:ICF'])
 		env.Append(CPPDEFINES=['_SCL_SECURE_NO_WARNINGS']) #Disable warnings about 'std::print'
 		if GetOption('static'):
 			env.Append(LINKFLAGS=['/NODEFAULTLIB:msvcrt.lib', '/LTCG'])
