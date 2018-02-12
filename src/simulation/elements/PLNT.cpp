@@ -48,12 +48,10 @@ Element_PLNT::Element_PLNT()
 	Graphics = &Element_PLNT::graphics;
 }
 
-#include <iostream>
 //#TPT-Directive ElementHeader Element_PLNT static int update(UPDATE_FUNC_ARGS)
 int Element_PLNT::update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry, np, rndstore;
-	std::cout << PMAPBITS << ", " << PMAPMASK << std::endl;
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
