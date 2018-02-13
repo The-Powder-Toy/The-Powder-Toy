@@ -9,7 +9,7 @@ Tool_Vac::Tool_Vac()
 	Description = "Vacuum, reduces air pressure.";
 }
 
-int Tool_Vac::Perform(Simulation * sim, Particle * cpart, int x, int y, float strength)
+int Tool_Vac::Perform(Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength)
 {
 	sim->air->pv[y/CELL][x/CELL] -= strength*0.05f;
 

@@ -8,7 +8,7 @@ Tool_Mix::Tool_Mix()
 	Description = "Mixes particles.";
 }
 
-int Tool_Mix::Perform(Simulation * sim, Particle * cpart, int x, int y, float strength)
+int Tool_Mix::Perform(Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength)
 {
 	int thisPart = sim->pmap[y][x];
 	if(!thisPart)

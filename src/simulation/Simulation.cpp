@@ -1192,7 +1192,7 @@ void Simulation::ApplyDecorationFill(Renderer *ren, int x, int y, int colR, int 
 	free(bitmap);
 }
 
-int Simulation::Tool(int x, int y, int tool, float strength)
+int Simulation::Tool(int x, int y, int tool, int brushX, int brushY, float strength)
 {
 	if(tools[tool])
 	{
@@ -1202,7 +1202,7 @@ int Simulation::Tool(int x, int y, int tool, float strength)
 			cpart = &(parts[ID(r)]);
 		else if ((r = photons[y][x]))
 			cpart = &(parts[ID(r)]);
-		return tools[tool]->Perform(this, cpart, x, y, strength);
+		return tools[tool]->Perform(this, cpart, x, y, brushX, brushY, strength);
 	}
 	return 0;
 }
@@ -1216,7 +1216,7 @@ int Simulation::ToolBrush(int positionX, int positionY, int tool, Brush * cBrush
 		for(int y = 0; y < sizeY; y++)
 			for(int x = 0; x < sizeX; x++)
 				if(bitmap[(y*sizeX)+x] && (positionX+(x-radiusX) >= 0 && positionY+(y-radiusY) >= 0 && positionX+(x-radiusX) < XRES && positionY+(y-radiusY) < YRES))
-					Tool(positionX+(x-radiusX), positionY+(y-radiusY), tool, strength);
+					Tool(positionX + (x - radiusX), positionY + (y - radiusY), tool, positionX, positionY, strength);
 	}
 	return 0;
 }
@@ -1275,6 +1275,9 @@ void Simulation::ToolLine(int x1, int y1, int x2, int y2, int tool, Brush * cBru
 }
 void Simulation::ToolBox(int x1, int y1, int x2, int y2, int tool, float strength)
 {
+	int brushX, brushY;
+	brushX = ((x1 + x2) / 2);
+	brushY = ((y1 + y2) / 2);
 	int i, j;
 	if (x1>x2)
 	{
@@ -1290,7 +1293,7 @@ void Simulation::ToolBox(int x1, int y1, int x2, int y2, int tool, float strengt
 	}
 	for (j=y1; j<=y2; j++)
 		for (i=x1; i<=x2; i++)
-			Tool(i, j, tool, strength);
+			Tool(i, j, tool, brushX, brushY, strength);
 }
 
 int Simulation::CreateWalls(int x, int y, int rx, int ry, int wall, Brush * cBrush)
