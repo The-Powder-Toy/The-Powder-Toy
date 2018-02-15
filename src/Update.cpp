@@ -7,7 +7,7 @@
 #include <malloc.h>
 #endif
 #include <cstring>
-#include <stdint.h>
+#include <cstdint>
 
 #ifdef WIN
 #include <windows.h>

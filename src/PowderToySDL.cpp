@@ -25,7 +25,7 @@
 #if defined(LIN)
 #include "icon.h"
 #endif
-#include <signal.h>
+#include <csignal>
 #include <stdexcept>
 
 #ifndef WIN

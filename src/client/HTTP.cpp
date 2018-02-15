@@ -41,9 +41,9 @@
 #else
 #include <sys/types.h>
 #include <unistd.h>
-#include <errno.h>
+#include <cerrno>
 #include <fcntl.h>
-#include <signal.h>
+#include <csignal>
 #include <sys/socket.h>
 #include <netdb.h>
 #include <netinet/in.h>

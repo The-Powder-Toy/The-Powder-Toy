@@ -2,7 +2,7 @@
 #define STRUCTPROPERTY_H_
 
 #include <string>
-#include <stdint.h>
+#include <cstdint>
 
 struct StructProperty
 {
