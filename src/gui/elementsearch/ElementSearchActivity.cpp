@@ -14,7 +14,7 @@ class ElementSearchActivity::ToolAction: public ui::ButtonAction
 public:
 	Tool * tool;
 	ToolAction(ElementSearchActivity * a, Tool * tool) : a(a), tool(tool) {  }
-	void ActionCallback(ui::Button * sender_)
+	void ActionCallback(ui::Button * sender_) override
 	{
 		auto *sender = (ToolButton*)sender_;
 		if(sender->GetSelectionState() >= 0 && sender->GetSelectionState() <= 2)
@@ -46,7 +46,7 @@ ElementSearchActivity::ElementSearchActivity(GameController * gameController, st
 		ElementSearchActivity * a;
 	public:
 		SearchAction(ElementSearchActivity * a) : a(a) {}
-		virtual void TextChangedCallback(ui::Textbox * sender) {
+		void TextChangedCallback(ui::Textbox * sender) override {
 			a->searchTools(sender->GetText());
 		}
 	};
@@ -62,7 +62,7 @@ ElementSearchActivity::ElementSearchActivity(GameController * gameController, st
 			ElementSearchActivity * a;
 		public:
 			CloseAction(ElementSearchActivity * a) : a(a) {  }
-			void ActionCallback(ui::Button * sender_)
+			void ActionCallback(ui::Button * sender_) override
 			{
 				a->exit = true;
 			}
@@ -73,7 +73,7 @@ ElementSearchActivity::ElementSearchActivity(GameController * gameController, st
 			ElementSearchActivity * a;
 		public:
 			OKAction(ElementSearchActivity * a) : a(a) {  }
-			void ActionCallback(ui::Button * sender_)
+			void ActionCallback(ui::Button * sender_) override
 			{
 				if(a->GetFirstResult())
 					a->SetActiveTool(0, a->GetFirstResult());

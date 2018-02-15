@@ -18,7 +18,7 @@ class PreviewController: public ClientListener {
 	LoginController * loginWindow;
 	ControllerCallback * callback;
 public:
-	virtual void NotifyAuthUserChanged(Client * sender);
+	void NotifyAuthUserChanged(Client * sender) override;
 	inline int SaveID() { return saveId; }
 
 	bool HasExited;
@@ -39,7 +39,7 @@ public:
 	bool NextCommentPage();
 	bool PrevCommentPage();
 
-	virtual ~PreviewController();
+	~PreviewController() override;
 };
 
 #endif /* PREVIEWCONTROLLER_H_ */

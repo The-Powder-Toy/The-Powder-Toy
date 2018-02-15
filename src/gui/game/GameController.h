@@ -55,7 +55,7 @@ public:
 	class SaveOpenCallback;
 	friend class SaveOpenCallback;
 	GameController();
-	~GameController();
+	~GameController() override;
 	GameView * GetView();
 	int GetSignAt(int x, int y);
 	std::string GetSignText(int signID);
@@ -165,9 +165,9 @@ public:
 
 	void RemoveNotification(Notification * notification);
 
-	virtual void NotifyUpdateAvailable(Client * sender);
-	virtual void NotifyAuthUserChanged(Client * sender);
-	virtual void NotifyNewNotification(Client * sender, std::pair<std::string, std::string> notification);
+	void NotifyUpdateAvailable(Client * sender) override;
+	void NotifyAuthUserChanged(Client * sender) override;
+	void NotifyNewNotification(Client * sender, std::pair<std::string, std::string> notification) override;
 	void RunUpdater();
 };
 

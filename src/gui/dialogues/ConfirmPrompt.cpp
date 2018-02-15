@@ -39,7 +39,7 @@ ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, ConfirmDial
 		ConfirmPrompt * prompt;
 		DialogueResult result;
 		CloseAction(ConfirmPrompt * prompt_, DialogueResult result_) { prompt = prompt_; result = result_; }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			prompt->CloseActiveWindow();
 			if(prompt->callback)
@@ -101,7 +101,7 @@ ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, std::string
 		ConfirmPrompt * prompt;
 		DialogueResult result;
 		CloseAction(ConfirmPrompt * prompt_, DialogueResult result_) { prompt = prompt_; result = result_; }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			prompt->CloseActiveWindow();
 			if(prompt->callback)
@@ -136,14 +136,14 @@ bool ConfirmPrompt::Blocking(std::string title, std::string message, std::string
 	public:
 		bool & outputResult;
 		BlockingPromptCallback(bool & output): outputResult(output) {}
-		virtual void ConfirmCallback(ConfirmPrompt::DialogueResult result) {
+		void ConfirmCallback(ConfirmPrompt::DialogueResult result) override {
 			if (result == ConfirmPrompt::ResultOkay)
 				outputResult = true;
 			else
 				outputResult = false;
 			ui::Engine::Ref().Break();
 		}
-		virtual ~BlockingPromptCallback() { }
+		~BlockingPromptCallback() override { }
 	};
 	bool result;
 	new ConfirmPrompt(title, message, buttonText, new BlockingPromptCallback(result));

@@ -9,13 +9,13 @@ class ToolButton: public ui::Button
 	std::string toolIdentifier;
 public:
 	ToolButton(ui::Point position, ui::Point size, std::string text_, std::string toolIdentifier, std::string toolTip = "");
-	virtual void OnMouseUnclick(int x, int y, unsigned int button);
-	virtual void OnMouseUp(int x, int y, unsigned int button);
-	virtual void OnMouseClick(int x, int y, unsigned int button);
-	virtual void Draw(const ui::Point& screenPos);
+	void OnMouseUnclick(int x, int y, unsigned int button) override;
+	void OnMouseUp(int x, int y, unsigned int button) override;
+	void OnMouseClick(int x, int y, unsigned int button) override;
+	void Draw(const ui::Point& screenPos) override;
 	void SetSelectionState(int state);
 	int GetSelectionState();
-	virtual ~ToolButton();
+	~ToolButton() override;
 };
 
 #endif /* TOOLBUTTON_H_ */

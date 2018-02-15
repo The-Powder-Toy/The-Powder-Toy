@@ -19,12 +19,12 @@ class ConsoleView: public ui::Window {
 	std::vector<ui::Label*> commandList;
 public:
 	ConsoleView();
-	virtual void OnDraw();
-	virtual void DoKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
+	void OnDraw() override;
+	void DoKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt) override;
 	void AttachController(ConsoleController * c_) { c = c_; }
 	void NotifyPreviousCommandsChanged(ConsoleModel * sender);
 	void NotifyCurrentCommandChanged(ConsoleModel * sender);
-	virtual ~ConsoleView();
+	~ConsoleView() override;
 };
 
 #endif /* CONSOLEVIEW_H_ */

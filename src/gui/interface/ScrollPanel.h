@@ -25,11 +25,11 @@ namespace ui
 		int GetScrollLimit();
 		void SetScrollPosition(int position);
 
-		virtual void Draw(const Point& screenPos);
-		virtual void XTick(float dt);
-		virtual void XOnMouseWheelInside(int localx, int localy, int d);
-		virtual void XOnMouseClick(int localx, int localy, unsigned int button);
-		virtual void XOnMouseUp(int x, int y, unsigned int button);
-		virtual void XOnMouseMoved(int localx, int localy, int dx, int dy);
+		void Draw(const Point& screenPos) override;
+		void XTick(float dt) override;
+		void XOnMouseWheelInside(int localx, int localy, int d) override;
+		void XOnMouseClick(int localx, int localy, unsigned int button) override;
+		void XOnMouseUp(int x, int y, unsigned int button) override;
+		void XOnMouseMoved(int localx, int localy, int dx, int dy) override;
 	};
 }

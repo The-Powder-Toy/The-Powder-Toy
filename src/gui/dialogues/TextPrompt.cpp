@@ -12,7 +12,7 @@ public:
 	TextPrompt * prompt;
 	TextPrompt::DialogueResult result;
 	CloseAction(TextPrompt * prompt_, TextPrompt::DialogueResult result_) { prompt = prompt_; result = result_; }
-	void ActionCallback(ui::Button * sender)
+	void ActionCallback(ui::Button * sender) override
 	{
 		prompt->CloseActiveWindow();
 		if(prompt->callback)
@@ -85,14 +85,14 @@ std::string TextPrompt::Blocking(std::string title, std::string message, std::st
 		std::string & outputString;
 	public:
 		BlockingTextCallback(std::string & output) : outputString(output) {}
-		virtual void TextCallback(TextPrompt::DialogueResult result, std::string resultText) {
+		void TextCallback(TextPrompt::DialogueResult result, std::string resultText) override {
 			if(result == ResultOkay)
 				outputString = resultText;
 			else
 				outputString = "";
 			ui::Engine::Ref().Break();
 		}
-		virtual ~BlockingTextCallback() { }
+		~BlockingTextCallback() override { }
 	};
 	new TextPrompt(title, message, text, placeholder, multiline, new BlockingTextCallback(returnString));
 	EngineProcess();

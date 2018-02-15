@@ -22,19 +22,19 @@ class Button : public Component
 {
 public:
 	Button(Point position = Point(0, 0), Point size = Point(0, 0), std::string buttonText = "", std::string toolTip = "");
-	virtual ~Button();
+	~Button() override;
 
-	virtual void OnMouseClick(int x, int y, unsigned int button);
-	virtual void OnMouseUnclick(int x, int y, unsigned int button);
-	virtual void OnMouseUp(int x, int y, unsigned int button);
+	void OnMouseClick(int x, int y, unsigned int button) override;
+	void OnMouseUnclick(int x, int y, unsigned int button) override;
+	void OnMouseUp(int x, int y, unsigned int button) override;
 
-	virtual void OnMouseEnter(int x, int y);
-	virtual void OnMouseHover(int x, int y);
-	virtual void OnMouseLeave(int x, int y);
+	void OnMouseEnter(int x, int y) override;
+	void OnMouseHover(int x, int y) override;
+	void OnMouseLeave(int x, int y) override;
 
-	virtual void Draw(const Point& screenPos);
+	void Draw(const Point& screenPos) override;
 
-	virtual void TextPosition(std::string);
+	void TextPosition(std::string) override;
 	inline bool GetState() { return state; }
 	virtual void DoAction(); //action of button what ever it may be
 	virtual void DoAltAction(); //action of button what ever it may be

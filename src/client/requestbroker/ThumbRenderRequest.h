@@ -9,8 +9,7 @@ public:
 	bool Fire;
 	GameSave * Save;
 	ThumbRenderRequest(GameSave * save, bool decorations, bool fire, int width, int height, ListenerHandle listener, int identifier = 0);
-	virtual RequestBroker::ProcessResponse Process(RequestBroker & rb);
-	virtual ~ThumbRenderRequest();
-	virtual void Cleanup();
+	RequestBroker::ProcessResponse Process(RequestBroker & rb) override;
+	~ThumbRenderRequest() override;
+	void Cleanup() override;
 };
-

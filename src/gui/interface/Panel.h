@@ -37,7 +37,7 @@ class Component;
 		ui::Point ViewportPosition;
 
 		Panel(Point position, Point size);
-		virtual ~Panel();
+		~Panel() override;
 
 		/* Add a child component.
 		 * Similar to XComponent::SetParent

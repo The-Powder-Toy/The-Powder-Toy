@@ -33,7 +33,7 @@ public:
 	LocalSaveActivity(SaveFile save, FileSavedCallback * callback);
 	void saveWrite(std::string finalFilename);
 	virtual void Save();
-	virtual void OnDraw();
-	virtual void OnResponseReady(void * imagePtr, int identifier);
-	virtual ~LocalSaveActivity();
+	void OnDraw() override;
+	void OnResponseReady(void * imagePtr, int identifier) override;
+	~LocalSaveActivity() override;
 };

@@ -11,8 +11,8 @@ public:
 	ConfirmPrompt(std::string title, std::string message, ConfirmDialogueCallback * callback_ = nullptr);
 	ConfirmPrompt(std::string title, std::string message, std::string buttonText, ConfirmDialogueCallback * callback_ = nullptr);
 	static bool Blocking(std::string title, std::string message, std::string buttonText = "Confirm");
-	virtual void OnDraw();
-	virtual ~ConfirmPrompt();
+	void OnDraw() override;
+	~ConfirmPrompt() override;
 	ConfirmDialogueCallback * callback;
 };
 

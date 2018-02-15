@@ -29,7 +29,7 @@ ErrorMessage::ErrorMessage(std::string title, std::string message,  ErrorMessage
 		ErrorMessage * message;
 	public:
 		DismissAction(ErrorMessage * message_) { message = message_; }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			message->CloseActiveWindow();
 			if(message->callback)
@@ -55,10 +55,10 @@ void ErrorMessage::Blocking(std::string title, std::string message)
 	class BlockingDismissCallback: public ErrorMessageCallback {
 	public:
 		BlockingDismissCallback() {}
-		virtual void DismissCallback() {
+		void DismissCallback() override {
 			ui::Engine::Ref().Break();
 		}
-		virtual ~BlockingDismissCallback() { }
+		~BlockingDismissCallback() override { }
 	};
 	new ErrorMessage(title, message, new BlockingDismissCallback());
 	EngineProcess();

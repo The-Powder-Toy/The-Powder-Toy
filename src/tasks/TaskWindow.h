@@ -18,14 +18,14 @@ class TaskWindow: public ui::Window, public TaskListener {
 	std::string progressStatus;
 public:
 	TaskWindow(std::string title_, Task * task_, bool closeOnDone = true);
-	virtual void NotifyStatus(Task * task);
-	virtual void NotifyDone(Task * task);
-	virtual void NotifyProgress(Task * task);
-	virtual void NotifyError(Task * task);
-	virtual void OnTick(float dt);
-	virtual void OnDraw();
+	void NotifyStatus(Task * task) override;
+	void NotifyDone(Task * task) override;
+	void NotifyProgress(Task * task) override;
+	void NotifyError(Task * task) override;
+	void OnTick(float dt) override;
+	void OnDraw() override;
 	virtual void Exit();
-	virtual ~TaskWindow();
+	~TaskWindow() override;
 };
 
 #endif /* TASKWINDOW_H_ */

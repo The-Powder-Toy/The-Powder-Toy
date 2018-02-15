@@ -13,8 +13,8 @@ public:
 	enum DialogueResult { ResultCancel, ResultOkay };
 	TextPrompt(std::string title, std::string message, std::string text, std::string placeholder, bool multiline, TextDialogueCallback * callback_);
 	static std::string Blocking(std::string title, std::string message, std::string text, std::string placeholder, bool multiline);
-	virtual void OnDraw();
-	virtual ~TextPrompt();
+	void OnDraw() override;
+	~TextPrompt() override;
 	TextDialogueCallback * callback;
 };
 

@@ -23,7 +23,7 @@ class PreviewView::LoginAction: public ui::ButtonAction
 	PreviewView * v;
 public:
 	LoginAction(PreviewView * v_){ v = v_; }
-	virtual void ActionCallback(ui::Button * sender)
+	void ActionCallback(ui::Button * sender) override
 	{
 		v->c->ShowLogin();
 	}
@@ -34,7 +34,7 @@ class PreviewView::SubmitCommentAction: public ui::ButtonAction
 	PreviewView * v;
 public:
 	SubmitCommentAction(PreviewView * v_){ v = v_; }
-	virtual void ActionCallback(ui::Button * sender)
+	void ActionCallback(ui::Button * sender) override
 	{
 		v->submitComment();
 	}
@@ -45,7 +45,7 @@ class PreviewView::AutoCommentSizeAction: public ui::TextboxAction
 	PreviewView * v;
 public:
 	AutoCommentSizeAction(PreviewView * v): v(v) {}
-	virtual void TextChangedCallback(ui::Textbox * sender) {
+	void TextChangedCallback(ui::Textbox * sender) override {
 		v->CheckComment();
 		v->commentBoxAutoHeight();
 	}
@@ -56,7 +56,7 @@ class PreviewView::AvatarAction: public ui::AvatarButtonAction
 	PreviewView * v;
 public:
 	AvatarAction(PreviewView * v_){ v = v_; }
-	virtual void ActionCallback(ui::AvatarButton * sender)
+	void ActionCallback(ui::AvatarButton * sender) override
 	{
 		if(sender->GetUsername().size() > 0)
 		{
@@ -85,7 +85,7 @@ PreviewView::PreviewView():
 		PreviewView * v;
 	public:
 		FavAction(PreviewView * v_){ v = v_; }
-		virtual void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			v->c->FavouriteSave();
 		}
@@ -104,11 +104,11 @@ PreviewView::PreviewView():
 	public:
 		PreviewView * v;
 		ReportPromptCallback(PreviewView * v_) { v = v_;	}
-		virtual void TextCallback(TextPrompt::DialogueResult result, std::string resultText) {
+		void TextCallback(TextPrompt::DialogueResult result, std::string resultText) override {
 			if (result == TextPrompt::ResultOkay)
 				v->c->Report(resultText);
 		}
-		virtual ~ReportPromptCallback() { }
+		~ReportPromptCallback() override { }
 	};
 
 	class ReportAction: public ui::ButtonAction
@@ -116,7 +116,7 @@ PreviewView::PreviewView():
 		PreviewView * v;
 	public:
 		ReportAction(PreviewView * v_){ v = v_; }
-		virtual void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			new TextPrompt("Report Save", "Things to consider when reporting:\n\bw1)\bg When reporting stolen saves, please include the ID of the original save.\n\bw2)\bg Do not ask for saves to be removed from front page unless they break the rules.\n\bw3)\bg You may report saves for comments or tags too (including your own saves)", "", "[reason]", true, new ReportPromptCallback(v));
 		}
@@ -133,7 +133,7 @@ PreviewView::PreviewView():
 		PreviewView * v;
 	public:
 		OpenAction(PreviewView * v_){ v = v_; }
-		virtual void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			v->c->DoOpen();
 		}
@@ -149,7 +149,7 @@ PreviewView::PreviewView():
 		PreviewView * v;
 	public:
 		BrowserOpenAction(PreviewView * v_){ v = v_; }
-		virtual void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			v->c->OpenInBrowser();
 		}

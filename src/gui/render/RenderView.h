@@ -33,13 +33,13 @@ public:
 	void NotifyDisplayChanged(RenderModel * sender);
 	void NotifyColourChanged(RenderModel * sender);
 	void AttachController(RenderController * c_) { c = c_; }
-	void OnMouseDown(int x, int y, unsigned button);
-	void OnTryExit(ExitMethod method);
-	virtual void OnDraw();
-	virtual void OnTick(float dt);
-	virtual void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
-	virtual void ToolTip(ui::Point senderPosition, std::string toolTip);
-	virtual ~RenderView();
+	void OnMouseDown(int x, int y, unsigned button) override;
+	void OnTryExit(ExitMethod method) override;
+	void OnDraw() override;
+	void OnTick(float dt) override;
+	void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt) override;
+	void ToolTip(ui::Point senderPosition, std::string toolTip) override;
+	~RenderView() override;
 };
 
 #endif /* RENDERVIEW_H_ */

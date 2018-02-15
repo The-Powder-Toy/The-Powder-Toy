@@ -23,16 +23,16 @@ public:
 	std::vector<StructProperty> properties;
 	PropertyWindow(PropertyTool *tool_, Simulation *sim);
 	void SetProperty();
-	virtual void OnDraw();
-	virtual void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
-	virtual void OnTryExit(ExitMethod method);
-	virtual ~PropertyWindow() {}
+	void OnDraw() override;
+	void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt) override;
+	void OnTryExit(ExitMethod method) override;
+	~PropertyWindow() override {}
 	class OkayAction: public ui::ButtonAction
 	{
 	public:
 		PropertyWindow * prompt;
 		OkayAction(PropertyWindow * prompt_) { prompt = prompt_; }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			prompt->CloseActiveWindow();
 			if(prompt->textField->GetText().length())
@@ -69,7 +69,7 @@ sim(sim_)
 		PropertyWindow * w;
 	public:
 		PropertyChanged(PropertyWindow * w): w(w) { }
-		virtual void OptionChanged(ui::DropDown * sender, std::pair<std::string, int> option)
+		void OptionChanged(ui::DropDown * sender, std::pair<std::string, int> option) override
 		{
 			w->FocusComponent(w->textField);
 		}

@@ -25,15 +25,15 @@ class SaveSelectedAction: public ui::SaveButtonAction
 	FileBrowserActivity * a;
 public:
 	SaveSelectedAction(FileBrowserActivity * _a) { a = _a; }
-	virtual void ActionCallback(ui::SaveButton * sender)
+	void ActionCallback(ui::SaveButton * sender) override
 	{
 		a->SelectSave(sender->GetSaveFile());
 	}
-	virtual void AltActionCallback(ui::SaveButton * sender)
+	void AltActionCallback(ui::SaveButton * sender) override
 	{
 		a->RenameSave(sender->GetSaveFile());
 	}
-	virtual void AltActionCallback2(ui::SaveButton * sender)
+	void AltActionCallback2(ui::SaveButton * sender) override
 	{
 		a->DeleteSave(sender->GetSaveFile());
 	}
@@ -46,17 +46,17 @@ class LoadFilesTask: public Task
 	std::string search;
 	std::vector<SaveFile*> saveFiles;
 
-	virtual void before()
+	void before() override
 	{
 
 	}
 
-	virtual void after()
+	void after() override
 	{
 
 	}
 
-	virtual bool doWork()
+	bool doWork() override
 	{
 		std::vector<std::string> files = Client::Ref().DirectorySearch(directory, search, ".cps");
 		std::sort(files.rbegin(), files.rend(), [](std::string a, std::string b) {
@@ -116,7 +116,7 @@ class FileBrowserActivity::SearchAction: public ui::TextboxAction
 public:
 	FileBrowserActivity * a;
 	SearchAction(FileBrowserActivity * a) : a(a) {}
-	virtual void TextChangedCallback(ui::Textbox * sender) {
+	void TextChangedCallback(ui::Textbox * sender) override {
 		a->DoSearch(sender->GetText());
 	}
 };

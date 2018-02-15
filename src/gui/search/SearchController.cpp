@@ -17,7 +17,7 @@ class SearchController::OpenCallback: public ControllerCallback
 	SearchController * cc;
 public:
 	OpenCallback(SearchController * cc_) { cc = cc_; }
-	virtual void ControllerExit()
+	void ControllerExit() override
 	{
 		if(cc->activePreview->GetDoOpen() && cc->activePreview->GetSaveInfo())
 		{
@@ -229,11 +229,11 @@ void SearchController::RemoveSelected()
 	public:
 		SearchController * c;
 		RemoveSelectedConfirmation(SearchController * c_) {	c = c_;	}
-		virtual void ConfirmCallback(ConfirmPrompt::DialogueResult result) {
+		void ConfirmCallback(ConfirmPrompt::DialogueResult result) override {
 			if (result == ConfirmPrompt::ResultOkay)
 				c->removeSelectedC();
 		}
-		virtual ~RemoveSelectedConfirmation() { }
+		~RemoveSelectedConfirmation() override { }
 	};
 
 	std::stringstream desc;
@@ -252,7 +252,7 @@ void SearchController::removeSelectedC()
 		std::vector<int> saves;
 	public:
 		RemoveSavesTask(std::vector<int> saves_, SearchController *c_) { saves = saves_; c = c_; }
-		virtual bool doWork()
+		bool doWork() override
 		{
 			for (size_t i = 0; i < saves.size(); i++)
 			{
@@ -287,11 +287,11 @@ void SearchController::UnpublishSelected(bool publish)
 		SearchController * c;
 		bool publish;
 		UnpublishSelectedConfirmation(SearchController * c_, bool publish_) { c = c_; publish = publish_; }
-		virtual void ConfirmCallback(ConfirmPrompt::DialogueResult result) {
+		void ConfirmCallback(ConfirmPrompt::DialogueResult result) override {
 			if (result == ConfirmPrompt::ResultOkay)
 				c->unpublishSelectedC(publish);
 		}
-		virtual ~UnpublishSelectedConfirmation() { }
+		~UnpublishSelectedConfirmation() override { }
 	};
 
 	std::stringstream desc;
@@ -332,7 +332,7 @@ void SearchController::unpublishSelectedC(bool publish)
 			return true;
 		}
 
-		virtual bool doWork()
+		bool doWork() override
 		{
 			bool ret;
 			for (size_t i = 0; i < saves.size(); i++)
@@ -370,7 +370,7 @@ void SearchController::FavouriteSelected()
 		std::vector<int> saves;
 	public:
 		FavouriteSavesTask(std::vector<int> saves_) { saves = saves_; }
-		virtual bool doWork()
+		bool doWork() override
 		{
 			for (size_t i = 0; i < saves.size(); i++)
 			{
@@ -395,7 +395,7 @@ void SearchController::FavouriteSelected()
 		std::vector<int> saves;
 	public:
 		UnfavouriteSavesTask(std::vector<int> saves_) { saves = saves_; }
-		virtual bool doWork()
+		bool doWork() override
 		{
 			for (size_t i = 0; i < saves.size(); i++)
 			{

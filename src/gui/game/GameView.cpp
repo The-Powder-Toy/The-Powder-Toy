@@ -74,7 +74,7 @@ public:
 			}
 		}
 	}
-	virtual void OnMouseUnclick(int x, int y, unsigned int button)
+	void OnMouseUnclick(int x, int y, unsigned int button) override
 	{
 		if(isButtonDown)
 		{
@@ -90,18 +90,18 @@ public:
 	{
 		SetToolTip(x, y);
 	}
-	virtual void OnMouseHover(int x, int y)
+	void OnMouseHover(int x, int y) override
 	{
 		SetToolTip(x, y);
 	}
-	virtual void OnMouseEnter(int x, int y)
+	void OnMouseEnter(int x, int y) override
 	{
 		isMouseInside = true;
 		if(!Enabled)
 			return;
 		SetToolTip(x, y);
 	}
-	virtual void TextPosition(std::string ButtonText)
+	void TextPosition(std::string ButtonText) override
 	{
 		ui::Button::TextPosition(ButtonText);
 		textPosition.X += 3;
@@ -111,7 +111,7 @@ public:
 		toolTip = newToolTip1;
 		toolTip2 = newToolTip2;
 	}
-	virtual void OnMouseClick(int x, int y, unsigned int button)
+	void OnMouseClick(int x, int y, unsigned int button) override
 	{
 		ui::Button::OnMouseClick(x, y, button);
 		rightDown = false;
@@ -135,7 +135,7 @@ public:
 		if(splitActionCallback)
 			splitActionCallback->ActionCallbackLeft(this);
 	}
-	void Draw(const ui::Point& screenPos)
+	void Draw(const ui::Point& screenPos) override
 	{
 		ui::Button::Draw(screenPos);
 		Graphics * g = GetGraphics();
@@ -144,7 +144,7 @@ public:
 		if(showSplit)
 			g->draw_line(splitPosition+screenPos.X, screenPos.Y+1, splitPosition+screenPos.X, screenPos.Y+Size.Y-2, 180, 180, 180, 255);
 	}
-	virtual ~SplitButton()
+	~SplitButton() override
 	{
 		delete splitActionCallback;
 	}
@@ -215,7 +215,7 @@ GameView::GameView():
 		GameView * v;
 	public:
 		SearchAction(GameView * _v) { v = _v; }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			if(v->CtrlBehaviour())
 				v->c->OpenLocalBrowse();
@@ -243,11 +243,11 @@ GameView::GameView():
 		GameView * v;
 	public:
 		ReloadAction(GameView * _v) { v = _v; }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			v->c->ReloadSim();
 		}
-		void AltActionCallback(ui::Button * sender)
+		void AltActionCallback(ui::Button * sender) override
 		{
 			v->c->OpenSavePreview();
 		}
@@ -264,14 +264,14 @@ GameView::GameView():
 		GameView * v;
 	public:
 		SaveSimulationAction(GameView * _v) { v = _v; }
-		void ActionCallbackRight(ui::Button * sender)
+		void ActionCallbackRight(ui::Button * sender) override
 		{
 			if(v->CtrlBehaviour() || !Client::Ref().GetAuthUser().UserID)
 				v->c->OpenLocalSaveWindow(false);
 			else
 				v->c->OpenSaveWindow();
 		}
-		void ActionCallbackLeft(ui::Button * sender)
+		void ActionCallbackLeft(ui::Button * sender) override
 		{
 			if(v->CtrlBehaviour() || !Client::Ref().GetAuthUser().UserID)
 				v->c->OpenLocalSaveWindow(true);
@@ -292,7 +292,7 @@ GameView::GameView():
 		GameView * v;
 	public:
 		UpVoteAction(GameView * _v) { v = _v; }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			v->c->Vote(1);
 		}
@@ -310,7 +310,7 @@ GameView::GameView():
 		GameView * v;
 	public:
 		DownVoteAction(GameView * _v) { v = _v; }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			v->c->Vote(-1);
 		}
@@ -328,7 +328,7 @@ GameView::GameView():
 		GameView * v;
 	public:
 		TagSimulationAction(GameView * _v) { v = _v; }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			v->c->OpenTags();
 		}
@@ -345,7 +345,7 @@ GameView::GameView():
 		GameView * v;
 	public:
 		ClearSimAction(GameView * _v) { v = _v; }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			v->c->ClearSim();
 		}
@@ -361,11 +361,11 @@ GameView::GameView():
 		GameView * v;
 	public:
 		LoginAction(GameView * _v) { v = _v; }
-		void ActionCallbackLeft(ui::Button * sender)
+		void ActionCallbackLeft(ui::Button * sender) override
 		{
 			v->c->OpenLogin();
 		}
-		void ActionCallbackRight(ui::Button * sender)
+		void ActionCallbackRight(ui::Button * sender) override
 		{
 			v->c->OpenProfile();
 		}
@@ -381,7 +381,7 @@ GameView::GameView():
 		GameView * v;
 	public:
 		SimulationOptionAction(GameView * _v) { v = _v; }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			v->c->OpenOptions();
 		}
@@ -397,7 +397,7 @@ GameView::GameView():
 		GameView * v;
 	public:
 		DisplayModeAction(GameView * _v) { v = _v; }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			v->c->OpenRenderOptions();
 		}
@@ -413,7 +413,7 @@ GameView::GameView():
 		GameView * v;
 	public:
 		PauseAction(GameView * _v) { v = _v; }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			v->c->SetPaused(sender->GetToggleState());
 		}
@@ -429,7 +429,7 @@ GameView::GameView():
 		GameView * v;
 	public:
 		ElementSearchAction(GameView * _v) { v = _v; }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			v->c->OpenElementSearch();
 		}
@@ -444,7 +444,7 @@ GameView::GameView():
 		GameView * v;
 	public:
 		ColourPickerAction(GameView * _v) { v = _v; }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			v->c->OpenColourPicker();
 		}
@@ -485,7 +485,7 @@ public:
 		else
 			needsClick = false;
 	}
-	void MouseEnterCallback(ui::Button * sender)
+	void MouseEnterCallback(ui::Button * sender) override
 	{
 		// don't immediately change the active menu, the actual set is done inside GameView::OnMouseMove
 		// if we change it here it causes components to be removed, which causes the window to stop sending events
@@ -493,7 +493,7 @@ public:
 		if(!needsClick && !v->GetMouseDown())
 			v->SetActiveMenuDelayed(menuID);
 	}
-	void ActionCallback(ui::Button * sender)
+	void ActionCallback(ui::Button * sender) override
 	{
 		if (needsClick)
 			v->c->SetActiveMenu(menuID);
@@ -507,7 +507,7 @@ class GameView::OptionAction: public ui::ButtonAction
 	QuickOption * option;
 public:
 	OptionAction(QuickOption * _option) { option = _option; }
-	void ActionCallback(ui::Button * sender)
+	void ActionCallback(ui::Button * sender) override
 	{
 		option->Perform();
 	}
@@ -518,7 +518,7 @@ class GameView::OptionListener: public QuickOptionListener
 	ui::Button * button;
 public:
 	OptionListener(ui::Button * _button) { button = _button; }
-	virtual void OnValueChanged(QuickOption * option)
+	void OnValueChanged(QuickOption * option) override
 	{
 		switch(option->GetType())
 		{
@@ -538,7 +538,7 @@ class GameView::ToolAction: public ui::ButtonAction
 public:
 	Tool * tool;
 	ToolAction(GameView * _v, Tool * tool_) { v = _v; tool = tool_; }
-	void ActionCallback(ui::Button * sender_)
+	void ActionCallback(ui::Button * sender_) override
 	{
 		auto *sender = (ToolButton*)sender_;
 		if (v->ShiftBehaviour() && v->CtrlBehaviour() && !v->AltBehaviour())
@@ -831,7 +831,7 @@ void GameView::NotifyColourPresetsChanged(GameModel * sender)
 	public:
 		int preset;
 		ColourPresetAction(GameView * _v, int preset) : preset(preset) { v = _v; }
-		void ActionCallback(ui::Button * sender_)
+		void ActionCallback(ui::Button * sender_) override
 		{
 			v->c->SetActiveColourPreset(preset);
 			v->c->SetColour(sender_->Appearance.BackgroundInactive);
@@ -1860,7 +1860,7 @@ void GameView::NotifyNotificationsChanged(GameModel * sender)
 		Notification * notification;
 	public:
 		NotificationButtonAction(Notification * notification) : notification(notification) { }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			notification->Action();
 			//v->c->RemoveNotification(notification);
@@ -1872,11 +1872,11 @@ void GameView::NotifyNotificationsChanged(GameModel * sender)
 		Notification * notification;
 	public:
 		CloseNotificationButtonAction(GameView * v, Notification * notification) : v(v), notification(notification) { }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			v->c->RemoveNotification(notification);
 		}
-		void AltActionCallback(ui::Button * sender)
+		void AltActionCallback(ui::Button * sender) override
 		{
 			v->c->RemoveNotification(notification);
 		}

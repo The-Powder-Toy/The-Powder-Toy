@@ -28,9 +28,9 @@ public:
 	OptionsView();
 	void NotifySettingsChanged(OptionsModel * sender);
 	void AttachController(OptionsController * c_);
-	void OnDraw();
-	void OnTryExit(ExitMethod method);
-	virtual ~OptionsView();
+	void OnDraw() override;
+	void OnTryExit(ExitMethod method) override;
+	~OptionsView() override;
 };
 
 #endif /* OPTIONSVIEW_H_ */

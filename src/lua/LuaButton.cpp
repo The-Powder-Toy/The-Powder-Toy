@@ -36,7 +36,7 @@ LuaButton::LuaButton(lua_State * l) :
 		LuaButton * luaButton;
 	public:
 		ClickAction(LuaButton * luaButton) : luaButton(luaButton) {}
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			luaButton->triggerAction();
 		}

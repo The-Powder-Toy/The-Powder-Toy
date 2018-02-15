@@ -37,7 +37,7 @@ LuaTextbox::LuaTextbox(lua_State * l) :
 		LuaTextbox * t;
 	public:
 		TextChangedAction(LuaTextbox * t) : t(t) {}
-		void TextChangedCallback(ui::Textbox * sender)
+		void TextChangedCallback(ui::Textbox * sender) override
 		{
 			t->triggerOnTextChanged();
 		}

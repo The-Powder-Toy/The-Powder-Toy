@@ -23,17 +23,17 @@ class Slider: public ui::Component {
 	void updatePosition(int position);
 public:
 	Slider(Point position, Point size, int steps);
-	virtual void OnMouseMoved(int x, int y, int dx, int dy);
-	virtual void OnMouseClick(int x, int y, unsigned button);
-	virtual void OnMouseUp(int x, int y, unsigned button);
-	virtual void Draw(const Point& screenPos);
+	void OnMouseMoved(int x, int y, int dx, int dy) override;
+	void OnMouseClick(int x, int y, unsigned button) override;
+	void OnMouseUp(int x, int y, unsigned button) override;
+	void Draw(const Point& screenPos) override;
 	void SetColour(Colour col1, Colour col2);
 	void SetActionCallback(SliderAction * action) { actionCallback = action; }
 	int GetValue();
 	void SetValue(int value);
 	int GetSteps();
 	void SetSteps(int steps);
-	virtual ~Slider();
+	~Slider() override;
 };
 
 } /* namespace ui */

@@ -19,22 +19,22 @@ struct ParseException: public std::exception {
 	ParseResult result;
 public:
 	ParseException(ParseResult result, std::string message_): message(message_), result(result) {}
-	const char * what() const throw()
+	const char * what() const throw() override
 	{
 		return message.c_str();
 	}
-	~ParseException() throw() {}
+	~ParseException() throw() override {}
 };
 
 struct BuildException: public std::exception {
 	std::string message;
 public:
 	BuildException(std::string message_): message(message_) {}
-	const char * what() const throw()
+	const char * what() const throw() override
 	{
 		return message.c_str();
 	}
-	~BuildException() throw() {}
+	~BuildException() throw() override {}
 };
 
 class StkmData

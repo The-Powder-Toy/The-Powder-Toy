@@ -8,7 +8,7 @@ public:
 	int RequestTime;
 	void * HTTPContext;
 	ImageRequest(std::string url, int width, int height, ListenerHandle listener, int identifier = 0);
-	virtual RequestBroker::ProcessResponse Process(RequestBroker & rb);
-	virtual ~ImageRequest();
-	virtual void Cleanup();
+	RequestBroker::ProcessResponse Process(RequestBroker & rb) override;
+	~ImageRequest() override;
+	void Cleanup() override;
 };

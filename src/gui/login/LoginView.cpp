@@ -12,7 +12,7 @@ class LoginView::LoginAction : public ui::ButtonAction
 	LoginView * v;
 public:
 	LoginAction(LoginView * _v) { v = _v; }
-	void ActionCallback(ui::Button * sender)
+	void ActionCallback(ui::Button * sender) override
 	{
 		v->c->Login(v->usernameField->GetText(), v->passwordField->GetText());
 	}
@@ -23,7 +23,7 @@ class LoginView::CancelAction : public ui::ButtonAction
 	LoginView * v;
 public:
 	CancelAction(LoginView * _v) { v = _v; }
-	void ActionCallback(ui::Button * sender)
+	void ActionCallback(ui::Button * sender) override
 	{
 		v->c->Exit();
 	}

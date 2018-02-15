@@ -29,17 +29,17 @@ public:
 	ServerSaveActivity(SaveInfo save, bool saveNow, SaveUploadedCallback * callback);
 	void saveUpload();
 	virtual void Save();
-	virtual void Exit();
+	void Exit() override;
 	virtual void ShowPublishingInfo();
 	virtual void ShowRules();
 	virtual void CheckName(std::string newname);
-	virtual void OnDraw();
-	virtual void OnResponseReady(void * imagePtr, int identifier);
-	virtual void OnTick(float dt);
-	virtual ~ServerSaveActivity();
+	void OnDraw() override;
+	void OnResponseReady(void * imagePtr, int identifier) override;
+	void OnTick(float dt) override;
+	~ServerSaveActivity() override;
 protected:
 	void AddAuthorInfo();
-	virtual void NotifyDone(Task * task);
+	void NotifyDone(Task * task) override;
 	VideoBuffer * thumbnail;
 	SaveInfo save;
 	SaveUploadedCallback * callback;

@@ -45,7 +45,7 @@ class GameController::SearchCallback: public ControllerCallback
 	GameController * cc;
 public:
 	SearchCallback(GameController * cc_) { cc = cc_; }
-	virtual void ControllerExit()
+	void ControllerExit() override
 	{
 		if(cc->search->GetLoadedSave())
 		{
@@ -68,7 +68,7 @@ class GameController::SaveOpenCallback: public ControllerCallback
 	GameController * cc;
 public:
 	SaveOpenCallback(GameController * cc_) { cc = cc_; }
-	virtual void ControllerExit()
+	void ControllerExit() override
 	{
 		if(cc->activePreview->GetDoOpen() && cc->activePreview->GetSaveInfo())
 		{
@@ -90,7 +90,7 @@ class GameController::OptionsCallback: public ControllerCallback
 	GameController * cc;
 public:
 	OptionsCallback(GameController * cc_) { cc = cc_; }
-	virtual void ControllerExit()
+	void ControllerExit() override
 	{
 		cc->gameModel->UpdateQuickOptions();
 	}
@@ -101,7 +101,7 @@ class GameController::TagsCallback: public ControllerCallback
 	GameController * cc;
 public:
 	TagsCallback(GameController * cc_) { cc = cc_; }
-	virtual void ControllerExit()
+	void ControllerExit() override
 	{
 		cc->gameView->NotifySaveChanged(cc->gameModel);
 	}
@@ -112,7 +112,7 @@ class GameController::StampsCallback: public ControllerCallback
 	GameController * cc;
 public:
 	StampsCallback(GameController * cc_) { cc = cc_; }
-	virtual void ControllerExit()
+	void ControllerExit() override
 	{
 		SaveFile *file = cc->localBrowser->GetSave();
 		if (file)
@@ -354,7 +354,7 @@ void GameController::Install()
 	public:
 		GameController * c;
 		InstallConfirmation(GameController * c_) {	c = c_;	}
-		virtual void ConfirmCallback(ConfirmPrompt::DialogueResult result) {
+		void ConfirmCallback(ConfirmPrompt::DialogueResult result) override {
 			if (result == ConfirmPrompt::ResultOkay)
 			{
 				if(Client::Ref().DoInstallation())
@@ -367,7 +367,7 @@ void GameController::Install()
 				}
 			}
 		}
-		virtual ~InstallConfirmation() { }
+		~InstallConfirmation() override { }
 	};
 	new ConfirmPrompt("Install The Powder Toy", "Do you wish to install The Powder Toy on this computer?\nThis allows you to open save files and saves directly from the website.", new InstallConfirmation(this));
 #else
@@ -1233,8 +1233,8 @@ void GameController::OpenLocalSaveWindow(bool asCurrent)
 				GameController * c;
 			public:
 				LocalSaveCallback(GameController * _c): c(_c) {}
-				virtual  ~LocalSaveCallback() {}
-				virtual void FileSaved(SaveFile* file)
+				 ~LocalSaveCallback() override {}
+				void FileSaved(SaveFile* file) override
 				{
 					c->gameModel->SetSaveFile(file);
 				}
@@ -1298,8 +1298,8 @@ void GameController::OpenLocalBrowse()
 		GameController * c;
 	public:
 		LocalSaveOpenCallback(GameController * _c): c(_c) {}
-		virtual  ~LocalSaveOpenCallback() {};
-		virtual void FileSelected(SaveFile* file)
+		 ~LocalSaveOpenCallback() override {};
+		void FileSelected(SaveFile* file) override
 		{
 			c->HistorySnapshot();
 			c->LoadSaveFile(file);
@@ -1352,8 +1352,8 @@ void GameController::OpenColourPicker()
 		GameController * c;
 	public:
 		ColourPickerCallback(GameController * _c): c(_c) {}
-		virtual  ~ColourPickerCallback() {};
-		virtual void ColourPicked(ui::Colour colour)
+		 ~ColourPickerCallback() override {};
+		void ColourPicked(ui::Colour colour) override
 		{
 			c->SetColour(colour);
 		}
@@ -1416,8 +1416,8 @@ void GameController::OpenSaveWindow()
 		GameController * c;
 	public:
 		SaveUploadedCallback(GameController * _c): c(_c) {}
-		virtual  ~SaveUploadedCallback() {}
-		virtual void SaveUploaded(SaveInfo save)
+		 ~SaveUploadedCallback() override {}
+		void SaveUploaded(SaveInfo save) override
 		{
 			save.SetVote(1);
 			save.SetVotesUp(1);
@@ -1464,8 +1464,8 @@ void GameController::SaveAsCurrent()
 		GameController * c;
 	public:
 		SaveUploadedCallback(GameController * _c): c(_c) {}
-		virtual  ~SaveUploadedCallback() {}
-		virtual void SaveUploaded(SaveInfo save)
+		 ~SaveUploadedCallback() override {}
+		void SaveUploaded(SaveInfo save) override
 		{
 			c->LoadSave(&save);
 		}
@@ -1602,9 +1602,9 @@ void GameController::NotifyNewNotification(Client * sender, std::pair<std::strin
 		std::string link;
 	public:
 		LinkNotification(std::string link_, std::string message) : Notification(message), link(link_) {}
-		virtual ~LinkNotification() {}
+		~LinkNotification() override {}
 
-		virtual void Action()
+		void Action() override
 		{
 			Platform::OpenURI(link);
 		}
@@ -1618,13 +1618,13 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 	public:
 		GameController * c;
 		UpdateConfirmation(GameController * c_) {	c = c_;	}
-		virtual void ConfirmCallback(ConfirmPrompt::DialogueResult result) {
+		void ConfirmCallback(ConfirmPrompt::DialogueResult result) override {
 			if (result == ConfirmPrompt::ResultOkay)
 			{
 				c->RunUpdater();
 			}
 		}
-		virtual ~UpdateConfirmation() { }
+		~UpdateConfirmation() override { }
 	};
 
 	class UpdateNotification : public Notification
@@ -1632,9 +1632,9 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 		GameController * c;
 	public:
 		UpdateNotification(GameController * c, std::string message) : Notification(message), c(c) {}
-		virtual ~UpdateNotification() {}
+		~UpdateNotification() override {}
 
-		virtual void Action()
+		void Action() override
 		{
 			UpdateInfo info = Client::Ref().GetUpdateInfo();
 			std::stringstream updateMessage;

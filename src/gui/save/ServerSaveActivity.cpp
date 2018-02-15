@@ -20,7 +20,7 @@ class ServerSaveActivity::CancelAction: public ui::ButtonAction
 	ServerSaveActivity * a;
 public:
 	CancelAction(ServerSaveActivity * a) : a(a) {}
-	virtual void ActionCallback(ui::Button * sender)
+	void ActionCallback(ui::Button * sender) override
 	{
 		a->Exit();
 	}
@@ -31,7 +31,7 @@ class ServerSaveActivity::SaveAction: public ui::ButtonAction
 	ServerSaveActivity * a;
 public:
 	SaveAction(ServerSaveActivity * a) : a(a) {}
-	virtual void ActionCallback(ui::Button * sender)
+	void ActionCallback(ui::Button * sender) override
 	{
 		a->Save();
 	}
@@ -42,7 +42,7 @@ class ServerSaveActivity::PublishingAction: public ui::ButtonAction
 	ServerSaveActivity * a;
 public:
 	PublishingAction(ServerSaveActivity * a) : a(a) {}
-	virtual void ActionCallback(ui::Button * sender)
+	void ActionCallback(ui::Button * sender) override
 	{
 		a->ShowPublishingInfo();
 	}
@@ -53,7 +53,7 @@ class ServerSaveActivity::RulesAction: public ui::ButtonAction
 	ServerSaveActivity * a;
 public:
 	RulesAction(ServerSaveActivity * a) : a(a) {}
-	virtual void ActionCallback(ui::Button * sender)
+	void ActionCallback(ui::Button * sender) override
 	{
 		a->ShowRules();
 	}
@@ -64,7 +64,7 @@ class ServerSaveActivity::NameChangedAction: public ui::TextboxAction
 public:
 	ServerSaveActivity * a;
 	NameChangedAction(ServerSaveActivity * a) : a(a) {}
-	virtual void TextChangedCallback(ui::Textbox * sender) {
+	void TextChangedCallback(ui::Textbox * sender) override {
 		a->CheckName(sender->GetText());
 	}
 };
@@ -73,17 +73,17 @@ class SaveUploadTask: public Task
 {
 	SaveInfo save;
 
-	virtual void before()
+	void before() override
 	{
 
 	}
 
-	virtual void after()
+	void after() override
 	{
 
 	}
 
-	virtual bool doWork()
+	bool doWork() override
 	{
 		notifyProgress(-1);
 		return Client::Ref().UploadSave(save) == RequestOkay;
@@ -230,14 +230,14 @@ void ServerSaveActivity::Save()
 	public:
 		ServerSaveActivity * a;
 		PublishConfirmation(ServerSaveActivity * a) : a(a) {}
-		virtual void ConfirmCallback(ConfirmPrompt::DialogueResult result) {
+		void ConfirmCallback(ConfirmPrompt::DialogueResult result) override {
 			if (result == ConfirmPrompt::ResultOkay)
 			{
 				a->Exit();
 				a->saveUpload();
 			}
 		}
-		virtual ~PublishConfirmation() { }
+		~PublishConfirmation() override { }
 	};
 
 	if(nameField->GetText().length())

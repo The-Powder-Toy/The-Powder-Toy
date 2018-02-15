@@ -39,11 +39,11 @@ void LocalBrowserController::RemoveSelected()
 	public:
 		LocalBrowserController * c;
 		RemoveSelectedConfirmation(LocalBrowserController * c_) {	c = c_;	}
-		virtual void ConfirmCallback(ConfirmPrompt::DialogueResult result) {
+		void ConfirmCallback(ConfirmPrompt::DialogueResult result) override {
 			if (result == ConfirmPrompt::ResultOkay)
 				c->removeSelectedC();
 		}
-		virtual ~RemoveSelectedConfirmation() { }
+		~RemoveSelectedConfirmation() override { }
 	};
 
 	std::stringstream desc;
@@ -62,7 +62,7 @@ void LocalBrowserController::removeSelectedC()
 		LocalBrowserController * c;
 	public:
 		RemoveSavesTask(LocalBrowserController * c, std::vector<std::string> saves_) : c(c) { saves = saves_; }
-		virtual bool doWork()
+		bool doWork() override
 		{
 			for (size_t i = 0; i < saves.size(); i++)
 			{
@@ -74,7 +74,7 @@ void LocalBrowserController::removeSelectedC()
 			}
 			return true;
 		}
-		virtual void after()
+		void after() override
 		{
 			Client::Ref().updateStamps();
 			c->RefreshSavesList();
@@ -91,11 +91,11 @@ void LocalBrowserController::RescanStamps()
 	public:
 		LocalBrowserController * c;
 		RescanConfirmation(LocalBrowserController * c_) {	c = c_;	}
-		virtual void ConfirmCallback(ConfirmPrompt::DialogueResult result) {
+		void ConfirmCallback(ConfirmPrompt::DialogueResult result) override {
 			if (result == ConfirmPrompt::ResultOkay)
 				c->rescanStampsC();
 		}
-		virtual ~RescanConfirmation() { }
+		~RescanConfirmation() override { }
 	};
 
 	std::stringstream desc;

@@ -79,14 +79,14 @@ public:
 	void NotifyCommentsPageChanged(PreviewModel * sender);
 	void NotifyCommentBoxEnabledChanged(PreviewModel * sender);
 	void SaveLoadingError(std::string errorMessage);
-	virtual void OnDraw();
-	virtual void DoDraw();
-	virtual void OnTick(float dt);
-	virtual void OnTryExit(ExitMethod method);
-	virtual void OnMouseWheel(int x, int y, int d);
-	virtual void OnMouseUp(int x, int y, unsigned int button);
-	virtual void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
-	virtual ~PreviewView();
+	void OnDraw() override;
+	void DoDraw() override;
+	void OnTick(float dt) override;
+	void OnTryExit(ExitMethod method) override;
+	void OnMouseWheel(int x, int y, int d) override;
+	void OnMouseUp(int x, int y, unsigned int button) override;
+	void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt) override;
+	~PreviewView() override;
 };
 
 #endif /* PREVIEWVIEW_H_ */

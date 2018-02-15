@@ -15,7 +15,7 @@ namespace ui
 		virtual int GetProgress();
 		virtual void SetStatus(std::string status);
 		virtual std::string GetStatus();
-		virtual void Draw(const Point & screenPos);
-		virtual void Tick(float dt);
+		void Draw(const Point & screenPos) override;
+		void Tick(float dt) override;
 	};
 }

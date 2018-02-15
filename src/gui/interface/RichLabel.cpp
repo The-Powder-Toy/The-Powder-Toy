@@ -13,11 +13,11 @@ struct RichTextParseException: public std::exception {
 	std::string message;
 public:
 	RichTextParseException(std::string message_ = "Parse error"): message(message_) {}
-	const char * what() const throw()
+	const char * what() const throw() override
 	{
 		return message.c_str();
 	}
-	~RichTextParseException() throw() {};
+	~RichTextParseException() throw() override {};
 };
 
 RichLabel::RichLabel(Point position, Point size, std::string labelText):

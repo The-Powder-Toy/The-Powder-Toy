@@ -17,14 +17,14 @@ public:
 private:
 	UpdateActivity * a;
 	std::string updateName;
-	virtual void notifyDoneMain(){
+	void notifyDoneMain() override{
 		a->NotifyDone(this);
 	}
-	virtual void notifyErrorMain()
+	void notifyErrorMain() override
 	{
 		a->NotifyError(this);
 	}
-	virtual bool doWork()
+	bool doWork() override
 	{
 		std::stringstream errorStream;
 		void * request = http_async_req_start(nullptr, (char*)updateName.c_str(), nullptr, 0, 0);
@@ -149,7 +149,7 @@ void UpdateActivity::NotifyError(Task * sender)
 		UpdateActivity * a;
 	public:
 		ErrorMessageCallback(UpdateActivity * a_) {	a = a_;	}
-		virtual void ConfirmCallback(ConfirmPrompt::DialogueResult result) {
+		void ConfirmCallback(ConfirmPrompt::DialogueResult result) override {
 			if (result == ConfirmPrompt::ResultOkay)
 			{
 #ifndef UPDATESERVER
@@ -158,7 +158,7 @@ void UpdateActivity::NotifyError(Task * sender)
 			}
 			a->Exit();
 		}
-		virtual ~ErrorMessageCallback() { }
+		~ErrorMessageCallback() override { }
 	};
 #ifdef UPDATESERVER
 	new ConfirmPrompt("Autoupdate failed", "Please go online to manually download a newer version.\nError: " + sender->GetError(), new ErrorMessageCallback(this));

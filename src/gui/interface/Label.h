@@ -43,7 +43,7 @@ namespace ui
 		//Label(Window* parent_state, std::string labelText);
 		Label(Point position, Point size, std::string labelText);
 		//Label(std::string labelText);
-		virtual ~Label();
+		~Label() override;
 
 		virtual void SetMultiline(bool status);
 
@@ -58,13 +58,13 @@ namespace ui
 
 		void SetTextColour(Colour textColour) { this->textColour = textColour; }
 
-		virtual void OnContextMenuAction(int item);
-		virtual void OnMouseClick(int x, int y, unsigned button);
-		virtual void OnMouseUp(int x, int y, unsigned button);
-		virtual void OnMouseMoved(int localx, int localy, int dx, int dy);
-		virtual void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
-		virtual void Draw(const Point& screenPos);
-		virtual void Tick(float dt);
+		void OnContextMenuAction(int item) override;
+		void OnMouseClick(int x, int y, unsigned button) override;
+		void OnMouseUp(int x, int y, unsigned button) override;
+		void OnMouseMoved(int localx, int localy, int dx, int dy) override;
+		void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt) override;
+		void Draw(const Point& screenPos) override;
+		void Tick(float dt) override;
 	};
 }
 

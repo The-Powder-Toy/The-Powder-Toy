@@ -19,9 +19,9 @@ protected:
 public:
 	TPTScriptInterface(GameController * c, GameModel * m);
 	virtual void Tick() {}
-	virtual int Command(std::string command);
-	virtual std::string FormatCommand(std::string command);
-	virtual ~TPTScriptInterface();
+	int Command(std::string command) override;
+	std::string FormatCommand(std::string command) override;
+	~TPTScriptInterface() override;
 };
 
 #endif /* TPTSCRIPTINTERFACE_H_ */

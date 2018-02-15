@@ -36,7 +36,7 @@ SearchView::SearchView():
 		SearchView * v;
 	public:
 		PageNumAction(SearchView * _v) { v = _v; }
-		void TextChangedCallback(ui::Textbox * sender)
+		void TextChangedCallback(ui::Textbox * sender) override
 		{
 			v->textChanged();
 		}
@@ -57,7 +57,7 @@ SearchView::SearchView():
 		SearchView * v;
 	public:
 		SearchAction(SearchView * _v) { v = _v; }
-		void TextChangedCallback(ui::Textbox * sender)
+		void TextChangedCallback(ui::Textbox * sender) override
 		{
 			v->doSearch();
 		}
@@ -75,7 +75,7 @@ SearchView::SearchView():
 		SearchView * v;
 	public:
 		SortAction(SearchView * _v) { v = _v; }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			v->c->ChangeSort();
 		}
@@ -93,7 +93,7 @@ SearchView::SearchView():
 		SearchView * v;
 	public:
 		MyOwnAction(SearchView * _v) { v = _v; }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			v->c->ShowOwn(sender->GetToggleState());
 		}
@@ -111,7 +111,7 @@ SearchView::SearchView():
 		SearchView * v;
 	public:
 		FavAction(SearchView * _v) { v = _v; }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			v->c->ShowFavourite(sender->GetToggleState());
 		}
@@ -131,7 +131,7 @@ SearchView::SearchView():
 		SearchView * v;
 	public:
 		ClearSearchAction(SearchView * _v) { v = _v; }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			v->clearSearch();
 		}
@@ -151,7 +151,7 @@ SearchView::SearchView():
 		SearchView * v;
 	public:
 		NextPageAction(SearchView * _v) { v = _v; }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			v->c->NextPage();
 		}
@@ -165,7 +165,7 @@ SearchView::SearchView():
 		SearchView * v;
 	public:
 		PrevPageAction(SearchView * _v) { v = _v; }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			v->c->PrevPage();
 		}
@@ -191,7 +191,7 @@ SearchView::SearchView():
 		SearchView * v;
 	public:
 		RemoveSelectedAction(SearchView * _v) { v = _v; }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			v->c->RemoveSelected();
 		}
@@ -202,7 +202,7 @@ SearchView::SearchView():
 		SearchView * v;
 	public:
 		UnpublishSelectedAction(SearchView * _v) { v = _v; }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			v->c->UnpublishSelected(v->publishButtonShown);
 		}
@@ -213,7 +213,7 @@ SearchView::SearchView():
 		SearchView * v;
 	public:
 		FavouriteSelectedAction(SearchView * _v) { v = _v; }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			v->c->FavouriteSelected();
 		}
@@ -224,7 +224,7 @@ SearchView::SearchView():
 		SearchView * v;
 	public:
 		ClearSelectionAction(SearchView * _v) { v = _v; }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			v->c->ClearSelection();
 		}
@@ -513,7 +513,7 @@ void SearchView::NotifyTagListChanged(SearchModel * sender)
 		std::string tag;
 	public:
 		TagAction(SearchView * v, std::string tag) : v(v), tag(tag) {}
-		virtual void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			v->Search(tag);
 		}
@@ -663,21 +663,21 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 			SearchView * v;
 		public:
 			SaveOpenAction(SearchView * _v) { v = _v; }
-			virtual void ActionCallback(ui::SaveButton * sender)
+			void ActionCallback(ui::SaveButton * sender) override
 			{
 				v->c->OpenSave(sender->GetSave()->GetID(), sender->GetSave()->GetVersion());
 			}
-			virtual void SelectedCallback(ui::SaveButton * sender)
+			void SelectedCallback(ui::SaveButton * sender) override
 			{
 				v->c->Selected(sender->GetSave()->GetID(), sender->GetSelected());
 			}
-			virtual void AltActionCallback(ui::SaveButton * sender)
+			void AltActionCallback(ui::SaveButton * sender) override
 			{
 				stringstream search;
 				search << "history:" << sender->GetSave()->GetID();
 				v->Search(search.str());
 			}
-			virtual void AltActionCallback2(ui::SaveButton * sender)
+			void AltActionCallback2(ui::SaveButton * sender) override
 			{
 				v->Search("user:"+sender->GetSave()->GetUserName());
 			}

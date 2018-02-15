@@ -6,8 +6,8 @@
 class InformationMessage: public ui::Window {
 public:
 	InformationMessage(std::string title, std::string message, bool large);
-	virtual void OnDraw();
-	virtual ~InformationMessage();
+	void OnDraw() override;
+	~InformationMessage() override;
 };
 
 #endif /* INFORMATIONMESSAGE_H_ */

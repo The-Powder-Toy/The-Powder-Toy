@@ -1327,7 +1327,7 @@ RequestBroker::Request * Client::SaveUserInfoAsync(UserInfo info)
 {
 	class StatusParser: public APIResultParser
 	{
-		virtual void * ProcessResponse(unsigned char * data, int dataLength)
+		void * ProcessResponse(unsigned char * data, int dataLength) override
 		{
 			try
 			{
@@ -1341,11 +1341,11 @@ RequestBroker::Request * Client::SaveUserInfoAsync(UserInfo info)
 				return nullptr;
 			}
 		}
-		virtual void Cleanup(void * objectPtr)
+		void Cleanup(void * objectPtr) override
 		{
 			//delete (UserInfo*)objectPtr;
 		}
-		virtual ~StatusParser() { }
+		~StatusParser() override { }
 	};
 	std::map<std::string, std::string> postData;
 	postData.insert(std::pair<std::string, std::string>("Location", info.location));
@@ -1357,7 +1357,7 @@ RequestBroker::Request * Client::GetUserInfoAsync(std::string username)
 {
 	class UserInfoParser: public APIResultParser
 	{
-		virtual void * ProcessResponse(unsigned char * data, int dataLength)
+		void * ProcessResponse(unsigned char * data, int dataLength) override
 		{
 			try
 			{
@@ -1383,11 +1383,11 @@ RequestBroker::Request * Client::GetUserInfoAsync(std::string username)
 				return nullptr;
 			}
 		}
-		virtual void Cleanup(void * objectPtr)
+		void Cleanup(void * objectPtr) override
 		{
 			delete (UserInfo*)objectPtr;
 		}
-		virtual ~UserInfoParser() { }
+		~UserInfoParser() override { }
 	};
 	return new APIRequest("http://" SERVER "/User.json?Name=" + username, new UserInfoParser());
 }
@@ -1700,7 +1700,7 @@ RequestBroker::Request * Client::GetSaveAsync(int saveID, int saveDate)
 
 	class SaveInfoParser: public APIResultParser
 	{
-		virtual void * ProcessResponse(unsigned char * data, int dataLength)
+		void * ProcessResponse(unsigned char * data, int dataLength) override
 		{
 			try
 			{
@@ -1742,11 +1742,11 @@ RequestBroker::Request * Client::GetSaveAsync(int saveID, int saveDate)
 				return nullptr;
 			}
 		}
-		virtual void Cleanup(void * objectPtr)
+		void Cleanup(void * objectPtr) override
 		{
 			delete (SaveInfo*)objectPtr;
 		}
-		virtual ~SaveInfoParser() { }
+		~SaveInfoParser() override { }
 	};
 	return new APIRequest(urlStream.str(), new SaveInfoParser());
 }
@@ -1755,7 +1755,7 @@ RequestBroker::Request * Client::GetCommentsAsync(int saveID, int start, int cou
 {
 	class CommentsParser: public APIResultParser
 	{
-		virtual void * ProcessResponse(unsigned char * data, int dataLength)
+		void * ProcessResponse(unsigned char * data, int dataLength) override
 		{
 			auto * commentArray = new std::vector<SaveComment*>();
 			try
@@ -1782,11 +1782,11 @@ RequestBroker::Request * Client::GetCommentsAsync(int saveID, int start, int cou
 				return nullptr;
 			}
 		}
-		virtual void Cleanup(void * objectPtr)
+		void Cleanup(void * objectPtr) override
 		{
 			delete (std::vector<SaveComment*>*)objectPtr;
 		}
-		virtual ~CommentsParser() { }
+		~CommentsParser() override { }
 	};
 
 	std::stringstream urlStream;

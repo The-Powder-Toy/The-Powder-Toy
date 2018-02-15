@@ -20,14 +20,14 @@ namespace ui
 
 		RichLabel(Point position, Point size, std::string richText);
 
-		virtual ~RichLabel();
+		~RichLabel() override;
 
 		virtual void SetText(std::string text);
 		virtual std::string GetDisplayText();
 		virtual std::string GetText();
 
-		virtual void Draw(const Point& screenPos);
-		virtual void OnMouseClick(int x, int y, unsigned button);
+		void Draw(const Point& screenPos) override;
+		void OnMouseClick(int x, int y, unsigned button) override;
 	protected:
 		std::string textSource;
 		std::string displayText;

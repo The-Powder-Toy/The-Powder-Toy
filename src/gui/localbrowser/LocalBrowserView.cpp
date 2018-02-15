@@ -34,7 +34,7 @@ LocalBrowserView::LocalBrowserView():
 		LocalBrowserView * v;
 	public:
 		PageNumAction(LocalBrowserView * _v) { v = _v; }
-		void TextChangedCallback(ui::Textbox * sender)
+		void TextChangedCallback(ui::Textbox * sender) override
 		{
 			v->textChanged();
 		}
@@ -55,7 +55,7 @@ LocalBrowserView::LocalBrowserView():
 		LocalBrowserView * v;
 	public:
 		NextPageAction(LocalBrowserView * _v) { v = _v; }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			v->c->NextPage();
 		}
@@ -69,7 +69,7 @@ LocalBrowserView::LocalBrowserView():
 		LocalBrowserView * v;
 	public:
 		PrevPageAction(LocalBrowserView * _v) { v = _v; }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			v->c->PrevPage();
 		}
@@ -83,7 +83,7 @@ LocalBrowserView::LocalBrowserView():
 		LocalBrowserView * v;
 	public:
 		UndeleteAction(LocalBrowserView * _v) { v = _v; }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			v->c->RescanStamps();
 		}
@@ -95,7 +95,7 @@ LocalBrowserView::LocalBrowserView():
 		LocalBrowserView * v;
 	public:
 		RemoveSelectedAction(LocalBrowserView * _v) { v = _v; }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			v->c->RemoveSelected();
 		}
@@ -198,12 +198,12 @@ void LocalBrowserView::NotifySavesListChanged(LocalBrowserModel * sender)
 		LocalBrowserView * v;
 	public:
 		SaveOpenAction(LocalBrowserView * _v) { v = _v; }
-		virtual void ActionCallback(ui::SaveButton * sender)
+		void ActionCallback(ui::SaveButton * sender) override
 		{
 			if(sender->GetSaveFile())
 				v->c->OpenSave(sender->GetSaveFile());
 		}
-		virtual void SelectedCallback(ui::SaveButton * sender)
+		void SelectedCallback(ui::SaveButton * sender) override
 		{
 			if(sender->GetSaveFile())
 				v->c->Selected(sender->GetSaveFile()->GetName(), sender->GetSelected());

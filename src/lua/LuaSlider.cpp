@@ -35,7 +35,7 @@ LuaSlider::LuaSlider(lua_State * l) :
 		LuaSlider * luaSlider;
 	public:
 		ValueAction(LuaSlider * luaSlider) : luaSlider(luaSlider) {}
-		void ValueChangedCallback(ui::Slider * sender)
+		void ValueChangedCallback(ui::Slider * sender) override
 		{
 			luaSlider->triggerOnValueChanged();
 		}

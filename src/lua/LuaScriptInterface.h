@@ -174,20 +174,20 @@ public:
 	ui::Window * Window;
 	lua_State *l;
 	LuaScriptInterface(GameController * c, GameModel * m);
-	virtual bool OnActiveToolChanged(int toolSelection, Tool * tool);
-	virtual bool OnMouseMove(int x, int y, int dx, int dy);
-	virtual bool OnMouseDown(int x, int y, unsigned button);
-	virtual bool OnMouseUp(int x, int y, unsigned button, char type);
-	virtual bool OnMouseWheel(int x, int y, int d);
-	virtual bool OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
-	virtual bool OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt);
-	virtual bool OnMouseTick();
-	virtual void OnTick();
+	bool OnActiveToolChanged(int toolSelection, Tool * tool) override;
+	bool OnMouseMove(int x, int y, int dx, int dy) override;
+	bool OnMouseDown(int x, int y, unsigned button) override;
+	bool OnMouseUp(int x, int y, unsigned button, char type) override;
+	bool OnMouseWheel(int x, int y, int d) override;
+	bool OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt) override;
+	bool OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt) override;
+	bool OnMouseTick() override;
+	void OnTick() override;
 	virtual void Init();
 	virtual void SetWindow(ui::Window * window);
-	virtual int Command(std::string command);
-	virtual std::string FormatCommand(std::string command);
-	virtual ~LuaScriptInterface();
+	int Command(std::string command) override;
+	std::string FormatCommand(std::string command) override;
+	~LuaScriptInterface() override;
 };
 
 

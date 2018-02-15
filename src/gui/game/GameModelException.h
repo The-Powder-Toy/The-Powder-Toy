@@ -9,11 +9,11 @@ struct GameModelException: public exception {
 	string message;
 public:
 	GameModelException(string message_): message(message_) {}
-	const char * what() const throw()
+	const char * what() const throw() override
 	{
 		return message.c_str();
 	}
-	~GameModelException() throw() {};
+	~GameModelException() throw() override {};
 };
 
 #endif /* GAMEMODELEXCEPTION_H_ */

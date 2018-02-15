@@ -32,12 +32,12 @@ public:
 	Tool * GetFirstResult() { return firstResult; }
 	ElementSearchActivity(GameController * gameController, std::vector<Tool*> tools);
 	void SetActiveTool(int selectionState, Tool * tool);
-	virtual ~ElementSearchActivity();
-	virtual void OnTick(float dt);
-	virtual void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
-	virtual void OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt);
-	virtual void OnDraw();
-	virtual void ToolTip(ui::Point senderPosition, std::string ToolTip);
+	~ElementSearchActivity() override;
+	void OnTick(float dt) override;
+	void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt) override;
+	void OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt) override;
+	void OnDraw() override;
+	void ToolTip(ui::Point senderPosition, std::string ToolTip) override;
 };
 
 #endif /* ELEMENTSEARCHACTIVITY_H_ */

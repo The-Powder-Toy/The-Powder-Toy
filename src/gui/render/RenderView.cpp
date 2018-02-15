@@ -13,7 +13,7 @@ public:
 		v = v_;
 		renderMode = renderMode_;
 	}
-	virtual void ActionCallback(ui::Checkbox * sender)
+	void ActionCallback(ui::Checkbox * sender) override
 	{
 		if(sender->GetChecked())
 			v->c->SetRenderMode(renderMode);
@@ -32,7 +32,7 @@ public:
 		v = v_;
 		displayMode = displayMode_;
 	}
-	virtual void ActionCallback(ui::Checkbox * sender)
+	void ActionCallback(ui::Checkbox * sender) override
 	{
 		if(sender->GetChecked())
 			v->c->SetDisplayMode(displayMode);
@@ -51,7 +51,7 @@ public:
 		v = v_;
 		colourMode = colourMode_;
 	}
-	virtual void ActionCallback(ui::Checkbox * sender)
+	void ActionCallback(ui::Checkbox * sender) override
 	{
 		if(sender->GetChecked())
 			v->c->SetColourMode(colourMode);
@@ -70,7 +70,7 @@ public:
 		v = v_;
 		renderPreset = renderPreset_;
 	}
-	virtual void ActionCallback(ui::Button * sender)
+	void ActionCallback(ui::Button * sender) override
 	{
 		v->c->LoadRenderPreset(renderPreset);
 	}

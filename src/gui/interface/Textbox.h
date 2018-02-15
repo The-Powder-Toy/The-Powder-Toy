@@ -23,10 +23,10 @@ public:
 	bool ReadOnly;
 	enum ValidInput { All, Multiline, Numeric, Number }; // Numeric doesn't delete trailing 0's
 	Textbox(Point position, Point size, std::string textboxText = "", std::string textboxPlaceholder = "");
-	virtual ~Textbox();
+	~Textbox() override;
 
-	virtual void SetText(std::string text);
-	virtual std::string GetText();
+	void SetText(std::string text) override;
+	std::string GetText() override;
 
 	virtual void SetPlaceholder(std::string text);
 
@@ -46,15 +46,15 @@ public:
 	//Determines if the given character is valid given the input type
 	bool CharacterValid(Uint16 character);
 
-	virtual void Tick(float dt);
-	virtual void OnContextMenuAction(int item);
-	virtual void OnMouseClick(int x, int y, unsigned button);
-	virtual void OnMouseUp(int x, int y, unsigned button);
-	virtual void OnMouseMoved(int localx, int localy, int dx, int dy);
-	virtual void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
+	void Tick(float dt) override;
+	void OnContextMenuAction(int item) override;
+	void OnMouseClick(int x, int y, unsigned button) override;
+	void OnMouseUp(int x, int y, unsigned button) override;
+	void OnMouseMoved(int localx, int localy, int dx, int dy) override;
+	void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt) override;
 	virtual void OnVKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
-	virtual void OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt);
-	virtual void Draw(const Point& screenPos);
+	void OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt) override;
+	void Draw(const Point& screenPos) override;
 
 protected:
 	ValidInput inputType;

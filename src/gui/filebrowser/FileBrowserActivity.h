@@ -47,19 +47,19 @@ class FileBrowserActivity: public TaskListener, public WindowActivity
 	void populateList();
 public:
 	FileBrowserActivity(std::string directory, FileSelectedCallback * callback);
-	virtual void OnDraw();
-	virtual void OnTick(float dt);
-	virtual void OnTryExit(ExitMethod method);
-	virtual void OnMouseDown(int x, int y, unsigned button);
+	void OnDraw() override;
+	void OnTick(float dt) override;
+	void OnTryExit(ExitMethod method) override;
+	void OnMouseDown(int x, int y, unsigned button) override;
 	void loadDirectory(std::string directory, std::string search);
 	void SelectSave(SaveFile * file);
 	void DeleteSave(SaveFile * file);
 	void RenameSave(SaveFile * file);
 	void DoSearch(std::string search);
-	virtual ~FileBrowserActivity();
+	~FileBrowserActivity() override;
 
-	virtual void NotifyDone(Task * task);
-	virtual void NotifyError(Task * task);
-	virtual void NotifyProgress(Task * task);
-	virtual void NotifyStatus(Task * task);
+	void NotifyDone(Task * task) override;
+	void NotifyError(Task * task) override;
+	void NotifyProgress(Task * task) override;
+	void NotifyStatus(Task * task) override;
 };

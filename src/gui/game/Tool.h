@@ -55,12 +55,12 @@ public:
 	{
 	}
 	static VideoBuffer * GetIcon(int toolID, int width, int height);
-	virtual ~SignTool() {}
-	virtual void Click(Simulation * sim, Brush * brush, ui::Point position);
-	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position) { }
-	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false) { }
-	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) { }
-	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position) { }
+	~SignTool() override {}
+	void Click(Simulation * sim, Brush * brush, ui::Point position) override;
+	void Draw(Simulation * sim, Brush * brush, ui::Point position) override { }
+	void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false) override { }
+	void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) override { }
+	void DrawFill(Simulation * sim, Brush * brush, ui::Point position) override { }
 };
 
 class SampleTool: public Tool
@@ -73,12 +73,12 @@ public:
 	{
 	}
 	static VideoBuffer * GetIcon(int toolID, int width, int height);
-	virtual ~SampleTool() {}
-	virtual void Click(Simulation * sim, Brush * brush, ui::Point position) { }
-	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position);
-	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false) { }
-	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) { }
-	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position) { }
+	~SampleTool() override {}
+	void Click(Simulation * sim, Brush * brush, ui::Point position) override { }
+	void Draw(Simulation * sim, Brush * brush, ui::Point position) override;
+	void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false) override { }
+	void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) override { }
+	void DrawFill(Simulation * sim, Brush * brush, ui::Point position) override { }
 };
 
 class PropertyTool: public Tool
@@ -93,13 +93,13 @@ public:
 	size_t propOffset;
 
 	void OpenWindow(Simulation *sim);
-	virtual ~PropertyTool() {}
+	~PropertyTool() override {}
 	virtual void SetProperty(Simulation *sim, ui::Point position);
-	virtual void Click(Simulation * sim, Brush * brush, ui::Point position) { }
-	virtual void Draw(Simulation *sim, Brush *brush, ui::Point position);
-	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false);
-	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2);
-	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position);
+	void Click(Simulation * sim, Brush * brush, ui::Point position) override { }
+	void Draw(Simulation *sim, Brush *brush, ui::Point position) override;
+	void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false) override;
+	void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) override;
+	void DrawFill(Simulation * sim, Brush * brush, ui::Point position) override;
 };
 
 
@@ -107,11 +107,11 @@ class ElementTool: public Tool
 {
 public:
 	ElementTool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int) = nullptr);
-	virtual ~ElementTool();
-	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position);
-	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false);
-	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2);
-	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position);
+	~ElementTool() override;
+	void Draw(Simulation * sim, Brush * brush, ui::Point position) override;
+	void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false) override;
+	void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) override;
+	void DrawFill(Simulation * sim, Brush * brush, ui::Point position) override;
 };
 
 class Element_LIGH_Tool: public ElementTool
@@ -120,11 +120,11 @@ public:
 	Element_LIGH_Tool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int) = nullptr):
 		ElementTool(id, name, description, r, g, b, identifier, textureGen)
 	{ }
-	virtual ~Element_LIGH_Tool() { }
-	virtual void Click(Simulation * sim, Brush * brush, ui::Point position) { }
-	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false);
-	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) { }
-	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position) { }
+	~Element_LIGH_Tool() override { }
+	void Click(Simulation * sim, Brush * brush, ui::Point position) override { }
+	void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false) override;
+	void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) override { }
+	void DrawFill(Simulation * sim, Brush * brush, ui::Point position) override { }
 };
 
 class Element_TESC_Tool: public ElementTool
@@ -133,9 +133,9 @@ public:
 	Element_TESC_Tool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int) = nullptr):
 		ElementTool(id, name, description, r, g, b, identifier, textureGen)
 	{ }
-	virtual ~Element_TESC_Tool() {}
-	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2);
-	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position);
+	~Element_TESC_Tool() override {}
+	void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) override;
+	void DrawFill(Simulation * sim, Brush * brush, ui::Point position) override;
 };
 
 class PlopTool: public ElementTool
@@ -144,34 +144,34 @@ public:
 	PlopTool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int) = nullptr):
 		ElementTool(id, name, description, r, g, b, identifier, textureGen)
 	{ }
-	virtual ~PlopTool() { }
-	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position) { }
-	virtual void Click(Simulation * sim, Brush * brush, ui::Point position);
-	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false) { }
-	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) { }
-	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position) { }
+	~PlopTool() override { }
+	void Draw(Simulation * sim, Brush * brush, ui::Point position) override { }
+	void Click(Simulation * sim, Brush * brush, ui::Point position) override;
+	void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false) override { }
+	void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) override { }
+	void DrawFill(Simulation * sim, Brush * brush, ui::Point position) override { }
 };
 
 class WallTool: public Tool
 {
 public:
 	WallTool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int) = nullptr);
-	virtual ~WallTool();
-	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position);
-	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false);
-	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2);
-	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position);
+	~WallTool() override;
+	void Draw(Simulation * sim, Brush * brush, ui::Point position) override;
+	void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false) override;
+	void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) override;
+	void DrawFill(Simulation * sim, Brush * brush, ui::Point position) override;
 };
 
 class WindTool: public Tool
 {
 public:
 	WindTool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int) = nullptr);
-	virtual ~WindTool() { }
-	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position) { }
-	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false);
-	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) { }
-	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position) { }
+	~WindTool() override { }
+	void Draw(Simulation * sim, Brush * brush, ui::Point position) override { }
+	void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false) override;
+	void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) override { }
+	void DrawFill(Simulation * sim, Brush * brush, ui::Point position) override { }
 };
 
 #endif /* TOOL_H_ */

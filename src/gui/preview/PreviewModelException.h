@@ -9,11 +9,11 @@ struct PreviewModelException: public exception {
 	string message;
 public:
 	PreviewModelException(string message_): message(message_) {}
-	const char * what() const throw()
+	const char * what() const throw() override
 	{
 		return message.c_str();
 	}
-	~PreviewModelException() throw() {};
+	~PreviewModelException() throw() override {};
 };
 
 #endif /* PREVIEWMODELEXCEPTION_H_ */

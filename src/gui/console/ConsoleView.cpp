@@ -10,7 +10,7 @@ ConsoleView::ConsoleView():
 		ConsoleView * v;
 	public:
 		CommandHighlighter(ConsoleView * v_) { v = v_; }
-		virtual void TextChangedCallback(ui::Textbox * sender)
+		void TextChangedCallback(ui::Textbox * sender) override
 		{
 			sender->SetDisplayText(v->c->FormatCommand(sender->GetText()));
 		}

@@ -42,23 +42,23 @@ class SaveButton : public Component, public RequestListener
 public:
 	SaveButton(Point position, Point size, SaveInfo * save);
 	SaveButton(Point position, Point size, SaveFile * file);
-	virtual ~SaveButton();
+	~SaveButton() override;
 
-	virtual void OnMouseClick(int x, int y, unsigned int button);
-	virtual void OnMouseUnclick(int x, int y, unsigned int button);
+	void OnMouseClick(int x, int y, unsigned int button) override;
+	void OnMouseUnclick(int x, int y, unsigned int button) override;
 
-	virtual void OnMouseEnter(int x, int y);
-	virtual void OnMouseLeave(int x, int y);
+	void OnMouseEnter(int x, int y) override;
+	void OnMouseLeave(int x, int y) override;
 
-	virtual void OnMouseMovedInside(int x, int y, int dx, int dy);
+	void OnMouseMovedInside(int x, int y, int dx, int dy) override;
 
 	void AddContextMenu(int menuType);
-	virtual void OnContextMenuAction(int item);
+	void OnContextMenuAction(int item) override;
 
-	virtual void Draw(const Point& screenPos);
-	virtual void Tick(float dt);
+	void Draw(const Point& screenPos) override;
+	void Tick(float dt) override;
 
-	virtual void OnResponseReady(void * imagePtr, int identifier);
+	void OnResponseReady(void * imagePtr, int identifier) override;
 
 	void SetSelected(bool selected_) { selected = selected_; }
 	bool GetSelected() { return selected; }
@@ -80,4 +80,3 @@ protected:
 };
 }
 #endif /* BUTTON_H_ */
-

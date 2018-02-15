@@ -30,11 +30,11 @@ public:
 	void RemoveOption(std::string option);
 	void SetOptions(std::vector<std::pair<std::string, int> > options);
 	void SetActionCallback(DropDownAction * action) { callback = action;}
-	virtual void Draw(const Point& screenPos);
-	virtual void OnMouseClick(int x, int y, unsigned int button);
-	virtual void OnMouseEnter(int x, int y);
-	virtual void OnMouseLeave(int x, int y);
-	virtual ~DropDown();
+	void Draw(const Point& screenPos) override;
+	void OnMouseClick(int x, int y, unsigned int button) override;
+	void OnMouseEnter(int x, int y) override;
+	void OnMouseLeave(int x, int y) override;
+	~DropDown() override;
 };
 
 } /* namespace ui */
