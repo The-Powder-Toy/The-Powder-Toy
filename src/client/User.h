@@ -2,6 +2,7 @@
 #define USER_H_
 
 #include <string>
+#include <utility>
 
 
 class User
@@ -18,7 +19,7 @@ public:
 	Elevation UserElevation;
 	User(int id, std::string username):
 		UserID(id),
-		Username(username),
+		Username(std::move(username)),
 		SessionID(""),
 		SessionKey(""),
 		UserElevation(ElevationNone)

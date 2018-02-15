@@ -1,5 +1,6 @@
 #include <bzlib.h>
 #include <sstream>
+#include <utility>
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/interface/Engine.h"
 #include "UpdateActivity.h"
@@ -13,7 +14,7 @@
 class UpdateDownloadTask : public Task
 {
 public:
-	UpdateDownloadTask(std::string updateName, UpdateActivity * a) : a(a), updateName(updateName) {}
+	UpdateDownloadTask(std::string updateName, UpdateActivity * a) : a(a), updateName(std::move(updateName)) {}
 private:
 	UpdateActivity * a;
 	std::string updateName;

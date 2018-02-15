@@ -1,5 +1,6 @@
 #include <iomanip>
 #include <sstream>
+#include <utility>
 #include "Sign.h"
 #include "graphics/Graphics.h"
 #include "simulation/Simulation.h"
@@ -8,7 +9,7 @@ sign::sign(std::string text_, int x_, int y_, Justification justification_):
 	x(x_),
 	y(y_),
 	ju(justification_),
-	text(text_)
+	text(std::move(text_))
 {
 }
 

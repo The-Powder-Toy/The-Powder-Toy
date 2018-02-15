@@ -1,4 +1,5 @@
 #include <iostream>
+#include <utility>
 #include "graphics/Graphics.h"
 #include "gui/Style.h"
 #include "Button.h"
@@ -20,7 +21,7 @@ public:
 		DropDownWindow * window;
 		std::string option;
 	public:
-		ItemSelectedAction(DropDownWindow * window, std::string option): window(window), option(option) { }
+		ItemSelectedAction(DropDownWindow * window, std::string option): window(window), option(std::move(option)) { }
 		void ActionCallback(ui::Button *sender) override
 		{
 			window->CloseActiveWindow();

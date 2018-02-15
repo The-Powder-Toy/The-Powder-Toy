@@ -1,5 +1,6 @@
 #include <iostream>
 #include <queue>
+#include <utility>
 #include "Config.h"
 #include "Format.h"
 #include "Platform.h"
@@ -1601,7 +1602,7 @@ void GameController::NotifyNewNotification(Client * sender, std::pair<std::strin
 	{
 		std::string link;
 	public:
-		LinkNotification(std::string link_, std::string message) : Notification(message), link(link_) {}
+		LinkNotification(std::string link_, std::string message) : Notification(message), link(std::move(link_)) {}
 		~LinkNotification() override = default;
 
 		void Action() override

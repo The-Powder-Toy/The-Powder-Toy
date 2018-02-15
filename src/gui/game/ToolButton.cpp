@@ -1,3 +1,4 @@
+#include <utility>
 #include "ToolButton.h"
 #include "graphics/Graphics.h"
 #include "gui/interface/Keys.h"
@@ -6,7 +7,7 @@
 
 ToolButton::ToolButton(ui::Point position, ui::Point size, std::string text_, std::string toolIdentifier, std::string toolTip):
 	ui::Button(position, size, text_, toolTip),
-	toolIdentifier(toolIdentifier)
+	toolIdentifier(std::move(toolIdentifier))
 {
 	SetSelectionState(-1);
 	Appearance.BorderActive = ui::Colour(255, 0, 0);
@@ -109,4 +110,3 @@ int ToolButton::GetSelectionState()
 }
 
 ToolButton::~ToolButton() = default;
-

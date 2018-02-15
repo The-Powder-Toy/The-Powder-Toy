@@ -3,12 +3,13 @@
 
 #include <string>
 #include <exception>
+#include <utility>
 using namespace std;
 
 struct PreviewModelException: public exception {
 	string message;
 public:
-	PreviewModelException(string message_): message(message_) {}
+	PreviewModelException(string message_): message(std::move(message_)) {}
 	const char * what() const throw() override
 	{
 		return message.c_str();

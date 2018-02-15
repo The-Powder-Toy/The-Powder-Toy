@@ -1,4 +1,5 @@
 #include <iostream>
+#include <utility>
 #include "gui/interface/Button.h"
 #include "gui/interface/Window.h"
 #include "graphics/Graphics.h"
@@ -8,8 +9,8 @@ namespace ui {
 
 Button::Button(Point position, Point size, std::string buttonText, std::string toolTip):
 	Component(position, size),
-	ButtonText(buttonText),
-	toolTip(toolTip),
+	ButtonText(std::move(buttonText)),
+	toolTip(std::move(toolTip)),
 	isButtonDown(false),
 	isMouseInside(false),
 	isTogglable(false),

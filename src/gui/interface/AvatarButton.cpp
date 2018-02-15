@@ -1,5 +1,6 @@
 #include <iostream>
 #include <typeinfo>
+#include <utility>
 
 #include "AvatarButton.h"
 #include "Format.h"
@@ -15,7 +16,7 @@ namespace ui {
 AvatarButton::AvatarButton(Point position, Point size, std::string username):
 	Component(position, size),
 	avatar(nullptr),
-	name(username),
+	name(std::move(username)),
 	tried(false),
 	actionCallback(nullptr)
 {

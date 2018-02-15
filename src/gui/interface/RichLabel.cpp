@@ -1,3 +1,4 @@
+#include <utility>
 #include <vector>
 #include <exception>
 
@@ -12,7 +13,7 @@ using namespace ui;
 struct RichTextParseException: public std::exception {
 	std::string message;
 public:
-	RichTextParseException(std::string message_ = "Parse error"): message(message_) {}
+	RichTextParseException(std::string message_ = "Parse error"): message(std::move(message_)) {}
 	const char * what() const throw() override
 	{
 		return message.c_str();
@@ -22,7 +23,7 @@ public:
 
 RichLabel::RichLabel(Point position, Point size, std::string labelText):
 	Component(position, size),
-	textSource(labelText),
+	textSource(std::move(labelText)),
 	displayText("")
 {
 	updateRichText();

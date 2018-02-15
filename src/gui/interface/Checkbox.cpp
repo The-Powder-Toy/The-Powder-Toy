@@ -1,3 +1,4 @@
+#include <utility>
 #include "Checkbox.h"
 #include "graphics/Graphics.h"
 #include "gui/interface/Window.h"
@@ -6,8 +7,8 @@ using namespace ui;
 
 Checkbox::Checkbox(ui::Point position, ui::Point size, std::string text, std::string toolTip):
 	Component(position, size),
-	text(text),
-	toolTip(toolTip),
+	text(std::move(text)),
+	toolTip(std::move(toolTip)),
 	checked(false),
 	isMouseOver(false),
 	actionCallback(nullptr)
@@ -105,4 +106,3 @@ void Checkbox::SetActionCallback(CheckboxAction * action)
 Checkbox::~Checkbox() {
 	delete actionCallback;
 }
-

@@ -2,6 +2,7 @@
 #define CLIENT_H
 
 #include <queue>
+#include <utility>
 #include <vector>
 #include <list>
 
@@ -42,8 +43,8 @@ public:
 	int Time;
 	BuildType Type;
 	UpdateInfo() : File(""), Changelog(""), Major(0), Minor(0), Build(0), Time(0), Type(Stable) {}
-	UpdateInfo(int major, int minor, int build, std::string file, std::string changelog, BuildType type) : File(file), Changelog(changelog), Major(major), Minor(minor), Build(build), Time(0), Type(type) {}
-	UpdateInfo(int time, std::string file, std::string changelog, BuildType type) : File(file), Changelog(changelog), Major(0), Minor(0), Build(0), Time(time), Type(type) {}
+	UpdateInfo(int major, int minor, int build, std::string file, std::string changelog, BuildType type) : File(std::move(file)), Changelog(std::move(changelog)), Major(major), Minor(minor), Build(build), Time(0), Type(type) {}
+	UpdateInfo(int time, std::string file, std::string changelog, BuildType type) : File(std::move(file)), Changelog(std::move(changelog)), Major(0), Minor(0), Build(0), Time(time), Type(type) {}
 };
 
 class RequestListener;

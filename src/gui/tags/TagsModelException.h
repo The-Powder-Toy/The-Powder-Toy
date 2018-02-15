@@ -3,11 +3,12 @@
 
 #include <string>
 #include <exception>
+#include <utility>
 
 class TagsModelException {
 	std::string message;
 public:
-	TagsModelException(std::string message_): message(message_) {};
+	TagsModelException(std::string message_): message(std::move(message_)) {};
 	const char * what() const throw() { return message.c_str(); };
 	~TagsModelException() throw() = default;;
 };

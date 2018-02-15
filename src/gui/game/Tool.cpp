@@ -1,4 +1,5 @@
 #include <string>
+#include <utility>
 #include "Tool.h"
 #include "gui/game/Brush.h"
 
@@ -9,11 +10,11 @@ using namespace std;
 Tool::Tool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int)):
 	textureGen(textureGen),
 	toolID(id),
-	toolName(name),
-	toolDescription(description),
+	toolName(std::move(name)),
+	toolDescription(std::move(description)),
 	strength(1.0f),
 	blocky(false),
-	identifier(identifier),
+	identifier(std::move(identifier)),
 	colRed(r),
 	colGreen(g),
 	colBlue(b)

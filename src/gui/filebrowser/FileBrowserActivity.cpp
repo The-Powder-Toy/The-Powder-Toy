@@ -1,6 +1,7 @@
 #include <sstream>
 #include <iostream>
 #include <algorithm>
+#include <utility>
 #include "FileBrowserActivity.h"
 #include "gui/interface/Label.h"
 #include "gui/interface/Textbox.h"
@@ -104,8 +105,8 @@ public:
 	}
 
 	LoadFilesTask(std::string directory, std::string search):
-		directory(directory),
-		search(search)
+		directory(std::move(directory)),
+		search(std::move(search))
 	{
 
 	}

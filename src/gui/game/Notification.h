@@ -2,11 +2,12 @@
 #define NOTIFICATION_H_
 
 #include <string>
+#include <utility>
 
 class Notification
 {
 public:
-	Notification(std::string message) : Message(message) {}
+	Notification(std::string message) : Message(std::move(message)) {}
 	virtual ~Notification() = default;;
 	std::string Message;
 

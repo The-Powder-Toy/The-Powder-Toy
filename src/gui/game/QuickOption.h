@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <utility>
 #include <vector>
 
 class GameModel;
@@ -28,8 +29,8 @@ protected:
 	QuickOption(std::string icon, std::string description, GameModel * m, Type type) :
 		m(m),
 		type(type),
-		icon(icon),
-		description(description)
+		icon(std::move(icon)),
+		description(std::move(description))
 	{
 
 	}
@@ -73,4 +74,3 @@ public:
 			listener->OnValueChanged(this);
 	}
 };
-

@@ -1,4 +1,6 @@
 #include "SaveInfo.h"
+
+#include <utility>
 #include "GameSave.h"
 #include "Client.h"
 
@@ -37,8 +39,8 @@ SaveInfo::SaveInfo(int _id, int _createdDate, int _updatedDate, int _votesUp, in
 	Comments(0),
 	Views(0),
 	Version(0),
-	userName(_userName),
-	name(_name),
+	userName(std::move(_userName)),
+	name(std::move(_name)),
 	Description(""),
 	Published(false),
 	tags(),
@@ -58,9 +60,9 @@ SaveInfo::SaveInfo(int _id, int _createdDate, int _updatedDate, int _votesUp, in
 	Comments(0),
 	Views(0),
 	Version(0),
-	userName(_userName),
-	name(_name),
-	Description(description_),
+	userName(std::move(_userName)),
+	name(std::move(_name)),
+	Description(std::move(description_)),
 	Published(published_),
 	tags(),
 	gameSave(nullptr)

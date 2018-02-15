@@ -3,6 +3,7 @@
 
 #include <string>
 #include <cstdint>
+#include <utility>
 
 struct StructProperty
 {
@@ -12,7 +13,7 @@ struct StructProperty
 	intptr_t Offset;
 
 	StructProperty(std::string name, PropertyType type, intptr_t offset):
-	Name(name),
+	Name(std::move(name)),
 	Type(type),
 	Offset(offset)
 	{

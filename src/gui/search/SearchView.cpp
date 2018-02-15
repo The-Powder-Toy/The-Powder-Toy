@@ -1,4 +1,5 @@
 #include <sstream>
+#include <utility>
 
 #include "SearchView.h"
 #include "client/Client.h"
@@ -512,7 +513,7 @@ void SearchView::NotifyTagListChanged(SearchModel * sender)
 		SearchView * v;
 		std::string tag;
 	public:
-		TagAction(SearchView * v, std::string tag) : v(v), tag(tag) {}
+		TagAction(SearchView * v, std::string tag) : v(v), tag(std::move(tag)) {}
 		void ActionCallback(ui::Button * sender) override
 		{
 			v->Search(tag);

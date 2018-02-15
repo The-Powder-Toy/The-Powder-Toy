@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <utility>
 #include "ElementSearchActivity.h"
 #include "gui/interface/Textbox.h"
 #include "gui/interface/Label.h"
@@ -26,7 +27,7 @@ ElementSearchActivity::ElementSearchActivity(GameController * gameController, st
 	WindowActivity(ui::Point(-1, -1), ui::Point(236, 302)),
 	firstResult(nullptr),
 	gameController(gameController),
-	tools(tools),
+	tools(std::move(tools)),
 	toolTip(""),
 	toolTipPresence(0),
 	shiftPressed(false),

@@ -1,6 +1,7 @@
 #ifndef MENU_H_
 #define MENU_H_
 
+#include <utility>
 #include "Tool.h"
 
 class Menu
@@ -12,7 +13,7 @@ class Menu
 public:
 	Menu(char icon_, string description_, int visible_):
 		icon(icon_),
-		description(description_),
+		description(std::move(description_)),
 		tools(vector<Tool*>()),
 		visible(visible_ ? true : false)
 	{

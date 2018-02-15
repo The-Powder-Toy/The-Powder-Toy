@@ -1,6 +1,7 @@
 #include <sstream>
 #include <iomanip>
 #include <algorithm>
+#include <utility>
 
 #include "Config.h"
 #include "gui/Style.h"
@@ -47,7 +48,7 @@ public:
 		Button(position, size, buttonText, toolTip),
 		showSplit(true),
 		splitPosition(split),
-		toolTip2(toolTip2),
+		toolTip2(std::move(toolTip2)),
 		splitActionCallback(nullptr)
 	{
 

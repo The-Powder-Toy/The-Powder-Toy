@@ -2,6 +2,7 @@
 #define USERINFO_H_
 
 #include <string>
+#include <utility>
 
 class UserInfo
 {
@@ -24,10 +25,10 @@ public:
 	UserInfo(int id, int age, std::string username, std::string biography, std::string location, std::string website, int saveCount, float averageScore, int highestScore, int topicCount, int topicReplies, int reputation):
 		UserID(id),
 		age(age),
-		username(username),
-		biography(biography),
-		location(location),
-		website(website),
+		username(std::move(username)),
+		biography(std::move(biography)),
+		location(std::move(location)),
+		website(std::move(website)),
 		saveCount(saveCount),
 		averageScore(averageScore),
 		highestScore(highestScore),

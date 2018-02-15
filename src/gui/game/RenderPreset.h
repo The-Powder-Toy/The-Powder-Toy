@@ -1,3 +1,5 @@
+#include <utility>
+
 #ifndef RENDER_PRESET_H
 #define RENDER_PRESET_H
 class RenderPreset
@@ -10,9 +12,9 @@ public:
 
 	RenderPreset(): Name(""), ColourMode(0) {}
 	RenderPreset(std::string name, std::vector<unsigned int> renderModes, std::vector<unsigned int> displayModes, unsigned int colourMode):
-		Name(name),
-		RenderModes(renderModes),
-		DisplayModes(displayModes),
+		Name(std::move(name)),
+		RenderModes(std::move(renderModes)),
+		DisplayModes(std::move(displayModes)),
 		ColourMode(colourMode)
 	{}
 };

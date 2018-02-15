@@ -1,6 +1,7 @@
 #ifndef The_Powder_Toy_GameSave_h
 #define The_Powder_Toy_GameSave_h
 
+#include <utility>
 #include <vector>
 #include <string>
 #include "Config.h"
@@ -18,7 +19,7 @@ struct ParseException: public std::exception {
 	std::string message;
 	ParseResult result;
 public:
-	ParseException(ParseResult result, std::string message_): message(message_), result(result) {}
+	ParseException(ParseResult result, std::string message_): message(std::move(message_)), result(result) {}
 	const char * what() const throw() override
 	{
 		return message.c_str();
@@ -29,7 +30,7 @@ public:
 struct BuildException: public std::exception {
 	std::string message;
 public:
-	BuildException(std::string message_): message(message_) {}
+	BuildException(std::string message_): message(std::move(message_)) {}
 	const char * what() const throw() override
 	{
 		return message.c_str();

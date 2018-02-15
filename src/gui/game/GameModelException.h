@@ -3,12 +3,14 @@
 
 #include <string>
 #include <exception>
+#include <utility>
+#include <utility>
 using namespace std;
 
 struct GameModelException: public exception {
 	string message;
 public:
-	GameModelException(string message_): message(message_) {}
+	GameModelException(string message_): message(std::move(message_)) {}
 	const char * what() const throw() override
 	{
 		return message.c_str();

@@ -1,6 +1,7 @@
 #ifndef The_Powder_Toy_ContextMenu_h
 #define The_Powder_Toy_ContextMenu_h
 
+#include <utility>
 #include "Window.h"
 #include "Appearance.h"
 #include "Button.h"
@@ -14,7 +15,7 @@ public:
 	int ID;
 	std::string Text;
 	bool Enabled;
-	ContextMenuItem(std::string text, int id, bool enabled) : ID(id), Text(text), Enabled(enabled) {}
+	ContextMenuItem(std::string text, int id, bool enabled) : ID(id), Text(std::move(text)), Enabled(enabled) {}
 };
 
 class ContextMenu: public ui::Window, public ButtonAction {

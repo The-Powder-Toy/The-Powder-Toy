@@ -1,3 +1,4 @@
+#include <utility>
 #include "LocalSaveActivity.h"
 #include "gui/interface/Label.h"
 #include "gui/interface/Textbox.h"
@@ -77,7 +78,7 @@ void LocalSaveActivity::Save()
 	public:
 		LocalSaveActivity * a;
 		std::string filename;
-		FileOverwriteConfirmation(LocalSaveActivity * a, std::string finalFilename) : a(a), filename(finalFilename) {}
+		FileOverwriteConfirmation(LocalSaveActivity * a, std::string finalFilename) : a(a), filename(std::move(finalFilename)) {}
 		void ConfirmCallback(ConfirmPrompt::DialogueResult result) override {
 			if (result == ConfirmPrompt::ResultOkay)
 			{

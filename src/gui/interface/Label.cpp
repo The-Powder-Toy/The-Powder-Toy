@@ -1,4 +1,5 @@
 #include <string>
+#include <utility>
 #include "Config.h"
 #include "Format.h"
 #include "Point.h"
@@ -13,7 +14,7 @@ using namespace ui;
 
 Label::Label(Point position, Point size, std::string labelText):
 	Component(position, size),
-	text(labelText),
+	text(std::move(labelText)),
 	textColour(255, 255, 255),
 	selectionIndex0(-1),
 	selectionIndex1(-1),

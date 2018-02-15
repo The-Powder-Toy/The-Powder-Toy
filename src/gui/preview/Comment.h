@@ -2,6 +2,7 @@
 #define COMMENT_H_
 
 #include <string>
+#include <utility>
 
 class SaveComment
 {
@@ -11,10 +12,10 @@ public:
 	std::string authorNameFormatted;
 	std::string comment;
 	SaveComment(int userID, std::string username, std::string usernameFormatted, std::string commentText):
-			authorID(userID), authorName(username), authorNameFormatted(usernameFormatted), comment(commentText)
+			authorID(userID), authorName(std::move(username)), authorNameFormatted(std::move(usernameFormatted)), comment(std::move(commentText))
 	{
 	}
-	SaveComment(const SaveComment & comment) 
+	SaveComment(const SaveComment & comment)
 	= default;
 	SaveComment(const SaveComment * comment):
 			authorID(comment->authorID), authorName(comment->authorName), authorNameFormatted(comment->authorNameFormatted), comment(comment->comment)
