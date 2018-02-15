@@ -372,7 +372,7 @@ GameSave * Simulation::Save(int fullX, int fullY, int fullX2, int fullY2, bool i
 	}
 
 	for (int ID : paletteSet)
-		newSave->palette.push_back(GameSave::PaletteItem(elements[ID].Identifier, ID));
+		newSave->palette.emplace_back(GameSave::PaletteItem(elements[ID].Identifier, ID));
 
 	if (storedParts && elementCount[PT_SOAP])
 	{

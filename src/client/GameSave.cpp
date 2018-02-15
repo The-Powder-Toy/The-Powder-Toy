@@ -766,7 +766,7 @@ void GameSave::readOPS(char * data, int dataLength)
 					{
 						std::string id = std::string(bson_iterator_key(&subiter));
 						int num = bson_iterator_int(&subiter);
-						palette.push_back(PaletteItem(id, num));
+						palette.emplace_back(id, num);
 					}
 				}
 			}

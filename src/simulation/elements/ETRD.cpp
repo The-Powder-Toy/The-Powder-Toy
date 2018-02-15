@@ -79,7 +79,7 @@ void Element_ETRD::initDeltaPos()
 		{
 			ui::Point d(rx, ry);
 			if (std::abs(d.X) + std::abs(d.Y) <= maxLength)
-				deltaPos.push_back(ETRD_deltaWithLength(d, std::abs(d.X) + std::abs(d.Y)));
+				deltaPos.emplace_back(d, std::abs(d.X) + std::abs(d.Y));
 		}
 	std::stable_sort(deltaPos.begin(), deltaPos.end(), compareFunc);
 }

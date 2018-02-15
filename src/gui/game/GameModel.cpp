@@ -131,14 +131,14 @@ GameModel::GameModel():
 
 	SetColourSelectorColour(ui::Colour(colourR, colourG, colourB, colourA));
 
-	colourPresets.push_back(ui::Colour(255, 255, 255));
-	colourPresets.push_back(ui::Colour(0, 255, 255));
-	colourPresets.push_back(ui::Colour(255, 0, 255));
-	colourPresets.push_back(ui::Colour(255, 255, 0));
-	colourPresets.push_back(ui::Colour(255, 0, 0));
-	colourPresets.push_back(ui::Colour(0, 255, 0));
-	colourPresets.push_back(ui::Colour(0, 0, 255));
-	colourPresets.push_back(ui::Colour(0, 0, 0));
+	colourPresets.emplace_back(255, 255, 255);
+	colourPresets.emplace_back(0, 255, 255);
+	colourPresets.emplace_back(255, 0, 255);
+	colourPresets.emplace_back(255, 255, 0);
+	colourPresets.emplace_back(255, 0, 0);
+	colourPresets.emplace_back(0, 255, 0);
+	colourPresets.emplace_back(0, 0, 255);
+	colourPresets.emplace_back(0, 0, 0);
 
 	undoHistoryLimit = Client::Ref().GetPrefInteger("Simulation.UndoHistoryLimit", 5);
 	// cap due to memory usage (this is about 3.4GB of RAM)

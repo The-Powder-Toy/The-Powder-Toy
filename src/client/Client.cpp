@@ -142,7 +142,7 @@ void Client::Initialise(std::string proxyString)
 		stampsLib.read(data, 10);
 		if(!data[0])
 			break;
-		stampIDs.push_back(data);
+		stampIDs.emplace_back(data);
 	}
 	stampsLib.close();
 

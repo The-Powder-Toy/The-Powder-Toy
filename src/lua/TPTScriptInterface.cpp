@@ -31,10 +31,10 @@ int TPTScriptInterface::Command(std::string command)
 	while((currentCommand = strchr(currentCommand, ' ')))
 	{
 		currentCommand[0] = 0;
-		words.push_back(std::string(currentWord));
+		words.emplace_back(currentWord);
 		currentWord = ++currentCommand;
 	}
-	words.push_back(std::string(currentWord));
+	words.emplace_back(currentWord);
 	while(!words.empty())
 	{
 		try
@@ -224,10 +224,10 @@ std::string TPTScriptInterface::FormatCommand(std::string command)
 	while((currentCommand = strchr(currentCommand, ' ')))
 	{
 		currentCommand[0] = 0;
-		words.push_back(std::string(currentWord));
+		words.emplace_back(currentWord);
 		currentWord = ++currentCommand;
 	}
-	words.push_back(std::string(currentWord));
+	words.emplace_back(currentWord);
 	free(rawCommand);
 	while(!words.empty())
 	{

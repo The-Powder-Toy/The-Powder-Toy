@@ -70,7 +70,7 @@ RequestBroker::ProcessResponse ImageRequest::Process(RequestBroker & rb)
 						delete rb.imageCache.front().second;
 						rb.imageCache.pop_front();
 					}
-					rb.imageCache.push_back(std::pair<std::string, VideoBuffer*>(URL, image));
+					rb.imageCache.emplace_back(URL, image);
 				}
 				else
 				{

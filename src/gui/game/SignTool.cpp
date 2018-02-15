@@ -41,7 +41,7 @@ public:
 			prompt->CloseActiveWindow();
 			if(prompt->signID==-1 && prompt->textField->GetText().length())
 			{
-				prompt->sim->signs.push_back(sign(prompt->textField->GetText(), prompt->signPosition.X, prompt->signPosition.Y, (sign::Justification)prompt->justification->GetOption().second));
+				prompt->sim->signs.emplace_back(prompt->textField->GetText(), prompt->signPosition.X, prompt->signPosition.Y, (sign::Justification)prompt->justification->GetOption().second);
 			}
 			else if(prompt->signID!=-1 && prompt->textField->GetText().length())
 			{

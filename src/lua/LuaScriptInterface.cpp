@@ -682,7 +682,7 @@ int LuaScriptInterface::simulation_newsign(lua_State *l)
 	if (y < 0 || y >= YRES)
 		return luaL_error(l, "Invalid Y coordinate");
 
-	luacon_sim->signs.push_back(sign(text, x, y, (sign::Justification)ju));
+	luacon_sim->signs.emplace_back(text, x, y, (sign::Justification)ju);
 
 	lua_pushnumber(l, luacon_sim->signs.size());
 	return 1;
