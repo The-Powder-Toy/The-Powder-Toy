@@ -791,6 +791,7 @@ void LuaScriptInterface::initSimulationAPI()
 	SETCONST(l, TOOL_PGRV);
 	SETCONST(l, TOOL_NGRV);
 	SETCONST(l, TOOL_MIX);
+	SETCONST(l, TOOL_CYCL);
 	lua_pushinteger(l, luacon_sim->tools.size()); lua_setfield(l, -2, "TOOL_WIND");
 	SETCONST(l, DECO_DRAW);
 	SETCONST(l, DECO_CLEAR);
