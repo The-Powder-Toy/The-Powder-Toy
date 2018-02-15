@@ -25,9 +25,8 @@ void DownloadManager::Shutdown()
 {
 	pthread_mutex_lock(&downloadLock);
 	pthread_mutex_lock(&downloadAddLock);
-	for (std::vector<Download*>::iterator iter = downloads.begin(); iter != downloads.end(); ++iter)
+	for (auto download : downloads)
 	{
-		Download *download = (*iter);
 		if (download->http)
 			http_force_close(download->http);
 		download->downloadCanceled = true;
@@ -65,9 +64,9 @@ void DownloadManager::Update()
 		pthread_mutex_lock(&downloadAddLock);
 		if (downloadsAddQueue.size())
 		{
-			for (size_t i = 0; i < downloadsAddQueue.size(); i++)
+			for (auto i : downloadsAddQueue)
 			{
-				downloads.push_back(downloadsAddQueue[i]);
+				downloads.push_back(i);
 			}
 			downloadsAddQueue.clear();
 		}

@@ -307,19 +307,19 @@ void RenderView::NotifyRendererChanged(RenderModel * sender)
 
 void RenderView::NotifyRenderChanged(RenderModel * sender)
 {
-	for (size_t i = 0; i < renderModes.size(); i++)
+	for (auto & renderMode : renderModes)
 	{
-		if (renderModes[i]->GetActionCallback())
+		if (renderMode->GetActionCallback())
 		{
 			//Compares bitmasks at the moment, this means that "Point" is always on when other options that depend on it are, this might confuse some users, TODO: get the full list and compare that?
-			RenderModeAction * action = (RenderModeAction *)(renderModes[i]->GetActionCallback());
+			RenderModeAction * action = (RenderModeAction *)(renderMode->GetActionCallback());
 			if (action->renderMode  == (sender->GetRenderMode() & action->renderMode))
 			{
-				renderModes[i]->SetChecked(true);
+				renderMode->SetChecked(true);
 			}
 			else
 			{
-				renderModes[i]->SetChecked(false);
+				renderMode->SetChecked(false);
 			}
 		}
 	}
@@ -327,18 +327,18 @@ void RenderView::NotifyRenderChanged(RenderModel * sender)
 
 void RenderView::NotifyDisplayChanged(RenderModel * sender)
 {
-	for (size_t i = 0; i < displayModes.size(); i++)
+	for (auto & displayMode : displayModes)
 	{
-		if( displayModes[i]->GetActionCallback())
+		if( displayMode->GetActionCallback())
 		{
-			DisplayModeAction * action = (DisplayModeAction *)(displayModes[i]->GetActionCallback());
+			DisplayModeAction * action = (DisplayModeAction *)(displayMode->GetActionCallback());
 			if (action->displayMode  == (sender->GetDisplayMode() & action->displayMode))
 			{
-				displayModes[i]->SetChecked(true);
+				displayMode->SetChecked(true);
 			}
 			else
 			{
-				displayModes[i]->SetChecked(false);
+				displayMode->SetChecked(false);
 			}
 		}
 	}
@@ -346,18 +346,18 @@ void RenderView::NotifyDisplayChanged(RenderModel * sender)
 
 void RenderView::NotifyColourChanged(RenderModel * sender)
 {
-	for (size_t i = 0; i < colourModes.size(); i++)
+	for (auto & colourMode : colourModes)
 	{
-		if (colourModes[i]->GetActionCallback())
+		if (colourMode->GetActionCallback())
 		{
-			ColourModeAction * action = (ColourModeAction *)(colourModes[i]->GetActionCallback());
+			ColourModeAction * action = (ColourModeAction *)(colourMode->GetActionCallback());
 			if (action->colourMode == sender->GetColourMode())
 			{
-				colourModes[i]->SetChecked(true);
+				colourMode->SetChecked(true);
 			}
 			else
 			{
-				colourModes[i]->SetChecked(false);
+				colourMode->SetChecked(false);
 			}
 		}
 	}

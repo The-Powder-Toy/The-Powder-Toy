@@ -676,8 +676,8 @@ void Element_STKM::STKM_init_legs(Simulation * sim, playerst *playerp, int i)
 	playerp->legs[14] = x+3;
 	playerp->legs[15] = y+12;
 
-	for (int i = 0; i < 8; i++)
-		playerp->accs[i] = 0;
+	for (float & acc : playerp->accs)
+		acc = 0;
 	playerp->comm = 0;
 	playerp->pcomm = 0;
 	playerp->frames = 0;

@@ -61,9 +61,8 @@ int Simulation::Load(int fullX, int fullY, GameSave * save, bool includePressure
 	}
 	if(save->palette.size())
 	{
-		for(std::vector<GameSave::PaletteItem>::iterator iter = save->palette.begin(), end = save->palette.end(); iter != end; ++iter)
+		for(auto pi : save->palette)
 		{
-			GameSave::PaletteItem pi = *iter;
 			if (pi.second > 0 && pi.second < PT_NUM)
 			{
 				int myId = 0;
@@ -241,12 +240,12 @@ int Simulation::Load(int fullX, int fullY, GameSave * save, bool includePressure
 
 	// fix SOAP links using soapList, a map of old particle ID -> new particle ID
 	// loop through every old particle (loaded from save), and convert .tmp / .tmp2
-	for (std::map<unsigned int, unsigned int>::iterator iter = soapList.begin(), end = soapList.end(); iter != end; ++iter)
+	for (auto iter = soapList.begin(), end = soapList.end(); iter != end; ++iter)
 	{
 		int i = (*iter).second;
 		if ((parts[i].ctype & 0x2) == 2)
 		{
-			std::map<unsigned int, unsigned int>::iterator n = soapList.find(parts[i].tmp);
+			auto n = soapList.find(parts[i].tmp);
 			if (n != end)
 				parts[i].tmp = n->second;
 			// sometimes the proper SOAP isn't found. It should remove the link, but seems to break some saves
@@ -254,7 +253,7 @@ int Simulation::Load(int fullX, int fullY, GameSave * save, bool includePressure
 		}
 		if ((parts[i].ctype & 0x4) == 4)
 		{
-			std::map<unsigned int, unsigned int>::iterator n = soapList.find(parts[i].tmp2);
+			auto n = soapList.find(parts[i].tmp2);
 			if (n != end)
 				parts[i].tmp2 = n->second;
 			// sometimes the proper SOAP isn't found. It should remove the link, but seems to break some saves
@@ -335,7 +334,7 @@ GameSave * Simulation::Save(int fullX, int fullY, int fullX2, int fullY2, bool i
 	blockW = blockX2-blockX;
 	blockH = blockY2-blockY;
 
-	GameSave * newSave = new GameSave(blockW, blockH);
+	auto * newSave = new GameSave(blockW, blockH);
 
 	int storedParts = 0;
 	int elementCount[PT_NUM];
@@ -379,14 +378,14 @@ GameSave * Simulation::Save(int fullX, int fullY, int fullX2, int fullY2, bool i
 	{
 		// fix SOAP links using particleMap, a map of old particle ID -> new particle ID
 		// loop through every new particle (saved into the save), and convert .tmp / .tmp2
-		for (std::map<unsigned int, unsigned int>::iterator iter = particleMap.begin(), end = particleMap.end(); iter != end; ++iter)
+		for (auto iter = particleMap.begin(), end = particleMap.end(); iter != end; ++iter)
 		{
 			int i = (*iter).second;
 			if (newSave->particles[i].type != PT_SOAP)
 				continue;
 			if ((newSave->particles[i].ctype & 0x2) == 2)
 			{
-				std::map<unsigned int, unsigned int>::iterator n = particleMap.find(newSave->particles[i].tmp);
+				auto n = particleMap.find(newSave->particles[i].tmp);
 				if (n != end)
 					newSave->particles[i].tmp = n->second;
 				else
@@ -397,7 +396,7 @@ GameSave * Simulation::Save(int fullX, int fullY, int fullX2, int fullY2, bool i
 			}
 			if ((newSave->particles[i].ctype & 0x4) == 4)
 			{
-				std::map<unsigned int, unsigned int>::iterator n = particleMap.find(newSave->particles[i].tmp2);
+				auto n = particleMap.find(newSave->particles[i].tmp2);
 				if (n != end)
 					newSave->particles[i].tmp2 = n->second;
 				else
@@ -474,7 +473,7 @@ void Simulation::SaveSimOptions(GameSave * gameSave)
 
 Snapshot * Simulation::CreateSnapshot()
 {
-	Snapshot * snap = new Snapshot();
+	auto * snap = new Snapshot();
 	snap->AirPressure.insert(snap->AirPressure.begin(), &pv[0][0], &pv[0][0]+((XRES/CELL)*(YRES/CELL)));
 	snap->AirVelocityX.insert(snap->AirVelocityX.begin(), &vx[0][0], &vx[0][0]+((XRES/CELL)*(YRES/CELL)));
 	snap->AirVelocityY.insert(snap->AirVelocityY.begin(), &vy[0][0], &vy[0][0]+((XRES/CELL)*(YRES/CELL)));
@@ -507,8 +506,8 @@ void Simulation::Restore(const Snapshot & snap)
 	std::copy(snap.AirVelocityX.begin(), snap.AirVelocityX.end(), &vx[0][0]);
 	std::copy(snap.AirVelocityY.begin(), snap.AirVelocityY.end(), &vy[0][0]);
 	std::copy(snap.AmbientHeat.begin(), snap.AmbientHeat.end(), &hv[0][0]);
-	for (int i = 0; i < NPART; i++)
-		parts[i].type = 0;
+	for (auto & part : parts)
+		part.type = 0;
 	std::copy(snap.Particles.begin(), snap.Particles.end(), parts);
 	parts_lastActiveIndex = NPART-1;
 	RecalcFreeParticles(false);
@@ -581,7 +580,7 @@ int Simulation::flood_prop(int x, int y, size_t propoffset, PropertyValue propva
 	if (!r)
 		return 0;
 	int parttype = TYP(r);
-	char * bitmap = (char*)malloc(XRES*YRES); //Bitmap for checking
+	auto * bitmap = (char*)malloc(XRES*YRES); //Bitmap for checking
 	if (!bitmap) return -1;
 	memset(bitmap, 0, XRES*YRES);
 	try
@@ -876,8 +875,8 @@ int Simulation::flood_water(int x, int y, int i, int originaly, int check)
 		//check above, maybe around other sides too?
 		if ( ((y-1) > originaly) && !pmap[y-1][x] && eval_move(parts[i].type, x, y-1, nullptr))
 		{
-			int oldx = (int)(parts[i].x + 0.5f);
-			int oldy = (int)(parts[i].y + 0.5f);
+			auto oldx = (int)(parts[i].x + 0.5f);
+			auto oldy = (int)(parts[i].y + 0.5f);
 			pmap[y-1][x] = pmap[oldy][oldx];
 			pmap[oldy][oldx] = 0;
 			parts[i].x = x;
@@ -1165,7 +1164,7 @@ bool Simulation::ColorCompare(Renderer *ren, int x, int y, int replaceR, int rep
 void Simulation::ApplyDecorationFill(Renderer *ren, int x, int y, int colR, int colG, int colB, int colA, int replaceR, int replaceG, int replaceB)
 {
 	int x1, x2;
-	char *bitmap = (char*)malloc(XRES*YRES); //Bitmap for checking
+	auto *bitmap = (char*)malloc(XRES*YRES); //Bitmap for checking
 	if (!bitmap)
 		return;
 	memset(bitmap, 0, XRES*YRES);
@@ -2106,7 +2105,7 @@ void Simulation::create_arc(int sx, int sy, int dx, int dy, int midpoints, int v
 	free(ymid);
 }
 
-void Simulation::clear_sim(void)
+void Simulation::clear_sim()
 {
 	debug_currentParticle = 0;
 	emp_decor = 0;
@@ -2911,8 +2910,8 @@ int Simulation::get_normal_interp(int pt, float x0, float y0, float dx, float dy
 
 void Simulation::kill_part(int i)//kills particle number i
 {
-	int x = (int)(parts[i].x+0.5f);
-	int y = (int)(parts[i].y+0.5f);
+	auto x = (int)(parts[i].x+0.5f);
+	auto y = (int)(parts[i].y+0.5f);
 	if (x>=0 && y>=0 && x<XRES && y<YRES) {
 		if (ID(pmap[y][x]) == i)
 			pmap[y][x] = 0;
@@ -3170,8 +3169,8 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 	}
 	else
 	{
-		int oldX = (int)(parts[p].x+0.5f);
-		int oldY = (int)(parts[p].y+0.5f);
+		auto oldX = (int)(parts[p].x+0.5f);
+		auto oldY = (int)(parts[p].y+0.5f);
 		if (ID(pmap[oldY][oldX]) == p)
 			pmap[oldY][oldX] = 0;
 		if (ID(photons[oldY][oldX]) == p)
@@ -4414,8 +4413,8 @@ killed:
 				//head movement, let head pass through anything
 				parts[i].x += parts[i].vx;
 				parts[i].y += parts[i].vy;
-				int nx = (int)((float)parts[i].x+0.5f);
-				int ny = (int)((float)parts[i].y+0.5f);
+				auto nx = (int)((float)parts[i].x+0.5f);
+				auto ny = (int)((float)parts[i].y+0.5f);
 				if (edgeMode == 2)
 				{
 					bool x_ok = (nx >= CELL && nx < XRES-CELL);
@@ -4889,7 +4888,7 @@ movedone:
 
 int Simulation::GetParticleType(std::string type)
 {
-	char * txt = (char*)type.c_str();
+	auto * txt = (char*)type.c_str();
 
 	// alternative names for some elements
 	if (!strcasecmp(txt, "C4"))
@@ -5145,8 +5144,8 @@ void Simulation::CheckStacking()
 			if (parts[i].type)
 			{
 				int t = parts[i].type;
-				int x = (int)(parts[i].x+0.5f);
-				int y = (int)(parts[i].y+0.5f);
+				auto x = (int)(parts[i].x+0.5f);
+				auto y = (int)(parts[i].y+0.5f);
 				if (x>=0 && y>=0 && x<XRES && y<YRES && !(elements[t].Properties&TYPE_ENERGY))
 				{
 					if (pmap_count[y][x]>=NPART)
@@ -5310,9 +5309,9 @@ void Simulation::BeforeSim()
 		{
 			for (int nx = 0; nx < XRES; nx++)
 			{
-				for (int ny = 0; ny < YRES; ny++)
+				for (auto & ny : pmap)
 				{
-					int r = pmap[ny][nx];
+					int r = ny[nx];
 					if (!r)
 						continue;
 					if(parts[ID(r)].type == PT_WIRE)
@@ -5345,10 +5344,10 @@ void Simulation::BeforeSim()
 		// wifi channel reseting
 		if (ISWIRE > 0)
 		{
-			for (int q = 0; q < (int)(MAX_TEMP-73.15f)/100+2; q++)
+			for (auto & wireles : wireless)
 			{
-				wireless[q][0] = wireless[q][1];
-				wireless[q][1] = 0;
+				wireles[0] = wireles[1];
+				wireles[1] = 0;
 			}
 			ISWIRE--;
 		}
@@ -5377,8 +5376,8 @@ Simulation::~Simulation()
 	delete[] platent;
 	delete grav;
 	delete air;
-	for (size_t i = 0; i < tools.size(); i++)
-		delete tools[i];
+	for (auto & tool : tools)
+		delete tool;
 }
 
 Simulation::Simulation():

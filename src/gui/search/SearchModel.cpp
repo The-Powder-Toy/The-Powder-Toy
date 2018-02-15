@@ -189,9 +189,9 @@ void SearchModel::AddObserver(SearchView * observer)
 
 void SearchModel::SelectSave(int saveID)
 {
-	for (size_t i = 0; i < selected.size(); i++)
+	for (int i : selected)
 	{
-		if (selected[i] == saveID)
+		if (i == saveID)
 		{
 			return;
 		}
@@ -219,63 +219,56 @@ restart:
 
 void SearchModel::notifySaveListChanged()
 {
-	for (size_t i = 0; i < observers.size(); i++)
+	for (auto cObserver : observers)
 	{
-		SearchView* cObserver = observers[i];
 		cObserver->NotifySaveListChanged(this);
 	}
 }
 
 void SearchModel::notifyTagListChanged()
 {
-	for (size_t i = 0; i < observers.size(); i++)
+	for (auto cObserver : observers)
 	{
-		SearchView* cObserver = observers[i];
 		cObserver->NotifyTagListChanged(this);
 	}
 }
 
 void SearchModel::notifyPageChanged()
 {
-	for (size_t i = 0; i < observers.size(); i++)
+	for (auto cObserver : observers)
 	{
-		SearchView* cObserver = observers[i];
 		cObserver->NotifyPageChanged(this);
 	}
 }
 
 void SearchModel::notifySortChanged()
 {
-	for (size_t i = 0; i < observers.size(); i++)
+	for (auto cObserver : observers)
 	{
-		SearchView* cObserver = observers[i];
 		cObserver->NotifySortChanged(this);
 	}
 }
 
 void SearchModel::notifyShowOwnChanged()
 {
-	for (size_t i = 0; i < observers.size(); i++)
+	for (auto cObserver : observers)
 	{
-		SearchView* cObserver = observers[i];
 		cObserver->NotifyShowOwnChanged(this);
 	}
 }
 
 void SearchModel::notifyShowFavouriteChanged()
 {
-	for (size_t i = 0; i < observers.size(); i++)
+	for (auto cObserver : observers)
 	{
-		SearchView* cObserver = observers[i];
 		cObserver->NotifyShowOwnChanged(this);
 	}
 }
 
 void SearchModel::notifySelectedChanged()
 {
-	for (size_t i = 0; i < observers.size(); i++)
+	for (auto cObserver : observers)
 	{
-		SearchView* cObserver = observers[i];
 		cObserver->NotifySelectedChanged(this);
 	}
 }

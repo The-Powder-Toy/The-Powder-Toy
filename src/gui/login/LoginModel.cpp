@@ -54,9 +54,9 @@ bool LoginModel::GetStatus()
 
 void LoginModel::notifyStatusChanged()
 {
-	for (size_t i = 0; i < observers.size(); i++)
+	for (auto & observer : observers)
 	{
-		observers[i]->NotifyStatusChanged(this);
+		observer->NotifyStatusChanged(this);
 	}
 }
 

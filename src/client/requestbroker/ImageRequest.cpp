@@ -24,11 +24,11 @@ RequestBroker::ProcessResponse ImageRequest::Process(RequestBroker & rb)
 	VideoBuffer * image = nullptr;
 
 	//Have a look at the thumbnail cache
-	for(std::deque<std::pair<std::string, VideoBuffer*> >::iterator iter = rb.imageCache.begin(), end = rb.imageCache.end(); iter != end; ++iter)
+	for(auto & iter : rb.imageCache)
 	{
-		if((*iter).first == URL)
+		if(iter.first == URL)
 		{
-			image = (*iter).second;
+			image = iter.second;
 /*#ifdef DEBUG
 			std::cout << typeid(*this).name() << " " << URL << " found in cache" << std::endl;
 #endif*/
@@ -86,18 +86,18 @@ RequestBroker::ProcessResponse ImageRequest::Process(RequestBroker & rb)
 		else
 		{
 			//Check for ongoing requests
-			for(std::vector<Request*>::iterator iter = rb.activeRequests.begin(), end = rb.activeRequests.end(); iter != end; ++iter)
+			for(auto & activeRequest : rb.activeRequests)
 			{
-				if((*iter)->Type != Request::Image)
+				if(activeRequest->Type != Request::Image)
 					continue;
-				ImageRequest * otherReq = (ImageRequest*)(*iter);
+				ImageRequest * otherReq = (ImageRequest*)activeRequest;
 				if(otherReq->URL == URL && otherReq != this)
 				{
 /*#ifdef DEBUG
 					std::cout << typeid(*this).name() << " Request for " << URL << " found, appending." << std::endl;
 #endif*/
 					//Add the current listener to the item already being requested
-					(*iter)->Children.push_back(this);
+					activeRequest->Children.push_back(this);
 					return RequestBroker::Duplicate;
 				}
 			}
@@ -122,15 +122,15 @@ RequestBroker::ProcessResponse ImageRequest::Process(RequestBroker & rb)
 		myVB->Resize(Width, Height, true);
 		ResultObject = (void*)myVB;
 		rb.requestComplete(this);
-		for(std::vector<Request*>::iterator childIter = children.begin(), childEnd = children.end(); childIter != childEnd; ++childIter)
+		for(auto & childIter : children)
 		{
-			if((*childIter)->Type == Request::Image)
+			if(childIter->Type == Request::Image)
 			{
-				ImageRequest * childReq = (ImageRequest*)*childIter;
+				ImageRequest * childReq = (ImageRequest*)childIter;
 				VideoBuffer * tempImage = new VideoBuffer(*image);
 				tempImage->Resize(childReq->Width, childReq->Height, true);
 				childReq->ResultObject = (void*)tempImage;
-				rb.requestComplete(*childIter);
+				rb.requestComplete(childIter);
 			}
 		}
 		return RequestBroker::Finished;

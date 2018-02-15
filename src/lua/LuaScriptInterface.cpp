@@ -808,13 +808,13 @@ void LuaScriptInterface::initSimulationAPI()
 	std::vector<StructProperty> particlePropertiesV = Particle::GetProperties();
 	particlePropertiesCount = 0;
 	particleProperties = new StructProperty[particlePropertiesV.size()];
-	for(std::vector<StructProperty>::iterator iter = particlePropertiesV.begin(), end = particlePropertiesV.end(); iter != end; ++iter)
+	for(auto & iter : particlePropertiesV)
 	{
-		std::string propertyName = (*iter).Name;
+		std::string propertyName = iter.Name;
 		std::transform(propertyName.begin(), propertyName.end(), propertyName.begin(), ::toupper);
 		lua_pushinteger(l, particlePropertiesCount);
 		lua_setfield(l, -2, ("FIELD_"+propertyName).c_str());
-		particleProperties[particlePropertiesCount++] = *iter;
+		particleProperties[particlePropertiesCount++] = iter;
 	}
 
 	lua_newtable(l);
@@ -2251,9 +2251,9 @@ int LuaScriptInterface::renderer_renderModes(lua_State * l)
 		lua_newtable(l);
 		std::vector<unsigned int> renderModes = luacon_ren->GetRenderMode();
 		int i = 1;
-		for(std::vector<unsigned int>::iterator iter = renderModes.begin(), end = renderModes.end(); iter != end; ++iter)
+		for(unsigned int & renderMode : renderModes)
 		{
-			lua_pushinteger(l, *iter);
+			lua_pushinteger(l, renderMode);
 			lua_rawseti(l, -2, i++);
 		}
 		return 1;
@@ -2284,9 +2284,9 @@ int LuaScriptInterface::renderer_displayModes(lua_State * l)
 		lua_newtable(l);
 		std::vector<unsigned int> displayModes = luacon_ren->GetDisplayMode();
 		int i = 1;
-		for(std::vector<unsigned int>::iterator iter = displayModes.begin(), end = displayModes.end(); iter != end; ++iter)
+		for(unsigned int & displayMode : displayModes)
 		{
-			lua_pushinteger(l, *iter);
+			lua_pushinteger(l, displayMode);
 			lua_rawseti(l, -2, i++);
 		}
 		return 1;
@@ -2520,9 +2520,9 @@ int LuaScriptInterface::elements_allocate(lua_State * l)
 
 	identifier = group + "_PT_" + id;
 
-	for(int i = 0; i < PT_NUM; i++)
+	for(auto & element : luacon_sim->elements)
 	{
-		if(luacon_sim->elements[i].Enabled && std::string(luacon_sim->elements[i].Identifier) == identifier)
+		if(element.Enabled && std::string(element.Identifier) == identifier)
 			return luaL_error(l, "Element identifier already in use");
 	}
 
@@ -2582,13 +2582,13 @@ int LuaScriptInterface::elements_element(lua_State * l)
 		luaL_checktype(l, 2, LUA_TTABLE);
 		std::vector<StructProperty> properties = Element::GetProperties();
 		//Write values from native data to a table
-		for(std::vector<StructProperty>::iterator iter = properties.begin(), end = properties.end(); iter != end; ++iter)
+		for(auto & propertie : properties)
 		{
-			lua_getfield(l, -1, (*iter).Name.c_str());
+			lua_getfield(l, -1, propertie.Name.c_str());
 			if(lua_type(l, -1) != LUA_TNIL)
 			{
-				intptr_t offset = (*iter).Offset;
-				switch((*iter).Type)
+				intptr_t offset = propertie.Offset;
+				switch(propertie.Type)
 				{
 					case StructProperty::ParticleType:
 					case StructProperty::Integer:
@@ -2663,10 +2663,10 @@ int LuaScriptInterface::elements_element(lua_State * l)
 		std::vector<StructProperty> properties = Element::GetProperties();
 		//Write values from native data to a table
 		lua_newtable(l);
-		for(std::vector<StructProperty>::iterator iter = properties.begin(), end = properties.end(); iter != end; ++iter)
+		for(auto & propertie : properties)
 		{
-			intptr_t offset = (*iter).Offset;
-			switch((*iter).Type)
+			intptr_t offset = propertie.Offset;
+			switch(propertie.Type)
 			{
 				case StructProperty::ParticleType:
 				case StructProperty::Integer:
@@ -2697,7 +2697,7 @@ int LuaScriptInterface::elements_element(lua_State * l)
 				case StructProperty::Removed:
 					continue;
 			}
-			lua_setfield(l, -2, (*iter).Name.c_str());
+			lua_setfield(l, -2, propertie.Name.c_str());
 		}
 		lua_pushstring(l, luacon_sim->elements[id].Identifier);
 		lua_setfield(l, -2, "Identifier");
@@ -2724,11 +2724,11 @@ int LuaScriptInterface::elements_property(lua_State * l)
 		bool propertyFound = false;
 		std::vector<StructProperty> properties = Element::GetProperties();
 
-		for(std::vector<StructProperty>::iterator iter = properties.begin(), end = properties.end(); iter != end; ++iter)
+		for(auto & propertie : properties)
 		{
-			if((*iter).Name == propertyName)
+			if(propertie.Name == propertyName)
 			{
-				property = *iter;
+				property = propertie;
 				propertyFound = true;
 				break;
 			}
@@ -2829,11 +2829,11 @@ int LuaScriptInterface::elements_property(lua_State * l)
 		bool propertyFound = false;
 		std::vector<StructProperty> properties = Element::GetProperties();
 
-		for(std::vector<StructProperty>::iterator iter = properties.begin(), end = properties.end(); iter != end; ++iter)
+		for(auto & propertie : properties)
 		{
-			if((*iter).Name == propertyName)
+			if(propertie.Name == propertyName)
 			{
-				property = *iter;
+				property = propertie;
 				propertyFound = true;
 				break;
 			}

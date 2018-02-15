@@ -554,9 +554,9 @@ AnyType TPTScriptInterface::tptS_reset(std::deque<std::string> * words)
 	if (resetStr == "pressure")
 	{
 		for (int nx = 0; nx < XRES/CELL; nx++)
-			for (int ny = 0; ny < YRES/CELL; ny++)
+			for (auto & ny : sim->air->pv)
 			{
-				sim->air->pv[ny][nx] = 0;
+				ny[nx] = 0;
 			}
 	}
 	else if (resetStr == "velocity")
@@ -574,11 +574,11 @@ AnyType TPTScriptInterface::tptS_reset(std::deque<std::string> * words)
 	}
 	else if (resetStr == "temp")
 	{
-		for (int i = 0; i < NPART; i++)
+		for (auto & part : sim->parts)
 		{
-			if (sim->parts[i].type)
+			if (part.type)
 			{
-				sim->parts[i].temp = sim->elements[sim->parts[i].type].Temperature;
+				part.temp = sim->elements[part.type].Temperature;
 			}
 		}
 	}

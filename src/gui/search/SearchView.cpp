@@ -302,10 +302,10 @@ SearchView::~SearchView()
 	delete pageLabel;
 	delete pageCountLabel;
 
-	for (size_t i = 0; i < saveButtons.size(); i++)
+	for (auto & saveButton : saveButtons)
 	{
-		RemoveComponent(saveButtons[i]);
-		delete saveButtons[i];
+		RemoveComponent(saveButton);
+		delete saveButton;
 	}
 	saveButtons.clear();
 }
@@ -436,9 +436,9 @@ void SearchView::CheckAccess()
 		{
 			unpublishSelected->Enabled = true;
 			removeSelected->Enabled = true;
-			for (size_t i = 0; i < saveButtons.size(); i++)
+			for (auto & saveButton : saveButtons)
 			{
-				saveButtons[i]->SetSelectable(true);
+				saveButton->SetSelectable(true);
 			}
 		}
 
@@ -453,10 +453,10 @@ void SearchView::CheckAccess()
 		unpublishSelected->Enabled = false;
 		removeSelected->Enabled = false;
 
-		for (size_t i = 0; i < saveButtons.size(); i++)
+		for (auto & saveButton : saveButtons)
 		{
-			saveButtons[i]->SetSelectable(false);
-			saveButtons[i]->SetSelected(false);
+			saveButton->SetSelectable(false);
+			saveButton->SetSelected(false);
 		}
 	}
 }
@@ -477,10 +477,10 @@ void SearchView::NotifyTagListChanged(SearchModel * sender)
 	RemoveComponent(tagsLabel);
 	tagsLabel->SetParentWindow(nullptr);
 
-	for (size_t i = 0; i < tagButtons.size(); i++)
+	for (auto & tagButton : tagButtons)
 	{
-		RemoveComponent(tagButtons[i]);
-		delete tagButtons[i];
+		RemoveComponent(tagButton);
+		delete tagButton;
 	}
 	tagButtons.clear();
 
@@ -577,9 +577,9 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 		favouriteSelected->SetText("Favourite");
 
 	Client::Ref().ClearThumbnailRequests();
-	for (size_t i = 0; i < saveButtons.size(); i++)
+	for (auto & saveButton : saveButtons)
 	{
-		RemoveComponent(saveButtons[i]);
+		RemoveComponent(saveButton);
 	}
 	if (!sender->GetSavesLoaded())
 	{
@@ -635,9 +635,9 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 			delete errorLabel;
 			errorLabel = nullptr;
 		}
-		for (size_t i = 0; i < saveButtons.size(); i++)
+		for (auto & saveButton : saveButtons)
 		{
-			delete saveButtons[i];
+			delete saveButton;
 		}
 		saveButtons.clear();
 
@@ -682,7 +682,7 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 				v->Search("user:"+sender->GetSave()->GetUserName());
 			}
 		};
-		for (size_t i = 0; i < saves.size(); i++)
+		for (auto & save : saves)
 		{
 			if (saveX == savesX)
 			{
@@ -698,12 +698,12 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 							buttonYOffset + buttonPadding + saveY*(buttonHeight+buttonPadding*2)
 							),
 						ui::Point(buttonWidth, buttonHeight),
-						saves[i]);
+						save);
 			saveButton->AddContextMenu(0);
 			saveButton->SetActionCallback(new SaveOpenAction(this));
 			if(Client::Ref().GetAuthUser().UserID)
 				saveButton->SetSelectable(true);
-			if (saves[i]->GetUserName() == Client::Ref().GetAuthUser().Username || Client::Ref().GetAuthUser().UserElevation == User::ElevationAdmin || Client::Ref().GetAuthUser().UserElevation == User::ElevationModerator)
+			if (save->GetUserName() == Client::Ref().GetAuthUser().Username || Client::Ref().GetAuthUser().UserElevation == User::ElevationAdmin || Client::Ref().GetAuthUser().UserElevation == User::ElevationModerator)
 				saveButton->SetShowVotes(true);
 			saveButtons.push_back(saveButton);
 			AddComponent(saveButton);
@@ -716,15 +716,15 @@ void SearchView::NotifySelectedChanged(SearchModel * sender)
 {
 	vector<int> selected = sender->GetSelected();
 	size_t published = 0;
-	for (size_t j = 0; j < saveButtons.size(); j++)
+	for (auto & saveButton : saveButtons)
 	{
-		saveButtons[j]->SetSelected(false);
-		for (size_t i = 0; i < selected.size(); i++)
+		saveButton->SetSelected(false);
+		for (int i : selected)
 		{
-			if (saveButtons[j]->GetSave()->GetID() == selected[i])
+			if (saveButton->GetSave()->GetID() == i)
 			{
-				saveButtons[j]->SetSelected(true);
-				if (saveButtons[j]->GetSave()->GetPublished())
+				saveButton->SetSelected(true);
+				if (saveButton->GetSave()->GetPublished())
 					published++;
 			}
 		}

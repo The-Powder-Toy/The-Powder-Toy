@@ -102,33 +102,33 @@ Renderer * RenderModel::GetRenderer()
 
 void RenderModel::notifyRendererChanged()
 {
-	for (size_t i = 0; i < observers.size(); i++)
+	for (auto & observer : observers)
 	{
-		observers[i]->NotifyRendererChanged(this);
+		observer->NotifyRendererChanged(this);
 	}
 }
 
 void RenderModel::notifyRenderChanged()
 {
-	for (size_t i = 0; i < observers.size(); i++)
+	for (auto & observer : observers)
 	{
-		observers[i]->NotifyRenderChanged(this);
+		observer->NotifyRenderChanged(this);
 	}
 }
 
 void RenderModel::notifyDisplayChanged()
 {
-	for (size_t i = 0; i < observers.size(); i++)
+	for (auto & observer : observers)
 	{
-		observers[i]->NotifyDisplayChanged(this);
+		observer->NotifyDisplayChanged(this);
 	}
 }
 
 void RenderModel::notifyColourChanged()
 {
-	for (size_t i = 0; i < observers.size(); i++)
+	for (auto & observer : observers)
 	{
-		observers[i]->NotifyColourChanged(this);
+		observer->NotifyColourChanged(this);
 	}
 }
 

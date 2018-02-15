@@ -28,18 +28,18 @@ void LocalBrowserModel::AddObserver(LocalBrowserView * observer)
 
 void LocalBrowserModel::notifySavesListChanged()
 {
-	for (size_t i = 0; i < observers.size(); i++)
+	for (auto & observer : observers)
 	{
-		observers[i]->NotifySavesListChanged(this);
-		observers[i]->NotifyPageChanged(this);
+		observer->NotifySavesListChanged(this);
+		observer->NotifyPageChanged(this);
 	}
 }
 
 void LocalBrowserModel::notifyPageChanged()
 {
-	for (size_t i = 0; i < observers.size(); i++)
+	for (auto & observer : observers)
 	{
-		observers[i]->NotifyPageChanged(this);
+		observer->NotifyPageChanged(this);
 	}
 }
 
@@ -79,9 +79,9 @@ void LocalBrowserModel::UpdateSavesList(int pageNumber)
 
 	stampIDs = Client::Ref().GetStamps((pageNumber-1)*20, 20);
 
-	for (size_t i = 0; i < stampIDs.size(); i++)
+	for (const auto & stampID : stampIDs)
 	{
-		SaveFile * tempSave = Client::Ref().GetStamp(stampIDs[i]);
+		SaveFile * tempSave = Client::Ref().GetStamp(stampID);
 		if (tempSave)
 		{
 			savesList.push_back(tempSave);
@@ -102,9 +102,9 @@ int LocalBrowserModel::GetPageCount()
 
 void LocalBrowserModel::SelectSave(std::string stampID)
 {
-	for (size_t i = 0; i < selected.size(); i++)
+	for (const auto & i : selected)
 	{
-		if (selected[i] == stampID)
+		if (i == stampID)
 		{
 			return;
 		}
@@ -132,10 +132,9 @@ restart:
 
 void LocalBrowserModel::notifySelectedChanged()
 {
-	for (size_t i = 0; i < observers.size(); i++)
+	for (auto cObserver : observers)
 	{
-		LocalBrowserView* cObserver = observers[i];
-		cObserver->NotifySelectedChanged(this);
+			cObserver->NotifySelectedChanged(this);
 	}
 }
 

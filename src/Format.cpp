@@ -369,9 +369,8 @@ std::vector<char> format::VideoBufferToPNG(const VideoBuffer & vidBuf)
 
 	//Write chunks to output buffer
 	int finalDataSize = 8;
-	for(std::vector<PNGChunk*>::iterator iter = chunks.begin(), end = chunks.end(); iter != end; ++iter)
+	for(auto cChunk : chunks)
 	{
-		PNGChunk * cChunk = *iter;
 		finalDataSize += 4 + 4 + 4;
 		finalDataSize += cChunk->Length;
 	}
@@ -388,10 +387,8 @@ std::vector<char> format::VideoBufferToPNG(const VideoBuffer & vidBuf)
 	finalData[finalDataPos++] = 0x1A;
 	finalData[finalDataPos++] = 0x0A;
 
-	for(std::vector<PNGChunk*>::iterator iter = chunks.begin(), end = chunks.end(); iter != end; ++iter)
+	for(auto cChunk : chunks)
 	{
-		PNGChunk * cChunk = *iter;
-
 		//Chunk length
 		finalData[finalDataPos++] = (cChunk->Length>>24)&0xFF;
 		finalData[finalDataPos++] = (cChunk->Length>>16)&0xFF;

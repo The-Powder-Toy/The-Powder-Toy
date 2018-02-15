@@ -479,8 +479,8 @@ std::vector<std::string> Client::DirectorySearch(std::string directory, std::str
 {
 	std::vector<std::string> extensions;
 	extensions.push_back(extension);
-	for (std::string::iterator iter = search.begin(); iter != search.end(); ++iter)
-		*iter = toupper(*iter);
+	for (char & iter : search)
+		iter = toupper(iter);
 	return DirectorySearch(directory, search, extensions);
 }
 
@@ -533,22 +533,22 @@ std::vector<std::string> Client::DirectorySearch(std::string directory, std::str
 #endif
 
 	std::vector<std::string> searchResults;
-	for(std::vector<std::string>::iterator iter = directoryList.begin(), end = directoryList.end(); iter != end; ++iter)
+	for(auto & iter : directoryList)
 	{
-		std::string filename = *iter, tempfilename = *iter;
+		std::string filename = iter, tempfilename = iter;
 		bool extensionMatch = !extensions.size();
-		for(std::vector<std::string>::iterator extIter = extensions.begin(), extEnd = extensions.end(); extIter != extEnd; ++extIter)
+		for(auto & extension : extensions)
 		{
-			size_t filenameLength = filename.length()-(*extIter).length();
-			if(filename.find(*extIter, filenameLength) == filenameLength)
+			size_t filenameLength = filename.length()-extension.length();
+			if(filename.find(extension, filenameLength) == filenameLength)
 			{
 				extensionMatch = true;
 				tempfilename = filename.substr(0, filenameLength);
 				break;
 			}
 		}
-		for (std::string::iterator iter = tempfilename.begin(); iter != tempfilename.end(); ++iter)
-			*iter = toupper(*iter);
+		for (char & iter : tempfilename)
+			iter = toupper(iter);
 		bool searchMatch = !search.size();
 		if(search.size() && tempfilename.find(search)!=std::string::npos)
 			searchMatch = true;
@@ -805,10 +805,10 @@ bool Client::CheckUpdate(void *updateRequest, bool checkSession)
 
 				//Notifications from server
 				Json::Value notificationsArray = objDocument["Notifications"];
-				for (Json::UInt j = 0; j < notificationsArray.size(); j++)
+				for (auto & j : notificationsArray)
 				{
-					std::string notificationLink = notificationsArray[j]["Link"].asString();
-					std::string notificationText = notificationsArray[j]["Text"].asString();
+					std::string notificationLink = j["Link"].asString();
+					std::string notificationText = j["Text"].asString();
 
 					std::pair<std::string, std::string> item = std::pair<std::string, std::string>(notificationText, notificationLink);
 					AddServerNotification(item);
@@ -891,33 +891,33 @@ UpdateInfo Client::GetUpdateInfo()
 
 void Client::notifyUpdateAvailable()
 {
-	for (std::vector<ClientListener*>::iterator iterator = listeners.begin(), end = listeners.end(); iterator != end; ++iterator)
+	for (auto & listener : listeners)
 	{
-		(*iterator)->NotifyUpdateAvailable(this);
+		listener->NotifyUpdateAvailable(this);
 	}
 }
 
 void Client::notifyMessageOfTheDay()
 {
-	for (std::vector<ClientListener*>::iterator iterator = listeners.begin(), end = listeners.end(); iterator != end; ++iterator)
+	for (auto & listener : listeners)
 	{
-		(*iterator)->NotifyMessageOfTheDay(this);
+		listener->NotifyMessageOfTheDay(this);
 	}
 }
 
 void Client::notifyAuthUserChanged()
 {
-	for (std::vector<ClientListener*>::iterator iterator = listeners.begin(), end = listeners.end(); iterator != end; ++iterator)
+	for (auto & listener : listeners)
 	{
-		(*iterator)->NotifyAuthUserChanged(this);
+		listener->NotifyAuthUserChanged(this);
 	}
 }
 
 void Client::notifyNewNotification(std::pair<std::string, std::string> notification)
 {
-	for (std::vector<ClientListener*>::iterator iterator = listeners.begin(), end = listeners.end(); iterator != end; ++iterator)
+	for (auto & listener : listeners)
 	{
-		(*iterator)->NotifyNewNotification(this, notification);
+		listener->NotifyNewNotification(this, notification);
 	}
 }
 
@@ -1433,10 +1433,10 @@ LoginStatus Client::Login(std::string username, std::string password, User & use
 			std::string userElevationTemp = objDocument["Elevation"].asString();
 
 			Json::Value notificationsArray = objDocument["Notifications"];
-			for (Json::UInt j = 0; j < notificationsArray.size(); j++)
+			for (auto & j : notificationsArray)
 			{
-				std::string notificationLink = notificationsArray[j]["Link"].asString();
-				std::string notificationText = notificationsArray[j]["Text"].asString();
+				std::string notificationLink = j["Link"].asString();
+				std::string notificationText = j["Text"].asString();
 
 				std::pair<std::string, std::string> item = std::pair<std::string, std::string>(notificationText, notificationLink);
 				AddServerNotification(item);
@@ -1661,8 +1661,8 @@ SaveInfo * Client::GetSave(int saveID, int saveDate)
 
 			Json::Value tagsArray = objDocument["Tags"];
 			std::list<std::string> tempTags;
-			for (Json::UInt j = 0; j < tagsArray.size(); j++)
-				tempTags.push_back(tagsArray[j].asString());
+			for (const auto & j : tagsArray)
+				tempTags.push_back(j.asString());
 
 			SaveInfo * tempSave = new SaveInfo(tempID, tempCreatedDate, tempUpdatedDate, tempScoreUp,
 			                                   tempScoreDown, tempMyScore, tempUsername, tempName,
@@ -1725,8 +1725,8 @@ RequestBroker::Request * Client::GetSaveAsync(int saveID, int saveDate)
 
 				Json::Value tagsArray = objDocument["Tags"];
 				std::list<std::string> tempTags;
-				for (Json::UInt j = 0; j < tagsArray.size(); j++)
-					tempTags.push_back(tagsArray[j].asString());
+				for (const auto & j : tagsArray)
+					tempTags.push_back(j.asString());
 
 				SaveInfo * tempSave = new SaveInfo(tempID, tempCreatedDate, tempUpdatedDate, tempScoreUp,
 				                                   tempScoreDown, tempMyScore, tempUsername, tempName,
@@ -1764,14 +1764,14 @@ RequestBroker::Request * Client::GetCommentsAsync(int saveID, int start, int cou
 				Json::Value commentsArray;
 				dataStream >> commentsArray;
 
-				for (Json::UInt j = 0; j < commentsArray.size(); j++)
+				for (auto & j : commentsArray)
 				{
-					int userID = format::StringToNumber<int>(commentsArray[j]["UserID"].asString());
-					std::string username = commentsArray[j]["Username"].asString();
-					std::string formattedUsername = commentsArray[j]["FormattedUsername"].asString();
+					int userID = format::StringToNumber<int>(j["UserID"].asString());
+					std::string username = j["Username"].asString();
+					std::string formattedUsername = j["FormattedUsername"].asString();
 					if (formattedUsername == "jacobot")
 						formattedUsername = "\bt" + formattedUsername;
-					std::string comment = commentsArray[j]["Text"].asString();
+					std::string comment = j["Text"].asString();
 					commentArray->push_back(new SaveComment(userID, username, formattedUsername, comment));
 				}
 				return commentArray;
@@ -1821,10 +1821,10 @@ std::vector<std::pair<std::string, int> > * Client::GetTags(int start, int count
 
 			resultCount = objDocument["TagTotal"].asInt();
 			Json::Value tagsArray = objDocument["Tags"];
-			for (Json::UInt j = 0; j < tagsArray.size(); j++)
+			for (auto & j : tagsArray)
 			{
-				int tagCount = tagsArray[j]["Count"].asInt();
-				std::string tag = tagsArray[j]["Tag"].asString();
+				int tagCount = j["Count"].asInt();
+				std::string tag = j["Tag"].asString();
 				tagArray->push_back(std::pair<std::string, int>(tag, tagCount));
 			}
 		}
@@ -1887,17 +1887,17 @@ std::vector<SaveInfo*> * Client::SearchSaves(int start, int count, std::string q
 
 			resultCount = objDocument["Count"].asInt();
 			Json::Value savesArray = objDocument["Saves"];
-			for (Json::UInt j = 0; j < savesArray.size(); j++)
+			for (auto & j : savesArray)
 			{
-				int tempID = savesArray[j]["ID"].asInt();
-				int tempCreatedDate = savesArray[j]["Created"].asInt();
-				int tempUpdatedDate = savesArray[j]["Updated"].asInt();
-				int tempScoreUp = savesArray[j]["ScoreUp"].asInt();
-				int tempScoreDown = savesArray[j]["ScoreDown"].asInt();
-				std::string tempUsername = savesArray[j]["Username"].asString();
-				std::string tempName = savesArray[j]["Name"].asString();
-				int tempVersion = savesArray[j]["Version"].asInt();
-				bool tempPublished = savesArray[j]["Published"].asBool();
+				int tempID = j["ID"].asInt();
+				int tempCreatedDate = j["Created"].asInt();
+				int tempUpdatedDate = j["Updated"].asInt();
+				int tempScoreUp = j["ScoreUp"].asInt();
+				int tempScoreDown = j["ScoreDown"].asInt();
+				std::string tempUsername = j["Username"].asString();
+				std::string tempName = j["Name"].asString();
+				int tempVersion = j["Version"].asInt();
+				bool tempPublished = j["Published"].asBool();
 				SaveInfo * tempSaveInfo = new SaveInfo(tempID, tempCreatedDate, tempUpdatedDate, tempScoreUp, tempScoreDown, tempUsername, tempName);
 				tempSaveInfo->Version = tempVersion;
 				tempSaveInfo->SetPublished(tempPublished);
@@ -1957,8 +1957,8 @@ std::list<std::string> * Client::RemoveTag(int saveID, std::string tag)
 
 			Json::Value tagsArray = responseObject["Tags"];
 			tags = new std::list<std::string>();
-			for (Json::UInt j = 0; j < tagsArray.size(); j++)
-				tags->push_back(tagsArray[j].asString());
+			for (const auto & j : tagsArray)
+				tags->push_back(j.asString());
 		}
 		catch (std::exception &e)
 		{
@@ -1999,8 +1999,8 @@ std::list<std::string> * Client::AddTag(int saveID, std::string tag)
 
 			Json::Value tagsArray = responseObject["Tags"];
 			tags = new std::list<std::string>();
-			for (Json::UInt j = 0; j < tagsArray.size(); j++)
-				tags->push_back(tagsArray[j].asString());
+			for (const auto & j : tagsArray)
+				tags->push_back(j.asString());
 		}
 		catch (std::exception & e)
 		{
@@ -2044,21 +2044,21 @@ void Client::MergeStampAuthorInfo(Json::Value stampAuthors)
 // linksToAdd is an array (NOT an object) of links to add to authors["links"]
 void Client::MergeAuthorInfo(Json::Value linksToAdd)
 {
-	for (Json::Value::ArrayIndex i = 0; i < linksToAdd.size(); i++)
+	for (const auto & i : linksToAdd)
 	{
 		// link is the same exact json we have open, don't do anything
-		if (linksToAdd[i] == authors)
+		if (i == authors)
 			return;
 
 		bool hasLink = false;
-		for (Json::Value::ArrayIndex j = 0; j < authors["links"].size(); j++)
+		for (const auto & j : authors["links"])
 		{
 			// check everything in authors["links"] to see if it's the same json as what we are already adding
-			if (authors["links"][j] == linksToAdd[i])
+			if (j == i)
 				hasLink = true;
 		}
 		if (!hasLink)
-			authors["links"].append(linksToAdd[i]);
+			authors["links"].append(i);
 	}
 }
 
@@ -2162,8 +2162,8 @@ std::vector<std::string> Client::GetPrefStringArray(std::string prop)
 	{
 		std::vector<std::string> ret;
 		Json::Value arr = GetPref(preferences, prop);
-		for (int i = 0; i < (int)arr.size(); i++)
-			ret.push_back(arr[i].asString());
+		for (const auto & i : arr)
+			ret.push_back(i.asString());
 		return ret;
 	}
 	catch (std::exception & e)
@@ -2179,8 +2179,8 @@ std::vector<double> Client::GetPrefNumberArray(std::string prop)
 	{
 		std::vector<double> ret;
 		Json::Value arr = GetPref(preferences, prop);
-		for (int i = 0; i < (int)arr.size(); i++)
-			ret.push_back(arr[i].asDouble());
+		for (const auto & i : arr)
+			ret.push_back(i.asDouble());
 		return ret;
 	}
 	catch (std::exception & e)
@@ -2196,8 +2196,8 @@ std::vector<int> Client::GetPrefIntegerArray(std::string prop)
 	{
 		std::vector<int> ret;
 		Json::Value arr = GetPref(preferences, prop);
-		for (int i = 0; i < (int)arr.size(); i++)
-			ret.push_back(arr[i].asInt());
+		for (const auto & i : arr)
+			ret.push_back(i.asInt());
 		return ret;
 	}
 	catch (std::exception & e)
@@ -2213,8 +2213,8 @@ std::vector<unsigned int> Client::GetPrefUIntegerArray(std::string prop)
 	{
 		std::vector<unsigned int> ret;
 		Json::Value arr = GetPref(preferences, prop);
-		for (int i = 0; i < (int)arr.size(); i++)
-			ret.push_back(arr[i].asUInt());
+		for (const auto & i : arr)
+			ret.push_back(i.asUInt());
 		return ret;
 	}
 	catch (std::exception & e)
@@ -2230,8 +2230,8 @@ std::vector<bool> Client::GetPrefBoolArray(std::string prop)
 	{
 		std::vector<bool> ret;
 		Json::Value arr = GetPref(preferences, prop);
-		for (int i = 0; i < (int)arr.size(); i++)
-			ret.push_back(arr[i].asBool());
+		for (const auto & i : arr)
+			ret.push_back(i.asBool());
 		return ret;
 	}
 	catch (std::exception & e)
@@ -2283,9 +2283,9 @@ void Client::SetPref(std::string prop, std::vector<Json::Value> value)
 	try
 	{
 		Json::Value arr;
-		for (int i = 0; i < (int)value.size(); i++)
+		for (const auto & i : value)
 		{
-			arr.append(value[i]);
+			arr.append(i);
 		}
 		SetPref(prop, arr);
 	}

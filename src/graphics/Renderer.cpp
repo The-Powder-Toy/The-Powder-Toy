@@ -979,13 +979,13 @@ void Renderer::DrawSigns()
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, partsFbo);
 	glTranslated(0, MENUSIZE, 0);
 #endif
-	for (size_t i = 0; i < signs.size(); i++)
-		if (signs[i].text.length())
+	for (auto & i : signs)
+		if (i.text.length())
 		{
 			char type = 0;
-			std::string text = signs[i].getText(sim);
-			sign::splitsign(signs[i].text, &type);
-			signs[i].pos(text, x, y, w, h);
+			std::string text = i.getText(sim);
+			sign::splitsign(i.text, &type);
+			i.pos(text, x, y, w, h);
 			clearrect(x, y, w+1, h);
 			drawrect(x, y, w+1, h, 192, 192, 192, 255);
 			if (!type)
@@ -995,12 +995,12 @@ void Renderer::DrawSigns()
 			else
 				drawtext(x+3, y+3, text, 0, 191, 255, 255);
 
-			if (signs[i].ju != sign::None)
+			if (i.ju != sign::None)
 			{
-				int x = signs[i].x;
-				int y = signs[i].y;
-				int dx = 1 - signs[i].ju;
-				int dy = (signs[i].y > 18) ? -1 : 1;
+				int x = i.x;
+				int y = i.y;
+				int dx = 1 - i.ju;
+				int dy = (i.y > 18) ? -1 : 1;
 #ifdef OGLR
 				glBegin(GL_LINES);
 				glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -2812,8 +2812,8 @@ void Renderer::CompileRenderMode()
 {
 	int old_render_mode = render_mode;
 	render_mode = 0;
-	for (size_t i = 0; i < render_modes.size(); i++)
-		render_mode |= render_modes[i];
+	for (unsigned int render_mode : render_modes)
+		render_mode |= render_mode;
 
 	//If firemode is removed, clear the fire display
 	if(!(render_mode & FIREMODE) && (old_render_mode & FIREMODE))
@@ -2834,9 +2834,9 @@ void Renderer::ClearAccumulation()
 
 void Renderer::AddRenderMode(unsigned int mode)
 {
-	for (size_t i = 0; i < render_modes.size(); i++)
+	for (unsigned int render_mode : render_modes)
 	{
-		if(render_modes[i] == mode)
+		if(render_mode == mode)
 		{
 			return;
 		}
@@ -2873,8 +2873,8 @@ void Renderer::CompileDisplayMode()
 {
 	int old_display_mode = display_mode;
 	display_mode = 0;
-	for (size_t i = 0; i < display_modes.size(); i++)
-		display_mode |= display_modes[i];
+	for (unsigned int display_mode : display_modes)
+		display_mode |= display_mode;
 	if (!(display_mode & DISPLAY_PERS) && (old_display_mode & DISPLAY_PERS))
 	{
 		ClearAccumulation();

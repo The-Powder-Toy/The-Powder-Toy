@@ -944,13 +944,13 @@ std::string FindBoundary(std::map<std::string, std::string> parts, std::string b
 	unsigned int map[62];
 	size_t blen = boundary.length();
 	std::fill(&map[0], &map[62], 0);
-	for (std::map<std::string, std::string>::iterator iter = parts.begin(); iter != parts.end(); iter++)
+	for (auto & part : parts)
 	{
 		// loop through every character in each part and search for the substring, adding 1 to map for every character found (character after the substring)
-		for (ssize_t j = 0; j < (ssize_t)((*iter).second.length()-blen); j++)
-			if (!blen || (*iter).second.substr(j, blen) == boundary)
+		for (ssize_t j = 0; j < (ssize_t)(part.second.length()-blen); j++)
+			if (!blen || part.second.substr(j, blen) == boundary)
 			{
-				unsigned char ch = (*iter).second[j+blen];
+				unsigned char ch = part.second[j+blen];
 				if (ch >= '0' && ch <= '9')
 					map[ch-'0']++;
 				else if (ch >= 'A' && ch <= 'Z')
@@ -991,10 +991,10 @@ std::string GetMultipartMessage(std::map<std::string, std::string> parts, std::s
 	std::stringstream data;
 
 	// loop through each part, adding it
-	for (std::map<std::string, std::string>::iterator iter = parts.begin(); iter != parts.end(); iter++)
+	for (auto & part : parts)
 	{
-		std::string name = (*iter).first;
-		std::string value = (*iter).second;
+		std::string name = part.first;
+		std::string value = part.second;
 
 		data << "--" << boundary << "\r\n";
 		data << "Content-transfer-encoding: binary" << "\r\n";

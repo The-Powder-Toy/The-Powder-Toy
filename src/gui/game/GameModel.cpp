@@ -106,18 +106,18 @@ GameModel::GameModel():
 
 	//Load more from brushes folder
 	std::vector<string> brushFiles = Client::Ref().DirectorySearch(BRUSH_DIR, "", ".ptb");
-	for (size_t i = 0; i < brushFiles.size(); i++)
+	for (const auto & brushFile : brushFiles)
 	{
-		std::vector<unsigned char> brushData = Client::Ref().ReadFile(brushFiles[i]);
+		std::vector<unsigned char> brushData = Client::Ref().ReadFile(brushFile);
 		if(!brushData.size())
 		{
-			std::cout << "Brushes: Skipping " << brushFiles[i] << ". Could not open" << std::endl;
+			std::cout << "Brushes: Skipping " << brushFile << ". Could not open" << std::endl;
 			continue;
 		}
 		size_t dimension = std::sqrt((float)brushData.size());
 		if (dimension * dimension != brushData.size())
 		{
-			std::cout << "Brushes: Skipping " << brushFiles[i] << ". Invalid bitmap size" << std::endl;
+			std::cout << "Brushes: Skipping " << brushFile << ". Invalid bitmap size" << std::endl;
 			continue;
 		}
 		brushList.push_back(new BitmapBrush(brushData, ui::Point(dimension, dimension)));
@@ -181,13 +181,13 @@ GameModel::~GameModel()
 			menuList[i]->ClearTools();
 		delete menuList[i];
 	}
-	for (std::vector<Tool*>::iterator iter = extraElementTools.begin(), end = extraElementTools.end(); iter != end; ++iter)
+	for (auto & extraElementTool : extraElementTools)
 	{
-		delete *iter;
+		delete extraElementTool;
 	}
-	for (size_t i = 0; i < brushList.size(); i++)
+	for (auto & i : brushList)
 	{
-		delete brushList[i];
+		delete i;
 	}
 	delete sim;
 	delete ren;
@@ -202,18 +202,17 @@ GameModel::~GameModel()
 
 void GameModel::UpdateQuickOptions()
 {
-	for(std::vector<QuickOption*>::iterator iter = quickOptions.begin(), end = quickOptions.end(); iter != end; ++iter)
+	for(auto option : quickOptions)
 	{
-		QuickOption * option = *iter;
 		option->Update();
 	}
 }
 
 void GameModel::BuildQuickOptionMenu(GameController * controller)
 {
-	for(std::vector<QuickOption*>::iterator iter = quickOptions.begin(), end = quickOptions.end(); iter != end; ++iter)
+	for(auto & quickOption : quickOptions)
 	{
-		delete *iter;
+		delete quickOption;
 	}
 	quickOptions.clear();
 
@@ -254,17 +253,17 @@ void GameModel::BuildMenus()
 	menuList.clear();
 	toolList.clear();
 
-	for(std::vector<Tool*>::iterator iter = extraElementTools.begin(), end = extraElementTools.end(); iter != end; ++iter)
+	for(auto & extraElementTool : extraElementTools)
 	{
-		delete *iter;
+		delete extraElementTool;
 	}
 	extraElementTools.clear();
 	elementTools.clear();
 
 	//Create menus
-	for (int i = 0; i < SC_TOTAL; i++)
+	for (auto & msection : sim->msections)
 	{
-		menuList.push_back(new Menu((const char)sim->msections[i].icon[0], sim->msections[i].name, sim->msections[i].doshow));
+		menuList.push_back(new Menu((const char)msection.icon[0], msection.name, msection.doshow));
 	}
 
 	//Build menus from Simulation elements
@@ -387,9 +386,9 @@ void GameModel::BuildFavoritesMenu()
 	menuList[SC_FAVORITES]->ClearTools();
 
 	std::vector<std::string> favList = Favorite::Ref().GetFavoritesList();
-	for (size_t i = 0; i < favList.size(); i++)
+	for (const auto & i : favList)
 	{
-		Tool *tool = GetToolFromIdentifier(favList[i]);
+		Tool *tool = GetToolFromIdentifier(i);
 		if (tool)
 			menuList[SC_FAVORITES]->AddTool(tool);
 	}
@@ -405,19 +404,19 @@ void GameModel::BuildFavoritesMenu()
 
 Tool * GameModel::GetToolFromIdentifier(std::string identifier)
 {
-	for (std::vector<Menu*>::iterator iter = menuList.begin(), end = menuList.end(); iter != end; ++iter)
+	for (auto & iter : menuList)
 	{
-		std::vector<Tool*> menuTools = (*iter)->GetToolList();
-		for (std::vector<Tool*>::iterator titer = menuTools.begin(), tend = menuTools.end(); titer != tend; ++titer)
+		std::vector<Tool*> menuTools = iter->GetToolList();
+		for (auto & menuTool : menuTools)
 		{
-			if (identifier == (*titer)->GetIdentifier())
-				return *titer;
+			if (identifier == menuTool->GetIdentifier())
+				return menuTool;
 		}
 	}
-	for (std::vector<Tool*>::iterator iter = extraElementTools.begin(), end = extraElementTools.end(); iter != end; ++iter)
+	for (auto & extraElementTool : extraElementTools)
 	{
-		if (identifier == (*iter)->GetIdentifier())
-			return *iter;
+		if (identifier == extraElementTool->GetIdentifier())
+			return extraElementTool;
 	}
 
 	return nullptr;
@@ -585,10 +584,10 @@ int GameModel::GetActiveMenu()
 //Get an element tool from an element ID
 Tool * GameModel::GetElementTool(int elementID)
 {
-	for(std::vector<Tool*>::iterator iter = elementTools.begin(), end = elementTools.end(); iter != end; ++iter)
+	for(auto & elementTool : elementTools)
 	{
-		if((*iter)->GetToolID() == elementID)
-			return *iter;
+		if(elementTool->GetToolID() == elementID)
+			return elementTool;
 	}
 	return nullptr;
 }
@@ -885,12 +884,12 @@ void GameModel::SetColourSelectorColour(ui::Colour colour_)
 	colour = colour_;
 
 	vector<Tool*> tools = GetMenuList()[SC_DECO]->GetToolList();
-	for (size_t i = 0; i < tools.size(); i++)
+	for (auto & tool : tools)
 	{
-		((DecorationTool*)tools[i])->Red = colour.Red;
-		((DecorationTool*)tools[i])->Green = colour.Green;
-		((DecorationTool*)tools[i])->Blue = colour.Blue;
-		((DecorationTool*)tools[i])->Alpha = colour.Alpha;
+		((DecorationTool*)tool)->Red = colour.Red;
+		((DecorationTool*)tool)->Green = colour.Green;
+		((DecorationTool*)tool)->Blue = colour.Blue;
+		((DecorationTool*)tool)->Alpha = colour.Alpha;
 	}
 
 	notifyColourSelectorColourChanged();
@@ -1112,73 +1111,73 @@ std::string GameModel::GetInfoTip()
 
 void GameModel::notifyNotificationsChanged()
 {
-	for (std::vector<GameView*>::iterator iter = observers.begin(); iter != observers.end(); ++iter)
+	for (auto & observer : observers)
 	{
-		(*iter)->NotifyNotificationsChanged(this);
+		observer->NotifyNotificationsChanged(this);
 	}
 }
 
 void GameModel::notifyColourPresetsChanged()
 {
-	for (std::vector<GameView*>::iterator iter = observers.begin(); iter != observers.end(); ++iter)
+	for (auto & observer : observers)
 	{
-		(*iter)->NotifyColourPresetsChanged(this);
+		observer->NotifyColourPresetsChanged(this);
 	}
 }
 
 void GameModel::notifyColourActivePresetChanged()
 {
-	for (std::vector<GameView*>::iterator iter = observers.begin(); iter != observers.end(); ++iter)
+	for (auto & observer : observers)
 	{
-		(*iter)->NotifyColourActivePresetChanged(this);
+		observer->NotifyColourActivePresetChanged(this);
 	}
 }
 
 void GameModel::notifyColourSelectorColourChanged()
 {
-	for (size_t i = 0; i < observers.size(); i++)
+	for (auto & observer : observers)
 	{
-		observers[i]->NotifyColourSelectorColourChanged(this);
+		observer->NotifyColourSelectorColourChanged(this);
 	}
 }
 
 void GameModel::notifyColourSelectorVisibilityChanged()
 {
-	for (size_t i = 0; i < observers.size(); i++)
+	for (auto & observer : observers)
 	{
-		observers[i]->NotifyColourSelectorVisibilityChanged(this);
+		observer->NotifyColourSelectorVisibilityChanged(this);
 	}
 }
 
 void GameModel::notifyRendererChanged()
 {
-	for (size_t i = 0; i < observers.size(); i++)
+	for (auto & observer : observers)
 	{
-		observers[i]->NotifyRendererChanged(this);
+		observer->NotifyRendererChanged(this);
 	}
 }
 
 void GameModel::notifySaveChanged()
 {
-	for (size_t i = 0; i < observers.size(); i++)
+	for (auto & observer : observers)
 	{
-		observers[i]->NotifySaveChanged(this);
+		observer->NotifySaveChanged(this);
 	}
 }
 
 void GameModel::notifySimulationChanged()
 {
-	for (size_t i = 0; i < observers.size(); i++)
+	for (auto & observer : observers)
 	{
-		observers[i]->NotifySimulationChanged(this);
+		observer->NotifySimulationChanged(this);
 	}
 }
 
 void GameModel::notifyPausedChanged()
 {
-	for (size_t i = 0; i < observers.size(); i++)
+	for (auto & observer : observers)
 	{
-		observers[i]->NotifyPausedChanged(this);
+		observer->NotifyPausedChanged(this);
 	}
 }
 
@@ -1192,96 +1191,96 @@ void GameModel::notifyDecorationChanged()
 
 void GameModel::notifyBrushChanged()
 {
-	for (size_t i = 0; i < observers.size(); i++)
+	for (auto & observer : observers)
 	{
-		observers[i]->NotifyBrushChanged(this);
+		observer->NotifyBrushChanged(this);
 	}
 }
 
 void GameModel::notifyMenuListChanged()
 {
-	for (size_t i = 0; i < observers.size(); i++)
+	for (auto & observer : observers)
 	{
-		observers[i]->NotifyMenuListChanged(this);
+		observer->NotifyMenuListChanged(this);
 	}
 }
 
 void GameModel::notifyToolListChanged()
 {
-	for (size_t i = 0; i < observers.size(); i++)
+	for (auto & observer : observers)
 	{
-		observers[i]->NotifyToolListChanged(this);
+		observer->NotifyToolListChanged(this);
 	}
 }
 
 void GameModel::notifyActiveToolsChanged()
 {
-	for (size_t i = 0; i < observers.size(); i++)
+	for (auto & observer : observers)
 	{
-		observers[i]->NotifyActiveToolsChanged(this);
+		observer->NotifyActiveToolsChanged(this);
 	}
 }
 
 void GameModel::notifyUserChanged()
 {
-	for (size_t i = 0; i < observers.size(); i++)
+	for (auto & observer : observers)
 	{
-		observers[i]->NotifyUserChanged(this);
+		observer->NotifyUserChanged(this);
 	}
 }
 
 void GameModel::notifyZoomChanged()
 {
-	for (size_t i = 0; i < observers.size(); i++)
+	for (auto & observer : observers)
 	{
-		observers[i]->NotifyZoomChanged(this);
+		observer->NotifyZoomChanged(this);
 	}
 }
 
 void GameModel::notifyPlaceSaveChanged()
 {
-	for (size_t i = 0; i < observers.size(); i++)
+	for (auto & observer : observers)
 	{
-		observers[i]->NotifyPlaceSaveChanged(this);
+		observer->NotifyPlaceSaveChanged(this);
 	}
 }
 
 void GameModel::notifyLogChanged(string entry)
 {
-	for (size_t i = 0; i < observers.size(); i++)
+	for (auto & observer : observers)
 	{
-		observers[i]->NotifyLogChanged(this, entry);
+		observer->NotifyLogChanged(this, entry);
 	}
 }
 
 void GameModel::notifyInfoTipChanged()
 {
-	for (size_t i = 0; i < observers.size(); i++)
+	for (auto & observer : observers)
 	{
-		observers[i]->NotifyInfoTipChanged(this);
+		observer->NotifyInfoTipChanged(this);
 	}
 }
 
 void GameModel::notifyToolTipChanged()
 {
-	for (size_t i = 0; i < observers.size(); i++)
+	for (auto & observer : observers)
 	{
-		observers[i]->NotifyToolTipChanged(this);
+		observer->NotifyToolTipChanged(this);
 	}
 }
 
 void GameModel::notifyQuickOptionsChanged()
 {
-	for (size_t i = 0; i < observers.size(); i++)
+	for (auto & observer : observers)
 	{
-		observers[i]->NotifyQuickOptionsChanged(this);
+		observer->NotifyQuickOptionsChanged(this);
 	}
 }
 
 void GameModel::notifyLastToolChanged()
 {
-	for (size_t i = 0; i < observers.size(); i++)
+	for (auto & observer : observers)
 	{
-		observers[i]->NotifyLastToolChanged(this);
+		observer->NotifyLastToolChanged(this);
 	}
 }

@@ -203,25 +203,25 @@ GameController::~GameController()
 	{
 		delete options;
 	}
-	for(std::vector<DebugInfo*>::iterator iter = debugInfo.begin(), end = debugInfo.end(); iter != end; iter++)
+	for(auto & iter : debugInfo)
 	{
-		delete *iter;
+		delete iter;
 	}
 	//deleted here because it refuses to be deleted when deleted from gameModel even with the same code
 	std::deque<Snapshot*> history = gameModel->GetHistory();
-	for(std::deque<Snapshot*>::iterator iter = history.begin(), end = history.end(); iter != end; ++iter)
+	for(auto & iter : history)
 	{
-		delete *iter;
+		delete iter;
 	}
 	std::vector<QuickOption*> quickOptions = gameModel->GetQuickOptions();
-	for(std::vector<QuickOption*>::iterator iter = quickOptions.begin(), end = quickOptions.end(); iter != end; ++iter)
+	for(auto & quickOption : quickOptions)
 	{
-		delete *iter;
+		delete quickOption;
 	}
 	std::vector<Notification*> notifications = gameModel->GetNotifications();
-	for(std::vector<Notification*>::iterator iter = notifications.begin(); iter != notifications.end(); ++iter)
+	for(auto & notification : notifications)
 	{
-		delete *iter;
+		delete notification;
 	}
 	delete gameModel;
 	if (gameView->CloseActiveWindow())
@@ -781,10 +781,10 @@ bool GameController::KeyPress(int key, Uint16 character, bool shift, bool ctrl, 
 			}
 		}
 
-		for(std::vector<DebugInfo*>::iterator iter = debugInfo.begin(), end = debugInfo.end(); iter != end; iter++)
+		for(auto & iter : debugInfo)
 		{
-			if ((*iter)->debugID & debugFlags)
-				if (!(*iter)->KeyPress(key, character, shift, ctrl, alt, gameView->GetMousePosition()))
+			if (iter->debugID & debugFlags)
+				if (!iter->KeyPress(key, character, shift, ctrl, alt, gameView->GetMousePosition()))
 					ret = false;
 		}
 	}
@@ -848,10 +848,10 @@ void GameController::Tick()
 #endif
 		firstTick = false;
 	}
-	for(std::vector<DebugInfo*>::iterator iter = debugInfo.begin(), end = debugInfo.end(); iter != end; iter++)
+	for(auto & iter : debugInfo)
 	{
-		if ((*iter)->debugID & debugFlags)
-			(*iter)->Draw();
+		if (iter->debugID & debugFlags)
+			iter->Draw();
 	}
 	commandInterface->OnTick();
 }
@@ -866,11 +866,11 @@ void GameController::ResetAir()
 {
 	Simulation * sim = gameModel->GetSimulation();
 	sim->air->Clear();
-	for (int i = 0; i < NPART; i++)
+	for (auto & part : sim->parts)
 	{
-		if (sim->parts[i].type == PT_QRTZ || sim->parts[i].type == PT_GLAS || sim->parts[i].type == PT_TUNG)
+		if (part.type == PT_QRTZ || part.type == PT_GLAS || part.type == PT_TUNG)
 		{
-			sim->parts[i].pavg[0] = sim->parts[i].pavg[1] = 0;
+			part.pavg[0] = part.pavg[1] = 0;
 		}
 	}
 }
@@ -1132,8 +1132,8 @@ int GameController::GetNumMenus(bool onlyEnabled)
 	if (onlyEnabled)
 	{
 		std::vector<Menu*> menuList = gameModel->GetMenuList();
-		for (std::vector<Menu*>::iterator it = menuList.begin(), end = menuList.end(); it != end; ++it)
-			if ((*it)->GetVisible())
+		for (auto & it : menuList)
+			if (it->GetVisible())
 				count++;
 	}
 	else
@@ -1332,10 +1332,10 @@ void GameController::OpenElementSearch()
 {
 	vector<Tool*> toolList;
 	vector<Menu*> menuList = gameModel->GetMenuList();
-	for(std::vector<Menu*>::iterator iter = menuList.begin(), end = menuList.end(); iter!=end; ++iter) {
-		if(!(*iter))
+	for(auto & iter : menuList) {
+		if(!iter)
 			continue;
-		vector<Tool*> menuToolList = (*iter)->GetToolList();
+		vector<Tool*> menuToolList = iter->GetToolList();
 		if(!menuToolList.size())
 			continue;
 		toolList.insert(toolList.end(), menuToolList.begin(), menuToolList.end());

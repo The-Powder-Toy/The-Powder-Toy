@@ -66,17 +66,17 @@ class LoadFilesTask: public Task
 		});
 
 		notifyProgress(-1);
-		for(std::vector<std::string>::iterator iter = files.begin(), end = files.end(); iter != end; ++iter)
+		for(auto & file : files)
 		{
-			SaveFile * saveFile = new SaveFile(*iter);
+			SaveFile * saveFile = new SaveFile(file);
 			try
 			{
-				std::vector<unsigned char> data = Client::Ref().ReadFile(*iter);
+				std::vector<unsigned char> data = Client::Ref().ReadFile(file);
 				GameSave * tempSave = new GameSave(data);
 				saveFile->SetGameSave(tempSave);
 				saveFiles.push_back(saveFile);
 
-				std::string filename = *iter;
+				std::string filename = file;
 				size_t folderPos = filename.rfind(PATH_SEP);
 				if(folderPos!=std::string::npos && folderPos+1 < filename.size())
 				{
@@ -210,21 +210,21 @@ void FileBrowserActivity::RenameSave(SaveFile * file)
 
 void FileBrowserActivity::loadDirectory(std::string directory, std::string search)
 {
-	for (size_t i = 0; i < components.size(); i++)
+	for (auto & component : components)
 	{
-		RemoveComponent(components[i]);
-		itemList->RemoveChild(components[i]);
+		RemoveComponent(component);
+		itemList->RemoveChild(component);
 	}
 
-	for (std::vector<ui::Component*>::iterator iter = componentsQueue.begin(), end = componentsQueue.end(); iter != end; ++iter)
+	for (auto & iter : componentsQueue)
 	{
-		delete *iter;
+		delete iter;
 	}
 	componentsQueue.clear();
 
-	for (std::vector<SaveFile*>::iterator iter = files.begin(), end = files.end(); iter != end; ++iter)
+	for (auto & file : files)
 	{
-		delete *iter;
+		delete file;
 	}
 	files.clear();
 
@@ -253,9 +253,9 @@ void FileBrowserActivity::NotifyDone(Task * task)
 	}
 	else
 		itemList->Visible = true;
-	for (size_t i = 0; i < components.size(); i++)
+	for (auto & component : components)
 	{
-		delete components[i];
+		delete component;
 	}
 	components.clear();
 }
@@ -318,10 +318,10 @@ void FileBrowserActivity::OnTick(float dt)
 	}
 	else if(componentsQueue.size())
 	{
-		for(std::vector<ui::Component*>::iterator iter = componentsQueue.begin(), end = componentsQueue.end(); iter != end; ++iter)
+		for(auto & iter : componentsQueue)
 		{
-			components.push_back(*iter);
-			itemList->AddChild(*iter);
+			components.push_back(iter);
+			itemList->AddChild(iter);
 		}
 		componentsQueue.clear();
 		itemList->InnerSize.Y = (buttonHeight+(buttonPadding*2))*(fileY+1);

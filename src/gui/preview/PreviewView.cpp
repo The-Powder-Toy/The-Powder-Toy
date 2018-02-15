@@ -279,9 +279,9 @@ void PreviewView::commentBoxAutoHeight()
 
 bool PreviewView::CheckSwearing(std::string text)
 {
-	for (std::set<std::string>::iterator iter = swearWords.begin(), end = swearWords.end(); iter != end; iter++)
+	for (const auto & swearWord : swearWords)
 	{
-		if (text.find(*iter) != text.npos)
+		if (text.find(swearWord) != text.npos)
 			return true;
 	}
 	return false;
@@ -331,9 +331,9 @@ void PreviewView::DoDraw()
 {
 	Window::DoDraw();
 	Graphics * g = GetGraphics();
-	for (size_t i = 0; i < commentTextComponents.size(); i++)
+	for (auto & commentTextComponent : commentTextComponents)
 	{
-		int linePos = commentTextComponents[i]->Position.Y+commentsPanel->ViewportPosition.Y+commentTextComponents[i]->Size.Y+4;
+		int linePos = commentTextComponent->Position.Y+commentsPanel->ViewportPosition.Y+commentTextComponent->Size.Y+4;
 		if (linePos > 0 && linePos < Size.Y-commentBoxHeight)
 		g->draw_line(
 				Position.X+1+XRES/2,
@@ -648,10 +648,10 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 {
 	std::vector<SaveComment*> * comments = sender->GetComments();
 
-	for (size_t i = 0; i < commentComponents.size(); i++)
+	for (auto & commentComponent : commentComponents)
 	{
-		commentsPanel->RemoveChild(commentComponents[i]);
-		delete commentComponents[i];
+		commentsPanel->RemoveChild(commentComponent);
+		delete commentComponent;
 	}
 	commentComponents.clear();
 	commentTextComponents.clear();
@@ -659,10 +659,10 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 
 	if (comments)
 	{
-		for (size_t i = 0; i < commentComponents.size(); i++)
+		for (auto & commentComponent : commentComponents)
 		{
-			commentsPanel->RemoveChild(commentComponents[i]);
-			delete commentComponents[i];
+			commentsPanel->RemoveChild(commentComponent);
+			delete commentComponent;
 		}
 		commentComponents.clear();
 		commentTextComponents.clear();
@@ -671,25 +671,25 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 		ui::Label * tempUsername;
 		ui::Label * tempComment;
 		ui::AvatarButton * tempAvatar;
-		for (size_t i = 0; i < comments->size(); i++)
+		for (auto & comment : *comments)
 		{
 			if (showAvatars)
 			{
-				tempAvatar = new ui::AvatarButton(ui::Point(2, currentY+7), ui::Point(26, 26), comments->at(i)->authorName);
+				tempAvatar = new ui::AvatarButton(ui::Point(2, currentY+7), ui::Point(26, 26), comment->authorName);
 				tempAvatar->SetActionCallback(new AvatarAction(this));
 				commentComponents.push_back(tempAvatar);
 				commentsPanel->AddChild(tempAvatar);
 			}
 
 			if (showAvatars)
-				tempUsername = new ui::Label(ui::Point(31, currentY+3), ui::Point(Size.X-((XRES/2) + 13 + 26), 16), comments->at(i)->authorNameFormatted);
+				tempUsername = new ui::Label(ui::Point(31, currentY+3), ui::Point(Size.X-((XRES/2) + 13 + 26), 16), comment->authorNameFormatted);
 			else
-				tempUsername = new ui::Label(ui::Point(5, currentY+3), ui::Point(Size.X-((XRES/2) + 13), 16), comments->at(i)->authorNameFormatted);
+				tempUsername = new ui::Label(ui::Point(5, currentY+3), ui::Point(Size.X-((XRES/2) + 13), 16), comment->authorNameFormatted);
 			tempUsername->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 			tempUsername->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
-			if (Client::Ref().GetAuthUser().UserID && Client::Ref().GetAuthUser().Username == comments->at(i)->authorName)
+			if (Client::Ref().GetAuthUser().UserID && Client::Ref().GetAuthUser().Username == comment->authorName)
 				tempUsername->SetTextColour(ui::Colour(255, 255, 100));
-			else if (sender->GetSaveInfo() && sender->GetSaveInfo()->GetUserName() == comments->at(i)->authorName)
+			else if (sender->GetSaveInfo() && sender->GetSaveInfo()->GetUserName() == comment->authorName)
 				tempUsername->SetTextColour(ui::Colour(255, 100, 100));
 			currentY += 16;
 
@@ -697,9 +697,9 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 			commentsPanel->AddChild(tempUsername);
 
 			if (showAvatars)
-				tempComment = new ui::Label(ui::Point(31, currentY+5), ui::Point(Size.X-((XRES/2) + 13 + 26), -1), comments->at(i)->comment);
+				tempComment = new ui::Label(ui::Point(31, currentY+5), ui::Point(Size.X-((XRES/2) + 13 + 26), -1), comment->comment);
 			else
-				tempComment = new ui::Label(ui::Point(5, currentY+5), ui::Point(Size.X-((XRES/2) + 13), -1), comments->at(i)->comment);
+				tempComment = new ui::Label(ui::Point(5, currentY+5), ui::Point(Size.X-((XRES/2) + 13), -1), comment->comment);
 			tempComment->SetMultiline(true);
 			tempComment->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 			tempComment->Appearance.VerticalAlign = ui::Appearance::AlignTop;
