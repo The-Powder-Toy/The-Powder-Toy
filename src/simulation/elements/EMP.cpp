@@ -43,7 +43,7 @@ Element_EMP::Element_EMP()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = NULL;
+	Update = nullptr;
 	Graphics = &Element_EMP::graphics;
 }
 

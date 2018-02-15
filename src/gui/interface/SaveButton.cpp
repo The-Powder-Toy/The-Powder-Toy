@@ -15,9 +15,9 @@ namespace ui {
 
 SaveButton::SaveButton(Point position, Point size, SaveInfo * save):
 	Component(position, size),
-	file(NULL),
+	file(nullptr),
 	save(save),
-	thumbnail(NULL),
+	thumbnail(nullptr),
 	waitingForThumb(false),
 	isMouseInsideAuthor(false),
 	isMouseInsideHistory(false),
@@ -26,7 +26,7 @@ SaveButton::SaveButton(Point position, Point size, SaveInfo * save):
 	isMouseInside(false),
 	selected(false),
 	selectable(false),
-	actionCallback(NULL)
+	actionCallback(nullptr)
 {
 	if(save)
 	{
@@ -89,8 +89,8 @@ SaveButton::SaveButton(Point position, Point size, SaveInfo * save):
 SaveButton::SaveButton(Point position, Point size, SaveFile * file):
 	Component(position, size),
 	file(file),
-	save(NULL),
-	thumbnail(NULL),
+	save(nullptr),
+	thumbnail(nullptr),
 	wantsDraw(false),
 	waitingForThumb(false),
 	isMouseInsideAuthor(false),
@@ -100,7 +100,7 @@ SaveButton::SaveButton(Point position, Point size, SaveFile * file):
 	isMouseInside(false),
 	selected(false),
 	selectable(false),
-	actionCallback(NULL)
+	actionCallback(nullptr)
 {
 	if(file)
 	{

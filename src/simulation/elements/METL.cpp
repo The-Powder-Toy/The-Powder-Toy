@@ -41,7 +41,7 @@ Element_METL::Element_METL()
 	HighTemperature = 1273.0f;
 	HighTemperatureTransition = PT_LAVA;
 
-	Update = NULL;
+	Update = nullptr;
 }
 
 Element_METL::~Element_METL() {}

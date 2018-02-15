@@ -146,7 +146,7 @@ static char *getport(char *host)
 
 static int resolve(char *dns, char *srv, struct sockaddr_in *addr)
 {
-	struct addrinfo hnt, *res = 0;
+	struct addrinfo hnt, *res = nullptr;
 	if (http_use_proxy)
 	{
 		memcpy(addr, &http_proxy, sizeof(struct sockaddr_in));
@@ -247,11 +247,11 @@ struct http_ctx
 void *http_async_req_start(void *ctx, const char *uri, const char *data, int dlen, int keep)
 {
 	struct http_ctx *cx = (http_ctx *)ctx;
-	if (cx && time(NULL) - cx->last > http_timeout)
+	if (cx && time(nullptr) - cx->last > http_timeout)
 	{
 		http_force_close(ctx);
 		http_async_req_close(ctx);
-		ctx = NULL;
+		ctx = nullptr;
 	}
 	if (!ctx)
 	{
@@ -295,7 +295,7 @@ void *http_async_req_start(void *ctx, const char *uri, const char *data, int dle
 	if (cx->fdhost && strcmp(cx->host, cx->fdhost))
 	{
 		free(cx->fdhost);
-		cx->fdhost = NULL;
+		cx->fdhost = nullptr;
 		PCLOSE(cx->fd);
 		cx->fd = PERROR;
 		cx->state = HTS_STRT;
@@ -320,7 +320,7 @@ void *http_async_req_start(void *ctx, const char *uri, const char *data, int dle
 	cx->tptr = 0;
 	cx->tlen = 0;
 
-	cx->last = time(NULL);
+	cx->last = time(nullptr);
 
 	return ctx;
 }
@@ -340,7 +340,7 @@ static void process_header(struct http_ctx *cx, char *str)
 		p = strchr(str, ';');
 		if (p)
 			*p = 0;
-		cx->rxtogo = strtoul(str, NULL, 16);
+		cx->rxtogo = strtoul(str, nullptr, 16);
 		cx->chunkhdr = 0;
 		if (!cx->rxtogo)
 			cx->chunked = 0;
@@ -438,7 +438,7 @@ int http_async_req_status(void *ctx)
 	struct http_ctx *cx = (http_ctx *)ctx;
 	char *dns,*srv,buf[CHUNK];
 	int tmp, i;
-	time_t now = time(NULL);
+	time_t now = time(nullptr);
 #ifdef WIN
 	unsigned long tmp2;
 #endif
@@ -518,7 +518,7 @@ int http_async_req_status(void *ctx)
 				memcpy(cx->tbuf+cx->tlen, cx->thdr, cx->thlen);
 				cx->tlen += cx->thlen;
 				free(cx->thdr);
-				cx->thdr = NULL;
+				cx->thdr = nullptr;
 				cx->thlen = 0;
 			}
 			cx->tlen += sprintf(cx->tbuf+cx->tlen, "Content-Length: %d\r\n", cx->txdl);
@@ -527,7 +527,7 @@ int http_async_req_status(void *ctx)
 			memcpy(cx->tbuf+cx->tlen, cx->txd, cx->txdl);
 			cx->tlen += cx->txdl;
 			free(cx->txd);
-			cx->txd = NULL;
+			cx->txd = nullptr;
 			cx->txdl = 0;
 		}
 		else
@@ -543,7 +543,7 @@ int http_async_req_status(void *ctx)
 				memcpy(cx->tbuf+cx->tlen, cx->thdr, cx->thlen);
 				cx->tlen += cx->thlen;
 				free(cx->thdr);
-				cx->thdr = NULL;
+				cx->thdr = nullptr;
 				cx->thlen = 0;
 			}
 			if (!cx->keep)
@@ -568,7 +568,7 @@ int http_async_req_status(void *ctx)
 				if (cx->tbuf)
 				{
 					free(cx->tbuf);
-					cx->tbuf = NULL;
+					cx->tbuf = nullptr;
 				}
 				cx->state = HTS_RECV;
 			}
@@ -622,33 +622,33 @@ char *http_async_req_stop(void *ctx, int *ret, int *len)
 	if (cx->host)
 	{
 		free(cx->host);
-		cx->host = NULL;
+		cx->host = nullptr;
 	}
 	if (cx->path)
 	{
 		free(cx->path);
-		cx->path = NULL;
+		cx->path = nullptr;
 	}
 	if (cx->txd)
 	{
 		free(cx->txd);
-		cx->txd = NULL;
+		cx->txd = nullptr;
 		cx->txdl = 0;
 	}
 	if (cx->tbuf)
 	{
 		free(cx->tbuf);
-		cx->tbuf = NULL;
+		cx->tbuf = nullptr;
 	}
 	if (cx->hbuf)
 	{
 		free(cx->hbuf);
-		cx->hbuf = NULL;
+		cx->hbuf = nullptr;
 	}
 	if (cx->thdr)
 	{
 		free(cx->thdr);
-		cx->thdr = NULL;
+		cx->thdr = nullptr;
 		cx->thlen = 0;
 	}
 
@@ -659,7 +659,7 @@ char *http_async_req_stop(void *ctx, int *ret, int *len)
 	if (cx->rbuf)
 		cx->rbuf[cx->rptr] = 0;
 	rxd = cx->rbuf;
-	cx->rbuf = NULL;
+	cx->rbuf = nullptr;
 	cx->rlen = 0;
 	cx->rptr = 0;
 	cx->contlen = 0;
@@ -673,7 +673,7 @@ char *http_async_req_stop(void *ctx, int *ret, int *len)
 		if (cx->fdhost)
 		{
 			free(cx->fdhost);
-			cx->fdhost = NULL;
+			cx->fdhost = nullptr;
 		}
 		cx->state = HTS_STRT;
 	}
@@ -705,7 +705,7 @@ void http_async_req_close(void *ctx)
 	if (cx->host)
 	{
 		cx->keep = 1;
-		tmp = http_async_req_stop(ctx, NULL, NULL);
+		tmp = http_async_req_stop(ctx, nullptr, nullptr);
 		free(tmp);
 	}
 	free(cx->fdhost);
@@ -715,14 +715,14 @@ void http_async_req_close(void *ctx)
 
 char *http_simple_get(const char *uri, int *ret, int *len)
 {
-	void *ctx = http_async_req_start(NULL, uri, NULL, 0, 0);
+	void *ctx = http_async_req_start(nullptr, uri, nullptr, 0, 0);
 	if (!ctx)
 	{
 		if (ret)
 			*ret = 600;
 		if (len)
 			*len = 0;
-		return NULL;
+		return nullptr;
 	}
 	return http_async_req_stop(ctx, ret, len);
 }
@@ -766,7 +766,7 @@ void http_auth_headers(void *ctx, const char *user, const char *pass, const char
 }
 char *http_auth_get(const char *uri, const char *user, const char *pass, const char *session_id, int *ret, int *len)
 {
-	void *ctx = http_async_req_start(NULL, uri, NULL, 0, 0);
+	void *ctx = http_async_req_start(nullptr, uri, nullptr, 0, 0);
 
 	if (!ctx)
 	{
@@ -774,7 +774,7 @@ char *http_auth_get(const char *uri, const char *user, const char *pass, const c
 			*ret = 600;
 		if (len)
 			*len = 0;
-		return NULL;
+		return nullptr;
 	}
 	http_auth_headers(ctx, user, pass, session_id);
 	return http_async_req_stop(ctx, ret, len);
@@ -782,14 +782,14 @@ char *http_auth_get(const char *uri, const char *user, const char *pass, const c
 
 char *http_simple_post(const char *uri, const char *data, int dlen, int *ret, int *len)
 {
-	void *ctx = http_async_req_start(NULL, uri, data, dlen, 0);
+	void *ctx = http_async_req_start(nullptr, uri, data, dlen, 0);
 	if (!ctx)
 	{
 		if (ret)
 			*ret = 600;
 		if (len)
 			*len = 0;
-		return NULL;
+		return nullptr;
 	}
 	return http_async_req_stop(ctx, ret, len);
 }
@@ -1029,7 +1029,7 @@ void http_add_multipart_header(void *ctx, std::string boundary)
 char *http_multipart_post(const char *uri, const char *const *names, const char *const *parts, size_t *plens, const char *user, const char *pass, const char *session_id, int *ret, int *len)
 {
 	void *ctx;
-	char *data = NULL, *tmp;
+	char *data = nullptr, *tmp;
 	int dlen = 0, i, j;
 	unsigned char hash[16];
 	unsigned char boundary[32], ch;
@@ -1114,7 +1114,7 @@ retry:
 		dlen += sprintf(data+dlen, "--%s--\r\n", boundary);
 	}
 
-	ctx = http_async_req_start(NULL, uri, data, dlen, 0);
+	ctx = http_async_req_start(nullptr, uri, data, dlen, 0);
 	if (!ctx)
 		goto fail;
 
@@ -1210,14 +1210,14 @@ fail:
 		*ret = 600;
 	if (len)
 		*len = 0;
-	return NULL;
+	return nullptr;
 }
 
 
 void *http_multipart_post_async(const char *uri, const char *const *names, const char *const *parts, int *plens, const char *user, const char *pass, const char *session_id)
 {
 	void *ctx;
-	char *data = NULL, *tmp;
+	char *data = nullptr, *tmp;
 	int dlen = 0, i, j;
 	unsigned char hash[16];
 	unsigned char boundary[32], ch;
@@ -1302,7 +1302,7 @@ retry:
 		dlen += sprintf(data+dlen, "--%s--\r\n", boundary);
 	}
 
-	ctx = http_async_req_start(NULL, uri, data, dlen, 0);
+	ctx = http_async_req_start(nullptr, uri, data, dlen, 0);
 	if (!ctx)
 		goto fail;
 
@@ -1399,5 +1399,5 @@ fail:
 	//	*ret = 600;
 	//if (len)
 	//	*len = 0;
-	return NULL;
+	return nullptr;
 }

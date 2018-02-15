@@ -43,7 +43,7 @@ Element_ETRD::Element_ETRD()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = NULL;
+	Update = nullptr;
 
 	Element_ETRD::initDeltaPos();
 }

@@ -41,7 +41,7 @@ Element_SALT::Element_SALT()
 	HighTemperature = 1173.0f;
 	HighTemperatureTransition = PT_LAVA;
 
-	Update = NULL;
+	Update = nullptr;
 }
 
 Element_SALT::~Element_SALT() {}

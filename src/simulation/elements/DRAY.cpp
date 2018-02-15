@@ -42,7 +42,7 @@ Element_DRAY::Element_DRAY()
 	HighTemperatureTransition = NT;
 
 	Update = &Element_DRAY::update;
-	Graphics = NULL;
+	Graphics = nullptr;
 }
 
 //should probably be in Simulation.h

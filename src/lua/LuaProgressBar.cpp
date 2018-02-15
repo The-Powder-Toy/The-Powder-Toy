@@ -14,7 +14,7 @@ Luna<LuaProgressBar>::RegType LuaProgressBar::methods[] = {
 	method(LuaProgressBar, visible),
 	method(LuaProgressBar, progress),
 	method(LuaProgressBar, status),
-	{0, 0}
+	{nullptr, nullptr}
 };
 
 LuaProgressBar::LuaProgressBar(lua_State * l) :

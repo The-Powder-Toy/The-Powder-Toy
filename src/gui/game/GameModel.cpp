@@ -25,15 +25,15 @@
 
 
 GameModel::GameModel():
-	clipboard(NULL),
-	placeSave(NULL),
+	clipboard(nullptr),
+	placeSave(nullptr),
 	activeMenu(-1),
 	currentBrush(0),
-	currentSave(NULL),
-	currentFile(NULL),
+	currentSave(nullptr),
+	currentFile(nullptr),
 	currentUser(0, ""),
 	toolStrength(1.0f),
-	redoHistory(NULL),
+	redoHistory(nullptr),
 	historyPosition(0),
 	activeColourPreset(0),
 	colourSelector(false),
@@ -45,8 +45,8 @@ GameModel::GameModel():
 
 	activeTools = regularToolset;
 
-	std::fill(decoToolset, decoToolset+4, (Tool*)NULL);
-	std::fill(regularToolset, regularToolset+4, (Tool*)NULL);
+	std::fill(decoToolset, decoToolset+4, (Tool*)nullptr);
+	std::fill(regularToolset, regularToolset+4, (Tool*)nullptr);
 
 	//Default render prefs
 	std::vector<unsigned int> tempArray;
@@ -420,7 +420,7 @@ Tool * GameModel::GetToolFromIdentifier(std::string identifier)
 			return *iter;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 void GameModel::SetEdgeMode(int edgeMode)
@@ -590,7 +590,7 @@ Tool * GameModel::GetElementTool(int elementID)
 		if((*iter)->GetToolID() == elementID)
 			return *iter;
 	}
-	return NULL;
+	return nullptr;
 }
 
 Tool * GameModel::GetActiveTool(int selection)
@@ -624,13 +624,13 @@ void GameModel::SetSave(SaveInfo * newSave)
 	if(currentSave != newSave)
 	{
 		delete currentSave;
-		if(newSave == NULL)
-			currentSave = NULL;
+		if(newSave == nullptr)
+			currentSave = nullptr;
 		else
 			currentSave = new SaveInfo(*newSave);
 	}
 	delete currentFile;
-	currentFile = NULL;
+	currentFile = nullptr;
 
 	if(currentSave && currentSave->GetGameSave())
 	{
@@ -685,13 +685,13 @@ void GameModel::SetSaveFile(SaveFile * newSave)
 	if(currentFile != newSave)
 	{
 		delete currentFile;
-		if(newSave == NULL)
-			currentFile = NULL;
+		if(newSave == nullptr)
+			currentFile = nullptr;
 		else
 			currentFile = new SaveFile(*newSave);
 	}
 	delete currentSave;
-	currentSave = NULL;
+	currentSave = nullptr;
 
 	if(newSave && newSave->GetGameSave())
 	{
@@ -1027,7 +1027,7 @@ void GameModel::SetPlaceSave(GameSave * save)
 		if(save)
 			placeSave = new GameSave(*save);
 		else
-			placeSave = NULL;
+			placeSave = nullptr;
 	}
 	notifyPlaceSaveChanged();
 }

@@ -41,7 +41,7 @@ Element_LRBD::Element_LRBD()
 	HighTemperature = 961.0f;
 	HighTemperatureTransition = PT_FIRE;
 
-	Update = NULL;
+	Update = nullptr;
 }
 
 Element_LRBD::~Element_LRBD() {}

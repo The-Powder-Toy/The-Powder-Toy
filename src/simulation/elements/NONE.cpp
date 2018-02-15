@@ -41,7 +41,7 @@ Element_NONE::Element_NONE()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = NULL;
+	Update = nullptr;
 	IconGenerator = &Element_NONE::iconGen;
 }
 

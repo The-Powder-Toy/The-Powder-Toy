@@ -67,10 +67,10 @@ public:
 
 PreviewView::PreviewView():
 	ui::Window(ui::Point(-1, -1), ui::Point((XRES/2)+210, (YRES/2)+150)),
-	savePreview(NULL),
-	submitCommentButton(NULL),
-	addCommentBox(NULL),
-	commentWarningLabel(NULL),
+	savePreview(nullptr),
+	submitCommentButton(nullptr),
+	addCommentBox(nullptr),
+	commentWarningLabel(nullptr),
 	userIsAuthor(false),
 	doOpen(false),
 	doError(false),
@@ -492,7 +492,7 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 {
 	SaveInfo * save = sender->GetSaveInfo();
 	delete savePreview;
-	savePreview = NULL;
+	savePreview = nullptr;
 	if(save)
 	{
 		votesUp = save->votesUp;
@@ -574,7 +574,7 @@ void PreviewView::submitComment()
 		submitCommentButton->Enabled = false;
 		addCommentBox->SetText("");
 		addCommentBox->SetPlaceholder("Submitting comment"); //This doesn't appear to ever show since no separate thread is created
-		FocusComponent(NULL);
+		FocusComponent(nullptr);
 
 		if (!c->SubmitComment(comment))
 			addCommentBox->SetText(comment);
@@ -592,13 +592,13 @@ void PreviewView::NotifyCommentBoxEnabledChanged(PreviewModel * sender)
 	{
 		RemoveComponent(addCommentBox);
 		delete addCommentBox;
-		addCommentBox = NULL;
+		addCommentBox = nullptr;
 	}
 	if(submitCommentButton)
 	{
 		RemoveComponent(submitCommentButton);
 		delete submitCommentButton;
-		submitCommentButton = NULL;
+		submitCommentButton = nullptr;
 	}
 	if(sender->GetCommentBoxEnabled())
 	{

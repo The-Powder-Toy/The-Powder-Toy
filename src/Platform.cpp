@@ -55,7 +55,7 @@ char *ExecutableName(void)
 #ifndef MACOSX
 		max *= 2;
 		char* realloced_name = (char *)realloc(name, max);
-		assert(realloced_name != NULL);
+		assert(realloced_name != nullptr);
 		name = realloced_name;
 		memset(name, 0, max);
 	}
@@ -63,7 +63,7 @@ char *ExecutableName(void)
 	if (res <= 0)
 	{
 		free(name);
-		return NULL;
+		return nullptr;
 	}
 	return name;
 }
@@ -110,7 +110,7 @@ void Millisleep(long int t)
 	struct timespec s;
 	s.tv_sec = t / 1000;
 	s.tv_nsec = (t % 1000) * 10000000;
-	nanosleep(&s, NULL);
+	nanosleep(&s, nullptr);
 #endif
 }
 

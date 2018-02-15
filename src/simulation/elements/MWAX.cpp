@@ -41,7 +41,7 @@ Element_MWAX::Element_MWAX()
 	HighTemperature = 673.0f;
 	HighTemperatureTransition = PT_FIRE;
 
-	Update = NULL;
+	Update = nullptr;
 }
 
 Element_MWAX::~Element_MWAX() {}

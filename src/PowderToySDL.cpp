@@ -132,7 +132,7 @@ std::string ClipboardPull()
 	selectionOwner = XGetSelectionOwner(sdl_wminfo.info.x11.display, XA_CLIPBOARD);
 	if (selectionOwner != None)
 	{
-		unsigned char *data = NULL;
+		unsigned char *data = nullptr;
 		Atom type;
 		int format, result;
 		unsigned long len, bytesLeft;
@@ -159,7 +159,7 @@ std::string ClipboardPull()
 		if (data)
 		{
 			XFree(data);
-			data = NULL;
+			data = nullptr;
 		}
 		if (bytesLeft)
 		{
@@ -618,7 +618,7 @@ SDLKey MapNumpad(SDLKey key)
 int elapsedTime = 0, currentTime = 0, lastTime = 0, currentFrame = 0;
 unsigned int lastTick = 0;
 float fps = 0, delta = 1.0f, inputScale = 1.0f;
-ui::Engine * engine = NULL;
+ui::Engine * engine = nullptr;
 bool showDoubleScreenDialog = false;
 float currentWidth, currentHeight;
 
@@ -1103,7 +1103,7 @@ int main(int argc, char * argv[])
 	_MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
 #endif
 
-	GameController * gameController = NULL;
+	GameController * gameController = nullptr;
 #if !defined(DEBUG) && !defined(_DEBUG)
 	try {
 #endif

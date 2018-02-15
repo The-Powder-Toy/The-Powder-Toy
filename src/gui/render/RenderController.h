@@ -14,7 +14,7 @@ class RenderController {
 	ControllerCallback * callback;
 public:
 	bool HasExited;
-	RenderController(Renderer * ren, ControllerCallback * callback = NULL);
+	RenderController(Renderer * ren, ControllerCallback * callback = nullptr);
 	void Exit();
 	RenderView * GetView() { return renderView; }
 	virtual ~RenderController();

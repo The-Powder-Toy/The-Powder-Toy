@@ -104,10 +104,10 @@ public:
 
 ServerSaveActivity::ServerSaveActivity(SaveInfo save, ServerSaveActivity::SaveUploadedCallback * callback) :
 	WindowActivity(ui::Point(-1, -1), ui::Point(440, 200)),
-	thumbnail(NULL),
+	thumbnail(nullptr),
 	save(save),
 	callback(callback),
-	saveUploadTask(NULL)
+	saveUploadTask(nullptr)
 {
 	titleLabel = new ui::Label(ui::Point(4, 5), ui::Point((Size.X/2)-8, 16), "");
 	titleLabel->SetTextColour(style::Colour::InformationTitle);
@@ -189,10 +189,10 @@ ServerSaveActivity::ServerSaveActivity(SaveInfo save, ServerSaveActivity::SaveUp
 
 ServerSaveActivity::ServerSaveActivity(SaveInfo save, bool saveNow, ServerSaveActivity::SaveUploadedCallback * callback) :
 	WindowActivity(ui::Point(-1, -1), ui::Point(200, 50)),
-	thumbnail(NULL),
+	thumbnail(nullptr),
 	save(save),
 	callback(callback),
-	saveUploadTask(NULL)
+	saveUploadTask(nullptr)
 {
 	ui::Label * titleLabel = new ui::Label(ui::Point(0, 0), Size, "Saving to server...");
 	titleLabel->SetTextColour(style::Colour::InformationTitle);
@@ -267,7 +267,7 @@ void ServerSaveActivity::AddAuthorInfo()
 	serverSaveInfo["title"] = save.GetName();
 	serverSaveInfo["description"] = save.GetDescription();
 	serverSaveInfo["published"] = (int)save.GetPublished();
-	serverSaveInfo["date"] = (Json::Value::UInt64)time(NULL);
+	serverSaveInfo["date"] = (Json::Value::UInt64)time(nullptr);
 	Client::Ref().SaveAuthorInfo(&serverSaveInfo);
 	save.GetGameSave()->authors = serverSaveInfo;
 }

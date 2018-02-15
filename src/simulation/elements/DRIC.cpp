@@ -41,7 +41,7 @@ Element_DRIC::Element_DRIC()
 	HighTemperature = 195.65f;
 	HighTemperatureTransition = PT_CO2;
 
-	Update = NULL;
+	Update = nullptr;
 }
 
 Element_DRIC::~Element_DRIC() {}

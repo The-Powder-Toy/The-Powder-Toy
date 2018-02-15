@@ -41,7 +41,7 @@ Element_PSTS::Element_PSTS()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = NULL;
+	Update = nullptr;
 }
 
 Element_PSTS::~Element_PSTS() {}

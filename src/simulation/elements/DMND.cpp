@@ -41,7 +41,7 @@ Element_DMND::Element_DMND()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = NULL;
+	Update = nullptr;
 }
 
 Element_DMND::~Element_DMND() {}

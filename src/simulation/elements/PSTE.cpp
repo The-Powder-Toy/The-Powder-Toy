@@ -41,7 +41,7 @@ Element_PSTE::Element_PSTE()
 	HighTemperature = 747.0f;
 	HighTemperatureTransition = PT_BRCK;
 
-	Update = NULL;
+	Update = nullptr;
 }
 
 Element_PSTE::~Element_PSTE() {}

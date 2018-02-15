@@ -48,7 +48,7 @@ public:
 		showSplit(true),
 		splitPosition(split),
 		toolTip2(toolTip2),
-		splitActionCallback(NULL)
+		splitActionCallback(nullptr)
 	{
 
 	}
@@ -192,8 +192,8 @@ GameView::GameView():
 	recordingIndex(0),
 	currentPoint(ui::Point(0, 0)),
 	lastPoint(ui::Point(0, 0)),
-	ren(NULL),
-	activeBrush(NULL),
+	ren(nullptr),
+	activeBrush(nullptr),
 	saveSimulationButtonEnabled(false),
 	saveReuploadAllowed(true),
 	drawMode(DrawPoints),
@@ -204,7 +204,7 @@ GameView::GameView():
 	selectPoint2(0, 0),
 	currentMouse(0, 0),
 	mousePosition(0, 0),
-	placeSaveThumb(NULL),
+	placeSaveThumb(nullptr),
 	placeSaveOffset(0, 0)
 {
 
@@ -809,11 +809,11 @@ void GameView::NotifyColourSelectorVisibilityChanged(GameModel * sender)
 	{
 		ToolButton * button = *iter;
 		RemoveComponent(button);
-		button->SetParentWindow(NULL);
+		button->SetParentWindow(nullptr);
 	}
 
 	RemoveComponent(colourPicker);
-	colourPicker->SetParentWindow(NULL);
+	colourPicker->SetParentWindow(nullptr);
 
 	if(sender->GetColourSelectorVisibility())
 	{
@@ -1065,7 +1065,7 @@ int GameView::Record(bool record)
 		bool record = ConfirmPrompt::Blocking("Recording", "You're about to start recording all drawn frames. This will use a load of disk space.");
 		if (record)
 		{
-			time_t startTime = time(NULL);
+			time_t startTime = time(nullptr);
 			recordingFolder = startTime;
 			std::stringstream recordingDir;
 			recordingDir << "recordings" << PATH_SEP << recordingFolder;
@@ -1951,7 +1951,7 @@ void GameView::NotifyPlaceSaveChanged(GameModel * sender)
 	}
 	else
 	{
-		placeSaveThumb = NULL;
+		placeSaveThumb = nullptr;
 		selectMode = SelectNone;
 	}
 }

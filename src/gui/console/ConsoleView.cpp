@@ -3,7 +3,7 @@
 
 ConsoleView::ConsoleView():
 	ui::Window(ui::Point(0, 0), ui::Point(WINDOWW, 150)),
-	commandField(NULL)
+	commandField(nullptr)
 {
 	class CommandHighlighter: public ui::TextboxAction
 	{

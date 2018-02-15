@@ -41,7 +41,7 @@ Element_CNCT::Element_CNCT()
 	HighTemperature = 1123.0f;
 	HighTemperatureTransition = PT_LAVA;
 
-	Update = NULL;
+	Update = nullptr;
 }
 
 Element_CNCT::~Element_CNCT() {}

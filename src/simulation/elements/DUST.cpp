@@ -42,8 +42,8 @@ Element_DUST::Element_DUST()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = NULL;
-	Graphics = NULL;
+	Update = nullptr;
+	Graphics = nullptr;
 }
 
 Element_DUST::~Element_DUST() {}

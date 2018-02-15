@@ -41,7 +41,7 @@ Element_SPAWN::Element_SPAWN()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = NULL;
+	Update = nullptr;
 }
 
 Element_SPAWN::~Element_SPAWN() {}

@@ -41,7 +41,7 @@ Element_RBDM::Element_RBDM()
 	HighTemperature = 312.0f;
 	HighTemperatureTransition = PT_LRBD;
 
-	Update = NULL;
+	Update = nullptr;
 }
 
 Element_RBDM::~Element_RBDM() {}

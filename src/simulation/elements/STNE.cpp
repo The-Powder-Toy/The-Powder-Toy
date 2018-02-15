@@ -41,7 +41,7 @@ Element_STNE::Element_STNE()
 	HighTemperature = 983.0f;
 	HighTemperatureTransition = PT_LAVA;
 
-	Update = NULL;
+	Update = nullptr;
 }
 
 Element_STNE::~Element_STNE() {}

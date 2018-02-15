@@ -41,7 +41,7 @@ Element_INWR::Element_INWR()
 	HighTemperature = 1687.0f;
 	HighTemperatureTransition = PT_LAVA;
 
-	Update = NULL;
+	Update = nullptr;
 }
 
 Element_INWR::~Element_INWR() {}

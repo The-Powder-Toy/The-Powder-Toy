@@ -84,7 +84,7 @@ void Label::updateMultiline()
 
 		int wordWidth = 0;
 		int lineWidth = 0;
-		char * wordStart = NULL;
+		char * wordStart = nullptr;
 		while ((c = rawText[charIndex++]))
 		{
 			switch(c)
@@ -120,7 +120,7 @@ void Label::updateMultiline()
 					lineWidth = 0;
 				}
 				wordWidth = 0;
-				wordStart = 0;
+				wordStart = nullptr;
 				lines++;
 			}
 			pc = c;

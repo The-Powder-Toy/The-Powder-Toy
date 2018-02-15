@@ -35,8 +35,8 @@ protected:
 	}
 public:
 	Brush(ui::Point size_):
-		outline(NULL),
-		bitmap(NULL),
+		outline(nullptr),
+		bitmap(nullptr),
 		size(0, 0),
 		radius(0, 0)
 	{
@@ -95,7 +95,7 @@ public:
 		if(!outline)
 			updateOutline();
 		if(!outline)
-			return NULL;
+			return nullptr;
 		return outline;
 	}
 };

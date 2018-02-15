@@ -24,7 +24,7 @@ public:
 
 ElementSearchActivity::ElementSearchActivity(GameController * gameController, std::vector<Tool*> tools) :
 	WindowActivity(ui::Point(-1, -1), ui::Point(236, 302)),
-	firstResult(NULL),
+	firstResult(nullptr),
 	gameController(gameController),
 	tools(tools),
 	toolTip(""),
@@ -93,7 +93,7 @@ ElementSearchActivity::ElementSearchActivity(GameController * gameController, st
 
 void ElementSearchActivity::searchTools(std::string query)
 {
-	firstResult = NULL;
+	firstResult = nullptr;
 	for(std::vector<ToolButton*>::iterator iter = toolButtons.begin(), end = toolButtons.end(); iter != end; ++iter) {
 		delete *iter;
 		RemoveComponent(*iter);

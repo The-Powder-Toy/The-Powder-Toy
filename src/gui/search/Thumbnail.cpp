@@ -14,7 +14,7 @@ Thumbnail::Thumbnail(const Thumbnail & thumb):
 	}
 	else
 	{
-		Data = NULL;
+		Data = nullptr;
 	}
 }
 
@@ -31,7 +31,7 @@ Thumbnail::Thumbnail(int _id, int _datestamp, pixel * _data, ui::Point _size):
 	}
 	else
 	{
-		Data = NULL;
+		Data = nullptr;
 	}
 }
 

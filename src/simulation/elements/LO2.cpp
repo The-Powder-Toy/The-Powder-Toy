@@ -41,7 +41,7 @@ Element_LO2::Element_LO2()
 	HighTemperature = 90.1f;
 	HighTemperatureTransition = PT_O2;
 
-	Update = NULL;
+	Update = nullptr;
 }
 
 Element_LO2::~Element_LO2() {}

@@ -41,7 +41,7 @@ Element_INSL::Element_INSL()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = NULL;
+	Update = nullptr;
 }
 
 Element_INSL::~Element_INSL() {}

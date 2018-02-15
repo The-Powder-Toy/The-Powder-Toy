@@ -41,7 +41,7 @@ Element_INST::Element_INST()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = NULL;
+	Update = nullptr;
 }
 
 Element_INST::~Element_INST() {}

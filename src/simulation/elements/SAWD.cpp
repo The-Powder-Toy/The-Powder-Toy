@@ -41,8 +41,8 @@ Element_SAWD::Element_SAWD()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = NULL;
-	Graphics = NULL;
+	Update = nullptr;
+	Graphics = nullptr;
 }
 
 Element_SAWD::~Element_SAWD() {}

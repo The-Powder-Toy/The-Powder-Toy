@@ -14,7 +14,7 @@ Button::Button(Point position, Point size, std::string buttonText, std::string t
 	isMouseInside(false),
 	isTogglable(false),
 	toggle(false),
-	actionCallback(NULL)
+	actionCallback(nullptr)
 {
 	TextPosition(ButtonText);
 }

@@ -35,7 +35,7 @@ Luna<LuaWindow>::RegType LuaWindow::methods[] = {
 	method(LuaWindow, onMouseWheel),
 	method(LuaWindow, onKeyPress),
 	method(LuaWindow, onKeyRelease),
-	{0, 0}
+	{nullptr, nullptr}
 };
 
 LuaWindow::LuaWindow(lua_State * l) :
@@ -107,8 +107,8 @@ LuaWindow::LuaWindow(lua_State * l) :
 
 int LuaWindow::addComponent(lua_State * l)
 {
-	void * luaComponent = NULL;
-	ui::Component * component = NULL;
+	void * luaComponent = nullptr;
+	ui::Component * component = nullptr;
 	if ((luaComponent = Luna<LuaButton>::tryGet(l, 1)))
 		component = Luna<LuaButton>::get(luaComponent)->GetComponent();
 	else if ((luaComponent = Luna<LuaLabel>::tryGet(l, 1)))
@@ -130,8 +130,8 @@ int LuaWindow::addComponent(lua_State * l)
 
 int LuaWindow::removeComponent(lua_State * l)
 {
-	void * luaComponent = NULL;
-	ui::Component * component = NULL;
+	void * luaComponent = nullptr;
+	ui::Component * component = nullptr;
 	if ((luaComponent = Luna<LuaButton>::tryGet(l, 1)))
 		component = Luna<LuaButton>::get(luaComponent)->GetComponent();
 	else if ((luaComponent = Luna<LuaLabel>::tryGet(l, 1)))

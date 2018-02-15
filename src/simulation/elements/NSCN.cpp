@@ -42,7 +42,7 @@ Element_NSCN::Element_NSCN()
 	HighTemperature = 1687.0f;
 	HighTemperatureTransition = PT_LAVA;
 
-	Update = NULL;
+	Update = nullptr;
 }
 
 Element_NSCN::~Element_NSCN() {}

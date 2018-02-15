@@ -51,7 +51,7 @@ std::string format::UnixtimeToDate(time_t unixtime, std::string dateFormat)
 
 std::string format::UnixtimeToDateMini(time_t unixtime)
 {
-	time_t currentTime = time(NULL);
+	time_t currentTime = time(nullptr);
 	struct tm currentTimeData = *localtime(&currentTime);
 	struct tm timeData = *localtime(&unixtime);
 
@@ -150,7 +150,7 @@ VideoBuffer * format::PTIToVideoBuffer(std::vector<char> & data)
 		free(buffer);
 		return vb;
 	}
-	return NULL;
+	return nullptr;
 }
 
 std::vector<char> format::VideoBufferToBMP(const VideoBuffer & vidBuf)
@@ -239,7 +239,7 @@ struct PNGChunk
 		}
 		else
 		{
-			Data = NULL;
+			Data = nullptr;
 		}
 	}
 	unsigned long CRC()

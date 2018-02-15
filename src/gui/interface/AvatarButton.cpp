@@ -14,10 +14,10 @@ namespace ui {
 
 AvatarButton::AvatarButton(Point position, Point size, std::string username):
 	Component(position, size),
-	avatar(NULL),
+	avatar(nullptr),
 	name(username),
 	tried(false),
-	actionCallback(NULL)
+	actionCallback(nullptr)
 {
 
 }

@@ -45,7 +45,7 @@ char *mystrdup(const char *s)
 		strcpy(x, s);
 		return x;
 	}
-	return NULL;
+	return nullptr;
 }
 
 void strlist_add(struct strlist **list, char *str)
@@ -120,7 +120,7 @@ void *file_load(char *fn, int *size)
 	void *s;
 
 	if (!f)
-		return NULL;
+		return nullptr;
 	fseek(f, 0, SEEK_END);
 	*size = ftell(f);
 	fseek(f, 0, SEEK_SET);
@@ -128,14 +128,14 @@ void *file_load(char *fn, int *size)
 	if (!s)
 	{
 		fclose(f);
-		return NULL;
+		return nullptr;
 	}
 	int readsize = fread(s, *size, 1, f);
 	fclose(f);
 	if (readsize != 1)
 	{
 		free(s);
-		return NULL;
+		return nullptr;
 	}
 	return s;
 }

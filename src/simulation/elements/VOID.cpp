@@ -41,7 +41,7 @@ Element_VOID::Element_VOID()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = NULL;
+	Update = nullptr;
 }
 
 Element_VOID::~Element_VOID() {}

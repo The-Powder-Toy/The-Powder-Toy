@@ -27,7 +27,7 @@ private:
 	virtual bool doWork()
 	{
 		std::stringstream errorStream;
-		void * request = http_async_req_start(NULL, (char*)updateName.c_str(), NULL, 0, 0);
+		void * request = http_async_req_start(nullptr, (char*)updateName.c_str(), nullptr, 0, 0);
 		notifyStatus("Downloading update");
 		notifyProgress(-1);
 		while(!http_async_req_status(request))

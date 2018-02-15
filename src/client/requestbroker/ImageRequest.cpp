@@ -9,7 +9,7 @@ ImageRequest::ImageRequest(std::string url, int width, int height, ListenerHandl
 	Request(Image, listener, identifier)
 {
 	URL = url;
-	HTTPContext = NULL;
+	HTTPContext = nullptr;
 	Width = width;
 	Height = height;
 }
@@ -21,7 +21,7 @@ ImageRequest::~ImageRequest()
 
 RequestBroker::ProcessResponse ImageRequest::Process(RequestBroker & rb)
 {
-	VideoBuffer * image = NULL;
+	VideoBuffer * image = nullptr;
 
 	//Have a look at the thumbnail cache
 	for(std::deque<std::pair<std::string, VideoBuffer*> >::iterator iter = rb.imageCache.begin(), end = rb.imageCache.end(); iter != end; ++iter)
@@ -106,8 +106,8 @@ RequestBroker::ProcessResponse ImageRequest::Process(RequestBroker & rb)
 /*#ifdef DEBUG
 			std::cout << typeid(*this).name() << " Creating new request for " << URL << std::endl;
 #endif*/
-			HTTPContext = http_async_req_start(NULL, (char *)URL.c_str(), NULL, 0, 0);
-			RequestTime = time(NULL);
+			HTTPContext = http_async_req_start(nullptr, (char *)URL.c_str(), nullptr, 0, 0);
+			RequestTime = time(nullptr);
 		}
 	}
 
@@ -145,6 +145,6 @@ void ImageRequest::Cleanup()
 	if(ResultObject)
 	{
 		delete ((VideoBuffer*)ResultObject);
-		ResultObject = NULL;
+		ResultObject = nullptr;
 	}
 }

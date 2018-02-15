@@ -41,7 +41,7 @@ Element_SMKE::Element_SMKE()
 	HighTemperature = 625.0f;
 	HighTemperatureTransition = PT_FIRE;
 
-	Update = NULL;
+	Update = nullptr;
 	Graphics = &Element_SMKE::graphics;
 }
 

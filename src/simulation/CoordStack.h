@@ -39,7 +39,7 @@ private:
 	const static int stack_limit = XRES*YRES;
 public:
 	CoordStack() :
-		stack(NULL),
+		stack(nullptr),
 		stack_size(0)
 	{
 		stack = (unsigned short(*)[2])(malloc(sizeof(unsigned short)*2*stack_limit));

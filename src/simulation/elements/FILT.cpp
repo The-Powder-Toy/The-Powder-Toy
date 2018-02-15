@@ -41,7 +41,7 @@ Element_FILT::Element_FILT()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = NULL;
+	Update = nullptr;
 	Graphics = &Element_FILT::graphics;
 }
 

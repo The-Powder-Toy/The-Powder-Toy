@@ -23,7 +23,7 @@ Textbox::Textbox(Point position, Point size, std::string textboxText, std::strin
 	mouseDown(false),
 	masked(false),
 	border(true),
-	actionCallback(NULL)
+	actionCallback(nullptr)
 {
 	placeHolder = textboxPlaceholder;
 

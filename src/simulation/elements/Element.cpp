@@ -42,9 +42,9 @@ Element::Element():
 	HighTemperature(ITH),
 	HighTemperatureTransition(NT),
 
-	Update(NULL),
+	Update(nullptr),
 	Graphics(&Element::defaultGraphics),
-	IconGenerator(NULL)
+	IconGenerator(nullptr)
 {
 }
 

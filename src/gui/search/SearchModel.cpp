@@ -4,7 +4,7 @@
 #include "client/Client.h"
 
 SearchModel::SearchModel():
-	loadedSave(NULL),
+	loadedSave(nullptr),
 	currentSort("best"),
 	currentPage(1),
 	resultCount(0),
@@ -88,12 +88,12 @@ bool SearchModel::UpdateSaveList(int pageNumber, std::string query)
 		{
 			updateTagListFinished = false;
 			updateTagListWorking = true;
-			pthread_create(&updateTagListThread, 0, &SearchModel::updateTagListTHelper, this);
+			pthread_create(&updateTagListThread, nullptr, &SearchModel::updateTagListTHelper, this);
 		}
 
 		updateSaveListFinished = false;
 		updateSaveListWorking = true;
-		pthread_create(&updateSaveListThread, 0, &SearchModel::updateSaveListTHelper, this);
+		pthread_create(&updateSaveListThread, nullptr, &SearchModel::updateSaveListTHelper, this);
 		return true;
 	}
 	return false;
@@ -109,7 +109,7 @@ void SearchModel::SetLoadedSave(SaveInfo * save)
 	}
 	else
 	{
-		loadedSave = NULL;
+		loadedSave = nullptr;
 	}
 }
 

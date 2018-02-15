@@ -245,7 +245,7 @@ void FileBrowserActivity::NotifyDone(Task * task)
 	files = ((LoadFilesTask*)task)->GetSaveFiles();
 	totalFiles = files.size();
 	delete loadFiles;
-	loadFiles = NULL;
+	loadFiles = nullptr;
 	if (!files.size())
 	{
 		progressBar->Visible = false;

@@ -25,14 +25,14 @@ public:
 		}
 		else
 		{
-			cc->searchModel->SetLoadedSave(NULL);
+			cc->searchModel->SetLoadedSave(nullptr);
 		}
 
 	}
 };
 
 SearchController::SearchController(ControllerCallback * callback):
-	activePreview(NULL),
+	activePreview(nullptr),
 	nextQueryTime(0.0f),
 	nextQueryDone(true),
 	instantOpen(false),
@@ -56,7 +56,7 @@ SaveInfo * SearchController::GetLoadedSave()
 
 void SearchController::ReleaseLoadedSave()
 {
-	searchModel->SetLoadedSave(NULL);
+	searchModel->SetLoadedSave(nullptr);
 }
 
 void SearchController::Update()
@@ -78,7 +78,7 @@ void SearchController::Update()
 	if(activePreview && activePreview->HasExited)
 	{
 		delete activePreview;
-		activePreview = NULL;
+		activePreview = nullptr;
 		if(searchModel->GetLoadedSave())
 		{
 			Exit();

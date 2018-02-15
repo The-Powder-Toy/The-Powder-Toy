@@ -20,7 +20,7 @@ RequestBroker::ProcessResponse ThumbRenderRequest::Process(RequestBroker & rb)
 	VideoBuffer * thumbnail = SaveRenderer::Ref().Render(Save, Decorations, Fire);
 
 	delete Save;
-	Save = NULL;
+	Save = nullptr;
 
 	if(thumbnail)
 	{
@@ -47,6 +47,6 @@ void ThumbRenderRequest::Cleanup()
 	if(ResultObject)
 	{
 		delete ((VideoBuffer*)ResultObject);
-		ResultObject = NULL;
+		ResultObject = nullptr;
 	}
 }

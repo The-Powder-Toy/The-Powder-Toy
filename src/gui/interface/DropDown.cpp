@@ -76,7 +76,7 @@ DropDown::DropDown(Point position, Point size):
 	Component(position, size),
 	isMouseInside(false),
 	optionIndex(-1),
-	callback(NULL)
+	callback(nullptr)
 {
 }
 

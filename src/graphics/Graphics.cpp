@@ -240,7 +240,7 @@ void *Graphics::ptif_pack(pixel *src, int w, int h, int *result_size){
 	if(BZ2_bzBuffToBuffCompress((char *)(result+8), (unsigned *)&i, (char *)data, datalen, 9, 0, 0) != 0){
 		free(data);
 		free(result);
-		return NULL;
+		return nullptr;
 	}
 
 	*result_size = i+8;
@@ -258,11 +258,11 @@ pixel *Graphics::ptif_unpack(void *datain, int size, int *w, int *h){
 	pixel *result;
 	if(size<16){
 		printf("Image empty\n");
-		return NULL;
+		return nullptr;
 	}
 	if(!(data[0]=='P' && data[1]=='T' && data[2]=='i')){
 		printf("Image header invalid\n");
-		return NULL;
+		return nullptr;
 	}
 	width = data[4]|(data[5]<<8);
 	height = data[6]|(data[7]<<8);
@@ -282,7 +282,7 @@ pixel *Graphics::ptif_unpack(void *datain, int size, int *w, int *h){
 		free(blue_chan);
 		free(undata);
 		free(result);
-		return NULL;
+		return nullptr;
 	}
 	if(i != (width*height)*3){
 		printf("Result buffer size mismatch, %d != %d\n", i, (width*height)*3);
@@ -291,7 +291,7 @@ pixel *Graphics::ptif_unpack(void *datain, int size, int *w, int *h){
 		free(blue_chan);
 		free(undata);
 		free(result);
-		return NULL;
+		return nullptr;
 	}
 	memcpy(red_chan, undata, width*height);
 	memcpy(green_chan, undata+(width*height), width*height);
@@ -315,7 +315,7 @@ pixel *Graphics::ptif_unpack(void *datain, int size, int *w, int *h){
 pixel *Graphics::resample_img_nn(pixel * src, int sw, int sh, int rw, int rh)
 {
 	int y, x;
-	pixel *q = NULL;
+	pixel *q = nullptr;
 	q = new pixel[rw*rh];
 	for (y=0; y<rh; y++)
 		for (x=0; x<rw; x++){
@@ -342,8 +342,8 @@ pixel *Graphics::resample_img(pixel *src, int sw, int sh, int rw, int rh)
 
 	//Resampler for each colour channel
 	if (sourceWidth <= 0 || sourceHeight <= 0 || resultWidth <= 0 || resultHeight <= 0)
-		return NULL;
-	resamplers[0] = new Resampler(sourceWidth, sourceHeight, resultWidth, resultHeight, Resampler::BOUNDARY_CLAMP, 0.0f, 1.0f, pFilter, NULL, NULL, filter_scale, filter_scale);
+		return nullptr;
+	resamplers[0] = new Resampler(sourceWidth, sourceHeight, resultWidth, resultHeight, Resampler::BOUNDARY_CLAMP, 0.0f, 1.0f, pFilter, nullptr, nullptr, filter_scale, filter_scale);
 	samples[0] = new float[sourceWidth];
 	for (int i = 1; i < PIXELCHANNELS; i++)
 	{
@@ -375,7 +375,7 @@ pixel *Graphics::resample_img(pixel *src, int sw, int sh, int rw, int rh)
 			if (!resamplers[c]->put_line(&samples[c][0]))
 			{
 				printf("Out of memory!\n");
-				return NULL;
+				return nullptr;
 			}
 		}
 
@@ -1122,12 +1122,12 @@ pixel *Graphics::render_packed_rgb(void *image, int width, int height, int cmp_s
 
 	tmp = (unsigned char *)malloc(width*height*3);
 	if (!tmp)
-		return NULL;
+		return nullptr;
 	res = (pixel *)malloc(width*height*PIXELSIZE);
 	if (!res)
 	{
 		free(tmp);
-		return NULL;
+		return nullptr;
 	}
 
 	i = width*height*3;
@@ -1135,7 +1135,7 @@ pixel *Graphics::render_packed_rgb(void *image, int width, int height, int cmp_s
 	{
 		free(res);
 		free(tmp);
-		return NULL;
+		return nullptr;
 	}
 
 	for (i=0; i<width*height; i++)

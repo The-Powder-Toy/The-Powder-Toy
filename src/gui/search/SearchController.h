@@ -28,7 +28,7 @@ private:
 public:
 	class OpenCallback;
 	bool HasExited;
-	SearchController(ControllerCallback * callback = NULL);
+	SearchController(ControllerCallback * callback = nullptr);
 	~SearchController();
 	SearchView * GetView() { return searchView; }
 	void Exit();

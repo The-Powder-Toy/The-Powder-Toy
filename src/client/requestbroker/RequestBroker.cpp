@@ -21,16 +21,16 @@ RequestBroker::RequestBroker()
 	thumbnailQueueRunning = false;
 
 	//listenersMutex = PTHREAD_MUTEX_INITIALIZER;
-	pthread_mutex_init (&listenersMutex, NULL);
+	pthread_mutex_init (&listenersMutex, nullptr);
 
 
-	pthread_mutex_init (&runningMutex, NULL);
+	pthread_mutex_init (&runningMutex, nullptr);
 
 
-	pthread_mutex_init (&requestQueueMutex, NULL);
+	pthread_mutex_init (&requestQueueMutex, nullptr);
 
 
-	pthread_mutex_init (&completeQueueMutex, NULL);
+	pthread_mutex_init (&completeQueueMutex, nullptr);
 }
 
 RequestBroker::~RequestBroker()
@@ -53,7 +53,7 @@ void RequestBroker::assureRunning()
 #ifdef DEBUG
 		std::cout << typeid(*this).name() << " Starting background thread for new " << __FUNCTION__ << " request" << std::endl;
 #endif
-		pthread_create(&thumbnailQueueThread, 0, &RequestBroker::thumbnailQueueProcessHelper, this);
+		pthread_create(&thumbnailQueueThread, nullptr, &RequestBroker::thumbnailQueueProcessHelper, this);
 	}
 }
 
@@ -64,7 +64,7 @@ void RequestBroker::Shutdown()
 	{
 		thumbnailQueueRunning = false;
 		pthread_mutex_unlock(&runningMutex);
-		pthread_join(thumbnailQueueThread, NULL);
+		pthread_join(thumbnailQueueThread, nullptr);
 	}
 	else
 		pthread_mutex_unlock(&runningMutex);
@@ -146,7 +146,7 @@ void RequestBroker::RetrieveImage(std::string imageUrl, int width, int height, R
 TH_ENTRY_POINT void * RequestBroker::thumbnailQueueProcessHelper(void * ref)
 {
 	((RequestBroker*)ref)->thumbnailQueueProcessTH();
-	return NULL;
+	return nullptr;
 }
 
 void RequestBroker::FlushThumbQueue()
@@ -173,14 +173,14 @@ void RequestBroker::FlushThumbQueue()
 
 void RequestBroker::thumbnailQueueProcessTH()
 {
-	time_t lastAction = time(NULL);
+	time_t lastAction = time(nullptr);
 	pthread_mutex_lock(&runningMutex);
 	thumbnailQueueRunning = true;
 	pthread_mutex_unlock(&runningMutex);
 	while(true)
 	{
 		//Shutdown after 2 seconds of idle
-		if(time(NULL) - lastAction > 2)
+		if(time(nullptr) - lastAction > 2)
 		{
 #ifdef DEBUG
 			std::cout << typeid(*this).name() << " Idle shutdown" << std::endl;
@@ -219,7 +219,7 @@ void RequestBroker::thumbnailQueueProcessTH()
 					req++;
 				}
 			}
-			lastAction = time(NULL);
+			lastAction = time(nullptr);
 		}
 
 		//Move any items from the request queue to the processing queue
@@ -299,7 +299,7 @@ RequestBroker::Request::Request(RequestType type, ListenerHandle listener, int i
 {
 	Type = type;
 	Listener = listener;
-	ResultObject = NULL;
+	ResultObject = nullptr;
 	Identifier = identifier;
 }
 RequestBroker::Request::~Request()

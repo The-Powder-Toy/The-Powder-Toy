@@ -41,7 +41,7 @@ Element_GUNP::Element_GUNP()
 	HighTemperature = 673.0f;
 	HighTemperatureTransition = PT_FIRE;
 
-	Update = NULL;
+	Update = nullptr;
 }
 
 Element_GUNP::~Element_GUNP() {}

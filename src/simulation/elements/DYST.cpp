@@ -41,7 +41,7 @@ Element_DYST::Element_DYST()
 	HighTemperature = 473.0f;
 	HighTemperatureTransition = PT_DUST;
 
-	Update = NULL;
+	Update = nullptr;
 }
 
 Element_DYST::~Element_DYST() {}

@@ -4,8 +4,8 @@
 #include "gui/search/Thumbnail.h"
 
 SaveFile::SaveFile(SaveFile & save):
-	thumbnail(NULL),
-	gameSave(NULL),
+	thumbnail(nullptr),
+	gameSave(nullptr),
 	filename(save.filename),
 	displayName(save.displayName),
 	loadingError(save.loadingError)
@@ -27,8 +27,8 @@ void SaveFile::SetThumbnail(Thumbnail * thumb)
 }
 
 SaveFile::SaveFile(std::string filename):
-	thumbnail(NULL),
-	gameSave(NULL),
+	thumbnail(nullptr),
+	gameSave(nullptr),
 	filename(filename),
 	displayName(filename),
 	loadingError("")

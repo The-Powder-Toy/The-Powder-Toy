@@ -344,7 +344,7 @@ int luacon_elementread(lua_State* l)
 	float tempfloat;
 	int i;
 	const char * key = luaL_optstring(l, 2, "");
-	offset = luacon_element_getproperty(key, &format, NULL);
+	offset = luacon_element_getproperty(key, &format, nullptr);
 
 	//Get Raw Index value for element
 	lua_pushstring(l, "id");
@@ -1089,7 +1089,7 @@ int luatpt_set_property(lua_State* l)
 	}
 	else
 	{
-		name = luaL_checklstring(l, 2, NULL);
+		name = luaL_checklstring(l, 2, nullptr);
 		if ((t = luacon_sim->GetParticleType(std::string(name)))==-1)
 			return luaL_error(l, "Unrecognised element '%s'", name);
 	}
@@ -1943,7 +1943,7 @@ int luatpt_getscript(lua_State* l)
 	if (outputfile)
 	{
 		fclose(outputfile);
-		outputfile = NULL;
+		outputfile = nullptr;
 		if (!confirmPrompt || ConfirmPrompt::Blocking("File already exists, overwrite?", filename, "Overwrite"))
 		{
 			outputfile = fopen(filename, "wb");
@@ -1966,7 +1966,7 @@ int luatpt_getscript(lua_State* l)
 
 	fputs(scriptData, outputfile);
 	fclose(outputfile);
-	outputfile = NULL;
+	outputfile = nullptr;
 	if (runScript)
 	{
 		std::stringstream luaCommand;

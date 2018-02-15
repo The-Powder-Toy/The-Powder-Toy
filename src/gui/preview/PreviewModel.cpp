@@ -10,11 +10,11 @@
 PreviewModel::PreviewModel():
 	doOpen(false),
 	canOpen(true),
-	saveInfo(NULL),
-	saveData(NULL),
-	saveComments(NULL),
-	saveDataDownload(NULL),
-	commentsDownload(NULL),
+	saveInfo(nullptr),
+	saveData(nullptr),
+	saveComments(nullptr),
+	saveDataDownload(nullptr),
+	commentsDownload(nullptr),
 	commentBoxEnabled(false),
 	commentsLoaded(false),
 	commentsTotal(0),
@@ -59,12 +59,12 @@ void PreviewModel::UpdateSave(int saveID, int saveDate)
 	if (saveInfo)
 	{
 		delete saveInfo;
-		saveInfo = NULL;
+		saveInfo = nullptr;
 	}
 	if (saveData)
 	{
 		delete saveData;
-		saveData = NULL;
+		saveData = nullptr;
 	}
 	ClearComments();
 	notifySaveChanged();
@@ -192,7 +192,7 @@ void PreviewModel::ClearComments()
 			delete saveComments->at(i);
 		saveComments->clear();
 		delete saveComments;
-		saveComments = NULL;
+		saveComments = nullptr;
 	}
 }
 
@@ -241,7 +241,7 @@ bool PreviewModel::ParseSaveInfo(char * saveInfoResponse)
 			if (saveDataDownload)
 				saveDataDownload->Cancel();
 			delete saveData;
-			saveData = NULL;
+			saveData = nullptr;
 			std::stringstream urlStream;
 			urlStream << "http://" << STATICSERVER << "/2157797.cps";
 			saveDataDownload = new Download(urlStream.str());
@@ -251,7 +251,7 @@ bool PreviewModel::ParseSaveInfo(char * saveInfoResponse)
 	}
 	catch (std::exception &e)
 	{
-		saveInfo = NULL;
+		saveInfo = nullptr;
 		return false;
 	}
 }
@@ -291,7 +291,7 @@ void PreviewModel::Update()
 		int status, length;
 		char *ret = saveDataDownload->Finish(&length, &status);
 
-		Client::Ref().ParseServerReturn(NULL, status, true);
+		Client::Ref().ParseServerReturn(nullptr, status, true);
 		if (status == 200 && ret)
 		{
 			delete saveData;
@@ -306,15 +306,15 @@ void PreviewModel::Update()
 				observers[i]->SaveLoadingError(Client::Ref().GetLastError());
 			}
 		}
-		saveDataDownload = NULL;
+		saveDataDownload = nullptr;
 	}
 
 	if (saveInfoDownload && saveInfoDownload->CheckDone())
 	{
 		int status;
-		char *ret = saveInfoDownload->Finish(NULL, &status);
+		char *ret = saveInfoDownload->Finish(nullptr, &status);
 
-		Client::Ref().ParseServerReturn(NULL, status, true);
+		Client::Ref().ParseServerReturn(nullptr, status, true);
 		if (status == 200 && ret)
 		{
 			if (ParseSaveInfo(ret))
@@ -333,16 +333,16 @@ void PreviewModel::Update()
 			for (size_t i = 0; i < observers.size(); i++)
 				observers[i]->SaveLoadingError(Client::Ref().GetLastError());
 		}
-		saveInfoDownload = NULL;
+		saveInfoDownload = nullptr;
 	}
 
 	if (commentsDownload && commentsDownload->CheckDone())
 	{
 		int status;
-		char *ret = commentsDownload->Finish(NULL, &status);
+		char *ret = commentsDownload->Finish(nullptr, &status);
 		ClearComments();
 
-		Client::Ref().ParseServerReturn(NULL, status, true);
+		Client::Ref().ParseServerReturn(nullptr, status, true);
 		if (status == 200 && ret)
 			ParseComments(ret);
 
@@ -350,7 +350,7 @@ void PreviewModel::Update()
 		notifySaveCommentsChanged();
 		notifyCommentsPageChanged();
 
-		commentsDownload = NULL;
+		commentsDownload = nullptr;
 	}
 }
 

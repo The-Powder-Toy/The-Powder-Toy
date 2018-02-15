@@ -35,7 +35,7 @@ SaveRenderer::SaveRenderer(){
 VideoBuffer * SaveRenderer::Render(GameSave * save, bool decorations, bool fire)
 {
 	int width, height;
-	VideoBuffer * tempThumb = NULL;
+	VideoBuffer * tempThumb = nullptr;
 	width = save->blockWidth;
 	height = save->blockHeight;
 	bool doCollapse = save->Collapsed();
@@ -109,7 +109,7 @@ VideoBuffer * SaveRenderer::Render(GameSave * save, bool decorations, bool fire)
 		delete[] texData;
 		pData = NULL;
 #else
-		pixel * pData = NULL;
+		pixel * pData = nullptr;
 		pixel * dst;
 		pixel * src = g->vid;
 

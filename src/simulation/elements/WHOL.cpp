@@ -41,7 +41,7 @@ Element_WHOL::Element_WHOL()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = NULL;
+	Update = nullptr;
 }
 
 Element_WHOL::~Element_WHOL() {}

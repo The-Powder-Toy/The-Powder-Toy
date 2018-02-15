@@ -5,7 +5,7 @@
 namespace ui
 {
 	Appearance::Appearance():
-		texture(NULL),
+		texture(nullptr),
 
 		VerticalAlign(AlignMiddle),
 		HorizontalAlign(AlignCentre),
@@ -42,7 +42,7 @@ namespace ui
 		if(texture)
 			this->texture = new VideoBuffer(texture);
 		else
-			this->texture = NULL;
+			this->texture = nullptr;
 	}
 
 	Appearance::~Appearance()

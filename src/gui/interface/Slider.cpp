@@ -10,7 +10,7 @@ Slider::Slider(Point position, Point size, int steps):
 		sliderSteps(steps),
 		sliderPosition(0),
 		isMouseDown(false),
-		bgGradient(NULL),
+		bgGradient(nullptr),
 		col1(0, 0, 0, 0),
 		col2(0, 0, 0, 0)
 {

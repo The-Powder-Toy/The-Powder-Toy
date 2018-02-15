@@ -98,7 +98,7 @@ void Renderer::RenderBegin()
 	{
 		std::copy(persistentVid, persistentVid+(VIDXRES*YRES), vid);
 	}
-	pixel * oldVid = NULL;
+	pixel * oldVid = nullptr;
 	if(display_mode & DISPLAY_WARP)
 	{
 		oldVid = vid;
@@ -526,7 +526,7 @@ VideoBuffer * Renderer::WallIcon(int wallID, int width, int height)
 	int i, j;
 	int wt = wallID;
 	if (wt<0 || wt>=Renderer_wtypesCount)
-		return 0;
+		return nullptr;
 	wall_type *wtypes = Renderer_wtypes;
 	pixel pc = wtypes[wt].colour;
 	pixel gc = wtypes[wt].eglow;
@@ -2544,8 +2544,8 @@ pixel Renderer::GetPixel(int x, int y)
 }
 
 Renderer::Renderer(Graphics * g, Simulation * sim):
-	sim(NULL),
-	g(NULL),
+	sim(nullptr),
+	g(nullptr),
 	render_mode(0),
 	colour_mode(0),
 	display_mode(0),

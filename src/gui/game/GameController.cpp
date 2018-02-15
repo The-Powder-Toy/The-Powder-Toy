@@ -129,14 +129,14 @@ public:
 GameController::GameController():
 	firstTick(true),
 	foundSignID(-1),
-	activePreview(NULL),
-	search(NULL),
-	renderOptions(NULL),
-	loginWindow(NULL),
-	console(NULL),
-	tagsWindow(NULL),
-	localBrowser(NULL),
-	options(NULL),
+	activePreview(nullptr),
+	search(nullptr),
+	renderOptions(nullptr),
+	loginWindow(nullptr),
+	console(nullptr),
+	tagsWindow(nullptr),
+	localBrowser(nullptr),
+	options(nullptr),
 	debugFlags(0),
 	HasDone(false)
 {
@@ -280,7 +280,7 @@ void GameController::HistorySnapshot()
 		gameModel->SetHistory(history);
 		gameModel->SetHistoryPosition(std::min((size_t)historyPosition+1, history.size()));
 		delete gameModel->GetRedoHistory();
-		gameModel->SetRedoHistory(NULL);
+		gameModel->SetRedoHistory(nullptr);
 	}
 }
 
@@ -607,7 +607,7 @@ void GameController::CopyRegion(ui::Point point1, ui::Point point2, bool include
 		Json::Value clipboardInfo;
 		clipboardInfo["type"] = "clipboard";
 		clipboardInfo["username"] = Client::Ref().GetAuthUser().Username;
-		clipboardInfo["date"] = (Json::Value::UInt64)time(NULL);
+		clipboardInfo["date"] = (Json::Value::UInt64)time(nullptr);
 		Client::Ref().SaveAuthorInfo(&clipboardInfo);
 		newSave->authors = clipboardInfo;
 
@@ -997,31 +997,31 @@ void GameController::Update()
 	if(renderOptions && renderOptions->HasExited)
 	{
 		delete renderOptions;
-		renderOptions = NULL;
+		renderOptions = nullptr;
 	}
 
 	if(search && search->HasExited)
 	{
 		delete search;
-		search = NULL;
+		search = nullptr;
 	}
 
 	if(activePreview && activePreview->HasExited)
 	{
 		delete activePreview;
-		activePreview = NULL;
+		activePreview = nullptr;
 	}
 
 	if(loginWindow && loginWindow->HasExited)
 	{
 		delete loginWindow;
-		loginWindow = NULL;
+		loginWindow = nullptr;
 	}
 
 	if(localBrowser && localBrowser->HasDone)
 	{
 		delete localBrowser;
-		localBrowser = NULL;
+		localBrowser = nullptr;
 	}
 }
 
@@ -1248,7 +1248,7 @@ void GameController::OpenLocalSaveWindow(bool asCurrent)
 			localSaveInfo["type"] = "localsave";
 			localSaveInfo["username"] = Client::Ref().GetAuthUser().Username;
 			localSaveInfo["title"] = gameModel->GetSaveFile()->GetName();
-			localSaveInfo["date"] = (Json::Value::UInt64)time(NULL);
+			localSaveInfo["date"] = (Json::Value::UInt64)time(nullptr);
 			Client::Ref().SaveAuthorInfo(&localSaveInfo);
 			gameSave->authors = localSaveInfo;
 
@@ -1391,7 +1391,7 @@ void GameController::OpenOptions()
 void GameController::ShowConsole()
 {
 	if (!console)
-		console = new ConsoleController(NULL, commandInterface);
+		console = new ConsoleController(nullptr, commandInterface);
 	if (console->GetView() != ui::Engine::Ref().GetWindow())
 		ui::Engine::Ref().ShowWindow(console->GetView());
 }
@@ -1405,7 +1405,7 @@ void GameController::HideConsole()
 
 void GameController::OpenRenderOptions()
 {
-	renderOptions = new RenderController(gameModel->GetRenderer(), NULL);
+	renderOptions = new RenderController(gameModel->GetRenderer(), nullptr);
 	ui::Engine::Ref().ShowWindow(renderOptions->GetView());
 }
 
@@ -1536,7 +1536,7 @@ void GameController::ChangeBrush()
 void GameController::ClearSim()
 {
 	HistorySnapshot();
-	gameModel->SetSave(NULL);
+	gameModel->SetSave(nullptr);
 	gameModel->ClearSimulation();
 }
 

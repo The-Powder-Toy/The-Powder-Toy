@@ -13,7 +13,7 @@
 PreviewController::PreviewController(int saveID, int saveDate, bool instant, ControllerCallback * callback):
 	saveId(saveID),
 	saveDate(saveDate),
-	loginWindow(NULL),
+	loginWindow(nullptr),
 	HasExited(false)
 {
 	previewModel = new PreviewModel();
@@ -38,7 +38,7 @@ PreviewController::PreviewController(int saveID, int saveDate, bool instant, Con
 PreviewController::PreviewController(int saveID, bool instant, ControllerCallback * callback):
 	saveId(saveID),
 	saveDate(0),
-	loginWindow(NULL),
+	loginWindow(nullptr),
 	HasExited(false)
 {
 	previewModel = new PreviewModel();
@@ -65,7 +65,7 @@ void PreviewController::Update()
 	if (loginWindow && loginWindow->HasExited == true)
 	{
 		delete loginWindow;
-		loginWindow = NULL;
+		loginWindow = nullptr;
 	}
 	if (previewModel->GetDoOpen() && previewModel->GetSaveInfo() && previewModel->GetSaveInfo()->GetGameSave())
 	{

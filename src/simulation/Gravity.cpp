@@ -130,7 +130,7 @@ void Gravity::gravity_update_async()
 TH_ENTRY_POINT void *Gravity::update_grav_async_helper(void * context)
 {
 	((Gravity *)context)->update_grav_async();
-	return NULL;
+	return nullptr;
 }
 
 void Gravity::update_grav_async()
@@ -169,7 +169,7 @@ void Gravity::update_grav_async()
 			pthread_mutex_unlock(&gravmutex);
 		}
 	}
-	pthread_exit(NULL);
+	pthread_exit(nullptr);
 }
 
 void Gravity::start_grav_async()
@@ -179,9 +179,9 @@ void Gravity::start_grav_async()
 
 	gravthread_done = 0;
 	grav_ready = 0;
-	pthread_mutex_init (&gravmutex, NULL);
-	pthread_cond_init(&gravcv, NULL);
-	pthread_create(&gravthread, NULL, &Gravity::update_grav_async_helper, this); //Start asynchronous gravity simulation
+	pthread_mutex_init (&gravmutex, nullptr);
+	pthread_cond_init(&gravcv, nullptr);
+	pthread_create(&gravthread, nullptr, &Gravity::update_grav_async_helper, this); //Start asynchronous gravity simulation
 	ngrav_enable = 1;
 
 	memset(gravy, 0, (XRES/CELL)*(YRES/CELL)*sizeof(float));
@@ -197,7 +197,7 @@ void Gravity::stop_grav_async()
 		gravthread_done = 1;
 		pthread_cond_signal(&gravcv);
 		pthread_mutex_unlock(&gravmutex);
-		pthread_join(gravthread, NULL);
+		pthread_join(gravthread, nullptr);
 		pthread_mutex_destroy(&gravmutex); //Destroy the mutex
 		ngrav_enable = 0;
 	}
@@ -457,9 +457,9 @@ void Gravity::grav_mask_r(int x, int y, char checkmap[YRES/CELL][XRES/CELL], cha
 	return;
 }
 void Gravity::mask_free(mask_el *c_mask_el){
-	if(c_mask_el==NULL)
+	if(c_mask_el==nullptr)
 		return;
-	if(c_mask_el->next!=NULL)
+	if(c_mask_el->next!=nullptr)
 		mask_free((mask_el*)c_mask_el->next);
 	free(c_mask_el->shape);
 	free(c_mask_el);
@@ -469,8 +469,8 @@ void Gravity::gravity_mask()
 	char checkmap[YRES/CELL][XRES/CELL];
 	int x = 0, y = 0;
 	unsigned maskvalue;
-	mask_el *t_mask_el = NULL;
-	mask_el *c_mask_el = NULL;
+	mask_el *t_mask_el = nullptr;
+	mask_el *c_mask_el = nullptr;
 	if(!gravmask)
 		return;
 	memset(checkmap, 0, sizeof(checkmap));
@@ -481,12 +481,12 @@ void Gravity::gravity_mask()
 			if(bmap[y][x]!=WL_GRAV && checkmap[y][x] == 0)
 			{
 				//Create a new shape
-				if(t_mask_el==NULL){
+				if(t_mask_el==nullptr){
 					t_mask_el = (mask_el *)malloc(sizeof(mask_el));
 					t_mask_el->shape = (char *)malloc((XRES/CELL)*(YRES/CELL));
 					memset(t_mask_el->shape, 0, (XRES/CELL)*(YRES/CELL));
 					t_mask_el->shapeout = 0;
-					t_mask_el->next = NULL;
+					t_mask_el->next = nullptr;
 					c_mask_el = t_mask_el;
 				} else {
 					c_mask_el->next = (mask_el *)malloc(sizeof(mask_el));
@@ -494,7 +494,7 @@ void Gravity::gravity_mask()
 					c_mask_el->shape = (char *)malloc((XRES/CELL)*(YRES/CELL));
 					memset(c_mask_el->shape, 0, (XRES/CELL)*(YRES/CELL));
 					c_mask_el->shapeout = 0;
-					c_mask_el->next = NULL;
+					c_mask_el->next = nullptr;
 				}
 				//Fill the shape
 				grav_mask_r(x, y, (char (*)[XRES/CELL])checkmap, (char (*)[XRES/CELL])c_mask_el->shape, (char*)&c_mask_el->shapeout);
@@ -503,7 +503,7 @@ void Gravity::gravity_mask()
 	}
 	c_mask_el = t_mask_el;
 	memset(gravmask, 0, (XRES/CELL)*(YRES/CELL)*sizeof(unsigned));
-	while(c_mask_el!=NULL)
+	while(c_mask_el!=nullptr)
 	{
 		char *cshape = c_mask_el->shape;
 		for(x = 0; x < XRES/CELL; x++)

@@ -4,9 +4,9 @@
 #include "HTTP.h"
 
 Download::Download(std::string uri_, bool keepAlive):
-	http(NULL),
+	http(nullptr),
 	keepAlive(keepAlive),
-	downloadData(NULL),
+	downloadData(nullptr),
 	downloadSize(0),
 	downloadStatus(0),
 	postData(""),
@@ -59,7 +59,7 @@ void Download::Start()
 	http = http_async_req_start(http, uri.c_str(), postData.c_str(), postData.length(), keepAlive ? 1 : 0);
 	// add the necessary headers
 	if (userID.length() || userSession.length())
-		http_auth_headers(http, userID.c_str(), NULL, userSession.c_str());
+		http_auth_headers(http, userID.c_str(), nullptr, userSession.c_str());
 	if (postDataBoundary.length())
 		http_add_multipart_header(http, postDataBoundary);
 	DownloadManager::Ref().Lock();
@@ -87,7 +87,7 @@ bool Download::Reuse(std::string newuri)
 char* Download::Finish(int *length, int *status)
 {
 	if (CheckCanceled())
-		return NULL; // shouldn't happen but just in case
+		return nullptr; // shouldn't happen but just in case
 	while (!CheckDone()); // block
 	DownloadManager::Ref().Lock();
 	downloadStarted = false;
@@ -96,7 +96,7 @@ char* Download::Finish(int *length, int *status)
 	if (status)
 		*status = downloadStatus;
 	char *ret = downloadData;
-	downloadData = NULL;
+	downloadData = nullptr;
 	if (!keepAlive)
 		downloadCanceled = true;
 	DownloadManager::Ref().Unlock();

@@ -14,7 +14,7 @@ WebRequest::WebRequest(std::string url, ListenerHandle listener, int identifier)
 	RequestBroker::Request(API, listener, identifier)
 {
 	Post = false;
-	HTTPContext = NULL;
+	HTTPContext = nullptr;
 	URL = url;
 }
 
@@ -23,7 +23,7 @@ WebRequest::WebRequest(std::string url, std::map<std::string, std::string> postD
 {
 	Post = true;
 	PostData = postData;
-	HTTPContext = NULL;
+	HTTPContext = nullptr;
 	URL = url;
 }
 
@@ -37,7 +37,7 @@ RequestBroker::ProcessResponse WebRequest::Process(RequestBroker & rb)
 			int status, data_size;
 			data = http_async_req_stop(HTTPContext, &status, &data_size);
 
-			Client::Ref().ParseServerReturn(NULL, status, true);
+			Client::Ref().ParseServerReturn(nullptr, status, true);
 			if (status == 200 && data)
 			{
 				void * resultObject = new std::vector<unsigned char>(data, data+data_size);
@@ -96,7 +96,7 @@ RequestBroker::ProcessResponse WebRequest::Process(RequestBroker & rb)
 				i++;
 				iter++;
 			}
-			postNames[i] = NULL;
+			postNames[i] = nullptr;
 
 			if(Client::Ref().GetAuthUser().UserID)
 			{
@@ -108,18 +108,18 @@ RequestBroker::ProcessResponse WebRequest::Process(RequestBroker & rb)
 				char *userSession = new char[user.SessionID.length() + 1];
 				std::strcpy(userName, format::NumberToString<int>(user.UserID).c_str());
 				std::strcpy(userSession, user.SessionID.c_str());
-				HTTPContext = http_multipart_post_async((char*)URL.c_str(), postNames, postData, postLength, userName, NULL, userSession);
+				HTTPContext = http_multipart_post_async((char*)URL.c_str(), postNames, postData, postLength, userName, nullptr, userSession);
 				delete[] userSession;
 			}
 			else
 			{
-				HTTPContext = http_multipart_post_async((char*)URL.c_str(), postNames, postData, postLength, NULL, NULL, NULL);
+				HTTPContext = http_multipart_post_async((char*)URL.c_str(), postNames, postData, postLength, nullptr, nullptr, nullptr);
 			}
 
 		}
 		else
 		{
-			HTTPContext = http_async_req_start(NULL, (char *)URL.c_str(), NULL, 0, 0);
+			HTTPContext = http_async_req_start(nullptr, (char *)URL.c_str(), nullptr, 0, 0);
 			if(Client::Ref().GetAuthUser().UserID)
 			{
 				User user = Client::Ref().GetAuthUser();
@@ -127,7 +127,7 @@ RequestBroker::ProcessResponse WebRequest::Process(RequestBroker & rb)
 				char *userSession = new char[user.SessionID.length() + 1];
 				std::strcpy(userName, format::NumberToString<int>(user.UserID).c_str());
 				std::strcpy(userSession, user.SessionID.c_str());
-				http_auth_headers(HTTPContext, userName, NULL, userSession);
+				http_auth_headers(HTTPContext, userName, nullptr, userSession);
 				delete[] userSession;
 			}
 		}
@@ -145,6 +145,6 @@ void WebRequest::Cleanup()
 	if(ResultObject)
 	{
 		delete (std::vector<unsigned char>*)ResultObject;
-		ResultObject = NULL;
+		ResultObject = nullptr;
 	}
 }

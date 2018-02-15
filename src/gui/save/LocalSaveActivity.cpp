@@ -36,7 +36,7 @@ public:
 LocalSaveActivity::LocalSaveActivity(SaveFile save, FileSavedCallback * callback) :
 	WindowActivity(ui::Point(-1, -1), ui::Point(220, 200)),
 	save(save),
-	thumbnail(NULL),
+	thumbnail(nullptr),
 	callback(callback)
 {
 	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 16), "Save to computer:");
@@ -115,7 +115,7 @@ void LocalSaveActivity::saveWrite(std::string finalFilename)
 	localSaveInfo["type"] = "localsave";
 	localSaveInfo["username"] = Client::Ref().GetAuthUser().Username;
 	localSaveInfo["title"] = finalFilename;
-	localSaveInfo["date"] = (Json::Value::UInt64)time(NULL);
+	localSaveInfo["date"] = (Json::Value::UInt64)time(nullptr);
 	Client::Ref().SaveAuthorInfo(&localSaveInfo);
 	gameSave->authors = localSaveInfo;
 	std::vector<char> saveData = gameSave->Serialise();

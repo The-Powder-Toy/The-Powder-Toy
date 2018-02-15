@@ -41,7 +41,7 @@ Element_TESC::Element_TESC()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = NULL;
+	Update = nullptr;
 }
 
 Element_TESC::~Element_TESC() {}

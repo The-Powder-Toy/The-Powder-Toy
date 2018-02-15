@@ -46,7 +46,7 @@ Element_CFLM::Element_CFLM()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = NULL;
+	Update = nullptr;
 	Graphics = &Element_CFLM::graphics;
 }
 

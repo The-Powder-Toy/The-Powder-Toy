@@ -26,7 +26,7 @@ VideoBuffer * Tool::GetTexture(int width, int height)
 	{
 		return textureGen(toolID, width, height);
 	}
-	return NULL;
+	return nullptr;
 }
 void Tool::SetTextureGen(VideoBuffer * (*textureGen)(int, int, int))
 {

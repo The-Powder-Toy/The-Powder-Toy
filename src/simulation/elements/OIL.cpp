@@ -41,7 +41,7 @@ Element_OIL::Element_OIL()
 	HighTemperature = 333.0f;
 	HighTemperatureTransition = PT_GAS;
 
-	Update = NULL;
+	Update = nullptr;
 }
 
 Element_OIL::~Element_OIL() {}

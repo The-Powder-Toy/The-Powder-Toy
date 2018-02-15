@@ -42,7 +42,7 @@ Element_NITR::Element_NITR()
 	HighTemperature = 673.0f;
 	HighTemperatureTransition = PT_FIRE;
 
-	Update = NULL;
+	Update = nullptr;
 }
 
 Element_NITR::~Element_NITR() {}

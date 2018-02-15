@@ -41,7 +41,7 @@ Element_116::Element_116()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = NULL;
+	Update = nullptr;
 }
 
 Element_116::~Element_116() {}

@@ -41,7 +41,7 @@ Element_LNTG::Element_LNTG()
 	HighTemperature = 77.0f;
 	HighTemperatureTransition = PT_NONE;
 
-	Update = NULL;
+	Update = nullptr;
 }
 
 Element_LNTG::~Element_LNTG() {}

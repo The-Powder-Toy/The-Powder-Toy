@@ -41,7 +41,7 @@ Element_BRAY::Element_BRAY()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = NULL;
+	Update = nullptr;
 	Graphics = &Element_BRAY::graphics;
 }
 

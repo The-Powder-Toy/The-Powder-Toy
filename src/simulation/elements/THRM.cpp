@@ -41,7 +41,7 @@ Element_THRM::Element_THRM()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = NULL;
+	Update = nullptr;
 }
 
 Element_THRM::~Element_THRM() {}

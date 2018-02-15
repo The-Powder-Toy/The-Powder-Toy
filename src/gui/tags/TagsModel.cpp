@@ -5,7 +5,7 @@
 #include "client/SaveInfo.h"
 
 TagsModel::TagsModel():
-	save(NULL)
+	save(nullptr)
 {
 
 }

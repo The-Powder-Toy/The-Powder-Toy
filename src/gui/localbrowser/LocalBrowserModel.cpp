@@ -5,7 +5,7 @@
 #include "client/SaveFile.h"
 
 LocalBrowserModel::LocalBrowserModel():
-	stamp(NULL),
+	stamp(nullptr),
 	currentPage(1),
 	stampToFront(1)
 {

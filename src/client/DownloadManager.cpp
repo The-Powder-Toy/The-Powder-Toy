@@ -6,14 +6,14 @@
 
 DownloadManager::DownloadManager():
 	threadStarted(false),
-	lastUsed(time(NULL)),
+	lastUsed(time(nullptr)),
 	managerRunning(false),
 	managerShutdown(false),
 	downloads(std::vector<Download*>()),
 	downloadsAddQueue(std::vector<Download*>())
 {
-	pthread_mutex_init(&downloadLock, NULL);
-	pthread_mutex_init(&downloadAddLock, NULL);
+	pthread_mutex_init(&downloadLock, nullptr);
+	pthread_mutex_init(&downloadAddLock, nullptr);
 }
 
 DownloadManager::~DownloadManager()
@@ -39,7 +39,7 @@ void DownloadManager::Shutdown()
 	pthread_mutex_unlock(&downloadAddLock);
 	pthread_mutex_unlock(&downloadLock);
 	if (threadStarted)
-		pthread_join(downloadThread, NULL);
+		pthread_join(downloadThread, nullptr);
 }
 
 //helper function for download
@@ -47,14 +47,14 @@ TH_ENTRY_POINT void* DownloadManagerHelper(void* obj)
 {
 	DownloadManager *temp = (DownloadManager*)obj;
 	temp->Update();
-	return NULL;
+	return nullptr;
 }
 
 void DownloadManager::Start()
 {
 	managerRunning = true;
-	lastUsed = time(NULL);
-	pthread_create(&downloadThread, NULL, &DownloadManagerHelper, this);
+	lastUsed = time(nullptr);
+	pthread_create(&downloadThread, nullptr, &DownloadManagerHelper, this);
 }
 
 void DownloadManager::Update()
@@ -94,15 +94,15 @@ void DownloadManager::Update()
 						download->downloadData = http_async_req_stop(download->http, &download->downloadStatus, &download->downloadSize);
 						download->downloadFinished = true;
 						if (!download->keepAlive)
-							download->http = NULL;
+							download->http = nullptr;
 					}
-					lastUsed = time(NULL);
+					lastUsed = time(nullptr);
 					numActiveDownloads++;
 				}
 			}
 			pthread_mutex_unlock(&downloadLock);
 		}
-		if (time(NULL) > lastUsed+http_timeout*2 && !numActiveDownloads)
+		if (time(nullptr) > lastUsed+http_timeout*2 && !numActiveDownloads)
 		{
 			pthread_mutex_lock(&downloadLock);
 			managerRunning = false;
@@ -119,7 +119,7 @@ void DownloadManager::EnsureRunning()
 	if (!managerRunning)
 	{
 		if (threadStarted)
-			pthread_join(downloadThread, NULL);
+			pthread_join(downloadThread, nullptr);
 		else
 			threadStarted = true;
 		Start();

@@ -17,7 +17,7 @@ public:
 	std::string GetError();
 	std::string GetStatus();
 	void Poll();
-	Task() : listener(NULL) { progress = 0; thProgress = 0; }
+	Task() : listener(nullptr) { progress = 0; thProgress = 0; }
 	virtual ~Task();
 protected:
 	int progress;

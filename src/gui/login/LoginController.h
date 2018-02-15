@@ -17,7 +17,7 @@ class LoginController {
 	ControllerCallback * callback;
 public:
 	bool HasExited;
-	LoginController(ControllerCallback * callback = NULL);
+	LoginController(ControllerCallback * callback = nullptr);
 	void Login(string username, string password);
 	void Exit();
 	LoginView * GetView() { return loginView; }
