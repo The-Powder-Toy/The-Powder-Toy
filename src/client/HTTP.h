@@ -27,7 +27,7 @@ static const char hexChars[] = "0123456789abcdef";
 static const long http_timeout = 15;
 
 void http_init(char *proxy);
-void http_done(void);
+void http_done();
 
 char *http_simple_get(const char *uri, int *ret, int *len);
 char *http_auth_get(const char *uri, const char *user, const char *pass, const char *session_id, int *ret, int *len);

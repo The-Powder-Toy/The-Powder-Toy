@@ -20,7 +20,7 @@
 namespace Platform
 {
 
-char *ExecutableName(void)
+char *ExecutableName()
 {
 #if defined(WIN)
 	char *name = (char *)malloc(64);

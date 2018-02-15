@@ -603,7 +603,7 @@ void bson_oid_gen( bson_oid_t *oid );
  *
  * @param func a pointer to a function that returns an int.
  */
-void bson_set_oid_fuzz( int ( *func )( void ) );
+void bson_set_oid_fuzz( int ( *func )( ) );
 
 /**
  * Set a function to be used to generate the incrementing part
@@ -612,7 +612,7 @@ void bson_set_oid_fuzz( int ( *func )( void ) );
  *
  * @param func a pointer to a function that returns an int.
  */
-void bson_set_oid_inc( int ( *func )( void ) );
+void bson_set_oid_inc( int ( *func )( ) );
 
 /**
  * Get the time a bson_oid_t was created.

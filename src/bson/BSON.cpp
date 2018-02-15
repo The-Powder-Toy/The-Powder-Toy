@@ -40,8 +40,8 @@ static int _bson_errprintf( const char *, ... );
 bson_printf_func bson_errprintf = _bson_errprintf;
 
 /* ObjectId fuzz functions. */
-static int ( *oid_fuzz_func )( void ) = nullptr;
-static int ( *oid_inc_func )( void )  = nullptr;
+static int ( *oid_fuzz_func )( ) = nullptr;
+static int ( *oid_inc_func )( )  = nullptr;
 
 /* ----------------------------
    READING
@@ -166,11 +166,11 @@ void bson_oid_to_string( const bson_oid_t *oid, char *str ) {
 	str[24] = '\0';
 }
 
-void bson_set_oid_fuzz( int ( *func )( void ) ) {
+void bson_set_oid_fuzz( int ( *func )( ) ) {
 	oid_fuzz_func = func;
 }
 
-void bson_set_oid_inc( int ( *func )( void ) ) {
+void bson_set_oid_inc( int ( *func )( ) ) {
 	oid_inc_func = func;
 }
 

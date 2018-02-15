@@ -27,9 +27,9 @@ public:
 	unsigned char bmap_blockair[YRES/CELL][XRES/CELL];
 	unsigned char bmap_blockairh[YRES/CELL][XRES/CELL];
 	float kernel[9];
-	void make_kernel(void);
-	void update_airh(void);
-	void update_air(void);
+	void make_kernel();
+	void update_airh();
+	void update_air();
 	void Clear();
 	void ClearAirH();
 	void Invert();

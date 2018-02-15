@@ -36,7 +36,7 @@ void strlist_free(struct strlist **list);
 
 void save_presets(int do_update);
 
-void load_presets(void);
+void load_presets();
 
 void strcaturl(char *dst, const char *src);
 

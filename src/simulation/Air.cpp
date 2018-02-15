@@ -23,7 +23,7 @@ float fvx[YRES/CELL][XRES/CELL], fvy[YRES/CELL][XRES/CELL];
 
 float hv[YRES/CELL][XRES/CELL], ohv[YRES/CELL][XRES/CELL]; // For Ambient Heat */
 
-void Air::make_kernel(void) //used for velocity
+void Air::make_kernel() //used for velocity
 {
 	int i, j;
 	float s = 0.0f;
@@ -51,7 +51,7 @@ void Air::ClearAirH()
 	std::fill(&hv[0][0], &hv[0][0]+((XRES/CELL)*(YRES/CELL)), ambientAirTemp);
 }
 
-void Air::update_airh(void)
+void Air::update_airh()
 {
 	int x, y, i, j;
 	float odh, dh, dx, dy, f, tx, ty;
@@ -127,7 +127,7 @@ void Air::update_airh(void)
 	memcpy(hv, ohv, sizeof(hv));
 }
 
-void Air::update_air(void)
+void Air::update_air()
 {
 	int x = 0, y = 0, i = 0, j = 0;
 	float dp = 0.0f, dx = 0.0f, dy = 0.0f, f = 0.0f, tx = 0.0f, ty = 0.0f;

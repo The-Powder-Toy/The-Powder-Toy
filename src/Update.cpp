@@ -101,7 +101,7 @@ fail:
 	return res;
 }
 
-int update_finish(void)
+int update_finish()
 {
 #ifdef WIN
 	char *temp, *self = Platform::ExecutableName(), *p;
@@ -157,7 +157,7 @@ int update_finish(void)
 	return 0;
 }
 
-void update_cleanup(void)
+void update_cleanup()
 {
 #ifdef WIN
 	update_finish();

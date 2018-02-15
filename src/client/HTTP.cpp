@@ -204,7 +204,7 @@ void http_init(char *proxy)
 	//"User-Agent: PowderToy/%d.%d (%s; %s; M%d) TPTPP/%d.%d.%d%s.%d\n", SAVE_VERSION, MINOR_VERSION, IDENT_PLATFORM, IDENT_BUILD, 0, SAVE_VERSION, MINOR_VERSION, BUILD_NUM, IDENT_RELTYPE, SNAPSHOT_ID
 }
 
-void http_done(void)
+void http_done()
 {
 #ifdef WIN
 	WSACleanup();
