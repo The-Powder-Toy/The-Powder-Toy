@@ -26,7 +26,7 @@ Engine::Engine():
 	state_(nullptr),
 	windowTargetPosition(0, 0),
 	break_(false),
-	FastQuit(1),
+	FastQuit(true),
 	lastTick(0),
 	mouseb_(0),
 	mousex_(0),

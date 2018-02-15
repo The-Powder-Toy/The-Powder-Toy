@@ -373,7 +373,7 @@ bool Client::DoInstallation()
 "</mime-info>\n";
 	f = fopen("powdertoy-save.xml", "wb");
 	if (!f)
-		return 0;
+		return false;
 	fwrite(mimedata, 1, strlen(mimedata), f);
 	fclose(f);
 
@@ -390,7 +390,7 @@ bool Client::DoInstallation()
 	protocolfiledata << protocolfiledata_tmp << "Exec=" << filename << " ptsave %u\nPath=" << pathname << "\n";
 	f = fopen("powdertoy-tpt-ptsave.desktop", "wb");
 	if (!f)
-		return 0;
+		return false;
 	fwrite(protocolfiledata.str().c_str(), 1, strlen(protocolfiledata.str().c_str()), f);
 	fclose(f);
 	success = system("xdg-desktop-menu install powdertoy-tpt-ptsave.desktop");
@@ -408,7 +408,7 @@ bool Client::DoInstallation()
 	desktopopenfiledata << desktopopenfiledata_tmp << "Exec=" << filename << " open %f\nPath=" << pathname << "\n";
 	f = fopen("powdertoy-tpt-open.desktop", "wb");
 	if (!f)
-		return 0;
+		return false;
 	fwrite(desktopopenfiledata.str().c_str(), 1, strlen(desktopopenfiledata.str().c_str()), f);
 	fclose(f);
 	success = system("xdg-mime install powdertoy-save.xml") && success;
@@ -427,24 +427,24 @@ bool Client::DoInstallation()
 	desktopfiledata << desktopfiledata_tmp << "Exec=" << filename << "\nPath=" << pathname << "\n";
 	f = fopen("powdertoy-tpt.desktop", "wb");
 	if (!f)
-		return 0;
+		return false;
 	fwrite(desktopfiledata.str().c_str(), 1, strlen(desktopfiledata.str().c_str()), f);
 	fclose(f);
 	success = system("xdg-desktop-menu install powdertoy-tpt.desktop") && success;
 
 	f = fopen("powdertoy-save-32.png", "wb");
 	if (!f)
-		return 0;
+		return false;
 	fwrite(icon_doc_32_png, 1, sizeof(icon_doc_32_png), f);
 	fclose(f);
 	f = fopen("powdertoy-save-16.png", "wb");
 	if (!f)
-		return 0;
+		return false;
 	fwrite(icon_doc_16_png, 1, sizeof(icon_doc_16_png), f);
 	fclose(f);
 	f = fopen("powdertoy.png", "wb");
 	if (!f)
-		return 0;
+		return false;
 	fwrite(icon_desktop_48_png, 1, sizeof(icon_desktop_48_png), f);
 	fclose(f);
 	success = system("xdg-icon-resource install --noupdate --context mimetypes --size 32 powdertoy-save-32.png application-vnd.powdertoy.save") && success;

@@ -880,7 +880,7 @@ int luatpt_setpause(lua_State* l)
 		return 1;
 	}
 	int pausestate = luaL_checkinteger(l, 1);
-	luacon_model->SetPaused(pausestate==0?0:1);
+	luacon_model->SetPaused(pausestate==0?false:true);
 	return 0;
 }
 
@@ -1716,7 +1716,7 @@ int luatpt_start_getPartIndex(lua_State* l)
 
 int luatpt_next_getPartIndex(lua_State* l)
 {
-	while(1)
+	while(true)
 	{
 		getPartIndex_curIdx++;
 		if (getPartIndex_curIdx >= NPART)
@@ -1755,9 +1755,9 @@ int luatpt_hud(lua_State* l)
 	}
 	int hudstate = luaL_checkint(l, 1);
 	if (hudstate)
-		luacon_controller->SetHudEnable(1);
+		luacon_controller->SetHudEnable(true);
 	else
-		luacon_controller->SetHudEnable(0);
+		luacon_controller->SetHudEnable(false);
 	return 0;
 }
 

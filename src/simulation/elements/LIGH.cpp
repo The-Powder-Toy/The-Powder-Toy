@@ -313,7 +313,7 @@ void Element_LIGH::create_line_par(Simulation * sim, int x1, int y1, int x2, int
 		y2 = y;
 	}
 	if (x1 > x2)
-		back = 1;
+		back = true;
 	dx = x2 - x1;
 	dy = abs(y2 - y1);
 	if (dx)

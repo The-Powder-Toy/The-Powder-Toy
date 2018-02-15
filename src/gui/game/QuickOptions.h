@@ -102,7 +102,7 @@ public:
 	}
 	bool GetToggle() override
 	{
-		return 0;
+		return false;
 	}
 	void perform() override
 	{

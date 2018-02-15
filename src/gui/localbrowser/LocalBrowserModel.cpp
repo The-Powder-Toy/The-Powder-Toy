@@ -7,7 +7,7 @@
 LocalBrowserModel::LocalBrowserModel():
 	stamp(nullptr),
 	currentPage(1),
-	stampToFront(1)
+	stampToFront(true)
 {
 	//stampIDs = Client::Ref().GetStamps();
 	stampIDs = Client::Ref().GetStamps(0, 16);

@@ -139,7 +139,7 @@ std::string ClipboardPull()
 		XConvertSelection(sdl_wminfo.info.x11.display, XA_CLIPBOARD, XA_UTF8_STRING, XA_CLIPBOARD, sdl_wminfo.info.x11.window, CurrentTime);
 		XFlush(sdl_wminfo.info.x11.display);
 		sdl_wminfo.info.x11.unlock_func();
-		while (1)
+		while (true)
 		{
 			SDL_Event event;
 			SDL_WaitEvent(&event);

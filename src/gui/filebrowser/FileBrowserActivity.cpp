@@ -194,7 +194,7 @@ void FileBrowserActivity::DeleteSave(SaveFile * file)
 
 void FileBrowserActivity::RenameSave(SaveFile * file)
 {
-	std::string newName = TextPrompt::Blocking("Rename", "Change save name", file->GetDisplayName(), "", 0);
+	std::string newName = TextPrompt::Blocking("Rename", "Change save name", file->GetDisplayName(), "", false);
 	if (newName.length())
 	{
 		newName = directory + PATH_SEP + newName + ".cps";

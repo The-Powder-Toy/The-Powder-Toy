@@ -4348,7 +4348,7 @@ killed:
 				fin_x = (int)(fin_xf+0.5f);
 				fin_y = (int)(fin_yf+0.5f);
 				bool closedEholeStart = this->InBounds(fin_x, fin_y) && (bmap[fin_y/CELL][fin_x/CELL] == WL_EHOLE && !emap[fin_y/CELL][fin_x/CELL]);
-				while (1)
+				while (true)
 				{
 					mv -= ISTP;
 					fin_xf += dx;
@@ -5126,7 +5126,7 @@ void Simulation::CheckStacking()
 					if (pmap_count[y][x]>1500)
 					{
 						pmap_count[y][x] = pmap_count[y][x] + NPART;
-						excessive_stacking_found = 1;
+						excessive_stacking_found = true;
 					}
 				}
 				else if (pmap_count[y][x]>1500 || (rand()%1600)<=(pmap_count[y][x]+100))
