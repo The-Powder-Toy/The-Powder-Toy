@@ -54,7 +54,7 @@ char *ExecutableName(void)
 #endif
 #ifndef MACOSX
 		max *= 2;
-		char* realloced_name = (char *)realloc(name, max);
+		auto* realloced_name = (char *)realloc(name, max);
 		assert(realloced_name != nullptr);
 		name = realloced_name;
 		memset(name, 0, max);
@@ -93,7 +93,7 @@ void OpenURI(std::string uri)
 	strappend(cmd, (char*)uri.c_str());
 	system(cmd);
 #elif defined(LIN)
-	char *cmd = (char*)malloc(11+uri.length());
+	auto *cmd = (char*)malloc(11+uri.length());
 	strcpy(cmd, "xdg-open ");
 	strappend(cmd, (char*)uri.c_str());
 	system(cmd);

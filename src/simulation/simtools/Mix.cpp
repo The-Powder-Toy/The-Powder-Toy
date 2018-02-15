@@ -17,7 +17,7 @@ int Tool_Mix::Perform(Simulation * sim, Particle * cpart, int x, int y, int brus
 	if(rand() % 100 != 0)
 		return 0;
 
-	int distance = (int)(std::pow(strength, .5f) * 10);
+	auto distance = (int)(std::pow(strength, .5f) * 10);
 
 	if(!(sim->elements[TYP(thisPart)].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS)))
 		return 0;

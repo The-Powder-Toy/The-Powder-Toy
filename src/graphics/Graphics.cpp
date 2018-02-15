@@ -160,7 +160,7 @@ char * Graphics::GenerateGradient(pixel * colours, float * points, int pointcoun
 {
 	int cp, i, j;
 	pixel ptemp;
-	char * newdata = (char*)malloc(size * 3);
+	auto * newdata = (char*)malloc(size * 3);
 	float poss, pose, temp;
 	memset(newdata, 0, size*3);
 	//Sort the Colours and Points
@@ -205,11 +205,11 @@ char * Graphics::GenerateGradient(pixel * colours, float * points, int pointcoun
 
 void *Graphics::ptif_pack(pixel *src, int w, int h, int *result_size){
 	int i = 0, datalen = (w*h)*3, cx = 0, cy = 0;
-	unsigned char *red_chan = (unsigned char*)calloc(1, w*h);
-	unsigned char *green_chan = (unsigned char*)calloc(1, w*h);
-	unsigned char *blue_chan = (unsigned char*)calloc(1, w*h);
-	unsigned char *data = (unsigned char*)malloc(((w*h)*3)+8);
-	unsigned char *result = (unsigned char*)malloc(((w*h)*3)+8);
+	auto *red_chan = (unsigned char*)calloc(1, w*h);
+	auto *green_chan = (unsigned char*)calloc(1, w*h);
+	auto *blue_chan = (unsigned char*)calloc(1, w*h);
+	auto *data = (unsigned char*)malloc(((w*h)*3)+8);
+	auto *result = (unsigned char*)malloc(((w*h)*3)+8);
 
 	for(cx = 0; cx<w; cx++){
 		for(cy = 0; cy<h; cy++){
@@ -253,7 +253,7 @@ pixel *Graphics::ptif_unpack(void *datain, int size, int *w, int *h){
 	unsigned char *red_chan;
 	unsigned char *green_chan;
 	unsigned char *blue_chan;
-	unsigned char *data = (unsigned char*)datain;
+	auto *data = (unsigned char*)datain;
 	unsigned char *undata;
 	pixel *result;
 	if(size<16){
@@ -328,7 +328,7 @@ pixel *Graphics::resample_img(pixel *src, int sw, int sh, int rw, int rh)
 {
 #ifdef HIGH_QUALITY_RESAMPLE
 
-	unsigned char * source = (unsigned char*)src;
+	auto * source = (unsigned char*)src;
 	int sourceWidth = sw, sourceHeight = sh;
 	int resultWidth = rw, resultHeight = rh;
 	int sourcePitch = sourceWidth*PIXELSIZE, resultPitch = resultWidth*PIXELSIZE;
@@ -351,7 +351,7 @@ pixel *Graphics::resample_img(pixel *src, int sw, int sh, int rw, int rh)
 		samples[i] = new float[sourceWidth];
 	}
 
-	unsigned char * resultImage = new unsigned char[resultHeight * resultPitch];
+	auto * resultImage = new unsigned char[resultHeight * resultPitch];
 	std::fill(resultImage, resultImage + (resultHeight*resultPitch), 0);
 
 	//Resample time
@@ -393,7 +393,7 @@ pixel *Graphics::resample_img(pixel *src, int sw, int sh, int rw, int rh)
 
 				for (int x = 0; x < resultWidth; x++)
 				{
-					int c = (int)(255.0f * resultSamples[x] + .5f);
+					auto c = (int)(255.0f * resultSamples[x] + .5f);
 					if (c < 0) c = 0; else if (c > 255) c = 255;
 					*resultPixel = (unsigned char)c;
 					resultPixel += PIXELSIZE;
@@ -1097,7 +1097,7 @@ void Graphics::draw_rgba_image(const unsigned char *data_, int x, int y, float a
 	unsigned char w, h;
 	int i, j;
 	unsigned char r, g, b, a;
-	unsigned char *data = (unsigned char*)data_;
+	auto *data = (unsigned char*)data_;
 	if (!data) return;
 	w = *(data++)&0xFF;
 	h = *(data++)&0xFF;

@@ -62,7 +62,7 @@ int TPTScriptInterface::Command(std::string command)
 ValueType TPTScriptInterface::testType(std::string word)
 {
 	size_t i = 0;
-	char * rawWord = (char *)word.c_str();
+	auto * rawWord = (char *)word.c_str();
 	//Function
 	if (word == "set")
 		return TypeFunction;
@@ -171,7 +171,7 @@ AnyType TPTScriptInterface::eval(std::deque<std::string> * words)
 	if(words->size() < 1)
 		return AnyType(TypeNull, ValueValue());
 	std::string word = words->front(); words->pop_front();
-	char * rawWord = (char *)word.c_str();
+	auto * rawWord = (char *)word.c_str();
 	ValueType wordType = testType(word);
 	switch(wordType)
 	{
@@ -262,7 +262,7 @@ AnyType TPTScriptInterface::tptS_set(std::deque<std::string> * words)
 	AnyType value = eval(words);
 
 	Simulation * sim = m->GetSimulation();
-	unsigned char * partsBlock = (unsigned char*)&sim->parts[0];
+	auto * partsBlock = (unsigned char*)&sim->parts[0];
 
 	int returnValue = 0;
 

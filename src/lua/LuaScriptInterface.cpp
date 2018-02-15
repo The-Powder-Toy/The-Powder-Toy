@@ -79,13 +79,13 @@ int atPanic(lua_State *l)
 
 int TptIndexClosure(lua_State *l)
 {
-	LuaScriptInterface *lsi = (LuaScriptInterface *)lua_touserdata(l, lua_upvalueindex(1));
+	auto *lsi = (LuaScriptInterface *)lua_touserdata(l, lua_upvalueindex(1));
 	return lsi->tpt_index(l);
 }
 
 int TptNewindexClosure(lua_State *l)
 {
-	LuaScriptInterface *lsi = (LuaScriptInterface *)lua_touserdata(l, lua_upvalueindex(1));
+	auto *lsi = (LuaScriptInterface *)lua_touserdata(l, lua_upvalueindex(1));
 	return lsi->tpt_newIndex(l);
 }
 
@@ -1031,7 +1031,7 @@ int LuaScriptInterface::simulation_partProperty(lua_State * l)
 	}
 
 	//Calculate memory address of property
-	intptr_t propertyAddress = (intptr_t)(((unsigned char*)&luacon_sim->parts[particleID])+property->Offset);
+	auto propertyAddress = (intptr_t)(((unsigned char*)&luacon_sim->parts[particleID])+property->Offset);
 
 	if(argCount == 3)
 	{
@@ -1958,7 +1958,7 @@ int BrushClosure(lua_State * l)
 	int sizeY = lua_tointeger(l, lua_upvalueindex(6));
 	int x = lua_tointeger(l, lua_upvalueindex(7));
 	int y = lua_tointeger(l, lua_upvalueindex(8));
-	unsigned char *bitmap = (unsigned char *)lua_touserdata(l, lua_upvalueindex(9));
+	auto *bitmap = (unsigned char *)lua_touserdata(l, lua_upvalueindex(9));
 
 
 	int yield_x, yield_y;

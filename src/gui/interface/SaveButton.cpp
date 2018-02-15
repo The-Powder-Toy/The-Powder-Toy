@@ -126,7 +126,7 @@ SaveButton::~SaveButton()
 
 void SaveButton::OnResponseReady(void * imagePtr, int identifier)
 {
-	VideoBuffer * image = (VideoBuffer*)imagePtr;
+	auto * image = (VideoBuffer*)imagePtr;
 	if(image)
 	{
 		delete thumbnail;

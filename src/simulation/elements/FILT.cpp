@@ -90,13 +90,13 @@ int Element_FILT::interactWavelengths(Particle* cpart, int origWl)
 			return origWl & (~filtWl); //Subtract colour of filt from colour of photon
 		case 4:
 		{
-			int shift = int((cpart->temp-273.0f)*0.025f);
+			auto shift = int((cpart->temp-273.0f)*0.025f);
 			if (shift<=0) shift = 1;
 			return (origWl << shift) & mask; // red shift
 		}
 		case 5:
 		{
-			int shift = int((cpart->temp-273.0f)*0.025f);
+			auto shift = int((cpart->temp-273.0f)*0.025f);
 			if (shift<=0) shift = 1;
 			return (origWl >> shift) & mask; // blue shift
 		}
@@ -137,7 +137,7 @@ int Element_FILT::getWavelengths(Particle* cpart)
 	}
 	else
 	{
-		int temp_bin = (int)((cpart->temp-273.0f)*0.025f);
+		auto temp_bin = (int)((cpart->temp-273.0f)*0.025f);
 		if (temp_bin < 0) temp_bin = 0;
 		if (temp_bin > 25) temp_bin = 25;
 		return (0x1F << temp_bin);

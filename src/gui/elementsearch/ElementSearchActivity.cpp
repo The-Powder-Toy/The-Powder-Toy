@@ -16,7 +16,7 @@ public:
 	ToolAction(ElementSearchActivity * a, Tool * tool) : a(a), tool(tool) {  }
 	void ActionCallback(ui::Button * sender_)
 	{
-		ToolButton *sender = (ToolButton*)sender_;
+		auto *sender = (ToolButton*)sender_;
 		if(sender->GetSelectionState() >= 0 && sender->GetSelectionState() <= 2)
 			a->SetActiveTool(sender->GetSelectionState(), tool);
 	}

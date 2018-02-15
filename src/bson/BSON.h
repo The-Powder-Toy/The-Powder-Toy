@@ -1194,8 +1194,8 @@ bson_bool_t bson_check_string( bson *b, const char *string,
 //#endif
 
 static TPT_INLINE void bson_swap_endian64( void *outp, const void *inp ) {
-	const char *in = ( const char * )inp;
-	char *out = ( char * )outp;
+	const auto *in = ( const char * )inp;
+	auto *out = ( char * )outp;
 
 	out[0] = in[7];
 	out[1] = in[6];
@@ -1208,8 +1208,8 @@ static TPT_INLINE void bson_swap_endian64( void *outp, const void *inp ) {
 
 }
 static TPT_INLINE void bson_swap_endian32( void *outp, const void *inp ) {
-	const char *in = ( const char * )inp;
-	char *out = ( char * )outp;
+	const auto *in = ( const char * )inp;
+	auto *out = ( char * )outp;
 
 	out[0] = in[3];
 	out[1] = in[2];

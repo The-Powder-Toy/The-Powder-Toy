@@ -356,7 +356,7 @@ static Resample_Real kaiser_filter(Resample_Real t)
    {
       // db atten
       const Resample_Real att = 40.0f;
-      const Resample_Real alpha = (Resample_Real)(exp(log((double)0.58417 * (att - 20.96)) * 0.4) + 0.07886 * (att - 20.96));
+      const auto alpha = (Resample_Real)(exp(log((double)0.58417 * (att - 20.96)) * 0.4) + 0.07886 * (att - 20.96));
       //const Resample_Real alpha = KAISER_ALPHA;
       return (Resample_Real)clean(sinc(t) * kaiser(alpha, KAISER_SUPPORT, t));
    }
@@ -536,7 +536,7 @@ Resampler::Contrib_List* Resampler::make_clist(
 
          for (j = left; j <= right; j++)
             total_weight += (*Pfilter)((center - (Resample_Real)j) * xscale * oo_filter_scale);
-         const Resample_Real norm = static_cast<Resample_Real>(1.0f / total_weight);
+         const auto norm = static_cast<Resample_Real>(1.0f / total_weight);
 
          total_weight = 0;
 
@@ -655,7 +655,7 @@ Resampler::Contrib_List* Resampler::make_clist(
          for (j = left; j <= right; j++)
             total_weight += (*Pfilter)((center - (Resample_Real)j) * oo_filter_scale);
 
-         const Resample_Real norm = static_cast<Resample_Real>(1.0f / total_weight);
+         const auto norm = static_cast<Resample_Real>(1.0f / total_weight);
 
          total_weight = 0;
 

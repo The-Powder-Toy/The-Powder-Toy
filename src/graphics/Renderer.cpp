@@ -530,7 +530,7 @@ VideoBuffer * Renderer::WallIcon(int wallID, int width, int height)
 	wall_type *wtypes = Renderer_wtypes;
 	pixel pc = wtypes[wt].colour;
 	pixel gc = wtypes[wt].eglow;
-	VideoBuffer * newTexture = new VideoBuffer(width, height);
+	auto * newTexture = new VideoBuffer(width, height);
 	if (wtypes[wt].drawstyle==1)
 	{
 		for (j=0; j<height; j+=2)
@@ -796,7 +796,7 @@ void Renderer::DrawWalls()
 					{
 						float xf = x*CELL + CELL*0.5f;
 						float yf = y*CELL + CELL*0.5f;
-						int oldX = (int)(xf+0.5f), oldY = (int)(yf+0.5f);
+						auto oldX = (int)(xf+0.5f), oldY = (int)(yf+0.5f);
 						int newX, newY;
 						float xVel = sim->vx[y][x]*0.125f, yVel = sim->vy[y][x]*0.125f;
 						// there is no velocity here, draw a streamline and continue

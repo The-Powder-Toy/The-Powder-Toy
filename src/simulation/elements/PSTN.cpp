@@ -300,7 +300,7 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 			//Move particles
 			for(int j = 0; j < currentPos; j++) {
 				int jP = tempParts[j];
-				int srcX = (int)(sim->parts[jP].x + 0.5f), srcY = (int)(sim->parts[jP].y + 0.5f);
+				auto srcX = (int)(sim->parts[jP].x + 0.5f), srcY = (int)(sim->parts[jP].y + 0.5f);
 				int destX = srcX-directionX*amount, destY = srcY-directionY*amount;
 				sim->pmap[srcY][srcX] = 0;
 				sim->parts[jP].x = destX;
@@ -323,7 +323,7 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 				}
 				if(!possibleMovement)
 					continue;
-				int srcX = (int)(sim->parts[jP].x + 0.5f), srcY = (int)(sim->parts[jP].y + 0.5f);
+				auto srcX = (int)(sim->parts[jP].x + 0.5f), srcY = (int)(sim->parts[jP].y + 0.5f);
 				int destX = srcX+directionX*possibleMovement, destY = srcY+directionY*possibleMovement;
 				sim->pmap[srcY][srcX] = 0;
 				sim->parts[jP].x = destX;

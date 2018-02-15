@@ -268,7 +268,7 @@ bool PreviewModel::ParseComments(char *commentsResponse)
 
 		for (auto & j : commentsArray)
 		{
-			int userID = format::StringToNumber<int>(j["UserID"].asString());
+			auto userID = format::StringToNumber<int>(j["UserID"].asString());
 			std::string username = j["Username"].asString();
 			std::string formattedUsername = j["FormattedUsername"].asString();
 			if (formattedUsername == "jacobot")

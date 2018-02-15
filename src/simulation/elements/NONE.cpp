@@ -48,7 +48,7 @@ Element_NONE::Element_NONE()
 //#TPT-Directive ElementHeader Element_NONE static VideoBuffer * iconGen(int, int, int)
 VideoBuffer * Element_NONE::iconGen(int wallID, int width, int height)
 {
-	VideoBuffer * newTexture = new VideoBuffer(width, height);
+	auto * newTexture = new VideoBuffer(width, height);
 
 	for (int j=3; j<(width-4)/2; j++)
 	{

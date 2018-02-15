@@ -82,7 +82,7 @@ DropDown::DropDown(Point position, Point size):
 
 void DropDown::OnMouseClick(int x, int y, unsigned int button)
 {
-	DropDownWindow * newWindow = new DropDownWindow(this);
+	auto * newWindow = new DropDownWindow(this);
 	newWindow->MakeActiveWindow();
 }
 

@@ -109,7 +109,7 @@ LocalBrowserView::LocalBrowserView():
 
 void LocalBrowserView::textChanged()
 {
-	int num = format::StringToNumber<int>(pageTextbox->GetText());
+	auto num = format::StringToNumber<int>(pageTextbox->GetText());
 	if (num < 0) //0 is allowed so that you can backspace the 1
 		pageTextbox->SetText("1");
 	else if (num > pageCount)

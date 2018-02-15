@@ -678,7 +678,7 @@ bool GameController::MouseUp(int x, int y, unsigned button, char type)
 						{
 						case 'c':
 						{
-							int saveID = format::StringToNumber<int>(link);
+							auto saveID = format::StringToNumber<int>(link);
 							if (saveID)
 								OpenSavePreview(saveID, 0, false);
 							break;

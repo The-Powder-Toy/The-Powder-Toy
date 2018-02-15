@@ -259,7 +259,7 @@ OptionsView::OptionsView():
 #else
 			const char* openCommand = "xdg-open ";
 #endif
-			char* workingDirectory = new char[FILENAME_MAX+strlen(openCommand)];
+			auto* workingDirectory = new char[FILENAME_MAX+strlen(openCommand)];
 			sprintf(workingDirectory, "%s\"%s\"", openCommand, getcwd(nullptr, 0));
 			system(workingDirectory);
 			delete[] workingDirectory;

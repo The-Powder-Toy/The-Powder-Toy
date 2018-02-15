@@ -69,7 +69,7 @@ void RequestBroker::Shutdown()
 	else
 		pthread_mutex_unlock(&runningMutex);
 
-	std::vector<Request*>::iterator req = activeRequests.begin();
+	auto req = activeRequests.begin();
 	while(req != activeRequests.end())
 	{
 		(*req)->Cleanup();
@@ -87,7 +87,7 @@ void RequestBroker::RenderThumbnail(GameSave * gameSave, bool decorations, bool 
 {
 	ListenerHandle handle = AttachRequestListener(tListener);
 
-	ThumbRenderRequest * r = new ThumbRenderRequest(new GameSave(*gameSave), decorations, fire, width, height, handle);
+	auto * r = new ThumbRenderRequest(new GameSave(*gameSave), decorations, fire, width, height, handle);
 
 	pthread_mutex_lock(&requestQueueMutex);
 	requestQueue.push_back(r);
@@ -202,7 +202,7 @@ void RequestBroker::thumbnailQueueProcessTH()
 
 		if(activeRequests.size())
 		{
-			std::vector<Request*>::iterator req = activeRequests.begin();
+			auto req = activeRequests.begin();
 			while(req != activeRequests.end())
 			{
 				ProcessResponse resultStatus = OK;
@@ -224,7 +224,7 @@ void RequestBroker::thumbnailQueueProcessTH()
 
 		//Move any items from the request queue to the processing queue
 		pthread_mutex_lock(&requestQueueMutex);
-		std::vector<Request*>::iterator newReq = requestQueue.begin();
+		auto newReq = requestQueue.begin();
 		while(newReq != requestQueue.end())
 		{
 			if(activeRequests.size() > 5)
@@ -283,7 +283,7 @@ void RequestBroker::DetachRequestListener(RequestListener * tListener)
 
 	pthread_mutex_lock(&listenersMutex);
 
-	std::vector<ListenerHandle>::iterator iter = validListeners.begin();
+	auto iter = validListeners.begin();
 	while (iter != validListeners.end())
 	{
 		if(*iter == ListenerHandle(tListener->ListenerID, tListener))
@@ -304,7 +304,7 @@ RequestBroker::Request::Request(RequestType type, ListenerHandle listener, int i
 }
 RequestBroker::Request::~Request()
 {
-	std::vector<Request*>::iterator iter = Children.begin();
+	auto iter = Children.begin();
 	while(iter != Children.end())
 	{
 		delete (*iter);
@@ -314,7 +314,7 @@ RequestBroker::Request::~Request()
 }
 void RequestBroker::Request::Cleanup()
 {
-	std::vector<Request*>::iterator iter = Children.begin();
+	auto iter = Children.begin();
 	while(iter != Children.end())
 	{
 		(*iter)->Cleanup();

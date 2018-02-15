@@ -76,9 +76,9 @@ public:
 						unsigned char topLeft = origBitmap[(lowerY*origSize.X)+lowerX];
 						unsigned char bottomRight = origBitmap[(upperY*origSize.X)+upperX];
 						unsigned char bottomLeft = origBitmap[(upperY*origSize.X)+lowerX];
-						float top = LinearInterpolate<float>(topLeft, topRight, lowerX, upperX, originalX);
-						float bottom = LinearInterpolate<float>(bottomLeft, bottomRight, lowerX, upperX, originalX);
-						float mid = LinearInterpolate<float>(top, bottom, lowerY, upperY, originalY);
+						auto top = LinearInterpolate<float>(topLeft, topRight, lowerX, upperX, originalX);
+						auto bottom = LinearInterpolate<float>(bottomLeft, bottomRight, lowerX, upperX, originalX);
+						auto mid = LinearInterpolate<float>(top, bottom, lowerY, upperY, originalY);
 						bitmap[(y*size.X)+x] = mid > 128 ? 255 : 0;
 					}
 				}

@@ -233,8 +233,8 @@ int Element_LIGH::LIGH_nearest_part(Simulation * sim, int ci, int max_d)
 	int ndistance = 0;
 	int id = -1;
 	int i = 0;
-	int cx = (int)sim->parts[ci].x;
-	int cy = (int)sim->parts[ci].y;
+	auto cx = (int)sim->parts[ci].x;
+	auto cy = (int)sim->parts[ci].y;
 	for (i=0; i<=sim->parts_lastActiveIndex; i++)
 	{
 		if (sim->parts[i].type && sim->parts[i].life && i!=ci && sim->parts[i].type!=PT_LIGH && sim->parts[i].type!=PT_THDR && sim->parts[i].type!=PT_NEUT && sim->parts[i].type!=PT_PHOT)

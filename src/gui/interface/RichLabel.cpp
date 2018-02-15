@@ -45,20 +45,20 @@ void RichLabel::updateRichText()
 		State state = ReadText;
 
 		int currentDataPos = 0;
-		char * currentData = new char[textSource.length()+1];
+		auto * currentData = new char[textSource.length()+1];
 		std::fill(currentData, currentData+textSource.length()+1, 0);
 
 		int finalTextPos = 0;
-		char * finalText = new char[textSource.length()+1];
+		auto * finalText = new char[textSource.length()+1];
 		std::fill(finalText, finalText+textSource.length()+1, 0);
 
 		int originalTextPos = 0;
-		char * originalText = new char[textSource.length()+1];
+		auto * originalText = new char[textSource.length()+1];
 		std::copy(textSource.begin(), textSource.end(), originalText);
 		originalText[textSource.length()] = 0;
 
 		int stackPos = -1;
-		RichTextRegion * regionsStack = new RichTextRegion[256];
+		auto * regionsStack = new RichTextRegion[256];
 
 		try
 		{

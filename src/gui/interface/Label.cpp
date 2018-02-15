@@ -75,7 +75,7 @@ void Label::updateMultiline()
 	int lines = 1;
 	if (text.length()>0)
 	{
-		char * rawText = new char[text.length()+1];
+		auto * rawText = new char[text.length()+1];
 		std::copy(text.begin(), text.end(), rawText);
 		rawText[text.length()] = 0;
 

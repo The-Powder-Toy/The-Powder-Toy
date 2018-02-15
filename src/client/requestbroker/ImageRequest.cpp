@@ -90,7 +90,7 @@ RequestBroker::ProcessResponse ImageRequest::Process(RequestBroker & rb)
 			{
 				if(activeRequest->Type != Request::Image)
 					continue;
-				ImageRequest * otherReq = (ImageRequest*)activeRequest;
+				auto * otherReq = (ImageRequest*)activeRequest;
 				if(otherReq->URL == URL && otherReq != this)
 				{
 /*#ifdef DEBUG
@@ -118,7 +118,7 @@ RequestBroker::ProcessResponse ImageRequest::Process(RequestBroker & rb)
 		std::vector<Request *> children(Children.begin(), Children.end());
 		Children.clear();
 
-		VideoBuffer * myVB = new VideoBuffer(*image);
+		auto * myVB = new VideoBuffer(*image);
 		myVB->Resize(Width, Height, true);
 		ResultObject = (void*)myVB;
 		rb.requestComplete(this);
@@ -126,8 +126,8 @@ RequestBroker::ProcessResponse ImageRequest::Process(RequestBroker & rb)
 		{
 			if(childIter->Type == Request::Image)
 			{
-				ImageRequest * childReq = (ImageRequest*)childIter;
-				VideoBuffer * tempImage = new VideoBuffer(*image);
+				auto * childReq = (ImageRequest*)childIter;
+				auto * tempImage = new VideoBuffer(*image);
 				tempImage->Resize(childReq->Width, childReq->Height, true);
 				childReq->ResultObject = (void*)tempImage;
 				rb.requestComplete(childIter);

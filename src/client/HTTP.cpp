@@ -246,7 +246,7 @@ struct http_ctx
 };
 void *http_async_req_start(void *ctx, const char *uri, const char *data, int dlen, int keep)
 {
-	struct http_ctx *cx = (http_ctx *)ctx;
+	auto *cx = (http_ctx *)ctx;
 	if (cx && time(nullptr) - cx->last > http_timeout)
 	{
 		http_force_close(ctx);
@@ -327,7 +327,7 @@ void *http_async_req_start(void *ctx, const char *uri, const char *data, int dle
 
 void http_async_add_header(void *ctx, const char *name, const char *data)
 {
-	struct http_ctx *cx = (http_ctx *)ctx;
+	auto *cx = (http_ctx *)ctx;
 	cx->thdr = (char *)realloc(cx->thdr, cx->thlen + strlen(name) + strlen(data) + 5);
 	cx->thlen += sprintf(cx->thdr+cx->thlen, "%s: %s\r\n", name, data);
 }
@@ -435,7 +435,7 @@ static void process_byte(struct http_ctx *cx, char ch)
 
 int http_async_req_status(void *ctx)
 {
-	struct http_ctx *cx = (http_ctx *)ctx;
+	auto *cx = (http_ctx *)ctx;
 	char *dns,*srv,buf[CHUNK];
 	int tmp, i;
 	time_t now = time(nullptr);
@@ -612,7 +612,7 @@ timeout:
 
 char *http_async_req_stop(void *ctx, int *ret, int *len)
 {
-	struct http_ctx *cx = (http_ctx *)ctx;
+	auto *cx = (http_ctx *)ctx;
 	char *rxd;
 
 	if (cx->state != HTS_DONE)
@@ -685,7 +685,7 @@ char *http_async_req_stop(void *ctx, int *ret, int *len)
 
 void http_async_get_length(void *ctx, int *total, int *done)
 {
-	struct http_ctx *cx = (http_ctx *)ctx;
+	auto *cx = (http_ctx *)ctx;
 	if (done)
 		*done = cx->rptr;
 	if (total)
@@ -694,13 +694,13 @@ void http_async_get_length(void *ctx, int *total, int *done)
 
 void http_force_close(void *ctx)
 {
-	struct http_ctx *cx = (struct http_ctx*)ctx;
+	auto *cx = (struct http_ctx*)ctx;
 	cx->state = HTS_DONE;
 }
 
 void http_async_req_close(void *ctx)
 {
-	struct http_ctx *cx = (http_ctx *)ctx;
+	auto *cx = (http_ctx *)ctx;
 	void *tmp;
 	if (cx->host)
 	{

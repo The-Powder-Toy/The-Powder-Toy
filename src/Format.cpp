@@ -11,14 +11,14 @@
 
 std::string format::URLEncode(std::string source)
 {
-	char * src = (char *)source.c_str();
-	char * dst = new char[(source.length()*3)+2];
+	auto * src = (char *)source.c_str();
+	auto * dst = new char[(source.length()*3)+2];
 	std::fill(dst, dst+(source.length()*3)+2, 0);
 
 	char *d;
 	for (d = dst; *d; d++) ;
 
-	for (unsigned char *s = (unsigned char *)src; *s; s++)
+	for (auto *s = (unsigned char *)src; *s; s++)
 	{
 		if ((*s>='0' && *s<='9') ||
 		        (*s>='a' && *s<='z') ||
@@ -127,7 +127,7 @@ std::vector<char> format::VideoBufferToPTI(const VideoBuffer & vidBuf)
 {
 	std::vector<char> data;
 	int dataSize = 0;
-	char * buffer = (char*)Graphics::ptif_pack(vidBuf.Buffer, vidBuf.Width, vidBuf.Height, &dataSize);
+	auto * buffer = (char*)Graphics::ptif_pack(vidBuf.Buffer, vidBuf.Width, vidBuf.Height, &dataSize);
 
 	if(buffer)
 	{
@@ -146,7 +146,7 @@ VideoBuffer * format::PTIToVideoBuffer(std::vector<char> & data)
 
 	if(buffer)
 	{
-		VideoBuffer * vb = new VideoBuffer(buffer, newWidth, newHeight);
+		auto * vb = new VideoBuffer(buffer, newWidth, newHeight);
 		free(buffer);
 		return vb;
 	}
@@ -177,7 +177,7 @@ std::vector<char> format::VideoBufferToBMP(const VideoBuffer & vidBuf)
 
 	data.insert(data.end(), buffer, buffer+54);
 
-	char *currentRow = (char *)malloc((vidBuf.Width * 3) + padding);
+	auto *currentRow = (char *)malloc((vidBuf.Width * 3) + padding);
 	for(int y = vidBuf.Height - 1; y >= 0; y--)
 	{
 		int rowPos = 0;
@@ -201,7 +201,7 @@ std::vector<char> format::VideoBufferToPPM(const VideoBuffer & vidBuf)
 	sprintf(buffer, "P6\n%d %d\n255\n", vidBuf.Width, vidBuf.Height);
 	data.insert(data.end(), buffer, buffer+strlen(buffer));
 
-	unsigned char * currentRow = new unsigned char[vidBuf.Width*3];
+	auto * currentRow = new unsigned char[vidBuf.Width*3];
 	for(int y = 0; y < vidBuf.Height; y++)
 	{
 		int rowPos = 0;
@@ -250,7 +250,7 @@ struct PNGChunk
 		}
 		else
 		{
-			unsigned char * temp = new unsigned char[4+Length];
+			auto * temp = new unsigned char[4+Length];
 			std::copy(Name, Name+4, temp);
 			std::copy(Data, Data+Length, temp+4);
 			unsigned long tempRet = format::CalculateCRC(temp, 4+Length);
@@ -294,12 +294,12 @@ std::vector<char> format::VideoBufferToPNG(const VideoBuffer & vidBuf)
 
 	//Begin image data, format is 8bit RGB (24bit pixel)
 	int dataPos = 0;
-	unsigned char * uncompressedData = new unsigned char[(vidBuf.Width*vidBuf.Height*3)+vidBuf.Height];
+	auto * uncompressedData = new unsigned char[(vidBuf.Width*vidBuf.Height*3)+vidBuf.Height];
 
 	//Byte ordering and filtering
-	unsigned char * previousRow = new unsigned char[vidBuf.Width*3];
+	auto * previousRow = new unsigned char[vidBuf.Width*3];
 	std::fill(previousRow, previousRow+(vidBuf.Width*3), 0);
-	unsigned char * currentRow = new unsigned char[vidBuf.Width*3];
+	auto * currentRow = new unsigned char[vidBuf.Width*3];
 	for(int y = 0; y < vidBuf.Height; y++)
 	{
 		int rowPos = 0;
@@ -326,7 +326,7 @@ std::vector<char> format::VideoBufferToPNG(const VideoBuffer & vidBuf)
 
 	//Compression
 	int compressedBufferSize = (vidBuf.Width*vidBuf.Height*3)*2;
-	unsigned char * compressedData = new unsigned char[compressedBufferSize];
+	auto * compressedData = new unsigned char[compressedBufferSize];
 
 	int result;
     z_stream zipStream;
@@ -374,7 +374,7 @@ std::vector<char> format::VideoBufferToPNG(const VideoBuffer & vidBuf)
 		finalDataSize += 4 + 4 + 4;
 		finalDataSize += cChunk->Length;
 	}
-	unsigned char * finalData = new unsigned char[finalDataSize];
+	auto * finalData = new unsigned char[finalDataSize];
 	int finalDataPos = 0;
 
 	//PNG File header

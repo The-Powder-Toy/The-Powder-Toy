@@ -44,7 +44,7 @@ void DownloadManager::Shutdown()
 //helper function for download
 TH_ENTRY_POINT void* DownloadManagerHelper(void* obj)
 {
-	DownloadManager *temp = (DownloadManager*)obj;
+	auto *temp = (DownloadManager*)obj;
 	temp->Update();
 	return nullptr;
 }

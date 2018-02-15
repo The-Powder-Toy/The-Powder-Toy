@@ -157,7 +157,7 @@ VideoBuffer * SaveRenderer::Render(unsigned char * saveData, int dataSize, bool 
 	} catch (std::exception & e) {
 
 		//Todo: make this look a little less shit
-		VideoBuffer * buffer = new VideoBuffer(64, 64);
+		auto * buffer = new VideoBuffer(64, 64);
 		buffer->BlendCharacter(32, 32, 'x', 255, 255, 255, 255);
 
 		return buffer;

@@ -312,7 +312,7 @@ void RenderView::NotifyRenderChanged(RenderModel * sender)
 		if (renderMode->GetActionCallback())
 		{
 			//Compares bitmasks at the moment, this means that "Point" is always on when other options that depend on it are, this might confuse some users, TODO: get the full list and compare that?
-			RenderModeAction * action = (RenderModeAction *)(renderMode->GetActionCallback());
+			auto * action = (RenderModeAction *)(renderMode->GetActionCallback());
 			if (action->renderMode  == (sender->GetRenderMode() & action->renderMode))
 			{
 				renderMode->SetChecked(true);
@@ -331,7 +331,7 @@ void RenderView::NotifyDisplayChanged(RenderModel * sender)
 	{
 		if( displayMode->GetActionCallback())
 		{
-			DisplayModeAction * action = (DisplayModeAction *)(displayMode->GetActionCallback());
+			auto * action = (DisplayModeAction *)(displayMode->GetActionCallback());
 			if (action->displayMode  == (sender->GetDisplayMode() & action->displayMode))
 			{
 				displayMode->SetChecked(true);
@@ -350,7 +350,7 @@ void RenderView::NotifyColourChanged(RenderModel * sender)
 	{
 		if (colourMode->GetActionCallback())
 		{
-			ColourModeAction * action = (ColourModeAction *)(colourMode->GetActionCallback());
+			auto * action = (ColourModeAction *)(colourMode->GetActionCallback());
 			if (action->colourMode == sender->GetColourMode())
 			{
 				colourMode->SetChecked(true);

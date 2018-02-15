@@ -69,7 +69,7 @@ public:
 	// get userdata from Lua stack and return pointer to T object
 	static T * check(lua_State * L, int narg)
 	{
-		userdataType *ud = static_cast<userdataType*>(luaL_checkudata(L, narg, T::className));
+		auto *ud = static_cast<userdataType*>(luaL_checkudata(L, narg, T::className));
 		if(!ud)
 			luaL_typerror(L, narg, T::className);
 		return ud->pT;  // pointer to T object
@@ -79,7 +79,7 @@ public:
 	{
 		if(checkType(L, narg, T::className))
 		{
-			userdataType *ud = static_cast<userdataType*>(luaL_checkudata(L, narg, T::className));
+			auto *ud = static_cast<userdataType*>(luaL_checkudata(L, narg, T::className));
 			if(!ud)
 				luaL_typerror(L, narg, T::className);
 			return ud;  // pointer to T object
@@ -117,7 +117,7 @@ private:
 		T *obj = check(L, 1);  // get 'self', or if you prefer, 'this'
 		lua_remove(L, 1);  // remove self so member function args start at index 1
 		// get member function from upvalue
-		RegType *l = static_cast<RegType*>(lua_touserdata(L, lua_upvalueindex(1)));
+		auto *l = static_cast<RegType*>(lua_touserdata(L, lua_upvalueindex(1)));
 		return (obj->*(l->mfunc))(L);  // call member function
 	}
 
@@ -129,8 +129,8 @@ private:
 			return 0;
 		lua_remove(L, 1);   // use classname:new(), instead of classname.new()
 
-		T *obj = new T(L);  // call constructor for T objects
-		userdataType *ud = static_cast<userdataType*>(lua_newuserdata(L, sizeof(userdataType)));
+		auto *obj = new T(L);  // call constructor for T objects
+		auto *ud = static_cast<userdataType*>(lua_newuserdata(L, sizeof(userdataType)));
 		ud->pT = obj;  // store pointer to object in userdata
 
 		obj->UserData = luaL_ref(L, LUA_REGISTRYINDEX);
@@ -144,7 +144,7 @@ private:
 	// garbage collection metamethod
 	static int gc_T(lua_State *L)
 	{
-		userdataType *ud = static_cast<userdataType*>(lua_touserdata(L, 1));
+		auto *ud = static_cast<userdataType*>(lua_touserdata(L, 1));
 		T *obj = ud->pT;
 		delete obj;  // call destructor for T objects
 		return 0;
@@ -153,7 +153,7 @@ private:
 	static int tostring_T (lua_State * L)
 	{
 		char buff[32];
-		userdataType *ud = static_cast<userdataType*>(lua_touserdata(L, 1));
+		auto *ud = static_cast<userdataType*>(lua_touserdata(L, 1));
 		T *obj = ud->pT;
 		sprintf(buff, "%p", obj);
 		lua_pushfstring(L, "%s (%s)", T::className, buff);

@@ -76,18 +76,18 @@ RequestBroker::ProcessResponse WebRequest::Process(RequestBroker & rb)
 #endif
 		if(Post)
 		{
-			char ** postNames = new char*[PostData.size() + 1];
-			char ** postData = new char*[PostData.size()];
-			int * postLength = new int[PostData.size()];
+			auto ** postNames = new char*[PostData.size() + 1];
+			auto ** postData = new char*[PostData.size()];
+			auto * postLength = new int[PostData.size()];
 
 			int i = 0;
-			std::map<std::string, std::string>::iterator iter = PostData.begin();
+			auto iter = PostData.begin();
 			while(iter != PostData.end())
 			{
 				std::string name = iter->first;
 				std::string data = iter->second;
-				char * cName = new char[name.length() + 1];
-				char * cData = new char[data.length() + 1];
+				auto * cName = new char[name.length() + 1];
+				auto * cData = new char[data.length() + 1];
 				std::strcpy(cName, name.c_str());
 				std::strcpy(cData, data.c_str());
 				postNames[i] = cName;
@@ -105,7 +105,7 @@ RequestBroker::ProcessResponse WebRequest::Process(RequestBroker & rb)
 #endif
 				User user = Client::Ref().GetAuthUser();
 				char userName[12];
-				char *userSession = new char[user.SessionID.length() + 1];
+				auto *userSession = new char[user.SessionID.length() + 1];
 				std::strcpy(userName, format::NumberToString<int>(user.UserID).c_str());
 				std::strcpy(userSession, user.SessionID.c_str());
 				HTTPContext = http_multipart_post_async((char*)URL.c_str(), postNames, postData, postLength, userName, nullptr, userSession);
@@ -124,7 +124,7 @@ RequestBroker::ProcessResponse WebRequest::Process(RequestBroker & rb)
 			{
 				User user = Client::Ref().GetAuthUser();
 				char userName[12];
-				char *userSession = new char[user.SessionID.length() + 1];
+				auto *userSession = new char[user.SessionID.length() + 1];
 				std::strcpy(userName, format::NumberToString<int>(user.UserID).c_str());
 				std::strcpy(userSession, user.SessionID.c_str());
 				http_auth_headers(HTTPContext, userName, nullptr, userSession);

@@ -231,7 +231,7 @@ void GameSave::read(char * data, int dataSize)
 template <typename T>
 T ** GameSave::Allocate2DArray(int blockWidth, int blockHeight, T defaultVal)
 {
-	T ** temp = new T*[blockHeight];
+	auto ** temp = new T*[blockHeight];
 	for (int y = 0; y < blockHeight; y++)
 	{
 		temp[y] = new T[blockWidth];
@@ -1323,7 +1323,7 @@ void GameSave::readOPS(char * data, int dataLength)
 
 void GameSave::readPSv(char * saveDataChar, int dataLength)
 {
-	unsigned char * saveData = (unsigned char *)saveDataChar;
+	auto * saveData = (unsigned char *)saveDataChar;
 	int q,j,k,x,y,p=0, ver, pty, ty, legacy_beta=0;
 	int bx0=0, by0=0, bw, bh, w, h, y0 = 0, x0 = 0;
 	int new_format = 0, ttv = 0;
@@ -2047,7 +2047,7 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 			vyData[vyDataLen++] = (unsigned char)((int)(velY*128)&0xFF);
 			vyData[vyDataLen++] = (unsigned char)((int)(velY*128)>>8);
 
-			int tempTemp = (int)(ambientHeat[y][x]+0.5f);
+			auto tempTemp = (int)(ambientHeat[y][x]+0.5f);
 			ambientData[ambientDataLen++] = tempTemp;
 			ambientData[ambientDataLen++] = tempTemp >> 8;
 
@@ -2522,7 +2522,7 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 	if (bson_finish(&b) == BSON_ERROR)
 		throw BuildException("Error building bson data");
 
-	unsigned char *finalData = (unsigned char*)bson_data(&b);
+	auto *finalData = (unsigned char*)bson_data(&b);
 	unsigned int finalDataLen = bson_size(&b);
 	auto outputData = std::unique_ptr<unsigned char[]>(new unsigned char[finalDataLen*2+12]);
 	if (!outputData)
@@ -2552,7 +2552,7 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 #endif
 	dataLength = compressedSize + 12;
 
-	char *saveData = new char[dataLength];
+	auto *saveData = new char[dataLength];
 	std::copy(&outputData[0], &outputData[dataLength], &saveData[0]);
 	return saveData;
 }

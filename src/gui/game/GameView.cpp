@@ -540,7 +540,7 @@ public:
 	ToolAction(GameView * _v, Tool * tool_) { v = _v; tool = tool_; }
 	void ActionCallback(ui::Button * sender_)
 	{
-		ToolButton *sender = (ToolButton*)sender_;
+		auto *sender = (ToolButton*)sender_;
 		if (v->ShiftBehaviour() && v->CtrlBehaviour() && !v->AltBehaviour())
 		{
 			if (Favorite::Ref().IsFavorite(tool->GetIdentifier()) && sender->GetSelectionState() == 1)
@@ -1080,7 +1080,7 @@ void GameView::updateToolButtonScroll()
 		int x = currentMouse.X, y = currentMouse.Y;
 		int newInitialX = WINDOWW-56;
 		int totalWidth = (toolButtons[0]->Size.X+1)*toolButtons.size();
-		int scrollSize = (int)(((float)(XRES-BARSIZE))/((float)totalWidth) * ((float)XRES-BARSIZE));
+		auto scrollSize = (int)(((float)(XRES-BARSIZE))/((float)totalWidth) * ((float)XRES-BARSIZE));
 		if (scrollSize>XRES-1)
 			scrollSize = XRES-1;
 		if(totalWidth > XRES-15)

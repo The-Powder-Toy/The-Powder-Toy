@@ -33,7 +33,7 @@ gol_menu * LoadGOLMenu(int & golMenuCount)
 		{"BRAN",	PIXPACK(0xCCCC00), 23, "Brian 6: B246/S6/3"}
 	};
 	golMenuCount = NGOL;
-	gol_menu * golMenuT = (gol_menu*)malloc(NGOL*sizeof(gol_menu));
+	auto * golMenuT = (gol_menu*)malloc(NGOL*sizeof(gol_menu));
 	memcpy(golMenuT, golMenu, NGOL*sizeof(gol_menu));
 	return golMenuT;
 }
@@ -70,7 +70,7 @@ int * LoadGOLRules(int & golRuleCount)
 		{0,0,2,0,2,0,3,0,0,3},//BRAN
 	};
 	golRuleCount = NGOL+1;
-	int * golRulesT = (int*)malloc((golRuleCount*10)*sizeof(int));
+	auto * golRulesT = (int*)malloc((golRuleCount*10)*sizeof(int));
 	memcpy(golRulesT, golRules, (golRuleCount*10)*sizeof(int));
 	return golRulesT;
 }
@@ -105,7 +105,7 @@ int * LoadGOLTypes(int & golTypeCount)
 		GT_BRAN,
 	};
 	golTypeCount = NGOL;
-	int * golTypesT = (int*)malloc((golTypeCount)*sizeof(int));
+	auto * golTypesT = (int*)malloc((golTypeCount)*sizeof(int));
 	memcpy(golTypesT, golTypes, (golTypeCount)*sizeof(int));
 	return golTypesT;
 }
@@ -134,7 +134,7 @@ wall_type * LoadWalls(int & wallCount)
 		{PIXPACK(0x808080), PIXPACK(0x000000), 0, Renderer::WallIcon, "ERASEALL",		"DEFAULT_WL_ERASEA","Erases walls, particles, and signs."},
 	};
 	wallCount = UI_WALLCOUNT;
-	wall_type * wtypesT = (wall_type*)malloc(UI_WALLCOUNT*sizeof(wall_type));
+	auto * wtypesT = (wall_type*)malloc(UI_WALLCOUNT*sizeof(wall_type));
 	memcpy(wtypesT, wtypes, UI_WALLCOUNT*sizeof(wall_type));
 	return wtypesT;
 }
@@ -163,7 +163,7 @@ menu_section * LoadMenus(int & menuCount)
 		{"\xC8", "Cracker!", 0, 0},
 	};
 	menuCount = SC_TOTAL;
-	menu_section * msectionsT = (menu_section*)malloc(SC_TOTAL*sizeof(menu_section));
+	auto * msectionsT = (menu_section*)malloc(SC_TOTAL*sizeof(menu_section));
 	memcpy(msectionsT, msections, SC_TOTAL*sizeof(menu_section));
 	return msectionsT;
 }
@@ -335,7 +335,7 @@ unsigned int * LoadLatent(int & elementCount)
 		/* REPL */ 0,
 	};
 	elementCount = PT_NUM;
-	unsigned int * platentT = (unsigned int*)malloc(PT_NUM*sizeof(unsigned int));
+	auto * platentT = (unsigned int*)malloc(PT_NUM*sizeof(unsigned int));
 	memcpy(platentT, platent, PT_NUM*sizeof(unsigned int));
 	return platentT;
 }

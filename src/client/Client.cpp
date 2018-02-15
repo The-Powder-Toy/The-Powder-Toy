@@ -152,9 +152,9 @@ void Client::Initialise(std::string proxyString)
 	if (authUser.UserID)
 	{
 		std::string idTempString = format::NumberToString<int>(authUser.UserID);
-		char *id = new char[idTempString.length() + 1];
+		auto *id = new char[idTempString.length() + 1];
 		std::strcpy (id, idTempString.c_str());
-		char *session = new char[authUser.SessionID.length() + 1];
+		auto *session = new char[authUser.SessionID.length() + 1];
 		std::strcpy (session, authUser.SessionID.c_str());
 		http_auth_headers(versionCheckRequest, id, nullptr, session);
 		delete[] id;
@@ -648,7 +648,7 @@ std::vector<unsigned char> Client::ReadFile(std::string filename)
 			size_t fileSize = fileStream.tellg();
 			fileStream.seekg(0);
 
-			unsigned char * tempData = new unsigned char[fileSize];
+			auto * tempData = new unsigned char[fileSize];
 			fileStream.read((char *)tempData, fileSize);
 			fileStream.close();
 
@@ -928,7 +928,7 @@ void Client::AddListener(ClientListener * listener)
 
 void Client::RemoveListener(ClientListener * listener)
 {
-	for (std::vector<ClientListener*>::iterator iterator = listeners.begin(), end = listeners.end(); iterator != end; ++iterator)
+	for (auto iterator = listeners.begin(), end = listeners.end(); iterator != end; ++iterator)
 	{
 		if((*iterator) == listener)
 		{
@@ -1035,7 +1035,7 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 		std::strcpy (saveDescription, save.GetDescription().c_str());
 		char *userid = new char[userIDStream.str().length() + 1];
 		std::strcpy (userid, userIDStream.str().c_str());
-		char *session = new char[authUser.SessionID.length() + 1];
+		auto *session = new char[authUser.SessionID.length() + 1];
 		std::strcpy (session, authUser.SessionID.c_str());
 
 		const char *const postNames[] = { "Name", "Description", "Data:save.bin", "Publish", nullptr };
@@ -1057,7 +1057,7 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 	RequestStatus ret = ParseServerReturn(data, dataStatus, false);
 	if (ret == RequestOkay)
 	{
-		int saveID = format::StringToNumber<int>(data+3);
+		auto saveID = format::StringToNumber<int>(data+3);
 		if (!saveID)
 		{
 			lastError = "Server did not return Save ID";
@@ -1073,7 +1073,7 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 
 void Client::MoveStampToFront(std::string stampID)
 {
-	for (std::list<std::string>::iterator iterator = stampIDs.begin(), end = stampIDs.end(); iterator != end; ++iterator)
+	for (auto iterator = stampIDs.begin(), end = stampIDs.end(); iterator != end; ++iterator)
 	{
 		if((*iterator) == stampID)
 		{
@@ -1109,7 +1109,7 @@ SaveFile * Client::GetStamp(std::string stampID)
 
 void Client::DeleteStamp(std::string stampID)
 {
-	for (std::list<std::string>::iterator iterator = stampIDs.begin(), end = stampIDs.end(); iterator != end; ++iterator)
+	for (auto iterator = stampIDs.begin(), end = stampIDs.end(); iterator != end; ++iterator)
 	{
 		if((*iterator) == stampID)
 		{
@@ -1129,7 +1129,7 @@ void Client::DeleteStamp(std::string stampID)
 
 std::string Client::AddStamp(GameSave * saveData)
 {
-	unsigned t=(unsigned)time(nullptr);
+	auto t=(unsigned)time(nullptr);
 	if (lastStampTime!=t)
 	{
 		lastStampTime=t;
@@ -1219,7 +1219,7 @@ int Client::GetStampsCount()
 
 std::vector<std::string> Client::GetStamps(int start, int count)
 {
-	int size = (int)stampIDs.size();
+	auto size = (int)stampIDs.size();
 	if (start+count > size)
 	{
 		if(start > size)
@@ -1246,15 +1246,15 @@ RequestStatus Client::ExecVote(int saveID, int direction)
 
 	if (authUser.UserID)
 	{
-		char * directionText = (char*)(direction==1?"Up":"Down");
+		auto * directionText = (char*)(direction==1?"Up":"Down");
 		std::string saveIDText = format::NumberToString<int>(saveID);
 		std::string userIDText = format::NumberToString<int>(authUser.UserID);
 
-		char *id = new char[saveIDText.length() + 1];
+		auto *id = new char[saveIDText.length() + 1];
 		std::strcpy(id, saveIDText.c_str());
-		char *userid = new char[userIDText.length() + 1];
+		auto *userid = new char[userIDText.length() + 1];
 		std::strcpy(userid, userIDText.c_str());
-		char *session = new char[authUser.SessionID.length() + 1];
+		auto *session = new char[authUser.SessionID.length() + 1];
 		std::strcpy(session, authUser.SessionID.c_str());
 
 		const char *const postNames[] = { "ID", "Action", nullptr };
@@ -1757,7 +1757,7 @@ RequestBroker::Request * Client::GetCommentsAsync(int saveID, int start, int cou
 	{
 		virtual void * ProcessResponse(unsigned char * data, int dataLength)
 		{
-			std::vector<SaveComment*> * commentArray = new std::vector<SaveComment*>();
+			auto * commentArray = new std::vector<SaveComment*>();
 			try
 			{
 				std::istringstream dataStream((char*)data);
@@ -1766,7 +1766,7 @@ RequestBroker::Request * Client::GetCommentsAsync(int saveID, int start, int cou
 
 				for (auto & j : commentsArray)
 				{
-					int userID = format::StringToNumber<int>(j["UserID"].asString());
+					auto userID = format::StringToNumber<int>(j["UserID"].asString());
 					std::string username = j["Username"].asString();
 					std::string formattedUsername = j["FormattedUsername"].asString();
 					if (formattedUsername == "jacobot")
@@ -1798,7 +1798,7 @@ std::vector<std::pair<std::string, int> > * Client::GetTags(int start, int count
 {
 	lastError = "";
 	resultCount = 0;
-	std::vector<std::pair<std::string, int> > * tagArray = new std::vector<std::pair<std::string, int> >();
+	auto * tagArray = new std::vector<std::pair<std::string, int> >();
 	std::stringstream urlStream;
 	char * data;
 	int dataStatus, dataLength;
@@ -1845,7 +1845,7 @@ std::vector<SaveInfo*> * Client::SearchSaves(int start, int count, std::string q
 {
 	lastError = "";
 	resultCount = 0;
-	std::vector<SaveInfo*> * saveArray = new std::vector<SaveInfo*>();
+	auto * saveArray = new std::vector<SaveInfo*>();
 	std::stringstream urlStream;
 	char * data;
 	int dataStatus, dataLength;

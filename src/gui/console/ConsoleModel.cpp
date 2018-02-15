@@ -3,7 +3,7 @@
 
 ConsoleModel::ConsoleModel() {
 	std::vector<std::string> previousHistory = Client::Ref().GetPrefStringArray("Console.History");
-	for(std::vector<std::string>::reverse_iterator iter = previousHistory.rbegin(), end = previousHistory.rend(); iter != end; ++iter)
+	for(auto iter = previousHistory.rbegin(), end = previousHistory.rend(); iter != end; ++iter)
 	{
 		if(previousCommands.size()<25)
 		{

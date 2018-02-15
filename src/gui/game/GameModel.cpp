@@ -1075,7 +1075,7 @@ void GameModel::AddNotification(Notification * notification)
 
 void GameModel::RemoveNotification(Notification * notification)
 {
-	for(std::vector<Notification*>::iterator iter = notifications.begin(); iter != notifications.end(); ++iter)
+	for(auto iter = notifications.begin(); iter != notifications.end(); ++iter)
 	{
 		if(*iter == notification)
 		{

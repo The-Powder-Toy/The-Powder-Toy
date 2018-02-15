@@ -97,7 +97,7 @@ int Element_DLAY::update(UPDATE_FUNC_ARGS)
 int Element_DLAY::graphics(GRAPHICS_FUNC_ARGS)
 
 {
-	int stage = (int)(((float)cpart->life/(cpart->temp-273.15))*100.0f);
+	auto stage = (int)(((float)cpart->life/(cpart->temp-273.15))*100.0f);
 	*colr += stage;
 	*colg += stage;
 	*colb += stage;

@@ -258,7 +258,7 @@ void SignWindow::OnDraw()
 
 VideoBuffer * SignTool::GetIcon(int toolID, int width, int height)
 {
-	VideoBuffer * newTexture = new VideoBuffer(width, height);
+	auto * newTexture = new VideoBuffer(width, height);
 	for (int y=0; y<height; y++)
 	{
 		for (int x=0; x<width; x++)
