@@ -979,8 +979,7 @@ void Client::Shutdown()
 }
 
 Client::~Client()
-{
-}
+= default;
 
 
 void Client::SetAuthUser(User user)
@@ -1345,7 +1344,7 @@ RequestBroker::Request * Client::SaveUserInfoAsync(UserInfo info)
 		{
 			//delete (UserInfo*)objectPtr;
 		}
-		~StatusParser() override { }
+		~StatusParser() override = default;
 	};
 	std::map<std::string, std::string> postData;
 	postData.insert(std::pair<std::string, std::string>("Location", info.location));
@@ -1387,7 +1386,7 @@ RequestBroker::Request * Client::GetUserInfoAsync(std::string username)
 		{
 			delete (UserInfo*)objectPtr;
 		}
-		~UserInfoParser() override { }
+		~UserInfoParser() override = default;
 	};
 	return new APIRequest("http://" SERVER "/User.json?Name=" + username, new UserInfoParser());
 }
@@ -1746,7 +1745,7 @@ RequestBroker::Request * Client::GetSaveAsync(int saveID, int saveDate)
 		{
 			delete (SaveInfo*)objectPtr;
 		}
-		~SaveInfoParser() override { }
+		~SaveInfoParser() override = default;
 	};
 	return new APIRequest(urlStream.str(), new SaveInfoParser());
 }
@@ -1786,7 +1785,7 @@ RequestBroker::Request * Client::GetCommentsAsync(int saveID, int start, int cou
 		{
 			delete (std::vector<SaveComment*>*)objectPtr;
 		}
-		~CommentsParser() override { }
+		~CommentsParser() override = default;
 	};
 
 	std::stringstream urlStream;

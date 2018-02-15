@@ -17,9 +17,7 @@ DownloadManager::DownloadManager():
 }
 
 DownloadManager::~DownloadManager()
-{
-
-}
+= default;
 
 void DownloadManager::Shutdown()
 {

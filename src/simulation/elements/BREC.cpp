@@ -63,4 +63,4 @@ int Element_BREC::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-Element_BREC::~Element_BREC() {}
+Element_BREC::~Element_BREC() = default;

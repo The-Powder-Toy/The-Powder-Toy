@@ -44,4 +44,4 @@ Element_DESL::Element_DESL()
 	Update = nullptr;
 }
 
-Element_DESL::~Element_DESL() {}
+Element_DESL::~Element_DESL() = default;

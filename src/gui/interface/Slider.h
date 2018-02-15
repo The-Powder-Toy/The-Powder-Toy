@@ -10,7 +10,7 @@ class SliderAction
 {
 public:
 	virtual void ValueChangedCallback(ui::Slider * sender) {}
-	virtual ~SliderAction() {}
+	virtual ~SliderAction() = default;
 };
 class Slider: public ui::Component {
 	friend class SliderAction;

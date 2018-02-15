@@ -55,7 +55,7 @@ public:
 	{
 	}
 	static VideoBuffer * GetIcon(int toolID, int width, int height);
-	~SignTool() override {}
+	~SignTool() override = default;
 	void Click(Simulation * sim, Brush * brush, ui::Point position) override;
 	void Draw(Simulation * sim, Brush * brush, ui::Point position) override { }
 	void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false) override { }
@@ -73,7 +73,7 @@ public:
 	{
 	}
 	static VideoBuffer * GetIcon(int toolID, int width, int height);
-	~SampleTool() override {}
+	~SampleTool() override = default;
 	void Click(Simulation * sim, Brush * brush, ui::Point position) override { }
 	void Draw(Simulation * sim, Brush * brush, ui::Point position) override;
 	void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false) override { }
@@ -93,7 +93,7 @@ public:
 	size_t propOffset;
 
 	void OpenWindow(Simulation *sim);
-	~PropertyTool() override {}
+	~PropertyTool() override = default;
 	virtual void SetProperty(Simulation *sim, ui::Point position);
 	void Click(Simulation * sim, Brush * brush, ui::Point position) override { }
 	void Draw(Simulation *sim, Brush *brush, ui::Point position) override;
@@ -120,7 +120,7 @@ public:
 	Element_LIGH_Tool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int) = nullptr):
 		ElementTool(id, name, description, r, g, b, identifier, textureGen)
 	{ }
-	~Element_LIGH_Tool() override { }
+	~Element_LIGH_Tool() override = default;
 	void Click(Simulation * sim, Brush * brush, ui::Point position) override { }
 	void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false) override;
 	void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) override { }
@@ -133,7 +133,7 @@ public:
 	Element_TESC_Tool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int) = nullptr):
 		ElementTool(id, name, description, r, g, b, identifier, textureGen)
 	{ }
-	~Element_TESC_Tool() override {}
+	~Element_TESC_Tool() override = default;
 	void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) override;
 	void DrawFill(Simulation * sim, Brush * brush, ui::Point position) override;
 };
@@ -144,7 +144,7 @@ public:
 	PlopTool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int) = nullptr):
 		ElementTool(id, name, description, r, g, b, identifier, textureGen)
 	{ }
-	~PlopTool() override { }
+	~PlopTool() override = default;
 	void Draw(Simulation * sim, Brush * brush, ui::Point position) override { }
 	void Click(Simulation * sim, Brush * brush, ui::Point position) override;
 	void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false) override { }
@@ -167,7 +167,7 @@ class WindTool: public Tool
 {
 public:
 	WindTool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int) = nullptr);
-	~WindTool() override { }
+	~WindTool() override = default;
 	void Draw(Simulation * sim, Brush * brush, ui::Point position) override { }
 	void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false) override;
 	void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) override { }

@@ -367,7 +367,7 @@ void GameController::Install()
 				}
 			}
 		}
-		~InstallConfirmation() override { }
+		~InstallConfirmation() override = default;
 	};
 	new ConfirmPrompt("Install The Powder Toy", "Do you wish to install The Powder Toy on this computer?\nThis allows you to open save files and saves directly from the website.", new InstallConfirmation(this));
 #else
@@ -1233,7 +1233,7 @@ void GameController::OpenLocalSaveWindow(bool asCurrent)
 				GameController * c;
 			public:
 				LocalSaveCallback(GameController * _c): c(_c) {}
-				 ~LocalSaveCallback() override {}
+				 ~LocalSaveCallback() override = default;
 				void FileSaved(SaveFile* file) override
 				{
 					c->gameModel->SetSaveFile(file);
@@ -1298,7 +1298,7 @@ void GameController::OpenLocalBrowse()
 		GameController * c;
 	public:
 		LocalSaveOpenCallback(GameController * _c): c(_c) {}
-		 ~LocalSaveOpenCallback() override {};
+		 ~LocalSaveOpenCallback() override = default;;
 		void FileSelected(SaveFile* file) override
 		{
 			c->HistorySnapshot();
@@ -1352,7 +1352,7 @@ void GameController::OpenColourPicker()
 		GameController * c;
 	public:
 		ColourPickerCallback(GameController * _c): c(_c) {}
-		 ~ColourPickerCallback() override {};
+		 ~ColourPickerCallback() override = default;;
 		void ColourPicked(ui::Colour colour) override
 		{
 			c->SetColour(colour);
@@ -1416,7 +1416,7 @@ void GameController::OpenSaveWindow()
 		GameController * c;
 	public:
 		SaveUploadedCallback(GameController * _c): c(_c) {}
-		 ~SaveUploadedCallback() override {}
+		 ~SaveUploadedCallback() override = default;
 		void SaveUploaded(SaveInfo save) override
 		{
 			save.SetVote(1);
@@ -1464,7 +1464,7 @@ void GameController::SaveAsCurrent()
 		GameController * c;
 	public:
 		SaveUploadedCallback(GameController * _c): c(_c) {}
-		 ~SaveUploadedCallback() override {}
+		 ~SaveUploadedCallback() override = default;
 		void SaveUploaded(SaveInfo save) override
 		{
 			c->LoadSave(&save);
@@ -1602,7 +1602,7 @@ void GameController::NotifyNewNotification(Client * sender, std::pair<std::strin
 		std::string link;
 	public:
 		LinkNotification(std::string link_, std::string message) : Notification(message), link(link_) {}
-		~LinkNotification() override {}
+		~LinkNotification() override = default;
 
 		void Action() override
 		{
@@ -1624,7 +1624,7 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 				c->RunUpdater();
 			}
 		}
-		~UpdateConfirmation() override { }
+		~UpdateConfirmation() override = default;
 	};
 
 	class UpdateNotification : public Notification
@@ -1632,7 +1632,7 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 		GameController * c;
 	public:
 		UpdateNotification(GameController * c, std::string message) : Notification(message), c(c) {}
-		~UpdateNotification() override {}
+		~UpdateNotification() override = default;
 
 		void Action() override
 		{

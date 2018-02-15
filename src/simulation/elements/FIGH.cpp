@@ -140,4 +140,4 @@ int Element_FIGH::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-Element_FIGH::~Element_FIGH() {}
+Element_FIGH::~Element_FIGH() = default;

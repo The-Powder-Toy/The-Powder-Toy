@@ -375,4 +375,4 @@ int Element_SPRK::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_SPRK::~Element_SPRK() {}
+Element_SPRK::~Element_SPRK() = default;

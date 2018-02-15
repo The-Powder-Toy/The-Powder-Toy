@@ -44,4 +44,4 @@ Element_SALT::Element_SALT()
 	Update = nullptr;
 }
 
-Element_SALT::~Element_SALT() {}
+Element_SALT::~Element_SALT() = default;

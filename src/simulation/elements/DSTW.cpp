@@ -99,4 +99,4 @@ int Element_DSTW::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_DSTW::~Element_DSTW() {}
+Element_DSTW::~Element_DSTW() = default;

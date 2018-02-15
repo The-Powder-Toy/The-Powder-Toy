@@ -209,4 +209,4 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_ARAY::~Element_ARAY() {}
+Element_ARAY::~Element_ARAY() = default;

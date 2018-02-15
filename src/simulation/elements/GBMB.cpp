@@ -92,4 +92,4 @@ int Element_GBMB::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_GBMB::~Element_GBMB() {}
+Element_GBMB::~Element_GBMB() = default;

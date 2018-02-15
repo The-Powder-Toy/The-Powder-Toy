@@ -94,4 +94,4 @@ int Element_CONV::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_CONV::~Element_CONV() {}
+Element_CONV::~Element_CONV() = default;

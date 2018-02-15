@@ -148,4 +148,4 @@ int Element_PCLN::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_PCLN::~Element_PCLN() {}
+Element_PCLN::~Element_PCLN() = default;

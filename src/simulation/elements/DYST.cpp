@@ -44,4 +44,4 @@ Element_DYST::Element_DYST()
 	Update = nullptr;
 }
 
-Element_DYST::~Element_DYST() {}
+Element_DYST::~Element_DYST() = default;

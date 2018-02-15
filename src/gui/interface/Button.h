@@ -15,7 +15,7 @@ public:
 	virtual void ActionCallback(ui::Button * sender) {}
 	virtual void AltActionCallback(ui::Button * sender) {}
 	virtual void MouseEnterCallback(ui::Button * sender) {}
-	virtual ~ButtonAction() {}
+	virtual ~ButtonAction() = default;
 };
 
 class Button : public Component

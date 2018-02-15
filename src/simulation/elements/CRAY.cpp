@@ -155,4 +155,4 @@ unsigned int Element_CRAY::wavelengthToDecoColour(int wavelength)
 }
 
 
-Element_CRAY::~Element_CRAY() {}
+Element_CRAY::~Element_CRAY() = default;

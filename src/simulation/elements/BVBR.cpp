@@ -45,4 +45,4 @@ Element_BVBR::Element_BVBR()
 	Graphics = &Element_VIBR::graphics;
 }
 
-Element_BVBR::~Element_BVBR() {}
+Element_BVBR::~Element_BVBR() = default;

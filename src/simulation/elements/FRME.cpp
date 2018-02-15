@@ -56,4 +56,4 @@ int Element_FRME::graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
-Element_FRME::~Element_FRME() {}
+Element_FRME::~Element_FRME() = default;

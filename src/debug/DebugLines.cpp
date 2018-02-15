@@ -46,6 +46,4 @@ void DebugLines::Draw()
 }
 
 DebugLines::~DebugLines()
-{
-
-}
+= default;

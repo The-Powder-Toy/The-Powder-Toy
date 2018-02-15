@@ -44,4 +44,4 @@ Element_PSTS::Element_PSTS()
 	Update = nullptr;
 }
 
-Element_PSTS::~Element_PSTS() {}
+Element_PSTS::~Element_PSTS() = default;

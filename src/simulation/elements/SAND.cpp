@@ -44,4 +44,4 @@ Element_SAND::Element_SAND()
 	Update = nullptr;
 }
 
-Element_SAND::~Element_SAND() {}
+Element_SAND::~Element_SAND() = default;

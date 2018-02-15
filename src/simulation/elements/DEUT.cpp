@@ -153,4 +153,4 @@ int Element_DEUT::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_DEUT::~Element_DEUT() {}
+Element_DEUT::~Element_DEUT() = default;

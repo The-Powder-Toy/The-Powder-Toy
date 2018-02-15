@@ -44,4 +44,4 @@ Element_RFGL::Element_RFGL()
 	Update = &Element_RFRG::update;
 }
 
-Element_RFGL::~Element_RFGL() {}
+Element_RFGL::~Element_RFGL() = default;

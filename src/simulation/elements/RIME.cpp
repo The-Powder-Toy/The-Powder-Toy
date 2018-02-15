@@ -70,4 +70,4 @@ int Element_RIME::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_RIME::~Element_RIME() {}
+Element_RIME::~Element_RIME() = default;

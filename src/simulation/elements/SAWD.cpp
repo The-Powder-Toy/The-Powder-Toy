@@ -45,4 +45,4 @@ Element_SAWD::Element_SAWD()
 	Graphics = nullptr;
 }
 
-Element_SAWD::~Element_SAWD() {}
+Element_SAWD::~Element_SAWD() = default;

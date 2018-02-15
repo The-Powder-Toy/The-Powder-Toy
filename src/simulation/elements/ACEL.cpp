@@ -91,4 +91,4 @@ int Element_ACEL::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_ACEL::~Element_ACEL() {}
+Element_ACEL::~Element_ACEL() = default;

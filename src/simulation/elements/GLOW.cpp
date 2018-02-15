@@ -88,4 +88,4 @@ int Element_GLOW::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_GLOW::~Element_GLOW() {}
+Element_GLOW::~Element_GLOW() = default;

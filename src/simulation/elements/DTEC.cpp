@@ -118,4 +118,4 @@ int Element_DTEC::update(UPDATE_FUNC_ARGS)
 
 
 
-Element_DTEC::~Element_DTEC() {}
+Element_DTEC::~Element_DTEC() = default;

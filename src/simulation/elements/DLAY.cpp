@@ -105,4 +105,4 @@ int Element_DLAY::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_DLAY::~Element_DLAY() {}
+Element_DLAY::~Element_DLAY() = default;

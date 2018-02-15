@@ -45,4 +45,4 @@ Element_BIZRS::Element_BIZRS()
 	Graphics = &Element_BIZR::graphics;
 }
 //BIZRS update is in BIZR.cpp
-Element_BIZRS::~Element_BIZRS() {}
+Element_BIZRS::~Element_BIZRS() = default;

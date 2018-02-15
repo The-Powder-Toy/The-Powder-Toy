@@ -45,4 +45,4 @@ Element_NSCN::Element_NSCN()
 	Update = nullptr;
 }
 
-Element_NSCN::~Element_NSCN() {}
+Element_NSCN::~Element_NSCN() = default;

@@ -20,4 +20,4 @@ int Tool_Vac::Perform(Simulation * sim, Particle * cpart, int x, int y, int brus
 	return 1;
 }
 
-Tool_Vac::~Tool_Vac() {}
+Tool_Vac::~Tool_Vac() = default;

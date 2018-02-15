@@ -130,4 +130,4 @@ int Element_FIRW::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_FIRW::~Element_FIRW() {}
+Element_FIRW::~Element_FIRW() = default;

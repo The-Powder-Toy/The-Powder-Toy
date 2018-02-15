@@ -44,4 +44,4 @@ Element_PSTE::Element_PSTE()
 	Update = nullptr;
 }
 
-Element_PSTE::~Element_PSTE() {}
+Element_PSTE::~Element_PSTE() = default;

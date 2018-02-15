@@ -107,4 +107,4 @@ int Element_CO2::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_CO2::~Element_CO2() {}
+Element_CO2::~Element_CO2() = default;

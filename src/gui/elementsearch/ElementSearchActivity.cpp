@@ -271,6 +271,5 @@ void ElementSearchActivity::ToolTip(ui::Point senderPosition, std::string toolTi
 	this->isToolTipFadingIn = true;
 }
 
-ElementSearchActivity::~ElementSearchActivity() {
-}
+ElementSearchActivity::~ElementSearchActivity() = default;
 

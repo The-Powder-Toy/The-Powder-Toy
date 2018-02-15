@@ -250,4 +250,4 @@ int Element_VIBR::graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
-Element_VIBR::~Element_VIBR() {}
+Element_VIBR::~Element_VIBR() = default;

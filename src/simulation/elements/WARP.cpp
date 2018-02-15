@@ -91,4 +91,4 @@ int Element_WARP::graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
-Element_WARP::~Element_WARP() {}
+Element_WARP::~Element_WARP() = default;

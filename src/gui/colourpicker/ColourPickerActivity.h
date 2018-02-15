@@ -9,8 +9,8 @@
 class ColourPickedCallback
 {
 public:
-	ColourPickedCallback() {}
-	virtual  ~ColourPickedCallback() {}
+	ColourPickedCallback() = default;
+	virtual  ~ColourPickedCallback() = default;
 	virtual void ColourPicked(ui::Colour colour) {}
 };
 

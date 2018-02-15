@@ -8,9 +8,9 @@ class QuickOption;
 class QuickOptionListener
 {
 protected:
-	QuickOptionListener() {}
+	QuickOptionListener() = default;
 public:
-	virtual ~QuickOptionListener() {}
+	virtual ~QuickOptionListener() = default;
 	virtual void OnValueChanged(QuickOption * sender) {}
 };
 class QuickOption

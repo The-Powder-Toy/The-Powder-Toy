@@ -105,4 +105,4 @@ int Element_BRAY::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_BRAY::~Element_BRAY() {}
+Element_BRAY::~Element_BRAY() = default;

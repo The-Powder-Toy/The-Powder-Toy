@@ -79,4 +79,4 @@ int Element_FRAY::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_FRAY::~Element_FRAY() {}
+Element_FRAY::~Element_FRAY() = default;

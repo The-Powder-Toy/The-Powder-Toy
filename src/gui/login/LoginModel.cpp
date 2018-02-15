@@ -60,6 +60,5 @@ void LoginModel::notifyStatusChanged()
 	}
 }
 
-LoginModel::~LoginModel() {
-}
+LoginModel::~LoginModel() = default;
 

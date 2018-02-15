@@ -77,4 +77,4 @@ int Element_INVIS::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_INVIS::~Element_INVIS() {}
+Element_INVIS::~Element_INVIS() = default;

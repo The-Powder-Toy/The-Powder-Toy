@@ -45,4 +45,4 @@ Element_PSCN::Element_PSCN()
 	Update = nullptr;
 }
 
-Element_PSCN::~Element_PSCN() {}
+Element_PSCN::~Element_PSCN() = default;

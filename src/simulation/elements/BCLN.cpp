@@ -96,4 +96,4 @@ int Element_BCLN::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_BCLN::~Element_BCLN() {}
+Element_BCLN::~Element_BCLN() = default;

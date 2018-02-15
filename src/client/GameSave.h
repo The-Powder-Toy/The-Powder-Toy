@@ -23,7 +23,7 @@ public:
 	{
 		return message.c_str();
 	}
-	~ParseException() throw() override {}
+	~ParseException() throw() override = default;
 };
 
 struct BuildException: public std::exception {
@@ -34,7 +34,7 @@ public:
 	{
 		return message.c_str();
 	}
-	~BuildException() throw() override {}
+	~BuildException() throw() override = default;
 };
 
 class StkmData

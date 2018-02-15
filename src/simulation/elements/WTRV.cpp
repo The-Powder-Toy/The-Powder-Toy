@@ -68,4 +68,4 @@ int Element_WTRV::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_WTRV::~Element_WTRV() {}
+Element_WTRV::~Element_WTRV() = default;

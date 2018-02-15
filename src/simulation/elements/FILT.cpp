@@ -144,4 +144,4 @@ int Element_FILT::getWavelengths(Particle* cpart)
 	}
 }
 
-Element_FILT::~Element_FILT() {}
+Element_FILT::~Element_FILT() = default;

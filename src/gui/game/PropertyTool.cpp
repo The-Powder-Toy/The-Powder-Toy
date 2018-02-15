@@ -26,7 +26,7 @@ public:
 	void OnDraw() override;
 	void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt) override;
 	void OnTryExit(ExitMethod method) override;
-	~PropertyWindow() override {}
+	~PropertyWindow() override = default;
 	class OkayAction: public ui::ButtonAction
 	{
 	public:

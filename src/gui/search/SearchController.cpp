@@ -233,7 +233,7 @@ void SearchController::RemoveSelected()
 			if (result == ConfirmPrompt::ResultOkay)
 				c->removeSelectedC();
 		}
-		~RemoveSelectedConfirmation() override { }
+		~RemoveSelectedConfirmation() override = default;
 	};
 
 	std::stringstream desc;
@@ -291,7 +291,7 @@ void SearchController::UnpublishSelected(bool publish)
 			if (result == ConfirmPrompt::ResultOkay)
 				c->unpublishSelectedC(publish);
 		}
-		~UnpublishSelectedConfirmation() override { }
+		~UnpublishSelectedConfirmation() override = default;
 	};
 
 	std::stringstream desc;

@@ -279,4 +279,4 @@ int Element_SOAP::graphics(GRAPHICS_FUNC_ARGS)
 	return 1;
 }
 
-Element_SOAP::~Element_SOAP() {}
+Element_SOAP::~Element_SOAP() = default;

@@ -52,4 +52,4 @@ int Element_MORT::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_MORT::~Element_MORT() {}
+Element_MORT::~Element_MORT() = default;

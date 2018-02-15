@@ -53,4 +53,4 @@ int Element_PTCT::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_PTCT::~Element_PTCT() {}
+Element_PTCT::~Element_PTCT() = default;

@@ -167,6 +167,5 @@ VideoBuffer * SaveRenderer::Render(unsigned char * saveData, int dataSize, bool 
 	return thumb;
 }
 
-SaveRenderer::~SaveRenderer() {
-}
+SaveRenderer::~SaveRenderer() = default;
 

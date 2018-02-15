@@ -44,4 +44,4 @@ Element_WAX::Element_WAX()
 	Update = nullptr;
 }
 
-Element_WAX::~Element_WAX() {}
+Element_WAX::~Element_WAX() = default;

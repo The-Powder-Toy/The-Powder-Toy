@@ -87,4 +87,4 @@ succ:
 }
 
 
-Element_IRON::~Element_IRON() {}
+Element_IRON::~Element_IRON() = default;

@@ -159,4 +159,4 @@ int Element_PRTI::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_PRTI::~Element_PRTI() {}
+Element_PRTI::~Element_PRTI() = default;

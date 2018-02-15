@@ -235,4 +235,4 @@ int Element_EXOT::graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
-Element_EXOT::~Element_EXOT() {}
+Element_EXOT::~Element_EXOT() = default;

@@ -44,4 +44,4 @@ Element_GAS::Element_GAS()
 	Update = nullptr;
 }
 
-Element_GAS::~Element_GAS() {}
+Element_GAS::~Element_GAS() = default;

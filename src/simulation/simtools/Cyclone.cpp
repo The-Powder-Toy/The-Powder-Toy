@@ -42,4 +42,4 @@ int Tool_Cycl::Perform(Simulation * sim, Particle * cpart, int x, int y, int bru
 	return 1;
 }
 
-Tool_Cycl::~Tool_Cycl() {}
+Tool_Cycl::~Tool_Cycl() = default;

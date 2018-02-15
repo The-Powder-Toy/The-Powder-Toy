@@ -7,7 +7,7 @@ class DebugInfo
 {
 public:
 	DebugInfo(unsigned int id):debugID(id) { }
-	virtual ~DebugInfo() { }
+	virtual ~DebugInfo() = default;
 	unsigned int debugID;
 	virtual void Draw() {}
 	// currentMouse doesn't belong but I don't want to create more hooks at the moment

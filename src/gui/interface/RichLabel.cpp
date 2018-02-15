@@ -17,7 +17,7 @@ public:
 	{
 		return message.c_str();
 	}
-	~RichTextParseException() throw() override {};
+	~RichTextParseException() throw() override = default;;
 };
 
 RichLabel::RichLabel(Point position, Point size, std::string labelText):
@@ -29,9 +29,7 @@ RichLabel::RichLabel(Point position, Point size, std::string labelText):
 }
 
 RichLabel::~RichLabel()
-{
-
-}
+= default;
 
 void RichLabel::updateRichText()
 {

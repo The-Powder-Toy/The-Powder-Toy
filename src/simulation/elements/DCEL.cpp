@@ -86,4 +86,4 @@ int Element_DCEL::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_DCEL::~Element_DCEL() {}
+Element_DCEL::~Element_DCEL() = default;

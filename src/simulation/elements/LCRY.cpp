@@ -151,4 +151,4 @@ int Element_LCRY::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_LCRY::~Element_LCRY() {}
+Element_LCRY::~Element_LCRY() = default;

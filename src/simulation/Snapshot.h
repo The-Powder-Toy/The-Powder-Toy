@@ -57,7 +57,5 @@ public:
 	}
 
 	virtual ~Snapshot()
-	{
-
-	}
+	= default;
 };

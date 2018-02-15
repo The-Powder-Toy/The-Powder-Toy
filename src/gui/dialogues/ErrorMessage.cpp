@@ -54,11 +54,11 @@ void ErrorMessage::Blocking(std::string title, std::string message)
 {
 	class BlockingDismissCallback: public ErrorMessageCallback {
 	public:
-		BlockingDismissCallback() {}
+		BlockingDismissCallback() = default;
 		void DismissCallback() override {
 			ui::Engine::Ref().Break();
 		}
-		~BlockingDismissCallback() override { }
+		~BlockingDismissCallback() override = default;
 	};
 	new ErrorMessage(title, message, new BlockingDismissCallback());
 	EngineProcess();

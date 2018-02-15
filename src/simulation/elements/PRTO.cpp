@@ -188,4 +188,4 @@ int Element_PRTO::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_PRTO::~Element_PRTO() {}
+Element_PRTO::~Element_PRTO() = default;

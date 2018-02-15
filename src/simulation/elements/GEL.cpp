@@ -166,4 +166,4 @@ int Element_GEL::graphics(GRAPHICS_FUNC_ARGS)
 
 
 
-Element_GEL::~Element_GEL() {}
+Element_GEL::~Element_GEL() = default;

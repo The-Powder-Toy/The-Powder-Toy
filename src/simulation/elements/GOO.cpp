@@ -61,4 +61,4 @@ int Element_GOO::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_GOO::~Element_GOO() {}
+Element_GOO::~Element_GOO() = default;

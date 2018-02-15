@@ -108,4 +108,4 @@ int Element_DEST::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_DEST::~Element_DEST() {}
+Element_DEST::~Element_DEST() = default;

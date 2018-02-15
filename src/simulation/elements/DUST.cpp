@@ -46,4 +46,4 @@ Element_DUST::Element_DUST()
 	Graphics = nullptr;
 }
 
-Element_DUST::~Element_DUST() {}
+Element_DUST::~Element_DUST() = default;

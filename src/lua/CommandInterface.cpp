@@ -110,6 +110,5 @@ std::string CommandInterface::GetLastError()
 	return lastError;
 }
 
-CommandInterface::~CommandInterface() {
-}
+CommandInterface::~CommandInterface() = default;
 

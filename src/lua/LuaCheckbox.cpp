@@ -103,6 +103,5 @@ void LuaCheckbox::triggerAction()
 }
 
 LuaCheckbox::~LuaCheckbox()
-{
-}
+= default;
 #endif

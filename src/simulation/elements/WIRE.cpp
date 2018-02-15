@@ -123,4 +123,4 @@ int Element_WIRE::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_WIRE::~Element_WIRE() {}
+Element_WIRE::~Element_WIRE() = default;

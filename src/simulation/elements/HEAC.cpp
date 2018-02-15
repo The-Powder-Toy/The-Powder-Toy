@@ -185,4 +185,4 @@ int Element_HEAC::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_HEAC::~Element_HEAC() {}
+Element_HEAC::~Element_HEAC() = default;

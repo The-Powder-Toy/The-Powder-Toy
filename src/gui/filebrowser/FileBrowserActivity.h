@@ -11,8 +11,8 @@ class SaveFile;
 class FileSelectedCallback
 {
 public:
-	FileSelectedCallback() {}
-	virtual  ~FileSelectedCallback() {}
+	FileSelectedCallback() = default;
+	virtual  ~FileSelectedCallback() = default;
 	virtual void FileSelected(SaveFile* file) {}
 };
 

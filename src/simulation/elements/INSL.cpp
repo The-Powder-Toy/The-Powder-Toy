@@ -44,4 +44,4 @@ Element_INSL::Element_INSL()
 	Update = nullptr;
 }
 
-Element_INSL::~Element_INSL() {}
+Element_INSL::~Element_INSL() = default;

@@ -59,4 +59,4 @@ int Element_LOVE::RuleTable[9][9] =
 //#TPT-Directive ElementHeader Element_LOVE static int love[XRES/9][YRES/9];
 int Element_LOVE::love[XRES/9][YRES/9];
 
-Element_LOVE::~Element_LOVE() {}
+Element_LOVE::~Element_LOVE() = default;

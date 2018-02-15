@@ -102,4 +102,4 @@ int Element_COAL::graphics(GRAPHICS_FUNC_ARGS)
 
 
 
-Element_COAL::~Element_COAL() {}
+Element_COAL::~Element_COAL() = default;

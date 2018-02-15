@@ -15,7 +15,7 @@ class AvatarButtonAction
 {
 public:
 	virtual void ActionCallback(ui::AvatarButton * sender) {}
-	virtual ~AvatarButtonAction() {}
+	virtual ~AvatarButtonAction() = default;
 };
 
 class AvatarButton : public Component, public RequestListener

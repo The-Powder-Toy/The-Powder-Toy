@@ -14,8 +14,8 @@ class VideoBuffer;
 class FileSavedCallback
 {
 public:
-	FileSavedCallback() {}
-	virtual  ~FileSavedCallback() {}
+	FileSavedCallback() = default;
+	virtual  ~FileSavedCallback() = default;
 	virtual void FileSaved(SaveFile * file) {}
 };
 

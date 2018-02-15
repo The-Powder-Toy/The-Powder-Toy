@@ -20,7 +20,7 @@ public:
 	virtual void AltActionCallback(ui::SaveButton * sender) {}
 	virtual void AltActionCallback2(ui::SaveButton * sender) {}
 	virtual void SelectedCallback(ui::SaveButton * sender) {}
-	virtual ~SaveButtonAction() {}
+	virtual ~SaveButtonAction() = default;
 };
 
 class SaveButton : public Component, public RequestListener

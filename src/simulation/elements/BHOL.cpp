@@ -44,4 +44,4 @@ Element_BHOL::Element_BHOL()
 	Update = nullptr;
 }
 
-Element_BHOL::~Element_BHOL() {}
+Element_BHOL::~Element_BHOL() = default;

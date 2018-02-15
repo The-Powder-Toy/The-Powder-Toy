@@ -88,4 +88,4 @@ int Element_LSNS::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_LSNS::~Element_LSNS() {}
+Element_LSNS::~Element_LSNS() = default;

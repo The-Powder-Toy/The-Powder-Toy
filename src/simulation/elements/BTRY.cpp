@@ -70,4 +70,4 @@ int Element_BTRY::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_BTRY::~Element_BTRY() {}
+Element_BTRY::~Element_BTRY() = default;

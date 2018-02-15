@@ -22,7 +22,7 @@ class TextDialogueCallback
 {
 	public:
 		virtual void TextCallback(TextPrompt::DialogueResult result, std::string resultText) {}
-		virtual ~TextDialogueCallback() {}
+		virtual ~TextDialogueCallback() = default;
 };
 
 #endif /* TEXTPROMPT_H_ */

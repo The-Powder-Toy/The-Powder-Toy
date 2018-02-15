@@ -140,4 +140,4 @@ int Element_PLNT::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_PLNT::~Element_PLNT() {}
+Element_PLNT::~Element_PLNT() = default;

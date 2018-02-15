@@ -45,4 +45,4 @@ Element_NITR::Element_NITR()
 	Update = nullptr;
 }
 
-Element_NITR::~Element_NITR() {}
+Element_NITR::~Element_NITR() = default;

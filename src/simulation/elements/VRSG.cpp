@@ -59,4 +59,4 @@ int Element_VRSG::graphics(GRAPHICS_FUNC_ARGS)
 	return 1;
 }
 
-Element_VRSG::~Element_VRSG() {}
+Element_VRSG::~Element_VRSG() = default;

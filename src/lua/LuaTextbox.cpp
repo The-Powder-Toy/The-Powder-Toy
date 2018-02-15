@@ -106,6 +106,5 @@ int LuaTextbox::text(lua_State * l)
 }
 
 LuaTextbox::~LuaTextbox()
-{
-}
+= default;
 #endif

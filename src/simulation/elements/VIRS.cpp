@@ -148,4 +148,4 @@ int Element_VIRS::graphics(GRAPHICS_FUNC_ARGS)
 	return 1;
 }
 
-Element_VIRS::~Element_VIRS() {}
+Element_VIRS::~Element_VIRS() = default;

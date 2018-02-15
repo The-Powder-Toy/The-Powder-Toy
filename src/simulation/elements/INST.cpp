@@ -44,4 +44,4 @@ Element_INST::Element_INST()
 	Update = nullptr;
 }
 
-Element_INST::~Element_INST() {}
+Element_INST::~Element_INST() = default;

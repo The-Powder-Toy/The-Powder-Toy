@@ -24,4 +24,4 @@ int Tool_Heat::Perform(Simulation * sim, Particle * cpart, int x, int y, int bru
 	return 1;
 }
 
-Tool_Heat::~Tool_Heat() {}
+Tool_Heat::~Tool_Heat() = default;

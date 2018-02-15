@@ -119,4 +119,4 @@ int Element_EMBR::graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
-Element_EMBR::~Element_EMBR() {}
+Element_EMBR::~Element_EMBR() = default;

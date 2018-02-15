@@ -88,4 +88,4 @@ int Element_WATR::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-Element_WATR::~Element_WATR() {}
+Element_WATR::~Element_WATR() = default;

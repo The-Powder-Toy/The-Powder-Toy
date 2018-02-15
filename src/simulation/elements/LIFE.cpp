@@ -123,4 +123,4 @@ int Element_LIFE::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_LIFE::~Element_LIFE() {}
+Element_LIFE::~Element_LIFE() = default;

@@ -122,4 +122,4 @@ int Element_BIZR::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_BIZR::~Element_BIZR() {}
+Element_BIZR::~Element_BIZR() = default;

@@ -71,7 +71,5 @@ void SaveIDMessage::OnTryExit(ExitMethod method)
 }
 
 SaveIDMessage::~SaveIDMessage()
-{
-
-}
+= default;
 

@@ -63,4 +63,4 @@ int Element_URAN::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_URAN::~Element_URAN() {}
+Element_URAN::~Element_URAN() = default;

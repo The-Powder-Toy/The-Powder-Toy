@@ -142,4 +142,4 @@ int Element_SING::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_SING::~Element_SING() {}
+Element_SING::~Element_SING() = default;

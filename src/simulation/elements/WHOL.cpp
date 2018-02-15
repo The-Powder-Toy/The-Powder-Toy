@@ -44,4 +44,4 @@ Element_WHOL::Element_WHOL()
 	Update = nullptr;
 }
 
-Element_WHOL::~Element_WHOL() {}
+Element_WHOL::~Element_WHOL() = default;

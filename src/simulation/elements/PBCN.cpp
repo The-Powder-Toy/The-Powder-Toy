@@ -159,4 +159,4 @@ int Element_PBCN::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_PBCN::~Element_PBCN() {}
+Element_PBCN::~Element_PBCN() = default;

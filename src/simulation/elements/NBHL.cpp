@@ -55,4 +55,4 @@ int Element_NBHL::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_NBHL::~Element_NBHL() {}
+Element_NBHL::~Element_NBHL() = default;

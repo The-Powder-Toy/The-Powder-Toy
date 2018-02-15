@@ -90,4 +90,4 @@ int Element_PVOD::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_PVOD::~Element_PVOD() {}
+Element_PVOD::~Element_PVOD() = default;

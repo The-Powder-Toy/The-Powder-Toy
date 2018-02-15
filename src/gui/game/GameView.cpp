@@ -31,7 +31,7 @@ class SplitButtonAction
 public:
 	virtual void ActionCallbackLeft(ui::Button * sender) {}
 	virtual void ActionCallbackRight(ui::Button * sender) {}
-	virtual ~SplitButtonAction() {}
+	virtual ~SplitButtonAction() = default;
 };
 class SplitButton : public ui::Button
 {

@@ -23,12 +23,12 @@
 class CoordStackOverflowException: public std::exception
 {
 public:
-	CoordStackOverflowException() { }
+	CoordStackOverflowException() = default;
 	const char* what() const throw() override
 	{
 		return "Maximum number of entries in the coordinate stack was exceeded";
 	}
-	~CoordStackOverflowException() throw() override {}
+	~CoordStackOverflowException() throw() override = default;
 };
 
 class CoordStack

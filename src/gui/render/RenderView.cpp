@@ -421,5 +421,4 @@ void RenderView::ToolTip(ui::Point senderPosition, std::string toolTip)
 	this->isToolTipFadingIn = true;
 }
 
-RenderView::~RenderView() {
-}
+RenderView::~RenderView() = default;

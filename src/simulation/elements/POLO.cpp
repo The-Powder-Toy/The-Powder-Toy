@@ -118,4 +118,4 @@ int Element_POLO::graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
-Element_POLO::~Element_POLO() {}
+Element_POLO::~Element_POLO() = default;

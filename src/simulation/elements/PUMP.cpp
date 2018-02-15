@@ -112,4 +112,4 @@ int Element_PUMP::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_PUMP::~Element_PUMP() {}
+Element_PUMP::~Element_PUMP() = default;

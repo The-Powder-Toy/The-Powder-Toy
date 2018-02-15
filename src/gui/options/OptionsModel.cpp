@@ -143,6 +143,5 @@ void OptionsModel::notifySettingsChanged()
 	}
 }
 
-OptionsModel::~OptionsModel() {
-}
+OptionsModel::~OptionsModel() = default;
 

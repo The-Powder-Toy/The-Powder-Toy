@@ -265,4 +265,4 @@ bool Element_TRON::canmovetron(Simulation * sim, int r, int len)
 	return false;
 }
 
-Element_TRON::~Element_TRON() {}
+Element_TRON::~Element_TRON() = default;

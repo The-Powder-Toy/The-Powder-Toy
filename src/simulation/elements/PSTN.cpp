@@ -348,4 +348,4 @@ int Element_PSTN::graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
-Element_PSTN::~Element_PSTN() {}
+Element_PSTN::~Element_PSTN() = default;

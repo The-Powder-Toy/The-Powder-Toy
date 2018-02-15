@@ -132,4 +132,4 @@ int Element_MERC::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_MERC::~Element_MERC() {}
+Element_MERC::~Element_MERC() = default;

@@ -98,4 +98,4 @@ int Element_THDR::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_THDR::~Element_THDR() {}
+Element_THDR::~Element_THDR() = default;

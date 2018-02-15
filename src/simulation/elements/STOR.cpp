@@ -112,4 +112,4 @@ int Element_STOR::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_STOR::~Element_STOR() {}
+Element_STOR::~Element_STOR() = default;

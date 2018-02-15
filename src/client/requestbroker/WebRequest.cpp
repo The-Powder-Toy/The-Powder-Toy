@@ -136,8 +136,7 @@ RequestBroker::ProcessResponse WebRequest::Process(RequestBroker & rb)
 }
 
 WebRequest::~WebRequest()
-{
-}
+= default;
 
 void WebRequest::Cleanup()
 {

@@ -77,4 +77,4 @@ int Element_BRMT::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_BRMT::~Element_BRMT() {}
+Element_BRMT::~Element_BRMT() = default;

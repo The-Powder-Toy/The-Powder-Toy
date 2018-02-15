@@ -16,8 +16,7 @@ public:
 	{
 	}
 	Colour()
-	{
-	}
+	= default;
 };
 }
 

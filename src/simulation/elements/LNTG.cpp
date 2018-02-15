@@ -44,4 +44,4 @@ Element_LNTG::Element_LNTG()
 	Update = nullptr;
 }
 
-Element_LNTG::~Element_LNTG() {}
+Element_LNTG::~Element_LNTG() = default;

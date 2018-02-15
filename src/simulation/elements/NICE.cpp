@@ -44,4 +44,4 @@ Element_NICE::Element_NICE()
 	Update = nullptr;
 }
 
-Element_NICE::~Element_NICE() {}
+Element_NICE::~Element_NICE() = default;

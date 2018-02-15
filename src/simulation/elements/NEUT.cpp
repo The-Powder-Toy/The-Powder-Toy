@@ -218,4 +218,4 @@ int Element_NEUT::DeutExplosion(Simulation * sim, int n, int x, int y, float tem
 	return 0;
 }
 
-Element_NEUT::~Element_NEUT() {}
+Element_NEUT::~Element_NEUT() = default;

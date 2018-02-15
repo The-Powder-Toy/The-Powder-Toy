@@ -84,7 +84,7 @@ void LocalSaveActivity::Save()
 				a->saveWrite(filename);
 			}
 		}
-		~FileOverwriteConfirmation() override { }
+		~FileOverwriteConfirmation() override = default;
 	};
 
 	if(filenameField->GetText().length())

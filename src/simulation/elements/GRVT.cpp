@@ -70,4 +70,4 @@ int Element_GRVT::graphics(GRAPHICS_FUNC_ARGS)
 	return 1;
 }
 
-Element_GRVT::~Element_GRVT() {}
+Element_GRVT::~Element_GRVT() = default;

@@ -68,4 +68,4 @@ int Element_LAVA::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_LAVA::~Element_LAVA() {}
+Element_LAVA::~Element_LAVA() = default;

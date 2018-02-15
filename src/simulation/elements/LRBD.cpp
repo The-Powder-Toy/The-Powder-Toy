@@ -44,4 +44,4 @@ Element_LRBD::Element_LRBD()
 	Update = nullptr;
 }
 
-Element_LRBD::~Element_LRBD() {}
+Element_LRBD::~Element_LRBD() = default;

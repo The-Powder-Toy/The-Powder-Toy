@@ -61,4 +61,4 @@ int Element_BRCK::graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
-Element_BRCK::~Element_BRCK() {}
+Element_BRCK::~Element_BRCK() = default;

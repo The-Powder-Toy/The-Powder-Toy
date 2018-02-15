@@ -45,4 +45,4 @@ Element_PQRT::Element_PQRT()
 	Graphics = &Element_QRTZ::graphics;
 }
 
-Element_PQRT::~Element_PQRT() {}
+Element_PQRT::~Element_PQRT() = default;

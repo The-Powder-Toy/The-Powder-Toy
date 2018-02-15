@@ -5,8 +5,8 @@ class Client;
 class ClientListener
 {
 public:
-	ClientListener() {}
-	virtual ~ClientListener() {}
+	ClientListener() = default;
+	virtual ~ClientListener() = default;
 
 	virtual void NotifyUpdateAvailable(Client * sender) {}
 	virtual void NotifyAuthUserChanged(Client * sender) {}

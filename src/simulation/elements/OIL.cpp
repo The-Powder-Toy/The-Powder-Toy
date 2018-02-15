@@ -44,4 +44,4 @@ Element_OIL::Element_OIL()
 	Update = nullptr;
 }
 
-Element_OIL::~Element_OIL() {}
+Element_OIL::~Element_OIL() = default;

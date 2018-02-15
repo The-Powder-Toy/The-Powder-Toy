@@ -66,4 +66,4 @@ int Element_PLSM::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_PLSM::~Element_PLSM() {}
+Element_PLSM::~Element_PLSM() = default;

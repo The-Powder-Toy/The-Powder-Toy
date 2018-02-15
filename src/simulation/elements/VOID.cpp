@@ -44,4 +44,4 @@ Element_VOID::Element_VOID()
 	Update = nullptr;
 }
 
-Element_VOID::~Element_VOID() {}
+Element_VOID::~Element_VOID() = default;

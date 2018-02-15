@@ -15,9 +15,7 @@ ImageRequest::ImageRequest(std::string url, int width, int height, ListenerHandl
 }
 
 ImageRequest::~ImageRequest()
-{
-
-}
+= default;
 
 RequestBroker::ProcessResponse ImageRequest::Process(RequestBroker & rb)
 {

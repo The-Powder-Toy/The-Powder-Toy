@@ -64,4 +64,4 @@ int Element_SMKE::graphics(GRAPHICS_FUNC_ARGS)
 	return 1;
 }
 
-Element_SMKE::~Element_SMKE() {}
+Element_SMKE::~Element_SMKE() = default;

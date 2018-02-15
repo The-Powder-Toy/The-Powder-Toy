@@ -8,7 +8,7 @@ public:
 	virtual void NotifyError(Task * task) {}
 	virtual void NotifyProgress(Task * task) {}
 	virtual void NotifyStatus(Task * task) {}
-	virtual ~TaskListener() {}
+	virtual ~TaskListener() = default;
 };
 
 #endif /* TASK_H_ */

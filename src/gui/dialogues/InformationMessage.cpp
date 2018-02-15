@@ -84,6 +84,5 @@ void InformationMessage::OnDraw()
 	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 200, 200, 200, 255);
 }
 
-InformationMessage::~InformationMessage() {
-}
+InformationMessage::~InformationMessage() = default;
 

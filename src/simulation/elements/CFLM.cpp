@@ -71,4 +71,4 @@ int Element_CFLM::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_CFLM::~Element_CFLM() {}
+Element_CFLM::~Element_CFLM() = default;

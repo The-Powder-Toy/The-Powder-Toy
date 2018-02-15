@@ -158,7 +158,7 @@ void UpdateActivity::NotifyError(Task * sender)
 			}
 			a->Exit();
 		}
-		~ErrorMessageCallback() override { }
+		~ErrorMessageCallback() override = default;
 	};
 #ifdef UPDATESERVER
 	new ConfirmPrompt("Autoupdate failed", "Please go online to manually download a newer version.\nError: " + sender->GetError(), new ErrorMessageCallback(this));
@@ -168,6 +168,5 @@ void UpdateActivity::NotifyError(Task * sender)
 }
 
 
-UpdateActivity::~UpdateActivity() {
-}
+UpdateActivity::~UpdateActivity() = default;
 

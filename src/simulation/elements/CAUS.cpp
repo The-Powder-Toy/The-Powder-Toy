@@ -88,4 +88,4 @@ int Element_CAUS::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_CAUS::~Element_CAUS() {}
+Element_CAUS::~Element_CAUS() = default;

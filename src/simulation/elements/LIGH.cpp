@@ -378,4 +378,4 @@ int Element_LIGH::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_LIGH::~Element_LIGH() {}
+Element_LIGH::~Element_LIGH() = default;

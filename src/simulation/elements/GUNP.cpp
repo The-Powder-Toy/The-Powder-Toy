@@ -44,4 +44,4 @@ Element_GUNP::Element_GUNP()
 	Update = nullptr;
 }
 
-Element_GUNP::~Element_GUNP() {}
+Element_GUNP::~Element_GUNP() = default;

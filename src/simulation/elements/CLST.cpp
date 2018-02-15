@@ -100,4 +100,4 @@ int Element_CLST::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_CLST::~Element_CLST() {}
+Element_CLST::~Element_CLST() = default;

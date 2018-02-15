@@ -44,4 +44,4 @@ Element_METL::Element_METL()
 	Update = nullptr;
 }
 
-Element_METL::~Element_METL() {}
+Element_METL::~Element_METL() = default;

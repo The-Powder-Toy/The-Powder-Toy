@@ -55,4 +55,4 @@ int Element_NWHL::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_NWHL::~Element_NWHL() {}
+Element_NWHL::~Element_NWHL() = default;

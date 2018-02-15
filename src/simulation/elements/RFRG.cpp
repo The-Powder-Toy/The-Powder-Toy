@@ -65,4 +65,4 @@ int Element_RFRG::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_RFRG::~Element_RFRG() {}
+Element_RFRG::~Element_RFRG() = default;

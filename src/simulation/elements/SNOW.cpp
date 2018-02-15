@@ -70,4 +70,4 @@ int Element_SNOW::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_SNOW::~Element_SNOW() {}
+Element_SNOW::~Element_SNOW() = default;

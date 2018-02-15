@@ -44,4 +44,4 @@ Element_CNCT::Element_CNCT()
 	Update = nullptr;
 }
 
-Element_CNCT::~Element_CNCT() {}
+Element_CNCT::~Element_CNCT() = default;

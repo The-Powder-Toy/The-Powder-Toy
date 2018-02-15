@@ -67,4 +67,4 @@ int Element_FRZZ::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_FRZZ::~Element_FRZZ() {}
+Element_FRZZ::~Element_FRZZ() = default;

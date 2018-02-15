@@ -169,4 +169,4 @@ int Element_ETRD::nearestSparkablePart(Simulation *sim, int targetId)
 	return foundI;
 }
 
-Element_ETRD::~Element_ETRD() {}
+Element_ETRD::~Element_ETRD() = default;

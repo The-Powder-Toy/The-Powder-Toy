@@ -60,4 +60,4 @@ int Element_ISZS::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_ISZS::~Element_ISZS() {}
+Element_ISZS::~Element_ISZS() = default;

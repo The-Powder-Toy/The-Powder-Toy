@@ -69,7 +69,7 @@ public:
 		CloseActiveWindow();
 		SelfDestruct();
 	}
-	~DropDownWindow() override {}
+	~DropDownWindow() override = default;
 };
 
 DropDown::DropDown(Point position, Point size):

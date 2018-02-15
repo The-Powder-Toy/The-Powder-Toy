@@ -51,6 +51,4 @@ void DebugParts::Draw()
 }
 
 DebugParts::~DebugParts()
-{
-
-}
+= default;

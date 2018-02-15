@@ -73,4 +73,4 @@ int Element_TTAN::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_TTAN::~Element_TTAN() {}
+Element_TTAN::~Element_TTAN() = default;

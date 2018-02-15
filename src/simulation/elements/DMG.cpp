@@ -117,4 +117,4 @@ int Element_DMG::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_DMG::~Element_DMG() {}
+Element_DMG::~Element_DMG() = default;

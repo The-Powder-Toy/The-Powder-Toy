@@ -157,4 +157,4 @@ int Element_QRTZ::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_QRTZ::~Element_QRTZ() {}
+Element_QRTZ::~Element_QRTZ() = default;

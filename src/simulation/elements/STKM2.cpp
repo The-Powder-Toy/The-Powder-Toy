@@ -52,4 +52,4 @@ int Element_STKM2::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-Element_STKM2::~Element_STKM2() {}
+Element_STKM2::~Element_STKM2() = default;

@@ -108,7 +108,7 @@ PreviewView::PreviewView():
 			if (result == TextPrompt::ResultOkay)
 				v->c->Report(resultText);
 		}
-		~ReportPromptCallback() override { }
+		~ReportPromptCallback() override = default;
 	};
 
 	class ReportAction: public ui::ButtonAction

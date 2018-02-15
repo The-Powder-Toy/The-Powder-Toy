@@ -92,4 +92,4 @@ int Element_SLTW::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_SLTW::~Element_SLTW() {}
+Element_SLTW::~Element_SLTW() = default;

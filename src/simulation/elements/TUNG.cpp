@@ -129,4 +129,4 @@ int Element_TUNG::graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
-Element_TUNG::~Element_TUNG() {}
+Element_TUNG::~Element_TUNG() = default;

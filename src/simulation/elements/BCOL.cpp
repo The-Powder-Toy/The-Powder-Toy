@@ -46,4 +46,4 @@ Element_BCOL::Element_BCOL()
 	Graphics = &Element_COAL::graphics;
 }
 
-Element_BCOL::~Element_BCOL() {}
+Element_BCOL::~Element_BCOL() = default;

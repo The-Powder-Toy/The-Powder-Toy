@@ -44,4 +44,4 @@ Element_TESC::Element_TESC()
 	Update = nullptr;
 }
 
-Element_TESC::~Element_TESC() {}
+Element_TESC::~Element_TESC() = default;

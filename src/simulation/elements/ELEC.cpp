@@ -136,4 +136,4 @@ int Element_ELEC::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_ELEC::~Element_ELEC() {}
+Element_ELEC::~Element_ELEC() = default;

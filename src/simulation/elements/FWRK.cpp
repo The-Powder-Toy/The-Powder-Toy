@@ -115,4 +115,4 @@ int Element_FWRK::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_FWRK::~Element_FWRK() {}
+Element_FWRK::~Element_FWRK() = default;

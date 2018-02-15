@@ -14,10 +14,8 @@ public:
 			authorID(userID), authorName(username), authorNameFormatted(usernameFormatted), comment(commentText)
 	{
 	}
-	SaveComment(const SaveComment & comment):
-			authorID(comment.authorID), authorName(comment.authorName), authorNameFormatted(comment.authorNameFormatted), comment(comment.comment)
-	{
-	}
+	SaveComment(const SaveComment & comment) 
+	= default;
 	SaveComment(const SaveComment * comment):
 			authorID(comment->authorID), authorName(comment->authorName), authorNameFormatted(comment->authorNameFormatted), comment(comment->comment)
 	{

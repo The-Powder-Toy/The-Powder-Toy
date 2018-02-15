@@ -88,4 +88,4 @@ int Element_FUSE::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_FUSE::~Element_FUSE() {}
+Element_FUSE::~Element_FUSE() = default;

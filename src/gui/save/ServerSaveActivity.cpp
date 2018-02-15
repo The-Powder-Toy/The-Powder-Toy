@@ -237,7 +237,7 @@ void ServerSaveActivity::Save()
 				a->saveUpload();
 			}
 		}
-		~PublishConfirmation() override { }
+		~PublishConfirmation() override = default;
 	};
 
 	if(nameField->GetText().length())

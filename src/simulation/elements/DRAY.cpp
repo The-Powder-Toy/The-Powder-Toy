@@ -167,4 +167,4 @@ int Element_DRAY::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-Element_DRAY::~Element_DRAY() {}
+Element_DRAY::~Element_DRAY() = default;

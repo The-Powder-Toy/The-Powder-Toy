@@ -93,4 +93,4 @@ int Element_GPMP::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_GPMP::~Element_GPMP() {}
+Element_GPMP::~Element_GPMP() = default;

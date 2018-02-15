@@ -35,7 +35,7 @@ public:
 		topicReplies(topicReplies),
 		reputation(reputation)
 	{ }
-	UserInfo() {}
+	UserInfo() = default;
 };
 
 

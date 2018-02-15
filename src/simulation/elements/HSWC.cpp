@@ -96,4 +96,4 @@ int Element_HSWC::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_HSWC::~Element_HSWC() {}
+Element_HSWC::~Element_HSWC() = default;

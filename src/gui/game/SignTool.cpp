@@ -29,7 +29,7 @@ public:
 	void DoMouseWheel(int x, int y, int d) override { if(!signMoving) ui::Window::DoMouseWheel(x, y, d); }
 	void DoKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt) override { if(!signMoving) ui::Window::DoKeyPress(key, character, shift, ctrl, alt); }
 	void DoKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt) override { if(!signMoving) ui::Window::DoKeyRelease(key, character, shift, ctrl, alt); }
-	~SignWindow() override {}
+	~SignWindow() override = default;
 	void OnTryExit(ui::Window::ExitMethod method) override;
 	class OkayAction: public ui::ButtonAction
 	{

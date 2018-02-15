@@ -20,7 +20,7 @@ class ConfirmDialogueCallback
 {
 	public:
 		virtual void ConfirmCallback(ConfirmPrompt::DialogueResult result) {}
-		virtual ~ConfirmDialogueCallback() {}
+		virtual ~ConfirmDialogueCallback() = default;
 };
 
 #endif /* CONFIRMPROMPT_H_ */

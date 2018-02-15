@@ -56,4 +56,4 @@ int Element_PLUT::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_PLUT::~Element_PLUT() {}
+Element_PLUT::~Element_PLUT() = default;

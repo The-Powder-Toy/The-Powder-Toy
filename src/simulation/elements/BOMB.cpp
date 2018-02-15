@@ -118,4 +118,4 @@ int Element_BOMB::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_BOMB::~Element_BOMB() {}
+Element_BOMB::~Element_BOMB() = default;

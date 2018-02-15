@@ -13,7 +13,7 @@ public:
 	{
 		return message.c_str();
 	}
-	~PreviewModelException() throw() override {};
+	~PreviewModelException() throw() override = default;;
 };
 
 #endif /* PREVIEWMODELEXCEPTION_H_ */

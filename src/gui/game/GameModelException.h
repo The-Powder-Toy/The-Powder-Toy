@@ -13,7 +13,7 @@ public:
 	{
 		return message.c_str();
 	}
-	~GameModelException() throw() override {};
+	~GameModelException() throw() override = default;;
 };
 
 #endif /* GAMEMODELEXCEPTION_H_ */

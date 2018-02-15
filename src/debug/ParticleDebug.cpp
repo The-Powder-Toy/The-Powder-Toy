@@ -106,6 +106,4 @@ bool ParticleDebug::KeyPress(int key, Uint16 character, bool shift, bool ctrl, b
 }
 
 ParticleDebug::~ParticleDebug()
-{
-
-}
+= default;

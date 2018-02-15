@@ -707,4 +707,4 @@ void Element_STKM::STKM_set_element(Simulation *sim, playerst *playerp, int elem
 }
 
 
-Element_STKM::~Element_STKM() {}
+Element_STKM::~Element_STKM() = default;

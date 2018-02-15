@@ -33,6 +33,4 @@ void Spinner::Draw(const Point& screenPos)
 	}
 }
 Spinner::~Spinner()
-{
-
-}
+= default;

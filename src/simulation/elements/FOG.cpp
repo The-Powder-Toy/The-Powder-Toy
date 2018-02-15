@@ -68,4 +68,4 @@ int Element_FOG::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_FOG::~Element_FOG() {}
+Element_FOG::~Element_FOG() = default;

@@ -9,7 +9,7 @@ class TagsModelException {
 public:
 	TagsModelException(std::string message_): message(message_) {};
 	const char * what() const throw() { return message.c_str(); };
-	~TagsModelException() throw() {};
+	~TagsModelException() throw() = default;;
 };
 
 #endif /* TAGSMODELEXCEPTION_H_ */

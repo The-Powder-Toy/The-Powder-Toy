@@ -13,7 +13,7 @@ class DropDownAction
 {
 public:
 	virtual void OptionChanged(DropDown * sender, std::pair<std::string, int> newOption) {}
-	virtual ~DropDownAction() {}
+	virtual ~DropDownAction() = default;
 };
 class DropDown: public ui::Component {
 	friend class DropDownWindow;

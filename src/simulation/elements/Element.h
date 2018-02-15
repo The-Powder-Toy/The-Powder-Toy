@@ -55,7 +55,7 @@ public:
 	VideoBuffer * (*IconGenerator)(int, int, int);
 
 	Element();
-	virtual ~Element() {}
+	virtual ~Element() = default;
 	static int defaultGraphics(GRAPHICS_FUNC_ARGS);
 	static int legacyUpdate(UPDATE_FUNC_ARGS);
 

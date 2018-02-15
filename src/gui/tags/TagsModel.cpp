@@ -71,6 +71,5 @@ void TagsModel::notifyTagsChanged()
 	}
 }
 
-TagsModel::~TagsModel() {
-}
+TagsModel::~TagsModel() = default;
 

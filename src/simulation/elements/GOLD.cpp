@@ -109,4 +109,4 @@ int Element_GOLD::graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
-Element_GOLD::~Element_GOLD() {}
+Element_GOLD::~Element_GOLD() = default;

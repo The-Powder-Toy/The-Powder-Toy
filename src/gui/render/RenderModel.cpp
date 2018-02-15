@@ -132,5 +132,4 @@ void RenderModel::notifyColourChanged()
 	}
 }
 
-RenderModel::~RenderModel() {
-}
+RenderModel::~RenderModel() = default;

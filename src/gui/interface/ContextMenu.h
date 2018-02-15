@@ -32,7 +32,7 @@ public:
 	virtual void Show(ui::Point position);
 	void OnDraw() override;
 	void OnMouseDown(int x, int y, unsigned button) override;
-	~ContextMenu() override {}
+	~ContextMenu() override = default;
 };
 }
 

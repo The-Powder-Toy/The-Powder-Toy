@@ -141,4 +141,4 @@ int Element_PHOT::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_PHOT::~Element_PHOT() {}
+Element_PHOT::~Element_PHOT() = default;

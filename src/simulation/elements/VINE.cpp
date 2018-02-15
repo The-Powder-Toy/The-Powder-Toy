@@ -91,4 +91,4 @@ int Element_VINE::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_VINE::~Element_VINE() {}
+Element_VINE::~Element_VINE() = default;

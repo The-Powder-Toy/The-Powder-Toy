@@ -35,7 +35,7 @@ void Tool::SetTextureGen(VideoBuffer * (*textureGen)(int, int, int))
 std::string Tool::GetIdentifier() { return identifier; }
 string Tool::GetName() { return toolName; }
 string Tool::GetDescription() { return toolDescription; }
-Tool::~Tool() {}
+Tool::~Tool() = default;
 
 void Tool::Click(Simulation * sim, Brush * brush, ui::Point position) { }
 void Tool::Draw(Simulation * sim, Brush * brush, ui::Point position) {
@@ -54,7 +54,7 @@ ElementTool::ElementTool(int id, string name, string description, int r, int g, 
 	Tool(id, name, description, r, g, b, identifier, textureGen)
 {
 }
-ElementTool::~ElementTool() {}
+ElementTool::~ElementTool() = default;
 void ElementTool::Draw(Simulation * sim, Brush * brush, ui::Point position){
 	sim->CreateParts(position.X, position.Y, toolID, brush);
 }
@@ -74,7 +74,7 @@ Tool(id, name, description, r, g, b, identifier, textureGen)
 {
 	blocky = true;
 }
-WallTool::~WallTool() {}
+WallTool::~WallTool() = default;
 void WallTool::Draw(Simulation * sim, Brush * brush, ui::Point position) {
 	sim->CreateWalls(position.X, position.Y, 1, 1, toolID, brush);
 }

@@ -70,4 +70,4 @@ int Element_FRZW::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_FRZW::~Element_FRZW() {}
+Element_FRZW::~Element_FRZW() = default;

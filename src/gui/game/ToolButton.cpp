@@ -108,6 +108,5 @@ int ToolButton::GetSelectionState()
 	return currentSelection;
 }
 
-ToolButton::~ToolButton() {
-}
+ToolButton::~ToolButton() = default;
 

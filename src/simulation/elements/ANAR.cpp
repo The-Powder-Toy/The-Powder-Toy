@@ -70,4 +70,4 @@ int Element_ANAR::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_ANAR::~Element_ANAR() {}
+Element_ANAR::~Element_ANAR() = default;

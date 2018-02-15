@@ -8,7 +8,7 @@ public:
 	virtual void Exit() {}
 	virtual void Show() {}
 	virtual void Hide() {}
-	virtual ~Activity() {}
+	virtual ~Activity() = default;
 };
 
 class WindowActivity: public ui::Window, public Activity
@@ -32,5 +32,5 @@ public:
 	{
 		CloseActiveWindow();
 	}
-	~WindowActivity() override {}
+	~WindowActivity() override = default;
 };

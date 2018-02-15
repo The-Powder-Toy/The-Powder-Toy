@@ -53,4 +53,4 @@ int Element_NTCT::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_NTCT::~Element_NTCT() {}
+Element_NTCT::~Element_NTCT() = default;

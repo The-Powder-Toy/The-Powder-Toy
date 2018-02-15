@@ -91,4 +91,4 @@ int Element_NBLE::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_NBLE::~Element_NBLE() {}
+Element_NBLE::~Element_NBLE() = default;

@@ -60,4 +60,4 @@ int Element_ISOZ::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_ISOZ::~Element_ISOZ() {}
+Element_ISOZ::~Element_ISOZ() = default;

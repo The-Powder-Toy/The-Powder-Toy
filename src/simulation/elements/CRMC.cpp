@@ -63,5 +63,5 @@ int Element_CRMC::graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
-Element_CRMC::~Element_CRMC() {}
+Element_CRMC::~Element_CRMC() = default;
 

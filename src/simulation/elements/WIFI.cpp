@@ -93,4 +93,4 @@ int Element_WIFI::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_WIFI::~Element_WIFI() {}
+Element_WIFI::~Element_WIFI() = default;

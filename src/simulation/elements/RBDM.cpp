@@ -44,4 +44,4 @@ Element_RBDM::Element_RBDM()
 	Update = nullptr;
 }
 
-Element_RBDM::~Element_RBDM() {}
+Element_RBDM::~Element_RBDM() = default;

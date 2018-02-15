@@ -88,4 +88,4 @@ int Element_SHLD2::update(UPDATE_FUNC_ARGS)
 
 
 
-Element_SHLD2::~Element_SHLD2() {}
+Element_SHLD2::~Element_SHLD2() = default;

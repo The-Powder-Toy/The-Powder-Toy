@@ -87,4 +87,4 @@ int Element_IGNT::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_IGNT::~Element_IGNT() {}
+Element_IGNT::~Element_IGNT() = default;

@@ -122,4 +122,4 @@ int Element_BANG::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_BANG::~Element_BANG() {}
+Element_BANG::~Element_BANG() = default;

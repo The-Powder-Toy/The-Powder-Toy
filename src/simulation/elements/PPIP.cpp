@@ -156,4 +156,4 @@ void Element_PPIP::flood_trigger(Simulation * sim, int x, int y, int sparkedBy)
 	delete[] coord_stack;
 }
 
-Element_PPIP::~Element_PPIP() {}
+Element_PPIP::~Element_PPIP() = default;

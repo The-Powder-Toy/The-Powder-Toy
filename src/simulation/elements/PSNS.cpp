@@ -104,4 +104,4 @@ int Element_PSNS::update(UPDATE_FUNC_ARGS)
 
 
 
-Element_PSNS::~Element_PSNS() {}
+Element_PSNS::~Element_PSNS() = default;

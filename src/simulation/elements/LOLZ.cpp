@@ -59,4 +59,4 @@ int Element_LOLZ::RuleTable[9][9] =
 //#TPT-Directive ElementHeader Element_LOLZ static int lolz[XRES/9][YRES/9];
 int Element_LOLZ::lolz[XRES/9][YRES/9];
 
-Element_LOLZ::~Element_LOLZ() {}
+Element_LOLZ::~Element_LOLZ() = default;

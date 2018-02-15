@@ -283,4 +283,4 @@ void LocalBrowserView::OnKeyRelease(int key, Uint16 character, bool shift, bool 
 		c->SetMoveToFront(true);
 }
 
-LocalBrowserView::~LocalBrowserView() { }
+LocalBrowserView::~LocalBrowserView() = default;

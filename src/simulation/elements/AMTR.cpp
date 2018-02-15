@@ -84,4 +84,4 @@ int Element_AMTR::graphics(GRAPHICS_FUNC_ARGS)
 	return 1;
 }
 
-Element_AMTR::~Element_AMTR() {}
+Element_AMTR::~Element_AMTR() = default;

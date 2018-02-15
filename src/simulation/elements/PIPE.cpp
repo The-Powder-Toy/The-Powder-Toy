@@ -516,4 +516,4 @@ void Element_PIPE::pushParticle(Simulation * sim, int i, int count, int original
 }
 
 
-Element_PIPE::~Element_PIPE() {}
+Element_PIPE::~Element_PIPE() = default;

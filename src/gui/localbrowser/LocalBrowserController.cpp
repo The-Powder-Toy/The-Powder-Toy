@@ -43,7 +43,7 @@ void LocalBrowserController::RemoveSelected()
 			if (result == ConfirmPrompt::ResultOkay)
 				c->removeSelectedC();
 		}
-		~RemoveSelectedConfirmation() override { }
+		~RemoveSelectedConfirmation() override = default;
 	};
 
 	std::stringstream desc;
@@ -95,7 +95,7 @@ void LocalBrowserController::RescanStamps()
 			if (result == ConfirmPrompt::ResultOkay)
 				c->rescanStampsC();
 		}
-		~RescanConfirmation() override { }
+		~RescanConfirmation() override = default;
 	};
 
 	std::stringstream desc;

@@ -78,4 +78,4 @@ int Element_ICEI::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_ICEI::~Element_ICEI() {}
+Element_ICEI::~Element_ICEI() = default;

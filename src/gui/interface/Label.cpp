@@ -28,9 +28,7 @@ Label::Label(Point position, Point size, std::string labelText):
 }
 
 Label::~Label()
-{
-
-}
+= default;
 
 void Label::SetMultiline(bool status)
 {

@@ -207,4 +207,4 @@ int Element_SPNG::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_SPNG::~Element_SPNG() {}
+Element_SPNG::~Element_SPNG() = default;

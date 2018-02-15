@@ -44,4 +44,4 @@ Element_THRM::Element_THRM()
 	Update = nullptr;
 }
 
-Element_THRM::~Element_THRM() {}
+Element_THRM::~Element_THRM() = default;

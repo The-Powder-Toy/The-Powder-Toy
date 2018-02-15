@@ -58,4 +58,4 @@ int Element_GLAS::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_GLAS::~Element_GLAS() {}
+Element_GLAS::~Element_GLAS() = default;

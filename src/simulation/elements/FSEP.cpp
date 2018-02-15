@@ -80,4 +80,4 @@ int Element_FSEP::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_FSEP::~Element_FSEP() {}
+Element_FSEP::~Element_FSEP() = default;

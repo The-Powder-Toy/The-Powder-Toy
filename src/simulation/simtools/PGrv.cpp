@@ -15,4 +15,4 @@ int Tool_PGrv::Perform(Simulation * sim, Particle * cpart, int x, int y, int bru
 	return 1;
 }
 
-Tool_PGrv::~Tool_PGrv() {}
+Tool_PGrv::~Tool_PGrv() = default;

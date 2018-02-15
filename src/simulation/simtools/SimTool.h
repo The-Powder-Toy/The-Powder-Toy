@@ -16,7 +16,7 @@ public:
 	const char *Description;
 
 	SimTool();
-	virtual ~SimTool() {}
+	virtual ~SimTool() = default;
 	virtual int Perform(Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength) { return 0; }
 };
 

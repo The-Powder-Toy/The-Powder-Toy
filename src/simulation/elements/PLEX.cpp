@@ -45,4 +45,4 @@ Element_PLEX::Element_PLEX()
 	Update = nullptr;
 }
 
-Element_PLEX::~Element_PLEX() {}
+Element_PLEX::~Element_PLEX() = default;

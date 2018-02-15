@@ -67,4 +67,4 @@ int Element_YEST::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_YEST::~Element_YEST() {}
+Element_YEST::~Element_YEST() = default;

@@ -103,6 +103,5 @@ void LuaSlider::triggerOnValueChanged()
 }
 
 LuaSlider::~LuaSlider()
-{
-}
+= default;
 #endif

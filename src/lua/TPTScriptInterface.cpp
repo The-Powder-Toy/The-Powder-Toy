@@ -597,6 +597,5 @@ AnyType TPTScriptInterface::tptS_quit(std::deque<std::string> * words)
 	return NumberType(0);
 }
 
-TPTScriptInterface::~TPTScriptInterface() {
-}
+TPTScriptInterface::~TPTScriptInterface() = default;
 

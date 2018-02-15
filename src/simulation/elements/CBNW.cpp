@@ -146,4 +146,4 @@ int Element_CBNW::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_CBNW::~Element_CBNW() {}
+Element_CBNW::~Element_CBNW() = default;

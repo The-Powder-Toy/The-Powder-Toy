@@ -44,4 +44,4 @@ Element_DMND::Element_DMND()
 	Update = nullptr;
 }
 
-Element_DMND::~Element_DMND() {}
+Element_DMND::~Element_DMND() = default;

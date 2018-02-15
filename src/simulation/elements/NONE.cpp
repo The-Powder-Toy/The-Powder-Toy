@@ -62,4 +62,4 @@ VideoBuffer * Element_NONE::iconGen(int wallID, int width, int height)
 }
 
 
-Element_NONE::~Element_NONE() {}
+Element_NONE::~Element_NONE() = default;

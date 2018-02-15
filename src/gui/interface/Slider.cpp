@@ -134,7 +134,6 @@ void Slider::Draw(const Point& screenPos)
 }
 
 Slider::~Slider()
-{
-}
+= default;
 
 } /* namespace ui */

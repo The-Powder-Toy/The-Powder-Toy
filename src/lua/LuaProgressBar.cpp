@@ -62,6 +62,5 @@ int LuaProgressBar::status(lua_State * l)
 }
 
 LuaProgressBar::~LuaProgressBar()
-{
-}
+= default;
 #endif

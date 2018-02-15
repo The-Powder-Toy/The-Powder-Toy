@@ -163,6 +163,5 @@ void TagsView::addTag()
 	tagInput->SetText("");
 }
 
-TagsView::~TagsView() {
-}
+TagsView::~TagsView() = default;
 

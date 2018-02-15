@@ -143,7 +143,7 @@ bool ConfirmPrompt::Blocking(std::string title, std::string message, std::string
 				outputResult = false;
 			ui::Engine::Ref().Break();
 		}
-		~BlockingPromptCallback() override { }
+		~BlockingPromptCallback() override = default;
 	};
 	bool result;
 	new ConfirmPrompt(title, message, buttonText, new BlockingPromptCallback(result));

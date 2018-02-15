@@ -92,7 +92,7 @@ std::string TextPrompt::Blocking(std::string title, std::string message, std::st
 				outputString = "";
 			ui::Engine::Ref().Break();
 		}
-		~BlockingTextCallback() override { }
+		~BlockingTextCallback() override = default;
 	};
 	new TextPrompt(title, message, text, placeholder, multiline, new BlockingTextCallback(returnString));
 	EngineProcess();

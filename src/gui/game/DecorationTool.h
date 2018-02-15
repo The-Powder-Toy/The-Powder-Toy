@@ -67,7 +67,7 @@ public:
 		ren(ren_)
 	{
 	}
-	~DecorationTool() override {}
+	~DecorationTool() override = default;
 	void Draw(Simulation * sim, Brush * brush, ui::Point position) override{
 		sim->ApplyDecorationPoint(position.X, position.Y, Red, Green, Blue, Alpha, toolID, brush);
 	}

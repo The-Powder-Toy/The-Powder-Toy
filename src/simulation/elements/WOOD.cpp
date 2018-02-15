@@ -73,4 +73,4 @@ int Element_WOOD::graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
-Element_WOOD::~Element_WOOD() {}
+Element_WOOD::~Element_WOOD() = default;

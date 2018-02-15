@@ -20,4 +20,4 @@ int Tool_Air::Perform(Simulation * sim, Particle * cpart, int x, int y, int brus
 	return 1;
 }
 
-Tool_Air::~Tool_Air() {}
+Tool_Air::~Tool_Air() = default;

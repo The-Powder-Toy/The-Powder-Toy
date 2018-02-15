@@ -7,7 +7,7 @@ class Notification
 {
 public:
 	Notification(std::string message) : Message(message) {}
-	virtual ~Notification() {};
+	virtual ~Notification() = default;;
 	std::string Message;
 
 	virtual void Action() { }

@@ -87,4 +87,4 @@ int Element_BOYL::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_BOYL::~Element_BOYL() {}
+Element_BOYL::~Element_BOYL() = default;

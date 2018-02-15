@@ -52,4 +52,4 @@ int Element_VRSS::graphics(GRAPHICS_FUNC_ARGS)
 	return 1;
 }
 
-Element_VRSS::~Element_VRSS() {}
+Element_VRSS::~Element_VRSS() = default;

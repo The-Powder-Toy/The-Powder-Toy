@@ -118,4 +118,4 @@ int Element_GRAV::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_GRAV::~Element_GRAV() {}
+Element_GRAV::~Element_GRAV() = default;

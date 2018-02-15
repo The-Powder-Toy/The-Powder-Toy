@@ -44,4 +44,4 @@ Element_MWAX::Element_MWAX()
 	Update = nullptr;
 }
 
-Element_MWAX::~Element_MWAX() {}
+Element_MWAX::~Element_MWAX() = default;

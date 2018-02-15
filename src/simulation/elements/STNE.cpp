@@ -44,4 +44,4 @@ Element_STNE::Element_STNE()
 	Update = nullptr;
 }
 
-Element_STNE::~Element_STNE() {}
+Element_STNE::~Element_STNE() = default;

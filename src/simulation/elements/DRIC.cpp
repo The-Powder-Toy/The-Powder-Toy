@@ -44,4 +44,4 @@ Element_DRIC::Element_DRIC()
 	Update = nullptr;
 }
 
-Element_DRIC::~Element_DRIC() {}
+Element_DRIC::~Element_DRIC() = default;

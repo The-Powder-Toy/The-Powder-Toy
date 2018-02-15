@@ -262,4 +262,4 @@ int Element_FIRE::graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
-Element_FIRE::~Element_FIRE() {}
+Element_FIRE::~Element_FIRE() = default;

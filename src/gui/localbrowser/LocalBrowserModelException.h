@@ -10,7 +10,7 @@ class LocalBrowserModelException {
 public:
 	LocalBrowserModelException(string message_): message(message_) {};
 	const char * what() const throw() { return message.c_str(); };
-	~LocalBrowserModelException() throw() {};
+	~LocalBrowserModelException() throw() = default;;
 };
 
 #endif /* STAMPSMODELEXCEPTION_H_ */

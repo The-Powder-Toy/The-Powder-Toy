@@ -247,7 +247,7 @@ OptionsView::OptionsView():
 	class DataFolderAction: public ui::ButtonAction
 	{
 	public:
-		DataFolderAction() { }
+		DataFolderAction() = default;
 		void ActionCallback(ui::Button * sender) override
 		{
 //one of these should always be defined
@@ -325,5 +325,4 @@ void OptionsView::OnTryExit(ExitMethod method)
 }
 
 
-OptionsView::~OptionsView() {
-}
+OptionsView::~OptionsView() = default;

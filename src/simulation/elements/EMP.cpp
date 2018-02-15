@@ -224,4 +224,4 @@ int Element_EMP::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_EMP::~Element_EMP() {}
+Element_EMP::~Element_EMP() = default;

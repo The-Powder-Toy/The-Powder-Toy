@@ -77,6 +77,4 @@ void ElementPopulationDebug::Draw()
 }
 
 ElementPopulationDebug::~ElementPopulationDebug()
-{
-
-}
+= default;

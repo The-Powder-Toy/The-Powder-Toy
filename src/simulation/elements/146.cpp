@@ -44,4 +44,4 @@ Element_146::Element_146()
 	Update = nullptr;
 }
 
-Element_146::~Element_146() {}
+Element_146::~Element_146() = default;

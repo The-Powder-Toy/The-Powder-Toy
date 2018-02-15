@@ -105,6 +105,5 @@ void LuaButton::triggerAction()
 }
 
 LuaButton::~LuaButton()
-{
-}
+= default;
 #endif

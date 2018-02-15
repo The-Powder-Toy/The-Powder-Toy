@@ -10,7 +10,7 @@ class CheckboxAction
 {
 public:
 	virtual void ActionCallback(ui::Checkbox * sender) {}
-	virtual ~CheckboxAction() {}
+	virtual ~CheckboxAction() = default;
 };
 class Checkbox: public ui::Component {
 	std::string text;

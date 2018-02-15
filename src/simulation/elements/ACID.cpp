@@ -140,4 +140,4 @@ int Element_ACID::graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
-Element_ACID::~Element_ACID() {}
+Element_ACID::~Element_ACID() = default;

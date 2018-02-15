@@ -44,4 +44,4 @@ Element_LO2::Element_LO2()
 	Update = nullptr;
 }
 
-Element_LO2::~Element_LO2() {}
+Element_LO2::~Element_LO2() = default;

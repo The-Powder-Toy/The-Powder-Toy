@@ -203,4 +203,4 @@ int Element_PROT::graphics(GRAPHICS_FUNC_ARGS)
 	return 1;
 }
 
-Element_PROT::~Element_PROT() {}
+Element_PROT::~Element_PROT() = default;

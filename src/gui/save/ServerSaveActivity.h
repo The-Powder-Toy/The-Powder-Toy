@@ -21,8 +21,8 @@ public:
 	class SaveUploadedCallback
 	{
 	public:
-		SaveUploadedCallback() {}
-		virtual  ~SaveUploadedCallback() {}
+		SaveUploadedCallback() = default;
+		virtual  ~SaveUploadedCallback() = default;
 		virtual void SaveUploaded(SaveInfo save) {}
 	};
 	ServerSaveActivity(SaveInfo save, SaveUploadedCallback * callback);

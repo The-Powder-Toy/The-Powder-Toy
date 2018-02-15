@@ -4,9 +4,9 @@
 class ControllerCallback
 {
 public:
-	ControllerCallback() {}
+	ControllerCallback() = default;
 	virtual void ControllerExit() {}
-	virtual ~ControllerCallback() {}
+	virtual ~ControllerCallback() = default;
 };
 
 class Controller

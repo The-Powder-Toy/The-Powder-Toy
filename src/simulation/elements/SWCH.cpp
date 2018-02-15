@@ -109,4 +109,4 @@ int Element_SWCH::graphics(GRAPHICS_FUNC_ARGS)
 }
 
 
-Element_SWCH::~Element_SWCH() {}
+Element_SWCH::~Element_SWCH() = default;

@@ -74,4 +74,4 @@ int Element_BMTL::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_BMTL::~Element_BMTL() {}
+Element_BMTL::~Element_BMTL() = default;

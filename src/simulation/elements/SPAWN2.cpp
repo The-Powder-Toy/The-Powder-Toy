@@ -44,4 +44,4 @@ Element_SPAWN2::Element_SPAWN2()
 	Update = nullptr;
 }
 
-Element_SPAWN2::~Element_SPAWN2() {}
+Element_SPAWN2::~Element_SPAWN2() = default;

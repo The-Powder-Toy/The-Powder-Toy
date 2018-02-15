@@ -119,4 +119,4 @@ int Element_TSNS::update(UPDATE_FUNC_ARGS)
 
 
 
-Element_TSNS::~Element_TSNS() {}
+Element_TSNS::~Element_TSNS() = default;

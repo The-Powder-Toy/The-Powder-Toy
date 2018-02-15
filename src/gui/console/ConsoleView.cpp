@@ -97,6 +97,5 @@ void ConsoleView::OnDraw()
 	g->draw_line(Position.X, Position.Y+Size.Y, Position.X+Size.X, Position.Y+Size.Y, 255, 255, 255, 200);
 }
 
-ConsoleView::~ConsoleView() {
-}
+ConsoleView::~ConsoleView() = default;
 

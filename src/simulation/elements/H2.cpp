@@ -134,4 +134,4 @@ int Element_H2::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_H2::~Element_H2() {}
+Element_H2::~Element_H2() = default;

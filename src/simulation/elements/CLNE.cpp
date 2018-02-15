@@ -87,4 +87,4 @@ int Element_CLNE::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_CLNE::~Element_CLNE() {}
+Element_CLNE::~Element_CLNE() = default;

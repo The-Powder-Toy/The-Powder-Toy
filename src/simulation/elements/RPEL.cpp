@@ -70,4 +70,4 @@ int Element_RPEL::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_RPEL::~Element_RPEL() {}
+Element_RPEL::~Element_RPEL() = default;

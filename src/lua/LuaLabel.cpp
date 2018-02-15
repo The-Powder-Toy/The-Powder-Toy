@@ -46,6 +46,5 @@ int LuaLabel::text(lua_State * l)
 }
 
 LuaLabel::~LuaLabel()
-{
-}
+= default;
 #endif

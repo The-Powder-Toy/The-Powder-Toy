@@ -17,7 +17,7 @@ class ErrorMessageCallback
 {
 	public:
 		virtual void DismissCallback() {}
-		virtual ~ErrorMessageCallback() {}
+		virtual ~ErrorMessageCallback() = default;
 };
 
 #endif /* ERRORMESSAGE_H_ */

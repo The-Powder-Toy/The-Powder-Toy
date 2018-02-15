@@ -24,4 +24,4 @@ int Tool_Cool::Perform(Simulation * sim, Particle * cpart, int x, int y, int bru
 	return 1;
 }
 
-Tool_Cool::~Tool_Cool() {}
+Tool_Cool::~Tool_Cool() = default;

@@ -44,4 +44,4 @@ Element_BGLA::Element_BGLA()
 	Update = nullptr;
 }
 
-Element_BGLA::~Element_BGLA() {}
+Element_BGLA::~Element_BGLA() = default;

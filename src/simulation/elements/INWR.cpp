@@ -44,4 +44,4 @@ Element_INWR::Element_INWR()
 	Update = nullptr;
 }
 
-Element_INWR::~Element_INWR() {}
+Element_INWR::~Element_INWR() = default;

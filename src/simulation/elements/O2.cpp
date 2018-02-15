@@ -117,4 +117,4 @@ int Element_O2::update(UPDATE_FUNC_ARGS)
 }
 
 
-Element_O2::~Element_O2() {}
+Element_O2::~Element_O2() = default;
