@@ -447,7 +447,7 @@ if not GetOption('no-sse'):
 		env.Append(CPPDEFINES=['X86_SSE2'])
 	if GetOption('sse3'):
 		if msvc:
-			env.Append(CCFLAGS=['/arch:SSE3'])
+			FatalError("--sse3 doesn't work with --msvc")
 		else:
 			env.Append(CCFLAGS=['-msse3'])
 		env.Append(CPPDEFINES=['X86_SSE3'])
