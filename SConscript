@@ -468,15 +468,17 @@ if GetOption('debugging'):
 		env.Append(CPPDEFINES=['DEBUG'])
 elif GetOption('release'):
 	if msvc:
-		env.Append(CCFLAGS=['/O2', '/Oy-', '/fp:fast'])
+		env.Append(CCFLAGS=['/O2', '/Oy-', '/fp:fast', '/GL'])
 		if GetOption('static'):
 			env.Append(CCFLAGS=['/MT'])
 		else:
 			env.Append(CCFLAGS=['/MD'])
 	else:
-		env.Append(CCFLAGS=['-O3', '-ftree-vectorize', '-funsafe-math-optimizations', '-ffast-math', '-fomit-frame-pointer'])
+		env.Append(CCFLAGS=['-O3', '-ftree-vectorize', '-funsafe-math-optimizations', '-ffast-math', '-fomit-frame-pointer', '-flto'])
 		if platform != "Darwin":
 			env.Append(CCFLAGS=['-funsafe-loop-optimizations'])
+		#-flto: link time optimization, gives a noticeable speed boost
+		env.Append(LINKFLAGS=['-flto'])
 
 if GetOption('static'):
 	if platform == "Windows":
