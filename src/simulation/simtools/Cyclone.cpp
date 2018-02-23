@@ -21,8 +21,8 @@ int Tool_Cycl::Perform(Simulation * sim, Particle * cpart, int x, int y, int bru
 	// only trigger once per cell (less laggy)
 	if ((x%CELL) == 0 && (y%CELL) == 0)
 	{
-		float *vx = (sim->air->ovx)[y/CELL][x/CELL];
-		float *vy = (sim->air->ovy)[y/CELL][x/CELL];
+		float *vx = &(sim->vx)[y/CELL][x/CELL];
+		float *vy = &(sim->vy)[y/CELL][x/CELL];
 
 		*vx -= (strength / 16) * (cos(1.57f + (atan2(brushY - y, brushX - x))));
 		*vy -= (strength / 16) * (sin(1.57f + (atan2(brushY - y, brushX - x))));

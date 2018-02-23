@@ -11,12 +11,12 @@ Tool_Air::Tool_Air()
 
 int Tool_Air::Perform(Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength)
 {
-	(*sim->air->opv)[y/CELL][x/CELL] += strength*0.05f;
+	sim->pv[y/CELL][x/CELL] += strength*0.05f;
 
-	if ((*sim->air->opv)[y/CELL][x/CELL] > 256.0f)
-		(*sim->air->opv)[y/CELL][x/CELL] = 256.0f;
-	else if ((*sim->air->opv)[y/CELL][x/CELL] < -256.0f)
-		(*sim->air->opv)[y/CELL][x/CELL] = -256.0f;
+	if (sim->pv[y/CELL][x/CELL] > 256.0f)
+		sim->pv[y/CELL][x/CELL] = 256.0f;
+	else if (sim->pv[y/CELL][x/CELL] < -256.0f)
+		sim->pv[y/CELL][x/CELL] = -256.0f;
 	return 1;
 }
 
