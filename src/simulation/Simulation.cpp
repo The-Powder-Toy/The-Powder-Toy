@@ -250,9 +250,12 @@ int Simulation::Load(int fullX, int fullY, GameSave * save, bool includePressure
 			{
 				if (save->hasPressure)
 				{
-					pv[saveBlockY+blockY][saveBlockX+blockX] = save->pressure[saveBlockY][saveBlockX];
-					vx[saveBlockY+blockY][saveBlockX+blockX] = save->velocityX[saveBlockY][saveBlockX];
-					vy[saveBlockY+blockY][saveBlockX+blockX] = save->velocityY[saveBlockY][saveBlockX];
+					(*air->pv)[saveBlockY+blockY][saveBlockX+blockX] = save->pressure[saveBlockY][saveBlockX];
+					(*air->vx)[saveBlockY+blockY][saveBlockX+blockX] = save->velocityX[saveBlockY][saveBlockX];
+					(*air->vy)[saveBlockY+blockY][saveBlockX+blockX] = save->velocityY[saveBlockY][saveBlockX];
+					(*air->opv)[saveBlockY+blockY][saveBlockX+blockX] = save->pressure[saveBlockY][saveBlockX];
+					(*air->ovx)[saveBlockY+blockY][saveBlockX+blockX] = save->velocityX[saveBlockY][saveBlockX];
+					(*air->ovy)[saveBlockY+blockY][saveBlockX+blockX] = save->velocityY[saveBlockY][saveBlockX];
 				}
 				if (save->hasAmbientHeat)
 					hv[saveBlockY+blockY][saveBlockX+blockX] = save->ambientHeat[saveBlockY][saveBlockX];
@@ -262,6 +265,8 @@ int Simulation::Load(int fullX, int fullY, GameSave * save, bool includePressure
 
 	gravWallChanged = true;
 	air->RecalculateBlockAirMaps();
+	//HACK: Update the air to avert desyncs
+	air->update_air();
 
 	return 0;
 }
