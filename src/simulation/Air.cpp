@@ -41,36 +41,42 @@ void Air::make_kernel(void) //used for velocity
 
 void Air::Clear()
 {
-	std::fill(&pv[0][0], &pv[0][0]+((XRES/CELL)*(YRES/CELL)), 0.0f);
-	std::fill(&vy[0][0], &vy[0][0]+((XRES/CELL)*(YRES/CELL)), 0.0f);
-	std::fill(&vx[0][0], &vx[0][0]+((XRES/CELL)*(YRES/CELL)), 0.0f);
+	std::fill(opv[0][0], opv[0][0]+((XRES/CELL)*(YRES/CELL)), 0.0f);
+	std::fill(ovy[0][0], ovy[0][0]+((XRES/CELL)*(YRES/CELL)), 0.0f);
+	std::fill(ovx[0][0], ovx[0][0]+((XRES/CELL)*(YRES/CELL)), 0.0f);
+	std::fill(pv[0][0], pv[0][0]+((XRES/CELL)*(YRES/CELL)), 0.0f);
+	std::fill(vy[0][0], vy[0][0]+((XRES/CELL)*(YRES/CELL)), 0.0f);
+	std::fill(vx[0][0], vx[0][0]+((XRES/CELL)*(YRES/CELL)), 0.0f);
 }
 
 void Air::ClearAirH()
 {
-	std::fill(&hv[0][0], &hv[0][0]+((XRES/CELL)*(YRES/CELL)), ambientAirTemp);
+	std::fill(ohv[0][0], ohv[0][0]+((XRES/CELL)*(YRES/CELL)), ambientAirTemp);
 }
 
 void Air::update_airh(void)
 {
 	int x, y, i, j;
 	float odh, dh, dx, dy, f, tx, ty;
+	#pragma omp parallel for
 	for (i=0; i<YRES/CELL; i++) //reduces pressure/velocity on the edges every frame
 	{
-		hv[i][0] = ambientAirTemp;
-		hv[i][1] = ambientAirTemp;
-		hv[i][XRES/CELL-3] = ambientAirTemp;
-		hv[i][XRES/CELL-2] = ambientAirTemp;
-		hv[i][XRES/CELL-1] = ambientAirTemp;
+		(*hv)[i][0] = ambientAirTemp;
+		(*hv)[i][1] = ambientAirTemp;
+		(*hv)[i][XRES/CELL-3] = ambientAirTemp;
+		(*hv)[i][XRES/CELL-2] = ambientAirTemp;
+		(*hv)[i][XRES/CELL-1] = ambientAirTemp;
 	}
+	#pragma omp parallel for
 	for (i=0; i<XRES/CELL; i++) //reduces pressure/velocity on the edges every frame
 	{
-		hv[0][i] = ambientAirTemp;
-		hv[1][i] = ambientAirTemp;
-		hv[YRES/CELL-3][i] = ambientAirTemp;
-		hv[YRES/CELL-2][i] = ambientAirTemp;
-		hv[YRES/CELL-1][i] = ambientAirTemp;
+		(*hv)[0][i] = ambientAirTemp;
+		(*hv)[1][i] = ambientAirTemp;
+		(*hv)[YRES/CELL-3][i] = ambientAirTemp;
+		(*hv)[YRES/CELL-2][i] = ambientAirTemp;
+		(*hv)[YRES/CELL-1][i] = ambientAirTemp;
 	}
+	#pragma omp parallel for simd
 	for (y=0; y<YRES/CELL; y++) //update velocity and pressure
 	{
 		for (x=0; x<XRES/CELL; x++)
@@ -87,16 +93,16 @@ void Air::update_airh(void)
 					        !(bmap_blockairh[y+j][x+i]&0x8))
 						{
 						f = kernel[i+1+(j+1)*3];
-						dh += hv[y+j][x+i]*f;
-						dx += vx[y+j][x+i]*f;
-						dy += vy[y+j][x+i]*f;
+						dh += (*hv)[y+j][x+i]*f;
+						dx += (*vx)[y+j][x+i]*f;
+						dy += (*vy)[y+j][x+i]*f;
 					}
 					else
 					{
 						f = kernel[i+1+(j+1)*3];
-						dh += hv[y][x]*f;
-						dx += vx[y][x]*f;
-						dy += vy[y][x]*f;
+						dh += (*hv)[y][x]*f;
+						dx += (*vx)[y][x]*f;
+						dy += (*vy)[y][x]*f;
 					}
 				}
 			}
@@ -110,25 +116,28 @@ void Air::update_airh(void)
 			{
 				odh = dh;
 				dh *= 1.0f - AIR_VADV;
-				dh += AIR_VADV*(1.0f-tx)*(1.0f-ty)*((bmap_blockairh[j][i]&0x8) ? odh : hv[j][i]);
-				dh += AIR_VADV*tx*(1.0f-ty)*((bmap_blockairh[j][i+1]&0x8) ? odh : hv[j][i+1]);
-				dh += AIR_VADV*(1.0f-tx)*ty*((bmap_blockairh[j+1][i]&0x8) ? odh : hv[j+1][i]);
-				dh += AIR_VADV*tx*ty*((bmap_blockairh[j+1][i+1]&0x8) ? odh : hv[j+1][i+1]);
+				dh += AIR_VADV*(1.0f-tx)*(1.0f-ty)*((bmap_blockairh[j][i]&0x8) ? odh : (*hv)[j][i]);
+				dh += AIR_VADV*tx*(1.0f-ty)*((bmap_blockairh[j][i+1]&0x8) ? odh : (*hv)[j][i+1]);
+				dh += AIR_VADV*(1.0f-tx)*ty*((bmap_blockairh[j+1][i]&0x8) ? odh : (*hv)[j+1][i]);
+				dh += AIR_VADV*tx*ty*((bmap_blockairh[j+1][i+1]&0x8) ? odh : (*hv)[j+1][i+1]);
 			}
 			if(!sim.gravityMode)
 			{ //Vertical gravity only for the time being
-				float airdiff = hv[y-1][x]-hv[y][x];
+				float airdiff = (*hv)[y-1][x]-(*hv)[y][x];
 				if(airdiff>0 && !(bmap_blockairh[y-1][x]&0x8))
-					vy[y][x] -= airdiff/5000.0f;
+					(*vy)[y][x] -= airdiff/5000.0f;
 			}
-			ohv[y][x] = dh;
+			(*ohv)[y][x] = dh;
 		}
 	}
-	memcpy(hv, ohv, sizeof(hv));
+	#pragma omp barrier
+	std::swap(hv, ohv);
 }
+
 
 void Air::update_air(void)
 {
+
 	int x = 0, y = 0, i = 0, j = 0;
 	float dp = 0.0f, dx = 0.0f, dy = 0.0f, f = 0.0f, tx = 0.0f, ty = 0.0f;
 	const float advDistanceMult = 0.7f;
@@ -136,80 +145,82 @@ void Air::update_air(void)
 	int stepLimit, step;
 
 	if (airMode != 4) { //airMode 4 is no air/pressure update
-
+		#pragma omp parallel for
 		for (i=0; i<YRES/CELL; i++) //reduces pressure/velocity on the edges every frame
 		{
-			pv[i][0] = pv[i][0]*0.8f;
-			pv[i][1] = pv[i][1]*0.8f;
-			pv[i][2] = pv[i][2]*0.8f;
-			pv[i][XRES/CELL-2] = pv[i][XRES/CELL-2]*0.8f;
-			pv[i][XRES/CELL-1] = pv[i][XRES/CELL-1]*0.8f;
-			vx[i][0] = vx[i][1]*0.9f;
-			vx[i][1] = vx[i][2]*0.9f;
-			vx[i][XRES/CELL-2] = vx[i][XRES/CELL-3]*0.9f;
-			vx[i][XRES/CELL-1] = vx[i][XRES/CELL-2]*0.9f;
-			vy[i][0] = vy[i][1]*0.9f;
-			vy[i][1] = vy[i][2]*0.9f;
-			vy[i][XRES/CELL-2] = vy[i][XRES/CELL-3]*0.9f;
-			vy[i][XRES/CELL-1] = vy[i][XRES/CELL-2]*0.9f;
+			//NOTE: The seemingly excessive use of parens is actually necessary. Without them, a nasty segfault bug will occur that's hard to track down
+			(*pv)[i][0] = (*opv)[i][0]*0.8f;
+			(*pv)[i][1] = (*opv)[i][1]*0.8f;
+			(*pv)[i][2] = (*opv)[i][2]*0.8f;
+			(*pv)[i][XRES/CELL-2] = (*opv)[i][XRES/CELL-2]*0.8f;
+			(*pv)[i][XRES/CELL-1] = (*opv)[i][XRES/CELL-1]*0.8f;
+			(*vx)[i][0] = (*ovx)[i][1]*0.9f;
+			(*vx)[i][1] = (*ovx)[i][2]*0.9f;
+			(*vx)[i][XRES/CELL-2] = (*ovx)[i][XRES/CELL-3]*0.9f;
+			(*vx)[i][XRES/CELL-1] = (*ovx)[i][XRES/CELL-2]*0.9f;
+			(*vy)[i][0] = (*ovy)[i][1]*0.9f;
+			(*vy)[i][1] = (*ovy)[i][2]*0.9f;
+			(*vy)[i][XRES/CELL-2] = (*ovy)[i][XRES/CELL-3]*0.9f;
+			(*vy)[i][XRES/CELL-1] = (*ovy)[i][XRES/CELL-2]*0.9f;
 		}
+		#pragma omp parallel for
 		for (i=0; i<XRES/CELL; i++) //reduces pressure/velocity on the edges every frame
 		{
-			pv[0][i] = pv[0][i]*0.8f;
-			pv[1][i] = pv[1][i]*0.8f;
-			pv[2][i] = pv[2][i]*0.8f;
-			pv[YRES/CELL-2][i] = pv[YRES/CELL-2][i]*0.8f;
-			pv[YRES/CELL-1][i] = pv[YRES/CELL-1][i]*0.8f;
-			vx[0][i] = vx[1][i]*0.9f;
-			vx[1][i] = vx[2][i]*0.9f;
-			vx[YRES/CELL-2][i] = vx[YRES/CELL-3][i]*0.9f;
-			vx[YRES/CELL-1][i] = vx[YRES/CELL-2][i]*0.9f;
-			vy[0][i] = vy[1][i]*0.9f;
-			vy[1][i] = vy[2][i]*0.9f;
-			vy[YRES/CELL-2][i] = vy[YRES/CELL-3][i]*0.9f;
-			vy[YRES/CELL-1][i] = vy[YRES/CELL-2][i]*0.9f;
+			(*pv)[0][i] = (*opv)[0][i]*0.8f;
+			(*pv)[1][i] = (*opv)[1][i]*0.8f;
+			(*pv)[2][i] = (*opv)[2][i]*0.8f;
+			(*pv)[YRES/CELL-2][i] = (*opv)[YRES/CELL-2][i]*0.8f;
+			(*pv)[YRES/CELL-1][i] = (*opv)[YRES/CELL-1][i]*0.8f;
+			(*vx)[0][i] = (*ovx)[1][i]*0.9f;
+			(*vx)[1][i] = (*ovx)[2][i]*0.9f;
+			(*vx)[YRES/CELL-2][i] = (*ovx)[YRES/CELL-3][i]*0.9f;
+			(*vx)[YRES/CELL-1][i] = (*ovx)[YRES/CELL-2][i]*0.9f;
+			(*vy)[0][i] = (*ovy)[1][i]*0.9f;
+			(*vy)[1][i] = (*ovy)[2][i]*0.9f;
+			(*vy)[YRES/CELL-2][i] = (*ovy)[YRES/CELL-3][i]*0.9f;
+			(*vy)[YRES/CELL-1][i] = (*ovy)[YRES/CELL-2][i]*0.9f;
 		}
-
+		#pragma omp parallel for
 		for (j=1; j<YRES/CELL; j++) //clear some velocities near walls
 		{
 			for (i=1; i<XRES/CELL; i++)
 			{
 				if (bmap_blockair[j][i])
 				{
-					vx[j][i] = 0.0f;
-					vx[j][i-1] = 0.0f;
-					vy[j][i] = 0.0f;
-					vy[j-1][i] = 0.0f;
+					(*vx)[j][i] = 0.0f;
+					(*vx)[j][i-1] = 0.0f;
+					(*vy)[j][i] = 0.0f;
+					(*vy)[j-1][i] = 0.0f;
 				}
 			}
 		}
-
+		#pragma omp parallel for
 		for (y=1; y<YRES/CELL; y++) //pressure adjustments from velocity
 			for (x=1; x<XRES/CELL; x++)
 			{
 				dp = 0.0f;
-				dp += vx[y][x-1] - vx[y][x];
-				dp += vy[y-1][x] - vy[y][x];
-				pv[y][x] *= AIR_PLOSS;
-				pv[y][x] += dp*AIR_TSTEPP;
+				dp += (*ovx)[y][x-1] - (*ovx)[y][x];
+				dp += (*ovy)[y-1][x] - (*ovy)[y][x];
+				(*pv)[y][x] *= AIR_PLOSS;
+				(*pv)[y][x] += dp*AIR_TSTEPP;
 			}
-
+		#pragma omp parallel for
 		for (y=0; y<YRES/CELL-1; y++) //velocity adjustments from pressure
 			for (x=0; x<XRES/CELL-1; x++)
 			{
 				dx = dy = 0.0f;
-				dx += pv[y][x] - pv[y][x+1];
-				dy += pv[y][x] - pv[y+1][x];
-				vx[y][x] *= AIR_VLOSS;
-				vy[y][x] *= AIR_VLOSS;
-				vx[y][x] += dx*AIR_TSTEPV;
-				vy[y][x] += dy*AIR_TSTEPV;
+				dx += (*opv)[y][x] - (*opv)[y][x+1];
+				dy += (*opv)[y][x] - (*opv)[y+1][x];
+				(*vx)[y][x] *= AIR_VLOSS;
+				(*vy)[y][x] *= AIR_VLOSS;
+				(*vx)[y][x] += dx*AIR_TSTEPV;
+				(*vy)[y][x] += dy*AIR_TSTEPV;
 				if (bmap_blockair[y][x] || bmap_blockair[y][x+1])
-					vx[y][x] = 0;
+					(*vx)[y][x] = 0;
 				if (bmap_blockair[y][x] || bmap_blockair[y+1][x])
-					vy[y][x] = 0;
+					(*vy)[y][x] = 0;
 			}
-
+		#pragma omp parallel for
 		for (y=0; y<YRES/CELL; y++) //update velocity and pressure
 			for (x=0; x<XRES/CELL; x++)
 			{
@@ -223,16 +234,16 @@ void Air::update_air(void)
 						        !bmap_blockair[y+j][x+i])
 						{
 							f = kernel[i+1+(j+1)*3];
-							dx += vx[y+j][x+i]*f;
-							dy += vy[y+j][x+i]*f;
-							dp += pv[y+j][x+i]*f;
+							dx += (*ovx)[y+j][x+i]*f;
+							dy += (*ovy)[y+j][x+i]*f;
+							dp += (*opv)[y+j][x+i]*f;
 						}
 						else
 						{
 							f = kernel[i+1+(j+1)*3];
-							dx += vx[y][x]*f;
-							dy += vy[y][x]*f;
-							dp += pv[y][x]*f;
+							dx += (*ovx)[y][x]*f;
+							dy += (*ovy)[y][x]*f;
+							dp += (*opv)[y][x]*f;
 						}
 
 				tx = x - dx*advDistanceMult;
@@ -282,17 +293,17 @@ void Air::update_air(void)
 					dx *= 1.0f - AIR_VADV;
 					dy *= 1.0f - AIR_VADV;
 
-					dx += AIR_VADV*(1.0f-tx)*(1.0f-ty)*vx[j][i];
-					dy += AIR_VADV*(1.0f-tx)*(1.0f-ty)*vy[j][i];
+					dx += AIR_VADV*(1.0f-tx)*(1.0f-ty)*(*ovx)[j][i];
+					dy += AIR_VADV*(1.0f-tx)*(1.0f-ty)*(*ovy)[j][i];
 
-					dx += AIR_VADV*tx*(1.0f-ty)*vx[j][i+1];
-					dy += AIR_VADV*tx*(1.0f-ty)*vy[j][i+1];
+					dx += AIR_VADV*tx*(1.0f-ty)*(*ovx)[j][i+1];
+					dy += AIR_VADV*tx*(1.0f-ty)*(*ovy)[j][i+1];
 
-					dx += AIR_VADV*(1.0f-tx)*ty*vx[j+1][i];
-					dy += AIR_VADV*(1.0f-tx)*ty*vy[j+1][i];
+					dx += AIR_VADV*(1.0f-tx)*ty*(*ovx)[j+1][i];
+					dy += AIR_VADV*(1.0f-tx)*ty*(*ovy)[j+1][i];
 
-					dx += AIR_VADV*tx*ty*vx[j+1][i+1];
-					dy += AIR_VADV*tx*ty*vy[j+1][i+1];
+					dx += AIR_VADV*tx*ty*(*ovx)[j+1][i+1];
+					dy += AIR_VADV*tx*ty*(*ovy)[j+1][i+1];
 				}
 
 				if (bmap[y][x] == WL_FAN)
@@ -330,31 +341,34 @@ void Air::update_air(void)
 					break;
 				}
 
-				ovx[y][x] = dx;
-				ovy[y][x] = dy;
-				opv[y][x] = dp;
+				(*ovx)[y][x] = dx;
+				(*ovy)[y][x] = dy;
+				(*opv)[y][x] = dp;
 			}
-		memcpy(vx, ovx, sizeof(vx));
-		memcpy(vy, ovy, sizeof(vy));
-		memcpy(pv, opv, sizeof(pv));
+		#pragma omp barrier
+		std::swap(vx, ovx);
+		std::swap(vy, ovy);
+		std::swap(pv, opv);
 	}
 }
 
 void Air::Invert()
 {
 	int nx, ny;
+	#pragma omp parallel for
 	for (nx = 0; nx<XRES/CELL; nx++)
 		for (ny = 0; ny<YRES/CELL; ny++)
 		{
-			pv[ny][nx] = -pv[ny][nx];
-			vx[ny][nx] = -vx[ny][nx];
-			vy[ny][nx] = -vy[ny][nx];
+			(*pv)[ny][nx] = -(*pv)[ny][nx];
+			(*vx)[ny][nx] = -(*vx)[ny][nx];
+			(*vy)[ny][nx] = -(*vy)[ny][nx];
 		}
 }
 
 // called when loading saves / stamps to ensure nothing "leaks" the first frame
 void Air::RecalculateBlockAirMaps()
 {
+	#pragma omp parallel for
 	for (int i = 0; i <= sim.parts_lastActiveIndex; i++)
 	{
 		int type = sim.parts[i].type;
@@ -389,14 +403,30 @@ Air::Air(Simulation & simulation):
 {
 	//Simulation should do this.
 	make_kernel();
+	static float avx[YRES/CELL][XRES/CELL] = {0};
+	vx = &avx;
+	static float aovx[YRES/CELL][XRES/CELL] = {0};
+	ovx = &aovx;
+	static float avy[YRES/CELL][XRES/CELL] = {0};
+	vy = &avy;
+	static float aovy[YRES/CELL][XRES/CELL] = {0};
+	ovy = &aovy;
+	static float ahv[YRES/CELL][XRES/CELL] = {0};
+	hv = &ahv;
+	static float aohv[YRES/CELL][XRES/CELL] = {0};
+	ohv = &aohv;
+	static float apv[YRES/CELL][XRES/CELL] = {0};
+	pv = &apv;
+	static float aopv[YRES/CELL][XRES/CELL] = {0};
+	opv = &aopv;
 	std::fill(&bmap_blockair[0][0], &bmap_blockair[0][0]+((XRES/CELL)*(YRES/CELL)), 0);
 	std::fill(&bmap_blockairh[0][0], &bmap_blockairh[0][0]+((XRES/CELL)*(YRES/CELL)), 0);
-	std::fill(&vx[0][0], &vx[0][0]+((XRES/CELL)*(YRES/CELL)), 0.0f);
-	std::fill(&ovx[0][0], &ovx[0][0]+((XRES/CELL)*(YRES/CELL)), 0.0f);
-	std::fill(&vy[0][0], &vy[0][0]+((XRES/CELL)*(YRES/CELL)), 0.0f);
-	std::fill(&ovy[0][0], &ovy[0][0]+((XRES/CELL)*(YRES/CELL)), 0.0f);
-	std::fill(&hv[0][0], &hv[0][0]+((XRES/CELL)*(YRES/CELL)), 0.0f);
-	std::fill(&ohv[0][0], &ohv[0][0]+((XRES/CELL)*(YRES/CELL)), 0.0f);
-	std::fill(&pv[0][0], &pv[0][0]+((XRES/CELL)*(YRES/CELL)), 0.0f);
-	std::fill(&opv[0][0], &opv[0][0]+((XRES/CELL)*(YRES/CELL)), 0.0f);
+	std::fill(vx[0][0], vx[0][0]+((XRES/CELL)*(YRES/CELL)), 0.0f);
+	std::fill(ovx[0][0], ovx[0][0]+((XRES/CELL)*(YRES/CELL)), 0.0f);
+	std::fill(vy[0][0], vy[0][0]+((XRES/CELL)*(YRES/CELL)), 0.0f);
+	std::fill(ovy[0][0], ovy[0][0]+((XRES/CELL)*(YRES/CELL)), 0.0f);
+	std::fill(hv[0][0], hv[0][0]+((XRES/CELL)*(YRES/CELL)), 0.0f);
+	std::fill(ohv[0][0], ohv[0][0]+((XRES/CELL)*(YRES/CELL)), 0.0f);
+	std::fill(pv[0][0], pv[0][0]+((XRES/CELL)*(YRES/CELL)), 0.0f);
+	std::fill(opv[0][0], opv[0][0]+((XRES/CELL)*(YRES/CELL)), 0.0f);
 }

@@ -11,12 +11,12 @@ Tool_Vac::Tool_Vac()
 
 int Tool_Vac::Perform(Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength)
 {
-	sim->air->pv[y/CELL][x/CELL] -= strength*0.05f;
+	*sim->air->pv[y/CELL][x/CELL] -= strength*0.05f;
 
-	if (sim->air->pv[y/CELL][x/CELL] > 256.0f)
-		sim->air->pv[y/CELL][x/CELL] = 256.0f;
-	else if (sim->air->pv[y/CELL][x/CELL] < -256.0f)
-		sim->air->pv[y/CELL][x/CELL] = -256.0f;
+	if (*sim->air->pv[y/CELL][x/CELL] > 256.0f)
+		*sim->air->pv[y/CELL][x/CELL] = 256.0f;
+	else if (*sim->air->pv[y/CELL][x/CELL] < -256.0f)
+		*sim->air->pv[y/CELL][x/CELL] = -256.0f;
 	return 1;
 }
 

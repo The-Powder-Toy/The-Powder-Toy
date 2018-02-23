@@ -556,7 +556,7 @@ AnyType TPTScriptInterface::tptS_reset(std::deque<std::string> * words)
 		for (int nx = 0; nx < XRES/CELL; nx++)
 			for (int ny = 0; ny < YRES/CELL; ny++)
 			{
-				sim->air->pv[ny][nx] = 0;
+				*sim->air->pv[ny][nx] = 0;
 			}
 	}
 	else if (resetStr == "velocity")
@@ -564,8 +564,8 @@ AnyType TPTScriptInterface::tptS_reset(std::deque<std::string> * words)
 		for (int nx = 0; nx < XRES/CELL; nx++)
 			for (int ny = 0; ny < YRES/CELL; ny++)
 			{
-				sim->air->vx[ny][nx] = 0;
-				sim->air->vy[ny][nx] = 0;
+				*sim->air->vx[ny][nx] = 0;
+				*sim->air->vy[ny][nx] = 0;
 			}
 	}
 	else if (resetStr == "sparks")
@@ -599,4 +599,3 @@ AnyType TPTScriptInterface::tptS_quit(std::deque<std::string> * words)
 
 TPTScriptInterface::~TPTScriptInterface() {
 }
-

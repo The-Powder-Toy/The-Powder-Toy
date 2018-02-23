@@ -16,14 +16,14 @@ public:
 	float (*fvx)[XRES/CELL];
 	float (*fvy)[XRES/CELL];
 	//
-	float vx[YRES/CELL][XRES/CELL];
-	float ovx[YRES/CELL][XRES/CELL];
-	float vy[YRES/CELL][XRES/CELL];
-	float ovy[YRES/CELL][XRES/CELL];
-	float pv[YRES/CELL][XRES/CELL];
-	float opv[YRES/CELL][XRES/CELL];
-	float hv[YRES/CELL][XRES/CELL];
-	float ohv[YRES/CELL][XRES/CELL]; // Ambient Heat
+	float (*vx)[YRES/CELL][XRES/CELL];
+	float (*ovx)[YRES/CELL][XRES/CELL];
+	float (*vy)[YRES/CELL][XRES/CELL];
+	float (*ovy)[YRES/CELL][XRES/CELL];
+	float (*pv)[YRES/CELL][XRES/CELL];
+	float (*opv)[YRES/CELL][XRES/CELL];
+	float (*hv)[YRES/CELL][XRES/CELL];
+	float (*ohv)[YRES/CELL][XRES/CELL]; // Ambient Heat
 	unsigned char bmap_blockair[YRES/CELL][XRES/CELL];
 	unsigned char bmap_blockairh[YRES/CELL][XRES/CELL];
 	float kernel[9];

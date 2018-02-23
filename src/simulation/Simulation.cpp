@@ -5169,6 +5169,12 @@ void Simulation::BeforeSim()
 		if(aheat_enable)
 			air->update_airh();
 
+		// Patch up the pointers in sim. This is needed to make sure sim always has the latest buffer.
+		vx = *air->vx;
+		vy = *air->vy;
+		pv = *air->pv;
+		hv = *air->hv;
+
 		if(grav->ngrav_enable)
 		{
 			grav->gravity_update_async();
@@ -5422,10 +5428,10 @@ Simulation::Simulation():
 	air->fvx = fvx;
 	air->fvy = fvy;
 	//Air sim gives us maps to use
-	vx = air->vx;
-	vy = air->vy;
-	pv = air->pv;
-	hv = air->hv;
+	vx = *air->ovx;
+	vy = *air->ovy;
+	pv = *air->opv;
+	hv = *air->ohv;
 
 	int menuCount;
 	menu_section * msectionsT = LoadMenus(menuCount);

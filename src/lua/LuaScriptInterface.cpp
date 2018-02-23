@@ -14,7 +14,7 @@
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/dialogues/InformationMessage.h"
 #include "gui/dialogues/TextPrompt.h"
-#include "gui/dialogues/ConfirmPrompt.h" 
+#include "gui/dialogues/ConfirmPrompt.h"
 #include "simulation/Simulation.h"
 #include "simulation/Air.h"
 #include "ToolClasses.h"
@@ -805,7 +805,7 @@ void LuaScriptInterface::initSimulationAPI()
 	SETCONST(l, PMAPMASK);
 
 	//Declare FIELD_BLAH constants
-	std::vector<StructProperty> particlePropertiesV = Particle::GetProperties(); 
+	std::vector<StructProperty> particlePropertiesV = Particle::GetProperties();
 	particlePropertiesCount = 0;
 	particleProperties = new StructProperty[particlePropertiesV.size()];
 	for(std::vector<StructProperty>::iterator iter = particlePropertiesV.begin(), end = particlePropertiesV.end(); iter != end; ++iter)
@@ -978,7 +978,7 @@ int LuaScriptInterface::simulation_partPosition(lua_State * l)
 			return 0;
 		}
 	}
-	
+
 	if(argCount == 3)
 	{
 		luacon_sim->parts[particleID].x = lua_tonumber(l, 2);
@@ -1068,7 +1068,7 @@ int LuaScriptInterface::simulation_partProperty(lua_State * l)
 				break;
 		}
 		return 0;
-	} 
+	}
 	else
 	{
 		//Get
@@ -1675,7 +1675,7 @@ int LuaScriptInterface::simulation_resetPressure(lua_State * l)
 	for (int nx = x1; nx<x1+width; nx++)
 		for (int ny = y1; ny<y1+height; ny++)
 		{
-			luacon_sim->air->pv[ny][nx] = 0;
+			*luacon_sim->air->pv[ny][nx] = 0;
 		}
 	return 0;
 }
@@ -1911,7 +1911,7 @@ int LuaScriptInterface::simulation_canMove(lua_State * l)
 		return luaL_error(l, "Invalid element ID (%d)", movingElement);
 	if (destinationElement < 0 || destinationElement >= PT_NUM)
 		return luaL_error(l, "Invalid element ID (%d)", destinationElement);
-	
+
 	if (lua_gettop(l) < 3)
 	{
 		lua_pushnumber(l, luacon_sim->can_move[movingElement][destinationElement]);
@@ -1959,8 +1959,8 @@ int BrushClosure(lua_State * l)
 	int x = lua_tointeger(l, lua_upvalueindex(7));
 	int y = lua_tointeger(l, lua_upvalueindex(8));
 	unsigned char *bitmap = (unsigned char *)lua_touserdata(l, lua_upvalueindex(9));
-	
-	
+
+
 	int yield_x, yield_y;
 	while (true)
 	{
@@ -1985,12 +1985,12 @@ int BrushClosure(lua_State * l)
 			y++;
 		}
 	}
-	
+
 	lua_pushnumber(l, x);
 	lua_replace(l, lua_upvalueindex(7));
 	lua_pushnumber(l, y);
 	lua_replace(l, lua_upvalueindex(8));
-	
+
 	lua_pushnumber(l, yield_x);
 	lua_pushnumber(l, yield_y);
 	return 2;
@@ -2014,11 +2014,11 @@ int LuaScriptInterface::simulation_brush(lua_State * l)
 		brushradiusY = size.Y;
 	}
 	int brushID = luaL_optint(l, 5, luacon_model->GetBrushID());
-	
+
 	vector<Brush *> brushList = luacon_model->GetBrushList();
 	if (brushID < 0 || brushID >= (int)brushList.size())
 		return luaL_error(l, "Invalid brush id '%d'", brushID);
-	
+
 	ui::Point tempRadius = brushList[brushID]->GetRadius();
 	brushList[brushID]->SetRadius(ui::Point(brushradiusX, brushradiusY));
 	lua_pushnumber(l, positionX);
@@ -2037,7 +2037,7 @@ int LuaScriptInterface::simulation_brush(lua_State * l)
 	void *bitmapCopy = lua_newuserdata(l, bitmapSize);
 	memcpy(bitmapCopy, brushList[brushID]->GetBitmap(), bitmapSize);
 	brushList[brushID]->SetRadius(tempRadius);
-	
+
 	lua_pushcclosure(l, BrushClosure, 9);
 	return 1;
 }
@@ -2556,7 +2556,7 @@ int LuaScriptInterface::elements_allocate(lua_State * l)
 	}
 
 	if (newID != -1)
-	{	
+	{
 		lua_getglobal(l, "elements");
 		lua_pushinteger(l, newID);
 		lua_setfield(l, -2, identifier.c_str());
@@ -2890,7 +2890,7 @@ int LuaScriptInterface::elements_free(lua_State * l)
 	int id;
 	luaL_checktype(l, 1, LUA_TNUMBER);
 	id = lua_tointeger(l, 1);
-	
+
 	if(id < 0 || id >= PT_NUM || !luacon_sim->elements[id].Enabled)
 		return luaL_error(l, "Invalid element");
 
@@ -2953,7 +2953,7 @@ int LuaScriptInterface::graphics_drawText(lua_State * l)
 	int g = luaL_optint(l, 5, 255);
 	int b = luaL_optint(l, 6, 255);
 	int a = luaL_optint(l, 7, 255);
-	
+
 	if (r<0) r = 0;
 	else if (r>255) r = 255;
 	if (g<0) g = 0;
@@ -3321,7 +3321,7 @@ int LuaScriptInterface::fileSystem_copy(lua_State * l)
 
 		std::istreambuf_iterator<char> begin_source(source);
 		std::istreambuf_iterator<char> end_source;
-		std::ostreambuf_iterator<char> begin_dest(dest); 
+		std::ostreambuf_iterator<char> begin_dest(dest);
 		std::copy(begin_source, end_source, begin_dest);
 
 		source.close();
