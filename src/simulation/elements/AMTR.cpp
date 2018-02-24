@@ -15,14 +15,14 @@ Element_AMTR::Element_AMTR()
 	Loss = 0.80f;
 	Collision = 0.00f;
 	Gravity = 0.10f;
-	Diffusion = 1.00f;
+	Diffusion = 0.00f;
 	HotAir = 0.0000f * CFDS;
-	Falldown = 0;
+	Falldown = 1;
 
-	Flammable = 0;
+	Flammable = 10;
 	Explosive = 0;
 	Meltable = 0;
-	Hardness = 0;
+	Hardness = 30;
 
 	Weight = 100;
 
@@ -30,7 +30,7 @@ Element_AMTR::Element_AMTR()
 	HeatConduct = 70;
 	Description = "Anti-Matter, destroys a majority of particles.";
 
-	Properties = TYPE_GAS;
+	Properties = TYPE_PART;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
