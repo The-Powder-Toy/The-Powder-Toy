@@ -397,7 +397,8 @@ elif not GetOption('help'):
 
 if not msvc:
 	env.Append(CXXFLAGS=['-std=c++11'])
-	env.Append(CXXFLAGS=['-Wno-invalid-offsetof'])
+	env.Append(CXXFLAGS=['-Wno-invalid-offsetof', '-fopenmp'])
+	env.Append(LINKFLAGS=['-fopenmp'])
 	if platform == "Linux":
 		env.Append(CXXFLAGS=['-Wno-unused-result'])
 
@@ -406,7 +407,8 @@ if not msvc:
 if platform == "Windows":
 	env.Append(CPPDEFINES=["WIN", "_WIN32_WINNT=0x0501", "_USING_V110_SDK71_"])
 	if msvc:
-		env.Append(CCFLAGS=['/Gm', '/Zi', '/EHsc', '/FS', '/GS']) #enable minimal rebuild, ?, enable exceptions, allow -j to work in debug builds, enable security check
+		env.Append(CCFLAGS=['/Gm', '/Zi', '/EHsc', '/FS', '/GS', '/openmp']) #enable minimal rebuild, ?, enable exceptions, allow -j to work in debug builds, enable security check
+		env.Append(LINKFLAGS=['/openmp'])
 		if GetOption('renderer'):
 			env.Append(LINKFLAGS=['/SUBSYSTEM:CONSOLE'])
 		else:
@@ -474,11 +476,11 @@ elif GetOption('release'):
 		else:
 			env.Append(CCFLAGS=['/MD'])
 	else:
-		env.Append(CCFLAGS=['-O3', '-ftree-vectorize', '-funsafe-math-optimizations', '-ffast-math', '-fomit-frame-pointer', '-flto', '-fopenmp'])
+		env.Append(CCFLAGS=['-O3', '-ftree-vectorize', '-funsafe-math-optimizations', '-ffast-math', '-fomit-frame-pointer', '-flto'])
 		if platform != "Darwin":
 			env.Append(CCFLAGS=['-funsafe-loop-optimizations'])
 		#-flto: link time optimization, gives a noticeable speed boost
-		env.Append(LINKFLAGS=['-flto', '-fopenmp'])
+		env.Append(LINKFLAGS=['-flto'])
 
 if GetOption('static'):
 	if platform == "Windows":
