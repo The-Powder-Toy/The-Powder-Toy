@@ -46,6 +46,3 @@ int Tool_Cycl::Perform(Simulation * sim, Particle * cpart, int x, int y, int bru
 }
 
 Tool_Cycl::~Tool_Cycl() {}
-
-
-
