@@ -1,9 +1,9 @@
+#include "TrigTables.h"
+
 namespace tpt
 {
-#include "TrigTables.h"
 float sin(float angle)
 {
-
 	angle *= 81.4873;
 	int i = (int)angle % 512;
 
@@ -19,7 +19,6 @@ float sin(float angle)
 
 float cos(float angle)
 {
-
 	angle *= 81.4873;
 	int i = (int)angle % 512;
 
@@ -73,11 +72,11 @@ float atan(float ratio)
 {
 	if (ratio > 20)
 	{
-		return 1.53f;
+		atan(ratio);
 	}
 	if (ratio < -20)
 	{
-		return -1.53f;
+		atan(ratio);
 	}
 	float atan = atanLookupTable[(int)(ratio * 100) + 2000];
 	return atan;
@@ -90,19 +89,18 @@ float atan2(float y, float x)
 
 	if (x > 0)
 	{
-		atan2 = atan((y / x));
+		atan2 = atan(y / x);
 		return atan2;
 	}
-
 	else
 	{
 		if (y >= 0)
 		{
-			atan2 = atan((y / x)) + 3.14159f;
+			atan2 = atan(y / x) + 3.14159f;
 			return atan2;
 		}
 
-		atan2 = atan((y / x)) - 3.14159f;
+		atan2 = atan(y / x) - 3.14159f;
 		return atan2;
 	}
 
