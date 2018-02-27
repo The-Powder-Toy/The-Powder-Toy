@@ -2,138 +2,110 @@ namespace tpt
 {
 #include "TrigTables.h"
 float sin(float angle)
+{
+
+	angle *= 81.4873;
+	int i = (int)angle % 512;
+
+	if (i < 0)
 	{
-		float sine;
-		int i;
-		
-		angle *= 81.4873;
-		i = (int)angle % 512;
-		if (i < 0)
-		{
-			i += 512;
-		}
-
-		sine = sineLookupTable[i];
-
-		return sine;
+		i += 512;
 	}
+
+	float sine = sineLookupTable[i];
+	return sine;
+}
 
 
 float cos(float angle)
+{
+
+	angle *= 81.4873;
+	int i = (int)angle % 512;
+
+	if (i < 0)
 	{
-		float cosine;
-		int i;
-
-		angle *= 81.4873;
-		i = (int)angle % 512;
-		if (i < 0)
-		{
-			i += 512;
-		}
-
-		cosine = cosineLookupTable[i];
-
-		return cosine;
+		i += 512;
 	}
+
+	float cosine = cosineLookupTable[i];
+	return cosine;
+}
 
 float tan(float angle)
+{
+	angle *= 81.4873;
+	int i = (int)angle % 512;
+	if (i < 0)
 	{
-		float tangent;
-		int i;
-
-		angle *= 81.4873;
-		i = (int)angle % 512;
-		if (i < 0)
-		{
-			i += 512;
-		}
-
-		tangent = tanLookupTable[i];
-
-		return tangent;
+		i += 512;
 	}
+
+	float tangent = tanLookupTable[i];
+	return tangent;
+}
 
 float asin(float angle)
 {
-	float asin;
-
 	angle *= 81.4873;
-	
 	if (angle > 256 || angle < 0)
 	{
 		return 0.0;
 	}
 
-	asin = asinLookupTable[(int)(angle + 256)];
-
+	float asin = asinLookupTable[(int)(angle + 256)];
 	return asin;
 }
 
 float acos(float angle)
 {
-	float acos;
-
 	angle *= 81.4873;
-
 	if (angle > 256 || angle < 0)
 	{
 		return 0.0;
 	}
 
-	acos = acosLookupTable[(int)(angle + 256)];
-
+	float acos = acosLookupTable[(int)(angle + 256)];
 	return acos;
 }
 
 float atan(float ratio)
+{
+	if (ratio > 20)
 	{
-		float atan;
-
-		if (ratio > 20)
-		{
-			return 1.53f;
-		}
-		if (ratio < -20)
-		{
-			return -1.53f;
-		}
-		atan = atanLookupTable[(signed int)(ratio * 100) + 2000];
-		return atan;
+		return 1.53f;
 	}
-
-
-float atan2(float y, float x)
+	if (ratio < -20)
 	{
-		float atan2, debugtan;
-
-		if (x > 0)
-		{
-			atan2 = atan((y / x));
-			return atan2;
-		}
-
-		else
-		{
-			if (y >= 0)
-			{
-				atan2 = atan((y / x)) + 3.14159f;
-				return atan2;
-			}
-
-			atan2 = atan((y / x)) - 3.14159f;
-			return atan2;
+		return -1.53f;
 	}
-
+	float atan = atanLookupTable[(int)(ratio * 100) + 2000];
+	return atan;
 }
 
 
+float atan2(float y, float x)
+{
+	float atan2;
 
+	if (x > 0)
+	{
+		atan2 = atan((y / x));
+		return atan2;
+	}
 
+	else
+	{
+		if (y >= 0)
+		{
+			atan2 = atan((y / x)) + 3.14159f;
+			return atan2;
+		}
 
+		atan2 = atan((y / x)) - 3.14159f;
+		return atan2;
+	}
 
-
-
-
-
+}
 
 }

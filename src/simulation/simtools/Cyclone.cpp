@@ -22,11 +22,11 @@ int Tool_Cycl::Perform(Simulation * sim, Particle * cpart, int x, int y, int bru
 		Ditto for Y, except Y uses sine
 	*/
 	// only trigger once per cell (less laggy)
-	//if ((x%CELL) == 0 && (y%CELL) == 0)
-//	{
+	if ((x%CELL) == 0 && (y%CELL) == 0)
+	{
 		float *vx = &sim->air->vx[y / CELL][x / CELL];
 		float *vy = &sim->air->vy[y / CELL][x / CELL];
-		
+
 		*vx -= (strength / 16) * (tpt::cos(1.57f + (tpt::atan2(brushY - y, brushX - x))));
 		*vy -= (strength / 16) * (tpt::sin(1.57f + (tpt::atan2(brushY - y, brushX - x))));
 
@@ -40,7 +40,7 @@ int Tool_Cycl::Perform(Simulation * sim, Particle * cpart, int x, int y, int bru
 		else if (*vy < -256.0f)
 			*vy = -256.0f;
 
-//	}
+	}
 
 	return 1;
 }
