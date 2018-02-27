@@ -70,15 +70,18 @@ float acos(float angle)
 
 float atan(float ratio)
 {
+	float atan;
 	if (ratio > 20)
 	{
-		atan(ratio);
+		atan = atan(ratio);
+		return atan;
 	}
 	if (ratio < -20)
 	{
-		atan(ratio);
+		atan = atan(ratio);
+		return atan;
 	}
-	float atan = atanLookupTable[(int)(ratio * 100) + 2000];
+	atan = atanLookupTable[(int)(ratio * 100) + 2000];
 	return atan;
 }
 
