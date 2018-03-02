@@ -474,11 +474,9 @@ elif GetOption('release'):
 		else:
 			env.Append(CCFLAGS=['/MD'])
 	else:
-		env.Append(CCFLAGS=['-O3', '-ftree-vectorize', '-funsafe-math-optimizations', '-ffast-math', '-fomit-frame-pointer', '-flto'])
+		env.Append(CCFLAGS=['-O3', '-ftree-vectorize', '-funsafe-math-optimizations', '-ffast-math', '-fomit-frame-pointer'])
 		if platform != "Darwin":
 			env.Append(CCFLAGS=['-funsafe-loop-optimizations'])
-		#-flto: link time optimization, gives a noticeable speed boost
-		env.Append(LINKFLAGS=['-flto'])
 
 if GetOption('static'):
 	if platform == "Windows":
