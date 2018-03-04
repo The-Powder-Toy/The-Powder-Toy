@@ -73,9 +73,12 @@ int Element_LIGH::update(UPDATE_FUNC_ARGS)
 	//Element_FIRE::update(UPDATE_FUNC_SUBCALL_ARGS);
 	if (sim->aheat_enable)
 	{
-		sim->hv[y/CELL][x/CELL]+=powderful/50;
-		if (sim->hv[y/CELL][x/CELL]>MAX_TEMP)
-			sim->hv[y/CELL][x/CELL]=MAX_TEMP;
+		sim->hv[y/CELL][x/CELL] += powderful/50;
+		if (sim->hv[y/CELL][x/CELL] > MAX_TEMP)
+			sim->hv[y/CELL][x/CELL] = MAX_TEMP;
+		// If the LIGH was so powerful that it overflowed hv, set to max temp
+		else if (sim->hv[y/CELL][x/CELL] < 0)
+			sim->hv[y/CELL][x/CELL] = MAX_TEMP;
 	}
 
 	for (rx=-2; rx<3; rx++)
