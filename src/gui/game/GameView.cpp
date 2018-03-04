@@ -195,7 +195,7 @@ GameView::GameView():
 	ren(NULL),
 	activeBrush(NULL),
 	saveSimulationButtonEnabled(false),
-    saveReuploadAllowed(true),
+	saveReuploadAllowed(true),
 	drawMode(DrawPoints),
 	drawPoint1(0, 0),
 	drawPoint2(0, 0),
