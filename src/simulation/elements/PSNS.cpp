@@ -47,7 +47,7 @@ Element_PSNS::Element_PSNS()
 //#TPT-Directive ElementHeader Element_PSNS static int update(UPDATE_FUNC_ARGS)
 int Element_PSNS::update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry, rt, rd = parts[i].tmp2;
+	int r, rx, ry, rt;
 	float photonWl = 0.0f;
 	bool setFilt = false;
 	if (sim->pv[y/CELL][x/CELL] > parts[i].temp-273.15f)
@@ -89,9 +89,9 @@ int Element_PSNS::update(UPDATE_FUNC_ARGS)
 							continue;
 						nx = x + rx;
 						ny = y + ry;
-						while ((r & 0xFF) == PT_FILT)
+						while (TYP(r) == PT_FILT)
 						{
-							parts[r >> 8].ctype = 0x10000000 + roundl(photonWl) + 256;
+							parts[ID(r)].ctype = 0x10000000 + roundl(photonWl) + 256;
 							nx += rx;
 							ny += ry;
 							if (nx < 0 || ny < 0 || nx >= XRES || ny >= YRES)
