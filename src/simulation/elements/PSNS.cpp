@@ -48,6 +48,8 @@ Element_PSNS::Element_PSNS()
 int Element_PSNS::update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry, rt;
+	float photonWl = 0.0f;
+	bool setFilt = false;
 	if (sim->pv[y/CELL][x/CELL] > parts[i].temp-273.15f)
 	{
 		parts[i].life = 0;
@@ -69,6 +71,35 @@ int Element_PSNS::update(UPDATE_FUNC_ARGS)
 						}
 					}
 				}
+	}
+	if (parts[i].tmp == 1) 
+	{
+		parts[i].life = 0;
+		setFilt = true;
+		photonWl = sim->pv[y / CELL][x / CELL];
+		if (setFilt)
+		{
+			int nx, ny;
+			for (rx = -1; rx < 2; rx++)
+				for (ry = -1; ry < 2; ry++)
+					if (BOUNDS_CHECK && (rx || ry))
+					{
+						r = pmap[y + ry][x + rx];
+						if (!r)
+							continue;
+						nx = x + rx;
+						ny = y + ry;
+						while (TYP(r) == PT_FILT)
+						{
+							parts[ID(r)].ctype = 0x10000000 + roundl(photonWl) + 256;
+							nx += rx;
+							ny += ry;
+							if (nx < 0 || ny < 0 || nx >= XRES || ny >= YRES)
+								break;
+							r = pmap[ny][nx];
+						}
+					}
+		}
 	}
 	return 0;
 }

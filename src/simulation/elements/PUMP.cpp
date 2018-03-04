@@ -63,7 +63,7 @@ int Element_PUMP::update(UPDATE_FUNC_ARGS)
 
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
-				if (!(rx && ry))
+				if (parts[i].tmp != 1 && (!(rx && ry)))
 				{
 					sim->pv[(y/CELL)+ry][(x/CELL)+rx] += 0.1f*((parts[i].temp-273.15)-sim->pv[(y/CELL)+ry][(x/CELL)+rx]);
 				}
@@ -80,6 +80,17 @@ int Element_PUMP::update(UPDATE_FUNC_ARGS)
 							parts[i].life = 9;
 						else if (parts[ID(r)].life==0)
 							parts[ID(r)].life = 10;
+					}
+					if (parts[i].tmp == 1 && (TYP(r) == PT_FILT || TYP(r) == PT_PHOT || TYP(r) == PT_BRAY))
+					{
+						if (parts[ID(r)].ctype >= 0x10000000 && parts[ID(r)].ctype <= 0x10000000 + 512)
+						{
+							sim->pv[(y / CELL) + ry][(x / CELL) + rx] = (parts[ID(r)].ctype - 0x10000000) - 256;
+						}
+						else
+						{
+							sim->pv[(y / CELL) + ry][(x / CELL) + rx] = 0.0f;
+						}
 					}
 				}
 	}
