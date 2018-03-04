@@ -110,3 +110,11 @@ Command Line
 | open <file>              | Opens the file as a stamp or game save                         |
 | ddir <directory>         | Directory used for saving stamps and preferences               |
 | ptsave:<save id>#[name]  | [Example: ptsave:2198#Destroyable_city_5_wth_metro~dima-gord]  |
+    Quotes by richard stallman
+    
+    Use windows
+    Use apple
+    Stop using GNU/linux
+    Stop making free software
+    i jerk off to furry foot fetish and gay porn
+    yourChocoIsMyMotto.innerText = "Actual Chocolate: " + actualChocolate;yourChocoIsMyMotto.innerText = "Actual Chocolate: " + actualChocolate;yourChocoIsMyMotto.innerText = "Actual Chocolate: " + actualChocolate;yourChocoIsMyMotto.innerText = "Actual Chocolate: " + actualChocolate;yourChocoIsMyMotto.innerText = "Actual Chocolate: " + actualChocolate;yourChocoIsMyMotto.innerText = "Actual Chocolate: " + actualChocolate;yourChocoIsMyMotto.innerText = "Actual Chocolate: " + actualChocolate;yourChocoIsMyMotto.innerText = "Actual Chocolate: " + actualChocolate;yourChocoIsMyMotto.innerText = "Actual Chocolate: " + actualChocolate;yourChocoIsMyMotto.innerText = "Actual Chocolate: " + actualChocolate;
