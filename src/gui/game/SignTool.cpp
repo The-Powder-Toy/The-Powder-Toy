@@ -184,7 +184,7 @@ void SignWindow::DoDraw()
 		char type = 0;
 		Graphics * g = GetGraphics();
 		std::string text = currentSign.getText(sim);
-		sign::splitsign(currentSign.text.c_str(), &type);
+		sign::splitsign(currentSign.text, &type);
 		currentSign.pos(text, x, y, w, h);
 		g->clearrect(x, y, w+1, h);
 		g->drawrect(x, y, w+1, h, 192, 192, 192, 255);

@@ -631,7 +631,7 @@ bool GameController::MouseDown(int x, int y, unsigned button)
 			if (foundSignID != -1)
 			{
 				sign foundSign = gameModel->GetSimulation()->signs[foundSignID];
-				if (sign::splitsign(foundSign.text.c_str()))
+				if (sign::splitsign(foundSign.text))
 					return false;
 			}
 		}
@@ -655,7 +655,7 @@ bool GameController::MouseUp(int x, int y, unsigned button, char type)
 			if (foundSignID != -1)
 			{
 				sign foundSign = gameModel->GetSimulation()->signs[foundSignID];
-				const char* str = foundSign.text.c_str();
+				std::string str = foundSign.text;
 				char type;
 				int pos = sign::splitsign(str, &type);
 				if (pos)
@@ -663,14 +663,12 @@ bool GameController::MouseUp(int x, int y, unsigned button, char type)
 					ret = false;
 					if (type == 'c' || type == 't' || type == 's')
 					{
-						char buff[256];
-						strcpy(buff, str+3);
-						buff[pos-3] = 0;
+						std::string link = str.substr(3, pos-3);
 						switch (type)
 						{
 						case 'c':
 						{
-							int saveID = format::StringToNumber<int>(std::string(buff));
+							int saveID = format::StringToNumber<int>(link);
 							if (saveID)
 								OpenSavePreview(saveID, 0, false);
 							break;
@@ -679,12 +677,12 @@ bool GameController::MouseUp(int x, int y, unsigned button, char type)
 						{
 							// buff is already confirmed to be a number by sign::splitsign
 							std::stringstream uri;
-							uri << "http://powdertoy.co.uk/Discussions/Thread/View.html?Thread=" << buff;
+							uri << "http://powdertoy.co.uk/Discussions/Thread/View.html?Thread=" << link;
 							Platform::OpenURI(uri.str());
 							break;
 						}
 						case 's':
-							OpenSearch(buff);
+							OpenSearch(link);
 							break;
 						}
 					}

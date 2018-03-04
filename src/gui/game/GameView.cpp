@@ -1744,25 +1744,23 @@ void GameView::OnTick(float dt)
 	int foundSignID = c->GetSignAt(mousePosition.X, mousePosition.Y);
 	if (foundSignID != -1)
 	{
-		const char* str = c->GetSignText(foundSignID).c_str();;
+		std::string str = c->GetSignText(foundSignID);
 		char type = '\0';
 		int pos = sign::splitsign(str, &type);
 		if (type == 'c' || type == 't' || type == 's')
 		{
-			char buff[256];
-			strcpy(buff, str+3);
-			buff[pos-3] = 0;
+			std::string linkSign = str.substr(3, pos-3);
 			std::stringstream tooltip;
 			switch (type)
 			{
 			case 'c':
-				tooltip << "Go to save ID:" << buff;
+				tooltip << "Go to save ID:" << linkSign;
 				break;
 			case 't':
-				tooltip << "Open forum thread " << buff << " in browser";
+				tooltip << "Open forum thread " << linkSign << " in browser";
 				break;
 			case 's':
-				tooltip << "Search for " << buff;
+				tooltip << "Search for " << linkSign;
 				break;
 			}
 			ToolTip(ui::Point(0, Size.Y), tooltip.str());
