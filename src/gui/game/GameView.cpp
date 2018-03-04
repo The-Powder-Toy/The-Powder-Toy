@@ -195,6 +195,7 @@ GameView::GameView():
 	ren(NULL),
 	activeBrush(NULL),
 	saveSimulationButtonEnabled(false),
+    saveReuploadAllowed(true),
 	drawMode(DrawPoints),
 	drawPoint1(0, 0),
 	drawPoint2(0, 0),
@@ -939,13 +940,14 @@ void GameView::NotifyInfoTipChanged(GameModel * sender)
 
 void GameView::NotifySaveChanged(GameModel * sender)
 {
-	if(sender->GetSave())
+	saveReuploadAllowed = true;
+	if (sender->GetSave())
 	{
-		if(introText > 50)
+		if (introText > 50)
 			introText = 50;
 
 		saveSimulationButton->SetText(sender->GetSave()->GetName());
-		if(sender->GetSave()->GetUserName() == sender->GetUser().Username)
+		if (sender->GetSave()->GetUserName() == sender->GetUser().Username)
 			((SplitButton*)saveSimulationButton)->SetShowSplit(true);
 		else
 			((SplitButton*)saveSimulationButton)->SetShowSplit(false);
@@ -957,7 +959,7 @@ void GameView::NotifySaveChanged(GameModel * sender)
 			upVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 0, 0));
 
 		downVoteButton->Enabled = upVoteButton->Enabled;
-		if(sender->GetSave()->GetID() && sender->GetUser().UserID && sender->GetSave()->GetVote()==-1)
+		if (sender->GetSave()->GetID() && sender->GetUser().UserID && sender->GetSave()->GetVote()==-1)
 			downVoteButton->Appearance.BackgroundDisabled = (ui::Colour(108, 0, 10, 255));
 		else
 			downVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 0, 0));
@@ -974,15 +976,15 @@ void GameView::NotifySaveChanged(GameModel * sender)
 		}
 
 		tagSimulationButton->Enabled = sender->GetSave()->GetID();
-		if(sender->GetSave()->GetID())
+		if (sender->GetSave()->GetID())
 		{
 			std::stringstream tagsStream;
 			std::list<string> tags = sender->GetSave()->GetTags();
-			if(tags.size())
+			if (tags.size())
 			{
-				for(std::list<std::string>::const_iterator iter = tags.begin(), begin = tags.begin(), end = tags.end(); iter != end; iter++)
+				for (std::list<std::string>::const_iterator iter = tags.begin(), begin = tags.begin(), end = tags.end(); iter != end; iter++)
 				{
-					if(iter != begin)
+					if (iter != begin)
 						tagsStream << " ";
 					tagsStream << *iter;
 				}
@@ -998,6 +1000,9 @@ void GameView::NotifySaveChanged(GameModel * sender)
 			tagSimulationButton->SetText("[no tags set]");
 		}
 		currentSaveType = 1;
+		int saveID = sender->GetSave()->GetID();
+		if (saveID == 404 || saveID == 2157797)
+			saveReuploadAllowed = false;
 	}
 	else if (sender->GetSaveFile())
 	{
@@ -1032,7 +1037,7 @@ void GameView::NotifySaveChanged(GameModel * sender)
 		tagSimulationButton->SetText("[no tags set]");
 		currentSaveType = 0;
 	}
-	saveSimulationButton->Enabled = (saveSimulationButtonEnabled || ctrlBehaviour);
+	saveSimulationButton->Enabled = (saveSimulationButtonEnabled && saveReuploadAllowed) || ctrlBehaviour;
 	SetSaveButtonTooltips();
 }
 
@@ -2045,7 +2050,7 @@ void GameView::disableCtrlBehaviour()
 		saveSimulationButton->Appearance.BackgroundInactive = ui::Colour(0, 0, 0);
 		saveSimulationButton->Appearance.BackgroundHover = ui::Colour(20, 20, 20);
 		saveSimulationButton->Appearance.TextInactive = saveSimulationButton->Appearance.TextHover = ui::Colour(255, 255, 255);
-		saveSimulationButton->Enabled = saveSimulationButtonEnabled;
+		saveSimulationButton->Enabled = saveSimulationButtonEnabled && saveReuploadAllowed;
 		SetSaveButtonTooltips();
 		searchButton->Appearance.BackgroundInactive = ui::Colour(0, 0, 0);
 		searchButton->Appearance.BackgroundHover = ui::Colour(20, 20, 20);

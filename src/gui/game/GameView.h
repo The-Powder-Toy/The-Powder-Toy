@@ -86,6 +86,7 @@ private:
 	ui::Button * reloadButton;
 	ui::Button * saveSimulationButton;
 	bool saveSimulationButtonEnabled;
+	bool saveReuploadAllowed;
 	ui::Button * downVoteButton;
 	ui::Button * upVoteButton;
 	ui::Button * tagSimulationButton;
