@@ -76,8 +76,9 @@ int Element_O2::update(UPDATE_FUNC_ARGS)
 			}
 	if (parts[i].temp > 9973.15 && sim->pv[y/CELL][x/CELL] > 250.0f)
 	{
-		float gravx = sim->gravx[((y/CELL)*(XRES/CELL))+(x/CELL)];
-		float gravy = sim->gravy[((y/CELL)*(XRES/CELL))+(x/CELL)];
+		int gravPos = ((y/CELL)*(XRES/CELL))+(x/CELL);
+		float gravx = sim->gravx[gravPos];
+		float gravy = sim->gravy[gravPos];
 		if (gravx*gravx + gravy*gravy > 400)
 		{
 			if (!(rand()%5))
