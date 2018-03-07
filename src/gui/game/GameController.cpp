@@ -329,6 +329,10 @@ std::string GameController::GetSignText(int signID)
 
 void GameController::PlaceSave(ui::Point position, bool includePressure)
 {
+	bool incPressure = Client::Ref().GetPrefBool("Simulation.LoadPressure", true);
+	if (!incPressure)
+		includePressure = !includePressure;
+
 	GameSave *placeSave = gameModel->GetPlaceSave();
 	if (placeSave)
 	{
@@ -571,8 +575,11 @@ void GameController::ToolClick(int toolSelection, ui::Point point)
 
 std::string GameController::StampRegion(ui::Point point1, ui::Point point2, bool includePressure)
 {
-	GameSave * newSave;
-	newSave = gameModel->GetSimulation()->Save(point1.X, point1.Y, point2.X, point2.Y, includePressure);
+	bool incPressure = Client::Ref().GetPrefBool("Simulation.IncludePressure", true);
+	if (!incPressure)
+		includePressure = !includePressure;
+
+	GameSave * newSave = gameModel->GetSimulation()->Save(point1.X, point1.Y, point2.X, point2.Y, includePressure);
 	if(newSave)
 	{
 		newSave->paused = gameModel->GetPaused();
@@ -590,8 +597,11 @@ std::string GameController::StampRegion(ui::Point point1, ui::Point point2, bool
 
 void GameController::CopyRegion(ui::Point point1, ui::Point point2, bool includePressure)
 {
-	GameSave * newSave;
-	newSave = gameModel->GetSimulation()->Save(point1.X, point1.Y, point2.X, point2.Y, includePressure);
+	bool incPressure = Client::Ref().GetPrefBool("Simulation.IncludePressure", true);
+	if (!incPressure)
+		includePressure = !includePressure;
+
+	GameSave * newSave = gameModel->GetSimulation()->Save(point1.X, point1.Y, point2.X, point2.Y, includePressure);
 	if(newSave)
 	{
 		Json::Value clipboardInfo;
