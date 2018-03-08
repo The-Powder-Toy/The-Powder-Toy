@@ -2448,7 +2448,12 @@ void GameView::OnDraw()
 #endif
 
 		if (showDebug)
-			fpsInfo << " Parts: " << sample.NumParts;
+		{
+			if (ren->findingElement)
+				fpsInfo << " Parts: " << ren->foundElements << "/" << sample.NumParts;
+			else
+				fpsInfo << " Parts: " << sample.NumParts;
+		}
 		if (c->GetReplaceModeFlags()&REPLACE_MODE)
 			fpsInfo << " [REPLACE MODE]";
 		if (c->GetReplaceModeFlags()&SPECIFIC_DELETE)

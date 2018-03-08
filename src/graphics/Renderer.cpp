@@ -1232,6 +1232,7 @@ void Renderer::render_parts()
 			}
 	}
 #endif
+	foundElements = 0;
 	for(i = 0; i<=sim->parts_lastActiveIndex; i++) {
 		if (sim->parts[i].type && sim->parts[i].type >= 0 && sim->parts[i].type < PT_NUM) {
 			t = sim->parts[i].type;
@@ -1424,6 +1425,7 @@ void Renderer::render_parts()
 					{
 						colr = firer = 255;
 						colg = fireg = colb = fireb = 0;
+						foundElements++;
 					}
 					else
 					{
@@ -2557,6 +2559,7 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 	debugLines(false),
 	sampleColor(0xFFFFFFFF),
 	findingElement(0),
+    foundElements(0),
 	mousePos(0, 0),
 	zoomWindowPosition(0, 0),
 	zoomScopePosition(0, 0),
