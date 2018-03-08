@@ -49,48 +49,52 @@ Element_PUMP::Element_PUMP()
 int Element_PUMP::update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry;
-	if (parts[i].life!=10)
+	if (parts[i].life != 10)
 	{
 		if (parts[i].life>0)
 			parts[i].life--;
 	}
 	else
 	{
-		if (parts[i].temp>=256.0+273.15)
-			parts[i].temp=256.0+273.15;
-		if (parts[i].temp<= -256.0+273.15)
+		if (parts[i].temp >= 256.0+273.15)
+			parts[i].temp = 256.0+273.15;
+		if (parts[i].temp <= -256.0+273.15)
 			parts[i].temp = -256.0+273.15;
 
-		for (rx=-1; rx<2; rx++)
-			for (ry=-1; ry<2; ry++)
-				if (parts[i].tmp != 1 && (!(rx && ry)))
+		for (rx = -1; rx <= 1; rx++)
+			for (ry = -1; ry <= 1; ry++)
+			{
+				if (parts[i].tmp != 1)
 				{
-					sim->pv[(y/CELL)+ry][(x/CELL)+rx] += 0.1f*((parts[i].temp-273.15)-sim->pv[(y/CELL)+ry][(x/CELL)+rx]);
+					if (!(rx && ry))
+						sim->pv[(y/CELL)+ry][(x/CELL)+rx] += 0.1f*((parts[i].temp-273.15)-sim->pv[(y/CELL)+ry][(x/CELL)+rx]);
 				}
-		for (rx=-2; rx<3; rx++)
-			for (ry=-2; ry<3; ry++)
+				else
+				{
+					int r = pmap[y+ry][x+rx];
+					if (TYP(r) == PT_FILT)
+					{
+						int newPressure = parts[ID(r)].ctype - 0x10000000;
+						if (newPressure >= 0 && newPressure <= 512)
+						{
+							sim->pv[(y + ry) / CELL][(x + rx) / CELL] = newPressure - 256;
+						}
+					}
+				}
+			}
+		for (rx = -2; rx <= 2; rx++)
+			for (ry = -2; ry <= 2; ry++)
 				if (BOUNDS_CHECK && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if (TYP(r)==PT_PUMP)
+					if (TYP(r) == PT_PUMP)
 					{
-						if (parts[ID(r)].life<10&&parts[ID(r)].life>0)
+						if (parts[ID(r)].life < 10 && parts[ID(r)].life > 0)
 							parts[i].life = 9;
-						else if (parts[ID(r)].life==0)
+						else if (parts[ID(r)].life == 0)
 							parts[ID(r)].life = 10;
-					}
-					if (parts[i].tmp == 1 && (TYP(r) == PT_FILT || TYP(r) == PT_PHOT || TYP(r) == PT_BRAY))
-					{
-						if (parts[ID(r)].ctype >= 0x10000000 && parts[ID(r)].ctype <= 0x10000000 + 512)
-						{
-							sim->pv[(y / CELL) + ry][(x / CELL) + rx] = (parts[ID(r)].ctype - 0x10000000) - 256;
-						}
-						else
-						{
-							sim->pv[(y / CELL) + ry][(x / CELL) + rx] = 0.0f;
-						}
 					}
 				}
 	}

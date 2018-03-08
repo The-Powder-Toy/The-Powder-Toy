@@ -56,25 +56,29 @@ int Element_HSWC::update(UPDATE_FUNC_ARGS)
 	}
 	else
 	{
+		bool deserializeTemp = parts[i].tmp == 1;
 		for (rx=-2; rx<3; rx++)
 			for (ry=-2; ry<3; ry++)
 				if (BOUNDS_CHECK && (rx || ry))
 				{
 					r = pmap[y+ry][x+rx];
-					if (parts[i].tmp == 1 && !r)
-						r = sim->photons[y + ry][x + rx];
 					if (!r)
 						continue;
-					if (TYP(r)==PT_HSWC)
+					if (TYP(r) == PT_HSWC)
 					{
 						if (parts[ID(r)].life<10&&parts[ID(r)].life>0)
 							parts[i].life = 9;
 						else if (parts[ID(r)].life==0)
 							parts[ID(r)].life = 10;
 					}
-					if (parts[i].tmp == 1 && (TYP(r) == PT_FILT || TYP(r) == PT_PHOT || TYP(r) == PT_BRAY))
+					if (deserializeTemp && TYP(r) == PT_FILT)
 					{
-						parts[i].temp = parts[ID(r)].ctype - 0x10000000;
+						if (rx >= -1 && rx <= 1 && ry >= -1 && ry <= 1)
+						{
+							int newTemp = parts[ID(r)].ctype - 0x10000000;
+							if (newTemp >= MIN_TEMP && newTemp <= MAX_TEMP)
+								parts[i].temp = parts[ID(r)].ctype - 0x10000000;
+						}
 					}
 				}
 	}

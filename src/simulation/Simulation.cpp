@@ -3833,11 +3833,13 @@ void Simulation::UpdateParticles(int start, int end)
 						if (!r)
 							continue;
 						rt = TYP(r);
-						if (rt&&elements[rt].HeatConduct&&(rt!=PT_HSWC||parts[ID(r)].life==10)
-						        &&(t!=PT_FILT||(rt!=PT_BRAY&&rt!=PT_BIZR&&rt!=PT_BIZRG))
-						        &&(rt!=PT_FILT||(t!=PT_BRAY&&t!=PT_PHOT&&t!=PT_BIZR&&t!=PT_BIZRG))
-						        &&(t!=PT_ELEC||rt!=PT_DEUT)
-						        &&(t!=PT_DEUT||rt!=PT_ELEC))
+						if (rt && elements[rt].HeatConduct && (rt!=PT_HSWC||parts[ID(r)].life==10)
+						        && (t!=PT_FILT||(rt!=PT_BRAY&&rt!=PT_BIZR&&rt!=PT_BIZRG))
+						        && (rt!=PT_FILT||(t!=PT_BRAY&&t!=PT_PHOT&&t!=PT_BIZR&&t!=PT_BIZRG))
+						        && (t!=PT_ELEC||rt!=PT_DEUT)
+						        && (t!=PT_DEUT||rt!=PT_ELEC)
+						        && (t!=PT_HSWC || rt!=PT_FILT || parts[i].tmp != 1)
+						        && (t!=PT_FILT || rt!=PT_HSWC || parts[ID(r)].tmp != 1))
 						{
 							surround_hconduct[j] = ID(r);
 #ifdef REALISTIC
