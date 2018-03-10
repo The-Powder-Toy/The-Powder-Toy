@@ -2246,6 +2246,15 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 					RESTRICTVERSION(93, 0);
 					fromNewerVersion = true; // TODO: remove on 93.0 release
 				}
+				if (particles[i].type == PT_TSNS || particles[i].type == PT_PSNS
+				        || particles[i].type == PT_HSWC || particles[i].type == PT_PUMP)
+				{
+					if (particles[i].tmp == 1)
+					{
+						RESTRICTVERSION(93, 0);
+						fromNewerVersion = true; // TODO: remove on 93.0 release
+					}
+				}
 				if (PMAPBITS > 8)
 				{
 					if (Simulation::TypeInCtype(particles[i].type) && particles[i].ctype > 0xFF)

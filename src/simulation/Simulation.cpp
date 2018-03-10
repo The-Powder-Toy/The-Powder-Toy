@@ -4113,12 +4113,10 @@ void Simulation::UpdateParticles(int start, int end)
 							kill_part(i);
 							goto killed;
 						}
-						if (part_change_type(i,x,y,t))
-							goto killed;
 						// part_change_type could refuse to change the type and kill the particle
 						// for example, changing type to STKM but one already exists
 						// we need to account for that to not cause simulation corruption issues
-						if (parts[i].type == PT_NONE)
+						if (part_change_type(i,x,y,t))
 							goto killed;
 
 						if (t==PT_FIRE || t==PT_PLSM || t==PT_CFLM)
