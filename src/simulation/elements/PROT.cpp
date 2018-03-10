@@ -58,7 +58,7 @@ int Element_PROT::update(UPDATE_FUNC_ARGS)
 	{
 		//remove active sparks
 		int sparked = parts[uID].ctype;
-		if (sparked > 0 && sparked < PT_NUM && sim->elements[sparked].Enabled)
+		if (sparked > 0 && sparked != PT_SPAWN && sparked != PT_SPAWN2 && sparked < PT_NUM && sim->elements[sparked].Enabled)
 		{
 			sim->part_change_type(uID, x, y, sparked);
 			parts[uID].life = 44 + parts[uID].life;
