@@ -7,6 +7,7 @@
 #include "Platform.h"
 #include "gui/interface/Window.h"
 #include "gui/interface/Engine.h"
+#include "gui/dialogues/ConfirmPrompt.h"
 #include "graphics/Graphics.h"
 
 using namespace ui;
@@ -71,6 +72,22 @@ void Engine::UnBreak()
 void Engine::Exit()
 {
 	running_ = false;
+}
+
+void Engine::ConfirmExit()
+{
+	class ExitConfirmation: public ConfirmDialogueCallback {
+	public:
+		ExitConfirmation() {}
+		virtual void ConfirmCallback(ConfirmPrompt::DialogueResult result) {
+			if (result == ConfirmPrompt::ResultOkay)
+			{
+				ui::Engine::Ref().Exit();
+			}
+		}
+		virtual ~ExitConfirmation() { }
+	};
+	new ConfirmPrompt("You are about to quit", "Are you sure you want to exit the game?", new ExitConfirmation());
 }
 
 void Engine::ShowWindow(Window * window)
