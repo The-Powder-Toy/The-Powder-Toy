@@ -146,7 +146,7 @@ public:
 	int flood_water(int x, int y, int i, int originaly, int check);
 	int FloodINST(int x, int y, int fullc, int cm);
 	void detach(int i);
-	void part_change_type(int i, int x, int y, int t);
+	bool part_change_type(int i, int x, int y, int t);
 	//int InCurrentBrush(int i, int j, int rx, int ry);
 	//int get_brush_flags();
 	int create_part(int p, int x, int y, int t, int v = -1);

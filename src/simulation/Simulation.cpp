@@ -2935,26 +2935,26 @@ void Simulation::kill_part(int i)//kills particle number i
 	pfree = i;
 }
 
-void Simulation::part_change_type(int i, int x, int y, int t)//changes the type of particle number i, to t.  This also changes pmap at the same time.
+// Changes the type of particle number i, to t.  This also changes pmap at the same time
+// Returns true if the particle was killed
+bool Simulation::part_change_type(int i, int x, int y, int t)
 {
 	if (x<0 || y<0 || x>=XRES || y>=YRES || i>=NPART || t<0 || t>=PT_NUM || !parts[i].type)
-		return;
-	if (!elements[t].Enabled)
-		t = PT_NONE;
-	if (t == PT_NONE)
+		return false;
+	if (!elements[t].Enabled || t == PT_NONE)
 	{
 		kill_part(i);
-		return;
+		return true;
 	}
 	else if ((t == PT_STKM || t == PT_STKM2 || t == PT_SPAWN || t == PT_SPAWN2) && elementCount[t])
 	{
 		kill_part(i);
-		return;
+		return true;
 	}
 	else if ((t == PT_STKM && player.spwn) || (t == PT_STKM2 && player2.spwn))
 	{
 		kill_part(i);
-		return;
+		return true;
 	}
 
 	if (parts[i].type == PT_STKM)
@@ -3014,6 +3014,7 @@ void Simulation::part_change_type(int i, int x, int y, int t)//changes the type 
 		if (ID(photons[y][x]) == i)
 			photons[y][x] = 0;
 	}
+	return false;
 }
 
 //the function for creating a particle, use p=-1 for creating a new particle, -2 is from a brush, or a particle number to replace a particle.
@@ -4107,13 +4108,8 @@ void Simulation::UpdateParticles(int start, int end)
 						if ((elements[t].Properties&TYPE_GAS) && !(elements[parts[i].type].Properties&TYPE_GAS))
 							pv[y/CELL][x/CELL] += 0.50f;
 
-						if (t == PT_NONE)
-						{
-							kill_part(i);
+						if (part_change_type(i,x,y,t))
 							goto killed;
-						}
-						else
-							part_change_type(i,x,y,t);
 						// part_change_type could refuse to change the type and kill the particle
 						// for example, changing type to STKM but one already exists
 						// we need to account for that to not cause simulation corruption issues
@@ -4247,19 +4243,13 @@ void Simulation::UpdateParticles(int start, int end)
 			if (s)
 			{
 				parts[i].life = 0;
-				part_change_type(i,x,y,t);
 				// part_change_type could refuse to change the type and kill the particle
 				// for example, changing type to STKM but one already exists
 				// we need to account for that to not cause simulation corruption issues
-				if (parts[i].type == PT_NONE)
+				if (part_change_type(i,x,y,t))
 					goto killed;
-				if (t==PT_FIRE)
+				if (t == PT_FIRE)
 					parts[i].life = rand()%50+120;
-				if (t==PT_NONE)
-				{
-					kill_part(i);
-					goto killed;
-				}
 				transitionOccurred = true;
 			}
 

@@ -66,7 +66,8 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 			parts[i].life = 54;
 		else if (ct == PT_SWCH)
 			parts[i].life = 14;
-		sim->part_change_type(i,x,y,ct);
+		if (sim->part_change_type(i,x,y,ct))
+			return 1;
 		return 0;
 	}
 	//Some functions of SPRK based on ctype (what it is on)
