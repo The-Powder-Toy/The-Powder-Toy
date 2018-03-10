@@ -4108,6 +4108,11 @@ void Simulation::UpdateParticles(int start, int end)
 						if ((elements[t].Properties&TYPE_GAS) && !(elements[parts[i].type].Properties&TYPE_GAS))
 							pv[y/CELL][x/CELL] += 0.50f;
 
+						if (t == PT_NONE)
+						{
+							kill_part(i);
+							goto killed;
+						}
 						if (part_change_type(i,x,y,t))
 							goto killed;
 						// part_change_type could refuse to change the type and kill the particle
@@ -4242,6 +4247,11 @@ void Simulation::UpdateParticles(int start, int end)
 			// particle type change occurred
 			if (s)
 			{
+				if (t == PT_NONE)
+				{
+					kill_part(i);
+					goto killed;
+				}
 				parts[i].life = 0;
 				// part_change_type could refuse to change the type and kill the particle
 				// for example, changing type to STKM but one already exists
