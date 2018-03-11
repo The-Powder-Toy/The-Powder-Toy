@@ -567,7 +567,9 @@ void GameSave::readOPS(char * data, int dataLength)
 	unsigned partsCount = 0;
 	unsigned int blockX, blockY, blockW, blockH, fullX, fullY, fullW, fullH;
 	int savedVersion = inputData[4];
+#if defined(SNAPSHOT) || defined(DEBUG)
 	bool fakeNewerVersion = false; // used for development builds only
+#endif
 
 	bson b;
 	b.data = NULL;
@@ -1201,7 +1203,11 @@ void GameSave::readOPS(char * data, int dataLength)
 						break;
 					case PT_PIPE:
 					case PT_PPIP:
+#if defined(SNAPSHOT) || defined(DEBUG)
 						if (savedVersion < 93 && !fakeNewerVersion)
+#else
+						if (savedVersion < 93)
+#endif
 						{
 							if (particles[newIndex].ctype == 1)
 								particles[newIndex].tmp |= 0x00020000; //PFLAG_INITIALIZING
