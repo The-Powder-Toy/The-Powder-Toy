@@ -567,9 +567,7 @@ void GameSave::readOPS(char * data, int dataLength)
 	unsigned partsCount = 0;
 	unsigned int blockX, blockY, blockW, blockH, fullX, fullY, fullW, fullH;
 	int savedVersion = inputData[4];
-#if defined(SNAPSHOT) || defined(DEBUG)
 	bool fakeNewerVersion = false; // used for development builds only
-#endif
 
 	bson b;
 	b.data = NULL;
@@ -733,28 +731,42 @@ void GameSave::readOPS(char * data, int dataLength)
 			if (bson_iterator_type(&iter) == BSON_OBJECT)
 			{
 				int major = INT_MAX, minor = INT_MAX;
+#ifdef RENDERER
+				int renderMajor = INT_MAX, renderMinor = INT_MAX;
+#endif
 				bson_iterator subiter;
 				bson_iterator_subiterator(&iter, &subiter);
 				while (bson_iterator_next(&subiter))
 				{
 					if (bson_iterator_type(&subiter) == BSON_INT)
 					{
+#ifdef RENDERER
+						if (!strcmp(bson_iterator_key(&subiter), "rendermajor"))
+							renderMajor = bson_iterator_int(&subiter);
+						else if (!strcmp(bson_iterator_key(&subiter), "renderminor"))
+							renderMinor = bson_iterator_int(&subiter);
+#else
 						if (!strcmp(bson_iterator_key(&subiter), "major"))
 							major = bson_iterator_int(&subiter);
 						else if (!strcmp(bson_iterator_key(&subiter), "minor"))
 							minor = bson_iterator_int(&subiter);
-						else
-							fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
+#endif
 					}
 				}
-#if defined(SNAPSHOT) || defined(DEBUG)
+#ifdef RENDERER
+				if (renderMajor > SAVE_VERSION || (renderMajor == SAVE_VERSION && renderMinor > MINOR_VERSION))
+#elif defined(SNAPSHOT) || defined(DEBUG)
 				if (major > FUTURE_SAVE_VERSION || (major == FUTURE_SAVE_VERSION && minor > FUTURE_MINOR_VERSION))
 #else
 				if (major > SAVE_VERSION || (major == SAVE_VERSION && minor > MINOR_VERSION))
 #endif
 				{
 					std::stringstream errorMessage;
+#ifdef RENDERER
+					errorMessage << "Save from a newer version: Requires render version " << renderMajor << "." << renderMinor;
+#else
 					errorMessage << "Save from a newer version: Requires version " << major << "." << minor;
+#endif
 					throw ParseException(ParseException::WrongVersion, errorMessage.str());
 				}
 #if defined(SNAPSHOT) || defined(DEBUG)
@@ -1203,11 +1215,7 @@ void GameSave::readOPS(char * data, int dataLength)
 						break;
 					case PT_PIPE:
 					case PT_PPIP:
-#if defined(SNAPSHOT) || defined(DEBUG)
 						if (savedVersion < 93 && !fakeNewerVersion)
-#else
-						if (savedVersion < 93)
-#endif
 						{
 							if (particles[newIndex].ctype == 1)
 								particles[newIndex].tmp |= 0x00020000; //PFLAG_INITIALIZING
@@ -1924,6 +1932,12 @@ void GameSave::readPSv(char * saveDataChar, int dataLength)
 	minimumMinorVersion = minor;\
 }
 
+// restrict the minimum version this save can be rendered with
+#define RESTRICTRENDERVERSION(major, minor) if ((major) > blameSimon_major || (((major) == blameSimon_major && (minor) > blameSimon_minor))) {\
+	blameSimon_major = major;\
+	blameSimon_minor = minor;\
+}
+
 char * GameSave::serialiseOPS(unsigned int & dataLength)
 {
 	int blockX, blockY, blockW, blockH, fullX, fullY, fullW, fullH;
@@ -1932,6 +1946,8 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 	// when building, this number may be increased depending on what elements are used
 	// or what properties are detected
 	int minimumMajorVersion = 90, minimumMinorVersion = 2;
+	// blame simon for always being slow updating the renderer
+	int blameSimon_major = 92, blameSimon_minor = 0;
 
 	//Get coords in blocks
 	blockX = 0;//orig_x0/CELL;
@@ -2090,6 +2106,9 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 				//Store saved particle index+1 for this partsptr index (0 means not saved)
 				partsSaveIndex[i] = (partsCount++) + 1;
 
+				RESTRICTVERSION(94, 0);
+				RESTRICTRENDERVERSION(93, 0);
+
 				//Type (required)
 				partsData[partsDataLen++] = particles[i].type;
 
@@ -2103,6 +2122,7 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 					partsData[partsDataLen++] = particles[i].type >> 8;
 					fieldDesc |= 1 << 14;
 					RESTRICTVERSION(93, 0);
+					RESTRICTRENDERVERSION(93, 0);
 					fromNewerVersion = true; // TODO: remove on 93.0 release
 				}
 
@@ -2353,6 +2373,8 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 	bson_append_start_object(&b, "minimumVersion");
 	bson_append_int(&b, "major", minimumMajorVersion);
 	bson_append_int(&b, "minor", minimumMinorVersion);
+	bson_append_int(&b, "rendermajor", blameSimon_major);
+	bson_append_int(&b, "renderminor", blameSimon_minor);
 	bson_append_finish_object(&b);
 
 
