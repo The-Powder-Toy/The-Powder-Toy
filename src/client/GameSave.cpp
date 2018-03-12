@@ -2106,9 +2106,6 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 				//Store saved particle index+1 for this partsptr index (0 means not saved)
 				partsSaveIndex[i] = (partsCount++) + 1;
 
-				RESTRICTVERSION(94, 0);
-				RESTRICTRENDERVERSION(93, 0);
-
 				//Type (required)
 				partsData[partsDataLen++] = particles[i].type;
 
