@@ -824,7 +824,7 @@ bool Client::CheckUpdate(void *updateRequest, bool checkSession)
 #ifndef IGNORE_UPDATES
 					//Check for updates
 					Json::Value versions = objDocument["Updates"];
-#if !defined(BETA) && !defined(SNAPSHOT)
+#ifndef SNAPSHOT
 					Json::Value stableVersion = versions["Stable"];
 					int stableMajor = stableVersion["Major"].asInt();
 					int stableMinor = stableVersion["Minor"].asInt();
@@ -1021,7 +1021,7 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 			lastError = "Cannot serialize game save";
 			return RequestFailure;
 		}
-#if defined(SNAPSHOT) || defined(DEBUG)
+#if defined(SNAPSHOT) || defined(BETA) || defined(DEBUG)
 		else if (save.gameSave->fromNewerVersion)
 		{
 			lastError = "Cannot upload save, incompatible with latest release version";
