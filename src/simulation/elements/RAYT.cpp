@@ -1,3 +1,5 @@
+#ifdef defined(SNAPSHOT) || defined(DEBUG)
+
 #include "simulation/Elements.h"
 
 //#TPT-Directive ElementClass Element_RAYT PT_RAYT 186
@@ -133,3 +135,5 @@ int Element_RAYT::update(UPDATE_FUNC_ARGS) {
 }
 
 Element_RAYT::~Element_RAYT() {}
+
+#endif
