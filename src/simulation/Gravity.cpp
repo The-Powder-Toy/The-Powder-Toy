@@ -27,7 +27,7 @@ void Gravity::bilinear_interpolation(float *src, float *dst, int sw, int sh, int
 			tl = src[sw*(int)floor(fy)+(int)floor(fx)];
 			br = src[sw*fyceil+fxceil];
 			bl = src[sw*fyceil+(int)floor(fx)];
-			dst[rw*y+x] = ((tl*(1.0f-fxc))+(tr*(fxc)))*(1.0f-fyc) + ((bl*(1.0f-fxc))+(br*(fxc)))*(fyc);				
+			dst[rw*y+x] = ((tl*(1.0f-fxc))+(tr*(fxc)))*(1.0f-fyc) + ((bl*(1.0f-fxc))+(br*(fxc)))*(fyc);
 		}
 }
 
@@ -154,18 +154,18 @@ void Gravity::update_grav_async()
 			update_grav();
 			done = 1;
 			pthread_mutex_lock(&gravmutex);
-			
+
 			grav_ready = done;
 			thread_done = gravthread_done;
-			
+
 			pthread_mutex_unlock(&gravmutex);
 		} else {
 			pthread_mutex_lock(&gravmutex);
 			pthread_cond_wait(&gravcv, &gravmutex);
-		    
+
 			done = grav_ready;
 			thread_done = gravthread_done;
-			
+
 			pthread_mutex_unlock(&gravmutex);
 		}
 	}
@@ -441,7 +441,7 @@ void Gravity::grav_mask_r(int x, int y, char checkmap[YRES/CELL][XRES/CELL], cha
 			break;
 		x2++;
 	}
-	
+
 	// fill span
 	for (x = x1; x <= x2; x++)
 		checkmap[y][x] = shape[y][x] = 1;

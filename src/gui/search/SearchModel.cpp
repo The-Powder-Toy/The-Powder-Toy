@@ -26,7 +26,7 @@ void SearchModel::SetShowTags(bool show)
 
 bool SearchModel::GetShowTags()
 {
-	return showTags;	
+	return showTags;
 }
 
 TH_ENTRY_POINT void * SearchModel::updateSaveListTHelper(void * obj)
@@ -90,7 +90,7 @@ bool SearchModel::UpdateSaveList(int pageNumber, std::string query)
 			updateTagListWorking = true;
 			pthread_create(&updateTagListThread, 0, &SearchModel::updateTagListTHelper, this);
 		}
-		
+
 		updateSaveListFinished = false;
 		updateSaveListWorking = true;
 		pthread_create(&updateSaveListThread, 0, &SearchModel::updateSaveListTHelper, this);
@@ -152,7 +152,7 @@ void SearchModel::Update()
 				if (lastError == "Unspecified Error")
 					lastError = "";
 			}
-			
+
 			resultCount = thResultCount;
 			notifyPageChanged();
 			notifySaveListChanged();

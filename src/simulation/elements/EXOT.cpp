@@ -207,7 +207,7 @@ int Element_EXOT::graphics(GRAPHICS_FUNC_ARGS)
 			*colr = (sin(frequency*q + 4) * 127 + (b/1.7));
 			*colg = (sin(frequency*q + 6) * 127 + (b/1.7));
 			*colb = (sin(frequency*q + 8) * 127 + (b/1.7));
-			*cola = cpart->tmp / 6; 
+			*cola = cpart->tmp / 6;
 
 			*firea = *cola;
 			*firer = *colr;

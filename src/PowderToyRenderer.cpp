@@ -57,7 +57,7 @@ void writeFile(std::string filename, std::vector<char> & fileData)
 }
 
 int main(int argc, char *argv[])
-{	
+{
 	ui::Engine * engine;
 	std::string outputPrefix, inputFilename;
 	std::vector<char> inputFile;
@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
 	readFile(inputFilename, inputFile);
 
 	ui::Engine::Ref().g = new Graphics();
-	
+
 	engine = &ui::Engine::Ref();
 	engine->Begin(WINDOWW, WINDOWH);
 

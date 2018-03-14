@@ -11,7 +11,7 @@ struct Point
 #else
 # define POINT_T int
 #endif
-	
+
 	POINT_T X;
 	POINT_T Y;
 

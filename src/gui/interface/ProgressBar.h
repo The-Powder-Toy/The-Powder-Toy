@@ -17,5 +17,5 @@ namespace ui
 		virtual std::string GetStatus();
 		virtual void Draw(const Point & screenPos);
 		virtual void Tick(float dt);
-	};	
+	};
 }

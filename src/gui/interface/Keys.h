@@ -73,7 +73,7 @@ typedef enum {
 	SDLK_GREATER		= 62,
 	SDLK_QUESTION		= 63,
 	SDLK_AT			= 64,
-	/* 
+	/*
 	   Skip uppercase letters
 	 */
 	SDLK_LEFTBRACKET	= 91,

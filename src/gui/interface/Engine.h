@@ -11,7 +11,7 @@ namespace ui
 	class Window;
 
 	/* class Engine
-	 * 
+	 *
 	 * Controls the User Interface.
 	 * Send user inputs to the Engine and the appropriate controls and components will interact.
 	 */
@@ -35,7 +35,7 @@ namespace ui
 
 		void Begin(int width, int height);
 		inline bool Running() { return running_; }
-		inline bool Broken() { return break_; } 
+		inline bool Broken() { return break_; }
 		inline long unsigned int LastTick() { return lastTick; }
 		inline void LastTick(long unsigned int tick) { lastTick = tick; }
 		void Exit();
@@ -70,7 +70,7 @@ namespace ui
 		void SetMaxSize(int width, int height);
 
 		inline void SetSize(int width, int height);
-		
+
 		//void SetState(Window* state);
 		//inline State* GetState() { return state_; }
 		inline Window* GetWindow() { return state_; }
@@ -96,7 +96,7 @@ namespace ui
 		bool running_;
 		bool break_;
 		bool FastQuit;
-		
+
 		long unsigned int lastTick;
 		int mouseb_;
 		int mousex_;

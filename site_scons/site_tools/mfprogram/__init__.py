@@ -26,7 +26,7 @@
 import os
 import new
 import sys
-## 
+##
 import SCons
 
 if sys.version_info < (2,6,0):
@@ -98,16 +98,16 @@ def MFProgramEmitter(target, source, env):
     """Ensures that target list is complete, and does validity checking.  Sets precious"""
     if len(target) == 1 and len(source) > 1:
         #Looks like the user specified many sources and SCons created 1 target
-        #targets are implicit, but the builder doesn't know how to handle 
+        #targets are implicit, but the builder doesn't know how to handle
         #suffixes for multiple target files, so we'll do it here
         objdir = env.get('OBJDIR', '')
         #target = [os.path.join(
-        #    objdir, 
+        #    objdir,
         #        os.path.splitext(
         #            os.path.basename(str(i)))[0] + '.o' ) for i in source]
     elif len(source) == 1 and 'OBJDIR' in env:
         target = os.path.join(
-            env['OBJDIR'], 
+            env['OBJDIR'],
                 os.path.splitext(
                     os.path.basename(str(source[0])))[0] + '.o' )
     else:
@@ -129,7 +129,7 @@ def MFProgramEmitter(target, source, env):
     return target, source
 
 def MFProgramGenerator(source, target, env, for_signature):
-    #Rebuild everything if 
+    #Rebuild everything if
     #   a) the number of dependencies has changed
     #   b) any target does not exist
     #   c) the build command has changed
@@ -137,7 +137,7 @@ def MFProgramGenerator(source, target, env, for_signature):
     #The signature of this builder should always be the same, because the
     #multifile compile is always functionally equivalent to rebuilding
     #everything
-    
+
     if for_signature:
         pared_sources = source
     else:
@@ -145,9 +145,9 @@ def MFProgramGenerator(source, target, env, for_signature):
         assert len(set([os.path.splitext(str(i))[1] for i in source])) == 1, \
                 "All source files must have the same extension."
         pared_sources = []
-        src_names = [os.path.splitext(os.path.basename(str(i)))[0] 
+        src_names = [os.path.splitext(os.path.basename(str(i)))[0]
                         for i in source]
-        tgt_names = [os.path.splitext(os.path.basename(str(t)))[0] 
+        tgt_names = [os.path.splitext(os.path.basename(str(t)))[0]
                         for t in target]
         ni = target[0].get_binfo()
         oi = target[0].get_stored_info().binfo
@@ -191,7 +191,7 @@ def MFProgramGenerator(source, target, env, for_signature):
     prefixed_sources = [relpath(str(i), destdir) for i in pared_sources]
     prefixed_sources_str = ' '.join([str(i) for i in prefixed_sources])
     lang_ext = os.path.splitext(prefixed_sources[0])[1]
-    tgt_names2 = [os.path.splitext(os.path.basename(str(t)))[0] 
+    tgt_names2 = [os.path.splitext(os.path.basename(str(t)))[0]
                 for t in target]
 
     _CPPPATH = []
@@ -201,7 +201,7 @@ def MFProgramGenerator(source, target, env, for_signature):
             ##_CPPPATH.append(relpath(i[1:], destdir))
             _CPPPATH.append(i)
             #else:
-            #    _CPPPATH.append(relpath(os.path.join(sconscript_dir, i), 
+            #    _CPPPATH.append(relpath(os.path.join(sconscript_dir, i),
             #                            destdir))
 
     defines = ""
@@ -231,11 +231,11 @@ def MFProgramGenerator(source, target, env, for_signature):
 
 def generate(env):
     """Adds the MFObject builder to your environment"""
-    MFProgramBld = env.Builder(generator = MFProgramGenerator, 
+    MFProgramBld = env.Builder(generator = MFProgramGenerator,
                               emitter = MFProgramEmitter,
-                              suffix = '.o', 
+                              suffix = '.o',
                               source_scanner=SCons.Tool.SourceFileScanner)
-    MFProgramBld.get_single_executor = new.instancemethod(MF_get_single_executor, 
+    MFProgramBld.get_single_executor = new.instancemethod(MF_get_single_executor,
                         MFProgramBld, MFProgramBld.__class__)
 
     env.Append(BUILDERS = {'MFProgram': MFProgramBld})

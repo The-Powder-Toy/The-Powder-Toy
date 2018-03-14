@@ -41,13 +41,13 @@ LoginView::LoginView():
 {
 	targetSize = Size;
 	FocusComponent(usernameField);
-	
+
 	infoLabel->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	infoLabel->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 	infoLabel->SetMultiline(true);
 	infoLabel->Visible = false;
 	AddComponent(infoLabel);
-	
+
 	AddComponent(loginButton);
 	SetOkayButton(loginButton);
 	loginButton->Appearance.HorizontalAlign = ui::Appearance::AlignRight;
@@ -61,7 +61,7 @@ LoginView::LoginView():
 	AddComponent(titleLabel);
 	titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	titleLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-	
+
 	AddComponent(usernameField);
 	usernameField->Appearance.icon = IconUsername;
 	usernameField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
@@ -127,7 +127,7 @@ void LoginView::OnTick(float dt)
 				ydiff = 1*isign(difference.Y);
 			Size.Y += ydiff;
 		}
-		
+
 		loginButton->Position.Y = Size.Y-17;
 		cancelButton->Position.Y = Size.Y-17;
 	}

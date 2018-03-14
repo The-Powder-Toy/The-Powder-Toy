@@ -2364,18 +2364,18 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 			{
 				//Find the first particle in this position
 				i = partsPosFirstMap[y*fullW + x];
-	
+
 				//Loop while there is a pmap entry
 				while (i)
 				{
 					//Turn pmap entry into a partsptr index
 					i = i>>8;
-	
+
 					if (particles[i].type==PT_SOAP)
 					{
 						//Only save forward link for each particle, back links can be deduced from other forward links
 						//linkedIndex is index within saved particles + 1, 0 means not saved or no link
-	
+
 						unsigned linkedIndex = 0;
 						if ((particles[i].ctype&2) && particles[i].tmp>=0 && particles[i].tmp<NPART)
 						{
@@ -2385,7 +2385,7 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 						soapLinkData[soapLinkDataLen++] = (linkedIndex&0x00FF00)>>8;
 						soapLinkData[soapLinkDataLen++] = (linkedIndex&0x0000FF);
 					}
-	
+
 					//Get the pmap entry for the next particle in the same position
 					i = partsPosLink[i];
 				}

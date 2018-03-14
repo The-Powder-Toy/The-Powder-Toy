@@ -47,9 +47,9 @@ static int finalize(lua_State *L) {
     } else return lua_gettop(L);
 }
 
-static int do_nothing(lua_State *L) { 
+static int do_nothing(lua_State *L) {
     (void) L;
-    return 0; 
+    return 0;
 }
 
 static int global_newtry(lua_State *L) {

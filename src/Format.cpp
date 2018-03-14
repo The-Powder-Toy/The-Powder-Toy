@@ -310,7 +310,7 @@ std::vector<char> format::VideoBufferToPNG(const VideoBuffer & vidBuf)
 			currentRow[rowPos++] = PIXB(vidBuf.Buffer[(y*vidBuf.Width)+x]);
 		}
 
-		uncompressedData[dataPos++] = 2; //Up Sub(x) filter 
+		uncompressedData[dataPos++] = 2; //Up Sub(x) filter
 		for(int b = 0; b < rowPos; b++)
 		{
 			int filteredByte = (currentRow[b]-previousRow[b])&0xFF;
@@ -329,7 +329,7 @@ std::vector<char> format::VideoBufferToPNG(const VideoBuffer & vidBuf)
 	unsigned char * compressedData = new unsigned char[compressedBufferSize];
 
 	int result;
-    z_stream zipStream; 
+    z_stream zipStream;
     zipStream.zalloc = Z_NULL;
     zipStream.zfree = Z_NULL;
     zipStream.opaque = Z_NULL;

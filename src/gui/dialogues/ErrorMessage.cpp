@@ -46,7 +46,7 @@ ErrorMessage::ErrorMessage(std::string title, std::string message,  ErrorMessage
 	AddComponent(okayButton);
 	SetOkayButton(okayButton);
 	SetCancelButton(okayButton);
-	
+
 	MakeActiveWindow();
 }
 

@@ -356,7 +356,7 @@ void SaveButton::OnMouseClick(int x, int y, unsigned int button)
 			selected = !selected;
 			DoSelection();
 		}
-		
+
 	}
 }
 

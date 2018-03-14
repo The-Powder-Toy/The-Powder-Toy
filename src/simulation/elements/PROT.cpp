@@ -121,7 +121,7 @@ int Element_PROT::update(UPDATE_FUNC_ARGS)
 	//make temp of other things closer to it's own temperature. This will change temp of things that don't conduct, and won't change the PROT's temperature
 	if (utype && utype != PT_WIFI)
 		parts[uID].temp = restrict_flt(parts[uID].temp-(parts[uID].temp-parts[i].temp)/4.0f, MIN_TEMP, MAX_TEMP);
- 
+
 
 	//if this proton has collided with another last frame, change it into a heavier element
 	if (parts[i].tmp)

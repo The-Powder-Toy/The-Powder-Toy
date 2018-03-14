@@ -66,7 +66,7 @@ void Component::TextPosition(std::string displayText)
 {
 
 	textPosition = ui::Point(0, 0);
-	
+
 	int textWidth, textHeight = 10;
 	Graphics::textsize((char*)displayText.c_str(), textWidth, textHeight);
 	textSize.X = textWidth; textSize.Y = textHeight;
@@ -76,10 +76,10 @@ void Component::TextPosition(std::string displayText)
 	{
 		textWidth += 13;
 	}
-	
+
 	int textAreaWidth = Size.X-(Appearance.Margin.Right+Appearance.Margin.Left);
 	int textAreaHeight = Size.Y-(Appearance.Margin.Top+Appearance.Margin.Bottom);
-	
+
 	switch(Appearance.VerticalAlign)
 	{
 		case ui::Appearance::AlignTop:
@@ -92,7 +92,7 @@ void Component::TextPosition(std::string displayText)
 			textPosition.Y = Size.Y-(textHeight+Appearance.Margin.Bottom);
 			break;
 	}
-	
+
 	switch(Appearance.HorizontalAlign)
 	{
 		case ui::Appearance::AlignLeft:
@@ -137,10 +137,10 @@ void Component::SetParent(Panel* new_parent)
 				{
 					// remove ourself from parent component
 					_parent->RemoveChild(i, false);
-					
+
 					// add ourself to the parent state
 					GetParentWindow()->AddComponent(this);
-					
+
 					//done in this loop.
 					break;
 				}

@@ -51,7 +51,7 @@ static int inet_gethost(const char *address, struct hostent **hp) {
     struct in_addr addr;
     if (inet_aton(address, &addr))
         return socket_gethostbyaddr((char *) &addr, sizeof(addr), hp);
-    else 
+    else
         return socket_gethostbyname(address, hp);
 }
 
@@ -61,7 +61,7 @@ static int inet_gethost(const char *address, struct hostent **hp) {
 \*-------------------------------------------------------------------------*/
 static int inet_global_tohostname(lua_State *L) {
     const char *address = luaL_checkstring(L, 1);
-    struct hostent *hp = NULL; 
+    struct hostent *hp = NULL;
     int err = inet_gethost(address, &hp);
     if (err != IO_DONE) {
         lua_pushnil(L);
@@ -80,7 +80,7 @@ static int inet_global_tohostname(lua_State *L) {
 static int inet_global_toip(lua_State *L)
 {
     const char *address = luaL_checkstring(L, 1);
-    struct hostent *hp = NULL; 
+    struct hostent *hp = NULL;
     int err = inet_gethost(address, &hp);
     if (err != IO_DONE) {
         lua_pushnil(L);
@@ -202,7 +202,7 @@ const char *inet_trycreate(p_socket ps, int type) {
 /*-------------------------------------------------------------------------*\
 * Tries to connect to remote address (address, port)
 \*-------------------------------------------------------------------------*/
-const char *inet_tryconnect(p_socket ps, const char *address, 
+const char *inet_tryconnect(p_socket ps, const char *address,
         unsigned short port, p_timeout tm)
 {
     struct sockaddr_in remote;
@@ -246,7 +246,7 @@ const char *inet_trybind(p_socket ps, const char *address, unsigned short port)
     }
     err = socket_bind(ps, (SA *) &local, sizeof(local));
     if (err != IO_DONE) socket_destroy(ps);
-    return socket_strerror(err); 
+    return socket_strerror(err);
 }
 
 /*-------------------------------------------------------------------------*\

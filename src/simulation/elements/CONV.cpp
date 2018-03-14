@@ -72,7 +72,7 @@ int Element_CONV::update(UPDATE_FUNC_ARGS)
 					}
 				}
 	}
-	else 
+	else
 	{
 		int restrictElement = sim->IsValidElement(parts[i].tmp) ? parts[i].tmp : 0;
 		for (rx=-1; rx<2; rx++)

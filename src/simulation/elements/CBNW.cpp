@@ -65,7 +65,7 @@ int Element_CBNW::update(UPDATE_FUNC_ARGS)
 	{
 		parts[i].tmp2 = rand()%40;
 	}
-	 
+
 	if(parts[i].tmp>0)
 	{
 		//Explode

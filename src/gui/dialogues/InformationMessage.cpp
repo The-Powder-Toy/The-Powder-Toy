@@ -72,7 +72,7 @@ InformationMessage::InformationMessage(std::string title, std::string message, b
 	AddComponent(okayButton);
 	SetOkayButton(okayButton);
 	SetCancelButton(okayButton);
-	
+
 	MakeActiveWindow();
 }
 

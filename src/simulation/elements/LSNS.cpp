@@ -84,7 +84,7 @@ int Element_LSNS::update(UPDATE_FUNC_ARGS)
 					parts[i].life = 1;
 			}
 	return 0;
-	
+
 }
 
 

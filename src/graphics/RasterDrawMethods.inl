@@ -5,10 +5,10 @@ int PIXELMETHODS_CLASS::drawtext_outline(int x, int y, const char *s, int r, int
 {
 	drawtext(x-1, y-1, s, 0, 0, 0, 120);
 	drawtext(x+1, y+1, s, 0, 0, 0, 120);
-	
+
 	drawtext(x-1, y+1, s, 0, 0, 0, 120);
 	drawtext(x+1, y-1, s, 0, 0, 0, 120);
-	
+
 	return drawtext(x, y, s, r, g, b, a);
 }
 

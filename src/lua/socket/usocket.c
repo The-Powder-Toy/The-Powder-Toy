@@ -5,11 +5,11 @@
 *
 * The code is now interrupt-safe.
 * The penalty of calling select to avoid busy-wait is only paid when
-* the I/O call fail in the first place. 
+* the I/O call fail in the first place.
 *
 * RCS ID: $Id: usocket.c,v 1.38 2007/10/13 23:55:20 diego Exp $
 \*=========================================================================*/
-#include <string.h> 
+#include <string.h>
 #include <signal.h>
 
 #include "socket.h"
@@ -74,7 +74,7 @@ int socket_waitfd(p_socket ps, int sw, p_timeout tm) {
 
 
 /*-------------------------------------------------------------------------*\
-* Initializes module 
+* Initializes module
 \*-------------------------------------------------------------------------*/
 int socket_open(void) {
     /* instals a handler to ignore sigpipe or it will crash us */
@@ -83,7 +83,7 @@ int socket_open(void) {
 }
 
 /*-------------------------------------------------------------------------*\
-* Close module 
+* Close module
 \*-------------------------------------------------------------------------*/
 int socket_close(void) {
     return 1;
@@ -103,7 +103,7 @@ void socket_destroy(p_socket ps) {
 /*-------------------------------------------------------------------------*\
 * Select with timeout control
 \*-------------------------------------------------------------------------*/
-int socket_select(t_socket n, fd_set *rfds, fd_set *wfds, fd_set *efds, 
+int socket_select(t_socket n, fd_set *rfds, fd_set *wfds, fd_set *efds,
         p_timeout tm) {
     int ret;
     do {
@@ -122,8 +122,8 @@ int socket_select(t_socket n, fd_set *rfds, fd_set *wfds, fd_set *efds,
 \*-------------------------------------------------------------------------*/
 int socket_create(p_socket ps, int domain, int type, int protocol) {
     *ps = socket(domain, type, protocol);
-    if (*ps != SOCKET_INVALID) return IO_DONE; 
-    else return errno; 
+    if (*ps != SOCKET_INVALID) return IO_DONE;
+    else return errno;
 }
 
 /*-------------------------------------------------------------------------*\
@@ -132,24 +132,24 @@ int socket_create(p_socket ps, int domain, int type, int protocol) {
 int socket_bind(p_socket ps, SA *addr, socklen_t len) {
     int err = IO_DONE;
     socket_setblocking(ps);
-    if (bind(*ps, addr, len) < 0) err = errno; 
+    if (bind(*ps, addr, len) < 0) err = errno;
     socket_setnonblocking(ps);
     return err;
 }
 
 /*-------------------------------------------------------------------------*\
-* 
+*
 \*-------------------------------------------------------------------------*/
 int socket_listen(p_socket ps, int backlog) {
-    int err = IO_DONE; 
+    int err = IO_DONE;
     socket_setblocking(ps);
-    if (listen(*ps, backlog)) err = errno; 
+    if (listen(*ps, backlog)) err = errno;
     socket_setnonblocking(ps);
     return err;
 }
 
 /*-------------------------------------------------------------------------*\
-* 
+*
 \*-------------------------------------------------------------------------*/
 void socket_shutdown(p_socket ps, int how) {
     socket_setblocking(ps);
@@ -168,7 +168,7 @@ int socket_connect(p_socket ps, SA *addr, socklen_t len, p_timeout tm) {
     do if (connect(*ps, addr, len) == 0) return IO_DONE;
     while ((err = errno) == EINTR);
     /* if connection failed immediately, return error code */
-    if (err != EINPROGRESS && err != EAGAIN) return err; 
+    if (err != EINPROGRESS && err != EAGAIN) return err;
     /* zero timeout case optimization */
     if (timeout_iszero(tm)) return IO_TIMEOUT;
     /* wait until we have the result of the connection attempt or timeout */
@@ -185,7 +185,7 @@ int socket_connect(p_socket ps, SA *addr, socklen_t len, p_timeout tm) {
 int socket_accept(p_socket ps, p_socket pa, SA *addr, socklen_t *len, p_timeout tm) {
     SA daddr;
     socklen_t dlen = sizeof(daddr);
-    if (*ps == SOCKET_INVALID) return IO_CLOSED; 
+    if (*ps == SOCKET_INVALID) return IO_CLOSED;
     if (!addr) addr = &daddr;
     if (!len) len = &dlen;
     for ( ;; ) {
@@ -203,7 +203,7 @@ int socket_accept(p_socket ps, p_socket pa, SA *addr, socklen_t *len, p_timeout 
 /*-------------------------------------------------------------------------*\
 * Send with timeout
 \*-------------------------------------------------------------------------*/
-int socket_send(p_socket ps, const char *data, size_t count, 
+int socket_send(p_socket ps, const char *data, size_t count,
         size_t *sent, p_timeout tm)
 {
     int err;
@@ -219,7 +219,7 @@ int socket_send(p_socket ps, const char *data, size_t count,
             return IO_DONE;
         }
         err = errno;
-        /* send can't really return 0, but EPIPE means the connection was 
+        /* send can't really return 0, but EPIPE means the connection was
            closed */
         if (put == 0 || err == EPIPE) return IO_CLOSED;
         /* we call was interrupted, just try again */
@@ -236,14 +236,14 @@ int socket_send(p_socket ps, const char *data, size_t count,
 /*-------------------------------------------------------------------------*\
 * Sendto with timeout
 \*-------------------------------------------------------------------------*/
-int socket_sendto(p_socket ps, const char *data, size_t count, size_t *sent, 
+int socket_sendto(p_socket ps, const char *data, size_t count, size_t *sent,
         SA *addr, socklen_t len, p_timeout tm)
 {
     int err;
     *sent = 0;
     if (*ps == SOCKET_INVALID) return IO_CLOSED;
     for ( ;; ) {
-        long put = (long) sendto(*ps, data, count, 0, addr, len);  
+        long put = (long) sendto(*ps, data, count, 0, addr, len);
         if (put > 0) {
             *sent = put;
             return IO_DONE;
@@ -273,8 +273,8 @@ int socket_recv(p_socket ps, char *data, size_t count, size_t *got, p_timeout tm
         err = errno;
         if (taken == 0) return IO_CLOSED;
         if (err == EINTR) continue;
-        if (err != EAGAIN) return err; 
-        if ((err = socket_waitfd(ps, WAITFD_R, tm)) != IO_DONE) return err; 
+        if (err != EAGAIN) return err;
+        if ((err = socket_waitfd(ps, WAITFD_R, tm)) != IO_DONE) return err;
     }
     return IO_UNKNOWN;
 }
@@ -282,7 +282,7 @@ int socket_recv(p_socket ps, char *data, size_t count, size_t *got, p_timeout tm
 /*-------------------------------------------------------------------------*\
 * Recvfrom with timeout
 \*-------------------------------------------------------------------------*/
-int socket_recvfrom(p_socket ps, char *data, size_t count, size_t *got, 
+int socket_recvfrom(p_socket ps, char *data, size_t count, size_t *got,
         SA *addr, socklen_t *len, p_timeout tm) {
     int err;
     *got = 0;
@@ -296,8 +296,8 @@ int socket_recvfrom(p_socket ps, char *data, size_t count, size_t *got,
         err = errno;
         if (taken == 0) return IO_CLOSED;
         if (err == EINTR) continue;
-        if (err != EAGAIN) return err; 
-        if ((err = socket_waitfd(ps, WAITFD_R, tm)) != IO_DONE) return err; 
+        if (err != EAGAIN) return err;
+        if ((err = socket_waitfd(ps, WAITFD_R, tm)) != IO_DONE) return err;
     }
     return IO_UNKNOWN;
 }
@@ -321,7 +321,7 @@ void socket_setnonblocking(p_socket ps) {
 }
 
 /*-------------------------------------------------------------------------*\
-* DNS helpers 
+* DNS helpers
 \*-------------------------------------------------------------------------*/
 int socket_gethostbyaddr(const char *addr, socklen_t len, struct hostent **hp) {
     *hp = gethostbyaddr(addr, len, AF_INET);
@@ -368,5 +368,5 @@ const char *socket_strerror(int err) {
 const char *socket_ioerror(p_socket ps, int err) {
     (void) ps;
     return socket_strerror(err);
-} 
+}
 #endif

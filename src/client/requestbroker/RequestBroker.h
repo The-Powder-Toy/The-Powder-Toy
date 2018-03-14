@@ -21,7 +21,7 @@ class RequestBroker: public Singleton<RequestBroker>
 	friend class ThumbRenderRequest;
 public:
 	class Request;
-private: 
+private:
 
 	pthread_mutex_t listenersMutex;
 	pthread_mutex_t runningMutex;
@@ -58,7 +58,7 @@ public:
 	void RetrieveThumbnail(int saveID, int width, int height, RequestListener * tListener);
 	void RetrieveAvatar(std::string username, int width, int height, RequestListener * tListener);
 	void Start(Request * request, RequestListener * tLIstener, int identifier = 0);
-	
+
 	bool CheckRequestListener(ListenerHandle handle);
 	ListenerHandle AttachRequestListener(RequestListener * tListener);
 	void DetachRequestListener(RequestListener * tListener);

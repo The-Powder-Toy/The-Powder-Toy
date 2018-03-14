@@ -374,7 +374,7 @@ int main(int argc, char *argv[])
 #endif
 
 		drawchar(vid_buf, 32, 192+32*CELLH, c, 255, 255, 255);
-		
+
 		sprintf(hex, "%02X", c);
 		drawtext(vid_buf, 32, 192+34*CELLH, hex, 255, 255, 255);
 #ifdef EXTENDED_FONT

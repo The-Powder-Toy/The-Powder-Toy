@@ -38,7 +38,7 @@ public:
 		OkayAction(SignWindow * prompt_) { prompt = prompt_; }
 		void ActionCallback(ui::Button * sender)
 		{
-			prompt->CloseActiveWindow();	
+			prompt->CloseActiveWindow();
 			if(prompt->signID==-1 && prompt->textField->GetText().length())
 			{
 				prompt->sim->signs.push_back(sign(prompt->textField->GetText(), prompt->signPosition.X, prompt->signPosition.Y, (sign::Justification)prompt->justification->GetOption().second));
@@ -120,7 +120,7 @@ SignWindow::SignWindow(SignTool * tool_, Simulation * sim_, int signID_, ui::Poi
 	okayButton->SetActionCallback(new OkayAction(this));
 	AddComponent(okayButton);
 	SetOkayButton(okayButton);
-	
+
 	ui::Label * tempLabel = new ui::Label(ui::Point(8, 48), ui::Point(40, 15), "Pointer:");
 	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
@@ -134,7 +134,7 @@ SignWindow::SignWindow(SignTool * tool_, Simulation * sim_, int signID_, ui::Poi
 	justification->AddOption(std::pair<std::string, int>("\x9D None", (int)sign::None));
 	justification->SetOption(1);
 	justification->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
-	
+
 	textField = new ui::Textbox(ui::Point(8, 25), ui::Point(Size.X-16, 17), "", "[message]");
 	textField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	textField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
@@ -142,7 +142,7 @@ SignWindow::SignWindow(SignTool * tool_, Simulation * sim_, int signID_, ui::Poi
 	textField->SetActionCallback(new SignTextAction(this));
 	AddComponent(textField);
 	FocusComponent(textField);
-	
+
 	if(signID!=-1)
 	{
 		messageLabel->SetText("Edit sign");
@@ -252,7 +252,7 @@ void SignWindow::DoMouseDown(int x, int y, unsigned button)
 void SignWindow::OnDraw()
 {
 	Graphics * g = GetGraphics();
-	
+
 	g->clearrect(Position.X-2, Position.Y-2, Size.X+3, Size.Y+3);
 	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 200, 200, 200, 255);
 }

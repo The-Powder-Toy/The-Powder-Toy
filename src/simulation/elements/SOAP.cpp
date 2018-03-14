@@ -89,7 +89,7 @@ void Element_SOAP::attach(Particle * parts, int i1, int i2)
 
 //#TPT-Directive ElementHeader Element_SOAP static int update(UPDATE_FUNC_ARGS)
 int Element_SOAP::update(UPDATE_FUNC_ARGS)
- 
+
 {
 	int r, rx, ry, nr, ng, nb, na;
 	float tr, tg, tb, ta;

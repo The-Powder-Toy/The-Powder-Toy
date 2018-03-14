@@ -5,10 +5,10 @@ int PIXELMETHODS_CLASS::drawtext_outline(int x, int y, const char *s, int r, int
 {
 	drawtext(x-1, y-1, s, 0, 0, 0, 120);
 	drawtext(x+1, y+1, s, 0, 0, 0, 120);
-	
+
 	drawtext(x-1, y+1, s, 0, 0, 0, 120);
 	drawtext(x+1, y-1, s, 0, 0, 0, 120);
-	
+
 	return drawtext(x, y, s, r, g, b, a);
 }
 
@@ -60,7 +60,7 @@ int PIXELMETHODS_CLASS::drawtext(int x, int y, const char *s, int r, int g, int 
 			switch (s[1])
 			{
 			case 'w':
-				r = g = b = 255; 
+				r = g = b = 255;
 				break;
 			case 'g':
 				r = g = b = 192;
@@ -241,7 +241,7 @@ void PIXELMETHODS_CLASS::xor_bitmap(unsigned char * bitmap, int x, int y, int w,
 {
 	//glEnable(GL_COLOR_LOGIC_OP);
 	//glLogicOp(GL_XOR);
-	
+
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, textTexture);
 

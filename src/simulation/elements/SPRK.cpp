@@ -206,7 +206,7 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 								parts[ID(r)].life = 9;
 							}
 						}
-						else if(parts[ID(r)].ctype==PT_NTCT||parts[ID(r)].ctype==PT_PTCT)		
+						else if(parts[ID(r)].ctype==PT_NTCT||parts[ID(r)].ctype==PT_PTCT)
 							if (sender==PT_METL)
 							{
 								parts[ID(r)].temp = 473.0f;

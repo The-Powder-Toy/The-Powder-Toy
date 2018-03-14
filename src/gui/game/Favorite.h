@@ -15,10 +15,10 @@ public:
 	std::vector<std::string> GetFavoritesList();
 	bool IsFavorite(std::string identifier);
 	bool AnyFavorites();
-	
+
 	void AddFavorite(std::string identifier);
 	void RemoveFavorite(std::string identifier);
-	
+
 	void SaveFavoritesToPrefs();
 	void LoadFavoritesFromPrefs();
 };

@@ -126,7 +126,7 @@ void ColourPickerActivity::OnMouseMove(int x, int y, int dx, int dy)
 
 		currentHue = (float(x)/float(255))*359.0f;
 		currentSaturation = 255-(y*2);
-	
+
 		if(currentSaturation > 255)
 			currentSaturation = 255;
 		if(currentSaturation < 0)

@@ -9,7 +9,7 @@
 #include "gui/interface/Label.h"
 #include "gui/interface/SaveButton.h"
 #include "gui/interface/Keys.h"
- 
+
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "LocalBrowserController.h"

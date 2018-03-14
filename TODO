@@ -1,5 +1,5 @@
 HTTP API:
-	Make it OO, 
+	Make it OO,
 	Use STL (i.e std::string for url, etc)
 
 RequestBroker:
@@ -16,4 +16,4 @@ Interface General:
 	Move interfaces into separate folder
 
 Interface Elements:
-	Vertical Scrolling for Textbox, 
+	Vertical Scrolling for Textbox,

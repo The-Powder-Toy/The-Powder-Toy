@@ -16,7 +16,7 @@ void Brush::RenderRect(Renderer * ren, ui::Point position1, ui::Point position2)
 		position1.X += width;
 		width *= -1;
 	}
-	
+
 	ren->xor_line(position1.X, position1.Y, position1.X+width, position1.Y);
 	if(height>0){
 		ren->xor_line(position1.X, position1.Y+height, position1.X+width, position1.Y+height);

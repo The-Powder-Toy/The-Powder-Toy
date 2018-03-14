@@ -32,17 +32,17 @@ HGLRC ensureContext(JAWT_Win32DrawingSurfaceInfo* dsi_win, HGLRC hRC) {
 	if (1 && wglGetCurrentDC() != dsi_win->hdc) {
 		wglMakeCurrent( dsi_win->hdc, hRC );
 	}
-	
+
 	return hRC;
 }
 
-ContextInfo* getContext(JNIEnv *env, jobject canvas) 
+ContextInfo* getContext(JNIEnv *env, jobject canvas)
 {
 	ContextInfo *ci;
 	if (!ctxID) {
 		jclass cls = env->GetObjectClass(canvas);
 		ctxID = env->GetFieldID(cls, "openGLContext", "J");
-	}	
+	}
 
 	ci = (ContextInfo *)(long)(env->GetLongField(canvas, ctxID));
 
@@ -51,11 +51,11 @@ ContextInfo* getContext(JNIEnv *env, jobject canvas)
 		ci->awt = (JAWT *)calloc(sizeof(JAWT), 1);
 		env->SetLongField(canvas, ctxID, (jlong)(long)ci);
 	}
-	
+
 	return ci;
 }
 
-void freeContext(JNIEnv *env, jobject canvas, ContextInfo* ci) 
+void freeContext(JNIEnv *env, jobject canvas, ContextInfo* ci)
 {
 	if (ci) {
 		free(ci->awt);
@@ -68,7 +68,7 @@ JNIEXPORT jboolean JNICALL Java_OpenGLCanvas_beginOpenGL(JNIEnv *env, jobject ca
 {
 	jint lock;
 	ContextInfo *ci = getContext(env, canvas);
-	
+
     // Get the drawing surface.  This can be safely cached -- not in win32
     // Anything below the DS (DSI, contexts, etc)
     // can possibly change/go away and should not be cached.
@@ -85,10 +85,10 @@ JNIEXPORT jboolean JNICALL Java_OpenGLCanvas_beginOpenGL(JNIEnv *env, jobject ca
         env->ExceptionDescribe();
     }
     assert((lock & JAWT_LOCK_ERROR) == 0);
-    
+
     // Get the drawing surface info
     ci->dsi = ci->ds->GetDrawingSurfaceInfo(ci->ds);
-	
+
 	// Check DrawingSurfaceInfo.  This can be NULL on Mac OS X
     // if the windowing system is not ready
 	if (ci->dsi != NULL) {
@@ -105,14 +105,14 @@ JNIEXPORT jboolean JNICALL Java_OpenGLCanvas_beginOpenGL(JNIEnv *env, jobject ca
 
 		return JNI_TRUE;
 	}
-	
+
 	return JNI_FALSE;
 }
 
 JNIEXPORT void JNICALL Java_OpenGLCanvas_endOpenGL(JNIEnv *env, jobject canvas)
 {
 	ContextInfo *ci = getContext(env, canvas);
-	
+
 	SwapBuffers( ci->dsi_win->hdc );
 
 	// Free the DrawingSurfaceInfo
@@ -120,10 +120,10 @@ JNIEXPORT void JNICALL Java_OpenGLCanvas_endOpenGL(JNIEnv *env, jobject canvas)
 	if (env->ExceptionOccurred()){
 		env->ExceptionDescribe();
 	}
-	
+
     // Unlock the drawing surface
     // You must unlock EACH TIME when done drawing
-    ci->ds->Unlock(ci->ds); 
+    ci->ds->Unlock(ci->ds);
     if (env->ExceptionOccurred()) {
         env->ExceptionDescribe();
     }
@@ -145,19 +145,19 @@ JNIEXPORT void JNICALL Java_OpenGLCanvas_updateOpenGL(JNIEnv *env, jobject canva
 JNIEXPORT void JNICALL Java_OpenGLCanvas_allocOpenGL(JNIEnv *env, jobject canvas)
 {
 	ContextInfo *ci = getContext(env, canvas);
-	
+
 	jboolean result = JNI_FALSE;
-    
+
     // get the AWT
     ci->awt->version = JAWT_VERSION_1_4;
     result = JAWT_GetAWT(env, ci->awt);
     if (env->ExceptionOccurred()) {
         env->ExceptionDescribe();
     }
-    assert(result != JNI_FALSE);	
+    assert(result != JNI_FALSE);
 }
 
-JNIEXPORT void JNICALL Java_OpenGLCanvas_releaseOpenGL(JNIEnv *env, jobject canvas) 
+JNIEXPORT void JNICALL Java_OpenGLCanvas_releaseOpenGL(JNIEnv *env, jobject canvas)
 {
 	ContextInfo *ci = getContext(env, canvas);
 	if (ci->hRC) {

@@ -206,7 +206,7 @@ void GameModel::UpdateQuickOptions()
 	{
 		QuickOption * option = *iter;
 		option->Update();
-	}	
+	}
 }
 
 void GameModel::BuildQuickOptionMenu(GameController * controller)
@@ -316,7 +316,7 @@ void GameModel::BuildMenus()
 		menuList[SC_WALL]->AddTool(tempTool);
 		//sim->wtypes[i]
 	}
-	
+
 	//Build menu for tools
 	for (size_t i = 0; i < sim->tools.size(); i++)
 	{
@@ -385,7 +385,7 @@ void GameModel::BuildMenus()
 void GameModel::BuildFavoritesMenu()
 {
 	menuList[SC_FAVORITES]->ClearTools();
-	
+
 	std::vector<std::string> favList = Favorite::Ref().GetFavoritesList();
 	for (size_t i = 0; i < favList.size(); i++)
 	{
@@ -718,7 +718,7 @@ void GameModel::SetSaveFile(SaveFile * newSave)
 			Client::Ref().OverwriteAuthorInfo(saveData->authors);
 		}
 	}
-	
+
 	notifySaveChanged();
 	UpdateQuickOptions();
 }

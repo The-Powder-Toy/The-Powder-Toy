@@ -42,13 +42,13 @@ public:
 	{
 		SetRadius(size_);
 	};
-	
+
 	//Radius of the brush 0x0 - infxinf (Radius of 0x0 would be 1x1, radius of 1x1 would be 3x3)
 	ui::Point GetRadius()
 	{
 		return radius;
 	}
-	
+
 	//Size of the brush bitmap mask, 1x1 - infxinf
 	ui::Point GetSize()
 	{

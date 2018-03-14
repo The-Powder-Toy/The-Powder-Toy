@@ -12,7 +12,7 @@
 /* These are used for the renderer, which doesn't include the rest of SDL and only this file
  * It still needs fake SDL_BUTTON_* constants to compile
  */
- 
+
 #define SDL_BUTTON(X)		(1 << ((X)-1))
 #define SDL_BUTTON_LEFT		1
 #define SDL_BUTTON_MIDDLE	2

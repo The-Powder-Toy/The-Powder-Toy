@@ -12,9 +12,9 @@ Graphics::Graphics():
 //		pthread_mutex_init (&gMutex, NULL);
 	LoadDefaults();
 	InitialiseTextures();
-	
 
-	
+
+
 	//Texture for main UI
 
 }
@@ -38,28 +38,28 @@ void Graphics::LoadDefaults()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
-void Graphics::InitialiseTextures() 
+void Graphics::InitialiseTextures()
 {
 	glEnable(GL_TEXTURE_2D);
-	
+
 	glGenTextures(1, &vidBuf);
 	glBindTexture(GL_TEXTURE_2D, vidBuf);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, WINDOWW, WINDOWH, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
-	
+
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	
+
 	glBindTexture(GL_TEXTURE_2D, 0);
-	
+
 	glGenTextures(1, &textTexture);
 	glBindTexture(GL_TEXTURE_2D, textTexture);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	
+
 	glBindTexture(GL_TEXTURE_2D, 0);
-	
+
 	glDisable(GL_TEXTURE_2D);
 }
 

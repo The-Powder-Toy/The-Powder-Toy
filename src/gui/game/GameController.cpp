@@ -1251,7 +1251,7 @@ void GameController::OpenLocalSaveWindow(bool asCurrent)
 			localSaveInfo["date"] = (Json::Value::UInt64)time(NULL);
 			Client::Ref().SaveAuthorInfo(&localSaveInfo);
 			gameSave->authors = localSaveInfo;
-			
+
 			gameModel->SetSaveFile(&tempSave);
 			Client::Ref().MakeDirectory(LOCAL_SAVE_DIR);
 			std::vector<char> saveData = gameSave->Serialise();

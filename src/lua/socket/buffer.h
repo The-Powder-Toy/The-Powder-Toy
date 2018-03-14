@@ -1,13 +1,13 @@
 #ifndef BUF_H
-#define BUF_H 
+#define BUF_H
 /*=========================================================================*\
 * Input/Output interface for Lua programs
 * LuaSocket toolkit
 *
 * Line patterns require buffering. Reading one character at a time involves
 * too many system calls and is very slow. This module implements the
-* LuaSocket interface for input/output on connected objects, as seen by 
-* Lua programs. 
+* LuaSocket interface for input/output on connected objects, as seen by
+* Lua programs.
 *
 * Input is buffered. Output is *not* buffered because there was no simple
 * way of making sure the buffered output data would ever be sent.

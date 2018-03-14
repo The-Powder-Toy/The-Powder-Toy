@@ -9,7 +9,7 @@ public:
 	{
 
 	}
-	virtual bool GetToggle() 
+	virtual bool GetToggle()
 	{
 		return m->GetSimulation()->pretty_powder;
 	}
@@ -27,7 +27,7 @@ public:
 	{
 
 	}
-	virtual bool GetToggle() 
+	virtual bool GetToggle()
 	{
 		return m->GetGravityGrid();
 	}
@@ -45,7 +45,7 @@ public:
 	{
 
 	}
-	virtual bool GetToggle() 
+	virtual bool GetToggle()
 	{
 		return m->GetDecoration();
 	}
@@ -63,7 +63,7 @@ public:
 	{
 
 	}
-	virtual bool GetToggle() 
+	virtual bool GetToggle()
 	{
 		return m->GetNewtonianGrvity();
 	}
@@ -81,7 +81,7 @@ public:
 	{
 
 	}
-	virtual bool GetToggle() 
+	virtual bool GetToggle()
 	{
 		return m->GetAHeatEnable();
 	}

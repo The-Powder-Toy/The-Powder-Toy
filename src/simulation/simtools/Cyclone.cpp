@@ -11,7 +11,7 @@ Tool_Cycl::Tool_Cycl()
 
 int Tool_Cycl::Perform(Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength)
 {
-	/* 
+	/*
 		Air velocity calculation.
 		Air velocity X = cosine of cell angle
 		Angle of cell is calculated via cells X/Y relation to the brush center and arctangent

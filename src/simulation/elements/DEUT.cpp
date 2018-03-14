@@ -95,7 +95,7 @@ int Element_DEUT::update(UPDATE_FUNC_ARGS)
 						parts[np].life = 0;
 					}
 				}
-trade: 
+trade:
 	for ( trade = 0; trade<4; trade ++)
 	{
 		rx = rand()%5-2;
