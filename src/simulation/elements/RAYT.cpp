@@ -1,4 +1,4 @@
-#ifdef defined(SNAPSHOT) || defined(DEBUG)
+
 
 #include "simulation/Elements.h"
 
@@ -9,7 +9,11 @@ Element_RAYT::Element_RAYT() {
 	Colour = PIXPACK(0x66ff66);
 	MenuVisible = 1;
 	MenuSection = SC_SENSOR;
+	#if defined(SNAPSHOT) || defined(DEBUG)
 	Enabled = 1;
+	#else
+	Enabled = 0;
+	#endif
 
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
@@ -135,5 +139,3 @@ int Element_RAYT::update(UPDATE_FUNC_ARGS) {
 }
 
 Element_RAYT::~Element_RAYT() {}
-
-#endif
