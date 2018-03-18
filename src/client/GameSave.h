@@ -97,7 +97,11 @@ public:
 	void Expand();
 	void Collapse();
 	bool Collapsed();
-	
+
+	static bool TypeInCtype(int type, int ctype);
+	static bool TypeInTmp(int type);
+	static bool TypeInTmp2(int type, int tmp2);
+
 	inline GameSave& operator << (Particle v)
 	{
 		if(particlesCount<NPART && v.type)

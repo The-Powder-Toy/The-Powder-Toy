@@ -1,5 +1,5 @@
 #include <cmath>
-#include <math.h>
+#include <set>
 #ifdef _MSC_VER
 #include <intrin.h>
 #else
@@ -113,21 +113,21 @@ int Simulation::Load(int fullX, int fullY, GameSave * save, bool includePressure
 				ctype = partMap[ctype];
 			tempPart.ctype = PMAP(extra, ctype);
 		}
-		else if (tempPart.ctype > 0 && tempPart.ctype < PT_NUM && TypeInCtype(tempPart.type))
+		else if (GameSave::TypeInCtype(tempPart.type, tempPart.ctype))
 		{
 			tempPart.ctype = partMap[tempPart.ctype];
 		}
 		// also stores extra bits past type (only STOR right now)
-		if (TypeInTmp(tempPart.type))
+		if (GameSave::TypeInTmp(tempPart.type))
 		{
 			int tmp = tempPart.tmp & pmapmask;
 			int extra = tempPart.tmp >> save->pmapbits;
+			tmp = partMap[TYP(tmp)];
 			tempPart.tmp = PMAP(extra, tmp);
 		}
-		if (TypeInTmp2(tempPart.type))
+		if (GameSave::TypeInTmp2(tempPart.type, tempPart.tmp2))
 		{
-			if (tempPart.tmp2 > 0 && tempPart.tmp2 < PT_NUM)
-				tempPart.tmp2 = partMap[tempPart.tmp2];
+			tempPart.tmp2 = partMap[tempPart.tmp2];
 		}
 
 		//Replace existing
@@ -266,25 +266,6 @@ int Simulation::Load(int fullX, int fullY, GameSave * save, bool includePressure
 	return 0;
 }
 
-bool Simulation::TypeInCtype(int el)
-{
-	return el == PT_CLNE || el == PT_PCLN || el == PT_BCLN || el == PT_PBCN ||
-	        el == PT_STOR || el == PT_CONV || el == PT_STKM || el == PT_STKM2 ||
-	        el == PT_FIGH || el == PT_LAVA || el == PT_SPRK || el == PT_PSTN ||
-	        el == PT_CRAY || el == PT_DTEC || el == PT_DRAY || el == PT_PIPE ||
-	        el == PT_PPIP;
-}
-
-bool Simulation::TypeInTmp(int el)
-{
-	return el == PT_STOR;
-}
-
-bool Simulation::TypeInTmp2(int el)
-{
-	return el == PT_VIRS || el == PT_VRSG || el == PT_VRSS;
-}
-
 GameSave * Simulation::Save(bool includePressure)
 {
 	return Save(0, 0, XRES-1, YRES-1, includePressure);
@@ -325,6 +306,7 @@ GameSave * Simulation::Save(int fullX, int fullY, int fullX2, int fullY2, bool i
 	std::fill(elementCount, elementCount+PT_NUM, 0);
 	// Map of soap particles loaded into this save, new ID -> old ID
 	std::map<unsigned int, unsigned int> soapList;
+	std::set<int> paletteSet;
 	for (int i = 0; i < NPART; i++)
 	{
 		int x, y;
@@ -342,19 +324,23 @@ GameSave * Simulation::Save(int fullX, int fullY, int fullX2, int fullY2, bool i
 				*newSave << tempPart;
 				storedParts++;
 				elementCount[tempPart.type]++;
+
+				paletteSet.insert(tempPart.type);
+				if (GameSave::TypeInCtype(tempPart.type, tempPart.ctype))
+					paletteSet.insert(tempPart.ctype);
+				if (GameSave::TypeInTmp(tempPart.type))
+					paletteSet.insert(TYP(tempPart.tmp));
+				if (GameSave::TypeInTmp2(tempPart.type, tempPart.tmp2))
+					paletteSet.insert(tempPart.tmp2);
 			}
 		}
 	}
 
 	if (storedParts)
 	{
-		for (int i = 0; i < PT_NUM; i++)
-		{
-			if (elements[i].Enabled && elementCount[i])
-			{
-				newSave->palette.push_back(GameSave::PaletteItem(elements[i].Identifier, i));
-			}
-		}
+		for (int ID : paletteSet)
+			newSave->palette.push_back(GameSave::PaletteItem(elements[ID].Identifier, ID));
+
 		// fix SOAP links using soapList, a map of new particle ID -> old particle ID
 		// loop through every new particle (saved into the save), and convert .tmp / .tmp2
 		for (std::map<unsigned int, unsigned int>::iterator iter = soapList.begin(), end = soapList.end(); iter != end; ++iter)

@@ -216,12 +216,6 @@ public:
 		return (x>=0 && y>=0 && x<XRES && y<YRES);
 	}
 
-	// Element IDs can be stored in other properties
-	// These functions return true if an element stores a particle type in a property
-	static bool TypeInCtype(int el);
-	static bool TypeInTmp(int el);
-	static bool TypeInTmp2(int el);
-
 	// These don't really belong anywhere at the moment, so go here for loop edge mode
 	static int remainder_p(int x, int y)
 	{

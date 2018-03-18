@@ -2280,17 +2280,17 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 				}
 				if (PMAPBITS > 8)
 				{
-					if (Simulation::TypeInCtype(particles[i].type) && particles[i].ctype > 0xFF)
+					if (TypeInCtype(particles[i].type, particles[i].ctype) && particles[i].ctype > 0xFF)
 					{
 						RESTRICTVERSION(93, 0);
 						fromNewerVersion = true; // TODO: remove on 93.0 release
 					}
-					else if (Simulation::TypeInTmp(particles[i].type) && particles[i].tmp > 0xFF)
+					else if (TypeInTmp(particles[i].type) && particles[i].tmp > 0xFF)
 					{
 						RESTRICTVERSION(93, 0);
 						fromNewerVersion = true; // TODO: remove on 93.0 release
 					}
-					else if (Simulation::TypeInTmp2(particles[i].type) && particles[i].tmp2 > 0xFF)
+					else if (TypeInTmp2(particles[i].type, particles[i].tmp2) && particles[i].tmp2 > 0xFF)
 					{
 						RESTRICTVERSION(93, 0);
 						fromNewerVersion = true; // TODO: remove on 93.0 release
@@ -2618,6 +2618,26 @@ void GameSave::Deallocate2DArray(T ***array, int blockHeight)
 		delete[] (*array);
 		*array = NULL;
 	}
+}
+
+bool GameSave::TypeInCtype(int type, int ctype)
+{
+	return ctype >= 0 && ctype < PT_NUM &&
+	        (type == PT_CLNE || type == PT_PCLN || type == PT_BCLN || type == PT_PBCN ||
+	        type == PT_STOR || type == PT_CONV || type == PT_STKM || type == PT_STKM2 ||
+	        type == PT_FIGH || type == PT_LAVA || type == PT_SPRK || type == PT_PSTN ||
+	        type == PT_CRAY || type == PT_DTEC || type == PT_DRAY || type == PT_PIPE ||
+	        type == PT_PPIP);
+}
+
+bool GameSave::TypeInTmp(int type)
+{
+	return type == PT_STOR;
+}
+
+bool GameSave::TypeInTmp2(int type, int tmp2)
+{
+	return (type == PT_VIRS || type == PT_VRSG || type == PT_VRSS) && (tmp2 >= 0 && tmp2 < PT_NUM);
 }
 
 void GameSave::dealloc()
