@@ -468,7 +468,8 @@ if GetOption('debugging'):
 		env.Append(CPPDEFINES=['DEBUG'])
 elif GetOption('release'):
 	if msvc:
-		env.Append(CCFLAGS=['/O2', '/Oy-', '/fp:fast', '/GL'])
+		# Certain options (like /GL and /GS) cause TPT to be flagged as a virus. Don't include them
+		env.Append(CCFLAGS=['/O2', '/Oy-', '/fp:fast'])
 		if GetOption('static'):
 			env.Append(CCFLAGS=['/MT'])
 		else:
