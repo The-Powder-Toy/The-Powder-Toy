@@ -1223,6 +1223,15 @@ void GameSave::readOPS(char * data, int dataLength)
 							particles[newIndex].ctype = particles[newIndex].tmp&0xFF;
 						}
 						break;
+					case PT_TSNS:
+					case PT_HSWC:
+					case PT_PSNS:
+					case PT_PUMP:
+						if (savedVersion < 93 && !fakeNewerVersion)
+						{
+							particles[newIndex].tmp = 0;
+						}
+						break;
 					}
 					//note: PSv was used in version 77.0 and every version before, add something in PSv too if the element is that old
 					newIndex++;
@@ -1879,13 +1888,19 @@ void GameSave::readPSv(char * saveDataChar, int dataLength)
 					}
 				}
 			}
-			// Version 93.0
-			if (particles[i-1].type == PT_PIPE || particles[i-1].type == PT_PPIP)
+			if (ver < 93)
 			{
-				if (particles[i-1].ctype == 1)
-					particles[i-1].tmp |= 0x00020000; //PFLAG_INITIALIZING
-				particles[i-1].tmp |= (particles[i-1].ctype-1)<<18;
-				particles[i-1].ctype = particles[i-1].tmp&0xFF;
+				if (particles[i-1].type == PT_PIPE || particles[i-1].type == PT_PPIP)
+				{
+					if (particles[i-1].ctype == 1)
+						particles[i-1].tmp |= 0x00020000; //PFLAG_INITIALIZING
+					particles[i-1].tmp |= (particles[i-1].ctype-1)<<18;
+					particles[i-1].ctype = particles[i-1].tmp&0xFF;
+				}
+				else if (particles[i-1].type == PT_HSWC || particles[i-1].type == PT_PUMP)
+				{
+					particles[i-1].tmp = 0;
+				}
 			}
 		}
 	}
