@@ -836,24 +836,6 @@ void Renderer::DrawWalls()
 						}
 						drawtext(x*CELL, y*CELL-2, "\x8D", 255, 255, 255, 128);
 					}
-					else if (wt == 255)
-					{
-
-						if (!powered)
-						{
-							for (int j = 0; j < CELL; j++)
-								for (int i =0; i < CELL; i++)
-									if (i&j&1)
-										vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = pc;
-						}
-						else
-						{
-							for (int j = 0; j < CELL; j++)
-								for (int i = 0; i < CELL; i++)
-									if (!(i&j&1))
-										vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = pc;
-						}
-					}
 					break;
 				case 1:
 					for (int j = 0; j < CELL; j += 2)
