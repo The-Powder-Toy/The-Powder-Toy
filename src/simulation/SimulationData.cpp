@@ -132,7 +132,7 @@ wall_type * LoadWalls(int & wallCount)
 		{PIXPACK(0xFFAA00), PIXPACK(0xAA5500), 4, Renderer::WallIcon, "ENERGY WALL",	"DEFAULT_WL_ENRGY",	"Allows energy particles, blocks all other particles."},
 		{PIXPACK(0xDCDCDC), PIXPACK(0x000000), 1, Renderer::WallIcon, "AIRBLOCK WALL",	"DEFAULT_WL_NOAIR",	"Allows all particles, but blocks air."},
 		{PIXPACK(0x808080), PIXPACK(0x000000), 0, Renderer::WallIcon, "ERASEALL",		"DEFAULT_WL_ERASEA","Erases walls, particles, and signs."},
-		{PIXPACK(0x800080), PIXPACK(0x000000), 1, Renderer::WallIcon, "STASIS WALL",		"DEFAULT_WL_STASIS",	"Freezes particles inside the wall in place"},
+		{PIXPACK(0x800080), PIXPACK(0x000000), 0, Renderer::WallIcon, "STASIS WALL",		"DEFAULT_WL_STASIS",	"Freezes particles inside the wall in place"},
 	};
 	wallCount = UI_WALLCOUNT;
 	wall_type * wtypesT = (wall_type*)malloc(UI_WALLCOUNT*sizeof(wall_type));
