@@ -589,7 +589,7 @@ VideoBuffer * Renderer::WallIcon(int wallID, int width, int height)
 					newTexture->SetPixel(i, j, 0x80, 0x80, 0x80, 255);
 			}
 	}
-	else if (wt==WL_EHOLE)
+	else if (wt==WL_EHOLE || wt==WL_STASIS)
 	{
 		for (j=0; j<height; j++)
 		{
@@ -681,22 +681,6 @@ VideoBuffer * Renderer::WallIcon(int wallID, int width, int height)
 			newTexture->SetPixel(i, 7+(int)(3.9f*cos(i*0.3f)), 255, 255, 255, 255);
 		}
 	}
-	else if (wt==WL_STASIS)
-	{
-		for (j=0; j<height; j++)
-		{
-			for (i=0; i<(width/4)+j; i++)
-			{
-				if (i&j&1)
-					newTexture->SetPixel(i, j, PIXR(pc), PIXG(pc), PIXB(pc), 255);
-			}
-			for (; i<width; i++)
-			{
-				if (!(i&j&1))
-					newTexture->SetPixel(i, j, PIXR(pc), PIXG(pc), PIXB(pc), 255);
-			}
-		}
-	}
 	return newTexture;
 }
 
@@ -762,9 +746,10 @@ void Renderer::DrawWalls()
 				switch (sim->wtypes[wt].drawstyle)
 				{
 				case 0:
-					if (wt == WL_EWALL)
+					if (wt == WL_EWALL || wt == WL_STASIS)
 					{
-						if (powered)
+						bool reverse = wt == WL_STASIS;
+						if ((powered>0) ^ reverse)
 						{
 							for (int j = 0; j < CELL; j++)
 								for (int i =0; i < CELL; i++)
@@ -851,8 +836,9 @@ void Renderer::DrawWalls()
 						}
 						drawtext(x*CELL, y*CELL-2, "\x8D", 255, 255, 255, 128);
 					}
-					else if (wt == WL_STASIS)
+					else if (wt == 255)
 					{
+
 						if (!powered)
 						{
 							for (int j = 0; j < CELL; j++)
