@@ -18,6 +18,7 @@ extern "C"
 }
 
 GameSave::GameSave(GameSave & save):
+    majorVersion(save.majorVersion),
 	waterEEnabled(save.waterEEnabled),
 	legacyEnable(save.legacyEnable),
 	gravityEnable(save.gravityEnable),
@@ -162,6 +163,7 @@ void GameSave::InitData()
 // Called on every new GameSave, except the copy constructor
 void GameSave::InitVars()
 {
+	majorVersion = 0;
 	waterEEnabled = false;
 	legacyEnable = false;
 	gravityEnable = false;
@@ -567,6 +569,7 @@ void GameSave::readOPS(char * data, int dataLength)
 	unsigned partsCount = 0;
 	unsigned int blockX, blockY, blockW, blockH, fullX, fullY, fullW, fullH;
 	int savedVersion = inputData[4];
+	majorVersion = savedVersion;
 	bool fakeNewerVersion = false; // used for development builds only
 
 	bson b;
@@ -1149,12 +1152,6 @@ void GameSave::readOPS(char * data, int dataLength)
 						if (savedVersion < 91)
 							particles[newIndex].temp = 283.15;
 						break;
-					case PT_STKM:
-					case PT_STKM2:
-					case PT_FIGH:
-						if (savedVersion < 88 && particles[newIndex].ctype == OLD_SPC_AIR)
-							particles[newIndex].ctype = SPC_AIR;
-						break;
 					case PT_FILT:
 						if (savedVersion < 89)
 						{
@@ -1322,6 +1319,7 @@ void GameSave::readPSv(char * saveDataChar, int dataLength)
 	if (saveData[4]>SAVE_VERSION)
 		throw ParseException(ParseException::WrongVersion, "Save from newer version");
 	ver = saveData[4];
+	majorVersion = saveData[4];
 
 	if (ver<34)
 	{
@@ -1857,9 +1855,6 @@ void GameSave::readPSv(char * saveDataChar, int dataLength)
 					particles[i-1].ctype = (((firw_data[caddress]))<<16) | (((firw_data[caddress+1]))<<8) | ((firw_data[caddress+2]));
 				}
 			}
-			if (ver < 88) //fix air blowing stickmen
-				if ((particles[i-1].type == PT_STKM || particles[i-1].type == PT_STKM2 || particles[i-1].type == PT_FIGH) && particles[i-1].ctype == OLD_SPC_AIR)
-					particles[i-1].ctype = SPC_AIR;
 			if (ver < 89)
 			{
 				if (particles[i-1].type == PT_FILT)

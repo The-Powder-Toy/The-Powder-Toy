@@ -165,12 +165,23 @@ int Simulation::Load(int fullX, int fullY, GameSave * save, bool includePressure
 			player.spwn = 1;
 			player.elem = PT_DUST;
 			player.rocketBoots = false;
+
+			if ((save->majorVersion < 93 && parts[i].ctype == SPC_AIR) ||
+			        (save->majorVersion < 88 && parts[i].ctype == OLD_SPC_AIR))
+			{
+				player.fan = true;
+			}
 			break;
 		case PT_STKM2:
 			Element_STKM::STKM_init_legs(this, &player2, i);
 			player2.spwn = 1;
 			player2.elem = PT_DUST;
 			player2.rocketBoots = false;
+			if ((save->majorVersion < 93 && parts[i].ctype == SPC_AIR) ||
+			        (save->majorVersion < 88 && parts[i].ctype == OLD_SPC_AIR))
+			{
+				player2.fan = true;
+			}
 			break;
 		case PT_SPAWN:
 			player.spawnID = i;
@@ -2084,9 +2095,11 @@ void Simulation::clear_sim(void)
 	player.spwn = 0;
 	player.spawnID = -1;
 	player.rocketBoots = false;
+	player.fan = false;
 	player2.spwn = 0;
 	player2.spawnID = -1;
 	player2.rocketBoots = false;
+	player2.fan = false;
 	//memset(pers_bg, 0, WINDOWW*YRES*PIXELSIZE);
 	//memset(fire_r, 0, sizeof(fire_r));
 	//memset(fire_g, 0, sizeof(fire_g));
@@ -3014,20 +3027,7 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 	if (t>=0 && t<PT_NUM && !elements[t].Enabled)
 		return -1;
 
-	if (t == SPC_AIR)
-	{
-		pv[y/CELL][x/CELL] += 0.03f;
-		if (y+CELL<YRES)
-			pv[y/CELL+1][x/CELL] += 0.03f;
-		if (x+CELL<XRES)
-		{
-			pv[y/CELL][x/CELL+1] += 0.03f;
-			if (y+CELL<YRES)
-				pv[y/CELL+1][x/CELL+1] += 0.03f;
-		}
-		return -1;
-	}
-	else if (t==PT_SPRK)
+	if (t==PT_SPRK)
 	{
 		int type = TYP(pmap[y][x]);
 		int index = ID(pmap[y][x]);
