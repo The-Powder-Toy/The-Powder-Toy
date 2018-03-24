@@ -37,6 +37,36 @@ public:
 	~BuildException() throw() {}
 };
 
+class StkmData
+{
+public:
+	bool rocketBoots1 = false;
+	bool rocketBoots2 = false;
+	bool fan1 = false;
+	bool fan2 = false;
+	std::vector<unsigned int> rocketBootsFigh = std::vector<unsigned int>();
+	std::vector<unsigned int> fanFigh = std::vector<unsigned int>();
+
+	StkmData() = default;
+
+	StkmData(const StkmData & stkmData):
+		rocketBoots1(stkmData.rocketBoots1),
+		rocketBoots2(stkmData.rocketBoots2),
+		fan1(stkmData.fan1),
+		fan2(stkmData.fan2),
+		rocketBootsFigh(stkmData.rocketBootsFigh),
+		fanFigh(stkmData.fanFigh)
+	{
+
+	}
+
+	bool hasData()
+	{
+		return rocketBoots1 || rocketBoots2 || fan1 || fan2
+		        || rocketBootsFigh.size() || fanFigh.size();
+	}
+};
+
 class GameSave
 {
 public:
@@ -68,9 +98,10 @@ public:
 	int gravityMode;
 	int airMode;
 	int edgeMode;
-	
+
 	//Signs
 	std::vector<sign> signs;
+	StkmData stkm;
 
 	//Element palette
 	typedef std::pair<std::string, int> PaletteItem;

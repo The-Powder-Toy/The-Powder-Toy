@@ -171,6 +171,10 @@ int Simulation::Load(int fullX, int fullY, GameSave * save, bool includePressure
 			{
 				player.fan = true;
 			}
+			if (save->stkm.rocketBoots1)
+				player.rocketBoots = true;
+			if (save->stkm.fan1)
+				player.fan = true;
 			break;
 		case PT_STKM2:
 			Element_STKM::STKM_init_legs(this, &player2, i);
@@ -182,6 +186,10 @@ int Simulation::Load(int fullX, int fullY, GameSave * save, bool includePressure
 			{
 				player2.fan = true;
 			}
+			if (save->stkm.rocketBoots2)
+				player2.rocketBoots = true;
+			if (save->stkm.fan2)
+				player2.fan = true;
 			break;
 		case PT_SPAWN:
 			player.spawnID = i;
@@ -192,14 +200,31 @@ int Simulation::Load(int fullX, int fullY, GameSave * save, bool includePressure
 		case PT_FIGH:
 			for (int fcount = 0; fcount < MAX_FIGHTERS; fcount++)
 			{
-				if(!fighters[fcount].spwn)
+				if (!fighters[fcount].spwn)
 				{
 					fighcount++;
-					//currentPart.tmp = fcount;
+					unsigned int oldtmp = parts[i].tmp;
 					parts[i].tmp = fcount;
 					Element_STKM::STKM_init_legs(this, &(fighters[fcount]), i);
 					fighters[fcount].spwn = 1;
 					fighters[fcount].elem = PT_DUST;
+
+					if ((save->majorVersion < 93 && parts[i].ctype == SPC_AIR)
+					        || (save->majorVersion < 88 && parts[i].ctype == OLD_SPC_AIR))
+					{
+						parts[i].ctype = 0;
+						fighters[fcount].fan = true;
+					}
+					for (unsigned int fighNum : save->stkm.rocketBootsFigh)
+					{
+						if (fighNum == oldtmp)
+							fighters[fcount].rocketBoots = true;
+					}
+					for (unsigned int fighNum : save->stkm.fanFigh)
+					{
+						if (fighNum == oldtmp)
+							fighters[fcount].fan = true;
+					}
 					break;
 				}
 			}
@@ -413,6 +438,18 @@ GameSave * Simulation::Save(int fullX, int fullY, int fullX2, int fullY2, bool i
 				newSave->hasAmbientHeat = true;
 			}
 		}
+	}
+
+	newSave->stkm.rocketBoots1 = player.rocketBoots;
+	newSave->stkm.rocketBoots2 = player2.rocketBoots;
+	newSave->stkm.fan1 = player.fan;
+	newSave->stkm.fan2 = player2.fan;
+	for (unsigned char i = 0; i < MAX_FIGHTERS; i++)
+	{
+		if (fighters[i].rocketBoots)
+			newSave->stkm.rocketBootsFigh.push_back(i);
+		if (fighters[i].fan)
+			newSave->stkm.fanFigh.push_back(i);
 	}
 
 	SaveSimOptions(newSave);

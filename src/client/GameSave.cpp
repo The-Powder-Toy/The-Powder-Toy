@@ -28,6 +28,7 @@ GameSave::GameSave(GameSave & save):
 	airMode(save.airMode),
 	edgeMode(save.edgeMode),
 	signs(save.signs),
+    stkm(save.stkm),
 	palette(save.palette),
 	pmapbits(save.pmapbits),
 	expanded(save.expanded),
@@ -704,6 +705,47 @@ void GameSave::readOPS(char * data, int dataLength)
 							fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&subiter));
 						}
 					}
+				}
+			}
+			else
+			{
+				fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
+			}
+		}
+		else if (!strcmp(bson_iterator_key(&iter), "stkm"))
+		{
+			if (bson_iterator_type(&iter) == BSON_OBJECT)
+			{
+				bson_iterator stkmiter;
+				bson_iterator_subiterator(&iter, &stkmiter);
+				while (bson_iterator_next(&stkmiter))
+				{
+					CheckBsonFieldBool(stkmiter, "rocketBoots1", &stkm.rocketBoots1);
+					CheckBsonFieldBool(stkmiter, "rocketBoots1", &stkm.rocketBoots1);
+					CheckBsonFieldBool(stkmiter, "fan1", &stkm.fan1);
+					CheckBsonFieldBool(stkmiter, "fan2", &stkm.fan2);
+					if (!strcmp(bson_iterator_key(&stkmiter), "rocketBootsFigh") && bson_iterator_type(&stkmiter) == BSON_ARRAY)
+					{
+						bson_iterator fighiter;
+						bson_iterator_subiterator(&stkmiter, &fighiter);
+						while (bson_iterator_next(&fighiter))
+						{
+							if (bson_iterator_type(&fighiter) == BSON_INT)
+								stkm.rocketBootsFigh.push_back(bson_iterator_int(&fighiter));
+						}
+					}
+					else if (!strcmp(bson_iterator_key(&stkmiter), "fanFigh") && bson_iterator_type(&stkmiter) == BSON_ARRAY)
+					{
+						bson_iterator fighiter;
+						bson_iterator_subiterator(&stkmiter, &fighiter);
+						while (bson_iterator_next(&fighiter))
+						{
+							if (bson_iterator_type(&fighiter) == BSON_INT)
+								stkm.fanFigh.push_back(bson_iterator_int(&fighiter));
+						}
+					}
+					else
+						fprintf(stderr, "Unknown stkm property %s\n", bson_iterator_key(&stkmiter));
 				}
 			}
 			else
@@ -2393,6 +2435,34 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 	bson_append_int(&b, "gravityMode", gravityMode);
 	bson_append_int(&b, "airMode", airMode);
 	bson_append_int(&b, "edgeMode", edgeMode);
+
+	if (stkm.hasData())
+	{
+		bson_append_start_object(&b, "stkm");
+		if (stkm.rocketBoots1)
+			bson_append_bool(&b, "rocketBoots1", stkm.rocketBoots1);
+		if (stkm.rocketBoots2)
+			bson_append_bool(&b, "rocketBoots2", stkm.rocketBoots2);
+		if (stkm.fan1)
+			bson_append_bool(&b, "fan1", stkm.fan1);
+		if (stkm.fan2)
+			bson_append_bool(&b, "fan2", stkm.fan2);
+		if (stkm.rocketBootsFigh.size())
+		{
+			bson_append_start_array(&b, "rocketBootsFigh");
+			for (unsigned int fighNum : stkm.rocketBootsFigh)
+				bson_append_int(&b, "num", fighNum);
+			bson_append_finish_array(&b);
+		}
+		if (stkm.fanFigh.size())
+		{
+			bson_append_start_array(&b, "fanFigh");
+			for (unsigned int fighNum : stkm.fanFigh)
+				bson_append_int(&b, "num", fighNum);
+			bson_append_finish_array(&b);
+		}
+		bson_append_finish_object(&b);
+	}
 
 	bson_append_int(&b, "pmapbits", pmapbits);
 	if (partsData && partsDataLen)
