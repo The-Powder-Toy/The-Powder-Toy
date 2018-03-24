@@ -28,7 +28,7 @@ GameSave::GameSave(GameSave & save):
 	airMode(save.airMode),
 	edgeMode(save.edgeMode),
 	signs(save.signs),
-    stkm(save.stkm),
+	stkm(save.stkm),
 	palette(save.palette),
 	pmapbits(save.pmapbits),
 	expanded(save.expanded),
@@ -1563,7 +1563,6 @@ void GameSave::readPSv(char * saveDataChar, int dataLength)
 				throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
 			j=data[p++];
 			if (j >= PT_NUM) {
-				//TODO: Possibly some server side translation
 				j = PT_DUST;//throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
 			}
 			if (j)
@@ -1806,7 +1805,6 @@ void GameSave::readPSv(char * saveDataChar, int dataLength)
 			else
 				p++;
 		}
-		//TODO: STKM_init_legs
 		// no more particle properties to load, so we can change type here without messing up loading
 		if (i && i<=NPART)
 		{
@@ -2172,7 +2170,6 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 					fieldDesc |= 1 << 14;
 					RESTRICTVERSION(93, 0);
 					RESTRICTRENDERVERSION(93, 0);
-					fromNewerVersion = true; // TODO: remove on 93.0 release
 				}
 
 				//Extra Temperature (2nd byte optional, 1st required), 1 to 2 bytes
@@ -2319,7 +2316,6 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 				else if (particles[i].type == PT_PIPE || particles[i].type == PT_PPIP)
 				{
 					RESTRICTVERSION(93, 0);
-					fromNewerVersion = true; // TODO: remove on 93.0 release
 				}
 				if (particles[i].type == PT_TSNS || particles[i].type == PT_PSNS
 				        || particles[i].type == PT_HSWC || particles[i].type == PT_PUMP)
@@ -2327,7 +2323,6 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 					if (particles[i].tmp == 1)
 					{
 						RESTRICTVERSION(93, 0);
-						fromNewerVersion = true; // TODO: remove on 93.0 release
 					}
 				}
 				if (PMAPBITS > 8)
@@ -2335,17 +2330,14 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 					if (TypeInCtype(particles[i].type, particles[i].ctype) && particles[i].ctype > 0xFF)
 					{
 						RESTRICTVERSION(93, 0);
-						fromNewerVersion = true; // TODO: remove on 93.0 release
 					}
 					else if (TypeInTmp(particles[i].type) && particles[i].tmp > 0xFF)
 					{
 						RESTRICTVERSION(93, 0);
-						fromNewerVersion = true; // TODO: remove on 93.0 release
 					}
 					else if (TypeInTmp2(particles[i].type, particles[i].tmp2) && particles[i].tmp2 > 0xFF)
 					{
 						RESTRICTVERSION(93, 0);
-						fromNewerVersion = true; // TODO: remove on 93.0 release
 					}
 				}
 
