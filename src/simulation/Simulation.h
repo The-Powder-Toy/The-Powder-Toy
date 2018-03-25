@@ -127,7 +127,6 @@ public:
 	int is_blocking(int t, int x, int y);
 	int is_boundary(int pt, int x, int y);
 	int find_next_boundary(int pt, int *x, int *y, int dm, int *em);
-	int pn_junction_sprk(int x, int y, int pt);
 	void photoelectric_effect(int nx, int ny);
 	unsigned direction_to_map(float dx, float dy, int t);
 	int do_move(int i, int x, int y, float nxf, float nyf);

@@ -2741,33 +2741,19 @@ int Simulation::do_move(int i, int x, int y, float nxf, float nyf)
 	return result;
 }
 
-int Simulation::pn_junction_sprk(int x, int y, int pt)
-{
-	int r = pmap[y][x];
-	if (TYP(r) != pt)
-		return 0;
-	r >>= 8;
-	if (parts[r].type != pt)
-		return 0;
-	if (parts[r].life != 0)
-		return 0;
-
-	parts[r].ctype = pt;
-	part_change_type(r,x,y,PT_SPRK);
-	parts[r].life = 4;
-	return 1;
-}
-
 void Simulation::photoelectric_effect(int nx, int ny)//create sparks from PHOT when hitting PSCN and NSCN
 {
 	unsigned r = pmap[ny][nx];
 
-	if (TYP(r) == PT_PSCN) {
-		if (TYP(pmap[ny][nx-1]) == PT_NSCN ||
-		        TYP(pmap[ny][nx+1]) == PT_NSCN ||
-		        TYP(pmap[ny-1][nx]) == PT_NSCN ||
-		        TYP(pmap[ny+1][nx]) == PT_NSCN)
-			pn_junction_sprk(nx, ny, PT_PSCN);
+	if (TYP(r) == PT_PSCN)
+	{
+		if (TYP(pmap[ny][nx-1]) == PT_NSCN || TYP(pmap[ny][nx+1]) == PT_NSCN ||
+		        TYP(pmap[ny-1][nx]) == PT_NSCN ||  TYP(pmap[ny+1][nx]) == PT_NSCN)
+		{
+			parts[ID(r)].ctype = PT_PSCN;
+			part_change_type(ID(r), nx, ny, PT_SPRK);
+			parts[ID(r)].life = 4;
+		}
 	}
 }
 
