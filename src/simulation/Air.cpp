@@ -240,7 +240,7 @@ void Air::update_air(void)
 				if ((dx*advDistanceMult>1.0f || dy*advDistanceMult>1.0f) && (tx>=2 && tx<XRES/CELL-2 && ty>=2 && ty<YRES/CELL-2))
 				{
 					// Trying to take velocity from far away, check whether there is an intervening wall. Step from current position to desired source location, looking for walls, with either the x or y step size being 1 cell
-					if (abs(dx)>abs(dy))
+					if (std::abs(dx)>std::abs(dy))
 					{
 						stepX = (dx<0.0f) ? 1 : -1;
 						stepY = -dy/fabsf(dx);
