@@ -239,7 +239,7 @@ int Element_LIGH::LIGH_nearest_part(Simulation * sim, int ci, int max_d)
 	{
 		if (sim->parts[i].type && sim->parts[i].life && i!=ci && sim->parts[i].type!=PT_LIGH && sim->parts[i].type!=PT_THDR && sim->parts[i].type!=PT_NEUT && sim->parts[i].type!=PT_PHOT)
 		{
-			ndistance = abs(cx-sim->parts[i].x)+abs(cy-sim->parts[i].y);// Faster but less accurate  Older: sqrt(pow(cx-parts[i].x, 2)+pow(cy-parts[i].y, 2));
+			ndistance = std::abs(cx-sim->parts[i].x)+std::abs(cy-sim->parts[i].y);// Faster but less accurate  Older: sqrt(pow(cx-parts[i].x, 2)+pow(cy-parts[i].y, 2));
 			if (ndistance<distance)
 			{
 				distance = ndistance;
