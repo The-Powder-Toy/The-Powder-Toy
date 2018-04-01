@@ -34,7 +34,7 @@ public:
 		std::string unlockPrice = format::NumberToString<int>(price);
 		if (numCoins < price)
 		{
-			new ErrorMessage("Cannot afford pack", "This pack requires " + unlockPrice
+			ErrorMessage::Blocking("Cannot afford pack", "This pack requires " + unlockPrice
 							 + " \xEA""owdercoins to purchase.\n\nYou have " + format::NumberToString<int>(numCoins) + " coins");
 		}
 		else

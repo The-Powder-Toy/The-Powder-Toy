@@ -196,7 +196,7 @@ GameController::GameController():
 
 		if (salt != expectedSaltStr)
 		{
-			gameModel->Log("Coins have been reset due to login status change or tampering, expected " + expectedSaltStr + ", got " + salt + ", current coins " + format::NumberToString(coins), false);
+			gameModel->Log("Coins have been reset due to login status change or tampering", false);
 			coins = 0;
 		}
 	}
