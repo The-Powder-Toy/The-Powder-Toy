@@ -187,8 +187,8 @@ GameController::GameController():
 
 		std::string expectedsalt = SALT;
 		if (Client::Ref().GetAuthUser().UserID)
-			expectedsalt += "-" + Client::Ref().GetAuthUser().UserID;
-		expectedsalt += "-" + coins;
+			expectedsalt += "-" + format::NumberToString<int>(Client::Ref().GetAuthUser().UserID);
+		expectedsalt += "-" + format::NumberToString<int>(coins);
 
 		char saltMd5[33];
 		md5_ascii(saltMd5, (const unsigned char *)expectedsalt.c_str(), expectedsalt.length());
@@ -302,8 +302,8 @@ GameController::~GameController()
 	Client::Ref().SetPref("Coins.coins", coins);
 	std::string salt = SALT;
 	if (Client::Ref().GetAuthUser().UserID)
-		salt += "-" + Client::Ref().GetAuthUser().UserID;
-	salt += "-" + coins;
+		salt += "-" + format::NumberToString<int>(Client::Ref().GetAuthUser().UserID);
+	salt += "-" + format::NumberToString<int>(coins);
 
 	char saltMd5[33];
 	md5_ascii(saltMd5, (const unsigned char *)salt.c_str(), salt.length());
