@@ -19,6 +19,8 @@ public:
 	int MenuVisible;
 	int MenuSection;
 	int Enabled;
+	int Unlocked;
+	int UnlockPrice;
 
 	float Advection;
 	float AirDrag;

@@ -8,6 +8,7 @@ Element_GAS::Element_GAS()
 	MenuVisible = 1;
 	MenuSection = SC_GAS;
 	Enabled = 1;
+	Unlocked = 1;
 
 	Advection = 1.0f;
 	AirDrag = 0.01f * CFDS;

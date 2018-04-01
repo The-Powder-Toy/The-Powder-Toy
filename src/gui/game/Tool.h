@@ -24,6 +24,8 @@ protected:
 	std::string identifier;
 public:
 	int colRed, colGreen, colBlue;
+	bool unlocked = true;
+	int unlockPrice = 20;
 
 	Tool(int id, string name, string description, int r, int g, int b, std::string identifier, VideoBuffer * (*textureGen)(int, int, int) = NULL);
 	int GetToolID() { return toolID; }

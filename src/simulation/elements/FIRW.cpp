@@ -12,6 +12,7 @@ Element_FIRW::Element_FIRW()
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;
+	Unlocked = 1;
 
 	Advection = 0.2f;
 	AirDrag = 0.01f * CFDS;

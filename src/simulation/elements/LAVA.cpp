@@ -8,6 +8,7 @@ Element_LAVA::Element_LAVA()
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;
 	Enabled = 1;
+	Unlocked = 1;
 
 	Advection = 0.3f;
 	AirDrag = 0.02f * CFDS;

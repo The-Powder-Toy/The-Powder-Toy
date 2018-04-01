@@ -33,6 +33,9 @@ class GameModel;
 class GameView: public ui::Window
 {
 private:
+	unsigned int lastCoinEarned = 0;
+	unsigned int lastActivity = 0;
+
 	bool isMouseDown;
 	bool skipDraw;
 	bool zoomEnabled;

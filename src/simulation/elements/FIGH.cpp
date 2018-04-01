@@ -8,6 +8,7 @@ Element_FIGH::Element_FIGH()
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;
 	Enabled = 1;
+	UnlockPrice = 5000;
 
 	Advection = 0.5f;
 	AirDrag = 0.00f * CFDS;

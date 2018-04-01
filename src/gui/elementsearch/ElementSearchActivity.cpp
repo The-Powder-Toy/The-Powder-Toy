@@ -1,5 +1,9 @@
 #include <algorithm>
 #include "ElementSearchActivity.h"
+#include "Format.h"
+#include "client/Client.h"
+#include "gui/dialogues/ConfirmPrompt.h"
+#include "gui/dialogues/ErrorMessage.h"
 #include "gui/interface/Textbox.h"
 #include "gui/interface/Label.h"
 #include "gui/interface/Keys.h"
@@ -17,7 +21,31 @@ public:
 	void ActionCallback(ui::Button * sender_)
 	{
 		ToolButton *sender = (ToolButton*)sender_;
-		if(sender->GetSelectionState() >= 0 && sender->GetSelectionState() <= 2)
+		if (!tool->unlocked)
+		{
+			int numCoins = Client::Ref().GetCoins();
+			std::string unlockPrice = format::NumberToString<int>(tool->unlockPrice);
+			if (numCoins < tool->unlockPrice)
+			{
+				new ErrorMessage("This element is locked", "This element is locked and requires " + unlockPrice
+								 + " \xEA""owdercoins to purchase.\n\nYou have " + format::NumberToString<int>(numCoins) + " coins");
+			}
+			else
+			{
+				bool buy = ConfirmPrompt::Blocking("This element is locked", "Buy this element for " + unlockPrice + " \xEA"
+											  "owdercoins? You will have " + format::NumberToString<int>(numCoins - tool->unlockPrice) + " \xEA"
+											  "owdercoins after this transaction.\n\nFor more purchaseable items and sets, click the \xEA"
+											  "icon on the bottom bar.");
+				if (buy)
+				{
+					Client::Ref().AddCoins(-tool->unlockPrice);
+					a->UnlockElement(tool->GetToolID());
+					a->SetActiveTool(sender->GetSelectionState(), tool);
+				}
+			}
+			return;
+		}
+		if (sender->GetSelectionState() >= 0 && sender->GetSelectionState() <= 2)
 			a->SetActiveTool(sender->GetSelectionState(), tool);
 	}
 };
@@ -143,6 +171,7 @@ void ElementSearchActivity::searchTools(std::string query)
 		tempButton->Appearance.SetTexture(tempTexture);
 		tempButton->Appearance.BackgroundInactive = ui::Colour(tool->colRed, tool->colGreen, tool->colBlue);
 		tempButton->SetActionCallback(new ToolAction(this, tool));
+		tempButton->SetUnlocked(tool->unlocked);
 
 		if(gameController->GetActiveTool(0) == tool)
 		{
@@ -187,6 +216,11 @@ void ElementSearchActivity::SetActiveTool(int selectionState, Tool * tool)
 	else
 		gameController->SetActiveTool(selectionState, tool);
 	exit = true;
+}
+
+void ElementSearchActivity::UnlockElement(int element)
+{
+	gameController->UnlockElement(element);
 }
 
 void ElementSearchActivity::OnDraw()

@@ -8,6 +8,7 @@ Element_STKM2::Element_STKM2()
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;
 	Enabled = 1;
+	UnlockPrice = 2000;
 
 	Advection = 0.5f;
 	AirDrag = 0.00f * CFDS;

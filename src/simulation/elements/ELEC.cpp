@@ -8,6 +8,7 @@ Element_ELEC::Element_ELEC()
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
 	Enabled = 1;
+	Unlocked = 1;
 
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;

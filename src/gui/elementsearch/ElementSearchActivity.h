@@ -32,6 +32,7 @@ public:
 	Tool * GetFirstResult() { return firstResult; }
 	ElementSearchActivity(GameController * gameController, std::vector<Tool*> tools);
 	void SetActiveTool(int selectionState, Tool * tool);
+	void UnlockElement(int element);
 	virtual ~ElementSearchActivity();
 	virtual void OnTick(float dt);
 	virtual void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);

@@ -38,6 +38,15 @@
 #include "lua/TPTScriptInterface.h"
 #endif
 
+
+#include "client/MD5.h"
+#include "gui/coin/Coin.h"
+#include "gui/coin/Promote.h"
+
+#ifndef SALT
+#define SALT "HBtzeBMtXau2xse2D"
+#endif
+
 using namespace std;
 
 class GameController::SearchCallback: public ControllerCallback
@@ -167,6 +176,71 @@ GameController::GameController():
 	debugInfo.push_back(new ElementPopulationDebug(0x2, gameModel->GetSimulation()));
 	debugInfo.push_back(new DebugLines(0x4, gameView, this));
 	debugInfo.push_back(new ParticleDebug(0x8, gameModel->GetSimulation(), gameModel));
+
+
+	int coins = Client::Ref().GetPrefInteger("Coins.coins", 0);
+	if (coins < 0)
+		coins = 0;
+	if (coins)
+	{
+		std::string salt = Client::Ref().GetPrefString("Coins.salt", "");
+
+		std::string expectedsalt = SALT;
+		if (Client::Ref().GetAuthUser().UserID)
+			expectedsalt += "-" + Client::Ref().GetAuthUser().UserID;
+		expectedsalt += "-" + coins;
+
+		char saltMd5[33];
+		md5_ascii(saltMd5, (const unsigned char *)expectedsalt.c_str(), expectedsalt.length());
+		std::string expectedSaltStr = saltMd5;
+
+		if (salt != expectedSaltStr)
+		{
+			gameModel->Log("Coins have been reset due to login status change or tampering, expected " + expectedSaltStr + ", got " + salt + ", current coins " + format::NumberToString(coins), false);
+			coins = 0;
+		}
+	}
+	Client::Ref().SetCoins(coins);
+
+	std::vector<int> unlockedElements = Client::Ref().GetPrefIntegerArray("Coins.UnlockedElements");
+	int unlockedSalt = 0;
+	for (int i = 0; i < PT_NUM; i++)
+	{
+		try
+		{
+			if (unlockedElements.at(i))
+				unlockedSalt += i << (i%20);
+		}
+		catch (std::exception &e)
+		{
+			gameModel->Log("Unlocked elements have been reset due to preference loading exception", false);
+			return;
+		}
+	}
+
+	std::string salt = Client::Ref().GetPrefString("Coins.UnlockedSalt", "");
+	if (!salt.length())
+		return;
+
+	std::string expectedsalt = SALT;
+	expectedsalt += "-" + format::NumberToString<int>(unlockedSalt);
+	char saltMd5[33];
+	md5_ascii(saltMd5, (const unsigned char *)expectedsalt.c_str(), expectedsalt.length());
+	std::string expectedSaltStr = saltMd5;
+
+	if (salt != expectedSaltStr)
+	{
+		gameModel->Log("Unlocked elements have been reset due to unauthorized tampering", false);
+		return;
+	}
+	for (int i = 0; i < PT_NUM; i++)
+		gameModel->GetSimulation()->elements[i].Unlocked = unlockedElements[i] ? true : false;
+	gameModel->BuildMenus();
+	if (gameModel->GetSimulation()->elements[0].Unlocked)
+	{
+		this->SetActiveTool(1, "DEFAULT_PT_NONE");
+		this->SetActiveTool(3, "DEFAULT_PT_NONE");
+	}
 }
 
 GameController::~GameController()
@@ -223,10 +297,47 @@ GameController::~GameController()
 	{
 		delete *iter;
 	}
+
+	int coins = Client::Ref().GetCoins();
+	Client::Ref().SetPref("Coins.coins", coins);
+	std::string salt = SALT;
+	if (Client::Ref().GetAuthUser().UserID)
+		salt += "-" + Client::Ref().GetAuthUser().UserID;
+	salt += "-" + coins;
+
+	char saltMd5[33];
+	md5_ascii(saltMd5, (const unsigned char *)salt.c_str(), salt.length());
+	Client::Ref().SetPref("Coins.salt", std::string(saltMd5));
+
+	std::vector<int> unlockedElements;
+	int unlockedSalt = 0;
+	for (int i = 0; i < PT_NUM; i++)
+	{
+		bool unlocked = gameModel->GetSimulation()->elements[i].Unlocked;
+		unlockedElements.push_back(unlocked ? 1 : 0);
+		if (unlocked)
+			unlockedSalt += i << (i%20);
+	}
+	Client::Ref().SetPref("Coins.UnlockedElements", std::vector<Json::Value>(unlockedElements.begin(), unlockedElements.end()));
+
+	salt = SALT;
+	salt += "-" + format::NumberToString<int>(unlockedSalt);
+	md5_ascii(saltMd5, (const unsigned char *)salt.c_str(), salt.length());
+	Client::Ref().SetPref("Coins.UnlockedSalt", std::string(saltMd5));
+
 	delete gameModel;
 	if (gameView->CloseActiveWindow())
 	{
 		delete gameView;
+	}
+}
+
+void GameController::UnlockElement(int ID)
+{
+	if (ID >= 0 && ID < PT_NUM)
+	{
+		gameModel->GetSimulation()->elements[ID].Unlocked = 1;
+		gameModel->BuildMenus();
 	}
 }
 
@@ -1373,6 +1484,12 @@ void GameController::OpenTags()
 	{
 		new ErrorMessage("Error", "No save open");
 	}
+}
+
+void GameController::OpenCoin()
+{
+	Coin *coin = new Coin(gameModel);
+	ui::Engine::Ref().ShowWindow(coin);
 }
 
 void GameController::OpenStamps()

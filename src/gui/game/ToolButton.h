@@ -6,6 +6,7 @@
 class ToolButton: public ui::Button
 {
 	int currentSelection;
+	bool unlocked = true;
 	std::string toolIdentifier;
 public:
 	ToolButton(ui::Point position, ui::Point size, std::string text_, std::string toolIdentifier, std::string toolTip = "");
@@ -15,6 +16,8 @@ public:
 	virtual void Draw(const ui::Point& screenPos);
 	void SetSelectionState(int state);
 	int GetSelectionState();
+	void SetUnlocked(bool unlocked) { this->unlocked = unlocked; }
+	bool GetUnlocked() { return unlocked; }
 	virtual ~ToolButton();
 };
 

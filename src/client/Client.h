@@ -69,6 +69,8 @@ private:
 	//Auth session
 	User authUser;
 
+	int coins;
+
 	//Thumbnail retreival
 	int thumbnailCacheNextID;
 	Thumbnail * thumbnailCache[THUMB_CACHE_SIZE];
@@ -184,6 +186,10 @@ public:
 	void Tick();
 	bool CheckUpdate(void *updateRequest, bool checkSession);
 	void Shutdown();
+
+	void SetCoins(int coins) { this->coins = coins; }
+	void AddCoins(int coins) { this->coins += coins; }
+	int GetCoins() { return coins; }
 
 	// preferences functions
 	void WritePrefs();

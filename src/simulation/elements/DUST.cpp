@@ -8,6 +8,7 @@ Element_DUST::Element_DUST()
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
 	Enabled = 1;
+	Unlocked = 1;
 
 	Advection = 0.7f;
 	AirDrag = 0.02f * CFDS;

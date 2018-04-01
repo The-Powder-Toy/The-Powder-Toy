@@ -8,6 +8,7 @@ Element_BRMT::Element_BRMT()
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
 	Enabled = 1;
+	Unlocked = 1;
 
 	Advection = 0.4f;
 	AirDrag = 0.04f * CFDS;

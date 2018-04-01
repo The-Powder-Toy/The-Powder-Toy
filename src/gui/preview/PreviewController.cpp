@@ -17,7 +17,7 @@ PreviewController::PreviewController(int saveID, int saveDate, bool instant, Con
 	HasExited(false)
 {
 	previewModel = new PreviewModel();
-	previewView = new PreviewView();
+	previewView = new PreviewView(saveID);
 	previewModel->AddObserver(previewView);
 	previewView->AttachController(this);
 	previewModel->SetDoOpen(instant);
@@ -42,7 +42,7 @@ PreviewController::PreviewController(int saveID, bool instant, ControllerCallbac
 	HasExited(false)
 {
 	previewModel = new PreviewModel();
-	previewView = new PreviewView();
+	previewView = new PreviewView(saveID);
 	previewModel->AddObserver(previewView);
 	previewView->AttachController(this);
 

@@ -10,6 +10,7 @@ Element_FIRE::Element_FIRE()
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;
+	Unlocked = 1;
 
 	Advection = 0.9f;
 	AirDrag = 0.04f * CFDS;
