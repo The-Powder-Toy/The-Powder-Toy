@@ -8,7 +8,6 @@ Element_THDR::Element_THDR()
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;
-	Unlocked = 1;
 
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;

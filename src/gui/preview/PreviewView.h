@@ -33,7 +33,6 @@ class PreviewView: public ui::Window {
 	ui::Button * browserOpenButton;
 	ui::Button * favButton;
 	ui::Button * reportButton;
-	ui::Button * promoteButton;
 	ui::Button * submitCommentButton;
 	ui::Textbox * addCommentBox;
 	ui::Label * commentWarningLabel;
@@ -74,7 +73,7 @@ class PreviewView: public ui::Window {
 	void CheckComment();
 public:
 	void AttachController(PreviewController * controller);
-	PreviewView(int saveID);
+	PreviewView();
 	void NotifySaveChanged(PreviewModel * sender);
 	void NotifyCommentsChanged(PreviewModel * sender);
 	void NotifyCommentsPageChanged(PreviewModel * sender);

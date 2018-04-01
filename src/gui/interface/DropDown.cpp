@@ -4,7 +4,6 @@
 #include "Button.h"
 #include "DropDown.h"
 #include "gui/interface/Window.h"
-#include "gui/interface/ScrollPanel.h"
 
 namespace ui {
 
@@ -30,30 +29,21 @@ public:
 		}
 	};
 	DropDownWindow(DropDown * dropDown):
-		Window(ui::Point(dropDown->Position.X+dropDown->GetParentWindow()->Position.X-5, dropDown->Position.Y+dropDown->GetParentWindow()->Position.Y-3), ui::Point(dropDown->Size.X+25, 1+dropDown->options.size()*16)),
+		Window(ui::Point(dropDown->Position.X+dropDown->GetParentWindow()->Position.X-5, dropDown->Position.Y+dropDown->GetParentWindow()->Position.Y-3), ui::Point(dropDown->Size.X+10, 1+dropDown->options.size()*16)),
 		dropDown(dropDown),
 		appearance(dropDown->Appearance)
 	{
-		ui::ScrollPanel *messagePanel = new ui::ScrollPanel(ui::Point(0, 0), ui::Point(Size.X-8, dropDown->GetParentWindow()->Size.Y - dropDown->Position.Y + 30));
-		AddComponent(messagePanel);
-
 		int currentY = 1;
 		for (size_t i = 0; i < dropDown->options.size(); i++)
 		{
-			Button * tempButton = new Button(Point(1, currentY), Point(Size.X-17, 16), dropDown->options[i].first);
+			Button * tempButton = new Button(Point(1, currentY), Point(Size.X-2, 16), dropDown->options[i].first);
 			tempButton->Appearance = appearance;
 			if (i)
 				tempButton->Appearance.Border = ui::Border(0, 1, 1, 1);
 			tempButton->SetActionCallback(new ItemSelectedAction(this, dropDown->options[i].first));
-			messagePanel->AddChild(tempButton);
+			AddComponent(tempButton);
 			currentY += 16;
 		}
-
-		messagePanel->InnerSize = ui::Point(messagePanel->Size.X, currentY);
-
-		if (currentY < messagePanel->Size.Y)
-			messagePanel->Size.Y = currentY;
-		Size.Y = messagePanel->Size.Y + 12;
 	}
 	virtual void OnDraw()
 	{

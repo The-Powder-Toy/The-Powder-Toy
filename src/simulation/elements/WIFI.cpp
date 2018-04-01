@@ -8,7 +8,6 @@ Element_WIFI::Element_WIFI()
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
 	Enabled = 1;
-	Unlocked = 1;
 
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;

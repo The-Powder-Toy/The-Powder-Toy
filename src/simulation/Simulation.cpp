@@ -353,16 +353,6 @@ GameSave * Simulation::Save(int fullX, int fullY, int fullX2, int fullY2, bool i
 			Particle tempPart = parts[i];
 			tempPart.x -= blockX*CELL;
 			tempPart.y -= blockY*CELL;
-
-			if (!elements[tempPart.type].Unlocked)
-				continue;
-			if (GameSave::TypeInCtype(tempPart.type, tempPart.ctype) && !elements[tempPart.ctype].Unlocked)
-				tempPart.ctype = 0;
-			if (GameSave::TypeInTmp(tempPart.type) && !elements[TYP(tempPart.tmp)].Unlocked)
-				tempPart.tmp = 0;
-			if (GameSave::TypeInTmp2(tempPart.type, tempPart.tmp2) && !elements[tempPart.tmp2].Unlocked)
-				tempPart.tmp2 = 0;
-
 			if (elements[tempPart.type].Enabled)
 			{
 				if (tempPart.type == PT_SOAP)
@@ -4900,15 +4890,15 @@ int Simulation::GetParticleType(std::string type)
 	char * txt = (char*)type.c_str();
 
 	// alternative names for some elements
-	if (!strcasecmp(txt, "C4") && elements[PT_PLEX].Unlocked)
+	if (!strcasecmp(txt, "C4"))
 		return PT_PLEX;
-	else if (!strcasecmp(txt, "C5") && elements[PT_C5].Unlocked)
+	else if (!strcasecmp(txt, "C5"))
 		return PT_C5;
-	else if (!strcasecmp(txt, "NONE") && elements[PT_NONE].Unlocked)
+	else if (!strcasecmp(txt, "NONE"))
 		return PT_NONE;
 	for (int i = 1; i < PT_NUM; i++)
 	{
-		if (!strcasecmp(txt, elements[i].Name) && strlen(elements[i].Name) && elements[i].Enabled && elements[i].Unlocked)
+		if (!strcasecmp(txt, elements[i].Name) && strlen(elements[i].Name) && elements[i].Enabled)
 		{
 			return i;
 		}

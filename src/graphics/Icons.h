@@ -40,8 +40,7 @@ enum Icon
 	IconPersistant,
 	IconHeat,
 	IconLife,
-	IconGradient,
-	IconCoin,
+	IconGradient
 };
 
 #endif // ICONS_H

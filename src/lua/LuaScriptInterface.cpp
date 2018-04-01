@@ -401,25 +401,13 @@ int LuaScriptInterface::tpt_index(lua_State *l)
 	return lua_rawget(l, 1), 1;
 }
 
-bool CheckUnlocked(int ID)
-{
-	return ID >= 0 && ID < PT_NUM && luacon_sim->elements[ID].Unlocked;
-}
-
-bool CheckUnlocked(std::string identifier, int ID)
-{
-	if (identifier.find("DEFAULT_PT_") == 0)
-		return CheckUnlocked(ID);
-	return true;
-}
-
 int LuaScriptInterface::tpt_newIndex(lua_State *l)
 {
 	std::string key = luaL_checkstring(l, 2);
 	if (!key.compare("selectedl"))
 	{
 		Tool *t = m->GetToolFromIdentifier(luaL_checkstring(l, 3));
-		if (t && CheckUnlocked(t->GetIdentifier(), t->GetToolID()))
+		if (t)
 			c->SetActiveTool(0, t);
 		else
 			luaL_error(l, "Invalid tool identifier: %s", lua_tostring(l, 3));
@@ -427,7 +415,7 @@ int LuaScriptInterface::tpt_newIndex(lua_State *l)
 	else if (!key.compare("selectedr"))
 	{
 		Tool *t = m->GetToolFromIdentifier(luaL_checkstring(l, 3));
-		if (t && CheckUnlocked(t->GetIdentifier(), t->GetToolID()))
+		if (t)
 			c->SetActiveTool(1, t);
 		else
 			luaL_error(l, "Invalid tool identifier: %s", lua_tostring(l, 3));
@@ -435,7 +423,7 @@ int LuaScriptInterface::tpt_newIndex(lua_State *l)
 	else if (!key.compare("selecteda"))
 	{
 		Tool *t = m->GetToolFromIdentifier(luaL_checkstring(l, 3));
-		if (t && CheckUnlocked(t->GetIdentifier(), t->GetToolID()))
+		if (t)
 			c->SetActiveTool(2, t);
 		else
 			luaL_error(l, "Invalid tool identifier: %s", lua_tostring(l, 3));
@@ -443,7 +431,7 @@ int LuaScriptInterface::tpt_newIndex(lua_State *l)
 	else if (!key.compare("selectedreplace"))
 	{
 		Tool *t = m->GetToolFromIdentifier(luaL_checkstring(l, 3));
-		if (t && CheckUnlocked(t->GetIdentifier(), t->GetToolID()))
+		if( t)
 			c->SetActiveTool(3, t);
 		else
 			luaL_error(l, "Invalid tool identifier: %s", lua_tostring(l, 3));
@@ -926,9 +914,6 @@ int LuaScriptInterface::simulation_partChangeType(lua_State * l)
 	int partIndex = lua_tointeger(l, 1);
 	if(partIndex < 0 || partIndex >= NPART || !luacon_sim->parts[partIndex].type)
 		return 0;
-	int t = lua_tointeger(l, 2);
-	if (!CheckUnlocked(t))
-		return luaL_error(l, "Invalid element id '%d'", t);
 	luacon_sim->part_change_type(partIndex, luacon_sim->parts[partIndex].x+0.5f, luacon_sim->parts[partIndex].y+0.5f, lua_tointeger(l, 2));
 	return 0;
 }
@@ -953,8 +938,6 @@ int LuaScriptInterface::simulation_partCreate(lua_State * l)
 		v = ID(type);
 		type = TYP(type);
 	}
-	if (!CheckUnlocked(type))
-		return luaL_error(l, "Invalid element id '%d'", type);
 	lua_pushinteger(l, luacon_sim->create_part(newID, lua_tointeger(l, 2), lua_tointeger(l, 3), type, v));
 	return 1;
 }
@@ -1056,8 +1039,6 @@ int LuaScriptInterface::simulation_partProperty(lua_State * l)
 		switch(property->Type)
 		{
 			case StructProperty::ParticleType:
-				if (!CheckUnlocked(lua_tointeger(l, 3)))
-					return luaL_error(l, "Invalid element id '%d'", lua_tointeger(l, 3));
 			case StructProperty::Integer:
 				*((int*)propertyAddress) = lua_tointeger(l, 3);
 				break;
@@ -1330,9 +1311,6 @@ int LuaScriptInterface::simulation_createParts(lua_State * l)
 	int brush = luaL_optint(l,6,CIRCLE_BRUSH);
 	int flags = luaL_optint(l,7,luacon_sim->replaceModeFlags);
 
-	if (!CheckUnlocked(c))
-		return luaL_error(l, "Invalid element id '%d'", c);
-
 	vector<Brush*> brushList = luacon_model->GetBrushList();
 	if (brush < 0 || brush >= (int)brushList.size())
 		return luaL_error(l, "Invalid brush id '%d'", brush);
@@ -1357,9 +1335,6 @@ int LuaScriptInterface::simulation_createLine(lua_State * l)
 	int brush = luaL_optint(l,8,CIRCLE_BRUSH);
 	int flags = luaL_optint(l,9,luacon_sim->replaceModeFlags);
 
-	if (!CheckUnlocked(c))
-		return luaL_error(l, "Invalid element id '%d'", c);
-
 	vector<Brush*> brushList = luacon_model->GetBrushList();
 	if (brush < 0 || brush >= (int)brushList.size())
 		return luaL_error(l, "Invalid brush id '%d'", brush);
@@ -1380,9 +1355,6 @@ int LuaScriptInterface::simulation_createBox(lua_State * l)
 	int c = luaL_optint(l,5,luacon_model->GetActiveTool(0)->GetToolID());
 	int flags = luaL_optint(l,6,luacon_sim->replaceModeFlags);
 
-	if (!CheckUnlocked(c))
-		return luaL_error(l, "Invalid element id '%d'", c);
-
 	luacon_sim->CreateBox(x1, y1, x2, y2, c, flags);
 	return 0;
 }
@@ -1392,8 +1364,6 @@ int LuaScriptInterface::simulation_floodParts(lua_State * l)
 	int x = luaL_optint(l,1,-1);
 	int y = luaL_optint(l,2,-1);
 	int c = luaL_optint(l,3,luacon_model->GetActiveTool(0)->GetToolID());
-	if (!CheckUnlocked(c))
-		return luaL_error(l, "Invalid element id '%d'", c);
 	int cm = luaL_optint(l,4,-1);
 	int flags = luaL_optint(l,5,luacon_sim->replaceModeFlags);
 	int ret = luacon_sim->FloodParts(x, y, c, cm, flags);
@@ -2563,6 +2533,9 @@ int LuaScriptInterface::elements_allocate(lua_State * l)
 		if (!luacon_sim->elements[i].Enabled)
 		{
 			newID = i;
+			luacon_sim->elements[i] = Element();
+			luacon_sim->elements[i].Enabled = true;
+			luacon_sim->elements[i].Identifier = strdup(identifier.c_str());
 			break;
 		}
 	}
@@ -2574,6 +2547,9 @@ int LuaScriptInterface::elements_allocate(lua_State * l)
 			if (!luacon_sim->elements[i].Enabled)
 			{
 				newID = i;
+				luacon_sim->elements[i] = Element();
+				luacon_sim->elements[i].Enabled = true;
+				luacon_sim->elements[i].Identifier = strdup(identifier.c_str());
 				break;
 			}
 		}
@@ -2581,10 +2557,6 @@ int LuaScriptInterface::elements_allocate(lua_State * l)
 
 	if (newID != -1)
 	{	
-		luacon_sim->elements[newID] = Element();
-		luacon_sim->elements[newID].Enabled = true;
-		luacon_sim->elements[newID].Unlocked = true;
-		luacon_sim->elements[newID].Identifier = strdup(identifier.c_str());
 		lua_getglobal(l, "elements");
 		lua_pushinteger(l, newID);
 		lua_setfield(l, -2, identifier.c_str());

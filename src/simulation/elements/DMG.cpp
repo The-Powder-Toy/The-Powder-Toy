@@ -8,7 +8,6 @@ Element_DMG::Element_DMG()
 	MenuVisible = 1;
 	MenuSection = SC_FORCE;
 	Enabled = 1;
-	Unlocked = 1;
 
 	Advection = 0.0f;
 	AirDrag = 0.01f * CFDS;

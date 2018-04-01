@@ -8,7 +8,6 @@ Element_PLUT::Element_PLUT()
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
 	Enabled = 1;
-	Unlocked = 1;
 
 	Advection = 0.4f;
 	AirDrag = 0.01f * CFDS;

@@ -298,8 +298,6 @@ void GameModel::BuildMenus()
 			{
 				extraElementTools.push_back(tempTool);
 			}
-			tempTool->unlocked = sim->elements[i].Unlocked;
-			tempTool->unlockPrice = sim->elements[i].UnlockPrice;
 			elementTools.push_back(tempTool);
 		}
 	}
@@ -308,7 +306,6 @@ void GameModel::BuildMenus()
 	for(int i = 0; i < NGOL; i++)
 	{
 		Tool * tempTool = new ElementTool(PT_LIFE|PMAPID(i), sim->gmenu[i].name, std::string(sim->gmenu[i].description), PIXR(sim->gmenu[i].colour), PIXG(sim->gmenu[i].colour), PIXB(sim->gmenu[i].colour), "DEFAULT_PT_LIFE_"+std::string(sim->gmenu[i].name));
-		tempTool->unlocked = sim->elements[PT_LIFE].Unlocked;
 		menuList[SC_LIFE]->AddTool(tempTool);
 	}
 
@@ -348,11 +345,10 @@ void GameModel::BuildMenus()
 	decoToolset[3] = GetToolFromIdentifier("DEFAULT_PT_NONE");
 
 	//Set default tools
-	std::string eraser = sim->elements[PT_NONE].Unlocked ? "DEFAULT_PT_NONE" : "DEFAULT_WL_ERASEA";
 	regularToolset[0] = GetToolFromIdentifier("DEFAULT_PT_DUST");
-	regularToolset[1] = GetToolFromIdentifier(eraser);
+	regularToolset[1] = GetToolFromIdentifier("DEFAULT_PT_NONE");
 	regularToolset[2] = GetToolFromIdentifier("DEFAULT_UI_SAMPLE");
-	regularToolset[3] = GetToolFromIdentifier(eraser);
+	regularToolset[3] = GetToolFromIdentifier("DEFAULT_PT_NONE");
 
 
 	if(activeToolIdentifiers[0].length())

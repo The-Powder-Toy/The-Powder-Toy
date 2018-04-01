@@ -70,8 +70,6 @@ public:
 	void Tick();
 	void Exit();
 
-	void UnlockElement(int ID);
-
 	void Install();
 
 	void HistoryRestore();
@@ -125,7 +123,6 @@ public:
 	void OpenLogin();
 	void OpenProfile();
 	void OpenTags();
-	void OpenCoin();
 	void OpenSavePreview(int saveID, int saveDate, bool instant);
 	void OpenSavePreview();
 	void OpenLocalSaveWindow(bool asCurrent);

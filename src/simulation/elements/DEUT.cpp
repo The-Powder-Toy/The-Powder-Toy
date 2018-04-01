@@ -8,7 +8,6 @@ Element_DEUT::Element_DEUT()
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
 	Enabled = 1;
-	Unlocked = 1;
 
 	Advection = 0.6f;
 	AirDrag = 0.01f * CFDS;

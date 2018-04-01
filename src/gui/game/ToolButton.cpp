@@ -27,15 +27,12 @@ void ToolButton::OnMouseUnclick(int x, int y, unsigned int button)
 	if(isButtonDown)
 	{
 		isButtonDown = false;
-		if (unlocked)
-		{
-			if (button == SDL_BUTTON_LEFT)
-				SetSelectionState(0);
-			if (button == SDL_BUTTON_RIGHT)
-				SetSelectionState(1);
-			if (button == SDL_BUTTON_MIDDLE)
-				SetSelectionState(2);
-		}
+		if(button == SDL_BUTTON_LEFT)
+			SetSelectionState(0);
+		if(button == SDL_BUTTON_RIGHT)
+			SetSelectionState(1);
+		if(button == SDL_BUTTON_MIDDLE)
+			SetSelectionState(2);
 		DoAction();
 	}
 }
@@ -68,9 +65,7 @@ void ToolButton::Draw(const ui::Point& screenPos)
 	{
 		g->drawrect(screenPos.X, screenPos.Y, Size.X, Size.Y, Appearance.BorderInactive.Red, Appearance.BorderInactive.Green, Appearance.BorderInactive.Blue, Appearance.BorderInactive.Alpha);
 	}
-	if (!unlocked)
-		g->drawtext(screenPos.X, screenPos.Y, "\xE9", Appearance.BorderFavorite.Red, Appearance.BorderFavorite.Green, Appearance.BorderFavorite.Blue, Appearance.BorderFavorite.Alpha);
-	else if (Favorite::Ref().IsFavorite(toolIdentifier))
+	if (Favorite::Ref().IsFavorite(toolIdentifier))
 	{
 		g->drawtext(screenPos.X, screenPos.Y, "\xE8", Appearance.BorderFavorite.Red, Appearance.BorderFavorite.Green, Appearance.BorderFavorite.Blue, Appearance.BorderFavorite.Alpha);
 	}

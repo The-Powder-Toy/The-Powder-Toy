@@ -8,8 +8,6 @@ Element::Element():
 	MenuVisible(0),
 	MenuSection(0),
 	Enabled(0),
-	Unlocked(0),
-	UnlockPrice(20),
 
 	Advection(0.0f),
 	AirDrag(-0.0f * CFDS),

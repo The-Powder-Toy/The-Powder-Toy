@@ -18,8 +18,6 @@
 #include "gui/interface/Keys.h"
 #include "gui/dialogues/ErrorMessage.h"
 
-#include "gui/coin/Promote.h"
-
 class PreviewView::LoginAction: public ui::ButtonAction
 {
 	PreviewView * v;
@@ -67,7 +65,7 @@ public:
 	}
 };
 
-PreviewView::PreviewView(int saveID):
+PreviewView::PreviewView():
 	ui::Window(ui::Point(-1, -1), ui::Point((XRES/2)+210, (YRES/2)+150)),
 	savePreview(NULL),
 	submitCommentButton(NULL),
@@ -129,22 +127,6 @@ PreviewView::PreviewView(int saveID):
 	reportButton->SetActionCallback(new ReportAction(this));
 	reportButton->Enabled = Client::Ref().GetAuthUser().UserID?true:false;
 	AddComponent(reportButton);
-
-	class PromoteAction: public ui::ButtonAction
-	{
-		int saveID;
-	public:
-		PromoteAction(int saveID) { this->saveID = saveID; }
-		virtual void ActionCallback(ui::Button * sender)
-		{
-			new Promote(saveID);
-		}
-	};
-	promoteButton = new ui::Button(ui::Point(150, Size.Y - 19), ui::Point((XRES/2)-107 - 149, 19), "Promote");
-	promoteButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-	promoteButton->Enabled = Client::Ref().GetAuthUser().UserID ? true : false;
-	promoteButton->SetActionCallback(new PromoteAction(saveID));
-	AddComponent(promoteButton);
 
 	class OpenAction: public ui::ButtonAction
 	{

@@ -8,7 +8,6 @@ Element_SLTW::Element_SLTW()
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;
 	Enabled = 1;
-	Unlocked = 1;
 
 	Advection = 0.6f;
 	AirDrag = 0.01f * CFDS;

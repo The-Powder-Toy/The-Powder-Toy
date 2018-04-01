@@ -68,16 +68,10 @@ ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, ConfirmDial
 	MakeActiveWindow();
 }
 
-ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, std::string buttonText, ConfirmDialogueCallback * callback_, bool large):
+ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, std::string buttonText, ConfirmDialogueCallback * callback_):
 	ui::Window(ui::Point(-1, -1), ui::Point(250, 50)),
 	callback(callback_)
 {
-	if (large) //Maybe also use this large mode for changelogs eventually, or have it as a customizable size?
-	{
-		Size.X += 200;
-		Size.Y += 215;
-	}
-
 	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 15), title);
 	titleLabel->SetTextColour(style::Colour::WarningTitle);
 	titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
@@ -96,13 +90,10 @@ ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, std::string
 
 	messagePanel->InnerSize = ui::Point(messagePanel->Size.X, messageLabel->Size.Y+4);
 
-	if (!large)
-	{
-		if (messageLabel->Size.Y < messagePanel->Size.Y)
-			messagePanel->Size.Y = messageLabel->Size.Y+4;
-		Size.Y += messagePanel->Size.Y+12;
-		Position.Y = (ui::Engine::Ref().GetHeight()-Size.Y)/2;
-	}
+	if (messageLabel->Size.Y < messagePanel->Size.Y)
+		messagePanel->Size.Y = messageLabel->Size.Y+4;
+	Size.Y += messagePanel->Size.Y+12;
+	Position.Y = (ui::Engine::Ref().GetHeight()-Size.Y)/2;
 
 	class CloseAction: public ui::ButtonAction
 	{
@@ -139,7 +130,7 @@ ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, std::string
 	MakeActiveWindow();
 }
 
-bool ConfirmPrompt::Blocking(std::string title, std::string message, std::string buttonText, bool large)
+bool ConfirmPrompt::Blocking(std::string title, std::string message, std::string buttonText)
 {
 	class BlockingPromptCallback: public ConfirmDialogueCallback {
 	public:
@@ -155,7 +146,7 @@ bool ConfirmPrompt::Blocking(std::string title, std::string message, std::string
 		virtual ~BlockingPromptCallback() { }
 	};
 	bool result;
-	new ConfirmPrompt(title, message, buttonText, new BlockingPromptCallback(result), large);
+	new ConfirmPrompt(title, message, buttonText, new BlockingPromptCallback(result));
 	EngineProcess();
 	return result;
 }

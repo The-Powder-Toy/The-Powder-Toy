@@ -385,7 +385,6 @@ int main(int argc, char *argv[])
 #endif
 
 		sdl_blit(0, 0, XRES, YRES, vid_buf, XRES*4);
-		SDL_Delay(1);
 	}
 
 	f = fopen("font.bin", "wb");

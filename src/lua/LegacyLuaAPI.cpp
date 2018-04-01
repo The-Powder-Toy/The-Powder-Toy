@@ -21,11 +21,6 @@
 #include "simulation/Simulation.h"
 
 
-bool CheckUnlockedLegacy(int ID)
-{
-	return ID >= 0 && ID < PT_NUM && luacon_sim->elements[ID].Unlocked;
-}
-
 #ifndef FFI
 int luacon_partread(lua_State* l)
 {
@@ -87,12 +82,7 @@ int luacon_partwrite(lua_State* l)
 		*((float*)(((unsigned char*)&luacon_sim->parts[i])+offset)) = luaL_optnumber(l, 3, 0);
 		break;
 	case CommandInterface::FormatElement:
-	{
-		int type = luaL_optinteger(l, 3, 0);
-		if (!CheckUnlockedLegacy(type))
-			return luaL_error(l, "Invalid element id '%d'", type);
-		luacon_sim->part_change_type(i, luacon_sim->parts[i].x, luacon_sim->parts[i].y, type);
-	}
+		luacon_sim->part_change_type(i, luacon_sim->parts[i].x, luacon_sim->parts[i].y, luaL_optinteger(l, 3, 0));
 	default:
 		break;
 	}
@@ -873,8 +863,6 @@ int luatpt_create(lua_State* l)
 			if ((t = luacon_sim->GetParticleType(std::string(name))) == -1)
 				return luaL_error(l,"Unrecognised element '%s'", name);
 		}
-		if (!CheckUnlockedLegacy(t))
-			return luaL_error(l, "Invalid element id '%d'", t);
 		retid = luacon_sim->create_part(-1, x, y, t);
 		// failing to create a particle often happens (e.g. if space is already occupied) and isn't usually important, so don't raise an error
 		lua_pushinteger(l, retid);
@@ -1139,11 +1127,7 @@ int luatpt_set_property(lua_State* l)
 				if (nx >= x && nx < x+w && ny >= y && ny < y+h && (!partsel || partsel == parts[i].type))
 				{
 					if (format == CommandInterface::FormatElement)
-					{
-						if (!CheckUnlockedLegacy(t))
-							return luaL_error(l, "Invalid element id '%d'", t);
 						luacon_sim->part_change_type(i, nx, ny, t);
-					}
 					else if(format == CommandInterface::FormatFloat)
 						*((float*)(((unsigned char*)&luacon_sim->parts[i])+offset)) = f;
 					else
@@ -1176,11 +1160,7 @@ int luatpt_set_property(lua_State* l)
 			return 0;
 
 		if (format == CommandInterface::FormatElement)
-		{
-			if (!CheckUnlockedLegacy(t))
-				return luaL_error(l, "Invalid element id '%d'", t);
 			luacon_sim->part_change_type(i, luacon_sim->parts[i].x, luacon_sim->parts[i].y, t);
-		}
 		else if (format == CommandInterface::FormatFloat)
 			*((float*)(((unsigned char*)&luacon_sim->parts[i])+offset)) = f;
 		else

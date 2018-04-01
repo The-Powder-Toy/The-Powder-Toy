@@ -15,15 +15,15 @@
 #include "gui/search/Thumbnail.h"
 #include "simulation/SaveRenderer.h"
 #include "simulation/SimulationData.h"
-#include "gui/dialogues/ConfirmPrompt.h"
-#include "gui/dialogues/ErrorMessage.h"
 #include "gui/dialogues/InformationMessage.h"
+#include "gui/dialogues/ConfirmPrompt.h"
 #include "client/SaveFile.h"
 #include "Format.h"
 #include "QuickOptions.h"
 #include "IntroText.h"
 #include "DecorationTool.h"
 #include "Favorite.h"
+
 
 class SplitButton;
 class SplitButtonAction
@@ -333,28 +333,12 @@ GameView::GameView():
 			v->c->OpenTags();
 		}
 	};
-	tagSimulationButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(209, 15), "[no tags set]", "Add simulation tags");
+	tagSimulationButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(227, 15), "[no tags set]", "Add simulation tags");
 	tagSimulationButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	tagSimulationButton->SetIcon(IconTag);
 	//currentX+=252;
 	tagSimulationButton->SetActionCallback(new TagSimulationAction(this));
 	AddComponent(tagSimulationButton);
-
-	class CoinAction : public ui::ButtonAction
-	{
-		GameView * v;
-	public:
-		CoinAction(GameView * _v) { v = _v; }
-		void ActionCallback(ui::Button * sender)
-		{
-			v->c->OpenCoin();
-		}
-	};
-	ui::Button *coinButton = new ui::Button(ui::Point(Size.X-177, Size.Y-16), ui::Point(17, 15), "", "Open thing");
-	coinButton->SetIcon(IconCoin);
-	coinButton->Appearance.Margin.Left += 2;
-	coinButton->SetActionCallback(new CoinAction(this));
-	AddComponent(coinButton);
 
 	class ClearSimAction : public ui::ButtonAction
 	{
@@ -557,29 +541,6 @@ public:
 	ToolAction(GameView * _v, Tool * tool_) { v = _v; tool = tool_; }
 	void ActionCallback(ui::Button * sender_)
 	{
-		if (!tool->unlocked)
-		{
-			int numCoins = Client::Ref().GetCoins();
-			std::string unlockPrice = format::NumberToString<int>(tool->unlockPrice);
-			if (numCoins < tool->unlockPrice)
-			{
-				new ErrorMessage("This element is locked", "This element is locked and requires " + unlockPrice
-								 + " \xEA""owdercoins to purchase.\n\nYou have " + format::NumberToString<int>(numCoins) + " coins");
-			}
-			else
-			{
-				bool buy = ConfirmPrompt::Blocking("This element is locked", "Buy this element for " + unlockPrice + " \xEA"
-											  "owdercoins? You will have " + format::NumberToString<int>(numCoins - tool->unlockPrice) + " \xEA"
-											  "owdercoins after this transaction.\n\nFor more purchaseable items and sets, click the \xEA"
-											  "icon on the bottom bar.");
-				if (buy)
-				{
-					Client::Ref().AddCoins(-tool->unlockPrice);
-					v->c->UnlockElement(tool->GetToolID());
-				}
-			}
-			return;
-		}
 		ToolButton *sender = (ToolButton*)sender_;
 		if (v->ShiftBehaviour() && v->CtrlBehaviour() && !v->AltBehaviour())
 		{
@@ -833,7 +794,6 @@ void GameView::NotifyToolListChanged(GameModel * sender)
 
 		tempButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 		tempButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-		tempButton->SetUnlocked(toolList[i]->unlocked);
 		AddComponent(tempButton);
 		toolButtons.push_back(tempButton);
 	}
@@ -1175,8 +1135,6 @@ void GameView::updateToolButtonScroll()
 
 void GameView::OnMouseMove(int x, int y, int dx, int dy)
 {
-	lastActivity = GetTicks();
-
 	bool newMouseInZoom = c->MouseInZoom(ui::Point(x, y));
 	mousePosition = c->PointTranslate(ui::Point(x, y));
 	currentMouse = ui::Point(x, y);
@@ -1225,8 +1183,6 @@ void GameView::OnMouseMove(int x, int y, int dx, int dy)
 
 void GameView::OnMouseDown(int x, int y, unsigned button)
 {
-	lastActivity = GetTicks();
-
 	currentMouse = ui::Point(x, y);
 	if (altBehaviour && !shiftBehaviour && !ctrlBehaviour)
 		button = SDL_BUTTON_MIDDLE;
@@ -1429,8 +1385,6 @@ void GameView::BeginStampSelection()
 
 void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
 {
-	lastActivity = GetTicks();
-
 	if (introText > 50)
 	{
 		introText = 50;
@@ -1747,23 +1701,6 @@ void GameView::OnBlur()
 
 void GameView::OnTick(float dt)
 {
-	if (lastCoinEarned == 0)
-		lastCoinEarned = GetTicks() + 6000;
-	int timeDiff = GetTicks() - lastCoinEarned;
-	if (timeDiff > 12000)
-		lastCoinEarned = GetTicks() + 6000;
-	else if (timeDiff > 6000)
-	{
-		if (lastActivity > lastCoinEarned)
-		{
-			Client::Ref().AddCoins(1);
-			std::cout << "earned coin" << std::endl;
-		}
-		else
-			std::cout << "no coin due to inactivity" << std::endl;
-		lastCoinEarned = GetTicks();
-	}
-
 	if (selectMode == PlaceSave && !placeSaveThumb)
 		selectMode = SelectNone;
 	if (zoomEnabled && !zoomCursorFixed)

@@ -8,7 +8,6 @@ Element_PCLN::Element_PCLN()
 	MenuVisible = 1;
 	MenuSection = SC_POWERED;
 	Enabled = 1;
-	Unlocked = 1;
 
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;

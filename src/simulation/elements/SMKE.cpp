@@ -8,7 +8,6 @@ Element_SMKE::Element_SMKE()
 	MenuVisible = 1;
 	MenuSection = SC_GAS;
 	Enabled = 1;
-	Unlocked = 1;
 
 	Advection = 0.9f;
 	AirDrag = 0.04f * CFDS;
