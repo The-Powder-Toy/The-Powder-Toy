@@ -2313,7 +2313,7 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 				{
 					RESTRICTVERSION(92, 0);
 				}
-				else if (particles[i].type == PT_PIPE || particles[i].type == PT_PPIP)
+				/*else if (particles[i].type == PT_PIPE || particles[i].type == PT_PPIP)
 				{
 					RESTRICTVERSION(93, 0);
 				}
@@ -2324,7 +2324,7 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 					{
 						RESTRICTVERSION(93, 0);
 					}
-				}
+				}*/
 				if (PMAPBITS > 8)
 				{
 					if (TypeInCtype(particles[i].type, particles[i].ctype) && particles[i].ctype > 0xFF)
