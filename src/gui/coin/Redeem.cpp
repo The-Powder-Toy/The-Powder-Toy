@@ -48,7 +48,7 @@ public:
 				for (Tool * tool : toolList)
 				{
 					int toolId = tool->GetToolID();
-					if (toolId > 0 && toolId < PT_NUM)
+					if (toolId >= 0 && toolId < PT_NUM)
 						sim->elements[toolId].Unlocked = true;
 				}
 			}

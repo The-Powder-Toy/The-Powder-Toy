@@ -8,6 +8,7 @@ Element_NONE::Element_NONE()
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;
 	Enabled = 1;
+	UnlockPrice = 5000;
 
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
