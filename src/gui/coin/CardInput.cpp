@@ -46,7 +46,7 @@ void CardInput::Next()
 void CardInput::AttemptPurchase()
 {
 	std::string error;
-	int num = 0;//rand()%100;
+	int num = rand()%100;
 	if (num < purchaseChance)
 	{
 		bool confirm = ConfirmPrompt::Blocking("Purchase \xEA""owdercoins?", "Clicking 'Confirm' will charge your card and add " +
