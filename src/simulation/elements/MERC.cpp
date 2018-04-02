@@ -49,6 +49,9 @@ int Element_MERC::update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry, trade, np;
 	const int absorbScale = 10000;// max number of particles that can be condensed into one
+	//Integer overflow prevention
+	if (parts[i].temp + 1 == 0)
+		parts[i].temp = 0;
 	int maxtmp = ((absorbScale/(parts[i].temp + 1))-1);
 	if ((absorbScale%((int)parts[i].temp+1))>rand()%((int)parts[i].temp+1))
 		maxtmp ++;
