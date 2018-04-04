@@ -10,13 +10,13 @@ struct StructProperty
 	std::string Name;
 	PropertyType Type;
 	intptr_t Offset;
-	
+
 	StructProperty(std::string name, PropertyType type, intptr_t offset):
 	Name(name),
 	Type(type),
 	Offset(offset)
 	{
-		
+
 	}
 
 	StructProperty():
@@ -24,7 +24,7 @@ struct StructProperty
 	Type(Char),
 	Offset(0)
 	{
-		
+
 	}
 };
 

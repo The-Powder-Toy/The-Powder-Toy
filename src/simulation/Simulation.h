@@ -180,7 +180,7 @@ public:
 	int ToolBrush(int x, int y, int tool, Brush * cBrush, float strength = 1.0f);
 	void ToolLine(int x1, int y1, int x2, int y2, int tool, Brush * cBrush, float strength = 1.0f);
 	void ToolBox(int x1, int y1, int x2, int y2, int tool, float strength = 1.0f);
-	
+
 	//Drawing Walls
 	int CreateWalls(int x, int y, int rx, int ry, int wall, Brush * cBrush = NULL);
 	void CreateWallLine(int x1, int y1, int x2, int y2, int rx, int ry, int wall, Brush * cBrush = NULL);
@@ -196,7 +196,7 @@ public:
 	void CreateBox(int x1, int y1, int x2, int y2, int c, int flags = -1);
 	int FloodParts(int x, int y, int c, int cm, int flags = -1);
 
-	
+
 	void GetGravityField(int x, int y, float particleGrav, float newtonGrav, float & pGravX, float & pGravY);
 
 	int GetParticleType(std::string type);

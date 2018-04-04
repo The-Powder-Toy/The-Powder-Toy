@@ -116,7 +116,7 @@ int Element_PIPE::update(UPDATE_FUNC_ARGS)
 					}
 				}
 		}
-	
+
 		if (parts[i].tmp & PPIP_TMPFLAG_TRIGGER_REVERSE)
 		{
 			parts[i].tmp ^= PPIP_TMPFLAG_REVERSED;
@@ -132,7 +132,7 @@ int Element_PIPE::update(UPDATE_FUNC_ARGS)
 				parts[i].tmp |= coords2<<13;
 			}
 		}
-		
+
 		parts[i].tmp &= ~PPIP_TMPFLAG_TRIGGERS;
 	}
 	if ((parts[i].tmp&PFLAG_COLORS) && !(parts[i].tmp & PPIP_TMPFLAG_PAUSED))
@@ -412,7 +412,7 @@ void Element_PIPE::transfer_pipe_to_pipe(Particle *src, Particle *dest, bool STO
 	}
 	else
 	{
-		dest->ctype = src->ctype;	
+		dest->ctype = src->ctype;
 		src->ctype = 0;
 	}
 	dest->temp = src->temp;
@@ -431,7 +431,7 @@ void Element_PIPE::pushParticle(Simulation * sim, int i, int count, int original
 	x = (int)(sim->parts[i].x+0.5f);
 	y = (int)(sim->parts[i].y+0.5f);
 	if( !(sim->parts[i].tmp&0x200) )
-	{ 
+	{
 		//normal random push
 		rndstore = rand();
 		// RAND_MAX is at least 32767 on all platforms i.e. pow(8,5)-1
@@ -510,7 +510,7 @@ void Element_PIPE::pushParticle(Simulation * sim, int i, int count, int original
 				transfer_pipe_to_part(sim, sim->parts+i, sim->parts+np);
 			}
 		}
-		
+
 	}
 	return;
 }

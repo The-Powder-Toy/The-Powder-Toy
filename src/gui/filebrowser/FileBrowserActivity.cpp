@@ -39,7 +39,7 @@ public:
 	}
 };
 
-//Currently, reading is done on another thread, we can't render outside the main thread due to some bullshit with OpenGL 
+//Currently, reading is done on another thread, we can't render outside the main thread due to some bullshit with OpenGL
 class LoadFilesTask: public Task
 {
 	std::string directory;

@@ -52,7 +52,7 @@ struct Element_PSTN::StackData
 {
 	int pushed;
 	int spaces;
-	
+
 	StackData(int pushed, int spaces):
 		pushed(pushed),
 		spaces(spaces)

@@ -10,7 +10,7 @@
 // March 9, 2002: Kaiser filter grabbed from Jonathan Blow's GD magazine mipmap sample code.
 // Sept. 8, 2002: Comments cleaned up a bit.
 // Dec. 31, 2008: v2.2: Bit more cleanup, released as public domain.
-// June 4, 2012: v2.21: Switched to unlicense.org, integrated GCC fixes supplied by Peter Nagy <petern@crytek.com>, Anteru at anteru.net, and clay@coge.net, 
+// June 4, 2012: v2.21: Switched to unlicense.org, integrated GCC fixes supplied by Peter Nagy <petern@crytek.com>, Anteru at anteru.net, and clay@coge.net,
 // added Codeblocks project (for testing with MinGW and GCC), VS2008 static code analysis pass.
 #include <cstdlib>
 #include <cmath>

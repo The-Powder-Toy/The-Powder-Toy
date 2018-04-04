@@ -58,7 +58,7 @@ int Element_BRCK::graphics(GRAPHICS_FUNC_ARGS)
 		*fireg = *colg;
 		*fireb = *colb;
 	}
-	return 0;  
+	return 0;
 }
 
 Element_BRCK::~Element_BRCK() {}

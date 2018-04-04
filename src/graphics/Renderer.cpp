@@ -569,7 +569,7 @@ VideoBuffer * Renderer::WallIcon(int wallID, int width, int height)
 			for (i=0; i<(width/4)+j; i++)
 			{
 				if (!(i&j&1))
-					newTexture->SetPixel(i, j, PIXR(pc), PIXG(pc), PIXB(pc), 255);	
+					newTexture->SetPixel(i, j, PIXR(pc), PIXG(pc), PIXB(pc), 255);
 			}
 			for (; i<width; i++)
 			{
@@ -601,7 +601,7 @@ VideoBuffer * Renderer::WallIcon(int wallID, int width, int height)
 			for (; i<width; i++)
 			{
 				if (!(i&j&1))
-					newTexture->SetPixel(i, j, PIXR(pc), PIXG(pc), PIXB(pc), 255);	
+					newTexture->SetPixel(i, j, PIXR(pc), PIXG(pc), PIXB(pc), 255);
 			}
 		}
 	}
@@ -994,7 +994,7 @@ void Renderer::DrawSigns()
 				drawtext(x+3, y+3, text, 211, 211, 40, 255);
 			else
 				drawtext(x+3, y+3, text, 0, 191, 255, 255);
-				
+
 			if (signs[i].ju != sign::None)
 			{
 				int x = signs[i].x;
@@ -2537,7 +2537,7 @@ pixel Renderer::GetPixel(int x, int y)
 	if (x<0 || y<0 || x>=VIDXRES || y>=VIDYRES)
 		return 0;
 #ifdef OGLR
-	return 0;	
+	return 0;
 #else
 	return vid[(y*VIDXRES)+x];
 #endif
@@ -2794,12 +2794,12 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 	glEnable(GL_TEXTURE_2D);
 	glGenTextures(1, &textTexture);
 	glBindTexture(GL_TEXTURE_2D, textTexture);
-	
+
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	
+
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_TEXTURE_2D);
 
@@ -2935,7 +2935,7 @@ unsigned int Renderer::GetColourMode()
 VideoBuffer Renderer::DumpFrame()
 {
 #ifdef OGLR
-#elif defined(OGLI) 
+#elif defined(OGLI)
 	VideoBuffer newBuffer(XRES, YRES);
 	std::copy(vid, vid+(XRES*YRES), newBuffer.Buffer);
 	return newBuffer;

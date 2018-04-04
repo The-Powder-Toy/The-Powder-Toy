@@ -120,7 +120,7 @@ void TagsView::NotifyTagsChanged(TagsModel * sender)
 				tempButton->Appearance.icon = IconDelete;
 				tempButton->Appearance.Border = ui::Border(0);
 				tempButton->Appearance.Margin.Top += 2;
-				tempButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;	
+				tempButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 				tempButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 				tempButton->SetActionCallback(new DeleteTagAction(this, *iter));
 				tags.push_back(tempButton);

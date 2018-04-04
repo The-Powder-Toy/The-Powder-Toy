@@ -210,7 +210,7 @@ int Element_LIGH::update(UPDATE_FUNC_ARGS)
 	//if (parts[i].tmp2==1/* || near!=-1*/)
 	//angle=0;//parts[i].tmp-30+rand()%60;
 	angle = (parts[i].tmp-30+rand()%60)%360;
-	multipler=parts[i].life*1.5+rand()%((int)(parts[i].life+1));	
+	multipler=parts[i].life*1.5+rand()%((int)(parts[i].life+1));
 	rx=cos(angle*M_PI/180)*multipler;
 	ry=-sin(angle*M_PI/180)*multipler;
 	create_line_par(sim, x, y, x+rx, y+ry, PT_LIGH, parts[i].temp, parts[i].life, angle, parts[i].tmp2);

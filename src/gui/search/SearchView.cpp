@@ -125,7 +125,7 @@ SearchView::SearchView():
 	favButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	favButton->Appearance.BorderInactive = ui::Colour(170,170,170);
 	AddComponent(favButton);
-	
+
 	class ClearSearchAction : public ui::ButtonAction
 	{
 		SearchView * v;
@@ -425,7 +425,7 @@ void SearchView::CheckAccess()
 		if(favButton->GetToggleState())
 			favButton->DoAction();
 	}
-	
+
 	if (Client::Ref().GetAuthUser().UserID)
 	{
 		ownButton->Enabled = true;
@@ -525,7 +525,7 @@ void SearchView::NotifyTagListChanged(SearchModel * sender)
 			int maxTagVotes = tags[0].second;
 
 			pair<string, int> tag = tags[i];
-			
+
 			if (tagX == tagsX)
 			{
 				if(tagY == tagsY-1)

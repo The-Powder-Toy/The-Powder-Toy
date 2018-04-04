@@ -140,7 +140,7 @@ ServerSaveActivity::ServerSaveActivity(SaveInfo save, ServerSaveActivity::SaveUp
 	if(Client::Ref().GetAuthUser().Username != save.GetUserName())
 	{
 		//Save is not owned by the user, disable by default
-		publishedCheckbox->SetChecked(false);	
+		publishedCheckbox->SetChecked(false);
 	}
 	else
 	{

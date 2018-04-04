@@ -66,17 +66,17 @@ int Element_BIZR::update(UPDATE_FUNC_ARGS)
 						tg = (parts[ID(r)].dcolour>>8)&0xFF;
 						tb = (parts[ID(r)].dcolour)&0xFF;
 						ta = (parts[ID(r)].dcolour>>24)&0xFF;
-						
+
 						mr = (parts[i].dcolour>>16)&0xFF;
 						mg = (parts[i].dcolour>>8)&0xFF;
 						mb = (parts[i].dcolour)&0xFF;
 						ma = (parts[i].dcolour>>24)&0xFF;
-						
+
 						nr = (tr*BLEND) + (mr*(1 - BLEND));
 						ng = (tg*BLEND) + (mg*(1 - BLEND));
 						nb = (tb*BLEND) + (mb*(1 - BLEND));
 						na = (ta*BLEND) + (ma*(1 - BLEND));
-						
+
 						parts[ID(r)].dcolour = nr<<16 | ng<<8 | nb | na<<24;
 					}
 				}

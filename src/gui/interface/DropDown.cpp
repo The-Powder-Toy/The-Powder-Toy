@@ -119,7 +119,7 @@ void DropDown::Draw(const Point& screenPos)
 	if(optionIndex!=-1)
 		g->drawtext(Position.X+textPosition.X, Position.Y+textPosition.Y, options[optionIndex].first, textColour.Red, textColour.Green, textColour.Blue, textColour.Alpha);
 }
-	
+
 void DropDown::OnMouseEnter(int x, int y)
 {
 	isMouseInside = true;
@@ -137,7 +137,7 @@ void DropDown::OnMouseLeave(int x, int y)
 		}
 		return std::pair<std::string, int>("", -1);
 	}
-	
+
 	void DropDown::SetOption(std::string option)
 	{
 		for (size_t i = 0; i < options.size(); i++)

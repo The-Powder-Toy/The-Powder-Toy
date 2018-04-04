@@ -86,9 +86,9 @@ void Task::Poll()
 
 			pthread_join(doWorkThread, NULL);
 			pthread_mutex_destroy(&taskMutex);
-			
+
 			after();
-			
+
 			notifyDoneMain();
 		}
 	}

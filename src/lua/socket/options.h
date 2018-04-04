@@ -1,11 +1,11 @@
 #ifndef OPTIONS_H
 #define OPTIONS_H
 /*=========================================================================*\
-* Common option interface 
+* Common option interface
 * LuaSocket toolkit
 *
 * This module provides a common interface to socket options, used mainly by
-* modules UDP and TCP. 
+* modules UDP and TCP.
 *
 * RCS ID: $Id: options.h,v 1.4 2005/10/07 04:40:59 diego Exp $
 \*=========================================================================*/

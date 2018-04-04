@@ -76,14 +76,14 @@ RequestBroker::ProcessResponse ImageRequest::Process(RequestBroker & rb)
 				{
 #ifdef DEBUG
 					std::cout << typeid(*this).name() << " Request for " << URL << " failed with status " << status << std::endl;
-#endif	
+#endif
 					free(data);
 
 					return RequestBroker::Failed;
 				}
 			}
 		}
-		else 
+		else
 		{
 			//Check for ongoing requests
 			for(std::vector<Request*>::iterator iter = rb.activeRequests.begin(), end = rb.activeRequests.end(); iter != end; ++iter)
@@ -110,7 +110,7 @@ RequestBroker::ProcessResponse ImageRequest::Process(RequestBroker & rb)
 			RequestTime = time(NULL);
 		}
 	}
-	
+
 	if(image)
 	{
 

@@ -49,7 +49,7 @@ void timeout_init(p_timeout tm, double block, double total) {
 
 /*-------------------------------------------------------------------------*\
 * Determines how much time we have left for the next system call,
-* if the previous call was successful 
+* if the previous call was successful
 * Input
 *   tm: timeout control structure
 * Returns
@@ -104,7 +104,7 @@ double timeout_getretry(p_timeout tm) {
 }
 
 /*-------------------------------------------------------------------------*\
-* Marks the operation start time in structure 
+* Marks the operation start time in structure
 * Input
 *   tm: timeout control structure
 \*-------------------------------------------------------------------------*/
@@ -114,7 +114,7 @@ p_timeout timeout_markstart(p_timeout tm) {
 }
 
 /*-------------------------------------------------------------------------*\
-* Gets time in s, relative to January 1, 1970 (UTC) 
+* Gets time in s, relative to January 1, 1970 (UTC)
 * Returns
 *   time in s.
 \*-------------------------------------------------------------------------*/
@@ -156,7 +156,7 @@ int timeout_meth_settimeout(lua_State *L, p_timeout tm) {
     const char *mode = luaL_optstring(L, 3, "b");
     switch (*mode) {
         case 'b':
-            tm->block = t; 
+            tm->block = t;
             break;
         case 'r': case 't':
             tm->total = t;

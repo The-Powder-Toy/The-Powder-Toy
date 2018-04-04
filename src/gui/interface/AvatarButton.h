@@ -39,7 +39,7 @@ public:
 	virtual void Tick(float dt);
 
 	virtual void OnResponseReady(void * imagePtr, int identifier);
-	
+
 	virtual void DoAction();
 
 	void SetUsername(std::string username) { name = username; }

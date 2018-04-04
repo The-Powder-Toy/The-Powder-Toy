@@ -84,7 +84,7 @@ int Element_COAL::graphics(GRAPHICS_FUNC_ARGS)
 		*colr = 170;
 	if (*colr < *colg)
 		*colr = *colg;
-		
+
 	*colg = *colb = *colr;
 
 	// ((cpart->temp-295.15f) > 300.0f-200.0f)

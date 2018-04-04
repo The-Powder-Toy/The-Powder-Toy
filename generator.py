@@ -24,7 +24,7 @@ def generateElements(elementFiles, outputCpp, outputH):
 			f = open(elementFile, "r")
 		except:
 			f = open("src/simulation/elements/"+elementFile, "r")
-            
+
 		fileData = f.read()
 		f.close()
 
@@ -144,7 +144,7 @@ std::vector<Element> GetElements()
 
 def generateTools(toolFiles, outputCpp, outputH):
 	toolClasses = {}
-	
+
 	toolHeader = """#ifndef TOOLCLASSES_H
 #define TOOLCLASSES_H
 
@@ -153,7 +153,7 @@ def generateTools(toolFiles, outputCpp, outputH):
 #include "simulation/simtools/SimTool.h"
 
 """
-	
+
 	directives = []
 
 	for toolFile in toolFiles:
@@ -163,14 +163,14 @@ def generateTools(toolFiles, outputCpp, outputH):
 			f = open("src/simulation/simtools/"+toolFile, "r")
 		fileData = f.read()
 		f.close()
-		
+
 		directiveMatcher = '//#TPT-Directive\s+([^\r\n]+)'
 		matcher = re.compile(directiveMatcher)
 		directiveMatches = matcher.findall(fileData)
-		
+
 		for match in directiveMatches:
 			directives.append(match.split(" "))
-	
+
 	classDirectives = []
 	usedIDs = []
 	for d in directives:
@@ -182,11 +182,11 @@ def generateTools(toolFiles, outputCpp, outputH):
 			if d[3] in usedIDs:
 				print("WARNING: duplicate tool ID {} ({})".format(d[3],d[2]))
 			usedIDs.append(d[3])
-	
+
 	for d in directives:
 		if d[0] == "ToolHeader":
 			toolClasses[d[1]].append(" ".join(d[2:])+";")
-	
+
 	for className, classMembers in list(toolClasses.items()):
 		toolHeader += """
 class {0}: public SimTool
@@ -197,24 +197,24 @@ public:
 	virtual int Perform(Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength);
 }};
 """.format(className, str.join("\n", classMembers))
-	
+
 	toolHeader += """
 std::vector<SimTool*> GetTools();
 
 #endif
 """
-	
+
 	toolContent = """#include "ToolClasses.h"
 std::vector<SimTool*> GetTools()
 {
 	std::vector<SimTool*> tools;
 """;
-	
+
 	toolIDs = sorted(classDirectives, key=lambda directive: directive[3])
 	for d in toolIDs:
 		toolContent += """	tools.push_back(new %s());
 """ % (d[1])
-	
+
 	toolContent += """	return tools;
 }
 """;
@@ -226,7 +226,7 @@ std::vector<SimTool*> GetTools()
 	f = open(outputH, "w")
 	f.write(toolHeader)
 	f.close()
-	
+
 	f = open(outputCpp, "w")
 	f.write(toolContent)
 	f.close()

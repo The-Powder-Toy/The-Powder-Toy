@@ -63,7 +63,7 @@ class PreviewView: public ui::Window {
 	float commentBoxSizeX;
 	float commentBoxSizeY;
 	bool commentHelpText;
-	
+
 	std::set<std::string> swearWords;
 
 	void displayComments();

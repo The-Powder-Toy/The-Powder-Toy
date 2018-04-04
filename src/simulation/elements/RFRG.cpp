@@ -54,11 +54,11 @@ int Element_RFRG::update(UPDATE_FUNC_ARGS)
 		*old_pressure = new_pressure;
 		return 0;
 	}
-	
+
 	// * 0 bar seems to be pressure value -256 in TPT, see Air.cpp. Also, 1 bar seems to be pressure value 0.
 	//   With those two values we can set up our pressure scale which states that ... the highest pressure
 	//   we can achieve in TPT is 2 bar. That's not particularly realistic, but good enough for TPT.
-	
+
 	parts[i].temp = restrict_flt(parts[i].temp * ((new_pressure + 257.f) / (*old_pressure + 257.f)), 0, MAX_TEMP);
 	*old_pressure = new_pressure;
 	return 0;

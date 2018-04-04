@@ -43,7 +43,7 @@ public:
       STATUS_BAD_FILTER_NAME = 2,
       STATUS_SCAN_BUFFER_FULL = 3
    };
-   
+
    // src_x/src_y - Input dimensions
    // dst_x/dst_y - Output dimensions
    // boundary_op - How to sample pixels near the image boundaries
@@ -54,13 +54,13 @@ public:
       int src_x, int src_y,
       int dst_x, int dst_y,
       Boundary_Op boundary_op = BOUNDARY_CLAMP,
-      Resample_Real sample_low = 0.0f, Resample_Real sample_high = 0.0f,		
+      Resample_Real sample_low = 0.0f, Resample_Real sample_high = 0.0f,
       const char* Pfilter_name = RESAMPLER_DEFAULT_FILTER,
       Contrib_List* Pclist_x = NULL,
       Contrib_List* Pclist_y = NULL,
       Resample_Real filter_x_scale = 1.0f,
       Resample_Real filter_y_scale = 1.0f,
-      Resample_Real src_x_ofs = 0.0f, 
+      Resample_Real src_x_ofs = 0.0f,
       Resample_Real src_y_ofs = 0.0f);
 
    ~Resampler();
@@ -76,7 +76,7 @@ public:
 
    Status status() const { return m_status; }
 
-   // Returned contributor lists can be shared with another Resampler. 
+   // Returned contributor lists can be shared with another Resampler.
    void get_clists(Contrib_List** ptr_clist_x, Contrib_List** ptr_clist_y);
    Contrib_List* get_clist_x() const {	return m_Pclist_x; }
    Contrib_List* get_clist_y() const {	return m_Pclist_y; }
@@ -84,7 +84,7 @@ public:
    // Filter accessors.
    static int get_filter_num();
    static char* get_filter_name(int filter_num);
-   
+
 private:
    Resampler();
    Resampler(const Resampler& o);
@@ -119,7 +119,7 @@ private:
 
    // The maximum number of scanlines that can be buffered at one time.
    enum { MAX_SCAN_BUF_SIZE = RESAMPLER_MAX_DIMENSION };
-   
+
    struct Scan_Buf
    {
       int scan_buf_y[MAX_SCAN_BUF_SIZE];
@@ -166,7 +166,7 @@ private:
       else if (f > m_hi)
          f = m_hi;
       return f;
-   }   
+   }
 };
 
 #endif // __RESAMPLER_H__
@@ -177,7 +177,7 @@ private:
 // distribute this software, either in source code form or as a compiled
 // binary, for any purpose, commercial or non-commercial, and by any
 // means.
-// 
+//
 // In jurisdictions that recognize copyright laws, the author or authors
 // of this software dedicate any and all copyright interest in the
 // software to the public domain. We make this dedication for the benefit
@@ -185,7 +185,7 @@ private:
 // successors. We intend this dedication to be an overt act of
 // relinquishment in perpetuity of all present and future rights to this
 // software under copyright law.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -193,5 +193,5 @@ private:
 // OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 // ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 // OTHER DEALINGS IN THE SOFTWARE.
-// 
+//
 // For more information, please refer to <http://unlicense.org/>

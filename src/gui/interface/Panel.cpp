@@ -110,7 +110,7 @@ void Panel::Draw(const Point& screenPos)
 	ui::Engine::Ref().g->vid = myVid;
 	std::fill(myVid, myVid+(WINDOWW*WINDOWH), 0);
 #endif
-	
+
 	// attempt to draw all children
 	for (size_t i = 0; i < children.size(); ++i)
 	{
@@ -169,7 +169,7 @@ void Panel::Tick(float dt)
 {
 	// tick ourself first
 	XTick(dt);
-	
+
 	// tick our children
 	for(unsigned i = 0; i < children.size(); ++i)
 		children[i]->Tick(dt);
@@ -188,7 +188,7 @@ void Panel::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool 
 void Panel::OnMouseClick(int localx, int localy, unsigned button)
 {
 	bool childclicked = false;
-	
+
 	//check if clicked a child
 	for(int i = children.size()-1; i >= 0 ; --i)
 	{
@@ -208,7 +208,7 @@ void Panel::OnMouseClick(int localx, int localy, unsigned button)
 			}
 		}
 	}
-	
+
 	//if a child wasn't clicked, send click to ourself
 	if(!childclicked)
 	{
@@ -244,7 +244,7 @@ void Panel::OnMouseHover(int localx, int localy)
 			}
 		}
 	}
-	
+
 	// always allow hover on parent (?)
 	XOnMouseHover(localx, localy);
 }
@@ -268,7 +268,7 @@ void Panel::OnMouseMovedInside(int localx, int localy, int dx, int dy)
 		{
 			Point local	(localx - children[i]->Position.X - ViewportPosition.X, localy - children[i]->Position.Y - ViewportPosition.Y)
 			, prevlocal (local.X - dx, local.Y - dy);
-			
+
 			// mouse currently inside?
 			if( local.X >= 0 &&
 				local.Y >= 0 &&
@@ -276,7 +276,7 @@ void Panel::OnMouseMovedInside(int localx, int localy, int dx, int dy)
 				local.Y < children[i]->Size.Y )
 			{
 				children[i]->OnMouseMovedInside(localx - children[i]->Position.X - ViewportPosition.X, localy - children[i]->Position.Y - ViewportPosition.Y, dx, dy);
-				
+
 				// was the mouse outside?
 				if(!(prevlocal.X >= 0 &&
 					 prevlocal.Y >= 0 &&
@@ -297,11 +297,11 @@ void Panel::OnMouseMovedInside(int localx, int localy, int dx, int dy)
 				{
 					children[i]->OnMouseLeave(local.X, local.Y);
 				}
-				
+
 			}
 		}
 	}
-	
+
 	// always allow hover on parent (?)
 	XOnMouseMovedInside(localx, localy, dx, dy);
 }
@@ -321,7 +321,7 @@ void Panel::OnMouseLeave(int localx, int localy)
 void Panel::OnMouseUnclick(int localx, int localy, unsigned button)
 {
 	bool childunclicked = false;
-	
+
 	//check if clicked a child
 	for(int i = children.size()-1; i >= 0 ; --i)
 	{
@@ -340,7 +340,7 @@ void Panel::OnMouseUnclick(int localx, int localy, unsigned button)
 			}
 		}
 	}
-	
+
 	//if a child wasn't clicked, send click to ourself
 	if (!childunclicked)
 	{

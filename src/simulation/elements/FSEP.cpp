@@ -53,7 +53,7 @@ int Element_FSEP::update(UPDATE_FUNC_ARGS)
 		if (r!=-1)
 			parts[r].life = 50;
 		return 1;
-	} 
+	}
 	else if (parts[i].life < 40) {
 		parts[i].life--;
 		if (!(rand()%10)) {
@@ -72,7 +72,7 @@ int Element_FSEP::update(UPDATE_FUNC_ARGS)
 						continue;
 					if ((TYP(r)==PT_SPRK || (parts[i].temp>=(273.15+400.0f))) && parts[i].life>40 && !(rand()%15))
 					{
-						parts[i].life = 39;						
+						parts[i].life = 39;
 					}
 				}
 	}

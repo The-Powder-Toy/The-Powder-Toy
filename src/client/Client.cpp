@@ -110,7 +110,7 @@ Client::Client():
 		}
 		catch (std::exception &e)
 		{
-			
+
 		}
 		configFile.close();
 		firstRun = false;
@@ -191,19 +191,19 @@ bool Client::DoInstallation()
 	char *AppDataPath = NULL;
 	iconname = (char*)malloc(strlen(currentfilename)+6);
 	sprintf(iconname, "%s,-102", currentfilename);
-	
+
 	//Create Roaming application data folder
-	/*if(!SUCCEEDED(SHGetFolderPath(NULL, CSIDL_APPDATA|CSIDL_FLAG_CREATE, NULL, 0, AppDataPath))) 
+	/*if(!SUCCEEDED(SHGetFolderPath(NULL, CSIDL_APPDATA|CSIDL_FLAG_CREATE, NULL, 0, AppDataPath)))
 	{
 		returnval = 0;
 		goto finalise;
 	}*/
-	
+
 	AppDataPath = _getcwd(NULL, 0);
 
 	//Move Game executable into application data folder
 	//TODO: Implement
-	
+
 	opencommand = (char*)malloc(strlen(currentfilename)+53+strlen(AppDataPath));
 	protocolcommand = (char*)malloc(strlen(currentfilename)+53+strlen(AppDataPath));
 	/*if((strlen(AppDataPath)+strlen(APPDATA_SUBDIR "\\Powder Toy"))<MAX_PATH)
@@ -238,7 +238,7 @@ bool Client::DoInstallation()
 		goto finalise;
 	}
 	RegCloseKey(newkey);
-	
+
 	//Set Protocol DefaultIcon
 	rresult = RegCreateKeyEx(HKEY_CURRENT_USER, "Software\\Classes\\ptsave\\DefaultIcon", 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &newkey, NULL);
 	if (rresult != ERROR_SUCCESS) {
@@ -251,8 +251,8 @@ bool Client::DoInstallation()
 		returnval = 0;
 		goto finalise;
 	}
-	RegCloseKey(newkey);	
-	
+	RegCloseKey(newkey);
+
 	//Set Protocol Launch command
 	rresult = RegCreateKeyEx(HKEY_CURRENT_USER, "Software\\Classes\\ptsave\\shell\\open\\command", 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &newkey, NULL);
 	if (rresult != ERROR_SUCCESS) {
@@ -335,7 +335,7 @@ bool Client::DoInstallation()
 		goto finalise;
 	}
 	RegCloseKey(newkey);
-	
+
 	returnval = 1;
 	finalise:
 
@@ -343,7 +343,7 @@ bool Client::DoInstallation()
 	free(opencommand);
 	free(protocolcommand);
 	free(currentfilename);
-	
+
 	return returnval;
 #elif defined(LIN)
 	#include "icondoc.h"
@@ -449,7 +449,7 @@ bool Client::DoInstallation()
 	fclose(f);
 	success = system("xdg-icon-resource install --noupdate --context mimetypes --size 32 powdertoy-save-32.png application-vnd.powdertoy.save") && success;
 	success = system("xdg-icon-resource install --noupdate --context mimetypes --size 16 powdertoy-save-16.png application-vnd.powdertoy.save") && success;
-	success = system("xdg-icon-resource install --noupdate --novendor --size 48 powdertoy.png") && success;	
+	success = system("xdg-icon-resource install --noupdate --novendor --size 48 powdertoy.png") && success;
 	success = system("xdg-icon-resource forceupdate") && success;
 	success = system("xdg-mime default powdertoy-tpt-open.desktop application/vnd.powdertoy.save") && success;
 	success = system("xdg-mime default powdertoy-tpt-ptsave.desktop x-scheme-handler/ptsave") && success;
@@ -552,7 +552,7 @@ std::vector<std::string> Client::DirectorySearch(std::string directory, std::str
 		bool searchMatch = !search.size();
 		if(search.size() && tempfilename.find(search)!=std::string::npos)
 			searchMatch = true;
-		
+
 		if(searchMatch && extensionMatch)
 			searchResults.push_back(filename);
 	}
@@ -942,7 +942,7 @@ void Client::WritePrefs()
 {
 	std::ofstream configFile;
 	configFile.open("powder.pref", std::ios::trunc);
-	
+
 	if (configFile)
 	{
 		if (authUser.UserID)
@@ -1145,7 +1145,7 @@ std::string Client::AddStamp(GameSave * saveData)
 	std::string filename = std::string(STAMPS_DIR PATH_SEP + saveID.str()+".stm").c_str();
 
 	MakeDirectory(STAMPS_DIR);
-	
+
 	Json::Value stampInfo;
 	stampInfo["type"] = "stamp";
 	stampInfo["username"] = authUser.Username;
@@ -1499,7 +1499,7 @@ RequestStatus Client::AddComment(int saveID, std::string comment)
 	{
 		std::stringstream userIDStream;
 		userIDStream << authUser.UserID;
-		
+
 		const char *const postNames[] = { "Comment", NULL };
 		const char *const postDatas[] = { (char*)(comment.c_str()) };
 		size_t postLengths[] = { comment.length() };
@@ -1664,7 +1664,7 @@ SaveInfo * Client::GetSave(int saveID, int saveDate)
 			for (Json::UInt j = 0; j < tagsArray.size(); j++)
 				tempTags.push_back(tagsArray[j].asString());
 
-			SaveInfo * tempSave = new SaveInfo(tempID, tempCreatedDate, tempUpdatedDate, tempScoreUp, 
+			SaveInfo * tempSave = new SaveInfo(tempID, tempCreatedDate, tempUpdatedDate, tempScoreUp,
 			                                   tempScoreDown, tempMyScore, tempUsername, tempName,
 			                                   tempDescription, tempPublished, tempTags);
 			tempSave->Comments = tempComments;
@@ -1809,7 +1809,7 @@ std::vector<std::pair<std::string, int> > * Client::GetTags(int start, int count
 		if(query.length())
 			urlStream << format::URLEncode(query);
 	}
-	
+
 	data = http_simple_get((char *)urlStream.str().c_str(), &dataStatus, &dataLength);
 	if(dataStatus == 200 && data)
 	{
@@ -2026,7 +2026,7 @@ void Client::MergeStampAuthorInfo(Json::Value stampAuthors)
 				return;
 			if (authors["username"] != stampAuthors["username"])
 			{
-				// 2nd arg of MergeAuthorInfo needs to be an array 
+				// 2nd arg of MergeAuthorInfo needs to be an array
 				Json::Value toAdd;
 				toAdd.append(stampAuthors);
 				MergeAuthorInfo(toAdd);

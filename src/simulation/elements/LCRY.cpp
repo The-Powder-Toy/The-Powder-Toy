@@ -124,7 +124,7 @@ int Element_LCRY::graphics(GRAPHICS_FUNC_ARGS)
 			*colg /= 10-cpart->tmp2;
 			*colb /= 10-cpart->tmp2;
 		}
-		
+
 	}
 	else
 	{
@@ -132,11 +132,11 @@ int Element_LCRY::graphics(GRAPHICS_FUNC_ARGS)
 	}
 	*pixel_mode |= NO_DECO;
 	return 0;
-					
+
 	/*int lifemod = ((cpart->tmp2>10?10:cpart->tmp2)*10);
-	*colr += lifemod; 
-	*colg += lifemod; 
-	*colb += lifemod; 
+	*colr += lifemod;
+	*colg += lifemod;
+	*colb += lifemod;
 	if(decorations_enable && cpart->dcolour && cpart->dcolour&0xFF000000)
 	{
 		lifemod *= 2.5f;

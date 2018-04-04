@@ -17,7 +17,7 @@ public:
 
 		// push global table to the stack, so we can add the component APIs to it
 		lua_pushglobaltable(L);
-		 
+
 		luaL_newmetatable(L, T::className);
 		int metatable = lua_gettop(L);
 
@@ -90,7 +90,7 @@ public:
 		}
 	}
 
-	static bool checkType (lua_State * L, int idx, const char *name) 
+	static bool checkType (lua_State * L, int idx, const char *name)
 	{
 		// returns true if a userdata is of a certain type
 		int res;
@@ -132,7 +132,7 @@ private:
 		T *obj = new T(L);  // call constructor for T objects
 		userdataType *ud = static_cast<userdataType*>(lua_newuserdata(L, sizeof(userdataType)));
 		ud->pT = obj;  // store pointer to object in userdata
-		
+
 		obj->UserData = luaL_ref(L, LUA_REGISTRYINDEX);
 		lua_rawgeti(L, LUA_REGISTRYINDEX, obj->UserData);
 

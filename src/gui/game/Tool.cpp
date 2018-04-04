@@ -118,18 +118,18 @@ WindTool::WindTool(int id, string name, string description, int r, int g, int b,
 void WindTool::DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging)
 {
 	int radiusX, radiusY, sizeX, sizeY;
-	
+
 	float strength = dragging?0.01f:0.002f;
 	strength *= this->strength;
 
 	radiusX = brush->GetRadius().X;
 	radiusY = brush->GetRadius().Y;
-	
+
 	sizeX = brush->GetSize().X;
 	sizeY = brush->GetSize().Y;
-	
+
 	unsigned char *bitmap = brush->GetBitmap();
-	
+
 	for(int y = 0; y < sizeY; y++)
 	{
 		for(int x = 0; x < sizeX; x++)

@@ -39,11 +39,11 @@ VideoBuffer * SaveRenderer::Render(GameSave * save, bool decorations, bool fire)
 	width = save->blockWidth;
 	height = save->blockHeight;
 	bool doCollapse = save->Collapsed();
-	
+
 	g->Acquire();
 	g->Clear();
 	sim->clear_sim();
-	
+
 	if(!sim->Load(save))
 	{
 		ren->decorations_enable = true;
@@ -56,7 +56,7 @@ VideoBuffer * SaveRenderer::Render(GameSave * save, bool decorations, bool fire)
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
-		
+
 		ren->clearScreen(1.0f);
 		ren->ClearAccumulation();
 
@@ -130,7 +130,7 @@ VideoBuffer * SaveRenderer::Render(GameSave * save, bool decorations, bool fire)
 		ren->RenderBegin();
 		ren->RenderEnd();
 
-	
+
 		pData = (pixel *)malloc(PIXELSIZE * ((width*CELL)*(height*CELL)));
 		dst = pData;
 		for(int i = 0; i < height*CELL; i++)
@@ -155,11 +155,11 @@ VideoBuffer * SaveRenderer::Render(unsigned char * saveData, int dataSize, bool 
 	try {
 		tempSave = new GameSave((char*)saveData, dataSize);
 	} catch (std::exception & e) {
-		
+
 		//Todo: make this look a little less shit
 		VideoBuffer * buffer = new VideoBuffer(64, 64);
 		buffer->BlendCharacter(32, 32, 'x', 255, 255, 255, 255);
-		
+
 		return buffer;
 	}
 	VideoBuffer * thumb = Render(tempSave, decorations, fire);

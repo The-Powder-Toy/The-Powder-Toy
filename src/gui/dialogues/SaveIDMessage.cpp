@@ -52,7 +52,7 @@ SaveIDMessage::SaveIDMessage(int id):
 	// This button has multiple personalities
 	SetOkayButton(okayButton);
 	SetCancelButton(okayButton);
-	
+
 	MakeActiveWindow();
 }
 

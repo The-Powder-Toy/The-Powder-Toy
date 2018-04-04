@@ -48,7 +48,7 @@ Element_ANAR::Element_ANAR()
 int Element_ANAR::update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry;
-	   
+
 	//if (parts[i].temp >= 0.23)
 	// parts[i].temp --;
 	for (rx=-1; rx<2; rx++)

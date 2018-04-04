@@ -1,10 +1,10 @@
 /*=========================================================================*\
-* TCP object 
+* TCP object
 * LuaSocket toolkit
 *
 * RCS ID: $Id: tcp.c,v 1.41 2005/10/07 04:40:59 diego Exp $
 \*=========================================================================*/
-#include <string.h> 
+#include <string.h>
 
 #include "auxiliar.h"
 #include "socket.h"
@@ -89,7 +89,7 @@ int tcp_open(lua_State *L)
     auxiliar_add2group(L, "tcp{client}", "tcp{any}");
     auxiliar_add2group(L, "tcp{server}", "tcp{any}");
     /* define library functions */
-    luaL_openlib(L, NULL, func, 0); 
+    luaL_openlib(L, NULL, func, 0);
     return 0;
 }
 
@@ -142,7 +142,7 @@ static int meth_getfd(lua_State *L)
 static int meth_setfd(lua_State *L)
 {
     p_tcp tcp = (p_tcp) auxiliar_checkgroup(L, "tcp{any}", 1);
-    tcp->sock = (t_socket) luaL_checknumber(L, 2); 
+    tcp->sock = (t_socket) luaL_checknumber(L, 2);
     return 0;
 }
 
@@ -154,8 +154,8 @@ static int meth_dirty(lua_State *L)
 }
 
 /*-------------------------------------------------------------------------*\
-* Waits for and returns a client object attempting connection to the 
-* server object 
+* Waits for and returns a client object attempting connection to the
+* server object
 \*-------------------------------------------------------------------------*/
 static int meth_accept(lua_State *L)
 {
@@ -170,20 +170,20 @@ static int meth_accept(lua_State *L)
         /* initialize structure fields */
         socket_setnonblocking(&sock);
         clnt->sock = sock;
-        io_init(&clnt->io, (p_send) socket_send, (p_recv) socket_recv, 
+        io_init(&clnt->io, (p_send) socket_send, (p_recv) socket_recv,
                 (p_error) socket_ioerror, &clnt->sock);
         timeout_init(&clnt->tm, -1, -1);
         buffer_init(&clnt->buf, &clnt->io, &clnt->tm);
         return 1;
     } else {
-        lua_pushnil(L); 
+        lua_pushnil(L);
         lua_pushstring(L, socket_strerror(err));
         return 2;
     }
 }
 
 /*-------------------------------------------------------------------------*\
-* Binds an object to an address 
+* Binds an object to an address
 \*-------------------------------------------------------------------------*/
 static int meth_bind(lua_State *L)
 {
@@ -223,7 +223,7 @@ static int meth_connect(lua_State *L)
 }
 
 /*-------------------------------------------------------------------------*\
-* Closes socket used by object 
+* Closes socket used by object
 \*-------------------------------------------------------------------------*/
 static int meth_close(lua_State *L)
 {
@@ -308,14 +308,14 @@ static int meth_settimeout(lua_State *L)
 * Library functions
 \*=========================================================================*/
 /*-------------------------------------------------------------------------*\
-* Creates a master tcp object 
+* Creates a master tcp object
 \*-------------------------------------------------------------------------*/
 static int global_create(lua_State *L)
 {
     t_socket sock;
     const char *err = inet_trycreate(&sock, SOCK_STREAM);
     /* try to allocate a system socket */
-    if (!err) { 
+    if (!err) {
         /* allocate tcp object */
         p_tcp tcp = (p_tcp) lua_newuserdata(L, sizeof(t_tcp));
         /* set its type as master object */
@@ -323,7 +323,7 @@ static int global_create(lua_State *L)
         /* initialize remaining structure fields */
         socket_setnonblocking(&sock);
         tcp->sock = sock;
-        io_init(&tcp->io, (p_send) socket_send, (p_recv) socket_recv, 
+        io_init(&tcp->io, (p_send) socket_send, (p_recv) socket_recv,
                 (p_error) socket_ioerror, &tcp->sock);
         timeout_init(&tcp->tm, -1, -1);
         buffer_init(&tcp->buf, &tcp->io, &tcp->tm);

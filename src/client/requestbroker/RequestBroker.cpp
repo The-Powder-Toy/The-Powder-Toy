@@ -86,19 +86,19 @@ void RequestBroker::RenderThumbnail(GameSave * gameSave, int width, int height, 
 void RequestBroker::RenderThumbnail(GameSave * gameSave, bool decorations, bool fire, int width, int height, RequestListener * tListener)
 {
 	ListenerHandle handle = AttachRequestListener(tListener);
-	
+
 	ThumbRenderRequest * r = new ThumbRenderRequest(new GameSave(*gameSave), decorations, fire, width, height, handle);
-	
+
 	pthread_mutex_lock(&requestQueueMutex);
 	requestQueue.push_back(r);
 	pthread_mutex_unlock(&requestQueueMutex);
-	
+
 	assureRunning();
 }
 
 void RequestBroker::RetrieveThumbnail(int saveID, int saveDate, int width, int height, RequestListener * tListener)
 {
-	std::stringstream urlStream;	
+	std::stringstream urlStream;
 	urlStream << "http://" << STATICSERVER << "/" << saveID;
 	if(saveDate)
 	{
@@ -111,7 +111,7 @@ void RequestBroker::RetrieveThumbnail(int saveID, int saveDate, int width, int h
 
 void RequestBroker::RetrieveAvatar(std::string username, int width, int height, RequestListener * tListener)
 {
-	std::stringstream urlStream;	
+	std::stringstream urlStream;
 	urlStream << "http://" << STATICSERVER << "/avatars/" << username << ".pti";
 
 	RetrieveImage(urlStream.str(), width, height, tListener);
@@ -127,7 +127,7 @@ void RequestBroker::Start(Request * request, RequestListener * tListener, int id
 	requestQueue.push_back(request);
 	pthread_mutex_unlock(&requestQueueMutex);
 
-	assureRunning();	
+	assureRunning();
 }
 
 void RequestBroker::RetrieveImage(std::string imageUrl, int width, int height, RequestListener * tListener)
@@ -135,7 +135,7 @@ void RequestBroker::RetrieveImage(std::string imageUrl, int width, int height, R
 	ListenerHandle handle = AttachRequestListener(tListener);
 
 	ImageRequest * r = new ImageRequest(imageUrl, width, height, handle);
-	
+
 	pthread_mutex_lock(&requestQueueMutex);
 	requestQueue.push_back(r);
 	pthread_mutex_unlock(&requestQueueMutex);
@@ -167,7 +167,7 @@ void RequestBroker::FlushThumbQueue()
 		}
 		delete completeQueue.front();
 		completeQueue.pop();
-	}	
+	}
 	pthread_mutex_unlock(&completeQueueMutex);
 }
 
@@ -231,7 +231,7 @@ void RequestBroker::thumbnailQueueProcessTH()
 			{
 				break;
 			}
-			else 
+			else
 			{
 				activeRequests.push_back(*newReq);
 				newReq = requestQueue.erase(newReq);

@@ -57,7 +57,7 @@ int Element_STKM::update(UPDATE_FUNC_ARGS)
 
 //#TPT-Directive ElementHeader Element_STKM static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_STKM::graphics(GRAPHICS_FUNC_ARGS)
-{	
+{
 	*colr = *colg = *colb = *cola = 0;
 	*pixel_mode = PSPEC_STICKMAN;
 	return 1;
@@ -367,7 +367,7 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 
 				if (!r && !sim->bmap[(y+ry)/CELL][(x+rx)/CELL])
 					continue;
-				
+
 				STKM_set_element(sim, playerp, TYP(r));
 				if (TYP(r) == PT_PLNT && parts[i].life<100) //Plant gives him 5 HP
 				{
@@ -600,7 +600,7 @@ void Element_STKM::STKM_interact(Simulation *sim, playerst *playerp, int i, int 
 			sim->parts[i].life -= 2;
 			playerp->accs[3] -= 1;
 		}
-			
+
 		if (sim->elements[TYP(r)].Properties&PROP_DEADLY)
 			switch (TYP(r))
 			{

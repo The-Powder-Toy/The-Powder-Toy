@@ -191,7 +191,7 @@ void ProfileActivity::setUserInfo(UserInfo newInfo)
 		highestScore->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 		scrollPanel->AddChild(highestScore);
 		currentY += 2+highestScore->Size.Y;
-	
+
 	// biograhy
 	ui::Label * bioTitle = new ui::Label(ui::Point(4, currentY), ui::Point(50, 15), "Biography:");
 	bioTitle->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;

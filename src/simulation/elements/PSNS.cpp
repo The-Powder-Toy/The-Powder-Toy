@@ -70,7 +70,7 @@ int Element_PSNS::update(UPDATE_FUNC_ARGS)
 					}
 				}
 	}
-	if (parts[i].tmp == 1) 
+	if (parts[i].tmp == 1)
 	{
 		parts[i].life = 0;
 		bool setFilt = true;

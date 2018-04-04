@@ -69,7 +69,7 @@ RequestBroker::ProcessResponse APIRequest::Process(RequestBroker & rb)
 			}
 		}
 	}
-	else 
+	else
 	{
 #ifdef DEBUG
 		std::cout << typeid(*this).name() << " New Request for " << URL << std::endl;

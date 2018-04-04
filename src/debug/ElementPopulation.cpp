@@ -39,7 +39,7 @@ void ElementPopulationDebug::Draw()
 
 	maxValString = format::NumberToString<int>(maxAverage);
 	halfValString = format::NumberToString<int>(maxAverage/2);
-	
+
 
 	g->fillrect(xStart-5, yBottom - 263, bars+10+Graphics::textwidth(maxValString.c_str())+10, 255 + 13, 0, 0, 0, 180);
 
@@ -53,7 +53,7 @@ void ElementPopulationDebug::Draw()
 			int barX = bars;//*2;
 
 			g->draw_line(xStart+barX, yBottom+3, xStart+barX, yBottom+2, PIXR(sim->elements[i].Colour), PIXG(sim->elements[i].Colour), PIXB(sim->elements[i].Colour), 255);
-			if(sim->elementCount[i])	
+			if(sim->elementCount[i])
 			{
 				if(barSize > 256)
 				{
@@ -61,7 +61,7 @@ void ElementPopulationDebug::Draw()
 					g->blendpixel(xStart+barX, yBottom-barSize-3, PIXR(sim->elements[i].Colour), PIXG(sim->elements[i].Colour), PIXB(sim->elements[i].Colour), 255);
 					g->blendpixel(xStart+barX, yBottom-barSize-5, PIXR(sim->elements[i].Colour), PIXG(sim->elements[i].Colour), PIXB(sim->elements[i].Colour), 255);
 					g->blendpixel(xStart+barX, yBottom-barSize-7, PIXR(sim->elements[i].Colour), PIXG(sim->elements[i].Colour), PIXB(sim->elements[i].Colour), 255);
-				} else {			
+				} else {
 
 					g->draw_line(xStart+barX, yBottom-barSize-3, xStart+barX, yBottom-barSize-2, 255, 255, 255, 180);
 				}

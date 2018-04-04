@@ -229,15 +229,15 @@ void Window::DoDraw()
 			Graphics * g = ui::Engine::Ref().g;
 			char tempString[512];
 			char tempString2[512];
-			
+
 			sprintf(tempString, "Position: L %d, R %d, T: %d, B: %d", focusedComponent_->Position.X, Size.X-(focusedComponent_->Position.X+focusedComponent_->Size.X), focusedComponent_->Position.Y, Size.Y-(focusedComponent_->Position.Y+focusedComponent_->Size.Y));
 			sprintf(tempString2, "Size: %d, %d", focusedComponent_->Size.X, focusedComponent_->Size.Y);
-			
+
 			if (Graphics::textwidth(tempString)+xPos > WINDOWW)
 				xPos = WINDOWW-(Graphics::textwidth(tempString)+5);
 			if (Graphics::textwidth(tempString2)+xPos > WINDOWW)
 				xPos = WINDOWW-(Graphics::textwidth(tempString2)+5);
-			
+
 			g->drawtext(xPos, focusedComponent_->Position.Y+Position.Y+1, tempString, 0, 0, 0, 200);
 			g->drawtext(xPos, focusedComponent_->Position.Y+Position.Y, tempString, 255, 255, 255, 255);
 			g->drawtext(xPos, focusedComponent_->Position.Y+Position.Y+13, tempString2, 0, 0, 0, 200);
@@ -380,7 +380,7 @@ void Window::DoKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool a
 
 	if (!stop)
 		OnKeyPress(key, character, shift, ctrl, alt);
-	
+
 	if (key == SDLK_ESCAPE)
 		OnTryExit(Escape);
 
@@ -435,7 +435,7 @@ void Window::DoMouseDown(int x_, int y_, unsigned button)
 
 	if (!clickState)
 		FocusComponent(NULL);
-	
+
 #ifdef DEBUG
 	if (debugMode)
 		return;

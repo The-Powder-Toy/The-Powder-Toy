@@ -269,7 +269,7 @@ void PreviewView::commentBoxAutoHeight()
 		commentBoxPositionY = Size.Y-19;
 		commentBoxSizeX = Size.X-(XRES/2)-48;
 		commentBoxSizeY = 17;
-		
+
 		if (commentWarningLabel && commentWarningLabel->Visible)
 		{
 			commentWarningLabel->Visible = false;
@@ -616,7 +616,7 @@ void PreviewView::NotifyCommentBoxEnabledChanged(PreviewModel * sender)
 		submitCommentButton->SetActionCallback(new SubmitCommentAction(this));
 		//submitCommentButton->Enabled = false;
 		AddComponent(submitCommentButton);
-		
+
 		commentWarningLabel = new ui::Label(ui::Point((XRES/2)+4, Size.Y-19), ui::Point(Size.X-(XRES/2)-48, 16), "If you see this it is a bug");
 		commentWarningLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 		commentWarningLabel->SetTextColour(ui::Colour(255, 0, 0));

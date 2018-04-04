@@ -70,7 +70,7 @@ public:
 class GameSave
 {
 public:
-	
+
 	int blockWidth, blockHeight;
 	bool fromNewerVersion;
 	int majorVersion;
@@ -88,7 +88,7 @@ public:
 	float ** velocityX;
 	float ** velocityY;
 	float ** ambientHeat;
-	
+
 	//Simulation Options
 	bool waterEEnabled;
 	bool legacyEnable;
@@ -142,14 +142,14 @@ public:
 		}
 		return *this;
 	}
-	
+
 	inline GameSave& operator << (sign v)
 	{
 		if(signs.size()<MAXSIGNS && v.text.length())
 			signs.push_back(v);
 		return *this;
 	}
-		
+
 private:
 	bool expanded;
 	bool hasOriginalData;
