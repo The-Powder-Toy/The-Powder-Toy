@@ -3661,8 +3661,6 @@ void Simulation::UpdateParticles(int start, int end)
 	for (i = start; i <= end && i <= parts_lastActiveIndex; i++)
 		if (parts[i].type)
 		{
-
-
 			t = parts[i].type;
 
 			x = (int)(parts[i].x+0.5f);
@@ -5073,7 +5071,6 @@ void Simulation::RecalcFreeParticles(bool do_life_dec)
 				unsigned int elem_properties = elements[t].Properties;
 				if (parts[i].life>0 && (elem_properties&PROP_LIFE_DEC) && !(bmap[y/CELL][x/CELL] == WL_STASIS && emap[y/CELL][x/CELL]<8))
 				{
-
 					// automatically decrease life
 					parts[i].life--;
 					if (parts[i].life<=0 && (elem_properties&(PROP_LIFE_KILL_DEC|PROP_LIFE_KILL)))
