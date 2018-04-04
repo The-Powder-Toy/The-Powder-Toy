@@ -1919,12 +1919,12 @@ void Simulation::orbitalparts_set(int *block1, int *block2, int resblock1[], int
 
 inline int Simulation::is_wire(int x, int y)
 {
-	return bmap[y][x]==WL_DETECT || bmap[y][x]==WL_EWALL || bmap[y][x]==WL_ALLOWLIQUID || bmap[y][x]==WL_WALLELEC || bmap[y][x]==WL_ALLOWALLELEC || bmap[y][x]==WL_EHOLE;
+	return bmap[y][x]==WL_DETECT || bmap[y][x]==WL_EWALL || bmap[y][x]==WL_ALLOWLIQUID || bmap[y][x]==WL_WALLELEC || bmap[y][x]==WL_ALLOWALLELEC || bmap[y][x]==WL_EHOLE || bmap[y][x]==WL_STASIS;
 }
 
 inline int Simulation::is_wire_off(int x, int y)
 {
-	return (bmap[y][x]==WL_DETECT || bmap[y][x]==WL_EWALL || bmap[y][x]==WL_ALLOWLIQUID || bmap[y][x]==WL_WALLELEC || bmap[y][x]==WL_ALLOWALLELEC || bmap[y][x]==WL_EHOLE) && emap[y][x]<8;
+	return (bmap[y][x]==WL_DETECT || bmap[y][x]==WL_EWALL || bmap[y][x]==WL_ALLOWLIQUID || bmap[y][x]==WL_WALLELEC || bmap[y][x]==WL_ALLOWALLELEC || bmap[y][x]==WL_EHOLE || bmap[y][x]==WL_STASIS) && emap[y][x]<8;
 }
 
 // implement __builtin_ctz and __builtin_clz on msvc
@@ -3661,10 +3661,17 @@ void Simulation::UpdateParticles(int start, int end)
 	for (i = start; i <= end && i <= parts_lastActiveIndex; i++)
 		if (parts[i].type)
 		{
+
+
 			t = parts[i].type;
 
 			x = (int)(parts[i].x+0.5f);
 			y = (int)(parts[i].y+0.5f);
+
+			// Make sure that STASIS'd particles don't tick.
+			if (bmap[y/CELL][x/CELL] == WL_STASIS && emap[y/CELL][x/CELL]<8) {
+				continue;
+			}
 
 			//this kills any particle out of the screen, or in a wall where it isn't supposed to go
 			if (x<CELL || y<CELL || x>=XRES-CELL || y>=YRES-CELL ||
@@ -4196,7 +4203,7 @@ void Simulation::UpdateParticles(int start, int end)
 				{
 					if (t!=PT_SPRK)
 					{
-						if (emap[ny][nx]==12 && !parts[i].life)
+						if (emap[ny][nx]==12 && !parts[i].life && bmap[ny][nx] != WL_STASIS)
 						{
 							part_change_type(i,x,y,PT_SPRK);
 							parts[i].life = 4;
@@ -5064,8 +5071,9 @@ void Simulation::RecalcFreeParticles(bool do_life_dec)
 					elementCount[t]++;
 
 				unsigned int elem_properties = elements[t].Properties;
-				if (parts[i].life>0 && (elem_properties&PROP_LIFE_DEC))
+				if (parts[i].life>0 && (elem_properties&PROP_LIFE_DEC) && !(bmap[y/CELL][x/CELL] == WL_STASIS && emap[y/CELL][x/CELL]<8))
 				{
+
 					// automatically decrease life
 					parts[i].life--;
 					if (parts[i].life<=0 && (elem_properties&(PROP_LIFE_KILL_DEC|PROP_LIFE_KILL)))
@@ -5075,7 +5083,7 @@ void Simulation::RecalcFreeParticles(bool do_life_dec)
 						continue;
 					}
 				}
-				else if (parts[i].life<=0 && (elem_properties&PROP_LIFE_KILL))
+				else if (parts[i].life<=0 && (elem_properties&PROP_LIFE_KILL) && !(bmap[y/CELL][x/CELL] == WL_STASIS && emap[y/CELL][x/CELL]<8))
 				{
 					// kill if no life
 					kill_part(i);

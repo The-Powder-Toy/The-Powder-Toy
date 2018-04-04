@@ -589,7 +589,7 @@ VideoBuffer * Renderer::WallIcon(int wallID, int width, int height)
 					newTexture->SetPixel(i, j, 0x80, 0x80, 0x80, 255);
 			}
 	}
-	else if (wt==WL_EHOLE)
+	else if (wt==WL_EHOLE || wt==WL_STASIS)
 	{
 		for (j=0; j<height; j++)
 		{
@@ -746,9 +746,10 @@ void Renderer::DrawWalls()
 				switch (sim->wtypes[wt].drawstyle)
 				{
 				case 0:
-					if (wt == WL_EWALL)
+					if (wt == WL_EWALL || wt == WL_STASIS)
 					{
-						if (powered)
+						bool reverse = wt == WL_STASIS;
+						if ((powered>0) ^ reverse)
 						{
 							for (int j = 0; j < CELL; j++)
 								for (int i =0; i < CELL; i++)
@@ -2974,4 +2975,3 @@ Renderer::~Renderer()
 #endif
 
 #undef PIXELMETHODS_CLASS
-
