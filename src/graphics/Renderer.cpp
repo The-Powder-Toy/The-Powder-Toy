@@ -2367,10 +2367,10 @@ void Renderer::draw_air()
 	if(!(display_mode & DISPLAY_AIR))
 		return;
 	int x, y, i, j;
-	float (*pv)[XRES/CELL] = sim->air->pv;
-	float (*hv)[XRES/CELL] = sim->air->hv;
-	float (*vx)[XRES/CELL] = sim->air->vx;
-	float (*vy)[XRES/CELL] = sim->air->vy;
+	float (*pv)[XRES/CELL] = sim->pv;
+	float (*hv)[XRES/CELL] = sim->hv;
+	float (*vx)[XRES/CELL] = sim->vx;
+	float (*vy)[XRES/CELL] = sim->vy;
 	pixel c = 0;
 	for (y=0; y<YRES/CELL; y++)
 		for (x=0; x<XRES/CELL; x++)
@@ -2465,15 +2465,15 @@ void Renderer::draw_air()
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, airVX);
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES/CELL, YRES/CELL, GL_RED, GL_FLOAT, sim->air->vx);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES/CELL, YRES/CELL, GL_RED, GL_FLOAT, *sim->air->vx);
 	glUniform1i(glGetUniformLocation(airProg, "airX"), 0);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, airVY);
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES/CELL, YRES/CELL, GL_GREEN, GL_FLOAT, sim->air->vy);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES/CELL, YRES/CELL, GL_GREEN, GL_FLOAT, *sim->air->vy);
 	glUniform1i(glGetUniformLocation(airProg, "airY"), 1);
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, airPV);
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES/CELL, YRES/CELL, GL_BLUE, GL_FLOAT, sim->air->pv);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, XRES/CELL, YRES/CELL, GL_BLUE, GL_FLOAT, *sim->air->pv);
 	glUniform1i(glGetUniformLocation(airProg, "airP"), 2);
 	glActiveTexture(GL_TEXTURE0);
 

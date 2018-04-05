@@ -1675,7 +1675,7 @@ int LuaScriptInterface::simulation_resetPressure(lua_State * l)
 	for (int nx = x1; nx<x1+width; nx++)
 		for (int ny = y1; ny<y1+height; ny++)
 		{
-			luacon_sim->air->pv[ny][nx] = 0;
+			*luacon_sim->air->pv[ny][nx] = 0;
 		}
 	return 0;
 }

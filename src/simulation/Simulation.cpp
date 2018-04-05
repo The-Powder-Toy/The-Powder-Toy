@@ -286,9 +286,12 @@ int Simulation::Load(int fullX, int fullY, GameSave * save, bool includePressure
 			{
 				if (save->hasPressure)
 				{
-					pv[saveBlockY+blockY][saveBlockX+blockX] = save->pressure[saveBlockY][saveBlockX];
-					vx[saveBlockY+blockY][saveBlockX+blockX] = save->velocityX[saveBlockY][saveBlockX];
-					vy[saveBlockY+blockY][saveBlockX+blockX] = save->velocityY[saveBlockY][saveBlockX];
+					(*air->pv)[saveBlockY+blockY][saveBlockX+blockX] = save->pressure[saveBlockY][saveBlockX];
+					(*air->vx)[saveBlockY+blockY][saveBlockX+blockX] = save->velocityX[saveBlockY][saveBlockX];
+					(*air->vy)[saveBlockY+blockY][saveBlockX+blockX] = save->velocityY[saveBlockY][saveBlockX];
+					(*air->opv)[saveBlockY+blockY][saveBlockX+blockX] = save->pressure[saveBlockY][saveBlockX];
+					(*air->ovx)[saveBlockY+blockY][saveBlockX+blockX] = save->velocityX[saveBlockY][saveBlockX];
+					(*air->ovy)[saveBlockY+blockY][saveBlockX+blockX] = save->velocityY[saveBlockY][saveBlockX];
 				}
 				if (save->hasAmbientHeat)
 					hv[saveBlockY+blockY][saveBlockX+blockX] = save->ambientHeat[saveBlockY][saveBlockX];
@@ -298,6 +301,8 @@ int Simulation::Load(int fullX, int fullY, GameSave * save, bool includePressure
 
 	gravWallChanged = true;
 	air->RecalculateBlockAirMaps();
+	//HACK: Update the air to avert desyncs
+	air->update_air();
 
 	return 0;
 }
@@ -5185,6 +5190,12 @@ void Simulation::BeforeSim()
 		if(aheat_enable)
 			air->update_airh();
 
+		// Patch up the pointers in sim. This is needed to make sure sim always has the latest buffer.
+		vx = *air->vx;
+		vy = *air->vy;
+		pv = *air->pv;
+		hv = *air->hv;
+
 		if(grav->ngrav_enable)
 		{
 			grav->gravity_update_async();
@@ -5438,10 +5449,10 @@ Simulation::Simulation():
 	air->fvx = fvx;
 	air->fvy = fvy;
 	//Air sim gives us maps to use
-	vx = air->vx;
-	vy = air->vy;
-	pv = air->pv;
-	hv = air->hv;
+	vx = *air->vx;
+	vy = *air->vy;
+	pv = *air->pv;
+	hv = *air->hv;
 
 	int menuCount;
 	menu_section * msectionsT = LoadMenus(menuCount);
