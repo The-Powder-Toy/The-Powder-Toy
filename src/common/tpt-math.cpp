@@ -1,7 +1,14 @@
+#include <cmath>
 #include "TrigTables.h"
+
+float orig_atan(float val)
+{
+	return atan(val);
+}
 
 namespace tpt
 {
+
 float sin(float angle)
 {
 	angle *= 81.4873;
@@ -12,8 +19,7 @@ float sin(float angle)
 		i += 512;
 	}
 
-	float sine = sineLookupTable[i];
-	return sine;
+	return sineLookupTable[i];
 }
 
 
@@ -27,8 +33,7 @@ float cos(float angle)
 		i += 512;
 	}
 
-	float cosine = cosineLookupTable[i];
-	return cosine;
+	return cosineLookupTable[i];
 }
 
 float tan(float angle)
@@ -40,8 +45,7 @@ float tan(float angle)
 		i += 512;
 	}
 
-	float tangent = tanLookupTable[i];
-	return tangent;
+	return tanLookupTable[i];
 }
 
 float asin(float angle)
@@ -52,8 +56,7 @@ float asin(float angle)
 		return 0.0;
 	}
 
-	float asin = asinLookupTable[(int)(angle + 256)];
-	return asin;
+	return asinLookupTable[(int)(angle + 256)];
 }
 
 float acos(float angle)
@@ -64,49 +67,44 @@ float acos(float angle)
 		return 0.0;
 	}
 
-	float acos = acosLookupTable[(int)(angle + 256)];
-	return acos;
+	return acosLookupTable[(int)(angle + 256)];
 }
 
 float atan(float ratio)
 {
-	float atan;
 	if (ratio > 20)
 	{
-		atan = atan(ratio);
-		return atan;
+		return orig_atan(ratio);
 	}
 	if (ratio < -20)
 	{
-		atan = atan(ratio);
-		return atan;
+		return orig_atan(ratio);
 	}
-	atan = atanLookupTable[(int)(ratio * 100) + 2000];
-	return atan;
+	return atanLookupTable[(int)(ratio * 100) + 2000];
 }
 
 
 float atan2(float y, float x)
 {
-	float atan2;
-
 	if (x > 0)
 	{
-		atan2 = atan(y / x);
-		return atan2;
+		return tpt::atan(y / x);
 	}
-	else
+	else if (x < 0)
 	{
 		if (y >= 0)
 		{
-			atan2 = atan(y / x) + 3.14159f;
-			return atan2;
+			return tpt::atan(y / x) + M_PI;
 		}
 
-		atan2 = atan(y / x) - 3.14159f;
-		return atan2;
+		return tpt::atan(y / x) - M_PI;
 	}
-
+	else if (y > 0)
+		return M_PI_2;
+	else if (y < 0)
+		return M_PI_2;
+	else
+		return 0.0f;
 }
 
 }
