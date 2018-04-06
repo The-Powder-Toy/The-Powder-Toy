@@ -1,6 +1,12 @@
 #include <cmath>
 #include "TrigTables.h"
 
+/**
+ * Fast trig functions, using lookup table
+ * Only use for things that require no accuracy, like cyclone tool
+ * Do not use for any core simulation stuff
+ */
+
 float orig_atan(float val)
 {
 	return atan(val);
@@ -46,28 +52,6 @@ float tan(float angle)
 	}
 
 	return tanLookupTable[i];
-}
-
-float asin(float angle)
-{
-	angle *= 81.4873;
-	if (angle > 256 || angle < 0)
-	{
-		return 0.0;
-	}
-
-	return asinLookupTable[(int)(angle + 256)];
-}
-
-float acos(float angle)
-{
-	angle *= 81.4873;
-	if (angle > 256 || angle < 0)
-	{
-		return 0.0;
-	}
-
-	return acosLookupTable[(int)(angle + 256)];
 }
 
 float atan(float ratio)
