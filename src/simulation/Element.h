@@ -3,11 +3,12 @@
 // This header should be included by all files in src/elements/
 
 #include <cmath>
-#include "Simulation.h"
-#include "graphics/Renderer.h"
+#include "ElementGraphics.h"
 #include "Gravity.h"
 #include "Misc.h"
-#include "ElementGraphics.h"
+#include "Simulation.h"
+#include "common/tpt-math.h"
+#include "graphics/Renderer.h"
 
 #define IPL -257.0f
 #define IPH 257.0f
