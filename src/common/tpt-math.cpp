@@ -1,4 +1,5 @@
 #include <cmath>
+#include "tpt-math.h"
 #include "TrigTables.h"
 
 /**
