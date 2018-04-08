@@ -1,5 +1,3 @@
-
-
 #include "simulation/Elements.h"
 
 //#TPT-Directive ElementClass Element_RAYT PT_RAYT 186
@@ -9,11 +7,7 @@ Element_RAYT::Element_RAYT() {
 	Colour = PIXPACK(0x66ff66);
 	MenuVisible = 1;
 	MenuSection = SC_SENSOR;
-	#if defined(SNAPSHOT) || defined(DEBUG)
 	Enabled = 1;
-	#else
-	Enabled = 0;
-	#endif
 
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
@@ -60,7 +54,8 @@ Element_RAYT::Element_RAYT() {
 // 01: Ignore energy particles
 
 //#TPT-Directive ElementHeader Element_RAYT static int update(UPDATE_FUNC_ARGS)
-int Element_RAYT::update(UPDATE_FUNC_ARGS) {
+int Element_RAYT::update(UPDATE_FUNC_ARGS)
+{
 	int rx, ry, r = 0;
 	for (rx = -1; rx <= 1; rx++)
 	{
@@ -73,12 +68,10 @@ int Element_RAYT::update(UPDATE_FUNC_ARGS) {
 					continue;
 
 				int rt = TYP(r);
-				if ((sim->elements[rt].Properties&PROP_CONDUCTS) && !(rt==PT_WATR||rt==PT_SLTW||rt==PT_NTCT||rt==PT_PTCT||rt==PT_INWR) && parts[ID(r)].life==0)
+				if ((sim->elements[rt].Properties & PROP_CONDUCTS) && !(rt == PT_WATR || rt == PT_SLTW || rt == PT_NTCT || rt == PT_PTCT || rt == PT_INWR) && parts[ID(r)].life == 0)
 				{
 					// Stolen from DRAY
-					bool foundParticle = false;
 					bool isEnergy = false;
-					int p = 0;
 					for (int xStep = rx*-1, yStep = ry*-1, xCurrent = x+xStep, yCurrent = y+yStep; ; xCurrent+=xStep, yCurrent+=yStep)
 					{
 						int rr;
@@ -90,45 +83,44 @@ int Element_RAYT::update(UPDATE_FUNC_ARGS) {
 						if (!rr)
 						{
 							rr = sim->photons[yCurrent][xCurrent];
-								if (rr)
-								{
-									isEnergy = true;
-								}
+							if (rr)
+								isEnergy = true;
 						}
-						if (rr)
+						if (!rr)
+							continue;
+
+						if (parts[i].ctype == PT_NONE && TYP(rr) != PT_NONE)
 						{
-							if (parts[i].ctype == PT_NONE && TYP(rr) != PT_NONE)
+							parts[ID(r)].life = 4;
+							parts[ID(r)].ctype = rt;
+							sim->part_change_type(ID(r), x + rx, y + ry, PT_SPRK);
+						}
+						if (isEnergy)
+						{
+							if ((parts[i].tmp2 & 1) && ((TYP(rr) == TYP(parts[i].ctype)) xor (parts[i].tmp2 & (1 << 1))))
 							{
-								parts[ID(r)].life = 4;
-								parts[ID(r)].ctype = rt;
-								sim->part_change_type(ID(r),x+rx,y+ry,PT_SPRK);
-							}
-							if (isEnergy)
-							{
-								if ((parts[i].tmp2 & 1) && ((TYP(rr) == TYP(parts[i].ctype)) xor (parts[i].tmp2 & (1 << 1))))
-								{
-									if (sim->parts_avg(i,ID(r),PT_INSL) != PT_INSL)
-									{
-										parts[ID(r)].life = 4;
-										parts[ID(r)].ctype = rt;
-										sim->part_change_type(ID(r),x+rx,y+ry,PT_SPRK);
-									}
-								} else
-								{
-									break;
-								}
-							}
-							if ((TYP(rr) == TYP(parts[i].ctype)) xor (parts[i].tmp2 & (1 << 1)))
-							{
-								if (sim->parts_avg(i,ID(r),PT_INSL) != PT_INSL)
+								if (sim->parts_avg(i, ID(r), PT_INSL) != PT_INSL)
 								{
 									parts[ID(r)].life = 4;
 									parts[ID(r)].ctype = rt;
 									sim->part_change_type(ID(r),x+rx,y+ry,PT_SPRK);
 								}
 							}
-							break;
+							else
+							{
+								break;
+							}
 						}
+						if ((TYP(rr) == TYP(parts[i].ctype)) xor (parts[i].tmp2 & (1 << 1)))
+						{
+							if (sim->parts_avg(i,ID(r),PT_INSL) != PT_INSL)
+							{
+								parts[ID(r)].life = 4;
+								parts[ID(r)].ctype = rt;
+								sim->part_change_type(ID(r), x + rx, y + ry, PT_SPRK);
+							}
+						}
+						break;
 					}
 				}
 				continue;
