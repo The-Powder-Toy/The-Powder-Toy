@@ -92,7 +92,7 @@ int Element_RAYT::update(UPDATE_FUNC_ARGS)
 
 				int rt = TYP(r);
 
-				if (accepted_type(sim, r) && parts[ID(r)].life == 0)
+				if (accepted_type(sim, r) && (parts[ID(r)].life == 0 || phot_data_type(TYP(r))))
 				{
 					// Stolen from DRAY
 					int xStep = rx*-1, yStep = ry*-1;
@@ -114,7 +114,7 @@ int Element_RAYT::update(UPDATE_FUNC_ARGS)
 						if (!rr)
 							continue;
 
-						if (!phot_data_type(TYP(r)))
+						if (!phot_data_type(TYP(r)) )
 						{
 							if (parts[i].ctype == 0 || (parts[i].ctype == TYP(rr)) ^ (parts[i].tmp2 & mask_invert_filter))
 							{
