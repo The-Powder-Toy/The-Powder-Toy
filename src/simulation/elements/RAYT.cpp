@@ -1,4 +1,5 @@
 #include "simulation/Elements.h"
+#include <iostream>
 
 //#TPT-Directive ElementClass Element_RAYT PT_RAYT 186
 Element_RAYT::Element_RAYT() {
@@ -44,14 +45,34 @@ Element_RAYT::Element_RAYT() {
 	Update = &Element_RAYT::update;
 }
 
-#define INVERT_FILTER 0
-#define IGNORE_ENERGY 1
+const int mask_invert_filter = 1<<0; // First flag
+const int mask_ignore_energy = 1<<1;
+const int mask_no_copy_color = 1<<2;
 
 //NOTES:
 // ctype is used to store the target element, if any. (NONE is treated as a wildcard)
 // tmp2 is used for settings (binary flags). The flags are as follows:
-// 10: Inverts the CTYPE filter so that the element in ctype is the only thing that doesn't trigger RAYT, instead of the opposite.
-// 01: Ignore energy particles
+// 1000: Inverts the CTYPE filter so that the element in ctype is the only thing that doesn't trigger RAYT, instead of the opposite.
+// 0100: Ignore energy particles
+// 0010: Ignore FILT
+
+bool accepted_type(Simulation* sim, int part) {
+	int rt = TYP(part);
+	if ((sim->elements[rt].Properties & PROP_CONDUCTS) && !(rt == PT_WATR || rt == PT_SLTW || rt == PT_NTCT || rt == PT_PTCT || rt == PT_INWR)) {
+		return true;
+	} else if (rt == PT_FILT || rt == PT_PHOT || rt == PT_BRAY) {
+		return true;
+	}
+	return false;
+}
+
+bool phot_data_type(int rt) {
+	if (rt == PT_FILT || rt == PT_PHOT || rt == PT_BRAY) {
+		return true;
+	}
+	return false;
+}
+
 
 //#TPT-Directive ElementHeader Element_RAYT static int update(UPDATE_FUNC_ARGS)
 int Element_RAYT::update(UPDATE_FUNC_ARGS)
@@ -68,59 +89,50 @@ int Element_RAYT::update(UPDATE_FUNC_ARGS)
 					continue;
 
 				int rt = TYP(r);
-				if ((sim->elements[rt].Properties & PROP_CONDUCTS) && !(rt == PT_WATR || rt == PT_SLTW || rt == PT_NTCT || rt == PT_PTCT || rt == PT_INWR) && parts[ID(r)].life == 0)
+
+				if (accepted_type(sim, r) && parts[ID(r)].life == 0)
 				{
 					// Stolen from DRAY
-					bool isEnergy = false;
-					for (int xStep = rx*-1, yStep = ry*-1, xCurrent = x+xStep, yCurrent = y+yStep; ; xCurrent+=xStep, yCurrent+=yStep)
+					int xStep = rx*-1, yStep = ry*-1;
+					int xCurrent = x+(xStep*(parts[i].life+1)), yCurrent = y+(yStep*(parts[i].life+1));
+					for (;(parts[i].tmp == 0) || !(xCurrent-x >= parts[i].tmp) || (yCurrent-y >= parts[i].tmp);xCurrent+=xStep, yCurrent+=yStep)
 					{
-						int rr;
+						int rr = pmap[yCurrent][xCurrent];
 						if (!(xCurrent>=0 && yCurrent>=0 && xCurrent<XRES && yCurrent<YRES))
 						{
 							break; // We're out of bounds! Oops!
 						}
-						rr = pmap[yCurrent][xCurrent];
 						if (!rr)
 						{
 							rr = sim->photons[yCurrent][xCurrent];
-							if (rr)
-								isEnergy = true;
+							if (!(rr && !(parts[i].tmp2 & mask_ignore_energy))) {
+								continue;
+							}
 						}
 						if (!rr)
 							continue;
 
-						if (parts[i].ctype == PT_NONE && TYP(rr) != PT_NONE)
+						if (!phot_data_type(TYP(r)))
 						{
-							parts[ID(r)].life = 4;
-							parts[ID(r)].ctype = rt;
-							sim->part_change_type(ID(r), x + rx, y + ry, PT_SPRK);
-						}
-						if (isEnergy)
-						{
-							if ((parts[i].tmp2 & 1) && ((TYP(rr) == TYP(parts[i].ctype)) xor (parts[i].tmp2 & (1 << 1))))
-							{
-								if (sim->parts_avg(i, ID(r), PT_INSL) != PT_INSL)
-								{
-									parts[ID(r)].life = 4;
-									parts[ID(r)].ctype = rt;
-									sim->part_change_type(ID(r),x+rx,y+ry,PT_SPRK);
-								}
-							}
-							else
-							{
-								break;
-							}
-						}
-						if ((TYP(rr) == TYP(parts[i].ctype)) xor (parts[i].tmp2 & (1 << 1)))
-						{
-							if (sim->parts_avg(i,ID(r),PT_INSL) != PT_INSL)
+							if (parts[i].ctype == 0 || (parts[i].ctype == TYP(rr)) ^ (parts[i].tmp2 & mask_invert_filter))
 							{
 								parts[ID(r)].life = 4;
-								parts[ID(r)].ctype = rt;
-								sim->part_change_type(ID(r), x + rx, y + ry, PT_SPRK);
+								parts[ID(r)].ctype = TYP(r);
+								sim->part_change_type(ID(r), xCurrent, yCurrent, PT_SPRK);
+								break;
+							}
+							// room for more conditions here.
+						} else {
+							if (parts[i].ctype == 0 || (parts[i].ctype == TYP(rr)) ^ (parts[i].tmp2 & mask_invert_filter))
+							{
+								if ((phot_data_type(TYP(rr)) && !(parts[i].tmp2 & mask_no_copy_color)))
+								{
+									parts[ID(r)].ctype = Element_FILT::getWavelengths(&parts[ID(rr)]);
+									parts[ID(r)].tmp = 8008; // verifying it works.
+									break;
+								}
 							}
 						}
-						break;
 					}
 				}
 				continue;
