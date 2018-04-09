@@ -51,6 +51,8 @@ const int mask_no_copy_color = 1<<2;
 
 //NOTES:
 // ctype is used to store the target element, if any. (NONE is treated as a wildcard)
+// life is used for the amount of pixels to skip before starting the scan. Starts just in front of the RAYT if 0.
+// tmp is the number of particles that will be scanned before scanning stops. Unbounded if 0.
 // tmp2 is used for settings (binary flags). The flags are as follows:
 // 1000: Inverts the CTYPE filter so that the element in ctype is the only thing that doesn't trigger RAYT, instead of the opposite.
 // 0100: Ignore energy particles
@@ -77,7 +79,7 @@ bool phot_data_type(int rt) {
 //#TPT-Directive ElementHeader Element_RAYT static int update(UPDATE_FUNC_ARGS)
 int Element_RAYT::update(UPDATE_FUNC_ARGS)
 {
-	int rx, ry, r = 0;
+	int rx, ry, r = 0, max = parts[i].tmp + parts[i].life;
 	for (rx = -1; rx <= 1; rx++)
 	{
 		for (ry = -1; ry <= 1; ry++)
@@ -95,7 +97,7 @@ int Element_RAYT::update(UPDATE_FUNC_ARGS)
 					// Stolen from DRAY
 					int xStep = rx*-1, yStep = ry*-1;
 					int xCurrent = x+(xStep*(parts[i].life+1)), yCurrent = y+(yStep*(parts[i].life+1));
-					for (;(parts[i].tmp == 0) || !(xCurrent-x >= parts[i].tmp) || (yCurrent-y >= parts[i].tmp);xCurrent+=xStep, yCurrent+=yStep)
+					for (;(parts[i].tmp == 0) || !(xCurrent-x >= max) || (yCurrent-y >= max);xCurrent+=xStep, yCurrent+=yStep)
 					{
 						int rr = pmap[yCurrent][xCurrent];
 						if (!(xCurrent>=0 && yCurrent>=0 && xCurrent<XRES && yCurrent<YRES))
@@ -128,7 +130,6 @@ int Element_RAYT::update(UPDATE_FUNC_ARGS)
 								if ((phot_data_type(TYP(rr)) && !(parts[i].tmp2 & mask_no_copy_color)))
 								{
 									parts[ID(r)].ctype = Element_FILT::getWavelengths(&parts[ID(rr)]);
-									parts[ID(r)].tmp = 8008; // verifying it works.
 									break;
 								}
 							}
