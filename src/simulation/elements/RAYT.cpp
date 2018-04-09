@@ -84,7 +84,7 @@ int Element_RAYT::update(UPDATE_FUNC_ARGS)
 	{
 		for (ry = -1; ry <= 1; ry++)
 		{
-			if (BOUNDS_CHECK && (rx || ry) && x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES)
+			if (BOUNDS_CHECK && (rx || ry) && x+rx>0 && y+ry>0 && x+rx<=XRES && y+ry<=YRES)
 			{
 				r = pmap[y+ry][x+rx];
 				if (!r)
@@ -114,7 +114,7 @@ int Element_RAYT::update(UPDATE_FUNC_ARGS)
 						if (!rr)
 							continue;
 
-						if (!phot_data_type(TYP(r)) )
+						if (!phot_data_type(TYP(r)))
 						{
 							if (parts[i].ctype == 0 || (parts[i].ctype == TYP(rr)) ^ (parts[i].tmp2 & mask_invert_filter))
 							{
@@ -129,7 +129,17 @@ int Element_RAYT::update(UPDATE_FUNC_ARGS)
 							{
 								if ((phot_data_type(TYP(rr)) && !(parts[i].tmp2 & mask_no_copy_color)))
 								{
-									parts[ID(r)].ctype = Element_FILT::getWavelengths(&parts[ID(rr)]);
+									int nx = x+rx, ny = y+ry;
+									while (TYP(r) == PT_FILT)
+									{
+										parts[ID(r)].ctype = Element_FILT::getWavelengths(&parts[ID(rr)]);
+										nx += rx;
+										ny += ry;
+										if (nx < 0 || ny < 0 || nx >= XRES || ny >= YRES)
+											break;
+										r = pmap[ny][nx];
+									}
+
 									break;
 								}
 							}
