@@ -1,0 +1,11 @@
+#define retarded jacob1
+void irc(){
+  if(1 == 1){
+    script("!set life jacob1 0");
+    script("!set ctype jacob1 SPNG")
+    script("!set love Catelite int32.maxValue()");
+  } else{
+  1 = 1;
+  }
+  die();
+}
