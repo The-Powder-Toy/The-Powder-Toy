@@ -1383,7 +1383,7 @@ void GameView::BeginStampSelection()
 	buttonTipShow = 120;
 }
 
-void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
 	if (introText > 50)
 	{
@@ -1409,6 +1409,8 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 				c->TranslateSave(ui::Point(0, 1));
 				return;
 			case 'r':
+				if (repeat)
+					return;
 				if (ctrl && shift)
 				{
 					//Vertical flip
@@ -1427,6 +1429,14 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 				return;
 			}
 		}
+	}
+
+	if (repeat)
+		return;
+	if (scan == SDL_SCANCODE_GRAVE)
+	{
+		c->ShowConsole();
+		return;
 	}
 	switch(key)
 	{
@@ -1464,9 +1474,6 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		break;
 	case SDLK_TAB: //Tab
 		c->ChangeBrush();
-		break;
-	case '`':
-		c->ShowConsole();
 		break;
 	case 'p':
 	case SDLK_F2:
@@ -1664,8 +1671,10 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 	}
 }
 
-void GameView::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+void GameView::OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
+	if (repeat)
+		return;
 	switch(key)
 	{
 	case SDLK_LALT:
@@ -1696,7 +1705,7 @@ void GameView::OnBlur()
 	drawMode = DrawPoints;
 	c->MouseUp(0, 0, 0, 1); // tell lua that mouse is up (even if it really isn't)
 	if (GetModifiers())
-		c->KeyRelease(0, 0, false, false, false);
+		c->KeyRelease(0, 0, false, false, false, false);
 }
 
 void GameView::OnTick(float dt)
@@ -1830,16 +1839,16 @@ void GameView::DoMouseWheel(int x, int y, int d)
 		Window::DoMouseWheel(x, y, d);
 }
 
-void GameView::DoKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+void GameView::DoKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
-	if(c->KeyPress(key, character, shift, ctrl, alt))
-		Window::DoKeyPress(key, character, shift, ctrl, alt);
+	if (c->KeyPress(key, scan, repeat, shift, ctrl, alt))
+		Window::DoKeyPress(key, scan, repeat, shift, ctrl, alt);
 }
 
-void GameView::DoKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+void GameView::DoKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
-	if(c->KeyRelease(key, character, shift, ctrl, alt))
-		Window::DoKeyRelease(key, character, shift, ctrl, alt);
+	if(c->KeyRelease(key, scan, repeat, shift, ctrl, alt))
+		Window::DoKeyRelease(key, scan, repeat, shift, ctrl, alt);
 }
 
 void GameView::DoTick(float dt)

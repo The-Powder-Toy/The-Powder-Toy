@@ -65,8 +65,9 @@ namespace ui
 		virtual void DoMouseDown(int x, int y, unsigned button);
 		virtual void DoMouseUp(int x, int y, unsigned button);
 		virtual void DoMouseWheel(int x, int y, int d);
-		virtual void DoKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
-		virtual void DoKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt);
+		virtual void DoKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
+		virtual void DoKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
+		virtual void DoTextInput(std::string text);
 
 		// Sets halt and destroy, this causes the Windows to stop sending events and remove itself.
 		void SelfDestruct();
@@ -102,8 +103,9 @@ namespace ui
 		virtual void OnMouseDown(int x, int y, unsigned button) {}
 		virtual void OnMouseUp(int x, int y, unsigned button) {}
 		virtual void OnMouseWheel(int x, int y, int d) {}
-		virtual void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt) {}
-		virtual void OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt) {}
+		virtual void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) {}
+		virtual void OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) {}
+		virtual void OnTextInput(std::string text) {}
 		std::vector<Component*> Components;
 		Component *focusedComponent_;
 		Component *hoverComponent;

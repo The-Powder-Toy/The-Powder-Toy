@@ -28,8 +28,9 @@ namespace ui
 		void onMouseClick(int x, int y, unsigned button);
 		void onMouseUnclick(int x, int y, unsigned button);
 		void onMouseWheel(int x, int y, int delta);
-		void onKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
-		void onKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt);
+		void onKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
+		void onKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
+		void onTextInput(std::string text);
 		void onResize(int newWidth, int newHeight);
 		void onClose();
 
@@ -47,8 +48,6 @@ namespace ui
 		inline bool GetFullscreen() { return Fullscreen; }
 		void SetScale(int scale) { Scale = scale; }
 		inline int GetScale() { return Scale; }
-		void Set3dDepth(int depth3d) { Depth3d = depth3d; if (Depth3d) SetCursorEnabled(0); else SetCursorEnabled(1);}
-		inline int Get3dDepth() { return Depth3d; }
 		void SetFastQuit(bool fastquit) { FastQuit = fastquit; }
 		inline bool GetFastQuit() {return FastQuit; }
 
@@ -78,7 +77,6 @@ namespace ui
 		Graphics * g;
 		int Scale;
 		bool Fullscreen;
-		int Depth3d;
 
 		unsigned int FrameIndex;
 	private:
@@ -92,6 +90,7 @@ namespace ui
 		Window* state_;
 		Point windowTargetPosition;
 		int windowOpenState;
+		bool ignoreEvents = false;
 
 		bool running_;
 		bool break_;

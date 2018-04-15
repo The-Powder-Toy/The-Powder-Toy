@@ -2,7 +2,7 @@
 #ifdef USE_SDL
 
 #ifdef SDL_INC
-#include "SDL/SDL_mouse.h"
+#include "SDL2/SDL_mouse.h"
 #else
 #include "SDL_mouse.h"
 #endif

@@ -230,8 +230,10 @@ void Label::OnMouseUp(int x, int y, unsigned button)
 	selecting = false;
 }
 
-void Label::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+void Label::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
+	if (repeat)
+		return;
 	if(ctrl && key == 'c')
 	{
 		copySelection();

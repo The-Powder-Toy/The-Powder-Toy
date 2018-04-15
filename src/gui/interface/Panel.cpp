@@ -175,14 +175,14 @@ void Panel::Tick(float dt)
 		children[i]->Tick(dt);
 }
 
-void Panel::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+void Panel::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
-	XOnKeyPress(key, character, shift, ctrl, alt);
+	XOnKeyPress(key, scan, repeat, shift, ctrl, alt);
 }
 
-void Panel::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+void Panel::OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
-	XOnKeyRelease(key, character, shift, ctrl, alt);
+	XOnKeyRelease(key, scan, repeat, shift, ctrl, alt);
 }
 
 void Panel::OnMouseClick(int localx, int localy, unsigned button)
@@ -401,11 +401,11 @@ void Panel::XTick(float dt)
 {
 }
 
-void Panel::XOnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+void Panel::XOnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
 }
 
-void Panel::XOnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+void Panel::XOnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
 }
 
