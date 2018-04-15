@@ -190,11 +190,15 @@ void Component::Tick(float dt)
 {
 }
 
-void Component::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+void Component::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
 }
 
-void Component::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+void Component::OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
+{
+}
+
+void Component::OnTextInput(String text)
 {
 }
 

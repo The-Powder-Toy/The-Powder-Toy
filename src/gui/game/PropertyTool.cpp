@@ -23,7 +23,7 @@ public:
 	PropertyWindow(PropertyTool *tool_, Simulation *sim);
 	void SetProperty();
 	virtual void OnDraw();
-	virtual void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
+	virtual void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
 	virtual void OnTryExit(ExitMethod method);
 	virtual ~PropertyWindow() {}
 	class OkayAction: public ui::ButtonAction
@@ -217,7 +217,7 @@ void PropertyWindow::OnDraw()
 	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 200, 200, 200, 255);
 }
 
-void PropertyWindow::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+void PropertyWindow::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
 	if (key == SDLK_UP)
 		property->SetOption(property->GetOption().second-1);

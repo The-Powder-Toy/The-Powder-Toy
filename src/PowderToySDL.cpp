@@ -29,13 +29,6 @@
 #ifndef WIN
 #include <unistd.h>
 #endif
-#ifdef MACOSX
-#include <ApplicationServices/ApplicationServices.h>
-extern "C" {
-	char * readClipboard();
-	void writeClipboard(const char * clipboardData);
-}
-#endif
 
 #include "Format.h"
 
@@ -66,125 +59,22 @@ SDL_SysWMinfo sdl_wminfo;
 Atom XA_CLIPBOARD, XA_TARGETS, XA_UTF8_STRING;
 #endif
 
-ByteString clipboardText = "";
-
 int desktopWidth = 1280, desktopHeight = 1024;
 
-SDL_Surface * sdl_scrn;
+SDL_Window * sdl_window;
+SDL_Renderer * sdl_renderer;
+SDL_Texture * sdl_texture;
 int scale = 1;
 bool fullscreen = false;
 
 void ClipboardPush(ByteString text)
 {
-	clipboardText = text;
-#ifdef MACOSX
-	writeClipboard(text.c_str());
-#elif defined(WIN)
-	if (OpenClipboard(NULL))
-	{
-		HGLOBAL cbuffer;
-		char * glbuffer;
-
-		EmptyClipboard();
-
-		cbuffer = GlobalAlloc(GMEM_DDESHARE, text.size() + 1);
-		glbuffer = (char*)GlobalLock(cbuffer);
-
-		strcpy(glbuffer, text.c_str());
-
-		GlobalUnlock(cbuffer);
-		SetClipboardData(CF_TEXT, cbuffer);
-		CloseClipboard();
-	}
-#elif defined(LIN) && defined(SDL_VIDEO_DRIVER_X11)
-	sdl_wminfo.info.x11.lock_func();
-	XSetSelectionOwner(sdl_wminfo.info.x11.display, XA_CLIPBOARD, sdl_wminfo.info.x11.window, CurrentTime);
-	XFlush(sdl_wminfo.info.x11.display);
-	sdl_wminfo.info.x11.unlock_func();
-#else
-	printf("Not implemented: put text on clipboard \"%s\"\n", text.c_str());
-#endif
+	SDL_SetClipboardText(text.c_str());
 }
-
-void EventProcess(SDL_Event event);
 
 ByteString ClipboardPull()
 {
-#ifdef MACOSX
-	const char *text = readClipboard();
-	return text ? ByteString(text) : "";
-#elif defined(WIN)
-	if (OpenClipboard(NULL))
-	{
-		HANDLE cbuffer;
-		char * glbuffer;
-
-		cbuffer = GetClipboardData(CF_TEXT);
-		glbuffer = (char*)GlobalLock(cbuffer);
-		GlobalUnlock(cbuffer);
-		CloseClipboard();
-		return glbuffer ? ByteString(glbuffer) : "";
-	}
-#elif defined(LIN) && defined(SDL_VIDEO_DRIVER_X11)
-	ByteString text = "";
-	Window selectionOwner;
-	sdl_wminfo.info.x11.lock_func();
-	selectionOwner = XGetSelectionOwner(sdl_wminfo.info.x11.display, XA_CLIPBOARD);
-	if (selectionOwner != None)
-	{
-		unsigned char *data = NULL;
-		Atom type;
-		int format, result;
-		unsigned long len, bytesLeft;
-		XConvertSelection(sdl_wminfo.info.x11.display, XA_CLIPBOARD, XA_UTF8_STRING, XA_CLIPBOARD, sdl_wminfo.info.x11.window, CurrentTime);
-		XFlush(sdl_wminfo.info.x11.display);
-		sdl_wminfo.info.x11.unlock_func();
-		while (1)
-		{
-			SDL_Event event;
-			SDL_WaitEvent(&event);
-			if (event.type == SDL_SYSWMEVENT)
-			{
-				XEvent xevent = event.syswm.msg->event.xevent;
-				if (xevent.type == SelectionNotify && xevent.xselection.requestor == sdl_wminfo.info.x11.window)
-					break;
-				else
-					EventProcess(event);
-			}
-			else
-				EventProcess(event);
-		}
-		sdl_wminfo.info.x11.lock_func();
-		XGetWindowProperty(sdl_wminfo.info.x11.display, sdl_wminfo.info.x11.window, XA_CLIPBOARD, 0, 0, 0, AnyPropertyType, &type, &format, &len, &bytesLeft, &data);
-		if (data)
-		{
-			XFree(data);
-			data = NULL;
-		}
-		if (bytesLeft)
-		{
-			result = XGetWindowProperty(sdl_wminfo.info.x11.display, sdl_wminfo.info.x11.window, XA_CLIPBOARD, 0, bytesLeft, 0, AnyPropertyType, &type, &format, &len, &bytesLeft, &data);
-			if (result == Success)
-			{
-				text = data ? ByteString((char const *)data) : "";
-				XFree(data);
-			}
-			else
-			{
-				printf("Failed to pull from clipboard\n");
-				return "?";
-			}
-		}
-		else
-			return "";
-		XDeleteProperty(sdl_wminfo.info.x11.display, sdl_wminfo.info.x11.window, XA_CLIPBOARD);
-	}
-	sdl_wminfo.info.x11.unlock_func();
-	return text;
-#else
-	printf("Not implemented: get text from clipboard\n");
-#endif
-	return clipboardText;
+	return ByteString(SDL_GetClipboardText());
 }
 
 int mousex = 0, mousey = 0;
@@ -194,259 +84,12 @@ void blit()
 	SDL_GL_SwapBuffers();
 }
 #else
-void DrawPixel(pixel * vid, pixel color, int x, int y)
-{
-	if (x >= 0 && x < WINDOWW && y >= 0 && y < WINDOWH)
-		vid[x+y*WINDOWW] = color;
-}
-// draws a custom cursor, used to make 3D mode work properly (normal cursor ruins the effect)
-void DrawCursor(pixel * vid)
-{
-	for (int j = 0; j <= 9; j++)
-	{
-		for (int i = 0; i <= j; i++)
-		{
-			if (i == 0 || i == j)
-				DrawPixel(vid, 0xFFFFFFFF, mousex+i, mousey+j);
-			else
-				DrawPixel(vid, 0xFF000000, mousex+i, mousey+j);
-		}
-	}
-	DrawPixel(vid, 0xFFFFFFFF, mousex, mousey+10);
-	for (int i = 0; i < 5; i++)
-	{
-		DrawPixel(vid, 0xFF000000, mousex+1+i, mousey+10);
-		DrawPixel(vid, 0xFFFFFFFF, mousex+6+i, mousey+10);
-	}
-	DrawPixel(vid, 0xFFFFFFFF, mousex, mousey+11);
-	DrawPixel(vid, 0xFF000000, mousex+1, mousey+11);
-	DrawPixel(vid, 0xFF000000, mousex+2, mousey+11);
-	DrawPixel(vid, 0xFFFFFFFF, mousex+3, mousey+11);
-	DrawPixel(vid, 0xFF000000, mousex+4, mousey+11);
-	DrawPixel(vid, 0xFF000000, mousex+5, mousey+11);
-	DrawPixel(vid, 0xFFFFFFFF, mousex+6, mousey+11);
-
-	DrawPixel(vid, 0xFFFFFFFF, mousex, mousey+12);
-	DrawPixel(vid, 0xFF000000, mousex+1, mousey+12);
-	DrawPixel(vid, 0xFFFFFFFF, mousex+2, mousey+12);
-	DrawPixel(vid, 0xFFFFFFFF, mousex+4, mousey+12);
-	DrawPixel(vid, 0xFF000000, mousex+5, mousey+12);
-	DrawPixel(vid, 0xFF000000, mousex+6, mousey+12);
-	DrawPixel(vid, 0xFFFFFFFF, mousex+7, mousey+12);
-
-	DrawPixel(vid, 0xFFFFFFFF, mousex, mousey+13);
-	DrawPixel(vid, 0xFFFFFFFF, mousex+1, mousey+13);
-	DrawPixel(vid, 0xFFFFFFFF, mousex+4, mousey+13);
-	DrawPixel(vid, 0xFF000000, mousex+5, mousey+13);
-	DrawPixel(vid, 0xFF000000, mousex+6, mousey+13);
-	DrawPixel(vid, 0xFFFFFFFF, mousex+7, mousey+13);
-
-	DrawPixel(vid, 0xFFFFFFFF, mousex, mousey+14);
-	for (int i = 0; i < 2; i++)
-	{
-		DrawPixel(vid, 0xFFFFFFFF, mousex+5, mousey+14+i);
-		DrawPixel(vid, 0xFF000000, mousex+6, mousey+14+i);
-		DrawPixel(vid, 0xFF000000, mousex+7, mousey+14+i);
-		DrawPixel(vid, 0xFFFFFFFF, mousex+8, mousey+14+i);
-
-		DrawPixel(vid, 0xFFFFFFFF, mousex+6, mousey+16+i);
-		DrawPixel(vid, 0xFF000000, mousex+7, mousey+16+i);
-		DrawPixel(vid, 0xFF000000, mousex+8, mousey+16+i);
-		DrawPixel(vid, 0xFFFFFFFF, mousex+9, mousey+16+i);
-	}
-
-	DrawPixel(vid, 0xFFFFFFFF, mousex+7, mousey+18);
-	DrawPixel(vid, 0xFFFFFFFF, mousex+8, mousey+18);
-}
 void blit(pixel * vid)
 {
-	if (sdl_scrn)
-	{
-		int depth3d = ui::Engine::Ref().Get3dDepth();
-		if (depth3d)
-			DrawCursor(vid);
-		pixel * src = vid;
-		int j, x = 0, y = 0, w = WINDOWW, h = WINDOWH, pitch = WINDOWW;
-		pixel *dst;
-		if (SDL_MUSTLOCK(sdl_scrn))
-			if (SDL_LockSurface(sdl_scrn)<0)
-				return;
-		dst=(pixel *)sdl_scrn->pixels+y*sdl_scrn->pitch/PIXELSIZE+x;
-		if (SDL_MapRGB(sdl_scrn->format,0x33,0x55,0x77)!=PIXPACK(0x335577))
-		{
-			//pixel format conversion, used for strange formats (OS X specifically)
-			int i;
-			unsigned int red, green, blue;
-			pixel px, lastpx, nextpx;
-			SDL_PixelFormat *fmt = sdl_scrn->format;
-			if(depth3d)
-			{
-				for (j=0; j<h; j++)
-				{
-					for (i=0; i<w; i++)
-					{
-						lastpx = i >= depth3d && i < w+depth3d ? src[i-depth3d] : 0;
-						nextpx = i >= -depth3d && i < w-depth3d ? src[i+depth3d] : 0;
-						int redshift = PIXB(lastpx) + PIXG(lastpx);
-						if (redshift > 255)
-							redshift = 255;
-						int blueshift = PIXR(nextpx) + PIXG(nextpx);
-						if (blueshift > 255)
-							blueshift = 255;
-						red = ((int)(PIXR(lastpx)*.69f+redshift*.3f)>>fmt->Rloss)<<fmt->Rshift;
-						green = ((int)(PIXG(nextpx)*.3f)>>fmt->Gloss)<<fmt->Gshift;
-						blue = ((int)(PIXB(nextpx)*.69f+blueshift*.3f)>>fmt->Bloss)<<fmt->Bshift;
-						dst[i] = red|green|blue;
-					}
-					dst+=sdl_scrn->pitch/PIXELSIZE;
-					src+=pitch;
-				}
-			}
-			else
-			{
-				for (j=0; j<h; j++)
-				{
-					for (i=0; i<w; i++)
-					{
-						px = src[i];
-						red = (PIXR(px)>>fmt->Rloss)<<fmt->Rshift;
-						green = (PIXG(px)>>fmt->Gloss)<<fmt->Gshift;
-						blue = (PIXB(px)>>fmt->Bloss)<<fmt->Bshift;
-						dst[i] = red|green|blue;
-					}
-					dst+=sdl_scrn->pitch/PIXELSIZE;
-					src+=pitch;
-				}
-			}
-		}
-		else
-		{
-			int i;
-			if(depth3d)
-			{
-				pixel lastpx, nextpx;
-				for (j=0; j<h; j++)
-				{
-					for (i=0; i<w; i++)
-					{
-						lastpx = i >= depth3d && i < w+depth3d ? src[i-depth3d] : 0;
-						nextpx = i >= -depth3d && i < w-depth3d ? src[i+depth3d] : 0;
-						int redshift = PIXB(lastpx) + PIXG(lastpx);
-						if (redshift > 255)
-							redshift = 255;
-						int blueshift = PIXR(nextpx) + PIXG(nextpx);
-						if (blueshift > 255)
-							blueshift = 255;
-						dst[i] = PIXRGB((int)(PIXR(lastpx)*.69f+redshift*.3f), (int)(PIXG(nextpx)*.3f), (int)(PIXB(nextpx)*.69f+blueshift*.3f));
-					}
-					dst+=sdl_scrn->pitch/PIXELSIZE;
-					src+=pitch;
-				}
-			}
-			else
-			{
-				for (j=0; j<h; j++)
-				{
-					memcpy(dst, src, w*PIXELSIZE);
-					dst+=sdl_scrn->pitch/PIXELSIZE;
-					src+=pitch;
-				}
-			}
-		}
-		if (SDL_MUSTLOCK(sdl_scrn))
-			SDL_UnlockSurface(sdl_scrn);
-		SDL_UpdateRect(sdl_scrn,0,0,0,0);
-	}
-}
-void blit2(pixel * vid, int currentScale)
-{
-	if (sdl_scrn)
-	{
-		int depth3d = ui::Engine::Ref().Get3dDepth();
-		if (depth3d)
-			DrawCursor(vid);
-		pixel * src = vid;
-		int j, x = 0, y = 0, w = WINDOWW, h = WINDOWH, pitch = WINDOWW;
-		pixel *dst;
-		pixel px, lastpx, nextpx;
-		int i,k,sx;
-		if (SDL_MUSTLOCK(sdl_scrn))
-			if (SDL_LockSurface(sdl_scrn)<0)
-				return;
-		dst=(pixel *)sdl_scrn->pixels+y*sdl_scrn->pitch/PIXELSIZE+x;
-		if (SDL_MapRGB(sdl_scrn->format,0x33,0x55,0x77)!=PIXPACK(0x335577))
-		{
-			//pixel format conversion
-			SDL_PixelFormat *fmt = sdl_scrn->format;
-			int red, green, blue;
-			for (j=0; j<h; j++)
-			{
-				for (k=0; k<currentScale; k++)
-				{
-					for (i=0; i<w; i++)
-					{
-						if (depth3d)
-						{
-							lastpx = i >= depth3d && i < w+depth3d ? src[i-depth3d] : 0;
-							nextpx = i >= -depth3d && i < w-depth3d ? src[i+depth3d] : 0;
-							int redshift = PIXB(lastpx) + PIXG(lastpx);
-							if (redshift > 255)
-								redshift = 255;
-							int blueshift = PIXR(nextpx) + PIXG(nextpx);
-							if (blueshift > 255)
-								blueshift = 255;
-							red = ((int)(PIXR(lastpx)*.69f+redshift*.3f)>>fmt->Rloss)<<fmt->Rshift;
-							green = ((int)(PIXG(nextpx)*.3f)>>fmt->Gloss)<<fmt->Gshift;
-							blue = ((int)(PIXB(nextpx)*.69f+blueshift*.3f)>>fmt->Bloss)<<fmt->Bshift;
-						}
-						else
-						{
-							px = src[i];
-							red = (PIXR(px)>>fmt->Rloss)<<fmt->Rshift;
-							green = (PIXG(px)>>fmt->Gloss)<<fmt->Gshift;
-							blue = (PIXB(px)>>fmt->Bloss)<<fmt->Bshift;
-						}
-						for (sx=0; sx<currentScale; sx++)
-							dst[i*currentScale+sx] = red|green|blue;
-					}
-					dst+=sdl_scrn->pitch/PIXELSIZE;
-				}
-				src+=pitch;
-			}
-		}
-		else
-		{
-			for (j=0; j<h; j++)
-			{
-				for (k=0; k<currentScale; k++)
-				{
-					for (i=0; i<w; i++)
-					{
-						px = src[i];
-						if (depth3d)
-						{
-							lastpx = i >= depth3d && i < w+depth3d ? src[i-depth3d] : 0;
-							nextpx = i >= -depth3d && i < w-depth3d ? src[i+depth3d] : 0;
-							int redshift = PIXB(lastpx) + PIXG(lastpx);
-							if (redshift > 255)
-								redshift = 255;
-							int blueshift = PIXR(nextpx) + PIXG(nextpx);
-							if (blueshift > 255)
-								blueshift = 255;
-							px = PIXRGB((int)(PIXR(lastpx)*.69f+redshift*.3f), (int)(PIXG(nextpx)*.3f), (int)(PIXB(nextpx)*.69f+blueshift*.3f));
-						}
-						for (sx=0; sx<currentScale; sx++)
-							dst[i*currentScale+sx] = px;
-					}
-					dst+=sdl_scrn->pitch/PIXELSIZE;
-				}
-				src+=pitch;
-			}
-		}
-		if (SDL_MUSTLOCK(sdl_scrn))
-			SDL_UnlockSurface(sdl_scrn);
-		SDL_UpdateRect(sdl_scrn,0,0,0,0);
-	}
+	SDL_UpdateTexture(sdl_texture, NULL, vid, WINDOWW * sizeof (Uint32));
+	SDL_RenderClear(sdl_renderer);
+	SDL_RenderCopy(sdl_renderer, sdl_texture, NULL, NULL);
+	SDL_RenderPresent(sdl_renderer);
 }
 #endif
 
@@ -460,10 +103,12 @@ int SDLOpen()
 		fprintf(stderr, "Initializing SDL: %s\n", SDL_GetError());
 		return 1;
 	}
-	const SDL_VideoInfo * vidInfo = SDL_GetVideoInfo();
-	desktopWidth = vidInfo->current_w;
-	desktopHeight = vidInfo->current_h;
-	SDL_EnableUNICODE(1);
+
+	SDL_DisplayMode SDLDisplayMode;
+	SDL_GetCurrentDisplayMode(0, &SDLDisplayMode);
+	desktopWidth = SDLDisplayMode.w;
+	desktopHeight = SDLDisplayMode.h;
+
 #if defined(WIN) && defined(WINCONSOLE)
 	//On Windows, SDL redirects stdout to stdout.txt, which can be annoying when debugging, here we redirect back to the console
 	if (console)
@@ -490,33 +135,31 @@ int SDLOpen()
 	SendMessage(WindowHandle, WM_SETICON, ICON_BIG, (LPARAM)hIconBig);
 #elif defined(LIN)
 	SDL_Surface *icon = SDL_CreateRGBSurfaceFrom((void*)app_icon, 48, 48, 24, 144, 0x00FF0000, 0x0000FF00, 0x000000FF, 0);
-	SDL_WM_SetIcon(icon, (Uint8*)app_icon_bitmap);
+	//SDL_WM_SetIcon(icon, (Uint8*)app_icon_bitmap);
+	SDL_SetWindowIcon(sdl_window, icon);
 	SDL_FreeSurface(icon);
 #endif
 
-	SDL_WM_SetCaption("The Powder Toy", "Powder Toy");
-	//SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 	atexit(SDL_Quit);
 
 	return 0;
 }
 
-SDL_Surface * SDLSetScreen(int newScale, bool newFullscreen)
+void SDLSetScreen(int newScale, bool newFullscreen)
 {
+	SDL_DestroyTexture(sdl_texture);
+	SDL_DestroyRenderer(sdl_renderer);
+	SDL_DestroyWindow(sdl_window);
 	scale = newScale;
 	fullscreen = newFullscreen;
-	SDL_Surface * surface;
-#ifndef OGLI
-	surface = SDL_SetVideoMode(WINDOWW * newScale, WINDOWH * newScale, 32, SDL_SWSURFACE | (newFullscreen?SDL_FULLSCREEN:0));
-#else
-	surface = SDL_SetVideoMode(WINDOWW * newScale, WINDOWH * newScale, 32, SDL_OPENGL | SDL_RESIZABLE | (newFullscreen?SDL_FULLSCREEN:0));
-#endif
-	return surface;
-}
-
-void SetCursorEnabled(int enabled)
-{
-	SDL_ShowCursor(enabled);
+	sdl_window = SDL_CreateWindow("The Powder Toy", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOWW * newScale, WINDOWH * newScale,
+								  newFullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+	sdl_renderer = SDL_CreateRenderer(sdl_window, -1, 0);
+	if (newScale > 1)
+		SDL_RenderSetLogicalSize(sdl_renderer, WINDOWW, WINDOWH);
+	sdl_texture = SDL_CreateTexture(sdl_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, WINDOWW, WINDOWH);
+	//SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
+	//SDL_SetWindowResizable(sdl_window, SDL_TRUE);
 }
 
 unsigned int GetTicks()
@@ -588,7 +231,7 @@ std::map<ByteString, ByteString> readArguments(int argc, char * argv[])
 	return arguments;
 }
 
-SDLKey MapNumpad(SDLKey key)
+/*SDLKey MapNumpad(SDLKey key)
 {
 	switch(key)
 	{
@@ -613,18 +256,20 @@ SDLKey MapNumpad(SDLKey key)
 	default:
 		return key;
 	}
-}
+}*/
 
 int elapsedTime = 0, currentTime = 0, lastTime = 0, currentFrame = 0;
 unsigned int lastTick = 0;
-float fps = 0, delta = 1.0f, inputScale = 1.0f;
+float fps = 0, delta = 1.0f;
+float inputScaleH = 1.0f, inputScaleV = 1.0f;
 ui::Engine * engine = NULL;
 bool showDoubleScreenDialog = false;
 float currentWidth, currentHeight;
 
 void EventProcess(SDL_Event event)
 {
-	if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP)
+	//inputScale= 1.0f;
+	/*if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP)
 	{
 		if (event.key.keysym.unicode==0)
 		{
@@ -638,7 +283,7 @@ void EventProcess(SDL_Event event)
 				event.key.keysym.unicode = 0;
 			}
 		}
-	}
+	}*/
 	switch (event.type)
 	{
 	case SDL_QUIT:
@@ -646,106 +291,61 @@ void EventProcess(SDL_Event event)
 			engine->Exit();
 		break;
 	case SDL_KEYDOWN:
-		if (event.key.keysym.sym == 'q' && (event.key.keysym.mod&KMOD_CTRL))
+		if (!event.key.repeat && event.key.keysym.sym == 'q' && (event.key.keysym.mod&KMOD_CTRL))
 			engine->ConfirmExit();
 		else
-			engine->onKeyPress(event.key.keysym.sym, event.key.keysym.unicode, event.key.keysym.mod&KMOD_SHIFT, event.key.keysym.mod&KMOD_CTRL, event.key.keysym.mod&KMOD_ALT);
+			engine->onKeyPress(event.key.keysym.sym, event.key.keysym.scancode, event.key.repeat, event.key.keysym.mod&KMOD_SHIFT, event.key.keysym.mod&KMOD_CTRL, event.key.keysym.mod&KMOD_ALT);
 		break;
 	case SDL_KEYUP:
-		engine->onKeyRelease(event.key.keysym.sym, event.key.keysym.unicode, event.key.keysym.mod&KMOD_SHIFT, event.key.keysym.mod&KMOD_CTRL, event.key.keysym.mod&KMOD_ALT);
+		engine->onKeyRelease(event.key.keysym.sym, event.key.keysym.scancode, event.key.repeat, event.key.keysym.mod&KMOD_SHIFT, event.key.keysym.mod&KMOD_CTRL, event.key.keysym.mod&KMOD_ALT);
 		break;
+	case SDL_TEXTINPUT:
+		engine->onTextInput(ByteString(event.text.text).FromUtf8());
+		break;
+	case SDL_MOUSEWHEEL:
+	{
+		int x = event.wheel.x;
+		int y = event.wheel.y;
+		if (event.wheel.direction == SDL_MOUSEWHEEL_FLIPPED)
+		{
+			x *= -1;
+			y *= -1;
+		}
+		bool positiveDir = y == 0 ? x > 0 : y > 0;
+		engine->onMouseWheel(event.motion.x * inputScaleH, event.motion.y * inputScaleV, positiveDir ? 1 : -1);
+		break;
+	}
 	case SDL_MOUSEMOTION:
-		engine->onMouseMove(event.motion.x*inputScale, event.motion.y*inputScale);
-		mousex = event.motion.x*inputScale;
-		mousey = event.motion.y*inputScale;
+		engine->onMouseMove(event.motion.x * inputScaleH, event.motion.y * inputScaleV);
+		mousex = event.motion.x * inputScaleH;
+		mousey = event.motion.y * inputScaleV;
 		break;
 	case SDL_MOUSEBUTTONDOWN:
-		if (event.button.button == SDL_BUTTON_WHEELUP)
-		{
-			engine->onMouseWheel(event.motion.x*inputScale, event.motion.y*inputScale, 1);
-		}
-		else if (event.button.button == SDL_BUTTON_WHEELDOWN)
-		{
-			engine->onMouseWheel(event.motion.x*inputScale, event.motion.y*inputScale, -1);
-		}
-		else
-		{
-			engine->onMouseClick(event.motion.x*inputScale, event.motion.y*inputScale, event.button.button);
-		}
-		mousex = event.motion.x*inputScale;
-		mousey = event.motion.y*inputScale;
+		engine->onMouseClick(event.motion.x * inputScaleH, event.motion.y * inputScaleV, event.button.button);
+		mousex = event.motion.x * inputScaleH;
+		mousey = event.motion.y * inputScaleV;
 		break;
 	case SDL_MOUSEBUTTONUP:
-		if (event.button.button != SDL_BUTTON_WHEELUP && event.button.button != SDL_BUTTON_WHEELDOWN)
-			engine->onMouseUnclick(event.motion.x*inputScale, event.motion.y*inputScale, event.button.button);
-		mousex = event.motion.x*inputScale;
-		mousey = event.motion.y*inputScale;
+		engine->onMouseUnclick(event.motion.x * inputScaleH, event.motion.y * inputScaleV, event.button.button);
+		mousex = event.motion.x * inputScaleH;
+		mousey = event.motion.y * inputScaleV;
 		break;
-#ifdef OGLI
-	case SDL_VIDEORESIZE:
+	case SDL_WINDOWEVENT:
 	{
-		float ratio = (float)WINDOWW / WINDOWH;
-		float width = event.resize.w;
-		float height = width/ratio;
-
-		sdl_scrn = SDL_SetVideoMode(event.resize.w, height, 32, SDL_OPENGL | SDL_RESIZABLE);
-
-		glViewport(0, 0, width, height);
-		engine->g->Reset();
-		//glScaled(width/currentWidth, height/currentHeight, 1.0f);
+		if (event.window.event != SDL_WINDOWEVENT_RESIZED)
+			break;
+		float width = event.window.data1;
+		float height = event.window.data2;
 
 		currentWidth = width;
 		currentHeight = height;
-		inputScale = (float)WINDOWW/currentWidth;
+		// this "* scale" thing doesn't really work properly
+		// currently there is a bug where input doesn't scale properly after resizing, only when double scale mode is active
+		inputScaleH = (float)WINDOWW * scale / currentWidth;
+		inputScaleV = (float)WINDOWH * scale / currentHeight;
 
-		glLineWidth(currentWidth/(float)WINDOWW);
-		if(sdl_scrn == NULL)
-		{
-			std::cerr << "Oh bugger" << std::endl;
-		}
 		break;
 	}
-#endif
-#if defined (USE_SDL) && defined(LIN) && defined(SDL_VIDEO_DRIVER_X11)
-	case SDL_SYSWMEVENT:
-		if (event.syswm.msg->subsystem != SDL_SYSWM_X11)
-			break;
-		sdl_wminfo.info.x11.lock_func();
-		XEvent xe = event.syswm.msg->event.xevent;
-		if (xe.type==SelectionClear)
-		{
-			clipboardText = "";
-		}
-		else if (xe.type==SelectionRequest)
-		{
-			XEvent xr;
-			xr.xselection.type = SelectionNotify;
-			xr.xselection.requestor = xe.xselectionrequest.requestor;
-			xr.xselection.selection = xe.xselectionrequest.selection;
-			xr.xselection.target = xe.xselectionrequest.target;
-			xr.xselection.property = xe.xselectionrequest.property;
-			xr.xselection.time = xe.xselectionrequest.time;
-			if (xe.xselectionrequest.target==XA_TARGETS)
-			{
-				// send list of supported formats
-				Atom targets[] = {XA_TARGETS, XA_STRING, XA_UTF8_STRING};
-				xr.xselection.property = xe.xselectionrequest.property;
-				XChangeProperty(sdl_wminfo.info.x11.display, xe.xselectionrequest.requestor, xe.xselectionrequest.property, XA_ATOM, 32, PropModeReplace, (unsigned char*)targets, (int)(sizeof(targets)/sizeof(Atom)));
-			}
-			// TODO: Supporting more targets would be nice
-			else if ((xe.xselectionrequest.target==XA_STRING || xe.xselectionrequest.target==XA_UTF8_STRING))
-			{
-				XChangeProperty(sdl_wminfo.info.x11.display, xe.xselectionrequest.requestor, xe.xselectionrequest.property, xe.xselectionrequest.target, 8, PropModeReplace, (unsigned char*)clipboardText.c_str(), clipboardText.size()+1);
-			}
-			else
-			{
-				// refuse clipboard request
-				xr.xselection.property = None;
-			}
-			XSendEvent(sdl_wminfo.info.x11.display, xe.xselectionrequest.requestor, 0, 0, &xr);
-		}
-		sdl_wminfo.info.x11.unlock_func();
-#endif
 	}
 }
 
@@ -786,17 +386,13 @@ void EngineProcess()
 
 		if(scale != engine->Scale || fullscreen != engine->Fullscreen)
 		{
-			sdl_scrn = SDLSetScreen(engine->Scale, engine->Fullscreen);
-			inputScale = 1.0f/(float)scale;
+			SDLSetScreen(engine->Scale, engine->Fullscreen);
 		}
 
 #ifdef OGLI
 		blit();
 #else
-		if(engine->Scale > 1)
-			blit2(engine->g->vid, engine->Scale);
-		else
-			blit(engine->g->vid);
+		blit(engine->g->vid);
 #endif
 
 		int frameTime = SDL_GetTicks() - frameStart;
@@ -914,7 +510,8 @@ bool SaveWindowPosition()
 
 #endif
 
-void BlueScreen(String detailMessage){
+void BlueScreen(String detailMessage)
+{
 	ui::Engine * engine = &ui::Engine::Ref();
 	engine->g->fillrect(0, 0, engine->GetWidth(), engine->GetHeight(), 17, 114, 169, 210);
 
@@ -948,10 +545,7 @@ void BlueScreen(String detailMessage){
 #ifdef OGLI
 		blit();
 #else
-		if(engine->Scale > 1)
-			blit2(engine->g->vid, engine->Scale);
-		else
-			blit(engine->g->vid);
+		blit(engine->g->vid);
 #endif
 	}
 }
@@ -1047,7 +641,7 @@ int main(int argc, char * argv[])
 #ifdef WIN
 	LoadWindowPosition(tempScale);
 #endif
-	sdl_scrn = SDLSetScreen(tempScale, tempFullscreen);
+	SDLSetScreen(tempScale, tempFullscreen);
 
 #ifdef OGLI
 	SDL_GL_SetAttribute (SDL_GL_DOUBLEBUFFER, 1);
@@ -1061,26 +655,8 @@ int main(int argc, char * argv[])
 		exit(-1);
 	}
 #endif
-#if defined (USE_SDL) && defined(LIN) && defined(SDL_VIDEO_DRIVER_X11)
-	SDL_EventState(SDL_SYSWMEVENT, SDL_ENABLE);
-	SDL_VERSION(&sdl_wminfo.version);
-	if(SDL_GetWMInfo(&sdl_wminfo) > 0)
-	{
-		sdl_wminfo.info.x11.lock_func();
-		XA_CLIPBOARD = XInternAtom(sdl_wminfo.info.x11.display, "CLIPBOARD", 1);
-		XA_TARGETS = XInternAtom(sdl_wminfo.info.x11.display, "TARGETS", 1);
-		XA_UTF8_STRING = XInternAtom(sdl_wminfo.info.x11.display, "UTF8_STRING", 1);
-		sdl_wminfo.info.x11.unlock_func();
-	}
-	else
-	{
-		fprintf(stderr, "X11 setup failed, X11 window info not found");
-		exit(-1);
-	}
-#endif
 	ui::Engine::Ref().g = new Graphics();
 	ui::Engine::Ref().Scale = scale;
-	inputScale = 1.0f/float(scale);
 	ui::Engine::Ref().Fullscreen = fullscreen;
 
 	engine = &ui::Engine::Ref();
@@ -1156,10 +732,7 @@ int main(int argc, char * argv[])
 #ifdef OGLI
 			blit();
 #else
-			if(engine->Scale > 1)
-				blit2(engine->g->vid, engine->Scale);
-			else
-				blit(engine->g->vid);
+			blit(engine->g->vid);
 #endif
 			ByteString ptsaveArg = arguments["ptsave"];
 			try
@@ -1208,7 +781,7 @@ int main(int argc, char * argv[])
 		//initial mouse coords
 		int sdl_x, sdl_y;
 		SDL_GetMouseState(&sdl_x, &sdl_y);
-		engine->onMouseMove(sdl_x*inputScale, sdl_y*inputScale);
+		engine->onMouseMove(sdl_x * inputScaleH, sdl_y * inputScaleV);
 		EngineProcess();
 
 #ifdef WIN

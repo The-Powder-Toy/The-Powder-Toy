@@ -2288,17 +2288,7 @@ int LuaScriptInterface::renderer_debugHUD(lua_State * l)
 
 int LuaScriptInterface::renderer_depth3d(lua_State * l)
 {
-	int acount = lua_gettop(l);
-	if (acount == 0)
-	{
-		lua_pushnumber(l, ui::Engine::Ref().Get3dDepth());
-		return 1;
-	}
-	int depth3d = luaL_optint(l, 1, -3);
-	if (depth3d < -30 || depth3d > 30)
-		return luaL_error(l, "3D depth is too large");
-	ui::Engine::Ref().Set3dDepth(depth3d);
-	return 0;
+	return luaL_error(l, "This feature is no longer supported");
 }
 
 void LuaScriptInterface::initElementsAPI()
@@ -3374,12 +3364,12 @@ bool LuaScriptInterface::OnMouseWheel(int x, int y, int d)
 	return luacon_mouseevent(x, y, luacon_mousedown?luacon_mousebutton:0, 0, d);
 }
 
-bool LuaScriptInterface::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+bool LuaScriptInterface::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
-	return luacon_keyevent(key, character, GetModifiers(), LUACON_KDOWN);
+	return luacon_keyevent(key, scan, GetModifiers(), LUACON_KDOWN);
 }
 
-bool LuaScriptInterface::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+bool LuaScriptInterface::OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
 	int modifiers = 0;
 	if(shift)

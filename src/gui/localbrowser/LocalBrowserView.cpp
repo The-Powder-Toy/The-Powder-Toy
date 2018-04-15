@@ -266,16 +266,20 @@ void LocalBrowserView::OnMouseWheel(int x, int y, int d)
 		c->PrevPage();
 }
 
-void LocalBrowserView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+void LocalBrowserView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
+	if (repeat)
+		return;
 	if (key == SDLK_ESCAPE)
 		c->Exit();
 	else if (key == SDLK_LCTRL || key == SDLK_RCTRL)
 		c->SetMoveToFront(false);
 }
 
-void LocalBrowserView::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+void LocalBrowserView::OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
+	if (repeat)
+		return;
 	if (key == SDLK_LCTRL || key == SDLK_RCTRL)
 		c->SetMoveToFront(true);
 }

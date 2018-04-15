@@ -8,7 +8,6 @@ OptionsController::OptionsController(GameModel * gModel_, ControllerCallback * c
 	callback(callback_),
 	HasExited(false)
 {
-	this->depth3d = ui::Engine::Ref().Get3dDepth();
 	view = new OptionsView();
 	model = new OptionsModel(gModel);
 	model->AddObserver(view);
@@ -71,11 +70,6 @@ void OptionsController::SetFastQuit(bool fastquit)
 	model->SetFastQuit(fastquit);
 }
 
-void OptionsController::Set3dDepth(int depth)
-{
-	depth3d = depth;
-}
-
 OptionsView * OptionsController::GetView()
 {
 	return view;
@@ -84,8 +78,6 @@ OptionsView * OptionsController::GetView()
 void OptionsController::Exit()
 {
 	view->CloseActiveWindow();
-	// only update on close, it would be hard to edit if the changes were live
-	ui::Engine::Ref().Set3dDepth(depth3d);
 
 	if (callback)
 		callback->ControllerExit();

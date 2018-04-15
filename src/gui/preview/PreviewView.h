@@ -85,7 +85,7 @@ public:
 	virtual void OnTryExit(ExitMethod method);
 	virtual void OnMouseWheel(int x, int y, int d);
 	virtual void OnMouseUp(int x, int y, unsigned int button);
-	virtual void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
+	virtual void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
 	virtual ~PreviewView();
 };
 

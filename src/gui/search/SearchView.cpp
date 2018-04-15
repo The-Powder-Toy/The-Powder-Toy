@@ -798,16 +798,20 @@ void SearchView::OnMouseWheel(int x, int y, int d)
 	else
 		c->PrevPage();
 }
-void SearchView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+void SearchView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
+	if (repeat)
+		return;
 	if (key == SDLK_ESCAPE)
 		c->Exit();
 	else if (key == SDLK_LCTRL || key == SDLK_RCTRL)
 		c->InstantOpen(true);
 }
 
-void SearchView::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+void SearchView::OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
+	if (repeat)
+		return;
 	if (key == SDLK_LCTRL || key == SDLK_RCTRL)
 		c->InstantOpen(false);
 }

@@ -25,7 +25,7 @@ public:
 	TagsView();
 	virtual void OnDraw();
 	void AttachController(TagsController * c_) { c = c_; }
-	virtual void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
+	virtual void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
 	void NotifyTagsChanged(TagsModel * sender);
 	virtual ~TagsView();
 };

@@ -19,6 +19,9 @@ public:
 class Textbox : public Label
 {
 	friend class TextboxAction;
+
+	void AfterTextChange(bool changed);
+
 public:
 	bool ReadOnly;
 	enum ValidInput { All, Multiline, Numeric, Number }; // Numeric doesn't delete trailing 0's
@@ -44,16 +47,18 @@ public:
 	void resetCursorPosition();
 	void TabFocus();
 	//Determines if the given character is valid given the input type
-	bool CharacterValid(Uint16 character);
+	bool CharacterValid(int character);
+	bool StringValid(String text);
 
 	virtual void Tick(float dt);
 	virtual void OnContextMenuAction(int item);
 	virtual void OnMouseClick(int x, int y, unsigned button);
 	virtual void OnMouseUp(int x, int y, unsigned button);
 	virtual void OnMouseMoved(int localx, int localy, int dx, int dy);
-	virtual void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
-	virtual void OnVKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
-	virtual void OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt);
+	virtual void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
+	virtual void OnVKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
+	virtual void OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
+	void OnTextInput(String text) override;
 	virtual void Draw(const Point& screenPos);
 
 protected:

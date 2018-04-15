@@ -69,8 +69,8 @@ public:
 	virtual void Search(String);
 	virtual void OnTick(float dt);
 	virtual void OnMouseWheel(int x, int y, int d);
-	virtual void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
-	virtual void OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt);
+	virtual void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
+	virtual void OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
 
 };
 
