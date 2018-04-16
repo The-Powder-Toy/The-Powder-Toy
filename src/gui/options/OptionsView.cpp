@@ -228,10 +228,6 @@ OptionsView::OptionsView():
 	AddComponent(tempLabel);
 	AddComponent(showAvatars);
 
-	tempLabel = new ui::Label(ui::Point(showAvatars->Position.X+showAvatars->Size.X+3, depthTextbox->Position.Y), ui::Point(Size.X-28, 16), "\bg- Change the depth of the 3D anaglyph effect");
-	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-	AddComponent(tempLabel);
-
 	class DataFolderAction: public ui::ButtonAction
 	{
 	public:
