@@ -37,7 +37,7 @@ public:
 	void OnTryExit(ExitMethod method);
 	virtual void OnDraw();
 	virtual void OnTick(float dt);
-	virtual void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
+	virtual void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
 	virtual void ToolTip(ui::Point senderPosition, std::string toolTip);
 	virtual ~RenderView();
 };

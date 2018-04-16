@@ -482,8 +482,10 @@ void PreviewView::OnMouseUp(int x, int y, unsigned int button)
 	}
 }
 
-void PreviewView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+void PreviewView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
+	if (repeat)
+		return;
 	if ((key == SDLK_KP_ENTER || key == SDLK_RETURN) && (!addCommentBox || !addCommentBox->IsFocused()))
 		openButton->DoAction();
 }

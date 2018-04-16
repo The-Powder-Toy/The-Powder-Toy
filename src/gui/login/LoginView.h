@@ -27,7 +27,7 @@ public:
 	class LoginAction;
 	class CancelAction;
 	LoginView();
-	virtual void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
+	virtual void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
 	virtual void OnTryExit(ExitMethod method);
 	void AttachController(LoginController * c_) { c = c_; }
 	void NotifyStatusChanged(LoginModel * sender);

@@ -12,7 +12,7 @@ class ParticleDebug : public DebugInfo
 public:
 	ParticleDebug(unsigned int id, Simulation * sim, GameModel * model);
 	void Debug(int mode, int x, int y);
-	virtual bool KeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt, ui::Point currentMouse);
+	virtual bool KeyPress(int key, int scan, bool shift, bool ctrl, bool alt, ui::Point currentMouse);
 	virtual ~ParticleDebug();
 };
 

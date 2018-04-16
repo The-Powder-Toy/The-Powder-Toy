@@ -20,6 +20,8 @@
     slouken@libsdl.org
 */
 
+#include "SDLCompat.h"
+#define _SDL_keysym_h
 #ifndef _SDL_keysym_h
 #define _SDL_keysym_h
 

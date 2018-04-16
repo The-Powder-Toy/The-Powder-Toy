@@ -14,7 +14,6 @@ class OptionsController {
 	OptionsView * view;
 	OptionsModel * model;
 	ControllerCallback * callback;
-	int depth3d;
 public:
 	bool HasExited;
 	OptionsController(GameModel * gModel_, ControllerCallback * callback_);
@@ -29,7 +28,6 @@ public:
 	void SetScale(int scale);
 	void SetFastQuit(bool fastquit);
 	void SetShowAvatars(bool showAvatars);
-	void Set3dDepth(int depth);
 	void Exit();
 	OptionsView * GetView();
 	virtual ~OptionsController();

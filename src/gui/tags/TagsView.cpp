@@ -131,8 +131,10 @@ void TagsView::NotifyTagsChanged(TagsModel * sender)
 	}
 }
 
-void TagsView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+void TagsView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
+	if (repeat)
+		return;
 	switch(key)
 	{
 	case SDLK_KP_ENTER:

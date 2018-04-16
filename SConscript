@@ -244,24 +244,24 @@ def findLibs(env, conf):
 	if not GetOption('renderer'):
 		#Look for SDL
 		runSdlConfig = platform == "Linux" or compilePlatform == "Linux" or platform == "FreeBSD"
-		if platform == "Darwin" and conf.CheckFramework("SDL"):
+		if False and platform == "Darwin" and conf.CheckFramework("SDL"):
 			runSdlConfig = False
-		elif not conf.CheckLib("SDL"):
+		elif not conf.CheckLib("SDL2"):
 			FatalError("SDL development library not found or not installed")
 
 		if runSdlConfig:
 			try:
-				env.ParseConfig('sdl-config --cflags')
+				env.ParseConfig('sdl2-config --cflags')
 				if GetOption('static'):
-					env.ParseConfig('sdl-config --static-libs')
+					env.ParseConfig('sdl2-config --static-libs')
 				else:
-					env.ParseConfig('sdl-config --libs')
+					env.ParseConfig('sdl2-config --libs')
 			except:
 				pass
 
 	#look for SDL.h
-	if not GetOption('renderer') and not conf.CheckCHeader('SDL.h'):
-		if conf.CheckCHeader('SDL/SDL.h'):
+	if not GetOption('renderer') and not conf.CheckCHeader('SDL2.h'):
+		if conf.CheckCHeader('SDL2/SDL.h'):
 			env.Append(CPPDEFINES=["SDL_INC"])
 		else:
 			FatalError("SDL.h not found")
@@ -551,8 +551,8 @@ if platform == "Windows":
 		envCopy = env.Clone()
 		envCopy.Append(CCFLAGS='-mstackrealign')
 		sources += envCopy.Object('src/simulation/Gravity.cpp')
-elif platform == "Darwin":
-	sources += ["src/SDLMain.m"]
+#elif platform == "Darwin":
+#	sources += ["src/SDLMain.m"]
 
 
 #Program output name

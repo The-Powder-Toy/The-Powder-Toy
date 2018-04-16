@@ -405,8 +405,10 @@ void RenderView::OnTick(float dt)
 	}
 }
 
-void RenderView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+void RenderView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
+	if (repeat)
+		return;
 	if (shift && key == '1')
 		c->LoadRenderPreset(10);
 	else if(key >= '0' && key <= '9')

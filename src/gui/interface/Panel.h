@@ -72,33 +72,13 @@ class Component;
 		void OnMouseUnclick(int localx, int localy, unsigned button);
 		void OnMouseWheel(int localx, int localy, int d);
 		void OnMouseWheelInside(int localx, int localy, int d);
-		void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
-		void OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt);
+		void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
+		void OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
 
 	protected:
 		// child components
 		std::vector<ui::Component*> children;
 		bool mouseInside;
-
-		//UI functions:
-		/*
-			void XTick(float dt);
-			void XDraw(const Point& screenPos);
-
-			void XOnMouseHover(int localx, int localy);
-			void XOnMouseMoved(int localx, int localy, int dx, int dy);
-			void XOnMouseMovedInside(int localx, int localy, int dx, int dy);
-			void XOnMouseEnter(int localx, int localy);
-			void XOnMouseLeave(int localx, int localy);
-			void XOnMouseDown(int x, int y, unsigned int button);
-			void XOnMouseUp(int x, int y, unsigned int button);
-			void XOnMouseClick(int localx, int localy, unsigned int button);
-			void XOnMouseUnclick(int localx, int localy, unsigned int button);
-			void XOnMouseWheel(int localx, int localy, int d);
-			void XOnMouseWheelInside(int localx, int localy, int d);
-			void XOnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
-			void XOnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt);
-		*/
 
 		// Overridable. Called by XComponent::Tick()
 		virtual void XTick(float dt);
@@ -141,10 +121,10 @@ class Component;
 		virtual void XOnMouseWheelInside(int localx, int localy, int d);
 
 		// Overridable. Called by XComponent::OnKeyPress()
-		virtual void XOnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
+		virtual void XOnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
 
 		// Overridable. Called by XComponent::OnKeyRelease()
-		virtual void XOnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt);
+		virtual void XOnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
 	};
 
 }
