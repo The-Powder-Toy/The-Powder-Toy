@@ -584,6 +584,7 @@ std::string GameController::StampRegion(ui::Point point1, ui::Point point2, bool
 	{
 		newSave->paused = gameModel->GetPaused();
 		std::string stampName = Client::Ref().AddStamp(newSave);
+		delete newSave;
 		if (stampName.length() == 0)
 			new ErrorMessage("Could not create stamp", "Error serializing save file");
 		return stampName;
