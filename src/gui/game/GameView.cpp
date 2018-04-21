@@ -1,28 +1,28 @@
 #include <sstream>
 #include <iomanip>
 #include <algorithm>
+#include "GameView.h"
 
 #include "Config.h"
-#include "gui/Style.h"
-#include "GameView.h"
+#include "Favorite.h"
+#include "Format.h"
+#include "IntroText.h"
+#include "QuickOptions.h"
+#include "DecorationTool.h"
+#include "client/SaveFile.h"
 #include "graphics/Graphics.h"
-#include "gui/interface/Window.h"
+#include "gui/Style.h"
+#include "gui/dialogues/ConfirmPrompt.h"
+#include "gui/dialogues/InformationMessage.h"
 #include "gui/interface/Button.h"
 #include "gui/interface/Colour.h"
 #include "gui/interface/Keys.h"
 #include "gui/interface/Mouse.h"
 #include "gui/interface/Slider.h"
+#include "gui/interface/Window.h"
 #include "gui/search/Thumbnail.h"
 #include "simulation/SaveRenderer.h"
 #include "simulation/SimulationData.h"
-#include "gui/dialogues/InformationMessage.h"
-#include "gui/dialogues/ConfirmPrompt.h"
-#include "client/SaveFile.h"
-#include "Format.h"
-#include "QuickOptions.h"
-#include "IntroText.h"
-#include "DecorationTool.h"
-#include "Favorite.h"
 
 
 class SplitButton;
@@ -1612,7 +1612,9 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		std::vector<std::string> stampList = Client::Ref().GetStamps(0, 1);
 		if (stampList.size())
 		{
-			c->LoadStamp(Client::Ref().GetStamp(stampList[0])->GetGameSave());
+			SaveFile *saveFile = Client::Ref().GetStamp(stampList[0]);
+			c->LoadStamp(saveFile->GetGameSave());
+			delete saveFile;
 			selectPoint1 = selectPoint2 = mousePosition;
 			isMouseDown = false;
 			break;

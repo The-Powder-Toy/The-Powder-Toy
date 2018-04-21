@@ -1021,10 +1021,10 @@ void GameModel::ClearSimulation()
 
 void GameModel::SetPlaceSave(GameSave * save)
 {
-	if(save != placeSave)
+	if (save != placeSave)
 	{
 		delete placeSave;
-		if(save)
+		if (save)
 			placeSave = new GameSave(*save);
 		else
 			placeSave = NULL;

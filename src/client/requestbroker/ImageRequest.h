@@ -7,6 +7,7 @@ public:
 	std::string URL;
 	int RequestTime;
 	void * HTTPContext;
+	bool started = false;
 	ImageRequest(std::string url, int width, int height, ListenerHandle listener, int identifier = 0);
 	virtual RequestBroker::ProcessResponse Process(RequestBroker & rb);
 	virtual ~ImageRequest();

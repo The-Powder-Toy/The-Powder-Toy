@@ -45,6 +45,7 @@ RequestBroker::ProcessResponse ImageRequest::Process(RequestBroker & rb)
 				char * data;
 				int status, data_size, imgw, imgh;
 				data = http_async_req_stop(HTTPContext, &status, &data_size);
+				started = false;
 
 				if (status == 200 && data)
 				{
@@ -107,6 +108,7 @@ RequestBroker::ProcessResponse ImageRequest::Process(RequestBroker & rb)
 			std::cout << typeid(*this).name() << " Creating new request for " << URL << std::endl;
 #endif*/
 			HTTPContext = http_async_req_start(NULL, (char *)URL.c_str(), NULL, 0, 0);
+			started = true;
 			RequestTime = time(NULL);
 		}
 	}
@@ -146,5 +148,11 @@ void ImageRequest::Cleanup()
 	{
 		delete ((VideoBuffer*)ResultObject);
 		ResultObject = NULL;
+	}
+	if (HTTPContext && started)
+	{
+		http_force_close(HTTPContext);
+		http_async_req_stop(HTTPContext, nullptr, nullptr);
+		started = false;
 	}
 }

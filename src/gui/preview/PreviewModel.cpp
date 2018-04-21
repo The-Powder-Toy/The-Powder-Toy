@@ -307,6 +307,7 @@ void PreviewModel::Update()
 			}
 		}
 		saveDataDownload = NULL;
+		free(ret);
 	}
 
 	if (saveInfoDownload && saveInfoDownload->CheckDone())
@@ -334,6 +335,7 @@ void PreviewModel::Update()
 				observers[i]->SaveLoadingError(Client::Ref().GetLastError());
 		}
 		saveInfoDownload = NULL;
+		free(ret);
 	}
 
 	if (commentsDownload && commentsDownload->CheckDone())
@@ -351,6 +353,7 @@ void PreviewModel::Update()
 		notifyCommentsPageChanged();
 
 		commentsDownload = NULL;
+		free(ret);
 	}
 }
 
