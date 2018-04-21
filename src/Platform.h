@@ -5,7 +5,7 @@
 
 namespace Platform
 {
-	char * ExecutableName();
+	std::string ExecutableName();
 	void DoRestart();
 
 	void OpenURI(std::string uri);

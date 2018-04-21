@@ -25,120 +25,106 @@
 
 int update_start(char *data, unsigned int len)
 {
-	char *self = Platform::ExecutableName(), *temp;
-#ifdef WIN
-	char *p;
-#endif
+	std::string exeName = Platform::ExecutableName(), updName;
 	FILE *f;
-	int res = 1;
 
-	if (!self)
+	if (!exeName.length())
 		return 1;
 
 #ifdef WIN
-	temp = (char*)malloc(strlen(self)+12);
-	strcpy(temp, self);
-	p = temp + strlen(temp) - 4;
-	if (_stricmp(p, ".exe"))
-		p += 4;
-	strcpy(p, "_upd.exe");
+	updName = exeName;
+	std::string extension = exeName.substr(exeName.length() - 4);
+	if (extension == ".exe")
+		updName = exeName.substr(0, exeName.length() - 4);
+	updName = updName + "_upd.exe";
 
-	if (!MoveFile(self, temp))
+	if (!MoveFile(exeName.c_str(), updName.c_str()))
 		goto fail;
 
-	f = fopen(self, "wb");
+	f = fopen(exeName.c_str(), "wb");
 	if (!f)
 		goto fail;
 	if (fwrite(data, 1, len, f) != len)
 	{
 		fclose(f);
-		DeleteFile(self);
+		DeleteFile(exeName.c_str());
 		goto fail;
 	}
 	fclose(f);
 
-	if ((uintptr_t)ShellExecute(NULL, "open", self, NULL, NULL, SW_SHOWNORMAL) <= 32)
+	if ((uintptr_t)ShellExecute(NULL, "open", exeName.c_str(), NULL, NULL, SW_SHOWNORMAL) <= 32)
 	{
-		DeleteFile(self);
+		DeleteFile(exeName.c_str());
 		goto fail;
 	}
 
 	return 0;
 #else
-	temp = (char*)malloc(strlen(self)+8);
-	strcpy(temp, self);
-	strcat(temp, "-update");
+	updName = exeName + "-update";
 
-	f = fopen(temp, "w");
+	f = fopen(updName.c_str(), "w");
 	if (!f)
-		goto fail;
+		return 1;
 	if (fwrite(data, 1, len, f) != len)
 	{
 		fclose(f);
-		unlink(temp);
-		goto fail;
+		unlink(updName.c_str());
+		return 1;
 	}
 	fclose(f);
 
-	if (chmod(temp, 0755))
+	if (chmod(updName.c_str(), 0755))
 	{
-		unlink(temp);
-		goto fail;
+		unlink(updName.c_str());
+		return 1;
 	}
 
-	if (rename(temp, self))
+	if (rename(updName.c_str(), exeName.c_str()))
 	{
-		unlink(temp);
-		goto fail;
+		unlink(updName.c_str());
+		return 1;
 	}
 
-	execl(self, "powder-update", NULL);
+	execl(exeName.c_str(), "powder-update", NULL);
+	return 0;
 #endif
-
-fail:
-	free(temp);
-	free(self);
-	return res;
 }
 
 int update_finish(void)
 {
 #ifdef WIN
-	char *temp, *self = Platform::ExecutableName(), *p;
+	std::string exeName = Platform::ExecutableName(), updName;
 	int timeout = 5, err;
 
 #ifdef DEBUG
-	printf("Update: Current EXE name: %s\n", self);
+	printf("Update: Current EXE name: %s\n", exeName.c_str());
 #endif
 
-	temp = (char*)malloc(strlen(self)+12);
-	strcpy(temp, self);
-	p = temp + strlen(temp) - 4;
-	if (_stricmp(p, ".exe"))
-		p += 4;
-	strcpy(p, "_upd.exe");
+	updName = exeName;
+	std::string extension = exeName.substr(exeName.length() - 4);
+	if (extension == ".exe")
+		updName = exeName.substr(0, exeName.length() - 4);
+	updName = updName + "_upd.exe";
 
 #ifdef DEBUG
-	printf("Update: Temp EXE name: %s\n", temp);
+	printf("Update: Temp EXE name: %s\n", updName.c_str());
 #endif
 
-	while (!DeleteFile(temp))
+	while (!DeleteFile(updName.c_str()))
 	{
 		err = GetLastError();
 		if (err == ERROR_FILE_NOT_FOUND)
 		{
 #ifdef DEBUG
-			printf("Update: Temp file deleted\n");
+			printf("Update: Temp file not deleted\n");
 #endif
-			free(temp);
 			// Old versions of powder toy name their update files with _update.exe, delete that upgrade file here
-			temp = (char*)malloc(strlen(self)+12);
-			strcpy(temp, self);
-			p = temp + strlen(temp) - 4;
-			if (_stricmp(p, ".exe"))
-				p += 4;
-			strcpy(p, "_update.exe");
-			DeleteFile(temp);
+			updName = exeName;
+			std::string extension = exeName.substr(exeName.length() - 4);
+			if (extension == ".exe")
+				updName = exeName.substr(0, exeName.length() - 4);
+			updName = updName + "_update.exe";
+			DeleteFile(updName.c_str());
 			return 0;
 		}
 		Sleep(500);
@@ -148,11 +134,9 @@ int update_finish(void)
 #ifdef DEBUG
 			printf("Update: Delete timeout\n");
 #endif
-			free(temp);
 			return 1;
 		}
 	}
-	free(temp);
 #endif
 	return 0;
 }

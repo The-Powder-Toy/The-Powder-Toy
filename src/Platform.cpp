@@ -20,8 +20,9 @@
 namespace Platform
 {
 
-char *ExecutableName(void)
+std::string ExecutableName()
 {
+	std::string ret;
 #if defined(WIN)
 	char *name = (char *)malloc(64);
 	DWORD max = 64, res;
@@ -41,7 +42,7 @@ char *ExecutableName(void)
 	{
 		free(fn);
 		free(name);
-		return NULL;
+		return "";
 	}
 	res = 1;
 #else
@@ -63,22 +64,23 @@ char *ExecutableName(void)
 	if (res <= 0)
 	{
 		free(name);
-		return NULL;
+		return "";
 	}
-	return name;
+	ret = name;
+	free(name);
+	return ret;
 }
 
 void DoRestart()
 {
-	char *exename = ExecutableName();
-	if (exename)
+	std::string exename = ExecutableName();
+	if (exename.length())
 	{
 #ifdef WIN
 		ShellExecute(NULL, "open", exename, NULL, NULL, SW_SHOWNORMAL);
 #elif defined(LIN) || defined(MACOSX)
-		execl(exename, "powder", NULL);
+		execl(exename.c_str(), "powder", NULL);
 #endif
-		free(exename);
 	}
 	exit(-1);
 }

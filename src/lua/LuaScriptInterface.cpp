@@ -3379,9 +3379,9 @@ int LuaScriptInterface::platform_releaseType(lua_State * l)
 
 int LuaScriptInterface::platform_exeName(lua_State * l)
 {
-	char *name = Platform::ExecutableName();
-	if (name)
-		lua_pushstring(l, name);
+	std::string name = Platform::ExecutableName();
+	if (name.length())
+		lua_pushstring(l, name.c_str());
 	else
 		luaL_error(l, "Error, could not get executable name");
 	return 1;
