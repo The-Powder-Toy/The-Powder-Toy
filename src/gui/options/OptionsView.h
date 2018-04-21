@@ -23,7 +23,6 @@ class OptionsView: public ui::Window {
 	ui::Checkbox * fullscreen;
 	ui::Checkbox * fastquit;
 	ui::Checkbox * showAvatars;
-	ui::Textbox  * depthTextbox;
 public:
 	OptionsView();
 	void NotifySettingsChanged(OptionsModel * sender);
