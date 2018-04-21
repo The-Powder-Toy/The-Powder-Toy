@@ -48,7 +48,7 @@ Element_PSNS::Element_PSNS()
 int Element_PSNS::update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry, rt;
-	if (sim->pv[y/CELL][x/CELL] > parts[i].temp-273.15f)
+	if ((parts[i].tmp == 0 && sim->pv[y/CELL][x/CELL] > parts[i].temp-273.15f) || (parts[i].tmp == 2 && sim->pv[y/CELL][x/CELL] < parts[i].temp-273.15f))
 	{
 		parts[i].life = 0;
 		for (rx = -2; rx <= 2; rx++)
