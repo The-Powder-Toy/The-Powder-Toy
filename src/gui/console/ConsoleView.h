@@ -23,7 +23,7 @@ public:
 	void OnDraw() override;
 	void OnTick(float dt) override;
 	void DoKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
-	void DoTextInput(std::string text) override;
+	void DoTextInput(String text) override;
 	void AttachController(ConsoleController * c_) { c = c_; }
 	void NotifyPreviousCommandsChanged(ConsoleModel * sender);
 	void NotifyCurrentCommandChanged(ConsoleModel * sender);

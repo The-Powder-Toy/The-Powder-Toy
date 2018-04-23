@@ -92,7 +92,8 @@ void Engine::ConfirmExit()
 void Engine::ShowWindow(Window * window)
 {
 	windowOpenState = 0;
-	ignoreEvents = true;
+	if (state_)
+		ignoreEvents = true;
 	if(window->Position.X==-1)
 	{
 		window->Position.X = (width_-window->Size.X)/2;
