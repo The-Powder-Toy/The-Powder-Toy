@@ -93,6 +93,7 @@ public:
 	virtual void ControllerExit()
 	{
 		cc->gameModel->UpdateQuickOptions();
+		Client::Ref().WritePrefs();
 	}
 };
 

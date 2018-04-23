@@ -158,6 +158,7 @@ int Engine::CloseWindow()
 			mousexp_ = mousex_;
 			mouseyp_ = mousey_;
 		}
+		ignoreEvents = true;
 		return 0;
 	}
 	else

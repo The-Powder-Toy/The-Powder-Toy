@@ -77,7 +77,6 @@ ByteString ClipboardPull()
 	return ByteString(SDL_GetClipboardText());
 }
 
-int mousex = 0, mousey = 0;
 #ifdef OGLI
 void blit()
 {
@@ -89,6 +88,16 @@ void blit(pixel * vid)
 	SDL_UpdateTexture(sdl_texture, NULL, vid, WINDOWW * sizeof (Uint32));
 	SDL_RenderClear(sdl_renderer);
 	SDL_RenderCopy(sdl_renderer, sdl_texture, NULL, NULL);
+
+	/*SDL_Surface *icon = SDL_CreateRGBSurfaceFrom((void*)app_icon, 48, 48, 24, 144, 0x00FF0000, 0x0000FF00, 0x000000FF, 0);
+	SDL_Texture *iconicon = SDL_CreateTextureFromSurface(sdl_renderer, icon);
+	SDL_Rect a;
+	a.h = 48;
+	a.w = 48;
+	a.x = 0;
+	a.y = 0;
+	SDL_RenderCopy(sdl_renderer, iconicon, NULL, &a);*/
+
 	SDL_RenderPresent(sdl_renderer);
 }
 #endif
@@ -133,11 +142,6 @@ int SDLOpen()
 	HICON hIconBig = (HICON)LoadImage(hModExe, MAKEINTRESOURCE(101), IMAGE_ICON, 32, 32, LR_SHARED);
 	SendMessage(WindowHandle, WM_SETICON, ICON_SMALL, (LPARAM)hIconSmall);
 	SendMessage(WindowHandle, WM_SETICON, ICON_BIG, (LPARAM)hIconBig);
-#elif defined(LIN)
-	SDL_Surface *icon = SDL_CreateRGBSurfaceFrom((void*)app_icon, 48, 48, 24, 144, 0x00FF0000, 0x0000FF00, 0x000000FF, 0);
-	//SDL_WM_SetIcon(icon, (Uint8*)app_icon_bitmap);
-	SDL_SetWindowIcon(sdl_window, icon);
-	SDL_FreeSurface(icon);
 #endif
 
 	atexit(SDL_Quit);
@@ -154,9 +158,20 @@ void SDLSetScreen(int newScale, bool newFullscreen)
 	fullscreen = newFullscreen;
 	sdl_window = SDL_CreateWindow("The Powder Toy", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOWW * newScale, WINDOWH * newScale,
 								  newFullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+	SDL_Surface *icon = SDL_CreateRGBSurfaceFrom((void*)app_icon, 48, 48, 24, 144, 0x00FF0000, 0x0000FF00, 0x000000FF, 0);
+	//SDL_WM_SetIcon(icon, (Uint8*)app_icon_bitmap);
+	SDL_SetWindowIcon(sdl_window, icon);
+	SDL_FreeSurface(icon);
+
 	sdl_renderer = SDL_CreateRenderer(sdl_window, -1, 0);
 	if (newScale > 1)
 		SDL_RenderSetLogicalSize(sdl_renderer, WINDOWW, WINDOWH);
+	//SDL_RenderSetIntegerScale(sdl_renderer, SDL_TRUE);
+	if (newFullscreen)
+	{
+		SDL_RaiseWindow(sdl_window);
+		//SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
+	}
 	sdl_texture = SDL_CreateTexture(sdl_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, WINDOWW, WINDOWH);
 	//SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
 	//SDL_SetWindowResizable(sdl_window, SDL_TRUE);
@@ -266,6 +281,10 @@ ui::Engine * engine = NULL;
 bool showDoubleScreenDialog = false;
 float currentWidth, currentHeight;
 
+int mousex = 0, mousey = 0;
+int mouseButton = 0;
+bool mouseDown = false;
+
 void EventProcess(SDL_Event event)
 {
 	//inputScale= 1.0f;
@@ -316,34 +335,58 @@ void EventProcess(SDL_Event event)
 		break;
 	}
 	case SDL_MOUSEMOTION:
-		engine->onMouseMove(event.motion.x * inputScaleH, event.motion.y * inputScaleV);
 		mousex = event.motion.x * inputScaleH;
 		mousey = event.motion.y * inputScaleV;
+		engine->onMouseMove(mousex, mousey);
 		break;
 	case SDL_MOUSEBUTTONDOWN:
-		engine->onMouseClick(event.motion.x * inputScaleH, event.motion.y * inputScaleV, event.button.button);
 		mousex = event.motion.x * inputScaleH;
 		mousey = event.motion.y * inputScaleV;
+		mouseButton = event.button.button;
+		engine->onMouseClick(event.motion.x * inputScaleH, event.motion.y * inputScaleV, mouseButton);
+
+		mouseDown = true;
+		SDL_CaptureMouse(SDL_TRUE);
 		break;
 	case SDL_MOUSEBUTTONUP:
-		engine->onMouseUnclick(event.motion.x * inputScaleH, event.motion.y * inputScaleV, event.button.button);
 		mousex = event.motion.x * inputScaleH;
 		mousey = event.motion.y * inputScaleV;
+		mouseButton = event.button.button;
+		engine->onMouseUnclick(mousex, mousey, mouseButton);
+
+		mouseDown = false;
+		SDL_CaptureMouse(SDL_FALSE);
 		break;
 	case SDL_WINDOWEVENT:
 	{
-		if (event.window.event != SDL_WINDOWEVENT_RESIZED)
+		switch (event.window.event)
+		{
+		case SDL_WINDOWEVENT_RESIZED:
+		{
+			float width = event.window.data1;
+			float height = event.window.data2;
+
+			currentWidth = width;
+			currentHeight = height;
+			// this "* scale" thing doesn't really work properly
+			// currently there is a bug where input doesn't scale properly after resizing, only when double scale mode is active
+			inputScaleH = (float)WINDOWW * scale / currentWidth;
+			inputScaleV = (float)WINDOWH * scale / currentHeight;
+			std::cout << "Changing input scale to " << inputScaleH << "x" << inputScaleV << std::endl;
 			break;
-		float width = event.window.data1;
-		float height = event.window.data2;
-
-		currentWidth = width;
-		currentHeight = height;
-		// this "* scale" thing doesn't really work properly
-		// currently there is a bug where input doesn't scale properly after resizing, only when double scale mode is active
-		inputScaleH = (float)WINDOWW * scale / currentWidth;
-		inputScaleV = (float)WINDOWH * scale / currentHeight;
-
+		}
+		// This would send a mouse up event when focus is lost
+		// Not even sdl itself will know when the mouse was released if it happens in another window
+		// So it will ignore the next mouse down (after tpt is re-focused) and not send any events at all
+		// This is more unintuitive than pretending the mouse is still down when it's not, so this code is commented out
+		/*case SDL_WINDOWEVENT_FOCUS_LOST:
+			if (mouseDown)
+			{
+				mouseDown = false;
+				engine->onMouseUnclick(mousex, mousey, mouseButton);
+			}
+			break;*/
+		}
 		break;
 	}
 	}

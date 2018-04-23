@@ -28,7 +28,8 @@ void ConsoleView::DoKeyPress(int key, int scan, bool repeat, bool shift, bool ct
 {
 	if ((scan == SDL_SCANCODE_GRAVE && key != '~') || key == SDLK_ESCAPE)
 	{
-		c->CloseConsole();
+		if (!repeat)
+			doClose = true;
 		return;
 	}
 	switch(key)
@@ -49,6 +50,14 @@ void ConsoleView::DoKeyPress(int key, int scan, bool repeat, bool shift, bool ct
 		Window::DoKeyPress(key, scan, repeat, shift, ctrl, alt);
 		break;
 	}
+}
+
+void ConsoleView::DoTextInput(std::string text)
+{
+	if (text == "~")
+		doClose = false;
+	if (!doClose)
+		Window::DoTextInput(text);
 }
 
 void ConsoleView::NotifyPreviousCommandsChanged(ConsoleModel * sender)
@@ -95,6 +104,16 @@ void ConsoleView::OnDraw()
 	g->draw_line(Position.X, Position.Y+Size.Y, Position.X+Size.X, Position.Y+Size.Y, 255, 255, 255, 200);
 }
 
-ConsoleView::~ConsoleView() {
+void ConsoleView::OnTick(float dt)
+{
+	if (doClose)
+	{
+		c->CloseConsole();
+		doClose = false;
+	}
+}
+
+ConsoleView::~ConsoleView()
+{
 }
 
