@@ -56,16 +56,16 @@ int Element_SLTW::update(UPDATE_FUNC_ARGS)
 				switch TYP(r)
 				{
 				case PT_SALT:
-					if (!(rand()%2000))
+					if (!(random_gen()%2000))
 						sim->part_change_type(ID(r),x+rx,y+ry,PT_SLTW);
 					break;
 				case PT_PLNT:
-					if (!(rand()%40))
+					if (!(random_gen()%40))
 						sim->kill_part(ID(r));
 					break;
 				case PT_RBDM:
 				case PT_LRBD:
-					if ((sim->legacy_enable||parts[i].temp>(273.15f+12.0f)) && !(rand()%100))
+					if ((sim->legacy_enable||parts[i].temp>(273.15f+12.0f)) && !(random_gen()%100))
 					{
 						sim->part_change_type(i,x,y,PT_FIRE);
 						parts[i].life = 4;
@@ -76,7 +76,7 @@ int Element_SLTW::update(UPDATE_FUNC_ARGS)
 					if (parts[ID(r)].ctype!=PT_WATR)
 					{
 						sim->kill_part(ID(r));
-						if(!(rand()%30)){
+						if(!(random_gen()%30)){
 							sim->kill_part(i);
 							return 1;
 						}

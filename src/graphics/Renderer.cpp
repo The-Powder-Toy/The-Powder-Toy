@@ -8,6 +8,7 @@
 #include "Renderer.h"
 #include "Graphics.h"
 #include "common/tpt-math.h"
+#include "common/tpt-rand.h"
 #include "common/tpt-minmax.h"
 #include "gui/game/RenderPreset.h"
 #include "simulation/Elements.h"
@@ -1774,7 +1775,7 @@ void Renderer::render_parts()
 				}
 				if(pixel_mode & PMODE_SPARK)
 				{
-					flicker = rand()%20;
+					flicker = random_gen()%20;
 #ifdef OGLR
 					//Oh god, this is awful
 					lineC[clineC++] = ((float)colr)/255.0f;
@@ -1838,7 +1839,7 @@ void Renderer::render_parts()
 				}
 				if(pixel_mode & PMODE_FLARE)
 				{
-					flicker = rand()%20;
+					flicker = random_gen()%20;
 #ifdef OGLR
 					//Oh god, this is awful
 					lineC[clineC++] = ((float)colr)/255.0f;
@@ -1911,7 +1912,7 @@ void Renderer::render_parts()
 				}
 				if(pixel_mode & PMODE_LFLARE)
 				{
-					flicker = rand()%20;
+					flicker = random_gen()%20;
 #ifdef OGLR
 					//Oh god, this is awful
 					lineC[clineC++] = ((float)colr)/255.0f;

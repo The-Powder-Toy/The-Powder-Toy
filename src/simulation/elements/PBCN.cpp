@@ -52,7 +52,7 @@ int Element_PBCN::update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry, rt;
 	if (!parts[i].tmp2 && sim->pv[y/CELL][x/CELL]>4.0f)
-		parts[i].tmp2 = rand()%40+80;
+		parts[i].tmp2 = random_gen()%40+80;
 	if (parts[i].tmp2)
 	{
 		parts[i].vx += ADVECTION*sim->vx[y/CELL][x/CELL];
@@ -132,9 +132,9 @@ int Element_PBCN::update(UPDATE_FUNC_ARGS)
 					for (ry=-1; ry<2; ry++)
 						sim->create_part(-1, x+rx, y+ry, PT_LIFE, parts[i].tmp);
 
-			else if (parts[i].ctype!=PT_LIGH || !(rand()%30))
+			else if (parts[i].ctype!=PT_LIGH || !(random_gen()%30))
 			{
-				int np = sim->create_part(-1, x+rand()%3-1, y+rand()%3-1, TYP(parts[i].ctype));
+				int np = sim->create_part(-1, x+random_gen()%3-1, y+random_gen()%3-1, TYP(parts[i].ctype));
 				if (np>-1)
 				{
 					if (parts[i].ctype==PT_LAVA && parts[i].tmp>0 && parts[i].tmp<PT_NUM && sim->elements[parts[i].tmp].HighTemperatureTransition==PT_LAVA)

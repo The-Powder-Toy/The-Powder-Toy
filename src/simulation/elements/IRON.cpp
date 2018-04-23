@@ -58,19 +58,19 @@ int Element_IRON::update(UPDATE_FUNC_ARGS)
 				switch TYP(r)
 				{
 				case PT_SALT:
-					if (!(rand()%47))
+					if (!(random_gen()%47))
 						goto succ;
 					break;
 				case PT_SLTW:
-					if (!(rand()%67))
+					if (!(random_gen()%67))
 						goto succ;
 					break;
 				case PT_WATR:
-					if (!(rand()%1200))
+					if (!(random_gen()%1200))
 						goto succ;
 					break;
 				case PT_O2:
-					if (!(rand()%250))
+					if (!(random_gen()%250))
 						goto succ;
 					break;
 				case PT_LO2:
@@ -82,7 +82,7 @@ int Element_IRON::update(UPDATE_FUNC_ARGS)
 	return 0;
 succ:
 	sim->part_change_type(i,x,y,PT_BMTL);
-	parts[i].tmp=(rand()%10)+20;
+	parts[i].tmp=(random_gen()%10)+20;
 	return 0;
 }
 

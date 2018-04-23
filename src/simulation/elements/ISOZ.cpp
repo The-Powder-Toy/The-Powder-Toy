@@ -48,11 +48,11 @@ Element_ISOZ::Element_ISOZ()
 int Element_ISOZ::update(UPDATE_FUNC_ARGS)
  { // for both ISZS and ISOZ
 	float rr, rrr;
-	if (!(rand()%200) && ((int)(-4.0f*(sim->pv[y/CELL][x/CELL])))>(rand()%1000))
+	if (!(random_gen()%200) && ((int)(-4.0f*(sim->pv[y/CELL][x/CELL])))>(random_gen()%1000))
 	{
 		sim->create_part(i, x, y, PT_PHOT);
-		rr = (rand()%228+128)/127.0f;
-		rrr = (rand()%360)*3.14159f/180.0f;
+		rr = (random_gen()%228+128)/127.0f;
+		rrr = (random_gen()%360)*3.14159f/180.0f;
 		parts[i].vx = rr*cosf(rrr);
 		parts[i].vy = rr*sinf(rrr);
 	}

@@ -87,29 +87,29 @@ int Element_BANG::update(UPDATE_FUNC_ARGS)
 		//Explode!!
 		sim->pv[y/CELL][x/CELL] += 0.5f;
 		parts[i].tmp = 0;
-		if(!(rand()%3))
+		if(!(random_gen()%3))
 		{
-			if(!(rand()%2))
+			if(!(random_gen()%2))
 			{
 				sim->create_part(i, x, y, PT_FIRE);
 			}
 			else
 			{
 				sim->create_part(i, x, y, PT_SMKE);
-				parts[i].life = rand()%50+500;
+				parts[i].life = random_gen()%50+500;
 			}
 			parts[i].temp = restrict_flt((MAX_TEMP/4)+otemp, MIN_TEMP, MAX_TEMP);
 		}
 		else
 		{
-			if(!(rand()%15))
+			if(!(random_gen()%15))
 			{
 				sim->create_part(i, x, y, PT_EMBR);
 				parts[i].tmp = 0;
 				parts[i].life = 50;
 				parts[i].temp = restrict_flt((MAX_TEMP/3)+otemp, MIN_TEMP, MAX_TEMP);
-				parts[i].vx = rand()%20-10;
-				parts[i].vy = rand()%20-10;
+				parts[i].vx = random_gen()%20-10;
+				parts[i].vy = random_gen()%20-10;
 			}
 			else
 			{

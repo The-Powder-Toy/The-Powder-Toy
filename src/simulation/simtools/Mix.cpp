@@ -14,7 +14,7 @@ int Tool_Mix::Perform(Simulation * sim, Particle * cpart, int x, int y, int brus
 	if(!thisPart)
 		return 0;
 
-	if(rand() % 100 != 0)
+	if(random_gen() % 100 != 0)
 		return 0;
 
 	int distance = (int)(std::pow(strength, .5f) * 10);
@@ -22,8 +22,8 @@ int Tool_Mix::Perform(Simulation * sim, Particle * cpart, int x, int y, int brus
 	if(!(sim->elements[TYP(thisPart)].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS)))
 		return 0;
 
-	int newX = x + (rand() % distance) - (distance/2);
-	int newY = y + (rand() % distance) - (distance/2);
+	int newX = x + (random_gen() % distance) - (distance/2);
+	int newY = y + (random_gen() % distance) - (distance/2);
 
 	if(newX < 0 || newY < 0 || newX >= XRES || newY >= YRES)
 		return 0;

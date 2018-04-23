@@ -53,13 +53,13 @@ int Element_WARP::update(UPDATE_FUNC_ARGS)
 	{
 		parts[i].temp = 10000;
 		sim->pv[y/CELL][x/CELL] += (parts[i].tmp2/5000) * CFDS;
-		if (!(rand()%50))
+		if (!(random_gen()%50))
 			sim->create_part(-3, x, y, PT_ELEC);
 	}
 	for ( trade = 0; trade<5; trade ++)
 	{
-		rx = rand()%3-1;
-		ry = rand()%3-1;
+		rx = random_gen()%3-1;
+		ry = random_gen()%3-1;
 		if (BOUNDS_CHECK && (rx || ry))
 		{
 			r = pmap[y+ry][x+rx];
@@ -71,8 +71,8 @@ int Element_WARP::update(UPDATE_FUNC_ARGS)
 				parts[i].y = parts[ID(r)].y;
 				parts[ID(r)].x = x;
 				parts[ID(r)].y = y;
-				parts[ID(r)].vx = (rand()%4)-1.5;
-				parts[ID(r)].vy = (rand()%4)-2;
+				parts[ID(r)].vx = (random_gen()%4)-1.5;
+				parts[ID(r)].vy = (random_gen()%4)-2;
 				parts[i].life += 4;
 				pmap[y][x] = r;
 				pmap[y+ry][x+rx] = PMAP(i, parts[i].type);

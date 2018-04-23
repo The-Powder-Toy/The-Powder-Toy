@@ -21,6 +21,7 @@
 #include "common/tpt-compat.h"
 #include "common/tpt-math.h"
 #include "common/tpt-minmax.h"
+#include "common/tpt-rand.h"
 #include "gui/game/Brush.h"
 
 #ifdef LUACONSOLE
@@ -1974,7 +1975,7 @@ int Simulation::get_wavelength_bin(int *wm)
 	if (wM - w0 < 5)
 		return wM + w0;
 
-	r = rand();
+	r = random_gen();
 	i = (r >> 1) % (wM-w0-4);
 	i += w0;
 
@@ -2098,8 +2099,8 @@ void Simulation::create_arc(int sx, int sy, int dx, int dy, int midpoints, int v
 	{
 		if(i!=midpoints)
 		{
-			xmid[i+1] += (rand()%variance)-voffset;
-			ymid[i+1] += (rand()%variance)-voffset;
+			xmid[i+1] += (random_gen()%variance)-voffset;
+			ymid[i+1] += (random_gen()%variance)-voffset;
 		}
 		CreateLine(xmid[i], ymid[i], xmid[i+1], ymid[i+1], type);
 	}
@@ -2415,7 +2416,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 
 	/* half-silvered mirror */
 	if (!e && parts[i].type==PT_PHOT &&
-	        ((TYP(r)==PT_BMTL && rand()<RAND_MAX/2) ||
+	        ((TYP(r)==PT_BMTL && random_gen()%2) ||
 	         TYP(pmap[y][x])==PT_BMTL))
 		e = 2;
 
@@ -2475,7 +2476,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 			switch (TYP(r))
 			{
 			case PT_GLOW:
-				if (!parts[ID(r)].life && rand() < RAND_MAX/30)
+				if (!parts[ID(r)].life && random_gen()%30)
 				{
 					parts[ID(r)].life = 120;
 					create_gain_photon(i);
@@ -2564,7 +2565,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 		}
 		case PT_NEUT:
 			if (TYP(r) == PT_GLAS || TYP(r) == PT_BGLA)
-				if (rand() < RAND_MAX/10)
+				if (random_gen()%10)
 					create_cherenkov_photon(i);
 			break;
 		case PT_ELEC:
@@ -3235,7 +3236,7 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 		parts[i].life = 75;
 		break;
 	case PT_WARP:
-		parts[i].life = rand()%95+70;
+		parts[i].life = random_gen()%95+70;
 		break;
 	case PT_FUSE:
 		parts[i].life = 50;
@@ -3261,14 +3262,14 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 		parts[i].life = 10;
 		break;
 	case PT_SING:
-		parts[i].life = rand()%50+60;
+		parts[i].life = random_gen()%50+60;
 		break;
 	case PT_QRTZ:
 	case PT_PQRT:
-		parts[i].tmp2 = (rand()%11);
+		parts[i].tmp2 = (random_gen()%11);
 		break;
 	case PT_CLST:
-		parts[i].tmp = (rand()%7);
+		parts[i].tmp = (random_gen()%7);
 		break;
 	case PT_FSEP:
 		parts[i].life = 50;
@@ -3291,16 +3292,16 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 		parts[i].life = 110;
 		break;
 	case PT_FIRE:
-		parts[i].life = rand()%50+120;
+		parts[i].life = random_gen()%50+120;
 		break;
 	case PT_PLSM:
-		parts[i].life = rand()%150+50;
+		parts[i].life = random_gen()%150+50;
 		break;
 	case PT_CFLM:
-		parts[i].life = rand()%150+50;
+		parts[i].life = random_gen()%150+50;
 		break;
 	case PT_LAVA:
-		parts[i].life = rand()%120+240;
+		parts[i].life = random_gen()%120+240;
 		break;
 	case PT_NBLE:
 		parts[i].life = 0;
@@ -3340,7 +3341,7 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 		parts[i].pavg[1] = 250;
 		break;
 	case PT_CRMC:
-		parts[i].tmp2 = (rand() % 5);
+		parts[i].tmp2 = (random_gen() % 5);
 		break;
 	case PT_ETRD:
 		etrd_life0_count++;
@@ -3403,7 +3404,7 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 	}
 	case PT_PHOT:
 	{
-		float a = (rand()%8) * 0.78540f;
+		float a = (random_gen()%8) * 0.78540f;
 		parts[i].life = 680;
 		parts[i].ctype = 0x3FFFFFFF;
 		parts[i].vx = 3.0f*cosf(a);
@@ -3414,7 +3415,7 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 	}
 	case PT_ELEC:
 	{
-		float a = (rand()%360)*3.14159f/180.0f;
+		float a = (random_gen()%360)*3.14159f/180.0f;
 		parts[i].life = 680;
 		parts[i].vx = 2.0f*cosf(a);
 		parts[i].vy = 2.0f*sinf(a);
@@ -3422,16 +3423,16 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 	}
 	case PT_NEUT:
 	{
-		float r = (rand()%128+128)/127.0f;
-		float a = (rand()%360)*3.14159f/180.0f;
-		parts[i].life = rand()%480+480;
+		float r = (random_gen()%128+128)/127.0f;
+		float a = (random_gen()%360)*3.14159f/180.0f;
+		parts[i].life = random_gen()%480+480;
 		parts[i].vx = r*cosf(a);
 		parts[i].vy = r*sinf(a);
 		break;
 	}
 	case PT_PROT:
 	{
-		float a = (rand()%36)* 0.17453f;
+		float a = (random_gen()%36)* 0.17453f;
 		parts[i].life = 680;
 		parts[i].vx = 2.0f*cosf(a);
 		parts[i].vy = 2.0f*sinf(a);
@@ -3439,8 +3440,8 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 	}
 	case PT_GRVT:
 	{
-		float a = (rand()%360)*3.14159f/180.0f;
-		parts[i].life = 250 + rand()%200;
+		float a = (random_gen()%360)*3.14159f/180.0f;
+		parts[i].life = 250 + random_gen()%200;
 		parts[i].vx = 2.0f*cosf(a);
 		parts[i].vy = 2.0f*sinf(a);
 		parts[i].tmp = 7;
@@ -3448,8 +3449,8 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 	}
 	case PT_TRON:
 	{
-		int randhue = rand()%360;
-		int randomdir = rand()%4;
+		int randhue = random_gen()%360;
+		int randomdir = random_gen()%4;
 		parts[i].tmp = 1|(randomdir<<5)|(randhue<<7);//set as a head and a direction
 		parts[i].tmp2 = 4;//tail
 		parts[i].life = 5;
@@ -3472,13 +3473,13 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 		gsize = gx*gx+gy*gy;
 		if (gsize<0.0016f)
 		{
-			float angle = (rand()%6284)*0.001f;//(in radians, between 0 and 2*pi)
+			float angle = (random_gen()%6284)*0.001f;//(in radians, between 0 and 2*pi)
 			gsize = sqrtf(gsize);
 			// randomness in weak gravity fields (more randomness with weaker fields)
 			gx += cosf(angle)*(0.04f-gsize);
 			gy += sinf(angle)*(0.04f-gsize);
 		}
-		parts[i].tmp = (((int)(atan2f(-gy, gx)*(180.0f/M_PI)))+rand()%40-20+360)%360;
+		parts[i].tmp = (((int)(atan2f(-gy, gx)*(180.0f/M_PI)))+random_gen()%40-20+360)%360;
 		parts[i].tmp2 = 4;
 		break;
 	}
@@ -3498,13 +3499,13 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 	if((elements[t].Properties & TYPE_PART) && pretty_powder)
 	{
 		int colr, colg, colb;
-		colr = PIXR(elements[t].Colour)+sandcolour*1.3+(rand()%40)-20+(rand()%30)-15;
-		colg = PIXG(elements[t].Colour)+sandcolour*1.3+(rand()%40)-20+(rand()%30)-15;
-		colb = PIXB(elements[t].Colour)+sandcolour*1.3+(rand()%40)-20+(rand()%30)-15;
+		colr = PIXR(elements[t].Colour)+sandcolour*1.3+(random_gen()%40)-20+(random_gen()%30)-15;
+		colg = PIXG(elements[t].Colour)+sandcolour*1.3+(random_gen()%40)-20+(random_gen()%30)-15;
+		colb = PIXB(elements[t].Colour)+sandcolour*1.3+(random_gen()%40)-20+(random_gen()%30)-15;
 		colr = colr>255 ? 255 : (colr<0 ? 0 : colr);
 		colg = colg>255 ? 255 : (colg<0 ? 0 : colg);
 		colb = colb>255 ? 255 : (colb<0 ? 0 : colb);
-		parts[i].dcolour = ((rand()%150)<<24) | (colr<<16) | (colg<<8) | colb;
+		parts[i].dcolour = ((random_gen()%150)<<24) | (colr<<16) | (colg<<8) | colb;
 	}
 	elementCount[t]++;
 	return i;
@@ -3541,7 +3542,7 @@ void Simulation::create_gain_photon(int pp)//photons from PHOT going through GLO
 		return;
 	i = pfree;
 
-	lr = rand() % 2;
+	lr = random_gen() % 2;
 
 	if (lr) {
 		xx = parts[pp].x - 0.3*parts[pp].vy;
@@ -3600,7 +3601,7 @@ void Simulation::create_cherenkov_photon(int pp)//photons from NEUT going throug
 	pfree = parts[i].life;
 	if (i>parts_lastActiveIndex) parts_lastActiveIndex = i;
 
-	lr = rand() % 2;
+	lr = random_gen() % 2;
 
 	parts[i].type = PT_PHOT;
 	parts[i].ctype = 0x00000F80;
@@ -3774,11 +3775,11 @@ void Simulation::UpdateParticles(int start, int end)
 			{
 #ifdef REALISTIC
 				//The magic number controls diffusion speed
-				parts[i].vx += 0.05*sqrtf(parts[i].temp)*elements[t].Diffusion*(rand()/(0.5f*RAND_MAX)-1.0f);
-				parts[i].vy += 0.05*sqrtf(parts[i].temp)*elements[t].Diffusion*(rand()/(0.5f*RAND_MAX)-1.0f);
+				parts[i].vx += 0.05*sqrtf(parts[i].temp)*elements[t].Diffusion*(2.0f*random_gen.uniform01()-1.0f);
+				parts[i].vy += 0.05*sqrtf(parts[i].temp)*elements[t].Diffusion*(2.0f*random_gen.uniform01()-1.0f);
 #else
-				parts[i].vx += elements[t].Diffusion*(rand()/(0.5f*RAND_MAX)-1.0f);
-				parts[i].vy += elements[t].Diffusion*(rand()/(0.5f*RAND_MAX)-1.0f);
+				parts[i].vx += elements[t].Diffusion*(2.0f*random_gen.uniform01()-1.0f);
+				parts[i].vy += elements[t].Diffusion*(2.0f*random_gen.uniform01()-1.0f);
 #endif
 			}
 
@@ -3803,7 +3804,7 @@ void Simulation::UpdateParticles(int start, int end)
 
 			if (!legacy_enable)
 			{
-				if (y-2 >= 0 && y-2 < YRES && (elements[t].Properties&TYPE_LIQUID) && (t!=PT_GEL || gel_scale>(1+rand()%255))) {//some heat convection for liquids
+				if (y-2 >= 0 && y-2 < YRES && (elements[t].Properties&TYPE_LIQUID) && (t!=PT_GEL || gel_scale>(1+random_gen()%255))) {//some heat convection for liquids
 					r = pmap[y-2][x];
 					if (!(!r || parts[i].type != TYP(r))) {
 						if (parts[i].temp>parts[ID(r)].temp) {
@@ -3819,7 +3820,7 @@ void Simulation::UpdateParticles(int start, int end)
 #ifdef REALISTIC
 				if (t&&(t!=PT_HSWC||parts[i].life==10)&&(elements[t].HeatConduct*gel_scale))
 #else
-				if (t&&(t!=PT_HSWC||parts[i].life==10)&&(elements[t].HeatConduct*gel_scale)>(rand()%250))
+				if (t&&(t!=PT_HSWC||parts[i].life==10)&&(elements[t].HeatConduct*gel_scale)>(random_gen()%250))
 #endif
 				{
 					if (aheat_enable && !(elements[t].Properties&PROP_NOAMBHEAT))
@@ -3976,7 +3977,7 @@ void Simulation::UpdateParticles(int start, int end)
 							{
 								pt = (c_heat - platent[t])/c_Cm;
 
-								if (rand()%4==0) t = PT_SALT;
+								if (random_gen()%4==0) t = PT_SALT;
 								else t = PT_WTRV;
 							}
 							else
@@ -3985,7 +3986,7 @@ void Simulation::UpdateParticles(int start, int end)
 								s = 0;
 							}
 #else
-							if (rand()%4 == 0)
+							if (random_gen()%4 == 0)
 								t = PT_SALT;
 							else
 								t = PT_WTRV;
@@ -4137,14 +4138,14 @@ void Simulation::UpdateParticles(int start, int end)
 							goto killed;
 
 						if (t==PT_FIRE || t==PT_PLSM || t==PT_CFLM)
-							parts[i].life = rand()%50+120;
+							parts[i].life = random_gen()%50+120;
 						if (t == PT_LAVA)
 						{
 							if (parts[i].ctype == PT_BRMT) parts[i].ctype = PT_BMTL;
 							else if (parts[i].ctype == PT_SAND) parts[i].ctype = PT_GLAS;
 							else if (parts[i].ctype == PT_BGLA) parts[i].ctype = PT_GLAS;
 							else if (parts[i].ctype == PT_PQRT) parts[i].ctype = PT_QRTZ;
-							parts[i].life = rand()%120+240;
+							parts[i].life = random_gen()%120+240;
 						}
 						transitionOccurred = true;
 					}
@@ -4218,7 +4219,7 @@ void Simulation::UpdateParticles(int start, int end)
 			//the basic explosion, from the .explosive variable
 			if ((elements[t].Explosive&2) && pv[y/CELL][x/CELL]>2.5f)
 			{
-				parts[i].life = rand()%80+180;
+				parts[i].life = random_gen()%80+180;
 				parts[i].temp = restrict_flt(elements[PT_FIRE].Temperature + (elements[t].Flammable/2), MIN_TEMP, MAX_TEMP);
 				t = PT_FIRE;
 				part_change_type(i,x,y,t);
@@ -4274,7 +4275,7 @@ void Simulation::UpdateParticles(int start, int end)
 				if (part_change_type(i,x,y,t))
 					goto killed;
 				if (t == PT_FIRE)
-					parts[i].life = rand()%50+120;
+					parts[i].life = random_gen()%50+120;
 				transitionOccurred = true;
 			}
 
@@ -4547,7 +4548,7 @@ killed:
 						continue;
 					// reflection
 					parts[i].flags |= FLAG_STAGNANT;
-					if (t==PT_NEUT && 100>(rand()%1000))
+					if (t==PT_NEUT && 100>(random_gen()%1000))
 					{
 						kill_part(i);
 						continue;
@@ -4572,7 +4573,7 @@ killed:
 					{
 						if (TYP(r) == PT_CRMC)
 						{
-							float r = (rand() % 101 - 50) * 0.01f, rx, ry, anrx, anry;
+							float r = (random_gen() % 101 - 50) * 0.01f, rx, ry, anrx, anry;
 							r = r * r * r;
 							rx = cosf(r); ry = sinf(r);
 							anrx = rx * nrx + ry * nry;
@@ -4633,7 +4634,7 @@ killed:
 			}
 			else
 			{
-				if (water_equal_test && elements[t].Falldown == 2 && 1>= rand()%400)//checking stagnant is cool, but then it doesn't update when you change it later.
+				if (water_equal_test && elements[t].Falldown == 2 && 1>= random_gen()%400)//checking stagnant is cool, but then it doesn't update when you change it later.
 				{
 					if (!flood_water(x,y,i,y, parts[i].flags&FLAG_WATEREQUAL))
 						goto movedone;
@@ -4656,7 +4657,7 @@ killed:
 					else
 					{
 						s = 1;
-						r = (rand()%2)*2-1;// position search direction (left/right first)
+						r = (random_gen()%2)*2-1;// position search direction (left/right first)
 						if ((clear_x!=x || clear_y!=y || nt || surround_space) &&
 							(fabsf(parts[i].vx)>0.01f || fabsf(parts[i].vy)>0.01f))
 						{
@@ -5136,7 +5137,7 @@ void Simulation::CheckStacking()
 						excessive_stacking_found = 1;
 					}
 				}
-				else if (pmap_count[y][x]>1500 || (rand()%1600)<=(pmap_count[y][x]+100))
+				else if (pmap_count[y][x]>1500 || (random_gen()%1600)<=(pmap_count[y][x]+100))
 				{
 					pmap_count[y][x] = pmap_count[y][x] + NPART;
 					excessive_stacking_found = true;
@@ -5236,7 +5237,7 @@ void Simulation::BeforeSim()
 		}
 
 		// check for stacking and create BHOL if found
-		if (force_stacking_check || (rand()%10)==0)
+		if (force_stacking_check || (random_gen()%10)==0)
 		{
 			CheckStacking();
 		}

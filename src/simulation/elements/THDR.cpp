@@ -68,9 +68,9 @@ int Element_THDR::update(UPDATE_FUNC_ARGS)
 				else if (rt!=PT_CLNE&&rt!=PT_THDR&&rt!=PT_SPRK&&rt!=PT_DMND&&rt!=PT_FIRE)
 				{
 					sim->pv[y/CELL][x/CELL] += 100.0f;
-					if (sim->legacy_enable&&1>(rand()%200))
+					if (sim->legacy_enable&&1>(random_gen()%200))
 					{
-						parts[i].life = rand()%50+120;
+						parts[i].life = random_gen()%50+120;
 						sim->part_change_type(i,x,y,PT_FIRE);
 					}
 					else

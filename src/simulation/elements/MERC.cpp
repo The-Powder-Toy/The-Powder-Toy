@@ -54,7 +54,7 @@ int Element_MERC::update(UPDATE_FUNC_ARGS)
 	if (parts[i].temp + 1 == 0)
 		parts[i].temp = 0;
 	int maxtmp = ((absorbScale/(parts[i].temp + 1))-1);
-	if ((absorbScale%((int)parts[i].temp+1))>rand()%((int)parts[i].temp+1))
+	if ((absorbScale%((int)parts[i].temp+1))>random_gen()%((int)parts[i].temp+1))
 		maxtmp ++;
 
 	if (parts[i].tmp < 0)
@@ -75,7 +75,7 @@ int Element_MERC::update(UPDATE_FUNC_ARGS)
 					r = pmap[y+ry][x+rx];
 					if (!r || (parts[i].tmp >=maxtmp))
 						continue;
-					if (TYP(r)==PT_MERC&& !(rand()%3))
+					if (TYP(r)==PT_MERC&& !(random_gen()%3))
 					{
 						if ((parts[i].tmp + parts[ID(r)].tmp + 1) <= maxtmp)
 						{
@@ -105,8 +105,8 @@ int Element_MERC::update(UPDATE_FUNC_ARGS)
 				}
 	for ( trade = 0; trade<4; trade ++)
 	{
-		rx = rand()%5-2;
-		ry = rand()%5-2;
+		rx = random_gen()%5-2;
+		ry = random_gen()%5-2;
 		if (BOUNDS_CHECK && (rx || ry))
 		{
 			r = pmap[y+ry][x+rx];

@@ -108,9 +108,9 @@ int Element_FILT::interactWavelengths(Particle* cpart, int origWl)
 			return (~origWl) & mask; // Invert colours
 		case 9:
 		{
-			int t1 = (origWl & 0x0000FF)+(rand()%5)-2;
-			int t2 = ((origWl & 0x00FF00)>>8)+(rand()%5)-2;
-			int t3 = ((origWl & 0xFF0000)>>16)+(rand()%5)-2;
+			int t1 = (origWl & 0x0000FF)+(random_gen()%5)-2;
+			int t2 = ((origWl & 0x00FF00)>>8)+(random_gen()%5)-2;
+			int t3 = ((origWl & 0xFF0000)>>16)+(random_gen()%5)-2;
 			return (origWl & 0xFF000000) | (t3<<16) | (t2<<8) | t1;
 		}
 		case 10:

@@ -66,16 +66,16 @@ int Element_TUNG::update(UPDATE_FUNC_ARGS)
 					}
 				}
 	}
-	if((parts[i].temp > MELTING_POINT && !(rand()%20)) || splode)
+	if((parts[i].temp > MELTING_POINT && !(random_gen()%20)) || splode)
 	{
-		if(!(rand()%50))
+		if(!(random_gen()%50))
 		{
 			sim->pv[y/CELL][x/CELL] += 50.0f;
 		}
-		else if(!(rand()%100))
+		else if(!(random_gen()%100))
 		{
 			sim->part_change_type(i, x, y, PT_FIRE);
-			parts[i].life = rand()%500;
+			parts[i].life = random_gen()%500;
 			return 1;
 		}
 		else
@@ -86,10 +86,10 @@ int Element_TUNG::update(UPDATE_FUNC_ARGS)
 		}
 		if(splode)
 		{
-			parts[i].temp = restrict_flt(MELTING_POINT + (rand()%600) + 200, MIN_TEMP, MAX_TEMP);
+			parts[i].temp = restrict_flt(MELTING_POINT + (random_gen()%600) + 200, MIN_TEMP, MAX_TEMP);
 		}
-		parts[i].vx += (rand()%100)-50;
-		parts[i].vy += (rand()%100)-50;
+		parts[i].vx += (random_gen()%100)-50;
+		parts[i].vy += (random_gen()%100)-50;
 		return 1;
 	}
 	parts[i].pavg[0] = parts[i].pavg[1];

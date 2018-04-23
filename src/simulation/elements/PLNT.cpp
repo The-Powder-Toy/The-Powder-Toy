@@ -60,7 +60,7 @@ int Element_PLNT::update(UPDATE_FUNC_ARGS)
 				switch (TYP(r))
 				{
 				case PT_WATR:
-					if (!(rand()%50))
+					if (!(random_gen()%50))
 					{
 						np = sim->create_part(ID(r),x+rx,y+ry,PT_PLNT);
 						if (np<0) continue;
@@ -68,7 +68,7 @@ int Element_PLNT::update(UPDATE_FUNC_ARGS)
 					}
 					break;
 				case PT_LAVA:
-					if (!(rand()%50))
+					if (!(random_gen()%50))
 					{
 						sim->part_change_type(i,x,y,PT_FIRE);
 						parts[i].life = 4;
@@ -76,14 +76,14 @@ int Element_PLNT::update(UPDATE_FUNC_ARGS)
 					break;
 				case PT_SMKE:
 				case PT_CO2:
-					if (!(rand()%50))
+					if (!(random_gen()%50))
 					{
 						sim->kill_part(ID(r));
-						parts[i].life = rand()%60 + 60;
+						parts[i].life = random_gen()%60 + 60;
 					}
 					break;
 				case PT_WOOD:
-					rndstore = rand();
+					rndstore = random_gen();
 					if (surround_space && !(rndstore%4) && parts[i].tmp==1)
 					{
 						rndstore >>= 3;

@@ -59,7 +59,7 @@ int Element_CLST::update(UPDATE_FUNC_ARGS)
 					continue;
 				if (TYP(r)==PT_WATR)
 				{
-					if (!(rand()%1500))
+					if (!(random_gen()%1500))
 					{
 						sim->create_part(i, x, y, PT_PSTS);
 						sim->kill_part(ID(r));

@@ -56,29 +56,29 @@ int Element_DSTW::update(UPDATE_FUNC_ARGS)
 				switch (TYP(r))
 				{
 				case PT_SALT:
-					if (!(rand()%50))
+					if (!(random_gen()%50))
 					{
 						sim->part_change_type(i,x,y,PT_SLTW);
 						// on average, convert 3 DSTW to SLTW before SALT turns into SLTW
-						if (!(rand()%3))
+						if (!(random_gen()%3))
 							sim->part_change_type(ID(r),x+rx,y+ry,PT_SLTW);
 					}
 					break;
 				case PT_SLTW:
-					if (!(rand()%2000))
+					if (!(random_gen()%2000))
 					{
 						sim->part_change_type(i,x,y,PT_SLTW);
 						break;
 					}
 				case PT_WATR:
-					if (!(rand()%100))
+					if (!(random_gen()%100))
 					{
 						sim->part_change_type(i,x,y,PT_WATR);
 					}
 					break;
 				case PT_RBDM:
 				case PT_LRBD:
-					if ((sim->legacy_enable||parts[i].temp>12.0f) && !(rand()%100))
+					if ((sim->legacy_enable||parts[i].temp>12.0f) && !(random_gen()%100))
 					{
 						sim->part_change_type(i,x,y,PT_FIRE);
 						parts[i].life = 4;
@@ -86,7 +86,7 @@ int Element_DSTW::update(UPDATE_FUNC_ARGS)
 					break;
 				case PT_FIRE:
 					sim->kill_part(ID(r));
-					if(!(rand()%30)){
+					if(!(random_gen()%30)){
 						sim->kill_part(i);
 						return 1;
 					}

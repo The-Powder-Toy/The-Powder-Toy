@@ -78,7 +78,7 @@ int Element_SING::update(UPDATE_FUNC_ARGS)
 		spawncount = (spawncount>255) ? 3019 : std::pow((double)(spawncount/8), 2)*M_PI;
 		for (int j = 0;j < spawncount; j++)
 		{
-			switch(rand()%3)
+			switch(random_gen()%3)
 			{
 				case 0:
 					nb = sim->create_part(-3, x, y, PT_PHOT);
@@ -91,10 +91,10 @@ int Element_SING::update(UPDATE_FUNC_ARGS)
 					break;
 			}
 			if (nb!=-1) {
-				parts[nb].life = (rand()%300);
+				parts[nb].life = (random_gen()%300);
 				parts[nb].temp = MAX_TEMP/2;
-				angle = rand()*2.0f*M_PI/RAND_MAX;
-				v = (float)(rand())*5.0f/RAND_MAX;
+				angle = random_gen.uniform01()*2.0f*M_PI;
+				v = random_gen.uniform01()*5.0f;
 				parts[nb].vx = v*cosf(angle);
 				parts[nb].vy = v*sinf(angle);
 			}
@@ -111,7 +111,7 @@ int Element_SING::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if (TYP(r)!=PT_DMND&& !(rand()%3))
+				if (TYP(r)!=PT_DMND&& !(random_gen()%3))
 				{
 					if (TYP(r)==PT_SING && parts[ID(r)].life >10)
 					{
@@ -123,11 +123,11 @@ int Element_SING::update(UPDATE_FUNC_ARGS)
 					{
 						if (parts[i].life+3 > 255)
 						{
-							if (parts[ID(r)].type!=PT_SING && !(rand()%100))
+							if (parts[ID(r)].type!=PT_SING && !(random_gen()%100))
 							{
 								int np;
 								np = sim->create_part(ID(r),x+rx,y+ry,PT_SING);
-								parts[np].life = rand()%50+60;
+								parts[np].life = random_gen()%50+60;
 							}
 							continue;
 						}

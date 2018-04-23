@@ -58,19 +58,19 @@ int Element_O2::update(UPDATE_FUNC_ARGS)
 
 				if (TYP(r)==PT_FIRE)
 				{
-					parts[ID(r)].temp+=(rand()%100);
+					parts[ID(r)].temp+=(random_gen()%100);
 					if(parts[ID(r)].tmp&0x01)
 						parts[ID(r)].temp=3473;
 					parts[ID(r)].tmp |= 2;
 
 					sim->create_part(i,x,y,PT_FIRE);
-					parts[i].temp+=(rand()%100);
+					parts[i].temp+=(random_gen()%100);
 					parts[i].tmp |= 2;
 				}
 				else if (TYP(r)==PT_PLSM && !(parts[ID(r)].tmp&4))
 				{
 					sim->create_part(i,x,y,PT_FIRE);
-					parts[i].temp+=(rand()%100);
+					parts[i].temp+=(random_gen()%100);
 					parts[i].tmp |= 2;
 				}
 			}
@@ -81,7 +81,7 @@ int Element_O2::update(UPDATE_FUNC_ARGS)
 		float gravy = sim->gravy[gravPos];
 		if (gravx*gravx + gravy*gravy > 400)
 		{
-			if (!(rand()%5))
+			if (!(random_gen()%5))
 			{
 				int j;
 				sim->create_part(i,x,y,PT_BRMT);
@@ -95,7 +95,7 @@ int Element_O2::update(UPDATE_FUNC_ARGS)
 					parts[j].temp = MAX_TEMP;
 					parts[j].tmp = 0x1;
 				}
-				rx = x+rand()%3-1, ry = y+rand()%3-1, r = TYP(pmap[ry][rx]);
+				rx = x+random_gen()%3-1, ry = y+random_gen()%3-1, r = TYP(pmap[ry][rx]);
 				if (sim->can_move[PT_PLSM][r] || r == PT_O2)
 				{
 					j = sim->create_part(-3,rx,ry,PT_PLSM);

@@ -58,7 +58,7 @@ int Element_RIME::update(UPDATE_FUNC_ARGS)
 				if (TYP(r)==PT_SPRK)
 				{
 					sim->part_change_type(i,x,y,PT_FOG);
-					parts[i].life = rand()%50 + 60;
+					parts[i].life = random_gen()%50 + 60;
 				}
 				else if (TYP(r)==PT_FOG&&parts[ID(r)].life>0)
 				{

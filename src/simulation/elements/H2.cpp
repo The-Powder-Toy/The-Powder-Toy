@@ -77,14 +77,14 @@ int Element_H2::update(UPDATE_FUNC_ARGS)
 							parts[ID(r)].temp=2473.15f;
 						parts[ID(r)].tmp |= 1;
 						sim->create_part(i,x,y,PT_FIRE);
-						parts[i].temp+=(rand()%100);
+						parts[i].temp+=(random_gen()%100);
 						parts[i].tmp |= 1;
 						return 1;
 					}
 					else if ((rt==PT_PLSM && !(parts[ID(r)].tmp&4)) || (rt==PT_LAVA && parts[ID(r)].ctype != PT_BMTL))
 					{
 						sim->create_part(i,x,y,PT_FIRE);
-						parts[i].temp+=(rand()%100);
+						parts[i].temp+=(random_gen()%100);
 						parts[i].tmp |= 1;
 						return 1;
 					}
@@ -92,7 +92,7 @@ int Element_H2::update(UPDATE_FUNC_ARGS)
 			}
 	if (parts[i].temp > 2273.15 && sim->pv[y/CELL][x/CELL] > 50.0f)
 	{
-		if (!(rand()%5))
+		if (!(random_gen()%5))
 		{
 			int j;
 			float temp = parts[i].temp;
@@ -102,7 +102,7 @@ int Element_H2::update(UPDATE_FUNC_ARGS)
 			j = sim->create_part(-3,x,y,PT_NEUT);
 			if (j>-1)
 				parts[j].temp = temp;
-			if (!(rand()%10))
+			if (!(random_gen()%10))
 			{
 				j = sim->create_part(-3,x,y,PT_ELEC);
 				if (j>-1)
@@ -115,7 +115,7 @@ int Element_H2::update(UPDATE_FUNC_ARGS)
 				parts[j].temp = temp;
 				parts[j].tmp = 0x1;
 			}
-			rx = x+rand()%3-1, ry = y+rand()%3-1, rt = TYP(pmap[ry][rx]);
+			rx = x+random_gen()%3-1, ry = y+random_gen()%3-1, rt = TYP(pmap[ry][rx]);
 			if (sim->can_move[PT_PLSM][rt] || rt == PT_H2)
 			{
 				j = sim->create_part(-3,rx,ry,PT_PLSM);
@@ -125,7 +125,7 @@ int Element_H2::update(UPDATE_FUNC_ARGS)
 					parts[j].tmp |= 4;
 				}
 			}
-			parts[i].temp = temp+750+rand()%500;
+			parts[i].temp = temp+750+random_gen()%500;
 			sim->pv[y/CELL][x/CELL] += 30;
 			return 1;
 		}

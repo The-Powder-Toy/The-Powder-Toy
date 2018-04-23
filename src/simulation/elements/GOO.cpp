@@ -51,7 +51,7 @@ Element_GOO::Element_GOO()
 int Element_GOO::update(UPDATE_FUNC_ARGS)
 {
 	if (!parts[i].life && sim->pv[y/CELL][x/CELL]>1.0f)
-		parts[i].life = rand()%80+300;
+		parts[i].life = random_gen()%80+300;
 	if (parts[i].life)
 	{
 		parts[i].vx += ADVECTION*sim->vx[y/CELL][x/CELL];

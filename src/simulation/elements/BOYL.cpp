@@ -70,12 +70,12 @@ int Element_BOYL::update(UPDATE_FUNC_ARGS)
 					continue;
 				if (TYP(r)==PT_WATR)
 				{
-					if (!(rand()%30))
+					if (!(random_gen()%30))
 						sim->part_change_type(ID(r),x+rx,y+ry,PT_FOG);
 				}
 				else if (TYP(r)==PT_O2)
 				{
-					if (!(rand()%9))
+					if (!(random_gen()%9))
 					{
 						sim->kill_part(ID(r));
 						sim->part_change_type(i,x,y,PT_WATR);

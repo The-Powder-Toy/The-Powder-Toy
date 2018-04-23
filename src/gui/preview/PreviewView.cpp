@@ -17,6 +17,8 @@
 #include "gui/interface/AvatarButton.h"
 #include "gui/interface/Keys.h"
 #include "gui/dialogues/ErrorMessage.h"
+#include "common/tpt-math.h"
+#include "common/tpt-rand.h"
 
 class PreviewView::LoginAction: public ui::ButtonAction
 {
@@ -297,7 +299,7 @@ void PreviewView::CheckComment()
 	{
 		if (!commentHelpText)
 		{
-			if (rand()%2)
+			if (random_gen()%2)
 				commentWarningLabel->SetText("Stolen? Report the save instead");
 			else
 				commentWarningLabel->SetText("Please report stolen saves");
@@ -313,7 +315,7 @@ void PreviewView::CheckComment()
 	{
 		if (!commentHelpText)
 		{
-			if (rand()%2)
+			if (random_gen()%2)
 				commentWarningLabel->SetText("Please do not swear");
 			else
 				commentWarningLabel->SetText("Bad language may be deleted");

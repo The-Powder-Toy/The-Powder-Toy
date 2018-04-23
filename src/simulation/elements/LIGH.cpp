@@ -91,11 +91,11 @@ int Element_LIGH::update(UPDATE_FUNC_ARGS)
 				rt = TYP(r);
 				if ((surround_space || sim->elements[rt].Explosive) &&
 				    (rt!=PT_SPNG || parts[ID(r)].life==0) &&
-					sim->elements[rt].Flammable && (sim->elements[rt].Flammable + (int)(sim->pv[(y+ry)/CELL][(x+rx)/CELL]*10.0f))>(rand()%1000))
+					sim->elements[rt].Flammable && (sim->elements[rt].Flammable + (int)(sim->pv[(y+ry)/CELL][(x+rx)/CELL]*10.0f))>(random_gen()%1000))
 				{
 					sim->part_change_type(ID(r),x+rx,y+ry,PT_FIRE);
 					parts[ID(r)].temp = restrict_flt(sim->elements[PT_FIRE].Temperature + (sim->elements[rt].Flammable/2), MIN_TEMP, MAX_TEMP);
-					parts[ID(r)].life = rand()%80+180;
+					parts[ID(r)].life = random_gen()%80+180;
 					parts[ID(r)].tmp = parts[ID(r)].ctype = 0;
 					if (sim->elements[rt].Explosive)
 						sim->pv[y/CELL][x/CELL] += 0.25f * CFDS;
@@ -115,12 +115,12 @@ int Element_LIGH::update(UPDATE_FUNC_ARGS)
 				case PT_PLUT:
 					parts[ID(r)].temp = restrict_flt(parts[ID(r)].temp+powderful, MIN_TEMP, MAX_TEMP);
 					sim->pv[y/CELL][x/CELL] +=powderful/35;
-					if (!(rand()%3))
+					if (!(random_gen()%3))
 					{
 						sim->part_change_type(ID(r),x+rx,y+ry,PT_NEUT);
-						parts[ID(r)].life = rand()%480+480;
-						parts[ID(r)].vx=rand()%10-5;
-						parts[ID(r)].vy=rand()%10-5;
+						parts[ID(r)].life = random_gen()%480+480;
+						parts[ID(r)].vx=random_gen()%10-5;
+						parts[ID(r)].vy=random_gen()%10-5;
 					}
 					break;
 				case PT_COAL:
@@ -208,15 +208,15 @@ int Element_LIGH::update(UPDATE_FUNC_ARGS)
 	}*/
 
 	//if (parts[i].tmp2==1/* || near!=-1*/)
-	//angle=0;//parts[i].tmp-30+rand()%60;
-	angle = (parts[i].tmp-30+rand()%60)%360;
-	multipler=parts[i].life*1.5+rand()%((int)(parts[i].life+1));
+	//angle=0;//parts[i].tmp-30+random_gen()%60;
+	angle = (parts[i].tmp-30+random_gen()%60)%360;
+	multipler=parts[i].life*1.5+random_gen()%((int)(parts[i].life+1));
 	rx=cos(angle*M_PI/180)*multipler;
 	ry=-sin(angle*M_PI/180)*multipler;
 	create_line_par(sim, x, y, x+rx, y+ry, PT_LIGH, parts[i].temp, parts[i].life, angle, parts[i].tmp2);
 	if (parts[i].tmp2==2)// && pNear==-1)
 	{
-		angle2= ((int)angle+100-rand()%200)%360;
+		angle2= ((int)angle+100-random_gen()%200)%360;
 		rx=cos(angle2*M_PI/180)*multipler;
 		ry=-sin(angle2*M_PI/180)*multipler;
 		create_line_par(sim, x, y, x+rx, y+ry, PT_LIGH, parts[i].temp, parts[i].life, angle2, parts[i].tmp2);
@@ -278,8 +278,8 @@ bool Element_LIGH::create_LIGH(Simulation * sim, int x, int y, int c, int temp, 
 		sim->parts[p].tmp = tmp;
 		if (last)
 		{
-			sim->parts[p].tmp2=1+(rand()%200>tmp2*tmp2/10+60);
-			sim->parts[p].life=(int)(life/1.5-rand()%2);
+			sim->parts[p].tmp2=1+(random_gen()%200>tmp2*tmp2/10+60);
+			sim->parts[p].life=(int)(life/1.5-random_gen()%2);
 		}
 		else
 		{

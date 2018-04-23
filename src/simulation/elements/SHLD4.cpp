@@ -55,7 +55,7 @@ int Element_SHLD4::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 				{
-					if (!(rand()%5500))
+					if (!(random_gen()%5500))
 					{
 						np = sim->create_part(-1,x+rx,y+ry,PT_SHLD1);
 						if (np<0) continue;

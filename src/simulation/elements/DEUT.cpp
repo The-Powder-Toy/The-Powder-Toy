@@ -51,7 +51,7 @@ int Element_DEUT::update(UPDATE_FUNC_ARGS)
 	int r, rx, ry, trade, np;
 	float gravtot = fabs(sim->gravy[(y/CELL)*(XRES/CELL)+(x/CELL)])+fabs(sim->gravx[(y/CELL)*(XRES/CELL)+(x/CELL)]);
 	int maxlife = ((10000/(parts[i].temp + 1))-1);
-	if ((10000%((int)parts[i].temp + 1))>rand()%((int)parts[i].temp + 1))
+	if ((10000%((int)parts[i].temp + 1))>random_gen()%((int)parts[i].temp + 1))
 		maxlife ++;
 	// Compress when Newtonian gravity is applied
 	// multiplier=1 when gravtot=0, multiplier -> 5 as gravtot -> inf
@@ -65,7 +65,7 @@ int Element_DEUT::update(UPDATE_FUNC_ARGS)
 					r = pmap[y+ry][x+rx];
 					if (!r || (parts[i].life >=maxlife))
 						continue;
-					if (TYP(r)==PT_DEUT&& !(rand()%3))
+					if (TYP(r)==PT_DEUT&& !(random_gen()%3))
 					{
 						// If neighbour life+1 fits in the free capacity for this particle, absorb neighbour
 						// Condition is written in this way so that large neighbour life values don't cause integer overflow
@@ -98,8 +98,8 @@ int Element_DEUT::update(UPDATE_FUNC_ARGS)
 trade:
 	for ( trade = 0; trade<4; trade ++)
 	{
-		rx = rand()%5-2;
-		ry = rand()%5-2;
+		rx = random_gen()%5-2;
+		ry = random_gen()%5-2;
 		if (BOUNDS_CHECK && (rx || ry))
 		{
 			r = pmap[y+ry][x+rx];

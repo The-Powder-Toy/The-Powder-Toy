@@ -63,31 +63,31 @@ int Element_SPNG::update(UPDATE_FUNC_ARGS)
 					case PT_WATR:
 					case PT_DSTW:
 					case PT_FRZW:
-						if (parts[i].life<limit && 500>rand()%absorbChanceDenom)
+						if (parts[i].life<limit && 500>random_gen()%absorbChanceDenom)
 						{
 							parts[i].life++;
 							sim->kill_part(ID(r));
 						}
 						break;
 					case PT_SLTW:
-						if (parts[i].life<limit && 50>rand()%absorbChanceDenom)
+						if (parts[i].life<limit && 50>random_gen()%absorbChanceDenom)
 						{
 							parts[i].life++;
-							if (rand()%4)
+							if (random_gen()%4)
 								sim->kill_part(ID(r));
 							else
 								sim->part_change_type(ID(r), x+rx, y+ry, PT_SALT);
 						}
 						break;
 					case PT_CBNW:
-						if (parts[i].life<limit && 100>rand()%absorbChanceDenom)
+						if (parts[i].life<limit && 100>random_gen()%absorbChanceDenom)
 						{
 							parts[i].life++;
 							sim->part_change_type(ID(r), x+rx, y+ry, PT_CO2);
 						}
 						break;
 					case PT_PSTE:
-						if (parts[i].life<limit && 20>rand()%absorbChanceDenom)
+						if (parts[i].life<limit && 20>random_gen()%absorbChanceDenom)
 						{
 							parts[i].life++;
 							sim->create_part(ID(r), x+rx, y+ry, PT_CLST);
@@ -112,8 +112,8 @@ int Element_SPNG::update(UPDATE_FUNC_ARGS)
 				}
 	for ( trade = 0; trade<9; trade ++)
 	{
-		rx = rand()%5-2;
-		ry = rand()%5-2;
+		rx = random_gen()%5-2;
+		ry = random_gen()%5-2;
 		if (BOUNDS_CHECK && (rx || ry))
 		{
 			r = pmap[y+ry][x+rx];

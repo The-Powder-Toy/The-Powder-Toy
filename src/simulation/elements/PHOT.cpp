@@ -55,7 +55,7 @@ int Element_PHOT::update(UPDATE_FUNC_ARGS)
 		return 1;
 	}
 	if (parts[i].temp > 506)
-		if (!(rand()%10)) Element_FIRE::update(UPDATE_FUNC_SUBCALL_ARGS);
+		if (!(random_gen()%10)) Element_FIRE::update(UPDATE_FUNC_SUBCALL_ARGS);
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)
 			if (BOUNDS_CHECK) {
@@ -64,16 +64,16 @@ int Element_PHOT::update(UPDATE_FUNC_ARGS)
 					continue;
 				if (TYP(r)==PT_ISOZ || TYP(r)==PT_ISZS)
 				{
-					if (!(rand()%400))
+					if (!(random_gen()%400))
 					{
 						parts[i].vx *= 0.90;
 						parts[i].vy *= 0.90;
 						sim->create_part(ID(r), x+rx, y+ry, PT_PHOT);
-						rrr = (rand()%360)*3.14159f/180.0f;
+						rrr = (random_gen()%360)*3.14159f/180.0f;
 						if (TYP(r) == PT_ISOZ)
-							rr = (rand()%128+128)/127.0f;
+							rr = (random_gen()%128+128)/127.0f;
 						else
-							rr = (rand()%228+128)/127.0f;
+							rr = (random_gen()%228+128)/127.0f;
 						parts[ID(r)].vx = rr*cosf(rrr);
 						parts[ID(r)].vy = rr*sinf(rrr);
 						sim->pv[y/CELL][x/CELL] -= 15.0f * CFDS;
@@ -81,17 +81,17 @@ int Element_PHOT::update(UPDATE_FUNC_ARGS)
 				}
 				else if((TYP(r) == PT_QRTZ || TYP(r) == PT_PQRT) && !ry && !rx)//if on QRTZ
 				{
-					float a = (rand()%360)*3.14159f/180.0f;
+					float a = (random_gen()%360)*3.14159f/180.0f;
 					parts[i].vx = 3.0f*cosf(a);
 					parts[i].vy = 3.0f*sinf(a);
 					if(parts[i].ctype == 0x3FFFFFFF)
-						parts[i].ctype = 0x1F<<(rand()%26);
+						parts[i].ctype = 0x1F<<(random_gen()%26);
 					if (parts[i].life)
 						parts[i].life++; //Delay death
 				}
 				else if(TYP(r) == PT_BGLA && !ry && !rx)//if on BGLA
 				{
-					float a = (rand()%101 - 50) * 0.001f;
+					float a = (random_gen()%101 - 50) * 0.001f;
 					float rx = cosf(a), ry = sinf(a), vx, vy;
 					vx = rx * parts[i].vx + ry * parts[i].vy;
 					vy = rx * parts[i].vy - ry * parts[i].vx;
@@ -100,8 +100,8 @@ int Element_PHOT::update(UPDATE_FUNC_ARGS)
 				}
 				else if (TYP(r) == PT_FILT && parts[ID(r)].tmp==9)
 				{
-					parts[i].vx += ((float)(rand()%1000-500))/1000.0f;
-					parts[i].vy += ((float)(rand()%1000-500))/1000.0f;
+					parts[i].vx += ((float)(random_gen()%1000-500))/1000.0f;
+					parts[i].vy += ((float)(random_gen()%1000-500))/1000.0f;
 				}
 			}
 	return 0;

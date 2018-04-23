@@ -56,7 +56,7 @@ int Element_GLOW::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if (TYP(r)==PT_WATR && !(rand()%400))
+				if (TYP(r)==PT_WATR && !(random_gen()%400))
 				{
 					sim->kill_part(i);
 					sim->part_change_type(ID(r),x+rx,y+ry,PT_DEUT);

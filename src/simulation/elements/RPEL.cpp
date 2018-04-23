@@ -50,8 +50,8 @@ int Element_RPEL::update(UPDATE_FUNC_ARGS)
 	int r, rx, ry, ri;
 	for(ri = 0; ri <= 10; ri++)
 	{
-		rx = (rand()%21)-10;
-		ry = (rand()%21)-10;
+		rx = (random_gen()%21)-10;
+		ry = (random_gen()%21)-10;
 		if (x+rx >= 0 && x+rx < XRES && y+ry >= 0 && y+ry < YRES && (rx || ry))
 		{
 			r = pmap[y+ry][x+rx];

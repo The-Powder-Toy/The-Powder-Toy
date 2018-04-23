@@ -69,20 +69,20 @@ int Element_ELEC::update(UPDATE_FUNC_ARGS)
 									parts[nb].tmp = 0;
 									parts[nb].life = 50;
 									parts[nb].temp = parts[i].temp*0.8f;
-									parts[nb].vx = rand()%20-10;
-									parts[nb].vy = rand()%20-10;
+									parts[nb].vx = random_gen()%20-10;
+									parts[nb].vy = random_gen()%20-10;
 								}
 							}
 					sim->kill_part(i);
 					return 1;
 				case PT_LCRY:
-					parts[ID(r)].tmp2 = 5+rand()%5;
+					parts[ID(r)].tmp2 = 5+random_gen()%5;
 					break;
 				case PT_WATR:
 				case PT_DSTW:
 				case PT_SLTW:
 				case PT_CBNW:
-					if(!(rand()%3))
+					if(!(random_gen()%3))
 						sim->create_part(ID(r), x+rx, y+ry, PT_O2);
 					else
 						sim->create_part(ID(r), x+rx, y+ry, PT_H2);

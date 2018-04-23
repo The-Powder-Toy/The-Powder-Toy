@@ -102,7 +102,7 @@ int Element_TRON::update(UPDATE_FUNC_ARGS)
 		int originaldir = direction;
 
 		//random turn
-		int random = rand()%340;
+		int random = random_gen()%340;
 		if ((random==1 || random==3) && !(parts[i].tmp & TRON_NORANDOM))
 		{
 			//randomly turn left(3) or right(1)
@@ -126,7 +126,7 @@ int Element_TRON::update(UPDATE_FUNC_ARGS)
 			}
 			else
 			{
-				seconddir = (direction + ((rand()%2)*2)+1)% 4;
+				seconddir = (direction + ((random_gen()%2)*2)+1)% 4;
 				lastdir = (seconddir + 2)%4;
 			}
 			seconddircheck = trymovetron(sim,x,y,seconddir,i,parts[i].tmp2);

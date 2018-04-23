@@ -3,6 +3,7 @@
 #include <cstring>
 #include <cstddef>
 #include <vector>
+#include <random>
 
 #include "Config.h"
 #include "Elements.h"
