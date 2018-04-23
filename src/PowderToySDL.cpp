@@ -88,16 +88,6 @@ void blit(pixel * vid)
 	SDL_UpdateTexture(sdl_texture, NULL, vid, WINDOWW * sizeof (Uint32));
 	SDL_RenderClear(sdl_renderer);
 	SDL_RenderCopy(sdl_renderer, sdl_texture, NULL, NULL);
-
-	/*SDL_Surface *icon = SDL_CreateRGBSurfaceFrom((void*)app_icon, 48, 48, 24, 144, 0x00FF0000, 0x0000FF00, 0x000000FF, 0);
-	SDL_Texture *iconicon = SDL_CreateTextureFromSurface(sdl_renderer, icon);
-	SDL_Rect a;
-	a.h = 48;
-	a.w = 48;
-	a.x = 0;
-	a.y = 0;
-	SDL_RenderCopy(sdl_renderer, iconicon, NULL, &a);*/
-
 	SDL_RenderPresent(sdl_renderer);
 }
 #endif
