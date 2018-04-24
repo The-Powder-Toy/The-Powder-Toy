@@ -77,7 +77,7 @@ void DoRestart()
 	if (exename.length())
 	{
 #ifdef WIN
-		ShellExecute(NULL, "open", exename, NULL, NULL, SW_SHOWNORMAL);
+		ShellExecute(NULL, "open", exename.c_str(), NULL, NULL, SW_SHOWNORMAL);
 #elif defined(LIN) || defined(MACOSX)
 		execl(exename.c_str(), "powder", NULL);
 #endif

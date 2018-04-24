@@ -23,6 +23,7 @@
 #include "Update.h"
 #include "Platform.h"
 
+// returns 1 on failure, 0 on success
 int update_start(char *data, unsigned int len)
 {
 	std::string exeName = Platform::ExecutableName(), updName;
@@ -39,23 +40,23 @@ int update_start(char *data, unsigned int len)
 	updName = updName + "_upd.exe";
 
 	if (!MoveFile(exeName.c_str(), updName.c_str()))
-		goto fail;
+		return 1;
 
 	f = fopen(exeName.c_str(), "wb");
 	if (!f)
-		goto fail;
+		return 1;
 	if (fwrite(data, 1, len, f) != len)
 	{
 		fclose(f);
 		DeleteFile(exeName.c_str());
-		goto fail;
+		return 1;
 	}
 	fclose(f);
 
 	if ((uintptr_t)ShellExecute(NULL, "open", exeName.c_str(), NULL, NULL, SW_SHOWNORMAL) <= 32)
 	{
 		DeleteFile(exeName.c_str());
-		goto fail;
+		return 1;
 	}
 
 	return 0;
@@ -90,7 +91,8 @@ int update_start(char *data, unsigned int len)
 #endif
 }
 
-int update_finish(void)
+// returns 1 on failure, 0 on success
+int update_finish()
 {
 #ifdef WIN
 	std::string exeName = Platform::ExecutableName(), updName;
@@ -141,7 +143,7 @@ int update_finish(void)
 	return 0;
 }
 
-void update_cleanup(void)
+void update_cleanup()
 {
 #ifdef WIN
 	update_finish();

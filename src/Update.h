@@ -3,7 +3,7 @@
 
 //char *exe_name(void);
 int update_start(char *data, unsigned int len);
-int update_finish(void);
-void update_cleanup(void);
+int update_finish();
+void update_cleanup();
 
 #endif /* UPDATE_H_ */

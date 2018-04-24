@@ -183,7 +183,9 @@ bool Client::DoInstallation()
 	int returnval;
 	LONG rresult;
 	HKEY newkey;
-	char *currentfilename = Platform::ExecutableName();
+	std::string currentfilename2 = Platform::ExecutableName();
+	// this isn't necessary but I don't feel like c++ifying this code right now
+	const char *currentfilename = currentfilename2.c_str();
 	char *iconname = NULL;
 	char *opencommand = NULL;
 	char *protocolcommand = NULL;
@@ -342,7 +344,6 @@ bool Client::DoInstallation()
 	free(iconname);
 	free(opencommand);
 	free(protocolcommand);
-	free(currentfilename);
 
 	return returnval;
 #elif defined(LIN)
