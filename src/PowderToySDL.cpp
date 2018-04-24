@@ -175,7 +175,7 @@ int SDLOpen()
 #endif
 
 	sdl_window = SDL_CreateWindow("The Powder Toy", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOWW * scale, WINDOWH * scale,
-								  fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+	                              fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
 	sdl_renderer = SDL_CreateRenderer(sdl_window, -1, 0);
 	SDL_RenderSetLogicalSize(sdl_renderer, WINDOWW, WINDOWH);
 	//Uncomment this to force fullscreen to an integer resolution
@@ -184,8 +184,8 @@ int SDLOpen()
 	if (fullscreen)
 		SDL_RaiseWindow(sdl_window);
 	//Uncomment this to enable resizing
-	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
-	SDL_SetWindowResizable(sdl_window, SDL_TRUE);
+	//SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
+	//SDL_SetWindowResizable(sdl_window, SDL_TRUE);
 
 #ifdef LIN
 	SDL_Surface *icon = SDL_CreateRGBSurfaceFrom((void*)app_icon, 48, 48, 24, 144, 0x00FF0000, 0x0000FF00, 0x000000FF, 0);
@@ -443,9 +443,9 @@ void EngineProcess()
 		}
 
 #ifdef OGLI
-			blit();
+		blit();
 #else
-			blit(engine->g->vid);
+		blit(engine->g->vid);
 #endif
 
 		int frameTime = SDL_GetTicks() - frameStart;
