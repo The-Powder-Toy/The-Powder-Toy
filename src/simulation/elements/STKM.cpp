@@ -439,7 +439,7 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 			{
 				if (playerp->elem == PT_PHOT)
 				{
-					int random = abs(random_gen()%3-1)*3;
+					int random = abs((int)(random_gen()%3-1))*3;
 					if (random==0)
 					{
 						sim->kill_part(np);
