@@ -7,7 +7,7 @@ class RandomGen
 {
 private:
 	uint64_t s[2];
-	uint64_t next(void);
+	uint64_t next();
 public:
 	unsigned int operator()();
 	unsigned int between(unsigned int lower, unsigned int upper);

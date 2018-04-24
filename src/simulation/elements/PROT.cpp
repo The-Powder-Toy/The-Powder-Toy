@@ -68,7 +68,7 @@ int Element_PROT::update(UPDATE_FUNC_ARGS)
 		break;
 	}
 	case PT_DEUT:
-		if ((-((int)sim->pv[y / CELL][x / CELL] - 4) + (parts[uID].life / 100)) > random_gen() % 200)
+		if ((-((int)sim->pv[y / CELL][x / CELL] - 4) + (parts[uID].life / 100)) > (int)(random_gen() % 200))
 		{
 			DeutImplosion(sim, parts[uID].life, x, y, restrict_flt(parts[uID].temp + parts[uID].life * 500, MIN_TEMP, MAX_TEMP), PT_PROT);
 			sim->kill_part(uID);

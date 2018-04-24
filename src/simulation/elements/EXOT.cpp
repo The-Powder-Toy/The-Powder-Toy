@@ -186,7 +186,7 @@ int Element_EXOT::graphics(GRAPHICS_FUNC_ARGS)
 	int c = cpart->tmp2;
 	if (cpart->life < 1001)
 	{
-		if ((cpart->tmp2 - 1)>random_gen()%1000)
+		if ((cpart->tmp2 - 1) > (int)(random_gen()%1000))
 		{
 			float frequency = 0.04045;
 			*colr = (sin(frequency*c + 4) * 127 + 150);

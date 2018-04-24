@@ -49,7 +49,7 @@ Element_NEUT::Element_NEUT()
 int Element_NEUT::update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry;
-	int pressureFactor = 3 + (int)sim->pv[y/CELL][x/CELL];
+	unsigned int pressureFactor = 3 + (int)sim->pv[y/CELL][x/CELL];
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)
 			if (BOUNDS_CHECK)
@@ -66,7 +66,7 @@ int Element_NEUT::update(UPDATE_FUNC_ARGS)
 					parts[i].vy *= 0.995;
 					break;
 				case PT_PLUT:
-					if (pressureFactor>(random_gen()%1000))
+					if (pressureFactor > (random_gen()%1000))
 					{
 						if (!(random_gen()%3))
 						{

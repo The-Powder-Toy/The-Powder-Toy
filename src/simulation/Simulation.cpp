@@ -5137,7 +5137,7 @@ void Simulation::CheckStacking()
 						excessive_stacking_found = 1;
 					}
 				}
-				else if (pmap_count[y][x]>1500 || (random_gen()%1600)<=(pmap_count[y][x]+100))
+				else if (pmap_count[y][x]>1500 || (random_gen()%1600) <= (pmap_count[y][x]+100))
 				{
 					pmap_count[y][x] = pmap_count[y][x] + NPART;
 					excessive_stacking_found = true;

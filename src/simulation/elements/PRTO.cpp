@@ -141,8 +141,8 @@ int Element_PRTO::update(UPDATE_FUNC_ARGS)
 	if (fe) {
 		int orbd[4] = {0, 0, 0, 0};	//Orbital distances
 		int orbl[4] = {0, 0, 0, 0};	//Orbital locations
-		if (!sim->parts[i].life) parts[i].life = random_gen()*random_gen()*random_gen();
-		if (!sim->parts[i].ctype) parts[i].ctype = random_gen()*random_gen()*random_gen();
+		if (!sim->parts[i].life) parts[i].life = random_gen();
+		if (!sim->parts[i].ctype) parts[i].ctype = random_gen();
 		sim->orbitalparts_get(parts[i].life, parts[i].ctype, orbd, orbl);
 		for (r = 0; r < 4; r++) {
 			if (orbd[r]<254) {

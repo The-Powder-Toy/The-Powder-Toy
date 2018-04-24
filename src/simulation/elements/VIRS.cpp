@@ -101,7 +101,7 @@ int Element_VIRS::update(UPDATE_FUNC_ARGS)
 				}
 				else if (TYP(r) == PT_PLSM)
 				{
-					if (surround_space && 10 + (int)(sim->pv[(y+ry)/CELL][(x+rx)/CELL]) > (random_gen()%100))
+					if (surround_space && 10 + sim->pv[(y+ry)/CELL][(x+rx)/CELL] > (random_gen()%100))
 					{
 						sim->create_part(i, x, y, PT_PLSM);
 						return 1;

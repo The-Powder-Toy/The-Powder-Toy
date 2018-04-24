@@ -101,7 +101,7 @@ public:
 	Particle parts[NPART];
 	int pmap[YRES][XRES];
 	int photons[YRES][XRES];
-	int pmap_count[YRES][XRES];
+	unsigned int pmap_count[YRES][XRES];
 	//Simulation Settings
 	int edgeMode;
 	int gravityMode;

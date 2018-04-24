@@ -76,7 +76,7 @@ int Element_ACID::update(UPDATE_FUNC_ARGS)
 							sim->kill_part(ID(r));
 						}
 					}
-					else if ((rt != PT_CLNE && rt != PT_PCLN && sim->elements[rt].Hardness>(random_gen()%1000))&&parts[i].life>=50)
+					else if ((rt != PT_CLNE && rt != PT_PCLN && (unsigned int)sim->elements[rt].Hardness>(random_gen()%1000))&&parts[i].life>=50)
 					{
 						if (sim->parts_avg(i, ID(r),PT_GLAS)!= PT_GLAS)//GLAS protects stuff from acid
 						{

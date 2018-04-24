@@ -3,11 +3,13 @@
 
 /* xoroshiro128+ by David Blackman and Sebastiano Vigna */
 
-static inline uint64_t rotl(const uint64_t x, int k) {
+static inline uint64_t rotl(const uint64_t x, int k)
+{
 	return (x << k) | (x >> (64 - k));
 }
 
-uint64_t RandomGen::next(void) {
+uint64_t RandomGen::next()
+{
 	const uint64_t s0 = s[0];
 	uint64_t s1 = s[1];
 	const uint64_t result = s0 + s1;
@@ -27,7 +29,7 @@ unsigned int RandomGen::operator()()
 unsigned int RandomGen::between(unsigned int lower, unsigned int upper)
 {
 	unsigned int r = (*this)();
-	
+
 	return r % (upper - lower + 1) + lower;
 }
 
