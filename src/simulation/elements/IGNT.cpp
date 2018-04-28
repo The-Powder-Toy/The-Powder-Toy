@@ -66,20 +66,20 @@ int Element_IGNT::update(UPDATE_FUNC_ARGS)
 	}
 	else if(parts[i].life > 0)
 	{
-		if(random_gen()%3)
+		if (RNG::Ref().chance(2.0/3))
 		{
-			int nb = sim->create_part(-1, x+random_gen()%3-1, y+random_gen()%3-1, PT_EMBR);
+			int nb = sim->create_part(-1, x + RNG::Ref().between(-1, 1), y + RNG::Ref().between(-1, 1), PT_EMBR);
 			if (nb!=-1) {
 				parts[nb].tmp = 0;
 				parts[nb].life = 30;
-				parts[nb].vx = random_gen()%20-10;
-				parts[nb].vy = random_gen()%20-10;
+				parts[nb].vx = RNG::Ref().between(-10, 10);
+				parts[nb].vy = RNG::Ref().between(-10, 10);
 				parts[nb].temp = restrict_flt(parts[i].temp-273.15f+400.0f, MIN_TEMP, MAX_TEMP);
 			}
 		}
 		else
 		{
-			sim->create_part(-1, x+random_gen()%3-1, y+random_gen()%3-1, PT_FIRE);
+			sim->create_part(-1, x + RNG::Ref().between(-1, 1), y + RNG::Ref().between(-1, 1), PT_FIRE);
 		}
 		parts[i].life--;
 	}

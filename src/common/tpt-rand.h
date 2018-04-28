@@ -2,21 +2,23 @@
 #define TPT_RAND_
 
 #include <stdint.h>
+#include "Singleton.h"
 
-class RandomGen
+class RNG : public Singleton<RNG>
 {
 private:
 	uint64_t s[2];
 	uint64_t next();
 public:
 	unsigned int operator()();
-	unsigned int between(unsigned int lower, unsigned int upper);
+	int between(int lower, int upper);
+	bool chance(float chance);
 	float uniform01();
 
-	RandomGen();
+	RNG();
 	void seed(unsigned int sd);
 };
 
-extern RandomGen random_gen;
+extern RNG random_gen;
 
 #endif /* TPT_RAND_ */

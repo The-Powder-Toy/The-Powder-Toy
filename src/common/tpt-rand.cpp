@@ -1,5 +1,6 @@
 #include "tpt-rand.h"
 #include <cstdlib>
+#include <ctime>
 
 /* xoroshiro128+ by David Blackman and Sebastiano Vigna */
 
@@ -8,7 +9,7 @@ static inline uint64_t rotl(const uint64_t x, int k)
 	return (x << k) | (x >> (64 - k));
 }
 
-uint64_t RandomGen::next()
+uint64_t RNG::next()
 {
 	const uint64_t s0 = s[0];
 	uint64_t s1 = s[1];
@@ -21,33 +22,37 @@ uint64_t RandomGen::next()
 	return result;
 }
 
-unsigned int RandomGen::operator()()
+unsigned int RNG::operator()()
 {
 	return next()&0xFFFFFFFF;
 }
 
-unsigned int RandomGen::between(unsigned int lower, unsigned int upper)
+int RNG::between(int lower, int upper)
 {
-	unsigned int r = (*this)();
-
-	return r % (upper - lower + 1) + lower;
+	unsigned int r = next();
+	return static_cast<int>(r % (upper - lower + 1)) + lower;
 }
 
-float RandomGen::uniform01()
+bool RNG::chance(float chance)
 {
-	return static_cast<float>(random_gen())/(float)0xFFFFFFFF;
+	return uniform01() < chance;
 }
 
-RandomGen::RandomGen()
+float RNG::uniform01()
 {
-	s[0] = 1;
-	s[1] = 2;
+	return static_cast<float>(next()&0xFFFFFFFF)/(float)0xFFFFFFFF;
 }
 
-void RandomGen::seed(unsigned int sd)
+RNG::RNG()
+{
+	s[0] = time(NULL);
+	s[1] = 614;
+}
+
+void RNG::seed(unsigned int sd)
 {
 	s[0] = sd;
 	s[1] = sd;
 }
 
-RandomGen random_gen;
+RNG random_gen;

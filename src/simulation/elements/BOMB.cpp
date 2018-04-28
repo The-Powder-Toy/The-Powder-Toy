@@ -97,8 +97,8 @@ int Element_BOMB::update(UPDATE_FUNC_ARGS)
 									parts[nb].tmp = 0;
 									parts[nb].life = 50;
 									parts[nb].temp = MAX_TEMP;
-									parts[nb].vx = random_gen()%40-20;
-									parts[nb].vy = random_gen()%40-20;
+									parts[nb].vx = RNG::Ref().between(-20, 20);
+									parts[nb].vy = RNG::Ref().between(-20, 20);
 								}
 							}
 					sim->kill_part(i);
