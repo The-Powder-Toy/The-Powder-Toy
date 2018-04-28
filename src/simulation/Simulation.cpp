@@ -3667,11 +3667,6 @@ void Simulation::UpdateParticles(int start, int end)
 			x = (int)(parts[i].x+0.5f);
 			y = (int)(parts[i].y+0.5f);
 
-			// Make sure that STASIS'd particles don't tick.
-			if (bmap[y/CELL][x/CELL] == WL_STASIS && emap[y/CELL][x/CELL]<8) {
-				continue;
-			}
-
 			//this kills any particle out of the screen, or in a wall where it isn't supposed to go
 			if (x<CELL || y<CELL || x>=XRES-CELL || y>=YRES-CELL ||
 			        (bmap[y/CELL][x/CELL] &&
@@ -3689,6 +3684,12 @@ void Simulation::UpdateParticles(int start, int end)
 				kill_part(i);
 				continue;
 			}
+
+			// Make sure that STASIS'd particles don't tick.
+			if (bmap[y/CELL][x/CELL] == WL_STASIS && emap[y/CELL][x/CELL]<8) {
+				continue;
+			}
+
 			if (bmap[y/CELL][x/CELL]==WL_DETECT && emap[y/CELL][x/CELL]<8)
 				set_emap(x/CELL, y/CELL);
 
