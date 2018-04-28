@@ -17,7 +17,6 @@
 #include "gui/interface/AvatarButton.h"
 #include "gui/interface/Keys.h"
 #include "gui/dialogues/ErrorMessage.h"
-#include "common/tpt-math.h"
 #include "common/tpt-rand.h"
 
 class PreviewView::LoginAction: public ui::ButtonAction
