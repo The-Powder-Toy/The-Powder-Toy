@@ -5040,6 +5040,7 @@ void Simulation::RecalcFreeParticles(bool do_life_dec)
 			t = parts[i].type;
 			x = (int)(parts[i].x+0.5f);
 			y = (int)(parts[i].y+0.5f);
+			bool inBounds = false;
 			if (x>=0 && y>=0 && x<XRES && y<YRES)
 			{
 				if (elements[t].Properties & TYPE_ENERGY)
@@ -5054,6 +5055,7 @@ void Simulation::RecalcFreeParticles(bool do_life_dec)
 					if (t!=PT_THDR && t!=PT_EMBR && t!=PT_FIGH && t!=PT_PLSM)
 						pmap_count[y][x]++;
 				}
+				inBounds = true;
 			}
 			lastPartUsed = i;
 			NUM_PARTS ++;
@@ -5071,7 +5073,7 @@ void Simulation::RecalcFreeParticles(bool do_life_dec)
 					elementCount[t]++;
 
 				unsigned int elem_properties = elements[t].Properties;
-				if (parts[i].life>0 && (elem_properties&PROP_LIFE_DEC) && !(bmap[y/CELL][x/CELL] == WL_STASIS && emap[y/CELL][x/CELL]<8))
+				if (parts[i].life>0 && (elem_properties&PROP_LIFE_DEC) && !(inBounds && bmap[y/CELL][x/CELL] == WL_STASIS && emap[y/CELL][x/CELL]<8))
 				{
 					// automatically decrease life
 					parts[i].life--;
@@ -5082,7 +5084,7 @@ void Simulation::RecalcFreeParticles(bool do_life_dec)
 						continue;
 					}
 				}
-				else if (parts[i].life<=0 && (elem_properties&PROP_LIFE_KILL) && !(bmap[y/CELL][x/CELL] == WL_STASIS && emap[y/CELL][x/CELL]<8))
+				else if (parts[i].life<=0 && (elem_properties&PROP_LIFE_KILL) && !(inBounds && bmap[y/CELL][x/CELL] == WL_STASIS && emap[y/CELL][x/CELL]<8))
 				{
 					// kill if no life
 					kill_part(i);
