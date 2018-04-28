@@ -70,7 +70,6 @@
 struct playerst;
 
 #include "ElementClasses.h"
-#include "common/tpt-rand.h"
 
 
 #endif /* ELEMENTS_H_ */

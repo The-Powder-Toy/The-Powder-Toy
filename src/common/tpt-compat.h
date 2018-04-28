@@ -21,6 +21,10 @@
 #define strcasecmp stricmp
 #endif
 
+#ifndef M_PI
+#define M_PI 3.14159265f
+#endif
+
 typedef unsigned short Uint16;
 
 #ifndef NULL

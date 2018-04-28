@@ -7,6 +7,8 @@
 #include "Gravity.h"
 #include "Misc.h"
 #include "Simulation.h"
+#include "common/tpt-compat.h"
+#include "common/tpt-rand.h"
 #include "graphics/Renderer.h"
 
 #define IPL -257.0f
