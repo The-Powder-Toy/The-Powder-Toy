@@ -1,6 +1,7 @@
 #ifndef FONT_H_CHECK
 #define FONT_H_CHECK
 #define FONT_H 12
+#ifndef FONTEDITOR
 #ifdef INCLUDE_FONTDATA
 unsigned char font_data[] = {
     0x05,   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -298,6 +299,10 @@ short font_ptrs[] = {
 #else
 extern unsigned char font_data[];
 extern short font_ptrs[];
+#endif
+#else
+extern unsigned char *font_data;
+extern short *font_ptrs;
 #endif
 #endif
 

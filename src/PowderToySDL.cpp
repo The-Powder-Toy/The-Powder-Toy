@@ -50,6 +50,8 @@ extern "C" {
 #include "gui/game/GameController.h"
 #include "gui/game/GameView.h"
 
+#include "gui/font/FontEditor.h"
+
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/interface/Keys.h"
@@ -1108,6 +1110,7 @@ int main(int argc, char * argv[])
 	try {
 #endif
 
+#ifndef FONTEDITOR
 		gameController = new GameController();
 		engine->ShowWindow(gameController->GetView());
 
@@ -1203,6 +1206,12 @@ int main(int argc, char * argv[])
 				new ErrorMessage("Error", e.what());
 			}
 		}
+
+#else // FONTEDITOR
+		if(argc <= 1)
+			throw std::runtime_error("Not enough arguments");
+		engine->ShowWindow(new FontEditor(argv[1]));
+#endif
 
 		//initial mouse coords
 		int sdl_x, sdl_y;
