@@ -26,7 +26,7 @@ int PIXELMETHODS_CLASS::drawtext(int x, int y, const char *s, int r, int g, int 
 		if (*s == '\n')
 		{
 			characterX = startX;
-			characterY += FONT_H+2;
+			characterY += FONT_H;
 		}
 		else if (*s == '\x0F')
 		{
@@ -112,7 +112,7 @@ int PIXELMETHODS_CLASS::drawchar(int x, int y, int c, int r, int g, int b, int a
 	int i, j, w, bn = 0, ba = 0;
 	unsigned char *rp = font_data + font_ptrs[c];
 	w = *(rp++);
-	for (j=0; j<FONT_H; j++)
+	for (j=-2; j<FONT_H-2; j++)
 		for (i=0; i<w; i++)
 		{
 			if (!bn)
@@ -132,7 +132,7 @@ int PIXELMETHODS_CLASS::addchar(int x, int y, int c, int r, int g, int b, int a)
 	int i, j, w, bn = 0, ba = 0;
 	unsigned char *rp = font_data + font_ptrs[c];
 	w = *(rp++);
-	for (j=0; j<FONT_H; j++)
+	for (j=-2; j<FONT_H-2; j++)
 		for (i=0; i<w; i++)
 		{
 			if (!bn)

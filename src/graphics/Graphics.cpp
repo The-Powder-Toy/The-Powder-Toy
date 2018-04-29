@@ -91,7 +91,7 @@ int VideoBuffer::SetCharacter(int x, int y, int c, int r, int g, int b, int a)
 	int i, j, w, bn = 0, ba = 0;
 	unsigned char *rp = font_data + font_ptrs[c];
 	w = *(rp++);
-	for (j=0; j<FONT_H; j++)
+	for (j=-2; j<FONT_H-2; j++)
 		for (i=0; i<w; i++)
 		{
 			if (!bn)
@@ -111,7 +111,7 @@ int VideoBuffer::BlendCharacter(int x, int y, int c, int r, int g, int b, int a)
 	int i, j, w, bn = 0, ba = 0;
 	unsigned char *rp = font_data + font_ptrs[c];
 	w = *(rp++);
-	for (j=0; j<FONT_H; j++)
+	for (j=-2; j<FONT_H-2; j++)
 		for (i=0; i<w; i++)
 		{
 			if (!bn)
@@ -131,7 +131,7 @@ int VideoBuffer::AddCharacter(int x, int y, int c, int r, int g, int b, int a)
 	int i, j, w, bn = 0, ba = 0;
 	unsigned char *rp = font_data + font_ptrs[c];
 	w = *(rp++);
-	for (j=0; j<FONT_H; j++)
+	for (j=-2; j<FONT_H-2; j++)
 		for (i=0; i<w; i++)
 		{
 			if (!bn)
@@ -626,7 +626,7 @@ void Graphics::textnpos(char *s, int n, int w, int *cx, int *cy)
 		if (charspace<wordlen && wordlen && w-x<w/3)
 		{
 			x = 0;
-			y += FONT_H+2;
+			y += FONT_H;
 		}
 		for (; *s && --wordlen>=-1; s++)
 		{
@@ -637,7 +637,7 @@ void Graphics::textnpos(char *s, int n, int w, int *cx, int *cy)
 			if (x>=w)
 			{
 				x = 0;
-				y += FONT_H+2;
+				y += FONT_H;
 			}
 			n--;
 		}
@@ -681,7 +681,7 @@ int Graphics::PositionAtCharIndex(char *s, int charIndex, int & positionX, int &
 		if(*s == '\n') {
 			lines++;
 			x = 0;
-			y += FONT_H+2;
+			y += FONT_H;
 			charIndex--;
 			continue;
 		} else if(*s =='\b') {
@@ -705,12 +705,12 @@ int Graphics::PositionAtCharIndex(char *s, int charIndex, int & positionX, int &
 
 int Graphics::CharIndexAtPosition(char *s, int positionX, int positionY)
 {
-	int x=0, y=0,charIndex=0,cw;
+	int x=0, y=-2,charIndex=0,cw;
 	for (; *s; s++)
 	{
 		if(*s == '\n') {
 			x = 0;
-			y += FONT_H+2;
+			y += FONT_H;
 			charIndex++;
 			continue;
 		} else if(*s == '\b') {
@@ -736,7 +736,7 @@ int Graphics::CharIndexAtPosition(char *s, int positionX, int positionY)
 
 int Graphics::textwrapheight(char *s, int width)
 {
-	int x=0, height=FONT_H+2, cw;
+	int x=0, height=FONT_H, cw;
 	int wordlen;
 	int charspace;
 	while (*s)
@@ -746,14 +746,14 @@ int Graphics::textwrapheight(char *s, int width)
 		if (charspace<wordlen && wordlen && width-x<width/3)
 		{
 			x = 0;
-			height += FONT_H+2;
+			height += FONT_H;
 		}
 		for (; *s && --wordlen>=-1; s++)
 		{
 			if (*s == '\n')
 			{
 				x = 0;
-				height += FONT_H+2;
+				height += FONT_H;
 			}
 			else if (*s == '\b')
 			{
@@ -771,7 +771,7 @@ int Graphics::textwrapheight(char *s, int width)
 				if (x+cw>=width)
 				{
 					x = 0;
-					height += FONT_H+2;
+					height += FONT_H;
 				}
 				x += cw;
 			}
@@ -785,17 +785,17 @@ void Graphics::textsize(const char * s, int & width, int & height)
 	if(!strlen(s))
 	{
 		width = 0;
-		height = FONT_H;
+		height = FONT_H-2;
 		return;
 	}
 
-	int cHeight = FONT_H, cWidth = 0, lWidth = 0;
+	int cHeight = FONT_H-2, cWidth = 0, lWidth = 0;
 	for (; *s; s++)
 	{
 		if (*s == '\n')
 		{
 			cWidth = 0;
-			cHeight += FONT_H+2;
+			cHeight += FONT_H;
 		}
 		else if (*s == '\x0F')
 		{

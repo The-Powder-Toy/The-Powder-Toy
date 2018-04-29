@@ -11,7 +11,7 @@
 #include "font.h"
 
 #define CELLW	12
-#define CELLH	10
+#define CELLH	12
 
 char font[256][CELLH][CELLW];
 char width[256];
