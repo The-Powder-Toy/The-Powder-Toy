@@ -268,7 +268,7 @@ VideoBuffer * SignTool::GetIcon(int toolID, int width, int height)
 			newTexture->SetPixel(x, y, PIXR(pc), PIXG(pc), PIXB(pc), 255);
 		}
 	}
-	newTexture->SetCharacter((width/2)-5, (height/2)-5, 0xA1, 32, 64, 128, 255);
+	newTexture->AddCharacter((width/2)-5, (height/2)-5, 0xA1, 32, 64, 128, 255);
 	newTexture->BlendCharacter((width/2)-5, (height/2)-5, 0xA0, 255, 255, 255, 255);
 	return newTexture;
 }

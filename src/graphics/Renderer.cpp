@@ -677,7 +677,7 @@ VideoBuffer * Renderer::WallIcon(int wallID, int width, int height)
 				newTexture->SetPixel(i, j, PIXR(pc), PIXG(pc), PIXB(pc), 255);
 			}
 		}
-		newTexture->SetCharacter(4, 2, 0x8D, 255, 255, 255, 255);
+		newTexture->AddCharacter(4, 2, 0x8D, 255, 255, 255, 255);
 		for (i=width/3; i<width; i++)
 		{
 			newTexture->SetPixel(i, 7+(int)(3.9f*cos(i*0.3f)), 255, 255, 255, 255);
