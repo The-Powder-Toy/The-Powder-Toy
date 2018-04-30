@@ -5,7 +5,7 @@
 #include "gui/interface/Label.h"
 #include "gui/interface/ScrollPanel.h"
 
-InformationMessage::InformationMessage(std::string title, std::string message, bool large):
+InformationMessage::InformationMessage(String title, String message, bool large):
 	ui::Window(ui::Point(-1, -1), ui::Point(200, 35))
 {
 	if (large) //Maybe also use this large mode for changelogs eventually, or have it as a customizable size?

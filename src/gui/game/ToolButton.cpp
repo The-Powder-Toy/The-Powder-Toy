@@ -4,8 +4,8 @@
 #include "gui/interface/Mouse.h"
 #include "Favorite.h"
 
-ToolButton::ToolButton(ui::Point position, ui::Point size, std::string text_, std::string toolIdentifier, std::string toolTip):
-	ui::Button(position, size, text_, toolTip),
+ToolButton::ToolButton(ui::Point position, ui::Point size, ByteString text_, ByteString toolIdentifier, String toolTip):
+	ui::Button(position, size, text_.FromAscii(), toolTip),
 	toolIdentifier(toolIdentifier)
 {
 	SetSelectionState(-1);

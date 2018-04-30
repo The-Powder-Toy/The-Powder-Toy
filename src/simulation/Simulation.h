@@ -41,12 +41,12 @@ public:
 	Element elements[PT_NUM];
 	//Element * elements;
 	std::vector<SimTool*> tools;
-	unsigned int * platent;
-	wall_type wtypes[UI_WALLCOUNT];
-	gol_menu gmenu[NGOL];
-	int goltype[NGOL];
-	int grule[NGOL+1][10];
-	menu_section msections[SC_TOTAL];
+	std::vector<unsigned int> platent;
+	std::vector<wall_type> wtypes;
+	std::vector<gol_menu> gmenu;
+	std::vector<int> goltype;
+	std::vector<std::array<int, 10> > grule;
+	std::vector<menu_section> msections;
 
 	int currentTick;
 	int replaceModeSelected;
@@ -199,7 +199,7 @@ public:
 
 	void GetGravityField(int x, int y, float particleGrav, float newtonGrav, float & pGravX, float & pGravY);
 
-	int GetParticleType(std::string type);
+	int GetParticleType(ByteString type);
 
 	void orbitalparts_get(int block1, int block2, int resblock1[], int resblock2[]);
 	void orbitalparts_set(int *block1, int *block2, int resblock1[], int resblock2[]);

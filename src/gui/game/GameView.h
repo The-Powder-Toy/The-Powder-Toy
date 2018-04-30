@@ -4,7 +4,7 @@
 #include <vector>
 #include <queue>
 #include <deque>
-#include <string>
+#include "common/String.h"
 #include "GameController.h"
 #include "GameModel.h"
 #include "gui/interface/Window.h"
@@ -54,16 +54,16 @@ private:
 	int lastMenu;
 
 	int toolTipPresence;
-	std::string toolTip;
+	String toolTip;
 	bool isToolTipFadingIn;
 	ui::Point toolTipPosition;
 	int infoTipPresence;
-	std::string infoTip;
+	String infoTip;
 	int buttonTipShow;
-	std::string buttonTip;
+	String buttonTip;
 	bool isButtonTipFadingIn;
 	int introText;
-	std::string introTextMessage;
+	String introTextMessage;
 
 	bool doScreenshot;
 	int screenshotIndex;
@@ -80,7 +80,7 @@ private:
 	vector<ui::Button*> menuButtons;
 	vector<ToolButton*> toolButtons;
 	vector<ui::Component*> notificationComponents;
-	deque<std::pair<std::string, int> > logEntries;
+	deque<std::pair<String, int> > logEntries;
 	ui::Button * scrollBar;
 	ui::Button * searchButton;
 	ui::Button * reloadButton;
@@ -178,14 +178,14 @@ public:
 	void NotifyColourActivePresetChanged(GameModel * sender);
 	void NotifyPlaceSaveChanged(GameModel * sender);
 	void NotifyNotificationsChanged(GameModel * sender);
-	void NotifyLogChanged(GameModel * sender, string entry);
+	void NotifyLogChanged(GameModel * sender, String entry);
 	void NotifyToolTipChanged(GameModel * sender);
 	void NotifyInfoTipChanged(GameModel * sender);
 	void NotifyQuickOptionsChanged(GameModel * sender);
 	void NotifyLastToolChanged(GameModel * sender);
 
 
-	virtual void ToolTip(ui::Point senderPosition, std::string toolTip);
+	virtual void ToolTip(ui::Point senderPosition, String toolTip);
 
 	virtual void OnMouseMove(int x, int y, int dx, int dy);
 	virtual void OnMouseDown(int x, int y, unsigned button);

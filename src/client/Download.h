@@ -1,12 +1,12 @@
 #ifndef DOWNLOAD_H
 #define DOWNLOAD_H
 #include <map>
-#include <string>
+#include "common/String.h"
 
 class DownloadManager;
 class Download
 {
-	std::string uri;
+	ByteString uri;
 	void *http;
 	bool keepAlive;
 
@@ -14,25 +14,25 @@ class Download
 	int downloadSize;
 	int downloadStatus;
 
-	std::string postData;
-	std::string postDataBoundary;
+	ByteString postData;
+	ByteString postDataBoundary;
 
-	std::string userID;
-	std::string userSession;
+	ByteString userID;
+	ByteString userSession;
 
 	volatile bool downloadFinished;
 	volatile bool downloadCanceled;
 	volatile bool downloadStarted;
 
 public:
-	Download(std::string uri, bool keepAlive = false);
+	Download(ByteString uri, bool keepAlive = false);
 	~Download();
 
-	void AddPostData(std::map<std::string, std::string> data);
-	void AddPostData(std::pair<std::string, std::string> data);
-	void AuthHeaders(std::string ID, std::string session);
+	void AddPostData(std::map<ByteString, ByteString> data);
+	void AddPostData(std::pair<ByteString, ByteString> data);
+	void AuthHeaders(ByteString ID, ByteString session);
 	void Start();
-	bool Reuse(std::string newuri);
+	bool Reuse(ByteString newuri);
 	char* Finish(int *length, int *status);
 	void Cancel();
 

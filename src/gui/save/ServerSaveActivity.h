@@ -32,7 +32,7 @@ public:
 	virtual void Exit();
 	virtual void ShowPublishingInfo();
 	virtual void ShowRules();
-	virtual void CheckName(std::string newname);
+	virtual void CheckName(String newname);
 	virtual void OnDraw();
 	virtual void OnResponseReady(void * imagePtr, int identifier);
 	virtual void OnTick(float dt);

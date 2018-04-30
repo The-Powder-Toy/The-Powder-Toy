@@ -128,10 +128,10 @@ SignWindow::SignWindow(SignTool * tool_, Simulation * sim_, int signID_, ui::Poi
 
 	justification = new ui::DropDown(ui::Point(52, 48), ui::Point(50, 16));
 	AddComponent(justification);
-	justification->AddOption(std::pair<std::string, int>("\xA0 Left", (int)sign::Left));
-	justification->AddOption(std::pair<std::string, int>("\x9E Middle", (int)sign::Middle));
-	justification->AddOption(std::pair<std::string, int>("\x9F Right", (int)sign::Right));
-	justification->AddOption(std::pair<std::string, int>("\x9D None", (int)sign::None));
+	justification->AddOption(std::pair<String, int>("\xA0 Left", (int)sign::Left));
+	justification->AddOption(std::pair<String, int>("\x9E Middle", (int)sign::Middle));
+	justification->AddOption(std::pair<String, int>("\x9F Right", (int)sign::Right));
+	justification->AddOption(std::pair<String, int>("\x9D None", (int)sign::None));
 	justification->SetOption(1);
 	justification->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 
@@ -181,9 +181,9 @@ void SignWindow::DoDraw()
 	{
 		sign & currentSign = *iter;
 		int x, y, w, h, dx, dy;
-		char type = 0;
+		String::value_type type = 0;
 		Graphics * g = GetGraphics();
-		std::string text = currentSign.getText(sim);
+		String text = currentSign.getText(sim);
 		sign::splitsign(currentSign.text, &type);
 		currentSign.pos(text, x, y, w, h);
 		g->clearrect(x, y, w+1, h);

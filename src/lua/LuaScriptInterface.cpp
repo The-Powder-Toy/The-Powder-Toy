@@ -1,5 +1,4 @@
 #ifdef LUACONSOLE
-#include <string>
 #include <iomanip>
 #include <vector>
 #include <algorithm>
@@ -61,8 +60,8 @@ Graphics * luacon_g;
 Renderer * luacon_ren;
 
 bool *luacon_currentCommand;
-std::string *luacon_lastError;
-std::string lastCode;
+String *luacon_lastError;
+String lastCode;
 
 int *lua_el_func, *lua_el_mode, *lua_gr_func;
 
@@ -74,7 +73,7 @@ int tptParts, tptPartsMeta, tptElementTransitions, tptPartsCData, tptPartMeta, t
 
 int atPanic(lua_State *l)
 {
-	throw std::runtime_error("Unprotected lua panic: " + std::string(lua_tostring(l, -1)));
+	throw std::runtime_error("Unprotected lua panic: " + ByteString(lua_tostring(l, -1)));
 }
 
 int TptIndexClosure(lua_State *l)
@@ -296,9 +295,9 @@ tpt.partsdata = nil");
 	tptElements = lua_gettop(l);
 	for (int i = 1; i < PT_NUM; i++)
 	{
-		for (size_t j = 0; j < strlen(luacon_sim->elements[i].Name); j++)
+		for (size_t j = 0; j < luacon_sim->elements[i].Name.size(); j++)
 			tmpname[j] = tolower(luacon_sim->elements[i].Name[j]);
-		tmpname[strlen(luacon_sim->elements[i].Name)] = 0;
+		tmpname[luacon_sim->elements[i].Name.size()] = 0;
 
 		lua_newtable(l);
 		currentElement = lua_gettop(l);
@@ -321,9 +320,9 @@ tpt.partsdata = nil");
 	tptElementTransitions = lua_gettop(l);
 	for (int i = 1; i < PT_NUM; i++)
 	{
-		for (size_t j = 0; j < strlen(luacon_sim->elements[i].Name); j++)
+		for (size_t j = 0; j < luacon_sim->elements[i].Name.size(); j++)
 			tmpname[j] = tolower(luacon_sim->elements[i].Name[j]);
-		tmpname[strlen(luacon_sim->elements[i].Name)] = 0;
+		tmpname[luacon_sim->elements[i].Name.size()] = 0;
 
 		lua_newtable(l);
 		currentElement = lua_gettop(l);
@@ -381,7 +380,7 @@ void LuaScriptInterface::SetWindow(ui::Window * window)
 
 int LuaScriptInterface::tpt_index(lua_State *l)
 {
-	std::string key = luaL_checkstring(l, 2);
+	ByteString key = luaL_checkstring(l, 2);
 	if (!key.compare("selectedl"))
 		return lua_pushstring(l, luacon_selectedl.c_str()), 1;
 	if (!key.compare("selectedr"))
@@ -403,7 +402,7 @@ int LuaScriptInterface::tpt_index(lua_State *l)
 
 int LuaScriptInterface::tpt_newIndex(lua_State *l)
 {
-	std::string key = luaL_checkstring(l, 2);
+	ByteString key = luaL_checkstring(l, 2);
 	if (!key.compare("selectedl"))
 	{
 		Tool *t = m->GetToolFromIdentifier(luaL_checkstring(l, 3));
@@ -543,7 +542,7 @@ int LuaScriptInterface::interface_closeWindow(lua_State * l)
 
 int LuaScriptInterface::simulation_signIndex(lua_State *l)
 {
-	std::string key = luaL_checkstring(l, 2);
+	ByteString key = luaL_checkstring(l, 2);
 
 	//Get Raw Index value for element. Maybe there is a way to get the sign index some other way?
 	lua_pushstring(l, "id");
@@ -561,9 +560,9 @@ int LuaScriptInterface::simulation_signIndex(lua_State *l)
 	}
 
 	if (!key.compare("text"))
-		return lua_pushstring(l, luacon_sim->signs[id].text.c_str()), 1;
+		return lua_pushstring(l, luacon_sim->signs[id].text.ToUtf8().c_str()), 1;
 	else if (!key.compare("displayText"))
-		return lua_pushstring(l, luacon_sim->signs[id].getText(luacon_sim).c_str()), 1;
+		return lua_pushstring(l, luacon_sim->signs[id].getText(luacon_sim).ToUtf8().c_str()), 1;
 	else if (!key.compare("justification"))
 		return lua_pushnumber(l, (int)luacon_sim->signs[id].ju), 1;
 	else if (!key.compare("x"))
@@ -604,7 +603,7 @@ int LuaScriptInterface::simulation_signIndex(lua_State *l)
 
 int LuaScriptInterface::simulation_signNewIndex(lua_State *l)
 {
-	std::string key = luaL_checkstring(l, 2);
+	ByteString key = luaL_checkstring(l, 2);
 
 	//Get Raw Index value for element. Maybe there is a way to get the sign index some other way?
 	lua_pushstring(l, "id");
@@ -624,7 +623,7 @@ int LuaScriptInterface::simulation_signNewIndex(lua_State *l)
 	if (!key.compare("text"))
 	{
 		const char *temp = luaL_checkstring(l, 3);
-		std::string cleaned = format::CleanString(temp, false, true, true).substr(0, 45);
+		String cleaned = format::CleanString(ByteString(temp).FromUtf8(), false, true, true).substr(0, 45);
 		if (!cleaned.empty())
 			luacon_sim->signs[id].text = cleaned;
 		else
@@ -671,7 +670,7 @@ int LuaScriptInterface::simulation_newsign(lua_State *l)
 	if (luacon_sim->signs.size() >= MAXSIGNS)
 		return lua_pushnil(l), 1;
 
-	std::string text = format::CleanString(luaL_checkstring(l, 1), false, true, true).substr(0, 45);
+	String text = format::CleanString(ByteString(luaL_checkstring(l, 1)).FromUtf8(), false, true, true).substr(0, 45);
 	int x = luaL_checkinteger(l, 2);
 	int y = luaL_checkinteger(l, 3);
 	int ju = luaL_optinteger(l, 4, 1);
@@ -810,7 +809,7 @@ void LuaScriptInterface::initSimulationAPI()
 	particleProperties = new StructProperty[particlePropertiesV.size()];
 	for(std::vector<StructProperty>::iterator iter = particlePropertiesV.begin(), end = particlePropertiesV.end(); iter != end; ++iter)
 	{
-		std::string propertyName = (*iter).Name;
+		ByteString propertyName = (*iter).Name;
 		std::transform(propertyName.begin(), propertyName.end(), propertyName.begin(), ::toupper);
 		lua_pushinteger(l, particlePropertiesCount);
 		lua_setfield(l, -2, ("FIELD_"+propertyName).c_str());
@@ -1018,7 +1017,7 @@ int LuaScriptInterface::simulation_partProperty(lua_State * l)
 			return luaL_error(l, "Invalid field ID (%d)", fieldID);
 		property = &particleProperties[fieldID];
 	} else if(lua_type(l, 2) == LUA_TSTRING) {
-		std::string fieldName = lua_tostring(l, 2);
+		ByteString fieldName = lua_tostring(l, 2);
 		for(int i = particlePropertiesCount-1; i >= 0; i--)
 		{
 			if(particleProperties[i].Name == fieldName)
@@ -1687,7 +1686,7 @@ int LuaScriptInterface::simulation_saveStamp(lua_State * l)
 	int w = luaL_optint(l,3,XRES-1);
 	int h = luaL_optint(l,4,YRES-1);
 	int includePressure = luaL_optint(l,5,1);
-	std::string name = luacon_controller->StampRegion(ui::Point(x, y), ui::Point(x+w, y+h), includePressure);
+	ByteString name = luacon_controller->StampRegion(ui::Point(x, y), ui::Point(x+w, y+h), includePressure);
 	lua_pushstring(l, name.c_str());
 	return 1;
 }
@@ -1738,12 +1737,12 @@ int LuaScriptInterface::simulation_loadStamp(lua_State * l)
 int LuaScriptInterface::simulation_deleteStamp(lua_State * l)
 {
 	int stampCount = Client::Ref().GetStampsCount();
-	std::vector<std::string> stamps = Client::Ref().GetStamps(0, stampCount);
+	std::vector<ByteString> stamps = Client::Ref().GetStamps(0, stampCount);
 
 	if (lua_isstring(l, 1)) //note: lua_isstring returns true on numbers too
 	{
 		const char * filename = luaL_optstring(l, 1, "");
-		for (std::vector<std::string>::const_iterator iterator = stamps.begin(), end = stamps.end(); iterator != end; ++iterator)
+		for (std::vector<ByteString>::const_iterator iterator = stamps.begin(), end = stamps.end(); iterator != end; ++iterator)
 		{
 			if (*iterator == filename)
 			{
@@ -2440,10 +2439,10 @@ void LuaScriptInterface::initElementsAPI()
 		if(luacon_sim->elements[i].Enabled)
 		{
 			lua_pushinteger(l, i);
-			lua_setfield(l, -2, luacon_sim->elements[i].Identifier);
+			lua_setfield(l, -2, luacon_sim->elements[i].Identifier.c_str());
 			char realIdentifier[20];
-			sprintf(realIdentifier, "DEFAULT_PT_%s", luacon_sim->elements[i].Name);
-			if (i != 0 && i != PT_NBHL && i != PT_NWHL && strcmp(luacon_sim->elements[i].Identifier, realIdentifier))
+			sprintf(realIdentifier, "DEFAULT_PT_%s", luacon_sim->elements[i].Name.c_str());
+			if (i != 0 && i != PT_NBHL && i != PT_NWHL && luacon_sim->elements[i].Identifier != realIdentifier)
 			{
 				lua_pushinteger(l, i);
 				lua_setfield(l, -2, realIdentifier);
@@ -2464,7 +2463,7 @@ int LuaScriptInterface::elements_loadDefault(lua_State * l)
 
 		lua_getglobal(l, "elements");
 		lua_pushnil(l);
-		lua_setfield(l, -2, luacon_sim->elements[id].Identifier);
+		lua_setfield(l, -2, luacon_sim->elements[id].Identifier.c_str());
 
 		std::vector<Element> elementList = GetElements();
 		if (id < (int)elementList.size())
@@ -2473,7 +2472,7 @@ int LuaScriptInterface::elements_loadDefault(lua_State * l)
 			luacon_sim->elements[id] = Element();
 
 		lua_pushinteger(l, id);
-		lua_setfield(l, -2, luacon_sim->elements[id].Identifier);
+		lua_setfield(l, -2, luacon_sim->elements[id].Identifier.c_str());
 		lua_pop(l, 1);
 	}
 	else
@@ -2507,12 +2506,12 @@ int LuaScriptInterface::elements_loadDefault(lua_State * l)
 
 int LuaScriptInterface::elements_allocate(lua_State * l)
 {
-	std::string group, id, identifier;
+	ByteString group, id, identifier;
 	luaL_checktype(l, 1, LUA_TSTRING);
 	luaL_checktype(l, 2, LUA_TSTRING);
-	group = std::string(lua_tostring(l, 1));
+	group = ByteString(lua_tostring(l, 1));
 	std::transform(group.begin(), group.end(), group.begin(), ::toupper);
-	id = std::string(lua_tostring(l, 2));
+	id = ByteString(lua_tostring(l, 2));
 	std::transform(id.begin(), id.end(), id.begin(), ::toupper);
 
 	if(group == "DEFAULT")
@@ -2522,7 +2521,7 @@ int LuaScriptInterface::elements_allocate(lua_State * l)
 
 	for(int i = 0; i < PT_NUM; i++)
 	{
-		if(luacon_sim->elements[i].Enabled && std::string(luacon_sim->elements[i].Identifier) == identifier)
+		if(luacon_sim->elements[i].Enabled && ByteString(luacon_sim->elements[i].Identifier) == identifier)
 			return luaL_error(l, "Element identifier already in use");
 	}
 
@@ -2699,7 +2698,7 @@ int LuaScriptInterface::elements_element(lua_State * l)
 			}
 			lua_setfield(l, -2, (*iter).Name.c_str());
 		}
-		lua_pushstring(l, luacon_sim->elements[id].Identifier);
+		lua_pushstring(l, luacon_sim->elements[id].Identifier.c_str());
 		lua_setfield(l, -2, "Identifier");
 		return 1;
 	}
@@ -2709,11 +2708,11 @@ int LuaScriptInterface::elements_property(lua_State * l)
 {
 	int args = lua_gettop(l);
 	int id;
-	std::string propertyName;
+	ByteString propertyName;
 	luaL_checktype(l, 1, LUA_TNUMBER);
 	id = lua_tointeger(l, 1);
 	luaL_checktype(l, 2, LUA_TSTRING);
-	propertyName = std::string(lua_tostring(l, 2));
+	propertyName = ByteString(lua_tostring(l, 2));
 
 	if(id < 0 || id >= PT_NUM || !luacon_sim->elements[id].Enabled)
 		return luaL_error(l, "Invalid element");
@@ -2877,7 +2876,7 @@ int LuaScriptInterface::elements_property(lua_State * l)
 		}
 		else if(propertyName == "Identifier")
 		{
-			lua_pushstring(l, luacon_sim->elements[id].Identifier);
+			lua_pushstring(l, luacon_sim->elements[id].Identifier.c_str());
 			return 1;
 		}
 		else
@@ -2894,7 +2893,7 @@ int LuaScriptInterface::elements_free(lua_State * l)
 	if(id < 0 || id >= PT_NUM || !luacon_sim->elements[id].Enabled)
 		return luaL_error(l, "Invalid element");
 
-	std::string identifier = luacon_sim->elements[id].Identifier;
+	ByteString identifier = luacon_sim->elements[id].Identifier;
 	if(identifier.length()>7 && identifier.substr(0, 7) == "DEFAULT")
 		return luaL_error(l, "Cannot free default elements");
 
@@ -2937,7 +2936,7 @@ int LuaScriptInterface::graphics_textSize(lua_State * l)
 {
 	int width, height;
 	const char* text = luaL_optstring(l, 1, "");
-	Graphics::textsize(text, width, height);
+	Graphics::textsize(ByteString(text).FromUtf8(), width, height);
 
 	lua_pushinteger(l, width);
 	lua_pushinteger(l, height);
@@ -2963,7 +2962,7 @@ int LuaScriptInterface::graphics_drawText(lua_State * l)
 	if (a<0) a = 0;
 	else if (a>255) a = 255;
 
-	luacon_g->drawtext(x, y, text, r, g, b, a);
+	luacon_g->drawtext(x, y, ByteString(text).FromUtf8(), r, g, b, a);
 	return 0;
 }
 
@@ -3379,7 +3378,7 @@ int LuaScriptInterface::platform_releaseType(lua_State * l)
 
 int LuaScriptInterface::platform_exeName(lua_State * l)
 {
-	std::string name = Platform::ExecutableName();
+	ByteString name = Platform::ExecutableName();
 	if (name.length())
 		lua_pushstring(l, name.c_str());
 	else
@@ -3415,7 +3414,7 @@ int LuaScriptInterface::platform_clipboardPaste(lua_State * l)
 
 bool LuaScriptInterface::OnActiveToolChanged(int toolSelection, Tool * tool)
 {
-	std::string identifier;
+	ByteString identifier;
 	if (tool)
 		identifier = tool->GetIdentifier();
 	else
@@ -3520,7 +3519,7 @@ void LuaScriptInterface::OnTick()
 	luacon_step(luacon_mousex, luacon_mousey);
 }
 
-int LuaScriptInterface::Command(std::string command)
+int LuaScriptInterface::Command(String command)
 {
 	if (command[0] == '!')
 	{
@@ -3532,24 +3531,24 @@ int LuaScriptInterface::Command(std::string command)
 	else
 	{
 		int level = lua_gettop(l), ret = -1;
-		std::string text = "";
+		String text = "";
 		lastError = "";
 		currentCommand = true;
 		if (lastCode.length())
 			lastCode += "\n";
 		lastCode += command;
-		std::string tmp = "return " + lastCode;
+		String tmp = "return " + lastCode;
 		ui::Engine::Ref().LastTick(Platform::GetTime());
-		luaL_loadbuffer(l, tmp.c_str(), tmp.length(), "@console");
+		luaL_loadbuffer(l, tmp.ToUtf8().c_str(), tmp.length(), "@console");
 		if (lua_type(l, -1) != LUA_TFUNCTION)
 		{
 			lua_pop(l, 1);
-			luaL_loadbuffer(l, lastCode.c_str(), lastCode.length(), "@console");
+			luaL_loadbuffer(l, lastCode.ToUtf8().c_str(), lastCode.length(), "@console");
 		}
 		if (lua_type(l, -1) != LUA_TFUNCTION)
 		{
 			lastError = luacon_geterror();
-			std::string err = lastError;
+			String err = lastError;
 			if (err.find("near '<eof>'") != err.npos) //the idea stolen from lua-5.1.5/lua.c
 				lastError = "...";
 			else
@@ -3567,9 +3566,9 @@ int LuaScriptInterface::Command(std::string command)
 				{
 					luaL_tostring(l, level);
 					if (text.length())
-						text += ", " + std::string(luaL_optstring(l, -1, ""));
+						text += ", " + ByteString(luaL_optstring(l, -1, "")).FromUtf8();
 					else
-						text = std::string(luaL_optstring(l, -1, ""));
+						text = ByteString(luaL_optstring(l, -1, "")).FromUtf8();
 					lua_pop(l, 1);
 				}
 				if (text.length())
@@ -3606,39 +3605,39 @@ int strlcmp(const char* a, const char* b, int len)
 	return -1;
 }
 
-std::string highlight(std::string command)
+String highlight(String command)
 {
-#define CMP(X) (!strlcmp(wstart, X, len))
-	std::stringstream result;
+#define CMP(X) (String(wstart, len) == X)
+	String::Stream result;
 	int pos = 0;
-	const char *raw = command.c_str();
-	char c;
+	String::value_type const*raw = command.c_str();
+	String::value_type c;
 	while ((c = raw[pos]))
 	{
 		if((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_')
 		{
 			int len = 0;
-			char w;
-			const char* wstart = raw+pos;
+			String::value_type w;
+			String::value_type const* wstart = raw+pos;
 			while((w = wstart[len]) && ((w >= 'A' && w <= 'Z') || (w >= 'a' && w <= 'z') || (w >= '0' && w <= '9') || w == '_'))
 				len++;
 			if(CMP("and") || CMP("break") || CMP("do") || CMP("else") || CMP("elseif") || CMP("end") || CMP("for") || CMP("function") || CMP("if") || CMP("in") || CMP("local") || CMP("not") || CMP("or") || CMP("repeat") || CMP("return") || CMP("then") || CMP("until") || CMP("while"))
 			{
-				result << "\x0F\xB5\x89\x01";
+				result << String("\x0F\xB5\x89\x01");
 				result.write(wstart, len);
-				result << "\bw";
+				result << String("\bw");
 			}
 			else if(CMP("false") || CMP("nil") || CMP("true"))
 			{
-				result << "\x0F\xCB\x4B\x16";
+				result << String("\x0F\xCB\x4B\x16");
 				result.write(wstart, len);
-				result << "\bw";
+				result << String("\bw");
 			}
 			else
 			{
-				result << "\x0F\x2A\xA1\x98";
+				result << String("\x0F\x2A\xA1\x98");
 				result.write(wstart, len);
-				result << "\bw";
+				result << String("\bw");
 			}
 			pos += len;
 		}
@@ -3647,20 +3646,20 @@ std::string highlight(std::string command)
 			if(c == '0' && raw[pos + 1] == 'x')
 			{
 				int len = 2;
-				char w;
-				const char *wstart = raw + pos;
+				String::value_type w;
+				String::value_type const* wstart = raw+pos;
 				while((w = wstart[len]) && ((w >= '0' && w <= '9') || (w >= 'A' && w <= 'F') || (w >= 'a' && w <= 'f')))
 					len++;
-				result << "\x0F\xD3\x36\x82";
+				result << String("\x0F\xD3\x36\x82");
 				result.write(wstart, len);
-				result << "\bw";
+				result << String("\bw");
 				pos += len;
 			}
 			else
 			{
 				int len = 0;
-				char w;
-				const char *wstart = raw+pos;
+				String::value_type w;
+				String::value_type const* wstart = raw+pos;
 				bool seendot = false;
 				while((w = wstart[len]) && ((w >= '0' && w <= '9') || w == '.'))
 				{
@@ -3682,9 +3681,9 @@ std::string highlight(std::string command)
 					while((w = wstart[len]) && (w >= '0' && w <= '9'))
 						len++;
 				}
-				result << "\x0F\xD3\x36\x82";
+				result << String("\x0F\xD3\x36\x82");
 				result.write(wstart, len);
-				result << "\bw";
+				result << String("\bw");
 				pos += len;
 			}
 		}
@@ -3693,8 +3692,8 @@ std::string highlight(std::string command)
 			if(c == '[')
 			{
 				int len = 1, eqs=0;
-				char w;
-				const char *wstart = raw + pos;
+				String::value_type w;
+				String::value_type const* wstart = raw + pos;
 				while((w = wstart[len]) && (w == '='))
 				{
 					eqs++;
@@ -3705,7 +3704,7 @@ std::string highlight(std::string command)
 					if(w == ']')
 					{
 						int nlen = 1;
-						const char *cstart = wstart + len;
+						String::value_type const* cstart = wstart + len;
 						while((w = cstart[nlen]) && (w == '='))
 							nlen++;
 						if(w == ']' && nlen == eqs+1)
@@ -3716,16 +3715,16 @@ std::string highlight(std::string command)
 					}
 					len++;
 				}
-				result << "\x0F\xDC\x32\x2F";
+				result << String("\x0F\xDC\x32\x2F");
 				result.write(wstart, len);
-				result << "\bw";
+				result << String("\bw");
 				pos += len;
 			}
 			else
 			{
 				int len = 1;
-				char w;
-				const char *wstart = raw+pos;
+				String::value_type w;
+				String::value_type const* wstart = raw+pos;
 				while((w = wstart[len]) && (w != c))
 				{
 					if(w == '\\' && wstart[len + 1])
@@ -3734,9 +3733,9 @@ std::string highlight(std::string command)
 				}
 				if(w == c)
 					len++;
-				result << "\x0F\xDC\x32\x2F";
+				result << String("\x0F\xDC\x32\x2F");
 				result.write(wstart, len);
-				result << "\bw";
+				result << String("\bw");
 				pos += len;
 			}
 		}
@@ -3745,8 +3744,8 @@ std::string highlight(std::string command)
 			if(raw[pos + 2] == '[')
 			{
 				int len = 3, eqs = 0;
-				char w;
-				const char *wstart = raw + pos;
+				String::value_type w;
+				String::value_type const* wstart = raw + pos;
 				while((w = wstart[len]) && (w == '='))
 				{
 					eqs++;
@@ -3757,7 +3756,7 @@ std::string highlight(std::string command)
 					if(w == ']')
 					{
 						int nlen = 1;
-						const char *cstart = wstart + len;
+						String::value_type const* cstart = wstart + len;
 						while((w = cstart[nlen]) && (w == '='))
 							nlen++;
 						if(w == ']' && nlen == eqs + 1)
@@ -3768,32 +3767,32 @@ std::string highlight(std::string command)
 					}
 					len++;
 				}
-				result << "\x0F\x85\x99\x01";
+				result << String("\x0F\x85\x99\x01");
 				result.write(wstart, len);
-				result << "\bw";
+				result << String("\bw");
 				pos += len;
 			}
 			else
 			{
 				int len = 2;
-				char w;
-				const char *wstart = raw + pos;
+				String::value_type w;
+				String::value_type const* wstart = raw + pos;
 				while((w = wstart[len]) && (w != '\n'))
 					len++;
-				result << "\x0F\x85\x99\x01";
+				result << String("\x0F\x85\x99\x01");
 				result.write(wstart, len);
-				result << "\bw";
+				result << String("\bw");
 				pos += len;
 			}
 		}
 		else if(c == '{' || c == '}')
 		{
-			result << "\x0F\xCB\x4B\x16" << c;
+			result << String("\x0F\xCB\x4B\x16") << c;
 			pos++;
 		}
 		else if(c == '.' && raw[pos + 1] == '.' && raw[pos + 2] == '.')
 		{
-			result << "\x0F\x2A\xA1\x98...";
+			result << String("\x0F\x2A\xA1\x98...");
 			pos += 3;
 		}
 		else
@@ -3805,9 +3804,9 @@ std::string highlight(std::string command)
 	return result.str();
 }
 
-std::string LuaScriptInterface::FormatCommand(std::string command)
+String LuaScriptInterface::FormatCommand(String command)
 {
-	if(command != "" && command[0] == '!')
+	if(command.size() && command[0] == '!')
 	{
 		return "!"+legacy->FormatCommand(command.substr(1));
 	}

@@ -4894,7 +4894,7 @@ movedone:
 		framerender--;
 }
 
-int Simulation::GetParticleType(std::string type)
+int Simulation::GetParticleType(ByteString type)
 {
 	char * txt = (char*)type.c_str();
 
@@ -4907,7 +4907,7 @@ int Simulation::GetParticleType(std::string type)
 		return PT_NONE;
 	for (int i = 1; i < PT_NUM; i++)
 	{
-		if (!strcasecmp(txt, elements[i].Name) && strlen(elements[i].Name) && elements[i].Enabled)
+		if (!strcasecmp(txt, elements[i].Name.c_str()) && elements[i].Name.size() && elements[i].Enabled)
 		{
 			return i;
 		}
@@ -5383,7 +5383,6 @@ void Simulation::AfterSim()
 
 Simulation::~Simulation()
 {
-	delete[] platent;
 	delete grav;
 	delete air;
 	for (size_t i = 0; i < tools.size(); i++)
@@ -5447,21 +5446,11 @@ Simulation::Simulation():
 	pv = air->pv;
 	hv = air->hv;
 
-	int menuCount;
-	menu_section * msectionsT = LoadMenus(menuCount);
-	memcpy(msections, msectionsT, menuCount * sizeof(menu_section));
-	free(msectionsT);
+	msections = LoadMenus();
 
-	int wallCount;
-	wall_type * wtypesT = LoadWalls(wallCount);
-	memcpy(wtypes, wtypesT, wallCount * sizeof(wall_type));
-	free(wtypesT);
+	wtypes = LoadWalls();
 
-	platent = new unsigned[PT_NUM];
-	int latentCount;
-	unsigned int * platentT = LoadLatent(latentCount);
-	memcpy(platent, platentT, latentCount * sizeof(unsigned int));
-	free(platentT);
+	platent = LoadLatent();
 
 	std::vector<Element> elementList = GetElements();
 	for(int i = 0; i < PT_NUM; i++)
@@ -5474,20 +5463,9 @@ Simulation::Simulation():
 
 	tools = GetTools();
 
-	int golRulesCount;
-	int * golRulesT = LoadGOLRules(golRulesCount);
-	memcpy(grule, golRulesT, sizeof(int) * (golRulesCount*10));
-	free(golRulesT);
+	grule = LoadGOLRules();
 
-	int golTypesCount;
-	int * golTypesT = LoadGOLTypes(golTypesCount);
-	memcpy(goltype, golTypesT, sizeof(int) * (golTypesCount));
-	free(golTypesT);
-
-	int golMenuCount;
-	gol_menu * golMenuT = LoadGOLMenu(golMenuCount);
-	memcpy(gmenu, golMenuT, sizeof(gol_menu) * golMenuCount);
-	free(golMenuT);
+	gmenu = LoadGOLMenu();
 
 	player.comm = 0;
 	player2.comm = 0;

@@ -1,10 +1,9 @@
 #include <iomanip>
-#include <sstream>
 #include "Sign.h"
 #include "graphics/Graphics.h"
 #include "simulation/Simulation.h"
 
-sign::sign(std::string text_, int x_, int y_, Justification justification_):
+sign::sign(String text_, int x_, int y_, Justification justification_):
 	x(x_),
 	y(y_),
 	ju(justification_),
@@ -12,9 +11,9 @@ sign::sign(std::string text_, int x_, int y_, Justification justification_):
 {
 }
 
-std::string sign::getText(Simulation *sim)
+String sign::getText(Simulation *sim)
 {
-	std::stringstream signTextNew;
+	String::Stream signTextNew;
 	if (text[0] && text[0] == '{')
 	{
 		if (text == "{p}")
@@ -55,7 +54,7 @@ std::string sign::getText(Simulation *sim)
 	return signTextNew.str();
 }
 
-void sign::pos(std::string signText, int & x0, int & y0, int & w, int & h)
+void sign::pos(String signText, int & x0, int & y0, int & w, int & h)
 {
 	w = Graphics::textwidth(signText.c_str()) + 5;
 	h = 15;
@@ -64,7 +63,7 @@ void sign::pos(std::string signText, int & x0, int & y0, int & w, int & h)
 	y0 = (y > 18) ? y - 18 : y + 4;
 }
 
-int sign::splitsign(std::string str, char * type)
+int sign::splitsign(String str, String::value_type *type)
 {
 	if (str[0] == '{' && (str[1] == 'c' || str[1] == 't' || str[1] == 'b' || str[1] == 's'))
 	{

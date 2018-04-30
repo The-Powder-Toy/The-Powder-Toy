@@ -1,7 +1,7 @@
 #ifndef SAVEFILE_H_
 #define SAVEFILE_H_
 
-#include <string>
+#include "common/String.h"
 
 class GameSave;
 class Thumbnail;
@@ -9,26 +9,26 @@ class Thumbnail;
 class SaveFile {
 public:
 	SaveFile(SaveFile & save);
-	SaveFile(std::string filename);
+	SaveFile(ByteString filename);
 
 	Thumbnail * GetThumbnail();
 	GameSave * GetGameSave();
 	void SetThumbnail(Thumbnail * thumb);
 	void SetGameSave(GameSave * save);
-	std::string GetDisplayName();
-	void SetDisplayName(std::string displayName);
-	std::string GetName();
-	void SetFileName(std::string fileName);
-	std::string GetError();
-	void SetLoadingError(std::string error);
+	String GetDisplayName();
+	void SetDisplayName(String displayName);
+	ByteString GetName();
+	void SetFileName(ByteString fileName);
+	String GetError();
+	void SetLoadingError(String error);
 
 	virtual ~SaveFile();
 private:
 	Thumbnail * thumbnail;
 	GameSave * gameSave;
-	std::string filename;
-	std::string displayName;
-	std::string loadingError;
+	ByteString filename;
+	String displayName;
+	String loadingError;
 };
 
 #endif /* SAVEFILE_H_ */

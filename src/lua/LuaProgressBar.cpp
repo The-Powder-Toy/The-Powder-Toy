@@ -25,7 +25,7 @@ LuaProgressBar::LuaProgressBar(lua_State * l) :
 	int sizeX = luaL_optinteger(l, 3, 10);
 	int sizeY = luaL_optinteger(l, 4, 10);
 	int value = luaL_optinteger(l, 5, 0);
-	std::string status = luaL_optstring(l, 6, "");
+	String status = ByteString(luaL_optstring(l, 6, "")).FromUtf8();
 
 	progressBar = new ui::ProgressBar(ui::Point(posX, posY), ui::Point(sizeX, sizeY), value, status);
 	component = progressBar;
@@ -51,12 +51,12 @@ int LuaProgressBar::status(lua_State * l)
 	int args = lua_gettop(l);
 	if(args)
 	{
-		progressBar->SetStatus(std::string(lua_tostring(l, 1)));
+		progressBar->SetStatus(ByteString(lua_tostring(l, 1)).FromUtf8());
 		return 0;
 	}
 	else
 	{
-		lua_pushstring(l, progressBar->GetStatus().c_str());
+		lua_pushstring(l, progressBar->GetStatus().ToUtf8().c_str());
 		return 1;
 	}
 }

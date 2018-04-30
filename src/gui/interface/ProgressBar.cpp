@@ -5,7 +5,7 @@
 
 using namespace ui;
 
-ProgressBar::ProgressBar(Point position, Point size, int startProgress, std::string startStatus):
+ProgressBar::ProgressBar(Point position, Point size, int startProgress, String startStatus):
 	Component(position, size),
 	progress(0),
 	intermediatePos(0.0f),
@@ -27,12 +27,12 @@ int ProgressBar::GetProgress()
 	return progress;
 }
 
-void ProgressBar::SetStatus(std::string status)
+void ProgressBar::SetStatus(String status)
 {
 	progressStatus = status;
 }
 
-std::string ProgressBar::GetStatus()
+String ProgressBar::GetStatus()
 {
 	return progressStatus;
 }
@@ -70,9 +70,9 @@ void ProgressBar::Draw(const Point & screenPos)
 		}
 	}
 	if(progress<50)
-		g->drawtext(screenPos.X + ((Size.X-Graphics::textwidth(progressStatus.c_str()))/2), screenPos.Y + (Size.Y-8)/2, progressStatus, 255, 255, 255, 255);
+		g->drawtext(screenPos.X + ((Size.X-Graphics::textwidth(progressStatus))/2), screenPos.Y + (Size.Y-8)/2, progressStatus, 255, 255, 255, 255);
 	else
-		g->drawtext(screenPos.X + ((Size.X-Graphics::textwidth(progressStatus.c_str()))/2), screenPos.Y + (Size.Y-8)/2, progressStatus, 0, 0, 0, 255);
+		g->drawtext(screenPos.X + ((Size.X-Graphics::textwidth(progressStatus))/2), screenPos.Y + (Size.Y-8)/2, progressStatus, 0, 0, 0, 255);
 }
 
 void ProgressBar::Tick(float dt)

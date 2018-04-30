@@ -13,8 +13,8 @@ struct Particle;
 class Element
 {
 public:
-	const char *Identifier;
-	const char *Name;
+	ByteString Identifier;
+	ByteString Name;
 	pixel Colour;
 	int MenuVisible;
 	int MenuSection;
@@ -38,7 +38,7 @@ public:
 	int Weight;
 	float Temperature;
 	unsigned char HeatConduct;
-	const char *Description;
+	String Description;
 	unsigned int Properties;
 
 	float LowPressure;

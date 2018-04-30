@@ -20,8 +20,7 @@
  */
 
 
-#include <string>
-#include <sstream>
+#include "common/String.h"
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -193,11 +192,11 @@ void http_init(char *proxy)
 		free(host);
 		free(port);
 	}
-	std::stringstream userAgentBuilder;
+	ByteString::Stream userAgentBuilder;
 	userAgentBuilder << "PowderToy/" << SAVE_VERSION << "." << MINOR_VERSION << " ";
 	userAgentBuilder << "(" << IDENT_PLATFORM << "; " << IDENT_BUILD << "; M" << MOD_ID << ") ";
 	userAgentBuilder << "TPTPP/" << SAVE_VERSION << "." << MINOR_VERSION << "." << BUILD_NUM << IDENT_RELTYPE << "." << SNAPSHOT_ID;
-	std::string newUserAgent = userAgentBuilder.str();
+	ByteString newUserAgent = userAgentBuilder.str();
 	userAgent = new char[newUserAgent.length()+1];
 	std::copy(newUserAgent.begin(), newUserAgent.end(), userAgent);
 	userAgent[newUserAgent.length()] = 0;
@@ -938,13 +937,13 @@ const char *http_ret_text(int ret)
 // Find the boundary used in the multipart POST request
 // the boundary is a string that never appears in any of the parts, ex. 'A92'
 // keeps looking recursively until it finds one
-std::string FindBoundary(std::map<std::string, std::string> parts, std::string boundary)
+ByteString FindBoundary(std::map<ByteString, ByteString> parts, ByteString boundary)
 {
 	// we only look for a-zA-Z0-9 chars
 	unsigned int map[62];
 	size_t blen = boundary.length();
 	std::fill(&map[0], &map[62], 0);
-	for (std::map<std::string, std::string>::iterator iter = parts.begin(); iter != parts.end(); iter++)
+	for (std::map<ByteString, ByteString>::iterator iter = parts.begin(); iter != parts.end(); iter++)
 	{
 		// loop through every character in each part and search for the substring, adding 1 to map for every character found (character after the substring)
 		for (ssize_t j = 0; j < (ssize_t)((*iter).second.length()-blen); j++)
@@ -986,15 +985,15 @@ std::string FindBoundary(std::map<std::string, std::string> parts, std::string b
 // Generates a MIME multipart message to be used in POST requests
 // see https://en.wikipedia.org/wiki/MIME#Multipart_messages
 // this function used in Download class, and eventually all http requests
-std::string GetMultipartMessage(std::map<std::string, std::string> parts, std::string boundary)
+ByteString GetMultipartMessage(std::map<ByteString, ByteString> parts, ByteString boundary)
 {
-	std::stringstream data;
+	ByteString::Stream data;
 
 	// loop through each part, adding it
-	for (std::map<std::string, std::string>::iterator iter = parts.begin(); iter != parts.end(); iter++)
+	for (std::map<ByteString, ByteString>::iterator iter = parts.begin(); iter != parts.end(); iter++)
 	{
-		std::string name = (*iter).first;
-		std::string value = (*iter).second;
+		ByteString name = (*iter).first;
+		ByteString value = (*iter).second;
 
 		data << "--" << boundary << "\r\n";
 		data << "Content-transfer-encoding: binary" << "\r\n";
@@ -1020,9 +1019,9 @@ std::string GetMultipartMessage(std::map<std::string, std::string> parts, std::s
 }
 
 // add the header needed to make POSTS work
-void http_add_multipart_header(void *ctx, std::string boundary)
+void http_add_multipart_header(void *ctx, ByteString boundary)
 {
-	std::string header = "multipart/form-data; boundary=" + boundary;
+	ByteString header = "multipart/form-data; boundary=" + boundary;
 	http_async_add_header(ctx, "Content-type", header.c_str());
 }
 

@@ -1,5 +1,6 @@
 #include <cmath>
 #include <iostream>
+#include <iomanip>
 #include <vector>
 #include <cstdio>
 #include <cstdlib>
@@ -519,17 +520,16 @@ void Renderer::RenderZoom()
 	#endif
 }
 
-int Renderer_wtypesCount;
-wall_type * Renderer_wtypes = LoadWalls(Renderer_wtypesCount);
+std::vector<wall_type> Renderer_wtypes = LoadWalls();
 
 
 VideoBuffer * Renderer::WallIcon(int wallID, int width, int height)
 {
 	int i, j;
 	int wt = wallID;
-	if (wt<0 || wt>=Renderer_wtypesCount)
+	if (wt<0 || wt>=(int)Renderer_wtypes.size())
 		return 0;
-	wall_type *wtypes = Renderer_wtypes;
+	wall_type *wtypes = Renderer_wtypes.data();
 	pixel pc = wtypes[wt].colour;
 	pixel gc = wtypes[wt].eglow;
 	VideoBuffer * newTexture = new VideoBuffer(width, height);
@@ -985,8 +985,8 @@ void Renderer::DrawSigns()
 	for (size_t i = 0; i < signs.size(); i++)
 		if (signs[i].text.length())
 		{
-			char type = 0;
-			std::string text = signs[i].getText(sim);
+			String::value_type type = 0;
+			String text = signs[i].getText(sim);
 			sign::splitsign(signs[i].text, &type);
 			signs[i].pos(text, x, y, w, h);
 			clearrect(x, y, w+1, h);
@@ -1496,9 +1496,9 @@ void Renderer::render_parts()
 
 					if (mousePos.X>(nx-3) && mousePos.X<(nx+3) && mousePos.Y<(ny+3) && mousePos.Y>(ny-3)) //If mouse is in the head
 					{
-						char buff[12];  //Buffer for HP
-						sprintf(buff, "%3d", sim->parts[i].life);  //Show HP
-						drawtext(mousePos.X-8-2*(sim->parts[i].life<100)-2*(sim->parts[i].life<10), mousePos.Y-12, buff, 255, 255, 255, 255);
+						String::Stream hp;
+						hp << std::setw(3) << sim->parts[i].life;
+						drawtext(mousePos.X-8-2*(sim->parts[i].life<100)-2*(sim->parts[i].life<10), mousePos.Y-12, hp.str(), 255, 255, 255, 255);
 					}
 
 					if (findingElement == t)

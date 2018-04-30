@@ -2,10 +2,10 @@
 
 //Legacy blocking prompts
 //This are not implemented here, but rather in the engine bootstrapper
-bool ConfirmUI(std::string title, std::string message, std::string confirmText) {}
+bool ConfirmUI(String title, String message, String confirmText) {}
 
-void ErrorUI(std::string title, std::string message) {}
+void ErrorUI(String title, String message) {}
 
-void InformationUI(std::string title, std::string message) {}
+void InformationUI(String title, String message) {}
 
-std::string MessagePromptUI(std::string title, std::string message, std::string text, std::string placeholder) {}
+String MessagePromptUI(String title, String message, String text, String placeholder) {}

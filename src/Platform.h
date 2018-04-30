@@ -1,14 +1,14 @@
 #ifndef PLATFORM_H
 #define PLATFORM_H
 
-#include <string>
+#include "common/String.h"
 
 namespace Platform
 {
-	std::string ExecutableName();
+	ByteString ExecutableName();
 	void DoRestart();
 
-	void OpenURI(std::string uri);
+	void OpenURI(ByteString uri);
 
 	void Millisleep(long int t);
 	long unsigned int GetTime();

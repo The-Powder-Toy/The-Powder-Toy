@@ -6,7 +6,7 @@ LoginModel::LoginModel():
 
 }
 
-void LoginModel::Login(string username, string password)
+void LoginModel::Login(ByteString username, ByteString password)
 {
 	if (username.find('@') != username.npos)
 	{
@@ -37,7 +37,7 @@ void LoginModel::AddObserver(LoginView * observer)
 	observers.push_back(observer);
 }
 
-string LoginModel::GetStatusText()
+String LoginModel::GetStatusText()
 {
 	return statusText;
 }

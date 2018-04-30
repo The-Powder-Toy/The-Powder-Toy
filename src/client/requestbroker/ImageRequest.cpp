@@ -5,7 +5,7 @@
 #include "graphics/Graphics.h"
 #include "client/HTTP.h"
 
-ImageRequest::ImageRequest(std::string url, int width, int height, ListenerHandle listener, int identifier):
+ImageRequest::ImageRequest(ByteString url, int width, int height, ListenerHandle listener, int identifier):
 	Request(Image, listener, identifier)
 {
 	URL = url;
@@ -24,7 +24,7 @@ RequestBroker::ProcessResponse ImageRequest::Process(RequestBroker & rb)
 	VideoBuffer * image = NULL;
 
 	//Have a look at the thumbnail cache
-	for(std::deque<std::pair<std::string, VideoBuffer*> >::iterator iter = rb.imageCache.begin(), end = rb.imageCache.end(); iter != end; ++iter)
+	for(std::deque<std::pair<ByteString, VideoBuffer*> >::iterator iter = rb.imageCache.begin(), end = rb.imageCache.end(); iter != end; ++iter)
 	{
 		if((*iter).first == URL)
 		{
@@ -71,7 +71,7 @@ RequestBroker::ProcessResponse ImageRequest::Process(RequestBroker & rb)
 						delete rb.imageCache.front().second;
 						rb.imageCache.pop_front();
 					}
-					rb.imageCache.push_back(std::pair<std::string, VideoBuffer*>(URL, image));
+					rb.imageCache.push_back(std::pair<ByteString, VideoBuffer*>(URL, image));
 				}
 				else
 				{

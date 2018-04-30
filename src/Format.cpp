@@ -1,6 +1,6 @@
 
 #include <ctime>
-#include <string>
+#include "common/String.h"
 #include <stdexcept>
 #include <iostream>
 #include <iterator>
@@ -9,7 +9,7 @@
 #include "Format.h"
 #include "graphics/Graphics.h"
 
-std::string format::URLEncode(std::string source)
+ByteString format::URLEncode(ByteString source)
 {
 	char * src = (char *)source.c_str();
 	char * dst = new char[(source.length()*3)+2];
@@ -33,12 +33,12 @@ std::string format::URLEncode(std::string source)
 	}
 	*d = 0;
 
-	std::string finalString(dst);
+	ByteString finalString(dst);
 	delete[] dst;
 	return finalString;
 }
 
-std::string format::UnixtimeToDate(time_t unixtime, std::string dateFormat)
+ByteString format::UnixtimeToDate(time_t unixtime, ByteString dateFormat)
 {
 	struct tm * timeData;
 	char buffer[128];
@@ -46,10 +46,10 @@ std::string format::UnixtimeToDate(time_t unixtime, std::string dateFormat)
 	timeData = localtime(&unixtime);
 
 	strftime(buffer, 128, dateFormat.c_str(), timeData);
-	return std::string(buffer);
+	return ByteString(buffer);
 }
 
-std::string format::UnixtimeToDateMini(time_t unixtime)
+ByteString format::UnixtimeToDateMini(time_t unixtime)
 {
 	time_t currentTime = time(NULL);
 	struct tm currentTimeData = *localtime(&currentTime);
@@ -69,7 +69,7 @@ std::string format::UnixtimeToDateMini(time_t unixtime)
 	}
 }
 
-std::string format::CleanString(std::string dirtyString, bool ascii, bool color, bool newlines, bool numeric)
+String format::CleanString(String dirtyString, bool ascii, bool color, bool newlines, bool numeric)
 {
 	for (size_t i = 0; i < dirtyString.size(); i++)
 	{
@@ -226,7 +226,7 @@ struct PNGChunk
 
 	//char[4] CRC();
 
-	PNGChunk(int length, std::string name)
+	PNGChunk(int length, ByteString name)
 	{
 		if (name.length()!=4)
 			throw std::runtime_error("Invalid chunk name");

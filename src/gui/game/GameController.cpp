@@ -57,7 +57,7 @@ public:
 			}
 			catch(GameModelException & ex)
 			{
-				new ErrorMessage("Cannot open save", ex.what());
+				new ErrorMessage("Cannot open save", ByteString(ex.what()).FromUtf8());
 			}
 		}
 	}
@@ -79,7 +79,7 @@ public:
 			}
 			catch(GameModelException & ex)
 			{
-				new ErrorMessage("Cannot open save", ex.what());
+				new ErrorMessage("Cannot open save", ByteString(ex.what()).FromUtf8());
 			}
 		}
 	}
@@ -322,7 +322,7 @@ int GameController::GetSignAt(int x, int y)
 }
 
 // assumed to already be a valid sign
-std::string GameController::GetSignText(int signID)
+String GameController::GetSignText(int signID)
 {
 	return gameModel->GetSimulation()->signs[signID].text;
 }
@@ -573,7 +573,7 @@ void GameController::ToolClick(int toolSelection, ui::Point point)
 	activeTool->Click(sim, cBrush, point);
 }
 
-std::string GameController::StampRegion(ui::Point point1, ui::Point point2, bool includePressure)
+ByteString GameController::StampRegion(ui::Point point1, ui::Point point2, bool includePressure)
 {
 	bool incPressure = Client::Ref().GetPrefBool("Simulation.IncludePressure", true);
 	if (!incPressure)
@@ -583,7 +583,7 @@ std::string GameController::StampRegion(ui::Point point1, ui::Point point2, bool
 	if(newSave)
 	{
 		newSave->paused = gameModel->GetPaused();
-		std::string stampName = Client::Ref().AddStamp(newSave);
+		ByteString stampName = Client::Ref().AddStamp(newSave);
 		delete newSave;
 		if (stampName.length() == 0)
 			new ErrorMessage("Could not create stamp", "Error serializing save file");
@@ -666,15 +666,15 @@ bool GameController::MouseUp(int x, int y, unsigned button, char type)
 			if (foundSignID != -1)
 			{
 				sign foundSign = gameModel->GetSimulation()->signs[foundSignID];
-				std::string str = foundSign.text;
-				char type;
+				String str = foundSign.text;
+				String::value_type type;
 				int pos = sign::splitsign(str, &type);
 				if (pos)
 				{
 					ret = false;
 					if (type == 'c' || type == 't' || type == 's')
 					{
-						std::string link = str.substr(3, pos-3);
+						String link = str.substr(3, pos-3);
 						switch (type)
 						{
 						case 'c':
@@ -687,8 +687,8 @@ bool GameController::MouseUp(int x, int y, unsigned button, char type)
 						case 't':
 						{
 							// buff is already confirmed to be a number by sign::splitsign
-							std::stringstream uri;
-							uri << "http://powdertoy.co.uk/Discussions/Thread/View.html?Thread=" << link;
+							ByteString::Stream uri;
+							uri << "http://powdertoy.co.uk/Discussions/Thread/View.html?Thread=" << link.ToUtf8();
 							Platform::OpenURI(uri.str());
 							break;
 						}
@@ -1175,7 +1175,7 @@ void GameController::SetActiveTool(int toolSelection, Tool * tool)
 		((PropertyTool *)tool)->OpenWindow(gameModel->GetSimulation());
 }
 
-void GameController::SetActiveTool(int toolSelection, std::string identifier)
+void GameController::SetActiveTool(int toolSelection, ByteString identifier)
 {
 	Tool *tool = gameModel->GetToolFromIdentifier(identifier);
 	if (!tool)
@@ -1198,7 +1198,7 @@ void GameController::SetReplaceModeFlags(int flags)
 	gameModel->GetSimulation()->replaceModeFlags = flags;
 }
 
-void GameController::OpenSearch(std::string searchText)
+void GameController::OpenSearch(String searchText)
 {
 	if(!search)
 		search = new SearchController(new SearchCallback(this));
@@ -1524,7 +1524,7 @@ void GameController::Vote(int direction)
 		}
 		catch(GameModelException & ex)
 		{
-			new ErrorMessage("Error while voting", ex.what());
+			new ErrorMessage("Error while voting", ByteString(ex.what()).FromUtf8());
 		}
 	}
 }
@@ -1555,14 +1555,14 @@ void GameController::ReloadSim()
 	}
 }
 
-std::string GameController::ElementResolve(int type, int ctype)
+ByteString GameController::ElementResolve(int type, int ctype)
 {
 	if(gameModel && gameModel->GetSimulation())
 	{
 		if (type == PT_LIFE && ctype >= 0 && ctype < NGOL)
 			return gameModel->GetSimulation()->gmenu[ctype].name;
 		else if (type >= 0 && type < PT_NUM)
-			return std::string(gameModel->GetSimulation()->elements[type].Name);
+			return gameModel->GetSimulation()->elements[type].Name;
 	}
 	return "";
 }
@@ -1577,10 +1577,10 @@ bool GameController::IsValidElement(int type)
 		return false;
 }
 
-std::string GameController::WallName(int type)
+String GameController::WallName(int type)
 {
 	if(gameModel && gameModel->GetSimulation() && type >= 0 && type < UI_WALLCOUNT)
-		return std::string(gameModel->GetSimulation()->wtypes[type].name);
+		return gameModel->GetSimulation()->wtypes[type].name;
 	else
 		return "";
 }
@@ -1596,13 +1596,13 @@ void GameController::NotifyAuthUserChanged(Client * sender)
 	gameModel->SetUser(newUser);
 }
 
-void GameController::NotifyNewNotification(Client * sender, std::pair<std::string, std::string> notification)
+void GameController::NotifyNewNotification(Client * sender, std::pair<String, ByteString> notification)
 {
 	class LinkNotification : public Notification
 	{
-		std::string link;
+		ByteString link;
 	public:
-		LinkNotification(std::string link_, std::string message) : Notification(message), link(link_) {}
+		LinkNotification(ByteString link_, String message) : Notification(message), link(link_) {}
 		virtual ~LinkNotification() {}
 
 		virtual void Action()
@@ -1632,13 +1632,13 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 	{
 		GameController * c;
 	public:
-		UpdateNotification(GameController * c, std::string message) : Notification(message), c(c) {}
+		UpdateNotification(GameController * c, String message) : Notification(message), c(c) {}
 		virtual ~UpdateNotification() {}
 
 		virtual void Action()
 		{
 			UpdateInfo info = Client::Ref().GetUpdateInfo();
-			std::stringstream updateMessage;
+			String::Stream updateMessage;
 			updateMessage << "Are you sure you want to run the updater? Please save any changes before updating.\n\nCurrent version:\n ";
 
 #ifdef SNAPSHOT
@@ -1674,16 +1674,16 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 	{
 		case UpdateInfo::Snapshot:
 #if MOD_ID > 0
-			gameModel->AddNotification(new UpdateNotification(this, std::string("A new mod update is available - click here to update")));
+			gameModel->AddNotification(new UpdateNotification(this, "A new mod update is available - click here to update"));
 #else
-			gameModel->AddNotification(new UpdateNotification(this, std::string("A new snapshot is available - click here to update")));
+			gameModel->AddNotification(new UpdateNotification(this, "A new snapshot is available - click here to update"));
 #endif
 			break;
 		case UpdateInfo::Stable:
-			gameModel->AddNotification(new UpdateNotification(this, std::string("A new version is available - click here to update")));
+			gameModel->AddNotification(new UpdateNotification(this, "A new version is available - click here to update"));
 			break;
 		case UpdateInfo::Beta:
-			gameModel->AddNotification(new UpdateNotification(this, std::string("A new beta is available - click here to update")));
+			gameModel->AddNotification(new UpdateNotification(this, "A new beta is available - click here to update"));
 			break;
 	}
 }

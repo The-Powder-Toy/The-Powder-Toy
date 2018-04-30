@@ -1,6 +1,6 @@
 #pragma once
 
-#include <string>
+#include "common/String.h"
 #include "common/tpt-compat.h"
 #include "Appearance.h"
 #include "Point.h"
@@ -49,7 +49,7 @@ namespace ui
 		ui::Appearance Appearance;
 		//virtual void SetAppearance(ui::Appearance);
 		//ui::Appearance GetAppearance();
-		virtual void TextPosition(std::string);
+		virtual void TextPosition(String);
 
 		void Refresh();
 

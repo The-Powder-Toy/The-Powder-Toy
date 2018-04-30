@@ -105,7 +105,7 @@ GameModel::GameModel():
 	brushList.push_back(new TriangleBrush(ui::Point(4, 4)));
 
 	//Load more from brushes folder
-	std::vector<string> brushFiles = Client::Ref().DirectorySearch(BRUSH_DIR, "", ".ptb");
+	std::vector<ByteString> brushFiles = Client::Ref().DirectorySearch(BRUSH_DIR, "", ".ptb");
 	for (size_t i = 0; i < brushFiles.size(); i++)
 	{
 		std::vector<unsigned char> brushData = Client::Ref().ReadFile(brushFiles[i]);
@@ -234,7 +234,7 @@ void GameModel::BuildMenus()
 	if(activeMenu != -1)
 		lastMenu = activeMenu;
 
-	std::string activeToolIdentifiers[4];
+	ByteString activeToolIdentifiers[4];
 	if(regularToolset[0])
 		activeToolIdentifiers[0] = regularToolset[0]->GetIdentifier();
 	if(regularToolset[1])
@@ -264,7 +264,7 @@ void GameModel::BuildMenus()
 	//Create menus
 	for (int i = 0; i < SC_TOTAL; i++)
 	{
-		menuList.push_back(new Menu((const char)sim->msections[i].icon[0], sim->msections[i].name, sim->msections[i].doshow));
+		menuList.push_back(new Menu(sim->msections[i].icon[0], sim->msections[i].name, sim->msections[i].doshow));
 	}
 
 	//Build menus from Simulation elements
@@ -305,14 +305,14 @@ void GameModel::BuildMenus()
 	//Build menu for GOL types
 	for(int i = 0; i < NGOL; i++)
 	{
-		Tool * tempTool = new ElementTool(PT_LIFE|PMAPID(i), sim->gmenu[i].name, std::string(sim->gmenu[i].description), PIXR(sim->gmenu[i].colour), PIXG(sim->gmenu[i].colour), PIXB(sim->gmenu[i].colour), "DEFAULT_PT_LIFE_"+std::string(sim->gmenu[i].name));
+		Tool * tempTool = new ElementTool(PT_LIFE|PMAPID(i), sim->gmenu[i].name, sim->gmenu[i].description, PIXR(sim->gmenu[i].colour), PIXG(sim->gmenu[i].colour), PIXB(sim->gmenu[i].colour), "DEFAULT_PT_LIFE_"+sim->gmenu[i].name);
 		menuList[SC_LIFE]->AddTool(tempTool);
 	}
 
 	//Build other menus from wall data
 	for(int i = 0; i < UI_WALLCOUNT; i++)
 	{
-		Tool * tempTool = new WallTool(i, "", std::string(sim->wtypes[i].descs), PIXR(sim->wtypes[i].colour), PIXG(sim->wtypes[i].colour), PIXB(sim->wtypes[i].colour), sim->wtypes[i].identifier, sim->wtypes[i].textureGen);
+		Tool * tempTool = new WallTool(i, "", sim->wtypes[i].descs, PIXR(sim->wtypes[i].colour), PIXG(sim->wtypes[i].colour), PIXB(sim->wtypes[i].colour), sim->wtypes[i].identifier, sim->wtypes[i].textureGen);
 		menuList[SC_WALL]->AddTool(tempTool);
 		//sim->wtypes[i]
 	}
@@ -386,7 +386,7 @@ void GameModel::BuildFavoritesMenu()
 {
 	menuList[SC_FAVORITES]->ClearTools();
 
-	std::vector<std::string> favList = Favorite::Ref().GetFavoritesList();
+	std::vector<ByteString> favList = Favorite::Ref().GetFavoritesList();
 	for (size_t i = 0; i < favList.size(); i++)
 	{
 		Tool *tool = GetToolFromIdentifier(favList[i]);
@@ -403,7 +403,7 @@ void GameModel::BuildFavoritesMenu()
 	notifyLastToolChanged();
 }
 
-Tool * GameModel::GetToolFromIdentifier(std::string identifier)
+Tool * GameModel::GetToolFromIdentifier(ByteString identifier)
 {
 	for (std::vector<Menu*>::iterator iter = menuList.begin(), end = menuList.end(); iter != end; ++iter)
 	{
@@ -657,8 +657,8 @@ void GameModel::SetSave(SaveInfo * newSave)
 				saveData->authors["type"] = "save";
 				saveData->authors["id"] = newSave->id;
 				saveData->authors["username"] = newSave->userName;
-				saveData->authors["title"] = newSave->name;
-				saveData->authors["description"] = newSave->Description;
+				saveData->authors["title"] = newSave->name.ToUtf8();
+				saveData->authors["description"] = newSave->Description.ToUtf8();
 				saveData->authors["published"] = (int)newSave->Published;
 				saveData->authors["date"] = newSave->updatedDate;
 			}
@@ -912,7 +912,7 @@ void GameModel::SetPaused(bool pauseState)
 {
 	if (!pauseState && sim->debug_currentParticle > 0)
 	{
-		std::stringstream logmessage;
+		String::Stream logmessage;
 		logmessage << "Updated particles from #" << sim->debug_currentParticle << " to end due to unpause";
 		sim->UpdateParticles(sim->debug_currentParticle, NPART);
 		sim->AfterSim();
@@ -1048,17 +1048,17 @@ GameSave * GameModel::GetPlaceSave()
 	return placeSave;
 }
 
-void GameModel::Log(string message, bool printToFile)
+void GameModel::Log(String message, bool printToFile)
 {
 	consoleLog.push_front(message);
 	if(consoleLog.size()>100)
 		consoleLog.pop_back();
 	notifyLogChanged(message);
 	if (printToFile)
-		std::cout << message << std::endl;
+		std::cout << message.ToUtf8() << std::endl;
 }
 
-deque<string> GameModel::GetLog()
+deque<String> GameModel::GetLog()
 {
 	return consoleLog;
 }
@@ -1088,24 +1088,24 @@ void GameModel::RemoveNotification(Notification * notification)
 	notifyNotificationsChanged();
 }
 
-void GameModel::SetToolTip(std::string text)
+void GameModel::SetToolTip(String text)
 {
 	toolTip = text;
 	notifyToolTipChanged();
 }
 
-void GameModel::SetInfoTip(std::string text)
+void GameModel::SetInfoTip(String text)
 {
 	infoTip = text;
 	notifyInfoTipChanged();
 }
 
-std::string GameModel::GetToolTip()
+String GameModel::GetToolTip()
 {
 	return toolTip;
 }
 
-std::string GameModel::GetInfoTip()
+String GameModel::GetInfoTip()
 {
 	return infoTip;
 }
@@ -1246,7 +1246,7 @@ void GameModel::notifyPlaceSaveChanged()
 	}
 }
 
-void GameModel::notifyLogChanged(string entry)
+void GameModel::notifyLogChanged(String entry)
 {
 	for (size_t i = 0; i < observers.size(); i++)
 	{

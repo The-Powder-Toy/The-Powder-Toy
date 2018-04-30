@@ -1,4 +1,3 @@
-#include <sstream>
 #include "client/Client.h"
 #include "Format.h"
 #include "LocalBrowserView.h"
@@ -141,7 +140,7 @@ void LocalBrowserView::NotifyPageChanged(LocalBrowserModel * sender)
 	}
 	else
 	{
-		std::stringstream pageInfo;
+		String::Stream pageInfo;
 		pageInfo << "of " << pageCount;
 		pageCountLabel->SetText(pageInfo.str());
 		int width = Graphics::textwidth(pageInfo.str().c_str());
@@ -152,7 +151,7 @@ void LocalBrowserView::NotifyPageChanged(LocalBrowserModel * sender)
 		//pageCountLabel->Position.X = WINDOWW/2+6;
 		pageLabel->Visible = pageCountLabel->Visible = pageTextbox->Visible = true;
 
-		pageInfo.str("");
+		pageInfo.str(String());
 		pageInfo << sender->GetPageNum();
 		pageTextbox->SetText(pageInfo.str());
 	}
@@ -180,7 +179,7 @@ void LocalBrowserView::NotifySavesListChanged(LocalBrowserModel * sender)
 	int buttonWidth, buttonHeight, saveX = 0, saveY = 0, savesX = 5, savesY = 4, buttonPadding = 2;
 	int buttonAreaWidth, buttonAreaHeight, buttonXOffset, buttonYOffset;
 
-	vector<SaveFile*> saves = sender->GetSavesList();
+	std::vector<SaveFile*> saves = sender->GetSavesList();
 	for (size_t i = 0; i < stampButtons.size(); i++)
 	{
 		RemoveComponent(stampButtons[i]);
@@ -236,7 +235,7 @@ void LocalBrowserView::NotifySavesListChanged(LocalBrowserModel * sender)
 
 void LocalBrowserView::NotifySelectedChanged(LocalBrowserModel * sender)
 {
-	vector<std::string> selected = sender->GetSelected();
+	std::vector<ByteString> selected = sender->GetSelected();
 	for (size_t j = 0; j < stampButtons.size(); j++)
 	{
 		stampButtons[j]->SetSelected(false);

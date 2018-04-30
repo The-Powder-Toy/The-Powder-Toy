@@ -1,5 +1,4 @@
 #include <bzlib.h>
-#include <sstream>
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/interface/Engine.h"
 #include "UpdateActivity.h"
@@ -13,10 +12,10 @@
 class UpdateDownloadTask : public Task
 {
 public:
-	UpdateDownloadTask(std::string updateName, UpdateActivity * a) : a(a), updateName(updateName) {}
+	UpdateDownloadTask(ByteString updateName, UpdateActivity * a) : a(a), updateName(updateName) {}
 private:
 	UpdateActivity * a;
-	std::string updateName;
+	ByteString updateName;
 	virtual void notifyDoneMain(){
 		a->NotifyDone(this);
 	}
@@ -26,7 +25,7 @@ private:
 	}
 	virtual bool doWork()
 	{
-		std::stringstream errorStream;
+		String::Stream errorStream;
 		void * request = http_async_req_start(NULL, (char*)updateName.c_str(), NULL, 0, 0);
 		notifyStatus("Downloading update");
 		notifyProgress(-1);
@@ -117,7 +116,7 @@ private:
 };
 
 UpdateActivity::UpdateActivity() {
-	std::stringstream file;
+	ByteString::Stream file;
 #ifdef UPDATESERVER
 	file << "http://" << UPDATESERVER << Client::Ref().GetUpdateInfo().File;
 #else

@@ -31,14 +31,14 @@ SaveButton::SaveButton(Point position, Point size, SaveInfo * save):
 	if(save)
 	{
 		name = save->name;
-		if(Graphics::textwidth((char *)name.c_str()) > Size.X)
+		if(Graphics::textwidth(name) > Size.X)
 		{
-			int position = Graphics::textwidthx((char *)name.c_str(), Size.X - 22);
+			int position = Graphics::textwidthx(name, Size.X - 22);
 			name = name.erase(position, name.length()-position);
 			name += "...";
 		}
 
-		std::string votes, icon;
+		String votes, icon;
 
 		votes = format::NumberToString<int>(save->GetVotesUp()-save->GetVotesDown());
 		icon += 0xBB;
@@ -49,12 +49,12 @@ SaveButton::SaveButton(Point position, Point size, SaveInfo * save):
 
 		votesBackground = icon;
 
-		for (std::string::iterator iter = icon.begin(), end = icon.end(); iter != end; ++iter)
+		for (String::iterator iter = icon.begin(), end = icon.end(); iter != end; ++iter)
 			*iter -= 14;
 
 		votesBackground2 = icon;
 
-		for (std::string::iterator iter = votes.begin(), end = votes.end(); iter != end; ++iter)
+		for (String::iterator iter = votes.begin(), end = votes.end(); iter != end; ++iter)
 			if(*iter != '-')
 				*iter += 127;
 
@@ -105,9 +105,9 @@ SaveButton::SaveButton(Point position, Point size, SaveFile * file):
 	if(file)
 	{
 		name = file->GetDisplayName();
-		if(Graphics::textwidth((char *)name.c_str()) > Size.X)
+		if(Graphics::textwidth(name) > Size.X)
 		{
-			int position = Graphics::textwidthx((char *)name.c_str(), Size.X - 22);
+			int position = Graphics::textwidthx(name, Size.X - 22);
 			name = name.erase(position, name.length()-position);
 			name += "...";
 		}
@@ -217,17 +217,17 @@ void SaveButton::Draw(const Point& screenPos)
 		}
 
 		if(isMouseInside && !isMouseInsideAuthor)
-			g->drawtext(screenPos.X+(Size.X-Graphics::textwidth((char *)name.c_str()))/2, screenPos.Y+Size.Y - 21, name, 255, 255, 255, 255);
+			g->drawtext(screenPos.X+(Size.X-Graphics::textwidth(name))/2, screenPos.Y+Size.Y - 21, name, 255, 255, 255, 255);
 		else
-			g->drawtext(screenPos.X+(Size.X-Graphics::textwidth((char *)name.c_str()))/2, screenPos.Y+Size.Y - 21, name, 180, 180, 180, 255);
+			g->drawtext(screenPos.X+(Size.X-Graphics::textwidth(name))/2, screenPos.Y+Size.Y - 21, name, 180, 180, 180, 255);
 
 		if(isMouseInsideAuthor)
-			g->drawtext(screenPos.X+(Size.X-Graphics::textwidth((char *)save->userName.c_str()))/2, screenPos.Y+Size.Y - 10, save->userName, 200, 230, 255, 255);
+			g->drawtext(screenPos.X+(Size.X-Graphics::textwidth(save->userName.FromUtf8()))/2, screenPos.Y+Size.Y - 10, save->userName.FromUtf8(), 200, 230, 255, 255);
 		else
-			g->drawtext(screenPos.X+(Size.X-Graphics::textwidth((char *)save->userName.c_str()))/2, screenPos.Y+Size.Y - 10, save->userName, 100, 130, 160, 255);
+			g->drawtext(screenPos.X+(Size.X-Graphics::textwidth(save->userName.FromUtf8()))/2, screenPos.Y+Size.Y - 10, save->userName.FromUtf8(), 100, 130, 160, 255);
 		if (showVotes)// && !isMouseInside)
 		{
-			int x = screenPos.X-7+(Size.X-thumbBoxSize.X)/2+thumbBoxSize.X-Graphics::textwidth(votesBackground.c_str());
+			int x = screenPos.X-7+(Size.X-thumbBoxSize.X)/2+thumbBoxSize.X-Graphics::textwidth(votesBackground);
 			int y = screenPos.Y-23+(Size.Y-thumbBoxSize.Y)/2+thumbBoxSize.Y;
 			g->drawtext(x, y, votesBackground, 16, 72, 16, 255);
 			g->drawtext(x, y, votesBackground2, 192, 192, 192, 255);
@@ -259,11 +259,11 @@ void SaveButton::Draw(const Point& screenPos)
 
 		if (isMouseInside)
 		{
-			g->drawtext(screenPos.X+(Size.X-Graphics::textwidth((char *)name.c_str()))/2, screenPos.Y+Size.Y - 21, name, 255, 255, 255, 255);
+			g->drawtext(screenPos.X+(Size.X-Graphics::textwidth(name))/2, screenPos.Y+Size.Y - 21, name, 255, 255, 255, 255);
 		}
 		else
 		{
-			g->drawtext(screenPos.X+(Size.X-Graphics::textwidth((char *)name.c_str()))/2, screenPos.Y+Size.Y - 21, name, 180, 180, 180, 255);
+			g->drawtext(screenPos.X+(Size.X-Graphics::textwidth(name))/2, screenPos.Y+Size.Y - 21, name, 180, 180, 180, 255);
 		}
 	}
 

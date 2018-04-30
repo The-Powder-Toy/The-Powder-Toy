@@ -5,7 +5,7 @@
 
 class InformationMessage: public ui::Window {
 public:
-	InformationMessage(std::string title, std::string message, bool large);
+	InformationMessage(String title, String message, bool large);
 	virtual void OnDraw();
 	virtual ~InformationMessage();
 };

@@ -1,17 +1,17 @@
 #ifndef USERINFO_H_
 #define USERINFO_H_
 
-#include <string>
+#include "common/String.h"
 
 class UserInfo
 {
 public:
 	int UserID;
 	int age;
-	std::string username;
-	std::string biography;
-	std::string location;
-	std::string website;
+	ByteString username;
+	String biography;
+	String location;
+	ByteString website;
 
 	int saveCount;
 	float averageScore;
@@ -21,7 +21,7 @@ public:
 	int topicReplies;
 	int reputation;
 
-	UserInfo(int id, int age, std::string username, std::string biography, std::string location, std::string website, int saveCount, float averageScore, int highestScore, int topicCount, int topicReplies, int reputation):
+	UserInfo(int id, int age, ByteString username, String biography, String location, ByteString website, int saveCount, float averageScore, int highestScore, int topicCount, int topicReplies, int reputation):
 		UserID(id),
 		age(age),
 		username(username),

@@ -14,7 +14,7 @@
 #include "Format.h"
 #include "Platform.h"
 
-ProfileActivity::ProfileActivity(std::string username) :
+ProfileActivity::ProfileActivity(ByteString username) :
 	WindowActivity(ui::Point(-1, -1), ui::Point(236, 300)),
 	loading(false),
 	saving(false),
@@ -98,7 +98,7 @@ void ProfileActivity::setUserInfo(UserInfo newInfo)
 	int currentY = 5;
 
 	// username label
-	ui::Label * title = new ui::Label(ui::Point(4, currentY), ui::Point(Size.X-8-(40+8+75), 15), info.username);
+	ui::Label * title = new ui::Label(ui::Point(4, currentY), ui::Point(Size.X-8-(40+8+75), 15), info.username.FromUtf8());
 	title->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	scrollPanel->AddChild(title);
 
@@ -147,7 +147,7 @@ void ProfileActivity::setUserInfo(UserInfo newInfo)
 	websiteTitle->SetTextColour(ui::Colour(180, 180, 180));
 	scrollPanel->AddChild(websiteTitle);
 
-	ui::Label *website = new ui::Label(ui::Point(8+websiteTitle->Size.X, currentY), ui::Point(Size.X-websiteTitle->Size.X-16, 15), info.website);
+	ui::Label *website = new ui::Label(ui::Point(8+websiteTitle->Size.X, currentY), ui::Point(Size.X-websiteTitle->Size.X-16, 15), info.website.FromUtf8());
 	website->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	scrollPanel->AddChild(website);
 	currentY += 2+website->Size.Y;

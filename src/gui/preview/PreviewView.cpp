@@ -1,4 +1,3 @@
-#include <sstream>
 #include <vector>
 #include <cmath>
 #include <algorithm>
@@ -105,7 +104,7 @@ PreviewView::PreviewView():
 	public:
 		PreviewView * v;
 		ReportPromptCallback(PreviewView * v_) { v = v_;	}
-		virtual void TextCallback(TextPrompt::DialogueResult result, std::string resultText) {
+		virtual void TextCallback(TextPrompt::DialogueResult result, String resultText) {
 			if (result == TextPrompt::ResultOkay)
 				v->c->Report(resultText);
 		}
@@ -278,9 +277,9 @@ void PreviewView::commentBoxAutoHeight()
 	}
 }
 
-bool PreviewView::CheckSwearing(std::string text)
+bool PreviewView::CheckSwearing(String text)
 {
-	for (std::set<std::string>::iterator iter = swearWords.begin(), end = swearWords.end(); iter != end; iter++)
+	for (std::set<String>::iterator iter = swearWords.begin(), end = swearWords.end(); iter != end; iter++)
 	{
 		if (text.find(*iter) != text.npos)
 			return true;
@@ -292,9 +291,9 @@ void PreviewView::CheckComment()
 {
 	if (!commentWarningLabel)
 		return;
-	std::string text = addCommentBox->GetText();
+	String text = addCommentBox->GetText();
 	std::transform(text.begin(), text.end(), text.begin(), ::tolower);
-	if (!userIsAuthor && (text.find("stolen") != text.npos || text.find("copied") != text.npos))
+	if (!userIsAuthor && (text.find("stolen") != String::npos || text.find("copied") != String::npos))
 	{
 		if (!commentHelpText)
 		{
@@ -499,7 +498,7 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 		votesUp = save->votesUp;
 		votesDown = save->votesDown;
 		saveNameLabel->SetText(save->name);
-		std::string dateType;
+		String dateType;
 		if (save->updatedDate == save->createdDate)
 			dateType = "Created:";
 		else
@@ -507,11 +506,11 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 		if (showAvatars)
 		{
 			avatarButton->SetUsername(save->userName);
-			authorDateLabel->SetText("\bw" + save->userName + " \bg" + dateType + " \bw" + format::UnixtimeToDateMini(save->updatedDate));
+			authorDateLabel->SetText("\bw" + save->userName.FromUtf8() + " \bg" + dateType + " \bw" + format::UnixtimeToDateMini(save->updatedDate).FromAscii());
 		}
 		else
 		{
-			authorDateLabel->SetText("\bgAuthor:\bw " + save->userName + " \bg" + dateType + " \bw" + format::UnixtimeToDateMini(save->updatedDate));
+			authorDateLabel->SetText("\bgAuthor:\bw " + save->userName.FromUtf8() + " \bg" + dateType + " \bw" + format::UnixtimeToDateMini(save->updatedDate).FromAscii());
 		}
 		if (Client::Ref().GetAuthUser().UserID && save->userName == Client::Ref().GetAuthUser().Username)
 			userIsAuthor = true;
@@ -571,7 +570,7 @@ void PreviewView::submitComment()
 {
 	if(addCommentBox)
 	{
-		std::string comment = std::string(addCommentBox->GetText());
+		String comment = addCommentBox->GetText();
 		submitCommentButton->Enabled = false;
 		addCommentBox->SetText("");
 		addCommentBox->SetPlaceholder("Submitting comment"); //This doesn't appear to ever show since no separate thread is created
@@ -632,7 +631,7 @@ void PreviewView::NotifyCommentBoxEnabledChanged(PreviewModel * sender)
 	}
 }
 
-void PreviewView::SaveLoadingError(std::string errorMessage)
+void PreviewView::SaveLoadingError(String errorMessage)
 {
 	doError = true;
 	doErrorMessage = errorMessage;
@@ -640,7 +639,7 @@ void PreviewView::SaveLoadingError(std::string errorMessage)
 
 void PreviewView::NotifyCommentsPageChanged(PreviewModel * sender)
 {
-	std::stringstream pageInfoStream;
+	String::Stream pageInfoStream;
 	pageInfoStream << "Page " << sender->GetCommentsPageNum() << " of " << sender->GetCommentsPageCount();
 	pageInfo->SetText(pageInfoStream.str());
 }
@@ -683,9 +682,9 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 			}
 
 			if (showAvatars)
-				tempUsername = new ui::Label(ui::Point(31, currentY+3), ui::Point(Size.X-((XRES/2) + 13 + 26), 16), comments->at(i)->authorNameFormatted);
+				tempUsername = new ui::Label(ui::Point(31, currentY+3), ui::Point(Size.X-((XRES/2) + 13 + 26), 16), comments->at(i)->authorNameFormatted.FromUtf8());
 			else
-				tempUsername = new ui::Label(ui::Point(5, currentY+3), ui::Point(Size.X-((XRES/2) + 13), 16), comments->at(i)->authorNameFormatted);
+				tempUsername = new ui::Label(ui::Point(5, currentY+3), ui::Point(Size.X-((XRES/2) + 13), 16), comments->at(i)->authorNameFormatted.FromUtf8());
 			tempUsername->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 			tempUsername->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
 			if (Client::Ref().GetAuthUser().UserID && Client::Ref().GetAuthUser().Username == comments->at(i)->authorName)

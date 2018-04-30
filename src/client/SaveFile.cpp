@@ -26,11 +26,11 @@ void SaveFile::SetThumbnail(Thumbnail * thumb)
 	thumbnail = thumb;
 }
 
-SaveFile::SaveFile(std::string filename):
+SaveFile::SaveFile(ByteString filename):
 	thumbnail(NULL),
 	gameSave(NULL),
 	filename(filename),
-	displayName(filename),
+	displayName(filename.FromUtf8()),
 	loadingError("")
 {
 
@@ -46,32 +46,32 @@ void SaveFile::SetGameSave(GameSave * save)
 	gameSave = save;
 }
 
-std::string SaveFile::GetName()
+ByteString SaveFile::GetName()
 {
 	return filename;
 }
 
-void SaveFile::SetFileName(std::string fileName)
+void SaveFile::SetFileName(ByteString fileName)
 {
 	this->filename = fileName;
 }
 
-std::string SaveFile::GetDisplayName()
+String SaveFile::GetDisplayName()
 {
 	return displayName;
 }
 
-void SaveFile::SetDisplayName(std::string displayName)
+void SaveFile::SetDisplayName(String displayName)
 {
 	this->displayName = displayName;
 }
 
-std::string SaveFile::GetError()
+String SaveFile::GetError()
 {
 	return loadingError;
 }
 
-void SaveFile::SetLoadingError(std::string error)
+void SaveFile::SetLoadingError(String error)
 {
 	loadingError = error;
 }

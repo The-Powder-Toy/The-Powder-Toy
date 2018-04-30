@@ -3,9 +3,9 @@
 #include "ElementGraphics.h"
 #include "Elements.h"
 
-gol_menu * LoadGOLMenu(int & golMenuCount)
+std::vector<gol_menu> LoadGOLMenu()
 {
-	gol_menu golMenu[NGOL] =
+	return
 	{
 		{"GOL",		PIXPACK(0x0CAC00), 0, "Game Of Life: Begin 3/Stay 23"},
 		{"HLIF",	PIXPACK(0xFF0000), 1, "High Life: B36/S23"},
@@ -32,15 +32,11 @@ gol_menu * LoadGOLMenu(int & golMenuCount)
 		{"FROG",	PIXPACK(0x00AA00), 22, "Frogs: B34/S12/3"},
 		{"BRAN",	PIXPACK(0xCCCC00), 23, "Brian 6: B246/S6/3"}
 	};
-	golMenuCount = NGOL;
-	gol_menu * golMenuT = (gol_menu*)malloc(NGOL*sizeof(gol_menu));
-	memcpy(golMenuT, golMenu, NGOL*sizeof(gol_menu));
-	return golMenuT;
 }
 
-int * LoadGOLRules(int & golRuleCount)
+std::vector<std::array<int, 10> > LoadGOLRules()
 {
-	int golRules[NGOL+1][10] =
+	return
 	{
 	//	 0,1,2,3,4,5,6,7,8,STATES    live=1  spawn=2 spawn&live=3   States are kind of how long until it dies, normal ones use two states(living,dead) for others the intermediate states live but do nothing
 		{0,0,0,0,0,0,0,0,0,2},//blank
@@ -69,15 +65,11 @@ int * LoadGOLRules(int & golRuleCount)
 		{0,1,1,2,2,0,0,0,0,3},//FROG
 		{0,0,2,0,2,0,3,0,0,3},//BRAN
 	};
-	golRuleCount = NGOL+1;
-	int * golRulesT = (int*)malloc((golRuleCount*10)*sizeof(int));
-	memcpy(golRulesT, golRules, (golRuleCount*10)*sizeof(int));
-	return golRulesT;
 }
 
-int * LoadGOLTypes(int & golTypeCount)
+std::vector<int> LoadGOLTypes()
 {
-	int golTypes[NGOL] =
+	return 
 	{
 		GT_GOL,
 		GT_HLIF,
@@ -104,15 +96,11 @@ int * LoadGOLTypes(int & golTypeCount)
 		GT_FROG,
 		GT_BRAN,
 	};
-	golTypeCount = NGOL;
-	int * golTypesT = (int*)malloc((golTypeCount)*sizeof(int));
-	memcpy(golTypesT, golTypes, (golTypeCount)*sizeof(int));
-	return golTypesT;
 }
 
-wall_type * LoadWalls(int & wallCount)
+std::vector<wall_type> LoadWalls()
 {
-	wall_type wtypes[] =
+	return
 	{
 		{PIXPACK(0x808080), PIXPACK(0x000000), 0, Renderer::WallIcon, "ERASE",           "DEFAULT_WL_ERASE",  "Erases walls."},
 		{PIXPACK(0xC0C0C0), PIXPACK(0x101010), 0, Renderer::WallIcon, "CONDUCTIVE WALL", "DEFAULT_WL_CNDTW",  "Blocks everything. Conductive."},
@@ -134,15 +122,11 @@ wall_type * LoadWalls(int & wallCount)
 		{PIXPACK(0x808080), PIXPACK(0x000000), 0, Renderer::WallIcon, "ERASEALL",        "DEFAULT_WL_ERASEA", "Erases walls, particles, and signs."},
 		{PIXPACK(0x800080), PIXPACK(0x000000), 0, Renderer::WallIcon, "STASIS WALL",     "DEFAULT_WL_STASIS", "Freezes particles inside the wall in place until powered."},
 	};
-	wallCount = UI_WALLCOUNT;
-	wall_type * wtypesT = (wall_type*)malloc(UI_WALLCOUNT*sizeof(wall_type));
-	memcpy(wtypesT, wtypes, UI_WALLCOUNT*sizeof(wall_type));
-	return wtypesT;
 }
 
-menu_section * LoadMenus(int & menuCount)
+std::vector<menu_section> LoadMenus()
 {
-	menu_section msections[] = //doshow does not do anything currently.
+	return
 	{
 		{"\xC1", "Walls", 0, 1},
 		{"\xC2", "Electronics", 0, 1},
@@ -163,15 +147,11 @@ menu_section * LoadMenus(int & menuCount)
 		{"\xC8", "Cracker", 0, 0},
 		{"\xC8", "Cracker!", 0, 0},
 	};
-	menuCount = SC_TOTAL;
-	menu_section * msectionsT = (menu_section*)malloc(SC_TOTAL*sizeof(menu_section));
-	memcpy(msectionsT, msections, SC_TOTAL*sizeof(menu_section));
-	return msectionsT;
 }
 
-unsigned int * LoadLatent(int & elementCount)
+std::vector<unsigned int> LoadLatent()
 {
-	unsigned int platent[PT_NUM] =
+	return
 	{
 		/* NONE */ 0,
 		/* DUST */ 0,
@@ -335,8 +315,4 @@ unsigned int * LoadLatent(int & elementCount)
 		/* FRAY */ 0,
 		/* REPL */ 0,
 	};
-	elementCount = PT_NUM;
-	unsigned int * platentT = (unsigned int*)malloc(PT_NUM*sizeof(unsigned int));
-	memcpy(platentT, platent, PT_NUM*sizeof(unsigned int));
-	return platentT;
 }

@@ -31,7 +31,7 @@ class LocalSaveActivity: public WindowActivity, public RequestListener
 	FileSavedCallback * callback;
 public:
 	LocalSaveActivity(SaveFile save, FileSavedCallback * callback);
-	void saveWrite(std::string finalFilename);
+	void saveWrite(ByteString finalFilename);
 	virtual void Save();
 	virtual void OnDraw();
 	virtual void OnResponseReady(void * imagePtr, int identifier);

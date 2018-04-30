@@ -3,7 +3,7 @@
 
 #include <list>
 #include <vector>
-#include <string>
+#include "common/String.h"
 #include <cstdlib>
 #include <iostream>
 
@@ -23,34 +23,34 @@ public:
 	int Views;
 	int Version;
 
-	std::string userName;
+	ByteString userName;
 
-	std::string name;
-	std::string Description;
+	String name;
+	String Description;
 	bool Published;
 
-	std::list<std::string> tags;
+	std::list<ByteString> tags;
 	GameSave * gameSave;
 
 	SaveInfo(SaveInfo & save);
 
-	SaveInfo(int _id, int _createdDate, int _updatedDate, int _votesUp, int _votesDown, std::string _userName, std::string _name);
+	SaveInfo(int _id, int _createdDate, int _updatedDate, int _votesUp, int _votesDown, ByteString _userName, String _name);
 
-	SaveInfo(int _id, int _createdDate, int _updatedDate, int _votesUp, int _votesDown, int _vote, std::string _userName, std::string _name, std::string description_, bool published_, std::list<std::string> tags);
+	SaveInfo(int _id, int _createdDate, int _updatedDate, int _votesUp, int _votesDown, int _vote, ByteString _userName, String _name, String description_, bool published_, std::list<ByteString> tags);
 
 	~SaveInfo();
 
-	void SetName(std::string name);
-	std::string GetName();
+	void SetName(String name);
+	String GetName();
 
-	void SetDescription(std::string description);
-	std::string GetDescription();
+	void SetDescription(String description);
+	String GetDescription();
 
 	void SetPublished(bool published);
 	bool GetPublished();
 
-	void SetUserName(std::string userName);
-	std::string GetUserName();
+	void SetUserName(ByteString userName);
+	ByteString GetUserName();
 
 	void SetID(int id);
 	int GetID();
@@ -67,8 +67,8 @@ public:
 	void SetVersion(int version);
 	int GetVersion();
 
-	void SetTags(std::list<std::string> tags);
-	std::list<std::string> GetTags();
+	void SetTags(std::list<ByteString> tags);
+	std::list<ByteString> GetTags();
 
 	GameSave * GetGameSave();
 	void SetGameSave(GameSave * gameSave);

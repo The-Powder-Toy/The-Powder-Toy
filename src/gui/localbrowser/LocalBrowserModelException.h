@@ -1,15 +1,14 @@
 #ifndef STAMPSMODELEXCEPTION_H_
 #define STAMPSMODELEXCEPTION_H_
 
-#include <string>
+#include "common/String.h"
 #include <exception>
-using namespace std;
 
 class LocalBrowserModelException {
-	string message;
+	String message;
 public:
-	LocalBrowserModelException(string message_): message(message_) {};
-	const char * what() const throw() { return message.c_str(); };
+	LocalBrowserModelException(String message_): message(message_) {};
+	const char * what() const throw() { return message.ToUtf8().c_str(); };
 	~LocalBrowserModelException() throw() {};
 };
 

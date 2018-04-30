@@ -1,7 +1,6 @@
 #ifndef STORAGECLASSES_H_
 #define STORAGECLASSES_H_
 
-#include <string>
 #include "Elements.h"
 
 class Renderer;

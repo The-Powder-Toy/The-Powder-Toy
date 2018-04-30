@@ -1,16 +1,16 @@
 #ifndef COMMENT_H_
 #define COMMENT_H_
 
-#include <string>
+#include "common/String.h"
 
 class SaveComment
 {
 public:
 	int authorID;
-	std::string authorName;
-	std::string authorNameFormatted;
-	std::string comment;
-	SaveComment(int userID, std::string username, std::string usernameFormatted, std::string commentText):
+	ByteString authorName;
+	ByteString authorNameFormatted;
+	String comment;
+	SaveComment(int userID, ByteString username, ByteString usernameFormatted, String commentText):
 			authorID(userID), authorName(username), authorNameFormatted(usernameFormatted), comment(commentText)
 	{
 	}

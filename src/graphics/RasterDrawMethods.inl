@@ -1,7 +1,7 @@
 #include "font.h"
 #include <cmath>
 
-int PIXELMETHODS_CLASS::drawtext_outline(int x, int y, const char *s, int r, int g, int b, int a)
+int PIXELMETHODS_CLASS::drawtext_outline(int x, int y, String s, int r, int g, int b, int a)
 {
 	drawtext(x-1, y-1, s, 0, 0, 0, 120);
 	drawtext(x+1, y+1, s, 0, 0, 0, 120);
@@ -12,15 +12,16 @@ int PIXELMETHODS_CLASS::drawtext_outline(int x, int y, const char *s, int r, int
 	return drawtext(x, y, s, r, g, b, a);
 }
 
-int PIXELMETHODS_CLASS::drawtext(int x, int y, const char *s, int r, int g, int b, int a)
+int PIXELMETHODS_CLASS::drawtext(int x, int y, String str, int r, int g, int b, int a)
 {
-	if(!strlen(s))
+	if(!str.size())
 		return 0;
 
 	int invert = 0;
 	int oR = r, oG = g, oB = b;
 	int characterX = x, characterY = y;
 	int startX = characterX;
+	String::value_type const *s = str.c_str();
 	for (; *s; s++)
 	{
 		if (*s == '\n')
@@ -96,18 +97,13 @@ int PIXELMETHODS_CLASS::drawtext(int x, int y, const char *s, int r, int g, int 
 		}
 		else
 		{
-			characterX = drawchar(characterX, characterY, *(unsigned char *)s, r, g, b, a);
+			characterX = drawchar(characterX, characterY, *s, r, g, b, a);
 		}
 	}
 	return x;
 }
 
-int PIXELMETHODS_CLASS::drawtext(int x, int y, std::string s, int r, int g, int b, int a)
-{
-	return drawtext(x, y, s.c_str(), r, g, b, a);
-}
-
-int PIXELMETHODS_CLASS::drawchar(int x, int y, int c, int r, int g, int b, int a)
+int PIXELMETHODS_CLASS::drawchar(int x, int y, String::value_type c, int r, int g, int b, int a)
 {
 	int i, j, w, bn = 0, ba = 0;
 	unsigned char *rp = font_data + font_ptrs[c];
@@ -127,7 +123,7 @@ int PIXELMETHODS_CLASS::drawchar(int x, int y, int c, int r, int g, int b, int a
 	return x + w;
 }
 
-int PIXELMETHODS_CLASS::addchar(int x, int y, int c, int r, int g, int b, int a)
+int PIXELMETHODS_CLASS::addchar(int x, int y, String::value_type c, int r, int g, int b, int a)
 {
 	int i, j, w, bn = 0, ba = 0;
 	unsigned char *rp = font_data + font_ptrs[c];

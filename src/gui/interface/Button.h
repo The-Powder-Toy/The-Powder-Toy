@@ -1,7 +1,7 @@
 #ifndef BUTTON_H_
 #define BUTTON_H_
 
-#include <string>
+#include "common/String.h"
 #include "Misc.h"
 #include "Component.h"
 #include "Colour.h"
@@ -21,7 +21,7 @@ public:
 class Button : public Component
 {
 public:
-	Button(Point position = Point(0, 0), Point size = Point(0, 0), std::string buttonText = "", std::string toolTip = "");
+	Button(Point position = Point(0, 0), Point size = Point(0, 0), String buttonText = "", String toolTip = "");
 	virtual ~Button();
 
 	virtual void OnMouseClick(int x, int y, unsigned int button);
@@ -34,7 +34,7 @@ public:
 
 	virtual void Draw(const Point& screenPos);
 
-	virtual void TextPosition(std::string);
+	virtual void TextPosition(String);
 	inline bool GetState() { return state; }
 	virtual void DoAction(); //action of button what ever it may be
 	virtual void DoAltAction(); //action of button what ever it may be
@@ -44,15 +44,15 @@ public:
 	void SetToggleState(bool state);
 	void SetActionCallback(ButtonAction * action);
 	ButtonAction * GetActionCallback() { return actionCallback; }
-	void SetText(std::string buttonText);
+	void SetText(String buttonText);
 	void SetIcon(Icon icon);
-	inline std::string GetText() { return ButtonText; }
-	void SetToolTip(std::string newToolTip) { toolTip = newToolTip; }
+	inline String GetText() { return ButtonText; }
+	void SetToolTip(String newToolTip) { toolTip = newToolTip; }
 protected:
 
-	std::string ButtonText;
-	std::string toolTip;
-	std::string buttonDisplayText;
+	String ButtonText;
+	String toolTip;
+	String buttonDisplayText;
 
 	bool isButtonDown, isAltButtonDown, state, isMouseInside, isTogglable, toggle;
 	ButtonAction * actionCallback;

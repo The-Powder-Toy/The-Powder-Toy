@@ -1,7 +1,7 @@
 #include <cmath>
 #include <iostream>
 #include <bzlib.h>
-#include <string>
+#include "common/String.h"
 #include "Config.h"
 #include "Misc.h"
 #include "Graphics.h"
@@ -566,9 +566,10 @@ pixel *Graphics::rescale_img(pixel *src, int sw, int sh, int *qw, int *qh, int f
 	return q;
 }
 
-int Graphics::textwidth(const char *s)
+int Graphics::textwidth(String str)
 {
 	int x = 0;
+	String::value_type const *s = str.c_str();
 	for (; *s; s++)
 	{
 		if(((char)*s)=='\b')
@@ -581,19 +582,20 @@ int Graphics::textwidth(const char *s)
 			s+=3;
 			continue;
 		}
-		x += font_data[font_ptrs[(int)(*(unsigned char *)s)]];
+		x += font_data[font_ptrs[*s]];
 	}
 	return x-1;
 }
 
-int Graphics::CharWidth(unsigned char c)
+int Graphics::CharWidth(String::value_type c)
 {
 	return font_data[font_ptrs[(int)c]];
 }
 
-int Graphics::textnwidth(char *s, int n)
+int Graphics::textnwidth(String str, int n)
 {
 	int x = 0;
+	String::value_type const *s = str.c_str();
 	for (; *s; s++)
 	{
 		if (!n)
@@ -608,20 +610,23 @@ int Graphics::textnwidth(char *s, int n)
 			s+=3;
 			continue;
 		}
-		x += font_data[font_ptrs[(int)(*(unsigned char *)s)]];
+		x += font_data[font_ptrs[*s]];
 		n--;
 	}
 	return x-1;
 }
 
-void Graphics::textnpos(char *s, int n, int w, int *cx, int *cy)
+void Graphics::textnpos(String str, int n, int w, int *cx, int *cy)
 {
 	int x = 0;
 	int y = 0;
 	int wordlen, charspace;
+	String::value_type const *s = str.c_str();
 	while (*s&&n)
 	{
-		wordlen = strcspn(s," .,!?\n");
+		wordlen = 0;
+		while(*s && String(" .,!?\n").find(*s) != String::npos)
+			s++;
 		charspace = textwidthx(s, w-x);
 		if (charspace<wordlen && wordlen && w-x<w/3)
 		{
@@ -633,7 +638,7 @@ void Graphics::textnpos(char *s, int n, int w, int *cx, int *cy)
 			if (!n) {
 				break;
 			}
-			x += font_data[font_ptrs[(int)(*(unsigned char *)s)]];
+			x += font_data[font_ptrs[*s]];
 			if (x>=w)
 			{
 				x = 0;
@@ -646,9 +651,10 @@ void Graphics::textnpos(char *s, int n, int w, int *cx, int *cy)
 	*cy = y;
 }
 
-int Graphics::textwidthx(char *s, int w)
+int Graphics::textwidthx(String str, int w)
 {
 	int x=0,n=0,cw;
+	String::value_type const *s = str.c_str();
 	for (; *s; s++)
 	{
 		if((char)*s == '\b')
@@ -662,7 +668,7 @@ int Graphics::textwidthx(char *s, int w)
 			s+=3;
 			continue;
 		}
-		cw = font_data[font_ptrs[(int)(*(unsigned char *)s)]];
+		cw = font_data[font_ptrs[*s]];
 		if (x+(cw/2) >= w)
 			break;
 		x += cw;
@@ -671,9 +677,10 @@ int Graphics::textwidthx(char *s, int w)
 	return n;
 }
 
-int Graphics::PositionAtCharIndex(char *s, int charIndex, int & positionX, int & positionY)
+int Graphics::PositionAtCharIndex(String str, int charIndex, int & positionX, int & positionY)
 {
 	int x = 0, y = 0, lines = 1;
+	String::value_type const *s = str.c_str();
 	for (; *s; s++)
 	{
 		if (!charIndex)
@@ -695,7 +702,7 @@ int Graphics::PositionAtCharIndex(char *s, int charIndex, int & positionX, int &
 			charIndex-=4;
 			continue;
 		}
-		x += font_data[font_ptrs[(int)(*(unsigned char *)s)]];
+		x += font_data[font_ptrs[*s]];
 		charIndex--;
 	}
 	positionX = x;
@@ -703,9 +710,10 @@ int Graphics::PositionAtCharIndex(char *s, int charIndex, int & positionX, int &
 	return lines;
 }
 
-int Graphics::CharIndexAtPosition(char *s, int positionX, int positionY)
+int Graphics::CharIndexAtPosition(String str, int positionX, int positionY)
 {
 	int x=0, y=-2,charIndex=0,cw;
+	String::value_type const *s = str.c_str();
 	for (; *s; s++)
 	{
 		if(*s == '\n') {
@@ -724,7 +732,7 @@ int Graphics::CharIndexAtPosition(char *s, int positionX, int positionY)
 			charIndex+=4;
 			continue;
 		}
-		cw = font_data[font_ptrs[(int)(*(unsigned char *)s)]];
+		cw = font_data[font_ptrs[*s]];
 		if ((x+(cw/2) >= positionX && y+FONT_H >= positionY) || y > positionY)
 			break;
 		x += cw;
@@ -734,14 +742,17 @@ int Graphics::CharIndexAtPosition(char *s, int positionX, int positionY)
 }
 
 
-int Graphics::textwrapheight(char *s, int width)
+int Graphics::textwrapheight(String str, int width)
 {
 	int x=0, height=FONT_H, cw;
 	int wordlen;
 	int charspace;
+	String::value_type const *s = str.c_str();
 	while (*s)
 	{
-		wordlen = strcspn(s," .,!?\n");
+		wordlen = 0;
+		while(*s && String(" .,!?\n").find(*s) != String::npos)
+			s++;
 		charspace = textwidthx(s, width-x);
 		if (charspace<wordlen && wordlen && width-x<width/3)
 		{
@@ -767,7 +778,7 @@ int Graphics::textwrapheight(char *s, int width)
 			}
 			else
 			{
-				cw = font_data[font_ptrs[(int)(*(unsigned char *)s)]];
+				cw = font_data[font_ptrs[*s]];
 				if (x+cw>=width)
 				{
 					x = 0;
@@ -780,9 +791,9 @@ int Graphics::textwrapheight(char *s, int width)
 	return height;
 }
 
-void Graphics::textsize(const char * s, int & width, int & height)
+void Graphics::textsize(String str, int & width, int & height)
 {
-	if(!strlen(s))
+	if(!str.size())
 	{
 		width = 0;
 		height = FONT_H-2;
@@ -790,6 +801,7 @@ void Graphics::textsize(const char * s, int & width, int & height)
 	}
 
 	int cHeight = FONT_H-2, cWidth = 0, lWidth = 0;
+	String::value_type const *s = str.c_str();
 	for (; *s; s++)
 	{
 		if (*s == '\n')
@@ -809,7 +821,7 @@ void Graphics::textsize(const char * s, int & width, int & height)
 		}
 		else
 		{
-			cWidth += font_data[font_ptrs[(int)(*(unsigned char *)s)]];
+			cWidth += font_data[font_ptrs[*s]];
 			if(cWidth>lWidth)
 				lWidth = cWidth;
 		}

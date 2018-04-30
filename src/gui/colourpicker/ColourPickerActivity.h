@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include <string>
+#include "common/String.h"
 #include "Activity.h"
 #include "gui/interface/Window.h"
 #include "gui/interface/Textbox.h"

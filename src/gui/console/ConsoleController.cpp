@@ -13,7 +13,7 @@ ConsoleController::ConsoleController(ControllerCallback * callback, CommandInter
 	this->commandInterface = commandInterface;
 }
 
-void ConsoleController::EvaluateCommand(std::string command)
+void ConsoleController::EvaluateCommand(String command)
 {
 	if(command.length())
 	{
@@ -31,7 +31,7 @@ void ConsoleController::CloseConsole()
 	consoleView->CloseActiveWindow();
 }
 
-std::string ConsoleController::FormatCommand(std::string command)
+String ConsoleController::FormatCommand(String command)
 {
 	return commandInterface->FormatCommand(command);
 }

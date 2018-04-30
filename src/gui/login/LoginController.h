@@ -1,7 +1,7 @@
 #ifndef LOGINCONTROLLER_H_
 #define LOGINCONTROLLER_H_
 
-#include <string>
+#include "common/String.h"
 #include "LoginView.h"
 #include "LoginModel.h"
 #include "Controller.h"
@@ -18,7 +18,7 @@ class LoginController {
 public:
 	bool HasExited;
 	LoginController(ControllerCallback * callback = NULL);
-	void Login(string username, string password);
+	void Login(ByteString username, ByteString password);
 	void Exit();
 	LoginView * GetView() { return loginView; }
 	User GetUser();

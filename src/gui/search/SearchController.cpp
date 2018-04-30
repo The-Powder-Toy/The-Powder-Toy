@@ -1,5 +1,4 @@
-#include <string>
-#include <sstream>
+#include "common/String.h"
 #include "SearchController.h"
 #include "SearchModel.h"
 #include "SearchView.h"
@@ -104,7 +103,7 @@ SearchController::~SearchController()
 	delete callback;
 }
 
-void SearchController::DoSearch(std::string query, bool now)
+void SearchController::DoSearch(String query, bool now)
 {
 	nextQuery = query;
 	if (!now)
@@ -118,7 +117,7 @@ void SearchController::DoSearch(std::string query, bool now)
 	}
 }
 
-void SearchController::DoSearch2(std::string query)
+void SearchController::DoSearch2(String query)
 {
 	// calls SearchView function to set textbox text, then calls DoSearch
 	searchView->Search(query);
@@ -236,7 +235,7 @@ void SearchController::RemoveSelected()
 		virtual ~RemoveSelectedConfirmation() { }
 	};
 
-	std::stringstream desc;
+	String::Stream desc;
 	desc << "Are you sure you want to delete " << searchModel->GetSelected().size() << " save";
 	if(searchModel->GetSelected().size()>1)
 		desc << "s";
@@ -256,12 +255,12 @@ void SearchController::removeSelectedC()
 		{
 			for (size_t i = 0; i < saves.size(); i++)
 			{
-				std::stringstream saveID;
+				String::Stream saveID;
 				saveID << "Deleting save [" << saves[i] << "] ...";
  				notifyStatus(saveID.str());
 				if (Client::Ref().DeleteSave(saves[i])!=RequestOkay)
 				{
- 					std::stringstream saveIDF;
+					String::Stream saveIDF;
 					saveIDF << "Failed to delete [" << saves[i] << "]: " << Client::Ref().GetLastError();
 					notifyError(saveIDF.str());
 					c->Refresh();
@@ -294,12 +293,12 @@ void SearchController::UnpublishSelected(bool publish)
 		virtual ~UnpublishSelectedConfirmation() { }
 	};
 
-	std::stringstream desc;
+	String::Stream desc;
 	desc << "Are you sure you want to " << (publish ? "publish " : "unpublish ") << searchModel->GetSelected().size() << " save";
 	if (searchModel->GetSelected().size() > 1)
 		desc << "s";
 	desc << "?";
-	new ConfirmPrompt((publish ? "Publish Saves" : "Unpublish Saves"), desc.str(), new UnpublishSelectedConfirmation(this, publish));
+	new ConfirmPrompt(publish ? String("Publish Saves") : String("Unpublish Saves"), desc.str(), new UnpublishSelectedConfirmation(this, publish));
 }
 
 void SearchController::unpublishSelectedC(bool publish)
@@ -314,7 +313,7 @@ void SearchController::unpublishSelectedC(bool publish)
 
 		bool PublishSave(int saveID)
 		{
-			std::stringstream message;
+			String::Stream message;
 			message << "Publishing save [" << saveID << "]";
 			notifyStatus(message.str());
 			if (Client::Ref().PublishSave(saveID) != RequestOkay)
@@ -324,7 +323,7 @@ void SearchController::unpublishSelectedC(bool publish)
 
 		bool UnpublishSave(int saveID)
 		{
-			std::stringstream message;
+			String::Stream message;
 			message << "Unpublishing save [" << saveID << "]";
 			notifyStatus(message.str());
 			if (Client::Ref().UnpublishSave(saveID) != RequestOkay)
@@ -343,7 +342,7 @@ void SearchController::unpublishSelectedC(bool publish)
 					ret = UnpublishSave(saves[i]);
 				if (!ret)
 				{
-					std::stringstream error;
+					String::Stream error;
 					if (publish) // uses html page so error message will be spam
 						error << "Failed to publish [" << saves[i] << "], is this save yours?";
 					else
@@ -360,7 +359,7 @@ void SearchController::unpublishSelectedC(bool publish)
 	};
 
 	std::vector<int> selected = searchModel->GetSelected();
-	new TaskWindow((publish ? "Publishing Saves" : "Unpublishing Saves"), new UnpublishSavesTask(selected, this, publish));
+	new TaskWindow(publish ? String("Publishing Saves") : String("Unpublishing Saves"), new UnpublishSavesTask(selected, this, publish));
 }
 
 void SearchController::FavouriteSelected()
@@ -374,12 +373,12 @@ void SearchController::FavouriteSelected()
 		{
 			for (size_t i = 0; i < saves.size(); i++)
 			{
-				std::stringstream saveID;
+				String::Stream saveID;
 				saveID << "Favouring save [" << saves[i] << "]";
 				notifyStatus(saveID.str());
 				if (Client::Ref().FavouriteSave(saves[i], true)!=RequestOkay)
 				{
-					std::stringstream saveIDF;
+					String::Stream saveIDF;
 					saveIDF << "Failed to favourite [" << saves[i] << "]: " + Client::Ref().GetLastError();
 					notifyError(saveIDF.str());
 					return false;
@@ -399,12 +398,12 @@ void SearchController::FavouriteSelected()
 		{
 			for (size_t i = 0; i < saves.size(); i++)
 			{
-				std::stringstream saveID;
+				String::Stream saveID;
 				saveID << "Unfavouring save [" << saves[i] << "]";
 				notifyStatus(saveID.str());
 				if (Client::Ref().FavouriteSave(saves[i], false)!=RequestOkay)
 				{
-					std::stringstream saveIDF;
+					String::Stream saveIDF;
 					saveIDF << "Failed to unfavourite [" << saves[i] << "]: " + Client::Ref().GetLastError();
 					notifyError(saveIDF.str());
 					return false;

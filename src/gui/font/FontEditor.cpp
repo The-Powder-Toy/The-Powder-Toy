@@ -1,5 +1,4 @@
 #include <stdexcept>
-#include <sstream>
 #include <fstream>
 #include <iterator>
 #include <iomanip>
@@ -19,7 +18,7 @@
 unsigned char *font_data;
 short *font_ptrs;
 
-void FontEditor::ReadHeader(std::string header)
+void FontEditor::ReadHeader(ByteString header)
 {
 	std::fstream file;
 	file.open(header, std::ios_base::in);
@@ -27,7 +26,7 @@ void FontEditor::ReadHeader(std::string header)
 		throw std::runtime_error("Could not open " + header);
 	file >> std::skipws;
 
-	std::string word;
+	ByteString word;
 
 	while(word != "font_data[]")
 		file >> word;
@@ -82,24 +81,24 @@ void FontEditor::ReadHeader(std::string header)
 	size_t eof = file.tellg();
 
 	file.seekg(0);
-	beforeFontData = std::string(startFontData, 0);
+	beforeFontData = ByteString(startFontData, 0);
 	file.read(&beforeFontData[0], startFontData);
 
 	file.seekg(endFontData);
-	afterFontData = std::string(startFontPtrs - endFontData, 0);
+	afterFontData = ByteString(startFontPtrs - endFontData, 0);
 	file.read(&afterFontData[0], startFontPtrs - endFontData);
 
 	file.seekg(endFontData);
-	afterFontData = std::string(startFontPtrs - endFontData, 0);
+	afterFontData = ByteString(startFontPtrs - endFontData, 0);
 	file.read(&afterFontData[0], startFontPtrs - endFontData);
 
 	file.seekg(endFontPtrs);
-	afterFontPtrs = std::string(eof - endFontPtrs, 0);
+	afterFontPtrs = ByteString(eof - endFontPtrs, 0);
 	file.read(&afterFontPtrs[0], eof - endFontPtrs);
 	file.close();
 }
 
-void FontEditor::WriteHeader(std::string header, std::vector<unsigned char> const &fontData, std::vector<short> const &fontPtrs)
+void FontEditor::WriteHeader(ByteString header, std::vector<unsigned char> const &fontData, std::vector<short> const &fontPtrs)
 {
 	std::fstream file;
 	file.open(header, std::ios_base::out | std::ios_base::trunc);
@@ -189,7 +188,7 @@ void FontEditor::PackData(
 }
 
 #define FONT_SCALE 16
-FontEditor::FontEditor(std::string _header):
+FontEditor::FontEditor(ByteString _header):
 	ui::Window(ui::Point(0, 0), ui::Point(WINDOWW, WINDOWH)),
 	header(_header),
 	currentChar(0x80),
@@ -228,7 +227,7 @@ FontEditor::FontEditor(std::string _header):
 		void TextChangedCallback(ui::Textbox *)
 		{
 			unsigned int number;
-			std::stringstream ss(v->currentCharTextbox->GetText());
+			String::Stream ss(v->currentCharTextbox->GetText());
 			ss >> std::hex >> number;
 			if(number < 256)
 				v->currentChar = number;
@@ -320,14 +319,14 @@ FontEditor::FontEditor(std::string _header):
 		ColorComponentAction(int &_color): color(_color) {}
 		void TextChangedCallback(ui::Textbox *box)
 		{
-			std::stringstream ss(box->GetText());
+			String::Stream ss(box->GetText());
 			ss >> color;
 		}
 	};
 	int *refs[6] = {&fgR, &fgG, &fgB, &bgR, &bgG, &bgB};
 	for(int i = 0; i < 6; i++)
 	{
-		std::stringstream ss;
+		String::Stream ss;
 		ss << *refs[i];
 		ui::Textbox *colorComponent = new ui::Textbox(ui::Point(currentX, baseline), ui::Point(27, 17), ss.str());
 		currentX += 28;
@@ -385,8 +384,8 @@ FontEditor::FontEditor(std::string _header):
 		PreviewAction(FontEditor *_v): v(_v) {}
 		void TextChangedCallback(ui::Textbox *box)
 		{
-			std::stringstream ss(box->GetText());
-			std::string text;
+			String::Stream ss(box->GetText());
+			String text;
 			while(!ss.eof())
 			{
 				if(ss.peek() == '\n')
@@ -399,12 +398,12 @@ FontEditor::FontEditor(std::string _header):
 				if(ss.fail())
 				{
 					ss.clear();
-					char ch = ss.get();
+					String::value_type ch = ss.get();
 					if(!ss.eof())
 						text.push_back(ch);
 					continue;
 				}
-				text.push_back((char)ch);
+				text.push_back(ch);
 			}
 			v->outputPreview->SetText(text);
 		}
@@ -416,7 +415,7 @@ FontEditor::FontEditor(std::string _header):
 	inputPreview->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 	inputPreview->SetActionCallback(new PreviewAction(this));
 
-	std::stringstream input;
+	String::Stream input;
 	for(unsigned int ch = 0x20; ch <= 0xFF; ch++)
 	{
 		if(!(ch & 0x3F))
@@ -493,7 +492,7 @@ void FontEditor::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bo
 
 void FontEditor::UpdateCharNumber()
 {
-	std::stringstream ss;
+	String::Stream ss;
 	ss << std::hex << currentChar;
 	currentCharTextbox->SetText(ss.str());
 }

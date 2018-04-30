@@ -76,8 +76,8 @@ void LocalSaveActivity::Save()
 	class FileOverwriteConfirmation: public ConfirmDialogueCallback {
 	public:
 		LocalSaveActivity * a;
-		std::string filename;
-		FileOverwriteConfirmation(LocalSaveActivity * a, std::string finalFilename) : a(a), filename(finalFilename) {}
+		ByteString filename;
+		FileOverwriteConfirmation(LocalSaveActivity * a, ByteString finalFilename) : a(a), filename(finalFilename) {}
 		virtual void ConfirmCallback(ConfirmPrompt::DialogueResult result) {
 			if (result == ConfirmPrompt::ResultOkay)
 			{
@@ -89,12 +89,12 @@ void LocalSaveActivity::Save()
 
 	if(filenameField->GetText().length())
 	{
-		std::string finalFilename = std::string(LOCAL_SAVE_DIR) + std::string(PATH_SEP) + filenameField->GetText() + ".cps";
+		ByteString finalFilename = ByteString(LOCAL_SAVE_DIR) + ByteString(PATH_SEP) + filenameField->GetText().ToUtf8() + ".cps";
 		save.SetDisplayName(filenameField->GetText());
 		save.SetFileName(finalFilename);
 		if(Client::Ref().FileExists(finalFilename))
 		{
-			new ConfirmPrompt("Overwrite file", "Are you sure you wish to overwrite\n"+finalFilename, new FileOverwriteConfirmation(this, finalFilename));
+			new ConfirmPrompt("Overwrite file", "Are you sure you wish to overwrite\n"+finalFilename.FromUtf8(), new FileOverwriteConfirmation(this, finalFilename));
 		}
 		else
 		{
@@ -107,7 +107,7 @@ void LocalSaveActivity::Save()
 	}
 }
 
-void LocalSaveActivity::saveWrite(std::string finalFilename)
+void LocalSaveActivity::saveWrite(ByteString finalFilename)
 {
 	Client::Ref().MakeDirectory(LOCAL_SAVE_DIR);
 	GameSave *gameSave = save.GetGameSave();

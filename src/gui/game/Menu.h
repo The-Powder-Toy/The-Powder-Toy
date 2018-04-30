@@ -1,19 +1,20 @@
 #ifndef MENU_H_
 #define MENU_H_
 
+#include "common/String.h"
 #include "Tool.h"
 
 class Menu
 {
-	char icon;
-	string description;
-	vector<Tool*> tools;
+	String::value_type icon;
+	String description;
+	std::vector<Tool*> tools;
 	bool visible;
 public:
-	Menu(char icon_, string description_, int visible_):
+	Menu(String::value_type icon_, String description_, int visible_):
 		icon(icon_),
 		description(description_),
-		tools(vector<Tool*>()),
+		tools(std::vector<Tool*>()),
 		visible(visible_ ? true : false)
 	{
 
@@ -28,17 +29,17 @@ public:
 		tools.clear();
 	}
 
-	vector<Tool*> GetToolList()
+	std::vector<Tool*> GetToolList()
 	{
 		return tools;
 	}
 
-	char GetIcon()
+	String::value_type GetIcon()
 	{
 		return icon;
 	}
 
-	string GetDescription()
+	String GetDescription()
 	{
 		return description;
 	}

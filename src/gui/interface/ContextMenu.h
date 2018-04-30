@@ -12,9 +12,9 @@ class ContextMenuItem
 {
 public:
 	int ID;
-	std::string Text;
+	String Text;
 	bool Enabled;
-	ContextMenuItem(std::string text, int id, bool enabled) : ID(id), Text(text), Enabled(enabled) {}
+	ContextMenuItem(String text, int id, bool enabled) : ID(id), Text(text), Enabled(enabled) {}
 };
 
 class ContextMenu: public ui::Window, public ButtonAction {
@@ -28,7 +28,7 @@ public:
 	virtual void ActionCallbackItem(ui::Button *sender, int item);
 	virtual void AddItem(ContextMenuItem item);
 	virtual void RemoveItem(int id);
-	virtual void SetItem(int id, std::string text);
+	virtual void SetItem(int id, String text);
 	virtual void Show(ui::Point position);
 	virtual void OnDraw();
 	virtual void OnMouseDown(int x, int y, unsigned button);

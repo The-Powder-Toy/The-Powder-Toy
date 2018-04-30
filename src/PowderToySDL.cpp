@@ -1,7 +1,7 @@
 #ifdef USE_SDL
 
 #include <map>
-#include <string>
+#include "common/String.h"
 #include <ctime>
 #include <climits>
 #ifdef WIN
@@ -18,9 +18,9 @@
 #endif
 
 #include <iostream>
-#include <sstream>
-#include <string>
+#include "common/String.h"
 #include "Config.h"
+#include "common/String.h"
 #include "graphics/Graphics.h"
 #if defined(LIN)
 #include "icon.h"
@@ -68,7 +68,7 @@ SDL_SysWMinfo sdl_wminfo;
 Atom XA_CLIPBOARD, XA_TARGETS, XA_UTF8_STRING;
 #endif
 
-std::string clipboardText = "";
+ByteString clipboardText = "";
 
 int desktopWidth = 1280, desktopHeight = 1024;
 
@@ -76,7 +76,7 @@ SDL_Surface * sdl_scrn;
 int scale = 1;
 bool fullscreen = false;
 
-void ClipboardPush(std::string text)
+void ClipboardPush(ByteString text)
 {
 	clipboardText = text;
 #ifdef MACOSX
@@ -110,11 +110,11 @@ void ClipboardPush(std::string text)
 
 void EventProcess(SDL_Event event);
 
-std::string ClipboardPull()
+ByteString ClipboardPull()
 {
 #ifdef MACOSX
 	const char *text = readClipboard();
-	return text ? std::string(text) : "";
+	return text ? ByteString(text).FromUtf8() : "";
 #elif defined(WIN)
 	if (OpenClipboard(NULL))
 	{
@@ -125,10 +125,10 @@ std::string ClipboardPull()
 		glbuffer = (char*)GlobalLock(cbuffer);
 		GlobalUnlock(cbuffer);
 		CloseClipboard();
-		return glbuffer ? std::string(glbuffer) : "";
+		return glbuffer ? ByteString(glbuffer) : "";
 	}
 #elif defined(LIN) && defined(SDL_VIDEO_DRIVER_X11)
-	std::string text = "";
+	ByteString text = "";
 	Window selectionOwner;
 	sdl_wminfo.info.x11.lock_func();
 	selectionOwner = XGetSelectionOwner(sdl_wminfo.info.x11.display, XA_CLIPBOARD);
@@ -168,7 +168,7 @@ std::string ClipboardPull()
 			result = XGetWindowProperty(sdl_wminfo.info.x11.display, sdl_wminfo.info.x11.window, XA_CLIPBOARD, 0, bytesLeft, 0, AnyPropertyType, &type, &format, &len, &bytesLeft, &data);
 			if (result == Success)
 			{
-				text = data ? (const char*)data : "";
+				text = data ? ByteString((char const *)data) : "";
 				XFree(data);
 			}
 			else
@@ -526,9 +526,9 @@ unsigned int GetTicks()
 	return SDL_GetTicks();
 }
 
-std::map<std::string, std::string> readArguments(int argc, char * argv[])
+std::map<ByteString, ByteString> readArguments(int argc, char * argv[])
 {
-	std::map<std::string, std::string> arguments;
+	std::map<ByteString, ByteString> arguments;
 
 	//Defaults
 	arguments["scale"] = "";
@@ -545,12 +545,12 @@ std::map<std::string, std::string> readArguments(int argc, char * argv[])
 	{
 		if (!strncmp(argv[i], "scale:", 6) && argv[i]+6)
 		{
-			arguments["scale"] = std::string(argv[i]+6);
+			arguments["scale"] = argv[i]+6;
 		}
 		else if (!strncmp(argv[i], "proxy:", 6))
 		{
 			if(argv[i]+6)
-				arguments["proxy"] =  std::string(argv[i]+6);
+				arguments["proxy"] = argv[i]+6;
 			else
 				arguments["proxy"] = "false";
 		}
@@ -572,17 +572,17 @@ std::map<std::string, std::string> readArguments(int argc, char * argv[])
 		}
 		else if (!strncmp(argv[i], "open", 5) && i+1<argc)
 		{
-			arguments["open"] = std::string(argv[i+1]);;
+			arguments["open"] = argv[i+1];
 			i++;
 		}
 		else if (!strncmp(argv[i], "ddir", 5) && i+1<argc)
 		{
-			arguments["ddir"] = std::string(argv[i+1]);
+			arguments["ddir"] = argv[i+1];
 			i++;
 		}
 		else if (!strncmp(argv[i], "ptsave", 7) && i+1<argc)
 		{
-			arguments["ptsave"] = std::string(argv[i+1]);
+			arguments["ptsave"] = argv[i+1];
 			i++;
 			break;
 		}
@@ -753,7 +753,7 @@ void EventProcess(SDL_Event event)
 
 void DoubleScreenDialog()
 {
-	std::stringstream message;
+	String::Stream message;
 	message << "Switching to double size mode since your screen was determined to be large enough: ";
 	message << desktopWidth << "x" << desktopHeight << " detected, " << WINDOWW*2 << "x" << WINDOWH*2 << " required";
 	message << "\nTo undo this, hit Cancel. You can toggle double size mode in settings at any time.";
@@ -916,28 +916,28 @@ bool SaveWindowPosition()
 
 #endif
 
-void BlueScreen(const char * detailMessage){
+void BlueScreen(String detailMessage){
 	ui::Engine * engine = &ui::Engine::Ref();
 	engine->g->fillrect(0, 0, engine->GetWidth(), engine->GetHeight(), 17, 114, 169, 210);
 
-	std::string errorTitle = "ERROR";
-	std::string errorDetails = "Details: " + std::string(detailMessage);
-	std::string errorHelp = "An unrecoverable fault has occurred, please report the error by visiting the website below\n"
+	String errorTitle = "ERROR";
+	String errorDetails = "Details: " + detailMessage;
+	String errorHelp = "An unrecoverable fault has occurred, please report the error by visiting the website below\n"
 		"http://" SERVER;
 	int currentY = 0, width, height;
 	int errorWidth = 0;
-	Graphics::textsize(errorHelp.c_str(), errorWidth, height);
+	Graphics::textsize(errorHelp, errorWidth, height);
 
 	engine->g->drawtext((engine->GetWidth()/2)-(errorWidth/2), ((engine->GetHeight()/2)-100) + currentY, errorTitle.c_str(), 255, 255, 255, 255);
-	Graphics::textsize(errorTitle.c_str(), width, height);
+	Graphics::textsize(errorTitle, width, height);
 	currentY += height + 4;
 
 	engine->g->drawtext((engine->GetWidth()/2)-(errorWidth/2), ((engine->GetHeight()/2)-100) + currentY, errorDetails.c_str(), 255, 255, 255, 255);
-	Graphics::textsize(errorTitle.c_str(), width, height);
+	Graphics::textsize(errorTitle, width, height);
 	currentY += height + 4;
 
 	engine->g->drawtext((engine->GetWidth()/2)-(errorWidth/2), ((engine->GetHeight()/2)-100) + currentY, errorHelp.c_str(), 255, 255, 255, 255);
-	Graphics::textsize(errorTitle.c_str(), width, height);
+	Graphics::textsize(errorTitle, width, height);
 	currentY += height + 4;
 
 	//Death loop
@@ -985,7 +985,7 @@ int main(int argc, char * argv[])
 	currentHeight = WINDOWH;
 
 
-	std::map<std::string, std::string> arguments = readArguments(argc, argv);
+	std::map<ByteString, ByteString> arguments = readArguments(argc, argv);
 
 	if(arguments["ddir"].length())
 #ifdef WIN
@@ -1009,11 +1009,11 @@ int main(int argc, char * argv[])
 
 	if(arguments["scale"].length())
 	{
-		tempScale = format::StringToNumber<int>(arguments["scale"]);
+		tempScale = format::ByteStringToNumber<int>(arguments["scale"]);
 		Client::Ref().SetPref("Scale", tempScale);
 	}
 
-	std::string proxyString = "";
+	ByteString proxyString = "";
 	if(arguments["proxy"].length())
 	{
 		if(arguments["proxy"] == "false")
@@ -1029,7 +1029,7 @@ int main(int argc, char * argv[])
 	}
 	else if(Client::Ref().GetPrefString("Proxy", "").length())
 	{
-		proxyString = (Client::Ref().GetPrefString("Proxy", ""));
+		proxyString = (Client::Ref().GetPrefByteString("Proxy", ""));
 	}
 
 	Client::Ref().Initialise(proxyString);
@@ -1140,7 +1140,7 @@ int main(int argc, char * argv[])
 				}
 				catch(std::exception & e)
 				{
-					new ErrorMessage("Error", "Could not open save file:\n"+std::string(e.what())) ;
+					new ErrorMessage("Error", "Could not open save file:\n" + ByteString(e.what()).FromUtf8()) ;
 				}
 			}
 			else
@@ -1163,16 +1163,16 @@ int main(int argc, char * argv[])
 			else
 				blit(engine->g->vid);
 #endif
-			std::string ptsaveArg = arguments["ptsave"];
+			ByteString ptsaveArg = arguments["ptsave"];
 			try
 			{
 				if (ptsaveArg.find("ptsave:"))
 					throw std::runtime_error("Invalid save link");
 
-				std::string saveIdPart = "";
+				ByteString saveIdPart = "";
 				int saveId;
 				size_t hashPos = ptsaveArg.find('#');
-				if (hashPos != std::string::npos)
+				if (hashPos != ByteString::npos)
 				{
 					saveIdPart = ptsaveArg.substr(7, hashPos-7);
 				}
@@ -1185,7 +1185,7 @@ int main(int argc, char * argv[])
 #ifdef DEBUG
 				std::cout << "Got Ptsave: id: " <<  saveIdPart << std::endl;
 #endif
-				saveId = format::StringToNumber<int>(saveIdPart);
+				saveId = format::ByteStringToNumber<int>(saveIdPart);
 				if (!saveId)
 					throw std::runtime_error("Invalid Save ID");
 
@@ -1194,7 +1194,7 @@ int main(int argc, char * argv[])
 					throw std::runtime_error("Could not load save info");
 				std::vector<unsigned char> saveData = Client::Ref().GetSaveData(saveId, 0);
 				if (!saveData.size())
-					throw std::runtime_error("Could not load save\n" + Client::Ref().GetLastError());
+					throw std::runtime_error(("Could not load save\n" + Client::Ref().GetLastError()).ToUtf8());
 				GameSave * newGameSave = new GameSave(saveData);
 				newSave->SetGameSave(newGameSave);
 
@@ -1203,7 +1203,7 @@ int main(int argc, char * argv[])
 			}
 			catch (std::exception & e)
 			{
-				new ErrorMessage("Error", e.what());
+				new ErrorMessage("Error", ByteString(e.what()).FromUtf8());
 			}
 		}
 

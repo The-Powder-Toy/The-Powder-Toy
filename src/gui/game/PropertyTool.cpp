@@ -1,5 +1,4 @@
 #include <iostream>
-#include <sstream>
 #include "Tool.h"
 #include "client/Client.h"
 #include "gui/Style.h"
@@ -69,7 +68,7 @@ sim(sim_)
 		PropertyWindow * w;
 	public:
 		PropertyChanged(PropertyWindow * w): w(w) { }
-		virtual void OptionChanged(ui::DropDown * sender, std::pair<std::string, int> option)
+		virtual void OptionChanged(ui::DropDown * sender, std::pair<String, int> option)
 		{
 			w->FocusComponent(w->textField);
 		}
@@ -79,7 +78,7 @@ sim(sim_)
 	AddComponent(property);
 	for (size_t i = 0; i < properties.size(); i++)
 	{
-		property->AddOption(std::pair<std::string, int>(properties[i].Name, i));
+		property->AddOption(std::pair<String, int>(properties[i].Name.FromAscii(), i));
 	}
 	property->SetOption(Client::Ref().GetPrefInteger("Prop.Type", 0));
 
@@ -97,7 +96,7 @@ void PropertyWindow::SetProperty()
 {
 	if(property->GetOption().second!=-1 && textField->GetText().length() > 0)
 	{
-		std::string value = textField->GetText();
+		String value = textField->GetText();
 		try {
 			switch(properties[property->GetOption().second].Type)
 			{
@@ -108,23 +107,23 @@ void PropertyWindow::SetProperty()
 					if(value.length() > 2 && value.substr(0, 2) == "0x")
 					{
 						//0xC0FFEE
-						std::stringstream buffer;
-						buffer.exceptions(std::stringstream::failbit | std::stringstream::badbit);
+						String::Stream buffer;
+						buffer.exceptions(String::Stream::failbit | String::Stream::badbit);
 						buffer << std::hex << value.substr(2);
 						buffer >> v;
 					}
 					else if(value.length() > 1 && value[0] == '#')
 					{
 						//#C0FFEE
-						std::stringstream buffer;
-						buffer.exceptions(std::stringstream::failbit | std::stringstream::badbit);
+						String::Stream buffer;
+						buffer.exceptions(String::Stream::failbit | String::Stream::badbit);
 						buffer << std::hex << value.substr(1);
 						buffer >> v;
 					}
 					else
 					{
 						int type;
-						if (properties[property->GetOption().second].Type == StructProperty::ParticleType && (type = sim->GetParticleType(value)) != -1)
+						if (properties[property->GetOption().second].Type == StructProperty::ParticleType && (type = sim->GetParticleType(value.ToUtf8())) != -1)
 						{
 							v = type;
 
@@ -134,8 +133,8 @@ void PropertyWindow::SetProperty()
 						}
 						else
 						{
-							std::stringstream buffer(value);
-							buffer.exceptions(std::stringstream::failbit | std::stringstream::badbit);
+							String::Stream buffer(value);
+							buffer.exceptions(String::Stream::failbit | String::Stream::badbit);
 							buffer >> v;
 						}
 					}
@@ -159,23 +158,23 @@ void PropertyWindow::SetProperty()
 					if(value.length() > 2 && value.substr(0, 2) == "0x")
 					{
 						//0xC0FFEE
-						std::stringstream buffer;
-						buffer.exceptions(std::stringstream::failbit | std::stringstream::badbit);
+						String::Stream buffer;
+						buffer.exceptions(String::Stream::failbit | String::Stream::badbit);
 						buffer << std::hex << value.substr(2);
 						buffer >> v;
 					}
 					else if(value.length() > 1 && value[0] == '#')
 					{
 						//#C0FFEE
-						std::stringstream buffer;
-						buffer.exceptions(std::stringstream::failbit | std::stringstream::badbit);
+						String::Stream buffer;
+						buffer.exceptions(String::Stream::failbit | String::Stream::badbit);
 						buffer << std::hex << value.substr(1);
 						buffer >> v;
 					}
 					else
 					{
-						std::stringstream buffer(value);
-						buffer.exceptions(std::stringstream::failbit | std::stringstream::badbit);
+						String::Stream buffer(value);
+						buffer.exceptions(String::Stream::failbit | String::Stream::badbit);
 						buffer >> v;
 					}
 #ifdef DEBUG
@@ -186,8 +185,8 @@ void PropertyWindow::SetProperty()
 				}
 				case StructProperty::Float:
 				{
-					std::stringstream buffer(value);
-					buffer.exceptions(std::stringstream::failbit | std::stringstream::badbit);
+					String::Stream buffer(value);
+					buffer.exceptions(String::Stream::failbit | String::Stream::badbit);
 					buffer >> tool->propValue.Float;
 					if (properties[property->GetOption().second].Name == "temp" && value.length())
 					{
@@ -212,7 +211,7 @@ void PropertyWindow::SetProperty()
 			return;
 		}
 		Client::Ref().SetPref("Prop.Type", property->GetOption().second);
-		Client::Ref().SetPref("Prop.Value", textField->GetText());
+		Client::Ref().SetPrefUnicode("Prop.Value", textField->GetText());
 	}
 }
 

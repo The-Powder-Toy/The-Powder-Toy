@@ -37,7 +37,7 @@ class TPTScriptInterface;
 class LuaScriptInterface: public CommandInterface
 {
 	int luacon_mousex, luacon_mousey, luacon_mousebutton;
-	std::string luacon_selectedl, luacon_selectedr, luacon_selectedalt, luacon_selectedreplace;
+	ByteString luacon_selectedl, luacon_selectedr, luacon_selectedalt, luacon_selectedreplace;
 	bool luacon_mousedown;
 	bool currentCommand;
 	TPTScriptInterface * legacy;
@@ -185,8 +185,8 @@ public:
 	virtual void OnTick();
 	virtual void Init();
 	virtual void SetWindow(ui::Window * window);
-	virtual int Command(std::string command);
-	virtual std::string FormatCommand(std::string command);
+	virtual int Command(String command);
+	virtual String FormatCommand(String command);
 	virtual ~LuaScriptInterface();
 };
 

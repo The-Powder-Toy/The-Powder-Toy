@@ -27,8 +27,8 @@ LuaTextbox::LuaTextbox(lua_State * l) :
 	int posY = luaL_optinteger(l, 2, 0);
 	int sizeX = luaL_optinteger(l, 3, 10);
 	int sizeY = luaL_optinteger(l, 4, 10);
-	std::string text = luaL_optstring(l, 5, "");
-	std::string placeholder = luaL_optstring(l, 6, "");
+	String text = ByteString(luaL_optstring(l, 5, "")).FromUtf8();
+	String placeholder = ByteString(luaL_optstring(l, 6, "")).FromUtf8();
 
 	textbox = new ui::Textbox(ui::Point(posX, posY), ui::Point(sizeX, sizeY), text, placeholder);
 	textbox->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
@@ -85,7 +85,7 @@ void LuaTextbox::triggerOnTextChanged()
 		lua_rawgeti(l, LUA_REGISTRYINDEX, UserData);
 		if (lua_pcall(l, 1, 0, 0))
 		{
-			ci->Log(CommandInterface::LogError, lua_tostring(l, -1));
+			ci->Log(CommandInterface::LogError, ByteString(lua_tostring(l, -1)).FromUtf8());
 		}
 	}
 }
@@ -95,12 +95,12 @@ int LuaTextbox::text(lua_State * l)
 	int args = lua_gettop(l);
 	if(args)
 	{
-		textbox->SetText(std::string(lua_tostring(l, 1)));
+		textbox->SetText(ByteString(lua_tostring(l, 1)).FromUtf8());
 		return 0;
 	}
 	else
 	{
-		lua_pushstring(l, textbox->GetText().c_str());
+		lua_pushstring(l, textbox->GetText().ToUtf8().c_str());
 		return 1;
 	}
 }

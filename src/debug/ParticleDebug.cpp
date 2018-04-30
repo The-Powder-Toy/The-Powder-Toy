@@ -1,4 +1,3 @@
-#include <sstream>
 #include "ParticleDebug.h"
 #include "gui/interface/Engine.h"
 #include "gui/game/GameView.h"
@@ -16,7 +15,7 @@ void ParticleDebug::Debug(int mode, int x, int y)
 {
 	int debug_currentParticle = sim->debug_currentParticle;
 	int i = 0;
-	std::stringstream logmessage;
+	String::Stream logmessage;
 
 	if (mode == 0)
 	{
@@ -90,7 +89,7 @@ bool ParticleDebug::KeyPress(int key, Uint16 character, bool shift, bool ctrl, b
 			{
 				sim->UpdateParticles(sim->debug_currentParticle, NPART);
 				sim->AfterSim();
-				std::stringstream logmessage;
+				String::Stream logmessage;
 				logmessage << "Updated particles from #" << sim->debug_currentParticle << " to end, updated sim";
 				model->Log(logmessage.str(), false);
 				sim->debug_currentParticle = 0;

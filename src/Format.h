@@ -1,6 +1,6 @@
 #pragma once
 
-#include <sstream>
+#include "common/String.h"
 #include <vector>
 
 class VideoBuffer;
@@ -9,24 +9,38 @@ namespace format
 {
 	const static char hex[] = "0123456789ABCDEF";
 
-	template <typename T> std::string NumberToString(T number)
+	template <typename T> ByteString NumberToByteString(T number)
 	{
-		std::stringstream ss;
+		ByteString::Stream ss;
 		ss << number;
 		return ss.str();
 	}
 
-	template <typename T> T StringToNumber(const std::string & text)
+	template <typename T> String NumberToString(T number)
 	{
-		std::stringstream ss(text);
+		String::Stream ss;
+		ss << number;
+		return ss.str();
+	}
+
+	template <typename T> T ByteStringToNumber(const ByteString & text)
+	{
+		ByteString::Stream ss(text);
 		T number;
 		return (ss >> number)?number:0;
 	}
 
-	std::string URLEncode(std::string value);
-	std::string UnixtimeToDate(time_t unixtime, std::string dateFomat = "%d %b %Y");
-	std::string UnixtimeToDateMini(time_t unixtime);
-	std::string CleanString(std::string dirtyString, bool ascii, bool color, bool newlines, bool numeric = false);
+	template <typename T> T StringToNumber(const String & text)
+	{
+		String::Stream ss(text);
+		T number;
+		return (ss >> number)?number:0;
+	}
+
+	ByteString URLEncode(ByteString value);
+	ByteString UnixtimeToDate(time_t unixtime, ByteString dateFomat = "%d %b %Y");
+	ByteString UnixtimeToDateMini(time_t unixtime);
+	String CleanString(String dirtyString, bool ascii, bool color, bool newlines, bool numeric = false);
 	std::vector<char> VideoBufferToPNG(const VideoBuffer & vidBuf);
 	std::vector<char> VideoBufferToBMP(const VideoBuffer & vidBuf);
 	std::vector<char> VideoBufferToPPM(const VideoBuffer & vidBuf);

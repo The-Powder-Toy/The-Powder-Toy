@@ -1,5 +1,3 @@
-#include <sstream>
-
 #include "SearchView.h"
 #include "client/Client.h"
 #include "gui/interface/Keys.h"
@@ -310,7 +308,7 @@ SearchView::~SearchView()
 	saveButtons.clear();
 }
 
-void SearchView::Search(std::string query)
+void SearchView::Search(String query)
 {
 	searchField->SetText(query);
 	c->DoSearch(query, true);
@@ -376,7 +374,7 @@ void SearchView::NotifyPageChanged(SearchModel * sender)
 	}
 	else
 	{
-		std::stringstream pageInfo;
+		String::Stream pageInfo;
 		pageInfo << "of " << pageCount;
 		pageCountLabel->SetText(pageInfo.str());
 		int width = Graphics::textwidth(pageInfo.str().c_str());
@@ -387,7 +385,7 @@ void SearchView::NotifyPageChanged(SearchModel * sender)
 		//pageCountLabel->Position.X = WINDOWW/2+6;
 		pageLabel->Visible = pageCountLabel->Visible = pageTextbox->Visible = true;
 
-		pageInfo.str("");
+		pageInfo.str(String());
 		pageInfo << sender->GetPageNum();
 		pageTextbox->SetText(pageInfo.str());
 	}
@@ -469,7 +467,7 @@ void SearchView::NotifyTagListChanged(SearchModel * sender)
 	int tagWidth = 0, tagHeight = 0, tagX = 0, tagY = 0, tagsX = 6, tagsY = 4, tagPadding = 1;
 	int tagAreaWidth, tagAreaHeight, tagXOffset = 0, tagYOffset = 0;
 
-	vector<pair<string, int> > tags = sender->GetTagList();
+	vector<pair<ByteString, int> > tags = sender->GetTagList();
 
 	RemoveComponent(motdLabel);
 	motdLabel->SetParentWindow(NULL);
@@ -510,12 +508,12 @@ void SearchView::NotifyTagListChanged(SearchModel * sender)
 	class TagAction: public ui::ButtonAction
 	{
 		SearchView * v;
-		std::string tag;
+		ByteString tag;
 	public:
-		TagAction(SearchView * v, std::string tag) : v(v), tag(tag) {}
+		TagAction(SearchView * v, ByteString tag) : v(v), tag(tag) {}
 		virtual void ActionCallback(ui::Button * sender)
 		{
-			v->Search(tag);
+			v->Search(tag.FromUtf8());
 		}
 	};
 	if (sender->GetShowTags())
@@ -524,7 +522,7 @@ void SearchView::NotifyTagListChanged(SearchModel * sender)
 		{
 			int maxTagVotes = tags[0].second;
 
-			pair<string, int> tag = tags[i];
+			pair<ByteString, int> tag = tags[i];
 
 			if (tagX == tagsX)
 			{
@@ -545,7 +543,7 @@ void SearchView::NotifyTagListChanged(SearchModel * sender)
 						tagYOffset + tagPadding + tagY*(tagHeight+tagPadding*2)
 					),
 				ui::Point(tagWidth, tagHeight),
-				tag.first
+				tag.first.FromUtf8()
 				);
 			tagButton->SetActionCallback(new TagAction(this, tag.first));
 			tagButton->Appearance.BorderInactive = ui::Colour(0, 0, 0);
@@ -673,13 +671,13 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 			}
 			virtual void AltActionCallback(ui::SaveButton * sender)
 			{
-				stringstream search;
+				String::Stream search;
 				search << "history:" << sender->GetSave()->GetID();
 				v->Search(search.str());
 			}
 			virtual void AltActionCallback2(ui::SaveButton * sender)
 			{
-				v->Search("user:"+sender->GetSave()->GetUserName());
+				v->Search("user:"+sender->GetSave()->GetUserName().FromUtf8());
 			}
 		};
 		for (size_t i = 0; i < saves.size(); i++)

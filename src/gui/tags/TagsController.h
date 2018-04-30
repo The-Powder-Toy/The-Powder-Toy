@@ -16,8 +16,8 @@ public:
 	TagsController(ControllerCallback * callback, SaveInfo * save);
 	TagsView * GetView() {return tagsView;}
 	SaveInfo * GetSave();
-	void RemoveTag(std::string tag);
-	void AddTag(std::string tag);
+	void RemoveTag(ByteString tag);
+	void AddTag(ByteString tag);
 	void Exit();
 	virtual ~TagsController();
 };

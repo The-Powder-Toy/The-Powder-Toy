@@ -62,13 +62,13 @@ void Component::Refresh()
 	drawn = false;
 }
 
-void Component::TextPosition(std::string displayText)
+void Component::TextPosition(String displayText)
 {
 
 	textPosition = ui::Point(0, 0);
 
 	int textWidth, textHeight = 10;
-	Graphics::textsize((char*)displayText.c_str(), textWidth, textHeight);
+	Graphics::textsize(displayText, textWidth, textHeight);
 	textSize.X = textWidth; textSize.Y = textHeight;
 	textHeight-=3;
 	textWidth-=1;

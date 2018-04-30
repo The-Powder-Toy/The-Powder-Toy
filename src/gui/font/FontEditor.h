@@ -13,19 +13,19 @@
 class FontEditor: public ui::Window
 {
 private:
-	std::string header;
+	ByteString header;
 	std::array<char, 256> fontWidths;
 	std::array<std::array<std::array<char, MAX_WIDTH>, FONT_H>, 256> fontPixels;
 
 	std::vector<unsigned char> fontData;
 	std::vector<short> fontPtrs;
 
-	std::string beforeFontData;
-	std::string afterFontData;
-	std::string afterFontPtrs;
+	ByteString beforeFontData;
+	ByteString afterFontData;
+	ByteString afterFontPtrs;
 
-	void ReadHeader(std::string header);
-	void WriteHeader(std::string header, std::vector<unsigned char> const &fontData, std::vector<short> const &fontPtrs);
+	void ReadHeader(ByteString header);
+	void WriteHeader(ByteString header, std::vector<unsigned char> const &fontData, std::vector<short> const &fontPtrs);
 	static void PackData(
 			std::array<char, 256> const &fontWidths,
 			std::array<std::array<std::array<char, MAX_WIDTH>, FONT_H>, 256> const &fontPixels,
@@ -57,7 +57,7 @@ private:
 	void Save();
 
 public:
-	FontEditor(std::string header);
+	FontEditor(ByteString header);
 
 	void OnDraw();
 	void OnMouseDown(int x, int y, unsigned button);
