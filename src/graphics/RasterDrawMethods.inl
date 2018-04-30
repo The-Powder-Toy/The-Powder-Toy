@@ -1,5 +1,5 @@
-#include "font.h"
 #include <cmath>
+#include "Font.h"
 
 int PIXELMETHODS_CLASS::drawtext_outline(int x, int y, String s, int r, int g, int b, int a)
 {
@@ -105,44 +105,20 @@ int PIXELMETHODS_CLASS::drawtext(int x, int y, String str, int r, int g, int b, 
 
 int PIXELMETHODS_CLASS::drawchar(int x, int y, String::value_type c, int r, int g, int b, int a)
 {
-	int i, j, w, bn = 0, ba = 0;
-	unsigned char *rp = font_data + font_ptrs[c];
-	w = *(rp++);
-	for (j=-2; j<FONT_H-2; j++)
-		for (i=0; i<w; i++)
-		{
-			if (!bn)
-			{
-				ba = *(rp++);
-				bn = 8;
-			}
-			blendpixel(x+i, y+j, r, g, b, ((ba&3)*a)/3);
-			ba >>= 2;
-			bn -= 2;
-		}
-	return x + w;
+	FontReader reader(c);
+	for (int j = -2; j < FONT_H - 2; j++)
+		for (int i = 0; i < reader.GetWidth(); i++)
+			blendpixel(x + i, y + j, r, g, b, reader.NextPixel() * a / 3);
+	return x + reader.GetWidth();
 }
 
 int PIXELMETHODS_CLASS::addchar(int x, int y, String::value_type c, int r, int g, int b, int a)
 {
-	int i, j, w, bn = 0, ba = 0;
-	unsigned char *rp = font_data + font_ptrs[c];
-	w = *(rp++);
-	for (j=-2; j<FONT_H-2; j++)
-		for (i=0; i<w; i++)
-		{
-			if (!bn)
-			{
-				ba = *(rp++);
-				bn = 8;
-			}
-			{
-			addpixel(x+i, y+j, r, g, b, ((ba&3)*a)/3);
-			}
-			ba >>= 2;
-			bn -= 2;
-		}
-	return x + w;
+	FontReader reader(c);
+	for (int j = -2; j < FONT_H - 2; j++)
+		for (int i = 0; i < reader.GetWidth(); i++)
+			addpixel(x + i, y + j, r, g, b, reader.NextPixel() * a / 3);
+	return x + reader.GetWidth();
 }
 
 TPT_INLINE void PIXELMETHODS_CLASS::xor_pixel(int x, int y)

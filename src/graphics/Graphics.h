@@ -84,9 +84,9 @@ public:
 			b = 255;
 		Buffer[y*(Width)+x] = PIXRGB(r,g,b);
 	}
-	int SetCharacter(int x, int y, int c, int r, int g, int b, int a);
-	int BlendCharacter(int x, int y, int c, int r, int g, int b, int a);
-	int AddCharacter(int x, int y, int c, int r, int g, int b, int a);
+	int SetCharacter(int x, int y, String::value_type c, int r, int g, int b, int a);
+	int BlendCharacter(int x, int y, String::value_type c, int r, int g, int b, int a);
+	int AddCharacter(int x, int y, String::value_type c, int r, int g, int b, int a);
 	~VideoBuffer();
 };
 

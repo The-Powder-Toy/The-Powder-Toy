@@ -5,8 +5,7 @@
 #include "Config.h"
 #include "Misc.h"
 #include "Graphics.h"
-#define INCLUDE_FONTDATA
-#include "font.h"
+#include "Font.h"
 #ifdef HIGH_QUALITY_RESAMPLE
 #include "resampler/resampler.h"
 #endif
@@ -86,64 +85,31 @@ void VideoBuffer::Resize(int width, int height, bool resample, bool fixedRatio)
 	}
 }
 
-int VideoBuffer::SetCharacter(int x, int y, int c, int r, int g, int b, int a)
+int VideoBuffer::SetCharacter(int x, int y, String::value_type c, int r, int g, int b, int a)
 {
-	int i, j, w, bn = 0, ba = 0;
-	unsigned char *rp = font_data + font_ptrs[c];
-	w = *(rp++);
-	for (j=-2; j<FONT_H-2; j++)
-		for (i=0; i<w; i++)
-		{
-			if (!bn)
-			{
-				ba = *(rp++);
-				bn = 8;
-			}
-			SetPixel(x+i, y+j, r, g, b, ((ba&3)*a)/3);
-			ba >>= 2;
-			bn -= 2;
-		}
-	return x + w;
+	FontReader reader(c);
+	for (int j = -2; j < FONT_H - 2; j++)
+		for (int i = 0; i < reader.GetWidth(); i++)
+			SetPixel(x + i, y + j, r, g, b, reader.NextPixel() * a / 3);
+	return x + reader.GetWidth();
 }
 
-int VideoBuffer::BlendCharacter(int x, int y, int c, int r, int g, int b, int a)
+int VideoBuffer::BlendCharacter(int x, int y, String::value_type c, int r, int g, int b, int a)
 {
-	int i, j, w, bn = 0, ba = 0;
-	unsigned char *rp = font_data + font_ptrs[c];
-	w = *(rp++);
-	for (j=-2; j<FONT_H-2; j++)
-		for (i=0; i<w; i++)
-		{
-			if (!bn)
-			{
-				ba = *(rp++);
-				bn = 8;
-			}
-			BlendPixel(x+i, y+j, r, g, b, ((ba&3)*a)/3);
-			ba >>= 2;
-			bn -= 2;
-		}
-	return x + w;
+	FontReader reader(c);
+	for (int j = -2; j < FONT_H - 2; j++)
+		for (int i = 0; i < reader.GetWidth(); i++)
+			BlendPixel(x + i, y + j, r, g, b, reader.NextPixel() * a / 3);
+	return x + reader.GetWidth();
 }
 
-int VideoBuffer::AddCharacter(int x, int y, int c, int r, int g, int b, int a)
+int VideoBuffer::AddCharacter(int x, int y, String::value_type c, int r, int g, int b, int a)
 {
-	int i, j, w, bn = 0, ba = 0;
-	unsigned char *rp = font_data + font_ptrs[c];
-	w = *(rp++);
-	for (j=-2; j<FONT_H-2; j++)
-		for (i=0; i<w; i++)
-		{
-			if (!bn)
-			{
-				ba = *(rp++);
-				bn = 8;
-			}
-			AddPixel(x+i, y+j, r, g, b, ((ba&3)*a)/3);
-			ba >>= 2;
-			bn -= 2;
-		}
-	return x + w;
+	FontReader reader(c);
+	for (int j = -2; j < FONT_H - 2; j++)
+		for (int i = 0; i < reader.GetWidth(); i++)
+			AddPixel(x + i, y + j, r, g, b, reader.NextPixel() * a / 3);
+	return x + reader.GetWidth();
 }
 
 VideoBuffer::~VideoBuffer()
@@ -582,14 +548,14 @@ int Graphics::textwidth(String str)
 			s+=3;
 			continue;
 		}
-		x += font_data[font_ptrs[*s]];
+		x += FontReader(*s).GetWidth();
 	}
 	return x-1;
 }
 
 int Graphics::CharWidth(String::value_type c)
 {
-	return font_data[font_ptrs[(int)c]];
+	return FontReader(c).GetWidth();
 }
 
 int Graphics::textnwidth(String str, int n)
@@ -610,7 +576,7 @@ int Graphics::textnwidth(String str, int n)
 			s+=3;
 			continue;
 		}
-		x += font_data[font_ptrs[*s]];
+		x += FontReader(*s).GetWidth();
 		n--;
 	}
 	return x-1;
@@ -638,7 +604,7 @@ void Graphics::textnpos(String str, int n, int w, int *cx, int *cy)
 			if (!n) {
 				break;
 			}
-			x += font_data[font_ptrs[*s]];
+			x += FontReader(*s).GetWidth();
 			if (x>=w)
 			{
 				x = 0;
@@ -668,7 +634,7 @@ int Graphics::textwidthx(String str, int w)
 			s+=3;
 			continue;
 		}
-		cw = font_data[font_ptrs[*s]];
+		cw = FontReader(*s).GetWidth();
 		if (x+(cw/2) >= w)
 			break;
 		x += cw;
@@ -702,7 +668,7 @@ int Graphics::PositionAtCharIndex(String str, int charIndex, int & positionX, in
 			charIndex-=4;
 			continue;
 		}
-		x += font_data[font_ptrs[*s]];
+		x += FontReader(*s).GetWidth();
 		charIndex--;
 	}
 	positionX = x;
@@ -732,7 +698,7 @@ int Graphics::CharIndexAtPosition(String str, int positionX, int positionY)
 			charIndex+=4;
 			continue;
 		}
-		cw = font_data[font_ptrs[*s]];
+		cw = FontReader(*s).GetWidth();
 		if ((x+(cw/2) >= positionX && y+FONT_H >= positionY) || y > positionY)
 			break;
 		x += cw;
@@ -778,7 +744,7 @@ int Graphics::textwrapheight(String str, int width)
 			}
 			else
 			{
-				cw = font_data[font_ptrs[*s]];
+				cw = FontReader(*s).GetWidth();
 				if (x+cw>=width)
 				{
 					x = 0;
@@ -821,7 +787,7 @@ void Graphics::textsize(String str, int & width, int & height)
 		}
 		else
 		{
-			cWidth += font_data[font_ptrs[*s]];
+			cWidth += FontReader(*s).GetWidth();
 			if(cWidth>lWidth)
 				lWidth = cWidth;
 		}
