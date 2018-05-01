@@ -433,7 +433,7 @@ GameView::GameView():
 			v->c->OpenElementSearch();
 		}
 	};
-	ui::Button * tempButton = new ui::Button(ui::Point(WINDOWW-16, WINDOWH-32), ui::Point(15, 15), "\xE5", "Search for elements");
+	ui::Button * tempButton = new ui::Button(ui::Point(WINDOWW-16, WINDOWH-32), ui::Point(15, 15), String(1, 0xE065), "Search for elements");
 	tempButton->Appearance.Margin = ui::Border(0, 2, 3, 2);
 	tempButton->SetActionCallback(new ElementSearchAction(this));
 	AddComponent(tempButton);
@@ -1912,7 +1912,7 @@ void GameView::NotifyNotificationsChanged(GameModel * sender)
 		AddComponent(tempButton);
 		notificationComponents.push_back(tempButton);
 
-		tempButton = new ui::Button(ui::Point(XRES-20, currentY), ui::Point(15, 15), "\xAA");
+		tempButton = new ui::Button(ui::Point(XRES-20, currentY), ui::Point(15, 15), String(1, 0xE02A));
 		//tempButton->SetIcon(IconClose);
 		tempButton->SetActionCallback(new CloseNotificationButtonAction(this, *iter));
 		tempButton->Appearance.Margin.Left -= 1;
@@ -2266,7 +2266,7 @@ void GameView::OnDraw()
 	{
 		String::Stream sampleInfo;
 		sampleInfo << recordingIndex;
-		sampleInfo << ". \x8E REC";
+		sampleInfo << ". " + String(1, 0xE00E) + " REC";
 
 		int textWidth = Graphics::textwidth(sampleInfo.str());
 		g->fillrect(XRES-20-textWidth, 12, textWidth+8, 15, 0, 0, 0, 255*0.5);

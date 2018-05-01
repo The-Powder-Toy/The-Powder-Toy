@@ -41,22 +41,22 @@ SaveButton::SaveButton(Point position, Point size, SaveInfo * save):
 		String votes, icon;
 
 		votes = format::NumberToString<int>(save->GetVotesUp()-save->GetVotesDown());
-		icon += 0xBB;
+		icon += 0xE03B;
 		for (size_t j = 1; j < votes.length(); j++)
-			icon += 0xBC;
-		icon += 0xB9;
-		icon += 0xBA;
+			icon += 0xE03C;
+		icon += 0xE039;
+		icon += 0xE03A;
 
 		votesBackground = icon;
 
 		for (String::iterator iter = icon.begin(), end = icon.end(); iter != end; ++iter)
-			*iter -= 14;
+			*iter -= 14; // 0xE039 -> 0xE02B
 
 		votesBackground2 = icon;
 
 		for (String::iterator iter = votes.begin(), end = votes.end(); iter != end; ++iter)
 			if(*iter != '-')
-				*iter += 127;
+				*iter += 0xDFFF; // 0x30 -> 0xE02F
 
 		votesString = votes;
 
@@ -239,15 +239,15 @@ void SaveButton::Draw(const Point& screenPos)
 			int y = screenPos.Y-15+(Size.Y-thumbBoxSize.Y)/2+thumbBoxSize.Y;
 			g->fillrect(x+1, y+1, 7, 8, 255, 255, 255, 255);
 			if (isMouseInsideHistory) {
-				g->drawtext(x, y, "\xA6", 200, 100, 80, 255);
+				g->drawtext(x, y, String(1, 0xE026), 200, 100, 80, 255);
 			} else {
-				g->drawtext(x, y, "\xA6", 160, 70, 50, 255);
+				g->drawtext(x, y, String(1, 0xE026), 160, 70, 50, 255);
 			}
 		}
 		if (!save->GetPublished())
 		{
-			g->drawtext(screenPos.X, screenPos.Y-2, "\xCD", 255, 255, 255, 255);
-			g->drawtext(screenPos.X, screenPos.Y-2, "\xCE", 212, 151, 81, 255);
+			g->drawtext(screenPos.X, screenPos.Y-2, String(1, 0xE04D), 255, 255, 255, 255);
+			g->drawtext(screenPos.X, screenPos.Y-2, String(1, 0xE04E), 212, 151, 81, 255);
 		}
 	}
 	else if (file)

@@ -65,7 +65,7 @@ void Textbox::SetText(String newText)
 	if(masked)
 	{
 		String maskedText = newText;
-		std::fill(maskedText.begin(), maskedText.end(), '\x8D');
+		std::fill(maskedText.begin(), maskedText.end(), 0xE00D);
 		Label::SetText(maskedText);
 	}
 	else
@@ -159,7 +159,7 @@ void Textbox::cutSelection()
 	if(masked)
 	{
 		String maskedText = backingText;
-		std::fill(maskedText.begin(), maskedText.end(), '\x8D');
+		std::fill(maskedText.begin(), maskedText.end(), 0xE00D);
 		Label::SetText(maskedText);
 	}
 	else
@@ -223,7 +223,7 @@ void Textbox::pasteIntoSelection()
 	if(masked)
 	{
 		String maskedText = backingText;
-		std::fill(maskedText.begin(), maskedText.end(), '\x8D');
+		std::fill(maskedText.begin(), maskedText.end(), 0xE00D);
 		Label::SetText(maskedText);
 	}
 	else
@@ -459,7 +459,7 @@ void Textbox::OnVKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		if (masked)
 		{
 			String maskedText = backingText;
-			std::fill(maskedText.begin(), maskedText.end(), '\x8D');
+			std::fill(maskedText.begin(), maskedText.end(), 0xE00D);
 			Label::SetText(maskedText);
 		}
 		else

@@ -3,7 +3,7 @@
 
 struct menu_section
 {
-	String icon;
+	String::value_type icon;
 	String name;
 	int itemcount;
 	int doshow;
