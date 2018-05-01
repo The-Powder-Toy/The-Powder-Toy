@@ -99,14 +99,6 @@ public:
 
 public:
 
-	class ConversionError : public std::runtime_error
-	{
-		static std::string formatError(value_type const *at, value_type const *upto);
-	public:
-		inline ConversionError(value_type const *at, value_type const *upto): std::runtime_error(formatError(at, upto)) {}
-		inline ConversionError(bool to): std::runtime_error(to ? "Could not convert to UTF-8" : "Could not convert from UTF-8") {}
-	};
-
 	String FromUtf8(bool ignoreError = true) const;
 	inline String FromAscii() const;
 
@@ -243,4 +235,13 @@ inline ByteString String::ToAscii() const
 		destination[i] = ByteString::value_type(operator[](i));
 	return destination;
 }
+
+class ConversionError : public std::runtime_error
+{
+	static ByteString formatError(ByteString::value_type const *at, ByteString::value_type const *upto);
+public:
+	inline ConversionError(ByteString::value_type const *at, ByteString::value_type const *upto): std::runtime_error(formatError(at, upto)) {}
+	inline ConversionError(bool to): std::runtime_error(to ? "Could not convert to UTF-8" : "Could not convert from UTF-8") {}
+};
+
 #endif

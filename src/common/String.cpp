@@ -5,7 +5,7 @@
 
 #include "String.h"
 
-std::string ByteString::ConversionError::formatError(ByteString::value_type const *at, ByteString::value_type const *upto)
+ByteString ConversionError::formatError(ByteString::value_type const *at, ByteString::value_type const *upto)
 {
 	std::stringstream ss;
 	ss << "Could not convert sequence to UTF-8:";
@@ -77,7 +77,7 @@ ByteString String::ToUtf8() const
 		}
 		else if(result == std::codecvt_base::error)
 		{
-			throw ByteString::ConversionError(true);
+			throw ConversionError(true);
 		}
 		else if(result == std::codecvt_base::partial)
 		{
