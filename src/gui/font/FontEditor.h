@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <array>
+#include <map>
 
 #include "font.h"
 
@@ -14,34 +15,38 @@ class FontEditor: public ui::Window
 {
 private:
 	ByteString header;
-	std::array<char, 256> fontWidths;
-	std::array<std::array<std::array<char, MAX_WIDTH>, FONT_H>, 256> fontPixels;
+	std::map<String::value_type, unsigned char> fontWidths;
+	std::map<String::value_type, std::array<std::array<char, MAX_WIDTH>, FONT_H> > fontPixels;
 
 	std::vector<unsigned char> fontData;
-	std::vector<short> fontPtrs;
+	std::vector<unsigned short> fontPtrs;
+	std::vector<std::array<unsigned int, 2> > fontRanges;
 
 	ByteString beforeFontData;
 	ByteString afterFontData;
 	ByteString afterFontPtrs;
+	ByteString afterFontRanges;
 
 	void ReadHeader(ByteString header);
-	void WriteHeader(ByteString header, std::vector<unsigned char> const &fontData, std::vector<short> const &fontPtrs);
+	void WriteHeader(ByteString header, std::vector<unsigned char> const &fontData, std::vector<unsigned short> const &fontPtrs, std::vector<std::array<unsigned int, 2> > const &fontRanges);
 	static void PackData(
-			std::array<char, 256> const &fontWidths,
-			std::array<std::array<std::array<char, MAX_WIDTH>, FONT_H>, 256> const &fontPixels,
+			std::map<String::value_type, unsigned char> const &fontWidths,
+			std::map<String::value_type, std::array<std::array<char, MAX_WIDTH>, FONT_H> > const &fontPixels,
 			std::vector<unsigned char> &fontData,
-			std::vector<short> &fontPtrs);
+			std::vector<unsigned short> &fontPtrs,
+			std::vector<std::array<unsigned int, 2> > &fontRanges);
 	static void UnpackData(
-			std::array<char, 256> &fontWidths,
-			std::array<std::array<std::array<char, MAX_WIDTH>, FONT_H>, 256> &fontPixels,
+			std::map<String::value_type, unsigned char> &fontWidths,
+			std::map<String::value_type, std::array<std::array<char, MAX_WIDTH>, FONT_H> > &fontPixels,
 			std::vector<unsigned char> const &fontData,
-			std::vector<short> const &fontPtrs);
+			std::vector<unsigned short> const &fontPtrs,
+			std::vector<std::array<unsigned int, 2> > const &fontRanges);
 
 	ui::Textbox *currentCharTextbox;
 	ui::Button *savedButton;
 	ui::Label *outputPreview;
 
-	int currentChar;
+	String::value_type currentChar;
 	int fgR, fgG, fgB;
 	int bgR, bgG, bgB;
 

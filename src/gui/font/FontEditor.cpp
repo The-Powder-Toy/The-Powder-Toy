@@ -16,7 +16,8 @@
 
 #ifdef FONTEDITOR
 unsigned char *font_data;
-short *font_ptrs;
+unsigned short *font_ptrs;
+unsigned int (*font_ranges)[2];
 
 void FontEditor::ReadHeader(ByteString header)
 {
@@ -47,15 +48,15 @@ void FontEditor::ReadHeader(ByteString header)
 	}
 	while(!file.fail());
 	file.clear();
-	
+
 	size_t endFontData = file.tellg();
-	
+
 	while(word != "font_ptrs[]")
 		file >> word;
 	file >> word >> word;
-	
+
 	size_t startFontPtrs = file.tellg();
-	
+
 	fontPtrs.clear();
 	do
 	{
@@ -69,8 +70,29 @@ void FontEditor::ReadHeader(ByteString header)
 	}
 	while(!file.fail());
 	file.clear();
-	
+
 	size_t endFontPtrs = file.tellg();
+
+	while(word != "font_ranges[][2]")
+		file >> word;
+	file >> word >> word;
+
+	size_t startFontRanges = file.tellg();
+
+	fontRanges.clear();
+	while(true)
+	{
+		unsigned int value1, value2;
+		file >> word >> std::hex >> value1 >> word >> std::hex >> value2 >> word;
+		if(file.fail())
+			break;
+		fontRanges.push_back({value1, value2});
+		if(!value2)
+			break;
+	}
+	file.clear();
+
+	size_t endFontRanges = file.tellg();
 
 	do
 	{
@@ -88,17 +110,17 @@ void FontEditor::ReadHeader(ByteString header)
 	afterFontData = ByteString(startFontPtrs - endFontData, 0);
 	file.read(&afterFontData[0], startFontPtrs - endFontData);
 
-	file.seekg(endFontData);
-	afterFontData = ByteString(startFontPtrs - endFontData, 0);
-	file.read(&afterFontData[0], startFontPtrs - endFontData);
-
 	file.seekg(endFontPtrs);
-	afterFontPtrs = ByteString(eof - endFontPtrs, 0);
-	file.read(&afterFontPtrs[0], eof - endFontPtrs);
+	afterFontPtrs = ByteString(startFontRanges - endFontPtrs, 0);
+	file.read(&afterFontPtrs[0], startFontRanges - endFontPtrs);
+
+	file.seekg(endFontRanges);
+	afterFontRanges = ByteString(eof - endFontRanges, 0);
+	file.read(&afterFontRanges[0], eof - endFontRanges);
 	file.close();
 }
 
-void FontEditor::WriteHeader(ByteString header, std::vector<unsigned char> const &fontData, std::vector<short> const &fontPtrs)
+void FontEditor::WriteHeader(ByteString header, std::vector<unsigned char> const &fontData, std::vector<unsigned short> const &fontPtrs, std::vector<std::array<unsigned int, 2> > const &fontRanges)
 {
 	std::fstream file;
 	file.open(header, std::ios_base::out | std::ios_base::trunc);
@@ -107,84 +129,128 @@ void FontEditor::WriteHeader(ByteString header, std::vector<unsigned char> const
 
 	file << std::setfill('0') << std::hex << std::uppercase;
 	file << beforeFontData << std::endl;
-	for(int ch = 0; ch < 256; ch++)
+
+	size_t pos = 0;
+	size_t ptrpos = 0;
+	while(pos < fontData.size())
 	{
-		file << "    " << "0x" << std::setw(2) << (unsigned int)fontData[fontPtrs[ch]] << ",  ";
-		for(int i = fontPtrs[ch] + 1; i < (int)(ch == (int)fontPtrs.size() - 1 ? fontData.size() : fontPtrs[ch + 1]); i++)
-			file << " " << "0x" << std::setw(2) << (unsigned int)fontData[i] << ",";
+		file << "    " << "0x" << std::setw(2) << (unsigned int)fontData[pos] << ",  ";
+		for(pos++; pos < fontData.size() && (ptrpos == fontPtrs.size() - 1 || pos < (size_t)fontPtrs[ptrpos + 1]); pos++)
+			file << " " << "0x" << std::setw(2) << (unsigned int)fontData[pos] << ",";
 		file << std::endl;
+		ptrpos++;
 	}
 	file << afterFontData;
-	for(int ch = 0; ch < 256; ch++)
+
+	pos = 0;
+	for(size_t i = 0; pos < fontPtrs.size() && fontRanges[i][1]; i++)
 	{
-		if(!(ch & 7))
-			file << std::endl << "    ";
-		else
-			file << " ";
-		file << "0x" << std::setw(4) << (unsigned int)fontPtrs[ch] << ",";
+		bool first = true;
+		for(String::value_type ch = fontRanges[i][0]; ch <= fontRanges[i][1]; ch++)
+		{
+			if(!(ch & 0x7) || first)
+				file << std::endl << "    ";
+			else
+				file << " ";
+			first = false;
+			file << "0x" << std::setw(4) << (unsigned int)fontPtrs[pos++] << ",";
+		}
+		file << std::endl;
 	}
-	file << std::endl << afterFontPtrs;
+	file << afterFontPtrs << std::endl;
+	for(size_t i = 0; i < fontRanges.size() - 1; i++)
+		file << "    { 0x" << std::setw(6) << (unsigned int)fontRanges[i][0] << ", 0x" << std::setw(6) << (unsigned int)fontRanges[i][1] << " }," << std::endl;
+	file << "    { 0, 0 },";
+	file << afterFontRanges;
 	file.close();
 }
 
 void FontEditor::UnpackData(
-		std::array<char, 256> &fontWidths,
-		std::array<std::array<std::array<char, MAX_WIDTH>, FONT_H>, 256> &fontPixels,
+		std::map<String::value_type, unsigned char> &fontWidths,
+		std::map<String::value_type, std::array<std::array<char, MAX_WIDTH>, FONT_H> > &fontPixels,
 		std::vector<unsigned char> const &fontData,
-		std::vector<short> const &fontPtrs)
+		std::vector<unsigned short> const &fontPtrs,
+		std::vector<std::array<unsigned int, 2> > const &fontRanges)
 {
-	for(int ch = 0; ch < 256; ch++)
-	{
-		unsigned char const *data = &fontData[fontPtrs[ch]];
-		int bits = 0;
-		int pixels = 0;
-		int width = fontWidths[ch] = *(data++);
-		for(int j = 0; j < FONT_H; j++)
-			for(int i = 0; i < width; i++)
-			{
-				if(!bits)
+	fontWidths.clear();
+	fontPixels.clear();
+	size_t pos = 0;
+	for(size_t range = 0; fontRanges[range][1]; range++)
+		for(String::value_type ch = fontRanges[range][0]; ch <= fontRanges[range][1]; ch++)
+		{
+			unsigned char const *pointer = &fontData[fontPtrs[pos]];
+			int width = fontWidths[ch] = *(pointer++);
+			int pixels = 0;
+			int data = 0;
+			for(int j = 0; j < FONT_H; j++)
+				for(int i = 0; i < width; i++)
 				{
-					pixels = *(data++);
-					bits = 8;
+					if(!pixels)
+					{
+						data = *(pointer++);
+						pixels = 4;
+					}
+					fontPixels[ch][j][i] = data & 3;
+					data >>= 2;
+					pixels--;
 				}
-				fontPixels[ch][j][i] = pixels & 3;
-				pixels >>= 2;
-				bits -= 2;
-			}
-	}
+			pos++;
+		}
 }
 
 void FontEditor::PackData(
-		std::array<char, 256> const &fontWidths,
-		std::array<std::array<std::array<char, MAX_WIDTH>, FONT_H>, 256> const &fontPixels,
+		std::map<String::value_type, unsigned char> const &fontWidths,
+		std::map<String::value_type, std::array<std::array<char, MAX_WIDTH>, FONT_H> > const &fontPixels,
 		std::vector<unsigned char> &fontData,
-		std::vector<short> &fontPtrs)
+		std::vector<unsigned short> &fontPtrs,
+		std::vector<std::array<unsigned int, 2> > &fontRanges)
 {
-	fontPtrs.clear();
 	fontData.clear();
-	for(int ch = 0; ch < 256; ch++)
+	fontPtrs.clear();
+	fontRanges.clear();
+	bool first = true;
+	String::value_type rangeStart;
+	String::value_type prev;
+	for(std::map<String::value_type, unsigned char>::const_iterator it = fontWidths.begin(); it != fontWidths.end(); it++)
 	{
-		fontPtrs.push_back(fontData.size());
-		fontData.push_back(fontWidths[ch]);
-
-		int bits = 0;
-		int pixels = 0;
-		for(int j = 0; j < FONT_H; j++)
-			for(int i = 0; i < fontWidths[ch]; i++)
+		String::value_type ch = it->first;
+		if(first)
+		{
+			rangeStart = ch;
+			first = false;
+		}
+		else
+			if(ch != prev + 1)
 			{
-				if(bits == 8)
-				{
-					fontData.push_back(pixels);
-					bits = 0;
-					pixels = 0;
-				}
-				pixels >>= 2;
-				pixels |= fontPixels[ch][j][i] << 6;
-				bits += 2;
+				fontRanges.push_back({rangeStart, prev});
+				rangeStart = ch;
 			}
-		if(bits)
-			fontData.push_back(pixels);
+
+		fontPtrs.push_back(fontData.size());
+		fontData.push_back(it->second);
+
+		int pixels = 0;
+		int data = 0;
+		for(int j = 0; j < FONT_H; j++)
+			for(int i = 0; i < it->second; i++)
+			{
+				if(pixels == 4)
+				{
+					fontData.push_back(data);
+					pixels = 0;
+					data = 0;
+				}
+				data >>= 2;
+				data |= fontPixels.at(ch)[j][i] << 6;
+				pixels++;
+			}
+		if(pixels)
+			fontData.push_back(data);
+
+		prev = ch;
 	}
+	fontRanges.push_back({rangeStart, prev});
+	fontRanges.push_back({0, 0});
 }
 
 #define FONT_SCALE 16
@@ -197,9 +263,10 @@ FontEditor::FontEditor(ByteString _header):
 	rulers(1)
 {
 	ReadHeader(header);
-	UnpackData(fontWidths, fontPixels, fontData, fontPtrs);
+	UnpackData(fontWidths, fontPixels, fontData, fontPtrs, fontRanges);
 	font_data = fontData.data();
 	font_ptrs = fontPtrs.data();
+	font_ranges = (unsigned int (*)[2])fontRanges.data();
 	
 	int baseline = 8 + FONT_H * FONT_SCALE + 4 + FONT_H + 4 + 1;
 	int currentX = 1;
@@ -227,9 +294,9 @@ FontEditor::FontEditor(ByteString _header):
 		void TextChangedCallback(ui::Textbox *)
 		{
 			unsigned int number;
-			String::Stream ss(v->currentCharTextbox->GetText());
+			ByteString::Stream ss(v->currentCharTextbox->GetText().ToUtf8());
 			ss >> std::hex >> number;
-			if(number < 256)
+			if(number <= 0x10FFFF)
 				v->currentChar = number;
 		}
 	};
@@ -284,6 +351,45 @@ FontEditor::FontEditor(ByteString _header):
 	grow->SetActionCallback(new GrowCharAction(this));
 	AddComponent(grow);
 
+	class AddCharAction : public ui::ButtonAction
+	{
+		FontEditor *v;
+	public:
+		AddCharAction(FontEditor *_v): v(_v) {}
+		void ActionCallback(ui::Button *)
+		{
+			if(v->fontWidths.find(v->currentChar) == v->fontWidths.end())
+			{
+				v->savedButton->SetToggleState(false);
+				v->fontWidths[v->currentChar] = 5;
+				v->fontPixels[v->currentChar];
+			}
+		}
+	};
+	ui::Button *add = new ui::Button(ui::Point(currentX, baseline), ui::Point(36, 17), "Add");
+	currentX += 37;
+	add->SetActionCallback(new AddCharAction(this));
+	AddComponent(add);
+
+	class RemoveCharAction : public ui::ButtonAction
+	{
+		FontEditor *v;
+	public:
+		RemoveCharAction(FontEditor *_v): v(_v) {}
+		void ActionCallback(ui::Button *)
+		{
+			if(v->fontWidths.find(v->currentChar) != v->fontWidths.end())
+			{
+				v->savedButton->SetToggleState(false);
+				v->fontWidths.erase(v->currentChar);
+				v->fontPixels.erase(v->currentChar);
+			}
+		}
+	};
+	ui::Button *remove = new ui::Button(ui::Point(currentX, baseline), ui::Point(36, 17), "Remove");
+	currentX += 37;
+	remove->SetActionCallback(new RemoveCharAction(this));
+	AddComponent(remove);
 	
 	class ToggleAction : public ui::ButtonAction
 	{
@@ -295,6 +401,7 @@ FontEditor::FontEditor(ByteString _header):
 			toggle = button->GetToggleState();
 		}
 	};
+
 	ui::Button *showGrid = new ui::Button(ui::Point(currentX, baseline), ui::Point(32, 17), "Grid");
 	currentX += 33;
 	showGrid->SetTogglable(true);
@@ -319,7 +426,7 @@ FontEditor::FontEditor(ByteString _header):
 		ColorComponentAction(int &_color): color(_color) {}
 		void TextChangedCallback(ui::Textbox *box)
 		{
-			String::Stream ss(box->GetText());
+			ByteString::Stream ss(box->GetText().ToUtf8());
 			ss >> color;
 		}
 	};
@@ -384,7 +491,7 @@ FontEditor::FontEditor(ByteString _header):
 		PreviewAction(FontEditor *_v): v(_v) {}
 		void TextChangedCallback(ui::Textbox *box)
 		{
-			String::Stream ss(box->GetText());
+			ByteString::Stream ss(box->GetText().ToUtf8()); // ByteString::Stream for now
 			String text;
 			while(!ss.eof())
 			{
@@ -431,41 +538,54 @@ void FontEditor::OnDraw()
 {
 	Graphics *g = GetGraphics();
 	
-	int areaWidth = 8 + fontWidths[currentChar] * FONT_SCALE + 8;
-	g->fillrect(0, 0, areaWidth, 8 + FONT_H * FONT_SCALE + 4 + FONT_H + 4, bgR, bgG, bgB, 255);
-	for(int j = 0; j < FONT_H; j++)
-		for(int i = 0; i < fontWidths[currentChar]; i++)
-			g->fillrect(8 + i * FONT_SCALE, 8 + j * FONT_SCALE, FONT_SCALE - grid, FONT_SCALE - grid, fgR, fgG, fgB, fontPixels[currentChar][j][i] * 255 / 3);
-
-	for(int j = 0; j < FONT_H; j++)
-		for(int i = 0; i < fontWidths[currentChar]; i++)
-			g->blendpixel(8 + i, 8 + FONT_H * FONT_SCALE + 4 + j, fgR, fgG, fgB, fontPixels[currentChar][j][i] * 255 / 3);
-
-
-	if(rulers)
+	if(fontWidths.find(currentChar) != fontWidths.end())
 	{
-		g->draw_line(0, 7 + 0 * FONT_SCALE , areaWidth - 1, 7 + 0 * FONT_SCALE, 128, 128, 128, 255);
-		g->draw_line(0, 7 + 2 * FONT_SCALE , areaWidth - 1, 7 + 2 * FONT_SCALE, 128, 128, 128, 255);
-		g->draw_line(0, 7 + 4 * FONT_SCALE , areaWidth - 1, 7 + 4 * FONT_SCALE, 128, 128, 128, 255);
-		g->draw_line(0, 7 + 9 * FONT_SCALE , areaWidth - 1, 7 + 9 * FONT_SCALE, 128, 128, 128, 255);
-		g->draw_line(0, 7 + 12 * FONT_SCALE , areaWidth - 1, 7 + 12 * FONT_SCALE, 128, 128, 128, 255);
+		int width = fontWidths[currentChar];
+		std::array<std::array<char, MAX_WIDTH>, FONT_H> const &pixels = fontPixels[currentChar];
 
-		g->draw_line(7, 8, 7, 7 + FONT_H * FONT_SCALE, 128, 128, 128, 255);
-		g->draw_line(7 + fontWidths[currentChar] * FONT_SCALE, 8, 7 + fontWidths[currentChar] * FONT_SCALE, 7 + FONT_H * FONT_SCALE, 128, 128, 128, 255);
+		int areaWidth = 8 + width * FONT_SCALE + 8;
+		g->fillrect(0, 0, areaWidth, 8 + FONT_H * FONT_SCALE + 4 + FONT_H + 4, bgR, bgG, bgB, 255);
+		for(int j = 0; j < FONT_H; j++)
+			for(int i = 0; i < width; i++)
+				g->fillrect(8 + i * FONT_SCALE, 8 + j * FONT_SCALE, FONT_SCALE - grid, FONT_SCALE - grid, fgR, fgG, fgB, pixels[j][i] * 255 / 3);
+
+		for(int j = 0; j < FONT_H; j++)
+			for(int i = 0; i < width; i++)
+				g->blendpixel(8 + i, 8 + FONT_H * FONT_SCALE + 4 + j, fgR, fgG, fgB, pixels[j][i] * 255 / 3);
+
+
+		if(rulers)
+		{
+			g->draw_line(0, 7 + 0 * FONT_SCALE , areaWidth - 1, 7 + 0 * FONT_SCALE, 128, 128, 128, 255);
+			g->draw_line(0, 7 + 2 * FONT_SCALE , areaWidth - 1, 7 + 2 * FONT_SCALE, 128, 128, 128, 255);
+			g->draw_line(0, 7 + 4 * FONT_SCALE , areaWidth - 1, 7 + 4 * FONT_SCALE, 128, 128, 128, 255);
+			g->draw_line(0, 7 + 9 * FONT_SCALE , areaWidth - 1, 7 + 9 * FONT_SCALE, 128, 128, 128, 255);
+			g->draw_line(0, 7 + 12 * FONT_SCALE , areaWidth - 1, 7 + 12 * FONT_SCALE, 128, 128, 128, 255);
+
+			g->draw_line(7, 8, 7, 7 + FONT_H * FONT_SCALE, 128, 128, 128, 255);
+			g->draw_line(7 + width * FONT_SCALE, 8, 7 + width * FONT_SCALE, 7 + FONT_H * FONT_SCALE, 128, 128, 128, 255);
+		}
+	}
+	else
+	{
+		g->drawtext(8, 8, "No character", 255, 0, 0, 255);
 	}
 }
 
 void FontEditor::OnMouseDown(int x, int y, unsigned button)
 {
-	x = (x - 8) / FONT_SCALE;
-	y = (y - 8) / FONT_SCALE;
-	if(x >= 0 && y >= 0 && x < fontWidths[currentChar] && y < FONT_H)
+	if(fontWidths.find(currentChar) != fontWidths.end())
 	{
-		if(button == SDL_BUTTON_LEFT)
-			fontPixels[currentChar][y][x] = (fontPixels[currentChar][y][x] + 1) % 4;
-		else
-			fontPixels[currentChar][y][x] = (fontPixels[currentChar][y][x] + 3) % 4;
-		savedButton->SetToggleState(false);
+		x = (x - 8) / FONT_SCALE;
+		y = (y - 8) / FONT_SCALE;
+		if(x >= 0 && y >= 0 && x < fontWidths[currentChar] && y < FONT_H)
+		{
+			if(button == SDL_BUTTON_LEFT)
+				fontPixels[currentChar][y][x] = (fontPixels[currentChar][y][x] + 1) % 4;
+			else
+				fontPixels[currentChar][y][x] = (fontPixels[currentChar][y][x] + 3) % 4;
+			savedButton->SetToggleState(false);
+		}
 	}
 }
 
@@ -492,9 +612,9 @@ void FontEditor::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bo
 
 void FontEditor::UpdateCharNumber()
 {
-	String::Stream ss;
+	ByteString::Stream ss;
 	ss << std::hex << currentChar;
-	currentCharTextbox->SetText(ss.str());
+	currentCharTextbox->SetText(ByteString(ss.str()).FromUtf8());
 }
 
 void FontEditor::PrevChar()
@@ -506,7 +626,7 @@ void FontEditor::PrevChar()
 
 void FontEditor::NextChar()
 {
-	if(currentChar < 255)
+	if(currentChar <= 0x10FFFF)
 		currentChar++;
 	UpdateCharNumber();
 }
@@ -527,17 +647,19 @@ void FontEditor::GrowChar()
 
 void FontEditor::Render()
 {
-	PackData(fontWidths, fontPixels, fontData, fontPtrs);
+	PackData(fontWidths, fontPixels, fontData, fontPtrs, fontRanges);
 	font_data = fontData.data();
 	font_ptrs = fontPtrs.data();
+	font_ranges = (unsigned int (*)[2])fontRanges.data();
 }
 
 void FontEditor::Save()
 {
 	std::vector<unsigned char> tmpFontData;
-	std::vector<short> tmpFontPtrs;
-	PackData(fontWidths, fontPixels, tmpFontData, tmpFontPtrs);
-	WriteHeader(header, tmpFontData, tmpFontPtrs);
+	std::vector<unsigned short> tmpFontPtrs;
+	std::vector<std::array<unsigned int, 2> > tmpFontRanges;
+	PackData(fontWidths, fontPixels, tmpFontData, tmpFontPtrs, tmpFontRanges);
+	WriteHeader(header, tmpFontData, tmpFontPtrs, tmpFontRanges);
 	savedButton->SetToggleState(true);
 }
 #endif
