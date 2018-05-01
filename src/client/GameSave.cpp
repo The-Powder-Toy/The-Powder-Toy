@@ -678,7 +678,7 @@ void GameSave::readOPS(char * data, int dataLength)
 							{
 								if (!strcmp(bson_iterator_key(&signiter), "text") && bson_iterator_type(&signiter) == BSON_STRING)
 								{
-									tempSign.text = format::CleanString(ByteString(bson_iterator_string(&signiter)).FromUtf8(), true, true, true).substr(0, 45);
+									tempSign.text = format::CleanString(ByteString(bson_iterator_string(&signiter)).FromUtf8(), true, true, true).Substr(0, 45);
 								}
 								else if (!strcmp(bson_iterator_key(&signiter), "justification") && bson_iterator_type(&signiter) == BSON_INT)
 								{
@@ -1407,11 +1407,7 @@ void GameSave::readPSv(char * saveDataChar, int dataLength)
 
 	int bzStatus = 0;
 	if ((bzStatus = BZ2_bzBuffToBuffDecompress((char *)data, (unsigned *)&size, (char *)(saveData+12), dataLength-12, 0, 0)))
-	{
-		String::Stream bzStatusStr;
-		bzStatusStr << bzStatus;
-		throw ParseException(ParseException::Corrupt, "Cannot decompress: " + bzStatusStr.str());
-	}
+		throw ParseException(ParseException::Corrupt, "Cannot decompress: " + format::NumberToString(bzStatus));
 	dataLength = size;
 
 #ifdef DEBUG
@@ -1952,7 +1948,7 @@ void GameSave::readPSv(char * saveDataChar, int dataLength)
 			x = 254;
 		memcpy(tempSignText, data+p, x);
 		tempSignText[x] = 0;
-		tempSign.text = format::CleanString(tempSignText, true, true, true).substr(0, 45);
+		tempSign.text = format::CleanString(tempSignText, true, true, true).Substr(0, 45);
 		tempSigns.push_back(tempSign);
 		p += x;
 	}

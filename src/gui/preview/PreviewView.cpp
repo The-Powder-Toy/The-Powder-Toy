@@ -280,10 +280,8 @@ void PreviewView::commentBoxAutoHeight()
 bool PreviewView::CheckSwearing(String text)
 {
 	for (std::set<String>::iterator iter = swearWords.begin(), end = swearWords.end(); iter != end; iter++)
-	{
-		if (text.find(*iter) != text.npos)
+		if (text.Contains(*iter))
 			return true;
-	}
 	return false;
 }
 
@@ -293,7 +291,7 @@ void PreviewView::CheckComment()
 		return;
 	String text = addCommentBox->GetText();
 	std::transform(text.begin(), text.end(), text.begin(), ::tolower);
-	if (!userIsAuthor && (text.find("stolen") != String::npos || text.find("copied") != String::npos))
+	if (!userIsAuthor && (text.Contains("stolen") || text.Contains("copied")))
 	{
 		if (!commentHelpText)
 		{
@@ -304,7 +302,7 @@ void PreviewView::CheckComment()
 			commentHelpText = true;
 		}
 	}
-	else if (userIsAuthor && text.find("vote") != text.npos)
+	else if (userIsAuthor && text.Contains("vote"))
 	{
 		commentWarningLabel->SetText("Do not ask for votes");
 		commentHelpText = true;

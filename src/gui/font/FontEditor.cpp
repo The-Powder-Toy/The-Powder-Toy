@@ -281,7 +281,7 @@ FontEditor::FontEditor(ByteString _header):
 			v->PrevChar();
 		}
 	};
-	ui::Button *prev = new ui::Button(ui::Point(currentX, baseline), ui::Point(17, 17), String(1, 0xE016));
+	ui::Button *prev = new ui::Button(ui::Point(currentX, baseline), ui::Point(17, 17), 0xE016);
 	currentX += 18;
 	prev->SetActionCallback(new PrevCharAction(this));
 	AddComponent(prev);
@@ -316,7 +316,7 @@ FontEditor::FontEditor(ByteString _header):
 			v->NextChar();
 		}
 	};
-	ui::Button *next = new ui::Button(ui::Point(currentX, baseline), ui::Point(17, 17), String(1, 0xE015));
+	ui::Button *next = new ui::Button(ui::Point(currentX, baseline), ui::Point(17, 17), 0xE015);
 	currentX += 18;
 	next->SetActionCallback(new NextCharAction(this));
 	AddComponent(next);

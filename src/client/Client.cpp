@@ -349,17 +349,9 @@ bool Client::DoInstallation()
 	#include "icondoc.h"
 
 	int success = 1;
-	ByteString filename = Platform::ExecutableName(), pathname = filename.substr(0, filename.rfind('/'));
-	for (size_t i = 0; i < filename.size(); i++)
-	{
-		if (filename[i] == '\'')
-		{
-			filename.insert(i, "'\\'");
-			i += 3;
-		}
-	}
-	filename.insert(filename.size(), "'");
-	filename.insert(0, "'");
+	ByteString filename = Platform::ExecutableName(), pathname = filename.SplitFromEndBy('/').Before();
+	filename.Substitute('\'', "'\\''");
+	filename = '\'' + filename + '\'';
 
 	FILE *f;
 	const char *mimedata =
@@ -539,18 +531,17 @@ std::vector<ByteString> Client::DirectorySearch(ByteString directory, ByteString
 		bool extensionMatch = !extensions.size();
 		for(std::vector<ByteString>::iterator extIter = extensions.begin(), extEnd = extensions.end(); extIter != extEnd; ++extIter)
 		{
-			size_t filenameLength = filename.length()-(*extIter).length();
-			if(filename.find(*extIter, filenameLength) == filenameLength)
+			if(filename.EndsWith(*extIter))
 			{
 				extensionMatch = true;
-				tempfilename = filename.substr(0, filenameLength);
+				tempfilename = filename.SubstrFromEnd(0, (*extIter).size());
 				break;
 			}
 		}
 		for (ByteString::iterator iter = tempfilename.begin(); iter != tempfilename.end(); ++iter)
 			*iter = toupper(*iter);
 		bool searchMatch = !search.size();
-		if(search.size() && tempfilename.find(search)!=ByteString::npos)
+		if(search.size() && tempfilename.Contains(search))
 			searchMatch = true;
 
 		if(searchMatch && extensionMatch)
@@ -1202,10 +1193,9 @@ void Client::RescanStamps()
 		stampIDs.clear();
 		while ((entry = readdir(directory)))
 		{
-			if(strncmp(entry->d_name, "..", 3) && strncmp(entry->d_name, ".", 2) && strstr(entry->d_name, ".stm") && strlen(entry->d_name) == 14)
-			{
-				stampIDs.push_front(ByteString(entry->d_name).substr(0, 10));
-			}
+			ByteString name = entry->d_name;
+			if(name != ".." && name != "." && name.EndsWith(".stm") && name.size() == 14)
+				stampIDs.push_front(name.Substr(0, 10));
 		}
 		closedir(directory);
 		updateStamps();
@@ -2084,11 +2074,10 @@ Json::Value Client::GetPref(Json::Value root, ByteString prop, Json::Value defau
 {
 	try
 	{
-		size_t dot = prop.find('.');
-		if (dot == prop.npos)
-			return root.get(prop, defaultValue);
+		if(ByteString::Split split = prop.SplitBy('.'))
+			return GetPref(root[split.Before()], split.After(), defaultValue);
 		else
-			return GetPref(root[prop.substr(0, dot)], prop.substr(dot+1), defaultValue);
+			return root.get(prop, defaultValue);
 	}
 	catch (std::exception & e)
 	{
@@ -2277,15 +2266,14 @@ std::vector<bool> Client::GetPrefBoolArray(ByteString prop)
 // and return it to SetPref to do the actual setting
 Json::Value Client::SetPrefHelper(Json::Value root, ByteString prop, Json::Value value)
 {
-	size_t dot = prop.find(".");
-	if (dot == prop.npos)
-		root[prop] = value;
-	else
+	if(ByteString::Split split = prop.SplitBy('.'))
 	{
-		Json::Value toSet = GetPref(root, prop.substr(0, dot));
-		toSet = SetPrefHelper(toSet, prop.substr(dot+1), value);
-		root[prop.substr(0, dot)] = toSet;
+		Json::Value toSet = GetPref(root, split.Before());
+		toSet = SetPrefHelper(toSet, split.After(), value);
+		root[split.Before()] = toSet;
 	}
+	else
+		root[prop] = value;
 	return root;
 }
 
@@ -2293,13 +2281,10 @@ void Client::SetPref(ByteString prop, Json::Value value)
 {
 	try
 	{
-		size_t dot = prop.find(".");
-		if (dot == prop.npos)
-			preferences[prop] = value;
+		if(ByteString::Split split = prop.SplitBy('.'))
+			preferences[split.Before()] = SetPrefHelper(preferences[split.Before()], split.After(), value);
 		else
-		{
-			preferences[prop.substr(0, dot)] = SetPrefHelper(preferences[prop.substr(0, dot)], prop.substr(dot+1), value);
-		}
+			preferences[prop] = value;
 	}
 	catch (std::exception & e)
 	{

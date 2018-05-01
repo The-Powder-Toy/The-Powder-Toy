@@ -75,17 +75,8 @@ class LoadFilesTask: public Task
 				saveFile->SetGameSave(tempSave);
 				saveFiles.push_back(saveFile);
 
-				ByteString filename = *iter;
-				size_t folderPos = filename.rfind(PATH_SEP);
-				if(folderPos!=ByteString::npos && folderPos+1 < filename.size())
-				{
-					filename = filename.substr(folderPos+1);
-				}
-				size_t extPos = filename.rfind(".");
-				if(extPos!=ByteString::npos)
-				{
-					filename = filename.substr(0, extPos);
-				}
+				ByteString filename = (*iter).SplitFromEndBy(PATH_SEP).After();
+				filename = filename.SplitBy('.').Before();
 				saveFile->SetDisplayName(filename.FromUtf8());
 			}
 			catch(std::exception & e)

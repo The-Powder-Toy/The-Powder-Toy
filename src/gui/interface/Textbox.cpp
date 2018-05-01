@@ -141,7 +141,7 @@ void Textbox::cutSelection()
 	{
 		if (getLowerSelectionBound() < 0 || getHigherSelectionBound() > (int)backingText.length())
 			return;
-		String toCopy = backingText.substr(getLowerSelectionBound(), getHigherSelectionBound()-getLowerSelectionBound());
+		String toCopy = backingText.Between(getLowerSelectionBound(), getHigherSelectionBound());
 		ClipboardPush(format::CleanString(toCopy, false, true, false).ToUtf8());
 		backingText.erase(backingText.begin()+getLowerSelectionBound(), backingText.begin()+getHigherSelectionBound());
 		cursor = getLowerSelectionBound();
@@ -191,7 +191,7 @@ void Textbox::pasteIntoSelection()
 	{
 		if (getLowerSelectionBound() < 0 || getHigherSelectionBound() > (int)backingText.length())
 			return;
-		backingText.erase(backingText.begin()+getLowerSelectionBound(), backingText.begin()+getHigherSelectionBound());
+		backingText.EraseBetween(getLowerSelectionBound(), getHigherSelectionBound());
 		cursor = getLowerSelectionBound();
 	}
 
@@ -203,7 +203,7 @@ void Textbox::pasteIntoSelection()
 
 	if (limit != String::npos)
 	{
-		newText = newText.substr(0, limit-backingText.length());
+		newText = newText.Substr(0, limit-backingText.length());
 	}
 	if (!multiline && Graphics::textwidth(backingText + newText) > regionWidth)
 	{
@@ -211,12 +211,12 @@ void Textbox::pasteIntoSelection()
 		int cIndex = Graphics::CharIndexAtPosition(newText, pLimit, 0);
 
 		if (cIndex > 0)
-			newText = newText.substr(0, cIndex);
+			newText = newText.Substr(0, cIndex);
 		else
 			newText = "";
 	}
 
-	backingText.insert(cursor, newText);
+	backingText.Insert(cursor, newText);
 	cursor = cursor+newText.length();
 	ClearSelection();
 
@@ -353,7 +353,7 @@ void Textbox::OnVKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 			{
 				if (getLowerSelectionBound() < 0 || getHigherSelectionBound() > (int)backingText.length())
 					return;
-				backingText.erase(backingText.begin()+getLowerSelectionBound(), backingText.begin()+getHigherSelectionBound());
+				backingText.Erase(getLowerSelectionBound(), getHigherSelectionBound());
 				cursor = getLowerSelectionBound();
 				changed = true;
 			}
@@ -362,9 +362,9 @@ void Textbox::OnVKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 				if (ctrl)
 				{
 					size_t stopChar;
-					stopChar = backingText.find_first_not_of(String(" .,!?\n"), cursor);
-					stopChar = backingText.find_first_of(String(" .,!?\n"), stopChar);
-					backingText.erase(cursor, stopChar-cursor);
+					stopChar = backingText.SplitByNot(" .,!?\n", cursor).PositionBefore();
+					stopChar = backingText.SplitByAny(" .,!?\n", stopChar).PositionBefore();
+					backingText.EraseBetween(cursor, stopChar);
 				}
 				else
 					backingText.erase(cursor, 1);
@@ -388,12 +388,12 @@ void Textbox::OnVKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 				if (ctrl)
 				{
 					size_t stopChar;
-					stopChar = backingText.substr(0, cursor).find_last_not_of(String(" .,!?\n"));
+					stopChar = backingText.SplitFromEndByNot(" .,!?\n", cursor).PositionBefore();
 					if (stopChar == backingText.npos)
 						stopChar = -1;
 					else
-						stopChar = backingText.substr(0, stopChar).find_last_of(String(" .,!?\n"));
-					backingText.erase(stopChar+1, cursor-(stopChar+1));
+						stopChar = backingText.SplitFromEndByAny(" .,!?\n", stopChar).PositionBefore();
+					backingText.EraseBetween(stopChar+1, cursor);
 					cursor = stopChar+1;
 				}
 				else
@@ -431,7 +431,7 @@ void Textbox::OnVKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 					}
 					else
 					{
-						backingText.insert(cursor, 1, String::value_type(character));
+						backingText.Insert(cursor, character);
 					}
 					cursor++;
 				}

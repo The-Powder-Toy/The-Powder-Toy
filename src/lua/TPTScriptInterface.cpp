@@ -274,9 +274,9 @@ AnyType TPTScriptInterface::tptS_set(std::deque<String> * words)
 		{
 			String newString = ((StringType)value).Value();
 			if (newString.at(newString.length()-1) == 'C')
-				newValuef = atof(newString.substr(0, newString.length()-1).ToUtf8().c_str())+273.15;
+				newValuef = atof(newString.SubstrFromEnd(1).ToUtf8().c_str())+273.15;
 			else if (newString.at(newString.length()-1) == 'F')
-				newValuef = (atof(newString.substr(0, newString.length()-1).ToUtf8().c_str())-32.0f)*5/9+273.15f;
+				newValuef = (atof(newString.SubstrFromEnd(1).ToUtf8().c_str())-32.0f)*5/9+273.15f;
 			else
 				throw GeneralException("Invalid value for assignment");
 		}

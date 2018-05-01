@@ -433,7 +433,7 @@ GameView::GameView():
 			v->c->OpenElementSearch();
 		}
 	};
-	ui::Button * tempButton = new ui::Button(ui::Point(WINDOWW-16, WINDOWH-32), ui::Point(15, 15), String(1, 0xE065), "Search for elements");
+	ui::Button * tempButton = new ui::Button(ui::Point(WINDOWW-16, WINDOWH-32), ui::Point(15, 15), 0xE065, "Search for elements");
 	tempButton->Appearance.Margin = ui::Border(0, 2, 3, 2);
 	tempButton->SetActionCallback(new ElementSearchAction(this));
 	AddComponent(tempButton);
@@ -555,7 +555,7 @@ public:
 		else
 		{
 			if (v->CtrlBehaviour() && v->AltBehaviour() && !v->ShiftBehaviour())
-				if (tool->GetIdentifier().find("DEFAULT_PT_") != tool->GetIdentifier().npos)
+				if (tool->GetIdentifier().BeginsWith("DEFAULT_PT_"))
 					sender->SetSelectionState(3);
 
 			if (sender->GetSelectionState() >= 0 && sender->GetSelectionState() <= 3)
@@ -676,18 +676,15 @@ void GameView::NotifyActiveToolsChanged(GameModel * sender)
 		if(sender->GetActiveTool(0) == tool)
 		{
 			toolButtons[i]->SetSelectionState(0);	//Primary
-			if (tool->GetIdentifier().find("DEFAULT_UI_WIND") != tool->GetIdentifier().npos)
-				windTool = true;
-			else
-				windTool = false;
+			windTool = tool->GetIdentifier() == "DEFAULT_UI_WIND";
 
-			if (sender->GetActiveTool(0)->GetIdentifier().find("DEFAULT_DECOR_") != sender->GetActiveTool(0)->GetIdentifier().npos)
+			if (sender->GetActiveTool(0)->GetIdentifier().BeginsWith("DEFAULT_DECOR_"))
 				decoBrush = true;
 		}
 		else if(sender->GetActiveTool(1) == tool)
 		{
 			toolButtons[i]->SetSelectionState(1);	//Secondary
-			if (sender->GetActiveTool(1)->GetIdentifier().find("DEFAULT_DECOR_") != sender->GetActiveTool(1)->GetIdentifier().npos)
+			if (sender->GetActiveTool(1)->GetIdentifier().BeginsWith("DEFAULT_DECOR_"))
 				decoBrush = true;
 		}
 		else if(sender->GetActiveTool(2) == tool)
@@ -708,7 +705,7 @@ void GameView::NotifyActiveToolsChanged(GameModel * sender)
 	if (sender->GetRenderer()->findingElement)
 	{
 		Tool *active = sender->GetActiveTool(0);
-		if (active->GetIdentifier().find("_PT_") == active->GetIdentifier().npos)
+		if (active->GetIdentifier().Contains("_PT_"))
 			ren->findingElement = 0;
 		else
 			ren->findingElement = sender->GetActiveTool(0)->GetToolID()%256;
@@ -723,10 +720,7 @@ void GameView::NotifyLastToolChanged(GameModel * sender)
 	if (sender->GetLastTool())
 	{
 		wallBrush = sender->GetLastTool()->GetBlocky();
-		if (sender->GetLastTool()->GetIdentifier().find("DEFAULT_TOOL_") != sender->GetLastTool()->GetIdentifier().npos)
-			toolBrush = true;
-		else
-			toolBrush = false;
+		toolBrush = sender->GetLastTool()->GetIdentifier().BeginsWith("DEFAULT_TOOL_");
 	}
 }
 
@@ -1504,7 +1498,7 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		if (ctrl)
 		{
 			Tool *active = c->GetActiveTool(0);
-			if (active->GetIdentifier().find("_PT_") == active->GetIdentifier().npos || ren->findingElement == active->GetToolID()%256)
+			if (!active->GetIdentifier().Contains("_PT_") || ren->findingElement == active->GetToolID()%256)
 				ren->findingElement = 0;
 			else
 				ren->findingElement = active->GetToolID()%256;
@@ -1739,7 +1733,7 @@ void GameView::OnTick(float dt)
 		int pos = sign::splitsign(str, &type);
 		if (type == 'c' || type == 't' || type == 's')
 		{
-			String linkSign = str.substr(3, pos-3);
+			String linkSign = str.Substr(3, pos-3);
 			String::Stream tooltip;
 			switch (type)
 			{
@@ -1912,7 +1906,7 @@ void GameView::NotifyNotificationsChanged(GameModel * sender)
 		AddComponent(tempButton);
 		notificationComponents.push_back(tempButton);
 
-		tempButton = new ui::Button(ui::Point(XRES-20, currentY), ui::Point(15, 15), String(1, 0xE02A));
+		tempButton = new ui::Button(ui::Point(XRES-20, currentY), ui::Point(15, 15), 0xE02A);
 		//tempButton->SetIcon(IconClose);
 		tempButton->SetActionCallback(new CloseNotificationButtonAction(this, *iter));
 		tempButton->Appearance.Margin.Left -= 1;
@@ -2266,7 +2260,7 @@ void GameView::OnDraw()
 	{
 		String::Stream sampleInfo;
 		sampleInfo << recordingIndex;
-		sampleInfo << ". " + String(1, 0xE00E) + " REC";
+		sampleInfo << ". " + String(0xE00E) + " REC";
 
 		int textWidth = Graphics::textwidth(sampleInfo.str());
 		g->fillrect(XRES-20-textWidth, 12, textWidth+8, 15, 0, 0, 0, 255*0.5);

@@ -239,15 +239,15 @@ void SaveButton::Draw(const Point& screenPos)
 			int y = screenPos.Y-15+(Size.Y-thumbBoxSize.Y)/2+thumbBoxSize.Y;
 			g->fillrect(x+1, y+1, 7, 8, 255, 255, 255, 255);
 			if (isMouseInsideHistory) {
-				g->drawtext(x, y, String(1, 0xE026), 200, 100, 80, 255);
+				g->drawtext(x, y, 0xE026, 200, 100, 80, 255);
 			} else {
-				g->drawtext(x, y, String(1, 0xE026), 160, 70, 50, 255);
+				g->drawtext(x, y, 0xE026, 160, 70, 50, 255);
 			}
 		}
 		if (!save->GetPublished())
 		{
-			g->drawtext(screenPos.X, screenPos.Y-2, String(1, 0xE04D), 255, 255, 255, 255);
-			g->drawtext(screenPos.X, screenPos.Y-2, String(1, 0xE04E), 212, 151, 81, 255);
+			g->drawtext(screenPos.X, screenPos.Y-2, 0xE04D, 255, 255, 255, 255);
+			g->drawtext(screenPos.X, screenPos.Y-2, 0xE04E, 212, 151, 81, 255);
 		}
 	}
 	else if (file)

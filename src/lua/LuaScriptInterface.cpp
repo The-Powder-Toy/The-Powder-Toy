@@ -623,7 +623,7 @@ int LuaScriptInterface::simulation_signNewIndex(lua_State *l)
 	if (!key.compare("text"))
 	{
 		const char *temp = luaL_checkstring(l, 3);
-		String cleaned = format::CleanString(ByteString(temp).FromUtf8(), false, true, true).substr(0, 45);
+		String cleaned = format::CleanString(ByteString(temp).FromUtf8(), false, true, true).Substr(0, 45);
 		if (!cleaned.empty())
 			luacon_sim->signs[id].text = cleaned;
 		else
@@ -670,7 +670,7 @@ int LuaScriptInterface::simulation_newsign(lua_State *l)
 	if (luacon_sim->signs.size() >= MAXSIGNS)
 		return lua_pushnil(l), 1;
 
-	String text = format::CleanString(ByteString(luaL_checkstring(l, 1)).FromUtf8(), false, true, true).substr(0, 45);
+	String text = format::CleanString(ByteString(luaL_checkstring(l, 1)).FromUtf8(), false, true, true).Substr(0, 45);
 	int x = luaL_checkinteger(l, 2);
 	int y = luaL_checkinteger(l, 3);
 	int ju = luaL_optinteger(l, 4, 1);
@@ -2894,7 +2894,7 @@ int LuaScriptInterface::elements_free(lua_State * l)
 		return luaL_error(l, "Invalid element");
 
 	ByteString identifier = luacon_sim->elements[id].Identifier;
-	if(identifier.length()>7 && identifier.substr(0, 7) == "DEFAULT")
+	if(identifier.BeginsWith("DEFAULT"))
 		return luaL_error(l, "Cannot free default elements");
 
 	luacon_sim->elements[id].Enabled = false;
@@ -3524,7 +3524,7 @@ int LuaScriptInterface::Command(String command)
 	if (command[0] == '!')
 	{
 		lastError = "";
-		int ret = legacy->Command(command.substr(1));
+		int ret = legacy->Command(command.Substr(1));
 		lastError = legacy->GetLastError();
 		return ret;
 	}
@@ -3549,7 +3549,7 @@ int LuaScriptInterface::Command(String command)
 		{
 			lastError = luacon_geterror();
 			String err = lastError;
-			if (err.find("near '<eof>'") != err.npos) //the idea stolen from lua-5.1.5/lua.c
+			if (err.Contains("near '<eof>'")) //the idea stolen from lua-5.1.5/lua.c
 				lastError = "...";
 			else
 				lastCode = "";
@@ -3808,7 +3808,7 @@ String LuaScriptInterface::FormatCommand(String command)
 {
 	if(command.size() && command[0] == '!')
 	{
-		return "!"+legacy->FormatCommand(command.substr(1));
+		return "!"+legacy->FormatCommand(command.Substr(1));
 	}
 	else
 		return highlight(command);

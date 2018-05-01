@@ -104,20 +104,20 @@ void PropertyWindow::SetProperty()
 				case StructProperty::ParticleType:
 				{
 					int v;
-					if(value.length() > 2 && value.substr(0, 2) == "0x")
+					if(value.length() > 2 && value.BeginsWith("0x"))
 					{
 						//0xC0FFEE
 						String::Stream buffer;
 						buffer.exceptions(String::Stream::failbit | String::Stream::badbit);
-						buffer << std::hex << value.substr(2);
+						buffer << std::hex << value.Substr(2);
 						buffer >> v;
 					}
-					else if(value.length() > 1 && value[0] == '#')
+					else if(value.length() > 1 && value.BeginsWith("0"))
 					{
 						//#C0FFEE
 						String::Stream buffer;
 						buffer.exceptions(String::Stream::failbit | String::Stream::badbit);
-						buffer << std::hex << value.substr(1);
+						buffer << std::hex << value.Substr(1);
 						buffer >> v;
 					}
 					else
@@ -155,20 +155,20 @@ void PropertyWindow::SetProperty()
 				case StructProperty::UInteger:
 				{
 					unsigned int v;
-					if(value.length() > 2 && value.substr(0, 2) == "0x")
+					if(value.length() > 2 && value.BeginsWith("0x"))
 					{
 						//0xC0FFEE
 						String::Stream buffer;
 						buffer.exceptions(String::Stream::failbit | String::Stream::badbit);
-						buffer << std::hex << value.substr(2);
+						buffer << std::hex << value.Substr(2);
 						buffer >> v;
 					}
-					else if(value.length() > 1 && value[0] == '#')
+					else if(value.length() > 1 && value.BeginsWith("#"))
 					{
 						//#C0FFEE
 						String::Stream buffer;
 						buffer.exceptions(String::Stream::failbit | String::Stream::badbit);
-						buffer << std::hex << value.substr(1);
+						buffer << std::hex << value.Substr(1);
 						buffer >> v;
 					}
 					else
@@ -190,9 +190,9 @@ void PropertyWindow::SetProperty()
 					buffer >> tool->propValue.Float;
 					if (properties[property->GetOption().second].Name == "temp" && value.length())
 					{
-						if (value.substr(value.length()-1) == "C")
+						if (value.EndsWith("C"))
 							tool->propValue.Float += 273.15;
-						else if (value.substr(value.length()-1) == "F")
+						else if (value.EndsWith("F"))
 							tool->propValue.Float = (tool->propValue.Float-32.0f)*5/9+273.15f;
 					}
 #ifdef DEBUG

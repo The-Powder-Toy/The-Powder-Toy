@@ -1166,26 +1166,22 @@ int main(int argc, char * argv[])
 			ByteString ptsaveArg = arguments["ptsave"];
 			try
 			{
-				if (ptsaveArg.find("ptsave:"))
-					throw std::runtime_error("Invalid save link");
-
-				ByteString saveIdPart = "";
-				int saveId;
-				size_t hashPos = ptsaveArg.find('#');
-				if (hashPos != ByteString::npos)
+				ByteString saveIdPart;
+				if (ByteString::Split split = arguments["ptsave"].SplitBy(':'))
 				{
-					saveIdPart = ptsaveArg.substr(7, hashPos-7);
+					if (split.Before() != "ptsave")
+						throw std::runtime_error("Not a ptsave link");
+					saveIdPart = split.After().SplitBy('#').Before();
 				}
 				else
-				{
-					saveIdPart = ptsaveArg.substr(7);
-				}
-				if (!saveIdPart.length())
+					throw std::runtime_error("Invalid save link");
+
+				if (!saveIdPart.size())
 					throw std::runtime_error("No Save ID");
 #ifdef DEBUG
-				std::cout << "Got Ptsave: id: " <<  saveIdPart << std::endl;
+				std::cout << "Got Ptsave: id: " << saveIdPart << std::endl;
 #endif
-				saveId = format::ByteStringToNumber<int>(saveIdPart);
+				int saveId = format::ByteStringToNumber<int>(saveIdPart);
 				if (!saveId)
 					throw std::runtime_error("Invalid Save ID");
 
@@ -1227,7 +1223,7 @@ int main(int argc, char * argv[])
 	}
 	catch(exception& e)
 	{
-		BlueScreen(e.what());
+		BlueScreen(ByteString(e.what()).FromUtf8());
 	}
 #endif
 

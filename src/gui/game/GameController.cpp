@@ -674,7 +674,7 @@ bool GameController::MouseUp(int x, int y, unsigned button, char type)
 					ret = false;
 					if (type == 'c' || type == 't' || type == 's')
 					{
-						String link = str.substr(3, pos-3);
+						String link = str.Substr(3, pos-3);
 						switch (type)
 						{
 						case 'c':
@@ -983,7 +983,7 @@ void GameController::Update()
 	{
 		int rightSelected = PT_DUST;
 		Tool * activeTool = gameModel->GetActiveTool(1);
-		if (activeTool->GetIdentifier().find("DEFAULT_PT_") != activeTool->GetIdentifier().npos)
+		if (activeTool->GetIdentifier().BeginsWith("DEFAULT_PT_"))
 		{
 			int sr = activeTool->GetToolID();
 			if (sr && sim->IsValidElement(sr))

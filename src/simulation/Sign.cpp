@@ -41,7 +41,7 @@ String sign::getText(Simulation *sim)
 		{
 			int pos = splitsign(text);
 			if (pos)
-				signTextNew << text.substr(pos+1, text.length()-pos-2);
+				signTextNew << text.Between(pos + 1, text.size() - 1);
 			else
 				signTextNew << text;
 		}

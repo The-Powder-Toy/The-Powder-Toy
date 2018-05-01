@@ -214,9 +214,9 @@ void Label::copySelection()
 	String copyText;
 
 	if (selectionIndex1 > selectionIndex0)
-		copyText = currentText.substr(selectionIndex0, selectionIndex1-selectionIndex0).c_str();
+		copyText = currentText.Between(selectionIndex0, selectionIndex1).c_str();
 	else if(selectionIndex0 > selectionIndex1)
-		copyText = currentText.substr(selectionIndex1, selectionIndex0-selectionIndex1).c_str();
+		copyText = currentText.Between(selectionIndex1, selectionIndex0).c_str();
 	else if (!currentText.length())
 		return;
 	else
@@ -324,8 +324,8 @@ void Label::updateSelection()
 		textFragments = currentText;
 		//textFragments.insert(selectionIndex1, "\x0E");
 		//textFragments.insert(selectionIndex0, "\x0F\x01\x01\x01");
-		textFragments.insert(selectionIndex1, "\x01");
-		textFragments.insert(selectionIndex0, "\x01");
+		textFragments.Insert(selectionIndex1, "\x01");
+		textFragments.Insert(selectionIndex0, "\x01");
 	} else if(selectionIndex0 > selectionIndex1) {
 		selectionLineH = Graphics::PositionAtCharIndex(currentText, selectionIndex0, selectionXH, selectionYH);
 		selectionLineL = Graphics::PositionAtCharIndex(currentText, selectionIndex1, selectionXL, selectionYL);
@@ -333,8 +333,8 @@ void Label::updateSelection()
 		textFragments = currentText;
 		//textFragments.insert(selectionIndex0, "\x0E");
 		//textFragments.insert(selectionIndex1, "\x0F\x01\x01\x01");
-		textFragments.insert(selectionIndex0, "\x01");
-		textFragments.insert(selectionIndex1, "\x01");
+		textFragments.Insert(selectionIndex0, "\x01");
+		textFragments.Insert(selectionIndex1, "\x01");
 	} else {
 		selectionXH = -1;
 		selectionXL = -1;
@@ -349,14 +349,14 @@ void Label::updateSelection()
 			int tSelectionIndex1 = Graphics::CharIndexAtPosition(displayText, selectionXH, selectionYH);
 			int tSelectionIndex0 = Graphics::CharIndexAtPosition(displayText, selectionXL, selectionYL);
 
-			displayText.insert(tSelectionIndex1, "\x01");
-			displayText.insert(tSelectionIndex0, "\x01");
+			displayText.Insert(tSelectionIndex1, "\x01");
+			displayText.Insert(tSelectionIndex0, "\x01");
 		} else if(selectionIndex0 > selectionIndex1) {
 			int tSelectionIndex0 = Graphics::CharIndexAtPosition(displayText, selectionXH, selectionYH);
 			int tSelectionIndex1 = Graphics::CharIndexAtPosition(displayText, selectionXL, selectionYL);
 
-			displayText.insert(tSelectionIndex0, "\x01");
-			displayText.insert(tSelectionIndex1, "\x01");
+			displayText.Insert(tSelectionIndex0, "\x01");
+			displayText.Insert(tSelectionIndex1, "\x01");
 		}
 	}
 }

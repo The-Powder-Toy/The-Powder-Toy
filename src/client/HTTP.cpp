@@ -947,7 +947,7 @@ ByteString FindBoundary(std::map<ByteString, ByteString> parts, ByteString bound
 	{
 		// loop through every character in each part and search for the substring, adding 1 to map for every character found (character after the substring)
 		for (ssize_t j = 0; j < (ssize_t)((*iter).second.length()-blen); j++)
-			if (!blen || (*iter).second.substr(j, blen) == boundary)
+			if (!blen || (*iter).second.Substr(j, blen) == boundary)
 			{
 				unsigned char ch = (*iter).second[j+blen];
 				if (ch >= '0' && ch <= '9')
@@ -999,12 +999,11 @@ ByteString GetMultipartMessage(std::map<ByteString, ByteString> parts, ByteStrin
 		data << "Content-transfer-encoding: binary" << "\r\n";
 
 		// colon p
-		size_t colonP = name.find(':');
-		if (colonP != name.npos)
+		if (ByteString::Split split = name.SplitBy(':'))
 		{
 			// used to upload files (save data)
-			data << "content-disposition: form-data; name=\"" << name.substr(0, colonP) << "\"";
-			data << "filename=\"" << name.substr(colonP+1) << "\"";
+			data << "content-disposition: form-data; name=\"" << split.Before() << "\"";
+			data << "filename=\"" << split.After() << "\"";
 		}
 		else
 		{

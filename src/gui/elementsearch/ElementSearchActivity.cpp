@@ -117,9 +117,9 @@ void ElementSearchActivity::searchTools(String query)
 		std::transform(nameLower.begin(), nameLower.end(), nameLower.begin(), ::tolower);
 		if(nameLower == queryLower)
 			exactmatches.push_back(*iter);
-		else if(!nameLower.compare(0, queryLower.length(), queryLower))
+		else if(!nameLower.BeginsWith(queryLower))
 			frontmatches.push_back(*iter);
-		else if(nameLower.find(queryLower) != String::npos)
+		else if(nameLower.Contains(queryLower))
 			matches.push_back(*iter);
 	}
 
@@ -181,7 +181,7 @@ void ElementSearchActivity::SetActiveTool(int selectionState, Tool * tool)
 		gameController->RebuildFavoritesMenu();
 	}
 	else if (ctrlPressed && altPressed && !shiftPressed &&
-	         tool->GetIdentifier().find("DEFAULT_PT_") != tool->GetIdentifier().npos)
+	         tool->GetIdentifier().Contains("DEFAULT_PT_"))
 	{
 		gameController->SetActiveTool(3, tool);
 	}

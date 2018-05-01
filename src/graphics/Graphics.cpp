@@ -591,7 +591,7 @@ void Graphics::textnpos(String str, int n, int w, int *cx, int *cy)
 	while (*s&&n)
 	{
 		wordlen = 0;
-		while(*s && String(" .,!?\n").find(*s) != String::npos)
+		while(*s && String(" .,!?\n").Contains(*s))
 			s++;
 		charspace = textwidthx(s, w-x);
 		if (charspace<wordlen && wordlen && w-x<w/3)
@@ -717,7 +717,7 @@ int Graphics::textwrapheight(String str, int width)
 	while (*s)
 	{
 		wordlen = 0;
-		while(*s && String(" .,!?\n").find(*s) != String::npos)
+		while(*s && String(" .,!?\n").Contains(*s))
 			s++;
 		charspace = textwidthx(s, width-x);
 		if (charspace<wordlen && wordlen && width-x<width/3)

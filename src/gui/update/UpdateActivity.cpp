@@ -43,7 +43,7 @@ private:
 		{
 			free(data);
 			errorStream << "Server responded with Status " << status;
-			notifyError("Could not download update: " + errorStream.str());
+			notifyError("Could not download update: " + String(errorStream.str()));
 			return false;
 		}
 		if (!data)
@@ -109,7 +109,7 @@ private:
 		return true;
 
 	corrupt:
-		notifyError("Downloaded update is corrupted\n" + errorStream.str());
+		notifyError("Downloaded update is corrupted\n" + String(errorStream.str()));
 		free(data);
 		return false;
 	}

@@ -805,7 +805,7 @@ void Renderer::DrawWalls()
 						// there is no velocity here, draw a streamline and continue
 						if (!xVel && !yVel)
 						{
-							drawtext(x*CELL, y*CELL-2, String(1, 0xE00D), 255, 255, 255, 128);
+							drawtext(x*CELL, y*CELL-2, 0xE00D, 255, 255, 255, 128);
 							addpixel(oldX, oldY, 255, 255, 255, 255);
 							continue;
 						}
@@ -836,7 +836,7 @@ void Renderer::DrawWalls()
 							xf += xVel;
 							yf += yVel;
 						}
-						drawtext(x*CELL, y*CELL-2, String(1, 0xE00D), 255, 255, 255, 128);
+						drawtext(x*CELL, y*CELL-2, 0xE00D, 255, 255, 255, 128);
 					}
 					break;
 				case 1:

@@ -8,7 +8,7 @@ LoginModel::LoginModel():
 
 void LoginModel::Login(ByteString username, ByteString password)
 {
-	if (username.find('@') != username.npos)
+	if (username.Contains("@"))
 	{
 		statusText = "Use your Powder Toy account to log in, not your email. If you don't have a Powder Toy account, you can create one at https://powdertoy.co.uk/Register.html";
 		loginStatus = false;
