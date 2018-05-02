@@ -13,78 +13,106 @@ public:
 	inline void Write(StringBuilder &b) { b << value; }
 };
 
-class Format
+namespace Format
 {
-	std::function<void(StringBuilder &)> writer;
-public:
-	template<typename T, typename... Ts> inline Format(T const &value, Ts... args):
-		writer([value, args...](StringBuilder &b) { FormatProxy<T>(value, args...).Write(b); })
-	{}
+	template<typename T, std::ios_base::fmtflags set, std::ios_base::fmtflags reset> struct FlagsOverride
+	{
+		T value;
+		inline FlagsOverride(T _value): value(_value) {}
+	};
+	template<std::ios_base::fmtflags set, std::ios_base::fmtflags reset> struct FlagsOverride<void, set, reset>
+	{
+		inline FlagsOverride() {}
+	};
 
-	friend StringBuilder &operator<<(StringBuilder &, Format const &);
+	template<typename T> struct WidthOverride
+	{
+		T value;
+		size_t width;
+		inline WidthOverride(T _value, size_t _width): value(_value), width(_width) {}
+	};
+	template<> struct WidthOverride<void>
+	{
+		size_t width;
+		inline WidthOverride(size_t _width): width(_width) {}
+	};
 
-	enum Base { Dec, Oct, Hex };
-	enum Float { Default, Fixed, Scientific };
+	template<typename T> struct PrecisionOverride
+	{
+		T value;
+		size_t precision;
+		inline PrecisionOverride(T _value, size_t _precision): value(_value), precision(_precision) {}
+	};
+	template<> struct PrecisionOverride<void>
+	{
+		size_t precision;
+		inline PrecisionOverride(size_t _precision): precision(_precision) {}
+	};
+
+	template<typename T> inline FlagsOverride<T, std::ios_base::oct, std::ios_base::basefield> Oct(T value) { return FlagsOverride<T, std::ios_base::oct, std::ios_base::basefield>(value); }
+	template<typename T> inline FlagsOverride<T, std::ios_base::dec, std::ios_base::basefield> Dec(T value) { return FlagsOverride<T, std::ios_base::dec, std::ios_base::basefield>(value); }
+	template<typename T> inline FlagsOverride<T, std::ios_base::hex, std::ios_base::basefield> Hex(T value) { return FlagsOverride<T, std::ios_base::hex, std::ios_base::basefield>(value); }
+	inline FlagsOverride<void, std::ios_base::oct, std::ios_base::basefield> Oct() { return FlagsOverride<void, std::ios_base::oct, std::ios_base::basefield>(); }
+	inline FlagsOverride<void, std::ios_base::dec, std::ios_base::basefield> Dec() { return FlagsOverride<void, std::ios_base::dec, std::ios_base::basefield>(); }
+	inline FlagsOverride<void, std::ios_base::hex, std::ios_base::basefield> Hex() { return FlagsOverride<void, std::ios_base::hex, std::ios_base::basefield>(); }
+
+	template<typename T> inline FlagsOverride<T, std::ios_base::fixed, std::ios_base::floatfield> Fixed(T value) { return FlagsOverride<T, std::ios_base::fixed, std::ios_base::floatfield>(value); }
+	template<typename T> inline FlagsOverride<T, std::ios_base::scientific, std::ios_base::floatfield> Scientific(T value) { return FlagsOverride<T, std::ios_base::scientific, std::ios_base::floatfield>(value); }
+	template<typename T> inline FlagsOverride<T, std::ios_base::fmtflags{}, std::ios_base::floatfield> FloatDefault(T value) { return FlagsOverride<T, std::ios_base::fmtflags{}, std::ios_base::floatfield>(value); }
+	inline FlagsOverride<void, std::ios_base::fixed, std::ios_base::floatfield> Fixed() { return FlagsOverride<void, std::ios_base::fixed, std::ios_base::floatfield>(); }
+	inline FlagsOverride<void, std::ios_base::scientific, std::ios_base::floatfield> Scientific() { return FlagsOverride<void, std::ios_base::scientific, std::ios_base::floatfield>(); }
+	inline FlagsOverride<void, std::ios_base::fmtflags{}, std::ios_base::floatfield> FloatDefault() { return FlagsOverride<void, std::ios_base::fmtflags{}, std::ios_base::floatfield>(); }
+
+	template<typename T> inline WidthOverride<T> Width(T value, size_t width) { return WidthOverride<T>(value, width); }
+	template<typename T> inline PrecisionOverride<T> Precision(T value, size_t precision) { return PrecisionOverride<T>(value, precision); }
+	inline WidthOverride<void> Width(size_t width) { return WidthOverride<void>(width); }
+	inline PrecisionOverride<void> Precision(size_t precision) { return PrecisionOverride<void>(precision); }
 };
 
-inline StringBuilder &operator<<(StringBuilder &b, Format const &f)
+template<typename T, std::ios_base::fmtflags set, std::ios_base::fmtflags reset> inline StringBuilder &operator<<(StringBuilder &b, Format::FlagsOverride<T, set, reset> data)
 {
-	f.writer(b);
+	std::ios_base::fmtflags oldflags = b.flags;
+	b.flags = (b.flags & ~reset) | set;
+	b << data.value;
+	b.flags = oldflags;
+	return b;
+}
+template<std::ios_base::fmtflags set, std::ios_base::fmtflags reset> inline StringBuilder &operator<<(StringBuilder &b, Format::FlagsOverride<void, set, reset> data)
+{
+	b.flags = (b.flags & ~reset) | set;
 	return b;
 }
 
-template<typename T> class IntegralFormatProxy
+template<typename T> inline StringBuilder &operator<<(StringBuilder &b, Format::WidthOverride<T> data)
 {
-	T value;
-	Format::Base base;
-	size_t width;
-public:
-	inline IntegralFormatProxy(T _value, Format::Base _base = Format::Dec, size_t _width = 0): value(_value), base(_base), width(_width) {}
-	inline void Write(StringBuilder &b)
-	{
-		std::ios_base::fmtflags oldflags = b.flags;
-		b.flags &= ~std::ios_base::basefield;
-		b.flags |= base == Format::Hex ? std::ios_base::hex : base == Format::Oct ? std::ios_base::oct : std::ios_base::dec;
-		size_t oldwidth = b.width;
-		b.width = width;
-		b << value;
-		b.flags = oldflags;
-		b.width = oldwidth;
-	}
-};
-
-template<> class FormatProxy<short int>: public IntegralFormatProxy<short int> { using IntegralFormatProxy::IntegralFormatProxy; };
-template<> class FormatProxy<int>: public IntegralFormatProxy<int> { using IntegralFormatProxy::IntegralFormatProxy; };
-template<> class FormatProxy<long int>: public IntegralFormatProxy<long int> { using IntegralFormatProxy::IntegralFormatProxy; };
-template<> class FormatProxy<long long int>: public IntegralFormatProxy<long long int> { using IntegralFormatProxy::IntegralFormatProxy; };
-template<> class FormatProxy<unsigned short int>: public IntegralFormatProxy<unsigned short int> { using IntegralFormatProxy::IntegralFormatProxy; };
-template<> class FormatProxy<unsigned int>: public IntegralFormatProxy<unsigned int> { using IntegralFormatProxy::IntegralFormatProxy; };
-template<> class FormatProxy<unsigned long int>: public IntegralFormatProxy<unsigned long int> { using IntegralFormatProxy::IntegralFormatProxy; };
-template<> class FormatProxy<unsigned long long int>: public IntegralFormatProxy<unsigned long long int> { using IntegralFormatProxy::IntegralFormatProxy; };
-
-template<typename T> class FloatingFormatProxy
+	size_t oldwidth = b.width;
+	b.width = data.width;
+	b << data.value;
+	b.width = oldwidth;
+	return b;
+}
+inline StringBuilder &operator<<(StringBuilder &b, Format::WidthOverride<void> data)
 {
-	T value;
-	size_t precision;
-	Format::Float style;
-	size_t width;
-public:
-	inline FloatingFormatProxy(T _value, size_t _precision, Format::Float _style = Format::Default, size_t _width = 0): value(_value), precision(_precision), style(_style), width(_width) {}
-	inline void Write(StringBuilder &b)
-	{
-		std::ios_base::fmtflags oldflags = b.flags;
-		b.flags &= ~std::ios_base::floatfield;
-		b.flags |= style == Format::Fixed ? std::ios_base::fixed : style == Format::Scientific ? std::ios_base::scientific : std::ios_base::fmtflags();
-		size_t oldwidth = b.width;
-		b.width = width;
-		size_t oldprecision = b.precision;
-		b.precision = precision;
-		b << value;
-		b.flags = oldflags;
-		b.width = oldwidth;
-		b.precision = oldprecision;
-	}
-};
+	b.width = data.width;
+	return b;
+}
 
-template<> class FormatProxy<float>: public FloatingFormatProxy<float> { using FloatingFormatProxy::FloatingFormatProxy; };
-template<> class FormatProxy<double>: public FloatingFormatProxy<double> { using FloatingFormatProxy::FloatingFormatProxy; };
+template<typename T> inline StringBuilder &operator<<(StringBuilder &b, Format::PrecisionOverride<T> data)
+{
+	std::ios_base::fmtflags oldflags = b.flags;
+	if(!(oldflags & std::ios_base::floatfield))
+		b.flags |= std::ios_base::fixed;
+	size_t oldprecision = b.precision;
+	b.precision = data.precision;
+	b << data.value;
+	b.precision = oldprecision;
+	b.flags = oldflags;
+	return b;
+}
+inline StringBuilder &operator<<(StringBuilder &b, Format::PrecisionOverride<void> data)
+{
+	if(!(b.flags & std::ios_base::floatfield))
+		b.flags |= std::ios_base::fixed;
+	b.precision = data.precision;
+	return b;
+}

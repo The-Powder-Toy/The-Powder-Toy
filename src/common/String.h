@@ -194,6 +194,7 @@ public:
 
 	ByteString ToUtf8() const;
 	ByteString ToAscii() const;
+	template<typename... Ts> static String Build(Ts&&... args);
 
 	using Stream = std::basic_stringstream<value_type>;
 };
@@ -283,5 +284,12 @@ StringBuilder &operator<<(StringBuilder &, String const &);
 StringBuilder &operator<<(StringBuilder &, float);
 StringBuilder &operator<<(StringBuilder &, double);
 template<size_t N> StringBuilder &operator<<(StringBuilder &b, ByteString::value_type const (&data)[N]) { return b << ByteString(data).FromUtf8(); }
+
+template<typename... Ts> String String::Build(Ts&&... args)
+{
+	StringBuilder b;
+	b.Add(std::forward<Ts>(args)...);
+	return b.Build();
+}
 
 #include "common/Format.h"
