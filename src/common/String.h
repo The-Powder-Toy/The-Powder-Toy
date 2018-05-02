@@ -13,12 +13,14 @@ class StringBuilder;
 template<typename T> class SplitBase
 {
 	T const &parent;
+	size_t posFrom;
 	size_t posBefore;
 	size_t posAfter;
 	bool reverse;
 
-	inline SplitBase(T const &_parent, size_t _posBefore, size_t offset, bool _reverse):
+	inline SplitBase(T const &_parent, size_t _posFrom, size_t _posBefore, size_t offset, bool _reverse):
 		parent(_parent),
+		posFrom(_posFrom),
 		posBefore(_posBefore),
 		posAfter(_posBefore == T::npos ? T::npos : _posBefore + offset),
 		reverse(_reverse)
@@ -27,16 +29,17 @@ public:
 	inline T Before(bool includeSeparator = false) const
 	{
 		if(posBefore == T::npos)
-			return reverse ? T() : parent;
-		return parent.Substr(0, includeSeparator ? posAfter : posBefore);
+			return reverse ? T() : parent.Substr(posFrom);
+		return parent.Substr(reverse ? 0 : posFrom, includeSeparator ? posAfter : posBefore);
 	}
 	inline T After(bool includeSeparator = false) const
 	{
 		if(posBefore == T::npos)
-			return reverse ? parent : T();
-		return parent.Substr(includeSeparator ? posBefore : posAfter);
+			return reverse ? parent.Substr(0, posFrom) : T();
+		return parent.Substr(includeSeparator ? posBefore : posAfter, reverse ? posFrom : T::npos);
 	}
 
+	inline size_t PositionFrom() const { return posFrom; }
 	inline size_t PositionBefore() const { return posBefore; }
 	inline size_t PositionAfter() const { return posAfter; }
 
@@ -77,30 +80,24 @@ public:
 	inline bool EndsWith(ByteString const &other) const { return super::compare(size() - other.size(), other.size(), other); }
 
 	using Split = SplitBase<ByteString>;
-	inline Split SplitBy(value_type ch, size_t pos = 0) const { return Split(*this, super::find(ch, pos), 1, false); }
-	inline Split SplitBy(ByteString const &str, size_t pos = 0) const { return Split(*this, super::find(str, pos), str.size(), false); }
-	inline Split SplitByAny(ByteString const &str, size_t pos = 0) const { return Split(*this, super::find_first_of(str, pos), 1, false); }
-	inline Split SplitByNot(ByteString const &str, size_t pos = 0) const { return Split(*this, super::find_first_not_of(str, pos), 1, false); }
-	inline Split SplitFromEndBy(value_type ch, size_t pos = npos) const { return Split(*this, super::rfind(ch, pos), 1, true); }
-	inline Split SplitFromEndBy(ByteString const &str, size_t pos = npos) const { return Split(*this, super::find(str, pos), str.size(), true); }
-	inline Split SplitFromEndByAny(ByteString const &str, size_t pos = npos) const { return Split(*this, super::find_last_of(str, pos), 1, true); }
-	inline Split SplitFromEndByNot(ByteString const &str, size_t pos = npos) const { return Split(*this, super::find_last_not_of(str, pos), 1, true); }
+	inline Split SplitBy(value_type ch, size_t pos = 0) const { return Split(*this, pos, super::find(ch, pos), 1, false); }
+	inline Split SplitBy(ByteString const &str, size_t pos = 0) const { return Split(*this, pos, super::find(str, pos), str.size(), false); }
+	inline Split SplitByAny(ByteString const &str, size_t pos = 0) const { return Split(*this, pos, super::find_first_of(str, pos), 1, false); }
+	inline Split SplitByNot(ByteString const &str, size_t pos = 0) const { return Split(*this, pos, super::find_first_not_of(str, pos), 1, false); }
+	inline Split SplitFromEndBy(value_type ch, size_t pos = npos) const { return Split(*this, pos, super::rfind(ch, pos), 1, true); }
+	inline Split SplitFromEndBy(ByteString const &str, size_t pos = npos) const { return Split(*this, pos, super::find(str, pos), str.size(), true); }
+	inline Split SplitFromEndByAny(ByteString const &str, size_t pos = npos) const { return Split(*this, pos, super::find_last_of(str, pos), 1, true); }
+	inline Split SplitFromEndByNot(ByteString const &str, size_t pos = npos) const { return Split(*this, pos, super::find_last_not_of(str, pos), 1, true); }
 
-	inline ByteString &Substitute(ByteString const &needle, ByteString const &replacement)
-	{
-		size_t needleSize = needle.size();
-		size_t replacementSize = replacement.size();
-		size_t at = super::find(needle);
-		while(at != npos)
-		{
-			super::replace(at, needleSize, replacement);
-			at += replacementSize + !needleSize;
-			at = super::find(needle, at);
-		}
-		return *this;
-	}
+	std::vector<ByteString> PartitionBy(value_type ch, bool includeEmpty = false) const;
+	std::vector<ByteString> PartitionBy(ByteString const &str, bool includeEmpty = false) const;
+	std::vector<ByteString> PartitionByAny(ByteString const &str, bool includeEmpty = false) const;
 
-public:
+	ByteString &Substitute(ByteString const &needle, ByteString const &replacement);
+
+	inline ByteString &Insert(size_t pos, ByteString const &str) { super::insert(pos, str); return *this; }
+	inline ByteString &Erase(size_t pos, size_t count) { super::erase(pos, count); return *this; }
+	inline ByteString &EraseBetween(size_t from, size_t to) { if(from < to) super::erase(from, to - from); return *this; }
 
 	String FromUtf8(bool ignoreError = true) const;
 	inline String FromAscii() const;
@@ -128,6 +125,18 @@ inline ByteString operator+(ByteString::value_type lhs, ByteString const &rhs) {
 inline ByteString operator+(ByteString::value_type lhs, ByteString &&rhs) { return lhs + static_cast<std::basic_string<char> &&>(rhs); }
 inline ByteString operator+(ByteString::value_type const *lhs, ByteString const &rhs) { return lhs + static_cast<std::basic_string<char> const &>(rhs); }
 inline ByteString operator+(ByteString::value_type const *lhs, ByteString &&rhs) { return lhs + static_cast<std::basic_string<char> &&>(rhs); }
+
+inline bool operator==(ByteString const &lhs, ByteString const &rhs) { return static_cast<std::basic_string<char> const &>(lhs) == static_cast<std::basic_string<char> const &>(rhs); }
+inline bool operator==(ByteString const &lhs, std::basic_string<char> const &rhs) { return static_cast<std::basic_string<char> const &>(lhs) == rhs; }
+inline bool operator==(ByteString const &lhs, ByteString::value_type const *rhs) { return static_cast<std::basic_string<char> const &>(lhs) == rhs; }
+inline bool operator==(std::basic_string<char> const &lhs, ByteString const &rhs) { return lhs == static_cast<std::basic_string<char> const &>(rhs); }
+inline bool operator==(ByteString::value_type const *lhs, ByteString const &rhs) { return lhs == static_cast<std::basic_string<char> const &>(rhs); }
+
+inline bool operator!=(ByteString const &lhs, ByteString const &rhs) { return static_cast<std::basic_string<char> const &>(lhs) != static_cast<std::basic_string<char> const &>(rhs); }
+inline bool operator!=(ByteString const &lhs, std::basic_string<char> const &rhs) { return static_cast<std::basic_string<char> const &>(lhs) != rhs; }
+inline bool operator!=(ByteString const &lhs, ByteString::value_type const *rhs) { return static_cast<std::basic_string<char> const &>(lhs) != rhs; }
+inline bool operator!=(std::basic_string<char> const &lhs, ByteString const &rhs) { return lhs != static_cast<std::basic_string<char> const &>(rhs); }
+inline bool operator!=(ByteString::value_type const *lhs, ByteString const &rhs) { return lhs != static_cast<std::basic_string<char> const &>(rhs); }
 
 class String : public std::basic_string<char32_t>
 {
@@ -162,86 +171,24 @@ public:
 	inline bool EndsWith(String const &other) const { return super::compare(size() - other.size(), other.size(), other); }
 
 	using Split = SplitBase<String>;
-	inline Split SplitBy(value_type ch, size_t pos = 0) const { return Split(*this, super::find(ch, pos), 1, false); }
-	inline Split SplitBy(String const &str, size_t pos = 0) const { return Split(*this, super::find(str, pos), str.size(), false); }
-	inline Split SplitByAny(String const &str, size_t pos = 0) const { return Split(*this, super::find_first_of(str, pos), 1, false); }
-	inline Split SplitByNot(String const &str, size_t pos = 0) const { return Split(*this, super::find_first_not_of(str, pos), 1, false); }
-	inline Split SplitFromEndBy(value_type ch, size_t pos = npos) const { return Split(*this, super::rfind(ch, pos), 1, true); }
-	inline Split SplitFromEndBy(String const &str, size_t pos = npos) const { return Split(*this, super::find(str, pos), str.size(), true); }
-	inline Split SplitFromEndByAny(String const &str, size_t pos = npos) const { return Split(*this, super::find_last_of(str, pos), 1, true); }
-	inline Split SplitFromEndByNot(String const &str, size_t pos = npos) const { return Split(*this, super::find_last_not_of(str, pos), 1, true); }
+	inline Split SplitBy(value_type ch, size_t pos = 0) const { return Split(*this, pos, super::find(ch, pos), 1, false); }
+	inline Split SplitBy(String const &str, size_t pos = 0) const { return Split(*this, pos, super::find(str, pos), str.size(), false); }
+	inline Split SplitByAny(String const &str, size_t pos = 0) const { return Split(*this, pos, super::find_first_of(str, pos), 1, false); }
+	inline Split SplitByNot(String const &str, size_t pos = 0) const { return Split(*this, pos, super::find_first_not_of(str, pos), 1, false); }
+	inline Split SplitFromEndBy(value_type ch, size_t pos = npos) const { return Split(*this, pos, super::rfind(ch, pos), 1, true); }
+	inline Split SplitFromEndBy(String const &str, size_t pos = npos) const { return Split(*this, pos,super::find(str, pos), str.size(), true); }
+	inline Split SplitFromEndByAny(String const &str, size_t pos = npos) const { return Split(*this, pos, super::find_last_of(str, pos), 1, true); }
+	inline Split SplitFromEndByNot(String const &str, size_t pos = npos) const { return Split(*this, pos, super::find_last_not_of(str, pos), 1, true); }
 
-	inline std::vector<String> PartitionBy(value_type ch, bool includeEmpty = false) const
-	{
-		std::vector<String> result;
-		size_t at = 0;
-		while(true)
-		{
-			Split split = SplitBy(ch, at);
-			String part = split.Before();
-			if(includeEmpty || part.size())
-				result.push_back(part);
-			at = split.PositionAfter();
-			if(!split)
-				break;
-		}
-		return result;
-	}
+	std::vector<String> PartitionBy(value_type ch, bool includeEmpty = false) const;
+	std::vector<String> PartitionBy(String const &str, bool includeEmpty = false) const;
+	std::vector<String> PartitionByAny(String const &str, bool includeEmpty = false) const;
 
-	inline std::vector<String> PartitionBy(String const &str, bool includeEmpty = false) const
-	{
-		std::vector<String> result;
-		size_t at = 0;
-		while(true)
-		{
-			Split split = SplitBy(str, at);
-			String part = split.Before();
-			if(includeEmpty || part.size())
-				result.push_back(part);
-			at = split.PositionAfter();
-			if(!split)
-				break;
-		}
-		return result;
-	}
-
-	inline std::vector<String> PartitionByAny(String const &str, bool includeEmpty = false) const
-	{
-		std::vector<String> result;
-		size_t at = 0;
-		while(true)
-		{
-			Split split = SplitByAny(str, at);
-			String part = split.Before();
-			if(includeEmpty || part.size())
-				result.push_back(part);
-			at = split.PositionAfter();
-			if(!split)
-				break;
-		}
-		return result;
-	}
-
-	inline String &Substitute(String const &needle, String const &replacement)
-	{
-		size_t needleSize = needle.size();
-		size_t replacementSize = replacement.size();
-		size_t at = super::find(needle);
-		while(at != npos)
-		{
-			super::replace(at, needleSize, replacement);
-			at += replacementSize + !needleSize;
-			at = super::find(needle, at);
-		}
-		return *this;
-	}
+	String &Substitute(String const &needle, String const &replacement);
 	
 	inline String &Insert(size_t pos, String const &str) { super::insert(pos, str); return *this; }
 	inline String &Erase(size_t pos, size_t count) { super::erase(pos, count); return *this; }
 	inline String &EraseBetween(size_t from, size_t to) { if(from < to) super::erase(from, to - from); return *this; }
-
-	inline bool operator==(String const &other) { return std::basic_string<char32_t>(*this) == other; }
-	inline bool operator!=(String const &other) { return std::basic_string<char32_t>(*this) != other; }
 
 	ByteString ToUtf8() const;
 	ByteString ToAscii() const;
@@ -274,6 +221,22 @@ inline String operator+(String::value_type const *lhs, String const &rhs) { retu
 inline String operator+(String::value_type const *lhs, String &&rhs) { return lhs + static_cast<std::basic_string<char32_t> &&>(rhs); }
 template<size_t N> inline String operator+(ByteString::value_type const (&lhs)[N], String const &rhs) { return std::move(ByteString(lhs).FromAscii()) + static_cast<std::basic_string<char32_t> const &>(rhs); }
 template<size_t N> inline String operator+(ByteString::value_type const (&lhs)[N], String &&rhs) { return std::move(ByteString(lhs).FromAscii()) + static_cast<std::basic_string<char32_t> &&>(rhs); }
+
+inline bool operator==(String const &lhs, String const &rhs) { return static_cast<std::basic_string<char32_t> const &>(lhs) == static_cast<std::basic_string<char32_t> const &>(rhs); }
+inline bool operator==(String const &lhs, std::basic_string<char32_t> const &rhs) { return static_cast<std::basic_string<char32_t> const &>(lhs) == rhs; }
+inline bool operator==(String const &lhs, String::value_type const *rhs) { return static_cast<std::basic_string<char32_t> const &>(lhs) == rhs; }
+template<size_t N> inline bool operator==(String const &lhs, ByteString::value_type const (&rhs)[N]) { return static_cast<std::basic_string<char32_t> const &>(lhs) == std::move(ByteString(rhs).FromAscii()); }
+inline bool operator==(std::basic_string<char32_t> const &lhs, String const &rhs) { return lhs == static_cast<std::basic_string<char32_t> const &>(rhs); }
+inline bool operator==(String::value_type const *lhs, String const &rhs) { return lhs == static_cast<std::basic_string<char32_t> const &>(rhs); }
+template<size_t N> inline bool operator==(ByteString::value_type const (&lhs)[N], String const &rhs) { return std::move(ByteString(lhs).FromAscii()) == static_cast<std::basic_string<char32_t> const &>(rhs); }
+
+inline bool operator!=(String const &lhs, String const &rhs) { return static_cast<std::basic_string<char32_t> const &>(lhs) != static_cast<std::basic_string<char32_t> const &>(rhs); }
+inline bool operator!=(String const &lhs, std::basic_string<char32_t> const &rhs) { return static_cast<std::basic_string<char32_t> const &>(lhs) != rhs; }
+inline bool operator!=(String const &lhs, String::value_type const *rhs) { return static_cast<std::basic_string<char32_t> const &>(lhs) != rhs; }
+template<size_t N> inline bool operator!=(String const &lhs, ByteString::value_type const (&rhs)[N]) { return static_cast<std::basic_string<char32_t> const &>(lhs) != std::move(ByteString(rhs).FromAscii()); }
+inline bool operator!=(std::basic_string<char32_t> const &lhs, String const &rhs) { return lhs != static_cast<std::basic_string<char32_t> const &>(rhs); }
+inline bool operator!=(String::value_type const *lhs, String const &rhs) { return lhs != static_cast<std::basic_string<char32_t> const &>(rhs); }
+template<size_t N> inline bool operator!=(ByteString::value_type const (&lhs)[N], String const &rhs) { return std::move(ByteString(lhs).FromAscii()) != static_cast<std::basic_string<char32_t> const &>(rhs); }
 
 inline String ByteString::FromAscii() const
 {

@@ -16,19 +16,84 @@ ByteString ConversionError::formatError(ByteString::value_type const *at, ByteSt
 }
 
 
-std::codecvt_utf8<char32_t> convert(1);
+static std::codecvt_utf8<String::value_type> convert(1);
+
+std::vector<ByteString> ByteString::PartitionBy(value_type ch, bool includeEmpty) const
+{
+	std::vector<ByteString> result;
+	size_t at = 0;
+	while(true)
+	{
+		Split split = SplitBy(ch, at);
+		ByteString part = split.Before();
+		if(includeEmpty || part.size())
+			result.push_back(part);
+		at = split.PositionAfter();
+		if(!split)
+			break;
+	}
+	return result;
+}
+
+std::vector<ByteString> ByteString::PartitionBy(ByteString const &str, bool includeEmpty) const
+{
+	std::vector<ByteString> result;
+	size_t at = 0;
+	while(true)
+	{
+		Split split = SplitBy(str, at);
+		ByteString part = split.Before();
+		if(includeEmpty || part.size())
+			result.push_back(part);
+		at = split.PositionAfter();
+		if(!split)
+			break;
+	}
+	return result;
+}
+
+std::vector<ByteString> ByteString::PartitionByAny(ByteString const &str, bool includeEmpty) const
+{
+	std::vector<ByteString> result;
+	size_t at = 0;
+	while(true)
+	{
+		Split split = SplitByAny(str, at);
+		ByteString part = split.Before();
+		if(includeEmpty || part.size())
+			result.push_back(part);
+		at = split.PositionAfter();
+		if(!split)
+			break;
+	}
+	return result;
+}
+
+ByteString &ByteString::Substitute(ByteString const &needle, ByteString const &replacement)
+{
+	size_t needleSize = needle.size();
+	size_t replacementSize = replacement.size();
+	size_t at = super::find(needle);
+	while(at != npos)
+	{
+		super::replace(at, needleSize, replacement);
+		at += replacementSize + !needleSize;
+		at = super::find(needle, at);
+	}
+	return *this;
+}
 
 String ByteString::FromUtf8(bool ignoreError) const
 {
 	std::vector<String::value_type> destination = std::vector<String::value_type>(size(), String::value_type());
-	std::codecvt_utf8<char32_t>::state_type state;
+	std::codecvt_utf8<String::value_type>::state_type state;
 
 	ByteString::value_type const *from = data(), *from_next;
 	String::value_type *to = destination.data(), *to_next;
 
 	while(true)
 	{
-		std::codecvt_utf8<char32_t>::result result = convert.in(state, from, data() + size(), from_next, to, destination.data() + destination.size(), to_next);
+		std::codecvt_utf8<String::value_type>::result result = convert.in(state, from, data() + size(), from_next, to, destination.data() + destination.size(), to_next);
 		from = from_next;
 		to = to_next;
 		if(result == std::codecvt_base::ok || result == std::codecvt_base::noconv)
@@ -58,17 +123,82 @@ String ByteString::FromUtf8(bool ignoreError) const
 	}
 }
 
+std::vector<String> String::PartitionBy(value_type ch, bool includeEmpty) const
+{
+	std::vector<String> result;
+	size_t at = 0;
+	while(true)
+	{
+		Split split = SplitBy(ch, at);
+		String part = split.Before();
+		if(includeEmpty || part.size())
+			result.push_back(part);
+		at = split.PositionAfter();
+		if(!split)
+			break;
+	}
+	return result;
+}
+
+std::vector<String> String::PartitionBy(String const &str, bool includeEmpty) const
+{
+	std::vector<String> result;
+	size_t at = 0;
+	while(true)
+	{
+		Split split = SplitBy(str, at);
+		String part = split.Before();
+		if(includeEmpty || part.size())
+			result.push_back(part);
+		at = split.PositionAfter();
+		if(!split)
+			break;
+	}
+	return result;
+}
+
+std::vector<String> String::PartitionByAny(String const &str, bool includeEmpty) const
+{
+	std::vector<String> result;
+	size_t at = 0;
+	while(true)
+	{
+		Split split = SplitByAny(str, at);
+		String part = split.Before();
+		if(includeEmpty || part.size())
+			result.push_back(part);
+		at = split.PositionAfter();
+		if(!split)
+			break;
+	}
+	return result;
+}
+
+String &String::Substitute(String const &needle, String const &replacement)
+{
+	size_t needleSize = needle.size();
+	size_t replacementSize = replacement.size();
+	size_t at = super::find(needle);
+	while(at != npos)
+	{
+		super::replace(at, needleSize, replacement);
+		at += replacementSize + !needleSize;
+		at = super::find(needle, at);
+	}
+	return *this;
+}
+
 ByteString String::ToUtf8() const
 {
 	std::vector<ByteString::value_type> destination = std::vector<ByteString::value_type>(size(), ByteString::value_type());
-	std::codecvt_utf8<char32_t>::state_type state;
+	std::codecvt_utf8<String::value_type>::state_type state;
 
 	String::value_type const *from = data(), *from_next;
 	ByteString::value_type *to = destination.data(), *to_next;
 
 	while(true)
 	{
-		std::codecvt_utf8<char32_t>::result result = convert.out(state, from, data() + size(), from_next, to, destination.data() + destination.size(), to_next);
+		std::codecvt_utf8<String::value_type>::result result = convert.out(state, from, data() + size(), from_next, to, destination.data() + destination.size(), to_next);
 		from = from_next;
 		to = to_next;
 		if(result == std::codecvt_base::ok || result == std::codecvt_base::noconv)
