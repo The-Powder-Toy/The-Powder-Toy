@@ -753,11 +753,11 @@ void EventProcess(SDL_Event event)
 
 void DoubleScreenDialog()
 {
-	String::Stream message;
+	StringBuilder message;
 	message << "Switching to double size mode since your screen was determined to be large enough: ";
 	message << desktopWidth << "x" << desktopHeight << " detected, " << WINDOWW*2 << "x" << WINDOWH*2 << " required";
 	message << "\nTo undo this, hit Cancel. You can toggle double size mode in settings at any time.";
-	if (!ConfirmPrompt::Blocking("Large screen detected", message.str()))
+	if (!ConfirmPrompt::Blocking("Large screen detected", message.Build()))
 	{
 		Client::Ref().SetPref("Scale", 1);
 		engine->SetScale(1);

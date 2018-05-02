@@ -1638,7 +1638,7 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 		virtual void Action()
 		{
 			UpdateInfo info = Client::Ref().GetUpdateInfo();
-			String::Stream updateMessage;
+			StringBuilder updateMessage;
 			updateMessage << "Are you sure you want to run the updater? Please save any changes before updating.\n\nCurrent version:\n ";
 
 #ifdef SNAPSHOT
@@ -1666,7 +1666,7 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 			if (info.Changelog.length())
 				updateMessage << "\n\nChangelog:\n" << info.Changelog;
 
-			new ConfirmPrompt("Run Updater", updateMessage.str(), new UpdateConfirmation(c));
+			new ConfirmPrompt("Run Updater", updateMessage.Build(), new UpdateConfirmation(c));
 		}
 	};
 

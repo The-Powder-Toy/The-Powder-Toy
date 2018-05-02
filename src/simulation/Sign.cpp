@@ -13,7 +13,6 @@ sign::sign(String text_, int x_, int y_, Justification justification_):
 
 String sign::getText(Simulation *sim)
 {
-	String::Stream signTextNew;
 	if (text[0] && text[0] == '{')
 	{
 		if (text == "{p}")
@@ -21,37 +20,35 @@ String sign::getText(Simulation *sim)
 			float pressure = 0.0f;
 			if (x >= 0 && x < XRES && y >= 0 && y < YRES)
 				pressure = sim->pv[y/CELL][x/CELL];
-			signTextNew << std::fixed << std::showpoint << std::setprecision(2) << "Pressure: " << pressure;
+			return String::Build("Pressure: ", Format::Precision(Format::ShowPoint(pressure), 2));
 		}
 		else if (text == "{aheat}")
 		{
 			float aheat = 0.0f;
 			if (x >= 0 && x < XRES && y >= 0 && y < YRES)
 				aheat = sim->hv[y/CELL][x/CELL];
-			signTextNew << std::fixed << std::showpoint << std::setprecision(2) << aheat-273.15f;
+			return String::Build(Format::Precision(Format::ShowPoint(aheat - 273.15f), 2));
 		}
 		else if (text == "{t}")
 		{
 			if (x >= 0 && x < XRES && y >= 0 && y < YRES && sim->pmap[y][x])
-				signTextNew << std::fixed << std::showpoint << std::setprecision(2) << "Temp: " << sim->parts[ID(sim->pmap[y][x])].temp-273.15f;
+				return String::Build("Temp: ", Format::Precision(Format::ShowPoint(sim->parts[ID(sim->pmap[y][x])].temp - 273.15f), 2));
 			else
-				signTextNew << "Temp: 0.00";
+				return String::Build("Temp: ", Format::Precision(Format::ShowPoint(0), 2));
 		}
 		else
 		{
 			int pos = splitsign(text);
 			if (pos)
-				signTextNew << text.Between(pos + 1, text.size() - 1);
+				return text.Between(pos + 1, text.size() - 1);
 			else
-				signTextNew << text;
+				return text;
 		}
 	}
 	else
 	{
-		signTextNew << text;
+		return text;
 	}
-
-	return signTextNew.str();
 }
 
 void sign::pos(String signText, int & x0, int & y0, int & w, int & h)

@@ -971,7 +971,7 @@ void GameView::NotifySaveChanged(GameModel * sender)
 		tagSimulationButton->Enabled = sender->GetSave()->GetID();
 		if (sender->GetSave()->GetID())
 		{
-			String::Stream tagsStream;
+			StringBuilder tagsStream;
 			std::list<ByteString> tags = sender->GetSave()->GetTags();
 			if (tags.size())
 			{
@@ -981,7 +981,7 @@ void GameView::NotifySaveChanged(GameModel * sender)
 						tagsStream << " ";
 					tagsStream << iter->FromUtf8();
 				}
-				tagSimulationButton->SetText(tagsStream.str());
+				tagSimulationButton->SetText(tagsStream.Build());
 			}
 			else
 			{
@@ -1734,7 +1734,7 @@ void GameView::OnTick(float dt)
 		if (type == 'c' || type == 't' || type == 's')
 		{
 			String linkSign = str.Substr(3, pos-3);
-			String::Stream tooltip;
+			StringBuilder tooltip;
 			switch (type)
 			{
 			case 'c':
@@ -1747,7 +1747,7 @@ void GameView::OnTick(float dt)
 				tooltip << "Search for " << linkSign;
 				break;
 			}
-			ToolTip(ui::Point(0, Size.Y), tooltip.str());
+			ToolTip(ui::Point(0, Size.Y), tooltip.Build());
 		}
 	}
 
@@ -2258,13 +2258,11 @@ void GameView::OnDraw()
 
 	if(recording)
 	{
-		String::Stream sampleInfo;
-		sampleInfo << recordingIndex;
-		sampleInfo << ". " + String(0xE00E) + " REC";
+		String sampleInfo = String::Build(recordingIndex, ". ", String(0xE00E), " REC");
 
-		int textWidth = Graphics::textwidth(sampleInfo.str());
+		int textWidth = Graphics::textwidth(sampleInfo);
 		g->fillrect(XRES-20-textWidth, 12, textWidth+8, 15, 0, 0, 0, 255*0.5);
-		g->drawtext(XRES-16-textWidth, 16, sampleInfo.str(), 255, 50, 20, 255);
+		g->drawtext(XRES-16-textWidth, 16, sampleInfo, 255, 50, 20, 255);
 	}
 	else if(showHud)
 	{
@@ -2274,8 +2272,8 @@ void GameView::OnDraw()
 			alpha = 255-toolTipPresence*3;
 		if (alpha < 50)
 			alpha = 50;
-		String::Stream sampleInfo;
-		sampleInfo.precision(2);
+		StringBuilder sampleInfo;
+		sampleInfo << Format::Precision(2);
 
 		int type = sample.particle.type;
 		if (type)
@@ -2315,7 +2313,7 @@ void GameView::OnDraw()
 					else
 						sampleInfo << " ()";
 				}
-				sampleInfo << ", Temp: " << std::fixed << sample.particle.temp -273.15f << " C";
+				sampleInfo << ", Temp: " << (sample.particle.temp - 273.15f) << " C";
 				sampleInfo << ", Life: " << sample.particle.life;
 				if (sample.particle.type != PT_RFRG && sample.particle.type != PT_RFGL)
 					sampleInfo << ", Tmp: " << sample.particle.tmp;
@@ -2324,7 +2322,7 @@ void GameView::OnDraw()
 				if (type == PT_CRAY || type == PT_DRAY || type == PT_EXOT || type == PT_LIGH || type == PT_SOAP || type == PT_TRON || type == PT_VIBR || type == PT_VIRS || type == PT_WARP || type == PT_LCRY || type == PT_CBNW || type == PT_TSNS || type == PT_DTEC || type == PT_LSNS || type == PT_PSTN)
 					sampleInfo << ", Tmp2: " << sample.particle.tmp2;
 
-				sampleInfo << ", Pressure: " << std::fixed << sample.AirPressure;
+				sampleInfo << ", Pressure: " << sample.AirPressure;
 			}
 			else
 			{
@@ -2336,27 +2334,27 @@ void GameView::OnDraw()
 					sampleInfo << c->ElementResolve(type, ctype).FromAscii();
 				else
 					sampleInfo << c->ElementResolve(type, ctype).FromAscii();
-				sampleInfo << ", Temp: " << std::fixed << sample.particle.temp - 273.15f << " C";
-				sampleInfo << ", Pressure: " << std::fixed << sample.AirPressure;
+				sampleInfo << ", Temp: " << sample.particle.temp - 273.15f << " C";
+				sampleInfo << ", Pressure: " << sample.AirPressure;
 			}
 		}
 		else if (sample.WallType)
 		{
 			sampleInfo << c->WallName(sample.WallType);
-			sampleInfo << ", Pressure: " << std::fixed << sample.AirPressure;
+			sampleInfo << ", Pressure: " << sample.AirPressure;
 		}
 		else if (sample.isMouseInSim)
 		{
-			sampleInfo << "Empty, Pressure: " << std::fixed << sample.AirPressure;
+			sampleInfo << "Empty, Pressure: " << sample.AirPressure;
 		}
 		else
 		{
 			sampleInfo << "Empty";
 		}
 
-		int textWidth = Graphics::textwidth(sampleInfo.str());
+		int textWidth = Graphics::textwidth(sampleInfo.Build());
 		g->fillrect(XRES-20-textWidth, 12, textWidth+8, 15, 0, 0, 0, alpha*0.5f);
-		g->drawtext(XRES-16-textWidth, 16, sampleInfo.str(), 255, 255, 255, alpha*0.75f);
+		g->drawtext(XRES-16-textWidth, 16, sampleInfo.Build(), 255, 255, 255, alpha*0.75f);
 
 #ifndef OGLI
 		if (wavelengthGfx)
@@ -2397,7 +2395,8 @@ void GameView::OnDraw()
 
 		if (showDebug)
 		{
-			sampleInfo.str(String());
+			StringBuilder sampleInfo;
+			sampleInfo << Format::Precision(2);
 
 			if (type)
 				sampleInfo << "#" << sample.ParticleID << ", ";
@@ -2408,22 +2407,21 @@ void GameView::OnDraw()
 				sampleInfo << ", GX: " << sample.GravityVelocityX << " GY: " << sample.GravityVelocityY;
 
 			if (c->GetAHeatEnable())
-				sampleInfo << ", AHeat: " << std::fixed << sample.AirTemperature -273.15f << " C";
+				sampleInfo << ", AHeat: " << sample.AirTemperature - 273.15f << " C";
 
-			textWidth = Graphics::textwidth(sampleInfo.str());
+			textWidth = Graphics::textwidth(sampleInfo.Build());
 			g->fillrect(XRES-20-textWidth, 27, textWidth+8, 14, 0, 0, 0, alpha*0.5f);
-			g->drawtext(XRES-16-textWidth, 30, sampleInfo.str(), 255, 255, 255, alpha*0.75f);
+			g->drawtext(XRES-16-textWidth, 30, sampleInfo.Build(), 255, 255, 255, alpha*0.75f);
 		}
 	}
 
 	if(showHud && introText < 51)
 	{
 		//FPS and some version info
-		String::Stream fpsInfo;
-		fpsInfo.precision(2);
-		fpsInfo << "FPS: " << std::fixed << ui::Engine::Ref().GetFps();
+		StringBuilder fpsInfo;
+		fpsInfo << Format::Precision(2) << "FPS: " << ui::Engine::Ref().GetFps();
 #ifdef DEBUG
-		fpsInfo << " Delta: " << std::fixed << ui::Engine::Ref().GetDelta();
+		fpsInfo << " Delta: " << ui::Engine::Ref().GetDelta();
 #endif
 
 		if (showDebug)
@@ -2442,10 +2440,10 @@ void GameView::OnDraw()
 		if (ren && ren->findingElement)
 			fpsInfo << " [FIND]";
 
-		int textWidth = Graphics::textwidth(fpsInfo.str());
+		int textWidth = Graphics::textwidth(fpsInfo.Build());
 		int alpha = 255-introText*5;
 		g->fillrect(12, 12, textWidth+8, 15, 0, 0, 0, alpha*0.5);
-		g->drawtext(16, 16, fpsInfo.str(), 32, 216, 255, alpha*0.75);
+		g->drawtext(16, 16, fpsInfo.Build(), 32, 216, 255, alpha*0.75);
 	}
 
 	//Tooltips

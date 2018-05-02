@@ -140,10 +140,9 @@ void LocalBrowserView::NotifyPageChanged(LocalBrowserModel * sender)
 	}
 	else
 	{
-		String::Stream pageInfo;
-		pageInfo << "of " << pageCount;
-		pageCountLabel->SetText(pageInfo.str());
-		int width = Graphics::textwidth(pageInfo.str().c_str());
+		String pageInfo = String::Build("of ", pageCount);
+		pageCountLabel->SetText(pageInfo);
+		int width = Graphics::textwidth(pageInfo);
 
 		pageLabel->Position.X = WINDOWW/2-width-20;
 		pageTextbox->Position.X = WINDOWW/2-width+11;
@@ -151,9 +150,8 @@ void LocalBrowserView::NotifyPageChanged(LocalBrowserModel * sender)
 		//pageCountLabel->Position.X = WINDOWW/2+6;
 		pageLabel->Visible = pageCountLabel->Visible = pageTextbox->Visible = true;
 
-		pageInfo.str(String());
-		pageInfo << sender->GetPageNum();
-		pageTextbox->SetText(pageInfo.str());
+		pageInfo = String::Build(sender->GetPageNum());
+		pageTextbox->SetText(pageInfo);
 	}
 
 	if(sender->GetPageNum() == 1)

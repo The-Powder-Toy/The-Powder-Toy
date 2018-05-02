@@ -25,7 +25,7 @@ private:
 	}
 	virtual bool doWork()
 	{
-		String::Stream errorStream;
+		String error;
 		void * request = http_async_req_start(NULL, (char*)updateName.c_str(), NULL, 0, 0);
 		notifyStatus("Downloading update");
 		notifyProgress(-1);
@@ -42,13 +42,13 @@ private:
 		if (status!=200)
 		{
 			free(data);
-			errorStream << "Server responded with Status " << status;
-			notifyError("Could not download update: " + String(errorStream.str()));
+			error = String::Build("Server responded with Status ", status);
+			notifyError("Could not download update: " + error);
 			return false;
 		}
 		if (!data)
 		{
-			errorStream << "Server responded with nothing";
+			error = "Server responded with nothing";
 			notifyError("Server did not return any data");
 			return false;
 		}
@@ -60,12 +60,12 @@ private:
 
 		if(dataLength<16)
 		{
-			errorStream << "Unsufficient data, got " << dataLength << " bytes";
+			error = String::Build("Unsufficient data, got ", dataLength, " bytes");
 			goto corrupt;
 		}
 		if (data[0]!=0x42 || data[1]!=0x75 || data[2]!=0x54 || data[3]!=0x54)
 		{
-			errorStream << "Invalid update format";
+			error = "Invalid update format";
 			goto corrupt;
 		}
 
@@ -78,7 +78,7 @@ private:
 		res = (char *)malloc(uncompressedLength);
 		if (!res)
 		{
-			errorStream << "Unable to allocate " << uncompressedLength << " bytes of memory for decompression";
+			error = String::Build("Unable to allocate ", uncompressedLength, " bytes of memory for decompression");
 			goto corrupt;
 		}
 
@@ -86,7 +86,7 @@ private:
 		dstate = BZ2_bzBuffToBuffDecompress((char *)res, (unsigned *)&uncompressedLength, (char *)(data+8), dataLength-8, 0, 0);
 		if (dstate)
 		{
-			errorStream << "Unable to decompress update: " << dstate;
+			error = String::Build("Unable to decompress update: ", dstate);
 			free(res);
 			goto corrupt;
 		}
@@ -109,7 +109,7 @@ private:
 		return true;
 
 	corrupt:
-		notifyError("Downloaded update is corrupted\n" + String(errorStream.str()));
+		notifyError("Downloaded update is corrupted\n" + error);
 		free(data);
 		return false;
 	}

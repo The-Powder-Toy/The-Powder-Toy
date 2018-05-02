@@ -62,16 +62,10 @@ void TaskWindow::Exit()
 void TaskWindow::NotifyProgress(Task * task)
 {
 	progress = task->GetProgress();
-	String::Stream pStream;
 	if(progress>-1)
-	{
-		pStream << progress << "%";
-	}
+		progressStatus = String::Build(progress, "%");
 	else
-	{
-		pStream << "Please wait...";
-	}
-	progressStatus = pStream.str();
+		progressStatus = "Please wait...";
 }
 
 void TaskWindow::OnTick(float dt)

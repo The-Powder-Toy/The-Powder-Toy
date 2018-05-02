@@ -805,13 +805,12 @@ void GameSave::readOPS(char * data, int dataLength)
 				if (major > SAVE_VERSION || (major == SAVE_VERSION && minor > MINOR_VERSION))
 #endif
 				{
-					String::Stream errorMessage;
 #ifdef RENDERER
-					errorMessage << "Save from a newer version: Requires render version " << renderMajor << "." << renderMinor;
+					String errorMessage = String::Build("Save from a newer version: Requires render version ", renderMajor, ".", renderMinor);
 #else
-					errorMessage << "Save from a newer version: Requires version " << major << "." << minor;
+					String errorMessage = String::Build("Save from a newer version: Requires version ", major, ".", minor);
 #endif
-					throw ParseException(ParseException::WrongVersion, errorMessage.str());
+					throw ParseException(ParseException::WrongVersion, errorMessage);
 				}
 #if defined(SNAPSHOT) || defined(DEBUG)
 				else if (major > SAVE_VERSION || (major == SAVE_VERSION && minor > MINOR_VERSION))

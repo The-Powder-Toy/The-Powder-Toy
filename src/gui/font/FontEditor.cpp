@@ -433,9 +433,7 @@ FontEditor::FontEditor(ByteString _header):
 	int *refs[6] = {&fgR, &fgG, &fgB, &bgR, &bgG, &bgB};
 	for(int i = 0; i < 6; i++)
 	{
-		String::Stream ss;
-		ss << *refs[i];
-		ui::Textbox *colorComponent = new ui::Textbox(ui::Point(currentX, baseline), ui::Point(27, 17), ss.str());
+		ui::Textbox *colorComponent = new ui::Textbox(ui::Point(currentX, baseline), ui::Point(27, 17), format::NumberToString(*refs[i]));
 		currentX += 28;
 		colorComponent->SetActionCallback(new ColorComponentAction(*refs[i]));
 		AddComponent(colorComponent);
@@ -522,14 +520,15 @@ FontEditor::FontEditor(ByteString _header):
 	inputPreview->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 	inputPreview->SetActionCallback(new PreviewAction(this));
 
-	String::Stream input;
+	StringBuilder input;
+	input << Format::Hex() << Format::Width(2);
 	for(unsigned int ch = 0x20; ch <= 0xFF; ch++)
 	{
 		if(!(ch & 0x3F))
-			input << "20 ";
-		input << std::hex << std::setw(2) << ch << " ";
+			input << 0x20 << " ";
+		input << ch << " ";
 	}
-	inputPreview->SetText(input.str());
+	inputPreview->SetText(input.Build());
 	PreviewAction(this).TextChangedCallback(inputPreview);
 	AddComponent(inputPreview);
 }

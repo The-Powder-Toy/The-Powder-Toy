@@ -108,9 +108,7 @@ void ColourPickerActivity::UpdateTextboxes(int r, int g, int b, int a)
 	gValue->SetText(format::NumberToString<int>(g));
 	bValue->SetText(format::NumberToString<int>(b));
 	aValue->SetText(format::NumberToString<int>(a));
-	String::Stream hex;
-	hex << std::hex << "0x" << std::setfill(String::value_type('0')) << std::setw(2) << std::uppercase << a << std::setw(2) << r << std::setw(2) << g << std::setw(2) << b;
-	hexValue->SetText(hex.str());
+	hexValue->SetText(String::Build(Format::Hex(), Format::Uppercase(), Format::Width(2), a, r, g, b));
 }
 void ColourPickerActivity::OnTryExit(ExitMethod method)
 {

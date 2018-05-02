@@ -56,6 +56,15 @@ namespace Format
 	inline FlagsOverride<void, std::ios_base::dec, std::ios_base::basefield> Dec() { return FlagsOverride<void, std::ios_base::dec, std::ios_base::basefield>(); }
 	inline FlagsOverride<void, std::ios_base::hex, std::ios_base::basefield> Hex() { return FlagsOverride<void, std::ios_base::hex, std::ios_base::basefield>(); }
 
+	template<typename T> inline FlagsOverride<T, std::ios_base::uppercase, std::ios_base::uppercase> Uppercase(T value) { return FlagsOverride<T, std::ios_base::uppercase, std::ios_base::uppercase>(value); }
+	template<typename T> inline FlagsOverride<T, std::ios_base::showpoint, std::ios_base::showpoint> ShowPoint(T value) { return FlagsOverride<T, std::ios_base::showpoint, std::ios_base::showpoint>(value); }
+	template<typename T> inline FlagsOverride<T, std::ios_base::fmtflags{}, std::ios_base::uppercase> NoUppercase(T value) { return FlagsOverride<T, std::ios_base::fmtflags{}, std::ios_base::uppercase>(value); }
+	template<typename T> inline FlagsOverride<T, std::ios_base::fmtflags{}, std::ios_base::showpoint> NoShowPoint(T value) { return FlagsOverride<T, std::ios_base::fmtflags{}, std::ios_base::showpoint>(value); }
+	inline FlagsOverride<void, std::ios_base::uppercase, std::ios_base::uppercase> Uppercase() { return FlagsOverride<void, std::ios_base::uppercase, std::ios_base::uppercase>(); }
+	inline FlagsOverride<void, std::ios_base::showpoint, std::ios_base::showpoint> ShowPoint() { return FlagsOverride<void, std::ios_base::showpoint, std::ios_base::showpoint>(); }
+	inline FlagsOverride<void, std::ios_base::fmtflags{}, std::ios_base::uppercase> NoUppercase() { return FlagsOverride<void, std::ios_base::fmtflags{}, std::ios_base::uppercase>(); }
+	inline FlagsOverride<void, std::ios_base::fmtflags{}, std::ios_base::showpoint> NoShowPoint() { return FlagsOverride<void, std::ios_base::fmtflags{}, std::ios_base::showpoint>(); }
+
 	template<typename T> inline FlagsOverride<T, std::ios_base::fixed, std::ios_base::floatfield> Fixed(T value) { return FlagsOverride<T, std::ios_base::fixed, std::ios_base::floatfield>(value); }
 	template<typename T> inline FlagsOverride<T, std::ios_base::scientific, std::ios_base::floatfield> Scientific(T value) { return FlagsOverride<T, std::ios_base::scientific, std::ios_base::floatfield>(value); }
 	template<typename T> inline FlagsOverride<T, std::ios_base::fmtflags{}, std::ios_base::floatfield> FloatDefault(T value) { return FlagsOverride<T, std::ios_base::fmtflags{}, std::ios_base::floatfield>(value); }

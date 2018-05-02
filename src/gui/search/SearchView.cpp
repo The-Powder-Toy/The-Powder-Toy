@@ -374,10 +374,9 @@ void SearchView::NotifyPageChanged(SearchModel * sender)
 	}
 	else
 	{
-		String::Stream pageInfo;
-		pageInfo << "of " << pageCount;
-		pageCountLabel->SetText(pageInfo.str());
-		int width = Graphics::textwidth(pageInfo.str().c_str());
+		String pageInfo = String::Build("of ", pageCount);
+		pageCountLabel->SetText(pageInfo);
+		int width = Graphics::textwidth(pageInfo);
 
 		pageLabel->Position.X = WINDOWW/2-width-20;
 		pageTextbox->Position.X = WINDOWW/2-width+11;
@@ -385,9 +384,8 @@ void SearchView::NotifyPageChanged(SearchModel * sender)
 		//pageCountLabel->Position.X = WINDOWW/2+6;
 		pageLabel->Visible = pageCountLabel->Visible = pageTextbox->Visible = true;
 
-		pageInfo.str(String());
-		pageInfo << sender->GetPageNum();
-		pageTextbox->SetText(pageInfo.str());
+		pageInfo = String::Build(sender->GetPageNum());
+		pageTextbox->SetText(pageInfo);
 	}
 	if(sender->GetPageNum() == 1)
 	{
@@ -671,13 +669,11 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 			}
 			virtual void AltActionCallback(ui::SaveButton * sender)
 			{
-				String::Stream search;
-				search << "history:" << sender->GetSave()->GetID();
-				v->Search(search.str());
+				v->Search(String::Build("history:", sender->GetSave()->GetID()));
 			}
 			virtual void AltActionCallback2(ui::SaveButton * sender)
 			{
-				v->Search("user:"+sender->GetSave()->GetUserName().FromUtf8());
+				v->Search(String::Build("user:", sender->GetSave()->GetUserName().FromUtf8()));
 			}
 		};
 		for (size_t i = 0; i < saves.size(); i++)

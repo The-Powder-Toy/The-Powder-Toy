@@ -3608,7 +3608,7 @@ int strlcmp(const char* a, const char* b, int len)
 String highlight(String command)
 {
 #define CMP(X) (String(wstart, len) == X)
-	String::Stream result;
+	StringBuilder result;
 	int pos = 0;
 	String::value_type const*raw = command.c_str();
 	String::value_type c;
@@ -3622,23 +3622,11 @@ String highlight(String command)
 			while((w = wstart[len]) && ((w >= 'A' && w <= 'Z') || (w >= 'a' && w <= 'z') || (w >= '0' && w <= '9') || w == '_'))
 				len++;
 			if(CMP("and") || CMP("break") || CMP("do") || CMP("else") || CMP("elseif") || CMP("end") || CMP("for") || CMP("function") || CMP("if") || CMP("in") || CMP("local") || CMP("not") || CMP("or") || CMP("repeat") || CMP("return") || CMP("then") || CMP("until") || CMP("while"))
-			{
-				result << String("\x0F\xB5\x89\x01");
-				result.write(wstart, len);
-				result << String("\bw");
-			}
+				result << "\x0F\xB5\x89\x01" << String(wstart, len) << "\bw";
 			else if(CMP("false") || CMP("nil") || CMP("true"))
-			{
-				result << String("\x0F\xCB\x4B\x16");
-				result.write(wstart, len);
-				result << String("\bw");
-			}
+				result << "\x0F\xCB\x4B\x16" << String(wstart, len) << "\bw";
 			else
-			{
-				result << String("\x0F\x2A\xA1\x98");
-				result.write(wstart, len);
-				result << String("\bw");
-			}
+				result << "\x0F\x2A\xA1\x98" << String(wstart, len) << "\bw";
 			pos += len;
 		}
 		else if((c >= '0' && c <= '9') || (c == '.' && raw[pos + 1] >= '0' && raw[pos + 1] <= '9'))
@@ -3650,9 +3638,7 @@ String highlight(String command)
 				String::value_type const* wstart = raw+pos;
 				while((w = wstart[len]) && ((w >= '0' && w <= '9') || (w >= 'A' && w <= 'F') || (w >= 'a' && w <= 'f')))
 					len++;
-				result << String("\x0F\xD3\x36\x82");
-				result.write(wstart, len);
-				result << String("\bw");
+				result << "\x0F\xD3\x36\x82" << String(wstart, len) << "\bw";
 				pos += len;
 			}
 			else
@@ -3681,9 +3667,7 @@ String highlight(String command)
 					while((w = wstart[len]) && (w >= '0' && w <= '9'))
 						len++;
 				}
-				result << String("\x0F\xD3\x36\x82");
-				result.write(wstart, len);
-				result << String("\bw");
+				result << "\x0F\xD3\x36\x82" << String(wstart, len) << "\bw";
 				pos += len;
 			}
 		}
@@ -3715,9 +3699,7 @@ String highlight(String command)
 					}
 					len++;
 				}
-				result << String("\x0F\xDC\x32\x2F");
-				result.write(wstart, len);
-				result << String("\bw");
+				result << "\x0F\xDC\x32\x2F" << String(wstart, len) << "\bw";
 				pos += len;
 			}
 			else
@@ -3733,9 +3715,7 @@ String highlight(String command)
 				}
 				if(w == c)
 					len++;
-				result << String("\x0F\xDC\x32\x2F");
-				result.write(wstart, len);
-				result << String("\bw");
+				result << "\x0F\xDC\x32\x2F" << String(wstart, len) << "\bw";
 				pos += len;
 			}
 		}
@@ -3767,9 +3747,7 @@ String highlight(String command)
 					}
 					len++;
 				}
-				result << String("\x0F\x85\x99\x01");
-				result.write(wstart, len);
-				result << String("\bw");
+				result << "\x0F\x85\x99\x01" << String(wstart, len) << "\bw";
 				pos += len;
 			}
 			else
@@ -3779,20 +3757,18 @@ String highlight(String command)
 				String::value_type const* wstart = raw + pos;
 				while((w = wstart[len]) && (w != '\n'))
 					len++;
-				result << String("\x0F\x85\x99\x01");
-				result.write(wstart, len);
-				result << String("\bw");
+				result << "\x0F\x85\x99\x01" << String(wstart, len) << "\bw";
 				pos += len;
 			}
 		}
 		else if(c == '{' || c == '}')
 		{
-			result << String("\x0F\xCB\x4B\x16") << c;
+			result << "\x0F\xCB\x4B\x16" << c << "\bw";
 			pos++;
 		}
 		else if(c == '.' && raw[pos + 1] == '.' && raw[pos + 2] == '.')
 		{
-			result << String("\x0F\x2A\xA1\x98...");
+			result << "\x0F\x2A\xA1\x98...\bw";
 			pos += 3;
 		}
 		else
@@ -3801,7 +3777,7 @@ String highlight(String command)
 			pos++;
 		}
 	}
-	return result.str();
+	return result.Build();
 }
 
 String LuaScriptInterface::FormatCommand(String command)

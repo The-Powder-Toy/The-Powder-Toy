@@ -47,9 +47,7 @@ AnyType::operator StringType()
 {
 	if(type == TypeNumber)
 	{
-		String::Stream numberStream;
-		numberStream << ((NumberType *)this)->Value();
-		return StringType(numberStream.str());
+		return StringType(String::Build(((NumberType *)this)->Value()));
 	}
 	else if(type == TypeString && value.str)
 	{
@@ -58,9 +56,7 @@ AnyType::operator StringType()
 	else if (type == TypePoint && value.pt)
 	{
 		ui::Point thisPoint = *(value.pt);
-		String::Stream pointStream;
-		pointStream << thisPoint.X << "," << thisPoint.Y;
-		return StringType(pointStream.str());
+		return StringType(String::Build(thisPoint.X, ",", thisPoint.Y));
 	}
 	else
 		throw InvalidConversionException(type, TypeString);

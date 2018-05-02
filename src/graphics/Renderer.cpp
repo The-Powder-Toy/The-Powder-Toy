@@ -1496,9 +1496,8 @@ void Renderer::render_parts()
 
 					if (mousePos.X>(nx-3) && mousePos.X<(nx+3) && mousePos.Y<(ny+3) && mousePos.Y>(ny-3)) //If mouse is in the head
 					{
-						String::Stream hp;
-						hp << std::setw(3) << sim->parts[i].life;
-						drawtext(mousePos.X-8-2*(sim->parts[i].life<100)-2*(sim->parts[i].life<10), mousePos.Y-12, hp.str(), 255, 255, 255, 255);
+						String hp = String::Build(Format::Width(sim->parts[i].life, 3));
+						drawtext(mousePos.X-8-2*(sim->parts[i].life<100)-2*(sim->parts[i].life<10), mousePos.Y-12, hp, 255, 255, 255, 255);
 					}
 
 					if (findingElement == t)

@@ -695,9 +695,7 @@ RequestStatus Client::ParseServerReturn(char *result, int status, bool json)
 		return RequestOkay;
 	if (status != 200)
 	{
-		String::Stream httperror;
-		httperror << "HTTP Error " << status << ": " << http_ret_text(status);
-		lastError = httperror.str();
+		lastError = String::Build("HTTP Error ", status, ": ", ByteString(http_ret_text(status)).FromUtf8());
 		return RequestFailure;
 	}
 
@@ -727,9 +725,7 @@ RequestStatus Client::ParseServerReturn(char *result, int status, bool json)
 			if (!strncmp((const char *)result, "Error: ", 7))
 			{
 				status = atoi(result+7);
-				String::Stream httperror;
-				httperror << "HTTP Error " << status << ": " << http_ret_text(status);
-				lastError = httperror.str();
+				lastError = String::Build("HTTP Error ", status, ": ", ByteString(http_ret_text(status)).FromUtf8());
 				return RequestFailure;
 			}
 			lastError = "Could not read response: " + ByteString(e.what()).FromUtf8();

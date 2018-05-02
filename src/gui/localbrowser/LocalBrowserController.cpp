@@ -44,12 +44,12 @@ void LocalBrowserController::RemoveSelected()
 		virtual ~RemoveSelectedConfirmation() { }
 	};
 
-	String::Stream desc;
+	StringBuilder desc;
 	desc << "Are you sure you want to delete " << browserModel->GetSelected().size() << " stamp";
 	if(browserModel->GetSelected().size()>1)
 		desc << "s";
 	desc << "?";
-	new ConfirmPrompt("Delete stamps", desc.str(), new RemoveSelectedConfirmation(this));
+	new ConfirmPrompt("Delete stamps", desc.Build(), new RemoveSelectedConfirmation(this));
 }
 
 void LocalBrowserController::removeSelectedC()
@@ -64,10 +64,8 @@ void LocalBrowserController::removeSelectedC()
 		{
 			for (size_t i = 0; i < saves.size(); i++)
 			{
-				String::Stream saveName;
-				saveName << "Deleting stamp [" << saves[i].FromUtf8() << "] ...";
- 				notifyStatus(saveName.str());
- 				Client::Ref().DeleteStamp(saves[i]);
+				notifyStatus(String::Build("Deleting stamp [", saves[i].FromUtf8(), "] ..."));
+				Client::Ref().DeleteStamp(saves[i]);
 				notifyProgress((float(i+1)/float(saves.size())*100));
 			}
 			return true;
@@ -96,9 +94,8 @@ void LocalBrowserController::RescanStamps()
 		virtual ~RescanConfirmation() { }
 	};
 
-	String::Stream desc;
-	desc << "Rescanning the stamps folder can find stamps added to the stamps folder or recover stamps when the stamps.def file has been lost or damaged. However, be warned that this will mess up the current sorting order";
-	new ConfirmPrompt("Rescan", desc.str(), new RescanConfirmation(this));
+	String desc = "Rescanning the stamps folder can find stamps added to the stamps folder or recover stamps when the stamps.def file has been lost or damaged. However, be warned that this will mess up the current sorting order";
+	new ConfirmPrompt("Rescan", desc, new RescanConfirmation(this));
 }
 
 void LocalBrowserController::rescanStampsC()
