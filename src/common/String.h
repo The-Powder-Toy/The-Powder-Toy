@@ -1,5 +1,4 @@
-#ifndef TPT_STRING
-#define TPT_STRING
+#pragma once
 
 #include <stdexcept>
 #include <sstream>
@@ -285,4 +284,4 @@ StringBuilder &operator<<(StringBuilder &, float);
 StringBuilder &operator<<(StringBuilder &, double);
 template<size_t N> StringBuilder &operator<<(StringBuilder &b, ByteString::value_type const (&data)[N]) { return b << ByteString(data).FromUtf8(); }
 
-#endif
+#include "common/Format.h"
