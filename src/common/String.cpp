@@ -2,6 +2,7 @@
 #include <vector>
 #include <locale>
 #include <codecvt>
+#include <limits>
 
 #include "String.h"
 
@@ -87,6 +88,164 @@ ByteString String::ToUtf8() const
 		}
 	}
 }
+
+inline String::value_type widen_wchar(wchar_t ch)
+{
+	return std::make_unsigned<wchar_t>::type(ch);
+}
+
+inline bool representable_wchar(String::value_type ch)
+{
+	return ch < String::value_type(std::make_unsigned<wchar_t>::type(std::numeric_limits<wchar_t>::max()));
+}
+
+inline wchar_t narrow_wchar(String::value_type ch)
+{
+	return wchar_t(ch);
+}
+
+static thread_local struct LocaleImpl
+{
+	std::basic_stringstream<char> stream;
+	std::basic_stringstream<wchar_t> wstream;
+
+	LocaleImpl()
+	{
+		stream.imbue(std::locale::classic());
+		wstream.imbue(std::locale::classic());
+	}
+
+	inline void PrepareWStream(StringBuilder &b)
+	{
+		wstream.flags(b.flags);
+		wstream.width(b.width);
+		wstream.precision(b.precision);
+		wstream.fill(b.fill);
+	}
+
+	inline void FlushWStream(StringBuilder &b)
+	{
+		std::basic_string<wchar_t> wstr = wstream.str();
+		std::vector<String::value_type> chars; // operator new?
+		chars.reserve(wstr.size());
+		for(wchar_t ch : wstream.str())
+			chars.push_back(widen_wchar(ch));
+		b.AddChars(chars.data(), chars.size());
+		wstream.str(std::basic_string<wchar_t>());
+	}
+}
+LocaleImpl;
+
+String StringBuilder::Build() const
+{
+	return String(buffer.begin(), buffer.end());
+}
+
+void StringBuilder::AddChars(String::value_type const *data, size_t count)
+{
+	buffer.reserve(buffer.size() + count);
+	buffer.insert(buffer.end(), data, data + count);
+}
+
+StringBuilder &operator<<(StringBuilder &b, short int data)
+{
+	LocaleImpl.PrepareWStream(b);
+	LocaleImpl.wstream << data;
+	LocaleImpl.FlushWStream(b);
+	return b;
+}
+
+StringBuilder &operator<<(StringBuilder &b, int data)
+{
+	LocaleImpl.PrepareWStream(b);
+	LocaleImpl.wstream << data;
+	LocaleImpl.FlushWStream(b);
+	return b;
+}
+
+StringBuilder &operator<<(StringBuilder &b, long int data)
+{
+	LocaleImpl.PrepareWStream(b);
+	LocaleImpl.wstream << data;
+	LocaleImpl.FlushWStream(b);
+	return b;
+}
+
+StringBuilder &operator<<(StringBuilder &b, long long int data)
+{
+	LocaleImpl.PrepareWStream(b);
+	LocaleImpl.wstream << data;
+	LocaleImpl.FlushWStream(b);
+	return b;
+}
+
+StringBuilder &operator<<(StringBuilder &b, unsigned short int data)
+{
+	LocaleImpl.PrepareWStream(b);
+	LocaleImpl.wstream << data;
+	LocaleImpl.FlushWStream(b);
+	return b;
+}
+
+StringBuilder &operator<<(StringBuilder &b, unsigned int data)
+{
+	LocaleImpl.PrepareWStream(b);
+	LocaleImpl.wstream << data;
+	LocaleImpl.FlushWStream(b);
+	return b;
+}
+
+StringBuilder &operator<<(StringBuilder &b, unsigned long int data)
+{
+	LocaleImpl.PrepareWStream(b);
+	LocaleImpl.wstream << data;
+	LocaleImpl.FlushWStream(b);
+	return b;
+}
+
+StringBuilder &operator<<(StringBuilder &b, unsigned long long int data)
+{
+	LocaleImpl.PrepareWStream(b);
+	LocaleImpl.wstream << data;
+	LocaleImpl.FlushWStream(b);
+	return b;
+}
+
+StringBuilder &operator<<(StringBuilder &b, ByteString::value_type data)
+{
+	String::value_type ch = data;
+	b.AddChars(&ch, 1);
+	return b;
+}
+
+StringBuilder &operator<<(StringBuilder &b, String::value_type data)
+{
+	b.AddChars(&data, 1);
+	return b;
+}
+
+StringBuilder &operator<<(StringBuilder &b, String const &data)
+{
+	b.AddChars(data.data(), data.size());
+	return b;
+}
+
+StringBuilder &operator<<(StringBuilder &b, float data)
+{
+	LocaleImpl.PrepareWStream(b);
+	LocaleImpl.wstream << data;
+	LocaleImpl.FlushWStream(b);
+	return b;
+}
+
+StringBuilder &operator<<(StringBuilder &b, double data)
+{
+	LocaleImpl.PrepareWStream(b);
+	LocaleImpl.wstream << data;
+	LocaleImpl.FlushWStream(b);
+	return b;
+}
+
 
 template<> std::ctype<char32_t>::~ctype()
 {

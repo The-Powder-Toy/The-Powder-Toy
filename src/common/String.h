@@ -3,9 +3,13 @@
 
 #include <stdexcept>
 #include <sstream>
+#include <vector>
 #include <string>
+#include <ios>
 
+class ByteStringBuilder;
 class String;
+class StringBuilder;
 
 template<typename T> class SplitBase
 {
@@ -243,5 +247,42 @@ public:
 	inline ConversionError(ByteString::value_type const *at, ByteString::value_type const *upto): std::runtime_error(formatError(at, upto)) {}
 	inline ConversionError(bool to): std::runtime_error(to ? "Could not convert to UTF-8" : "Could not convert from UTF-8") {}
 };
+
+class StringBuilder
+{
+	std::vector<String::value_type> buffer; // TODO: std::list<std::vector<String::value_type> > ?
+public:
+	std::ios_base::fmtflags flags;
+	String::value_type fill;
+	size_t width, precision;
+	inline StringBuilder(): flags(std::ios_base::skipws | std::ios_base::dec), fill(' '), width(0), precision(6) {}
+
+	void AddChars(String::value_type const *, size_t);
+	size_t Size() const { return buffer.size(); }
+	String Build() const;
+
+	template<typename T> StringBuilder &operator<<(T) = delete;
+
+	template<typename T, typename... Ts> StringBuilder &Add(T &&arg, Ts&&... args)
+	{
+		return (*this << std::forward<T>(arg)).Add(std::forward<Ts>(args)...);
+	}
+	StringBuilder &Add() { return *this; }
+};
+
+StringBuilder &operator<<(StringBuilder &, short int);
+StringBuilder &operator<<(StringBuilder &, int);
+StringBuilder &operator<<(StringBuilder &, long int);
+StringBuilder &operator<<(StringBuilder &, long long int);
+StringBuilder &operator<<(StringBuilder &, unsigned short int);
+StringBuilder &operator<<(StringBuilder &, unsigned int);
+StringBuilder &operator<<(StringBuilder &, unsigned long int);
+StringBuilder &operator<<(StringBuilder &, unsigned long long int);
+StringBuilder &operator<<(StringBuilder &, ByteString::value_type);
+StringBuilder &operator<<(StringBuilder &, String::value_type);
+StringBuilder &operator<<(StringBuilder &, String const &);
+StringBuilder &operator<<(StringBuilder &, float);
+StringBuilder &operator<<(StringBuilder &, double);
+template<size_t N> StringBuilder &operator<<(StringBuilder &b, ByteString::value_type const (&data)[N]) { return b << ByteString(data).FromUtf8(); }
 
 #endif
