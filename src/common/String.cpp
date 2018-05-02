@@ -234,6 +234,8 @@ inline wchar_t narrow_wchar(String::value_type ch)
 	return wchar_t(ch);
 }
 
+String numberChars = "-.+0123456789ABCDEFXabcdefx";
+
 static thread_local struct LocaleImpl
 {
 	std::basic_stringstream<char> stream;
@@ -253,6 +255,16 @@ static thread_local struct LocaleImpl
 		wstream.fill(b.fill);
 	}
 
+	inline void PrepareWStream(String const &str, size_t pos, std::ios_base::fmtflags set, std::ios_base::fmtflags reset)
+	{
+		wstream.flags((std::ios_base::dec & ~ reset) | set);
+		std::basic_string<wchar_t> wstr;
+		while(pos < str.size() && representable_wchar(str[pos]) && numberChars.Contains(str[pos]))
+			wstr.push_back(narrow_wchar(str[pos++]));
+		wstream.str(wstr);
+		wstream.clear();
+	}
+
 	inline void FlushWStream(StringBuilder &b)
 	{
 		std::basic_string<wchar_t> wstr = wstream.str();
@@ -261,6 +273,11 @@ static thread_local struct LocaleImpl
 		for(wchar_t ch : wstream.str())
 			chars.push_back(widen_wchar(ch));
 		b.AddChars(chars.data(), chars.size());
+		wstream.str(std::basic_string<wchar_t>());
+	}
+
+	inline void FlushWStream()
+	{
 		wstream.str(std::basic_string<wchar_t>());
 	}
 }
@@ -376,6 +393,50 @@ StringBuilder &operator<<(StringBuilder &b, double data)
 	return b;
 }
 
+String::Split String::SplitSigned(long long int &value, size_t pos, std::ios_base::fmtflags set, std::ios_base::fmtflags reset) const
+{
+	LocaleImpl.PrepareWStream(*this, pos, set, reset);
+	LocaleImpl.wstream >> value;
+	if(LocaleImpl.wstream.fail())
+	{
+		LocaleImpl.FlushWStream();
+		return Split(*this, pos, npos, 0, false);
+	}
+	LocaleImpl.wstream.clear();
+	Split split(*this, pos, pos + LocaleImpl.wstream.tellg(), 0, false);
+	LocaleImpl.FlushWStream();
+	return split;
+}
+
+String::Split String::SplitUnsigned(unsigned long long int &value, size_t pos, std::ios_base::fmtflags set, std::ios_base::fmtflags reset) const
+{
+	LocaleImpl.PrepareWStream(*this, pos, set, reset);
+	LocaleImpl.wstream >> value;
+	if(LocaleImpl.wstream.fail())
+	{
+		LocaleImpl.FlushWStream();
+		return Split(*this, pos, npos, 0, false);
+	}
+	LocaleImpl.wstream.clear();
+	Split split(*this, pos, pos + LocaleImpl.wstream.tellg(), 0, false);
+	LocaleImpl.FlushWStream();
+	return split;
+}
+
+String::Split String::SplitFloat(double &value, size_t pos, std::ios_base::fmtflags set, std::ios_base::fmtflags reset) const
+{
+	LocaleImpl.PrepareWStream(*this, pos, set, reset);
+	LocaleImpl.wstream >> value;
+	if(LocaleImpl.wstream.fail())
+	{
+		LocaleImpl.FlushWStream();
+		return Split(*this, pos, npos, 0, false);
+	}
+	LocaleImpl.wstream.clear();
+	Split split(*this, pos, pos + LocaleImpl.wstream.tellg(), 0, false);
+	LocaleImpl.FlushWStream();
+	return split;
+}
 
 template<> std::ctype<char32_t>::~ctype()
 {

@@ -62,8 +62,10 @@ namespace Format
 	template<typename T> inline FlagsOverride<T, std::ios_base::fmtflags{}, std::ios_base::showpoint> NoShowPoint(T value) { return FlagsOverride<T, std::ios_base::fmtflags{}, std::ios_base::showpoint>(value); }
 	inline FlagsOverride<void, std::ios_base::uppercase, std::ios_base::uppercase> Uppercase() { return FlagsOverride<void, std::ios_base::uppercase, std::ios_base::uppercase>(); }
 	inline FlagsOverride<void, std::ios_base::showpoint, std::ios_base::showpoint> ShowPoint() { return FlagsOverride<void, std::ios_base::showpoint, std::ios_base::showpoint>(); }
+	inline FlagsOverride<void, std::ios_base::skipws, std::ios_base::skipws> SkipWS() { return FlagsOverride<void, std::ios_base::skipws, std::ios_base::skipws>(); }
 	inline FlagsOverride<void, std::ios_base::fmtflags{}, std::ios_base::uppercase> NoUppercase() { return FlagsOverride<void, std::ios_base::fmtflags{}, std::ios_base::uppercase>(); }
 	inline FlagsOverride<void, std::ios_base::fmtflags{}, std::ios_base::showpoint> NoShowPoint() { return FlagsOverride<void, std::ios_base::fmtflags{}, std::ios_base::showpoint>(); }
+	inline FlagsOverride<void, std::ios_base::fmtflags{}, std::ios_base::skipws> NoSkipWS() { return FlagsOverride<void, std::ios_base::fmtflags{}, std::ios_base::skipws>(); }
 
 	template<typename T> inline FlagsOverride<T, std::ios_base::fixed, std::ios_base::floatfield> Fixed(T value) { return FlagsOverride<T, std::ios_base::fixed, std::ios_base::floatfield>(value); }
 	template<typename T> inline FlagsOverride<T, std::ios_base::scientific, std::ios_base::floatfield> Scientific(T value) { return FlagsOverride<T, std::ios_base::scientific, std::ios_base::floatfield>(value); }

@@ -9,6 +9,7 @@
 class ByteStringBuilder;
 class String;
 class StringBuilder;
+namespace Format { template<typename T, std::ios_base::fmtflags set, std::ios_base::fmtflags reset> struct FlagsOverride; }
 
 template<typename T> class SplitBase
 {
@@ -179,6 +180,71 @@ public:
 	inline Split SplitFromEndBy(String const &str, size_t pos = npos) const { return Split(*this, pos,super::find(str, pos), str.size(), true); }
 	inline Split SplitFromEndByAny(String const &str, size_t pos = npos) const { return Split(*this, pos, super::find_last_of(str, pos), 1, true); }
 	inline Split SplitFromEndByNot(String const &str, size_t pos = npos) const { return Split(*this, pos, super::find_last_not_of(str, pos), 1, true); }
+private:
+	Split SplitSigned(long long int &, size_t, std::ios_base::fmtflags, std::ios_base::fmtflags) const;
+	Split SplitUnsigned(unsigned long long int &, size_t, std::ios_base::fmtflags, std::ios_base::fmtflags) const;
+	Split SplitFloat(double &, size_t, std::ios_base::fmtflags, std::ios_base::fmtflags) const;
+public:
+	template<typename T> inline Split SplitSigned(T &ref, size_t pos, std::ios_base::fmtflags set, std::ios_base::fmtflags reset) const
+	{
+		long long int value = 0;
+		Split split = SplitSigned(value, pos, set, reset);
+		ref = value;
+		return split;
+	}
+	template<typename T> inline Split SplitUnsigned(T &ref, size_t pos, std::ios_base::fmtflags set, std::ios_base::fmtflags reset) const
+	{
+		unsigned long long int value = 0;
+		Split split = SplitUnsigned(value, pos, set, reset);
+		ref = value;
+		return split;
+	}
+	template<typename T> inline Split SplitFloat(T &ref, size_t pos, std::ios_base::fmtflags set, std::ios_base::fmtflags reset) const
+	{
+		double value = 0;
+		Split split = SplitFloat(value, pos, set, reset);
+		ref = value;
+		return split;
+	}
+
+	inline Split SplitNumber(short int &ref, size_t pos = 0) const { return SplitSigned(ref, pos, std::ios_base::fmtflags(), std::ios_base::fmtflags()); }
+	inline Split SplitNumber(int &ref, size_t pos = 0) const { return SplitSigned(ref, pos, std::ios_base::fmtflags(), std::ios_base::fmtflags()); }
+	inline Split SplitNumber(long int &ref, size_t pos = 0) const { return SplitSigned(ref, pos, std::ios_base::fmtflags(), std::ios_base::fmtflags()); }
+	inline Split SplitNumber(long long int &ref, size_t pos = 0) const { return SplitSigned(ref, pos, std::ios_base::fmtflags(), std::ios_base::fmtflags()); }
+	inline Split SplitNumber(unsigned short int &ref, size_t pos = 0) const { return SplitUnsigned(ref, pos, std::ios_base::fmtflags(), std::ios_base::fmtflags()); }
+	inline Split SplitNumber(unsigned int &ref, size_t pos = 0) const { return SplitUnsigned(ref, pos, std::ios_base::fmtflags(), std::ios_base::fmtflags()); }
+	inline Split SplitNumber(unsigned long int &ref, size_t pos = 0) const { return SplitUnsigned(ref, pos, std::ios_base::fmtflags(), std::ios_base::fmtflags()); }
+	inline Split SplitNumber(unsigned long long int &ref, size_t pos = 0) const { return SplitUnsigned(ref, pos, std::ios_base::fmtflags(), std::ios_base::fmtflags()); }
+	inline Split SplitNumber(float &ref, size_t pos = 0) const { return SplitFloat(ref, pos, std::ios_base::fmtflags(), std::ios_base::fmtflags()); }
+	inline Split SplitNumber(double &ref, size_t pos = 0) const { return SplitFloat(ref, pos, std::ios_base::fmtflags(), std::ios_base::fmtflags()); }
+
+	template<std::ios_base::fmtflags set, std::ios_base::fmtflags reset> inline Split SplitNumber(short int &ref, Format::FlagsOverride<void, set, reset>, size_t pos = 0) const { return SplitSigned(ref, pos, set, reset); }
+	template<std::ios_base::fmtflags set, std::ios_base::fmtflags reset> inline Split SplitNumber(int &ref, Format::FlagsOverride<void, set, reset>, size_t pos = 0) const { return SplitSigned(ref, pos, set, reset); }
+	template<std::ios_base::fmtflags set, std::ios_base::fmtflags reset> inline Split SplitNumber(long int &ref, Format::FlagsOverride<void, set, reset>, size_t pos = 0) const { return SplitSigned(ref, pos, set, reset); }
+	template<std::ios_base::fmtflags set, std::ios_base::fmtflags reset> inline Split SplitNumber(long long int &ref, Format::FlagsOverride<void, set, reset>, size_t pos = 0) const { return SplitSigned(ref, pos, set, reset); }
+	template<std::ios_base::fmtflags set, std::ios_base::fmtflags reset> inline Split SplitNumber(unsigned short int &ref, Format::FlagsOverride<void, set, reset>, size_t pos = 0) const { return SplitUnsigned(ref, pos, set, reset); }
+	template<std::ios_base::fmtflags set, std::ios_base::fmtflags reset> inline Split SplitNumber(unsigned int &ref, Format::FlagsOverride<void, set, reset>, size_t pos = 0) const { return SplitUnsigned(ref, pos, set, reset); }
+	template<std::ios_base::fmtflags set, std::ios_base::fmtflags reset> inline Split SplitNumber(unsigned long int &ref, Format::FlagsOverride<void, set, reset>, size_t pos = 0) const { return SplitUnsigned(ref, pos, set, reset); }
+	template<std::ios_base::fmtflags set, std::ios_base::fmtflags reset> inline Split SplitNumber(unsigned long long int &ref, Format::FlagsOverride<void, set, reset>, size_t pos = 0) const { return SplitUnsigned(ref, pos, set, reset); }
+	template<std::ios_base::fmtflags set, std::ios_base::fmtflags reset> inline Split SplitNumber(float &ref, Format::FlagsOverride<void, set, reset>, size_t pos = 0) const { return SplitFloat(ref, pos, set, reset); }
+	template<std::ios_base::fmtflags set, std::ios_base::fmtflags reset> inline Split SplitNumber(double &ref, Format::FlagsOverride<void, set, reset>, size_t pos = 0) const { return SplitFloat(ref, pos, set, reset); }
+
+	template<typename T> T ToNumber() const
+	{
+		T value = T();
+		Split split = SplitNumber(value);
+		if(split.PositionBefore() != size())
+			return T();
+		return value;
+	}
+	template<typename T, std::ios_base::fmtflags set, std::ios_base::fmtflags reset> inline T ToNumber(Format::FlagsOverride<void, set, reset> fmt) const
+	{
+		T value = T();
+		Split split = SplitNumber(value, fmt);
+		if(split.PositionBefore() != size())
+			return T();
+		return value;
+	}
 
 	std::vector<String> PartitionBy(value_type ch, bool includeEmpty = false) const;
 	std::vector<String> PartitionBy(String const &str, bool includeEmpty = false) const;
