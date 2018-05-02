@@ -30,13 +30,13 @@ public:
 	{
 		if(posBefore == T::npos)
 			return reverse ? T() : parent.Substr(posFrom);
-		return parent.Substr(reverse ? 0 : posFrom, includeSeparator ? posAfter : posBefore);
+		return parent.Between(reverse ? 0 : posFrom, includeSeparator ? posAfter : posBefore);
 	}
 	inline T After(bool includeSeparator = false) const
 	{
 		if(posBefore == T::npos)
 			return reverse ? parent.Substr(0, posFrom) : T();
-		return parent.Substr(includeSeparator ? posBefore : posAfter, reverse ? posFrom : T::npos);
+		return parent.Between(includeSeparator ? posBefore : posAfter, reverse ? posFrom : T::npos);
 	}
 
 	inline size_t PositionFrom() const { return posFrom; }
