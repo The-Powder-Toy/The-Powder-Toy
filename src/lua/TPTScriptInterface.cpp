@@ -22,9 +22,7 @@ int TPTScriptInterface::Command(String command)
 	int retCode = -1;
 
 	//Split command into words, put them on the stack
-	String::Stream ss(command);
-	String word;
-	while(std::getline(ss, word, String::value_type(' ')))
+	for(String word : command.PartitionBy(' '))
 		words.push_back(word);
 	while(!words.empty())
 	{
@@ -211,9 +209,7 @@ String TPTScriptInterface::FormatCommand(String command)
 	String outputData;
 
 	//Split command into words, put them on the stack
-	String::Stream ss(command);
-	String word;
-	while(std::getline(ss, word, String::value_type(' ')))
+	for(String word : command.PartitionBy(' '))
 		words.push_back(word);
 	while(!words.empty())
 	{

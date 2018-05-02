@@ -171,6 +171,57 @@ public:
 	inline Split SplitFromEndByAny(String const &str, size_t pos = npos) const { return Split(*this, super::find_last_of(str, pos), 1, true); }
 	inline Split SplitFromEndByNot(String const &str, size_t pos = npos) const { return Split(*this, super::find_last_not_of(str, pos), 1, true); }
 
+	inline std::vector<String> PartitionBy(value_type ch, bool includeEmpty = false) const
+	{
+		std::vector<String> result;
+		size_t at = 0;
+		while(true)
+		{
+			Split split = SplitBy(ch, at);
+			String part = split.Before();
+			if(includeEmpty || part.size())
+				result.push_back(part);
+			at = split.PositionAfter();
+			if(!split)
+				break;
+		}
+		return result;
+	}
+
+	inline std::vector<String> PartitionBy(String const &str, bool includeEmpty = false) const
+	{
+		std::vector<String> result;
+		size_t at = 0;
+		while(true)
+		{
+			Split split = SplitBy(str, at);
+			String part = split.Before();
+			if(includeEmpty || part.size())
+				result.push_back(part);
+			at = split.PositionAfter();
+			if(!split)
+				break;
+		}
+		return result;
+	}
+
+	inline std::vector<String> PartitionByAny(String const &str, bool includeEmpty = false) const
+	{
+		std::vector<String> result;
+		size_t at = 0;
+		while(true)
+		{
+			Split split = SplitByAny(str, at);
+			String part = split.Before();
+			if(includeEmpty || part.size())
+				result.push_back(part);
+			at = split.PositionAfter();
+			if(!split)
+				break;
+		}
+		return result;
+	}
+
 	inline String &Substitute(String const &needle, String const &replacement)
 	{
 		size_t needleSize = needle.size();
