@@ -403,7 +403,7 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 	//Spawn
 	if (((int)(playerp->comm)&0x08) == 0x08)
 	{
-		ry -= 2*(random_gen()%2)+1;
+		ry -= 2 * RNG::Ref().between(0, 1) + 1;
 		r = pmap[ry][rx];
 		if (sim->elements[TYP(r)].Properties&TYPE_SOLID)
 		{
@@ -439,7 +439,7 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 			{
 				if (playerp->elem == PT_PHOT)
 				{
-					int random = abs((int)(random_gen()%3-1))*3;
+					int random = abs((RNG::Ref().between(-1, 1)))*3;
 					if (random==0)
 					{
 						sim->kill_part(np);
@@ -460,7 +460,7 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 					if (gvx!=0 || gvy!=0)
 						angle = atan2(gvx, gvy)*180.0f/M_PI;
 					else
-						angle = random_gen()%360;
+						angle = RNG::Ref().between(0, 359);
 					if (((int)playerp->pcomm)&0x01)
 						angle += 180;
 					if (angle>360)
@@ -468,9 +468,9 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 					if (angle<0)
 						angle+=360;
 					parts[np].tmp = angle;
-					parts[np].life=random_gen()%(2+power/15)+power/7;
-					parts[np].temp=parts[np].life*power/2.5;
-					parts[np].tmp2=1;
+					parts[np].life = RNG::Ref().between(0, 2+power/15) + power/7;
+					parts[np].temp = parts[np].life*power/2.5;
+					parts[np].tmp2 = 1;
 				}
 				else if (!playerp->fan)
 				{
@@ -592,7 +592,7 @@ void Element_STKM::STKM_interact(Simulation *sim, playerst *playerp, int i, int 
 	{
 		if (TYP(r)==PT_SPRK && playerp->elem!=PT_LIGH) //If on charge
 		{
-			sim->parts[i].life -= random_gen.between(32, 52);
+			sim->parts[i].life -= RNG::Ref().between(32, 52);
 		}
 
 		if (sim->elements[TYP(r)].HeatConduct && (TYP(r)!=PT_HSWC||sim->parts[ID(r)].life==10) && ((playerp->elem!=PT_LIGH && sim->parts[ID(r)].temp>=323) || sim->parts[ID(r)].temp<=243) && (!playerp->rocketBoots || TYP(r)!=PT_PLSM))

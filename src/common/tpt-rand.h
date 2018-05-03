@@ -11,8 +11,9 @@ private:
 	uint64_t next();
 public:
 	unsigned int operator()();
+	unsigned int gen();
 	int between(int lower, int upper);
-	bool chance(float chance);
+	bool chance(int nominator, unsigned int denominator);
 	float uniform01();
 
 	RNG();

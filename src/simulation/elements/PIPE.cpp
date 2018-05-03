@@ -191,7 +191,7 @@ int Element_PIPE::update(UPDATE_FUNC_ARGS)
 
 			if (nt)//there is something besides PIPE around current particle
 			{
-				rndstore = random_gen();
+				rndstore = RNG::Ref().gen();
 				rnd = rndstore&7;
 				//rndstore = rndstore>>3;
 				rx = pos_1_rx[rnd];
@@ -433,7 +433,7 @@ void Element_PIPE::pushParticle(Simulation * sim, int i, int count, int original
 	if( !(sim->parts[i].tmp&0x200) )
 	{
 		//normal random push
-		rndstore = random_gen();
+		rndstore = RNG::Ref().gen();
 		// RAND_MAX is at least 32767 on all platforms i.e. pow(8,5)-1
 		// so can go 5 cycles without regenerating rndstore
 		for (q=0; q<3; q++)//try to push 3 times

@@ -50,7 +50,7 @@ int Element_VIRS::update(UPDATE_FUNC_ARGS)
 {
 	//pavg[0] measures how many frames until it is cured (0 if still actively spreading and not being cured)
 	//pavg[1] measures how many frames until it dies
-	int r, rx, ry, rndstore = random_gen();
+	int r, rx, ry, rndstore = RNG::Ref().gen();
 	if (parts[i].pavg[0])
 	{
 		parts[i].pavg[0] -= (rndstore & 0x1) ? 0:1;
@@ -101,7 +101,7 @@ int Element_VIRS::update(UPDATE_FUNC_ARGS)
 				}
 				else if (TYP(r) == PT_PLSM)
 				{
-					if (surround_space && 10 + sim->pv[(y+ry)/CELL][(x+rx)/CELL] > (random_gen()%100))
+					if (surround_space && RNG::Ref().chance(10 + sim->pv[(y+ry)/CELL][(x+rx)/CELL], 100))
 					{
 						sim->create_part(i, x, y, PT_PLSM);
 						return 1;
@@ -135,7 +135,7 @@ int Element_VIRS::update(UPDATE_FUNC_ARGS)
 			}
 			//reset rndstore only once, halfway through
 			else if (!rx && !ry)
-				rndstore = random_gen();
+				rndstore = RNG::Ref().gen();
 		}
 	return 0;
 }

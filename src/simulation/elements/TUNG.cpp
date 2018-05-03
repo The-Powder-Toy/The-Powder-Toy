@@ -66,16 +66,16 @@ int Element_TUNG::update(UPDATE_FUNC_ARGS)
 					}
 				}
 	}
-	if((parts[i].temp > MELTING_POINT && !(random_gen()%20)) || splode)
+	if((parts[i].temp > MELTING_POINT && RNG::Ref().chance(1, 20)) || splode)
 	{
-		if(!(random_gen()%50))
+		if (RNG::Ref().chance(1, 50))
 		{
 			sim->pv[y/CELL][x/CELL] += 50.0f;
 		}
-		else if(!(random_gen()%100))
+		else if (RNG::Ref().chance(1, 100))
 		{
 			sim->part_change_type(i, x, y, PT_FIRE);
-			parts[i].life = random_gen()%500;
+			parts[i].life = RNG::Ref().between(0, 499);
 			return 1;
 		}
 		else
@@ -86,10 +86,10 @@ int Element_TUNG::update(UPDATE_FUNC_ARGS)
 		}
 		if(splode)
 		{
-			parts[i].temp = restrict_flt(MELTING_POINT + (random_gen()%600) + 200, MIN_TEMP, MAX_TEMP);
+			parts[i].temp = restrict_flt(MELTING_POINT + RNG::Ref().between(200, 799), MIN_TEMP, MAX_TEMP);
 		}
-		parts[i].vx += (random_gen()%100)-50;
-		parts[i].vy += (random_gen()%100)-50;
+		parts[i].vx += RNG::Ref().between(-50, 50);
+		parts[i].vy += RNG::Ref().between(-50, 50);
 		return 1;
 	}
 	parts[i].pavg[0] = parts[i].pavg[1];

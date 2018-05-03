@@ -55,7 +55,7 @@ int Element_SHLD3::update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 				{
-					if (!(random_gen()%2500))
+					if (RNG::Ref().chance(1, 2500))
 					{
 						np = sim->create_part(-1,x+rx,y+ry,PT_SHLD1);
 						if (np<0) continue;
@@ -71,7 +71,7 @@ int Element_SHLD3::update(UPDATE_FUNC_ARGS)
 				}
 				else if (TYP(r)==PT_SPRK&&parts[i].life==0)
 				{
-					if (3>random_gen()%500)
+					if (RNG::Ref().chance(3, 500))
 					{
 						sim->part_change_type(i,x,y,PT_SHLD4);
 						parts[i].life = 7;

@@ -99,7 +99,7 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 	case PT_NBLE:
 		if (parts[i].life<=1 && !(parts[i].tmp&0x1))
 		{
-			parts[i].life = random_gen()%150+50;
+			parts[i].life = RNG::Ref().between(50, 199);
 			sim->part_change_type(i,x,y,PT_PLSM);
 			parts[i].ctype = PT_NBLE;
 			if (parts[i].temp > 5273.15)
@@ -118,12 +118,12 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 					r = pmap[y+ry][x+rx];
 					if (r)
 						continue;
-					if (parts[i].tmp>4 && random_gen()%(parts[i].tmp*parts[i].tmp/20+6)==0)
+					if (parts[i].tmp>4 && RNG::Ref().chance(1, parts[i].tmp*parts[i].tmp/20+6))
 					{
 						int p = sim->create_part(-1, x+rx*2, y+ry*2, PT_LIGH);
 						if (p!=-1)
 						{
-							parts[p].life=random_gen()%(2+parts[i].tmp/15)+parts[i].tmp/7;
+							parts[p].life = RNG::Ref().between(0, 2+parts[i].tmp/15) + parts[i].tmp/7;
 							if (parts[i].life>60)
 								parts[i].life=60;
 							parts[p].temp=parts[p].life*parts[i].tmp/2.5;
@@ -151,17 +151,17 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 						continue;
 					if (TYP(r)==PT_DSTW || TYP(r)==PT_SLTW || TYP(r)==PT_WATR)
 					{
-						int rnd = random_gen()%100;
-						if (!rnd)
+						int rndstore = RNG::Ref().gen()%100;
+						if (!rndstore)
 							sim->part_change_type(ID(r),x+rx,y+ry,PT_O2);
-						else if (3>rnd)
+						else if (3 > rndstore)
 							sim->part_change_type(ID(r),x+rx,y+ry,PT_H2);
 					}
 				}
 		break;
 	case PT_TUNG:
 		if(parts[i].temp < 3595.0){
-			parts[i].temp += (random_gen()%20)-4;
+			parts[i].temp += RNG::Ref().between(-4, 15);
 		}
 	default:
 		break;

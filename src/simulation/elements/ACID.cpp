@@ -69,14 +69,14 @@ int Element_ACID::update(UPDATE_FUNC_ARGS)
 					}
 					else if (rt == PT_WTRV)
 					{
-						if (RNG::Ref().chance(1/250.0f))
+						if (RNG::Ref().chance(1, 250))
 						{
 							sim->part_change_type(i, x, y, PT_CAUS);
 							parts[i].life = RNG::Ref().between(25, 74);
 							sim->kill_part(ID(r));
 						}
 					}
-					else if (rt != PT_CLNE && rt != PT_PCLN && parts[i].life >= 50 && RNG::Ref().chance(sim->elements[rt].Hardness/1000.0))
+					else if (rt != PT_CLNE && rt != PT_PCLN && parts[i].life >= 50 && RNG::Ref().chance(sim->elements[rt].Hardness, 1000.0))
 					{
 						if (sim->parts_avg(i, ID(r),PT_GLAS)!= PT_GLAS)//GLAS protects stuff from acid
 						{

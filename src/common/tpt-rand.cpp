@@ -22,6 +22,11 @@ uint64_t RNG::next()
 	return result;
 }
 
+unsigned int RNG::gen()
+{
+	return next() & 0x7FFFFFFF;
+}
+
 unsigned int RNG::operator()()
 {
 	return next()&0xFFFFFFFF;
@@ -33,9 +38,11 @@ int RNG::between(int lower, int upper)
 	return static_cast<int>(r % (upper - lower + 1)) + lower;
 }
 
-bool RNG::chance(float chance)
+bool RNG::chance(int nominator, unsigned int denominator)
 {
-	return uniform01() < chance;
+	if (nominator < 0)
+		return false;
+	return next() % denominator < static_cast<unsigned int>(nominator);
 }
 
 float RNG::uniform01()

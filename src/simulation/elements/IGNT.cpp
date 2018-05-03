@@ -66,7 +66,7 @@ int Element_IGNT::update(UPDATE_FUNC_ARGS)
 	}
 	else if(parts[i].life > 0)
 	{
-		if (RNG::Ref().chance(2.0/3))
+		if (RNG::Ref().chance(2, 3))
 		{
 			int nb = sim->create_part(-1, x + RNG::Ref().between(-1, 1), y + RNG::Ref().between(-1, 1), PT_EMBR);
 			if (nb!=-1) {
