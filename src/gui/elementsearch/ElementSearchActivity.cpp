@@ -117,7 +117,7 @@ void ElementSearchActivity::searchTools(String query)
 		std::transform(nameLower.begin(), nameLower.end(), nameLower.begin(), ::tolower);
 		if(nameLower == queryLower)
 			exactmatches.push_back(*iter);
-		else if(!nameLower.BeginsWith(queryLower))
+		else if(nameLower.BeginsWith(queryLower))
 			frontmatches.push_back(*iter);
 		else if(nameLower.Contains(queryLower))
 			matches.push_back(*iter);
