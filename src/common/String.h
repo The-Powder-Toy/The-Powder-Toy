@@ -259,8 +259,6 @@ public:
 	ByteString ToUtf8() const;
 	ByteString ToAscii() const;
 	template<typename... Ts> static String Build(Ts&&... args);
-
-	using Stream = std::basic_stringstream<value_type>;
 };
 
 inline String operator+(String const &lhs, String const &rhs) { return static_cast<std::basic_string<char32_t> const &>(lhs) + static_cast<std::basic_string<char32_t> const &>(rhs); }
