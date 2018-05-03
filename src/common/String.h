@@ -163,7 +163,7 @@ public:
 
 	inline String Substr(size_t pos = 0, size_t count = npos) const { return super::substr(pos, count); }
 	inline String SubstrFromEnd(size_t rpos = 0, size_t rcount = npos) const { return super::substr(rcount == npos || rcount > rpos ? 0 : rpos - rcount, size() - rpos); }
-	inline String Between(size_t from, size_t to) const { return from >= to ? String() : super::substr(from, to - from); }
+	inline String Between(size_t from, size_t to) const { return to == npos ? super::substr(from) : from >= to ? String() : super::substr(from, to - from); }
 
 	inline bool Contains(value_type ch) const { return super::find(ch) != npos; }
 	inline bool Contains(String const &other) const { return super::find(other) != npos; }
@@ -229,20 +229,20 @@ public:
 	template<std::ios_base::fmtflags set, std::ios_base::fmtflags reset> inline Split SplitNumber(float &ref, Format::FlagsOverride<void, set, reset>, size_t pos = 0) const { return SplitFloat(ref, pos, set, reset); }
 	template<std::ios_base::fmtflags set, std::ios_base::fmtflags reset> inline Split SplitNumber(double &ref, Format::FlagsOverride<void, set, reset>, size_t pos = 0) const { return SplitFloat(ref, pos, set, reset); }
 
-	template<typename T> T ToNumber() const
+	template<typename T> T ToNumber(bool noThrow = false) const
 	{
 		T value = T();
 		Split split = SplitNumber(value);
 		if(split.PositionBefore() != size())
-			return T();
+			return noThrow ? T() : throw std::runtime_error("Not a number");
 		return value;
 	}
-	template<typename T, std::ios_base::fmtflags set, std::ios_base::fmtflags reset> inline T ToNumber(Format::FlagsOverride<void, set, reset> fmt) const
+	template<typename T, std::ios_base::fmtflags set, std::ios_base::fmtflags reset> inline T ToNumber(Format::FlagsOverride<void, set, reset> fmt, bool noThrow = false) const
 	{
 		T value = T();
 		Split split = SplitNumber(value, fmt);
 		if(split.PositionBefore() != size())
-			return T();
+			return noThrow ? T() : throw std::runtime_error("Not a number");
 		return value;
 	}
 

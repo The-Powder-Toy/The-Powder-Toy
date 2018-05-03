@@ -18,9 +18,7 @@ namespace format
 
 	template <typename T> String NumberToString(T number)
 	{
-		String::Stream ss;
-		ss << number;
-		return ss.str();
+		return String::Build(number);
 	}
 
 	template <typename T> T ByteStringToNumber(const ByteString & text)
@@ -32,9 +30,7 @@ namespace format
 
 	template <typename T> T StringToNumber(const String & text)
 	{
-		String::Stream ss(text);
-		T number;
-		return (ss >> number)?number:0;
+		return text.ToNumber<T>(true);
 	}
 
 	ByteString URLEncode(ByteString value);

@@ -150,10 +150,7 @@ int TPTScriptInterface::parseNumber(String str)
 	}
 	else
 	{
-		int number;
-		String::Stream ss(str);
-		ss >> number;
-		return number;
+		return str.ToNumber<int>();
 	}
 	return currentNumber;
 }
@@ -188,11 +185,12 @@ AnyType TPTScriptInterface::eval(std::deque<String> * words)
 		return FloatType(atof(word.ToUtf8().c_str()));
 	case TypePoint:
 	{
-		String::Stream pointStream(word);
 		int x, y;
-		String::value_type comma;
-		pointStream >> x >> comma >> y;
-		return PointType(x, y);
+		if(String::Split comma = word.SplitNumber(x))
+			if(comma.After().BeginsWith(","))
+				if(comma.After().Substr(1).SplitNumber(y))
+					return PointType(x, y);
+		return PointType(0, 0);
 	}
 	case TypeString:
 		return StringType(word);

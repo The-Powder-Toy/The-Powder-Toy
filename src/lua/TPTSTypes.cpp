@@ -71,13 +71,13 @@ AnyType::operator PointType()
 	}
 	else if(type == TypeString)
 	{
-		String::Stream pointStream(*(value.str));
 		int x, y;
-		String::value_type comma;
-		pointStream >> x >> comma >> y;
-		if (pointStream.fail() || comma != ',')
-			throw InvalidConversionException(type, TypePoint);
-		return PointType(ui::Point(x, y));
+		if(String::Split comma = (*value.str).SplitNumber(x))
+			if(comma.After().BeginsWith(","))
+				if(String::Split end = comma.After().Substr(1).SplitNumber(y))
+					if(!end.After().size())
+						return PointType(x, y);
+		throw InvalidConversionException(type, TypePoint);
 	}
 	else
 		throw InvalidConversionException(type, TypePoint);
