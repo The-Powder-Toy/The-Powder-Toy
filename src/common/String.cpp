@@ -399,6 +399,7 @@ String::Split String::SplitSigned(long long int &value, size_t pos, std::ios_bas
 	LocaleImpl.wstream >> value;
 	if(LocaleImpl.wstream.fail())
 	{
+		LocaleImpl.wstream.clear();
 		LocaleImpl.FlushWStream();
 		return Split(*this, pos, npos, 0, false);
 	}
@@ -414,6 +415,7 @@ String::Split String::SplitUnsigned(unsigned long long int &value, size_t pos, s
 	LocaleImpl.wstream >> value;
 	if(LocaleImpl.wstream.fail())
 	{
+		LocaleImpl.wstream.clear();
 		LocaleImpl.FlushWStream();
 		return Split(*this, pos, npos, 0, false);
 	}
@@ -429,6 +431,7 @@ String::Split String::SplitFloat(double &value, size_t pos, std::ios_base::fmtfl
 	LocaleImpl.wstream >> value;
 	if(LocaleImpl.wstream.fail())
 	{
+		LocaleImpl.wstream.clear();
 		LocaleImpl.FlushWStream();
 		return Split(*this, pos, npos, 0, false);
 	}
