@@ -1009,7 +1009,7 @@ int main(int argc, char * argv[])
 
 	if(arguments["scale"].length())
 	{
-		tempScale = format::ByteStringToNumber<int>(arguments["scale"]);
+		tempScale = arguments["scale"].ToNumber<int>();
 		Client::Ref().SetPref("Scale", tempScale);
 	}
 
@@ -1181,9 +1181,7 @@ int main(int argc, char * argv[])
 #ifdef DEBUG
 				std::cout << "Got Ptsave: id: " << saveIdPart << std::endl;
 #endif
-				int saveId = format::ByteStringToNumber<int>(saveIdPart);
-				if (!saveId)
-					throw std::runtime_error("Invalid Save ID");
+				int saveId = saveIdPart.ToNumber<int>();
 
 				SaveInfo * newSave = Client::Ref().GetSave(saveId, 0);
 				if (!newSave)

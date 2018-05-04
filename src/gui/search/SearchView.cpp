@@ -270,11 +270,11 @@ void SearchView::clearSearch()
 
 void SearchView::textChanged()
 {
-	int num = format::StringToNumber<int>(pageTextbox->GetText());
+	int num = pageTextbox->GetText().ToNumber<int>(true);
 	if (num < 0) //0 is allowed so that you can backspace the 1
 		pageTextbox->SetText("1");
 	else if (num > pageCount)
-		pageTextbox->SetText(format::NumberToString(pageCount));
+		pageTextbox->SetText(String::Build(pageCount));
 	changed = true;
 #ifdef USE_SDL
 	lastChanged = GetTicks()+600;
@@ -763,7 +763,7 @@ void SearchView::OnTick(float dt)
 	if (changed && lastChanged < GetTicks())
 	{
 		changed = false;
-		c->SetPage(std::max(format::StringToNumber<int>(pageTextbox->GetText()), 0));
+		c->SetPage(std::max(pageTextbox->GetText().ToNumber<int>(true), 0));
 	}
 #endif
 }

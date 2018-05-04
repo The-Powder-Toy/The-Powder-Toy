@@ -158,7 +158,7 @@ OptionsView::OptionsView():
 		{
 			if (current_scale == ix_scale)
 				current_scale_valid = true;
-			scale->AddOption(std::pair<String, int>(format::NumberToString<int>(ix_scale), ix_scale));
+			scale->AddOption(std::pair<String, int>(String::Build(ix_scale), ix_scale));
 			ix_scale += 1;
 		}
 		while (ui::Engine::Ref().GetMaxWidth() >= ui::Engine::Ref().GetWidth() * ix_scale && ui::Engine::Ref().GetMaxHeight() >= ui::Engine::Ref().GetHeight() * ix_scale);
@@ -233,9 +233,9 @@ OptionsView::OptionsView():
 		OptionsView * v;
 	public:
 		DepthAction(OptionsView * v_) { v = v_; }
-		virtual void TextChangedCallback(ui::Textbox * sender) { v->c->Set3dDepth(format::StringToNumber<int>(sender->GetText())); }
+		virtual void TextChangedCallback(ui::Textbox * sender) { v->c->Set3dDepth(sender->GetText().ToNumber<int>(true)); }
 	};
-	depthTextbox = new ui::Textbox(ui::Point(8, Size.Y-58), ui::Point(25, 16), format::NumberToString<int>(ui::Engine::Ref().Get3dDepth()));
+	depthTextbox = new ui::Textbox(ui::Point(8, Size.Y-58), ui::Point(25, 16), String::Build(ui::Engine::Ref().Get3dDepth()));
 	depthTextbox->SetInputType(ui::Textbox::Numeric);
 	depthTextbox->SetActionCallback(new DepthAction(this));
 	AddComponent(depthTextbox);

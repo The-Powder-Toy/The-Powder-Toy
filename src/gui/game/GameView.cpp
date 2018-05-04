@@ -1060,10 +1060,8 @@ int GameView::Record(bool record)
 		{
 			time_t startTime = time(NULL);
 			recordingFolder = startTime;
-			ByteString::Stream recordingDir;
-			recordingDir << "recordings" << PATH_SEP << recordingFolder;
 			Client::Ref().MakeDirectory("recordings");
-			Client::Ref().MakeDirectory(recordingDir.str().c_str());
+			Client::Ref().MakeDirectory(ByteString::Build("recordings", PATH_SEP, recordingFolder).c_str());
 			recording = true;
 			recordingIndex = 0;
 		}
@@ -2211,12 +2209,9 @@ void GameView::OnDraw()
 			VideoBuffer screenshot(ren->DumpFrame());
 			std::vector<char> data = format::VideoBufferToPNG(screenshot);
 
-			ByteString::Stream filename;
-			filename << "screenshot_";
-			filename << std::setfill('0') << std::setw(6) << (screenshotIndex++);
-			filename << ".png";
+			ByteString filename = ByteString::Build("screenshot_", Format::Width(screenshotIndex++, 6), ".png");
 
-			Client::Ref().WriteFile(data, filename.str());
+			Client::Ref().WriteFile(data, filename);
 			doScreenshot = false;
 		}
 
@@ -2225,13 +2220,9 @@ void GameView::OnDraw()
 			VideoBuffer screenshot(ren->DumpFrame());
 			std::vector<char> data = format::VideoBufferToPPM(screenshot);
 
-			ByteString::Stream filename;
-			filename << "recordings" << PATH_SEP << recordingFolder << PATH_SEP;
-			filename << "frame_";
-			filename << std::setfill('0') << std::setw(6) << (recordingIndex++);
-			filename << ".ppm";
+			ByteString filename = ByteString::Build("recordings", PATH_SEP, recordingFolder, PATH_SEP, "frame_", Format::Width(screenshotIndex++, 6), ".ppm");
 
-			Client::Ref().WriteFile(data, filename.str());
+			Client::Ref().WriteFile(data, filename);
 		}
 
 		if (logEntries.size())

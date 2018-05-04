@@ -629,7 +629,7 @@ void GameSave::readOPS(char * data, int dataLength)
 	int bz2ret;
 	if ((bz2ret = BZ2_bzBuffToBuffDecompress((char*)bsonData, &bsonDataLen, (char*)(inputData+12), inputDataLen-12, 0, 0)) != BZ_OK)
 	{
-		throw ParseException(ParseException::Corrupt, "Unable to decompress (ret " + format::NumberToString<int>(bz2ret) + ")");
+		throw ParseException(ParseException::Corrupt, String::Build("Unable to decompress (ret ", bz2ret, ")"));
 	}
 
 	set_bson_err_handler([](const char* err) { throw ParseException(ParseException::Corrupt, "BSON error when parsing save: " + ByteString(err).FromUtf8()); });
@@ -1406,7 +1406,7 @@ void GameSave::readPSv(char * saveDataChar, int dataLength)
 
 	int bzStatus = 0;
 	if ((bzStatus = BZ2_bzBuffToBuffDecompress((char *)data, (unsigned *)&size, (char *)(saveData+12), dataLength-12, 0, 0)))
-		throw ParseException(ParseException::Corrupt, "Cannot decompress: " + format::NumberToString(bzStatus));
+		throw ParseException(ParseException::Corrupt, String::Build("Cannot decompress: ", bzStatus));
 	dataLength = size;
 
 #ifdef DEBUG
@@ -2510,7 +2510,7 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 	unsigned int finalDataLen = bson_size(&b);
 	auto outputData = std::unique_ptr<unsigned char[]>(new unsigned char[finalDataLen*2+12]);
 	if (!outputData)
-		throw BuildException("Save error, out of memory (finalData): " + format::NumberToString<unsigned int>(finalDataLen*2+12));
+		throw BuildException(String::Build("Save error, out of memory (finalData): ", finalDataLen*2+12));
 
 	outputData[0] = 'O';
 	outputData[1] = 'P';
@@ -2528,7 +2528,7 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 	unsigned int compressedSize = finalDataLen*2, bz2ret;
 	if ((bz2ret = BZ2_bzBuffToBuffCompress((char*)(outputData.get()+12), &compressedSize, (char*)finalData, bson_size(&b), 9, 0, 0)) != BZ_OK)
 	{
-		throw BuildException("Save error, could not compress (ret " + format::NumberToString<int>(bz2ret) + ")");
+		throw BuildException(String::Build("Save error, could not compress (ret ", bz2ret, ")"));
 	}
 
 #ifdef DEBUG

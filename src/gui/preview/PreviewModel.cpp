@@ -70,30 +70,28 @@ void PreviewModel::UpdateSave(int saveID, int saveDate)
 	notifySaveChanged();
 	notifySaveCommentsChanged();
 
-	ByteString::Stream urlStream;
+	ByteString url;
 	if (saveDate)
-		urlStream << "http://" << STATICSERVER << "/" << saveID << "_" << saveDate << ".cps";
+		url = ByteString::Build("http://", STATICSERVER, "/", saveID, "_", saveDate, ".cps");
 	else
-		urlStream << "http://" << STATICSERVER << "/" << saveID << ".cps";
-	saveDataDownload = new Download(urlStream.str());
+		url = ByteString::Build("http://", STATICSERVER, "/", saveID, ".cps");
+	saveDataDownload = new Download(url);
 	saveDataDownload->Start();
 
-	urlStream.str("");
-	urlStream << "http://" << SERVER  << "/Browse/View.json?ID=" << saveID;
+	url = ByteString::Build("http://", SERVER , "/Browse/View.json?ID=", saveID);
 	if (saveDate)
-		urlStream << "&Date=" << saveDate;
-	saveInfoDownload = new Download(urlStream.str());
-	saveInfoDownload->AuthHeaders(format::NumberToByteString(Client::Ref().GetAuthUser().UserID), Client::Ref().GetAuthUser().SessionID);
+		url += ByteString::Build("&Date=", saveDate);
+	saveInfoDownload = new Download(url);
+	saveInfoDownload->AuthHeaders(ByteString::Build(Client::Ref().GetAuthUser().UserID), Client::Ref().GetAuthUser().SessionID);
 	saveInfoDownload->Start();
 
 	if (!GetDoOpen())
 	{
 		commentsLoaded = false;
 
-		urlStream.str("");
-		urlStream << "http://" << SERVER << "/Browse/Comments.json?ID=" << saveID << "&Start=" << (commentsPageNumber-1)*20 << "&Count=20";
-		commentsDownload = new Download(urlStream.str());
-		commentsDownload->AuthHeaders(format::NumberToByteString(Client::Ref().GetAuthUser().UserID), Client::Ref().GetAuthUser().SessionID);
+		url = ByteString::Build("http://", SERVER, "/Browse/Comments.json?ID=", saveID, "&Start=", (commentsPageNumber-1)*20, "&Count=20");
+		commentsDownload = new Download(url);
+		commentsDownload->AuthHeaders(ByteString::Build(Client::Ref().GetAuthUser().UserID), Client::Ref().GetAuthUser().SessionID);
 		commentsDownload->Start();
 	}
 }
@@ -143,10 +141,9 @@ void PreviewModel::UpdateComments(int pageNumber)
 		commentsPageNumber = pageNumber;
 		if (!GetDoOpen())
 		{
-			ByteString::Stream urlStream;
-			urlStream << "http://" << SERVER << "/Browse/Comments.json?ID=" << saveID << "&Start=" << (commentsPageNumber-1)*20 << "&Count=20";
-			commentsDownload = new Download(urlStream.str());
-			commentsDownload->AuthHeaders(format::NumberToByteString(Client::Ref().GetAuthUser().UserID), Client::Ref().GetAuthUser().SessionID);
+			ByteString url = ByteString::Build("http://", SERVER, "/Browse/Comments.json?ID=", saveID, "&Start=", (commentsPageNumber-1)*20, "&Count=20");
+			commentsDownload = new Download(url);
+			commentsDownload->AuthHeaders(ByteString::Build(Client::Ref().GetAuthUser().UserID), Client::Ref().GetAuthUser().SessionID);
 			commentsDownload->Start();
 		}
 
@@ -242,9 +239,7 @@ bool PreviewModel::ParseSaveInfo(char * saveInfoResponse)
 				saveDataDownload->Cancel();
 			delete saveData;
 			saveData = NULL;
-			ByteString::Stream urlStream;
-			urlStream << "http://" << STATICSERVER << "/2157797.cps";
-			saveDataDownload = new Download(urlStream.str());
+			saveDataDownload = new Download(ByteString::Build("http://", STATICSERVER, "/2157797.cps"));
 			saveDataDownload->Start();
 		}
 		return true;
@@ -268,7 +263,7 @@ bool PreviewModel::ParseComments(char *commentsResponse)
 
 		for (Json::UInt j = 0; j < commentsArray.size(); j++)
 		{
-			int userID = format::ByteStringToNumber<int>(commentsArray[j]["UserID"].asString());
+			int userID = ByteString(commentsArray[j]["UserID"].asString()).ToNumber<int>();
 			ByteString username = commentsArray[j]["Username"].asString();
 			ByteString formattedUsername = commentsArray[j]["FormattedUsername"].asString();
 			if (formattedUsername == "jacobot")

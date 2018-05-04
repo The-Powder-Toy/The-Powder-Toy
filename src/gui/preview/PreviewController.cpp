@@ -153,9 +153,8 @@ void PreviewController::FavouriteSave()
 
 void PreviewController::OpenInBrowser()
 {
-	ByteString::Stream uriStream;
-	uriStream << "http://" << SERVER << "/Browse/View.html?ID=" << saveId;
-	Platform::OpenURI(uriStream.str());
+	ByteString uri = ByteString::Build("http://", SERVER, "/Browse/View.html?ID=", saveId);
+	Platform::OpenURI(uri);
 }
 
 bool PreviewController::NextCommentPage()

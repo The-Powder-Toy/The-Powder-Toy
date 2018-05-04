@@ -227,11 +227,11 @@ void PreviewView::AttachController(PreviewController * controller)
 	saveIDLabel->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	AddComponent(saveIDLabel);
 
-	textWidth = Graphics::textwidth(format::NumberToString<int>(c->SaveID()).c_str());
+	textWidth = Graphics::textwidth(String::Build(c->SaveID()));
 	saveIDLabel2 = new ui::Label(ui::Point((Size.X-textWidth-20)/2-37, Size.Y+22), ui::Point(40, 16), "Save ID:");
 	AddComponent(saveIDLabel2);
 
-	saveIDButton = new ui::CopyTextButton(ui::Point((Size.X-textWidth-10)/2, Size.Y+20), ui::Point(textWidth+10, 18), format::NumberToString<int>(c->SaveID()), saveIDLabel);
+	saveIDButton = new ui::CopyTextButton(ui::Point((Size.X-textWidth-10)/2, Size.Y+20), ui::Point(textWidth+10, 18), String::Build(c->SaveID()), saveIDLabel);
 	AddComponent(saveIDButton);
 }
 
@@ -514,7 +514,7 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 			userIsAuthor = true;
 		else
 			userIsAuthor = false;
-		viewsLabel->SetText("\bgViews:\bw " + format::NumberToString<int>(save->Views));
+		viewsLabel->SetText(String::Build("\bgViews:\bw ", save->Views));
 		saveDescriptionLabel->SetText(save->Description);
 		if(save->Favourite)
 		{

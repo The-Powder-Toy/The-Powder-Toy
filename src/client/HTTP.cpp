@@ -192,11 +192,7 @@ void http_init(char *proxy)
 		free(host);
 		free(port);
 	}
-	ByteString::Stream userAgentBuilder;
-	userAgentBuilder << "PowderToy/" << SAVE_VERSION << "." << MINOR_VERSION << " ";
-	userAgentBuilder << "(" << IDENT_PLATFORM << "; " << IDENT_BUILD << "; M" << MOD_ID << ") ";
-	userAgentBuilder << "TPTPP/" << SAVE_VERSION << "." << MINOR_VERSION << "." << BUILD_NUM << IDENT_RELTYPE << "." << SNAPSHOT_ID;
-	ByteString newUserAgent = userAgentBuilder.str();
+	ByteString newUserAgent = ByteString::Build("PowderToy/", SAVE_VERSION, ".", MINOR_VERSION, " (", IDENT_PLATFORM, "; ", IDENT_BUILD, "; M", MOD_ID, ") TPTPP/", SAVE_VERSION, ".", MINOR_VERSION, ".", BUILD_NUM, IDENT_RELTYPE, ".", SNAPSHOT_ID);
 	userAgent = new char[newUserAgent.length()+1];
 	std::copy(newUserAgent.begin(), newUserAgent.end(), userAgent);
 	userAgent[newUserAgent.length()] = 0;
@@ -987,7 +983,7 @@ ByteString FindBoundary(std::map<ByteString, ByteString> parts, ByteString bound
 // this function used in Download class, and eventually all http requests
 ByteString GetMultipartMessage(std::map<ByteString, ByteString> parts, ByteString boundary)
 {
-	ByteString::Stream data;
+	ByteStringBuilder data;
 
 	// loop through each part, adding it
 	for (std::map<ByteString, ByteString>::iterator iter = parts.begin(); iter != parts.end(); iter++)
@@ -1014,7 +1010,7 @@ ByteString GetMultipartMessage(std::map<ByteString, ByteString> parts, ByteStrin
 		data << "\r\n";
 	}
 	data << "--" << boundary << "--\r\n";
-	return data.str();
+	return data.Build();
 }
 
 // add the header needed to make POSTS work

@@ -168,8 +168,6 @@ public:
 	String FromUtf8(bool ignoreError = true) const;
 	inline String FromAscii() const;
 	template<typename... Ts> static ByteString Build(Ts&&... args);
-
-	using Stream = std::basic_stringstream<value_type>;
 };
 
 inline ByteString operator+(ByteString const &lhs, ByteString const &rhs) { return static_cast<std::basic_string<char> const &>(lhs) + static_cast<std::basic_string<char> const &>(rhs); }
@@ -405,7 +403,7 @@ public:
 	size_t Size() const { return buffer.size(); }
 	ByteString Build() const;
 
-	template<typename T> ByteStringBuilder &operator<<(T) = delete;
+	template<typename T> ByteStringBuilder &operator<<(T) &&= delete;
 
 	template<typename T, typename... Ts> ByteStringBuilder &Add(T &&arg, Ts&&... args)
 	{

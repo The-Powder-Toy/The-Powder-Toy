@@ -1914,13 +1914,12 @@ int luatpt_getscript(lua_State* l)
 	int runScript = luaL_optint(l, 3, 0);
 	int confirmPrompt = luaL_optint(l, 4, 1);
 
-	ByteString::Stream url;
-	url << "http://starcatcher.us/scripts/main.lua?get=" << scriptID;
-	if (confirmPrompt && !ConfirmPrompt::Blocking("Do you want to install script?", ByteString(url.str()).FromUtf8(), "Install"))
+	ByteString url = ByteString::Build("http://starcatcher.us/scripts/main.lua?get=", scriptID);
+	if (confirmPrompt && !ConfirmPrompt::Blocking("Do you want to install script?", url.FromUtf8(), "Install"))
 		return 0;
 
 	int ret, len;
-	char *scriptData = http_simple_get(url.str().c_str(), &ret, &len);
+	char *scriptData = http_simple_get(url.c_str(), &ret, &len);
 	if (len <= 0 || !filename)
 	{
 		free(scriptData);
@@ -1968,9 +1967,7 @@ int luatpt_getscript(lua_State* l)
 	outputfile = NULL;
 	if (runScript)
 	{
-		ByteString::Stream luaCommand;
-		luaCommand << "dofile('" << filename << "')";
-		luaL_dostring(l, luaCommand.str().c_str());
+		luaL_dostring(l, ByteString::Build("dofile('", filename, "')").c_str());
 	}
 
 	return 0;
@@ -2018,18 +2015,16 @@ int luatpt_screenshot(lua_State* l)
 			data = format::VideoBufferToPNG(screenshot);
 		}
 	}
-	ByteString::Stream filename;
-	filename << "screenshot_";
-	filename << std::setfill('0') << std::setw(6) << (screenshotIndex++);
+	ByteString filename = ByteString::Build("screenshot_", Format::Width(screenshotIndex++, 6));
 	if(fileType == 1) {
-		filename << ".bmp";
+		filename += ".bmp";
 	} else if(fileType == 2) {
-		filename << ".ppm";
+		filename += ".ppm";
 	} else {
-		filename << ".png";
+		filename += ".png";
 	}
-	Client::Ref().WriteFile(data, filename.str());
-	lua_pushstring(l, filename.str().c_str());
+	Client::Ref().WriteFile(data, filename);
+	lua_pushstring(l, filename.c_str());
 	return 1;
 }
 

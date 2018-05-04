@@ -293,9 +293,7 @@ FontEditor::FontEditor(ByteString _header):
 		CharNumberAction(FontEditor *_v): v(_v) {}
 		void TextChangedCallback(ui::Textbox *)
 		{
-			unsigned int number;
-			ByteString::Stream ss(v->currentCharTextbox->GetText().ToUtf8());
-			ss >> std::hex >> number;
+			unsigned int number = v->currentCharTextbox->GetText().ToNumber<unsigned int>(true);
 			if(number <= 0x10FFFF)
 				v->currentChar = number;
 		}
@@ -426,14 +424,13 @@ FontEditor::FontEditor(ByteString _header):
 		ColorComponentAction(int &_color): color(_color) {}
 		void TextChangedCallback(ui::Textbox *box)
 		{
-			ByteString::Stream ss(box->GetText().ToUtf8());
-			ss >> color;
+			color = box->GetText().ToNumber<int>(true);
 		}
 	};
 	int *refs[6] = {&fgR, &fgG, &fgB, &bgR, &bgG, &bgB};
 	for(int i = 0; i < 6; i++)
 	{
-		ui::Textbox *colorComponent = new ui::Textbox(ui::Point(currentX, baseline), ui::Point(27, 17), format::NumberToString(*refs[i]));
+		ui::Textbox *colorComponent = new ui::Textbox(ui::Point(currentX, baseline), ui::Point(27, 17), String::Build(*refs[i]));
 		currentX += 28;
 		colorComponent->SetActionCallback(new ColorComponentAction(*refs[i]));
 		AddComponent(colorComponent);
@@ -489,28 +486,26 @@ FontEditor::FontEditor(ByteString _header):
 		PreviewAction(FontEditor *_v): v(_v) {}
 		void TextChangedCallback(ui::Textbox *box)
 		{
-			ByteString::Stream ss(box->GetText().ToUtf8()); // ByteString::Stream for now
-			String text;
-			while(!ss.eof())
+			String str = box->GetText();
+			size_t at = 0;
+			StringBuilder text;
+			while(at < str.size())
 			{
-				if(ss.peek() == '\n')
-				{
-					text.push_back('\n');
-					ss.get();
-				}
 				unsigned int ch;
-				ss >> std::hex >> ch;
-				if(ss.fail())
-				{
-					ss.clear();
-					String::value_type ch = ss.get();
-					if(!ss.eof())
-						text.push_back(ch);
-					continue;
-				}
-				text.push_back(ch);
+				if(str[at] != ' ')
+					if(String::Split split = str.SplitNumber(ch, Format::Hex(), at))
+					{
+						text << String::value_type(ch);
+						at = split.PositionAfter();
+					}
+					else
+					{
+						text << str[at++];
+					}
+				else
+					at++;
 			}
-			v->outputPreview->SetText(text);
+			v->outputPreview->SetText(text.Build());
 		}
 	};
 	ui::Textbox *inputPreview = new ui::Textbox(ui::Point(0, baseline), ui::Point(Size.X, (Size.Y - baseline) * 3 / 5));
@@ -611,9 +606,7 @@ void FontEditor::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bo
 
 void FontEditor::UpdateCharNumber()
 {
-	ByteString::Stream ss;
-	ss << std::hex << currentChar;
-	currentCharTextbox->SetText(ByteString(ss.str()).FromUtf8());
+	currentCharTextbox->SetText(String::Build(Format::Hex((unsigned int)currentChar)));
 }
 
 void FontEditor::PrevChar()

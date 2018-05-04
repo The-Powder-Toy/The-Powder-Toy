@@ -25,6 +25,18 @@ namespace Format
 		inline FlagsOverride() {}
 	};
 
+	template<typename T> struct FillOverride
+	{
+		T value;
+		size_t fill;
+		inline FillOverride(T _value, size_t _fill): value(_value), fill(_fill) {}
+	};
+	template<> struct FillOverride<void>
+	{
+		String::value_type fill;
+		inline FillOverride(size_t _fill): fill(_fill) {}
+	};
+
 	template<typename T> struct WidthOverride
 	{
 		T value;
@@ -74,8 +86,10 @@ namespace Format
 	inline FlagsOverride<void, std::ios_base::scientific, std::ios_base::floatfield> Scientific() { return FlagsOverride<void, std::ios_base::scientific, std::ios_base::floatfield>(); }
 	inline FlagsOverride<void, std::ios_base::fmtflags{}, std::ios_base::floatfield> FloatDefault() { return FlagsOverride<void, std::ios_base::fmtflags{}, std::ios_base::floatfield>(); }
 
+	template<typename T> inline FillOverride<T> Fill(T value, String::value_type fill) { return FillOverride<T>(value, fill); }
 	template<typename T> inline WidthOverride<T> Width(T value, size_t width) { return WidthOverride<T>(value, width); }
 	template<typename T> inline PrecisionOverride<T> Precision(T value, size_t precision) { return PrecisionOverride<T>(value, precision); }
+	inline FillOverride<void> Fill(String::value_type fill) { return FillOverride<void>(fill); }
 	inline WidthOverride<void> Width(size_t width) { return WidthOverride<void>(width); }
 	inline PrecisionOverride<void> Precision(size_t precision) { return PrecisionOverride<void>(precision); }
 };
@@ -94,16 +108,36 @@ template<std::ios_base::fmtflags set, std::ios_base::fmtflags reset> inline Byte
 	return b;
 }
 
+template<typename T> inline ByteStringBuilder &operator<<(ByteStringBuilder &b, Format::FillOverride<T> data)
+{
+	size_t oldfill = b.fill;
+	b.fill = data.fill;
+	b << data.value;
+	b.fill = oldfill;
+	return b;
+}
+inline ByteStringBuilder &operator<<(ByteStringBuilder &b, Format::FillOverride<void> data)
+{
+	b.fill = data.fill;
+	return b;
+}
+
 template<typename T> inline ByteStringBuilder &operator<<(ByteStringBuilder &b, Format::WidthOverride<T> data)
 {
+	String::value_type oldfill = b.fill;
+	if(oldfill == ' ')
+		b.fill = '0';
 	size_t oldwidth = b.width;
 	b.width = data.width;
 	b << data.value;
 	b.width = oldwidth;
+	b.fill = oldfill;
 	return b;
 }
 inline ByteStringBuilder &operator<<(ByteStringBuilder &b, Format::WidthOverride<void> data)
 {
+	if(b.fill == ' ')
+		b.fill = '0';
 	b.width = data.width;
 	return b;
 }
@@ -142,16 +176,36 @@ template<std::ios_base::fmtflags set, std::ios_base::fmtflags reset> inline Stri
 	return b;
 }
 
+template<typename T> inline StringBuilder &operator<<(StringBuilder &b, Format::FillOverride<T> data)
+{
+	size_t oldfill = b.fill;
+	b.fill = data.fill;
+	b << data.value;
+	b.fill = oldfill;
+	return b;
+}
+inline StringBuilder &operator<<(StringBuilder &b, Format::FillOverride<void> data)
+{
+	b.fill = data.fill;
+	return b;
+}
+
 template<typename T> inline StringBuilder &operator<<(StringBuilder &b, Format::WidthOverride<T> data)
 {
+	String::value_type oldfill = b.fill;
+	if(oldfill == ' ')
+		b.fill = '0';
 	size_t oldwidth = b.width;
 	b.width = data.width;
 	b << data.value;
 	b.width = oldwidth;
+	b.fill = oldfill;
 	return b;
 }
 inline StringBuilder &operator<<(StringBuilder &b, Format::WidthOverride<void> data)
 {
+	if(b.fill == ' ')
+		b.fill = '0';
 	b.width = data.width;
 	return b;
 }

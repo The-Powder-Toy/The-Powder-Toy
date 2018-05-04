@@ -116,13 +116,13 @@ private:
 };
 
 UpdateActivity::UpdateActivity() {
-	ByteString::Stream file;
+	ByteString file;
 #ifdef UPDATESERVER
-	file << "http://" << UPDATESERVER << Client::Ref().GetUpdateInfo().File;
+	file = ByteString::Build("http://", UPDATESERVER, Client::Ref().GetUpdateInfo().File);
 #else
-	file << "http://" << SERVER << Client::Ref().GetUpdateInfo().File;
+	file = ByteString::Build("http://", SERVER, Client::Ref().GetUpdateInfo().File);
 #endif
-	updateDownloadTask = new UpdateDownloadTask(file.str(), this);
+	updateDownloadTask = new UpdateDownloadTask(file, this);
 	updateWindow = new TaskWindow("Downloading update...", updateDownloadTask, true);
 }
 

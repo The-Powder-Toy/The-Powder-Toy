@@ -106,7 +106,7 @@ RequestBroker::ProcessResponse WebRequest::Process(RequestBroker & rb)
 				User user = Client::Ref().GetAuthUser();
 				char userName[12];
 				char *userSession = new char[user.SessionID.length() + 1];
-				std::strcpy(userName, format::NumberToByteString<int>(user.UserID).c_str());
+				std::strcpy(userName, ByteString::Build(user.UserID).c_str());
 				std::strcpy(userSession, user.SessionID.c_str());
 				HTTPContext = http_multipart_post_async((char*)URL.c_str(), postNames, postData, postLength, userName, NULL, userSession);
 				delete[] userSession;
@@ -125,7 +125,7 @@ RequestBroker::ProcessResponse WebRequest::Process(RequestBroker & rb)
 				User user = Client::Ref().GetAuthUser();
 				char userName[12];
 				char *userSession = new char[user.SessionID.length() + 1];
-				std::strcpy(userName, format::NumberToByteString<int>(user.UserID).c_str());
+				std::strcpy(userName, ByteString::Build(user.UserID).c_str());
 				std::strcpy(userSession, user.SessionID.c_str());
 				http_auth_headers(HTTPContext, userName, NULL, userSession);
 				delete[] userSession;

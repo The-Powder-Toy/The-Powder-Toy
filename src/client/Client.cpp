@@ -150,7 +150,7 @@ void Client::Initialise(ByteString proxyString)
 
 	if (authUser.UserID)
 	{
-		ByteString idTempString = format::NumberToByteString<int>(authUser.UserID);
+		ByteString idTempString = ByteString::Build(authUser.UserID);
 		char *id = new char[idTempString.length() + 1];
 		std::strcpy (id, idTempString.c_str());
 		char *session = new char[authUser.SessionID.length() + 1];
@@ -378,12 +378,11 @@ bool Client::DoInstallation()
 "NoDisplay=true\n"
 "Categories=Game;Simulation\n"
 "Icon=powdertoy.png\n";
-	ByteString::Stream protocolfiledata;
-	protocolfiledata << protocolfiledata_tmp << "Exec=" << filename << " ptsave %u\nPath=" << pathname << "\n";
+	ByteString protocolfiledata = ByteString::Build(protocolfiledata_tmp, "Exec=", filename, " ptsave %u\nPath=", pathname, "\n");
 	f = fopen("powdertoy-tpt-ptsave.desktop", "wb");
 	if (!f)
 		return 0;
-	fwrite(protocolfiledata.str().c_str(), 1, strlen(protocolfiledata.str().c_str()), f);
+	fwrite(protocolfiledata.c_str(), 1, protocolfiledata.size(), f);
 	fclose(f);
 	success = system("xdg-desktop-menu install powdertoy-tpt-ptsave.desktop");
 
@@ -396,12 +395,11 @@ bool Client::DoInstallation()
 "NoDisplay=true\n"
 "Categories=Game;Simulation\n"
 "Icon=powdertoy.png\n";
-	ByteString::Stream desktopopenfiledata;
-	desktopopenfiledata << desktopopenfiledata_tmp << "Exec=" << filename << " open %f\nPath=" << pathname << "\n";
+	ByteString desktopopenfiledata = ByteString::Build(desktopopenfiledata_tmp, "Exec=", filename, " open %f\nPath=", pathname, "\n");
 	f = fopen("powdertoy-tpt-open.desktop", "wb");
 	if (!f)
 		return 0;
-	fwrite(desktopopenfiledata.str().c_str(), 1, strlen(desktopopenfiledata.str().c_str()), f);
+	fwrite(desktopopenfiledata.c_str(), 1, desktopopenfiledata.size(), f);
 	fclose(f);
 	success = system("xdg-mime install powdertoy-save.xml") && success;
 	success = system("xdg-desktop-menu install powdertoy-tpt-open.desktop") && success;
@@ -415,12 +413,11 @@ bool Client::DoInstallation()
 "Comment=Physics sandbox game\n"
 "Categories=Game;Simulation\n"
 "Icon=powdertoy.png\n";
-	ByteString::Stream desktopfiledata;
-	desktopfiledata << desktopfiledata_tmp << "Exec=" << filename << "\nPath=" << pathname << "\n";
+	ByteString desktopfiledata = ByteString::Build(desktopfiledata_tmp, "Exec=", filename, "\nPath=", pathname, "\n");
 	f = fopen("powdertoy-tpt.desktop", "wb");
 	if (!f)
 		return 0;
-	fwrite(desktopfiledata.str().c_str(), 1, strlen(desktopfiledata.str().c_str()), f);
+	fwrite(desktopfiledata.c_str(), 1, desktopfiledata.size(), f);
 	fclose(f);
 	success = system("xdg-desktop-menu install powdertoy-tpt.desktop") && success;
 
@@ -989,8 +986,7 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 	int dataStatus;
 	char * data;
 	int dataLength = 0;
-	ByteString::Stream userIDStream;
-	userIDStream << authUser.UserID;
+	ByteString userID = ByteString::Build(authUser.UserID);
 	if (authUser.UserID)
 	{
 		if (!save.GetGameSave())
@@ -1020,13 +1016,13 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 		std::strcpy (saveName, save.GetName().ToUtf8().c_str());
 		char *saveDescription = new char[save.GetDescription().length() + 1];
 		std::strcpy (saveDescription, save.GetDescription().ToUtf8().c_str());
-		char *userid = new char[userIDStream.str().length() + 1];
-		std::strcpy (userid, userIDStream.str().c_str());
+		char *userid = new char[userID.size() + 1];
+		std::strcpy (userid, userID.c_str());
 		char *session = new char[authUser.SessionID.length() + 1];
 		std::strcpy (session, authUser.SessionID.c_str());
 
 		const char *const postNames[] = { "Name", "Description", "Data:save.bin", "Publish", NULL };
-		const char *const postDatas[] = { saveName, saveDescription, gameData, (char *)(save.GetPublished()?"Public":"Private") };
+		const char *const postDatas[] = { saveName, saveDescription, gameData, save.GetPublished()?"Public":"Private" };
 		size_t postLengths[] = { save.GetName().length(), save.GetDescription().length(), gameDataLength, (size_t)(save.GetPublished()?6:7) };
 		data = http_multipart_post("http://" SERVER "/Save.api", postNames, postDatas, postLengths, userid, NULL, session, &dataStatus, &dataLength);
 
@@ -1044,7 +1040,7 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 	RequestStatus ret = ParseServerReturn(data, dataStatus, false);
 	if (ret == RequestOkay)
 	{
-		int saveID = format::ByteStringToNumber<int>(data+3);
+		int saveID = ByteString(data+3).ToNumber<int>();
 		if (!saveID)
 		{
 			lastError = "Server did not return Save ID";
@@ -1100,12 +1096,8 @@ void Client::DeleteStamp(ByteString stampID)
 	{
 		if((*iterator) == stampID)
 		{
-			ByteString::Stream stampFilename;
-			stampFilename << STAMPS_DIR;
-			stampFilename << PATH_SEP;
-			stampFilename << stampID;
-			stampFilename << ".stm";
-			remove(stampFilename.str().c_str());
+			ByteString stampFilename = ByteString::Build(STAMPS_DIR, PATH_SEP, stampID, ".stm");
+			remove(stampFilename.c_str());
 			stampIDs.erase(iterator);
 			return;
 		}
@@ -1124,12 +1116,8 @@ ByteString Client::AddStamp(GameSave * saveData)
 	}
 	else
 		lastStampName++;
-	ByteString::Stream saveID;
-	//sprintf(saveID, "%08x%02x", lastStampTime, lastStampName);
-	saveID
-	<< std::setw(8) << std::setfill('0') << std::hex << lastStampTime
-	<< std::setw(2) << std::setfill('0') << std::hex << lastStampName;
-	ByteString filename = STAMPS_DIR PATH_SEP + saveID.str() + ".stm";
+	ByteString saveID = ByteString::Build(Format::Hex(Format::Width(lastStampTime, 8)), Format::Hex(Format::Width(lastStampName, 2)));
+	ByteString filename = STAMPS_DIR PATH_SEP + saveID + ".stm";
 
 	MakeDirectory(STAMPS_DIR);
 
@@ -1157,11 +1145,11 @@ ByteString Client::AddStamp(GameSave * saveData)
 
 	delete[] gameData;
 
-	stampIDs.push_front(saveID.str());
+	stampIDs.push_front(saveID);
 
 	updateStamps();
 
-	return saveID.str();
+	return saveID;
 }
 
 void Client::updateStamps()
@@ -1233,8 +1221,8 @@ RequestStatus Client::ExecVote(int saveID, int direction)
 	if (authUser.UserID)
 	{
 		char * directionText = (char*)(direction==1?"Up":"Down");
-		ByteString saveIDText = format::NumberToByteString<int>(saveID);
-		ByteString userIDText = format::NumberToByteString<int>(authUser.UserID);
+		ByteString saveIDText = ByteString::Build(saveID);
+		ByteString userIDText = ByteString::Build(authUser.UserID);
 
 		char *id = new char[saveIDText.length() + 1];
 		std::strcpy(id, saveIDText.c_str());
@@ -1267,14 +1255,14 @@ unsigned char * Client::GetSaveData(int saveID, int saveDate, int & dataLength)
 	int dataStatus;
 	char *data;
 	dataLength = 0;
-	ByteString::Stream urlStream;
+	ByteString urlStr;
 	if (saveDate)
-		urlStream << "http://" << STATICSERVER << "/" << saveID << "_" << saveDate << ".cps";
+		urlStr = ByteString::Build("http://", STATICSERVER, "/", saveID, "_", saveDate, ".cps");
 	else
-		urlStream << "http://" << STATICSERVER << "/" << saveID << ".cps";
+		urlStr = ByteString::Build("http://", STATICSERVER, "/", saveID, ".cps");
 
-	char *url = new char[urlStream.str().length() + 1];
-	std::strcpy(url, urlStream.str().c_str());
+	char *url = new char[urlStr.size() + 1];
+	std::strcpy(url, urlStr.c_str());
 	data = http_simple_get(url, &dataStatus, &dataLength);
 	delete[] url;
 
@@ -1300,13 +1288,13 @@ std::vector<unsigned char> Client::GetSaveData(int saveID, int saveDate)
 
 RequestBroker::Request * Client::GetSaveDataAsync(int saveID, int saveDate)
 {
-	ByteString::Stream urlStream;
+	ByteString url;
 	if(saveDate){
-		urlStream << "http://" << STATICSERVER << "/" << saveID << "_" << saveDate << ".cps";
+		url = ByteString::Build("http://", STATICSERVER, "/", saveID, "_", saveDate, ".cps");
 	} else {
-		urlStream << "http://" << STATICSERVER << "/" << saveID << ".cps";
+		url = ByteString::Build("http://", STATICSERVER, "/", saveID, ".cps");
 	}
-	return new WebRequest(urlStream.str());
+	return new WebRequest(url);
 }
 
 RequestBroker::Request * Client::SaveUserInfoAsync(UserInfo info)
@@ -1381,7 +1369,6 @@ RequestBroker::Request * Client::GetUserInfoAsync(ByteString username)
 LoginStatus Client::Login(ByteString username, ByteString password, User & user)
 {
 	lastError = "";
-	ByteString::Stream hashStream;
 	char passwordHash[33];
 	char totalHash[33];
 
@@ -1393,14 +1380,14 @@ LoginStatus Client::Login(ByteString username, ByteString password, User & user)
 	//Doop
 	md5_ascii(passwordHash, (const unsigned char *)password.c_str(), password.length());
 	passwordHash[32] = 0;
-	hashStream << username << "-" << passwordHash;
-	md5_ascii(totalHash, (const unsigned char *)(hashStream.str().c_str()), hashStream.str().length());
+	ByteString total = ByteString::Build(username, "-", passwordHash);
+	md5_ascii(totalHash, (const unsigned char *)(total.c_str()), total.size());
 	totalHash[32] = 0;
 
 	char * data;
 	int dataStatus, dataLength;
 	const char *const postNames[] = { "Username", "Hash", NULL };
-	const char *const postDatas[] = { (char*)username.c_str(), totalHash };
+	const char *const postDatas[] = { username.c_str(), totalHash };
 	size_t postLengths[] = { username.length(), 32 };
 	data = http_multipart_post("http://" SERVER "/Login.json", postNames, postDatas, postLengths, NULL, NULL, NULL, &dataStatus, &dataLength);
 	RequestStatus ret = ParseServerReturn(data, dataStatus, true);
@@ -1454,15 +1441,13 @@ LoginStatus Client::Login(ByteString username, ByteString password, User & user)
 RequestStatus Client::DeleteSave(int saveID)
 {
 	lastError = "";
-	ByteString::Stream urlStream;
 	char * data = NULL;
 	int dataStatus, dataLength;
-	urlStream << "http://" << SERVER << "/Browse/Delete.json?ID=" << saveID << "&Mode=Delete&Key=" << authUser.SessionKey;
+	ByteString url = ByteString::Build("http://", SERVER, "/Browse/Delete.json?ID=", saveID, "&Mode=Delete&Key=", authUser.SessionKey);
 	if(authUser.UserID)
 	{
-		ByteString::Stream userIDStream;
-		userIDStream << authUser.UserID;
-		data = http_auth_get((char *)urlStream.str().c_str(), (char *)(userIDStream.str().c_str()), NULL, (char *)(authUser.SessionID.c_str()), &dataStatus, &dataLength);
+		ByteString userID = ByteString::Build(authUser.UserID);
+		data = http_auth_get(url.c_str(), userID.c_str(), NULL, authUser.SessionID.c_str(), &dataStatus, &dataLength);
 	}
 	else
 	{
@@ -1477,19 +1462,18 @@ RequestStatus Client::DeleteSave(int saveID)
 RequestStatus Client::AddComment(int saveID, String comment)
 {
 	lastError = "";
-	ByteString::Stream urlStream;
 	char * data = NULL;
 	int dataStatus, dataLength;
-	urlStream << "http://" << SERVER << "/Browse/Comments.json?ID=" << saveID;
+	ByteString url = ByteString::Build("http://", SERVER, "/Browse/Comments.json?ID=", saveID);
 	if(authUser.UserID)
 	{
-		ByteString::Stream userIDStream;
-		userIDStream << authUser.UserID;
+		ByteString userID = ByteString::Build(authUser.UserID);
 
 		const char *const postNames[] = { "Comment", NULL };
-		const char *const postDatas[] = { (char*)(comment.c_str()) };
-		size_t postLengths[] = { comment.length() };
-		data = http_multipart_post((char *)urlStream.str().c_str(), postNames, postDatas, postLengths, (char *)(userIDStream.str().c_str()), NULL, (char *)(authUser.SessionID.c_str()), &dataStatus, &dataLength);
+		ByteString commentBytes = comment.ToUtf8();
+		const char *const postDatas[] = { commentBytes.c_str() };
+		size_t postLengths[] = { commentBytes.size() };
+		data = http_multipart_post(url.c_str(), postNames, postDatas, postLengths, userID.c_str(), NULL, authUser.SessionID.c_str(), &dataStatus, &dataLength);
 	}
 	else
 	{
@@ -1504,7 +1488,7 @@ RequestStatus Client::AddComment(int saveID, String comment)
 RequestStatus Client::FavouriteSave(int saveID, bool favourite)
 {
 	lastError = "";
-	ByteString::Stream urlStream;
+	ByteStringBuilder urlStream;
 	char * data = NULL;
 	int dataStatus, dataLength;
 	urlStream << "http://" << SERVER << "/Browse/Favourite.json?ID=" << saveID << "&Key=" << authUser.SessionKey;
@@ -1512,9 +1496,8 @@ RequestStatus Client::FavouriteSave(int saveID, bool favourite)
 		urlStream << "&Mode=Remove";
 	if(authUser.UserID)
 	{
-		ByteString::Stream userIDStream;
-		userIDStream << authUser.UserID;
-		data = http_auth_get((char *)urlStream.str().c_str(), (char *)(userIDStream.str().c_str()), NULL, (char *)(authUser.SessionID.c_str()), &dataStatus, &dataLength);
+		ByteString userID = ByteString::Build(authUser.UserID);
+		data = http_auth_get(urlStream.Build().c_str(), userID.c_str(), NULL, authUser.SessionID.c_str(), &dataStatus, &dataLength);
 	}
 	else
 	{
@@ -1529,19 +1512,18 @@ RequestStatus Client::FavouriteSave(int saveID, bool favourite)
 RequestStatus Client::ReportSave(int saveID, String message)
 {
 	lastError = "";
-	ByteString::Stream urlStream;
 	char * data = NULL;
 	int dataStatus, dataLength;
-	urlStream << "http://" << SERVER << "/Browse/Report.json?ID=" << saveID << "&Key=" << authUser.SessionKey;
+	ByteString url = ByteString::Build("http://", SERVER, "/Browse/Report.json?ID=", saveID, "&Key=", authUser.SessionKey);
 	if(authUser.UserID)
 	{
-		ByteString::Stream userIDStream;
-		userIDStream << authUser.UserID;
+		ByteString userID = ByteString::Build(authUser.UserID);
 
 		const char *const postNames[] = { "Reason", NULL };
-		const char *const postDatas[] = { (char*)(message.c_str()) };
-		size_t postLengths[] = { message.length() };
-		data = http_multipart_post((char *)urlStream.str().c_str(), postNames, postDatas, postLengths, (char *)(userIDStream.str().c_str()), NULL, (char *)(authUser.SessionID.c_str()), &dataStatus, &dataLength);
+		ByteString messageBytes = message.ToUtf8();
+		const char *const postDatas[] = { messageBytes.c_str() };
+		size_t postLengths[] = { messageBytes.size() };
+		data = http_multipart_post(url.c_str(), postNames, postDatas, postLengths, userID.c_str(), NULL, authUser.SessionID.c_str(), &dataStatus, &dataLength);
 	}
 	else
 	{
@@ -1556,15 +1538,14 @@ RequestStatus Client::ReportSave(int saveID, String message)
 RequestStatus Client::UnpublishSave(int saveID)
 {
 	lastError = "";
-	ByteString::Stream urlStream;
 	char * data = NULL;
 	int dataStatus, dataLength;
-	urlStream << "http://" << SERVER << "/Browse/Delete.json?ID=" << saveID << "&Mode=Unpublish&Key=" << authUser.SessionKey;
+	ByteString url = ByteString::Build("http://", SERVER, "/Browse/Delete.json?ID=", saveID, "&Mode=Unpublish&Key=", authUser.SessionKey);
 	if(authUser.UserID)
 	{
-		ByteString::Stream userIDStream;
-		userIDStream << authUser.UserID;
-		data = http_auth_get((char *)urlStream.str().c_str(), (char *)(userIDStream.str().c_str()), NULL, (char *)(authUser.SessionID.c_str()), &dataStatus, &dataLength);
+		ByteString userID = ByteString::Build(authUser.UserID);
+		
+		data = http_auth_get(url.c_str(), userID.c_str(), NULL, authUser.SessionID.c_str(), &dataStatus, &dataLength);
 	}
 	else
 	{
@@ -1579,18 +1560,17 @@ RequestStatus Client::UnpublishSave(int saveID)
 RequestStatus Client::PublishSave(int saveID)
 {
 	lastError = "";
-	ByteString::Stream urlStream;
 	char *data;
 	int dataStatus;
-	urlStream << "http://" << SERVER << "/Browse/View.json?ID=" << saveID << "&Key=" << authUser.SessionKey;
+	ByteString url = ByteString::Build("http://", SERVER, "/Browse/View.json?ID=", saveID, "&Key=", authUser.SessionKey);
 	if (authUser.UserID)
 	{
-		ByteString::Stream userIDStream;
-		userIDStream << authUser.UserID;
+		ByteString userID = ByteString::Build(authUser.UserID);
+		
 		const char *const postNames[] = { "ActionPublish", NULL };
 		const char *const postDatas[] = { "" };
-		size_t postLengths[] = { 1 };
-		data = http_multipart_post(urlStream.str().c_str(), postNames, postDatas, postLengths, userIDStream.str().c_str(), NULL, authUser.SessionID.c_str(), &dataStatus, NULL);	}
+		size_t postLengths[] = { 0 };
+		data = http_multipart_post(url.c_str(), postNames, postDatas, postLengths, userID.c_str(), NULL, authUser.SessionID.c_str(), &dataStatus, NULL);	}
 	else
 	{
 		lastError = "Not authenticated";
@@ -1604,7 +1584,7 @@ RequestStatus Client::PublishSave(int saveID)
 SaveInfo * Client::GetSave(int saveID, int saveDate)
 {
 	lastError = "";
-	ByteString::Stream urlStream;
+	ByteStringBuilder urlStream;
 	urlStream << "http://" << SERVER  << "/Browse/View.json?ID=" << saveID;
 	if(saveDate)
 	{
@@ -1614,13 +1594,13 @@ SaveInfo * Client::GetSave(int saveID, int saveDate)
 	int dataStatus, dataLength;
 	if(authUser.UserID)
 	{
-		ByteString::Stream userIDStream;
-		userIDStream << authUser.UserID;
-		data = http_auth_get((char *)urlStream.str().c_str(), (char *)(userIDStream.str().c_str()), NULL, (char *)(authUser.SessionID.c_str()), &dataStatus, &dataLength);
+		ByteString userID = ByteString::Build(authUser.UserID);
+		
+		data = http_auth_get(urlStream.Build().c_str(), userID.c_str(), NULL, authUser.SessionID.c_str(), &dataStatus, &dataLength);
 	}
 	else
 	{
-		data = http_simple_get((char *)urlStream.str().c_str(), &dataStatus, &dataLength);
+		data = http_simple_get(urlStream.Build().c_str(), &dataStatus, &dataLength);
 	}
 	if(dataStatus == 200 && data)
 	{
@@ -1677,7 +1657,7 @@ SaveInfo * Client::GetSave(int saveID, int saveDate)
 
 RequestBroker::Request * Client::GetSaveAsync(int saveID, int saveDate)
 {
-	ByteString::Stream urlStream;
+	ByteStringBuilder urlStream;
 	urlStream << "http://" << SERVER  << "/Browse/View.json?ID=" << saveID;
 	if(saveDate)
 	{
@@ -1734,7 +1714,7 @@ RequestBroker::Request * Client::GetSaveAsync(int saveID, int saveDate)
 		}
 		virtual ~SaveInfoParser() { }
 	};
-	return new APIRequest(urlStream.str(), new SaveInfoParser());
+	return new APIRequest(urlStream.Build(), new SaveInfoParser());
 }
 
 RequestBroker::Request * Client::GetCommentsAsync(int saveID, int start, int count)
@@ -1752,7 +1732,7 @@ RequestBroker::Request * Client::GetCommentsAsync(int saveID, int start, int cou
 
 				for (Json::UInt j = 0; j < commentsArray.size(); j++)
 				{
-					int userID = format::ByteStringToNumber<int>(commentsArray[j]["UserID"].asString());
+					int userID = ByteString(commentsArray[j]["UserID"].asString()).ToNumber<int>();
 					ByteString username = commentsArray[j]["Username"].asString();
 					ByteString formattedUsername = commentsArray[j]["FormattedUsername"].asString();
 					if (formattedUsername == "jacobot")
@@ -1775,9 +1755,8 @@ RequestBroker::Request * Client::GetCommentsAsync(int saveID, int start, int cou
 		virtual ~CommentsParser() { }
 	};
 
-	ByteString::Stream urlStream;
-	urlStream << "http://" << SERVER << "/Browse/Comments.json?ID=" << saveID << "&Start=" << start << "&Count=" << count;
-	return new APIRequest(urlStream.str(), new CommentsParser());
+	ByteString url = ByteString::Build("http://", SERVER, "/Browse/Comments.json?ID=", saveID, "&Start=", start, "&Count=", count);
+	return new APIRequest(url, new CommentsParser());
 }
 
 std::vector<std::pair<ByteString, int> > * Client::GetTags(int start, int count, String query, int & resultCount)
@@ -1785,7 +1764,7 @@ std::vector<std::pair<ByteString, int> > * Client::GetTags(int start, int count,
 	lastError = "";
 	resultCount = 0;
 	std::vector<std::pair<ByteString, int> > * tagArray = new std::vector<std::pair<ByteString, int> >();
-	ByteString::Stream urlStream;
+	ByteStringBuilder urlStream;
 	char * data;
 	int dataStatus, dataLength;
 	urlStream << "http://" << SERVER << "/Browse/Tags.json?Start=" << start << "&Count=" << count;
@@ -1796,7 +1775,7 @@ std::vector<std::pair<ByteString, int> > * Client::GetTags(int start, int count,
 			urlStream << format::URLEncode(query.ToUtf8());
 	}
 
-	data = http_simple_get((char *)urlStream.str().c_str(), &dataStatus, &dataLength);
+	data = http_simple_get(urlStream.Build().c_str(), &dataStatus, &dataLength);
 	if(dataStatus == 200 && data)
 	{
 		try
@@ -1832,7 +1811,7 @@ std::vector<SaveInfo*> * Client::SearchSaves(int start, int count, String query,
 	lastError = "";
 	resultCount = 0;
 	std::vector<SaveInfo*> * saveArray = new std::vector<SaveInfo*>();
-	ByteString::Stream urlStream;
+	ByteStringBuilder urlStream;
 	char * data;
 	int dataStatus, dataLength;
 	urlStream << "http://" << SERVER << "/Browse.json?Start=" << start << "&Count=" << count;
@@ -1854,13 +1833,12 @@ std::vector<SaveInfo*> * Client::SearchSaves(int start, int count, String query,
 	}
 	if(authUser.UserID)
 	{
-		ByteString::Stream userIDStream;
-		userIDStream << authUser.UserID;
-		data = http_auth_get((char *)urlStream.str().c_str(), (char *)(userIDStream.str().c_str()), NULL, (char *)(authUser.SessionID.c_str()), &dataStatus, &dataLength);
+		ByteString userID = ByteString::Build(authUser.UserID);
+		data = http_auth_get(urlStream.Build().c_str(), userID.c_str(), NULL, authUser.SessionID.c_str(), &dataStatus, &dataLength);
 	}
 	else
 	{
-		data = http_simple_get((char *)urlStream.str().c_str(), &dataStatus, &dataLength);
+		data = http_simple_get(urlStream.Build().c_str(), &dataStatus, &dataLength);
 	}
 	ParseServerReturn(data, dataStatus, true);
 	if (dataStatus == 200 && data)
@@ -1917,15 +1895,13 @@ std::list<ByteString> * Client::RemoveTag(int saveID, ByteString tag)
 {
 	lastError = "";
 	std::list<ByteString> * tags = NULL;
-	ByteString::Stream urlStream;
 	char * data = NULL;
 	int dataStatus, dataLength;
-	urlStream << "http://" << SERVER << "/Browse/EditTag.json?Op=delete&ID=" << saveID << "&Tag=" << tag << "&Key=" << authUser.SessionKey;
+	ByteString url = ByteString::Build("http://", SERVER, "/Browse/EditTag.json?Op=delete&ID=", saveID, "&Tag=", tag, "&Key=", authUser.SessionKey);
 	if(authUser.UserID)
 	{
-		ByteString::Stream userIDStream;
-		userIDStream << authUser.UserID;
-		data = http_auth_get((char *)urlStream.str().c_str(), (char *)(userIDStream.str().c_str()), NULL, (char *)(authUser.SessionID.c_str()), &dataStatus, &dataLength);
+		ByteString userID = ByteString::Build(authUser.UserID);
+		data = http_auth_get(url.c_str(), userID.c_str(), NULL, authUser.SessionID.c_str(), &dataStatus, &dataLength);
 	}
 	else
 	{
@@ -1959,15 +1935,13 @@ std::list<ByteString> * Client::AddTag(int saveID, ByteString tag)
 {
 	lastError = "";
 	std::list<ByteString> * tags = NULL;
-	ByteString::Stream urlStream;
 	char * data = NULL;
 	int dataStatus, dataLength;
-	urlStream << "http://" << SERVER << "/Browse/EditTag.json?Op=add&ID=" << saveID << "&Tag=" << tag << "&Key=" << authUser.SessionKey;
+	ByteString url = ByteString::Build("http://", SERVER, "/Browse/EditTag.json?Op=add&ID=", saveID, "&Tag=", tag, "&Key=", authUser.SessionKey);
 	if(authUser.UserID)
 	{
-		ByteString::Stream userIDStream;
-		userIDStream << authUser.UserID;
-		data = http_auth_get((char *)urlStream.str().c_str(), (char *)(userIDStream.str().c_str()), NULL, (char *)(authUser.SessionID.c_str()), &dataStatus, &dataLength);
+		ByteString userID = ByteString::Build(authUser.UserID);
+		data = http_auth_get(url.c_str(), userID.c_str(), NULL, authUser.SessionID.c_str(), &dataStatus, &dataLength);
 	}
 	else
 	{

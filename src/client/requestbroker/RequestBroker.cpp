@@ -97,23 +97,22 @@ void RequestBroker::RenderThumbnail(GameSave * gameSave, bool decorations, bool 
 
 void RequestBroker::RetrieveThumbnail(int saveID, int saveDate, int width, int height, RequestListener * tListener)
 {
-	ByteString::Stream urlStream;
-	urlStream << "http://" << STATICSERVER << "/" << saveID;
+	ByteStringBuilder url;
+	url << "http://" << STATICSERVER << "/" << saveID;
 	if(saveDate)
 	{
-		urlStream << "_" << saveDate;
+		url << "_" << saveDate;
 	}
-	urlStream << "_small.pti";
+	url << "_small.pti";
 
-	RetrieveImage(urlStream.str(), width, height, tListener);
+	RetrieveImage(url.Build(), width, height, tListener);
 }
 
 void RequestBroker::RetrieveAvatar(ByteString username, int width, int height, RequestListener * tListener)
 {
-	ByteString::Stream urlStream;
-	urlStream << "http://" << STATICSERVER << "/avatars/" << username << ".pti";
+	ByteString url = ByteString::Build("http://", STATICSERVER, "/avatars/", username, ".pti");
 
-	RetrieveImage(urlStream.str(), width, height, tListener);
+	RetrieveImage(url, width, height, tListener);
 }
 
 void RequestBroker::Start(Request * request, RequestListener * tListener, int identifier)

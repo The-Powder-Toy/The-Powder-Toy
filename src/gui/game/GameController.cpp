@@ -679,7 +679,7 @@ bool GameController::MouseUp(int x, int y, unsigned button, char type)
 						{
 						case 'c':
 						{
-							int saveID = format::StringToNumber<int>(link);
+							int saveID = link.ToNumber<int>(true);
 							if (saveID)
 								OpenSavePreview(saveID, 0, false);
 							break;
@@ -687,9 +687,7 @@ bool GameController::MouseUp(int x, int y, unsigned button, char type)
 						case 't':
 						{
 							// buff is already confirmed to be a number by sign::splitsign
-							ByteString::Stream uri;
-							uri << "http://powdertoy.co.uk/Discussions/Thread/View.html?Thread=" << link.ToUtf8();
-							Platform::OpenURI(uri.str());
+							Platform::OpenURI(ByteString::Build("http://powdertoy.co.uk/Discussions/Thread/View.html?Thread=", link.ToUtf8()));
 							break;
 						}
 						case 's':
