@@ -80,6 +80,54 @@ namespace Format
 	inline PrecisionOverride<void> Precision(size_t precision) { return PrecisionOverride<void>(precision); }
 };
 
+template<typename T, std::ios_base::fmtflags set, std::ios_base::fmtflags reset> inline ByteStringBuilder &operator<<(ByteStringBuilder &b, Format::FlagsOverride<T, set, reset> data)
+{
+	std::ios_base::fmtflags oldflags = b.flags;
+	b.flags = (b.flags & ~reset) | set;
+	b << data.value;
+	b.flags = oldflags;
+	return b;
+}
+template<std::ios_base::fmtflags set, std::ios_base::fmtflags reset> inline ByteStringBuilder &operator<<(ByteStringBuilder &b, Format::FlagsOverride<void, set, reset> data)
+{
+	b.flags = (b.flags & ~reset) | set;
+	return b;
+}
+
+template<typename T> inline ByteStringBuilder &operator<<(ByteStringBuilder &b, Format::WidthOverride<T> data)
+{
+	size_t oldwidth = b.width;
+	b.width = data.width;
+	b << data.value;
+	b.width = oldwidth;
+	return b;
+}
+inline ByteStringBuilder &operator<<(ByteStringBuilder &b, Format::WidthOverride<void> data)
+{
+	b.width = data.width;
+	return b;
+}
+
+template<typename T> inline ByteStringBuilder &operator<<(ByteStringBuilder &b, Format::PrecisionOverride<T> data)
+{
+	std::ios_base::fmtflags oldflags = b.flags;
+	if(!(oldflags & std::ios_base::floatfield))
+		b.flags |= std::ios_base::fixed;
+	size_t oldprecision = b.precision;
+	b.precision = data.precision;
+	b << data.value;
+	b.precision = oldprecision;
+	b.flags = oldflags;
+	return b;
+}
+inline ByteStringBuilder &operator<<(ByteStringBuilder &b, Format::PrecisionOverride<void> data)
+{
+	if(!(b.flags & std::ios_base::floatfield))
+		b.flags |= std::ios_base::fixed;
+	b.precision = data.precision;
+	return b;
+}
+
 template<typename T, std::ios_base::fmtflags set, std::ios_base::fmtflags reset> inline StringBuilder &operator<<(StringBuilder &b, Format::FlagsOverride<T, set, reset> data)
 {
 	std::ios_base::fmtflags oldflags = b.flags;
