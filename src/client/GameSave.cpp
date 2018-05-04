@@ -1947,7 +1947,7 @@ void GameSave::readPSv(char * saveDataChar, int dataLength)
 			x = 254;
 		memcpy(tempSignText, data+p, x);
 		tempSignText[x] = 0;
-		tempSign.text = format::CleanString(tempSignText, true, true, true).Substr(0, 45);
+		tempSign.text = format::CleanString(ByteString(tempSignText).FromUtf8(), true, true, true).Substr(0, 45);
 		tempSigns.push_back(tempSign);
 		p += x;
 	}
