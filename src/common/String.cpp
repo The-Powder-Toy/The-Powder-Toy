@@ -234,7 +234,9 @@ inline wchar_t narrow_wchar(String::value_type ch)
 	return wchar_t(ch);
 }
 
-String numberChars = "-.+0123456789ABCDEFXabcdefx";
+char const numberChars[] = "-.+0123456789ABCDEFXabcdefx";
+ByteString numberByteString(numberChars);
+String numberString(numberChars);
 
 static thread_local struct LocaleImpl
 {
@@ -247,19 +249,51 @@ static thread_local struct LocaleImpl
 		wstream.imbue(std::locale::classic());
 	}
 
+	inline void PrepareStream(ByteStringBuilder &b)
+	{
+		stream.flags(b.flags);
+		stream.width(b.width);
+		stream.precision(b.precision);
+		stream.fill(b.fill);
+		stream.clear();
+	}
+
+	inline void PrepareStream(ByteString const &str, size_t pos, std::ios_base::fmtflags set, std::ios_base::fmtflags reset)
+	{
+		stream.flags((std::ios_base::dec & ~ reset) | set);
+		std::basic_string<char> bstr;
+		while(pos < str.size() && numberByteString.Contains(str[pos]))
+			bstr.push_back(narrow_wchar(str[pos++]));
+		stream.str(bstr);
+		stream.clear();
+	}
+
+	inline void FlushStream(ByteStringBuilder &b)
+	{
+		std::basic_string<char> str = stream.str();
+		b.AddChars(str.data(), str.size());
+		stream.str(std::basic_string<char>());
+	}
+
+	inline void FlushStream()
+	{
+		stream.str(std::basic_string<char>());
+	}
+
 	inline void PrepareWStream(StringBuilder &b)
 	{
 		wstream.flags(b.flags);
 		wstream.width(b.width);
 		wstream.precision(b.precision);
 		wstream.fill(b.fill);
+		wstream.clear();
 	}
 
 	inline void PrepareWStream(String const &str, size_t pos, std::ios_base::fmtflags set, std::ios_base::fmtflags reset)
 	{
 		wstream.flags((std::ios_base::dec & ~ reset) | set);
 		std::basic_string<wchar_t> wstr;
-		while(pos < str.size() && representable_wchar(str[pos]) && numberChars.Contains(str[pos]))
+		while(pos < str.size() && representable_wchar(str[pos]) && numberString.Contains(str[pos]))
 			wstr.push_back(narrow_wchar(str[pos++]));
 		wstream.str(wstr);
 		wstream.clear();
@@ -282,6 +316,159 @@ static thread_local struct LocaleImpl
 	}
 }
 LocaleImpl;
+
+ByteString ByteStringBuilder::Build() const
+{
+	return ByteString(buffer.begin(), buffer.end());
+}
+
+void ByteStringBuilder::AddChars(ByteString::value_type const *data, size_t count)
+{
+	buffer.reserve(buffer.size() + count);
+	buffer.insert(buffer.end(), data, data + count);
+}
+
+ByteStringBuilder &operator<<(ByteStringBuilder &b, short int data)
+{
+	LocaleImpl.PrepareStream(b);
+	LocaleImpl.stream << data;
+	LocaleImpl.FlushStream(b);
+	return b;
+}
+
+ByteStringBuilder &operator<<(ByteStringBuilder &b, int data)
+{
+	LocaleImpl.PrepareStream(b);
+	LocaleImpl.stream << data;
+	LocaleImpl.FlushStream(b);
+	return b;
+}
+
+ByteStringBuilder &operator<<(ByteStringBuilder &b, long int data)
+{
+	LocaleImpl.PrepareStream(b);
+	LocaleImpl.stream << data;
+	LocaleImpl.FlushStream(b);
+	return b;
+}
+
+ByteStringBuilder &operator<<(ByteStringBuilder &b, long long int data)
+{
+	LocaleImpl.PrepareStream(b);
+	LocaleImpl.stream << data;
+	LocaleImpl.FlushStream(b);
+	return b;
+}
+
+ByteStringBuilder &operator<<(ByteStringBuilder &b, unsigned short int data)
+{
+	LocaleImpl.PrepareStream(b);
+	LocaleImpl.stream << data;
+	LocaleImpl.FlushStream(b);
+	return b;
+}
+
+ByteStringBuilder &operator<<(ByteStringBuilder &b, unsigned int data)
+{
+	LocaleImpl.PrepareStream(b);
+	LocaleImpl.stream << data;
+	LocaleImpl.FlushStream(b);
+	return b;
+}
+
+ByteStringBuilder &operator<<(ByteStringBuilder &b, unsigned long int data)
+{
+	LocaleImpl.PrepareStream(b);
+	LocaleImpl.stream << data;
+	LocaleImpl.FlushStream(b);
+	return b;
+}
+
+ByteStringBuilder &operator<<(ByteStringBuilder &b, unsigned long long int data)
+{
+	LocaleImpl.PrepareStream(b);
+	LocaleImpl.stream << data;
+	LocaleImpl.FlushStream(b);
+	return b;
+}
+
+ByteStringBuilder &operator<<(ByteStringBuilder &b, ByteString::value_type data)
+{
+	b.AddChars(&data, 1);
+	return b;
+}
+
+ByteStringBuilder &operator<<(ByteStringBuilder &b, ByteString::value_type const *data)
+{
+	return b << ByteString(data);
+}
+
+ByteStringBuilder &operator<<(ByteStringBuilder &b, ByteString const &data)
+{
+	b.AddChars(data.data(), data.size());
+	return b;
+}
+
+ByteStringBuilder &operator<<(ByteStringBuilder &b, float data)
+{
+	LocaleImpl.PrepareStream(b);
+	LocaleImpl.stream << data;
+	LocaleImpl.FlushStream(b);
+	return b;
+}
+
+ByteStringBuilder &operator<<(ByteStringBuilder &b, double data)
+{
+	LocaleImpl.PrepareStream(b);
+	LocaleImpl.stream << data;
+	LocaleImpl.FlushStream(b);
+	return b;
+}
+
+ByteString::Split ByteString::SplitSigned(long long int &value, size_t pos, std::ios_base::fmtflags set, std::ios_base::fmtflags reset) const
+{
+	LocaleImpl.PrepareStream(*this, pos, set, reset);
+	LocaleImpl.stream >> value;
+	if(LocaleImpl.stream.fail())
+	{
+		LocaleImpl.FlushStream();
+		return Split(*this, pos, npos, 0, false);
+	}
+	LocaleImpl.stream.clear();
+	Split split(*this, pos, pos + LocaleImpl.stream.tellg(), 0, false);
+	LocaleImpl.FlushStream();
+	return split;
+}
+
+ByteString::Split ByteString::SplitUnsigned(unsigned long long int &value, size_t pos, std::ios_base::fmtflags set, std::ios_base::fmtflags reset) const
+{
+	LocaleImpl.PrepareStream(*this, pos, set, reset);
+	LocaleImpl.stream >> value;
+	if(LocaleImpl.stream.fail())
+	{
+		LocaleImpl.FlushStream();
+		return Split(*this, pos, npos, 0, false);
+	}
+	LocaleImpl.stream.clear();
+	Split split(*this, pos, pos + LocaleImpl.stream.tellg(), 0, false);
+	LocaleImpl.FlushStream();
+	return split;
+}
+
+ByteString::Split ByteString::SplitFloat(double &value, size_t pos, std::ios_base::fmtflags set, std::ios_base::fmtflags reset) const
+{
+	LocaleImpl.PrepareStream(*this, pos, set, reset);
+	LocaleImpl.stream >> value;
+	if(LocaleImpl.stream.fail())
+	{
+		LocaleImpl.FlushStream();
+		return Split(*this, pos, npos, 0, false);
+	}
+	LocaleImpl.stream.clear();
+	Split split(*this, pos, pos + LocaleImpl.stream.tellg(), 0, false);
+	LocaleImpl.FlushStream();
+	return split;
+}
 
 String StringBuilder::Build() const
 {
@@ -371,6 +558,11 @@ StringBuilder &operator<<(StringBuilder &b, String::value_type data)
 	return b;
 }
 
+StringBuilder &operator<<(StringBuilder &b, String::value_type const *data)
+{
+	return b << String(data);
+}
+
 StringBuilder &operator<<(StringBuilder &b, String const &data)
 {
 	b.AddChars(data.data(), data.size());
@@ -399,7 +591,6 @@ String::Split String::SplitSigned(long long int &value, size_t pos, std::ios_bas
 	LocaleImpl.wstream >> value;
 	if(LocaleImpl.wstream.fail())
 	{
-		LocaleImpl.wstream.clear();
 		LocaleImpl.FlushWStream();
 		return Split(*this, pos, npos, 0, false);
 	}
@@ -415,7 +606,6 @@ String::Split String::SplitUnsigned(unsigned long long int &value, size_t pos, s
 	LocaleImpl.wstream >> value;
 	if(LocaleImpl.wstream.fail())
 	{
-		LocaleImpl.wstream.clear();
 		LocaleImpl.FlushWStream();
 		return Split(*this, pos, npos, 0, false);
 	}
@@ -431,7 +621,6 @@ String::Split String::SplitFloat(double &value, size_t pos, std::ios_base::fmtfl
 	LocaleImpl.wstream >> value;
 	if(LocaleImpl.wstream.fail())
 	{
-		LocaleImpl.wstream.clear();
 		LocaleImpl.FlushWStream();
 		return Split(*this, pos, npos, 0, false);
 	}

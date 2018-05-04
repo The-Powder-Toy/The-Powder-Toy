@@ -72,10 +72,10 @@ public:
 
 	inline ByteString Substr(size_t pos = 0, size_t count = npos) const { return super::substr(pos, count); }
 	inline ByteString SubstrFromEnd(size_t rpos = 0, size_t rcount = npos) const { return super::substr(rcount == npos || rcount > rpos ? 0 : rpos - rcount, size() - rpos); }
-	inline ByteString Between(size_t from, size_t to) const { return from >= to ? ByteString() : super::substr(from, to - from); }
+	inline ByteString Between(size_t from, size_t to) const { return to == npos ? super::substr(from) : from >= to ? ByteString() : super::substr(from, to - from); }
 
 	inline bool Contains(value_type ch) const { return super::find(ch) != npos; }
-	inline bool Contains(ByteString const &other) { return super::find(other) != npos; }
+	inline bool Contains(ByteString const &other) const { return super::find(other) != npos; }
 
 	inline bool BeginsWith(ByteString const &other) const { return !super::compare(0, other.size(), other); }
 	inline bool EndsWith(ByteString const &other) const { return !super::compare(size() - other.size(), other.size(), other); }
@@ -89,6 +89,71 @@ public:
 	inline Split SplitFromEndBy(ByteString const &str, size_t pos = npos) const { return Split(*this, pos, super::find(str, pos), str.size(), true); }
 	inline Split SplitFromEndByAny(ByteString const &str, size_t pos = npos) const { return Split(*this, pos, super::find_last_of(str, pos), 1, true); }
 	inline Split SplitFromEndByNot(ByteString const &str, size_t pos = npos) const { return Split(*this, pos, super::find_last_not_of(str, pos), 1, true); }
+private:
+	Split SplitSigned(long long int &, size_t, std::ios_base::fmtflags, std::ios_base::fmtflags) const;
+	Split SplitUnsigned(unsigned long long int &, size_t, std::ios_base::fmtflags, std::ios_base::fmtflags) const;
+	Split SplitFloat(double &, size_t, std::ios_base::fmtflags, std::ios_base::fmtflags) const;
+public:
+	template<typename T> inline Split SplitSigned(T &ref, size_t pos, std::ios_base::fmtflags set, std::ios_base::fmtflags reset) const
+	{
+		long long int value = 0;
+		Split split = SplitSigned(value, pos, set, reset);
+		ref = value;
+		return split;
+	}
+	template<typename T> inline Split SplitUnsigned(T &ref, size_t pos, std::ios_base::fmtflags set, std::ios_base::fmtflags reset) const
+	{
+		unsigned long long int value = 0;
+		Split split = SplitUnsigned(value, pos, set, reset);
+		ref = value;
+		return split;
+	}
+	template<typename T> inline Split SplitFloat(T &ref, size_t pos, std::ios_base::fmtflags set, std::ios_base::fmtflags reset) const
+	{
+		double value = 0;
+		Split split = SplitFloat(value, pos, set, reset);
+		ref = value;
+		return split;
+	}
+
+	inline Split SplitNumber(short int &ref, size_t pos = 0) const { return SplitSigned(ref, pos, std::ios_base::fmtflags(), std::ios_base::fmtflags()); }
+	inline Split SplitNumber(int &ref, size_t pos = 0) const { return SplitSigned(ref, pos, std::ios_base::fmtflags(), std::ios_base::fmtflags()); }
+	inline Split SplitNumber(long int &ref, size_t pos = 0) const { return SplitSigned(ref, pos, std::ios_base::fmtflags(), std::ios_base::fmtflags()); }
+	inline Split SplitNumber(long long int &ref, size_t pos = 0) const { return SplitSigned(ref, pos, std::ios_base::fmtflags(), std::ios_base::fmtflags()); }
+	inline Split SplitNumber(unsigned short int &ref, size_t pos = 0) const { return SplitUnsigned(ref, pos, std::ios_base::fmtflags(), std::ios_base::fmtflags()); }
+	inline Split SplitNumber(unsigned int &ref, size_t pos = 0) const { return SplitUnsigned(ref, pos, std::ios_base::fmtflags(), std::ios_base::fmtflags()); }
+	inline Split SplitNumber(unsigned long int &ref, size_t pos = 0) const { return SplitUnsigned(ref, pos, std::ios_base::fmtflags(), std::ios_base::fmtflags()); }
+	inline Split SplitNumber(unsigned long long int &ref, size_t pos = 0) const { return SplitUnsigned(ref, pos, std::ios_base::fmtflags(), std::ios_base::fmtflags()); }
+	inline Split SplitNumber(float &ref, size_t pos = 0) const { return SplitFloat(ref, pos, std::ios_base::fmtflags(), std::ios_base::fmtflags()); }
+	inline Split SplitNumber(double &ref, size_t pos = 0) const { return SplitFloat(ref, pos, std::ios_base::fmtflags(), std::ios_base::fmtflags()); }
+
+	template<std::ios_base::fmtflags set, std::ios_base::fmtflags reset> inline Split SplitNumber(short int &ref, Format::FlagsOverride<void, set, reset>, size_t pos = 0) const { return SplitSigned(ref, pos, set, reset); }
+	template<std::ios_base::fmtflags set, std::ios_base::fmtflags reset> inline Split SplitNumber(int &ref, Format::FlagsOverride<void, set, reset>, size_t pos = 0) const { return SplitSigned(ref, pos, set, reset); }
+	template<std::ios_base::fmtflags set, std::ios_base::fmtflags reset> inline Split SplitNumber(long int &ref, Format::FlagsOverride<void, set, reset>, size_t pos = 0) const { return SplitSigned(ref, pos, set, reset); }
+	template<std::ios_base::fmtflags set, std::ios_base::fmtflags reset> inline Split SplitNumber(long long int &ref, Format::FlagsOverride<void, set, reset>, size_t pos = 0) const { return SplitSigned(ref, pos, set, reset); }
+	template<std::ios_base::fmtflags set, std::ios_base::fmtflags reset> inline Split SplitNumber(unsigned short int &ref, Format::FlagsOverride<void, set, reset>, size_t pos = 0) const { return SplitUnsigned(ref, pos, set, reset); }
+	template<std::ios_base::fmtflags set, std::ios_base::fmtflags reset> inline Split SplitNumber(unsigned int &ref, Format::FlagsOverride<void, set, reset>, size_t pos = 0) const { return SplitUnsigned(ref, pos, set, reset); }
+	template<std::ios_base::fmtflags set, std::ios_base::fmtflags reset> inline Split SplitNumber(unsigned long int &ref, Format::FlagsOverride<void, set, reset>, size_t pos = 0) const { return SplitUnsigned(ref, pos, set, reset); }
+	template<std::ios_base::fmtflags set, std::ios_base::fmtflags reset> inline Split SplitNumber(unsigned long long int &ref, Format::FlagsOverride<void, set, reset>, size_t pos = 0) const { return SplitUnsigned(ref, pos, set, reset); }
+	template<std::ios_base::fmtflags set, std::ios_base::fmtflags reset> inline Split SplitNumber(float &ref, Format::FlagsOverride<void, set, reset>, size_t pos = 0) const { return SplitFloat(ref, pos, set, reset); }
+	template<std::ios_base::fmtflags set, std::ios_base::fmtflags reset> inline Split SplitNumber(double &ref, Format::FlagsOverride<void, set, reset>, size_t pos = 0) const { return SplitFloat(ref, pos, set, reset); }
+
+	template<typename T> T ToNumber(bool noThrow = false) const
+	{
+		T value = T();
+		Split split = SplitNumber(value);
+		if(split.PositionBefore() != size())
+			return noThrow ? T() : throw std::runtime_error("Not a number");
+		return value;
+	}
+	template<typename T, std::ios_base::fmtflags set, std::ios_base::fmtflags reset> inline T ToNumber(Format::FlagsOverride<void, set, reset> fmt, bool noThrow = false) const
+	{
+		T value = T();
+		Split split = SplitNumber(value, fmt);
+		if(split.PositionBefore() != size())
+			return noThrow ? T() : throw std::runtime_error("Not a number");
+		return value;
+	}
 
 	std::vector<ByteString> PartitionBy(value_type ch, bool includeEmpty = false) const;
 	std::vector<ByteString> PartitionBy(ByteString const &str, bool includeEmpty = false) const;
@@ -102,6 +167,7 @@ public:
 
 	String FromUtf8(bool ignoreError = true) const;
 	inline String FromAscii() const;
+	template<typename... Ts> static ByteString Build(Ts&&... args);
 
 	using Stream = std::basic_stringstream<value_type>;
 };
@@ -177,7 +243,7 @@ public:
 	inline Split SplitByAny(String const &str, size_t pos = 0) const { return Split(*this, pos, super::find_first_of(str, pos), 1, false); }
 	inline Split SplitByNot(String const &str, size_t pos = 0) const { return Split(*this, pos, super::find_first_not_of(str, pos), 1, false); }
 	inline Split SplitFromEndBy(value_type ch, size_t pos = npos) const { return Split(*this, pos, super::rfind(ch, pos), 1, true); }
-	inline Split SplitFromEndBy(String const &str, size_t pos = npos) const { return Split(*this, pos,super::find(str, pos), str.size(), true); }
+	inline Split SplitFromEndBy(String const &str, size_t pos = npos) const { return Split(*this, pos, super::find(str, pos), str.size(), true); }
 	inline Split SplitFromEndByAny(String const &str, size_t pos = npos) const { return Split(*this, pos, super::find_last_of(str, pos), 1, true); }
 	inline Split SplitFromEndByNot(String const &str, size_t pos = npos) const { return Split(*this, pos, super::find_last_not_of(str, pos), 1, true); }
 private:
@@ -251,7 +317,7 @@ public:
 	std::vector<String> PartitionByAny(String const &str, bool includeEmpty = false) const;
 
 	String &Substitute(String const &needle, String const &replacement);
-	
+
 	inline String &Insert(size_t pos, String const &str) { super::insert(pos, str); return *this; }
 	inline String &Erase(size_t pos, size_t count) { super::erase(pos, count); return *this; }
 	inline String &EraseBetween(size_t from, size_t to) { if(from < to) super::erase(from, to - from); return *this; }
@@ -326,9 +392,52 @@ public:
 	inline ConversionError(bool to): std::runtime_error(to ? "Could not convert to UTF-8" : "Could not convert from UTF-8") {}
 };
 
+class ByteStringBuilder
+{
+	std::vector<ByteString::value_type> buffer;
+public:
+	std::ios_base::fmtflags flags;
+	ByteString::value_type fill;
+	size_t width, precision;
+	inline ByteStringBuilder(): flags(std::ios_base::skipws | std::ios_base::dec), fill(' '), width(0), precision(6) {}
+
+	void AddChars(ByteString::value_type const *, size_t);
+	size_t Size() const { return buffer.size(); }
+	ByteString Build() const;
+
+	template<typename T> ByteStringBuilder &operator<<(T) = delete;
+
+	template<typename T, typename... Ts> ByteStringBuilder &Add(T &&arg, Ts&&... args)
+	{
+		return (*this << std::forward<T>(arg)).Add(std::forward<Ts>(args)...);
+	}
+	ByteStringBuilder &Add() { return *this; }
+};
+
+ByteStringBuilder &operator<<(ByteStringBuilder &, short int);
+ByteStringBuilder &operator<<(ByteStringBuilder &, int);
+ByteStringBuilder &operator<<(ByteStringBuilder &, long int);
+ByteStringBuilder &operator<<(ByteStringBuilder &, long long int);
+ByteStringBuilder &operator<<(ByteStringBuilder &, unsigned short int);
+ByteStringBuilder &operator<<(ByteStringBuilder &, unsigned int);
+ByteStringBuilder &operator<<(ByteStringBuilder &, unsigned long int);
+ByteStringBuilder &operator<<(ByteStringBuilder &, unsigned long long int);
+ByteStringBuilder &operator<<(ByteStringBuilder &, ByteString::value_type);
+ByteStringBuilder &operator<<(ByteStringBuilder &, ByteString::value_type const *);
+ByteStringBuilder &operator<<(ByteStringBuilder &, ByteString const &);
+ByteStringBuilder &operator<<(ByteStringBuilder &, float);
+ByteStringBuilder &operator<<(ByteStringBuilder &, double);
+
+template<typename... Ts> ByteString ByteString::Build(Ts&&... args)
+{
+	ByteStringBuilder b;
+	b.Add(std::forward<Ts>(args)...);
+	return b.Build();
+}
+
 class StringBuilder
 {
-	std::vector<String::value_type> buffer; // TODO: std::list<std::vector<String::value_type> > ?
+	std::vector<String::value_type> buffer;
 public:
 	std::ios_base::fmtflags flags;
 	String::value_type fill;
@@ -358,6 +467,7 @@ StringBuilder &operator<<(StringBuilder &, unsigned long int);
 StringBuilder &operator<<(StringBuilder &, unsigned long long int);
 StringBuilder &operator<<(StringBuilder &, ByteString::value_type);
 StringBuilder &operator<<(StringBuilder &, String::value_type);
+StringBuilder &operator<<(StringBuilder &, String::value_type const *);
 StringBuilder &operator<<(StringBuilder &, String const &);
 StringBuilder &operator<<(StringBuilder &, float);
 StringBuilder &operator<<(StringBuilder &, double);
