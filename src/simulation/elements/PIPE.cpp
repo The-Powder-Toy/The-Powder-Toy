@@ -75,6 +75,30 @@ Element_PIPE::Element_PIPE()
 signed char pos_1_rx[] = {-1,-1,-1, 0, 0, 1, 1, 1};
 signed char pos_1_ry[] = {-1, 0, 1,-1, 1,-1, 0, 1};
 
+unsigned int nextColor(unsigned int flags)
+{
+	unsigned int color = flags & PFLAG_COLORS;
+	if (color == PFLAG_COLOR_RED)
+		return PFLAG_COLOR_GREEN;
+	else if (color == PFLAG_COLOR_GREEN)
+		return PFLAG_COLOR_BLUE;
+	else if (color == PFLAG_COLOR_BLUE)
+		return PFLAG_COLOR_RED;
+	return PFLAG_COLOR_RED;
+}
+
+unsigned int prevColor(unsigned int flags)
+{
+	unsigned int color = flags & PFLAG_COLORS;
+	if (color == PFLAG_COLOR_RED)
+		return PFLAG_COLOR_BLUE;
+	else if (color == PFLAG_COLOR_BLUE)
+		color = PFLAG_COLOR_GREEN;
+	else if (color == PFLAG_COLOR_GREEN)
+		return PFLAG_COLOR_RED;
+	return PFLAG_COLOR_GREEN;
+}
+
 //#TPT-Directive ElementHeader Element_PIPE static int update(UPDATE_FUNC_ARGS)
 int Element_PIPE::update(UPDATE_FUNC_ARGS)
 {
@@ -151,24 +175,28 @@ int Element_PIPE::update(UPDATE_FUNC_ARGS)
 						if (!r)
 							continue;
 						if (TYP(r) != PT_PIPE && TYP(r) != PT_PPIP)
+						{
+							count++;
 							continue;
-						unsigned int nextColor = (((((parts[i].tmp&PFLAG_COLORS)>>18)+1)%3)+1)<<18;
+						}
+						unsigned int next = nextColor(parts[i].tmp);
+						unsigned int prev = prevColor(parts[i].tmp);
 						if (parts[ID(r)].tmp&PFLAG_INITIALIZING)
 						{
-							parts[ID(r)].tmp |= nextColor;
+							parts[ID(r)].tmp |= next;
 							parts[ID(r)].tmp &= ~PFLAG_INITIALIZING;
 							parts[ID(r)].life = 6;
 							if (parts[i].tmp&0x100)//is a single pixel pipe
 							{
 								parts[ID(r)].tmp |= 0x200;//will transfer to a single pixel pipe
 								parts[ID(r)].tmp |= count<<10;//coords of where it came from
-								parts[i].tmp |= ((7-count)<<14);
+								parts[i].tmp |= (7-count)<<14;
 								parts[i].tmp |= 0x2000;
 							}
 							neighborcount ++;
 							lastneighbor = ID(r);
 						}
-						else if ((parts[ID(r)].tmp&PFLAG_COLORS) != nextColor)
+						else if ((parts[ID(r)].tmp&PFLAG_COLORS) != prev)
 						{
 							neighborcount ++;
 							lastneighbor = ID(r);
@@ -425,7 +453,7 @@ void Element_PIPE::transfer_pipe_to_pipe(Particle *src, Particle *dest, bool STO
 void Element_PIPE::pushParticle(Simulation * sim, int i, int count, int original)
 {
 	int rndstore, rnd, rx, ry, r, x, y, np, q;
-	unsigned int notctype = (((((sim->parts[i].tmp&PFLAG_COLORS)>>18)+1)%3)+1)<<18;
+	unsigned int notctype = nextColor(sim->parts[i].tmp);
 	if (!TYP(sim->parts[i].ctype) || count >= 2)//don't push if there is nothing there, max speed of 2 per frame
 		return;
 	x = (int)(sim->parts[i].x+0.5f);
