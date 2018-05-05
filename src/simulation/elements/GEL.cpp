@@ -50,10 +50,11 @@ int Element_GEL::update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry, rt;
 	bool gel;
-	int absorbChanceDenom;
-	if (parts[i].tmp>100) parts[i].tmp = 100;
-	if (parts[i].tmp<0) parts[i].tmp = 0;
-	absorbChanceDenom = parts[i].tmp*10 + 500;
+	if (parts[i].tmp > 100)
+		parts[i].tmp = 100;
+	if (parts[i].tmp < 0)
+		parts[i].tmp = 0;
+	int absorbChanceDenom = parts[i].tmp * 10 + 500;
 	for (rx=-2; rx<3; rx++)
 		for (ry=-2; ry<3; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
@@ -69,31 +70,31 @@ int Element_GEL::update(UPDATE_FUNC_ARGS)
 				case PT_WATR:
 				case PT_DSTW:
 				case PT_FRZW:
-					if (parts[i].tmp<100 && 500>random_gen()%absorbChanceDenom)
+					if (parts[i].tmp<100 && RNG::Ref().chance(500, absorbChanceDenom))
 					{
 						parts[i].tmp++;
 						sim->kill_part(ID(r));
 					}
 					break;
 				case PT_PSTE:
-					if (parts[i].tmp<100 && 20>random_gen()%absorbChanceDenom)
+					if (parts[i].tmp<100 && RNG::Ref().chance(20, absorbChanceDenom))
 					{
 						parts[i].tmp++;
 						sim->create_part(ID(r), x+rx, y+ry, PT_CLST);
 					}
 					break;
 				case PT_SLTW:
-					if (parts[i].tmp<100 && 50>random_gen()%absorbChanceDenom)
+					if (parts[i].tmp<100 && RNG::Ref().chance(50, absorbChanceDenom))
 					{
 						parts[i].tmp++;
-						if (random_gen()%4)
+						if (RNG::Ref().chance(3, 4))
 							sim->kill_part(ID(r));
 						else
 							sim->part_change_type(ID(r), x+rx, y+ry, PT_SALT);
 					}
 					break;
 				case PT_CBNW:
-					if (parts[i].tmp<100 && 100>random_gen()%absorbChanceDenom)
+					if (parts[i].tmp < 100 && RNG::Ref().chance(100, absorbChanceDenom))
 					{
 						parts[i].tmp++;
 						sim->part_change_type(ID(r), x+rx, y+ry, PT_CO2);

@@ -464,6 +464,7 @@ void Element_PIPE::pushParticle(Simulation * sim, int i, int count, int original
 		rndstore = RNG::Ref().gen();
 		// RAND_MAX is at least 32767 on all platforms i.e. pow(8,5)-1
 		// so can go 5 cycles without regenerating rndstore
+		// (although now we use our own randomizer so maybe should reevaluate all the rndstore usages in every element)
 		for (q=0; q<3; q++)//try to push 3 times
 		{
 			rnd = rndstore&7;

@@ -50,7 +50,7 @@ Element_BCLN::Element_BCLN()
 int Element_BCLN::update(UPDATE_FUNC_ARGS)
 {
 	if (!parts[i].life && sim->pv[y/CELL][x/CELL]>4.0f)
-		parts[i].life = random_gen()%40+80;
+		parts[i].life = RNG::Ref().between(80, 119);
 	if (parts[i].life)
 	{
 		parts[i].vx += ADVECTION*sim->vx[y/CELL][x/CELL];
@@ -80,11 +80,12 @@ int Element_BCLN::update(UPDATE_FUNC_ARGS)
 					}
 				}
 	}
-	else {
-		if (parts[i].ctype==PT_LIFE) sim->create_part(-1, x+random_gen()%3-1, y+random_gen()%3-1, PT_LIFE, parts[i].tmp);
-		else if (parts[i].ctype!=PT_LIGH || (random_gen()%30)==0)
+	else
+	{
+		if (parts[i].ctype==PT_LIFE) sim->create_part(-1, x + RNG::Ref().between(-1, 1), y + RNG::Ref().between(-1, 1), PT_LIFE, parts[i].tmp);
+		else if (parts[i].ctype!=PT_LIGH || RNG::Ref().chance(1, 30))
 		{
-			int np = sim->create_part(-1, x+random_gen()%3-1, y+random_gen()%3-1, TYP(parts[i].ctype));
+			int np = sim->create_part(-1, x + RNG::Ref().between(-1, 1), y + RNG::Ref().between(-1, 1), TYP(parts[i].ctype));
 			if (np>=0)
 			{
 				if (parts[i].ctype==PT_LAVA && parts[i].tmp>0 && parts[i].tmp<PT_NUM && sim->elements[parts[i].tmp].HighTemperatureTransition==PT_LAVA)

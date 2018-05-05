@@ -60,16 +60,14 @@ int Element_BRMT::update(UPDATE_FUNC_ARGS)
 					r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if (TYP(r)==PT_BREC && !(random_gen()%tempFactor))
+					if (TYP(r)==PT_BREC && RNG::Ref().chance(1, tempFactor))
 					{
-						if(random_gen()%2)
+						if (RNG::Ref().chance(1, 2))
 						{
 							sim->create_part(ID(r), x+rx, y+ry, PT_THRM);
 						}
 						else
 							sim->create_part(i, x, y, PT_THRM);
-						//part_change_type(ID(r),x+rx,y+ry,PT_BMTL);
-						//parts[ID(r)].tmp=(parts[i].tmp<=7)?parts[i].tmp=1:parts[i].tmp-(random_gen()%5);//random_gen()/(RAND_MAX/300)+100;
 					}
 				}
 	}

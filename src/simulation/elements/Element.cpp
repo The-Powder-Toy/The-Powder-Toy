@@ -99,15 +99,15 @@ int Element::legacyUpdate(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if ((TYP(r)==PT_WATR||TYP(r)==PT_DSTW||TYP(r)==PT_SLTW) && 1>(random_gen()%1000))
+					if ((TYP(r)==PT_WATR||TYP(r)==PT_DSTW||TYP(r)==PT_SLTW) && RNG::Ref().chance(1, 1000))
 					{
 						sim->part_change_type(i,x,y,PT_WATR);
 						sim->part_change_type(ID(r),x+rx,y+ry,PT_WATR);
 					}
-					if ((TYP(r)==PT_ICEI || TYP(r)==PT_SNOW) && 1>(random_gen()%1000))
+					if ((TYP(r)==PT_ICEI || TYP(r)==PT_SNOW) && RNG::Ref().chance(1, 1000))
 					{
 						sim->part_change_type(i,x,y,PT_WATR);
-						if (1>(random_gen()%1000))
+						if (RNG::Ref().chance(1, 1000))
 							sim->part_change_type(ID(r),x+rx,y+ry,PT_WATR);
 					}
 				}
@@ -121,7 +121,7 @@ int Element::legacyUpdate(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if ((TYP(r)==PT_FIRE || TYP(r)==PT_LAVA) && 1>(random_gen()%10))
+					if ((TYP(r)==PT_FIRE || TYP(r)==PT_LAVA) && RNG::Ref().chance(1, 10))
 					{
 						sim->part_change_type(i,x,y,PT_WTRV);
 					}
@@ -136,10 +136,12 @@ int Element::legacyUpdate(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if ((TYP(r)==PT_FIRE || TYP(r)==PT_LAVA) && 1>(random_gen()%10))
+					if ((TYP(r)==PT_FIRE || TYP(r)==PT_LAVA) && RNG::Ref().chance(1, 10))
 					{
-						if (random_gen()%4==0) sim->part_change_type(i,x,y,PT_SALT);
-						else sim->part_change_type(i,x,y,PT_WTRV);
+						if (RNG::Ref().chance(1, 4))
+							sim->part_change_type(i,x,y,PT_SALT);
+						else
+							sim->part_change_type(i,x,y,PT_WTRV);
 					}
 				}
 	}
@@ -152,7 +154,7 @@ int Element::legacyUpdate(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if ((TYP(r)==PT_FIRE || TYP(r)==PT_LAVA) && 1>(random_gen()%10))
+					if ((TYP(r)==PT_FIRE || TYP(r)==PT_LAVA) && RNG::Ref().chance(1, 10))
 					{
 						sim->part_change_type(i,x,y,PT_WTRV);
 					}
@@ -166,7 +168,7 @@ int Element::legacyUpdate(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if ((TYP(r)==PT_WATR || TYP(r)==PT_DSTW) && 1>(random_gen()%1000))
+					if ((TYP(r)==PT_WATR || TYP(r)==PT_DSTW) && RNG::Ref().chance(1, 1000))
 					{
 						sim->part_change_type(i,x,y,PT_ICEI);
 						sim->part_change_type(ID(r),x+rx,y+ry,PT_ICEI);
@@ -181,12 +183,12 @@ int Element::legacyUpdate(UPDATE_FUNC_ARGS) {
 					r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if ((TYP(r)==PT_WATR || TYP(r)==PT_DSTW) && 1>(random_gen()%1000))
+					if ((TYP(r)==PT_WATR || TYP(r)==PT_DSTW) && RNG::Ref().chance(1, 1000))
 					{
 						sim->part_change_type(i,x,y,PT_ICEI);
 						sim->part_change_type(ID(r),x+rx,y+ry,PT_ICEI);
 					}
-					if ((TYP(r)==PT_WATR || TYP(r)==PT_DSTW) && 15>(random_gen()%1000))
+					if ((TYP(r)==PT_WATR || TYP(r)==PT_DSTW) && RNG::Ref().chance(3, 200))
 						sim->part_change_type(i,x,y,PT_WATR);
 				}
 	}
@@ -199,7 +201,7 @@ int Element::legacyUpdate(UPDATE_FUNC_ARGS) {
 	if (t==PT_DESL && sim->pv[y/CELL][x/CELL]>12.0f)
 	{
 		sim->part_change_type(i,x,y,PT_FIRE);
-		parts[i].life = random_gen()%50+120;
+		parts[i].life = RNG::Ref().between(120, 169);
 	}
 	return 0;
 }

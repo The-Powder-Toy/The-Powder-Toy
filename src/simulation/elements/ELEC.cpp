@@ -76,13 +76,13 @@ int Element_ELEC::update(UPDATE_FUNC_ARGS)
 					sim->kill_part(i);
 					return 1;
 				case PT_LCRY:
-					parts[ID(r)].tmp2 = 5+random_gen()%5;
+					parts[ID(r)].tmp2 = RNG::Ref().between(5, 9);
 					break;
 				case PT_WATR:
 				case PT_DSTW:
 				case PT_SLTW:
 				case PT_CBNW:
-					if(!(random_gen()%3))
+					if (RNG::Ref().chance(1, 3))
 						sim->create_part(ID(r), x+rx, y+ry, PT_O2);
 					else
 						sim->create_part(ID(r), x+rx, y+ry, PT_H2);
