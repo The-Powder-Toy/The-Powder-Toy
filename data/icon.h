@@ -20,4 +20,3 @@
  */
 #pragma once
 extern const unsigned char app_icon[];
-extern const unsigned char app_icon_bitmap[];

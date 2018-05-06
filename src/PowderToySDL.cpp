@@ -188,7 +188,7 @@ int SDLOpen()
 	//SDL_SetWindowResizable(sdl_window, SDL_TRUE);
 
 #ifdef LIN
-	SDL_Surface *icon = SDL_CreateRGBSurfaceFrom((void*)app_icon, 48, 48, 24, 144, 0x00FF0000, 0x0000FF00, 0x000000FF, 0);
+	SDL_Surface *icon = SDL_CreateRGBSurfaceFrom((void*)app_icon, 48, 48, 32, 192, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
 	SDL_SetWindowIcon(sdl_window, icon);
 	SDL_FreeSurface(icon);
 #endif
