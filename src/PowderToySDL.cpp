@@ -1,11 +1,10 @@
-#ifdef USE_SDL
+#ifndef RENDERER
 
 #include <map>
 #include "common/String.h"
 #include <ctime>
 #include <climits>
 #ifdef WIN
-#define _WIN32_WINNT 0x0501	//Necessary for some macros and functions, tells windows.h to include functions only available in Windows XP or later
 #include <direct.h>
 #endif
 #include "SDLCompat.h"
@@ -54,10 +53,6 @@ using namespace std;
 
 #define INCLUDE_SYSWM
 #include "SDLCompat.h"
-#if defined(USE_SDL) && defined(LIN) && defined(SDL_VIDEO_DRIVER_X11)
-SDL_SysWMinfo sdl_wminfo;
-Atom XA_CLIPBOARD, XA_TARGETS, XA_UTF8_STRING;
-#endif
 
 int desktopWidth = 1280, desktopHeight = 1024;
 
@@ -134,10 +129,7 @@ void blit(pixel * vid)
 
 int SDLOpen()
 {
-#if defined(WIN) && defined(WINCONSOLE)
-	FILE * console = fopen("CON", "w" );
-#endif
-	if (SDL_Init(SDL_INIT_VIDEO)<0)
+	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 	{
 		fprintf(stderr, "Initializing SDL: %s\n", SDL_GetError());
 		return 1;
@@ -147,32 +139,6 @@ int SDLOpen()
 	SDL_GetCurrentDisplayMode(0, &SDLDisplayMode);
 	desktopWidth = SDLDisplayMode.w;
 	desktopHeight = SDLDisplayMode.h;
-
-#if defined(WIN) && defined(WINCONSOLE)
-	//On Windows, SDL redirects stdout to stdout.txt, which can be annoying when debugging, here we redirect back to the console
-	if (console)
-	{
-		freopen("CON", "w", stdout);
-		freopen("CON", "w", stderr);
-		//fclose(console);
-	}
-#endif
-#ifdef WIN
-	SDL_SysWMinfo SysInfo;
-	SDL_VERSION(&SysInfo.version);
-	if(SDL_GetWMInfo(&SysInfo) <= 0) {
-	    printf("%s : %p\n", SDL_GetError(), SysInfo.window);
-	    exit(-1);
-	}
-	HWND WindowHandle = SysInfo.window;
-
-	// Use GetModuleHandle to get the Exe HMODULE/HINSTANCE
-	HMODULE hModExe = GetModuleHandle(NULL);
-	HICON hIconSmall = (HICON)LoadImage(hModExe, MAKEINTRESOURCE(101), IMAGE_ICON, 16, 16, LR_SHARED);
-	HICON hIconBig = (HICON)LoadImage(hModExe, MAKEINTRESOURCE(101), IMAGE_ICON, 32, 32, LR_SHARED);
-	SendMessage(WindowHandle, WM_SETICON, ICON_SMALL, (LPARAM)hIconSmall);
-	SendMessage(WindowHandle, WM_SETICON, ICON_BIG, (LPARAM)hIconBig);
-#endif
 
 	sdl_window = SDL_CreateWindow("The Powder Toy", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOWW * scale, WINDOWH * scale,
 	                              fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
@@ -187,6 +153,23 @@ int SDLOpen()
 	//SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
 	//SDL_SetWindowResizable(sdl_window, SDL_TRUE);
 
+#ifdef WIN
+	SDL_SysWMinfo SysInfo;
+	SDL_VERSION(&SysInfo.version);
+	if(SDL_GetWindowWMInfo(sdl_window, &SysInfo) <= 0)
+	{
+	    printf("%s : %p\n", SDL_GetError(), SysInfo.info.win.window);
+	    exit(-1);
+	}
+	HWND WindowHandle = SysInfo.info.win.window;
+
+	// Use GetModuleHandle to get the Exe HMODULE/HINSTANCE
+	HMODULE hModExe = GetModuleHandle(NULL);
+	HICON hIconSmall = (HICON)LoadImage(hModExe, MAKEINTRESOURCE(101), IMAGE_ICON, 16, 16, LR_SHARED);
+	HICON hIconBig = (HICON)LoadImage(hModExe, MAKEINTRESOURCE(101), IMAGE_ICON, 32, 32, LR_SHARED);
+	SendMessage(WindowHandle, WM_SETICON, ICON_SMALL, (LPARAM)hIconSmall);
+	SendMessage(WindowHandle, WM_SETICON, ICON_BIG, (LPARAM)hIconBig);
+#endif
 #ifdef LIN
 	SDL_Surface *icon = SDL_CreateRGBSurfaceFrom((void*)app_icon, 48, 48, 32, 192, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
 	SDL_SetWindowIcon(sdl_window, icon);
@@ -412,9 +395,6 @@ void DoubleScreenDialog()
 	{
 		Client::Ref().SetPref("Scale", 1);
 		engine->SetScale(1);
-#ifdef WIN
-		LoadWindowPosition(1);
-#endif
 	}
 }
 

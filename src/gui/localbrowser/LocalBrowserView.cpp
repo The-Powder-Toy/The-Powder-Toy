@@ -114,21 +114,17 @@ void LocalBrowserView::textChanged()
 	else if (num > pageCount)
 		pageTextbox->SetText(String::Build(pageCount));
 	changed = true;
-#ifdef USE_SDL
 	lastChanged = GetTicks()+600;
-#endif
 }
 
 void LocalBrowserView::OnTick(float dt)
 {
 	c->Update();
-#ifdef USE_SDL
 	if (changed && lastChanged < GetTicks())
 	{
 		changed = false;
 		c->SetPage(std::max(pageTextbox->GetText().ToNumber<int>(true), 0));
 	}
-#endif
 }
 
 void LocalBrowserView::NotifyPageChanged(LocalBrowserModel * sender)

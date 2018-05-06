@@ -180,13 +180,7 @@ OptionsView::OptionsView():
 		FullscreenAction(OptionsView * v_){	v = v_;	}
 		virtual void ActionCallback(ui::Checkbox * sender)
 		{
-#ifdef USE_SDL
-#if defined(MACOSX) && !SDL_VERSION_ATLEAST(1, 2, 15)
-			ErrorMessage::Blocking("Information", "Fullscreen doesn't work on OS X");
-#else
 			v->c->SetFullscreen(sender->GetChecked());
-#endif
-#endif
 		}
 	};
 

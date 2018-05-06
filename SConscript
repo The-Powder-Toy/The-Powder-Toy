@@ -242,26 +242,25 @@ def findLibs(env, conf):
 		if not GetOption('renderer') and not conf.CheckLib('SDLmain'):
 			FatalError("libSDLmain not found or not installed")
 
-	if not GetOption('renderer'):
-		#Look for SDL
-		runSdlConfig = platform == "Linux" or compilePlatform == "Linux" or platform == "FreeBSD"
-		if False and platform == "Darwin" and conf.CheckFramework("SDL"):
-			runSdlConfig = False
-		elif not conf.CheckLib("SDL2"):
-			FatalError("SDL development library not found or not installed")
+	#Look for SDL
+	runSdlConfig = platform == "Linux" or compilePlatform == "Linux" or platform == "FreeBSD"
+	if False and platform == "Darwin" and conf.CheckFramework("SDL"):
+		runSdlConfig = False
+	elif not conf.CheckLib("SDL2"):
+		FatalError("SDL development library not found or not installed")
 
-		if runSdlConfig:
-			try:
-				env.ParseConfig('sdl2-config --cflags')
-				if GetOption('static'):
-					env.ParseConfig('sdl2-config --static-libs')
-				else:
-					env.ParseConfig('sdl2-config --libs')
-			except:
-				pass
+	if runSdlConfig:
+		try:
+			env.ParseConfig('sdl2-config --cflags')
+			if GetOption('static'):
+				env.ParseConfig('sdl2-config --static-libs')
+			else:
+				env.ParseConfig('sdl2-config --libs')
+		except:
+			pass
 
 	#look for SDL.h
-	if not GetOption('renderer') and not conf.CheckCHeader('SDL2.h'):
+	if not conf.CheckCHeader('SDL2.h'):
 		if conf.CheckCHeader('SDL2/SDL.h'):
 			env.Append(CPPDEFINES=["SDL_INC"])
 		else:
@@ -505,8 +504,6 @@ if GetOption('opengl') or GetOption('opengl-renderer'):
 
 if GetOption('renderer'):
 	env.Append(CPPDEFINES=['RENDERER'])
-else:
-	env.Append(CPPDEFINES=['USE_SDL'])
 
 if GetOption('font'):
 	env.Append(CPPDEFINES=['FONTEDITOR'])
