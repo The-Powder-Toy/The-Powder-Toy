@@ -5,6 +5,54 @@
 
 #include "common/String.h"
 
+/*
+	The following formatting specifiers can be written into a
+	ByteStringBuilder or a StringBuilder:
+
+	Format::Oct(value)
+	Format::Dec(value)
+	Format::Hex(value)
+		Write the value in the specified base.
+
+	Format::Uppercase(value)
+	Format::NoUppercase(value)
+		Toggle uppercase characters in hexadecimal and scientific form.
+
+	Format::ShowPoint(value)
+	Format::NoShowPoint(value)
+		In floats, toggle always displaying the decimal point even if
+		the number is an integer.
+
+	Format::Fixed(value)
+	Format::Scientific(value)
+		Display the float with a fixed number of digits after the
+		decimal point, or force using the scientific notation.
+
+	Format::Precision(value, size_t precision)
+		Fix the number of digits of precision used for floats. By
+		default also enables the Fixed mode.
+
+	Format::Width(value, size_t width)
+		Fix the number of characters used to represent the value. By
+		default also sets the fill to the digit '0'.
+
+	All of the above can be written into builders with the value argument
+	omitted. In that case the specifiers will affect all future writes to
+	the builder.
+
+	The following formatting specifiers can be passed to string functions
+	SplitNumber and ToNumber:
+
+	Format::Oct()
+	Format::Dec()
+	Format::Hex()
+		Read the value in the specified base.
+
+	Format::SkipWS()
+	Format::NoSkipWS()
+		Toggle ignoring the whitespace when reading a number.
+*/
+
 template<typename T> class FormatProxy
 {
 	T const &value;

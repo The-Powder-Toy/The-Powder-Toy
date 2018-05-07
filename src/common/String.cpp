@@ -15,7 +15,7 @@ ByteString ConversionError::formatError(ByteString::value_type const *at, ByteSt
 	return ss.str();
 }
 
-
+// The STL-packaged standardized UTF-8 conversion interface
 static std::codecvt_utf8<String::value_type> convert(1);
 
 std::vector<ByteString> ByteString::PartitionBy(value_type ch, bool includeEmpty) const
@@ -218,6 +218,47 @@ ByteString String::ToUtf8() const
 		}
 	}
 }
+
+/*
+	Due to unknown reasons, the STL basically doesn't support string-number
+	conversions for char32_t strings. Under the hood all stream objects use
+	the so-called locale facets to do number formatting and parsing. As the
+	name implies the facets can depend on the currently chosen locale, but
+	they are also specialized by the type of characters that are used in
+	the strings that are written/read.
+
+	Of particular interest are the std::num_put<T> and std::num_get<T>
+	facets. In accordance with the standard the two class templates are
+	defined, and then specialized to char and wchar_t types. But the
+	generic class template does not implement all the necessary methods,
+	leaving you with undefined reference errors. Manually providing
+	implementations for such methods is a not a portable solution.
+	Therefore we provide our own number reading/writing interface, detached
+	from std::basic_stringstream.
+
+	We would nevertheless like to avoid writing all the conversion code
+	ourselves and use STL as much as possible. As it turns out std::num_put
+	and std::num_get are too wired into std::ios_base and thus are unusable
+	in separation from an STL stream object.
+
+	A hacky but simple solution is to create a static thread-local
+	std::wstringstream initialized to the C locale (setting the locale of a
+	temporarily created stream every time might be too expensive). Number
+	serialization then simply uses operator<< and then manually widens the
+	produced wchar_t's into char32_t's. Number parsing is more tricky and
+	narrows only a prefix of the parsed string: it selects only characters
+	that could be a part of a number as in "Stage 2" in
+	[facet.num.get.virtuals], narrows them and uses operator>>. The number
+	of characters consumed is used to take an offset into the original
+	string.
+
+	A std::stringstream is added in the same way for symmetry with
+	ByteStringStream and follows the same protocol except it doesn't
+	perform and narrowing or widening.
+
+	The nice thing above the *_wchar functions immediately below is that on
+	platforms where wchar_t has 32 bits these should be a no-op.
+*/
 
 inline String::value_type widen_wchar(wchar_t ch)
 {

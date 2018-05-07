@@ -6,6 +6,157 @@
 #include <string>
 #include <ios>
 
+/*
+	There are two "string" classes: ByteString and String. They have nearly
+	identical interfaces, except that one stores 8-bit octets (bytes) and
+	the other stores Unicode codepoints.
+
+	Both classes inherit from std::basic_string (std::string is an
+	instatiation of that), so all the familiar string interface is there
+	however some helper methods have been defined:
+
+	Substr(size_t start = 0, size_t count = npos)
+		Returns a substring starting at position <start> and counting
+		<count> symbols, or until end of string, whichever is earlier.
+		If count == npos, the entire remainder of the string is
+		included.
+
+	SubstrFromEnd(size_t rstart = 0, size_t rcount = npos)
+		Behaviourally equal to
+			reverse(reverse(str).Substr(rstart, rcount))
+		but is more efficient. Useful for taking suffixes of given
+		length or dropping a fixed number of symbols from the end.
+
+	Between(size_t begin, size_t end)
+		Returns a substring starting at <begin> and ending at <end>.
+		If end == npos, length of the string is used. If begin > end,
+		an empty string is returned.
+
+	Insert(size_t pos, String str)
+		Inserts the characters from <str> at position <pos> shifting
+		the rest of the string to the right.
+
+	Erase(size_t pos, size_t count)
+		Starting at position <pos> erases <count> characters to the
+		right or until the end of string. The rest of the string is
+		shifted left to fill the gap.
+
+	EraseBetween(size_t from, size_t to)
+		Starting at position <pos> erase until position <to> or end of
+		string, whichever is earlier. The rest of the string is shifted
+		left to fill the gap.
+
+	BeginsWith(String prefix)
+	EndsWith(String suffix)
+	Contains(String infix)
+	Contains(value_type infix)
+		Self-explanatory.
+
+	ByteString::FromUtf8(bool ignoreError = true)
+		Decodes UTF-8 byte sequences into Unicode codepoints.
+		If ignoreError is true, then invalid byte sequences are widened
+		as-is. Otherwise, a ConversionError is thrown.
+
+	ByteString::FromAscii()
+		Interprets byte values as Unicode codepoints.
+
+	String::ToUtf8()
+		Encodes Unicode codepoints into UTF-8 byte sequences.
+
+	String::ToAscii()
+		Narrows Unicode codepoints into bytes, possibly truncating
+		them (!).
+
+	To convert something into a string use ByteStringBuilder and
+	StringBuilder respectively. The two use operator<< much like
+	std::ostringstream. To convert a builder to a string use the Build()
+	method. Alternatively you could use the static ByteString::Build and
+	String::Build methods respectively. String::Build(x, y, z) is roughly
+	equivalent to:
+		StringBuilder tmp;
+		tmp << x << y << z;
+		return tmp.Build();
+
+	To control formatting of the input/output see "common/Format.h".
+
+	If you simply want to convert a string to a number you can use the
+	ToNumber<type>(bool ignoreError = false) method. It can optionally take
+	a formatting specifier as an argument:
+		str.ToNumber<unsigned>(Format::Hex(), true)
+
+	Otherwise to parse a string into components you can use splits. A Split
+	is a temporary object that "remembers" how a string is divided into a
+	"prefix", a "separator", and a "suffix". A split can also "fail", if,
+	for example the separator was not found in the string. A Split has the
+	following methods:
+
+	Before(bool includeSeparator = false)
+		Returns the "prefix", optionally with the "separator".
+
+	After(bool includeSeparator = false)
+		Returns the "suffix", optionally with the "separator".
+
+	A Split can also be converted to bool (used in the condition of an 'if'
+	or a 'while'), in which case it shows whether the split had succeeded
+	or failed. The idiomatic code goes like:
+		if(String::Split split = str.SplitBy(','))
+			// use split.Before() and split.After()
+		else
+			// str does not contain a ','
+
+	The following methods split a string:
+
+	SplitBy(String sep, size_t from = 0)
+	SplitBy(value_type sep, size_t from = 0)
+		Split on the first occurence of the <sep> separator since
+		position <from>. If no such separator is found the split fails
+		and "prefix" contains the whole string starting from <from>.
+
+	SplitByAny(String chars, size_t from = 0)
+		Split on the first occurence of any of the characters in
+		<chars>.
+
+	SplitByNot(String chars, size_t from = 0)
+		Split on the first occurence of any character that is *not* in
+		<chars>.
+
+	SplitFromEndBy(String sep, size_t from = npos)
+	SplitFromEndBy(value_type sep, size_t from = npos)
+	SplitFromEndByAny(String chars, size_t from = npos)
+	SplitFromEndByNot(String chars, size_t from = npos)
+		These do the same as the functions above except they try to
+		find the *last* occurence of the separator. If the split fails
+		it is the "suffix" that contains the whole string, and the
+		"prefix" is empty instead.
+
+	SplitNumber(number &ref, size_t pos = 0)
+		Attempt to read a number (with the type indicated by the type
+		of the reference) from position <pos>. In case of success store
+		the parsed number in the reference and return a split at the
+		end of the parse. The separator in this case is empty. If the
+		parse fails, the "prefix" is empty.
+
+	SplitNumber(number &ref, format, size_t pos = 0)
+		Parse the number according to the provided formatting
+		specifier.
+
+	It is recommented to use ByteString::value_type and String::value_type
+	instead of char and char32_t respectively.
+
+	The reason we do not use std::wstring is that on Windows, wchar_t is a
+	16-bit type, which forces the usage of a UTF-16 (UCS-2) encoding to
+	store the higher parts of the Unicode. The std::wstring implementation
+	does not care to handle the UTF-16 encoding. Considering characters
+	still occupy a variable amount of space (1 or 2 wchar_t's), finding the
+	"n'th character" or "index of character at offset n" becomes a problem.
+	(Event if that were not a problem a better solution would be to use the
+	more space-efficient UTF-8). Therefore the String class is derived from
+	std::basic_string<char32_t>, where char32_t is a type that is
+	guaranteed to contain at least 32 bits. The drawback is that we
+	basically lose std::stringstream (std::basic_stringstream) support and
+	have to implement our own (See "common/String.cpp").
+*/
+
 class ByteStringBuilder;
 class String;
 class StringBuilder;
