@@ -1,4 +1,3 @@
-#include <sstream>
 #include <iomanip>
 #include <algorithm>
 #include "GameView.h"
@@ -40,10 +39,10 @@ private:
 	bool leftDown;
 	bool showSplit;
 	int splitPosition;
-	std::string toolTip2;
+	String toolTip2;
 	SplitButtonAction * splitActionCallback;
 public:
-	SplitButton(ui::Point position, ui::Point size, std::string buttonText, std::string toolTip, std::string toolTip2, int split) :
+	SplitButton(ui::Point position, ui::Point size, String buttonText, String toolTip, String toolTip2, int split) :
 		Button(position, size, buttonText, toolTip),
 		showSplit(true),
 		splitPosition(split),
@@ -52,7 +51,7 @@ public:
 	{
 
 	}
-	void SetRightToolTip(std::string tooltip) { toolTip2 = tooltip; }
+	void SetRightToolTip(String tooltip) { toolTip2 = tooltip; }
 	bool GetShowSplit() { return showSplit; }
 	void SetShowSplit(bool split) { showSplit = split; }
 	SplitButtonAction * GetSplitActionCallback() { return splitActionCallback; }
@@ -101,12 +100,12 @@ public:
 			return;
 		SetToolTip(x, y);
 	}
-	virtual void TextPosition(std::string ButtonText)
+	virtual void TextPosition(String ButtonText)
 	{
 		ui::Button::TextPosition(ButtonText);
 		textPosition.X += 3;
 	}
-	void SetToolTips(std::string newToolTip1, std::string newToolTip2)
+	void SetToolTips(String newToolTip1, String newToolTip2)
 	{
 		toolTip = newToolTip1;
 		toolTip2 = newToolTip2;
@@ -183,7 +182,7 @@ GameView::GameView():
 	buttonTip(""),
 	isButtonTipFadingIn(false),
 	introText(2048),
-	introTextMessage(introTextData),
+	introTextMessage(ByteString(introTextData).FromAscii()),
 
 	doScreenshot(false),
 	screenshotIndex(0),
@@ -434,7 +433,7 @@ GameView::GameView():
 			v->c->OpenElementSearch();
 		}
 	};
-	ui::Button * tempButton = new ui::Button(ui::Point(WINDOWW-16, WINDOWH-32), ui::Point(15, 15), "\xE5", "Search for elements");
+	ui::Button * tempButton = new ui::Button(ui::Point(WINDOWW-16, WINDOWH-32), ui::Point(15, 15), 0xE065, "Search for elements");
 	tempButton->Appearance.Margin = ui::Border(0, 2, 3, 2);
 	tempButton->SetActionCallback(new ElementSearchAction(this));
 	AddComponent(tempButton);
@@ -556,7 +555,7 @@ public:
 		else
 		{
 			if (v->CtrlBehaviour() && v->AltBehaviour() && !v->ShiftBehaviour())
-				if (tool->GetIdentifier().find("DEFAULT_PT_") != tool->GetIdentifier().npos)
+				if (tool->GetIdentifier().BeginsWith("DEFAULT_PT_"))
 					sender->SetSelectionState(3);
 
 			if (sender->GetSelectionState() >= 0 && sender->GetSelectionState() <= 3)
@@ -610,9 +609,9 @@ void GameView::NotifyMenuListChanged(GameModel * sender)
 	{
 		if (menuList[i]->GetVisible())
 		{
-			std::string tempString = "";
+			String tempString = "";
 			tempString += menuList[i]->GetIcon();
-			std::string description = menuList[i]->GetDescription();
+			String description = menuList[i]->GetDescription();
 			if (i == SC_FAVORITES && Favorite::Ref().AnyFavorites())
 				description += " (Use ctrl+shift+click to favorite an element)";
 			ui::Button * tempButton = new ui::Button(ui::Point(WINDOWW-16, currentY), ui::Point(15, 15), tempString, description);
@@ -677,18 +676,15 @@ void GameView::NotifyActiveToolsChanged(GameModel * sender)
 		if(sender->GetActiveTool(0) == tool)
 		{
 			toolButtons[i]->SetSelectionState(0);	//Primary
-			if (tool->GetIdentifier().find("DEFAULT_UI_WIND") != tool->GetIdentifier().npos)
-				windTool = true;
-			else
-				windTool = false;
+			windTool = tool->GetIdentifier() == "DEFAULT_UI_WIND";
 
-			if (sender->GetActiveTool(0)->GetIdentifier().find("DEFAULT_DECOR_") != sender->GetActiveTool(0)->GetIdentifier().npos)
+			if (sender->GetActiveTool(0)->GetIdentifier().BeginsWith("DEFAULT_DECOR_"))
 				decoBrush = true;
 		}
 		else if(sender->GetActiveTool(1) == tool)
 		{
 			toolButtons[i]->SetSelectionState(1);	//Secondary
-			if (sender->GetActiveTool(1)->GetIdentifier().find("DEFAULT_DECOR_") != sender->GetActiveTool(1)->GetIdentifier().npos)
+			if (sender->GetActiveTool(1)->GetIdentifier().BeginsWith("DEFAULT_DECOR_"))
 				decoBrush = true;
 		}
 		else if(sender->GetActiveTool(2) == tool)
@@ -709,7 +705,7 @@ void GameView::NotifyActiveToolsChanged(GameModel * sender)
 	if (sender->GetRenderer()->findingElement)
 	{
 		Tool *active = sender->GetActiveTool(0);
-		if (active->GetIdentifier().find("_PT_") == active->GetIdentifier().npos)
+		if (active->GetIdentifier().Contains("_PT_"))
 			ren->findingElement = 0;
 		else
 			ren->findingElement = sender->GetActiveTool(0)->GetToolID()%256;
@@ -724,10 +720,7 @@ void GameView::NotifyLastToolChanged(GameModel * sender)
 	if (sender->GetLastTool())
 	{
 		wallBrush = sender->GetLastTool()->GetBlocky();
-		if (sender->GetLastTool()->GetIdentifier().find("DEFAULT_TOOL_") != sender->GetLastTool()->GetIdentifier().npos)
-			toolBrush = true;
-		else
-			toolBrush = false;
+		toolBrush = sender->GetLastTool()->GetIdentifier().BeginsWith("DEFAULT_TOOL_");
 	}
 }
 
@@ -912,7 +905,7 @@ void GameView::NotifyUserChanged(GameModel * sender)
 	}
 	else
 	{
-		loginButton->SetText(sender->GetUser().Username);
+		loginButton->SetText(sender->GetUser().Username.FromUtf8());
 		((SplitButton*)loginButton)->SetShowSplit(true);
 		((SplitButton*)loginButton)->SetRightToolTip("Edit profile");
 	}
@@ -978,17 +971,17 @@ void GameView::NotifySaveChanged(GameModel * sender)
 		tagSimulationButton->Enabled = sender->GetSave()->GetID();
 		if (sender->GetSave()->GetID())
 		{
-			std::stringstream tagsStream;
-			std::list<string> tags = sender->GetSave()->GetTags();
+			StringBuilder tagsStream;
+			std::list<ByteString> tags = sender->GetSave()->GetTags();
 			if (tags.size())
 			{
-				for (std::list<std::string>::const_iterator iter = tags.begin(), begin = tags.begin(), end = tags.end(); iter != end; iter++)
+				for (std::list<ByteString>::const_iterator iter = tags.begin(), begin = tags.begin(), end = tags.end(); iter != end; iter++)
 				{
 					if (iter != begin)
 						tagsStream << " ";
-					tagsStream << *iter;
+					tagsStream << iter->FromUtf8();
 				}
-				tagSimulationButton->SetText(tagsStream.str());
+				tagSimulationButton->SetText(tagsStream.Build());
 			}
 			else
 			{
@@ -1067,10 +1060,8 @@ int GameView::Record(bool record)
 		{
 			time_t startTime = time(NULL);
 			recordingFolder = startTime;
-			std::stringstream recordingDir;
-			recordingDir << "recordings" << PATH_SEP << recordingFolder;
 			Client::Ref().MakeDirectory("recordings");
-			Client::Ref().MakeDirectory(recordingDir.str().c_str());
+			Client::Ref().MakeDirectory(ByteString::Build("recordings", PATH_SEP, recordingFolder).c_str());
 			recording = true;
 			recordingIndex = 0;
 		}
@@ -1327,7 +1318,7 @@ void GameView::OnMouseUp(int x, int y, unsigned button)
 	UpdateDrawMode();
 }
 
-void GameView::ToolTip(ui::Point senderPosition, std::string toolTip)
+void GameView::ToolTip(ui::Point senderPosition, String toolTip)
 {
 	// buttom button tooltips
 	if (senderPosition.Y > Size.Y-17)
@@ -1342,16 +1333,16 @@ void GameView::ToolTip(ui::Point senderPosition, std::string toolTip)
 	else if(senderPosition.X > Size.X-BARSIZE)// < Size.Y-(quickOptionButtons.size()+1)*16)
 	{
 		this->toolTip = toolTip;
-		toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((char*)toolTip.c_str()), senderPosition.Y+3);
+		toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth(toolTip), senderPosition.Y+3);
 		if(toolTipPosition.Y+10 > Size.Y-MENUSIZE)
-			toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((char*)toolTip.c_str()), Size.Y-MENUSIZE-10);
+			toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth(toolTip), Size.Y-MENUSIZE-10);
 		isToolTipFadingIn = true;
 	}
 	// element tooltips
 	else
 	{
 		this->toolTip = toolTip;
-		toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth((char*)toolTip.c_str()), Size.Y-MENUSIZE-10);
+		toolTipPosition = ui::Point(Size.X-27-Graphics::textwidth(toolTip), Size.Y-MENUSIZE-10);
 		isToolTipFadingIn = true;
 	}
 }
@@ -1490,8 +1481,8 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		if ((Client::Ref().GetAuthUser().UserElevation == User::ElevationModerator
 		     || Client::Ref().GetAuthUser().UserElevation == User::ElevationAdmin) && ctrl)
 		{
-			std::string authorString = Client::Ref().GetAuthorInfo().toStyledString();
-			new InformationMessage("Save authorship info", authorString, true);
+			ByteString authorString = Client::Ref().GetAuthorInfo().toStyledString();
+			new InformationMessage("Save authorship info", authorString.FromUtf8(), true);
 		}
 		break;
 	case 'r':
@@ -1505,7 +1496,7 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		if (ctrl)
 		{
 			Tool *active = c->GetActiveTool(0);
-			if (active->GetIdentifier().find("_PT_") == active->GetIdentifier().npos || ren->findingElement == active->GetToolID()%256)
+			if (!active->GetIdentifier().Contains("_PT_") || ren->findingElement == active->GetToolID()%256)
 				ren->findingElement = 0;
 			else
 				ren->findingElement = active->GetToolID()%256;
@@ -1609,7 +1600,7 @@ void GameView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 		break;
 	case 'l':
 	{
-		std::vector<std::string> stampList = Client::Ref().GetStamps(0, 1);
+		std::vector<ByteString> stampList = Client::Ref().GetStamps(0, 1);
 		if (stampList.size())
 		{
 			SaveFile *saveFile = Client::Ref().GetStamp(stampList[0]);
@@ -1735,13 +1726,13 @@ void GameView::OnTick(float dt)
 	int foundSignID = c->GetSignAt(mousePosition.X, mousePosition.Y);
 	if (foundSignID != -1)
 	{
-		std::string str = c->GetSignText(foundSignID);
-		char type = '\0';
+		String str = c->GetSignText(foundSignID);
+		String::value_type type = '\0';
 		int pos = sign::splitsign(str, &type);
 		if (type == 'c' || type == 't' || type == 's')
 		{
-			std::string linkSign = str.substr(3, pos-3);
-			std::stringstream tooltip;
+			String linkSign = str.Substr(3, pos-3);
+			StringBuilder tooltip;
 			switch (type)
 			{
 			case 'c':
@@ -1754,7 +1745,7 @@ void GameView::OnTick(float dt)
 				tooltip << "Search for " << linkSign;
 				break;
 			}
-			ToolTip(ui::Point(0, Size.Y), tooltip.str());
+			ToolTip(ui::Point(0, Size.Y), tooltip.Build());
 		}
 	}
 
@@ -1903,7 +1894,7 @@ void GameView::NotifyNotificationsChanged(GameModel * sender)
 	int currentY = YRES-23;
 	for(std::vector<Notification*>::iterator iter = notifications.begin(), end = notifications.end(); iter != end; ++iter)
 	{
-		int width = (Graphics::textwidth((*iter)->Message.c_str()))+8;
+		int width = (Graphics::textwidth((*iter)->Message))+8;
 		ui::Button * tempButton = new ui::Button(ui::Point(XRES-width-22, currentY), ui::Point(width, 15), (*iter)->Message);
 		tempButton->SetActionCallback(new NotificationButtonAction(*iter));
 		tempButton->Appearance.BorderInactive = style::Colour::WarningTitle;
@@ -1913,7 +1904,7 @@ void GameView::NotifyNotificationsChanged(GameModel * sender)
 		AddComponent(tempButton);
 		notificationComponents.push_back(tempButton);
 
-		tempButton = new ui::Button(ui::Point(XRES-20, currentY), ui::Point(15, 15), "\xAA");
+		tempButton = new ui::Button(ui::Point(XRES-20, currentY), ui::Point(15, 15), 0xE02A);
 		//tempButton->SetIcon(IconClose);
 		tempButton->SetActionCallback(new CloseNotificationButtonAction(this, *iter));
 		tempButton->Appearance.Margin.Left -= 1;
@@ -1934,9 +1925,9 @@ void GameView::NotifyZoomChanged(GameModel * sender)
 	zoomEnabled = sender->GetZoomEnabled();
 }
 
-void GameView::NotifyLogChanged(GameModel * sender, string entry)
+void GameView::NotifyLogChanged(GameModel * sender, String entry)
 {
-	logEntries.push_front(std::pair<std::string, int>(entry, 600));
+	logEntries.push_front(std::pair<String, int>(entry, 600));
 	if (logEntries.size() > 20)
 		logEntries.pop_back();
 }
@@ -2218,12 +2209,9 @@ void GameView::OnDraw()
 			VideoBuffer screenshot(ren->DumpFrame());
 			std::vector<char> data = format::VideoBufferToPNG(screenshot);
 
-			std::stringstream filename;
-			filename << "screenshot_";
-			filename << std::setfill('0') << std::setw(6) << (screenshotIndex++);
-			filename << ".png";
+			ByteString filename = ByteString::Build("screenshot_", Format::Width(screenshotIndex++, 6), ".png");
 
-			Client::Ref().WriteFile(data, filename.str());
+			Client::Ref().WriteFile(data, filename);
 			doScreenshot = false;
 		}
 
@@ -2232,23 +2220,19 @@ void GameView::OnDraw()
 			VideoBuffer screenshot(ren->DumpFrame());
 			std::vector<char> data = format::VideoBufferToPPM(screenshot);
 
-			std::stringstream filename;
-			filename << "recordings" << PATH_SEP << recordingFolder << PATH_SEP;
-			filename << "frame_";
-			filename << std::setfill('0') << std::setw(6) << (recordingIndex++);
-			filename << ".ppm";
+			ByteString filename = ByteString::Build("recordings", PATH_SEP, recordingFolder, PATH_SEP, "frame_", Format::Width(screenshotIndex++, 6), ".ppm");
 
-			Client::Ref().WriteFile(data, filename.str());
+			Client::Ref().WriteFile(data, filename);
 		}
 
 		if (logEntries.size())
 		{
 			int startX = 20;
 			int startY = YRES-20;
-			deque<std::pair<std::string, int> >::iterator iter;
+			deque<std::pair<String, int> >::iterator iter;
 			for(iter = logEntries.begin(); iter != logEntries.end(); iter++)
 			{
-				string message = (*iter).first;
+				String message = (*iter).first;
 				int alpha = std::min((*iter).second, 255);
 				if (alpha <= 0) //erase this and everything older
 				{
@@ -2256,8 +2240,8 @@ void GameView::OnDraw()
 					break;
 				}
 				startY -= 14;
-				g->fillrect(startX-3, startY-3, Graphics::textwidth((char*)message.c_str())+6, 14, 0, 0, 0, 100);
-				g->drawtext(startX, startY, message.c_str(), 255, 255, 255, alpha);
+				g->fillrect(startX-3, startY-3, Graphics::textwidth(message)+6, 14, 0, 0, 0, 100);
+				g->drawtext(startX, startY, message, 255, 255, 255, alpha);
 				(*iter).second -= 3;
 			}
 		}
@@ -2265,13 +2249,11 @@ void GameView::OnDraw()
 
 	if(recording)
 	{
-		std::stringstream sampleInfo;
-		sampleInfo << recordingIndex;
-		sampleInfo << ". \x8E REC";
+		String sampleInfo = String::Build(recordingIndex, ". ", String(0xE00E), " REC");
 
-		int textWidth = Graphics::textwidth((char*)sampleInfo.str().c_str());
+		int textWidth = Graphics::textwidth(sampleInfo);
 		g->fillrect(XRES-20-textWidth, 12, textWidth+8, 15, 0, 0, 0, 255*0.5);
-		g->drawtext(XRES-16-textWidth, 16, (const char*)sampleInfo.str().c_str(), 255, 50, 20, 255);
+		g->drawtext(XRES-16-textWidth, 16, sampleInfo, 255, 50, 20, 255);
 	}
 	else if(showHud)
 	{
@@ -2281,8 +2263,8 @@ void GameView::OnDraw()
 			alpha = 255-toolTipPresence*3;
 		if (alpha < 50)
 			alpha = 50;
-		std::stringstream sampleInfo;
-		sampleInfo.precision(2);
+		StringBuilder sampleInfo;
+		sampleInfo << Format::Precision(2);
 
 		int type = sample.particle.type;
 		if (type)
@@ -2295,15 +2277,15 @@ void GameView::OnDraw()
 			if (showDebug)
 			{
 				if (type == PT_LAVA && c->IsValidElement(ctype))
-					sampleInfo << "Molten " << c->ElementResolve(ctype, -1);
+					sampleInfo << "Molten " << c->ElementResolve(ctype, -1).FromAscii();
 				else if ((type == PT_PIPE || type == PT_PPIP) && c->IsValidElement(ctype))
-					sampleInfo << c->ElementResolve(type, -1) << " with " << c->ElementResolve(ctype, (int)sample.particle.pavg[1]);
+					sampleInfo << c->ElementResolve(type, -1).FromAscii() << " with " << c->ElementResolve(ctype, (int)sample.particle.pavg[1]).FromAscii();
 				else if (type == PT_LIFE)
-					sampleInfo << c->ElementResolve(type, ctype);
+					sampleInfo << c->ElementResolve(type, ctype).FromAscii();
 				else if (type == PT_FILT)
 				{
-					sampleInfo << c->ElementResolve(type, ctype);
-					const char* filtModes[] = {"set colour", "AND", "OR", "subtract colour", "red shift", "blue shift", "no effect", "XOR", "NOT", "old QRTZ scattering", "variable red shift", "variable blue shift"};
+					sampleInfo << c->ElementResolve(type, ctype).FromAscii();
+					String filtModes[] = {"set colour", "AND", "OR", "subtract colour", "red shift", "blue shift", "no effect", "XOR", "NOT", "old QRTZ scattering", "variable red shift", "variable blue shift"};
 					if (sample.particle.tmp>=0 && sample.particle.tmp<=11)
 						sampleInfo << " (" << filtModes[sample.particle.tmp] << ")";
 					else
@@ -2311,18 +2293,18 @@ void GameView::OnDraw()
 				}
 				else
 				{
-					sampleInfo << c->ElementResolve(type, ctype);
+					sampleInfo << c->ElementResolve(type, ctype).FromAscii();
 					if (wavelengthGfx)
 						sampleInfo << " (" << ctype << ")";
 					// Some elements store extra LIFE info in upper bits of ctype, instead of tmp/tmp2
 					else if (type == PT_CRAY || type == PT_DRAY || type == PT_CONV)
-						sampleInfo << " (" << c->ElementResolve(TYP(ctype), ID(ctype)) << ")";
+						sampleInfo << " (" << c->ElementResolve(TYP(ctype), ID(ctype)).FromAscii() << ")";
 					else if (c->IsValidElement(ctype))
-						sampleInfo << " (" << c->ElementResolve(ctype, -1) << ")";
+						sampleInfo << " (" << c->ElementResolve(ctype, -1).FromAscii() << ")";
 					else
 						sampleInfo << " ()";
 				}
-				sampleInfo << ", Temp: " << std::fixed << sample.particle.temp -273.15f << " C";
+				sampleInfo << ", Temp: " << (sample.particle.temp - 273.15f) << " C";
 				sampleInfo << ", Life: " << sample.particle.life;
 				if (sample.particle.type != PT_RFRG && sample.particle.type != PT_RFGL)
 					sampleInfo << ", Tmp: " << sample.particle.tmp;
@@ -2331,39 +2313,39 @@ void GameView::OnDraw()
 				if (type == PT_CRAY || type == PT_DRAY || type == PT_EXOT || type == PT_LIGH || type == PT_SOAP || type == PT_TRON || type == PT_VIBR || type == PT_VIRS || type == PT_WARP || type == PT_LCRY || type == PT_CBNW || type == PT_TSNS || type == PT_DTEC || type == PT_LSNS || type == PT_PSTN)
 					sampleInfo << ", Tmp2: " << sample.particle.tmp2;
 
-				sampleInfo << ", Pressure: " << std::fixed << sample.AirPressure;
+				sampleInfo << ", Pressure: " << sample.AirPressure;
 			}
 			else
 			{
 				if (type == PT_LAVA && c->IsValidElement(ctype))
-					sampleInfo << "Molten " << c->ElementResolve(ctype, -1);
+					sampleInfo << "Molten " << c->ElementResolve(ctype, -1).FromAscii();
 				else if ((type == PT_PIPE || type == PT_PPIP) && c->IsValidElement(ctype))
-					sampleInfo << c->ElementResolve(type, -1) << " with " << c->ElementResolve(ctype, (int)sample.particle.pavg[1]);
+					sampleInfo << c->ElementResolve(type, -1).FromAscii() << " with " << c->ElementResolve(ctype, (int)sample.particle.pavg[1]).FromAscii();
 				else if (type == PT_LIFE)
-					sampleInfo << c->ElementResolve(type, ctype);
+					sampleInfo << c->ElementResolve(type, ctype).FromAscii();
 				else
-					sampleInfo << c->ElementResolve(type, ctype);
-				sampleInfo << ", Temp: " << std::fixed << sample.particle.temp - 273.15f << " C";
-				sampleInfo << ", Pressure: " << std::fixed << sample.AirPressure;
+					sampleInfo << c->ElementResolve(type, ctype).FromAscii();
+				sampleInfo << ", Temp: " << sample.particle.temp - 273.15f << " C";
+				sampleInfo << ", Pressure: " << sample.AirPressure;
 			}
 		}
 		else if (sample.WallType)
 		{
 			sampleInfo << c->WallName(sample.WallType);
-			sampleInfo << ", Pressure: " << std::fixed << sample.AirPressure;
+			sampleInfo << ", Pressure: " << sample.AirPressure;
 		}
 		else if (sample.isMouseInSim)
 		{
-			sampleInfo << "Empty, Pressure: " << std::fixed << sample.AirPressure;
+			sampleInfo << "Empty, Pressure: " << sample.AirPressure;
 		}
 		else
 		{
 			sampleInfo << "Empty";
 		}
 
-		int textWidth = Graphics::textwidth((char*)sampleInfo.str().c_str());
+		int textWidth = Graphics::textwidth(sampleInfo.Build());
 		g->fillrect(XRES-20-textWidth, 12, textWidth+8, 15, 0, 0, 0, alpha*0.5f);
-		g->drawtext(XRES-16-textWidth, 16, (const char*)sampleInfo.str().c_str(), 255, 255, 255, alpha*0.75f);
+		g->drawtext(XRES-16-textWidth, 16, sampleInfo.Build(), 255, 255, 255, alpha*0.75f);
 
 #ifndef OGLI
 		if (wavelengthGfx)
@@ -2404,7 +2386,8 @@ void GameView::OnDraw()
 
 		if (showDebug)
 		{
-			sampleInfo.str(std::string());
+			StringBuilder sampleInfo;
+			sampleInfo << Format::Precision(2);
 
 			if (type)
 				sampleInfo << "#" << sample.ParticleID << ", ";
@@ -2415,22 +2398,21 @@ void GameView::OnDraw()
 				sampleInfo << ", GX: " << sample.GravityVelocityX << " GY: " << sample.GravityVelocityY;
 
 			if (c->GetAHeatEnable())
-				sampleInfo << ", AHeat: " << std::fixed << sample.AirTemperature -273.15f << " C";
+				sampleInfo << ", AHeat: " << sample.AirTemperature - 273.15f << " C";
 
-			textWidth = Graphics::textwidth((char*)sampleInfo.str().c_str());
+			textWidth = Graphics::textwidth(sampleInfo.Build());
 			g->fillrect(XRES-20-textWidth, 27, textWidth+8, 14, 0, 0, 0, alpha*0.5f);
-			g->drawtext(XRES-16-textWidth, 30, (const char*)sampleInfo.str().c_str(), 255, 255, 255, alpha*0.75f);
+			g->drawtext(XRES-16-textWidth, 30, sampleInfo.Build(), 255, 255, 255, alpha*0.75f);
 		}
 	}
 
 	if(showHud && introText < 51)
 	{
 		//FPS and some version info
-		std::stringstream fpsInfo;
-		fpsInfo.precision(2);
-		fpsInfo << "FPS: " << std::fixed << ui::Engine::Ref().GetFps();
+		StringBuilder fpsInfo;
+		fpsInfo << Format::Precision(2) << "FPS: " << ui::Engine::Ref().GetFps();
 #ifdef DEBUG
-		fpsInfo << " Delta: " << std::fixed << ui::Engine::Ref().GetDelta();
+		fpsInfo << " Delta: " << ui::Engine::Ref().GetDelta();
 #endif
 
 		if (showDebug)
@@ -2449,37 +2431,37 @@ void GameView::OnDraw()
 		if (ren && ren->findingElement)
 			fpsInfo << " [FIND]";
 
-		int textWidth = Graphics::textwidth((char*)fpsInfo.str().c_str());
+		int textWidth = Graphics::textwidth(fpsInfo.Build());
 		int alpha = 255-introText*5;
 		g->fillrect(12, 12, textWidth+8, 15, 0, 0, 0, alpha*0.5);
-		g->drawtext(16, 16, (const char*)fpsInfo.str().c_str(), 32, 216, 255, alpha*0.75);
+		g->drawtext(16, 16, fpsInfo.Build(), 32, 216, 255, alpha*0.75);
 	}
 
 	//Tooltips
 	if(infoTipPresence)
 	{
 		int infoTipAlpha = (infoTipPresence>50?50:infoTipPresence)*5;
-		g->drawtext_outline((XRES-Graphics::textwidth((char*)infoTip.c_str()))/2, (YRES/2)-2, (char*)infoTip.c_str(), 255, 255, 255, infoTipAlpha);
+		g->drawtext_outline((XRES-Graphics::textwidth(infoTip))/2, (YRES/2)-2, infoTip, 255, 255, 255, infoTipAlpha);
 	}
 
 	if(toolTipPresence && toolTipPosition.X!=-1 && toolTipPosition.Y!=-1 && toolTip.length())
 	{
 		if (toolTipPosition.Y == Size.Y-MENUSIZE-10)
-			g->drawtext_outline(toolTipPosition.X, toolTipPosition.Y, (char*)toolTip.c_str(), 255, 255, 255, toolTipPresence>51?255:toolTipPresence*5);
+			g->drawtext_outline(toolTipPosition.X, toolTipPosition.Y, toolTip, 255, 255, 255, toolTipPresence>51?255:toolTipPresence*5);
 		else
-			g->drawtext(toolTipPosition.X, toolTipPosition.Y, (char*)toolTip.c_str(), 255, 255, 255, toolTipPresence>51?255:toolTipPresence*5);
+			g->drawtext(toolTipPosition.X, toolTipPosition.Y, toolTip, 255, 255, 255, toolTipPresence>51?255:toolTipPresence*5);
 	}
 
 	if(buttonTipShow > 0)
 	{
-		g->drawtext(16, Size.Y-MENUSIZE-24, (char*)buttonTip.c_str(), 255, 255, 255, buttonTipShow>51?255:buttonTipShow*5);
+		g->drawtext(16, Size.Y-MENUSIZE-24, buttonTip, 255, 255, 255, buttonTipShow>51?255:buttonTipShow*5);
 	}
 
 	//Introduction text
 	if(introText)
 	{
 		g->fillrect(0, 0, WINDOWW, WINDOWH, 0, 0, 0, introText>51?102:introText*2);
-		g->drawtext(16, 20, (char*)introTextMessage.c_str(), 255, 255, 255, introText>51?255:introText*5);
+		g->drawtext(16, 20, introTextMessage, 255, 255, 255, introText>51?255:introText*5);
 	}
 
 	// Clear menu areas, to ensure particle graphics don't overlap

@@ -2,11 +2,10 @@
 
 #include <ctime>
 #include <iostream>
-#include <sstream>
-#include <string>
 #include <fstream>
 #include <vector>
 
+#include "common/String.h"
 #include "Config.h"
 #include "Format.h"
 #include "gui/interface/Engine.h"
@@ -18,16 +17,16 @@
 
 
 void EngineProcess() {}
-void ClipboardPush(std::string) {}
-std::string ClipboardPull() { return ""; }
+void ClipboardPush(ByteString) {}
+ByteString ClipboardPull() { return ""; }
 int GetModifiers() { return 0; }
 void SetCursorEnabled(int enabled) {}
 unsigned int GetTicks() { return 0; }
 
-void readFile(std::string filename, std::vector<char> & storage)
+void readFile(ByteString filename, std::vector<char> & storage)
 {
 	std::ifstream fileStream;
-	fileStream.open(std::string(filename).c_str(), std::ios::binary);
+	fileStream.open(filename.c_str(), std::ios::binary);
 	if(fileStream.is_open())
 	{
 		fileStream.seekg(0, std::ios::end);
@@ -45,10 +44,10 @@ void readFile(std::string filename, std::vector<char> & storage)
 	}
 }
 
-void writeFile(std::string filename, std::vector<char> & fileData)
+void writeFile(ByteString filename, std::vector<char> & fileData)
 {
 	std::ofstream fileStream;
-	fileStream.open(std::string(filename).c_str(), std::ios::binary);
+	fileStream.open(filename.c_str(), std::ios::binary);
 	if(fileStream.is_open())
 	{
 		fileStream.write(&fileData[0], fileData.size());
@@ -59,13 +58,13 @@ void writeFile(std::string filename, std::vector<char> & fileData)
 int main(int argc, char *argv[])
 {
 	ui::Engine * engine;
-	std::string outputPrefix, inputFilename;
+	ByteString outputPrefix, inputFilename;
 	std::vector<char> inputFile;
-	std::string ppmFilename, ptiFilename, ptiSmallFilename, pngFilename, pngSmallFilename;
+	ByteString ppmFilename, ptiFilename, ptiSmallFilename, pngFilename, pngSmallFilename;
 	std::vector<char> ppmFile, ptiFile, ptiSmallFile, pngFile, pngSmallFile;
 
-	inputFilename = std::string(argv[1]);
-	outputPrefix = std::string(argv[2]);
+	inputFilename = argv[1];
+	outputPrefix = argv[2];
 
 	ppmFilename = outputPrefix+".ppm";
 	ptiFilename = outputPrefix+".pti";
@@ -88,7 +87,7 @@ int main(int argc, char *argv[])
 	catch (ParseException e)
 	{
 		//Render the save again later or something? I don't know
-		if (e.what() == "Save from newer version")
+		if (ByteString(e.what()).FromUtf8() == "Save from newer version")
 			throw e;
 	}
 

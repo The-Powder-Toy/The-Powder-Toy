@@ -2,16 +2,16 @@
 #define STAMPSMODEL_H_
 
 #include <vector>
-#include <string>
+#include "common/String.h"
 #include <cmath>
 
 class SaveFile;
 
 class LocalBrowserView;
 class LocalBrowserModel {
-	std::vector<std::string> selected;
+	std::vector<ByteString> selected;
 	SaveFile * stamp;
-	std::vector<std::string> stampIDs;
+	std::vector<ByteString> stampIDs;
 	std::vector<SaveFile*> savesList;
 	std::vector<LocalBrowserView*> observers;
 	int currentPage;
@@ -31,10 +31,10 @@ public:
 	void SetSave(SaveFile * newStamp);
 	bool GetMoveToFront();
 	void SetMoveToFront(bool move);
-	std::vector<std::string> GetSelected() { return selected; }
+	std::vector<ByteString> GetSelected() { return selected; }
 	void ClearSelected() { selected.clear(); notifySelectedChanged(); }
-	void SelectSave(std::string stampID);
-	void DeselectSave(std::string stampID);
+	void SelectSave(ByteString stampID);
+	void DeselectSave(ByteString stampID);
 	virtual ~LocalBrowserModel();
 };
 

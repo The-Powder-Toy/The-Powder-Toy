@@ -6,7 +6,7 @@
 #include <math.h>
 
 #define CELLW	12
-#define CELLH	10
+#define CELLH	12
 //#define EXTENDED_FONT 1
 
 char font[256][CELLH][CELLW];

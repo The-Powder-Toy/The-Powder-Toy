@@ -3,7 +3,7 @@
 #include "DownloadManager.h"
 #include "HTTP.h"
 
-Download::Download(std::string uri_, bool keepAlive):
+Download::Download(ByteString uri_, bool keepAlive):
 	http(NULL),
 	keepAlive(keepAlive),
 	downloadData(NULL),
@@ -17,7 +17,7 @@ Download::Download(std::string uri_, bool keepAlive):
 	downloadCanceled(false),
 	downloadStarted(false)
 {
-	uri = std::string(uri_);
+	uri = ByteString(uri_);
 	DownloadManager::Ref().AddDownload(this);
 }
 
@@ -31,20 +31,20 @@ Download::~Download()
 }
 
 // add post data to a request
-void Download::AddPostData(std::map<std::string, std::string> data)
+void Download::AddPostData(std::map<ByteString, ByteString> data)
 {
 	postDataBoundary = FindBoundary(data, "");
 	postData = GetMultipartMessage(data, postDataBoundary);
 }
-void Download::AddPostData(std::pair<std::string, std::string> data)
+void Download::AddPostData(std::pair<ByteString, ByteString> data)
 {
-	std::map<std::string, std::string> postData;
+	std::map<ByteString, ByteString> postData;
 	postData.insert(data);
 	AddPostData(postData);
 }
 
 // add userID and sessionID headers to the download. Must be done after download starts for some reason
-void Download::AuthHeaders(std::string ID, std::string session)
+void Download::AuthHeaders(ByteString ID, ByteString session)
 {
 	if (ID != "0")
 		userID = ID;
@@ -68,13 +68,13 @@ void Download::Start()
 }
 
 // for persistent connections (keepAlive = true), reuse the open connection to make another request
-bool Download::Reuse(std::string newuri)
+bool Download::Reuse(ByteString newuri)
 {
 	if (!keepAlive || !CheckDone() || CheckCanceled())
 	{
 		return false;
 	}
-	uri = std::string(newuri);
+	uri = newuri;
 	DownloadManager::Ref().Lock();
 	downloadFinished = false;
 	DownloadManager::Ref().Unlock();

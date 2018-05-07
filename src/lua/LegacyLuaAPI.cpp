@@ -1,5 +1,4 @@
 #ifdef LUACONSOLE
-#include <string>
 #include <iomanip>
 #include <vector>
 #include <algorithm>
@@ -26,7 +25,7 @@ int luacon_partread(lua_State* l)
 {
 	int tempinteger, i = cIndex;
 	float tempfloat;
-	std::string key = luaL_optstring(l, 2, "");
+	ByteString key = luaL_optstring(l, 2, "");
 	CommandInterface::FormatType format;
 	int offset = luacon_ci->GetPropertyOffset(key, format);
 
@@ -62,7 +61,7 @@ int luacon_partread(lua_State* l)
 int luacon_partwrite(lua_State* l)
 {
 	int i = cIndex;
-	std::string key = luaL_optstring(l, 2, "");
+	ByteString key = luaL_optstring(l, 2, "");
 	CommandInterface::FormatType format;
 	int offset = luacon_ci->GetPropertyOffset(key, format);
 
@@ -473,7 +472,7 @@ int luacon_keyevent(int key, Uint16 character, int modifier, int event)
 		int callret = lua_pcall(l, 4, 1, 0);
 		if (callret)
 		{
-			if (!strcmp(luacon_geterror(), "Error: Script not responding"))
+			if (luacon_geterror() == "Error: Script not responding")
 			{
 				ui::Engine::Ref().LastTick(Platform::GetTime());
 				for (int j = i; j <= len-1; j++)
@@ -527,7 +526,7 @@ int luacon_mouseevent(int mx, int my, int mb, int event, int mouse_wheel)
 		int callret = lua_pcall(l, 5, 1, 0);
 		if (callret)
 		{
-			if (!strcmp(luacon_geterror(), "Error: Script not responding"))
+			if (luacon_geterror() == "Error: Script not responding")
 			{
 				ui::Engine::Ref().LastTick(Platform::GetTime());
 				for (int j = i; j <= len-1; j++)
@@ -579,7 +578,7 @@ int luacon_step(int mx, int my)
 		int callret = lua_pcall(l, 0, 0, 0);
 		if (callret)
 		{
-			if (!strcmp(luacon_geterror(), "Error: Script not responding"))
+			if (luacon_geterror() == "Error: Script not responding")
 			{
 				ui::Engine::Ref().LastTick(Platform::GetTime());
 				for (int j = i; j <= len-1; j++)
@@ -641,10 +640,10 @@ int luaL_tostring (lua_State *L, int n)
 	return 1;
 }
 
-const char *luacon_geterror()
+String luacon_geterror()
 {
 	luaL_tostring(luacon_ci->l, -1);
-	const char* err = luaL_optstring(luacon_ci->l, -1, "failed to execute");
+	String err = ByteString(luaL_optstring(luacon_ci->l, -1, "failed to execute")).FromUtf8();
 	lua_pop(luacon_ci->l, 1);
 	return err;
 }
@@ -666,7 +665,7 @@ int luatpt_getelement(lua_State *l)
 		t = luaL_optint(l, 1, 1);
 		if (t<0 || t>=PT_NUM)
 			return luaL_error(l, "Unrecognised element number '%d'", t);
-		lua_pushstring(l, luacon_sim->elements[t].Name);
+		lua_pushstring(l, luacon_sim->elements[t].Name.c_str());
 	}
 	else
 	{
@@ -815,7 +814,7 @@ int luatpt_graphics_func(lua_State *l)
 
 int luatpt_error(lua_State* l)
 {
-	std::string errorMessage = std::string(luaL_optstring(l, 1, "Error text"));
+	String errorMessage = ByteString(luaL_optstring(l, 1, "Error text")).FromUtf8();
 	ErrorMessage::Blocking("Error", errorMessage);
 	return 0;
 }
@@ -842,7 +841,7 @@ int luatpt_drawtext(lua_State* l)
 	if (textalpha<0) textalpha = 0;
 	if (textalpha>255) textalpha = 255;
 
-	luacon_g->drawtext(textx, texty, string, textred, textgreen, textblue, textalpha);
+	luacon_g->drawtext(textx, texty, ByteString(string).FromUtf8(), textred, textgreen, textblue, textalpha);
 	return 0;
 }
 
@@ -860,7 +859,7 @@ int luatpt_create(lua_State* l)
 				return luaL_error(l, "Unrecognised element number '%d'", t);
 		} else {
 			const char* name = luaL_optstring(l, 3, "dust");
-			if ((t = luacon_sim->GetParticleType(std::string(name))) == -1)
+			if ((t = luacon_sim->GetParticleType(ByteString(name))) == -1)
 				return luaL_error(l,"Unrecognised element '%s'", name);
 		}
 		retid = luacon_sim->create_part(-1, x, y, t);
@@ -915,14 +914,14 @@ int luatpt_setconsole(lua_State* l)
 int luatpt_log(lua_State* l)
 {
 	int args = lua_gettop(l);
-	std::string text = "";
+	String text = "";
 	for(int i = 1; i <= args; i++)
 	{
 		luaL_tostring(l, -1);
 		if(text.length())
-			text=std::string(luaL_optstring(l, -1, "")) + ", " + text;
+			text=ByteString(luaL_optstring(l, -1, "")).FromUtf8() + ", " + text;
 		else
-			text=std::string(luaL_optstring(l, -1, ""));
+			text=ByteString(luaL_optstring(l, -1, "")).FromUtf8();
 		lua_pop(l, 2);
 	}
 	if((*luacon_currentCommand))
@@ -1073,7 +1072,7 @@ int luatpt_set_property(lua_State* l)
 		if(!lua_isnumber(l, acount) && lua_isstring(l, acount))
 		{
 			name = luaL_optstring(l, acount, "none");
-			if ((partsel = luacon_sim->GetParticleType(std::string(name))) == -1)
+			if ((partsel = luacon_sim->GetParticleType(ByteString(name))) == -1)
 				return luaL_error(l, "Unrecognised element '%s'", name);
 		}
 	}
@@ -1090,7 +1089,7 @@ int luatpt_set_property(lua_State* l)
 	else
 	{
 		name = luaL_checklstring(l, 2, NULL);
-		if ((t = luacon_sim->GetParticleType(std::string(name)))==-1)
+		if ((t = luacon_sim->GetParticleType(ByteString(name)))==-1)
 			return luaL_error(l, "Unrecognised element '%s'", name);
 	}
 	if (!lua_isnumber(l, 3) || acount >= 6)
@@ -1276,7 +1275,7 @@ int luatpt_get_elecmap(lua_State* l)
 
 int luatpt_get_property(lua_State* l)
 {
-	std::string prop = luaL_optstring(l, 1, "");
+	ByteString prop = luaL_optstring(l, 1, "");
 	int i = luaL_optint(l, 2, 0); //x coord or particle index, depending on arguments
 	int y = luaL_optint(l, 3, -1);
 	if (y!=-1 && y<YRES && y>=0 && i < XRES && i>=0)
@@ -1456,7 +1455,7 @@ int luatpt_textwidth(lua_State* l)
 {
 	int strwidth = 0;
 	const char* string = luaL_optstring(l, 1, "");
-	strwidth = Graphics::textwidth(string);
+	strwidth = Graphics::textwidth(ByteString(string).FromUtf8());
 	lua_pushinteger(l, strwidth);
 	return 1;
 }
@@ -1671,22 +1670,22 @@ int luatpt_unregister_mouseclick(lua_State* l)
 
 int luatpt_input(lua_State* l)
 {
-	std::string prompt, title, result, shadow, text;
-	title = std::string(luaL_optstring(l, 1, "Title"));
-	prompt = std::string(luaL_optstring(l, 2, "Enter some text:"));
-	text = std::string(luaL_optstring(l, 3, ""));
-	shadow = std::string(luaL_optstring(l, 4, ""));
+	String prompt, title, result, shadow, text;
+	title = ByteString(luaL_optstring(l, 1, "Title")).FromUtf8();
+	prompt = ByteString(luaL_optstring(l, 2, "Enter some text:")).FromUtf8();
+	text = ByteString(luaL_optstring(l, 3, "")).FromUtf8();
+	shadow = ByteString(luaL_optstring(l, 4, "")).FromUtf8();
 
 	result = TextPrompt::Blocking(title, prompt, text, shadow, false);
 
-	lua_pushstring(l, result.c_str());
+	lua_pushstring(l, result.ToUtf8().c_str());
 	return 1;
 }
 
 int luatpt_message_box(lua_State* l)
 {
-	std::string title = std::string(luaL_optstring(l, 1, "Title"));
-	std::string message = std::string(luaL_optstring(l, 2, "Message"));
+	String title = ByteString(luaL_optstring(l, 1, "Title")).FromUtf8();
+	String message = ByteString(luaL_optstring(l, 2, "Message")).FromUtf8();
 	int large = lua_toboolean(l, 3);
 	new InformationMessage(title, message, large);
 	return 0;
@@ -1694,9 +1693,9 @@ int luatpt_message_box(lua_State* l)
 
 int luatpt_confirm(lua_State *l)
 {
-	std::string title = std::string(luaL_optstring(l, 1, "Title"));
-	std::string message = std::string(luaL_optstring(l, 2, "Message"));
-	std::string buttonText = std::string(luaL_optstring(l, 3, "Confirm"));
+	String title = ByteString(luaL_optstring(l, 1, "Title")).FromUtf8();
+	String message = ByteString(luaL_optstring(l, 2, "Message")).FromUtf8();
+	String buttonText = ByteString(luaL_optstring(l, 3, "Confirm")).FromUtf8();
 	bool ret = ConfirmPrompt::Blocking(title, message, buttonText);
 	lua_pushboolean(l, ret ? 1 : 0);
 	return 1;
@@ -1915,13 +1914,12 @@ int luatpt_getscript(lua_State* l)
 	int runScript = luaL_optint(l, 3, 0);
 	int confirmPrompt = luaL_optint(l, 4, 1);
 
-	std::stringstream url;
-	url << "http://starcatcher.us/scripts/main.lua?get=" << scriptID;
-	if (confirmPrompt && !ConfirmPrompt::Blocking("Do you want to install script?", url.str(), "Install"))
+	ByteString url = ByteString::Build("http://starcatcher.us/scripts/main.lua?get=", scriptID);
+	if (confirmPrompt && !ConfirmPrompt::Blocking("Do you want to install script?", url.FromUtf8(), "Install"))
 		return 0;
 
 	int ret, len;
-	char *scriptData = http_simple_get(url.str().c_str(), &ret, &len);
+	char *scriptData = http_simple_get(url.c_str(), &ret, &len);
 	if (len <= 0 || !filename)
 	{
 		free(scriptData);
@@ -1944,7 +1942,7 @@ int luatpt_getscript(lua_State* l)
 	{
 		fclose(outputfile);
 		outputfile = NULL;
-		if (!confirmPrompt || ConfirmPrompt::Blocking("File already exists, overwrite?", filename, "Overwrite"))
+		if (!confirmPrompt || ConfirmPrompt::Blocking("File already exists, overwrite?", ByteString(filename).FromUtf8(), "Overwrite"))
 		{
 			outputfile = fopen(filename, "wb");
 		}
@@ -1969,9 +1967,7 @@ int luatpt_getscript(lua_State* l)
 	outputfile = NULL;
 	if (runScript)
 	{
-		std::stringstream luaCommand;
-		luaCommand << "dofile('" << filename << "')";
-		luaL_dostring(l, luaCommand.str().c_str());
+		luaL_dostring(l, ByteString::Build("dofile('", filename, "')").c_str());
 	}
 
 	return 0;
@@ -2019,18 +2015,16 @@ int luatpt_screenshot(lua_State* l)
 			data = format::VideoBufferToPNG(screenshot);
 		}
 	}
-	std::stringstream filename;
-	filename << "screenshot_";
-	filename << std::setfill('0') << std::setw(6) << (screenshotIndex++);
+	ByteString filename = ByteString::Build("screenshot_", Format::Width(screenshotIndex++, 6));
 	if(fileType == 1) {
-		filename << ".bmp";
+		filename += ".bmp";
 	} else if(fileType == 2) {
-		filename << ".ppm";
+		filename += ".ppm";
 	} else {
-		filename << ".png";
+		filename += ".png";
 	}
-	Client::Ref().WriteFile(data, filename.str());
-	lua_pushstring(l, filename.str().c_str());
+	Client::Ref().WriteFile(data, filename);
+	lua_pushstring(l, filename.c_str());
 	return 1;
 }
 

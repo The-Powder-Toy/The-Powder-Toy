@@ -12,7 +12,7 @@
 
 namespace ui {
 
-AvatarButton::AvatarButton(Point position, Point size, std::string username):
+AvatarButton::AvatarButton(Point position, Point size, ByteString username):
 	Component(position, size),
 	avatar(NULL),
 	name(username),

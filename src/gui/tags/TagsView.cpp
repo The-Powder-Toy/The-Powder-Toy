@@ -87,9 +87,9 @@ void TagsView::NotifyTagsChanged(TagsModel * sender)
 	class DeleteTagAction : public ui::ButtonAction
 	{
 		TagsView * v;
-		std::string tag;
+		ByteString tag;
 	public:
-		DeleteTagAction(TagsView * _v, std::string tag) { v = _v; this->tag = tag; }
+		DeleteTagAction(TagsView * _v, ByteString tag) { v = _v; this->tag = tag; }
 		void ActionCallback(ui::Button * sender)
 		{
 			try
@@ -98,18 +98,18 @@ void TagsView::NotifyTagsChanged(TagsModel * sender)
 			}
 			catch(TagsModelException & ex)
 			{
-				new ErrorMessage("Could not remove tag", ex.what());
+				new ErrorMessage("Could not remove tag", ByteString(ex.what()).FromUtf8());
 			}
 		}
 	};
 
 	if(sender->GetSave())
 	{
-		std::list<std::string> Tags = sender->GetSave()->GetTags();
+		std::list<ByteString> Tags = sender->GetSave()->GetTags();
 		int i = 0;
-		for(std::list<std::string>::const_iterator iter = Tags.begin(), end = Tags.end(); iter != end; iter++)
+		for(std::list<ByteString>::const_iterator iter = Tags.begin(), end = Tags.end(); iter != end; iter++)
 		{
-			ui::Label * tempLabel = new ui::Label(ui::Point(35, 35+(16*i)), ui::Point(120, 16), *iter);
+			ui::Label * tempLabel = new ui::Label(ui::Point(35, 35+(16*i)), ui::Point(120, 16), (*iter).FromUtf8());
 			tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;			tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 			tags.push_back(tempLabel);
 			AddComponent(tempLabel);
@@ -154,11 +154,11 @@ void TagsView::addTag()
 	}
 	try
 	{
-		c->AddTag(tagInput->GetText());
+		c->AddTag(tagInput->GetText().ToUtf8());
 	}
 	catch(TagsModelException & ex)
 	{
-		new ErrorMessage("Could not add tag", ex.what());
+		new ErrorMessage("Could not add tag", ByteString(ex.what()).FromUtf8());
 	}
 	tagInput->SetText("");
 }

@@ -1,4 +1,3 @@
-#include <sstream>
 #include "common/tpt-minmax.h"
 #include "gui/interface/Label.h"
 #include "gui/interface/Engine.h"
@@ -7,7 +6,7 @@
 #include "gui/Style.h"
 #include "Task.h"
 
-TaskWindow::TaskWindow(std::string title_, Task * task_, bool closeOnDone):
+TaskWindow::TaskWindow(String title_, Task * task_, bool closeOnDone):
 	ui::Window(ui::Point(-1, -1), ui::Point(240, 60)),
 	task(task_),
 	title(title_),
@@ -63,16 +62,10 @@ void TaskWindow::Exit()
 void TaskWindow::NotifyProgress(Task * task)
 {
 	progress = task->GetProgress();
-	std::stringstream pStream;
 	if(progress>-1)
-	{
-		pStream << progress << "%";
-	}
+		progressStatus = String::Build(progress, "%");
 	else
-	{
-		pStream << "Please wait...";
-	}
-	progressStatus = pStream.str();
+		progressStatus = "Please wait...";
 }
 
 void TaskWindow::OnTick(float dt)
@@ -120,9 +113,9 @@ void TaskWindow::OnDraw()
 		}
 	}
 	if(progress<50)
-		g->drawtext(Position.X + ((Size.X-Graphics::textwidth(progressStatus.c_str()))/2), Position.Y + Size.Y-13, progressStatus, 255, 255, 255, 255);
+		g->drawtext(Position.X + ((Size.X-Graphics::textwidth(progressStatus))/2), Position.Y + Size.Y-13, progressStatus, 255, 255, 255, 255);
 	else
-		g->drawtext(Position.X + ((Size.X-Graphics::textwidth(progressStatus.c_str()))/2), Position.Y + Size.Y-13, progressStatus, 0, 0, 0, 255);
+		g->drawtext(Position.X + ((Size.X-Graphics::textwidth(progressStatus))/2), Position.Y + Size.Y-13, progressStatus, 0, 0, 0, 255);
 }
 
 TaskWindow::~TaskWindow() {

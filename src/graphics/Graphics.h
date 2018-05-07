@@ -1,7 +1,7 @@
 #ifndef GRAPHICS_H
 #define GRAPHICS_H
 
-#include <string>
+#include "common/String.h"
 #include <cstdlib>
 #include <cstring>
 #include <vector>
@@ -84,9 +84,9 @@ public:
 			b = 255;
 		Buffer[y*(Width)+x] = PIXRGB(r,g,b);
 	}
-	int SetCharacter(int x, int y, int c, int r, int g, int b, int a);
-	int BlendCharacter(int x, int y, int c, int r, int g, int b, int a);
-	int AddCharacter(int x, int y, int c, int r, int g, int b, int a);
+	int SetCharacter(int x, int y, String::value_type c, int r, int g, int b, int a);
+	int BlendCharacter(int x, int y, String::value_type c, int r, int g, int b, int a);
+	int AddCharacter(int x, int y, String::value_type c, int r, int g, int b, int a);
 	~VideoBuffer();
 };
 
@@ -116,15 +116,15 @@ public:
 	static pixel *render_packed_rgb(void *image, int width, int height, int cmp_size);
 
 	//Font/text metrics
-	static int CharIndexAtPosition(char *s, int positionX, int positionY);
-	static int PositionAtCharIndex(char *s, int charIndex, int & positionX, int & positionY);
-	static int CharWidth(unsigned char c);
-	static int textnwidth(char *s, int n);
-	static void textnpos(char *s, int n, int w, int *cx, int *cy);
-	static int textwidthx(char *s, int w);
-	static int textwrapheight(char *s, int width);
-	static int textwidth(const char *s);
-	static void textsize(const char * s, int & width, int & height);
+	static int CharIndexAtPosition(String s, int positionX, int positionY);
+	static int PositionAtCharIndex(String s, int charIndex, int & positionX, int & positionY);
+	static int CharWidth(String::value_type c);
+	static int textnwidth(String s, int n);
+	static void textnpos(String s, int n, int w, int *cx, int *cy);
+	static int textwidthx(String s, int w);
+	static int textwrapheight(String s, int width);
+	static int textwidth(String s);
+	static void textsize(String s, int & width, int & height);
 
 	VideoBuffer DumpFrame();
 
@@ -139,11 +139,10 @@ public:
 	void Clear();
 	void Finalise();
 	//
-	int drawtext_outline(int x, int y, const char *s, int r, int g, int b, int a);
-	int drawtext(int x, int y, const char *s, int r, int g, int b, int a);
-	int drawtext(int x, int y, std::string s, int r, int g, int b, int a);
-	int drawchar(int x, int y, int c, int r, int g, int b, int a);
-	int addchar(int x, int y, int c, int r, int g, int b, int a);
+	int drawtext_outline(int x, int y, String s, int r, int g, int b, int a);
+	int drawtext(int x, int y, String s, int r, int g, int b, int a);
+	int drawchar(int x, int y, String::value_type c, int r, int g, int b, int a);
+	int addchar(int x, int y, String::value_type c, int r, int g, int b, int a);
 
 	void xor_pixel(int x, int y);
 	void xor_line(int x, int y, int x2, int y2);

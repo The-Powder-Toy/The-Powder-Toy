@@ -1,10 +1,9 @@
 #include <iomanip>
-#include <sstream>
 #include "Sign.h"
 #include "graphics/Graphics.h"
 #include "simulation/Simulation.h"
 
-sign::sign(std::string text_, int x_, int y_, Justification justification_):
+sign::sign(String text_, int x_, int y_, Justification justification_):
 	x(x_),
 	y(y_),
 	ju(justification_),
@@ -12,9 +11,8 @@ sign::sign(std::string text_, int x_, int y_, Justification justification_):
 {
 }
 
-std::string sign::getText(Simulation *sim)
+String sign::getText(Simulation *sim)
 {
-	std::stringstream signTextNew;
 	if (text[0] && text[0] == '{')
 	{
 		if (text == "{p}")
@@ -22,40 +20,38 @@ std::string sign::getText(Simulation *sim)
 			float pressure = 0.0f;
 			if (x >= 0 && x < XRES && y >= 0 && y < YRES)
 				pressure = sim->pv[y/CELL][x/CELL];
-			signTextNew << std::fixed << std::showpoint << std::setprecision(2) << "Pressure: " << pressure;
+			return String::Build("Pressure: ", Format::Precision(Format::ShowPoint(pressure), 2));
 		}
 		else if (text == "{aheat}")
 		{
 			float aheat = 0.0f;
 			if (x >= 0 && x < XRES && y >= 0 && y < YRES)
 				aheat = sim->hv[y/CELL][x/CELL];
-			signTextNew << std::fixed << std::showpoint << std::setprecision(2) << aheat-273.15f;
+			return String::Build(Format::Precision(Format::ShowPoint(aheat - 273.15f), 2));
 		}
 		else if (text == "{t}")
 		{
 			if (x >= 0 && x < XRES && y >= 0 && y < YRES && sim->pmap[y][x])
-				signTextNew << std::fixed << std::showpoint << std::setprecision(2) << "Temp: " << sim->parts[ID(sim->pmap[y][x])].temp-273.15f;
+				return String::Build("Temp: ", Format::Precision(Format::ShowPoint(sim->parts[ID(sim->pmap[y][x])].temp - 273.15f), 2));
 			else
-				signTextNew << "Temp: 0.00";
+				return String::Build("Temp: ", Format::Precision(Format::ShowPoint(0), 2));
 		}
 		else
 		{
 			int pos = splitsign(text);
 			if (pos)
-				signTextNew << text.substr(pos+1, text.length()-pos-2);
+				return text.Between(pos + 1, text.size() - 1);
 			else
-				signTextNew << text;
+				return text;
 		}
 	}
 	else
 	{
-		signTextNew << text;
+		return text;
 	}
-
-	return signTextNew.str();
 }
 
-void sign::pos(std::string signText, int & x0, int & y0, int & w, int & h)
+void sign::pos(String signText, int & x0, int & y0, int & w, int & h)
 {
 	w = Graphics::textwidth(signText.c_str()) + 5;
 	h = 15;
@@ -64,7 +60,7 @@ void sign::pos(std::string signText, int & x0, int & y0, int & w, int & h)
 	y0 = (y > 18) ? y - 18 : y + 4;
 }
 
-int sign::splitsign(std::string str, char * type)
+int sign::splitsign(String str, String::value_type *type)
 {
 	if (str[0] == '{' && (str[1] == 'c' || str[1] == 't' || str[1] == 'b' || str[1] == 's'))
 	{

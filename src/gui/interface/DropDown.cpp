@@ -18,9 +18,9 @@ public:
 	class ItemSelectedAction: public ButtonAction
 	{
 		DropDownWindow * window;
-		std::string option;
+		String option;
 	public:
-		ItemSelectedAction(DropDownWindow * window, std::string option): window(window), option(option) { }
+		ItemSelectedAction(DropDownWindow * window, String option): window(window), option(option) { }
 		virtual void ActionCallback(ui::Button *sender)
 		{
 			window->CloseActiveWindow();
@@ -50,7 +50,7 @@ public:
 		Graphics * g = GetGraphics();
 		g->clearrect(Position.X, Position.Y, Size.X, Size.Y);
 	}
-	void setOption(std::string option)
+	void setOption(String option)
 	{
 		dropDown->SetOption(option);
 		if (dropDown->callback)
@@ -129,16 +129,16 @@ void DropDown::OnMouseLeave(int x, int y)
 {
 	isMouseInside = false;
 }
-	std::pair<std::string, int> DropDown::GetOption()
+	std::pair<String, int> DropDown::GetOption()
 	{
 		if(optionIndex!=-1)
 		{
 			return options[optionIndex];
 		}
-		return std::pair<std::string, int>("", -1);
+		return std::pair<String, int>("", -1);
 	}
 
-	void DropDown::SetOption(std::string option)
+	void DropDown::SetOption(String option)
 	{
 		for (size_t i = 0; i < options.size(); i++)
 		{
@@ -162,7 +162,7 @@ void DropDown::OnMouseLeave(int x, int y)
 			}
 		}
 	}
-	void DropDown::AddOption(std::pair<std::string, int> option)
+	void DropDown::AddOption(std::pair<String, int> option)
 	{
 		for (size_t i = 0; i < options.size(); i++)
 		{
@@ -171,7 +171,7 @@ void DropDown::OnMouseLeave(int x, int y)
 		}
 		options.push_back(option);
 	}
-	void DropDown::RemoveOption(std::string option)
+	void DropDown::RemoveOption(String option)
 	{
 	start:
 		for (size_t i = 0; i < options.size(); i++)
@@ -185,7 +185,7 @@ void DropDown::OnMouseLeave(int x, int y)
 			}
 		}
 	}
-	void DropDown::SetOptions(std::vector<std::pair<std::string, int> > options)
+	void DropDown::SetOptions(std::vector<std::pair<String, int> > options)
 	{
 		this->options = options;
 	}

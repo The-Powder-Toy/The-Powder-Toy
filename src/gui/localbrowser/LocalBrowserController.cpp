@@ -1,5 +1,3 @@
-#include <sstream>
-
 #include "client/Client.h"
 #include "LocalBrowserController.h"
 #include "gui/interface/Engine.h"
@@ -46,30 +44,28 @@ void LocalBrowserController::RemoveSelected()
 		virtual ~RemoveSelectedConfirmation() { }
 	};
 
-	std::stringstream desc;
+	StringBuilder desc;
 	desc << "Are you sure you want to delete " << browserModel->GetSelected().size() << " stamp";
 	if(browserModel->GetSelected().size()>1)
 		desc << "s";
 	desc << "?";
-	new ConfirmPrompt("Delete stamps", desc.str(), new RemoveSelectedConfirmation(this));
+	new ConfirmPrompt("Delete stamps", desc.Build(), new RemoveSelectedConfirmation(this));
 }
 
 void LocalBrowserController::removeSelectedC()
 {
 	class RemoveSavesTask : public Task
 	{
-		std::vector<std::string> saves;
+		std::vector<ByteString> saves;
 		LocalBrowserController * c;
 	public:
-		RemoveSavesTask(LocalBrowserController * c, std::vector<std::string> saves_) : c(c) { saves = saves_; }
+		RemoveSavesTask(LocalBrowserController * c, std::vector<ByteString> saves_) : c(c) { saves = saves_; }
 		virtual bool doWork()
 		{
 			for (size_t i = 0; i < saves.size(); i++)
 			{
-				std::stringstream saveName;
-				saveName << "Deleting stamp [" << saves[i] << "] ...";
- 				notifyStatus(saveName.str());
- 				Client::Ref().DeleteStamp(saves[i]);
+				notifyStatus(String::Build("Deleting stamp [", saves[i].FromUtf8(), "] ..."));
+				Client::Ref().DeleteStamp(saves[i]);
 				notifyProgress((float(i+1)/float(saves.size())*100));
 			}
 			return true;
@@ -81,7 +77,7 @@ void LocalBrowserController::removeSelectedC()
 		}
 	};
 
-	std::vector<std::string> selected = browserModel->GetSelected();
+	std::vector<ByteString> selected = browserModel->GetSelected();
 	new TaskWindow("Removing stamps", new RemoveSavesTask(this, selected));
 }
 
@@ -98,9 +94,8 @@ void LocalBrowserController::RescanStamps()
 		virtual ~RescanConfirmation() { }
 	};
 
-	std::stringstream desc;
-	desc << "Rescanning the stamps folder can find stamps added to the stamps folder or recover stamps when the stamps.def file has been lost or damaged. However, be warned that this will mess up the current sorting order";
-	new ConfirmPrompt("Rescan", desc.str(), new RescanConfirmation(this));
+	String desc = "Rescanning the stamps folder can find stamps added to the stamps folder or recover stamps when the stamps.def file has been lost or damaged. However, be warned that this will mess up the current sorting order";
+	new ConfirmPrompt("Rescan", desc, new RescanConfirmation(this));
 }
 
 void LocalBrowserController::rescanStampsC()
@@ -146,7 +141,7 @@ void LocalBrowserController::Update()
 	}
 }
 
-void LocalBrowserController::Selected(std::string saveName, bool selected)
+void LocalBrowserController::Selected(ByteString saveName, bool selected)
 {
 	if(selected)
 		browserModel->SelectSave(saveName);

@@ -58,7 +58,7 @@ public:
 	~GameController();
 	GameView * GetView();
 	int GetSignAt(int x, int y);
-	std::string GetSignText(int signID);
+	String GetSignText(int signID);
 
 	bool MouseMove(int x, int y, int dx, int dy);
 	bool MouseDown(int x, int y, unsigned button);
@@ -89,7 +89,7 @@ public:
 	void DrawRect(int toolSelection, ui::Point point1, ui::Point point2);
 	void DrawLine(int toolSelection, ui::Point point1, ui::Point point2);
 	void DrawFill(int toolSelection, ui::Point point);
-	std::string StampRegion(ui::Point point1, ui::Point point2, bool includePressure);
+	ByteString StampRegion(ui::Point point1, ui::Point point2, bool includePressure);
 	void CopyRegion(ui::Point point1, ui::Point point2, bool includePressure);
 	void CutRegion(ui::Point point1, ui::Point point2, bool includePressure);
 	void Update();
@@ -109,7 +109,7 @@ public:
 	void RebuildFavoritesMenu();
 	Tool * GetActiveTool(int selection);
 	void SetActiveTool(int toolSelection, Tool * tool);
-	void SetActiveTool(int toolSelection, std::string identifier);
+	void SetActiveTool(int toolSelection, ByteString identifier);
 	void SetLastTool(Tool * tool);
 	int GetReplaceModeFlags();
 	void SetReplaceModeFlags(int flags);
@@ -119,7 +119,7 @@ public:
 	void SetToolStrength(float value);
 	void LoadSaveFile(SaveFile * file);
 	void LoadSave(SaveInfo * save);
-	void OpenSearch(std::string searchText);
+	void OpenSearch(String searchText);
 	void OpenLogin();
 	void OpenProfile();
 	void OpenTags();
@@ -147,9 +147,9 @@ public:
 	bool MouseInZoom(ui::Point position);
 	ui::Point PointTranslate(ui::Point point);
 	ui::Point NormaliseBlockCoord(ui::Point point);
-	std::string ElementResolve(int type, int ctype);
+	ByteString ElementResolve(int type, int ctype);
 	bool IsValidElement(int type);
-	std::string WallName(int type);
+	String WallName(int type);
 	int Record(bool record);
 
 	void ResetAir();
@@ -167,7 +167,7 @@ public:
 
 	virtual void NotifyUpdateAvailable(Client * sender);
 	virtual void NotifyAuthUserChanged(Client * sender);
-	virtual void NotifyNewNotification(Client * sender, std::pair<std::string, std::string> notification);
+	virtual void NotifyNewNotification(Client * sender, std::pair<String, ByteString> notification);
 	void RunUpdater();
 };
 

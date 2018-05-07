@@ -1,5 +1,3 @@
-#include <sstream>
-
 #include "SearchView.h"
 #include "client/Client.h"
 #include "gui/interface/Keys.h"
@@ -26,8 +24,8 @@ SearchView::SearchView():
 
 	Client::Ref().AddListener(this);
 
-	nextButton = new ui::Button(ui::Point(WINDOWW-52, WINDOWH-18), ui::Point(50, 16), "Next \x95");
-	previousButton = new ui::Button(ui::Point(2, WINDOWH-18), ui::Point(50, 16), "\x96 Prev");
+	nextButton = new ui::Button(ui::Point(WINDOWW-52, WINDOWH-18), ui::Point(50, 16), String("Next ") + 0xE015);
+	previousButton = new ui::Button(ui::Point(2, WINDOWH-18), ui::Point(50, 16), 0xE016 + String(" Prev"));
 	tagsLabel  = new ui::Label(ui::Point(270, WINDOWH-18), ui::Point(WINDOWW-540, 16), "\boPopular Tags:");
 	motdLabel  = new ui::RichLabel(ui::Point(51, WINDOWH-18), ui::Point(WINDOWW-102, 16), Client::Ref().GetMessageOfTheDay());
 
@@ -272,11 +270,11 @@ void SearchView::clearSearch()
 
 void SearchView::textChanged()
 {
-	int num = format::StringToNumber<int>(pageTextbox->GetText());
+	int num = pageTextbox->GetText().ToNumber<int>(true);
 	if (num < 0) //0 is allowed so that you can backspace the 1
 		pageTextbox->SetText("1");
 	else if (num > pageCount)
-		pageTextbox->SetText(format::NumberToString(pageCount));
+		pageTextbox->SetText(String::Build(pageCount));
 	changed = true;
 #ifdef USE_SDL
 	lastChanged = GetTicks()+600;
@@ -310,7 +308,7 @@ SearchView::~SearchView()
 	saveButtons.clear();
 }
 
-void SearchView::Search(std::string query)
+void SearchView::Search(String query)
 {
 	searchField->SetText(query);
 	c->DoSearch(query, true);
@@ -376,10 +374,9 @@ void SearchView::NotifyPageChanged(SearchModel * sender)
 	}
 	else
 	{
-		std::stringstream pageInfo;
-		pageInfo << "of " << pageCount;
-		pageCountLabel->SetText(pageInfo.str());
-		int width = Graphics::textwidth(pageInfo.str().c_str());
+		String pageInfo = String::Build("of ", pageCount);
+		pageCountLabel->SetText(pageInfo);
+		int width = Graphics::textwidth(pageInfo);
 
 		pageLabel->Position.X = WINDOWW/2-width-20;
 		pageTextbox->Position.X = WINDOWW/2-width+11;
@@ -387,9 +384,8 @@ void SearchView::NotifyPageChanged(SearchModel * sender)
 		//pageCountLabel->Position.X = WINDOWW/2+6;
 		pageLabel->Visible = pageCountLabel->Visible = pageTextbox->Visible = true;
 
-		pageInfo.str("");
-		pageInfo << sender->GetPageNum();
-		pageTextbox->SetText(pageInfo.str());
+		pageInfo = String::Build(sender->GetPageNum());
+		pageTextbox->SetText(pageInfo);
 	}
 	if(sender->GetPageNum() == 1)
 	{
@@ -469,7 +465,7 @@ void SearchView::NotifyTagListChanged(SearchModel * sender)
 	int tagWidth = 0, tagHeight = 0, tagX = 0, tagY = 0, tagsX = 6, tagsY = 4, tagPadding = 1;
 	int tagAreaWidth, tagAreaHeight, tagXOffset = 0, tagYOffset = 0;
 
-	vector<pair<string, int> > tags = sender->GetTagList();
+	vector<pair<ByteString, int> > tags = sender->GetTagList();
 
 	RemoveComponent(motdLabel);
 	motdLabel->SetParentWindow(NULL);
@@ -510,12 +506,12 @@ void SearchView::NotifyTagListChanged(SearchModel * sender)
 	class TagAction: public ui::ButtonAction
 	{
 		SearchView * v;
-		std::string tag;
+		ByteString tag;
 	public:
-		TagAction(SearchView * v, std::string tag) : v(v), tag(tag) {}
+		TagAction(SearchView * v, ByteString tag) : v(v), tag(tag) {}
 		virtual void ActionCallback(ui::Button * sender)
 		{
-			v->Search(tag);
+			v->Search(tag.FromUtf8());
 		}
 	};
 	if (sender->GetShowTags())
@@ -524,7 +520,7 @@ void SearchView::NotifyTagListChanged(SearchModel * sender)
 		{
 			int maxTagVotes = tags[0].second;
 
-			pair<string, int> tag = tags[i];
+			pair<ByteString, int> tag = tags[i];
 
 			if (tagX == tagsX)
 			{
@@ -545,7 +541,7 @@ void SearchView::NotifyTagListChanged(SearchModel * sender)
 						tagYOffset + tagPadding + tagY*(tagHeight+tagPadding*2)
 					),
 				ui::Point(tagWidth, tagHeight),
-				tag.first
+				tag.first.FromUtf8()
 				);
 			tagButton->SetActionCallback(new TagAction(this, tag.first));
 			tagButton->Appearance.BorderInactive = ui::Colour(0, 0, 0);
@@ -673,13 +669,11 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 			}
 			virtual void AltActionCallback(ui::SaveButton * sender)
 			{
-				stringstream search;
-				search << "history:" << sender->GetSave()->GetID();
-				v->Search(search.str());
+				v->Search(String::Build("history:", sender->GetSave()->GetID()));
 			}
 			virtual void AltActionCallback2(ui::SaveButton * sender)
 			{
-				v->Search("user:"+sender->GetSave()->GetUserName());
+				v->Search(String::Build("user:", sender->GetSave()->GetUserName().FromUtf8()));
 			}
 		};
 		for (size_t i = 0; i < saves.size(); i++)
@@ -769,7 +763,7 @@ void SearchView::OnTick(float dt)
 	if (changed && lastChanged < GetTicks())
 	{
 		changed = false;
-		c->SetPage(std::max(format::StringToNumber<int>(pageTextbox->GetText()), 0));
+		c->SetPage(std::max(pageTextbox->GetText().ToNumber<int>(true), 0));
 	}
 #endif
 }

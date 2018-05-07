@@ -1,23 +1,23 @@
 #ifndef FAVORITE_H
 #define FAVORITE_H
 
-#include <string>
+#include "common/String.h"
 #include <vector>
 
 #include "common/Singleton.h"
 
 class Favorite : public Singleton<Favorite>
 {
-	std::vector<std::string> favoritesList;
+	std::vector<ByteString> favoritesList;
 public:
 	Favorite();
 
-	std::vector<std::string> GetFavoritesList();
-	bool IsFavorite(std::string identifier);
+	std::vector<ByteString> GetFavoritesList();
+	bool IsFavorite(ByteString identifier);
 	bool AnyFavorites();
 
-	void AddFavorite(std::string identifier);
-	void RemoveFavorite(std::string identifier);
+	void AddFavorite(ByteString identifier);
+	void RemoveFavorite(ByteString identifier);
 
 	void SaveFavoritesToPrefs();
 	void LoadFavoritesFromPrefs();

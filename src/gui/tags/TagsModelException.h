@@ -1,14 +1,14 @@
 #ifndef TAGSMODELEXCEPTION_H_
 #define TAGSMODELEXCEPTION_H_
 
-#include <string>
+#include "common/String.h"
 #include <exception>
 
 class TagsModelException {
-	std::string message;
+	String message;
 public:
-	TagsModelException(std::string message_): message(message_) {};
-	const char * what() const throw() { return message.c_str(); };
+	TagsModelException(String message_): message(message_) {};
+	const char * what() const throw() { return message.ToUtf8().c_str(); };
 	~TagsModelException() throw() {};
 };
 

@@ -1,7 +1,7 @@
 #ifndef LABEL_H
 #define LABEL_H
 
-#include <string>
+#include "common/String.h"
 
 #include "Component.h"
 #include "Colour.h"
@@ -11,12 +11,12 @@ namespace ui
 	class Label : public Component
 	{
 	protected:
-		std::string textFragments;
-		std::string textLines;
-		std::string displayText;
-		std::string tDisplayText;
+		String textFragments;
+		String textLines;
+		String displayText;
+		String tDisplayText;
 
-		std::string text;
+		String text;
 		Colour textColour;
 		int selectionIndex0;
 		int selectionIndex1;
@@ -40,16 +40,16 @@ namespace ui
 
 		virtual void copySelection();
 	public:
-		//Label(Window* parent_state, std::string labelText);
-		Label(Point position, Point size, std::string labelText);
-		//Label(std::string labelText);
+		//Label(Window* parent_state, String labelText);
+		Label(Point position, Point size, String labelText);
+		//Label(String labelText);
 		virtual ~Label();
 
 		virtual void SetMultiline(bool status);
 
-		virtual void SetText(std::string text);
-		virtual void SetDisplayText(std::string newText);
-		virtual std::string GetText();
+		virtual void SetText(String text);
+		virtual void SetDisplayText(String newText);
+		virtual String GetText();
 
 		virtual bool HasSelection();
 		virtual void ClearSelection();

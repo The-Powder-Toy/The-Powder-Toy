@@ -26,8 +26,8 @@ LuaButton::LuaButton(lua_State * l) :
 	int posY = luaL_optinteger(l, 2, 0);
 	int sizeX = luaL_optinteger(l, 3, 10);
 	int sizeY = luaL_optinteger(l, 4, 10);
-	std::string text = luaL_optstring(l, 5, "");
-	std::string toolTip = luaL_optstring(l, 6, "");
+	String text = ByteString(luaL_optstring(l, 5, "")).FromUtf8();
+	String toolTip = ByteString(luaL_optstring(l, 6, "")).FromUtf8();
 
 	button = new ui::Button(ui::Point(posX, posY), ui::Point(sizeX, sizeY), text, toolTip);
 	component = button;
@@ -81,12 +81,12 @@ int LuaButton::text(lua_State * l)
 	if(args)
 	{
 		luaL_checktype(l, 1, LUA_TSTRING);
-		button->SetText(lua_tostring(l, 1));
+		button->SetText(ByteString(lua_tostring(l, 1)).FromUtf8());
 		return 0;
 	}
 	else
 	{
-		lua_pushstring(l, button->GetText().c_str());
+		lua_pushstring(l, button->GetText().ToUtf8().c_str());
 		return 1;
 	}
 }
@@ -99,7 +99,7 @@ void LuaButton::triggerAction()
 		lua_rawgeti(l, LUA_REGISTRYINDEX, UserData);
 		if (lua_pcall(l, 1, 0, 0))
 		{
-			ci->Log(CommandInterface::LogError, lua_tostring(l, -1));
+			ci->Log(CommandInterface::LogError, ByteString(lua_tostring(l, -1)).FromUtf8());
 		}
 	}
 }

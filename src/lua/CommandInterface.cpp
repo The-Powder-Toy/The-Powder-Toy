@@ -1,5 +1,4 @@
 #include <iostream>
-#include <string>
 #include <cstring>
 #if !defined(WIN) || defined(__GNUC__)
 #include <strings.h>
@@ -18,23 +17,23 @@ CommandInterface::CommandInterface(GameController * c, GameModel * m) {
 	this->m = m;
 }*/
 
-int CommandInterface::Command(std::string command)
+int CommandInterface::Command(String command)
 {
 	lastError = "No interpreter";
 	return -1;
 }
 
-std::string CommandInterface::FormatCommand(std::string command)
+String CommandInterface::FormatCommand(String command)
 {
 	return command;
 }
 
-void CommandInterface::Log(LogType type, std::string message)
+void CommandInterface::Log(LogType type, String message)
 {
 	m->Log(message, type == LogError || type == LogNotice);
 }
 
-int CommandInterface::GetPropertyOffset(std::string key, FormatType & format)
+int CommandInterface::GetPropertyOffset(ByteString key, FormatType & format)
 {
 	int offset = -1;
 	if (!key.compare("type"))
@@ -105,7 +104,7 @@ int CommandInterface::GetPropertyOffset(std::string key, FormatType & format)
 	return offset;
 }
 
-std::string CommandInterface::GetLastError()
+String CommandInterface::GetLastError()
 {
 	return lastError;
 }

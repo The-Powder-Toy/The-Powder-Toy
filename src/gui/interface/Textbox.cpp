@@ -1,4 +1,4 @@
-#include <string>
+#include "common/String.h"
 #include <iostream>
 #include <stdexcept>
 #include "Config.h"
@@ -13,11 +13,11 @@
 
 using namespace ui;
 
-Textbox::Textbox(Point position, Point size, std::string textboxText, std::string textboxPlaceholder):
+Textbox::Textbox(Point position, Point size, String textboxText, String textboxPlaceholder):
 	Label(position, size, ""),
 	ReadOnly(false),
 	inputType(All),
-	limit(std::string::npos),
+	limit(String::npos),
 	keyDown(0),
 	characterDown(0),
 	mouseDown(false),
@@ -53,19 +53,19 @@ void Textbox::SetHidden(bool hidden)
 	masked = hidden;
 }
 
-void Textbox::SetPlaceholder(std::string text)
+void Textbox::SetPlaceholder(String text)
 {
 	placeHolder = text;
 }
 
-void Textbox::SetText(std::string newText)
+void Textbox::SetText(String newText)
 {
 	backingText = newText;
 
 	if(masked)
 	{
-		std::string maskedText = std::string(newText);
-		std::fill(maskedText.begin(), maskedText.end(), '\x8D');
+		String maskedText = newText;
+		std::fill(maskedText.begin(), maskedText.end(), 0xE00D);
 		Label::SetText(maskedText);
 	}
 	else
@@ -75,7 +75,7 @@ void Textbox::SetText(std::string newText)
 
 	if(cursor)
 	{
-		Graphics::PositionAtCharIndex(multiline?((char*)textLines.c_str()):((char*)text.c_str()), cursor, cursorPositionX, cursorPositionY);
+		Graphics::PositionAtCharIndex(multiline?textLines:text, cursor, cursorPositionX, cursorPositionY);
 	}
 	else
 	{
@@ -103,7 +103,7 @@ size_t Textbox::GetLimit()
 	return limit;
 }
 
-std::string Textbox::GetText()
+String Textbox::GetText()
 {
 	return backingText;
 }
@@ -126,7 +126,7 @@ void Textbox::OnContextMenuAction(int item)
 
 void Textbox::resetCursorPosition()
 {
-	Graphics::PositionAtCharIndex(multiline?((char*)textLines.c_str()):((char*)text.c_str()), cursor, cursorPositionX, cursorPositionY);
+	Graphics::PositionAtCharIndex(multiline?textLines:text, cursor, cursorPositionX, cursorPositionY);
 }
 
 void Textbox::TabFocus()
@@ -141,8 +141,8 @@ void Textbox::cutSelection()
 	{
 		if (getLowerSelectionBound() < 0 || getHigherSelectionBound() > (int)backingText.length())
 			return;
-		std::string toCopy = backingText.substr(getLowerSelectionBound(), getHigherSelectionBound()-getLowerSelectionBound());
-		ClipboardPush(format::CleanString(toCopy, false, true, false));
+		String toCopy = backingText.Between(getLowerSelectionBound(), getHigherSelectionBound());
+		ClipboardPush(format::CleanString(toCopy, false, true, false).ToUtf8());
 		backingText.erase(backingText.begin()+getLowerSelectionBound(), backingText.begin()+getHigherSelectionBound());
 		cursor = getLowerSelectionBound();
 	}
@@ -150,7 +150,7 @@ void Textbox::cutSelection()
 	{
 		if (!backingText.length())
 			return;
-		ClipboardPush(format::CleanString(backingText, false, true, false));
+		ClipboardPush(format::CleanString(backingText, false, true, false).ToUtf8());
 		backingText.clear();
 		cursor = 0;
 	}
@@ -158,8 +158,8 @@ void Textbox::cutSelection()
 
 	if(masked)
 	{
-		std::string maskedText = std::string(backingText);
-		std::fill(maskedText.begin(), maskedText.end(), '\x8D');
+		String maskedText = backingText;
+		std::fill(maskedText.begin(), maskedText.end(), 0xE00D);
 		Label::SetText(maskedText);
 	}
 	else
@@ -174,7 +174,7 @@ void Textbox::cutSelection()
 
 	if(cursor)
 	{
-		Graphics::PositionAtCharIndex(multiline?((char*)textLines.c_str()):((char*)text.c_str()), cursor, cursorPositionX, cursorPositionY);
+		Graphics::PositionAtCharIndex(multiline?textLines:text, cursor, cursorPositionX, cursorPositionY);
 	}
 	else
 	{
@@ -186,12 +186,12 @@ void Textbox::cutSelection()
 
 void Textbox::pasteIntoSelection()
 {
-	std::string newText = format::CleanString(ClipboardPull(), true, true, inputType != Multiline, inputType == Number || inputType == Numeric);
+	String newText = format::CleanString(ClipboardPull().FromUtf8(), true, true, inputType != Multiline, inputType == Number || inputType == Numeric);
 	if (HasSelection())
 	{
 		if (getLowerSelectionBound() < 0 || getHigherSelectionBound() > (int)backingText.length())
 			return;
-		backingText.erase(backingText.begin()+getLowerSelectionBound(), backingText.begin()+getHigherSelectionBound());
+		backingText.EraseBetween(getLowerSelectionBound(), getHigherSelectionBound());
 		cursor = getLowerSelectionBound();
 	}
 
@@ -201,29 +201,29 @@ void Textbox::pasteIntoSelection()
 	regionWidth -= Appearance.Margin.Left;
 	regionWidth -= Appearance.Margin.Right;
 
-	if (limit != std::string::npos)
+	if (limit != String::npos)
 	{
-		newText = newText.substr(0, limit-backingText.length());
+		newText = newText.Substr(0, limit-backingText.length());
 	}
-	if (!multiline && Graphics::textwidth((char*)std::string(backingText+newText).c_str()) > regionWidth)
+	if (!multiline && Graphics::textwidth(backingText + newText) > regionWidth)
 	{
-		int pLimit = regionWidth - Graphics::textwidth((char*)backingText.c_str());
-		int cIndex = Graphics::CharIndexAtPosition((char *)newText.c_str(), pLimit, 0);
+		int pLimit = regionWidth - Graphics::textwidth(backingText);
+		int cIndex = Graphics::CharIndexAtPosition(newText, pLimit, 0);
 
 		if (cIndex > 0)
-			newText = newText.substr(0, cIndex);
+			newText = newText.Substr(0, cIndex);
 		else
 			newText = "";
 	}
 
-	backingText.insert(cursor, newText);
+	backingText.Insert(cursor, newText);
 	cursor = cursor+newText.length();
 	ClearSelection();
 
 	if(masked)
 	{
-		std::string maskedText = std::string(backingText);
-		std::fill(maskedText.begin(), maskedText.end(), '\x8D');
+		String maskedText = backingText;
+		std::fill(maskedText.begin(), maskedText.end(), 0xE00D);
 		Label::SetText(maskedText);
 	}
 	else
@@ -241,7 +241,7 @@ void Textbox::pasteIntoSelection()
 
 	if(cursor)
 	{
-		Graphics::PositionAtCharIndex(multiline?((char*)textLines.c_str()):((char*)text.c_str()), cursor, cursorPositionX, cursorPositionY);
+		Graphics::PositionAtCharIndex(multiline?textLines:text, cursor, cursorPositionX, cursorPositionY);
 	}
 	else
 	{
@@ -353,7 +353,7 @@ void Textbox::OnVKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 			{
 				if (getLowerSelectionBound() < 0 || getHigherSelectionBound() > (int)backingText.length())
 					return;
-				backingText.erase(backingText.begin()+getLowerSelectionBound(), backingText.begin()+getHigherSelectionBound());
+				backingText.Erase(getLowerSelectionBound(), getHigherSelectionBound());
 				cursor = getLowerSelectionBound();
 				changed = true;
 			}
@@ -362,9 +362,9 @@ void Textbox::OnVKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 				if (ctrl)
 				{
 					size_t stopChar;
-					stopChar = backingText.find_first_not_of(" .,!?\n", cursor);
-					stopChar = backingText.find_first_of(" .,!?\n", stopChar);
-					backingText.erase(cursor, stopChar-cursor);
+					stopChar = backingText.SplitByNot(" .,!?\n", cursor).PositionBefore();
+					stopChar = backingText.SplitByAny(" .,!?\n", stopChar).PositionBefore();
+					backingText.EraseBetween(cursor, stopChar);
 				}
 				else
 					backingText.erase(cursor, 1);
@@ -388,12 +388,12 @@ void Textbox::OnVKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 				if (ctrl)
 				{
 					size_t stopChar;
-					stopChar = backingText.substr(0, cursor).find_last_not_of(" .,!?\n");
+					stopChar = backingText.SplitFromEndByNot(" .,!?\n", cursor).PositionBefore();
 					if (stopChar == backingText.npos)
 						stopChar = -1;
 					else
-						stopChar = backingText.substr(0, stopChar).find_last_of(" .,!?\n");
-					backingText.erase(stopChar+1, cursor-(stopChar+1));
+						stopChar = backingText.SplitFromEndByAny(" .,!?\n", stopChar).PositionBefore();
+					backingText.EraseBetween(stopChar+1, cursor);
 					cursor = stopChar+1;
 				}
 				else
@@ -423,7 +423,7 @@ void Textbox::OnVKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 					regionWidth -= 13;
 				regionWidth -= Appearance.Margin.Left;
 				regionWidth -= Appearance.Margin.Right;
-				if ((limit==std::string::npos || backingText.length() < limit) && (Graphics::textwidth((char*)std::string(backingText+char(character)).c_str()) <= regionWidth || multiline))
+				if ((limit==String::npos || backingText.length() < limit) && (Graphics::textwidth(backingText + character) <= regionWidth || multiline))
 				{
 					if (cursor == (int)backingText.length())
 					{
@@ -431,7 +431,7 @@ void Textbox::OnVKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 					}
 					else
 					{
-						backingText.insert(cursor, 1, (char)character);
+						backingText.Insert(cursor, character);
 					}
 					cursor++;
 				}
@@ -458,8 +458,8 @@ void Textbox::OnVKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 	{
 		if (masked)
 		{
-			std::string maskedText = std::string(backingText);
-			std::fill(maskedText.begin(), maskedText.end(), '\x8D');
+			String maskedText = backingText;
+			std::fill(maskedText.begin(), maskedText.end(), 0xE00D);
 			Label::SetText(maskedText);
 		}
 		else
@@ -478,7 +478,7 @@ void Textbox::OnVKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool
 
 	if(cursor)
 	{
-		Graphics::PositionAtCharIndex(multiline?((char*)textLines.c_str()):((char*)text.c_str()), cursor, cursorPositionX, cursorPositionY);
+		Graphics::PositionAtCharIndex(multiline?textLines:text, cursor, cursorPositionX, cursorPositionY);
 	}
 	else
 	{
@@ -494,10 +494,10 @@ void Textbox::OnMouseClick(int x, int y, unsigned button)
 	if (button != SDL_BUTTON_RIGHT)
 	{
 		mouseDown = true;
-		cursor = Graphics::CharIndexAtPosition(multiline?((char*)textLines.c_str()):((char*)text.c_str()), x-textPosition.X, y-textPosition.Y);
+		cursor = Graphics::CharIndexAtPosition(multiline?textLines:text, x-textPosition.X, y-textPosition.Y);
 		if(cursor)
 		{
-			Graphics::PositionAtCharIndex(multiline?((char*)textLines.c_str()):((char*)text.c_str()), cursor, cursorPositionX, cursorPositionY);
+			Graphics::PositionAtCharIndex(multiline?textLines:text, cursor, cursorPositionX, cursorPositionY);
 		}
 		else
 		{
@@ -517,10 +517,10 @@ void Textbox::OnMouseMoved(int localx, int localy, int dx, int dy)
 {
 	if(mouseDown)
 	{
-		cursor = Graphics::CharIndexAtPosition(multiline?((char*)textLines.c_str()):((char*)text.c_str()), localx-textPosition.X, localy-textPosition.Y);
+		cursor = Graphics::CharIndexAtPosition(multiline?textLines:text, localx-textPosition.X, localy-textPosition.Y);
 		if(cursor)
 		{
-			Graphics::PositionAtCharIndex(multiline?((char*)textLines.c_str()):((char*)text.c_str()), cursor, cursorPositionX, cursorPositionY);
+			Graphics::PositionAtCharIndex(multiline?textLines:text, cursor, cursorPositionX, cursorPositionY);
 		}
 		else
 		{

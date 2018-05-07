@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include <string>
+#include "common/String.h"
 #include "Activity.h"
 #include "gui/interface/Window.h"
 #include "tasks/TaskListener.h"
@@ -33,7 +33,7 @@ class FileBrowserActivity: public TaskListener, public WindowActivity
 	std::vector<SaveFile*> files;
 	std::vector<ui::Component*> components;
 	std::vector<ui::Component*> componentsQueue;
-	std::string directory;
+	ByteString directory;
 
 	ui::ProgressBar * progressBar;
 
@@ -46,16 +46,16 @@ class FileBrowserActivity: public TaskListener, public WindowActivity
 	class SearchAction;
 	void populateList();
 public:
-	FileBrowserActivity(std::string directory, FileSelectedCallback * callback);
+	FileBrowserActivity(ByteString directory, FileSelectedCallback * callback);
 	virtual void OnDraw();
 	virtual void OnTick(float dt);
 	virtual void OnTryExit(ExitMethod method);
 	virtual void OnMouseDown(int x, int y, unsigned button);
-	void loadDirectory(std::string directory, std::string search);
+	void loadDirectory(ByteString directory, ByteString search);
 	void SelectSave(SaveFile * file);
 	void DeleteSave(SaveFile * file);
 	void RenameSave(SaveFile * file);
-	void DoSearch(std::string search);
+	void DoSearch(ByteString search);
 	virtual ~FileBrowserActivity();
 
 	virtual void NotifyDone(Task * task);

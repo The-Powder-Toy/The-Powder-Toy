@@ -66,7 +66,7 @@ public:
     SearchView();
 	virtual ~SearchView();
 	void AttachController(SearchController * _c) { c = _c; }
-	virtual void Search(std::string);
+	virtual void Search(String);
 	virtual void OnTick(float dt);
 	virtual void OnMouseWheel(int x, int y, int d);
 	virtual void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);

@@ -97,7 +97,7 @@ void LuaSlider::triggerOnValueChanged()
 		lua_pushinteger(l, slider->GetValue());
 		if (lua_pcall(l, 2, 0, 0))
 		{
-			ci->Log(CommandInterface::LogError, lua_tostring(l, -1));
+			ci->Log(CommandInterface::LogError, ByteString(lua_tostring(l, -1)).FromUtf8());
 		}
 	}
 }

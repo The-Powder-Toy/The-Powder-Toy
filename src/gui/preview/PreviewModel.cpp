@@ -70,30 +70,28 @@ void PreviewModel::UpdateSave(int saveID, int saveDate)
 	notifySaveChanged();
 	notifySaveCommentsChanged();
 
-	std::stringstream urlStream;
+	ByteString url;
 	if (saveDate)
-		urlStream << "http://" << STATICSERVER << "/" << saveID << "_" << saveDate << ".cps";
+		url = ByteString::Build("http://", STATICSERVER, "/", saveID, "_", saveDate, ".cps");
 	else
-		urlStream << "http://" << STATICSERVER << "/" << saveID << ".cps";
-	saveDataDownload = new Download(urlStream.str());
+		url = ByteString::Build("http://", STATICSERVER, "/", saveID, ".cps");
+	saveDataDownload = new Download(url);
 	saveDataDownload->Start();
 
-	urlStream.str("");
-	urlStream << "http://" << SERVER  << "/Browse/View.json?ID=" << saveID;
+	url = ByteString::Build("http://", SERVER , "/Browse/View.json?ID=", saveID);
 	if (saveDate)
-		urlStream << "&Date=" << saveDate;
-	saveInfoDownload = new Download(urlStream.str());
-	saveInfoDownload->AuthHeaders(format::NumberToString(Client::Ref().GetAuthUser().UserID), Client::Ref().GetAuthUser().SessionID);
+		url += ByteString::Build("&Date=", saveDate);
+	saveInfoDownload = new Download(url);
+	saveInfoDownload->AuthHeaders(ByteString::Build(Client::Ref().GetAuthUser().UserID), Client::Ref().GetAuthUser().SessionID);
 	saveInfoDownload->Start();
 
 	if (!GetDoOpen())
 	{
 		commentsLoaded = false;
 
-		urlStream.str("");
-		urlStream << "http://" << SERVER << "/Browse/Comments.json?ID=" << saveID << "&Start=" << (commentsPageNumber-1)*20 << "&Count=20";
-		commentsDownload = new Download(urlStream.str());
-		commentsDownload->AuthHeaders(format::NumberToString(Client::Ref().GetAuthUser().UserID), Client::Ref().GetAuthUser().SessionID);
+		url = ByteString::Build("http://", SERVER, "/Browse/Comments.json?ID=", saveID, "&Start=", (commentsPageNumber-1)*20, "&Count=20");
+		commentsDownload = new Download(url);
+		commentsDownload->AuthHeaders(ByteString::Build(Client::Ref().GetAuthUser().UserID), Client::Ref().GetAuthUser().SessionID);
 		commentsDownload->Start();
 	}
 }
@@ -143,10 +141,9 @@ void PreviewModel::UpdateComments(int pageNumber)
 		commentsPageNumber = pageNumber;
 		if (!GetDoOpen())
 		{
-			std::stringstream urlStream;
-			urlStream << "http://" << SERVER << "/Browse/Comments.json?ID=" << saveID << "&Start=" << (commentsPageNumber-1)*20 << "&Count=20";
-			commentsDownload = new Download(urlStream.str());
-			commentsDownload->AuthHeaders(format::NumberToString(Client::Ref().GetAuthUser().UserID).c_str(), Client::Ref().GetAuthUser().SessionID.c_str());
+			ByteString url = ByteString::Build("http://", SERVER, "/Browse/Comments.json?ID=", saveID, "&Start=", (commentsPageNumber-1)*20, "&Count=20");
+			commentsDownload = new Download(url);
+			commentsDownload->AuthHeaders(ByteString::Build(Client::Ref().GetAuthUser().UserID), Client::Ref().GetAuthUser().SessionID);
 			commentsDownload->Start();
 		}
 
@@ -174,7 +171,7 @@ void PreviewModel::OnSaveReady()
 	}
 	catch(ParseException &e)
 	{
-		new ErrorMessage("Error", e.what());
+		new ErrorMessage("Error", ByteString(e.what()).FromUtf8());
 		canOpen = false;
 	}
 	notifySaveChanged();
@@ -210,9 +207,9 @@ bool PreviewModel::ParseSaveInfo(char * saveInfoResponse)
 		int tempScoreUp = objDocument["ScoreUp"].asInt();
 		int tempScoreDown = objDocument["ScoreDown"].asInt();
 		int tempMyScore = objDocument["ScoreMine"].asInt();
-		std::string tempUsername = objDocument["Username"].asString();
-		std::string tempName = objDocument["Name"].asString();
-		std::string tempDescription = objDocument["Description"].asString();
+		ByteString tempUsername = objDocument["Username"].asString();
+		String tempName = ByteString(objDocument["Name"].asString()).FromUtf8();
+		String tempDescription = ByteString(objDocument["Description"].asString()).FromUtf8();
 		int tempCreatedDate = objDocument["DateCreated"].asInt();
 		int tempUpdatedDate = objDocument["Date"].asInt();
 		bool tempPublished = objDocument["Published"].asBool();
@@ -222,7 +219,7 @@ bool PreviewModel::ParseSaveInfo(char * saveInfoResponse)
 		int tempVersion = objDocument["Version"].asInt();
 
 		Json::Value tagsArray = objDocument["Tags"];
-		std::list<std::string> tempTags;
+		std::list<ByteString> tempTags;
 		for (Json::UInt j = 0; j < tagsArray.size(); j++)
 			tempTags.push_back(tagsArray[j].asString());
 
@@ -242,9 +239,7 @@ bool PreviewModel::ParseSaveInfo(char * saveInfoResponse)
 				saveDataDownload->Cancel();
 			delete saveData;
 			saveData = NULL;
-			std::stringstream urlStream;
-			urlStream << "http://" << STATICSERVER << "/2157797.cps";
-			saveDataDownload = new Download(urlStream.str());
+			saveDataDownload = new Download(ByteString::Build("http://", STATICSERVER, "/2157797.cps"));
 			saveDataDownload->Start();
 		}
 		return true;
@@ -268,12 +263,12 @@ bool PreviewModel::ParseComments(char *commentsResponse)
 
 		for (Json::UInt j = 0; j < commentsArray.size(); j++)
 		{
-			int userID = format::StringToNumber<int>(commentsArray[j]["UserID"].asString());
-			std::string username = commentsArray[j]["Username"].asString();
-			std::string formattedUsername = commentsArray[j]["FormattedUsername"].asString();
+			int userID = ByteString(commentsArray[j]["UserID"].asString()).ToNumber<int>();
+			ByteString username = commentsArray[j]["Username"].asString();
+			ByteString formattedUsername = commentsArray[j]["FormattedUsername"].asString();
 			if (formattedUsername == "jacobot")
 				formattedUsername = "\bt" + formattedUsername;
-			std::string comment = commentsArray[j]["Text"].asString();
+			String comment = ByteString(commentsArray[j]["Text"].asString()).FromUtf8();
 			saveComments->push_back(new SaveComment(userID, username, formattedUsername, comment));
 		}
 		return true;

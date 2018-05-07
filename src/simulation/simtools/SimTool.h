@@ -10,10 +10,10 @@ struct Particle;
 class SimTool
 {
 public:
-	const char *Identifier;
-	const char *Name;
+	ByteString Identifier;
+	ByteString Name;
 	pixel Colour;
-	const char *Description;
+	String Description;
 
 	SimTool();
 	virtual ~SimTool() {}

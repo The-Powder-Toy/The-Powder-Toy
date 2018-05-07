@@ -1,5 +1,4 @@
 #include <iostream>
-#include <sstream>
 #include <stdint.h>
 #include "TPTSTypes.h"
 
@@ -19,7 +18,7 @@ AnyType::AnyType(const AnyType & v):
 	value(v.value)
 {
 	if(type == TypeString)
-		value.str = new std::string(*(value.str));
+		value.str = new String(*(value.str));
 	else if(type == TypePoint)
 		value.pt = new ui::Point(*(value.pt));
 }
@@ -48,9 +47,7 @@ AnyType::operator StringType()
 {
 	if(type == TypeNumber)
 	{
-		std::stringstream numberStream;
-		numberStream << ((NumberType *)this)->Value();
-		return StringType(numberStream.str());
+		return StringType(String::Build(((NumberType *)this)->Value()));
 	}
 	else if(type == TypeString && value.str)
 	{
@@ -59,9 +56,7 @@ AnyType::operator StringType()
 	else if (type == TypePoint && value.pt)
 	{
 		ui::Point thisPoint = *(value.pt);
-		std::stringstream pointStream;
-		pointStream << thisPoint.X << "," << thisPoint.Y;
-		return StringType(pointStream.str());
+		return StringType(String::Build(thisPoint.X, ",", thisPoint.Y));
 	}
 	else
 		throw InvalidConversionException(type, TypeString);
@@ -76,13 +71,13 @@ AnyType::operator PointType()
 	}
 	else if(type == TypeString)
 	{
-		std::stringstream pointStream(*(value.str));
 		int x, y;
-		char comma;
-		pointStream >> x >> comma >> y;
-		if (pointStream.fail() || comma != ',')
-			throw InvalidConversionException(type, TypePoint);
-		return PointType(ui::Point(x, y));
+		if(String::Split comma = (*value.str).SplitNumber(x))
+			if(comma.After().BeginsWith(","))
+				if(String::Split end = comma.After().Substr(1).SplitNumber(y))
+					if(!end.After().size())
+						return PointType(x, y);
+		throw InvalidConversionException(type, TypePoint);
 	}
 	else
 		throw InvalidConversionException(type, TypePoint);
@@ -122,12 +117,12 @@ float FloatType::Value()
 
 //String type
 
-StringType::StringType(std::string string):	AnyType(TypeString, ValueValue())
+StringType::StringType(String string):	AnyType(TypeString, ValueValue())
 {
-	value.str = new std::string(string);
+	value.str = new String(string);
 }
 
-std::string StringType::Value()
+String StringType::Value()
 {
 	return *value.str;
 }

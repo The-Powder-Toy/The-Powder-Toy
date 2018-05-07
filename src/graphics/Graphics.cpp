@@ -1,12 +1,11 @@
 #include <cmath>
 #include <iostream>
 #include <bzlib.h>
-#include <string>
+#include "common/String.h"
 #include "Config.h"
 #include "Misc.h"
 #include "Graphics.h"
-#define INCLUDE_FONTDATA
-#include "font.h"
+#include "Font.h"
 #ifdef HIGH_QUALITY_RESAMPLE
 #include "resampler/resampler.h"
 #endif
@@ -86,64 +85,31 @@ void VideoBuffer::Resize(int width, int height, bool resample, bool fixedRatio)
 	}
 }
 
-int VideoBuffer::SetCharacter(int x, int y, int c, int r, int g, int b, int a)
+int VideoBuffer::SetCharacter(int x, int y, String::value_type c, int r, int g, int b, int a)
 {
-	int i, j, w, bn = 0, ba = 0;
-	unsigned char *rp = font_data + font_ptrs[c];
-	w = *(rp++);
-	for (j=0; j<FONT_H; j++)
-		for (i=0; i<w; i++)
-		{
-			if (!bn)
-			{
-				ba = *(rp++);
-				bn = 8;
-			}
-			SetPixel(x+i, y+j, r, g, b, ((ba&3)*a)/3);
-			ba >>= 2;
-			bn -= 2;
-		}
-	return x + w;
+	FontReader reader(c);
+	for (int j = -2; j < FONT_H - 2; j++)
+		for (int i = 0; i < reader.GetWidth(); i++)
+			SetPixel(x + i, y + j, r, g, b, reader.NextPixel() * a / 3);
+	return x + reader.GetWidth();
 }
 
-int VideoBuffer::BlendCharacter(int x, int y, int c, int r, int g, int b, int a)
+int VideoBuffer::BlendCharacter(int x, int y, String::value_type c, int r, int g, int b, int a)
 {
-	int i, j, w, bn = 0, ba = 0;
-	unsigned char *rp = font_data + font_ptrs[c];
-	w = *(rp++);
-	for (j=0; j<FONT_H; j++)
-		for (i=0; i<w; i++)
-		{
-			if (!bn)
-			{
-				ba = *(rp++);
-				bn = 8;
-			}
-			BlendPixel(x+i, y+j, r, g, b, ((ba&3)*a)/3);
-			ba >>= 2;
-			bn -= 2;
-		}
-	return x + w;
+	FontReader reader(c);
+	for (int j = -2; j < FONT_H - 2; j++)
+		for (int i = 0; i < reader.GetWidth(); i++)
+			BlendPixel(x + i, y + j, r, g, b, reader.NextPixel() * a / 3);
+	return x + reader.GetWidth();
 }
 
-int VideoBuffer::AddCharacter(int x, int y, int c, int r, int g, int b, int a)
+int VideoBuffer::AddCharacter(int x, int y, String::value_type c, int r, int g, int b, int a)
 {
-	int i, j, w, bn = 0, ba = 0;
-	unsigned char *rp = font_data + font_ptrs[c];
-	w = *(rp++);
-	for (j=0; j<FONT_H; j++)
-		for (i=0; i<w; i++)
-		{
-			if (!bn)
-			{
-				ba = *(rp++);
-				bn = 8;
-			}
-			AddPixel(x+i, y+j, r, g, b, ((ba&3)*a)/3);
-			ba >>= 2;
-			bn -= 2;
-		}
-	return x + w;
+	FontReader reader(c);
+	for (int j = -2; j < FONT_H - 2; j++)
+		for (int i = 0; i < reader.GetWidth(); i++)
+			AddPixel(x + i, y + j, r, g, b, reader.NextPixel() * a / 3);
+	return x + reader.GetWidth();
 }
 
 VideoBuffer::~VideoBuffer()
@@ -566,9 +532,10 @@ pixel *Graphics::rescale_img(pixel *src, int sw, int sh, int *qw, int *qh, int f
 	return q;
 }
 
-int Graphics::textwidth(const char *s)
+int Graphics::textwidth(String str)
 {
 	int x = 0;
+	String::value_type const *s = str.c_str();
 	for (; *s; s++)
 	{
 		if(((char)*s)=='\b')
@@ -581,19 +548,20 @@ int Graphics::textwidth(const char *s)
 			s+=3;
 			continue;
 		}
-		x += font_data[font_ptrs[(int)(*(unsigned char *)s)]];
+		x += FontReader(*s).GetWidth();
 	}
 	return x-1;
 }
 
-int Graphics::CharWidth(unsigned char c)
+int Graphics::CharWidth(String::value_type c)
 {
-	return font_data[font_ptrs[(int)c]];
+	return FontReader(c).GetWidth();
 }
 
-int Graphics::textnwidth(char *s, int n)
+int Graphics::textnwidth(String str, int n)
 {
 	int x = 0;
+	String::value_type const *s = str.c_str();
 	for (; *s; s++)
 	{
 		if (!n)
@@ -608,36 +576,39 @@ int Graphics::textnwidth(char *s, int n)
 			s+=3;
 			continue;
 		}
-		x += font_data[font_ptrs[(int)(*(unsigned char *)s)]];
+		x += FontReader(*s).GetWidth();
 		n--;
 	}
 	return x-1;
 }
 
-void Graphics::textnpos(char *s, int n, int w, int *cx, int *cy)
+void Graphics::textnpos(String str, int n, int w, int *cx, int *cy)
 {
 	int x = 0;
 	int y = 0;
 	int wordlen, charspace;
+	String::value_type const *s = str.c_str();
 	while (*s&&n)
 	{
-		wordlen = strcspn(s," .,!?\n");
+		wordlen = 0;
+		while(*s && String(" .,!?\n").Contains(*s))
+			s++;
 		charspace = textwidthx(s, w-x);
 		if (charspace<wordlen && wordlen && w-x<w/3)
 		{
 			x = 0;
-			y += FONT_H+2;
+			y += FONT_H;
 		}
 		for (; *s && --wordlen>=-1; s++)
 		{
 			if (!n) {
 				break;
 			}
-			x += font_data[font_ptrs[(int)(*(unsigned char *)s)]];
+			x += FontReader(*s).GetWidth();
 			if (x>=w)
 			{
 				x = 0;
-				y += FONT_H+2;
+				y += FONT_H;
 			}
 			n--;
 		}
@@ -646,9 +617,10 @@ void Graphics::textnpos(char *s, int n, int w, int *cx, int *cy)
 	*cy = y;
 }
 
-int Graphics::textwidthx(char *s, int w)
+int Graphics::textwidthx(String str, int w)
 {
 	int x=0,n=0,cw;
+	String::value_type const *s = str.c_str();
 	for (; *s; s++)
 	{
 		if((char)*s == '\b')
@@ -662,7 +634,7 @@ int Graphics::textwidthx(char *s, int w)
 			s+=3;
 			continue;
 		}
-		cw = font_data[font_ptrs[(int)(*(unsigned char *)s)]];
+		cw = FontReader(*s).GetWidth();
 		if (x+(cw/2) >= w)
 			break;
 		x += cw;
@@ -671,9 +643,10 @@ int Graphics::textwidthx(char *s, int w)
 	return n;
 }
 
-int Graphics::PositionAtCharIndex(char *s, int charIndex, int & positionX, int & positionY)
+int Graphics::PositionAtCharIndex(String str, int charIndex, int & positionX, int & positionY)
 {
 	int x = 0, y = 0, lines = 1;
+	String::value_type const *s = str.c_str();
 	for (; *s; s++)
 	{
 		if (!charIndex)
@@ -681,7 +654,7 @@ int Graphics::PositionAtCharIndex(char *s, int charIndex, int & positionX, int &
 		if(*s == '\n') {
 			lines++;
 			x = 0;
-			y += FONT_H+2;
+			y += FONT_H;
 			charIndex--;
 			continue;
 		} else if(*s =='\b') {
@@ -695,7 +668,7 @@ int Graphics::PositionAtCharIndex(char *s, int charIndex, int & positionX, int &
 			charIndex-=4;
 			continue;
 		}
-		x += font_data[font_ptrs[(int)(*(unsigned char *)s)]];
+		x += FontReader(*s).GetWidth();
 		charIndex--;
 	}
 	positionX = x;
@@ -703,14 +676,15 @@ int Graphics::PositionAtCharIndex(char *s, int charIndex, int & positionX, int &
 	return lines;
 }
 
-int Graphics::CharIndexAtPosition(char *s, int positionX, int positionY)
+int Graphics::CharIndexAtPosition(String str, int positionX, int positionY)
 {
-	int x=0, y=0,charIndex=0,cw;
+	int x=0, y=-2,charIndex=0,cw;
+	String::value_type const *s = str.c_str();
 	for (; *s; s++)
 	{
 		if(*s == '\n') {
 			x = 0;
-			y += FONT_H+2;
+			y += FONT_H;
 			charIndex++;
 			continue;
 		} else if(*s == '\b') {
@@ -724,7 +698,7 @@ int Graphics::CharIndexAtPosition(char *s, int positionX, int positionY)
 			charIndex+=4;
 			continue;
 		}
-		cw = font_data[font_ptrs[(int)(*(unsigned char *)s)]];
+		cw = FontReader(*s).GetWidth();
 		if ((x+(cw/2) >= positionX && y+FONT_H >= positionY) || y > positionY)
 			break;
 		x += cw;
@@ -734,26 +708,29 @@ int Graphics::CharIndexAtPosition(char *s, int positionX, int positionY)
 }
 
 
-int Graphics::textwrapheight(char *s, int width)
+int Graphics::textwrapheight(String str, int width)
 {
-	int x=0, height=FONT_H+2, cw;
+	int x=0, height=FONT_H, cw;
 	int wordlen;
 	int charspace;
+	String::value_type const *s = str.c_str();
 	while (*s)
 	{
-		wordlen = strcspn(s," .,!?\n");
+		wordlen = 0;
+		while(*s && String(" .,!?\n").Contains(*s))
+			s++;
 		charspace = textwidthx(s, width-x);
 		if (charspace<wordlen && wordlen && width-x<width/3)
 		{
 			x = 0;
-			height += FONT_H+2;
+			height += FONT_H;
 		}
 		for (; *s && --wordlen>=-1; s++)
 		{
 			if (*s == '\n')
 			{
 				x = 0;
-				height += FONT_H+2;
+				height += FONT_H;
 			}
 			else if (*s == '\b')
 			{
@@ -767,11 +744,11 @@ int Graphics::textwrapheight(char *s, int width)
 			}
 			else
 			{
-				cw = font_data[font_ptrs[(int)(*(unsigned char *)s)]];
+				cw = FontReader(*s).GetWidth();
 				if (x+cw>=width)
 				{
 					x = 0;
-					height += FONT_H+2;
+					height += FONT_H;
 				}
 				x += cw;
 			}
@@ -780,22 +757,23 @@ int Graphics::textwrapheight(char *s, int width)
 	return height;
 }
 
-void Graphics::textsize(const char * s, int & width, int & height)
+void Graphics::textsize(String str, int & width, int & height)
 {
-	if(!strlen(s))
+	if(!str.size())
 	{
 		width = 0;
-		height = FONT_H;
+		height = FONT_H-2;
 		return;
 	}
 
-	int cHeight = FONT_H, cWidth = 0, lWidth = 0;
+	int cHeight = FONT_H-2, cWidth = 0, lWidth = 0;
+	String::value_type const *s = str.c_str();
 	for (; *s; s++)
 	{
 		if (*s == '\n')
 		{
 			cWidth = 0;
-			cHeight += FONT_H+2;
+			cHeight += FONT_H;
 		}
 		else if (*s == '\x0F')
 		{
@@ -809,7 +787,7 @@ void Graphics::textsize(const char * s, int & width, int & height)
 		}
 		else
 		{
-			cWidth += font_data[font_ptrs[(int)(*(unsigned char *)s)]];
+			cWidth += FontReader(*s).GetWidth();
 			if(cWidth>lWidth)
 				lWidth = cWidth;
 		}
@@ -825,262 +803,262 @@ void Graphics::draw_icon(int x, int y, Icon icon, unsigned char alpha, bool inve
 	{
 	case IconOpen:
 		if(invert)
-			drawchar(x, y, 0x81, 0, 0, 0, alpha);
+			drawchar(x, y, 0xE001, 0, 0, 0, alpha);
 		else
-			drawchar(x, y, 0x81, 255, 255, 255, alpha);
+			drawchar(x, y, 0xE001, 255, 255, 255, alpha);
 		break;
 	case IconReload:
 		if(invert)
-			drawchar(x, y, 0x91, 0, 0, 0, alpha);
+			drawchar(x, y, 0xE011, 0, 0, 0, alpha);
 		else
-			drawchar(x, y, 0x91, 255, 255, 255, alpha);
+			drawchar(x, y, 0xE011, 255, 255, 255, alpha);
 		break;
 	case IconSave:
 		if(invert)
-			drawchar(x, y, 0x82, 0, 0, 0, alpha);
+			drawchar(x, y, 0xE002, 0, 0, 0, alpha);
 		else
-			drawchar(x, y, 0x82, 255, 255, 255, alpha);
+			drawchar(x, y, 0xE002, 255, 255, 255, alpha);
 		break;
 	case IconVoteUp:
 		if(invert)
 		{
-			drawchar(x-11, y+1, 0xCB, 0, 100, 0, alpha);
+			drawchar(x-11, y+1, 0xE04B, 0, 100, 0, alpha);
 			drawtext(x+2, y+1, "Vote", 0, 100, 0, alpha);
 		}
 		else
 		{
-			drawchar(x-11, y+1, 0xCB, 0, 187, 18, alpha);
+			drawchar(x-11, y+1, 0xE04B, 0, 187, 18, alpha);
 			drawtext(x+2, y+1, "Vote", 0, 187, 18, alpha);
 		}
 		break;
 	case IconVoteDown:
 		if(invert)
-			drawchar(x, y, 0xCA, 100, 10, 0, alpha);
+			drawchar(x, y, 0xE04A, 100, 10, 0, alpha);
 		else
-			drawchar(x, y, 0xCA, 187, 40, 0, alpha);
+			drawchar(x, y, 0xE04A, 187, 40, 0, alpha);
 		break;
 	case IconTag:
 		if(invert)
-			drawchar(x, y, 0x83, 0, 0, 0, alpha);
+			drawchar(x, y, 0xE003, 0, 0, 0, alpha);
 		else
-			drawchar(x, y, 0x83, 255, 255, 255, alpha);
+			drawchar(x, y, 0xE003, 255, 255, 255, alpha);
 		break;
 	case IconNew:
 		if(invert)
-			drawchar(x, y, 0x92, 0, 0, 0, alpha);
+			drawchar(x, y, 0xE012, 0, 0, 0, alpha);
 		else
-			drawchar(x, y, 0x92, 255, 255, 255, alpha);
+			drawchar(x, y, 0xE012, 255, 255, 255, alpha);
 		break;
 	case IconLogin:
 		if(invert)
-			drawchar(x, y+1, 0x84, 0, 0, 0, alpha);
+			drawchar(x, y+1, 0xE004, 0, 0, 0, alpha);
 		else
-			drawchar(x, y+1, 0x84, 255, 255, 255, alpha);
+			drawchar(x, y+1, 0xE004, 255, 255, 255, alpha);
 		break;
 	case IconSimulationSettings:
 		if(invert)
-			drawchar(x, y+1, 0xCF, 0, 0, 0, alpha);
+			drawchar(x, y+1, 0xE04F, 0, 0, 0, alpha);
 		else
-			drawchar(x, y+1, 0xCF, 255, 255, 255, alpha);
+			drawchar(x, y+1, 0xE04F, 255, 255, 255, alpha);
 		break;
 	case IconRenderSettings:
 		if(invert)
 		{
-			drawchar(x, y+1, 0xD8, 255, 0, 0, alpha);
-			drawchar(x, y+1, 0xD9, 0, 255, 0, alpha);
-			drawchar(x, y+1, 0xDA, 0, 0, 255, alpha);
+			drawchar(x, y+1, 0xE058, 255, 0, 0, alpha);
+			drawchar(x, y+1, 0xE059, 0, 255, 0, alpha);
+			drawchar(x, y+1, 0xE05A, 0, 0, 255, alpha);
 		}
 		else
 		{
-			addchar(x, y+1, 0xD8, 255, 0, 0, alpha);
-			addchar(x, y+1, 0xD9, 0, 255, 0, alpha);
-			addchar(x, y+1, 0xDA, 0, 0, 255, alpha);
+			addchar(x, y+1, 0xE058, 255, 0, 0, alpha);
+			addchar(x, y+1, 0xE059, 0, 255, 0, alpha);
+			addchar(x, y+1, 0xE05A, 0, 0, 255, alpha);
 		}
 		break;
 	case IconPause:
 		if(invert)
-			drawchar(x, y, 0x90, 0, 0, 0, alpha);
+			drawchar(x, y, 0xE010, 0, 0, 0, alpha);
 		else
-			drawchar(x, y, 0x90, 255, 255, 255, alpha);
+			drawchar(x, y, 0xE010, 255, 255, 255, alpha);
 		break;
 	case IconFavourite:
 		if(invert)
-			drawchar(x, y, 0xCC, 100, 80, 32, alpha);
+			drawchar(x, y, 0xE04C, 100, 80, 32, alpha);
 		else
-			drawchar(x, y, 0xCC, 192, 160, 64, alpha);
+			drawchar(x, y, 0xE04C, 192, 160, 64, alpha);
 		break;
 	case IconReport:
 		if(invert)
-			drawchar(x, y, 0xE3, 140, 140, 0, alpha);
+			drawchar(x, y, 0xE063, 140, 140, 0, alpha);
 		else
-			drawchar(x, y, 0xE3, 255, 255, 0, alpha);
+			drawchar(x, y, 0xE063, 255, 255, 0, alpha);
 		break;
 	case IconUsername:
 		if(invert)
 		{
-			drawchar(x, y, 0x8B, 32, 64, 128, alpha);
-			drawchar(x, y, 0x8A, 0, 0, 0, alpha);
+			drawchar(x, y, 0xE00B, 32, 64, 128, alpha);
+			drawchar(x, y, 0xE00A, 0, 0, 0, alpha);
 		}
 		else
 		{
-			drawchar(x, y, 0x8B, 32, 64, 128, alpha);
-			drawchar(x, y, 0x8A, 255, 255, 255, alpha);
+			drawchar(x, y, 0xE00B, 32, 64, 128, alpha);
+			drawchar(x, y, 0xE00A, 255, 255, 255, alpha);
 		}
 		break;
 	case IconPassword:
 		if(invert)
 		{
-			drawchar(x, y, 0x8C, 160, 144, 32, alpha);
-			drawchar(x, y, 0x84, 0, 0, 0, alpha);
+			drawchar(x, y, 0xE00C, 160, 144, 32, alpha);
+			drawchar(x, y, 0xE004, 0, 0, 0, alpha);
 		}
 		else
 		{
-			drawchar(x, y, 0x8C, 160, 144, 32, alpha);
-			drawchar(x, y, 0x84, 255, 255, 255, alpha);
+			drawchar(x, y, 0xE00C, 160, 144, 32, alpha);
+			drawchar(x, y, 0xE004, 255, 255, 255, alpha);
 		}
 		break;
 	case IconClose:
 		if(invert)
-			drawchar(x, y, 0xAA, 20, 20, 20, alpha);
+			drawchar(x, y, 0xE02A, 20, 20, 20, alpha);
 		else
-			drawchar(x, y, 0xAA, 230, 230, 230, alpha);
+			drawchar(x, y, 0xE02A, 230, 230, 230, alpha);
 		break;
 	case IconVoteSort:
 		if (invert)
 		{
-			drawchar(x, y, 0xA9, 44, 48, 32, alpha);
-			drawchar(x, y, 0xA8, 32, 44, 32, alpha);
-			drawchar(x, y, 0xA7, 128, 128, 128, alpha);
+			drawchar(x, y, 0xE029, 44, 48, 32, alpha);
+			drawchar(x, y, 0xE028, 32, 44, 32, alpha);
+			drawchar(x, y, 0xE027, 128, 128, 128, alpha);
 		}
 		else
 		{
-			drawchar(x, y, 0xA9, 144, 48, 32, alpha);
-			drawchar(x, y, 0xA8, 32, 144, 32, alpha);
-			drawchar(x, y, 0xA7, 255, 255, 255, alpha);
+			drawchar(x, y, 0xE029, 144, 48, 32, alpha);
+			drawchar(x, y, 0xE028, 32, 144, 32, alpha);
+			drawchar(x, y, 0xE027, 255, 255, 255, alpha);
 		}
 		break;
 	case IconDateSort:
 		if (invert)
 		{
-			drawchar(x, y, 0xA6, 32, 32, 32, alpha);
+			drawchar(x, y, 0xE026, 32, 32, 32, alpha);
 		}
 		else
 		{
-			drawchar(x, y, 0xA6, 255, 255, 255, alpha);
+			drawchar(x, y, 0xE026, 255, 255, 255, alpha);
 		}
 		break;
 	case IconMyOwn:
 		if (invert)
 		{
-			drawchar(x, y, 0x94, 192, 160, 64, alpha);
-			drawchar(x, y, 0x93, 32, 32, 32, alpha);
+			drawchar(x, y, 0xE014, 192, 160, 64, alpha);
+			drawchar(x, y, 0xE013, 32, 32, 32, alpha);
 		}
 		else
 		{
-			drawchar(x, y, 0x94, 192, 160, 64, alpha);
-			drawchar(x, y, 0x93, 255, 255, 255, alpha);
+			drawchar(x, y, 0xE014, 192, 160, 64, alpha);
+			drawchar(x, y, 0xE013, 255, 255, 255, alpha);
 		}
 		break;
 	case IconSearch:
-		drawchar(x, y, 0x8E, 30, 30, 180, alpha);
-		drawchar(x, y, 0x8F, 255, 255, 255, alpha);
+		drawchar(x, y, 0xE00E, 30, 30, 180, alpha);
+		drawchar(x, y, 0xE00F, 255, 255, 255, alpha);
 		break;
 	case IconDelete:
 		if(invert)
 		{
-			drawchar(x, y, 0x86, 159, 47, 31, alpha);
-			drawchar(x, y, 0x85, 0, 0, 0, alpha);
+			drawchar(x, y, 0xE006, 159, 47, 31, alpha);
+			drawchar(x, y, 0xE005, 0, 0, 0, alpha);
 		}
 		else
 		{
-			drawchar(x, y, 0x86, 159, 47, 31, alpha);
-			drawchar(x, y, 0x85, 255, 255, 255, alpha);
+			drawchar(x, y, 0xE006, 159, 47, 31, alpha);
+			drawchar(x, y, 0xE005, 255, 255, 255, alpha);
 		}
 		break;
 	case IconAdd:
 		if(invert)
 		{
-			drawchar(x, y, 0x86, 32, 144, 32, alpha);
-			drawchar(x, y, 0x89, 0, 0, 0, alpha);
+			drawchar(x, y, 0xE006, 32, 144, 32, alpha);
+			drawchar(x, y, 0xE009, 0, 0, 0, alpha);
 		}
 		else
 		{
-			drawchar(x, y, 0x86, 32, 144, 32, alpha);
-			drawchar(x, y, 0x89, 255, 255, 255, alpha);
+			drawchar(x, y, 0xE006, 32, 144, 32, alpha);
+			drawchar(x, y, 0xE009, 255, 255, 255, alpha);
 		}
 		break;
 	case IconVelocity:
-		drawchar(x+1, y, 0x98, 128, 160, 255, alpha);
+		drawchar(x+1, y, 0xE018, 128, 160, 255, alpha);
 		break;
 	case IconPressure:
 		if(invert)
-			drawchar(x+1, y+1, 0x99, 180, 160, 16, alpha);
+			drawchar(x+1, y+1, 0xE019, 180, 160, 16, alpha);
 		else
-			drawchar(x+1, y+1, 0x99, 255, 212, 32, alpha);
+			drawchar(x+1, y+1, 0xE019, 255, 212, 32, alpha);
 		break;
 	case IconPersistant:
 		if(invert)
-			drawchar(x+1, y+1, 0x9A, 20, 20, 20, alpha);
+			drawchar(x+1, y+1, 0xE01A, 20, 20, 20, alpha);
 		else
-			drawchar(x+1, y+1, 0x9A, 212, 212, 212, alpha);
+			drawchar(x+1, y+1, 0xE01A, 212, 212, 212, alpha);
 		break;
 	case IconFire:
-		drawchar(x+1, y+1, 0x9B, 255, 0, 0, alpha);
-		drawchar(x+1, y+1, 0x9C, 255, 255, 64, alpha);
+		drawchar(x+1, y+1, 0xE01B, 255, 0, 0, alpha);
+		drawchar(x+1, y+1, 0xE01C, 255, 255, 64, alpha);
 		break;
 	case IconBlob:
 		if(invert)
-			drawchar(x+1, y, 0xBF, 55, 180, 55, alpha);
+			drawchar(x+1, y, 0xE03F, 55, 180, 55, alpha);
 		else
-			drawchar(x+1, y, 0xBF, 55, 255, 55, alpha);
+			drawchar(x+1, y, 0xE03F, 55, 255, 55, alpha);
 		break;
 	case IconHeat:
-		drawchar(x+3, y, 0xBE, 255, 0, 0, alpha);
+		drawchar(x+3, y, 0xE03E, 255, 0, 0, alpha);
 		if(invert)
-			drawchar(x+3, y, 0xBD, 0, 0, 0, alpha);
+			drawchar(x+3, y, 0xE03D, 0, 0, 0, alpha);
 		else
-			drawchar(x+3, y, 0xBD, 255, 255, 255, alpha);
+			drawchar(x+3, y, 0xE03D, 255, 255, 255, alpha);
 		break;
 	case IconBlur:
 		if(invert)
-			drawchar(x+1, y, 0xC4, 50, 70, 180, alpha);
+			drawchar(x+1, y, 0xE044, 50, 70, 180, alpha);
 		else
-			drawchar(x+1, y, 0xC4, 100, 150, 255, alpha);
+			drawchar(x+1, y, 0xE044, 100, 150, 255, alpha);
 		break;
 	case IconGradient:
 		if(invert)
-			drawchar(x+1, y+1, 0xD3, 255, 50, 255, alpha);
+			drawchar(x+1, y+1, 0xE053, 255, 50, 255, alpha);
 		else
-			drawchar(x+1, y+1, 0xD3, 205, 50, 205, alpha);
+			drawchar(x+1, y+1, 0xE053, 205, 50, 205, alpha);
 		break;
 	case IconLife:
 		if(invert)
-			drawchar(x, y+1, 0xE0, 0, 0, 0, alpha);
+			drawchar(x, y+1, 0xE060, 0, 0, 0, alpha);
 		else
-			drawchar(x, y+1, 0xE0, 255, 255, 255, alpha);
+			drawchar(x, y+1, 0xE060, 255, 255, 255, alpha);
 		break;
 	case IconEffect:
-		drawchar(x+1, y, 0xE1, 255, 255, 160, alpha);
+		drawchar(x+1, y, 0xE061, 255, 255, 160, alpha);
 		break;
 	case IconGlow:
-		drawchar(x+1, y, 0xDF, 200, 255, 255, alpha);
+		drawchar(x+1, y, 0xE05F, 200, 255, 255, alpha);
 		break;
 	case IconWarp:
-		drawchar(x+1, y, 0xDE, 255, 255, 255, alpha);
+		drawchar(x+1, y, 0xE05E, 255, 255, 255, alpha);
 		break;
 	case IconBasic:
 		if(invert)
-			drawchar(x+1, y+1, 0xDB, 50, 50, 0, alpha);
+			drawchar(x+1, y+1, 0xE05B, 50, 50, 0, alpha);
 		else
-			drawchar(x+1, y+1, 0xDB, 255, 255, 200, alpha);
+			drawchar(x+1, y+1, 0xE05B, 255, 255, 200, alpha);
 		break;
 	case IconAltAir:
 		if(invert) {
-			drawchar(x+1, y+1, 0xD4, 180, 55, 55, alpha);
-			drawchar(x+1, y+1, 0xD5, 55, 180, 55, alpha);
+			drawchar(x+1, y+1, 0xE054, 180, 55, 55, alpha);
+			drawchar(x+1, y+1, 0xE055, 55, 180, 55, alpha);
 		} else {
-			drawchar(x+1, y+1, 0xD4, 255, 55, 55, alpha);
-			drawchar(x+1, y+1, 0xD5, 55, 255, 55, alpha);
+			drawchar(x+1, y+1, 0xE054, 255, 55, 55, alpha);
+			drawchar(x+1, y+1, 0xE055, 55, 255, 55, alpha);
 		}
 		break;
 	default:

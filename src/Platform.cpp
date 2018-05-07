@@ -20,9 +20,9 @@
 namespace Platform
 {
 
-std::string ExecutableName()
+ByteString ExecutableName()
 {
-	std::string ret;
+	ByteString ret;
 #if defined(WIN)
 	char *name = (char *)malloc(64);
 	DWORD max = 64, res;
@@ -73,7 +73,7 @@ std::string ExecutableName()
 
 void DoRestart()
 {
-	std::string exename = ExecutableName();
+	ByteString exename = ExecutableName();
 	if (exename.length())
 	{
 #ifdef WIN
@@ -85,7 +85,7 @@ void DoRestart()
 	exit(-1);
 }
 
-void OpenURI(std::string uri)
+void OpenURI(ByteString uri)
 {
 #if defined(WIN)
 	ShellExecute(0, "OPEN", uri.c_str(), NULL, NULL, 0);

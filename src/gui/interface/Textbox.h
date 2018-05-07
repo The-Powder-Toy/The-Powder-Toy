@@ -1,7 +1,7 @@
 #ifndef TEXTBOX_H
 #define TEXTBOX_H
 
-#include <string>
+#include "common/String.h"
 
 #include "Label.h"
 #include "PowderToy.h"
@@ -22,13 +22,13 @@ class Textbox : public Label
 public:
 	bool ReadOnly;
 	enum ValidInput { All, Multiline, Numeric, Number }; // Numeric doesn't delete trailing 0's
-	Textbox(Point position, Point size, std::string textboxText = "", std::string textboxPlaceholder = "");
+	Textbox(Point position, Point size, String textboxText = "", String textboxPlaceholder = "");
 	virtual ~Textbox();
 
-	virtual void SetText(std::string text);
-	virtual std::string GetText();
+	virtual void SetText(String text);
+	virtual String GetText();
 
-	virtual void SetPlaceholder(std::string text);
+	virtual void SetPlaceholder(String text);
 
 	void SetBorder(bool border) { this->border = border; }
 	void SetHidden(bool hidden);
@@ -66,8 +66,8 @@ protected:
 	bool masked, border;
 	int cursor, cursorPositionX, cursorPositionY;
 	TextboxAction *actionCallback;
-	std::string backingText;
-	std::string placeHolder;
+	String backingText;
+	String placeHolder;
 
 	virtual void cutSelection();
 	virtual void pasteIntoSelection();

@@ -1,4 +1,5 @@
 #include <vector>
+#include <array>
 
 #define SC_WALL 0
 #define SC_ELEC 1
@@ -142,16 +143,16 @@ struct menu_section;
 class SimTool;
 class Element;
 
-gol_menu * LoadGOLMenu(int & golMenuCount);
+std::vector<gol_menu> LoadGOLMenu();
 
-int * LoadGOLTypes(int & golTypeCount);
+std::vector<int> LoadGOLTypes();
 
-int * LoadGOLRules(int & golRuleCount);
+std::vector<std::array<int, 10> > LoadGOLRules();
 
-wall_type * LoadWalls(int & wallCount);
+std::vector<wall_type> LoadWalls();
 
-menu_section * LoadMenus(int & menuCount);
+std::vector<menu_section> LoadMenus();
 
-unsigned int * LoadLatent(int & elementCount);
+std::vector<unsigned int> LoadLatent();
 
 #endif /* SIMULATIONDATA_H */

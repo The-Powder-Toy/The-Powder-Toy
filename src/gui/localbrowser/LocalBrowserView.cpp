@@ -1,4 +1,3 @@
-#include <sstream>
 #include "client/Client.h"
 #include "Format.h"
 #include "LocalBrowserView.h"
@@ -22,8 +21,8 @@ LocalBrowserView::LocalBrowserView():
 	lastChanged(0),
 	pageCount(0)
 {
-	nextButton = new ui::Button(ui::Point(WINDOWW-52, WINDOWH-18), ui::Point(50, 16), "Next \x95");
-	previousButton = new ui::Button(ui::Point(2, WINDOWH-18), ui::Point(50, 16), "\x96 Prev");
+	nextButton = new ui::Button(ui::Point(WINDOWW-52, WINDOWH-18), ui::Point(50, 16), String("Next ") + 0xE015);
+	previousButton = new ui::Button(ui::Point(2, WINDOWH-18), ui::Point(50, 16), 0xE016 + String(" Prev"));
 	undeleteButton = new ui::Button(ui::Point(WINDOWW-122, WINDOWH-18), ui::Point(60, 16), "Rescan");
 	AddComponent(nextButton);
 	AddComponent(previousButton);
@@ -109,11 +108,11 @@ LocalBrowserView::LocalBrowserView():
 
 void LocalBrowserView::textChanged()
 {
-	int num = format::StringToNumber<int>(pageTextbox->GetText());
+	int num = pageTextbox->GetText().ToNumber<int>(true);
 	if (num < 0) //0 is allowed so that you can backspace the 1
 		pageTextbox->SetText("1");
 	else if (num > pageCount)
-		pageTextbox->SetText(format::NumberToString(pageCount));
+		pageTextbox->SetText(String::Build(pageCount));
 	changed = true;
 #ifdef USE_SDL
 	lastChanged = GetTicks()+600;
@@ -127,7 +126,7 @@ void LocalBrowserView::OnTick(float dt)
 	if (changed && lastChanged < GetTicks())
 	{
 		changed = false;
-		c->SetPage(std::max(format::StringToNumber<int>(pageTextbox->GetText()), 0));
+		c->SetPage(std::max(pageTextbox->GetText().ToNumber<int>(true), 0));
 	}
 #endif
 }
@@ -141,10 +140,9 @@ void LocalBrowserView::NotifyPageChanged(LocalBrowserModel * sender)
 	}
 	else
 	{
-		std::stringstream pageInfo;
-		pageInfo << "of " << pageCount;
-		pageCountLabel->SetText(pageInfo.str());
-		int width = Graphics::textwidth(pageInfo.str().c_str());
+		String pageInfo = String::Build("of ", pageCount);
+		pageCountLabel->SetText(pageInfo);
+		int width = Graphics::textwidth(pageInfo);
 
 		pageLabel->Position.X = WINDOWW/2-width-20;
 		pageTextbox->Position.X = WINDOWW/2-width+11;
@@ -152,9 +150,8 @@ void LocalBrowserView::NotifyPageChanged(LocalBrowserModel * sender)
 		//pageCountLabel->Position.X = WINDOWW/2+6;
 		pageLabel->Visible = pageCountLabel->Visible = pageTextbox->Visible = true;
 
-		pageInfo.str("");
-		pageInfo << sender->GetPageNum();
-		pageTextbox->SetText(pageInfo.str());
+		pageInfo = String::Build(sender->GetPageNum());
+		pageTextbox->SetText(pageInfo);
 	}
 
 	if(sender->GetPageNum() == 1)
@@ -180,7 +177,7 @@ void LocalBrowserView::NotifySavesListChanged(LocalBrowserModel * sender)
 	int buttonWidth, buttonHeight, saveX = 0, saveY = 0, savesX = 5, savesY = 4, buttonPadding = 2;
 	int buttonAreaWidth, buttonAreaHeight, buttonXOffset, buttonYOffset;
 
-	vector<SaveFile*> saves = sender->GetSavesList();
+	std::vector<SaveFile*> saves = sender->GetSavesList();
 	for (size_t i = 0; i < stampButtons.size(); i++)
 	{
 		RemoveComponent(stampButtons[i]);
@@ -236,7 +233,7 @@ void LocalBrowserView::NotifySavesListChanged(LocalBrowserModel * sender)
 
 void LocalBrowserView::NotifySelectedChanged(LocalBrowserModel * sender)
 {
-	vector<std::string> selected = sender->GetSelected();
+	std::vector<ByteString> selected = sender->GetSelected();
 	for (size_t j = 0; j < stampButtons.size(); j++)
 	{
 		stampButtons[j]->SetSelected(false);

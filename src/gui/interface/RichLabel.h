@@ -1,6 +1,6 @@
 #pragma once
 
-#include <string>
+#include "common/String.h"
 
 #include "Component.h"
 #include "Colour.h"
@@ -15,22 +15,22 @@ namespace ui
 			int start;
 			int finish;
 			int action;
-			std::string actionData;
+			String actionData;
 		};
 
-		RichLabel(Point position, Point size, std::string richText);
+		RichLabel(Point position, Point size, String richText);
 
 		virtual ~RichLabel();
 
-		virtual void SetText(std::string text);
-		virtual std::string GetDisplayText();
-		virtual std::string GetText();
+		virtual void SetText(String text);
+		virtual String GetDisplayText();
+		virtual String GetText();
 
 		virtual void Draw(const Point& screenPos);
 		virtual void OnMouseClick(int x, int y, unsigned button);
 	protected:
-		std::string textSource;
-		std::string displayText;
+		String textSource;
+		String displayText;
 
 		std::vector<RichTextRegion> regions;
 

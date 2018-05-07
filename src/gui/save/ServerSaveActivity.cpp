@@ -244,7 +244,7 @@ void ServerSaveActivity::Save()
 	{
 		if(Client::Ref().GetAuthUser().Username != save.GetUserName() && publishedCheckbox->GetChecked())
 		{
-			new ConfirmPrompt("Publish", "This save was created by " + save.GetUserName() + ", you're about to publish this under your own name; If you haven't been given permission by the author to do so, please uncheck the publish box, otherwise continue", new PublishConfirmation(this));
+			new ConfirmPrompt("Publish", "This save was created by " + save.GetUserName().FromUtf8() + ", you're about to publish this under your own name; If you haven't been given permission by the author to do so, please uncheck the publish box, otherwise continue", new PublishConfirmation(this));
 		}
 		else
 		{
@@ -264,8 +264,8 @@ void ServerSaveActivity::AddAuthorInfo()
 	serverSaveInfo["type"] = "save";
 	serverSaveInfo["id"] = save.GetID();
 	serverSaveInfo["username"] = Client::Ref().GetAuthUser().Username;
-	serverSaveInfo["title"] = save.GetName();
-	serverSaveInfo["description"] = save.GetDescription();
+	serverSaveInfo["title"] = save.GetName().ToUtf8();
+	serverSaveInfo["description"] = save.GetDescription().ToUtf8();
 	serverSaveInfo["published"] = (int)save.GetPublished();
 	serverSaveInfo["date"] = (Json::Value::UInt64)time(NULL);
 	Client::Ref().SaveAuthorInfo(&serverSaveInfo);
@@ -300,7 +300,7 @@ void ServerSaveActivity::Exit()
 
 void ServerSaveActivity::ShowPublishingInfo()
 {
-	const char *info =
+	String info =
 		"In The Powder Toy, one can save simulations to their account in two privacy levels: Published and unpublished. You can choose which one by checking or unchecking the 'publish' checkbox. Saves are unpublished by default, so if you do not check publish nobody will be able to see your saves.\n"
 		"\n"
 		"\btPublished saves\bw will appear on the 'By Date' feed and will be seen by many people. These saves also contribute to your Average Score, which is displayed publicly on your profile page on the website. Publish saves that you want people to see so they can comment and vote on.\n"
@@ -317,7 +317,7 @@ void ServerSaveActivity::ShowPublishingInfo()
 
 void ServerSaveActivity::ShowRules()
 {
-	const char *rules =
+	String rules =
 		"These are the rules you should follow when uploading saves to avoid having them deleted or otherwise hidden from public view. If you fail to follow them, don't be surprised if your saves get lousy votes, unpublished, or removed from the front page should they make it there. These rules may change at any time as new problems arise, and how each rule is handled changes depending on the situation.\n"
 		"\n"
 		"\bt1. No image plotting.\bw If you use a program to draw out pixels from an image outside of TPT without drawing it by hand, don't be surprised when the save gets deleted and you get banned.\n"
@@ -343,7 +343,7 @@ void ServerSaveActivity::ShowRules()
 	new InformationMessage("Save Uploading Rules", rules, true);
 }
 
-void ServerSaveActivity::CheckName(std::string newname)
+void ServerSaveActivity::CheckName(String newname)
 {
 	if (newname.length() && newname == save.GetName() && save.GetUserName() == Client::Ref().GetAuthUser().Username)
 		titleLabel->SetText("Modify simulation properties:");

@@ -1,5 +1,5 @@
 #include "Graphics.h"
-#include "font.h"
+#include "Font.h"
 #include "common/tpt-thread.h"
 #ifdef OGLI
 

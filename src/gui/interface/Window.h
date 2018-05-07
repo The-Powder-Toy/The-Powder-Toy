@@ -1,7 +1,7 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
-#include <string>
+#include "common/String.h"
 #include <vector>
 #include "common/tpt-compat.h"
 #include "gui/interface/Point.h"
@@ -52,7 +52,7 @@ namespace ui
 		// Remove a component from window. NOTE: This WILL free component from memory.
 		void RemoveComponent(unsigned idx);
 
-		virtual void ToolTip(ui::Point senderPosition, std::string toolTip) {}
+		virtual void ToolTip(ui::Point senderPosition, String toolTip) {}
 
 		virtual void DoInitialized();
 		virtual void DoExit();

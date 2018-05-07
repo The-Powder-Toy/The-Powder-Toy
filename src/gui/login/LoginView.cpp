@@ -14,7 +14,7 @@ public:
 	LoginAction(LoginView * _v) { v = _v; }
 	void ActionCallback(ui::Button * sender)
 	{
-		v->c->Login(v->usernameField->GetText(), v->passwordField->GetText());
+		v->c->Login(v->usernameField->GetText().ToUtf8(), v->passwordField->GetText().ToUtf8());
 	}
 };
 
@@ -35,7 +35,7 @@ LoginView::LoginView():
 	cancelButton(new ui::Button(ui::Point(0, 87-17), ui::Point(101, 17), "Sign Out")),
 	titleLabel(new ui::Label(ui::Point(4, 5), ui::Point(200-16, 16), "Server login")),
 	infoLabel(new ui::Label(ui::Point(8, 67), ui::Point(200-16, 16), "")),
-	usernameField(new ui::Textbox(ui::Point(8, 25), ui::Point(200-16, 17), Client::Ref().GetAuthUser().Username, "[username]")),
+	usernameField(new ui::Textbox(ui::Point(8, 25), ui::Point(200-16, 17), Client::Ref().GetAuthUser().Username.FromUtf8(), "[username]")),
 	passwordField(new ui::Textbox(ui::Point(8, 46), ui::Point(200-16, 17), "", "[password]")),
 	targetSize(0, 0)
 {

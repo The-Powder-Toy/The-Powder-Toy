@@ -1,4 +1,3 @@
-#include <sstream>
 #include "client/Client.h"
 #include "PreviewController.h"
 #include "PreviewView.h"
@@ -73,7 +72,7 @@ void PreviewController::Update()
 	}
 }
 
-bool PreviewController::SubmitComment(std::string comment)
+bool PreviewController::SubmitComment(String comment)
 {
 	if(comment.length() < 4)
 	{
@@ -123,7 +122,7 @@ void PreviewController::DoOpen()
 	previewModel->SetDoOpen(true);
 }
 
-void PreviewController::Report(std::string message)
+void PreviewController::Report(String message)
 {
 	if(Client::Ref().ReportSave(saveId, message) == RequestOkay)
 	{
@@ -147,16 +146,15 @@ void PreviewController::FavouriteSave()
 		}
 		catch (PreviewModelException & e)
 		{
-			new ErrorMessage("Error", e.what());
+			new ErrorMessage("Error", ByteString(e.what()).FromUtf8());
 		}
 	}
 }
 
 void PreviewController::OpenInBrowser()
 {
-	std::stringstream uriStream;
-	uriStream << "http://" << SERVER << "/Browse/View.html?ID=" << saveId;
-	Platform::OpenURI(uriStream.str());
+	ByteString uri = ByteString::Build("http://", SERVER, "/Browse/View.html?ID=", saveId);
+	Platform::OpenURI(uri);
 }
 
 bool PreviewController::NextCommentPage()

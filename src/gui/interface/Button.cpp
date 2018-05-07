@@ -6,7 +6,7 @@
 
 namespace ui {
 
-Button::Button(Point position, Point size, std::string buttonText, std::string toolTip):
+Button::Button(Point position, Point size, String buttonText, String toolTip):
 	Component(position, size),
 	ButtonText(buttonText),
 	toolTip(toolTip),
@@ -19,14 +19,14 @@ Button::Button(Point position, Point size, std::string buttonText, std::string t
 	TextPosition(ButtonText);
 }
 
-void Button::TextPosition(std::string ButtonText)
+void Button::TextPosition(String ButtonText)
 {
 	buttonDisplayText = ButtonText;
 	if(buttonDisplayText.length())
 	{
-		if(Graphics::textwidth((char *)buttonDisplayText.c_str()) > Size.X - (Appearance.icon? 22 : 0))
+		if(Graphics::textwidth(buttonDisplayText) > Size.X - (Appearance.icon? 22 : 0))
 		{
-			int position = Graphics::textwidthx((char *)buttonDisplayText.c_str(), Size.X - (Appearance.icon? 38 : 22));
+			int position = Graphics::textwidthx(buttonDisplayText, Size.X - (Appearance.icon? 38 : 22));
 			buttonDisplayText = buttonDisplayText.erase(position, buttonDisplayText.length()-position);
 			buttonDisplayText += "...";
 		}
@@ -41,7 +41,7 @@ void Button::SetIcon(Icon icon)
 	TextPosition(ButtonText);
 }
 
-void Button::SetText(std::string buttonText)
+void Button::SetText(String buttonText)
 {
 	ButtonText = buttonText;
 	TextPosition(ButtonText);

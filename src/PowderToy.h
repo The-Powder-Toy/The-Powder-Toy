@@ -1,9 +1,8 @@
 #pragma once
-#include <string>
 
 void EngineProcess();
-void ClipboardPush(std::string text);
-std::string ClipboardPull();
+void ClipboardPush(ByteString text);
+ByteString ClipboardPull();
 int GetModifiers();
 bool LoadWindowPosition(int scale);
 void SetCursorEnabled(int enabled);

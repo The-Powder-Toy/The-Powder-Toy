@@ -2,7 +2,6 @@
 #define ELEMENTSEARCHACTIVITY_H_
 
 #include <vector>
-#include <string>
 #include "Activity.h"
 #include "gui/interface/Window.h"
 #include "gui/interface/Textbox.h"
@@ -18,13 +17,13 @@ class ElementSearchActivity: public WindowActivity
 	std::vector<Tool*> tools;
 	ui::Textbox * searchField;
 	std::vector<ToolButton*> toolButtons;
-	std::string toolTip;
+	String toolTip;
 	int toolTipPresence;
 	bool shiftPressed;
 	bool ctrlPressed;
 	bool altPressed;
 	bool isToolTipFadingIn;
-	void searchTools(std::string query);
+	void searchTools(String query);
 
 public:
 	class ToolAction;
@@ -37,7 +36,7 @@ public:
 	virtual void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
 	virtual void OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt);
 	virtual void OnDraw();
-	virtual void ToolTip(ui::Point senderPosition, std::string ToolTip);
+	virtual void ToolTip(ui::Point senderPosition, String ToolTip);
 };
 
 #endif /* ELEMENTSEARCHACTIVITY_H_ */

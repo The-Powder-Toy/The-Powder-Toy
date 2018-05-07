@@ -67,6 +67,7 @@ AddSconsOption('static', False, False, "Compile statically.")
 AddSconsOption('opengl', False, False, "Build with OpenGL interface support.")
 AddSconsOption('opengl-renderer', False, False, "Build with OpenGL renderer support (turns on --opengl).") #Note: this has nothing to do with --renderer, only tells the game to render particles with opengl
 AddSconsOption('renderer', False, False, "Build the save renderer.")
+AddSconsOption('font', False, False, "Build the font editor.")
 
 AddSconsOption('wall', False, False, "Error on all warnings.")
 AddSconsOption('no-warnings', False, False, "Disable all compiler warnings.")
@@ -266,7 +267,7 @@ def findLibs(env, conf):
 		else:
 			FatalError("SDL.h not found")
 
-	if not GetOption('nolua') and not GetOption('renderer'):
+	if not GetOption('nolua') and not GetOption('renderer') and not GetOption('font'):
 		#Look for Lua
 		if platform == "FreeBSD":
 			luaver = "lua-5.1"
@@ -494,7 +495,7 @@ if GetOption('static'):
 #Add other flags and defines
 if not GetOption('nofft'):
 	env.Append(CPPDEFINES=['GRAVFFT'])
-if not GetOption('nolua') and not GetOption('renderer'):
+if not GetOption('nolua') and not GetOption('renderer') and not GetOption('font'):
 	env.Append(CPPDEFINES=['LUACONSOLE'])
 
 if GetOption('opengl') or GetOption('opengl-renderer'):
@@ -506,6 +507,9 @@ if GetOption('renderer'):
 	env.Append(CPPDEFINES=['RENDERER'])
 else:
 	env.Append(CPPDEFINES=['USE_SDL'])
+
+if GetOption('font'):
+	env.Append(CPPDEFINES=['FONTEDITOR'])
 
 if GetOption("wall"):
 	if msvc:
@@ -540,7 +544,7 @@ if GetOption('beta'):
 
 #Generate list of sources to compile
 sources = Glob("src/*.cpp") + Glob("src/*/*.cpp") + Glob("src/*/*/*.cpp") + Glob("generated/*.cpp")
-if not GetOption('nolua') and not GetOption('renderer'):
+if not GetOption('nolua') and not GetOption('renderer') and not GetOption('font'):
 	sources += Glob("src/lua/socket/*.c") + Glob("src/lua/LuaCompat.c")
 
 if platform == "Windows":
@@ -559,7 +563,11 @@ elif platform == "Darwin":
 if GetOption('output'):
 	programName = GetOption('output')
 else:
-	programName = GetOption('renderer') and "render" or "powder"
+	programName = "powder"
+	if GetOption('renderer'):
+		programName = "render"
+	if GetOption('font'):
+		programName = "font"
 	if "BIT" in env and env["BIT"] == 64:
 		programName += "64"
 	if isX86 and GetOption('no-sse'):

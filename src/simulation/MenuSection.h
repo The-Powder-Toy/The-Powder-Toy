@@ -3,8 +3,8 @@
 
 struct menu_section
 {
-	const char *icon;
-	const char *name;
+	String::value_type icon;
+	String name;
 	int itemcount;
 	int doshow;
 };

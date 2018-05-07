@@ -28,10 +28,10 @@ ColourPickerActivity::ColourPickerActivity(ui::Colour initialColour, ColourPicke
 		void TextChangedCallback(ui::Textbox * sender)
 		{
 			int r, g, b, alpha;
-			r = format::StringToNumber<int>(a->rValue->GetText());
-			g = format::StringToNumber<int>(a->gValue->GetText());
-			b = format::StringToNumber<int>(a->bValue->GetText());
-			alpha = format::StringToNumber<int>(a->aValue->GetText());
+			r = a->rValue->GetText().ToNumber<int>(true);
+			g = a->gValue->GetText().ToNumber<int>(true);
+			b = a->bValue->GetText().ToNumber<int>(true);
+			alpha = a->aValue->GetText().ToNumber<int>(true);
 			if (r > 255)
 				r = 255;
 			if (g > 255)
@@ -82,9 +82,9 @@ ColourPickerActivity::ColourPickerActivity(ui::Colour initialColour, ColourPicke
 		void ActionCallback(ui::Button * sender)
 		{
 			int Red, Green, Blue;
-			Red = format::StringToNumber<int>(a->rValue->GetText());
-			Green = format::StringToNumber<int>(a->gValue->GetText());
-			Blue = format::StringToNumber<int>(a->bValue->GetText());
+			Red = a->rValue->GetText().ToNumber<int>(true);
+			Green = a->gValue->GetText().ToNumber<int>(true);
+			Blue = a->bValue->GetText().ToNumber<int>(true);
 			ui::Colour col(Red, Green, Blue, a->currentAlpha);
 			if(a->callback)
 				a->callback->ColourPicked(col);
@@ -104,13 +104,11 @@ ColourPickerActivity::ColourPickerActivity(ui::Colour initialColour, ColourPicke
 
 void ColourPickerActivity::UpdateTextboxes(int r, int g, int b, int a)
 {
-	rValue->SetText(format::NumberToString<int>(r));
-	gValue->SetText(format::NumberToString<int>(g));
-	bValue->SetText(format::NumberToString<int>(b));
-	aValue->SetText(format::NumberToString<int>(a));
-	std::stringstream hex;
-	hex << std::hex << "0x" << std::setfill('0') << std::setw(2) << std::uppercase << a << std::setw(2) << r << std::setw(2) << g << std::setw(2) << b;
-	hexValue->SetText(hex.str());
+	rValue->SetText(String::Build(r));
+	gValue->SetText(String::Build(g));
+	bValue->SetText(String::Build(b));
+	aValue->SetText(String::Build(a));
+	hexValue->SetText(String::Build(Format::Hex(), Format::Uppercase(), Format::Width(2), a, r, g, b));
 }
 void ColourPickerActivity::OnTryExit(ExitMethod method)
 {

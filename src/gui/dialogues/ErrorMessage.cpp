@@ -5,7 +5,7 @@
 #include "gui/interface/Label.h"
 #include "PowderToy.h"
 
-ErrorMessage::ErrorMessage(std::string title, std::string message,  ErrorMessageCallback * callback_):
+ErrorMessage::ErrorMessage(String title, String message,  ErrorMessageCallback * callback_):
 	ui::Window(ui::Point(-1, -1), ui::Point(200, 35)),
 	callback(callback_)
 {
@@ -50,7 +50,7 @@ ErrorMessage::ErrorMessage(std::string title, std::string message,  ErrorMessage
 	MakeActiveWindow();
 }
 
-void ErrorMessage::Blocking(std::string title, std::string message)
+void ErrorMessage::Blocking(String title, String message)
 {
 	class BlockingDismissCallback: public ErrorMessageCallback {
 	public:

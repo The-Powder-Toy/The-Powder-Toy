@@ -1,7 +1,7 @@
 #ifndef AVATARBUTTON_H_
 #define AVATARBUTTON_H_
 
-#include <string>
+#include "common/String.h"
 
 #include "Component.h"
 #include "graphics/Graphics.h"
@@ -21,10 +21,10 @@ public:
 class AvatarButton : public Component, public RequestListener
 {
 	VideoBuffer * avatar;
-	std::string name;
+	ByteString name;
 	bool tried;
 public:
-	AvatarButton(Point position, Point size, std::string username);
+	AvatarButton(Point position, Point size, ByteString username);
 	virtual ~AvatarButton();
 
 	virtual void OnMouseClick(int x, int y, unsigned int button);
@@ -42,8 +42,8 @@ public:
 
 	virtual void DoAction();
 
-	void SetUsername(std::string username) { name = username; }
-	std::string GetUsername() { return name; }
+	void SetUsername(ByteString username) { name = username; }
+	ByteString GetUsername() { return name; }
 	void SetActionCallback(AvatarButtonAction * action);
 protected:
 	bool isMouseInside, isButtonDown;

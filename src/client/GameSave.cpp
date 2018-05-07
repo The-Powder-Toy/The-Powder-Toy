@@ -1,6 +1,5 @@
 #include "common/tpt-minmax.h"
 #include <iostream>
-#include <sstream>
 #include <cmath>
 #include <climits>
 #include <memory>
@@ -630,10 +629,10 @@ void GameSave::readOPS(char * data, int dataLength)
 	int bz2ret;
 	if ((bz2ret = BZ2_bzBuffToBuffDecompress((char*)bsonData, &bsonDataLen, (char*)(inputData+12), inputDataLen-12, 0, 0)) != BZ_OK)
 	{
-		throw ParseException(ParseException::Corrupt, "Unable to decompress (ret " + format::NumberToString<int>(bz2ret) + ")");
+		throw ParseException(ParseException::Corrupt, String::Build("Unable to decompress (ret ", bz2ret, ")"));
 	}
 
-	set_bson_err_handler([](const char* err) { throw ParseException(ParseException::Corrupt, "BSON error when parsing save: " + std::string(err)); });
+	set_bson_err_handler([](const char* err) { throw ParseException(ParseException::Corrupt, "BSON error when parsing save: " + ByteString(err).FromUtf8()); });
 	bson_init_data_size(&b, (char*)bsonData, bsonDataLen);
 	bson_iterator_init(&iter, &b);
 
@@ -679,7 +678,7 @@ void GameSave::readOPS(char * data, int dataLength)
 							{
 								if (!strcmp(bson_iterator_key(&signiter), "text") && bson_iterator_type(&signiter) == BSON_STRING)
 								{
-									tempSign.text = format::CleanString(bson_iterator_string(&signiter), true, true, true).substr(0, 45);
+									tempSign.text = format::CleanString(ByteString(bson_iterator_string(&signiter)).FromUtf8(), true, true, true).Substr(0, 45);
 								}
 								else if (!strcmp(bson_iterator_key(&signiter), "justification") && bson_iterator_type(&signiter) == BSON_INT)
 								{
@@ -764,7 +763,7 @@ void GameSave::readOPS(char * data, int dataLength)
 				{
 					if (bson_iterator_type(&subiter) == BSON_INT)
 					{
-						std::string id = std::string(bson_iterator_key(&subiter));
+						ByteString id = bson_iterator_key(&subiter);
 						int num = bson_iterator_int(&subiter);
 						palette.push_back(PaletteItem(id, num));
 					}
@@ -806,13 +805,12 @@ void GameSave::readOPS(char * data, int dataLength)
 				if (major > SAVE_VERSION || (major == SAVE_VERSION && minor > MINOR_VERSION))
 #endif
 				{
-					std::stringstream errorMessage;
 #ifdef RENDERER
-					errorMessage << "Save from a newer version: Requires render version " << renderMajor << "." << renderMinor;
+					String errorMessage = String::Build("Save from a newer version: Requires render version ", renderMajor, ".", renderMinor);
 #else
-					errorMessage << "Save from a newer version: Requires version " << major << "." << minor;
+					String errorMessage = String::Build("Save from a newer version: Requires version ", major, ".", minor);
 #endif
-					throw ParseException(ParseException::WrongVersion, errorMessage.str());
+					throw ParseException(ParseException::WrongVersion, errorMessage);
 				}
 #if defined(SNAPSHOT) || defined(DEBUG)
 				else if (major > SAVE_VERSION || (major == SAVE_VERSION && minor > MINOR_VERSION))
@@ -1333,18 +1331,8 @@ void GameSave::readPSv(char * saveDataChar, int dataLength)
 	sign tempSign("", 0, 0, sign::Left);
 
 	//Gol data used to read older saves
-	int goltype[NGOL];
-	int grule[NGOL+1][10];
-
-	int golRulesCount;
-	int * golRulesT = LoadGOLRules(golRulesCount);
-	memcpy(grule, golRulesT, sizeof(int) * (golRulesCount*10));
-	free(golRulesT);
-
-	int golTypesCount;
-	int * golTypesT = LoadGOLTypes(golTypesCount);
-	memcpy(goltype, golTypesT, sizeof(int) * (golTypesCount));
-	free(golTypesT);
+	std::vector<int> goltype = LoadGOLTypes();
+	std::vector<std::array<int, 10> > grule = LoadGOLRules();
 
 	std::vector<Element> elements = GetElements();
 
@@ -1418,11 +1406,7 @@ void GameSave::readPSv(char * saveDataChar, int dataLength)
 
 	int bzStatus = 0;
 	if ((bzStatus = BZ2_bzBuffToBuffDecompress((char *)data, (unsigned *)&size, (char *)(saveData+12), dataLength-12, 0, 0)))
-	{
-		std::stringstream bzStatusStr;
-		bzStatusStr << bzStatus;
-		throw ParseException(ParseException::Corrupt, "Cannot decompress: " + bzStatusStr.str());
-	}
+		throw ParseException(ParseException::Corrupt, String::Build("Cannot decompress: ", bzStatus));
 	dataLength = size;
 
 #ifdef DEBUG
@@ -1963,7 +1947,7 @@ void GameSave::readPSv(char * saveDataChar, int dataLength)
 			x = 254;
 		memcpy(tempSignText, data+p, x);
 		tempSignText[x] = 0;
-		tempSign.text = format::CleanString(tempSignText, true, true, true).substr(0, 45);
+		tempSign.text = format::CleanString(ByteString(tempSignText).FromUtf8(), true, true, true).Substr(0, 45);
 		tempSigns.push_back(tempSign);
 		p += x;
 	}
@@ -2399,7 +2383,7 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 	// Use unique_ptr with a custom deleter to ensure that bson_destroy is called even when an exception is thrown
 	std::unique_ptr<bson, decltype(bson_deleter)> b_ptr(&b, bson_deleter);
 
-	set_bson_err_handler([](const char* err) { throw BuildException("BSON error when parsing save: " + std::string(err)); });
+	set_bson_err_handler([](const char* err) { throw BuildException("BSON error when parsing save: " + ByteString(err).FromUtf8()); });
 	bson_init(&b);
 	bson_append_start_object(&b, "origin");
 	bson_append_int(&b, "majorVersion", SAVE_VERSION);
@@ -2504,7 +2488,7 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 			if(signs[i].text.length() && signs[i].x>=0 && signs[i].x<=fullW && signs[i].y>=0 && signs[i].y<=fullH)
 			{
 				bson_append_start_object(&b, "sign");
-				bson_append_string(&b, "text", signs[i].text.c_str());
+				bson_append_string(&b, "text", signs[i].text.ToUtf8().c_str());
 				bson_append_int(&b, "justification", signs[i].ju);
 				bson_append_int(&b, "x", signs[i].x);
 				bson_append_int(&b, "y", signs[i].y);
@@ -2526,7 +2510,7 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 	unsigned int finalDataLen = bson_size(&b);
 	auto outputData = std::unique_ptr<unsigned char[]>(new unsigned char[finalDataLen*2+12]);
 	if (!outputData)
-		throw BuildException("Save error, out of memory (finalData): " + format::NumberToString<unsigned int>(finalDataLen*2+12));
+		throw BuildException(String::Build("Save error, out of memory (finalData): ", finalDataLen*2+12));
 
 	outputData[0] = 'O';
 	outputData[1] = 'P';
@@ -2544,7 +2528,7 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 	unsigned int compressedSize = finalDataLen*2, bz2ret;
 	if ((bz2ret = BZ2_bzBuffToBuffCompress((char*)(outputData.get()+12), &compressedSize, (char*)finalData, bson_size(&b), 9, 0, 0)) != BZ_OK)
 	{
-		throw BuildException("Save error, could not compress (ret " + format::NumberToString<int>(bz2ret) + ")");
+		throw BuildException(String::Build("Save error, could not compress (ret ", bz2ret, ")"));
 	}
 
 #ifdef DEBUG
@@ -2563,7 +2547,7 @@ void GameSave::ConvertBsonToJson(bson_iterator *iter, Json::Value *j, int depth)
 	bson_iterator_subiterator(iter, &subiter);
 	while (bson_iterator_next(&subiter))
 	{
-		std::string key = bson_iterator_key(&subiter);
+		ByteString key = bson_iterator_key(&subiter);
 		if (bson_iterator_type(&subiter) == BSON_STRING)
 			(*j)[key] = bson_iterator_string(&subiter);
 		else if (bson_iterator_type(&subiter) == BSON_BOOL)
@@ -2604,7 +2588,7 @@ std::set<int> GetNestedSaveIDs(Json::Value j)
 	std::set<int> saveIDs = std::set<int>();
 	for (Json::Value::Members::iterator iter = members.begin(), end = members.end(); iter != end; ++iter)
 	{
-		std::string member = *iter;
+		ByteString member = *iter;
 		if (member == "id" && j[member].isInt())
 			saveIDs.insert(j[member].asInt());
 		else if (j[member].isArray())
@@ -2633,7 +2617,7 @@ void GameSave::ConvertJsonToBson(bson *b, Json::Value j, int depth)
 	Json::Value::Members members = j.getMemberNames();
 	for (Json::Value::Members::iterator iter = members.begin(), end = members.end(); iter != end; ++iter)
 	{
-		std::string member = *iter;
+		ByteString member = *iter;
 		if (j[member].isString())
 			bson_append_string(b, member.c_str(), j[member].asCString());
 		else if (j[member].isBool())

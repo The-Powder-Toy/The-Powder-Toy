@@ -1,7 +1,7 @@
 #ifndef SIGN_H_
 #define SIGN_H_
 
-#include <string>
+#include "common/String.h"
 
 class Simulation;
 
@@ -9,15 +9,15 @@ class sign
 {
 public:
 	enum Justification { Left = 0, Middle = 1, Right = 2, None = 3 };
-	sign(std::string text_, int x_, int y_, Justification justification_);
+	sign(String text_, int x_, int y_, Justification justification_);
 	int x, y;
 	Justification ju;
-	std::string text;
+	String text;
 
-	std::string getText(Simulation *sim);
-	void pos(std::string signText, int & x0, int & y0, int & w, int & h);
+	String getText(Simulation *sim);
+	void pos(String signText, int & x0, int & y0, int & w, int & h);
 
-	static int splitsign(std::string str, char * type = NULL);
+	static int splitsign(String str, String::value_type *type = NULL);
 };
 
 #endif

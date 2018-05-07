@@ -10,7 +10,7 @@ extern Renderer * luacon_ren;
 
 extern bool *luacon_currentCommand;
 extern int luaL_tostring(lua_State* l, int n);
-extern std::string *luacon_lastError;
+extern String *luacon_lastError;
 
 extern int *lua_el_func, *lua_el_mode, *lua_gr_func;
 
@@ -25,7 +25,7 @@ int luacon_step(int mx, int my);
 int luacon_mouseevent(int mx, int my, int mb, int event, int mouse_wheel);
 int luacon_keyevent(int key, Uint16 character, int modifier, int event);
 int luacon_eval(const char *command);
-const char *luacon_geterror();
+String luacon_geterror();
 void luacon_close();
 int luacon_partsread(lua_State* l);
 int luacon_partswrite(lua_State* l);

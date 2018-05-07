@@ -7,7 +7,7 @@
 #include <SDL/SDL.h>
 
 #define CELLW	12
-#define CELLH	10
+#define CELLH	12
 
 #define XRES	800
 #define YRES	600

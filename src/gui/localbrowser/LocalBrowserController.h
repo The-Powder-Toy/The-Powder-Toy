@@ -19,7 +19,7 @@ public:
 	void RemoveSelected();
 	void removeSelectedC();
 	void ClearSelection();
-	void Selected(std::string stampID, bool selected);
+	void Selected(ByteString stampID, bool selected);
 	void RescanStamps();
 	void rescanStampsC();
 	void RefreshSavesList();

@@ -15,7 +15,7 @@ LoginController::LoginController(ControllerCallback * callback):
 
 }
 
-void LoginController::Login(string username, string password)
+void LoginController::Login(ByteString username, ByteString password)
 {
 	loginModel->Login(username, password);
 }

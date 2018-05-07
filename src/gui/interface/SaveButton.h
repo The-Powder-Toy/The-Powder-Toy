@@ -1,7 +1,7 @@
 #ifndef SAVEBUTTON_H_
 #define SAVEBUTTON_H_
 
-#include <string>
+#include "common/String.h"
 
 #include "Component.h"
 #include "client/SaveFile.h"
@@ -28,10 +28,10 @@ class SaveButton : public Component, public RequestListener
 	SaveFile * file;
 	SaveInfo * save;
 	VideoBuffer * thumbnail;
-	std::string name;
-	std::string votesString;
-	std::string votesBackground;
-	std::string votesBackground2;
+	String name;
+	String votesString;
+	String votesBackground;
+	String votesBackground2;
 	int voteBarHeightUp;
 	int voteBarHeightDown;
 	bool wantsDraw;

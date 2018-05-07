@@ -6,7 +6,7 @@
 #include "gui/interface/ScrollPanel.h"
 #include "PowderToy.h"
 
-ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, ConfirmDialogueCallback * callback_):
+ConfirmPrompt::ConfirmPrompt(String title, String message, ConfirmDialogueCallback * callback_):
 	ui::Window(ui::Point(-1, -1), ui::Point(250, 35)),
 	callback(callback_)
 {
@@ -68,7 +68,7 @@ ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, ConfirmDial
 	MakeActiveWindow();
 }
 
-ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, std::string buttonText, ConfirmDialogueCallback * callback_):
+ConfirmPrompt::ConfirmPrompt(String title, String message, String buttonText, ConfirmDialogueCallback * callback_):
 	ui::Window(ui::Point(-1, -1), ui::Point(250, 50)),
 	callback(callback_)
 {
@@ -130,7 +130,7 @@ ConfirmPrompt::ConfirmPrompt(std::string title, std::string message, std::string
 	MakeActiveWindow();
 }
 
-bool ConfirmPrompt::Blocking(std::string title, std::string message, std::string buttonText)
+bool ConfirmPrompt::Blocking(String title, String message, String buttonText)
 {
 	class BlockingPromptCallback: public ConfirmDialogueCallback {
 	public:

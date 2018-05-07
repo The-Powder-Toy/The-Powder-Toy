@@ -21,7 +21,7 @@ public:
 	}
 };
 
-TextPrompt::TextPrompt(std::string title, std::string message, std::string text, std::string placeholder, bool multiline, TextDialogueCallback * callback_):
+TextPrompt::TextPrompt(String title, String message, String text, String placeholder, bool multiline, TextDialogueCallback * callback_):
 	ui::Window(ui::Point(-1, -1), ui::Point(200, 65)),
 	callback(callback_)
 {
@@ -77,15 +77,15 @@ TextPrompt::TextPrompt(std::string title, std::string message, std::string text,
 	MakeActiveWindow();
 }
 
-std::string TextPrompt::Blocking(std::string title, std::string message, std::string text, std::string placeholder, bool multiline)
+String TextPrompt::Blocking(String title, String message, String text, String placeholder, bool multiline)
 {
-	std::string returnString = "";
+	String returnString = "";
 
 	class BlockingTextCallback: public TextDialogueCallback {
-		std::string & outputString;
+		String & outputString;
 	public:
-		BlockingTextCallback(std::string & output) : outputString(output) {}
-		virtual void TextCallback(TextPrompt::DialogueResult result, std::string resultText) {
+		BlockingTextCallback(String & output) : outputString(output) {}
+		virtual void TextCallback(TextPrompt::DialogueResult result, String resultText) {
 			if(result == ResultOkay)
 				outputString = resultText;
 			else

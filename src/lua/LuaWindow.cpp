@@ -208,7 +208,7 @@ void LuaWindow::triggerOnInitialized()
 		lua_rawgeti(l, LUA_REGISTRYINDEX, onInitializedFunction);
 		if(lua_pcall(l, 0, 0, 0))
 		{
-			ci->Log(CommandInterface::LogError, lua_tostring(l, -1));
+			ci->Log(CommandInterface::LogError, ByteString(lua_tostring(l, -1)).FromUtf8());
 		}
 	}
 }
@@ -220,7 +220,7 @@ void LuaWindow::triggerOnExit()
 		lua_rawgeti(l, LUA_REGISTRYINDEX, onExitFunction);
 		if(lua_pcall(l, 0, 0, 0))
 		{
-			ci->Log(CommandInterface::LogError, lua_tostring(l, -1));
+			ci->Log(CommandInterface::LogError, ByteString(lua_tostring(l, -1)).FromUtf8());
 		}
 	}
 }
@@ -233,7 +233,7 @@ void LuaWindow::triggerOnTick(float dt)
 		lua_pushnumber(l, dt);
 		if(lua_pcall(l, 1, 0, 0))
 		{
-			ci->Log(CommandInterface::LogError, lua_tostring(l, -1));
+			ci->Log(CommandInterface::LogError, ByteString(lua_tostring(l, -1)).FromUtf8());
 		}
 	}
 }
@@ -245,7 +245,7 @@ void LuaWindow::triggerOnDraw()
 		lua_rawgeti(l, LUA_REGISTRYINDEX, onDrawFunction);
 		if(lua_pcall(l, 0, 0, 0))
 		{
-			ci->Log(CommandInterface::LogError, lua_tostring(l, -1));
+			ci->Log(CommandInterface::LogError, ByteString(lua_tostring(l, -1)).FromUtf8());
 		}
 	}
 }
@@ -257,7 +257,7 @@ void LuaWindow::triggerOnFocus()
 		lua_rawgeti(l, LUA_REGISTRYINDEX, onFocusFunction);
 		if(lua_pcall(l, 0, 0, 0))
 		{
-			ci->Log(CommandInterface::LogError, lua_tostring(l, -1));
+			ci->Log(CommandInterface::LogError, ByteString(lua_tostring(l, -1)).FromUtf8());
 		}
 	}
 }
@@ -269,7 +269,7 @@ void LuaWindow::triggerOnBlur()
 		lua_rawgeti(l, LUA_REGISTRYINDEX, onBlurFunction);
 		if(lua_pcall(l, 0, 0, 0))
 		{
-			ci->Log(CommandInterface::LogError, lua_tostring(l, -1));
+			ci->Log(CommandInterface::LogError, ByteString(lua_tostring(l, -1)).FromUtf8());
 		}
 	}
 }
@@ -281,7 +281,7 @@ void LuaWindow::triggerOnTryExit()
 		lua_rawgeti(l, LUA_REGISTRYINDEX, onTryExitFunction);
 		if(lua_pcall(l, 0, 0, 0))
 		{
-			ci->Log(CommandInterface::LogError, lua_tostring(l, -1));
+			ci->Log(CommandInterface::LogError, ByteString(lua_tostring(l, -1)).FromUtf8());
 		}
 	}
 }
@@ -293,7 +293,7 @@ void LuaWindow::triggerOnTryOkay()
 		lua_rawgeti(l, LUA_REGISTRYINDEX, onTryOkayFunction);
 		if(lua_pcall(l, 0, 0, 0))
 		{
-			ci->Log(CommandInterface::LogError, lua_tostring(l, -1));
+			ci->Log(CommandInterface::LogError, ByteString(lua_tostring(l, -1)).FromUtf8());
 		}
 	}
 }
@@ -309,7 +309,7 @@ void LuaWindow::triggerOnMouseMove(int x, int y, int dx, int dy)
 		lua_pushinteger(l, dy);
 		if(lua_pcall(l, 4, 0, 0))
 		{
-			ci->Log(CommandInterface::LogError, lua_tostring(l, -1));
+			ci->Log(CommandInterface::LogError, ByteString(lua_tostring(l, -1)).FromUtf8());
 		}
 	}
 }
@@ -324,7 +324,7 @@ void LuaWindow::triggerOnMouseDown(int x, int y, unsigned button)
 		lua_pushinteger(l, button);
 		if(lua_pcall(l, 3, 0, 0))
 		{
-			ci->Log(CommandInterface::LogError, lua_tostring(l, -1));
+			ci->Log(CommandInterface::LogError, ByteString(lua_tostring(l, -1)).FromUtf8());
 		}
 	}
 }
@@ -339,7 +339,7 @@ void LuaWindow::triggerOnMouseUp(int x, int y, unsigned button)
 		lua_pushinteger(l, button);
 		if(lua_pcall(l, 3, 0, 0))
 		{
-			ci->Log(CommandInterface::LogError, lua_tostring(l, -1));
+			ci->Log(CommandInterface::LogError, ByteString(lua_tostring(l, -1)).FromUtf8());
 		}
 	}
 }
@@ -354,7 +354,7 @@ void LuaWindow::triggerOnMouseWheel(int x, int y, int d)
 		lua_pushinteger(l, d);
 		if(lua_pcall(l, 3, 0, 0))
 		{
-			ci->Log(CommandInterface::LogError, lua_tostring(l, -1));
+			ci->Log(CommandInterface::LogError, ByteString(lua_tostring(l, -1)).FromUtf8());
 		}
 	}
 }
@@ -371,7 +371,7 @@ void LuaWindow::triggerOnKeyPress(int key, Uint16 character, bool shift, bool ct
 		lua_pushboolean(l, alt);
 		if(lua_pcall(l, 5, 0, 0))
 		{
-			ci->Log(CommandInterface::LogError, lua_tostring(l, -1));
+			ci->Log(CommandInterface::LogError, ByteString(lua_tostring(l, -1)).FromUtf8());
 		}
 	}
 }
@@ -388,7 +388,7 @@ void LuaWindow::triggerOnKeyRelease(int key, Uint16 character, bool shift, bool 
 		lua_pushboolean(l, alt);
 		if(lua_pcall(l, 5, 0, 0))
 		{
-			ci->Log(CommandInterface::LogError, lua_tostring(l, -1));
+			ci->Log(CommandInterface::LogError, ByteString(lua_tostring(l, -1)).FromUtf8());
 		}
 	}
 }

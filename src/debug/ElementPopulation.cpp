@@ -18,8 +18,8 @@ void ElementPopulationDebug::Draw()
 	int yBottom = YRES-10;
 	int xStart = 10;
 
-	std::string maxValString;
-	std::string halfValString;
+	String maxValString;
+	String halfValString;
 
 
 	float maxVal = 255;
@@ -37,11 +37,11 @@ void ElementPopulationDebug::Draw()
 	maxAverage = (maxAverage*(1.0f-0.015f)) + (0.015f*maxVal);
 	scale = 255.0f/maxAverage;
 
-	maxValString = format::NumberToString<int>(maxAverage);
-	halfValString = format::NumberToString<int>(maxAverage/2);
+	maxValString = String::Build(maxAverage);
+	halfValString = String::Build(maxAverage/2);
 
 
-	g->fillrect(xStart-5, yBottom - 263, bars+10+Graphics::textwidth(maxValString.c_str())+10, 255 + 13, 0, 0, 0, 180);
+	g->fillrect(xStart-5, yBottom - 263, bars+10+Graphics::textwidth(maxValString)+10, 255 + 13, 0, 0, 0, 180);
 
 	bars = 0;
 	for(int i = 0; i < PT_NUM; i++)

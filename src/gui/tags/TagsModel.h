@@ -2,7 +2,7 @@
 #define TAGSMODEL_H_
 
 #include <vector>
-#include <string>
+#include "common/String.h"
 
 class SaveInfo;
 
@@ -15,8 +15,8 @@ public:
 	TagsModel();
 	void AddObserver(TagsView * observer);
 	void SetSave(SaveInfo * save);
-	void RemoveTag(std::string tag);
-	void AddTag(std::string tag);
+	void RemoveTag(ByteString tag);
+	void AddTag(ByteString tag);
 	SaveInfo * GetSave();
 	virtual ~TagsModel();
 };

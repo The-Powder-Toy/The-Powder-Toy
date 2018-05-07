@@ -13,11 +13,11 @@ ConsoleController::ConsoleController(ControllerCallback * callback, CommandInter
 	this->commandInterface = commandInterface;
 }
 
-void ConsoleController::EvaluateCommand(std::string command)
+void ConsoleController::EvaluateCommand(String command)
 {
 	if(command.length())
 	{
-		if (command.substr(0, 6) == "!load ")
+		if (command.BeginsWith("!load "))
 			CloseConsole();
 		int returnCode = commandInterface->Command(command);
 		consoleModel->AddLastCommand(ConsoleCommand(command, returnCode, commandInterface->GetLastError()));
@@ -31,7 +31,7 @@ void ConsoleController::CloseConsole()
 	consoleView->CloseActiveWindow();
 }
 
-std::string ConsoleController::FormatCommand(std::string command)
+String ConsoleController::FormatCommand(String command)
 {
 	return commandInterface->FormatCommand(command);
 }

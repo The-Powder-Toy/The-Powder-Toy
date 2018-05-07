@@ -4,8 +4,8 @@
 #include "gui/interface/Mouse.h"
 #include "Favorite.h"
 
-ToolButton::ToolButton(ui::Point position, ui::Point size, std::string text_, std::string toolIdentifier, std::string toolTip):
-	ui::Button(position, size, text_, toolTip),
+ToolButton::ToolButton(ui::Point position, ui::Point size, ByteString text_, ByteString toolIdentifier, String toolTip):
+	ui::Button(position, size, text_.FromAscii(), toolTip),
 	toolIdentifier(toolIdentifier)
 {
 	SetSelectionState(-1);
@@ -13,7 +13,7 @@ ToolButton::ToolButton(ui::Point position, ui::Point size, std::string text_, st
 	Appearance.BorderFavorite = ui::Colour(255, 255, 0);
 
 	//don't use "..." on elements that have long names
-	buttonDisplayText = ButtonText.substr(0, 7);
+	buttonDisplayText = ButtonText.Substr(0, 7);
 	Component::TextPosition(buttonDisplayText);
 }
 
@@ -67,7 +67,7 @@ void ToolButton::Draw(const ui::Point& screenPos)
 	}
 	if (Favorite::Ref().IsFavorite(toolIdentifier))
 	{
-		g->drawtext(screenPos.X, screenPos.Y, "\xE8", Appearance.BorderFavorite.Red, Appearance.BorderFavorite.Green, Appearance.BorderFavorite.Blue, Appearance.BorderFavorite.Alpha);
+		g->drawtext(screenPos.X, screenPos.Y, 0xE068, Appearance.BorderFavorite.Red, Appearance.BorderFavorite.Green, Appearance.BorderFavorite.Blue, Appearance.BorderFavorite.Alpha);
 	}
 
 	if (totalColour<544)

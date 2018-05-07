@@ -10,7 +10,7 @@
 #include "client/HTTP.h"
 #include "APIResultParser.h"
 
-WebRequest::WebRequest(std::string url, ListenerHandle listener, int identifier):
+WebRequest::WebRequest(ByteString url, ListenerHandle listener, int identifier):
 	RequestBroker::Request(API, listener, identifier)
 {
 	Post = false;
@@ -18,7 +18,7 @@ WebRequest::WebRequest(std::string url, ListenerHandle listener, int identifier)
 	URL = url;
 }
 
-WebRequest::WebRequest(std::string url, std::map<std::string, std::string> postData, ListenerHandle listener, int identifier):
+WebRequest::WebRequest(ByteString url, std::map<ByteString, ByteString> postData, ListenerHandle listener, int identifier):
 	RequestBroker::Request(API, listener, identifier)
 {
 	Post = true;
@@ -81,11 +81,11 @@ RequestBroker::ProcessResponse WebRequest::Process(RequestBroker & rb)
 			int * postLength = new int[PostData.size()];
 
 			int i = 0;
-			std::map<std::string, std::string>::iterator iter = PostData.begin();
+			std::map<ByteString, ByteString>::iterator iter = PostData.begin();
 			while(iter != PostData.end())
 			{
-				std::string name = iter->first;
-				std::string data = iter->second;
+				ByteString name = iter->first;
+				ByteString data = iter->second;
 				char * cName = new char[name.length() + 1];
 				char * cData = new char[data.length() + 1];
 				std::strcpy(cName, name.c_str());
@@ -106,7 +106,7 @@ RequestBroker::ProcessResponse WebRequest::Process(RequestBroker & rb)
 				User user = Client::Ref().GetAuthUser();
 				char userName[12];
 				char *userSession = new char[user.SessionID.length() + 1];
-				std::strcpy(userName, format::NumberToString<int>(user.UserID).c_str());
+				std::strcpy(userName, ByteString::Build(user.UserID).c_str());
 				std::strcpy(userSession, user.SessionID.c_str());
 				HTTPContext = http_multipart_post_async((char*)URL.c_str(), postNames, postData, postLength, userName, NULL, userSession);
 				delete[] userSession;
@@ -125,7 +125,7 @@ RequestBroker::ProcessResponse WebRequest::Process(RequestBroker & rb)
 				User user = Client::Ref().GetAuthUser();
 				char userName[12];
 				char *userSession = new char[user.SessionID.length() + 1];
-				std::strcpy(userName, format::NumberToString<int>(user.UserID).c_str());
+				std::strcpy(userName, ByteString::Build(user.UserID).c_str());
 				std::strcpy(userSession, user.SessionID.c_str());
 				http_auth_headers(HTTPContext, userName, NULL, userSession);
 				delete[] userSession;
