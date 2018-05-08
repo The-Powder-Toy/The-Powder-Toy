@@ -1,19 +1,18 @@
-#ifndef SHADERS_H_
-#define SHADERS_H_
+#pragma once
 
-const char * fireFragment = "#version 120\n\
+const char *const fireFragment = "#version 120\n\
 uniform sampler2D fireAlpha;\
 void main () {\
 	vec4 texColor = texture2D(fireAlpha, gl_PointCoord);\
 	gl_FragColor = vec4(gl_Color.rgb, texColor.a*gl_Color.a);\
 }";
-const char * fireVertex = "#version 120\n\
+const char *const fireVertex = "#version 120\n\
 void main(void)\
 {\
    gl_Position = ftransform();;\
    gl_FrontColor = gl_Color;\
 }";
-const char * lensFragment = "#version 120\n\
+const char *const lensFragment = "#version 120\n\
 uniform sampler2D pTex;\
 uniform sampler2D tfX;\
 uniform sampler2D tfY;\
@@ -32,14 +31,14 @@ void main () {\
 	);\
 	gl_FragColor = texColor;\
 }";
-const char * lensVertex = "#version 120\n\
+const char *const lensVertex = "#version 120\n\
 void main(void)\
 {\
 	gl_TexCoord[0]  = gl_MultiTexCoord0;\
 	gl_Position = ftransform();;\
 	gl_FrontColor = gl_Color;\
 }";
-const char * airVFragment = "#version 120\n\
+const char *const airVFragment = "#version 120\n\
 uniform sampler2D airX;\
 uniform sampler2D airY;\
 uniform sampler2D airP;\
@@ -49,14 +48,14 @@ void main () {\
 	vec4 texP = texture2D(airP, gl_TexCoord[0].st);\
 	gl_FragColor = vec4(abs(texX.r)/2.0, texP.b/2.0, abs(texY.g)/2.0, 1.0);\
 }";
-const char * airVVertex = "#version 120\n\
+const char *const airVVertex = "#version 120\n\
 void main(void)\
 {\
 	gl_TexCoord[0]  = gl_MultiTexCoord0;\
 	gl_Position = ftransform();;\
 	gl_FrontColor = gl_Color;\
 }";
-const char * airPFragment = "#version 120\n\
+const char *const airPFragment = "#version 120\n\
 uniform sampler2D airX;\
 uniform sampler2D airY;\
 uniform sampler2D airP;\
@@ -64,14 +63,14 @@ void main () {\
 	vec4 texP = texture2D(airP, gl_TexCoord[0].st);\
 	gl_FragColor = vec4(max(texP.b/2.0, 0), 0, abs(min(texP.b/2.0, 0)), 1.0);\
 }";
-const char * airPVertex = "#version 120\n\
+const char *const airPVertex = "#version 120\n\
 void main(void)\
 {\
 	gl_TexCoord[0]  = gl_MultiTexCoord0;\
 	gl_Position = ftransform();;\
 	gl_FrontColor = gl_Color;\
 }";
-const char * airCFragment = "#version 120\n\
+const char *const airCFragment = "#version 120\n\
 uniform sampler2D airX;\
 uniform sampler2D airY;\
 uniform sampler2D airP;\
@@ -81,12 +80,10 @@ void main () {\
 	vec4 texP = texture2D(airP, gl_TexCoord[0].st);\
 	gl_FragColor = vec4(max(texP.b/2.0, 0), 0, abs(min(texP.b/2.0, 0)), 1.0) + vec4(abs(texX.r)/8.0, abs(texX.r)/8.0, abs(texX.r)/8.0, 1.0) + vec4(abs(texY.g)/8.0, abs(texY.g)/8.0, abs(texY.g)/8.0, 1.0);\
 }";
-const char * airCVertex = "#version 120\n\
+const char *const airCVertex = "#version 120\n\
 void main(void)\
 {\
 	gl_TexCoord[0]  = gl_MultiTexCoord0;\
 	gl_Position = ftransform();;\
 	gl_FrontColor = gl_Color;\
 }";
-
-#endif /* SHADERS_H_ */

@@ -1,8 +1,5 @@
 #include "simulation/Elements.h"
-extern "C"
-{
-	#include "hmap.h"
-}
+#include "hmap.h"
 
 //#TPT-Directive ElementClass Element_CFLM PT_CFLM 68
 Element_CFLM::Element_CFLM()
