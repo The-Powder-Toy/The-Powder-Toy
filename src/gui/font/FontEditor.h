@@ -53,6 +53,9 @@ private:
 	int grid;
 	int rulers;
 
+	unsigned char clipboardWidth;
+	std::array<std::array<char, MAX_WIDTH>, FONT_H> clipboardPixels;
+
 	void UpdateCharNumber();
 	void PrevChar();
 	void NextChar();

@@ -293,7 +293,7 @@ FontEditor::FontEditor(ByteString _header):
 		CharNumberAction(FontEditor *_v): v(_v) {}
 		void TextChangedCallback(ui::Textbox *)
 		{
-			unsigned int number = v->currentCharTextbox->GetText().ToNumber<unsigned int>(true);
+			unsigned int number = v->currentCharTextbox->GetText().ToNumber<unsigned int>(Format::Hex(), true);
 			if(number <= 0x10FFFF)
 				v->currentChar = number;
 		}
@@ -599,6 +599,14 @@ void FontEditor::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bo
 				ui::Engine::Ref().Exit();
 			else
 				ui::Engine::Ref().ConfirmExit();
+			break;
+		case 'c':
+			clipboardWidth = fontWidths[currentChar];
+			clipboardPixels = fontPixels[currentChar];
+			break;
+		case 'v':
+			fontWidths[currentChar] = clipboardWidth;
+			fontPixels[currentChar] = clipboardPixels;
 			break;
 		}
 	}
