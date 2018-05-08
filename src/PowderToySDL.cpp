@@ -114,7 +114,7 @@ ByteString ClipboardPull()
 {
 #ifdef MACOSX
 	const char *text = readClipboard();
-	return text ? ByteString(text).FromUtf8() : "";
+	return text ? ByteString(text) : "";
 #elif defined(WIN)
 	if (OpenClipboard(NULL))
 	{
