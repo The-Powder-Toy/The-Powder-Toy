@@ -164,7 +164,11 @@
 class ByteStringBuilder;
 class String;
 class StringBuilder;
-namespace Format { template<typename T, std::ios_base::fmtflags set, std::ios_base::fmtflags reset> struct FlagsOverride; }
+namespace Format
+{
+	const std::ios_base::fmtflags EmptyFmtFlags = std::ios_base::dec & ~std::ios_base::dec;
+	template<typename T, std::ios_base::fmtflags set, std::ios_base::fmtflags reset> struct FlagsOverride;
+}
 
 template<typename T> class SplitBase
 {
