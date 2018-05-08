@@ -21,7 +21,7 @@ public:
 class Button : public Component
 {
 public:
-	Button(Point position = Point(0, 0), Point size = Point(0, 0), String buttonText = "", String toolTip = "");
+	Button(Point position = Point(0, 0), Point size = Point(0, 0), String buttonText = String(), String toolTip = String());
 	virtual ~Button();
 
 	virtual void OnMouseClick(int x, int y, unsigned int button);

@@ -10,7 +10,7 @@ namespace ui
 		float intermediatePos;
 		String progressStatus;
 	public:
-	ProgressBar(Point position, Point size, int startProgress = 0, String startStatus = "");
+	ProgressBar(Point position, Point size, int startProgress = 0, String startStatus = String());
 		virtual void SetProgress(int progress);
 		virtual int GetProgress();
 		virtual void SetStatus(String status);

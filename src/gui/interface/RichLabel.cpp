@@ -12,7 +12,7 @@ using namespace ui;
 struct RichTextParseException: public std::exception {
 	String message;
 public:
-	RichTextParseException(String message_ = "Parse error"): message(message_) {}
+	RichTextParseException(String message_ = String("Parse error")): message(message_) {}
 	const char * what() const throw()
 	{
 		return message.ToUtf8().c_str();

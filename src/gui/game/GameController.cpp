@@ -1580,7 +1580,7 @@ String GameController::WallName(int type)
 	if(gameModel && gameModel->GetSimulation() && type >= 0 && type < UI_WALLCOUNT)
 		return gameModel->GetSimulation()->wtypes[type].name;
 	else
-		return "";
+		return String();
 }
 
 int GameController::Record(bool record)

@@ -18,9 +18,7 @@
 #endif
 
 #include <iostream>
-#include "common/String.h"
 #include "Config.h"
-#include "common/String.h"
 #include "graphics/Graphics.h"
 #if defined(LIN)
 #include "icon.h"
