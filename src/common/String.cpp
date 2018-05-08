@@ -1,7 +1,6 @@
 #include <sstream>
 #include <vector>
 #include <locale>
-#include <codecvt>
 #include <limits>
 
 #include "String.h"
@@ -14,9 +13,6 @@ ByteString ConversionError::formatError(ByteString::value_type const *at, ByteSt
 		ss << " " << std::hex << (unsigned int)std::make_unsigned<ByteString::value_type>::type(at[i]);
 	return ss.str();
 }
-
-// The STL-packaged standardized UTF-8 conversion interface
-static std::codecvt_utf8<String::value_type> convert(1);
 
 std::vector<ByteString> ByteString::PartitionBy(value_type ch, bool includeEmpty) const
 {
@@ -83,44 +79,59 @@ ByteString &ByteString::Substitute(ByteString const &needle, ByteString const &r
 	return *this;
 }
 
+// The STL codecvt interfaces aren't very portable and behave wildly
+// differntly on edge cases.
+// Refer to Table 3.1 of the Unicode Standard version 3.1.0+
+
 String ByteString::FromUtf8(bool ignoreError) const
 {
-	std::vector<String::value_type> destination = std::vector<String::value_type>(size(), String::value_type());
-	std::codecvt_utf8<String::value_type>::state_type state;
-
-	ByteString::value_type const *from = data(), *from_next;
-	String::value_type *to = destination.data(), *to_next;
-
-	while(true)
+	std::vector<String::value_type> destination;
+	destination.reserve(size());
+	std::make_unsigned<value_type>::type const *from = reinterpret_cast<std::make_unsigned<value_type>::type const *>(data());
+	for(size_t i = 0; i < size(); )
 	{
-		std::codecvt_utf8<String::value_type>::result result = convert.in(state, from, data() + size(), from_next, to, destination.data() + destination.size(), to_next);
-		from = from_next;
-		to = to_next;
-		if(result == std::codecvt_base::ok || result == std::codecvt_base::noconv)
+		if(from[i] < 0x80)
 		{
-			destination.resize(to - destination.data());
-			return String(destination.data(), destination.size());
+			destination.push_back(from[i]);
+			i += 1;
+			continue;
 		}
-		else if(result == std::codecvt_base::partial && to == destination.data() + destination.size())
+		else if(from[i] >= 0xC2 && from[i] < 0xE0)
 		{
-			String::value_type *old_data = destination.data();
-			destination.resize(2 * destination.size());
-			to = destination.data() + (to - old_data);
-		}
-		else
-		{
-			if(!ignoreError)
-				throw ConversionError(from, data() + size());
-
-			if(to == destination.data() + destination.size())
+			if(i + 1 < size() && from[i + 1] >= 0x80 && from[i + 1] < 0xC0)
 			{
-				String::value_type *old_data = destination.data();
-				destination.resize(2 * destination.size());
-				to = destination.data() + (to - old_data);
+				destination.push_back((from[i] & 0x1F) << 6 | (from[i + 1] & 0x3F));
+				i += 2;
+				continue;
 			}
-			*(to++) = std::make_unsigned<ByteString::value_type>::type(*(from++));
 		}
+		else if(from[i] >= 0xE0 && from[i] < 0xF0)
+		{
+			if(i + 1 < size() && from[i + 1] >= (from[i] == 0xE0 ? 0xA0 : 0x80) && from[i + 1] < 0xC0)
+				if(i + 2 < size() && from[i + 2] >= 0x80 && from[i + 2] < 0xC0)
+				{
+					destination.push_back((from[i] & 0x0F) << 12 | (from[i + 1] & 0x3F) << 6 | (from[i + 2] & 0x3F));
+					i += 3;
+					continue;
+				}
+		}
+		else if(from[i] >= 0xF0 && from[i] < 0xF5)
+		{
+			if(i + 1 < size() && from[i + 1] >= (from[i] == 0xF0 ? 0x90 : 0x80) && from[i + 1] < (from[i] == 0xF4 ? 0x90 : 0xC0))
+				if(i + 2 < size() && from[i + 2] >= 0x80 && from[i + 2] < 0xC0)
+					if(i + 3 < size() && from[i + 3] >= 0x80 && from[i + 3] < 0xC0)
+					{
+						destination.push_back((from[i] & 0x07) << 18 | (from[i + 1] & 0x3F) << 12 | (from[i + 2] & 0x3F) | (from[i + 3] & 0x3F));
+						i += 4;
+						continue;
+					}
+		}
+		if(ignoreError)
+			destination.push_back(from[i++]);
+		else
+			throw ConversionError(data() + i, data() + size());
 	}
+	return String(destination.data(), destination.size());
 }
 
 std::vector<String> String::PartitionBy(value_type ch, bool includeEmpty) const
@@ -190,33 +201,37 @@ String &String::Substitute(String const &needle, String const &replacement)
 
 ByteString String::ToUtf8() const
 {
-	std::vector<ByteString::value_type> destination = std::vector<ByteString::value_type>(size(), ByteString::value_type());
-	std::codecvt_utf8<String::value_type>::state_type state;
-
-	String::value_type const *from = data(), *from_next;
-	ByteString::value_type *to = destination.data(), *to_next;
-
-	while(true)
+	std::vector<std::make_unsigned<ByteString::value_type>::type> destination;
+	destination.reserve(size() * 2);
+	value_type const *from = data();
+	for(size_t i = 0; i < size(); i++)
 	{
-		std::codecvt_utf8<String::value_type>::result result = convert.out(state, from, data() + size(), from_next, to, destination.data() + destination.size(), to_next);
-		from = from_next;
-		to = to_next;
-		if(result == std::codecvt_base::ok || result == std::codecvt_base::noconv)
+		if(from[i] >= 0 && from[i] < 0x80)
 		{
-			destination.resize(to - destination.data());
-			return ByteString(destination.data(), destination.size());
+			destination.push_back(from[i]);
 		}
-		else if(result == std::codecvt_base::error)
+		else if(from[i] < 0x800)
 		{
+			destination.push_back(0xC0 | (from[i] >> 6));
+			destination.push_back(0x80 | (from[i] & 0x3F));
+		}
+		else if(from[i] < 0x10000)
+		{
+			destination.push_back(0xE0 | (from[i] >> 12));
+			destination.push_back(0x80 | ((from[i] >> 6) & 0x3F));
+			destination.push_back(0x80 | (from[i] & 0x3F));
+		}
+		else if(from[i] <= 0x10FFFF)
+		{
+			destination.push_back(0xF0 | (from[i] >> 18));
+			destination.push_back(0x80 | ((from[i] >> 12) & 0x3F));
+			destination.push_back(0x80 | ((from[i] >> 6) & 0x3F));
+			destination.push_back(0x80 | (from[i] & 0x3F));
+		}
+		else
 			throw ConversionError(true);
-		}
-		else if(result == std::codecvt_base::partial)
-		{
-			ByteString::value_type *old_data = destination.data();
-			destination.resize(2 * destination.size());
-			to = destination.data() + (to - old_data);
-		}
 	}
+	return ByteString(reinterpret_cast<ByteString::value_type const *>(destination.data()), destination.size());
 }
 
 /*
