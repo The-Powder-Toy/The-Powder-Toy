@@ -11,10 +11,7 @@
 #include "GameSave.h"
 #include "simulation/SimulationData.h"
 #include "ElementClasses.h"
-extern "C"
-{
-	#include "hmap.h"
-}
+#include "hmap.h"
 
 GameSave::GameSave(GameSave & save):
     majorVersion(save.majorVersion),

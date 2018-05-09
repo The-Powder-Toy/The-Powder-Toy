@@ -1,8 +1,5 @@
 #include "simulation/Elements.h"
-extern "C"
-{
-	#include "hmap.h"
-}
+#include "hmap.h"
 //#TPT-Directive ElementClass Element_FIRW PT_FIRW 69
 Element_FIRW::Element_FIRW()
 {

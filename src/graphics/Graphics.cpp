@@ -5,7 +5,7 @@
 #include "Config.h"
 #include "Misc.h"
 #include "Graphics.h"
-#include "Font.h"
+#include "FontReader.h"
 #ifdef HIGH_QUALITY_RESAMPLE
 #include "resampler/resampler.h"
 #endif
