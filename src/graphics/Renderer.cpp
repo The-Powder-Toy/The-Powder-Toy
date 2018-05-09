@@ -20,12 +20,9 @@
 #include "lua/LuaScriptHelper.h"
 #endif
 #include "hmap.h"
-extern "C"
-{
 #ifdef OGLR
 #include "Shaders.h"
 #endif
-}
 
 #ifndef OGLI
 #define VIDXRES WINDOWW
