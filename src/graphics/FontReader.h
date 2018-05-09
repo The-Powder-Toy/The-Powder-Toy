@@ -1,3 +1,4 @@
+#pragma once
 #include <cstddef>
 
 #include "common/String.h"
@@ -5,19 +6,19 @@
 
 class FontReader
 {
-	unsigned char *pointer;
+	unsigned char const *pointer;
 	int width;
 	int pixels;
 	int data;
 
-	inline FontReader(unsigned char *_pointer):
+	inline FontReader(unsigned char const *_pointer):
 		pointer(_pointer + 1),
 		width(*_pointer),
 		pixels(0),
 		data(0)
 	{}
 
-	static inline unsigned char *lookupChar(String::value_type ch)
+	static inline unsigned char const *lookupChar(String::value_type ch)
 	{
 		size_t offset = 0;
 		for(int i = 0; font_ranges[i][1]; i++)
