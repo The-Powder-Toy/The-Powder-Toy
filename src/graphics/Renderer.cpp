@@ -19,9 +19,9 @@
 #include "lua/LuaScriptInterface.h"
 #include "lua/LuaScriptHelper.h"
 #endif
+#include "hmap.h"
 extern "C"
 {
-#include "hmap.h"
 #ifdef OGLR
 #include "Shaders.h"
 #endif
