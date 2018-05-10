@@ -122,6 +122,8 @@ class LuaScriptInterface: public CommandInterface
 
 	//Elements
 	void initElementsAPI();
+	static void LuaGetProperty(lua_State* l, StructProperty property, intptr_t propertyAddress);
+	static void LuaSetProperty(lua_State* l, StructProperty property, intptr_t propertyAddress, int stackPos);
 	static int elements_allocate(lua_State * l);
 	static int elements_element(lua_State * l);
 	static int elements_property(lua_State * l);

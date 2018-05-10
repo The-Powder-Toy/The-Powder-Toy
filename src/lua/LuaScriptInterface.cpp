@@ -996,7 +996,7 @@ int LuaScriptInterface::simulation_partProperty(lua_State * l)
 {
 	int argCount = lua_gettop(l);
 	int particleID = luaL_checkinteger(l, 1);
-	StructProperty * property = NULL;
+	StructProperty property;
 
 	if(particleID < 0 || particleID >= NPART || !luacon_sim->parts[particleID].type)
 	{
@@ -1010,98 +1010,45 @@ int LuaScriptInterface::simulation_partProperty(lua_State * l)
 	}
 
 	//Get field
-	if(lua_type(l, 2) == LUA_TNUMBER)
+	if (lua_type(l, 2) == LUA_TNUMBER)
 	{
 		int fieldID = lua_tointeger(l, 2);
-		if(fieldID < 0 || fieldID >= particlePropertiesCount)
+		if (fieldID < 0 || fieldID >= particlePropertiesCount)
 			return luaL_error(l, "Invalid field ID (%d)", fieldID);
-		property = &particleProperties[fieldID];
-	} else if(lua_type(l, 2) == LUA_TSTRING) {
+		property = particleProperties[fieldID];
+	}
+	else if(lua_type(l, 2) == LUA_TSTRING)
+	{
 		ByteString fieldName = lua_tostring(l, 2);
+		bool foundProperty = false;
 		for(int i = particlePropertiesCount-1; i >= 0; i--)
 		{
-			if(particleProperties[i].Name == fieldName)
-				property = &particleProperties[i];
+			if (particleProperties[i].Name == fieldName)
+			{
+				property = particleProperties[i];
+				foundProperty = true;
+				break;
+			}
 		}
-		if(!property)
+		if (!foundProperty)
 			return luaL_error(l, "Unknown field (%s)", fieldName.c_str());
-	} else {
+	}
+	else
+	{
 		return luaL_error(l, "Field ID must be an name (string) or identifier (integer)");
 	}
 
 	//Calculate memory address of property
-	intptr_t propertyAddress = (intptr_t)(((unsigned char*)&luacon_sim->parts[particleID])+property->Offset);
+	intptr_t propertyAddress = (intptr_t)(((unsigned char*)&luacon_sim->parts[particleID])+property.Offset);
 
 	if(argCount == 3)
 	{
-		//Set
-		switch(property->Type)
-		{
-			case StructProperty::ParticleType:
-			case StructProperty::Integer:
-				*((int*)propertyAddress) = lua_tointeger(l, 3);
-				break;
-			case StructProperty::UInteger:
-				*((unsigned int*)propertyAddress) = lua_tointeger(l, 3);
-				break;
-			case StructProperty::Float:
-				*((float*)propertyAddress) = lua_tonumber(l, 3);
-				break;
-			case StructProperty::Char:
-				*((char*)propertyAddress) = lua_tointeger(l, 3);
-				break;
-			case StructProperty::UChar:
-				*((unsigned char*)propertyAddress) = lua_tointeger(l, 3);
-				break;
-			case StructProperty::String:
-				*((char**)propertyAddress) = strdup(lua_tostring(l, 3));
-				break;
-			case StructProperty::Colour:
-#if PIXELSIZE == 4
-				*((unsigned int*)propertyAddress) = lua_tointeger(l, 3);
-#else
-				*((unsigned short*)propertyAddress) = lua_tointeger(l, 3);
-#endif
-				break;
-			case StructProperty::Removed:
-				break;
-		}
+		LuaSetProperty(l, property, propertyAddress, 3);
 		return 0;
 	}
 	else
 	{
-		//Get
-		switch(property->Type)
-		{
-			case StructProperty::ParticleType:
-			case StructProperty::Integer:
-				lua_pushinteger(l, *((int*)propertyAddress));
-				break;
-			case StructProperty::UInteger:
-				lua_pushinteger(l, *((unsigned int*)propertyAddress));
-				break;
-			case StructProperty::Float:
-				lua_pushnumber(l, *((float*)propertyAddress));
-				break;
-			case StructProperty::Char:
-				lua_pushinteger(l, *((char*)propertyAddress));
-				break;
-			case StructProperty::UChar:
-				lua_pushinteger(l, *((unsigned char*)propertyAddress));
-				break;
-			case StructProperty::String:
-				lua_pushstring(l, *((char**)propertyAddress));
-				break;
-			case StructProperty::Colour:
-	#if PIXELSIZE == 4
-				lua_pushinteger(l, *((unsigned int*)propertyAddress));
-	#else
-				lua_pushinteger(l, *((unsigned short*)propertyAddress));
-	#endif
-				break;
-			default:
-				lua_pushnil(l);
-		}
+		LuaGetProperty(l, property, propertyAddress);
 		return 1;
 	}
 }
@@ -2451,6 +2398,82 @@ void LuaScriptInterface::initElementsAPI()
 	}
 }
 
+void LuaScriptInterface::LuaGetProperty(lua_State* l, StructProperty property, intptr_t propertyAddress)
+{
+	switch (property.Type)
+	{
+		case StructProperty::ParticleType:
+		case StructProperty::Integer:
+			lua_pushinteger(l, *((int*)propertyAddress));
+			break;
+		case StructProperty::UInteger:
+			lua_pushinteger(l, *((unsigned int*)propertyAddress));
+			break;
+		case StructProperty::Float:
+			lua_pushnumber(l, *((float*)propertyAddress));
+			break;
+		case StructProperty::Char:
+			lua_pushinteger(l, *((char*)propertyAddress));
+			break;
+		case StructProperty::UChar:
+			lua_pushinteger(l, *((unsigned char*)propertyAddress));
+			break;
+		case StructProperty::BString:
+			lua_pushstring(l, *((char**)propertyAddress));
+			break;
+		case StructProperty::String:
+			lua_pushstring(l, (*((String*)propertyAddress)).ToUtf8().c_str());
+			break;
+		case StructProperty::Colour:
+#if PIXELSIZE == 4
+			lua_pushinteger(l, *((unsigned int*)propertyAddress));
+#else
+			lua_pushinteger(l, *((unsigned short*)propertyAddress));
+#endif
+			break;
+		case StructProperty::Removed:
+			lua_pushnil(l);
+	}
+}
+
+void LuaScriptInterface::LuaSetProperty(lua_State* l, StructProperty property, intptr_t propertyAddress, int stackPos)
+{
+	switch (property.Type)
+	{
+		case StructProperty::ParticleType:
+		case StructProperty::Integer:
+			*((int*)propertyAddress) = luaL_checkinteger(l, stackPos);
+			break;
+		case StructProperty::UInteger:
+			*((unsigned int*)propertyAddress) = luaL_checkinteger(l, stackPos);
+			break;
+		case StructProperty::Float:
+			*((float*)propertyAddress) = luaL_checknumber(l, stackPos);
+			break;
+		case StructProperty::Char:
+			*((char*)propertyAddress) = luaL_checkinteger(l, stackPos);
+			break;
+		case StructProperty::UChar:
+			*((unsigned char*)propertyAddress) = luaL_checkinteger(l, stackPos);
+			break;
+		case StructProperty::BString:
+			*((ByteString*)propertyAddress) = ByteString(luaL_checkstring(l, stackPos));
+			break;
+		case StructProperty::String:
+			*((String*)propertyAddress) = ByteString(luaL_checkstring(l, stackPos)).FromUtf8();
+			break;
+		case StructProperty::Colour:
+#if PIXELSIZE == 4
+			*((unsigned int*)propertyAddress) = luaL_checkinteger(l, stackPos);
+#else
+			*((unsigned short*)propertyAddress) = luaL_checkinteger(l, stackPos);
+#endif
+			break;
+		case StructProperty::Removed:
+			break;
+	}
+}
+
 int LuaScriptInterface::elements_loadDefault(lua_State * l)
 {
 	int args = lua_gettop(l);
@@ -2586,38 +2609,8 @@ int LuaScriptInterface::elements_element(lua_State * l)
 			lua_getfield(l, -1, (*iter).Name.c_str());
 			if(lua_type(l, -1) != LUA_TNIL)
 			{
-				intptr_t offset = (*iter).Offset;
-				switch((*iter).Type)
-				{
-					case StructProperty::ParticleType:
-					case StructProperty::Integer:
-						*((int*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = lua_tointeger(l, -1);
-						break;
-					case StructProperty::UInteger:
-						*((unsigned int*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = lua_tointeger(l, -1);
-						break;
-					case StructProperty::Float:
-						*((float*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = lua_tonumber(l, -1);
-						break;
-					case StructProperty::Char:
-						*((char*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = lua_tointeger(l, -1);
-						break;
-					case StructProperty::UChar:
-						*((unsigned char*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = lua_tointeger(l, -1);
-						break;
-					case StructProperty::String:
-						*((char**)(((unsigned char*)&luacon_sim->elements[id])+offset)) = strdup(lua_tostring(l, -1));
-						break;
-					case StructProperty::Colour:
-#if PIXELSIZE == 4
-						*((unsigned int*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = lua_tointeger(l, -1);
-#else
-						*((unsigned short*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = lua_tointeger(l, -1);
-#endif
-						break;
-					case StructProperty::Removed:
-						break;
-				}
+				intptr_t propertyAddress = (intptr_t)(((unsigned char*)&luacon_sim->elements[id]) + (*iter).Offset);
+				LuaSetProperty(l, (*iter), propertyAddress, -1);
 			}
 			lua_pop(l, 1);
 		}
@@ -2664,38 +2657,8 @@ int LuaScriptInterface::elements_element(lua_State * l)
 		lua_newtable(l);
 		for(std::vector<StructProperty>::iterator iter = properties.begin(), end = properties.end(); iter != end; ++iter)
 		{
-			intptr_t offset = (*iter).Offset;
-			switch((*iter).Type)
-			{
-				case StructProperty::ParticleType:
-				case StructProperty::Integer:
-					lua_pushinteger(l, *((int*)(((unsigned char*)&luacon_sim->elements[id])+offset)));
-					break;
-				case StructProperty::UInteger:
-					lua_pushinteger(l, *((unsigned int*)(((unsigned char*)&luacon_sim->elements[id])+offset)));
-					break;
-				case StructProperty::Float:
-					lua_pushnumber(l, *((float*)(((unsigned char*)&luacon_sim->elements[id])+offset)));
-					break;
-				case StructProperty::Char:
-					lua_pushinteger(l, *((char*)(((unsigned char*)&luacon_sim->elements[id])+offset)));
-					break;
-				case StructProperty::UChar:
-					lua_pushinteger(l, *((unsigned char*)(((unsigned char*)&luacon_sim->elements[id])+offset)));
-					break;
-				case StructProperty::String:
-					lua_pushstring(l, *((char**)(((unsigned char*)&luacon_sim->elements[id])+offset)));
-					break;
-				case StructProperty::Colour:
-#if PIXELSIZE == 4
-					lua_pushinteger(l, *((unsigned int*)(((unsigned char*)&luacon_sim->elements[id])+offset)));
-#else
-					lua_pushinteger(l, *((unsigned short*)(((unsigned char*)&luacon_sim->elements[id])+offset)));
-#endif
-					break;
-				case StructProperty::Removed:
-					continue;
-			}
+			intptr_t propertyAddress = (intptr_t)(((unsigned char*)&luacon_sim->elements[id]) + (*iter).Offset);
+			LuaGetProperty(l, (*iter), propertyAddress);
 			lua_setfield(l, -2, (*iter).Name.c_str());
 		}
 		lua_pushstring(l, luacon_sim->elements[id].Identifier.c_str());
@@ -2737,38 +2700,8 @@ int LuaScriptInterface::elements_property(lua_State * l)
 		{
 			if(lua_type(l, 3) != LUA_TNIL)
 			{
-				intptr_t offset = property.Offset;
-				switch(property.Type)
-				{
-					case StructProperty::ParticleType:
-					case StructProperty::Integer:
-						*((int*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = luaL_checkinteger(l, 3);
-						break;
-					case StructProperty::UInteger:
-						*((unsigned int*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = luaL_checkinteger(l, 3);
-						break;
-					case StructProperty::Float:
-						*((float*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = luaL_checknumber(l, 3);
-						break;
-					case StructProperty::Char:
-						*((char*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = luaL_checkinteger(l, 3);
-						break;
-					case StructProperty::UChar:
-						*((unsigned char*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = luaL_checkinteger(l, 3);
-						break;
-					case StructProperty::String:
-						*((char**)(((unsigned char*)&luacon_sim->elements[id])+offset)) = strdup(luaL_checkstring(l, 3));
-						break;
-					case StructProperty::Colour:
-#if PIXELSIZE == 4
-						*((unsigned int*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = luaL_checkinteger(l, 3);
-#else
-						*((unsigned short*)(((unsigned char*)&luacon_sim->elements[id])+offset)) = luaL_checkinteger(l, 3);
-#endif
-						break;
-					case StructProperty::Removed:
-						break;
-				}
+				intptr_t propertyAddress = (intptr_t)(((unsigned char*)&luacon_sim->elements[id]) + property.Offset);
+				LuaSetProperty(l, property, propertyAddress, 3);
 			}
 
 			luacon_model->BuildMenus();
@@ -2840,38 +2773,8 @@ int LuaScriptInterface::elements_property(lua_State * l)
 
 		if(propertyFound)
 		{
-			intptr_t offset = property.Offset;
-			switch(property.Type)
-			{
-				case StructProperty::ParticleType:
-				case StructProperty::Integer:
-					lua_pushinteger(l, *((int*)(((unsigned char*)&luacon_sim->elements[id])+offset)));
-					break;
-				case StructProperty::UInteger:
-					lua_pushinteger(l, *((unsigned int*)(((unsigned char*)&luacon_sim->elements[id])+offset)));
-					break;
-				case StructProperty::Float:
-					lua_pushnumber(l, *((float*)(((unsigned char*)&luacon_sim->elements[id])+offset)));
-					break;
-				case StructProperty::Char:
-					lua_pushinteger(l, *((char*)(((unsigned char*)&luacon_sim->elements[id])+offset)));
-					break;
-				case StructProperty::UChar:
-					lua_pushinteger(l, *((unsigned char*)(((unsigned char*)&luacon_sim->elements[id])+offset)));
-					break;
-				case StructProperty::String:
-					lua_pushstring(l, *((char**)(((unsigned char*)&luacon_sim->elements[id])+offset)));
-					break;
-				case StructProperty::Colour:
-#if PIXELSIZE == 4
-					lua_pushinteger(l, *((unsigned int*)(((unsigned char*)&luacon_sim->elements[id])+offset)));
-#else
-					lua_pushinteger(l, *((unsigned short*)(((unsigned char*)&luacon_sim->elements[id])+offset)));
-#endif
-					break;
-				default:
-					lua_pushnil(l);
-			}
+			intptr_t propertyAddress = (intptr_t)(((unsigned char*)&luacon_sim->elements[id]) + property.Offset);
+			LuaGetProperty(l, property, propertyAddress);
 			return 1;
 		}
 		else if(propertyName == "Identifier")
