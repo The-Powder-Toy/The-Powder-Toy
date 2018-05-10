@@ -2557,7 +2557,7 @@ int LuaScriptInterface::elements_allocate(lua_State * l)
 			newID = i;
 			luacon_sim->elements[i] = Element();
 			luacon_sim->elements[i].Enabled = true;
-			luacon_sim->elements[i].Identifier = strdup(identifier.c_str());
+			luacon_sim->elements[i].Identifier = mystrdup(identifier.c_str());
 			break;
 		}
 	}
@@ -2571,7 +2571,7 @@ int LuaScriptInterface::elements_allocate(lua_State * l)
 				newID = i;
 				luacon_sim->elements[i] = Element();
 				luacon_sim->elements[i].Enabled = true;
-				luacon_sim->elements[i].Identifier = strdup(identifier.c_str());
+				luacon_sim->elements[i].Identifier = mystrdup(identifier.c_str());
 				break;
 			}
 		}
