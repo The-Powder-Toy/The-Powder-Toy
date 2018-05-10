@@ -397,7 +397,7 @@ elif not GetOption('help'):
 	env = conf.Finish()
 
 if not msvc:
-	env.Append(CXXFLAGS=['-std=c++11'])
+	env.Append(CXXFLAGS=['-std=c++11', '-U__STRICT_ANSI__'])
 	env.Append(CXXFLAGS=['-Wno-invalid-offsetof'])
 	if platform == "Linux":
 		env.Append(CXXFLAGS=['-Wno-unused-result'])
