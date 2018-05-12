@@ -2,7 +2,9 @@
 #include <vector>
 #include <locale>
 #include <limits>
+#include <stdexcept>
 
+#include "common/tpt-thread.h"
 #include "String.h"
 
 ByteString ConversionError::formatError(ByteString::value_type const *at, ByteString::value_type const *upto)
@@ -294,7 +296,7 @@ char const numberChars[] = "-.+0123456789ABCDEFXabcdefx";
 ByteString numberByteString(numberChars);
 String numberString(numberChars);
 
-static thread_local struct LocaleImpl
+struct LocaleImpl
 {
 	std::basic_stringstream<char> stream;
 	std::basic_stringstream<wchar_t> wstream;
@@ -370,8 +372,34 @@ static thread_local struct LocaleImpl
 	{
 		wstream.str(std::basic_string<wchar_t>());
 	}
+};
+
+static void destroyLocaleImpl(void *ptr)
+{
+	delete static_cast<LocaleImpl *>(ptr);
 }
-LocaleImpl;
+
+static pthread_once_t localeOnce = PTHREAD_ONCE_INIT;
+static pthread_key_t localeKey;
+
+static void createLocaleKey()
+{
+	if(int error = pthread_key_create(&localeKey, destroyLocaleImpl))
+		throw std::system_error(error, std::system_category(), "Could not create TLS key for LocaleImpl");
+}
+
+static LocaleImpl *getLocaleImpl()
+{
+	pthread_once(&localeOnce, createLocaleKey);
+	void *ptr = pthread_getspecific(localeKey);
+	if(!ptr)
+	{
+		ptr = static_cast<void *>(new LocaleImpl());
+		if(int error = pthread_setspecific(localeKey, ptr))
+			throw std::system_error(error, std::system_category(), "Could not put LocaleImpl into TLS");
+	}
+	return static_cast<LocaleImpl *>(ptr);
+}
 
 ByteString ByteStringBuilder::Build() const
 {
@@ -386,65 +414,73 @@ void ByteStringBuilder::AddChars(ByteString::value_type const *data, size_t coun
 
 ByteStringBuilder &operator<<(ByteStringBuilder &b, short int data)
 {
-	LocaleImpl.PrepareStream(b);
-	LocaleImpl.stream << data;
-	LocaleImpl.FlushStream(b);
+	LocaleImpl *impl = getLocaleImpl();
+	impl->PrepareStream(b);
+	impl->stream << data;
+	impl->FlushStream(b);
 	return b;
 }
 
 ByteStringBuilder &operator<<(ByteStringBuilder &b, int data)
 {
-	LocaleImpl.PrepareStream(b);
-	LocaleImpl.stream << data;
-	LocaleImpl.FlushStream(b);
+	LocaleImpl *impl = getLocaleImpl();
+	impl->PrepareStream(b);
+	impl->stream << data;
+	impl->FlushStream(b);
 	return b;
 }
 
 ByteStringBuilder &operator<<(ByteStringBuilder &b, long int data)
 {
-	LocaleImpl.PrepareStream(b);
-	LocaleImpl.stream << data;
-	LocaleImpl.FlushStream(b);
+	LocaleImpl *impl = getLocaleImpl();
+	impl->PrepareStream(b);
+	impl->stream << data;
+	impl->FlushStream(b);
 	return b;
 }
 
 ByteStringBuilder &operator<<(ByteStringBuilder &b, long long int data)
 {
-	LocaleImpl.PrepareStream(b);
-	LocaleImpl.stream << data;
-	LocaleImpl.FlushStream(b);
+	LocaleImpl *impl = getLocaleImpl();
+	impl->PrepareStream(b);
+	impl->stream << data;
+	impl->FlushStream(b);
 	return b;
 }
 
 ByteStringBuilder &operator<<(ByteStringBuilder &b, unsigned short int data)
 {
-	LocaleImpl.PrepareStream(b);
-	LocaleImpl.stream << data;
-	LocaleImpl.FlushStream(b);
+	LocaleImpl *impl = getLocaleImpl();
+	impl->PrepareStream(b);
+	impl->stream << data;
+	impl->FlushStream(b);
 	return b;
 }
 
 ByteStringBuilder &operator<<(ByteStringBuilder &b, unsigned int data)
 {
-	LocaleImpl.PrepareStream(b);
-	LocaleImpl.stream << data;
-	LocaleImpl.FlushStream(b);
+	LocaleImpl *impl = getLocaleImpl();
+	impl->PrepareStream(b);
+	impl->stream << data;
+	impl->FlushStream(b);
 	return b;
 }
 
 ByteStringBuilder &operator<<(ByteStringBuilder &b, unsigned long int data)
 {
-	LocaleImpl.PrepareStream(b);
-	LocaleImpl.stream << data;
-	LocaleImpl.FlushStream(b);
+	LocaleImpl *impl = getLocaleImpl();
+	impl->PrepareStream(b);
+	impl->stream << data;
+	impl->FlushStream(b);
 	return b;
 }
 
 ByteStringBuilder &operator<<(ByteStringBuilder &b, unsigned long long int data)
 {
-	LocaleImpl.PrepareStream(b);
-	LocaleImpl.stream << data;
-	LocaleImpl.FlushStream(b);
+	LocaleImpl *impl = getLocaleImpl();
+	impl->PrepareStream(b);
+	impl->stream << data;
+	impl->FlushStream(b);
 	return b;
 }
 
@@ -467,62 +503,67 @@ ByteStringBuilder &operator<<(ByteStringBuilder &b, ByteString const &data)
 
 ByteStringBuilder &operator<<(ByteStringBuilder &b, float data)
 {
-	LocaleImpl.PrepareStream(b);
-	LocaleImpl.stream << data;
-	LocaleImpl.FlushStream(b);
+	LocaleImpl *impl = getLocaleImpl();
+	impl->PrepareStream(b);
+	impl->stream << data;
+	impl->FlushStream(b);
 	return b;
 }
 
 ByteStringBuilder &operator<<(ByteStringBuilder &b, double data)
 {
-	LocaleImpl.PrepareStream(b);
-	LocaleImpl.stream << data;
-	LocaleImpl.FlushStream(b);
+	LocaleImpl *impl = getLocaleImpl();
+	impl->PrepareStream(b);
+	impl->stream << data;
+	impl->FlushStream(b);
 	return b;
 }
 
 ByteString::Split ByteString::SplitSigned(long long int &value, size_t pos, std::ios_base::fmtflags set, std::ios_base::fmtflags reset) const
 {
-	LocaleImpl.PrepareStream(*this, pos, set, reset);
-	LocaleImpl.stream >> value;
-	if(LocaleImpl.stream.fail())
+	LocaleImpl *impl = getLocaleImpl();
+	impl->PrepareStream(*this, pos, set, reset);
+	impl->stream >> value;
+	if(impl->stream.fail())
 	{
-		LocaleImpl.FlushStream();
+		impl->FlushStream();
 		return Split(*this, pos, npos, 0, false);
 	}
-	LocaleImpl.stream.clear();
-	Split split(*this, pos, pos + LocaleImpl.stream.tellg(), 0, false);
-	LocaleImpl.FlushStream();
+	impl->stream.clear();
+	Split split(*this, pos, pos + impl->stream.tellg(), 0, false);
+	impl->FlushStream();
 	return split;
 }
 
 ByteString::Split ByteString::SplitUnsigned(unsigned long long int &value, size_t pos, std::ios_base::fmtflags set, std::ios_base::fmtflags reset) const
 {
-	LocaleImpl.PrepareStream(*this, pos, set, reset);
-	LocaleImpl.stream >> value;
-	if(LocaleImpl.stream.fail())
+	LocaleImpl *impl = getLocaleImpl();
+	impl->PrepareStream(*this, pos, set, reset);
+	impl->stream >> value;
+	if(impl->stream.fail())
 	{
-		LocaleImpl.FlushStream();
+		impl->FlushStream();
 		return Split(*this, pos, npos, 0, false);
 	}
-	LocaleImpl.stream.clear();
-	Split split(*this, pos, pos + LocaleImpl.stream.tellg(), 0, false);
-	LocaleImpl.FlushStream();
+	impl->stream.clear();
+	Split split(*this, pos, pos + impl->stream.tellg(), 0, false);
+	impl->FlushStream();
 	return split;
 }
 
 ByteString::Split ByteString::SplitFloat(double &value, size_t pos, std::ios_base::fmtflags set, std::ios_base::fmtflags reset) const
 {
-	LocaleImpl.PrepareStream(*this, pos, set, reset);
-	LocaleImpl.stream >> value;
-	if(LocaleImpl.stream.fail())
+	LocaleImpl *impl = getLocaleImpl();
+	impl->PrepareStream(*this, pos, set, reset);
+	impl->stream >> value;
+	if(impl->stream.fail())
 	{
-		LocaleImpl.FlushStream();
+		impl->FlushStream();
 		return Split(*this, pos, npos, 0, false);
 	}
-	LocaleImpl.stream.clear();
-	Split split(*this, pos, pos + LocaleImpl.stream.tellg(), 0, false);
-	LocaleImpl.FlushStream();
+	impl->stream.clear();
+	Split split(*this, pos, pos + impl->stream.tellg(), 0, false);
+	impl->FlushStream();
 	return split;
 }
 
@@ -539,65 +580,73 @@ void StringBuilder::AddChars(String::value_type const *data, size_t count)
 
 StringBuilder &operator<<(StringBuilder &b, short int data)
 {
-	LocaleImpl.PrepareWStream(b);
-	LocaleImpl.wstream << data;
-	LocaleImpl.FlushWStream(b);
+	LocaleImpl *impl = getLocaleImpl();
+	impl->PrepareWStream(b);
+	impl->wstream << data;
+	impl->FlushWStream(b);
 	return b;
 }
 
 StringBuilder &operator<<(StringBuilder &b, int data)
 {
-	LocaleImpl.PrepareWStream(b);
-	LocaleImpl.wstream << data;
-	LocaleImpl.FlushWStream(b);
+	LocaleImpl *impl = getLocaleImpl();
+	impl->PrepareWStream(b);
+	impl->wstream << data;
+	impl->FlushWStream(b);
 	return b;
 }
 
 StringBuilder &operator<<(StringBuilder &b, long int data)
 {
-	LocaleImpl.PrepareWStream(b);
-	LocaleImpl.wstream << data;
-	LocaleImpl.FlushWStream(b);
+	LocaleImpl *impl = getLocaleImpl();
+	impl->PrepareWStream(b);
+	impl->wstream << data;
+	impl->FlushWStream(b);
 	return b;
 }
 
 StringBuilder &operator<<(StringBuilder &b, long long int data)
 {
-	LocaleImpl.PrepareWStream(b);
-	LocaleImpl.wstream << data;
-	LocaleImpl.FlushWStream(b);
+	LocaleImpl *impl = getLocaleImpl();
+	impl->PrepareWStream(b);
+	impl->wstream << data;
+	impl->FlushWStream(b);
 	return b;
 }
 
 StringBuilder &operator<<(StringBuilder &b, unsigned short int data)
 {
-	LocaleImpl.PrepareWStream(b);
-	LocaleImpl.wstream << data;
-	LocaleImpl.FlushWStream(b);
+	LocaleImpl *impl = getLocaleImpl();
+	impl->PrepareWStream(b);
+	impl->wstream << data;
+	impl->FlushWStream(b);
 	return b;
 }
 
 StringBuilder &operator<<(StringBuilder &b, unsigned int data)
 {
-	LocaleImpl.PrepareWStream(b);
-	LocaleImpl.wstream << data;
-	LocaleImpl.FlushWStream(b);
+	LocaleImpl *impl = getLocaleImpl();
+	impl->PrepareWStream(b);
+	impl->wstream << data;
+	impl->FlushWStream(b);
 	return b;
 }
 
 StringBuilder &operator<<(StringBuilder &b, unsigned long int data)
 {
-	LocaleImpl.PrepareWStream(b);
-	LocaleImpl.wstream << data;
-	LocaleImpl.FlushWStream(b);
+	LocaleImpl *impl = getLocaleImpl();
+	impl->PrepareWStream(b);
+	impl->wstream << data;
+	impl->FlushWStream(b);
 	return b;
 }
 
 StringBuilder &operator<<(StringBuilder &b, unsigned long long int data)
 {
-	LocaleImpl.PrepareWStream(b);
-	LocaleImpl.wstream << data;
-	LocaleImpl.FlushWStream(b);
+	LocaleImpl *impl = getLocaleImpl();
+	impl->PrepareWStream(b);
+	impl->wstream << data;
+	impl->FlushWStream(b);
 	return b;
 }
 
@@ -627,61 +676,66 @@ StringBuilder &operator<<(StringBuilder &b, String const &data)
 
 StringBuilder &operator<<(StringBuilder &b, float data)
 {
-	LocaleImpl.PrepareWStream(b);
-	LocaleImpl.wstream << data;
-	LocaleImpl.FlushWStream(b);
+	LocaleImpl *impl = getLocaleImpl();
+	impl->PrepareWStream(b);
+	impl->wstream << data;
+	impl->FlushWStream(b);
 	return b;
 }
 
 StringBuilder &operator<<(StringBuilder &b, double data)
 {
-	LocaleImpl.PrepareWStream(b);
-	LocaleImpl.wstream << data;
-	LocaleImpl.FlushWStream(b);
+	LocaleImpl *impl = getLocaleImpl();
+	impl->PrepareWStream(b);
+	impl->wstream << data;
+	impl->FlushWStream(b);
 	return b;
 }
 
 String::Split String::SplitSigned(long long int &value, size_t pos, std::ios_base::fmtflags set, std::ios_base::fmtflags reset) const
 {
-	LocaleImpl.PrepareWStream(*this, pos, set, reset);
-	LocaleImpl.wstream >> value;
-	if(LocaleImpl.wstream.fail())
+	LocaleImpl *impl = getLocaleImpl();
+	impl->PrepareWStream(*this, pos, set, reset);
+	impl->wstream >> value;
+	if(impl->wstream.fail())
 	{
-		LocaleImpl.FlushWStream();
+		impl->FlushWStream();
 		return Split(*this, pos, npos, 0, false);
 	}
-	LocaleImpl.wstream.clear();
-	Split split(*this, pos, pos + LocaleImpl.wstream.tellg(), 0, false);
-	LocaleImpl.FlushWStream();
+	impl->wstream.clear();
+	Split split(*this, pos, pos + impl->wstream.tellg(), 0, false);
+	impl->FlushWStream();
 	return split;
 }
 
 String::Split String::SplitUnsigned(unsigned long long int &value, size_t pos, std::ios_base::fmtflags set, std::ios_base::fmtflags reset) const
 {
-	LocaleImpl.PrepareWStream(*this, pos, set, reset);
-	LocaleImpl.wstream >> value;
-	if(LocaleImpl.wstream.fail())
+	LocaleImpl *impl = getLocaleImpl();
+	impl->PrepareWStream(*this, pos, set, reset);
+	impl->wstream >> value;
+	if(impl->wstream.fail())
 	{
-		LocaleImpl.FlushWStream();
+		impl->FlushWStream();
 		return Split(*this, pos, npos, 0, false);
 	}
-	LocaleImpl.wstream.clear();
-	Split split(*this, pos, pos + LocaleImpl.wstream.tellg(), 0, false);
-	LocaleImpl.FlushWStream();
+	impl->wstream.clear();
+	Split split(*this, pos, pos + impl->wstream.tellg(), 0, false);
+	impl->FlushWStream();
 	return split;
 }
 
 String::Split String::SplitFloat(double &value, size_t pos, std::ios_base::fmtflags set, std::ios_base::fmtflags reset) const
 {
-	LocaleImpl.PrepareWStream(*this, pos, set, reset);
-	LocaleImpl.wstream >> value;
-	if(LocaleImpl.wstream.fail())
+	LocaleImpl *impl = getLocaleImpl();
+	impl->PrepareWStream(*this, pos, set, reset);
+	impl->wstream >> value;
+	if(impl->wstream.fail())
 	{
-		LocaleImpl.FlushWStream();
+		impl->FlushWStream();
 		return Split(*this, pos, npos, 0, false);
 	}
-	LocaleImpl.wstream.clear();
-	Split split(*this, pos, pos + LocaleImpl.wstream.tellg(), 0, false);
-	LocaleImpl.FlushWStream();
+	impl->wstream.clear();
+	Split split(*this, pos, pos + impl->wstream.tellg(), 0, false);
+	impl->FlushWStream();
 	return split;
 }

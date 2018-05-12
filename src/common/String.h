@@ -564,11 +564,11 @@ public:
 
 	template<typename T> ByteStringBuilder &operator<<(T) &&= delete;
 
-	template<typename T, typename... Ts> ByteStringBuilder &Add(T &&arg, Ts&&... args)
+	template<typename T, typename... Ts> inline ByteStringBuilder &Add(T &&arg, Ts&&... args)
 	{
 		return (*this << std::forward<T>(arg)).Add(std::forward<Ts>(args)...);
 	}
-	ByteStringBuilder &Add() { return *this; }
+	inline ByteStringBuilder &Add() { return *this; }
 };
 
 ByteStringBuilder &operator<<(ByteStringBuilder &, short int);
@@ -607,11 +607,11 @@ public:
 
 	template<typename T> StringBuilder &operator<<(T) = delete;
 
-	template<typename T, typename... Ts> StringBuilder &Add(T &&arg, Ts&&... args)
+	template<typename T, typename... Ts> inline StringBuilder &Add(T &&arg, Ts&&... args)
 	{
 		return (*this << std::forward<T>(arg)).Add(std::forward<Ts>(args)...);
 	}
-	StringBuilder &Add() { return *this; }
+	inline StringBuilder &Add() { return *this; }
 };
 
 StringBuilder &operator<<(StringBuilder &, short int);
