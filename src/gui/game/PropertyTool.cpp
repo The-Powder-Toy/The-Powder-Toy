@@ -179,7 +179,10 @@ void PropertyWindow::SetProperty()
 						float v = value.SubstrFromEnd(1).ToNumber<float>();
 						tool->propValue.Float = (v-32.0f)*5/9+273.15f;
 					}
-					tool->propValue.Float = value.ToNumber<float>();
+					else
+					{
+						tool->propValue.Float = value.ToNumber<float>();
+					}
 #ifdef DEBUG
 					std::cout << "Got float value " << tool->propValue.Float << std::endl;
 #endif
