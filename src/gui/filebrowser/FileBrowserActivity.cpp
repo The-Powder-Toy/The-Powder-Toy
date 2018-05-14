@@ -58,11 +58,7 @@ class LoadFilesTask: public Task
 	virtual bool doWork()
 	{
 		std::vector<ByteString> files = Client::Ref().DirectorySearch(directory, search, ".cps");
-		std::sort(files.rbegin(), files.rend(), [](ByteString a, ByteString b) {
-			std::transform(a.begin(), a.end(), a.begin(), ::tolower);
-			std::transform(b.begin(), b.end(), b.begin(), ::tolower);
-			return a < b;
-		});
+		std::sort(files.rbegin(), files.rend(), [](ByteString a, ByteString b) { return a.ToLower() < b.ToLower(); });
 
 		notifyProgress(-1);
 		for(std::vector<ByteString>::iterator iter = files.begin(), end = files.end(); iter != end; ++iter)

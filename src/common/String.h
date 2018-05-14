@@ -4,6 +4,7 @@
 #include <sstream>
 #include <vector>
 #include <string>
+#include <limits>
 #include <ios>
 
 /*
@@ -55,6 +56,11 @@
 	Contains(String infix)
 	Contains(value_type infix)
 		Self-explanatory.
+
+	ToLower()
+	ToUpper()
+		Lowercases/Uppercases characters in the string. Only works on
+		characters in the ASCII range.
 
 	ByteString::FromUtf8(bool ignoreError = true)
 		Decodes UTF-8 byte sequences into Unicode codepoints.
@@ -324,6 +330,24 @@ public:
 	inline ByteString &Erase(size_t pos, size_t count) { super::erase(pos, count); return *this; }
 	inline ByteString &EraseBetween(size_t from, size_t to) { if(from < to) super::erase(from, to - from); return *this; }
 
+	inline ByteString ToLower() const
+	{
+		std::locale const &loc = std::locale::classic();
+		ByteString value(*this);
+		for(value_type &ch : value)
+			ch = std::tolower(ch, loc);
+		return value;
+	}
+
+	inline ByteString ToUpper() const
+	{
+		std::locale const &loc = std::locale::classic();
+		ByteString value(*this);
+		for(value_type &ch : value)
+			ch = std::toupper(ch, loc);
+		return value;
+	}
+
 	String FromUtf8(bool ignoreError = true) const;
 	inline String FromAscii() const;
 	template<typename... Ts> static ByteString Build(Ts&&... args);
@@ -478,6 +502,26 @@ public:
 	inline String &Insert(size_t pos, String const &str) { super::insert(pos, str); return *this; }
 	inline String &Erase(size_t pos, size_t count) { super::erase(pos, count); return *this; }
 	inline String &EraseBetween(size_t from, size_t to) { if(from < to) super::erase(from, to - from); return *this; }
+
+	inline String ToLower() const
+	{
+		std::locale const &loc = std::locale::classic();
+		String value(*this);
+		for(value_type &ch : value)
+			if(ch <= std::numeric_limits<ByteString::value_type>::max())
+				ch = std::tolower(ch, loc);
+		return value;
+	}
+
+	inline String ToUpper() const
+	{
+		std::locale const &loc = std::locale::classic();
+		String value(*this);
+		for(value_type &ch : value)
+			if(ch <= std::numeric_limits<ByteString::value_type>::max())
+				ch = std::toupper(ch, loc);
+		return value;
+	}
 
 	ByteString ToUtf8() const;
 	ByteString ToAscii() const;
