@@ -11,30 +11,22 @@
 
 ByteString format::URLEncode(ByteString source)
 {
-	char * src = (char *)source.c_str();
-	char * dst = new char[(source.length()*3)+2];
-	std::fill(dst, dst+(source.length()*3)+2, 0);
+	ByteString finalString;
 
-	char *d;
-	for (d = dst; *d; d++) ;
-
-	for (unsigned char *s = (unsigned char *)src; *s; s++)
+	for (auto& s : source)
 	{
-		if ((*s>='0' && *s<='9') ||
-		        (*s>='a' && *s<='z') ||
-		        (*s>='A' && *s<='Z'))
-			*(d++) = *s;
+		if ((s >= '0' && s <= '9') ||
+			(s >= 'a' && s <= 'z') ||
+			(s >= 'A' && s <= 'Z'))
+			finalString.insert(finalString.end() - 1, s);
 		else
 		{
-			*(d++) = '%';
-			*(d++) = hex[*s>>4];
-			*(d++) = hex[*s&15];
+			finalString.insert(finalString.end() - 1, '%');
+			finalString.insert(finalString.end() - 1, s >> 4);
+			finalString.insert(finalString.end() - 1, s & 15);
 		}
 	}
-	*d = 0;
 
-	ByteString finalString(dst);
-	delete[] dst;
 	return finalString;
 }
 
