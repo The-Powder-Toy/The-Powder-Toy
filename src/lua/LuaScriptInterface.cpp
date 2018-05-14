@@ -138,6 +138,7 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	initPlatformAPI();
 
 	//Old TPT API
+	char tmpname[12];
 	int currentElementMeta, currentElement;
 	const static struct luaL_Reg tptluaapi [] = {
 		{"test", &luatpt_test},
@@ -294,6 +295,10 @@ tpt.partsdata = nil");
 	tptElements = lua_gettop(l);
 	for (int i = 1; i < PT_NUM; i++)
 	{
+		for (size_t j = 0; j < luacon_sim->elements[i].Name.size(); j++)
+			tmpname[j] = tolower(luacon_sim->elements[i].Name[j]);
+		tmpname[luacon_sim->elements[i].Name.size()] = 0;
+
 		lua_newtable(l);
 		currentElement = lua_gettop(l);
 		lua_pushinteger(l, i);
@@ -307,7 +312,7 @@ tpt.partsdata = nil");
 		lua_setfield(l, currentElementMeta, "__index");
 		lua_setmetatable(l, currentElement);
 
-		lua_setfield(l, tptElements, luacon_sim->elements[i].Name.ToLower().c_str());
+		lua_setfield(l, tptElements, tmpname);
 	}
 	lua_setfield(l, tptProperties, "el");
 
@@ -315,6 +320,10 @@ tpt.partsdata = nil");
 	tptElementTransitions = lua_gettop(l);
 	for (int i = 1; i < PT_NUM; i++)
 	{
+		for (size_t j = 0; j < luacon_sim->elements[i].Name.size(); j++)
+			tmpname[j] = tolower(luacon_sim->elements[i].Name[j]);
+		tmpname[luacon_sim->elements[i].Name.size()] = 0;
+
 		lua_newtable(l);
 		currentElement = lua_gettop(l);
 		lua_newtable(l);
@@ -327,7 +336,7 @@ tpt.partsdata = nil");
 		lua_setfield(l, currentElementMeta, "__index");
 		lua_setmetatable(l, currentElement);
 
-		lua_setfield(l, tptElementTransitions, luacon_sim->elements[i].Name.ToLower().c_str());
+		lua_setfield(l, tptElementTransitions, tmpname);
 	}
 	lua_setfield(l, tptProperties, "eltransition");
 
@@ -801,8 +810,10 @@ void LuaScriptInterface::initSimulationAPI()
 	particleProperties = new StructProperty[particlePropertiesV.size()];
 	for(std::vector<StructProperty>::iterator iter = particlePropertiesV.begin(), end = particlePropertiesV.end(); iter != end; ++iter)
 	{
+		ByteString propertyName = (*iter).Name;
+		std::transform(propertyName.begin(), propertyName.end(), propertyName.begin(), ::toupper);
 		lua_pushinteger(l, particlePropertiesCount);
-		lua_setfield(l, -2, ("FIELD_" + (*iter).Name.ToUpper()).c_str());
+		lua_setfield(l, -2, ("FIELD_"+propertyName).c_str());
 		particleProperties[particlePropertiesCount++] = *iter;
 	}
 
@@ -2522,8 +2533,10 @@ int LuaScriptInterface::elements_allocate(lua_State * l)
 	ByteString group, id, identifier;
 	luaL_checktype(l, 1, LUA_TSTRING);
 	luaL_checktype(l, 2, LUA_TSTRING);
-	group = ByteString(lua_tostring(l, 1)).ToUpper();
-	id = ByteString(lua_tostring(l, 2)).ToUpper();
+	group = ByteString(lua_tostring(l, 1));
+	std::transform(group.begin(), group.end(), group.begin(), ::toupper);
+	id = ByteString(lua_tostring(l, 2));
+	std::transform(id.begin(), id.end(), id.begin(), ::toupper);
 
 	if(group == "DEFAULT")
 		return luaL_error(l, "You cannot create elements in the 'default' group.");

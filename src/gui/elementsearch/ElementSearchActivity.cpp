@@ -104,7 +104,8 @@ void ElementSearchActivity::searchTools(String query)
 	ui::Point viewPosition = searchField->Position + ui::Point(2+0, searchField->Size.Y+2+8);
 	ui::Point current = ui::Point(0, 0);
 
-	ByteString queryLower = query.ToUtf8().ToLower();
+	ByteString queryLower = query.ToAscii();
+	std::transform(queryLower.begin(), queryLower.end(), queryLower.begin(), ::tolower);
 
 	std::vector<Tool *> matches;
 	std::vector<Tool *> frontmatches;
@@ -112,7 +113,8 @@ void ElementSearchActivity::searchTools(String query)
 
 	for(std::vector<Tool*>::const_iterator iter = tools.begin(), end = tools.end(); iter != end; ++iter)
 	{
-		ByteString nameLower = (*iter)->GetName().ToLower();
+		ByteString nameLower = (*iter)->GetName();
+		std::transform(nameLower.begin(), nameLower.end(), nameLower.begin(), ::tolower);
 		if(nameLower == queryLower)
 			exactmatches.push_back(*iter);
 		else if(nameLower.BeginsWith(queryLower))

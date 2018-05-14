@@ -289,7 +289,8 @@ void PreviewView::CheckComment()
 {
 	if (!commentWarningLabel)
 		return;
-	String text = addCommentBox->GetText().ToLower();
+	String text = addCommentBox->GetText();
+	std::transform(text.begin(), text.end(), text.begin(), ::tolower);
 	if (!userIsAuthor && (text.Contains("stolen") || text.Contains("copied")))
 	{
 		if (!commentHelpText)

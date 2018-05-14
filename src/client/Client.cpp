@@ -468,7 +468,9 @@ std::vector<ByteString> Client::DirectorySearch(ByteString directory, ByteString
 {
 	std::vector<ByteString> extensions;
 	extensions.push_back(extension);
-	return DirectorySearch(directory, search.ToUpper(), extensions);
+	for (ByteString::iterator iter = search.begin(); iter != search.end(); ++iter)
+		*iter = toupper(*iter);
+	return DirectorySearch(directory, search, extensions);
 }
 
 std::vector<ByteString> Client::DirectorySearch(ByteString directory, ByteString search, std::vector<ByteString> extensions)
@@ -529,10 +531,12 @@ std::vector<ByteString> Client::DirectorySearch(ByteString directory, ByteString
 			if(filename.EndsWith(*extIter))
 			{
 				extensionMatch = true;
-				tempfilename = filename.SubstrFromEnd(0, (*extIter).size()).ToUpper();
+				tempfilename = filename.SubstrFromEnd(0, (*extIter).size());
 				break;
 			}
 		}
+		for (ByteString::iterator iter = tempfilename.begin(); iter != tempfilename.end(); ++iter)
+			*iter = toupper(*iter);
 		bool searchMatch = !search.size();
 		if(search.size() && tempfilename.Contains(search))
 			searchMatch = true;
