@@ -108,7 +108,8 @@ public:
 	static char * GenerateGradient(pixel * colours, float * points, int pointcount, int size);
 
 	//PTIF methods
-	static void *ptif_pack(pixel *src, int w, int h, int *result_size);
+	//static void *ptif_pack(pixel *src, int w, int h, int *result_size);
+	static std::vector<char> ptif_pack(pixel *src, int w, int h);
 	static pixel *ptif_unpack(void *datain, int size, int *w, int *h);
 	static pixel *resample_img_nn(pixel *src, int sw, int sh, int rw, int rh);
 	static pixel *resample_img(pixel *src, int sw, int sh, int rw, int rh);

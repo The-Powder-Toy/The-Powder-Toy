@@ -18,12 +18,12 @@ ByteString format::URLEncode(ByteString source)
 		if ((s >= '0' && s <= '9') ||
 			(s >= 'a' && s <= 'z') ||
 			(s >= 'A' && s <= 'Z'))
-			finalString.insert(finalString.end() - 1, s);
+			finalString.insert(finalString.end(), s);
 		else
 		{
-			finalString.insert(finalString.end() - 1, '%');
-			finalString.insert(finalString.end() - 1, s >> 4);
-			finalString.insert(finalString.end() - 1, s & 15);
+			finalString.insert(finalString.end(), '%');
+			finalString.insert(finalString.end(), s >> 4);
+			finalString.insert(finalString.end(), s & 15);
 		}
 	}
 
@@ -118,17 +118,7 @@ String format::CleanString(String dirtyString, bool ascii, bool color, bool newl
 
 std::vector<char> format::VideoBufferToPTI(const VideoBuffer & vidBuf)
 {
-	std::vector<char> data;
-	int dataSize = 0;
-	char * buffer = (char*)Graphics::ptif_pack(vidBuf.Buffer, vidBuf.Width, vidBuf.Height, &dataSize);
-
-	if(buffer)
-	{
-		data.insert(data.end(), buffer, buffer+dataSize);
-		free(buffer);
-	}
-
-	return data;
+	return Graphics::ptif_pack(vidBuf.Buffer, vidBuf.Width, vidBuf.Height);
 }
 
 VideoBuffer * format::PTIToVideoBuffer(std::vector<char> & data)
@@ -190,11 +180,17 @@ std::vector<char> format::VideoBufferToBMP(const VideoBuffer & vidBuf)
 std::vector<char> format::VideoBufferToPPM(const VideoBuffer & vidBuf)
 {
 	std::vector<char> data;
-	char buffer[256];
-	sprintf(buffer, "P6\n%d %d\n255\n", vidBuf.Width, vidBuf.Height);
-	data.insert(data.end(), buffer, buffer+strlen(buffer));
+	{
+		auto w = std::to_string(vidBuf.Width);
+		auto h = std::to_string(vidBuf.Height);
 
-	unsigned char * currentRow = new unsigned char[vidBuf.Width*3];
+		using namespace std::literals;
+		std::string string = "P6\n"s + w + " "s + h + "\n255\n"s;
+		
+		data.insert(data.end(), string.begin(), string.end());
+	}
+
+	auto currentRow = std::vector<unsigned char>(vidBuf.Width * 3);
 	for(int y = 0; y < vidBuf.Height; y++)
 	{
 		int rowPos = 0;
@@ -204,9 +200,8 @@ std::vector<char> format::VideoBufferToPPM(const VideoBuffer & vidBuf)
 			currentRow[rowPos++] = PIXG(vidBuf.Buffer[(y*vidBuf.Width)+x]);
 			currentRow[rowPos++] = PIXB(vidBuf.Buffer[(y*vidBuf.Width)+x]);
 		}
-		data.insert(data.end(), currentRow, currentRow+(vidBuf.Width*3));
+		data.insert(data.end(), currentRow.begin(), currentRow.end());
 	}
-	delete [] currentRow;
 
 	return data;
 }

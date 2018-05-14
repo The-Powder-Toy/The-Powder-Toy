@@ -169,13 +169,16 @@ char * Graphics::GenerateGradient(pixel * colours, float * points, int pointcoun
 	return newdata;
 }
 
-void *Graphics::ptif_pack(pixel *src, int w, int h, int *result_size){
+//void *Graphics::ptif_pack(pixel *src, int w, int h, int *result_size)
+std::vector<char> Graphics::ptif_pack(pixel *src, int w, int h)
+{
 	int i = 0, datalen = (w*h)*3, cx = 0, cy = 0;
-	unsigned char *red_chan = (unsigned char*)calloc(1, w*h);
-	unsigned char *green_chan = (unsigned char*)calloc(1, w*h);
-	unsigned char *blue_chan = (unsigned char*)calloc(1, w*h);
-	unsigned char *data = (unsigned char*)malloc(((w*h)*3)+8);
-	unsigned char *result = (unsigned char*)malloc(((w*h)*3)+8);
+
+	auto red_chan = std::vector<char>(w*h, 0);
+	auto green_chan = std::vector<char>(w*h, 0);
+	auto blue_chan = std::vector<char>(w*h, 0);
+	auto data = std::vector<char>(datalen + 8);
+	auto result = std::vector<char>(datalen + 8);
 
 	for(cx = 0; cx<w; cx++){
 		for(cy = 0; cy<h; cy++){
@@ -185,12 +188,10 @@ void *Graphics::ptif_pack(pixel *src, int w, int h, int *result_size){
 		}
 	}
 
-	memcpy(data, red_chan, w*h);
-	memcpy(data+(w*h), green_chan, w*h);
-	memcpy(data+((w*h)*2), blue_chan, w*h);
-	free(red_chan);
-	free(green_chan);
-	free(blue_chan);
+	//Copy the Red, Green and Blue channels to the data, appending each to the end of data
+	std::copy(red_chan.begin(), red_chan.end(), data.end() - 1);
+	std::copy(green_chan.begin(), green_chan.end(), data.end() - 1);
+	std::copy(blue_chan.begin(), blue_chan.end(), data.end() - 1);
 
 	result[0] = 'P';
 	result[1] = 'T';
@@ -203,14 +204,11 @@ void *Graphics::ptif_pack(pixel *src, int w, int h, int *result_size){
 
 	i -= 8;
 
-	if(BZ2_bzBuffToBuffCompress((char *)(result+8), (unsigned *)&i, (char *)data, datalen, 9, 0, 0) != 0){
-		free(data);
-		free(result);
-		return NULL;
+	if(BZ2_bzBuffToBuffCompress((char *)(result.data()+8), (unsigned *)&i, (char *)data.data(), datalen, 9, 0, 0) != 0){
+		std::vector<char> null;
+		return null;
 	}
 
-	*result_size = i+8;
-	free(data);
 	return result;
 }
 
