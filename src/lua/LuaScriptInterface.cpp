@@ -359,6 +359,7 @@ tpt.partsdata = nil");
 	lua_setfield(l, -2, "__newindex");
 	lua_setmetatable(l, -2);
 
+	initLegacyProps();
 }
 
 void LuaScriptInterface::Init()
