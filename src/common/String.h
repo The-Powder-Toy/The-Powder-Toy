@@ -4,6 +4,7 @@
 #include <sstream>
 #include <vector>
 #include <string>
+#include <locale>
 #include <limits>
 #include <ios>
 
