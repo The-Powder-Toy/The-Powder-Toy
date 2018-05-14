@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <limits>
+#include <locale>
 #include <ios>
 
 /*
