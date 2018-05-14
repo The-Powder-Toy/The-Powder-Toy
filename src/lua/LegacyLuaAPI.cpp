@@ -56,9 +56,7 @@ void initLegacyProps()
 
 		else
 		{
-			ByteString temp = ByteString(prop.Name);
-			std::transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
-			legacyPropNames.insert(std::pair<ByteString, StructProperty>(temp, prop));
+			legacyPropNames.insert(std::pair<ByteString, StructProperty>(prop.Name.ToLower(), prop));
 		}
 	}
 }
