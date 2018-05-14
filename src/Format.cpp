@@ -33,12 +33,13 @@ ByteString format::URLEncode(ByteString source)
 ByteString format::UnixtimeToDate(time_t unixtime, ByteString dateFormat)
 {
 	struct tm * timeData;
-	char buffer[128];
+	ByteString buffer;
+	buffer.reserve(128);
 
 	timeData = localtime(&unixtime);
 
-	strftime(buffer, 128, dateFormat.c_str(), timeData);
-	return ByteString(buffer);
+	strftime(&buffer[0], 128, dateFormat.c_str(), timeData);
+	return buffer;
 }
 
 ByteString format::UnixtimeToDateMini(time_t unixtime)
