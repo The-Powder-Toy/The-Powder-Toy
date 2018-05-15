@@ -169,7 +169,6 @@ char * Graphics::GenerateGradient(pixel * colours, float * points, int pointcoun
 	return newdata;
 }
 
-//void *Graphics::ptif_pack(pixel *src, int w, int h, int *result_size)
 std::vector<char> Graphics::ptif_pack(pixel *src, int w, int h)
 {
 	int i = 0, datalen = (w*h)*3, cx = 0, cy = 0;
