@@ -160,7 +160,7 @@ std::vector<char> format::VideoBufferToBMP(const VideoBuffer & vidBuf)
 
 	data.insert(data.end(), buffer, buffer+54);
 
-	char *currentRow = (char *)malloc((vidBuf.Width * 3) + padding);
+	auto currentRow = std::vector<char>(vidBuf.Width * 3);
 	for(int y = vidBuf.Height - 1; y >= 0; y--)
 	{
 		int rowPos = 0;
@@ -170,9 +170,8 @@ std::vector<char> format::VideoBufferToBMP(const VideoBuffer & vidBuf)
 			currentRow[rowPos++] = PIXG(vidBuf.Buffer[(y*vidBuf.Width)+x]);
 			currentRow[rowPos++] = PIXR(vidBuf.Buffer[(y*vidBuf.Width)+x]);
 		}
-		data.insert(data.end(), currentRow, currentRow+(vidBuf.Width*3)+padding);
+		data.insert(data.end(), data.begin(), data.end());
 	}
-	free(currentRow);
 
 	return data;
 }
