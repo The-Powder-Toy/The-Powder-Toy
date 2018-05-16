@@ -29,7 +29,6 @@ Makefile.me
 *.vcxproj*
 *.opensdf
 *.sdf
-*.user
 *.filter
 *.sln
 *.suo
@@ -67,3 +66,4 @@ site_scons/site_tools/mfprogram/*.pyc
 site_scons/site_tools/gch/*.pyc
 
 screenshot_*
+TODO.txt
