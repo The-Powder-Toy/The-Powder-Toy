@@ -13,7 +13,7 @@ class TextboxAction
 {
 public:
 	virtual void TextChangedCallback(ui::Textbox * sender) {}
-	virtual ~TextboxAction() {}
+	virtual ~TextboxAction() = default;
 };
 
 class Textbox : public Label
