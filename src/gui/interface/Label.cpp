@@ -26,11 +26,6 @@ Label::Label(Point position, Point size, String labelText):
 	menu->AddItem(ContextMenuItem("Copy", 0, true));
 }
 
-Label::~Label()
-{
-
-}
-
 void Label::SetMultiline(bool status)
 {
 	multiline = status;
@@ -74,17 +69,15 @@ void Label::updateMultiline()
 	int lines = 1;
 	if (text.length()>0)
 	{
-		String::value_type *rawText = new String::value_type[text.length()+1];
-		std::copy(text.begin(), text.end(), rawText);
-		rawText[text.length()] = 0;
+		auto rawText = text;
 
 		String::value_type c, pc = 0;
 		int charIndex = 0;
 
 		int wordWidth = 0;
-		int lineWidth = 0;
+		int lineWidth = 0; 
 		String::value_type *wordStart = NULL;
-		while ((c = rawText[charIndex++]))
+		for (auto& c : rawText)
 		{
 			switch(c)
 			{
@@ -129,39 +122,6 @@ void Label::updateMultiline()
 			Size.Y = lines*12+3;
 		}
 		textLines = rawText;
-		delete[] rawText;
-		/*int currentWidth = 0;
-		char * lastSpace = NULL;
-		char * currentWord = rawText;
-		char * nextSpace;
-		while(true)
-		{
-			nextSpace = strchr(currentWord+1, ' ');
-			if(nextSpace)
-				nextSpace[0] = 0;
-			int width = Graphics::textwidth(currentWord);
-			if(width+currentWidth >= Size.X-(Appearance.Margin.Left+Appearance.Margin.Right))
-			{
-				currentWidth = width;
-				if(currentWord!=rawText)
-				{
-					currentWord[0] = '\n';
-					lines++;
-				}
-			}
-			else
-				currentWidth += width;
-			if(nextSpace)
-				nextSpace[0] = ' ';
-			if(!currentWord[0] || !currentWord[1] || !(currentWord = strchr(currentWord+1, ' ')))
-				break;
-		}
-		if(autoHeight)
-		{
-			Size.Y = lines*12;
-		}
-		textLines = std::string(rawText);
-		delete[] rawText;*/
 	}
 	else
 	{

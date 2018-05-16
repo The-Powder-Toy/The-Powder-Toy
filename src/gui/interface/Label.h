@@ -43,7 +43,7 @@ namespace ui
 		//Label(Window* parent_state, String labelText);
 		Label(Point position, Point size, String labelText);
 		//Label(String labelText);
-		virtual ~Label();
+		virtual ~Label() = default;
 
 		virtual void SetMultiline(bool status);
 
