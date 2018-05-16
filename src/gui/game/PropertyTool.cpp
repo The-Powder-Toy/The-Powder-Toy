@@ -261,7 +261,7 @@ void PropertyTool::Draw(Simulation *sim, Brush *cBrush, ui::Point position)
 	if(cBrush)
 	{
 		int radiusX = cBrush->GetRadius().X, radiusY = cBrush->GetRadius().Y, sizeX = cBrush->GetSize().X, sizeY = cBrush->GetSize().Y;
-		unsigned char *bitmap = cBrush->GetBitmap();
+		std::vector<unsigned char> bitmap = cBrush->GetBitmap();
 		for(int y = 0; y < sizeY; y++)
 			for(int x = 0; x < sizeX; x++)
 				if(bitmap[(y*sizeX)+x] && (position.X+(x-radiusX) >= 0 && position.Y+(y-radiusY) >= 0 && position.X+(x-radiusX) < XRES && position.Y+(y-radiusY) < YRES))

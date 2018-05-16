@@ -1971,7 +1971,7 @@ int LuaScriptInterface::simulation_brush(lua_State * l)
 	lua_pushnumber(l, 0);
 	int bitmapSize = sizeX * sizeY * sizeof(unsigned char);
 	void *bitmapCopy = lua_newuserdata(l, bitmapSize);
-	memcpy(bitmapCopy, brushList[brushID]->GetBitmap(), bitmapSize);
+	memcpy(bitmapCopy, brushList[brushID]->GetBitmap().data(), bitmapSize);
 	brushList[brushID]->SetRadius(tempRadius);
 
 	lua_pushcclosure(l, BrushClosure, 9);

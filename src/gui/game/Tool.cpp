@@ -128,7 +128,7 @@ void WindTool::DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui
 	sizeX = brush->GetSize().X;
 	sizeY = brush->GetSize().Y;
 
-	unsigned char *bitmap = brush->GetBitmap();
+	std::vector<unsigned char> bitmap = brush->GetBitmap();
 
 	for(int y = 0; y < sizeY; y++)
 	{

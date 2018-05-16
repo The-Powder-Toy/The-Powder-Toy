@@ -16,7 +16,7 @@ class BitmapBrush: public Brush
 {
 protected:
 	ui::Point origSize;
-	unsigned char * origBitmap;
+	std::vector<unsigned char> origBitmap;
 public:
 	BitmapBrush(std::vector<unsigned char> newBitmap, ui::Point rectSize_):
 		Brush(ui::Point(0, 0)),
@@ -34,8 +34,7 @@ public:
 		size = newSize;
 		origSize = size;
 
-		origBitmap = new unsigned char[size.X*size.Y];
-		std::fill(origBitmap, origBitmap+(size.X*size.Y), 0);
+		origBitmap = std::vector<unsigned char>(size.X*size.Y, 0);
 		for(int y = 0; y < rectSize_.Y; y++)
 		{
 			for(int x = 0; x < rectSize_.X; x++)
@@ -49,12 +48,11 @@ public:
 	};
 	virtual void GenerateBitmap()
 	{
-		if(origBitmap)
+		if(origBitmap.size())
 		{
-			delete[] bitmap;
-			bitmap = new unsigned char[size.X*size.Y];
-			if(size == origSize)
-				std::copy(origBitmap, origBitmap+(origSize.X*origSize.Y), bitmap);
+			bitmap = std::vector<unsigned char>(size.X*size.Y);
+			if (size == origSize)
+				std::copy(origBitmap.begin(), origBitmap.end(), bitmap.begin());
 			else
 			{
 				//Bilinear interpolation
@@ -84,10 +82,6 @@ public:
 				}
 			}
 		}
-	}
-	virtual ~BitmapBrush()
-	{
-		delete[] origBitmap;
 	}
 };
 

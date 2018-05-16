@@ -21,8 +21,7 @@ public:
 	};
 	virtual void GenerateBitmap()
 	{
-		delete[] bitmap;
-		bitmap = new unsigned char[size.X*size.Y];
+		bitmap = std::vector<unsigned char>(size.X*size.Y);
 		int rx = radius.X;
 		int ry = radius.Y;
 		for(int x = -rx; x <= rx; x++)

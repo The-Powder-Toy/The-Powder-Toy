@@ -35,11 +35,11 @@ void Brush::RenderLine(Renderer * ren, ui::Point position1, ui::Point position2)
 
 void Brush::RenderPoint(Renderer * ren, ui::Point position)
 {
-	if(!outline)
+	if(!outline.size())
 		updateOutline();
-	if(!outline)
+	if(!outline.size())
 		return;
-	ren->xor_bitmap(outline, position.X-radius.X, position.Y-radius.Y, size.X, size.Y);
+	ren->xor_bitmap(outline.data(), position.X-radius.X, position.Y-radius.Y, size.X, size.Y);
 }
 
 void Brush::RenderFill(Renderer * ren, ui::Point position)

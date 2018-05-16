@@ -582,9 +582,8 @@ int Simulation::flood_prop(int x, int y, size_t propoffset, PropertyValue propva
 	if (!r)
 		return 0;
 	int parttype = TYP(r);
-	char * bitmap = (char*)malloc(XRES*YRES); //Bitmap for checking
-	if (!bitmap) return -1;
-	memset(bitmap, 0, XRES*YRES);
+
+	std::vector<char> bitmap(XRES*YRES, 0);
 	try
 	{
 		CoordStack cs;
@@ -645,10 +644,8 @@ int Simulation::flood_prop(int x, int y, size_t propoffset, PropertyValue propva
 	catch (std::exception& e)
 	{
 		std::cerr << e.what() << std::endl;
-		free(bitmap);
 		return -1;
 	}
-	free(bitmap);
 	return did_something;
 }
 
@@ -1057,7 +1054,7 @@ void Simulation::ApplyDecorationPoint(int positionX, int positionY, int colR, in
 	if(cBrush)
 	{
 		int radiusX = cBrush->GetRadius().X, radiusY = cBrush->GetRadius().Y, sizeX = cBrush->GetSize().X, sizeY = cBrush->GetSize().Y;
-		unsigned char *bitmap = cBrush->GetBitmap();
+		std::vector<unsigned char> bitmap = cBrush->GetBitmap();
 
 		for(int y = 0; y < sizeY; y++)
 		{
@@ -1166,13 +1163,10 @@ bool Simulation::ColorCompare(Renderer *ren, int x, int y, int replaceR, int rep
 void Simulation::ApplyDecorationFill(Renderer *ren, int x, int y, int colR, int colG, int colB, int colA, int replaceR, int replaceG, int replaceB)
 {
 	int x1, x2;
-	char *bitmap = (char*)malloc(XRES*YRES); //Bitmap for checking
-	if (!bitmap)
-		return;
-	memset(bitmap, 0, XRES*YRES);
+
+	auto bitmap = std::vector<char>(XRES*YRES, 0);
 
 	if (!ColorCompare(ren, x, y, replaceR, replaceG, replaceB)) {
-		free(bitmap);
 		return;
 	}
 
@@ -1223,10 +1217,8 @@ void Simulation::ApplyDecorationFill(Renderer *ren, int x, int y, int colR, int 
 	catch (std::exception& e)
 	{
 		std::cerr << e.what() << std::endl;
-		free(bitmap);
 		return;
 	}
-	free(bitmap);
 }
 
 int Simulation::Tool(int x, int y, int tool, int brushX, int brushY, float strength)
@@ -1249,7 +1241,7 @@ int Simulation::ToolBrush(int positionX, int positionY, int tool, Brush * cBrush
 	if(cBrush)
 	{
 		int radiusX = cBrush->GetRadius().X, radiusY = cBrush->GetRadius().Y, sizeX = cBrush->GetSize().X, sizeY = cBrush->GetSize().Y;
-		unsigned char *bitmap = cBrush->GetBitmap();
+		std::vector<unsigned char> bitmap = cBrush->GetBitmap();
 		for(int y = 0; y < sizeY; y++)
 			for(int x = 0; x < sizeX; x++)
 				if(bitmap[(y*sizeX)+x] && (positionX+(x-radiusX) >= 0 && positionY+(y-radiusY) >= 0 && positionX+(x-radiusX) < XRES && positionY+(y-radiusY) < YRES))
@@ -1530,8 +1522,7 @@ int Simulation::CreateParts(int positionX, int positionY, int c, Brush * cBrush,
 	if (cBrush)
 	{
 		int radiusX = cBrush->GetRadius().X, radiusY = cBrush->GetRadius().Y, sizeX = cBrush->GetSize().X, sizeY = cBrush->GetSize().Y;
-		unsigned char *bitmap = cBrush->GetBitmap();
-
+		std::vector<unsigned char> bitmap = cBrush->GetBitmap();
 		// special case for LIGH
 		if (c == PT_LIGH)
 		{
@@ -4897,18 +4888,18 @@ movedone:
 
 int Simulation::GetParticleType(ByteString type)
 {
-	char * txt = (char*)type.c_str();
-
 	// alternative names for some elements
-	if (!strcasecmp(txt, "C4"))
+	auto txt = type.ToUpper();
+	if (txt == "C4")
 		return PT_PLEX;
-	else if (!strcasecmp(txt, "C5"))
+	else if (txt == "C5")
 		return PT_C5;
-	else if (!strcasecmp(txt, "NONE"))
+	else if (txt == "NONE")
 		return PT_NONE;
-	for (int i = 1; i < PT_NUM; i++)
+
+	for (size_t i = 1; i < PT_NUM; i++)
 	{
-		if (!strcasecmp(txt, elements[i].Name.c_str()) && elements[i].Name.size() && elements[i].Enabled)
+		if (!(type == elements[i].Name) && elements[i].Name.size() && elements[i].Enabled)
 		{
 			return i;
 		}
