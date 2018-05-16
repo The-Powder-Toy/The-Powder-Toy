@@ -1,6 +1,8 @@
 #include <cmath>
 #include <iostream>
 #include <bzlib.h>
+#include <vector>
+#include <algorithm>
 #include "common/String.h"
 #include "Config.h"
 #include "Misc.h"
@@ -211,13 +213,11 @@ std::vector<char> Graphics::ptif_pack(pixel *src, int w, int h)
 	return result;
 }
 
-pixel *Graphics::ptif_unpack(void *datain, int size, int *w, int *h){
-	int width, height, i, cx, cy, resCode;
-	unsigned char *red_chan;
-	unsigned char *green_chan;
-	unsigned char *blue_chan;
-	unsigned char *data = (unsigned char*)datain;
-	unsigned char *undata;
+pixel *Graphics::ptif_unpack(void *datain, int size, int *w, int *h)
+{
+	auto input = static_cast<unsigned char *>(datain);
+	std::vector<unsigned char> data(input, input + size);
+	
 	pixel *result;
 	if(size<16){
 		printf("Image empty\n");
@@ -227,51 +227,40 @@ pixel *Graphics::ptif_unpack(void *datain, int size, int *w, int *h){
 		printf("Image header invalid\n");
 		return NULL;
 	}
-	width = data[4]|(data[5]<<8);
-	height = data[6]|(data[7]<<8);
+	int width = data[4]|(data[5]<<8);
+	int height = data[6]|(data[7]<<8);
 
-	i = (width*height)*3;
-	undata = (unsigned char*)calloc(1, (width*height)*3);
-	red_chan = (unsigned char*)calloc(1, width*height);
-	green_chan = (unsigned char*)calloc(1, width*height);
-	blue_chan = (unsigned char *)calloc(1, width*height);
+	int i = (width*height)*3;
+
+	auto red_chan = std::vector<unsigned char>(width*height);
+	auto green_chan = std::vector<unsigned char>(width*height);
+	auto blue_chan = std::vector<unsigned char>(width*height);
+	auto undata = std::vector<unsigned char>(width*height * 3);
+
 	result = (pixel *)calloc(width*height, PIXELSIZE);
 
-	resCode = BZ2_bzBuffToBuffDecompress((char *)undata, (unsigned *)&i, (char *)(data+8), size-8, 0, 0);
+	int resCode = BZ2_bzBuffToBuffDecompress((char *)undata.data(), (unsigned *)&i, (char *)(data.data()+8), size-8, 0, 0);
 	if (resCode){
 		printf("Decompression failure, %d\n", resCode);
-		free(red_chan);
-		free(green_chan);
-		free(blue_chan);
-		free(undata);
-		free(result);
 		return NULL;
 	}
 	if(i != (width*height)*3){
 		printf("Result buffer size mismatch, %d != %d\n", i, (width*height)*3);
-		free(red_chan);
-		free(green_chan);
-		free(blue_chan);
-		free(undata);
-		free(result);
 		return NULL;
 	}
-	memcpy(red_chan, undata, width*height);
-	memcpy(green_chan, undata+(width*height), width*height);
-	memcpy(blue_chan, undata+((width*height)*2), width*height);
+	std::copy(undata.begin(), undata.begin()+width*height, red_chan.end());
+	std::copy(undata.begin()+width*height, undata.begin()+width*height*2, green_chan.end());
+	std::copy(undata.begin()+width*height*2, undata.begin()+width*height*3, blue_chan.end());
 
-	for(cx = 0; cx<width; cx++){
-		for(cy = 0; cy<height; cy++){
+	for (size_t cy = 0; cy < height; cy++) {
+		for (size_t cx = 0; cx < width; cx++) {
 			result[width*(cy)+(cx)] = PIXRGB(red_chan[width*(cy)+(cx)], green_chan[width*(cy)+(cx)], blue_chan[width*(cy)+(cx)]);
 		}
 	}
 
 	*w = width;
 	*h = height;
-	free(red_chan);
-	free(green_chan);
-	free(blue_chan);
-	free(undata);
+
 	return result;
 }
 
@@ -291,7 +280,8 @@ pixel *Graphics::resample_img(pixel *src, int sw, int sh, int rw, int rh)
 {
 #ifdef HIGH_QUALITY_RESAMPLE
 
-	unsigned char * source = (unsigned char*)src;
+	auto source_ptr = (unsigned char*)src;
+	auto source = std::vector<unsigned char>(source_ptr, source_ptr + sw * sh);
 	int sourceWidth = sw, sourceHeight = sh;
 	int resultWidth = rw, resultHeight = rh;
 	int sourcePitch = sourceWidth*PIXELSIZE, resultPitch = resultWidth*PIXELSIZE;
@@ -316,13 +306,13 @@ pixel *Graphics::resample_img(pixel *src, int sw, int sh, int rw, int rh)
 
 	unsigned char * resultImage = new unsigned char[resultHeight * resultPitch];
 	std::fill(resultImage, resultImage + (resultHeight*resultPitch), 0);
-
+	
 	//Resample time
 	int resultY = 0;
 	for (int sourceY = 0; sourceY < sourceHeight; sourceY++)
 	{
-		unsigned char * sourcePixel = &source[sourceY * sourcePitch];
-
+		//unsigned char * sourcePixel = &source[sourceY * sourcePitch];
+		auto sourcePixel = source.begin() + sourceY * sourcePitch;
 		//Move pixel components into channel samples
 		for (int c = 0; c < PIXELCHANNELS; c++)
 		{
@@ -1091,21 +1081,17 @@ void Graphics::draw_rgba_image(const unsigned char *data_, int x, int y, float a
 
 pixel *Graphics::render_packed_rgb(void *image, int width, int height, int cmp_size)
 {
-	unsigned char *tmp;
-	pixel *res;
-	int i;
-
-	tmp = (unsigned char *)malloc(width*height*3);
+	unsigned char *tmp = (unsigned char *)malloc(width*height*3);
 	if (!tmp)
 		return NULL;
-	res = (pixel *)malloc(width*height*PIXELSIZE);
+	pixel *res = (pixel *)malloc(width*height*PIXELSIZE);
 	if (!res)
 	{
 		free(tmp);
 		return NULL;
 	}
 
-	i = width*height*3;
+	int i = width*height*3;
 	if (BZ2_bzBuffToBuffDecompress((char *)tmp, (unsigned *)&i, (char *)image, cmp_size, 0, 0))
 	{
 		free(res);
