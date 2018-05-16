@@ -50,7 +50,7 @@ int TPTScriptInterface::Command(String command)
 ValueType TPTScriptInterface::testType(String word)
 {
 	size_t i = 0;
-	String::value_type const *rawWord = word.c_str();
+	//String::value_type const *rawWord = word.c_str();
 	//Function
 	if (word == "set")
 		return TypeFunction;
@@ -72,16 +72,16 @@ ValueType TPTScriptInterface::testType(String word)
 	//Basic type
 	for (i = 0; i < word.length(); i++)
 	{
-		if (!(rawWord[i] >= '0' && rawWord[i] <= '9') && !(rawWord[i] == '-' && !i))
+		if (!(word[i] >= '0' && word[i] <= '9') && !(word[i] == '-' && !i))
 		{
-			if (rawWord[i] == '.' && rawWord[i+1])
+			if (word[i] == '.' && word[i+1])
 				goto parseFloat;
-			else if (rawWord[i] == ',' && rawWord[i+1] >= '0' && rawWord[i+1] <= '9')
+			else if (word[i] == ',' && word[i+1] >= '0' && word[i+1] <= '9')
 				goto parsePoint;
-			else if ((rawWord[i] == '#' || (i && rawWord[i-1] == '0' && rawWord[i] == 'x')) &&
-				((rawWord[i+1] >= '0' && rawWord[i+1] <= '9')
-				|| (rawWord[i+1] >= 'a' && rawWord[i+1] <= 'f')
-				|| (rawWord[i+1] >= 'A' && rawWord[i+1] <= 'F')))
+			else if ((word[i] == '#' || (i && word[i-1] == '0' && word[i] == 'x')) &&
+				((word[i+1] >= '0' && word[i+1] <= '9')
+				|| (word[i+1] >= 'a' && word[i+1] <= 'f')
+				|| (word[i+1] >= 'A' && word[i+1] <= 'F')))
 				goto parseNumberHex;
 			else
 				goto parseString;
@@ -91,7 +91,7 @@ ValueType TPTScriptInterface::testType(String word)
 
 parseFloat:
 	for (i++; i < word.length(); i++)
-		if (!((rawWord[i] >= '0' && rawWord[i] <= '9')))
+		if (!((word[i] >= '0' && word[i] <= '9')))
 		{
 			goto parseString;
 		}
@@ -99,7 +99,7 @@ parseFloat:
 
 parseNumberHex:
 	for (i++; i < word.length(); i++)
-		if (!((rawWord[i] >= '0' && rawWord[i] <= '9') || (rawWord[i] >= 'a' && rawWord[i] <= 'f') || (rawWord[i] >= 'A' && rawWord[i] <= 'F')))
+		if (!((word[i] >= '0' && word[i] <= '9') || (word[i] >= 'a' && word[i] <= 'f') || (word[i] >= 'A' && word[i] <= 'F')))
 		{
 			goto parseString;
 		}
@@ -107,7 +107,7 @@ parseNumberHex:
 
 parsePoint:
 	for (i++; i < word.length(); i++)
-		if (!(rawWord[i] >= '0' && rawWord[i] <= '9'))
+		if (!(word[i] >= '0' && word[i] <= '9'))
 		{
 			goto parseString;
 		}
@@ -119,23 +119,23 @@ parseString:
 
 int TPTScriptInterface::parseNumber(String str)
 {
-	String::value_type const *stringData = str.c_str();
+	auto stringIter = str.begin();
 	char cc;
 	int base = 10;
 	int currentNumber = 0;
-	if (stringData[0] == '#')
+	if (stringIter[0] == '#')
 	{
-		stringData++;
+		stringIter++;
 		base = 16;
 	}
-	else if (stringData[0] == '0' && stringData[1] == 'x')
+	else if (stringIter[0] == '0' && stringIter[1] == 'x')
 	{
-		stringData+=2;
+		stringIter +=2;
 		base = 16;
 	}
 	if (base == 16)
 	{
-		while ((cc = *(stringData++)))
+		while ((cc = *(stringIter++)))
 		{
 			currentNumber *= base;
 			if (cc >= '0' && cc <= '9')
