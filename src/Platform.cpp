@@ -19,18 +19,28 @@
 
 namespace Platform
 {
-
 ByteString ExecutableName()
 {
 	ByteString ret;
 #if defined(WIN)
-	char *name = (char *)malloc(64);
+	//char *name = (char *)malloc(64);
 	DWORD max = 64, res;
-	while ((res = GetModuleFileName(NULL, name, max)) >= max)
+	ByteString name(max, 0);
+	while ((res = GetModuleFileName(NULL, &name[0], max)) >= max)
 	{
 #elif defined MACOSX
 	char *fn = (char*)malloc(64),*name = (char*)malloc(PATH_MAX);
-	uint32_t max = 64, res;
+	int32_t max = 64, res;
+	/* Possible fix for memory leak and removeing Char * Strings. */
+	/*
+	ByteString fn(max, 0);
+	ByteString name(PATH_MAX, 0);
+	if(_NSGetExecutablePath(fn.data(), &max) != 0)
+	{
+		fm.resize(max);
+		_NSGetExecutablePath(fn.data(), &max);
+	}
+	*/
 	if (_NSGetExecutablePath(fn, &max) != 0)
 	{
 		char *realloced_fn = (char*)realloc(fn, max);
@@ -40,34 +50,41 @@ ByteString ExecutableName()
 	}
 	if (realpath(fn, name) == NULL)
 	{
+		/*IN thefix above the two free calls would be removed*/
 		free(fn);
 		free(name);
 		return "";
 	}
 	res = 1;
 #else
-	char fn[64], *name = (char *)malloc(64);
+	/*Changes here are estimations I Dont have a box to test if this code is correct
+	  Something needs to be changed because the next preprocessor block uses the name 
+	  from here and the WIN block*/
+	char fn[64];//, *name = (char *)malloc(64);
 	size_t max = 64, res;
+	ByteString name(max, 0);
 	sprintf(fn, "/proc/self/exe");
-	memset(name, 0, max);
-	while ((res = readlink(fn, name, max)) >= max-1)
+	//memset(name, 0, max);
+	while ((res = readlink(fn, name.data(), max)) >= max - 1)
 	{
 #endif
 #ifndef MACOSX
 		max *= 2;
-		char* realloced_name = (char *)realloc(name, max);
-		assert(realloced_name != NULL);
-		name = realloced_name;
-		memset(name, 0, max);
+		//char* realloced_name = (char *)realloc(name, max);
+		//assert(realloced_name != NULL);
+		//name = realloced_name;
+		//memset(name, 0, max);
+		name.resize(max);
+		std::fill_n(name.begin(), max, 0);
 	}
 #endif
 	if (res <= 0)
 	{
-		free(name);
+		//free(name);
 		return "";
 	}
 	ret = name;
-	free(name);
+	//free(name);
 	return ret;
 }
 
