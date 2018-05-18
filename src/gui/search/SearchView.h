@@ -35,7 +35,7 @@ private:
 	ui::Label * pageLabel;
 	ui::Label * pageCountLabel;
 	ui::Label * tagsLabel;
-	ui::RichLabel * motdLabel;
+	ui::RichLabel * motdLabel = nullptr;
 	ui::Button * sortButton;
 	ui::Button * ownButton;
 	ui::Spinner * loadingSpinner;

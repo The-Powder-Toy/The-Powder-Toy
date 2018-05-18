@@ -27,7 +27,11 @@ SearchView::SearchView():
 	nextButton = new ui::Button(ui::Point(WINDOWW-52, WINDOWH-18), ui::Point(50, 16), String("Next ") + 0xE015);
 	previousButton = new ui::Button(ui::Point(2, WINDOWH-18), ui::Point(50, 16), 0xE016 + String(" Prev"));
 	tagsLabel  = new ui::Label(ui::Point(270, WINDOWH-18), ui::Point(WINDOWW-540, 16), "\boPopular Tags:");
-	motdLabel  = new ui::RichLabel(ui::Point(51, WINDOWH-18), ui::Point(WINDOWW-102, 16), Client::Ref().GetMessageOfTheDay());
+	try
+	{
+		motdLabel  = new ui::RichLabel(ui::Point(51, WINDOWH-18), ui::Point(WINDOWW-102, 16), Client::Ref().GetMessageOfTheDay());
+	}
+	catch (std::exception e) { }
 
 	class PageNumAction : public ui::TextboxAction
 	{
@@ -253,7 +257,18 @@ SearchView::SearchView():
 
 void SearchView::NotifyMessageOfTheDay(Client * sender)
 {
-	motdLabel->SetText(sender->GetMessageOfTheDay());
+	if (motdLabel)
+	{
+		try
+		{
+			motdLabel->SetText(sender->GetMessageOfTheDay());
+		}
+		catch (std::exception e)
+		{
+			motdLabel = nullptr;
+		}
+	}
+
 }
 
 void SearchView::doSearch()
@@ -467,8 +482,11 @@ void SearchView::NotifyTagListChanged(SearchModel * sender)
 
 	vector<pair<ByteString, int> > tags = sender->GetTagList();
 
-	RemoveComponent(motdLabel);
-	motdLabel->SetParentWindow(NULL);
+	if (motdLabel)
+	{
+		RemoveComponent(motdLabel);
+		motdLabel->SetParentWindow(NULL);
+	}
 
 	RemoveComponent(tagsLabel);
 	tagsLabel->SetParentWindow(NULL);
@@ -499,8 +517,11 @@ void SearchView::NotifyTagListChanged(SearchModel * sender)
 		AddComponent(tagsLabel);
 		tagsLabel->Position.Y = tagYOffset-16;
 
-		AddComponent(motdLabel);
-		motdLabel->Position.Y = tagYOffset-30;
+		if (motdLabel)
+		{
+			AddComponent(motdLabel);
+			motdLabel->Position.Y = tagYOffset-30;
+		}
 	}
 
 	class TagAction: public ui::ButtonAction

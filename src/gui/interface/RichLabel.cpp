@@ -10,12 +10,12 @@
 using namespace ui;
 
 struct RichTextParseException: public std::exception {
-	String message;
+	ByteString message;
 public:
-	RichTextParseException(String message_ = String("Parse error")): message(message_) {}
-	const char * what() const throw()
+	RichTextParseException(String message = String("Parse error")): message(message.ToUtf8()) {}
+	const char * what() const throw() override
 	{
-		return message.ToUtf8().c_str();
+		return message.c_str();
 	}
 	~RichTextParseException() throw() {};
 };

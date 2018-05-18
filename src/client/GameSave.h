@@ -15,24 +15,24 @@
 
 struct ParseException: public std::exception {
 	enum ParseResult { OK = 0, Corrupt, WrongVersion, InvalidDimensions, InternalError, MissingElement };
-	String message;
+	ByteString message;
 	ParseResult result;
 public:
-	ParseException(ParseResult result, String message_): message(message_), result(result) {}
-	const char * what() const throw()
+	ParseException(ParseResult result, String message): message(message.ToUtf8()), result(result) {}
+	const char * what() const throw() override
 	{
-		return message.ToUtf8().c_str();
+		return message.c_str();
 	}
 	~ParseException() throw() {}
 };
 
 struct BuildException: public std::exception {
-	String message;
+	ByteString message;
 public:
-	BuildException(String message_): message(message_) {}
-	const char * what() const throw()
+	BuildException(String message): message(message.ToUtf8()) {}
+	const char * what() const throw() override
 	{
-		return message.ToUtf8().c_str();
+		return message.c_str();
 	}
 	~BuildException() throw() {}
 };
