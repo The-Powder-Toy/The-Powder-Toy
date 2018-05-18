@@ -10,6 +10,7 @@
 #include <stdint.h>
 
 #ifdef WIN
+#define NOMINMAX
 #include <windows.h>
 #else
 #include <unistd.h>

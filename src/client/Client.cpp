@@ -15,6 +15,7 @@
 #endif
 
 #ifdef WIN
+#define NOMINMAX
 #include <shlobj.h>
 #include <shlwapi.h>
 #include <windows.h>
