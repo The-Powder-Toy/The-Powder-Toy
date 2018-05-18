@@ -510,7 +510,7 @@ public:
 		String value(*this);
 		for(value_type &ch : value)
 			if(ch <= std::numeric_limits<ByteString::value_type>::max())
-				ch = std::tolower(ch, loc);
+				ch = std::tolower(static_cast<ByteString::value_type>(ch), loc);
 		return value;
 	}
 
@@ -520,7 +520,7 @@ public:
 		String value(*this);
 		for(value_type &ch : value)
 			if(ch <= std::numeric_limits<ByteString::value_type>::max())
-				ch = std::toupper(ch, loc);
+				ch = std::toupper(static_cast<ByteString::value_type>(ch), loc);
 		return value;
 	}
 
