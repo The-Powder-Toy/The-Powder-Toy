@@ -705,7 +705,7 @@ void GameView::NotifyActiveToolsChanged(GameModel * sender)
 	if (sender->GetRenderer()->findingElement)
 	{
 		Tool *active = sender->GetActiveTool(0);
-		if (active->GetIdentifier().Contains("_PT_"))
+		if (!active->GetIdentifier().Contains("_PT_"))
 			ren->findingElement = 0;
 		else
 			ren->findingElement = sender->GetActiveTool(0)->GetToolID()%256;
