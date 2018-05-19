@@ -18,6 +18,8 @@ Engine::Engine():
 	Scale(1),
 	Fullscreen(false),
 	FrameIndex(0),
+	altFullscreen(false),
+	resizable(false),
 	lastBuffer(NULL),
 	prevBuffers(stack<pixel*>()),
 	windows(stack<Window*>()),

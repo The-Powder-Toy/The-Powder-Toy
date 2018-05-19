@@ -46,8 +46,12 @@ namespace ui
 
 		void SetFullscreen(bool fullscreen) { Fullscreen = fullscreen; }
 		inline bool GetFullscreen() { return Fullscreen; }
+		void SetAltFullscreen(bool altFullscreen) { this->altFullscreen = altFullscreen; }
+		inline bool GetAltFullscreen() { return altFullscreen; }
 		void SetScale(int scale) { Scale = scale; }
 		inline int GetScale() { return Scale; }
+		void SetResizable(bool resizable) { this->resizable = resizable; }
+		inline bool GetResizable() { return resizable; }
 		void SetFastQuit(bool fastquit) { FastQuit = fastquit; }
 		inline bool GetFastQuit() {return FastQuit; }
 
@@ -80,6 +84,9 @@ namespace ui
 
 		unsigned int FrameIndex;
 	private:
+		bool altFullscreen;
+		bool resizable;
+
 		float dt;
 		float fps;
 		pixel * lastBuffer;

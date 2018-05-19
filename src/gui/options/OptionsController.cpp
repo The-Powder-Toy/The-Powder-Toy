@@ -55,6 +55,11 @@ void OptionsController::SetFullscreen(bool fullscreen)
 	model->SetFullscreen(fullscreen);
 }
 
+void OptionsController::SetAltFullscreen(bool altFullscreen)
+{
+	model->SetAltFullscreen(altFullscreen);
+}
+
 void OptionsController::SetShowAvatars(bool showAvatars)
 {
 	model->SetShowAvatars(showAvatars);
@@ -63,6 +68,11 @@ void OptionsController::SetShowAvatars(bool showAvatars)
 void OptionsController::SetScale(int scale)
 {
 	model->SetScale(scale);
+}
+
+void OptionsController::SetResizable(bool resizable)
+{
+	model->SetResizable(resizable);
 }
 
 void OptionsController::SetFastQuit(bool fastquit)

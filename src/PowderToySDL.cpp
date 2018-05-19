@@ -61,6 +61,8 @@ SDL_Renderer * sdl_renderer;
 SDL_Texture * sdl_texture;
 int scale = 1;
 bool fullscreen = false;
+bool altFullscreen = false;
+bool resizable = false;
 
 
 void ClipboardPush(ByteString text)
@@ -120,7 +122,7 @@ void blit(pixel * vid)
 {
 	SDL_UpdateTexture(sdl_texture, NULL, vid, WINDOWW * sizeof (Uint32));
 	// need to clear the renderer if there are black edges (fullscreen, or resizable window)
-	if (fullscreen)
+	if (fullscreen || resizable)
 		SDL_RenderClear(sdl_renderer);
 	SDL_RenderCopy(sdl_renderer, sdl_texture, NULL, NULL);
 	SDL_RenderPresent(sdl_renderer);
@@ -140,8 +142,13 @@ int SDLOpen()
 	desktopWidth = SDLDisplayMode.w;
 	desktopHeight = SDLDisplayMode.h;
 
+	unsigned int flags = 0;
+	if (fullscreen)
+		flags = altFullscreen ? SDL_WINDOW_FULLSCREEN : SDL_WINDOW_FULLSCREEN_DESKTOP;
+	if (resizable)
+		flags |= SDL_WINDOW_RESIZABLE;
 	sdl_window = SDL_CreateWindow("The Powder Toy", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOWW * scale, WINDOWH * scale,
-	                              fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+	                              flags);
 	sdl_renderer = SDL_CreateRenderer(sdl_window, -1, 0);
 	SDL_RenderSetLogicalSize(sdl_renderer, WINDOWW, WINDOWH);
 	//Uncomment this to force fullscreen to an integer resolution
@@ -180,14 +187,20 @@ int SDLOpen()
 	return 0;
 }
 
-void SDLSetScreen(int newScale, bool newFullscreen)
+void SDLSetScreen(int scale_, bool resizable_, bool fullscreen_, bool altFullscreen_)
 {
-	scale = newScale;
-	fullscreen = newFullscreen;
-	SDL_SetWindowSize(sdl_window, WINDOWW * newScale, WINDOWH * newScale);
-	SDL_SetWindowFullscreen(sdl_window, newFullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
-	if (newFullscreen)
+	scale = scale_;
+	fullscreen = fullscreen_;
+	altFullscreen = altFullscreen_;
+	resizable = resizable_;
+	SDL_SetWindowSize(sdl_window, WINDOWW * scale, WINDOWH * scale);
+	unsigned int flags = 0;
+	if (fullscreen)
+		flags = altFullscreen ? SDL_WINDOW_FULLSCREEN : SDL_WINDOW_FULLSCREEN_DESKTOP;
+	SDL_SetWindowFullscreen(sdl_window, flags);
+	if (fullscreen)
 		SDL_RaiseWindow(sdl_window);
+	SDL_SetWindowResizable(sdl_window, resizable ? SDL_TRUE : SDL_FALSE);
 }
 
 unsigned int GetTicks()
@@ -417,9 +430,10 @@ void EngineProcess()
 		engine->Tick();
 		engine->Draw();
 
-		if(scale != engine->Scale || fullscreen != engine->Fullscreen)
+		if (scale != engine->Scale || fullscreen != engine->Fullscreen
+				|| altFullscreen != engine->GetAltFullscreen() || resizable != engine->GetResizable())
 		{
-			SDLSetScreen(engine->Scale, engine->Fullscreen);
+			SDLSetScreen(engine->Scale, engine->GetResizable(), engine->Fullscreen, engine->GetAltFullscreen());
 		}
 
 #ifdef OGLI
@@ -534,7 +548,9 @@ int main(int argc, char * argv[])
 #endif
 
 	scale = Client::Ref().GetPrefInteger("Scale", 1);
+	resizable = Client::Ref().GetPrefBool("Resizable", false);
 	fullscreen = Client::Ref().GetPrefBool("Fullscreen", false);
+	altFullscreen = Client::Ref().GetPrefBool("AltFullscreen", false);
 
 
 	if(arguments["kiosk"] == "true")
@@ -598,7 +614,9 @@ int main(int argc, char * argv[])
 #endif
 	ui::Engine::Ref().g = new Graphics();
 	ui::Engine::Ref().Scale = scale;
+	ui::Engine::Ref().SetResizable(resizable);
 	ui::Engine::Ref().Fullscreen = fullscreen;
+	ui::Engine::Ref().SetAltFullscreen(altFullscreen);
 
 	engine = &ui::Engine::Ref();
 	engine->SetMaxSize(desktopWidth, desktopHeight);
