@@ -60,6 +60,13 @@ extern "C" {
 using namespace std;
 
 #define INCLUDE_SYSWM
+
+/* The default controller index is 0, and the default displacement
+ * of the cursor on an axis event is 2
+ */
+#define DEFAULT_CONTROLLER 0
+#define CURSOR_MOVEMENT 2 
+
 #include "SDLCompat.h"
 #if defined(USE_SDL) && defined(LIN) && defined(SDL_VIDEO_DRIVER_X11)
 SDL_SysWMinfo sdl_wminfo;
@@ -455,7 +462,7 @@ int SDLOpen()
 #if defined(WIN) && defined(WINCONSOLE)
 	FILE * console = fopen("CON", "w" );
 #endif
-	if (SDL_Init(SDL_INIT_VIDEO)<0)
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK)<0)
 	{
 		fprintf(stderr, "Initializing SDL: %s\n", SDL_GetError());
 		return 1;
@@ -659,6 +666,50 @@ void EventProcess(SDL_Event event)
 		mousex = event.motion.x*inputScale;
 		mousey = event.motion.y*inputScale;
 		break;
+	case SDL_JOYBUTTONDOWN:  /* Handle Joystick Button Presses */
+	    if ( event.jbutton.button == 0 ) // for A button , do left mouse click operation
+	    {
+	        engine->onMouseClick(mousex, mousey, SDL_BUTTON_LEFT);
+	    }
+	    if ( event.jbutton.button == 1 ) 
+	    {
+	        engine->onMouseClick(mousex, mousey, SDL_BUTTON_RIGHT);
+	    }
+	    if ( event.jbutton.button == 2 ) 
+	    {
+	        engine->onMouseClick(mousex, mousey, SDL_BUTTON_MIDDLE);
+	    }
+	    if ( event.jbutton.button == 5 ) // Right bumper, scroll in (WHEEL UP)
+	    {
+	        engine->onMouseWheel(mousex, mousey, 1);
+	    }
+	    if ( event.jbutton.button == 4 ) // left bumper, scroll out
+	    {
+	        engine->onMouseWheel(mousex, mousey, -1);
+	    }
+	    break;
+	case SDL_JOYBUTTONUP:  /* Handle Joystick Button Presses */
+	    if ( event.jbutton.button == 0 ) // for A button , do left mouse click operation
+	    {
+	        engine->onMouseUnclick(mousex, mousey, SDL_BUTTON_LEFT);
+	    }
+	    if ( event.jbutton.button == 1 ) 
+	    {
+	        engine->onMouseUnclick(mousex, mousey, SDL_BUTTON_RIGHT);
+	    }
+	    if ( event.jbutton.button == 2 )
+	    {
+	        engine->onMouseUnclick(mousex, mousey, SDL_BUTTON_MIDDLE);
+	    }
+	    if ( event.jbutton.button == 5 ) // Right bumper, scroll in (WHEEL UP)
+	    {
+	        engine->onMouseWheel(mousex, mousey, 1);
+	    }
+	    if ( event.jbutton.button == 4 ) // left bumper, scroll out
+	    {
+	        engine->onMouseWheel(mousex, mousey, -1);
+	    }
+	    break;
 	case SDL_MOUSEBUTTONDOWN:
 		if (event.button.button == SDL_BUTTON_WHEELUP)
 		{
@@ -765,14 +816,46 @@ void DoubleScreenDialog()
 	}
 }
 
+void HandleJoystick(SDL_Joystick* joystick) {
+        int x_move, y_move;
+        x_move = SDL_JoystickGetAxis(joystick, 0);
+        y_move = SDL_JoystickGetAxis(joystick, 1);
+        if( (x_move > 3200) && (mousex < WINDOWW) )
+        {
+            mousex += CURSOR_MOVEMENT;
+        }
+
+        if( (x_move < -3200) && (mousex > 0) )
+        {
+            mousex -= CURSOR_MOVEMENT;
+        }
+
+        if( (y_move > 3200) && (mousey < WINDOWH) )
+        {
+            mousey += CURSOR_MOVEMENT;
+        }
+
+        if( (y_move < -3200) && (mousey > 0) )
+        {
+            mousey -= CURSOR_MOVEMENT;
+        }
+        engine->onMouseMove(mousex, mousey);
+}
+
 void EngineProcess()
 {
 	double frameTimeAvg = 0.0f, correctedFrameTimeAvg = 0.0f;
+        SDL_Joystick *joystick;
+        SDL_JoystickEventState(SDL_ENABLE);
+        joystick = SDL_JoystickOpen(DEFAULT_CONTROLLER);
 	SDL_Event event;
 	while(engine->Running())
 	{
 		int frameStart = SDL_GetTicks();
 		if(engine->Broken()) { engine->UnBreak(); break; }
+                if (SDL_JoystickOpened(DEFAULT_CONTROLLER)) {
+                    HandleJoystick(joystick);
+                }
 		event.type = 0;
 		while (SDL_PollEvent(&event))
 		{
@@ -823,6 +906,7 @@ void EngineProcess()
 			DoubleScreenDialog();
 		}
 	}
+        SDL_JoystickClose(DEFAULT_CONTROLLER);
 #ifdef DEBUG
 	std::cout << "Breaking out of EngineProcess" << std::endl;
 #endif
