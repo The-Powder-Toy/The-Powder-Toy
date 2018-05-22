@@ -3,10 +3,10 @@
 #include <sstream>
 #include <vector>
 #include <string>
-#include <locale>
 #include <limits>
+#include <locale>
 #include <ios>
-#undef max
+
 /*
 	There are two "string" classes: ByteString and String. They have nearly
 	identical interfaces, except that one stores 8-bit octets (bytes) and
