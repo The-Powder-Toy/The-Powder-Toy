@@ -84,7 +84,11 @@ void LoadWindowPosition()
 {
 	int savedWindowX = Client::Ref().GetPrefInteger("WindowX", INT_MAX);
 	int savedWindowY = Client::Ref().GetPrefInteger("WindowY", INT_MAX);
-	SDL_SetWindowPosition(sdl_window, savedWindowX, savedWindowY);
+
+	int borderTop, borderLeft;
+	SDL_GetWindowBordersSize(sdl_window, &borderTop, &borderLeft, nullptr, nullptr);
+
+	SDL_SetWindowPosition(sdl_window, savedWindowX + borderLeft, savedWindowY + borderTop);
 }
 
 void SaveWindowPosition()
