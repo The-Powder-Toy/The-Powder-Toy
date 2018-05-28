@@ -164,10 +164,12 @@ int SDLOpen()
 	int displayIndex = SDL_GetWindowDisplayIndex(sdl_window);
 	if (displayIndex >= 0)
 	{
-		SDL_DisplayMode SDLDisplayMode;
-		SDL_GetCurrentDisplayMode(0, &SDLDisplayMode);
-		desktopWidth = SDLDisplayMode.w;
-		desktopHeight = SDLDisplayMode.h;
+		SDL_Rect rect;
+		if (!SDL_GetDisplayUsableBounds(displayIndex, &rect))
+		{
+			desktopWidth = rect.w;
+			desktopHeight = rect.h;
+		}
 	}
 
 #ifdef WIN
@@ -602,7 +604,7 @@ int main(int argc, char * argv[])
 
 	SDLOpen();
 	// TODO: mabe make a nice loop that automagically finds the optimal scale
-	if (Client::Ref().IsFirstRun() && desktopWidth > WINDOWW*2+50 && desktopHeight > WINDOWH*2+50)
+	if (Client::Ref().IsFirstRun() && desktopWidth > WINDOWW*2+30 && desktopHeight > WINDOWH*2+30)
 	{
 		scale = 2;
 		Client::Ref().SetPref("Scale", 2);
