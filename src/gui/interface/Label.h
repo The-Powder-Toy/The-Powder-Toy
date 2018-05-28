@@ -62,7 +62,7 @@ namespace ui
 		virtual void OnMouseClick(int x, int y, unsigned button);
 		virtual void OnMouseUp(int x, int y, unsigned button);
 		virtual void OnMouseMoved(int localx, int localy, int dx, int dy);
-		virtual void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
+		virtual void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
 		virtual void Draw(const Point& screenPos);
 		virtual void Tick(float dt);
 	};

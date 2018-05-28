@@ -98,8 +98,8 @@ LuaWindow::LuaWindow(lua_State * l) :
 		virtual void OnMouseDown(int x, int y, unsigned button) { luaWindow->triggerOnMouseDown(x, y, button); }
 		virtual void OnMouseUp(int x, int y, unsigned button) { luaWindow->triggerOnMouseUp(x, y, button); }
 		virtual void OnMouseWheel(int x, int y, int d) { luaWindow->triggerOnMouseWheel(x, y, d); }
-		virtual void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt) { luaWindow->triggerOnKeyPress(key, character, shift, ctrl, alt); }
-		virtual void OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt) { luaWindow->triggerOnKeyRelease(key, character, shift, ctrl, alt); }
+		virtual void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) { luaWindow->triggerOnKeyPress(key, scan, repeat, shift, ctrl, alt); }
+		virtual void OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) { luaWindow->triggerOnKeyRelease(key, scan, repeat, shift, ctrl, alt); }
 	};
 
 	window = new DrawnWindow(ui::Point(posX, posY), ui::Point(sizeX, sizeY), this);
@@ -359,13 +359,13 @@ void LuaWindow::triggerOnMouseWheel(int x, int y, int d)
 	}
 }
 
-void LuaWindow::triggerOnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+void LuaWindow::triggerOnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
 	if(onKeyPressFunction)
 	{
 		lua_rawgeti(l, LUA_REGISTRYINDEX, onKeyPressFunction);
 		lua_pushinteger(l, key);
-		lua_pushinteger(l, character);
+		lua_pushinteger(l, scan);
 		lua_pushboolean(l, shift);
 		lua_pushboolean(l, ctrl);
 		lua_pushboolean(l, alt);
@@ -376,13 +376,13 @@ void LuaWindow::triggerOnKeyPress(int key, Uint16 character, bool shift, bool ct
 	}
 }
 
-void LuaWindow::triggerOnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+void LuaWindow::triggerOnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
 	if(onKeyReleaseFunction)
 	{
 		lua_rawgeti(l, LUA_REGISTRYINDEX, onKeyReleaseFunction);
 		lua_pushinteger(l, key);
-		lua_pushinteger(l, character);
+		lua_pushinteger(l, scan);
 		lua_pushboolean(l, shift);
 		lua_pushboolean(l, ctrl);
 		lua_pushboolean(l, alt);

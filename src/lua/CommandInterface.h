@@ -25,8 +25,8 @@ public:
 	virtual bool OnMouseDown(int x, int y, unsigned button) {return true;}
 	virtual bool OnMouseUp(int x, int y, unsigned button, char type) {return true;}
 	virtual bool OnMouseWheel(int x, int y, int d) {return true;}
-	virtual bool OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt) {return true;}
-	virtual bool OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt) {return true;}
+	virtual bool OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) {return true;}
+	virtual bool OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) {return true;}
 	virtual bool OnMouseTick() { return true; }
 	virtual void OnTick() { }
 	virtual int Command(String command);

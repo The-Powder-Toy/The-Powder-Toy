@@ -24,17 +24,16 @@ ConsoleView::ConsoleView():
 	commandField->SetBorder(false);
 }
 
-void ConsoleView::DoKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+void ConsoleView::DoKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
+	if ((scan == SDL_SCANCODE_GRAVE && key != '~') || key == SDLK_ESCAPE)
+	{
+		if (!repeat)
+			doClose = true;
+		return;
+	}
 	switch(key)
 	{
-	case SDLK_ESCAPE:
-	case '`':
-		if (character != '~')
-			c->CloseConsole();
-		else
-			Window::DoKeyPress(key, character, shift, ctrl, alt);
-		break;
 	case SDLK_RETURN:
 	case SDLK_KP_ENTER:
 		c->EvaluateCommand(commandField->GetText());
@@ -48,9 +47,17 @@ void ConsoleView::DoKeyPress(int key, Uint16 character, bool shift, bool ctrl, b
 		c->PreviousCommand();
 		break;
 	default:
-		Window::DoKeyPress(key, character, shift, ctrl, alt);
+		Window::DoKeyPress(key, scan, repeat, shift, ctrl, alt);
 		break;
 	}
+}
+
+void ConsoleView::DoTextInput(String text)
+{
+	if (text == "~")
+		doClose = false;
+	if (!doClose)
+		Window::DoTextInput(text);
 }
 
 void ConsoleView::NotifyPreviousCommandsChanged(ConsoleModel * sender)
@@ -97,6 +104,16 @@ void ConsoleView::OnDraw()
 	g->draw_line(Position.X, Position.Y+Size.Y, Position.X+Size.X, Position.Y+Size.Y, 255, 255, 255, 200);
 }
 
-ConsoleView::~ConsoleView() {
+void ConsoleView::OnTick(float dt)
+{
+	if (doClose)
+	{
+		c->CloseConsole();
+		doClose = false;
+	}
+}
+
+ConsoleView::~ConsoleView()
+{
 }
 

@@ -20,10 +20,11 @@ class OptionsView: public ui::Window {
 	ui::DropDown * gravityMode;
 	ui::DropDown * edgeMode;
 	ui::DropDown * scale;
+	ui::Checkbox * resizable;
 	ui::Checkbox * fullscreen;
+	ui::Checkbox * altFullscreen;
 	ui::Checkbox * fastquit;
 	ui::Checkbox * showAvatars;
-	ui::Textbox  * depthTextbox;
 public:
 	OptionsView();
 	void NotifySettingsChanged(OptionsModel * sender);

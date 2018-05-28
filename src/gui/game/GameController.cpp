@@ -93,6 +93,7 @@ public:
 	virtual void ControllerExit()
 	{
 		cc->gameModel->UpdateQuickOptions();
+		Client::Ref().WritePrefs();
 	}
 };
 
@@ -713,9 +714,11 @@ bool GameController::MouseWheel(int x, int y, int d)
 	return commandInterface->OnMouseWheel(x, y, d);
 }
 
-bool GameController::KeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+bool GameController::KeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
-	bool ret = commandInterface->OnKeyPress(key, character, shift, ctrl, alt);
+	bool ret = commandInterface->OnKeyPress(key, scan, repeat, shift, ctrl, alt);
+	if (repeat)
+		return ret;
 	if (ret)
 	{
 		Simulation * sim = gameModel->GetSimulation();
@@ -783,16 +786,18 @@ bool GameController::KeyPress(int key, Uint16 character, bool shift, bool ctrl, 
 		for(std::vector<DebugInfo*>::iterator iter = debugInfo.begin(), end = debugInfo.end(); iter != end; iter++)
 		{
 			if ((*iter)->debugID & debugFlags)
-				if (!(*iter)->KeyPress(key, character, shift, ctrl, alt, gameView->GetMousePosition()))
+				if (!(*iter)->KeyPress(key, scan, shift, ctrl, alt, gameView->GetMousePosition()))
 					ret = false;
 		}
 	}
 	return ret;
 }
 
-bool GameController::KeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+bool GameController::KeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
-	bool ret = commandInterface->OnKeyRelease(key, character, shift, ctrl, alt);
+	bool ret = commandInterface->OnKeyRelease(key, scan, repeat, shift, ctrl, alt);
+	if (repeat)
+		return ret;
 	if (ret)
 	{
 		Simulation * sim = gameModel->GetSimulation();

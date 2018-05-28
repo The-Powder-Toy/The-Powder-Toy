@@ -33,8 +33,8 @@ public:
 	void SetActiveTool(int selectionState, Tool * tool);
 	virtual ~ElementSearchActivity();
 	virtual void OnTick(float dt);
-	virtual void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
-	virtual void OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt);
+	virtual void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
+	virtual void OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
 	virtual void OnDraw();
 	virtual void ToolTip(ui::Point senderPosition, String ToolTip);
 };

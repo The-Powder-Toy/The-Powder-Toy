@@ -283,7 +283,7 @@ void Window::DoTick(float dt)
 		finalise();
 }
 
-void Window::DoKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+void Window::DoKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
 #ifdef DEBUG
 	if (key == SDLK_TAB && ctrl)
@@ -374,11 +374,11 @@ void Window::DoKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool a
 	if (focusedComponent_ != NULL)
 	{
 		if (focusedComponent_->Enabled && focusedComponent_->Visible)
-			focusedComponent_->OnKeyPress(key, character, shift, ctrl, alt);
+			focusedComponent_->OnKeyPress(key, scan, repeat, shift, ctrl, alt);
 	}
 
 	if (!stop)
-		OnKeyPress(key, character, shift, ctrl, alt);
+		OnKeyPress(key, scan, repeat, shift, ctrl, alt);
 
 	if (key == SDLK_ESCAPE)
 		OnTryExit(Escape);
@@ -390,7 +390,7 @@ void Window::DoKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool a
 		finalise();
 }
 
-void Window::DoKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+void Window::DoKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
 #ifdef DEBUG
 	if(debugMode)
@@ -400,11 +400,30 @@ void Window::DoKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool
 	if (focusedComponent_ != NULL)
 	{
 		if (focusedComponent_->Enabled && focusedComponent_->Visible)
-			focusedComponent_->OnKeyRelease(key, character, shift, ctrl, alt);
+			focusedComponent_->OnKeyRelease(key, scan, repeat, shift, ctrl, alt);
 	}
 
 	if (!stop)
-		OnKeyRelease(key, character, shift, ctrl, alt);
+		OnKeyRelease(key, scan, repeat, shift, ctrl, alt);
+	if (destruct)
+		finalise();
+}
+
+void Window::DoTextInput(String text)
+{
+#ifdef DEBUG
+	if (debugMode)
+		return;
+#endif
+	//on key unpress
+	if (focusedComponent_ != NULL)
+	{
+		if (focusedComponent_->Enabled && focusedComponent_->Visible)
+			focusedComponent_->OnTextInput(text);
+	}
+
+	if (!stop)
+		OnTextInput(text);
 	if (destruct)
 		finalise();
 }

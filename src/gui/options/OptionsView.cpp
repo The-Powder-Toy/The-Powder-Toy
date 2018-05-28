@@ -17,7 +17,7 @@
 #include "gui/dialogues/ErrorMessage.h"
 
 OptionsView::OptionsView():
-	ui::Window(ui::Point(-1, -1), ui::Point(300, 348)){
+	ui::Window(ui::Point(-1, -1), ui::Point(300, 369)){
 
 	ui::Label * tempLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 14), "Simulation Options");
 	tempLabel->SetTextColour(style::Colour::InformationTitle);
@@ -173,6 +173,24 @@ OptionsView::OptionsView():
 	AddComponent(tempLabel);
 
 
+	class ResizableAction: public ui::CheckboxAction
+	{
+		OptionsView * v;
+	public:
+		ResizableAction(OptionsView * v_){	v = v_;	}
+		virtual void ActionCallback(ui::Checkbox * sender)
+		{
+			v->c->SetResizable(sender->GetChecked());
+		}
+	};
+
+	resizable = new ui::Checkbox(ui::Point(8, scale->Position.Y + 20), ui::Point(Size.X-6, 16), "Resizable", "");
+	resizable->SetActionCallback(new ResizableAction(this));
+	tempLabel = new ui::Label(ui::Point(resizable->Position.X+Graphics::textwidth(resizable->GetText().c_str())+20, resizable->Position.Y), ui::Point(Size.X-28, 16), "\bg- Allow resizing and maximizing window");
+	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	AddComponent(tempLabel);
+	AddComponent(resizable);
+
 	class FullscreenAction: public ui::CheckboxAction
 	{
 		OptionsView * v;
@@ -180,22 +198,34 @@ OptionsView::OptionsView():
 		FullscreenAction(OptionsView * v_){	v = v_;	}
 		virtual void ActionCallback(ui::Checkbox * sender)
 		{
-#ifdef USE_SDL
-#if defined(MACOSX) && !SDL_VERSION_ATLEAST(1, 2, 15)
-			ErrorMessage::Blocking("Information", "Fullscreen doesn't work on OS X");
-#else
 			v->c->SetFullscreen(sender->GetChecked());
-#endif
-#endif
 		}
 	};
 
-	fullscreen = new ui::Checkbox(ui::Point(8, 230), ui::Point(Size.X-6, 16), "Fullscreen", "");
+	fullscreen = new ui::Checkbox(ui::Point(8, resizable->Position.Y + 20), ui::Point(Size.X-6, 16), "Fullscreen", "");
 	fullscreen->SetActionCallback(new FullscreenAction(this));
 	tempLabel = new ui::Label(ui::Point(fullscreen->Position.X+Graphics::textwidth(fullscreen->GetText().c_str())+20, fullscreen->Position.Y), ui::Point(Size.X-28, 16), "\bg- Fill the entire screen");
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(tempLabel);
 	AddComponent(fullscreen);
+
+	class AltFullscreenAction: public ui::CheckboxAction
+	{
+		OptionsView * v;
+	public:
+		AltFullscreenAction(OptionsView * v_){	v = v_;	}
+		virtual void ActionCallback(ui::Checkbox * sender)
+		{
+			v->c->SetAltFullscreen(sender->GetChecked());
+		}
+	};
+
+	altFullscreen = new ui::Checkbox(ui::Point(23, fullscreen->Position.Y + 20), ui::Point(Size.X-6, 16), "Change Resolution", "");
+	altFullscreen->SetActionCallback(new AltFullscreenAction(this));
+	tempLabel = new ui::Label(ui::Point(altFullscreen->Position.X+Graphics::textwidth(altFullscreen->GetText().c_str())+20, altFullscreen->Position.Y), ui::Point(Size.X-28, 16), "\bg- Set optimial screen resolution");
+	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	AddComponent(tempLabel);
+	AddComponent(altFullscreen);
 
 
 	class FastQuitAction: public ui::CheckboxAction
@@ -206,7 +236,7 @@ OptionsView::OptionsView():
 		virtual void ActionCallback(ui::Checkbox * sender){	v->c->SetFastQuit(sender->GetChecked()); }
 	};
 
-	fastquit = new ui::Checkbox(ui::Point(8, 250), ui::Point(Size.X-6, 16), "Fast Quit", "");
+	fastquit = new ui::Checkbox(ui::Point(8, altFullscreen->Position.Y + 20), ui::Point(Size.X-6, 16), "Fast Quit", "");
 	fastquit->SetActionCallback(new FastQuitAction(this));
 	tempLabel = new ui::Label(ui::Point(fastquit->Position.X+Graphics::textwidth(fastquit->GetText().c_str())+20, fastquit->Position.Y), ui::Point(Size.X-28, 16), "\bg- Always exit completely when hitting close");
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
@@ -221,28 +251,12 @@ OptionsView::OptionsView():
 		virtual void ActionCallback(ui::Checkbox * sender){	v->c->SetShowAvatars(sender->GetChecked()); }
 	};
 
-	showAvatars = new ui::Checkbox(ui::Point(8, 270), ui::Point(Size.X-6, 16), "Show Avatars", "");
+	showAvatars = new ui::Checkbox(ui::Point(8, fastquit->Position.Y + 20), ui::Point(Size.X-6, 16), "Show Avatars", "");
 	showAvatars->SetActionCallback(new ShowAvatarsAction(this));
 	tempLabel = new ui::Label(ui::Point(showAvatars->Position.X+Graphics::textwidth(showAvatars->GetText().c_str())+20, showAvatars->Position.Y), ui::Point(Size.X-28, 16), "\bg- Disable if you have a slow connection");
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(tempLabel);
 	AddComponent(showAvatars);
-
-	class DepthAction: public ui::TextboxAction
-	{
-		OptionsView * v;
-	public:
-		DepthAction(OptionsView * v_) { v = v_; }
-		virtual void TextChangedCallback(ui::Textbox * sender) { v->c->Set3dDepth(sender->GetText().ToNumber<int>(true)); }
-	};
-	depthTextbox = new ui::Textbox(ui::Point(8, Size.Y-58), ui::Point(25, 16), String::Build(ui::Engine::Ref().Get3dDepth()));
-	depthTextbox->SetInputType(ui::Textbox::Numeric);
-	depthTextbox->SetActionCallback(new DepthAction(this));
-	AddComponent(depthTextbox);
-
-	tempLabel = new ui::Label(ui::Point(depthTextbox->Position.X+depthTextbox->Size.X+3, depthTextbox->Position.Y), ui::Point(Size.X-28, 16), "\bg- Change the depth of the 3D anaglyph effect");
-	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-	AddComponent(tempLabel);
 
 	class DataFolderAction: public ui::ButtonAction
 	{
@@ -301,7 +315,9 @@ void OptionsView::NotifySettingsChanged(OptionsModel * sender)
 	gravityMode->SetOption(sender->GetGravityMode());
 	edgeMode->SetOption(sender->GetEdgeMode());
 	scale->SetOption(sender->GetScale());
+	resizable->SetChecked(sender->GetResizable());
 	fullscreen->SetChecked(sender->GetFullscreen());
+	altFullscreen->SetChecked(sender->GetAltFullscreen());
 	fastquit->SetChecked(sender->GetFastQuit());
 	showAvatars->SetChecked(sender->GetShowAvatars());
 }

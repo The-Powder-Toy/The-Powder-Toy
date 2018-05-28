@@ -33,8 +33,12 @@ public:
 	void SetGravityMode(int gravityMode);
 	int GetScale();
 	void SetScale(int scale);
+	bool GetResizable();
+	void SetResizable(bool resizable);
 	bool GetFullscreen();
 	void SetFullscreen(bool fullscreen);
+	bool GetAltFullscreen();
+	void SetAltFullscreen(bool oldFullscreen);
 	bool GetFastQuit();
 	void SetFastQuit(bool fastquit);
 	virtual ~OptionsModel();

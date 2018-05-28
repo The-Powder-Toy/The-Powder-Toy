@@ -239,8 +239,10 @@ void ColourPickerActivity::OnMouseUp(int x, int y, unsigned button)
 	}
 }
 
-void ColourPickerActivity::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+void ColourPickerActivity::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
+	if (repeat)
+		return;
 	if (key == SDLK_TAB)
 	{
 		if (rValue->IsFocused())

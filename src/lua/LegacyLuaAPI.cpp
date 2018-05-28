@@ -244,7 +244,7 @@ int luacon_elementwrite(lua_State* l)
 }
 
 bool shortcuts = true;
-int luacon_keyevent(int key, Uint16 character, int modifier, int event)
+int luacon_keyevent(int key, int scan, int modifier, int event)
 {
 	ui::Engine::Ref().LastTick(Platform::GetTime());
 	int kycontinue = 1;
@@ -263,10 +263,10 @@ int luacon_keyevent(int key, Uint16 character, int modifier, int event)
 	for (int i = 1; i <= len && kycontinue; i++)
 	{
 		lua_rawgeti(l, -1, i);
-		if ((modifier & KMOD_CTRL) && (character < ' ' || character > '~') && key < 256)
+		if ((modifier & KMOD_CTRL) && (scan < ' ' || scan > '~') && key < 256)
 			lua_pushlstring(l, (const char*)&key, 1);
 		else
-			lua_pushlstring(l, (const char*)&character, 1);
+			lua_pushlstring(l, (const char*)&scan, 1);
 		lua_pushinteger(l, key);
 		lua_pushinteger(l, modifier);
 		lua_pushinteger(l, event);

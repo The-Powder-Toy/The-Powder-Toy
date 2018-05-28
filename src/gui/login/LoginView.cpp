@@ -73,8 +73,10 @@ LoginView::LoginView():
 	passwordField->SetHidden(true);
 }
 
-void LoginView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+void LoginView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
+	if (repeat)
+		return;
 	switch(key)
 	{
 	case SDLK_TAB:

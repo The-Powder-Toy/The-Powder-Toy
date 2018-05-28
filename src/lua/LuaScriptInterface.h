@@ -182,8 +182,8 @@ public:
 	virtual bool OnMouseDown(int x, int y, unsigned button);
 	virtual bool OnMouseUp(int x, int y, unsigned button, char type);
 	virtual bool OnMouseWheel(int x, int y, int d);
-	virtual bool OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
-	virtual bool OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt);
+	virtual bool OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
+	virtual bool OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
 	virtual bool OnMouseTick();
 	virtual void OnTick();
 	virtual void Init();

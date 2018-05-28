@@ -291,9 +291,7 @@ void SearchView::textChanged()
 	else if (num > pageCount)
 		pageTextbox->SetText(String::Build(pageCount));
 	changed = true;
-#ifdef USE_SDL
 	lastChanged = GetTicks()+600;
-#endif
 }
 
 void SearchView::OnTryOkay(OkayMethod method)
@@ -780,13 +778,11 @@ void SearchView::NotifySelectedChanged(SearchModel * sender)
 void SearchView::OnTick(float dt)
 {
 	c->Update();
-#ifdef USE_SDL
 	if (changed && lastChanged < GetTicks())
 	{
 		changed = false;
 		c->SetPage(std::max(pageTextbox->GetText().ToNumber<int>(true), 0));
 	}
-#endif
 }
 
 void SearchView::OnMouseWheel(int x, int y, int d)
@@ -798,16 +794,20 @@ void SearchView::OnMouseWheel(int x, int y, int d)
 	else
 		c->PrevPage();
 }
-void SearchView::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+void SearchView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
+	if (repeat)
+		return;
 	if (key == SDLK_ESCAPE)
 		c->Exit();
 	else if (key == SDLK_LCTRL || key == SDLK_RCTRL)
 		c->InstantOpen(true);
 }
 
-void SearchView::OnKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+void SearchView::OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
+	if (repeat)
+		return;
 	if (key == SDLK_LCTRL || key == SDLK_RCTRL)
 		c->InstantOpen(false);
 }

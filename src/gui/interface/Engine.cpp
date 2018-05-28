@@ -17,8 +17,9 @@ Engine::Engine():
 	FpsLimit(60.0f),
 	Scale(1),
 	Fullscreen(false),
-	Depth3d(0),
 	FrameIndex(0),
+	altFullscreen(false),
+	resizable(false),
 	lastBuffer(NULL),
 	prevBuffers(stack<pixel*>()),
 	windows(stack<Window*>()),
@@ -93,6 +94,8 @@ void Engine::ConfirmExit()
 void Engine::ShowWindow(Window * window)
 {
 	windowOpenState = 0;
+	if (state_)
+		ignoreEvents = true;
 	if(window->Position.X==-1)
 	{
 		window->Position.X = (width_-window->Size.X)/2;
@@ -158,6 +161,7 @@ int Engine::CloseWindow()
 			mousexp_ = mousex_;
 			mouseyp_ = mousey_;
 		}
+		ignoreEvents = true;
 		return 0;
 	}
 	else
@@ -199,6 +203,7 @@ void Engine::Tick()
 
 	lastTick = Platform::GetTime();
 
+	ignoreEvents = false;
 	/*if(statequeued_ != NULL)
 	{
 		if(state_ != NULL)
@@ -250,29 +255,35 @@ void Engine::SetFps(float fps)
 		this->dt = 1.0f;
 }
 
-void Engine::onKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+void Engine::onKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
-	if(state_)
-		state_->DoKeyPress(key, character, shift, ctrl, alt);
+	if (state_ && !ignoreEvents)
+		state_->DoKeyPress(key, scan, repeat, shift, ctrl, alt);
 }
 
-void Engine::onKeyRelease(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+void Engine::onKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
-	if(state_)
-		state_->DoKeyRelease(key, character, shift, ctrl, alt);
+	if (state_ && !ignoreEvents)
+		state_->DoKeyRelease(key, scan, repeat, shift, ctrl, alt);
+}
+
+void Engine::onTextInput(String text)
+{
+	if (state_ && !ignoreEvents)
+		state_->DoTextInput(text);
 }
 
 void Engine::onMouseClick(int x, int y, unsigned button)
 {
 	mouseb_ |= button;
-	if(state_)
+	if (state_ && !ignoreEvents)
 		state_->DoMouseDown(x, y, button);
 }
 
 void Engine::onMouseUnclick(int x, int y, unsigned button)
 {
 	mouseb_ &= ~button;
-	if(state_)
+	if (state_ && !ignoreEvents)
 		state_->DoMouseUp(x, y, button);
 }
 
@@ -280,7 +291,7 @@ void Engine::onMouseMove(int x, int y)
 {
 	mousex_ = x;
 	mousey_ = y;
-	if(state_)
+	if (state_ && !ignoreEvents)
 	{
 		state_->DoMouseMove(x, y, mousex_ - mousexp_, mousey_ - mouseyp_);
 	}
@@ -290,7 +301,7 @@ void Engine::onMouseMove(int x, int y)
 
 void Engine::onMouseWheel(int x, int y, int delta)
 {
-	if(state_)
+	if (state_ && !ignoreEvents)
 		state_->DoMouseWheel(x, y, delta);
 }
 
@@ -301,6 +312,6 @@ void Engine::onResize(int newWidth, int newHeight)
 
 void Engine::onClose()
 {
-	if(state_)
+	if (state_)
 		state_->DoExit();
 }
