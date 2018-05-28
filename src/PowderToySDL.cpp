@@ -608,6 +608,7 @@ int main(int argc, char * argv[])
 	{
 		scale = 2;
 		Client::Ref().SetPref("Scale", 2);
+		SDL_SetWindowSize(sdl_window, WINDOWW * 2, WINDOWH * 2);
 		showDoubleScreenDialog = true;
 	}
 	if (!Client::Ref().IsFirstRun())
