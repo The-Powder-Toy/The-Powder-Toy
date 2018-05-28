@@ -244,10 +244,10 @@ def findLibs(env, conf):
 
 	#Look for SDL
 	runSdlConfig = platform == "Linux" or compilePlatform == "Linux" or platform == "FreeBSD"
-	if False and platform == "Darwin" and conf.CheckFramework("SDL"):
-		runSdlConfig = False
-	elif not conf.CheckLib("SDL2"):
-		FatalError("SDL development library not found or not installed")
+	#if platform == "Darwin" and conf.CheckFramework("SDL"):
+	#	runSdlConfig = False
+	if not conf.CheckLib("SDL2"):
+		FatalError("SDL2 development library not found or not installed")
 
 	if runSdlConfig:
 		try:
@@ -260,11 +260,10 @@ def findLibs(env, conf):
 			pass
 
 	#look for SDL.h
-	if not conf.CheckCHeader('SDL2.h'):
-		if conf.CheckCHeader('SDL2/SDL.h'):
-			env.Append(CPPDEFINES=["SDL_INC"])
-		else:
-			FatalError("SDL.h not found")
+	if conf.CheckCHeader('SDL2/SDL.h'):
+		env.Append(CPPDEFINES=["SDL_INC"])
+	elif not conf.CheckCHeader('SDL.h'):
+		FatalError("SDL.h not found")
 
 	if not GetOption('nolua') and not GetOption('renderer') and not GetOption('font'):
 		#Look for Lua
