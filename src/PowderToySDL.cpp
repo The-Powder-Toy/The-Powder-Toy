@@ -88,7 +88,9 @@ void LoadWindowPosition()
 	int borderTop, borderLeft;
 	SDL_GetWindowBordersSize(sdl_window, &borderTop, &borderLeft, nullptr, nullptr);
 
-	SDL_SetWindowPosition(sdl_window, savedWindowX + borderLeft, savedWindowY + borderTop);
+	if (savedWindowX + borderLeft > 0 && savedWindowX + borderLeft < desktopWidth
+	        && savedWindowY + borderTop > 0 && savedWindowY + borderTop < desktopHeight)
+		SDL_SetWindowPosition(sdl_window, savedWindowX + borderLeft, savedWindowY + borderTop);
 }
 
 void SaveWindowPosition()
@@ -141,11 +143,6 @@ int SDLOpen()
 		return 1;
 	}
 
-	SDL_DisplayMode SDLDisplayMode;
-	SDL_GetCurrentDisplayMode(0, &SDLDisplayMode);
-	desktopWidth = SDLDisplayMode.w;
-	desktopHeight = SDLDisplayMode.h;
-
 	unsigned int flags = 0;
 	if (fullscreen)
 		flags = altFullscreen ? SDL_WINDOW_FULLSCREEN : SDL_WINDOW_FULLSCREEN_DESKTOP;
@@ -163,6 +160,15 @@ int SDLOpen()
 	//Uncomment this to enable resizing
 	//SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
 	//SDL_SetWindowResizable(sdl_window, SDL_TRUE);
+
+	int displayIndex = SDL_GetWindowDisplayIndex(sdl_window);
+	if (displayIndex >= 0)
+	{
+		SDL_DisplayMode SDLDisplayMode;
+		SDL_GetCurrentDisplayMode(0, &SDLDisplayMode);
+		desktopWidth = SDLDisplayMode.w;
+		desktopHeight = SDLDisplayMode.h;
+	}
 
 #ifdef WIN
 	SDL_SysWMinfo SysInfo;
@@ -602,7 +608,8 @@ int main(int argc, char * argv[])
 		Client::Ref().SetPref("Scale", 2);
 		showDoubleScreenDialog = true;
 	}
-	LoadWindowPosition();
+	if (!Client::Ref().IsFirstRun())
+		LoadWindowPosition();
 
 #ifdef OGLI
 	SDL_GL_SetAttribute (SDL_GL_DOUBLEBUFFER, 1);
