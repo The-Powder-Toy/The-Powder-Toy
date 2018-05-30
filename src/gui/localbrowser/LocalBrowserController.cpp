@@ -115,21 +115,16 @@ void LocalBrowserController::ClearSelection()
 	browserModel->ClearSelected();
 }
 
-void LocalBrowserController::NextPage()
-{
-	if(browserModel->GetPageNum() < browserModel->GetPageCount())
-		browserModel->UpdateSavesList(browserModel->GetPageNum()+1);
-}
-
-void LocalBrowserController::PrevPage()
-{
-	if(browserModel->GetPageNum()>1)
-		browserModel->UpdateSavesList(browserModel->GetPageNum()-1);
-}
-
 void LocalBrowserController::SetPage(int page)
 {
 	if (page != browserModel->GetPageNum() && page > 0 && page <= browserModel->GetPageCount())
+		browserModel->UpdateSavesList(page);
+}
+
+void LocalBrowserController::SetPageRelative(int offset)
+{
+	int page = std::min(std::max(browserModel->GetPageNum() + offset, 1), browserModel->GetPageCount());
+	if(page != browserModel->GetPageCount())
 		browserModel->UpdateSavesList(page);
 }
 

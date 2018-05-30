@@ -128,21 +128,16 @@ void SearchController::Refresh()
 	doRefresh = true;
 }
 
-void SearchController::PrevPage()
-{
-	if (searchModel->GetPageNum()>1)
-		searchModel->UpdateSaveList(searchModel->GetPageNum()-1, searchModel->GetLastQuery());
-}
-
-void SearchController::NextPage()
-{
-	if (searchModel->GetPageNum() < searchModel->GetPageCount())
-		searchModel->UpdateSaveList(searchModel->GetPageNum()+1, searchModel->GetLastQuery());
-}
-
 void SearchController::SetPage(int page)
 {
 	if (page != searchModel->GetPageNum() && page > 0 && page <= searchModel->GetPageCount())
+		searchModel->UpdateSaveList(page, searchModel->GetLastQuery());
+}
+
+void SearchController::SetPageRelative(int offset)
+{
+	int page = std::min(std::max(searchModel->GetPageNum() + offset, 1), searchModel->GetPageCount());
+	if(page != searchModel->GetPageCount())
 		searchModel->UpdateSaveList(page, searchModel->GetLastQuery());
 }
 

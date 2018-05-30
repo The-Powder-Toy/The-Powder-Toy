@@ -390,7 +390,7 @@ void GameController::InvertAirSim()
 }
 
 
-void GameController::AdjustBrushSize(int direction, bool logarithmic, bool xAxis, bool yAxis)
+void GameController::AdjustBrushSize(int delta, bool logarithmic, bool xAxis, bool yAxis)
 {
 	if(xAxis && yAxis)
 		return;
@@ -398,9 +398,9 @@ void GameController::AdjustBrushSize(int direction, bool logarithmic, bool xAxis
 	ui::Point newSize(0, 0);
 	ui::Point oldSize = gameModel->GetBrush()->GetRadius();
 	if(logarithmic)
-		newSize = gameModel->GetBrush()->GetRadius() + ui::Point(direction * ((gameModel->GetBrush()->GetRadius().X/5)>0?gameModel->GetBrush()->GetRadius().X/5:1), direction * ((gameModel->GetBrush()->GetRadius().Y/5)>0?gameModel->GetBrush()->GetRadius().Y/5:1));
+		newSize = gameModel->GetBrush()->GetRadius() + ui::Point(delta * std::max(gameModel->GetBrush()->GetRadius().X / 5, 1), delta * std::max(gameModel->GetBrush()->GetRadius().Y / 5, 1));
 	else
-		newSize = gameModel->GetBrush()->GetRadius() + ui::Point(direction, direction);
+		newSize = gameModel->GetBrush()->GetRadius() + ui::Point(delta, delta);
 	if(newSize.X < 0)
 		newSize.X = 0;
 	if(newSize.Y < 0)
@@ -423,13 +423,13 @@ void GameController::SetBrushSize(ui::Point newSize)
 	gameModel->GetBrush()->SetRadius(newSize);
 }
 
-void GameController::AdjustZoomSize(int direction, bool logarithmic)
+void GameController::AdjustZoomSize(int delta, bool logarithmic)
 {
 	int newSize;
 	if(logarithmic)
-		newSize = gameModel->GetZoomSize()+(((gameModel->GetZoomSize()/10)>0?(gameModel->GetZoomSize()/10):1)*direction);
+		newSize = gameModel->GetZoomSize() + std::max(gameModel->GetZoomSize() / 10, 1) * delta;
 	else
-		newSize = gameModel->GetZoomSize()+direction;
+		newSize = gameModel->GetZoomSize() + delta;
 	if(newSize<5)
 			newSize = 5;
 	if(newSize>64)

@@ -170,7 +170,7 @@ namespace ui
 		// Params:
 		//	localx: Local mouse X position.
 		//	localy: Local mouse Y position.
-		// 	d: The mouse wheel movement value.
+		// 	d: The vertical scroll offset
 		///
 		virtual void OnMouseWheel(int localx, int localy, int d);
 
@@ -179,7 +179,7 @@ namespace ui
 		// Params:
 		//	localx: Local mouse X position.
 		//	localy: Local mouse Y position.
-		// 	d: The mouse wheel movement value.
+		// 	d: The vertical scroll offset
 		///
 		virtual void OnMouseWheelInside(int localx, int localy, int d);
 

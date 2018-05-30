@@ -26,9 +26,8 @@ public:
 	void OpenSave(SaveFile * stamp);
 	bool GetMoveToFront();
 	void SetMoveToFront(bool move);
-	void NextPage();
-	void PrevPage();
 	void SetPage(int page);
+	void SetPageRelative(int offset);
 	void Update();
 	void Exit();
 	virtual ~LocalBrowserController();

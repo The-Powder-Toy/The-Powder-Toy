@@ -35,9 +35,8 @@ public:
 	void DoSearch(String query, bool now = false);
 	void DoSearch2(String query);
 	void Refresh();
-	void NextPage();
-	void PrevPage();
 	void SetPage(int page);
+	void SetPageRelative(int offset);
 	void ChangeSort();
 	void ShowOwn(bool show);
 	void ShowFavourite(bool show);

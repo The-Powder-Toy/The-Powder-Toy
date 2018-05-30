@@ -49,31 +49,22 @@ LocalBrowserView::LocalBrowserView():
 	AddComponent(pageCountLabel);
 	AddComponent(pageTextbox);
 
-	class NextPageAction : public ui::ButtonAction
+	class RelativePageAction : public ui::ButtonAction
 	{
 		LocalBrowserView * v;
+		int offset;
 	public:
-		NextPageAction(LocalBrowserView * _v) { v = _v; }
+		RelativePageAction(LocalBrowserView * _v, int _offset): v(_v), offset(_offset) {}
 		void ActionCallback(ui::Button * sender)
 		{
-			v->c->NextPage();
+			v->c->SetPageRelative(offset);
 		}
 	};
-	nextButton->SetActionCallback(new NextPageAction(this));
+	nextButton->SetActionCallback(new RelativePageAction(this, 1));
 	nextButton->Appearance.HorizontalAlign = ui::Appearance::AlignRight;
 	nextButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 
-	class PrevPageAction : public ui::ButtonAction
-	{
-		LocalBrowserView * v;
-	public:
-		PrevPageAction(LocalBrowserView * _v) { v = _v; }
-		void ActionCallback(ui::Button * sender)
-		{
-			v->c->PrevPage();
-		}
-	};
-	previousButton->SetActionCallback(new PrevPageAction(this));
+	previousButton->SetActionCallback(new RelativePageAction(this, -1));
 	previousButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	previousButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 
@@ -254,12 +245,8 @@ void LocalBrowserView::NotifySelectedChanged(LocalBrowserModel * sender)
 
 void LocalBrowserView::OnMouseWheel(int x, int y, int d)
 {
-	if(!d)
-		return;
-	if(d<0)
-		c->NextPage();
-	else
-		c->PrevPage();
+	if(d)
+		c->SetPageRelative(d);
 }
 
 void LocalBrowserView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)

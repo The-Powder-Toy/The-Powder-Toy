@@ -327,8 +327,8 @@ void EventProcess(SDL_Event event)
 			x *= -1;
 			y *= -1;
 		}
-		bool positiveDir = y == 0 ? x > 0 : y > 0;
-		engine->onMouseWheel(event.motion.x, event.motion.y, positiveDir ? 1 : -1);
+
+		engine->onMouseWheel(mousex, mousey, y); // TODO: pass x?
 		break;
 	}
 	case SDL_MOUSEMOTION:

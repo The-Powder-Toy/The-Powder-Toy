@@ -148,31 +148,22 @@ SearchView::SearchView():
 	clearSearchButton->Appearance.BorderInactive = ui::Colour(170,170,170);
 	AddComponent(clearSearchButton);
 
-	class NextPageAction : public ui::ButtonAction
+	class RelativePageAction : public ui::ButtonAction
 	{
 		SearchView * v;
+		int offset;
 	public:
-		NextPageAction(SearchView * _v) { v = _v; }
+		RelativePageAction(SearchView * _v, int _offset): v(_v), offset(_offset) {}
 		void ActionCallback(ui::Button * sender)
 		{
-			v->c->NextPage();
+			v->c->SetPageRelative(offset);
 		}
 	};
-	nextButton->SetActionCallback(new NextPageAction(this));
+	nextButton->SetActionCallback(new RelativePageAction(this, 1));
 	nextButton->Appearance.HorizontalAlign = ui::Appearance::AlignRight;
 	nextButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	nextButton->Visible = false;
-	class PrevPageAction : public ui::ButtonAction
-	{
-		SearchView * v;
-	public:
-		PrevPageAction(SearchView * _v) { v = _v; }
-		void ActionCallback(ui::Button * sender)
-		{
-			v->c->PrevPage();
-		}
-	};
-	previousButton->SetActionCallback(new PrevPageAction(this));
+	previousButton->SetActionCallback(new RelativePageAction(this, -1));
 	previousButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	previousButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	previousButton->Visible = false;
@@ -787,12 +778,8 @@ void SearchView::OnTick(float dt)
 
 void SearchView::OnMouseWheel(int x, int y, int d)
 {
-	if(!d)
-		return;
-	if(d<0)
-		c->NextPage();
-	else
-		c->PrevPage();
+	if(d)
+		c->SetPageRelative(d);
 }
 void SearchView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
