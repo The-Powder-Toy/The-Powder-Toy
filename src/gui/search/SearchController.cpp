@@ -137,7 +137,7 @@ void SearchController::SetPage(int page)
 void SearchController::SetPageRelative(int offset)
 {
 	int page = std::min(std::max(searchModel->GetPageNum() + offset, 1), searchModel->GetPageCount());
-	if(page != searchModel->GetPageCount())
+	if (page != searchModel->GetPageNum())
 		searchModel->UpdateSaveList(page, searchModel->GetLastQuery());
 }
 

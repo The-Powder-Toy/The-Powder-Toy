@@ -245,8 +245,8 @@ void LocalBrowserView::NotifySelectedChanged(LocalBrowserModel * sender)
 
 void LocalBrowserView::OnMouseWheel(int x, int y, int d)
 {
-	if(d)
-		c->SetPageRelative(d);
+	if (d)
+		c->SetPageRelative(-d);
 }
 
 void LocalBrowserView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)

@@ -124,7 +124,7 @@ void LocalBrowserController::SetPage(int page)
 void LocalBrowserController::SetPageRelative(int offset)
 {
 	int page = std::min(std::max(browserModel->GetPageNum() + offset, 1), browserModel->GetPageCount());
-	if(page != browserModel->GetPageCount())
+	if (page != browserModel->GetPageNum())
 		browserModel->UpdateSavesList(page);
 }
 
