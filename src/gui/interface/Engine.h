@@ -60,7 +60,6 @@ namespace ui
 
 		void SetFps(float fps);
 		inline float GetFps() { return fps; }
-		inline float GetDelta() { return dt; }
 
 		inline int GetMouseButton() { return mouseb_; }
 		inline int GetMouseX() { return mousex_; }

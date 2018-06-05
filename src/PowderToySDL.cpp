@@ -286,7 +286,8 @@ std::map<ByteString, ByteString> readArguments(int argc, char * argv[])
 
 int elapsedTime = 0, currentTime = 0, lastTime = 0, currentFrame = 0;
 unsigned int lastTick = 0;
-float fps = 0, delta = 1.0f;
+unsigned int lastFpsUpdate = 0;
+float fps = 0;
 ui::Engine * engine = NULL;
 bool showDoubleScreenDialog = false;
 float currentWidth, currentHeight;
@@ -465,8 +466,12 @@ void EngineProcess()
 		}
 		int correctedFrameTime = SDL_GetTicks() - frameStart;
 		correctedFrameTimeAvg = correctedFrameTimeAvg * 0.95 + correctedFrameTime * 0.05;
-		engine->SetFps(1000.0 / correctedFrameTimeAvg);
-		if(frameStart - lastTick > 1000)
+		if (frameStart - lastFpsUpdate > 200)
+		{
+			engine->SetFps(1000.0 / correctedFrameTimeAvg);
+			lastFpsUpdate = frameStart;
+		}
+		if (frameStart - lastTick > 1000)
 		{
 			//Run client tick every second
 			lastTick = frameStart;

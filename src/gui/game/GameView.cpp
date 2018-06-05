@@ -2420,9 +2420,6 @@ void GameView::OnDraw()
 		//FPS and some version info
 		StringBuilder fpsInfo;
 		fpsInfo << Format::Precision(2) << "FPS: " << ui::Engine::Ref().GetFps();
-#ifdef DEBUG
-		fpsInfo << " Delta: " << ui::Engine::Ref().GetDelta();
-#endif
 
 		if (showDebug)
 		{
