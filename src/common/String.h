@@ -425,7 +425,7 @@ public:
 	inline Split SplitByAny(String const &str, size_t pos = 0) const { return Split(*this, pos, super::find_first_of(str, pos), 1, false); }
 	inline Split SplitByNot(String const &str, size_t pos = 0) const { return Split(*this, pos, super::find_first_not_of(str, pos), 1, false); }
 	inline Split SplitFromEndBy(value_type ch, size_t pos = npos) const { return Split(*this, pos, super::rfind(ch, pos), 1, true); }
-	inline Split SplitFromEndBy(String const &str, size_t pos = npos) const { return Split(*this, pos, super::find(str, pos), str.size(), true); }
+	inline Split SplitFromEndBy(String const &str, size_t pos = npos) const { return Split(*this, pos, super::rfind(str, pos), str.size(), true); }
 	inline Split SplitFromEndByAny(String const &str, size_t pos = npos) const { return Split(*this, pos, super::find_last_of(str, pos), 1, true); }
 	inline Split SplitFromEndByNot(String const &str, size_t pos = npos) const { return Split(*this, pos, super::find_last_not_of(str, pos), 1, true); }
 private:
