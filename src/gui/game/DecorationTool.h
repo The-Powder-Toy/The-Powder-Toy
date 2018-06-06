@@ -27,7 +27,7 @@ public:
 				//else if (toolID == DECO_DARK)
 				//	vid_buf[WINDOWW*(y+j)+(x+i)] = PIXRGB(PIXR(pc)+10*j, PIXG(pc)+10*j, PIXB(pc)+10*j);
 				if (toolID == DECO_SMUDGE)
-					newTexture->SetPixel(x, y, 0, 255-5*x, 255+5*x, 255);
+					newTexture->SetPixel(x, y, 0, 255-5*x, 5*x, 255);
 				else if (toolID == DECO_DRAW || toolID == DECO_CLEAR)
 					newTexture->SetPixel(x, y, Red, Green, Blue, Alpha);
 				else
