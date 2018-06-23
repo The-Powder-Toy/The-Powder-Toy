@@ -1,11 +1,11 @@
 #include "simulation/Elements.h"
 #include <iostream>
 
-//#TPT-Directive ElementClass Element_RAYT PT_RAYT 186
-Element_RAYT::Element_RAYT()
+//#TPT-Directive ElementClass Element_LDTC PT_LDTC 186
+Element_LDTC::Element_LDTC()
 {
-	Identifier = "DEFAULT_PT_RAYT";
-	Name = "RAYT";
+	Identifier = "DEFAULT_PT_LDTC";
+	Name = "LDTC";
 	Colour = PIXPACK(0x66ff66);
 	MenuVisible = 1;
 	MenuSection = SC_SENSOR;
@@ -30,7 +30,7 @@ Element_RAYT::Element_RAYT()
 
 	Temperature = 283.15f;
 	HeatConduct = 0;
-	Description = "RAYT scans in 8 directions for the element in its ctype and sparks the conductor on the opposite side";
+	Description = "Linear detector. Scans in 8 directions for particles with its ctype and creates a spark on the opposite side.";
 
 	Properties = TYPE_SOLID | PROP_DRAWONCTYPE | PROP_NOCTYPEDRAW;
 
@@ -43,7 +43,7 @@ Element_RAYT::Element_RAYT()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_RAYT::update;
+	Update = &Element_LDTC::update;
 }
 
 const int mask_invert_filter =  0x1;
@@ -53,10 +53,10 @@ const int mask_keep_searching = 0x8;
 
 //NOTES:
 // ctype is used to store the target element, if any. (NONE is treated as a wildcard)
-// life is used for the amount of pixels to skip before starting the scan. Starts just in front of the RAYT if 0.
+// life is used for the amount of pixels to skip before starting the scan. Starts just in front of the LDTC if 0.
 // tmp is the number of particles that will be scanned before scanning stops. Unbounded if 0.
 // tmp2 is used for settings (binary flags). The flags are as follows:
-// 0x01: Inverts the CTYPE filter so that the element in ctype is the only thing that doesn't trigger RAYT, instead of the opposite.
+// 0x01: Inverts the CTYPE filter so that the element in ctype is the only thing that doesn't trigger LDTC, instead of the opposite.
 // 0x02: Ignore energy particles
 // 0x04: Ignore FILT (do not use color copying mode)
 // 0x08: Keep searching even after finding a particle
@@ -83,8 +83,8 @@ bool accepted_type(Simulation* sim, int r)
 	return false;
 }
 
-//#TPT-Directive ElementHeader Element_RAYT static int update(UPDATE_FUNC_ARGS)
-int Element_RAYT::update(UPDATE_FUNC_ARGS)
+//#TPT-Directive ElementHeader Element_LDTC static int update(UPDATE_FUNC_ARGS)
+int Element_LDTC::update(UPDATE_FUNC_ARGS)
 {
 	int max = parts[i].tmp + parts[i].life;
 	for (int rx = -1; rx <= 1; rx++)
@@ -167,4 +167,4 @@ int Element_RAYT::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-Element_RAYT::~Element_RAYT() {}
+Element_LDTC::~Element_LDTC() {}

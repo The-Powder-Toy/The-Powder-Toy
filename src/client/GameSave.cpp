@@ -2680,7 +2680,7 @@ bool GameSave::TypeInCtype(int type, int ctype)
 	        type == PT_STOR || type == PT_CONV || type == PT_STKM || type == PT_STKM2 ||
 	        type == PT_FIGH || type == PT_LAVA || type == PT_SPRK || type == PT_PSTN ||
 	        type == PT_CRAY || type == PT_DTEC || type == PT_DRAY || type == PT_PIPE ||
-	        type == PT_PPIP || type == PT_RAYT);
+	        type == PT_PPIP || type == PT_LDTC);
 }
 
 bool GameSave::TypeInTmp(int type)
