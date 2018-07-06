@@ -543,14 +543,23 @@ public:
 		ToolButton *sender = (ToolButton*)sender_;
 		if (v->ShiftBehaviour() && v->CtrlBehaviour() && !v->AltBehaviour())
 		{
-			if (Favorite::Ref().IsFavorite(tool->GetIdentifier()) && sender->GetSelectionState() == 1)
+			if (sender->GetSelectionState() == 0)
+			{
+				if (Favorite::Ref().IsFavorite(tool->GetIdentifier()))
+				{
+					Favorite::Ref().RemoveFavorite(tool->GetIdentifier());
+				}
+				else
+				{
+					Favorite::Ref().AddFavorite(tool->GetIdentifier());
+				}
+				v->c->RebuildFavoritesMenu();
+			}
+			else if (sender->GetSelectionState() == 1)
+			{
 				Favorite::Ref().RemoveFavorite(tool->GetIdentifier());
-			else if (sender->GetSelectionState() == 0)
-				Favorite::Ref().AddFavorite(tool->GetIdentifier());
-			else if (sender->GetSelectionState() == 2)
-				v->c->SetActiveMenu(SC_FAVORITES);
-
-			v->c->RebuildFavoritesMenu();
+				v->c->RebuildFavoritesMenu();
+			}
 		}
 		else
 		{
@@ -612,8 +621,8 @@ void GameView::NotifyMenuListChanged(GameModel * sender)
 			String tempString = "";
 			tempString += menuList[i]->GetIcon();
 			String description = menuList[i]->GetDescription();
-			if (i == SC_FAVORITES && Favorite::Ref().AnyFavorites())
-				description += " (Use ctrl+shift+click to favorite an element)";
+			if (i == SC_FAVORITES && !Favorite::Ref().AnyFavorites())
+				description += " (Use ctrl+shift+click toggle the favorite status of an element)";
 			ui::Button * tempButton = new ui::Button(ui::Point(WINDOWW-16, currentY), ui::Point(15, 15), tempString, description);
 			tempButton->Appearance.Margin = ui::Border(0, 2, 3, 2);
 			tempButton->SetTogglable(true);
