@@ -622,7 +622,7 @@ void GameView::NotifyMenuListChanged(GameModel * sender)
 			tempString += menuList[i]->GetIcon();
 			String description = menuList[i]->GetDescription();
 			if (i == SC_FAVORITES && !Favorite::Ref().AnyFavorites())
-				description += " (Use ctrl+shift+click toggle the favorite status of an element)";
+				description += " (Use ctrl+shift+click to toggle the favorite status of an element)";
 			ui::Button * tempButton = new ui::Button(ui::Point(WINDOWW-16, currentY), ui::Point(15, 15), tempString, description);
 			tempButton->Appearance.Margin = ui::Border(0, 2, 3, 2);
 			tempButton->SetTogglable(true);
