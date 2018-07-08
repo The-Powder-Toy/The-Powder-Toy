@@ -1,6 +1,77 @@
 #include "GameModel.h"
 #include "Tool.h"
 
+class FiltConfigWindow: public ui::Window
+{
+public:
+	ConfigTool *tool;
+	Simulation *sim;
+	FiltConfigWindow(ConfigTool *tool_, Simulation *sim);
+	void OnSelect(int result);
+	virtual void OnTryExit(ExitMethod method);
+	virtual ~FiltConfigWindow() {}
+	class SelectAction: public ui::ButtonAction
+	{
+	public:
+		FiltConfigWindow *prompt;
+		int result;
+		SelectAction(FiltConfigWindow *prompt_, int result_):
+		prompt(prompt_),
+		result(result_)
+		{ }
+		void ActionCallback(ui::Button *sender)
+		{
+			prompt->OnSelect(result);
+			return;
+		}
+	};
+};
+
+FiltConfigWindow::FiltConfigWindow(ConfigTool * tool_, Simulation *sim_):
+ui::Window(ui::Point(-1, -1), ui::Point(150, 200)),
+tool(tool_),
+sim(sim_)
+{
+	int maxTextWidth = 0;
+	for(int i = 0; i <= Element_FILT::NUM_MODES; i++)
+	{
+		String buttonText = (i == Element_FILT::NUM_MODES) ?
+			String::Build("Cancel") : Element_FILT::MODES[i];
+		int textWidth = Graphics::textwidth(buttonText);
+		if(textWidth > maxTextWidth)
+			maxTextWidth = textWidth;
+	}
+	int buttonWidth = maxTextWidth + 15;
+	int buttonHeight = 17;
+	int buttonLeft = Size.X/2 - buttonWidth/2;
+	int buttonTop = Size.Y/2 - ((buttonHeight-1) * (Element_FILT::NUM_MODES+1))/2;
+	for(int i = 0; i <= Element_FILT::NUM_MODES; i++)
+	{
+		String buttonText = (i == Element_FILT::NUM_MODES) ?
+			String::Build("Cancel") : Element_FILT::MODES[i];
+		ui::Button * b = new ui::Button(ui::Point(buttonLeft, i * (buttonHeight-1) + buttonTop), ui::Point(buttonWidth, buttonHeight), buttonText);
+		b->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
+		b->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+		b->SetActionCallback(new SelectAction(this, i));
+		AddComponent(b);
+	}
+	MakeActiveWindow();
+}
+
+void FiltConfigWindow::OnSelect(int result)
+{
+	if(result != Element_FILT::NUM_MODES)
+		tool->OnSelectFiltTmp(sim, result);
+	CloseActiveWindow();
+	SelfDestruct();
+}
+
+void FiltConfigWindow::OnTryExit(ExitMethod method)
+{
+	CloseActiveWindow();
+	SelfDestruct();
+}
+
 int ConfigTool::getIdAt(Simulation *sim, ui::Point position)
 {
 	if(position.X<0 || position.X>XRES || position.Y<0 || position.Y>YRES)
@@ -65,6 +136,16 @@ int ConfigTool::getDist(Particle part, int sampleX, int sampleY, int offset)
 	return getDist(proj, offset);
 }
 
+void ConfigTool::OnSelectFiltTmp(Simulation *sim, int tmp)
+{
+	if(!isSamePart(sim->parts[currId], configPart))
+	{
+		Reset();
+		return;
+	}
+	sim->parts[currId].tmp = tmp;
+}
+
 void ConfigTool::Click(Simulation *sim, Brush *brush, ui::Point position)
 {
 	if(configState != ConfigState::ready &&
@@ -86,6 +167,9 @@ void ConfigTool::Click(Simulation *sim, Brush *brush, ui::Point position)
 			break;
 		case PT_CRAY:
 			configState = ConfigState::crayTmp2;
+			break;
+		case PT_FILT:
+			new FiltConfigWindow(this, sim);
 			break;
 		default:
 			break;
@@ -126,7 +210,9 @@ String ConfigTool::GetInfo(GameController *c, SimulationSample sample)
 	switch(configState)
 	{
 	case ConfigState::ready:
-		if(sample.particle.type == PT_DRAY || sample.particle.type == PT_CRAY)
+		if(sample.particle.type == PT_DRAY ||
+			sample.particle.type == PT_CRAY ||
+			sample.particle.type == PT_FILT)
 			infoStream << c->ElementResolve(sample.particle.type, -1).FromAscii();
 		else
 			infoStream << "Ready";
