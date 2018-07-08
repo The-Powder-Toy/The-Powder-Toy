@@ -101,18 +101,28 @@ class ConfigTool: public Tool
 	GameModel * gameModel;
 	int currId;
 	Particle configPart;
+	int dirx, diry;
+	ui::Point cursorPos;
 	ConfigState configState;
 public:
 	ConfigTool(GameModel *model):
 	Tool(0, "CNFG", "Configurator.", 0xff, 0xcc, 0, "DEFAULT_UI_CONFIG", NULL),
 	gameModel(model),
+	cursorPos(0, 0),
 	configState(ConfigState::ready)
 	{
 	}
 	virtual ~ConfigTool() {}
-	String GetInfo(GameController * c, SimulationSample sample);
 	void Reset();
-	void DrawHUD(Renderer *ren, SimulationSample sample);
+	Particle GetPart();
+	static bool IsConfigurableType(int type);
+	bool IsConfiguring();
+	bool IsConfiguringTemp();
+	bool IsConfiguringLife();
+	bool IsConfiguringTmp();
+	bool IsConfiguringTmp2();
+	void CalculatePreview(int x, int y, Simulation *sim);
+	void DrawHUD(Renderer *ren);
 	void OnSelectFiltTmp(Simulation *sim, int tmp);
 	virtual void Click(Simulation * sim, Brush * brush, ui::Point position);
 	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position) { }
@@ -128,7 +138,7 @@ private:
 	int getDist(Particle part, int sampleX, int sampleY, int offset = 0, bool allowDiag = true);
 	void drawRedLine(Renderer *ren, int startx, int starty, int endx, int endy);
 	void drawWhiteLine(Renderer *ren, int startx, int starty, int endx, int endy);
-	void tripleLine(Renderer *ren, SimulationSample sample, int offset, bool drawFirstLine = true, bool drawThirdLine = true);
+	void tripleLine(Renderer *ren, int firstLineLen, int midLineLen, bool drawFirstLine = true, bool drawThirdLine = true);
 };
 
 class PropertyTool: public Tool

@@ -475,6 +475,11 @@ ui::Point GameController::NormaliseBlockCoord(ui::Point point)
 	return (point/CELL)*CELL;
 }
 
+Simulation *GameController::GetSimulation()
+{
+	return gameModel->GetSimulation();
+}
+
 void GameController::DrawRect(int toolSelection, ui::Point point1, ui::Point point2)
 {
 	Simulation * sim = gameModel->GetSimulation();

@@ -150,6 +150,44 @@ void ConfigTool::OnSelectFiltTmp(Simulation *sim, int tmp)
 	sim->parts[currId].tmp = tmp;
 }
 
+void ConfigTool::CalculatePreview(int x, int y, Simulation *sim)
+{
+	cursorPos = ui::Point(x, y);
+	bool allowDiag = !(configState == ConfigState::dtecTmp2);
+	ui::Point proj = projectPoint(configPart, x, y, allowDiag);
+	dirx = (proj.X == 0) ? 0 : ((proj.X > 0) ? 1 : -1);
+	diry = (proj.Y == 0) ? 0 : ((proj.Y > 0) ? 1 : -1);
+	switch(configState)
+	{
+	case ConfigState::drayTmp:
+		configPart.tmp = getDist(proj);
+		break;
+	case ConfigState::drayTmp2:
+		configPart.tmp2 = getDist(proj, configPart.tmp);
+		break;
+	case ConfigState::crayTmp2:
+		configPart.tmp2 = getDist(proj);
+		break;
+	case ConfigState::crayTmp:
+		configPart.tmp = getDist(proj, configPart.tmp2);
+		break;
+	case ConfigState::ldtcLife:
+		configPart.life = getDist(proj);
+		break;
+	case ConfigState::ldtcTmp:
+		configPart.tmp = getDist(proj, configPart.life);
+		break;
+	case ConfigState::dtecTmp2:
+		configPart.tmp2 = getDist(proj);
+		break;
+	case ConfigState::convTmp:
+		configPart.tmp = getPartAt(sim, ui::Point(x, y)).type;
+		break;
+	default:
+		break;
+	}
+}
+
 void ConfigTool::Click(Simulation *sim, Brush *brush, ui::Point position)
 {
 	if(configState != ConfigState::ready &&
@@ -157,6 +195,7 @@ void ConfigTool::Click(Simulation *sim, Brush *brush, ui::Point position)
 	{
 		Reset();
 	}
+	CalculatePreview(position.X, position.Y, sim);
 	switch(configState)
 	{
 	case ConfigState::ready:
@@ -189,38 +228,35 @@ void ConfigTool::Click(Simulation *sim, Brush *brush, ui::Point position)
 		}
 		break;
 	case ConfigState::drayTmp:
-		sim->parts[currId].tmp = getDist(configPart, position.X, position.Y);
-		configPart = sim->parts[currId];
+		sim->parts[currId].tmp = configPart.tmp;
 		configState = ConfigState::drayTmp2;
 		break;
 	case ConfigState::drayTmp2:
-		sim->parts[currId].tmp2 = getDist(configPart, position.X, position.Y, configPart.tmp);
+		sim->parts[currId].tmp2 = configPart.tmp2;
 		configState = ConfigState::ready;
 		break;
 	case ConfigState::crayTmp2:
-		sim->parts[currId].tmp2 = getDist(configPart, position.X, position.Y);
-		configPart = sim->parts[currId];
+		sim->parts[currId].tmp2 = configPart.tmp2;
 		configState = ConfigState::crayTmp;
 		break;
 	case ConfigState::crayTmp:
-		sim->parts[currId].tmp = getDist(configPart, position.X, position.Y, configPart.tmp2);
+		sim->parts[currId].tmp = configPart.tmp;
 		configState = ConfigState::ready;
 		break;
 	case ConfigState::ldtcLife:
-		sim->parts[currId].life = getDist(configPart, position.X, position.Y);
-		configPart = sim->parts[currId];
+		sim->parts[currId].life = configPart.life;
 		configState = ConfigState::ldtcTmp;
 		break;
 	case ConfigState::ldtcTmp:
-		sim->parts[currId].tmp = getDist(configPart, position.X, position.Y, configPart.life);
+		sim->parts[currId].tmp = configPart.tmp;
 		configState = ConfigState::ready;
 		break;
 	case ConfigState::dtecTmp2:
-		sim->parts[currId].tmp2 = getDist(configPart, position.X, position.Y, 0, false);
+		sim->parts[currId].tmp2 = configPart.tmp2;
 		configState = ConfigState::ready;
 		break;
 	case ConfigState::convTmp:
-		sim->parts[currId].tmp = getPartAt(sim, position).type;
+		sim->parts[currId].tmp = configPart.tmp;
 		configState = ConfigState::ready;
 		break;
 	default:
@@ -233,51 +269,45 @@ void ConfigTool::Reset()
 	configState = ConfigState::ready;
 }
 
-String ConfigTool::GetInfo(GameController *c, SimulationSample sample)
+Particle ConfigTool::GetPart()
 {
-	StringBuilder infoStream;
-	infoStream << "Configurator: ";
-	switch(configState)
-	{
-	case ConfigState::ready:
-		if(sample.particle.type == PT_DRAY ||
-			sample.particle.type == PT_CRAY ||
-			sample.particle.type == PT_LDTC ||
-			sample.particle.type == PT_DTEC ||
-			sample.particle.type == PT_CONV ||
-			sample.particle.type == PT_FILT)
-			infoStream << c->ElementResolve(sample.particle.type, -1).FromAscii();
-		else
-			infoStream << "Ready";
-		break;
-	case ConfigState::drayTmp:
-		infoStream << "DRAY, tmp: " << getDist(configPart, sample.PositionX, sample.PositionY);
-		break;
-	case ConfigState::drayTmp2:
-		infoStream << "DRAY, tmp: " << configPart.tmp << ", tmp2: " << getDist(configPart, sample.PositionX, sample.PositionY, configPart.tmp);
-		break;
-	case ConfigState::crayTmp2:
-		infoStream << "CRAY, tmp2: " << getDist(configPart, sample.PositionX, sample.PositionY);
-		break;
-	case ConfigState::crayTmp:
-		infoStream << "CRAY, tmp2: " << configPart.tmp2 << ", tmp: " << getDist(configPart, sample.PositionX, sample.PositionY, configPart.tmp2);
-		break;
-	case ConfigState::ldtcLife:
-		infoStream << "LDTC, life: " << getDist(configPart, sample.PositionX, sample.PositionY);
-		break;
-	case ConfigState::ldtcTmp:
-		infoStream << "LDTC, life: " << configPart.life << ", tmp: " << getDist(configPart, sample.PositionX, sample.PositionY, configPart.life);
-		break;
-	case ConfigState::dtecTmp2:
-		infoStream << "DTEC, tmp2: " << getDist(configPart, sample.PositionX, sample.PositionY, 0, false);
-		break;
-	case ConfigState::convTmp:
-		infoStream << "CONV, tmp: " << c->ElementResolve(sample.particle.type, -1).FromAscii();
-		break;
-	default:
-		break;
-	}
-	return infoStream.Build();
+	return configPart;
+}
+
+bool ConfigTool::IsConfigurableType(int type)
+{
+	return type == PT_DRAY || type == PT_CRAY || type == PT_LDTC ||
+		type == PT_DTEC || type == PT_CONV || type == PT_FILT;
+}
+
+bool ConfigTool::IsConfiguring()
+{
+	return configState != ConfigState::ready;
+}
+
+bool ConfigTool::IsConfiguringTemp()
+{
+	return false;
+}
+
+bool ConfigTool::IsConfiguringLife()
+{
+	return configState == ConfigState::ldtcLife;
+}
+
+bool ConfigTool::IsConfiguringTmp()
+{
+	return configState == ConfigState::drayTmp ||
+		configState == ConfigState::crayTmp ||
+		configState == ConfigState::ldtcTmp ||
+		configState == ConfigState::convTmp;
+}
+
+bool ConfigTool::IsConfiguringTmp2()
+{
+	return configState == ConfigState::drayTmp2 ||
+		configState == ConfigState::crayTmp2 ||
+		configState == ConfigState::dtecTmp2;
 }
 
 void ConfigTool::drawRedLine(Renderer *ren, int startx, int starty, int endx, int endy)
@@ -290,58 +320,50 @@ void ConfigTool::drawWhiteLine(Renderer *ren, int startx, int starty, int endx, 
 	ren->draw_line(startx, starty, endx, endy, 200, 200, 200, 255);
 }
 
-void ConfigTool::tripleLine(Renderer *ren, SimulationSample sample, int offset, bool drawFirstLine, bool drawThirdLine)
+void ConfigTool::tripleLine(Renderer *ren, int firstLineLen, int midLineLen, bool drawFirstLine, bool drawThirdLine)
 {
-	ui::Point proj = projectPoint(configPart, sample.PositionX, sample.PositionY);
-	int dirx = (proj.X == 0) ? 0 : ((proj.X > 0) ? 1 : -1);
-	int diry = (proj.Y == 0) ? 0 : ((proj.Y > 0) ? 1 : -1);
-	int spacing = getDist(proj, offset);
-	int mid1x = configPart.x + dirx * offset, mid1y = configPart.y + diry * offset;
-	int mid2x = mid1x + dirx * spacing, mid2y = mid1y + diry * spacing;
-	if(drawFirstLine && offset > 0)
+	int mid1x = configPart.x + dirx * firstLineLen,
+		mid1y = configPart.y + diry * firstLineLen;
+	int mid2x = mid1x + dirx * midLineLen,
+		mid2y = mid1y + diry * midLineLen;
+	if(drawFirstLine && firstLineLen > 0)
 		drawWhiteLine(ren, configPart.x + dirx, configPart.y + diry, mid1x, mid1y);
-	if(spacing > 0)
+	if(midLineLen > 0)
 		drawRedLine(ren, mid1x + dirx, mid1y + diry, mid2x, mid2y);
-	if(drawThirdLine && offset > 0)
-		drawWhiteLine(ren, mid2x + dirx, mid2y + diry, mid2x + dirx * offset, mid2y + diry * offset);
+	if(drawThirdLine && firstLineLen > 0)
+		drawWhiteLine(ren, mid2x + dirx, mid2y + diry, mid2x + dirx * firstLineLen, mid2y + diry * firstLineLen);
 }
 
-void ConfigTool::DrawHUD(Renderer *ren, SimulationSample sample)
+void ConfigTool::DrawHUD(Renderer *ren)
 {
 	switch(configState)
 	{
-	case ConfigState::ready:
-		ren->xor_line(sample.PositionX, sample.PositionY, sample.PositionX, sample.PositionY);
-		break;
 	case ConfigState::drayTmp:
-		tripleLine(ren, sample, 0, false, false);
+		tripleLine(ren, 0, configPart.tmp, false, false);
 		break;
 	case ConfigState::drayTmp2:
-		tripleLine(ren, sample, configPart.tmp);
+		tripleLine(ren, configPart.tmp, configPart.tmp2);
 		break;
 	case ConfigState::crayTmp2:
-		tripleLine(ren, sample, 0, false, false);
+		tripleLine(ren, 0, configPart.tmp2, false, false);
 		break;
 	case ConfigState::crayTmp:
-		tripleLine(ren, sample, configPart.tmp2, true, false);
+		tripleLine(ren, configPart.tmp2, configPart.tmp, true, false);
 		break;
 	case ConfigState::ldtcLife:
-		tripleLine(ren, sample, 0, false, false);
+		tripleLine(ren, 0, configPart.life, false, false);
 		break;
 	case ConfigState::ldtcTmp:
-		tripleLine(ren, sample, configPart.life, true, false);
+		tripleLine(ren, configPart.life, configPart.tmp, true, false);
 		break;
 	case ConfigState::dtecTmp2:
-	{
-		int boxSize = getDist(configPart, sample.PositionX, sample.PositionY, 0, false);
-		ren->drawrect(configPart.x - boxSize, configPart.y - boxSize, boxSize * 2 + 1, boxSize * 2 + 1, 200, 200, 200, 255);
+		ren->drawrect(configPart.x - configPart.tmp2, configPart.y - configPart.tmp2, configPart.tmp2 * 2 + 1, configPart.tmp2 * 2 + 1, 200, 200, 200, 255);
 		break;
-	}
 	case ConfigState::convTmp:
 	{
 		int partX = int(configPart.x+0.5f), partY = int(configPart.y+0.5f);
 		drawRedLine(ren, partX, partY, partX, partY);
-		ren->xor_line(sample.PositionX, sample.PositionY, sample.PositionX, sample.PositionY);
+		ren->xor_line(cursorPos.X, cursorPos.Y, cursorPos.X, cursorPos.Y);
 		break;
 	}
 	default:

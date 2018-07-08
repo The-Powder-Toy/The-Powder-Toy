@@ -2102,6 +2102,8 @@ void GameView::SetSaveButtonTooltips()
 void GameView::OnDraw()
 {
 	ConfigTool * configTool = c->GetActiveConfigTool();
+	if(configTool)
+		configTool->CalculatePreview(sample.PositionX, sample.PositionY, c->GetSimulation());
 	Graphics * g = GetGraphics();
 	if (ren)
 	{
@@ -2163,9 +2165,9 @@ void GameView::OnDraw()
 					ren->xor_line(finalCurrentMouse.X-finalBrushRadius.X, finalCurrentMouse.Y-finalBrushRadius.Y+1, finalCurrentMouse.X-finalBrushRadius.X, finalCurrentMouse.Y+finalBrushRadius.Y+CELL-2);
 					ren->xor_line(finalCurrentMouse.X+finalBrushRadius.X+CELL-1, finalCurrentMouse.Y-finalBrushRadius.Y+1, finalCurrentMouse.X+finalBrushRadius.X+CELL-1, finalCurrentMouse.Y+finalBrushRadius.Y+CELL-2);
 				}
-				else if(configTool)
+				else if(configTool && configTool->IsConfiguring())
 				{
-					configTool->DrawHUD(ren, sample);
+					configTool->DrawHUD(ren);
 				}
 				else
 				{
@@ -2293,6 +2295,9 @@ void GameView::OnDraw()
 		StringBuilder sampleInfo;
 		sampleInfo << Format::Precision(2);
 
+		if(configTool && configTool->IsConfiguring())
+			sample.particle = configTool->GetPart();
+
 		int type = sample.particle.type;
 		if (type)
 		{
@@ -2303,54 +2308,93 @@ void GameView::OnDraw()
 
 			if (showDebug)
 			{
+				String lbrace = String::Build("["),
+					rbrace = String::Build("]"),
+					noneString = String::Build("");
 				if (type == PT_LAVA && c->IsValidElement(ctype))
 					sampleInfo << "Molten " << c->ElementResolve(ctype, -1).FromAscii();
 				else if ((type == PT_PIPE || type == PT_PPIP) && c->IsValidElement(ctype))
 					sampleInfo << c->ElementResolve(type, -1).FromAscii() << " with " << c->ElementResolve(ctype, (int)sample.particle.pavg[1]).FromAscii();
 				else if (type == PT_LIFE)
 					sampleInfo << c->ElementResolve(type, ctype).FromAscii();
-				else if (type == PT_FILT)
-				{
-					sampleInfo << c->ElementResolve(type, ctype).FromAscii();
-					if (sample.particle.tmp>=0 && sample.particle.tmp<Element_FILT::NUM_MODES)
-						sampleInfo << " (" << Element_FILT::MODES[sample.particle.tmp] << ")";
-					else
-						sampleInfo << " (unknown mode)";
-				}
 				else
 				{
+					bool isConfigurable = configTool &&
+						(configTool->IsConfiguring() ||
+						ConfigTool::IsConfigurableType(type));
+					if(isConfigurable)
+						sampleInfo << lbrace;
 					sampleInfo << c->ElementResolve(type, ctype).FromAscii();
-					if (wavelengthGfx)
-						sampleInfo << " (" << ctype << ")";
-					// Some elements store extra LIFE info in upper bits of ctype, instead of tmp/tmp2
-					else if (type == PT_CRAY || type == PT_DRAY || type == PT_CONV)
-						sampleInfo << " (" << c->ElementResolve(TYP(ctype), ID(ctype)).FromAscii() << ")";
-					else if (c->IsValidElement(ctype))
-						sampleInfo << " (" << c->ElementResolve(ctype, -1).FromAscii() << ")";
+					if (type == PT_FILT)
+					{
+						if (sample.particle.tmp>=0 && sample.particle.tmp<Element_FILT::NUM_MODES)
+							sampleInfo << " (" << Element_FILT::MODES[sample.particle.tmp] << ")";
+						else
+							sampleInfo << " (unknown mode)";
+					}
 					else
-						sampleInfo << " ()";
+					{
+						if (wavelengthGfx)
+							sampleInfo << " (" << ctype << ")";
+						// Some elements store extra LIFE info in upper bits of ctype, instead of tmp/tmp2
+						else if (type == PT_CRAY || type == PT_DRAY || type == PT_CONV)
+							sampleInfo << " (" << c->ElementResolve(TYP(ctype), ID(ctype)).FromAscii() << ")";
+						else if (c->IsValidElement(ctype))
+							sampleInfo << " (" << c->ElementResolve(ctype, -1).FromAscii() << ")";
+						else
+							sampleInfo << " ()";
+					}
+					if(isConfigurable)
+						sampleInfo << rbrace;
 				}
-				sampleInfo << ", Temp: " << (sample.particle.temp - 273.15f) << " C";
-				sampleInfo << ", Life: " << sample.particle.life;
+				bool isConfiguringTemp = configTool &&
+					configTool->IsConfiguringTemp();
+				bool isConfiguringLife = configTool &&
+					configTool->IsConfiguringLife();
+				bool isConfiguringTmp = configTool &&
+					configTool->IsConfiguringTmp();
+				bool isConfiguringTmp2 = configTool &&
+					configTool->IsConfiguringTmp2();
+				sampleInfo << ", " <<
+					(isConfiguringTemp ? lbrace : noneString) <<
+					"Temp" <<
+					(isConfiguringTemp ? rbrace : noneString) <<
+					": " << (sample.particle.temp - 273.15f) << " C";
+				sampleInfo << ", " <<
+					(isConfiguringLife ? lbrace : noneString) <<
+					"Life" <<
+					(isConfiguringLife ? rbrace : noneString) <<
+					": " << sample.particle.life;
 				if (sample.particle.type != PT_RFRG && sample.particle.type != PT_RFGL)
 				{
+					sampleInfo << ", " <<
+						(isConfiguringTmp ? lbrace : noneString) <<
+						"Tmp" <<
+						(isConfiguringTmp ? rbrace : noneString) <<
+						": ";
 					if (sample.particle.type == PT_CONV)
 					{
 						String elemName = c->ElementResolve(
 							TYP(sample.particle.tmp),
 							ID(sample.particle.tmp)).FromAscii();
 						if (elemName == "")
-							sampleInfo << ", Tmp: " << sample.particle.tmp;
+							sampleInfo << sample.particle.tmp;
 						else
-							sampleInfo << ", Tmp: " << elemName;
+							sampleInfo << elemName;
 					}
 					else
-						sampleInfo << ", Tmp: " << sample.particle.tmp;
+						sampleInfo << sample.particle.tmp;
 				}
 
 				// only elements that use .tmp2 show it in the debug HUD
-				if (type == PT_CRAY || type == PT_DRAY || type == PT_EXOT || type == PT_LIGH || type == PT_SOAP || type == PT_TRON || type == PT_VIBR || type == PT_VIRS || type == PT_WARP || type == PT_LCRY || type == PT_CBNW || type == PT_TSNS || type == PT_DTEC || type == PT_LSNS || type == PT_PSTN || type == PT_LDTC)
-					sampleInfo << ", Tmp2: " << sample.particle.tmp2;
+				if (type == PT_CRAY || type == PT_DRAY || type == PT_EXOT || type == PT_LIGH || type == PT_SOAP || type == PT_TRON || type == PT_VIBR || type == PT_VIRS || type == PT_WARP || type == PT_LCRY || type == PT_CBNW || type == PT_TSNS || type == PT_DTEC || type == PT_LSNS || type == PT_PSTN)
+				{
+					sampleInfo << ", " <<
+					(isConfiguringTmp2 ? lbrace : noneString) <<
+					"Tmp2" <<
+					(isConfiguringTmp2 ? rbrace : noneString) <<
+					": " << sample.particle.tmp2;
+				}
 
 				sampleInfo << ", Pressure: " << sample.AirPressure;
 			}
@@ -2471,14 +2515,6 @@ void GameView::OnDraw()
 		int alpha = 255-introText*5;
 		g->fillrect(12, 12, textWidth+8, 15, 0, 0, 0, alpha*0.5);
 		g->drawtext(16, 16, fpsInfo.Build(), 32, 216, 255, alpha*0.75);
-
-		if(configTool) {
-			String configToolInfo = configTool->GetInfo(c, sample);
-			textWidth = Graphics::textwidth(configToolInfo);
-			alpha = 255-introText*5;
-			g->fillrect(12, 12+15, textWidth+8, 14, 0, 0, 0, alpha*0.5);
-			g->drawtext(16, 16+14, configToolInfo, 255, 255, 255, alpha*0.75);
-		}
 	}
 
 	//Tooltips
