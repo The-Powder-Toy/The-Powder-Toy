@@ -117,7 +117,11 @@ ui::Point ConfigTool::projectPoint(Particle part, int sampleX, int sampleY, bool
 		diagProjX = (relX - relY) / 2;
 		diagProjY = -diagProjX;
 	}
-	if(projX*projX+projY*projY > diagProjX*diagProjX+diagProjY*diagProjY || !allowDiag)
+	int relProjX = relX - projX, relProjY = relY - projY;
+	int relDiagProjX = relX - diagProjX, relDiagProjY = relY - diagProjY;
+	int distProj = relProjX*relProjX + relProjY*relProjY;
+	int distDiagProj = relDiagProjX*relDiagProjX + relDiagProjY*relDiagProjY;
+	if(distProj < distDiagProj || !allowDiag)
 		return ui::Point(projX, projY);
 	else
 		return ui::Point(diagProjX, diagProjY);
@@ -212,7 +216,7 @@ void ConfigTool::Click(Simulation *sim, Brush *brush, ui::Point position)
 		configState = ConfigState::ready;
 		break;
 	case ConfigState::dtecTmp2:
-		sim->parts[currId].tmp2 = getDist(configPart, position.X, position.Y, false);
+		sim->parts[currId].tmp2 = getDist(configPart, position.X, position.Y, 0, false);
 		configState = ConfigState::ready;
 		break;
 	case ConfigState::convTmp:
@@ -265,7 +269,7 @@ String ConfigTool::GetInfo(GameController *c, SimulationSample sample)
 		infoStream << "LDTC, life: " << configPart.life << ", tmp: " << getDist(configPart, sample.PositionX, sample.PositionY, configPart.life);
 		break;
 	case ConfigState::dtecTmp2:
-		infoStream << "DTEC, tmp2: " << getDist(configPart, sample.PositionX, sample.PositionY, false);
+		infoStream << "DTEC, tmp2: " << getDist(configPart, sample.PositionX, sample.PositionY, 0, false);
 		break;
 	case ConfigState::convTmp:
 		infoStream << "CONV, tmp: " << c->ElementResolve(sample.particle.type, -1).FromAscii();
@@ -329,7 +333,7 @@ void ConfigTool::DrawHUD(Renderer *ren, SimulationSample sample)
 		break;
 	case ConfigState::dtecTmp2:
 	{
-		int boxSize = getDist(configPart, sample.PositionX, sample.PositionY, false);
+		int boxSize = getDist(configPart, sample.PositionX, sample.PositionY, 0, false);
 		ren->drawrect(configPart.x - boxSize, configPart.y - boxSize, boxSize * 2 + 1, boxSize * 2 + 1, 200, 200, 200, 255);
 		break;
 	}
