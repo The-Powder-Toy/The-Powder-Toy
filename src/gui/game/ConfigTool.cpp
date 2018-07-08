@@ -174,6 +174,9 @@ void ConfigTool::Click(Simulation *sim, Brush *brush, ui::Point position)
 		case PT_DTEC:
 			configState = ConfigState::dtecTmp2;
 			break;
+		case PT_CONV:
+			configState = ConfigState::convTmp;
+			break;
 		case PT_FILT:
 			new FiltConfigWindow(this, sim);
 			break;
@@ -212,6 +215,10 @@ void ConfigTool::Click(Simulation *sim, Brush *brush, ui::Point position)
 		sim->parts[currId].tmp2 = getDist(configPart, position.X, position.Y, false);
 		configState = ConfigState::ready;
 		break;
+	case ConfigState::convTmp:
+		sim->parts[currId].tmp = getPartAt(sim, position).type;
+		configState = ConfigState::ready;
+		break;
 	default:
 		break;
 	}
@@ -233,6 +240,7 @@ String ConfigTool::GetInfo(GameController *c, SimulationSample sample)
 			sample.particle.type == PT_CRAY ||
 			sample.particle.type == PT_LDTC ||
 			sample.particle.type == PT_DTEC ||
+			sample.particle.type == PT_CONV ||
 			sample.particle.type == PT_FILT)
 			infoStream << c->ElementResolve(sample.particle.type, -1).FromAscii();
 		else
@@ -258,6 +266,9 @@ String ConfigTool::GetInfo(GameController *c, SimulationSample sample)
 		break;
 	case ConfigState::dtecTmp2:
 		infoStream << "DTEC, tmp2: " << getDist(configPart, sample.PositionX, sample.PositionY, false);
+		break;
+	case ConfigState::convTmp:
+		infoStream << "CONV, tmp: " << c->ElementResolve(sample.particle.type, -1).FromAscii();
 		break;
 	default:
 		break;
@@ -320,6 +331,13 @@ void ConfigTool::DrawHUD(Renderer *ren, SimulationSample sample)
 	{
 		int boxSize = getDist(configPart, sample.PositionX, sample.PositionY, false);
 		ren->drawrect(configPart.x - boxSize, configPart.y - boxSize, boxSize * 2 + 1, boxSize * 2 + 1, 200, 200, 200, 255);
+		break;
+	}
+	case ConfigState::convTmp:
+	{
+		int partX = int(configPart.x+0.5f), partY = int(configPart.y+0.5f);
+		drawRedLine(ren, partX, partY, partX, partY);
+		ren->xor_line(sample.PositionX, sample.PositionY, sample.PositionX, sample.PositionY);
 		break;
 	}
 	default:
