@@ -52,11 +52,17 @@ ui::Point ConfigTool::projectPoint(Particle part, int sampleX, int sampleY)
 		return ui::Point(diagProjX, diagProjY);
 }
 
-int ConfigTool::getDist(Particle part, int sampleX, int sampleY)
+int ConfigTool::getDist(ui::Point relPos, int offset)
+{
+	int signedDist = relPos.X ? relPos.X : relPos.Y;
+	int dist = ((signedDist > 0) ? signedDist : -signedDist) - offset;
+	return (dist < 0) ? 0 : dist;
+}
+
+int ConfigTool::getDist(Particle part, int sampleX, int sampleY, int offset)
 {
 	ui::Point proj = projectPoint(part, sampleX, sampleY);
-	int signedDist = proj.X ? proj.X : proj.Y;
-	return (signedDist > 0) ? signedDist : -signedDist;
+	return getDist(proj, offset);
 }
 
 void ConfigTool::Click(Simulation *sim, Brush *brush, ui::Point position)
@@ -78,6 +84,9 @@ void ConfigTool::Click(Simulation *sim, Brush *brush, ui::Point position)
 		case PT_DRAY:
 			configState = ConfigState::drayTmp;
 			break;
+		case PT_CRAY:
+			configState = ConfigState::crayTmp2;
+			break;
 		default:
 			break;
 		}
@@ -88,7 +97,16 @@ void ConfigTool::Click(Simulation *sim, Brush *brush, ui::Point position)
 		configState = ConfigState::drayTmp2;
 		break;
 	case ConfigState::drayTmp2:
-		sim->parts[currId].tmp2 = getDist(configPart, position.X, position.Y) - configPart.tmp;
+		sim->parts[currId].tmp2 = getDist(configPart, position.X, position.Y, configPart.tmp);
+		configState = ConfigState::ready;
+		break;
+	case ConfigState::crayTmp2:
+		sim->parts[currId].tmp2 = getDist(configPart, position.X, position.Y);
+		configPart = sim->parts[currId];
+		configState = ConfigState::crayTmp;
+		break;
+	case ConfigState::crayTmp:
+		sim->parts[currId].tmp = getDist(configPart, position.X, position.Y, configPart.tmp2);
 		configState = ConfigState::ready;
 		break;
 	default:
@@ -108,7 +126,7 @@ String ConfigTool::GetInfo(GameController *c, SimulationSample sample)
 	switch(configState)
 	{
 	case ConfigState::ready:
-		if(sample.particle.type == PT_DRAY)
+		if(sample.particle.type == PT_DRAY || sample.particle.type == PT_CRAY)
 			infoStream << c->ElementResolve(sample.particle.type, -1).FromAscii();
 		else
 			infoStream << "Ready";
@@ -117,7 +135,13 @@ String ConfigTool::GetInfo(GameController *c, SimulationSample sample)
 		infoStream << "DRAY, tmp: " << getDist(configPart, sample.PositionX, sample.PositionY);
 		break;
 	case ConfigState::drayTmp2:
-		infoStream << "DRAY, tmp: " << configPart.tmp << ", tmp2: " << getDist(configPart, sample.PositionX, sample.PositionY) - configPart.tmp;
+		infoStream << "DRAY, tmp: " << configPart.tmp << ", tmp2: " << getDist(configPart, sample.PositionX, sample.PositionY, configPart.tmp);
+		break;
+	case ConfigState::crayTmp2:
+		infoStream << "CRAY, tmp2: " << getDist(configPart, sample.PositionX, sample.PositionY);
+		break;
+	case ConfigState::crayTmp:
+		infoStream << "CRAY, tmp2: " << configPart.tmp2 << ", tmp: " << getDist(configPart, sample.PositionX, sample.PositionY, configPart.tmp2);
 		break;
 	default:
 		break;
@@ -125,22 +149,30 @@ String ConfigTool::GetInfo(GameController *c, SimulationSample sample)
 	return infoStream.Build();
 }
 
-void ConfigTool::lineToProj(Renderer *ren, SimulationSample sample)
+void ConfigTool::drawRedLine(Renderer *ren, int startx, int starty, int endx, int endy)
 {
-	ui::Point proj = projectPoint(configPart, sample.PositionX, sample.PositionY);
-	int dirx = (proj.X == 0) ? 0 : ((proj.X > 0) ? 1 : -1);
-	int diry = (proj.Y == 0) ? 0 : ((proj.Y > 0) ? 1 : -1);
-	ren->draw_line(configPart.x + dirx, configPart.y + diry, configPart.x + proj.X, configPart.y + proj.Y, 255, 0, 0, 255);
+	ren->draw_line(startx, starty, endx, endy, 255, 0, 0, 255);
 }
 
-void ConfigTool::tripleLine(Renderer *ren, SimulationSample sample, int offset)
+void ConfigTool::drawWhiteLine(Renderer *ren, int startx, int starty, int endx, int endy)
+{
+	ren->draw_line(startx, starty, endx, endy, 200, 200, 200, 255);
+}
+
+void ConfigTool::tripleLine(Renderer *ren, SimulationSample sample, int offset, bool drawFirstLine, bool drawThirdLine)
 {
 	ui::Point proj = projectPoint(configPart, sample.PositionX, sample.PositionY);
 	int dirx = (proj.X == 0) ? 0 : ((proj.X > 0) ? 1 : -1);
 	int diry = (proj.Y == 0) ? 0 : ((proj.Y > 0) ? 1 : -1);
-	ren->draw_line(configPart.x + dirx, configPart.y + diry, configPart.x + dirx * offset, configPart.y + diry * offset, 255, 0, 0, 255);
-	ren->draw_line(configPart.x + dirx * (offset + 1), configPart.y + diry * (offset + 1), configPart.x + proj.X, configPart.y + proj.Y, 200, 200, 200, 255);
-	ren->draw_line(configPart.x + proj.X + dirx, configPart.y + proj.Y + diry, configPart.x + proj.X + dirx * offset, configPart.y + proj.Y + diry * offset, 255, 0, 0, 255);
+	int spacing = getDist(proj, offset);
+	int mid1x = configPart.x + dirx * offset, mid1y = configPart.y + diry * offset;
+	int mid2x = mid1x + dirx * spacing, mid2y = mid1y + diry * spacing;
+	if(drawFirstLine && offset > 0)
+		drawWhiteLine(ren, configPart.x + dirx, configPart.y + diry, mid1x, mid1y);
+	if(spacing > 0)
+		drawRedLine(ren, mid1x + dirx, mid1y + diry, mid2x, mid2y);
+	if(drawThirdLine && offset > 0)
+		drawWhiteLine(ren, mid2x + dirx, mid2y + diry, mid2x + dirx * offset, mid2y + diry * offset);
 }
 
 void ConfigTool::DrawHUD(Renderer *ren, SimulationSample sample)
@@ -151,10 +183,16 @@ void ConfigTool::DrawHUD(Renderer *ren, SimulationSample sample)
 		ren->xor_line(sample.PositionX, sample.PositionY, sample.PositionX, sample.PositionY);
 		break;
 	case ConfigState::drayTmp:
-		lineToProj(ren, sample);
+		tripleLine(ren, sample, 0, false, false);
 		break;
 	case ConfigState::drayTmp2:
 		tripleLine(ren, sample, configPart.tmp);
+		break;
+	case ConfigState::crayTmp2:
+		tripleLine(ren, sample, 0, false, false);
+		break;
+	case ConfigState::crayTmp:
+		tripleLine(ren, sample, configPart.tmp2, true, false);
 		break;
 	default:
 		break;

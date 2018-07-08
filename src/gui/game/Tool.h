@@ -123,9 +123,11 @@ private:
 	Particle getPartAt(Simulation *sim, ui::Point position);
 	bool isSamePart(Particle p1, Particle p2);
 	ui::Point projectPoint(Particle part, int sampleX, int sampleY);
-	int getDist(Particle part, int sampleX, int sampleY);
-	void lineToProj(Renderer *ren, SimulationSample sample);
-	void tripleLine(Renderer *ren, SimulationSample sample, int offset);
+	int getDist(ui::Point relPos, int offset = 0);
+	int getDist(Particle part, int sampleX, int sampleY, int offset = 0);
+	void drawRedLine(Renderer *ren, int startx, int starty, int endx, int endy);
+	void drawWhiteLine(Renderer *ren, int startx, int starty, int endx, int endy);
+	void tripleLine(Renderer *ren, SimulationSample sample, int offset, bool drawFirstLine = true, bool drawThirdLine = true);
 };
 
 class PropertyTool: public Tool
