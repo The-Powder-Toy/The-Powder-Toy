@@ -2295,7 +2295,7 @@ void GameView::OnDraw()
 		StringBuilder sampleInfo;
 		sampleInfo << Format::Precision(2);
 
-		if(configTool && configTool->IsConfiguring())
+		if (configTool && configTool->IsConfiguring())
 			sample.particle = configTool->GetPart();
 
 		int type = sample.particle.type;
@@ -2306,7 +2306,7 @@ void GameView::OnDraw()
 			if (type == PT_PHOT || type == PT_BIZR || type == PT_BIZRG || type == PT_BIZRS || type == PT_FILT || type == PT_BRAY || type == PT_C5)
 				wavelengthGfx = (ctype&0x3FFFFFFF);
 
-			if (showDebug)
+			if (showDebug || configTool)
 			{
 				String lbrace = String::Build("["),
 					rbrace = String::Build("]"),
@@ -2322,7 +2322,7 @@ void GameView::OnDraw()
 					bool isConfigurable = configTool &&
 						(configTool->IsConfiguring() ||
 						ConfigTool::IsConfigurableType(type));
-					if(isConfigurable)
+					if (isConfigurable)
 						sampleInfo << lbrace;
 					sampleInfo << c->ElementResolve(type, ctype).FromAscii();
 					if (type == PT_FILT)
@@ -2344,7 +2344,7 @@ void GameView::OnDraw()
 						else
 							sampleInfo << " ()";
 					}
-					if(isConfigurable)
+					if (isConfigurable)
 						sampleInfo << rbrace;
 				}
 				bool isConfiguringTemp = configTool &&
@@ -2502,6 +2502,8 @@ void GameView::OnDraw()
 			else
 				fpsInfo << " Parts: " << sample.NumParts;
 		}
+		if (configTool)
+			fpsInfo << " [CONFIG TOOL]";
 		if (c->GetReplaceModeFlags()&REPLACE_MODE)
 			fpsInfo << " [REPLACE MODE]";
 		if (c->GetReplaceModeFlags()&SPECIFIC_DELETE)

@@ -317,7 +317,7 @@ void ConfigTool::drawRedLine(Renderer *ren, int startx, int starty, int endx, in
 
 void ConfigTool::drawWhiteLine(Renderer *ren, int startx, int starty, int endx, int endy)
 {
-	ren->draw_line(startx, starty, endx, endy, 200, 200, 200, 255);
+	ren->draw_line(startx, starty, endx, endy, 255, 200, 200, 255);
 }
 
 void ConfigTool::tripleLine(Renderer *ren, int firstLineLen, int midLineLen, bool drawFirstLine, bool drawThirdLine)
