@@ -2295,13 +2295,14 @@ void GameView::OnDraw()
 		StringBuilder sampleInfo;
 		sampleInfo << Format::Precision(2);
 
-		if (configTool && configTool->IsConfiguring())
-			sample.particle = configTool->GetPart();
+		bool isConfiguring = configTool && configTool->IsConfiguring();
+		Particle samplePart = isConfiguring ?
+			configTool->GetPart() : sample.particle;
 
-		int type = sample.particle.type;
+		int type = samplePart.type;
 		if (type)
 		{
-			int ctype = sample.particle.ctype;
+			int ctype = samplePart.ctype;
 
 			if (type == PT_PHOT || type == PT_BIZR || type == PT_BIZRG || type == PT_BIZRS || type == PT_FILT || type == PT_BRAY || type == PT_C5)
 				wavelengthGfx = (ctype&0x3FFFFFFF);
@@ -2314,7 +2315,7 @@ void GameView::OnDraw()
 				if (type == PT_LAVA && c->IsValidElement(ctype))
 					sampleInfo << "Molten " << c->ElementResolve(ctype, -1).FromAscii();
 				else if ((type == PT_PIPE || type == PT_PPIP) && c->IsValidElement(ctype))
-					sampleInfo << c->ElementResolve(type, -1).FromAscii() << " with " << c->ElementResolve(ctype, (int)sample.particle.pavg[1]).FromAscii();
+					sampleInfo << c->ElementResolve(type, -1).FromAscii() << " with " << c->ElementResolve(ctype, (int)samplePart.pavg[1]).FromAscii();
 				else if (type == PT_LIFE)
 					sampleInfo << c->ElementResolve(type, ctype).FromAscii();
 				else
@@ -2327,8 +2328,8 @@ void GameView::OnDraw()
 					sampleInfo << c->ElementResolve(type, ctype).FromAscii();
 					if (type == PT_FILT)
 					{
-						if (sample.particle.tmp>=0 && sample.particle.tmp<Element_FILT::NUM_MODES)
-							sampleInfo << " (" << Element_FILT::MODES[sample.particle.tmp] << ")";
+						if (samplePart.tmp>=0 && samplePart.tmp<Element_FILT::NUM_MODES)
+							sampleInfo << " (" << Element_FILT::MODES[samplePart.tmp] << ")";
 						else
 							sampleInfo << " (unknown mode)";
 					}
@@ -2359,31 +2360,31 @@ void GameView::OnDraw()
 					(isConfiguringTemp ? lbrace : noneString) <<
 					"Temp" <<
 					(isConfiguringTemp ? rbrace : noneString) <<
-					": " << (sample.particle.temp - 273.15f) << " C";
+					": " << (samplePart.temp - 273.15f) << " C";
 				sampleInfo << ", " <<
 					(isConfiguringLife ? lbrace : noneString) <<
 					"Life" <<
 					(isConfiguringLife ? rbrace : noneString) <<
-					": " << sample.particle.life;
-				if (sample.particle.type != PT_RFRG && sample.particle.type != PT_RFGL)
+					": " << samplePart.life;
+				if (samplePart.type != PT_RFRG && samplePart.type != PT_RFGL)
 				{
 					sampleInfo << ", " <<
 						(isConfiguringTmp ? lbrace : noneString) <<
 						"Tmp" <<
 						(isConfiguringTmp ? rbrace : noneString) <<
 						": ";
-					if (sample.particle.type == PT_CONV)
+					if (samplePart.type == PT_CONV)
 					{
 						String elemName = c->ElementResolve(
-							TYP(sample.particle.tmp),
-							ID(sample.particle.tmp)).FromAscii();
+							TYP(samplePart.tmp),
+							ID(samplePart.tmp)).FromAscii();
 						if (elemName == "")
-							sampleInfo << sample.particle.tmp;
+							sampleInfo << samplePart.tmp;
 						else
 							sampleInfo << elemName;
 					}
 					else
-						sampleInfo << sample.particle.tmp;
+						sampleInfo << samplePart.tmp;
 				}
 
 				// only elements that use .tmp2 show it in the debug HUD
@@ -2393,7 +2394,7 @@ void GameView::OnDraw()
 					(isConfiguringTmp2 ? lbrace : noneString) <<
 					"Tmp2" <<
 					(isConfiguringTmp2 ? rbrace : noneString) <<
-					": " << sample.particle.tmp2;
+					": " << samplePart.tmp2;
 				}
 
 				sampleInfo << ", Pressure: " << sample.AirPressure;
@@ -2403,12 +2404,12 @@ void GameView::OnDraw()
 				if (type == PT_LAVA && c->IsValidElement(ctype))
 					sampleInfo << "Molten " << c->ElementResolve(ctype, -1).FromAscii();
 				else if ((type == PT_PIPE || type == PT_PPIP) && c->IsValidElement(ctype))
-					sampleInfo << c->ElementResolve(type, -1).FromAscii() << " with " << c->ElementResolve(ctype, (int)sample.particle.pavg[1]).FromAscii();
+					sampleInfo << c->ElementResolve(type, -1).FromAscii() << " with " << c->ElementResolve(ctype, (int)samplePart.pavg[1]).FromAscii();
 				else if (type == PT_LIFE)
 					sampleInfo << c->ElementResolve(type, ctype).FromAscii();
 				else
 					sampleInfo << c->ElementResolve(type, ctype).FromAscii();
-				sampleInfo << ", Temp: " << sample.particle.temp - 273.15f << " C";
+				sampleInfo << ", Temp: " << samplePart.temp - 273.15f << " C";
 				sampleInfo << ", Pressure: " << sample.AirPressure;
 			}
 		}
