@@ -1595,7 +1595,6 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 		}
 		else
 		{
-			ConfigTool *t = c->GetActiveConfigTool();
 			c->SetActiveTool(0, "DEFAULT_UI_CONFIG");
 		}
 		break;

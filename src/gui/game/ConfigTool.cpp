@@ -78,6 +78,8 @@ void ConfigTool::Click(Simulation *sim, Brush *brush, ui::Point position)
 		case PT_DRAY:
 			configState = ConfigState::drayTmp;
 			break;
+		default:
+			break;
 		}
 		break;
 	case ConfigState::drayTmp:
@@ -88,6 +90,8 @@ void ConfigTool::Click(Simulation *sim, Brush *brush, ui::Point position)
 	case ConfigState::drayTmp2:
 		sim->parts[currId].tmp2 = getDist(configPart, position.X, position.Y) - configPart.tmp;
 		configState = ConfigState::ready;
+		break;
+	default:
 		break;
 	}
 }
@@ -114,6 +118,8 @@ String ConfigTool::GetInfo(GameController *c, SimulationSample sample)
 		break;
 	case ConfigState::drayTmp2:
 		infoStream << "DRAY, tmp: " << configPart.tmp << ", tmp2: " << getDist(configPart, sample.PositionX, sample.PositionY) - configPart.tmp;
+		break;
+	default:
 		break;
 	}
 	return infoStream.Build();
@@ -149,6 +155,8 @@ void ConfigTool::DrawHUD(Renderer *ren, SimulationSample sample)
 		break;
 	case ConfigState::drayTmp2:
 		tripleLine(ren, sample, configPart.tmp);
+		break;
+	default:
 		break;
 	}
 }
