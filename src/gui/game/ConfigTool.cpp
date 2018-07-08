@@ -97,7 +97,7 @@ bool ConfigTool::isSamePart(Particle p1, Particle p2)
 		int(p1.y+0.5f) == int(p2.y+0.5f);
 }
 
-ui::Point ConfigTool::projectPoint(Particle part, int sampleX, int sampleY)
+ui::Point ConfigTool::projectPoint(Particle part, int sampleX, int sampleY, bool allowDiag)
 {
 	int partX = int(part.x + 0.5f), partY = int(part.y + 0.5f);
 	int relX = sampleX - partX, relY = sampleY - partY;
@@ -117,7 +117,7 @@ ui::Point ConfigTool::projectPoint(Particle part, int sampleX, int sampleY)
 		diagProjX = (relX - relY) / 2;
 		diagProjY = -diagProjX;
 	}
-	if(projX*projX+projY*projY > diagProjX*diagProjX+diagProjY*diagProjY)
+	if(projX*projX+projY*projY > diagProjX*diagProjX+diagProjY*diagProjY || !allowDiag)
 		return ui::Point(projX, projY);
 	else
 		return ui::Point(diagProjX, diagProjY);
@@ -130,9 +130,9 @@ int ConfigTool::getDist(ui::Point relPos, int offset)
 	return (dist < 0) ? 0 : dist;
 }
 
-int ConfigTool::getDist(Particle part, int sampleX, int sampleY, int offset)
+int ConfigTool::getDist(Particle part, int sampleX, int sampleY, int offset, bool allowDiag)
 {
-	ui::Point proj = projectPoint(part, sampleX, sampleY);
+	ui::Point proj = projectPoint(part, sampleX, sampleY, allowDiag);
 	return getDist(proj, offset);
 }
 
@@ -168,6 +168,12 @@ void ConfigTool::Click(Simulation *sim, Brush *brush, ui::Point position)
 		case PT_CRAY:
 			configState = ConfigState::crayTmp2;
 			break;
+		case PT_LDTC:
+			configState = ConfigState::ldtcLife;
+			break;
+		case PT_DTEC:
+			configState = ConfigState::dtecTmp2;
+			break;
 		case PT_FILT:
 			new FiltConfigWindow(this, sim);
 			break;
@@ -193,6 +199,19 @@ void ConfigTool::Click(Simulation *sim, Brush *brush, ui::Point position)
 		sim->parts[currId].tmp = getDist(configPart, position.X, position.Y, configPart.tmp2);
 		configState = ConfigState::ready;
 		break;
+	case ConfigState::ldtcLife:
+		sim->parts[currId].life = getDist(configPart, position.X, position.Y);
+		configPart = sim->parts[currId];
+		configState = ConfigState::ldtcTmp;
+		break;
+	case ConfigState::ldtcTmp:
+		sim->parts[currId].tmp = getDist(configPart, position.X, position.Y, configPart.life);
+		configState = ConfigState::ready;
+		break;
+	case ConfigState::dtecTmp2:
+		sim->parts[currId].tmp2 = getDist(configPart, position.X, position.Y, false);
+		configState = ConfigState::ready;
+		break;
 	default:
 		break;
 	}
@@ -212,6 +231,8 @@ String ConfigTool::GetInfo(GameController *c, SimulationSample sample)
 	case ConfigState::ready:
 		if(sample.particle.type == PT_DRAY ||
 			sample.particle.type == PT_CRAY ||
+			sample.particle.type == PT_LDTC ||
+			sample.particle.type == PT_DTEC ||
 			sample.particle.type == PT_FILT)
 			infoStream << c->ElementResolve(sample.particle.type, -1).FromAscii();
 		else
@@ -228,6 +249,15 @@ String ConfigTool::GetInfo(GameController *c, SimulationSample sample)
 		break;
 	case ConfigState::crayTmp:
 		infoStream << "CRAY, tmp2: " << configPart.tmp2 << ", tmp: " << getDist(configPart, sample.PositionX, sample.PositionY, configPart.tmp2);
+		break;
+	case ConfigState::ldtcLife:
+		infoStream << "LDTC, life: " << getDist(configPart, sample.PositionX, sample.PositionY);
+		break;
+	case ConfigState::ldtcTmp:
+		infoStream << "LDTC, life: " << configPart.life << ", tmp: " << getDist(configPart, sample.PositionX, sample.PositionY, configPart.life);
+		break;
+	case ConfigState::dtecTmp2:
+		infoStream << "DTEC, tmp2: " << getDist(configPart, sample.PositionX, sample.PositionY, false);
 		break;
 	default:
 		break;
@@ -280,6 +310,18 @@ void ConfigTool::DrawHUD(Renderer *ren, SimulationSample sample)
 	case ConfigState::crayTmp:
 		tripleLine(ren, sample, configPart.tmp2, true, false);
 		break;
+	case ConfigState::ldtcLife:
+		tripleLine(ren, sample, 0, false, false);
+		break;
+	case ConfigState::ldtcTmp:
+		tripleLine(ren, sample, configPart.life, true, false);
+		break;
+	case ConfigState::dtecTmp2:
+	{
+		int boxSize = getDist(configPart, sample.PositionX, sample.PositionY, false);
+		ren->drawrect(configPart.x - boxSize, configPart.y - boxSize, boxSize * 2 + 1, boxSize * 2 + 1, 200, 200, 200, 255);
+		break;
+	}
 	default:
 		break;
 	}
