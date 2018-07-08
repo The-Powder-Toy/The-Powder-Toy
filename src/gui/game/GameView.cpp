@@ -1593,6 +1593,11 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 			buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to copy (right click = cancel)";
 			buttonTipShow = 120;
 		}
+		else
+		{
+			ConfigTool *t = c->GetActiveConfigTool();
+			c->SetActiveTool(0, "DEFAULT_UI_CONFIG");
+		}
 		break;
 	case 'x':
 		if(ctrl)
@@ -2097,6 +2102,7 @@ void GameView::SetSaveButtonTooltips()
 
 void GameView::OnDraw()
 {
+	ConfigTool * configTool = c->GetActiveConfigTool();
 	Graphics * g = GetGraphics();
 	if (ren)
 	{
@@ -2157,6 +2163,10 @@ void GameView::OnDraw()
 
 					ren->xor_line(finalCurrentMouse.X-finalBrushRadius.X, finalCurrentMouse.Y-finalBrushRadius.Y+1, finalCurrentMouse.X-finalBrushRadius.X, finalCurrentMouse.Y+finalBrushRadius.Y+CELL-2);
 					ren->xor_line(finalCurrentMouse.X+finalBrushRadius.X+CELL-1, finalCurrentMouse.Y-finalBrushRadius.Y+1, finalCurrentMouse.X+finalBrushRadius.X+CELL-1, finalCurrentMouse.Y+finalBrushRadius.Y+CELL-2);
+				}
+				else if(configTool)
+				{
+					configTool->DrawHUD(ren, sample);
 				}
 				else
 				{
@@ -2463,6 +2473,14 @@ void GameView::OnDraw()
 		int alpha = 255-introText*5;
 		g->fillrect(12, 12, textWidth+8, 15, 0, 0, 0, alpha*0.5);
 		g->drawtext(16, 16, fpsInfo.Build(), 32, 216, 255, alpha*0.75);
+
+		if(configTool) {
+			String configToolInfo = configTool->GetInfo(c, sample);
+			textWidth = Graphics::textwidth(configToolInfo);
+			alpha = 255-introText*5;
+			g->fillrect(12, 12+15, textWidth+8, 14, 0, 0, 0, alpha*0.5);
+			g->drawtext(16, 16+14, configToolInfo, 255, 255, 255, alpha*0.75);
+		}
 	}
 
 	//Tooltips

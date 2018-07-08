@@ -6,8 +6,12 @@
 #include "common/String.h"
 #include "gui/interface/Point.h"
 #include "simulation/StructProperty.h"
+#include "simulation/Particle.h"
+#include "simulation/Sample.h"
 
 class Simulation;
+class GameController;
+class Renderer;
 class Brush;
 class VideoBuffer;
 
@@ -78,6 +82,50 @@ public:
 	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false) { }
 	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) { }
 	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position) { }
+};
+
+class ConfigTool: public Tool
+{
+	enum struct ConfigState
+	{
+		ready,
+		drayTmp,
+		drayTmp2,
+		crayTmp,
+		crayTmp2,
+		dtecTmp2,
+		convTmp,
+		ldtcTmp,
+		ldtcLife
+	};
+	GameModel * gameModel;
+	int currId;
+	Particle configPart;
+	ConfigState configState;
+public:
+	ConfigTool(GameModel *model):
+	Tool(0, "CNFG", "Configurator.", 0xff, 0xcc, 0, "DEFAULT_UI_CONFIG", NULL),
+	gameModel(model),
+	configState(ConfigState::ready)
+	{
+	}
+	virtual ~ConfigTool() {}
+	String GetInfo(GameController * c, SimulationSample sample);
+	void Reset();
+	void DrawHUD(Renderer *ren, SimulationSample sample);
+	virtual void Click(Simulation * sim, Brush * brush, ui::Point position);
+	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position) { }
+	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false) { }
+	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) { }
+	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position) { }
+private:
+	int getIdAt(Simulation *sim, ui::Point position);
+	Particle getPartAt(Simulation *sim, ui::Point position);
+	bool isSamePart(Particle p1, Particle p2);
+	ui::Point projectPoint(Particle part, int sampleX, int sampleY);
+	int getDist(Particle part, int sampleX, int sampleY);
+	void lineToProj(Renderer *ren, SimulationSample sample);
+	void tripleLine(Renderer *ren, SimulationSample sample, int offset);
 };
 
 class PropertyTool: public Tool
