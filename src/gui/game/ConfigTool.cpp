@@ -74,7 +74,7 @@ void FiltConfigWindow::OnTryExit(ExitMethod method)
 
 int ConfigTool::getIdAt(Simulation *sim, ui::Point position)
 {
-	if(position.X<0 || position.X>XRES || position.Y<0 || position.Y>YRES)
+	if(position.X<0 || position.X>=XRES || position.Y<0 || position.Y>=YRES)
 		return -1;
 	int p = sim->pmap[position.Y][position.X];
 	if(!p)
