@@ -47,7 +47,7 @@ Element_VIBR::Element_VIBR()
 
 //#TPT-Directive ElementHeader Element_VIBR static int update(UPDATE_FUNC_ARGS)
 int Element_VIBR::update(UPDATE_FUNC_ARGS) {
-	int r, rx, ry, rndstore;
+	int r, rx, ry, rndstore = 0;
 	int trade, transfer;
 	if (!parts[i].life) //if not exploding
 	{

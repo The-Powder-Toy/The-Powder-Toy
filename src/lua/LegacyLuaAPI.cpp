@@ -858,8 +858,8 @@ int luatpt_reset_spark(lua_State* l)
 int luatpt_set_property(lua_State* l)
 {
 	const char *name;
-	int r, i, x, y, w, h, t, nx, ny, partsel = 0;
-	float f;
+	int r, i, x, y, w, h, t = 0, nx, ny, partsel = 0;
+	float f = 0;
 	int acount = lua_gettop(l);
 	const char* prop = luaL_optstring(l, 1, "");
 
@@ -877,14 +877,14 @@ int luatpt_set_property(lua_State* l)
 				return luaL_error(l, "Unrecognised element '%s'", name);
 		}
 	}
-	if (lua_isnumber(l, 2))
+	if (lua_isnumber(l, 2) || format == CommandInterface::FormatElement)
 	{
 		if (format == CommandInterface::FormatFloat)
 			f = luaL_optnumber(l, 2, 0);
 		else
 			t = luaL_optint(l, 2, 0);
 
-		if (!strcmp(prop,"type") && (t<0 || t>=PT_NUM || !luacon_sim->elements[t].Enabled))
+		if (!strcmp(prop, "type") && (t<0 || t>=PT_NUM || !luacon_sim->elements[t].Enabled))
 			return luaL_error(l, "Unrecognised element number '%d'", t);
 	}
 	else
