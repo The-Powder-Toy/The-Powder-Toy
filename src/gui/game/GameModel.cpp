@@ -348,7 +348,7 @@ void GameModel::BuildMenus()
 	configToolset[0] = GetToolFromIdentifier("DEFAULT_UI_CONFIG");
 	configToolset[1] = &((ConfigTool*)GetToolFromIdentifier("DEFAULT_UI_CONFIG"))->releaseTool;
 	// Reserved for more complex configuration
-	configToolset[2] = GetToolFromIdentifier("DEFAULT_PT_NONE");
+	configToolset[2] = GetToolFromIdentifier("DEFAULT_UI_SAMPLE");
 	configToolset[3] = GetToolFromIdentifier("DEFAULT_PT_NONE");
 
 	//Set default tools
@@ -607,8 +607,10 @@ Tool * GameModel::GetActiveTool(int selection)
 
 void GameModel::SetActiveTool(int selection, Tool * tool)
 {
-	if(tool->GetIdentifier() == "DEFAULT_UI_CONFIG")
+	if (tool->GetIdentifier() == "DEFAULT_UI_CONFIG")
 		activeTools = configToolset;
+	else if (activeTools == configToolset)
+		activeTools = regularToolset;
 	activeTools[selection] = tool;
 	notifyActiveToolsChanged();
 }
