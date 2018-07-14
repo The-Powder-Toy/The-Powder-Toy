@@ -312,12 +312,12 @@ bool ConfigTool::IsConfiguringTmp2()
 
 void ConfigTool::drawRedLine(Renderer *ren, int startx, int starty, int endx, int endy)
 {
-	ren->draw_line(startx, starty, endx, endy, 255, 0, 0, 255);
+	ren->draw_line(startx, starty, endx, endy, 255, 0, 0, 200);
 }
 
 void ConfigTool::drawWhiteLine(Renderer *ren, int startx, int starty, int endx, int endy)
 {
-	ren->draw_line(startx, starty, endx, endy, 255, 200, 200, 255);
+	ren->draw_line(startx, starty, endx, endy, 255, 200, 200, 220);
 }
 
 void ConfigTool::tripleLine(Renderer *ren, int firstLineLen, int midLineLen, bool drawFirstLine, bool drawThirdLine)
@@ -357,7 +357,7 @@ void ConfigTool::DrawHUD(Renderer *ren)
 		tripleLine(ren, configPart.life, configPart.tmp, true, false);
 		break;
 	case ConfigState::dtecTmp2:
-		ren->drawrect(configPart.x - configPart.tmp2, configPart.y - configPart.tmp2, configPart.tmp2 * 2 + 1, configPart.tmp2 * 2 + 1, 200, 200, 200, 255);
+		ren->drawrect(configPart.x - configPart.tmp2, configPart.y - configPart.tmp2, configPart.tmp2 * 2 + 1, configPart.tmp2 * 2 + 1, 200, 200, 200, 220);
 		break;
 	case ConfigState::convTmp:
 	{
