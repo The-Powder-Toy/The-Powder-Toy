@@ -338,6 +338,9 @@ void ConfigTool::DrawHUD(Renderer *ren)
 {
 	switch(configState)
 	{
+	case ConfigState::ready:
+		ren->xor_line(cursorPos.X, cursorPos.Y, cursorPos.X, cursorPos.Y);
+		break;
 	case ConfigState::drayTmp:
 		tripleLine(ren, 0, configPart.tmp, false, false);
 		break;
