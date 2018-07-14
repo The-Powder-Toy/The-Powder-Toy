@@ -1162,6 +1162,9 @@ Tool * GameController::GetActiveTool(int selection)
 
 void GameController::SetActiveTool(int toolSelection, Tool * tool)
 {
+	if (gameModel->GetActiveMenu() == SC_DECO &&
+		tool->GetIdentifier().BeginsWith("DEFAULT_UI"))
+		SetActiveMenu(SC_TOOL);
 	if (gameModel->GetActiveMenu() == SC_DECO && toolSelection == 2)
 		toolSelection = 0;
 	gameModel->SetActiveTool(toolSelection, tool);
