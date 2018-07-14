@@ -1162,17 +1162,10 @@ void GameController::ActiveToolChanged(int toolSelection, Tool *tool)
 
 ConfigTool * GameController::GetActiveConfigTool()
 {
-	ConfigTool * configTool = NULL;
-	for(int i = 0; i < 4; i++)
-	{
-		Tool * t = GetActiveTool(i);
-		if(t->GetIdentifier() == "DEFAULT_UI_CONFIG")
-		{
-			configTool = (ConfigTool*)t;
-			break;
-		}
-	}
-	return configTool;
+	Tool * t = GetActiveTool(0);
+	if(t->GetIdentifier() == "DEFAULT_UI_CONFIG")
+		return (ConfigTool*)t;
+	else return NULL;
 }
 
 Tool * GameController::GetActiveTool(int selection)
