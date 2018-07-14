@@ -46,6 +46,7 @@ GameModel::GameModel():
 	activeTools = regularToolset;
 
 	std::fill(decoToolset, decoToolset+4, (Tool*)NULL);
+	std::fill(configToolset, configToolset+4, (Tool*)NULL);
 	std::fill(regularToolset, regularToolset+4, (Tool*)NULL);
 
 	//Default render prefs
@@ -344,6 +345,11 @@ void GameModel::BuildMenus()
 	decoToolset[1] = GetToolFromIdentifier("DEFAULT_DECOR_CLR");
 	decoToolset[2] = GetToolFromIdentifier("DEFAULT_UI_SAMPLE");
 	decoToolset[3] = GetToolFromIdentifier("DEFAULT_PT_NONE");
+	configToolset[0] = GetToolFromIdentifier("DEFAULT_UI_CONFIG");
+	configToolset[1] = &((ConfigTool*)GetToolFromIdentifier("DEFAULT_UI_CONFIG"))->releaseTool;
+	// Reserved for more complex configuration
+	configToolset[2] = GetToolFromIdentifier("DEFAULT_PT_NONE");
+	configToolset[3] = GetToolFromIdentifier("DEFAULT_PT_NONE");
 
 	//Set default tools
 	regularToolset[0] = GetToolFromIdentifier("DEFAULT_PT_DUST");
@@ -558,7 +564,7 @@ void GameModel::SetActiveMenu(int menuID)
 			notifyActiveToolsChanged();
 		}
 	}
-	else
+	else if(activeTools != configToolset)
 	{
 		if(activeTools != regularToolset)
 		{
@@ -601,7 +607,15 @@ Tool * GameModel::GetActiveTool(int selection)
 
 void GameModel::SetActiveTool(int selection, Tool * tool)
 {
+	if(tool->GetIdentifier() == "DEFAULT_UI_CONFIG")
+		activeTools = configToolset;
 	activeTools[selection] = tool;
+	notifyActiveToolsChanged();
+}
+
+void GameModel::ResetToolset()
+{
+	activeTools = regularToolset;
 	notifyActiveToolsChanged();
 }
 

@@ -113,6 +113,7 @@ public:
 	void SetActiveTool(int toolSelection, Tool * tool);
 	void SetActiveTool(int toolSelection, ByteString identifier);
 	void SetLastTool(Tool * tool);
+	void ToggleConfigTool();
 	int GetReplaceModeFlags();
 	void SetReplaceModeFlags(int flags);
 	void ActiveToolChanged(int toolSelection, Tool *tool);

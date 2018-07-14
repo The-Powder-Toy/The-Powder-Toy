@@ -63,6 +63,7 @@ private:
 	Tool ** activeTools;
 	Tool * decoToolset[4];
 	Tool * regularToolset[4];
+	Tool * configToolset[4];
 	User currentUser;
 	float toolStrength;
 	std::deque<Snapshot*> history;
@@ -145,6 +146,7 @@ public:
 
 	Tool * GetActiveTool(int selection);
 	void SetActiveTool(int selection, Tool * tool);
+	void ResetToolset();
 	void SetToolStrength(float value);
 	float GetToolStrength();
 	Tool * GetLastTool();

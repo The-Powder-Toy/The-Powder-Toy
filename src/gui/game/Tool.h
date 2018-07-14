@@ -86,6 +86,23 @@ public:
 
 class ConfigTool: public Tool
 {
+	class ReleaseTool : public Tool
+	{
+		ConfigTool * configTool;
+	public:
+		ReleaseTool(ConfigTool *configTool_):
+		Tool(0, "", "", 0, 0, 0, "DEFAULT_UI_CONFIG_RELEASE", NULL),
+		configTool(configTool_)
+		{
+		}
+		virtual ~ReleaseTool() {}
+		virtual void Click(Simulation * sim, Brush * brush, ui::Point position);
+		virtual void Draw(Simulation * sim, Brush * brush, ui::Point position) { }
+		virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false) { }
+		virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) { }
+		virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position) { }
+	};
+
 	enum struct ConfigState
 	{
 		ready,
@@ -105,11 +122,13 @@ class ConfigTool: public Tool
 	ui::Point cursorPos;
 	ConfigState configState;
 public:
+	ReleaseTool releaseTool;
 	ConfigTool(GameModel *model):
 	Tool(0, "CNFG", "Configurator.", 0xff, 0xcc, 0, "DEFAULT_UI_CONFIG", NULL),
 	gameModel(model),
 	cursorPos(0, 0),
-	configState(ConfigState::ready)
+	configState(ConfigState::ready),
+	releaseTool(ReleaseTool(this))
 	{
 	}
 	virtual ~ConfigTool() {}

@@ -370,3 +370,8 @@ void ConfigTool::DrawHUD(Renderer *ren)
 		break;
 	}
 }
+
+void ConfigTool::ReleaseTool::Click(Simulation *sim, Brush *brush, ui::Point position)
+{
+	configTool->Reset();
+}
