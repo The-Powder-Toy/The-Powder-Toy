@@ -117,7 +117,7 @@ void PropertyWindow::SetProperty()
 					else
 					{
 						int type;
-						if (properties[property->GetOption().second].Type == StructProperty::ParticleType && (type = sim->GetParticleType(value.ToUtf8())) != -1)
+						if ((type = sim->GetParticleType(value.ToUtf8())) != -1)
 						{
 							v = type;
 
