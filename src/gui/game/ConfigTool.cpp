@@ -33,19 +33,19 @@ tool(tool_),
 sim(sim_)
 {
 	int maxTextWidth = 0;
-	for(int i = 0; i <= Element_FILT::NUM_MODES; i++)
+	for (int i = 0; i <= Element_FILT::NUM_MODES; i++)
 	{
 		String buttonText = (i == Element_FILT::NUM_MODES) ?
 			String::Build("Cancel") : Element_FILT::MODES[i];
 		int textWidth = Graphics::textwidth(buttonText);
-		if(textWidth > maxTextWidth)
+		if (textWidth > maxTextWidth)
 			maxTextWidth = textWidth;
 	}
 	int buttonWidth = maxTextWidth + 15;
 	int buttonHeight = 17;
 	int buttonLeft = Size.X/2 - buttonWidth/2;
 	int buttonTop = Size.Y/2 - ((buttonHeight-1) * (Element_FILT::NUM_MODES+1))/2;
-	for(int i = 0; i <= Element_FILT::NUM_MODES; i++)
+	for (int i = 0; i <= Element_FILT::NUM_MODES; i++)
 	{
 		String buttonText = (i == Element_FILT::NUM_MODES) ?
 			String::Build("Cancel") : Element_FILT::MODES[i];
@@ -60,7 +60,7 @@ sim(sim_)
 
 void FiltConfigWindow::OnSelect(int result)
 {
-	if(result != Element_FILT::NUM_MODES)
+	if (result != Element_FILT::NUM_MODES)
 		tool->OnSelectFiltTmp(sim, result);
 	CloseActiveWindow();
 	SelfDestruct();
@@ -74,10 +74,10 @@ void FiltConfigWindow::OnTryExit(ExitMethod method)
 
 int ConfigTool::getIdAt(Simulation *sim, ui::Point position)
 {
-	if(position.X<0 || position.X>=XRES || position.Y<0 || position.Y>=YRES)
+	if (position.X<0 || position.X>=XRES || position.Y<0 || position.Y>=YRES)
 		return -1;
 	int p = sim->pmap[position.Y][position.X];
-	if(!p)
+	if (!p)
 		return -1;
 	return ID(p);
 }
@@ -103,11 +103,11 @@ ui::Point ConfigTool::projectPoint(Particle part, int sampleX, int sampleY, bool
 	int relX = sampleX - partX, relY = sampleY - partY;
 	int absX = (relX > 0) ? relX : -relX, absY = (relY > 0) ? relY : -relY;
 	int projX = 0, projY = 0, diagProjX, diagProjY;
-	if(absX > absY)
+	if (absX > absY)
 		projX = relX;
 	else
 		projY = relY;
-	if((relX > 0) == (relY > 0))
+	if ((relX > 0) == (relY > 0))
 	{
 		diagProjX = (relX + relY) / 2;
 		diagProjY = diagProjX;
@@ -121,7 +121,7 @@ ui::Point ConfigTool::projectPoint(Particle part, int sampleX, int sampleY, bool
 	int relDiagProjX = relX - diagProjX, relDiagProjY = relY - diagProjY;
 	int distProj = relProjX*relProjX + relProjY*relProjY;
 	int distDiagProj = relDiagProjX*relDiagProjX + relDiagProjY*relDiagProjY;
-	if(distProj < distDiagProj || !allowDiag)
+	if (distProj < distDiagProj || !allowDiag)
 		return ui::Point(projX, projY);
 	else
 		return ui::Point(diagProjX, diagProjY);
@@ -142,7 +142,7 @@ int ConfigTool::getDist(Particle part, int sampleX, int sampleY, int offset, boo
 
 void ConfigTool::OnSelectFiltTmp(Simulation *sim, int tmp)
 {
-	if(!isSamePart(sim->parts[currId], configPart))
+	if (!isSamePart(sim->parts[currId], configPart))
 	{
 		Reset();
 		return;
@@ -157,10 +157,10 @@ void ConfigTool::CalculatePreview(int x, int y, Simulation *sim)
 	ui::Point proj = projectPoint(configPart, x, y, allowDiag);
 	dirx = (proj.X == 0) ? 0 : ((proj.X > 0) ? 1 : -1);
 	diry = (proj.Y == 0) ? 0 : ((proj.Y > 0) ? 1 : -1);
-	switch(configState)
+	switch (configState)
 	{
 	case ConfigState::ready:
-		configPart = getPartAt(sim, ui::Point(x, y));
+		configPart = getPartAt(sim, cursorPos);
 		break;
 	case ConfigState::drayTmp:
 		configPart.tmp = getDist(proj);
@@ -184,7 +184,7 @@ void ConfigTool::CalculatePreview(int x, int y, Simulation *sim)
 		configPart.tmp2 = getDist(proj);
 		break;
 	case ConfigState::convTmp:
-		configPart.tmp = getPartAt(sim, ui::Point(x, y)).type;
+		configPart.tmp = getPartAt(sim, cursorPos).type;
 		break;
 	default:
 		break;
@@ -193,20 +193,20 @@ void ConfigTool::CalculatePreview(int x, int y, Simulation *sim)
 
 void ConfigTool::Click(Simulation *sim, Brush *brush, ui::Point position)
 {
-	if(configState != ConfigState::ready &&
+	if (configState != ConfigState::ready &&
 		!isSamePart(sim->parts[currId], configPart))
 	{
 		Reset();
 	}
 	CalculatePreview(position.X, position.Y, sim);
-	switch(configState)
+	switch (configState)
 	{
 	case ConfigState::ready:
 		currId = getIdAt(sim, position);
-		if(currId == -1)
+		if (currId == -1)
 			break;
 		configPart = sim->parts[currId];
-		switch(configPart.type)
+		switch (configPart.type)
 		{
 		case PT_DRAY:
 			configState = ConfigState::drayTmp;
@@ -323,17 +323,17 @@ void ConfigTool::drawWhiteLine(Renderer *ren, int startx, int starty, int endx, 
 	ren->draw_line(startx, starty, endx, endy, 255, 200, 200, 220);
 }
 
-void ConfigTool::tripleLine(Renderer *ren, int firstLineLen, int midLineLen, bool drawFirstLine, bool drawThirdLine)
+void ConfigTool::drawTripleLine(Renderer *ren, int firstLineLen, int midLineLen, bool drawFirstLine, bool drawThirdLine)
 {
 	int mid1x = configPart.x + dirx * firstLineLen,
 		mid1y = configPart.y + diry * firstLineLen;
 	int mid2x = mid1x + dirx * midLineLen,
 		mid2y = mid1y + diry * midLineLen;
-	if(drawFirstLine && firstLineLen > 0)
+	if (drawFirstLine && firstLineLen > 0)
 		drawWhiteLine(ren, configPart.x + dirx, configPart.y + diry, mid1x, mid1y);
-	if(midLineLen > 0)
+	if (midLineLen > 0)
 		drawRedLine(ren, mid1x + dirx, mid1y + diry, mid2x, mid2y);
-	if(drawThirdLine && firstLineLen > 0)
+	if (drawThirdLine && firstLineLen > 0)
 		drawWhiteLine(ren, mid2x + dirx, mid2y + diry, mid2x + dirx * firstLineLen, mid2y + diry * firstLineLen);
 }
 
@@ -344,11 +344,11 @@ void ConfigTool::drawDtecBox(Renderer *ren)
 
 void ConfigTool::DrawHUD(Renderer *ren)
 {
-	switch(configState)
+	switch (configState)
 	{
 	case ConfigState::ready:
 		ren->xor_line(cursorPos.X, cursorPos.Y, cursorPos.X, cursorPos.Y);
-		switch(configPart.type)
+		switch (configPart.type)
 		{
 		case PT_DTEC:
 			drawDtecBox(ren);
@@ -356,22 +356,22 @@ void ConfigTool::DrawHUD(Renderer *ren)
 		}
 		break;
 	case ConfigState::drayTmp:
-		tripleLine(ren, 0, configPart.tmp, false, false);
+		drawTripleLine(ren, 0, configPart.tmp, false, false);
 		break;
 	case ConfigState::drayTmp2:
-		tripleLine(ren, configPart.tmp, configPart.tmp2);
+		drawTripleLine(ren, configPart.tmp, configPart.tmp2);
 		break;
 	case ConfigState::crayTmp2:
-		tripleLine(ren, 0, configPart.tmp2, false, false);
+		drawTripleLine(ren, 0, configPart.tmp2, false, false);
 		break;
 	case ConfigState::crayTmp:
-		tripleLine(ren, configPart.tmp2, configPart.tmp, true, false);
+		drawTripleLine(ren, configPart.tmp2, configPart.tmp, true, false);
 		break;
 	case ConfigState::ldtcLife:
-		tripleLine(ren, 0, configPart.life, false, false);
+		drawTripleLine(ren, 0, configPart.life, false, false);
 		break;
 	case ConfigState::ldtcTmp:
-		tripleLine(ren, configPart.life, configPart.tmp, true, false);
+		drawTripleLine(ren, configPart.life, configPart.tmp, true, false);
 		break;
 	case ConfigState::dtecTmp2:
 		drawDtecBox(ren);
