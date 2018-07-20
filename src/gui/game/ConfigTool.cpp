@@ -159,6 +159,9 @@ void ConfigTool::CalculatePreview(int x, int y, Simulation *sim)
 	diry = (proj.Y == 0) ? 0 : ((proj.Y > 0) ? 1 : -1);
 	switch(configState)
 	{
+	case ConfigState::ready:
+		configPart = getPartAt(sim, ui::Point(x, y));
+		break;
 	case ConfigState::drayTmp:
 		configPart.tmp = getDist(proj);
 		break;
@@ -334,12 +337,23 @@ void ConfigTool::tripleLine(Renderer *ren, int firstLineLen, int midLineLen, boo
 		drawWhiteLine(ren, mid2x + dirx, mid2y + diry, mid2x + dirx * firstLineLen, mid2y + diry * firstLineLen);
 }
 
+void ConfigTool::drawDtecBox(Renderer *ren)
+{
+	ren->drawrect(configPart.x - configPart.tmp2, configPart.y - configPart.tmp2, configPart.tmp2 * 2 + 1, configPart.tmp2 * 2 + 1, 200, 200, 200, 220);
+}
+
 void ConfigTool::DrawHUD(Renderer *ren)
 {
 	switch(configState)
 	{
 	case ConfigState::ready:
 		ren->xor_line(cursorPos.X, cursorPos.Y, cursorPos.X, cursorPos.Y);
+		switch(configPart.type)
+		{
+		case PT_DTEC:
+			drawDtecBox(ren);
+			break;
+		}
 		break;
 	case ConfigState::drayTmp:
 		tripleLine(ren, 0, configPart.tmp, false, false);
@@ -360,7 +374,7 @@ void ConfigTool::DrawHUD(Renderer *ren)
 		tripleLine(ren, configPart.life, configPart.tmp, true, false);
 		break;
 	case ConfigState::dtecTmp2:
-		ren->drawrect(configPart.x - configPart.tmp2, configPart.y - configPart.tmp2, configPart.tmp2 * 2 + 1, configPart.tmp2 * 2 + 1, 200, 200, 200, 220);
+		drawDtecBox(ren);
 		break;
 	case ConfigState::convTmp:
 	{

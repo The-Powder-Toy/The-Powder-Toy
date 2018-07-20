@@ -158,6 +158,7 @@ private:
 	void drawRedLine(Renderer *ren, int startx, int starty, int endx, int endy);
 	void drawWhiteLine(Renderer *ren, int startx, int starty, int endx, int endy);
 	void tripleLine(Renderer *ren, int firstLineLen, int midLineLen, bool drawFirstLine = true, bool drawThirdLine = true);
+	void drawDtecBox(Renderer *ren);
 };
 
 class PropertyTool: public Tool
