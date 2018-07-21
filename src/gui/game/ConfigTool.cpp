@@ -393,29 +393,54 @@ void ConfigTool::ReleaseTool::Click(Simulation *sim, Brush *brush, ui::Point pos
 	if (configTool->IsConfiguring())
 		configTool->Reset();
 	else
+	{
+		ui::Point oldSize = brush->GetRadius();
+		brush->SetRadius(ui::Point(0, 0));
 		clearTool->Click(sim, brush, position);
+		brush->SetRadius(oldSize);
+	}
 }
 
 void ConfigTool::ReleaseTool::Draw(Simulation * sim, Brush * brush, ui::Point position)
 {
 	if (!configTool->IsConfiguring())
+	{
+		ui::Point oldSize = brush->GetRadius();
+		brush->SetRadius(ui::Point(0, 0));
 		clearTool->Draw(sim, brush, position);
+		brush->SetRadius(oldSize);
+	}
 }
 
 void ConfigTool::ReleaseTool::DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging)
 {
 	if (!configTool->IsConfiguring())
+	{
+		ui::Point oldSize = brush->GetRadius();
+		brush->SetRadius(ui::Point(0, 0));
 		clearTool->DrawLine(sim, brush, position1, position2, dragging);
+		brush->SetRadius(oldSize);
+	}
 }
 
 void ConfigTool::ReleaseTool::DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2)
 {
 	if (!configTool->IsConfiguring())
+	{
+		ui::Point oldSize = brush->GetRadius();
+		brush->SetRadius(ui::Point(0, 0));
 		clearTool->DrawRect(sim, brush, position1, position2);
+		brush->SetRadius(oldSize);
+	}
 }
 
 void ConfigTool::ReleaseTool::DrawFill(Simulation * sim, Brush * brush, ui::Point position)
 {
 	if (!configTool->IsConfiguring())
+	{
+		ui::Point oldSize = brush->GetRadius();
+		brush->SetRadius(ui::Point(0, 0));
 		clearTool->DrawFill(sim, brush, position);
+		brush->SetRadius(oldSize);
+	}
 }
