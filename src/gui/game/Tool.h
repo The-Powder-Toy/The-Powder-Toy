@@ -89,18 +89,21 @@ class ConfigTool: public Tool
 	class ReleaseTool : public Tool
 	{
 		ConfigTool * configTool;
+		Tool * clearTool;
 	public:
 		ReleaseTool(ConfigTool *configTool_):
 		Tool(0, "", "", 0, 0, 0, "DEFAULT_UI_CONFIG_RELEASE", NULL),
-		configTool(configTool_)
+		configTool(configTool_),
+		clearTool(NULL)
 		{
 		}
 		virtual ~ReleaseTool() {}
+		void SetClearTool(Tool *clearTool_) { clearTool = clearTool_; }
 		virtual void Click(Simulation * sim, Brush * brush, ui::Point position);
-		virtual void Draw(Simulation * sim, Brush * brush, ui::Point position) { }
-		virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false) { }
-		virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) { }
-		virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position) { }
+		virtual void Draw(Simulation * sim, Brush * brush, ui::Point position);
+		virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false);
+		virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2);
+		virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position);
 	};
 
 	enum struct ConfigState
@@ -132,6 +135,7 @@ public:
 	{
 	}
 	virtual ~ConfigTool() {}
+	void SetClearTool(Tool *clearTool) { releaseTool.SetClearTool(clearTool); }
 	void Reset();
 	Particle GetPart();
 	static bool IsConfigurableType(int type);

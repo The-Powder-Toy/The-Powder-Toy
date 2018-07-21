@@ -345,8 +345,10 @@ void GameModel::BuildMenus()
 	decoToolset[1] = GetToolFromIdentifier("DEFAULT_DECOR_CLR");
 	decoToolset[2] = GetToolFromIdentifier("DEFAULT_UI_SAMPLE");
 	decoToolset[3] = GetToolFromIdentifier("DEFAULT_PT_NONE");
-	configToolset[0] = GetToolFromIdentifier("DEFAULT_UI_CONFIG");
-	configToolset[1] = &((ConfigTool*)GetToolFromIdentifier("DEFAULT_UI_CONFIG"))->releaseTool;
+	ConfigTool *configTool = (ConfigTool*)GetToolFromIdentifier("DEFAULT_UI_CONFIG");
+	configTool->SetClearTool(GetToolFromIdentifier("DEFAULT_PT_NONE"));
+	configToolset[0] = configTool;
+	configToolset[1] = &configTool->releaseTool;
 	// Reserved for more complex configuration
 	configToolset[2] = GetToolFromIdentifier("DEFAULT_UI_SAMPLE");
 	configToolset[3] = GetToolFromIdentifier("DEFAULT_PT_NONE");

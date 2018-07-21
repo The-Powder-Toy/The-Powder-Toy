@@ -390,5 +390,32 @@ void ConfigTool::DrawHUD(Renderer *ren)
 
 void ConfigTool::ReleaseTool::Click(Simulation *sim, Brush *brush, ui::Point position)
 {
-	configTool->Reset();
+	if (configTool->IsConfiguring())
+		configTool->Reset();
+	else
+		clearTool->Click(sim, brush, position);
+}
+
+void ConfigTool::ReleaseTool::Draw(Simulation * sim, Brush * brush, ui::Point position)
+{
+	if (!configTool->IsConfiguring())
+		clearTool->Draw(sim, brush, position);
+}
+
+void ConfigTool::ReleaseTool::DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging)
+{
+	if (!configTool->IsConfiguring())
+		clearTool->DrawLine(sim, brush, position1, position2, dragging);
+}
+
+void ConfigTool::ReleaseTool::DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2)
+{
+	if (!configTool->IsConfiguring())
+		clearTool->DrawRect(sim, brush, position1, position2);
+}
+
+void ConfigTool::ReleaseTool::DrawFill(Simulation * sim, Brush * brush, ui::Point position)
+{
+	if (!configTool->IsConfiguring())
+		clearTool->DrawFill(sim, brush, position);
 }
