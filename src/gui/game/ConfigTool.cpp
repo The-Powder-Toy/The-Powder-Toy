@@ -150,7 +150,7 @@ void ConfigTool::OnSelectFiltTmp(Simulation *sim, int tmp)
 	sim->parts[currId].tmp = tmp;
 }
 
-void ConfigTool::CalculatePreview(int x, int y, Simulation *sim)
+void ConfigTool::CalculatePreview(int x, int y, Particle samplePart)
 {
 	cursorPos = ui::Point(x, y);
 	bool allowDiag = !(configState == ConfigState::dtecTmp2);
@@ -160,7 +160,7 @@ void ConfigTool::CalculatePreview(int x, int y, Simulation *sim)
 	switch (configState)
 	{
 	case ConfigState::ready:
-		configPart = getPartAt(sim, cursorPos);
+		configPart = samplePart;
 		break;
 	case ConfigState::drayTmp:
 		configPart.tmp = getDist(proj);
@@ -184,7 +184,7 @@ void ConfigTool::CalculatePreview(int x, int y, Simulation *sim)
 		configPart.tmp2 = getDist(proj);
 		break;
 	case ConfigState::convTmp:
-		configPart.tmp = getPartAt(sim, cursorPos).type;
+		configPart.tmp = samplePart.type;
 		break;
 	default:
 		break;
@@ -198,7 +198,7 @@ void ConfigTool::Click(Simulation *sim, Brush *brush, ui::Point position)
 	{
 		Reset();
 	}
-	CalculatePreview(position.X, position.Y, sim);
+	CalculatePreview(position.X, position.Y, getPartAt(sim, position));
 	switch (configState)
 	{
 	case ConfigState::ready:

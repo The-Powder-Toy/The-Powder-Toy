@@ -2103,7 +2103,7 @@ void GameView::OnDraw()
 {
 	ConfigTool * configTool = c->GetActiveConfigTool();
 	if(configTool)
-		configTool->CalculatePreview(sample.PositionX, sample.PositionY, c->GetSimulation());
+		configTool->CalculatePreview(sample.PositionX, sample.PositionY, sample.particle);
 	Graphics * g = GetGraphics();
 	if (ren)
 	{

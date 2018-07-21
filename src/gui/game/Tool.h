@@ -144,7 +144,7 @@ public:
 	bool IsConfiguringLife();
 	bool IsConfiguringTmp();
 	bool IsConfiguringTmp2();
-	void CalculatePreview(int x, int y, Simulation *sim);
+	void CalculatePreview(int x, int y, Particle samplePart);
 	void DrawHUD(Renderer *ren);
 	void OnSelectFiltTmp(Simulation *sim, int tmp);
 	virtual void Click(Simulation * sim, Brush * brush, ui::Point position);
