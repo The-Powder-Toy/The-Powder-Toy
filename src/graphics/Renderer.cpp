@@ -748,7 +748,7 @@ void Renderer::DrawWalls()
 					if (wt == WL_EWALL || wt == WL_STASIS)
 					{
 						bool reverse = wt == WL_STASIS;
-						if ((powered>0) ^ reverse)
+						if ((powered > 0) ^ reverse)
 						{
 							for (int j = 0; j < CELL; j++)
 								for (int i =0; i < CELL; i++)
@@ -869,21 +869,22 @@ void Renderer::DrawWalls()
 					switch (sim->wtypes[wt].drawstyle)
 					{
 					case 0:
-						if (wt == WL_EWALL)
+						if (wt == WL_EWALL || wt == WL_STASIS)
 						{
-							if (powered)
+							bool reverse = wt == WL_STASIS;
+							if ((powered>0) ^ reverse)
 							{
 								for (int j = 0; j < CELL; j++)
 									for (int i =0; i < CELL; i++)
 										if (i&j&1)
-											drawblob((x*CELL+i), (y*CELL+j), 0x80, 0x80, 0x80);
+											drawblob((x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
 							}
 							else
 							{
 								for (int j = 0; j < CELL; j++)
 									for (int i = 0; i < CELL; i++)
 										if (!(i&j&1))
-											drawblob((x*CELL+i), (y*CELL+j), 0x80, 0x80, 0x80);
+											drawblob((x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
 							}
 						}
 						else if (wt == WL_WALLELEC)
