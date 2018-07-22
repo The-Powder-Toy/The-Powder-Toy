@@ -2391,10 +2391,10 @@ void GameView::OnDraw()
 				if (type == PT_CRAY || type == PT_DRAY || type == PT_EXOT || type == PT_LIGH || type == PT_SOAP || type == PT_TRON || type == PT_VIBR || type == PT_VIRS || type == PT_WARP || type == PT_LCRY || type == PT_CBNW || type == PT_TSNS || type == PT_DTEC || type == PT_LSNS || type == PT_PSTN)
 				{
 					sampleInfo << ", " <<
-					(isConfiguringTmp2 ? lbrace : noneString) <<
-					"Tmp2" <<
-					(isConfiguringTmp2 ? rbrace : noneString) <<
-					": " << samplePart.tmp2;
+						(isConfiguringTmp2 ? lbrace : noneString) <<
+						"Tmp2" <<
+						(isConfiguringTmp2 ? rbrace : noneString) <<
+						": " << samplePart.tmp2;
 				}
 
 				sampleInfo << ", Pressure: " << sample.AirPressure;
