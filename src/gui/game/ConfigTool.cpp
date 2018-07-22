@@ -44,11 +44,10 @@ sim(sim_)
 	int buttonWidth = maxTextWidth + 15;
 	int buttonHeight = 17;
 	int buttonLeft = Size.X/2 - buttonWidth/2;
-	int buttonTop = Size.Y/2 - ((buttonHeight-1) * (Element_FILT::NUM_MODES+1))/2;
-	for (int i = 0; i <= Element_FILT::NUM_MODES; i++)
+	int buttonTop = Size.Y/2 - ((buttonHeight-1) * (Element_FILT::NUM_MODES))/2;
+	for (int i = 0; i < Element_FILT::NUM_MODES; i++)
 	{
-		String buttonText = (i == Element_FILT::NUM_MODES) ?
-			String::Build("Cancel") : Element_FILT::MODES[i];
+		String buttonText = Element_FILT::MODES[i];
 		ui::Button * b = new ui::Button(ui::Point(buttonLeft, i * (buttonHeight-1) + buttonTop), ui::Point(buttonWidth, buttonHeight), buttonText);
 		b->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 		b->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
@@ -60,8 +59,7 @@ sim(sim_)
 
 void FiltConfigWindow::OnSelect(int result)
 {
-	if (result != Element_FILT::NUM_MODES)
-		tool->OnSelectFiltTmp(sim, result);
+	tool->OnSelectFiltTmp(sim, result);
 	CloseActiveWindow();
 	SelfDestruct();
 }
