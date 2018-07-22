@@ -13,7 +13,7 @@ Element_LDTC::Element_LDTC()
 
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
-	AirLoss = 0.00f;
+	AirLoss = 0.96f;
 	Loss = 0.00f;
 	Collision = 0.0f;
 	Gravity = 0.0f;
@@ -28,7 +28,7 @@ Element_LDTC::Element_LDTC()
 
 	Weight = 100;
 
-	Temperature = 283.15f;
+	Temperature = R_TEMP + 273.15f;
 	HeatConduct = 0;
 	Description = "Linear detector. Scans in 8 directions for particles with its ctype and creates a spark on the opposite side.";
 
