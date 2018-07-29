@@ -20,7 +20,7 @@ bool Favorite::IsFavorite(ByteString identifier)
 
 bool Favorite::AnyFavorites()
 {
-	return favoritesList.size() == 0;
+	return favoritesList.size() != 0;
 }
 
 void Favorite::AddFavorite(ByteString identifier)

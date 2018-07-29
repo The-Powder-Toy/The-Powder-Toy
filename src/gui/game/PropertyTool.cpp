@@ -109,7 +109,7 @@ void PropertyWindow::SetProperty()
 						//0xC0FFEE
 						v = value.Substr(2).ToNumber<unsigned int>(Format::Hex());
 					}
-					else if(value.length() > 1 && value.BeginsWith("0"))
+					else if(value.length() > 1 && value.BeginsWith("#"))
 					{
 						//#C0FFEE
 						v = value.Substr(1).ToNumber<unsigned int>(Format::Hex());
@@ -117,7 +117,7 @@ void PropertyWindow::SetProperty()
 					else
 					{
 						int type;
-						if (properties[property->GetOption().second].Type == StructProperty::ParticleType && (type = sim->GetParticleType(value.ToUtf8())) != -1)
+						if ((type = sim->GetParticleType(value.ToUtf8())) != -1)
 						{
 							v = type;
 

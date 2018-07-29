@@ -1075,7 +1075,7 @@ void Simulation::ApplyDecorationPoint(int positionX, int positionY, int colR, in
 void Simulation::ApplyDecorationLine(int x1, int y1, int x2, int y2, int colR, int colG, int colB, int colA, int mode, Brush * cBrush)
 {
 	bool reverseXY = abs(y2-y1) > abs(x2-x1);
-	int x, y, dx, dy, sy, rx, ry;
+	int x, y, dx, dy, sy, rx = 0, ry = 0;
 	float e = 0.0f, de;
 
 	if(cBrush)
@@ -2404,7 +2404,7 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr)
 
 int Simulation::try_move(int i, int x, int y, int nx, int ny)
 {
-	unsigned r, e;
+	unsigned r = 0, e;
 
 	if (x==nx && y==ny)
 		return 1;

@@ -543,14 +543,23 @@ public:
 		ToolButton *sender = (ToolButton*)sender_;
 		if (v->ShiftBehaviour() && v->CtrlBehaviour() && !v->AltBehaviour())
 		{
-			if (Favorite::Ref().IsFavorite(tool->GetIdentifier()) && sender->GetSelectionState() == 1)
+			if (sender->GetSelectionState() == 0)
+			{
+				if (Favorite::Ref().IsFavorite(tool->GetIdentifier()))
+				{
+					Favorite::Ref().RemoveFavorite(tool->GetIdentifier());
+				}
+				else
+				{
+					Favorite::Ref().AddFavorite(tool->GetIdentifier());
+				}
+				v->c->RebuildFavoritesMenu();
+			}
+			else if (sender->GetSelectionState() == 1)
+			{
 				Favorite::Ref().RemoveFavorite(tool->GetIdentifier());
-			else if (sender->GetSelectionState() == 0)
-				Favorite::Ref().AddFavorite(tool->GetIdentifier());
-			else if (sender->GetSelectionState() == 2)
-				v->c->SetActiveMenu(SC_FAVORITES);
-
-			v->c->RebuildFavoritesMenu();
+				v->c->RebuildFavoritesMenu();
+			}
 		}
 		else
 		{
@@ -612,8 +621,8 @@ void GameView::NotifyMenuListChanged(GameModel * sender)
 			String tempString = "";
 			tempString += menuList[i]->GetIcon();
 			String description = menuList[i]->GetDescription();
-			if (i == SC_FAVORITES && Favorite::Ref().AnyFavorites())
-				description += " (Use ctrl+shift+click to favorite an element)";
+			if (i == SC_FAVORITES && !Favorite::Ref().AnyFavorites())
+				description += " (Use ctrl+shift+click to toggle the favorite status of an element)";
 			ui::Button * tempButton = new ui::Button(ui::Point(WINDOWW-16, currentY), ui::Point(15, 15), tempString, description);
 			tempButton->Appearance.Margin = ui::Border(0, 2, 3, 2);
 			tempButton->SetTogglable(true);
@@ -2316,10 +2325,23 @@ void GameView::OnDraw()
 				sampleInfo << ", Temp: " << (sample.particle.temp - 273.15f) << " C";
 				sampleInfo << ", Life: " << sample.particle.life;
 				if (sample.particle.type != PT_RFRG && sample.particle.type != PT_RFGL)
-					sampleInfo << ", Tmp: " << sample.particle.tmp;
+				{
+					if (sample.particle.type == PT_CONV)
+					{
+						String elemName = c->ElementResolve(
+							TYP(sample.particle.tmp),
+							ID(sample.particle.tmp)).FromAscii();
+						if (elemName == "")
+							sampleInfo << ", Tmp: " << sample.particle.tmp;
+						else
+							sampleInfo << ", Tmp: " << elemName;
+					}
+					else
+						sampleInfo << ", Tmp: " << sample.particle.tmp;
+				}
 
 				// only elements that use .tmp2 show it in the debug HUD
-				if (type == PT_CRAY || type == PT_DRAY || type == PT_EXOT || type == PT_LIGH || type == PT_SOAP || type == PT_TRON || type == PT_VIBR || type == PT_VIRS || type == PT_WARP || type == PT_LCRY || type == PT_CBNW || type == PT_TSNS || type == PT_DTEC || type == PT_LSNS || type == PT_PSTN)
+				if (type == PT_CRAY || type == PT_DRAY || type == PT_EXOT || type == PT_LIGH || type == PT_SOAP || type == PT_TRON || type == PT_VIBR || type == PT_VIRS || type == PT_WARP || type == PT_LCRY || type == PT_CBNW || type == PT_TSNS || type == PT_DTEC || type == PT_LSNS || type == PT_PSTN || type == PT_LDTC)
 					sampleInfo << ", Tmp2: " << sample.particle.tmp2;
 
 				sampleInfo << ", Pressure: " << sample.AirPressure;
