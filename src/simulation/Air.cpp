@@ -145,14 +145,14 @@ void Air::update_air(void)
 			pv[i][2] = pv[i][2]*0.8f;
 			pv[i][XRES/CELL-2] = pv[i][XRES/CELL-2]*0.8f;
 			pv[i][XRES/CELL-1] = pv[i][XRES/CELL-1]*0.8f;
-			vx[i][0] = vx[i][1]*0.9f;
-			vx[i][1] = vx[i][2]*0.9f;
-			vx[i][XRES/CELL-2] = vx[i][XRES/CELL-3]*0.9f;
-			vx[i][XRES/CELL-1] = vx[i][XRES/CELL-2]*0.9f;
-			vy[i][0] = vy[i][1]*0.9f;
-			vy[i][1] = vy[i][2]*0.9f;
-			vy[i][XRES/CELL-2] = vy[i][XRES/CELL-3]*0.9f;
-			vy[i][XRES/CELL-1] = vy[i][XRES/CELL-2]*0.9f;
+			vx[i][0] = vx[i][0]*0.9f;
+			vx[i][1] = vx[i][1]*0.9f;
+			vx[i][XRES/CELL-2] = vx[i][XRES/CELL-2]*0.9f;
+			vx[i][XRES/CELL-1] = vx[i][XRES/CELL-1]*0.9f;
+			vy[i][0] = vy[i][0]*0.9f;
+			vy[i][1] = vy[i][1]*0.9f;
+			vy[i][XRES/CELL-2] = vy[i][XRES/CELL-2]*0.9f;
+			vy[i][XRES/CELL-1] = vy[i][XRES/CELL-1]*0.9f;
 		}
 		for (i=0; i<XRES/CELL; i++) //reduces pressure/velocity on the edges every frame
 		{
@@ -161,14 +161,14 @@ void Air::update_air(void)
 			pv[2][i] = pv[2][i]*0.8f;
 			pv[YRES/CELL-2][i] = pv[YRES/CELL-2][i]*0.8f;
 			pv[YRES/CELL-1][i] = pv[YRES/CELL-1][i]*0.8f;
-			vx[0][i] = vx[1][i]*0.9f;
-			vx[1][i] = vx[2][i]*0.9f;
-			vx[YRES/CELL-2][i] = vx[YRES/CELL-3][i]*0.9f;
-			vx[YRES/CELL-1][i] = vx[YRES/CELL-2][i]*0.9f;
-			vy[0][i] = vy[1][i]*0.9f;
-			vy[1][i] = vy[2][i]*0.9f;
-			vy[YRES/CELL-2][i] = vy[YRES/CELL-3][i]*0.9f;
-			vy[YRES/CELL-1][i] = vy[YRES/CELL-2][i]*0.9f;
+			vx[0][i] = vx[0][i]*0.9f;
+			vx[1][i] = vx[1][i]*0.9f;
+			vx[YRES/CELL-2][i] = vx[YRES/CELL-2][i]*0.9f;
+			vx[YRES/CELL-1][i] = vx[YRES/CELL-1][i]*0.9f;
+			vy[0][i] = vy[0][i]*0.9f;
+			vy[1][i] = vy[1][i]*0.9f;
+			vy[YRES/CELL-2][i] = vy[YRES/CELL-2][i]*0.9f;
+			vy[YRES/CELL-1][i] = vy[YRES/CELL-1][i]*0.9f;
 		}
 
 		for (j=1; j<YRES/CELL; j++) //clear some velocities near walls
