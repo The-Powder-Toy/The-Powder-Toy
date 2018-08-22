@@ -74,9 +74,13 @@ int ConfigTool::getIdAt(Simulation *sim, ui::Point position)
 {
 	if (position.X<0 || position.X>=XRES || position.Y<0 || position.Y>=YRES)
 		return -1;
-	int p = sim->pmap[position.Y][position.X];
+	int p = sim->photons[position.Y][position.X];
 	if (!p)
-		return -1;
+	{
+		p = sim->pmap[position.Y][position.X];
+		if (!p)
+			return -1;
+	}
 	return ID(p);
 }
 
