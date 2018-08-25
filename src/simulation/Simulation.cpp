@@ -76,7 +76,7 @@ int Simulation::Load(int fullX, int fullY, GameSave * save, bool includePressure
 				// if this is a custom element, set the ID to the ID we found when comparing identifiers in the palette map
 				// set type to 0 if we couldn't find an element with that identifier present when loading,
 				//  unless this is a default element, in which case keep the current ID, because otherwise when an element is renamed it wouldn't show up anymore in older saves
-				if (myId != 0 || pi.first.BeginsWith("DEFAULT_PT_"))
+				if (myId != 0 || !pi.first.BeginsWith("DEFAULT_PT_"))
 					partMap[pi.second] = myId;
 			}
 		}
