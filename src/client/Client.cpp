@@ -1566,7 +1566,7 @@ RequestStatus Client::PublishSave(int saveID)
 		
 		const char *const postNames[] = { "ActionPublish", NULL };
 		const char *const postDatas[] = { "" };
-		size_t postLengths[] = { 0 };
+		size_t postLengths[] = { 1 };
 		data = http_multipart_post(url.c_str(), postNames, postDatas, postLengths, userID.c_str(), NULL, authUser.SessionID.c_str(), &dataStatus, NULL);	}
 	else
 	{
