@@ -2726,9 +2726,12 @@ int Simulation::do_move(int i, int x, int y, float nxf, float nyf)
 		parts[i].y = nyf;
 		if (ny!=y || nx!=x)
 		{
-			if (ID(pmap[y][x])==i) pmap[y][x] = 0;
-			else if (ID(photons[y][x])==i) photons[y][x] = 0;
-			if (nx<CELL || nx>=XRES-CELL || ny<CELL || ny>=YRES-CELL)//kill_part if particle is out of bounds
+			if (ID(pmap[y][x]) == i)
+				pmap[y][x] = 0;
+			if (ID(photons[y][x]) == i)
+				photons[y][x] = 0;
+			// kill_part if particle is out of bounds
+			if (nx < CELL || nx >= XRES - CELL || ny < CELL || ny >= YRES - CELL)
 			{
 				kill_part(i);
 				return -1;
