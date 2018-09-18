@@ -2399,11 +2399,17 @@ void LuaScriptInterface::LuaGetProperty(lua_State* l, StructProperty property, i
 			lua_pushinteger(l, *((unsigned char*)propertyAddress));
 			break;
 		case StructProperty::BString:
-			lua_pushstring(l, *((char**)propertyAddress));
+		{
+			ByteString byteStringProperty = *((ByteString*)propertyAddress);
+			lua_pushstring(l, byteStringProperty.c_str());
 			break;
+		}
 		case StructProperty::String:
-			lua_pushstring(l, (*((String*)propertyAddress)).ToUtf8().c_str());
+		{
+			ByteString byteStringProperty = (*((String*)propertyAddress)).ToUtf8();
+			lua_pushstring(l, byteStringProperty.c_str());
 			break;
+		}
 		case StructProperty::Colour:
 #if PIXELSIZE == 4
 			lua_pushinteger(l, *((unsigned int*)propertyAddress));
