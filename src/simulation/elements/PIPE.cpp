@@ -171,14 +171,12 @@ int Element_PIPE::update(UPDATE_FUNC_ARGS)
 				for (ry=-1; ry<2; ry++)
 					if (BOUNDS_CHECK && (rx || ry))
 					{
+						count++;
 						r = pmap[y+ry][x+rx];
 						if (!r)
 							continue;
 						if (TYP(r) != PT_PIPE && TYP(r) != PT_PPIP)
-						{
-							count++;
 							continue;
-						}
 						unsigned int next = nextColor(parts[i].tmp);
 						unsigned int prev = prevColor(parts[i].tmp);
 						if (parts[ID(r)].tmp&PFLAG_INITIALIZING)
@@ -186,11 +184,14 @@ int Element_PIPE::update(UPDATE_FUNC_ARGS)
 							parts[ID(r)].tmp |= next;
 							parts[ID(r)].tmp &= ~PFLAG_INITIALIZING;
 							parts[ID(r)].life = 6;
-							if (parts[i].tmp&0x100)//is a single pixel pipe
+							// Is a single pixel pipe
+							if (parts[i].tmp&0x100)
 							{
-								parts[ID(r)].tmp |= 0x200;//will transfer to a single pixel pipe
-								parts[ID(r)].tmp |= count<<10;//coords of where it came from
-								parts[i].tmp |= (7-count)<<14;
+								// Will transfer to a single pixel pipe
+								parts[ID(r)].tmp |= 0x200;
+								// Coords of where it came from
+								parts[ID(r)].tmp |= (count - 1) << 10;
+								parts[i].tmp |= (8 - count) << 14;
 								parts[i].tmp |= 0x2000;
 							}
 							neighborcount ++;
@@ -201,7 +202,6 @@ int Element_PIPE::update(UPDATE_FUNC_ARGS)
 							neighborcount ++;
 							lastneighbor = ID(r);
 						}
-						count++;
 					}
 			if (neighborcount == 1)
 				parts[lastneighbor].tmp |= 0x100;
