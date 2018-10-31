@@ -63,7 +63,7 @@ extern "C"
 
 
 Client::Client():
-	messageOfTheDay(""),
+	messageOfTheDay("Fetching the message of the day..."),
 	versionCheckRequest(NULL),
 	alternateVersionCheckRequest(NULL),
 	usingAltUpdateServer(false),
