@@ -1,10 +1,10 @@
 The Powder Toy - March 2018
 ==========================
 
-Get the latest version [from the Powder Toy website](http://powdertoy.co.uk/Download.html).
+Get the latest version [from the Powder Toy website](https://powdertoy.co.uk/Download.html).
 
-To use online features such as saving, you need to [register an account](http://powdertoy.co.uk/Register.html).
-You can also visit [the official TPT forum](http://powdertoy.co.uk/Discussions/Categories/Index.html).
+To use online features such as saving, you need to [register an account](https://powdertoy.co.uk/Register.html).
+You can also visit [the official TPT forum](https://powdertoy.co.uk/Discussions/Categories/Index.html).
 
 Have you ever wanted to blow something up? Or maybe you always dreamt of operating an atomic power plant? Do you have a will to develop your own CPU? The Powder Toy lets you to do all of these, and even more!
 
@@ -18,7 +18,7 @@ Build instructions
     sudo apt-get install build-essential libsdl1.2-dev libbz2-dev zlib1g-dev liblua5.1.0-dev git scons libfftw3-dev
     scons
 
-For a list of flags for `scons`, see [the Powder Toy wiki](http://powdertoy.co.uk/Wiki/W/Scons_command_line_flags.html).
+For a list of flags for `scons`, see [the Powder Toy wiki](https://powdertoy.co.uk/Wiki/W/Scons_command_line_flags.html).
 
 Thanks
 ===========================================================================
@@ -75,13 +75,13 @@ Controls
 | N                       | Toggle Newtonian Gravity on/off                                 |
 | U                       | Toggle ambient heat on/off                                      |
 | Ctrl + I                | Install powder toy, for loading saves/stamps by double clicking |
-| \`                      | Toggle console                                                  |
+| Backtick                | Toggle console                                                  |
 | =                       | Reset pressure and velocity map                                 |
 | Ctrl + =                | Reset Electricity                                               |
-| [                       | Decrease brush size                                             |
-| ]                       | Increase brush size                                             |
-| Alt + [                 | Decrease brush size by 1                                        |
-| Alt + ]                 | Increase brush size by 1                                        |
+| \[                      | Decrease brush size                                             |
+| \]                      | Increase brush size                                             |
+| Alt + \[                | Decrease brush size by 1                                        |
+| Alt + \]                | Increase brush size by 1                                        |
 | Ctrl + C/V/X            | Copy/Paste/Cut                                                  |
 | Ctrl + Z                | Undo                                                            |
 | Ctrl + Y                | Redo                                                            |
@@ -105,7 +105,7 @@ Command Line
 | ------------------------ | -------------------------------------------------------------- |
 | scale:<size>             | Change window scale                                            |
 | kiosk                    | Fullscreen mode                                                |
-| proxy:server[:port]      | Proxy server to use [Example: proxy:wwwcache.lancs.ac.uk:8080] |
+| proxy\:server[:port]      | Proxy server to use [Example: proxy\:wwwcache.lancs.ac.uk:8080] |
 | open <file>              | Opens the file as a stamp or game save                         |
 | ddir <directory>         | Directory used for saving stamps and preferences               |
 | ptsave:<save id>#[name]  | [Example: ptsave:2198#Destroyable_city_5_wth_metro~dima-gord]  |
