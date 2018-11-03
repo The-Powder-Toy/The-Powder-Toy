@@ -270,7 +270,7 @@ char * GameSave::Serialise(unsigned int & dataSize)
 	{
 		return serialiseOPS(dataSize);
 	}
-	catch (BuildException e)
+	catch (BuildException & e)
 	{
 		std::cout << e.what() << std::endl;
 		return NULL;

@@ -43,7 +43,7 @@ int Simulation::Load(int fullX, int fullY, GameSave * save, bool includePressure
 	{
 		save->Expand();
 	}
-	catch (ParseException)
+	catch (ParseException &)
 	{
 		return 1;
 	}

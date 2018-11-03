@@ -31,7 +31,7 @@ SearchView::SearchView():
 	{
 		motdLabel  = new ui::RichLabel(ui::Point(51, WINDOWH-18), ui::Point(WINDOWW-102, 16), Client::Ref().GetMessageOfTheDay());
 	}
-	catch (std::exception e) { }
+	catch (std::exception & e) { }
 
 	class PageNumAction : public ui::TextboxAction
 	{
@@ -254,7 +254,7 @@ void SearchView::NotifyMessageOfTheDay(Client * sender)
 		{
 			motdLabel->SetText(sender->GetMessageOfTheDay());
 		}
-		catch (std::exception e)
+		catch (std::exception & e)
 		{
 			motdLabel = nullptr;
 		}
