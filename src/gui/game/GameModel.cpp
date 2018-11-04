@@ -46,6 +46,7 @@ GameModel::GameModel():
 	activeTools = regularToolset;
 
 	std::fill(decoToolset, decoToolset+4, (Tool*)NULL);
+	std::fill(configToolset, configToolset+4, (Tool*)NULL);
 	std::fill(regularToolset, regularToolset+4, (Tool*)NULL);
 
 	//Default render prefs
@@ -327,6 +328,7 @@ void GameModel::BuildMenus()
 	//Add special sign and prop tools
 	menuList[SC_TOOL]->AddTool(new WindTool(0, "WIND", "Creates air movement.", 64, 64, 64, "DEFAULT_UI_WIND"));
 	menuList[SC_TOOL]->AddTool(new PropertyTool());
+	menuList[SC_TOOL]->AddTool(new ConfigTool(this));
 	menuList[SC_TOOL]->AddTool(new SignTool(this));
 	menuList[SC_TOOL]->AddTool(new SampleTool(this));
 
@@ -343,6 +345,13 @@ void GameModel::BuildMenus()
 	decoToolset[1] = GetToolFromIdentifier("DEFAULT_DECOR_CLR");
 	decoToolset[2] = GetToolFromIdentifier("DEFAULT_UI_SAMPLE");
 	decoToolset[3] = GetToolFromIdentifier("DEFAULT_PT_NONE");
+	ConfigTool *configTool = (ConfigTool*)GetToolFromIdentifier("DEFAULT_UI_CONFIG");
+	configTool->SetClearTool(GetToolFromIdentifier("DEFAULT_PT_NONE"));
+	configToolset[0] = configTool;
+	configToolset[1] = &configTool->releaseTool;
+	// Reserved for more complex configuration
+	configToolset[2] = GetToolFromIdentifier("DEFAULT_UI_SAMPLE");
+	configToolset[3] = GetToolFromIdentifier("DEFAULT_PT_NONE");
 
 	//Set default tools
 	regularToolset[0] = GetToolFromIdentifier("DEFAULT_PT_DUST");
@@ -557,7 +566,7 @@ void GameModel::SetActiveMenu(int menuID)
 			notifyActiveToolsChanged();
 		}
 	}
-	else
+	else if(activeTools != configToolset)
 	{
 		if(activeTools != regularToolset)
 		{
@@ -600,7 +609,17 @@ Tool * GameModel::GetActiveTool(int selection)
 
 void GameModel::SetActiveTool(int selection, Tool * tool)
 {
+	if (tool->GetIdentifier() == "DEFAULT_UI_CONFIG")
+		activeTools = configToolset;
+	else if (activeTools == configToolset)
+		activeTools = regularToolset;
 	activeTools[selection] = tool;
+	notifyActiveToolsChanged();
+}
+
+void GameModel::ResetToolset()
+{
+	activeTools = regularToolset;
 	notifyActiveToolsChanged();
 }
 

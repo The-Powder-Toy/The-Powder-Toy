@@ -1155,6 +1155,14 @@ void GameController::ActiveToolChanged(int toolSelection, Tool *tool)
 	commandInterface->OnActiveToolChanged(toolSelection, tool);
 }
 
+ConfigTool * GameController::GetActiveConfigTool()
+{
+	Tool * t = GetActiveTool(0);
+	if(t->GetIdentifier() == "DEFAULT_UI_CONFIG")
+		return (ConfigTool*)t;
+	else return NULL;
+}
+
 Tool * GameController::GetActiveTool(int selection)
 {
 	return gameModel->GetActiveTool(selection);
@@ -1162,6 +1170,11 @@ Tool * GameController::GetActiveTool(int selection)
 
 void GameController::SetActiveTool(int toolSelection, Tool * tool)
 {
+	if(tool->GetIdentifier() == "DEFAULT_UI_CONFIG")
+	{
+		((ConfigTool *)tool)->Reset();
+		toolSelection = 0;
+	}
 	if (gameModel->GetActiveMenu() == SC_DECO && toolSelection == 2)
 		toolSelection = 0;
 	gameModel->SetActiveTool(toolSelection, tool);
@@ -1189,6 +1202,14 @@ void GameController::SetActiveTool(int toolSelection, ByteString identifier)
 void GameController::SetLastTool(Tool * tool)
 {
 	gameModel->SetLastTool(tool);
+}
+
+void GameController::ToggleConfigTool()
+{
+	if (GetActiveConfigTool())
+		gameModel->ResetToolset();
+	else
+		SetActiveTool(0, "DEFAULT_UI_CONFIG");
 }
 
 int GameController::GetReplaceModeFlags()

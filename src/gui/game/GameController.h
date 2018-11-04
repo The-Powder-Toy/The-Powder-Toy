@@ -107,10 +107,12 @@ public:
 	std::vector<Menu*> GetMenuList();
 	int GetNumMenus(bool onlyEnabled);
 	void RebuildFavoritesMenu();
+	ConfigTool * GetActiveConfigTool();
 	Tool * GetActiveTool(int selection);
 	void SetActiveTool(int toolSelection, Tool * tool);
 	void SetActiveTool(int toolSelection, ByteString identifier);
 	void SetLastTool(Tool * tool);
+	void ToggleConfigTool();
 	int GetReplaceModeFlags();
 	void SetReplaceModeFlags(int flags);
 	void ActiveToolChanged(int toolSelection, Tool *tool);

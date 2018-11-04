@@ -45,6 +45,11 @@ Element_FILT::Element_FILT()
 	Graphics = &Element_FILT::graphics;
 }
 
+//#TPT-Directive ElementHeader Element_FILT static int NUM_MODES
+int Element_FILT::NUM_MODES = 12;
+//#TPT-Directive ElementHeader Element_FILT static String MODES[]
+String Element_FILT::MODES[] = {"set colour", "AND", "OR", "subtract colour", "red shift", "blue shift", "no effect", "XOR", "NOT", "old QRTZ scattering", "variable red shift", "variable blue shift"};
+
 //#TPT-Directive ElementHeader Element_FILT static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_FILT::graphics(GRAPHICS_FUNC_ARGS)
 {

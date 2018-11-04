@@ -1593,6 +1593,10 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 			buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to copy (right click = cancel)";
 			buttonTipShow = 120;
 		}
+		else
+		{
+			c->ToggleConfigTool();
+		}
 		break;
 	case 'x':
 		if(ctrl)
@@ -2097,6 +2101,9 @@ void GameView::SetSaveButtonTooltips()
 
 void GameView::OnDraw()
 {
+	ConfigTool * configTool = c->GetActiveConfigTool();
+	if(configTool)
+		configTool->CalculatePreview(sample.PositionX, sample.PositionY, sample.particle);
 	Graphics * g = GetGraphics();
 	if (ren)
 	{
@@ -2157,6 +2164,10 @@ void GameView::OnDraw()
 
 					ren->xor_line(finalCurrentMouse.X-finalBrushRadius.X, finalCurrentMouse.Y-finalBrushRadius.Y+1, finalCurrentMouse.X-finalBrushRadius.X, finalCurrentMouse.Y+finalBrushRadius.Y+CELL-2);
 					ren->xor_line(finalCurrentMouse.X+finalBrushRadius.X+CELL-1, finalCurrentMouse.Y-finalBrushRadius.Y+1, finalCurrentMouse.X+finalBrushRadius.X+CELL-1, finalCurrentMouse.Y+finalBrushRadius.Y+CELL-2);
+				}
+				else if(configTool)
+				{
+					configTool->DrawHUD(ren);
 				}
 				else
 				{
@@ -2284,65 +2295,107 @@ void GameView::OnDraw()
 		StringBuilder sampleInfo;
 		sampleInfo << Format::Precision(2);
 
-		int type = sample.particle.type;
+		bool isConfiguring = configTool && configTool->IsConfiguring();
+		Particle samplePart = isConfiguring ?
+			configTool->GetPart() : sample.particle;
+
+		int type = samplePart.type;
 		if (type)
 		{
-			int ctype = sample.particle.ctype;
+			int ctype = samplePart.ctype;
 
 			if (type == PT_PHOT || type == PT_BIZR || type == PT_BIZRG || type == PT_BIZRS || type == PT_FILT || type == PT_BRAY || type == PT_C5)
 				wavelengthGfx = (ctype&0x3FFFFFFF);
 
-			if (showDebug)
+			if (showDebug || configTool)
 			{
+				String lbrace = String::Build("["),
+					rbrace = String::Build("]"),
+					noneString = String::Build("");
 				if (type == PT_LAVA && c->IsValidElement(ctype))
 					sampleInfo << "Molten " << c->ElementResolve(ctype, -1).FromAscii();
 				else if ((type == PT_PIPE || type == PT_PPIP) && c->IsValidElement(ctype))
-					sampleInfo << c->ElementResolve(type, -1).FromAscii() << " with " << c->ElementResolve(ctype, (int)sample.particle.pavg[1]).FromAscii();
+					sampleInfo << c->ElementResolve(type, -1).FromAscii() << " with " << c->ElementResolve(ctype, (int)samplePart.pavg[1]).FromAscii();
 				else if (type == PT_LIFE)
 					sampleInfo << c->ElementResolve(type, ctype).FromAscii();
-				else if (type == PT_FILT)
-				{
-					sampleInfo << c->ElementResolve(type, ctype).FromAscii();
-					String filtModes[] = {"set colour", "AND", "OR", "subtract colour", "red shift", "blue shift", "no effect", "XOR", "NOT", "old QRTZ scattering", "variable red shift", "variable blue shift"};
-					if (sample.particle.tmp>=0 && sample.particle.tmp<=11)
-						sampleInfo << " (" << filtModes[sample.particle.tmp] << ")";
-					else
-						sampleInfo << " (unknown mode)";
-				}
 				else
 				{
+					bool isConfigurable = configTool &&
+						(configTool->IsConfiguring() ||
+						ConfigTool::IsConfigurableType(type));
+					if (isConfigurable)
+						sampleInfo << lbrace;
 					sampleInfo << c->ElementResolve(type, ctype).FromAscii();
-					if (wavelengthGfx)
-						sampleInfo << " (" << ctype << ")";
-					// Some elements store extra LIFE info in upper bits of ctype, instead of tmp/tmp2
-					else if (type == PT_CRAY || type == PT_DRAY || type == PT_CONV)
-						sampleInfo << " (" << c->ElementResolve(TYP(ctype), ID(ctype)).FromAscii() << ")";
-					else if (c->IsValidElement(ctype))
-						sampleInfo << " (" << c->ElementResolve(ctype, -1).FromAscii() << ")";
-					else
-						sampleInfo << " ()";
-				}
-				sampleInfo << ", Temp: " << (sample.particle.temp - 273.15f) << " C";
-				sampleInfo << ", Life: " << sample.particle.life;
-				if (sample.particle.type != PT_RFRG && sample.particle.type != PT_RFGL)
-				{
-					if (sample.particle.type == PT_CONV)
+					if (type == PT_FILT)
 					{
-						String elemName = c->ElementResolve(
-							TYP(sample.particle.tmp),
-							ID(sample.particle.tmp)).FromAscii();
-						if (elemName == "")
-							sampleInfo << ", Tmp: " << sample.particle.tmp;
+						if (samplePart.tmp>=0 && samplePart.tmp<Element_FILT::NUM_MODES)
+							sampleInfo << " (" << Element_FILT::MODES[samplePart.tmp] << ")";
 						else
-							sampleInfo << ", Tmp: " << elemName;
+							sampleInfo << " (unknown mode)";
 					}
 					else
-						sampleInfo << ", Tmp: " << sample.particle.tmp;
+					{
+						if (wavelengthGfx)
+							sampleInfo << " (" << ctype << ")";
+						// Some elements store extra LIFE info in upper bits of ctype, instead of tmp/tmp2
+						else if (type == PT_CRAY || type == PT_DRAY || type == PT_CONV)
+							sampleInfo << " (" << c->ElementResolve(TYP(ctype), ID(ctype)).FromAscii() << ")";
+						else if (c->IsValidElement(ctype))
+							sampleInfo << " (" << c->ElementResolve(ctype, -1).FromAscii() << ")";
+						else
+							sampleInfo << " ()";
+					}
+					if (isConfigurable)
+						sampleInfo << rbrace;
+				}
+				bool isConfiguringTemp = configTool &&
+					configTool->IsConfiguringTemp();
+				bool isConfiguringLife = configTool &&
+					configTool->IsConfiguringLife();
+				bool isConfiguringTmp = configTool &&
+					configTool->IsConfiguringTmp();
+				bool isConfiguringTmp2 = configTool &&
+					configTool->IsConfiguringTmp2();
+				sampleInfo << ", " <<
+					(isConfiguringTemp ? lbrace : noneString) <<
+					"Temp" <<
+					(isConfiguringTemp ? rbrace : noneString) <<
+					": " << (samplePart.temp - 273.15f) << " C";
+				sampleInfo << ", " <<
+					(isConfiguringLife ? lbrace : noneString) <<
+					"Life" <<
+					(isConfiguringLife ? rbrace : noneString) <<
+					": " << samplePart.life;
+				if (samplePart.type != PT_RFRG && samplePart.type != PT_RFGL)
+				{
+					sampleInfo << ", " <<
+						(isConfiguringTmp ? lbrace : noneString) <<
+						"Tmp" <<
+						(isConfiguringTmp ? rbrace : noneString) <<
+						": ";
+					if (samplePart.type == PT_CONV)
+					{
+						String elemName = c->ElementResolve(
+							TYP(samplePart.tmp),
+							ID(samplePart.tmp)).FromAscii();
+						if (elemName == "")
+							sampleInfo << samplePart.tmp;
+						else
+							sampleInfo << elemName;
+					}
+					else
+						sampleInfo << samplePart.tmp;
 				}
 
 				// only elements that use .tmp2 show it in the debug HUD
-				if (type == PT_CRAY || type == PT_DRAY || type == PT_EXOT || type == PT_LIGH || type == PT_SOAP || type == PT_TRON || type == PT_VIBR || type == PT_VIRS || type == PT_WARP || type == PT_LCRY || type == PT_CBNW || type == PT_TSNS || type == PT_DTEC || type == PT_LSNS || type == PT_PSTN || type == PT_LDTC)
-					sampleInfo << ", Tmp2: " << sample.particle.tmp2;
+				if (type == PT_CRAY || type == PT_DRAY || type == PT_EXOT || type == PT_LIGH || type == PT_SOAP || type == PT_TRON || type == PT_VIBR || type == PT_VIRS || type == PT_WARP || type == PT_LCRY || type == PT_CBNW || type == PT_TSNS || type == PT_DTEC || type == PT_LSNS || type == PT_PSTN)
+				{
+					sampleInfo << ", " <<
+						(isConfiguringTmp2 ? lbrace : noneString) <<
+						"Tmp2" <<
+						(isConfiguringTmp2 ? rbrace : noneString) <<
+						": " << samplePart.tmp2;
+				}
 
 				sampleInfo << ", Pressure: " << sample.AirPressure;
 			}
@@ -2351,12 +2404,12 @@ void GameView::OnDraw()
 				if (type == PT_LAVA && c->IsValidElement(ctype))
 					sampleInfo << "Molten " << c->ElementResolve(ctype, -1).FromAscii();
 				else if ((type == PT_PIPE || type == PT_PPIP) && c->IsValidElement(ctype))
-					sampleInfo << c->ElementResolve(type, -1).FromAscii() << " with " << c->ElementResolve(ctype, (int)sample.particle.pavg[1]).FromAscii();
+					sampleInfo << c->ElementResolve(type, -1).FromAscii() << " with " << c->ElementResolve(ctype, (int)samplePart.pavg[1]).FromAscii();
 				else if (type == PT_LIFE)
 					sampleInfo << c->ElementResolve(type, ctype).FromAscii();
 				else
 					sampleInfo << c->ElementResolve(type, ctype).FromAscii();
-				sampleInfo << ", Temp: " << sample.particle.temp - 273.15f << " C";
+				sampleInfo << ", Temp: " << samplePart.temp - 273.15f << " C";
 				sampleInfo << ", Pressure: " << sample.AirPressure;
 			}
 		}
@@ -2450,6 +2503,8 @@ void GameView::OnDraw()
 			else
 				fpsInfo << " Parts: " << sample.NumParts;
 		}
+		if (configTool)
+			fpsInfo << " [CONFIG TOOL]";
 		if (c->GetReplaceModeFlags()&REPLACE_MODE)
 			fpsInfo << " [REPLACE MODE]";
 		if (c->GetReplaceModeFlags()&SPECIFIC_DELETE)

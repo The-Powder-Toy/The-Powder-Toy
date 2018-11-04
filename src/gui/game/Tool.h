@@ -6,8 +6,12 @@
 #include "common/String.h"
 #include "gui/interface/Point.h"
 #include "simulation/StructProperty.h"
+#include "simulation/Particle.h"
+#include "simulation/Sample.h"
 
 class Simulation;
+class GameController;
+class Renderer;
 class Brush;
 class VideoBuffer;
 
@@ -78,6 +82,87 @@ public:
 	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false) { }
 	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) { }
 	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position) { }
+};
+
+class ConfigTool: public Tool
+{
+	class ReleaseTool : public Tool
+	{
+		ConfigTool * configTool;
+		Tool * clearTool;
+	public:
+		ReleaseTool(ConfigTool *configTool_):
+		Tool(0, "", "", 0, 0, 0, "DEFAULT_UI_CONFIG_RELEASE", NULL),
+		configTool(configTool_),
+		clearTool(NULL)
+		{
+		}
+		virtual ~ReleaseTool() {}
+		void SetClearTool(Tool *clearTool_) { clearTool = clearTool_; }
+		virtual void Click(Simulation * sim, Brush * brush, ui::Point position);
+		virtual void Draw(Simulation * sim, Brush * brush, ui::Point position);
+		virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false);
+		virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2);
+		virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position);
+	};
+
+	enum struct ConfigState
+	{
+		ready,
+		drayTmp,
+		drayTmp2,
+		crayTmp,
+		crayTmp2,
+		dtecTmp2,
+		convTmp,
+		ldtcTmp,
+		ldtcLife
+	};
+	GameModel * gameModel;
+	int currId;
+	Particle configPart;
+	int dirx, diry;
+	ui::Point cursorPos;
+	ConfigState configState;
+public:
+	ReleaseTool releaseTool;
+	ConfigTool(GameModel *model):
+	Tool(0, "CNFG", "Configurator.", 0xff, 0xcc, 0, "DEFAULT_UI_CONFIG", NULL),
+	gameModel(model),
+	cursorPos(0, 0),
+	configState(ConfigState::ready),
+	releaseTool(ReleaseTool(this))
+	{
+	}
+	virtual ~ConfigTool() {}
+	void SetClearTool(Tool *clearTool) { releaseTool.SetClearTool(clearTool); }
+	void Reset();
+	Particle GetPart();
+	static bool IsConfigurableType(int type);
+	bool IsConfiguring();
+	bool IsConfiguringTemp();
+	bool IsConfiguringLife();
+	bool IsConfiguringTmp();
+	bool IsConfiguringTmp2();
+	void CalculatePreview(int x, int y, Particle samplePart);
+	void DrawHUD(Renderer *ren);
+	void OnSelectFiltTmp(Simulation *sim, int tmp);
+	virtual void Click(Simulation * sim, Brush * brush, ui::Point position);
+	virtual void Draw(Simulation * sim, Brush * brush, ui::Point position) { }
+	virtual void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false) { }
+	virtual void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) { }
+	virtual void DrawFill(Simulation * sim, Brush * brush, ui::Point position) { }
+private:
+	int getIdAt(Simulation *sim, ui::Point position);
+	Particle getPartAt(Simulation *sim, ui::Point position);
+	bool isSamePart(Particle p1, Particle p2);
+	ui::Point projectPoint(Particle part, int sampleX, int sampleY, bool allowDiag = true);
+	int getDist(ui::Point relPos, int offset = 0);
+	int getDist(Particle part, int sampleX, int sampleY, int offset = 0, bool allowDiag = true);
+	void drawRedLine(Renderer *ren, int startx, int starty, int endx, int endy);
+	void drawWhiteLine(Renderer *ren, int startx, int starty, int endx, int endy);
+	void drawTripleLine(Renderer *ren, int firstLineLen, int midLineLen, bool drawFirstLine = true, bool drawThirdLine = true);
+	void drawDtecBox(Renderer *ren);
 };
 
 class PropertyTool: public Tool
