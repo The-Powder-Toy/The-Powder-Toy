@@ -865,6 +865,8 @@ void GameController::Tick()
 
 void GameController::Exit()
 {
+	CloseEvent ev;
+	commandInterface->HandleEvent(LuaEvents::close, &ev);
 	gameView->CloseActiveWindow();
 	HasDone = true;
 }

@@ -1855,6 +1855,12 @@ void GameView::DoKeyRelease(int key, int scan, bool repeat, bool shift, bool ctr
 		Window::DoKeyRelease(key, scan, repeat, shift, ctrl, alt);
 }
 
+void GameView::DoExit()
+{
+	Window::DoExit();
+	c->Exit();
+}
+
 void GameView::DoDraw()
 {
 	Window::DoDraw();

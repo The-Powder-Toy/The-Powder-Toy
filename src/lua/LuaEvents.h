@@ -98,6 +98,12 @@ public:
 	int PushToStack(lua_State *l) override { return 0; }
 };
 
+class CloseEvent: public Event
+{
+public:
+	int PushToStack(lua_State *l) override { return 0; }
+};
+
 class LuaEvents
 {
 public:
@@ -109,7 +115,8 @@ public:
 		mouseup,
 		mousemove,
 		mousewheel,
-		tick
+		tick,
+		close
 	};
 
 	static int RegisterEventHook(lua_State* l, ByteString eventName);
