@@ -622,12 +622,14 @@ void GameController::CutRegion(ui::Point point1, ui::Point point2, bool includeP
 
 bool GameController::MouseMove(int x, int y, int dx, int dy)
 {
-	return commandInterface->HandleEvent(LuaEvents::mousemove, new MouseMoveEvent(x, y, dx, dy));
+	MouseMoveEvent ev(x, y, dx, dy);
+	return commandInterface->HandleEvent(LuaEvents::mousemove, &ev);
 }
 
 bool GameController::MouseDown(int x, int y, unsigned button)
 {
-	bool ret = commandInterface->HandleEvent(LuaEvents::mousedown, new MouseDownEvent(x, y, button));
+	MouseDownEvent ev(x, y, button);
+	bool ret = commandInterface->HandleEvent(LuaEvents::mousedown, &ev);
 	if (ret && y<YRES && x<XRES && !gameView->GetPlacingSave() && !gameView->GetPlacingZoom())
 	{
 		ui::Point point = gameModel->AdjustZoomCoords(ui::Point(x, y));
@@ -649,7 +651,8 @@ bool GameController::MouseDown(int x, int y, unsigned button)
 
 bool GameController::MouseUp(int x, int y, unsigned button, char type)
 {
-	bool ret = commandInterface->HandleEvent(LuaEvents::mouseup, new MouseUpEvent(x, y, button, type));
+	MouseUpEvent ev(x, y, button, type);
+	bool ret = commandInterface->HandleEvent(LuaEvents::mouseup, &ev);
 	if (type)
 		return ret;
 	if (ret && foundSignID != -1 && y<YRES && x<XRES && !gameView->GetPlacingSave())
@@ -707,17 +710,20 @@ bool GameController::MouseUp(int x, int y, unsigned button, char type)
 
 bool GameController::MouseWheel(int x, int y, int d)
 {
-	return commandInterface->HandleEvent(LuaEvents::mousewheel, new MouseWheelEvent(x, y, d));
+	MouseWheelEvent ev(x, y, d);
+	return commandInterface->HandleEvent(LuaEvents::mousewheel, &ev);
 }
 
 bool GameController::TextInput(String text)
 {
-	return commandInterface->HandleEvent(LuaEvents::textinput, new TextInputEvent(text));
+	TextInputEvent ev(text);
+	return commandInterface->HandleEvent(LuaEvents::textinput, &ev);
 }
 
 bool GameController::KeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
-	bool ret = commandInterface->HandleEvent(LuaEvents::keypress, new KeyEvent(key, scan, repeat, shift, ctrl, alt));
+	KeyEvent ev(key, scan, repeat, shift, ctrl, alt);
+	bool ret = commandInterface->HandleEvent(LuaEvents::keypress, &ev);
 	if (repeat)
 		return ret;
 	if (ret)
@@ -796,7 +802,8 @@ bool GameController::KeyPress(int key, int scan, bool repeat, bool shift, bool c
 
 bool GameController::KeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
-	bool ret = commandInterface->HandleEvent(LuaEvents::keyrelease, new KeyEvent(key, scan, repeat, shift, ctrl, alt));
+	KeyEvent ev(key, scan, repeat, shift, ctrl, alt);
+	bool ret = commandInterface->HandleEvent(LuaEvents::keyrelease, &ev);
 	if (repeat)
 		return ret;
 	if (ret)

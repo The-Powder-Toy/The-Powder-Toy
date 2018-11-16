@@ -3349,7 +3349,8 @@ void LuaScriptInterface::OnTick()
 		lua_setfield(l, -2, "NUM_PARTS");
 	}
 	lua_pop(l, 1);
-	HandleEvent(LuaEvents::tick, new TickEvent());
+	TickEvent ev;
+	HandleEvent(LuaEvents::tick, &ev);
 }
 
 int LuaScriptInterface::Command(String command)
