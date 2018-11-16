@@ -17,3 +17,28 @@ void lua_pushglobaltable(lua_State *L)
 }
 
 #endif
+
+// Useful helper function, mainly used for logging
+int luaL_tostring(lua_State *L, int n)
+{
+	luaL_checkany(L, n);
+	switch (lua_type(L, n))
+	{
+		case LUA_TNUMBER:
+			lua_pushstring(L, lua_tostring(L, n));
+			break;
+		case LUA_TSTRING:
+			lua_pushvalue(L, n);
+			break;
+		case LUA_TBOOLEAN:
+			lua_pushstring(L, (lua_toboolean(L, n) ? "true" : "false"));
+			break;
+		case LUA_TNIL:
+			lua_pushliteral(L, "nil");
+			break;
+		default:
+			lua_pushfstring(L, "%s: %p", luaL_typename(L, n), lua_topointer(L, n));
+			break;
+	}
+	return 1;
+}

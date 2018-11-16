@@ -37,6 +37,7 @@
 #else
 #include "lua/TPTScriptInterface.h"
 #endif
+#include "lua/LuaEvents.h"
 
 using namespace std;
 
@@ -156,11 +157,6 @@ GameController::GameController():
 #else
 	commandInterface = new TPTScriptInterface(this, gameModel);
 #endif
-
-	ActiveToolChanged(0, gameModel->GetActiveTool(0));
-	ActiveToolChanged(1, gameModel->GetActiveTool(1));
-	ActiveToolChanged(2, gameModel->GetActiveTool(2));
-	ActiveToolChanged(3, gameModel->GetActiveTool(3));
 
 	Client::Ref().AddListener(this);
 
@@ -626,12 +622,12 @@ void GameController::CutRegion(ui::Point point1, ui::Point point2, bool includeP
 
 bool GameController::MouseMove(int x, int y, int dx, int dy)
 {
-	return commandInterface->OnMouseMove(x, y, dx, dy);
+	return commandInterface->HandleEvent(EventTypes::mousemove, new MouseMoveEvent(x, y, dx, dy));
 }
 
 bool GameController::MouseDown(int x, int y, unsigned button)
 {
-	bool ret = commandInterface->OnMouseDown(x, y, button);
+	bool ret = commandInterface->HandleEvent(EventTypes::mousedown, new MouseDownEvent(x, y, button));
 	if (ret && y<YRES && x<XRES && !gameView->GetPlacingSave() && !gameView->GetPlacingZoom())
 	{
 		ui::Point point = gameModel->AdjustZoomCoords(ui::Point(x, y));
@@ -653,7 +649,7 @@ bool GameController::MouseDown(int x, int y, unsigned button)
 
 bool GameController::MouseUp(int x, int y, unsigned button, char type)
 {
-	bool ret = commandInterface->OnMouseUp(x, y, button, type);
+	bool ret = commandInterface->HandleEvent(EventTypes::mouseup, new MouseUpEvent(x, y, button, type));
 	if (type)
 		return ret;
 	if (ret && foundSignID != -1 && y<YRES && x<XRES && !gameView->GetPlacingSave())
@@ -711,12 +707,17 @@ bool GameController::MouseUp(int x, int y, unsigned button, char type)
 
 bool GameController::MouseWheel(int x, int y, int d)
 {
-	return commandInterface->OnMouseWheel(x, y, d);
+	return commandInterface->HandleEvent(EventTypes::mousewheel, new MouseWheelEvent(x, y, d));
+}
+
+bool GameController::TextInput(String text)
+{
+	return commandInterface->HandleEvent(EventTypes::textinput, new TextInputEvent(text));
 }
 
 bool GameController::KeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
-	bool ret = commandInterface->OnKeyPress(key, scan, repeat, shift, ctrl, alt);
+	bool ret = commandInterface->HandleEvent(EventTypes::keypress, new KeyEvent(key, scan, repeat, shift, ctrl, alt));
 	if (repeat)
 		return ret;
 	if (ret)
@@ -795,7 +796,7 @@ bool GameController::KeyPress(int key, int scan, bool repeat, bool shift, bool c
 
 bool GameController::KeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
-	bool ret = commandInterface->OnKeyRelease(key, scan, repeat, shift, ctrl, alt);
+	bool ret = commandInterface->HandleEvent(EventTypes::keyrelease, new KeyEvent(key, scan, repeat, shift, ctrl, alt));
 	if (repeat)
 		return ret;
 	if (ret)
@@ -830,11 +831,6 @@ bool GameController::KeyRelease(int key, int scan, bool repeat, bool shift, bool
 		}
 	}
 	return ret;
-}
-
-bool GameController::MouseTick()
-{
-	return commandInterface->OnMouseTick();
 }
 
 void GameController::Tick()
@@ -1148,11 +1144,6 @@ int GameController::GetNumMenus(bool onlyEnabled)
 void GameController::RebuildFavoritesMenu()
 {
 	gameModel->BuildFavoritesMenu();
-}
-
-void GameController::ActiveToolChanged(int toolSelection, Tool *tool)
-{
-	commandInterface->OnActiveToolChanged(toolSelection, tool);
 }
 
 Tool * GameController::GetActiveTool(int selection)

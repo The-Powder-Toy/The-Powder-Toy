@@ -198,12 +198,12 @@ public:
 	virtual void OnBlur();
 
 	//Top-level handlers, for Lua interface
-	virtual void DoTick(float dt);
 	virtual void DoDraw();
 	virtual void DoMouseMove(int x, int y, int dx, int dy);
 	virtual void DoMouseDown(int x, int y, unsigned button);
 	virtual void DoMouseUp(int x, int y, unsigned button);
 	virtual void DoMouseWheel(int x, int y, int d);
+	virtual void DoTextInput(String text);
 	virtual void DoKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
 	virtual void DoKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
 

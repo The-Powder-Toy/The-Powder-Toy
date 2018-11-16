@@ -29,6 +29,7 @@ LUALIB_API int (luaL_typerror) (lua_State *L, int narg, const char *tname);
 #else
 LUALIB_API void (lua_pushglobaltable) (lua_State *L);
 #endif
+int luaL_tostring(lua_State *L, int n);
 
 #ifdef __cplusplus
 }
