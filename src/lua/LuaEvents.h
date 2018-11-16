@@ -98,20 +98,20 @@ public:
 	int PushToStack(lua_State *l) override { return 0; }
 };
 
-enum EventTypes {
-	keypress,
-	keyrelease,
-	textinput,
-	mousedown,
-	mouseup,
-	mousemove,
-	mousewheel,
-	tick
-};
-
 class LuaEvents
 {
 public:
+	enum EventTypes {
+		keypress,
+		keyrelease,
+		textinput,
+		mousedown,
+		mouseup,
+		mousemove,
+		mousewheel,
+		tick
+	};
+
 	static int RegisterEventHook(lua_State* l, ByteString eventName);
 	static int UnregisterEventHook(lua_State* l, ByteString eventName);
 	static bool HandleEvent(LuaScriptInterface * luacon_ci, Event * event, ByteString eventName);

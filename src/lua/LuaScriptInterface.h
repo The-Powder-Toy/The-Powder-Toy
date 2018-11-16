@@ -186,7 +186,7 @@ public:
 	LuaScriptInterface(GameController * c, GameModel * m);
 
 	virtual void OnTick();
-	virtual bool HandleEvent(EventTypes eventType, Event * event);
+	virtual bool HandleEvent(LuaEvents::EventTypes eventType, Event * event);
 
 	virtual void Init();
 	virtual void SetWindow(ui::Window * window);
