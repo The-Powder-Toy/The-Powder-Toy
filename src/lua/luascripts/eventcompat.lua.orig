@@ -1,0 +1,27 @@
+#ifdef LUACONSOLE
+#ifdef _MSC_VER
+#include "Platform.h"
+#include "resource.h"
+#endif
+#include "lua/LuaCompat.h"
+
+void luaopen_eventcompat(lua_State *l)
+{
+#ifndef _MSC_VER
+	int eventcompat_luac_sz = /*#SIZE*/;
+	const char* eventcompat_luac = /*#DATA*/;
+	luaL_loadbuffer(l, eventcompat_luac, eventcompat_luac_sz, "@eventcompat.lua");
+	lua_pcall(l, 0, 0, 0);
+#else
+	unsigned int size = 0;
+	const char* data = NULL;
+	Platform::LoadFileInResource(IDI_EVENTCOMPAT, LUASCRIPT, size, data);
+	char *buffer = new char[size+1];
+	::memcpy(buffer, data, size);
+	buffer[size] = 0;
+	luaL_loadbuffer(l, buffer, size, "@eventcompat.lua");
+	lua_pcall(l, 0, 0, 0);
+	delete[] buffer;
+#endif
+}
+#endif
