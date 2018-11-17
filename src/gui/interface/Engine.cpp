@@ -72,6 +72,7 @@ void Engine::UnBreak()
 
 void Engine::Exit()
 {
+	onClose();
 	running_ = false;
 }
 
