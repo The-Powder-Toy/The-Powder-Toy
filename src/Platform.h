@@ -12,6 +12,8 @@ namespace Platform
 
 	void Millisleep(long int t);
 	long unsigned int GetTime();
+
+	void LoadFileInResource(int name, int type, unsigned int& size, const char*& data);
 }
 
 #endif

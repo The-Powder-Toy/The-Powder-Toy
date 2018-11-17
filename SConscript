@@ -180,7 +180,7 @@ if GetOption("msvc"):
 		env.Append(LIBPATH=['StaticLibs/'])
 	else:
 		env.Append(LIBPATH=['Libraries/'])
-	env.Append(CPPPATH=['includes/'])
+	env.Append(CPPPATH=['includes/', 'resources/'])
 
 #Check 32/64 bit
 def CheckBit(context):

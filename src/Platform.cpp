@@ -132,4 +132,16 @@ long unsigned int GetTime()
 #endif
 }
 
+
+void LoadFileInResource(int name, int type, unsigned int& size, const char*& data)
+{
+#ifdef _MSC_VER
+	HMODULE handle = ::GetModuleHandle(NULL);
+	HRSRC rc = ::FindResource(handle, MAKEINTRESOURCE(name), MAKEINTRESOURCE(type));
+	HGLOBAL rcData = ::LoadResource(handle, rc);
+	size = ::SizeofResource(handle, rc);
+	data = static_cast<const char*>(::LockResource(rcData));
+#endif
+}
+
 }

@@ -335,6 +335,9 @@ tpt.partsdata = nil");
 	lua_setmetatable(l, -2);
 
 	initLegacyProps();
+
+	ui::Engine::Ref().LastTick(Platform::GetTime());
+	luaopen_eventcompat(l);
 }
 
 void LuaScriptInterface::Init()

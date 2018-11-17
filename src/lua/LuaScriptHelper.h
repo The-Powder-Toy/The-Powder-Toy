@@ -19,6 +19,7 @@ extern int tptPropertiesVersion;
 extern int tptElements; //Table for TPT element names
 extern int tptParts, tptPartsMeta, tptElementTransitions, tptPartsCData, tptPartMeta, tptPart, cIndex;
 
+void luaopen_eventcompat(lua_State *l);
 void luacon_hook(lua_State *L, lua_Debug *ar);
 int luacon_eval(const char *command);
 String luacon_geterror();
