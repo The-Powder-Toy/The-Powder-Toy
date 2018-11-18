@@ -3,7 +3,7 @@
 
 #include "common/String.h"
 
-class lua_State;
+struct lua_State;
 class LuaScriptInterface;
 
 class Event
@@ -119,9 +119,9 @@ public:
 		close
 	};
 
-	static int RegisterEventHook(lua_State* l, ByteString eventName);
-	static int UnregisterEventHook(lua_State* l, ByteString eventName);
-	static bool HandleEvent(LuaScriptInterface * luacon_ci, Event * event, ByteString eventName);
+	static int RegisterEventHook(lua_State *l, ByteString eventName);
+	static int UnregisterEventHook(lua_State *l, ByteString eventName);
+	static bool HandleEvent(LuaScriptInterface *luacon_ci, Event *event, ByteString eventName);
 
 	static String luacon_geterror(LuaScriptInterface *luacon_ci);
 };

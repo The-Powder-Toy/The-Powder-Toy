@@ -146,7 +146,6 @@ int LuaEvents::RegisterEventHook(lua_State *l, ByteString eventName)
 	return 1;
 }
 
-#include <iostream>
 int LuaEvents::UnregisterEventHook(lua_State *l, ByteString eventName)
 {
 	if (lua_isfunction(l, 2))
