@@ -1936,9 +1936,9 @@ int LuaScriptInterface::simulation_brush(lua_State * l)
 	}
 	else
 	{
-		ui::Point size = luacon_model->GetBrush()->GetSize();
-		brushradiusX = size.X;
-		brushradiusY = size.Y;
+		ui::Point radius = luacon_model->GetBrush()->GetRadius();
+		brushradiusX = radius.X;
+		brushradiusY = radius.Y;
 	}
 	int brushID = luaL_optint(l, 5, luacon_model->GetBrushID());
 
