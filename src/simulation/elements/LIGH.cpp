@@ -91,7 +91,7 @@ int Element_LIGH::update(UPDATE_FUNC_ARGS)
 				rt = TYP(r);
 				if ((surround_space || sim->elements[rt].Explosive) &&
 				    (rt!=PT_SPNG || parts[ID(r)].life==0) &&
-					sim->elements[rt].Flammable && (sim->elements[rt].Flammable + RNG::Ref().chance(sim->pv[(y+ry)/CELL][(x+rx)/CELL] * 10.0f, 1000)))
+					sim->elements[rt].Flammable && RNG::Ref().chance(sim->elements[rt].Flammable + sim->pv[(y+ry)/CELL][(x+rx)/CELL] * 10.0f, 1000))
 				{
 					sim->part_change_type(ID(r),x+rx,y+ry,PT_FIRE);
 					parts[ID(r)].temp = restrict_flt(sim->elements[PT_FIRE].Temperature + (sim->elements[rt].Flammable/2), MIN_TEMP, MAX_TEMP);

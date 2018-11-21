@@ -468,7 +468,7 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 					if (angle<0)
 						angle+=360;
 					parts[np].tmp = angle;
-					parts[np].life = RNG::Ref().between(0, 2+power/15) + power/7;
+					parts[np].life = RNG::Ref().between(0, 1+power/15) + power/7;
 					parts[np].temp = parts[np].life*power/2.5;
 					parts[np].tmp2 = 1;
 				}
@@ -592,7 +592,7 @@ void Element_STKM::STKM_interact(Simulation *sim, playerst *playerp, int i, int 
 	{
 		if (TYP(r)==PT_SPRK && playerp->elem!=PT_LIGH) //If on charge
 		{
-			sim->parts[i].life -= RNG::Ref().between(32, 52);
+			sim->parts[i].life -= RNG::Ref().between(32, 51);
 		}
 
 		if (sim->elements[TYP(r)].HeatConduct && (TYP(r)!=PT_HSWC||sim->parts[ID(r)].life==10) && ((playerp->elem!=PT_LIGH && sim->parts[ID(r)].temp>=323) || sim->parts[ID(r)].temp<=243) && (!playerp->rocketBoots || TYP(r)!=PT_PLSM))

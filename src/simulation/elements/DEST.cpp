@@ -59,7 +59,7 @@ int Element_DEST::update(UPDATE_FUNC_ARGS)
 
 	if (parts[i].life<=0 || parts[i].life>37)
 	{
-		parts[i].life = RNG::Ref().between(30, 59);
+		parts[i].life = RNG::Ref().between(30, 49);
 		sim->pv[y/CELL][x/CELL]+=60.0f;
 	}
 	if (rt == PT_PLUT || rt == PT_DEUT)
