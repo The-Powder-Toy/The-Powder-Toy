@@ -16,7 +16,6 @@
 
 #include "requestbroker/RequestBroker.h"
 
-class Thumbnail;
 class SaveInfo;
 class SaveFile;
 class SaveComment;
@@ -70,13 +69,6 @@ private:
 	//Auth session
 	User authUser;
 
-	//Thumbnail retreival
-	int thumbnailCacheNextID;
-	Thumbnail * thumbnailCache[THUMB_CACHE_SIZE];
-	void * activeThumbRequests[IMGCONNS];
-	int activeThumbRequestTimes[IMGCONNS];
-	int activeThumbRequestCompleteTimes[IMGCONNS];
-	ByteString activeThumbRequestIDs[IMGCONNS];
 	void notifyUpdateAvailable();
 	void notifyAuthUserChanged();
 	void notifyMessageOfTheDay();
@@ -160,7 +152,6 @@ public:
 	std::vector<unsigned char> GetSaveData(int saveID, int saveDate);
 
 	LoginStatus Login(ByteString username, ByteString password, User & user);
-	void ClearThumbnailRequests();
 	std::vector<SaveInfo*> * SearchSaves(int start, int count, String query, ByteString sort, ByteString category, int & resultCount);
 	std::vector<std::pair<ByteString, int> > * GetTags(int start, int count, String query, int & resultCount);
 

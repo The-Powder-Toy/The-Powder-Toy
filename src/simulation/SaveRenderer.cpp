@@ -3,7 +3,6 @@
 #include "graphics/Graphics.h"
 #include "Simulation.h"
 #include "graphics/Renderer.h"
-#include "gui/search/Thumbnail.h"
 
 
 SaveRenderer::SaveRenderer(){

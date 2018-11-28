@@ -19,7 +19,6 @@
 #include "gui/interface/Mouse.h"
 #include "gui/interface/Slider.h"
 #include "gui/interface/Window.h"
-#include "gui/search/Thumbnail.h"
 #include "simulation/SaveRenderer.h"
 #include "simulation/SimulationData.h"
 

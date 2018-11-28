@@ -16,9 +16,6 @@
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/dialogues/ErrorMessage.h"
 
-class Thumbnail;
-
-
 class SaveSelectedAction: public ui::SaveButtonAction
 {
 	FileBrowserActivity * a;

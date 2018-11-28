@@ -101,9 +101,6 @@
 #define M_GRAV 6.67300e-1
 #endif
 
-//Number of asynchronous connections used to retrieve thumbnails
-#define IMGCONNS 5
-
 #ifdef RENDERER
 #define MENUSIZE 0
 #define BARSIZE 0

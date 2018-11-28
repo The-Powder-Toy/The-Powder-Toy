@@ -2,6 +2,7 @@
 #include "SearchController.h"
 #include "SearchModel.h"
 #include "SearchView.h"
+#include "graphics/Graphics.h"
 #include "gui/interface/Panel.h"
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/dialogues/ErrorMessage.h"

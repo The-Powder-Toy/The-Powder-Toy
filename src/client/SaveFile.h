@@ -4,16 +4,13 @@
 #include "common/String.h"
 
 class GameSave;
-class Thumbnail;
 
 class SaveFile {
 public:
 	SaveFile(SaveFile & save);
 	SaveFile(ByteString filename);
 
-	Thumbnail * GetThumbnail();
 	GameSave * GetGameSave();
-	void SetThumbnail(Thumbnail * thumb);
 	void SetGameSave(GameSave * save);
 	String GetDisplayName();
 	void SetDisplayName(String displayName);
@@ -24,7 +21,6 @@ public:
 
 	virtual ~SaveFile();
 private:
-	Thumbnail * thumbnail;
 	GameSave * gameSave;
 	ByteString filename;
 	String displayName;

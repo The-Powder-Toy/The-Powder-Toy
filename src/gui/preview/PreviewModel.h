@@ -6,7 +6,6 @@
 #include "PreviewView.h"
 #include "client/SaveInfo.h"
 #include "gui/preview/Comment.h"
-#include "gui/search/Thumbnail.h"
 #include "client/Download.h"
 
 using namespace std;

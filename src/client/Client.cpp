@@ -42,7 +42,6 @@
 #include "client/SaveFile.h"
 #include "client/GameSave.h"
 #include "client/UserInfo.h"
-#include "gui/search/Thumbnail.h"
 #include "gui/preview/Comment.h"
 #include "ClientListener.h"
 #include "requestbroker/RequestBroker.h"
@@ -70,18 +69,6 @@ Client::Client():
 	updateAvailable(false),
 	authUser(0, "")
 {
-	int i = 0;
-	for(i = 0; i < THUMB_CACHE_SIZE; i++)
-	{
-		thumbnailCache[i] = NULL;
-	}
-	for(i = 0; i < IMGCONNS; i++)
-	{
-		activeThumbRequests[i] = NULL;
-		activeThumbRequestTimes[i] = 0;
-		activeThumbRequestCompleteTimes[i] = 0;
-	}
-
 	//Read config
 	std::ifstream configFile;
 	configFile.open("powder.pref", std::ios::binary);
@@ -952,7 +939,6 @@ void Client::WritePrefs()
 void Client::Shutdown()
 {
 	RequestBroker::Ref().Shutdown();
-	ClearThumbnailRequests();
 	http_done();
 
 	//Save config
@@ -1872,20 +1858,6 @@ std::vector<SaveInfo*> * Client::SearchSaves(int start, int count, String query,
 	}
 	free(data);
 	return saveArray;
-}
-
-void Client::ClearThumbnailRequests()
-{
-	for(int i = 0; i < IMGCONNS; i++)
-	{
-		if(activeThumbRequests[i])
-		{
-			http_async_req_close(activeThumbRequests[i]);
-			activeThumbRequests[i] = NULL;
-			activeThumbRequestTimes[i] = 0;
-			activeThumbRequestCompleteTimes[i] = 0;
-		}
-	}
 }
 
 std::list<ByteString> * Client::RemoveTag(int saveID, ByteString tag)

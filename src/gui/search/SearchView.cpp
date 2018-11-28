@@ -582,7 +582,6 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 	else
 		favouriteSelected->SetText("Favourite");
 
-	Client::Ref().ClearThumbnailRequests();
 	for (size_t i = 0; i < saveButtons.size(); i++)
 	{
 		RemoveComponent(saveButtons[i]);

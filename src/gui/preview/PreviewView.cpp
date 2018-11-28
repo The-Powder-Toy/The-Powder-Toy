@@ -9,7 +9,6 @@
 #include "gui/interface/Textbox.h"
 #include "gui/Style.h"
 #include "Format.h"
-#include "gui/search/Thumbnail.h"
 #include "gui/profile/ProfileActivity.h"
 #include "client/Client.h"
 #include "gui/interface/ScrollPanel.h"
