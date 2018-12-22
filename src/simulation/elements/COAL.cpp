@@ -63,7 +63,7 @@ int Element_COAL::update(UPDATE_FUNC_ARGS)
 		else if (parts[i].tmp<40&&parts[i].tmp>0)
 			parts[i].tmp--;
 		else if (parts[i].tmp<=0) {
-			sim->create_part(i, x, y, PT_BCOL);
+			sim->part_change_type(i, x, y, PT_BCOL);
 			return 1;
 		}
 	}
