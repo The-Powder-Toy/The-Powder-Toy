@@ -863,6 +863,14 @@ void GameController::Tick()
 	commandInterface->OnTick();
 }
 
+void GameController::Blur()
+{
+	// Tell lua that mouse is up (even if it really isn't)
+	MouseUp(0, 0, 0, 1);
+	BlurEvent ev;
+	commandInterface->HandleEvent(LuaEvents::blur, &ev);
+}
+
 void GameController::Exit()
 {
 	CloseEvent ev;

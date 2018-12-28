@@ -3314,6 +3314,7 @@ void LuaScriptInterface::initEventAPI()
 	lua_pushinteger(l, LuaEvents::mousemove); lua_setfield(l, -2, "mousemove");
 	lua_pushinteger(l, LuaEvents::mousewheel); lua_setfield(l, -2, "mousewheel");
 	lua_pushinteger(l, LuaEvents::tick); lua_setfield(l, -2, "tick");
+	lua_pushinteger(l, LuaEvents::blur); lua_setfield(l, -2, "blur");
 	lua_pushinteger(l, LuaEvents::close); lua_setfield(l, -2, "close");
 }
 

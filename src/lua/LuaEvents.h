@@ -98,6 +98,12 @@ public:
 	int PushToStack(lua_State *l) override { return 0; }
 };
 
+class BlurEvent: public Event
+{
+public:
+	int PushToStack(lua_State *l) override { return 0; }
+};
+
 class CloseEvent: public Event
 {
 public:
@@ -116,6 +122,7 @@ public:
 		mousemove,
 		mousewheel,
 		tick,
+		blur,
 		close
 	};
 

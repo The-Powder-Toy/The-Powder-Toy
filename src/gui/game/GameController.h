@@ -68,6 +68,7 @@ public:
 	bool KeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
 	bool KeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
 	void Tick();
+	void Blur();
 	void Exit();
 
 	void Install();
