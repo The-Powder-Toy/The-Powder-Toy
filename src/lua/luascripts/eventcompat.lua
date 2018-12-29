@@ -145,6 +145,32 @@ function tpt.register_keypress(f)
 	keyMapping[79] = 275
 	keyMapping[80] = 276
 
+	-- shift mapping for US keyboard layout
+	local shiftMapping = {
+		["`"] = "~",
+		["1"] = "!",
+		["2"] = "@",
+		["3"] = "#",
+		["4"] = "$",
+		["5"] = "%",
+		["6"] = "^",
+		["7"] = "&",
+		["8"] = "*",
+		["9"] = "(",
+		["0"] = ")",
+		["-"] = "_",
+		["="] = "+",
+
+		["["] = "{",
+		["]"] = "}",
+		["\\"] = "|",
+		[";"] = ":",
+		["'"] = "\"",
+		[","] = "<",
+		["."] = ">",
+		["/"] = "?"
+	}
+
 	event.register(event.keypress, function(key, scan, rep, shift, ctrl, alt)
 		if rep then return end
 		local mod = event.getmodifiers()
@@ -152,7 +178,9 @@ function tpt.register_keypress(f)
 		-- attempt to convert to string representation
 		err, keyStr = pcall(string.char, key)
 		if not err then keyStr = "" end
-		if keyStr ~= "" and shift then keyStr = string.upper(keyStr) end
+		if keyStr ~= "" and shift then
+			keyStr = shiftMapping[keyStr] and shiftMapping[keyStr] or string.upper(keyStr)
+		end
 
 		-- key mapping for common keys, extremely incomplete
 		if keyMapping[scan] then key = keyMapping[scan] end
