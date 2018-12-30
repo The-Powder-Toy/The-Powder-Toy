@@ -220,6 +220,6 @@ function tpt.unregister_keypress(f)
 	local funcs = registered_keypresses[f]
 	event.unregister(event.keypress, funcs[1])
 	event.unregister(event.keyrelease, funcs[2])
-	registered_mouseclicks[f] = nil
+	registered_keypresses[f] = nil
 end
 tpt.unregister_keyevent = tpt.unregister_keypress
