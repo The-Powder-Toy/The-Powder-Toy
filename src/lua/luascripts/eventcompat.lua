@@ -54,6 +54,8 @@ local registered_mouseclicks = {}
 function tpt.register_mouseclick(f)
 	deprecationwarning()
 
+	if registered_mouseclicks[f] then return end
+
 	local mousex = -1
 	local mousey = -1
 	local mousedown = -1
@@ -123,11 +125,16 @@ function tpt.unregister_mouseclick(f)
 	event.unregister(event.mousemove, funcs[3])
 	event.unregister(event.mousewheel, funcs[4])
 	event.unregister(event.tick, funcs[5])
+	
+	registered_mouseclicks[f] = nil
 end
 tpt.unregister_mouseevent = tpt.unregister_mouseclick
 
+local registered_keypresses = {}
 function tpt.register_keypress(f)
 	deprecationwarning()
+
+	if registered_keypresses[f] then return end
 
 	local keyMapping = {}
 
@@ -171,7 +178,7 @@ function tpt.register_keypress(f)
 		["/"] = "?"
 	}
 
-	event.register(event.keypress, function(key, scan, rep, shift, ctrl, alt)
+	local function keypress(key, scan, rep, shift, ctrl, alt)
 		if rep then return end
 		local mod = event.getmodifiers()
 
@@ -185,9 +192,9 @@ function tpt.register_keypress(f)
 		-- key mapping for common keys, extremely incomplete
 		if keyMapping[scan] then key = keyMapping[scan] end
 		return f(keyStr, key, mod, 1)
-	end)
+	end
 
-	event.register(event.keyrelease, function(key, scan, rep, shift, ctrl, alt)
+	local function keyrelease(key, scan, rep, shift, ctrl, alt)
 		local mod = event.getmodifiers()
 
 		-- attempt to convert to string representation
@@ -197,6 +204,22 @@ function tpt.register_keypress(f)
 		-- key mapping for common keys, extremely incomplete
 		if keyMapping[scan] then key = keyMapping[scan] end
 		return f(keyStr, key, mod, 2)
-	end)
+	end
+
+	event.register(event.keypress, keypress)
+	event.register(event.keyrelease, keyrelease)
+	
+	local funcs = { keypress, keyrelease }
+	registered_keypresses[f] = funcs
 end
 tpt.register_keyevent = tpt.register_keypress
+
+function tpt.unregister_keypress(f)
+	if not registered_keypresses[f] then return end
+
+	local funcs = registered_keypresses[f]
+	event.unregister(event.keypress, funcs[1])
+	event.unregister(event.keyrelease, funcs[2])
+	registered_mouseclicks[f] = nil
+end
+tpt.unregister_keyevent = tpt.unregister_keypress
