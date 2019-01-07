@@ -31,7 +31,7 @@
 
 #if defined(LIN) || defined(USE_STDINT)
 #include <sys/types.h>
-#include <stdint.h>
+#include <cstdint>
 #else
 typedef long long int int64_t;
 typedef unsigned long long int uint64_t;
