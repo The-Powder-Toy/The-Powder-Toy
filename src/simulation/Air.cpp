@@ -205,9 +205,9 @@ void Air::update_air(void)
 				vy[y][x] *= AIR_VLOSS;
 				vx[y][x] += dx*AIR_TSTEPV;
 				vy[y][x] += dy*AIR_TSTEPV;
-				if (bmap_blockair[y][x] || bmap_blockair[y][x+1])
+				if (bmap_blockair[y][x] || (bmap_blockair[y][x+1] && vx[y][x] > 0))
 					vx[y][x] = 0;
-				if (bmap_blockair[y][x] || bmap_blockair[y+1][x])
+				if (bmap_blockair[y][x] || (bmap_blockair[y+1][x] && vy[y][x] > 0))
 					vy[y][x] = 0;
 			}
 
