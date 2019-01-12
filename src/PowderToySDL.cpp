@@ -553,17 +553,17 @@ void SigHandler(int signal)
 void ChdirToDataDirectory()
 {
 #ifdef MACOSX
-    FSRef ref;
-    OSType folderType = kApplicationSupportFolderType;
-    char path[PATH_MAX];
+	FSRef ref;
+	OSType folderType = kApplicationSupportFolderType;
+	char path[PATH_MAX];
 
-    FSFindFolder( kUserDomain, folderType, kCreateFolder, &ref );
+	FSFindFolder( kUserDomain, folderType, kCreateFolder, &ref );
 
-    FSRefMakePath( &ref, (UInt8*)&path, PATH_MAX );
+	FSRefMakePath( &ref, (UInt8*)&path, PATH_MAX );
 
-    const char *tptPath = (std::string(path) + "/The Powder Toy").c_str();
-    mkdir(tptPath, 0755);
-    chdir(tptPath);
+	const char *tptPath = (std::string(path) + "/The Powder Toy").c_str();
+	mkdir(tptPath, 0755);
+	chdir(tptPath);
 #endif
 }
 
@@ -584,8 +584,8 @@ int main(int argc, char * argv[])
 #else
 		chdir(arguments["ddir"].c_str());
 #endif
-    else
-        ChdirToDataDirectory();
+	else
+		ChdirToDataDirectory();
 
 	scale = Client::Ref().GetPrefInteger("Scale", 1);
 	resizable = Client::Ref().GetPrefBool("Resizable", false);
