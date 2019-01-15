@@ -517,6 +517,7 @@ void Simulation::Restore(const Snapshot & snap)
 	std::copy(snap.WirelessData.begin(), snap.WirelessData.end(), &wireless[0][0]);
 	if (grav->ngrav_enable)
 	{
+		grav->Clear();
 		std::copy(snap.GravVelocityX.begin(), snap.GravVelocityX.end(), gravx);
 		std::copy(snap.GravVelocityY.begin(), snap.GravVelocityY.end(), gravy);
 		std::copy(snap.GravValue.begin(), snap.GravValue.end(), gravp);

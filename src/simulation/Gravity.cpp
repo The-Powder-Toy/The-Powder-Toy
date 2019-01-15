@@ -31,6 +31,7 @@ void Gravity::bilinear_interpolation(float *src, float *dst, int sw, int sh, int
 		}
 }
 
+bool ignoreNextResult = false;
 void Gravity::Clear()
 {
 	std::fill(gravy, gravy+((XRES/CELL)*(YRES/CELL)), 0.0f);
@@ -38,6 +39,8 @@ void Gravity::Clear()
 	std::fill(gravp, gravp+((XRES/CELL)*(YRES/CELL)), 0.0f);
 	std::fill(gravmap, gravmap+((XRES/CELL)*(YRES/CELL)), 0.0f);
 	std::fill(gravmask, gravmask+((XRES/CELL)*(YRES/CELL)), 0xFFFFFFFF);
+
+	ignoreNextResult = true;
 }
 
 void Gravity::gravity_init()
@@ -90,7 +93,7 @@ void Gravity::gravity_update_async()
 				//Switch the full size gravmaps, we don't really need the two above any more
 				float *tmpf;
 
-				if(th_gravchanged)
+				if (th_gravchanged && !ignoreNextResult)
 				{
 				#if !defined(GRAVFFT) && defined(GRAV_DIFF)
 					memcpy(gravy, th_gravy, (XRES/CELL)*(YRES/CELL)*sizeof(float));
@@ -110,6 +113,7 @@ void Gravity::gravity_update_async()
 					th_gravp = tmpf;
 				#endif
 				}
+				ignoreNextResult = false;
 
 				tmpf = gravmap;
 				gravmap = th_gravmap;
