@@ -5,8 +5,8 @@ std::vector<StructProperty> Particle::GetProperties()
 {
 	std::vector<StructProperty> properties;
 	properties.push_back(StructProperty("type", StructProperty::ParticleType, offsetof(Particle, type)));
-	properties.push_back(StructProperty("life", StructProperty::ParticleType, offsetof(Particle, life)));
-	properties.push_back(StructProperty("ctype", StructProperty::ParticleType, offsetof(Particle, ctype)));
+	properties.push_back(StructProperty("life", StructProperty::Integer, offsetof(Particle, life)));
+	properties.push_back(StructProperty("ctype", StructProperty::Integer, offsetof(Particle, ctype)));
 	properties.push_back(StructProperty("x", StructProperty::Float, offsetof(Particle, x)));
 	properties.push_back(StructProperty("y", StructProperty::Float, offsetof(Particle, y)));
 	properties.push_back(StructProperty("vx", StructProperty::Float, offsetof(Particle, vx)));

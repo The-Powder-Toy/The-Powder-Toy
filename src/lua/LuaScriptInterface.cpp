@@ -2418,6 +2418,11 @@ void LuaScriptInterface::LuaSetProperty(lua_State* l, StructProperty property, i
 	switch (property.Type)
 	{
 		case StructProperty::ParticleType:
+			{
+				int partIndex = (Particle *)((unsigned char *)(propertyAddress) - property.Offset) - luacon_sim->parts;
+				luacon_sim->part_change_type(partIndex, luacon_sim->parts[partIndex].x+0.5f, luacon_sim->parts[partIndex].y+0.5f, luaL_checkinteger(l, stackPos));
+			}
+			break;
 		case StructProperty::Integer:
 			*((int*)propertyAddress) = luaL_checkinteger(l, stackPos);
 			break;
