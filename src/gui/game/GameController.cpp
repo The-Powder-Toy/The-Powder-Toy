@@ -1650,7 +1650,11 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 		{
 			UpdateInfo info = Client::Ref().GetUpdateInfo();
 			StringBuilder updateMessage;
+#ifndef MACOSX
 			updateMessage << "Are you sure you want to run the updater? Please save any changes before updating.\n\nCurrent version:\n ";
+#else
+			updateMessage << "Click \"Continue\" to download the latest version from our website.\n\nCurrent version:\n ";
+#endif
 
 #ifdef SNAPSHOT
 			updateMessage << "Snapshot " << SNAPSHOT_ID;
@@ -1706,6 +1710,17 @@ void GameController::RemoveNotification(Notification * notification)
 
 void GameController::RunUpdater()
 {
+#ifndef MACOSX
 	Exit();
 	new UpdateActivity();
+#else
+
+#ifdef UPDATESERVER
+	ByteString file = ByteString::Build("https://", UPDATESERVER, Client::Ref().GetUpdateInfo().File);
+#else
+	ByteString file = ByteString::Build("https://", SERVER, Client::Ref().GetUpdateInfo().File);
+#endif
+
+	Platform::OpenURI(file);
+#endif // MACOSX
 }
