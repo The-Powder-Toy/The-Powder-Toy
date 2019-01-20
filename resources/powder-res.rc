@@ -1,5 +1,8 @@
 #include "resource.h"
 
-IDI_ICON1 ICON DISCARDABLE "powder.ico"
-IDI_ICON2 ICON DISCARDABLE "document.ico"
+IDI_ICON1 ICON DISCARDABLE "icon_256.ico"
+IDI_ICON2 ICON DISCARDABLE "icon_96.ico"
+IDI_ICON3 ICON DISCARDABLE "icon_64.ico"
+IDI_ICON4 ICON DISCARDABLE "icon_48.ico"
+IDI_DOC_ICON ICON DISCARDABLE "document.ico"
 IDI_EVENTCOMPAT LUASCRIPT "../src/lua/luascripts/eventcompat.lua"
