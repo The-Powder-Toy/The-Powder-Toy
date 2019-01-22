@@ -561,9 +561,9 @@ void ChdirToDataDirectory()
 
 	FSRefMakePath( &ref, (UInt8*)&path, PATH_MAX );
 
-	const char *tptPath = (std::string(path) + "/The Powder Toy").c_str();
-	mkdir(tptPath, 0755);
-	chdir(tptPath);
+	std::string tptPath = std::string(path) + "/The Powder Toy";
+	mkdir(tptPath.c_str(), 0755);
+	chdir(tptPath.c_str());
 #endif
 }
 
