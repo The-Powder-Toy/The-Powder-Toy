@@ -1198,10 +1198,12 @@ void GameView::OnMouseDown(int x, int y, unsigned button)
 			// update tool index, set new "last" tool so GameView can detect certain tools properly
 			if (button == SDL_BUTTON_LEFT)
 				toolIndex = 0;
-			if (button == SDL_BUTTON_RIGHT)
+			else if (button == SDL_BUTTON_RIGHT)
 				toolIndex = 1;
-			if (button == SDL_BUTTON_MIDDLE)
+			else if (button == SDL_BUTTON_MIDDLE)
 				toolIndex = 2;
+			else
+				return;
 			Tool *lastTool = c->GetActiveTool(toolIndex);
 			c->SetLastTool(lastTool);
 			UpdateDrawMode();
