@@ -1,15 +1,16 @@
 #include <iostream>
 #include <typeinfo>
 
-#include "SaveButton.h"
-#include "client/SaveInfo.h"
-#include "graphics/Graphics.h"
-#include "client/requestbroker/RequestBroker.h"
-#include "simulation/SaveRenderer.h"
-#include "Format.h"
 #include "ContextMenu.h"
+#include "Format.h"
 #include "Keys.h"
 #include "Mouse.h"
+#include "SaveButton.h"
+#include "client/Client.h"
+#include "client/SaveInfo.h"
+#include "graphics/Graphics.h"
+#include "simulation/SaveRenderer.h"
+#include "client/requestbroker/RequestBroker.h"
 
 namespace ui {
 
@@ -308,7 +309,8 @@ void SaveButton::AddContextMenu(int menuType)
 	{
 		menu = new ContextMenu(this);
 		menu->AddItem(ContextMenuItem("Open", 0, true));
-		menu->AddItem(ContextMenuItem("Select", 1, true));
+		if (Client::Ref().GetAuthUser().UserID)
+			menu->AddItem(ContextMenuItem("Select", 1, true));
 		menu->AddItem(ContextMenuItem("View History", 2, true));
 		menu->AddItem(ContextMenuItem("More by this user", 3, true));
 	}
