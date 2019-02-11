@@ -715,7 +715,7 @@ void GameView::NotifyActiveToolsChanged(GameModel * sender)
 		if (!active->GetIdentifier().Contains("_PT_"))
 			ren->findingElement = 0;
 		else
-			ren->findingElement = sender->GetActiveTool(0)->GetToolID()%256;
+			ren->findingElement = sender->GetActiveTool(0)->GetToolID() & ((1 << PMAPBITS) - 1);
 	}
 }
 
@@ -1509,10 +1509,10 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 		if (ctrl)
 		{
 			Tool *active = c->GetActiveTool(0);
-			if (!active->GetIdentifier().Contains("_PT_") || ren->findingElement == active->GetToolID()%256)
+			if (!active->GetIdentifier().Contains("_PT_") || (ren->findingElement == (active->GetToolID() & ((1 << PMAPBITS) - 1))))
 				ren->findingElement = 0;
 			else
-				ren->findingElement = active->GetToolID()%256;
+				ren->findingElement = active->GetToolID() & ((1 << PMAPBITS) - 1);
 		}
 		else
 			c->FrameStep();
