@@ -2032,7 +2032,7 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 			ambientData[ambientDataLen++] = tempTemp;
 			ambientData[ambientDataLen++] = tempTemp >> 8;
 
-			if(blockMap[y][x]==WL_FAN)
+			if (blockMap[y][x] == WL_FAN)
 			{
 				i = (int)(fanVelX[y][x]*64.0f+127.5f);
 				if (i<0) i=0;
@@ -2042,6 +2042,10 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 				if (i<0) i=0;
 				if (i>255) i=255;
 				fanData[fanDataLen++] = i;
+			}
+			else if (blockMap[y][x] == WL_STASIS)
+			{
+				RESTRICTVERSION(94, 0);
 			}
 		}
 	}
@@ -2294,7 +2298,7 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 				{
 					RESTRICTVERSION(92, 0);
 				}
-				/*else if (particles[i].type == PT_PIPE || particles[i].type == PT_PPIP)
+				else if (particles[i].type == PT_PIPE || particles[i].type == PT_PPIP)
 				{
 					RESTRICTVERSION(93, 0);
 				}
@@ -2305,7 +2309,7 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 					{
 						RESTRICTVERSION(93, 0);
 					}
-				}*/
+				}
 				if (PMAPBITS > 8)
 				{
 					if (TypeInCtype(particles[i].type, particles[i].ctype) && particles[i].ctype > 0xFF)
@@ -2319,6 +2323,17 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 					else if (TypeInTmp2(particles[i].type, particles[i].tmp2) && particles[i].tmp2 > 0xFF)
 					{
 						RESTRICTVERSION(93, 0);
+					}
+				}
+				if (particles[i].type == PT_LDTC)
+				{
+					RESTRICTVERSION(94, 0);
+				}
+				if (particles[i].type == PT_TSNS || particles[i].type == PT_PSNS)
+				{
+					if (particles[i].tmp == 2)
+					{
+						RESTRICTVERSION(94, 0);
 					}
 				}
 
