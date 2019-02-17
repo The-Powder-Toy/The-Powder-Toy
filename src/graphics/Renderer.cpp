@@ -1422,7 +1422,8 @@ void Renderer::render_parts()
 
 				if (findingElement)
 				{
-					if (findingElement == parts[i].type)
+					if (TYP(findingElement) == parts[i].type &&
+							(parts[i].type != PT_LIFE || (ID(findingElement) == parts[i].ctype)))
 					{
 						colr = firer = 255;
 						colg = fireg = colb = fireb = 0;
