@@ -150,7 +150,14 @@ int TPTScriptInterface::parseNumber(String str)
 	}
 	else
 	{
-		return str.ToNumber<int>();
+		try
+		{
+			return str.ToNumber<int>();
+		}
+		catch (std::exception & e)
+		{
+			throw GeneralException(ByteString(e.what()).FromUtf8());
+		}
 	}
 	return currentNumber;
 }
