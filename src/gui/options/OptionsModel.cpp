@@ -137,6 +137,18 @@ void OptionsModel::SetAltFullscreen(bool altFullscreen)
 	notifySettingsChanged();
 }
 
+bool OptionsModel::GetForceIntegerScaling()
+{
+	return ui::Engine::Ref().GetForceIntegerScaling();
+}
+
+void OptionsModel::SetForceIntegerScaling(bool forceIntegerScaling)
+{
+	ui::Engine::Ref().SetForceIntegerScaling(forceIntegerScaling);
+	Client::Ref().SetPref("ForceIntegerScaling", forceIntegerScaling);
+	notifySettingsChanged();
+}
+
 bool OptionsModel::GetFastQuit()
 {
 	return ui::Engine::Ref().GetFastQuit();

@@ -17,7 +17,7 @@
 #include "gui/dialogues/ErrorMessage.h"
 
 OptionsView::OptionsView():
-	ui::Window(ui::Point(-1, -1), ui::Point(300, 369)){
+	ui::Window(ui::Point(-1, -1), ui::Point(300, 389)){
 
 	ui::Label * tempLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 14), "Simulation Options");
 	tempLabel->SetTextColour(style::Colour::InformationTitle);
@@ -227,6 +227,24 @@ OptionsView::OptionsView():
 	AddComponent(tempLabel);
 	AddComponent(altFullscreen);
 
+	class ForceIntegerScalingAction: public ui::CheckboxAction
+	{
+		OptionsView * v;
+	public:
+		ForceIntegerScalingAction(OptionsView * v_) { v = v_; }
+		virtual void ActionCallback(ui::Checkbox * sender)
+		{
+			v->c->SetForceIntegerScaling(sender->GetChecked());
+		}
+	};
+
+	forceIntegerScaling = new ui::Checkbox(ui::Point(23, altFullscreen->Position.Y + 20), ui::Point(Size.X-6, 16), "Force Integer Scaling", "");
+	forceIntegerScaling->SetActionCallback(new ForceIntegerScalingAction(this));
+	tempLabel = new ui::Label(ui::Point(altFullscreen->Position.X+Graphics::textwidth(forceIntegerScaling->GetText().c_str())+20, forceIntegerScaling->Position.Y), ui::Point(Size.X-28, 16), "\bg- less blurry");
+	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	AddComponent(tempLabel);
+	AddComponent(forceIntegerScaling);
+
 
 	class FastQuitAction: public ui::CheckboxAction
 	{
@@ -236,7 +254,7 @@ OptionsView::OptionsView():
 		virtual void ActionCallback(ui::Checkbox * sender){	v->c->SetFastQuit(sender->GetChecked()); }
 	};
 
-	fastquit = new ui::Checkbox(ui::Point(8, altFullscreen->Position.Y + 20), ui::Point(Size.X-6, 16), "Fast Quit", "");
+	fastquit = new ui::Checkbox(ui::Point(8, forceIntegerScaling->Position.Y + 20), ui::Point(Size.X-6, 16), "Fast Quit", "");
 	fastquit->SetActionCallback(new FastQuitAction(this));
 	tempLabel = new ui::Label(ui::Point(fastquit->Position.X+Graphics::textwidth(fastquit->GetText().c_str())+20, fastquit->Position.Y), ui::Point(Size.X-28, 16), "\bg- Always exit completely when hitting close");
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
@@ -318,6 +336,7 @@ void OptionsView::NotifySettingsChanged(OptionsModel * sender)
 	resizable->SetChecked(sender->GetResizable());
 	fullscreen->SetChecked(sender->GetFullscreen());
 	altFullscreen->SetChecked(sender->GetAltFullscreen());
+	forceIntegerScaling->SetChecked(sender->GetForceIntegerScaling());
 	fastquit->SetChecked(sender->GetFastQuit());
 	showAvatars->SetChecked(sender->GetShowAvatars());
 }

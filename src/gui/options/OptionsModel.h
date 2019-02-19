@@ -39,6 +39,8 @@ public:
 	void SetFullscreen(bool fullscreen);
 	bool GetAltFullscreen();
 	void SetAltFullscreen(bool oldFullscreen);
+	bool GetForceIntegerScaling();
+	void SetForceIntegerScaling(bool forceIntegerScaling);
 	bool GetFastQuit();
 	void SetFastQuit(bool fastquit);
 	virtual ~OptionsModel();

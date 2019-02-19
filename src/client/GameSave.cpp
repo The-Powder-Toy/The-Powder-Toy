@@ -772,41 +772,25 @@ void GameSave::readOPS(char * data, int dataLength)
 			if (bson_iterator_type(&iter) == BSON_OBJECT)
 			{
 				int major = INT_MAX, minor = INT_MAX;
-#ifdef RENDERER
-				int renderMajor = INT_MAX, renderMinor = INT_MAX;
-#endif
 				bson_iterator subiter;
 				bson_iterator_subiterator(&iter, &subiter);
 				while (bson_iterator_next(&subiter))
 				{
 					if (bson_iterator_type(&subiter) == BSON_INT)
 					{
-#ifdef RENDERER
-						if (!strcmp(bson_iterator_key(&subiter), "rendermajor"))
-							renderMajor = bson_iterator_int(&subiter);
-						else if (!strcmp(bson_iterator_key(&subiter), "renderminor"))
-							renderMinor = bson_iterator_int(&subiter);
-#else
 						if (!strcmp(bson_iterator_key(&subiter), "major"))
 							major = bson_iterator_int(&subiter);
 						else if (!strcmp(bson_iterator_key(&subiter), "minor"))
 							minor = bson_iterator_int(&subiter);
-#endif
 					}
 				}
-#ifdef RENDERER
-				if (renderMajor > SAVE_VERSION || (renderMajor == SAVE_VERSION && renderMinor > MINOR_VERSION))
-#elif defined(SNAPSHOT) || defined(DEBUG)
+#if defined(SNAPSHOT) || defined(DEBUG)
 				if (major > FUTURE_SAVE_VERSION || (major == FUTURE_SAVE_VERSION && minor > FUTURE_MINOR_VERSION))
 #else
 				if (major > SAVE_VERSION || (major == SAVE_VERSION && minor > MINOR_VERSION))
 #endif
 				{
-#ifdef RENDERER
-					String errorMessage = String::Build("Save from a newer version: Requires render version ", renderMajor, ".", renderMinor);
-#else
 					String errorMessage = String::Build("Save from a newer version: Requires version ", major, ".", minor);
-#endif
 					throw ParseException(ParseException::WrongVersion, errorMessage);
 				}
 #if defined(SNAPSHOT) || defined(DEBUG)

@@ -23,6 +23,7 @@ class OptionsView: public ui::Window {
 	ui::Checkbox * resizable;
 	ui::Checkbox * fullscreen;
 	ui::Checkbox * altFullscreen;
+	ui::Checkbox * forceIntegerScaling;
 	ui::Checkbox * fastquit;
 	ui::Checkbox * showAvatars;
 public:

@@ -66,6 +66,7 @@ SDL_Texture * sdl_texture;
 int scale = 1;
 bool fullscreen = false;
 bool altFullscreen = false;
+bool forceIntegerScaling = true;
 bool resizable = false;
 
 
@@ -91,6 +92,10 @@ void LoadWindowPosition()
 
 	int borderTop, borderLeft;
 	SDL_GetWindowBordersSize(sdl_window, &borderTop, &borderLeft, nullptr, nullptr);
+	// Sometimes (Windows), the border size may not be reported for 200+ frames
+	// So just have a default of 5 to ensure the window doesn't get stuck where it can't be moved
+	if (borderTop == 0)
+		borderTop = 5;
 
 	if (savedWindowX + borderLeft > 0 && savedWindowX + borderLeft < desktopWidth
 	        && savedWindowY + borderTop > 0 && savedWindowY + borderTop < desktopHeight)
@@ -139,6 +144,7 @@ void blit(pixel * vid)
 }
 #endif
 
+void RecreateWindow();
 int SDLOpen()
 {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -147,23 +153,7 @@ int SDLOpen()
 		return 1;
 	}
 
-	unsigned int flags = 0;
-	if (fullscreen)
-		flags = altFullscreen ? SDL_WINDOW_FULLSCREEN : SDL_WINDOW_FULLSCREEN_DESKTOP;
-	if (resizable)
-		flags |= SDL_WINDOW_RESIZABLE;
-	sdl_window = SDL_CreateWindow("The Powder Toy", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOWW * scale, WINDOWH * scale,
-	                              flags);
-	sdl_renderer = SDL_CreateRenderer(sdl_window, -1, 0);
-	SDL_RenderSetLogicalSize(sdl_renderer, WINDOWW, WINDOWH);
-	//Uncomment this to force fullscreen to an integer resolution
-	//SDL_RenderSetIntegerScale(sdl_renderer, SDL_TRUE);
-	sdl_texture = SDL_CreateTexture(sdl_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, WINDOWW, WINDOWH);
-	if (fullscreen)
-		SDL_RaiseWindow(sdl_window);
-	//Uncomment this to enable resizing
-	//SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
-	//SDL_SetWindowResizable(sdl_window, SDL_TRUE);
+	RecreateWindow();
 
 	int displayIndex = SDL_GetWindowDisplayIndex(sdl_window);
 	if (displayIndex >= 0)
@@ -203,13 +193,29 @@ int SDLOpen()
 	return 0;
 }
 
-void SDLSetScreen(int scale_, bool resizable_, bool fullscreen_, bool altFullscreen_)
+void SDLSetScreen(int scale_, bool resizable_, bool fullscreen_, bool altFullscreen_, bool forceIntegerScaling_)
 {
+//	bool changingScale = scale != scale_;
+	bool changingFullscreen = fullscreen_ != fullscreen;
+	bool changingResizable = resizable != resizable_;
 	scale = scale_;
 	fullscreen = fullscreen_;
 	altFullscreen = altFullscreen_;
 	resizable = resizable_;
+	forceIntegerScaling = forceIntegerScaling_;
+	// Recreate the window when toggling fullscreen, due to occasional issues
+	// Also recreate it when enabling resizable windows, to fix bugs on windows,
+	//  see https://github.com/jacob1/The-Powder-Toy/issues/24
+	if (changingFullscreen || (changingResizable && resizable && !fullscreen))
+	{
+		RecreateWindow();
+		return;
+	}
+	if (changingResizable)
+		SDL_RestoreWindow(sdl_window);
+
 	SDL_SetWindowSize(sdl_window, WINDOWW * scale, WINDOWH * scale);
+	SDL_RenderSetIntegerScale(sdl_renderer, forceIntegerScaling && fullscreen ? SDL_TRUE : SDL_FALSE);
 	unsigned int flags = 0;
 	if (fullscreen)
 		flags = altFullscreen ? SDL_WINDOW_FULLSCREEN : SDL_WINDOW_FULLSCREEN_DESKTOP;
@@ -217,6 +223,40 @@ void SDLSetScreen(int scale_, bool resizable_, bool fullscreen_, bool altFullscr
 	if (fullscreen)
 		SDL_RaiseWindow(sdl_window);
 	SDL_SetWindowResizable(sdl_window, resizable ? SDL_TRUE : SDL_FALSE);
+}
+
+void RecreateWindow()
+{
+	unsigned int flags = 0;
+	if (fullscreen)
+		flags = altFullscreen ? SDL_WINDOW_FULLSCREEN : SDL_WINDOW_FULLSCREEN_DESKTOP;
+	if (resizable && !fullscreen)
+		flags |= SDL_WINDOW_RESIZABLE;
+
+	if (sdl_texture)
+		SDL_DestroyTexture(sdl_texture);
+	if (sdl_renderer)
+		SDL_DestroyRenderer(sdl_renderer);
+	if (sdl_window)
+	{
+		SaveWindowPosition();
+		SDL_DestroyWindow(sdl_window);
+	}
+
+	sdl_window = SDL_CreateWindow("The Powder Toy", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOWW * scale, WINDOWH * scale,
+	                              flags);
+	sdl_renderer = SDL_CreateRenderer(sdl_window, -1, 0);
+	SDL_RenderSetLogicalSize(sdl_renderer, WINDOWW, WINDOWH);
+	if (forceIntegerScaling && fullscreen)
+		SDL_RenderSetIntegerScale(sdl_renderer, SDL_TRUE);
+	sdl_texture = SDL_CreateTexture(sdl_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, WINDOWW, WINDOWH);
+	SDL_RaiseWindow(sdl_window);
+	//Uncomment this to enable resizing
+	//SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
+	//SDL_SetWindowResizable(sdl_window, SDL_TRUE);
+
+	if (!Client::Ref().IsFirstRun())
+		LoadWindowPosition();
 }
 
 unsigned int GetTicks()
@@ -354,7 +394,9 @@ void EventProcess(SDL_Event event)
 		engine->onMouseClick(event.motion.x, event.motion.y, mouseButton);
 
 		mouseDown = true;
+#if !defined(NDEBUG) && !defined(DEBUG)
 		SDL_CaptureMouse(SDL_TRUE);
+#endif
 		break;
 	case SDL_MOUSEBUTTONUP:
 		// if mouse hasn't moved yet, sdl will send 0,0. We don't want that
@@ -367,7 +409,9 @@ void EventProcess(SDL_Event event)
 		engine->onMouseUnclick(mousex, mousey, mouseButton);
 
 		mouseDown = false;
+#if !defined(NDEBUG) && !defined(DEBUG)
 		SDL_CaptureMouse(SDL_FALSE);
+#endif
 		break;
 	case SDL_WINDOWEVENT:
 	{
@@ -447,10 +491,12 @@ void EngineProcess()
 		engine->Tick();
 		engine->Draw();
 
-		if (scale != engine->Scale || fullscreen != engine->Fullscreen
-				|| altFullscreen != engine->GetAltFullscreen() || resizable != engine->GetResizable())
+		if (scale != engine->Scale || fullscreen != engine->Fullscreen ||
+				altFullscreen != engine->GetAltFullscreen() ||
+				forceIntegerScaling != engine->GetForceIntegerScaling() || resizable != engine->GetResizable())
 		{
-			SDLSetScreen(engine->Scale, engine->GetResizable(), engine->Fullscreen, engine->GetAltFullscreen());
+			SDLSetScreen(engine->Scale, engine->GetResizable(), engine->Fullscreen, engine->GetAltFullscreen(),
+						 engine->GetForceIntegerScaling());
 		}
 
 #ifdef OGLI
@@ -591,6 +637,7 @@ int main(int argc, char * argv[])
 	resizable = Client::Ref().GetPrefBool("Resizable", false);
 	fullscreen = Client::Ref().GetPrefBool("Fullscreen", false);
 	altFullscreen = Client::Ref().GetPrefBool("AltFullscreen", false);
+	forceIntegerScaling = Client::Ref().GetPrefBool("ForceIntegerScaling", true);
 
 
 	if(arguments["kiosk"] == "true")
@@ -639,8 +686,6 @@ int main(int argc, char * argv[])
 		SDL_SetWindowSize(sdl_window, WINDOWW * 2, WINDOWH * 2);
 		showDoubleScreenDialog = true;
 	}
-	if (!Client::Ref().IsFirstRun())
-		LoadWindowPosition();
 
 #ifdef OGLI
 	SDL_GL_SetAttribute (SDL_GL_DOUBLEBUFFER, 1);
@@ -659,6 +704,7 @@ int main(int argc, char * argv[])
 	ui::Engine::Ref().SetResizable(resizable);
 	ui::Engine::Ref().Fullscreen = fullscreen;
 	ui::Engine::Ref().SetAltFullscreen(altFullscreen);
+	ui::Engine::Ref().SetForceIntegerScaling(forceIntegerScaling);
 
 	engine = &ui::Engine::Ref();
 	engine->SetMaxSize(desktopWidth, desktopHeight);

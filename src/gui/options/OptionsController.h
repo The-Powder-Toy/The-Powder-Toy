@@ -26,6 +26,7 @@ public:
 	void SetEdgeMode(int edgeMode);
 	void SetFullscreen(bool fullscreen);
 	void SetAltFullscreen(bool altFullscreen);
+	void SetForceIntegerScaling(bool forceIntegerScaling);
 	void SetScale(int scale);
 	void SetResizable(bool resizable);
 	void SetFastQuit(bool fastquit);

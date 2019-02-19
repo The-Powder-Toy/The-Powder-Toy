@@ -48,6 +48,8 @@ namespace ui
 		inline bool GetFullscreen() { return Fullscreen; }
 		void SetAltFullscreen(bool altFullscreen) { this->altFullscreen = altFullscreen; }
 		inline bool GetAltFullscreen() { return altFullscreen; }
+		void SetForceIntegerScaling(bool forceIntegerScaling) { this->forceIntegerScaling = forceIntegerScaling; }
+		inline bool GetForceIntegerScaling() { return forceIntegerScaling; }
 		void SetScale(int scale) { Scale = scale; }
 		inline int GetScale() { return Scale; }
 		void SetResizable(bool resizable) { this->resizable = resizable; }
@@ -84,6 +86,7 @@ namespace ui
 		unsigned int FrameIndex;
 	private:
 		bool altFullscreen;
+		bool forceIntegerScaling = true;
 		bool resizable;
 
 		float dt;

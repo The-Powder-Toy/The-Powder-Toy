@@ -60,6 +60,11 @@ void OptionsController::SetAltFullscreen(bool altFullscreen)
 	model->SetAltFullscreen(altFullscreen);
 }
 
+void OptionsController::SetForceIntegerScaling(bool forceIntegerScaling)
+{
+	model->SetForceIntegerScaling(forceIntegerScaling);
+}
+
 void OptionsController::SetShowAvatars(bool showAvatars)
 {
 	model->SetShowAvatars(showAvatars);
