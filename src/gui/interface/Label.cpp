@@ -233,11 +233,11 @@ void Label::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bo
 {
 	if (repeat)
 		return;
-	if(ctrl && key == 'c')
+	if (ctrl && scan == SDL_SCANCODE_C)
 	{
 		copySelection();
 	}
-	if(ctrl && key == 'a')
+	if (ctrl && scan == SDL_SCANCODE_A)
 	{
 		selectAll();
 		return;

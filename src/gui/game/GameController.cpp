@@ -737,54 +737,54 @@ bool GameController::KeyPress(int key, int scan, bool repeat, bool shift, bool c
 				sim->player.comm = (int)(sim->player.comm)|0x02;
 			}
 			// Go left command
-			if (key == SDLK_LEFT)
+			else if (key == SDLK_LEFT)
 			{
 				sim->player.comm = (int)(sim->player.comm)|0x01;
 			}
 			// Use element command
-			if (key == SDLK_DOWN && ((int)(sim->player.comm)&0x08)!=0x08)
+			else if (key == SDLK_DOWN && ((int)(sim->player.comm)&0x08)!=0x08)
 			{
 				sim->player.comm = (int)(sim->player.comm)|0x08;
 			}
 			// Jump command
-			if (key == SDLK_UP && ((int)(sim->player.comm)&0x04)!=0x04)
+			else if (key == SDLK_UP && ((int)(sim->player.comm)&0x04)!=0x04)
 			{
 				sim->player.comm = (int)(sim->player.comm)|0x04;
 			}
 		}
 
 		// Go right command
-		if (key == SDLK_d)
+		if (scan == SDL_SCANCODE_D)
 		{
 			sim->player2.comm = (int)(sim->player2.comm)|0x02;
 		}
 		// Go left command
-		if (key == SDLK_a)
+		else if (scan == SDL_SCANCODE_A)
 		{
 			sim->player2.comm = (int)(sim->player2.comm)|0x01;
 		}
 		// Use element command
-		if (key == SDLK_s && ((int)(sim->player2.comm)&0x08)!=0x08)
+		else if (scan == SDL_SCANCODE_S && ((int)(sim->player2.comm)&0x08)!=0x08)
 		{
 			sim->player2.comm = (int)(sim->player2.comm)|0x08;
 		}
 		// Jump command
-		if (key == SDLK_w && ((int)(sim->player2.comm)&0x04)!=0x04)
+		else if (scan == SDL_SCANCODE_W && ((int)(sim->player2.comm)&0x04)!=0x04)
 		{
 			sim->player2.comm = (int)(sim->player2.comm)|0x04;
 		}
 
 		if (!sim->elementCount[PT_STKM2] || ctrl)
 		{
-			switch(key)
+			switch(scan)
 			{
-			case 'w':
+			case SDL_SCANCODE_W:
 				SwitchGravity();
 				break;
-			case 'd':
+			case SDL_SCANCODE_D:
 				gameView->SetDebugHUD(!gameView->GetDebugHUD());
 				break;
-			case 's':
+			case SDL_SCANCODE_S:
 				gameView->BeginStampSelection();
 				break;
 			}
@@ -814,25 +814,25 @@ bool GameController::KeyRelease(int key, int scan, bool repeat, bool shift, bool
 			sim->player.pcomm = sim->player.comm;  //Saving last movement
 			sim->player.comm = (int)(sim->player.comm)&12;  //Stop command
 		}
-		if (key == SDLK_UP)
+		else if (key == SDLK_UP)
 		{
 			sim->player.comm = (int)(sim->player.comm)&11;
 		}
-		if (key == SDLK_DOWN)
+		else if (key == SDLK_DOWN)
 		{
 			sim->player.comm = (int)(sim->player.comm)&7;
 		}
 
-		if (key == SDLK_d || key == SDLK_a)
+		if (scan == SDL_SCANCODE_D || scan == SDL_SCANCODE_A)
 		{
 			sim->player2.pcomm = sim->player2.comm;  //Saving last movement
 			sim->player2.comm = (int)(sim->player2.comm)&12;  //Stop command
 		}
-		if (key == SDLK_w)
+		else if (scan == SDL_SCANCODE_W)
 		{
 			sim->player2.comm = (int)(sim->player2.comm)&11;
 		}
-		if (key == SDLK_s)
+		else if (scan == SDL_SCANCODE_S)
 		{
 			sim->player2.comm = (int)(sim->player2.comm)&7;
 		}

@@ -312,22 +312,22 @@ void Textbox::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, 
 void Textbox::OnVKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
 	bool changed = false;
-	if(ctrl && key == 'c' && !masked && !repeat)
+	if (ctrl && scan == SDL_SCANCODE_C && !masked && !repeat)
 	{
 		copySelection();
 		return;
 	}
-	if(ctrl && key == 'v' && !ReadOnly)
+	if (ctrl && scan == SDL_SCANCODE_V && !ReadOnly)
 	{
 		pasteIntoSelection();
 		return;
 	}
-	if(ctrl && key == 'x' && !masked && !repeat && !ReadOnly)
+	if (ctrl && scan == SDL_SCANCODE_X && !masked && !repeat && !ReadOnly)
 	{
 		cutSelection();
 		return;
 	}
-	if(ctrl && key == 'a')
+	if (ctrl && scan == SDL_SCANCODE_A)
 	{
 		selectAll();
 		return;
