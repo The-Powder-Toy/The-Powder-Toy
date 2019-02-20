@@ -1633,10 +1633,10 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 		break;
 	case SDL_SCANCODE_SEMICOLON:
 		if (ctrl)
-		{
 			c->SetReplaceModeFlags(c->GetReplaceModeFlags()^SPECIFIC_DELETE);
-			break;
-		}
+		else
+			c->SetReplaceModeFlags(c->GetReplaceModeFlags()^REPLACE_MODE);
+		break;
 	default:
 		didKeyShortcut = false;
 	}
