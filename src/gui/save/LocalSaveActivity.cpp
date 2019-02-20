@@ -90,7 +90,11 @@ void LocalSaveActivity::Save()
 		virtual ~FileOverwriteConfirmation() { }
 	};
 
-	if(filenameField->GetText().length())
+	if (filenameField->GetText().Contains('/') || filenameField->GetText().BeginsWith("."))
+	{
+		new ErrorMessage("Error", "Invalid filename.");
+	}
+	else if (filenameField->GetText().length())
 	{
 		ByteString finalFilename = ByteString(LOCAL_SAVE_DIR) + ByteString(PATH_SEP) + filenameField->GetText().ToUtf8() + ".cps";
 		save.SetDisplayName(filenameField->GetText());

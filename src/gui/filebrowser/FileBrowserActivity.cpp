@@ -69,7 +69,7 @@ class LoadFilesTask: public Task
 				saveFiles.push_back(saveFile);
 
 				ByteString filename = (*iter).SplitFromEndBy(PATH_SEP).After();
-				filename = filename.SplitBy('.').Before();
+				filename = filename.SplitFromEndBy('.').Before();
 				saveFile->SetDisplayName(filename.FromUtf8());
 			}
 			catch(std::exception & e)
