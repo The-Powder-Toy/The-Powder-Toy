@@ -197,6 +197,7 @@ void http_init(char *proxy)
 	std::copy(newUserAgent.begin(), newUserAgent.end(), userAgent);
 	userAgent[newUserAgent.length()] = 0;
 	//"User-Agent: PowderToy/%d.%d (%s; %s; M%d) TPTPP/%d.%d.%d%s.%d\n", SAVE_VERSION, MINOR_VERSION, IDENT_PLATFORM, IDENT_BUILD, 0, SAVE_VERSION, MINOR_VERSION, BUILD_NUM, IDENT_RELTYPE, SNAPSHOT_ID
+	//User-Agent: PowderToy/94.1 (MACOSX; 342; M0) TPTPP/94.1.342R.0
 }
 
 void http_done(void)
