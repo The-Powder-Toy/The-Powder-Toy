@@ -196,7 +196,7 @@ int SDLOpen()
 void SDLSetScreen(int scale_, bool resizable_, bool fullscreen_, bool altFullscreen_, bool forceIntegerScaling_)
 {
 //	bool changingScale = scale != scale_;
-	bool changingFullscreen = fullscreen_ != fullscreen;
+	bool changingFullscreen = fullscreen_ != fullscreen || (altFullscreen_ != altFullscreen && fullscreen);
 	bool changingResizable = resizable != resizable_;
 	scale = scale_;
 	fullscreen = fullscreen_;
