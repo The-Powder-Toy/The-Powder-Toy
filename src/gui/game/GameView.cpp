@@ -1434,6 +1434,8 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 	switch(scan)
 	{
 	case SDL_SCANCODE_GRAVE:
+		SDL_StopTextInput();
+		SDL_StartTextInput();
 		c->ShowConsole();
 		break;
 	case SDL_SCANCODE_SPACE: //Space
