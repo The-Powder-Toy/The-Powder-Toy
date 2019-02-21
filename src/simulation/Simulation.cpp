@@ -4922,7 +4922,7 @@ int Simulation::GetParticleType(ByteString type)
 
 void Simulation::SimulateGoL()
 {
-	CGOL=0;
+	CGOL = 0;
 	//TODO: maybe this should only loop through active particles
 	for (int ny = CELL; ny < YRES-CELL; ny++)
 	{
@@ -4935,10 +4935,11 @@ void Simulation::SimulateGoL()
 				gol[ny][nx] = 0;
 				continue;
 			}
-			if (TYP(r)==PT_LIFE)
+			if (TYP(r) == PT_LIFE)
 			{
-				int golnum = parts[ID(r)].ctype+1;
-				if (golnum<=0 || golnum>NGOL) {
+				int golnum = parts[ID(r)].ctype + 1;
+				if (golnum <= 0 || golnum > NGOL)
+				{
 					kill_part(ID(r));
 					continue;
 				}
@@ -4953,7 +4954,7 @@ void Simulation::SimulateGoL()
 							int adx = ((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL;
 							int ady = ((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL;
 							int rt = pmap[ady][adx];
-							if (!rt || TYP(rt)==PT_LIFE)
+							if (!rt || TYP(rt) == PT_LIFE)
 							{
 								//the total neighbor count is in 0
 								gol2[ady][adx][0] ++;
@@ -4993,34 +4994,38 @@ void Simulation::SimulateGoL()
 			int neighbors = gol2[ny][nx][0];
 			if (neighbors)
 			{
-				int golnum = gol[ny][nx];
-				if (!r)
+				if (!(bmap[ny/CELL][nx/CELL] == WL_STASIS && emap[ny/CELL][nx/CELL] < 8))
 				{
-					//Find which type we can try and create
-					int creategol = 0xFF;
-					for (int i = 1; i < 9; i++)
+					int golnum = gol[ny][nx];
+					if (!r)
 					{
-						if (!gol2[ny][nx][i]) break;
-						golnum = (gol2[ny][nx][i]>>4);
-						if (grule[golnum][neighbors]>=2 && (gol2[ny][nx][i]&0xF)>=(neighbors%2)+neighbors/2)
+						//Find which type we can try and create
+						int creategol = 0xFF;
+						for (int i = 1; i < 9; i++)
 						{
-							if (golnum<creategol) creategol=golnum;
+							if (!gol2[ny][nx][i]) break;
+							golnum = (gol2[ny][nx][i]>>4);
+							if (grule[golnum][neighbors]>= 2 && (gol2[ny][nx][i]&0xF) >= (neighbors%2)+neighbors/2)
+							{
+								if (golnum < creategol)
+									creategol = golnum;
+							}
 						}
+						if (creategol < 0xFF)
+							create_part(-1, nx, ny, PT_LIFE, creategol-1);
 					}
-					if (creategol<0xFF)
-						create_part(-1, nx, ny, PT_LIFE, creategol-1);
-				}
-				else if (grule[golnum][neighbors-1]==0 || grule[golnum][neighbors-1]==2)//subtract 1 because it counted itself
-				{
-					if (parts[ID(r)].tmp==grule[golnum][9]-1)
-						parts[ID(r)].tmp --;
+					else if (grule[golnum][neighbors-1] == 0 || grule[golnum][neighbors-1] == 2)//subtract 1 because it counted itself
+					{
+						if (parts[ID(r)].tmp == grule[golnum][9]-1)
+							parts[ID(r)].tmp--;
+					}
 				}
 				for (int z = 0; z < 9; z++)
 					gol2[ny][nx][z] = 0;//this improves performance A LOT compared to the memset, i was getting ~23 more fps with this.
 			}
 			//we still need to kill things with 0 neighbors (higher state life)
-			if (r && parts[ID(r)].tmp<=0)
-					kill_part(ID(r));
+			if (r && parts[ID(r)].tmp <= 0)
+				kill_part(ID(r));
 		}
 	}
 	//memset(gol2, 0, sizeof(gol2));
