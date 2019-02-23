@@ -2096,6 +2096,9 @@ void LuaScriptInterface::initRendererAPI()
 		{"grid", renderer_grid},
 		{"debugHUD", renderer_debugHUD},
 		{"depth3d", renderer_depth3d},
+		{"zoomEnabled", renderer_zoomEnabled},
+		{"zoomWindow", renderer_zoomWindowInfo},
+		{"zoomScope", renderer_zoomScopeInfo},
 		{NULL, NULL}
 	};
 	luaL_register(l, "renderer", rendererAPIMethods);
@@ -2280,6 +2283,67 @@ int LuaScriptInterface::renderer_debugHUD(lua_State * l)
 int LuaScriptInterface::renderer_depth3d(lua_State * l)
 {
 	return luaL_error(l, "This feature is no longer supported");
+}
+
+int LuaScriptInterface::renderer_zoomEnabled(lua_State * l)
+{
+	if (lua_gettop(l) == 0)
+	{
+		lua_pushboolean(l, luacon_ren->zoomEnabled);
+		return 1;
+	}
+	else {
+		luacon_ren->zoomEnabled = luaL_optint(l, 1, 0);
+		return 0;
+	}
+}
+int LuaScriptInterface::renderer_zoomWindowInfo(lua_State * l)
+{
+	if (lua_gettop(l) == 0)
+	{
+		ui::Point location = luacon_ren->zoomWindowPosition;
+		lua_pushnumber(l, location.X);
+		lua_pushnumber(l, location.Y);
+		lua_pushnumber(l, luacon_ren->zoomScopeSize*luacon_ren->ZFACTOR);
+		lua_pushnumber(l, luacon_ren->ZFACTOR);
+		return 4;
+	}
+	int x = luaL_optint(l, 1, 0);
+	int y = luaL_optint(l, 2, 0);
+	int f = luaL_optint(l, 3, 0);
+	if (luacon_ren->zoomScopeSize*f + x <= XRES && luacon_ren->zoomScopeSize*f + y <= YRES && x >= 0 && y >= 0) //To prevent crash when zoom window is outside screen
+	{
+		luacon_ren->zoomWindowPosition = ui::Point(x, y);
+		luacon_ren->ZFACTOR = f;
+		lua_pushboolean(l, true);
+		return 1;
+	}
+	lua_pushboolean(l, false);
+	return 1;
+}
+int LuaScriptInterface::renderer_zoomScopeInfo(lua_State * l)
+{
+	if (lua_gettop(l) == 0) {
+		ui::Point location = luacon_ren->zoomScopePosition;
+		lua_pushnumber(l, location.X);
+		lua_pushnumber(l, location.Y);
+		lua_pushnumber(l, luacon_ren->zoomScopeSize);
+		return 3;
+	}
+	int x = luaL_optint(l, 1, 0);
+	int y = luaL_optint(l, 2, 0);
+	int s = luaL_optint(l, 3, 0);
+	if (luacon_ren->ZFACTOR*s + luacon_ren->zoomWindowPosition.X <= XRES && luacon_ren->ZFACTOR*s + luacon_ren->zoomWindowPosition.Y <= YRES
+		&& x >= 0 && y >= 0 && x <= XRES && y <= YRES) //To prevent crash when zoom or scope window is outside screen
+	{
+		luacon_ren->zoomScopePosition = ui::Point(x, y);
+		luacon_ren->zoomScopeSize = s;
+		lua_pushboolean(l, true);
+		return 1;
+	}
+	lua_pushboolean(l, false);
+	return 1;
+
 }
 
 void LuaScriptInterface::initElementsAPI()
