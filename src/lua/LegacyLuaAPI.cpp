@@ -687,7 +687,7 @@ int luatpt_set_property(lua_State* l)
 				return luaL_error(l, "Unrecognised element '%s'", name);
 		}
 	}
-	if (lua_isnumber(l, 2) || format == CommandInterface::FormatElement)
+	if (lua_isnumber(l, 2))
 	{
 		if (format == CommandInterface::FormatFloat)
 			f = luaL_optnumber(l, 2, 0);
@@ -697,12 +697,15 @@ int luatpt_set_property(lua_State* l)
 		if (!strcmp(prop, "type") && (t<0 || t>=PT_NUM || !luacon_sim->elements[t].Enabled))
 			return luaL_error(l, "Unrecognised element number '%d'", t);
 	}
-	else
+	else if (lua_isstring(l, 2))
 	{
 		name = luaL_checklstring(l, 2, NULL);
 		if ((t = luacon_sim->GetParticleType(ByteString(name)))==-1)
 			return luaL_error(l, "Unrecognised element '%s'", name);
 	}
+	else
+		luaL_error(l, "Expected number or element name as argument 2");
+
 	if (!lua_isnumber(l, 3) || acount >= 6)
 	{
 		// Got a region
