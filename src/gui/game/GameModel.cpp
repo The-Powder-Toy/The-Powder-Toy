@@ -783,7 +783,7 @@ bool GameModel::MouseInZoom(ui::Point position)
 	ui::Point zoomWindowPosition = GetZoomWindowPosition();
 	ui::Point zoomWindowSize = ui::Point(GetZoomSize()*zoomFactor, GetZoomSize()*zoomFactor);
 
-	if (position.X >= zoomWindowPosition.X && position.X >= zoomWindowPosition.Y && position.X <= zoomWindowPosition.X+zoomWindowSize.X && position.Y <= zoomWindowPosition.Y+zoomWindowSize.Y)
+	if (position.X >= zoomWindowPosition.X && position.Y >= zoomWindowPosition.Y && position.X <= zoomWindowPosition.X+zoomWindowSize.X && position.Y <= zoomWindowPosition.Y+zoomWindowSize.Y)
 		return true;
 	return false;
 }
@@ -797,7 +797,7 @@ ui::Point GameModel::AdjustZoomCoords(ui::Point position)
 	ui::Point zoomWindowPosition = GetZoomWindowPosition();
 	ui::Point zoomWindowSize = ui::Point(GetZoomSize()*zoomFactor, GetZoomSize()*zoomFactor);
 
-	if (position.X >= zoomWindowPosition.X && position.X >= zoomWindowPosition.Y && position.X <= zoomWindowPosition.X+zoomWindowSize.X && position.Y <= zoomWindowPosition.Y+zoomWindowSize.Y)
+	if (position.X >= zoomWindowPosition.X && position.Y >= zoomWindowPosition.Y && position.X <= zoomWindowPosition.X+zoomWindowSize.X && position.Y <= zoomWindowPosition.Y+zoomWindowSize.Y)
 		return ((position-zoomWindowPosition)/GetZoomFactor())+GetZoomPosition();
 	return position;
 }
