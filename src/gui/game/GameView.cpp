@@ -1646,18 +1646,6 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 	{
 		switch (key)
 		{
-		case SDLK_LALT:
-		case SDLK_RALT:
-			enableAltBehaviour();
-			break;
-		case SDLK_LCTRL:
-		case SDLK_RCTRL:
-			enableCtrlBehaviour();
-			break;
-		case SDLK_LSHIFT:
-		case SDLK_RSHIFT:
-			enableShiftBehaviour();
-			break;
 		case SDLK_TAB: //Tab
 			c->ChangeBrush();
 			break;
@@ -1690,21 +1678,6 @@ void GameView::OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctr
 		if (!zoomCursorFixed && !alt)
 			c->SetZoomEnabled(false);
 		return;
-	}
-	switch(key)
-	{
-	case SDLK_LALT:
-	case SDLK_RALT:
-		disableAltBehaviour();
-		break;
-	case SDLK_LCTRL:
-	case SDLK_RCTRL:
-		disableCtrlBehaviour();
-		break;
-	case SDLK_LSHIFT:
-	case SDLK_RSHIFT:
-		disableShiftBehaviour();
-		break;
 	}
 }
 
@@ -1857,13 +1830,25 @@ void GameView::DoTextInput(String text)
 
 void GameView::DoKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
+	if (shift && !shiftBehaviour)
+		enableShiftBehaviour();
+	if (ctrl && !ctrlBehaviour)
+		enableCtrlBehaviour();
+	if (alt && !altBehaviour)
+		enableAltBehaviour();
 	if (c->KeyPress(key, scan, repeat, shift, ctrl, alt))
 		Window::DoKeyPress(key, scan, repeat, shift, ctrl, alt);
 }
 
 void GameView::DoKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
-	if(c->KeyRelease(key, scan, repeat, shift, ctrl, alt))
+	if (!shift && shiftBehaviour)
+		disableShiftBehaviour();
+	if (!ctrl && ctrlBehaviour)
+		disableCtrlBehaviour();
+	if (!alt && altBehaviour)
+		disableAltBehaviour();
+	if (c->KeyRelease(key, scan, repeat, shift, ctrl, alt))
 		Window::DoKeyRelease(key, scan, repeat, shift, ctrl, alt);
 }
 
