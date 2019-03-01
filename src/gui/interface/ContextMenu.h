@@ -25,13 +25,13 @@ public:
 	ui::Appearance Appearance;
 	class ItemSelectedAction;
 	ContextMenu(Component * source);
-	virtual void ActionCallbackItem(ui::Button *sender, int item);
-	virtual void AddItem(ContextMenuItem item);
-	virtual void RemoveItem(int id);
-	virtual void SetItem(int id, String text);
-	virtual void Show(ui::Point position);
-	virtual void OnDraw();
-	virtual void OnMouseDown(int x, int y, unsigned button);
+	void ActionCallbackItem(ui::Button *sender, int item);
+	void AddItem(ContextMenuItem item);
+	void RemoveItem(int id);
+	void SetItem(int id, String text);
+	void Show(ui::Point position);
+	void OnDraw() override;
+	void OnMouseDown(int x, int y, unsigned button) override;
 	virtual ~ContextMenu() {}
 };
 }

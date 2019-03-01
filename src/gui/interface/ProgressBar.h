@@ -11,11 +11,11 @@ namespace ui
 		String progressStatus;
 	public:
 	ProgressBar(Point position, Point size, int startProgress = 0, String startStatus = String());
-		virtual void SetProgress(int progress);
-		virtual int GetProgress();
-		virtual void SetStatus(String status);
-		virtual String GetStatus();
-		virtual void Draw(const Point & screenPos);
-		virtual void Tick(float dt);
+		void SetProgress(int progress);
+		int GetProgress();
+		void SetStatus(String status);
+		String GetStatus();
+		void Draw(const Point & screenPos) override;
+		void Tick(float dt) override;
 	};
 }

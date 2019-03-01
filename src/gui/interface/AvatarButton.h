@@ -27,20 +27,20 @@ public:
 	AvatarButton(Point position, Point size, ByteString username);
 	virtual ~AvatarButton();
 
-	virtual void OnMouseClick(int x, int y, unsigned int button);
-	virtual void OnMouseUnclick(int x, int y, unsigned int button);
+	void OnMouseClick(int x, int y, unsigned int button) override;
+	void OnMouseUnclick(int x, int y, unsigned int button) override;
 
-	virtual void OnMouseEnter(int x, int y);
-	virtual void OnMouseLeave(int x, int y);
+	void OnMouseEnter(int x, int y) override;
+	void OnMouseLeave(int x, int y) override;
 
-	virtual void OnContextMenuAction(int item);
+	void OnContextMenuAction(int item) override;
 
-	virtual void Draw(const Point& screenPos);
-	virtual void Tick(float dt);
+	void Draw(const Point& screenPos) override;
+	void Tick(float dt) override;
 
-	virtual void OnResponseReady(void * imagePtr, int identifier);
+	void OnResponseReady(void * imagePtr, int identifier) override;
 
-	virtual void DoAction();
+	void DoAction();
 
 	void SetUsername(ByteString username) { name = username; }
 	ByteString GetUsername() { return name; }

@@ -12,10 +12,10 @@ class CopyTextButton : public Button
 public:
 	CopyTextButton(Point position, Point size, String buttonText, Label *copyTextLabel_);
 
-	virtual void OnMouseClick(int x, int y, unsigned int button);
+	void OnMouseClick(int x, int y, unsigned int button) override;
 
-	virtual void OnMouseEnter(int x, int y);
-	virtual void OnMouseLeave(int x, int y);
+	void OnMouseEnter(int x, int y) override;
+	void OnMouseLeave(int x, int y) override;
 };
 }
 #endif /* COPYTEXTBUTTON_H */

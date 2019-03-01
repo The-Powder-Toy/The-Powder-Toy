@@ -28,8 +28,8 @@ public:
 	Textbox(Point position, Point size, String textboxText = String(), String textboxPlaceholder = String());
 	virtual ~Textbox();
 
-	virtual void SetText(String text);
-	virtual String GetText();
+	void SetText(String text) override;
+	String GetText() override;
 
 	virtual void SetPlaceholder(String text);
 
@@ -50,16 +50,16 @@ public:
 	bool CharacterValid(int character);
 	bool StringValid(String text);
 
-	virtual void Tick(float dt);
-	virtual void OnContextMenuAction(int item);
-	virtual void OnMouseClick(int x, int y, unsigned button);
-	virtual void OnMouseUp(int x, int y, unsigned button);
-	virtual void OnMouseMoved(int localx, int localy, int dx, int dy);
-	virtual void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
-	virtual void OnVKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
-	virtual void OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
-	void OnTextInput(String text) override;
-	virtual void Draw(const Point& screenPos);
+	void Tick(float dt) override;
+	void OnContextMenuAction(int item) override;
+	void OnMouseClick(int x, int y, unsigned button) override;
+	void OnMouseUp(int x, int y, unsigned button) override;
+	void OnMouseMoved(int localx, int localy, int dx, int dy);
+	void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
+	void OnVKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
+	void OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
+	void OnTextInput(String text);
+	void Draw(const Point& screenPos) override;
 
 protected:
 	ValidInput inputType;

@@ -23,12 +23,12 @@ public:
 	void SetText(String text);
 	String GetText();
 	void SetIcon(Icon icon);
-	void Draw(const Point& screenPos);
-	virtual void OnMouseEnter(int x, int y);
-	virtual void OnMouseHover(int x, int y);
-	virtual void OnMouseLeave(int x, int y);
-	virtual void OnMouseClick(int x, int y, unsigned int button);
-	virtual void OnMouseUp(int x, int y, unsigned int button);
+	void Draw(const Point& screenPos) override;
+	void OnMouseEnter(int x, int y) override;
+	void OnMouseHover(int x, int y) override;
+	void OnMouseLeave(int x, int y) override;
+	void OnMouseClick(int x, int y, unsigned int button) override;
+	void OnMouseUp(int x, int y, unsigned int button) override;
 	void SetActionCallback(CheckboxAction * action);
 	CheckboxAction * GetActionCallback() { return actionCallback; }
 	bool GetChecked() { return checked; }
