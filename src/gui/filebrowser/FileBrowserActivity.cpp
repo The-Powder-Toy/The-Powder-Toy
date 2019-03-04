@@ -105,7 +105,7 @@ public:
 };
 
 FileBrowserActivity::FileBrowserActivity(ByteString directory, FileSelectedCallback * callback):
-	WindowActivity(ui::Point(-1, -1), ui::Point(450, 300)),
+	WindowActivity(ui::Point(-1, -1), ui::Point(500, 350)),
 	callback(callback),
 	directory(directory),
 	totalFiles(0)
@@ -142,7 +142,7 @@ FileBrowserActivity::FileBrowserActivity(ByteString directory, FileSelectedCallb
 
 	buttonXOffset = 0;
 	buttonYOffset = 0;
-	buttonAreaWidth = itemList->Size.X;
+	buttonAreaWidth = itemList->Size.X - 5;
 	buttonAreaHeight = itemList->Size.Y;// - buttonYOffset - 18;
 	buttonWidth = (buttonAreaWidth/filesX) - buttonPadding*2;
 	buttonHeight = (buttonAreaHeight/filesY) - buttonPadding*2;
