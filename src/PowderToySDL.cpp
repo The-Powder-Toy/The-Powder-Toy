@@ -521,9 +521,8 @@ void EngineProcess()
 			engine->SetFps(1000.0 / correctedFrameTimeAvg);
 			lastFpsUpdate = frameStart;
 		}
-		if (frameStart - lastTick > 1000)
+		if (frameStart - lastTick > 100)
 		{
-			//Run client tick every second
 			lastTick = frameStart;
 			Client::Ref().Tick();
 		}
