@@ -184,7 +184,7 @@ ServerSaveActivity::ServerSaveActivity(SaveInfo save, ServerSaveActivity::SaveUp
 	AddComponent(RulesButton);
 
 	if(save.GetGameSave())
-		RequestBroker::Ref().RenderThumbnail(save.GetGameSave(), false, true, (Size.X/2)-16, -1, this);
+		RequestBroker::Ref().RenderThumbnail(save.GetGameSave(), false, true, (Size.X/2)-16, -1, false, this);
 }
 
 ServerSaveActivity::ServerSaveActivity(SaveInfo save, bool saveNow, ServerSaveActivity::SaveUploadedCallback * callback) :

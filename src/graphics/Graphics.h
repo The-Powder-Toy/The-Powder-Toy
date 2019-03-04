@@ -158,8 +158,8 @@ public:
 	void gradientrect(int x, int y, int width, int height, int r, int g, int b, int a, int r2, int g2, int b2, int a2);
 
 	void draw_image(pixel *img, int x, int y, int w, int h, int a);
-	void draw_image(const VideoBuffer & vidBuf, int w, int h, int a);
-	void draw_image(VideoBuffer * vidBuf, int w, int h, int a);
+	void draw_image(const VideoBuffer & vidBuf, int x, int y, int a);
+	void draw_image(VideoBuffer * vidBuf, int x, int y, int a);
 	void draw_rgba_image(const unsigned char *data, int x, int y, float alpha);
 
 	Graphics();

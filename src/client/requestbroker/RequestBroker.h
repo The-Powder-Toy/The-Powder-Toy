@@ -52,7 +52,7 @@ public:
 
 	void FlushThumbQueue();
 	void RetrieveImage(ByteString imageUrl, int width, int height, RequestListener * tListener);
-	void RenderThumbnail(GameSave * gameSave, bool decorations, bool fire, int width, int height, RequestListener * tListener);
+	void RenderThumbnail(GameSave * gameSave, bool decorations, bool fire, int width, int height, bool autoRescale, RequestListener * tListener);
 	void RenderThumbnail(GameSave * gameSave, int width, int height, RequestListener * tListener);
 	void RetrieveThumbnail(int saveID, int saveDate, int width, int height, RequestListener * tListener);
 	void RetrieveThumbnail(int saveID, int width, int height, RequestListener * tListener);

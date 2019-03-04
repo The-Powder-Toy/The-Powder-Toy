@@ -1,3 +1,4 @@
+#include <cmath>
 #include <iostream>
 #include <typeinfo>
 #include "ThumbRenderRequest.h"
@@ -5,14 +6,16 @@
 #include "graphics/Graphics.h"
 #include "simulation/SaveRenderer.h"
 
-ThumbRenderRequest::ThumbRenderRequest(GameSave * save, bool decorations, bool fire, int width, int height, ListenerHandle listener, int identifier):
-	RequestBroker::Request(ThumbnailRender, listener, identifier)
+ThumbRenderRequest::ThumbRenderRequest(GameSave * save, bool decorations, bool fire, int width, int height, bool autoRescale, ListenerHandle listener, int identifier):
+	RequestBroker::Request(ThumbnailRender, listener, identifier),
+	Save(save),
+	Width(width),
+	Height(height),
+	Decorations(decorations),
+	Fire(fire),
+	autoRescale(autoRescale)
 {
-	Save = save;
-	Width = width;
-	Height = height;
-	Decorations = decorations;
-	Fire = fire;
+
 }
 
 RequestBroker::ProcessResponse ThumbRenderRequest::Process(RequestBroker & rb)
@@ -22,9 +25,20 @@ RequestBroker::ProcessResponse ThumbRenderRequest::Process(RequestBroker & rb)
 	delete Save;
 	Save = NULL;
 
-	if(thumbnail)
+	if (thumbnail)
 	{
-		thumbnail->Resize(Width, Height, true);
+		if (!autoRescale)
+			thumbnail->Resize(Width, Height, true);
+		else
+		{
+			int scaleX = (int)std::ceil((float)thumbnail->Width / Width);
+			int scaleY = (int)std::ceil((float)thumbnail->Height / Height);
+			int scale = scaleX > scaleY ? scaleX : scaleY;
+			int newWidth = thumbnail->Width / scale, newHeight = thumbnail->Height / scale;
+			thumbnail->Resize(newWidth, newHeight, true);
+			Width = newWidth;
+			Height = newHeight;
+		}
 		ResultObject = (void*)thumbnail;
 		rb.requestComplete((Request*)this);
 		return RequestBroker::Finished;

@@ -79,14 +79,14 @@ void RequestBroker::Shutdown()
 
 void RequestBroker::RenderThumbnail(GameSave * gameSave, int width, int height, RequestListener * tListener)
 {
-	RenderThumbnail(gameSave, true, true, width, height, tListener);
+	RenderThumbnail(gameSave, true, true, width, height, false, tListener);
 }
 
-void RequestBroker::RenderThumbnail(GameSave * gameSave, bool decorations, bool fire, int width, int height, RequestListener * tListener)
+void RequestBroker::RenderThumbnail(GameSave * gameSave, bool decorations, bool fire, int width, int height, bool autoRescale, RequestListener * tListener)
 {
 	ListenerHandle handle = AttachRequestListener(tListener);
 
-	ThumbRenderRequest * r = new ThumbRenderRequest(new GameSave(*gameSave), decorations, fire, width, height, handle);
+	ThumbRenderRequest * r = new ThumbRenderRequest(new GameSave(*gameSave), decorations, fire, width, height, autoRescale, handle);
 
 	pthread_mutex_lock(&requestQueueMutex);
 	requestQueue.push_back(r);

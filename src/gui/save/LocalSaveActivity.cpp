@@ -71,7 +71,7 @@ LocalSaveActivity::LocalSaveActivity(SaveFile save, FileSavedCallback * callback
 	SetOkayButton(okayButton);
 
 	if(save.GetGameSave())
-		RequestBroker::Ref().RenderThumbnail(save.GetGameSave(), true, false, Size.X-16, -1, this);
+		RequestBroker::Ref().RenderThumbnail(save.GetGameSave(), true, false, Size.X-16, -1, false, this);
 }
 
 void LocalSaveActivity::Save()

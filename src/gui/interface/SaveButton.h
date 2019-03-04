@@ -28,6 +28,7 @@ class SaveButton : public Component, public RequestListener
 	SaveFile * file;
 	SaveInfo * save;
 	VideoBuffer * thumbnail;
+	ui::Point thumbSize = ui::Point(0, 0);
 	String name;
 	String votesString;
 	String votesBackground;
