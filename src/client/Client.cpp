@@ -44,6 +44,7 @@
 #include "client/UserInfo.h"
 #include "gui/preview/Comment.h"
 #include "ClientListener.h"
+#include "client/Download.h"
 #include "requestbroker/RequestBroker.h"
 #include "requestbroker/WebRequest.h"
 #include "requestbroker/APIRequest.h"
@@ -63,8 +64,8 @@ extern "C"
 
 Client::Client():
 	messageOfTheDay("Fetching the message of the day..."),
-	versionCheckRequest(NULL),
-	alternateVersionCheckRequest(NULL),
+	versionCheckRequest(nullptr),
+	alternateVersionCheckRequest(nullptr),
 	usingAltUpdateServer(false),
 	updateAvailable(false),
 	authUser(0, "")
@@ -134,28 +135,23 @@ void Client::Initialise(ByteString proxyString)
 	stampsLib.close();
 
 	//Begin version check
-	versionCheckRequest = http_async_req_start(NULL, "http://" SERVER "/Startup.json", NULL, 0, 0);
+	versionCheckRequest = new Download("http://" SERVER "/Startup.json");
 
 	if (authUser.UserID)
 	{
-		ByteString idTempString = ByteString::Build(authUser.UserID);
-		char *id = new char[idTempString.length() + 1];
-		std::strcpy (id, idTempString.c_str());
-		char *session = new char[authUser.SessionID.length() + 1];
-		std::strcpy (session, authUser.SessionID.c_str());
-		http_auth_headers(versionCheckRequest, id, NULL, session);
-		delete[] id;
-		delete[] session;
+		versionCheckRequest->AuthHeaders(ByteString::Build(authUser.UserID), authUser.SessionID);
 	}
+	versionCheckRequest->Start();
 
 #ifdef UPDATESERVER
 	// use an alternate update server
-	alternateVersionCheckRequest = http_async_req_start(NULL, "http://" UPDATESERVER "/Startup.json", NULL, 0, 0);
+	alternateVersionCheckRequest = new Download("http://" UPDATESERVER "/Startup.json");
 	usingAltUpdateServer = true;
 	if (authUser.UserID)
 	{
-		http_auth_headers(alternateVersionCheckRequest, authUser.Username.c_str(), NULL, NULL);
+		alternateVersionCheckRequest->AuthHeaders(authUser.Username, "");
 	}
+	alternateVersionCheckRequest->Start();
 #endif
 }
 
@@ -664,11 +660,11 @@ std::vector<std::pair<String, ByteString> > Client::GetServerNotifications()
 	return serverNotifications;
 }
 
-RequestStatus Client::ParseServerReturn(char *result, int status, bool json)
+RequestStatus Client::ParseServerReturn(ByteString &result, int status, bool json)
 {
 	lastError = "";
 	// no server response, return "Malformed Response"
-	if (status == 200 && !result)
+	if (status == 200 && !result.size())
 	{
 		status = 603;
 	}
@@ -676,13 +672,13 @@ RequestStatus Client::ParseServerReturn(char *result, int status, bool json)
 		return RequestOkay;
 	if (status != 200)
 	{
-		lastError = String::Build("HTTP Error ", status, ": ", ByteString(http_ret_text(status)).FromUtf8());
+		lastError = String::Build("HTTP Error ", status, ": ", ByteString(Download::StatusText(status)).FromUtf8());
 		return RequestFailure;
 	}
 
 	if (json)
 	{
-		std::istringstream datastream(result);
+		std::istringstream datastream(result.c_str());
 		Json::Value root;
 
 		try
@@ -703,10 +699,10 @@ RequestStatus Client::ParseServerReturn(char *result, int status, bool json)
 		catch (std::exception &e)
 		{
 			// sometimes the server returns a 200 with the text "Error: 401"
-			if (!strncmp((const char *)result, "Error: ", 7))
+			if (!strncmp(result.c_str(), "Error: ", 7))
 			{
-				status = atoi(result+7);
-				lastError = String::Build("HTTP Error ", status, ": ", ByteString(http_ret_text(status)).FromUtf8());
+				status = ByteString(result.begin() + 7, result.end()).ToNumber<int>();
+				lastError = String::Build("HTTP Error ", status, ": ", ByteString(Download::StatusText(status)).FromUtf8());
 				return RequestFailure;
 			}
 			lastError = "Could not read response: " + ByteString(e.what()).FromUtf8();
@@ -715,9 +711,9 @@ RequestStatus Client::ParseServerReturn(char *result, int status, bool json)
 	}
 	else
 	{
-		if (strncmp((const char *)result, "OK", 2))
+		if (strncmp(result.c_str(), "OK", 2))
 		{
-			lastError = ByteString(result).FromUtf8();
+			lastError = result.FromUtf8();
 			return RequestFailure;
 		}
 	}
@@ -731,31 +727,31 @@ void Client::Tick()
 	if (versionCheckRequest)
 	{
 		if (CheckUpdate(versionCheckRequest, true))
-			versionCheckRequest = NULL;
+			versionCheckRequest = nullptr;
 	}
 	if (alternateVersionCheckRequest)
 	{
 		if (CheckUpdate(alternateVersionCheckRequest, false))
-			alternateVersionCheckRequest = NULL;
+			alternateVersionCheckRequest = nullptr;
 	}
 }
 
-bool Client::CheckUpdate(void *updateRequest, bool checkSession)
+bool Client::CheckUpdate(Download *updateRequest, bool checkSession)
 {
 	//Check status on version check request
-	if (http_async_req_status(updateRequest))
+	if (updateRequest->CheckDone())
 	{
 		int status;
 		int dataLength;
-		char * data = http_async_req_stop(updateRequest, &status, &dataLength);
+		ByteString data = updateRequest->Finish(&dataLength, &status);
 
 		if (status != 200)
 		{
-			free(data);
+			//free(data);
 		}
-		else if(data)
+		else if(data.size())
 		{
-			std::istringstream dataStream(data);
+			std::istringstream dataStream(data.c_str());
 
 			try
 			{
@@ -844,8 +840,6 @@ bool Client::CheckUpdate(void *updateRequest, bool checkSession)
 			{
 				//Do nothing
 			}
-
-			free(data);
 		}
 		return true;
 	}
@@ -967,7 +961,7 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 	unsigned int gameDataLength;
 	char * gameData = NULL;
 	int dataStatus;
-	char * data;
+	ByteString data;
 	int dataLength = 0;
 	ByteString userID = ByteString::Build(authUser.UserID);
 	if (authUser.UserID)
@@ -995,24 +989,12 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 		}
 #endif
 
-		char *saveName = new char[save.GetName().length() + 1];
-		std::strcpy (saveName, save.GetName().ToUtf8().c_str());
-		char *saveDescription = new char[save.GetDescription().length() + 1];
-		std::strcpy (saveDescription, save.GetDescription().ToUtf8().c_str());
-		char *userid = new char[userID.size() + 1];
-		std::strcpy (userid, userID.c_str());
-		char *session = new char[authUser.SessionID.length() + 1];
-		std::strcpy (session, authUser.SessionID.c_str());
-
-		const char *const postNames[] = { "Name", "Description", "Data:save.bin", "Publish", NULL };
-		const char *const postDatas[] = { saveName, saveDescription, gameData, save.GetPublished()?"Public":"Private" };
-		size_t postLengths[] = { save.GetName().length(), save.GetDescription().length(), gameDataLength, (size_t)(save.GetPublished()?6:7) };
-		data = http_multipart_post("http://" SERVER "/Save.api", postNames, postDatas, postLengths, userid, NULL, session, &dataStatus, &dataLength);
-
-		delete[] saveDescription;
-		delete[] saveName;
-		delete[] userid;
-		delete[] session;
+		data = Download::SimpleAuth("http://" SERVER "/Save.api", &dataLength, &dataStatus, userID, authUser.SessionID, {
+			{ "Name", save.GetName().ToUtf8() },
+			{ "Description", save.GetDescription().ToUtf8() },
+			{ "Data:save.bin", ByteString(gameData, gameData + gameDataLength) },
+			{ "Publish", save.GetPublished() ? "Public" : "Private" },
+		});
 	}
 	else
 	{
@@ -1023,7 +1005,7 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 	RequestStatus ret = ParseServerReturn(data, dataStatus, false);
 	if (ret == RequestOkay)
 	{
-		int saveID = ByteString(data+3).ToNumber<int>();
+		int saveID = ByteString(data.begin() + 3, data.end()).ToNumber<int>();
 		if (!saveID)
 		{
 			lastError = "Server did not return Save ID";
@@ -1032,7 +1014,6 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 		else
 			save.SetID(saveID);
 	}
-	free(data);
 	delete[] gameData;
 	return ret;
 }
@@ -1198,30 +1179,17 @@ RequestStatus Client::ExecVote(int saveID, int direction)
 {
 	lastError = "";
 	int dataStatus;
-	char * data;
+	ByteString data;
 	int dataLength = 0;
 
 	if (authUser.UserID)
 	{
-		char * directionText = (char*)(direction==1?"Up":"Down");
 		ByteString saveIDText = ByteString::Build(saveID);
 		ByteString userIDText = ByteString::Build(authUser.UserID);
-
-		char *id = new char[saveIDText.length() + 1];
-		std::strcpy(id, saveIDText.c_str());
-		char *userid = new char[userIDText.length() + 1];
-		std::strcpy(userid, userIDText.c_str());
-		char *session = new char[authUser.SessionID.length() + 1];
-		std::strcpy(session, authUser.SessionID.c_str());
-
-		const char *const postNames[] = { "ID", "Action", NULL };
-		const char *const postDatas[] = { id, directionText };
-		size_t postLengths[] = { saveIDText.length(), strlen(directionText) };
-		data = http_multipart_post("http://" SERVER "/Vote.api", postNames, postDatas, postLengths, userid, NULL, session, &dataStatus, &dataLength);
-
-		delete[] id;
-		delete[] userid;
-		delete[] session;
+		data = Download::SimpleAuth("http://" SERVER "/Vote.api", &dataLength, &dataStatus, userIDText, authUser.SessionID, {
+			{ "ID", saveIDText },
+			{ "Action", direction == 1 ? "Up" : "Down" },
+		});
 	}
 	else
 	{
@@ -1236,7 +1204,7 @@ unsigned char * Client::GetSaveData(int saveID, int saveDate, int & dataLength)
 {
 	lastError = "";
 	int dataStatus;
-	char *data;
+	ByteString data;
 	dataLength = 0;
 	ByteString urlStr;
 	if (saveDate)
@@ -1244,16 +1212,16 @@ unsigned char * Client::GetSaveData(int saveID, int saveDate, int & dataLength)
 	else
 		urlStr = ByteString::Build("http://", STATICSERVER, "/", saveID, ".cps");
 
-	char *url = new char[urlStr.size() + 1];
-	std::strcpy(url, urlStr.c_str());
-	data = http_simple_get(url, &dataStatus, &dataLength);
-	delete[] url;
+	data = Download::Simple(urlStr, &dataLength, &dataStatus);
 
 	// will always return failure
 	ParseServerReturn(data, dataStatus, false);
-	if (data && dataStatus == 200)
-		return (unsigned char *)data;
-	free(data);
+	if (data.size() && dataStatus == 200)
+	{
+		unsigned char *data_out = (unsigned char *)malloc(dataLength);
+		std::copy(data_out, data_out + dataLength, data.begin());
+		return data_out;
+	}
 	return NULL;
 }
 
@@ -1367,21 +1335,21 @@ LoginStatus Client::Login(ByteString username, ByteString password, User & user)
 	md5_ascii(totalHash, (const unsigned char *)(total.c_str()), total.size());
 	totalHash[32] = 0;
 
-	char * data;
+	ByteString data;
 	int dataStatus, dataLength;
-	const char *const postNames[] = { "Username", "Hash", NULL };
-	const char *const postDatas[] = { username.c_str(), totalHash };
-	size_t postLengths[] = { username.length(), 32 };
-	data = http_multipart_post("http://" SERVER "/Login.json", postNames, postDatas, postLengths, NULL, NULL, NULL, &dataStatus, &dataLength);
+	data = Download::Simple("http://" SERVER "/Login.json", &dataLength, &dataStatus, {
+		{ "Username", username },
+		{ "Hash", totalHash },
+	});
+
 	RequestStatus ret = ParseServerReturn(data, dataStatus, true);
 	if (ret == RequestOkay)
 	{
 		try
 		{
-			std::istringstream dataStream(data);
+			std::istringstream dataStream(data.c_str());
 			Json::Value objDocument;
 			dataStream >> objDocument;
-			free(data);
 
 			int userIDTemp = objDocument["UserID"].asInt();
 			ByteString sessionIDTemp = objDocument["SessionID"].asString();
@@ -1417,20 +1385,19 @@ LoginStatus Client::Login(ByteString username, ByteString password, User & user)
 			return LoginError;
 		}
 	}
-	free(data);
 	return LoginError;
 }
 
 RequestStatus Client::DeleteSave(int saveID)
 {
 	lastError = "";
-	char * data = NULL;
+	ByteString data;
 	int dataStatus, dataLength;
 	ByteString url = ByteString::Build("http://", SERVER, "/Browse/Delete.json?ID=", saveID, "&Mode=Delete&Key=", authUser.SessionKey);
 	if(authUser.UserID)
 	{
 		ByteString userID = ByteString::Build(authUser.UserID);
-		data = http_auth_get(url.c_str(), userID.c_str(), NULL, authUser.SessionID.c_str(), &dataStatus, &dataLength);
+		data = Download::SimpleAuth(url, &dataLength, &dataStatus, userID, authUser.SessionID);
 	}
 	else
 	{
@@ -1438,25 +1405,21 @@ RequestStatus Client::DeleteSave(int saveID)
 		return RequestFailure;
 	}
 	RequestStatus ret = ParseServerReturn(data, dataStatus, true);
-	free(data);
 	return ret;
 }
 
 RequestStatus Client::AddComment(int saveID, String comment)
 {
 	lastError = "";
-	char * data = NULL;
+	ByteString data;
 	int dataStatus, dataLength;
 	ByteString url = ByteString::Build("http://", SERVER, "/Browse/Comments.json?ID=", saveID);
 	if(authUser.UserID)
 	{
 		ByteString userID = ByteString::Build(authUser.UserID);
-
-		const char *const postNames[] = { "Comment", NULL };
-		ByteString commentBytes = comment.ToUtf8();
-		const char *const postDatas[] = { commentBytes.c_str() };
-		size_t postLengths[] = { commentBytes.size() };
-		data = http_multipart_post(url.c_str(), postNames, postDatas, postLengths, userID.c_str(), NULL, authUser.SessionID.c_str(), &dataStatus, &dataLength);
+		data = Download::SimpleAuth(url, &dataLength, &dataStatus, userID, authUser.SessionID, {
+			{ "Comment", comment.ToUtf8() },
+		});
 	}
 	else
 	{
@@ -1464,7 +1427,6 @@ RequestStatus Client::AddComment(int saveID, String comment)
 		return RequestFailure;
 	}
 	RequestStatus ret = ParseServerReturn(data, dataStatus, true);
-	free(data);
 	return ret;
 }
 
@@ -1472,7 +1434,7 @@ RequestStatus Client::FavouriteSave(int saveID, bool favourite)
 {
 	lastError = "";
 	ByteStringBuilder urlStream;
-	char * data = NULL;
+	ByteString data;
 	int dataStatus, dataLength;
 	urlStream << "http://" << SERVER << "/Browse/Favourite.json?ID=" << saveID << "&Key=" << authUser.SessionKey;
 	if(!favourite)
@@ -1480,7 +1442,7 @@ RequestStatus Client::FavouriteSave(int saveID, bool favourite)
 	if(authUser.UserID)
 	{
 		ByteString userID = ByteString::Build(authUser.UserID);
-		data = http_auth_get(urlStream.Build().c_str(), userID.c_str(), NULL, authUser.SessionID.c_str(), &dataStatus, &dataLength);
+		data = Download::SimpleAuth(urlStream.Build(), &dataLength, &dataStatus, userID, authUser.SessionID);
 	}
 	else
 	{
@@ -1488,25 +1450,21 @@ RequestStatus Client::FavouriteSave(int saveID, bool favourite)
 		return RequestFailure;
 	}
 	RequestStatus ret = ParseServerReturn(data, dataStatus, true);
-	free(data);
 	return ret;
 }
 
 RequestStatus Client::ReportSave(int saveID, String message)
 {
 	lastError = "";
-	char * data = NULL;
+	ByteString data;
 	int dataStatus, dataLength;
 	ByteString url = ByteString::Build("http://", SERVER, "/Browse/Report.json?ID=", saveID, "&Key=", authUser.SessionKey);
 	if(authUser.UserID)
 	{
 		ByteString userID = ByteString::Build(authUser.UserID);
-
-		const char *const postNames[] = { "Reason", NULL };
-		ByteString messageBytes = message.ToUtf8();
-		const char *const postDatas[] = { messageBytes.c_str() };
-		size_t postLengths[] = { messageBytes.size() };
-		data = http_multipart_post(url.c_str(), postNames, postDatas, postLengths, userID.c_str(), NULL, authUser.SessionID.c_str(), &dataStatus, &dataLength);
+		data = Download::SimpleAuth(url, &dataLength, &dataStatus, userID, authUser.SessionID, {
+			{ "Reason", message.ToUtf8() },
+		});
 	}
 	else
 	{
@@ -1514,21 +1472,19 @@ RequestStatus Client::ReportSave(int saveID, String message)
 		return RequestFailure;
 	}
 	RequestStatus ret = ParseServerReturn(data, dataStatus, true);
-	free(data);
 	return ret;
 }
 
 RequestStatus Client::UnpublishSave(int saveID)
 {
 	lastError = "";
-	char * data = NULL;
+	ByteString data;
 	int dataStatus, dataLength;
 	ByteString url = ByteString::Build("http://", SERVER, "/Browse/Delete.json?ID=", saveID, "&Mode=Unpublish&Key=", authUser.SessionKey);
 	if(authUser.UserID)
 	{
 		ByteString userID = ByteString::Build(authUser.UserID);
-		
-		data = http_auth_get(url.c_str(), userID.c_str(), NULL, authUser.SessionID.c_str(), &dataStatus, &dataLength);
+		data = Download::SimpleAuth(url, &dataLength, &dataStatus, userID, authUser.SessionID);
 	}
 	else
 	{
@@ -1536,31 +1492,28 @@ RequestStatus Client::UnpublishSave(int saveID)
 		return RequestFailure;
 	}
 	RequestStatus ret = ParseServerReturn(data, dataStatus, true);
-	free(data);
 	return ret;
 }
 
 RequestStatus Client::PublishSave(int saveID)
 {
 	lastError = "";
-	char *data;
+	ByteString data;
 	int dataStatus;
 	ByteString url = ByteString::Build("http://", SERVER, "/Browse/View.json?ID=", saveID, "&Key=", authUser.SessionKey);
 	if (authUser.UserID)
 	{
 		ByteString userID = ByteString::Build(authUser.UserID);
-		
-		const char *const postNames[] = { "ActionPublish", NULL };
-		const char *const postDatas[] = { "" };
-		size_t postLengths[] = { 1 };
-		data = http_multipart_post(url.c_str(), postNames, postDatas, postLengths, userID.c_str(), NULL, authUser.SessionID.c_str(), &dataStatus, NULL);	}
+		data = Download::SimpleAuth(url, nullptr, &dataStatus, userID, authUser.SessionID, {
+			{ "ActionPublish", "bagels" },
+		});
+	}
 	else
 	{
 		lastError = "Not authenticated";
 		return RequestFailure;
 	}
 	RequestStatus ret = ParseServerReturn(data, dataStatus, true);
-	free(data);
 	return ret;
 }
 
@@ -1573,23 +1526,23 @@ SaveInfo * Client::GetSave(int saveID, int saveDate)
 	{
 		urlStream << "&Date=" << saveDate;
 	}
-	char * data;
+	ByteString data;
 	int dataStatus, dataLength;
 	if(authUser.UserID)
 	{
 		ByteString userID = ByteString::Build(authUser.UserID);
 		
-		data = http_auth_get(urlStream.Build().c_str(), userID.c_str(), NULL, authUser.SessionID.c_str(), &dataStatus, &dataLength);
+		data = Download::SimpleAuth(urlStream.Build(), &dataLength, &dataStatus, userID, authUser.SessionID);
 	}
 	else
 	{
-		data = http_simple_get(urlStream.Build().c_str(), &dataStatus, &dataLength);
+		data = Download::Simple(urlStream.Build(), &dataLength, &dataStatus);
 	}
-	if(dataStatus == 200 && data)
+	if(dataStatus == 200 && data.size())
 	{
 		try
 		{
-			std::istringstream dataStream(data);
+			std::istringstream dataStream(data.c_str());
 			Json::Value objDocument;
 			dataStream >> objDocument;
 
@@ -1620,20 +1573,17 @@ SaveInfo * Client::GetSave(int saveID, int saveDate)
 			tempSave->Favourite = tempFavourite;
 			tempSave->Views = tempViews;
 			tempSave->Version = tempVersion;
-			free(data);
 			return tempSave;
 		}
 		catch (std::exception & e)
 		{
 			lastError = "Could not read response: " + ByteString(e.what()).FromUtf8();
-			free(data);
 			return NULL;
 		}
 	}
 	else
 	{
-		free(data);
-		lastError = ByteString(http_ret_text(dataStatus)).FromUtf8();
+		lastError = ByteString(Download::StatusText(dataStatus)).FromUtf8();
 	}
 	return NULL;
 }
@@ -1748,7 +1698,7 @@ std::vector<std::pair<ByteString, int> > * Client::GetTags(int start, int count,
 	resultCount = 0;
 	std::vector<std::pair<ByteString, int> > * tagArray = new std::vector<std::pair<ByteString, int> >();
 	ByteStringBuilder urlStream;
-	char * data;
+	ByteString data;
 	int dataStatus, dataLength;
 	urlStream << "http://" << SERVER << "/Browse/Tags.json?Start=" << start << "&Count=" << count;
 	if(query.length())
@@ -1758,12 +1708,12 @@ std::vector<std::pair<ByteString, int> > * Client::GetTags(int start, int count,
 			urlStream << format::URLEncode(query.ToUtf8());
 	}
 
-	data = http_simple_get(urlStream.Build().c_str(), &dataStatus, &dataLength);
-	if(dataStatus == 200 && data)
+	data = Download::Simple(urlStream.Build(), &dataLength, &dataStatus);
+	if(dataStatus == 200 && data.size())
 	{
 		try
 		{
-			std::istringstream dataStream(data);
+			std::istringstream dataStream(data.c_str());
 			Json::Value objDocument;
 			dataStream >> objDocument;
 
@@ -1783,9 +1733,8 @@ std::vector<std::pair<ByteString, int> > * Client::GetTags(int start, int count,
 	}
 	else
 	{
-		lastError = ByteString(http_ret_text(dataStatus)).FromUtf8();
+		lastError = ByteString(Download::StatusText(dataStatus)).FromUtf8();
 	}
-	free(data);
 	return tagArray;
 }
 
@@ -1795,7 +1744,7 @@ std::vector<SaveInfo*> * Client::SearchSaves(int start, int count, String query,
 	resultCount = 0;
 	std::vector<SaveInfo*> * saveArray = new std::vector<SaveInfo*>();
 	ByteStringBuilder urlStream;
-	char * data;
+	ByteString data;
 	int dataStatus, dataLength;
 	urlStream << "http://" << SERVER << "/Browse.json?Start=" << start << "&Count=" << count;
 	if(query.length() || sort.length())
@@ -1817,18 +1766,18 @@ std::vector<SaveInfo*> * Client::SearchSaves(int start, int count, String query,
 	if(authUser.UserID)
 	{
 		ByteString userID = ByteString::Build(authUser.UserID);
-		data = http_auth_get(urlStream.Build().c_str(), userID.c_str(), NULL, authUser.SessionID.c_str(), &dataStatus, &dataLength);
+		data = Download::SimpleAuth(urlStream.Build(), &dataLength, &dataStatus, userID, authUser.SessionID);
 	}
 	else
 	{
-		data = http_simple_get(urlStream.Build().c_str(), &dataStatus, &dataLength);
+		data = Download::Simple(urlStream.Build(), &dataLength, &dataStatus);
 	}
 	ParseServerReturn(data, dataStatus, true);
-	if (dataStatus == 200 && data)
+	if (dataStatus == 200 && data.size())
 	{
 		try
 		{
-			std::istringstream dataStream(data);
+			std::istringstream dataStream(data.c_str());
 			Json::Value objDocument;
 			dataStream >> objDocument;
 
@@ -1856,7 +1805,6 @@ std::vector<SaveInfo*> * Client::SearchSaves(int start, int count, String query,
 			lastError = "Could not read response: " + ByteString(e.what()).FromUtf8();
 		}
 	}
-	free(data);
 	return saveArray;
 }
 
@@ -1864,13 +1812,13 @@ std::list<ByteString> * Client::RemoveTag(int saveID, ByteString tag)
 {
 	lastError = "";
 	std::list<ByteString> * tags = NULL;
-	char * data = NULL;
+	ByteString data;
 	int dataStatus, dataLength;
 	ByteString url = ByteString::Build("http://", SERVER, "/Browse/EditTag.json?Op=delete&ID=", saveID, "&Tag=", tag, "&Key=", authUser.SessionKey);
 	if(authUser.UserID)
 	{
 		ByteString userID = ByteString::Build(authUser.UserID);
-		data = http_auth_get(url.c_str(), userID.c_str(), NULL, authUser.SessionID.c_str(), &dataStatus, &dataLength);
+		data = Download::SimpleAuth(url, &dataLength, &dataStatus, userID, authUser.SessionID);
 	}
 	else
 	{
@@ -1882,7 +1830,7 @@ std::list<ByteString> * Client::RemoveTag(int saveID, ByteString tag)
 	{
 		try
 		{
-			std::istringstream dataStream(data);
+			std::istringstream dataStream(data.c_str());
 			Json::Value responseObject;
 			dataStream >> responseObject;
 
@@ -1896,7 +1844,6 @@ std::list<ByteString> * Client::RemoveTag(int saveID, ByteString tag)
 			lastError = "Could not read response: " + ByteString(e.what()).FromUtf8();
 		}
 	}
-	free(data);
 	return tags;
 }
 
@@ -1904,13 +1851,13 @@ std::list<ByteString> * Client::AddTag(int saveID, ByteString tag)
 {
 	lastError = "";
 	std::list<ByteString> * tags = NULL;
-	char * data = NULL;
+	ByteString data;
 	int dataStatus, dataLength;
 	ByteString url = ByteString::Build("http://", SERVER, "/Browse/EditTag.json?Op=add&ID=", saveID, "&Tag=", tag, "&Key=", authUser.SessionKey);
 	if(authUser.UserID)
 	{
 		ByteString userID = ByteString::Build(authUser.UserID);
-		data = http_auth_get(url.c_str(), userID.c_str(), NULL, authUser.SessionID.c_str(), &dataStatus, &dataLength);
+		data = Download::SimpleAuth(url, &dataLength, &dataStatus, userID, authUser.SessionID);
 	}
 	else
 	{
@@ -1922,7 +1869,7 @@ std::list<ByteString> * Client::AddTag(int saveID, ByteString tag)
 	{
 		try
 		{
-			std::istringstream dataStream(data);
+			std::istringstream dataStream(data.c_str());
 			Json::Value responseObject;
 			dataStream >> responseObject;
 
@@ -1936,7 +1883,6 @@ std::list<ByteString> * Client::AddTag(int saveID, ByteString tag)
 			lastError = "Could not read response: " + ByteString(e.what()).FromUtf8();
 		}
 	}
-	free(data);
 	return tags;
 }
 

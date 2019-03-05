@@ -3,9 +3,9 @@
 #include "gui/interface/Engine.h"
 #include "UpdateActivity.h"
 #include "tasks/Task.h"
-#include "client/HTTP.h"
 #include "client/Client.h"
 #include "Update.h"
+#include "client/Download.h"
 #include "Platform.h"
 
 
@@ -26,27 +26,27 @@ private:
 	virtual bool doWork()
 	{
 		String error;
-		void * request = http_async_req_start(NULL, (char*)updateName.c_str(), NULL, 0, 0);
+		Download *request = new Download(updateName);
+		request->Start();
 		notifyStatus("Downloading update");
 		notifyProgress(-1);
-		while(!http_async_req_status(request))
+		while(!request->CheckDone())
 		{
 			int total, done;
-			http_async_get_length(request, &total, &done);
+			request->CheckProgress(&total, &done);
 			notifyProgress((float(done)/float(total))*100.0f);
+			Platform::Millisleep(1);
 		}
 
-		char * data;
 		int dataLength, status;
-		data = http_async_req_stop(request, &status, &dataLength);
+		ByteString data = request->Finish(&dataLength, &status);
 		if (status!=200)
 		{
-			free(data);
 			error = String::Build("Server responded with Status ", status);
 			notifyError("Could not download update: " + error);
 			return false;
 		}
-		if (!data)
+		if (data.size())
 		{
 			error = "Server responded with nothing";
 			notifyError("Server did not return any data");
@@ -83,15 +83,13 @@ private:
 		}
 
 		int dstate;
-		dstate = BZ2_bzBuffToBuffDecompress((char *)res, (unsigned *)&uncompressedLength, (char *)(data+8), dataLength-8, 0, 0);
+		dstate = BZ2_bzBuffToBuffDecompress((char *)res, (unsigned *)&uncompressedLength, &data[8], dataLength-8, 0, 0);
 		if (dstate)
 		{
 			error = String::Build("Unable to decompress update: ", dstate);
 			free(res);
 			goto corrupt;
 		}
-
-		free(data);
 
 		notifyStatus("Applying update");
 		notifyProgress(-1);
@@ -110,7 +108,6 @@ private:
 
 	corrupt:
 		notifyError("Downloaded update is corrupted\n" + error);
-		free(data);
 		return false;
 	}
 };

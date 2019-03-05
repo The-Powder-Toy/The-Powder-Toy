@@ -37,7 +37,8 @@ RequestBroker::ProcessResponse WebRequest::Process(RequestBroker & rb)
 			int status, data_size;
 			data = http_async_req_stop(HTTPContext, &status, &data_size);
 
-			Client::Ref().ParseServerReturn(NULL, status, true);
+			ByteString nothing;
+			Client::Ref().ParseServerReturn(nothing, status, true);
 			if (status == 200 && data)
 			{
 				void * resultObject = new std::vector<unsigned char>(data, data+data_size);

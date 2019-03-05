@@ -48,13 +48,14 @@ public:
 
 class RequestListener;
 class ClientListener;
+class Download;
 class Client: public Singleton<Client> {
 private:
 	String messageOfTheDay;
 	std::vector<std::pair<String, ByteString> > serverNotifications;
 
-	void * versionCheckRequest;
-	void * alternateVersionCheckRequest;
+	Download *versionCheckRequest;
+	Download *alternateVersionCheckRequest;
 	bool usingAltUpdateServer;
 	bool updateAvailable;
 	UpdateInfo updateInfo;
@@ -172,9 +173,9 @@ public:
 	String GetLastError() {
 		return lastError;
 	}
-	RequestStatus ParseServerReturn(char *result, int status, bool json);
+	RequestStatus ParseServerReturn(ByteString &result, int status, bool json);
 	void Tick();
-	bool CheckUpdate(void *updateRequest, bool checkSession);
+	bool CheckUpdate(Download *updateRequest, bool checkSession);
 	void Shutdown();
 
 	// preferences functions
