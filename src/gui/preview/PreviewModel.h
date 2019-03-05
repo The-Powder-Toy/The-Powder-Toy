@@ -57,8 +57,8 @@ public:
 	void Update();
 	void ClearComments();
 	void OnSaveReady();
-	bool ParseSaveInfo(char * saveInfoResponse);
-	bool ParseComments(char * commentsResponse);
+	bool ParseSaveInfo(ByteString &saveInfoResponse);
+	bool ParseComments(ByteString &commentsResponse);
 	virtual ~PreviewModel();
 };
 

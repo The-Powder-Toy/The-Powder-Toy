@@ -38,7 +38,8 @@ RequestBroker::ProcessResponse APIRequest::Process(RequestBroker & rb)
 			int status, data_size;
 			data = http_async_req_stop(HTTPContext, &status, &data_size);
 
-			Client::Ref().ParseServerReturn(data, status, true);
+			ByteString nice_data(data);
+			Client::Ref().ParseServerReturn(nice_data, status, true);
 			if (status == 200 && data)
 			{
 				void * resultObject = Parser->ProcessResponse((unsigned char *)data, data_size);

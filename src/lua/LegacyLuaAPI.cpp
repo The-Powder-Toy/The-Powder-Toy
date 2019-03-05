@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <locale>
 
-#include "client/HTTP.h"
+#include "client/Download.h"
 #include "Format.h"
 #include "LuaScriptInterface.h"
 #include "LuaScriptHelper.h"
@@ -1355,21 +1355,18 @@ int luatpt_getscript(lua_State* l)
 		return 0;
 
 	int ret, len;
-	char *scriptData = http_simple_get(url.c_str(), &ret, &len);
+	ByteString scriptData = Download::Simple(url, &len, &ret);
 	if (len <= 0 || !filename)
 	{
-		free(scriptData);
 		return luaL_error(l, "Server did not return data");
 	}
 	if (ret != 200)
 	{
-		free(scriptData);
-		return luaL_error(l, http_ret_text(ret));
+		return luaL_error(l, Download::StatusText(ret));
 	}
 
-	if (!strcmp(scriptData, "Invalid script ID\r\n"))
+	if (!strcmp(scriptData.c_str(), "Invalid script ID\r\n"))
 	{
-		free(scriptData);
 		return luaL_error(l, "Invalid Script ID");
 	}
 
@@ -1384,7 +1381,6 @@ int luatpt_getscript(lua_State* l)
 		}
 		else
 		{
-			free(scriptData);
 			return 0;
 		}
 	}
@@ -1394,11 +1390,10 @@ int luatpt_getscript(lua_State* l)
 	}
 	if (!outputfile)
 	{
-		free(scriptData);
 		return luaL_error(l, "Unable to write to file");
 	}
 
-	fputs(scriptData, outputfile);
+	fputs(scriptData.c_str(), outputfile);
 	fclose(outputfile);
 	outputfile = NULL;
 	if (runScript)

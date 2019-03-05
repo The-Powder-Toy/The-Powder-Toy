@@ -33,7 +33,7 @@ public:
 	void AuthHeaders(ByteString ID, ByteString session);
 	void Start();
 	bool Reuse(ByteString newuri);
-	char* Finish(int *length, int *status);
+	ByteString Finish(int *length, int *status);
 	void Cancel();
 
 	void CheckProgress(int *total, int *done);
@@ -42,6 +42,11 @@ public:
 	bool CheckStarted();
 
 	friend class DownloadManager;
+
+	static ByteString Simple(ByteString uri, int *length, int *status, std::map<ByteString, ByteString> post_data = {});
+	static ByteString SimpleAuth(ByteString uri, int *length, int *status, ByteString ID, ByteString session, std::map<ByteString, ByteString> post_data = {});
+
+	static const char *StatusText(int code);
 };
 
 #endif

@@ -2,6 +2,7 @@
 #include "Download.h"
 #include "DownloadManager.h"
 #include "HTTP.h"
+#include "Platform.h"
 
 Download::Download(ByteString uri_, bool keepAlive):
 	http(NULL),
@@ -84,10 +85,10 @@ bool Download::Reuse(ByteString newuri)
 }
 
 // finish the download (if called before the download is done, this will block)
-char* Download::Finish(int *length, int *status)
+ByteString Download::Finish(int *length, int *status)
 {
 	if (CheckCanceled())
-		return NULL; // shouldn't happen but just in case
+		return ""; // shouldn't happen but just in case
 	while (!CheckDone()); // block
 	DownloadManager::Ref().Lock();
 	downloadStarted = false;
@@ -95,7 +96,12 @@ char* Download::Finish(int *length, int *status)
 		*length = downloadSize;
 	if (status)
 		*status = downloadStatus;
-	char *ret = downloadData;
+	ByteString ret;
+	if (downloadData)
+	{
+		ret = ByteString(downloadData, downloadData + downloadSize);
+		free(downloadData);
+	}
 	downloadData = NULL;
 	if (!keepAlive)
 		downloadCanceled = true;
@@ -149,3 +155,34 @@ void Download::Cancel()
 	downloadCanceled = true;
 	DownloadManager::Ref().Unlock();
 }
+
+ByteString Download::Simple(ByteString uri, int *length, int *status, std::map<ByteString, ByteString> post_data)
+{
+	Download *request = new Download(uri);
+	request->AddPostData(post_data);
+	request->Start();
+	while(!request->CheckDone())
+	{
+		Platform::Millisleep(1);
+	}
+	return request->Finish(length, status);
+}
+
+ByteString Download::SimpleAuth(ByteString uri, int *length, int *status, ByteString ID, ByteString session, std::map<ByteString, ByteString> post_data)
+{
+	Download *request = new Download(uri);
+	request->AddPostData(post_data);
+	request->AuthHeaders(ID, session);
+	request->Start();
+	while(!request->CheckDone())
+	{
+		Platform::Millisleep(1);
+	}
+	return request->Finish(length, status);
+}
+
+const char *Download::StatusText(int code)
+{
+	return http_ret_text(code);
+}
+
