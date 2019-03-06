@@ -4,6 +4,8 @@
 #include "Config.h"
 #include "Platform.h"
 
+namespace http
+{
 DownloadManager::DownloadManager():
 	threadStarted(false),
 	lastUsed(time(NULL)),
@@ -143,4 +145,5 @@ void DownloadManager::Lock()
 void DownloadManager::Unlock()
 {
 	pthread_mutex_unlock(&downloadAddLock);
+}
 }

@@ -48,14 +48,17 @@ public:
 
 class RequestListener;
 class ClientListener;
-class Download;
+namespace http
+{
+	class Download;
+}
 class Client: public Singleton<Client> {
 private:
 	String messageOfTheDay;
 	std::vector<std::pair<String, ByteString> > serverNotifications;
 
-	Download *versionCheckRequest;
-	Download *alternateVersionCheckRequest;
+	http::Download *versionCheckRequest;
+	http::Download *alternateVersionCheckRequest;
 	bool usingAltUpdateServer;
 	bool updateAvailable;
 	UpdateInfo updateInfo;
@@ -175,7 +178,7 @@ public:
 	}
 	RequestStatus ParseServerReturn(ByteString &result, int status, bool json);
 	void Tick();
-	bool CheckUpdate(Download *updateRequest, bool checkSession);
+	bool CheckUpdate(http::Download *updateRequest, bool checkSession);
 	void Shutdown();
 
 	// preferences functions

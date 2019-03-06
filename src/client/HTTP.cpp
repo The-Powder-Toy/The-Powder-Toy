@@ -205,7 +205,7 @@ void http_done(void)
 #ifdef WIN
 	WSACleanup();
 #endif
-	DownloadManager::Ref().Shutdown();
+	http::DownloadManager::Ref().Shutdown();
 	http_up = 0;
 }
 

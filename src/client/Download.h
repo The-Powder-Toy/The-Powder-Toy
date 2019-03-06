@@ -3,6 +3,8 @@
 #include <map>
 #include "common/String.h"
 
+namespace http
+{
 class DownloadManager;
 class Download
 {
@@ -26,14 +28,13 @@ class Download
 
 public:
 	Download(ByteString uri, bool keepAlive = false);
-	~Download();
+	virtual ~Download();
 
 	void AddPostData(std::map<ByteString, ByteString> data);
 	void AddPostData(std::pair<ByteString, ByteString> data);
 	void AuthHeaders(ByteString ID, ByteString session);
 	void Start();
-	bool Reuse(ByteString newuri);
-	ByteString Finish(int *length, int *status);
+	ByteString Finish(int *status);
 	void Cancel();
 
 	void CheckProgress(int *total, int *done);
@@ -43,10 +44,11 @@ public:
 
 	friend class DownloadManager;
 
-	static ByteString Simple(ByteString uri, int *length, int *status, std::map<ByteString, ByteString> post_data = {});
-	static ByteString SimpleAuth(ByteString uri, int *length, int *status, ByteString ID, ByteString session, std::map<ByteString, ByteString> post_data = {});
-
-	static const char *StatusText(int code);
+	static ByteString Simple(ByteString uri, int *status, std::map<ByteString, ByteString> post_data = {});
+	static ByteString SimpleAuth(ByteString uri, int *status, ByteString ID, ByteString session, std::map<ByteString, ByteString> post_data = {});
 };
+
+const char *StatusText(int code);
+}
 
 #endif

@@ -108,13 +108,6 @@ void RequestBroker::RetrieveThumbnail(int saveID, int saveDate, int width, int h
 	RetrieveImage(url.Build(), width, height, tListener);
 }
 
-void RequestBroker::RetrieveAvatar(ByteString username, int width, int height, RequestListener * tListener)
-{
-	ByteString url = ByteString::Build("http://", STATICSERVER, "/avatars/", username, ".pti");
-
-	RetrieveImage(url, width, height, tListener);
-}
-
 void RequestBroker::Start(Request * request, RequestListener * tListener, int identifier)
 {
 	ListenerHandle handle = AttachRequestListener(tListener);

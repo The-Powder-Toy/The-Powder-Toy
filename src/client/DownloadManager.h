@@ -5,6 +5,8 @@
 #include <vector>
 #include "common/Singleton.h"
 
+namespace http
+{
 class Download;
 class DownloadManager : public Singleton<DownloadManager>
 {
@@ -35,5 +37,6 @@ public:
 	void Lock();
 	void Unlock();
 };
+}
 
 #endif // DOWNLOADMANAGER_H

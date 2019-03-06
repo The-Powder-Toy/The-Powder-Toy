@@ -23,9 +23,9 @@ class PreviewModel {
 	void notifyCommentsPageChanged();
 	void notifyCommentBoxEnabledChanged();
 
-	Download * saveDataDownload;
-	Download * saveInfoDownload;
-	Download * commentsDownload;
+	http::Download * saveDataDownload;
+	http::Download * saveInfoDownload;
+	http::Download * commentsDownload;
 	int saveID;
 	int saveDate;
 
