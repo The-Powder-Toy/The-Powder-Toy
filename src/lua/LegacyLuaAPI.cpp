@@ -1354,15 +1354,15 @@ int luatpt_getscript(lua_State* l)
 	if (confirmPrompt && !ConfirmPrompt::Blocking("Do you want to install script?", url.FromUtf8(), "Install"))
 		return 0;
 
-	int ret, len;
-	ByteString scriptData = Download::Simple(url, &len, &ret);
-	if (len <= 0 || !filename)
+	int ret;
+	ByteString scriptData = http::Download::Simple(url, &ret);
+	if (!scriptData.size() || !filename)
 	{
 		return luaL_error(l, "Server did not return data");
 	}
 	if (ret != 200)
 	{
-		return luaL_error(l, Download::StatusText(ret));
+		return luaL_error(l, http::StatusText(ret));
 	}
 
 	if (!strcmp(scriptData.c_str(), "Invalid script ID\r\n"))

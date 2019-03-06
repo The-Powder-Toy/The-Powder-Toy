@@ -26,7 +26,7 @@ private:
 	virtual bool doWork()
 	{
 		String error;
-		Download *request = new Download(updateName);
+		http::Download *request = new http::Download(updateName);
 		request->Start();
 		notifyStatus("Downloading update");
 		notifyProgress(-1);
@@ -38,8 +38,8 @@ private:
 			Platform::Millisleep(1);
 		}
 
-		int dataLength, status;
-		ByteString data = request->Finish(&dataLength, &status);
+		int status;
+		ByteString data = request->Finish(&status);
 		if (status!=200)
 		{
 			error = String::Build("Server responded with Status ", status);
@@ -58,9 +58,9 @@ private:
 
 		unsigned int uncompressedLength;
 
-		if(dataLength<16)
+		if(data.size()<16)
 		{
-			error = String::Build("Unsufficient data, got ", dataLength, " bytes");
+			error = String::Build("Unsufficient data, got ", data.size(), " bytes");
 			goto corrupt;
 		}
 		if (data[0]!=0x42 || data[1]!=0x75 || data[2]!=0x54 || data[3]!=0x54)
@@ -83,7 +83,7 @@ private:
 		}
 
 		int dstate;
-		dstate = BZ2_bzBuffToBuffDecompress((char *)res, (unsigned *)&uncompressedLength, &data[8], dataLength-8, 0, 0);
+		dstate = BZ2_bzBuffToBuffDecompress((char *)res, (unsigned *)&uncompressedLength, &data[8], data.size()-8, 0, 0);
 		if (dstate)
 		{
 			error = String::Build("Unable to decompress update: ", dstate);

@@ -4,6 +4,8 @@
 #include "HTTP.h"
 #include "Platform.h"
 
+namespace http
+{
 Download::Download(ByteString uri_, bool keepAlive):
 	http(NULL),
 	keepAlive(keepAlive),
@@ -68,32 +70,15 @@ void Download::Start()
 	DownloadManager::Ref().Unlock();
 }
 
-// for persistent connections (keepAlive = true), reuse the open connection to make another request
-bool Download::Reuse(ByteString newuri)
-{
-	if (!keepAlive || !CheckDone() || CheckCanceled())
-	{
-		return false;
-	}
-	uri = newuri;
-	DownloadManager::Ref().Lock();
-	downloadFinished = false;
-	DownloadManager::Ref().Unlock();
-	Start();
-	DownloadManager::Ref().EnsureRunning();
-	return true;
-}
 
 // finish the download (if called before the download is done, this will block)
-ByteString Download::Finish(int *length, int *status)
+ByteString Download::Finish(int *status)
 {
 	if (CheckCanceled())
 		return ""; // shouldn't happen but just in case
 	while (!CheckDone()); // block
 	DownloadManager::Ref().Lock();
 	downloadStarted = false;
-	if (length)
-		*length = downloadSize;
 	if (status)
 		*status = downloadStatus;
 	ByteString ret;
@@ -156,7 +141,7 @@ void Download::Cancel()
 	DownloadManager::Ref().Unlock();
 }
 
-ByteString Download::Simple(ByteString uri, int *length, int *status, std::map<ByteString, ByteString> post_data)
+ByteString Download::Simple(ByteString uri, int *status, std::map<ByteString, ByteString> post_data)
 {
 	Download *request = new Download(uri);
 	request->AddPostData(post_data);
@@ -165,10 +150,10 @@ ByteString Download::Simple(ByteString uri, int *length, int *status, std::map<B
 	{
 		Platform::Millisleep(1);
 	}
-	return request->Finish(length, status);
+	return request->Finish(status);
 }
 
-ByteString Download::SimpleAuth(ByteString uri, int *length, int *status, ByteString ID, ByteString session, std::map<ByteString, ByteString> post_data)
+ByteString Download::SimpleAuth(ByteString uri, int *status, ByteString ID, ByteString session, std::map<ByteString, ByteString> post_data)
 {
 	Download *request = new Download(uri);
 	request->AddPostData(post_data);
@@ -178,11 +163,12 @@ ByteString Download::SimpleAuth(ByteString uri, int *length, int *status, ByteSt
 	{
 		Platform::Millisleep(1);
 	}
-	return request->Finish(length, status);
+	return request->Finish(status);
 }
 
-const char *Download::StatusText(int code)
+const char *StatusText(int code)
 {
 	return http_ret_text(code);
+}
 }
 

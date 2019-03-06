@@ -56,7 +56,6 @@ public:
 	void RenderThumbnail(GameSave * gameSave, int width, int height, RequestListener * tListener);
 	void RetrieveThumbnail(int saveID, int saveDate, int width, int height, RequestListener * tListener);
 	void RetrieveThumbnail(int saveID, int width, int height, RequestListener * tListener);
-	void RetrieveAvatar(ByteString username, int width, int height, RequestListener * tListener);
 	void Start(Request * request, RequestListener * tLIstener, int identifier = 0);
 
 	bool CheckRequestListener(ListenerHandle handle);
