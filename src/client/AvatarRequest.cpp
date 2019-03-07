@@ -7,5 +7,9 @@ namespace http
 		ImageRequest(ByteString::Build("http://" STATICSERVER "/avatars/", username, ".pti"), width, height)
 	{
 	}
+
+	AvatarRequest::~AvatarRequest()
+	{
+	}
 }
 

@@ -10,6 +10,7 @@ namespace http
 	{
 	public:
 		AvatarRequest(ByteString username, int width, int height);
+		virtual ~AvatarRequest();
 	};
 }
 

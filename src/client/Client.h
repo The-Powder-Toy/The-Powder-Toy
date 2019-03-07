@@ -14,8 +14,6 @@
 
 #include "json/json.h"
 
-#include "requestbroker/RequestBroker.h"
-
 class SaveInfo;
 class SaveFile;
 class SaveComment;
@@ -121,7 +119,6 @@ public:
 	String GetMessageOfTheDay();
 
 	void Initialise(ByteString proxyString);
-	void SetProxy(ByteString proxy);
 	bool IsFirstRun();
 
 	int MakeDirectory(const char * dirname);
@@ -147,11 +144,6 @@ public:
 
 	RequestStatus AddComment(int saveID, String comment);
 
-	//Retrieves a "UserInfo" object
-	RequestBroker::Request * GetUserInfoAsync(ByteString username);
-	RequestBroker::Request * SaveUserInfoAsync(UserInfo info);
-
-	RequestBroker::Request * GetSaveDataAsync(int saveID, int saveDate);
 	unsigned char * GetSaveData(int saveID, int saveDate, int & dataLength);
 	std::vector<unsigned char> GetSaveData(int saveID, int saveDate);
 
@@ -159,10 +151,7 @@ public:
 	std::vector<SaveInfo*> * SearchSaves(int start, int count, String query, ByteString sort, ByteString category, int & resultCount);
 	std::vector<std::pair<ByteString, int> > * GetTags(int start, int count, String query, int & resultCount);
 
-	RequestBroker::Request * GetCommentsAsync(int saveID, int start, int count);
-
 	SaveInfo * GetSave(int saveID, int saveDate);
-	RequestBroker::Request * GetSaveAsync(int saveID, int saveDate);
 
 	RequestStatus DeleteSave(int saveID);
 	RequestStatus ReportSave(int saveID, String message);

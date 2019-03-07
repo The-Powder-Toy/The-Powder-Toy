@@ -10,6 +10,7 @@ namespace http
 	{
 	public:
 		ThumbnailRequest(int saveID, int saveDate, int width, int height);
+		virtual ~ThumbnailRequest();
 	};
 }
 

@@ -34,7 +34,6 @@
 #include "Misc.h"
 #include "Platform.h"
 #include "Update.h"
-#include "HTTP.h"
 
 #include "simulation/SaveRenderer.h"
 #include "gui/interface/Point.h"
@@ -45,10 +44,7 @@
 #include "gui/preview/Comment.h"
 #include "ClientListener.h"
 #include "client/Download.h"
-#include "requestbroker/RequestBroker.h"
-#include "requestbroker/WebRequest.h"
-#include "requestbroker/APIRequest.h"
-#include "requestbroker/APIResultParser.h"
+#include "client/DownloadManager.h"
 
 #include "json/json.h"
 
@@ -115,10 +111,7 @@ void Client::Initialise(ByteString proxyString)
 		update_finish();
 	}
 
-	if (proxyString.length())
-		http_init((char*)proxyString.c_str());
-	else
-		http_init(NULL);
+	http::DownloadManager::Ref().Initialise(proxyString);
 
 	//Read stamps library
 	std::ifstream stampsLib;
@@ -439,15 +432,6 @@ bool Client::DoInstallation()
 #endif
 }
 
-void Client::SetProxy(ByteString proxy)
-{
-	http_done();
-	if(proxy.length())
-		http_init((char*)proxy.c_str());
-	else
-		http_init(NULL);
-}
-
 std::vector<ByteString> Client::DirectorySearch(ByteString directory, ByteString search, ByteString extension)
 {
 	std::vector<ByteString> extensions;
@@ -722,8 +706,6 @@ RequestStatus Client::ParseServerReturn(ByteString &result, int status, bool jso
 
 void Client::Tick()
 {
-	//Check thumbnail queue
-	RequestBroker::Ref().FlushThumbQueue();
 	if (versionCheckRequest)
 	{
 		if (CheckUpdate(versionCheckRequest, true))
@@ -931,8 +913,7 @@ void Client::WritePrefs()
 
 void Client::Shutdown()
 {
-	RequestBroker::Ref().Shutdown();
-	http_done();
+	http::DownloadManager::Ref().Shutdown();
 
 	//Save config
 	WritePrefs();
@@ -1243,86 +1224,6 @@ std::vector<unsigned char> Client::GetSaveData(int saveID, int saveDate)
 	return saveData;
 }
 
-RequestBroker::Request * Client::GetSaveDataAsync(int saveID, int saveDate)
-{
-	ByteString url;
-	if(saveDate){
-		url = ByteString::Build("http://", STATICSERVER, "/", saveID, "_", saveDate, ".cps");
-	} else {
-		url = ByteString::Build("http://", STATICSERVER, "/", saveID, ".cps");
-	}
-	return new WebRequest(url);
-}
-
-RequestBroker::Request * Client::SaveUserInfoAsync(UserInfo info)
-{
-	class StatusParser: public APIResultParser
-	{
-		virtual void * ProcessResponse(unsigned char * data, int dataLength)
-		{
-			try
-			{
-				std::istringstream dataStream((char*)data);
-				Json::Value objDocument;
-				dataStream >> objDocument;
-				return (void*)(objDocument["Status"].asInt() == 1);
-			}
-			catch (std::exception & e)
-			{
-				return 0;
-			}
-		}
-		virtual void Cleanup(void * objectPtr)
-		{
-			//delete (UserInfo*)objectPtr;
-		}
-		virtual ~StatusParser() { }
-	};
-	std::map<ByteString, ByteString> postData;
-	postData.insert(std::pair<ByteString, ByteString>("Location", info.location.ToUtf8()));
-	postData.insert(std::pair<ByteString, ByteString>("Biography", info.biography.ToUtf8()));
-	return new APIRequest("http://" SERVER "/Profile.json", postData, new StatusParser());
-}
-
-RequestBroker::Request * Client::GetUserInfoAsync(ByteString username)
-{
-	class UserInfoParser: public APIResultParser
-	{
-		virtual void * ProcessResponse(unsigned char * data, int dataLength)
-		{
-			try
-			{
-				std::istringstream dataStream((char*)data);
-				Json::Value objDocument;
-				dataStream >> objDocument;
-				Json::Value tempUser = objDocument["User"];
-				return new UserInfo(tempUser["ID"].asInt(),
-									tempUser["Age"].asInt(),
-									tempUser["Username"].asString(),
-									ByteString(tempUser["Biography"].asString()).FromUtf8(),
-									ByteString(tempUser["Location"].asString()).FromUtf8(),
-									tempUser["Website"].asString(),
-									tempUser["Saves"]["Count"].asInt(),
-									tempUser["Saves"]["AverageScore"].asInt(),
-									tempUser["Saves"]["HighestScore"].asInt(),
-									tempUser["Forum"]["Topics"].asInt(),
-									tempUser["Forum"]["Replies"].asInt(),
-									tempUser["Forum"]["Reputation"].asInt());
-			}
-			catch (std::exception &e)
-			{
-				return 0;
-			}
-		}
-		virtual void Cleanup(void * objectPtr)
-		{
-			delete (UserInfo*)objectPtr;
-		}
-		virtual ~UserInfoParser() { }
-	};
-	return new APIRequest("http://" SERVER "/User.json?Name=" + username, new UserInfoParser());
-}
-
 LoginStatus Client::Login(ByteString username, ByteString password, User & user)
 {
 	lastError = "";
@@ -1592,110 +1493,6 @@ SaveInfo * Client::GetSave(int saveID, int saveDate)
 		lastError = ByteString(http::StatusText(dataStatus)).FromUtf8();
 	}
 	return NULL;
-}
-
-RequestBroker::Request * Client::GetSaveAsync(int saveID, int saveDate)
-{
-	ByteStringBuilder urlStream;
-	urlStream << "http://" << SERVER  << "/Browse/View.json?ID=" << saveID;
-	if(saveDate)
-	{
-		urlStream << "&Date=" << saveDate;
-	}
-
-	class SaveInfoParser: public APIResultParser
-	{
-		virtual void * ProcessResponse(unsigned char * data, int dataLength)
-		{
-			try
-			{
-				std::istringstream dataStream((char*)data);
-				Json::Value objDocument;
-				dataStream >> objDocument;
-
-				int tempID = objDocument["ID"].asInt();
-				int tempScoreUp = objDocument["ScoreUp"].asInt();
-				int tempScoreDown = objDocument["ScoreDown"].asInt();
-				int tempMyScore = objDocument["ScoreMine"].asInt();
-				ByteString tempUsername = objDocument["Username"].asString();
-				String tempName = ByteString(objDocument["Name"].asString()).FromUtf8();
-				String tempDescription = ByteString(objDocument["Description"].asString()).FromUtf8();
-				int tempCreatedDate = objDocument["DateCreated"].asInt();
-				int tempUpdatedDate = objDocument["Date"].asInt();
-				bool tempPublished = objDocument["Published"].asBool();
-				bool tempFavourite = objDocument["Favourite"].asBool();
-				int tempComments = objDocument["Comments"].asInt();
-				int tempViews = objDocument["Views"].asInt();
-				int tempVersion = objDocument["Version"].asInt();
-
-				Json::Value tagsArray = objDocument["Tags"];
-				std::list<ByteString> tempTags;
-				for (Json::UInt j = 0; j < tagsArray.size(); j++)
-					tempTags.push_back(tagsArray[j].asString());
-
-				SaveInfo * tempSave = new SaveInfo(tempID, tempCreatedDate, tempUpdatedDate, tempScoreUp,
-				                                   tempScoreDown, tempMyScore, tempUsername, tempName,
-				                                   tempDescription, tempPublished, tempTags);
-				tempSave->Comments = tempComments;
-				tempSave->Favourite = tempFavourite;
-				tempSave->Views = tempViews;
-				tempSave->Version = tempVersion;
-				return tempSave;
-			}
-			catch (std::exception &e)
-			{
-				return NULL;
-			}
-		}
-		virtual void Cleanup(void * objectPtr)
-		{
-			delete (SaveInfo*)objectPtr;
-		}
-		virtual ~SaveInfoParser() { }
-	};
-	return new APIRequest(urlStream.Build(), new SaveInfoParser());
-}
-
-RequestBroker::Request * Client::GetCommentsAsync(int saveID, int start, int count)
-{
-	class CommentsParser: public APIResultParser
-	{
-		virtual void * ProcessResponse(unsigned char * data, int dataLength)
-		{
-			std::vector<SaveComment*> * commentArray = new std::vector<SaveComment*>();
-			try
-			{
-				std::istringstream dataStream((char*)data);
-				Json::Value commentsArray;
-				dataStream >> commentsArray;
-
-				for (Json::UInt j = 0; j < commentsArray.size(); j++)
-				{
-					int userID = ByteString(commentsArray[j]["UserID"].asString()).ToNumber<int>();
-					ByteString username = commentsArray[j]["Username"].asString();
-					ByteString formattedUsername = commentsArray[j]["FormattedUsername"].asString();
-					if (formattedUsername == "jacobot")
-						formattedUsername = "\bt" + formattedUsername;
-					String comment = ByteString(commentsArray[j]["Text"].asString()).FromUtf8();
-					commentArray->push_back(new SaveComment(userID, username, formattedUsername, comment));
-				}
-				return commentArray;
-			}
-			catch (std::exception &e)
-			{
-				delete commentArray;
-				return NULL;
-			}
-		}
-		virtual void Cleanup(void * objectPtr)
-		{
-			delete (std::vector<SaveComment*>*)objectPtr;
-		}
-		virtual ~CommentsParser() { }
-	};
-
-	ByteString url = ByteString::Build("http://", SERVER, "/Browse/Comments.json?ID=", saveID, "&Start=", start, "&Count=", count);
-	return new APIRequest(url, new CommentsParser());
 }
 
 std::vector<std::pair<ByteString, int> > * Client::GetTags(int start, int count, String query, int & resultCount)

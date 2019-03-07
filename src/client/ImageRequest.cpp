@@ -13,6 +13,10 @@ namespace http
 	{
 	}
 
+	ImageRequest::~ImageRequest()
+	{
+	}
+
 	std::unique_ptr<VideoBuffer> ImageRequest::Finish()
 	{
 		ByteString data = Download::Finish(nullptr);

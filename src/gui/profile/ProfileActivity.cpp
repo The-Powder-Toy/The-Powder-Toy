@@ -10,7 +10,6 @@
 #include "gui/Style.h"
 #include "client/Client.h"
 #include "client/UserInfo.h"
-#include "client/requestbroker/RequestListener.h"
 #include "Format.h"
 #include "Platform.h"
 
@@ -49,7 +48,8 @@ ProfileActivity::ProfileActivity(ByteString username) :
 				a->saving = true;
 				a->info.location = ((ui::Textbox*)a->location)->GetText();
 				a->info.biography = ((ui::Textbox*)a->bio)->GetText();
-				RequestBroker::Ref().Start(Client::Ref().SaveUserInfoAsync(a->info), a);
+				a->SaveUserInfoRequestMonitor::RequestSetup(a->info);
+				a->SaveUserInfoRequestMonitor::RequestStart();
 			}
 		}
 	};
@@ -69,7 +69,9 @@ ProfileActivity::ProfileActivity(ByteString username) :
 	AddComponent(closeButton);
 
 	loading = true;
-	RequestBroker::Ref().Start(Client::Ref().GetUserInfoAsync(username), this);
+
+	GetUserInfoRequestMonitor::RequestSetup(username);
+	GetUserInfoRequestMonitor::RequestStart();
 }
 
 void ProfileActivity::setUserInfo(UserInfo newInfo)
@@ -229,27 +231,31 @@ void ProfileActivity::setUserInfo(UserInfo newInfo)
 	scrollPanel->InnerSize = ui::Point(Size.X, currentY);
 }
 
-void ProfileActivity::OnResponseReady(void * userDataPtr, int identifier)
+void ProfileActivity::OnResponse(bool SaveUserInfoStatus)
 {
-	if (loading)
-	{
-		loading = false;
-		setUserInfo(*(UserInfo*)userDataPtr);
-		delete (UserInfo*)userDataPtr;
-	}
-	else if (saving)
+	if (SaveUserInfoStatus)
 	{
 		Exit();
 	}
+	else
+	{
+		doError = true;
+		doErrorMessage = "Could not save user info: " + Client::Ref().GetLastError();
+	}
 }
 
-void ProfileActivity::OnResponseFailed(int identifier)
+void ProfileActivity::OnResponse(std::unique_ptr<UserInfo> getUserInfoResult)
 {
-	doError = true;
-	if (loading)
+	if (getUserInfoResult)
+	{
+		loading = false;
+		setUserInfo(*getUserInfoResult);
+	}
+	else
+	{
+		doError = true;
 		doErrorMessage = "Could not load user info: " + Client::Ref().GetLastError();
-	else if (saving)
-		doErrorMessage = "Could not save user info: " + Client::Ref().GetLastError();
+	}
 }
 
 void ProfileActivity::OnTick(float dt)
@@ -259,6 +265,9 @@ void ProfileActivity::OnTick(float dt)
 		ErrorMessage::Blocking("Error", doErrorMessage);
 		Exit();
 	}
+
+	SaveUserInfoRequestMonitor::RequestPoll();
+	GetUserInfoRequestMonitor::RequestPoll();
 }
 
 void ProfileActivity::OnDraw()
@@ -284,6 +293,5 @@ void ProfileActivity::ResizeArea()
 
 ProfileActivity::~ProfileActivity()
 {
-	RequestBroker::Ref().DetachRequestListener(this);
 }
 
