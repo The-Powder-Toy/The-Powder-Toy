@@ -48,7 +48,6 @@
 #include <netinet/in.h>
 #endif
 
-#include "client/DownloadManager.h"
 #include "Config.h"
 #include "Misc.h"
 #include "HTTP.h"
@@ -205,7 +204,6 @@ void http_done(void)
 #ifdef WIN
 	WSACleanup();
 #endif
-	http::DownloadManager::Ref().Shutdown();
 	http_up = 0;
 }
 

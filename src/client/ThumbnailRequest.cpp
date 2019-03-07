@@ -11,5 +11,9 @@ namespace http
 		), width, height)
 	{
 	}
+
+	ThumbnailRequest::~ThumbnailRequest()
+	{
+	}
 }
 

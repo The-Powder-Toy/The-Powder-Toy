@@ -4,6 +4,7 @@
 #include <ctime>
 #include <vector>
 #include "common/Singleton.h"
+#include "common/String.h"
 
 namespace http
 {
@@ -15,6 +16,7 @@ private:
 	pthread_mutex_t downloadLock;
 	pthread_mutex_t downloadAddLock;
 	bool threadStarted;
+	ByteString proxy;
 
 	int lastUsed;
 	volatile bool managerRunning;
@@ -26,6 +28,8 @@ private:
 public:
 	DownloadManager();
 	~DownloadManager();
+
+	void Initialise(ByteString proxy);
 
 	void Shutdown();
 	void Update();

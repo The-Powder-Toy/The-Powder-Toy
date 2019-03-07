@@ -42,6 +42,8 @@ void DownloadManager::Shutdown()
 	pthread_mutex_unlock(&downloadLock);
 	if (threadStarted)
 		pthread_join(downloadThread, NULL);
+	
+	http_done();
 }
 
 //helper function for download
@@ -50,6 +52,19 @@ TH_ENTRY_POINT void* DownloadManagerHelper(void* obj)
 	DownloadManager *temp = (DownloadManager*)obj;
 	temp->Update();
 	return NULL;
+}
+
+void DownloadManager::Initialise(ByteString Proxy)
+{
+	proxy = Proxy;
+	if (proxy.length())
+	{
+		http_init((char *)proxy.c_str());
+	}
+	else
+	{
+		http_init(NULL);
+	}
 }
 
 void DownloadManager::Start()
