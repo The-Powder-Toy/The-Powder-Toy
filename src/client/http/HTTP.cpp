@@ -998,7 +998,7 @@ ByteString GetMultipartMessage(std::map<ByteString, ByteString> parts, ByteStrin
 		{
 			// used to upload files (save data)
 			data << "content-disposition: form-data; name=\"" << split.Before() << "\"";
-			data << "filename=\"" << split.After() << "\"";
+			data << "; filename=\"" << split.After() << "\"";
 		}
 		else
 		{
