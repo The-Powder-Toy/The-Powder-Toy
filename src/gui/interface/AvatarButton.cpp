@@ -4,7 +4,6 @@
 #include "AvatarButton.h"
 #include "Format.h"
 #include "client/Client.h"
-#include "client/AvatarRequest.h"
 #include "graphics/Graphics.h"
 #include "ContextMenu.h"
 #include "Keys.h"
@@ -14,7 +13,6 @@ namespace ui {
 
 AvatarButton::AvatarButton(Point position, Point size, ByteString username):
 	Component(position, size),
-	avatarRequest(nullptr),
 	name(username),
 	tried(false),
 	actionCallback(NULL)
@@ -27,20 +25,21 @@ AvatarButton::~AvatarButton()
 	delete actionCallback;
 }
 
+void AvatarButton::OnResponse(std::unique_ptr<VideoBuffer> Avatar)
+{
+	avatar = std::move(Avatar);
+}
+
 void AvatarButton::Tick(float dt)
 {
 	if(!avatar && !tried && name.size() > 0)
 	{
 		tried = true;
-		avatarRequest = new http::AvatarRequest(name, Size.X, Size.Y);
-		avatarRequest->Start();
+		RequestSetup(name, Size.X, Size.Y);
+		RequestStart();
 	}
 
-	if (avatarRequest && avatarRequest->CheckDone())
-	{
-		avatar = avatarRequest->Finish();
-		avatarRequest = nullptr;
-	}
+	RequestPoll();
 }
 
 void AvatarButton::Draw(const Point& screenPos)

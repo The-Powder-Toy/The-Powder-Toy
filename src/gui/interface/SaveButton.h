@@ -8,14 +8,13 @@
 #include "client/SaveInfo.h"
 #include "graphics/Graphics.h"
 #include "gui/interface/Colour.h"
+#include "client/ThumbnailRequest.h"
+#include "client/RequestMonitor.h"
+#include "graphics/Graphics.h"
 
 #include <memory>
 
 class ThumbnailRendererTask;
-namespace http
-{
-	class ThumbnailRequest;
-}
 namespace ui
 {
 class SaveButton;
@@ -29,7 +28,7 @@ public:
 	virtual ~SaveButtonAction() {}
 };
 
-class SaveButton : public Component
+class SaveButton : public Component, public http::RequestMonitor<http::ThumbnailRequest>
 {
 	SaveFile * file;
 	SaveInfo * save;
@@ -47,7 +46,6 @@ class SaveButton : public Component
 	bool isMouseInsideHistory;
 	bool showVotes;
 	std::unique_ptr<ThumbnailRendererTask> thumbnailRenderer;
-	http::ThumbnailRequest *thumbnailRequest;
 public:
 	SaveButton(Point position, Point size, SaveInfo * save);
 	SaveButton(Point position, Point size, SaveFile * file);
@@ -66,6 +64,8 @@ public:
 
 	void Draw(const Point& screenPos) override;
 	void Tick(float dt) override;
+
+	void OnResponse(std::unique_ptr<VideoBuffer> thumbnail) override;
 
 	void SetSelected(bool selected_) { selected = selected_; }
 	bool GetSelected() { return selected; }
