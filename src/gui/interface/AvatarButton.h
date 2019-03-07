@@ -6,7 +6,6 @@
 #include "Component.h"
 #include "graphics/Graphics.h"
 #include "gui/interface/Colour.h"
-#include "client/requestbroker/RequestListener.h"
 
 #include <memory>
 

@@ -4,8 +4,6 @@
 #include "ImageRequest.h"
 #include "common/String.h"
 
-#include <memory>
-
 namespace http
 {
 	class AvatarRequest : public ImageRequest

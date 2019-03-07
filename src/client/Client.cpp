@@ -940,6 +940,14 @@ void Client::Shutdown()
 
 Client::~Client()
 {
+	if (versionCheckRequest)
+	{
+		versionCheckRequest->Cancel();
+	}
+	if (alternateVersionCheckRequest)
+	{
+		alternateVersionCheckRequest->Cancel();
+	}
 }
 
 
