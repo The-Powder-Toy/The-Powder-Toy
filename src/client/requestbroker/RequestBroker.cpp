@@ -77,37 +77,6 @@ void RequestBroker::Shutdown()
 	}
 }
 
-void RequestBroker::RenderThumbnail(GameSave * gameSave, int width, int height, RequestListener * tListener)
-{
-	RenderThumbnail(gameSave, true, true, width, height, false, tListener);
-}
-
-void RequestBroker::RenderThumbnail(GameSave * gameSave, bool decorations, bool fire, int width, int height, bool autoRescale, RequestListener * tListener)
-{
-	ListenerHandle handle = AttachRequestListener(tListener);
-
-	ThumbRenderRequest * r = new ThumbRenderRequest(new GameSave(*gameSave), decorations, fire, width, height, autoRescale, handle);
-
-	pthread_mutex_lock(&requestQueueMutex);
-	requestQueue.push_back(r);
-	pthread_mutex_unlock(&requestQueueMutex);
-
-	assureRunning();
-}
-
-void RequestBroker::RetrieveThumbnail(int saveID, int saveDate, int width, int height, RequestListener * tListener)
-{
-	ByteStringBuilder url;
-	url << "http://" << STATICSERVER << "/" << saveID;
-	if(saveDate)
-	{
-		url << "_" << saveDate;
-	}
-	url << "_small.pti";
-
-	RetrieveImage(url.Build(), width, height, tListener);
-}
-
 void RequestBroker::Start(Request * request, RequestListener * tListener, int identifier)
 {
 	ListenerHandle handle = AttachRequestListener(tListener);
@@ -116,19 +85,6 @@ void RequestBroker::Start(Request * request, RequestListener * tListener, int id
 	request->Listener = handle;
 	pthread_mutex_lock(&requestQueueMutex);
 	requestQueue.push_back(request);
-	pthread_mutex_unlock(&requestQueueMutex);
-
-	assureRunning();
-}
-
-void RequestBroker::RetrieveImage(ByteString imageUrl, int width, int height, RequestListener * tListener)
-{
-	ListenerHandle handle = AttachRequestListener(tListener);
-
-	ImageRequest * r = new ImageRequest(imageUrl, width, height, handle);
-
-	pthread_mutex_lock(&requestQueueMutex);
-	requestQueue.push_back(r);
 	pthread_mutex_unlock(&requestQueueMutex);
 
 	assureRunning();
@@ -241,12 +197,6 @@ void RequestBroker::requestComplete(Request * completedRequest)
 	pthread_mutex_lock(&completeQueueMutex);
 	completeQueue.push(completedRequest);
 	pthread_mutex_unlock(&completeQueueMutex);
-}
-
-
-void RequestBroker::RetrieveThumbnail(int saveID, int width, int height, RequestListener * tListener)
-{
-	RetrieveThumbnail(saveID, 0, width, height, tListener);
 }
 
 bool RequestBroker::CheckRequestListener(ListenerHandle handle)

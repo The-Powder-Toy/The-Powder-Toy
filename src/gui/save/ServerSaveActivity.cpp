@@ -4,7 +4,6 @@
 #include "gui/interface/Textbox.h"
 #include "gui/interface/Button.h"
 #include "gui/interface/Checkbox.h"
-#include "client/requestbroker/RequestBroker.h"
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/dialogues/SaveIDMessage.h"
 #include "gui/dialogues/ConfirmPrompt.h"
@@ -14,6 +13,7 @@
 #include "gui/Style.h"
 #include "client/GameSave.h"
 #include "images.h"
+#include "client/ThumbnailRenderer.h"
 
 class ServerSaveActivity::CancelAction: public ui::ButtonAction
 {
@@ -104,7 +104,6 @@ public:
 
 ServerSaveActivity::ServerSaveActivity(SaveInfo save, ServerSaveActivity::SaveUploadedCallback * callback) :
 	WindowActivity(ui::Point(-1, -1), ui::Point(440, 200)),
-	thumbnail(NULL),
 	save(save),
 	callback(callback),
 	saveUploadTask(NULL)
@@ -183,13 +182,15 @@ ServerSaveActivity::ServerSaveActivity(SaveInfo save, ServerSaveActivity::SaveUp
 	RulesButton->SetActionCallback(new RulesAction(this));
 	AddComponent(RulesButton);
 
-	if(save.GetGameSave())
-		RequestBroker::Ref().RenderThumbnail(save.GetGameSave(), false, true, (Size.X/2)-16, -1, false, this);
+	if (save.GetGameSave())
+	{
+		thumbnailRenderer = std::unique_ptr<ThumbnailRendererTask>(new ThumbnailRendererTask(save.GetGameSave(), (Size.X/2)-16, -1, false, false, true));
+		thumbnailRenderer->Start();
+	}
 }
 
 ServerSaveActivity::ServerSaveActivity(SaveInfo save, bool saveNow, ServerSaveActivity::SaveUploadedCallback * callback) :
 	WindowActivity(ui::Point(-1, -1), ui::Point(200, 50)),
-	thumbnail(NULL),
 	save(save),
 	callback(callback),
 	saveUploadTask(NULL)
@@ -401,6 +402,16 @@ void ServerSaveActivity::CheckName(String newname)
 
 void ServerSaveActivity::OnTick(float dt)
 {
+	if (thumbnailRenderer)
+	{
+		thumbnailRenderer->Poll();
+		if (thumbnailRenderer->GetDone())
+		{
+			thumbnail = thumbnailRenderer->GetThumbnail();
+			thumbnailRenderer.reset();
+		}
+	}
+
 	if(saveUploadTask)
 		saveUploadTask->Poll();
 }
@@ -417,21 +428,13 @@ void ServerSaveActivity::OnDraw()
 
 	if(thumbnail)
 	{
-		g->draw_image(thumbnail, Position.X+(Size.X/2)+((Size.X/2)-thumbnail->Width)/2, Position.Y+25, 255);
+		g->draw_image(thumbnail.get(), Position.X+(Size.X/2)+((Size.X/2)-thumbnail->Width)/2, Position.Y+25, 255);
 		g->drawrect(Position.X+(Size.X/2)+((Size.X/2)-thumbnail->Width)/2, Position.Y+25, thumbnail->Width, thumbnail->Height, 180, 180, 180, 255);
 	}
 }
 
-void ServerSaveActivity::OnResponseReady(void * imagePtr, int identifier)
-{
-	delete thumbnail;
-	thumbnail = (VideoBuffer *)imagePtr;
-}
-
 ServerSaveActivity::~ServerSaveActivity()
 {
-	RequestBroker::Ref().DetachRequestListener(this);
 	delete saveUploadTask;
 	delete callback;
-	delete thumbnail;
 }
