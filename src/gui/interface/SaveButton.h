@@ -6,10 +6,16 @@
 #include "Component.h"
 #include "client/SaveFile.h"
 #include "client/SaveInfo.h"
-#include "client/requestbroker/RequestListener.h"
 #include "graphics/Graphics.h"
 #include "gui/interface/Colour.h"
 
+#include <memory>
+
+class ThumbnailRendererTask;
+namespace http
+{
+	class ThumbnailRequest;
+}
 namespace ui
 {
 class SaveButton;
@@ -23,11 +29,11 @@ public:
 	virtual ~SaveButtonAction() {}
 };
 
-class SaveButton : public Component, public RequestListener
+class SaveButton : public Component
 {
 	SaveFile * file;
 	SaveInfo * save;
-	VideoBuffer * thumbnail;
+	std::unique_ptr<VideoBuffer> thumbnail;
 	ui::Point thumbSize = ui::Point(0, 0);
 	String name;
 	String votesString;
@@ -36,10 +42,12 @@ class SaveButton : public Component, public RequestListener
 	int voteBarHeightUp;
 	int voteBarHeightDown;
 	bool wantsDraw;
-	bool waitingForThumb;
+	bool triedThumbnail;
 	bool isMouseInsideAuthor;
 	bool isMouseInsideHistory;
 	bool showVotes;
+	std::unique_ptr<ThumbnailRendererTask> thumbnailRenderer;
+	http::ThumbnailRequest *thumbnailRequest;
 public:
 	SaveButton(Point position, Point size, SaveInfo * save);
 	SaveButton(Point position, Point size, SaveFile * file);
@@ -58,8 +66,6 @@ public:
 
 	void Draw(const Point& screenPos) override;
 	void Tick(float dt) override;
-
-	void OnResponseReady(void * imagePtr, int identifier) override;
 
 	void SetSelected(bool selected_) { selected = selected_; }
 	bool GetSelected() { return selected; }

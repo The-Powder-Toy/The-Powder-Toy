@@ -29,10 +29,14 @@ SaveRenderer::SaveRenderer(){
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // Reset framebuffer binding
 	glDisable(GL_TEXTURE_2D);
 #endif
+
+	pthread_mutex_init(&renderMutex, NULL);
 }
 
 VideoBuffer * SaveRenderer::Render(GameSave * save, bool decorations, bool fire)
 {
+	pthread_mutex_lock(&renderMutex);
+
 	int width, height;
 	VideoBuffer * tempThumb = NULL;
 	width = save->blockWidth;
@@ -145,11 +149,15 @@ VideoBuffer * SaveRenderer::Render(GameSave * save, bool decorations, bool fire)
 	if(doCollapse)
 		save->Collapse();
 	g->Release();
+
+	pthread_mutex_unlock(&renderMutex);
 	return tempThumb;
 }
 
 VideoBuffer * SaveRenderer::Render(unsigned char * saveData, int dataSize, bool decorations, bool fire)
 {
+	pthread_mutex_lock(&renderMutex);
+
 	GameSave * tempSave;
 	try {
 		tempSave = new GameSave((char*)saveData, dataSize);
@@ -159,13 +167,17 @@ VideoBuffer * SaveRenderer::Render(unsigned char * saveData, int dataSize, bool 
 		VideoBuffer * buffer = new VideoBuffer(64, 64);
 		buffer->BlendCharacter(32, 32, 'x', 255, 255, 255, 255);
 
+		pthread_mutex_unlock(&renderMutex);
 		return buffer;
 	}
 	VideoBuffer * thumb = Render(tempSave, decorations, fire);
 	delete tempSave;
+
+	pthread_mutex_unlock(&renderMutex);
 	return thumb;
 }
 
 SaveRenderer::~SaveRenderer() {
+	pthread_mutex_destroy(&renderMutex);
 }
 
