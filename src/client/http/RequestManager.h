@@ -1,5 +1,5 @@
-#ifndef DOWNLOADMANAGER_H
-#define DOWNLOADMANAGER_H
+#ifndef REQUESTMANAGER_H
+#define REQUESTMANAGER_H
 #include "common/tpt-thread.h"
 #include <ctime>
 #include <vector>
@@ -12,17 +12,17 @@ class Request;
 class RequestManager : public Singleton<RequestManager>
 {
 private:
-	pthread_t downloadThread;
-	pthread_mutex_t downloadLock;
-	pthread_mutex_t downloadAddLock;
+	pthread_t requestThread;
+	pthread_mutex_t requestLock;
+	pthread_mutex_t requestAddLock;
 	bool threadStarted;
 	ByteString proxy;
 
 	int lastUsed;
 	volatile bool managerRunning;
 	volatile bool managerShutdown;
-	std::vector<Request*> downloads;
-	std::vector<Request*> downloadsAddQueue;
+	std::vector<Request*> requests;
+	std::vector<Request*> requestsAddQueue;
 
 	void Start();
 public:
@@ -35,12 +35,12 @@ public:
 	void Update();
 	void EnsureRunning();
 
-	void AddDownload(Request *download);
-	void RemoveDownload(int id);
+	void AddRequest(Request *request);
+	void RemoveRequest(int id);
 
 	void Lock();
 	void Unlock();
 };
 }
 
-#endif // DOWNLOADMANAGER_H
+#endif // REQUESTMANAGER_H

@@ -9,28 +9,28 @@ namespace http
 Request::Request(ByteString uri_, bool keepAlive):
 	http(NULL),
 	keepAlive(keepAlive),
-	downloadData(NULL),
-	downloadSize(0),
-	downloadStatus(0),
+	requestData(NULL),
+	requestSize(0),
+	requestStatus(0),
 	postData(""),
 	postDataBoundary(""),
 	userID(""),
 	userSession(""),
-	downloadFinished(false),
-	downloadCanceled(false),
-	downloadStarted(false)
+	requestFinished(false),
+	requestCanceled(false),
+	requestStarted(false)
 {
 	uri = ByteString(uri_);
-	RequestManager::Ref().AddDownload(this);
+	RequestManager::Ref().AddRequest(this);
 }
 
-// called by download thread itself if download was canceled
+// called by request thread itself if request was canceled
 Request::~Request()
 {
-	if (http && (keepAlive || downloadCanceled))
+	if (http && (keepAlive || requestCanceled))
 		http_async_req_close(http);
-	if (downloadData)
-		free(downloadData);
+	if (requestData)
+		free(requestData);
 }
 
 // add post data to a request
@@ -46,7 +46,7 @@ void Request::AddPostData(std::pair<ByteString, ByteString> data)
 	AddPostData(postData);
 }
 
-// add userID and sessionID headers to the download. Must be done after download starts for some reason
+// add userID and sessionID headers to the request. Must be done after request starts for some reason
 void Request::AuthHeaders(ByteString ID, ByteString session)
 {
 	if (ID != "0")
@@ -54,7 +54,7 @@ void Request::AuthHeaders(ByteString ID, ByteString session)
 	userSession = session;
 }
 
-// start the download thread
+// start the request thread
 void Request::Start()
 {
 	if (CheckStarted() || CheckDone())
@@ -66,78 +66,78 @@ void Request::Start()
 	if (postDataBoundary.length())
 		http_add_multipart_header(http, postDataBoundary);
 	RequestManager::Ref().Lock();
-	downloadStarted = true;
+	requestStarted = true;
 	RequestManager::Ref().Unlock();
 }
 
 
-// finish the download (if called before the download is done, this will block)
+// finish the request (if called before the request is done, this will block)
 ByteString Request::Finish(int *status)
 {
 	if (CheckCanceled())
 		return ""; // shouldn't happen but just in case
 	while (!CheckDone()); // block
 	RequestManager::Ref().Lock();
-	downloadStarted = false;
+	requestStarted = false;
 	if (status)
-		*status = downloadStatus;
+		*status = requestStatus;
 	ByteString ret;
-	if (downloadData)
+	if (requestData)
 	{
-		ret = ByteString(downloadData, downloadData + downloadSize);
-		free(downloadData);
+		ret = ByteString(requestData, requestData + requestSize);
+		free(requestData);
 	}
-	downloadData = NULL;
+	requestData = NULL;
 	if (!keepAlive)
-		downloadCanceled = true;
+		requestCanceled = true;
 	RequestManager::Ref().Unlock();
 	return ret;
 }
 
-// returns the download size and progress (if the download has the correct length headers)
+// returns the request size and progress (if the request has the correct length headers)
 void Request::CheckProgress(int *total, int *done)
 {
 	RequestManager::Ref().Lock();
-	if (!downloadFinished && http)
+	if (!requestFinished && http)
 		http_async_get_length(http, total, done);
 	else
 		*total = *done = 0;
 	RequestManager::Ref().Unlock();
 }
 
-// returns true if the download has finished
+// returns true if the request has finished
 bool Request::CheckDone()
 {
 	RequestManager::Ref().Lock();
-	bool ret = downloadFinished;
+	bool ret = requestFinished;
 	RequestManager::Ref().Unlock();
 	return ret;
 }
 
-// returns true if the download was canceled
+// returns true if the request was canceled
 bool Request::CheckCanceled()
 {
 	RequestManager::Ref().Lock();
-	bool ret = downloadCanceled;
+	bool ret = requestCanceled;
 	RequestManager::Ref().Unlock();
 	return ret;
 }
 
-// returns true if the download is running
+// returns true if the request is running
 bool Request::CheckStarted()
 {
 	RequestManager::Ref().Lock();
-	bool ret = downloadStarted;
+	bool ret = requestStarted;
 	RequestManager::Ref().Unlock();
 	return ret;
 
 }
 
-// cancels the download, the download thread will delete the Request* when it finishes (do not use Request in any way after canceling)
+// cancels the request, the request thread will delete the Request* when it finishes (do not use Request in any way after canceling)
 void Request::Cancel()
 {
 	RequestManager::Ref().Lock();
-	downloadCanceled = true;
+	requestCanceled = true;
 	RequestManager::Ref().Unlock();
 }
 
