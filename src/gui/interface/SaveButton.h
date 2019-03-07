@@ -8,8 +8,8 @@
 #include "client/SaveInfo.h"
 #include "graphics/Graphics.h"
 #include "gui/interface/Colour.h"
-#include "client/ThumbnailRequest.h"
-#include "client/RequestMonitor.h"
+#include "client/http/ThumbnailRequest.h"
+#include "client/http/RequestMonitor.h"
 #include "graphics/Graphics.h"
 
 #include <memory>

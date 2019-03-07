@@ -51,7 +51,7 @@
 #include "Config.h"
 #include "Misc.h"
 #include "HTTP.h"
-#include "MD5.h"
+#include "../MD5.h"
 #include "Platform.h"
 
 #ifdef WIN
@@ -979,7 +979,7 @@ ByteString FindBoundary(std::map<ByteString, ByteString> parts, ByteString bound
 
 // Generates a MIME multipart message to be used in POST requests
 // see https://en.wikipedia.org/wiki/MIME#Multipart_messages
-// this function used in Download class, and eventually all http requests
+// this function used in Request class, and eventually all http requests
 ByteString GetMultipartMessage(std::map<ByteString, ByteString> parts, ByteString boundary)
 {
 	ByteStringBuilder data;

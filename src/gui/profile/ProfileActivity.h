@@ -5,9 +5,9 @@
 #include "Activity.h"
 #include "client/UserInfo.h"
 #include "gui/interface/Window.h"
-#include "client/SaveUserInfoRequest.h"
-#include "client/GetUserInfoRequest.h"
-#include "client/RequestMonitor.h"
+#include "client/http/SaveUserInfoRequest.h"
+#include "client/http/GetUserInfoRequest.h"
+#include "client/http/RequestMonitor.h"
 
 namespace ui
 {

@@ -20,7 +20,6 @@
 #include "gui/game/GameModel.h"
 #include "gui/game/Tool.h"
 #include "LuaScriptHelper.h"
-#include "client/HTTP.h"
 #include "client/GameSave.h"
 #include "client/SaveFile.h"
 #include "Misc.h"

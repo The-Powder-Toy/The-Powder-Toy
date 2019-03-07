@@ -5,7 +5,7 @@
 #include "tasks/Task.h"
 #include "client/Client.h"
 #include "Update.h"
-#include "client/Download.h"
+#include "client/http/Request.h"
 #include "Platform.h"
 
 
@@ -26,7 +26,7 @@ private:
 	virtual bool doWork()
 	{
 		String error;
-		http::Download *request = new http::Download(updateName);
+		http::Request *request = new http::Request(updateName);
 		request->Start();
 		notifyStatus("Downloading update");
 		notifyProgress(-1);
@@ -149,7 +149,7 @@ void UpdateActivity::NotifyError(Task * sender)
 			if (result == ConfirmPrompt::ResultOkay)
 			{
 #ifndef UPDATESERVER
-				Platform::OpenURI("http://powdertoy.co.uk/Download.html");
+				Platform::OpenURI("http://powdertoy.co.uk/http/Request.html");
 #endif
 			}
 			a->Exit();

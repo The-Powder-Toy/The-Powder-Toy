@@ -6,7 +6,7 @@
 #include "PreviewView.h"
 #include "client/SaveInfo.h"
 #include "gui/preview/Comment.h"
-#include "client/Download.h"
+#include "client/http/Request.h"
 
 using namespace std;
 
@@ -23,9 +23,9 @@ class PreviewModel {
 	void notifyCommentsPageChanged();
 	void notifyCommentBoxEnabledChanged();
 
-	http::Download * saveDataDownload;
-	http::Download * saveInfoDownload;
-	http::Download * commentsDownload;
+	http::Request * saveDataDownload;
+	http::Request * saveInfoDownload;
+	http::Request * commentsDownload;
 	int saveID;
 	int saveDate;
 

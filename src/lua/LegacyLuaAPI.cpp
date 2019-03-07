@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <locale>
 
-#include "client/Download.h"
+#include "client/http/Request.h"
 #include "Format.h"
 #include "LuaScriptInterface.h"
 #include "LuaScriptHelper.h"
@@ -1355,7 +1355,7 @@ int luatpt_getscript(lua_State* l)
 		return 0;
 
 	int ret;
-	ByteString scriptData = http::Download::Simple(url, &ret);
+	ByteString scriptData = http::Request::Simple(url, &ret);
 	if (!scriptData.size() || !filename)
 	{
 		return luaL_error(l, "Server did not return data");

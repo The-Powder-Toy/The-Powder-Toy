@@ -1,7 +1,7 @@
 #ifndef APIREQUEST2_H
 #define APIREQUEST2_H
 
-#include "Download.h"
+#include "Request.h"
 #include "common/String.h"
 #include "json/json.h"
 
@@ -10,7 +10,7 @@
 
 namespace http
 {
-	class APIRequest : public Download
+	class APIRequest : public Request
 	{
 	public:
 		struct Result

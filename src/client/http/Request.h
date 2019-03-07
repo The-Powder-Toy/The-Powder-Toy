@@ -5,8 +5,8 @@
 
 namespace http
 {
-class DownloadManager;
-class Download
+class RequestManager;
+class Request
 {
 	ByteString uri;
 	void *http;
@@ -27,8 +27,8 @@ class Download
 	volatile bool downloadStarted;
 
 public:
-	Download(ByteString uri, bool keepAlive = false);
-	virtual ~Download();
+	Request(ByteString uri, bool keepAlive = false);
+	virtual ~Request();
 
 	void AddPostData(std::map<ByteString, ByteString> data);
 	void AddPostData(std::pair<ByteString, ByteString> data);
@@ -42,7 +42,7 @@ public:
 	bool CheckCanceled();
 	bool CheckStarted();
 
-	friend class DownloadManager;
+	friend class RequestManager;
 
 	static ByteString Simple(ByteString uri, int *status, std::map<ByteString, ByteString> post_data = {});
 	static ByteString SimpleAuth(ByteString uri, int *status, ByteString ID, ByteString session, std::map<ByteString, ByteString> post_data = {});

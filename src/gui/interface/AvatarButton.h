@@ -6,8 +6,8 @@
 #include "Component.h"
 #include "graphics/Graphics.h"
 #include "gui/interface/Colour.h"
-#include "client/AvatarRequest.h"
-#include "client/RequestMonitor.h"
+#include "client/http/AvatarRequest.h"
+#include "client/http/RequestMonitor.h"
 
 #include <memory>
 
