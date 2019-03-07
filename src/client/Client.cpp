@@ -662,7 +662,7 @@ RequestStatus Client::ParseServerReturn(ByteString &result, int status, bool jso
 
 	if (json)
 	{
-		std::istringstream datastream(result.c_str());
+		std::istringstream datastream(result);
 		Json::Value root;
 
 		try
@@ -1449,7 +1449,7 @@ SaveInfo * Client::GetSave(int saveID, int saveDate)
 	{
 		try
 		{
-			std::istringstream dataStream(data.c_str());
+			std::istringstream dataStream(data);
 			Json::Value objDocument;
 			dataStream >> objDocument;
 
@@ -1516,7 +1516,7 @@ std::vector<std::pair<ByteString, int> > * Client::GetTags(int start, int count,
 	{
 		try
 		{
-			std::istringstream dataStream(data.c_str());
+			std::istringstream dataStream(data);
 			Json::Value objDocument;
 			dataStream >> objDocument;
 
@@ -1580,7 +1580,7 @@ std::vector<SaveInfo*> * Client::SearchSaves(int start, int count, String query,
 	{
 		try
 		{
-			std::istringstream dataStream(data.c_str());
+			std::istringstream dataStream(data);
 			Json::Value objDocument;
 			dataStream >> objDocument;
 
@@ -1633,7 +1633,7 @@ std::list<ByteString> * Client::RemoveTag(int saveID, ByteString tag)
 	{
 		try
 		{
-			std::istringstream dataStream(data.c_str());
+			std::istringstream dataStream(data);
 			Json::Value responseObject;
 			dataStream >> responseObject;
 
@@ -1672,7 +1672,7 @@ std::list<ByteString> * Client::AddTag(int saveID, ByteString tag)
 	{
 		try
 		{
-			std::istringstream dataStream(data.c_str());
+			std::istringstream dataStream(data);
 			Json::Value responseObject;
 			dataStream >> responseObject;
 

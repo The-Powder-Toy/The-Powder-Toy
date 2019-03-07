@@ -1,5 +1,5 @@
-#ifndef DOWNLOAD_H
-#define DOWNLOAD_H
+#ifndef REQUEST_H
+#define REQUEST_H
 #include <map>
 #include "common/String.h"
 
@@ -12,9 +12,9 @@ class Request
 	void *http;
 	bool keepAlive;
 
-	char *downloadData;
-	int downloadSize;
-	int downloadStatus;
+	char *requestData;
+	int requestSize;
+	int requestStatus;
 
 	ByteString postData;
 	ByteString postDataBoundary;
@@ -22,9 +22,9 @@ class Request
 	ByteString userID;
 	ByteString userSession;
 
-	volatile bool downloadFinished;
-	volatile bool downloadCanceled;
-	volatile bool downloadStarted;
+	volatile bool requestFinished;
+	volatile bool requestCanceled;
+	volatile bool requestStarted;
 
 public:
 	Request(ByteString uri, bool keepAlive = false);

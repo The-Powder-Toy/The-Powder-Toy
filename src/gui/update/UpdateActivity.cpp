@@ -149,7 +149,7 @@ void UpdateActivity::NotifyError(Task * sender)
 			if (result == ConfirmPrompt::ResultOkay)
 			{
 #ifndef UPDATESERVER
-				Platform::OpenURI("http://powdertoy.co.uk/http/Request.html");
+				Platform::OpenURI("http://powdertoy.co.uk/Download.html");
 #endif
 			}
 			a->Exit();
