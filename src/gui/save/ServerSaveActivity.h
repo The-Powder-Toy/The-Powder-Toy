@@ -2,8 +2,9 @@
 
 #include "Activity.h"
 #include "client/SaveInfo.h"
-#include "client/requestbroker/RequestListener.h"
 #include "tasks/TaskListener.h"
+
+#include <memory>
 
 namespace ui
 {
@@ -12,9 +13,10 @@ namespace ui
 	class Checkbox;
 }
 
+class ThumbnailRendererTask;
 class Task;
 class VideoBuffer;
-class ServerSaveActivity: public WindowActivity, public RequestListener, public TaskListener
+class ServerSaveActivity: public WindowActivity, public TaskListener
 {
 public:
 	class SaveUploadedCallback
@@ -33,13 +35,13 @@ public:
 	virtual void ShowRules();
 	virtual void CheckName(String newname);
 	virtual void OnDraw();
-	virtual void OnResponseReady(void * imagePtr, int identifier);
 	virtual void OnTick(float dt);
 	virtual ~ServerSaveActivity();
 protected:
 	void AddAuthorInfo();
 	virtual void NotifyDone(Task * task);
-	VideoBuffer * thumbnail;
+	std::unique_ptr<ThumbnailRendererTask> thumbnailRenderer;
+	std::unique_ptr<VideoBuffer> thumbnail;
 	SaveInfo save;
 	SaveUploadedCallback * callback;
 	Task * saveUploadTask;

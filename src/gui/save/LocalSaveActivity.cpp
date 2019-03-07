@@ -6,12 +6,12 @@
 #include "graphics/Graphics.h"
 #include "gui/Style.h"
 
-#include "client/requestbroker/RequestBroker.h"
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/interface/Button.h"
 #include "gui/interface/Label.h"
 #include "gui/interface/Textbox.h"
+#include "client/ThumbnailRenderer.h"
 
 
 class LocalSaveActivity::CancelAction: public ui::ButtonAction
@@ -39,7 +39,6 @@ public:
 LocalSaveActivity::LocalSaveActivity(SaveFile save, FileSavedCallback * callback) :
 	WindowActivity(ui::Point(-1, -1), ui::Point(220, 200)),
 	save(save),
-	thumbnail(NULL),
 	callback(callback)
 {
 	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 16), "Save to computer:");
@@ -71,7 +70,23 @@ LocalSaveActivity::LocalSaveActivity(SaveFile save, FileSavedCallback * callback
 	SetOkayButton(okayButton);
 
 	if(save.GetGameSave())
-		RequestBroker::Ref().RenderThumbnail(save.GetGameSave(), true, false, Size.X-16, -1, false, this);
+	{
+		thumbnailRenderer = std::unique_ptr<ThumbnailRendererTask>(new ThumbnailRendererTask(save.GetGameSave(), Size.X-16, -1, false, true, false));
+		thumbnailRenderer->Start();
+	}
+}
+
+void LocalSaveActivity::OnTick(float dt)
+{
+	if (thumbnailRenderer)
+	{
+		thumbnailRenderer->Poll();
+		if (thumbnailRenderer->GetDone())
+		{
+			thumbnail = thumbnailRenderer->GetThumbnail();
+			thumbnailRenderer.reset();
+		}
+	}
 }
 
 void LocalSaveActivity::Save()
@@ -146,20 +161,12 @@ void LocalSaveActivity::OnDraw()
 
 	if(thumbnail)
 	{
-		g->draw_image(thumbnail, Position.X+(Size.X-thumbnail->Width)/2, Position.Y+45, 255);
+		g->draw_image(thumbnail.get(), Position.X+(Size.X-thumbnail->Width)/2, Position.Y+45, 255);
 		g->drawrect(Position.X+(Size.X-thumbnail->Width)/2, Position.Y+45, thumbnail->Width, thumbnail->Height, 180, 180, 180, 255);
 	}
 }
 
-void LocalSaveActivity::OnResponseReady(void * imagePtr, int identifier)
-{
-	delete thumbnail;
-	thumbnail = (VideoBuffer*)imagePtr;
-}
-
 LocalSaveActivity::~LocalSaveActivity()
 {
-	RequestBroker::Ref().DetachRequestListener(this);
-	delete thumbnail;
 	delete callback;
 }
