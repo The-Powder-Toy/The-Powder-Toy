@@ -1,11 +1,11 @@
 #ifndef GETUSERINFOREQUEST2_H
 #define GETUSERINFOREQUEST2_H
 
-#include "Download.h"
+#include "Request.h"
 #include "common/String.h"
 #include "json/json.h"
 #include "client/Client.h"
-#include "client/APIRequest.h"
+#include "APIRequest.h"
 
 #include <memory>
 #include <map>

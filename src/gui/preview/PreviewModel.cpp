@@ -75,13 +75,13 @@ void PreviewModel::UpdateSave(int saveID, int saveDate)
 		url = ByteString::Build("http://", STATICSERVER, "/", saveID, "_", saveDate, ".cps");
 	else
 		url = ByteString::Build("http://", STATICSERVER, "/", saveID, ".cps");
-	saveDataDownload = new http::Download(url);
+	saveDataDownload = new http::Request(url);
 	saveDataDownload->Start();
 
 	url = ByteString::Build("http://", SERVER , "/Browse/View.json?ID=", saveID);
 	if (saveDate)
 		url += ByteString::Build("&Date=", saveDate);
-	saveInfoDownload = new http::Download(url);
+	saveInfoDownload = new http::Request(url);
 	saveInfoDownload->AuthHeaders(ByteString::Build(Client::Ref().GetAuthUser().UserID), Client::Ref().GetAuthUser().SessionID);
 	saveInfoDownload->Start();
 
@@ -90,7 +90,7 @@ void PreviewModel::UpdateSave(int saveID, int saveDate)
 		commentsLoaded = false;
 
 		url = ByteString::Build("http://", SERVER, "/Browse/Comments.json?ID=", saveID, "&Start=", (commentsPageNumber-1)*20, "&Count=20");
-		commentsDownload = new http::Download(url);
+		commentsDownload = new http::Request(url);
 		commentsDownload->AuthHeaders(ByteString::Build(Client::Ref().GetAuthUser().UserID), Client::Ref().GetAuthUser().SessionID);
 		commentsDownload->Start();
 	}
@@ -142,7 +142,7 @@ void PreviewModel::UpdateComments(int pageNumber)
 		if (!GetDoOpen())
 		{
 			ByteString url = ByteString::Build("http://", SERVER, "/Browse/Comments.json?ID=", saveID, "&Start=", (commentsPageNumber-1)*20, "&Count=20");
-			commentsDownload = new http::Download(url);
+			commentsDownload = new http::Request(url);
 			commentsDownload->AuthHeaders(ByteString::Build(Client::Ref().GetAuthUser().UserID), Client::Ref().GetAuthUser().SessionID);
 			commentsDownload->Start();
 		}
@@ -239,7 +239,7 @@ bool PreviewModel::ParseSaveInfo(ByteString &saveInfoResponse)
 				saveDataDownload->Cancel();
 			delete saveData;
 			saveData = NULL;
-			saveDataDownload = new http::Download(ByteString::Build("http://", STATICSERVER, "/2157797.cps"));
+			saveDataDownload = new http::Request(ByteString::Build("http://", STATICSERVER, "/2157797.cps"));
 			saveDataDownload->Start();
 		}
 		return true;

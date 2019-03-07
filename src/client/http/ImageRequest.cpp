@@ -7,7 +7,7 @@
 namespace http
 {
 	ImageRequest::ImageRequest(ByteString url, int width, int height) :
-		Download(url),
+		Request(url),
 		Width(width),
 		Height(height)
 	{
@@ -19,7 +19,7 @@ namespace http
 
 	std::unique_ptr<VideoBuffer> ImageRequest::Finish()
 	{
-		ByteString data = Download::Finish(nullptr);
+		ByteString data = Request::Finish(nullptr);
 		std::unique_ptr<VideoBuffer> vb;
 		if (data.size())
 		{

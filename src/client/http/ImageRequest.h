@@ -1,7 +1,7 @@
 #ifndef IMAGEREQUEST2_H
 #define IMAGEREQUEST2_H
 
-#include "Download.h"
+#include "Request.h"
 #include "common/String.h"
 
 #include <memory>
@@ -9,7 +9,7 @@
 class VideoBuffer;
 namespace http
 {
-	class ImageRequest : public Download
+	class ImageRequest : public Request
 	{
 		int Width, Height;
 		

@@ -43,8 +43,8 @@
 #include "client/UserInfo.h"
 #include "gui/preview/Comment.h"
 #include "ClientListener.h"
-#include "client/Download.h"
-#include "client/DownloadManager.h"
+#include "client/http/Request.h"
+#include "client/http/RequestManager.h"
 
 #include "json/json.h"
 
@@ -111,7 +111,7 @@ void Client::Initialise(ByteString proxyString)
 		update_finish();
 	}
 
-	http::DownloadManager::Ref().Initialise(proxyString);
+	http::RequestManager::Ref().Initialise(proxyString);
 
 	//Read stamps library
 	std::ifstream stampsLib;
@@ -128,7 +128,7 @@ void Client::Initialise(ByteString proxyString)
 	stampsLib.close();
 
 	//Begin version check
-	versionCheckRequest = new http::Download("http://" SERVER "/Startup.json");
+	versionCheckRequest = new http::Request("http://" SERVER "/Startup.json");
 
 	if (authUser.UserID)
 	{
@@ -138,7 +138,7 @@ void Client::Initialise(ByteString proxyString)
 
 #ifdef UPDATESERVER
 	// use an alternate update server
-	alternateVersionCheckRequest = new http::Download("http://" UPDATESERVER "/Startup.json");
+	alternateVersionCheckRequest = new http::Request("http://" UPDATESERVER "/Startup.json");
 	usingAltUpdateServer = true;
 	if (authUser.UserID)
 	{
@@ -718,7 +718,7 @@ void Client::Tick()
 	}
 }
 
-bool Client::CheckUpdate(http::Download *updateRequest, bool checkSession)
+bool Client::CheckUpdate(http::Request *updateRequest, bool checkSession)
 {
 	//Check status on version check request
 	if (updateRequest->CheckDone())
@@ -913,7 +913,7 @@ void Client::WritePrefs()
 
 void Client::Shutdown()
 {
-	http::DownloadManager::Ref().Shutdown();
+	http::RequestManager::Ref().Shutdown();
 
 	//Save config
 	WritePrefs();
@@ -976,7 +976,7 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 		}
 #endif
 
-		data = http::Download::SimpleAuth("http://" SERVER "/Save.api", &dataStatus, userID, authUser.SessionID, {
+		data = http::Request::SimpleAuth("http://" SERVER "/Save.api", &dataStatus, userID, authUser.SessionID, {
 			{ "Name", save.GetName().ToUtf8() },
 			{ "Description", save.GetDescription().ToUtf8() },
 			{ "Data:save.bin", ByteString(gameData, gameData + gameDataLength) },
@@ -1172,7 +1172,7 @@ RequestStatus Client::ExecVote(int saveID, int direction)
 	{
 		ByteString saveIDText = ByteString::Build(saveID);
 		ByteString userIDText = ByteString::Build(authUser.UserID);
-		data = http::Download::SimpleAuth("http://" SERVER "/Vote.api", &dataStatus, userIDText, authUser.SessionID, {
+		data = http::Request::SimpleAuth("http://" SERVER "/Vote.api", &dataStatus, userIDText, authUser.SessionID, {
 			{ "ID", saveIDText },
 			{ "Action", direction == 1 ? "Up" : "Down" },
 		});
@@ -1198,7 +1198,7 @@ unsigned char * Client::GetSaveData(int saveID, int saveDate, int & dataLength)
 	else
 		urlStr = ByteString::Build("http://", STATICSERVER, "/", saveID, ".cps");
 
-	data = http::Download::Simple(urlStr, &dataStatus);
+	data = http::Request::Simple(urlStr, &dataStatus);
 
 	// will always return failure
 	ParseServerReturn(data, dataStatus, false);
@@ -1244,7 +1244,7 @@ LoginStatus Client::Login(ByteString username, ByteString password, User & user)
 
 	ByteString data;
 	int dataStatus;
-	data = http::Download::Simple("http://" SERVER "/Login.json", &dataStatus, {
+	data = http::Request::Simple("http://" SERVER "/Login.json", &dataStatus, {
 		{ "Username", username },
 		{ "Hash", totalHash },
 	});
@@ -1304,7 +1304,7 @@ RequestStatus Client::DeleteSave(int saveID)
 	if(authUser.UserID)
 	{
 		ByteString userID = ByteString::Build(authUser.UserID);
-		data = http::Download::SimpleAuth(url, &dataStatus, userID, authUser.SessionID);
+		data = http::Request::SimpleAuth(url, &dataStatus, userID, authUser.SessionID);
 	}
 	else
 	{
@@ -1324,7 +1324,7 @@ RequestStatus Client::AddComment(int saveID, String comment)
 	if(authUser.UserID)
 	{
 		ByteString userID = ByteString::Build(authUser.UserID);
-		data = http::Download::SimpleAuth(url, &dataStatus, userID, authUser.SessionID, {
+		data = http::Request::SimpleAuth(url, &dataStatus, userID, authUser.SessionID, {
 			{ "Comment", comment.ToUtf8() },
 		});
 	}
@@ -1349,7 +1349,7 @@ RequestStatus Client::FavouriteSave(int saveID, bool favourite)
 	if(authUser.UserID)
 	{
 		ByteString userID = ByteString::Build(authUser.UserID);
-		data = http::Download::SimpleAuth(urlStream.Build(), &dataStatus, userID, authUser.SessionID);
+		data = http::Request::SimpleAuth(urlStream.Build(), &dataStatus, userID, authUser.SessionID);
 	}
 	else
 	{
@@ -1369,7 +1369,7 @@ RequestStatus Client::ReportSave(int saveID, String message)
 	if(authUser.UserID)
 	{
 		ByteString userID = ByteString::Build(authUser.UserID);
-		data = http::Download::SimpleAuth(url, &dataStatus, userID, authUser.SessionID, {
+		data = http::Request::SimpleAuth(url, &dataStatus, userID, authUser.SessionID, {
 			{ "Reason", message.ToUtf8() },
 		});
 	}
@@ -1391,7 +1391,7 @@ RequestStatus Client::UnpublishSave(int saveID)
 	if(authUser.UserID)
 	{
 		ByteString userID = ByteString::Build(authUser.UserID);
-		data = http::Download::SimpleAuth(url, &dataStatus, userID, authUser.SessionID);
+		data = http::Request::SimpleAuth(url, &dataStatus, userID, authUser.SessionID);
 	}
 	else
 	{
@@ -1411,7 +1411,7 @@ RequestStatus Client::PublishSave(int saveID)
 	if (authUser.UserID)
 	{
 		ByteString userID = ByteString::Build(authUser.UserID);
-		data = http::Download::SimpleAuth(url, &dataStatus, userID, authUser.SessionID, {
+		data = http::Request::SimpleAuth(url, &dataStatus, userID, authUser.SessionID, {
 			{ "ActionPublish", "bagels" },
 		});
 	}
@@ -1439,11 +1439,11 @@ SaveInfo * Client::GetSave(int saveID, int saveDate)
 	{
 		ByteString userID = ByteString::Build(authUser.UserID);
 		
-		data = http::Download::SimpleAuth(urlStream.Build(), &dataStatus, userID, authUser.SessionID);
+		data = http::Request::SimpleAuth(urlStream.Build(), &dataStatus, userID, authUser.SessionID);
 	}
 	else
 	{
-		data = http::Download::Simple(urlStream.Build(), &dataStatus);
+		data = http::Request::Simple(urlStream.Build(), &dataStatus);
 	}
 	if(dataStatus == 200 && data.size())
 	{
@@ -1511,7 +1511,7 @@ std::vector<std::pair<ByteString, int> > * Client::GetTags(int start, int count,
 			urlStream << format::URLEncode(query.ToUtf8());
 	}
 
-	data = http::Download::Simple(urlStream.Build(), &dataStatus);
+	data = http::Request::Simple(urlStream.Build(), &dataStatus);
 	if(dataStatus == 200 && data.size())
 	{
 		try
@@ -1569,11 +1569,11 @@ std::vector<SaveInfo*> * Client::SearchSaves(int start, int count, String query,
 	if(authUser.UserID)
 	{
 		ByteString userID = ByteString::Build(authUser.UserID);
-		data = http::Download::SimpleAuth(urlStream.Build(), &dataStatus, userID, authUser.SessionID);
+		data = http::Request::SimpleAuth(urlStream.Build(), &dataStatus, userID, authUser.SessionID);
 	}
 	else
 	{
-		data = http::Download::Simple(urlStream.Build(), &dataStatus);
+		data = http::Request::Simple(urlStream.Build(), &dataStatus);
 	}
 	ParseServerReturn(data, dataStatus, true);
 	if (dataStatus == 200 && data.size())
@@ -1621,7 +1621,7 @@ std::list<ByteString> * Client::RemoveTag(int saveID, ByteString tag)
 	if(authUser.UserID)
 	{
 		ByteString userID = ByteString::Build(authUser.UserID);
-		data = http::Download::SimpleAuth(url, &dataStatus, userID, authUser.SessionID);
+		data = http::Request::SimpleAuth(url, &dataStatus, userID, authUser.SessionID);
 	}
 	else
 	{
@@ -1660,7 +1660,7 @@ std::list<ByteString> * Client::AddTag(int saveID, ByteString tag)
 	if(authUser.UserID)
 	{
 		ByteString userID = ByteString::Build(authUser.UserID);
-		data = http::Download::SimpleAuth(url, &dataStatus, userID, authUser.SessionID);
+		data = http::Request::SimpleAuth(url, &dataStatus, userID, authUser.SessionID);
 	}
 	else
 	{

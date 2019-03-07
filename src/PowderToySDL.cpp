@@ -51,8 +51,6 @@
 #include "gui/interface/Keys.h"
 #include "gui/Style.h"
 
-#include "client/HTTP.h"
-
 using namespace std;
 
 #define INCLUDE_SYSWM

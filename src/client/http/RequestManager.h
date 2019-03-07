@@ -8,8 +8,8 @@
 
 namespace http
 {
-class Download;
-class DownloadManager : public Singleton<DownloadManager>
+class Request;
+class RequestManager : public Singleton<RequestManager>
 {
 private:
 	pthread_t downloadThread;
@@ -21,13 +21,13 @@ private:
 	int lastUsed;
 	volatile bool managerRunning;
 	volatile bool managerShutdown;
-	std::vector<Download*> downloads;
-	std::vector<Download*> downloadsAddQueue;
+	std::vector<Request*> downloads;
+	std::vector<Request*> downloadsAddQueue;
 
 	void Start();
 public:
-	DownloadManager();
-	~DownloadManager();
+	RequestManager();
+	~RequestManager();
 
 	void Initialise(ByteString proxy);
 
@@ -35,7 +35,7 @@ public:
 	void Update();
 	void EnsureRunning();
 
-	void AddDownload(Download *download);
+	void AddDownload(Request *download);
 	void RemoveDownload(int id);
 
 	void Lock();

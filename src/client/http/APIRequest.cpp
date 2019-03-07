@@ -4,7 +4,7 @@
 
 namespace http
 {
-	APIRequest::APIRequest(ByteString url) : Download(url)
+	APIRequest::APIRequest(ByteString url) : Request(url)
 	{
 		User user = Client::Ref().GetAuthUser();
 		AuthHeaders(ByteString::Build(user.UserID), user.SessionID);
@@ -19,7 +19,7 @@ namespace http
 		Result result;
 		try
 		{
-			ByteString data = Download::Finish(&result.status);
+			ByteString data = Request::Finish(&result.status);
 			Client::Ref().ParseServerReturn(data, result.status, true);
 			if (result.status == 200 && data.size())
 			{

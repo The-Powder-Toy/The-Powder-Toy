@@ -1,12 +1,12 @@
 #include <cstdlib>
-#include "Download.h"
-#include "DownloadManager.h"
+#include "Request.h"
+#include "RequestManager.h"
 #include "HTTP.h"
 #include "Platform.h"
 
 namespace http
 {
-Download::Download(ByteString uri_, bool keepAlive):
+Request::Request(ByteString uri_, bool keepAlive):
 	http(NULL),
 	keepAlive(keepAlive),
 	downloadData(NULL),
@@ -21,11 +21,11 @@ Download::Download(ByteString uri_, bool keepAlive):
 	downloadStarted(false)
 {
 	uri = ByteString(uri_);
-	DownloadManager::Ref().AddDownload(this);
+	RequestManager::Ref().AddDownload(this);
 }
 
 // called by download thread itself if download was canceled
-Download::~Download()
+Request::~Request()
 {
 	if (http && (keepAlive || downloadCanceled))
 		http_async_req_close(http);
@@ -34,12 +34,12 @@ Download::~Download()
 }
 
 // add post data to a request
-void Download::AddPostData(std::map<ByteString, ByteString> data)
+void Request::AddPostData(std::map<ByteString, ByteString> data)
 {
 	postDataBoundary = FindBoundary(data, "");
 	postData = GetMultipartMessage(data, postDataBoundary);
 }
-void Download::AddPostData(std::pair<ByteString, ByteString> data)
+void Request::AddPostData(std::pair<ByteString, ByteString> data)
 {
 	std::map<ByteString, ByteString> postData;
 	postData.insert(data);
@@ -47,7 +47,7 @@ void Download::AddPostData(std::pair<ByteString, ByteString> data)
 }
 
 // add userID and sessionID headers to the download. Must be done after download starts for some reason
-void Download::AuthHeaders(ByteString ID, ByteString session)
+void Request::AuthHeaders(ByteString ID, ByteString session)
 {
 	if (ID != "0")
 		userID = ID;
@@ -55,7 +55,7 @@ void Download::AuthHeaders(ByteString ID, ByteString session)
 }
 
 // start the download thread
-void Download::Start()
+void Request::Start()
 {
 	if (CheckStarted() || CheckDone())
 		return;
@@ -65,19 +65,19 @@ void Download::Start()
 		http_auth_headers(http, userID.c_str(), NULL, userSession.c_str());
 	if (postDataBoundary.length())
 		http_add_multipart_header(http, postDataBoundary);
-	DownloadManager::Ref().Lock();
+	RequestManager::Ref().Lock();
 	downloadStarted = true;
-	DownloadManager::Ref().Unlock();
+	RequestManager::Ref().Unlock();
 }
 
 
 // finish the download (if called before the download is done, this will block)
-ByteString Download::Finish(int *status)
+ByteString Request::Finish(int *status)
 {
 	if (CheckCanceled())
 		return ""; // shouldn't happen but just in case
 	while (!CheckDone()); // block
-	DownloadManager::Ref().Lock();
+	RequestManager::Ref().Lock();
 	downloadStarted = false;
 	if (status)
 		*status = downloadStatus;
@@ -90,60 +90,60 @@ ByteString Download::Finish(int *status)
 	downloadData = NULL;
 	if (!keepAlive)
 		downloadCanceled = true;
-	DownloadManager::Ref().Unlock();
+	RequestManager::Ref().Unlock();
 	return ret;
 }
 
 // returns the download size and progress (if the download has the correct length headers)
-void Download::CheckProgress(int *total, int *done)
+void Request::CheckProgress(int *total, int *done)
 {
-	DownloadManager::Ref().Lock();
+	RequestManager::Ref().Lock();
 	if (!downloadFinished && http)
 		http_async_get_length(http, total, done);
 	else
 		*total = *done = 0;
-	DownloadManager::Ref().Unlock();
+	RequestManager::Ref().Unlock();
 }
 
 // returns true if the download has finished
-bool Download::CheckDone()
+bool Request::CheckDone()
 {
-	DownloadManager::Ref().Lock();
+	RequestManager::Ref().Lock();
 	bool ret = downloadFinished;
-	DownloadManager::Ref().Unlock();
+	RequestManager::Ref().Unlock();
 	return ret;
 }
 
 // returns true if the download was canceled
-bool Download::CheckCanceled()
+bool Request::CheckCanceled()
 {
-	DownloadManager::Ref().Lock();
+	RequestManager::Ref().Lock();
 	bool ret = downloadCanceled;
-	DownloadManager::Ref().Unlock();
+	RequestManager::Ref().Unlock();
 	return ret;
 }
 
 // returns true if the download is running
-bool Download::CheckStarted()
+bool Request::CheckStarted()
 {
-	DownloadManager::Ref().Lock();
+	RequestManager::Ref().Lock();
 	bool ret = downloadStarted;
-	DownloadManager::Ref().Unlock();
+	RequestManager::Ref().Unlock();
 	return ret;
 
 }
 
-// cancels the download, the download thread will delete the Download* when it finishes (do not use Download in any way after canceling)
-void Download::Cancel()
+// cancels the download, the download thread will delete the Request* when it finishes (do not use Request in any way after canceling)
+void Request::Cancel()
 {
-	DownloadManager::Ref().Lock();
+	RequestManager::Ref().Lock();
 	downloadCanceled = true;
-	DownloadManager::Ref().Unlock();
+	RequestManager::Ref().Unlock();
 }
 
-ByteString Download::Simple(ByteString uri, int *status, std::map<ByteString, ByteString> post_data)
+ByteString Request::Simple(ByteString uri, int *status, std::map<ByteString, ByteString> post_data)
 {
-	Download *request = new Download(uri);
+	Request *request = new Request(uri);
 	request->AddPostData(post_data);
 	request->Start();
 	while(!request->CheckDone())
@@ -153,9 +153,9 @@ ByteString Download::Simple(ByteString uri, int *status, std::map<ByteString, By
 	return request->Finish(status);
 }
 
-ByteString Download::SimpleAuth(ByteString uri, int *status, ByteString ID, ByteString session, std::map<ByteString, ByteString> post_data)
+ByteString Request::SimpleAuth(ByteString uri, int *status, ByteString ID, ByteString session, std::map<ByteString, ByteString> post_data)
 {
-	Download *request = new Download(uri);
+	Request *request = new Request(uri);
 	request->AddPostData(post_data);
 	request->AuthHeaders(ID, session);
 	request->Start();
