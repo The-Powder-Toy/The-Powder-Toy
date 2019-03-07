@@ -8,11 +8,10 @@
 #include "SaveButton.h"
 #include "client/Client.h"
 #include "client/SaveInfo.h"
-#include "client/ThumbnailRequest.h"
 #include "client/ThumbnailRenderer.h"
-#include "graphics/Graphics.h"
 #include "simulation/SaveRenderer.h"
 #include "client/GameSave.h"
+#include "simulation/SaveRenderer.h"
 
 namespace ui {
 
@@ -24,7 +23,6 @@ SaveButton::SaveButton(Point position, Point size, SaveInfo * save):
 	isMouseInsideAuthor(false),
 	isMouseInsideHistory(false),
 	showVotes(false),
-	thumbnailRequest(nullptr),
 	isButtonDown(false),
 	isMouseInside(false),
 	selected(false),
@@ -98,7 +96,6 @@ SaveButton::SaveButton(Point position, Point size, SaveFile * file):
 	isMouseInsideAuthor(false),
 	isMouseInsideHistory(false),
 	showVotes(false),
-	thumbnailRequest(nullptr),
 	isButtonDown(false),
 	isMouseInside(false),
 	selected(false),
@@ -119,14 +116,14 @@ SaveButton::SaveButton(Point position, Point size, SaveFile * file):
 
 SaveButton::~SaveButton()
 {
-	if (thumbnailRequest)
-	{
-		thumbnailRequest->Cancel();
-	}
-
 	delete actionCallback;
 	delete save;
 	delete file;
+}
+
+void SaveButton::OnResponse(std::unique_ptr<VideoBuffer> Thumbnail)
+{
+	thumbnail = std::move(Thumbnail);
 }
 
 void SaveButton::Tick(float dt)
@@ -147,8 +144,8 @@ void SaveButton::Tick(float dt)
 				}
 				else if (save->GetID())
 				{
-					thumbnailRequest = new http::ThumbnailRequest(save->GetID(), save->GetVersion(), thumbBoxSize.X, thumbBoxSize.Y);
-					thumbnailRequest->Start();
+					RequestSetup(save->GetID(), save->GetVersion(), thumbBoxSize.X, thumbBoxSize.Y);
+					RequestStart();
 					triedThumbnail = true;
 				}
 			}
@@ -160,11 +157,7 @@ void SaveButton::Tick(float dt)
 			}
 		}
 
-		if (thumbnailRequest && thumbnailRequest->CheckDone())
-		{
-			thumbnail = thumbnailRequest->Finish();
-			thumbnailRequest = nullptr;
-		}
+		RequestPoll();
 
 		if (thumbnailRenderer)
 		{

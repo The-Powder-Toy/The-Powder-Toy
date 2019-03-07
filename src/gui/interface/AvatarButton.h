@@ -6,13 +6,11 @@
 #include "Component.h"
 #include "graphics/Graphics.h"
 #include "gui/interface/Colour.h"
+#include "client/AvatarRequest.h"
+#include "client/RequestMonitor.h"
 
 #include <memory>
 
-namespace http
-{
-	class AvatarRequest;
-}
 namespace ui
 {
 class AvatarButton;
@@ -23,10 +21,9 @@ public:
 	virtual ~AvatarButtonAction() {}
 };
 
-class AvatarButton : public Component
+class AvatarButton : public Component, public http::RequestMonitor<http::AvatarRequest>
 {
 	std::unique_ptr<VideoBuffer> avatar;
-	http::AvatarRequest *avatarRequest;
 	ByteString name;
 	bool tried;
 public:
@@ -43,6 +40,8 @@ public:
 
 	void Draw(const Point& screenPos) override;
 	void Tick(float dt) override;
+
+	void OnResponse(std::unique_ptr<VideoBuffer> avatar) override;
 
 	void DoAction();
 
