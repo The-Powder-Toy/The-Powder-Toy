@@ -40,7 +40,7 @@ public:
 protected:
 	void AddAuthorInfo();
 	virtual void NotifyDone(Task * task);
-	std::unique_ptr<ThumbnailRendererTask> thumbnailRenderer;
+	ThumbnailRendererTask *thumbnailRenderer;
 	std::unique_ptr<VideoBuffer> thumbnail;
 	SaveInfo save;
 	SaveUploadedCallback * callback;

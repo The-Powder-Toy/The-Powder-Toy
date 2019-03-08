@@ -45,7 +45,7 @@ class SaveButton : public Component, public http::RequestMonitor<http::Thumbnail
 	bool isMouseInsideAuthor;
 	bool isMouseInsideHistory;
 	bool showVotes;
-	std::unique_ptr<ThumbnailRendererTask> thumbnailRenderer;
+	ThumbnailRendererTask *thumbnailRenderer;
 public:
 	SaveButton(Point position, Point size, SaveInfo * save);
 	SaveButton(Point position, Point size, SaveFile * file);

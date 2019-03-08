@@ -1,4 +1,4 @@
-#include "ThumbnailRenderer.h"
+#include "ThumbnailRendererTask.h"
 
 #include <cmath>
 
@@ -47,8 +47,10 @@ bool ThumbnailRendererTask::doWork()
 	}
 }
 
-std::unique_ptr<VideoBuffer> ThumbnailRendererTask::GetThumbnail()
+std::unique_ptr<VideoBuffer> ThumbnailRendererTask::Finish()
 {
-	return std::move(thumbnail);
+	auto ptr = std::move(thumbnail);
+	AbandonableTask::Finish();
+	return ptr;
 }
 

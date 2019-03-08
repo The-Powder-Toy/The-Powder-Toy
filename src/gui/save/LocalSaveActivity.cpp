@@ -11,7 +11,7 @@
 #include "gui/interface/Button.h"
 #include "gui/interface/Label.h"
 #include "gui/interface/Textbox.h"
-#include "client/ThumbnailRenderer.h"
+#include "client/ThumbnailRendererTask.h"
 
 
 class LocalSaveActivity::CancelAction: public ui::ButtonAction
@@ -39,6 +39,7 @@ public:
 LocalSaveActivity::LocalSaveActivity(SaveFile save, FileSavedCallback * callback) :
 	WindowActivity(ui::Point(-1, -1), ui::Point(220, 200)),
 	save(save),
+	thumbnailRenderer(nullptr),
 	callback(callback)
 {
 	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 16), "Save to computer:");
@@ -71,7 +72,7 @@ LocalSaveActivity::LocalSaveActivity(SaveFile save, FileSavedCallback * callback
 
 	if(save.GetGameSave())
 	{
-		thumbnailRenderer = std::unique_ptr<ThumbnailRendererTask>(new ThumbnailRendererTask(save.GetGameSave(), Size.X-16, -1, false, true, false));
+		thumbnailRenderer = new ThumbnailRendererTask(save.GetGameSave(), Size.X-16, -1, false, true, false);
 		thumbnailRenderer->Start();
 	}
 }
@@ -83,8 +84,8 @@ void LocalSaveActivity::OnTick(float dt)
 		thumbnailRenderer->Poll();
 		if (thumbnailRenderer->GetDone())
 		{
-			thumbnail = thumbnailRenderer->GetThumbnail();
-			thumbnailRenderer.reset();
+			thumbnail = thumbnailRenderer->Finish();
+			thumbnailRenderer = nullptr;
 		}
 	}
 }
@@ -168,5 +169,9 @@ void LocalSaveActivity::OnDraw()
 
 LocalSaveActivity::~LocalSaveActivity()
 {
+	if (thumbnailRenderer)
+	{
+		thumbnailRenderer->Abandon();
+	}
 	delete callback;
 }
