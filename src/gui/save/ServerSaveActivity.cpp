@@ -13,7 +13,7 @@
 #include "gui/Style.h"
 #include "client/GameSave.h"
 #include "images.h"
-#include "client/ThumbnailRenderer.h"
+#include "client/ThumbnailRendererTask.h"
 
 class ServerSaveActivity::CancelAction: public ui::ButtonAction
 {
@@ -104,6 +104,7 @@ public:
 
 ServerSaveActivity::ServerSaveActivity(SaveInfo save, ServerSaveActivity::SaveUploadedCallback * callback) :
 	WindowActivity(ui::Point(-1, -1), ui::Point(440, 200)),
+	thumbnailRenderer(nullptr),
 	save(save),
 	callback(callback),
 	saveUploadTask(NULL)
@@ -184,13 +185,14 @@ ServerSaveActivity::ServerSaveActivity(SaveInfo save, ServerSaveActivity::SaveUp
 
 	if (save.GetGameSave())
 	{
-		thumbnailRenderer = std::unique_ptr<ThumbnailRendererTask>(new ThumbnailRendererTask(save.GetGameSave(), (Size.X/2)-16, -1, false, false, true));
+		thumbnailRenderer = new ThumbnailRendererTask(save.GetGameSave(), (Size.X/2)-16, -1, false, false, true);
 		thumbnailRenderer->Start();
 	}
 }
 
 ServerSaveActivity::ServerSaveActivity(SaveInfo save, bool saveNow, ServerSaveActivity::SaveUploadedCallback * callback) :
 	WindowActivity(ui::Point(-1, -1), ui::Point(200, 50)),
+	thumbnailRenderer(nullptr),
 	save(save),
 	callback(callback),
 	saveUploadTask(NULL)
@@ -407,8 +409,8 @@ void ServerSaveActivity::OnTick(float dt)
 		thumbnailRenderer->Poll();
 		if (thumbnailRenderer->GetDone())
 		{
-			thumbnail = thumbnailRenderer->GetThumbnail();
-			thumbnailRenderer.reset();
+			thumbnail = thumbnailRenderer->Finish();
+			thumbnailRenderer = nullptr;
 		}
 	}
 
@@ -435,6 +437,10 @@ void ServerSaveActivity::OnDraw()
 
 ServerSaveActivity::~ServerSaveActivity()
 {
+	if (thumbnailRenderer)
+	{
+		thumbnailRenderer->Abandon();
+	}
 	delete saveUploadTask;
 	delete callback;
 }

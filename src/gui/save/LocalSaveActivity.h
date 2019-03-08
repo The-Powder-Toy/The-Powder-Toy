@@ -24,7 +24,7 @@ public:
 class LocalSaveActivity: public WindowActivity
 {
 	SaveFile save;
-	std::unique_ptr<ThumbnailRendererTask> thumbnailRenderer;
+	ThumbnailRendererTask *thumbnailRenderer;
 	std::unique_ptr<VideoBuffer> thumbnail;
 	ui::Textbox * filenameField;
 	class CancelAction;

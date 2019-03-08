@@ -8,7 +8,7 @@
 #include "SaveButton.h"
 #include "client/Client.h"
 #include "client/SaveInfo.h"
-#include "client/ThumbnailRenderer.h"
+#include "client/ThumbnailRendererTask.h"
 #include "simulation/SaveRenderer.h"
 #include "client/GameSave.h"
 #include "simulation/SaveRenderer.h"
@@ -23,6 +23,7 @@ SaveButton::SaveButton(Point position, Point size, SaveInfo * save):
 	isMouseInsideAuthor(false),
 	isMouseInsideHistory(false),
 	showVotes(false),
+	thumbnailRenderer(nullptr),
 	isButtonDown(false),
 	isMouseInside(false),
 	selected(false),
@@ -96,6 +97,7 @@ SaveButton::SaveButton(Point position, Point size, SaveFile * file):
 	isMouseInsideAuthor(false),
 	isMouseInsideHistory(false),
 	showVotes(false),
+	thumbnailRenderer(nullptr),
 	isButtonDown(false),
 	isMouseInside(false),
 	selected(false),
@@ -116,6 +118,10 @@ SaveButton::SaveButton(Point position, Point size, SaveFile * file):
 
 SaveButton::~SaveButton()
 {
+	if (thumbnailRenderer)
+	{
+		thumbnailRenderer->Abandon();
+	}
 	delete actionCallback;
 	delete save;
 	delete file;
@@ -138,7 +144,7 @@ void SaveButton::Tick(float dt)
 			{
 				if(save->GetGameSave())
 				{
-					thumbnailRenderer = std::unique_ptr<ThumbnailRendererTask>(new ThumbnailRendererTask(save->GetGameSave(), thumbBoxSize.X, thumbBoxSize.Y));
+					thumbnailRenderer = new ThumbnailRendererTask(save->GetGameSave(), thumbBoxSize.X, thumbBoxSize.Y);
 					thumbnailRenderer->Start();
 					triedThumbnail = true;
 				}
@@ -151,7 +157,7 @@ void SaveButton::Tick(float dt)
 			}
 			else if (file && file->GetGameSave())
 			{
-				thumbnailRenderer = std::unique_ptr<ThumbnailRendererTask>(new ThumbnailRendererTask(file->GetGameSave(), thumbBoxSize.X, thumbBoxSize.Y, true, true, false));
+				thumbnailRenderer = new ThumbnailRendererTask(file->GetGameSave(), thumbBoxSize.X, thumbBoxSize.Y, true, true, false);
 				thumbnailRenderer->Start();
 				triedThumbnail = true;
 			}
@@ -164,8 +170,8 @@ void SaveButton::Tick(float dt)
 			thumbnailRenderer->Poll();
 			if (thumbnailRenderer->GetDone())
 			{
-				thumbnail = thumbnailRenderer->GetThumbnail();
-				thumbnailRenderer.reset();
+				thumbnail = thumbnailRenderer->Finish();
+				thumbnailRenderer = nullptr;
 			}
 		}
 
