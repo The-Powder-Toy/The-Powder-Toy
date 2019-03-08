@@ -44,8 +44,8 @@ public:
 
 	friend class RequestManager;
 
-	static ByteString Simple(ByteString uri, int *status, std::map<ByteString, ByteString> post_data = {});
-	static ByteString SimpleAuth(ByteString uri, int *status, ByteString ID, ByteString session, std::map<ByteString, ByteString> post_data = {});
+	static ByteString Simple(ByteString uri, int *status, std::map<ByteString, ByteString> post_data = std::map<ByteString, ByteString>{});
+	static ByteString SimpleAuth(ByteString uri, int *status, ByteString ID, ByteString session, std::map<ByteString, ByteString> post_data = std::map<ByteString, ByteString>{});
 };
 
 const char *StatusText(int code);
