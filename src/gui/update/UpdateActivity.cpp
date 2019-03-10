@@ -46,7 +46,7 @@ private:
 			notifyError("Could not download update: " + error);
 			return false;
 		}
-		if (data.size())
+		if (!data.size())
 		{
 			error = "Server responded with nothing";
 			notifyError("Server did not return any data");
