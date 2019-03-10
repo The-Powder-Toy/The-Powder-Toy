@@ -199,7 +199,7 @@ bool PreviewModel::ParseSaveInfo(ByteString &saveInfoResponse)
 
 	try
 	{
-		std::istringstream dataStream(saveInfoResponse.c_str());
+		std::istringstream dataStream(saveInfoResponse);
 		Json::Value objDocument;
 		dataStream >> objDocument;
 
@@ -257,7 +257,7 @@ bool PreviewModel::ParseComments(ByteString &commentsResponse)
 	saveComments = new std::vector<SaveComment*>();
 	try
 	{
-		std::istringstream dataStream(commentsResponse.c_str());
+		std::istringstream dataStream(commentsResponse);
 		Json::Value commentsArray;
 		dataStream >> commentsArray;
 

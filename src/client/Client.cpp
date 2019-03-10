@@ -732,7 +732,7 @@ bool Client::CheckUpdate(http::Request *updateRequest, bool checkSession)
 		}
 		else if(data.size())
 		{
-			std::istringstream dataStream(data.c_str());
+			std::istringstream dataStream(data);
 
 			try
 			{
@@ -913,14 +913,6 @@ void Client::WritePrefs()
 
 void Client::Shutdown()
 {
-	http::RequestManager::Ref().Shutdown();
-
-	//Save config
-	WritePrefs();
-}
-
-Client::~Client()
-{
 	if (versionCheckRequest)
 	{
 		versionCheckRequest->Cancel();
@@ -929,6 +921,15 @@ Client::~Client()
 	{
 		alternateVersionCheckRequest->Cancel();
 	}
+	
+	http::RequestManager::Ref().Shutdown();
+
+	//Save config
+	WritePrefs();
+}
+
+Client::~Client()
+{
 }
 
 
@@ -1254,7 +1255,7 @@ LoginStatus Client::Login(ByteString username, ByteString password, User & user)
 	{
 		try
 		{
-			std::istringstream dataStream(data.c_str());
+			std::istringstream dataStream(data);
 			Json::Value objDocument;
 			dataStream >> objDocument;
 
