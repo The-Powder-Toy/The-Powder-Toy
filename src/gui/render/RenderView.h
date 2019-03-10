@@ -33,12 +33,12 @@ public:
 	void NotifyDisplayChanged(RenderModel * sender);
 	void NotifyColourChanged(RenderModel * sender);
 	void AttachController(RenderController * c_) { c = c_; }
-	void OnMouseDown(int x, int y, unsigned button);
-	void OnTryExit(ExitMethod method);
-	virtual void OnDraw();
-	virtual void OnTick(float dt);
-	virtual void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
-	virtual void ToolTip(ui::Point senderPosition, String toolTip);
+	void OnMouseDown(int x, int y, unsigned button) override;
+	void OnTryExit(ExitMethod method) override;
+	void OnDraw() override;
+	void OnTick(float dt) override;
+	void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
+	void ToolTip(ui::Point senderPosition, String toolTip) override;
 	virtual ~RenderView();
 };
 

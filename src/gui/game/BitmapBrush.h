@@ -47,7 +47,7 @@ public:
 
 		SetRadius(radius);
 	};
-	virtual void GenerateBitmap()
+	void GenerateBitmap() override
 	{
 		if(origBitmap)
 		{

@@ -194,7 +194,7 @@ class {0}: public SimTool
 public:
 	{0}();
 	virtual ~{0}();
-	virtual int Perform(Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength);
+	int Perform(Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength) override;
 }};
 """.format(className, str.join("\n", classMembers))
 

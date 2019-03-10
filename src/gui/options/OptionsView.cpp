@@ -29,7 +29,9 @@ OptionsView::OptionsView():
 		OptionsView * v;
 	public:
 		HeatSimulationAction(OptionsView * v_){	v = v_;	}
-		virtual void ActionCallback(ui::Checkbox * sender){	v->c->SetHeatSimulation(sender->GetChecked()); }
+		void ActionCallback(ui::Checkbox * sender) override {
+			v->c->SetHeatSimulation(sender->GetChecked());
+		}
 	};
 
 	heatSimulation = new ui::Checkbox(ui::Point(8, 23), ui::Point(Size.X-6, 16), "Heat simulation \bgIntroduced in version 34", "");
@@ -44,7 +46,9 @@ OptionsView::OptionsView():
 		OptionsView * v;
 	public:
 		AmbientHeatSimulationAction(OptionsView * v_){	v = v_;	}
-		virtual void ActionCallback(ui::Checkbox * sender){	v->c->SetAmbientHeatSimulation(sender->GetChecked()); }
+		void ActionCallback(ui::Checkbox * sender) override {
+			v->c->SetAmbientHeatSimulation(sender->GetChecked());
+		}
 	};
 
 	ambientHeatSimulation = new ui::Checkbox(ui::Point(8, 53), ui::Point(Size.X-6, 16), "Ambient heat simulation \bgIntroduced in version 50", "");
@@ -59,7 +63,9 @@ OptionsView::OptionsView():
 		OptionsView * v;
 	public:
 		NewtonianGravityAction(OptionsView * v_){	v = v_;	}
-		virtual void ActionCallback(ui::Checkbox * sender){	v->c->SetNewtonianGravity(sender->GetChecked()); }
+		void ActionCallback(ui::Checkbox * sender) override {
+			v->c->SetNewtonianGravity(sender->GetChecked());
+		}
 	};
 
 	newtonianGravity = new ui::Checkbox(ui::Point(8, 83), ui::Point(Size.X-6, 16), "Newtonian gravity \bgIntroduced in version 48", "");
@@ -74,7 +80,9 @@ OptionsView::OptionsView():
 			OptionsView * v;
 		public:
 			WaterEqualisationAction(OptionsView * v_){	v = v_;	}
-			virtual void ActionCallback(ui::Checkbox * sender){	v->c->SetWaterEqualisation(sender->GetChecked()); }
+			void ActionCallback(ui::Checkbox * sender) override {
+				v->c->SetWaterEqualisation(sender->GetChecked());
+			}
 		};
 
 	waterEqualisation = new ui::Checkbox(ui::Point(8, 113), ui::Point(Size.X-6, 16), "Water equalisation \bgIntroduced in version 61", "");
@@ -89,7 +97,9 @@ OptionsView::OptionsView():
 		OptionsView * v;
 	public:
 		AirModeChanged(OptionsView * v): v(v) { }
-		virtual void OptionChanged(ui::DropDown * sender, std::pair<String, int> option) { v->c->SetAirMode(option.second); }
+		void OptionChanged(ui::DropDown * sender, std::pair<String, int> option) override {
+			v->c->SetAirMode(option.second);
+		}
 	};
 	airMode = new ui::DropDown(ui::Point(Size.X-88, 146), ui::Point(80, 16));
 	AddComponent(airMode);
@@ -109,7 +119,9 @@ OptionsView::OptionsView():
 		OptionsView * v;
 	public:
 		GravityModeChanged(OptionsView * v): v(v) { }
-		virtual void OptionChanged(ui::DropDown * sender, std::pair<String, int> option) { v->c->SetGravityMode(option.second); }
+		void OptionChanged(ui::DropDown * sender, std::pair<String, int> option) override {
+			v->c->SetGravityMode(option.second);
+		}
 	};
 
 	gravityMode = new ui::DropDown(ui::Point(Size.X-88, 166), ui::Point(80, 16));
@@ -128,7 +140,9 @@ OptionsView::OptionsView():
 		OptionsView * v;
 	public:
 		EdgeModeChanged(OptionsView * v): v(v) { }
-		virtual void OptionChanged(ui::DropDown * sender, std::pair<String, int> option) { v->c->SetEdgeMode(option.second); }
+		void OptionChanged(ui::DropDown * sender, std::pair<String, int> option) override {
+			v->c->SetEdgeMode(option.second);
+		}
 	};
 
 	edgeMode = new ui::DropDown(ui::Point(Size.X-88, 186), ui::Point(80, 16));
@@ -147,7 +161,9 @@ OptionsView::OptionsView():
 		OptionsView * v;
 	public:
 		ScaleAction(OptionsView * v): v(v) { }
-		virtual void OptionChanged(ui::DropDown * sender, std::pair<String, int> option) { v->c->SetScale(option.second); }
+		void OptionChanged(ui::DropDown * sender, std::pair<String, int> option) override {
+			v->c->SetScale(option.second);
+		}
 	};
 	scale = new ui::DropDown(ui::Point(8, 210), ui::Point(40, 16));
 	{
@@ -178,7 +194,7 @@ OptionsView::OptionsView():
 		OptionsView * v;
 	public:
 		ResizableAction(OptionsView * v_){	v = v_;	}
-		virtual void ActionCallback(ui::Checkbox * sender)
+		void ActionCallback(ui::Checkbox * sender) override
 		{
 			v->c->SetResizable(sender->GetChecked());
 		}
@@ -196,7 +212,7 @@ OptionsView::OptionsView():
 		OptionsView * v;
 	public:
 		FullscreenAction(OptionsView * v_){	v = v_;	}
-		virtual void ActionCallback(ui::Checkbox * sender)
+		void ActionCallback(ui::Checkbox * sender) override
 		{
 			v->c->SetFullscreen(sender->GetChecked());
 		}
@@ -214,7 +230,7 @@ OptionsView::OptionsView():
 		OptionsView * v;
 	public:
 		AltFullscreenAction(OptionsView * v_){	v = v_;	}
-		virtual void ActionCallback(ui::Checkbox * sender)
+		void ActionCallback(ui::Checkbox * sender) override
 		{
 			v->c->SetAltFullscreen(sender->GetChecked());
 		}
@@ -232,7 +248,7 @@ OptionsView::OptionsView():
 		OptionsView * v;
 	public:
 		ForceIntegerScalingAction(OptionsView * v_) { v = v_; }
-		virtual void ActionCallback(ui::Checkbox * sender)
+		void ActionCallback(ui::Checkbox * sender) override
 		{
 			v->c->SetForceIntegerScaling(sender->GetChecked());
 		}
@@ -251,7 +267,9 @@ OptionsView::OptionsView():
 		OptionsView * v;
 	public:
 		FastQuitAction(OptionsView * v_){	v = v_;	}
-		virtual void ActionCallback(ui::Checkbox * sender){	v->c->SetFastQuit(sender->GetChecked()); }
+		void ActionCallback(ui::Checkbox * sender) override {
+			v->c->SetFastQuit(sender->GetChecked());
+		}
 	};
 
 	fastquit = new ui::Checkbox(ui::Point(8, forceIntegerScaling->Position.Y + 20), ui::Point(Size.X-6, 16), "Fast Quit", "");
@@ -266,7 +284,9 @@ OptionsView::OptionsView():
 		OptionsView * v;
 	public:
 		ShowAvatarsAction(OptionsView * v_){	v = v_;	}
-		virtual void ActionCallback(ui::Checkbox * sender){	v->c->SetShowAvatars(sender->GetChecked()); }
+		void ActionCallback(ui::Checkbox * sender) override {
+			v->c->SetShowAvatars(sender->GetChecked());
+		}
 	};
 
 	showAvatars = new ui::Checkbox(ui::Point(8, fastquit->Position.Y + 20), ui::Point(Size.X-6, 16), "Show Avatars", "");
@@ -280,7 +300,7 @@ OptionsView::OptionsView():
 	{
 	public:
 		DataFolderAction() { }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 //one of these should always be defined
 #ifdef WIN
@@ -310,7 +330,7 @@ OptionsView::OptionsView():
 	public:
 		OptionsView * v;
 		CloseAction(OptionsView * v_) { v = v_; }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			v->c->Exit();
 		}

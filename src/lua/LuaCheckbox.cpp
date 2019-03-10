@@ -35,7 +35,7 @@ LuaCheckbox::LuaCheckbox(lua_State * l) :
 		LuaCheckbox * luaCheckbox;
 	public:
 		ClickAction(LuaCheckbox * luaCheckbox) : luaCheckbox(luaCheckbox) {}
-		void ActionCallback(ui::Checkbox * sender)
+		void ActionCallback(ui::Checkbox * sender) override
 		{
 			luaCheckbox->triggerAction();
 		}

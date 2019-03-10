@@ -30,9 +30,9 @@ class ProfileActivity: public WindowActivity, public SaveUserInfoRequestMonitor,
 public:
 	ProfileActivity(ByteString username);
 	virtual ~ProfileActivity();
-	virtual void OnTick(float dt);
-	virtual void OnDraw();
-	virtual void OnTryExit(ExitMethod method);
+	void OnTick(float dt) override;
+	void OnDraw() override;
+	void OnTryExit(ExitMethod method) override;
 
 	void OnResponse(bool saveUserInfoStatus) override;
 	void OnResponse(std::unique_ptr<UserInfo> getUserInfoResult) override;

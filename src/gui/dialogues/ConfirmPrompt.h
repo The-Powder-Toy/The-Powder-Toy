@@ -11,7 +11,7 @@ public:
 	ConfirmPrompt(String title, String message, ConfirmDialogueCallback * callback_ = NULL);
 	ConfirmPrompt(String title, String message, String buttonText, ConfirmDialogueCallback * callback_ = NULL);
 	static bool Blocking(String title, String message, String buttonText = String("Confirm"));
-	virtual void OnDraw();
+	void OnDraw() override;
 	virtual ~ConfirmPrompt();
 	ConfirmDialogueCallback * callback;
 };

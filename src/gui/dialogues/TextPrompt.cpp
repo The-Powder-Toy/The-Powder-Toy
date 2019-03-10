@@ -12,7 +12,7 @@ public:
 	TextPrompt * prompt;
 	TextPrompt::DialogueResult result;
 	CloseAction(TextPrompt * prompt_, TextPrompt::DialogueResult result_) { prompt = prompt_; result = result_; }
-	void ActionCallback(ui::Button * sender)
+	void ActionCallback(ui::Button * sender) override
 	{
 		prompt->CloseActiveWindow();
 		if(prompt->callback)
@@ -85,7 +85,7 @@ String TextPrompt::Blocking(String title, String message, String text, String pl
 		String & outputString;
 	public:
 		BlockingTextCallback(String & output) : outputString(output) {}
-		virtual void TextCallback(TextPrompt::DialogueResult result, String resultText) {
+		void TextCallback(TextPrompt::DialogueResult result, String resultText) override {
 			if(result == ResultOkay)
 				outputString = resultText;
 			else

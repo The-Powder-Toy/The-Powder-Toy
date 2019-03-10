@@ -27,12 +27,12 @@ public:
 	class LoginAction;
 	class CancelAction;
 	LoginView();
-	virtual void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
-	virtual void OnTryExit(ExitMethod method);
+	void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
+	void OnTryExit(ExitMethod method) override;
 	void AttachController(LoginController * c_) { c = c_; }
 	void NotifyStatusChanged(LoginModel * sender);
-	virtual void OnDraw();
-	virtual void OnTick(float dt);
+	void OnDraw() override;
+	void OnTick(float dt) override;
 	virtual ~LoginView();
 };
 

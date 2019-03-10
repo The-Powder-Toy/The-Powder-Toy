@@ -81,7 +81,7 @@ void Engine::ConfirmExit()
 	class ExitConfirmation: public ConfirmDialogueCallback {
 	public:
 		ExitConfirmation() {}
-		virtual void ConfirmCallback(ConfirmPrompt::DialogueResult result) {
+		void ConfirmCallback(ConfirmPrompt::DialogueResult result) override {
 			if (result == ConfirmPrompt::ResultOkay)
 			{
 				ui::Engine::Ref().Exit();

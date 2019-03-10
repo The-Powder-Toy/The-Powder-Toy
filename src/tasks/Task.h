@@ -10,13 +10,13 @@ class TaskListener;
 class Task {
 public:
 	void AddTaskListener(TaskListener * listener);
-	void Start();
+	virtual void Start();
 	int GetProgress();
 	bool GetDone();
 	bool GetSuccess();
 	String GetError();
 	String GetStatus();
-	void Poll();
+	virtual void Poll();
 	Task() : listener(NULL) { progress = 0; thProgress = 0; }
 	virtual ~Task();
 protected:

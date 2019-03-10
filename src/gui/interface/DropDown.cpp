@@ -21,7 +21,7 @@ public:
 		String option;
 	public:
 		ItemSelectedAction(DropDownWindow * window, String option): window(window), option(option) { }
-		virtual void ActionCallback(ui::Button *sender)
+		void ActionCallback(ui::Button *sender) override
 		{
 			window->CloseActiveWindow();
 			window->setOption(option);
@@ -45,7 +45,7 @@ public:
 			currentY += 16;
 		}
 	}
-	virtual void OnDraw()
+	void OnDraw() override
 	{
 		Graphics * g = GetGraphics();
 		g->clearrect(Position.X, Position.Y, Size.X, Size.Y);
@@ -64,7 +64,7 @@ public:
 			dropDown->callback->OptionChanged(dropDown, dropDown->options[optionIndex]);
 		}
 	}
-	virtual void OnTryExit(ExitMethod method)
+	void OnTryExit(ExitMethod method) override
 	{
 		CloseActiveWindow();
 		SelfDestruct();

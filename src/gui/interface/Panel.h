@@ -58,22 +58,22 @@ class Component;
 		//Get child of this component by index.
 		Component* GetChild(unsigned idx);
 
-		void Tick(float dt);
-		void Draw(const Point& screenPos);
+		void Tick(float dt) override;
+		void Draw(const Point& screenPos) override;
 
-		void OnMouseHover(int localx, int localy);
-		void OnMouseMoved(int localx, int localy, int dx, int dy);
-		void OnMouseMovedInside(int localx, int localy, int dx, int dy);
-		void OnMouseEnter(int localx, int localy);
-		void OnMouseLeave(int localx, int localy);
-		void OnMouseDown(int x, int y, unsigned button);
-		void OnMouseUp(int x, int y, unsigned button);
-		void OnMouseClick(int localx, int localy, unsigned button);
-		void OnMouseUnclick(int localx, int localy, unsigned button);
-		void OnMouseWheel(int localx, int localy, int d);
-		void OnMouseWheelInside(int localx, int localy, int d);
-		void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
-		void OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
+		void OnMouseHover(int localx, int localy) override;
+		void OnMouseMoved(int localx, int localy, int dx, int dy) override;
+		void OnMouseMovedInside(int localx, int localy, int dx, int dy) override;
+		void OnMouseEnter(int localx, int localy) override;
+		void OnMouseLeave(int localx, int localy) override;
+		void OnMouseDown(int x, int y, unsigned button) override;
+		void OnMouseUp(int x, int y, unsigned button) override;
+		void OnMouseClick(int localx, int localy, unsigned button) override;
+		void OnMouseUnclick(int localx, int localy, unsigned button) override;
+		void OnMouseWheel(int localx, int localy, int d) override;
+		void OnMouseWheelInside(int localx, int localy, int d) override;
+		void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
+		void OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
 
 	protected:
 		// child components

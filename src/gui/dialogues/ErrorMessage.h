@@ -9,7 +9,7 @@ class ErrorMessage: public ui::Window {
 public:
 	ErrorMessage(String title, String message, ErrorMessageCallback * callback_ = NULL);
 	static void Blocking(String title, String message);
-	virtual void OnDraw();
+	void OnDraw() override;
 	virtual ~ErrorMessage();
 };
 

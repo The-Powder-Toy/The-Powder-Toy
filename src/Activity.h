@@ -19,16 +19,16 @@ public:
 	{
 		Show();
 	}
-	virtual void Exit()
+	void Exit() override
 	{
 		Hide();
 		SelfDestruct();
 	}
-	virtual void Show()
+	void Show() override
 	{
 		MakeActiveWindow();
 	}
-	virtual void Hide()
+	void Hide() override
 	{
 		CloseActiveWindow();
 	}

@@ -67,9 +67,9 @@ private:
 public:
 	FontEditor(ByteString header);
 
-	void OnDraw();
-	void OnMouseDown(int x, int y, unsigned button);
-	void OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt);
+	void OnDraw() override;
+	void OnMouseDown(int x, int y, unsigned button) override;
+	void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
 };
 
 #endif

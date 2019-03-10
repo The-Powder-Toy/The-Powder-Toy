@@ -8,6 +8,6 @@ class DebugParts : public DebugInfo
 	Simulation * sim;
 public:
 	DebugParts(unsigned int id, Simulation * sim);
-	virtual void Draw();
+	void Draw() override;
 	virtual ~DebugParts();
 };

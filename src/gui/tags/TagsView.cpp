@@ -21,7 +21,7 @@ TagsView::TagsView():
 		TagsView * v;
 	public:
 		CloseAction(TagsView * _v) { v = _v; }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			v->c->Exit();
 		}
@@ -45,7 +45,7 @@ TagsView::TagsView():
 		TagsView * v;
 	public:
 		AddTagAction(TagsView * _v) { v = _v; }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			v->addTag();
 		}
@@ -90,7 +90,7 @@ void TagsView::NotifyTagsChanged(TagsModel * sender)
 		ByteString tag;
 	public:
 		DeleteTagAction(TagsView * _v, ByteString tag) { v = _v; this->tag = tag; }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			try
 			{

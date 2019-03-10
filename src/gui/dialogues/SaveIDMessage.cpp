@@ -37,7 +37,7 @@ SaveIDMessage::SaveIDMessage(int id):
 		SaveIDMessage * message;
 	public:
 		DismissAction(SaveIDMessage * message_) { message = message_; }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			message->CloseActiveWindow();
 			message->SelfDestruct();

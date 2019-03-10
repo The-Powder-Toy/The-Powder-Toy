@@ -57,7 +57,7 @@ InformationMessage::InformationMessage(String title, String message, bool large)
 		InformationMessage * message;
 	public:
 		DismissAction(InformationMessage * message_) { message = message_; }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			message->CloseActiveWindow();
 			message->SelfDestruct(); //TODO: Fix component disposal

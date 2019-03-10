@@ -9,6 +9,6 @@ class ElementPopulationDebug : public DebugInfo
 	float maxAverage;
 public:
 	ElementPopulationDebug(unsigned int id, Simulation * sim);
-	virtual void Draw();
+	void Draw() override;
 	virtual ~ElementPopulationDebug();
 };

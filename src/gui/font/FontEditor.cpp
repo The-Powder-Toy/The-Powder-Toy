@@ -583,28 +583,28 @@ void FontEditor::OnMouseDown(int x, int y, unsigned button)
 	}
 }
 
-void FontEditor::OnKeyPress(int key, Uint16 character, bool shift, bool ctrl, bool alt)
+void FontEditor::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
-	if(IsFocused(NULL))
+	if (IsFocused(NULL))
 	{
-		switch(key)
+		switch(scan)
 		{
-		case SDLK_LEFT:
+		case SDL_SCANCODE_LEFT:
 			PrevChar(); break;
-		case SDLK_RIGHT:
+		case SDL_SCANCODE_RIGHT:
 			PrevChar(); break;
-		case SDLK_ESCAPE:
-		case 'q':
+		case SDL_SCANCODE_ESCAPE:
+		case SDL_SCANCODE_Q:
 			if(savedButton->GetToggleState())
 				ui::Engine::Ref().Exit();
 			else
 				ui::Engine::Ref().ConfirmExit();
 			break;
-		case 'c':
+		case SDL_SCANCODE_C:
 			clipboardWidth = fontWidths[currentChar];
 			clipboardPixels = fontPixels[currentChar];
 			break;
-		case 'v':
+		case SDL_SCANCODE_V:
 			fontWidths[currentChar] = clipboardWidth;
 			fontPixels[currentChar] = clipboardPixels;
 			break;

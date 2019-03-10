@@ -19,7 +19,7 @@ class LocalSaveActivity::CancelAction: public ui::ButtonAction
 	LocalSaveActivity * a;
 public:
 	CancelAction(LocalSaveActivity * a) : a(a) {}
-	virtual void ActionCallback(ui::Button * sender)
+	void ActionCallback(ui::Button * sender) override
 	{
 		a->Exit();
 	}
@@ -30,7 +30,7 @@ class LocalSaveActivity::SaveAction: public ui::ButtonAction
 	LocalSaveActivity * a;
 public:
 	SaveAction(LocalSaveActivity * a) : a(a) {}
-	virtual void ActionCallback(ui::Button * sender)
+	void ActionCallback(ui::Button * sender) override
 	{
 		a->Save();
 	}
@@ -97,7 +97,7 @@ void LocalSaveActivity::Save()
 		LocalSaveActivity * a;
 		ByteString filename;
 		FileOverwriteConfirmation(LocalSaveActivity * a, ByteString finalFilename) : a(a), filename(finalFilename) {}
-		virtual void ConfirmCallback(ConfirmPrompt::DialogueResult result) {
+		void ConfirmCallback(ConfirmPrompt::DialogueResult result) override {
 			if (result == ConfirmPrompt::ResultOkay)
 			{
 				a->saveWrite(filename);

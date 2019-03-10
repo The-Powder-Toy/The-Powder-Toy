@@ -28,7 +28,7 @@ ProfileActivity::ProfileActivity(ByteString username) :
 		ProfileActivity * a;
 	public:
 		CloseAction(ProfileActivity * a) : a(a) {  }
-		void ActionCallback(ui::Button * sender_)
+		void ActionCallback(ui::Button * sender_) override
 		{
 			a->Exit();
 		}
@@ -39,7 +39,7 @@ ProfileActivity::ProfileActivity(ByteString username) :
 		ProfileActivity * a;
 	public:
 		SaveAction(ProfileActivity * a) : a(a) {  }
-		void ActionCallback(ui::Button * sender_)
+		void ActionCallback(ui::Button * sender_) override
 		{
 			if (!a->loading && !a->saving && a->editable)
 			{
@@ -79,7 +79,7 @@ void ProfileActivity::setUserInfo(UserInfo newInfo)
 	class EditAvatarAction: public ui::ButtonAction
 	{
 	public:
-		void ActionCallback(ui::Button * sender_)
+		void ActionCallback(ui::Button * sender_) override
 		{
 			Platform::OpenURI("http://" SERVER "/Profile/Avatar.html");
 		}
@@ -206,7 +206,7 @@ void ProfileActivity::setUserInfo(UserInfo newInfo)
 	public:
 		ProfileActivity * profileActivity;
 		BioChangedAction(ProfileActivity * profileActivity_) { profileActivity = profileActivity_; }
-		virtual void TextChangedCallback(ui::Textbox * sender)
+		void TextChangedCallback(ui::Textbox * sender) override
 		{
 			profileActivity->ResizeArea();
 		}

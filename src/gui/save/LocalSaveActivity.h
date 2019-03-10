@@ -35,8 +35,8 @@ class LocalSaveActivity: public WindowActivity
 public:
 	LocalSaveActivity(SaveFile save, FileSavedCallback * callback);
 	void saveWrite(ByteString finalFilename);
-	virtual void Save();
-	virtual void OnDraw();
-	virtual void OnTick(float dt);
+	void Save();
+	void OnDraw() override;
+	void OnTick(float dt) override;
 	virtual ~LocalSaveActivity();
 };

@@ -80,26 +80,26 @@ LuaWindow::LuaWindow(lua_State * l) :
 		LuaWindow * luaWindow;
 	public:
 		DrawnWindow(ui::Point position, ui::Point size, LuaWindow * luaWindow) : ui::Window(position, size), luaWindow(luaWindow) {}
-		virtual void OnDraw()
+		void OnDraw() override
 		{
 			Graphics * g = ui::Engine::Ref().g;
 			g->clearrect(Position.X-2, Position.Y-2, Size.X+4, Size.Y+4);
 			g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 255, 255, 255, 255);
 			luaWindow->triggerOnDraw();
 		}
-		virtual void OnInitialized() { luaWindow->triggerOnInitialized(); }
-		virtual void OnExit() { luaWindow->triggerOnExit(); }
-		virtual void OnTick(float dt) { luaWindow->triggerOnTick( dt); }
-		virtual void OnFocus() { luaWindow->triggerOnFocus(); }
-		virtual void OnBlur() { luaWindow->triggerOnBlur(); }
-		virtual void OnTryExit(ExitMethod) { luaWindow->triggerOnTryExit(); }
-		virtual void OnTryOkay(OkayMethod) { luaWindow->triggerOnTryOkay(); }
-		virtual void OnMouseMove(int x, int y, int dx, int dy) { luaWindow->triggerOnMouseMove(x, y, dx, dy); }
-		virtual void OnMouseDown(int x, int y, unsigned button) { luaWindow->triggerOnMouseDown(x, y, button); }
-		virtual void OnMouseUp(int x, int y, unsigned button) { luaWindow->triggerOnMouseUp(x, y, button); }
-		virtual void OnMouseWheel(int x, int y, int d) { luaWindow->triggerOnMouseWheel(x, y, d); }
-		virtual void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) { luaWindow->triggerOnKeyPress(key, scan, repeat, shift, ctrl, alt); }
-		virtual void OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) { luaWindow->triggerOnKeyRelease(key, scan, repeat, shift, ctrl, alt); }
+		void OnInitialized() override { luaWindow->triggerOnInitialized(); }
+		void OnExit() override { luaWindow->triggerOnExit(); }
+		void OnTick(float dt) override { luaWindow->triggerOnTick( dt); }
+		void OnFocus() override { luaWindow->triggerOnFocus(); }
+		void OnBlur() override { luaWindow->triggerOnBlur(); }
+		void OnTryExit(ExitMethod) override { luaWindow->triggerOnTryExit(); }
+		void OnTryOkay(OkayMethod) override { luaWindow->triggerOnTryOkay(); }
+		void OnMouseMove(int x, int y, int dx, int dy) override { luaWindow->triggerOnMouseMove(x, y, dx, dy); }
+		void OnMouseDown(int x, int y, unsigned button) override { luaWindow->triggerOnMouseDown(x, y, button); }
+		void OnMouseUp(int x, int y, unsigned button) override { luaWindow->triggerOnMouseUp(x, y, button); }
+		void OnMouseWheel(int x, int y, int d) override { luaWindow->triggerOnMouseWheel(x, y, d); }
+		void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override { luaWindow->triggerOnKeyPress(key, scan, repeat, shift, ctrl, alt); }
+		void OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override { luaWindow->triggerOnKeyRelease(key, scan, repeat, shift, ctrl, alt); }
 	};
 
 	window = new DrawnWindow(ui::Point(posX, posY), ui::Point(sizeX, sizeY), this);

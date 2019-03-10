@@ -25,7 +25,7 @@ ColourPickerActivity::ColourPickerActivity(ui::Colour initialColour, ColourPicke
 	public:
 		ColourChange(ColourPickerActivity * a) : a(a) {}
 
-		void TextChangedCallback(ui::Textbox * sender)
+		void TextChangedCallback(ui::Textbox * sender) override
 		{
 			int r, g, b, alpha;
 			r = a->rValue->GetText().ToNumber<int>(true);
@@ -79,7 +79,7 @@ ColourPickerActivity::ColourPickerActivity(ui::Colour initialColour, ColourPicke
 		ColourPickerActivity * a;
 	public:
 		OkayAction(ColourPickerActivity * a) : a(a) { }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			int Red, Green, Blue;
 			Red = a->rValue->GetText().ToNumber<int>(true);

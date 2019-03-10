@@ -16,14 +16,14 @@ public:
 private:
 	UpdateActivity * a;
 	ByteString updateName;
-	virtual void notifyDoneMain(){
+	void notifyDoneMain() override {
 		a->NotifyDone(this);
 	}
-	virtual void notifyErrorMain()
+	void notifyErrorMain() override
 	{
 		a->NotifyError(this);
 	}
-	virtual bool doWork()
+	bool doWork() override
 	{
 		String error;
 		http::Request *request = new http::Request(updateName);
@@ -145,7 +145,7 @@ void UpdateActivity::NotifyError(Task * sender)
 		UpdateActivity * a;
 	public:
 		ErrorMessageCallback(UpdateActivity * a_) {	a = a_;	}
-		virtual void ConfirmCallback(ConfirmPrompt::DialogueResult result) {
+		void ConfirmCallback(ConfirmPrompt::DialogueResult result) override {
 			if (result == ConfirmPrompt::ResultOkay)
 			{
 #ifndef UPDATESERVER

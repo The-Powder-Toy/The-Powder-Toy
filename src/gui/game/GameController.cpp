@@ -46,7 +46,7 @@ class GameController::SearchCallback: public ControllerCallback
 	GameController * cc;
 public:
 	SearchCallback(GameController * cc_) { cc = cc_; }
-	virtual void ControllerExit()
+	void ControllerExit() override
 	{
 		if(cc->search->GetLoadedSave())
 		{
@@ -69,7 +69,7 @@ class GameController::SaveOpenCallback: public ControllerCallback
 	GameController * cc;
 public:
 	SaveOpenCallback(GameController * cc_) { cc = cc_; }
-	virtual void ControllerExit()
+	void ControllerExit() override
 	{
 		if(cc->activePreview->GetDoOpen() && cc->activePreview->GetSaveInfo())
 		{
@@ -91,7 +91,7 @@ class GameController::OptionsCallback: public ControllerCallback
 	GameController * cc;
 public:
 	OptionsCallback(GameController * cc_) { cc = cc_; }
-	virtual void ControllerExit()
+	void ControllerExit() override
 	{
 		cc->gameModel->UpdateQuickOptions();
 		Client::Ref().WritePrefs();
@@ -103,7 +103,7 @@ class GameController::TagsCallback: public ControllerCallback
 	GameController * cc;
 public:
 	TagsCallback(GameController * cc_) { cc = cc_; }
-	virtual void ControllerExit()
+	void ControllerExit() override
 	{
 		cc->gameView->NotifySaveChanged(cc->gameModel);
 	}
@@ -114,7 +114,7 @@ class GameController::StampsCallback: public ControllerCallback
 	GameController * cc;
 public:
 	StampsCallback(GameController * cc_) { cc = cc_; }
-	virtual void ControllerExit()
+	void ControllerExit() override
 	{
 		SaveFile *file = cc->localBrowser->GetSave();
 		if (file)
@@ -351,7 +351,7 @@ void GameController::Install()
 	public:
 		GameController * c;
 		InstallConfirmation(GameController * c_) {	c = c_;	}
-		virtual void ConfirmCallback(ConfirmPrompt::DialogueResult result) {
+		void ConfirmCallback(ConfirmPrompt::DialogueResult result) override {
 			if (result == ConfirmPrompt::ResultOkay)
 			{
 				if(Client::Ref().DoInstallation())
@@ -1246,7 +1246,7 @@ void GameController::OpenLocalSaveWindow(bool asCurrent)
 			public:
 				LocalSaveCallback(GameController * _c): c(_c) {}
 				virtual  ~LocalSaveCallback() {}
-				virtual void FileSaved(SaveFile* file)
+				void FileSaved(SaveFile* file) override
 				{
 					c->gameModel->SetSaveFile(file);
 				}
@@ -1311,7 +1311,7 @@ void GameController::OpenLocalBrowse()
 	public:
 		LocalSaveOpenCallback(GameController * _c): c(_c) {}
 		virtual  ~LocalSaveOpenCallback() {};
-		virtual void FileSelected(SaveFile* file)
+		void FileSelected(SaveFile* file) override
 		{
 			c->HistorySnapshot();
 			c->LoadSaveFile(file);
@@ -1364,8 +1364,8 @@ void GameController::OpenColourPicker()
 		GameController * c;
 	public:
 		ColourPickerCallback(GameController * _c): c(_c) {}
-		virtual  ~ColourPickerCallback() {};
-		virtual void ColourPicked(ui::Colour colour)
+		virtual  ~ColourPickerCallback() {}
+		void ColourPicked(ui::Colour colour) override
 		{
 			c->SetColour(colour);
 		}
@@ -1429,7 +1429,7 @@ void GameController::OpenSaveWindow()
 	public:
 		SaveUploadedCallback(GameController * _c): c(_c) {}
 		virtual  ~SaveUploadedCallback() {}
-		virtual void SaveUploaded(SaveInfo save)
+		void SaveUploaded(SaveInfo save) override
 		{
 			save.SetVote(1);
 			save.SetVotesUp(1);
@@ -1477,7 +1477,7 @@ void GameController::SaveAsCurrent()
 	public:
 		SaveUploadedCallback(GameController * _c): c(_c) {}
 		virtual  ~SaveUploadedCallback() {}
-		virtual void SaveUploaded(SaveInfo save)
+		void SaveUploaded(SaveInfo save) override
 		{
 			c->LoadSave(&save);
 		}
@@ -1616,7 +1616,7 @@ void GameController::NotifyNewNotification(Client * sender, std::pair<String, By
 		LinkNotification(ByteString link_, String message) : Notification(message), link(link_) {}
 		virtual ~LinkNotification() {}
 
-		virtual void Action()
+		void Action() override
 		{
 			Platform::OpenURI(link);
 		}
@@ -1630,7 +1630,7 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 	public:
 		GameController * c;
 		UpdateConfirmation(GameController * c_) {	c = c_;	}
-		virtual void ConfirmCallback(ConfirmPrompt::DialogueResult result) {
+		void ConfirmCallback(ConfirmPrompt::DialogueResult result) override {
 			if (result == ConfirmPrompt::ResultOkay)
 			{
 				c->RunUpdater();
@@ -1646,7 +1646,7 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 		UpdateNotification(GameController * c, String message) : Notification(message), c(c) {}
 		virtual ~UpdateNotification() {}
 
-		virtual void Action()
+		void Action() override
 		{
 			UpdateInfo info = Client::Ref().GetUpdateInfo();
 			StringBuilder updateMessage;

@@ -21,22 +21,38 @@ public:
 	int signID;
 	ui::Point signPosition;
 	SignWindow(SignTool * tool_, Simulation * sim_, int signID_, ui::Point position_);
-	virtual void OnDraw();
-	virtual void DoDraw();
-	virtual void DoMouseMove(int x, int y, int dx, int dy);
-	virtual void DoMouseDown(int x, int y, unsigned button);
-	virtual void DoMouseUp(int x, int y, unsigned button) { if(!signMoving) ui::Window::DoMouseUp(x, y, button); }
-	virtual void DoMouseWheel(int x, int y, int d) { if(!signMoving) ui::Window::DoMouseWheel(x, y, d); }
-	virtual void DoKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) { if(!signMoving) ui::Window::DoKeyPress(key, scan, repeat, shift, ctrl, alt); }
-	virtual void DoKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) { if(!signMoving) ui::Window::DoKeyRelease(key, scan, repeat, shift, ctrl, alt); }
+	void OnDraw() override;
+	void DoDraw() override;
+	void DoMouseMove(int x, int y, int dx, int dy) override;
+	void DoMouseDown(int x, int y, unsigned button) override;
+	void DoMouseUp(int x, int y, unsigned button) override
+	{
+		if(!signMoving)
+			ui::Window::DoMouseUp(x, y, button);
+	}
+	void DoMouseWheel(int x, int y, int d) override
+	{
+		if(!signMoving)
+			ui::Window::DoMouseWheel(x, y, d);
+	}
+	void DoKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override
+	{
+		if(!signMoving)
+			ui::Window::DoKeyPress(key, scan, repeat, shift, ctrl, alt);
+	}
+	void DoKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override
+	{
+		if(!signMoving)
+			ui::Window::DoKeyRelease(key, scan, repeat, shift, ctrl, alt);
+	}
 	virtual ~SignWindow() {}
-	virtual void OnTryExit(ui::Window::ExitMethod method);
+	void OnTryExit(ui::Window::ExitMethod method) override;
 	class OkayAction: public ui::ButtonAction
 	{
 	public:
 		SignWindow * prompt;
 		OkayAction(SignWindow * prompt_) { prompt = prompt_; }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			prompt->CloseActiveWindow();
 			if(prompt->signID==-1 && prompt->textField->GetText().length())
@@ -55,7 +71,7 @@ public:
 	public:
 		SignWindow * prompt;
 		DeleteAction(SignWindow * prompt_) { prompt = prompt_; }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			prompt->CloseActiveWindow();
 			if(prompt->signID!=-1)
@@ -71,7 +87,7 @@ public:
 	public:
 		SignWindow * prompt;
 		SignTextAction(SignWindow * prompt_) { prompt = prompt_; }
-		virtual void TextChangedCallback(ui::Textbox * sender)
+		void TextChangedCallback(ui::Textbox * sender) override
 		{
 			if(prompt->signID!=-1)
 			{
@@ -86,7 +102,7 @@ public:
 	public:
 		SignWindow * prompt;
 		MoveAction(SignWindow * prompt_) { prompt = prompt_; }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			if(prompt->signID!=-1)
 			{

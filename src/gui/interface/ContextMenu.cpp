@@ -10,7 +10,7 @@ class ContextMenu::ItemSelectedAction: public ButtonAction
 	int item;
 public:
 	ItemSelectedAction(ContextMenu * window, int itemID): window(window), item(itemID) { }
-	virtual void ActionCallback(ui::Button *sender)
+	void ActionCallback(ui::Button *sender) override
 	{
 		window->ActionCallbackItem(sender, item);
 	}

@@ -29,7 +29,7 @@ ErrorMessage::ErrorMessage(String title, String message,  ErrorMessageCallback *
 		ErrorMessage * message;
 	public:
 		DismissAction(ErrorMessage * message_) { message = message_; }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			message->CloseActiveWindow();
 			if(message->callback)
@@ -55,7 +55,7 @@ void ErrorMessage::Blocking(String title, String message)
 	class BlockingDismissCallback: public ErrorMessageCallback {
 	public:
 		BlockingDismissCallback() {}
-		virtual void DismissCallback() {
+		void DismissCallback() override {
 			ui::Engine::Ref().Break();
 		}
 		virtual ~BlockingDismissCallback() { }

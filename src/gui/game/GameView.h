@@ -185,28 +185,28 @@ public:
 	void NotifyLastToolChanged(GameModel * sender);
 
 
-	virtual void ToolTip(ui::Point senderPosition, String toolTip);
+	void ToolTip(ui::Point senderPosition, String toolTip) override;
 
-	virtual void OnMouseMove(int x, int y, int dx, int dy);
-	virtual void OnMouseDown(int x, int y, unsigned button);
-	virtual void OnMouseUp(int x, int y, unsigned button);
-	virtual void OnMouseWheel(int x, int y, int d);
-	virtual void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
-	virtual void OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
-	virtual void OnTick(float dt);
-	virtual void OnDraw();
-	virtual void OnBlur();
+	void OnMouseMove(int x, int y, int dx, int dy) override;
+	void OnMouseDown(int x, int y, unsigned button) override;
+	void OnMouseUp(int x, int y, unsigned button) override;
+	void OnMouseWheel(int x, int y, int d) override;
+	void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
+	void OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
+	void OnTick(float dt) override;
+	void OnDraw() override;
+	void OnBlur() override;
 
 	//Top-level handlers, for Lua interface
-	virtual void DoExit();
-	virtual void DoDraw();
-	virtual void DoMouseMove(int x, int y, int dx, int dy);
-	virtual void DoMouseDown(int x, int y, unsigned button);
-	virtual void DoMouseUp(int x, int y, unsigned button);
-	virtual void DoMouseWheel(int x, int y, int d);
-	virtual void DoTextInput(String text);
-	virtual void DoKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
-	virtual void DoKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
+	void DoExit() override;
+	void DoDraw() override;
+	void DoMouseMove(int x, int y, int dx, int dy) override;
+	void DoMouseDown(int x, int y, unsigned button) override;
+	void DoMouseUp(int x, int y, unsigned button) override;
+	void DoMouseWheel(int x, int y, int d) override;
+	void DoTextInput(String text) override;
+	void DoKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
+	void DoKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
 
 	class MenuAction;
 	class ToolAction;

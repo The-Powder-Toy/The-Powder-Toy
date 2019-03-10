@@ -9,10 +9,10 @@ class ToolButton: public ui::Button
 	ByteString toolIdentifier;
 public:
 	ToolButton(ui::Point position, ui::Point size, ByteString text_, ByteString toolIdentifier, String toolTip = String());
-	virtual void OnMouseUnclick(int x, int y, unsigned int button);
-	virtual void OnMouseUp(int x, int y, unsigned int button);
-	virtual void OnMouseClick(int x, int y, unsigned int button);
-	virtual void Draw(const ui::Point& screenPos);
+	void OnMouseUnclick(int x, int y, unsigned int button) override;
+	void OnMouseUp(int x, int y, unsigned int button) override;
+	void OnMouseClick(int x, int y, unsigned int button) override;
+	void Draw(const ui::Point& screenPos) override;
 	void SetSelectionState(int state);
 	int GetSelectionState();
 	virtual ~ToolButton();

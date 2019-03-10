@@ -6,10 +6,10 @@
 class AbandonableTask : public Task
 {
 public:
-	void Start();
+	void Start() override;
 	void Finish();
 	void Abandon();
-	void Poll();
+	void Poll() override;
 	AbandonableTask();
 	virtual ~AbandonableTask();
 

@@ -39,7 +39,7 @@ ConfirmPrompt::ConfirmPrompt(String title, String message, ConfirmDialogueCallba
 		ConfirmPrompt * prompt;
 		DialogueResult result;
 		CloseAction(ConfirmPrompt * prompt_, DialogueResult result_) { prompt = prompt_; result = result_; }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			prompt->CloseActiveWindow();
 			if(prompt->callback)
@@ -101,7 +101,7 @@ ConfirmPrompt::ConfirmPrompt(String title, String message, String buttonText, Co
 		ConfirmPrompt * prompt;
 		DialogueResult result;
 		CloseAction(ConfirmPrompt * prompt_, DialogueResult result_) { prompt = prompt_; result = result_; }
-		void ActionCallback(ui::Button * sender)
+		void ActionCallback(ui::Button * sender) override
 		{
 			prompt->CloseActiveWindow();
 			if(prompt->callback)
@@ -136,7 +136,7 @@ bool ConfirmPrompt::Blocking(String title, String message, String buttonText)
 	public:
 		bool & outputResult;
 		BlockingPromptCallback(bool & output): outputResult(output) {}
-		virtual void ConfirmCallback(ConfirmPrompt::DialogueResult result) {
+		void ConfirmCallback(ConfirmPrompt::DialogueResult result) override {
 			if (result == ConfirmPrompt::ResultOkay)
 				outputResult = true;
 			else

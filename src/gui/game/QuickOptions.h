@@ -9,11 +9,11 @@ public:
 	{
 
 	}
-	virtual bool GetToggle()
+	bool GetToggle() override
 	{
 		return m->GetSimulation()->pretty_powder;
 	}
-	virtual void perform()
+	void perform() override
 	{
 		m->GetSimulation()->pretty_powder = !m->GetSimulation()->pretty_powder;
 	}
@@ -27,11 +27,11 @@ public:
 	{
 
 	}
-	virtual bool GetToggle()
+	bool GetToggle() override
 	{
 		return m->GetGravityGrid();
 	}
-	virtual void perform()
+	void perform() override
 	{
 		m->ShowGravityGrid(!m->GetGravityGrid());
 	}
@@ -45,11 +45,11 @@ public:
 	{
 
 	}
-	virtual bool GetToggle()
+	bool GetToggle() override
 	{
 		return m->GetDecoration();
 	}
-	virtual void perform()
+	void perform() override
 	{
 		m->SetDecoration(!m->GetDecoration());
 	}
@@ -63,11 +63,11 @@ public:
 	{
 
 	}
-	virtual bool GetToggle()
+	bool GetToggle() override
 	{
 		return m->GetNewtonianGrvity();
 	}
-	virtual void perform()
+	void perform() override
 	{
 		m->SetNewtonianGravity(!m->GetNewtonianGrvity());
 	}
@@ -81,11 +81,11 @@ public:
 	{
 
 	}
-	virtual bool GetToggle()
+	bool GetToggle() override
 	{
 		return m->GetAHeatEnable();
 	}
-	virtual void perform()
+	void perform() override
 	{
 		m->SetAHeatEnable(!m->GetAHeatEnable());
 	}
@@ -100,11 +100,11 @@ public:
 	{
 		c = c_;
 	}
-	virtual bool GetToggle()
+	bool GetToggle() override
 	{
 		return 0;
 	}
-	virtual void perform()
+	void perform() override
 	{
 		c->ShowConsole();
 	}

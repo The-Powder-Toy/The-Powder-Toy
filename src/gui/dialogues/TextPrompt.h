@@ -13,7 +13,7 @@ public:
 	enum DialogueResult { ResultCancel, ResultOkay };
 	TextPrompt(String title, String message, String text, String placeholder, bool multiline, TextDialogueCallback * callback_);
 	static String Blocking(String title, String message, String text, String placeholder, bool multiline);
-	virtual void OnDraw();
+	void OnDraw() override;
 	virtual ~TextPrompt();
 	TextDialogueCallback * callback;
 };

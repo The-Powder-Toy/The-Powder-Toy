@@ -6,7 +6,7 @@
 class InformationMessage: public ui::Window {
 public:
 	InformationMessage(String title, String message, bool large);
-	virtual void OnDraw();
+	void OnDraw() override;
 	virtual ~InformationMessage();
 };
 
