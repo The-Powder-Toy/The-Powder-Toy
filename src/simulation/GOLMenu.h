@@ -3,7 +3,7 @@
 
 struct gol_menu
 {
-	ByteString name;
+	String name;
 	pixel colour;
 	int goltype;
 	String description;

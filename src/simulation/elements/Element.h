@@ -14,7 +14,7 @@ class Element
 {
 public:
 	ByteString Identifier;
-	ByteString Name;
+	String Name;
 	pixel Colour;
 	int MenuVisible;
 	int MenuSection;

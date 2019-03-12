@@ -58,7 +58,7 @@ public:
 		return newTexture;
 	}
 
-	DecorationTool(Renderer *ren_, int decoMode, ByteString name, String description, int r, int g, int b, ByteString identifier):
+	DecorationTool(Renderer *ren_, int decoMode, String name, String description, int r, int g, int b, ByteString identifier):
 		Tool(decoMode, name, description, r, g, b, identifier),
 		Red(0),
 		Green(0),

@@ -276,7 +276,7 @@ int luatpt_getelement(lua_State *l)
 		t = luaL_optint(l, 1, 1);
 		if (t<0 || t>=PT_NUM)
 			return luaL_error(l, "Unrecognised element number '%d'", t);
-		lua_pushstring(l, luacon_sim->elements[t].Name.c_str());
+		lua_pushstring(l, luacon_sim->elements[t].Name.ToUtf8().c_str());
 	}
 	else
 	{

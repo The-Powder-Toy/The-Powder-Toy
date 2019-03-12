@@ -290,7 +290,7 @@ tpt.partsdata = nil");
 		lua_setfield(l, currentElementMeta, "__index");
 		lua_setmetatable(l, currentElement);
 
-		lua_setfield(l, tptElements, luacon_sim->elements[i].Name.ToLower().c_str());
+		lua_setfield(l, tptElements, luacon_sim->elements[i].Name.ToUtf8().ToLower().c_str());
 	}
 	lua_setfield(l, tptProperties, "el");
 
@@ -310,7 +310,7 @@ tpt.partsdata = nil");
 		lua_setfield(l, currentElementMeta, "__index");
 		lua_setmetatable(l, currentElement);
 
-		lua_setfield(l, tptElementTransitions, luacon_sim->elements[i].Name.ToLower().c_str());
+		lua_setfield(l, tptElementTransitions, luacon_sim->elements[i].Name.ToUtf8().ToLower().c_str());
 	}
 	lua_setfield(l, tptProperties, "eltransition");
 
@@ -2428,12 +2428,11 @@ void LuaScriptInterface::initElementsAPI()
 		{
 			lua_pushinteger(l, i);
 			lua_setfield(l, -2, luacon_sim->elements[i].Identifier.c_str());
-			char realIdentifier[20];
-			sprintf(realIdentifier, "DEFAULT_PT_%s", luacon_sim->elements[i].Name.c_str());
+			ByteString realIdentifier = ByteString::Build("DEFAULT_PT_", luacon_sim->elements[i].Name.ToUtf8());
 			if (i != 0 && i != PT_NBHL && i != PT_NWHL && luacon_sim->elements[i].Identifier != realIdentifier)
 			{
 				lua_pushinteger(l, i);
-				lua_setfield(l, -2, realIdentifier);
+				lua_setfield(l, -2, realIdentifier.c_str());
 			}
 		}
 	}

@@ -4912,7 +4912,7 @@ int Simulation::GetParticleType(ByteString type)
 		return PT_NONE;
 	for (int i = 1; i < PT_NUM; i++)
 	{
-		if (!strcasecmp(txt, elements[i].Name.c_str()) && elements[i].Name.size() && elements[i].Enabled)
+		if (!strcasecmp(txt, elements[i].Name.ToUtf8().c_str()) && elements[i].Name.size() && elements[i].Enabled)
 		{
 			return i;
 		}

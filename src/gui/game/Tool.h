@@ -16,7 +16,7 @@ class Tool
 protected:
 	VideoBuffer * (*textureGen)(int, int, int);
 	int toolID;
-	ByteString toolName;
+	String toolName;
 	String toolDescription;
 	float strength;
 	bool blocky;
@@ -24,9 +24,9 @@ protected:
 public:
 	int colRed, colGreen, colBlue;
 
-	Tool(int id, ByteString name, String description, int r, int g, int b, ByteString identifier, VideoBuffer * (*textureGen)(int, int, int) = NULL);
+	Tool(int id, String name, String description, int r, int g, int b, ByteString identifier, VideoBuffer * (*textureGen)(int, int, int) = NULL);
 	int GetToolID() { return toolID; }
-	ByteString GetName();
+	String GetName();
 	String GetDescription();
 	ByteString GetIdentifier();
 	int GetBlocky() { return blocky; }
@@ -105,7 +105,7 @@ public:
 class ElementTool: public Tool
 {
 public:
-	ElementTool(int id, ByteString name, String description, int r, int g, int b, ByteString identifier, VideoBuffer * (*textureGen)(int, int, int) = NULL);
+	ElementTool(int id, String name, String description, int r, int g, int b, ByteString identifier, VideoBuffer * (*textureGen)(int, int, int) = NULL);
 	virtual ~ElementTool();
 	void Draw(Simulation * sim, Brush * brush, ui::Point position) override;
 	void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false) override;
@@ -116,7 +116,7 @@ public:
 class Element_LIGH_Tool: public ElementTool
 {
 public:
-	Element_LIGH_Tool(int id, ByteString name, String description, int r, int g, int b, ByteString identifier, VideoBuffer * (*textureGen)(int, int, int) = NULL):
+	Element_LIGH_Tool(int id, String name, String description, int r, int g, int b, ByteString identifier, VideoBuffer * (*textureGen)(int, int, int) = NULL):
 		ElementTool(id, name, description, r, g, b, identifier, textureGen)
 	{ }
 	virtual ~Element_LIGH_Tool() { }
@@ -129,7 +129,7 @@ public:
 class Element_TESC_Tool: public ElementTool
 {
 public:
-	Element_TESC_Tool(int id, ByteString name, String description, int r, int g, int b, ByteString identifier, VideoBuffer * (*textureGen)(int, int, int) = NULL):
+	Element_TESC_Tool(int id, String name, String description, int r, int g, int b, ByteString identifier, VideoBuffer * (*textureGen)(int, int, int) = NULL):
 		ElementTool(id, name, description, r, g, b, identifier, textureGen)
 	{ }
 	virtual ~Element_TESC_Tool() {}
@@ -140,7 +140,7 @@ public:
 class PlopTool: public ElementTool
 {
 public:
-	PlopTool(int id, ByteString name, String description, int r, int g, int b, ByteString identifier, VideoBuffer * (*textureGen)(int, int, int) = NULL):
+	PlopTool(int id, String name, String description, int r, int g, int b, ByteString identifier, VideoBuffer * (*textureGen)(int, int, int) = NULL):
 		ElementTool(id, name, description, r, g, b, identifier, textureGen)
 	{ }
 	virtual ~PlopTool() { }
@@ -154,7 +154,7 @@ public:
 class WallTool: public Tool
 {
 public:
-	WallTool(int id, ByteString name, String description, int r, int g, int b, ByteString identifier, VideoBuffer * (*textureGen)(int, int, int) = NULL);
+	WallTool(int id, String name, String description, int r, int g, int b, ByteString identifier, VideoBuffer * (*textureGen)(int, int, int) = NULL);
 	virtual ~WallTool();
 	void Draw(Simulation * sim, Brush * brush, ui::Point position) override;
 	void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false) override;
@@ -165,7 +165,7 @@ public:
 class WindTool: public Tool
 {
 public:
-	WindTool(int id, ByteString name, String description, int r, int g, int b, ByteString identifier, VideoBuffer * (*textureGen)(int, int, int) = NULL);
+	WindTool(int id, String name, String description, int r, int g, int b, ByteString identifier, VideoBuffer * (*textureGen)(int, int, int) = NULL);
 	virtual ~WindTool() { }
 	void Draw(Simulation * sim, Brush * brush, ui::Point position) override { }
 	void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false) override;

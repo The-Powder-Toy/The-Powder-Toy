@@ -51,7 +51,7 @@ Element::Element():
 std::vector<StructProperty> Element::GetProperties()
 {
 	std::vector<StructProperty> properties;
-	properties.push_back(StructProperty("Name",                      StructProperty::BString,  offsetof(Element, Name)));
+	properties.push_back(StructProperty("Name",                      StructProperty::String,   offsetof(Element, Name)));
 	properties.push_back(StructProperty("Colour",                    StructProperty::Colour,   offsetof(Element, Colour)));
 	properties.push_back(StructProperty("Color",                     StructProperty::Colour,   offsetof(Element, Colour)));
 	properties.push_back(StructProperty("MenuVisible",               StructProperty::Integer,  offsetof(Element, MenuVisible)));

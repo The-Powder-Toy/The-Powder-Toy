@@ -6,7 +6,7 @@
 
 using namespace std;
 
-Tool::Tool(int id, ByteString name, String description, int r, int g, int b, ByteString identifier, VideoBuffer * (*textureGen)(int, int, int)):
+Tool::Tool(int id, String name, String description, int r, int g, int b, ByteString identifier, VideoBuffer * (*textureGen)(int, int, int)):
 	textureGen(textureGen),
 	toolID(id),
 	toolName(name),
@@ -33,7 +33,7 @@ void Tool::SetTextureGen(VideoBuffer * (*textureGen)(int, int, int))
 	this->textureGen = textureGen;
 }
 ByteString Tool::GetIdentifier() { return identifier; }
-ByteString Tool::GetName() { return toolName; }
+String Tool::GetName() { return toolName; }
 String Tool::GetDescription() { return toolDescription; }
 Tool::~Tool() {}
 
@@ -50,7 +50,7 @@ void Tool::DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Po
 void Tool::DrawFill(Simulation * sim, Brush * brush, ui::Point position) {}
 
 
-ElementTool::ElementTool(int id, ByteString name, String description, int r, int g, int b, ByteString identifier, VideoBuffer * (*textureGen)(int, int, int)):
+ElementTool::ElementTool(int id, String name, String description, int r, int g, int b, ByteString identifier, VideoBuffer * (*textureGen)(int, int, int)):
 	Tool(id, name, description, r, g, b, identifier, textureGen)
 {
 }
@@ -69,7 +69,7 @@ void ElementTool::DrawFill(Simulation * sim, Brush * brush, ui::Point position) 
 }
 
 
-WallTool::WallTool(int id, ByteString name, String description, int r, int g, int b, ByteString identifier, VideoBuffer * (*textureGen)(int, int, int)):
+WallTool::WallTool(int id, String name, String description, int r, int g, int b, ByteString identifier, VideoBuffer * (*textureGen)(int, int, int)):
 Tool(id, name, description, r, g, b, identifier, textureGen)
 {
 	blocky = true;
@@ -110,7 +110,7 @@ void WallTool::DrawFill(Simulation * sim, Brush * brush, ui::Point position) {
 		sim->FloodWalls(position.X, position.Y, toolID, -1);
 }
 
-WindTool::WindTool(int id, ByteString name, String description, int r, int g, int b, ByteString identifier, VideoBuffer * (*textureGen)(int, int, int)):
+WindTool::WindTool(int id, String name, String description, int r, int g, int b, ByteString identifier, VideoBuffer * (*textureGen)(int, int, int)):
 	Tool(id, name, description, r, g, b, identifier, textureGen)
 {
 }

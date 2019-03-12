@@ -11,7 +11,7 @@ class SimTool
 {
 public:
 	ByteString Identifier;
-	ByteString Name;
+	String Name;
 	pixel Colour;
 	String Description;
 

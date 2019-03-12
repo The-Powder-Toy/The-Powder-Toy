@@ -1472,7 +1472,7 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 	case SDL_SCANCODE_F5:
 		c->ReloadSim();
 		break;
-	case 'a':
+	case SDL_SCANCODE_A:
 		if ((Client::Ref().GetAuthUser().UserElevation == User::ElevationModerator
 		     || Client::Ref().GetAuthUser().UserElevation == User::ElevationAdmin) && ctrl)
 		{
@@ -2284,14 +2284,14 @@ void GameView::OnDraw()
 			if (showDebug)
 			{
 				if (type == PT_LAVA && c->IsValidElement(ctype))
-					sampleInfo << "Molten " << c->ElementResolve(ctype, -1).FromAscii();
+					sampleInfo << "Molten " << c->ElementResolve(ctype, -1);
 				else if ((type == PT_PIPE || type == PT_PPIP) && c->IsValidElement(ctype))
-					sampleInfo << c->ElementResolve(type, -1).FromAscii() << " with " << c->ElementResolve(ctype, (int)sample.particle.pavg[1]).FromAscii();
+					sampleInfo << c->ElementResolve(type, -1) << " with " << c->ElementResolve(ctype, (int)sample.particle.pavg[1]);
 				else if (type == PT_LIFE)
-					sampleInfo << c->ElementResolve(type, ctype).FromAscii();
+					sampleInfo << c->ElementResolve(type, ctype);
 				else if (type == PT_FILT)
 				{
-					sampleInfo << c->ElementResolve(type, ctype).FromAscii();
+					sampleInfo << c->ElementResolve(type, ctype);
 					String filtModes[] = {"set colour", "AND", "OR", "subtract colour", "red shift", "blue shift", "no effect", "XOR", "NOT", "old QRTZ scattering", "variable red shift", "variable blue shift"};
 					if (sample.particle.tmp>=0 && sample.particle.tmp<=11)
 						sampleInfo << " (" << filtModes[sample.particle.tmp] << ")";
@@ -2300,14 +2300,14 @@ void GameView::OnDraw()
 				}
 				else
 				{
-					sampleInfo << c->ElementResolve(type, ctype).FromAscii();
+					sampleInfo << c->ElementResolve(type, ctype);
 					if (wavelengthGfx)
 						sampleInfo << " (" << ctype << ")";
 					// Some elements store extra LIFE info in upper bits of ctype, instead of tmp/tmp2
 					else if (type == PT_CRAY || type == PT_DRAY || type == PT_CONV)
-						sampleInfo << " (" << c->ElementResolve(TYP(ctype), ID(ctype)).FromAscii() << ")";
+						sampleInfo << " (" << c->ElementResolve(TYP(ctype), ID(ctype)) << ")";
 					else if (c->IsValidElement(ctype))
-						sampleInfo << " (" << c->ElementResolve(ctype, -1).FromAscii() << ")";
+						sampleInfo << " (" << c->ElementResolve(ctype, -1) << ")";
 					else
 						sampleInfo << " ()";
 				}
@@ -2319,7 +2319,7 @@ void GameView::OnDraw()
 					{
 						String elemName = c->ElementResolve(
 							TYP(sample.particle.tmp),
-							ID(sample.particle.tmp)).FromAscii();
+							ID(sample.particle.tmp));
 						if (elemName == "")
 							sampleInfo << ", Tmp: " << sample.particle.tmp;
 						else
@@ -2338,13 +2338,13 @@ void GameView::OnDraw()
 			else
 			{
 				if (type == PT_LAVA && c->IsValidElement(ctype))
-					sampleInfo << "Molten " << c->ElementResolve(ctype, -1).FromAscii();
+					sampleInfo << "Molten " << c->ElementResolve(ctype, -1);
 				else if ((type == PT_PIPE || type == PT_PPIP) && c->IsValidElement(ctype))
-					sampleInfo << c->ElementResolve(type, -1).FromAscii() << " with " << c->ElementResolve(ctype, (int)sample.particle.pavg[1]).FromAscii();
+					sampleInfo << c->ElementResolve(type, -1) << " with " << c->ElementResolve(ctype, (int)sample.particle.pavg[1]);
 				else if (type == PT_LIFE)
-					sampleInfo << c->ElementResolve(type, ctype).FromAscii();
+					sampleInfo << c->ElementResolve(type, ctype);
 				else
-					sampleInfo << c->ElementResolve(type, ctype).FromAscii();
+					sampleInfo << c->ElementResolve(type, ctype);
 				sampleInfo << ", Temp: " << sample.particle.temp - 273.15f << " C";
 				sampleInfo << ", Pressure: " << sample.AirPressure;
 			}

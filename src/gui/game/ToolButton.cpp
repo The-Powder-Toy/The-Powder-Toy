@@ -4,8 +4,8 @@
 #include "gui/interface/Mouse.h"
 #include "Favorite.h"
 
-ToolButton::ToolButton(ui::Point position, ui::Point size, ByteString text_, ByteString toolIdentifier, String toolTip):
-	ui::Button(position, size, text_.FromAscii(), toolTip),
+ToolButton::ToolButton(ui::Point position, ui::Point size, String text, ByteString toolIdentifier, String toolTip):
+	ui::Button(position, size, text, toolTip),
 	toolIdentifier(toolIdentifier)
 {
 	SetSelectionState(-1);
@@ -72,11 +72,11 @@ void ToolButton::Draw(const ui::Point& screenPos)
 
 	if (totalColour<544)
 	{
-		g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, buttonDisplayText.c_str(), 255, 255, 255, 255);
+		g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, buttonDisplayText, 255, 255, 255, 255);
 	}
 	else
 	{
-		g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, buttonDisplayText.c_str(), 0, 0, 0, 255);
+		g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, buttonDisplayText, 0, 0, 0, 255);
 	}
 }
 

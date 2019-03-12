@@ -1566,7 +1566,7 @@ void GameController::ReloadSim()
 	}
 }
 
-ByteString GameController::ElementResolve(int type, int ctype)
+String GameController::ElementResolve(int type, int ctype)
 {
 	if(gameModel && gameModel->GetSimulation())
 	{

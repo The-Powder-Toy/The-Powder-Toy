@@ -147,7 +147,7 @@ public:
 	bool MouseInZoom(ui::Point position);
 	ui::Point PointTranslate(ui::Point point);
 	ui::Point NormaliseBlockCoord(ui::Point point);
-	ByteString ElementResolve(int type, int ctype);
+	String ElementResolve(int type, int ctype);
 	bool IsValidElement(int type);
 	String WallName(int type);
 	int Record(bool record);
