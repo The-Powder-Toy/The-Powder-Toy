@@ -27,7 +27,7 @@
 #define SNAPSHOT_ID 0
 #endif
 
-// Mod ID, used on the http://starcatcher.us/TPT build server
+// Mod ID, used on the https://starcatcher.us/TPT build server
 // The build server will compile for all platforms for you, and send updates in game
 // See jacob1 to get a mod ID
 #ifndef MOD_ID
@@ -85,6 +85,7 @@
 #define MTOS_EXPAND(str) #str
 #define MTOS(str) MTOS_EXPAND(str)
 
+#define SCHEME "https://"
 #define SERVER "powdertoy.co.uk"
 #define STATICSERVER "static.powdertoy.co.uk"
 
