@@ -1,164 +1,212 @@
 #include "RequestManager.h"
 #include "Request.h"
-#include "HTTP.h"
 #include "Config.h"
 #include "Platform.h"
 
+const int curl_multi_wait_timeout_ms = 100;
+const long curl_max_host_connections = 6;
+
 namespace http
 {
-RequestManager::RequestManager():
-	threadStarted(false),
-	lastUsed(time(NULL)),
-	managerRunning(false),
-	managerShutdown(false),
-	requests(std::vector<Request*>()),
-	requestsAddQueue(std::vector<Request*>())
-{
-	pthread_mutex_init(&requestLock, NULL);
-	pthread_mutex_init(&requestAddLock, NULL);
-}
+	const long timeout = 15;
+	ByteString proxy;
+	ByteString user_agent;
 
-RequestManager::~RequestManager()
-{
-
-}
-
-void RequestManager::Shutdown()
-{
-	pthread_mutex_lock(&requestLock);
-	pthread_mutex_lock(&requestAddLock);
-	for (std::vector<Request*>::iterator iter = requests.begin(); iter != requests.end(); ++iter)
+	RequestManager::RequestManager():
+		rt_shutting_down(false),
+		multi(NULL)
 	{
-		Request *request = (*iter);
-		if (request->http)
-			http_force_close(request->http);
-		request->requestCanceled = true;
-		delete request;
+		pthread_cond_init(&rt_cv, NULL);
+		pthread_mutex_init(&rt_mutex, NULL);
 	}
-	requests.clear();
-	requestsAddQueue.clear();
-	managerShutdown = true;
-	pthread_mutex_unlock(&requestAddLock);
-	pthread_mutex_unlock(&requestLock);
-	if (threadStarted)
-		pthread_join(requestThread, NULL);
-	
-	http_done();
-}
 
-//helper function for request
-TH_ENTRY_POINT void* RequestManagerHelper(void* obj)
-{
-	RequestManager *temp = (RequestManager*)obj;
-	temp->Update();
-	return NULL;
-}
-
-void RequestManager::Initialise(ByteString Proxy)
-{
-	proxy = Proxy;
-	if (proxy.length())
+	RequestManager::~RequestManager()
 	{
-		http_init((char *)proxy.c_str());
+		pthread_mutex_destroy(&rt_mutex);
+		pthread_cond_destroy(&rt_cv);
 	}
-	else
+
+	void RequestManager::Shutdown()
 	{
-		http_init(NULL);
+		pthread_mutex_lock(&rt_mutex);
+		rt_shutting_down = true;
+		pthread_cond_signal(&rt_cv);
+		pthread_mutex_unlock(&rt_mutex);
+
+		pthread_join(worker_thread, NULL);
+		
+		curl_multi_cleanup(multi);
+		multi = NULL;
+		curl_global_cleanup();
 	}
-}
 
-void RequestManager::Start()
-{
-	managerRunning = true;
-	lastUsed = time(NULL);
-	pthread_create(&requestThread, NULL, &RequestManagerHelper, this);
-}
-
-void RequestManager::Update()
-{
-	unsigned int numActiveRequests = 0;
-	while (!managerShutdown)
+	TH_ENTRY_POINT void *RequestManager::RequestManagerHelper(void *obj)
 	{
-		pthread_mutex_lock(&requestAddLock);
-		if (requestsAddQueue.size())
+		((RequestManager *)obj)->Worker();
+		return NULL;
+	}
+
+	void RequestManager::Initialise(ByteString Proxy)
+	{
+		curl_global_init(CURL_GLOBAL_DEFAULT);
+		multi = curl_multi_init();
+		if (multi)
 		{
-			for (size_t i = 0; i < requestsAddQueue.size(); i++)
-			{
-				requests.push_back(requestsAddQueue[i]);
-			}
-			requestsAddQueue.clear();
+			curl_multi_setopt(multi, CURLMOPT_MAX_HOST_CONNECTIONS, curl_max_host_connections);
 		}
-		pthread_mutex_unlock(&requestAddLock);
-		if (requests.size())
+
+		proxy = Proxy;
+
+		user_agent = ByteString::Build("PowderToy/", SAVE_VERSION, ".", MINOR_VERSION, " (", IDENT_PLATFORM, "; ", IDENT_BUILD, "; M", MOD_ID, ") TPTPP/", SAVE_VERSION, ".", MINOR_VERSION, ".", BUILD_NUM, IDENT_RELTYPE, ".", SNAPSHOT_ID);
+
+		pthread_create(&worker_thread, NULL, &RequestManager::RequestManagerHelper, this);
+	}
+
+	void RequestManager::Worker()
+	{
+		bool shutting_down = false;
+		while (!shutting_down)
 		{
-			numActiveRequests = 0;
-			pthread_mutex_lock(&requestLock);
-			for (size_t i = 0; i < requests.size(); i++)
+			for (Request *request : requests_to_remove)
 			{
-				Request *request = requests[i];
-				if (request->requestCanceled)
+				requests.erase(request);
+				if (multi && request->easy && request->added_to_multi)
 				{
-					if (request->http && request->requestStarted)
-						http_force_close(request->http);
-					delete request;
-					requests.erase(requests.begin()+i);
-					i--;
+					curl_multi_remove_handle(multi, request->easy);
+					request->added_to_multi = false;
 				}
-				else if (request->requestStarted && !request->requestFinished)
+				delete request;
+			}
+			requests_to_remove.clear();
+
+			pthread_mutex_lock(&rt_mutex);
+			shutting_down = rt_shutting_down;
+			for (Request *request : requests_to_add)
+			{
+				request->status = 0;
+				requests.insert(request);
+			}
+			requests_to_add.clear();
+			if (requests.empty())
+			{
+				while (!rt_shutting_down && requests_to_add.empty())
 				{
-					if (http_async_req_status(request->http) != 0)
+					pthread_cond_wait(&rt_cv, &rt_mutex);
+				}
+			}
+			pthread_mutex_unlock(&rt_mutex);
+
+			if (multi && !requests.empty())
+			{
+				int dontcare;
+				struct CURLMsg *msg;
+
+				curl_multi_wait(multi, nullptr, 0, curl_multi_wait_timeout_ms, &dontcare);
+				curl_multi_perform(multi, &dontcare);
+				while ((msg = curl_multi_info_read(multi, &dontcare)))
+				{
+					if (msg->msg == CURLMSG_DONE)
 					{
-						request->requestData = http_async_req_stop(request->http, &request->requestStatus, &request->requestSize);
-						request->requestFinished = true;
-						if (!request->keepAlive)
-							request->http = NULL;
+						Request *request;
+						curl_easy_getinfo(msg->easy_handle, CURLINFO_PRIVATE, &request);
+
+						int finish_with = 600;
+
+						switch (msg->data.result)
+						{
+						case CURLE_OK:
+							long code;
+							curl_easy_getinfo(msg->easy_handle, CURLINFO_RESPONSE_CODE, &code);
+							finish_with = (int)code;
+							break;
+						
+						case CURLE_UNSUPPORTED_PROTOCOL:  finish_with = 601; break;
+						case CURLE_COULDNT_RESOLVE_HOST:  finish_with = 602; break;
+						case CURLE_OPERATION_TIMEDOUT:    finish_with = 605; break;
+						case CURLE_URL_MALFORMAT:         finish_with = 606; break;
+						case CURLE_COULDNT_CONNECT:       finish_with = 607; break;
+						case CURLE_COULDNT_RESOLVE_PROXY: finish_with = 608; break;
+
+						case CURLE_SSL_CONNECT_ERROR:
+						case CURLE_SSL_ENGINE_NOTFOUND:
+						case CURLE_SSL_ENGINE_SETFAILED:
+						case CURLE_SSL_CERTPROBLEM:
+						case CURLE_SSL_CIPHER:
+						case CURLE_SSL_ENGINE_INITFAILED:
+						case CURLE_SSL_CACERT_BADFILE:
+						case CURLE_SSL_CRL_BADFILE:
+						case CURLE_SSL_ISSUER_ERROR:
+						case CURLE_SSL_PINNEDPUBKEYNOTMATCH:
+						case CURLE_SSL_INVALIDCERTSTATUS: finish_with = 609; break;
+
+						case CURLE_HTTP2:
+						case CURLE_HTTP2_STREAM:
+						
+						case CURLE_FAILED_INIT:
+						case CURLE_NOT_BUILT_IN:
+						default:
+							break;
+						}
+
+						request->status = finish_with;
 					}
-					lastUsed = time(NULL);
-					numActiveRequests++;
-				}
+				};
 			}
-			pthread_mutex_unlock(&requestLock);
-		}
-		if (time(NULL) > lastUsed+http_timeout*2 && !numActiveRequests)
-		{
-			pthread_mutex_lock(&requestLock);
-			managerRunning = false;
-			pthread_mutex_unlock(&requestLock);
-			return;
-		}
-		Platform::Millisleep(1);
-	}
-}
 
-void RequestManager::EnsureRunning()
-{
-	pthread_mutex_lock(&requestLock);
-	if (!managerRunning)
+			for (Request *request : requests)
+			{
+				pthread_mutex_lock(&request->rm_mutex);
+
+				if (shutting_down)
+				{
+					// In the weird case that a http::Request::Simple* call is
+					// waiting on this Request, we should fail the request
+					// instead of cancelling it ourselves.
+					request->status = 610;
+				}
+
+				if (request->rm_canceled)
+				{
+					requests_to_remove.insert(request);
+				}
+
+				if (!request->rm_canceled && request->rm_started && !request->added_to_multi)
+				{
+					if (multi && request->easy)
+					{
+						curl_multi_add_handle(multi, request->easy);
+						request->added_to_multi = true;
+					}
+					else
+					{
+						request->status = 604;
+					}
+				}
+
+				if (!request->rm_canceled && request->rm_started && !request->rm_finished)
+				{
+					if (multi && request->easy)
+					{
+						curl_easy_getinfo(request->easy, CURLINFO_CONTENT_LENGTH_DOWNLOAD_T, &request->rm_total);
+						curl_easy_getinfo(request->easy, CURLINFO_SIZE_DOWNLOAD_T, &request->rm_done);
+					}
+					if (request->status)
+					{
+						request->rm_finished = true;
+						pthread_cond_signal(&request->done_cv);
+					}
+				}
+
+				pthread_mutex_unlock(&request->rm_mutex);
+			}
+		}
+	}
+
+	void RequestManager::AddRequest(Request *request)
 	{
-		if (threadStarted)
-			pthread_join(requestThread, NULL);
-		else
-			threadStarted = true;
-		Start();
+		pthread_mutex_lock(&rt_mutex);
+		requests_to_add.insert(request);
+		pthread_cond_signal(&rt_cv);
+		pthread_mutex_unlock(&rt_mutex);
 	}
-	pthread_mutex_unlock(&requestLock);
-}
-
-void RequestManager::AddRequest(Request *request)
-{
-	pthread_mutex_lock(&requestAddLock);
-	requestsAddQueue.push_back(request);
-	pthread_mutex_unlock(&requestAddLock);
-	EnsureRunning();
-}
-
-void RequestManager::Lock()
-{
-	pthread_mutex_lock(&requestAddLock);
-}
-
-void RequestManager::Unlock()
-{
-	pthread_mutex_unlock(&requestAddLock);
-}
 }

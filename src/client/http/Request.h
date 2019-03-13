@@ -1,54 +1,63 @@
 #ifndef REQUEST_H
 #define REQUEST_H
+
 #include <map>
+#include <curl/curl.h>
 #include "common/String.h"
 
 namespace http
 {
-class RequestManager;
-class Request
-{
-	ByteString uri;
-	void *http;
-	bool keepAlive;
+	class RequestManager;
+	class Request
+	{
+		ByteString uri;
+		ByteString response_body;
 
-	char *requestData;
-	int requestSize;
-	int requestStatus;
+		CURL *easy;
 
-	ByteString postData;
-	ByteString postDataBoundary;
+		volatile curl_off_t rm_total;
+		volatile curl_off_t rm_done;
+		volatile bool rm_finished;
+		volatile bool rm_canceled;
+		volatile bool rm_started;
+		pthread_mutex_t rm_mutex;
 
-	ByteString userID;
-	ByteString userSession;
+		bool added_to_multi;
+		int status;
 
-	volatile bool requestFinished;
-	volatile bool requestCanceled;
-	volatile bool requestStarted;
+		struct curl_slist *headers;
+		curl_mime *post_fields;
 
-public:
-	Request(ByteString uri, bool keepAlive = false);
-	virtual ~Request();
+		pthread_cond_t done_cv;
 
-	void AddPostData(std::map<ByteString, ByteString> data);
-	void AddPostData(std::pair<ByteString, ByteString> data);
-	void AuthHeaders(ByteString ID, ByteString session);
-	void Start();
-	ByteString Finish(int *status);
-	void Cancel();
+	public:
+		Request(ByteString uri);
+		virtual ~Request();
 
-	void CheckProgress(int *total, int *done);
-	bool CheckDone();
-	bool CheckCanceled();
-	bool CheckStarted();
+		void AddHeader(ByteString name, ByteString value);
+		void AddPostData(std::map<ByteString, ByteString> data);
+		void AuthHeaders(ByteString ID, ByteString session);
 
-	friend class RequestManager;
+		void Start();
+		ByteString Finish(int *status);
+		void Cancel();
 
-	static ByteString Simple(ByteString uri, int *status, std::map<ByteString, ByteString> post_data = std::map<ByteString, ByteString>{});
-	static ByteString SimpleAuth(ByteString uri, int *status, ByteString ID, ByteString session, std::map<ByteString, ByteString> post_data = std::map<ByteString, ByteString>{});
-};
+		void CheckProgress(int *total, int *done);
+		bool CheckDone();
+		bool CheckCanceled();
+		bool CheckStarted();
 
-const char *StatusText(int code);
+		friend class RequestManager;
+
+		static ByteString Simple(ByteString uri, int *status, std::map<ByteString, ByteString> post_data = std::map<ByteString, ByteString>{});
+		static ByteString SimpleAuth(ByteString uri, int *status, ByteString ID, ByteString session, std::map<ByteString, ByteString> post_data = std::map<ByteString, ByteString>{});
+	};
+
+	const char *StatusText(int code);
+
+	extern const long timeout;
+	extern ByteString proxy;
+	extern ByteString user_agent;
 }
 
-#endif
+#endif // REQUEST_H
