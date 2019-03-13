@@ -5,6 +5,8 @@
 
 class AbandonableTask : public Task
 {
+	pthread_cond_t done_cv;
+	
 public:
 	void Start() override;
 	void Finish();

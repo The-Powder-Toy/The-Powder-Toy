@@ -47,7 +47,7 @@ void AbandonableTask::Start()
 	pthread_create(&doWorkThread, 0, &AbandonableTask::doWork_helper, this);
 
 #ifdef DEBUGTHREADS
-		std::cerr << "AbandonableTask @ " << this << " created" << std::endl;
+	std::cerr << "AbandonableTask @ " << this << " created" << std::endl;
 #endif
 }
 
@@ -57,6 +57,7 @@ TH_ENTRY_POINT void * AbandonableTask::doWork_helper(void * ref)
 
 	AbandonableTask *task = (AbandonableTask *)ref;
 	pthread_mutex_lock(&task->taskMutex);
+	pthread_cond_signal(&task->done_cv);
 	bool abandoned = task->thAbandoned;
 	pthread_mutex_unlock(&task->taskMutex);
 	if (abandoned)
@@ -78,15 +79,16 @@ TH_ENTRY_POINT void * AbandonableTask::doWork_helper(void * ref)
 
 void AbandonableTask::Finish()
 {
-	// note to self: if you make this wait for a condition variable,
-	// lock the corresponding mutex before calling GetDone, otherwise
-	// the CV may be signalled between the call and the locking of the
-	// mutex. -- LBPHacker
-	while (!GetDone())
+	pthread_mutex_lock(&taskMutex);
+	while (!thDone)
 	{
-		Poll();
-		Platform::Millisleep(1);
+		pthread_cond_wait(&done_cv, &taskMutex);
 	}
+	pthread_mutex_unlock(&taskMutex);
+
+	// Poll to make sure that the rest of the Task knows that it's
+	// done, not just us.
+	Poll();
 
 #ifdef DEBUGTHREADS
 	std::cerr << "AbandonableTask @ " << this << " finished" << std::endl;
@@ -145,6 +147,7 @@ void AbandonableTask::Poll()
 
 AbandonableTask::AbandonableTask()
 {
+	pthread_cond_init(&done_cv, NULL);
 #ifdef DEBUGTHREADS
 	std::cerr << "AbandonableTask @ " << this << " ctor" << std::endl;
 #endif
@@ -162,5 +165,6 @@ AbandonableTask::~AbandonableTask()
 
 	std::cerr << "AbandonableTask @ " << this << " dtor" << std::endl;
 #endif
+	pthread_cond_destroy(&done_cv);
 }
 
