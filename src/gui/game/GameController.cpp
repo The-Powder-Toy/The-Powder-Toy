@@ -687,7 +687,7 @@ bool GameController::MouseUp(int x, int y, unsigned button, char type)
 						case 't':
 						{
 							// buff is already confirmed to be a number by sign::splitsign
-							Platform::OpenURI(ByteString::Build("http://powdertoy.co.uk/Discussions/Thread/View.html?Thread=", link.ToUtf8()));
+							Platform::OpenURI(ByteString::Build(SCHEME "powdertoy.co.uk/Discussions/Thread/View.html?Thread=", link.ToUtf8()));
 							break;
 						}
 						case 's':
@@ -1716,9 +1716,9 @@ void GameController::RunUpdater()
 #else
 
 #ifdef UPDATESERVER
-	ByteString file = ByteString::Build("https://", UPDATESERVER, Client::Ref().GetUpdateInfo().File);
+	ByteString file = ByteString::Build(SCHEME, UPDATESERVER, Client::Ref().GetUpdateInfo().File);
 #else
-	ByteString file = ByteString::Build("https://", SERVER, Client::Ref().GetUpdateInfo().File);
+	ByteString file = ByteString::Build(SCHEME, SERVER, Client::Ref().GetUpdateInfo().File);
 #endif
 
 	Platform::OpenURI(file);

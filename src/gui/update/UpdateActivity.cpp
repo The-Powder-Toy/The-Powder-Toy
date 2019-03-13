@@ -115,9 +115,9 @@ private:
 UpdateActivity::UpdateActivity() {
 	ByteString file;
 #ifdef UPDATESERVER
-	file = ByteString::Build("http://", UPDATESERVER, Client::Ref().GetUpdateInfo().File);
+	file = ByteString::Build(SCHEME, UPDATESERVER, Client::Ref().GetUpdateInfo().File);
 #else
-	file = ByteString::Build("http://", SERVER, Client::Ref().GetUpdateInfo().File);
+	file = ByteString::Build(SCHEME, SERVER, Client::Ref().GetUpdateInfo().File);
 #endif
 	updateDownloadTask = new UpdateDownloadTask(file, this);
 	updateWindow = new TaskWindow("Downloading update...", updateDownloadTask, true);
@@ -149,7 +149,7 @@ void UpdateActivity::NotifyError(Task * sender)
 			if (result == ConfirmPrompt::ResultOkay)
 			{
 #ifndef UPDATESERVER
-				Platform::OpenURI("http://powdertoy.co.uk/Download.html");
+				Platform::OpenURI(SCHEME "powdertoy.co.uk/Download.html");
 #endif
 			}
 			a->Exit();

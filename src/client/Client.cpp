@@ -128,7 +128,7 @@ void Client::Initialise(ByteString proxyString)
 	stampsLib.close();
 
 	//Begin version check
-	versionCheckRequest = new http::Request("http://" SERVER "/Startup.json");
+	versionCheckRequest = new http::Request(SCHEME SERVER "/Startup.json");
 
 	if (authUser.UserID)
 	{
@@ -138,7 +138,7 @@ void Client::Initialise(ByteString proxyString)
 
 #ifdef UPDATESERVER
 	// use an alternate update server
-	alternateVersionCheckRequest = new http::Request("http://" UPDATESERVER "/Startup.json");
+	alternateVersionCheckRequest = new http::Request(SCHEME UPDATESERVER "/Startup.json");
 	usingAltUpdateServer = true;
 	if (authUser.UserID)
 	{
@@ -977,7 +977,7 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 		}
 #endif
 
-		data = http::Request::SimpleAuth("http://" SERVER "/Save.api", &dataStatus, userID, authUser.SessionID, {
+		data = http::Request::SimpleAuth(SCHEME SERVER "/Save.api", &dataStatus, userID, authUser.SessionID, {
 			{ "Name", save.GetName().ToUtf8() },
 			{ "Description", save.GetDescription().ToUtf8() },
 			{ "Data:save.bin", ByteString(gameData, gameData + gameDataLength) },
@@ -1173,7 +1173,7 @@ RequestStatus Client::ExecVote(int saveID, int direction)
 	{
 		ByteString saveIDText = ByteString::Build(saveID);
 		ByteString userIDText = ByteString::Build(authUser.UserID);
-		data = http::Request::SimpleAuth("http://" SERVER "/Vote.api", &dataStatus, userIDText, authUser.SessionID, {
+		data = http::Request::SimpleAuth(SCHEME SERVER "/Vote.api", &dataStatus, userIDText, authUser.SessionID, {
 			{ "ID", saveIDText },
 			{ "Action", direction == 1 ? "Up" : "Down" },
 		});
@@ -1195,9 +1195,9 @@ unsigned char * Client::GetSaveData(int saveID, int saveDate, int & dataLength)
 	dataLength = 0;
 	ByteString urlStr;
 	if (saveDate)
-		urlStr = ByteString::Build("http://", STATICSERVER, "/", saveID, "_", saveDate, ".cps");
+		urlStr = ByteString::Build(SCHEME, STATICSERVER, "/", saveID, "_", saveDate, ".cps");
 	else
-		urlStr = ByteString::Build("http://", STATICSERVER, "/", saveID, ".cps");
+		urlStr = ByteString::Build(SCHEME, STATICSERVER, "/", saveID, ".cps");
 
 	data = http::Request::Simple(urlStr, &dataStatus);
 
@@ -1245,7 +1245,7 @@ LoginStatus Client::Login(ByteString username, ByteString password, User & user)
 
 	ByteString data;
 	int dataStatus;
-	data = http::Request::Simple("http://" SERVER "/Login.json", &dataStatus, {
+	data = http::Request::Simple(SCHEME SERVER "/Login.json", &dataStatus, {
 		{ "Username", username },
 		{ "Hash", totalHash },
 	});
@@ -1300,7 +1300,7 @@ RequestStatus Client::DeleteSave(int saveID)
 {
 	lastError = "";
 	ByteString data;
-	ByteString url = ByteString::Build("http://", SERVER, "/Browse/Delete.json?ID=", saveID, "&Mode=Delete&Key=", authUser.SessionKey);
+	ByteString url = ByteString::Build(SCHEME, SERVER, "/Browse/Delete.json?ID=", saveID, "&Mode=Delete&Key=", authUser.SessionKey);
 	int dataStatus;
 	if(authUser.UserID)
 	{
@@ -1321,7 +1321,7 @@ RequestStatus Client::AddComment(int saveID, String comment)
 	lastError = "";
 	ByteString data;
 	int dataStatus;
-	ByteString url = ByteString::Build("http://", SERVER, "/Browse/Comments.json?ID=", saveID);
+	ByteString url = ByteString::Build(SCHEME, SERVER, "/Browse/Comments.json?ID=", saveID);
 	if(authUser.UserID)
 	{
 		ByteString userID = ByteString::Build(authUser.UserID);
@@ -1344,7 +1344,7 @@ RequestStatus Client::FavouriteSave(int saveID, bool favourite)
 	ByteStringBuilder urlStream;
 	ByteString data;
 	int dataStatus;
-	urlStream << "http://" << SERVER << "/Browse/Favourite.json?ID=" << saveID << "&Key=" << authUser.SessionKey;
+	urlStream << SCHEME << SERVER << "/Browse/Favourite.json?ID=" << saveID << "&Key=" << authUser.SessionKey;
 	if(!favourite)
 		urlStream << "&Mode=Remove";
 	if(authUser.UserID)
@@ -1366,7 +1366,7 @@ RequestStatus Client::ReportSave(int saveID, String message)
 	lastError = "";
 	ByteString data;
 	int dataStatus;
-	ByteString url = ByteString::Build("http://", SERVER, "/Browse/Report.json?ID=", saveID, "&Key=", authUser.SessionKey);
+	ByteString url = ByteString::Build(SCHEME, SERVER, "/Browse/Report.json?ID=", saveID, "&Key=", authUser.SessionKey);
 	if(authUser.UserID)
 	{
 		ByteString userID = ByteString::Build(authUser.UserID);
@@ -1388,7 +1388,7 @@ RequestStatus Client::UnpublishSave(int saveID)
 	lastError = "";
 	ByteString data;
 	int dataStatus;
-	ByteString url = ByteString::Build("http://", SERVER, "/Browse/Delete.json?ID=", saveID, "&Mode=Unpublish&Key=", authUser.SessionKey);
+	ByteString url = ByteString::Build(SCHEME, SERVER, "/Browse/Delete.json?ID=", saveID, "&Mode=Unpublish&Key=", authUser.SessionKey);
 	if(authUser.UserID)
 	{
 		ByteString userID = ByteString::Build(authUser.UserID);
@@ -1408,7 +1408,7 @@ RequestStatus Client::PublishSave(int saveID)
 	lastError = "";
 	ByteString data;
 	int dataStatus;
-	ByteString url = ByteString::Build("http://", SERVER, "/Browse/View.json?ID=", saveID, "&Key=", authUser.SessionKey);
+	ByteString url = ByteString::Build(SCHEME, SERVER, "/Browse/View.json?ID=", saveID, "&Key=", authUser.SessionKey);
 	if (authUser.UserID)
 	{
 		ByteString userID = ByteString::Build(authUser.UserID);
@@ -1429,7 +1429,7 @@ SaveInfo * Client::GetSave(int saveID, int saveDate)
 {
 	lastError = "";
 	ByteStringBuilder urlStream;
-	urlStream << "http://" << SERVER  << "/Browse/View.json?ID=" << saveID;
+	urlStream << SCHEME << SERVER  << "/Browse/View.json?ID=" << saveID;
 	if(saveDate)
 	{
 		urlStream << "&Date=" << saveDate;
@@ -1504,7 +1504,7 @@ std::vector<std::pair<ByteString, int> > * Client::GetTags(int start, int count,
 	ByteStringBuilder urlStream;
 	ByteString data;
 	int dataStatus;
-	urlStream << "http://" << SERVER << "/Browse/Tags.json?Start=" << start << "&Count=" << count;
+	urlStream << SCHEME << SERVER << "/Browse/Tags.json?Start=" << start << "&Count=" << count;
 	if(query.length())
 	{
 		urlStream << "&Search_Query=";
@@ -1550,7 +1550,7 @@ std::vector<SaveInfo*> * Client::SearchSaves(int start, int count, String query,
 	ByteStringBuilder urlStream;
 	ByteString data;
 	int dataStatus;
-	urlStream << "http://" << SERVER << "/Browse.json?Start=" << start << "&Count=" << count;
+	urlStream << SCHEME << SERVER << "/Browse.json?Start=" << start << "&Count=" << count;
 	if(query.length() || sort.length())
 	{
 		urlStream << "&Search_Query=";
@@ -1618,7 +1618,7 @@ std::list<ByteString> * Client::RemoveTag(int saveID, ByteString tag)
 	std::list<ByteString> * tags = NULL;
 	ByteString data;
 	int dataStatus;
-	ByteString url = ByteString::Build("http://", SERVER, "/Browse/EditTag.json?Op=delete&ID=", saveID, "&Tag=", tag, "&Key=", authUser.SessionKey);
+	ByteString url = ByteString::Build(SCHEME, SERVER, "/Browse/EditTag.json?Op=delete&ID=", saveID, "&Tag=", tag, "&Key=", authUser.SessionKey);
 	if(authUser.UserID)
 	{
 		ByteString userID = ByteString::Build(authUser.UserID);
@@ -1657,7 +1657,7 @@ std::list<ByteString> * Client::AddTag(int saveID, ByteString tag)
 	std::list<ByteString> * tags = NULL;
 	ByteString data;
 	int dataStatus;
-	ByteString url = ByteString::Build("http://", SERVER, "/Browse/EditTag.json?Op=add&ID=", saveID, "&Tag=", tag, "&Key=", authUser.SessionKey);
+	ByteString url = ByteString::Build(SCHEME, SERVER, "/Browse/EditTag.json?Op=add&ID=", saveID, "&Tag=", tag, "&Key=", authUser.SessionKey);
 	if(authUser.UserID)
 	{
 		ByteString userID = ByteString::Build(authUser.UserID);

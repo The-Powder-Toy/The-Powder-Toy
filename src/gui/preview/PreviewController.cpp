@@ -153,7 +153,7 @@ void PreviewController::FavouriteSave()
 
 void PreviewController::OpenInBrowser()
 {
-	ByteString uri = ByteString::Build("http://", SERVER, "/Browse/View.html?ID=", saveId);
+	ByteString uri = ByteString::Build(SCHEME, SERVER, "/Browse/View.html?ID=", saveId);
 	Platform::OpenURI(uri);
 }
 

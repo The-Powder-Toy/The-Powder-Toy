@@ -72,13 +72,13 @@ void PreviewModel::UpdateSave(int saveID, int saveDate)
 
 	ByteString url;
 	if (saveDate)
-		url = ByteString::Build("http://", STATICSERVER, "/", saveID, "_", saveDate, ".cps");
+		url = ByteString::Build(SCHEME, STATICSERVER, "/", saveID, "_", saveDate, ".cps");
 	else
-		url = ByteString::Build("http://", STATICSERVER, "/", saveID, ".cps");
+		url = ByteString::Build(SCHEME, STATICSERVER, "/", saveID, ".cps");
 	saveDataDownload = new http::Request(url);
 	saveDataDownload->Start();
 
-	url = ByteString::Build("http://", SERVER , "/Browse/View.json?ID=", saveID);
+	url = ByteString::Build(SCHEME, SERVER , "/Browse/View.json?ID=", saveID);
 	if (saveDate)
 		url += ByteString::Build("&Date=", saveDate);
 	saveInfoDownload = new http::Request(url);
@@ -89,7 +89,7 @@ void PreviewModel::UpdateSave(int saveID, int saveDate)
 	{
 		commentsLoaded = false;
 
-		url = ByteString::Build("http://", SERVER, "/Browse/Comments.json?ID=", saveID, "&Start=", (commentsPageNumber-1)*20, "&Count=20");
+		url = ByteString::Build(SCHEME, SERVER, "/Browse/Comments.json?ID=", saveID, "&Start=", (commentsPageNumber-1)*20, "&Count=20");
 		commentsDownload = new http::Request(url);
 		commentsDownload->AuthHeaders(ByteString::Build(Client::Ref().GetAuthUser().UserID), Client::Ref().GetAuthUser().SessionID);
 		commentsDownload->Start();
@@ -141,7 +141,7 @@ void PreviewModel::UpdateComments(int pageNumber)
 		commentsPageNumber = pageNumber;
 		if (!GetDoOpen())
 		{
-			ByteString url = ByteString::Build("http://", SERVER, "/Browse/Comments.json?ID=", saveID, "&Start=", (commentsPageNumber-1)*20, "&Count=20");
+			ByteString url = ByteString::Build(SCHEME, SERVER, "/Browse/Comments.json?ID=", saveID, "&Start=", (commentsPageNumber-1)*20, "&Count=20");
 			commentsDownload = new http::Request(url);
 			commentsDownload->AuthHeaders(ByteString::Build(Client::Ref().GetAuthUser().UserID), Client::Ref().GetAuthUser().SessionID);
 			commentsDownload->Start();
@@ -166,7 +166,7 @@ void PreviewModel::OnSaveReady()
 	{
 		GameSave *gameSave = new GameSave(*saveData);
 		if (gameSave->fromNewerVersion)
-			new ErrorMessage("This save is from a newer version", "Please update TPT in game or at http://powdertoy.co.uk");
+			new ErrorMessage("This save is from a newer version", "Please update TPT in game or at https://powdertoy.co.uk");
 		saveInfo->SetGameSave(gameSave);
 	}
 	catch(ParseException &e)
@@ -239,7 +239,7 @@ bool PreviewModel::ParseSaveInfo(ByteString &saveInfoResponse)
 				saveDataDownload->Cancel();
 			delete saveData;
 			saveData = NULL;
-			saveDataDownload = new http::Request(ByteString::Build("http://", STATICSERVER, "/2157797.cps"));
+			saveDataDownload = new http::Request(ByteString::Build(SCHEME, STATICSERVER, "/2157797.cps"));
 			saveDataDownload->Start();
 		}
 		return true;

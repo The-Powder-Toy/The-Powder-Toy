@@ -81,7 +81,7 @@ void ProfileActivity::setUserInfo(UserInfo newInfo)
 	public:
 		void ActionCallback(ui::Button * sender_) override
 		{
-			Platform::OpenURI("http://" SERVER "/Profile/Avatar.html");
+			Platform::OpenURI(SCHEME SERVER "/Profile/Avatar.html");
 		}
 	};
 
