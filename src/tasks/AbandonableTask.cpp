@@ -42,7 +42,6 @@ void AbandonableTask::Start()
 	thAbandoned = false;
 	progress = 0;
 	status = "";
-	//taskMutex = PTHREAD_MUTEX_INITIALIZER;
 	before();
 	pthread_mutex_init (&taskMutex, NULL);
 	pthread_create(&doWorkThread, 0, &AbandonableTask::doWork_helper, this);
@@ -79,6 +78,10 @@ TH_ENTRY_POINT void * AbandonableTask::doWork_helper(void * ref)
 
 void AbandonableTask::Finish()
 {
+	// note to self: if you make this wait for a condition variable,
+	// lock the corresponding mutex before calling GetDone, otherwise
+	// the CV may be signalled between the call and the locking of the
+	// mutex. -- LBPHacker
 	while (!GetDone())
 	{
 		Poll();

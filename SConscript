@@ -332,6 +332,10 @@ def findLibs(env, conf):
 	if not conf.CheckLib(['z', 'zlib']):
 		FatalError("libz not found or not installed")
 
+	#Look for libcurl
+	if not conf.CheckLib(['curl', 'libcurl']):
+		FatalError("libcurl not found or not installed")
+
 	#Look for pthreads
 	if not conf.CheckLib(['pthread', 'pthreadVC2']):
 		FatalError("pthreads development library not found or not installed")
