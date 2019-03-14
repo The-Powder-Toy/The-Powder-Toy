@@ -13,6 +13,9 @@ namespace http
 	ByteString user_agent;
 
 	RequestManager::RequestManager():
+		requests_added_to_multi(0),
+		requests_to_start(false),
+		requests_to_remove(false),
 		rt_shutting_down(false),
 		multi(NULL)
 	{
@@ -67,36 +70,26 @@ namespace http
 		bool shutting_down = false;
 		while (!shutting_down)
 		{
-			for (Request *request : requests_to_remove)
-			{
-				requests.erase(request);
-				if (multi && request->easy && request->added_to_multi)
-				{
-					curl_multi_remove_handle(multi, request->easy);
-					request->added_to_multi = false;
-				}
-				delete request;
-			}
-			requests_to_remove.clear();
-
 			pthread_mutex_lock(&rt_mutex);
+			if (!requests_added_to_multi)
+			{
+				while (!rt_shutting_down && requests_to_add.empty() && !requests_to_start && !requests_to_remove)
+				{
+					pthread_cond_wait(&rt_cv, &rt_mutex);
+				}
+			}
 			shutting_down = rt_shutting_down;
+			requests_to_remove = false;
+			requests_to_start = false;
 			for (Request *request : requests_to_add)
 			{
 				request->status = 0;
 				requests.insert(request);
 			}
 			requests_to_add.clear();
-			if (requests.empty())
-			{
-				while (!rt_shutting_down && requests_to_add.empty())
-				{
-					pthread_cond_wait(&rt_cv, &rt_mutex);
-				}
-			}
 			pthread_mutex_unlock(&rt_mutex);
 
-			if (multi && !requests.empty())
+			if (multi && requests_added_to_multi)
 			{
 				int dontcare;
 				struct CURLMsg *msg;
@@ -153,10 +146,10 @@ namespace http
 				};
 			}
 
+			std::set<Request *> requests_to_remove;
 			for (Request *request : requests)
 			{
 				pthread_mutex_lock(&request->rm_mutex);
-
 				if (shutting_down)
 				{
 					// In the weird case that a http::Request::Simple* call is
@@ -164,25 +157,17 @@ namespace http
 					// instead of cancelling it ourselves.
 					request->status = 610;
 				}
-
-				if (request->rm_canceled)
-				{
-					requests_to_remove.insert(request);
-				}
-
-				if (!request->rm_canceled && request->rm_started && !request->added_to_multi)
+				if (!request->rm_canceled && request->rm_started && !request->added_to_multi && !request->status)
 				{
 					if (multi && request->easy)
 					{
-						curl_multi_add_handle(multi, request->easy);
-						request->added_to_multi = true;
+						MultiAdd(request);
 					}
 					else
 					{
 						request->status = 604;
 					}
 				}
-
 				if (!request->rm_canceled && request->rm_started && !request->rm_finished)
 				{
 					if (multi && request->easy)
@@ -193,12 +178,42 @@ namespace http
 					if (request->status)
 					{
 						request->rm_finished = true;
+						MultiRemove(request);
 						pthread_cond_signal(&request->done_cv);
 					}
 				}
-
+				if (request->rm_canceled)
+				{
+					requests_to_remove.insert(request);
+				}
 				pthread_mutex_unlock(&request->rm_mutex);
 			}
+			for (Request *request : requests_to_remove)
+			{
+				requests.erase(request);
+				MultiRemove(request);
+				delete request;
+			}
+		}
+	}
+
+	void RequestManager::MultiAdd(Request *request)
+	{
+		if (multi && request->easy && !request->added_to_multi)
+		{
+			curl_multi_add_handle(multi, request->easy);
+			request->added_to_multi = true;
+			++requests_added_to_multi;
+		}
+	}
+
+	void RequestManager::MultiRemove(Request *request)
+	{
+		if (request->added_to_multi)
+		{
+			curl_multi_remove_handle(multi, request->easy);
+			request->added_to_multi = false;
+			--requests_added_to_multi;
 		}
 	}
 
@@ -206,6 +221,22 @@ namespace http
 	{
 		pthread_mutex_lock(&rt_mutex);
 		requests_to_add.insert(request);
+		pthread_cond_signal(&rt_cv);
+		pthread_mutex_unlock(&rt_mutex);
+	}
+
+	void RequestManager::StartRequest(Request *request)
+	{
+		pthread_mutex_lock(&rt_mutex);
+		requests_to_start = true;
+		pthread_cond_signal(&rt_cv);
+		pthread_mutex_unlock(&rt_mutex);
+	}
+
+	void RequestManager::RemoveRequest(Request *request)
+	{
+		pthread_mutex_lock(&rt_mutex);
+		requests_to_remove = true;
 		pthread_cond_signal(&rt_cv);
 		pthread_mutex_unlock(&rt_mutex);
 	}
