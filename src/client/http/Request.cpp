@@ -129,6 +129,7 @@ namespace http
 		pthread_mutex_lock(&rm_mutex);
 		rm_started = true;
 		pthread_mutex_unlock(&rm_mutex);
+		RequestManager::Ref().StartRequest(this);
 	}
 
 
@@ -146,14 +147,15 @@ namespace http
 			pthread_cond_wait(&done_cv, &rm_mutex);
 		}
 		rm_started = false;
-		rm_canceled = true; // signals to RequestManager that the Request can be deleted
-		ByteString response_out = std::move(response_body);
+		rm_canceled = true;
 		if (status_out)
 		{
 			*status_out = status;
 		}
+		ByteString response_out = std::move(response_body);
 		pthread_mutex_unlock(&rm_mutex);
 
+		RequestManager::Ref().RemoveRequest(this);
 		return response_out;
 	}
 
@@ -205,6 +207,7 @@ namespace http
 		pthread_mutex_lock(&rm_mutex);
 		rm_canceled = true;
 		pthread_mutex_unlock(&rm_mutex);
+		RequestManager::Ref().RemoveRequest(this);
 	}
 
 	ByteString Request::Simple(ByteString uri, int *status, std::map<ByteString, ByteString> post_data)
