@@ -87,6 +87,7 @@
 
 #define SCHEME "https://"
 #define SERVER "powdertoy.co.uk"
+#define STATICSCHEME "https://"
 #define STATICSERVER "static.powdertoy.co.uk"
 
 #define LOCAL_SAVE_DIR "Saves"
@@ -94,9 +95,6 @@
 #define STAMPS_DIR "stamps"
 
 #define BRUSH_DIR "Brushes"
-
-//Number of unique thumbnails to have in cache at one time
-#define THUMB_CACHE_SIZE 256
 
 #ifndef M_GRAV
 #define M_GRAV 6.67300e-1

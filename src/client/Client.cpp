@@ -1195,9 +1195,9 @@ unsigned char * Client::GetSaveData(int saveID, int saveDate, int & dataLength)
 	dataLength = 0;
 	ByteString urlStr;
 	if (saveDate)
-		urlStr = ByteString::Build(SCHEME, STATICSERVER, "/", saveID, "_", saveDate, ".cps");
+		urlStr = ByteString::Build(STATICSCHEME, STATICSERVER, "/", saveID, "_", saveDate, ".cps");
 	else
-		urlStr = ByteString::Build(SCHEME, STATICSERVER, "/", saveID, ".cps");
+		urlStr = ByteString::Build(STATICSCHEME, STATICSERVER, "/", saveID, ".cps");
 
 	data = http::Request::Simple(urlStr, &dataStatus);
 
