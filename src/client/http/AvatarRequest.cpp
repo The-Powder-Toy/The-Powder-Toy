@@ -4,7 +4,7 @@
 namespace http
 {
 	AvatarRequest::AvatarRequest(ByteString username, int width, int height) :
-		ImageRequest(ByteString::Build(SCHEME STATICSERVER "/avatars/", username, ".pti"), width, height)
+		ImageRequest(ByteString::Build(STATICSCHEME STATICSERVER "/avatars/", username, ".pti"), width, height)
 	{
 	}
 

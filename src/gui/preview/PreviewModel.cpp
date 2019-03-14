@@ -72,9 +72,9 @@ void PreviewModel::UpdateSave(int saveID, int saveDate)
 
 	ByteString url;
 	if (saveDate)
-		url = ByteString::Build(SCHEME, STATICSERVER, "/", saveID, "_", saveDate, ".cps");
+		url = ByteString::Build(STATICSCHEME, STATICSERVER, "/", saveID, "_", saveDate, ".cps");
 	else
-		url = ByteString::Build(SCHEME, STATICSERVER, "/", saveID, ".cps");
+		url = ByteString::Build(STATICSCHEME, STATICSERVER, "/", saveID, ".cps");
 	saveDataDownload = new http::Request(url);
 	saveDataDownload->Start();
 
@@ -239,7 +239,7 @@ bool PreviewModel::ParseSaveInfo(ByteString &saveInfoResponse)
 				saveDataDownload->Cancel();
 			delete saveData;
 			saveData = NULL;
-			saveDataDownload = new http::Request(ByteString::Build(SCHEME, STATICSERVER, "/2157797.cps"));
+			saveDataDownload = new http::Request(ByteString::Build(STATICSCHEME, STATICSERVER, "/2157797.cps"));
 			saveDataDownload->Start();
 		}
 		return true;
