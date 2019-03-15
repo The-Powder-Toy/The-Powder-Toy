@@ -119,6 +119,7 @@ namespace http
 						case CURLE_URL_MALFORMAT:         finish_with = 606; break;
 						case CURLE_COULDNT_CONNECT:       finish_with = 607; break;
 						case CURLE_COULDNT_RESOLVE_PROXY: finish_with = 608; break;
+						case CURLE_TOO_MANY_REDIRECTS:    finish_with = 611; break;
 
 						case CURLE_SSL_CONNECT_ERROR:
 						case CURLE_SSL_ENGINE_NOTFOUND:

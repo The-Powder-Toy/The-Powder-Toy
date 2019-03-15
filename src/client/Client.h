@@ -144,7 +144,6 @@ public:
 
 	RequestStatus AddComment(int saveID, String comment);
 
-	unsigned char * GetSaveData(int saveID, int saveDate, int & dataLength);
 	std::vector<unsigned char> GetSaveData(int saveID, int saveDate);
 
 	LoginStatus Login(ByteString username, ByteString password, User & user);
