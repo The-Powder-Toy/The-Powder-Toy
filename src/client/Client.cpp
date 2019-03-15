@@ -1187,12 +1187,11 @@ RequestStatus Client::ExecVote(int saveID, int direction)
 	return ret;
 }
 
-unsigned char * Client::GetSaveData(int saveID, int saveDate, int & dataLength)
+std::vector<unsigned char> Client::GetSaveData(int saveID, int saveDate)
 {
 	lastError = "";
 	int dataStatus;
 	ByteString data;
-	dataLength = 0;
 	ByteString urlStr;
 	if (saveDate)
 		urlStr = ByteString::Build(STATICSCHEME, STATICSERVER, "/", saveID, "_", saveDate, ".cps");
@@ -1205,24 +1204,9 @@ unsigned char * Client::GetSaveData(int saveID, int saveDate, int & dataLength)
 	ParseServerReturn(data, dataStatus, false);
 	if (data.size() && dataStatus == 200)
 	{
-		unsigned char *data_out = (unsigned char *)malloc(data.size());
-		std::copy(data_out, data_out + data.size(), data.begin());
-		dataLength = (int)data.size();
-		return data_out;
+		return std::vector<unsigned char>(data.begin(), data.end());
 	}
-	return NULL;
-}
-
-std::vector<unsigned char> Client::GetSaveData(int saveID, int saveDate)
-{
-	int dataSize;
-	unsigned char * data = GetSaveData(saveID, saveDate, dataSize);
-	if (!data)
-		return std::vector<unsigned char>();
-
-	std::vector<unsigned char> saveData(data, data+dataSize);
-	delete[] data;
-	return saveData;
+	return std::vector<unsigned char>();
 }
 
 LoginStatus Client::Login(ByteString username, ByteString password, User & user)
