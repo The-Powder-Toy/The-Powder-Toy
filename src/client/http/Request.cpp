@@ -85,6 +85,14 @@ namespace http
 		}
 	}
 
+	size_t Request::WriteDataHandler(char *ptr, size_t size, size_t count, void *userdata)
+	{
+		Request *req = (Request *)userdata;
+		auto actual_size = size * count;
+		req->response_body.append(ptr, actual_size);
+		return actual_size;
+	}
+
 	// start the request thread
 	void Request::Start()
 	{
@@ -121,12 +129,7 @@ namespace http
 			curl_easy_setopt(easy, CURLOPT_NOSIGNAL, 1L);
 
 			curl_easy_setopt(easy, CURLOPT_WRITEDATA, (void *)this);
-			curl_easy_setopt(easy, CURLOPT_WRITEFUNCTION, (size_t (*)(char *ptr, size_t size, size_t count, void *userdata))([](char *ptr, size_t size, size_t count, void *userdata) -> size_t {
-				Request *req = (Request *)userdata;
-				auto actual_size = size * count;
-				req->response_body.append(ptr, actual_size);
-				return actual_size;
-			})); // curl_easy_setopt does something really ugly with parameters; I have to cast the lambda explicitly to the right kind of function pointer for some reason
+			curl_easy_setopt(easy, CURLOPT_WRITEFUNCTION, Request::WriteDataHandler);
 		}
 
 		pthread_mutex_lock(&rm_mutex);

@@ -1,12 +1,14 @@
 #ifndef REQUESTMANAGER_H
 #define REQUESTMANAGER_H
 
+#include "common/tpt-minmax.h" // for MSVC, ensures windows.h doesn't cause compile errors by defining min/max
 #include "common/tpt-thread.h"
 #include <ctime>
 #include <set>
 #include <curl/curl.h>
 #include "common/Singleton.h"
 #include "common/String.h"
+#undef GetUserName // pthreads (included by curl) defines this, breaks stuff
 
 namespace http
 {
