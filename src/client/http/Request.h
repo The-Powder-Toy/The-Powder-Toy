@@ -2,8 +2,11 @@
 #define REQUEST_H
 
 #include <map>
+#include "common/tpt-minmax.h" // for MSVC, ensures windows.h doesn't cause compile errors by defining min/max
+#include "common/tpt-thread.h"
 #include <curl/curl.h>
 #include "common/String.h"
+#undef GetUserName // pthreads (included by curl) defines this, breaks stuff
 
 namespace http
 {
@@ -29,6 +32,8 @@ namespace http
 		curl_mime *post_fields;
 
 		pthread_cond_t done_cv;
+
+		static size_t WriteDataHandler(char * ptr, size_t size, size_t count, void * userdata);
 
 	public:
 		Request(ByteString uri);
