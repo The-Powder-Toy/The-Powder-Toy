@@ -229,7 +229,7 @@ def findLibs(env, conf):
 	#Windows specific libs
 	if platform == "Windows":
 		if msvc:
-			libChecks = ['shell32', 'wsock32', 'user32', 'Advapi32', 'ws2_32']
+			libChecks = ['shell32', 'wsock32', 'user32', 'Advapi32', 'ws2_32', 'Wldap32', 'crypt32']
 			if GetOption('static'):
 				libChecks += ['imm32', 'version', 'Ole32', 'OleAut32']
 			for i in libChecks:
@@ -484,6 +484,7 @@ elif GetOption('release'):
 
 if GetOption('static'):
 	if platform == "Windows":
+		env.Append(CPPDEFINES=['CURL_STATICLIB'])
 		if compilePlatform == "Windows" and not msvc:
 			env.Append(CPPDEFINES=['_PTW32_STATIC_LIB'])
 		else:
