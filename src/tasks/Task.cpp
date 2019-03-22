@@ -11,14 +11,11 @@ void Task::AddTaskListener(TaskListener * listener)
 
 void Task::Start()
 {
-	thDone = false;
-	done = false;
-	progress = 0;
-	status = "";
-	//taskMutex = PTHREAD_MUTEX_INITIALIZER;
 	before();
-	pthread_mutex_init (&taskMutex, NULL);
+	// This would use a lambda if we didn't use pthreads and if I dared omit
+	// the TH_ENTRY_POINT from the function type.
 	pthread_create(&doWorkThread, 0, &Task::doWork_helper, this);
+	pthread_detach(doWorkThread);
 }
 
 int Task::GetProgress()
@@ -83,24 +80,25 @@ void Task::Poll()
 		if(newDone!=done)
 		{
 			done = newDone;
-
-			pthread_join(doWorkThread, NULL);
-			pthread_mutex_destroy(&taskMutex);
-
 			after();
-
 			notifyDoneMain();
 		}
 	}
 }
 
+Task::Task() :
+	progress(0),
+	done(false),
+	thProgress(0),
+	thDone(false),
+	listener(NULL)
+{
+	pthread_mutex_init(&taskMutex, NULL);
+}
+
 Task::~Task()
 {
-	if(!done)
-	{
-		pthread_join(doWorkThread, NULL);
-		pthread_mutex_destroy(&taskMutex);
-	}
+	pthread_mutex_destroy(&taskMutex);
 }
 
 void Task::before()
@@ -123,13 +121,18 @@ void Task::after()
 
 }
 
-TH_ENTRY_POINT void * Task::doWork_helper(void * ref)
+void Task::doWork_wrapper()
 {
-	bool newSuccess = ((Task*)ref)->doWork();
-	pthread_mutex_lock(&((Task*)ref)->taskMutex);
-	((Task*)ref)->thSuccess = newSuccess;
-	((Task*)ref)->thDone = true;
-	pthread_mutex_unlock(&((Task*)ref)->taskMutex);
+	bool newSuccess = doWork();
+	pthread_mutex_lock(&taskMutex);
+	thSuccess = newSuccess;
+	thDone = true;
+	pthread_mutex_unlock(&taskMutex);
+}
+
+TH_ENTRY_POINT void *Task::doWork_helper(void *ref)
+{
+	((Task *)ref)->doWork_wrapper();
 	return NULL;
 }
 

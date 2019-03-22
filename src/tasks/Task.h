@@ -17,7 +17,7 @@ public:
 	String GetError();
 	String GetStatus();
 	virtual void Poll();
-	Task() : listener(NULL) { progress = 0; thProgress = 0; }
+	Task();
 	virtual ~Task();
 protected:
 	int progress;
@@ -35,12 +35,12 @@ protected:
 	TaskListener * listener;
 	pthread_t doWorkThread;
 	pthread_mutex_t taskMutex;
-	pthread_cond_t taskCond;
 
 
 	virtual void before();
 	virtual void after();
 	virtual bool doWork();
+	virtual void doWork_wrapper();
 	TH_ENTRY_POINT static void * doWork_helper(void * ref);
 
 	virtual void notifyProgress(int progress);
