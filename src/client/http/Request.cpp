@@ -14,7 +14,12 @@ namespace http
 		added_to_multi(false),
 		status(0),
 		headers(NULL),
+#ifdef REQUEST_USE_CURL_MIMEPOST
 		post_fields(NULL)
+#else
+		post_fields_first(NULL),
+		post_fields_last(NULL)
+#endif
 	{
 		pthread_cond_init(&done_cv, NULL);
 		pthread_mutex_init(&rm_mutex, NULL);
@@ -25,7 +30,11 @@ namespace http
 	Request::~Request()
 	{
 		curl_easy_cleanup(easy);
+#ifdef REQUEST_USE_CURL_MIMEPOST
 		curl_mime_free(post_fields);
+#else
+		curl_formfree(post_fields_first);
+#endif
 		curl_slist_free_all(headers);
 		pthread_mutex_destroy(&rm_mutex);
 		pthread_cond_destroy(&done_cv);
@@ -46,6 +55,7 @@ namespace http
 
 		if (easy)
 		{
+#ifdef REQUEST_USE_CURL_MIMEPOST
 			if (!post_fields)
 			{
 				post_fields = curl_mime_init(easy);
@@ -65,6 +75,9 @@ namespace http
 					curl_mime_name(part, field.first.c_str());
 				}
 			}
+#else
+			post_fields_map.insert(data.begin(), data.end());
+#endif
 		}
 	}
 
@@ -103,6 +116,7 @@ namespace http
 
 		if (easy)
 		{
+#ifdef REQUEST_USE_CURL_MIMEPOST
 			if (post_fields)
 			{
 				curl_easy_setopt(easy, CURLOPT_MIMEPOST, post_fields);
@@ -111,6 +125,36 @@ namespace http
 			{
 				curl_easy_setopt(easy, CURLOPT_HTTPGET, 1L);
 			}
+#else
+			if (!post_fields_map.empty())
+			{
+				for (auto &field : post_fields_map)
+				{
+					if (auto split = field.first.SplitBy(':'))
+					{
+						curl_formadd(&post_fields_first, &post_fields_last,
+							CURLFORM_COPYNAME, split.Before().c_str(),
+							CURLFORM_BUFFER, split.After().c_str(),
+							CURLFORM_BUFFERPTR, &field.second[0],
+							CURLFORM_BUFFERLENGTH, field.second.size(),
+						CURLFORM_END);
+					}
+					else
+					{
+						curl_formadd(&post_fields_first, &post_fields_last,
+							CURLFORM_COPYNAME, field.first.c_str(),
+							CURLFORM_PTRCONTENTS, &field.second[0],
+							CURLFORM_CONTENTLEN, field.second.size(),
+						CURLFORM_END);
+					}
+				}
+				curl_easy_setopt(easy, CURLOPT_HTTPPOST, post_fields_first);
+			}
+			else
+			{
+				curl_easy_setopt(easy, CURLOPT_HTTPGET, 1L);
+			}
+#endif
 
 			curl_easy_setopt(easy, CURLOPT_FOLLOWLOCATION, 1L);
 			curl_easy_setopt(easy, CURLOPT_MAXREDIRS, 10L);
