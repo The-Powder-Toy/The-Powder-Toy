@@ -274,7 +274,7 @@ namespace http
 		return request->Finish(status);
 	}
 
-	const char *StatusText(int ret)
+	String StatusText(int ret)
 	{
 		switch (ret)
 		{

@@ -656,7 +656,7 @@ RequestStatus Client::ParseServerReturn(ByteString &result, int status, bool jso
 		return RequestOkay;
 	if (status != 200)
 	{
-		lastError = String::Build("HTTP Error ", status, ": ", ByteString(http::StatusText(status)).FromUtf8());
+		lastError = String::Build("HTTP Error ", status, ": ", http::StatusText(status));
 		return RequestFailure;
 	}
 
@@ -686,7 +686,7 @@ RequestStatus Client::ParseServerReturn(ByteString &result, int status, bool jso
 			if (!strncmp(result.c_str(), "Error: ", 7))
 			{
 				status = ByteString(result.begin() + 7, result.end()).ToNumber<int>();
-				lastError = String::Build("HTTP Error ", status, ": ", ByteString(http::StatusText(status)).FromUtf8());
+				lastError = String::Build("HTTP Error ", status, ": ", http::StatusText(status));
 				return RequestFailure;
 			}
 			lastError = "Could not read response: " + ByteString(e.what()).FromUtf8();
@@ -729,6 +729,8 @@ bool Client::CheckUpdate(http::Request *updateRequest, bool checkSession)
 		if (status != 200)
 		{
 			//free(data);
+			if (usingAltUpdateServer && !checkSession)
+				this->messageOfTheDay = String::Build("HTTP Error ", status, " while checking for updates: ", http::StatusText(status));
 		}
 		else if(data.size())
 		{
@@ -1475,7 +1477,7 @@ SaveInfo * Client::GetSave(int saveID, int saveDate)
 	}
 	else
 	{
-		lastError = ByteString(http::StatusText(dataStatus)).FromUtf8();
+		lastError = http::StatusText(dataStatus);
 	}
 	return NULL;
 }
@@ -1521,7 +1523,7 @@ std::vector<std::pair<ByteString, int> > * Client::GetTags(int start, int count,
 	}
 	else
 	{
-		lastError = ByteString(http::StatusText(dataStatus)).FromUtf8();
+		lastError = http::StatusText(dataStatus);
 	}
 	return tagArray;
 }

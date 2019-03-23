@@ -1362,7 +1362,7 @@ int luatpt_getscript(lua_State* l)
 	}
 	if (ret != 200)
 	{
-		return luaL_error(l, http::StatusText(ret));
+		return luaL_error(l, http::StatusText(ret).ToUtf8().c_str());
 	}
 
 	if (!strcmp(scriptData.c_str(), "Invalid script ID\r\n"))

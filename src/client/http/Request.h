@@ -72,7 +72,7 @@ namespace http
 		static ByteString SimpleAuth(ByteString uri, int *status, ByteString ID, ByteString session, std::map<ByteString, ByteString> post_data = std::map<ByteString, ByteString>{});
 	};
 
-	const char *StatusText(int code);
+	String StatusText(int code);
 
 	extern const long timeout;
 	extern ByteString proxy;
