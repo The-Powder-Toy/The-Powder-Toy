@@ -173,8 +173,16 @@ namespace http
 				{
 					if (multi && request->easy)
 					{
+#ifdef REQUEST_USE_CURL_OFFSET_T
 						curl_easy_getinfo(request->easy, CURLINFO_CONTENT_LENGTH_DOWNLOAD_T, &request->rm_total);
 						curl_easy_getinfo(request->easy, CURLINFO_SIZE_DOWNLOAD_T, &request->rm_done);
+#else
+						double total, done;
+						curl_easy_getinfo(request->easy, CURLINFO_CONTENT_LENGTH_DOWNLOAD, &total);
+						curl_easy_getinfo(request->easy, CURLINFO_SIZE_DOWNLOAD, &done);
+						request->rm_total = (curl_off_t)total;
+						request->rm_done = (curl_off_t)done;
+#endif
 					}
 					if (request->status)
 					{

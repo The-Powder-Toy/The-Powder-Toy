@@ -6,12 +6,14 @@
 #include "common/tpt-thread.h"
 #include <curl/curl.h>
 #include "common/String.h"
-#undef GetUserName // pthreads (included by curl) defines this, breaks stuff
+#undef GetUserName // pthreads defines this, breaks stuff
 
-#ifdef CURL_AT_LEAST_VERSION
-# if CURL_AT_LEAST_VERSION(7, 56, 0)
-#  define REQUEST_USE_CURL_MIMEPOST
-# endif
+#if defined(CURL_AT_LEAST_VERSION) && CURL_AT_LEAST_VERSION(7, 55, 0)
+# define REQUEST_USE_CURL_OFFSET_T
+#endif
+
+#if defined(CURL_AT_LEAST_VERSION) && CURL_AT_LEAST_VERSION(7, 56, 0)
+# define REQUEST_USE_CURL_MIMEPOST
 #endif
 
 namespace http
