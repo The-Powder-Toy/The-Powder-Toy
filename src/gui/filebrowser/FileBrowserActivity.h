@@ -45,6 +45,7 @@ class FileBrowserActivity: public TaskListener, public WindowActivity
 
 	class SearchAction;
 	void populateList();
+	void cleanup();
 public:
 	FileBrowserActivity(ByteString directory, FileSelectedCallback * callback);
 	void OnDraw() override;

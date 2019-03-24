@@ -191,6 +191,21 @@ void FileBrowserActivity::RenameSave(SaveFile * file)
 		ErrorMessage::Blocking("Error", "No save name given");
 }
 
+void FileBrowserActivity::cleanup()
+{
+	for (auto comp : componentsQueue)
+	{
+		delete comp;
+	}
+	componentsQueue.clear();
+
+	for (auto file : files)
+	{
+		delete file;
+	}
+	files.clear();
+}
+
 void FileBrowserActivity::loadDirectory(ByteString directory, ByteString search)
 {
 	for (size_t i = 0; i < components.size(); i++)
@@ -199,17 +214,7 @@ void FileBrowserActivity::loadDirectory(ByteString directory, ByteString search)
 		itemList->RemoveChild(components[i]);
 	}
 
-	for (std::vector<ui::Component*>::iterator iter = componentsQueue.begin(), end = componentsQueue.end(); iter != end; ++iter)
-	{
-		delete *iter;
-	}
-	componentsQueue.clear();
-
-	for (std::vector<SaveFile*>::iterator iter = files.begin(), end = files.end(); iter != end; ++iter)
-	{
-		delete *iter;
-	}
-	files.clear();
+	cleanup();
 
 	infoText->Visible = false;
 	itemList->Visible = false;
@@ -325,4 +330,5 @@ void FileBrowserActivity::OnDraw()
 FileBrowserActivity::~FileBrowserActivity()
 {
 	delete callback;
+	cleanup();
 }
