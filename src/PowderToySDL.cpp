@@ -95,8 +95,21 @@ void LoadWindowPosition()
 	if (borderTop == 0)
 		borderTop = 5;
 
-	if (savedWindowX + borderLeft > 0 && savedWindowX + borderLeft < desktopWidth
-	        && savedWindowY + borderTop > 0 && savedWindowY + borderTop < desktopHeight)
+	int numDisplays = SDL_GetNumVideoDisplays();
+	SDL_Rect displayBounds;
+	bool ok = false;
+	for (int i = 0; i < numDisplays; i++)
+	{
+		SDL_GetDisplayBounds(i, &displayBounds);
+		if (savedWindowX + borderTop > displayBounds.x && savedWindowY + borderLeft > displayBounds.y &&
+				savedWindowX + borderTop < displayBounds.x + displayBounds.w &&
+				savedWindowY + borderLeft < displayBounds.y + displayBounds.h)
+		{
+			ok = true;
+			break;
+		}
+	}
+	if (ok)
 		SDL_SetWindowPosition(sdl_window, savedWindowX + borderLeft, savedWindowY + borderTop);
 }
 
