@@ -1048,12 +1048,12 @@ void Client::DeleteStamp(ByteString stampID)
 {
 	for (std::list<ByteString>::iterator iterator = stampIDs.begin(), end = stampIDs.end(); iterator != end; ++iterator)
 	{
-		if((*iterator) == stampID)
+		if ((*iterator) == stampID)
 		{
 			ByteString stampFilename = ByteString::Build(STAMPS_DIR, PATH_SEP, stampID, ".stm");
 			remove(stampFilename.c_str());
 			stampIDs.erase(iterator);
-			return;
+			break;
 		}
 	}
 
