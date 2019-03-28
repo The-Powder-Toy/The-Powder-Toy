@@ -77,7 +77,10 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 		sim->kill_part(i);
 		return 1;
 	case PT_NTCT:
+	case PT_FPTC:
+	case PT_FNTC:
 	case PT_PTCT:
+		Element_FNTC::update(UPDATE_FUNC_SUBCALL_ARGS);
 		Element_NTCT::update(UPDATE_FUNC_SUBCALL_ARGS);
 		break;
 	case PT_ETRD:
@@ -160,7 +163,7 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 				}
 		break;
 	case PT_TUNG:
-		if(parts[i].temp < 3595.0){
+		if (parts[i].temp < 3595.0) {
 			parts[i].temp += RNG::Ref().between(-4, 15);
 		}
 	default:
@@ -206,7 +209,7 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 								parts[ID(r)].life = 9;
 							}
 						}
-						else if(parts[ID(r)].ctype==PT_NTCT||parts[ID(r)].ctype==PT_PTCT)
+						else if(parts[ID(r)].ctype==PT_NTCT||parts[ID(r)].ctype==PT_PTCT ||parts[ID(r)].ctype == PT_FPTC||parts[ID(r)].ctype == PT_FNTC)
 							if (sender==PT_METL)
 							{
 								parts[ID(r)].temp = 473.0f;
@@ -227,18 +230,48 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 						else if (sender==PT_NSCN && parts[ID(r)].tmp == 3) parts[ID(r)].tmp = 1;
 					}
 					continue;
-				case PT_PPIP:
+				case PT_RBTR:
+					if (sender == PT_PSCN)
+					{
+						parts[ID(r)].tmp = 10;
+					}
+					 if (sender == PT_INST)
+					{
+						parts[ID(r)].temp += 1;
+					}
+					 if (sender == PT_INST &&  parts[ID(r)].tmp2 == 1)
+					 {
+						 parts[ID(r)].temp += 5;
+					 }
+				 if (sender == PT_NSCN)
+					 {
+						 parts[ID(r)].tmp = 0;
+					 }
+					break;
+				case PT_LED:
+					if (sender == PT_PSCN)
+					{
+						parts[ID(r)].temp += 900;
+						continue;
+					}
+				case PT_LED1:
+					if (sender == PT_NSCN && parts[ID(r)].temp > 370.0f)
+					{
+						parts[ID(r)].temp -= 970;
+						continue;
+					}
+								case PT_PPIP:
 					if (parts[i].life == 3 && pavg!=PT_INSL)
 					{
 						if (sender == PT_NSCN || sender == PT_PSCN || sender == PT_INST)
 							Element_PPIP::flood_trigger(sim, x+rx, y+ry, sender);
 					}
 					continue;
-				case PT_NTCT: case PT_PTCT: case PT_INWR:
+				case PT_NTCT: case PT_PTCT: case PT_FPTC: case PT_FNTC: case PT_INWR:
 					if (sender==PT_METL && pavg!=PT_INSL && parts[i].life<4)
 					{
 						parts[ID(r)].temp = 473.0f;
-						if (receiver==PT_NTCT||receiver==PT_PTCT)
+						if (receiver==PT_NTCT||receiver==PT_PTCT ||receiver == PT_FPTC || receiver == PT_FNTC)
 							continue;
 					}
 					break;
@@ -278,8 +311,16 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 					if (receiver==PT_PSCN || (receiver==PT_NSCN && parts[i].temp>373.0f))
 						goto conduct;
 					continue;
+				case PT_FNTC:
+					if (receiver==PT_PSCN || (receiver==PT_NSCN && parts[i].temp>373.0f))
+						goto conduct;
+					continue;
 				case PT_PTCT:
 					if (receiver==PT_PSCN || (receiver==PT_NSCN && parts[i].temp<373.0f))
+						goto conduct;
+					continue;
+				case PT_FPTC:
+					if (receiver == PT_PSCN || (receiver == PT_NSCN && parts[i].temp < 373.0f))
 						goto conduct;
 					continue;
 				case PT_INWR:
@@ -300,11 +341,19 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 					if (sender==PT_NSCN || (sender==PT_PSCN&&parts[ID(r)].temp>373.0f))
 						goto conduct;
 					continue;
+				case PT_FNTC:
+					if (sender==PT_NSCN || (sender==PT_PSCN&&parts[ID(r)].temp>373.0f))
+						goto conduct;
+					continue;
 				case PT_PTCT:
 					if (sender==PT_NSCN || (sender==PT_PSCN&&parts[ID(r)].temp<373.0f))
 						goto conduct;
 					continue;
-				case PT_INWR:
+				case PT_FPTC:
+					if (sender == PT_NSCN || (sender == PT_PSCN && parts[ID(r)].temp < 373.0f))
+						goto conduct;
+					continue;
+					case PT_INWR:
 					if (sender==PT_NSCN || sender==PT_PSCN)
 						goto conduct;
 					continue;
