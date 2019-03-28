@@ -2059,6 +2059,15 @@ int Simulation::parts_avg(int ci, int ni,int t)
 			return PT_NONE;
 	}
 	else
+		if (t == PT_INSD)//to keep electronics working
+		{
+			int pmr = pmap[((int)(parts[ci].y + 0.5f) + (int)(parts[ni].y + 0.5f)) / 2][((int)(parts[ci].x + 0.5f) + (int)(parts[ni].x + 0.5f)) / 2];
+			if (pmr)
+				return parts[ID(pmr)].type;
+			else
+				return PT_NONE;
+		}
+		else
 	{
 		int pmr2 = pmap[(int)((parts[ci].y + parts[ni].y)/2+0.5f)][(int)((parts[ci].x + parts[ni].x)/2+0.5f)];//seems to be more accurate.
 		if (pmr2)
@@ -2276,7 +2285,7 @@ void Simulation::init_can_move()
 		 || destinationType == PT_ISOZ || destinationType == PT_ISZS || destinationType == PT_QRTZ || destinationType == PT_PQRT
 		 || destinationType == PT_H2   || destinationType == PT_BGLA || destinationType == PT_C5)
 			can_move[PT_PHOT][destinationType] = 2;
-		if (destinationType != PT_DMND && destinationType != PT_INSL && destinationType != PT_VOID && destinationType != PT_PVOD && destinationType != PT_VIBR && destinationType != PT_BVBR && destinationType != PT_PRTI && destinationType != PT_PRTO)
+		if (destinationType != PT_DMND && destinationType != PT_INSL && destinationType != PT_VOID && destinationType != PT_PVOD && destinationType != PT_VIBR && destinationType != PT_BVBR && destinationType != PT_PRTI && destinationType != PT_PRTO && destinationType != PT_INSD)
 		{
 			can_move[PT_PROT][destinationType] = 2;
 			can_move[PT_GRVT][destinationType] = 2;
@@ -4912,7 +4921,7 @@ int Simulation::GetParticleType(ByteString type)
 		return PT_NONE;
 	for (int i = 1; i < PT_NUM; i++)
 	{
-		if (!strcasecmp(txt, elements[i].Name.ToUtf8().c_str()) && elements[i].Name.size() && elements[i].Enabled)
+		if (!strcasecmp(txt, elements[i].Name.c_str()) && elements[i].Name.size() && elements[i].Enabled)
 		{
 			return i;
 		}

@@ -129,7 +129,9 @@ std::vector<menu_section> LoadMenus()
 	return
 	std::vector<menu_section>{
 		{0xE041, String("Walls"), 0, 1},
-		{0xE042, String("Electronics"), 0, 1},
+		{0xE048, String("CRACKER1000"), 0, 1},
+		{0xE048, String("HIDDEN"), 0, 1 },
+		{0xE042, String("Electronics"), 0, 1 },
 		{0xE056, String("Powered Materials"), 0, 1},
 		{0xE019, String("Sensors"), 0, 1},
 		{0xE062, String("Force"), 0, 1},
