@@ -230,6 +230,13 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 						else if (sender==PT_NSCN && parts[ID(r)].tmp == 3) parts[ID(r)].tmp = 1;
 					}
 					continue;
+				case PT_LED:
+					if (abs(rx) < 2 && abs(ry) < 2 && parts[i].life < 4)
+					{
+						if (sender == PT_PSCN && parts[ID(r)].tmp == 0) parts[ID(r)].tmp = 2;
+						else if (sender == PT_NSCN && parts[ID(r)].tmp == 3) parts[ID(r)].tmp = 1;
+					}
+					continue;
 				case PT_RBTR:
 					if (sender == PT_PSCN)
 					{
@@ -248,18 +255,6 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 						 parts[ID(r)].tmp = 0;
 					 }
 					break;
-				case PT_LED:
-					if (sender == PT_PSCN)
-					{
-						parts[ID(r)].temp += 900;
-						continue;
-					}
-				case PT_LED1:
-					if (sender == PT_NSCN && parts[ID(r)].temp > 370.0f)
-					{
-						parts[ID(r)].temp -= 970;
-						continue;
-					}
 								case PT_PPIP:
 					if (parts[i].life == 3 && pavg!=PT_INSL)
 					{
