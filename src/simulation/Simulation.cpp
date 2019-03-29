@@ -4912,6 +4912,7 @@ int Simulation::GetParticleType(ByteString type)
 {
 	char * txt = (char*)type.c_str();
 
+	if (!strcasecmp(txt, elements[i].Name.ToUtf8().c_str()) && elements[i].Name.size() && elements[i].Enabled)
 	// alternative names for some elements
 	if (!strcasecmp(txt, "C4"))
 		return PT_PLEX;

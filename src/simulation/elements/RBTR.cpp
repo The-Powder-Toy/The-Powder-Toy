@@ -27,7 +27,7 @@ Element_RBTR::Element_RBTR()
 	Weight = 100;
 
 	Temperature = R_TEMP + 0.0f + 273.15f;
-	HeatConduct = 260;
+	HeatConduct = 252;
 	Description = "Realistic battery,PSCN activate,NSCN deactivate.INST charges.Tmp2=1 fast charges.Use sparingly!";
 
 	Properties = TYPE_SOLID;

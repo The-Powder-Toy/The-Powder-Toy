@@ -4,7 +4,7 @@ Element_SGLU::Element_SGLU()
 {
 	Identifier = "DEFAULT_PT_SGLU";
 	Name = "SGLU";
-	Colour = PIXPACK(0x222222222);
+	Colour = PIXPACK((0x445464);
 	MenuVisible = 1;
 	MenuSection = SC_CRACKER1000;
 	Enabled = 1;
