@@ -4,7 +4,7 @@ Element_CLNT::Element_CLNT()
 {
 	Identifier = "DEFAULT_PT_CLNT";
 	Name = "CLNT";
-	Colour = PIXPACK(0x00FF77);
+	Colour = PIXPACK(0x00FF76);
 	MenuVisible = 1;
 	MenuSection = SC_CRACKER1000;
 	Enabled = 1;
