@@ -50,6 +50,13 @@ String sign::getText(Simulation *sim)
 			else
 				return String::Build("tmp: ", Format::Precision(Format::ShowPoint(0), 2));
 		}
+		else if (text == "{tmp2}")
+		{
+			if (x >= 0 && x < XRES && y >= 0 && y < YRES && sim->pmap[y][x])
+				return String::Build("tmp2: ", Format::Precision(Format::ShowPoint(sim->parts[ID(sim->pmap[y][x])].tmp2), 2));
+			else
+				return String::Build("tmp2: ", Format::Precision(Format::ShowPoint(0), 2));
+		}
 		else
 		{
 			int pos = splitsign(text);
