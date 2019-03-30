@@ -26,7 +26,7 @@ Element_CLNT::Element_CLNT()
 
 	Weight = 100;
 
-	Temperature = R_TEMP + 0.0f + 273.15f;
+	Temperature = R_TEMP + 0.0f + 274.15f;
 	HeatConduct = 451;
 	Description = "Coolant for reactors and vehicles.Turns into WATR upon excess heating!";
 

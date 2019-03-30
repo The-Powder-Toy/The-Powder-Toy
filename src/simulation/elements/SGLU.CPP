@@ -26,7 +26,7 @@ Element_SGLU::Element_SGLU()
 
 	Weight = 20;
 
-	Temperature = R_TEMP + 0.0f + 273.15f;
+	Temperature = R_TEMP + 0.0f + 274.15f;
 	HeatConduct = 72;
 	Description = "SOLIDIFIED GLUE,Turns back into glue when extremely cold!";
 
