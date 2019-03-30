@@ -1206,6 +1206,22 @@ int GameController::GetReplaceModeFlags()
 
 void GameController::SetReplaceModeFlags(int flags)
 {
+	int old_flags = gameModel->GetSimulation()->replaceModeFlags;
+	if (!(old_flags & REPLACE_MODE) && (flags & REPLACE_MODE))
+	{
+		// if replace mode has just been enabled, disable specific delete
+		flags &= ~SPECIFIC_DELETE;
+	}
+	if (!(old_flags & SPECIFIC_DELETE) && (flags & SPECIFIC_DELETE))
+	{
+		// if specific delete has just been enabled, disable replace mode
+		flags &= ~REPLACE_MODE;
+	}
+	if ((flags & SPECIFIC_DELETE) && (flags & REPLACE_MODE))
+	{
+		// if both have just been enabled, arbitrarily disable one of them
+		flags &= ~SPECIFIC_DELETE;
+	}
 	gameModel->GetSimulation()->replaceModeFlags = flags;
 }
 

@@ -1601,38 +1601,6 @@ int Simulation::CreateParts(int x, int y, int rx, int ry, int c, int flags)
 	return !created;
 }
 
-int Simulation::CreatePartFlags(int x, int y, int c, int flags)
-{
-	//delete
-	if (c == 0 && !(flags&REPLACE_MODE))
-		delete_part(x, y);
-	//specific delete
-	else if ((flags&SPECIFIC_DELETE) && !(flags&REPLACE_MODE))
-	{
-		if (!replaceModeSelected || TYP(pmap[y][x]) == replaceModeSelected || TYP(photons[y][x]) == replaceModeSelected)
-			delete_part(x, y);
-	}
-	//replace mode
-	else if (flags&REPLACE_MODE)
-	{
-		if (x<0 || y<0 || x>=XRES || y>=YRES)
-			return 0;
-		if (replaceModeSelected && TYP(pmap[y][x]) != replaceModeSelected && TYP(photons[y][x]) != replaceModeSelected)
-			return 0;
-		if ((pmap[y][x]))
-		{
-			delete_part(x, y);
-			if (c!=0)
-				create_part(-2, x, y, TYP(c), ID(c));
-		}
-	}
-	//normal draw
-	else
-		if (create_part(-2, x, y, TYP(c), ID(c)) == -1)
-			return 1;
-	return 0;
-}
-
 void Simulation::CreateLine(int x1, int y1, int x2, int y2, int c, Brush * cBrush, int flags)
 {
 	int x, y, dx, dy, sy, rx = cBrush->GetRadius().X, ry = cBrush->GetRadius().Y;
@@ -1684,6 +1652,64 @@ void Simulation::CreateLine(int x1, int y1, int x2, int y2, int c, Brush * cBrus
 			e -= 1.0f;
 		}
 	}
+}
+
+int Simulation::CreatePartFlags(int x, int y, int c, int flags)
+{
+	if (x < 0 || y < 0 || x >= XRES || y >= YRES)
+	{
+		return 0;
+	}
+
+	if (flags & REPLACE_MODE)
+	{
+		// if replace whatever and there's something to replace
+		// or replace X and there's a non-energy particle on top with type X
+		// or replace X and there's an energy particle on top with type X
+		if ((!replaceModeSelected && (photons[y][x] || pmap[y][x])) ||
+			(!photons[y][x] && pmap[y][x] && TYP(pmap[y][x]) == replaceModeSelected) ||
+			(photons[y][x] && TYP(photons[y][x]) == replaceModeSelected))
+		{
+			if (c)
+			{
+				part_change_type(photons[y][x] ? ID(photons[y][x]) : ID(pmap[y][x]), x, y, TYP(c));
+			}
+			else
+			{
+				delete_part(x, y);
+			}
+		}
+		return 0;
+	}
+	else if (!c)
+	{
+		delete_part(x, y);
+		return 0;
+	}
+	else if (flags & SPECIFIC_DELETE)
+	{
+		// if delete whatever and there's something to delete
+		// or delete X and there's a non-energy particle on top with type X
+		// or delete X and there's an energy particle on top with type X
+		if ((!replaceModeSelected && (photons[y][x] || pmap[y][x])) ||
+			(!photons[y][x] && pmap[y][x] && TYP(pmap[y][x]) == replaceModeSelected) ||
+			(photons[y][x] && TYP(photons[y][x]) == replaceModeSelected))
+		{
+			delete_part(x, y);
+		}
+		return 0;
+	}
+	else
+	{
+		if (create_part(-2, x, y, TYP(c), ID(c)) == -1)
+		{
+			return 1;
+		}
+		return 0;
+	}
+
+	// I'm sure at least one compiler exists that would complain if this wasn't here
+	return 0;
 }
 
 //Now simply creates a 0 pixel radius line without all the complicated flags / other checks

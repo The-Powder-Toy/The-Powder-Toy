@@ -559,8 +559,12 @@ public:
 		else
 		{
 			if (v->CtrlBehaviour() && v->AltBehaviour() && !v->ShiftBehaviour())
-				if (tool->GetIdentifier().BeginsWith("DEFAULT_PT_"))
+			{
+				if (tool->GetIdentifier().Contains("_PT_"))
+				{
 					sender->SetSelectionState(3);
+				}
+			}
 
 			if (sender->GetSelectionState() >= 0 && sender->GetSelectionState() <= 3)
 				v->c->SetActiveTool(sender->GetSelectionState(), tool);

@@ -2581,8 +2581,18 @@ int LuaScriptInterface::elements_allocate(lua_State * l)
 	group = ByteString(lua_tostring(l, 1)).ToUpper();
 	id = ByteString(lua_tostring(l, 2)).ToUpper();
 
-	if(group == "DEFAULT")
-		return luaL_error(l, "You cannot create elements in the 'default' group.");
+	if (id.Contains("_"))
+	{
+		return luaL_error(l, "The element name may not contain '_'.");
+	}
+	if (group.Contains("_"))
+	{
+		return luaL_error(l, "The group name may not contain '_'.");
+	}
+	if (group == "DEFAULT")
+	{
+		return luaL_error(l, "You cannot create elements in the 'DEFAULT' group.");
+	}
 
 	identifier = group + "_PT_" + id;
 
