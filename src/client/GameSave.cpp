@@ -2254,14 +2254,37 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 				}
 
 				//Pavg, 4 bytes
-				//Don't save pavg for things that break under pressure, because then they will break when the save is loaded, since pressure isn't also loaded
-				if ((particles[i].pavg[0] || particles[i].pavg[1]) && !(particles[i].type == PT_QRTZ || particles[i].type == PT_GLAS || particles[i].type == PT_TUNG))
+				// save pavg if there's useful pavg to save
+				// and either we save pressure data too
+				// or the current particle is not one that cares about pressure
+				if (particles[i].pavg[0] || particles[i].pavg[1])
 				{
-					fieldDesc |= 1 << 13;
-					partsData[partsDataLen++] = (int)particles[i].pavg[0];
-					partsData[partsDataLen++] = ((int)particles[i].pavg[0])>>8;
-					partsData[partsDataLen++] = (int)particles[i].pavg[1];
-					partsData[partsDataLen++] = ((int)particles[i].pavg[1])>>8;
+					float pavg0 = particles[i].pavg[0];
+					float pavg1 = particles[i].pavg[1];
+					switch (particles[i].type)
+					{
+						// List of elements that save pavg with a multiplicative bias of 2**6
+						// (or not at all if pressure is not saved).
+						// If you change this list, change it in Simulation::Load too!
+					case PT_QRTZ:
+					case PT_GLAS:
+					case PT_TUNG:
+						if (!hasPressure)
+						{
+							break;
+						}
+						pavg0 *= 64;
+						pavg1 *= 64;
+						// fallthrough!
+
+					default:
+						fieldDesc |= 1 << 13;
+						partsData[partsDataLen++] = (int)pavg0;
+						partsData[partsDataLen++] = ((int)pavg0)>>8;
+						partsData[partsDataLen++] = (int)pavg1;
+						partsData[partsDataLen++] = ((int)pavg1)>>8;
+						break;
+					}
 				}
 
 				//Write the field descriptor

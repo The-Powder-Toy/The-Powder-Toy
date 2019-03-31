@@ -233,6 +233,24 @@ int Simulation::Load(int fullX, int fullY, GameSave * save, bool includePressure
 		case PT_SOAP:
 			soapList.insert(std::pair<unsigned int, unsigned int>(n, i));
 			break;
+
+			// List of elements that load pavg with a multiplicative bias of 2**6
+			// (or not at all if pressure is not loaded).
+			// If you change this list, change it in GameSave::serialiseOPS too!
+		case PT_QRTZ:
+		case PT_GLAS:
+		case PT_TUNG:
+			if (!includePressure)
+			{
+				parts[i].pavg[0] = 0;
+				parts[i].pavg[1] = 0;
+			}
+			else
+			{
+				parts[i].pavg[0] /= 64;
+				parts[i].pavg[1] /= 64;
+			}
+			break;
 		}
 	}
 	parts_lastActiveIndex = NPART-1;
@@ -437,10 +455,13 @@ GameSave * Simulation::Save(int fullX, int fullY, int fullX2, int fullY2, bool i
 				newSave->velocityX[saveBlockY][saveBlockX] = vx[saveBlockY+blockY][saveBlockX+blockX];
 				newSave->velocityY[saveBlockY][saveBlockX] = vy[saveBlockY+blockY][saveBlockX+blockX];
 				newSave->ambientHeat[saveBlockY][saveBlockX] = hv[saveBlockY+blockY][saveBlockX+blockX];
-				newSave->hasPressure = true;
-				newSave->hasAmbientHeat = true;
 			}
 		}
+	}
+	if (includePressure)
+	{
+		newSave->hasPressure = true;
+		newSave->hasAmbientHeat = true;
 	}
 
 	newSave->stkm.rocketBoots1 = player.rocketBoots;
