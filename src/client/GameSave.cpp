@@ -1991,30 +1991,36 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 		throw BuildException("Save error, out of memory (blockmaps)");
 	unsigned int wallDataLen = blockWidth*blockHeight, fanDataLen = 0, pressDataLen = 0, vxDataLen = 0, vyDataLen = 0, ambientDataLen = 0;
 
-	for(x = blockX; x < blockX+blockW; x++)
+	for (x = blockX; x < blockX+blockW; x++)
 	{
-		for(y = blockY; y < blockY+blockH; y++)
+		for (y = blockY; y < blockY+blockH; y++)
 		{
 			wallData[(y-blockY)*blockW+(x-blockX)] = blockMap[y][x];
 			if (blockMap[y][x])
 				hasWallData = true;
 
-			//save pressure and x/y velocity grids
-			float pres = std::max(-255.0f,std::min(255.0f,pressure[y][x]))+256.0f;
-			float velX = std::max(-255.0f,std::min(255.0f,velocityX[y][x]))+256.0f;
-			float velY = std::max(-255.0f,std::min(255.0f,velocityY[y][x]))+256.0f;
-			pressData[pressDataLen++] = (unsigned char)((int)(pres*128)&0xFF);
-			pressData[pressDataLen++] = (unsigned char)((int)(pres*128)>>8);
+			if (hasPressure)
+			{
+				//save pressure and x/y velocity grids
+				float pres = std::max(-255.0f,std::min(255.0f,pressure[y][x]))+256.0f;
+				float velX = std::max(-255.0f,std::min(255.0f,velocityX[y][x]))+256.0f;
+				float velY = std::max(-255.0f,std::min(255.0f,velocityY[y][x]))+256.0f;
+				pressData[pressDataLen++] = (unsigned char)((int)(pres*128)&0xFF);
+				pressData[pressDataLen++] = (unsigned char)((int)(pres*128)>>8);
 
-			vxData[vxDataLen++] = (unsigned char)((int)(velX*128)&0xFF);
-			vxData[vxDataLen++] = (unsigned char)((int)(velX*128)>>8);
+				vxData[vxDataLen++] = (unsigned char)((int)(velX*128)&0xFF);
+				vxData[vxDataLen++] = (unsigned char)((int)(velX*128)>>8);
 
-			vyData[vyDataLen++] = (unsigned char)((int)(velY*128)&0xFF);
-			vyData[vyDataLen++] = (unsigned char)((int)(velY*128)>>8);
+				vyData[vyDataLen++] = (unsigned char)((int)(velY*128)&0xFF);
+				vyData[vyDataLen++] = (unsigned char)((int)(velY*128)>>8);
+			}
 
-			int tempTemp = (int)(ambientHeat[y][x]+0.5f);
-			ambientData[ambientDataLen++] = tempTemp;
-			ambientData[ambientDataLen++] = tempTemp >> 8;
+			if (hasAmbientHeat)
+			{
+				int tempTemp = (int)(ambientHeat[y][x]+0.5f);
+				ambientData[ambientDataLen++] = tempTemp;
+				ambientData[ambientDataLen++] = tempTemp >> 8;
+			}
 
 			if (blockMap[y][x] == WL_FAN)
 			{
@@ -2458,13 +2464,13 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 		bson_append_binary(&b, "wallMap", BSON_BIN_USER, (const char *)wallData.get(), wallDataLen);
 	if (fanData && fanDataLen)
 		bson_append_binary(&b, "fanMap", BSON_BIN_USER, (const char *)fanData.get(), fanDataLen);
-	if (pressData && pressDataLen)
+	if (pressData && hasPressure && pressDataLen)
 		bson_append_binary(&b, "pressMap", (char)BSON_BIN_USER, (const char*)pressData.get(), pressDataLen);
-	if (vxData && vxDataLen)
+	if (vxData && hasPressure && vxDataLen)
 		bson_append_binary(&b, "vxMap", (char)BSON_BIN_USER, (const char*)vxData.get(), vxDataLen);
-	if (vyData && vyDataLen)
+	if (vyData && hasPressure && vyDataLen)
 		bson_append_binary(&b, "vyMap", (char)BSON_BIN_USER, (const char*)vyData.get(), vyDataLen);
-	if (ambientData && this->aheatEnable && ambientDataLen)
+	if (ambientData && hasAmbientHeat && this->aheatEnable && ambientDataLen)
 		bson_append_binary(&b, "ambientMap", (char)BSON_BIN_USER, (const char*)ambientData.get(), ambientDataLen);
 	if (soapLinkData && soapLinkDataLen)
 		bson_append_binary(&b, "soapLinks", BSON_BIN_USER, (const char *)soapLinkData, soapLinkDataLen);
