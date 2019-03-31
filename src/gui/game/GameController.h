@@ -148,6 +148,7 @@ public:
 	ui::Point PointTranslate(ui::Point point);
 	ui::Point NormaliseBlockCoord(ui::Point point);
 	String ElementResolve(int type, int ctype);
+	String BasicParticleInfo(Particle const &sample_part);
 	bool IsValidElement(int type);
 	String WallName(int type);
 	int Record(bool record);

@@ -73,7 +73,7 @@ public:
 
 	int blockWidth, blockHeight;
 	bool fromNewerVersion;
-	int majorVersion;
+	int majorVersion, minorVersion;
 	bool hasPressure;
 	bool hasAmbientHeat;
 

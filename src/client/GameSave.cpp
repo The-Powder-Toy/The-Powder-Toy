@@ -161,6 +161,7 @@ void GameSave::InitData()
 void GameSave::InitVars()
 {
 	majorVersion = 0;
+	minorVersion = 0;
 	waterEEnabled = false;
 	legacyEnable = false;
 	gravityEnable = false;
@@ -567,6 +568,7 @@ void GameSave::readOPS(char * data, int dataLength)
 	unsigned int blockX, blockY, blockW, blockH, fullX, fullY, fullW, fullH;
 	int savedVersion = inputData[4];
 	majorVersion = savedVersion;
+	minorVersion = 0;
 	bool fakeNewerVersion = false; // used for development builds only
 
 	bson b;
@@ -676,6 +678,17 @@ void GameSave::readOPS(char * data, int dataLength)
 								if (!strcmp(bson_iterator_key(&signiter), "text") && bson_iterator_type(&signiter) == BSON_STRING)
 								{
 									tempSign.text = format::CleanString(ByteString(bson_iterator_string(&signiter)).FromUtf8(), true, true, true).Substr(0, 45);
+									if (majorVersion < 94 || (majorVersion == 94 && minorVersion < 2))
+									{
+										if (tempSign.text == "{t}")
+										{
+											tempSign.text = "Temp: {t}";
+										}
+										else if (tempSign.text == "{p}")
+										{
+											tempSign.text = "Pressure: {p}";
+										}
+									}
 								}
 								else if (!strcmp(bson_iterator_key(&signiter), "justification") && bson_iterator_type(&signiter) == BSON_INT)
 								{
@@ -765,6 +778,28 @@ void GameSave::readOPS(char * data, int dataLength)
 						palette.push_back(PaletteItem(id, num));
 					}
 				}
+			}
+		}
+		else if (!strcmp(bson_iterator_key(&iter), "origin"))
+		{
+			if (bson_iterator_type(&iter) == BSON_OBJECT)
+			{
+				bson_iterator subiter;
+				bson_iterator_subiterator(&iter, &subiter);
+				while (bson_iterator_next(&subiter))
+				{
+					if (bson_iterator_type(&subiter) == BSON_INT)
+					{
+						if (!strcmp(bson_iterator_key(&subiter), "minorVersion"))
+						{
+							minorVersion = bson_iterator_int(&subiter);
+						}
+					}
+				}
+			}
+			else
+			{
+				fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
 			}
 		}
 		else if (!strcmp(bson_iterator_key(&iter), "minimumVersion"))
@@ -1331,6 +1366,7 @@ void GameSave::readPSv(char * saveDataChar, int dataLength)
 		throw ParseException(ParseException::WrongVersion, "Save from newer version");
 	ver = saveData[4];
 	majorVersion = saveData[4];
+	minorVersion = 0;
 
 	if (ver<34)
 	{
@@ -1929,6 +1965,14 @@ void GameSave::readPSv(char * saveDataChar, int dataLength)
 		memcpy(tempSignText, data+p, x);
 		tempSignText[x] = 0;
 		tempSign.text = format::CleanString(ByteString(tempSignText).FromUtf8(), true, true, true).Substr(0, 45);
+		if (tempSign.text == "{t}")
+		{
+			tempSign.text = "Temp: {t}";
+		}
+		else if (tempSign.text == "{p}")
+		{
+			tempSign.text = "Pressure: {p}";
+		}
 		tempSigns.push_back(tempSign);
 		p += x;
 	}

@@ -2288,11 +2288,24 @@ void GameView::OnDraw()
 			if (showDebug)
 			{
 				if (type == PT_LAVA && c->IsValidElement(ctype))
+				{
 					sampleInfo << "Molten " << c->ElementResolve(ctype, -1);
+				}
 				else if ((type == PT_PIPE || type == PT_PPIP) && c->IsValidElement(ctype))
-					sampleInfo << c->ElementResolve(type, -1) << " with " << c->ElementResolve(ctype, (int)sample.particle.pavg[1]);
+				{
+					if (ctype == PT_LAVA && c->IsValidElement((int)sample.particle.pavg[1]))
+					{
+						sampleInfo << c->ElementResolve(type, -1) << " with molten " << c->ElementResolve((int)sample.particle.pavg[1], -1);
+					}
+					else
+					{
+						sampleInfo << c->ElementResolve(type, -1) << " with " << c->ElementResolve(ctype, (int)sample.particle.pavg[1]);
+					}
+				}
 				else if (type == PT_LIFE)
+				{
 					sampleInfo << c->ElementResolve(type, ctype);
+				}
 				else if (type == PT_FILT)
 				{
 					sampleInfo << c->ElementResolve(type, ctype);
@@ -2341,14 +2354,7 @@ void GameView::OnDraw()
 			}
 			else
 			{
-				if (type == PT_LAVA && c->IsValidElement(ctype))
-					sampleInfo << "Molten " << c->ElementResolve(ctype, -1);
-				else if ((type == PT_PIPE || type == PT_PPIP) && c->IsValidElement(ctype))
-					sampleInfo << c->ElementResolve(type, -1) << " with " << c->ElementResolve(ctype, (int)sample.particle.pavg[1]);
-				else if (type == PT_LIFE)
-					sampleInfo << c->ElementResolve(type, ctype);
-				else
-					sampleInfo << c->ElementResolve(type, ctype);
+				sampleInfo << c->BasicParticleInfo(sample.particle);
 				sampleInfo << ", Temp: " << sample.particle.temp - 273.15f << " C";
 				sampleInfo << ", Pressure: " << sample.AirPressure;
 			}

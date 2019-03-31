@@ -224,6 +224,9 @@ public:
 	{
 		return std::fmod(x, y) + (x>=0 ? 0 : y);
 	}
+
+	String ElementResolve(int type, int ctype);
+	String BasicParticleInfo(Particle const &sample_part);
 };
 
 #endif /* SIMULATION_H */

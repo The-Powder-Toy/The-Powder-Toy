@@ -1568,6 +1568,24 @@ void GameController::ClearSim()
 	gameModel->ClearSimulation();
 }
 
+String GameController::ElementResolve(int type, int ctype)
+{
+	if (gameModel && gameModel->GetSimulation())
+	{
+		return gameModel->GetSimulation()->ElementResolve(type, ctype);
+	}
+	return "";
+}
+
+String GameController::BasicParticleInfo(Particle const &sample_part)
+{
+	if (gameModel && gameModel->GetSimulation())
+	{
+		return gameModel->GetSimulation()->BasicParticleInfo(sample_part);
+	}
+	return "";
+}
+
 void GameController::ReloadSim()
 {
 	if(gameModel->GetSave() && gameModel->GetSave()->GetGameSave())
@@ -1580,18 +1598,6 @@ void GameController::ReloadSim()
 		HistorySnapshot();
 		gameModel->SetSaveFile(gameModel->GetSaveFile());
 	}
-}
-
-String GameController::ElementResolve(int type, int ctype)
-{
-	if(gameModel && gameModel->GetSimulation())
-	{
-		if (type == PT_LIFE && ctype >= 0 && ctype < NGOL)
-			return gameModel->GetSimulation()->gmenu[ctype].name;
-		else if (type >= 0 && type < PT_NUM)
-			return gameModel->GetSimulation()->elements[type].Name;
-	}
-	return "";
 }
 
 bool GameController::IsValidElement(int type)

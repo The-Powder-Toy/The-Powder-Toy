@@ -5532,3 +5532,44 @@ Simulation::Simulation():
 
 	grav->gravity_mask();
 }
+
+String Simulation::ElementResolve(int type, int ctype)
+{
+	if (type == PT_LIFE && ctype >= 0 && ctype < NGOL)
+	{
+		return gmenu[ctype].name;
+	}
+	else if (type >= 0 && type < PT_NUM)
+	{
+		return elements[type].Name;
+	}
+	return "Empty";
+}
+
+String Simulation::BasicParticleInfo(Particle const &sample_part)
+{
+	StringBuilder sampleInfo;
+	int type = sample_part.type;
+	int ctype = sample_part.ctype;
+	int pavg1int = (int)sample_part.pavg[1];
+	if (type == PT_LAVA && ctype && IsValidElement(ctype))
+	{
+		sampleInfo << "Molten " << ElementResolve(ctype, -1);
+	}
+	else if ((type == PT_PIPE || type == PT_PPIP) && ctype && IsValidElement(ctype))
+	{
+		if (ctype == PT_LAVA && pavg1int && IsValidElement(pavg1int))
+		{
+			sampleInfo << ElementResolve(type, -1) << " with molten " << ElementResolve(pavg1int, -1);
+		}
+		else
+		{
+			sampleInfo << ElementResolve(type, -1) << " with " << ElementResolve(ctype, pavg1int);
+		}
+	}
+	else
+	{
+		sampleInfo << ElementResolve(type, ctype);
+	}
+	return sampleInfo.Build();
+}
