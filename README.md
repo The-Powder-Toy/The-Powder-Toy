@@ -15,7 +15,7 @@ There is a Lua API – you can automate your work or even make plugins for the g
 Build instructions
 ===========================================================================
 
-    sudo apt-get install build-essential libsdl2-dev libbz2-dev zlib1g-dev liblua5.1.0-dev git scons libfftw3-dev
+    sudo apt-get install build-essential libsdl2-dev libbz2-dev zlib1g-dev liblua5.1.0-dev git scons libfftw3-dev libcurl4-openssl-dev
     scons
 
 For a list of flags for `scons`, see [the Powder Toy wiki](https://powdertoy.co.uk/Wiki/W/Scons_command_line_flags.html).
