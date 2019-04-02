@@ -116,11 +116,11 @@ String sign::getText(Simulation *sim)
 			}
 			else if (between_curlies == "type")
 			{
-				formatted_text << (part ? sim->BasicParticleInfo(*part) : (formatted_text.Size() ? String::Build("empty") : String::Build("Empty")));
+				formatted_text << (part ? sim->BasicParticleInfo(*part) : (formatted_text.Size() ? "empty" : "Empty"));
 			}
 			else if (between_curlies == "ctype")
 			{
-				formatted_text << ((part && part->ctype && sim->IsValidElement(part->ctype)) ? sim->ElementResolve(part->ctype, -1) : (formatted_text.Size() ? String::Build("empty") : String::Build("Empty")));
+				formatted_text << (part ? ((part->ctype && sim->IsValidElement(part->ctype)) ? sim->ElementResolve(part->ctype, -1) : String::Build(part->ctype)) : (formatted_text.Size() ? "empty" : "Empty"));
 			}
 			else if (between_curlies == "life")
 			{
