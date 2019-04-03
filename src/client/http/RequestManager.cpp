@@ -121,17 +121,17 @@ namespace http
 						case CURLE_COULDNT_RESOLVE_PROXY: finish_with = 608; break;
 						case CURLE_TOO_MANY_REDIRECTS:    finish_with = 611; break;
 
-						case CURLE_SSL_CONNECT_ERROR:
-						case CURLE_SSL_ENGINE_NOTFOUND:
-						case CURLE_SSL_ENGINE_SETFAILED:
-						case CURLE_SSL_CERTPROBLEM:
-						case CURLE_SSL_CIPHER:
-						case CURLE_SSL_ENGINE_INITFAILED:
-						case CURLE_SSL_CACERT_BADFILE:
-						case CURLE_SSL_CRL_BADFILE:
-						case CURLE_SSL_ISSUER_ERROR:
-						case CURLE_SSL_PINNEDPUBKEYNOTMATCH:
-						case CURLE_SSL_INVALIDCERTSTATUS: finish_with = 609; break;
+						case CURLE_SSL_CONNECT_ERROR:        finish_with = 612; break;
+						case CURLE_SSL_ENGINE_NOTFOUND:      finish_with = 613; break;
+						case CURLE_SSL_ENGINE_SETFAILED:     finish_with = 614; break;
+						case CURLE_SSL_CERTPROBLEM:          finish_with = 615; break;
+						case CURLE_SSL_CIPHER:               finish_with = 616; break;
+						case CURLE_SSL_ENGINE_INITFAILED:    finish_with = 617; break;
+						case CURLE_SSL_CACERT_BADFILE:       finish_with = 618; break;
+						case CURLE_SSL_CRL_BADFILE:          finish_with = 619; break;
+						case CURLE_SSL_ISSUER_ERROR:         finish_with = 620; break;
+						case CURLE_SSL_PINNEDPUBKEYNOTMATCH: finish_with = 621; break;
+						case CURLE_SSL_INVALIDCERTSTATUS:    finish_with = 609; break;
 
 						case CURLE_HTTP2:
 						case CURLE_HTTP2_STREAM:

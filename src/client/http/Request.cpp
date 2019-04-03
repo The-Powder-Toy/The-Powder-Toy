@@ -344,9 +344,19 @@ namespace http
 		case 606: return "Malformed URL";
 		case 607: return "Connection Refused";
 		case 608: return "Proxy Server Not Found";
-		case 609: return "SSL Failure";
+		case 609: return "SSL: invalid certificate status";
 		case 610: return "Cancelled by Shutdown";
 		case 611: return "Too Many Redirects";
+		case 612: return "SSL: Connect Error";
+		case 613: return "SSL: Crypto Engine Not Found";
+		case 614: return "SSL: Failed To Set Default Crypto Engine";
+		case 615: return "SSL: Local Certificate Issue";
+		case 616: return "SSL: Unable To Use Specified Cipher";
+		case 617: return "SSL: Failed To Initialise Crypto Engine";
+		case 618: return "SSL: Failed To Load CACERT File";
+		case 619: return "SSL: Failed To Load CRL File";
+		case 620: return "SSL: Issuer Check Failed";
+		case 621: return "SSL: Pinned Public Key Mismatch";
 		default:  return "Unknown Status Code";
 		}
 	}
