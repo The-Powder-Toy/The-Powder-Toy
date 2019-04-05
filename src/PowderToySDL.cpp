@@ -285,6 +285,7 @@ std::map<ByteString, ByteString> readArguments(int argc, char * argv[])
 	arguments["nohud"] = "false"; //the nohud, sound, and scripts commands currently do nothing.
 	arguments["sound"] = "false";
 	arguments["kiosk"] = "false";
+	arguments["redirect"] = "false";
 	arguments["scripts"] = "false";
 	arguments["open"] = "";
 	arguments["ddir"] = "";
@@ -310,6 +311,10 @@ std::map<ByteString, ByteString> readArguments(int argc, char * argv[])
 		else if (!strncmp(argv[i], "kiosk", 5))
 		{
 			arguments["kiosk"] = "true";
+		}
+		else if (!strncmp(argv[i], "redirect", 8))
+		{
+			arguments["redirect"] = "true";
 		}
 		else if (!strncmp(argv[i], "sound", 5))
 		{
@@ -654,6 +659,12 @@ int main(int argc, char * argv[])
 	{
 		fullscreen = true;
 		Client::Ref().SetPref("Fullscreen", fullscreen);
+	}
+
+	if(arguments["redirect"] == "true")
+	{
+		freopen("stdout.log", "w", stdout);
+		freopen("stderr.log", "w", stderr);
 	}
 
 	if(arguments["scale"].length())
