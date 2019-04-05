@@ -159,6 +159,9 @@ namespace http
 			curl_easy_setopt(easy, CURLOPT_FOLLOWLOCATION, 1L);
 			curl_easy_setopt(easy, CURLOPT_MAXREDIRS, 10L);
 
+			curl_easy_setopt(easy, CURLOPT_ERRORBUFFER, error_buffer);
+			error_buffer[0] = 0;
+
 			curl_easy_setopt(easy, CURLOPT_TIMEOUT, timeout);
 			curl_easy_setopt(easy, CURLOPT_HTTPHEADER, headers);
 			curl_easy_setopt(easy, CURLOPT_URL, uri.c_str());

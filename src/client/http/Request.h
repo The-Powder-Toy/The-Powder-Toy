@@ -25,6 +25,7 @@ namespace http
 		ByteString response_body;
 
 		CURL *easy;
+		char error_buffer[CURL_ERROR_SIZE];
 
 		volatile curl_off_t rm_total;
 		volatile curl_off_t rm_done;

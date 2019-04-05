@@ -3,6 +3,8 @@
 #include "Config.h"
 #include "Platform.h"
 
+#include <iostream>
+
 const int curl_multi_wait_timeout_ms = 100;
 const long curl_max_host_connections = 6;
 
@@ -140,6 +142,11 @@ namespace http
 						case CURLE_NOT_BUILT_IN:
 						default:
 							break;
+						}
+
+						if (finish_with >= 600)
+						{
+							std::cerr << request->error_buffer << std::endl;
 						}
 
 						request->status = finish_with;
