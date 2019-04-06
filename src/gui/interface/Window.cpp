@@ -80,6 +80,7 @@ void Window::RemoveComponent(Component* c)
 			Components.erase(Components.begin() + i);
 
 			// we're done
+			c->SetParentWindow(NULL);
 			return;
 		}
 	}

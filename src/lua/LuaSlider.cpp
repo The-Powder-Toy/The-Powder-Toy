@@ -20,7 +20,7 @@ Luna<LuaSlider>::RegType LuaSlider::methods[] = {
 
 LuaSlider::LuaSlider(lua_State * l) :
 	LuaComponent(l),
-	onValueChangedFunction(0)
+	onValueChangedFunction(l)
 {
 	int posX = luaL_optinteger(l, 1, 0);
 	int posY = luaL_optinteger(l, 2, 0);
@@ -60,17 +60,7 @@ int LuaSlider::steps(lua_State * l)
 
 int LuaSlider::onValueChanged(lua_State * l)
 {
-	if(lua_type(l, 1) != LUA_TNIL)
-	{
-		luaL_checktype(l, 1, LUA_TFUNCTION);
-		lua_pushvalue(l, 1);
-		onValueChangedFunction = luaL_ref(l, LUA_REGISTRYINDEX);
-	}
-	else
-	{
-		onValueChangedFunction = 0;
-	}
-	return 0;
+	return onValueChangedFunction.CheckAndAssignArg1();
 }
 
 int LuaSlider::value(lua_State * l)
@@ -93,7 +83,7 @@ void LuaSlider::triggerOnValueChanged()
 	if(onValueChangedFunction)
 	{
 		lua_rawgeti(l, LUA_REGISTRYINDEX, onValueChangedFunction);
-		lua_rawgeti(l, LUA_REGISTRYINDEX, UserData);
+		lua_rawgeti(l, LUA_REGISTRYINDEX, owner_ref);
 		lua_pushinteger(l, slider->GetValue());
 		if (lua_pcall(l, 2, 0, 0))
 		{

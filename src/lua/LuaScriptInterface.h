@@ -2,10 +2,13 @@
 #define LUASCRIPTINTERFACE_H_
 
 #include "LuaCompat.h"
+#include "LuaSmartRef.h"
 
 #include "CommandInterface.h"
 #include "lua/LuaEvents.h"
 #include "simulation/Simulation.h"
+
+#include <map>
 
 namespace ui
 {
@@ -35,6 +38,7 @@ class Tool;
 	lua_setfield(L, -2, #NAME)
 
 class TPTScriptInterface;
+class LuaComponent;
 
 class LuaScriptInterface: public CommandInterface
 {
@@ -177,6 +181,8 @@ class LuaScriptInterface: public CommandInterface
 	static int event_unregister(lua_State * l);
 	static int event_getmodifiers(lua_State * l);
 
+	std::vector<LuaSmartRef> lua_el_func_v, lua_gr_func_v;
+
 public:
 	int tpt_index(lua_State *l);
 	int tpt_newIndex(lua_State *l);
@@ -186,6 +192,7 @@ public:
 
 	ui::Window * Window;
 	lua_State *l;
+	std::map<LuaComponent *, LuaSmartRef> grabbed_components;
 	LuaScriptInterface(GameController * c, GameModel * m);
 
 	void OnTick() override;

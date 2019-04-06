@@ -20,7 +20,7 @@ Luna<LuaCheckbox>::RegType LuaCheckbox::methods[] = {
 
 LuaCheckbox::LuaCheckbox(lua_State * l) :
 	LuaComponent(l),
-	actionFunction(0)
+	actionFunction(l)
 {
 	int posX = luaL_optinteger(l, 1, 0);
 	int posY = luaL_optinteger(l, 2, 0);
@@ -60,17 +60,7 @@ int LuaCheckbox::checked(lua_State * l)
 
 int LuaCheckbox::action(lua_State * l)
 {
-	if(lua_type(l, 1) != LUA_TNIL)
-	{
-		luaL_checktype(l, 1, LUA_TFUNCTION);
-		lua_pushvalue(l, 1);
-		actionFunction = luaL_ref(l, LUA_REGISTRYINDEX);
-	}
-	else
-	{
-		actionFunction = 0;
-	}
-	return 0;
+	return actionFunction.CheckAndAssignArg1();
 }
 
 int LuaCheckbox::text(lua_State * l)
@@ -93,7 +83,7 @@ void LuaCheckbox::triggerAction()
 	if(actionFunction)
 	{
 		lua_rawgeti(l, LUA_REGISTRYINDEX, actionFunction);
-		lua_rawgeti(l, LUA_REGISTRYINDEX, UserData);
+		lua_rawgeti(l, LUA_REGISTRYINDEX, owner_ref);
 		lua_pushboolean(l, checkbox->GetChecked());
 		if (lua_pcall(l, 2, 0, 0))
 		{

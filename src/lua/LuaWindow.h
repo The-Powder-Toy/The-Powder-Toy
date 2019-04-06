@@ -1,6 +1,10 @@
 #pragma once
 
 #include "LuaLuna.h"
+#include "LuaComponent.h"
+#include "LuaSmartRef.h"
+
+#include <map>
 
 namespace ui
 {
@@ -10,20 +14,22 @@ namespace ui
 class LuaScriptInterface;
 class LuaWindow
 {
-	int onInitializedFunction;
-	int onExitFunction;
-	int onTickFunction;
-	int onDrawFunction;
-	int onFocusFunction;
-	int onBlurFunction;
-	int onTryExitFunction;
-	int onTryOkayFunction;
-	int onMouseMoveFunction;
-	int onMouseDownFunction;
-	int onMouseUpFunction;
-	int onMouseWheelFunction;
-	int onKeyPressFunction;
-	int onKeyReleaseFunction;
+	LuaComponentCallback onInitializedFunction;
+	LuaComponentCallback onExitFunction;
+	LuaComponentCallback onTickFunction;
+	LuaComponentCallback onDrawFunction;
+	LuaComponentCallback onFocusFunction;
+	LuaComponentCallback onBlurFunction;
+	LuaComponentCallback onTryExitFunction;
+	LuaComponentCallback onTryOkayFunction;
+	LuaComponentCallback onMouseMoveFunction;
+	LuaComponentCallback onMouseDownFunction;
+	LuaComponentCallback onMouseUpFunction;
+	LuaComponentCallback onMouseWheelFunction;
+	LuaComponentCallback onKeyPressFunction;
+	LuaComponentCallback onKeyReleaseFunction;
+
+	std::map<LuaComponent *, LuaSmartRef> grabbed_components;
 
 	ui::Window * window;
 	lua_State * l;
@@ -65,7 +71,6 @@ class LuaWindow
 
 public:
 	LuaScriptInterface * ci;
-	int UserData;
 	static const char className[];
 	static Luna<LuaWindow>::RegType methods[];
 

@@ -18,6 +18,7 @@
 #ifdef LUACONSOLE
 #include "lua/LuaScriptInterface.h"
 #include "lua/LuaScriptHelper.h"
+#include "lua/LuaSmartRef.h"
 #endif
 #include "hmap.h"
 #ifdef OGLR

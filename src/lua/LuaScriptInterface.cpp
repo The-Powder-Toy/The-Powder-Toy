@@ -62,13 +62,15 @@ bool *luacon_currentCommand;
 String *luacon_lastError;
 String lastCode;
 
-int *lua_el_func, *lua_el_mode, *lua_gr_func;
+int *lua_el_mode;
+LuaSmartRef *lua_el_func, *lua_gr_func;
 
 int getPartIndex_curIdx;
 int tptProperties; //Table for some TPT properties
 int tptPropertiesVersion;
 int tptElements; //Table for TPT element names
-int tptParts, tptPartsMeta, tptElementTransitions, tptPartsCData, tptPartMeta, tptPart, cIndex;
+int tptParts, tptPartsMeta, tptElementTransitions, tptPartsCData, tptPartMeta, cIndex;
+LuaSmartRef *tptPart = nullptr;
 
 int atPanic(lua_State *l)
 {
@@ -261,16 +263,20 @@ tpt.partsdata = nil");
 	lua_setfield(l, tptProperties, "parts");
 
 	lua_newtable(l);
-	tptPart = lua_gettop(l);
-	lua_newtable(l);
-	tptPartMeta = lua_gettop(l);
-	lua_pushcfunction(l, luacon_partwrite);
-	lua_setfield(l, tptPartMeta, "__newindex");
-	lua_pushcfunction(l, luacon_partread);
-	lua_setfield(l, tptPartMeta, "__index");
-	lua_setmetatable(l, tptPart);
+	{
+		int top = lua_gettop(l);
+		lua_newtable(l);
+		tptPartMeta = lua_gettop(l);
+		lua_pushcfunction(l, luacon_partwrite);
+		lua_setfield(l, tptPartMeta, "__newindex");
+		lua_pushcfunction(l, luacon_partread);
+		lua_setfield(l, tptPartMeta, "__index");
+		lua_setmetatable(l, top);
+	}
 
-	tptPart = luaL_ref(l, LUA_REGISTRYINDEX);
+	tptPart = new LuaSmartRef(l);
+	tptPart->Assign(-1);
+	lua_pop(l, 1);
 #endif
 
 	lua_newtable(l);
@@ -314,14 +320,12 @@ tpt.partsdata = nil");
 	}
 	lua_setfield(l, tptProperties, "eltransition");
 
-	lua_el_func = (int*)calloc(PT_NUM, sizeof(int));
-	lua_el_mode = (int*)calloc(PT_NUM, sizeof(int));
-	lua_gr_func = (int*)calloc(PT_NUM, sizeof(int));
-	for (int i = 0; i < PT_NUM; i++)
-	{
-		lua_el_mode[i] = 0;
-		lua_gr_func[i] = 0;
-	}
+	lua_gr_func_v = std::vector<LuaSmartRef>(PT_NUM, l);
+	lua_gr_func = &lua_gr_func_v[0];
+	lua_el_func_v = std::vector<LuaSmartRef>(PT_NUM, l);
+	lua_el_func = &lua_el_func_v[0];
+	lua_el_mode = new int[PT_NUM];
+	std::fill(lua_el_mode, lua_el_mode + PT_NUM, 0);
 
 	//make tpt.* a metatable
 	lua_newtable(l);
@@ -459,47 +463,66 @@ void LuaScriptInterface::initInterfaceAPI()
 
 int LuaScriptInterface::interface_addComponent(lua_State * l)
 {
-	void * luaComponent = NULL;
-	ui::Component * component = NULL;
-	if ((luaComponent = Luna<LuaButton>::tryGet(l, 1)))
-		component = Luna<LuaButton>::get(luaComponent)->GetComponent();
-	else if ((luaComponent = Luna<LuaLabel>::tryGet(l, 1)))
-		component = Luna<LuaLabel>::get(luaComponent)->GetComponent();
-	else if ((luaComponent = Luna<LuaTextbox>::tryGet(l, 1)))
-		component = Luna<LuaTextbox>::get(luaComponent)->GetComponent();
-	else if ((luaComponent = Luna<LuaCheckbox>::tryGet(l, 1)))
-		component = Luna<LuaCheckbox>::get(luaComponent)->GetComponent();
-	else if ((luaComponent = Luna<LuaSlider>::tryGet(l, 1)))
-		component = Luna<LuaSlider>::get(luaComponent)->GetComponent();
-	else if ((luaComponent = Luna<LuaProgressBar>::tryGet(l, 1)))
-		component = Luna<LuaProgressBar>::get(luaComponent)->GetComponent();
+	void *opaque = nullptr;
+	LuaComponent *luaComponent = nullptr;
+	if ((opaque = Luna<LuaButton>::tryGet(l, 1)))
+		luaComponent = Luna<LuaButton>::get(opaque);
+	else if ((opaque = Luna<LuaLabel>::tryGet(l, 1)))
+		luaComponent = Luna<LuaLabel>::get(opaque);
+	else if ((opaque = Luna<LuaTextbox>::tryGet(l, 1)))
+		luaComponent = Luna<LuaTextbox>::get(opaque);
+	else if ((opaque = Luna<LuaCheckbox>::tryGet(l, 1)))
+		luaComponent = Luna<LuaCheckbox>::get(opaque);
+	else if ((opaque = Luna<LuaSlider>::tryGet(l, 1)))
+		luaComponent = Luna<LuaSlider>::get(opaque);
+	else if ((opaque = Luna<LuaProgressBar>::tryGet(l, 1)))
+		luaComponent = Luna<LuaProgressBar>::get(opaque);
 	else
 		luaL_typerror(l, 1, "Component");
-	if (luacon_ci->Window && component)
-		luacon_ci->Window->AddComponent(component);
+	if (luacon_ci->Window && luaComponent)
+	{
+		auto ok = luacon_ci->grabbed_components.insert(std::make_pair(luaComponent, LuaSmartRef(l)));
+		if (ok.second)
+		{
+			auto it = ok.first;
+			it->second.Assign(1);
+			it->first->owner_ref = it->second;
+		}
+		luacon_ci->Window->AddComponent(luaComponent->GetComponent());
+	}
 	return 0;
 }
 
 int LuaScriptInterface::interface_removeComponent(lua_State * l)
 {
-	void * luaComponent = NULL;
-	ui::Component * component = NULL;
-	if ((luaComponent = Luna<LuaButton>::tryGet(l, 1)))
-		component = Luna<LuaButton>::get(luaComponent)->GetComponent();
-	else if ((luaComponent = Luna<LuaLabel>::tryGet(l, 1)))
-		component = Luna<LuaLabel>::get(luaComponent)->GetComponent();
-	else if ((luaComponent = Luna<LuaTextbox>::tryGet(l, 1)))
-		component = Luna<LuaTextbox>::get(luaComponent)->GetComponent();
-	else if ((luaComponent = Luna<LuaCheckbox>::tryGet(l, 1)))
-		component = Luna<LuaCheckbox>::get(luaComponent)->GetComponent();
-	else if ((luaComponent = Luna<LuaSlider>::tryGet(l, 1)))
-		component = Luna<LuaSlider>::get(luaComponent)->GetComponent();
-	else if ((luaComponent = Luna<LuaProgressBar>::tryGet(l, 1)))
-		component = Luna<LuaProgressBar>::get(luaComponent)->GetComponent();
+	void *opaque = nullptr;
+	LuaComponent *luaComponent = nullptr;
+	if ((opaque = Luna<LuaButton>::tryGet(l, 1)))
+		luaComponent = Luna<LuaButton>::get(opaque);
+	else if ((opaque = Luna<LuaLabel>::tryGet(l, 1)))
+		luaComponent = Luna<LuaLabel>::get(opaque);
+	else if ((opaque = Luna<LuaTextbox>::tryGet(l, 1)))
+		luaComponent = Luna<LuaTextbox>::get(opaque);
+	else if ((opaque = Luna<LuaCheckbox>::tryGet(l, 1)))
+		luaComponent = Luna<LuaCheckbox>::get(opaque);
+	else if ((opaque = Luna<LuaSlider>::tryGet(l, 1)))
+		luaComponent = Luna<LuaSlider>::get(opaque);
+	else if ((opaque = Luna<LuaProgressBar>::tryGet(l, 1)))
+		luaComponent = Luna<LuaProgressBar>::get(opaque);
 	else
 		luaL_typerror(l, 1, "Component");
-	if(luacon_ci->Window && component)
+	if(luacon_ci->Window && luaComponent)
+	{
+		ui::Component *component = luaComponent->GetComponent();
 		luacon_ci->Window->RemoveComponent(component);
+		auto it = luacon_ci->grabbed_components.find(luaComponent);
+		if (it != luacon_ci->grabbed_components.end())
+		{
+			it->second.Clear();
+			it->first->owner_ref = it->second;
+			luacon_ci->grabbed_components.erase(it);
+		}
+	}
 	return 0;
 }
 
@@ -2672,12 +2695,14 @@ int LuaScriptInterface::elements_element(lua_State * l)
 		lua_getfield(l, -1, "Update");
 		if(lua_type(l, -1) == LUA_TFUNCTION)
 		{
-			lua_el_func[id] = luaL_ref(l, LUA_REGISTRYINDEX);
+			lua_el_func[id].Assign(-1);
+			lua_pop(l, 1);
 			lua_el_mode[id] = 1;
 		}
 		else if(lua_type(l, -1) == LUA_TBOOLEAN && !lua_toboolean(l, -1))
 		{
-			lua_el_func[id] = 0;
+			lua_el_func[id].Clear();
+			lua_pop(l, 1);
 			lua_el_mode[id] = 0;
 			luacon_sim->elements[id].Update = NULL;
 		}
@@ -2687,11 +2712,13 @@ int LuaScriptInterface::elements_element(lua_State * l)
 		lua_getfield(l, -1, "Graphics");
 		if(lua_type(l, -1) == LUA_TFUNCTION)
 		{
-			lua_gr_func[id] = luaL_ref(l, LUA_REGISTRYINDEX);
+			lua_gr_func[id].Assign(-1);
+			lua_pop(l, 1);
 		}
 		else if(lua_type(l, -1) == LUA_TBOOLEAN && !lua_toboolean(l, -1))
 		{
-			lua_gr_func[id] = 0;
+			lua_gr_func[id].Clear();
+			lua_pop(l, 1);
 			luacon_sim->elements[id].Graphics = NULL;
 		}
 		else
@@ -2781,12 +2808,11 @@ int LuaScriptInterface::elements_property(lua_State * l)
 				}
 				else
 					lua_el_mode[id] = 1;
-				lua_pushvalue(l, 3);
-				lua_el_func[id] = luaL_ref(l, LUA_REGISTRYINDEX);
+				lua_el_func[id].Assign(3);
 			}
 			else if(lua_type(l, 3) == LUA_TBOOLEAN && !lua_toboolean(l, 3))
 			{
-				lua_el_func[id] = 0;
+				lua_el_func[id].Clear();
 				lua_el_mode[id] = 0;
 				luacon_sim->elements[id].Update = NULL;
 			}
@@ -2795,12 +2821,11 @@ int LuaScriptInterface::elements_property(lua_State * l)
 		{
 			if(lua_type(l, 3) == LUA_TFUNCTION)
 			{
-				lua_pushvalue(l, 3);
-				lua_gr_func[id] = luaL_ref(l, LUA_REGISTRYINDEX);
+				lua_gr_func[id].Assign(3);
 			}
 			else if(lua_type(l, 3) == LUA_TBOOLEAN && !lua_toboolean(l, -1))
 			{
-				lua_gr_func[id] = 0;
+				lua_gr_func[id].Clear();
 				luacon_sim->elements[id].Graphics = NULL;
 			}
 			luacon_ren->graphicscache[id].isready = 0;
@@ -3709,6 +3734,16 @@ String LuaScriptInterface::FormatCommand(String command)
 }
 
 LuaScriptInterface::~LuaScriptInterface() {
+	delete tptPart;
+	for (auto &component_and_ref : grabbed_components)
+	{
+		luacon_ci->Window->RemoveComponent(component_and_ref.first->GetComponent());
+		component_and_ref.second.Clear();
+		component_and_ref.first->owner_ref = component_and_ref.second;
+	}
+	delete[] lua_el_mode;
+	lua_el_func_v.clear();
+	lua_gr_func_v.clear();
 	lua_close(l);
 	delete legacy;
 }
