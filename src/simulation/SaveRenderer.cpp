@@ -6,6 +6,8 @@
 
 
 SaveRenderer::SaveRenderer(){
+	pthread_mutex_init(&renderMutex, NULL);
+	pthread_mutex_lock(&renderMutex);
 	g = new Graphics();
 	sim = new Simulation();
 	ren = new Renderer(g, sim);
@@ -30,7 +32,7 @@ SaveRenderer::SaveRenderer(){
 	glDisable(GL_TEXTURE_2D);
 #endif
 
-	pthread_mutex_init(&renderMutex, NULL);
+	pthread_mutex_unlock(&renderMutex);
 }
 
 VideoBuffer * SaveRenderer::Render(GameSave * save, bool decorations, bool fire)
