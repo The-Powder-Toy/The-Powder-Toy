@@ -5,12 +5,12 @@
 #include <exception>
 
 struct GameModelException: public exception {
-	String message;
+	ByteString message;
 public:
-	GameModelException(String message_): message(message_) {}
+	GameModelException(String message_): message(message_.ToUtf8()) {}
 	const char * what() const throw() override
 	{
-		return message.ToUtf8().c_str();
+		return message.c_str();
 	}
 	~GameModelException() throw() {}
 };
