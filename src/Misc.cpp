@@ -36,46 +36,6 @@ float restrict_flt(float f, float min, float max) //TODO Inline or macro or some
 	return f;
 }
 
-char *mystrdup(const char *s)
-{
-	char *x;
-	if (s)
-	{
-		x = (char*)malloc(strlen(s)+1);
-		strcpy(x, s);
-		return x;
-	}
-	return NULL;
-}
-
-void strlist_add(struct strlist **list, char *str)
-{
-	struct strlist *item = (struct strlist*)malloc(sizeof(struct strlist));
-	item->str = mystrdup(str);
-	item->next = *list;
-	*list = item;
-}
-
-int strlist_find(struct strlist **list, char *str)
-{
-	struct strlist *item;
-	for (item=*list; item; item=item->next)
-		if (!strcmp(item->str, str))
-			return 1;
-	return 0;
-}
-
-void strlist_free(struct strlist **list)
-{
-	struct strlist *item;
-	while (*list)
-	{
-		item = *list;
-		*list = (*list)->next;
-		free(item);
-	}
-}
-
 const static char hex[] = "0123456789ABCDEF";
 void strcaturl(char *dst, char *src)
 {

@@ -2632,9 +2632,6 @@ int LuaScriptInterface::elements_allocate(lua_State * l)
 		if (!luacon_sim->elements[i].Enabled)
 		{
 			newID = i;
-			luacon_sim->elements[i] = Element();
-			luacon_sim->elements[i].Enabled = true;
-			luacon_sim->elements[i].Identifier = mystrdup(identifier.c_str());
 			break;
 		}
 	}
@@ -2646,9 +2643,6 @@ int LuaScriptInterface::elements_allocate(lua_State * l)
 			if (!luacon_sim->elements[i].Enabled)
 			{
 				newID = i;
-				luacon_sim->elements[i] = Element();
-				luacon_sim->elements[i].Enabled = true;
-				luacon_sim->elements[i].Identifier = mystrdup(identifier.c_str());
 				break;
 			}
 		}
@@ -2656,6 +2650,10 @@ int LuaScriptInterface::elements_allocate(lua_State * l)
 
 	if (newID != -1)
 	{
+		luacon_sim->elements[newID] = Element();
+		luacon_sim->elements[newID].Enabled = true;
+		luacon_sim->elements[newID].Identifier = identifier;
+
 		lua_getglobal(l, "elements");
 		lua_pushinteger(l, newID);
 		lua_setfield(l, -2, identifier.c_str());
@@ -2876,7 +2874,7 @@ int LuaScriptInterface::elements_free(lua_State * l)
 		return luaL_error(l, "Invalid element");
 
 	ByteString identifier = luacon_sim->elements[id].Identifier;
-	if(identifier.BeginsWith("DEFAULT"))
+	if(identifier.BeginsWith("DEFAULT_PT_"))
 		return luaL_error(l, "Cannot free default elements");
 
 	luacon_sim->elements[id].Enabled = false;
