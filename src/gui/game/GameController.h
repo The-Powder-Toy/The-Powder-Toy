@@ -59,6 +59,7 @@ public:
 	GameView * GetView();
 	int GetSignAt(int x, int y);
 	String GetSignText(int signID);
+	std::pair<int, sign::Type> GetSignSplit(int signID);
 
 	bool MouseMove(int x, int y, int dx, int dy);
 	bool MouseDown(int x, int y, unsigned button);

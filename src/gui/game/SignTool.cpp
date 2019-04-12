@@ -193,23 +193,15 @@ void SignWindow::OnTryExit(ui::Window::ExitMethod method)
 
 void SignWindow::DoDraw()
 {
-	for(std::vector<sign>::iterator iter = sim->signs.begin(), end = sim->signs.end(); iter != end; ++iter)
+	for (auto &currentSign : sim->signs)
 	{
-		sign & currentSign = *iter;
 		int x, y, w, h, dx, dy;
-		String::value_type type = 0;
 		Graphics * g = GetGraphics();
-		String text = currentSign.getText(sim);
-		sign::splitsign(currentSign.text, &type);
-		currentSign.pos(text, x, y, w, h);
+
+		String text = currentSign.getDisplayText(sim, x, y, w, h);
 		g->clearrect(x, y, w+1, h);
 		g->drawrect(x, y, w+1, h, 192, 192, 192, 255);
-		if (!type)
-			g->drawtext(x+3, y+3, text, 255, 255, 255, 255);
-		else if(type == 'b')
-			g->drawtext(x+3, y+3, text, 211, 211, 40, 255);
-		else
-			g->drawtext(x+3, y+3, text, 0, 191, 255, 255);
+		g->drawtext(x+3, y+3, text, 255, 255, 255, 255);
 
 		if (currentSign.ju != sign::None)
 		{
@@ -294,7 +286,7 @@ void SignTool::Click(Simulation * sim, Brush * brush, ui::Point position)
 	int signX, signY, signW, signH, signIndex = -1;
 	for (size_t i = 0; i < sim->signs.size(); i++)
 	{
-		sim->signs[i].pos(sim->signs[i].getText(sim), signX, signY, signW, signH);
+		sim->signs[i].getDisplayText(sim, signX, signY, signW, signH);
 		if (position.X > signX && position.X < signX+signW && position.Y > signY && position.Y < signY+signH)
 		{
 			signIndex = i;

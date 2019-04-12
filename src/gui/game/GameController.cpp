@@ -311,7 +311,7 @@ int GameController::GetSignAt(int x, int y)
 	for (int i = sim->signs.size()-1; i >= 0; i--)
 	{
 		int signx, signy, signw, signh;
-		sim->signs[i].pos(sim->signs[i].getText(sim), signx, signy, signw, signh);
+		sim->signs[i].getDisplayText(sim, signx, signy, signw, signh);
 		if (x>=signx && x<=signx+signw && y>=signy && y<=signy+signh)
 			return i;
 	}
@@ -322,6 +322,11 @@ int GameController::GetSignAt(int x, int y)
 String GameController::GetSignText(int signID)
 {
 	return gameModel->GetSimulation()->signs[signID].text;
+}
+
+std::pair<int, sign::Type> GameController::GetSignSplit(int signID)
+{
+	return gameModel->GetSimulation()->signs[signID].split();
 }
 
 void GameController::PlaceSave(ui::Point position, bool includePressure)
@@ -640,9 +645,10 @@ bool GameController::MouseDown(int x, int y, unsigned button)
 			foundSignID = GetSignAt(x, y);
 			if (foundSignID != -1)
 			{
-				sign foundSign = gameModel->GetSimulation()->signs[foundSignID];
-				if (sign::splitsign(foundSign.text))
+				if (gameModel->GetSimulation()->signs[foundSignID].split().first)
+				{
 					return false;
+				}
 			}
 		}
 	}
@@ -665,40 +671,31 @@ bool GameController::MouseUp(int x, int y, unsigned button, char type)
 			int foundSignID = GetSignAt(x, y);
 			if (foundSignID != -1)
 			{
-				sign foundSign = gameModel->GetSimulation()->signs[foundSignID];
+				sign &foundSign = gameModel->GetSimulation()->signs[foundSignID];
 				String str = foundSign.text;
-				String::value_type type;
-				int pos = sign::splitsign(str, &type);
-				if (pos)
+				auto si = gameModel->GetSimulation()->signs[foundSignID].split();
+				if (si.first)
 				{
 					ret = false;
-					if (type == 'c' || type == 't' || type == 's')
+					switch (si.second)
 					{
-						String link = str.Substr(3, pos-3);
-						switch (type)
+					case sign::Type::Save:
 						{
-						case 'c':
-						{
-							int saveID = link.ToNumber<int>(true);
+							int saveID = str.Substr(3, si.first - 3).ToNumber<int>(true);
 							if (saveID)
 								OpenSavePreview(saveID, 0, false);
-							break;
 						}
-						case 't':
-						{
-							// buff is already confirmed to be a number by sign::splitsign
-							Platform::OpenURI(ByteString::Build(SCHEME "powdertoy.co.uk/Discussions/Thread/View.html?Thread=", link.ToUtf8()));
-							break;
-						}
-						case 's':
-							OpenSearch(link);
-							break;
-						}
-					}
-					else if (type == 'b')
-					{
-						Simulation * sim = gameModel->GetSimulation();
-						sim->create_part(-1, foundSign.x, foundSign.y, PT_SPRK);
+						break;
+					case sign::Type::Thread:
+						Platform::OpenURI(ByteString::Build(SCHEME "powdertoy.co.uk/Discussions/Thread/View.html?Thread=", str.Substr(3, si.first - 3).ToUtf8()));
+						break;
+					case sign::Type::Search:
+						OpenSearch(str.Substr(3, si.first - 3));
+						break;
+					case sign::Type::Button:
+						gameModel->GetSimulation()->create_part(-1, foundSign.x, foundSign.y, PT_SPRK);
+						break;
+					default: break;
 					}
 				}
 			}

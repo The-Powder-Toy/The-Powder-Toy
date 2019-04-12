@@ -981,28 +981,21 @@ void Renderer::DrawSigns()
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, partsFbo);
 	glTranslated(0, MENUSIZE, 0);
 #endif
-	for (size_t i = 0; i < signs.size(); i++)
-		if (signs[i].text.length())
+	for (auto &currentSign : signs)
+	{
+		if (currentSign.text.length())
 		{
-			String::value_type type = 0;
-			String text = signs[i].getText(sim);
-			sign::splitsign(signs[i].text, &type);
-			signs[i].pos(text, x, y, w, h);
+			String text = currentSign.getDisplayText(sim, x, y, w, h);
 			clearrect(x, y, w+1, h);
 			drawrect(x, y, w+1, h, 192, 192, 192, 255);
-			if (!type)
-				drawtext(x+3, y+3, text, 255, 255, 255, 255);
-			else if(type == 'b')
-				drawtext(x+3, y+3, text, 211, 211, 40, 255);
-			else
-				drawtext(x+3, y+3, text, 0, 191, 255, 255);
+			drawtext(x+3, y+3, text, 255, 255, 255, 255);
 
-			if (signs[i].ju != sign::None)
+			if (currentSign.ju != sign::None)
 			{
-				int x = signs[i].x;
-				int y = signs[i].y;
-				int dx = 1 - signs[i].ju;
-				int dy = (signs[i].y > 18) ? -1 : 1;
+				int x = currentSign.x;
+				int y = currentSign.y;
+				int dx = 1 - currentSign.ju;
+				int dy = (currentSign.y > 18) ? -1 : 1;
 #ifdef OGLR
 				glBegin(GL_LINES);
 				glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -1019,6 +1012,7 @@ void Renderer::DrawSigns()
 #endif
 			}
 		}
+	}
 #ifdef OGLR
 	glTranslated(0, -MENUSIZE, 0);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, prevFbo);

@@ -3,21 +3,36 @@
 
 #include "common/String.h"
 
+#include <utility>
+
 class Simulation;
 
-class sign
+struct sign
 {
-public:
-	enum Justification { Left = 0, Middle = 1, Right = 2, None = 3 };
-	sign(String text_, int x_, int y_, Justification justification_);
+	enum Justification
+	{
+		Left = 0,
+		Middle = 1,
+		Right = 2,
+		None = 3
+	};
+
+	enum Type
+	{
+		Normal,
+		Save,
+		Thread,
+		Button,
+		Search
+	};
+
 	int x, y;
 	Justification ju;
 	String text;
 
-	String getText(Simulation *sim);
-	void pos(String signText, int & x0, int & y0, int & w, int & h);
-
-	static int splitsign(String str, String::value_type *type = NULL);
+	sign(String text_, int x_, int y_, Justification justification_);
+	String getDisplayText(Simulation *sim, int &x, int &y, int &w, int &h, bool colorize = true);
+	std::pair<int, Type> split();
 };
 
 #endif

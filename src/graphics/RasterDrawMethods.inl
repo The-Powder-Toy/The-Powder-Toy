@@ -58,34 +58,14 @@ int PIXELMETHODS_CLASS::drawtext(int x, int y, String str, int r, int g, int b, 
 			if(!s[1]) break;
 			switch (s[1])
 			{
-			case 'w':
-				r = g = b = 255;
-				break;
-			case 'g':
-				r = g = b = 192;
-				break;
-			case 'o':
-				r = 255;
-				g = 216;
-				b = 32;
-				break;
-			case 'r':
-				r = 255;
-				g = b = 0;
-				break;
-			case 'l':
-				r = 255;
-				g = b = 75;
-				break;
-			case 'b':
-				r = g = 0;
-				b = 255;
-				break;
-			case 't':
-				b = 255;
-				g = 170;
-				r = 32;
-				break;
+			case 'w': r = 255; g = 255; b = 255; break;
+			case 'g': r = 192; g = 192; b = 192; break;
+			case 'o': r = 255; g = 216; b =  32; break;
+			case 'r': r = 255; g =   0; b =   0; break;
+			case 'l': r = 255; g =  75; b =  75; break;
+			case 'b': r =   0; g =   0; b = 255; break;
+			case 't': b = 255; g = 170; r =  32; break;
+			case 'u': r = 147; g =  83; b = 211; break;
 			}
 			if(invert)
 			{

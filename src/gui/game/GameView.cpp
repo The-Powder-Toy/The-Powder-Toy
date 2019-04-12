@@ -1726,24 +1726,25 @@ void GameView::OnTick(float dt)
 	if (foundSignID != -1)
 	{
 		String str = c->GetSignText(foundSignID);
-		String::value_type type = '\0';
-		int pos = sign::splitsign(str, &type);
-		if (type == 'c' || type == 't' || type == 's')
+		auto si = c->GetSignSplit(foundSignID);
+
+		StringBuilder tooltip;
+		switch (si.second)
 		{
-			String linkSign = str.Substr(3, pos-3);
-			StringBuilder tooltip;
-			switch (type)
-			{
-			case 'c':
-				tooltip << "Go to save ID:" << linkSign;
-				break;
-			case 't':
-				tooltip << "Open forum thread " << linkSign << " in browser";
-				break;
-			case 's':
-				tooltip << "Search for " << linkSign;
-				break;
-			}
+		case sign::Type::Save:
+			tooltip << "Go to save ID:" << str.Substr(3, si.first - 3);
+			break;
+		case sign::Type::Thread:
+			tooltip << "Open forum thread " << str.Substr(3, si.first - 3) << " in browser";
+			break;
+		case sign::Type::Search:
+			tooltip << "Search for " << str.Substr(3, si.first - 3);
+			break;
+		default: break;
+		}
+
+		if (tooltip.Size())
+		{
 			ToolTip(ui::Point(0, Size.Y), tooltip.Build());
 		}
 	}
