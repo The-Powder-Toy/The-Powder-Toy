@@ -2,9 +2,10 @@
 #define TASK_H_
 
 #include "common/String.h"
-#include "common/tpt-thread.h"
 #include "TaskListener.h"
 #include "Config.h"
+#include <thread>
+#include <mutex>
 
 class TaskListener;
 class Task {
@@ -19,6 +20,7 @@ public:
 	virtual void Poll();
 	Task();
 	virtual ~Task();
+
 protected:
 	int progress;
 	bool done;
@@ -32,16 +34,13 @@ protected:
 	String thStatus;
 	String thError;
 
-	TaskListener * listener;
-	pthread_t doWorkThread;
-	pthread_mutex_t taskMutex;
-
+	TaskListener *listener;
+	std::mutex taskMutex;
 
 	virtual void before();
 	virtual void after();
 	virtual bool doWork();
 	virtual void doWork_wrapper();
-	TH_ENTRY_POINT static void * doWork_helper(void * ref);
 
 	virtual void notifyProgress(int progress);
 	virtual void notifyError(String error);

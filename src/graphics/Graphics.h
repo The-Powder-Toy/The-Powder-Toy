@@ -128,9 +128,6 @@ public:
 
 	VideoBuffer DumpFrame();
 
-	void Acquire();
-	void Release();
-
 	void blendpixel(int x, int y, int r, int g, int b, int a);
 	void addpixel(int x, int y, int r, int g, int b, int a);
 

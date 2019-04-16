@@ -1,22 +1,12 @@
 #include "Graphics.h"
 #include "FontReader.h"
-#include "common/tpt-thread.h"
 #ifdef OGLI
 
-static pthread_mutex_t gMutex = PTHREAD_MUTEX_INITIALIZER;
-//static pthread_mutex_t TMPMUT = PTHREAD_MUTEX_INITIALIZER;
 Graphics::Graphics():
 	sdl_scale(1)
 {
-//	if(gMutex == TMPMUT)
-//		pthread_mutex_init (&gMutex, NULL);
 	LoadDefaults();
 	InitialiseTextures();
-
-
-
-	//Texture for main UI
-
 }
 
 void Graphics::LoadDefaults()
@@ -66,16 +56,6 @@ void Graphics::InitialiseTextures()
 void Graphics::DestroyTextures()
 {
 	//Todo...
-}
-
-void Graphics::Acquire()
-{
-	pthread_mutex_lock(&gMutex);
-}
-
-void Graphics::Release()
-{
-	pthread_mutex_unlock(&gMutex);
 }
 
 Graphics::~Graphics()

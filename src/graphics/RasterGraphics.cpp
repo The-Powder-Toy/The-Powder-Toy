@@ -9,16 +9,6 @@ sdl_scale(1)
 
 }
 
-void Graphics::Acquire()
-{
-
-}
-
-void Graphics::Release()
-{
-
-}
-
 Graphics::~Graphics()
 {
 	free(vid);

@@ -3,6 +3,8 @@
 
 #include "client/Client.h"
 
+#include <thread>
+
 SearchModel::SearchModel():
 	loadedSave(NULL),
 	currentSort("best"),
@@ -14,8 +16,10 @@ SearchModel::SearchModel():
 	saveListLoaded(false),
 	updateSaveListWorking(false),
 	updateSaveListFinished(false),
+	updateSaveListResult(nullptr),
 	updateTagListWorking(false),
-	updateTagListFinished(false)
+	updateTagListFinished(false),
+	updateTagListResult(nullptr)
 {
 }
 
@@ -29,36 +33,26 @@ bool SearchModel::GetShowTags()
 	return showTags;
 }
 
-TH_ENTRY_POINT void * SearchModel::updateSaveListTHelper(void * obj)
-{
-	return ((SearchModel *)obj)->updateSaveListT();
-}
-
-void * SearchModel::updateSaveListT()
+void SearchModel::updateSaveListT()
 {
 	ByteString category = "";
 	if(showFavourite)
 		category = "Favourites";
 	if(showOwn && Client::Ref().GetAuthUser().UserID)
 		category = "by:"+Client::Ref().GetAuthUser().Username;
-	vector<SaveInfo*> * saveList = Client::Ref().SearchSaves((currentPage-1)*20, 20, lastQuery, currentSort=="new"?"date":"votes", category, thResultCount);
+	std::vector<SaveInfo*> * saveList = Client::Ref().SearchSaves((currentPage-1)*20, 20, lastQuery, currentSort=="new"?"date":"votes", category, thResultCount);
 
+	updateSaveListResult = saveList;
 	updateSaveListFinished = true;
-	return saveList;
 }
 
-TH_ENTRY_POINT void * SearchModel::updateTagListTHelper(void * obj)
-{
-	return ((SearchModel *)obj)->updateTagListT();
-}
-
-void * SearchModel::updateTagListT()
+void SearchModel::updateTagListT()
 {
 	int tagResultCount;
 	std::vector<std::pair<ByteString, int> > * tagList = Client::Ref().GetTags(0, 24, "", tagResultCount);
 
+	updateTagListResult = tagList;
 	updateTagListFinished = true;
-	return tagList;
 }
 
 bool SearchModel::UpdateSaveList(int pageNumber, String query)
@@ -88,12 +82,12 @@ bool SearchModel::UpdateSaveList(int pageNumber, String query)
 		{
 			updateTagListFinished = false;
 			updateTagListWorking = true;
-			pthread_create(&updateTagListThread, 0, &SearchModel::updateTagListTHelper, this);
+			std::thread([this]() { updateTagListT(); }).detach();
 		}
 
 		updateSaveListFinished = false;
 		updateSaveListWorking = true;
-		pthread_create(&updateSaveListThread, 0, &SearchModel::updateSaveListTHelper, this);
+		std::thread([this]() { updateSaveListT(); }).detach();
 		return true;
 	}
 	return false;
@@ -117,12 +111,12 @@ SaveInfo * SearchModel::GetLoadedSave(){
 	return loadedSave;
 }
 
-vector<SaveInfo*> SearchModel::GetSaveList()
+std::vector<SaveInfo*> SearchModel::GetSaveList()
 {
 	return saveList;
 }
 
-vector<pair<ByteString, int> > SearchModel::GetTagList()
+std::vector<std::pair<ByteString, int> > SearchModel::GetTagList()
 {
 	return tagList;
 }
@@ -137,8 +131,8 @@ void SearchModel::Update()
 			lastError = "";
 			saveListLoaded = true;
 
-			vector<SaveInfo*> * tempSaveList;
-			pthread_join(updateSaveListThread, (void**)&tempSaveList);
+			std::vector<SaveInfo *> *tempSaveList = updateSaveListResult;
+			updateSaveListResult = nullptr;
 
 			if(tempSaveList)
 			{
@@ -164,8 +158,8 @@ void SearchModel::Update()
 		{
 			updateTagListWorking = false;
 
-			vector<pair<ByteString, int> > * tempTagList;
-			pthread_join(updateTagListThread, (void**)&tempTagList);
+			std::vector<std::pair<ByteString, int>> *tempTagList = updateTagListResult;
+			updateTagListResult = nullptr;
 
 			if(tempTagList)
 			{

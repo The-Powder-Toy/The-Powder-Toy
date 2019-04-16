@@ -2,20 +2,21 @@
 #define REQUESTMANAGER_H
 
 #include "common/tpt-minmax.h" // for MSVC, ensures windows.h doesn't cause compile errors by defining min/max
-#include "common/tpt-thread.h"
+#include <thread>
+#include <mutex>
+#include <condition_variable>
 #include <ctime>
 #include <set>
 #include <curl/curl.h>
 #include "common/Singleton.h"
 #include "common/String.h"
-#undef GetUserName // pthreads (included by curl) defines this, breaks stuff
 
 namespace http
 {
 	class Request;
 	class RequestManager : public Singleton<RequestManager>
 	{
-		pthread_t worker_thread;
+		std::thread worker_thread;
 		std::set<Request *> requests;
 		int requests_added_to_multi;
 
@@ -23,8 +24,8 @@ namespace http
 		bool requests_to_start;
 		bool requests_to_remove;
 		bool rt_shutting_down;
-		pthread_mutex_t rt_mutex;
-		pthread_cond_t rt_cv;
+		std::mutex rt_mutex;
+		std::condition_variable rt_cv;
 
 		CURLM *multi;
 
@@ -35,8 +36,6 @@ namespace http
 		void AddRequest(Request *request);
 		void StartRequest(Request *request);
 		void RemoveRequest(Request *request);
-
-		static TH_ENTRY_POINT void *RequestManagerHelper(void *obj);
 
 	public:
 		RequestManager();

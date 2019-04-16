@@ -12,10 +12,7 @@ void Task::AddTaskListener(TaskListener * listener)
 void Task::Start()
 {
 	before();
-	// This would use a lambda if we didn't use pthreads and if I dared omit
-	// the TH_ENTRY_POINT from the function type.
-	pthread_create(&doWorkThread, 0, &Task::doWork_helper, this);
-	pthread_detach(doWorkThread);
+	std::thread([this]() { doWork_wrapper(); }).detach();
 }
 
 int Task::GetProgress()
@@ -52,13 +49,14 @@ void Task::Poll()
 		bool newSuccess = false;
 		String newStatus;
 		String newError;
-		pthread_mutex_lock(&taskMutex);
-		newProgress = thProgress;
-		newDone = thDone;
-		newSuccess = thSuccess;
-		newStatus = thStatus;
-		newError = thError;
-		pthread_mutex_unlock(&taskMutex);
+		{
+			std::lock_guard<std::mutex> g(taskMutex);
+			newProgress = thProgress;
+			newDone = thDone;
+			newSuccess = thSuccess;
+			newStatus = thStatus;
+			newError = thError;
+		}
 
 		success = newSuccess;
 
@@ -93,12 +91,10 @@ Task::Task() :
 	thDone(false),
 	listener(NULL)
 {
-	pthread_mutex_init(&taskMutex, NULL);
 }
 
 Task::~Task()
 {
-	pthread_mutex_destroy(&taskMutex);
 }
 
 void Task::before()
@@ -124,37 +120,29 @@ void Task::after()
 void Task::doWork_wrapper()
 {
 	bool newSuccess = doWork();
-	pthread_mutex_lock(&taskMutex);
-	thSuccess = newSuccess;
-	thDone = true;
-	pthread_mutex_unlock(&taskMutex);
-}
-
-TH_ENTRY_POINT void *Task::doWork_helper(void *ref)
-{
-	((Task *)ref)->doWork_wrapper();
-	return NULL;
+	{
+		std::lock_guard<std::mutex> g(taskMutex);
+		thSuccess = newSuccess;
+		thDone = true;
+	}
 }
 
 void Task::notifyProgress(int progress)
 {
-	pthread_mutex_lock(&taskMutex);
+	std::lock_guard<std::mutex> g(taskMutex);
 	thProgress = progress;
-	pthread_mutex_unlock(&taskMutex);
 }
 
 void Task::notifyStatus(String status)
 {
-	pthread_mutex_lock(&taskMutex);
+	std::lock_guard<std::mutex> g(taskMutex);
 	thStatus = status;
-	pthread_mutex_unlock(&taskMutex);
 }
 
 void Task::notifyError(String error)
 {
-	pthread_mutex_lock(&taskMutex);
+	std::lock_guard<std::mutex> g(taskMutex);
 	thError = error;
-	pthread_mutex_unlock(&taskMutex);
 }
 
 void Task::notifyProgressMain()

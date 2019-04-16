@@ -1,7 +1,9 @@
 #ifndef GRAVITY_H
 #define GRAVITY_H
 
-#include "common/tpt-thread.h"
+#include <thread>
+#include <mutex>
+#include <condition_variable>
 #include "Config.h"
 #include "Simulation.h"
 
@@ -18,28 +20,6 @@ struct mask_el {
 };
 typedef struct mask_el mask_el;
 
-
-/*
- * 	float *gravmap = NULL;//Maps to be used by the main thread
-	float *gravp = NULL;
-	float *gravy = NULL;
-	float *gravx = NULL;
-	unsigned *gravmask = NULL;
-
-	float *th_ogravmap = NULL;// Maps to be processed by the gravity thread
-	float *th_gravmap = NULL;
-	float *th_gravx = NULL;
-	float *th_gravy = NULL;
-	float *th_gravp = NULL;
-
-	int th_gravchanged = 0;
-
-	pthread_t gravthread;
-	pthread_mutex_t gravmutex;
-	pthread_cond_t gravcv;
-	int grav_ready = 0;
-	int gravthread_done = 0;
- */
 class Gravity
 {
 private:
@@ -52,9 +32,9 @@ private:
 
 	int th_gravchanged;
 
-	pthread_t gravthread;
-	pthread_mutex_t gravmutex;
-	pthread_cond_t gravcv;
+	std::thread gravthread;
+	std::mutex gravmutex;
+	std::condition_variable gravcv;
 	int grav_ready;
 	int gravthread_done;
 
@@ -84,7 +64,6 @@ public:
 	void gravity_cleanup();
 	void gravity_update_async();
 
-	TH_ENTRY_POINT static void *update_grav_async_helper(void * context);
 	void update_grav_async();
 
 	void start_grav_async();

@@ -4,7 +4,7 @@
 #include "graphics/OpenGLHeaders.h"
 #endif
 #include "common/Singleton.h"
-#include "common/tpt-thread.h"
+#include <mutex>
 
 class GameSave;
 class VideoBuffer;
@@ -16,7 +16,7 @@ class SaveRenderer: public Singleton<SaveRenderer> {
 	Graphics * g;
 	Simulation * sim;
 	Renderer * ren;
-	pthread_mutex_t renderMutex;
+	std::mutex renderMutex;
 public:
 	SaveRenderer();
 	VideoBuffer * Render(GameSave * save, bool decorations = true, bool fire = true);

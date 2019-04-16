@@ -21,8 +21,6 @@ namespace http
 		post_fields_last(NULL)
 #endif
 	{
-		pthread_cond_init(&done_cv, NULL);
-		pthread_mutex_init(&rm_mutex, NULL);
 		easy = curl_easy_init();
 		RequestManager::Ref().AddRequest(this);
 	}
@@ -36,8 +34,6 @@ namespace http
 		curl_formfree(post_fields_first);
 #endif
 		curl_slist_free_all(headers);
-		pthread_mutex_destroy(&rm_mutex);
-		pthread_cond_destroy(&done_cv);
 	}
 
 	void Request::AddHeader(ByteString name, ByteString value)
@@ -179,9 +175,10 @@ namespace http
 			curl_easy_setopt(easy, CURLOPT_WRITEFUNCTION, Request::WriteDataHandler);
 		}
 
-		pthread_mutex_lock(&rm_mutex);
-		rm_started = true;
-		pthread_mutex_unlock(&rm_mutex);
+		{
+			std::lock_guard<std::mutex> g(rm_mutex);
+			rm_started = true;
+		}
 		RequestManager::Ref().StartRequest(this);
 	}
 
@@ -194,19 +191,18 @@ namespace http
 			return ""; // shouldn't happen but just in case
 		}
 		
-		pthread_mutex_lock(&rm_mutex);
-		while (!rm_finished)
+		ByteString response_out;
 		{
-			pthread_cond_wait(&done_cv, &rm_mutex);
+			std::unique_lock<std::mutex> l(rm_mutex);
+			done_cv.wait(l, [this]() { return rm_finished; });
+			rm_started = false;
+			rm_canceled = true;
+			if (status_out)
+			{
+				*status_out = status;
+			}
+			response_out = std::move(response_body);
 		}
-		rm_started = false;
-		rm_canceled = true;
-		if (status_out)
-		{
-			*status_out = status;
-		}
-		ByteString response_out = std::move(response_body);
-		pthread_mutex_unlock(&rm_mutex);
 
 		RequestManager::Ref().RemoveRequest(this);
 		return response_out;
@@ -214,7 +210,7 @@ namespace http
 
 	void Request::CheckProgress(int *total, int *done)
 	{
-		pthread_mutex_lock(&rm_mutex);
+		std::lock_guard<std::mutex> g(rm_mutex);
 		if (total)
 		{
 			*total = rm_total;
@@ -223,43 +219,37 @@ namespace http
 		{
 			*done = rm_done;
 		}
-		pthread_mutex_unlock(&rm_mutex);
 	}
 
 	// returns true if the request has finished
 	bool Request::CheckDone()
 	{
-		pthread_mutex_lock(&rm_mutex);
-		bool ret = rm_finished;
-		pthread_mutex_unlock(&rm_mutex);
-		return ret;
+		std::lock_guard<std::mutex> g(rm_mutex);
+		return rm_finished;
 	}
 
 	// returns true if the request was canceled
 	bool Request::CheckCanceled()
 	{
-		pthread_mutex_lock(&rm_mutex);
-		bool ret = rm_canceled;
-		pthread_mutex_unlock(&rm_mutex);
-		return ret;
+		std::lock_guard<std::mutex> g(rm_mutex);
+		return rm_canceled;
 	}
 
 	// returns true if the request is running
 	bool Request::CheckStarted()
 	{
-		pthread_mutex_lock(&rm_mutex);
-		bool ret = rm_started;
-		pthread_mutex_unlock(&rm_mutex);
-		return ret;
+		std::lock_guard<std::mutex> g(rm_mutex);
+		return rm_started;
 
 	}
 
 	// cancels the request, the request thread will delete the Request* when it finishes (do not use Request in any way after canceling)
 	void Request::Cancel()
 	{
-		pthread_mutex_lock(&rm_mutex);
-		rm_canceled = true;
-		pthread_mutex_unlock(&rm_mutex);
+		{
+			std::lock_guard<std::mutex> g(rm_mutex);
+			rm_canceled = true;
+		}
 		RequestManager::Ref().RemoveRequest(this);
 	}
 

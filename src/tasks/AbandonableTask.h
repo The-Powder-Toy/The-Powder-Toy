@@ -3,9 +3,11 @@
 
 #include "Task.h"
 
+#include <condition_variable>
+
 class AbandonableTask : public Task
 {
-	pthread_cond_t done_cv;
+	std::condition_variable done_cv;
 	
 public:
 	void Finish();

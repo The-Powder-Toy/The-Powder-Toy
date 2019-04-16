@@ -1,6 +1,5 @@
 #include <cmath>
 #include <sys/types.h>
-#include "common/tpt-thread.h"
 #include "Config.h"
 #include "Gravity.h"
 #include "Misc.h"
@@ -85,13 +84,15 @@ void Gravity::gravity_update_async()
 	int result;
 	if (ngrav_enable)
 	{
-		if (!pthread_mutex_trylock(&gravmutex))
+		bool signal_grav = false;
+
 		{
-			result = grav_ready;
-			if (result) //Did the gravity thread finish?
+			std::unique_lock<std::mutex> l(gravmutex, std::defer_lock);
+			if (l.try_lock())
 			{
-				//if (!sys_pause||framerender){ //Only update if not paused
-					//Switch the full size gravmaps, we don't really need the two above any more
+				result = grav_ready;
+				if (result) //Did the gravity thread finish?
+				{
 					float *tmpf;
 
 					if (th_gravchanged && !ignoreNextResult)
@@ -121,22 +122,20 @@ void Gravity::gravity_update_async()
 					th_gravmap = tmpf;
 
 					grav_ready = 0; //Tell the other thread that we're ready for it to continue
-					pthread_cond_signal(&gravcv);
-				//}
+					signal_grav = true;
+				}
 			}
-			pthread_mutex_unlock(&gravmutex);
+
+			if (signal_grav)
+			{
+				gravcv.notify_one();
+			}
 		}
 		//Apply the gravity mask
 		membwand(gravy, gravmask, (XRES/CELL)*(YRES/CELL)*sizeof(float), (XRES/CELL)*(YRES/CELL)*sizeof(unsigned));
 		membwand(gravx, gravmask, (XRES/CELL)*(YRES/CELL)*sizeof(float), (XRES/CELL)*(YRES/CELL)*sizeof(unsigned));
 		memset(gravmap, 0, (XRES/CELL)*(YRES/CELL)*sizeof(float));
 	}
-}
-
-TH_ENTRY_POINT void *Gravity::update_grav_async_helper(void * context)
-{
-	((Gravity *)context)->update_grav_async();
-	return NULL;
 }
 
 void Gravity::update_grav_async()
@@ -155,7 +154,8 @@ void Gravity::update_grav_async()
 	if (!grav_fft_status)
 		grav_fft_init();
 #endif
-	pthread_mutex_lock(&gravmutex);
+
+	std::unique_lock<std::mutex> l(gravmutex);
 	while (!thread_done)
 	{
 		if (!done)
@@ -167,13 +167,11 @@ void Gravity::update_grav_async()
 			thread_done = gravthread_done;
 		} else {
 			// wait for main thread
-			pthread_cond_wait(&gravcv, &gravmutex);
+			gravcv.wait(l);
 			done = grav_ready;
 			thread_done = gravthread_done;
 		}
 	}
-	pthread_mutex_unlock(&gravmutex);
-	pthread_exit(NULL);
 }
 
 void Gravity::start_grav_async()
@@ -183,9 +181,7 @@ void Gravity::start_grav_async()
 
 	gravthread_done = 0;
 	grav_ready = 0;
-	pthread_mutex_init (&gravmutex, NULL);
-	pthread_cond_init(&gravcv, NULL);
-	pthread_create(&gravthread, NULL, &Gravity::update_grav_async_helper, this); //Start asynchronous gravity simulation
+	gravthread = std::thread([this]() { update_grav_async(); }); //Start asynchronous gravity simulation
 	ngrav_enable = 1;
 
 	memset(gravy, 0, (XRES/CELL)*(YRES/CELL)*sizeof(float));
@@ -198,12 +194,12 @@ void Gravity::stop_grav_async()
 {
 	if (ngrav_enable)
 	{
-		pthread_mutex_lock(&gravmutex);
-		gravthread_done = 1;
-		pthread_cond_signal(&gravcv);
-		pthread_mutex_unlock(&gravmutex);
-		pthread_join(gravthread, NULL);
-		pthread_mutex_destroy(&gravmutex); //Destroy the mutex
+		{
+			std::lock_guard<std::mutex> g(gravmutex);
+			gravthread_done = 1;
+		}
+		gravcv.notify_one();
+		gravthread.join();
 		ngrav_enable = 0;
 	}
 	//Clear the grav velocities

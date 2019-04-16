@@ -4,7 +4,6 @@
 #include <limits>
 #include <stdexcept>
 
-#include "common/tpt-thread.h"
 #include "String.h"
 
 ByteString ConversionError::formatError(ByteString::value_type const *at, ByteString::value_type const *upto)
@@ -374,31 +373,10 @@ struct LocaleImpl
 	}
 };
 
-static void destroyLocaleImpl(void *ptr)
-{
-	delete static_cast<LocaleImpl *>(ptr);
-}
-
-static pthread_once_t localeOnce = PTHREAD_ONCE_INIT;
-static pthread_key_t localeKey;
-
-static void createLocaleKey()
-{
-	if(int error = pthread_key_create(&localeKey, destroyLocaleImpl))
-		throw std::system_error(error, std::system_category(), "Could not create TLS key for LocaleImpl");
-}
-
 static LocaleImpl *getLocaleImpl()
 {
-	pthread_once(&localeOnce, createLocaleKey);
-	void *ptr = pthread_getspecific(localeKey);
-	if(!ptr)
-	{
-		ptr = static_cast<void *>(new LocaleImpl());
-		if(int error = pthread_setspecific(localeKey, ptr))
-			throw std::system_error(error, std::system_category(), "Could not put LocaleImpl into TLS");
-	}
-	return static_cast<LocaleImpl *>(ptr);
+	thread_local LocaleImpl li;
+	return &li;
 }
 
 ByteString ByteStringBuilder::Build() const
