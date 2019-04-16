@@ -22,6 +22,9 @@
 #include "simulation/SaveRenderer.h"
 #include "simulation/SimulationData.h"
 
+#ifdef GetUserName
+# undef GetUserName // dammit windows
+#endif
 
 class SplitButton;
 class SplitButtonAction

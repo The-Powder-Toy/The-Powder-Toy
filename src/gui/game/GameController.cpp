@@ -39,6 +39,10 @@
 #endif
 #include "lua/LuaEvents.h"
 
+#ifdef GetUserName
+# undef GetUserName // dammit windows
+#endif
+
 using namespace std;
 
 class GameController::SearchCallback: public ControllerCallback
