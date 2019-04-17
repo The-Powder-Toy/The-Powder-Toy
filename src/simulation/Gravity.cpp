@@ -125,11 +125,11 @@ void Gravity::gravity_update_async()
 					signal_grav = true;
 				}
 			}
+		}
 
-			if (signal_grav)
-			{
-				gravcv.notify_one();
-			}
+		if (signal_grav)
+		{
+			gravcv.notify_one();
 		}
 		//Apply the gravity mask
 		membwand(gravy, gravmask, (XRES/CELL)*(YRES/CELL)*sizeof(float), (XRES/CELL)*(YRES/CELL)*sizeof(unsigned));
