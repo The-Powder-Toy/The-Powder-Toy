@@ -14,7 +14,6 @@
 #include "PowderToy.h"
 
 using namespace ui;
-using namespace std;
 
 Engine::Engine():
 	FpsLimit(60.0f),
@@ -24,9 +23,6 @@ Engine::Engine():
 	altFullscreen(false),
 	resizable(false),
 	lastBuffer(NULL),
-	prevBuffers(stack<pixel*>()),
-	windows(stack<Window*>()),
-	mousePositions(stack<Point>()),
 	state_(NULL),
 	windowTargetPosition(0, 0),
 	break_(false),

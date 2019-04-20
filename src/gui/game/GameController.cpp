@@ -78,8 +78,6 @@
 # undef GetUserName // dammit windows
 #endif
 
-using namespace std;
-
 class GameController::SearchCallback: public ControllerCallback
 {
 	GameController * cc;
@@ -1394,17 +1392,18 @@ void GameController::OpenProfile()
 
 void GameController::OpenElementSearch()
 {
-	vector<Tool*> toolList;
-	vector<Menu*> menuList = gameModel->GetMenuList();
-	for(std::vector<Menu*>::iterator iter = menuList.begin(), end = menuList.end(); iter!=end; ++iter) {
-		if(!(*iter))
+	std::vector<Tool*> toolList;
+	std::vector<Menu*> menuList = gameModel->GetMenuList();
+	for(auto *mm : menuList)
+	{
+		if(!mm)
 			continue;
-		vector<Tool*> menuToolList = (*iter)->GetToolList();
+		std::vector<Tool*> menuToolList = mm->GetToolList();
 		if(!menuToolList.size())
 			continue;
 		toolList.insert(toolList.end(), menuToolList.begin(), menuToolList.end());
 	}
-	vector<Tool*> hiddenTools = gameModel->GetUnlistedTools();
+	std::vector<Tool*> hiddenTools = gameModel->GetUnlistedTools();
 	toolList.insert(toolList.end(), hiddenTools.begin(), hiddenTools.end());
 	new ElementSearchActivity(this, toolList);
 }

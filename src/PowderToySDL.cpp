@@ -50,8 +50,6 @@
 #include "gui/Style.h"
 #include "gui/interface/Engine.h"
 
-using namespace std;
-
 #define INCLUDE_SYSWM
 #include "SDLCompat.h"
 

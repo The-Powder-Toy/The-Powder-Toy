@@ -9,8 +9,6 @@
 
 #include "game/GameController.h"
 
-using namespace std;
-
 GameController * gameController;
 ui::Engine * engine;
 

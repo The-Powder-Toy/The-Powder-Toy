@@ -3,8 +3,6 @@
 
 #include <vector>
 
-using namespace std;
-
 class RenderView;
 class Renderer;
 class RenderModel

@@ -6,8 +6,6 @@
 #include "simulation/SimulationData.h"
 #include "ElementClasses.h"
 
-using namespace std;
-
 Tool::Tool(int id, String name, String description, int r, int g, int b, ByteString identifier, VideoBuffer * (*textureGen)(int, int, int)):
 	textureGen(textureGen),
 	toolID(id),
