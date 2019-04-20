@@ -1,10 +1,14 @@
-#include <iostream>
 #include "TextPrompt.h"
+
 #include "gui/interface/Label.h"
 #include "gui/interface/Button.h"
 #include "gui/interface/Engine.h"
+#include "gui/interface/Textbox.h"
+
 #include "gui/Style.h"
 #include "PowderToy.h"
+
+#include "graphics/Graphics.h"
 
 class CloseAction: public ui::ButtonAction
 {

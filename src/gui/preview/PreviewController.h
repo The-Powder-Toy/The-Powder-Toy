@@ -1,12 +1,10 @@
 #ifndef PREVIEWCONTROLLER_H_
 #define PREVIEWCONTROLLER_H_
 
-#include "gui/preview/PreviewModel.h"
-#include "gui/preview/PreviewView.h"
-#include "Controller.h"
-#include "client/SaveInfo.h"
 #include "client/ClientListener.h"
 
+class SaveInfo;
+class ControllerCallback;
 class LoginController;
 class PreviewModel;
 class PreviewView;

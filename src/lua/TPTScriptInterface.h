@@ -3,6 +3,7 @@
 
 #include "CommandInterface.h"
 #include "TPTSTypes.h"
+#include <deque>
 
 class TPTScriptInterface: public CommandInterface {
 protected:

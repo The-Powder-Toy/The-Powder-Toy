@@ -1,15 +1,12 @@
 #ifndef OPTIONSCONTROLLER_H_
 #define OPTIONSCONTROLLER_H_
 
-#include "Controller.h"
-#include "simulation/Simulation.h"
-#include "OptionsView.h"
-#include "OptionsModel.h"
-
+class ControllerCallback;
 class GameModel;
 class OptionsModel;
 class OptionsView;
-class OptionsController {
+class OptionsController
+{
 	GameModel * gModel;
 	OptionsView * view;
 	OptionsModel * model;

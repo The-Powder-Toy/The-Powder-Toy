@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_FRAY PT_FRAY 159
 Element_FRAY::Element_FRAY()
 {

@@ -1,9 +1,13 @@
 #include "LocalSaveActivity.h"
+
 #include "images.h"
 
 #include "client/Client.h"
 #include "client/GameSave.h"
+#include "client/ThumbnailRendererTask.h"
+
 #include "graphics/Graphics.h"
+
 #include "gui/Style.h"
 
 #include "gui/dialogues/ConfirmPrompt.h"
@@ -11,7 +15,6 @@
 #include "gui/interface/Button.h"
 #include "gui/interface/Label.h"
 #include "gui/interface/Textbox.h"
-#include "client/ThumbnailRendererTask.h"
 
 
 class LocalSaveActivity::CancelAction: public ui::ButtonAction

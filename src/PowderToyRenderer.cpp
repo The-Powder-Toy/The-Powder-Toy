@@ -1,5 +1,8 @@
 #if defined(RENDERER)
 
+#include "graphics/Graphics.h"
+#include "graphics/Renderer.h"
+
 #include <ctime>
 #include <iostream>
 #include <fstream>
@@ -9,8 +12,6 @@
 #include "Config.h"
 #include "Format.h"
 #include "gui/interface/Engine.h"
-#include "graphics/Graphics.h"
-#include "graphics/Renderer.h"
 
 #include "client/GameSave.h"
 #include "simulation/Simulation.h"

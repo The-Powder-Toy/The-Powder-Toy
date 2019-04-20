@@ -1,8 +1,11 @@
 #include "SaveUserInfoRequest.h"
 
+#include "Config.h"
+#include "client/UserInfo.h"
+
 namespace http
 {
-	SaveUserInfoRequest::SaveUserInfoRequest(UserInfo info) :
+	SaveUserInfoRequest::SaveUserInfoRequest(UserInfo &info) :
 		APIRequest(SCHEME SERVER "/Profile.json")
 	{
 		AddPostData({

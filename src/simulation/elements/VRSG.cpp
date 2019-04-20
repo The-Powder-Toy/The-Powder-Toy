@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_VRSG PT_VRSG 176
 Element_VRSG::Element_VRSG()
 {

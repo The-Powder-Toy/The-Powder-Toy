@@ -1,6 +1,5 @@
-#include <iostream>
 #include "Slider.h"
-#include "Colour.h"
+
 #include "graphics/Graphics.h"
 
 namespace ui {

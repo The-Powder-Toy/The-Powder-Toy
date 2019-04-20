@@ -1,11 +1,12 @@
+#include "Client.h"
+
 #include <cstdlib>
-#include <iostream>
 #include <vector>
 #include <map>
+#include <iostream>
 #include <iomanip>
 #include <ctime>
 #include <cstdio>
-#include <deque>
 #include <fstream>
 #include <dirent.h>
 
@@ -28,25 +29,23 @@
 #include "common/String.h"
 #include "Config.h"
 #include "Format.h"
-#include "Client.h"
 #include "MD5.h"
-#include "graphics/Graphics.h"
-#include "Misc.h"
 #include "Platform.h"
 #include "Update.h"
 
-#include "simulation/SaveRenderer.h"
-#include "gui/interface/Point.h"
+#include "ClientListener.h"
+
+#include "graphics/Graphics.h"
+
+#include "gui/preview/Comment.h"
+
 #include "client/SaveInfo.h"
 #include "client/SaveFile.h"
 #include "client/GameSave.h"
 #include "client/UserInfo.h"
-#include "gui/preview/Comment.h"
-#include "ClientListener.h"
 #include "client/http/Request.h"
 #include "client/http/RequestManager.h"
 
-#include "json/json.h"
 
 extern "C"
 {

@@ -1,16 +1,23 @@
-#include "common/String.h"
 #include "SearchController.h"
+
 #include "SearchModel.h"
 #include "SearchView.h"
-#include "graphics/Graphics.h"
-#include "gui/interface/Panel.h"
+
 #include "gui/dialogues/ConfirmPrompt.h"
-#include "gui/dialogues/ErrorMessage.h"
 #include "gui/preview/PreviewController.h"
-#include "client/Client.h"
-#include "Platform.h"
+#include "gui/preview/PreviewView.h"
+
 #include "tasks/Task.h"
 #include "tasks/TaskWindow.h"
+
+#include "Platform.h"
+#include "Controller.h"
+
+#include "graphics/Graphics.h"
+
+#include "client/Client.h"
+
+#include "common/tpt-minmax.h"
 
 class SearchController::OpenCallback: public ControllerCallback
 {

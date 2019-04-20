@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_VIRS PT_VIRS 174
 Element_VIRS::Element_VIRS()
 {

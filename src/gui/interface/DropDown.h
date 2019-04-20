@@ -3,7 +3,6 @@
 
 #include <utility>
 #include "Component.h"
-#include "Colour.h"
 
 namespace ui {
 

@@ -1,6 +1,7 @@
-#include <iostream>
 #include "Tool.h"
+
 #include "client/Client.h"
+
 #include "gui/Style.h"
 #include "gui/game/Brush.h"
 #include "gui/interface/Window.h"
@@ -10,7 +11,12 @@
 #include "gui/interface/DropDown.h"
 #include "gui/interface/Keys.h"
 #include "gui/dialogues/ErrorMessage.h"
+
 #include "simulation/Simulation.h"
+
+#include "graphics/Graphics.h"
+
+#include <iostream>
 
 class PropertyWindow: public ui::Window
 {

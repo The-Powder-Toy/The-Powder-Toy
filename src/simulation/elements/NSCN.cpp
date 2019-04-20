@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_NSCN PT_NSCN 36
 Element_NSCN::Element_NSCN()
 {

@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_LAVA PT_LAVA 6
 Element_LAVA::Element_LAVA()
 {

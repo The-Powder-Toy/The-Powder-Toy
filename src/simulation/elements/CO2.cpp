@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_CO2 PT_CO2 80
 Element_CO2::Element_CO2()
 {

@@ -1,9 +1,8 @@
 #ifndef SIMTOOL_H
 #define SIMTOOL_H
 
-#include "simulation/Simulation.h"
-#include "graphics/Renderer.h"
-#include "simulation/Elements.h"
+#include "common/String.h"
+#include "graphics/Pixel.h"
 
 class Simulation;
 struct Particle;

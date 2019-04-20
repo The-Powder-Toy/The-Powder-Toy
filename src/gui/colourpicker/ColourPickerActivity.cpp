@@ -1,13 +1,14 @@
-#include <algorithm>
-#include <iomanip>
 #include "ColourPickerActivity.h"
+
 #include "gui/interface/Textbox.h"
+#include "gui/interface/Button.h"
 #include "gui/interface/Label.h"
 #include "gui/interface/Keys.h"
-#include "gui/game/Tool.h"
 #include "gui/Style.h"
-#include "Format.h"
-#include "gui/game/GameModel.h"
+
+#include "graphics/Graphics.h"
+
+#include "Misc.h"
 
 ColourPickerActivity::ColourPickerActivity(ui::Colour initialColour, ColourPickedCallback * callback) :
 	WindowActivity(ui::Point(-1, -1), ui::Point(266, 175)),

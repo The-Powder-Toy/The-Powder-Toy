@@ -1,8 +1,9 @@
 #ifdef LUACONSOLE
 
-#include <iostream>
 #include "LuaButton.h"
+
 #include "LuaScriptInterface.h"
+
 #include "gui/interface/Button.h"
 
 const char LuaButton::className[] = "Button";

@@ -2,7 +2,6 @@
 #define THUMBNAILREQUEST2_H
 
 #include "ImageRequest.h"
-#include "common/String.h"
 
 namespace http
 {

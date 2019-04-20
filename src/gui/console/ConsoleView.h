@@ -2,18 +2,18 @@
 #define CONSOLEVIEW_H_
 
 #include <vector>
-#include <queue>
-#include "gui/interface/Label.h"
 #include "gui/interface/Window.h"
-#include "ConsoleController.h"
-#include "ConsoleModel.h"
-#include "gui/interface/Textbox.h"
-#include "ConsoleCommand.h"
 
+namespace ui
+{
+	class Label;
+	class Textbox;
+}
 
 class ConsoleController;
 class ConsoleModel;
-class ConsoleView: public ui::Window {
+class ConsoleView: public ui::Window
+{
 	ConsoleController * c;
 	ui::Textbox * commandField;
 	std::vector<ui::Label*> commandList;

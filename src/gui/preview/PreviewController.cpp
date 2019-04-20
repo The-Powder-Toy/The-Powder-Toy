@@ -1,13 +1,21 @@
-#include "client/Client.h"
 #include "PreviewController.h"
+
 #include "PreviewView.h"
 #include "PreviewModel.h"
+
+#include "client/Client.h"
+#include "client/SaveInfo.h"
+
 #include "PreviewModelException.h"
+
 #include "gui/dialogues/InformationMessage.h"
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/login/LoginController.h"
+#include "gui/login/LoginView.h"
+
 #include "Controller.h"
 #include "Platform.h"
+#include "Config.h"
 
 PreviewController::PreviewController(int saveID, int saveDate, bool instant, ControllerCallback * callback):
 	saveId(saveID),

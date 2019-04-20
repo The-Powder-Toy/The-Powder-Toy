@@ -1,15 +1,15 @@
 #ifndef RENDERVIEW_H_
 #define RENDERVIEW_H_
 
-
 #include <vector>
 #include "gui/interface/Window.h"
-#include "RenderController.h"
-#include "RenderModel.h"
-#include "graphics/Renderer.h"
-#include "gui/interface/Checkbox.h"
-#include "gui/interface/Button.h"
 
+namespace ui
+{
+	class Checkbox;
+}
+
+class Renderer;
 class RenderController;
 class RenderModel;
 class RenderView: public ui::Window {

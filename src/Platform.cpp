@@ -1,3 +1,5 @@
+#include "Platform.h"
+
 #include <cstdlib>
 #include <cstring>
 #include <cstdio>
@@ -15,7 +17,7 @@
 #ifdef MACOSX
 #include <mach-o/dyld.h>
 #endif
-#include "Platform.h"
+
 #include "Misc.h"
 
 namespace Platform

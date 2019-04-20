@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_BCOL PT_BCOL 73
 Element_BCOL::Element_BCOL()
 {

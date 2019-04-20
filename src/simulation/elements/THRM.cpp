@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_THRM PT_THRM 65
 Element_THRM::Element_THRM()
 {

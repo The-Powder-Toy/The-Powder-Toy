@@ -1,12 +1,13 @@
+#include "Format.h"
 
 #include <ctime>
-#include "common/String.h"
 #include <stdexcept>
 #include <iostream>
 #include <iterator>
+#include <cstring>
 #include <zlib.h>
 #include <cstdio>
-#include "Format.h"
+
 #include "graphics/Graphics.h"
 
 ByteString format::URLEncode(ByteString source)

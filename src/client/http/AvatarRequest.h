@@ -2,7 +2,6 @@
 #define AVATARREQUEST2_H
 
 #include "ImageRequest.h"
-#include "common/String.h"
 
 namespace http
 {

@@ -1,6 +1,81 @@
 #include "Brush.h"
 #include "graphics/Renderer.h"
 
+Brush::Brush(ui::Point size_):
+	outline(NULL),
+	bitmap(NULL),
+	size(0, 0),
+	radius(0, 0)
+{
+	SetRadius(size_);
+};
+
+Brush::~Brush()
+{
+	delete[] bitmap;
+	delete[] outline;
+}
+
+void Brush::updateOutline()
+{
+	if(!bitmap)
+		GenerateBitmap();
+	if(!bitmap)
+		return;
+	delete[] outline;
+	outline = new unsigned char[size.X*size.Y];
+	for(int x = 0; x < size.X; x++)
+	{
+		for(int y = 0; y < size.Y; y++)
+		{
+			if(bitmap[y*size.X+x] && (!y || !x || x == size.X-1 || y == size.Y-1 || !bitmap[y*size.X+(x+1)] || !bitmap[y*size.X+(x-1)] || !bitmap[(y-1)*size.X+x] || !bitmap[(y+1)*size.X+x]))
+			{
+				outline[y*size.X+x] = 255;
+			}
+			else
+				outline[y*size.X+x] = 0;
+		}
+	}
+}
+
+void Brush::SetRadius(ui::Point radius)
+{
+	this->radius = radius;
+	this->size = radius+radius+ui::Point(1, 1);
+
+	GenerateBitmap();
+	updateOutline();
+}
+
+void Brush::GenerateBitmap()
+{
+	delete[] bitmap;
+	bitmap = new unsigned char[size.X*size.Y];
+	for(int x = 0; x < size.X; x++)
+	{
+		for(int y = 0; y < size.Y; y++)
+		{
+			bitmap[(y*size.X)+x] = 255;
+		}
+	}
+}
+
+unsigned char *Brush::GetBitmap()
+{
+	if(!bitmap)
+		GenerateBitmap();
+	return bitmap;
+}
+
+unsigned char *Brush::GetOutline()
+{
+	if(!outline)
+		updateOutline();
+	if(!outline)
+		return NULL;
+	return outline;
+}
+
 void Brush::RenderRect(Renderer * ren, ui::Point position1, ui::Point position2)
 {
 	int width, height;

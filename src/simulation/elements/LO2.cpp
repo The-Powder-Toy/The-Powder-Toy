@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_LO2 PT_LO2 60
 Element_LO2::Element_LO2()
 {

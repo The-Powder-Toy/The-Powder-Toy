@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_BOMB PT_BOMB 129
 Element_BOMB::Element_BOMB()
 {

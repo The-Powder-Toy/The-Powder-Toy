@@ -4,7 +4,6 @@
 #include "common/String.h"
 #include "Activity.h"
 #include "client/UserInfo.h"
-#include "gui/interface/Window.h"
 #include "client/http/SaveUserInfoRequest.h"
 #include "client/http/GetUserInfoRequest.h"
 #include "client/http/RequestMonitor.h"

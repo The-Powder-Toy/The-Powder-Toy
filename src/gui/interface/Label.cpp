@@ -1,11 +1,12 @@
-#include "Config.h"
+#include "Label.h"
+
 #include "Format.h"
 #include "Point.h"
-#include "Label.h"
 #include "Keys.h"
 #include "Mouse.h"
 #include "PowderToy.h"
 #include "ContextMenu.h"
+
 #include "graphics/Graphics.h"
 
 using namespace ui;

@@ -4,17 +4,14 @@
 #include <vector>
 #include <set>
 #include "common/String.h"
-#include "Comment.h"
 #include "gui/interface/Window.h"
-#include "gui/preview/PreviewController.h"
-#include "gui/preview/PreviewModel.h"
-#include "gui/interface/Button.h"
-#include "gui/interface/CopyTextButton.h"
-#include "gui/interface/Label.h"
-#include "gui/interface/Textbox.h"
 
 namespace ui
 {
+	class Button;
+	class CopyTextButton;
+	class Label;
+	class Textbox;
 	class ScrollPanel;
 	class AvatarButton;
 }
@@ -22,7 +19,8 @@ namespace ui
 class VideoBuffer;
 class PreviewModel;
 class PreviewController;
-class PreviewView: public ui::Window {
+class PreviewView: public ui::Window
+{
 	class SubmitCommentAction;
 	class LoginAction;
 	class AutoCommentSizeAction;

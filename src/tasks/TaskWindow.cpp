@@ -1,10 +1,15 @@
-#include "common/tpt-minmax.h"
+#include "TaskWindow.h"
+
+#include "Task.h"
+
 #include "gui/interface/Label.h"
 #include "gui/interface/Engine.h"
-#include "TaskWindow.h"
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/Style.h"
-#include "Task.h"
+
+#include "graphics/Graphics.h"
+
+#include "common/tpt-minmax.h"
 
 TaskWindow::TaskWindow(String title_, Task * task_, bool closeOnDone):
 	ui::Window(ui::Point(-1, -1), ui::Point(240, 60)),

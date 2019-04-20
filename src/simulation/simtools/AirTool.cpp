@@ -1,5 +1,6 @@
-#include "ToolClasses.h"
+#include "simulation/ToolCommon.h"
 #include "simulation/Air.h"
+
 //#TPT-Directive ToolClass Tool_Air TOOL_AIR 2
 Tool_Air::Tool_Air()
 {

@@ -1,11 +1,10 @@
+#include "Air.h"
+
 #include <cmath>
 #include <algorithm>
-#include "Config.h"
-#include "Air.h"
+
 #include "Simulation.h"
-//#include <powder.h>
-//#include <defines.h>
-#include "Gravity.h"
+#include "ElementClasses.h"
 #include "common/tpt-rand.h"
 
 /*float kernel[9];

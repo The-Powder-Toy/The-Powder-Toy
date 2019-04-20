@@ -1,9 +1,12 @@
-#include "gui/Style.h"
 #include "InformationMessage.h"
+
+#include "gui/Style.h"
 #include "gui/interface/Button.h"
 #include "gui/interface/Engine.h"
 #include "gui/interface/Label.h"
 #include "gui/interface/ScrollPanel.h"
+
+#include "graphics/Graphics.h"
 
 InformationMessage::InformationMessage(String title, String message, bool large):
 	ui::Window(ui::Point(-1, -1), ui::Point(200, 35))

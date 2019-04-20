@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_LRBD PT_LRBD 42
 Element_LRBD::Element_LRBD()
 {

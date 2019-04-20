@@ -1,5 +1,11 @@
 #include "SearchView.h"
+
+#include "SearchController.h"
+#include "SearchModel.h"
+
 #include "client/Client.h"
+#include "client/SaveInfo.h"
+
 #include "gui/interface/Keys.h"
 #include "gui/interface/SaveButton.h"
 #include "gui/interface/Button.h"
@@ -7,9 +13,11 @@
 #include "gui/interface/RichLabel.h"
 #include "gui/interface/Textbox.h"
 #include "gui/interface/Spinner.h"
-#include "Misc.h"
-#include "Format.h"
+
 #include "PowderToy.h"
+#include "Config.h"
+
+#include "graphics/Graphics.h"
 
 #ifdef GetUserName
 # undef GetUserName // dammit windows
@@ -18,7 +26,7 @@
 SearchView::SearchView():
 	ui::Window(ui::Point(0, 0), ui::Point(WINDOWW, WINDOWH)),
 	c(NULL),
-	saveButtons(vector<ui::SaveButton*>()),
+	saveButtons(std::vector<ui::SaveButton*>()),
 	errorLabel(NULL),
 	changed(true),
 	lastChanged(0),
@@ -473,7 +481,7 @@ void SearchView::NotifyTagListChanged(SearchModel * sender)
 	int tagWidth = 0, tagHeight = 0, tagX = 0, tagY = 0, tagsX = 6, tagsY = 4, tagPadding = 1;
 	int tagAreaWidth, tagAreaHeight, tagXOffset = 0, tagYOffset = 0;
 
-	vector<pair<ByteString, int> > tags = sender->GetTagList();
+	std::vector<std::pair<ByteString, int> > tags = sender->GetTagList();
 
 	if (motdLabel)
 	{
@@ -534,7 +542,7 @@ void SearchView::NotifyTagListChanged(SearchModel * sender)
 		{
 			int maxTagVotes = tags[0].second;
 
-			pair<ByteString, int> tag = tags[i];
+			std::pair<ByteString, int> tag = tags[i];
 
 			if (tagX == tagsX)
 			{
@@ -578,7 +586,7 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 	int buttonWidth, buttonHeight, saveX = 0, saveY = 0, savesX = 5, savesY = 4, buttonPadding = 1;
 	int buttonAreaWidth, buttonAreaHeight, buttonXOffset, buttonYOffset;
 
-	vector<SaveInfo*> saves = sender->GetSaveList();
+	std::vector<SaveInfo*> saves = sender->GetSaveList();
 	//string messageOfTheDay = sender->GetMessageOfTheDay();
 
 	if(sender->GetShowFavourite())
@@ -721,7 +729,7 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 
 void SearchView::NotifySelectedChanged(SearchModel * sender)
 {
-	vector<int> selected = sender->GetSelected();
+	std::vector<int> selected = sender->GetSelected();
 	size_t published = 0;
 	for (size_t j = 0; j < saveButtons.size(); j++)
 	{

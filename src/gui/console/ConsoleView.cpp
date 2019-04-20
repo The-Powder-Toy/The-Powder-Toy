@@ -1,5 +1,19 @@
 #include "ConsoleView.h"
+
+#include "ConsoleController.h"
+#include "ConsoleModel.h"
+
+#include <deque>
+
+#include "graphics/Graphics.h"
+
+#include "Config.h"
+
+#include "ConsoleCommand.h"
+
 #include "gui/interface/Keys.h"
+#include "gui/interface/Label.h"
+#include "gui/interface/Textbox.h"
 
 ConsoleView::ConsoleView():
 	ui::Window(ui::Point(0, 0), ui::Point(WINDOWW, 150)),

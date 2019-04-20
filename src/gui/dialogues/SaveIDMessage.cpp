@@ -1,9 +1,13 @@
-#include "gui/Style.h"
 #include "SaveIDMessage.h"
+
+#include "gui/Style.h"
+
 #include "graphics/Graphics.h"
+
 #include "gui/interface/Button.h"
 #include "gui/interface/CopyTextButton.h"
 #include "gui/interface/Label.h"
+
 #include "Format.h"
 
 SaveIDMessage::SaveIDMessage(int id):

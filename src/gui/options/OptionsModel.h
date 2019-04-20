@@ -1,13 +1,13 @@
 #ifndef OPTIONSMODEL_H_
 #define OPTIONSMODEL_H_
+
 #include <vector>
-#include "OptionsView.h"
-#include "simulation/Simulation.h"
 
 class GameModel;
 class Simulation;
 class OptionsView;
-class OptionsModel {
+class OptionsModel
+{
 	GameModel * gModel;
 	Simulation * sim;
 	std::vector<OptionsView*> observers;

@@ -1,3 +1,8 @@
+#include "OptionsView.h"
+
+#include "OptionsController.h"
+#include "OptionsModel.h"
+
 #include <cstdio>
 #ifdef WIN
 #include <direct.h>
@@ -7,14 +12,15 @@
 #endif
 #include "SDLCompat.h"
 
-#include "OptionsView.h"
-#include "Format.h"
 #include "gui/Style.h"
 #include "gui/interface/Button.h"
 #include "gui/interface/Label.h"
 #include "gui/interface/DropDown.h"
 #include "gui/interface/Engine.h"
-#include "gui/dialogues/ErrorMessage.h"
+#include "gui/interface/Checkbox.h"
+#include "gui/interface/DropDown.h"
+
+#include "graphics/Graphics.h"
 
 OptionsView::OptionsView():
 	ui::Window(ui::Point(-1, -1), ui::Point(300, 389)){

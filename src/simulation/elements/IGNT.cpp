@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_IGNT PT_IGNT 140
 Element_IGNT::Element_IGNT()
 {

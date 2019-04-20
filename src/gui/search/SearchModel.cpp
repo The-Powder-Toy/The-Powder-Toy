@@ -1,9 +1,14 @@
 #include "SearchModel.h"
-#include "client/SaveInfo.h"
 
+#include "SearchView.h"
+
+#include "client/SaveInfo.h"
 #include "client/Client.h"
 
 #include <thread>
+#include <cmath>
+
+#include "common/tpt-minmax.h"
 
 SearchModel::SearchModel():
 	loadedSave(NULL),
@@ -277,4 +282,12 @@ void SearchModel::notifySelectedChanged()
 SearchModel::~SearchModel()
 {
 	delete loadedSave;
+}
+
+int SearchModel::GetPageCount()
+{
+	if (!showOwn && !showFavourite && currentSort == "best" && lastQuery == "")
+		return std::max(1, (int)(ceil(resultCount/20.0f))+1); //add one for front page (front page saves are repeated twice)
+	else
+		return std::max(1, (int)(ceil(resultCount/20.0f)));
 }

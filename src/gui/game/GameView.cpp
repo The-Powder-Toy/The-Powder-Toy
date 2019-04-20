@@ -1,26 +1,40 @@
-#include <iomanip>
-#include <algorithm>
 #include "GameView.h"
 
+#include "GameController.h"
+#include "GameModel.h"
+
 #include "Config.h"
+#include "Misc.h"
 #include "Favorite.h"
 #include "Format.h"
+
+#include "Notification.h"
+#include "Brush.h"
 #include "IntroText.h"
 #include "QuickOptions.h"
 #include "DecorationTool.h"
+#include "ToolButton.h"
+#include "Menu.h"
+
+#include "client/SaveInfo.h"
 #include "client/SaveFile.h"
+#include "client/Client.h"
+
 #include "graphics/Graphics.h"
+#include "graphics/Renderer.h"
+
 #include "gui/Style.h"
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/dialogues/InformationMessage.h"
 #include "gui/interface/Button.h"
 #include "gui/interface/Colour.h"
 #include "gui/interface/Keys.h"
-#include "gui/interface/Mouse.h"
-#include "gui/interface/Slider.h"
-#include "gui/interface/Window.h"
+#include "gui/interface/Engine.h"
+
 #include "simulation/SaveRenderer.h"
 #include "simulation/SimulationData.h"
+#include "simulation/ElementDefs.h"
+#include "ElementClasses.h"
 
 #ifdef GetUserName
 # undef GetUserName // dammit windows
@@ -584,10 +598,9 @@ void GameView::NotifyQuickOptionsChanged(GameModel * sender)
 	}
 
 	int currentY = 1;
-	vector<QuickOption*> optionList = sender->GetQuickOptions();
-	for(vector<QuickOption*>::iterator iter = optionList.begin(), end = optionList.end(); iter != end; ++iter)
+	std::vector<QuickOption*> optionList = sender->GetQuickOptions();
+	for(auto *option : optionList)
 	{
-		QuickOption * option = *iter;
 		ui::Button * tempButton = new ui::Button(ui::Point(WINDOWW-16, currentY), ui::Point(15, 15), option->GetIcon(), option->GetDescription());
 		//tempButton->Appearance.Margin = ui::Border(0, 2, 3, 2);
 		tempButton->SetTogglable(true);
@@ -615,7 +628,7 @@ void GameView::NotifyMenuListChanged(GameModel * sender)
 		delete toolButtons[i];
 	}
 	toolButtons.clear();
-	vector<Menu*> menuList = sender->GetMenuList();
+	std::vector<Menu*> menuList = sender->GetMenuList();
 	for (int i = (int)menuList.size()-1; i >= 0; i--)
 	{
 		if (menuList[i]->GetVisible())
@@ -750,7 +763,7 @@ void GameView::NotifyToolListChanged(GameModel * sender)
 		delete toolButtons[i];
 	}
 	toolButtons.clear();
-	vector<Tool*> toolList = sender->GetToolList();
+	std::vector<Tool*> toolList = sender->GetToolList();
 	int currentX = 0;
 	for (size_t i = 0; i < toolList.size(); i++)
 	{
@@ -1106,9 +1119,8 @@ void GameView::updateToolButtonScroll()
 		}
 		scrollBar->Size.X=scrollSize;
 		int offsetDelta = toolButtons[0]->Position.X - newInitialX;
-		for(vector<ToolButton*>::iterator iter = toolButtons.begin(), end = toolButtons.end(); iter!=end; ++iter)
+		for(auto *button : toolButtons)
 		{
-			ToolButton * button = *iter;
 			button->Position.X -= offsetDelta;
 			if (button->Position.X+button->Size.X <= 0 || (button->Position.X+button->Size.X) > XRES-2)
 				button->Visible = false;
@@ -1119,9 +1131,8 @@ void GameView::updateToolButtonScroll()
 		//Ensure that mouseLeave events are make their way to the buttons should they move from underneath the mouse pointer
 		if(toolButtons[0]->Position.Y < y && toolButtons[0]->Position.Y+toolButtons[0]->Size.Y > y)
 		{
-			for(vector<ToolButton*>::iterator iter = toolButtons.begin(), end = toolButtons.end(); iter!=end; ++iter)
+			for(auto *button : toolButtons)
 			{
-				ToolButton * button = *iter;
 				if(button->Position.X < x && button->Position.X+button->Size.X > x)
 					button->OnMouseEnter(x, y);
 				else
@@ -2244,7 +2255,7 @@ void GameView::OnDraw()
 		{
 			int startX = 20;
 			int startY = YRES-20;
-			deque<std::pair<String, int> >::iterator iter;
+			std::deque<std::pair<String, int> >::iterator iter;
 			for(iter = logEntries.begin(); iter != logEntries.end(); iter++)
 			{
 				String message = (*iter).first;

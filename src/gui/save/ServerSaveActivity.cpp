@@ -1,5 +1,7 @@
 #include "ServerSaveActivity.h"
+
 #include "graphics/Graphics.h"
+
 #include "gui/interface/Label.h"
 #include "gui/interface/Textbox.h"
 #include "gui/interface/Button.h"
@@ -8,12 +10,16 @@
 #include "gui/dialogues/SaveIDMessage.h"
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/dialogues/InformationMessage.h"
+
 #include "client/Client.h"
-#include "tasks/Task.h"
-#include "gui/Style.h"
-#include "client/GameSave.h"
-#include "images.h"
 #include "client/ThumbnailRendererTask.h"
+#include "client/GameSave.h"
+
+#include "tasks/Task.h"
+
+#include "gui/Style.h"
+
+#include "images.h"
 
 class ServerSaveActivity::CancelAction: public ui::ButtonAction
 {

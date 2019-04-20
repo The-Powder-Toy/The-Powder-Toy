@@ -1,9 +1,7 @@
 #pragma once
 
 #include "common/String.h"
-
 #include "Component.h"
-#include "Colour.h"
 
 namespace ui
 {

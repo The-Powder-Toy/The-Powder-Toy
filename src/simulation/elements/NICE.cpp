@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_NICE PT_NICE 51
 Element_NICE::Element_NICE()
 {

@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_DMG PT_DMG 163
 Element_DMG::Element_DMG()
 {

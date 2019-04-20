@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_ARAY PT_ARAY 126
 Element_ARAY::Element_ARAY()
 {

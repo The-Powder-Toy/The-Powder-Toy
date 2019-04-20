@@ -3,14 +3,12 @@
 
 #include <vector>
 #include "common/String.h"
-#include "LoginView.h"
-#include "client/Client.h"
-
-using namespace std;
+#include "client/User.h"
 
 class LoginView;
-class LoginModel {
-	vector<LoginView*> observers;
+class LoginModel
+{
+	std::vector<LoginView*> observers;
 	String statusText;
 	bool loginStatus;
 	void notifyStatusChanged();

@@ -1,8 +1,10 @@
-#include <iostream>
 #include "gui/interface/Button.h"
+
 #include "gui/interface/Window.h"
+
 #include "graphics/Graphics.h"
 #include "Misc.h"
+#include "Colour.h"
 
 namespace ui {
 

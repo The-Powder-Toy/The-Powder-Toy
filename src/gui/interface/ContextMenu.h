@@ -7,7 +7,8 @@
 
 namespace ui
 {
-
+	class Button;
+	
 class ContextMenuItem
 {
 public:

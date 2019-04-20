@@ -1,5 +1,5 @@
 #include "common/tpt-minmax.h"
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 
 //#TPT-Directive ElementClass Element_GRAV PT_GRAV 102
 Element_GRAV::Element_GRAV()

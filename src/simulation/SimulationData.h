@@ -1,3 +1,6 @@
+#ifndef SIMULATIONDATA_H
+#define SIMULATIONDATA_H
+
 #include <vector>
 #include <array>
 
@@ -129,9 +132,6 @@
 //replace mode / specific delete flags
 #define REPLACE_MODE 0x1
 #define SPECIFIC_DELETE 0x2
-
-#ifndef SIMULATIONDATA_H
-#define SIMULATIONDATA_H
 
 struct part_type;
 struct part_transition;

@@ -1,10 +1,10 @@
 #ifndef STAMPSCONTROLLER_H_
 #define STAMPSCONTROLLER_H_
 
-#include "Controller.h"
-#include "LocalBrowserView.h"
-#include "client/SaveInfo.h"
+#include "common/String.h"
 
+class ControllerCallback;
+class SaveFile;
 class LocalBrowserView;
 class LocalBrowserModel;
 class LocalBrowserController {

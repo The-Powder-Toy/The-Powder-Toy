@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_VIBR PT_VIBR 165
 Element_VIBR::Element_VIBR()
 {

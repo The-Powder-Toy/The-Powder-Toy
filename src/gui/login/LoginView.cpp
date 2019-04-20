@@ -1,11 +1,18 @@
 #include "LoginView.h"
 
+#include "LoginModel.h"
+#include "LoginController.h"
+
 #include "graphics/Graphics.h"
 #include "gui/interface/Button.h"
 #include "gui/interface/Label.h"
 #include "gui/interface/Textbox.h"
 #include "gui/interface/Keys.h"
 #include "gui/Style.h"
+
+#include "client/Client.h"
+
+#include "Misc.h"
 
 class LoginView::LoginAction : public ui::ButtonAction
 {

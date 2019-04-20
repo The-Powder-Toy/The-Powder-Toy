@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/String.h"
+
 void EngineProcess();
 void ClipboardPush(ByteString text);
 ByteString ClipboardPull();

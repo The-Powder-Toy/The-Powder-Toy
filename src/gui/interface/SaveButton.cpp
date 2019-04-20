@@ -1,17 +1,16 @@
-#include <iostream>
-#include <typeinfo>
+#include "SaveButton.h"
 
 #include "ContextMenu.h"
 #include "Format.h"
 #include "Keys.h"
 #include "Mouse.h"
-#include "SaveButton.h"
+
 #include "client/Client.h"
-#include "client/SaveInfo.h"
 #include "client/ThumbnailRendererTask.h"
-#include "simulation/SaveRenderer.h"
-#include "client/GameSave.h"
-#include "simulation/SaveRenderer.h"
+#include "client/SaveFile.h"
+#include "client/SaveInfo.h"
+
+#include "graphics/Graphics.h"
 
 namespace ui {
 

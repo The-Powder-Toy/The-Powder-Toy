@@ -1,5 +1,5 @@
 #include "common/tpt-minmax.h"
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 
 //#TPT-Directive ElementClass Element_WOOD PT_WOOD 17
 Element_WOOD::Element_WOOD()

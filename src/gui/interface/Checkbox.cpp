@@ -1,5 +1,7 @@
 #include "Checkbox.h"
+
 #include "graphics/Graphics.h"
+
 #include "gui/interface/Window.h"
 
 using namespace ui;

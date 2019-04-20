@@ -1,6 +1,15 @@
-#include "simulation/Air.h"
-#include "gui/game/GameModel.h"
 #include "OptionsModel.h"
+
+#include "OptionsView.h"
+
+#include "simulation/Simulation.h"
+#include "simulation/Air.h"
+#include "simulation/Gravity.h"
+
+#include "client/Client.h"
+
+#include "gui/interface/Engine.h"
+#include "gui/game/GameModel.h"
 
 OptionsModel::OptionsModel(GameModel * gModel_) {
 	gModel = gModel_;

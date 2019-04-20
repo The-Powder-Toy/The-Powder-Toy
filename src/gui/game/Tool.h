@@ -1,8 +1,6 @@
 #ifndef TOOL_H_
 #define TOOL_H_
 
-#include <iostream>
-
 #include "common/String.h"
 #include "gui/interface/Point.h"
 #include "simulation/StructProperty.h"

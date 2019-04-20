@@ -3,7 +3,6 @@
 
 #include "common/String.h"
 #include "lua/LuaEvents.h"
-#include "gui/interface/Engine.h"
 
 class Event;
 class GameModel;

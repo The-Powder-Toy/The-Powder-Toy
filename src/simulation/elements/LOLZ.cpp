@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_LOLZ PT_LOLZ 123
 Element_LOLZ::Element_LOLZ()
 {

@@ -1,8 +1,9 @@
 #ifdef LUACONSOLE
 
-#include <iostream>
 #include "LuaSlider.h"
+
 #include "LuaScriptInterface.h"
+
 #include "gui/interface/Slider.h"
 
 const char LuaSlider::className[] = "Slider";

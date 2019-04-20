@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_SPNG PT_SPNG 90
 Element_SPNG::Element_SPNG()
 {

@@ -1,9 +1,9 @@
 #include "RequestManager.h"
-#include "Request.h"
-#include "Config.h"
-#include "Platform.h"
 
 #include <iostream>
+
+#include "Request.h"
+#include "Config.h"
 
 const int curl_multi_wait_timeout_ms = 100;
 const long curl_max_host_connections = 6;

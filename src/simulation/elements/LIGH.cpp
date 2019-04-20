@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 
 //#TPT-Directive ElementClass Element_LIGH PT_LIGH 87
 Element_LIGH::Element_LIGH()

@@ -1,43 +1,78 @@
-#include <iostream>
-#include <queue>
+#include "GameController.h"
+
+#include "GameView.h"
+#include "GameModel.h"
+
+#include "RenderPreset.h"
+#include "Menu.h"
+#include "Tool.h"
+#include "Brush.h"
+#include "QuickOptions.h"
+#include "GameModelException.h"
+
 #include "Config.h"
 #include "Format.h"
 #include "Platform.h"
-#include "GameController.h"
-#include "GameModel.h"
-#include "client/SaveInfo.h"
+#include "Controller.h"
+#include "Notification.h"
+
 #include "client/GameSave.h"
+#include "client/Client.h"
+
 #include "gui/search/SearchController.h"
 #include "gui/render/RenderController.h"
 #include "gui/login/LoginController.h"
-#include "gui/interface/Point.h"
+#include "gui/preview/PreviewController.h"
+#include "gui/tags/TagsController.h"
+#include "gui/console/ConsoleController.h"
+#include "gui/localbrowser/LocalBrowserController.h"
+#include "gui/options/OptionsController.h"
+
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/dialogues/InformationMessage.h"
 #include "gui/dialogues/ConfirmPrompt.h"
-#include "GameModelException.h"
-#include "simulation/Air.h"
+
 #include "gui/elementsearch/ElementSearchActivity.h"
 #include "gui/profile/ProfileActivity.h"
 #include "gui/colourpicker/ColourPickerActivity.h"
 #include "gui/update/UpdateActivity.h"
-#include "Notification.h"
 #include "gui/filebrowser/FileBrowserActivity.h"
 #include "gui/save/LocalSaveActivity.h"
 #include "gui/save/ServerSaveActivity.h"
+
+#include "gui/tags/TagsView.h"
+#include "gui/search/SearchView.h"
+#include "gui/render/RenderView.h"
+#include "gui/preview/PreviewView.h"
+#include "gui/options/OptionsView.h"
+#include "gui/login/LoginView.h"
+#include "gui/localbrowser/LocalBrowserView.h"
+#include "gui/console/ConsoleView.h"
+
 #include "gui/interface/Keys.h"
 #include "gui/interface/Mouse.h"
-#include "simulation/Snapshot.h"
+#include "gui/interface/Engine.h"
+
 #include "debug/DebugInfo.h"
 #include "debug/DebugParts.h"
 #include "debug/ElementPopulation.h"
 #include "debug/DebugLines.h"
 #include "debug/ParticleDebug.h"
+
 #ifdef LUACONSOLE
 #include "lua/LuaScriptInterface.h"
 #else
 #include "lua/TPTScriptInterface.h"
 #endif
 #include "lua/LuaEvents.h"
+
+#include "graphics/Renderer.h"
+
+#include "simulation/Simulation.h"
+#include "simulation/SimulationData.h"
+#include "simulation/Air.h"
+#include "simulation/Snapshot.h"
+#include "ElementClasses.h"
 
 #ifdef GetUserName
 # undef GetUserName // dammit windows

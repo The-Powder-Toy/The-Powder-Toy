@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_WIRE PT_WIRE 156
 Element_WIRE::Element_WIRE()
 {

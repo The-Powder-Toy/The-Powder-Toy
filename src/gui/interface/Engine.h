@@ -1,11 +1,12 @@
 #pragma once
 
 #include <stack>
+#include "common/String.h"
 #include "common/Singleton.h"
-#include "graphics/Graphics.h"
-#include "Window.h"
-#include "PowderToy.h"
+#include "graphics/Pixel.h"
+#include "gui/interface/Point.h"
 
+class Graphics;
 namespace ui
 {
 	class Window;

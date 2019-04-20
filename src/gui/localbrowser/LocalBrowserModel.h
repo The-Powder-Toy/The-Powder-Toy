@@ -3,7 +3,6 @@
 
 #include <vector>
 #include "common/String.h"
-#include <cmath>
 
 class SaveFile;
 

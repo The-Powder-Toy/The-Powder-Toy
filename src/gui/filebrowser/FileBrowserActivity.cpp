@@ -1,20 +1,23 @@
-#include <iostream>
-#include <algorithm>
 #include "FileBrowserActivity.h"
+
 #include "gui/interface/Label.h"
 #include "gui/interface/Textbox.h"
 #include "gui/interface/ScrollPanel.h"
 #include "gui/interface/SaveButton.h"
 #include "gui/interface/ProgressBar.h"
+
 #include "client/Client.h"
 #include "client/SaveFile.h"
 #include "client/GameSave.h"
+
 #include "gui/Style.h"
 #include "tasks/Task.h"
-#include "simulation/SaveRenderer.h"
+
 #include "gui/dialogues/TextPrompt.h"
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/dialogues/ErrorMessage.h"
+
+#include "graphics/Graphics.h"
 
 class SaveSelectedAction: public ui::SaveButtonAction
 {

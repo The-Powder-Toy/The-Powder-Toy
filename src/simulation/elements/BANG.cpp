@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_BANG PT_BANG 139
 Element_BANG::Element_BANG()
 {

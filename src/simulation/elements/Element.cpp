@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 #include "simulation/StructProperty.h"
 
 Element::Element():

@@ -1,8 +1,11 @@
 #include "TagsController.h"
-#include "gui/interface/Engine.h"
 
 #include "TagsModel.h"
 #include "TagsView.h"
+
+#include "gui/interface/Engine.h"
+#include "client/SaveInfo.h"
+#include "Controller.h"
 
 TagsController::TagsController(ControllerCallback * callback, SaveInfo * save):
 	HasDone(false)

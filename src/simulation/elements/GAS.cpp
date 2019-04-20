@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_GAS PT_GAS 10
 Element_GAS::Element_GAS()
 {

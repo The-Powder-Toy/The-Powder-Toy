@@ -2,7 +2,6 @@
 #define TPTSTYPES_H_
 
 #include "common/String.h"
-#include <typeinfo>
 #include "gui/interface/Point.h"
 
 enum ValueType { TypeNumber, TypeFloat, TypePoint, TypeString, TypeNull, TypeFunction };

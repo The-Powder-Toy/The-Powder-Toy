@@ -1,6 +1,5 @@
-#include <algorithm>
-#include "common/String.h"
 #include "ElementSearchActivity.h"
+
 #include "gui/interface/Textbox.h"
 #include "gui/interface/Label.h"
 #include "gui/interface/Keys.h"
@@ -8,6 +7,9 @@
 #include "gui/Style.h"
 #include "gui/game/Favorite.h"
 #include "gui/game/GameController.h"
+#include "gui/game/ToolButton.h"
+
+#include "graphics/Graphics.h"
 
 class ElementSearchActivity::ToolAction: public ui::ButtonAction
 {

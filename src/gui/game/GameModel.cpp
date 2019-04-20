@@ -1,28 +1,37 @@
 #include "GameModel.h"
+
 #include "GameView.h"
+#include "GameController.h"
+
 #include "ToolClasses.h"
-#include "Brush.h"
 #include "EllipseBrush.h"
 #include "TriangleBrush.h"
 #include "BitmapBrush.h"
 #include "QuickOptions.h"
 #include "GameModelException.h"
 #include "Format.h"
+#include "Menu.h"
 #include "Favorite.h"
+#include "Notification.h"
 
 #include "client/Client.h"
 #include "client/GameSave.h"
 #include "client/SaveFile.h"
-#include "common/tpt-minmax.h"
+#include "client/SaveInfo.h"
+
 #include "graphics/Renderer.h"
+
 #include "simulation/Air.h"
 #include "simulation/Simulation.h"
 #include "simulation/Snapshot.h"
+#include "simulation/Gravity.h"
+#include "simulation/ElementGraphics.h"
+#include "ElementClasses.h"
 
 #include "gui/game/DecorationTool.h"
 #include "gui/interface/Engine.h"
-#include "gui/interface/Point.h"
 
+#include <iostream>
 
 GameModel::GameModel():
 	clipboard(NULL),
@@ -496,7 +505,7 @@ Brush * GameModel::GetBrush()
 	return brushList[currentBrush];
 }
 
-vector<Brush*> GameModel::GetBrushList()
+std::vector<Brush*> GameModel::GetBrushList()
 {
 	return brushList;
 }
@@ -567,12 +576,12 @@ void GameModel::SetActiveMenu(int menuID)
 	}
 }
 
-vector<Tool*> GameModel::GetUnlistedTools()
+std::vector<Tool*> GameModel::GetUnlistedTools()
 {
 	return extraElementTools;
 }
 
-vector<Tool*> GameModel::GetToolList()
+std::vector<Tool*> GameModel::GetToolList()
 {
 	return toolList;
 }
@@ -604,12 +613,12 @@ void GameModel::SetActiveTool(int selection, Tool * tool)
 	notifyActiveToolsChanged();
 }
 
-vector<QuickOption*> GameModel::GetQuickOptions()
+std::vector<QuickOption*> GameModel::GetQuickOptions()
 {
 	return quickOptions;
 }
 
-vector<Menu*> GameModel::GetMenuList()
+std::vector<Menu*> GameModel::GetMenuList()
 {
 	return menuList;
 }
@@ -884,7 +893,7 @@ void GameModel::SetColourSelectorColour(ui::Colour colour_)
 {
 	colour = colour_;
 
-	vector<Tool*> tools = GetMenuList()[SC_DECO]->GetToolList();
+	std::vector<Tool*> tools = GetMenuList()[SC_DECO]->GetToolList();
 	for (size_t i = 0; i < tools.size(); i++)
 	{
 		((DecorationTool*)tools[i])->Red = colour.Red;
@@ -1057,7 +1066,7 @@ void GameModel::Log(String message, bool printToFile)
 		std::cout << message.ToUtf8() << std::endl;
 }
 
-deque<String> GameModel::GetLog()
+std::deque<String> GameModel::GetLog()
 {
 	return consoleLog;
 }

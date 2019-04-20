@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_DUST PT_DUST 1
 Element_DUST::Element_DUST()
 {

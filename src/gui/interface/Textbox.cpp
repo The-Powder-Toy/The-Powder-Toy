@@ -1,14 +1,16 @@
-#include "common/String.h"
-#include <iostream>
-#include <stdexcept>
+#include "gui/interface/Textbox.h"
+
 #include "Config.h"
 #include "Platform.h"
 #include "Format.h"
+#include "PowderToy.h"
+
 #include "graphics/Graphics.h"
+
 #include "gui/interface/Point.h"
-#include "gui/interface/Textbox.h"
 #include "gui/interface/Keys.h"
 #include "gui/interface/Mouse.h"
+
 #include "ContextMenu.h"
 
 using namespace ui;

@@ -2,15 +2,13 @@
 #define CONSOLECONTROLLER_H_
 
 #include "common/String.h"
-#include "Controller.h"
-#include "ConsoleView.h"
-#include "ConsoleModel.h"
-#include "ConsoleCommand.h"
-#include "lua/CommandInterface.h"
 
+class CommandInterface;
 class ConsoleModel;
 class ConsoleView;
-class ConsoleController {
+class ControllerCallback;
+class ConsoleController
+{
 	ControllerCallback * callback;
 	ConsoleView * consoleView;
 	ConsoleModel * consoleModel;

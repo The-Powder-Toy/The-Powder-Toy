@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_CBNW PT_CBNW 82
 Element_CBNW::Element_CBNW()
 {

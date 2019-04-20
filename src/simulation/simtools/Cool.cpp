@@ -1,4 +1,5 @@
-#include "ToolClasses.h"
+#include "simulation/ToolCommon.h"
+
 //#TPT-Directive ToolClass Tool_Cool TOOL_COOL 1
 Tool_Cool::Tool_Cool()
 {

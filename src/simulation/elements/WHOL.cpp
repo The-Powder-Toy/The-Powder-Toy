@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_WHOL PT_WHOL 40
 Element_WHOL::Element_WHOL()
 {

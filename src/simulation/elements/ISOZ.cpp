@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_ISOZ PT_ISOZ 107
 Element_ISOZ::Element_ISOZ()
 {

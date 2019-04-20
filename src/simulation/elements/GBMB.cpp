@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_GBMB PT_GBMB 157
 Element_GBMB::Element_GBMB()
 {

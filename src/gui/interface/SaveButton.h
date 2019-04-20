@@ -4,16 +4,14 @@
 #include "common/String.h"
 
 #include "Component.h"
-#include "client/SaveFile.h"
-#include "client/SaveInfo.h"
-#include "graphics/Graphics.h"
-#include "gui/interface/Colour.h"
 #include "client/http/ThumbnailRequest.h"
 #include "client/http/RequestMonitor.h"
-#include "graphics/Graphics.h"
 
 #include <memory>
 
+class VideoBuffer;
+class SaveFile;
+class SaveInfo;
 class ThumbnailRendererTask;
 namespace ui
 {

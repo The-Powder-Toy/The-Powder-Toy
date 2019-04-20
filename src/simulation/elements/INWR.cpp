@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_INWR PT_INWR 62
 Element_INWR::Element_INWR()
 {

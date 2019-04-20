@@ -1,4 +1,5 @@
 #include "AvatarRequest.h"
+
 #include "Config.h"
 
 namespace http

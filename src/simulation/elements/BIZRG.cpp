@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_BIZRG PT_BIZRG 104
 Element_BIZRG::Element_BIZRG()
 {

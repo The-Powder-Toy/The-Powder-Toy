@@ -1,11 +1,12 @@
-#include <cstdio>
-#include <cstdlib>
+#include "Misc.h"
+
+#include "Config.h"
+#include "icondoc.h"
+
 #include <cstring>
 #include <sys/types.h>
 #include <cmath>
-#include "Config.h"
-#include "Misc.h"
-#include "icondoc.h"
+
 #include "common/tpt-minmax.h"
 
 //Signum function

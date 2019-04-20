@@ -2,16 +2,13 @@
 #define LOGINCONTROLLER_H_
 
 #include "common/String.h"
-#include "LoginView.h"
-#include "LoginModel.h"
-#include "Controller.h"
 #include "client/User.h"
-
-using namespace std;
 
 class LoginView;
 class LoginModel;
-class LoginController {
+class ControllerCallback;
+class LoginController
+{
 	LoginView * loginView;
 	LoginModel * loginModel;
 	ControllerCallback * callback;

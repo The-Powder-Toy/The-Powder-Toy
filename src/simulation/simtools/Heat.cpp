@@ -1,4 +1,5 @@
-#include "ToolClasses.h"
+#include "simulation/ToolCommon.h"
+
 //#TPT-Directive ToolClass Tool_Heat TOOL_HEAT 0
 Tool_Heat::Tool_Heat()
 {

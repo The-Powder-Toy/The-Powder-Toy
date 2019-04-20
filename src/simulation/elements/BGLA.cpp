@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_BGLA PT_BGLA 47
 Element_BGLA::Element_BGLA()
 {

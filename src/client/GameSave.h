@@ -8,10 +8,9 @@
 
 #include "bson/BSON.h"
 #include "json/json.h"
-#include "simulation/Sign.h"
-#include "simulation/Particle.h"
 
-//using namespace std;
+struct sign;
+struct Particle;
 
 struct ParseException: public std::exception {
 	enum ParseResult { OK = 0, Corrupt, WrongVersion, InvalidDimensions, InternalError, MissingElement };
@@ -134,21 +133,8 @@ public:
 	static bool TypeInTmp(int type);
 	static bool TypeInTmp2(int type, int tmp2);
 
-	inline GameSave& operator << (Particle v)
-	{
-		if(particlesCount<NPART && v.type)
-		{
-			particles[particlesCount++] = v;
-		}
-		return *this;
-	}
-
-	inline GameSave& operator << (sign v)
-	{
-		if(signs.size()<MAXSIGNS && v.text.length())
-			signs.push_back(v);
-		return *this;
-	}
+	GameSave& operator << (Particle &v);
+	GameSave& operator << (sign &v);
 
 private:
 	bool expanded;

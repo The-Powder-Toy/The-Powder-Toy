@@ -2,10 +2,8 @@
 #define SEARCHVIEW_H
 
 #include <vector>
-#include "SearchController.h"
 #include "client/ClientListener.h"
-
-using namespace std;
+#include "gui/interface/Window.h"
 
 namespace ui
 {
@@ -24,8 +22,8 @@ class SearchView: public ui::Window, public ClientListener
 {
 private:
 	SearchController * c;
-	vector<ui::SaveButton*> saveButtons;
-	vector<ui::Button*> tagButtons;
+	std::vector<ui::SaveButton*> saveButtons;
+	std::vector<ui::Button*> tagButtons;
 	ui::Button * favButton;
 	ui::Button * nextButton;
 	ui::Button * previousButton;

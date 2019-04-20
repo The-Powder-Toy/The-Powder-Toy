@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_DTEC PT_DTEC 162
 Element_DTEC::Element_DTEC()
 {

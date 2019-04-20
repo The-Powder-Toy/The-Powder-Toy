@@ -4,7 +4,8 @@
 #include "common/String.h"
 #include <exception>
 
-class LocalBrowserModelException {
+class LocalBrowserModelException : std::exception
+{
 	ByteString message;
 public:
 	LocalBrowserModelException(String message_): message(message_.ToUtf8()) {};

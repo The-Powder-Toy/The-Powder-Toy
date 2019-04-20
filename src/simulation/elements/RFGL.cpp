@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_RFGL PT_RFGL 184
 Element_RFGL::Element_RFGL()
 {

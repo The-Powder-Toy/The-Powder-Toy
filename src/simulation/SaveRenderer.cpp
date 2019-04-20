@@ -1,9 +1,11 @@
 #include "SaveRenderer.h"
+
 #include "client/GameSave.h"
+
 #include "graphics/Graphics.h"
-#include "Simulation.h"
 #include "graphics/Renderer.h"
 
+#include "Simulation.h"
 
 SaveRenderer::SaveRenderer(){
 	g = new Graphics();

@@ -1,13 +1,19 @@
+#include "UpdateActivity.h"
+
 #include <bzlib.h>
+
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/interface/Engine.h"
-#include "UpdateActivity.h"
-#include "tasks/Task.h"
-#include "client/Client.h"
-#include "Update.h"
-#include "client/http/Request.h"
-#include "Platform.h"
 
+#include "tasks/Task.h"
+#include "tasks/TaskWindow.h"
+
+#include "client/Client.h"
+#include "client/http/Request.h"
+
+#include "Update.h"
+#include "Config.h"
+#include "Platform.h"
 
 class UpdateDownloadTask : public Task
 {

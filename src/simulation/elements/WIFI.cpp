@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_WIFI PT_WIFI 124
 Element_WIFI::Element_WIFI()
 {

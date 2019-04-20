@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 #include "simulation/Air.h"
 //#TPT-Directive ElementClass Element_GOLD PT_GOLD 170
 Element_GOLD::Element_GOLD()

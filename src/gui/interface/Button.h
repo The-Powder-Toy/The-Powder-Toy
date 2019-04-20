@@ -2,9 +2,7 @@
 #define BUTTON_H_
 
 #include "common/String.h"
-#include "Misc.h"
 #include "Component.h"
-#include "Colour.h"
 
 namespace ui
 {

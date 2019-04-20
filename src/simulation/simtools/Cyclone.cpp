@@ -1,5 +1,7 @@
-#include "ToolClasses.h"
+#include "simulation/ToolCommon.h"
 #include "simulation/Air.h"
+
+#include <cmath>
 
 
 //#TPT-Directive ToolClass Tool_Cycl TOOL_CYCL 7

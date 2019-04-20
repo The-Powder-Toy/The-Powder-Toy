@@ -1,10 +1,7 @@
 #ifndef TEXTBOX_H
 #define TEXTBOX_H
 
-#include "common/String.h"
-
 #include "Label.h"
-#include "PowderToy.h"
 
 namespace ui
 {
@@ -66,7 +63,7 @@ protected:
 	size_t limit;
 	unsigned long repeatTime;
 	int keyDown;
-	Uint16 characterDown;
+	unsigned short characterDown;
 	bool mouseDown;
 	bool masked, border;
 	int cursor, cursorPositionX, cursorPositionY;

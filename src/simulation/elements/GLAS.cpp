@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_GLAS PT_GLAS 45
 Element_GLAS::Element_GLAS()
 {

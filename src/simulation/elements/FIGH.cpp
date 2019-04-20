@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_FIGH PT_FIGH 158
 Element_FIGH::Element_FIGH()
 {

@@ -2,9 +2,8 @@
 #define ELEMENTCLASS_H
 
 #include "graphics/Pixel.h"
-#include "simulation/Simulation.h"
-#include "simulation/Elements.h"
 #include "simulation/StructProperty.h"
+#include "simulation/ElementDefs.h"
 
 class Simulation;
 class Renderer;

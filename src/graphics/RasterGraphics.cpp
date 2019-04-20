@@ -1,5 +1,8 @@
 #include "Graphics.h"
 
+#include <cstdlib>
+#include <cstring>
+
 #ifndef OGLI
 
 Graphics::Graphics():

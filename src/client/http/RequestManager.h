@@ -5,7 +5,6 @@
 #include <thread>
 #include <mutex>
 #include <condition_variable>
-#include <ctime>
 #include <set>
 #include <curl/curl.h>
 #include "common/Singleton.h"

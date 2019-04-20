@@ -1,10 +1,15 @@
 #include "ConfirmPrompt.h"
+
 #include "gui/Style.h"
+
 #include "gui/interface/Button.h"
 #include "gui/interface/Engine.h"
 #include "gui/interface/Label.h"
 #include "gui/interface/ScrollPanel.h"
+
 #include "PowderToy.h"
+
+#include "graphics/Graphics.h"
 
 ConfirmPrompt::ConfirmPrompt(String title, String message, ConfirmDialogueCallback * callback_):
 	ui::Window(ui::Point(-1, -1), ui::Point(250, 35)),

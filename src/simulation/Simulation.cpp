@@ -1,3 +1,6 @@
+#include "Simulation.h"
+
+#include <iostream>
 #include <cmath>
 #include <set>
 #ifdef _MSC_VER
@@ -5,18 +8,22 @@
 #else
 #include <strings.h>
 #endif
+
 #include "Air.h"
 #include "Config.h"
 #include "CoordStack.h"
-#include "Elements.h"
-#include "elements/Element.h"
+#include "ElementClasses.h"
 #include "Gravity.h"
 #include "Sample.h"
-#include "Simulation.h"
 #include "Snapshot.h"
 
 #include "Misc.h"
 #include "ToolClasses.h"
+#include "Config.h"
+#include "SimulationData.h"
+
+#include "graphics/Renderer.h"
+
 #include "client/GameSave.h"
 #include "common/tpt-compat.h"
 #include "common/tpt-minmax.h"
@@ -5572,4 +5579,19 @@ String Simulation::BasicParticleInfo(Particle const &sample_part)
 		sampleInfo << ElementResolve(type, ctype);
 	}
 	return sampleInfo.Build();
+}
+
+bool Simulation::InBounds(int x, int y)
+{
+	return (x>=0 && y>=0 && x<XRES && y<YRES);
+}
+
+int Simulation::remainder_p(int x, int y)
+{
+	return (x % y) + (x>=0 ? 0 : y);
+}
+
+float Simulation::remainder_p(float x, float y)
+{
+	return std::fmod(x, y) + (x>=0 ? 0 : y);
 }

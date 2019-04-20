@@ -2,15 +2,18 @@
 #define OPTIONSVIEW_H_
 
 #include "gui/interface/Window.h"
-#include "OptionsController.h"
-#include "gui/interface/Checkbox.h"
-#include "gui/interface/DropDown.h"
-#include "gui/interface/Textbox.h"
-#include "OptionsModel.h"
+
+namespace ui
+{
+	class Checkbox;
+	class DropDown;
+	class DropDown;
+}
 
 class OptionsModel;
 class OptionsController;
-class OptionsView: public ui::Window {
+class OptionsView: public ui::Window
+{
 	OptionsController * c;
 	ui::Checkbox * heatSimulation;
 	ui::Checkbox * ambientHeatSimulation;

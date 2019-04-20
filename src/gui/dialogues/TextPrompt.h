@@ -2,10 +2,15 @@
 #define TEXTPROMPT_H_
 
 #include "gui/interface/Window.h"
-#include "gui/interface/Textbox.h"
+
+namespace ui
+{
+	class Textbox;
+}
 
 class TextDialogueCallback;
-class TextPrompt: public ui::Window {
+class TextPrompt: public ui::Window
+{
 protected:
 	ui::Textbox * textField;
 public:

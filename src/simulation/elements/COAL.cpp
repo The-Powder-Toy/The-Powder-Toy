@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_COAL PT_COAL 59
 Element_COAL::Element_COAL()
 {

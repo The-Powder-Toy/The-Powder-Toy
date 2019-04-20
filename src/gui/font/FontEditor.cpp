@@ -7,6 +7,7 @@
 #include "FontEditor.h"
 
 #include "Config.h"
+#include "gui/interface/Textbox.h"
 #include "gui/interface/Engine.h"
 #include "gui/interface/Point.h"
 #include "gui/interface/Button.h"

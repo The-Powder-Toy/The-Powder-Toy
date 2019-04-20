@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_AMTR PT_AMTR 72
 Element_AMTR::Element_AMTR()
 {

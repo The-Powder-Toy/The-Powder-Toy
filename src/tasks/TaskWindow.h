@@ -1,9 +1,13 @@
 #ifndef TASKWINDOW_H_
 #define TASKWINDOW_H_
 
-#include "gui/interface/Label.h"
 #include "gui/interface/Window.h"
 #include "tasks/TaskListener.h"
+
+namespace ui
+{
+	class Label;
+}
 
 class Task;
 class TaskWindow: public ui::Window, public TaskListener {

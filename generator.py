@@ -12,7 +12,7 @@ def generateElements(elementFiles, outputCpp, outputH):
 
 #include <vector>
 
-#include "simulation/Element.h"
+#include "simulation/SimulationData.h"
 #include "simulation/elements/Element.h"
 
 """
@@ -106,7 +106,8 @@ std::vector<Element> GetElements();
 #endif
 """
 
-	elementContent = """#include "ElementClasses.h"
+	elementContent = """#include "simulation/ElementDefs.h"
+#include "ElementClasses.h"
 
 std::vector<Element> GetElements()
 {

@@ -1,12 +1,15 @@
-#include "client/Client.h"
 #include "TagsView.h"
 
-#include "graphics/Graphics.h"
-#include "gui/dialogues/ErrorMessage.h"
 #include "TagsController.h"
 #include "TagsModel.h"
 #include "TagsModelException.h"
 
+#include "client/Client.h"
+#include "client/SaveInfo.h"
+
+#include "graphics/Graphics.h"
+
+#include "gui/dialogues/ErrorMessage.h"
 #include "gui/interface/Button.h"
 #include "gui/interface/Textbox.h"
 #include "gui/interface/Label.h"

@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_BREC PT_BREC 135
 Element_BREC::Element_BREC()
 {

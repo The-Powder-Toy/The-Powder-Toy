@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_FOG PT_FOG 92
 Element_FOG::Element_FOG()
 {

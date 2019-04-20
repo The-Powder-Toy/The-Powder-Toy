@@ -1,10 +1,11 @@
+#include "Graphics.h"
+
 #include <cmath>
 #include <iostream>
+#include <cstdlib>
+#include <cstring>
 #include <bzlib.h>
-#include "common/String.h"
-#include "Config.h"
-#include "Misc.h"
-#include "Graphics.h"
+
 #include "FontReader.h"
 #ifdef HIGH_QUALITY_RESAMPLE
 #include "resampler/resampler.h"

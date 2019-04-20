@@ -1,14 +1,24 @@
-#include <stack>
-#include <iostream>
+#include "TPTScriptInterface.h"
+
 #include <deque>
-#include <cstring>
 #ifdef MACOSX
 #include <strings.h>
 #endif
 #include <cstdlib>
-#include "TPTScriptInterface.h"
-#include "gui/game/GameModel.h"
+#include <cmath>
+
+#include "Config.h"
+
+#include "simulation/Simulation.h"
 #include "simulation/Air.h"
+#include "ElementClasses.h"
+
+#include "gui/game/GameController.h"
+#include "gui/game/GameModel.h"
+
+#include "gui/interface/Engine.h"
+
+#include "common/tpt-compat.h"
 
 TPTScriptInterface::TPTScriptInterface(GameController * c, GameModel * m): CommandInterface(c, m)
 {

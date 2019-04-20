@@ -1,7 +1,14 @@
 #include "SimulationData.h"
-//#include "ElementFunctions.h"
+
 #include "ElementGraphics.h"
-#include "Elements.h"
+#include "ElementDefs.h"
+#include "ElementClasses.h"
+
+#include "GOLMenu.h"
+#include "WallType.h"
+#include "MenuSection.h"
+
+#include "graphics/Renderer.h"
 
 std::vector<gol_menu> LoadGOLMenu()
 {

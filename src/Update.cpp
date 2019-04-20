@@ -1,3 +1,5 @@
+#include "Update.h"
+
 #include <cstdio>
 #include <cstdlib>
 #ifndef WIN
@@ -21,7 +23,6 @@
 #include <errno.h>
 #endif
 
-#include "Update.h"
 #include "Platform.h"
 
 // returns 1 on failure, 0 on success

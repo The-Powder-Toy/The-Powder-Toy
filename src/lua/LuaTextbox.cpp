@@ -1,8 +1,9 @@
 #ifdef LUACONSOLE
 
-#include <iostream>
-#include "LuaScriptInterface.h"
 #include "LuaTextbox.h"
+
+#include "LuaScriptInterface.h"
+
 #include "gui/interface/Textbox.h"
 
 const char LuaTextbox::className[] = "Textbox";

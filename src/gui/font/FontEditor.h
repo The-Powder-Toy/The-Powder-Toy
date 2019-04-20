@@ -8,7 +8,13 @@
 #include "font.h"
 
 #include "gui/interface/Window.h"
-#include "gui/interface/Textbox.h"
+
+namespace ui
+{
+	class Textbox;
+	class Label;
+	class Button;
+}
 
 #define MAX_WIDTH 64
 class FontEditor: public ui::Window

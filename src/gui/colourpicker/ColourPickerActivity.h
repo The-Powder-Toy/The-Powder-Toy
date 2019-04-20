@@ -1,10 +1,14 @@
 #pragma once
 
-#include <vector>
 #include "common/String.h"
 #include "Activity.h"
-#include "gui/interface/Window.h"
-#include "gui/interface/Textbox.h"
+#include "gui/interface/Colour.h"
+
+namespace ui
+{
+	class Textbox;
+	class Label;
+}
 
 class ColourPickedCallback
 {

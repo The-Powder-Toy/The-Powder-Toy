@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_NWHL PT_NWHL 151
 Element_NWHL::Element_NWHL()
 {

@@ -1,18 +1,14 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
-#include <queue>
 #include <vector>
 #include <list>
 
 #include "common/String.h"
-#include "Config.h"
 #include "common/Singleton.h"
+#include "json/json.h"
 
 #include "User.h"
-#include "UserInfo.h"
-
-#include "json/json.h"
 
 class SaveInfo;
 class SaveFile;

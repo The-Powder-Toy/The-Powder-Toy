@@ -1,5 +1,6 @@
-#include "ToolClasses.h"
+#include "simulation/ToolCommon.h"
 #include "simulation/Air.h"
+
 //#TPT-Directive ToolClass Tool_Vac TOOL_VAC 3
 Tool_Vac::Tool_Vac()
 {

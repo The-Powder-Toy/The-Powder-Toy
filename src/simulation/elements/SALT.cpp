@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_SALT PT_SALT 26
 Element_SALT::Element_SALT()
 {

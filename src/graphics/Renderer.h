@@ -6,13 +6,12 @@
 #include "OpenGLHeaders.h"
 #endif
 
-#include "Config.h"
 #include "Graphics.h"
+#include "Config.h"
 #include "gui/interface/Point.h"
 
 class RenderPreset;
 class Simulation;
-class Graphics;
 
 struct gcache_item
 {

@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_WAX PT_WAX 33
 Element_WAX::Element_WAX()
 {

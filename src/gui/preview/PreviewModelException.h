@@ -3,9 +3,9 @@
 
 #include "common/String.h"
 #include <exception>
-using namespace std;
 
-struct PreviewModelException: public exception {
+struct PreviewModelException: public std::exception
+{
 	String message;
 public:
 	PreviewModelException(String message_): message(message_) {}

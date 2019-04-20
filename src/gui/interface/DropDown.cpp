@@ -1,8 +1,8 @@
-#include <iostream>
+#include "DropDown.h"
+
 #include "graphics/Graphics.h"
 #include "gui/Style.h"
 #include "Button.h"
-#include "DropDown.h"
 #include "gui/interface/Window.h"
 
 namespace ui {

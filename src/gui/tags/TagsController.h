@@ -1,13 +1,14 @@
 #ifndef TAGSCONTROLLER_H_
 #define TAGSCONTROLLER_H_
 
-#include "Controller.h"
-#include "TagsView.h"
-#include "client/SaveInfo.h"
+#include "common/String.h"
 
+class ControllerCallback;
+class SaveInfo;
 class TagsView;
 class TagsModel;
-class TagsController {
+class TagsController
+{
 	ControllerCallback * callback;
 	TagsView * tagsView;
 	TagsModel * tagsModel;

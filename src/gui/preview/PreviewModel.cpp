@@ -1,11 +1,20 @@
-#include <cmath>
 #include "PreviewModel.h"
+
+#include <cmath>
+#include <iostream>
+
 #include "Format.h"
+
 #include "client/Client.h"
 #include "client/GameSave.h"
-#include "common/tpt-minmax.h"
+#include "client/SaveInfo.h"
+#include "client/http/Request.h"
+
 #include "gui/dialogues/ErrorMessage.h"
+#include "gui/preview/Comment.h"
+
 #include "PreviewModelException.h"
+#include "PreviewView.h"
 
 PreviewModel::PreviewModel():
 	doOpen(false),

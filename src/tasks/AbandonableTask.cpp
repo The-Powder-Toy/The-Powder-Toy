@@ -1,7 +1,5 @@
 #include "AbandonableTask.h"
 
-#include "Platform.h"
-
 void AbandonableTask::doWork_wrapper()
 {
 	Task::doWork_wrapper();

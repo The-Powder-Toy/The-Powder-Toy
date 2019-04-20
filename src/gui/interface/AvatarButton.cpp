@@ -1,6 +1,7 @@
 #include <iostream>
 #include <typeinfo>
 
+#include "Button.h"
 #include "AvatarButton.h"
 #include "Format.h"
 #include "client/Client.h"

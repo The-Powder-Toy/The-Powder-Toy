@@ -1,8 +1,9 @@
 #ifdef LUACONSOLE
 
-#include <iostream>
 #include "LuaProgressBar.h"
+
 #include "LuaScriptInterface.h"
+
 #include "gui/interface/ProgressBar.h"
 
 const char LuaProgressBar::className[] = "ProgressBar";

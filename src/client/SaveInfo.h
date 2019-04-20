@@ -2,10 +2,7 @@
 #define SAVE_H
 
 #include <list>
-#include <vector>
 #include "common/String.h"
-#include <cstdlib>
-#include <iostream>
 
 #ifdef GetUserName
 # undef GetUserName // dammit windows

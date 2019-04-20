@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_ISZS PT_ISZS 108
 Element_ISZS::Element_ISZS()
 {

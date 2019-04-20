@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_FRZW PT_FRZW 101
 Element_FRZW::Element_FRZW()
 {

@@ -2,8 +2,6 @@
 #define TASK_H_
 
 #include "common/String.h"
-#include "TaskListener.h"
-#include "Config.h"
 #include <thread>
 #include <mutex>
 

@@ -1,6 +1,5 @@
 #include "SaveInfo.h"
 #include "GameSave.h"
-#include "Client.h"
 
 SaveInfo::SaveInfo(SaveInfo & save):
 	id(save.id),

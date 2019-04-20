@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_HSWC PT_HSWC 75
 Element_HSWC::Element_HSWC()
 {

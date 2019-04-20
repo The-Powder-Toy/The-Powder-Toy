@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_PHOT PT_PHOT 31
 Element_PHOT::Element_PHOT()
 {

@@ -1,7 +1,9 @@
 #include "OptionsController.h"
-#include "gui/dialogues/ErrorMessage.h"
-#include "gui/interface/Engine.h"
-#include "gui/game/GameModel.h"
+
+#include "OptionsView.h"
+#include "OptionsModel.h"
+
+#include "Controller.h"
 
 OptionsController::OptionsController(GameModel * gModel_, ControllerCallback * callback_):
 	gModel(gModel_),

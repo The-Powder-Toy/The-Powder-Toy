@@ -5,7 +5,6 @@
 #include <mutex>
 #include <condition_variable>
 #include "Config.h"
-#include "Simulation.h"
 
 #ifdef GRAVFFT
 #include <fftw3.h>

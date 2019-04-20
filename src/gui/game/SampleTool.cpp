@@ -1,8 +1,15 @@
-#include <iostream>
-#include "graphics/Graphics.h"
 #include "Tool.h"
-#include "GameModel.h"
+
+#include "graphics/Graphics.h"
+#include "graphics/Renderer.h"
+
+#include "gui/game/GameModel.h"
 #include "gui/interface/Colour.h"
+
+#include "simulation/Simulation.h"
+#include "ElementClasses.h"
+
+#include "Menu.h"
 
 VideoBuffer * SampleTool::GetIcon(int toolID, int width, int height)
 {

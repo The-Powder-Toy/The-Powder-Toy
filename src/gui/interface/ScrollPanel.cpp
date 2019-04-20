@@ -1,7 +1,8 @@
-#include <iostream>
 #include "ScrollPanel.h"
-#include "common/tpt-minmax.h"
+
 #include "graphics/Graphics.h"
+
+#include "common/tpt-minmax.h"
 
 using namespace ui;
 

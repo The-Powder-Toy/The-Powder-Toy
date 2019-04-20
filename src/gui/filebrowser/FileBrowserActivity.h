@@ -3,9 +3,7 @@
 #include <vector>
 #include "common/String.h"
 #include "Activity.h"
-#include "gui/interface/Window.h"
 #include "tasks/TaskListener.h"
-
 
 class SaveFile;
 class FileSelectedCallback

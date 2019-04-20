@@ -1,14 +1,21 @@
-#ifndef ELEMENT_H
-#define ELEMENT_H
+#ifndef ELEMENTCOMMON_H
+#define ELEMENTCOMMON_H
 // This header should be included by all files in src/elements/
 
 #include <cmath>
-#include "ElementGraphics.h"
-#include "Gravity.h"
+
 #include "Misc.h"
-#include "Simulation.h"
-#include "common/tpt-compat.h"
+
 #include "common/tpt-rand.h"
+#include "common/tpt-compat.h"
+#include "common/tpt-minmax.h"
+
+#include "ElementDefs.h"
+#include "ElementClasses.h"
+#include "Particle.h"
+#include "ElementGraphics.h"
+#include "Simulation.h"
+
 #include "graphics/Renderer.h"
 
 #define IPL -257.0f

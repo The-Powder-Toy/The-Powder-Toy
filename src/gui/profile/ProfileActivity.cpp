@@ -1,16 +1,15 @@
-#include <algorithm>
 #include "ProfileActivity.h"
+
 #include "gui/interface/Button.h"
 #include "gui/interface/Textbox.h"
 #include "gui/interface/Label.h"
 #include "gui/interface/AvatarButton.h"
 #include "gui/interface/ScrollPanel.h"
-#include "gui/interface/Keys.h"
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/Style.h"
+
 #include "client/Client.h"
-#include "client/UserInfo.h"
-#include "Format.h"
+
 #include "Platform.h"
 
 ProfileActivity::ProfileActivity(ByteString username) :

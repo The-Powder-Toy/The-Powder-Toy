@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_LNTG PT_LNTG 37
 Element_LNTG::Element_LNTG()
 {

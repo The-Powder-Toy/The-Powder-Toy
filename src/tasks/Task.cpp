@@ -1,5 +1,5 @@
-#include "Config.h"
 #include "Task.h"
+
 #include "TaskListener.h"
 
 void Task::AddTaskListener(TaskListener * listener)

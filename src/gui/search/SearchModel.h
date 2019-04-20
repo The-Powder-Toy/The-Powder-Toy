@@ -3,12 +3,9 @@
 
 #include <vector>
 #include "common/String.h"
-#include "common/tpt-minmax.h"
 #include <atomic>
-#include <cmath>
-#include "client/SaveInfo.h"
-#include "SearchView.h"
 
+class SaveInfo;
 class SearchView;
 class SearchModel
 {
@@ -57,13 +54,7 @@ public:
 	std::vector<SaveInfo*> GetSaveList();
 	std::vector<std::pair<ByteString, int> > GetTagList();
 	String GetLastError() { return lastError; }
-	int GetPageCount()
-	{
-		if (!showOwn && !showFavourite && currentSort == "best" && lastQuery == "")
-			return std::max(1, (int)(ceil(resultCount/20.0f))+1); //add one for front page (front page saves are repeated twice)
-		else
-			return std::max(1, (int)(ceil(resultCount/20.0f)));
-	}
+	int GetPageCount();
 	int GetPageNum() { return currentPage; }
 	String GetLastQuery() { return lastQuery; }
 	void SetSort(ByteString sort) { if(!updateSaveListWorking) { currentSort = sort; } notifySortChanged(); }

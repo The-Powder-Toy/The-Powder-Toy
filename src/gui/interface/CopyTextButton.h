@@ -2,10 +2,10 @@
 #define COPYTEXTBUTTON_H
 
 #include "Button.h"
-#include "Label.h"
 
 namespace ui
 {
+	class Label;
 class CopyTextButton : public Button
 {
 	ui::Label *copyTextLabel;

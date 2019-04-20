@@ -1,5 +1,8 @@
 #include "GetUserInfoRequest.h"
 
+#include "Config.h"
+#include "client/UserInfo.h"
+
 namespace http
 {
 	GetUserInfoRequest::GetUserInfoRequest(ByteString username) :

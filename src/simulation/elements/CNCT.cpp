@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_CNCT PT_CNCT 24
 Element_CNCT::Element_CNCT()
 {

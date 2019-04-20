@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_MERC PT_MERC 152
 Element_MERC::Element_MERC()
 {

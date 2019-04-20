@@ -1,5 +1,5 @@
-#include "ToolClasses.h"
-#include "simulation/Simulation.h"
+#include "simulation/ToolCommon.h"
+
 //#TPT-Directive ToolClass Tool_PGrv TOOL_PGRV 4
 Tool_PGrv::Tool_PGrv()
 {

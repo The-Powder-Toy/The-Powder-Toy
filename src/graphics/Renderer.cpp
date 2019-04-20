@@ -1,3 +1,5 @@
+#include "Renderer.h"
+
 #include <cmath>
 #include <iostream>
 #include <iomanip>
@@ -6,15 +8,18 @@
 #include <cstdlib>
 #include "Config.h"
 #include "Misc.h"
-#include "Renderer.h"
-#include "Graphics.h"
-#include "common/tpt-compat.h"
-#include "common/tpt-minmax.h"
+
 #include "common/tpt-rand.h"
+#include "common/tpt-compat.h"
+
 #include "gui/game/RenderPreset.h"
-#include "simulation/Elements.h"
+
+#include "simulation/Simulation.h"
 #include "simulation/ElementGraphics.h"
 #include "simulation/Air.h"
+#include "simulation/Gravity.h"
+#include "ElementClasses.h"
+
 #ifdef LUACONSOLE
 #include "lua/LuaScriptInterface.h"
 #include "lua/LuaScriptHelper.h"

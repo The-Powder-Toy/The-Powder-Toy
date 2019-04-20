@@ -1,6 +1,6 @@
 #include <algorithm>
 #include <functional>
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 #include "simulation/Air.h"
 //#TPT-Directive ElementClass Element_HEAC PT_HEAC 180
 Element_HEAC::Element_HEAC()

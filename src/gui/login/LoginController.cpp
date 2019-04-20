@@ -1,6 +1,10 @@
 #include "LoginController.h"
-#include "client/User.h"
+
 #include "client/Client.h"
+
+#include "LoginView.h"
+#include "LoginModel.h"
+#include "Controller.h"
 
 LoginController::LoginController(ControllerCallback * callback):
 	HasExited(false)

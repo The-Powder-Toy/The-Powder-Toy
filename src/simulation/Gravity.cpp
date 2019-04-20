@@ -1,8 +1,13 @@
+#include "Gravity.h"
+
+#include "SimulationData.h"
+
 #include <cmath>
 #include <sys/types.h>
-#include "Config.h"
-#include "Gravity.h"
+
 #include "Misc.h"
+
+#include "Simulation.h"
 
 void Gravity::bilinear_interpolation(float *src, float *dst, int sw, int sh, int rw, int rh)
 {

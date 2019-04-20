@@ -1,5 +1,5 @@
-#include <iomanip>
 #include "Sign.h"
+
 #include "graphics/Graphics.h"
 #include "simulation/Simulation.h"
 

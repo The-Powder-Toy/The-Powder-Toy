@@ -1,31 +1,18 @@
 #ifdef LUACONSOLE
-#include <iomanip>
+
+#include "LuaScriptInterface.h"
+
 #include <vector>
-#include <algorithm>
-#include <locale>
 #include <fstream>
-#include <stdexcept>
+
 #include "Config.h"
 #include "Format.h"
-#include "LuaLuna.h"
-#include "LuaScriptInterface.h"
-#include "TPTScriptInterface.h"
-#include "gui/dialogues/ErrorMessage.h"
-#include "gui/dialogues/InformationMessage.h"
-#include "gui/dialogues/TextPrompt.h"
-#include "gui/dialogues/ConfirmPrompt.h"
-#include "simulation/Simulation.h"
-#include "simulation/Air.h"
-#include "ToolClasses.h"
-#include "gui/game/GameModel.h"
-#include "gui/game/Tool.h"
-#include "LuaScriptHelper.h"
-#include "client/GameSave.h"
-#include "client/SaveFile.h"
-#include "Misc.h"
 #include "Platform.h"
 #include "PowderToy.h"
 
+#include "TPTScriptInterface.h"
+#include "LuaScriptHelper.h"
+#include "LuaLuna.h"
 #include "LuaBit.h"
 #include "LuaButton.h"
 #include "LuaCheckbox.h"
@@ -35,6 +22,29 @@
 #include "LuaSlider.h"
 #include "LuaTextbox.h"
 #include "LuaWindow.h"
+
+#include "gui/interface/Window.h"
+#include "gui/interface/Engine.h"
+#include "gui/game/GameView.h"
+#include "gui/game/GameController.h"
+#include "gui/game/GameModel.h"
+#include "gui/game/Tool.h"
+#include "gui/game/Brush.h"
+
+#include "simulation/Simulation.h"
+#include "simulation/ElementGraphics.h"
+#include "simulation/Air.h"
+
+#include "ToolClasses.h"
+#include "ElementClasses.h"
+
+#include "client/GameSave.h"
+#include "client/SaveFile.h"
+#include "client/SaveInfo.h"
+#include "client/Client.h"
+
+#include "graphics/Graphics.h"
+#include "graphics/Renderer.h"
 
 #ifndef WIN
 #include <unistd.h>
@@ -1257,7 +1267,7 @@ int LuaScriptInterface::simulation_createParts(lua_State * l)
 	int brush = luaL_optint(l,6,CIRCLE_BRUSH);
 	int flags = luaL_optint(l,7,luacon_sim->replaceModeFlags);
 
-	vector<Brush*> brushList = luacon_model->GetBrushList();
+	std::vector<Brush*> brushList = luacon_model->GetBrushList();
 	if (brush < 0 || brush >= (int)brushList.size())
 		return luaL_error(l, "Invalid brush id '%d'", brush);
 	ui::Point tempRadius = brushList[brush]->GetRadius();
@@ -1281,7 +1291,7 @@ int LuaScriptInterface::simulation_createLine(lua_State * l)
 	int brush = luaL_optint(l,8,CIRCLE_BRUSH);
 	int flags = luaL_optint(l,9,luacon_sim->replaceModeFlags);
 
-	vector<Brush*> brushList = luacon_model->GetBrushList();
+	std::vector<Brush*> brushList = luacon_model->GetBrushList();
 	if (brush < 0 || brush >= (int)brushList.size())
 		return luaL_error(l, "Invalid brush id '%d'", brush);
 	ui::Point tempRadius = brushList[brush]->GetRadius();
@@ -1397,7 +1407,7 @@ int LuaScriptInterface::simulation_toolBrush(lua_State * l)
 	else if (tool < 0 || tool > (int)luacon_sim->tools.size())
 		return luaL_error(l, "Invalid tool id '%d'", tool);
 
-	vector<Brush*> brushList = luacon_model->GetBrushList();
+	std::vector<Brush*> brushList = luacon_model->GetBrushList();
 	if (brush < 0 || brush >= (int)brushList.size())
 		return luaL_error(l, "Invalid brush id '%d'", brush);
 	ui::Point tempRadius = brushList[brush]->GetRadius();
@@ -1423,7 +1433,7 @@ int LuaScriptInterface::simulation_toolLine(lua_State * l)
 	if (tool < 0 || tool >= (int)luacon_sim->tools.size()+1)
 		return luaL_error(l, "Invalid tool id '%d'", tool);
 
-	vector<Brush*> brushList = luacon_model->GetBrushList();
+	std::vector<Brush*> brushList = luacon_model->GetBrushList();
 	if (brush < 0 || brush >= (int)brushList.size())
 		return luaL_error(l, "Invalid brush id '%d'", brush);
 	ui::Point tempRadius = brushList[brush]->GetRadius();
@@ -1476,7 +1486,7 @@ int LuaScriptInterface::simulation_decoBrush(lua_State * l)
 	int tool = luaL_optint(l,9,DECO_DRAW);
 	int brush = luaL_optint(l,10,CIRCLE_BRUSH);
 
-	vector<Brush*> brushList = luacon_model->GetBrushList();
+	std::vector<Brush*> brushList = luacon_model->GetBrushList();
 	if (brush < 0 || brush >= (int)brushList.size())
 		return luaL_error(l, "Invalid brush id '%d'", brush);
 	ui::Point tempRadius = brushList[brush]->GetRadius();
@@ -1502,7 +1512,7 @@ int LuaScriptInterface::simulation_decoLine(lua_State * l)
 	int tool = luaL_optint(l,11,DECO_DRAW);
 	int brush = luaL_optint(l,12,CIRCLE_BRUSH);
 
-	vector<Brush*> brushList = luacon_model->GetBrushList();
+	std::vector<Brush*> brushList = luacon_model->GetBrushList();
 	if (brush < 0 || brush >= (int)brushList.size())
 		return luaL_error(l, "Invalid brush id '%d'", brush);
 	ui::Point tempRadius = brushList[brush]->GetRadius();
@@ -1961,7 +1971,7 @@ int LuaScriptInterface::simulation_brush(lua_State * l)
 	}
 	int brushID = luaL_optint(l, 5, luacon_model->GetBrushID());
 
-	vector<Brush *> brushList = luacon_model->GetBrushList();
+	std::vector<Brush *> brushList = luacon_model->GetBrushList();
 	if (brushID < 0 || brushID >= (int)brushList.size())
 		return luaL_error(l, "Invalid brush id '%d'", brushID);
 

@@ -2,19 +2,21 @@
 #define PREVIEWMODEL_H
 
 #include <vector>
-#include <iostream>
-#include "PreviewView.h"
-#include "client/SaveInfo.h"
-#include "gui/preview/Comment.h"
-#include "client/http/Request.h"
+#include "common/String.h"
 
-using namespace std;
+namespace http
+{
+	class Request;
+}
 
 class PreviewView;
-class PreviewModel {
+class SaveInfo;
+class SaveComment;
+class PreviewModel
+{
 	bool doOpen;
 	bool canOpen;
-	vector<PreviewView*> observers;
+	std::vector<PreviewView*> observers;
 	SaveInfo * saveInfo;
 	std::vector<unsigned char> * saveData;
 	std::vector<SaveComment*> * saveComments;

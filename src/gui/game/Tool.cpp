@@ -1,8 +1,10 @@
-#include "common/String.h"
 #include "Tool.h"
+
 #include "gui/game/Brush.h"
 
 #include "simulation/Simulation.h"
+#include "simulation/SimulationData.h"
+#include "ElementClasses.h"
 
 using namespace std;
 

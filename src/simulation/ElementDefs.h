@@ -1,7 +1,7 @@
 #ifndef ELEMENTS_H_
 #define ELEMENTS_H_
 
-//#include "Config.h"
+#include "Config.h"
 //#include "Simulation.h"
 
 #define R_TEMP 22
@@ -68,8 +68,6 @@
 #endif
 
 struct playerst;
-
-#include "ElementClasses.h"
 
 
 #endif /* ELEMENTS_H_ */

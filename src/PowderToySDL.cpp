@@ -1,7 +1,6 @@
 #ifndef RENDERER
 
 #include <map>
-#include "common/String.h"
 #include <ctime>
 #include <climits>
 #ifdef WIN
@@ -18,7 +17,6 @@
 
 #include <iostream>
 #include "Config.h"
-#include "graphics/Graphics.h"
 #if defined(LIN)
 #include "icon.h"
 #endif
@@ -34,22 +32,23 @@
 #endif
 
 #include "Format.h"
+#include "Misc.h"
 
+#include "graphics/Graphics.h"
+
+#include "client/SaveInfo.h"
 #include "client/GameSave.h"
 #include "client/SaveFile.h"
-#include "simulation/SaveRenderer.h"
 #include "client/Client.h"
-#include "Misc.h"
 
 #include "gui/game/GameController.h"
 #include "gui/game/GameView.h"
-
 #include "gui/font/FontEditor.h"
-
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/interface/Keys.h"
 #include "gui/Style.h"
+#include "gui/interface/Engine.h"
 
 using namespace std;
 

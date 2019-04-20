@@ -2,8 +2,6 @@
 #define LOGINVIEW_H_
 
 #include "gui/interface/Window.h"
-#include "LoginController.h"
-#include "LoginModel.h"
 
 namespace ui
 {
@@ -13,8 +11,9 @@ namespace ui
 }
 
 class LoginController;
-class LoginMode;
-class LoginView: public ui::Window {
+class LoginModel;
+class LoginView: public ui::Window
+{
 	LoginController * c;
 	ui::Button * loginButton;
 	ui::Button * cancelButton;

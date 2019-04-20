@@ -7,6 +7,7 @@
 #include <memory>
 
 class VideoBuffer;
+
 namespace http
 {
 	class ImageRequest : public Request

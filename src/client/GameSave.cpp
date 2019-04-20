@@ -1,17 +1,19 @@
-#include "common/tpt-minmax.h"
+#include "GameSave.h"
+
 #include <iostream>
 #include <cmath>
 #include <climits>
 #include <memory>
-#include <vector>
 #include <set>
 #include <bzlib.h>
+#include <cmath>
+
 #include "Config.h"
 #include "Format.h"
-#include "GameSave.h"
-#include "simulation/SimulationData.h"
-#include "ElementClasses.h"
 #include "hmap.h"
+
+#include "simulation/Simulation.h"
+#include "ElementClasses.h"
 
 GameSave::GameSave(GameSave & save):
     majorVersion(save.majorVersion),
@@ -2784,4 +2786,20 @@ void GameSave::dealloc()
 GameSave::~GameSave()
 {
 	dealloc();
+}
+
+GameSave& GameSave::operator << (Particle &v)
+{
+	if(particlesCount<NPART && v.type)
+	{
+		particles[particlesCount++] = v;
+	}
+	return *this;
+}
+
+GameSave& GameSave::operator << (sign &v)
+{
+	if(signs.size()<MAXSIGNS && v.text.length())
+		signs.push_back(v);
+	return *this;
 }

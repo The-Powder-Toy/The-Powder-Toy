@@ -1,5 +1,10 @@
 #include "RenderController.h"
 
+#include "RenderView.h"
+#include "RenderModel.h"
+
+#include "Controller.h"
+
 RenderController::RenderController(Renderer * ren, ControllerCallback * callback):
 	HasExited(false)
 {

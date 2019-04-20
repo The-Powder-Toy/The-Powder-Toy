@@ -1,7 +1,7 @@
-#include "client/Client.h"
-#include "Format.h"
 #include "LocalBrowserView.h"
-#include "PowderToy.h"
+
+#include "LocalBrowserController.h"
+#include "LocalBrowserModel.h"
 
 #include "gui/interface/Button.h"
 #include "gui/interface/Textbox.h"
@@ -9,11 +9,12 @@
 #include "gui/interface/SaveButton.h"
 #include "gui/interface/Keys.h"
 
-#include "gui/dialogues/ErrorMessage.h"
-#include "gui/dialogues/ConfirmPrompt.h"
-#include "LocalBrowserController.h"
-#include "LocalBrowserModel.h"
-#include "LocalBrowserModelException.h"
+#include "PowderToy.h"
+#include "Config.h"
+
+#include "client/SaveFile.h"
+
+#include "graphics/Graphics.h"
 
 LocalBrowserView::LocalBrowserView():
 	ui::Window(ui::Point(0, 0), ui::Point(WINDOWW, WINDOWH)),

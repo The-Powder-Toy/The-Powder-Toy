@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_GOO PT_GOO 12
 Element_GOO::Element_GOO()
 {

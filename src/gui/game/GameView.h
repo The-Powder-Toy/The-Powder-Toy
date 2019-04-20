@@ -2,21 +2,10 @@
 #define GAMEVIEW_H
 
 #include <vector>
-#include <queue>
 #include <deque>
 #include "common/String.h"
-#include "GameController.h"
-#include "GameModel.h"
 #include "gui/interface/Window.h"
-#include "gui/interface/Point.h"
-#include "gui/interface/Button.h"
-#include "gui/interface/Slider.h"
-#include "gui/interface/Textbox.h"
-#include "ToolButton.h"
-#include "Brush.h"
 #include "simulation/Sample.h"
-
-using namespace std;
 
 enum DrawMode
 {
@@ -28,7 +17,18 @@ enum SelectMode
 	SelectNone, SelectStamp, SelectCopy, SelectCut, PlaceSave
 };
 
+namespace ui
+{
+	class Button;
+	class Slider;
+	class Textbox;
+}
+
+class Renderer;
+class VideoBuffer;
+class ToolButton;
 class GameController;
+class Brush;
 class GameModel;
 class GameView: public ui::Window
 {
@@ -76,11 +76,11 @@ private:
 	Renderer * ren;
 	Brush * activeBrush;
 	//UI Elements
-	vector<ui::Button*> quickOptionButtons;
-	vector<ui::Button*> menuButtons;
-	vector<ToolButton*> toolButtons;
-	vector<ui::Component*> notificationComponents;
-	deque<std::pair<String, int> > logEntries;
+	std::vector<ui::Button*> quickOptionButtons;
+	std::vector<ui::Button*> menuButtons;
+	std::vector<ToolButton*> toolButtons;
+	std::vector<ui::Component*> notificationComponents;
+	std::deque<std::pair<String, int> > logEntries;
 	ui::Button * scrollBar;
 	ui::Button * searchButton;
 	ui::Button * reloadButton;
@@ -97,7 +97,7 @@ private:
 	ui::Button * pauseButton;
 
 	ui::Button * colourPicker;
-	vector<ToolButton*> colourPresets;
+	std::vector<ToolButton*> colourPresets;
 
 	DrawMode drawMode;
 	ui::Point drawPoint1;

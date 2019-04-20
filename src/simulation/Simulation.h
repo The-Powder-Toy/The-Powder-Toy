@@ -1,18 +1,18 @@
 #ifndef SIMULATION_H
 #define SIMULATION_H
+
 #include <cstring>
 #include <cstddef>
 #include <vector>
 
-#include "Config.h"
-#include "Elements.h"
-#include "SimulationData.h"
-#include "Sign.h"
 #include "Particle.h"
 #include "Stickman.h"
 #include "WallType.h"
+#include "Sign.h"
+#include "ElementDefs.h"
 #include "GOLMenu.h"
 #include "MenuSection.h"
+
 #include "elements/Element.h"
 
 #define CHANNELS ((int)(MAX_TEMP-73)/100+2)
@@ -210,20 +210,11 @@ public:
 	Simulation();
 	~Simulation();
 
-	bool InBounds(int x, int y)
-	{
-		return (x>=0 && y>=0 && x<XRES && y<YRES);
-	}
+	bool InBounds(int x, int y);
 
 	// These don't really belong anywhere at the moment, so go here for loop edge mode
-	static int remainder_p(int x, int y)
-	{
-		return (x % y) + (x>=0 ? 0 : y);
-	}
-	static float remainder_p(float x, float y)
-	{
-		return std::fmod(x, y) + (x>=0 ? 0 : y);
-	}
+	static int remainder_p(int x, int y);
+	static float remainder_p(float x, float y);
 
 	String ElementResolve(int type, int ctype);
 	String BasicParticleInfo(Particle const &sample_part);

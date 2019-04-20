@@ -1,6 +1,5 @@
 #include "SaveFile.h"
 #include "GameSave.h"
-#include "Client.h"
 
 SaveFile::SaveFile(SaveFile & save):
 	gameSave(NULL),

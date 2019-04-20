@@ -1,13 +1,12 @@
 #ifndef SEARCHCONTROLLER_H
 #define SEARCHCONTROLLER_H
 
-#include "gui/interface/Panel.h"
-#include "SearchModel.h"
-#include "SearchView.h"
-#include "gui/preview/PreviewController.h"
-#include "Controller.h"
-#include "client/SaveInfo.h"
+#include "common/String.h"
 
+class ControllerCallback;
+class SaveInfo;
+class PreviewController;
+class PreviewController;
 class SearchView;
 class SearchModel;
 class SearchController

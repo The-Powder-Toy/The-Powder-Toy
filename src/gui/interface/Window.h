@@ -3,7 +3,6 @@
 
 #include "common/String.h"
 #include <vector>
-#include "common/tpt-compat.h"
 #include "gui/interface/Point.h"
 
 class Graphics;

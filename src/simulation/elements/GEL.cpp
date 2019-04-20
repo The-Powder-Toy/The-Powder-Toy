@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_GEL PT_GEL 142
 Element_GEL::Element_GEL()
 {

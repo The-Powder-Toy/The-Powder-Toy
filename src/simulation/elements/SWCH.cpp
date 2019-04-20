@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_SWCH PT_SWCH 56
 Element_SWCH::Element_SWCH()
 {

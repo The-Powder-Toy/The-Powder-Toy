@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_NITR PT_NITR 8
 Element_NITR::Element_NITR()
 {

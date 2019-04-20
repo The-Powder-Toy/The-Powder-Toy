@@ -1,9 +1,11 @@
 #ifdef LUACONSOLE
 
-#include <iostream>
 #include "LuaComponent.h"
+
 #include "LuaScriptInterface.h"
+
 #include "gui/interface/Component.h"
+#include "gui/interface/Window.h"
 
 int LuaComponentCallback::CheckAndAssignArg1()
 {

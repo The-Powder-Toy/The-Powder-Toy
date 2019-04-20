@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_RFRG PT_RFRG 183
 Element_RFRG::Element_RFRG()
 {

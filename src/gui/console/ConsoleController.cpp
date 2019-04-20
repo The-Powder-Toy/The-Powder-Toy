@@ -1,5 +1,11 @@
-#include <stack>
 #include "ConsoleController.h"
+
+#include "Controller.h"
+#include "ConsoleView.h"
+#include "ConsoleModel.h"
+#include "ConsoleCommand.h"
+
+#include "lua/CommandInterface.h"
 
 ConsoleController::ConsoleController(ControllerCallback * callback, CommandInterface * commandInterface):
 	HasDone(false)

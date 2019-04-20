@@ -1,7 +1,15 @@
+#include "RenderView.h"
+
 #include "simulation/ElementGraphics.h"
+
 #include "graphics/Graphics.h"
 #include "graphics/Renderer.h"
-#include "RenderView.h"
+
+#include "RenderController.h"
+#include "RenderModel.h"
+
+#include "gui/interface/Checkbox.h"
+#include "gui/interface/Button.h"
 
 class RenderView::RenderModeAction: public ui::CheckboxAction
 {

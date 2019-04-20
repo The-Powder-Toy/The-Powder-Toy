@@ -1,6 +1,18 @@
 #ifndef LUASCRIPTHELPER_H_
 #define LUASCRIPTHELPER_H_
 
+#include "simulation/Particle.h"
+#include "simulation/ElementDefs.h"
+#include "common/String.h"
+#include "LuaCompat.h"
+
+class GameModel;
+class GameController;
+class Simulation;
+class LuaScriptInterface;
+class Graphics;
+class Renderer;
+
 extern GameModel * luacon_model;
 extern GameController * luacon_controller;
 extern Simulation * luacon_sim;

@@ -6,7 +6,7 @@
 
 #include "CommandInterface.h"
 #include "lua/LuaEvents.h"
-#include "simulation/Simulation.h"
+#include "simulation/StructProperty.h"
 
 #include <map>
 
@@ -37,6 +37,7 @@ class Tool;
 	lua_pushinteger(L, NAME);\
 	lua_setfield(L, -2, #NAME)
 
+class Simulation;
 class TPTScriptInterface;
 class LuaComponent;
 

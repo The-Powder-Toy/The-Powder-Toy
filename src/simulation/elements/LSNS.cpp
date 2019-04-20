@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_LSNS PT_LSNS 185
 Element_LSNS::Element_LSNS()
 {

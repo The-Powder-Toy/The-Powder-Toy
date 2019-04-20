@@ -1,30 +1,36 @@
 #ifndef GAMECONTROLLER_H
 #define GAMECONTROLLER_H
 
-#include <queue>
-#include "GameView.h"
-#include "GameModel.h"
-#include "simulation/Simulation.h"
-#include "gui/interface/Point.h"
-#include "gui/search/SearchController.h"
-#include "gui/render/RenderController.h"
-#include "gui/preview/PreviewController.h"
-#include "gui/login/LoginController.h"
-#include "gui/tags/TagsController.h"
-#include "gui/console/ConsoleController.h"
-#include "gui/localbrowser/LocalBrowserController.h"
-#include "gui/options/OptionsController.h"
-#include "client/ClientListener.h"
-#include "RenderPreset.h"
-#include "Menu.h"
+#include <vector>
+#include <utility>
 
-using namespace std;
+#include "client/ClientListener.h"
+
+#include "gui/interface/Point.h"
+#include "gui/interface/Colour.h"
+
+#include "simulation/Sign.h"
+#include "simulation/Particle.h"
+
+#include "Misc.h"
 
 class DebugInfo;
+class SaveFile;
 class Notification;
 class GameModel;
 class GameView;
+class OptionsController;
+class LocalBrowserController;
+class SearchController;
+class PreviewController;
+class RenderController;
 class CommandInterface;
+class Tool;
+class Menu;
+class SaveInfo;
+class GameSave;
+class LoginController;
+class TagsController;
 class ConsoleController;
 class GameController: public ClientListener
 {
@@ -43,7 +49,7 @@ private:
 	LocalBrowserController * localBrowser;
 	OptionsController * options;
 	CommandInterface * commandInterface;
-	vector<DebugInfo*> debugInfo;
+	std::vector<DebugInfo*> debugInfo;
 	unsigned int debugFlags;
 public:
 	bool HasDone;

@@ -1,6 +1,6 @@
 #include "Request.h"
+
 #include "RequestManager.h"
-#include "Platform.h"
 
 namespace http
 {

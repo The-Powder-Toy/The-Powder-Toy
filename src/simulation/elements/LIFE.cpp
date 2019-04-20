@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 
 bool Element_GOL_colourInit = false;
 pixel Element_GOL_colour[NGOL];

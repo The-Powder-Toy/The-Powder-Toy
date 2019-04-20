@@ -3,12 +3,17 @@
 
 #include <vector>
 #include "Activity.h"
-#include "gui/interface/Window.h"
-#include "gui/interface/Textbox.h"
-#include "gui/game/ToolButton.h"
+#include "common/String.h"
+#include "gui/interface/Point.h"
 
 class Tool;
+class ToolButton;
 class GameController;
+
+namespace ui
+{
+	class Textbox;
+}
 
 class ElementSearchActivity: public WindowActivity
 {

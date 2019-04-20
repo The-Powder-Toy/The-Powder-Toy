@@ -1,12 +1,16 @@
-#include "client/Client.h"
 #include "LocalBrowserController.h"
-#include "gui/interface/Engine.h"
+
+#include "LocalBrowserModel.h"
+#include "LocalBrowserView.h"
+
+#include "client/Client.h"
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "tasks/TaskWindow.h"
 #include "tasks/Task.h"
 
-#include "LocalBrowserModel.h"
-#include "LocalBrowserView.h"
+#include "Controller.h"
+
+#include "common/tpt-minmax.h"
 
 LocalBrowserController::LocalBrowserController(ControllerCallback * callback):
 	HasDone(false)

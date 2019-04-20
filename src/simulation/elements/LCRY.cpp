@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_LCRY PT_LCRY 54
 Element_LCRY::Element_LCRY()
 {

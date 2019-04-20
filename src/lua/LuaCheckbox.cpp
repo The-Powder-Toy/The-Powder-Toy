@@ -1,8 +1,9 @@
 #ifdef LUACONSOLE
 
-#include <iostream>
 #include "LuaCheckbox.h"
+
 #include "LuaScriptInterface.h"
+
 #include "gui/interface/Checkbox.h"
 
 const char LuaCheckbox::className[] = "Checkbox";

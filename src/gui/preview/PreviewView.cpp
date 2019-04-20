@@ -1,21 +1,30 @@
-#include <vector>
-#include <cmath>
-#include <algorithm>
 #include "PreviewView.h"
-#include "gui/dialogues/TextPrompt.h"
+
 #include "simulation/SaveRenderer.h"
-#include "gui/interface/Point.h"
-#include "gui/interface/Window.h"
-#include "gui/interface/Textbox.h"
-#include "gui/Style.h"
-#include "Format.h"
-#include "gui/profile/ProfileActivity.h"
+
 #include "client/Client.h"
+#include "client/SaveInfo.h"
+
+#include "gui/dialogues/TextPrompt.h"
+#include "gui/profile/ProfileActivity.h"
 #include "gui/interface/ScrollPanel.h"
 #include "gui/interface/AvatarButton.h"
+#include "gui/preview/PreviewController.h"
+#include "gui/preview/PreviewModel.h"
+#include "gui/interface/Button.h"
 #include "gui/interface/Keys.h"
+#include "gui/interface/CopyTextButton.h"
+#include "gui/interface/Label.h"
+#include "gui/interface/Textbox.h"
 #include "gui/dialogues/ErrorMessage.h"
+#include "gui/interface/Point.h"
+#include "gui/interface/Window.h"
+#include "gui/Style.h"
+
 #include "common/tpt-rand.h"
+#include "Comment.h"
+#include "Format.h"
+#include "Misc.h"
 
 #ifdef GetUserName
 # undef GetUserName // dammit windows
