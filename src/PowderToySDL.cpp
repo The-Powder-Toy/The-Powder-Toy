@@ -849,7 +849,7 @@ int main(int argc, char * argv[])
 
 #if !defined(DEBUG) && !defined(_DEBUG)
 	}
-	catch(exception& e)
+	catch(std::exception& e)
 	{
 		BlueScreen(ByteString(e.what()).FromUtf8());
 	}
