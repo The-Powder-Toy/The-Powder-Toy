@@ -41,14 +41,8 @@ Element_TEMP::Element_TEMP()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_TEMP::update;
+	Update = NULL;
 	Graphics = &Element_TEMP::graphics;
-}
-
-//#TPT-Directive ElementHeader Element_TEMP static int update(UPDATE_FUNC_ARGS)
-int Element_TEMP::update(UPDATE_FUNC_ARGS)
-{
-	return 0;
 }
 
 #define FREQUENCY1 0.0928f

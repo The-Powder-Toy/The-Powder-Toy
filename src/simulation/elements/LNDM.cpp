@@ -50,22 +50,14 @@ int Element_LNDM::update(UPDATE_FUNC_ARGS)
 	int r, rx, ry,np, rndstore;
 	for (rx = -15; rx < 15; rx++)
 		for (ry = -15; ry < 15; ry++)
-			if (BOUNDS_CHECK && (rx || ry))
+			if (x + rx >= 0 && x + rx < XRES && y + ry >= 0 && y + ry < YRES && (rx || ry))
 			{
 				r = pmap[y + ry][x + rx];
 				switch (TYP(r))
 				{
 				case PT_STKM:
-					if (RNG::Ref().chance(50, 50))
-					{
-						parts[i].temp = 350.0f;
-					}
 				case PT_STKM2:
-					if (RNG::Ref().chance(50, 50))
-					{
-						parts[i].temp = 350.0f;
-					}
-					
+					parts[i].temp = 350.0f;
 				}
 			}
 	return 0;

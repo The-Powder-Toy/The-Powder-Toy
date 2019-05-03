@@ -52,8 +52,9 @@ int Element_COND::update(UPDATE_FUNC_ARGS)
 			if (BOUNDS_CHECK && (rx || ry))
 			{
 				r = pmap[y + ry][x + rx];
+				if (r)
 				{
-			parts[ID(r)].temp = parts[i].temp;
+					parts[ID(r)].temp = parts[i].temp;
 				}
 				break;
 				

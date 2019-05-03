@@ -41,18 +41,9 @@ Element_UVRD::Element_UVRD()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_UVRD::update;
+	Update = NULL;
 	Graphics = &Element_UVRD::graphics;
 }
-
-//#TPT-Directive ElementHeader Element_UVRD static int update(UPDATE_FUNC_ARGS)
-int Element_UVRD::update(UPDATE_FUNC_ARGS)
-{
-	
-	return 0;
-}
-
-
 
 //#TPT-Directive ElementHeader Element_UVRD static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_UVRD::graphics(GRAPHICS_FUNC_ARGS)
