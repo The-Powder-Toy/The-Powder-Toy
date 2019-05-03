@@ -56,7 +56,6 @@ int Element_COND::update(UPDATE_FUNC_ARGS)
 				{
 					parts[ID(r)].temp = parts[i].temp;
 				}
-				break;
 				
 			}
 	return 0;

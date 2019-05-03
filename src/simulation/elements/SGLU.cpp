@@ -36,9 +36,9 @@ Element_SGLU::Element_SGLU()
 	LowPressureTransition = NT;
 	HighPressure = IPH;
 	HighPressureTransition = NT;
-	LowTemperature = ITL;
 	LowTemperature = 273.0f;
 	LowTemperatureTransition = PT_GLUE;
+	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
 	Update = NULL;
