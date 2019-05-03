@@ -31,6 +31,8 @@ public:
 	void SetEdgeMode(int edgeMode);
 	int GetGravityMode();
 	void SetGravityMode(int gravityMode);
+	int GetTheme();
+	void SetTheme(bool state);
 	int GetScale();
 	void SetScale(int scale);
 	bool GetResizable();

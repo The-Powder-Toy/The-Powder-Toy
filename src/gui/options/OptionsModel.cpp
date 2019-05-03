@@ -98,6 +98,13 @@ void OptionsModel::SetGravityMode(int gravityMode)
 	sim->gravityMode = gravityMode;
 	notifySettingsChanged();
 }
+int OptionsModel::GetTheme()
+{
+	return 0;
+}
+void OptionsModel::SetTheme(bool state)
+{
+}
 
 int OptionsModel::GetScale()
 {

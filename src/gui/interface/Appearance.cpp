@@ -10,10 +10,10 @@ namespace ui
 		VerticalAlign(AlignMiddle),
 		HorizontalAlign(AlignCentre),
 
-		BackgroundHover(20, 20, 20),
+		BackgroundHover(20, 20, 80),
 		BackgroundInactive(0, 0, 0),
-		BackgroundActive(255, 255, 255),
-		BackgroundDisabled(10, 10, 10),
+		BackgroundActive(100, 100, 255),
+		BackgroundDisabled(10, 10, 80),
 
 		TextHover(255, 255, 255),
 		TextInactive(255, 255, 255),

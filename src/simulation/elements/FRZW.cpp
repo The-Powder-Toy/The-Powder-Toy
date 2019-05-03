@@ -6,7 +6,7 @@ Element_FRZW::Element_FRZW()
 	Name = "FRZW";
 	Colour = PIXPACK(0x1020C0);
 	MenuVisible = 1;
-	MenuSection = SC_CRACKER2;
+	MenuSection = SC_HIDDEN;
 	Enabled = 1;
 
 	Advection = 0.6f;

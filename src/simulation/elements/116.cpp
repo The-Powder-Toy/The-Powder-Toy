@@ -5,8 +5,8 @@ Element_116::Element_116()
 	Identifier = "DEFAULT_PT_116";
 	Name = "EQVE";
 	Colour = PIXPACK(0xFFE0A0);
-	MenuVisible = 0;
-	MenuSection = SC_CRACKER2;
+	MenuVisible = 1;
+	MenuSection = SC_HIDDEN;
 	Enabled = 1;
 
 	Advection = 0.7f;

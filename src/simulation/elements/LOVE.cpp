@@ -6,7 +6,7 @@ Element_LOVE::Element_LOVE()
 	Name = "LOVE";
 	Colour = PIXPACK(0xFF30FF);
 	MenuVisible = 1;
-	MenuSection = SC_CRACKER2;
+	MenuSection = SC_HIDDEN;
 	Enabled = 1;
 
 	Advection = 0.0f;

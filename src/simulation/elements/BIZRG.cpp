@@ -6,7 +6,7 @@ Element_BIZRG::Element_BIZRG()
 	Name = "BIZG";
 	Colour = PIXPACK(0x00FFBB);
 	MenuVisible = 1;
-	MenuSection = SC_CRACKER2;
+	MenuSection = SC_HIDDEN;
 	Enabled = 1;
 
 	Advection = 1.0f;

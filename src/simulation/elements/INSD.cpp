@@ -1,17 +1,17 @@
-#include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_146 PT_146 146
-Element_146::Element_146()
+#include "simulation/Elements.h"
+//#TPT-Directive ElementClass Element_DMRN PT_DMRN 193
+Element_DMRN::Element_DMRN()
 {
-	Identifier = "DEFAULT_PT_146";
-	Name = "BRAN";
-	Colour = PIXPACK(0xCCCC00);
+	Identifier = "DEFAULT_PT_DMRN";
+	Name = "DMRN";
+	Colour = PIXPACK(0x1EA2B3);
 	MenuVisible = 1;
-	MenuSection = SC_HIDDEN;
+	MenuSection = SC_CRACKER1000;
 	Enabled = 1;
 
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
-	AirLoss = 0.90f;
+	AirLoss = 0.95f;
 	Loss = 0.00f;
 	Collision = 0.0f;
 	Gravity = 0.0f;
@@ -22,15 +22,15 @@ Element_146::Element_146()
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
-	Hardness = 0;
+	Hardness = 10;
 
 	Weight = 100;
 
-	Temperature = 9000.0f;
-	HeatConduct = 40;
-	Description = "Brian 6 S6/B246/3";
+	Temperature = R_TEMP + 0.0f + 273.15f;
+	HeatConduct = 0;
+	Description = "DAMRON,basically indestructible insulator that also blocks radiations.";
 
-	Properties = TYPE_SOLID|PROP_LIFE;
+	Properties = TYPE_SOLID;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
@@ -44,4 +44,4 @@ Element_146::Element_146()
 	Update = NULL;
 }
 
-Element_146::~Element_146() {}
+Element_DMRN::~Element_DMRN() {}

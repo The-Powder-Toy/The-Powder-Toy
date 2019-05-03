@@ -134,25 +134,27 @@ std::vector<wall_type> LoadWalls()
 std::vector<menu_section> LoadMenus()
 {
 	return
-	std::vector<menu_section>{
-		{0xE041, String("Walls"), 0, 1},
-		{0xE042, String("Electronics"), 0, 1},
-		{0xE056, String("Powered Materials"), 0, 1},
-		{0xE019, String("Sensors"), 0, 1},
-		{0xE062, String("Force"), 0, 1},
-		{0xE043, String("Explosives"), 0, 1},
-		{0xE045, String("Gases"), 0, 1},
-		{0xE044, String("Liquids"), 0, 1},
-		{0xE050, String("Powders"), 0, 1},
-		{0xE051, String("Solids"), 0, 1},
-		{0xE046, String("Radioactive"), 0, 1},
-		{0xE04C, String("Special"), 0, 1},
-		{0xE052, String("Game Of Life"), 0, 1},
-		{0xE057, String("Tools"), 0, 1},
-		{0xE067, String("Favorites"), 0, 1},
-		{0xE064, String("Decoration tools"), 0, 1},
-		{0xE048, String("Cracker"), 0, 0},
-		{0xE048, String("Cracker!"), 0, 0},
+		std::vector<menu_section>{
+			{0xE041, String("Walls"), 0, 1},
+			{ 0xE048, String("CRACKER1000"), 0, 1 },
+			{ 0xE048, String("HIDDEN"), 0, 1 },
+			{ 0xE042, String("Electronics"), 0, 1 },
+			{ 0xE056, String("Powered Materials"), 0, 1 },
+			{ 0xE019, String("Sensors"), 0, 1 },
+			{ 0xE062, String("Force"), 0, 1 },
+			{ 0xE043, String("Explosives"), 0, 1 },
+			{ 0xE045, String("Gases"), 0, 1 },
+			{ 0xE044, String("Liquids"), 0, 1 },
+			{ 0xE050, String("Powders"), 0, 1 },
+			{ 0xE051, String("Solids"), 0, 1 },
+			{ 0xE046, String("Radioactive"), 0, 1 },
+			{ 0xE04C, String("Special"), 0, 1 },
+			{ 0xE052, String("Game Of Life"), 0, 1 },
+			{ 0xE057, String("Tools"), 0, 1 },
+			{ 0xE067, String("Favorites"), 0, 1 },
+			{ 0xE064, String("Decoration tools"), 0, 1 },
+			{ 0xE048, String("Cracker"), 0, 0 },
+			{ 0xE048, String("Cracker!"), 0, 0 },
 	};
 }
 

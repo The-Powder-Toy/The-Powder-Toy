@@ -6,7 +6,7 @@ Element_BIZRS::Element_BIZRS()
 	Name = "BIZS";
 	Colour = PIXPACK(0x00E455);
 	MenuVisible = 1;
-	MenuSection = SC_CRACKER2;
+	MenuSection = SC_HIDDEN;
 	Enabled = 1;
 
 	Advection = 0.0f;

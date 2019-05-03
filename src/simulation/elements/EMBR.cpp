@@ -5,8 +5,8 @@ Element_EMBR::Element_EMBR()
 	Identifier = "DEFAULT_PT_EMBR";
 	Name = "EMBR";
 	Colour = PIXPACK(0xFFF288);
-	MenuVisible = 0;
-	MenuSection = SC_EXPLOSIVE;
+	MenuVisible = 1;
+	MenuSection = SC_HIDDEN;
 	Enabled = 1;
 
 	Advection = 0.4f;

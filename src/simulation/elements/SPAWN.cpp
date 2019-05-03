@@ -5,8 +5,8 @@ Element_SPAWN::Element_SPAWN()
 	Identifier = "DEFAULT_PT_SPAWN";
 	Name = "SPWN";
 	Colour = PIXPACK(0xAAAAAA);
-	MenuVisible = 0;
-	MenuSection = SC_SOLIDS;
+	MenuVisible = 1;
+	MenuSection = SC_HIDDEN;
 	Enabled = 1;
 
 	Advection = 0.0f;

@@ -31,7 +31,7 @@
 // The build server will compile for all platforms for you, and send updates in game
 // See jacob1 to get a mod ID
 #ifndef MOD_ID
-#define MOD_ID 0
+#define MOD_ID 6
 #endif
 
 #if defined(SNAPSHOT) || defined(DEBUG)

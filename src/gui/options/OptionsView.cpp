@@ -97,7 +97,15 @@ OptionsView::OptionsView():
 	tempLabel = new ui::Label(ui::Point(24, waterEqualisation->Position.Y+14), ui::Point(Size.X-28, 16), "\bgMay cause poor performance with a lot of water");
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(tempLabel);
-
+	class Theme : public ui::CheckboxAction
+	{
+		OptionsView * v;
+	public:
+		Theme(OptionsView * v_) { v = v_; }
+		void ActionCallback(ui::Checkbox * sender) override {
+			v->c->SetTheme(sender->GetChecked());
+		}
+	};
 	class AirModeChanged: public ui::DropDownAction
 	{
 		OptionsView * v;

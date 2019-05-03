@@ -16,7 +16,7 @@
 using namespace ui;
 
 Engine::Engine():
-	FpsLimit(60.0f),
+	FpsLimit(80.0f),
 	Scale(1),
 	Fullscreen(false),
 	FrameIndex(0),
@@ -88,7 +88,7 @@ void Engine::ConfirmExit()
 		}
 		virtual ~ExitConfirmation() { }
 	};
-	new ConfirmPrompt("You are about to quit", "Are you sure you want to exit the game?", new ExitConfirmation());
+	new ConfirmPrompt("You are about to quit", "Are you sure you want to exit the MOD?", new ExitConfirmation());
 }
 
 void Engine::ShowWindow(Window * window)

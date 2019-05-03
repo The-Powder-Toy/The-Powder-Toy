@@ -122,6 +122,7 @@ public:
 		toolTip = newToolTip1;
 		toolTip2 = newToolTip2;
 	}
+	
 	void OnMouseClick(int x, int y, unsigned int button) override
 	{
 		ui::Button::OnMouseClick(x, y, button);
@@ -236,8 +237,8 @@ GameView::GameView():
 	};
 
 	scrollBar = new ui::Button(ui::Point(0,YRES+21), ui::Point(XRES, 2), "");
-	scrollBar->Appearance.BorderHover = ui::Colour(200, 200, 200);
-	scrollBar->Appearance.BorderActive = ui::Colour(200, 200, 200);
+	scrollBar->Appearance.BorderHover = ui::Colour(0, 0, 255);
+	scrollBar->Appearance.BorderActive = ui::Colour(0,0, 255);
 	scrollBar->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	scrollBar->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(scrollBar);
@@ -434,7 +435,6 @@ GameView::GameView():
 	pauseButton->SetTogglable(true);
 	pauseButton->SetActionCallback(new PauseAction(this));
 	AddComponent(pauseButton);
-
 	class ElementSearchAction : public ui::ButtonAction
 	{
 		GameView * v;
@@ -1946,6 +1946,7 @@ void GameView::NotifyNotificationsChanged(GameModel * sender)
 	}
 }
 
+
 void GameView::NotifyZoomChanged(GameModel * sender)
 {
 	zoomEnabled = sender->GetZoomEnabled();
@@ -2362,7 +2363,7 @@ void GameView::OnDraw()
 				}
 
 				// only elements that use .tmp2 show it in the debug HUD
-				if (type == PT_CRAY || type == PT_DRAY || type == PT_EXOT || type == PT_LIGH || type == PT_SOAP || type == PT_TRON || type == PT_VIBR || type == PT_VIRS || type == PT_WARP || type == PT_LCRY || type == PT_CBNW || type == PT_TSNS || type == PT_DTEC || type == PT_LSNS || type == PT_PSTN || type == PT_LDTC)
+				if (type == PT_CRAY || type == PT_DRAY || type == PT_EXOT || type == PT_LIGH || type == PT_SOAP || type == PT_TRON || type == PT_VIBR || type == PT_VIRS || type == PT_WARP || type == PT_LCRY || type == PT_CBNW || type == PT_TSNS || type == PT_DTEC || type == PT_LSNS || type == PT_PSTN || type == PT_LDTC || type == PT_LITH)
 					sampleInfo << ", Tmp2: " << sample.particle.tmp2;
 
 				sampleInfo << ", Pressure: " << sample.AirPressure;
@@ -2455,8 +2456,8 @@ void GameView::OnDraw()
 	{
 		//FPS and some version info
 		StringBuilder fpsInfo;
-		fpsInfo << Format::Precision(2) << "FPS: " << ui::Engine::Ref().GetFps();
-
+		fpsInfo << Format::Precision(2) << "" << ui::Engine::Ref().GetFps();
+		
 		if (showDebug)
 		{
 			if (ren->findingElement)
@@ -2476,7 +2477,7 @@ void GameView::OnDraw()
 		int textWidth = Graphics::textwidth(fpsInfo.Build());
 		int alpha = 255-introText*5;
 		g->fillrect(12, 12, textWidth+8, 15, 0, 0, 0, alpha*0.5);
-		g->drawtext(16, 16, fpsInfo.Build(), 32, 216, 255, alpha*0.75);
+		g->drawtext(16, 16, fpsInfo.Build(), 255, 0, 0, alpha*0.75);
 	}
 
 	//Tooltips

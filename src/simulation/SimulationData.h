@@ -5,24 +5,26 @@
 #include <array>
 
 #define SC_WALL 0
-#define SC_ELEC 1
-#define SC_POWERED 2
-#define SC_SENSOR 3
-#define SC_FORCE 4
-#define SC_EXPLOSIVE 5
-#define SC_GAS 6
-#define SC_LIQUID 7
-#define SC_POWDERS 8
-#define SC_SOLIDS 9
-#define SC_NUCLEAR 10
-#define SC_SPECIAL 11
-#define SC_LIFE 12
-#define SC_TOOL 13
-#define SC_FAVORITES 14
-#define SC_DECO 15
-#define SC_CRACKER 16
-#define SC_CRACKER2 17
-#define SC_TOTAL 16
+#define SC_CRACKER1000 1
+#define SC_HIDDEN 2
+#define SC_ELEC 3
+#define SC_POWERED 4
+#define SC_SENSOR 5
+#define SC_FORCE 6
+#define SC_EXPLOSIVE 7
+#define SC_GAS 8
+#define SC_LIQUID 9
+#define SC_POWDERS 10
+#define SC_SOLIDS 11
+#define SC_NUCLEAR 12
+#define SC_SPECIAL 13
+#define SC_LIFE 14
+#define SC_TOOL 15
+#define SC_FAVORITES 16
+#define SC_DECO 17
+#define SC_CRACKER 18
+#define SC_CRACKER2 19
+#define SC_TOTAL 18
 
 #define O_WL_WALLELEC	122
 #define O_WL_EWALL		123

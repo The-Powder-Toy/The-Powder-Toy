@@ -6,7 +6,7 @@ Element_LOLZ::Element_LOLZ()
 	Name = "LOLZ";
 	Colour = PIXPACK(0x569212);
 	MenuVisible = 1;
-	MenuSection = SC_CRACKER2;
+	MenuSection = SC_HIDDEN;
 	Enabled = 1;
 
 	Advection = 0.0f;

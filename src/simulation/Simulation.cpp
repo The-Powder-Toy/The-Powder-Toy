@@ -2112,6 +2112,14 @@ int Simulation::parts_avg(int ci, int ni,int t)
 		else
 			return PT_NONE;
 	}
+	if (t == PT_DMRN)//to keep electronics working
+	{
+		int pmr = pmap[((int)(parts[ci].y + 0.5f) + (int)(parts[ni].y + 0.5f)) / 2][((int)(parts[ci].x + 0.5f) + (int)(parts[ni].x + 0.5f)) / 2];
+		if (pmr)
+			return parts[ID(pmr)].type;
+		else
+			return PT_NONE;
+	}
 	else
 	{
 		int pmr2 = pmap[(int)((parts[ci].y + parts[ni].y)/2+0.5f)][(int)((parts[ci].x + parts[ni].x)/2+0.5f)];//seems to be more accurate.
@@ -2330,7 +2338,7 @@ void Simulation::init_can_move()
 		 || destinationType == PT_ISOZ || destinationType == PT_ISZS || destinationType == PT_QRTZ || destinationType == PT_PQRT
 		 || destinationType == PT_H2   || destinationType == PT_BGLA || destinationType == PT_C5)
 			can_move[PT_PHOT][destinationType] = 2;
-		if (destinationType != PT_DMND && destinationType != PT_INSL && destinationType != PT_VOID && destinationType != PT_PVOD && destinationType != PT_VIBR && destinationType != PT_BVBR && destinationType != PT_PRTI && destinationType != PT_PRTO)
+		if (destinationType != PT_DMND && destinationType != PT_INSL && destinationType != PT_VOID && destinationType != PT_PVOD && destinationType != PT_VIBR && destinationType != PT_BVBR && destinationType != PT_PRTI && destinationType != PT_PRTO && destinationType != PT_DMRN)
 		{
 			can_move[PT_PROT][destinationType] = 2;
 			can_move[PT_GRVT][destinationType] = 2;
@@ -3494,6 +3502,15 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 		break;
 	}
 	case PT_GRVT:
+	{
+		float a = RNG::Ref().between(0, 359) * 3.14159f / 180.0f;
+		parts[i].life = RNG::Ref().between(250, 449);
+		parts[i].vx = 2.0f*cosf(a);
+		parts[i].vy = 2.0f*sinf(a);
+		parts[i].tmp = 7;
+		break;
+	}
+	case PT_UVRD:
 	{
 		float a = RNG::Ref().between(0, 359) * 3.14159f / 180.0f;
 		parts[i].life = RNG::Ref().between(250, 449);

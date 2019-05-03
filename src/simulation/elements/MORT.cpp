@@ -6,7 +6,7 @@ Element_MORT::Element_MORT()
 	Name = "MORT";
 	Colour = PIXPACK(0xE0E0E0);
 	MenuVisible = 1;
-	MenuSection = SC_CRACKER2;
+	MenuSection = SC_HIDDEN;
 	Enabled = 1;
 
 	Advection = 0.0f;

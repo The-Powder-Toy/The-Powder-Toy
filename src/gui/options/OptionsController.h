@@ -19,6 +19,7 @@ public:
 	void SetNewtonianGravity(bool state);
 	void SetWaterEqualisation(bool state);
 	void SetGravityMode(int gravityMode);
+	void SetTheme(bool state);
 	void SetAirMode(int airMode);
 	void SetEdgeMode(int edgeMode);
 	void SetFullscreen(bool fullscreen);

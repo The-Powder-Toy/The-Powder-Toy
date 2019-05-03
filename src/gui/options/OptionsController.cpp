@@ -42,6 +42,10 @@ void OptionsController::SetGravityMode(int gravityMode)
 	model->SetGravityMode(gravityMode);
 }
 
+void OptionsController::SetTheme(bool state)
+{
+	model->SetTheme(state);
+}
 void OptionsController::SetAirMode(int airMode)
 {
 	model->SetAirMode(airMode);
