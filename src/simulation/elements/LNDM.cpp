@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_LNDM PT_LNDM 189
 Element_LNDM::Element_LNDM()
 {

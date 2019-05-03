@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_SGLU PT_SGLU 191
 Element_SGLU::Element_SGLU()
 {

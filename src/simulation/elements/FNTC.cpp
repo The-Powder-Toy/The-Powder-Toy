@@ -1,4 +1,4 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 //#TPT-Directive ElementClass Element_FNTC PT_FNTC 188
 Element_FNTC::Element_FNTC()
 {
