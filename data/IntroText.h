@@ -1,7 +1,7 @@
 #pragma once
 const char *const introTextData =
 "\bl                                             << WELCOME TO THE CRACKER 1000 MOD >>\n"
-"\blVERSION: 7.0 \n"
+"\blVERSION: 7.1 \n"
 "\n"
 "\bgWhat's new?\n"
 "\n"
@@ -10,7 +10,7 @@ const char *const introTextData =
 "# All hidden elements are now shown in  Hidden menu.\n"
 "# Added new blue theme.\n"
 "# FPS capped at 80 instead of 60.\n"
-"# This mod is still work in progress please report all the bugs.\n"
+"# Report any bug you find in the mod thread.\n"
 
 "\n"
 "\btPress any key to continue.....";
