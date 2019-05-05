@@ -96,6 +96,7 @@ int Element_LITH::update(UPDATE_FUNC_ARGS)
 				{
 					parts[ID(r)].tmp = setto;
 				}
+
 			}
 	for (rx = -3; rx < 3; rx++)
 		for (ry = -3; ry < 3; ry++)
@@ -111,6 +112,17 @@ int Element_LITH::update(UPDATE_FUNC_ARGS)
 						np = sim->create_part(ID(r), x + rx, y + ry, PT_SPRK);
 
 					}
+					break;
+				case PT_WATR:
+					{
+						sim->part_change_type(i, x, y, PT_LAVA);
+					}
+					break;
+				case PT_SLTW:
+				{
+					sim->part_change_type(i, x, y, PT_LAVA);
+				}
+				break;
 				}
 			}
 	return 0;
