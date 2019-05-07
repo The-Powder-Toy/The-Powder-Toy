@@ -243,7 +243,7 @@ int Simulation::Load(int fullX, int fullY, GameSave * save, bool includePressure
 
 			// List of elements that load pavg with a multiplicative bias of 2**6
 			// (or not at all if pressure is not loaded).
-			// If you change this list, change it in GameSave::serialiseOPS too!
+			// If you change this list, change it in GameSave::serialiseOPS and GameSave::readOPS too!
 		case PT_QRTZ:
 		case PT_GLAS:
 		case PT_TUNG:
@@ -251,11 +251,6 @@ int Simulation::Load(int fullX, int fullY, GameSave * save, bool includePressure
 			{
 				parts[i].pavg[0] = 0;
 				parts[i].pavg[1] = 0;
-			}
-			else
-			{
-				parts[i].pavg[0] /= 64;
-				parts[i].pavg[1] /= 64;
 			}
 			break;
 		}
