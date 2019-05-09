@@ -235,13 +235,13 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 					{
 						if (sender == PT_NSCN && parts[ID(r)].tmp == 0) parts[ID(r)].tmp = 2;
 						else if (sender == PT_PSCN && parts[ID(r)].tmp == 3) parts[ID(r)].tmp = 1;
-						if (sender == PT_INST && parts[ID(r)].life == 10)
+						if (sender == PT_INST && parts[ID(r)].life == 10 && parts[ID(r)].temp < 1293.0f)
 						{
 							parts[i].temp += 4.15f;
 						}
-						else if (sender == PT_INST && parts[ID(r)].life == 10 && parts[ID(r)].tmp2 == 1)
+						 if (sender == PT_INST && parts[ID(r)].life == 10 && parts[ID(r)].tmp2 == 1 && parts[ID(r)].temp < 1293.0f)
 						{
-							parts[i].temp += 16.15f;
+							parts[i].temp += 26.15f;
 						}
 					}
 					continue;

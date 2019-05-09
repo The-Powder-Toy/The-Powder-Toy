@@ -28,7 +28,7 @@ Element_DMRN::Element_DMRN()
 
 	Temperature = R_TEMP + 0.0f + 273.15f;
 	HeatConduct = 0;
-	Description = "DAMRON,basically indestructible insulator that also blocks radiations.";
+	Description = "DEMRON,radiation-shielding fabric and insulator.";
 
 	Properties = TYPE_SOLID;
 

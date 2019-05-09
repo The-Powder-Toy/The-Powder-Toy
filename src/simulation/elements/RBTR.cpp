@@ -20,8 +20,8 @@ Element_LITH::Element_LITH()
 	Falldown = 0;
 
 	Flammable = 0;
-	Explosive = 1;
-	Meltable = 0;
+	Explosive = 10;
+	Meltable = 1;
 	Hardness = 1;
 
 	Weight = 100;
@@ -38,7 +38,7 @@ Element_LITH::Element_LITH()
 	HighPressureTransition = NT;
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
-	HighTemperature = 1293.0f;
+	HighTemperature = 1393.0f;
 	HighTemperatureTransition = PT_LAVA;
 
 	Update = &Element_LITH::update;
@@ -115,12 +115,12 @@ int Element_LITH::update(UPDATE_FUNC_ARGS)
 					break;
 				case PT_WATR:
 					{
-						sim->part_change_type(i, x, y, PT_LAVA);
+						sim->part_change_type(i, x, y, PT_BOMB);
 					}
 					break;
 				case PT_SLTW:
 				{
-					sim->part_change_type(i, x, y, PT_LAVA);
+					sim->part_change_type(i, x, y, PT_BOMB);
 				}
 				break;
 				}
@@ -132,6 +132,21 @@ int Element_LITH::update(UPDATE_FUNC_ARGS)
 //#TPT-Directive ElementHeader Element_LITH static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_LITH::graphics(GRAPHICS_FUNC_ARGS)
 {
+	int gradv;
+	double tempOver = (((cpart->tmp2)));
+	if (cpart->tmp2 == 1)
+	{
+		double gradv = sin(tempOver) + 2.0;
+		*firer = (int)(gradv * 158.0);
+		*fireg = (int)(gradv * 156.0);
+		*fireb = (int)(gradv * 112.0);
+		*firea = 50;
+
+		*colr += *firer;
+		*colg += *fireg;
+		*colb += *fireb;
+		*pixel_mode |= FIRE_ADD;
+	}
 	return 0;
 }
 

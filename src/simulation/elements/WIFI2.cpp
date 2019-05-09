@@ -1,9 +1,9 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_TEMP PT_TEMP 199
-Element_TEMP::Element_TEMP()
+//#TPT-Directive ElementClass Element_THMM PT_THMM 199
+Element_THMM::Element_THMM()
 {
-	Identifier = "DEFAULT_PT_TEMP";
-	Name = "TEMP";
+	Identifier = "DEFAULT_PT_THMM";
+	Name = "THMM";
 	Colour = PIXPACK(0x40A060);
 	MenuVisible = 1;
 	MenuSection = SC_CRACKER1000;
@@ -27,8 +27,8 @@ Element_TEMP::Element_TEMP()
 	Weight = 100;
 
 	Temperature = R_TEMP + 0.0f + 273.15f;
-	HeatConduct = 252;
-	Description = "Temperature meter,Changes colour based on its temp.";
+	HeatConduct = 232;
+	Description = "Thermometer,Changes colour based on its temperature.";
 
 	Properties = TYPE_SOLID;
 
@@ -42,21 +42,20 @@ Element_TEMP::Element_TEMP()
 	HighTemperatureTransition = NT;
 
 	Update = NULL;
-	Graphics = &Element_TEMP::graphics;
+	Graphics = &Element_THMM::graphics;
 }
 
 #define FREQUENCY1 0.0928f
 
-//#TPT-Directive ElementHeader Element_TEMP static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_TEMP::graphics(GRAPHICS_FUNC_ARGS)
+//#TPT-Directive ElementHeader Element_THMM static int graphics(GRAPHICS_FUNC_ARGS)
+int Element_THMM::graphics(GRAPHICS_FUNC_ARGS)
 {
-	int q = (int)((cpart->temp - 73.15f) / 100 + 1);
-	*colr = sin(FREQUENCY1*q + 0) * 127 + 128;
-	*colg = sin(FREQUENCY1*q + 2) * 127 + 128;
-	*colb = sin(FREQUENCY1*q + 4) * 127 + 128;
-	*pixel_mode |= EFFECT_DBGLINES;
+	int q = (int)((cpart->temp)/50);
+	*colr = sin(FREQUENCY1*q + 2) * 127 + 128;
+	*colg = sin(FREQUENCY1*q + 4) * 127 + 128;
+	*colb = sin(FREQUENCY1*q + 8) * 127 + 128;
 	return 0;
 }
 
 
-Element_TEMP::~Element_TEMP() {}
+Element_THMM::~Element_THMM() {}
