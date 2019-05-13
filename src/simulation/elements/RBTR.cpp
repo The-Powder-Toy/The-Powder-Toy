@@ -133,22 +133,49 @@ int Element_LITH::update(UPDATE_FUNC_ARGS)
 int Element_LITH::graphics(GRAPHICS_FUNC_ARGS)
 {
 	int gradv;
-	double tempOver = (((cpart->tmp2)));
-	if (cpart->tmp2 == 1)
+	double tempOver = (((cpart->temp)));
+	
+	if (cpart->temp >= 1093.0f)
 	{
 		double gradv = sin(tempOver) + 2.0;
-		*firer = (int)(gradv * 158.0);
-		*fireg = (int)(gradv * 156.0);
-		*fireb = (int)(gradv * 112.0);
-		*firea = 50;
+		*firer = (int)(gradv * 0.0);
+		*fireg = (int)(gradv * 249.0);
+		*fireb = (int)(gradv * 0.0);
+		*firea = 40;
 
 		*colr += *firer;
 		*colg += *fireg;
 		*colb += *fireb;
 		*pixel_mode |= FIRE_ADD;
 	}
+	if (cpart->temp <= 275.0f)
+	{
+		double gradv = sin(tempOver) + 2.0;
+		*firer = (int)(gradv * 249.0);
+		*fireg = (int)(gradv * 0.0);
+		*fireb = (int)(gradv * 0.0);
+		*firea = 40;
+
+		*colr += *firer;
+		*colg += *fireg;
+		*colb += *fireb;
+		*pixel_mode |= FIRE_ADD;
+		
+	}
+	if (cpart->life == 10 && cpart->temp <= 1090.0f)
+	{
+		double gradv = sin(tempOver) + 2.0;
+		*firer = (int)(gradv * 156.0);
+		*fireg = (int)(gradv * 156.0);
+		*fireb = (int)(gradv * 156.0);
+		*firea = 30;
+
+		*colr += *firer;
+		*colg += *fireg;
+		*colb += *fireb;
+		*pixel_mode |= FIRE_ADD;
+
+	}
 	return 0;
 }
-
-
 Element_LITH::~Element_LITH() {}
