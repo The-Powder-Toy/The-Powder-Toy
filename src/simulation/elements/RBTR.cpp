@@ -123,6 +123,11 @@ int Element_LITH::update(UPDATE_FUNC_ARGS)
 					sim->part_change_type(i, x, y, PT_BOMB);
 				}
 				break;
+				case PT_CBNW:
+				{
+					sim->part_change_type(i, x, y, PT_BOMB);
+				}
+				break;
 				}
 			}
 	return 0;
