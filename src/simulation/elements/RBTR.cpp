@@ -141,7 +141,7 @@ int Element_LITH::graphics(GRAPHICS_FUNC_ARGS)
 		*firer = (int)(gradv * 0.0);
 		*fireg = (int)(gradv * 249.0);
 		*fireb = (int)(gradv * 0.0);
-		*firea = 40;
+		*firea = 20;
 
 		*colr += *firer;
 		*colg += *fireg;
@@ -154,7 +154,7 @@ int Element_LITH::graphics(GRAPHICS_FUNC_ARGS)
 		*firer = (int)(gradv * 249.0);
 		*fireg = (int)(gradv * 0.0);
 		*fireb = (int)(gradv * 0.0);
-		*firea = 40;
+		*firea = 20;
 
 		*colr += *firer;
 		*colg += *fireg;
@@ -162,13 +162,27 @@ int Element_LITH::graphics(GRAPHICS_FUNC_ARGS)
 		*pixel_mode |= FIRE_ADD;
 		
 	}
-	if (cpart->life == 10 && cpart->temp <= 1090.0f)
+	if (cpart->life == 0 && cpart->temp <= 1090.0f && cpart->temp>= 280.0f)
 	{
 		double gradv = sin(tempOver) + 2.0;
-		*firer = (int)(gradv * 156.0);
-		*fireg = (int)(gradv * 156.0);
-		*fireb = (int)(gradv * 156.0);
-		*firea = 30;
+		*firer = (int)(gradv * 249.0);
+		*fireg = (int)(gradv * 249.0);
+		*fireb = (int)(gradv * 249.0);
+		*firea = 20;
+
+		*colr += *firer;
+		*colg += *fireg;
+		*colb += *fireb;
+		*pixel_mode |= FIRE_ADD;
+
+	}
+	if (cpart->tmp2 == 1)
+	{
+		double gradv = sin(tempOver) + 2.0;
+		*firer = (int)(gradv * 0.0);
+		*fireg = (int)(gradv * 0.0);
+		*fireb = (int)(gradv * 249.0);
+		*firea = 20;
 
 		*colr += *firer;
 		*colg += *fireg;
