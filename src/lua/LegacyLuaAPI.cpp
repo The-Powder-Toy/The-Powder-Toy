@@ -1369,7 +1369,7 @@ int luatpt_getscript(lua_State* l)
 		return luaL_error(l, http::StatusText(ret).ToUtf8().c_str());
 	}
 
-	if (!strcmp(scriptData.c_str(), "Invalid script ID\r\n"))
+	if (scriptData.Contains("Invalid script ID"))
 	{
 		return luaL_error(l, "Invalid Script ID");
 	}
