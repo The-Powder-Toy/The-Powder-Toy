@@ -28,7 +28,7 @@ Element_LITH::Element_LITH()
 
 	Temperature = R_TEMP + 0.0f + 273.15f;
 	HeatConduct = 251;
-	Description = "Lithium.(PSCN activates,NSCN deactivates,INST recieve/send charge,.tmp2=1 fast charges)";
+	Description = "Lithium.(PSCN activates, NSCN deactivates, INST recieve/send charge, .tmp2=1 fast charges)";
 
 	Properties = TYPE_SOLID | PROP_HOT_GLOW;
 
@@ -38,7 +38,7 @@ Element_LITH::Element_LITH()
 	HighPressureTransition = NT;
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
-	HighTemperature = 1393.0f;
+	HighTemperature = 3393.0f;
 	HighTemperatureTransition = PT_LAVA;
 
 	Update = &Element_LITH::update;
@@ -98,8 +98,8 @@ int Element_LITH::update(UPDATE_FUNC_ARGS)
 				}
 
 			}
-	for (rx = -3; rx < 3; rx++)
-		for (ry = -3; ry < 3; ry++)
+	for (rx = -4; rx < 4; rx++)
+		for (ry = -4; ry < 4; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
 			{
 				r = pmap[y + ry][x + rx];
@@ -113,17 +113,21 @@ int Element_LITH::update(UPDATE_FUNC_ARGS)
 
 					}
 					break;
+
 				case PT_WATR:
-					{
-						sim->part_change_type(i, x, y, PT_BOMB);
-					}
-					break;
+				
+				{
+					sim->part_change_type(i, x, y, PT_BOMB);
+				}
+				break;
 				case PT_SLTW:
+
 				{
 					sim->part_change_type(i, x, y, PT_BOMB);
 				}
 				break;
 				case PT_CBNW:
+
 				{
 					sim->part_change_type(i, x, y, PT_BOMB);
 				}
@@ -140,13 +144,13 @@ int Element_LITH::graphics(GRAPHICS_FUNC_ARGS)
 	int gradv;
 	double tempOver = (((cpart->temp)));
 	
-	if (cpart->temp >= 1093.0f)
+	if (cpart->temp >= 3293.0f )
 	{
 		double gradv = sin(tempOver) + 2.0;
 		*firer = (int)(gradv * 0.0);
-		*fireg = (int)(gradv * 249.0);
+		*fireg = (int)(gradv * 200.0);
 		*fireb = (int)(gradv * 0.0);
-		*firea = 20;
+		*firea = 25;
 
 		*colr += *firer;
 		*colg += *fireg;
@@ -156,10 +160,10 @@ int Element_LITH::graphics(GRAPHICS_FUNC_ARGS)
 	if (cpart->temp <= 275.0f)
 	{
 		double gradv = sin(tempOver) + 2.0;
-		*firer = (int)(gradv * 249.0);
+		*firer = (int)(gradv * 200.0);
 		*fireg = (int)(gradv * 0.0);
 		*fireb = (int)(gradv * 0.0);
-		*firea = 20;
+		*firea = 25;
 
 		*colr += *firer;
 		*colg += *fireg;
@@ -167,13 +171,13 @@ int Element_LITH::graphics(GRAPHICS_FUNC_ARGS)
 		*pixel_mode |= FIRE_ADD;
 		
 	}
-	if (cpart->life == 0 && cpart->temp <= 1090.0f && cpart->temp>= 280.0f)
+	if (cpart->life == 0 && cpart->temp <= 3090.0f && cpart->temp>= 280.0f)
 	{
 		double gradv = sin(tempOver) + 2.0;
-		*firer = (int)(gradv * 249.0);
-		*fireg = (int)(gradv * 249.0);
-		*fireb = (int)(gradv * 249.0);
-		*firea = 20;
+		*firer = (int)(gradv * 150.0);
+		*fireg = (int)(gradv * 150.0);
+		*fireb = (int)(gradv * 150.0);
+		*firea = 10;
 
 		*colr += *firer;
 		*colg += *fireg;
@@ -181,13 +185,13 @@ int Element_LITH::graphics(GRAPHICS_FUNC_ARGS)
 		*pixel_mode |= FIRE_ADD;
 
 	}
-	if (cpart->tmp2 == 1)
+	if (cpart->tmp2 == 1 && cpart->temp <= 3293.0f)
 	{
 		double gradv = sin(tempOver) + 2.0;
 		*firer = (int)(gradv * 0.0);
 		*fireg = (int)(gradv * 0.0);
-		*fireb = (int)(gradv * 249.0);
-		*firea = 20;
+		*fireb = (int)(gradv * 200.0);
+		*firea = 25;
 
 		*colr += *firer;
 		*colg += *fireg;

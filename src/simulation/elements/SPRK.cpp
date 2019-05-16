@@ -231,17 +231,20 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 					}
 					continue;
 				case PT_LITH:
-					if (abs(rx) < 2 && abs(ry) < 2 && parts[i].life < 4)
+					if (abs(rx) < 4 && abs(ry) < 4 && parts[i].life < 4)
 					{
 						if (sender == PT_NSCN && parts[ID(r)].tmp == 0) parts[ID(r)].tmp = 2;
 						else if (sender == PT_PSCN && parts[ID(r)].tmp == 3) parts[ID(r)].tmp = 1;
-						if (sender == PT_INST && parts[ID(r)].life == 10 && parts[ID(r)].temp < 1393.0f)
+					}
+					if (abs(rx) < 4 && abs(ry) < 4 && parts[i].life < 4)
+					{
+						if (sender == PT_INST && parts[ID(r)].life == 10 && parts[ID(r)].temp < 3293.0f)
 						{
 							parts[i].temp += 4.15f;
 						}
-						 if (sender == PT_INST && parts[ID(r)].life == 10 && parts[ID(r)].tmp2 == 1 && parts[ID(r)].temp < 1393.0f)
+						 if (sender == PT_INST && parts[ID(r)].life == 10 && parts[ID(r)].tmp2 == 1 && parts[ID(r)].temp < 3293.0f)
 						{
-							parts[i].temp += 16.15f;
+							parts[i].temp += 36.15f;
 						}
 					}
 					continue;
