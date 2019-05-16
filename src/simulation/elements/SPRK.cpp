@@ -244,8 +244,13 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 						}
 						 if (sender == PT_INST && parts[ID(r)].life == 10 && parts[ID(r)].tmp2 == 1 && parts[ID(r)].temp < 3293.0f)
 						{
-							parts[i].temp += 36.15f;
+							parts[i].temp += 26.15f;
 						}
+					}
+					if (parts[i].life < 4)
+					{
+						if (sender == PT_NSCN) parts[ID(r)].life = 10;
+						else if (sender == PT_PSCN && parts[ID(r)].life >= 10) parts[ID(r)].life = 9;
 					}
 					continue;
 				case PT_LED:

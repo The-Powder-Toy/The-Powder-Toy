@@ -11,7 +11,7 @@ Element_LITH::Element_LITH()
 
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
-	AirLoss = 0.90f;
+	AirLoss = 0.95f;
 	Loss = 0.00f;
 	Collision = 0.0f;
 	Gravity = 0.0f;
@@ -22,7 +22,7 @@ Element_LITH::Element_LITH()
 	Flammable = 0;
 	Explosive = 10;
 	Meltable = 1;
-	Hardness = 1;
+	Hardness = 10;
 
 	Weight = 100;
 
@@ -49,55 +49,30 @@ Element_LITH::Element_LITH()
 int Element_LITH::update(UPDATE_FUNC_ARGS)
 
 {
-	int r, rx, ry, check, setto,np;
-	switch (parts[i].tmp)
+	int r, rx, ry,np;
+	if (parts[i].life != 10)
 	{
-	case 1:
-		if (parts[i].life <= 0)
-			parts[i].tmp = 0;
-		else
-		{
-			parts[i].life -= 2;
-			if (parts[i].life < 0)
-				parts[i].life = 0;
-			parts[i].tmp2 = parts[i].life;
-		}
-	case 0:
-		check = 3;
-		setto = 1;
-		break;
-	case 2:
-		if (parts[i].life >= 10)
-			parts[i].tmp = 3;
-		else
-		{
-			parts[i].life += 2;
-			if (parts[i].life > 10)
-				parts[i].life = 10;
-			parts[i].tmp2 = parts[i].life;
-		}
-	case 3:
-		check = 0;
-		setto = 2;
-		break;
-	default:
-		parts[i].tmp = 0;
-		parts[i].life = 0;
-		return 0;
+		if (parts[i].life > 0)
+			parts[i].life--;
 	}
-	for (rx = -1; rx < 2; rx++)
-		for (ry = -1; ry < 2; ry++)
-			if (BOUNDS_CHECK && (rx || ry))
-			{
-				r = pmap[y + ry][x + rx];
-				if (!r)
-					continue;
-				if (TYP(r) == PT_LITH && parts[ID(r)].tmp == check)
+	else
+	{
+		for (rx = -2; rx < 3; rx++)
+			for (ry = -2; ry < 3; ry++)
+				if (BOUNDS_CHECK && (rx || ry))
 				{
-					parts[ID(r)].tmp = setto;
+					r = pmap[y + ry][x + rx];
+					if (!r)
+						continue;
+					if (TYP(r) == PT_LITH)
+					{
+						if (parts[ID(r)].life < 10 && parts[ID(r)].life>0)
+							parts[i].life = 9;
+						else if (parts[ID(r)].life == 0)
+							parts[ID(r)].life = 10;
+					}
+					}
 				}
-
-			}
 	for (rx = -4; rx < 4; rx++)
 		for (ry = -4; ry < 4; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
@@ -113,27 +88,30 @@ int Element_LITH::update(UPDATE_FUNC_ARGS)
 
 					}
 					break;
-
-				case PT_WATR:
-				
-				{
-					sim->part_change_type(i, x, y, PT_BOMB);
+	
+					case PT_WATR:
+						if (RNG::Ref().chance(1, 200))
+						{
+							sim->part_change_type(i, x, y, PT_PLSM);
+							parts[i].life = 65;
+						}
+					break;
+					case PT_SLTW:
+						if (RNG::Ref().chance(1, 200))
+					{
+						sim->part_change_type(i, x, y, PT_PLSM);
+						parts[i].life = 65;
+					}
+					break;
+					case PT_CBNW:
+						if (RNG::Ref().chance(1, 200))
+					{
+						sim->part_change_type(i, x, y, PT_PLSM);
+						parts[i].life = 65;
+					}
+					break;
+					}
 				}
-				break;
-				case PT_SLTW:
-
-				{
-					sim->part_change_type(i, x, y, PT_BOMB);
-				}
-				break;
-				case PT_CBNW:
-
-				{
-					sim->part_change_type(i, x, y, PT_BOMB);
-				}
-				break;
-				}
-			}
 	return 0;
 }
 
@@ -150,7 +128,7 @@ int Element_LITH::graphics(GRAPHICS_FUNC_ARGS)
 		*firer = (int)(gradv * 0.0);
 		*fireg = (int)(gradv * 200.0);
 		*fireb = (int)(gradv * 0.0);
-		*firea = 25;
+		*firea = 20;
 
 		*colr += *firer;
 		*colg += *fireg;
@@ -163,7 +141,7 @@ int Element_LITH::graphics(GRAPHICS_FUNC_ARGS)
 		*firer = (int)(gradv * 200.0);
 		*fireg = (int)(gradv * 0.0);
 		*fireb = (int)(gradv * 0.0);
-		*firea = 25;
+		*firea = 20;
 
 		*colr += *firer;
 		*colg += *fireg;
@@ -171,13 +149,13 @@ int Element_LITH::graphics(GRAPHICS_FUNC_ARGS)
 		*pixel_mode |= FIRE_ADD;
 		
 	}
-	if (cpart->life == 0 && cpart->temp <= 3090.0f && cpart->temp>= 280.0f)
+	if (cpart->life == 0 && cpart->temp <= 3293.0f && cpart->temp>= 280.0f)
 	{
 		double gradv = sin(tempOver) + 2.0;
-		*firer = (int)(gradv * 150.0);
-		*fireg = (int)(gradv * 150.0);
-		*fireb = (int)(gradv * 150.0);
-		*firea = 10;
+		*firer = (int)(gradv * 90.0);
+		*fireg = (int)(gradv * 90.0);
+		*fireb = (int)(gradv * 90.0);
+		
 
 		*colr += *firer;
 		*colg += *fireg;
@@ -191,7 +169,7 @@ int Element_LITH::graphics(GRAPHICS_FUNC_ARGS)
 		*firer = (int)(gradv * 0.0);
 		*fireg = (int)(gradv * 0.0);
 		*fireb = (int)(gradv * 200.0);
-		*firea = 25;
+		*firea = 20;
 
 		*colr += *firer;
 		*colg += *fireg;
