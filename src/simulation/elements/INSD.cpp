@@ -22,7 +22,7 @@ Element_DMRN::Element_DMRN()
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
-	Hardness = 10;
+	Hardness = 0;
 
 	Weight = 100;
 

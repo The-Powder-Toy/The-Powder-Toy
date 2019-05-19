@@ -48,7 +48,7 @@ Element_LITH::Element_LITH()
 //#TPT-Directive ElementHeader Element_LITH static int update(UPDATE_FUNC_ARGS)
 int Element_LITH::update(UPDATE_FUNC_ARGS)
 
-{
+{                                                                                 //Basic code for activation and deactivation.
 	int r, rx, ry,np;
 	if (parts[i].life != 10)
 	{
@@ -63,7 +63,7 @@ int Element_LITH::update(UPDATE_FUNC_ARGS)
 				{
 					r = pmap[y + ry][x + rx];
 					if (!r)
-						continue;
+						continue; 
 					if (TYP(r) == PT_LITH)
 					{
 						if (parts[ID(r)].life < 10 && parts[ID(r)].life>0)
@@ -73,6 +73,7 @@ int Element_LITH::update(UPDATE_FUNC_ARGS)
 					}
 					}
 				}
+	                                                                              //Code for LITH discharging.
 	for (rx = -4; rx < 4; rx++)
 		for (ry = -4; ry < 4; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
@@ -85,28 +86,27 @@ int Element_LITH::update(UPDATE_FUNC_ARGS)
 					{
 						parts[i].temp -= 0.15f;
 						np = sim->create_part(ID(r), x + rx, y + ry, PT_SPRK);
-
 					}
 					break;
-	
+					//Various reactions with different kinds of water elements.Slowly reacts with water and releases H2 gas.
 					case PT_WATR:
-						if (RNG::Ref().chance(1, 200))
+						if (RNG::Ref().chance(0.5, 1000))
 						{
-							sim->part_change_type(i, x, y, PT_PLSM);
+							sim->part_change_type(i, x, y, PT_H2);
 							parts[i].life = 65;
 						}
 					break;
 					case PT_SLTW:
-						if (RNG::Ref().chance(1, 200))
+						if (RNG::Ref().chance(0.5, 1000))
 					{
-						sim->part_change_type(i, x, y, PT_PLSM);
+						sim->part_change_type(i, x, y, PT_H2);
 						parts[i].life = 65;
 					}
 					break;
 					case PT_CBNW:
-						if (RNG::Ref().chance(1, 200))
+						if (RNG::Ref().chance(0.5, 1000))
 					{
-						sim->part_change_type(i, x, y, PT_PLSM);
+						sim->part_change_type(i, x, y, PT_H2);
 						parts[i].life = 65;
 					}
 					break;
@@ -122,11 +122,11 @@ int Element_LITH::graphics(GRAPHICS_FUNC_ARGS)
 	int gradv;
 	double tempOver = (((cpart->temp)));
 	
-	if (cpart->temp >= 3293.0f )
+	if (cpart->temp >= 3293.0f )                            // Fancy colour states ( Green = Full, Red = Discharged, Dull Blue = Fast charge but OFF, Blue glow = Fast charge and on, White/Grey = On/OFF. )
 	{
 		double gradv = sin(tempOver) + 2.0;
 		*firer = (int)(gradv * 0.0);
-		*fireg = (int)(gradv * 200.0);
+		*fireg = (int)(gradv * 250.0);
 		*fireb = (int)(gradv * 0.0);
 		*firea = 20;
 
@@ -149,7 +149,7 @@ int Element_LITH::graphics(GRAPHICS_FUNC_ARGS)
 		*pixel_mode |= FIRE_ADD;
 		
 	}
-	if (cpart->life == 0 && cpart->temp <= 3293.0f && cpart->temp>= 280.0f)
+	if (cpart->life == 0 && cpart->temp <= 3293.0f && cpart->temp>= 280.0f && cpart-> tmp2 != 1 )
 	{
 		double gradv = sin(tempOver) + 2.0;
 		*firer = (int)(gradv * 90.0);
@@ -163,13 +163,26 @@ int Element_LITH::graphics(GRAPHICS_FUNC_ARGS)
 		*pixel_mode |= FIRE_ADD;
 
 	}
-	if (cpart->tmp2 == 1 && cpart->temp <= 3293.0f)
+	if (cpart->tmp2 == 1 && cpart->temp <= 3293.0f && cpart->life == 10)
+	{
+		double gradv = sin(tempOver) + 2.0;
+		*firer = (int)(gradv * 10.0);
+		*fireg = (int)(gradv * 10.0);
+		*fireb = (int)(gradv * 50.0);
+		*firea = 5;
+
+		*colr += *firer;
+		*colg += *fireg;
+		*colb += *fireb;
+		*pixel_mode |= FIRE_ADD;
+	}
+	if (cpart->tmp2 == 1 && cpart->temp <= 3293.0f && cpart->life == 0)
 	{
 		double gradv = sin(tempOver) + 2.0;
 		*firer = (int)(gradv * 0.0);
 		*fireg = (int)(gradv * 0.0);
 		*fireb = (int)(gradv * 200.0);
-		*firea = 20;
+		*firea = 30;
 
 		*colr += *firer;
 		*colg += *fireg;

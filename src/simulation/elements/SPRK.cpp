@@ -240,11 +240,11 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 					{
 						if (sender == PT_INST && parts[ID(r)].life == 10 && parts[ID(r)].temp < 3293.0f)
 						{
-							parts[i].temp += 4.15f;
+							parts[ID(r)].temp += 1.15f;
 						}
 						 if (sender == PT_INST && parts[ID(r)].life == 10 && parts[ID(r)].tmp2 == 1 && parts[ID(r)].temp < 3293.0f)
 						{
-							parts[i].temp += 26.15f;
+							 parts[ID(r)].temp += 16.15f;
 						}
 					}
 					if (parts[i].life < 4)
