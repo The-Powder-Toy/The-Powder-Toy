@@ -11,7 +11,6 @@ const char *const introTextData =
 "# Added new blue theme.\n"
 "# FPS capped at 80 instead of 60.\n"
 "# Feel free to give new element suggestion/feedback at https://tpt.io/:23279"
-"# You are using "; "\bt" " IDENT_PLATFORM "
 "\n"
 "\n"
 "\btPress any key to continue.....";
