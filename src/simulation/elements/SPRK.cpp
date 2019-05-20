@@ -254,10 +254,10 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 					}
 					continue;
 				case PT_LED:
-					if (abs(rx) < 2 && abs(ry) < 2 && parts[i].life < 4)
+					if (parts[i].life < 4)
 					{
-						if (sender == PT_PSCN && parts[ID(r)].tmp == 0) parts[ID(r)].tmp = 2;
-						else if (sender == PT_NSCN && parts[ID(r)].tmp == 3) parts[ID(r)].tmp = 1;
+						if (sender == PT_NSCN) parts[ID(r)].life = 10;
+						else if (sender == PT_PSCN && parts[ID(r)].life >= 10) parts[ID(r)].life = 9;
 					}
 					continue;
 								case PT_PPIP:

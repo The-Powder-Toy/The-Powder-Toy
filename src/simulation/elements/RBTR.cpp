@@ -27,7 +27,7 @@ Element_LITH::Element_LITH()
 	Weight = 100;
 
 	Temperature = R_TEMP + 0.0f + 273.15f;
-	HeatConduct = 251;
+	HeatConduct = 254;
 	Description = "Lithium.(PSCN activates, NSCN deactivates, INST recieve/send charge, .tmp2=1 fast charges)";
 
 	Properties = TYPE_SOLID | PROP_HOT_GLOW;
@@ -90,21 +90,21 @@ int Element_LITH::update(UPDATE_FUNC_ARGS)
 					break;
 					//Various reactions with different kinds of water elements.Slowly reacts with water and releases H2 gas.
 					case PT_WATR:
-						if (RNG::Ref().chance(0.5, 1000))
+						if (RNG::Ref().chance(1, 700))
 						{
 							sim->part_change_type(i, x, y, PT_H2);
 							parts[i].life = 65;
 						}
 					break;
 					case PT_SLTW:
-						if (RNG::Ref().chance(0.5, 1000))
+						if (RNG::Ref().chance(1, 700))
 					{
 						sim->part_change_type(i, x, y, PT_H2);
 						parts[i].life = 65;
 					}
 					break;
 					case PT_CBNW:
-						if (RNG::Ref().chance(0.5, 1000))
+						if (RNG::Ref().chance(1, 700))
 					{
 						sim->part_change_type(i, x, y, PT_H2);
 						parts[i].life = 65;

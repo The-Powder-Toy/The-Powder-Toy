@@ -26,9 +26,9 @@ Element_GLUE::Element_GLUE()
 
 	Weight = 20;
 
-	Temperature = R_TEMP + 0.0f + 273.15f;
-	HeatConduct = 72;
-	Description = "GLUE,hardens when heated";
+	Temperature = R_TEMP + 80.0f + 273.15f;
+	HeatConduct = 254;
+	Description = "GLUE, heat to cure it.";
 
 	Properties = TYPE_LIQUID;
 
@@ -36,10 +36,10 @@ Element_GLUE::Element_GLUE()
 	LowPressureTransition = NT;
 	HighPressure = IPH;
 	HighPressureTransition = NT;
-	LowTemperature = ITL;
-	LowTemperatureTransition = NT;
-	HighTemperature = 320.0f;
-	HighTemperatureTransition = PT_SGLU;
+	LowTemperature = 374.15f;
+	LowTemperatureTransition = PT_SGLU;
+	HighTemperature = NT;
+	HighTemperatureTransition = NT;
 
 	Update = NULL;
 }

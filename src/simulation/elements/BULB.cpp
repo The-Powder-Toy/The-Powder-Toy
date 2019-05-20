@@ -28,7 +28,7 @@ Element_LED::Element_LED()
 
 	Temperature = R_TEMP + 0.0f + 273.15f;
 	HeatConduct = 0;
-	Description = "LED,Glows when activated.";
+	Description = "Light emitting diode, .tmp2 changes colour modes.";
 
 	Properties = TYPE_SOLID;
 
@@ -49,69 +49,46 @@ Element_LED::Element_LED()
 int Element_LED::update(UPDATE_FUNC_ARGS)
 
 {
-	int r, rx, ry, check, setto;
-	switch (parts[i].tmp)
+	int r, rx, ry, np;
+	if (parts[i].life != 10)
 	{
-	case 1:
-		if (parts[i].life <= 0)
-			parts[i].tmp = 0;
-		else
-		{
-			parts[i].life -= 2;
-			if (parts[i].life < 0)
-				parts[i].life = 0;
-			parts[i].tmp2 = parts[i].life;
-		}
-	case 0:
-		check = 3;
-		setto = 1;
-		break;
-	case 2:
-		if (parts[i].life >= 10)
-			parts[i].tmp = 3;
-		else
-		{
-			parts[i].life += 2;
-			if (parts[i].life > 10)
-				parts[i].life = 10;
-			parts[i].tmp2 = parts[i].life;
-		}
-	case 3:
-		check = 0;
-		setto = 2;
-		break;
-	default:
-		parts[i].tmp = 0;
-		parts[i].life = 0;
-		return 0;
+		if (parts[i].life > 0)
+			parts[i].life--;
 	}
-	for (rx = -1; rx < 2; rx++)
-		for (ry = -1; ry < 2; ry++)
-			if (BOUNDS_CHECK && (rx || ry))
-			{
-				r = pmap[y + ry][x + rx];
-				if (!r)
-					continue;
-				if (TYP(r) == PT_LED && parts[ID(r)].tmp == check)
+	else
+	{
+		for (rx = -2; rx < 3; rx++)
+			for (ry = -2; ry < 3; ry++)
+				if (BOUNDS_CHECK && (rx || ry))
 				{
-					parts[ID(r)].tmp = setto;
+					r = pmap[y + ry][x + rx];
+					if (!r)
+						continue;
+					if (TYP(r) == PT_LED)
+					{
+						if (parts[ID(r)].life < 10 && parts[ID(r)].life>0)
+							parts[i].life = 9;
+						else if (parts[ID(r)].life == 0)
+							parts[ID(r)].life = 10;
+					}
 				}
-			}
+	}
 	return 0;
 }
 
 
 //#TPT-Directive ElementHeader Element_LED static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_LED::graphics(GRAPHICS_FUNC_ARGS)
+{int gradv;
+double tempOver = (((cpart->temp)));
+if (cpart->life == 0)
 {
-	int gradv;
-	double tempOver = (((cpart->life)));
-	if (cpart->life == 10)
+	if (cpart->tmp2 == 1)                            // Different tmp modes change colour of glow.
 	{
 		double gradv = sin(tempOver) + 2.0;
-		*firer = (int)(gradv * 158.0);
-		*fireg = (int)(gradv * 156.0);
-		*fireb = (int)(gradv * 112.0);
+		*firer = (int)(gradv * 250.0);
+		*fireg = (int)(gradv * 0.0);
+		*fireb = (int)(gradv * 0.0);
 		*firea = 50;
 
 		*colr += *firer;
@@ -119,6 +96,72 @@ int Element_LED::graphics(GRAPHICS_FUNC_ARGS)
 		*colb += *fireb;
 		*pixel_mode |= FIRE_ADD;
 	}
+	if (cpart->tmp2 == 2)
+	{
+		double gradv = sin(tempOver) + 2.0;
+		*firer = (int)(gradv * 0.0);
+		*fireg = (int)(gradv * 250.0);
+		*fireb = (int)(gradv * 0.0);
+		*firea = 50;
+
+		*colr += *firer;
+		*colg += *fireg;
+		*colb += *fireb;
+		*pixel_mode |= FIRE_ADD;
+	}
+	if (cpart->tmp2 == 3)
+	{
+		double gradv = sin(tempOver) + 2.0;
+		*firer = (int)(gradv * 0.0);
+		*fireg = (int)(gradv * 0.0);
+		*fireb = (int)(gradv * 250.0);
+		*firea = 50;
+
+		*colr += *firer;
+		*colg += *fireg;
+		*colb += *fireb;
+		*pixel_mode |= FIRE_ADD;
+	}
+	if (cpart->tmp2 == 4)
+	{
+		double gradv = sin(tempOver) + 2.0;
+		*firer = (int)(gradv * 250.0);
+		*fireg = (int)(gradv * 250.0);
+		*fireb = (int)(gradv * 250.0);
+		*firea = 50;
+
+		*colr += *firer;
+		*colg += *fireg;
+		*colb += *fireb;
+		*pixel_mode |= FIRE_ADD;
+	}
+	if (cpart->tmp2 == 5)
+	{
+		double gradv = sin(tempOver) + 2.0;
+		*firer = (int)(gradv * 250.0);
+		*fireg = (int)(gradv * 0.0);
+		*fireb = (int)(gradv * 250.0);
+		*firea = 50;
+
+		*colr += *firer;
+		*colg += *fireg;
+		*colb += *fireb;
+		*pixel_mode |= FIRE_ADD;
+	}
+	if (cpart->tmp2 == 0 && cpart->life == 0)
+	{
+		double gradv = sin(tempOver) + 2.0;
+		*firer = (int)(gradv * 150.0);
+		*fireg = (int)(gradv * 150.0);
+		*fireb = (int)(gradv * 150.0);
+
+		*colr += *firer;
+		*colg += *fireg;
+		*colb += *fireb;
+		*pixel_mode |= FIRE_ADD;
+	}
+}
+
 	return 0;
 }
 Element_LED::~Element_LED() {}

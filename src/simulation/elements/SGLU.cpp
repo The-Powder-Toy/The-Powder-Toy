@@ -27,8 +27,8 @@ Element_SGLU::Element_SGLU()
 	Weight = 20;
 
 	Temperature = R_TEMP + 0.0f + 273.15f;
-	HeatConduct = 72;
-	Description = "SOLIDIFIED GLUE,Turns back into glue when extremely cold!";
+	HeatConduct = 254;
+	Description = "SOLIDIFIED GLUE, turns back into glue when heated.";
 
 	Properties = TYPE_SOLID;
 
@@ -36,10 +36,10 @@ Element_SGLU::Element_SGLU()
 	LowPressureTransition = NT;
 	HighPressure = IPH;
 	HighPressureTransition = NT;
-	LowTemperature = 273.0f;
-	LowTemperatureTransition = PT_GLUE;
-	HighTemperature = ITH;
-	HighTemperatureTransition = NT;
+	LowTemperature = NT;
+	LowTemperatureTransition = NT;
+	HighTemperature = 374.15f;
+	HighTemperatureTransition = PT_GLUE;
 
 	Update = NULL;
 }

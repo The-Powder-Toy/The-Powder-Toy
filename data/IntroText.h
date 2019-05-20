@@ -1,6 +1,6 @@
 #pragma once
 const char *const introTextData =
-"\bl                                             << WELCOME TO THE CRACKER 1000 MOD >>\n"
+"\bl                                         << WELCOME TO THE CRACKER1000 MOD >> \n"
 "\blVERSION: 5.0 \n"
 "\n"
 "\bgWhat's new?\n"
