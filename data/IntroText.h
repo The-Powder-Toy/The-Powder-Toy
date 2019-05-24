@@ -5,12 +5,14 @@ const char *const introTextData =
 "\n"
 "\bgWhat's new?\n"
 "\n"
+"\bt"
 "# 02 new menus added: Cracker1000 and Hidden menu.\n"
 "# All new elements added can be found in Cracker10000 menu.\n"
 "# All hidden elements are now shown in  Hidden menu.\n"
 "# Added new blue theme.\n"
 "# FPS capped at 80 instead of 60.\n"
+"# New Reset tool added.\n"
 "# Feel free to give new element suggestion/feedback at https://tpt.io/:23279"
 "\n"
 "\n"
-"\btPress any key to continue.....";
+"\blPress any key to continue.....";
