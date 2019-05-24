@@ -28,7 +28,7 @@ Element_LITH::Element_LITH()
 
 	Temperature = R_TEMP + 0.0f + 273.15f;
 	HeatConduct = 254;
-	Description = "Lithium.(PSCN activates, NSCN deactivates, INST recieve/send charge, .tmp2=1 fast charges)";
+	Description = "Lithium battery.(PSCN activates, NSCN deactivates, INST recieve/send charge, .tmp2=1 fast charges)";
 
 	Properties = TYPE_SOLID | PROP_HOT_GLOW;
 
@@ -39,7 +39,7 @@ Element_LITH::Element_LITH()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 3393.0f;
-	HighTemperatureTransition = PT_LAVA;
+	HighTemperatureTransition = PT_BOMB;
 
 	Update = &Element_LITH::update;
 	Graphics = &Element_LITH::graphics;

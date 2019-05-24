@@ -12,12 +12,12 @@ Tool_CRCK::Tool_CRCK()
 int Tool_CRCK::Perform(Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength)
 
 {
+	int i = sim->pmap[y][x];
 	if (!cpart)
-	{
 		return 0;
-	}
-	int i = (int)(cpart - sim->parts);
-	sim->create_part (i, x, y, cpart->type);
+	else 
+		int i = (int)(cpart - sim->parts);
+	sim->create_part(i, x, y, cpart->type);
 	return 1;
 }
 
