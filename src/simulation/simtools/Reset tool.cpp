@@ -1,5 +1,4 @@
 #include "simulation/ToolCommon.h"
-#include "simulation/ElementCommon.h"
 
 //#TPT-Directive ToolClass Tool_CRCK TOOL_CRCK 1
 Tool_CRCK::Tool_CRCK()
@@ -13,12 +12,12 @@ Tool_CRCK::Tool_CRCK()
 int Tool_CRCK::Perform(Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength)
 
 {
-	int i = sim->pmap[y][x];
-	if (!i)
+	if (!cpart)
 	{
 		return 0;
 	}
-	sim->create_part(i, x, y, cpart->type);
+	int i = (int)(cpart - sim->parts);
+	sim->create_part (i, x, y, cpart->type);
 	return 1;
 }
 
