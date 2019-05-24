@@ -18,8 +18,8 @@ int Tool_CRCK::Perform(Simulation * sim, Particle * cpart, int x, int y, int bru
 	{
 		return 0;
 	}
-	sim->create_part (i, x, y, cpart->type);
-	return 0;
+	sim->create_part(i, x, y, cpart->type);
+	return 1;
 }
 
 Tool_CRCK::~Tool_CRCK() {}
