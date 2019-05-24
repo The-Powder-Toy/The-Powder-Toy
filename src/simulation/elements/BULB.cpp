@@ -122,20 +122,8 @@ if (cpart->life == 0)
 		*colb += *fireb;
 		*pixel_mode |= FIRE_ADD;
 	}
+	
 	if (cpart->tmp2 == 4)
-	{
-		double gradv = sin(tempOver) + 2.0;
-		*firer = (int)(gradv * 250.0);
-		*fireg = (int)(gradv * 250.0);
-		*fireb = (int)(gradv * 250.0);
-		*firea = 50;
-
-		*colr += *firer;
-		*colg += *fireg;
-		*colb += *fireb;
-		*pixel_mode |= FIRE_ADD;
-	}
-	if (cpart->tmp2 == 5)
 	{
 		double gradv = sin(tempOver) + 2.0;
 		*firer = (int)(gradv * 250.0);
@@ -148,13 +136,13 @@ if (cpart->life == 0)
 		*colb += *fireb;
 		*pixel_mode |= FIRE_ADD;
 	}
-	if (cpart->tmp2 == 0 && cpart->life == 0)
+	if (cpart->tmp2 == 0)
 	{
 		double gradv = sin(tempOver) + 2.0;
-		*firer = (int)(gradv * 150.0);
-		*fireg = (int)(gradv * 150.0);
-		*fireb = (int)(gradv * 150.0);
-
+		*firer = (int)(gradv * 250.0);
+		*fireg = (int)(gradv * 250.0);
+		*fireb = (int)(gradv * 250.0);
+		*firea = 50;
 		*colr += *firer;
 		*colg += *fireg;
 		*colb += *fireb;
