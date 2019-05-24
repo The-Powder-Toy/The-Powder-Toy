@@ -39,7 +39,7 @@ Element_LITH::Element_LITH()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 3393.0f;
-	HighTemperatureTransition = PT_BOMB;
+	HighTemperatureTransition = PT_BOMB; // Explodes when overcharged.
 
 	Update = &Element_LITH::update;
 	Graphics = &Element_LITH::graphics;
@@ -73,7 +73,7 @@ int Element_LITH::update(UPDATE_FUNC_ARGS)
 					}
 					}
 				}
-	                                                                              //Code for LITH discharging.
+	                                                                              //Code for LITH battery discharging.
 	for (rx = -4; rx < 4; rx++)
 		for (ry = -4; ry < 4; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
@@ -89,11 +89,13 @@ int Element_LITH::update(UPDATE_FUNC_ARGS)
 					}
 					break;
 					//Various reactions with different kinds of water elements.Slowly reacts with water and releases H2 gas.
+					//Exothermic reaction while reacting with water.
 					case PT_WATR:
 						if (RNG::Ref().chance(1, 700))
 						{
 							sim->part_change_type(i, x, y, PT_H2);
 							parts[i].life = 65;
+							parts[i].temp += 10;
 						}
 					break;
 					case PT_SLTW:
@@ -101,6 +103,7 @@ int Element_LITH::update(UPDATE_FUNC_ARGS)
 					{
 						sim->part_change_type(i, x, y, PT_H2);
 						parts[i].life = 65;
+						parts[i].temp += 10;
 					}
 					break;
 					case PT_CBNW:
@@ -108,6 +111,7 @@ int Element_LITH::update(UPDATE_FUNC_ARGS)
 					{
 						sim->part_change_type(i, x, y, PT_H2);
 						parts[i].life = 65;
+						parts[i].temp += 10;
 					}
 					break;
 					}
