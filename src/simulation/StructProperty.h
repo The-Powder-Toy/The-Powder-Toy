@@ -6,7 +6,20 @@
 
 struct StructProperty
 {
-	enum PropertyType { ParticleType, Colour, Integer, UInteger, Float, BString, String, Char, UChar, Removed };
+	enum PropertyType
+	{
+		TransitionType,
+		ParticleType,
+		Colour,
+		Integer,
+		UInteger,
+		Float,
+		BString,
+		String,
+		Char,
+		UChar,
+		Removed
+	};
 	ByteString Name;
 	PropertyType Type;
 	intptr_t Offset;

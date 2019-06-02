@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <fstream>
+#include <algorithm>
 
 #include "Config.h"
 #include "Format.h"
@@ -33,6 +34,7 @@
 
 #include "simulation/Simulation.h"
 #include "simulation/ElementGraphics.h"
+#include "simulation/ElementCommon.h"
 #include "simulation/Air.h"
 
 #include "ToolClasses.h"
@@ -712,9 +714,6 @@ int simulation_deletesign(lua_State *l)
 
 //// Begin Simulation API
 
-StructProperty * LuaScriptInterface::particleProperties;
-int LuaScriptInterface::particlePropertiesCount;
-
 void LuaScriptInterface::initSimulationAPI()
 {
 	//Methods
@@ -817,14 +816,13 @@ void LuaScriptInterface::initSimulationAPI()
 	SETCONST(l, PMAPMASK);
 
 	//Declare FIELD_BLAH constants
-	std::vector<StructProperty> particlePropertiesV = Particle::GetProperties();
-	particlePropertiesCount = 0;
-	particleProperties = new StructProperty[particlePropertiesV.size()];
-	for(std::vector<StructProperty>::iterator iter = particlePropertiesV.begin(), end = particlePropertiesV.end(); iter != end; ++iter)
 	{
-		lua_pushinteger(l, particlePropertiesCount);
-		lua_setfield(l, -2, ("FIELD_" + (*iter).Name.ToUpper()).c_str());
-		particleProperties[particlePropertiesCount++] = *iter;
+		int particlePropertiesCount = 0;
+		for (auto &prop : Particle::GetProperties())
+		{
+			lua_pushinteger(l, particlePropertiesCount++);
+			lua_setfield(l, -2, ("FIELD_" + prop.Name.ToUpper()).c_str());
+		}
 	}
 
 	lua_newtable(l);
@@ -1020,29 +1018,29 @@ int LuaScriptInterface::simulation_partProperty(lua_State * l)
 		}
 	}
 
+	auto &properties = Particle::GetProperties();
+	auto prop = properties.end();
+
 	//Get field
 	if (lua_type(l, 2) == LUA_TNUMBER)
 	{
 		int fieldID = lua_tointeger(l, 2);
-		if (fieldID < 0 || fieldID >= particlePropertiesCount)
+		if (fieldID < 0 || fieldID >= (int)properties.size())
+		{
 			return luaL_error(l, "Invalid field ID (%d)", fieldID);
-		property = particleProperties[fieldID];
+		}
+		prop = properties.begin() + fieldID;
 	}
-	else if(lua_type(l, 2) == LUA_TSTRING)
+	else if (lua_type(l, 2) == LUA_TSTRING)
 	{
 		ByteString fieldName = lua_tostring(l, 2);
-		bool foundProperty = false;
-		for(int i = particlePropertiesCount-1; i >= 0; i--)
+		prop = std::find_if(properties.begin(), properties.end(), [&fieldName](StructProperty const &p) {
+			return p.Name == fieldName;
+		});
+		if (prop == properties.end())
 		{
-			if (particleProperties[i].Name == fieldName)
-			{
-				property = particleProperties[i];
-				foundProperty = true;
-				break;
-			}
-		}
-		if (!foundProperty)
 			return luaL_error(l, "Unknown field (%s)", fieldName.c_str());
+		}
 	}
 	else
 	{
@@ -1050,16 +1048,16 @@ int LuaScriptInterface::simulation_partProperty(lua_State * l)
 	}
 
 	//Calculate memory address of property
-	intptr_t propertyAddress = (intptr_t)(((unsigned char*)&luacon_sim->parts[particleID])+property.Offset);
+	intptr_t propertyAddress = (intptr_t)(((unsigned char*)&luacon_sim->parts[particleID]) + prop->Offset);
 
 	if(argCount == 3)
 	{
-		LuaSetProperty(l, property, propertyAddress, 3);
+		LuaSetProperty(l, *prop, propertyAddress, 3);
 		return 0;
 	}
 	else
 	{
-		LuaGetProperty(l, property, propertyAddress);
+		LuaGetProperty(l, *prop, propertyAddress);
 		return 1;
 	}
 }
@@ -2473,6 +2471,7 @@ void LuaScriptInterface::LuaGetProperty(lua_State* l, StructProperty property, i
 {
 	switch (property.Type)
 	{
+		case StructProperty::TransitionType:
 		case StructProperty::ParticleType:
 		case StructProperty::Integer:
 			lua_pushinteger(l, *((int*)propertyAddress));
@@ -2517,6 +2516,7 @@ void LuaScriptInterface::LuaSetProperty(lua_State* l, StructProperty property, i
 {
 	switch (property.Type)
 	{
+		case StructProperty::TransitionType:
 		case StructProperty::ParticleType:
 		case StructProperty::Integer:
 			*((int*)propertyAddress) = luaL_checkinteger(l, stackPos);
@@ -2674,79 +2674,68 @@ int LuaScriptInterface::elements_allocate(lua_State * l)
 
 int LuaScriptInterface::elements_element(lua_State * l)
 {
-	int args = lua_gettop(l);
-	int id;
-	luaL_checktype(l, 1, LUA_TNUMBER);
-	id = lua_tointeger(l, 1);
-
-	if(id < 0 || id >= PT_NUM || !luacon_sim->elements[id].Enabled)
+	int id = luaL_checkinteger(l, 1);
+	if (!luacon_sim->IsValidElement(id))
+	{
 		return luaL_error(l, "Invalid element");
+	}
 
-	if(args > 1)
+	if (lua_gettop(l) > 1)
 	{
 		luaL_checktype(l, 2, LUA_TTABLE);
-		std::vector<StructProperty> properties = Element::GetProperties();
 		//Write values from native data to a table
-		for(std::vector<StructProperty>::iterator iter = properties.begin(), end = properties.end(); iter != end; ++iter)
+		for (auto &prop : Element::GetProperties())
 		{
-			lua_getfield(l, -1, (*iter).Name.c_str());
-			if(lua_type(l, -1) != LUA_TNIL)
+			lua_getfield(l, -1, prop.Name.c_str());
+			if (lua_type(l, -1) != LUA_TNIL)
 			{
-				intptr_t propertyAddress = (intptr_t)(((unsigned char*)&luacon_sim->elements[id]) + (*iter).Offset);
-				LuaSetProperty(l, (*iter), propertyAddress, -1);
+				intptr_t propertyAddress = (intptr_t)(((unsigned char*)&luacon_sim->elements[id]) + prop.Offset);
+				LuaSetProperty(l, prop, propertyAddress, -1);
 			}
 			lua_pop(l, 1);
 		}
 
 		lua_getfield(l, -1, "Update");
-		if(lua_type(l, -1) == LUA_TFUNCTION)
+		if (lua_type(l, -1) == LUA_TFUNCTION)
 		{
 			lua_el_func[id].Assign(-1);
-			lua_pop(l, 1);
 			lua_el_mode[id] = 1;
 		}
-		else if(lua_type(l, -1) == LUA_TBOOLEAN && !lua_toboolean(l, -1))
+		else if (lua_type(l, -1) == LUA_TBOOLEAN && !lua_toboolean(l, -1))
 		{
 			lua_el_func[id].Clear();
-			lua_pop(l, 1);
 			lua_el_mode[id] = 0;
 			luacon_sim->elements[id].Update = NULL;
 		}
-		else
-			lua_pop(l, 1);
+		lua_pop(l, 1);
 
 		lua_getfield(l, -1, "Graphics");
-		if(lua_type(l, -1) == LUA_TFUNCTION)
+		if (lua_type(l, -1) == LUA_TFUNCTION)
 		{
 			lua_gr_func[id].Assign(-1);
-			lua_pop(l, 1);
 		}
-		else if(lua_type(l, -1) == LUA_TBOOLEAN && !lua_toboolean(l, -1))
+		else if (lua_type(l, -1) == LUA_TBOOLEAN && !lua_toboolean(l, -1))
 		{
 			lua_gr_func[id].Clear();
-			lua_pop(l, 1);
 			luacon_sim->elements[id].Graphics = NULL;
 		}
-		else
-			lua_pop(l, 1);
+		lua_pop(l, 1);
 
 		luacon_model->BuildMenus();
 		luacon_sim->init_can_move();
 		luacon_ren->graphicscache[id].isready = 0;
 
-		lua_pop(l, 1);
 		return 0;
 	}
 	else
 	{
-		std::vector<StructProperty> properties = Element::GetProperties();
 		//Write values from native data to a table
 		lua_newtable(l);
-		for(std::vector<StructProperty>::iterator iter = properties.begin(), end = properties.end(); iter != end; ++iter)
+		for (auto &prop : Element::GetProperties())
 		{
-			intptr_t propertyAddress = (intptr_t)(((unsigned char*)&luacon_sim->elements[id]) + (*iter).Offset);
-			LuaGetProperty(l, (*iter), propertyAddress);
-			lua_setfield(l, -2, (*iter).Name.c_str());
+			intptr_t propertyAddress = (intptr_t)(((unsigned char*)&luacon_sim->elements[id]) + prop.Offset);
+			LuaGetProperty(l, prop, propertyAddress);
+			lua_setfield(l, -2, prop.Name.c_str());
 		}
 		lua_pushstring(l, luacon_sim->elements[id].Identifier.c_str());
 		lua_setfield(l, -2, "Identifier");
@@ -2756,134 +2745,122 @@ int LuaScriptInterface::elements_element(lua_State * l)
 
 int LuaScriptInterface::elements_property(lua_State * l)
 {
-	int args = lua_gettop(l);
-	int id;
-	ByteString propertyName;
-	luaL_checktype(l, 1, LUA_TNUMBER);
-	id = lua_tointeger(l, 1);
-	luaL_checktype(l, 2, LUA_TSTRING);
-	propertyName = ByteString(lua_tostring(l, 2));
-
-	if(id < 0 || id >= PT_NUM || !luacon_sim->elements[id].Enabled)
-		return luaL_error(l, "Invalid element");
-
-	if(args > 2)
+	int id = luaL_checkinteger(l, 1);
+	if (!luacon_sim->IsValidElement(id))
 	{
-		StructProperty property;
-		bool propertyFound = false;
-		std::vector<StructProperty> properties = Element::GetProperties();
+		return luaL_error(l, "Invalid element");
+	}
+	ByteString propertyName(luaL_checklstring(l, 2, NULL));
 
-		for(std::vector<StructProperty>::iterator iter = properties.begin(), end = properties.end(); iter != end; ++iter)
-		{
-			if((*iter).Name == propertyName)
-			{
-				property = *iter;
-				propertyFound = true;
-				break;
-			}
-		}
+	auto &properties = Element::GetProperties();
+	auto prop = std::find_if(properties.begin(), properties.end(), [&propertyName](StructProperty const &p) {
+		return p.Name == propertyName;
+	});
 
-		if(propertyFound)
+	if (lua_gettop(l) > 2)
+	{
+		if (prop != properties.end())
 		{
-			if(lua_type(l, 3) != LUA_TNIL)
+			if (lua_type(l, 3) != LUA_TNIL)
 			{
-				intptr_t propertyAddress = (intptr_t)(((unsigned char*)&luacon_sim->elements[id]) + property.Offset);
-				LuaSetProperty(l, property, propertyAddress, 3);
+				if (prop->Type == StructProperty::TransitionType)
+				{
+					int type = luaL_checkinteger(l, 3);
+					if (!luacon_sim->IsValidElement(type) && type != NT && type != ST)
+					{
+						luaL_error(l, "Invalid element");
+					}
+				}
+
+				intptr_t propertyAddress = (intptr_t)(((unsigned char*)&luacon_sim->elements[id]) + prop->Offset);
+				LuaSetProperty(l, *prop, propertyAddress, 3);
 			}
 
 			luacon_model->BuildMenus();
 			luacon_sim->init_can_move();
 			luacon_ren->graphicscache[id].isready = 0;
-
 			return 0;
 		}
-		else if(propertyName == "Update")
+		else if (propertyName == "Update")
 		{
-			if(lua_type(l, 3) == LUA_TFUNCTION)
+			if (lua_type(l, 3) == LUA_TFUNCTION)
 			{
-				if (args > 3)
+				switch (luaL_optint(l, 4, 0))
 				{
-					luaL_checktype(l, 4, LUA_TNUMBER);
-					int replace = lua_tointeger(l, 4);
-					if (replace == 2)
-						lua_el_mode[id] = 3; //update before
-					else if (replace == 1)
-						lua_el_mode[id] = 2; //replace
-					else
-						lua_el_mode[id] = 1; //update after
+				case 2:
+					lua_el_mode[id] = 3; //update before
+					break;
+
+				case 1:
+					lua_el_mode[id] = 2; //replace
+					break;
+
+				default:
+					lua_el_mode[id] = 1; //update after
+					break;
 				}
-				else
-					lua_el_mode[id] = 1;
 				lua_el_func[id].Assign(3);
 			}
-			else if(lua_type(l, 3) == LUA_TBOOLEAN && !lua_toboolean(l, 3))
+			else if (lua_type(l, 3) == LUA_TBOOLEAN && !lua_toboolean(l, 3))
 			{
 				lua_el_func[id].Clear();
 				lua_el_mode[id] = 0;
 				luacon_sim->elements[id].Update = NULL;
 			}
+			return 0;
 		}
-		else if(propertyName == "Graphics")
+		else if (propertyName == "Graphics")
 		{
-			if(lua_type(l, 3) == LUA_TFUNCTION)
+			if (lua_type(l, 3) == LUA_TFUNCTION)
 			{
 				lua_gr_func[id].Assign(3);
 			}
-			else if(lua_type(l, 3) == LUA_TBOOLEAN && !lua_toboolean(l, -1))
+			else if (lua_type(l, 3) == LUA_TBOOLEAN && !lua_toboolean(l, -1))
 			{
 				lua_gr_func[id].Clear();
 				luacon_sim->elements[id].Graphics = NULL;
 			}
 			luacon_ren->graphicscache[id].isready = 0;
+			return 0;
 		}
 		else
+		{
 			return luaL_error(l, "Invalid element property");
-		return 0;
+		}
 	}
 	else
 	{
-		StructProperty property;
-		bool propertyFound = false;
-		std::vector<StructProperty> properties = Element::GetProperties();
-
-		for(std::vector<StructProperty>::iterator iter = properties.begin(), end = properties.end(); iter != end; ++iter)
+		if (prop != properties.end())
 		{
-			if((*iter).Name == propertyName)
-			{
-				property = *iter;
-				propertyFound = true;
-				break;
-			}
-		}
-
-		if(propertyFound)
-		{
-			intptr_t propertyAddress = (intptr_t)(((unsigned char*)&luacon_sim->elements[id]) + property.Offset);
-			LuaGetProperty(l, property, propertyAddress);
+			intptr_t propertyAddress = (intptr_t)(((unsigned char*)&luacon_sim->elements[id]) + prop->Offset);
+			LuaGetProperty(l, *prop, propertyAddress);
 			return 1;
 		}
-		else if(propertyName == "Identifier")
+		else if (propertyName == "Identifier")
 		{
 			lua_pushstring(l, luacon_sim->elements[id].Identifier.c_str());
 			return 1;
 		}
 		else
+		{
 			return luaL_error(l, "Invalid element property");
+		}
 	}
 }
 
 int LuaScriptInterface::elements_free(lua_State * l)
 {
-	int id;
-	luaL_checktype(l, 1, LUA_TNUMBER);
-	id = lua_tointeger(l, 1);
-
-	if(id < 0 || id >= PT_NUM || !luacon_sim->elements[id].Enabled)
+	int id = luaL_checkinteger(l, 1);
+	if (!luacon_sim->IsValidElement(id))
+	{
 		return luaL_error(l, "Invalid element");
+	}
 
 	ByteString identifier = luacon_sim->elements[id].Identifier;
-	if(identifier.BeginsWith("DEFAULT_PT_"))
+	if (identifier.BeginsWith("DEFAULT_PT_"))
+	{
 		return luaL_error(l, "Cannot free default elements");
+	}
 
 	luacon_sim->elements[id].Enabled = false;
 

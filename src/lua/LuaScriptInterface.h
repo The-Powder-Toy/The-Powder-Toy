@@ -55,8 +55,6 @@ class LuaScriptInterface: public CommandInterface
 	static int simulation_newsign(lua_State *l);
 
 	//Simulation
-	static StructProperty * particleProperties;
-	static int particlePropertiesCount;
 
 	void initSimulationAPI();
 	static void set_map(int x, int y, int width, int height, float value, int mapType);
