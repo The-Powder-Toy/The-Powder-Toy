@@ -1052,7 +1052,14 @@ int LuaScriptInterface::simulation_partProperty(lua_State * l)
 
 	if(argCount == 3)
 	{
-		LuaSetProperty(l, *prop, propertyAddress, 3);
+		if (prop == properties.begin() + 0) // i.e. it's .type
+		{
+			luacon_sim->part_change_type(particleID, luacon_sim->parts[particleID].x+0.5f, luacon_sim->parts[particleID].y+0.5f, luaL_checkinteger(l, 3));
+		}
+		else
+		{
+			LuaSetProperty(l, *prop, propertyAddress, 3);
+		}
 		return 0;
 	}
 	else
