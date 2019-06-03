@@ -26,6 +26,7 @@
 #include "simulation/Simulation.h"
 #include "simulation/Gravity.h"
 #include "simulation/SimulationData.h"
+#include "simulation/ElementCommon.h"
 
 #include "graphics/Graphics.h"
 #include "graphics/Renderer.h"
@@ -165,11 +166,11 @@ int luacon_transitionread(lua_State* l)
 	StructProperty prop = legacyTransitionNames[key];
 
 	//Get Raw Index value for element
-	lua_pushstring(l, "value");
+	lua_pushstring(l, "id");
 	lua_rawget(l, 1);
 	int i = lua_tointeger (l, lua_gettop(l));
 	lua_pop(l, 1);
-	if (i < 0 || i >= PT_NUM)
+	if (!luacon_sim->IsValidElement(i))
 	{
 		return luaL_error(l, "Invalid index");
 	}
@@ -192,9 +193,18 @@ int luacon_transitionwrite(lua_State* l)
 	lua_rawget(l, 1);
 	int i = lua_tointeger (l, lua_gettop(l));
 	lua_pop(l, 1);
-	if (i < 0 || i >= PT_NUM)
+	if (!luacon_sim->IsValidElement(i))
 	{
 		return luaL_error(l, "Invalid index");
+	}
+
+	if (prop.Type == StructProperty::TransitionType)
+	{
+		int type = luaL_checkinteger(l, 3);
+		if (!luacon_sim->IsValidElement(type) && type != NT && type != ST)
+		{
+			return luaL_error(l, "Invalid element");
+		}
 	}
 
 	intptr_t propertyAddress = (intptr_t)(((unsigned char*)&luacon_sim->elements[i]) + prop.Offset);
@@ -215,7 +225,7 @@ int luacon_elementread(lua_State* l)
 	lua_rawget(l, 1);
 	int i = lua_tointeger (l, lua_gettop(l));
 	lua_pop(l, 1);
-	if (i < 0 || i >= PT_NUM)
+	if (!luacon_sim->IsValidElement(i))
 	{
 		return luaL_error(l, "Invalid index");
 	}
@@ -238,13 +248,20 @@ int luacon_elementwrite(lua_State* l)
 	lua_rawget(l, 1);
 	int i = lua_tointeger (l, lua_gettop(l));
 	lua_pop(l, 1);
-	if (i < 0 || i >= PT_NUM)
+	if (!luacon_sim->IsValidElement(i))
 	{
 		return luaL_error(l, "Invalid index");
 	}
 
-	intptr_t propertyAddress = (intptr_t)(((unsigned char*)&luacon_sim->elements[i]) + prop.Offset);
-	LuaScriptInterface::LuaSetProperty(l, prop, propertyAddress, 3);
+	if (prop.Name == "type") // i.e. it's .type
+	{
+		luacon_sim->part_change_type(i, luacon_sim->parts[i].x+0.5f, luacon_sim->parts[i].y+0.5f, luaL_checkinteger(l, 3));
+	}
+	else
+	{
+		intptr_t propertyAddress = (intptr_t)(((unsigned char*)&luacon_sim->elements[i]) + prop.Offset);
+		LuaScriptInterface::LuaSetProperty(l, prop, propertyAddress, 3);
+	}
 
 	luacon_model->BuildMenus();
 	luacon_sim->init_can_move();
@@ -284,8 +301,10 @@ int luatpt_getelement(lua_State *l)
 	if (lua_isnumber(l, 1))
 	{
 		t = luaL_optint(l, 1, 1);
-		if (t<0 || t>=PT_NUM)
+		if (!luacon_sim->IsValidElement(t))
+		{
 			return luaL_error(l, "Unrecognised element number '%d'", t);
+		}
 		lua_pushstring(l, luacon_sim->elements[t].Name.ToUtf8().c_str());
 	}
 	else
@@ -327,7 +346,7 @@ int luatpt_element_func(lua_State *l)
 	{
 		int element = luaL_optint(l, 2, 0);
 		int replace = luaL_optint(l, 3, 0);
-		if(element > 0 && element < PT_NUM)
+		if (luacon_sim->IsValidElement(element))
 		{
 			lua_el_func[element].Assign(1);
 			if (replace == 2)
@@ -346,7 +365,7 @@ int luatpt_element_func(lua_State *l)
 	else if(lua_isnil(l, 1))
 	{
 		int element = luaL_optint(l, 2, 0);
-		if(element > 0 && element < PT_NUM)
+		if (luacon_sim->IsValidElement(element))
 		{
 			lua_el_func[element].Clear();
 			lua_el_mode[element] = 0;
@@ -397,7 +416,7 @@ int luatpt_graphics_func(lua_State *l)
 	if(lua_isfunction(l, 1))
 	{
 		int element = luaL_optint(l, 2, 0);
-		if (element > 0 && element < PT_NUM)
+		if (luacon_sim->IsValidElement(element))
 		{
 			lua_gr_func[element].Assign(1);
 			luacon_ren->graphicscache[element].isready = 0;
@@ -411,7 +430,7 @@ int luatpt_graphics_func(lua_State *l)
 	else if (lua_isnil(l, 1))
 	{
 		int element = luaL_optint(l, 2, 0);
-		if (element > 0 && element < PT_NUM)
+		if (luacon_sim->IsValidElement(element))
 		{
 			lua_gr_func[element].Clear();
 			luacon_ren->graphicscache[element].isready = 0;
@@ -470,8 +489,10 @@ int luatpt_create(lua_State* l)
 		if(lua_isnumber(l, 3))
 		{
 			t = luaL_optint(l, 3, 0);
-			if (t<0 || t >= PT_NUM || !luacon_sim->elements[t].Enabled)
+			if (!luacon_sim->IsValidElement(t))
+			{
 				return luaL_error(l, "Unrecognised element number '%d'", t);
+			}
 		} else {
 			const char* name = luaL_optstring(l, 3, "dust");
 			if ((t = luacon_sim->GetParticleType(ByteString(name))) == -1)
@@ -698,7 +719,7 @@ int luatpt_set_property(lua_State* l)
 		else
 			t = luaL_optint(l, 2, 0);
 
-		if (!strcmp(prop, "type") && (t<0 || t>=PT_NUM || !luacon_sim->elements[t].Enabled))
+		if (!strcmp(prop, "type") && !luacon_sim->IsValidElement(t))
 			return luaL_error(l, "Unrecognised element number '%d'", t);
 	}
 	else if (lua_isstring(l, 2))

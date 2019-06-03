@@ -321,7 +321,7 @@ tpt.partsdata = nil");
 		lua_newtable(l);
 		currentElementMeta = lua_gettop(l);
 		lua_pushinteger(l, i);
-		lua_setfield(l, currentElement, "value");
+		lua_setfield(l, currentElement, "id");
 		lua_pushcfunction(l, luacon_transitionwrite);
 		lua_setfield(l, currentElementMeta, "__newindex");
 		lua_pushcfunction(l, luacon_transitionread);
@@ -2775,7 +2775,7 @@ int LuaScriptInterface::elements_property(lua_State * l)
 					int type = luaL_checkinteger(l, 3);
 					if (!luacon_sim->IsValidElement(type) && type != NT && type != ST)
 					{
-						luaL_error(l, "Invalid element");
+						return luaL_error(l, "Invalid element");
 					}
 				}
 

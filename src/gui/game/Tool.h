@@ -87,6 +87,7 @@ public:
 	}
 	StructProperty::PropertyType propType;
 	PropertyValue propValue;
+	bool changeType;
 	size_t propOffset;
 
 	void OpenWindow(Simulation *sim);

@@ -200,6 +200,7 @@ void PropertyWindow::SetProperty()
 			}
 			tool->propOffset = properties[property->GetOption().second].Offset;
 			tool->propType = properties[property->GetOption().second].Type;
+			tool->changeType = properties[property->GetOption().second].Name == "type";
 		} catch (const std::exception& ex) {
 			new ErrorMessage("Could not set property", "Invalid value provided");
 			return;
@@ -245,6 +246,13 @@ void PropertyTool::SetProperty(Simulation *sim, ui::Point position)
 		i = sim->photons[position.Y][position.X];
 	if(!i)
 		return;
+
+	if (changeType)
+	{
+		sim->part_change_type(ID(i), sim->parts[ID(i)].x+0.5f, sim->parts[ID(i)].y+0.5f, propValue.Integer);
+		return;
+	}
+
 	switch (propType)
 	{
 		case StructProperty::Float:
