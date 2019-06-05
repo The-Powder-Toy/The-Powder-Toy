@@ -1,9 +1,17 @@
 #pragma once
 const char *const wikidata =
-"\bl                                         << WELCOME TO THE IN GAME WIKI>> \n"
+"\bt                                         << WELCOME TO THE IN GAME WIKI>> \n"
 "                       \n"
-"\btINVS:When exposed to high pressures, INVS becomes intangible, allowing particles to pass through like E-wall.\n"
-"PHOT can pass through and be transformed into NEUT, but only when unpressurized.\n"
+"\br"
+"LITH:Lithium ion battery.\n\n"
+"UVRD:Ultra violet radiations, damages nearby objects.\n\n"
+"LED:Light Emmiting Diode,PSCN and NSCN toggles state while .tmp2 controls colour.\n\n"
+"LNDM:Landmine, Sensitive explosive.Explodes when detects STKM or STKM2.\n\n"
+"Work in progress...                      \n"
+"                       \n"
+"                       \n"
+"                       \n"
+"                       \n"
 "                       \n"
 "                       \n"
 "                       \n"
@@ -17,4 +25,4 @@ const char *const wikidata =
 "Press J to exit..\n"
 "                       \n"
 "                       \n"
-"\blPAGE 1/1                       \n";
+"\bl                                                     PAGE 1/1                       \n";
