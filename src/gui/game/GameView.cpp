@@ -1540,9 +1540,14 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 		{
 			if (!introText)
 				introText = 8047;
+			if (wikitext)
+			{
+				introText = 0;
+			}
 			else
 				introText = 0;
 		}
+		break;
 	case SDL_SCANCODE_J:
 	{
 		if (introText && wikitext)
@@ -1561,16 +1566,13 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 		{
 			wikitext = 2000;
 		}
-
-		else
+	else
 		{
 			wikitext = 0;
 		}
 	}
 
-
-			showHud = !showHud;
-		break;
+	break;
 	case SDL_SCANCODE_B:
 		if(ctrl)
 			c->SetDecoration();
@@ -1797,12 +1799,6 @@ void GameView::OnTick(float dt)
 		introText -= int(dt)>0?((int)dt < 5? dt:5):1;
 		if(introText < 0)
 			introText  = 0;
-	}
-	if (wikitext)
-	{
-		wikitext -= int(dt) > 0 ? ((int)dt < 5 ? dt : 5) : 1;
-		if (wikitext < 50)
-			wikitext = 0;
 	}
 	if(infoTipPresence>0)
 	{
@@ -2544,8 +2540,8 @@ void GameView::OnDraw()
 	//In game wiki
 	if (wikitext)
 	{
-		g->fillrect(0, 0, WINDOWW, WINDOWH, 0, 0, 255, wikitext > 51 ? 102 : wikitext * 2);
-		g->drawtext(20, 20, wikimessage, 255, 255, 255,wikitext > 51 ? 255 : wikitext * 5);
+		g->fillrect(0, 0, WINDOWW, WINDOWH, 0, 0, 105, wikitext > 0 ? 102 : wikitext * 2);
+		g->drawtext(15,20 , wikimessage, 155, 155, 255,wikitext > 0 ? 255 : wikitext * 5);
 	}
 
 	// Clear menu areas, to ensure particle graphics don't overlap
