@@ -6,6 +6,7 @@ const char *const introTextData =
 "\bgWhat's new?\n"
 "\n"
 "\bt"
+"# Press J for more info and to access in game wiki.\n"
 "# 02 new menus added: Cracker1000 and Hidden menu.\n"
 "# All new elements added can be found in Cracker10000 menu.\n"
 "# All hidden elements are now shown in  Hidden menu.\n"

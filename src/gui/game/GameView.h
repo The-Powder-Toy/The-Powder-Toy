@@ -64,6 +64,8 @@ private:
 	bool isButtonTipFadingIn;
 	int introText;
 	String introTextMessage;
+	int wikitext;
+	String wikimessage;
 
 	bool doScreenshot;
 	int screenshotIndex;

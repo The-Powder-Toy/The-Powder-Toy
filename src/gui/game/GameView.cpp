@@ -11,6 +11,7 @@
 #include "Notification.h"
 #include "Brush.h"
 #include "IntroText.h"
+#include "wikidata.h"
 #include "QuickOptions.h"
 #include "DecorationTool.h"
 #include "ToolButton.h"
@@ -196,6 +197,9 @@ GameView::GameView():
 	isButtonTipFadingIn(false),
 	introText(2048),
 	introTextMessage(ByteString(introTextData).FromAscii()),
+	wikitext(2078),
+	wikimessage(ByteString(wikidata).FromAscii()),
+
 
 	doScreenshot(false),
 	screenshotIndex(0),
@@ -1539,7 +1543,14 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 			else
 				introText = 0;
 		}
-		else
+	case SDL_SCANCODE_J:
+		{
+			if (!wikitext)
+				wikitext = 2078;
+			else
+				wikitext = 0;
+		}
+
 			showHud = !showHud;
 		break;
 	case SDL_SCANCODE_B:
@@ -1768,6 +1779,12 @@ void GameView::OnTick(float dt)
 		introText -= int(dt)>0?((int)dt < 5? dt:5):1;
 		if(introText < 0)
 			introText  = 0;
+	}
+	if (wikitext)
+	{
+		wikitext -= int(dt) > 0 ? ((int)dt < 5 ? dt : 5) : 1;
+		if (wikitext < 0)
+			wikitext = 0;
 	}
 	if(infoTipPresence>0)
 	{
@@ -2505,6 +2522,12 @@ void GameView::OnDraw()
 	{
 		g->fillrect(0, 0, WINDOWW, WINDOWH, 0, 0, 0, introText>51?102:introText*2);
 		g->drawtext(16, 20, introTextMessage, 255, 255, 255, introText>51?255:introText*5);
+	}
+	//In game wiki
+	if (wikitext)
+	{
+		g->fillrect(0, 0, WINDOWW, WINDOWH, 0, 0, 0, wikitext > 51 ? 102 : wikitext * 2);
+		g->drawtext(16, 20, wikimessage, 255, 255, 255,wikitext > 51 ? 255 : wikitext * 5);
 	}
 
 	// Clear menu areas, to ensure particle graphics don't overlap

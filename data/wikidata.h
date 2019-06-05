@@ -1,0 +1,20 @@
+#pragma once
+const char *const wikidata =
+"\bl                                         << WELCOME TO THE IN GAME WIKI>> \n"
+"                       \n"
+"\btINVS:When exposed to high pressures, INVS becomes intangible, allowing particles to pass through like E-wall.\n"
+"PHOT can pass through and be transformed into NEUT, but only when unpressurized.\n"
+"                       \n"
+"                       \n"
+"                       \n"
+"                       \n"
+"                       \n"
+"                       \n"
+"                       \n"
+"                       \n"
+"                       \n"
+"                       \n"
+"Press J to exit..\n"
+"                       \n"
+"                       \n"
+"\blPAGE 1/1                       \n";
