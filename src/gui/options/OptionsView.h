@@ -16,6 +16,7 @@ class OptionsView: public ui::Window
 {
 	OptionsController * c;
 	ui::Checkbox * heatSimulation;
+	ui::Checkbox * theme;
 	ui::Checkbox * ambientHeatSimulation;
 	ui::Checkbox * newtonianGravity;
 	ui::Checkbox * waterEqualisation;
