@@ -91,28 +91,14 @@ int Element_LITH::update(UPDATE_FUNC_ARGS)
 					//Various reactions with different kinds of water elements.Slowly reacts with water and releases H2 gas.
 					//Exothermic reaction while reacting with water.
 					case PT_WATR:
+					case PT_SLTW:
+					case PT_CBNW:
 						if (RNG::Ref().chance(1, 700))
 						{
 							sim->part_change_type(i, x, y, PT_H2);
 							parts[i].life = 65;
 							parts[i].temp += 10;
 						}
-					break;
-					case PT_SLTW:
-						if (RNG::Ref().chance(1, 700))
-					{
-						sim->part_change_type(i, x, y, PT_H2);
-						parts[i].life = 65;
-						parts[i].temp += 10;
-					}
-					break;
-					case PT_CBNW:
-						if (RNG::Ref().chance(1, 700))
-					{
-						sim->part_change_type(i, x, y, PT_H2);
-						parts[i].life = 65;
-						parts[i].temp += 10;
-					}
 					break;
 					}
 				}

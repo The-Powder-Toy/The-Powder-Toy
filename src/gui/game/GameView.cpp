@@ -2535,14 +2535,14 @@ void GameView::OnDraw()
 	//Introduction text
 	if(introText)
 	{
-		g->fillrect(0, 0, WINDOWW, WINDOWH, 95, 95, 225, introText>51?102:introText*2);
+		g->fillrect(0, 0, WINDOWW, WINDOWH, 65, 65, 155, introText>51?102:introText*2);
 		g->drawtext(16, 20, introTextMessage, 255, 255, 255, introText>51?255:introText*5);
 	}
 	//In game wiki
 	if (wikitext)
 	{
-		g->fillrect(0, 0, WINDOWW, WINDOWH, 0, 0, 105, wikitext > 0 ? 102 : wikitext * 2);
-		g->drawtext(15,20 , wikimessage, 155, 155, 255,wikitext > 0 ? 255 : wikitext * 5);
+		g->fillrect(0, 0, WINDOWW, WINDOWH, 65, 65, 155, wikitext > 0 ? 102 : wikitext * 2);
+		g->drawtext(15,20 , wikimessage, 155, 155, 155,wikitext > 0 ? 255 : wikitext * 5);
 	}
 
 	// Clear menu areas, to ensure particle graphics don't overlap
