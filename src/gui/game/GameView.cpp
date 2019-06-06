@@ -197,7 +197,7 @@ GameView::GameView():
 	isButtonTipFadingIn(false),
 	introText(2048),
 	introTextMessage(ByteString(introTextData).FromAscii()),
-	wikitext(2078),
+	wikitext(0),
 	wikimessage(ByteString(wikidata).FromAscii()),
 
 
@@ -1570,6 +1570,7 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 		{
 			wikitext = 0;
 		}
+		showHud = !showHud;
 	}
 
 	break;
@@ -2534,7 +2535,7 @@ void GameView::OnDraw()
 	//Introduction text
 	if(introText)
 	{
-		g->fillrect(0, 0, WINDOWW, WINDOWH, 0, 0, 0, introText>51?102:introText*2);
+		g->fillrect(0, 0, WINDOWW, WINDOWH, 95, 95, 225, introText>51?102:introText*2);
 		g->drawtext(16, 20, introTextMessage, 255, 255, 255, introText>51?255:introText*5);
 	}
 	//In game wiki
