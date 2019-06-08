@@ -60,8 +60,9 @@ int Element_LSNS::update(UPDATE_FUNC_ARGS)
 					if (!r)
 						continue;
 					rt = TYP(r);
-					if (sim->parts_avg(i,ID(r),PT_INSL) != PT_INSL)
+					if (sim->parts_avg(i,ID(r),PT_INSL) != PT_INSL) 
 					{
+
 						if ((sim->elements[rt].Properties&PROP_CONDUCTS) && !(rt==PT_WATR||rt==PT_SLTW||rt==PT_NTCT||rt==PT_PTCT||rt==PT_INWR) && parts[ID(r)].life==0)
 						{
 							parts[ID(r)].life = 4;
