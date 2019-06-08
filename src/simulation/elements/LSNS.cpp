@@ -82,36 +82,74 @@ int Element_LSNS::update(UPDATE_FUNC_ARGS)
 					continue;
 				if (parts[ID(r)].life > parts[i].temp - 273.15)
 					parts[i].life = 1;
-
-				if (parts[i].tmp == 1)
+			}                                                                                   //.Life serialization.(.tmp2 = turns serialization mode on)
+	bool setFilt = false;
+	int photonWl = 0;
+	for (int rx = -rd; rx <= rd; rx++)
+		for (int ry = -rd; ry <= rd; ry++)
+			if (x + rx >= 0 && y + ry >= 0 && x + rx < XRES && y + ry < YRES && (rx || ry))
+			{
+				int r = pmap[y + ry][x + rx];
+				if (!r)
+					r = sim->photons[y + ry][x + rx];
+				if (!r)
+					continue;
+				if (parts[i].tmp == 1 && TYP(r) != PT_LSNS && TYP(r) != PT_FILT)
 				{
-					parts[i].life = 0;
-					bool setFilt = true;
-					float partlife = parts[ID(r)].life;
-					if (setFilt)                                      // Life digitisation.
+					setFilt = true;
+					photonWl = parts[ID(r)].life;
+				}
+			}
+	if (setFilt)
+	{
+		int nx, ny;
+		for (int rx = -1; rx <= 1; rx++)
+			for (int ry = -1; ry <= 1; ry++)
+				if (BOUNDS_CHECK && (rx || ry))
+				{
+					int r = pmap[y + ry][x + rx];
+					if (!r)
+						continue;
+					nx = x + rx;
+					ny = y + ry;
+					while (TYP(r) == PT_FILT)
 					{
-						int nx, ny;
-						for (rx = -1; rx <= 1; rx++)
-							for (ry = -1; ry <= 1; ry++)
-								if (BOUNDS_CHECK && (rx || ry))
-								{
-									r = pmap[y + ry][x + rx];
-									if (!r)
-										continue;
-									nx = x + rx;
-									ny = y + ry;
-									while (TYP(r) == PT_FILT)
-									{
-										parts[ID(r)].ctype = 0x10000000 + roundl(partlife) + 256;
-										nx += rx;
-										ny += ry;
-										if (nx < 0 || ny < 0 || nx >= XRES || ny >= YRES)
-											break;
-										r = pmap[ny][nx];
-									}
-								}
+						parts[ID(r)].ctype = 0x10000000 + photonWl;
+						nx += rx;
+						ny += ry;
+						if (nx < 0 || ny < 0 || nx >= XRES || ny >= YRES)
+							break;
+						r = pmap[ny][nx];
 					}
 				}
+	}
+	// .Life Deserialization (.tmp2 = turns deserialization mode on).Sets nearby particle's life.
+	bool deserializelife = parts[i].tmp == 2;
+	for (rx = -2; rx < 3; rx++)
+		for (ry = -2; ry < 3; ry++)
+			if (BOUNDS_CHECK && (rx || ry))
+			{
+				r = pmap[y + ry][x + rx];
+				if (!r)
+					continue;
+
+				if (deserializelife && TYP(r) == PT_FILT)
+				{
+					if (rx >= -1 && rx <= 1 && ry >= -1 && ry <= 1)
+					{
+						int newlife = parts[ID(r)].ctype - 0x10000000;
+						parts[i].life = parts[ID(r)].ctype - 0x10000000;
+					}
+				}
+				if (deserializelife && TYP(r) != PT_FILT)
+				{
+					if (rx >= -1 && rx <= 1 && ry >= -1 && ry <= 1)
+					{
+
+						parts[ID(r)].life = parts[i].life;
+					}
+				}
+
 			}
 	return 0;
 
