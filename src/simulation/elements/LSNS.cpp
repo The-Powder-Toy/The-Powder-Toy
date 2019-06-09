@@ -96,7 +96,7 @@ int Element_LSNS::update(UPDATE_FUNC_ARGS)
 					r = sim->photons[y + ry][x + rx];
 				if (!r)
 					continue;
-				if (parts[i].tmp == 1 && TYP(r) != PT_LSNS && TYP(r) != PT_FILT)
+				if (parts[i].tmp == 1 && TYP(r) != PT_LSNS && TYP(r) != PT_FILT && parts[ID(r)].life >= 0)
 				{
 					setFilt = true;
 					photonWl = parts[ID(r)].life;
@@ -128,7 +128,6 @@ int Element_LSNS::update(UPDATE_FUNC_ARGS)
 	// .Life Deserialization (.tmp = 2 turns on .life deserialization).
 	if (parts[i].tmp == 2)
 	{
-		bool deserializelife = parts[i].tmp == 2;
 		for (rx = -2; rx < 3; rx++)
 			for (ry = -2; ry < 3; ry++)
 				if (BOUNDS_CHECK && (rx || ry))
