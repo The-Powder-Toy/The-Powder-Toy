@@ -82,7 +82,9 @@ int Element_LSNS::update(UPDATE_FUNC_ARGS)
 					continue;
 				if (parts[ID(r)].life > parts[i].temp - 273.15)
 					parts[i].life = 1;
-			}                                                                                   //.Life serialization.(.tmp2 = turns serialization mode on)
+			}
+	//.Life serialization (.tmp = 1 turns on .life serialization).
+
 	bool setFilt = false;
 	int photonWl = 0;
 	for (int rx = -rd; rx <= rd; rx++)
@@ -123,7 +125,8 @@ int Element_LSNS::update(UPDATE_FUNC_ARGS)
 					}
 				}
 	}
-	// .Life Deserialization (.tmp2 = turns deserialization mode on).Sets nearby particle's life.
+	// .Life Deserialization (.tmp = 2 turns on .life deserialization).
+
 	bool deserializelife = parts[i].tmp == 2;
 	for (rx = -2; rx < 3; rx++)
 		for (ry = -2; ry < 3; ry++)
@@ -138,15 +141,14 @@ int Element_LSNS::update(UPDATE_FUNC_ARGS)
 					if (rx >= -1 && rx <= 1 && ry >= -1 && ry <= 1)
 					{
 						int newlife = parts[ID(r)].ctype - 0x10000000;
-						parts[i].life = parts[ID(r)].ctype - 0x10000000;
+						parts[i].ctype = newlife;
 					}
 				}
 				if (deserializelife && TYP(r) != PT_FILT)
 				{
-					if (rx >= -1 && rx <= 1 && ry >= -1 && ry <= 1)
+					if (rx >= -1 && rx <= 1 && ry >= -1 && ry <= 1 && parts[i].ctype >= 0)
 					{
-
-						parts[ID(r)].life = parts[i].life;
+						parts[ID(r)].life = parts[i].ctype;
 					}
 				}
 
