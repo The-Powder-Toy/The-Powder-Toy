@@ -126,33 +126,35 @@ int Element_LSNS::update(UPDATE_FUNC_ARGS)
 				}
 	}
 	// .Life Deserialization (.tmp = 2 turns on .life deserialization).
-
-	bool deserializelife = parts[i].tmp == 2;
-	for (rx = -2; rx < 3; rx++)
-		for (ry = -2; ry < 3; ry++)
-			if (BOUNDS_CHECK && (rx || ry))
-			{
-				r = pmap[y + ry][x + rx];
-				if (!r)
-					continue;
-
-				if (parts[i].tmp == 2 && TYP(r) == PT_FILT)
+	if (parts[i].tmp == 2)
+	{
+		bool deserializelife = parts[i].tmp == 2;
+		for (rx = -2; rx < 3; rx++)
+			for (ry = -2; ry < 3; ry++)
+				if (BOUNDS_CHECK && (rx || ry))
 				{
-					if (rx >= -1 && rx <= 1 && ry >= -1 && ry <= 1)
-					{
-						int newlife = parts[ID(r)].ctype - 0x10000000;
-						parts[i].ctype = newlife;
-					}
-				}
-				if (parts[i].tmp == 2 && TYP(r) != PT_FILT)
-				{
-					if (rx >= -1 && rx <= 1 && ry >= -1 && ry <= 1 && parts[i].ctype >= 0)
-					{
-						parts[ID(r)].life = parts[i].ctype;
-					}
-				}
+					r = pmap[y + ry][x + rx];
+					if (!r)
+						continue;
 
-			}
+					if (TYP(r) == PT_FILT)
+					{
+						if (rx >= -1 && rx <= 1 && ry >= -1 && ry <= 1)
+						{
+							int newlife = parts[ID(r)].ctype - 0x10000000;
+							parts[i].ctype = newlife;
+						}
+					}
+					if (TYP(r) != PT_FILT)
+					{
+						if (rx >= -1 && rx <= 1 && ry >= -1 && ry <= 1 && parts[i].ctype >= 0)
+						{
+							parts[ID(r)].life = parts[i].ctype;
+						}
+					}
+
+				}
+	}
 	return 0;
 
 }
