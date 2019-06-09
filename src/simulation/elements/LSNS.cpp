@@ -136,7 +136,7 @@ int Element_LSNS::update(UPDATE_FUNC_ARGS)
 				if (!r)
 					continue;
 
-				if (deserializelife && TYP(r) == PT_FILT)
+				if (parts[i].tmp == 2 && TYP(r) == PT_FILT)
 				{
 					if (rx >= -1 && rx <= 1 && ry >= -1 && ry <= 1)
 					{
@@ -144,7 +144,7 @@ int Element_LSNS::update(UPDATE_FUNC_ARGS)
 						parts[i].ctype = newlife;
 					}
 				}
-				if (deserializelife && TYP(r) != PT_FILT)
+				if (parts[i].tmp == 2 && TYP(r) != PT_FILT)
 				{
 					if (rx >= -1 && rx <= 1 && ry >= -1 && ry <= 1 && parts[i].ctype >= 0)
 					{
