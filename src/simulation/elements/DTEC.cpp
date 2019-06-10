@@ -82,16 +82,19 @@ int Element_DTEC::update(UPDATE_FUNC_ARGS)
 					r = sim->photons[y + ry][x + rx];
 				if (!r)
 					continue;
-				if (TYP(r) == parts[i].ctype && (parts[i].ctype != PT_LIFE || parts[i].temp == parts[ID(r)].ctype || !parts[i].temp))
-					if (TYP(r) == parts[i].ctype && (parts[i].ctype != PT_LIFE || parts[i].temp == parts[ID(r)].ctype || !parts[i].temp))
-						parts[i].life = 1;
+				if (TYP(r) == parts[i].ctype)
+				{
+					parts[i].life = 1;
+				}
+				//Invert mode.
 				if (parts[i].tmp == 1)
 				{
-					if (TYP(r) == parts[i].ctype && (parts[i].ctype != PT_LIFE || parts[i].temp == parts[ID(r)].ctype || !parts[i].temp))
+					if (TYP(r) == parts[i].ctype)
 						parts[i].life = 0;
-					if (TYP(r) != parts[i].ctype && (parts[i].ctype != PT_LIFE || parts[i].temp == parts[ID(r)].ctype || !parts[i].temp))
+					if (TYP(r) != parts[i].ctype)
 						parts[i].life = 1;
 				}
+
 				if (TYP(r) == PT_PHOT || (TYP(r) == PT_BRAY && parts[ID(r)].tmp != 2))
 				{
 					setFilt = true;
