@@ -26,7 +26,7 @@ Element_DTEC::Element_DTEC()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
+	Temperature = R_TEMP + 0.0f + 273.15f;
 	HeatConduct = 0;
 	Description = "Detector, creates a spark when something with its ctype is nearby.";
 
@@ -52,39 +52,46 @@ int Element_DTEC::update(UPDATE_FUNC_ARGS)
 	if (parts[i].life)
 	{
 		parts[i].life = 0;
-		for (rx=-2; rx<3; rx++)
-			for (ry=-2; ry<3; ry++)
+		for (rx = -2; rx < 3; rx++)
+			for (ry = -2; ry < 3; ry++)
 				if (BOUNDS_CHECK && (rx || ry))
 				{
-					r = pmap[y+ry][x+rx];
+					r = pmap[y + ry][x + rx];
 					if (!r)
 						continue;
 					rt = TYP(r);
-					if (sim->parts_avg(i,ID(r),PT_INSL) != PT_INSL)
+					if (sim->parts_avg(i, ID(r), PT_INSL) != PT_INSL)
 					{
-						if ((sim->elements[rt].Properties&PROP_CONDUCTS) && !(rt==PT_WATR||rt==PT_SLTW||rt==PT_NTCT||rt==PT_PTCT||rt==PT_INWR) && parts[ID(r)].life==0)
+						if ((sim->elements[rt].Properties&PROP_CONDUCTS) && !(rt == PT_WATR || rt == PT_SLTW || rt == PT_NTCT || rt == PT_PTCT || rt == PT_INWR) && parts[ID(r)].life == 0)
 						{
 							parts[ID(r)].life = 4;
 							parts[ID(r)].ctype = rt;
-							sim->part_change_type(ID(r),x+rx,y+ry,PT_SPRK);
+							sim->part_change_type(ID(r), x + rx, y + ry, PT_SPRK);
 						}
 					}
 				}
 	}
 	bool setFilt = false;
 	int photonWl = 0;
-	for (rx=-rd; rx<rd+1; rx++)
-		for (ry=-rd; ry<rd+1; ry++)
-			if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES && (rx || ry))
+	for (rx = -rd; rx < rd + 1; rx++)
+		for (ry = -rd; ry < rd + 1; ry++)
+			if (x + rx >= 0 && y + ry >= 0 && x + rx < XRES && y + ry < YRES && (rx || ry))
 			{
-				r = pmap[y+ry][x+rx];
-				if(!r)
-					r = sim->photons[y+ry][x+rx];
-				if(!r)
+				r = pmap[y + ry][x + rx];
+				if (!r)
+					r = sim->photons[y + ry][x + rx];
+				if (!r)
 					continue;
-				if (TYP(r) == parts[i].ctype && (parts[i].ctype != PT_LIFE || parts[i].tmp == parts[ID(r)].ctype || !parts[i].tmp))
+				if (TYP(r) == parts[i].ctype && (parts[i].ctype != PT_LIFE || parts[i].temp == parts[ID(r)].ctype || !parts[i].temp))
 					parts[i].life = 1;
-				if (TYP(r) == PT_PHOT || (TYP(r) == PT_BRAY && parts[ID(r)].tmp!=2))
+				if (parts[i].tmp == 1)
+				{
+					if (TYP(r) == parts[i].ctype && (parts[i].ctype != PT_LIFE || parts[i].temp == parts[ID(r)].ctype || !parts[i].temp))
+						parts[i].life = 0;
+					if (TYP(r) != parts[i].ctype && (parts[i].ctype != PT_LIFE || parts[i].temp == parts[ID(r)].ctype || !parts[i].temp))
+						parts[i].life = 1;
+				}
+				if (TYP(r) == PT_PHOT || (TYP(r) == PT_BRAY && parts[ID(r)].tmp != 2))
 				{
 					setFilt = true;
 					photonWl = parts[ID(r)].ctype;
@@ -93,21 +100,21 @@ int Element_DTEC::update(UPDATE_FUNC_ARGS)
 	if (setFilt)
 	{
 		int nx, ny;
-		for (rx=-1; rx<2; rx++)
-			for (ry=-1; ry<2; ry++)
+		for (rx = -1; rx < 2; rx++)
+			for (ry = -1; ry < 2; ry++)
 				if (BOUNDS_CHECK && (rx || ry))
 				{
-					r = pmap[y+ry][x+rx];
+					r = pmap[y + ry][x + rx];
 					if (!r)
 						continue;
-					nx = x+rx;
-					ny = y+ry;
-					while (TYP(r)==PT_FILT)
+					nx = x + rx;
+					ny = y + ry;
+					while (TYP(r) == PT_FILT)
 					{
 						parts[ID(r)].ctype = photonWl;
 						nx += rx;
 						ny += ry;
-						if (nx<0 || ny<0 || nx>=XRES || ny>=YRES)
+						if (nx < 0 || ny < 0 || nx >= XRES || ny >= YRES)
 							break;
 						r = pmap[ny][nx];
 					}
