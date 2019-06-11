@@ -38,6 +38,7 @@ Thanks
 * MaksProg
 * jacob1
 * mniip
+* LBPHacker
 
 
 Instructions
@@ -101,11 +102,11 @@ Controls
 Command Line
 ---------------------------------------------------------------------------
 
-| Command                  |                                                                |
-| ------------------------ | -------------------------------------------------------------- |
-| scale:<size>             | Change window scale                                            |
-| kiosk                    | Fullscreen mode                                                |
-| proxy\:server[:port]      | Proxy server to use [Example: proxy\:wwwcache.lancs.ac.uk:8080] |
-| open <file>              | Opens the file as a stamp or game save                         |
-| ddir <directory>         | Directory used for saving stamps and preferences               |
-| ptsave:<save id>#[name]  | [Example: ptsave:2198#Destroyable_city_5_wth_metro~dima-gord]  |
+| Command                | Description                                      | Example                                              |
+| ---------------------- | ------------------------------------------------ | ---------------------------------------------------- |
+| `scale:SIZE`           | Change window scale factor                       | `scale:2`                                            |
+| `kiosk`                | Fullscreen mode                                  |                                                      |
+| `proxy\:SERVER[:PORT]` | Proxy server to use                              | `proxy\:wwwcache.lancs.ac.uk:8080`                   |
+| `open FILE`            | Opens the file as a stamp or game save           |                                                      |
+| `ddir DIRECTORY`       | Directory used for saving stamps and preferences |                                                      |
+| `ptsave:SAVEID[#NAME]` | Open online save, used by ptsave: URLs           | `ptsave:2198#Destroyable_city_5_wth_metro~dima-gord` |
