@@ -147,7 +147,7 @@ public:
 	float GetToolStrength();
 	Tool * GetLastTool();
 	void SetLastTool(Tool * newTool);
-	Tool * GetToolFromIdentifier(ByteString identifier);
+	Tool *GetToolFromIdentifier(ByteString const &identifier);
 	Tool * GetElementTool(int elementID);
 	std::vector<Tool*> GetToolList();
 	std::vector<Tool*> GetUnlistedTools();

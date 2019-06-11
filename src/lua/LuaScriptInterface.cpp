@@ -2876,6 +2876,7 @@ int LuaScriptInterface::elements_free(lua_State * l)
 	}
 
 	luacon_sim->elements[id].Enabled = false;
+	luacon_model->BuildMenus();
 
 	lua_getglobal(l, "elements");
 	lua_pushnil(l);
