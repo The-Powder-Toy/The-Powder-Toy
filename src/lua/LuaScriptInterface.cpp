@@ -789,6 +789,12 @@ void LuaScriptInterface::initSimulationAPI()
 	SETCONST(l, XRES);
 	SETCONST(l, YRES);
 	SETCONST(l, CELL);
+	SETCONST(l, NT);
+	SETCONST(l, ST);
+	SETCONST(l, ITH);
+	SETCONST(l, ITL);
+	SETCONST(l, IPH);
+	SETCONST(l, IPL);
 	SETCONST(l, PT_NUM);
 	lua_pushinteger(l, 0); lua_setfield(l, -2, "NUM_PARTS");
 	SETCONST(l, R_TEMP);
