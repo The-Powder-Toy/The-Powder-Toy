@@ -47,7 +47,7 @@ Element_LSNS::Element_LSNS()
 //#TPT-Directive ElementHeader Element_LSNS static int update(UPDATE_FUNC_ARGS)
 int Element_LSNS::update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry, rt, rd = parts[i].tmp2;
+	int r, rx, ry, rt, rd = parts[i].tmp2, Filt = parts[PT_FILT].ctype;
 	if (rd > 25) parts[i].tmp2 = rd = 25;
 	if (parts[i].life)
 	{
@@ -71,18 +71,21 @@ int Element_LSNS::update(UPDATE_FUNC_ARGS)
 					}
 				}
 	}
-	for (rx = -rd; rx < rd + 1; rx++)
-		for (ry = -rd; ry < rd + 1; ry++)
-			if (x + rx >= 0 && y + ry >= 0 && x + rx < XRES && y + ry < YRES && (rx || ry))
-			{
-				r = pmap[y + ry][x + rx];
-				if (!r)
-					r = sim->photons[y + ry][x + rx];
-				if (!r)
-					continue;
-				if (parts[ID(r)].life > parts[i].temp - 273.15)
-					parts[i].life = 1;
-			}
+	if ((parts[i].tmp != 2) && (parts[i].tmp != 3))
+	{
+		for (rx = -rd; rx < rd + 1; rx++)
+			for (ry = -rd; ry < rd + 1; ry++)
+				if (x + rx >= 0 && y + ry >= 0 && x + rx < XRES && y + ry < YRES && (rx || ry))
+				{
+					r = pmap[y + ry][x + rx];
+					if (!r)
+						r = sim->photons[y + ry][x + rx];
+					if (!r)
+						continue;
+					if (parts[ID(r)].life > parts[i].temp - 273.15)
+						parts[i].life = 1;
+				}
+	}
 	//.Life serialization (.tmp = 1 turns on .life serialization).
 
 	bool setFilt = false;
@@ -125,8 +128,8 @@ int Element_LSNS::update(UPDATE_FUNC_ARGS)
 					}
 				}
 	}
-	// .Life Deserialization (.tmp = 2 turns on .life deserialization).
-	if (parts[i].tmp == 2)
+	// .Life Deserialization (.tmp = 3 turns on .life deserialization).
+	if (parts[i].tmp == 3)
 	{
 		for (rx = -2; rx < 3; rx++)
 			for (ry = -2; ry < 3; ry++)
@@ -140,18 +143,37 @@ int Element_LSNS::update(UPDATE_FUNC_ARGS)
 					{
 						if (rx >= -1 && rx <= 1 && ry >= -1 && ry <= 1)
 						{
-							int newlife = parts[ID(r)].ctype - 0x10000000;
-							parts[i].ctype = newlife;
+							Filt = parts[ID(r)].ctype - 0x10000000;
 						}
 					}
 					if (TYP(r) != PT_FILT)
 					{
 						if (rx >= -1 && rx <= 1 && ry >= -1 && ry <= 1 && parts[i].ctype >= 0)
 						{
-							parts[ID(r)].life = parts[i].ctype;
+							parts[ID(r)].life = Filt;
 						}
 					}
 
+				}
+	}
+	//Invert mode (.tmp = 2 activates invert mode).
+	if (parts[i].tmp == 2)
+	{
+		for (rx = -rd; rx < rd + 1; rx++)
+			for (ry = -rd; ry < rd + 1; ry++)
+				if (x + rx >= 0 && y + ry >= 0 && x + rx < XRES && y + ry < YRES && (rx || ry))
+				{
+					r = pmap[y + ry][x + rx];
+					if (!r)
+						r = sim->photons[y + ry][x + rx];
+					if (!r)
+						continue;
+					if (parts[ID(r)].life > parts[i].temp - 273.15)
+					{
+						parts[i].life = 0;
+					}
+					else
+						parts[i].life = 1;
 				}
 	}
 	return 0;
