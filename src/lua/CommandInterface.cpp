@@ -1,6 +1,7 @@
 #include "CommandInterface.h"
 
 #include <cstring>
+#include <cstddef>
 #if !defined(WIN) || defined(__GNUC__)
 #include <strings.h>
 #endif
