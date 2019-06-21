@@ -47,7 +47,7 @@ Element_LSNS::Element_LSNS()
 //#TPT-Directive ElementHeader Element_LSNS static int update(UPDATE_FUNC_ARGS)
 int Element_LSNS::update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry, rt, rd = parts[i].tmp2, Filt = parts[PT_FILT].ctype;
+	int r, rx, ry, rt, rd = parts[i].tmp2;
 	if (rd > 25) parts[i].tmp2 = rd = 25;
 	if (parts[i].life)
 	{
@@ -69,32 +69,18 @@ int Element_LSNS::update(UPDATE_FUNC_ARGS)
 							sim->part_change_type(ID(r), x + rx, y + ry, PT_SPRK);
 						}
 					}
-				}
-	}
-	if ((parts[i].tmp != 2) && (parts[i].tmp != 3))
-	{
-		for (rx = -rd; rx < rd + 1; rx++)
-			for (ry = -rd; ry < rd + 1; ry++)
-				if (x + rx >= 0 && y + ry >= 0 && x + rx < XRES && y + ry < YRES && (rx || ry))
-				{
-					r = pmap[y + ry][x + rx];
-					if (!r)
-						r = sim->photons[y + ry][x + rx];
-					if (!r)
-						continue;
-					if (parts[ID(r)].life > parts[i].temp - 273.15)
-						parts[i].life = 1;
-				}
-	}
-	//.Life serialization (.tmp = 1 turns on .life serialization).
 
+				}
+	}
 	bool setFilt = false;
+	bool setFiltd = false;
 	int photonWl = 0;
-	for (int rx = -rd; rx <= rd; rx++)
-		for (int ry = -rd; ry <= rd; ry++)
+	int photonW2 = 0;
+	for (rx = -rd; rx < rd + 1; rx++)
+		for (ry = -rd; ry < rd + 1; ry++)
 			if (x + rx >= 0 && y + ry >= 0 && x + rx < XRES && y + ry < YRES && (rx || ry))
 			{
-				int r = pmap[y + ry][x + rx];
+				r = pmap[y + ry][x + rx];
 				if (!r)
 					r = sim->photons[y + ry][x + rx];
 				if (!r)
@@ -104,19 +90,42 @@ int Element_LSNS::update(UPDATE_FUNC_ARGS)
 					setFilt = true;
 					photonWl = parts[ID(r)].life;
 				}
-			}
-	if (setFilt)
-	{
-		int nx, ny;
-		for (int rx = -1; rx <= 1; rx++)
-			for (int ry = -1; ry <= 1; ry++)
-				if (BOUNDS_CHECK && (rx || ry))
+				if (parts[i].tmp == 3 && TYP(r) != PT_LSNS && TYP(r) == PT_FILT)
 				{
-					int r = pmap[y + ry][x + rx];
-					if (!r)
-						continue;
-					nx = x + rx;
-					ny = y + ry;
+					setFiltd = true;
+					photonW2 = parts[ID(r)].ctype;
+				}
+				if ((parts[i].tmp != 1) && (parts[i].tmp != 2) && (parts[i].tmp != 3))
+				{
+					if (parts[ID(r)].life > parts[i].temp - 273.15)
+					{
+						parts[i].life = 1;
+					}
+				}
+				//Invert mode.
+				if (parts[i].tmp == 2)
+				{
+					if (parts[ID(r)].life > parts[i].temp - 273.15)
+						parts[i].life = 0;
+					else
+						parts[i].life = 1;
+
+				}
+
+			}
+	int nx, ny;
+	for (int rx = -1; rx <= 1; rx++)
+		for (int ry = -1; ry <= 1; ry++)
+			if (BOUNDS_CHECK && (rx || ry))
+			{
+				int r = pmap[y + ry][x + rx];
+				if (!r)
+					continue;
+				nx = x + rx;
+				ny = y + ry;
+				//.life serialization.
+				if (setFilt)
+				{
 					while (TYP(r) == PT_FILT)
 					{
 						parts[ID(r)].ctype = 0x10000000 + photonWl;
@@ -127,46 +136,21 @@ int Element_LSNS::update(UPDATE_FUNC_ARGS)
 						r = pmap[ny][nx];
 					}
 				}
-	}
-
-	for (rx = -2; rx < 3; rx++)
-		for (ry = -2; ry < 3; ry++)
-			if (BOUNDS_CHECK && (rx || ry))
-			{
-				r = pmap[y + ry][x + rx];
-				if (!r)
-					continue;
-
-				// .Life Deserialization (.tmp = 3 turns on .life deserialization).
-				if (parts[i].tmp == 3)
+				//.life deserialization.
+				if (setFiltd)
 				{
-					if (TYP(r) == PT_FILT)
+					while (TYP(r) != PT_FILT)
 					{
-						if (rx >= -1 && rx <= 1 && ry >= -1 && ry <= 1)
-						{
-							Filt = parts[ID(r)].ctype - 0x10000000;
-						}
+						parts[ID(r)].life = photonW2 - 0x10000000;
+						nx += rx;
+						ny += ry;
+						if (nx < 0 || ny < 0 || nx >= XRES || ny >= YRES)
+							break;
+						r = pmap[ny][nx];
 					}
-					if (TYP(r) != PT_FILT)
-					{
-						if (rx >= -1 && rx <= 1 && ry >= -1 && ry <= 1 && Filt >= 0)
-						{
-							parts[ID(r)].life = Filt;
-						}
-					}
-
-				}
-				//Invert mode (.tmp = 2 activates invert mode).
-				if (parts[i].tmp == 2)
-				{
-					if (parts[ID(r)].life > parts[i].temp - 273.15)
-					{
-						parts[i].life = 0;
-					}
-					else
-						parts[i].life = 1;
 				}
 			}
+
 	return 0;
 
 }
