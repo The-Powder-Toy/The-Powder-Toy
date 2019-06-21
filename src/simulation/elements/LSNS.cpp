@@ -142,11 +142,7 @@ int Element_LSNS::update(UPDATE_FUNC_ARGS)
 					while (TYP(r) != PT_FILT)
 					{
 						parts[ID(r)].life = photonW2 - 0x10000000;
-						nx += rx;
-						ny += ry;
-						if (nx < 0 || ny < 0 || nx >= XRES || ny >= YRES)
-							break;
-						r = pmap[ny][nx];
+						break;
 					}
 				}
 			}
