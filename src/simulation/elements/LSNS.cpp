@@ -73,9 +73,9 @@ int Element_LSNS::update(UPDATE_FUNC_ARGS)
 				}
 	}
 	bool setFilt = false;
-	bool setFiltd = false;
-	int photonWl = 0;
-	int photonW2 = 0;
+	bool Setnewlife = false;
+	int partlife = 0;
+	int Newlife = 0;
 	for (rx = -rd; rx < rd + 1; rx++)
 		for (ry = -rd; ry < rd + 1; ry++)
 			if (x + rx >= 0 && y + ry >= 0 && x + rx < XRES && y + ry < YRES && (rx || ry))
@@ -88,12 +88,12 @@ int Element_LSNS::update(UPDATE_FUNC_ARGS)
 				if (parts[i].tmp == 1 && TYP(r) != PT_LSNS && TYP(r) != PT_FILT && parts[ID(r)].life >= 0)
 				{
 					setFilt = true;
-					photonWl = parts[ID(r)].life;
+					partlife = parts[ID(r)].life;
 				}
-				if (parts[i].tmp == 3 && TYP(r) != PT_LSNS && TYP(r) == PT_FILT)
+				if (parts[i].tmp == 3 && TYP(r) == PT_FILT)
 				{
-					setFiltd = true;
-					photonW2 = parts[ID(r)].ctype;
+					Setnewlife = true;
+					Newlife = parts[ID(r)].ctype;
 				}
 				if ((parts[i].tmp != 1) && (parts[i].tmp != 2) && (parts[i].tmp != 3))
 				{
@@ -128,7 +128,7 @@ int Element_LSNS::update(UPDATE_FUNC_ARGS)
 				{
 					while (TYP(r) == PT_FILT)
 					{
-						parts[ID(r)].ctype = 0x10000000 + photonWl;
+						parts[ID(r)].ctype = 0x10000000 + partlife;
 						nx += rx;
 						ny += ry;
 						if (nx < 0 || ny < 0 || nx >= XRES || ny >= YRES)
@@ -137,11 +137,11 @@ int Element_LSNS::update(UPDATE_FUNC_ARGS)
 					}
 				}
 				//.life deserialization.
-				if (setFiltd)
+				if (Setnewlife)
 				{
-					while (TYP(r) != PT_FILT)
+					if (TYP(r) != PT_FILT)
 					{
-						parts[ID(r)].life = photonW2 - 0x10000000;
+						parts[ID(r)].life = Newlife - 0x10000000;
 						break;
 					}
 				}
