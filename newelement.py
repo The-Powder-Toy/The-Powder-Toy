@@ -3,9 +3,13 @@ import re
 import os
 
 if len(sys.argv) != 2:
-	sys.exit('needs an element name as an argument')
+	name = input('element name: ')
+else:
+	name = sys.argv[1]
 
-name = sys.argv[1].upper()
+if re.search('[^A-Z0-9-]', name):
+	sys.exit('element names should only contain uppercase letters, numbers and hyphens (you can change the Name property of the element to whatever later though, which is what shows up in menus)')
+
 path = 'src/simulation/elements/' + name + '.cpp'
 
 if os.path.isfile(path):
@@ -23,6 +27,7 @@ with open('generated/ElementClasses.h', 'r') as classes:
 
 with open(path, 'w') as elem:
 	elem.write(r"""#include "simulation/ElementCommon.h"
+
 //#TPT-Directive ElementClass Element_{0} PT_{0} {1}
 Element_{0}::Element_{0}()
 {{

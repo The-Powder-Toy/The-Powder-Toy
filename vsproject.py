@@ -15,8 +15,7 @@ for root, subdirs, files in os.walk('src'):
 			source_dirs.add(os.path.dirname(file))
 
 sln = open('The-Powder-Toy.sln', 'w')
-sln.write(r"""
-Microsoft Visual Studio Solution File, Format Version 12.00
+sln.write(r"""Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
