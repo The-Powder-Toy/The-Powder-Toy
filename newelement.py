@@ -8,7 +8,7 @@ else:
 	name = sys.argv[1]
 
 if re.search('[^A-Z0-9-]', name):
-	sys.exit('element names should only contain uppercase letters, numbers and hyphens (you can change the Name property of the element to whatever later though, which is what shows up in menus)')
+	sys.exit('element names should only contain uppercase letters, digits and hyphens (you can change the Name property of the element to whatever later though, which is what shows up in menus)')
 
 path = 'src/simulation/elements/' + name + '.cpp'
 
