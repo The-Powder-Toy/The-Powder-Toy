@@ -48,7 +48,7 @@ Element_TSNS::Element_TSNS()
 int Element_TSNS::update(UPDATE_FUNC_ARGS)
 {
 	int rd = parts[i].tmp2;
-	if (rd > 25)
+	(rd > 25 || rd < 0)
 		parts[i].tmp2 = rd = 25;
 	if (parts[i].life)
 	{
@@ -115,6 +115,11 @@ int Element_TSNS::update(UPDATE_FUNC_ARGS)
 						r = pmap[ny][nx];
 					}
 				}
+	}
+	//Preventing user from setting random .tmp values.
+	if (parts[i].tmp > 2 || parts[i].tmp < 0)
+	{
+		parts[i].tmp = 0;
 	}
 	return 0;
 }

@@ -48,7 +48,7 @@ Element_LSNS::Element_LSNS()
 int Element_LSNS::update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry, rt, rd = parts[i].tmp2;
-	if (rd > 25) parts[i].tmp2 = rd = 25;
+	if (rd > 25 || rd < 0) parts[i].tmp2 = rd = 25;
 	if (parts[i].life)
 	{
 		parts[i].life = 0;
@@ -146,7 +146,11 @@ int Element_LSNS::update(UPDATE_FUNC_ARGS)
 					}
 				}
 			}
-
+	//Preventing user from setting random .tmp values.
+	if (parts[i].tmp > 3 || parts[i].tmp < 0)
+	{
+		parts[i].tmp = 0;
+	}
 	return 0;
 
 }

@@ -99,6 +99,11 @@ int Element_PSNS::update(UPDATE_FUNC_ARGS)
 					}
 		}
 	}
+	//Preventing user from setting random .tmp values.
+	if (parts[i].tmp > 2 || parts[i].tmp < 0)
+	{
+		parts[i].tmp = 0;
+	}
 	return 0;
 }
 
