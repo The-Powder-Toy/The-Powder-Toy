@@ -48,8 +48,10 @@ Element_TSNS::Element_TSNS()
 int Element_TSNS::update(UPDATE_FUNC_ARGS)
 {
 	int rd = parts[i].tmp2;
-	(rd > 25 || rd < 0)
+	if (rd > 25 || rd < 0)
+	{
 		parts[i].tmp2 = rd = 25;
+	}
 	if (parts[i].life)
 	{
 		parts[i].life = 0;
