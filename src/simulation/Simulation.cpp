@@ -113,7 +113,7 @@ int Simulation::Load(int fullX, int fullY, GameSave * save, bool includePressure
 			continue;
 
 		// These store type in ctype, but are special because they store extra information in the bits after type
-		if (tempPart.type == PT_CRAY || tempPart.type == PT_DRAY || tempPart.type == PT_CONV)
+		if (tempPart.type == PT_CRAY || tempPart.type == PT_DRAY || tempPart.type == PT_CONV || tempPart.type == PT_DTEC)
 		{
 			int ctype = tempPart.ctype & pmapmask;
 			int extra = tempPart.ctype >> save->pmapbits;
@@ -3118,7 +3118,7 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 			parts[index].ctype = PT_DUST;
 			return index;
 		}
-		if (p==-2 && ((elements[type].Properties & PROP_DRAWONCTYPE) || type==PT_CRAY))
+		if (p==-2 && ((elements[type].Properties & PROP_DRAWONCTYPE) || type==PT_CRAY || type == PT_DTEC))
 		{
 			parts[index].ctype = PT_SPRK;
 			return index;
@@ -3187,7 +3187,7 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 						parts[ID(pmap[y][x])].tmp = v;
 				}
 			}
-			else if (drawOn == PT_DTEC || (drawOn == PT_PSTN && t != PT_FRME) || drawOn == PT_DRAY)
+			else if ( (drawOn == PT_PSTN && t != PT_FRME) || drawOn == PT_DRAY)
 			{
 				parts[ID(pmap[y][x])].ctype = t;
 				if (t == PT_LIFE && v >= 0 && v < NGOL)
@@ -3207,6 +3207,15 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 					parts[ID(pmap[y][x])].ctype |= PMAPID(30);
 				parts[ID(pmap[y][x])].temp = elements[t].Temperature;
 			}
+			else if (drawOn == PT_DTEC)
+			{
+				parts[ID(pmap[y][x])].ctype = t;
+				if (t == PT_LIFE && v >= 0 && v < NGOL)
+					parts[ID(pmap[y][x])].ctype |= PMAPID(v);
+				if (t == PT_LIGH)
+					parts[ID(pmap[y][x])].ctype |= PMAPID(30);
+			}
+
 			return -1;
 		}
 		else if (IsWallBlocking(x, y, t))

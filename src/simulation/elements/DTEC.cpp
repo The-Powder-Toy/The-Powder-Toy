@@ -48,7 +48,10 @@ Element_DTEC::Element_DTEC()
 int Element_DTEC::update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry, rt, rd = parts[i].tmp2;
-	if (rd > 25) parts[i].tmp2 = rd = 25;
+	if (rd > 25 || rd < 0)
+	{
+		parts[i].tmp2 = rd = 25;
+	}
 	if (parts[i].life)
 	{
 		parts[i].life = 0;
@@ -82,23 +85,36 @@ int Element_DTEC::update(UPDATE_FUNC_ARGS)
 					r = sim->photons[y + ry][x + rx];
 				if (!r)
 					continue;
-				if (TYP(r) == parts[i].ctype)
-				{
-					parts[i].life = 1;
-				}
-				//Invert mode.
-				if (parts[i].tmp == 1)
+				// normal detection mode.
+				if (parts[i].tmp == 0)
 				{
 					if (TYP(r) == parts[i].ctype)
-						parts[i].life = 0;
-					if (TYP(r) != parts[i].ctype)
+					{
 						parts[i].life = 1;
+					}
 				}
-
-				if (TYP(r) == PT_PHOT || (TYP(r) == PT_BRAY && parts[ID(r)].tmp != 2))
+				// invert mode.
+				if (parts[i].tmp == 2)
 				{
-					setFilt = true;
-					photonWl = parts[ID(r)].ctype;
+					if (TYP(r) == parts[i].ctype)
+					{
+						parts[i].life = 0;
+					}
+					else
+					{
+						parts[i].life = 1;
+					}
+
+				}
+				//.Ctype serialization mode (Earlier used to be active all the time.
+				if (parts[i].tmp == 1)
+				{
+
+					if (TYP(r) == PT_PHOT || TYP(r) == PT_BRAY)
+					{
+						setFilt = true;
+						photonWl = parts[ID(r)].ctype;
+					}
 				}
 			}
 	if (setFilt)
@@ -123,6 +139,11 @@ int Element_DTEC::update(UPDATE_FUNC_ARGS)
 						r = pmap[ny][nx];
 					}
 				}
+	}
+	//Preventing user from setting random .tmp values.
+	if (parts[i].tmp > 2 || parts[i].tmp < 0)
+	{
+		parts[i].tmp = 0;
 	}
 	return 0;
 }
