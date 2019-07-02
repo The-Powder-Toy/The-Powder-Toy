@@ -168,6 +168,21 @@ OptionsView::OptionsView():
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	scrollPanel->AddChild(tempLabel);
 
+	class HorizontalSeparator : public ui::Component
+	{
+		public:
+		HorizontalSeparator(ui::Point position, ui::Point size) : Component(position, size){}
+		virtual ~HorizontalSeparator(){}
+
+		void Draw(const ui::Point& screenPos)
+		{
+			GetGraphics()->drawrect(screenPos.X, screenPos.Y, Size.X, Size.Y, 255, 255, 255, 180);
+		}		
+	};
+
+	HorizontalSeparator *tmpSeparator = new HorizontalSeparator(ui::Point(10, 183), ui::Point(Size.X-10, 1));
+	scrollPanel->AddChild(tmpSeparator);
+
 	class ScaleAction: public ui::DropDownAction
 	{
 		OptionsView * v;
@@ -403,7 +418,6 @@ void OptionsView::OnDraw()
 	Graphics * g = GetGraphics();
 	g->clearrect(Position.X-2, Position.Y-2, Size.X+3, Size.Y+3);
 	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 255, 255, 255, 255);
-	g->draw_line(Position.X+1, Position.Y+scale->Position.Y-4, Position.X+Size.X-1, Position.Y+scale->Position.Y-4, 255, 255, 255, 180);
 }
 
 void OptionsView::OnTryExit(ExitMethod method)
