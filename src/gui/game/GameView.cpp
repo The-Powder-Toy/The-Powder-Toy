@@ -2336,7 +2336,7 @@ void GameView::OnDraw()
 					if (wavelengthGfx)
 						sampleInfo << " (" << ctype << ")";
 					// Some elements store extra LIFE info in upper bits of ctype, instead of tmp/tmp2
-					else if (type == PT_CRAY || type == PT_DRAY || type == PT_CONV)
+					else if (type == PT_CRAY || type == PT_DRAY || type == PT_CONV || type == PT_DTEC)
 						sampleInfo << " (" << c->ElementResolve(TYP(ctype), ID(ctype)) << ")";
 					else if (c->IsValidElement(ctype))
 						sampleInfo << " (" << c->ElementResolve(ctype, -1) << ")";
