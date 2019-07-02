@@ -2,6 +2,7 @@
 #define OPTIONSVIEW_H_
 
 #include "gui/interface/Window.h"
+#include "gui/interface/ScrollPanel.h"
 
 namespace ui
 {
@@ -29,6 +30,8 @@ class OptionsView: public ui::Window
 	ui::Checkbox * forceIntegerScaling;
 	ui::Checkbox * fastquit;
 	ui::Checkbox * showAvatars;
+	ui::Checkbox * mouseClickRequired;
+	ui::ScrollPanel * scrollPanel;
 public:
 	OptionsView();
 	void NotifySettingsChanged(OptionsModel * sender);

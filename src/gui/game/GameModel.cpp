@@ -153,6 +153,8 @@ GameModel::GameModel():
 	// cap due to memory usage (this is about 3.4GB of RAM)
 	if (undoHistoryLimit > 200)
 		undoHistoryLimit = 200;
+
+	mouseClickRequired = Client::Ref().GetPrefBool("MouseClickRequired", false);
 }
 
 GameModel::~GameModel()
@@ -181,6 +183,8 @@ GameModel::~GameModel()
 	Client::Ref().SetPref("Decoration.Alpha", (int)colour.Alpha);
 
 	Client::Ref().SetPref("Simulation.UndoHistoryLimit", undoHistoryLimit);
+
+	Client::Ref().SetPref("MouseClickRequired", mouseClickRequired);
 
 	Favorite::Ref().SaveFavoritesToPrefs();
 
@@ -1293,4 +1297,15 @@ void GameModel::notifyLastToolChanged()
 	{
 		observers[i]->NotifyLastToolChanged(this);
 	}
+}
+
+bool GameModel::GetMouseClickRequired()
+{
+	return mouseClickRequired;
+}
+
+void GameModel::SetMouseClickRequired(bool mouseClickRequired_)
+{
+	mouseClickRequired = mouseClickRequired_;
+	notifyMenuListChanged();
 }

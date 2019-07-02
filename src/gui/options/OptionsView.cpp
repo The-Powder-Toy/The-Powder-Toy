@@ -23,12 +23,18 @@
 #include "graphics/Graphics.h"
 
 OptionsView::OptionsView():
-	ui::Window(ui::Point(-1, -1), ui::Point(300, 389)){
+	ui::Window(ui::Point(-1, -1), ui::Point(350, 389)){
+
+	int currentY = 400;
+	scrollPanel = new ui::ScrollPanel(ui::Point(-1, -1), ui::Point(Size.X, Size.Y-16));
+	
+	AddComponent(scrollPanel);
 
 	ui::Label * tempLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 14), "Simulation Options");
 	tempLabel->SetTextColour(style::Colour::InformationTitle);
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-	AddComponent(tempLabel);
+	scrollPanel->AddChild(tempLabel);
+	
 
 	class HeatSimulationAction: public ui::CheckboxAction
 	{
@@ -42,10 +48,10 @@ OptionsView::OptionsView():
 
 	heatSimulation = new ui::Checkbox(ui::Point(8, 23), ui::Point(Size.X-6, 16), "Heat simulation \bgIntroduced in version 34", "");
 	heatSimulation->SetActionCallback(new HeatSimulationAction(this));
-	AddComponent(heatSimulation);
+	scrollPanel->AddChild(heatSimulation);
 	tempLabel = new ui::Label(ui::Point(24, heatSimulation->Position.Y+14), ui::Point(Size.X-28, 16), "\bgCan cause odd behaviour when disabled");
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-	AddComponent(tempLabel);
+	scrollPanel->AddChild(tempLabel);
 
 	class AmbientHeatSimulationAction: public ui::CheckboxAction
 	{
@@ -59,10 +65,10 @@ OptionsView::OptionsView():
 
 	ambientHeatSimulation = new ui::Checkbox(ui::Point(8, 53), ui::Point(Size.X-6, 16), "Ambient heat simulation \bgIntroduced in version 50", "");
 	ambientHeatSimulation->SetActionCallback(new AmbientHeatSimulationAction(this));
-	AddComponent(ambientHeatSimulation);
+	scrollPanel->AddChild(ambientHeatSimulation);
 	tempLabel = new ui::Label(ui::Point(24, ambientHeatSimulation->Position.Y+14), ui::Point(Size.X-28, 16), "\bgCan cause odd / broken behaviour with many saves");
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-	AddComponent(tempLabel);
+	scrollPanel->AddChild(tempLabel);
 
 	class NewtonianGravityAction: public ui::CheckboxAction
 	{
@@ -76,10 +82,10 @@ OptionsView::OptionsView():
 
 	newtonianGravity = new ui::Checkbox(ui::Point(8, 83), ui::Point(Size.X-6, 16), "Newtonian gravity \bgIntroduced in version 48", "");
 	newtonianGravity->SetActionCallback(new NewtonianGravityAction(this));
-	AddComponent(newtonianGravity);
+	scrollPanel->AddChild(newtonianGravity);
 	tempLabel = new ui::Label(ui::Point(24, newtonianGravity->Position.Y+14), ui::Point(Size.X-28, 16), "\bgMay cause poor performance on older computers");
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-	AddComponent(tempLabel);
+	scrollPanel->AddChild(tempLabel);
 
 	class WaterEqualisationAction: public ui::CheckboxAction
 		{
@@ -93,10 +99,10 @@ OptionsView::OptionsView():
 
 	waterEqualisation = new ui::Checkbox(ui::Point(8, 113), ui::Point(Size.X-6, 16), "Water equalisation \bgIntroduced in version 61", "");
 	waterEqualisation->SetActionCallback(new WaterEqualisationAction(this));
-	AddComponent(waterEqualisation);
+	scrollPanel->AddChild(waterEqualisation);
 	tempLabel = new ui::Label(ui::Point(24, waterEqualisation->Position.Y+14), ui::Point(Size.X-28, 16), "\bgMay cause poor performance with a lot of water");
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-	AddComponent(tempLabel);
+	scrollPanel->AddChild(tempLabel);
 
 	class AirModeChanged: public ui::DropDownAction
 	{
@@ -108,7 +114,7 @@ OptionsView::OptionsView():
 		}
 	};
 	airMode = new ui::DropDown(ui::Point(Size.X-88, 146), ui::Point(80, 16));
-	AddComponent(airMode);
+	scrollPanel->AddChild(airMode);
 	airMode->AddOption(std::pair<String, int>("On", 0));
 	airMode->AddOption(std::pair<String, int>("Pressure off", 1));
 	airMode->AddOption(std::pair<String, int>("Velocity off", 2));
@@ -118,7 +124,7 @@ OptionsView::OptionsView():
 
 	tempLabel = new ui::Label(ui::Point(8, 146), ui::Point(Size.X-96, 16), "Air Simulation Mode");
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-	AddComponent(tempLabel);
+	scrollPanel->AddChild(tempLabel);
 
 	class GravityModeChanged: public ui::DropDownAction
 	{
@@ -131,7 +137,7 @@ OptionsView::OptionsView():
 	};
 
 	gravityMode = new ui::DropDown(ui::Point(Size.X-88, 166), ui::Point(80, 16));
-	AddComponent(gravityMode);
+	scrollPanel->AddChild(gravityMode);
 	gravityMode->AddOption(std::pair<String, int>("Vertical", 0));
 	gravityMode->AddOption(std::pair<String, int>("Off", 1));
 	gravityMode->AddOption(std::pair<String, int>("Radial", 2));
@@ -139,7 +145,7 @@ OptionsView::OptionsView():
 
 	tempLabel = new ui::Label(ui::Point(8, 166), ui::Point(Size.X-96, 16), "Gravity Simulation Mode");
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-	AddComponent(tempLabel);
+	scrollPanel->AddChild(tempLabel);
 
 	class EdgeModeChanged: public ui::DropDownAction
 	{
@@ -152,7 +158,7 @@ OptionsView::OptionsView():
 	};
 
 	edgeMode = new ui::DropDown(ui::Point(Size.X-88, 186), ui::Point(80, 16));
-	AddComponent(edgeMode);
+	scrollPanel->AddChild(edgeMode);
 	edgeMode->AddOption(std::pair<String, int>("Void", 0));
 	edgeMode->AddOption(std::pair<String, int>("Solid", 1));
 	edgeMode->AddOption(std::pair<String, int>("Loop", 2));
@@ -160,7 +166,7 @@ OptionsView::OptionsView():
 
 	tempLabel = new ui::Label(ui::Point(8, 186), ui::Point(Size.X-96, 16), "Edge Mode");
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-	AddComponent(tempLabel);
+	scrollPanel->AddChild(tempLabel);
 
 	class ScaleAction: public ui::DropDownAction
 	{
@@ -188,11 +194,11 @@ OptionsView::OptionsView():
 			scale->AddOption(std::pair<String, int>("current", current_scale));
 	}
 	scale->SetActionCallback(new ScaleAction(this));
-	AddComponent(scale);
+	scrollPanel->AddChild(scale);
 
 	tempLabel = new ui::Label(ui::Point(scale->Position.X+scale->Size.X+3, scale->Position.Y), ui::Point(Size.X-28, 16), "\bg- Window scale factor for larger screens");
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-	AddComponent(tempLabel);
+	scrollPanel->AddChild(tempLabel);
 
 
 	class ResizableAction: public ui::CheckboxAction
@@ -210,8 +216,8 @@ OptionsView::OptionsView():
 	resizable->SetActionCallback(new ResizableAction(this));
 	tempLabel = new ui::Label(ui::Point(resizable->Position.X+Graphics::textwidth(resizable->GetText().c_str())+20, resizable->Position.Y), ui::Point(Size.X-28, 16), "\bg- Allow resizing and maximizing window");
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-	AddComponent(tempLabel);
-	AddComponent(resizable);
+	scrollPanel->AddChild(tempLabel);
+	scrollPanel->AddChild(resizable);
 
 	class FullscreenAction: public ui::CheckboxAction
 	{
@@ -228,8 +234,8 @@ OptionsView::OptionsView():
 	fullscreen->SetActionCallback(new FullscreenAction(this));
 	tempLabel = new ui::Label(ui::Point(fullscreen->Position.X+Graphics::textwidth(fullscreen->GetText().c_str())+20, fullscreen->Position.Y), ui::Point(Size.X-28, 16), "\bg- Fill the entire screen");
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-	AddComponent(tempLabel);
-	AddComponent(fullscreen);
+	scrollPanel->AddChild(tempLabel);
+	scrollPanel->AddChild(fullscreen);
 
 	class AltFullscreenAction: public ui::CheckboxAction
 	{
@@ -246,8 +252,8 @@ OptionsView::OptionsView():
 	altFullscreen->SetActionCallback(new AltFullscreenAction(this));
 	tempLabel = new ui::Label(ui::Point(altFullscreen->Position.X+Graphics::textwidth(altFullscreen->GetText().c_str())+20, altFullscreen->Position.Y), ui::Point(Size.X-28, 16), "\bg- Set optimial screen resolution");
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-	AddComponent(tempLabel);
-	AddComponent(altFullscreen);
+	scrollPanel->AddChild(tempLabel);
+	scrollPanel->AddChild(altFullscreen);
 
 	class ForceIntegerScalingAction: public ui::CheckboxAction
 	{
@@ -264,8 +270,8 @@ OptionsView::OptionsView():
 	forceIntegerScaling->SetActionCallback(new ForceIntegerScalingAction(this));
 	tempLabel = new ui::Label(ui::Point(altFullscreen->Position.X+Graphics::textwidth(forceIntegerScaling->GetText().c_str())+20, forceIntegerScaling->Position.Y), ui::Point(Size.X-28, 16), "\bg- less blurry");
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-	AddComponent(tempLabel);
-	AddComponent(forceIntegerScaling);
+	scrollPanel->AddChild(tempLabel);
+	scrollPanel->AddChild(forceIntegerScaling);
 
 
 	class FastQuitAction: public ui::CheckboxAction
@@ -282,8 +288,8 @@ OptionsView::OptionsView():
 	fastquit->SetActionCallback(new FastQuitAction(this));
 	tempLabel = new ui::Label(ui::Point(fastquit->Position.X+Graphics::textwidth(fastquit->GetText().c_str())+20, fastquit->Position.Y), ui::Point(Size.X-28, 16), "\bg- Always exit completely when hitting close");
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-	AddComponent(tempLabel);
-	AddComponent(fastquit);
+	scrollPanel->AddChild(tempLabel);
+	scrollPanel->AddChild(fastquit);
 
 	class ShowAvatarsAction: public ui::CheckboxAction
 	{
@@ -299,8 +305,25 @@ OptionsView::OptionsView():
 	showAvatars->SetActionCallback(new ShowAvatarsAction(this));
 	tempLabel = new ui::Label(ui::Point(showAvatars->Position.X+Graphics::textwidth(showAvatars->GetText().c_str())+20, showAvatars->Position.Y), ui::Point(Size.X-28, 16), "\bg- Disable if you have a slow connection");
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-	AddComponent(tempLabel);
-	AddComponent(showAvatars);
+	scrollPanel->AddChild(tempLabel);
+	scrollPanel->AddChild(showAvatars);
+
+	class MouseClickRequiredAction: public ui::CheckboxAction
+	{
+		OptionsView * v;
+	public:
+		MouseClickRequiredAction(OptionsView * v_){	v = v_;	}
+		void ActionCallback(ui::Checkbox * sender) override {
+			v->c->SetMouseClickrequired(sender->GetChecked());
+		}
+	};
+
+	mouseClickRequired = new ui::Checkbox(ui::Point(8, showAvatars->Position.Y + 20), ui::Point(Size.X-6, 16), "Mouse click required", "");
+	mouseClickRequired->SetActionCallback(new MouseClickRequiredAction(this));
+	tempLabel = new ui::Label(ui::Point(mouseClickRequired->Position.X+Graphics::textwidth(mouseClickRequired->GetText().c_str())+20, mouseClickRequired->Position.Y), ui::Point(Size.X-28, 16), "\bg- click required to change category in menu");
+	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	scrollPanel->AddChild(tempLabel);
+	scrollPanel->AddChild(mouseClickRequired);
 
 	class DataFolderAction: public ui::ButtonAction
 	{
@@ -323,13 +346,13 @@ OptionsView::OptionsView():
 			delete[] workingDirectory;
 		}
 	};
-	ui::Button * dataFolderButton = new ui::Button(ui::Point(8, Size.Y-38), ui::Point(90, 16), "Open Data Folder");
+	ui::Button * dataFolderButton = new ui::Button(ui::Point(8, mouseClickRequired->Position.Y + 20), ui::Point(90, 16), "Open Data Folder");
 	dataFolderButton->SetActionCallback(new DataFolderAction());
-	AddComponent(dataFolderButton);
+	scrollPanel->AddChild(dataFolderButton);
 
 	tempLabel = new ui::Label(ui::Point(dataFolderButton->Position.X+dataFolderButton->Size.X+3, dataFolderButton->Position.Y), ui::Point(Size.X-28, 16), "\bg- Open the data and preferences folder");
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-	AddComponent(tempLabel);
+	scrollPanel->AddChild(tempLabel);
 
 	class CloseAction: public ui::ButtonAction
 	{
@@ -347,6 +370,8 @@ OptionsView::OptionsView():
 	AddComponent(tempButton);
 	SetCancelButton(tempButton);
 	SetOkayButton(tempButton);
+
+	scrollPanel->InnerSize = ui::Point(Size.X, currentY);
 }
 
 void OptionsView::NotifySettingsChanged(OptionsModel * sender)
@@ -365,6 +390,7 @@ void OptionsView::NotifySettingsChanged(OptionsModel * sender)
 	forceIntegerScaling->SetChecked(sender->GetForceIntegerScaling());
 	fastquit->SetChecked(sender->GetFastQuit());
 	showAvatars->SetChecked(sender->GetShowAvatars());
+	mouseClickRequired->SetChecked(sender->GetMouseClickRequired());
 }
 
 void OptionsView::AttachController(OptionsController * c_)

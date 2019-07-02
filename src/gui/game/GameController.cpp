@@ -1781,3 +1781,8 @@ void GameController::RunUpdater()
 	Platform::OpenURI(file);
 #endif // MACOSX
 }
+
+bool GameController::GetMouseClickRequired()
+{
+	return gameModel->GetMouseClickRequired();
+}

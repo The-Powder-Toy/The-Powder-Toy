@@ -492,10 +492,10 @@ public:
 	{
 		v = _v;
 		menuID = menuID_;
-		if (menuID == SC_DECO)
+		 if (menuID == SC_DECO)
 			needsClick = true;
 		else
-			needsClick = false;
+			needsClick = v->c->GetMouseClickRequired();
 	}
 	void MouseEnterCallback(ui::Button * sender) override
 	{
