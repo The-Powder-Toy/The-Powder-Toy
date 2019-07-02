@@ -28,6 +28,8 @@ public:
 	void SetResizable(bool resizable);
 	void SetFastQuit(bool fastquit);
 	void SetShowAvatars(bool showAvatars);
+	void SetMouseClickrequired(bool mouseClickRequired);
+	
 	void Exit();
 	OptionsView * GetView();
 	virtual ~OptionsController();

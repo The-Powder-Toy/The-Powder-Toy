@@ -92,6 +92,11 @@ OptionsView * OptionsController::GetView()
 	return view;
 }
 
+void OptionsController::SetMouseClickrequired(bool mouseClickRequired)
+{
+	model->SetMouseClickRequired(mouseClickRequired);
+}
+
 void OptionsController::Exit()
 {
 	view->CloseActiveWindow();

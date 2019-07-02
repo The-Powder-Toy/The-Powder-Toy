@@ -67,6 +67,7 @@ private:
 	Snapshot *redoHistory;
 	unsigned int historyPosition;
 	unsigned int undoHistoryLimit;
+	bool mouseClickRequired;
 
 	size_t activeColourPreset;
 	std::vector<ui::Colour> colourPresets;
@@ -202,6 +203,8 @@ public:
 	std::deque<String> GetLog();
 	GameSave * GetClipboard();
 	GameSave * GetPlaceSave();
+	bool GetMouseClickRequired();
+	void SetMouseClickRequired(bool mouseClickRequired_);
 
 	std::vector<Notification*> GetNotifications();
 	void AddNotification(Notification * notification);

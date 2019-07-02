@@ -180,6 +180,18 @@ void OptionsModel::SetShowAvatars(bool state)
 	notifySettingsChanged();
 }
 
+bool OptionsModel::GetMouseClickRequired()
+{
+	return Client::Ref().GetPrefBool("MouseClickRequired", false);
+}
+
+void OptionsModel::SetMouseClickRequired(bool mouseClickRequired)
+{
+	Client::Ref().SetPref("MouseClickRequired", mouseClickRequired);
+	gModel->SetMouseClickRequired(mouseClickRequired);
+	notifySettingsChanged();
+}
+
 void OptionsModel::notifySettingsChanged()
 {
 	for (size_t i = 0; i < observers.size(); i++)

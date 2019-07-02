@@ -43,6 +43,8 @@ public:
 	void SetForceIntegerScaling(bool forceIntegerScaling);
 	bool GetFastQuit();
 	void SetFastQuit(bool fastquit);
+	bool GetMouseClickRequired();
+	void SetMouseClickRequired(bool mouseClickRequired);
 	virtual ~OptionsModel();
 };
 
