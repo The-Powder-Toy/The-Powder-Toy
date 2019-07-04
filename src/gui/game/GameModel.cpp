@@ -1307,5 +1307,4 @@ bool GameModel::GetMouseClickRequired()
 void GameModel::SetMouseClickRequired(bool mouseClickRequired_)
 {
 	mouseClickRequired = mouseClickRequired_;
-	notifyMenuListChanged();
 }
