@@ -495,19 +495,19 @@ public:
 		 if (menuID == SC_DECO)
 			needsClick = true;
 		else
-			needsClick = v->c->GetMouseClickRequired();
+			needsClick = false;
 	}
 	void MouseEnterCallback(ui::Button * sender) override
 	{
 		// don't immediately change the active menu, the actual set is done inside GameView::OnMouseMove
 		// if we change it here it causes components to be removed, which causes the window to stop sending events
 		// and then the previous menusection button never gets sent the OnMouseLeave event and is never unhighlighted
-		if(!needsClick && !v->GetMouseDown())
+		if(!(needsClick || v->c->GetMouseClickRequired()) && !v->GetMouseDown())
 			v->SetActiveMenuDelayed(menuID);
 	}
 	void ActionCallback(ui::Button * sender) override
 	{
-		if (needsClick)
+		if (needsClick || v->c->GetMouseClickRequired())
 			v->c->SetActiveMenu(menuID);
 		else
 			MouseEnterCallback(sender);
