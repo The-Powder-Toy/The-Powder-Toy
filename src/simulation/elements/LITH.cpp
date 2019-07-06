@@ -1,5 +1,5 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_LITH PT_LITH 192
+//#TPT-Directive ElementClass Element_LITH PT_LITH 187
 Element_LITH::Element_LITH()
 {
 	Identifier = "DEFAULT_PT_LITH";
@@ -49,7 +49,7 @@ Element_LITH::Element_LITH()
 int Element_LITH::update(UPDATE_FUNC_ARGS)
 
 {                                                                                 //Basic code for activation and deactivation.
-	int r, rx, ry, np, charge, trade, capacity = parts[i].tmp2;
+	int r, rx, ry, charge, trade, capacity = parts[i].tmp2;
 	if (parts[i].life != 10)
 	{
 		if (parts[i].life > 0)
@@ -85,7 +85,7 @@ int Element_LITH::update(UPDATE_FUNC_ARGS)
 					if (parts[i].tmp > 0 && parts[i].life == 0)
 					{
 						parts[i].tmp -= 1;
-						np = sim->create_part(ID(r), x + rx, y + ry, PT_SPRK);
+						sim->create_part(ID(r), x + rx, y + ry, PT_SPRK);
 					}
 					break;
 					//Various reactions with different kinds of water elements.Slowly reacts with water and releases H2 gas.
@@ -144,9 +144,7 @@ int Element_LITH::graphics(GRAPHICS_FUNC_ARGS)
 	if (cpart->tmp >= cpart->tmp2)                            // Fancy colour changes.
 	{
 		double gradv = sin(tempOver) + 2.0;
-		*firer = (int)(gradv * 0.0);
 		*fireg = (int)(gradv * 250.0);
-		*fireb = (int)(gradv * 0.0);
 		*firea = 20;
 
 		*colr += *firer;
@@ -159,8 +157,6 @@ int Element_LITH::graphics(GRAPHICS_FUNC_ARGS)
 	{
 		double gradv = sin(tempOver) + 2.0;
 		*firer = (int)(gradv * 250.0);
-		*fireg = (int)(gradv * 0.0);
-		*fireb = (int)(gradv * 0.0);
 		*firea = 20;
 
 		*colr += *firer;
@@ -168,7 +164,7 @@ int Element_LITH::graphics(GRAPHICS_FUNC_ARGS)
 		*colb += *fireb;
 		*pixel_mode |= FIRE_ADD;
 	}
-	//Activated/Discharging.
+	//ACtivated/Discharging.
 	if (cpart->life == 10 && cpart->tmp != 0 && cpart->tmp != cpart->tmp2)
 	{
 		double gradv = sin(tempOver) + 2.0;
@@ -182,7 +178,7 @@ int Element_LITH::graphics(GRAPHICS_FUNC_ARGS)
 		*colb += *fireb;
 		*pixel_mode |= FIRE_ADD;
 	}
-	//Deactivated/charging.
+	//DEACtivated/charging.
 	if (cpart->life <= 0 && cpart->tmp != 0 && cpart->tmp != cpart->tmp2)
 	{
 		double gradv = sin(tempOver) + 2.0;
