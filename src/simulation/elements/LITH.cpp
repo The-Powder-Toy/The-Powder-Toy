@@ -39,7 +39,7 @@ Element_LITH::Element_LITH()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 3393.0f;
-	HighTemperatureTransition = PT_BOMB; // Explodes when overcharged.
+	HighTemperatureTransition = PT_BOMB; // Explodes when overheated.
 
 	Update = &Element_LITH::update;
 	Graphics = &Element_LITH::graphics;
@@ -48,8 +48,18 @@ Element_LITH::Element_LITH()
 //#TPT-Directive ElementHeader Element_LITH static int update(UPDATE_FUNC_ARGS)
 int Element_LITH::update(UPDATE_FUNC_ARGS)
 
-{                                                                                 //Basic code for activation and deactivation.
-	int r, rx, ry, charge, trade, capacity = parts[i].tmp2;
+{
+	int r, rx, ry, charge, chargediffuse, capacity = parts[i].tmp2;
+	if (parts[i].tmp2 < 1)   //Prevent setting capacity below 1.
+	{
+		parts[i].tmp2 = 1;
+	}
+	if (parts[i].tmp > parts[i].tmp2)   //Explodes when overcharged.
+	{
+		parts[i].temp = 3395.0f;
+	}
+
+	//Basic code for activation and deactivation.
 	if (parts[i].life != 10)
 	{
 		if (parts[i].life > 0)
@@ -74,6 +84,7 @@ int Element_LITH::update(UPDATE_FUNC_ARGS)
 				}
 	}
 	//Code for LITH battery discharging.
+
 	for (rx = -4; rx < 4; rx++)
 		for (ry = -4; ry < 4; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
@@ -84,8 +95,12 @@ int Element_LITH::update(UPDATE_FUNC_ARGS)
 				case PT_INST:
 					if (parts[i].tmp > 0 && parts[i].life == 0)
 					{
-						parts[i].tmp -= 1;
+
 						sim->create_part(ID(r), x + rx, y + ry, PT_SPRK);
+						if (RNG::Ref().chance(1, 10))
+						{
+							parts[i].tmp -= 0.5;
+						}
 					}
 					break;
 					//Various reactions with different kinds of water elements.Slowly reacts with water and releases H2 gas.
@@ -103,10 +118,11 @@ int Element_LITH::update(UPDATE_FUNC_ARGS)
 				}
 			}
 	//Diffusion of tmp i.e stored charge.
-	for (trade = 0; trade < 9; trade++)
+
+	for (chargediffuse = 0; chargediffuse < 9; chargediffuse++)
 	{
-		rx = RNG::Ref().between(-2, 2);
-		ry = RNG::Ref().between(-2, 2);
+		rx = RNG::Ref().between(-5, 5);
+		ry = RNG::Ref().between(-5, 5);
 		if (BOUNDS_CHECK && (rx || ry))
 		{
 			r = pmap[y + ry][x + rx];
@@ -119,13 +135,13 @@ int Element_LITH::update(UPDATE_FUNC_ARGS)
 				{
 					parts[ID(r)].tmp++;
 					parts[i].tmp--;
-					trade = 9;
+					chargediffuse = 9;
 				}
 				else if (charge > 0)
 				{
 					parts[ID(r)].tmp += charge / 2;
 					parts[i].tmp -= charge / 2;
-					trade = 9;
+					chargediffuse = 9;
 				}
 			}
 		}
@@ -145,7 +161,7 @@ int Element_LITH::graphics(GRAPHICS_FUNC_ARGS)
 	{
 		double gradv = sin(tempOver) + 2.0;
 		*fireg = (int)(gradv * 250.0);
-		*firea = 20;
+		*firea = 10;
 
 		*colr += *firer;
 		*colg += *fireg;
@@ -157,34 +173,20 @@ int Element_LITH::graphics(GRAPHICS_FUNC_ARGS)
 	{
 		double gradv = sin(tempOver) + 2.0;
 		*firer = (int)(gradv * 250.0);
-		*firea = 20;
+		*firea = 10;
 
 		*colr += *firer;
 		*colg += *fireg;
 		*colb += *fireb;
 		*pixel_mode |= FIRE_ADD;
 	}
-	//ACtivated/Discharging.
-	if (cpart->life == 10 && cpart->tmp != 0 && cpart->tmp != cpart->tmp2)
+	//Activated/Discharging.
+	if (cpart->life == 0 && cpart->tmp != 0 && cpart->tmp != cpart->tmp2)
 	{
 		double gradv = sin(tempOver) + 2.0;
-		*firer = (int)(gradv * 0.0);
-		*fireg = (int)(gradv * 0.0);
-		*fireb = (int)(gradv * 0.0);
-		*firea = 0;
-
-		*colr += *firer;
-		*colg += *fireg;
-		*colb += *fireb;
-		*pixel_mode |= FIRE_ADD;
-	}
-	//DEACtivated/charging.
-	if (cpart->life <= 0 && cpart->tmp != 0 && cpart->tmp != cpart->tmp2)
-	{
-		double gradv = sin(tempOver) + 2.0;
-		*firer = (int)(gradv * 250.0);
-		*fireg = (int)(gradv * 250.0);
-		*fireb = (int)(gradv * 250.0);
+		*firer = (int)(gradv * 110.0);
+		*fireg = (int)(gradv * 110.0);
+		*fireb = (int)(gradv * 110.0);
 		*firea = 0;
 
 		*colr += *firer;
