@@ -99,7 +99,7 @@ int Element_LITH::update(UPDATE_FUNC_ARGS)
 						sim->create_part(ID(r), x + rx, y + ry, PT_SPRK);
 						if (RNG::Ref().chance(1, 10))
 						{
-							parts[i].tmp -= 0.5;
+							parts[i].tmp -= 1;
 						}
 					}
 					break;
