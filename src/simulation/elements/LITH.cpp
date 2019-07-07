@@ -1,12 +1,12 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_LITH PT_LITH 187
+//#TPT-Directive ElementClass Element_LITH PT_LITH 192
 Element_LITH::Element_LITH()
 {
 	Identifier = "DEFAULT_PT_LITH";
 	Name = "LITH";
 	Colour = PIXPACK(0X707070);
 	MenuVisible = 1;
-	MenuSection = SC_POWERED;
+	MenuSection = SC_CRACKER1000;
 	Enabled = 1;
 
 	Advection = 0.0f;
@@ -157,7 +157,7 @@ int Element_LITH::graphics(GRAPHICS_FUNC_ARGS)
 	double tempOver = (((cpart->tmp)));
 
 	//Almost charged.
-	if (cpart->tmp >= cpart->tmp2 - 5)                            // Fancy colour changes.
+	if (cpart->tmp >= cpart->tmp2 - 4)                            // Fancy colour changes.
 	{
 		double gradv = sin(tempOver) + 2.0;
 		*fireg = (int)(gradv * 250.0);
