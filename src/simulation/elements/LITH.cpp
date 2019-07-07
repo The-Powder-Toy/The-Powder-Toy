@@ -97,7 +97,7 @@ int Element_LITH::update(UPDATE_FUNC_ARGS)
 					{
 
 						sim->create_part(ID(r), x + rx, y + ry, PT_SPRK);
-						if (RNG::Ref().chance(1, 10))
+						if (RNG::Ref().chance(1, 9))
 						{
 							parts[i].tmp -= 1;
 						}
@@ -121,8 +121,8 @@ int Element_LITH::update(UPDATE_FUNC_ARGS)
 
 	for (chargediffuse = 0; chargediffuse < 9; chargediffuse++)
 	{
-		rx = RNG::Ref().between(-5, 5);
-		ry = RNG::Ref().between(-5, 5);
+		rx = RNG::Ref().between(-2, 2);
+		ry = RNG::Ref().between(-2, 2);
 		if (BOUNDS_CHECK && (rx || ry))
 		{
 			r = pmap[y + ry][x + rx];
@@ -156,47 +156,31 @@ int Element_LITH::graphics(GRAPHICS_FUNC_ARGS)
 	int gradv;
 	double tempOver = (((cpart->tmp)));
 
-	//Fully charged.
-	if (cpart->tmp >= cpart->tmp2)                            // Fancy colour changes.
+	//Almost charged.
+	if (cpart->tmp >= cpart->tmp2 - 5)                            // Fancy colour changes.
 	{
 		double gradv = sin(tempOver) + 2.0;
 		*fireg = (int)(gradv * 250.0);
-		*firea = 10;
-
-		*colr += *firer;
+		*firea = 12;
 		*colg += *fireg;
-		*colb += *fireb;
-		*pixel_mode |= FIRE_ADD;
 	}
 	//Discharged.
 	if (cpart->tmp <= 0 && cpart->life == 0)
 	{
 		double gradv = sin(tempOver) + 2.0;
 		*firer = (int)(gradv * 250.0);
-		*firea = 10;
-
+		*firea = 12;
 		*colr += *firer;
-		*colg += *fireg;
-		*colb += *fireb;
-		*pixel_mode |= FIRE_ADD;
 	}
 	//Activated/Discharging.
 	if (cpart->life == 0 && cpart->tmp != 0 && cpart->tmp != cpart->tmp2)
 	{
 		double gradv = sin(tempOver) + 2.0;
-		*firer = (int)(gradv * 110.0);
-		*fireg = (int)(gradv * 110.0);
-		*fireb = (int)(gradv * 110.0);
-		*firea = 0;
-
-		*colr += *firer;
-		*colg += *fireg;
-		*colb += *fireb;
-		*pixel_mode |= FIRE_ADD;
+		*colr = 255.0;
+		*colg = 255.0;
+		*colb = 255.0;
 	}
-
-
-
+	*pixel_mode |= FIRE_ADD;
 
 	return 0;
 }

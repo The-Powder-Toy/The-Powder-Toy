@@ -226,9 +226,8 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 						if (sender==PT_PSCN && parts[ID(r)].tmp == 0) parts[ID(r)].tmp = 2;
 						else if (sender==PT_NSCN && parts[ID(r)].tmp == 3) parts[ID(r)].tmp = 1;
 					}
-					continue;
 				case PT_LITH:
-					if (abs(rx) < 4 && abs(ry) < 4 && parts[i].life < 4)
+					if (abs(rx) < 2 && abs(ry) < 2)
 					{
 						if (sender == PT_INST && parts[ID(r)].life == 10 && parts[ID(r)].tmp < parts[ID(r)].tmp2)
 						{
