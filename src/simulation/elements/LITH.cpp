@@ -1,12 +1,12 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_LITH PT_LITH 192
+//#TPT-Directive ElementClass Element_LITH PT_LITH 187
 Element_LITH::Element_LITH()
 {
 	Identifier = "DEFAULT_PT_LITH";
 	Name = "LITH";
 	Colour = PIXPACK(0X707070);
 	MenuVisible = 1;
-	MenuSection = SC_CRACKER1000;
+	MenuSection = SC_POWERED;
 	Enabled = 1;
 
 	Advection = 0.0f;
@@ -26,20 +26,20 @@ Element_LITH::Element_LITH()
 
 	Weight = 100;
 
-	Temperature = R_TEMP + 0.0f + 273.15f;
-	HeatConduct = 254;
-	Description = "Lithium battery.(PSCN activates, NSCN deactivates, INST recieve/send charge, .tmp2 sets capacity)";
+	Temperature = 284.00f;
+	HeatConduct = 0;
+	Description = "Lithium battery.(PSCN activates, NSCN deactivates, INST recieve/send charge, Temp sets capacity)";
 
-	Properties = TYPE_SOLID | PROP_HOT_GLOW;
-
+	Properties = TYPE_SOLID;
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
 	HighPressureTransition = NT;
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
-	HighTemperature = 3393.0f;
-	HighTemperatureTransition = PT_BOMB; // Explodes when overheated.
+	HighTemperature = ITH;
+	HighTemperatureTransition = NT;
+
 
 	Update = &Element_LITH::update;
 	Graphics = &Element_LITH::graphics;
@@ -49,14 +49,16 @@ Element_LITH::Element_LITH()
 int Element_LITH::update(UPDATE_FUNC_ARGS)
 
 {
-	int r, rx, ry, charge, chargediffuse, capacity = parts[i].tmp2;
-	if (parts[i].tmp2 < 1)   //Prevent setting capacity below 1.
+	int r, rx, ry, charge, chargediffuse, capacity = parts[i].temp, In = 284.00f;
+	if (parts[i].temp < In)   //Prevent setting capacity below 1.
 	{
-		parts[i].tmp2 = 1;
+		parts[i].temp = In;
 	}
-	if (parts[i].tmp > parts[i].tmp2)   //Explodes when overcharged.
+
+	//Explosion code
+	if (parts[i].tmp > parts[i].temp - 272.00f)
 	{
-		parts[i].temp = 3395.0f;
+		parts[i].type = PT_BOMB;
 	}
 
 	//Basic code for activation and deactivation.
@@ -111,7 +113,6 @@ int Element_LITH::update(UPDATE_FUNC_ARGS)
 					if (RNG::Ref().chance(1, 700))
 					{
 						sim->part_change_type(i, x, y, PT_H2);
-						parts[i].life = 65;
 						parts[i].temp += 10;
 					}
 					break;
@@ -119,7 +120,7 @@ int Element_LITH::update(UPDATE_FUNC_ARGS)
 			}
 	//Diffusion of tmp i.e stored charge.
 
-	for (chargediffuse = 0; chargediffuse < 9; chargediffuse++)
+	for (chargediffuse = 0; chargediffuse < 8; chargediffuse++)
 	{
 		rx = RNG::Ref().between(-2, 2);
 		ry = RNG::Ref().between(-2, 2);
@@ -135,13 +136,13 @@ int Element_LITH::update(UPDATE_FUNC_ARGS)
 				{
 					parts[ID(r)].tmp++;
 					parts[i].tmp--;
-					chargediffuse = 9;
+					chargediffuse = 8;
 				}
 				else if (charge > 0)
 				{
 					parts[ID(r)].tmp += charge / 2;
 					parts[i].tmp -= charge / 2;
-					chargediffuse = 9;
+					chargediffuse = 8;
 				}
 			}
 		}
@@ -155,31 +156,38 @@ int Element_LITH::graphics(GRAPHICS_FUNC_ARGS)
 {
 	int gradv;
 	double tempOver = (((cpart->tmp)));
+	// Different colour states.
+	{
 
-	//Almost charged.
-	if (cpart->tmp >= cpart->tmp2 - 4)                            // Fancy colour changes.
-	{
-		double gradv = sin(tempOver) + 2.0;
-		*fireg = (int)(gradv * 250.0);
-		*firea = 12;
-		*colg += *fireg;
+		//Almost charged.
+		if (cpart->tmp + 1 >= cpart->temp - 273.15f)
+		{
+			double gradv = sin(tempOver) + 2.0;
+			*fireg = (int)(gradv * 250.0);
+			*colg += *fireg;
+		}
+		//Discharged.
+		if (cpart->tmp <= 0 && cpart->life == 0)
+		{
+			double gradv = sin(tempOver) + 2.0;
+			*firer = (int)(gradv * 250.0);
+			*colr += *firer;
+		}
 	}
-	//Discharged.
-	if (cpart->tmp <= 0 && cpart->life == 0)
-	{
-		double gradv = sin(tempOver) + 2.0;
-		*firer = (int)(gradv * 250.0);
-		*firea = 12;
-		*colr += *firer;
-	}
-	//Activated/Discharging.
-	if (cpart->life == 0 && cpart->tmp != 0 && cpart->tmp != cpart->tmp2)
+	//Activated / Discharging.
+	if (cpart->life == 0 && cpart->tmp != 0 && cpart->tmp != cpart->temp)
 	{
 		double gradv = sin(tempOver) + 2.0;
 		*colr = 255.0;
 		*colg = 255.0;
 		*colb = 255.0;
 	}
+	if (cpart->tmp2 == 1)
+	{
+		double gradv = sin(tempOver) + 2.0;
+		*firea = 50;
+	}
+
 	*pixel_mode |= FIRE_ADD;
 
 	return 0;
