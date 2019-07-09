@@ -155,6 +155,7 @@ GameModel::GameModel():
 		undoHistoryLimit = 200;
 
 	mouseClickRequired = Client::Ref().GetPrefBool("MouseClickRequired", false);
+	includePressure = Client::Ref().GetPrefBool("Simulation.IncludePressure", true);
 }
 
 GameModel::~GameModel()
@@ -185,6 +186,7 @@ GameModel::~GameModel()
 	Client::Ref().SetPref("Simulation.UndoHistoryLimit", undoHistoryLimit);
 
 	Client::Ref().SetPref("MouseClickRequired", mouseClickRequired);
+	Client::Ref().SetPref("Simulation.IncludePressure", includePressure);
 
 	Favorite::Ref().SaveFavoritesToPrefs();
 
@@ -662,7 +664,7 @@ void GameModel::SetSave(SaveInfo * newSave)
 			sim->grav->stop_grav_async();
 		sim->clear_sim();
 		ren->ClearAccumulation();
-		if (!sim->Load(saveData))
+		if (!sim->Load(saveData, GetIncludePressure()))
 		{
 			// This save was created before logging existed
 			// Add in the correct info
@@ -727,7 +729,7 @@ void GameModel::SetSaveFile(SaveFile * newSave)
 		}
 		sim->clear_sim();
 		ren->ClearAccumulation();
-		if (!sim->Load(saveData))
+		if (!sim->Load(saveData, GetIncludePressure()))
 		{
 			Client::Ref().OverwriteAuthorInfo(saveData->authors);
 		}
@@ -1307,4 +1309,14 @@ bool GameModel::GetMouseClickRequired()
 void GameModel::SetMouseClickRequired(bool mouseClickRequired_)
 {
 	mouseClickRequired = mouseClickRequired_;
+}
+
+bool GameModel::GetIncludePressure()
+{
+	return includePressure;
+}
+
+void GameModel::SetIncludePressure(bool includePressure_)
+{
+	includePressure = includePressure_;
 }

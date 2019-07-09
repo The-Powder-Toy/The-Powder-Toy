@@ -46,7 +46,7 @@ VideoBuffer * SaveRenderer::Render(GameSave * save, bool decorations, bool fire)
 	g->Clear();
 	sim->clear_sim();
 
-	if(!sim->Load(save))
+	if(!sim->Load(save, true))
 	{
 		ren->decorations_enable = true;
 		ren->blackDecorations = !decorations;

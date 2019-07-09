@@ -97,9 +97,9 @@ public:
 	void DrawRect(int toolSelection, ui::Point point1, ui::Point point2);
 	void DrawLine(int toolSelection, ui::Point point1, ui::Point point2);
 	void DrawFill(int toolSelection, ui::Point point);
-	ByteString StampRegion(ui::Point point1, ui::Point point2, bool includePressure);
-	void CopyRegion(ui::Point point1, ui::Point point2, bool includePressure);
-	void CutRegion(ui::Point point1, ui::Point point2, bool includePressure);
+	ByteString StampRegion(ui::Point point1, ui::Point point2);
+	void CopyRegion(ui::Point point1, ui::Point point2);
+	void CutRegion(ui::Point point1, ui::Point point2);
 	void Update();
 	void SetPaused(bool pauseState);
 	void SetPaused();
@@ -141,7 +141,7 @@ public:
 	void OpenStamps();
 	void OpenElementSearch();
 	void OpenColourPicker();
-	void PlaceSave(ui::Point position, bool includePressure);
+	void PlaceSave(ui::Point position);
 	void ClearSim();
 	void ReloadSim();
 	void Vote(int direction);

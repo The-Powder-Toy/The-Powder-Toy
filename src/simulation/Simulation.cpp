@@ -37,10 +37,10 @@
 
 int Simulation::Load(GameSave * save, bool includePressure)
 {
-	return Load(0, 0, save, includePressure);
+	return Load(save, includePressure, 0, 0);
 }
 
-int Simulation::Load(int fullX, int fullY, GameSave * save, bool includePressure)
+int Simulation::Load(GameSave * save, bool includePressure, int fullX, int fullY)
 {
 	int x, y, r;
 
@@ -325,10 +325,10 @@ int Simulation::Load(int fullX, int fullY, GameSave * save, bool includePressure
 
 GameSave * Simulation::Save(bool includePressure)
 {
-	return Save(0, 0, XRES-1, YRES-1, includePressure);
+	return Save(includePressure, 0, 0, XRES-1, YRES-1);
 }
 
-GameSave * Simulation::Save(int fullX, int fullY, int fullX2, int fullY2, bool includePressure)
+GameSave * Simulation::Save(bool includePressure, int fullX, int fullY, int fullX2, int fullY2)
 {
 	int blockX, blockY, blockX2, blockY2, blockW, blockH;
 	//Normalise incoming coords

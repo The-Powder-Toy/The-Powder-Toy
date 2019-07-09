@@ -29,6 +29,7 @@ public:
 	void SetFastQuit(bool fastquit);
 	void SetShowAvatars(bool showAvatars);
 	void SetMouseClickrequired(bool mouseClickRequired);
+	void SetIncludePressure(bool includePressure);
 	
 	void Exit();
 	OptionsView * GetView();

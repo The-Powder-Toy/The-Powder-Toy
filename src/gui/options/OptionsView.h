@@ -31,6 +31,7 @@ class OptionsView: public ui::Window
 	ui::Checkbox * fastquit;
 	ui::Checkbox * showAvatars;
 	ui::Checkbox * mouseClickRequired;
+	ui::Checkbox * includePressure;
 	ui::ScrollPanel * scrollPanel;
 public:
 	OptionsView();

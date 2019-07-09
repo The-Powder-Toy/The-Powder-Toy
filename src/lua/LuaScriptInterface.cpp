@@ -1654,8 +1654,7 @@ int LuaScriptInterface::simulation_saveStamp(lua_State * l)
 	int y = luaL_optint(l,2,0);
 	int w = luaL_optint(l,3,XRES-1);
 	int h = luaL_optint(l,4,YRES-1);
-	int includePressure = luaL_optint(l,5,1);
-	ByteString name = luacon_controller->StampRegion(ui::Point(x, y), ui::Point(x+w, y+h), includePressure);
+	ByteString name = luacon_controller->StampRegion(ui::Point(x, y), ui::Point(x+w, y+h));
 	lua_pushstring(l, name.c_str());
 	return 1;
 }
@@ -1666,7 +1665,6 @@ int LuaScriptInterface::simulation_loadStamp(lua_State * l)
 	SaveFile * tempfile = NULL;
 	int x = luaL_optint(l,2,0);
 	int y = luaL_optint(l,3,0);
-	int includePressure = luaL_optint(l,4,1);
 	if (lua_isstring(l, 1)) //Load from 10 char name, or full filename
 	{
 		const char * filename = luaL_optstring(l, 1, "");
@@ -1683,7 +1681,7 @@ int LuaScriptInterface::simulation_loadStamp(lua_State * l)
 
 	if (tempfile)
 	{
-		if (!luacon_sim->Load(x, y, tempfile->GetGameSave(), includePressure))
+		if (!luacon_sim->Load(tempfile->GetGameSave(), luacon_model->GetIncludePressure(), x, y))
 		{
 			//luacon_sim->sys_pause = (tempfile->GetGameSave()->paused | luacon_model->GetPaused())?1:0;
 			lua_pushinteger(l, 1);

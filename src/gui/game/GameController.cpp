@@ -366,17 +366,13 @@ std::pair<int, sign::Type> GameController::GetSignSplit(int signID)
 	return gameModel->GetSimulation()->signs[signID].split();
 }
 
-void GameController::PlaceSave(ui::Point position, bool includePressure)
+void GameController::PlaceSave(ui::Point position)
 {
-	bool incPressure = Client::Ref().GetPrefBool("Simulation.LoadPressure", true);
-	if (!incPressure)
-		includePressure = !includePressure;
-
 	GameSave *placeSave = gameModel->GetPlaceSave();
 	if (placeSave)
 	{
 		HistorySnapshot();
-		if (!gameModel->GetSimulation()->Load(position.X, position.Y, placeSave, includePressure))
+		if (!gameModel->GetSimulation()->Load(placeSave, Client::Ref().GetPrefBool("Simulation.LoadPressure", true), position.X, position.Y))
 		{
 			gameModel->SetPaused(placeSave->paused | gameModel->GetPaused());
 			Client::Ref().MergeStampAuthorInfo(placeSave->authors);
@@ -612,13 +608,9 @@ void GameController::ToolClick(int toolSelection, ui::Point point)
 	activeTool->Click(sim, cBrush, point);
 }
 
-ByteString GameController::StampRegion(ui::Point point1, ui::Point point2, bool includePressure)
+ByteString GameController::StampRegion(ui::Point point1, ui::Point point2)
 {
-	bool incPressure = Client::Ref().GetPrefBool("Simulation.IncludePressure", true);
-	if (!incPressure)
-		includePressure = !includePressure;
-
-	GameSave * newSave = gameModel->GetSimulation()->Save(point1.X, point1.Y, point2.X, point2.Y, includePressure);
+	GameSave * newSave = gameModel->GetSimulation()->Save(gameModel->GetIncludePressure(), point1.X, point1.Y, point2.X, point2.Y);
 	if(newSave)
 	{
 		newSave->paused = gameModel->GetPaused();
@@ -635,13 +627,9 @@ ByteString GameController::StampRegion(ui::Point point1, ui::Point point2, bool 
 	}
 }
 
-void GameController::CopyRegion(ui::Point point1, ui::Point point2, bool includePressure)
+void GameController::CopyRegion(ui::Point point1, ui::Point point2)
 {
-	bool incPressure = Client::Ref().GetPrefBool("Simulation.IncludePressure", true);
-	if (!incPressure)
-		includePressure = !includePressure;
-
-	GameSave * newSave = gameModel->GetSimulation()->Save(point1.X, point1.Y, point2.X, point2.Y, includePressure);
+	GameSave * newSave = gameModel->GetSimulation()->Save(gameModel->GetIncludePressure(), point1.X, point1.Y, point2.X, point2.Y);
 	if(newSave)
 	{
 		Json::Value clipboardInfo;
@@ -656,9 +644,9 @@ void GameController::CopyRegion(ui::Point point1, ui::Point point2, bool include
 	}
 }
 
-void GameController::CutRegion(ui::Point point1, ui::Point point2, bool includePressure)
+void GameController::CutRegion(ui::Point point1, ui::Point point2)
 {
-	CopyRegion(point1, point2, includePressure);
+	CopyRegion(point1, point2);
 	gameModel->GetSimulation()->clear_area(point1.X, point1.Y, point2.X-point1.X, point2.Y-point1.Y);
 }
 
@@ -1271,7 +1259,7 @@ void GameController::OpenSearch(String searchText)
 void GameController::OpenLocalSaveWindow(bool asCurrent)
 {
 	Simulation * sim = gameModel->GetSimulation();
-	GameSave * gameSave = sim->Save();
+	GameSave * gameSave = sim->Save(gameModel->GetIncludePressure());
 	if(!gameSave)
 	{
 		new ErrorMessage("Error", "Unable to build save.");
@@ -1490,7 +1478,7 @@ void GameController::OpenSaveWindow()
 	if(gameModel->GetUser().UserID)
 	{
 		Simulation * sim = gameModel->GetSimulation();
-		GameSave * gameSave = sim->Save();
+		GameSave * gameSave = sim->Save(gameModel->GetIncludePressure());
 		if(!gameSave)
 		{
 			new ErrorMessage("Error", "Unable to build save.");
@@ -1537,7 +1525,7 @@ void GameController::SaveAsCurrent()
 	if(gameModel->GetSave() && gameModel->GetUser().UserID && gameModel->GetUser().Username == gameModel->GetSave()->GetUserName())
 	{
 		Simulation * sim = gameModel->GetSimulation();
-		GameSave * gameSave = sim->Save();
+		GameSave * gameSave = sim->Save(gameModel->GetIncludePressure());
 		if(!gameSave)
 		{
 			new ErrorMessage("Error", "Unable to build save.");

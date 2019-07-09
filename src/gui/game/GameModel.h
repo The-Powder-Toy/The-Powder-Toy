@@ -68,6 +68,7 @@ private:
 	unsigned int historyPosition;
 	unsigned int undoHistoryLimit;
 	bool mouseClickRequired;
+	bool includePressure;
 
 	size_t activeColourPreset;
 	std::vector<ui::Colour> colourPresets;
@@ -204,7 +205,9 @@ public:
 	GameSave * GetClipboard();
 	GameSave * GetPlaceSave();
 	bool GetMouseClickRequired();
-	void SetMouseClickRequired(bool mouseClickRequired_);
+	void SetMouseClickRequired(bool mouseClickRequired);
+	bool GetIncludePressure();
+	void SetIncludePressure(bool includePressure);
 
 	std::vector<Notification*> GetNotifications();
 	void AddNotification(Notification * notification);

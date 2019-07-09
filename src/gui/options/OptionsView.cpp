@@ -397,6 +397,26 @@ OptionsView::OptionsView():
 	scrollPanel->AddChild(tempLabel);
 	scrollPanel->AddChild(mouseClickRequired);
 
+	class IncludePressureAction: public ui::CheckboxAction
+	{
+		OptionsView * v;
+	public:
+		IncludePressureAction(OptionsView * v_){	v = v_;	}
+		void ActionCallback(ui::Checkbox * sender) override {
+			v->c->SetIncludePressure(sender->GetChecked());
+		}
+	};
+	currentY+=20;
+	includePressure = new ui::Checkbox(ui::Point(8, currentY), ui::Point(1, 16), "Include Pressure", "");
+	autowidth(includePressure);
+	includePressure->SetActionCallback(new IncludePressureAction(this));
+	tempLabel = new ui::Label(ui::Point(includePressure->Position.X+Graphics::textwidth(includePressure->GetText())+20, currentY), ui::Point(1, 16), "\bg- When saving, loading, stamping, etc.");
+	autowidth(tempLabel);
+	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	scrollPanel->AddChild(tempLabel);
+	scrollPanel->AddChild(includePressure);
+
 	class DataFolderAction: public ui::ButtonAction
 	{
 	public:
@@ -466,6 +486,7 @@ void OptionsView::NotifySettingsChanged(OptionsModel * sender)
 	fastquit->SetChecked(sender->GetFastQuit());
 	showAvatars->SetChecked(sender->GetShowAvatars());
 	mouseClickRequired->SetChecked(sender->GetMouseClickRequired());
+	includePressure->SetChecked(sender->GetIncludePressure());
 }
 
 void OptionsView::AttachController(OptionsController * c_)

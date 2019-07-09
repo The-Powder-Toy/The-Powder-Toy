@@ -45,6 +45,8 @@ public:
 	void SetFastQuit(bool fastquit);
 	bool GetMouseClickRequired();
 	void SetMouseClickRequired(bool mouseClickRequired);
+	bool GetIncludePressure();
+	void SetIncludePressure(bool includePressure);
 	virtual ~OptionsModel();
 };
 
