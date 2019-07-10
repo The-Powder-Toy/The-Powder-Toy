@@ -239,9 +239,9 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 					if (sender == PT_NSCN) parts[ID(r)].life = 10;
 					else if (sender == PT_PSCN && parts[ID(r)].life >= 10) parts[ID(r)].life = 9;
 				}
-				if (sender == PT_INST && parts[ID(r)].life == 10 && parts[ID(r)].tmp < parts[ID(r)].temp - 273.15f && parts[ID(r)].tmp2 == 1)
+				if (sender == PT_INST && parts[ID(r)].life == 10 && parts[ID(r)].tmp2 == 1) // Fast charge mode ignores the capacity limits.
 				{
-					parts[ID(r)].tmp = parts[ID(r)].temp - 271.15f;
+					parts[ID(r)].tmp += 10;
 				}
 				continue;
 				case PT_PPIP:
