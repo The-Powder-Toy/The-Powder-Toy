@@ -635,7 +635,7 @@ SaveInfo * GameModel::GetSave()
 	return currentSave;
 }
 
-void GameModel::SetSave(SaveInfo * newSave)
+void GameModel::SetSave(SaveInfo * newSave, bool invertIncludePressure)
 {
 	if(currentSave != newSave)
 	{
@@ -664,7 +664,7 @@ void GameModel::SetSave(SaveInfo * newSave)
 			sim->grav->stop_grav_async();
 		sim->clear_sim();
 		ren->ClearAccumulation();
-		if (!sim->Load(saveData, GetIncludePressure()))
+		if (!sim->Load(saveData, !invertIncludePressure))
 		{
 			// This save was created before logging existed
 			// Add in the correct info
@@ -696,7 +696,7 @@ SaveFile * GameModel::GetSaveFile()
 	return currentFile;
 }
 
-void GameModel::SetSaveFile(SaveFile * newSave)
+void GameModel::SetSaveFile(SaveFile * newSave, bool invertIncludePressure)
 {
 	if(currentFile != newSave)
 	{
@@ -729,7 +729,7 @@ void GameModel::SetSaveFile(SaveFile * newSave)
 		}
 		sim->clear_sim();
 		ren->ClearAccumulation();
-		if (!sim->Load(saveData, GetIncludePressure()))
+		if (!sim->Load(saveData, !invertIncludePressure))
 		{
 			Client::Ref().OverwriteAuthorInfo(saveData->authors);
 		}

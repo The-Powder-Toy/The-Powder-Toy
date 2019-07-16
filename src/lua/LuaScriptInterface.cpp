@@ -1681,7 +1681,7 @@ int LuaScriptInterface::simulation_loadStamp(lua_State * l)
 
 	if (tempfile)
 	{
-		if (!luacon_sim->Load(tempfile->GetGameSave(), luacon_model->GetIncludePressure(), x, y))
+		if (!luacon_sim->Load(tempfile->GetGameSave(), !luacon_controller->GetView()->ShiftBehaviour(), x, y))
 		{
 			//luacon_sim->sys_pause = (tempfile->GetGameSave()->paused | luacon_model->GetPaused())?1:0;
 			lua_pushinteger(l, 1);

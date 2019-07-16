@@ -410,7 +410,7 @@ OptionsView::OptionsView():
 	includePressure = new ui::Checkbox(ui::Point(8, currentY), ui::Point(1, 16), "Include Pressure", "");
 	autowidth(includePressure);
 	includePressure->SetActionCallback(new IncludePressureAction(this));
-	tempLabel = new ui::Label(ui::Point(includePressure->Position.X+Graphics::textwidth(includePressure->GetText())+20, currentY), ui::Point(1, 16), "\bg- When saving, loading, stamping, etc.");
+	tempLabel = new ui::Label(ui::Point(includePressure->Position.X+Graphics::textwidth(includePressure->GetText())+20, currentY), ui::Point(1, 16), "\bg- When saving, copying, stamping, etc.");
 	autowidth(tempLabel);
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
