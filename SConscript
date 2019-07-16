@@ -238,9 +238,9 @@ def findLibs(env, conf):
 
 	#Look for SDL
 	runSdlConfig = platform == "Linux" or compilePlatform == "Linux" or platform == "FreeBSD"
-	#if platform == "Darwin" and conf.CheckFramework("SDL"):
-	#	runSdlConfig = False
-	if not conf.CheckLib("SDL2"):
+	if platform == "Darwin" and conf.CheckFramework("SDL2"):
+		runSdlConfig = False
+	elif not conf.CheckLib("SDL2"):
 		FatalError("SDL2 development library not found or not installed")
 
 	if runSdlConfig:
