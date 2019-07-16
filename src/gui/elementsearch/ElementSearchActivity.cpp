@@ -1,9 +1,13 @@
 #include "ElementSearchActivity.h"
 
+#include <map>
+#include <algorithm>
+
 #include "gui/interface/Textbox.h"
 #include "gui/interface/Label.h"
 #include "gui/interface/Keys.h"
 #include "gui/game/Tool.h"
+#include "gui/game/Menu.h"
 #include "gui/Style.h"
 #include "gui/game/Favorite.h"
 #include "gui/game/GameController.h"
@@ -108,27 +112,74 @@ void ElementSearchActivity::searchTools(String query)
 
 	String queryLower = query.ToLower();
 
-	std::vector<Tool *> matches;
-	std::vector<Tool *> frontmatches;
-	std::vector<Tool *> exactmatches;
-
-	for(std::vector<Tool*>::const_iterator iter = tools.begin(), end = tools.end(); iter != end; ++iter)
+	struct Match
 	{
-		String nameLower = (*iter)->GetName().ToLower();
-		if(nameLower == queryLower)
-			exactmatches.push_back(*iter);
-		else if(nameLower.BeginsWith(queryLower))
-			frontmatches.push_back(*iter);
-		else if(nameLower.Contains(queryLower))
-			matches.push_back(*iter);
+		int tool_index; // relevance by position of tool in tools vector
+		int hs_org; // relevance by origin of haystack
+		int nd_pos; // relevance by position of needle in haystack
+
+		bool operator <(Match const &other) const
+		{
+			return std::tie(hs_org, nd_pos, tool_index) < std::tie(other.hs_org, other.nd_pos, other.tool_index);
+		}
+	};
+
+	std::map<int, Match> index_to_match;
+	auto push = [ &index_to_match ](Match match) {
+		auto it = index_to_match.find(match.tool_index);
+		if (it == index_to_match.end())
+		{
+			index_to_match.insert(std::make_pair(match.tool_index, match));
+		}
+		else if (match < it->second)
+		{
+			it->second = match;
+		}
+	};
+
+	auto push_if_matches = [ &queryLower, &push ](String infoLower, int tool_index, int haystack_relevance) {
+		if (infoLower == queryLower)
+		{
+			push(Match{ tool_index, haystack_relevance, 0 });
+		}
+		if (infoLower.BeginsWith(queryLower))
+		{
+			push(Match{ tool_index, haystack_relevance, 1 });
+		}
+		if (infoLower.Contains(queryLower))
+		{
+			push(Match{ tool_index, haystack_relevance, 2 });
+		}
+	};
+
+	std::map<Tool *, String> menudescriptionLower;
+	for (auto *menu : gameController->GetMenuList())
+	{
+		for (auto *tool : menu->GetToolList())
+		{
+			menudescriptionLower.insert(std::make_pair(tool, menu->GetDescription().ToLower()));
+		}
 	}
 
-	matches.insert(matches.begin(), frontmatches.begin(), frontmatches.end());
-	matches.insert(matches.begin(), exactmatches.begin(), exactmatches.end());
-
-	for(std::vector<Tool*>::const_iterator iter = matches.begin(), end = matches.end(); iter != end; ++iter)
+	for (int tool_index = 0; tool_index < (int)tools.size(); ++tool_index)
 	{
-		Tool * tool = *iter;
+		push_if_matches(tools[tool_index]->GetName().ToLower(), tool_index, 0);
+		push_if_matches(tools[tool_index]->GetDescription().ToLower(), tool_index, 1);
+		auto it = menudescriptionLower.find(tools[tool_index]);
+		if (it != menudescriptionLower.end())
+		{
+			push_if_matches(it->second, tool_index, 2);
+		}
+	}
+
+	std::vector<Match> matches;
+	std::transform(index_to_match.begin(), index_to_match.end(), std::back_inserter(matches), [](decltype(index_to_match)::value_type const &pair) {
+		return pair.second;
+	});
+	std::sort(matches.begin(), matches.end());
+	for (auto &match : matches)
+	{
+		Tool *tool = tools[match.tool_index];
 
 		if(!firstResult)
 			firstResult = tool;
