@@ -4,25 +4,26 @@
 #include <vector>
 #include <array>
 
-#define SC_WALL 0
-#define SC_ELEC 1
-#define SC_POWERED 2
-#define SC_SENSOR 3
-#define SC_FORCE 4
-#define SC_EXPLOSIVE 5
-#define SC_GAS 6
-#define SC_LIQUID 7
-#define SC_POWDERS 8
-#define SC_SOLIDS 9
-#define SC_NUCLEAR 10
-#define SC_SPECIAL 11
-#define SC_LIFE 12
-#define SC_TOOL 13
-#define SC_FAVORITES 14
-#define SC_DECO 15
-#define SC_CRACKER 16
-#define SC_CRACKER2 17
-#define SC_TOTAL 16
+#define SC_BACKGROUND_COLOR 0
+#define SC_WALL 1
+#define SC_ELEC 2
+#define SC_POWERED 3
+#define SC_SENSOR 4
+#define SC_FORCE 5
+#define SC_EXPLOSIVE 6
+#define SC_GAS 7
+#define SC_LIQUID 8
+#define SC_POWDERS 9
+#define SC_SOLIDS 10
+#define SC_NUCLEAR 11
+#define SC_SPECIAL 12
+#define SC_LIFE 13
+#define SC_TOOL 14
+#define SC_FAVORITES 15
+#define SC_DECO 16
+#define SC_CRACKER 17
+#define SC_CRACKER2 18
+#define SC_TOTAL 17
 
 #define O_WL_WALLELEC	122
 #define O_WL_EWALL		123
@@ -137,6 +138,7 @@ struct part_type;
 struct part_transition;
 
 struct wall_type;
+struct background;
 struct gol_menu;
 struct menu_section;
 
@@ -150,6 +152,8 @@ std::vector<int> LoadGOLTypes();
 std::vector<std::array<int, 10> > LoadGOLRules();
 
 std::vector<wall_type> LoadWalls();
+
+std::vector<background> LoadBackgrounds();
 
 std::vector<menu_section> LoadMenus();
 

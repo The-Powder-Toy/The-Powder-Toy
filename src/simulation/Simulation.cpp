@@ -5509,6 +5509,8 @@ Simulation::Simulation():
 
 	wtypes = LoadWalls();
 
+	backgrounds = LoadBackgrounds();
+
 	platent = LoadLatent();
 
 	std::vector<Element> elementList = GetElements();

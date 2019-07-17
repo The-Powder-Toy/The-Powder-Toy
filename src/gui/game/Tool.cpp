@@ -110,6 +110,47 @@ void WallTool::DrawFill(Simulation * sim, Brush * brush, ui::Point position) {
 		sim->FloodWalls(position.X, position.Y, toolID, -1);
 }
 
+BackgroundTool::BackgroundTool(int id, String name, String description, int r, int g, int b, ByteString identifier, VideoBuffer * (*textureGen)(int, int, int)):
+Tool(id, name, description, r, g, b, identifier, textureGen)
+{
+	blocky = true;
+}
+BackgroundTool::~BackgroundTool() {}
+void BackgroundTool::Draw(Simulation * sim, Brush * brush, ui::Point position) {
+	sim->CreateWalls(position.X, position.Y, 1, 1, toolID, brush);
+}
+void BackgroundTool::DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging) {
+	int wallX = position1.X/CELL;
+	int wallY = position1.Y/CELL;
+	if(dragging == false && toolID == WL_FAN && sim->bmap[wallY][wallX]==WL_FAN)
+	{
+		float newFanVelX = (position2.X-position1.X)*0.005f;
+		newFanVelX *= strength;
+		float newFanVelY = (position2.Y-position1.Y)*0.005f;
+		newFanVelY *= strength;
+		sim->FloodWalls(position1.X, position1.Y, WL_FLOODHELPER, WL_FAN);
+		for (int j = 0; j < YRES/CELL; j++)
+			for (int i = 0; i < XRES/CELL; i++)
+				if (sim->bmap[j][i] == WL_FLOODHELPER)
+				{
+					sim->fvx[j][i] = newFanVelX;
+					sim->fvy[j][i] = newFanVelY;
+					sim->bmap[j][i] = WL_FAN;
+				}
+	}
+	else
+	{
+		sim->CreateWallLine(position1.X, position1.Y, position2.X, position2.Y, 1, 1, toolID, brush);
+	}
+}
+void BackgroundTool::DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) {
+	sim->CreateWallBox(position1.X, position1.Y, position2.X, position2.Y, toolID);
+}
+void BackgroundTool::DrawFill(Simulation * sim, Brush * brush, ui::Point position) {
+	if (toolID != WL_STREAM)
+		sim->FloodWalls(position.X, position.Y, toolID, -1);
+}
+
 WindTool::WindTool(int id, String name, String description, int r, int g, int b, ByteString identifier, VideoBuffer * (*textureGen)(int, int, int)):
 	Tool(id, name, description, r, g, b, identifier, textureGen)
 {

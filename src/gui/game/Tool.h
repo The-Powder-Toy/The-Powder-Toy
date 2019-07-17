@@ -161,6 +161,17 @@ public:
 	void DrawFill(Simulation * sim, Brush * brush, ui::Point position) override;
 };
 
+class BackgroundTool: public Tool
+{
+public:
+	BackgroundTool(int id, String name, String description, int r, int g, int b, ByteString identifier, VideoBuffer * (*textureGen)(int, int, int) = NULL);
+	virtual ~BackgroundTool();
+	void Draw(Simulation * sim, Brush * brush, ui::Point position) override;
+	void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false) override;
+	void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) override;
+	void DrawFill(Simulation * sim, Brush * brush, ui::Point position) override;
+};
+
 class WindTool: public Tool
 {
 public:
