@@ -5509,7 +5509,6 @@ Simulation::Simulation():
 
 	wtypes = LoadWalls();
 
-	background = PIXPACK(0x000000);
 	backgrounds = LoadBackgrounds();
 
 	platent = LoadLatent();

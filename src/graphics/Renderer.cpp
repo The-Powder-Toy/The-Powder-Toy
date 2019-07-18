@@ -45,7 +45,6 @@ void Renderer::RenderBegin()
 #ifdef OGLR
 	draw_air();
 	draw_grav();
-	DrawBackground();
 	DrawWalls();
 	render_parts();
 	render_fire();
@@ -71,7 +70,6 @@ void Renderer::RenderBegin()
 
 	draw_air();
 	draw_grav();
-	DrawBackground();
 	DrawWalls();
 	render_parts();
 	if(display_mode & DISPLAY_PERS)
@@ -116,7 +114,6 @@ void Renderer::RenderBegin()
 
 	draw_air();
 	draw_grav();
-	DrawBackground();
 	DrawWalls();
 	render_parts();
 	if(display_mode & DISPLAY_PERS)
@@ -2451,6 +2448,21 @@ void Renderer::draw_air()
 			}
 			if (findingElement)
 				c = PIXRGB(PIXR(c)/10,PIXG(c)/10,PIXB(c)/10);
+
+			int r = PIXR(sim->background);
+			int g = PIXG(sim->background);
+			int b = PIXB(sim->background);
+
+			int rc = (PIXR(c)) > 255 ? 255 : PIXR(c);
+			int gc = (PIXG(c)) > 255 ? 255 : PIXG(c);
+			int bc = (PIXB(c)) > 255 ? 255 : PIXB(c);
+
+			int rcr = r + clamp_flt(rc, 0.0f, 8.0f);
+			int gcg = g + clamp_flt(gc, 0.0f, 8.0f);
+			int bcb = b + clamp_flt(bc, 0.0f, 8.0f);
+
+			c = PIXRGB(rcr, gcg, bcb);
+
 			for (j=0; j<CELL; j++)//draws the colors
 				for (i=0; i<CELL; i++)
 					vid[(x*CELL+i) + (y*CELL+j)*(VIDXRES)] = c;
