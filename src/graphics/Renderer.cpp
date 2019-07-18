@@ -45,6 +45,7 @@ void Renderer::RenderBegin()
 #ifdef OGLR
 	draw_air();
 	draw_grav();
+	DrawBackground();
 	DrawWalls();
 	render_parts();
 	render_fire();
@@ -70,6 +71,7 @@ void Renderer::RenderBegin()
 
 	draw_air();
 	draw_grav();
+	DrawBackground();
 	DrawWalls();
 	render_parts();
 	if(display_mode & DISPLAY_PERS)
@@ -114,6 +116,7 @@ void Renderer::RenderBegin()
 
 	draw_air();
 	draw_grav();
+	DrawBackground();
 	DrawWalls();
 	render_parts();
 	if(display_mode & DISPLAY_PERS)
@@ -700,6 +703,23 @@ void Renderer::DrawBlob(int x, int y, unsigned char cr, unsigned char cg, unsign
 	blendpixel(x-1, y-1, cr, cg, cb, 64);
 	blendpixel(x+1, y+1, cr, cg, cb, 64);
 	blendpixel(x-1, y+1, cr, cg, cb, 64);
+}
+
+void Renderer::DrawBackground()
+{
+	for (int y = 0; y < YRES/CELL; y++)
+	{
+		for (int x = 0; x < XRES/CELL; x++)
+		{
+			if (sim->background)
+			{
+				pixel pc = sim->background;
+				for (int j = 0; j < CELL; j++)
+					for (int i = 0; i < CELL; i++)
+						vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = pc;
+			}
+		}
+	}
 }
 
 void Renderer::DrawWalls()

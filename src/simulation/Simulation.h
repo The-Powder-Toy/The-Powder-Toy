@@ -54,6 +54,7 @@ public:
 	int replaceModeSelected;
 	int replaceModeFlags;
 
+	pixel background;
 	char can_move[PT_NUM][PT_NUM];
 	int debug_currentParticle;
 	int parts_lastActiveIndex;
@@ -94,6 +95,8 @@ public:
 	float *gravy;//gravy[(YRES/CELL) * (XRES/CELL)];
 	float *gravp;//gravp[(YRES/CELL) * (XRES/CELL)];
 	float *gravmap;//gravmap[(YRES/CELL) * (XRES/CELL)];
+	// Background
+	unsigned char bgmap[YRES/CELL][XRES/CELL];
 	//Walls
 	unsigned char bmap[YRES/CELL][XRES/CELL];
 	unsigned char emap[YRES/CELL][XRES/CELL];

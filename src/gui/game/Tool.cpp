@@ -5,6 +5,10 @@
 #include "simulation/Simulation.h"
 #include "simulation/SimulationData.h"
 #include "ElementClasses.h"
+#include "graphics/Graphics.h"
+#include "gui/interface/Window.h"
+#include "gui/interface/Engine.h"
+#include <unistd.h>
 
 Tool::Tool(int id, String name, String description, int r, int g, int b, ByteString identifier, VideoBuffer * (*textureGen)(int, int, int)):
 	textureGen(textureGen),
@@ -110,23 +114,24 @@ void WallTool::DrawFill(Simulation * sim, Brush * brush, ui::Point position) {
 		sim->FloodWalls(position.X, position.Y, toolID, -1);
 }
 
-BackgroundTool::BackgroundTool(int id, String name, String description, int r, int g, int b, ByteString identifier, VideoBuffer * (*textureGen)(int, int, int)):
+BackgroundTool::BackgroundTool(Renderer* _ren, int id, String name, String description, int r, int g, int b, ByteString identifier, VideoBuffer * (*textureGen)(int, int, int)):
+ren(_ren),
 Tool(id, name, description, r, g, b, identifier, textureGen)
 {
 	blocky = true;
 }
 BackgroundTool::~BackgroundTool() {}
 void BackgroundTool::Draw(Simulation * sim, Brush * brush, ui::Point position) {
-	sim->FloodWalls(position.X, position.Y, toolID, -1);
+	DrawFill(sim, brush, position);
 }
 void BackgroundTool::DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging) {
-	sim->FloodWalls(position1.X, position1.Y, toolID, -1);
+	DrawFill(sim, brush, position1);
 }
 void BackgroundTool::DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) {
-	sim->FloodWalls(position1.X, position1.Y, toolID, -1);
+	DrawFill(sim, brush, position1);
 }
 void BackgroundTool::DrawFill(Simulation * sim, Brush * brush, ui::Point position) {
-	sim->FloodWalls(position.X, position.Y, toolID, -1);
+	sim->background = PIXRGB(colRed, colGreen, colBlue);
 }
 
 WindTool::WindTool(int id, String name, String description, int r, int g, int b, ByteString identifier, VideoBuffer * (*textureGen)(int, int, int)):

@@ -81,6 +81,7 @@ public:
 
 	void RenderZoom();
 	void DrawBlob(int x, int y, unsigned char cr, unsigned char cg, unsigned char cb);
+	void DrawBackground();
 	void DrawWalls();
 	void DrawSigns();
 	void render_gravlensing(pixel * source);
