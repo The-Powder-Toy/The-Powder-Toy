@@ -136,9 +136,9 @@ std::vector<background> LoadBackgrounds()
 {
 	return
 	std::vector<background>{
-		{PIXPACK(0xFF0000), PIXPACK(0xFF0000), 0, Renderer::WallIcon, String("RED"),           "RED_BACKGROUND",   String("Red Background")},
-		{PIXPACK(0x00FF00), PIXPACK(0x00FF00), 0, Renderer::WallIcon, String("GREEN"), 		   "GREEN_BACKGROUND", String("Green Background")},
-		{PIXPACK(0x0000FF), PIXPACK(0x0000FF), 0, Renderer::WallIcon, String("BLUE"),          "BLUE_BACKGROUND",  String("Blue Background")}
+		{PIXPACK(0xFF0000), 0, 0, Renderer::WallIcon, String("RED"),           "RED_BACKGROUND",   String("Red Background")},
+		{PIXPACK(0x00FF00), 0, 0, Renderer::WallIcon, String("GREEN"), 		   "GREEN_BACKGROUND", String("Green Background")},
+		{PIXPACK(0x0000FF), 0, 0, Renderer::WallIcon, String("BLUE"),          "BLUE_BACKGROUND",  String("Blue Background")}
 	};
 }
 
