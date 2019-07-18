@@ -136,25 +136,9 @@ std::vector<background> LoadBackgrounds()
 {
 	return
 	std::vector<background>{
-		{PIXPACK(0x808080), PIXPACK(0x000000), 0, Renderer::WallIcon, String("ERASE"),           "DEFAULT_WL_ERASE",  String("Erases walls.")},
-		{PIXPACK(0xC0C0C0), PIXPACK(0x101010), 0, Renderer::WallIcon, String("CONDUCTIVE WALL"), "DEFAULT_WL_CNDTW",  String("Blocks everything. Conductive.")},
-		{PIXPACK(0x808080), PIXPACK(0x808080), 0, Renderer::WallIcon, String("EWALL"),           "DEFAULT_WL_EWALL",  String("E-Wall. Becomes transparent when electricity is connected.")},
-		{PIXPACK(0xFF8080), PIXPACK(0xFF2008), 1, Renderer::WallIcon, String("DETECTOR"),        "DEFAULT_WL_DTECT",  String("Detector. Generates electricity when a particle is inside.")},
-		{PIXPACK(0x808080), PIXPACK(0x000000), 0, Renderer::WallIcon, String("STREAMLINE"),      "DEFAULT_WL_STRM",   String("Streamline. Set start point of a streamline.")},
-		{PIXPACK(0x8080FF), PIXPACK(0x000000), 1, Renderer::WallIcon, String("FAN"),             "DEFAULT_WL_FAN",    String("Fan. Accelerates air. Use the line tool to set direction and strength.")},
-		{PIXPACK(0xC0C0C0), PIXPACK(0x101010), 2, Renderer::WallIcon, String("LIQUID WALL"),     "DEFAULT_WL_LIQD",   String("Allows liquids, blocks all other particles. Conductive.")},
-		{PIXPACK(0x808080), PIXPACK(0x000000), 1, Renderer::WallIcon, String("ABSORB WALL"),     "DEFAULT_WL_ABSRB",  String("Absorbs particles but lets air currents through.")},
-		{PIXPACK(0x808080), PIXPACK(0x000000), 3, Renderer::WallIcon, String("WALL"),            "DEFAULT_WL_WALL",   String("Basic wall, blocks everything.")},
-		{PIXPACK(0x3C3C3C), PIXPACK(0x000000), 1, Renderer::WallIcon, String("AIRONLY WALL"),    "DEFAULT_WL_AIR",    String("Allows air, but blocks all particles.")},
-		{PIXPACK(0x575757), PIXPACK(0x000000), 1, Renderer::WallIcon, String("POWDER WALL"),     "DEFAULT_WL_POWDR",  String("Allows powders, blocks all other particles.")},
-		{PIXPACK(0xFFFF22), PIXPACK(0x101010), 2, Renderer::WallIcon, String("CONDUCTOR"),       "DEFAULT_WL_CNDTR",  String("Conductor. Allows all particles to pass through and conducts electricity.")},
-		{PIXPACK(0x242424), PIXPACK(0x101010), 0, Renderer::WallIcon, String("EHOLE"),           "DEFAULT_WL_EHOLE",  String("E-Hole. absorbs particles, releases them when powered.")},
-		{PIXPACK(0x579777), PIXPACK(0x000000), 1, Renderer::WallIcon, String("GAS WALL"),        "DEFAULT_WL_GAS",    String("Allows gases, blocks all other particles.")},
-		{PIXPACK(0xFFEE00), PIXPACK(0xAA9900), 4, Renderer::WallIcon, String("GRAVITY WALL"),    "DEFAULT_WL_GRVTY",  String("Gravity wall. Newtonian Gravity has no effect inside a box drawn with this.")},
-		{PIXPACK(0xFFAA00), PIXPACK(0xAA5500), 4, Renderer::WallIcon, String("ENERGY WALL"),     "DEFAULT_WL_ENRGY",  String("Allows energy particles, blocks all other particles.")},
-		{PIXPACK(0xDCDCDC), PIXPACK(0x000000), 1, Renderer::WallIcon, String("AIRBLOCK WALL"),   "DEFAULT_WL_NOAIR",  String("Allows all particles, but blocks air.")},
-		{PIXPACK(0x808080), PIXPACK(0x000000), 0, Renderer::WallIcon, String("ERASEALL"),        "DEFAULT_WL_ERASEA", String("Erases walls, particles, and signs.")},
-		{PIXPACK(0x800080), PIXPACK(0x000000), 0, Renderer::WallIcon, String("STASIS WALL"),     "DEFAULT_WL_STASIS", String("Freezes particles inside the wall in place until powered.")},
+		{PIXPACK(0xFF0000), PIXPACK(0xFF0000), 0, Renderer::WallIcon, String("RED"),           "RED_BACKGROUND",   String("Red Background")},
+		{PIXPACK(0x00FF00), PIXPACK(0x00FF00), 0, Renderer::WallIcon, String("GREEN"), 		   "GREEN_BACKGROUND", String("Green Background")},
+		{PIXPACK(0x0000FF), PIXPACK(0x0000FF), 0, Renderer::WallIcon, String("BLUE"),          "BLUE_BACKGROUND",  String("Blue Background")}
 	};
 }
 

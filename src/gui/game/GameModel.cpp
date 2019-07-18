@@ -325,9 +325,9 @@ void GameModel::BuildMenus()
 	}
 
 	//Build menu from background data
-	for(int i = 0; i < UI_WALLCOUNT; i++)
+	for(int i = 0; i < UI_BACKGROUND_COUNT; i++)
 	{
-		Tool * tempTool = new BackgroundTool(i, "", sim->backgrounds[i].descs, PIXR(sim->backgrounds[i].colour), PIXG(sim->backgrounds[i].colour), PIXB(sim->backgrounds[i].colour), sim->backgrounds[i].identifier, sim->backgrounds[i].textureGen);
+		Tool * tempTool = new BackgroundTool(999 + i, "", sim->backgrounds[i].descs, PIXR(sim->backgrounds[i].colour), PIXG(sim->backgrounds[i].colour), PIXB(sim->backgrounds[i].colour), sim->backgrounds[i].identifier, sim->backgrounds[i].textureGen);
 		menuList[SC_BACKGROUND_COLOR]->AddTool(tempTool);
 	}
 
