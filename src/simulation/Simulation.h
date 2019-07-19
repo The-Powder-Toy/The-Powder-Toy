@@ -12,7 +12,6 @@
 #include "ElementDefs.h"
 #include "GOLMenu.h"
 #include "MenuSection.h"
-#include "Background.h"
 
 #include "elements/Element.h"
 
@@ -44,7 +43,6 @@ public:
 	std::vector<SimTool*> tools;
 	std::vector<unsigned int> platent;
 	std::vector<wall_type> wtypes;
-	std::vector<background> backgrounds;
 	std::vector<gol_menu> gmenu;
 	std::vector<int> goltype;
 	std::vector<std::array<int, 10> > grule;

@@ -154,8 +154,6 @@ std::vector<std::array<int, 10> > LoadGOLRules();
 
 std::vector<wall_type> LoadWalls();
 
-std::vector<background> LoadBackgrounds();
-
 std::vector<menu_section> LoadMenus();
 
 std::vector<unsigned int> LoadLatent();
