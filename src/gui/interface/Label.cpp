@@ -204,8 +204,10 @@ void Label::updateSelection()
 	displayTextWithSelection = displayTextWrapper.WrappedText();
 	if (HasSelection())
 	{
-		displayTextWithSelection.Insert(displayTextWrapper.Clear2Index(selectionIndexL.clear_index).wrapped_index, "\x01");
-		displayTextWithSelection.Insert(displayTextWrapper.Clear2Index(selectionIndexH.clear_index).wrapped_index + 1, "\x01");
+		auto indexL = displayTextWrapper.Clear2Index(selectionIndexL.clear_index);
+		auto indexH = displayTextWrapper.Clear2Index(selectionIndexH.clear_index);
+		displayTextWithSelection.Insert(indexL.wrapped_index    , "\x01");
+		displayTextWithSelection.Insert(indexH.wrapped_index + 1, "\x01");
 	}
 }
 
@@ -229,13 +231,16 @@ void Label::Draw(const Point& screenPos)
 	}
 	Graphics *g = GetGraphics();
 
+	auto indexL = displayTextWrapper.Clear2Index(selectionIndexL.clear_index);
+	auto indexH = displayTextWrapper.Clear2Index(selectionIndexH.clear_index);
+		
 	int selectionXL;
 	int selectionYL;
-	int selectionLineL = displayTextWrapper.Index2Point(selectionIndexL, selectionXL, selectionYL);
+	int selectionLineL = displayTextWrapper.Index2Point(indexL, selectionXL, selectionYL);
 
 	int selectionXH;
 	int selectionYH;
-	int selectionLineH = displayTextWrapper.Index2Point(selectionIndexH, selectionXH, selectionYH);
+	int selectionLineH = displayTextWrapper.Index2Point(indexH, selectionXH, selectionYH);
 
 	if (HasSelection())
 	{

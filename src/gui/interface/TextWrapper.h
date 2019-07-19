@@ -32,7 +32,6 @@ namespace ui
 
 	public:
 		int Update(String const &text, bool do_wrapping, int max_width);
-		Index Raw2Index(int raw_index) const;
 		Index Clear2Index(int clear_index) const;
 		Index Point2Index(int x, int y) const;
 		int Index2Point(Index index, int &x, int &y) const;
