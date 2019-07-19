@@ -66,7 +66,6 @@
 #define WL_FLOODHELPER	255
 
 #define UI_WALLCOUNT 19
-#define UI_BACKGROUND_COUNT 11
 
 #define OLD_SPC_AIR 236
 #define SPC_AIR 256
@@ -139,7 +138,6 @@ struct part_type;
 struct part_transition;
 
 struct wall_type;
-struct background;
 struct gol_menu;
 struct menu_section;
 
