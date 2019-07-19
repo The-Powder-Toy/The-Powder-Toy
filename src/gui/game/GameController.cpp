@@ -1164,7 +1164,10 @@ void GameController::SetActiveMenu(int menuID)
 {
 	gameModel->SetActiveMenu(menuID);
 	if(menuID == SC_DECO || menuID == SC_BACKGROUND_COLOR)
+	{
 		gameModel->SetColourSelectorVisibility(true);
+		gameView->NotifyColourPresetsChanged(gameModel);
+	}
 	else
 		gameModel->SetColourSelectorVisibility(false);
 }
@@ -1421,6 +1424,7 @@ void GameController::OpenColourPicker()
 				Simulation* sim = c->gameModel->GetSimulation();
 				pixel backgroundColour = PIXRGB(colour.Red, colour.Green, colour.Blue);
 				sim->background = backgroundColour;
+				c->SetColour(colour);
 			}
 			else
 				c->SetColour(colour);

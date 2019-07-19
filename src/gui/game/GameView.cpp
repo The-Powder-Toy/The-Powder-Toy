@@ -859,6 +859,7 @@ void GameView::NotifyColourPresetsChanged(GameModel * sender)
 				ui::Colour col = sender_->Appearance.BackgroundInactive;
 				pixel backgroundColour = PIXRGB(col.Red, col.Green, col.Blue);
 				sim->background = backgroundColour;
+				v->c->SetActiveColourPreset(preset);
 			}
 			else
 			{
@@ -882,7 +883,9 @@ void GameView::NotifyColourPresetsChanged(GameModel * sender)
 	int i = 0;
 	for(std::vector<ui::Colour>::iterator iter = colours.begin(), end = colours.end(); iter != end; ++iter)
 	{
-		ToolButton * tempButton = new ToolButton(ui::Point(currentX, YRES+1), ui::Point(30, 18), "", "", "Decoration Presets.");
+		int activeMenu = sender->GetActiveMenu();
+		String label((activeMenu == SC_BACKGROUND_COLOR) ? "Background Presets." : "Decoration Presets.");
+		ToolButton * tempButton = new ToolButton(ui::Point(currentX, YRES+1), ui::Point(30, 18), "", "", label.c_str());
 		tempButton->Appearance.BackgroundInactive = *iter;
 		tempButton->SetActionCallback(new ColourPresetAction(this, i, sender));
 
