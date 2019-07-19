@@ -114,26 +114,6 @@ void WallTool::DrawFill(Simulation * sim, Brush * brush, ui::Point position) {
 		sim->FloodWalls(position.X, position.Y, toolID, -1);
 }
 
-BackgroundTool::BackgroundTool(Renderer* _ren, int id, String name, String description, int r, int g, int b, ByteString identifier, VideoBuffer * (*textureGen)(int, int, int)):
-ren(_ren),
-Tool(id, name, description, r, g, b, identifier, textureGen)
-{
-	blocky = true;
-}
-BackgroundTool::~BackgroundTool() {}
-void BackgroundTool::Draw(Simulation * sim, Brush * brush, ui::Point position) {
-	DrawFill(sim, brush, position);
-}
-void BackgroundTool::DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging) {
-	DrawFill(sim, brush, position1);
-}
-void BackgroundTool::DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) {
-	DrawFill(sim, brush, position1);
-}
-void BackgroundTool::DrawFill(Simulation * sim, Brush * brush, ui::Point position) {
-	sim->background = PIXRGB(colRed, colGreen, colBlue);
-}
-
 WindTool::WindTool(int id, String name, String description, int r, int g, int b, ByteString identifier, VideoBuffer * (*textureGen)(int, int, int)):
 	Tool(id, name, description, r, g, b, identifier, textureGen)
 {
