@@ -26,9 +26,27 @@ namespace ui
 		int word_begins_at = -1; // this is a pointer into records; we're not currently in a word
 		int word_width;
 		int lines = 1;
+		int char_width;
+
+		auto wrap_if_needed = [&](int width_to_consider) {
+			if (do_wrapping && width_to_consider + char_width > max_width)
+			{
+				records.push_back(wrap_record{
+					'\n', // character; makes the line wrap when rendered
+					0, // width; fools the clickmap generator into not seeing this newline
+					0, // position; the clickmap generator is fooled, this can be anything
+					true // signal the end of the line to the clickmap generator
+				});
+				line_width = 0;
+				lines += 1;
+				return true;
+			}
+			return false;
+		};
+
 		for (auto it = text.begin(); it != text.end(); ++it)
 		{
-			auto char_width = Graphics::CharWidth(*it);
+			char_width = Graphics::CharWidth(*it);
 
 			int sequence_length = 0;
 			switch (*it) // set sequence_length if *it starts a sequence that should be forwarded as-is
@@ -41,21 +59,10 @@ namespace ui
 			{
 			// add more supported spaces here
 			case ' ':
-				if (do_wrapping && line_width + char_width > max_width)
+				if (!wrap_if_needed(line_width))
 				{
-					records.push_back(wrap_record{
-						'\n', // character; makes the line wrap when rendered
-						0, // width; fools the clickmap generator into not seeing this newline
-						0, // position; the clickmap generator is fooled, this can be anything
-						true // signal the end of the line to the clickmap generator
-					});
-					line_width = 0;
-					lines += 1;
-				}
-				else
-				{
-					// this is in an else branch to make spaces immediately following
-					// newline characters inserted by the wrapper disappear
+					// this is in the non-wrapping branch to make spaces immediately
+					// following newline characters inserted by the wrapper disappear
 					records.push_back(wrap_record{
 						*it,
 						char_width,
@@ -107,33 +114,45 @@ namespace ui
 						word_width = 0;
 					}
 
-					if (do_wrapping && word_width + char_width > max_width)
+
+					auto wrap_if_needed = [&](int width_to_consider) {
+						if (do_wrapping && width_to_consider + char_width > max_width)
+						{
+							records.push_back(wrap_record{
+								'\n', // character; makes the line wrap when rendered
+								0, // width; fools the clickmap generator into not seeing this newline
+								0, // position; the clickmap generator is fooled, this can be anything
+								true // signal the end of the line to the clickmap generator
+							});
+							line_width = 0;
+							lines += 1;
+							return true;
+						}
+						return false;
+					};
+
+
+					if (wrap_if_needed(word_width))
 					{
-						records.push_back(wrap_record{
-							'\n', // character; makes the line wrap when rendered
-							0, // width; fools the clickmap generator into not seeing this newline
-							0, // position; the clickmap generator is fooled, this can be anything
-							true // signal the end of the line to the clickmap generator
-						});
-						lines += 1;
 						word_begins_at = records.size();
 						word_width = 0;
-						line_width = 0;
 					}
-					if (do_wrapping && line_width + char_width > max_width)
+					if (wrap_if_needed(line_width))
 					{
 						// if we get in here, we skipped the previous block (since line_width
 						// would have been set to 0 (unless of course (char_width > max_width) which
 						// is dumb)). since (word_width + char_width) <= (line_width + char_width) always
 						// holds and we are in this block, we can be sure that word_width < line_width,
 						// so breaking the line by the preceding space is sure to decrease line_width.
-						records.insert(records.begin() + word_begins_at, wrap_record{
-							'\n', // character; makes the line wrap when rendered
-							0, // width; fools the clickmap generator into not seeing this newline
-							0, // position; the clickmap generator is fooled, this can be anything
-							true // signal the end of the line to the clickmap generator
-						});
-						lines += 1;
+
+						// now of course there's this problem that wrap_if_needed appends the
+						// newline character to the end of records, and we want it before
+						// the record at position word_begins_at (0-based)
+						std::rotate(
+							records.begin() + word_begins_at,
+							records.end() - 1,
+							records.end()
+						);
 						word_begins_at += 1;
 						line_width = word_width;
 					}
@@ -146,6 +165,21 @@ namespace ui
 					});
 					word_width += char_width;
 					line_width += char_width;
+
+					switch (*it)
+					{
+					// add more supported non-spaces here that break the word
+					case '?':
+					case ';':
+					case ',':
+					case ':':
+					case '.':
+					case '-':
+					case '!':
+						word_begins_at = -1; // reset word state
+						wrap_if_needed(line_width);
+						break;
+					}
 				}
 				break;
 			}
