@@ -512,6 +512,8 @@ ui::Point GameController::NormaliseBlockCoord(ui::Point point)
 
 void GameController::DrawRect(int toolSelection, ui::Point point1, ui::Point point2)
 {
+	if (gameModel->GetActiveMenu() == SC_BACKGROUND_COLOR)
+		return;
 	Simulation * sim = gameModel->GetSimulation();
 	Tool * activeTool = gameModel->GetActiveTool(toolSelection);
 	gameModel->SetLastTool(activeTool);
@@ -524,6 +526,8 @@ void GameController::DrawRect(int toolSelection, ui::Point point1, ui::Point poi
 
 void GameController::DrawLine(int toolSelection, ui::Point point1, ui::Point point2)
 {
+	if (gameModel->GetActiveMenu() == SC_BACKGROUND_COLOR)
+		return;
 	Simulation * sim = gameModel->GetSimulation();
 	Tool * activeTool = gameModel->GetActiveTool(toolSelection);
 	gameModel->SetLastTool(activeTool);
@@ -536,6 +540,8 @@ void GameController::DrawLine(int toolSelection, ui::Point point1, ui::Point poi
 
 void GameController::DrawFill(int toolSelection, ui::Point point)
 {
+	if (gameModel->GetActiveMenu() == SC_BACKGROUND_COLOR)
+		return;
 	Simulation * sim = gameModel->GetSimulation();
 	Tool * activeTool = gameModel->GetActiveTool(toolSelection);
 	gameModel->SetLastTool(activeTool);
@@ -548,6 +554,8 @@ void GameController::DrawFill(int toolSelection, ui::Point point)
 
 void GameController::DrawPoints(int toolSelection, ui::Point oldPos, ui::Point newPos, bool held)
 {
+	if (gameModel->GetActiveMenu() == SC_BACKGROUND_COLOR)
+		return;
 	Simulation * sim = gameModel->GetSimulation();
 	Tool * activeTool = gameModel->GetActiveTool(toolSelection);
 	gameModel->SetLastTool(activeTool);
