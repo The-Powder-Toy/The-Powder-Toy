@@ -17,7 +17,8 @@ namespace ui
 		{
 			String::value_type character;
 			int width;
-			std::iterator_traits<String::iterator>::difference_type position;
+			int raw_index;
+			int clear_index;
 			bool wraps;
 		};
 		int line_width = 0;
@@ -27,14 +28,16 @@ namespace ui
 		int word_width;
 		int lines = 1;
 		int char_width;
+		int clear_count = 0;
 
-		auto wrap_if_needed = [&](int width_to_consider) {
+		auto wrap_if_needed = [&](int width_to_consider) -> bool {
 			if (do_wrapping && width_to_consider + char_width > max_width)
 			{
 				records.push_back(wrap_record{
 					'\n', // character; makes the line wrap when rendered
 					0, // width; fools the clickmap generator into not seeing this newline
 					0, // position; the clickmap generator is fooled, this can be anything
+					0,
 					true // signal the end of the line to the clickmap generator
 				});
 				line_width = 0;
@@ -66,12 +69,14 @@ namespace ui
 					records.push_back(wrap_record{
 						*it,
 						char_width,
-						it - text.begin(),
+						(int)(it - text.begin()),
+						clear_count,
 						false
 					});
 					line_width += char_width;
 				}
 				word_begins_at = -1; // reset word state
+				++clear_count;
 				break;
 
 			// add more supported linebreaks here
@@ -79,12 +84,14 @@ namespace ui
 				records.push_back(wrap_record{
 					*it, // character; makes the line wrap when rendered
 					max_width - line_width, // width; make it span all the way to the end
-					it - text.begin(), // position; so the clickmap generator knows where *it is
+					(int)(it - text.begin()), // position; so the clickmap generator knows where *it is
+					clear_count,
 					true // signal the end of the line to the clickmap generator
 				});
 				lines += 1;
 				line_width = 0;
 				word_begins_at = -1; // reset word state
+				++clear_count;
 				break;
 
 			default:
@@ -101,6 +108,7 @@ namespace ui
 							*it, // character; forward the sequence to the output
 							0, // width; fools the clickmap generator into not seeing this sequence
 							0, // position; the clickmap generator is fooled, this can be anything
+							0,
 							false // signal nothing to the clickmap generator
 						});
 					}
@@ -113,24 +121,6 @@ namespace ui
 						word_begins_at = records.size();
 						word_width = 0;
 					}
-
-
-					auto wrap_if_needed = [&](int width_to_consider) {
-						if (do_wrapping && width_to_consider + char_width > max_width)
-						{
-							records.push_back(wrap_record{
-								'\n', // character; makes the line wrap when rendered
-								0, // width; fools the clickmap generator into not seeing this newline
-								0, // position; the clickmap generator is fooled, this can be anything
-								true // signal the end of the line to the clickmap generator
-							});
-							line_width = 0;
-							lines += 1;
-							return true;
-						}
-						return false;
-					};
-
 
 					if (wrap_if_needed(word_width))
 					{
@@ -160,11 +150,13 @@ namespace ui
 					records.push_back(wrap_record{
 						*it, // character; make the line wrap with *it
 						char_width, // width; make it span all the way to the end
-						it - text.begin(), // position; so the clickmap generator knows where *it is
+						(int)(it - text.begin()), // position; so the clickmap generator knows where *it is
+						clear_count,
 						false // signal nothing to the clickmap generator
 					});
 					word_width += char_width;
 					line_width += char_width;
+					++clear_count;
 
 					switch (*it)
 					{
@@ -192,7 +184,7 @@ namespace ui
 		int counter = 0;
 		for (auto const &record : records)
 		{
-			regions.push_back(clickmap_region{ x, l * FONT_H, record.width, l + 1, Index{ (int)record.position, counter } });
+			regions.push_back(clickmap_region{ x, l * FONT_H, record.width, l + 1, Index{ record.raw_index, counter, record.clear_index } });
 			++counter;
 			x += record.width;
 			if (record.wraps)
@@ -203,6 +195,7 @@ namespace ui
 			wrapped_text.append(1, record.character);
 		}
 
+		clear_text_size = clear_count;
 		wrapped_lines = lines;
 		return lines;
 	}
@@ -285,6 +278,22 @@ namespace ui
 		for (auto const &region : regions)
 		{
 			if (region.index.raw_index >= raw_index)
+			{
+				return region.index;
+			}
+		}
+		return IndexEnd();
+	}
+
+	TextWrapper::Index TextWrapper::Clear2Index(int clear_index) const
+	{
+		if (clear_index < 0)
+		{
+			return IndexBegin();
+		}
+		for (auto const &region : regions)
+		{
+			if (region.index.clear_index >= clear_index)
 			{
 				return region.index;
 			}

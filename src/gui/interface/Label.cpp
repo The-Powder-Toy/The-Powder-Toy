@@ -35,7 +35,7 @@ void Label::SetMultiline(bool status)
 	multiline = status;
 	updateTextWrapper();
 	updateSelection();
-	TextPosition(textWrapper.WrappedText());
+	TextPosition(displayTextWrapper.WrappedText());
 }
 
 void Label::SetText(String newText)
@@ -43,7 +43,7 @@ void Label::SetText(String newText)
 	this->text = newText;
 	updateTextWrapper();
 	updateSelection();
-	TextPosition(textWrapper.WrappedText());
+	TextPosition(displayTextWrapper.WrappedText());
 }
 
 void Label::AutoHeight()
@@ -56,7 +56,16 @@ void Label::AutoHeight()
 
 void Label::updateTextWrapper()
 {
-	int lines = textWrapper.Update(text, multiline, Size.X - Appearance.Margin.Left - Appearance.Margin.Right);
+	int lines = textWrapper.Update(
+		text,
+		multiline,
+		Size.X - Appearance.Margin.Left - Appearance.Margin.Right
+	);
+	displayTextWrapper.Update(
+		displayText.size() ? displayText : text,
+		multiline,
+		Size.X - Appearance.Margin.Left - Appearance.Margin.Right
+	);
 	if (autoHeight)
 	{
 		Size.Y = lines * 12 + 3;
@@ -192,28 +201,28 @@ void Label::updateSelection()
 	if (selectionIndexH.raw_index <                  0) selectionIndexH = textWrapper.IndexBegin();
 	if (selectionIndexH.raw_index > (int)text.length()) selectionIndexH = textWrapper.IndexEnd();
 
-	displayTextWithSelection = textWrapper.WrappedText();
+	displayTextWithSelection = displayTextWrapper.WrappedText();
 	if (HasSelection())
 	{
-		displayTextWithSelection.Insert(selectionIndexL.wrapped_index, "\x01");
-		displayTextWithSelection.Insert(selectionIndexH.wrapped_index + 1, "\x01");
+		displayTextWithSelection.Insert(displayTextWrapper.Clear2Index(selectionIndexL.clear_index).wrapped_index, "\x01");
+		displayTextWithSelection.Insert(displayTextWrapper.Clear2Index(selectionIndexH.clear_index).wrapped_index + 1, "\x01");
 	}
 }
 
-// void Label::SetDisplayText(String newText)
-// {
-	// displayText = newText;
-	// ClearSelection();
-	// updateTextWrapper();
-	// updateSelection();
-	// TextPosition(textWrapper.WrappedText());
-// }
+void Label::SetDisplayText(String newText)
+{
+	displayText = newText;
+	ClearSelection();
+	updateTextWrapper();
+	updateSelection();
+	TextPosition(displayTextWrapper.WrappedText());
+}
 
 void Label::Draw(const Point& screenPos)
 {
 	if (!drawn)
 	{
-		TextPosition(textWrapper.WrappedText());
+		TextPosition(displayTextWrapper.WrappedText());
 		updateTextWrapper();
 		updateSelection();
 		drawn = true;
@@ -222,11 +231,11 @@ void Label::Draw(const Point& screenPos)
 
 	int selectionXL;
 	int selectionYL;
-	int selectionLineL = textWrapper.Index2Point(selectionIndexL, selectionXL, selectionYL);
+	int selectionLineL = displayTextWrapper.Index2Point(selectionIndexL, selectionXL, selectionYL);
 
 	int selectionXH;
 	int selectionYH;
-	int selectionLineH = textWrapper.Index2Point(selectionIndexH, selectionXH, selectionYH);
+	int selectionLineH = displayTextWrapper.Index2Point(selectionIndexH, selectionXH, selectionYH);
 
 	if (HasSelection())
 	{

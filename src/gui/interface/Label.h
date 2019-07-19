@@ -16,6 +16,11 @@ namespace ui
 		String displayTextWithSelection;
 
 		String text;
+		TextWrapper textWrapper;
+
+		String displayText;
+		TextWrapper displayTextWrapper;
+
 		Colour textColour;
 		TextWrapper::Index selectionIndex0;
 		TextWrapper::Index selectionIndex1;
@@ -32,7 +37,6 @@ namespace ui
 		int getLowerSelectionBound();
 		int getHigherSelectionBound();
 
-		TextWrapper textWrapper;
 
 		void copySelection();
 	public:
@@ -44,6 +48,7 @@ namespace ui
 		void SetMultiline(bool status);
 
 		virtual void SetText(String text);
+		virtual void SetDisplayText(String text);
 		virtual String GetText();
 
 		bool HasSelection();

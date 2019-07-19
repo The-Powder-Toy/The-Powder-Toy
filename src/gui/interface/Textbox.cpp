@@ -171,7 +171,7 @@ void Textbox::cutSelection()
 
 	updateTextWrapper();
 	updateSelection();
-	TextPosition(text);
+	TextPosition(displayTextWrapper.WrappedText());
 
 	if(cursor)
 	{
@@ -241,7 +241,7 @@ void Textbox::pasteIntoSelection()
 
 	updateTextWrapper();
 	updateSelection();
-	TextPosition(textWrapper.WrappedText());
+	TextPosition(displayTextWrapper.WrappedText());
 
 	if(cursor)
 	{
@@ -459,7 +459,7 @@ void Textbox::AfterTextChange(bool changed)
 
 	updateTextWrapper();
 	updateSelection();
-	TextPosition(textWrapper.WrappedText());
+	TextPosition(displayTextWrapper.WrappedText());
 
 	if(cursor)
 	{
