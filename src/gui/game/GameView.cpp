@@ -35,6 +35,7 @@
 #include "simulation/SimulationData.h"
 #include "simulation/ElementDefs.h"
 #include "ElementClasses.h"
+#include "simulation/Simulation.h"
 
 #ifdef GetUserName
 # undef GetUserName // dammit windows
@@ -845,13 +846,25 @@ void GameView::NotifyColourPresetsChanged(GameModel * sender)
 	class ColourPresetAction: public ui::ButtonAction
 	{
 		GameView * v;
+		GameModel* model;
 	public:
 		int preset;
-		ColourPresetAction(GameView * _v, int preset) : preset(preset) { v = _v; }
+		ColourPresetAction(GameView * _v, int preset, GameModel* parentModel) : preset(preset), model(parentModel) { v = _v; }
 		void ActionCallback(ui::Button * sender_) override
 		{
-			v->c->SetActiveColourPreset(preset);
-			v->c->SetColour(sender_->Appearance.BackgroundInactive);
+			int activeMenu = model->GetActiveMenu();
+			if (activeMenu == SC_BACKGROUND_COLOR)
+			{
+				Simulation* sim = model->GetSimulation();
+				ui::Colour col = sender_->Appearance.BackgroundInactive;
+				pixel backgroundColour = PIXRGB(col.Red, col.Green, col.Blue);
+				sim->background = backgroundColour;
+			}
+			else
+			{
+				v->c->SetActiveColourPreset(preset);
+				v->c->SetColour(sender_->Appearance.BackgroundInactive);
+			}
 		}
 	};
 
@@ -871,7 +884,7 @@ void GameView::NotifyColourPresetsChanged(GameModel * sender)
 	{
 		ToolButton * tempButton = new ToolButton(ui::Point(currentX, YRES+1), ui::Point(30, 18), "", "", "Decoration Presets.");
 		tempButton->Appearance.BackgroundInactive = *iter;
-		tempButton->SetActionCallback(new ColourPresetAction(this, i));
+		tempButton->SetActionCallback(new ColourPresetAction(this, i, sender));
 
 		currentX += 31;
 

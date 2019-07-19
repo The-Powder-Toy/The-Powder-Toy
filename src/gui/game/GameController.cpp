@@ -1155,7 +1155,7 @@ void GameController::SetColour(ui::Colour colour)
 void GameController::SetActiveMenu(int menuID)
 {
 	gameModel->SetActiveMenu(menuID);
-	if(menuID == SC_DECO)
+	if(menuID == SC_DECO || menuID == SC_BACKGROUND_COLOR)
 		gameModel->SetColourSelectorVisibility(true);
 	else
 		gameModel->SetColourSelectorVisibility(false);
@@ -1407,7 +1407,15 @@ void GameController::OpenColourPicker()
 		virtual  ~ColourPickerCallback() {}
 		void ColourPicked(ui::Colour colour) override
 		{
-			c->SetColour(colour);
+			int activeMenu = c->gameModel->GetActiveMenu();
+			if (activeMenu == SC_BACKGROUND_COLOR)
+			{
+				Simulation* sim = c->gameModel->GetSimulation();
+				pixel backgroundColour = PIXRGB(colour.Red, colour.Green, colour.Blue);
+				sim->background = backgroundColour;
+			}
+			else
+				c->SetColour(colour);
 		}
 	};
 	new ColourPickerActivity(gameModel->GetColourSelectorColour(), new ColourPickerCallback(this));

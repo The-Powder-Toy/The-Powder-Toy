@@ -136,9 +136,17 @@ std::vector<background> LoadBackgrounds()
 {
 	return
 	std::vector<background>{
+		{PIXPACK(0x000000), 0, 0, Renderer::WallIcon, String("BLACK"),           "BLACK_BACKGROUND",   String("Black Background")},
+		{PIXPACK(0xD3D3D3), 0, 0, Renderer::WallIcon, String("GREY"),           "GREY_BACKGROUND",   String("Grey Background")},
+		{PIXPACK(0x654321), 0, 0, Renderer::WallIcon, String("BROWN"),           "BROWN_BACKGROUND",   String("Brown Background")},
+		{PIXPACK(0xFFFFFF), 0, 0, Renderer::WallIcon, String("WHITE"), 		   "WHITE_BACKGROUND", String("White Background")},
 		{PIXPACK(0xFF0000), 0, 0, Renderer::WallIcon, String("RED"),           "RED_BACKGROUND",   String("Red Background")},
+		{PIXPACK(0xFFC0CB), 0, 0, Renderer::WallIcon, String("PINK"),           "PINK_BACKGROUND",   String("Pink Background")},
+		{PIXPACK(0xFFFF00), 0, 0, Renderer::WallIcon, String("YELLOW"),         "YELLOW_BACKGROUND",  String("Yellow Background")},
 		{PIXPACK(0x00FF00), 0, 0, Renderer::WallIcon, String("GREEN"), 		   "GREEN_BACKGROUND", String("Green Background")},
-		{PIXPACK(0x0000FF), 0, 0, Renderer::WallIcon, String("BLUE"),          "BLUE_BACKGROUND",  String("Blue Background")}
+		{PIXPACK(0x00FFFF), 0, 0, Renderer::WallIcon, String("AQUA"),          "AQUA_BACKGROUND",  String("Aqua Background")},
+		{PIXPACK(0x0000FF), 0, 0, Renderer::WallIcon, String("BLUE"),          "BLUE_BACKGROUND",  String("Blue Background")},
+		{PIXPACK(0x800080), 0, 0, Renderer::WallIcon, String("PURPLE"),         "PURPLE_BACKGROUND",  String("Purple Background")},
 	};
 }
 
