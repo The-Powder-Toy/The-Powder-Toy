@@ -77,7 +77,7 @@ void Textbox::SetText(String newText)
 
 	if(cursor)
 	{
-		Graphics::PositionAtCharIndex(multiline?textLines:text, cursor, cursorPositionX, cursorPositionY);
+		textWrapper.Index2Point(textWrapper.Raw2Index(cursor), cursorPositionX, cursorPositionY);
 	}
 	else
 	{
@@ -128,7 +128,7 @@ void Textbox::OnContextMenuAction(int item)
 
 void Textbox::resetCursorPosition()
 {
-	Graphics::PositionAtCharIndex(multiline?textLines:text, cursor, cursorPositionX, cursorPositionY);
+	textWrapper.Index2Point(textWrapper.Raw2Index(cursor), cursorPositionX, cursorPositionY);
 }
 
 void Textbox::TabFocus()
@@ -169,14 +169,13 @@ void Textbox::cutSelection()
 		text = backingText;
 	}
 
-	if(multiline)
-		updateMultiline();
+	updateTextWrapper();
 	updateSelection();
-	TextPosition(text);
+	TextPosition(displayTextWrapper.WrappedText());
 
 	if(cursor)
 	{
-		Graphics::PositionAtCharIndex(multiline?textLines:text, cursor, cursorPositionX, cursorPositionY);
+		textWrapper.Index2Point(textWrapper.Raw2Index(cursor), cursorPositionX, cursorPositionY);
 	}
 	else
 	{
@@ -210,12 +209,19 @@ void Textbox::pasteIntoSelection()
 	if (!multiline && Graphics::textwidth(backingText + newText) > regionWidth)
 	{
 		int pLimit = regionWidth - Graphics::textwidth(backingText);
-		int cIndex = Graphics::CharIndexAtPosition(newText, pLimit, 0);
-
-		if (cIndex > 0)
-			newText = newText.Substr(0, cIndex);
-		else
-			newText = "";
+		int pWidth = 0;
+		auto it = newText.begin();
+		while (it != newText.end())
+		{
+			auto w = Graphics::CharWidth(*it);
+			if (pWidth + w > pLimit)
+			{
+				break;
+			}
+			pWidth += w;
+			++it;
+		}
+		newText = String(newText.begin(), it);
 	}
 
 	backingText.Insert(cursor, newText);
@@ -233,17 +239,13 @@ void Textbox::pasteIntoSelection()
 		text = backingText;
 	}
 
-	if(multiline)
-		updateMultiline();
+	updateTextWrapper();
 	updateSelection();
-	if(multiline)
-		TextPosition(textLines);
-	else
-		TextPosition(text);
+	TextPosition(displayTextWrapper.WrappedText());
 
 	if(cursor)
 	{
-		Graphics::PositionAtCharIndex(multiline?textLines:text, cursor, cursorPositionX, cursorPositionY);
+		textWrapper.Index2Point(textWrapper.Raw2Index(cursor), cursorPositionX, cursorPositionY);
 	}
 	else
 	{
@@ -455,17 +457,13 @@ void Textbox::AfterTextChange(bool changed)
 		}
 	}
 
-	if (multiline)
-		updateMultiline();
+	updateTextWrapper();
 	updateSelection();
-	if (multiline)
-		TextPosition(textLines);
-	else
-		TextPosition(text);
+	TextPosition(displayTextWrapper.WrappedText());
 
 	if(cursor)
 	{
-		Graphics::PositionAtCharIndex(multiline?textLines:text, cursor, cursorPositionX, cursorPositionY);
+		textWrapper.Index2Point(textWrapper.Raw2Index(cursor), cursorPositionX, cursorPositionY);
 	}
 	else
 	{
@@ -515,10 +513,11 @@ void Textbox::OnMouseClick(int x, int y, unsigned button)
 	if (button != SDL_BUTTON_RIGHT)
 	{
 		mouseDown = true;
-		cursor = Graphics::CharIndexAtPosition(multiline?textLines:text, x-textPosition.X, y-textPosition.Y);
+		auto index = textWrapper.Point2Index(x-textPosition.X, y-textPosition.Y);
+		cursor = index.raw_index;
 		if(cursor)
 		{
-			Graphics::PositionAtCharIndex(multiline?textLines:text, cursor, cursorPositionX, cursorPositionY);
+			textWrapper.Index2Point(index, cursorPositionX, cursorPositionY);
 		}
 		else
 		{
@@ -538,10 +537,11 @@ void Textbox::OnMouseMoved(int localx, int localy, int dx, int dy)
 {
 	if(mouseDown)
 	{
-		cursor = Graphics::CharIndexAtPosition(multiline?textLines:text, localx-textPosition.X, localy-textPosition.Y);
+		auto index = textWrapper.Point2Index(localx-textPosition.X, localy-textPosition.Y);
+		cursor = index.raw_index;
 		if(cursor)
 		{
-			Graphics::PositionAtCharIndex(multiline?textLines:text, cursor, cursorPositionX, cursorPositionY);
+			textWrapper.Index2Point(index, cursorPositionX, cursorPositionY);
 		}
 		else
 		{

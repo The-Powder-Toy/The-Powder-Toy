@@ -113,8 +113,6 @@ public:
 	static pixel *render_packed_rgb(void *image, int width, int height, int cmp_size);
 
 	//Font/text metrics
-	static int CharIndexAtPosition(String s, int positionX, int positionY);
-	static int PositionAtCharIndex(String s, int charIndex, int & positionX, int & positionY);
 	static int CharWidth(String::value_type c);
 	static int textnwidth(String s, int n);
 	static void textnpos(String s, int n, int w, int *cx, int *cy);

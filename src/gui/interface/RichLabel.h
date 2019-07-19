@@ -2,6 +2,7 @@
 
 #include "common/String.h"
 #include "Component.h"
+#include "TextWrapper.h"
 
 namespace ui
 {
@@ -16,6 +17,8 @@ namespace ui
 			String actionData;
 		};
 
+		TextWrapper displayTextWrapper;
+
 		RichLabel(Point position, Point size, String richText);
 
 		virtual ~RichLabel();
@@ -26,6 +29,7 @@ namespace ui
 
 		void Draw(const Point& screenPos) override;
 		void OnMouseClick(int x, int y, unsigned button) override;
+
 	protected:
 		String textSource;
 		String displayText;
