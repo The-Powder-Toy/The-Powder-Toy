@@ -68,7 +68,7 @@ void Label::updateTextWrapper()
 	);
 	if (autoHeight)
 	{
-		Size.Y = lines * 12 + 3;
+		Size.Y = lines * FONT_H + 3;
 	}
 }
 
@@ -245,7 +245,7 @@ void Label::Draw(const Point& screenPos)
 				screenPos.X + textPosition.X + selectionXL,
 				screenPos.Y + textPosition.Y + selectionYL - 1,
 				selectionXH - selectionXL,
-				10,
+				FONT_H - 2,
 				255, 255, 255, 255
 			);
 		}
@@ -255,16 +255,16 @@ void Label::Draw(const Point& screenPos)
 				screenPos.X + textPosition.X + selectionXL,
 				screenPos.Y + textPosition.Y + selectionYL - 1,
 				textSize.X - selectionXL,
-				10,
+				FONT_H - 2,
 				255, 255, 255, 255
 			);
 			for (int i = 1; i < selectionLineH - selectionLineL; ++i)
 			{
 				g->fillrect(
 					screenPos.X + textPosition.X,
-					screenPos.Y + textPosition.Y + selectionYL - 1 + i * 12,
+					screenPos.Y + textPosition.Y + selectionYL - 1 + i * FONT_H,
 					textSize.X,
-					10,
+					FONT_H - 2,
 					255, 255, 255, 255
 				);
 			}
@@ -272,7 +272,7 @@ void Label::Draw(const Point& screenPos)
 				screenPos.X + textPosition.X,
 				screenPos.Y + textPosition.Y + selectionYH - 1,
 				selectionXH,
-				10,
+				FONT_H - 2,
 				255, 255, 255, 255
 			);
 		}

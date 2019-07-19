@@ -2,6 +2,7 @@
 
 #include "common/String.h"
 #include "Component.h"
+#include "TextWrapper.h"
 
 namespace ui
 {
@@ -15,6 +16,8 @@ namespace ui
 			int action;
 			String actionData;
 		};
+
+		TextWrapper displayTextWrapper;
 
 		RichLabel(Point position, Point size, String richText);
 
