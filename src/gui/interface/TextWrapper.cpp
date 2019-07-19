@@ -20,6 +20,7 @@ namespace ui
 			int raw_index;
 			int clear_index;
 			bool wraps;
+			bool may_eat_space;
 		};
 		int line_width = 0;
 		std::vector<wrap_record> records;
@@ -38,7 +39,8 @@ namespace ui
 					0, // width; fools the clickmap generator into not seeing this newline
 					0, // position; the clickmap generator is fooled, this can be anything
 					0,
-					true // signal the end of the line to the clickmap generator
+					true, // signal the end of the line to the clickmap generator
+					true // allow record to eat the following space
 				});
 				line_width = 0;
 				lines += 1;
@@ -62,15 +64,22 @@ namespace ui
 			{
 			// add more supported spaces here
 			case ' ':
-				if (!wrap_if_needed(line_width))
+				wrap_if_needed(line_width);
+				if (records.size() && records.back().may_eat_space)
 				{
-					// this is in the non-wrapping branch to make spaces immediately
-					// following newline characters inserted by the wrapper disappear
+					records.back().may_eat_space = false;
+				}
+				else
+				{
+					// this is pushed only if the previous record isn't a wrapping one
+					// to make spaces immediately following newline characters inserted
+					// by the wrapper disappear
 					records.push_back(wrap_record{
 						*it,
 						char_width,
 						(int)(it - text.begin()),
 						clear_count,
+						false,
 						false
 					});
 					line_width += char_width;
@@ -86,7 +95,8 @@ namespace ui
 					max_width - line_width, // width; make it span all the way to the end
 					(int)(it - text.begin()), // position; so the clickmap generator knows where *it is
 					clear_count,
-					true // signal the end of the line to the clickmap generator
+					true, // signal the end of the line to the clickmap generator
+					false
 				});
 				lines += 1;
 				line_width = 0;
@@ -109,7 +119,8 @@ namespace ui
 							0, // width; fools the clickmap generator into not seeing this sequence
 							0, // position; the clickmap generator is fooled, this can be anything
 							0,
-							false // signal nothing to the clickmap generator
+							false, // signal nothing to the clickmap generator
+							false
 						});
 					}
 					--it;
@@ -152,7 +163,8 @@ namespace ui
 						char_width, // width; make it span all the way to the end
 						(int)(it - text.begin()), // position; so the clickmap generator knows where *it is
 						clear_count,
-						false // signal nothing to the clickmap generator
+						false, // signal nothing to the clickmap generator
+						false
 					});
 					word_width += char_width;
 					line_width += char_width;
@@ -267,22 +279,6 @@ namespace ui
 		x = regions[index.wrapped_index].pos_x;
 		y = regions[index.wrapped_index].pos_y;
 		return regions[index.wrapped_index].pos_line;
-	}
-
-	TextWrapper::Index TextWrapper::Raw2Index(int raw_index) const
-	{
-		if (raw_index < 0)
-		{
-			return IndexBegin();
-		}
-		for (auto const &region : regions)
-		{
-			if (region.index.raw_index >= raw_index)
-			{
-				return region.index;
-			}
-		}
-		return IndexEnd();
 	}
 
 	TextWrapper::Index TextWrapper::Clear2Index(int clear_index) const

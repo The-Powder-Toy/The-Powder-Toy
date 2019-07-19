@@ -77,7 +77,7 @@ void Textbox::SetText(String newText)
 
 	if(cursor)
 	{
-		textWrapper.Index2Point(textWrapper.Raw2Index(cursor), cursorPositionX, cursorPositionY);
+		textWrapper.Index2Point(textWrapper.Clear2Index(cursor), cursorPositionX, cursorPositionY);
 	}
 	else
 	{
@@ -128,7 +128,7 @@ void Textbox::OnContextMenuAction(int item)
 
 void Textbox::resetCursorPosition()
 {
-	textWrapper.Index2Point(textWrapper.Raw2Index(cursor), cursorPositionX, cursorPositionY);
+	textWrapper.Index2Point(textWrapper.Clear2Index(cursor), cursorPositionX, cursorPositionY);
 }
 
 void Textbox::TabFocus()
@@ -175,7 +175,7 @@ void Textbox::cutSelection()
 
 	if(cursor)
 	{
-		textWrapper.Index2Point(textWrapper.Raw2Index(cursor), cursorPositionX, cursorPositionY);
+		textWrapper.Index2Point(textWrapper.Clear2Index(cursor), cursorPositionX, cursorPositionY);
 	}
 	else
 	{
@@ -245,7 +245,7 @@ void Textbox::pasteIntoSelection()
 
 	if(cursor)
 	{
-		textWrapper.Index2Point(textWrapper.Raw2Index(cursor), cursorPositionX, cursorPositionY);
+		textWrapper.Index2Point(textWrapper.Clear2Index(cursor), cursorPositionX, cursorPositionY);
 	}
 	else
 	{
@@ -463,7 +463,7 @@ void Textbox::AfterTextChange(bool changed)
 
 	if(cursor)
 	{
-		textWrapper.Index2Point(textWrapper.Raw2Index(cursor), cursorPositionX, cursorPositionY);
+		textWrapper.Index2Point(textWrapper.Clear2Index(cursor), cursorPositionX, cursorPositionY);
 	}
 	else
 	{
