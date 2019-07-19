@@ -26,7 +26,7 @@ ConsoleView::ConsoleView():
 		CommandHighlighter(ConsoleView * v_) { v = v_; }
 		void TextChangedCallback(ui::Textbox * sender) override
 		{
-			sender->SetDisplayText(v->c->FormatCommand(sender->GetText()));
+			// sender->SetDisplayText(v->c->FormatCommand(sender->GetText()));
 		}
 	};
 	commandField = new ui::Textbox(ui::Point(0, Size.Y-16), ui::Point(Size.X, 16), "");
@@ -52,7 +52,7 @@ void ConsoleView::DoKeyPress(int key, int scan, bool repeat, bool shift, bool ct
 	case SDLK_KP_ENTER:
 		c->EvaluateCommand(commandField->GetText());
 		commandField->SetText("");
-		commandField->SetDisplayText("");
+		// commandField->SetDisplayText("");
 		break;
 	case SDLK_DOWN:
 		c->NextCommand();
@@ -106,7 +106,7 @@ void ConsoleView::NotifyPreviousCommandsChanged(ConsoleModel * sender)
 void ConsoleView::NotifyCurrentCommandChanged(ConsoleModel * sender)
 {
 	commandField->SetText(sender->GetCurrentCommand().Command);
-	commandField->SetDisplayText(c->FormatCommand(commandField->GetText()));
+	// commandField->SetDisplayText(c->FormatCommand(commandField->GetText()));
 }
 
 

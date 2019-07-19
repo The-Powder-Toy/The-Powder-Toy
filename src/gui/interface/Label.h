@@ -5,6 +5,7 @@
 
 #include "Component.h"
 #include "Colour.h"
+#include "TextWrapper.h"
 
 namespace ui
 {
@@ -12,31 +13,26 @@ namespace ui
 	{
 	protected:
 		String textFragments;
-		String textLines;
-		String displayText;
-		String tDisplayText;
+		String displayTextWithSelection;
 
 		String text;
 		Colour textColour;
-		int selectionIndex0;
-		int selectionIndex1;
-
-		int selectionXL;
-		int selectionXH;
-		int selectionYL;
-		int selectionYH;
-		int selectionLineL;
-		int selectionLineH;
+		TextWrapper::Index selectionIndex0;
+		TextWrapper::Index selectionIndex1;
+		TextWrapper::Index selectionIndexL;
+		TextWrapper::Index selectionIndexH;
 
 		bool multiline;
 		bool selecting;
 		bool autoHeight;
 
-		void updateMultiline();
+		void updateTextWrapper();
 		void updateSelection();
 
 		int getLowerSelectionBound();
 		int getHigherSelectionBound();
+
+		TextWrapper textWrapper;
 
 		void copySelection();
 	public:
@@ -48,7 +44,6 @@ namespace ui
 		void SetMultiline(bool status);
 
 		virtual void SetText(String text);
-		virtual void SetDisplayText(String newText);
 		virtual String GetText();
 
 		bool HasSelection();

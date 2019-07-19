@@ -9,6 +9,7 @@
 #include "gui/interface/Component.h"
 
 #include "graphics/Graphics.h"
+#include "graphics/FontReader.h"
 
 #include "Colour.h"
 
@@ -185,17 +186,49 @@ void RichLabel::Draw(const Point& screenPos)
 	g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, displayText, textColour.Red, textColour.Green, textColour.Blue, 255);
 }
 
+// don't ever use this for anything ever again eww
+int EndMySuffering(String const &displayText, int positionX, int positionY)
+{
+	int x=0, y=-2,charIndex=0,cw;
+	auto s = displayText.begin();
+	for (; s != displayText.end(); ++s)
+	{
+		if(*s == '\n') {
+			x = 0;
+			y += FONT_H;
+			charIndex++;
+			continue;
+		} else if(*s == '\b') {
+			if((displayText.end() - s) < 2) break;
+			s++;
+			charIndex+=2;
+			continue;
+		} else if (*s == '\x0F') {
+			if((displayText.end() - s) < 4) break;
+			s+=3;
+			charIndex+=4;
+			continue;
+		}
+		cw = FontReader(*s).GetWidth();
+		if ((x+(cw/2) >= positionX && y+FONT_H >= positionY) || y > positionY)
+			break;
+		x += cw;
+		charIndex++;
+	}
+	return charIndex;
+}
+
 void RichLabel::OnMouseClick(int x, int y, unsigned button)
 {
-	int cursorPosition = Graphics::CharIndexAtPosition(displayText, x-textPosition.X, y-textPosition.Y);
-	for(std::vector<RichTextRegion>::iterator iter = regions.begin(), end = regions.end(); iter != end; ++iter)
+	int cursorPosition = EndMySuffering(displayText, x-textPosition.X, y-textPosition.Y);
+	for (auto const &region : regions)
 	{
-		if((*iter).start <= cursorPosition && (*iter).finish >= cursorPosition)
+		if (region.start <= cursorPosition && region.finish >= cursorPosition)
 		{
-			switch((*iter).action)
+			switch (region.action)
 			{
-				case 'a':
-					Platform::OpenURI((*iter).actionData.ToUtf8());
+			case 'a':
+				Platform::OpenURI(region.actionData.ToUtf8());
 				break;
 			}
 		}

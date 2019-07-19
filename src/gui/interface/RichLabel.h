@@ -26,6 +26,7 @@ namespace ui
 
 		void Draw(const Point& screenPos) override;
 		void OnMouseClick(int x, int y, unsigned button) override;
+
 	protected:
 		String textSource;
 		String displayText;
