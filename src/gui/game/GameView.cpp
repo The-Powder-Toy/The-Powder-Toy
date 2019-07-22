@@ -951,6 +951,11 @@ void GameView::NotifyInfoTipChanged(GameModel * sender)
 	infoTipPresence = 120;
 }
 
+void GameView::HideIntroText()
+{
+	introText = 0;
+}
+
 void GameView::NotifySaveChanged(GameModel * sender)
 {
 	saveReuploadAllowed = true;

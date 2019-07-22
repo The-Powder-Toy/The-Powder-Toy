@@ -421,7 +421,11 @@ void EventProcess(SDL_Event event)
 			std::cerr << "Client: Invalid stamp file, " << droppedFilePath << " " << e.what() << std::endl;
 			break;
 		}
+
+		// hide the info text if its not already hidden
+		gGameController->GetView()->HideIntroText();
 		SDL_free(event.drop.file);
+		break;
 	}
 	case SDL_MOUSEBUTTONDOWN:
 		// if mouse hasn't moved yet, sdl will send 0,0. We don't want that
