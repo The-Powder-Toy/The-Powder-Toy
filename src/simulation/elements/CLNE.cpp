@@ -30,7 +30,7 @@ Element_CLNE::Element_CLNE()
 	HeatConduct = 251;
 	Description = "Clone. Duplicates any particles it touches.";
 
-	Properties = TYPE_SOLID|PROP_DRAWONCTYPE|PROP_NOCTYPEDRAW;
+	Properties = TYPE_SOLID | PROP_NOCTYPEDRAW;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
@@ -42,6 +42,7 @@ Element_CLNE::Element_CLNE()
 	HighTemperatureTransition = NT;
 
 	Update = &Element_CLNE::update;
+	CtypeDraw = &Element::ctypeDrawVInTmp;
 }
 
 //#TPT-Directive ElementHeader Element_CLNE static int update(UPDATE_FUNC_ARGS)
@@ -86,6 +87,5 @@ int Element_CLNE::update(UPDATE_FUNC_ARGS)
 	}
 	return 0;
 }
-
 
 Element_CLNE::~Element_CLNE() {}

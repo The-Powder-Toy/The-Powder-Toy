@@ -30,7 +30,7 @@ Element_DRAY::Element_DRAY()
 	HeatConduct = 0;
 	Description = "Duplicator ray. Replicates a line of particles in front of it.";
 
-	Properties = TYPE_SOLID|PROP_LIFE_DEC;
+	Properties = TYPE_SOLID | PROP_LIFE_DEC;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
@@ -42,7 +42,8 @@ Element_DRAY::Element_DRAY()
 	HighTemperatureTransition = NT;
 
 	Update = &Element_DRAY::update;
-	Graphics = NULL;
+	Graphics = nullptr;
+	CtypeDraw = &Element::ctypeDrawVInCtype;
 }
 
 //should probably be in Simulation.h

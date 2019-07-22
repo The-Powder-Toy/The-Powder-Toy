@@ -30,7 +30,7 @@ Element_PCLN::Element_PCLN()
 	HeatConduct = 251;
 	Description = "Powered clone. When activated, duplicates any particles it touches.";
 
-	Properties = TYPE_SOLID|PROP_NOCTYPEDRAW;
+	Properties = TYPE_SOLID | PROP_NOCTYPEDRAW;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
@@ -43,6 +43,7 @@ Element_PCLN::Element_PCLN()
 
 	Update = &Element_PCLN::update;
 	Graphics = &Element_PCLN::graphics;
+	CtypeDraw = &Element_PCLN::ctypeDraw;
 }
 
 //#TPT-Directive ElementHeader Element_PCLN static int update(UPDATE_FUNC_ARGS)
@@ -147,5 +148,14 @@ int Element_PCLN::graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
+//#TPT-Directive ElementHeader Element_PCLN static bool ctypeDraw(CTYPEDRAW_FUNC_ARGS)
+bool Element_PCLN::ctypeDraw(CTYPEDRAW_FUNC_ARGS)
+{
+	if (t == PT_PSCN || t == PT_NSCN)
+	{
+		return false;
+	}
+	return Element::ctypeDrawVInTmp(CTYPEDRAW_FUNC_SUBCALL_ARGS);
+}
 
 Element_PCLN::~Element_PCLN() {}

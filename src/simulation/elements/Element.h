@@ -51,12 +51,17 @@ public:
 
 	int (*Update) (UPDATE_FUNC_ARGS);
 	int (*Graphics) (GRAPHICS_FUNC_ARGS);
+	bool (*CtypeDraw) (CTYPEDRAW_FUNC_ARGS);
+
 	VideoBuffer * (*IconGenerator)(int, int, int);
 
 	Element();
 	virtual ~Element() {}
 	static int defaultGraphics(GRAPHICS_FUNC_ARGS);
 	static int legacyUpdate(UPDATE_FUNC_ARGS);
+	static bool basicCtypeDraw(CTYPEDRAW_FUNC_ARGS);
+	static bool ctypeDrawVInTmp(CTYPEDRAW_FUNC_ARGS);
+	static bool ctypeDrawVInCtype(CTYPEDRAW_FUNC_ARGS);
 
 	/** Returns a list of properties, their type and offset within the structure that can be changed
 	 by higher-level processes referring to them by name such as Lua or the property tool **/

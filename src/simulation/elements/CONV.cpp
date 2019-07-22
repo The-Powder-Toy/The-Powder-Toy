@@ -30,7 +30,7 @@ Element_CONV::Element_CONV()
 	HeatConduct = 251;
 	Description = "Converter. Converts everything into whatever it first touches.";
 
-	Properties = TYPE_SOLID|PROP_DRAWONCTYPE|PROP_NOCTYPEDRAW;
+	Properties = TYPE_SOLID | PROP_NOCTYPEDRAW;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
@@ -42,6 +42,7 @@ Element_CONV::Element_CONV()
 	HighTemperatureTransition = NT;
 
 	Update = &Element_CONV::update;
+	CtypeDraw = &Element::ctypeDrawVInCtype;
 }
 
 //#TPT-Directive ElementHeader Element_CONV static int update(UPDATE_FUNC_ARGS)
@@ -92,6 +93,5 @@ int Element_CONV::update(UPDATE_FUNC_ARGS)
 	}
 	return 0;
 }
-
 
 Element_CONV::~Element_CONV() {}

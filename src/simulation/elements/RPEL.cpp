@@ -30,7 +30,7 @@ Element_RPEL::Element_RPEL()
 	HeatConduct = 0;
 	Description = "Repels or attracts particles based on its temperature.";
 
-	Properties = TYPE_SOLID | PROP_DRAWONCTYPE;
+	Properties = TYPE_SOLID;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
@@ -42,6 +42,7 @@ Element_RPEL::Element_RPEL()
 	HighTemperatureTransition = NT;
 
 	Update = &Element_RPEL::update;
+	CtypeDraw = &Element::basicCtypeDraw;
 }
 
 //#TPT-Directive ElementHeader Element_RPEL static int update(UPDATE_FUNC_ARGS)

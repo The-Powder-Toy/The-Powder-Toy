@@ -42,9 +42,10 @@ Element::Element():
 	HighTemperature(ITH),
 	HighTemperatureTransition(NT),
 
-	Update(NULL),
+	Update(nullptr),
 	Graphics(&Element::defaultGraphics),
-	IconGenerator(NULL)
+	CtypeDraw(nullptr),
+	IconGenerator(nullptr)
 {
 }
 
@@ -228,4 +229,40 @@ int Element::defaultGraphics(GRAPHICS_FUNC_ARGS)
 		*pixel_mode |= DECO_FIRE;
 	}
 	return 1;
+}
+
+bool Element::basicCtypeDraw(CTYPEDRAW_FUNC_ARGS)
+{
+	if (sim->parts[i].type == t || sim->elements[t].Properties & PROP_NOCTYPEDRAW)
+	{
+		return false;
+	}
+	sim->parts[i].ctype = t;
+	return true;
+}
+
+bool Element::ctypeDrawVInTmp(CTYPEDRAW_FUNC_ARGS)
+{
+	if (!Element::basicCtypeDraw(CTYPEDRAW_FUNC_SUBCALL_ARGS))
+	{
+		return false;
+	}
+	if (t == PT_LIFE && v >= 0 && v < NGOL)
+	{
+		sim->parts[i].tmp = v;
+	}
+	return true;
+}
+
+bool Element::ctypeDrawVInCtype(CTYPEDRAW_FUNC_ARGS)
+{
+	if (!Element::basicCtypeDraw(CTYPEDRAW_FUNC_SUBCALL_ARGS))
+	{
+		return false;
+	}
+	if (t == PT_LIFE && v >= 0 && v < NGOL)
+	{
+		sim->parts[i].ctype |= PMAPID(v);
+	}
+	return true;
 }

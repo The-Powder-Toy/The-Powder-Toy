@@ -3113,11 +3113,6 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 			parts[index].ctype = PT_DUST;
 			return index;
 		}
-		if (p==-2 && ((elements[type].Properties & PROP_DRAWONCTYPE) || type==PT_CRAY))
-		{
-			parts[index].ctype = PT_SPRK;
-			return index;
-		}
 		if (!(type == PT_INST || (elements[type].Properties&PROP_CONDUCTS)) || parts[index].life!=0)
 			return -1;
 		if (p == -2 && type == PT_INST)
@@ -3163,44 +3158,10 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 	{
 		if (pmap[y][x])
 		{
-			//If an element has the PROP_DRAWONCTYPE property, and the element being drawn to it does not have PROP_NOCTYPEDRAW (Also some special cases), set the element's ctype
 			int drawOn = TYP(pmap[y][x]);
-			if (drawOn == t)
-				return -1;
-			if (((elements[drawOn].Properties & PROP_DRAWONCTYPE) ||
-				 (drawOn == PT_STOR && !(elements[t].Properties & TYPE_SOLID)) ||
-				 (drawOn == PT_PCLN && t != PT_PSCN && t != PT_NSCN) ||
-				 (drawOn == PT_PBCN && t != PT_PSCN && t != PT_NSCN))
-				&& (!(elements[t].Properties & PROP_NOCTYPEDRAW)))
+			if (elements[drawOn].CtypeDraw)
 			{
-				parts[ID(pmap[y][x])].ctype = t;
-				if (t == PT_LIFE && v >= 0 && v < NGOL)
-				{
-					if (drawOn == PT_CONV)
-						parts[ID(pmap[y][x])].ctype |= PMAPID(v);
-					else if (drawOn != PT_STOR)
-						parts[ID(pmap[y][x])].tmp = v;
-				}
-			}
-			else if (drawOn == PT_DTEC || (drawOn == PT_PSTN && t != PT_FRME) || drawOn == PT_DRAY)
-			{
-				parts[ID(pmap[y][x])].ctype = t;
-				if (t == PT_LIFE && v >= 0 && v < NGOL)
-				{
-					if (drawOn == PT_DTEC)
-						parts[ID(pmap[y][x])].tmp = v;
-					else if (drawOn == PT_DRAY)
-						parts[ID(pmap[y][x])].ctype |= PMAPID(v);
-				}
-			}
-			else if (drawOn == PT_CRAY)
-			{
-				parts[ID(pmap[y][x])].ctype = t;
-				if (t == PT_LIFE && v >= 0 && v < NGOL)
-					parts[ID(pmap[y][x])].ctype |= PMAPID(v);
-				if (t == PT_LIGH)
-					parts[ID(pmap[y][x])].ctype |= PMAPID(30);
-				parts[ID(pmap[y][x])].temp = elements[t].Temperature;
+				elements[drawOn].CtypeDraw(this, ID(pmap[y][x]), t, v);
 			}
 			return -1;
 		}

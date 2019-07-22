@@ -32,7 +32,7 @@ Element_LDTC::Element_LDTC()
 	HeatConduct = 0;
 	Description = "Linear detector. Scans in 8 directions for particles with its ctype and creates a spark on the opposite side.";
 
-	Properties = TYPE_SOLID | PROP_DRAWONCTYPE | PROP_NOCTYPEDRAW;
+	Properties = TYPE_SOLID | PROP_NOCTYPEDRAW;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
@@ -44,6 +44,7 @@ Element_LDTC::Element_LDTC()
 	HighTemperatureTransition = NT;
 
 	Update = &Element_LDTC::update;
+	CtypeDraw = &Element::ctypeDrawVInTmp;
 }
 
 //#TPT-Directive ElementHeader Element_LDTC static const int FLAG_INVERT_FILTER

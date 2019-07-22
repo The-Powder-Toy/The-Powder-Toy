@@ -45,6 +45,7 @@ Element_PSTN::Element_PSTN()
 
 	Update = &Element_PSTN::update;
 	Graphics = &Element_PSTN::graphics;
+	CtypeDraw = &Element_PSTN::ctypeDraw;
 }
 
 //#TPT-Directive ElementHeader Element_PSTN struct StackData
@@ -346,6 +347,16 @@ int Element_PSTN::graphics(GRAPHICS_FUNC_ARGS)
 		*colg -= 60;
 	}
 	return 0;
+}
+
+//#TPT-Directive ElementHeader Element_PSTN static bool ctypeDraw(CTYPEDRAW_FUNC_ARGS)
+bool Element_PSTN::ctypeDraw(CTYPEDRAW_FUNC_ARGS)
+{
+	if (t == PT_FRME)
+	{
+		return false;
+	}
+	return Element::basicCtypeDraw(CTYPEDRAW_FUNC_SUBCALL_ARGS);
 }
 
 Element_PSTN::~Element_PSTN() {}

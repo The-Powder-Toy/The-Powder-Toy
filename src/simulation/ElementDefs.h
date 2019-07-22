@@ -30,7 +30,6 @@
 #define PROP_LIFE_KILL_DEC	0x10000  //2^16 Kill when life value is decremented to <= zero
 #define PROP_SPARKSETTLE	0x20000  //2^17 Allow Sparks/Embers to settle
 #define PROP_NOAMBHEAT		0x40000  //2^18 Don't transfer or receive heat from ambient heat.
-#define PROP_DRAWONCTYPE	0x80000  //2^19 Set its ctype to another element if the element is drawn upon it (like what CLNE does)
 #define PROP_NOCTYPEDRAW	0x100000 // 2^20 When this element is drawn upon with, do not set ctype (like BCLN for CLNE)
 
 #define FLAG_STAGNANT	0x1
@@ -45,6 +44,9 @@
 
 #define GRAPHICS_FUNC_ARGS Renderer * ren, Particle *cpart, int nx, int ny, int *pixel_mode, int* cola, int *colr, int *colg, int *colb, int *firea, int *firer, int *fireg, int *fireb
 #define GRAPHICS_FUNC_SUBCALL_ARGS ren, cpart, nx, ny, pixel_mode, cola, colr, colg, colb, firea, firer, fireg, fireb
+
+#define CTYPEDRAW_FUNC_ARGS Simulation *sim, int i, int t, int v
+#define CTYPEDRAW_FUNC_SUBCALL_ARGS sim, i, t, v
 
 #define BOUNDS_CHECK true
 

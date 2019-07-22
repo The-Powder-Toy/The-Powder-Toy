@@ -42,6 +42,7 @@ Element_DTEC::Element_DTEC()
 	HighTemperatureTransition = NT;
 
 	Update = &Element_DTEC::update;
+	CtypeDraw = &Element::ctypeDrawVInTmp;
 }
 
 //#TPT-Directive ElementHeader Element_DTEC static int update(UPDATE_FUNC_ARGS)

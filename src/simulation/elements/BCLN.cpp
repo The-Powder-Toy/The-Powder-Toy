@@ -30,7 +30,7 @@ Element_BCLN::Element_BCLN()
 	HeatConduct = 251;
 	Description = "Breakable Clone.";
 
-	Properties = TYPE_SOLID|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC|PROP_DRAWONCTYPE|PROP_NOCTYPEDRAW;
+	Properties = TYPE_SOLID | PROP_LIFE_DEC | PROP_LIFE_KILL_DEC | PROP_NOCTYPEDRAW;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
@@ -42,6 +42,7 @@ Element_BCLN::Element_BCLN()
 	HighTemperatureTransition = NT;
 
 	Update = &Element_BCLN::update;
+	CtypeDraw = &Element::ctypeDrawVInTmp;
 }
 
 #define ADVECTION 0.1f

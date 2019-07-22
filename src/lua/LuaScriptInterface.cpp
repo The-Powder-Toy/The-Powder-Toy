@@ -75,7 +75,7 @@ String *luacon_lastError;
 String lastCode;
 
 int *lua_el_mode;
-LuaSmartRef *lua_el_func, *lua_gr_func;
+LuaSmartRef *lua_el_func, *lua_gr_func, *lua_cd_func;
 
 int getPartIndex_curIdx;
 int tptProperties; //Table for some TPT properties
@@ -332,12 +332,14 @@ tpt.partsdata = nil");
 	}
 	lua_setfield(l, tptProperties, "eltransition");
 
+	lua_cd_func_v = std::vector<LuaSmartRef>(PT_NUM, l);
+	lua_cd_func = &lua_cd_func_v[0];
 	lua_gr_func_v = std::vector<LuaSmartRef>(PT_NUM, l);
 	lua_gr_func = &lua_gr_func_v[0];
 	lua_el_func_v = std::vector<LuaSmartRef>(PT_NUM, l);
 	lua_el_func = &lua_el_func_v[0];
-	lua_el_mode = new int[PT_NUM];
-	std::fill(lua_el_mode, lua_el_mode + PT_NUM, 0);
+	lua_el_mode_v = std::vector<int>(PT_NUM, 0);
+	lua_el_mode = &lua_el_mode_v[0];
 
 	//make tpt.* a metatable
 	lua_newtable(l);
@@ -2426,7 +2428,6 @@ void LuaScriptInterface::initElementsAPI()
 	SETCONST(l, PROP_LIFE_KILL_DEC);
 	SETCONST(l, PROP_SPARKSETTLE);
 	SETCONST(l, PROP_NOAMBHEAT);
-	SETCONST(l, PROP_DRAWONCTYPE);
 	SETCONST(l, PROP_NOCTYPEDRAW);
 	SETCONST(l, FLAG_STAGNANT);
 	SETCONST(l, FLAG_SKIPMOVE);
@@ -2679,6 +2680,25 @@ int LuaScriptInterface::elements_allocate(lua_State * l)
 	return 1;
 }
 
+static bool luaCtypeDrawWrapper(CTYPEDRAW_FUNC_ARGS)
+{
+	bool ret = false;
+	if (lua_cd_func[sim->parts[i].type])
+	{
+		lua_rawgeti(luacon_ci->l, LUA_REGISTRYINDEX, lua_cd_func[sim->parts[i].type]);
+		lua_pushinteger(luacon_ci->l, i);
+		lua_pushinteger(luacon_ci->l, t);
+		lua_pushinteger(luacon_ci->l, v);
+		if (lua_pcall(luacon_ci->l, 3, 1, 0))
+		{
+			luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
+		}
+		ret = luaL_optinteger(luacon_ci->l, -1, 0);
+		lua_pop(luacon_ci->l, 1);
+	}
+	return ret;
+}
+
 int LuaScriptInterface::elements_element(lua_State * l)
 {
 	int id = luaL_checkinteger(l, 1);
@@ -2712,7 +2732,7 @@ int LuaScriptInterface::elements_element(lua_State * l)
 		{
 			lua_el_func[id].Clear();
 			lua_el_mode[id] = 0;
-			luacon_sim->elements[id].Update = NULL;
+			luacon_sim->elements[id].Update = nullptr;
 		}
 		lua_pop(l, 1);
 
@@ -2724,7 +2744,20 @@ int LuaScriptInterface::elements_element(lua_State * l)
 		else if (lua_type(l, -1) == LUA_TBOOLEAN && !lua_toboolean(l, -1))
 		{
 			lua_gr_func[id].Clear();
-			luacon_sim->elements[id].Graphics = NULL;
+			luacon_sim->elements[id].Graphics = nullptr;
+		}
+		lua_pop(l, 1);
+
+		lua_getfield(l, -1, "CtypeDraw");
+		if (lua_type(l, -1) == LUA_TFUNCTION)
+		{
+			lua_cd_func[id].Assign(-1);
+			luacon_sim->elements[id].CtypeDraw = luaCtypeDrawWrapper;
+		}
+		else if (lua_type(l, -1) == LUA_TBOOLEAN && !lua_toboolean(l, -1))
+		{
+			lua_cd_func[id].Clear();
+			luacon_sim->elements[id].CtypeDraw = nullptr;
 		}
 		lua_pop(l, 1);
 
@@ -2828,6 +2861,20 @@ int LuaScriptInterface::elements_property(lua_State * l)
 				luacon_sim->elements[id].Graphics = NULL;
 			}
 			luacon_ren->graphicscache[id].isready = 0;
+			return 0;
+		}
+		else if (propertyName == "CtypeDraw")
+		{
+			if (lua_type(l, 3) == LUA_TFUNCTION)
+			{
+				lua_cd_func[id].Assign(3);
+				luacon_sim->elements[id].CtypeDraw = luaCtypeDrawWrapper;
+			}
+			else if (lua_type(l, 3) == LUA_TBOOLEAN && !lua_toboolean(l, -1))
+			{
+				lua_cd_func[id].Clear();
+				luacon_sim->elements[id].CtypeDraw = nullptr;
+			}
 			return 0;
 		}
 		else
@@ -3732,9 +3779,10 @@ LuaScriptInterface::~LuaScriptInterface() {
 		component_and_ref.second.Clear();
 		component_and_ref.first->owner_ref = component_and_ref.second;
 	}
-	delete[] lua_el_mode;
+	lua_el_mode_v.clear();
 	lua_el_func_v.clear();
 	lua_gr_func_v.clear();
+	lua_cd_func_v.clear();
 	lua_close(l);
 	delete legacy;
 }
