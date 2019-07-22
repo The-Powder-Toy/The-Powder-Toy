@@ -355,6 +355,7 @@ bool mouseDown = false;
 
 bool calculatedInitialMouse = false, delay = false;
 bool hasMouseMoved = false;
+static GameController* gGameController;
 
 void EventProcess(SDL_Event event)
 {
@@ -396,6 +397,25 @@ void EventProcess(SDL_Event event)
 
 		hasMouseMoved = true;
 		break;
+	case SDL_DROPFILE:
+		char* droppedFilePath;
+		droppedFilePath = event.drop.file;
+		try
+		{
+			ByteString droppedFile(droppedFilePath);
+			std::vector<unsigned char> gameSaveData = Client::Ref().ReadFile(droppedFile);
+			SaveFile * newFile = new SaveFile(droppedFile);
+			GameSave * newSave = new GameSave(gameSaveData);
+			newFile->SetGameSave(newSave);
+			gGameController->LoadSaveFile(newFile);
+			delete newFile;
+		}
+		catch (ParseException & e)
+		{
+			std::cerr << "Client: Invalid stamp file, " << droppedFilePath << " " << e.what() << std::endl;
+			break;
+		}
+		SDL_free(droppedFilePath); 
 	case SDL_MOUSEBUTTONDOWN:
 		// if mouse hasn't moved yet, sdl will send 0,0. We don't want that
 		if (hasMouseMoved)
@@ -752,6 +772,7 @@ int main(int argc, char * argv[])
 #ifndef FONTEDITOR
 		gameController = new GameController();
 		engine->ShowWindow(gameController->GetView());
+		gGameController = gameController;
 
 		if(arguments["open"].length())
 		{
