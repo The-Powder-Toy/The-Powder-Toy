@@ -401,10 +401,12 @@ void EventProcess(SDL_Event event)
 	{
 		std::string droppedFilePath(event.drop.file);
 		// check if the file is a stamp file else bail
-		std::string fileExtension(".cps");
-		if (fileExtension.size() > droppedFilePath.size())
+		std::string cpsFileExtension(".cps");
+		std::string stmFileExtension(".stm");
+		if (cpsFileExtension.size() > droppedFilePath.size())
 			break;
-		if (!std::equal(fileExtension.rbegin(), fileExtension.rend(), droppedFilePath.rbegin()))
+		if (!std::equal(cpsFileExtension.rbegin(), cpsFileExtension.rend(), droppedFilePath.rbegin()) && 
+			!std::equal(stmFileExtension.rbegin(), stmFileExtension.rend(), droppedFilePath.rbegin()))
 			break;
 		ByteString droppedFile(droppedFilePath.c_str());
 		try
