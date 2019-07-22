@@ -2940,10 +2940,9 @@ unsigned int Renderer::GetColourMode()
 
 void Renderer::ResetModes()
 {
+	SetRenderMode({ RENDER_BASC, RENDER_FIRE, RENDER_SPRK });
+	SetDisplayMode({ });
 	SetColourMode(COLOUR_DEFAULT);
-	AddRenderMode(RENDER_BASC);
-	AddRenderMode(RENDER_FIRE);
-	AddRenderMode(RENDER_SPRK);
 }
 
 VideoBuffer Renderer::DumpFrame()
