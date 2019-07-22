@@ -2583,70 +2583,75 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 	memset(fire_b, 0, sizeof(fire_b));
 
 	//Set defauly display modes
-	SetColourMode(COLOUR_DEFAULT);
-	AddRenderMode(RENDER_BASC);
-	AddRenderMode(RENDER_FIRE);
-	AddRenderMode(RENDER_SPRK);
+	ResetModes();
 
 	//Render mode presets. Possibly load from config in future?
-	renderModePresets = new RenderPreset[11];
-
-	renderModePresets[0].Name = "Alternative Velocity Display";
-	renderModePresets[0].RenderModes.push_back(RENDER_EFFE);
-	renderModePresets[0].RenderModes.push_back(RENDER_BASC);
-	renderModePresets[0].DisplayModes.push_back(DISPLAY_AIRC);
-
-	renderModePresets[1].Name = "Velocity Display";
-	renderModePresets[1].RenderModes.push_back(RENDER_EFFE);
-	renderModePresets[1].RenderModes.push_back(RENDER_BASC);
-	renderModePresets[1].DisplayModes.push_back(DISPLAY_AIRV);
-
-	renderModePresets[2].Name = "Pressure Display";
-	renderModePresets[2].RenderModes.push_back(RENDER_EFFE);
-	renderModePresets[2].RenderModes.push_back(RENDER_BASC);
-	renderModePresets[2].DisplayModes.push_back(DISPLAY_AIRP);
-
-	renderModePresets[3].Name = "Persistent Display";
-	renderModePresets[3].RenderModes.push_back(RENDER_EFFE);
-	renderModePresets[3].RenderModes.push_back(RENDER_BASC);
-	renderModePresets[3].DisplayModes.push_back(DISPLAY_PERS);
-
-	renderModePresets[4].Name = "Fire Display";
-	renderModePresets[4].RenderModes.push_back(RENDER_FIRE);
-	renderModePresets[4].RenderModes.push_back(RENDER_SPRK);
-	renderModePresets[4].RenderModes.push_back(RENDER_EFFE);
-	renderModePresets[4].RenderModes.push_back(RENDER_BASC);
-
-	renderModePresets[5].Name = "Blob Display";
-	renderModePresets[5].RenderModes.push_back(RENDER_FIRE);
-	renderModePresets[5].RenderModes.push_back(RENDER_SPRK);
-	renderModePresets[5].RenderModes.push_back(RENDER_EFFE);
-	renderModePresets[5].RenderModes.push_back(RENDER_BLOB);
-
-	renderModePresets[6].Name = "Heat Display";
-	renderModePresets[6].RenderModes.push_back(RENDER_BASC);
-	renderModePresets[6].DisplayModes.push_back(DISPLAY_AIRH);
-	renderModePresets[6].ColourMode = COLOUR_HEAT;
-
-	renderModePresets[7].Name = "Fancy Display";
-	renderModePresets[7].RenderModes.push_back(RENDER_FIRE);
-	renderModePresets[7].RenderModes.push_back(RENDER_SPRK);
-	renderModePresets[7].RenderModes.push_back(RENDER_GLOW);
-	renderModePresets[7].RenderModes.push_back(RENDER_BLUR);
-	renderModePresets[7].RenderModes.push_back(RENDER_EFFE);
-	renderModePresets[7].RenderModes.push_back(RENDER_BASC);
-	renderModePresets[7].DisplayModes.push_back(DISPLAY_WARP);
-
-	renderModePresets[8].Name = "Nothing Display";
-	renderModePresets[8].RenderModes.push_back(RENDER_BASC);
-
-	renderModePresets[9].Name = "Heat Gradient Display";
-	renderModePresets[9].RenderModes.push_back(RENDER_BASC);
-	renderModePresets[9].ColourMode = COLOUR_GRAD;
-
-	renderModePresets[10].Name = "Life Gradient Display";
-	renderModePresets[10].RenderModes.push_back(RENDER_BASC);
-	renderModePresets[10].ColourMode = COLOUR_LIFE;
+	renderModePresets.push_back({
+		"Alternative Velocity Display",
+		{ RENDER_EFFE, RENDER_BASC },
+		{ DISPLAY_AIRC },
+		{ }
+	});
+	renderModePresets.push_back({
+		"Velocity Display",
+		{ RENDER_EFFE, RENDER_BASC },
+		{ DISPLAY_AIRV },
+		{ }
+	});
+	renderModePresets.push_back({
+		"Pressure Display",
+		{ RENDER_EFFE, RENDER_BASC },
+		{ DISPLAY_AIRP },
+		{ }
+	});
+	renderModePresets.push_back({
+		"Persistent Display",
+		{ RENDER_EFFE, RENDER_BASC },
+		{ DISPLAY_PERS },
+		{ }
+	});
+	renderModePresets.push_back({
+		"Fire Display",
+		{ RENDER_FIRE, RENDER_SPRK, RENDER_EFFE, RENDER_BASC },
+		{ },
+		{ }
+	});
+	renderModePresets.push_back({
+		"Blob Display",
+		{ RENDER_FIRE, RENDER_SPRK, RENDER_EFFE, RENDER_BLOB },
+		{ },
+		{ }
+	});
+	renderModePresets.push_back({
+		"Heat Display",
+		{ RENDER_BASC },
+		{ DISPLAY_AIRH },
+		{ COLOUR_HEAT }
+	});
+	renderModePresets.push_back({
+		"Fancy Display",
+		{ RENDER_FIRE, RENDER_SPRK, RENDER_GLOW, RENDER_BLUR, RENDER_EFFE, RENDER_BASC },
+		{ DISPLAY_WARP },
+		{ }
+	});
+	renderModePresets.push_back({
+		"Nothing Display",
+		{ RENDER_BASC },
+		{ },
+		{ }
+	});
+	renderModePresets.push_back({
+		"Heat Gradient Display",
+		{ RENDER_BASC },
+		{ },
+		{ COLOUR_GRAD }
+	});
+	renderModePresets.push_back({
+		"Life Gradient Display",
+		{ RENDER_BASC },
+		{ },
+		{ COLOUR_LIFE }
+	});
 
 	//Prepare the graphics cache
 	graphicscache = new gcache_item[PT_NUM];
@@ -2933,6 +2938,14 @@ unsigned int Renderer::GetColourMode()
 	return colour_mode;
 }
 
+void Renderer::ResetModes()
+{
+	SetColourMode(COLOUR_DEFAULT);
+	AddRenderMode(RENDER_BASC);
+	AddRenderMode(RENDER_FIRE);
+	AddRenderMode(RENDER_SPRK);
+}
+
 VideoBuffer Renderer::DumpFrame()
 {
 #ifdef OGLR
@@ -2952,8 +2965,6 @@ VideoBuffer Renderer::DumpFrame()
 
 Renderer::~Renderer()
 {
-	delete[] renderModePresets;
-
 #if !defined(OGLR)
 #if defined(OGLI)
 	delete[] vid;

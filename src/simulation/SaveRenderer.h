@@ -21,6 +21,8 @@ public:
 	SaveRenderer();
 	VideoBuffer * Render(GameSave * save, bool decorations = true, bool fire = true);
 	VideoBuffer * Render(unsigned char * saveData, int saveDataSize, bool decorations = true, bool fire = true);
+	void CopyModes(Renderer *source);
+	void ResetModes();
 	virtual ~SaveRenderer();
 
 private:

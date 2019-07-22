@@ -176,3 +176,14 @@ SaveRenderer::~SaveRenderer()
 {
 }
 
+void SaveRenderer::CopyModes(Renderer *source)
+{
+	ren->SetRenderMode(source->GetRenderMode());
+	ren->SetDisplayMode(source->GetDisplayMode());
+	ren->SetColourMode(source->GetColourMode());
+}
+
+void SaveRenderer::ResetModes()
+{
+	ren->ResetModes();
+}
