@@ -398,11 +398,17 @@ void EventProcess(SDL_Event event)
 		hasMouseMoved = true;
 		break;
 	case SDL_DROPFILE:
-		char* droppedFilePath;
-		droppedFilePath = event.drop.file;
+	{
+		std::string droppedFilePath(event.drop.file);
+		// check if the file is a stamp file else bail
+		std::string fileExtension(".cps");
+		if (fileExtension.size() > droppedFilePath.size())
+			break;
+		if (!std::equal(fileExtension.rbegin(), fileExtension.rend(), droppedFilePath.rbegin()))
+			break;
+		ByteString droppedFile(droppedFilePath.c_str());
 		try
 		{
-			ByteString droppedFile(droppedFilePath);
 			std::vector<unsigned char> gameSaveData = Client::Ref().ReadFile(droppedFile);
 			SaveFile * newFile = new SaveFile(droppedFile);
 			GameSave * newSave = new GameSave(gameSaveData);
@@ -415,7 +421,8 @@ void EventProcess(SDL_Event event)
 			std::cerr << "Client: Invalid stamp file, " << droppedFilePath << " " << e.what() << std::endl;
 			break;
 		}
-		SDL_free(droppedFilePath); 
+		SDL_free(event.drop.file);
+	}
 	case SDL_MOUSEBUTTONDOWN:
 		// if mouse hasn't moved yet, sdl will send 0,0. We don't want that
 		if (hasMouseMoved)
