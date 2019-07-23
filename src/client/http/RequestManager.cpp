@@ -14,19 +14,6 @@ namespace http
 	ByteString proxy;
 	ByteString user_agent;
 
-	RequestManager::RequestManager():
-		requests_added_to_multi(0),
-		requests_to_start(false),
-		requests_to_remove(false),
-		rt_shutting_down(false),
-		multi(NULL)
-	{
-	}
-
-	RequestManager::~RequestManager()
-	{
-	}
-
 	void RequestManager::Shutdown()
 	{
 		{
@@ -35,11 +22,14 @@ namespace http
 		}
 		rt_cv.notify_one();
 
-		worker_thread.join();
-		
-		curl_multi_cleanup(multi);
-		multi = NULL;
-		curl_global_cleanup();
+		if (initialized)
+		{
+			worker_thread.join();
+
+			curl_multi_cleanup(multi);
+			multi = NULL;
+			curl_global_cleanup();
+		}
 	}
 
 	void RequestManager::Initialise(ByteString Proxy)
@@ -56,6 +46,7 @@ namespace http
 		user_agent = ByteString::Build("PowderToy/", SAVE_VERSION, ".", MINOR_VERSION, " (", IDENT_PLATFORM, "; ", IDENT_BUILD, "; M", MOD_ID, ") TPTPP/", SAVE_VERSION, ".", MINOR_VERSION, ".", BUILD_NUM, IDENT_RELTYPE, ".", SNAPSHOT_ID);
 
 		worker_thread = std::thread([this]() { Worker(); });
+		initialized = true;
 	}
 
 	void RequestManager::Worker()
@@ -233,13 +224,16 @@ namespace http
 		}
 	}
 
-	void RequestManager::AddRequest(Request *request)
+	bool RequestManager::AddRequest(Request *request)
 	{
+		if (!initialized)
+			return false;
 		{
 			std::lock_guard<std::mutex> g(rt_mutex);
 			requests_to_add.insert(request);
 		}
 		rt_cv.notify_one();
+		return true;
 	}
 
 	void RequestManager::StartRequest(Request *request)

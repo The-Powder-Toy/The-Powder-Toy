@@ -114,7 +114,7 @@ public:
 	void SetMessageOfTheDay(String message);
 	String GetMessageOfTheDay();
 
-	void Initialise(ByteString proxyString);
+	void Initialise(ByteString proxyString, bool disableNetwork);
 	bool IsFirstRun();
 
 	int MakeDirectory(const char * dirname);

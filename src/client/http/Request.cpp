@@ -22,7 +22,11 @@ namespace http
 #endif
 	{
 		easy = curl_easy_init();
-		RequestManager::Ref().AddRequest(this);
+		if (!RequestManager::Ref().AddRequest(this))
+		{
+			status = 604;
+			rm_finished = true;
+		}
 	}
 
 	Request::~Request()

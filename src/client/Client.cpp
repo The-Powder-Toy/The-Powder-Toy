@@ -102,7 +102,7 @@ Client::Client():
 		firstRun = true;
 }
 
-void Client::Initialise(ByteString proxyString)
+void Client::Initialise(ByteString proxyString, bool disableNetwork)
 {
 	if (GetPrefBool("version.update", false))
 	{
@@ -110,7 +110,8 @@ void Client::Initialise(ByteString proxyString)
 		update_finish();
 	}
 
-	http::RequestManager::Ref().Initialise(proxyString);
+	if (!disableNetwork)
+		http::RequestManager::Ref().Initialise(proxyString);
 
 	//Read stamps library
 	std::ifstream stampsLib;
