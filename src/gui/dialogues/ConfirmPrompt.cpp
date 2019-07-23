@@ -152,7 +152,7 @@ bool ConfirmPrompt::Blocking(String title, String message, String buttonText)
 	};
 	bool result;
 	new ConfirmPrompt(title, message, buttonText, new BlockingPromptCallback(result));
-	EngineProcess();
+	EngineProcess(nullptr);
 	return result;
 }
 

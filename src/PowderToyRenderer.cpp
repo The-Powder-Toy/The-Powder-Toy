@@ -15,9 +15,10 @@
 
 #include "client/GameSave.h"
 #include "simulation/Simulation.h"
+#include "gui/game/GameController.h"
 
 
-void EngineProcess() {}
+void EngineProcess(GameController* gameController) {}
 void ClipboardPush(ByteString) {}
 ByteString ClipboardPull() { return ""; }
 int GetModifiers() { return 0; }

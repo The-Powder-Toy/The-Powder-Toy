@@ -355,9 +355,8 @@ bool mouseDown = false;
 
 bool calculatedInitialMouse = false, delay = false;
 bool hasMouseMoved = false;
-static GameController* gGameController;
 
-void EventProcess(SDL_Event event)
+void EventProcess(SDL_Event event, GameController* gameController)
 {
 	switch (event.type)
 	{
@@ -399,6 +398,8 @@ void EventProcess(SDL_Event event)
 		break;
 	case SDL_DROPFILE:
 	{
+		if (gameController == nullptr)
+			break;
 		std::string droppedFilePath(event.drop.file);
 		// check if the file is a stamp file else bail
 		std::string cpsFileExtension(".cps");
@@ -415,7 +416,7 @@ void EventProcess(SDL_Event event)
 			SaveFile * newFile = new SaveFile(droppedFile);
 			GameSave * newSave = new GameSave(gameSaveData);
 			newFile->SetGameSave(newSave);
-			gGameController->LoadSaveFile(newFile);
+			gameController->LoadSaveFile(newFile);
 			delete newFile;
 		}
 		catch (ParseException & e)
@@ -425,7 +426,7 @@ void EventProcess(SDL_Event event)
 		}
 
 		// hide the info text if its not already hidden
-		gGameController->GetView()->HideIntroText();
+		gameController->GetView()->HideIntroText();
 		SDL_free(event.drop.file);
 		break;
 	}
@@ -518,7 +519,7 @@ void DoubleScreenDialog()
 	}
 }
 
-void EngineProcess()
+void EngineProcess(GameController* gameController)
 {
 	double frameTimeAvg = 0.0f, correctedFrameTimeAvg = 0.0f;
 	SDL_Event event;
@@ -529,7 +530,7 @@ void EngineProcess()
 		event.type = 0;
 		while (SDL_PollEvent(&event))
 		{
-			EventProcess(event);
+			EventProcess(event, gameController);
 			event.type = 0; //Clear last event
 		}
 		if(engine->Broken()) { engine->UnBreak(); break; }
@@ -785,7 +786,6 @@ int main(int argc, char * argv[])
 #ifndef FONTEDITOR
 		gameController = new GameController();
 		engine->ShowWindow(gameController->GetView());
-		gGameController = gameController;
 
 		if(arguments["open"].length())
 		{
@@ -877,7 +877,7 @@ int main(int argc, char * argv[])
 		engine->ShowWindow(new FontEditor(argv[1]));
 #endif
 
-		EngineProcess();
+		EngineProcess(gameController);
 
 		SaveWindowPosition();
 
