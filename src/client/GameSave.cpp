@@ -1172,9 +1172,9 @@ void GameSave::readOPS(char * data, int dataLength)
 
 						switch (particles[newIndex].type)
 						{
-							// List of elements that save pavg with a multiplicative bias of 2**6
-							// (or not at all if pressure is not saved).
-							// If you change this list, change it in Simulation::Load and GameSave::serialiseOPS too!
+						// List of elements that save pavg with a multiplicative bias of 2**6
+						// (or not at all if pressure is not saved).
+						// If you change this list, change it in Simulation::Load and GameSave::serialiseOPS too!
 						case PT_QRTZ:
 						case PT_GLAS:
 						case PT_TUNG:
@@ -2322,16 +2322,14 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 					float pavg1 = particles[i].pavg[1];
 					switch (particles[i].type)
 					{
-						// List of elements that save pavg with a multiplicative bias of 2**6
-						// (or not at all if pressure is not saved).
-						// If you change this list, change it in Simulation::Load and GameSave::readOPS too!
+					// List of elements that save pavg with a multiplicative bias of 2**6
+					// (or not at all if pressure is not saved).
+					// If you change this list, change it in Simulation::Load and GameSave::readOPS too!
 					case PT_QRTZ:
 					case PT_GLAS:
 					case PT_TUNG:
 						if (!hasPressure)
-						{
 							break;
-						}
 						pavg0 *= 64;
 						pavg1 *= 64;
 						// fallthrough!

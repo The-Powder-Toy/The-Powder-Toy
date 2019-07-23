@@ -1032,9 +1032,7 @@ int LuaScriptInterface::simulation_partProperty(lua_State * l)
 	{
 		int fieldID = lua_tointeger(l, 2);
 		if (fieldID < 0 || fieldID >= (int)properties.size())
-		{
 			return luaL_error(l, "Invalid field ID (%d)", fieldID);
-		}
 		prop = properties.begin() + fieldID;
 	}
 	else if (lua_type(l, 2) == LUA_TSTRING)
@@ -1044,9 +1042,7 @@ int LuaScriptInterface::simulation_partProperty(lua_State * l)
 			return p.Name == fieldName;
 		});
 		if (prop == properties.end())
-		{
 			return luaL_error(l, "Unknown field (%s)", fieldName.c_str());
-		}
 	}
 	else
 	{

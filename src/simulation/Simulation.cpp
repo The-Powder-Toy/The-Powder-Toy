@@ -241,9 +241,9 @@ int Simulation::Load(GameSave * save, bool includePressure, int fullX, int fullY
 			soapList.insert(std::pair<unsigned int, unsigned int>(n, i));
 			break;
 
-			// List of elements that load pavg with a multiplicative bias of 2**6
-			// (or not at all if pressure is not loaded).
-			// If you change this list, change it in GameSave::serialiseOPS and GameSave::readOPS too!
+		// List of elements that load pavg with a multiplicative bias of 2**6
+		// (or not at all if pressure is not loaded).
+		// If you change this list, change it in GameSave::serialiseOPS and GameSave::readOPS too!
 		case PT_QRTZ:
 		case PT_GLAS:
 		case PT_TUNG:
