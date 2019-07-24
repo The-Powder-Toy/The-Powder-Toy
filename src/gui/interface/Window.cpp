@@ -162,6 +162,11 @@ void Window::DoFocus()
 	OnFocus();
 }
 
+void Window::DoFileDrop(ByteString filename)
+{
+	OnFileDrop(filename);
+}
+
 void Window::DoDraw()
 {
 	OnDraw();

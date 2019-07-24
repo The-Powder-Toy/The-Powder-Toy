@@ -25,6 +25,7 @@
 
 #include "gui/Style.h"
 #include "gui/dialogues/ConfirmPrompt.h"
+#include "gui/dialogues/ErrorMessage.h"
 #include "gui/dialogues/InformationMessage.h"
 #include "gui/interface/Button.h"
 #include "gui/interface/Colour.h"
@@ -1703,6 +1704,29 @@ void GameView::OnBlur()
 	isMouseDown = false;
 	drawMode = DrawPoints;
 	c->Blur();
+}
+
+void GameView::OnFileDrop(ByteString filename)
+{
+	if (!(filename.EndsWith(".cps") || filename.EndsWith(".stm")))
+	{
+		new ErrorMessage("Error loading save", "Dropped file is not a TPT save file (.cps or .stm format)");
+		return;
+	}
+
+	SaveFile *saveFile = Client::Ref().LoadSaveFile(filename);
+	if (!saveFile)
+		return;
+	if (saveFile->GetError().length())
+	{
+		new ErrorMessage("Error loading save", "Dropped save file could not be loaded: " + saveFile->GetError());
+		return;
+	}
+	c->LoadSaveFile(saveFile);
+	delete saveFile;
+
+	// hide the info text if it's not already hidden
+	introText = 0;
 }
 
 void GameView::OnTick(float dt)

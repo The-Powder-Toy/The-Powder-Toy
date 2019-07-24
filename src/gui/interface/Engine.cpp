@@ -313,3 +313,9 @@ void Engine::onClose()
 	if (state_)
 		state_->DoExit();
 }
+
+void Engine::onFileDrop(ByteString filename)
+{
+	if (state_)
+		state_->DoFileDrop(filename);
+}

@@ -400,6 +400,10 @@ void EventProcess(SDL_Event event)
 
 		hasMouseMoved = true;
 		break;
+	case SDL_DROPFILE:
+		engine->onFileDrop(event.drop.file);
+		SDL_free(event.drop.file);
+		break;
 	case SDL_MOUSEBUTTONDOWN:
 		// if mouse hasn't moved yet, sdl will send 0,0. We don't want that
 		if (hasMouseMoved)

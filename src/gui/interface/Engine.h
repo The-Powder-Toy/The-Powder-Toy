@@ -34,6 +34,7 @@ namespace ui
 		void onTextInput(String text);
 		void onResize(int newWidth, int newHeight);
 		void onClose();
+		void onFileDrop(ByteString filename);
 
 		void Begin(int width, int height);
 		inline bool Running() { return running_; }
