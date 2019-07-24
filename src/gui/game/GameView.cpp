@@ -1618,6 +1618,8 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 		if (stampList.size())
 		{
 			SaveFile *saveFile = Client::Ref().GetStamp(stampList[0]);
+			if (!saveFile || !saveFile->GetGameSave())
+				break;
 			c->LoadStamp(saveFile->GetGameSave());
 			delete saveFile;
 			selectPoint1 = selectPoint2 = mousePosition;
