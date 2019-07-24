@@ -17,7 +17,7 @@
 #include "simulation/Simulation.h"
 
 
-void EngineProcess(GameController* gameController) {}
+void EngineProcess() {}
 void ClipboardPush(ByteString) {}
 ByteString ClipboardPull() { return ""; }
 int GetModifiers() { return 0; }
