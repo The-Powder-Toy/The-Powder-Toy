@@ -66,7 +66,7 @@ void ErrorMessage::Blocking(String title, String message)
 		virtual ~BlockingDismissCallback() { }
 	};
 	new ErrorMessage(title, message, new BlockingDismissCallback());
-	EngineProcess(nullptr);
+	EngineProcess();
 }
 
 void ErrorMessage::OnDraw()

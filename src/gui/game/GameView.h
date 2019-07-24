@@ -151,7 +151,6 @@ public:
 	ui::Point GetPlaceSaveOffset() { return placeSaveOffset; }
 	void SetPlaceSaveOffset(ui::Point offset) { placeSaveOffset = offset; }
 	int Record(bool record);
-	void HideIntroText();
 
 	//all of these are only here for one debug lines
 	bool GetMouseDown() { return isMouseDown; }
@@ -197,6 +196,7 @@ public:
 	void OnTick(float dt) override;
 	void OnDraw() override;
 	void OnBlur() override;
+	void OnFileDrop(ByteString filename) override;
 
 	//Top-level handlers, for Lua interface
 	void DoExit() override;

@@ -59,6 +59,7 @@ namespace ui
 		virtual void DoDraw();
 		virtual void DoFocus();
 		virtual void DoBlur();
+		virtual void DoFileDrop(ByteString filename);
 
 		virtual void DoMouseMove(int x, int y, int dx, int dy);
 		virtual void DoMouseDown(int x, int y, unsigned button);
@@ -94,6 +95,7 @@ namespace ui
 		virtual void OnDraw() {}
 		virtual void OnFocus() {}
 		virtual void OnBlur() {}
+		virtual void OnFileDrop(ByteString filename) {}
 
 		virtual void OnTryExit(ExitMethod);
 		virtual void OnTryOkay(OkayMethod);

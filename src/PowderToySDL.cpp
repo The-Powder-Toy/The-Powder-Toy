@@ -356,7 +356,7 @@ bool mouseDown = false;
 bool calculatedInitialMouse = false, delay = false;
 bool hasMouseMoved = false;
 
-void EventProcess(SDL_Event event, GameController* gameController)
+void EventProcess(SDL_Event event)
 {
 	switch (event.type)
 	{
@@ -397,39 +397,9 @@ void EventProcess(SDL_Event event, GameController* gameController)
 		hasMouseMoved = true;
 		break;
 	case SDL_DROPFILE:
-	{
-		if (gameController == nullptr)
-			break;
-		std::string droppedFilePath(event.drop.file);
-		// check if the file is a stamp file else bail
-		std::string cpsFileExtension(".cps");
-		std::string stmFileExtension(".stm");
-		if (cpsFileExtension.size() > droppedFilePath.size())
-			break;
-		if (!std::equal(cpsFileExtension.rbegin(), cpsFileExtension.rend(), droppedFilePath.rbegin()) && 
-			!std::equal(stmFileExtension.rbegin(), stmFileExtension.rend(), droppedFilePath.rbegin()))
-			break;
-		ByteString droppedFile(droppedFilePath.c_str());
-		try
-		{
-			std::vector<unsigned char> gameSaveData = Client::Ref().ReadFile(droppedFile);
-			SaveFile * newFile = new SaveFile(droppedFile);
-			GameSave * newSave = new GameSave(gameSaveData);
-			newFile->SetGameSave(newSave);
-			gameController->LoadSaveFile(newFile);
-			delete newFile;
-		}
-		catch (ParseException & e)
-		{
-			std::cerr << "Client: Invalid stamp file, " << droppedFilePath << " " << e.what() << std::endl;
-			break;
-		}
-
-		// hide the info text if its not already hidden
-		gameController->GetView()->HideIntroText();
+		engine->onFileDrop(event.drop.file);
 		SDL_free(event.drop.file);
 		break;
-	}
 	case SDL_MOUSEBUTTONDOWN:
 		// if mouse hasn't moved yet, sdl will send 0,0. We don't want that
 		if (hasMouseMoved)
@@ -519,7 +489,7 @@ void DoubleScreenDialog()
 	}
 }
 
-void EngineProcess(GameController* gameController)
+void EngineProcess()
 {
 	double frameTimeAvg = 0.0f, correctedFrameTimeAvg = 0.0f;
 	SDL_Event event;
@@ -530,7 +500,7 @@ void EngineProcess(GameController* gameController)
 		event.type = 0;
 		while (SDL_PollEvent(&event))
 		{
-			EventProcess(event, gameController);
+			EventProcess(event);
 			event.type = 0; //Clear last event
 		}
 		if(engine->Broken()) { engine->UnBreak(); break; }
@@ -877,7 +847,7 @@ int main(int argc, char * argv[])
 		engine->ShowWindow(new FontEditor(argv[1]));
 #endif
 
-		EngineProcess(gameController);
+		EngineProcess();
 
 		SaveWindowPosition();
 

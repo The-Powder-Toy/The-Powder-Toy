@@ -15,7 +15,6 @@
 
 #include "client/GameSave.h"
 #include "simulation/Simulation.h"
-#include "gui/game/GameController.h"
 
 
 void EngineProcess(GameController* gameController) {}

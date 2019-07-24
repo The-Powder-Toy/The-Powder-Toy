@@ -99,7 +99,7 @@ String TextPrompt::Blocking(String title, String message, String text, String pl
 		virtual ~BlockingTextCallback() { }
 	};
 	new TextPrompt(title, message, text, placeholder, multiline, new BlockingTextCallback(returnString));
-	EngineProcess(nullptr);
+	EngineProcess();
 
 	return returnString;
 }

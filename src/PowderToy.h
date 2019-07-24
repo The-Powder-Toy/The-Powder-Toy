@@ -1,9 +1,8 @@
 #pragma once
 
 #include "common/String.h"
-#include "gui/game/GameController.h"
 
-void EngineProcess(GameController* gameController);
+void EngineProcess();
 void ClipboardPush(ByteString text);
 ByteString ClipboardPull();
 int GetModifiers();

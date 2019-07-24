@@ -147,6 +147,7 @@ public:
 	std::vector<std::pair<ByteString, int> > * GetTags(int start, int count, String query, int & resultCount);
 
 	SaveInfo * GetSave(int saveID, int saveDate);
+	SaveFile * LoadSaveFile(ByteString filename);
 
 	RequestStatus DeleteSave(int saveID);
 	RequestStatus ReportSave(int saveID, String message);

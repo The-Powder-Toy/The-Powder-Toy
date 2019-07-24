@@ -1024,23 +1024,10 @@ void Client::MoveStampToFront(ByteString stampID)
 SaveFile * Client::GetStamp(ByteString stampID)
 {
 	ByteString stampFile = ByteString(STAMPS_DIR PATH_SEP + stampID + ".stm");
-	SaveFile * file = new SaveFile(stampID);
-	if (!FileExists(stampFile))
-		stampFile = stampID;
-	if (FileExists(stampFile))
-	{
-		try
-		{
-			GameSave * tempSave = new GameSave(ReadFile(stampFile));
-			file->SetGameSave(tempSave);
-		}
-		catch (ParseException & e)
-		{
-			std::cerr << "Client: Invalid stamp file, " << stampID << " " << e.what() << std::endl;
-			file->SetLoadingError(ByteString(e.what()).FromUtf8());
-		}
-	}
-	return file;
+	SaveFile *saveFile = LoadSaveFile(stampFile);
+	if (!saveFile)
+		saveFile = LoadSaveFile(stampID);
+	return saveFile;
 }
 
 void Client::DeleteStamp(ByteString stampID)
@@ -1479,6 +1466,24 @@ SaveInfo * Client::GetSave(int saveID, int saveDate)
 		lastError = http::StatusText(dataStatus);
 	}
 	return NULL;
+}
+
+SaveFile * Client::LoadSaveFile(ByteString filename)
+{
+	if (!FileExists(filename))
+		return nullptr;
+	SaveFile * file = new SaveFile(filename);
+	try
+	{
+		GameSave * tempSave = new GameSave(ReadFile(filename));
+		file->SetGameSave(tempSave);
+	}
+	catch (ParseException & e)
+	{
+		std::cerr << "Client: Invalid save file '" << filename << "': " << e.what() << std::endl;
+		file->SetLoadingError(ByteString(e.what()).FromUtf8());
+	}
+	return file;
 }
 
 std::vector<std::pair<ByteString, int> > * Client::GetTags(int start, int count, String query, int & resultCount)
