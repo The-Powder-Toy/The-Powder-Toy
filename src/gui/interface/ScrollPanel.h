@@ -24,6 +24,7 @@ namespace ui
 
 		int GetScrollLimit();
 		void SetScrollPosition(int position);
+		inline float GetScrollPositionY() const { return offsetY; }
 
 		void Draw(const Point& screenPos) override;
 		void XTick(float dt) override;

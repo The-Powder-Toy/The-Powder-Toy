@@ -181,10 +181,12 @@ public:
 	std::vector<int> GetPrefIntegerArray(ByteString prop);
 	std::vector<unsigned int> GetPrefUIntegerArray(ByteString prop);
 	std::vector<bool> GetPrefBoolArray(ByteString prop);
+	Json::Value GetPrefJson(ByteString prop, Json::Value defaultValue = Json::nullValue);
 
 	void SetPref(ByteString prop, Json::Value value);
 	void SetPref(ByteString property, std::vector<Json::Value> value);
 	void SetPrefUnicode(ByteString prop, String value);
+	void ClearPref(ByteString prop);
 };
 
 #endif // CLIENT_H

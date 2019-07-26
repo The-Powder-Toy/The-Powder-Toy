@@ -6,6 +6,7 @@
 #include "common/String.h"
 #include "gui/interface/Window.h"
 #include "simulation/Sample.h"
+#include "gui/options/keyboardbindings/KeyboardBindingsModel.h"
 
 enum DrawMode
 {
@@ -114,6 +115,8 @@ private:
 
 	SimulationSample sample;
 
+	KeyboardBindingsModel keyboardBindingModel;
+
 	void updateToolButtonScroll();
 
 	void SetSaveButtonTooltips();
@@ -182,6 +185,7 @@ public:
 	void NotifyInfoTipChanged(GameModel * sender);
 	void NotifyQuickOptionsChanged(GameModel * sender);
 	void NotifyLastToolChanged(GameModel * sender);
+	void NotifyKeyBindingsChanged(GameModel * sender);
 
 
 	void ToolTip(ui::Point senderPosition, String toolTip) override;

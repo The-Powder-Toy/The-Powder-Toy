@@ -208,6 +208,7 @@ public:
 	void SetMouseClickRequired(bool mouseClickRequired);
 	bool GetIncludePressure();
 	void SetIncludePressure(bool includePressure);
+	void NotifyKeyBindingsChanged();
 
 	std::vector<Notification*> GetNotifications();
 	void AddNotification(Notification * notification);
