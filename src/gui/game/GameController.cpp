@@ -160,7 +160,7 @@ public:
 			if (file->GetError().length())
 				new ErrorMessage("Error loading stamp", file->GetError());
 			else if (cc->localBrowser->GetMoveToFront())
-				Client::Ref().MoveStampToFront(file->GetName());
+				Client::Ref().MoveStampToFront(file->GetDisplayName().ToUtf8());
 			cc->LoadStamp(file->GetGameSave());
 		}
 	}

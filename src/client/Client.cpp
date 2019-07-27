@@ -1028,6 +1028,8 @@ SaveFile * Client::GetStamp(ByteString stampID)
 	SaveFile *saveFile = LoadSaveFile(stampFile);
 	if (!saveFile)
 		saveFile = LoadSaveFile(stampID);
+	else
+		saveFile->SetDisplayName(stampID.FromUtf8());
 	return saveFile;
 }
 
@@ -1123,6 +1125,7 @@ void Client::RescanStamps()
 				stampIDs.push_front(name.Substr(0, 10));
 		}
 		closedir(directory);
+		stampIDs.sort(std::greater<ByteString>());
 		updateStamps();
 	}
 }
