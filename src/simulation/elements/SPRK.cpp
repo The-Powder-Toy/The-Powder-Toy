@@ -228,18 +228,19 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 					}
 					continue;
 				case PT_LITH:
-				{
-					if (sender == PT_INST && parts[ID(r)].life == 10 && parts[ID(r)].tmp < parts[ID(r)].temp - 273.15f)
+					if (pavg != PT_INSL)
 					{
-						parts[ID(r)].tmp += 1;
+						if (sender == PT_INST && parts[ID(r)].life == 10 && parts[ID(r)].tmp < parts[ID(r)].temp - 273.15f)
+						{
+							parts[ID(r)].tmp += 1;
+						}
 					}
-				}
-				if (parts[i].life < 4)
-				{
-					if (sender == PT_NSCN) parts[ID(r)].life = 10;
-					else if (sender == PT_PSCN && parts[ID(r)].life >= 10) parts[ID(r)].life = 9;
-				}
-				continue;
+					if (parts[i].life < 4)
+					{
+						if (sender == PT_NSCN) parts[ID(r)].life = 10;
+						else if (sender == PT_PSCN && parts[ID(r)].life >= 10) parts[ID(r)].life = 9;
+					}
+					continue;
 				case PT_PPIP:
 					if (parts[i].life == 3 && pavg!=PT_INSL)
 					{
