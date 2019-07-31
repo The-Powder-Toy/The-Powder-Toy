@@ -133,7 +133,7 @@ int PIXELMETHODS_CLASS::drawchar(int x, int y, String::value_type c, int r, int 
 {
 	unsigned char *rp = font_data + font_ptrs[c];
 	int w = *(rp++);
-	VideoBuffer texture(w, 12);
+	VideoBuffer texture(w, FONT_H);
 	texture.SetCharacter(0, 0, c, r, g, b, a);
 
 	glEnable(GL_TEXTURE_2D);
@@ -162,7 +162,7 @@ int PIXELMETHODS_CLASS::addchar(int x, int y, String::value_type c, int r, int g
 {
 	unsigned char *rp = font_data + font_ptrs[c];
 	int w = *(rp++);
-	VideoBuffer texture(w, 12);
+	VideoBuffer texture(w, FONT_H);
 	texture.AddCharacter(0, 0, c, r, g, b, a);
 
 	glEnable(GL_TEXTURE_2D);
