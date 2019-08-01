@@ -3104,7 +3104,7 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 	if (t>=0 && t<PT_NUM && !elements[t].Enabled)
 		return -1;
 
-	if (t==PT_SPRK)
+	if (t==PT_SPRK && !elements[TYP(pmap[y][x])].CtypeDraw)
 	{
 		int type = TYP(pmap[y][x]);
 		int index = ID(pmap[y][x]);
