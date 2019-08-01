@@ -5219,11 +5219,6 @@ void Simulation::BeforeSim()
 			gravp = grav->gravp;
 			gravmap = grav->gravmap;
 		}
-		if(gravWallChanged)
-		{
-			grav->gravity_mask();
-			gravWallChanged = false;
-		}
 		if(emp_decor>0)
 			emp_decor -= emp_decor/25+2;
 		if(emp_decor < 0)
@@ -5239,6 +5234,12 @@ void Simulation::BeforeSim()
 	}
 	sandcolour = (int)(20.0f*sin((float)sandcolour_frame*(M_PI/180.0f)));
 	sandcolour_frame = (sandcolour_frame+1)%360;
+
+	if (gravWallChanged)
+	{
+		grav->gravity_mask();
+		gravWallChanged = false;
+	}
 
 	if (debug_currentParticle == 0)
 		RecalcFreeParticles(true);
