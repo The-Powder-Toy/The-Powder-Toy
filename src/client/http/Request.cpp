@@ -157,6 +157,14 @@ namespace http
 #endif
 
 			curl_easy_setopt(easy, CURLOPT_FOLLOWLOCATION, 1L);
+#ifdef ENFORCE_HTTPS
+			curl_easy_setopt(easy, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
+			curl_easy_setopt(easy, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTPS);
+#else
+			curl_easy_setopt(easy, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS | CURLPROTO_HTTP);
+			curl_easy_setopt(easy, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTPS | CURLPROTO_HTTP);
+#endif
+			curl_easy_setopt(easy, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
 			curl_easy_setopt(easy, CURLOPT_MAXREDIRS, 10L);
 
 			curl_easy_setopt(easy, CURLOPT_ERRORBUFFER, error_buffer);

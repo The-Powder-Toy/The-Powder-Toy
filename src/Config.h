@@ -89,6 +89,7 @@
 #define SERVER "powdertoy.co.uk"
 #define STATICSCHEME "https://"
 #define STATICSERVER "static.powdertoy.co.uk"
+#define ENFORCE_HTTPS
 
 #define LOCAL_SAVE_DIR "Saves"
 
