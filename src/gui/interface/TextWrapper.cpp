@@ -181,7 +181,6 @@ namespace ui
 					case '-':
 					case '!':
 						word_begins_at = -1; // reset word state
-						wrap_if_needed(line_width);
 						break;
 					}
 				}
