@@ -16,6 +16,10 @@
 # define REQUEST_USE_CURL_MIMEPOST
 #endif
 
+#if defined(CURL_AT_LEAST_VERSION) && CURL_AT_LEAST_VERSION(7, 61, 0)
+# define REQUEST_USE_CURL_TLSV13CL
+#endif
+
 namespace http
 {
 	class RequestManager;
