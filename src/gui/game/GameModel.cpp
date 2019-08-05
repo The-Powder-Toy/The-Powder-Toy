@@ -174,7 +174,7 @@ GameModel::~GameModel()
 	Client::Ref().SetPref("Renderer.DebugMode", ren->debugLines); //These two should always be equivalent, even though they are different things
 
 	Client::Ref().SetPref("Simulation.EdgeMode", edgeMode);
-	Client::Ref().SetPref("Simulation.NewtonianGravity", sim->grav->ngrav_enable);
+	Client::Ref().SetPref("Simulation.NewtonianGravity", sim->grav->IsEnabled());
 	Client::Ref().SetPref("Simulation.AmbientHeat", sim->aheat_enable);
 	Client::Ref().SetPref("Simulation.PrettyPowder", sim->pretty_powder);
 
@@ -719,11 +719,11 @@ void GameModel::SetSaveFile(SaveFile * newSave, bool invertIncludePressure)
 		sim->legacy_enable = saveData->legacyEnable;
 		sim->water_equal_test = saveData->waterEEnabled;
 		sim->aheat_enable = saveData->aheatEnable;
-		if(saveData->gravityEnable && !sim->grav->ngrav_enable)
+		if(saveData->gravityEnable && !sim->grav->IsEnabled())
 		{
 			sim->grav->start_grav_async();
 		}
-		else if(!saveData->gravityEnable && sim->grav->ngrav_enable)
+		else if(!saveData->gravityEnable && sim->grav->IsEnabled())
 		{
 			sim->grav->stop_grav_async();
 		}
@@ -995,7 +995,7 @@ void GameModel::SetNewtonianGravity(bool newtonainGravity)
 
 bool GameModel::GetNewtonianGrvity()
 {
-    return sim->grav->ngrav_enable;
+    return sim->grav->IsEnabled();
 }
 
 void GameModel::ShowGravityGrid(bool showGrid)

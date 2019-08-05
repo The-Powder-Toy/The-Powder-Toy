@@ -1226,7 +1226,7 @@ int luatpt_gravity(lua_State* l)
 	int acount = lua_gettop(l);
 	if (acount == 0)
 	{
-		lua_pushinteger(l, luacon_sim->grav->ngrav_enable);
+		lua_pushinteger(l, luacon_sim->grav->IsEnabled() ? 1 : 0);
 		return 1;
 	}
 	int gravstate = luaL_checkint(l, 1);

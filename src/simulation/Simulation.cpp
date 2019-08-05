@@ -492,7 +492,7 @@ void Simulation::SaveSimOptions(GameSave * gameSave)
 	gameSave->edgeMode = edgeMode;
 	gameSave->legacyEnable = legacy_enable;
 	gameSave->waterEEnabled = water_equal_test;
-	gameSave->gravityEnable = grav->ngrav_enable;
+	gameSave->gravityEnable = grav->IsEnabled();
 	gameSave->aheatEnable = aheat_enable;
 }
 
@@ -538,7 +538,7 @@ void Simulation::Restore(const Snapshot & snap)
 	RecalcFreeParticles(false);
 	std::copy(snap.PortalParticles.begin(), snap.PortalParticles.end(), &portalp[0][0][0]);
 	std::copy(snap.WirelessData.begin(), snap.WirelessData.end(), &wireless[0][0]);
-	if (grav->ngrav_enable)
+	if (grav->IsEnabled())
 	{
 		grav->Clear();
 		std::copy(snap.GravVelocityX.begin(), snap.GravVelocityX.end(), gravx);
@@ -702,7 +702,7 @@ SimulationSample Simulation::GetSample(int x, int y)
 		sample.AirVelocityX = vx[y/CELL][x/CELL];
 		sample.AirVelocityY = vy[y/CELL][x/CELL];
 
-		if(grav->ngrav_enable)
+		if(grav->IsEnabled())
 		{
 			sample.Gravity = gravp[(y/CELL)*(XRES/CELL)+(x/CELL)];
 			sample.GravityVelocityX = gravx[(y/CELL)*(XRES/CELL)+(x/CELL)];
@@ -4702,7 +4702,7 @@ killed:
 								goto movedone;
 							}
 						}
-						if (elements[t].Falldown>1 && !grav->ngrav_enable && gravityMode==0 && parts[i].vy>fabsf(parts[i].vx))
+						if (elements[t].Falldown>1 && !grav->IsEnabled() && gravityMode==0 && parts[i].vy>fabsf(parts[i].vx))
 						{
 							s = 0;
 							// stagnant is true if FLAG_STAGNANT was set for this particle in previous frame
@@ -5209,7 +5209,7 @@ void Simulation::BeforeSim()
 		if(aheat_enable)
 			air->update_airh();
 
-		if(grav->ngrav_enable)
+		if(grav->IsEnabled())
 		{
 			grav->gravity_update_async();
 
