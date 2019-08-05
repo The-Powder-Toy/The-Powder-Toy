@@ -157,6 +157,7 @@ void Gravity::gravity_update_async()
 					memcpy(gravx, th_gravx, (XRES/CELL)*(YRES/CELL)*sizeof(float));
 					memcpy(gravp, th_gravp, (XRES/CELL)*(YRES/CELL)*sizeof(float));
 #else
+					// Copy thread gravity maps into this one
 					std::swap(gravy, th_gravy);
 					std::swap(gravx, th_gravx);
 					std::swap(gravp, th_gravp);

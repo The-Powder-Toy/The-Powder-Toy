@@ -600,7 +600,7 @@ void GameSave::readOPS(char * data, int dataLength)
 	}
 
 	//Incompatible cell size
-	if (inputData[5] > CELL)
+	if (inputData[5] != CELL)
 		throw ParseException(ParseException::InvalidDimensions, "Incorrect CELL size");
 
 	//Too large/off screen
