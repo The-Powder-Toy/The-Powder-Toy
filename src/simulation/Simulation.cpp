@@ -900,9 +900,16 @@ bool Simulation::flood_water(int x, int y, int i)
 			}
 			for (int x = x1; x <= x2; x++)
 			{
-				// Check above, maybe around other sides too?
-				if (((y - 1) > originalY) && !pmap[y - 1][x] && eval_move(parts[i].type, x, y - 1, nullptr))
+				if ((y - 1) > originalY && !pmap[y - 1][x])
 				{
+					// Try to move the water to a random position on this line, because there's probably a free location somewhere
+					int randPos = RNG::Ref().between(x, x2);
+					if (!pmap[y - 1][randPos] && eval_move(parts[i].type, randPos, y - 1, nullptr))
+						x = randPos;
+					// Couldn't move to random position, so try the original position on the left
+					else if (!eval_move(parts[i].type, x, y - 1, nullptr))
+						continue;
+
 					int oldx = (int)(parts[i].x + 0.5f);
 					int oldy = (int)(parts[i].y + 0.5f);
 					pmap[y - 1][x] = pmap[oldy][oldx];
