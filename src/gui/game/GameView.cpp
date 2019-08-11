@@ -201,7 +201,6 @@ GameView::GameView():
 	screenshotIndex(0),
 	recording(false),
 	recordingFolder(0),
-	recordingIndex(0),
 	currentPoint(ui::Point(0, 0)),
 	lastPoint(ui::Point(0, 0)),
 	ren(NULL),
@@ -1070,7 +1069,6 @@ int GameView::Record(bool record)
 	if (!record)
 	{
 		recording = false;
-		recordingIndex = 0;
 		recordingFolder = 0;
 	}
 	else if (!recording)
@@ -1084,7 +1082,6 @@ int GameView::Record(bool record)
 			Client::Ref().MakeDirectory("recordings");
 			Client::Ref().MakeDirectory(ByteString::Build("recordings", PATH_SEP, recordingFolder).c_str());
 			recording = true;
-			recordingIndex = 0;
 		}
 	}
 	return recordingFolder;
@@ -2300,9 +2297,9 @@ void GameView::OnDraw()
 		}
 	}
 
-	if(recording)
+	if (recording)
 	{
-		String sampleInfo = String::Build(recordingIndex, ". ", String(0xE00E), " REC");
+		String sampleInfo = String::Build("#", screenshotIndex, " ", String(0xE00E), " REC");
 
 		int textWidth = Graphics::textwidth(sampleInfo);
 		g->fillrect(XRES-20-textWidth, 12, textWidth+8, 15, 0, 0, 0, 255*0.5);
