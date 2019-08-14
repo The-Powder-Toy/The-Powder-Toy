@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import re, os, shutil, string, sys
 
 def generateElements(elementFiles, outputCpp, outputH):
