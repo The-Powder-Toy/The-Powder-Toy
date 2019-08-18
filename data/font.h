@@ -5,7 +5,7 @@ extern const unsigned char font_data[];
 extern const unsigned short font_ptrs[];
 extern const unsigned int font_ranges[][2];
 #else
-extern const unsigned char *font_data;
-extern const unsigned short *font_ptrs;
-extern const unsigned int (*font_ranges)[2];
+extern unsigned char *font_data;
+extern unsigned short *font_ptrs;
+extern unsigned int (*font_ranges)[2];
 #endif
