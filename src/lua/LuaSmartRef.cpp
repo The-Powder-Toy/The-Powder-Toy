@@ -1,3 +1,4 @@
+#ifdef LUACONSOLE
 #include "LuaSmartRef.h"
 
 void LuaSmartRef::Clear()
@@ -33,4 +34,4 @@ LuaSmartRef::operator bool() const
 {
 	return ref != LUA_REFNIL;
 }
-
+#endif
