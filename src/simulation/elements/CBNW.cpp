@@ -48,7 +48,6 @@ Element_CBNW::Element_CBNW()
 //#TPT-Directive ElementHeader Element_CBNW static int update(UPDATE_FUNC_ARGS)
 int Element_CBNW::update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry;
 	if (sim->pv[y/CELL][x/CELL]<=3)
 	{
 		if (sim->pv[y/CELL][x/CELL] <= -0.5 || RNG::Ref().chance(1, 4000))
@@ -77,11 +76,11 @@ int Element_CBNW::update(UPDATE_FUNC_ARGS)
 		}
 		parts[i].tmp--;
 	}
-	for (rx=-1; rx<2; rx++)
-		for (ry=-1; ry<2; ry++)
+	for (int rx=-1; rx<2; rx++)
+		for (int ry=-1; ry<2; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
 			{
-				r = pmap[y+ry][x+rx];
+				int r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
 				if ((sim->elements[TYP(r)].Properties&TYPE_PART) && parts[i].tmp == 0 && RNG::Ref().chance(1, 83))
