@@ -62,14 +62,12 @@ int Element_GRAV::update(UPDATE_FUNC_ARGS)
 //#TPT-Directive ElementHeader Element_GRAV static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_GRAV::graphics(GRAPHICS_FUNC_ARGS)
 {
-	int GRAV_R, GRAV_B, GRAV_G, GRAV_R2, GRAV_B2, GRAV_G2;
-
-	GRAV_R = std::abs((ren->sim->currentTick%120)-60);
-	GRAV_G = std::abs(((ren->sim->currentTick+60)%120)-60);
-	GRAV_B = std::abs(((ren->sim->currentTick+120)%120)-60);
-	GRAV_R2 = std::abs((ren->sim->currentTick%60)-30);
-	GRAV_G2 = std::abs(((ren->sim->currentTick+30)%60)-30);
-	GRAV_B2 = std::abs(((ren->sim->currentTick+60)%60)-30);
+	int GRAV_R = std::abs((ren->sim->currentTick%120)-60);
+  int GRAV_G = std::abs(((ren->sim->currentTick+60)%120)-60);
+	int GRAV_B = std::abs(((ren->sim->currentTick+120)%120)-60);
+	int GRAV_R2 = std::abs((ren->sim->currentTick%60)-30);
+	int GRAV_G2 = std::abs(((ren->sim->currentTick+30)%60)-30);
+	int GRAV_B2 = std::abs(((ren->sim->currentTick+60)%60)-30);
 
 
 	*colr = 20;
