@@ -48,15 +48,14 @@ Element_CONV::Element_CONV()
 //#TPT-Directive ElementHeader Element_CONV static int update(UPDATE_FUNC_ARGS)
 int Element_CONV::update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry;
 	int ctype = TYP(parts[i].ctype), ctypeExtra = ID(parts[i].ctype);
 	if (ctype<=0 || ctype>=PT_NUM || !sim->elements[ctype].Enabled || ctype==PT_CONV || (ctype==PT_LIFE && (ctypeExtra<0 || ctypeExtra>=NGOL)))
 	{
-		for (rx=-1; rx<2; rx++)
-			for (ry=-1; ry<2; ry++)
+		for (int rx=-1; rx<2; rx++)
+			for (int ry=-1; ry<2; ry++)
 				if (BOUNDS_CHECK)
 				{
-					r = sim->photons[y+ry][x+rx];
+					int r = sim->photons[y+ry][x+rx];
 					if (!r)
 						r = pmap[y+ry][x+rx];
 					if (!r)
@@ -76,11 +75,11 @@ int Element_CONV::update(UPDATE_FUNC_ARGS)
 	else
 	{
 		int restrictElement = sim->IsValidElement(parts[i].tmp) ? parts[i].tmp : 0;
-		for (rx=-1; rx<2; rx++)
-			for (ry=-1; ry<2; ry++)
+		for (int rx=-1; rx<2; rx++)
+			for (int ry=-1; ry<2; ry++)
 				if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES)
 				{
-					r = sim->photons[y+ry][x+rx];
+					int r = sim->photons[y+ry][x+rx];
 					if (!r || (restrictElement && TYP(r) != restrictElement))
 						r = pmap[y+ry][x+rx];
 					if (!r || (restrictElement && TYP(r) != restrictElement))
