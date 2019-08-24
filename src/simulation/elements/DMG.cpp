@@ -48,39 +48,37 @@ Element_DMG::Element_DMG()
 //#TPT-Directive ElementHeader Element_DMG static int update(UPDATE_FUNC_ARGS)
 int Element_DMG::update(UPDATE_FUNC_ARGS)
 {
-	int r, rr, rx, ry, nxi, nxj, t, dist;
 	int rad = 25;
-	float angle, fx, fy;
 
-	for (rx=-1; rx<2; rx++)
-		for (ry=-1; ry<2; ry++)
+	for (int rx=-1; rx<2; rx++)
+		for (int ry=-1; ry<2; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
 			{
-				r = pmap[y+ry][x+rx];
+				int r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
 				if (TYP(r)!=PT_DMG && TYP(r)!=PT_EMBR && TYP(r)!=PT_DMND && TYP(r)!=PT_CLNE && TYP(r)!=PT_PCLN && TYP(r)!=PT_BCLN)
 				{
 					sim->kill_part(i);
-					for (nxj=-rad; nxj<=rad; nxj++)
-						for (nxi=-rad; nxi<=rad; nxi++)
+					for (int nxj=-rad; nxj<=rad; nxj++)
+						for (int nxi=-rad; nxi<=rad; nxi++)
 							if (x+nxi>=0 && y+nxj>=0 && x+nxi<XRES && y+nxj<YRES && (nxi || nxj))
 							{
-								dist = sqrt(pow(nxi, 2.0f)+pow(nxj, 2.0f));//;(pow((float)nxi,2))/(pow((float)rad,2))+(pow((float)nxj,2))/(pow((float)rad,2));
+								float dist = sqrt(pow(nxi, 2.0f)+pow(nxj, 2.0f));//;(pow((float)nxi,2))/(pow((float)rad,2))+(pow((float)nxj,2))/(pow((float)rad,2));
 								if (!dist || (dist <= rad))
 								{
-									rr = pmap[y+nxj][x+nxi];
+									int rr = pmap[y+nxj][x+nxi];
 									if (rr)
 									{
-										angle = atan2((float)nxj, nxi);
-										fx = cos(angle) * 7.0f;
-										fy = sin(angle) * 7.0f;
+										float angle = atan2((float)nxj, nxi);
+										float fx = cos(angle) * 7.0f;
+										float fy = sin(angle) * 7.0f;
 										parts[ID(rr)].vx += fx;
 										parts[ID(rr)].vy += fy;
 										sim->vx[(y+nxj)/CELL][(x+nxi)/CELL] += fx;
 										sim->vy[(y+nxj)/CELL][(x+nxi)/CELL] += fy;
 										sim->pv[(y+nxj)/CELL][(x+nxi)/CELL] += 1.0f;
-										t = TYP(rr);
+										int t = TYP(rr);
 										if (t && sim->elements[t].HighPressureTransition>-1 && sim->elements[t].HighPressureTransition<PT_NUM)
 											sim->part_change_type(ID(rr), x+nxi, y+nxj, sim->elements[t].HighPressureTransition);
 										else if (t == PT_BMTL)
