@@ -50,32 +50,30 @@ Element_BIZR::Element_BIZR()
 //#TPT-Directive ElementHeader Element_BIZR static int update(UPDATE_FUNC_ARGS)
 int Element_BIZR::update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry, nr, ng, nb, na;
-	float tr, tg, tb, ta, mr, mg, mb, ma;
 	if(parts[i].dcolour){
-		for (rx=-2; rx<3; rx++)
-			for (ry=-2; ry<3; ry++)
+		for (int rx=-2; rx<3; rx++)
+			for (int ry=-2; ry<3; ry++)
 				if (BOUNDS_CHECK && (rx || ry))
 				{
-					r = pmap[y+ry][x+rx];
+					int r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
 					if (TYP(r)!=PT_BIZR && TYP(r)!=PT_BIZRG  && TYP(r)!=PT_BIZRS)
 					{
-						tr = (parts[ID(r)].dcolour>>16)&0xFF;
-						tg = (parts[ID(r)].dcolour>>8)&0xFF;
-						tb = (parts[ID(r)].dcolour)&0xFF;
-						ta = (parts[ID(r)].dcolour>>24)&0xFF;
+						float tr = (parts[ID(r)].dcolour>>16)&0xFF;
+						float tg = (parts[ID(r)].dcolour>>8)&0xFF;
+						float tb = (parts[ID(r)].dcolour)&0xFF;
+						float ta = (parts[ID(r)].dcolour>>24)&0xFF;
 
-						mr = (parts[i].dcolour>>16)&0xFF;
-						mg = (parts[i].dcolour>>8)&0xFF;
-						mb = (parts[i].dcolour)&0xFF;
-						ma = (parts[i].dcolour>>24)&0xFF;
+						float mr = (parts[i].dcolour>>16)&0xFF;
+						float mg = (parts[i].dcolour>>8)&0xFF;
+						float mb = (parts[i].dcolour)&0xFF;
+						float ma = (parts[i].dcolour>>24)&0xFF;
 
-						nr = (tr*BLEND) + (mr*(1 - BLEND));
-						ng = (tg*BLEND) + (mg*(1 - BLEND));
-						nb = (tb*BLEND) + (mb*(1 - BLEND));
-						na = (ta*BLEND) + (ma*(1 - BLEND));
+						int nr = (tr*BLEND) + (mr*(1 - BLEND));
+						int ng = (tg*BLEND) + (mg*(1 - BLEND));
+						int nb = (tb*BLEND) + (mb*(1 - BLEND));
+						int na = (ta*BLEND) + (ma*(1 - BLEND));
 
 						parts[ID(r)].dcolour = nr<<16 | ng<<8 | nb | na<<24;
 					}
