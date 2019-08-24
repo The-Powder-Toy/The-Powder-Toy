@@ -47,12 +47,11 @@ Element_DSTW::Element_DSTW()
 //#TPT-Directive ElementHeader Element_DSTW static int update(UPDATE_FUNC_ARGS)
 int Element_DSTW::update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry;
-	for (rx=-1; rx<2; rx++)
-		for (ry=-1; ry<2; ry++)
+	for (int rx=-1; rx<2; rx++)
+		for (int ry=-1; ry<2; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
 			{
-				r = pmap[y+ry][x+rx];
+				int r = pmap[y+ry][x+rx];
 				switch (TYP(r))
 				{
 				case PT_SALT:
