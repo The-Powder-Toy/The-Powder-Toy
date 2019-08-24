@@ -49,7 +49,7 @@ Element_BRAY::Element_BRAY()
 int Element_BRAY::graphics(GRAPHICS_FUNC_ARGS)
 
 {
-	int x, trans = 255;
+	int trans = 255;
 	if(cpart->tmp==0)
 	{
 		trans = cpart->life * 7;
@@ -64,7 +64,7 @@ int Element_BRAY::graphics(GRAPHICS_FUNC_ARGS)
 			}
 			for (x=0; x<12; x++)
 				*colg += (cpart->ctype >> (x+9))  & 1;
-			x = 624/(*colr+*colg+*colb+1);
+			int x = 624/(*colr+*colg+*colb+1);
 			*colr *= x;
 			*colg *= x;
 			*colb *= x;
@@ -84,7 +84,7 @@ int Element_BRAY::graphics(GRAPHICS_FUNC_ARGS)
 			}
 			for (x=0; x<12; x++)
 				*colg += (cpart->ctype >> (x+9))  & 1;
-			x = 624/(*colr+*colg+*colb+1);
+			int x = 624/(*colr+*colg+*colb+1);
 			*colr *= x;
 			*colg *= x;
 			*colb *= x;
