@@ -48,22 +48,21 @@ Element_GEL::Element_GEL()
 //#TPT-Directive ElementHeader Element_GEL static int update(UPDATE_FUNC_ARGS)
 int Element_GEL::update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry, rt;
-	bool gel;
+
 	if (parts[i].tmp > 100)
 		parts[i].tmp = 100;
 	if (parts[i].tmp < 0)
 		parts[i].tmp = 0;
 	int absorbChanceDenom = parts[i].tmp * 10 + 500;
-	for (rx=-2; rx<3; rx++)
-		for (ry=-2; ry<3; ry++)
+	for (int rx=-2; rx<3; rx++)
+		for (int ry=-2; ry<3; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
 			{
-				gel=false;
-				r = pmap[y+ry][x+rx];
+				bool gel = false;
+				int r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				rt = TYP(r);
+				int rt = TYP(r);
 				//Desaturation
 				switch (rt)
 				{
