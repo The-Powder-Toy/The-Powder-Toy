@@ -42,8 +42,6 @@ int Simulation::Load(GameSave * save, bool includePressure)
 
 int Simulation::Load(GameSave * save, bool includePressure, int fullX, int fullY)
 {
-	int x, y, r;
-
 	if (!save)
 		return 1;
 	try
@@ -97,8 +95,8 @@ int Simulation::Load(GameSave * save, bool includePressure, int fullX, int fullY
 		Particle tempPart = save->particles[n];
 		tempPart.x += (float)fullX;
 		tempPart.y += (float)fullY;
-		x = int(tempPart.x + 0.5f);
-		y = int(tempPart.y + 0.5f);
+		int x = int(tempPart.x + 0.5f);
+		int y = int(tempPart.y + 0.5f);
 
 		if (tempPart.type >= 0 && tempPart.type < PT_NUM)
 			tempPart.type = partMap[tempPart.type];
@@ -139,14 +137,14 @@ int Simulation::Load(GameSave * save, bool includePressure, int fullX, int fullY
 		}
 
 		//Replace existing
-		if ((r = pmap[y][x]))
+		if (int r = pmap[y][x])
 		{
 			elementCount[parts[ID(r)].type]--;
 			parts[ID(r)] = tempPart;
 			i = ID(r);
 			elementCount[tempPart.type]++;
 		}
-		else if ((r = photons[y][x]))
+		else if (int r = photons[y][x])
 		{
 			elementCount[parts[ID(r)].type]--;
 			parts[ID(r)] = tempPart;
@@ -721,7 +719,6 @@ SimulationSample Simulation::GetSample(int x, int y)
 int Simulation::FloodINST(int x, int y, int fullc, int cm)
 {
 	int c = TYP(fullc);
-	int x1, x2;
 	int coord_stack_limit = XRES*YRES;
 	unsigned short (*coord_stack)[2];
 	int coord_stack_size = 0;
@@ -755,7 +752,7 @@ int Simulation::FloodINST(int x, int y, int fullc, int cm)
 		coord_stack_size--;
 		x = coord_stack[coord_stack_size][0];
 		y = coord_stack[coord_stack_size][1];
-		x1 = x2 = x;
+		int x1 = x, x2 = x;
 		// go left as far as possible
 		while (x1>=CELL)
 		{
@@ -868,7 +865,7 @@ int Simulation::FloodINST(int x, int y, int fullc, int cm)
 
 bool Simulation::flood_water(int x, int y, int i)
 {
-	int x1, x2, originalY = y;
+	int originalY = y;
 	int r = pmap[y][x];
 	if (!r)
 		return false;
@@ -885,7 +882,7 @@ bool Simulation::flood_water(int x, int y, int i)
 		do
 		{
 			cs.pop(x, y);
-			x1 = x2 = x;
+			int x1 = x, x2 = x;
 			while (x1 >= CELL)
 			{
 				if (elements[TYP(pmap[y][x1 - 1])].Falldown != 2 || bitmap[(y * XRES) + x1 - 1])
@@ -977,19 +974,18 @@ void Simulation::SetEdgeMode(int newEdgeMode)
 
 void Simulation::ApplyDecoration(int x, int y, int colR_, int colG_, int colB_, int colA_, int mode)
 {
-	int rp;
-	float tr, tg, tb, ta, colR = colR_, colG = colG_, colB = colB_, colA = colA_;
+	float colR = colR_, colG = colG_, colB = colB_, colA = colA_;
 	float strength = 0.01f;
-	rp = pmap[y][x];
+	int rp = pmap[y][x];
 	if (!rp)
 		rp = photons[y][x];
 	if (!rp)
 		return;
 
-	ta = (parts[ID(rp)].dcolour>>24)&0xFF;
-	tr = (parts[ID(rp)].dcolour>>16)&0xFF;
-	tg = (parts[ID(rp)].dcolour>>8)&0xFF;
-	tb = (parts[ID(rp)].dcolour)&0xFF;
+	float ta = (parts[ID(rp)].dcolour>>24)&0xFF;
+	float tr = (parts[ID(rp)].dcolour>>16)&0xFF;
+	float tg = (parts[ID(rp)].dcolour>>8)&0xFF;
+	float tb = (parts[ID(rp)].dcolour)&0xFF;
 
 	ta /= 255.0f; tr /= 255.0f; tg /= 255.0f; tb /= 255.0f;
 	colR /= 255.0f; colG /= 255.0f; colB /= 255.0f; colA /= 255.0f;
@@ -1172,22 +1168,21 @@ void Simulation::ApplyDecorationLine(int x1, int y1, int x2, int y2, int colR, i
 
 void Simulation::ApplyDecorationBox(int x1, int y1, int x2, int y2, int colR, int colG, int colB, int colA, int mode)
 {
-	int i, j;
 
 	if (x1>x2)
 	{
-		i = x2;
+	  int tmp = x2;
 		x2 = x1;
-		x1 = i;
+		x1 = tmp;
 	}
 	if (y1>y2)
 	{
-		j = y2;
+		int tmp = y2;
 		y2 = y1;
-		y1 = j;
+		y1 = tmp;
 	}
-	for (j=y1; j<=y2; j++)
-		for (i=x1; i<=x2; i++)
+	for (int j=y1; j<=y2; j++)
+		for (int i=x1; i<=x2; i++)
 			ApplyDecoration(i, j, colR, colG, colB, colA, mode);
 }
 
@@ -1203,7 +1198,6 @@ bool Simulation::ColorCompare(Renderer *ren, int x, int y, int replaceR, int rep
 
 void Simulation::ApplyDecorationFill(Renderer *ren, int x, int y, int colR, int colG, int colB, int colA, int replaceR, int replaceG, int replaceB)
 {
-	int x1, x2;
 	char *bitmap = (char*)malloc(XRES*YRES); //Bitmap for checking
 	if (!bitmap)
 		return;
@@ -1221,7 +1215,7 @@ void Simulation::ApplyDecorationFill(Renderer *ren, int x, int y, int colR, int 
 		do
 		{
 			cs.pop(x, y);
-			x1 = x2 = x;
+			int x1 = x, x2 = x;
 			// go left as far as possible
 			while (x1>0)
 			{
@@ -1486,27 +1480,26 @@ void Simulation::CreateWallLine(int x1, int y1, int x2, int y2, int rx, int ry, 
 
 void Simulation::CreateWallBox(int x1, int y1, int x2, int y2, int wall)
 {
-	int i, j;
 	if (x1>x2)
 	{
-		i = x2;
+		int tmp = x2;
 		x2 = x1;
-		x1 = i;
+		x1 = tmp;
 	}
 	if (y1>y2)
 	{
-		j = y2;
+		int tmp = y2;
 		y2 = y1;
-		y1 = j;
+		y1 = tmp;
 	}
-	for (j=y1; j<=y2; j++)
-		for (i=x1; i<=x2; i++)
+	for (int j=y1; j<=y2; j++)
+		for (int i=x1; i<=x2; i++)
 			CreateWalls(i, j, 0, 0, wall, NULL);
 }
 
 int Simulation::FloodWalls(int x, int y, int wall, int bm)
 {
-	int x1, x2, dy = CELL;
+	int dy = CELL;
 	if (bm==-1)
 	{
 		if (wall==WL_ERASE || wall==WL_ERASEALL)
@@ -1523,7 +1516,7 @@ int Simulation::FloodWalls(int x, int y, int wall, int bm)
 		return 1;
 
 	// go left as far as possible
-	x1 = x2 = x;
+	int x1 = x, x2 = x;
 	while (x1>=CELL)
 	{
 		if (bmap[y/CELL][(x1-1)/CELL]!=bm)
@@ -1640,36 +1633,36 @@ int Simulation::CreateParts(int x, int y, int rx, int ry, int c, int flags)
 
 void Simulation::CreateLine(int x1, int y1, int x2, int y2, int c, Brush * cBrush, int flags)
 {
-	int x, y, dx, dy, sy, rx = cBrush->GetRadius().X, ry = cBrush->GetRadius().Y;
+	int rx = cBrush->GetRadius().X, ry = cBrush->GetRadius().Y;
 	bool reverseXY = abs(y2-y1) > abs(x2-x1);
 	float e = 0.0f, de;
 	if (reverseXY)
 	{
-		y = x1;
+		int tmp = x1;
 		x1 = y1;
-		y1 = y;
-		y = x2;
+		y1 = tmp;
+		tmp = x2;
 		x2 = y2;
-		y2 = y;
+		y2 = tmp;
 	}
 	if (x1 > x2)
 	{
-		y = x1;
+		int tmp = x1;
 		x1 = x2;
-		x2 = y;
-		y = y1;
+		x2 = tmp;
+		tmp = y1;
 		y1 = y2;
-		y2 = y;
+		y2 = tmp;
 	}
-	dx = x2 - x1;
-	dy = abs(y2 - y1);
+	int dx = x2 - x1;
+	int dy = abs(y2 - y1);
 	if (dx)
 		de = dy/(float)dx;
 	else
 		de = 0.0f;
-	y = y1;
-	sy = (y1<y2) ? 1 : -1;
-	for (x=x1; x<=x2; x++)
+	int y = y1;
+	int sy = (y1<y2) ? 1 : -1;
+	for (int x=x1; x<=x2; x++)
 	{
 		if (reverseXY)
 			CreateParts(y, x, c, cBrush, flags);
@@ -1753,38 +1746,37 @@ int Simulation::CreatePartFlags(int x, int y, int c, int flags)
 void Simulation::CreateLine(int x1, int y1, int x2, int y2, int c)
 {
 	bool reverseXY = abs(y2-y1) > abs(x2-x1);
-	int x, y, dx, dy, sy;
-	float e, de;
 	int v = ID(c);
 	c = TYP(c);
 	if (reverseXY)
 	{
-		y = x1;
+		int tmp = x1;
 		x1 = y1;
-		y1 = y;
-		y = x2;
+		y1 = tmp;
+		tmp = x2;
 		x2 = y2;
-		y2 = y;
+		y2 = tmp;
 	}
 	if (x1 > x2)
 	{
-		y = x1;
+		int tmp = x1;
 		x1 = x2;
-		x2 = y;
-		y = y1;
+		x2 = tmp;
+		tmp = y1;
 		y1 = y2;
-		y2 = y;
+		y2 = tmp;
 	}
-	dx = x2 - x1;
-	dy = abs(y2 - y1);
-	e = 0.0f;
+	int dx = x2 - x1;
+	int dy = abs(y2 - y1);
+	float e = 0.0f;
+  float de;
 	if (dx)
 		de = dy/(float)dx;
 	else
 		de = 0.0f;
-	y = y1;
-	sy = (y1<y2) ? 1 : -1;
-	for (x=x1; x<=x2; x++)
+	int y = y1;
+	int sy = (y1<y2) ? 1 : -1;
+	for (int x=x1; x<=x2; x++)
 	{
 		if (reverseXY)
 			create_part(-1, y, x, c, v);
@@ -1808,21 +1800,20 @@ void Simulation::CreateLine(int x1, int y1, int x2, int y2, int c)
 
 void Simulation::CreateBox(int x1, int y1, int x2, int y2, int c, int flags)
 {
-	int i, j;
 	if (x1>x2)
 	{
-		i = x2;
+		int tmp = x2;
 		x2 = x1;
-		x1 = i;
+		x1 = tmp;
 	}
 	if (y1>y2)
 	{
-		j = y2;
+		int tmp = y2;
 		y2 = y1;
-		y1 = j;
+		y1 = tmp;
 	}
-	for (j=y2; j>=y1; j--)
-		for (i=x1; i<=x2; i++)
+	for (int j=y2; j>=y1; j--)
+		for (int i=x1; i<=x2; i++)
 			CreateParts(i, j, 0, 0, c, flags);
 }
 
@@ -2014,18 +2005,17 @@ unsigned msvc_clz(unsigned a)
 
 int Simulation::get_wavelength_bin(int *wm)
 {
-	int i, w0, wM, r;
 
 	if (!(*wm & 0x3FFFFFFF))
 		return -1;
 
 #if defined(__GNUC__) || defined(_MSVC_VER)
-	w0 = __builtin_ctz(*wm | 0xC0000000);
-	wM = 31 - __builtin_clz(*wm & 0x3FFFFFFF);
+	int w0 = __builtin_ctz(*wm | 0xC0000000);
+	int wM = 31 - __builtin_clz(*wm & 0x3FFFFFFF);
 #else
-	w0 = 30;
-	wM = 0;
-	for (i = 0; i < 30; i++)
+	int w0 = 30;
+	int wM = 0;
+	for (int i = 0; i < 30; i++)
 		if (*wm & (1<<i))
 		{
 			if (i < w0)
@@ -2038,8 +2028,8 @@ int Simulation::get_wavelength_bin(int *wm)
 	if (wM - w0 < 5)
 		return wM + w0;
 
-	r = RNG::Ref().gen();
-	i = (r >> 1) % (wM-w0-4);
+	int r = RNG::Ref().gen();
+	int i = (r >> 1) % (wM-w0-4);
 	i += w0;
 
 	if (r & 1)
@@ -2056,13 +2046,11 @@ int Simulation::get_wavelength_bin(int *wm)
 
 void Simulation::set_emap(int x, int y)
 {
-	int x1, x2;
-
 	if (!is_wire_off(x, y))
 		return;
 
 	// go left as far as possible
-	x1 = x2 = x;
+	int x1 = x, x2 = x;
 	while (x1>0)
 	{
 		if (!is_wire_off(x1-1, y))
@@ -2385,20 +2373,18 @@ void Simulation::init_can_move()
  */
 int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr)
 {
-	unsigned r;
-	int result;
 
 	if (nx<0 || ny<0 || nx>=XRES || ny>=YRES)
 		return 0;
 
-	r = pmap[ny][nx];
+  int r = pmap[ny][nx];
 	if (r)
 		r = (r&~PMAPMASK) | parts[ID(r)].type;
 	if (rr)
 		*rr = r;
 	if (pt>=PT_NUM || TYP(r)>=PT_NUM)
 		return 0;
-	result = can_move[pt][TYP(r)];
+	int result = can_move[pt][TYP(r)];
 	if (result == 3)
 	{
 		switch (TYP(r))
@@ -2468,14 +2454,12 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr)
 
 int Simulation::try_move(int i, int x, int y, int nx, int ny)
 {
-	unsigned r = 0, e;
-
 	if (x==nx && y==ny)
 		return 1;
 	if (nx<0 || ny<0 || nx>=XRES || ny>=YRES)
 		return 1;
-
-	e = eval_move(parts[i].type, nx, ny, &r);
+  unsigned int r = 0;
+	int e = eval_move(parts[i].type, nx, ny, &r);
 
 	/* half-silvered mirror */
 	if (!e && parts[i].type==PT_PHOT && ((TYP(r)==PT_BMTL && RNG::Ref().chance(1, 2)) || TYP(pmap[y][x])==PT_BMTL))
@@ -2760,7 +2744,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 // try to move particle, and if successful update pmap and parts[i].x,y
 int Simulation::do_move(int i, int x, int y, float nxf, float nyf)
 {
-	int nx = (int)(nxf+0.5f), ny = (int)(nyf+0.5f), result;
+	int nx = (int)(nxf+0.5f), ny = (int)(nyf+0.5f);
 	if (edgeMode == 2)
 	{
 		bool x_ok = (nx >= CELL && nx < XRES-CELL);
@@ -2782,7 +2766,7 @@ int Simulation::do_move(int i, int x, int y, float nxf, float nyf)
 	}
 	if (parts[i].type == PT_NONE)
 		return 0;
-	result = try_move(i, x, y, nx, ny);
+	int result = try_move(i, x, y, nx, ny);
 	if (result)
 	{
 		int t = parts[i].type;
@@ -2811,7 +2795,7 @@ int Simulation::do_move(int i, int x, int y, float nxf, float nyf)
 
 void Simulation::photoelectric_effect(int nx, int ny)//create sparks from PHOT when hitting PSCN and NSCN
 {
-	unsigned r = pmap[ny][nx];
+	int r = pmap[ny][nx];
 
 	if (TYP(r) == PT_PSCN)
 	{
@@ -2881,7 +2865,7 @@ int Simulation::find_next_boundary(int pt, int *x, int *y, int dm, int *em)
 	static int dx[8] = {1,1,0,-1,-1,-1,0,1};
 	static int dy[8] = {0,1,1,1,0,-1,-1,-1};
 	static int de[8] = {0x83,0x07,0x0E,0x1C,0x38,0x70,0xE0,0xC1};
-	int i, ii, i0;
+	int i0;
 
 	if (*x <= 0 || *x >= XRES-1 || *y <= 0 || *y >= YRES-1)
 		return 0;
@@ -2892,8 +2876,8 @@ int Simulation::find_next_boundary(int pt, int *x, int *y, int dm, int *em)
 	} else
 		i0 = 0;
 
-	for (ii=0; ii<8; ii++) {
-		i = (ii + i0) & 7;
+	for (int ii=0; ii<8; ii++) {
+		int i = (ii + i0) & 7;
 		if ((dm & (1 << i)) && is_boundary(pt, *x+dx[i], *y+dy[i])) {
 			*x += dx[i];
 			*y += dy[i];
@@ -2907,10 +2891,6 @@ int Simulation::find_next_boundary(int pt, int *x, int *y, int dm, int *em)
 
 int Simulation::get_normal(int pt, int x, int y, float dx, float dy, float *nx, float *ny)
 {
-	int ldm, rdm, lm, rm;
-	int lx, ly, lv, rx, ry, rv;
-	int i, j;
-	float r, ex, ey;
 
 	if (!dx && !dy)
 		return 0;
@@ -2918,15 +2898,15 @@ int Simulation::get_normal(int pt, int x, int y, float dx, float dy, float *nx, 
 	if (!is_boundary(pt, x, y))
 		return 0;
 
-	ldm = direction_to_map(-dy, dx, pt);
-	rdm = direction_to_map(dy, -dx, pt);
-	lx = rx = x;
-	ly = ry = y;
-	lv = rv = 1;
-	lm = rm = -1;
+	int ldm = direction_to_map(-dy, dx, pt);
+	int rdm = direction_to_map(dy, -dx, pt);
+	int lx = x, rx = x;
+	int ly = y, ry = y;
+	int lv = 1, rv = 1;
+	int lm = -1, rm = -1;
 
-	j = 0;
-	for (i=0; i<SURF_RANGE; i++) {
+	int j = 0;
+	for (int i=0; i<SURF_RANGE; i++) {
 		if (lv)
 			lv = find_next_boundary(pt, &lx, &ly, ldm, &lm);
 		if (rv)
@@ -2942,9 +2922,9 @@ int Simulation::get_normal(int pt, int x, int y, float dx, float dy, float *nx, 
 	if ((lx == rx) && (ly == ry))
 		return 0;
 
-	ex = rx - lx;
-	ey = ry - ly;
-	r = 1.0f/hypot(ex, ey);
+	float ex = rx - lx;
+	float ey = ry - ly;
+	float r = 1.0f/hypot(ex, ey);
 	*nx =  ey * r;
 	*ny = -ex * r;
 
@@ -2953,12 +2933,10 @@ int Simulation::get_normal(int pt, int x, int y, float dx, float dy, float *nx, 
 
 int Simulation::get_normal_interp(int pt, float x0, float y0, float dx, float dy, float *nx, float *ny)
 {
-	int x, y, i;
-
 	dx /= NORMAL_FRAC;
 	dy /= NORMAL_FRAC;
-
-	for (i=0; i<NORMAL_INTERP; i++) {
+  int x, y;
+	for (int i=0; i<NORMAL_INTERP; i++) {
 		x = (int)(x0 + 0.5f);
 		y = (int)(y0 + 0.5f);
 		if (is_boundary(pt, x, y))
@@ -2966,8 +2944,6 @@ int Simulation::get_normal_interp(int pt, float x0, float y0, float dx, float dy
 		x0 += dx;
 		y0 += dy;
 	}
-	if (i >= NORMAL_INTERP)
-		return 0;
 
 	if (pt == PT_PHOT)
 		photoelectric_effect(x, y);
@@ -3560,15 +3536,14 @@ void Simulation::GetGravityField(int x, int y, float particleGrav, float newtonG
 
 void Simulation::create_gain_photon(int pp)//photons from PHOT going through GLOW
 {
-	float xx, yy;
-	int i, lr, temp_bin, nx, ny;
-
 	if (pfree == -1)
 		return;
-	i = pfree;
 
-	lr = RNG::Ref().between(0, 1);
+	int i = pfree;
 
+	int lr = RNG::Ref().between(0, 1);
+
+  float xx, yy;
 	if (lr) {
 		xx = parts[pp].x - 0.3*parts[pp].vy;
 		yy = parts[pp].y + 0.3*parts[pp].vx;
@@ -3577,8 +3552,8 @@ void Simulation::create_gain_photon(int pp)//photons from PHOT going through GLO
 		yy = parts[pp].y - 0.3*parts[pp].vx;
 	}
 
-	nx = (int)(xx + 0.5f);
-	ny = (int)(yy + 0.5f);
+	int nx = (int)(xx + 0.5f);
+	int ny = (int)(yy + 0.5f);
 
 	if (nx<0 || ny<0 || nx>=XRES || ny>=YRES)
 		return;
@@ -3600,7 +3575,7 @@ void Simulation::create_gain_photon(int pp)//photons from PHOT going through GLO
 	parts[i].pavg[0] = parts[i].pavg[1] = 0.0f;
 	photons[ny][nx] = PMAP(i, PT_PHOT);
 
-	temp_bin = (int)((parts[i].temp-273.0f)*0.25f);
+	int temp_bin = (int)((parts[i].temp-273.0f)*0.25f);
 	if (temp_bin < 0) temp_bin = 0;
 	if (temp_bin > 25) temp_bin = 25;
 	parts[i].ctype = 0x1F << temp_bin;
@@ -3608,15 +3583,13 @@ void Simulation::create_gain_photon(int pp)//photons from PHOT going through GLO
 
 void Simulation::create_cherenkov_photon(int pp)//photons from NEUT going through GLAS
 {
-	int i, lr, nx, ny;
-	float r;
-
 	if (pfree == -1)
 		return;
-	i = pfree;
 
-	nx = (int)(parts[pp].x + 0.5f);
-	ny = (int)(parts[pp].y + 0.5f);
+	int i = pfree;
+
+	int nx = (int)(parts[pp].x + 0.5f);
+	int ny = (int)(parts[pp].y + 0.5f);
 	if (TYP(pmap[ny][nx]) != PT_GLAS && TYP(pmap[ny][nx]) != PT_BGLA)
 		return;
 
@@ -3626,7 +3599,7 @@ void Simulation::create_cherenkov_photon(int pp)//photons from NEUT going throug
 	pfree = parts[i].life;
 	if (i>parts_lastActiveIndex) parts_lastActiveIndex = i;
 
-	lr = RNG::Ref().between(0, 1);
+	int lr = RNG::Ref().between(0, 1);
 
 	parts[i].type = PT_PHOT;
 	parts[i].ctype = 0x00000F80;
@@ -3647,14 +3620,14 @@ void Simulation::create_cherenkov_photon(int pp)//photons from NEUT going throug
 	}
 
 	/* photons have speed of light. no discussion. */
-	r = 1.269 / hypotf(parts[i].vx, parts[i].vy);
+	float r = 1.269 / hypotf(parts[i].vx, parts[i].vy);
 	parts[i].vx *= r;
 	parts[i].vy *= r;
 }
 
 void Simulation::delete_part(int x, int y)//calls kill_part with the particle located at x,y
 {
-	unsigned i;
+  int i;
 
 	if (x<0 || y<0 || x>=XRES || y>=YRES)
 		return;
@@ -3671,7 +3644,7 @@ void Simulation::delete_part(int x, int y)//calls kill_part with the particle lo
 
 void Simulation::UpdateParticles(int start, int end)
 {
-	int i, j, x, y, t, nx, ny, r, surround_space, s, rt, nt;
+	int s, rt, nt;
 	float mv, dx, dy, nrx, nry, dp, ctemph, ctempl, gravtot;
 	int fin_x, fin_y, clear_x, clear_y, stagnant;
 	float fin_xf, fin_yf, clear_xf, clear_yf;
@@ -3685,13 +3658,13 @@ void Simulation::UpdateParticles(int start, int end)
 	bool transitionOccurred;
 
 	//the main particle loop function, goes over all particles.
-	for (i = start; i <= end && i <= parts_lastActiveIndex; i++)
+	for (int i = start; i <= end && i <= parts_lastActiveIndex; i++)
 		if (parts[i].type)
 		{
-			t = parts[i].type;
+			int t = parts[i].type;
 
-			x = (int)(parts[i].x+0.5f);
-			y = (int)(parts[i].y+0.5f);
+			int x = (int)(parts[i].x+0.5f);
+			int y = (int)(parts[i].y+0.5f);
 
 			//this kills any particle out of the screen, or in a wall where it isn't supposed to go
 			if (x<CELL || y<CELL || x>=XRES-CELL || y>=YRES-CELL ||
@@ -3810,11 +3783,12 @@ void Simulation::UpdateParticles(int start, int end)
 			}
 
 			transitionOccurred = false;
-
-			j = surround_space = nt = 0;//if nt is greater than 1 after this, then there is a particle around the current particle, that is NOT the current particle's type, for water movement.
-			for (nx=-1; nx<2; nx++)
-				for (ny=-1; ny<2; ny++) {
+      int surround_space;
+			int j = surround_space = nt = 0;//if nt is greater than 1 after this, then there is a particle around the current particle, that is NOT the current particle's type, for water movement.
+			for (int nx=-1; nx<2; nx++)
+				for (int ny=-1; ny<2; ny++) {
 					if (nx||ny) {
+            int r;
 						surround[j] = r = pmap[y+ny][x+nx];
 						j++;
 						if (!TYP(r))
@@ -3831,7 +3805,7 @@ void Simulation::UpdateParticles(int start, int end)
 			if (!legacy_enable)
 			{
 				if (y-2 >= 0 && y-2 < YRES && (elements[t].Properties&TYPE_LIQUID) && (t!=PT_GEL || gel_scale > (1 + RNG::Ref().between(0, 254)))) {//some heat convection for liquids
-					r = pmap[y-2][x];
+					int r = pmap[y-2][x];
 					if (!(!r || parts[i].type != TYP(r))) {
 						if (parts[i].temp>parts[ID(r)].temp) {
 							swappage = parts[i].temp;
@@ -3874,7 +3848,7 @@ void Simulation::UpdateParticles(int start, int end)
 					for (j=0; j<8; j++)
 					{
 						surround_hconduct[j] = i;
-						r = surround[j];
+						int r = surround[j];
 						if (!r)
 							continue;
 						rt = TYP(r);
@@ -4213,14 +4187,14 @@ void Simulation::UpdateParticles(int start, int end)
 			//spark updates from walls
 			if ((elements[t].Properties&PROP_CONDUCTS) || t==PT_SPRK)
 			{
-				nx = x % CELL;
+				int nx = x % CELL;
 				if (nx == 0)
 					nx = x/CELL - 1;
 				else if (nx == CELL-1)
 					nx = x/CELL + 1;
 				else
 					nx = x/CELL;
-				ny = y % CELL;
+				int ny = y % CELL;
 				if (ny == 0)
 					ny = y/CELL - 1;
 				else if (ny == CELL-1)
@@ -4342,7 +4316,6 @@ void Simulation::UpdateParticles(int start, int end)
 				y = (int)(parts[i].y+0.5f);
 			}
 #endif
-
 			if(legacy_enable)//if heat sim is off
 				Element::legacyUpdate(this, i,x,y,surround_space,nt, parts, pmap);
 
@@ -4530,7 +4503,7 @@ killed:
 								continue;
 							}
 
-							r = get_wavelength_bin(&parts[i].ctype);
+							const int r = get_wavelength_bin(&parts[i].ctype);
 							if (r == -1 || !(parts[i].ctype&0x3FFFFFFF))
 							{
 								kill_part(i);
@@ -4581,7 +4554,7 @@ killed:
 						kill_part(i);
 						continue;
 					}
-					r = pmap[fin_y][fin_x];
+					const int r = pmap[fin_y][fin_x];
 
 					if ((TYP(r)==PT_PIPE || TYP(r) == PT_PPIP) && !TYP(parts[ID(r)].ctype))
 					{
@@ -4686,7 +4659,7 @@ killed:
 					else
 					{
 						s = 1;
-						r = RNG::Ref().between(0, 1) * 2 - 1;// position search direction (left/right first)
+						int r = RNG::Ref().between(0, 1) * 2 - 1;// position search direction (left/right first)
 						if ((clear_x!=x || clear_y!=y || nt || surround_space) &&
 							(fabsf(parts[i].vx)>0.01f || fabsf(parts[i].vy)>0.01f))
 						{
@@ -4727,7 +4700,7 @@ killed:
 
 							if (t==PT_GEL)
 								rt = parts[i].tmp*0.20f+5.0f;
-
+              int nx, ny;
 							for (j=clear_x+r; j>=0 && j>=clear_x-rt && j<clear_x+rt && j<XRES; j+=r)
 							{
 								if ((TYP(pmap[fin_y][j])!=t || bmap[fin_y/CELL][j/CELL])
@@ -4777,8 +4750,8 @@ killed:
 							// clear_xf, clear_yf is the last known position that the particle should almost certainly be able to move to
 							nxf = clear_xf;
 							nyf = clear_yf;
-							nx = clear_x;
-							ny = clear_y;
+							int nx = clear_x;
+							int ny = clear_y;
 							// Look for spaces to move horizontally (perpendicular to gravity direction), keep going until a space is found or the number of positions examined = rt
 							for (j=0;j<rt;j++)
 							{
