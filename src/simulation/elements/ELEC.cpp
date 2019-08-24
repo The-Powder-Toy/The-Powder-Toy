@@ -48,23 +48,22 @@ Element_ELEC::Element_ELEC()
 //#TPT-Directive ElementHeader Element_ELEC static int update(UPDATE_FUNC_ARGS)
 int Element_ELEC::update(UPDATE_FUNC_ARGS)
 {
-	int r, rt, rx, ry, nb, rrx, rry;
-	for (rx=-2; rx<=2; rx++)
-		for (ry=-2; ry<=2; ry++)
+	for (int rx=-2; rx<=2; rx++)
+		for (int ry=-2; ry<=2; ry++)
 			if (BOUNDS_CHECK) {
-				r = pmap[y+ry][x+rx];
+				int r = pmap[y+ry][x+rx];
 				if (!r)
 					r = sim->photons[y+ry][x+rx];
 				if (!r)
 					continue;
-				rt = TYP(r);
+				int rt = TYP(r);
 				switch (rt)
 				{
 				case PT_GLAS:
-					for (rrx=-1; rrx<=1; rrx++)
-						for (rry=-1; rry<=1; rry++)
+					for (int rrx=-1; rrx<=1; rrx++)
+						for (int rry=-1; rry<=1; rry++)
 							if (x+rx+rrx>=0 && y+ry+rry>=0 && x+rx+rrx<XRES && y+ry+rry<YRES) {
-								nb = sim->create_part(-1, x+rx+rrx, y+ry+rry, PT_EMBR);
+								int nb = sim->create_part(-1, x+rx+rrx, y+ry+rry, PT_EMBR);
 								if (nb!=-1) {
 									parts[nb].tmp = 0;
 									parts[nb].life = 50;
