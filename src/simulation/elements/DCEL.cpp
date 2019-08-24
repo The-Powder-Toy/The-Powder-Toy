@@ -48,18 +48,17 @@ Element_DCEL::Element_DCEL()
 //#TPT-Directive ElementHeader Element_DCEL static int update(UPDATE_FUNC_ARGS)
 int Element_DCEL::update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry;
-	float multiplier = 1.0f/1.1f;
+  float multiplier = 1.0f/1.1f;
 	if (parts[i].life!=0)
 	{
 		multiplier = 1.0f - ((parts[i].life > 100 ? 100 : (parts[i].life < 0 ? 0 : parts[i].life)) / 100.0f);
 	}
 	parts[i].tmp = 0;
-	for (rx=-1; rx<2; rx++)
-		for (ry=-1; ry<2; ry++)
+	for (int rx=-1; rx<2; rx++)
+		for (int ry=-1; ry<2; ry++)
 			if (BOUNDS_CHECK && (rx || ry) && !(rx && ry))
 			{
-				r = pmap[y+ry][x+rx];
+				int r = pmap[y+ry][x+rx];
 				if (!r)
 					r = sim->photons[y+ry][x+rx];
 				if (!r)
