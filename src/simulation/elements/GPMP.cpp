@@ -48,7 +48,6 @@ Element_GPMP::Element_GPMP()
 //#TPT-Directive ElementHeader Element_GPMP static int update(UPDATE_FUNC_ARGS)
 int Element_GPMP::update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry;
 	if (parts[i].life!=10)
 	{
 		if (parts[i].life>0)
@@ -62,11 +61,11 @@ int Element_GPMP::update(UPDATE_FUNC_ARGS)
 			parts[i].temp = -256.0+273.15;
 
 		sim->gravmap[(y/CELL)*(XRES/CELL)+(x/CELL)] = 0.2f*(parts[i].temp-273.15);
-		for (rx=-2; rx<3; rx++)
-			for (ry=-2; ry<3; ry++)
+		for (int rx=-2; rx<3; rx++)
+			for (int ry=-2; ry<3; ry++)
 				if (BOUNDS_CHECK && (rx || ry))
 				{
-					r = pmap[y+ry][x+rx];
+					int r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
 					if (TYP(r)==PT_GPMP)
