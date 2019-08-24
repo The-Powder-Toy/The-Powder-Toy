@@ -49,19 +49,18 @@ Element_FIRW::Element_FIRW()
 //#TPT-Directive ElementHeader Element_FIRW static int update(UPDATE_FUNC_ARGS)
 int Element_FIRW::update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry, rt, np;
 	if (parts[i].tmp<=0) {
-		for (rx=-1; rx<2; rx++)
-			for (ry=-1; ry<2; ry++)
+		for (int rx=-1; rx<2; rx++)
+			for (int ry=-1; ry<2; ry++)
 				if (BOUNDS_CHECK && (rx || ry))
 				{
-					r = pmap[y+ry][x+rx];
+					int r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					rt = TYP(r);
+					int rt = TYP(r);
 					if (rt==PT_FIRE||rt==PT_PLSM||rt==PT_THDR)
 					{
-						float gx, gy, multiplier;
+						float gx, gy;
 						sim->GetGravityField(x, y, sim->elements[PT_FIRW].Gravity, 1.0f, gx, gy);
 						if (gx*gx+gy*gy < 0.001f)
 						{
@@ -71,7 +70,7 @@ int Element_FIRW::update(UPDATE_FUNC_ARGS)
 						}
 						parts[i].tmp = 1;
 						parts[i].life = RNG::Ref().between(20, 29);
-						multiplier = (parts[i].life+20)*0.2f/sqrtf(gx*gx+gy*gy);
+						float multiplier = (parts[i].life+20)*0.2f/sqrtf(gx*gx+gy*gy);
 						parts[i].vx -= gx*multiplier;
 						parts[i].vy -= gy*multiplier;
 						return 0;
@@ -87,17 +86,15 @@ int Element_FIRW::update(UPDATE_FUNC_ARGS)
 	}
 	else //if (parts[i].tmp>=2)
 	{
-		float angle, magnitude;
 		int caddress = RNG::Ref().between(0, 199) * 3;
-		int n;
 		unsigned col = (((firw_data[caddress]))<<16) | (((firw_data[caddress+1]))<<8) | ((firw_data[caddress+2]));
-		for (n=0; n<40; n++)
+		for (int n=0; n<40; n++)
 		{
-			np = sim->create_part(-3, x, y, PT_EMBR);
+			int np = sim->create_part(-3, x, y, PT_EMBR);
 			if (np>-1)
 			{
-				magnitude = RNG::Ref().between(40, 99) * 0.05f;
-				angle = RNG::Ref().between(0, 6283) * 0.001f;//(in radians, between 0 and 2*pi)
+				float magnitude = RNG::Ref().between(40, 99) * 0.05f;
+				float angle = RNG::Ref().between(0, 6283) * 0.001f;//(in radians, between 0 and 2*pi)
 				parts[np].vx = parts[i].vx*0.5f + cosf(angle)*magnitude;
 				parts[np].vy = parts[i].vy*0.5f + sinf(angle)*magnitude;
 				parts[np].ctype = col;
