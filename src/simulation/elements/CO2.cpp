@@ -47,12 +47,11 @@ Element_CO2::Element_CO2()
 //#TPT-Directive ElementHeader Element_CO2 static int update(UPDATE_FUNC_ARGS)
 int Element_CO2::update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry;
-	for (rx=-1; rx<2; rx++)
-		for (ry=-1; ry<2; ry++)
+	for (int rx=-1; rx<2; rx++)
+		for (int ry=-1; ry<2; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
 			{
-				r = pmap[y+ry][x+rx];
+				int r = pmap[y+ry][x+rx];
 				if (!r)
 				{
 					if (parts[i].ctype==5 && RNG::Ref().chance(1, 2000))
