@@ -59,17 +59,16 @@ int Element_BCLN::update(UPDATE_FUNC_ARGS)
 	}
 	if (parts[i].ctype<=0 || parts[i].ctype>=PT_NUM || !sim->elements[parts[i].ctype].Enabled || (parts[i].ctype==PT_LIFE && (parts[i].tmp<0 || parts[i].tmp>=NGOL)))
 	{
-		int r, rx, ry, rt;
-		for (rx=-1; rx<2; rx++)
-			for (ry=-1; ry<2; ry++)
+		for (int rx=-1; rx<2; rx++)
+			for (int ry=-1; ry<2; ry++)
 				if (BOUNDS_CHECK)
 				{
-					r = sim->photons[y+ry][x+rx];
+					int r = sim->photons[y+ry][x+rx];
 					if (!r)
-						r = pmap[y+ry][x+rx];
+						int r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					rt = TYP(r);
+					int rt = TYP(r);
 					if (rt!=PT_CLNE && rt!=PT_PCLN &&
 						rt!=PT_BCLN && rt!=PT_STKM &&
 						rt!=PT_PBCN && rt!=PT_STKM2 &&
