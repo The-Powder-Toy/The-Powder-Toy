@@ -58,12 +58,12 @@ int Element_BRAY::graphics(GRAPHICS_FUNC_ARGS)
 			*colg = 0;
 			*colb = 0;
 			*colr = 0;
-			for (x=0; x<12; x++) {
-				*colr += (cpart->ctype >> (x+18)) & 1;
-				*colb += (cpart->ctype >>  x)	 & 1;
+			for (int cn=0; cn<12; cn++) {
+				*colr += (cpart->ctype >> (cn+18)) & 1;
+				*colb += (cpart->ctype >>  cn)	 & 1;
 			}
-			for (x=0; x<12; x++)
-				*colg += (cpart->ctype >> (x+9))  & 1;
+			for (int cn=0; cn<12; cn++)
+				*colg += (cpart->ctype >> (cn+9))  & 1;
 			int x = 624/(*colr+*colg+*colb+1);
 			*colr *= x;
 			*colg *= x;
@@ -78,12 +78,12 @@ int Element_BRAY::graphics(GRAPHICS_FUNC_ARGS)
 			*colg = 0;
 			*colb = 0;
 			*colr = 0;
-			for (x=0; x<12; x++) {
-				*colr += (cpart->ctype >> (x+18)) & 1;
-				*colb += (cpart->ctype >>  x)	 & 1;
+			for (int cn=0; cn<12; cn++) {
+				*colr += (cpart->ctype >> (cn+18)) & 1;
+				*colb += (cpart->ctype >>  cn)	 & 1;
 			}
-			for (x=0; x<12; x++)
-				*colg += (cpart->ctype >> (x+9))  & 1;
+			for (int cn=0; cn<12; cn++)
+				*colg += (cpart->ctype >> (cn+9))  & 1;
 			int x = 624/(*colr+*colg+*colb+1);
 			*colr *= x;
 			*colg *= x;
