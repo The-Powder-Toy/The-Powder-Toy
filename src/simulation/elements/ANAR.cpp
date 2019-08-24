@@ -47,15 +47,13 @@ Element_ANAR::Element_ANAR()
 //#TPT-Directive ElementHeader Element_ANAR static int update(UPDATE_FUNC_ARGS)
 int Element_ANAR::update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry;
-
 	//if (parts[i].temp >= 0.23)
 	// parts[i].temp --;
-	for (rx=-1; rx<2; rx++)
-		for (ry=-1; ry<2; ry++)
+	for (int rx=-1; rx<2; rx++)
+		for (int ry=-1; ry<2; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
 			{
-				r = pmap[y+ry][x+rx];
+				int r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
 				if (TYP(r)==PT_CFLM && RNG::Ref().chance(1, 4))
