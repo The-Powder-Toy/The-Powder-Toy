@@ -48,12 +48,11 @@ Element_GLOW::Element_GLOW()
 //#TPT-Directive ElementHeader Element_GLOW static int update(UPDATE_FUNC_ARGS)
 int Element_GLOW::update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry;
-	for (rx=-1; rx<2; rx++)
-		for (ry=-1; ry<2; ry++)
+	for (int rx=-1; rx<2; rx++)
+		for (int ry=-1; ry<2; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
 			{
-				r = pmap[y+ry][x+rx];
+				int r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
 				if (TYP(r)==PT_WATR && RNG::Ref().chance(1, 400))
