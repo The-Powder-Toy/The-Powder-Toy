@@ -48,15 +48,14 @@ Element_GBMB::Element_GBMB()
 //#TPT-Directive ElementHeader Element_GBMB static int update(UPDATE_FUNC_ARGS)
 int Element_GBMB::update(UPDATE_FUNC_ARGS)
 {
-	int rx,ry,r;
 	if (parts[i].life<=0)
 	{
-		for (rx=-1; rx<2; rx++)
-			for (ry=-1; ry<2; ry++)
+		for (int rx=-1; rx<2; rx++)
+			for (int ry=-1; ry<2; ry++)
 			{
 				if (BOUNDS_CHECK)
 				{
-					r = pmap[y+ry][x+rx];
+					int r = pmap[y+ry][x+rx];
 					if(!r)
 						continue;
 					if(TYP(r)!=PT_BOMB && TYP(r)!=PT_GBMB &&
