@@ -48,7 +48,6 @@ Element_HSWC::Element_HSWC()
 //#TPT-Directive ElementHeader Element_HSWC static int update(UPDATE_FUNC_ARGS)
 int Element_HSWC::update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry;
 	if (parts[i].life!=10)
 	{
 		if (parts[i].life>0)
@@ -57,11 +56,11 @@ int Element_HSWC::update(UPDATE_FUNC_ARGS)
 	else
 	{
 		bool deserializeTemp = parts[i].tmp == 1;
-		for (rx=-2; rx<3; rx++)
-			for (ry=-2; ry<3; ry++)
+		for (int rx=-2; rx<3; rx++)
+			for (int ry=-2; ry<3; ry++)
 				if (BOUNDS_CHECK && (rx || ry))
 				{
-					r = pmap[y+ry][x+rx];
+					int r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
 					if (TYP(r) == PT_HSWC)
@@ -90,8 +89,7 @@ int Element_HSWC::update(UPDATE_FUNC_ARGS)
 int Element_HSWC::graphics(GRAPHICS_FUNC_ARGS)
 
 {
-	int lifemod = ((cpart->life>10?10:cpart->life)*19);
-	*colr += lifemod;
+	*colr += ((cpart->life>10?10:cpart->life)*19);
 	return 0;
 }
 
