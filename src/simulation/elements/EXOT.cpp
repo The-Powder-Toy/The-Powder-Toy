@@ -48,15 +48,14 @@ Element_EXOT::Element_EXOT()
 //#TPT-Directive ElementHeader Element_EXOT static int update(UPDATE_FUNC_ARGS)
 int Element_EXOT::update(UPDATE_FUNC_ARGS)
 {
-	int r, rt, rx, ry, trade, tym;
-	for (rx=-2; rx<=2; rx++)
-		for (ry=-2; ry<=2; ry++)
+	for (int rx=-2; rx<=2; rx++)
+		for (int ry=-2; ry<=2; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
 			{
-				r = pmap[y+ry][x+rx];
+				int r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				rt = TYP(r);
+				int rt = TYP(r);
 				if (rt == PT_WARP)
 				{
 					if (parts[ID(r)].tmp2>2000 && RNG::Ref().chance(1, 100))
@@ -129,18 +128,18 @@ int Element_EXOT::update(UPDATE_FUNC_ARGS)
 	}
 	if (parts[i].tmp2 > 100)
 	{
-		for (trade = 0; trade < 9; trade++)
+		for (int trade = 0; trade < 9; trade++)
 		{
-			rx = RNG::Ref().between(-2, 2);
-			ry = RNG::Ref().between(-2, 2);
+			int rx = RNG::Ref().between(-2, 2);
+			int ry = RNG::Ref().between(-2, 2);
 			if (BOUNDS_CHECK && (rx || ry))
 			{
-				r = pmap[y+ry][x+rx];
+				int r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
 				if (TYP(r)==PT_EXOT && (parts[i].tmp2 > parts[ID(r)].tmp2) && parts[ID(r)].tmp2 >= 0) //diffusion
 				{
-					tym = parts[i].tmp2 - parts[ID(r)].tmp2;
+					int tym = parts[i].tmp2 - parts[ID(r)].tmp2;
 					if (tym == 1)
 					{
 						parts[ID(r)].tmp2++;
