@@ -47,7 +47,6 @@ Element_BOYL::Element_BOYL()
 //#TPT-Directive ElementHeader Element_BOYL static int update(UPDATE_FUNC_ARGS)
 int Element_BOYL::update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry;
 	float limit = parts[i].temp / 100;
 	if (sim->pv[y / CELL][x / CELL] < limit)
 		sim->pv[y / CELL][x / CELL] += 0.001f*(limit - sim->pv[y / CELL][x / CELL]);
@@ -61,11 +60,11 @@ int Element_BOYL::update(UPDATE_FUNC_ARGS)
 	sim->pv[y / CELL][x / CELL - 1]	+= 0.001f*(limit - sim->pv[y / CELL][x / CELL - 1]);
 	sim->pv[y / CELL - 1][x / CELL - 1] += 0.001f*(limit - sim->pv[y / CELL - 1][x / CELL - 1]);
 
-	for (rx=-1; rx<2; rx++)
-		for (ry=-1; ry<2; ry++)
+	for (int rx=-1; rx<2; rx++)
+		for (int ry=-1; ry<2; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
 			{
-				r = pmap[y+ry][x+rx];
+				int r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
 				if (TYP(r)==PT_WATR)
