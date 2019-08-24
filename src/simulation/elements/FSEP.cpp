@@ -47,9 +47,8 @@ Element_FSEP::Element_FSEP()
 //#TPT-Directive ElementHeader Element_FSEP static int update(UPDATE_FUNC_ARGS)
 int Element_FSEP::update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry;
 	if (parts[i].life<=0) {
-		r = sim->create_part(i, x, y, PT_PLSM);
+		int r = sim->create_part(i, x, y, PT_PLSM);
 		if (r!=-1)
 			parts[r].life = 50;
 		return 1;
@@ -57,17 +56,17 @@ int Element_FSEP::update(UPDATE_FUNC_ARGS)
 	else if (parts[i].life < 40) {
 		parts[i].life--;
 		if (RNG::Ref().chance(1, 10)) {
-			r = sim->create_part(-1, x + RNG::Ref().between(-1, 1), y + RNG::Ref().between(-1, 1), PT_PLSM);
+			int r = sim->create_part(-1, x + RNG::Ref().between(-1, 1), y + RNG::Ref().between(-1, 1), PT_PLSM);
 			if (r>-1)
 				parts[r].life = 50;
 		}
 	}
 	else {
-		for (rx=-2; rx<3; rx++)
-			for (ry=-2; ry<3; ry++)
+		for (int rx=-2; rx<3; rx++)
+			for (int ry=-2; ry<3; ry++)
 				if (BOUNDS_CHECK && (rx || ry))
 				{
-					r = pmap[y+ry][x+rx];
+					int r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
 					if ((TYP(r)==PT_SPRK || (parts[i].temp>=(273.15+400.0f))) && parts[i].life>40 && RNG::Ref().chance(1, 15))
