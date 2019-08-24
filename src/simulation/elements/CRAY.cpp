@@ -48,7 +48,6 @@ Element_CRAY::Element_CRAY()
 //#TPT-Directive ElementHeader Element_CRAY static int update(UPDATE_FUNC_ARGS)
 int Element_CRAY::update(UPDATE_FUNC_ARGS)
 {
-	int nxx, nyy, docontinue, nxi, nyi;
 	// set ctype to things that touch it if it doesn't have one already
 	if (parts[i].ctype<=0 || !sim->elements[TYP(parts[i].ctype)].Enabled)
 	{
@@ -86,6 +85,7 @@ int Element_CRAY::update(UPDATE_FUNC_ARGS)
 						if (parts[i].tmp) //how far it shoots
 							partsRemaining = parts[i].tmp;
 						int spacesRemaining = parts[i].tmp2;
+            int docontinue, nxi, nyi, nxx, nyy;
 						for (docontinue = 1, nxi = rx*-1, nyi = ry*-1, nxx = spacesRemaining*nxi, nyy = spacesRemaining*nyi; docontinue; nyy+=nyi, nxx+=nxi)
 						{
 							if (!(x+nxi+nxx<XRES && y+nyi+nyy<YRES && x+nxi+nxx >= 0 && y+nyi+nyy >= 0)) {
@@ -133,14 +133,14 @@ int Element_CRAY::update(UPDATE_FUNC_ARGS)
 //#TPT-Directive ElementHeader Element_CRAY static unsigned int wavelengthToDecoColour(int wavelength)
 unsigned int Element_CRAY::wavelengthToDecoColour(int wavelength)
 {
-	int colr = 0, colg = 0, colb = 0, x;
-	for (x=0; x<12; x++) {
-		colr += (wavelength >> (x+18)) & 1;
-		colb += (wavelength >>  x)     & 1;
+	int colr = 0, colg = 0, colb = 0;
+	for (int cn=0; cn<12; cn++) {
+		colr += (wavelength >> (cn+18)) & 1;
+		colb += (wavelength >>  cn)     & 1;
 	}
-	for (x=0; x<12; x++)
-		colg += (wavelength >> (x+9))  & 1;
-	x = 624/(colr+colg+colb+1);
+	for (int cn=0; cn<12; cn++)
+		colg += (wavelength >> (cn+9))  & 1;
+	int x = 624/(colr+colg+colb+1);
 	colr *= x;
 	colg *= x;
 	colb *= x;
