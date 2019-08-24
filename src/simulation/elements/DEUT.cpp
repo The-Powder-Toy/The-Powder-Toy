@@ -48,7 +48,6 @@ Element_DEUT::Element_DEUT()
 //#TPT-Directive ElementHeader Element_DEUT static int update(UPDATE_FUNC_ARGS)
 int Element_DEUT::update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry, trade, np;
 	float gravtot = fabs(sim->gravy[(y/CELL)*(XRES/CELL)+(x/CELL)])+fabs(sim->gravx[(y/CELL)*(XRES/CELL)+(x/CELL)]);
 	int maxlife = ((10000/(parts[i].temp + 1))-1);
 	if (RNG::Ref().chance(10000 % static_cast<int>(parts[i].temp + 1), static_cast<int>(parts[i].temp + 1)))
@@ -58,11 +57,11 @@ int Element_DEUT::update(UPDATE_FUNC_ARGS)
 	maxlife = maxlife*(5.0f - 8.0f/(gravtot+2.0f));
 	if (parts[i].life < maxlife)
 	{
-		for (rx=-1; rx<2; rx++)
-			for (ry=-1; ry<2; ry++)
+		for (int rx=-1; rx<2; rx++)
+			for (int ry=-1; ry<2; ry++)
 				if (BOUNDS_CHECK && (rx || ry))
 				{
-					r = pmap[y+ry][x+rx];
+					int r = pmap[y+ry][x+rx];
 					if (!r || (parts[i].life >=maxlife))
 						continue;
 					if (TYP(r)==PT_DEUT&& RNG::Ref().chance(1, 3))
@@ -78,17 +77,17 @@ int Element_DEUT::update(UPDATE_FUNC_ARGS)
 				}
 	}
 	else
-		for (rx=-1; rx<2; rx++)
-			for (ry=-1; ry<2; ry++)
+		for (int rx=-1; rx<2; rx++)
+			for (int ry=-1; ry<2; ry++)
 				if (BOUNDS_CHECK && (rx || ry))
 				{
 					//Leave if there is nothing to do
 					if (parts[i].life <= maxlife)
 						goto trade;
-					r = pmap[y+ry][x+rx];
+					int r = pmap[y+ry][x+rx];
 					if ((!r)&&parts[i].life>=1)//if nothing then create deut
 					{
-						np = sim->create_part(-1,x+rx,y+ry,PT_DEUT);
+						int np = sim->create_part(-1,x+rx,y+ry,PT_DEUT);
 						if (np<0) continue;
 						parts[i].life--;
 						parts[np].temp = parts[i].temp;
@@ -96,13 +95,13 @@ int Element_DEUT::update(UPDATE_FUNC_ARGS)
 					}
 				}
 trade:
-	for ( trade = 0; trade<4; trade ++)
+	for ( int trade = 0; trade<4; trade ++)
 	{
-		rx = RNG::Ref().between(-2, 2);
-		ry = RNG::Ref().between(-2, 2);
+		int rx = RNG::Ref().between(-2, 2);
+		int ry = RNG::Ref().between(-2, 2);
 		if (BOUNDS_CHECK && (rx || ry))
 		{
-			r = pmap[y+ry][x+rx];
+			int r = pmap[y+ry][x+rx];
 			if (!r)
 				continue;
 			if (TYP(r)==PT_DEUT&&(parts[i].life>parts[ID(r)].life)&&parts[i].life>0)//diffusion
