@@ -50,17 +50,16 @@ Element_GOLD::Element_GOLD()
 //#TPT-Directive ElementHeader Element_GOLD static int update(UPDATE_FUNC_ARGS)
 int Element_GOLD::update(UPDATE_FUNC_ARGS)
 {
-	int rx, ry, r, rndstore;
 	static int checkCoordsX[] = { -4, 4, 0, 0 };
 	static int checkCoordsY[] = { 0, 0, -4, 4 };
 	//Find nearby rusted iron (BMTL with tmp 1+)
 	for(int j = 0; j < 8; j++){
-		rndstore = RNG::Ref().gen();
-		rx = (rndstore % 9)-4;
+		int rndstore = RNG::Ref().gen();
+		int rx = (rndstore % 9)-4;
 		rndstore >>= 4;
-		ry = (rndstore % 9)-4;
+		int ry = (rndstore % 9)-4;
 		if ((!rx != !ry) && BOUNDS_CHECK) {
-			r = pmap[y+ry][x+rx];
+			int r = pmap[y+ry][x+rx];
 			if(!r) continue;
 			if(TYP(r)==PT_BMTL && parts[ID(r)].tmp)
 			{
@@ -73,10 +72,10 @@ int Element_GOLD::update(UPDATE_FUNC_ARGS)
 	if(!parts[i].life)
 	{
 		for(int j = 0; j < 4; j++){
-			rx = checkCoordsX[j];
-			ry = checkCoordsY[j];
+			int rx = checkCoordsX[j];
+			int ry = checkCoordsY[j];
 			if (BOUNDS_CHECK) {
-				r = pmap[y+ry][x+rx];
+				int r = pmap[y+ry][x+rx];
 				if(!r) continue;
 				if(TYP(r)==PT_SPRK && parts[ID(r)].life && parts[ID(r)].life<4)
 				{
