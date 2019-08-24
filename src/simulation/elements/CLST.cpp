@@ -48,13 +48,11 @@ Element_CLST::Element_CLST()
 //#TPT-Directive ElementHeader Element_CLST static int update(UPDATE_FUNC_ARGS)
 int Element_CLST::update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry;
-	float cxy = 0;
-	for (rx=-2; rx<3; rx++)
-		for (ry=-2; ry<3; ry++)
+	for (int rx=-2; rx<3; rx++)
+		for (int ry=-2; ry<3; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
 			{
-				r = pmap[y+ry][x+rx];
+				int r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
 				if (TYP(r)==PT_WATR)
@@ -72,6 +70,7 @@ int Element_CLST::update(UPDATE_FUNC_ARGS)
 				}
 				else if (TYP(r)==PT_CLST)
 				{
+          float cxy;
 					if(parts[i].temp <195)
 						cxy = 0.05;
 					else if(parts[i].temp <295)
