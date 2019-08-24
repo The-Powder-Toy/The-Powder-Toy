@@ -47,12 +47,11 @@ Element_FOG::Element_FOG()
 //#TPT-Directive ElementHeader Element_FOG static int update(UPDATE_FUNC_ARGS)
 int Element_FOG::update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry;
-	for (rx=-1; rx<2; rx++)
-		for (ry=-1; ry<2; ry++)
+	for (int rx=-1; rx<2; rx++)
+		for (int ry=-1; ry<2; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
 			{
-				r = pmap[y+ry][x+rx];
+				int r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
 				if ((sim->elements[TYP(r)].Properties&TYPE_SOLID) && RNG::Ref().chance(1, 10) && parts[i].life==0 && !(TYP(r)==PT_CLNE || TYP(r)==PT_PCLN)) // TODO: should this also exclude BCLN?
