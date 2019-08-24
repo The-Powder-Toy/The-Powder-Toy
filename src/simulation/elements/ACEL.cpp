@@ -48,7 +48,6 @@ Element_ACEL::Element_ACEL()
 //#TPT-Directive ElementHeader Element_ACEL static int update(UPDATE_FUNC_ARGS)
 int Element_ACEL::update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry;
 	float multiplier;
 	if (parts[i].life!=0)
 	{
@@ -60,11 +59,11 @@ int Element_ACEL::update(UPDATE_FUNC_ARGS)
 		multiplier = 1.1f;
 	}
 	parts[i].tmp = 0;
-	for (rx=-1; rx<2; rx++)
-		for (ry=-1; ry<2; ry++)
+	for (int rx=-1; rx<2; rx++)
+		for (int ry=-1; ry<2; ry++)
 			if (BOUNDS_CHECK && (!rx != !ry))
 			{
-				r = pmap[y+ry][x+rx];
+				int r = pmap[y+ry][x+rx];
 				if(!r)
 					r = sim->photons[y+ry][x+rx];
 				if (!r)
