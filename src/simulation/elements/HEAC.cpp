@@ -64,36 +64,26 @@ template<class BinaryPredicate>
 bool Element_HEAC::CheckLine(Simulation* sim, int x1, int y1, int x2, int y2, BinaryPredicate func)
 {
 	bool reverseXY = abs(y2-y1) > abs(x2-x1);
-	int x, y, dx, dy, sy;
-	float e, de;
 	if (reverseXY)
 	{
-		y = x1;
-		x1 = y1;
-		y1 = y;
-		y = x2;
-		x2 = y2;
-		y2 = y;
+    std::swap(x1, y1);
 	}
 	if (x1 > x2)
 	{
-		y = x1;
-		x1 = x2;
-		x2 = y;
-		y = y1;
-		y1 = y2;
-		y2 = y;
+    std::swap(x1, x2);
+    std::swap(y1, y2);
 	}
-	dx = x2 - x1;
-	dy = abs(y2 - y1);
-	e = 0.0f;
+	int dx = x2 - x1;
+	int dy = abs(y2 - y1);
+	int e = 0.0f;
+  float de;
 	if (dx)
 		de = dy/(float)dx;
 	else
 		de = 0.0f;
-	y = y1;
-	sy = (y1<y2) ? 1 : -1;
-	for (x=x1; x<=x2; x++)
+	int y = y1;
+	int sy = (y1<y2) ? 1 : -1;
+	for (int x=x1; x<=x2; x++)
 	{
 		if (reverseXY)
 		{
