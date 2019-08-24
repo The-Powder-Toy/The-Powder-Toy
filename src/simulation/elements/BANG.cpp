@@ -47,17 +47,16 @@ Element_BANG::Element_BANG()
 //#TPT-Directive ElementHeader Element_BANG static int update(UPDATE_FUNC_ARGS)
 int Element_BANG::update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry;
 	if(parts[i].tmp==0)
 	{
 		if(parts[i].temp>=673.0f)
 			parts[i].tmp = 1;
 		else
-			for (rx=-1; rx<2; rx++)
-				for (ry=-1; ry<2; ry++)
+			for (int rx=-1; rx<2; rx++)
+				for (int ry=-1; ry<2; ry++)
 					if (BOUNDS_CHECK && (rx || ry))
 					{
-						r = pmap[y+ry][x+rx];
+						int r = pmap[y+ry][x+rx];
 						if (!r)
 							continue;
 						if (TYP(r)==PT_FIRE || TYP(r)==PT_PLSM || TYP(r)==PT_SPRK || TYP(r)==PT_LIGH)
