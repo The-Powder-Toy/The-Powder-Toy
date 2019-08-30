@@ -1714,7 +1714,7 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 
 			updateMessage << "\nNew version:\n ";
 			if (info.Type == UpdateInfo::Beta)
-				updateMessage << info.Major << " " << info.Minor << " Beta, Build " << info.Build;
+				updateMessage << info.Major << "." << info.Minor << " Beta, Build " << info.Build;
 			else if (info.Type == UpdateInfo::Snapshot)
 #if MOD_ID > 0
 				updateMessage << "Mod version " << info.Time;
@@ -1722,7 +1722,7 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 				updateMessage << "Snapshot " << info.Time;
 #endif
 			else if(info.Type == UpdateInfo::Stable)
-				updateMessage << info.Major << " " << info.Minor << " Stable, Build " << info.Build;
+				updateMessage << info.Major << "." << info.Minor << " Stable, Build " << info.Build;
 
 			if (info.Changelog.length())
 				updateMessage << "\n\nChangelog:\n" << info.Changelog;

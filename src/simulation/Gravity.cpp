@@ -376,7 +376,6 @@ void Gravity::update_grav(void)
 	}
 fin:
 	memcpy(th_ogravmap, th_gravmap, (XRES/CELL)*(YRES/CELL)*sizeof(float));
-	memcpy(obmap, bmap, (XRES/CELL)*(YRES/CELL)*sizeof(unsigned char));
 }
 #endif
 
