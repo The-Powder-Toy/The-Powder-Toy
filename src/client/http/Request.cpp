@@ -4,6 +4,7 @@
 
 namespace http
 {
+#ifndef NOHTTP
 	Request::Request(ByteString uri_):
 		uri(uri_),
 		rm_total(0),
@@ -28,9 +29,13 @@ namespace http
 			rm_finished = true;
 		}
 	}
+#else
+	Request::Request(ByteString uri_) {}
+#endif
 
 	Request::~Request()
 	{
+#ifndef NOHTTP
 		curl_easy_cleanup(easy);
 #ifdef REQUEST_USE_CURL_MIMEPOST
 		curl_mime_free(post_fields);
@@ -38,16 +43,20 @@ namespace http
 		curl_formfree(post_fields_first);
 #endif
 		curl_slist_free_all(headers);
+#endif
 	}
 
 	void Request::AddHeader(ByteString name, ByteString value)
 	{
+#ifndef NOHTTP
 		headers = curl_slist_append(headers, (name + ": " + value).c_str());
+#endif
 	}
 
 	// add post data to a request
 	void Request::AddPostData(std::map<ByteString, ByteString> data)
 	{
+#ifndef NOHTTP
 		if (!data.size())
 		{
 			return;
@@ -79,6 +88,7 @@ namespace http
 			post_fields_map.insert(data.begin(), data.end());
 #endif
 		}
+#endif
 	}
 
 	// add userID and sessionID headers to the request
@@ -98,6 +108,7 @@ namespace http
 		}
 	}
 
+#ifndef NOHTTP
 	size_t Request::WriteDataHandler(char *ptr, size_t size, size_t count, void *userdata)
 	{
 		Request *req = (Request *)userdata;
@@ -105,10 +116,12 @@ namespace http
 		req->response_body.append(ptr, actual_size);
 		return actual_size;
 	}
+#endif
 
 	// start the request thread
 	void Request::Start()
 	{
+#ifndef NOHTTP
 		if (CheckStarted() || CheckDone())
 		{
 			return;
@@ -210,12 +223,14 @@ namespace http
 			rm_started = true;
 		}
 		RequestManager::Ref().StartRequest(this);
+#endif
 	}
 
 
 	// finish the request (if called before the request is done, this will block)
 	ByteString Request::Finish(int *status_out)
 	{
+#ifndef NOHTTP
 		if (CheckCanceled())
 		{
 			return ""; // shouldn't happen but just in case
@@ -236,10 +251,16 @@ namespace http
 
 		RequestManager::Ref().RemoveRequest(this);
 		return response_out;
+#else
+		if (status_out)
+			*status_out = 604;
+		return "";
+#endif
 	}
 
 	void Request::CheckProgress(int *total, int *done)
 	{
+#ifndef NOHTTP
 		std::lock_guard<std::mutex> g(rm_mutex);
 		if (total)
 		{
@@ -249,38 +270,53 @@ namespace http
 		{
 			*done = rm_done;
 		}
+#endif
 	}
 
 	// returns true if the request has finished
 	bool Request::CheckDone()
 	{
+#ifndef NOHTTP
 		std::lock_guard<std::mutex> g(rm_mutex);
 		return rm_finished;
+#else
+		return true;
+#endif
 	}
 
 	// returns true if the request was canceled
 	bool Request::CheckCanceled()
 	{
+#ifndef NOHTTP
 		std::lock_guard<std::mutex> g(rm_mutex);
 		return rm_canceled;
+#else
+		return false;
+#endif
 	}
 
 	// returns true if the request is running
 	bool Request::CheckStarted()
 	{
+#ifndef NOHTTP
 		std::lock_guard<std::mutex> g(rm_mutex);
 		return rm_started;
+#else
+		return true;
+#endif
 
 	}
 
 	// cancels the request, the request thread will delete the Request* when it finishes (do not use Request in any way after canceling)
 	void Request::Cancel()
 	{
+#ifndef NOHTTP
 		{
 			std::lock_guard<std::mutex> g(rm_mutex);
 			rm_canceled = true;
 		}
 		RequestManager::Ref().RemoveRequest(this);
+#endif
 	}
 
 	ByteString Request::Simple(ByteString uri, int *status, std::map<ByteString, ByteString> post_data)

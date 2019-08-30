@@ -1,3 +1,4 @@
+#ifndef NOHTTP
 #ifndef REQUESTMANAGER_H
 #define REQUESTMANAGER_H
 
@@ -53,3 +54,4 @@ namespace http
 }
 
 #endif // REQUESTMANAGER_H
+#endif

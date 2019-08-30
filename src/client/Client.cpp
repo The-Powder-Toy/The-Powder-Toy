@@ -110,8 +110,10 @@ void Client::Initialise(ByteString proxyString, bool disableNetwork)
 		update_finish();
 	}
 
+#ifndef NOHTTP
 	if (!disableNetwork)
 		http::RequestManager::Ref().Initialise(proxyString);
+#endif
 
 	//Read stamps library
 	std::ifstream stampsLib;
@@ -923,8 +925,10 @@ void Client::Shutdown()
 	{
 		alternateVersionCheckRequest->Cancel();
 	}
-	
+
+#ifndef NOHTTP
 	http::RequestManager::Ref().Shutdown();
+#endif
 
 	//Save config
 	WritePrefs();

@@ -72,9 +72,10 @@ AddSconsOption('font', False, False, "Build the font editor.")
 AddSconsOption('wall', False, False, "Error on all warnings.")
 AddSconsOption('no-warnings', False, False, "Disable all compiler warnings.")
 AddSconsOption('nolua', False, False, "Disable Lua.")
-AddSconsOption('luajit', False, False, "Enable LuaJIT")
-AddSconsOption('lua52', False, False, "Compile using lua 5.2")
+AddSconsOption('luajit', False, False, "Enable LuaJIT.")
+AddSconsOption('lua52', False, False, "Compile using lua 5.2.")
 AddSconsOption('nofft', False, False, "Disable FFT.")
+AddSconsOption('nohttp', False, False, "Disable http requests and libcurl.")
 AddSconsOption("output", False, True, "Executable output name.")
 
 
@@ -327,7 +328,7 @@ def findLibs(env, conf):
 		FatalError("libz not found or not installed")
 
 	#Look for libcurl
-	if not conf.CheckLib(['curl', 'libcurl']):
+	if not GetOption('nohttp') and not conf.CheckLib(['curl', 'libcurl']):
 		FatalError("libcurl not found or not installed")
 
 	if platform == "Linux" or compilePlatform == "Linux" or platform == "FreeBSD":
@@ -496,10 +497,12 @@ if GetOption('static'):
 
 
 #Add other flags and defines
-if not GetOption('nofft'):
+if not GetOption('nofft') or GetOption('renderer'):
 	env.Append(CPPDEFINES=['GRAVFFT'])
 if not GetOption('nolua') and not GetOption('renderer') and not GetOption('font'):
 	env.Append(CPPDEFINES=['LUACONSOLE'])
+if GetOption('nohttp') or GetOption('renderer'):
+	env.Append(CPPDEFINES=['NOHTTP'])
 
 if GetOption('opengl') or GetOption('opengl-renderer'):
 	env.Append(CPPDEFINES=['OGLI', 'PIX32OGL'])

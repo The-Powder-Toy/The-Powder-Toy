@@ -1,3 +1,4 @@
+#ifndef NOHTTP
 #include "RequestManager.h"
 
 #include <iostream>
@@ -254,3 +255,4 @@ namespace http
 		rt_cv.notify_one();
 	}
 }
+#endif

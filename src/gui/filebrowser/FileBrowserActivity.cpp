@@ -1,5 +1,7 @@
 #include "FileBrowserActivity.h"
 
+#include <algorithm>
+
 #include "gui/interface/Label.h"
 #include "gui/interface/Textbox.h"
 #include "gui/interface/ScrollPanel.h"
