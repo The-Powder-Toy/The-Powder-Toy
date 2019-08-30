@@ -497,7 +497,7 @@ if GetOption('static'):
 
 
 #Add other flags and defines
-if not GetOption('nofft') or GetOption('renderer'):
+if not GetOption('nofft') and not GetOption('renderer'):
 	env.Append(CPPDEFINES=['GRAVFFT'])
 if not GetOption('nolua') and not GetOption('renderer') and not GetOption('font'):
 	env.Append(CPPDEFINES=['LUACONSOLE'])
