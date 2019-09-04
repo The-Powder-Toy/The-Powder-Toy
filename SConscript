@@ -328,14 +328,15 @@ def findLibs(env, conf):
 		FatalError("libz not found or not installed")
 
 	#Look for libcurl
-	if not GetOption('nohttp') and not GetOption('renderer') and not conf.CheckLib(['curl', 'libcurl']):
+	useCurl = not GetOption('nohttp') and not GetOption('renderer')
+	if useCurl and not conf.CheckLib(['curl', 'libcurl']):
 		FatalError("libcurl not found or not installed")
 
-		if platform == "Linux" or compilePlatform == "Linux" or platform == "FreeBSD":
-			if GetOption('static'):
-				env.ParseConfig("curl-config --static-libs")
-			else:
-				env.ParseConfig("curl-config --libs")
+	if useCurl and (platform == "Linux" or compilePlatform == "Linux" or platform == "FreeBSD"):
+		if GetOption('static'):
+			env.ParseConfig("curl-config --static-libs")
+		else:
+			env.ParseConfig("curl-config --libs")
 
 	#Look for pthreads
 	if not conf.CheckLib(['pthread', 'pthreadVC2']):
