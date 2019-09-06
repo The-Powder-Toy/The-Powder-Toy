@@ -45,6 +45,7 @@ AddSconsOption('msvc', False, False, "Use the Microsoft Visual Studio compiler."
 AddSconsOption("tool", False, True, "Tool prefix appended before gcc/g++.")
 
 AddSconsOption('beta', False, False, "Beta build.")
+AddSconsOption('no-install-prompt', False, False, "Disable the \"do you want to install Powder Toy?\" prompt.")
 AddSconsOption('save-version', False, True, "Save version.")
 AddSconsOption('minor-version', False, True, "Minor version.")
 AddSconsOption('build-number', False, True, "Build number.")
@@ -545,6 +546,8 @@ elif GetOption('snapshot'):
 
 if GetOption('beta'):
 	env.Append(CPPDEFINES=['BETA'])
+if GetOption('no-install-prompt'):
+	env.Append(CPPDEFINES=['NO_INSTALL_CHECK'])
 
 
 #Generate list of sources to compile
