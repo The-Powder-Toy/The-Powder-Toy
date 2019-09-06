@@ -5,6 +5,7 @@
 
 namespace Platform
 {
+	ByteString PrefFileDirectory();
 	ByteString ExecutableName();
 	void DoRestart();
 
@@ -14,6 +15,11 @@ namespace Platform
 	long unsigned int GetTime();
 
 	void LoadFileInResource(int name, int type, unsigned int& size, const char*& data);
+
+	int MakeDirectory(const char * dirname);
+	int MakeDirectory(const ByteString &dirname);
+	int MakeDirectoryChain(const char * dirname);
+	int MakeDirectoryChain(ByteString dirname);
 }
 
 #endif

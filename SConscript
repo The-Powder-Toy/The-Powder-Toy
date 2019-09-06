@@ -70,6 +70,8 @@ AddSconsOption('opengl-renderer', False, False, "Build with OpenGL renderer supp
 AddSconsOption('renderer', False, False, "Build the save renderer.")
 AddSconsOption('font', False, False, "Build the font editor.")
 
+AddSconsOption('data-in-homedir', False, False, "Store preferences and savegames inside the user home directory.")
+
 AddSconsOption('wall', False, False, "Error on all warnings.")
 AddSconsOption('no-warnings', False, False, "Disable all compiler warnings.")
 AddSconsOption('nolua', False, False, "Disable Lua.")
@@ -512,6 +514,9 @@ if GetOption('renderer'):
 
 if GetOption('font'):
 	env.Append(CPPDEFINES=['FONTEDITOR'])
+
+if GetOption('data-in-homedir'):
+	env.Append(CPPDEFINES=['DATA_IN_HOMEDIR'])
 
 if GetOption("wall"):
 	if msvc:

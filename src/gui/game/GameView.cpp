@@ -37,6 +37,7 @@
 #include "simulation/SimulationData.h"
 #include "simulation/ElementDefs.h"
 #include "simulation/ElementClasses.h"
+#include "Platform.h"
 
 #ifdef GetUserName
 # undef GetUserName // dammit windows
@@ -898,8 +899,8 @@ int GameView::Record(bool record)
 		{
 			time_t startTime = time(NULL);
 			recordingFolder = startTime;
-			Client::Ref().MakeDirectory("recordings");
-			Client::Ref().MakeDirectory(ByteString::Build("recordings", PATH_SEP, recordingFolder).c_str());
+			Platform::MakeDirectory("recordings");
+			Platform::MakeDirectory(ByteString::Build("recordings", PATH_SEP, recordingFolder));
 			recording = true;
 		}
 	}

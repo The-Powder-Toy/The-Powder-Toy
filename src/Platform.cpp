@@ -10,8 +10,10 @@
 #include <shlwapi.h>
 #include <windows.h>
 #else
-#include <unistd.h>
 #include <ctime>
+#include <errno.h>
+#include <unistd.h>
+#include <sys/stat.h>
 #include <sys/time.h>
 #endif
 #ifdef MACOSX
@@ -22,6 +24,40 @@
 
 namespace Platform
 {
+
+ByteString PrefFileDirectory()
+{
+#if defined(WIN)
+	char *appdata = getenv("APPDATA");
+	if(appdata != nullptr) return std::string(appdata) + "\\The Powder Toy\\";
+
+	char *homedrive = getenv("HOMEDRIVE");
+	char *homepath = getenv("HOMEPATH");
+	if(homedrive != nullptr && homepath != nullptr) return std::string(homedrive) + std::string(homepath) + "\\AppData\\Roaming\\The Powder Toy\\";
+#elif defined(LIN)
+	char *xdg_data = getenv("XDG_DATA_HOME");
+	if(xdg_data != nullptr) return std::string(xdg_data) + "/powdertoy/";
+
+	char *home = getenv("HOME");
+	if(home != nullptr) return std::string(home) + "/.local/share/powdertoy/";
+
+	char *username = getlogin();
+	if(username != nullptr) return "/home/" + std::string(username) + "/.local/share/powdertoy/";
+#elif defined(MACOSX)
+	FSRef ref;
+	OSType folderType = kApplicationSupportFolderType;
+	char path[PATH_MAX];
+
+	FSFindFolder( kUserDomain, folderType, kCreateFolder, &ref );
+
+	FSRefMakePath( &ref, (UInt8*)&path, PATH_MAX );
+
+	std::string tptPath = std::string(path) + "/The Powder Toy";
+	return tptPath;
+#endif
+
+	return ""; // give up
+}
 
 ByteString ExecutableName()
 {
@@ -144,6 +180,53 @@ void LoadFileInResource(int name, int type, unsigned int& size, const char*& dat
 	size = ::SizeofResource(handle, rc);
 	data = static_cast<const char*>(::LockResource(rcData));
 #endif
+}
+
+int MakeDirectory(const char * dirName)
+{
+#ifdef WIN
+	return _mkdir(dirName);
+#else
+	return mkdir(dirName, 0755);
+#endif
+}
+
+int MakeDirectory(const ByteString &dirName)
+{
+	return MakeDirectory(dirName.c_str());
+}
+
+int MakeDirectoryChain(const char * dirName)
+{
+	ByteString dirStr = dirName;
+	return MakeDirectoryChain(dirStr);
+}
+
+int MakeDirectoryChain(ByteString dirName)
+{
+	int success = MakeDirectory(dirName);
+	if(success == 0) return 0;
+
+	// If the directory already exists, consider it a success
+	if(errno == EEXIST) return 0;
+
+	// ENOENT signifies that an element of the path does not exist, i.e. a parent directory is missing.
+	// If the error is ENOENT, descend in path and try to create parent directories.
+	// If it's something else, bail out and return failure.
+	if(errno != ENOENT) return -1;
+
+#ifdef WIN
+	unsigned long slashPos = dirName.find_last_of('\\', 0);
+#else
+	unsigned long slashPos = dirName.find_last_of('/', 0);
+#endif
+
+	// No slash, means we can't descent further in path
+	if(slashPos == std::string::npos) return -1;
+
+	// Descend in path and try again
+	dirName = dirName.Erase(slashPos, dirName.length());
+	return MakeDirectoryChain(dirName);
 }
 
 }

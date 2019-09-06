@@ -15,6 +15,7 @@
 #include "gui/interface/Button.h"
 #include "gui/interface/Label.h"
 #include "gui/interface/Textbox.h"
+#include "Platform.h"
 
 LocalSaveActivity::LocalSaveActivity(SaveFile save, OnSaved onSaved_) :
 	WindowActivity(ui::Point(-1, -1), ui::Point(220, 200)),
@@ -104,7 +105,7 @@ void LocalSaveActivity::Save()
 
 void LocalSaveActivity::saveWrite(ByteString finalFilename)
 {
-	Client::Ref().MakeDirectory(LOCAL_SAVE_DIR);
+	Platform::MakeDirectory(LOCAL_SAVE_DIR);
 	GameSave *gameSave = save.GetGameSave();
 	Json::Value localSaveInfo;
 	localSaveInfo["type"] = "localsave";

@@ -3484,7 +3484,7 @@ int LuaScriptInterface::fileSystem_makeDirectory(lua_State * l)
 	const char * dirname = luaL_checkstring(l, 1);
 
 	int ret = 0;
-	ret = Client::Ref().MakeDirectory(dirname);
+	ret = Platform::MakeDirectory(dirname);
 	lua_pushboolean(l, ret == 0);
 	return 1;
 }

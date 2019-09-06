@@ -515,15 +515,6 @@ std::vector<ByteString> Client::DirectorySearch(ByteString directory, ByteString
 	return searchResults;
 }
 
-int Client::MakeDirectory(const char * dirName)
-{
-#ifdef WIN
-	return _mkdir(dirName);
-#else
-	return mkdir(dirName, 0755);
-#endif
-}
-
 bool Client::WriteFile(std::vector<unsigned char> fileData, ByteString filename)
 {
 	bool saveError = false;
@@ -1066,7 +1057,7 @@ ByteString Client::AddStamp(GameSave * saveData)
 	ByteString saveID = ByteString::Build(Format::Hex(Format::Width(lastStampTime, 8)), Format::Hex(Format::Width(lastStampName, 2)));
 	ByteString filename = STAMPS_DIR PATH_SEP + saveID + ".stm";
 
-	MakeDirectory(STAMPS_DIR);
+	Platform::MakeDirectory(STAMPS_DIR);
 
 	Json::Value stampInfo;
 	stampInfo["type"] = "stamp";
@@ -1101,7 +1092,7 @@ ByteString Client::AddStamp(GameSave * saveData)
 
 void Client::updateStamps()
 {
-	MakeDirectory(STAMPS_DIR);
+	Platform::MakeDirectory(STAMPS_DIR);
 
 	std::ofstream stampsStream;
 	stampsStream.open(ByteString(STAMPS_DIR PATH_SEP "stamps.def").c_str(), std::ios::binary);

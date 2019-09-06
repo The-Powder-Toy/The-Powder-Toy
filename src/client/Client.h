@@ -117,7 +117,6 @@ public:
 	void Initialise(ByteString proxyString, bool disableNetwork);
 	bool IsFirstRun();
 
-	int MakeDirectory(const char * dirname);
 	bool WriteFile(std::vector<unsigned char> fileData, ByteString filename);
 	bool WriteFile(std::vector<char> fileData, ByteString filename);
 	bool FileExists(ByteString filename);

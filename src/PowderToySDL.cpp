@@ -53,6 +53,7 @@
 
 #define INCLUDE_SYSWM
 #include "SDLCompat.h"
+#include "Platform.h"
 
 int desktopWidth = 1280, desktopHeight = 1024;
 
@@ -619,18 +620,10 @@ void SigHandler(int signal)
 
 void ChdirToDataDirectory()
 {
-#ifdef MACOSX
-	FSRef ref;
-	OSType folderType = kApplicationSupportFolderType;
-	char path[PATH_MAX];
-
-	FSFindFolder( kUserDomain, folderType, kCreateFolder, &ref );
-
-	FSRefMakePath( &ref, (UInt8*)&path, PATH_MAX );
-
-	std::string tptPath = std::string(path) + "/The Powder Toy";
-	mkdir(tptPath.c_str(), 0755);
-	chdir(tptPath.c_str());
+#if defined(DATA_IN_HOMEDIR) || defined(MACOSX)
+	ByteString path = Platform::PrefFileDirectory();
+	Platform::MakeDirectoryChain(path);
+	chdir(path.c_str());
 #endif
 }
 
