@@ -723,7 +723,6 @@ int Simulation::FloodINST(int x, int y, int fullc, int cm)
 	int c = TYP(fullc);
 	int x1, x2;
 	int coord_stack_limit = XRES*YRES;
-	unsigned short (*coord_stack)[2];
 	int coord_stack_size = 0;
 	int created_something = 0;
 
@@ -745,16 +744,18 @@ int Simulation::FloodINST(int x, int y, int fullc, int cm)
 	if (TYP(pmap[y][x])!=cm || parts[ID(pmap[y][x])].life!=0)
 		return 1;
 
-	coord_stack = (short unsigned int (*)[2])malloc(sizeof(unsigned short)*2*coord_stack_limit);
-	coord_stack[coord_stack_size][0] = x;
-	coord_stack[coord_stack_size][1] = y;
+	if (INST_coord_stack == nullptr)
+		INST_coord_stack = (short unsigned int (*)[2])malloc(sizeof(unsigned short)*2*coord_stack_limit);
+
+	INST_coord_stack[coord_stack_size][0] = x;
+	INST_coord_stack[coord_stack_size][1] = y;
 	coord_stack_size++;
 
 	do
 	{
 		coord_stack_size--;
-		x = coord_stack[coord_stack_size][0];
-		y = coord_stack[coord_stack_size][1];
+		x = INST_coord_stack[coord_stack_size][0];
+		y = INST_coord_stack[coord_stack_size][1];
 		x1 = x2 = x;
 		// go left as far as possible
 		while (x1>=CELL)
@@ -790,12 +791,11 @@ int Simulation::FloodINST(int x, int y, int fullc, int cm)
 			// travelling vertically up, skipping a horizontal line
 			if (TYP(pmap[y-2][x1])==cm && !parts[ID(pmap[y-2][x1])].life)
 			{
-				coord_stack[coord_stack_size][0] = x1;
-				coord_stack[coord_stack_size][1] = y-2;
+				INST_coord_stack[coord_stack_size][0] = x1;
+				INST_coord_stack[coord_stack_size][1] = y-2;
 				coord_stack_size++;
 				if (coord_stack_size>=coord_stack_limit)
 				{
-					free(coord_stack);
 					return -1;
 				}
 			}
@@ -809,12 +809,11 @@ int Simulation::FloodINST(int x, int y, int fullc, int cm)
 					if (x==x1 || x==x2 || y>=YRES-CELL-1 || !PMAP_CMP_CONDUCTIVE(pmap[y+1][x], cm) || PMAP_CMP_CONDUCTIVE(pmap[y+1][x+1], cm) || PMAP_CMP_CONDUCTIVE(pmap[y+1][x-1], cm))
 					{
 						// if at the end of a horizontal section, or if it's a T junction or not a 1px wire crossing
-						coord_stack[coord_stack_size][0] = x;
-						coord_stack[coord_stack_size][1] = y-1;
+						INST_coord_stack[coord_stack_size][0] = x;
+						INST_coord_stack[coord_stack_size][1] = y-1;
 						coord_stack_size++;
 						if (coord_stack_size>=coord_stack_limit)
 						{
-							free(coord_stack);
 							return -1;
 						}
 					}
@@ -829,12 +828,11 @@ int Simulation::FloodINST(int x, int y, int fullc, int cm)
 			// travelling vertically down, skipping a horizontal line
 			if (TYP(pmap[y+2][x1])==cm && !parts[ID(pmap[y+2][x1])].life)
 			{
-				coord_stack[coord_stack_size][0] = x1;
-				coord_stack[coord_stack_size][1] = y+2;
+				INST_coord_stack[coord_stack_size][0] = x1;
+				INST_coord_stack[coord_stack_size][1] = y+2;
 				coord_stack_size++;
 				if (coord_stack_size>=coord_stack_limit)
 				{
-					free(coord_stack);
 					return -1;
 				}
 			}
@@ -848,12 +846,11 @@ int Simulation::FloodINST(int x, int y, int fullc, int cm)
 					if (x==x1 || x==x2 || y<0 || !PMAP_CMP_CONDUCTIVE(pmap[y-1][x], cm) || PMAP_CMP_CONDUCTIVE(pmap[y-1][x+1], cm) || PMAP_CMP_CONDUCTIVE(pmap[y-1][x-1], cm))
 					{
 						// if at the end of a horizontal section, or if it's a T junction or not a 1px wire crossing
-						coord_stack[coord_stack_size][0] = x;
-						coord_stack[coord_stack_size][1] = y+1;
+						INST_coord_stack[coord_stack_size][0] = x;
+						INST_coord_stack[coord_stack_size][1] = y+1;
 						coord_stack_size++;
 						if (coord_stack_size>=coord_stack_limit)
 						{
-							free(coord_stack);
 							return -1;
 						}
 					}
@@ -862,7 +859,6 @@ int Simulation::FloodINST(int x, int y, int fullc, int cm)
 			}
 		}
 	} while (coord_stack_size>0);
-	free(coord_stack);
 	return created_something;
 }
 
@@ -5418,6 +5414,7 @@ void Simulation::AfterSim()
 
 Simulation::~Simulation()
 {
+	free(INST_coord_stack);
 	delete grav;
 	delete air;
 	for (size_t i = 0; i < tools.size(); i++)

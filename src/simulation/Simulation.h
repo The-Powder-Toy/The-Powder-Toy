@@ -66,6 +66,8 @@ public:
 	bool etrd_count_valid;
 	int etrd_life0_count;
 	int lightningRecreate;
+	//INST Flooding
+	unsigned short (*INST_coord_stack)[2] = nullptr;
 	//Stickman
 	playerst player;
 	playerst player2;
