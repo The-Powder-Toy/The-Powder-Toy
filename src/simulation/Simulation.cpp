@@ -745,120 +745,102 @@ int Simulation::FloodINST(int x, int y, int fullc, int cm)
 		return 1;
 
 	if (INST_coord_stack == nullptr)
-		INST_coord_stack = (short unsigned int (*)[2])malloc(sizeof(unsigned short)*2*coord_stack_limit);
+		INST_coord_stack = new CoordStack;
 
-	INST_coord_stack[coord_stack_size][0] = x;
-	INST_coord_stack[coord_stack_size][1] = y;
-	coord_stack_size++;
+	INST_coord_stack->push(x, y);
 
-	do
+	try
 	{
-		coord_stack_size--;
-		x = INST_coord_stack[coord_stack_size][0];
-		y = INST_coord_stack[coord_stack_size][1];
-		x1 = x2 = x;
-		// go left as far as possible
-		while (x1>=CELL)
+		do
 		{
-			if (TYP(pmap[y][x1-1])!=cm || parts[ID(pmap[y][x1-1])].life!=0)
+			INST_coord_stack->pop(x, y);
+			x1 = x2 = x;
+			// go left as far as possible
+			while (x1>=CELL)
 			{
-				break;
-			}
-			x1--;
-		}
-		// go right as far as possible
-		while (x2<XRES-CELL)
-		{
-			if (TYP(pmap[y][x2+1])!=cm || parts[ID(pmap[y][x2+1])].life!=0)
-			{
-				break;
-			}
-			x2++;
-		}
-		// fill span
-		for (x=x1; x<=x2; x++)
-		{
-			if (create_part(-1, x, y, c, ID(fullc))>=0)
-				created_something = 1;
-		}
-
-		// add vertically adjacent pixels to stack
-		// (wire crossing for INST)
-		if (y>=CELL+1 && x1==x2 &&
-				PMAP_CMP_CONDUCTIVE(pmap[y-1][x1-1], cm) && PMAP_CMP_CONDUCTIVE(pmap[y-1][x1], cm) && PMAP_CMP_CONDUCTIVE(pmap[y-1][x1+1], cm) &&
-				!PMAP_CMP_CONDUCTIVE(pmap[y-2][x1-1], cm) && PMAP_CMP_CONDUCTIVE(pmap[y-2][x1], cm) && !PMAP_CMP_CONDUCTIVE(pmap[y-2][x1+1], cm))
-		{
-			// travelling vertically up, skipping a horizontal line
-			if (TYP(pmap[y-2][x1])==cm && !parts[ID(pmap[y-2][x1])].life)
-			{
-				INST_coord_stack[coord_stack_size][0] = x1;
-				INST_coord_stack[coord_stack_size][1] = y-2;
-				coord_stack_size++;
-				if (coord_stack_size>=coord_stack_limit)
+				if (TYP(pmap[y][x1-1])!=cm || parts[ID(pmap[y][x1-1])].life!=0)
 				{
-					return -1;
+					break;
 				}
+				x1--;
 			}
-		}
-		else if (y>=CELL+1)
-		{
+			// go right as far as possible
+			while (x2<XRES-CELL)
+			{
+				if (TYP(pmap[y][x2+1])!=cm || parts[ID(pmap[y][x2+1])].life!=0)
+				{
+					break;
+				}
+				x2++;
+			}
+			// fill span
 			for (x=x1; x<=x2; x++)
 			{
-				if (TYP(pmap[y-1][x])==cm && !parts[ID(pmap[y-1][x])].life)
+				if (create_part(-1, x, y, c, ID(fullc))>=0)
+					created_something = 1;
+			}
+
+			// add vertically adjacent pixels to stack
+			// (wire crossing for INST)
+			if (y>=CELL+1 && x1==x2 &&
+					PMAP_CMP_CONDUCTIVE(pmap[y-1][x1-1], cm) && PMAP_CMP_CONDUCTIVE(pmap[y-1][x1], cm) && PMAP_CMP_CONDUCTIVE(pmap[y-1][x1+1], cm) &&
+					!PMAP_CMP_CONDUCTIVE(pmap[y-2][x1-1], cm) && PMAP_CMP_CONDUCTIVE(pmap[y-2][x1], cm) && !PMAP_CMP_CONDUCTIVE(pmap[y-2][x1+1], cm))
+			{
+				// travelling vertically up, skipping a horizontal line
+				if (TYP(pmap[y-2][x1])==cm && !parts[ID(pmap[y-2][x1])].life)
 				{
-					if (x==x1 || x==x2 || y>=YRES-CELL-1 || !PMAP_CMP_CONDUCTIVE(pmap[y+1][x], cm) || PMAP_CMP_CONDUCTIVE(pmap[y+1][x+1], cm) || PMAP_CMP_CONDUCTIVE(pmap[y+1][x-1], cm))
+						INST_coord_stack->push(x1, y-2);
+				}
+			}
+			else if (y>=CELL+1)
+			{
+				for (x=x1; x<=x2; x++)
+				{
+					if (TYP(pmap[y-1][x])==cm && !parts[ID(pmap[y-1][x])].life)
 					{
-						// if at the end of a horizontal section, or if it's a T junction or not a 1px wire crossing
-						INST_coord_stack[coord_stack_size][0] = x;
-						INST_coord_stack[coord_stack_size][1] = y-1;
-						coord_stack_size++;
-						if (coord_stack_size>=coord_stack_limit)
+						if (x==x1 || x==x2 || y>=YRES-CELL-1 || !PMAP_CMP_CONDUCTIVE(pmap[y+1][x], cm) || PMAP_CMP_CONDUCTIVE(pmap[y+1][x+1], cm) || PMAP_CMP_CONDUCTIVE(pmap[y+1][x-1], cm))
 						{
-							return -1;
+							// if at the end of a horizontal section, or if it's a T junction or not a 1px wire crossing
+							INST_coord_stack->push(x, y-1);
 						}
 					}
 				}
 			}
-		}
 
-		if (y<YRES-CELL-1 && x1==x2 &&
-				PMAP_CMP_CONDUCTIVE(pmap[y+1][x1-1], cm) && PMAP_CMP_CONDUCTIVE(pmap[y+1][x1], cm) && PMAP_CMP_CONDUCTIVE(pmap[y+1][x1+1], cm) &&
-				!PMAP_CMP_CONDUCTIVE(pmap[y+2][x1-1], cm) && PMAP_CMP_CONDUCTIVE(pmap[y+2][x1], cm) && !PMAP_CMP_CONDUCTIVE(pmap[y+2][x1+1], cm))
-		{
-			// travelling vertically down, skipping a horizontal line
-			if (TYP(pmap[y+2][x1])==cm && !parts[ID(pmap[y+2][x1])].life)
+			if (y<YRES-CELL-1 && x1==x2 &&
+					PMAP_CMP_CONDUCTIVE(pmap[y+1][x1-1], cm) && PMAP_CMP_CONDUCTIVE(pmap[y+1][x1], cm) && PMAP_CMP_CONDUCTIVE(pmap[y+1][x1+1], cm) &&
+					!PMAP_CMP_CONDUCTIVE(pmap[y+2][x1-1], cm) && PMAP_CMP_CONDUCTIVE(pmap[y+2][x1], cm) && !PMAP_CMP_CONDUCTIVE(pmap[y+2][x1+1], cm))
 			{
-				INST_coord_stack[coord_stack_size][0] = x1;
-				INST_coord_stack[coord_stack_size][1] = y+2;
-				coord_stack_size++;
-				if (coord_stack_size>=coord_stack_limit)
+				// travelling vertically down, skipping a horizontal line
+				if (TYP(pmap[y+2][x1])==cm && !parts[ID(pmap[y+2][x1])].life)
 				{
-					return -1;
+					INST_coord_stack->push(x1, y+2);
 				}
 			}
-		}
-		else if (y<YRES-CELL-1)
-		{
-			for (x=x1; x<=x2; x++)
+			else if (y<YRES-CELL-1)
 			{
-				if (TYP(pmap[y+1][x])==cm && !parts[ID(pmap[y+1][x])].life)
+				for (x=x1; x<=x2; x++)
 				{
-					if (x==x1 || x==x2 || y<0 || !PMAP_CMP_CONDUCTIVE(pmap[y-1][x], cm) || PMAP_CMP_CONDUCTIVE(pmap[y-1][x+1], cm) || PMAP_CMP_CONDUCTIVE(pmap[y-1][x-1], cm))
+					if (TYP(pmap[y+1][x])==cm && !parts[ID(pmap[y+1][x])].life)
 					{
-						// if at the end of a horizontal section, or if it's a T junction or not a 1px wire crossing
-						INST_coord_stack[coord_stack_size][0] = x;
-						INST_coord_stack[coord_stack_size][1] = y+1;
-						coord_stack_size++;
-						if (coord_stack_size>=coord_stack_limit)
+						if (x==x1 || x==x2 || y<0 || !PMAP_CMP_CONDUCTIVE(pmap[y-1][x], cm) || PMAP_CMP_CONDUCTIVE(pmap[y-1][x+1], cm) || PMAP_CMP_CONDUCTIVE(pmap[y-1][x-1], cm))
 						{
-							return -1;
+							// if at the end of a horizontal section, or if it's a T junction or not a 1px wire crossing
+							INST_coord_stack->push(x, y+1);
 						}
-					}
 
+					}
 				}
 			}
-		}
-	} while (coord_stack_size>0);
+		} while (INST_coord_stack->getSize()>0);
+	}
+	catch (std::exception& e)
+	{
+		std::cerr << e.what() << std::endl;
+		INST_coord_stack->clear();
+		return -1;
+	}
+
 	return created_something;
 }
 
@@ -5414,7 +5396,7 @@ void Simulation::AfterSim()
 
 Simulation::~Simulation()
 {
-	free(INST_coord_stack);
+	delete INST_coord_stack;
 	delete grav;
 	delete air;
 	for (size_t i = 0; i < tools.size(); i++)
