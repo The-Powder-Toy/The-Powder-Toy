@@ -13,8 +13,6 @@
 #include "GOLMenu.h"
 #include "MenuSection.h"
 
-#include "CoordStack.h"
-
 #include "elements/Element.h"
 
 #define CHANNELS ((int)(MAX_TEMP-73)/100+2)
@@ -68,8 +66,6 @@ public:
 	bool etrd_count_valid;
 	int etrd_life0_count;
 	int lightningRecreate;
-	//INST Flooding
-	CoordStack* INST_coord_stack = nullptr;
 	//Stickman
 	playerst player;
 	playerst player2;

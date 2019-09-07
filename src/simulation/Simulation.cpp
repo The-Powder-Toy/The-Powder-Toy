@@ -744,16 +744,15 @@ int Simulation::FloodINST(int x, int y, int fullc, int cm)
 	if (TYP(pmap[y][x])!=cm || parts[ID(pmap[y][x])].life!=0)
 		return 1;
 
-	if (INST_coord_stack == nullptr)
-		INST_coord_stack = new CoordStack;
+	CoordStack cs;
 
-	INST_coord_stack->push(x, y);
+	cs.push(x, y);
 
 	try
 	{
 		do
 		{
-			INST_coord_stack->pop(x, y);
+			cs.pop(x, y);
 			x1 = x2 = x;
 			// go left as far as possible
 			while (x1>=CELL)
@@ -789,7 +788,7 @@ int Simulation::FloodINST(int x, int y, int fullc, int cm)
 				// travelling vertically up, skipping a horizontal line
 				if (TYP(pmap[y-2][x1])==cm && !parts[ID(pmap[y-2][x1])].life)
 				{
-						INST_coord_stack->push(x1, y-2);
+						cs.push(x1, y-2);
 				}
 			}
 			else if (y>=CELL+1)
@@ -801,7 +800,7 @@ int Simulation::FloodINST(int x, int y, int fullc, int cm)
 						if (x==x1 || x==x2 || y>=YRES-CELL-1 || !PMAP_CMP_CONDUCTIVE(pmap[y+1][x], cm) || PMAP_CMP_CONDUCTIVE(pmap[y+1][x+1], cm) || PMAP_CMP_CONDUCTIVE(pmap[y+1][x-1], cm))
 						{
 							// if at the end of a horizontal section, or if it's a T junction or not a 1px wire crossing
-							INST_coord_stack->push(x, y-1);
+							cs.push(x, y-1);
 						}
 					}
 				}
@@ -814,7 +813,7 @@ int Simulation::FloodINST(int x, int y, int fullc, int cm)
 				// travelling vertically down, skipping a horizontal line
 				if (TYP(pmap[y+2][x1])==cm && !parts[ID(pmap[y+2][x1])].life)
 				{
-					INST_coord_stack->push(x1, y+2);
+					cs.push(x1, y+2);
 				}
 			}
 			else if (y<YRES-CELL-1)
@@ -826,18 +825,17 @@ int Simulation::FloodINST(int x, int y, int fullc, int cm)
 						if (x==x1 || x==x2 || y<0 || !PMAP_CMP_CONDUCTIVE(pmap[y-1][x], cm) || PMAP_CMP_CONDUCTIVE(pmap[y-1][x+1], cm) || PMAP_CMP_CONDUCTIVE(pmap[y-1][x-1], cm))
 						{
 							// if at the end of a horizontal section, or if it's a T junction or not a 1px wire crossing
-							INST_coord_stack->push(x, y+1);
+							cs.push(x, y+1);
 						}
 
 					}
 				}
 			}
-		} while (INST_coord_stack->getSize()>0);
+		} while (cs.getSize()>0);
 	}
 	catch (std::exception& e)
 	{
 		std::cerr << e.what() << std::endl;
-		INST_coord_stack->clear();
 		return -1;
 	}
 
@@ -5396,7 +5394,6 @@ void Simulation::AfterSim()
 
 Simulation::~Simulation()
 {
-	delete INST_coord_stack;
 	delete grav;
 	delete air;
 	for (size_t i = 0; i < tools.size(); i++)
