@@ -1,12 +1,12 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_VLSN PT_VLSN 203
+//#TPT-Directive ElementClass Element_VLSN PT_VLSN 188
 Element_VLSN::Element_VLSN()
 {
 	Identifier = "DEFAULT_PT_VLSN";
 	Name = "VLSN";
 	Colour = PIXPACK(0x006400);
 	MenuVisible = 1;
-	MenuSection = SC_New;
+	MenuSection = SC_SENSOR;
 	Enabled = 1;
 
 	Advection = 0.0f;
