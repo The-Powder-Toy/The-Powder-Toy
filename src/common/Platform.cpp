@@ -383,7 +383,7 @@ String DoMigration(ByteString fromDir, ByteString toDir)
 	if (stamps.empty() && saves.empty() && scripts.empty() && downloadedScripts.empty() && screenshots.empty() && !hasAutorun && !hasPref)
 	{
 		logFile << "Nothing to migrate.";
-		return "Nothing to migrate. This button is used to migrate data from pre-96.0 TPT installations to the shared directory";
+		return String("Nothing to migrate. This button is used to migrate data from pre-96.0 TPT installations to the shared directory");
 	}
 
 	StringBuilder result;

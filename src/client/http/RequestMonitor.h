@@ -11,7 +11,7 @@ namespace http
 	{
 		R *request;
 
-	protected:
+	public:
 		RequestMonitor() :
 			request(nullptr)
 		{

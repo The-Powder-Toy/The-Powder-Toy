@@ -175,12 +175,12 @@ void PreviewModel::OnSaveReady()
 	{
 		GameSave *gameSave = new GameSave(*saveData);
 		if (gameSave->fromNewerVersion)
-			new ErrorMessage("This save is from a newer version", "Please update TPT in game or at https://powdertoy.co.uk");
+			new ErrorMessage("This save is from a newer version", "Please update TPT in game or at https://powdertoy.co.uk", {});
 		saveInfo->SetGameSave(gameSave);
 	}
 	catch(ParseException &e)
 	{
-		new ErrorMessage("Error", ByteString(e.what()).FromUtf8());
+		new ErrorMessage("Error", ByteString(e.what()).FromUtf8(), {});
 		canOpen = false;
 	}
 	notifySaveChanged();

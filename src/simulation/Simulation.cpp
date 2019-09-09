@@ -5367,7 +5367,7 @@ String Simulation::ElementResolve(int type, int ctype)
 	}
 	else if (type >= 0 && type < PT_NUM)
 		return elements[type].Name;
-	return "Empty";
+	return String("Empty");
 }
 
 String Simulation::BasicParticleInfo(Particle const &sample_part)
