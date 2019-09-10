@@ -24,16 +24,6 @@
 #define PIXR(x) (((x)>>8)&0xFF)
 #define PIXG(x) (((x)>>16)&0xFF)
 #define PIXB(x) (((x)>>24)&0xFF)
-#elif defined(PIX32OGL)
-#undef PIXELCHANNELS
-#define PIXELCHANNELS 4
-#define PIXPACK(x) (0xFF000000|((x)&0xFFFFFF))												//32bit ARGB in 32bit int: AARRGGBB
-#define PIXRGB(r,g,b) (0xFF000000|((r)<<16)|((g)<<8)|((b)))
-#define PIXRGBA(r,g,b,a) (((a)<<24)|((r)<<16)|((g)<<8)|((b)))
-#define PIXA(x) (((x)>>24)&0xFF)
-#define PIXR(x) (((x)>>16)&0xFF)
-#define PIXG(x) (((x)>>8)&0xFF)
-#define PIXB(x) ((x)&0xFF)
 #else
 #define PIXPACK(x) (x)																		//24bit RGB in 32bit int: 00RRGGBB.
 #define PIXRGB(r,g,b) (((r)<<16)|((g)<<8)|(b))

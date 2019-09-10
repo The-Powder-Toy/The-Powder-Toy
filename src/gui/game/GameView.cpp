@@ -2416,7 +2416,6 @@ void GameView::OnDraw()
 		g->fillrect(XRES-20-textWidth, 12, textWidth+8, 15, 0, 0, 0, alpha*0.5f);
 		g->drawtext(XRES-16-textWidth, 16, sampleInfo.Build(), 255, 255, 255, alpha*0.75f);
 
-#ifndef OGLI
 		if (wavelengthGfx)
 		{
 			int i, cr, cg, cb, j, h = 3, x = XRES-19-textWidth, y = 10;
@@ -2451,7 +2450,6 @@ void GameView::OnDraw()
 				}
 			}
 		}
-#endif
 
 		if (showDebug)
 		{

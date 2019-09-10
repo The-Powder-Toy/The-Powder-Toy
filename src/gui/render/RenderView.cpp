@@ -246,11 +246,7 @@ RenderView::RenderView():
 	tCheckbox->SetActionCallback(new DisplayModeAction(this, DISPLAY_WARP));
 	AddComponent(tCheckbox);
 
-#ifdef OGLR
-	tCheckbox = new ui::Checkbox(ui::Point(checkboxOffset, YRES+4), ui::Point(30, 16), "Effect", "Some type of OpenGL effect ... maybe"); //I would remove the whole checkbox, but then there's a large empty space
-#else
 	tCheckbox = new ui::Checkbox(ui::Point(checkboxOffset, YRES+4), ui::Point(30, 16), "Effect", "Enables moving solids, stickmen guns, and premium(tm) graphics");
-#endif
 	displayModes.push_back(tCheckbox);
 	tCheckbox->SetIcon(IconEffect);
 	tCheckbox->SetActionCallback(new DisplayModeAction(this, DISPLAY_EFFE));

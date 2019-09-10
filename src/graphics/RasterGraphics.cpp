@@ -3,8 +3,6 @@
 #include <cstdlib>
 #include <cstring>
 
-#ifndef OGLI
-
 Graphics::Graphics():
 sdl_scale(1)
 {
@@ -34,5 +32,3 @@ void Graphics::Finalise()
 #undef VIDYRES
 #undef VIDXRES
 #undef PIXELMETHODS_CLASS
-
-#endif

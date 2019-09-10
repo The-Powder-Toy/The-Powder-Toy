@@ -1061,10 +1061,7 @@ pixel *Graphics::render_packed_rgb(void *image, int width, int height, int cmp_s
 
 VideoBuffer Graphics::DumpFrame()
 {
-#ifdef OGLI
-#else
 	VideoBuffer newBuffer(WINDOWW, WINDOWH);
 	std::copy(vid, vid+(WINDOWW*WINDOWH), newBuffer.Buffer);
 	return newBuffer;
-#endif
 }

@@ -506,11 +506,6 @@ if not GetOption('nolua') and not GetOption('renderer') and not GetOption('font'
 if GetOption('nohttp') or GetOption('renderer'):
 	env.Append(CPPDEFINES=['NOHTTP'])
 
-if GetOption('opengl') or GetOption('opengl-renderer'):
-	env.Append(CPPDEFINES=['OGLI', 'PIX32OGL'])
-	if GetOption('opengl-renderer'):
-		env.Append(CPPDEFINES=['OGLR'])
-
 if GetOption('renderer'):
 	env.Append(CPPDEFINES=['RENDERER'])
 

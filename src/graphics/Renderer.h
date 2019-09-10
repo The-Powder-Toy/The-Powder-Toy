@@ -2,9 +2,6 @@
 #define RENDERER_H
 
 #include <vector>
-#ifdef OGLR
-#include "OpenGLHeaders.h"
-#endif
 
 #include "Graphics.h"
 #include "Config.h"
@@ -97,13 +94,6 @@ public:
 	void clearScreen(float alpha);
 	void SetSample(int x, int y);
 
-#ifdef OGLR
-	void checkShader(GLuint shader, const char * shname);
-	void checkProgram(GLuint program, const char * progname);
-	void loadShaders();
-	GLuint vidBuf,textTexture;
-	GLint prevFbo;
-#endif
 	pixel * vid;
 	pixel * persistentVid;
 	pixel * warpVid;
@@ -166,26 +156,6 @@ public:
 
 private:
 	int gridSize;
-#ifdef OGLR
-	GLuint zoomTex, airBuf, fireAlpha, glowAlpha, blurAlpha, partsFboTex, partsFbo, partsTFX, partsTFY, airPV, airVY, airVX;
-	GLuint fireProg, airProg_Pressure, airProg_Velocity, airProg_Cracker, lensProg;
-	GLuint fireV[(YRES*XRES)*2];
-	GLfloat fireC[(YRES*XRES)*4];
-	GLuint smokeV[(YRES*XRES)*2];
-	GLfloat smokeC[(YRES*XRES)*4];
-	GLuint blobV[(YRES*XRES)*2];
-	GLfloat blobC[(YRES*XRES)*4];
-	GLuint blurV[(YRES*XRES)*2];
-	GLfloat blurC[(YRES*XRES)*4];
-	GLuint glowV[(YRES*XRES)*2];
-	GLfloat glowC[(YRES*XRES)*4];
-	GLuint flatV[(YRES*XRES)*2];
-	GLfloat flatC[(YRES*XRES)*4];
-	GLuint addV[(YRES*XRES)*2];
-	GLfloat addC[(YRES*XRES)*4];
-	GLfloat lineV[(((YRES*XRES)*2)*6)];
-	GLfloat lineC[(((YRES*XRES)*2)*6)];
-#endif
 };
 
 #endif

@@ -1,8 +1,5 @@
 #ifndef SAVERENDERER_H_
 #define SAVERENDERER_H_
-#ifdef OGLI
-#include "graphics/OpenGLHeaders.h"
-#endif
 #include "common/Singleton.h"
 #include <mutex>
 
@@ -24,11 +21,6 @@ public:
 	void CopyModes(Renderer *source);
 	void ResetModes();
 	virtual ~SaveRenderer();
-
-private:
-#if defined(OGLR) || defined(OGLI)
-	GLuint fboTex, fbo;
-#endif
 };
 
 #endif /* SAVERENDERER_H_ */
