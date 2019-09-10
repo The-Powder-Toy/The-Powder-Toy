@@ -75,7 +75,8 @@ int Element_VLSN::update(UPDATE_FUNC_ARGS)
 	}
 	bool doSerialization = false;
 	bool doDeserialization = false;
-	int vel = 0;
+	int velx = 0;
+	int vely = 0;
 	for (int rx = -rd; rx < rd + 1; rx++)
 		for (int ry = -rd; ry < rd + 1; ry++)
 			if (x + rx >= 0 && y + ry >= 0 && x + rx < XRES && y + ry < YRES && (rx || ry))
@@ -93,7 +94,8 @@ int Element_VLSN::update(UPDATE_FUNC_ARGS)
 					if (TYP(r) != PT_VLSN && TYP(r) != PT_FILT)
 					{
 						doSerialization = true;
-						vel = std::abs(parts[ID(r)].vx) + std::abs(parts[ID(r)].vy);
+						velx = std::abs(parts[ID(r)].vx);
+						vely = std::abs(parts[ID(r)].vy);
 					}
 					break;
 				case 3:
@@ -101,7 +103,8 @@ int Element_VLSN::update(UPDATE_FUNC_ARGS)
 					if (TYP(r) == PT_FILT)
 					{
 						doDeserialization = true;
-						vel = parts[ID(r)].ctype;
+						velx = parts[ID(r)].ctype;
+						vely = parts[ID(r)].ctype;
 					}
 					break;
 				case 2:
@@ -110,7 +113,7 @@ int Element_VLSN::update(UPDATE_FUNC_ARGS)
 					{
 						if (std::abs(parts[ID(r)].vx) < parts[i].temp - 273.15f && std::abs(parts[ID(r)].vx) > 0)
 							parts[i].life = 1;
-						if (std::abs(parts[ID(r)].vx) < parts[i].temp - 273.15f && std::abs(parts[ID(r)].vx) > 0)
+						if (std::abs(parts[ID(r)].vy) < parts[i].temp - 273.15f && std::abs(parts[ID(r)].vy) > 0)
 							parts[i].life = 1;
 					}
 					break;
@@ -120,7 +123,7 @@ int Element_VLSN::update(UPDATE_FUNC_ARGS)
 					{
 						if (std::abs(parts[ID(r)].vx) >= parts[i].temp - 273.15f && std::abs(parts[ID(r)].vx) > 0)
 							parts[i].life = 1;
-						if (std::abs(parts[ID(r)].vx) >= parts[i].temp - 273.15f && std::abs(parts[ID(r)].vx) > 0)
+						if (std::abs(parts[ID(r)].vy) >= parts[i].temp - 273.15f && std::abs(parts[ID(r)].vy) > 0)
 							parts[i].life = 1;
 					}
 					break;
@@ -141,7 +144,8 @@ int Element_VLSN::update(UPDATE_FUNC_ARGS)
 				{
 					while (TYP(r) == PT_FILT)
 					{
-						parts[ID(r)].ctype = 0x10000000 + vel;
+						parts[ID(r)].ctype = 0x10000000 + velx;
+						parts[ID(r)].ctype = 0x11100000 + vely;
 						nx += rx;
 						ny += ry;
 						if (nx < 0 || ny < 0 || nx >= XRES || ny >= YRES)
@@ -154,25 +158,24 @@ int Element_VLSN::update(UPDATE_FUNC_ARGS)
 				{
 					if (TYP(r) != PT_FILT)
 					{
-						parts[ID(r)].vx = vel - 0x10000000;
-						parts[ID(r)].vy = vel - 0x10000000;
+						parts[ID(r)].vx = velx - 0x10000000;
+						parts[ID(r)].vy = vely - 0x11100000;
 						break;
 					}
 				}
 			}
 	return 0;
 }
-	//#TPT-Directive ElementHeader Element_VLSN static int graphics(GRAPHICS_FUNC_ARGS)
-	int Element_VLSN::graphics(GRAPHICS_FUNC_ARGS)
+//#TPT-Directive ElementHeader Element_VLSN static int graphics(GRAPHICS_FUNC_ARGS)
+int Element_VLSN::graphics(GRAPHICS_FUNC_ARGS)
+{
+	if (cpart->life == 1)
 	{
-		if (cpart->life == 1)
-		{
-			*colg = 255;
-			*colr = 0;
-			*colb = 0;
-
-		}
-		return 0;
+		*colg = 255;
+		*colr = 0;
+		*colb = 0;
 	}
+	return 0;
+}
 
 Element_VLSN::~Element_VLSN() {}
