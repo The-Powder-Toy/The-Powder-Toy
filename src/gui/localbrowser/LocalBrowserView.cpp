@@ -191,7 +191,7 @@ void LocalBrowserView::NotifySavesListChanged(LocalBrowserModel * sender)
 		void SelectedCallback(ui::SaveButton * sender) override
 		{
 			if(sender->GetSaveFile())
-				v->c->Selected(sender->GetSaveFile()->GetName(), sender->GetSelected());
+				v->c->Selected(sender->GetSaveFile()->GetDisplayName().ToUtf8(), sender->GetSelected());
 		}
 	};
 	for (size_t i = 0; i < saves.size(); i++)
@@ -227,7 +227,7 @@ void LocalBrowserView::NotifySelectedChanged(LocalBrowserModel * sender)
 		stampButtons[j]->SetSelected(false);
 		for (size_t i = 0; i < selected.size(); i++)
 		{
-			if (stampButtons[j]->GetSaveFile()->GetName()==selected[i])
+			if (stampButtons[j]->GetSaveFile()->GetDisplayName().ToUtf8() == selected[i])
 				stampButtons[j]->SetSelected(true);
 		}
 	}
