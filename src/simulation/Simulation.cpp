@@ -722,8 +722,6 @@ int Simulation::FloodINST(int x, int y, int fullc, int cm)
 {
 	int c = TYP(fullc);
 	int x1, x2;
-	int coord_stack_limit = XRES*YRES;
-	int coord_stack_size = 0;
 	int created_something = 0;
 
 	if (c>=PT_NUM)
