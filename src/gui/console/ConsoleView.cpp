@@ -58,6 +58,10 @@ void ConsoleView::DoKeyPress(int key, int scan, bool repeat, bool shift, bool ct
 		c->NextCommand();
 		break;
 	case SDLK_UP:
+		if (editingNewCommand)
+		{
+			newCommand = commandField->GetText();
+		}
 		c->PreviousCommand();
 		break;
 	default:
@@ -105,7 +109,16 @@ void ConsoleView::NotifyPreviousCommandsChanged(ConsoleModel * sender)
 
 void ConsoleView::NotifyCurrentCommandChanged(ConsoleModel * sender)
 {
-	commandField->SetText(sender->GetCurrentCommand().Command);
+	bool oldEditingNewCommand = editingNewCommand;
+	editingNewCommand = sender->GetCurrentCommandIndex() >= sender->GetPreviousCommands().size();
+	if (!oldEditingNewCommand && editingNewCommand)
+	{
+		commandField->SetText(newCommand);
+	}
+	else
+	{
+		commandField->SetText(sender->GetCurrentCommand().Command);
+	}
 	commandField->SetDisplayText(c->FormatCommand(commandField->GetText()));
 }
 

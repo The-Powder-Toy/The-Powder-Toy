@@ -18,6 +18,8 @@ class ConsoleView: public ui::Window
 	ui::Textbox * commandField;
 	std::vector<ui::Label*> commandList;
 	bool doClose = false;
+	String newCommand;
+	bool editingNewCommand = true;
 public:
 	ConsoleView();
 	void OnDraw() override;
