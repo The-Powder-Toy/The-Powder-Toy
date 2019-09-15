@@ -1888,27 +1888,6 @@ int LuaScriptInterface::simulation_canMove(lua_State * l)
 	}
 }
 
-int PartsClosure(lua_State * l)
-{
-	int i = lua_tointeger(l, lua_upvalueindex(1));
-	do
-	{
-		if (++i >= NPART)
-			return 0;
-	} while (!luacon_sim->parts[i].type);
-	lua_pushnumber(l, i);
-	lua_replace(l, lua_upvalueindex(1));
-	lua_pushnumber(l, i);
-	return 1;
-}
-
-int LuaScriptInterface::simulation_parts(lua_State * l)
-{
-	lua_pushnumber(l, -1);
-	lua_pushcclosure(l, PartsClosure, 1);
-	return 1;
-}
-
 int BrushClosure(lua_State * l)
 {
 	// see Simulation::ToolBrush
@@ -2001,6 +1980,28 @@ int LuaScriptInterface::simulation_brush(lua_State * l)
 	brushList[brushID]->SetRadius(tempRadius);
 
 	lua_pushcclosure(l, BrushClosure, 9);
+	return 1;
+}
+
+int PartsClosure(lua_State *l)
+{
+	for (int i = lua_tointeger(l, lua_upvalueindex(1)); i <= luacon_sim->parts_lastActiveIndex; ++i)
+	{
+		if (luacon_sim->parts[i].type)
+		{
+			lua_pushnumber(l, i + 1);
+			lua_replace(l, lua_upvalueindex(1));
+			lua_pushnumber(l, i);
+			return 1;
+		}
+	}
+	return 0;
+}
+
+int LuaScriptInterface::simulation_parts(lua_State *l)
+{
+	lua_pushnumber(l, 0);
+	lua_pushcclosure(l, PartsClosure, 1);
 	return 1;
 }
 
