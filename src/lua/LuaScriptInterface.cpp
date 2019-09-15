@@ -1893,11 +1893,9 @@ int PartsClosure(lua_State * l)
 	int i = lua_tointeger(l, lua_upvalueindex(1));
 	do
 	{
-		if(i>=NPART)
+		if (++i >= NPART)
 			return 0;
-		else
-			i++;
-	} while(!luacon_sim->parts[i].type);
+	} while (!luacon_sim->parts[i].type);
 	lua_pushnumber(l, i);
 	lua_replace(l, lua_upvalueindex(1));
 	lua_pushnumber(l, i);
