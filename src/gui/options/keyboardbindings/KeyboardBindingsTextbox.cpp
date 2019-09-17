@@ -37,7 +37,7 @@ void KeyboardBindingsTextbox::SetTextToPrevious()
 	SetText(prevKey);	
 }
 
-void KeyboardBindingsTextbox::SetTextFromModifierAndScan(uint32_t modifier, uint32_t scan)
+void KeyboardBindingsTextbox::SetTextFromModifierAndScan(int modifier, int scan)
 {
 	ByteString modDisplay;
 
@@ -67,7 +67,7 @@ void KeyboardBindingsTextbox::OnKeyRelease(int key, int scan, bool repeat, bool 
 {
 	ui::Textbox::OnKeyRelease(key, scan, repeat, shift, ctrl, alt);
 
-	uint32_t mod = 0x00;
+	int mod = 0x00;
 	ByteString modDisplay = "";
 
 	if (ctrl)
@@ -103,7 +103,7 @@ void KeyboardBindingsTextbox::OnKeyRelease(int key, int scan, bool repeat, bool 
 
 	BindingModel newModel;
 	newModel.modifier = mod;
-	newModel.scan = (uint32_t) scan;
+	newModel.scan = (int) scan;
 	newModel.functionId = model.functionId;
 	newModel.description = model.description;
 	newModel.index = model.index;

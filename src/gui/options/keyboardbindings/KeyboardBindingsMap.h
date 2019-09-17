@@ -5,15 +5,15 @@
 
 typedef struct KeyboardBindingMap
 {
-	uint32_t id;
+	int id;
 	String description;
-	int32_t functionId;
+	int functionId;
 } KeyboardBindingMap;
 
 typedef struct DefaultKeyboardBindingMap
 {
 	ByteString keyCombo;
-	uint32_t bindingId; // KeyboardBindingMap id
+	int bindingId; // KeyboardBindingMap id
 } DefaultKeyboardBindingMap;
 
 static KeyboardBindingMap keyboardBindingFunctionMap[] = 

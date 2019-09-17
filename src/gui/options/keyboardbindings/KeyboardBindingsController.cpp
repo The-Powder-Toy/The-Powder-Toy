@@ -72,7 +72,7 @@ void KeyboardBindingsController::NotifyKeyReleased()
 	view->OnKeyReleased();
 }
 
-void KeyboardBindingsController::PopBindingByFunctionId(int32_t functionId)
+void KeyboardBindingsController::PopBindingByFunctionId(int functionId)
 {
 	model->PopBindingByFunctionId(functionId);
 }
@@ -82,7 +82,7 @@ void KeyboardBindingsController::ResetToDefaults()
 	model->WriteDefaultPrefs(true);
 }
 
-bool KeyboardBindingsController::FunctionHasShortcut(int32_t functionId)
+bool KeyboardBindingsController::FunctionHasShortcut(int functionId)
 {
 	return model->FunctionHasShortcut(functionId);
 }

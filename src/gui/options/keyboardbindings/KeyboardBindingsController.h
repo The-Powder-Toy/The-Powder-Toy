@@ -30,8 +30,8 @@ public:
 	void NotifyKeyReleased();
 	void OnKeyReleased();
 	void NotifyBindingsChanged();
-	void PopBindingByFunctionId(int32_t functionId);
-	bool FunctionHasShortcut(int32_t functionId);
+	void PopBindingByFunctionId(int functionId);
+	bool FunctionHasShortcut(int functionId);
 	void ResetToDefaults();
 	
 	void LoadBindingPrefs();

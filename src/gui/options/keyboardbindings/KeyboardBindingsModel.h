@@ -15,13 +15,13 @@
 
 struct BindingModel
 {
-	uint32_t modifier;
-	uint32_t scan;
-	int32_t functionId;
+	int modifier;
+	int scan;
+	int functionId;
 	String description;
-	uint32_t index;
-	bool isNew;
+	int index;
 	bool noShortcut;
+	bool isNew;
 
 	BindingModel() : noShortcut(false), isNew(false){};
 
@@ -50,25 +50,25 @@ public:
 	inline std::vector<BindingModel> GetBindingPrefs() const { return bindingPrefs; }
 	void LoadBindingPrefs();
 	void Save();
-	void RemoveModelByIndex(uint32_t index);
+	void RemoveModelByIndex(int index);
 	void AddModel(BindingModel model);
 	void CreateModel(BindingModel model);
 	String GetDisplayForModel(BindingModel model);
 	void AddObserver(KeyboardBindingsView* observer);
 	void NotifyBindingsChanged(bool hasConflict);
 	bool HasConflictingCombo();
-	void PopBindingByFunctionId(int32_t functionId);
+	void PopBindingByFunctionId(int functionId);
 	void WriteDefaultFuncArray(bool force = false);
-	bool FunctionHasShortcut(int32_t functionId);
-	int32_t GetFunctionForBinding(int scan, bool shift, bool ctrl, bool alt);
+	bool FunctionHasShortcut(int functionId);
+	int GetFunctionForBinding(int scan, bool shift, bool ctrl, bool alt);
 
 protected:
-	void TurnOffFunctionShortcut(int32_t functionId);
-	void TurnOnFunctionShortcut(int32_t functionId);
+	void TurnOffFunctionShortcut(int functionId);
+	void TurnOnFunctionShortcut(int functionId);
 
 	std::vector<KeyboardBindingsView*> observers;
 	std::vector<BindingModel> bindingPrefs;
-	std::pair<uint32_t, uint32_t> GetModifierAndScanFromString(ByteString str);
+	std::pair<int, int> GetModifierAndScanFromString(ByteString str);
 };
 
 #endif // KEYBOARDBINDINGSMODEL_H

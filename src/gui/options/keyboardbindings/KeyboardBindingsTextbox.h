@@ -15,7 +15,7 @@ public:
 	void OnMouseClick(int x, int y, unsigned button);
 
 	void SetModel(BindingModel _model);
-	void SetTextFromModifierAndScan(uint32_t modifier, uint32_t scan);
+	void SetTextFromModifierAndScan(int modifier, int scan);
 	void SetTextToPrevious();
 
 	void OnTextInput(String text) {}

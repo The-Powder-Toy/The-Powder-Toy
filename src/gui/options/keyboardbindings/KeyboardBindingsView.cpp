@@ -14,6 +14,7 @@
 #include "KeyboardBindingsController.h"
 #include "client/Client.h"
 #include <vector>
+#include <algorithm>
 
 KeyboardBindingsView::KeyboardBindingsView() :
 	ui::Window(ui::Point(-1, -1), ui::Point(320, 340)) {
@@ -86,7 +87,7 @@ void KeyboardBindingsView::ClearScrollPanel()
 
 void KeyboardBindingsView::BuildKeyBindingsListView()
 {
-	uint32_t currentY = 0;
+	int currentY = 0;
 	float scrollPos = scrollPanel->GetScrollPositionY();
 	ClearScrollPanel();
 
@@ -96,7 +97,7 @@ void KeyboardBindingsView::BuildKeyBindingsListView()
 	std::vector<BindingModel> bindingModel = c->GetBindingPrefs();
 	std::sort(bindingModel.begin(), bindingModel.end());
 
-	for (int i = 0; i < bindingModel.size(); i++)
+	for (int i = 0; i < (int)bindingModel.size(); i++)
 	{
 		BindingModel& binding = bindingModel[i];
 
@@ -173,10 +174,10 @@ void KeyboardBindingsView::BuildKeyBindingsListView()
 		{
 		public:
 			KeyboardBindingsView * v;
-			int32_t functionId;
+			int functionId;
 			String desc;
 
-			AddBindingAction(KeyboardBindingsView * v_, int32_t _functionId, String _desc) 
+			AddBindingAction(KeyboardBindingsView * v_, int _functionId, String _desc) 
 			{ 
 				v = v_; 
 				functionId = _functionId;
@@ -210,9 +211,9 @@ void KeyboardBindingsView::BuildKeyBindingsListView()
 		{
 		public:
 			KeyboardBindingsView * v;
-			int32_t functionId;
+			int functionId;
 
-			RemoveBindingAction(KeyboardBindingsView * v_, int32_t _functionId) 
+			RemoveBindingAction(KeyboardBindingsView * v_, int _functionId) 
 			{ 
 				v = v_; 
 				functionId = _functionId;
