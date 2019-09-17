@@ -618,7 +618,7 @@ int Simulation::flood_prop(int x, int y, size_t propoffset, PropertyValue propva
 	{
 		CoordStack& cs = getCoordStackSingleton();
 		cs.clear();
-		
+
 		cs.push(x, y);
 		do
 		{
@@ -749,7 +749,8 @@ int Simulation::FloodINST(int x, int y, int fullc, int cm)
 	if (TYP(pmap[y][x])!=cm || parts[ID(pmap[y][x])].life!=0)
 		return 1;
 
-	CoordStack cs;
+	CoordStack& cs = getCoordStackSingleton();
+	cs.clear();
 
 	cs.push(x, y);
 
@@ -861,7 +862,9 @@ bool Simulation::flood_water(int x, int y, int i)
 
 	try
 	{
-		CoordStack cs;
+		CoordStack& cs = getCoordStackSingleton();
+		cs.clear();
+
 		cs.push(x, y);
 		do
 		{
@@ -1197,7 +1200,9 @@ void Simulation::ApplyDecorationFill(Renderer *ren, int x, int y, int colR, int 
 
 	try
 	{
-		CoordStack cs;
+		CoordStack& cs = getCoordStackSingleton();
+		cs.clear();
+		
 		cs.push(x, y);
 		do
 		{
