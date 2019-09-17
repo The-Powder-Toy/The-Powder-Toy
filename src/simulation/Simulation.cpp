@@ -599,6 +599,13 @@ bool Simulation::FloodFillPmapCheck(int x, int y, int type)
 		return TYP(pmap[y][x]) == type;
 }
 
+CoordStack& Simulation::getCoordStackSingleton()
+{
+	// Future-proofing in case Simulation is later multithreaded
+	thread_local CoordStack cs;
+	return cs;
+}
+
 int Simulation::flood_prop(int x, int y, size_t propoffset, PropertyValue propvalue, StructProperty::PropertyType proptype)
 {
 	int i, x1, x2, dy = 1;
@@ -614,7 +621,9 @@ int Simulation::flood_prop(int x, int y, size_t propoffset, PropertyValue propva
 	memset(bitmap, 0, XRES*YRES);
 	try
 	{
-		CoordStack cs;
+		CoordStack& cs = getCoordStackSingleton();
+		cs.clear();
+
 		cs.push(x, y);
 		do
 		{
@@ -745,7 +754,8 @@ int Simulation::FloodINST(int x, int y, int fullc, int cm)
 	if (TYP(pmap[y][x])!=cm || parts[ID(pmap[y][x])].life!=0)
 		return 1;
 
-	CoordStack cs;
+	CoordStack& cs = getCoordStackSingleton();
+	cs.clear();
 
 	cs.push(x, y);
 
@@ -857,7 +867,9 @@ bool Simulation::flood_water(int x, int y, int i)
 
 	try
 	{
-		CoordStack cs;
+		CoordStack& cs = getCoordStackSingleton();
+		cs.clear();
+
 		cs.push(x, y);
 		do
 		{
@@ -1272,7 +1284,9 @@ void Simulation::ApplyDecorationFill(Renderer *ren, int x, int y, int colR, int 
 
 	try
 	{
-		CoordStack cs;
+		CoordStack& cs = getCoordStackSingleton();
+		cs.clear();
+		
 		cs.push(x, y);
 		do
 		{
