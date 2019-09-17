@@ -13,6 +13,8 @@
 #include "GOLMenu.h"
 #include "MenuSection.h"
 
+#include "CoordStack.h"
+
 #include "elements/Element.h"
 
 #define CHANNELS ((int)(MAX_TEMP-73)/100+2)
@@ -218,6 +220,9 @@ public:
 
 	String ElementResolve(int type, int ctype);
 	String BasicParticleInfo(Particle const &sample_part);
+
+private:
+	CoordStack& getCoordStackSingleton ();
 };
 
 #endif /* SIMULATION_H */
