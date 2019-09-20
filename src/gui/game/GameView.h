@@ -6,7 +6,7 @@
 #include "common/String.h"
 #include "gui/interface/Window.h"
 #include "simulation/Sample.h"
-#include "gui/options/keyboardbindings/KeyboardBindingsModel.h"
+#include "gui/keyconfig/KeyconfigModel.h"
 
 enum DrawMode
 {
@@ -115,7 +115,7 @@ private:
 
 	SimulationSample sample;
 
-	KeyboardBindingsModel keyboardBindingModel;
+	KeyconfigModel keyboardBindingModel;
 
 	void updateToolButtonScroll();
 

@@ -1,4 +1,4 @@
-#include "KeyboardBindingsView.h"
+#include "KeyconfigView.h"
 
 #include "gui/interface/Button.h"
 #include "gui/interface/Label.h"
@@ -8,15 +8,15 @@
 #include "gui/interface/ScrollPanel.h"
 #include "gui/Style.h"
 #include "graphics/Graphics.h"
-#include "KeyboardBindingsMap.h"
-#include "KeyboardBindingsTextbox.h"
-#include "KeyboardBindingsModel.h"
-#include "KeyboardBindingsController.h"
+#include "KeyconfigMap.h"
+#include "KeyconfigTextbox.h"
+#include "KeyconfigModel.h"
+#include "KeyconfigController.h"
 #include "client/Client.h"
 #include <vector>
 #include <algorithm>
 
-KeyboardBindingsView::KeyboardBindingsView() :
+KeyconfigView::KeyconfigView() :
 	ui::Window(ui::Point(-1, -1), ui::Point(320, 340)) {
 	
 	ui::Label * tempLabel = new ui::Label(ui::Point(4, 1), ui::Point(Size.X / 2, 22), "Keyboard Bindings");
@@ -28,8 +28,8 @@ KeyboardBindingsView::KeyboardBindingsView() :
 	class ResetDefaultsAction: public ui::ButtonAction
 	{
 	public:
-		KeyboardBindingsView * v;
-		ResetDefaultsAction(KeyboardBindingsView * v_) { v = v_; }
+		KeyconfigView * v;
+		ResetDefaultsAction(KeyconfigView * v_) { v = v_; }
 		void ActionCallback(ui::Button * sender) override
 		{
 			v->c->ResetToDefaults();
@@ -52,8 +52,8 @@ KeyboardBindingsView::KeyboardBindingsView() :
 	class CloseAction: public ui::ButtonAction
 	{
 	public:
-		KeyboardBindingsView * v;
-		CloseAction(KeyboardBindingsView * v_) { v = v_; }
+		KeyconfigView * v;
+		CloseAction(KeyconfigView * v_) { v = v_; }
 		void ActionCallback(ui::Button * sender) override
 		{
 			v->c->Save();
@@ -70,7 +70,7 @@ KeyboardBindingsView::KeyboardBindingsView() :
 	AddComponent(scrollPanel);
 }
 
-void KeyboardBindingsView::ClearScrollPanel()
+void KeyconfigView::ClearScrollPanel()
 {
 	int count = scrollPanel->GetChildCount();
 
@@ -85,7 +85,7 @@ void KeyboardBindingsView::ClearScrollPanel()
 	textboxes.clear();
 }
 
-void KeyboardBindingsView::BuildKeyBindingsListView()
+void KeyconfigView::BuildKeyBindingsListView()
 {
 	int currentY = 0;
 	float scrollPos = scrollPanel->GetScrollPositionY();
@@ -105,7 +105,7 @@ void KeyboardBindingsView::BuildKeyBindingsListView()
 		functionLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 		scrollPanel->AddChild(functionLabel);
 
-		KeyboardBindingsTextbox* textbox;
+		KeyconfigTextbox* textbox;
 		ui::Label* noShortCutLabel;
 
 		bool hasBinding = true;
@@ -120,7 +120,7 @@ void KeyboardBindingsView::BuildKeyBindingsListView()
 		}
 		else
 		{
-			textbox = new KeyboardBindingsTextbox(ui::Point(functionLabel->Position.X + functionLabel->Size.X + 20, currentY), ui::Point(95, 16));
+			textbox = new KeyconfigTextbox(ui::Point(functionLabel->Position.X + functionLabel->Size.X + 20, currentY), ui::Point(95, 16));
 			textbox->SetTextFromModifierAndScan(binding.modifier, binding.scan);
 			textbox->SetModel(binding);
 			textbox->AttachController(c);
@@ -142,7 +142,7 @@ void KeyboardBindingsView::BuildKeyBindingsListView()
 				BindingModel nextBinding = *it;
 				if (nextBinding.functionId == binding.functionId)
 				{
-					KeyboardBindingsTextbox* tb = new KeyboardBindingsTextbox(ui::Point(functionLabel->Position.X + functionLabel->Size.X + 20, currentY), ui::Point(95, 16));
+					KeyconfigTextbox* tb = new KeyconfigTextbox(ui::Point(functionLabel->Position.X + functionLabel->Size.X + 20, currentY), ui::Point(95, 16));
 					if (!nextBinding.isNew)
 						tb->SetTextFromModifierAndScan(nextBinding.modifier, nextBinding.scan);
 					else
@@ -173,11 +173,11 @@ void KeyboardBindingsView::BuildKeyBindingsListView()
 		class AddBindingAction: public ui::ButtonAction
 		{
 		public:
-			KeyboardBindingsView * v;
+			KeyconfigView * v;
 			int functionId;
 			String desc;
 
-			AddBindingAction(KeyboardBindingsView * v_, int _functionId, String _desc) 
+			AddBindingAction(KeyconfigView * v_, int _functionId, String _desc) 
 			{ 
 				v = v_; 
 				functionId = _functionId;
@@ -210,10 +210,10 @@ void KeyboardBindingsView::BuildKeyBindingsListView()
 		class RemoveBindingAction: public ui::ButtonAction
 		{
 		public:
-			KeyboardBindingsView * v;
+			KeyconfigView * v;
 			int functionId;
 
-			RemoveBindingAction(KeyboardBindingsView * v_, int _functionId) 
+			RemoveBindingAction(KeyconfigView * v_, int _functionId) 
 			{ 
 				v = v_; 
 				functionId = _functionId;
@@ -242,7 +242,7 @@ void KeyboardBindingsView::BuildKeyBindingsListView()
 	scrollPanel->SetScrollPosition(scrollPos);
 }
 
-void KeyboardBindingsView::OnKeyReleased()
+void KeyconfigView::OnKeyReleased()
 {
 	for (auto textbox : textboxes)
 	{
@@ -253,24 +253,24 @@ void KeyboardBindingsView::OnKeyReleased()
 	}
 }
 
-void KeyboardBindingsView::AttachController(KeyboardBindingsController* c_)
+void KeyconfigView::AttachController(KeyconfigController* c_)
 {
 	c = c_;
 }
 
-void KeyboardBindingsView::OnDraw()
+void KeyconfigView::OnDraw()
 {
 	Graphics * g = GetGraphics();
 	g->clearrect(Position.X-2, Position.Y-2, Size.X+3, Size.Y+3);
 	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 255, 255, 255, 255);
 }
 
-void KeyboardBindingsView::OnTryExit(ExitMethod method)
+void KeyconfigView::OnTryExit(ExitMethod method)
 {
 	c->Exit();
 }
 
-void KeyboardBindingsView::OnKeyCombinationChanged(bool hasConflict)
+void KeyconfigView::OnKeyCombinationChanged(bool hasConflict)
 {
 	// disable OK button if there's a conflict
 	if (hasConflict)
@@ -285,7 +285,7 @@ void KeyboardBindingsView::OnKeyCombinationChanged(bool hasConflict)
 	}
 }
 
-KeyboardBindingsView::~KeyboardBindingsView()
+KeyconfigView::~KeyconfigView()
 {
 
 }

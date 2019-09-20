@@ -1,22 +1,22 @@
-#ifndef KEYBOARDBINDINGSMAP_H
-#define KEYBOARDBINDINGSMAP_H
+#ifndef KEYCONFIGSMAP_H
+#define KEYCONFIGSMAP_H
 
 #include "common/String.h"
 
-typedef struct KeyboardBindingMap
+typedef struct KeyconfigMap
 {
 	int id;
 	String description;
 	int functionId;
-} KeyboardBindingMap;
+} KeyconfigMap;
 
-typedef struct DefaultKeyboardBindingMap
+typedef struct DefaultKeyconfigMap
 {
 	ByteString keyCombo;
-	int bindingId; // KeyboardBindingMap id
-} DefaultKeyboardBindingMap;
+	int bindingId; // KeyconfigMap id
+} DefaultKeyconfigMap;
 
-static KeyboardBindingMap keyboardBindingFunctionMap[] = 
+static KeyconfigMap keyboardBindingFunctionMap[] = 
 {
 	{ 0x00, "Reload Simulation", 0 },
 	{ 0x01, "Open Element Search", 1 },
@@ -62,7 +62,7 @@ static KeyboardBindingMap keyboardBindingFunctionMap[] =
 	{ 0x29, "Toggle Console", 36 }
 };
 
-enum KeyboardBindingFunction 
+enum KeyconfigFunction 
 {
 	RELOAD_SIMULATION,
 	OPEN_ELEMENT_SEARCH,
@@ -103,7 +103,7 @@ enum KeyboardBindingFunction
 	TOGGLE_CONSOLE
 };
 
-static DefaultKeyboardBindingMap defaultKeyboardBindingMapArray[] = 
+static DefaultKeyconfigMap defaultKeyconfigMapArray[] = 
 {
 	{ "0+62", 0x00 },
 	{ "0+8", 0x01 },

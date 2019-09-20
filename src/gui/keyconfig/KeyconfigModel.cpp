@@ -1,16 +1,16 @@
-#include "KeyboardBindingsModel.h"
+#include "KeyconfigModel.h"
 #include "client/Client.h"
 #include "SDLCompat.h"
-#include "KeyboardBindingsMap.h"
+#include "KeyconfigMap.h"
 #include <algorithm>
-#include "KeyboardBindingsView.h"
+#include "KeyconfigView.h"
 
-void KeyboardBindingsModel::WriteDefaultFuncArray(bool force)
+void KeyconfigModel::WriteDefaultFuncArray(bool force)
 {
 	if (force)
-		Client::Ref().ClearPref(ByteString(KEYBOARDBINDING_FUNCS_PREF));
+		Client::Ref().ClearPref(ByteString(KEYCONFIG_FUNCS_PREF));
 
-	for (auto defaultBinding : defaultKeyboardBindingMapArray)
+	for (auto defaultBinding : defaultKeyconfigMapArray)
 	{
 		int functionId;
 		String description;
@@ -23,7 +23,7 @@ void KeyboardBindingsModel::WriteDefaultFuncArray(bool force)
 			}
 		}
 
-		ByteString pref = ByteString(KEYBOARDBINDING_FUNCS_PREF) + ByteString(".") + ByteString(functionId);
+		ByteString pref = ByteString(KEYCONFIG_FUNCS_PREF) + ByteString(".") + ByteString(functionId);
 		bool functionExists = Client::Ref().GetPrefJson(pref, Json::nullValue) != Json::nullValue;
 
 		if (!force && functionExists)
@@ -38,19 +38,19 @@ void KeyboardBindingsModel::WriteDefaultFuncArray(bool force)
 
 }
 
-void KeyboardBindingsModel::WriteDefaultPrefs(bool force)
+void KeyconfigModel::WriteDefaultPrefs(bool force)
 {
 	// Load temporary bindings into memory
 	// this is so we can add in any new axctions
-	// from the KeyboardBindingsMap into our prefs
+	// from the KeyconfigMap into our prefs
 	LoadBindingPrefs();
 
 	if (force)
-		Client::Ref().ClearPref(ByteString(KEYBOARDBINDING_PREF));
+		Client::Ref().ClearPref(ByteString(KEYCONFIG_PREF));
 
 	WriteDefaultFuncArray(force);
 
-	for (auto defaultBinding : defaultKeyboardBindingMapArray)
+	for (auto defaultBinding : defaultKeyconfigMapArray)
 	{
 		int functionId;
 		String description;
@@ -63,7 +63,7 @@ void KeyboardBindingsModel::WriteDefaultPrefs(bool force)
 			}
 		}
 
-		ByteString pref = ByteString(KEYBOARDBINDING_PREF) + ByteString(".") + defaultBinding.keyCombo;
+		ByteString pref = ByteString(KEYCONFIG_PREF) + ByteString(".") + defaultBinding.keyCombo;
 		Json::Value prefValue;
 		
 		// if we not forcing then check if the function is already set up as a pref
@@ -95,9 +95,9 @@ void KeyboardBindingsModel::WriteDefaultPrefs(bool force)
 	LoadBindingPrefs();
 }
 
-void KeyboardBindingsModel::LoadBindingPrefs()
+void KeyconfigModel::LoadBindingPrefs()
 {
-	Json::Value bindings = Client::Ref().GetPrefJson(KEYBOARDBINDING_PREF);
+	Json::Value bindings = Client::Ref().GetPrefJson(KEYCONFIG_PREF);
 	bindingPrefs.clear();
 
 	if (bindings != Json::nullValue)
@@ -108,7 +108,7 @@ void KeyboardBindingsModel::LoadBindingPrefs()
 		for (auto& member : keyComboJson)
 		{
 			ByteString keyCombo(member);
-			ByteString pref = ByteString(KEYBOARDBINDING_PREF) + "." + keyCombo;
+			ByteString pref = ByteString(KEYCONFIG_PREF) + "." + keyCombo;
 			Json::Value result = Client::Ref().GetPrefJson(pref);
 
 			if (result != Json::nullValue)
@@ -129,7 +129,7 @@ void KeyboardBindingsModel::LoadBindingPrefs()
 }
 
 std::pair<int, int> 
-KeyboardBindingsModel::GetModifierAndScanFromString(ByteString str)
+KeyconfigModel::GetModifierAndScanFromString(ByteString str)
 {
 	int modifier = 0;
 	int scan = 0;
@@ -152,23 +152,23 @@ KeyboardBindingsModel::GetModifierAndScanFromString(ByteString str)
 	return std::make_pair(modifier, scan);
 }
 
-void KeyboardBindingsModel::TurnOffFunctionShortcut(int functionId)
+void KeyconfigModel::TurnOffFunctionShortcut(int functionId)
 {
-	ByteString pref = ByteString(KEYBOARDBINDING_FUNCS_PREF) + ByteString(".") + ByteString(functionId) 
+	ByteString pref = ByteString(KEYCONFIG_FUNCS_PREF) + ByteString(".") + ByteString(functionId) 
 		+ ByteString(".hasShortcut");
 
 	Client::Ref().SetPref(pref, false);
 }
 
-void KeyboardBindingsModel::TurnOnFunctionShortcut(int functionId)
+void KeyconfigModel::TurnOnFunctionShortcut(int functionId)
 {
-	ByteString pref = ByteString(KEYBOARDBINDING_FUNCS_PREF) + ByteString(".") + ByteString(functionId) 
+	ByteString pref = ByteString(KEYCONFIG_FUNCS_PREF) + ByteString(".") + ByteString(functionId) 
 		+ ByteString(".hasShortcut");
 
 	Client::Ref().SetPref(pref, true);
 }
 
-void KeyboardBindingsModel::RemoveModelByIndex(int index)
+void KeyconfigModel::RemoveModelByIndex(int index)
 {
 	std::vector<BindingModel>::iterator it = bindingPrefs.begin();
 
@@ -185,7 +185,7 @@ void KeyboardBindingsModel::RemoveModelByIndex(int index)
 	}
 }
 
-void KeyboardBindingsModel::CreateModel(BindingModel model)
+void KeyconfigModel::CreateModel(BindingModel model)
 {
 	// if the function has no shortcut then just turn it on
 	if (!FunctionHasShortcut(model.functionId))
@@ -202,7 +202,7 @@ void KeyboardBindingsModel::CreateModel(BindingModel model)
 	bindingPrefs.push_back(model);
 }
 
-void KeyboardBindingsModel::AddModel(BindingModel model)
+void KeyconfigModel::AddModel(BindingModel model)
 {
 	bindingPrefs.push_back(model);
 	TurnOnFunctionShortcut(model.functionId);
@@ -210,23 +210,23 @@ void KeyboardBindingsModel::AddModel(BindingModel model)
 	NotifyBindingsChanged(hasConflict);
 }
 
-bool KeyboardBindingsModel::FunctionHasShortcut(int functionId)
+bool KeyconfigModel::FunctionHasShortcut(int functionId)
 {
-	ByteString pref = ByteString(KEYBOARDBINDING_FUNCS_PREF) + ByteString(".") + ByteString(functionId) 
+	ByteString pref = ByteString(KEYCONFIG_FUNCS_PREF) + ByteString(".") + ByteString(functionId) 
 		+ ByteString(".hasShortcut");
 
 	return Client::Ref().GetPrefBool(pref, false);
 }
 
-void KeyboardBindingsModel::Save()
+void KeyconfigModel::Save()
 {
-	Client::Ref().ClearPref(KEYBOARDBINDING_PREF);
+	Client::Ref().ClearPref(KEYCONFIG_PREF);
 
 	for (auto& binding : bindingPrefs)
 	{
 		ByteString mod(std::to_string(binding.modifier));
 		ByteString scan(std::to_string(binding.scan));
-		ByteString pref = ByteString(KEYBOARDBINDING_PREF) + ByteString(".") + mod + ByteString("+") + scan;
+		ByteString pref = ByteString(KEYCONFIG_PREF) + ByteString(".") + mod + ByteString("+") + scan;
 
 		Json::Value val;
 		val["functionId"] = binding.functionId;
@@ -237,7 +237,7 @@ void KeyboardBindingsModel::Save()
 	Client::Ref().WritePrefs();
 }
 
-int KeyboardBindingsModel::GetFunctionForBinding(int scan, bool shift, bool ctrl, bool alt)
+int KeyconfigModel::GetFunctionForBinding(int scan, bool shift, bool ctrl, bool alt)
 {
 	int modifier = 0;
 
@@ -272,7 +272,7 @@ int KeyboardBindingsModel::GetFunctionForBinding(int scan, bool shift, bool ctrl
  * then we turn off hasShortcut for the associated function
  * so it renders as *No Shortcut* on the view
  */ 
-void KeyboardBindingsModel::PopBindingByFunctionId(int functionId)
+void KeyconfigModel::PopBindingByFunctionId(int functionId)
 {
 	std::sort(bindingPrefs.begin(), bindingPrefs.end(), [](BindingModel a, BindingModel b)
 	{
@@ -306,12 +306,12 @@ void KeyboardBindingsModel::PopBindingByFunctionId(int functionId)
 	}
 }
 
-String KeyboardBindingsModel::GetDisplayForModel(BindingModel model)
+String KeyconfigModel::GetDisplayForModel(BindingModel model)
 {
 	return model.description;
 }
 
-bool KeyboardBindingsModel::HasConflictingCombo()
+bool KeyconfigModel::HasConflictingCombo()
 {
 	for (auto& binding : bindingPrefs)
 	{
@@ -345,12 +345,12 @@ bool KeyboardBindingsModel::HasConflictingCombo()
 	return false;
 }
 
-void KeyboardBindingsModel::AddObserver(KeyboardBindingsView* observer)
+void KeyconfigModel::AddObserver(KeyconfigView* observer)
 {
 	observers.push_back(observer);
 }
 
-void KeyboardBindingsModel::NotifyBindingsChanged(bool hasConflict)
+void KeyconfigModel::NotifyBindingsChanged(bool hasConflict)
 {
 	for (auto& observer : observers)
 	{

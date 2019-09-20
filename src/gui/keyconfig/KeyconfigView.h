@@ -1,5 +1,5 @@
-#ifndef KEYBOARDBINDINGSVIEW_H
-#define KEYBOARDBINDINGSVIEW_H
+#ifndef KEYCONFIGSVIEW_H
+#define KEYCONFIGSVIEW_H
 
 #include "gui/interface/Window.h"
 
@@ -10,19 +10,19 @@ namespace ui
 	class Label;
 }
 
-class KeyboardBindingsController;
-class KeyboardBindingsTextbox;
+class KeyconfigController;
+class KeyconfigTextbox;
 
-class KeyboardBindingsView: public ui::Window
+class KeyconfigView: public ui::Window
 {
 	ui::ScrollPanel* scrollPanel;
-	KeyboardBindingsController* c;
+	KeyconfigController* c;
 public:
-	KeyboardBindingsView();
+	KeyconfigView();
 	void OnDraw() override;
 	void OnTryExit(ExitMethod method) override;
-	void AttachController(KeyboardBindingsController* controller);
-	virtual ~KeyboardBindingsView();
+	void AttachController(KeyconfigController* controller);
+	virtual ~KeyconfigView();
 	void OnKeyCombinationChanged(bool hasConflict);
 	void BuildKeyBindingsListView();
 	void OnKeyReleased();
@@ -31,7 +31,7 @@ public:
 protected:
 	ui::Button* okayButton;
 	ui::Label* conflictLabel;
-	std::vector<KeyboardBindingsTextbox*> textboxes;
+	std::vector<KeyconfigTextbox*> textboxes;
 };
 
-#endif /* KEYBOARDBINDINGSVIEW_H */
+#endif /* KEYCONFIGSVIEW_H */

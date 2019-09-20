@@ -1,15 +1,15 @@
-#ifndef KEYBOARDBINDINGSTEXTBOX_H
-#define KEYBOARDBINDINGSTEXTBOX_H
+#ifndef KEYCONFIGSTEXTBOX_H
+#define KEYCONFIGSTEXTBOX_H
 
 #include "gui/interface/Textbox.h"
-#include "KeyboardBindingsModel.h"
+#include "KeyconfigModel.h"
 
-class KeyboardBindingsController;
+class KeyconfigController;
 
-class KeyboardBindingsTextbox: public ui::Textbox
+class KeyconfigTextbox: public ui::Textbox
 {
 public:
-	KeyboardBindingsTextbox(ui::Point position, ui::Point size);
+	KeyconfigTextbox(ui::Point position, ui::Point size);
 
 	void OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
 	void OnMouseClick(int x, int y, unsigned button);
@@ -20,12 +20,12 @@ public:
 
 	void OnTextInput(String text) {}
 
-	void AttachController(KeyboardBindingsController* _c);
+	void AttachController(KeyconfigController* _c);
 
 protected:
 	String prevKey;
-	KeyboardBindingsController* c;
+	KeyconfigController* c;
 	BindingModel model;
 };
 
-#endif /* KEYBOARDBINDINGSTEXTBOX_H */
+#endif /* KEYCONFIGSTEXTBOX_H */

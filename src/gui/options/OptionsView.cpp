@@ -18,8 +18,8 @@
 #include "gui/interface/DropDown.h"
 #include "gui/interface/Engine.h"
 #include "gui/interface/Checkbox.h"
-#include "keyboardbindings/KeyboardBindingsView.h"
-#include "keyboardbindings/KeyboardBindingsController.h"
+#include "gui/keyconfig/KeyconfigView.h"
+#include "gui/keyconfig/KeyconfigController.h"
 
 #include "graphics/Graphics.h"
 
@@ -452,20 +452,20 @@ OptionsView::OptionsView():
 	scrollPanel->AddChild(tempLabel);
 	currentY+=20;
 
-	class KeyboardBindingsAction: public ui::ButtonAction
+	class KeyconfigAction: public ui::ButtonAction
 	{
 	public:
-		KeyboardBindingsAction() { }
+		KeyconfigAction() { }
 		void ActionCallback(ui::Button * sender) override
 		{
 			OptionsView* v = (OptionsView*) sender->GetParentWindow();
-			KeyboardBindingsController* keyboardBindingsController = new KeyboardBindingsController(v->c);
+			KeyconfigController* keyboardBindingsController = new KeyconfigController(v->c);
 			ui::Engine::Ref().ShowWindow(keyboardBindingsController->GetView());
 		}
 	};
 
 	ui::Button * keyboardBindingsButton = new ui::Button(ui::Point(8, currentY), ui::Point(130, 16), "Open Keyboard Bindings");
-	keyboardBindingsButton->SetActionCallback(new KeyboardBindingsAction());
+	keyboardBindingsButton->SetActionCallback(new KeyconfigAction());
 	scrollPanel->AddChild(keyboardBindingsButton);
 
 	tempLabel = new ui::Label(ui::Point(keyboardBindingsButton->Position.X+keyboardBindingsButton->Size.X+3, currentY), ui::Point(1, 16), "\bg- Change the keyboard bindings");

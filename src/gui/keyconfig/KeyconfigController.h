@@ -1,27 +1,27 @@
-#ifndef KEYBOARDBINDINGSCONTROLLER_H
-#define KEYBOARDBINDINGSCONTROLLER_H
+#ifndef KEYCONFIGSCONTROLLER_H
+#define KEYCONFIGSCONTROLLER_H
 
 #include <vector>
 
 class ControllerCallback;
-class KeyboardBindingsView;
+class KeyconfigView;
 class GameModel;
 class OptionsController;
-class KeyboardBindingsModel;
+class KeyconfigModel;
 struct BindingModel;
 
-class KeyboardBindingsController
+class KeyconfigController
 {
 	ControllerCallback * callback;
-	KeyboardBindingsView* view;
-	KeyboardBindingsModel* model;
+	KeyconfigView* view;
+	KeyconfigModel* model;
 	OptionsController* parent;
 public:
 	bool HasExited;
-	KeyboardBindingsController(OptionsController* _parent);	
+	KeyconfigController(OptionsController* _parent);	
 	void Exit();
-	KeyboardBindingsView * GetView();
-	virtual ~KeyboardBindingsController();
+	KeyconfigView * GetView();
+	virtual ~KeyconfigController();
 	void AddModel(BindingModel model);
 	void CreateModel(BindingModel model);
 	void ChangeModel(BindingModel model);
@@ -38,4 +38,4 @@ public:
 	std::vector<BindingModel> GetBindingPrefs();
 };
 
-#endif /* KEYBOARDBINDINGSCONTROLLER_H */
+#endif /* KEYCONFIGSCONTROLLER_H */

@@ -36,7 +36,7 @@
 #include "simulation/SimulationData.h"
 #include "simulation/ElementDefs.h"
 #include "ElementClasses.h"
-#include "gui/options/keyboardbindings/KeyboardBindingsMap.h"
+#include "gui/keyconfig/KeyconfigMap.h"
 
 #ifdef GetUserName
 # undef GetUserName // dammit windows
@@ -1403,290 +1403,6 @@ void GameView::BeginStampSelection()
 	buttonTipShow = 120;
 }
 
-void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
-{
-	if (introText > 50)
-	{
-		introText = 50;
-	}
-
-	if (selectMode != SelectNone)
-	{
-		if (selectMode == PlaceSave)
-		{
-			switch (key)
-			{
-			case SDLK_RIGHT:
-				c->TranslateSave(ui::Point(1, 0));
-				return;
-			case SDLK_LEFT:
-				c->TranslateSave(ui::Point(-1, 0));
-				return;
-			case SDLK_UP:
-				c->TranslateSave(ui::Point(0, -1));
-				return;
-			case SDLK_DOWN:
-				c->TranslateSave(ui::Point(0, 1));
-				return;
-			}
-			if (scan == SDL_SCANCODE_R && !repeat)
-			{
-				if (ctrl && shift)
-				{
-					//Vertical flip
-					c->TransformSave(m2d_new(1,0,0,-1));
-				}
-				else if (!ctrl && shift)
-				{
-					//Horizontal flip
-					c->TransformSave(m2d_new(-1,0,0,1));
-				}
-				else
-				{
-					//Rotate 90deg
-					c->TransformSave(m2d_new(0,1,-1,0));
-				}
-				return;
-			}
-		}
-	}
-
-	int32_t functionId = keyboardBindingModel.GetFunctionForBinding(scan, shift, ctrl, alt);
-
-	if (repeat)
-		return;
-	bool didKeyShortcut = true;
-
-	// please see KeyboardBindingsMap.h for mappings
-	switch(functionId)
-	{
-	case KeyboardBindingFunction::TOGGLE_CONSOLE:
-	{
-		SDL_StopTextInput();
-		SDL_StartTextInput();
-		c->ShowConsole();
-		break;
-	}
-	case KeyboardBindingFunction::PAUSE_SIMULATION: //Space
-		c->SetPaused();
-		break;
-	case KeyboardBindingFunction::UNDO:
-		if (selectMode != SelectNone && isMouseDown)
-			break;
-		if (!isMouseDown)
-		{
-			c->HistoryRestore();
-		}
-		break;
-	case KeyboardBindingFunction::REDO:
-		if (selectMode != SelectNone && isMouseDown)
-			break;
-		if (!isMouseDown)
-		{
-			c->HistoryForward();
-		}
-		break;
-	case KeyboardBindingFunction::ENABLE_ZOOM:
-	{
-		isMouseDown = false;
-		zoomCursorFixed = false;
-		c->SetZoomEnabled(true);
-		break;
-	}
-	case KeyboardBindingFunction::PROPERTY_TOOL:
-		c->SetActiveTool(1, "DEFAULT_UI_PROPERTY");
-		break;
-	case KeyboardBindingFunction::TOGGLE_DEBUG_HUD:
-		SetDebugHUD(!GetDebugHUD());
-		break;
-	case KeyboardBindingFunction::RELOAD_SIMULATION:
-		c->ReloadSim();
-		break;
-	case KeyboardBindingFunction::SAVE_AUTHORSHIP_INFO:
-		if ((Client::Ref().GetAuthUser().UserElevation == User::ElevationModerator
-		     || Client::Ref().GetAuthUser().UserElevation == User::ElevationAdmin) && ctrl)
-		{
-			ByteString authorString = Client::Ref().GetAuthorInfo().toStyledString();
-			new InformationMessage("Save authorship info", authorString.FromUtf8(), true);
-		}
-		break;
-	case KeyboardBindingFunction::OPEN_ELEMENT_SEARCH:
-		c->OpenElementSearch();
-		break;
-	case KeyboardBindingFunction::FIND_MODE:
-	{
-		Tool *active = c->GetActiveTool(0);
-		if (!active->GetIdentifier().Contains("_PT_") || (ren->findingElement == active->GetToolID()))
-			ren->findingElement = 0;
-		else
-			ren->findingElement = active->GetToolID();
-		break;
-	}
-	case KeyboardBindingFunction::FRAME_STEP:
-		c->FrameStep();
-		break;
-	case KeyboardBindingFunction::SHOW_GRAVITY_GRID:
-		c->ShowGravityGrid();
-		break;
-	case KeyboardBindingFunction::DECREASE_GRAVITY_GRID_SIZE:
-		c->AdjustGridSize(-1);
-		break;
-	case KeyboardBindingFunction::INCREASE_GRAVITY_GRID_SIZE:
-		c->AdjustGridSize(1);
-		break;
-	case KeyboardBindingFunction::TOGGLE_INTRO_TEXT:
-		if(!introText)
-			introText = 8047;
-		else
-			introText = 0;
-		break;
-	case KeyboardBindingFunction::TOGGLE_HUD:
-		showHud = !showHud;
-		break;
-	case KeyboardBindingFunction::TOGGLE_DECORATIONS_LAYER:
-		c->SetDecoration();
-		break;
-	case KeyboardBindingFunction::TOGGLE_DECORATION_TOOL:
-		if (colourPicker->GetParentWindow())
-			c->SetActiveMenu(lastMenu);
-		else
-		{
-			c->SetDecoration(true);
-			c->SetPaused(true);
-			c->SetActiveMenu(SC_DECO);
-		}
-		break;
-	case KeyboardBindingFunction::TOGGLE_AIR_MODE:
-		c->SwitchAir();
-		break;
-	case KeyboardBindingFunction::QUIT:
-		ui::Engine::Ref().ConfirmExit();
-		break;
-	case KeyboardBindingFunction::TOGGLE_HEAT:
-		c->ToggleAHeat();
-		break;
-	case KeyboardBindingFunction::TOGGLE_NEWTONIAN_GRAVITY:
-		c->ToggleNewtonianGravity();
-		break;
-	case KeyboardBindingFunction::RESET_SPARK:
-		c->ResetSpark();
-		break;
-	case KeyboardBindingFunction::RESET_AIR:
-		c->ResetAir();
-		break;
-	case KeyboardBindingFunction::COPY:
-	{
-		selectMode = SelectCopy;
-		selectPoint1 = selectPoint2 = ui::Point(-1, -1);
-		isMouseDown = false;
-		buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to copy (right click = cancel)";
-		buttonTipShow = 120;
-		break;
-	}
-	case KeyboardBindingFunction::CUT:
-	{
-		selectMode = SelectCut;
-		selectPoint1 = selectPoint2 = ui::Point(-1, -1);
-		isMouseDown = false;
-		buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to copy then cut (right click = cancel)";
-		buttonTipShow = 120;
-		break;
-	}
-	case KeyboardBindingFunction::PASTE:
-		if (c->LoadClipboard())
-		{
-			selectPoint1 = selectPoint2 = mousePosition;
-			isMouseDown = false;
-		}
-		break;
-	case KeyboardBindingFunction::STAMP_TOOL:
-	{
-		std::vector<ByteString> stampList = Client::Ref().GetStamps(0, 1);
-		if (stampList.size())
-		{
-			SaveFile *saveFile = Client::Ref().GetStamp(stampList[0]);
-			if (!saveFile || !saveFile->GetGameSave())
-				break;
-			c->LoadStamp(saveFile->GetGameSave());
-			delete saveFile;
-			selectPoint1 = selectPoint2 = mousePosition;
-			isMouseDown = false;
-			break;
-		}
-	}
-	case KeyboardBindingFunction::OPEN_STAMPS:
-	{
-		selectMode = SelectNone;
-		selectPoint1 = selectPoint2 = ui::Point(-1, -1);
-		c->OpenStamps();
-		break;
-	}
-	case KeyboardBindingFunction::INCREASE_BRUSH_SIZE:
-		if(zoomEnabled && !zoomCursorFixed)
-			c->AdjustZoomSize(1, !alt);
-		else
-			c->AdjustBrushSize(1, !alt, shiftBehaviour, ctrlBehaviour);
-		break;
-	case KeyboardBindingFunction::DECREASE_BRUSH_SIZE:
-		if(zoomEnabled && !zoomCursorFixed)
-			c->AdjustZoomSize(-1, !alt);
-		else
-			c->AdjustBrushSize(-1, !alt, shiftBehaviour, ctrlBehaviour);
-		break;
-	case KeyboardBindingFunction::INSTALL_GAME:
-		c->Install();
-		break;
-	case KeyboardBindingFunction::INVERT_AIR_SIMULATION:
-		c->InvertAirSim();
-		break;
-	case KeyboardBindingFunction::TOGGLE_REPLACE_MODE:
-		c->SetReplaceModeFlags(c->GetReplaceModeFlags()^SPECIFIC_DELETE);
-		break;
-	case KeyboardBindingFunction::TOGGLE_SPECIFIC_DELETE_MODE:
-		c->SetReplaceModeFlags(c->GetReplaceModeFlags()^REPLACE_MODE);
-		break;
-	default:
-		didKeyShortcut = false;
-	}
-	if (!didKeyShortcut)
-	{
-		switch (key)
-		{
-		case SDLK_TAB: //Tab
-			c->ChangeBrush();
-			break;
-		case SDLK_INSERT:
-			if (ctrl)
-				c->SetReplaceModeFlags(c->GetReplaceModeFlags()^SPECIFIC_DELETE);
-			else
-				c->SetReplaceModeFlags(c->GetReplaceModeFlags()^REPLACE_MODE);
-			break;
-		case SDLK_DELETE:
-			c->SetReplaceModeFlags(c->GetReplaceModeFlags()^SPECIFIC_DELETE);
-			break;
-		}
-	}
-
-	if (shift && showDebug && key == '1')
-		c->LoadRenderPreset(10);
-	else if (key >= '0' && key <= '9')
-	{
-		c->LoadRenderPreset(key-'0');
-	}
-}
-
-void GameView::OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
-{
-	if (repeat)
-		return;
-	if (scan == SDL_SCANCODE_Z)
-	{
-		if (!zoomCursorFixed && !alt)
-			c->SetZoomEnabled(false);
-		return;
-	}
-}
-
 void GameView::OnBlur()
 {
 	disableAltBehaviour();
@@ -1892,6 +1608,290 @@ void GameView::DoDraw()
 {
 	Window::DoDraw();
 	c->Tick();
+}
+
+void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
+{
+	if (introText > 50)
+	{
+		introText = 50;
+	}
+
+	if (selectMode != SelectNone)
+	{
+		if (selectMode == PlaceSave)
+		{
+			switch (key)
+			{
+			case SDLK_RIGHT:
+				c->TranslateSave(ui::Point(1, 0));
+				return;
+			case SDLK_LEFT:
+				c->TranslateSave(ui::Point(-1, 0));
+				return;
+			case SDLK_UP:
+				c->TranslateSave(ui::Point(0, -1));
+				return;
+			case SDLK_DOWN:
+				c->TranslateSave(ui::Point(0, 1));
+				return;
+			}
+			if (scan == SDL_SCANCODE_R && !repeat)
+			{
+				if (ctrl && shift)
+				{
+					//Vertical flip
+					c->TransformSave(m2d_new(1,0,0,-1));
+				}
+				else if (!ctrl && shift)
+				{
+					//Horizontal flip
+					c->TransformSave(m2d_new(-1,0,0,1));
+				}
+				else
+				{
+					//Rotate 90deg
+					c->TransformSave(m2d_new(0,1,-1,0));
+				}
+				return;
+			}
+		}
+	}
+
+	int32_t functionId = keyboardBindingModel.GetFunctionForBinding(scan, shift, ctrl, alt);
+
+	if (repeat)
+		return;
+	bool didKeyShortcut = true;
+
+	// please see KeyconfigMap.h for mappings
+	switch(functionId)
+	{
+	case KeyconfigFunction::TOGGLE_CONSOLE:
+	{
+		SDL_StopTextInput();
+		SDL_StartTextInput();
+		c->ShowConsole();
+		break;
+	}
+	case KeyconfigFunction::PAUSE_SIMULATION: //Space
+		c->SetPaused();
+		break;
+	case KeyconfigFunction::UNDO:
+		if (selectMode != SelectNone && isMouseDown)
+			break;
+		if (!isMouseDown)
+		{
+			c->HistoryRestore();
+		}
+		break;
+	case KeyconfigFunction::REDO:
+		if (selectMode != SelectNone && isMouseDown)
+			break;
+		if (!isMouseDown)
+		{
+			c->HistoryForward();
+		}
+		break;
+	case KeyconfigFunction::ENABLE_ZOOM:
+	{
+		isMouseDown = false;
+		zoomCursorFixed = false;
+		c->SetZoomEnabled(true);
+		break;
+	}
+	case KeyconfigFunction::PROPERTY_TOOL:
+		c->SetActiveTool(1, "DEFAULT_UI_PROPERTY");
+		break;
+	case KeyconfigFunction::TOGGLE_DEBUG_HUD:
+		SetDebugHUD(!GetDebugHUD());
+		break;
+	case KeyconfigFunction::RELOAD_SIMULATION:
+		c->ReloadSim();
+		break;
+	case KeyconfigFunction::SAVE_AUTHORSHIP_INFO:
+		if ((Client::Ref().GetAuthUser().UserElevation == User::ElevationModerator
+		     || Client::Ref().GetAuthUser().UserElevation == User::ElevationAdmin) && ctrl)
+		{
+			ByteString authorString = Client::Ref().GetAuthorInfo().toStyledString();
+			new InformationMessage("Save authorship info", authorString.FromUtf8(), true);
+		}
+		break;
+	case KeyconfigFunction::OPEN_ELEMENT_SEARCH:
+		c->OpenElementSearch();
+		break;
+	case KeyconfigFunction::FIND_MODE:
+	{
+		Tool *active = c->GetActiveTool(0);
+		if (!active->GetIdentifier().Contains("_PT_") || (ren->findingElement == active->GetToolID()))
+			ren->findingElement = 0;
+		else
+			ren->findingElement = active->GetToolID();
+		break;
+	}
+	case KeyconfigFunction::FRAME_STEP:
+		c->FrameStep();
+		break;
+	case KeyconfigFunction::SHOW_GRAVITY_GRID:
+		c->ShowGravityGrid();
+		break;
+	case KeyconfigFunction::DECREASE_GRAVITY_GRID_SIZE:
+		c->AdjustGridSize(-1);
+		break;
+	case KeyconfigFunction::INCREASE_GRAVITY_GRID_SIZE:
+		c->AdjustGridSize(1);
+		break;
+	case KeyconfigFunction::TOGGLE_INTRO_TEXT:
+		if(!introText)
+			introText = 8047;
+		else
+			introText = 0;
+		break;
+	case KeyconfigFunction::TOGGLE_HUD:
+		showHud = !showHud;
+		break;
+	case KeyconfigFunction::TOGGLE_DECORATIONS_LAYER:
+		c->SetDecoration();
+		break;
+	case KeyconfigFunction::TOGGLE_DECORATION_TOOL:
+		if (colourPicker->GetParentWindow())
+			c->SetActiveMenu(lastMenu);
+		else
+		{
+			c->SetDecoration(true);
+			c->SetPaused(true);
+			c->SetActiveMenu(SC_DECO);
+		}
+		break;
+	case KeyconfigFunction::TOGGLE_AIR_MODE:
+		c->SwitchAir();
+		break;
+	case KeyconfigFunction::QUIT:
+		ui::Engine::Ref().ConfirmExit();
+		break;
+	case KeyconfigFunction::TOGGLE_HEAT:
+		c->ToggleAHeat();
+		break;
+	case KeyconfigFunction::TOGGLE_NEWTONIAN_GRAVITY:
+		c->ToggleNewtonianGravity();
+		break;
+	case KeyconfigFunction::RESET_SPARK:
+		c->ResetSpark();
+		break;
+	case KeyconfigFunction::RESET_AIR:
+		c->ResetAir();
+		break;
+	case KeyconfigFunction::COPY:
+	{
+		selectMode = SelectCopy;
+		selectPoint1 = selectPoint2 = ui::Point(-1, -1);
+		isMouseDown = false;
+		buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to copy (right click = cancel)";
+		buttonTipShow = 120;
+		break;
+	}
+	case KeyconfigFunction::CUT:
+	{
+		selectMode = SelectCut;
+		selectPoint1 = selectPoint2 = ui::Point(-1, -1);
+		isMouseDown = false;
+		buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to copy then cut (right click = cancel)";
+		buttonTipShow = 120;
+		break;
+	}
+	case KeyconfigFunction::PASTE:
+		if (c->LoadClipboard())
+		{
+			selectPoint1 = selectPoint2 = mousePosition;
+			isMouseDown = false;
+		}
+		break;
+	case KeyconfigFunction::STAMP_TOOL:
+	{
+		std::vector<ByteString> stampList = Client::Ref().GetStamps(0, 1);
+		if (stampList.size())
+		{
+			SaveFile *saveFile = Client::Ref().GetStamp(stampList[0]);
+			if (!saveFile || !saveFile->GetGameSave())
+				break;
+			c->LoadStamp(saveFile->GetGameSave());
+			delete saveFile;
+			selectPoint1 = selectPoint2 = mousePosition;
+			isMouseDown = false;
+			break;
+		}
+	}
+	case KeyconfigFunction::OPEN_STAMPS:
+	{
+		selectMode = SelectNone;
+		selectPoint1 = selectPoint2 = ui::Point(-1, -1);
+		c->OpenStamps();
+		break;
+	}
+	case KeyconfigFunction::INCREASE_BRUSH_SIZE:
+		if(zoomEnabled && !zoomCursorFixed)
+			c->AdjustZoomSize(1, !alt);
+		else
+			c->AdjustBrushSize(1, !alt, shiftBehaviour, ctrlBehaviour);
+		break;
+	case KeyconfigFunction::DECREASE_BRUSH_SIZE:
+		if(zoomEnabled && !zoomCursorFixed)
+			c->AdjustZoomSize(-1, !alt);
+		else
+			c->AdjustBrushSize(-1, !alt, shiftBehaviour, ctrlBehaviour);
+		break;
+	case KeyconfigFunction::INSTALL_GAME:
+		c->Install();
+		break;
+	case KeyconfigFunction::INVERT_AIR_SIMULATION:
+		c->InvertAirSim();
+		break;
+	case KeyconfigFunction::TOGGLE_REPLACE_MODE:
+		c->SetReplaceModeFlags(c->GetReplaceModeFlags()^SPECIFIC_DELETE);
+		break;
+	case KeyconfigFunction::TOGGLE_SPECIFIC_DELETE_MODE:
+		c->SetReplaceModeFlags(c->GetReplaceModeFlags()^REPLACE_MODE);
+		break;
+	default:
+		didKeyShortcut = false;
+	}
+	if (!didKeyShortcut)
+	{
+		switch (key)
+		{
+		case SDLK_TAB: //Tab
+			c->ChangeBrush();
+			break;
+		case SDLK_INSERT:
+			if (ctrl)
+				c->SetReplaceModeFlags(c->GetReplaceModeFlags()^SPECIFIC_DELETE);
+			else
+				c->SetReplaceModeFlags(c->GetReplaceModeFlags()^REPLACE_MODE);
+			break;
+		case SDLK_DELETE:
+			c->SetReplaceModeFlags(c->GetReplaceModeFlags()^SPECIFIC_DELETE);
+			break;
+		}
+	}
+
+	if (shift && showDebug && key == '1')
+		c->LoadRenderPreset(10);
+	else if (key >= '0' && key <= '9')
+	{
+		c->LoadRenderPreset(key-'0');
+	}
+}
+
+void GameView::OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
+{
+	if (repeat)
+		return;
+	if (scan == SDL_SCANCODE_Z)
+	{
+		if (!zoomCursorFixed && !alt)
+			c->SetZoomEnabled(false);
+		return;
+	}
 }
 
 void GameView::NotifyNotificationsChanged(GameModel * sender)

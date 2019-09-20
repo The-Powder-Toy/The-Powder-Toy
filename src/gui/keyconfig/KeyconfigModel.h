@@ -1,12 +1,12 @@
-#ifndef KEYBOARDBINDINGSMODEL_H
-#define KEYBOARDBINDINGSMODEL_H
+#ifndef KEYCONFIGSMODEL_H
+#define KEYCONFIGSMODEL_H
 
 #include <vector>
 #include <utility>
 #include "common/String.h"
 
-#define KEYBOARDBINDING_PREF "KeyboardBindings"
-#define KEYBOARDBINDING_FUNCS_PREF "KeyboardBindingFunctions"
+#define KEYCONFIG_PREF "Keyconfig"
+#define KEYCONFIG_FUNCS_PREF "KeyconfigFunctions"
 
 #define BINDING_MASK 0x07
 #define BINDING_CTRL 0x01
@@ -39,12 +39,12 @@ struct BindingModel
 	}
 };
 
-class KeyboardBindingsView;
+class KeyconfigView;
 
-class KeyboardBindingsModel
+class KeyconfigModel
 {
 public:
-	KeyboardBindingsModel(){}
+	KeyconfigModel(){}
 	void WriteDefaultPrefs(bool force = false); // true if user clicks reset to defaults
 
 	inline std::vector<BindingModel> GetBindingPrefs() const { return bindingPrefs; }
@@ -54,7 +54,7 @@ public:
 	void AddModel(BindingModel model);
 	void CreateModel(BindingModel model);
 	String GetDisplayForModel(BindingModel model);
-	void AddObserver(KeyboardBindingsView* observer);
+	void AddObserver(KeyconfigView* observer);
 	void NotifyBindingsChanged(bool hasConflict);
 	bool HasConflictingCombo();
 	void PopBindingByFunctionId(int functionId);
@@ -66,9 +66,9 @@ protected:
 	void TurnOffFunctionShortcut(int functionId);
 	void TurnOnFunctionShortcut(int functionId);
 
-	std::vector<KeyboardBindingsView*> observers;
+	std::vector<KeyconfigView*> observers;
 	std::vector<BindingModel> bindingPrefs;
 	std::pair<int, int> GetModifierAndScanFromString(ByteString str);
 };
 
-#endif // KEYBOARDBINDINGSMODEL_H
+#endif // KEYCONFIGSMODEL_H
