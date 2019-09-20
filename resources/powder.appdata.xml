@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <component type="desktop">
-  <id>com.github.ThePowderToy.ThePowderToy</id>
+  <id>uk.co.powdertoy.tpt</id>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0</project_license>
   <name>Powder Toy</name>
   <summary>Physics sandbox game</summary>
-  <content_rating type="oars-1.1" />
+  <content_rating type="oars-1.1">
+    <content_attribute id="social-chat">moderate</content_attribute>
+  </content_rating>
   <launchable type="desktop-id">powder.desktop</launchable>
   <description>
     <p>
