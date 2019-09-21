@@ -917,12 +917,21 @@ void Simulation::SetDecoSpace(int newDecoSpace)
 {
 	switch (newDecoSpace)
 	{
+	case 0: // linear
+	default: // anything stupid
+		deco_space = 0;
+		break;
+
 	case 1: // sRGB
 		deco_space = 1;
 		break;
 
-	default: // linear (or anything stupid)
-		deco_space = 0;
+	case 2: // Gamma = 2.2
+		deco_space = 2;
+		break;
+
+	case 3: // Gamma = 1.8
+		deco_space = 3;
 		break;
 	}
 }
@@ -1040,11 +1049,28 @@ void Simulation::ApplyDecoration(int x, int y, int colR_, int colG_, int colB_, 
 						float pb = ((float)((part.dcolour    )&0xFF)) / 255.f;
 						switch (deco_space)
 						{
+						case 0: // linear
+							break;
+
 						case 1: // sRGB
 							pa = (pa <= 0.04045f) ? (pa / 12.92f) : pow((pa + 0.055f) / 1.055f, 2.4f);
 							pr = (pr <= 0.04045f) ? (pr / 12.92f) : pow((pr + 0.055f) / 1.055f, 2.4f);
 							pg = (pg <= 0.04045f) ? (pg / 12.92f) : pow((pg + 0.055f) / 1.055f, 2.4f);
 							pb = (pb <= 0.04045f) ? (pb / 12.92f) : pow((pb + 0.055f) / 1.055f, 2.4f);
+							break;
+
+						case 2: // Gamma = 2.2
+							pa = pow(pa, 2.2f);
+							pr = pow(pr, 2.2f);
+							pg = pow(pg, 2.2f);
+							pb = pow(pb, 2.2f);
+							break;
+
+						case 3: // Gamma = 1.8
+							pa = pow(pa, 1.8f);
+							pr = pow(pr, 1.8f);
+							pg = pow(pg, 1.8f);
+							pb = pow(pb, 1.8f);
 							break;
 						}
 						tas += pa;
@@ -1061,11 +1087,29 @@ void Simulation::ApplyDecoration(int x, int y, int colR_, int colG_, int colB_, 
 			tb = tbs / num;
 			switch (deco_space)
 			{
+			case 0: // linear
+				break;
+
 			case 1: // sRGB
 				ta = (ta <= 0.0031308f) ? (ta * 12.92f) : (1.055f * pow(ta, 1.f / 2.4f) - 0.055f);
 				tr = (tr <= 0.0031308f) ? (tr * 12.92f) : (1.055f * pow(tr, 1.f / 2.4f) - 0.055f);
 				tg = (tg <= 0.0031308f) ? (tg * 12.92f) : (1.055f * pow(tg, 1.f / 2.4f) - 0.055f);
 				tb = (tb <= 0.0031308f) ? (tb * 12.92f) : (1.055f * pow(tb, 1.f / 2.4f) - 0.055f);
+				break;
+
+			case 2: // Gamma = 2.2
+				ta = pow(ta, 1.f / 2.2f);
+				tr = pow(tr, 1.f / 2.2f);
+				tg = pow(tg, 1.f / 2.2f);
+				tb = pow(tb, 1.f / 2.2f);
+				break;
+
+			case 3: // Gamma = 1.8
+				ta = pow(ta, 1.f / 1.8f);
+				tr = pow(tr, 1.f / 1.8f);
+				tg = pow(tg, 1.f / 1.8f);
+				tb = pow(tb, 1.f / 1.8f);
+				break;
 			}
 			if (!parts[ID(rp)].dcolour)
 				ta -= 3/255.0f;

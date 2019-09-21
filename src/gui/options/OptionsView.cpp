@@ -432,6 +432,8 @@ OptionsView::OptionsView():
 	scrollPanel->AddChild(decoSpace);
 	decoSpace->AddOption(std::pair<String, int>("Linear", 0));
 	decoSpace->AddOption(std::pair<String, int>("sRGB", 1));
+	decoSpace->AddOption(std::pair<String, int>("Gamma 2.2", 2));
+	decoSpace->AddOption(std::pair<String, int>("Gamma 1.8", 3));
 
 	tempLabel = new ui::Label(ui::Point(decoSpace->Position.X+decoSpace->Size.X+3, currentY), ui::Point(Size.X-40, 16), "\bg- Colour space used by decoration tools");
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
