@@ -395,6 +395,8 @@ int LuaScriptInterface::tpt_index(lua_State *l)
 		return lua_pushnumber(l, m->GetBrush()->GetRadius().Y), 1;
 	else if (!key.compare("brushID"))
 		return lua_pushnumber(l, m->GetBrushID()), 1;
+	else if (!key.compare("decoSpace"))
+		return lua_pushnumber(l, m->GetDecoSpace()), 1;
 
 	//if not a special key, return the value in the table
 	return lua_rawget(l, 1), 1;
@@ -441,6 +443,8 @@ int LuaScriptInterface::tpt_newIndex(lua_State *l)
 		c->SetBrushSize(ui::Point(m->GetBrush()->GetRadius().X, luaL_checkinteger(l, 3)));
 	else if (!key.compare("brushID"))
 		m->SetBrushID(luaL_checkinteger(l, 3));
+	else if (!key.compare("decoSpace"))
+		m->SetDecoSpace(luaL_checkinteger(l, 3));
 	else
 	{
 		//if not a special key, set a value in the table

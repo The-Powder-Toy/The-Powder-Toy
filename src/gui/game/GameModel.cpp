@@ -456,8 +456,8 @@ int GameModel::GetEdgeMode()
 
 void GameModel::SetDecoSpace(int decoSpace)
 {
-	this->decoSpace = decoSpace;
 	sim->SetDecoSpace(decoSpace);
+	this->decoSpace = sim->deco_space;
 }
 
 int GameModel::GetDecoSpace()
