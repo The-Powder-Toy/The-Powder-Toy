@@ -913,6 +913,20 @@ bool Simulation::flood_water(int x, int y, int i)
 	return false;
 }
 
+void Simulation::SetDecoSpace(int newDecoSpace)
+{
+	switch (newDecoSpace)
+	{
+	case 1: // sRGB
+		deco_space = 1;
+		break;
+
+	default: // linear (or anything stupid)
+		deco_space = 0;
+		break;
+	}
+}
+
 void Simulation::SetEdgeMode(int newEdgeMode)
 {
 	edgeMode = newEdgeMode;
@@ -1020,18 +1034,39 @@ void Simulation::ApplyDecoration(int x, int y, int colR_, int colG_, int colB_, 
 					{
 						Particle part = parts[ID(pmap[y+ry][x+rx])];
 						num += 1.0f;
-						tas += ((float)((part.dcolour>>24)&0xFF));
-						trs += ((float)((part.dcolour>>16)&0xFF));
-						tgs += ((float)((part.dcolour>>8)&0xFF));
-						tbs += ((float)((part.dcolour)&0xFF));
+						float pa = ((float)((part.dcolour>>24)&0xFF)) / 255.f;
+						float pr = ((float)((part.dcolour>>16)&0xFF)) / 255.f;
+						float pg = ((float)((part.dcolour>> 8)&0xFF)) / 255.f;
+						float pb = ((float)((part.dcolour    )&0xFF)) / 255.f;
+						switch (deco_space)
+						{
+						case 1: // sRGB
+							pa = (pa <= 0.04045f) ? (pa / 12.92f) : pow((pa + 0.055f) / 1.055f, 2.4f);
+							pr = (pr <= 0.04045f) ? (pr / 12.92f) : pow((pr + 0.055f) / 1.055f, 2.4f);
+							pg = (pg <= 0.04045f) ? (pg / 12.92f) : pow((pg + 0.055f) / 1.055f, 2.4f);
+							pb = (pb <= 0.04045f) ? (pb / 12.92f) : pow((pb + 0.055f) / 1.055f, 2.4f);
+							break;
+						}
+						tas += pa;
+						trs += pr;
+						tgs += pg;
+						tbs += pb;
 					}
 				}
 			if (num == 0)
 				return;
-			ta = (tas/num)/255.0f;
-			tr = (trs/num)/255.0f;
-			tg = (tgs/num)/255.0f;
-			tb = (tbs/num)/255.0f;
+			ta = tas / num;
+			tr = trs / num;
+			tg = tgs / num;
+			tb = tbs / num;
+			switch (deco_space)
+			{
+			case 1: // sRGB
+				ta = (ta <= 0.0031308f) ? (ta * 12.92f) : (1.055f * pow(ta, 1.f / 2.4f) - 0.055f);
+				tr = (tr <= 0.0031308f) ? (tr * 12.92f) : (1.055f * pow(tr, 1.f / 2.4f) - 0.055f);
+				tg = (tg <= 0.0031308f) ? (tg * 12.92f) : (1.055f * pow(tg, 1.f / 2.4f) - 0.055f);
+				tb = (tb <= 0.0031308f) ? (tb * 12.92f) : (1.055f * pow(tb, 1.f / 2.4f) - 0.055f);
+			}
 			if (!parts[ID(rp)].dcolour)
 				ta -= 3/255.0f;
 		}
@@ -5420,7 +5455,8 @@ Simulation::Simulation():
 	sys_pause(0),
 	framerender(0),
 	pretty_powder(0),
-	sandcolour_frame(0)
+	sandcolour_frame(0),
+	deco_space(0)
 {
 	int tportal_rx[] = {-1, 0, 1, 1, 1, 0,-1,-1};
 	int tportal_ry[] = {-1,-1,-1, 0, 1, 1, 1, 0};

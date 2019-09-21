@@ -43,6 +43,8 @@ public:
 	void SetForceIntegerScaling(bool forceIntegerScaling);
 	bool GetFastQuit();
 	void SetFastQuit(bool fastquit);
+	int GetDecoSpace();
+	void SetDecoSpace(int decoSpace);
 	bool GetMouseClickRequired();
 	void SetMouseClickRequired(bool mouseClickRequired);
 	bool GetIncludePressure();

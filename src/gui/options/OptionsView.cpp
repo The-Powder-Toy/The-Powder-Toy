@@ -417,6 +417,27 @@ OptionsView::OptionsView():
 	scrollPanel->AddChild(tempLabel);
 	scrollPanel->AddChild(includePressure);
 
+	class DecoSpaceAction: public ui::DropDownAction
+	{
+		OptionsView * v;
+	public:
+		DecoSpaceAction(OptionsView * v): v(v) { }
+		void OptionChanged(ui::DropDown * sender, std::pair<String, int> option) override {
+			v->c->SetDecoSpace(option.second);
+		}
+	};
+	currentY+=20;
+	decoSpace = new ui::DropDown(ui::Point(8, currentY), ui::Point(60, 16));
+	decoSpace->SetActionCallback(new DecoSpaceAction(this));
+	scrollPanel->AddChild(decoSpace);
+	decoSpace->AddOption(std::pair<String, int>("Linear", 0));
+	decoSpace->AddOption(std::pair<String, int>("sRGB", 1));
+
+	tempLabel = new ui::Label(ui::Point(decoSpace->Position.X+decoSpace->Size.X+3, currentY), ui::Point(Size.X-40, 16), "\bg- Colour space used by decoration tools");
+	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	scrollPanel->AddChild(tempLabel);
+
 	class DataFolderAction: public ui::ButtonAction
 	{
 	public:
@@ -477,6 +498,7 @@ void OptionsView::NotifySettingsChanged(OptionsModel * sender)
 	waterEqualisation->SetChecked(sender->GetWaterEqualisation());
 	airMode->SetOption(sender->GetAirMode());
 	gravityMode->SetOption(sender->GetGravityMode());
+	decoSpace->SetOption(sender->GetDecoSpace());
 	edgeMode->SetOption(sender->GetEdgeMode());
 	scale->SetOption(sender->GetScale());
 	resizable->SetChecked(sender->GetResizable());

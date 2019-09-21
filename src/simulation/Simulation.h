@@ -113,6 +113,7 @@ public:
 	int pretty_powder;
 	int sandcolour;
 	int sandcolour_frame;
+	int deco_space;
 
 	int Load(GameSave * save, bool includePressure);
 	int Load(GameSave * save, bool includePressure, int x, int y);
@@ -166,6 +167,7 @@ public:
 	void clear_area(int area_x, int area_y, int area_w, int area_h);
 
 	void SetEdgeMode(int newEdgeMode);
+	void SetDecoSpace(int newDecoSpace);
 
 	//Drawing Deco
 	void ApplyDecoration(int x, int y, int colR, int colG, int colB, int colA, int mode);

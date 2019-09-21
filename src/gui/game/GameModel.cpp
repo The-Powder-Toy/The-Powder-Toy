@@ -47,7 +47,8 @@ GameModel::GameModel():
 	activeColourPreset(0),
 	colourSelector(false),
 	colour(255, 0, 0, 255),
-	edgeMode(0)
+	edgeMode(0),
+	decoSpace(0)
 {
 	sim = new Simulation();
 	ren = new Renderer(ui::Engine::Ref().g, sim);
@@ -92,6 +93,8 @@ GameModel::GameModel():
 	//Load config into simulation
 	edgeMode = Client::Ref().GetPrefInteger("Simulation.EdgeMode", 0);
 	sim->SetEdgeMode(edgeMode);
+	decoSpace = Client::Ref().GetPrefInteger("Simulation.DecoSpace", 0);
+	sim->SetDecoSpace(decoSpace);
 	int ngrav_enable = Client::Ref().GetPrefInteger("Simulation.NewtonianGravity", 0);
 	if (ngrav_enable)
 		sim->grav->start_grav_async();
@@ -177,6 +180,7 @@ GameModel::~GameModel()
 	Client::Ref().SetPref("Simulation.NewtonianGravity", sim->grav->IsEnabled());
 	Client::Ref().SetPref("Simulation.AmbientHeat", sim->aheat_enable);
 	Client::Ref().SetPref("Simulation.PrettyPowder", sim->pretty_powder);
+	Client::Ref().SetPref("Simulation.DecoSpace", sim->deco_space);
 
 	Client::Ref().SetPref("Decoration.Red", (int)colour.Red);
 	Client::Ref().SetPref("Decoration.Green", (int)colour.Green);
@@ -448,6 +452,17 @@ void GameModel::SetEdgeMode(int edgeMode)
 int GameModel::GetEdgeMode()
 {
 	return this->edgeMode;
+}
+
+void GameModel::SetDecoSpace(int decoSpace)
+{
+	this->decoSpace = decoSpace;
+	sim->SetDecoSpace(decoSpace);
+}
+
+int GameModel::GetDecoSpace()
+{
+	return this->decoSpace;
 }
 
 std::deque<Snapshot*> GameModel::GetHistory()

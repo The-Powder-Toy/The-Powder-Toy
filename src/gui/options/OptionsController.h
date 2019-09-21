@@ -27,6 +27,7 @@ public:
 	void SetScale(int scale);
 	void SetResizable(bool resizable);
 	void SetFastQuit(bool fastquit);
+	void SetDecoSpace(int decoSpace);
 	void SetShowAvatars(bool showAvatars);
 	void SetMouseClickrequired(bool mouseClickRequired);
 	void SetIncludePressure(bool includePressure);

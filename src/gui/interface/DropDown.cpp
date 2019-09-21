@@ -29,7 +29,7 @@ public:
 		}
 	};
 	DropDownWindow(DropDown * dropDown):
-		Window(ui::Point(dropDown->Position.X+dropDown->GetParentWindow()->Position.X-5, dropDown->Position.Y+dropDown->GetParentWindow()->Position.Y-3), ui::Point(dropDown->Size.X+10, 1+dropDown->options.size()*16)),
+		Window(dropDown->GetScreenPos() + ui::Point(-1, -1 - dropDown->optionIndex * 16), ui::Point(dropDown->Size.X+2, 1+dropDown->options.size()*16)),
 		dropDown(dropDown),
 		appearance(dropDown->Appearance)
 	{

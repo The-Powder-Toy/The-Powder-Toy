@@ -169,6 +169,16 @@ void OptionsModel::SetFastQuit(bool fastquit)
 	notifySettingsChanged();
 }
 
+int OptionsModel::GetDecoSpace()
+{
+	return gModel->GetDecoSpace();
+}
+void OptionsModel::SetDecoSpace(int decoSpace)
+{
+	gModel->SetDecoSpace(decoSpace);
+	notifySettingsChanged();
+}
+
 bool OptionsModel::GetShowAvatars()
 {
 	return Client::Ref().GetPrefBool("ShowAvatars", true);

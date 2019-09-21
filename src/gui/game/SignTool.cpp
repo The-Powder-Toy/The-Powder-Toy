@@ -145,7 +145,7 @@ SignWindow::SignWindow(SignTool * tool_, Simulation * sim_, int signID_, ui::Poi
 	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(tempLabel);
 
-	justification = new ui::DropDown(ui::Point(52, 48), ui::Point(50, 16));
+	justification = new ui::DropDown(ui::Point(52, 48), ui::Point(55, 16));
 	AddComponent(justification);
 	justification->AddOption(std::pair<String, int>(0xE020 + String(" Left"), (int)sign::Left));
 	justification->AddOption(std::pair<String, int>(0xE01E + String(" Middle"), (int)sign::Middle));
