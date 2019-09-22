@@ -430,8 +430,8 @@ OptionsView::OptionsView():
 	decoSpace = new ui::DropDown(ui::Point(8, currentY), ui::Point(60, 16));
 	decoSpace->SetActionCallback(new DecoSpaceAction(this));
 	scrollPanel->AddChild(decoSpace);
-	decoSpace->AddOption(std::pair<String, int>("Linear", 0));
-	decoSpace->AddOption(std::pair<String, int>("sRGB", 1));
+	decoSpace->AddOption(std::pair<String, int>("sRGB", 0));
+	decoSpace->AddOption(std::pair<String, int>("Linear", 1));
 	decoSpace->AddOption(std::pair<String, int>("Gamma 2.2", 2));
 	decoSpace->AddOption(std::pair<String, int>("Gamma 1.8", 3));
 
