@@ -1,10 +1,10 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_VLSN PT_VLSN 188
+//#TPT-Directive ElementClass Element_VLSN PT_VLSN 187
 Element_VLSN::Element_VLSN()
 {
 	Identifier = "DEFAULT_PT_VLSN";
 	Name = "VLSN";
-	Colour = PIXPACK(0x006400);
+	Colour = PIXPACK(0x7CFC00);
 	MenuVisible = 1;
 	MenuSection = SC_SENSOR;
 	Enabled = 1;
@@ -86,27 +86,8 @@ int Element_VLSN::update(UPDATE_FUNC_ARGS)
 					r = sim->photons[y + ry][x + rx];
 				if (!r)
 					continue;
-
 				switch (parts[i].tmp)
 				{
-				case 1:
-					// .Velocity serialization into FILT
-					if (TYP(r) != PT_VLSN && TYP(r) != PT_FILT)
-					{
-						doSerialization = true;
-						velx = std::abs(parts[ID(r)].vx);
-						vely = std::abs(parts[ID(r)].vy);
-					}
-					break;
-				case 3:
-					// .Velocity deserialization
-					if (TYP(r) == PT_FILT)
-					{
-						doDeserialization = true;
-						velx = parts[ID(r)].ctype;
-						vely = parts[ID(r)].ctype;
-					}
-					break;
 				case 2:
 					// Invert mode
 					if (TYP(r) != PT_VLSN && TYP(r) != PT_METL)
@@ -127,6 +108,15 @@ int Element_VLSN::update(UPDATE_FUNC_ARGS)
 							parts[i].life = 1;
 					}
 					break;
+				case 1:
+					// .Velocity serialization
+					if (TYP(r) != PT_VLSN && TYP(r) != PT_FILT)
+					{
+						doSerialization = true;
+						velx = std::abs(parts[ID(r)].vx);
+						vely = std::abs(parts[ID(r)].vy);
+					}
+					break;
 				}
 			}
 
@@ -144,23 +134,13 @@ int Element_VLSN::update(UPDATE_FUNC_ARGS)
 				{
 					while (TYP(r) == PT_FILT)
 					{
-						parts[ID(r)].ctype = 0x10000000 + velx;
-						parts[ID(r)].ctype = 0x11100000 + vely;
+						parts[ID(r)].ctype = 0x10000000 + velx + vely;
+
 						nx += rx;
 						ny += ry;
 						if (nx < 0 || ny < 0 || nx >= XRES || ny >= YRES)
 							break;
 						r = pmap[ny][nx];
-					}
-				}
-				// .Velocity deserialization.
-				if (doDeserialization)
-				{
-					if (TYP(r) != PT_FILT)
-					{
-						parts[ID(r)].vx = velx - 0x10000000;
-						parts[ID(r)].vy = vely - 0x11100000;
-						break;
 					}
 				}
 			}
@@ -172,6 +152,12 @@ int Element_VLSN::graphics(GRAPHICS_FUNC_ARGS)
 	if (cpart->life == 1)
 	{
 		*colg = 255;
+		*colr = 0;
+		*colb = 0;
+	}
+	else if (cpart->life == 0)
+	{
+		*colg = 124;
 		*colr = 0;
 		*colb = 0;
 	}
