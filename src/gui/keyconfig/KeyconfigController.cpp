@@ -1,3 +1,5 @@
+static int Aa;
+#if 0 // temporarily disabled so it doesn't interfere with what I'm doing -- LBPHacker
 #include "KeyconfigController.h"
 
 #include "KeyconfigView.h"
@@ -94,4 +96,4 @@ KeyconfigController::~KeyconfigController()
 	delete callback;
 	delete model;
 }
-
+#endif

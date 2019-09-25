@@ -156,6 +156,8 @@ GameModel::GameModel():
 
 	mouseClickRequired = Client::Ref().GetPrefBool("MouseClickRequired", false);
 	includePressure = Client::Ref().GetPrefBool("Simulation.IncludePressure", true);
+
+	keyconfig = Client::Ref().GetPrefTupleArray<decltype(keyconfig)::value_type>("Keyconfig");
 }
 
 GameModel::~GameModel()
@@ -187,6 +189,8 @@ GameModel::~GameModel()
 
 	Client::Ref().SetPref("MouseClickRequired", mouseClickRequired);
 	Client::Ref().SetPref("Simulation.IncludePressure", includePressure);
+
+	Client::Ref().SetPref("Keyconfig", keyconfig);
 
 	Favorite::Ref().SaveFavoritesToPrefs();
 
@@ -546,6 +550,7 @@ void GameModel::AddObserver(GameView * observer){
 	observer->NotifyColourActivePresetChanged(this);
 	observer->NotifyQuickOptionsChanged(this);
 	observer->NotifyLastToolChanged(this);
+	observer->NotifyKeyconfigChanged(this);
 	UpdateQuickOptions();
 }
 
@@ -691,11 +696,11 @@ void GameModel::SetSave(SaveInfo * newSave, bool invertIncludePressure)
 	UpdateQuickOptions();
 }
 
-void GameModel::NotifyKeyBindingsChanged()
+void GameModel::notifyKeyconfigChanged()
 {
 	for (auto observer : observers)
 	{
-		observer->NotifyKeyBindingsChanged(this);
+		observer->NotifyKeyconfigChanged(this);
 	}
 }
 
@@ -1327,4 +1332,15 @@ bool GameModel::GetIncludePressure()
 void GameModel::SetIncludePressure(bool includePressure_)
 {
 	includePressure = includePressure_;
+}
+
+Keyconfig GameModel::GetKeyconfig()
+{
+	return keyconfig;
+}
+
+void GameModel::SetKeyconfig(Keyconfig keyconfig_)
+{
+	keyconfig = keyconfig_;
+	notifyKeyconfigChanged();
 }

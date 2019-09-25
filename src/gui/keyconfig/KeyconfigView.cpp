@@ -1,5 +1,6 @@
+static int Aa;
+#if 0 // temporarily disabled so it doesn't interfere with what I'm doing -- LBPHacker
 #include "KeyconfigView.h"
-
 #include "gui/interface/Button.h"
 #include "gui/interface/Label.h"
 #include "gui/interface/DropDown.h"
@@ -289,3 +290,4 @@ KeyconfigView::~KeyconfigView()
 {
 
 }
+#endif

@@ -1,5 +1,6 @@
+static int Aa;
+#if 0 // temporarily disabled so it doesn't interfere with what I'm doing -- LBPHacker
 #include "KeyconfigTextbox.h"
-
 #include "SDLCompat.h"
 #include "gui/interface/Window.h"
 #include "client/Client.h"
@@ -118,3 +119,4 @@ void KeyconfigTextbox::OnKeyRelease(int key, int scan, bool repeat, bool shift, 
 	// should the user carelessly click about
 	c->NotifyKeyReleased();
 }
+#endif

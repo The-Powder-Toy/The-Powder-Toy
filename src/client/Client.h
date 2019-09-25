@@ -3,12 +3,85 @@
 
 #include <vector>
 #include <list>
+#include <tuple>
+#include <utility>
 
 #include "common/String.h"
 #include "common/Singleton.h"
 #include "json/json.h"
 
 #include "User.h"
+
+template<class Item>
+void JsonArrayItemToTupleItem(Item &i, Json::Value const &v);
+
+template<>
+inline void JsonArrayItemToTupleItem<bool>(bool &i, Json::Value const &v)
+{
+	i = v.asBool();
+}
+
+template<>
+inline void JsonArrayItemToTupleItem<int>(int &i, Json::Value const &v)
+{
+	i = v.asInt();
+}
+
+template<>
+inline void JsonArrayItemToTupleItem<ByteString>(ByteString &i, Json::Value const &v)
+{
+	auto s = v.asString();
+	i = ByteString(s.begin(), s.end());
+}
+
+template<std::size_t Item = 0, class... Types>
+typename std::enable_if<Item == sizeof...(Types), void>::type
+JsonArrayToTuple(std::tuple<Types...> &, Json::Value const &)
+{
+}
+
+template<std::size_t Item = 0, class... Types>
+typename std::enable_if<Item < sizeof...(Types), void>::type
+JsonArrayToTuple(std::tuple<Types...> &t, Json::Value const &va)
+{
+	JsonArrayItemToTupleItem(std::get<Item>(t), va[(Json::ArrayIndex)Item]);
+	JsonArrayToTuple<Item + 1, Types...>(t, va);
+}
+
+template<class Item>
+void JsonArrayItemFromTupleItem(Item const &i, Json::Value &v);
+
+template<>
+inline void JsonArrayItemFromTupleItem<bool>(bool const &i, Json::Value &v)
+{
+	v = Json::Value((bool)i);
+}
+
+template<>
+inline void JsonArrayItemFromTupleItem<int>(int const &i, Json::Value &v)
+{
+	v = Json::Value((Json::Int)i);
+}
+
+template<>
+inline void JsonArrayItemFromTupleItem<ByteString>(ByteString const &i, Json::Value &v)
+{
+	v = Json::Value(std::string(i.begin(), i.end()));
+}
+
+template<std::size_t Item = 0, class... Types>
+typename std::enable_if<Item == sizeof...(Types), void>::type
+JsonArrayFromTuple(std::tuple<Types...> const &, Json::Value &)
+{
+}
+
+template<std::size_t Item = 0, class... Types>
+typename std::enable_if<Item < sizeof...(Types), void>::type
+JsonArrayFromTuple(std::tuple<Types...> const &t, Json::Value &va)
+{
+	JsonArrayItemFromTupleItem(std::get<Item>(t), va[(Json::ArrayIndex)Item]);
+	JsonArrayFromTuple<Item + 1, Types...>(t, va);
+}
 
 class SaveInfo;
 class SaveFile;
@@ -181,12 +254,40 @@ public:
 	std::vector<int> GetPrefIntegerArray(ByteString prop);
 	std::vector<unsigned int> GetPrefUIntegerArray(ByteString prop);
 	std::vector<bool> GetPrefBoolArray(ByteString prop);
-	Json::Value GetPrefJson(ByteString prop, Json::Value defaultValue = Json::nullValue);
 
 	void SetPref(ByteString prop, Json::Value value);
 	void SetPref(ByteString property, std::vector<Json::Value> value);
 	void SetPrefUnicode(ByteString prop, String value);
-	void ClearPref(ByteString prop);
+
+	template<class Tuple>
+	std::vector<Tuple> GetPrefTupleArray(ByteString prop)
+	{
+		try
+		{
+			Json::Value arr = GetPref(preferences, prop);
+			std::vector<Tuple> ret(arr.size());
+			for (int i = 0; i < (int)arr.size(); i++)
+			{
+				JsonArrayToTuple(ret[i], arr[i]);
+			}
+			return ret;
+		}
+		catch (std::exception &)
+		{
+		}
+		return std::vector<Tuple>();
+	}
+
+	template<class Tuple>
+	void SetPref(ByteString prop, std::vector<Tuple> const &value)
+	{
+		std::vector<Json::Value> arr(value.size());
+		for (int i = 0; i < (int)arr.size(); i++)
+		{
+			JsonArrayFromTuple(value[i], arr[i]);
+		}
+		SetPref(prop, arr);
+	}
 };
 
 #endif // CLIENT_H

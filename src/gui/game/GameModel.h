@@ -7,6 +7,7 @@
 #include "gui/interface/Colour.h"
 #include "client/User.h"
 #include "gui/interface/Point.h"
+#include "Keyconfig.h"
 
 class Menu;
 class Tool;
@@ -103,6 +104,10 @@ private:
 	void notifyToolTipChanged();
 	void notifyQuickOptionsChanged();
 	void notifyLastToolChanged();
+	void notifyKeyconfigChanged();
+
+	Keyconfig keyconfig;
+
 public:
 	GameModel();
 	~GameModel();
@@ -159,6 +164,9 @@ public:
 	int GetBrushID();
 	void SetBrushID(int i);
 
+	Keyconfig GetKeyconfig();
+	void SetKeyconfig(Keyconfig keyconfig);
+
 	void SetVote(int direction);
 	SaveInfo * GetSave();
 	SaveFile * GetSaveFile();
@@ -208,7 +216,6 @@ public:
 	void SetMouseClickRequired(bool mouseClickRequired);
 	bool GetIncludePressure();
 	void SetIncludePressure(bool includePressure);
-	void NotifyKeyBindingsChanged();
 
 	std::vector<Notification*> GetNotifications();
 	void AddNotification(Notification * notification);

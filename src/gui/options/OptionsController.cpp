@@ -2,7 +2,6 @@
 
 #include "OptionsView.h"
 #include "OptionsModel.h"
-#include "gui/game/GameModel.h"
 
 #include "Controller.h"
 
@@ -111,12 +110,6 @@ void OptionsController::Exit()
 		callback->ControllerExit();
 	HasExited = true;
 }
-
-void OptionsController::NotifyKeyBindingsChanged()
-{
-	gModel->NotifyKeyBindingsChanged();
-}
-
 
 OptionsController::~OptionsController()
 {

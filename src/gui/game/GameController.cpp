@@ -661,7 +661,7 @@ bool GameController::MouseDown(int x, int y, unsigned button)
 {
 	MouseDownEvent ev(x, y, button);
 	bool ret = commandInterface->HandleEvent(LuaEvents::mousedown, &ev);
-	if (ret && y<YRES && x<XRES && !gameView->GetPlacingSave() && !gameView->GetPlacingZoom())
+	if (ret && y<YRES && x<XRES && gameView->IsIdle())
 	{
 		ui::Point point = gameModel->AdjustZoomCoords(ui::Point(x, y));
 		x = point.X;
@@ -687,7 +687,7 @@ bool GameController::MouseUp(int x, int y, unsigned button, char type)
 	bool ret = commandInterface->HandleEvent(LuaEvents::mouseup, &ev);
 	if (type)
 		return ret;
-	if (ret && foundSignID != -1 && y<YRES && x<XRES && !gameView->GetPlacingSave())
+	if (ret && foundSignID != -1 && y<YRES && x<XRES && gameView->IsIdle())
 	{
 		ui::Point point = gameModel->AdjustZoomCoords(ui::Point(x, y));
 		x = point.X;
@@ -752,7 +752,7 @@ bool GameController::KeyPress(int key, int scan, bool repeat, bool shift, bool c
 	if (ret)
 	{
 		Simulation * sim = gameModel->GetSimulation();
-		if (!gameView->GetPlacingSave())
+		if (gameView->IsIdle())
 		{
 			// Go right command
 			if (key == SDLK_RIGHT)

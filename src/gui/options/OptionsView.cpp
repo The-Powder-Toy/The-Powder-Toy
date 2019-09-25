@@ -18,8 +18,6 @@
 #include "gui/interface/DropDown.h"
 #include "gui/interface/Engine.h"
 #include "gui/interface/Checkbox.h"
-#include "gui/keyconfig/KeyconfigView.h"
-#include "gui/keyconfig/KeyconfigController.h"
 
 #include "graphics/Graphics.h"
 
@@ -458,9 +456,9 @@ OptionsView::OptionsView():
 		KeyconfigAction() { }
 		void ActionCallback(ui::Button * sender) override
 		{
-			OptionsView* v = (OptionsView*) sender->GetParentWindow();
-			KeyconfigController* keyboardBindingsController = new KeyconfigController(v->c);
-			ui::Engine::Ref().ShowWindow(keyboardBindingsController->GetView());
+			// OptionsView* v = (OptionsView*) sender->GetParentWindow();
+			// KeyconfigController* keyboardBindingsController = new KeyconfigController(v->c);
+			// ui::Engine::Ref().ShowWindow(keyboardBindingsController->GetView());
 		}
 	};
 

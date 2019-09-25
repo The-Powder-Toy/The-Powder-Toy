@@ -1946,11 +1946,6 @@ std::vector<bool> Client::GetPrefBoolArray(ByteString prop)
 	return std::vector<bool>();
 }
 
-Json::Value Client::GetPrefJson(ByteString prop, Json::Value defaultValue)
-{
-	return GetPref(preferences, prop, defaultValue);
-}
-
 // Helper preference setting function.
 // To actually save any changes to preferences, we need to directly do preferences[property] = thing
 // any other way will set the value of a copy of preferences, not the original
@@ -1977,18 +1972,6 @@ void Client::SetPref(ByteString prop, Json::Value value)
 			preferences[split.Before()] = SetPrefHelper(preferences[split.Before()], split.After(), value);
 		else
 			preferences[prop] = value;
-	}
-	catch (std::exception & e)
-	{
-
-	}
-}
-
-void Client::ClearPref(ByteString prop)
-{
-	try
-	{
-		preferences[prop].clear();
 	}
 	catch (std::exception & e)
 	{

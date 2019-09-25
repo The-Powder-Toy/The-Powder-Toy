@@ -3,19 +3,17 @@
 
 #include <vector>
 #include <deque>
+#include <map>
+#include <stack>
+#include <functional>
 #include "common/String.h"
 #include "gui/interface/Window.h"
 #include "simulation/Sample.h"
-#include "gui/keyconfig/KeyconfigModel.h"
+#include "Keyconfig.h"
 
 enum DrawMode
 {
 	DrawPoints, DrawLine, DrawRect, DrawFill
-};
-
-enum SelectMode
-{
-	SelectNone, SelectStamp, SelectCopy, SelectCut, PlaceSave
 };
 
 namespace ui
@@ -33,6 +31,10 @@ class Brush;
 class GameModel;
 class GameView: public ui::Window
 {
+public:
+	using ViewFunctionOn = std::function<void ()>;
+	using ViewFunctionOff = std::function<void ()>;
+
 private:
 	bool isMouseDown;
 	bool skipDraw;
@@ -103,7 +105,7 @@ private:
 	ui::Point drawPoint1;
 	ui::Point drawPoint2;
 
-	SelectMode selectMode;
+	std::stack<ByteString> context;
 	ui::Point selectPoint1;
 	ui::Point selectPoint2;
 
@@ -114,8 +116,6 @@ private:
 	ui::Point placeSaveOffset;
 
 	SimulationSample sample;
-
-	KeyconfigModel keyboardBindingModel;
 
 	void updateToolButtonScroll();
 
@@ -131,6 +131,30 @@ private:
 	void disableAltBehaviour();
 	void UpdateDrawMode();
 	void UpdateToolStrength();
+
+	Keyconfig keyconfig;
+
+	struct ViewContext
+	{
+		ByteString description;
+	};
+	std::map<ByteString, ViewContext> view_contexts;
+
+	struct ViewFunction
+	{
+		ViewFunctionOn on;
+		ViewFunctionOff off;
+		ByteString description;
+	};
+	std::map<ByteString, ViewFunction> view_functions;
+	
+	struct ActiveViewFunction
+	{
+		ByteString func;
+		int scan;
+	};
+	std::vector<ActiveViewFunction> active_view_functions;
+
 public:
 	GameView();
 	virtual ~GameView();
@@ -142,17 +166,15 @@ public:
 	bool GetHudEnable();
 	void SetDebugHUD(bool mode);
 	bool GetDebugHUD();
-	bool GetPlacingSave();
-	bool GetPlacingZoom();
 	void SetActiveMenuDelayed(int activeMenu) { delayedActiveMenu = activeMenu; }
 	bool CtrlBehaviour(){ return ctrlBehaviour; }
 	bool ShiftBehaviour(){ return shiftBehaviour; }
 	bool AltBehaviour(){ return altBehaviour; }
-	SelectMode GetSelectMode() { return selectMode; }
 	void BeginStampSelection();
 	ui::Point GetPlaceSaveOffset() { return placeSaveOffset; }
 	void SetPlaceSaveOffset(ui::Point offset) { placeSaveOffset = offset; }
 	int Record(bool record);
+	bool IsIdle() const;
 
 	//all of these are only here for one debug lines
 	bool GetMouseDown() { return isMouseDown; }
@@ -185,7 +207,7 @@ public:
 	void NotifyInfoTipChanged(GameModel * sender);
 	void NotifyQuickOptionsChanged(GameModel * sender);
 	void NotifyLastToolChanged(GameModel * sender);
-	void NotifyKeyBindingsChanged(GameModel * sender);
+	void NotifyKeyconfigChanged(GameModel * sender);
 
 
 	void ToolTip(ui::Point senderPosition, String toolTip) override;
@@ -216,6 +238,15 @@ public:
 	class ToolAction;
 	class OptionAction;
 	class OptionListener;
+
+	void PushContext(ByteString new_context);
+	void PopContext();
+	ByteString GetContext() const;
+
+	void AddFunction(ByteString name, ByteString description, ViewFunctionOn on = nullptr, ViewFunctionOff off = nullptr);
+	void RemoveFunction(ByteString name);
+	void AddContext(ByteString name, ByteString description);
+	void RemoveContext(ByteString name);
 };
 
 #endif // GAMEVIEW_H

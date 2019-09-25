@@ -36,7 +36,10 @@
 #include "simulation/SimulationData.h"
 #include "simulation/ElementDefs.h"
 #include "ElementClasses.h"
-#include "gui/keyconfig/KeyconfigMap.h"
+// #include "gui/keyconfig/KeyconfigMap.h"
+
+#include <algorithm>
+#include <cassert>
 
 #ifdef GetUserName
 # undef GetUserName // dammit windows
@@ -211,7 +214,6 @@ GameView::GameView():
 	drawMode(DrawPoints),
 	drawPoint1(0, 0),
 	drawPoint2(0, 0),
-	selectMode(SelectNone),
 	selectPoint1(0, 0),
 	selectPoint2(0, 0),
 	currentMouse(0, 0),
@@ -219,7 +221,6 @@ GameView::GameView():
 	placeSaveThumb(NULL),
 	placeSaveOffset(0, 0)
 {
-
 	int currentX = 1;
 	//Set up UI
 	class SearchAction : public ui::ButtonAction
@@ -464,9 +465,249 @@ GameView::GameView():
 	colourPicker = new ui::Button(ui::Point((XRES/2)-8, YRES+1), ui::Point(16, 16), "", "Pick Colour");
 	colourPicker->SetActionCallback(new ColourPickerAction(this));
 
-	// write keyboard bindings prefs if they are absent
-	keyboardBindingModel.LoadBindingPrefs();
-	keyboardBindingModel.WriteDefaultPrefs();
+	AddFunction("DEFAULT_FUN_TOGGLE_CONSOLE", "Toggle Console", [this]() {
+		SDL_StopTextInput();
+		SDL_StartTextInput();
+		c->ShowConsole();
+	});
+	AddFunction("DEFAULT_FUN_PAUSE_SIMULATION", "Pause Simulation", [this]() {
+		c->SetPaused();
+	});
+	AddFunction("DEFAULT_FUN_UNDO", "Undo", [this]() {
+		if (!isMouseDown)
+		{
+			c->HistoryRestore();
+		}
+	});
+	AddFunction("DEFAULT_FUN_REDO", "Redo", [this]() {
+		if (!isMouseDown)
+		{
+			c->HistoryForward();
+		}
+	});
+	AddFunction("DEFAULT_FUN_ENABLE_ZOOM", "Enable Zoom", [this]() {
+		// sticky = altBehaviour;
+		isMouseDown = false;
+		zoomCursorFixed = false;
+		c->SetZoomEnabled(true);
+	}, [this]() {
+		if (!zoomCursorFixed)
+		{
+			c->SetZoomEnabled(false);
+		}
+	});
+	AddFunction("DEFAULT_FUN_PROPERTY_TOOL", "Switch to Property Tool", [this]() {
+		c->SetActiveTool(1, "DEFAULT_UI_PROPERTY");
+	});
+	AddFunction("DEFAULT_FUN_TOGGLE_DEBUG_HUD", "Toggle Debug HUD", [this]() {
+		SetDebugHUD(!GetDebugHUD());
+	});
+	AddFunction("DEFAULT_FUN_RELOAD_SIMULATION", "Reload Simulation", [this]() {
+		c->ReloadSim();
+	});
+	AddFunction("DEFAULT_FUN_SAVE_AUTHORSHIP_INFO", "Show Authorship Info", [this]() {
+		switch (Client::Ref().GetAuthUser().UserElevation)
+		{
+		case User::ElevationModerator:
+		case User::ElevationAdmin:
+			new InformationMessage("Save authorship info", ByteString(Client::Ref().GetAuthorInfo().toStyledString()).FromUtf8(), true);
+			break;
+
+		default:
+			break;
+		}
+	});
+	AddFunction("DEFAULT_FUN_OPEN_ELEMENT_SEARCH", "Open Element Search", [this]() {
+		c->OpenElementSearch();
+	});
+	AddFunction("DEFAULT_FUN_FIND_MODE", "Toggle Find Mode", [this]() {
+		Tool *active = c->GetActiveTool(0);
+		if (!active->GetIdentifier().Contains("_PT_") || (ren->findingElement == active->GetToolID()))
+		{
+			ren->findingElement = 0;
+		}
+		else
+		{
+			ren->findingElement = active->GetToolID();
+		}
+	});
+	AddFunction("DEFAULT_FUN_FRAME_STEP", "Next Frame", [this]() {
+		c->FrameStep();
+	});
+	AddFunction("DEFAULT_FUN_SHOW_GRAVITY_GRID", "Toggle Gravity Grid", [this]() {
+		c->ShowGravityGrid();
+	});
+	AddFunction("DEFAULT_FUN_DECREASE_GRAVITY_GRID_SIZE", "Decrease Gravity Grid Size", [this]() {
+		c->AdjustGridSize(-1);
+	});
+	AddFunction("DEFAULT_FUN_INCREASE_GRAVITY_GRID_SIZE", "Increase Gravity Grid Size", [this]() {
+		c->AdjustGridSize(1);
+	});
+	AddFunction("DEFAULT_FUN_TOGGLE_INTRO_TEXT", "Toggle Intro Text", [this]() {
+		if (!introText)
+		{
+			introText = 8047;
+		}
+		else
+		{
+			introText = 0;
+		}
+	});
+	AddFunction("DEFAULT_FUN_TOGGLE_HUD", "Toggle HUD", [this]() {
+		showHud = !showHud;
+	});
+	AddFunction("DEFAULT_FUN_TOGGLE_DECORATIONS_LAYER", "Toggle Decorations Layer", [this]() {
+		c->SetDecoration();
+	});
+	AddFunction("DEFAULT_FUN_TOGGLE_DECORATION_TOOL", "Toggle Decoration Tool", [this]() {
+		if (colourPicker->GetParentWindow())
+		{
+			c->SetActiveMenu(lastMenu);
+		}
+		else
+		{
+			c->SetDecoration(true);
+			c->SetPaused(true);
+			c->SetActiveMenu(SC_DECO);
+		}
+	});
+	AddFunction("DEFAULT_FUN_TOGGLE_AIR_MODE", "Cycle Air Mode", [this]() {
+		c->SwitchAir();
+	});
+	AddFunction("DEFAULT_FUN_QUIT", "Quit", [this]() {
+		ui::Engine::Ref().ConfirmExit();
+	});
+	AddFunction("DEFAULT_FUN_TOGGLE_HEAT", "Toggle Ambient Heat", [this]() {
+		c->ToggleAHeat();
+	});
+	AddFunction("DEFAULT_FUN_TOGGLE_NEWTONIAN_GRAVITY", "Toggle Newtonian Gravity", [this]() {
+		c->ToggleNewtonianGravity();
+	});
+	AddFunction("DEFAULT_FUN_RESET_SPARK", "Reset Sparks", [this]() {
+		c->ResetSpark();
+	});
+	AddFunction("DEFAULT_FUN_RESET_AIR", "Reset Air", [this]() {
+		c->ResetAir();
+	});
+	AddFunction("DEFAULT_FUN_COPY", "Copy", [this]() {
+		PushContext("DEFAULT_CTX_EDIT_COPY");
+		selectPoint1 = selectPoint2 = ui::Point(-1, -1);
+		isMouseDown = false;
+		buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to copy (right click = cancel)";
+		buttonTipShow = 120;
+	});
+	AddFunction("DEFAULT_FUN_CUT", "Cut", [this]() {
+		PushContext("DEFAULT_CTX_EDIT_CUT");
+		selectPoint1 = selectPoint2 = ui::Point(-1, -1);
+		isMouseDown = false;
+		buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to copy then cut (right click = cancel)";
+		buttonTipShow = 120;
+	});
+	AddFunction("DEFAULT_FUN_PASTE", "Paste", [this]() {
+		if (c->LoadClipboard())
+		{
+			selectPoint1 = selectPoint2 = mousePosition;
+			isMouseDown = false;
+		}
+	});
+	AddFunction("DEFAULT_FUN_STAMP_TOOL", "Stamp", [this]() {
+		std::vector<ByteString> stampList = Client::Ref().GetStamps(0, 1);
+		if (stampList.size())
+		{
+			SaveFile *saveFile = Client::Ref().GetStamp(stampList[0]);
+			if (saveFile && saveFile->GetGameSave())
+			{
+				c->LoadStamp(saveFile->GetGameSave());
+				delete saveFile;
+				selectPoint1 = selectPoint2 = mousePosition;
+				isMouseDown = false;
+			}
+		}
+	});
+	AddFunction("DEFAULT_FUN_OPEN_STAMPS", "Open Stamp Browser", [this]() {
+		// selectMode = SelectNone;
+		selectPoint1 = selectPoint2 = ui::Point(-1, -1);
+		c->OpenStamps();
+	});
+	AddFunction("DEFAULT_FUN_INCREASE_BRUSH_ZOOM_SIZE", "Increase Brush or Zoom Window Size", [this]() {
+		if (zoomEnabled && !zoomCursorFixed)
+		{
+			c->AdjustZoomSize(1, !altBehaviour);
+		}
+		else
+		{
+			c->AdjustBrushSize(1, !altBehaviour, shiftBehaviour, ctrlBehaviour);
+		}
+	});
+	AddFunction("DEFAULT_FUN_DECREASE_BRUSH_ZOOM_SIZE", "Decrease Brush or Zoom Window Size", [this]() {
+		if (zoomEnabled && !zoomCursorFixed)
+		{
+			c->AdjustZoomSize(-1, !altBehaviour);
+		}
+		else
+		{
+			c->AdjustBrushSize(-1, !altBehaviour, shiftBehaviour, ctrlBehaviour);
+		}
+	});
+	AddFunction("DEFAULT_FUN_INSTALL_GAME", "Install Game", [this]() {
+		c->Install();
+	});
+	AddFunction("DEFAULT_FUN_INVERT_AIR_SIMULATION", "Reverse Air Vectors", [this]() {
+		c->InvertAirSim();
+	});
+	AddFunction("DEFAULT_FUN_TOGGLE_REPLACE_MODE", "Toggle Replace Mode", [this]() {
+		c->SetReplaceModeFlags(c->GetReplaceModeFlags() ^ SPECIFIC_DELETE);
+	});
+	AddFunction("DEFAULT_FUN_TOGGLE_SPECIFIC_DELETE_MODE", "Toggle Specific Delete Mode", [this]() {
+		c->SetReplaceModeFlags(c->GetReplaceModeFlags() ^ REPLACE_MODE);
+	});
+	AddFunction("DEFAULT_FUN_CYCLE_BRUSH", "Cycle Brush", [this]() {
+		c->ChangeBrush();
+	});
+	AddFunction("DEFAULT_FUN_RENDER_PRESET_ALTERNATIVEVELOCITY", "Alternative Velocity Display", [this]() {
+		c->LoadRenderPreset(0);
+	});
+	AddFunction("DEFAULT_FUN_RENDER_PRESET_VELOCITY", "Velocity Display", [this]() {
+		c->LoadRenderPreset(1);
+	});
+	AddFunction("DEFAULT_FUN_RENDER_PRESET_PRESSURE", "Pressure Display", [this]() {
+		c->LoadRenderPreset(2);
+	});
+	AddFunction("DEFAULT_FUN_RENDER_PRESET_PERSISTENT", "Persistent Display", [this]() {
+		c->LoadRenderPreset(3);
+	});
+	AddFunction("DEFAULT_FUN_RENDER_PRESET_FIRE", "Fire Display", [this]() {
+		c->LoadRenderPreset(4);
+	});
+	AddFunction("DEFAULT_FUN_RENDER_PRESET_BLOB", "Blob Display", [this]() {
+		c->LoadRenderPreset(5);
+	});
+	AddFunction("DEFAULT_FUN_RENDER_PRESET_HEAT", "Heat Display", [this]() {
+		c->LoadRenderPreset(6);
+	});
+	AddFunction("DEFAULT_FUN_RENDER_PRESET_FANCY", "Fancy Display", [this]() {
+		c->LoadRenderPreset(7);
+	});
+	AddFunction("DEFAULT_FUN_RENDER_PRESET_NOTHING", "Nothing Display", [this]() {
+		c->LoadRenderPreset(8);
+	});
+	AddFunction("DEFAULT_FUN_RENDER_PRESET_HEATGRADIENT", "Heat Gradient Display", [this]() {
+		c->LoadRenderPreset(9);
+	});
+	AddFunction("DEFAULT_FUN_RENDER_PRESET_LIFEGRADIENT", "Life Gradient Display", [this]() {
+		if (showDebug)
+		{
+			c->LoadRenderPreset(10);
+		}
+	});
+
+	AddContext("DEFAULT_CTX_IDLE", "When editing");
+	AddContext("DEFAULT_CTX_EDIT_COPY", "When copying");
+	AddContext("DEFAULT_CTX_EDIT_CUT", "When cutting");
+	AddContext("DEFAULT_CTX_EDIT_PASTE", "When pasting");
+	AddContext("DEFAULT_CTX_EDIT_STAMP", "When creating a stamp");
+
+	PushContext("DEFAULT_CTX_IDLE");
 }
 
 GameView::~GameView()
@@ -594,10 +835,9 @@ public:
 	}
 };
 
-void GameView::NotifyKeyBindingsChanged(GameModel * sender)
+void GameView::NotifyKeyconfigChanged(GameModel * sender)
 {
-	// resync the model
-	keyboardBindingModel.LoadBindingPrefs();
+	keyconfig = sender->GetKeyconfig();
 }
 
 void GameView::NotifyQuickOptionsChanged(GameModel * sender)
@@ -690,16 +930,6 @@ bool GameView::GetDebugHUD()
 ui::Point GameView::GetMousePosition()
 {
 	return currentMouse;
-}
-
-bool GameView::GetPlacingSave()
-{
-	return selectMode != SelectNone;
-}
-
-bool GameView::GetPlacingZoom()
-{
-	return zoomEnabled && !zoomCursorFixed;
 }
 
 void GameView::NotifyActiveToolsChanged(GameModel * sender)
@@ -1156,35 +1386,43 @@ void GameView::OnMouseMove(int x, int y, int dx, int dy)
 	bool newMouseInZoom = c->MouseInZoom(ui::Point(x, y));
 	mousePosition = c->PointTranslate(ui::Point(x, y));
 	currentMouse = ui::Point(x, y);
-	if (selectMode != SelectNone)
+	if (GetContext().BeginsWith("DEFAULT_CTX_EDIT_"))
 	{
-		if (selectMode == PlaceSave)
+		if (GetContext() == "DEFAULT_CTX_EDIT_PASTE")
+		{
 			selectPoint1 = c->PointTranslate(ui::Point(x, y));
-		if (selectPoint1.X != -1)
-			selectPoint2 = c->PointTranslate(ui::Point(x, y));
-	}
-	else if (isMouseDown)
-	{
-		if (newMouseInZoom == mouseInZoom)
-		{
-			if (drawMode == DrawPoints)
-			{
-				currentPoint = mousePosition;
-				c->DrawPoints(toolIndex, lastPoint, currentPoint, true);
-				lastPoint = currentPoint;
-				skipDraw = true;
-			}
-			else if (drawMode == DrawFill)
-			{
-				c->DrawFill(toolIndex, mousePosition);
-				skipDraw = true;
-			}
 		}
-		else if (drawMode == DrawPoints || drawMode == DrawFill)
+
+		if (selectPoint1.X != -1)
 		{
-			isMouseDown = false;
-			drawMode = DrawPoints;
-			c->MouseUp(x, y, 0, 2);
+			selectPoint2 = c->PointTranslate(ui::Point(x, y));
+		}
+	}
+	else
+	{
+		if (isMouseDown)
+		{
+			if (newMouseInZoom == mouseInZoom)
+			{
+				if (drawMode == DrawPoints)
+				{
+					currentPoint = mousePosition;
+					c->DrawPoints(toolIndex, lastPoint, currentPoint, true);
+					lastPoint = currentPoint;
+					skipDraw = true;
+				}
+				else if (drawMode == DrawFill)
+				{
+					c->DrawFill(toolIndex, mousePosition);
+					skipDraw = true;
+				}
+			}
+			else if (drawMode == DrawPoints || drawMode == DrawFill)
+			{
+				isMouseDown = false;
+				drawMode = DrawPoints;
+				c->MouseUp(x, y, 0, 2);
+			}
 		}
 	}
 	mouseInZoom = newMouseInZoom;
@@ -1206,7 +1444,7 @@ void GameView::OnMouseDown(int x, int y, unsigned button)
 		button = SDL_BUTTON_MIDDLE;
 	if  (!(zoomEnabled && !zoomCursorFixed))
 	{
-		if (selectMode != SelectNone)
+		if (GetContext().BeginsWith("DEFAULT_CTX_EDIT_"))
 		{
 			isMouseDown = true;
 			if (button == SDL_BUTTON_LEFT && selectPoint1.X == -1)
@@ -1262,11 +1500,16 @@ void GameView::OnMouseUp(int x, int y, unsigned button)
 	else if (isMouseDown)
 	{
 		isMouseDown = false;
-		if (selectMode != SelectNone)
+		if (GetContext().BeginsWith("DEFAULT_CTX_EDIT_"))
 		{
 			if (button == SDL_BUTTON_LEFT && selectPoint1.X != -1 && selectPoint1.Y != -1 && selectPoint2.X != -1 && selectPoint2.Y != -1)
 			{
-				if (selectMode == PlaceSave)
+				int x2 = (selectPoint1.X>selectPoint2.X) ? selectPoint1.X : selectPoint2.X;
+				int y2 = (selectPoint1.Y>selectPoint2.Y) ? selectPoint1.Y : selectPoint2.Y;
+				int x1 = (selectPoint2.X<selectPoint1.X) ? selectPoint2.X : selectPoint1.X;
+				int y1 = (selectPoint2.Y<selectPoint1.Y) ? selectPoint2.Y : selectPoint1.Y;
+
+				if (GetContext().EndsWith("PASTE"))
 				{
 					if (placeSaveThumb && y <= WINDOWH-BARSIZE)
 					{
@@ -1286,22 +1529,21 @@ void GameView::OnMouseUp(int x, int y, unsigned button)
 						c->PlaceSave(ui::Point(thumbX, thumbY));
 					}
 				}
-				else
+				else if (GetContext().EndsWith("COPY"))
 				{
-					int x2 = (selectPoint1.X>selectPoint2.X) ? selectPoint1.X : selectPoint2.X;
-					int y2 = (selectPoint1.Y>selectPoint2.Y) ? selectPoint1.Y : selectPoint2.Y;
-					int x1 = (selectPoint2.X<selectPoint1.X) ? selectPoint2.X : selectPoint1.X;
-					int y1 = (selectPoint2.Y<selectPoint1.Y) ? selectPoint2.Y : selectPoint1.Y;
-					if (selectMode ==SelectCopy)
-						c->CopyRegion(ui::Point(x1, y1), ui::Point(x2, y2));
-					else if (selectMode == SelectCut)
-						c->CutRegion(ui::Point(x1, y1), ui::Point(x2, y2));
-					else if (selectMode == SelectStamp)
-						c->StampRegion(ui::Point(x1, y1), ui::Point(x2, y2));
+					c->CopyRegion(ui::Point(x1, y1), ui::Point(x2, y2));
+				}
+				else if (GetContext().EndsWith("CUT"))
+				{
+					c->CutRegion(ui::Point(x1, y1), ui::Point(x2, y2));
+				}
+				else if (GetContext().EndsWith("STAMP"))
+				{
+					c->StampRegion(ui::Point(x1, y1), ui::Point(x2, y2));
 				}
 			}
-			selectMode = SelectNone;
-			return;
+
+			PopContext();
 		}
 
 		ui::Point finalDrawPoint2 = c->PointTranslate(currentMouse);
@@ -1338,9 +1580,11 @@ void GameView::OnMouseUp(int x, int y, unsigned button)
 			c->DrawFill(toolIndex, finalDrawPoint2);
 		}
 	}
-	// this shouldn't happen, but do this just in case
-	else if (selectMode != SelectNone && button != SDL_BUTTON_LEFT)
-		selectMode = SelectNone;
+	else if (button != SDL_BUTTON_LEFT && GetContext().BeginsWith("DEFAULT_CTX_EDIT_"))
+	{
+		// this shouldn't happen, but do this just in case
+		PopContext();
+	}
 
 	// update the drawing mode for the next line
 	// since ctrl/shift state may have changed since we started drawing
@@ -1352,7 +1596,7 @@ void GameView::ToolTip(ui::Point senderPosition, String toolTip)
 	// buttom button tooltips
 	if (senderPosition.Y > Size.Y-17)
 	{
-		if (selectMode == PlaceSave || selectMode == SelectNone)
+		if (GetContext() == "DEFAULT_CTX_IDLE" || GetContext() == "DEFAULT_CTX_EDIT_PASTE")
 		{
 			buttonTip = toolTip;
 			isButtonTipFadingIn = true;
@@ -1380,7 +1624,7 @@ void GameView::OnMouseWheel(int x, int y, int d)
 {
 	if (!d)
 		return;
-	if (selectMode != SelectNone)
+	if (GetContext() != "DEFAULT_CTX_IDLE")
 	{
 		return;
 	}
@@ -1396,7 +1640,7 @@ void GameView::OnMouseWheel(int x, int y, int d)
 
 void GameView::BeginStampSelection()
 {
-	selectMode = SelectStamp;
+	PushContext("DEFAULT_CTX_EDIT_STAMP");
 	selectPoint1 = selectPoint2 = ui::Point(-1, -1);
 	isMouseDown = false;
 	buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to create a stamp (right click = cancel)";
@@ -1438,8 +1682,10 @@ void GameView::OnFileDrop(ByteString filename)
 
 void GameView::OnTick(float dt)
 {
-	if (selectMode == PlaceSave && !placeSaveThumb)
-		selectMode = SelectNone;
+	if (GetContext() == "DEFAULT_CTX_EDIT_PASTE" && !placeSaveThumb)
+	{
+		PopContext();
+	}
 	if (zoomEnabled && !zoomCursorFixed)
 		c->SetZoomPosition(currentMouse);
 
@@ -1447,7 +1693,7 @@ void GameView::OnTick(float dt)
 	{
 		skipDraw = false;
 	}
-	else if (selectMode == SelectNone && isMouseDown)
+	else if (GetContext() == "DEFAULT_CTX_IDLE" && isMouseDown)
 	{
 		if (drawMode == DrawPoints)
 		{
@@ -1506,14 +1752,17 @@ void GameView::OnTick(float dt)
 		if(infoTipPresence<0)
 			infoTipPresence = 0;
 	}
-	if (isButtonTipFadingIn || (selectMode != PlaceSave && selectMode != SelectNone))
+	if (isButtonTipFadingIn)
 	{
-		isButtonTipFadingIn = false;
-		if(buttonTipShow < 120)
+		if (GetContext().BeginsWith("DEFAULT_CTX_EDIT_") && GetContext() != "DEFAULT_CTX_EDIT_PASTE")
 		{
-			buttonTipShow += int(dt*2)>0?int(dt*2):1;
-			if(buttonTipShow>120)
-				buttonTipShow = 120;
+			isButtonTipFadingIn = false;
+			if(buttonTipShow < 120)
+			{
+				buttonTipShow += int(dt*2)>0?int(dt*2):1;
+				if(buttonTipShow>120)
+					buttonTipShow = 120;
+			}
 		}
 	}
 	else if(buttonTipShow>0)
@@ -1612,285 +1861,85 @@ void GameView::DoDraw()
 
 void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
+	if (repeat)
+	{
+		return;
+	}
+
 	if (introText > 50)
 	{
 		introText = 50;
 	}
 
-	if (selectMode != SelectNone)
-	{
-		if (selectMode == PlaceSave)
-		{
-			switch (key)
-			{
-			case SDLK_RIGHT:
-				c->TranslateSave(ui::Point(1, 0));
-				return;
-			case SDLK_LEFT:
-				c->TranslateSave(ui::Point(-1, 0));
-				return;
-			case SDLK_UP:
-				c->TranslateSave(ui::Point(0, -1));
-				return;
-			case SDLK_DOWN:
-				c->TranslateSave(ui::Point(0, 1));
-				return;
-			}
-			if (scan == SDL_SCANCODE_R && !repeat)
-			{
-				if (ctrl && shift)
-				{
-					//Vertical flip
-					c->TransformSave(m2d_new(1,0,0,-1));
-				}
-				else if (!ctrl && shift)
-				{
-					//Horizontal flip
-					c->TransformSave(m2d_new(-1,0,0,1));
-				}
-				else
-				{
-					//Rotate 90deg
-					c->TransformSave(m2d_new(0,1,-1,0));
-				}
-				return;
-			}
-		}
-	}
-
-	int32_t functionId = keyboardBindingModel.GetFunctionForBinding(scan, shift, ctrl, alt);
-
-	if (repeat)
-		return;
-	bool didKeyShortcut = true;
-
-	// please see KeyconfigMap.h for mappings
-	switch(functionId)
-	{
-	case KeyconfigFunction::TOGGLE_CONSOLE:
-	{
-		SDL_StopTextInput();
-		SDL_StartTextInput();
-		c->ShowConsole();
-		break;
-	}
-	case KeyconfigFunction::PAUSE_SIMULATION: //Space
-		c->SetPaused();
-		break;
-	case KeyconfigFunction::UNDO:
-		if (selectMode != SelectNone && isMouseDown)
-			break;
-		if (!isMouseDown)
-		{
-			c->HistoryRestore();
-		}
-		break;
-	case KeyconfigFunction::REDO:
-		if (selectMode != SelectNone && isMouseDown)
-			break;
-		if (!isMouseDown)
-		{
-			c->HistoryForward();
-		}
-		break;
-	case KeyconfigFunction::ENABLE_ZOOM:
-	{
-		isMouseDown = false;
-		zoomCursorFixed = false;
-		c->SetZoomEnabled(true);
-		break;
-	}
-	case KeyconfigFunction::PROPERTY_TOOL:
-		c->SetActiveTool(1, "DEFAULT_UI_PROPERTY");
-		break;
-	case KeyconfigFunction::TOGGLE_DEBUG_HUD:
-		SetDebugHUD(!GetDebugHUD());
-		break;
-	case KeyconfigFunction::RELOAD_SIMULATION:
-		c->ReloadSim();
-		break;
-	case KeyconfigFunction::SAVE_AUTHORSHIP_INFO:
-		if ((Client::Ref().GetAuthUser().UserElevation == User::ElevationModerator
-		     || Client::Ref().GetAuthUser().UserElevation == User::ElevationAdmin) && ctrl)
-		{
-			ByteString authorString = Client::Ref().GetAuthorInfo().toStyledString();
-			new InformationMessage("Save authorship info", authorString.FromUtf8(), true);
-		}
-		break;
-	case KeyconfigFunction::OPEN_ELEMENT_SEARCH:
-		c->OpenElementSearch();
-		break;
-	case KeyconfigFunction::FIND_MODE:
-	{
-		Tool *active = c->GetActiveTool(0);
-		if (!active->GetIdentifier().Contains("_PT_") || (ren->findingElement == active->GetToolID()))
-			ren->findingElement = 0;
-		else
-			ren->findingElement = active->GetToolID();
-		break;
-	}
-	case KeyconfigFunction::FRAME_STEP:
-		c->FrameStep();
-		break;
-	case KeyconfigFunction::SHOW_GRAVITY_GRID:
-		c->ShowGravityGrid();
-		break;
-	case KeyconfigFunction::DECREASE_GRAVITY_GRID_SIZE:
-		c->AdjustGridSize(-1);
-		break;
-	case KeyconfigFunction::INCREASE_GRAVITY_GRID_SIZE:
-		c->AdjustGridSize(1);
-		break;
-	case KeyconfigFunction::TOGGLE_INTRO_TEXT:
-		if(!introText)
-			introText = 8047;
-		else
-			introText = 0;
-		break;
-	case KeyconfigFunction::TOGGLE_HUD:
-		showHud = !showHud;
-		break;
-	case KeyconfigFunction::TOGGLE_DECORATIONS_LAYER:
-		c->SetDecoration();
-		break;
-	case KeyconfigFunction::TOGGLE_DECORATION_TOOL:
-		if (colourPicker->GetParentWindow())
-			c->SetActiveMenu(lastMenu);
-		else
-		{
-			c->SetDecoration(true);
-			c->SetPaused(true);
-			c->SetActiveMenu(SC_DECO);
-		}
-		break;
-	case KeyconfigFunction::TOGGLE_AIR_MODE:
-		c->SwitchAir();
-		break;
-	case KeyconfigFunction::QUIT:
-		ui::Engine::Ref().ConfirmExit();
-		break;
-	case KeyconfigFunction::TOGGLE_HEAT:
-		c->ToggleAHeat();
-		break;
-	case KeyconfigFunction::TOGGLE_NEWTONIAN_GRAVITY:
-		c->ToggleNewtonianGravity();
-		break;
-	case KeyconfigFunction::RESET_SPARK:
-		c->ResetSpark();
-		break;
-	case KeyconfigFunction::RESET_AIR:
-		c->ResetAir();
-		break;
-	case KeyconfigFunction::COPY:
-	{
-		selectMode = SelectCopy;
-		selectPoint1 = selectPoint2 = ui::Point(-1, -1);
-		isMouseDown = false;
-		buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to copy (right click = cancel)";
-		buttonTipShow = 120;
-		break;
-	}
-	case KeyconfigFunction::CUT:
-	{
-		selectMode = SelectCut;
-		selectPoint1 = selectPoint2 = ui::Point(-1, -1);
-		isMouseDown = false;
-		buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to copy then cut (right click = cancel)";
-		buttonTipShow = 120;
-		break;
-	}
-	case KeyconfigFunction::PASTE:
-		if (c->LoadClipboard())
-		{
-			selectPoint1 = selectPoint2 = mousePosition;
-			isMouseDown = false;
-		}
-		break;
-	case KeyconfigFunction::STAMP_TOOL:
-	{
-		std::vector<ByteString> stampList = Client::Ref().GetStamps(0, 1);
-		if (stampList.size())
-		{
-			SaveFile *saveFile = Client::Ref().GetStamp(stampList[0]);
-			if (!saveFile || !saveFile->GetGameSave())
-				break;
-			c->LoadStamp(saveFile->GetGameSave());
-			delete saveFile;
-			selectPoint1 = selectPoint2 = mousePosition;
-			isMouseDown = false;
-			break;
-		}
-	}
-	case KeyconfigFunction::OPEN_STAMPS:
-	{
-		selectMode = SelectNone;
-		selectPoint1 = selectPoint2 = ui::Point(-1, -1);
-		c->OpenStamps();
-		break;
-	}
-	case KeyconfigFunction::INCREASE_BRUSH_SIZE:
-		if(zoomEnabled && !zoomCursorFixed)
-			c->AdjustZoomSize(1, !alt);
-		else
-			c->AdjustBrushSize(1, !alt, shiftBehaviour, ctrlBehaviour);
-		break;
-	case KeyconfigFunction::DECREASE_BRUSH_SIZE:
-		if(zoomEnabled && !zoomCursorFixed)
-			c->AdjustZoomSize(-1, !alt);
-		else
-			c->AdjustBrushSize(-1, !alt, shiftBehaviour, ctrlBehaviour);
-		break;
-	case KeyconfigFunction::INSTALL_GAME:
-		c->Install();
-		break;
-	case KeyconfigFunction::INVERT_AIR_SIMULATION:
-		c->InvertAirSim();
-		break;
-	case KeyconfigFunction::TOGGLE_REPLACE_MODE:
-		c->SetReplaceModeFlags(c->GetReplaceModeFlags()^SPECIFIC_DELETE);
-		break;
-	case KeyconfigFunction::TOGGLE_SPECIFIC_DELETE_MODE:
-		c->SetReplaceModeFlags(c->GetReplaceModeFlags()^REPLACE_MODE);
-		break;
-	default:
-		didKeyShortcut = false;
-	}
-	if (!didKeyShortcut)
+	if (GetContext() == "DEFAULT_CTX_EDIT_PASTE")
 	{
 		switch (key)
 		{
-		case SDLK_TAB: //Tab
-			c->ChangeBrush();
-			break;
-		case SDLK_INSERT:
-			if (ctrl)
-				c->SetReplaceModeFlags(c->GetReplaceModeFlags()^SPECIFIC_DELETE);
+		case SDLK_RIGHT:
+			c->TranslateSave(ui::Point(1, 0));
+			return;
+		case SDLK_LEFT:
+			c->TranslateSave(ui::Point(-1, 0));
+			return;
+		case SDLK_UP:
+			c->TranslateSave(ui::Point(0, -1));
+			return;
+		case SDLK_DOWN:
+			c->TranslateSave(ui::Point(0, 1));
+			return;
+		}
+		if (scan == SDL_SCANCODE_R && !repeat)
+		{
+			if (ctrl && shift)
+			{
+				//Vertical flip
+				c->TransformSave(m2d_new(1,0,0,-1));
+			}
+			else if (!ctrl && shift)
+			{
+				//Horizontal flip
+				c->TransformSave(m2d_new(-1,0,0,1));
+			}
 			else
-				c->SetReplaceModeFlags(c->GetReplaceModeFlags()^REPLACE_MODE);
-			break;
-		case SDLK_DELETE:
-			c->SetReplaceModeFlags(c->GetReplaceModeFlags()^SPECIFIC_DELETE);
-			break;
+			{
+				//Rotate 90deg
+				c->TransformSave(m2d_new(0,1,-1,0));
+			}
+			return;
 		}
 	}
 
-	if (shift && showDebug && key == '1')
-		c->LoadRenderPreset(10);
-	else if (key >= '0' && key <= '9')
+	// linear search for now, will figure out something smarter if we ever need to
+	auto current_context = GetContext();
+	auto shortcut = std::find_if(keyconfig.begin(), keyconfig.end(), [=](KeyconfigItem const &item) {
+		return std::get<0>(item) == current_context
+		    && std::get<1>(item) == ctrl
+		    && std::get<2>(item) == shift
+		    && std::get<3>(item) == alt
+		    && std::get<4>(item) == scan;
+	});
+	if (shortcut != keyconfig.end())
 	{
-		c->LoadRenderPreset(key-'0');
+		auto func = std::get<5>(*shortcut);
+		active_view_functions.push_back({ func, scan });
+		view_functions[func].on();
 	}
 }
 
 void GameView::OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
 	if (repeat)
-		return;
-	if (scan == SDL_SCANCODE_Z)
 	{
-		if (!zoomCursorFixed && !alt)
-			c->SetZoomEnabled(false);
 		return;
+	}
+
+	auto active = std::find_if(active_view_functions.begin(), active_view_functions.end(), [=](ActiveViewFunction const &func) {
+		return func.scan != scan;
+	});
+	if (active != active_view_functions.end())
+	{
+		view_functions[active->func].off();
+		active_view_functions.erase(active);
 	}
 }
 
@@ -1975,19 +2024,28 @@ void GameView::NotifyLogChanged(GameModel * sender, String entry)
 
 void GameView::NotifyPlaceSaveChanged(GameModel * sender)
 {
-	delete placeSaveThumb;
+	if (placeSaveThumb)
+	{
+		delete placeSaveThumb;
+	}
 	placeSaveOffset = ui::Point(0, 0);
 	if(sender->GetPlaceSave())
 	{
 		SaveRenderer::Ref().CopyModes(sender->GetRenderer());
+		if (!placeSaveThumb) // we weren't in DEFAULT_CTX_EDIT_PASTE
+		{
+			PushContext("DEFAULT_CTX_EDIT_PASTE");
+		}
 		placeSaveThumb = SaveRenderer::Ref().Render(sender->GetPlaceSave());
-		selectMode = PlaceSave;
 		selectPoint2 = mousePosition;
 	}
 	else
 	{
+		if (placeSaveThumb)
+		{
+			PopContext(); // we were in DEFAULT_CTX_EDIT_PASTE
+		}
 		placeSaveThumb = NULL;
-		selectMode = SelectNone;
 	}
 }
 
@@ -1996,7 +2054,7 @@ void GameView::enableShiftBehaviour()
 	if (!shiftBehaviour)
 	{
 		shiftBehaviour = true;
-		if (!isMouseDown || selectMode != SelectNone)
+		if (!isMouseDown || GetContext() != "DEFAULT_CTX_IDLE")
 			UpdateDrawMode();
 		UpdateToolStrength();
 	}
@@ -2007,7 +2065,7 @@ void GameView::disableShiftBehaviour()
 	if (shiftBehaviour)
 	{
 		shiftBehaviour = false;
-		if (!isMouseDown || selectMode != SelectNone)
+		if (!isMouseDown || GetContext() != "DEFAULT_CTX_IDLE")
 			UpdateDrawMode();
 		UpdateToolStrength();
 	}
@@ -2036,7 +2094,7 @@ void GameView::enableCtrlBehaviour()
 	if (!ctrlBehaviour)
 	{
 		ctrlBehaviour = true;
-		if (!isMouseDown || selectMode != SelectNone)
+		if (!isMouseDown || GetContext() != "DEFAULT_CTX_IDLE")
 			UpdateDrawMode();
 		UpdateToolStrength();
 
@@ -2061,7 +2119,7 @@ void GameView::disableCtrlBehaviour()
 	if (ctrlBehaviour)
 	{
 		ctrlBehaviour = false;
-		if (!isMouseDown || selectMode != SelectNone)
+		if (!isMouseDown || GetContext() != "DEFAULT_CTX_IDLE")
 			UpdateDrawMode();
 		UpdateToolStrength();
 
@@ -2127,7 +2185,7 @@ void GameView::OnDraw()
 		ren->clearScreen(1.0f);
 		ren->RenderBegin();
 		ren->SetSample(c->PointTranslate(currentMouse).X, c->PointTranslate(currentMouse).Y);
-		if (selectMode == SelectNone && (!zoomEnabled || zoomCursorFixed) && activeBrush && (isMouseDown || (currentMouse.X >= 0 && currentMouse.X < XRES && currentMouse.Y >= 0 && currentMouse.Y < YRES)))
+		if (GetContext() == "DEFAULT_CTX_IDLE" && (!zoomEnabled || zoomCursorFixed) && activeBrush && (isMouseDown || (currentMouse.X >= 0 && currentMouse.X < XRES && currentMouse.Y >= 0 && currentMouse.Y < YRES)))
 		{
 			ui::Point finalCurrentMouse = c->PointTranslate(currentMouse);
 			ui::Point initialDrawPoint = drawPoint1;
@@ -2189,9 +2247,9 @@ void GameView::OnDraw()
 			}
 		}
 
-		if(selectMode!=SelectNone)
+		if (GetContext().BeginsWith("DEFAULT_CTX_EDIT_"))
 		{
-			if(selectMode==PlaceSave)
+			if (GetContext().EndsWith("PASTE"))
 			{
 				if(placeSaveThumb && selectPoint2.X!=-1)
 				{
@@ -2548,3 +2606,45 @@ ui::Point GameView::rectSnapCoords(ui::Point point1, ui::Point point2)
 	// SW-NE
 	return point1 + ui::Point((diff.X - diff.Y)/2, (diff.Y - diff.X)/2);
 }
+
+void GameView::PushContext(ByteString new_context)
+{
+	context.push(new_context);
+}
+
+void GameView::PopContext()
+{
+	context.pop();
+	assert(context.size());
+}
+
+ByteString GameView::GetContext() const
+{
+	return context.top();
+}
+
+bool GameView::IsIdle() const
+{
+	return GetContext() == "DEFAULT_CTX_IDLE";
+}
+
+void GameView::AddFunction(ByteString name, ByteString description, ViewFunctionOn on, ViewFunctionOff off)
+{
+	view_functions.insert(std::make_pair(name, ViewFunction{ on, off, description }));
+}
+
+void GameView::RemoveFunction(ByteString name)
+{
+	view_functions.erase(name);
+}
+
+void GameView::AddContext(ByteString name, ByteString description)
+{
+	view_contexts.insert(std::make_pair(name, ViewContext{ description }));
+}
+
+void GameView::RemoveContext(ByteString name)
+{
+	view_contexts.erase(name);
+}
+
