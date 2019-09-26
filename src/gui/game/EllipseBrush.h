@@ -31,7 +31,9 @@ public:
 			int yTop = ry+1, yBottom, i;
 			for (i = 0; i <= rx; i++)
 			{
-				while (pow(i-rx,2.0)*pow(ry,2.0) + pow(yTop-ry,2.0)*pow(rx,2.0) <= pow(rx,2.0)*pow(ry,2.0))
+				while (	pow(i - rx, 2.0) * pow(ry - 0.5, 2.0) +
+						pow(yTop - ry, 2.0) * pow(rx - 0.5, 2.0) <=
+							pow(rx, 2.0) * pow(ry, 2.0))
 					yTop++;
 				yBottom = 2*ry - yTop;
 				for (int j = 0; j <= ry*2; j++)
