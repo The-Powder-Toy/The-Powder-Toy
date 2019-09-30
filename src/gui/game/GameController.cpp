@@ -446,11 +446,11 @@ void GameController::AdjustBrushSize(int delta, bool logarithmic, bool xAxis, bo
 		newSize.Y = 200;
 
 	if(xAxis)
-		gameModel->GetBrush()->SetRadius(ui::Point(newSize.X, oldSize.Y));
+		SetBrushSize(ui::Point(newSize.X, oldSize.Y));
 	else if(yAxis)
-		gameModel->GetBrush()->SetRadius(ui::Point(oldSize.X, newSize.Y));
+		SetBrushSize(ui::Point(oldSize.X, newSize.Y));
 	else
-		gameModel->GetBrush()->SetRadius(newSize);
+		SetBrushSize(newSize);
 }
 
 void GameController::SetBrushSize(ui::Point newSize)
@@ -1582,7 +1582,9 @@ void GameController::Vote(int direction)
 
 void GameController::ChangeBrush()
 {
+	auto prev_size = gameModel->GetBrush()->GetRadius();
 	gameModel->SetBrushID(gameModel->GetBrushID()+1);
+	gameModel->GetBrush()->SetRadius(prev_size);
 }
 
 void GameController::ClearSim()
