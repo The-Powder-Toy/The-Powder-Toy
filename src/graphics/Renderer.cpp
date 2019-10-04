@@ -2590,67 +2590,67 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 		"Alternative Velocity Display",
 		{ RENDER_EFFE, RENDER_BASC },
 		{ DISPLAY_AIRC },
-		{ }
+		0
 	});
 	renderModePresets.push_back({
 		"Velocity Display",
 		{ RENDER_EFFE, RENDER_BASC },
 		{ DISPLAY_AIRV },
-		{ }
+		0
 	});
 	renderModePresets.push_back({
 		"Pressure Display",
 		{ RENDER_EFFE, RENDER_BASC },
 		{ DISPLAY_AIRP },
-		{ }
+		0
 	});
 	renderModePresets.push_back({
 		"Persistent Display",
 		{ RENDER_EFFE, RENDER_BASC },
 		{ DISPLAY_PERS },
-		{ }
+		0
 	});
 	renderModePresets.push_back({
 		"Fire Display",
 		{ RENDER_FIRE, RENDER_SPRK, RENDER_EFFE, RENDER_BASC },
 		{ },
-		{ }
+		0
 	});
 	renderModePresets.push_back({
 		"Blob Display",
 		{ RENDER_FIRE, RENDER_SPRK, RENDER_EFFE, RENDER_BLOB },
 		{ },
-		{ }
+		0
 	});
 	renderModePresets.push_back({
 		"Heat Display",
 		{ RENDER_BASC },
 		{ DISPLAY_AIRH },
-		{ COLOUR_HEAT }
+		COLOUR_HEAT
 	});
 	renderModePresets.push_back({
 		"Fancy Display",
 		{ RENDER_FIRE, RENDER_SPRK, RENDER_GLOW, RENDER_BLUR, RENDER_EFFE, RENDER_BASC },
 		{ DISPLAY_WARP },
-		{ }
+		0
 	});
 	renderModePresets.push_back({
 		"Nothing Display",
 		{ RENDER_BASC },
 		{ },
-		{ }
+		0
 	});
 	renderModePresets.push_back({
 		"Heat Gradient Display",
 		{ RENDER_BASC },
 		{ },
-		{ COLOUR_GRAD }
+		COLOUR_GRAD
 	});
 	renderModePresets.push_back({
 		"Life Gradient Display",
 		{ RENDER_BASC },
 		{ },
-		{ COLOUR_LIFE }
+		COLOUR_LIFE
 	});
 
 	//Prepare the graphics cache

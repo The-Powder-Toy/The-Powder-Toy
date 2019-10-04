@@ -46,7 +46,7 @@ public:
 	}
 	~CoordStack()
 	{
-		delete stack;
+		delete[] stack;
 	}
 	void push(int x, int y)
 	{
