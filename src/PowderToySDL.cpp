@@ -637,17 +637,15 @@ constexpr int SCALE_MAXIMUM = 10;
 constexpr int SCALE_MARGIN = 30;
 
 int guessBestScale() {
-	int guess = 1;
+	const int widthNoMargin = desktopWidth - SCALE_MARGIN;
+	const int widthGuess = widthNoMargin / WINDOWW;
 
-	for(int i = 2; i <= SCALE_MAXIMUM; ++i) {
-		const int requiredWidth = WINDOWW * i + SCALE_MARGIN;
-		const int requiredHeight = WINDOWH * i + SCALE_MARGIN;
+	const int heightNoMargin = desktopHeight - SCALE_MARGIN;
+	const int heightGuess = heightNoMargin / WINDOWH;
 
-		if(desktopWidth >= requiredWidth && desktopHeight >= requiredHeight)
-			guess = i;
-		else
-			break;
-	}
+	int guess = std::min(widthGuess, heightGuess);
+	if(guess < 1 || guess > SCALE_MAXIMUM)
+		guess = 1;
 
 	return guess;
 }
