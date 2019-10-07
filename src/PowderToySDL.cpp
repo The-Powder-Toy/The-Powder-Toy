@@ -636,6 +636,22 @@ void ChdirToDataDirectory()
 constexpr int SCALE_MAXIMUM = 10;
 constexpr int SCALE_MARGIN = 30;
 
+int guessBestScale() {
+	int guess = 1;
+
+	for(int i = 2; i <= SCALE_MAXIMUM; ++i) {
+		const int requiredWidth = WINDOWW * i + SCALE_MARGIN;
+		const int requiredHeight = WINDOWH * i + SCALE_MARGIN;
+
+		if(desktopWidth >= requiredWidth && desktopHeight >= requiredHeight)
+			guess = i;
+		else
+			break;
+	}
+
+	return guess;
+}
+
 int main(int argc, char * argv[])
 {
 #if defined(_DEBUG) && defined(_MSC_VER)
@@ -714,16 +730,7 @@ int main(int argc, char * argv[])
 
 	if (Client::Ref().IsFirstRun())
 	{
-		for(int i = 2; i <= SCALE_MAXIMUM; ++i) {
-			const int requiredWidth = WINDOWW * i + SCALE_MARGIN;
-			const int requiredHeight = WINDOWH * i + SCALE_MARGIN;
-
-			if(desktopWidth >= requiredWidth && desktopHeight >= requiredHeight)
-				scale = i;
-			else
-				break;
-		}
-
+		scale = guessBestScale();
 		if(scale > 1) {
 			Client::Ref().SetPref("Scale", scale);
 			SDL_SetWindowSize(sdl_window, WINDOWW * scale, WINDOWH * scale);
