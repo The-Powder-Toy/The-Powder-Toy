@@ -633,6 +633,9 @@ void ChdirToDataDirectory()
 #endif
 }
 
+constexpr int SCALE_MAXIMUM = 10;
+constexpr int SCALE_MARGIN = 30;
+
 int main(int argc, char * argv[])
 {
 #if defined(_DEBUG) && defined(_MSC_VER)
@@ -704,17 +707,28 @@ int main(int argc, char * argv[])
 	Client::Ref().Initialise(proxyString, disableNetwork);
 
 	// TODO: maybe bind the maximum allowed scale to screen size somehow
-	if(scale < 1 || scale > 10)
+	if(scale < 1 || scale > SCALE_MAXIMUM)
 		scale = 1;
 
 	SDLOpen();
-	// TODO: mabe make a nice loop that automagically finds the optimal scale
-	if (Client::Ref().IsFirstRun() && desktopWidth > WINDOWW*2+30 && desktopHeight > WINDOWH*2+30)
+
+	if (Client::Ref().IsFirstRun())
 	{
-		scale = 2;
-		Client::Ref().SetPref("Scale", 2);
-		SDL_SetWindowSize(sdl_window, WINDOWW * 2, WINDOWH * 2);
-		showDoubleScreenDialog = true;
+		for(int i = 2; i <= SCALE_MAXIMUM; ++i) {
+			const int requiredWidth = WINDOWW * i + SCALE_MARGIN;
+			const int requiredHeight = WINDOWH * i + SCALE_MARGIN;
+
+			if(desktopWidth >= requiredWidth && desktopHeight >= requiredHeight)
+				scale = i;
+			else
+				break;
+		}
+
+		if(scale > 1) {
+			Client::Ref().SetPref("Scale", scale);
+			SDL_SetWindowSize(sdl_window, WINDOWW * scale, WINDOWH * scale);
+			showDoubleScreenDialog = true;
+		}
 	}
 
 #ifdef OGLI
