@@ -3825,16 +3825,10 @@ void Simulation::UpdateParticles(int start, int end)
 					break;
 				}
 				//Get some gravity from the gravity map
-				if (t==PT_ANAR)
+				if(t!=PT_STKM && t!=PT_STKM2 && t!=PT_FIGH && !(elements[t].Properties & TYPE_SOLID))
 				{
-					// perhaps we should have a ptypes variable for this
-					pGravX -= gravx[(y/CELL)*(XRES/CELL)+(x/CELL)];
-					pGravY -= gravy[(y/CELL)*(XRES/CELL)+(x/CELL)];
-				}
-				else if(t!=PT_STKM && t!=PT_STKM2 && t!=PT_FIGH && !(elements[t].Properties & TYPE_SOLID))
-				{
-					pGravX += gravx[(y/CELL)*(XRES/CELL)+(x/CELL)];
-					pGravY += gravy[(y/CELL)*(XRES/CELL)+(x/CELL)];
+					pGravX += elements[t].Gravity * gravx[(y/CELL)*(XRES/CELL)+(x/CELL)];
+					pGravY += elements[t].Gravity * gravy[(y/CELL)*(XRES/CELL)+(x/CELL)];
 				}
 			}
 			else
