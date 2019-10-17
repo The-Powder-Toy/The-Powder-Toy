@@ -15,6 +15,7 @@ Element_ANAR::Element_ANAR()
 	Loss = 0.80f;
 	Collision = 0.1f;
 	Gravity = -0.1f;
+	NewtonianGravity = -1.f;
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 1;

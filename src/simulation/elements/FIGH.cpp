@@ -15,6 +15,7 @@ Element_FIGH::Element_FIGH()
 	Loss = 1.0f;
 	Collision = 0.0f;
 	Gravity = 0.0f;
+	NewtonianGravity = 0.0f;
 	Diffusion = 0.0f;
 	HotAir = 0.00f	* CFDS;
 	Falldown = 0;
