@@ -144,6 +144,7 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 
 	initSimulationAPI();
 	initInterfaceAPI();
+	SetWindow(c->GetView());
 	initRendererAPI();
 	initElementsAPI();
 	initGraphicsAPI();

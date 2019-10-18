@@ -191,7 +191,6 @@ GameController::GameController():
 
 #ifdef LUACONSOLE
 	commandInterface = new LuaScriptInterface(this, gameModel);
-	((LuaScriptInterface*)commandInterface)->SetWindow(gameView);
 #else
 	commandInterface = new TPTScriptInterface(this, gameModel);
 #endif
