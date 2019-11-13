@@ -2486,19 +2486,19 @@ void LuaScriptInterface::LuaGetProperty(lua_State* l, StructProperty property, i
 		case StructProperty::TransitionType:
 		case StructProperty::ParticleType:
 		case StructProperty::Integer:
-			lua_pushinteger(l, *((int*)propertyAddress));
+			lua_pushnumber(l, *((int*)propertyAddress));
 			break;
 		case StructProperty::UInteger:
-			lua_pushinteger(l, *((unsigned int*)propertyAddress));
+			lua_pushnumber(l, *((unsigned int*)propertyAddress));
 			break;
 		case StructProperty::Float:
 			lua_pushnumber(l, *((float*)propertyAddress));
 			break;
 		case StructProperty::Char:
-			lua_pushinteger(l, *((char*)propertyAddress));
+			lua_pushnumber(l, *((char*)propertyAddress));
 			break;
 		case StructProperty::UChar:
-			lua_pushinteger(l, *((unsigned char*)propertyAddress));
+			lua_pushnumber(l, *((unsigned char*)propertyAddress));
 			break;
 		case StructProperty::BString:
 		{
