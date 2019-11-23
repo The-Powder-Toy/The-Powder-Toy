@@ -2432,6 +2432,7 @@ void LuaScriptInterface::initElementsAPI()
 	SETCONST(l, PROP_LIFE_KILL_DEC);
 	SETCONST(l, PROP_SPARKSETTLE);
 	SETCONST(l, PROP_NOAMBHEAT);
+	lua_pushinteger(l, 0); lua_setfield(l, -2, "PROP_DRAWONCTYPE");
 	SETCONST(l, PROP_NOCTYPEDRAW);
 	SETCONST(l, FLAG_STAGNANT);
 	SETCONST(l, FLAG_SKIPMOVE);
@@ -2696,9 +2697,13 @@ static bool luaCtypeDrawWrapper(CTYPEDRAW_FUNC_ARGS)
 		if (lua_pcall(luacon_ci->l, 3, 1, 0))
 		{
 			luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
+			lua_pop(luacon_ci->l, 1);
 		}
-		ret = luaL_optinteger(luacon_ci->l, -1, 0);
-		lua_pop(luacon_ci->l, 1);
+		else
+		{
+			ret = luaL_optinteger(luacon_ci->l, -1, 0);
+			lua_pop(luacon_ci->l, 1);
+		}
 	}
 	return ret;
 }
