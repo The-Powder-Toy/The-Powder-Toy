@@ -2701,7 +2701,8 @@ static bool luaCtypeDrawWrapper(CTYPEDRAW_FUNC_ARGS)
 		}
 		else
 		{
-			ret = luaL_optinteger(luacon_ci->l, -1, 0);
+			if (lua_isboolean(luacon_ci->l, -1))
+				ret = lua_toboolean(luacon_ci->l, -1);
 			lua_pop(luacon_ci->l, 1);
 		}
 	}
@@ -2864,7 +2865,7 @@ int LuaScriptInterface::elements_property(lua_State * l)
 			{
 				lua_gr_func[id].Assign(3);
 			}
-			else if (lua_type(l, 3) == LUA_TBOOLEAN && !lua_toboolean(l, -1))
+			else if (lua_type(l, 3) == LUA_TBOOLEAN && !lua_toboolean(l, 3))
 			{
 				lua_gr_func[id].Clear();
 				luacon_sim->elements[id].Graphics = NULL;
@@ -2879,7 +2880,7 @@ int LuaScriptInterface::elements_property(lua_State * l)
 				lua_cd_func[id].Assign(3);
 				luacon_sim->elements[id].CtypeDraw = luaCtypeDrawWrapper;
 			}
-			else if (lua_type(l, 3) == LUA_TBOOLEAN && !lua_toboolean(l, -1))
+			else if (lua_type(l, 3) == LUA_TBOOLEAN && !lua_toboolean(l, 3))
 			{
 				lua_cd_func[id].Clear();
 				luacon_sim->elements[id].CtypeDraw = nullptr;
