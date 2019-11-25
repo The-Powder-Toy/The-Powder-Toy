@@ -398,7 +398,7 @@ int luacon_graphicsReplacement(GRAPHICS_FUNC_ARGS, int i)
 	{
 		bool valid = true;
 		for (int i = -10; i < 0; i++)
-			if (!lua_isnumber(luacon_ci->l, i))
+			if (!lua_isnumber(luacon_ci->l, i) && !lua_isnil(luacon_ci->l, i))
 			{
 				valid = false;
 				break;
