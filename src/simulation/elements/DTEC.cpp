@@ -26,7 +26,6 @@ Element_DTEC::Element_DTEC()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 0;
 	Description = "Detector, creates a spark when something with its ctype is nearby.";
 
@@ -40,6 +39,8 @@ Element_DTEC::Element_DTEC()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
+
+	DefaultProperties.tmp2 = 2;
 
 	Update = &Element_DTEC::update;
 	CtypeDraw = &Element::ctypeDrawVInTmp;

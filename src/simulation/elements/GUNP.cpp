@@ -26,7 +26,6 @@ Element_GUNP::Element_GUNP()
 
 	Weight = 85;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 97;
 	Description = "Gunpowder. Light dust, explodes on contact with fire or spark.";
 

@@ -26,7 +26,6 @@ Element_FUSE::Element_FUSE()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 200;
 	Description = "Burns slowly. Ignites at somewhat high temperatures or with electricity.";
 
@@ -40,6 +39,9 @@ Element_FUSE::Element_FUSE()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
+
+	DefaultProperties.life = 50;
+	DefaultProperties.tmp = 50;
 
 	Update = &Element_FUSE::update;
 }

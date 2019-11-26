@@ -26,7 +26,6 @@ Element_BANG::Element_BANG()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 88;
 	Description = "TNT, explodes all at once.";
 

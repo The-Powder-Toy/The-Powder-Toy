@@ -27,7 +27,7 @@ Element_STKM2::Element_STKM2()
 
 	Weight = 50;
 
-	Temperature = R_TEMP+14.6f+273.15f;
+	DefaultProperties.temp = R_TEMP + 14.6f + 273.15f;
 	HeatConduct = 0;
 	Description = "Second stickman. Don't kill him! Control with wasd.";
 
@@ -41,6 +41,8 @@ Element_STKM2::Element_STKM2()
 	LowTemperatureTransition = NT;
 	HighTemperature = 620.0f;
 	HighTemperatureTransition = PT_FIRE;
+
+	DefaultProperties.life = 100;
 
 	Update = &Element_STKM2::update;
 	Graphics = &Element_STKM::graphics;

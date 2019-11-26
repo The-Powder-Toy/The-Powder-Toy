@@ -26,7 +26,7 @@ Element_PSTE::Element_PSTE()
 
 	Weight = 31;
 
-	Temperature = R_TEMP-2.0f	+273.15f;
+	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
 	HeatConduct = 29;
 	Description = "Colloid, Hardens under pressure.";
 

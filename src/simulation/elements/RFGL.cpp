@@ -26,7 +26,6 @@ Element_RFGL::Element_RFGL()
 
 	Weight = 10;
 
-	Temperature = R_TEMP + 273.15f;
 	HeatConduct = 3;
 	Description = "Liquid refrigerant.";
 

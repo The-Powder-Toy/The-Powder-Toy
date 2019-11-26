@@ -26,7 +26,7 @@ Element_DMG::Element_DMG()
 
 	Weight = 30;
 
-	Temperature = R_TEMP-2.0f	+273.15f;
+	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
 	HeatConduct = 29;
 	Description = "Generates damaging pressure and breaks any elements it hits.";
 

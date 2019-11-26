@@ -28,7 +28,6 @@ Element_WOOD::Element_WOOD()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 164;
 	Description = "Wood, flammable.";
 

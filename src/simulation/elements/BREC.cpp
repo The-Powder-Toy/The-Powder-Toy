@@ -26,7 +26,6 @@ Element_BREC::Element_BREC()
 
 	Weight = 90;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 211;
 	Description = "Broken electronics. Formed from EMP blasts, and when constantly sparked while under pressure, turns to EXOT.";
 

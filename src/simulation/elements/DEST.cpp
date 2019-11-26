@@ -26,7 +26,6 @@ Element_DEST::Element_DEST()
 
 	Weight = 101;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 150;
 	Description = "More destructive Bomb, can break through virtually anything.";
 

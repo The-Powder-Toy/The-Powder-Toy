@@ -27,7 +27,6 @@ Element_ANAR::Element_ANAR()
 
 	Weight = 85;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
 	Description = "Anti-air. Very light dust, which behaves opposite gravity.";
 

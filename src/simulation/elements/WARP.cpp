@@ -26,7 +26,6 @@ Element_WARP::Element_WARP()
 
 	Weight = 1;
 
-	Temperature = R_TEMP +273.15f;
 	HeatConduct = 100;
 	Description = "Displaces other elements.";
 

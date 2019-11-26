@@ -27,7 +27,7 @@ Element_PLUT::Element_PLUT()
 
 	Weight = 90;
 
-	Temperature = R_TEMP+4.0f	+273.15f;
+	DefaultProperties.temp = R_TEMP + 4.0f + 273.15f;
 	HeatConduct = 251;
 	Description = "Plutonium. Heavy, fissile particles. Generates neutrons under pressure.";
 

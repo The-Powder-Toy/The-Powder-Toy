@@ -27,7 +27,6 @@ Element_TUNG::Element_TUNG()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 251;
 	Description = "Tungsten. Brittle metal with a very high melting point.";
 

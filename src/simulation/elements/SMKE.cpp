@@ -26,7 +26,7 @@ Element_SMKE::Element_SMKE()
 
 	Weight = 1;
 
-	Temperature = R_TEMP+320.0f+273.15f;
+	DefaultProperties.temp = R_TEMP + 320.0f + 273.15f;
 	HeatConduct = 88;
 	Description = "Smoke, created by fire.";
 

@@ -26,7 +26,7 @@ Element_VIRS::Element_VIRS()
 
 	Weight = 31;
 
-	Temperature = 72.0f	+ 273.15f;
+	DefaultProperties.temp = 72.0f + 273.15f;
 	HeatConduct = 251;
 	Description = "Virus. Turns everything it touches into virus.";
 
@@ -40,6 +40,8 @@ Element_VIRS::Element_VIRS()
 	LowTemperatureTransition = PT_VRSS;
 	HighTemperature = 673.0f;
 	HighTemperatureTransition = PT_VRSG;
+
+	DefaultProperties.pavg[1] = 250;
 
 	Update = &Element_VIRS::update;
 	Graphics = &Element_VIRS::graphics;

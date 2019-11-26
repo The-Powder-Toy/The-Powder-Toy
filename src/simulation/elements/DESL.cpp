@@ -26,7 +26,6 @@ Element_DESL::Element_DESL()
 
 	Weight = 15;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 42;
 	Description = "Liquid diesel. Explodes under high pressure and temperatures.";
 

@@ -26,7 +26,6 @@ Element_PQRT::Element_PQRT()
 
 	Weight = 90;
 
-	Temperature = R_TEMP+273.15f;
 	HeatConduct = 3;
 	Description = "Powdered quartz, broken form of QRTZ.";
 

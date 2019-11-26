@@ -26,7 +26,6 @@ Element_NWHL::Element_NWHL()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 186;
 	Description = "White hole, pushes away other particles with gravity. (Requires Newtonian gravity)";
 

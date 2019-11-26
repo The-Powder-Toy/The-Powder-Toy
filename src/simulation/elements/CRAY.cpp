@@ -26,7 +26,6 @@ Element_CRAY::Element_CRAY()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 0;
 	Description = "Particle Ray Emitter. Creates a beam of particles set by its ctype, with a range set by tmp.";
 
@@ -166,7 +165,7 @@ bool Element_CRAY::ctypeDraw(CTYPEDRAW_FUNC_ARGS)
 	{
 		sim->parts[i].ctype |= PMAPID(30);
 	}
-	sim->parts[i].temp = sim->elements[t].Temperature;
+	sim->parts[i].temp = sim->elements[t].DefaultProperties.temp;
 	return true;
 }
 

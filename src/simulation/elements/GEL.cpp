@@ -26,7 +26,7 @@ Element_GEL::Element_GEL()
 
 	Weight = 35;
 
-	Temperature = R_TEMP-2.0f  +273.15f;
+	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
 	HeatConduct = 29;
 	Description = "Gel. A liquid with variable viscosity and heat conductivity.";
 

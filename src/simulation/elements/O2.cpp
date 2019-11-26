@@ -26,7 +26,6 @@ Element_O2::Element_O2()
 
 	Weight = 1;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
 	Description = "Oxygen gas. Ignites easily.";
 

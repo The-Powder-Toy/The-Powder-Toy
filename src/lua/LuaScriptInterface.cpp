@@ -1614,7 +1614,7 @@ int LuaScriptInterface::simulation_resetTemp(lua_State * l)
 	{
 		if (luacon_sim->parts[i].type && (luacon_sim->elements[luacon_sim->parts[i].type].HeatConduct || !onlyConductors))
 		{
-			luacon_sim->parts[i].temp = luacon_sim->elements[luacon_sim->parts[i].type].Temperature;
+			luacon_sim->parts[i].temp = luacon_sim->elements[luacon_sim->parts[i].type].DefaultProperties.temp;
 		}
 	}
 	return 0;

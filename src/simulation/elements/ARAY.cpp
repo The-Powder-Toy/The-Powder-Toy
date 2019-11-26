@@ -26,7 +26,6 @@ Element_ARAY::Element_ARAY()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 0;
 	Description = "Ray Emitter. Rays create points when they collide.";
 

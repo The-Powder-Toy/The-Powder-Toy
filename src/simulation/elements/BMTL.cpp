@@ -26,7 +26,6 @@ Element_BMTL::Element_BMTL()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
 	Description = "Breakable metal. Common conductive building material, can melt and break under pressure.";
 

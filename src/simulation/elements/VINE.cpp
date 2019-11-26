@@ -28,7 +28,6 @@ Element_VINE::Element_VINE()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 65;
 	Description = "Vine, can grow along WOOD.";
 
@@ -42,6 +41,8 @@ Element_VINE::Element_VINE()
 	LowTemperatureTransition = NT;
 	HighTemperature = 573.0f;
 	HighTemperatureTransition = PT_FIRE;
+
+	DefaultProperties.tmp = 1;
 
 	Update = &Element_VINE::update;
 }

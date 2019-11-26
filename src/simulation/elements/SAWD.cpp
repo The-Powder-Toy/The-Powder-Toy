@@ -26,7 +26,6 @@ Element_SAWD::Element_SAWD()
 
 	Weight = 18;
 
-	Temperature = R_TEMP+273.15f;
 	HeatConduct = 70;
 	Description = "Sawdust. Floats on water.";
 

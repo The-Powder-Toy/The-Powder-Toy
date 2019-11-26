@@ -26,7 +26,7 @@ Element_LRBD::Element_LRBD()
 
 	Weight = 45;
 
-	Temperature = R_TEMP+45.0f+273.15f;
+	DefaultProperties.temp = R_TEMP + 45.0f + 273.15f;
 	HeatConduct = 170;
 	Description = "Liquid Rubidium.";
 

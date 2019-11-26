@@ -26,7 +26,7 @@ Element_LO2::Element_LO2()
 
 	Weight = 30;
 
-	Temperature = 80.0f;
+	DefaultProperties.temp = 80.0f;
 	HeatConduct = 70;
 	Description = "Liquid Oxygen. Very cold. Reacts with fire.";
 

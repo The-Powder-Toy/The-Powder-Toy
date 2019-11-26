@@ -26,7 +26,6 @@ Element_GLAS::Element_GLAS()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 150;
 	Description = "Glass. Meltable. Shatters under pressure, and refracts photons.";
 

@@ -26,7 +26,6 @@ Element_IGNT::Element_IGNT()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 88;
 	Description = "Ignition cord. Burns slowly with fire and sparks.";
 
@@ -40,6 +39,8 @@ Element_IGNT::Element_IGNT()
 	LowTemperatureTransition = NT;
 	HighTemperature = 673.0f;
 	HighTemperatureTransition = PT_FIRE;
+
+	DefaultProperties.life = 3;
 
 	Update = &Element_IGNT::update;
 }

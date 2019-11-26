@@ -26,7 +26,7 @@ Element_CBNW::Element_CBNW()
 
 	Weight = 30;
 
-	Temperature = R_TEMP-2.0f	+273.15f;
+	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
 	HeatConduct = 29;
 	Description = "Carbonated water. Slowly releases CO2.";
 

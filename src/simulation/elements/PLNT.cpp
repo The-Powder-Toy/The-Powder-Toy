@@ -29,7 +29,6 @@ Element_PLNT::Element_PLNT()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 65;
 	Description = "Plant, drinks water and grows.";
 

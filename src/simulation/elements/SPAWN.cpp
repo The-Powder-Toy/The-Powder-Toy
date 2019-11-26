@@ -26,7 +26,6 @@ Element_SPAWN::Element_SPAWN()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+273.15f;
 	HeatConduct = 0;
 	Description = "STKM spawn point.";
 

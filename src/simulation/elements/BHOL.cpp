@@ -26,7 +26,7 @@ Element_BHOL::Element_BHOL()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+70.0f+273.15f;
+	DefaultProperties.temp = R_TEMP + 70.0f + 273.15f;
 	HeatConduct = 255;
 	Description = "Vacuum, sucks in other particles and heats up.";
 

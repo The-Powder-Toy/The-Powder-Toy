@@ -26,7 +26,6 @@ Element_SAND::Element_SAND()
 
 	Weight = 90;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 150;
 	Description = "Sand, Heavy particles. Melts into glass.";
 

@@ -26,7 +26,7 @@ Element_LOLZ::Element_LOLZ()
 
 	Weight = 100;
 
-	Temperature = 373.0f;
+	DefaultProperties.temp = 373.0f;
 	HeatConduct = 40;
 	Description = "Lolz";
 

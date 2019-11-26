@@ -26,7 +26,7 @@ Element_DEUT::Element_DEUT()
 
 	Weight = 31;
 
-	Temperature = R_TEMP-2.0f	+273.15f;
+	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
 	HeatConduct = 251;
 	Description = "Deuterium oxide. Volume changes with temp, radioactive with neutrons.";
 
@@ -40,6 +40,8 @@ Element_DEUT::Element_DEUT()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
+
+	DefaultProperties.life = 10;
 
 	Update = &Element_DEUT::update;
 	Graphics = &Element_DEUT::graphics;

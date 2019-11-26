@@ -28,7 +28,7 @@ Element_CFLM::Element_CFLM()
 
 	Weight = 2;
 
-	Temperature = 0.0f;
+	DefaultProperties.temp = 0.0f;
 	HeatConduct = 88;
 	Description = "Sub-zero flame.";
 

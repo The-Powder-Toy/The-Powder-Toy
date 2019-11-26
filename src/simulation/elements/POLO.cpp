@@ -27,7 +27,7 @@ Element_POLO::Element_POLO()
 
 	Weight = 90;
 
-	Temperature = 388.15f;
+	DefaultProperties.temp = 388.15f;
 	HeatConduct = 251;
 	Description = "Polonium, highly radioactive. Decays into NEUT and heats up.";
 

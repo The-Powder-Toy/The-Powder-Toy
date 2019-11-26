@@ -26,7 +26,6 @@ Element_GPMP::Element_GPMP()
 
 	Weight = 100;
 
-	Temperature = 0.0f		+273.15f;
 	HeatConduct = 0;
 	Description = "Gravity pump. Changes gravity to its temp when activated. (use HEAT/COOL)";
 
@@ -40,6 +39,8 @@ Element_GPMP::Element_GPMP()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
+
+	DefaultProperties.life = 10;
 
 	Update = &Element_GPMP::update;
 	Graphics = &Element_GPMP::graphics;

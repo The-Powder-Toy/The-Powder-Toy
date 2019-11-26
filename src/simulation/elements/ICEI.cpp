@@ -26,7 +26,7 @@ Element_ICEI::Element_ICEI()
 
 	Weight = 100;
 
-	Temperature = R_TEMP-50.0f+273.15f;
+	DefaultProperties.temp = R_TEMP - 50.0f + 273.15f;
 	HeatConduct = 46;
 	Description = "Crushes under pressure. Cools down air.";
 
@@ -40,6 +40,8 @@ Element_ICEI::Element_ICEI()
 	LowTemperatureTransition = NT;
 	HighTemperature = 252.05f;
 	HighTemperatureTransition = ST;
+
+	DefaultProperties.ctype = PT_WATR;
 
 	Update = &Element_ICEI::update;
 }

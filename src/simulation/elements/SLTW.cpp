@@ -26,7 +26,6 @@ Element_SLTW::Element_SLTW()
 
 	Weight = 35;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 75;
 	Description = "Saltwater, conducts electricity, difficult to freeze.";
 

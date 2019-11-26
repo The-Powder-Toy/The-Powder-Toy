@@ -26,7 +26,7 @@ Element_LOVE::Element_LOVE()
 
 	Weight = 100;
 
-	Temperature = 373.0f;
+	DefaultProperties.temp = 373.0f;
 	HeatConduct = 40;
 	Description = "Love...";
 

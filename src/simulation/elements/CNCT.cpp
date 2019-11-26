@@ -26,7 +26,6 @@ Element_CNCT::Element_CNCT()
 
 	Weight = 55;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 100;
 	Description = "Concrete, stronger than stone.";
 

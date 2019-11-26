@@ -26,7 +26,7 @@ Element_PPIP::Element_PPIP()
 
 	Weight = 100;
 
-	Temperature = 273.15f;
+	DefaultProperties.temp = 273.15f;
 	HeatConduct = 0;
 	Description = "Powered version of PIPE, use PSCN/NSCN to Activate/Deactivate.";
 
@@ -40,6 +40,8 @@ Element_PPIP::Element_PPIP()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
+
+	DefaultProperties.life = 60;
 
 	Update = &Element_PIPE::update;
 	Graphics = &Element_PIPE::graphics;

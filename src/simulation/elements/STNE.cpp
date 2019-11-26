@@ -26,7 +26,6 @@ Element_STNE::Element_STNE()
 
 	Weight = 90;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 150;
 	Description = "Heavy particles. Meltable.";
 

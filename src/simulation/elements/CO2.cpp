@@ -26,7 +26,6 @@ Element_CO2::Element_CO2()
 
 	Weight = 1;
 
-	Temperature = R_TEMP+273.15f;
 	HeatConduct = 88;
 	Description = "Carbon Dioxide. Heavy gas, drifts downwards. Carbonates water and turns to dry ice when cold.";
 

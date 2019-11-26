@@ -26,7 +26,7 @@ Element_VRSS::Element_VRSS()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+ 273.15f;
+	DefaultProperties.temp = R_TEMP + 273.15f;
 	HeatConduct = 251;
 	Description = "Solid Virus. Turns everything it touches into virus.";
 
@@ -40,6 +40,8 @@ Element_VRSS::Element_VRSS()
 	LowTemperatureTransition = NT;
 	HighTemperature = 305.0f;
 	HighTemperatureTransition = PT_VIRS;
+
+	DefaultProperties.pavg[1] = 250;
 
 	Update = &Element_VIRS::update;
 	Graphics = &Element_VRSS::graphics;

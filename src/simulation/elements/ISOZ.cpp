@@ -26,7 +26,7 @@ Element_ISOZ::Element_ISOZ()
 
 	Weight = 24;
 
-	Temperature = R_TEMP-2.0f	+273.15f;
+	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
 	HeatConduct = 29;
 	Description = "Isotope-Z. Radioactive liquid, decays into photons when touching PHOT or under negative pressure.";
 

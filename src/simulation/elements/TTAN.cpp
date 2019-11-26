@@ -27,7 +27,6 @@ Element_TTAN::Element_TTAN()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 251;
 	Description = "Titanium. Higher melting temperature than most other metals, blocks all air pressure.";
 

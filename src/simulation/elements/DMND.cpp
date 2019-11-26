@@ -26,7 +26,6 @@ Element_DMND::Element_DMND()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 186;
 	Description = "Diamond. Indestructible.";
 

@@ -26,7 +26,6 @@ Element_PRTI::Element_PRTI()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 0;
 	Description = "Portal IN. Particles go in here. Also has temperature dependent channels. (same as WIFI)";
 

@@ -26,7 +26,6 @@ Element_ACEL::Element_ACEL()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
 	Description = "Accelerator, speeds up nearby elements.";
 

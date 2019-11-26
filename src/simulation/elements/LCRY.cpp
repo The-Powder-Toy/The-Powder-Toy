@@ -26,7 +26,6 @@ Element_LCRY::Element_LCRY()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
 	Description = "Liquid Crystal. Changes colour when charged. (PSCN Charges, NSCN Discharges)";
 

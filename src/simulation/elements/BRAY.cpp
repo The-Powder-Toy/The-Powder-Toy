@@ -26,7 +26,6 @@ Element_BRAY::Element_BRAY()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 251;
 	Description = "Ray Point. Rays create points when they collide.";
 
@@ -40,6 +39,8 @@ Element_BRAY::Element_BRAY()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
+
+	DefaultProperties.life = 30;
 
 	Update = NULL;
 	Graphics = &Element_BRAY::graphics;

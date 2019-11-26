@@ -26,7 +26,6 @@ Element_NBHL::Element_NBHL()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 186;
 	Description = "Black hole, sucks in particles using gravity. (Requires Newtonian gravity)";
 

@@ -26,7 +26,6 @@ Element_CONV::Element_CONV()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
 	Description = "Converter. Converts everything into whatever it first touches.";
 

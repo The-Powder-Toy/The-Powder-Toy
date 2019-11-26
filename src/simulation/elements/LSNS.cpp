@@ -26,7 +26,7 @@ Element_LSNS::Element_LSNS()
 
 	Weight = 100;
 
-	Temperature = 4.0f + 273.15f;
+	DefaultProperties.temp = 4.0f + 273.15f;
 	HeatConduct = 0;
 	Description = "Life sensor, creates a spark when there's a nearby particle with a life higher than its temperature.";
 
@@ -40,6 +40,8 @@ Element_LSNS::Element_LSNS()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
+
+	DefaultProperties.tmp2 = 2;
 
 	Update = &Element_LSNS::update;
 }

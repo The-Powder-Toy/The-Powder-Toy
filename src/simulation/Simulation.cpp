@@ -3281,44 +3281,20 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 
 	if (i>parts_lastActiveIndex) parts_lastActiveIndex = i;
 
+	parts[i] = elements[t].DefaultProperties;
+	parts[i].type = t;
 	parts[i].x = (float)x;
 	parts[i].y = (float)y;
-	parts[i].type = t;
-	parts[i].vx = 0;
-	parts[i].vy = 0;
-	parts[i].life = 0;
-	parts[i].ctype = 0;
-	parts[i].temp = elements[t].Temperature;
-	parts[i].tmp = 0;
-	parts[i].tmp2 = 0;
-	parts[i].dcolour = 0;
-	parts[i].flags = 0;
 	if (t == PT_GLAS || t == PT_QRTZ || t == PT_TUNG)
 	{
 		parts[i].pavg[0] = 0.0f;
 		parts[i].pavg[1] = pv[y/CELL][x/CELL];
 	}
-	else
-	{
-		parts[i].pavg[0] = 0.0f;
-		parts[i].pavg[1] = 0.0f;
-	}
 
 	switch (t)
 	{
-	case PT_SOAP:
-		parts[i].tmp = -1;
-		parts[i].tmp2 = -1;
-		break;
-	case PT_ACID: case PT_CAUS:
-		parts[i].life = 75;
-		break;
 	case PT_WARP:
 		parts[i].life = RNG::Ref().between(70, 164);
-		break;
-	case PT_FUSE:
-		parts[i].life = 50;
-		parts[i].tmp = 50;
 		break;
 	case PT_LIFE:
 		if (v < NGOL)
@@ -3326,18 +3302,6 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 			parts[i].tmp = grule[v+1][9] - 1;
 			parts[i].ctype = v;
 		}
-		break;
-	case PT_DEUT:
-		parts[i].life = 10;
-		break;
-	case PT_MERC:
-		parts[i].tmp = 10;
-		break;
-	case PT_BRAY:
-		parts[i].life = 30;
-		break;
-	case PT_GPMP: case PT_PUMP:
-		parts[i].life = 10;
 		break;
 	case PT_SING:
 		parts[i].life = RNG::Ref().between(60, 109);
@@ -3348,26 +3312,6 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 		break;
 	case PT_CLST:
 		parts[i].tmp = RNG::Ref().between(0, 6);
-		break;
-	case PT_FSEP:
-		parts[i].life = 50;
-		break;
-	case PT_COAL:
-		parts[i].life = 110;
-		parts[i].tmp = 50;
-		break;
-	case PT_IGNT:
-		parts[i].life = 3;
-		break;
-	case PT_FRZW:
-		parts[i].life = 100;
-		break;
-	case PT_PPIP:
-	case PT_PIPE:
-		parts[i].life = 60;
-		break;
-	case PT_BCOL:
-		parts[i].life = 110;
 		break;
 	case PT_FIRE:
 		parts[i].life = RNG::Ref().between(120, 169);
@@ -3381,42 +3325,10 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 	case PT_LAVA:
 		parts[i].life = RNG::Ref().between(240, 359);
 		break;
-	case PT_NBLE:
-		parts[i].life = 0;
-		break;
-	case PT_ICEI:
-		parts[i].ctype = PT_WATR;
-		break;
-	case PT_MORT:
-		parts[i].vx = 2;
-		break;
-	case PT_EXOT:
-		parts[i].life = 1000;
-		parts[i].tmp = 244;
-		break;
-	case PT_EMBR:
-		parts[i].life = 50;
-		break;
 	case PT_TESC:
 		parts[i].tmp = v;
 		if (parts[i].tmp > 300)
 			parts[i].tmp=300;
-		break;
-	case PT_BIZR: case PT_BIZRG: case PT_BIZRS:
-		parts[i].ctype = 0x47FFFF;
-		break;
-	case PT_DTEC:
-	case PT_TSNS:
-	case PT_LSNS:
-		parts[i].tmp2 = 2;
-		break;
-	case PT_VINE:
-		parts[i].tmp = 1;
-		break;
-	case PT_VIRS:
-	case PT_VRSS:
-	case PT_VRSG:
-		parts[i].pavg[1] = 250;
 		break;
 	case PT_CRMC:
 		parts[i].tmp2 = RNG::Ref().between(0, 4);
@@ -4299,7 +4211,7 @@ void Simulation::UpdateParticles(int start, int end)
 			if ((elements[t].Explosive&2) && pv[y/CELL][x/CELL]>2.5f)
 			{
 				parts[i].life = RNG::Ref().between(180, 259);
-				parts[i].temp = restrict_flt(elements[PT_FIRE].Temperature + (elements[t].Flammable/2), MIN_TEMP, MAX_TEMP);
+				parts[i].temp = restrict_flt(elements[PT_FIRE].DefaultProperties.temp + (elements[t].Flammable/2), MIN_TEMP, MAX_TEMP);
 				t = PT_FIRE;
 				part_change_type(i,x,y,t);
 				pv[y/CELL][x/CELL] += 0.25f * CFDS;

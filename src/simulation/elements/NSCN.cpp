@@ -27,7 +27,6 @@ Element_NSCN::Element_NSCN()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
 	Description = "N-Type Silicon, Will not transfer current to P-Type Silicon.";
 

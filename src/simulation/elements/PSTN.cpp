@@ -28,7 +28,7 @@ Element_PSTN::Element_PSTN()
 
 	Weight = 100;
 
-	Temperature = 283.15f;
+	DefaultProperties.temp = 10.0f + 273.15f;
 	HeatConduct = 0;
 	Description = "Piston, extends and pushes particles.";
 

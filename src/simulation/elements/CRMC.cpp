@@ -26,7 +26,6 @@ Element_CRMC::Element_CRMC()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+273.15f;
 	HeatConduct = 35;
 	Description = "Ceramic. Gets stronger under pressure.";
 

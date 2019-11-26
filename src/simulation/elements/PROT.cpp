@@ -26,7 +26,6 @@ Element_PROT::Element_PROT()
 
 	Weight = -1;
 
-	Temperature = R_TEMP+273.15f;
 	HeatConduct = 61;
 	Description = "Protons. Transfer heat to materials, and removes sparks.";
 
@@ -40,6 +39,8 @@ Element_PROT::Element_PROT()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
+
+	DefaultProperties.life = 75;
 
 	Update = &Element_PROT::update;
 	Graphics = &Element_PROT::graphics;

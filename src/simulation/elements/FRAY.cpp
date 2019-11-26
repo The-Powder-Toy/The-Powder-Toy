@@ -26,7 +26,7 @@ Element_FRAY::Element_FRAY()
 
 	Weight = 100;
 
-	Temperature = 20.0f+0.0f +273.15f;
+	DefaultProperties.temp = 20.0f + 273.15f;
 	HeatConduct = 0;
 	Description = "Force Emitter. Pushes or pulls objects based on its temperature. Use like ARAY.";
 

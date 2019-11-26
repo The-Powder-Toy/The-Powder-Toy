@@ -29,7 +29,7 @@ Element_PIPE::Element_PIPE()
 
 	Weight = 100;
 
-	Temperature = 273.15f;
+	DefaultProperties.temp = 273.15f;
 	HeatConduct = 0;
 	Description = "PIPE, moves particles around. Once the BRCK generates, erase some for the exit. Then the PIPE generates and is usable.";
 
@@ -43,6 +43,8 @@ Element_PIPE::Element_PIPE()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
+
+	DefaultProperties.life = 60;
 
 	Update = &Element_PIPE::update;
 	Graphics = &Element_PIPE::graphics;

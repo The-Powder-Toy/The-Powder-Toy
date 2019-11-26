@@ -26,7 +26,6 @@ Element_GRVT::Element_GRVT()
 
 	Weight = -1;
 
-	Temperature = R_TEMP+273.15f;
 	HeatConduct = 61;
 	Description = "Gravitons. Create Newtonian Gravity.";
 
@@ -40,6 +39,8 @@ Element_GRVT::Element_GRVT()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
+
+	DefaultProperties.tmp = 7;
 
 	Update = &Element_GRVT::update;
 	Graphics = &Element_GRVT::graphics;

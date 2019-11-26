@@ -26,7 +26,7 @@ Element_RPEL::Element_RPEL()
 
 	Weight = 100;
 
-	Temperature = 20.0f+0.0f  +273.15f;
+	DefaultProperties.temp = 20.0f + 273.15f;
 	HeatConduct = 0;
 	Description = "Repels or attracts particles based on its temperature.";
 

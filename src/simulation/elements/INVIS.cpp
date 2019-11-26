@@ -26,7 +26,6 @@ Element_INVIS::Element_INVIS()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 164;
 	Description = "Invisible to particles while under pressure.";
 

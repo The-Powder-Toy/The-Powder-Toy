@@ -26,7 +26,7 @@ Element_FRZW::Element_FRZW()
 
 	Weight = 30;
 
-	Temperature = 120.0f;
+	DefaultProperties.temp = 120.0f;
 	HeatConduct = 29;
 	Description = "Freeze water. Hybrid liquid formed when Freeze powder melts.";
 
@@ -40,6 +40,8 @@ Element_FRZW::Element_FRZW()
 	LowTemperatureTransition = PT_ICEI;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
+
+	DefaultProperties.life = 100;
 
 	Update = &Element_FRZW::update;
 }

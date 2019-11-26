@@ -27,7 +27,7 @@ Element_FIGH::Element_FIGH()
 
 	Weight = 50;
 
-	Temperature = R_TEMP+14.6f+273.15f;
+	DefaultProperties.temp = R_TEMP + 14.6f + 273.15f;
 	HeatConduct = 0;
 	Description = "Fighter. Tries to kill stickmen. You must first give it an element to kill him with.";
 
@@ -41,6 +41,8 @@ Element_FIGH::Element_FIGH()
 	LowTemperatureTransition = NT;
 	HighTemperature = 620.0f;
 	HighTemperatureTransition = PT_FIRE;
+
+	DefaultProperties.life = 100;
 
 	Update = &Element_FIGH::update;
 	Graphics = &Element_STKM::graphics;
@@ -89,8 +91,8 @@ int Element_FIGH::update(UPDATE_FUNC_ARGS)
 		if ((pow(float(tarx-x), 2) + pow(float(tary-y), 2))<600)
 		{
 			if (figh->elem == PT_LIGH || figh->elem == PT_NEUT
-			    || sim->elements[figh->elem].Properties&(PROP_DEADLY|PROP_RADIOACTIVE)
-			    || sim->elements[figh->elem].Temperature>=323 || sim->elements[figh->elem].Temperature<=243)
+			    || sim->elements[figh->elem].Properties & (PROP_DEADLY | PROP_RADIOACTIVE)
+			    || sim->elements[figh->elem].DefaultProperties.temp >= 323 || sim->elements[figh->elem].DefaultProperties.temp <= 243)
 				figh->comm = (int)figh->comm | 0x08;
 		}
 		else if (tarx<x)

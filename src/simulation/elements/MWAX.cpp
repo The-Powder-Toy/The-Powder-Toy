@@ -26,7 +26,7 @@ Element_MWAX::Element_MWAX()
 
 	Weight = 25;
 
-	Temperature = R_TEMP+28.0f+273.15f;
+	DefaultProperties.temp = R_TEMP + 28.0f + 273.15f;
 	HeatConduct = 44;
 	Description = "Liquid Wax. Hardens into WAX at 45 degrees.";
 

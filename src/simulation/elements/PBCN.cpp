@@ -26,7 +26,6 @@ Element_PBCN::Element_PBCN()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
 	Description = "Powered breakable clone.";
 

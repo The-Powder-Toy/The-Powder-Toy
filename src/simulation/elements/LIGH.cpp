@@ -27,7 +27,6 @@ Element_LIGH::Element_LIGH()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 0;
 	Description = "Lightning. Change the brush size to set the size of the lightning.";
 
@@ -94,7 +93,7 @@ int Element_LIGH::update(UPDATE_FUNC_ARGS)
 					sim->elements[rt].Flammable && RNG::Ref().chance(sim->elements[rt].Flammable + sim->pv[(y+ry)/CELL][(x+rx)/CELL] * 10.0f, 1000))
 				{
 					sim->part_change_type(ID(r),x+rx,y+ry,PT_FIRE);
-					parts[ID(r)].temp = restrict_flt(sim->elements[PT_FIRE].Temperature + (sim->elements[rt].Flammable/2), MIN_TEMP, MAX_TEMP);
+					parts[ID(r)].temp = restrict_flt(sim->elements[PT_FIRE].DefaultProperties.temp + (sim->elements[rt].Flammable/2), MIN_TEMP, MAX_TEMP);
 					parts[ID(r)].life = RNG::Ref().between(180, 259);
 					parts[ID(r)].tmp = parts[ID(r)].ctype = 0;
 					if (sim->elements[rt].Explosive)

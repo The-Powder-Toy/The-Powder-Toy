@@ -28,7 +28,6 @@ Element_EMP::Element_EMP()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 121;
 	Description = "Electromagnetic pulse. Breaks activated electronics.";
 

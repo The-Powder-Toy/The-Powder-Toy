@@ -26,7 +26,7 @@ Element_PSNS::Element_PSNS()
 
 	Weight = 100;
 
-	Temperature = 277.15f;
+	DefaultProperties.temp = 4.0f + 273.15f;
 	HeatConduct = 0;
 	Description = "Pressure sensor, creates a spark when the pressure is greater than its temperature.";
 

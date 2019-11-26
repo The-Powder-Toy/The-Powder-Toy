@@ -26,7 +26,6 @@ Element_FRME::Element_FRME()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 0;
 	Description = "Frame, can be used with pistons to push many particles.";
 

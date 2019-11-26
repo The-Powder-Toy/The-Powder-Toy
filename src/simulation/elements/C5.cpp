@@ -26,7 +26,6 @@ Element_C5::Element_C5()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 88;
 	Description = "Cold explosive, set off by anything cold.";
 

@@ -27,7 +27,6 @@ Element_COAL::Element_COAL()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 200;
 	Description = "Coal, Burns very slowly. Gets red when hot.";
 
@@ -41,6 +40,9 @@ Element_COAL::Element_COAL()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
+
+	DefaultProperties.life = 110;
+	DefaultProperties.tmp = 50;
 
 	Update = &Element_COAL::update;
 	Graphics = &Element_COAL::graphics;

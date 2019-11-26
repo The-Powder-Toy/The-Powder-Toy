@@ -26,7 +26,7 @@ Element_GLOW::Element_GLOW()
 
 	Weight = 40;
 
-	Temperature = R_TEMP+20.0f+273.15f;
+	DefaultProperties.temp = R_TEMP + 20.0f + 273.15f;
 	HeatConduct = 44;
 	Description = "Glow, Glows under pressure.";
 

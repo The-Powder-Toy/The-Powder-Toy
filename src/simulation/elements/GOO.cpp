@@ -27,7 +27,6 @@ Element_GOO::Element_GOO()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 75;
 	Description = "Deforms and disappears under pressure.";
 

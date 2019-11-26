@@ -28,7 +28,6 @@ Element::Element():
 
 	Weight(50),
 
-	Temperature(273.15f),
 	HeatConduct(128),
 	Description("No description"),
 
@@ -48,6 +47,8 @@ Element::Element():
 	CtypeDraw(nullptr),
 	IconGenerator(nullptr)
 {
+	memset(&DefaultProperties, 0, sizeof(Particle));
+	DefaultProperties.temp = R_TEMP + 273.15f;
 }
 
 std::vector<StructProperty> const &Element::GetProperties()
@@ -75,7 +76,7 @@ std::vector<StructProperty> const &Element::GetProperties()
 		{ "Hardness",                  StructProperty::Integer,  offsetof(Element, Hardness                 ) },
 		{ "PhotonReflectWavelengths",  StructProperty::UInteger, offsetof(Element, PhotonReflectWavelengths ) },
 		{ "Weight",                    StructProperty::Integer,  offsetof(Element, Weight                   ) },
-		{ "Temperature",               StructProperty::Float,    offsetof(Element, Temperature              ) },
+		{ "Temperature",               StructProperty::Float,    offsetof(Element, DefaultProperties.temp   ) },
 		{ "HeatConduct",               StructProperty::UChar,    offsetof(Element, HeatConduct              ) },
 		{ "Description",               StructProperty::String,   offsetof(Element, Description              ) },
 		{ "State",                     StructProperty::Removed,  0                                            },

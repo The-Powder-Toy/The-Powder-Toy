@@ -26,7 +26,6 @@ Element_TSNS::Element_TSNS()
 
 	Weight = 100;
 
-	Temperature = R_TEMP + 273.15f;
 	HeatConduct = 0;
 	Description = "Temperature sensor, creates a spark when there's a nearby particle with a greater temperature.";
 
@@ -40,6 +39,8 @@ Element_TSNS::Element_TSNS()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
+
+	DefaultProperties.tmp2 = 2;
 
 	Update = &Element_TSNS::update;
 }

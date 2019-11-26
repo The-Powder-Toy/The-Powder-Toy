@@ -26,7 +26,7 @@ Element_DSTW::Element_DSTW()
 
 	Weight = 30;
 
-	Temperature = R_TEMP-2.0f	+273.15f;
+	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
 	HeatConduct = 23;
 	Description = "Distilled water, does not conduct electricity.";
 

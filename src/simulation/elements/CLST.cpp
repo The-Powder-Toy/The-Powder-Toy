@@ -26,7 +26,6 @@ Element_CLST::Element_CLST()
 
 	Weight = 55;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
 	Description = "Clay dust. Produces paste when mixed with water.";
 

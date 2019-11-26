@@ -27,7 +27,6 @@ Element_ACID::Element_ACID()
 
 	Weight = 10;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 34;
 	Description = "Dissolves almost everything.";
 
@@ -41,6 +40,8 @@ Element_ACID::Element_ACID()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
+
+	DefaultProperties.life = 75;
 
 	Update = &Element_ACID::update;
 	Graphics = &Element_ACID::graphics;

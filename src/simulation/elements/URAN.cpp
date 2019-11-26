@@ -27,7 +27,7 @@ Element_URAN::Element_URAN()
 
 	Weight = 90;
 
-	Temperature = R_TEMP+30.0f+273.15f;
+	DefaultProperties.temp = R_TEMP + 30.0f + 273.15f;
 	HeatConduct = 251;
 	Description = "Uranium. Heavy particles. Generates heat under pressure.";
 

@@ -30,7 +30,7 @@ Element_LIFE::Element_LIFE()
 
 	Weight = 100;
 
-	Temperature = 9000.0f;
+	DefaultProperties.temp = 9000.0f;
 	HeatConduct = 40;
 	Description = "Game Of Life! B3/S23";
 

@@ -26,7 +26,7 @@ Element_FOG::Element_FOG()
 
 	Weight = 1;
 
-	Temperature = 243.15f;
+	DefaultProperties.temp = 243.15f;
 	HeatConduct = 100;
 	Description = "Fog, created when an electric current is passed through RIME.";
 

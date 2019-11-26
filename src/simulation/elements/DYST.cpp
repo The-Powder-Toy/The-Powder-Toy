@@ -26,7 +26,6 @@ Element_DYST::Element_DYST()
 
 	Weight = 80;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
 	Description = "Dead Yeast.";
 

@@ -27,7 +27,7 @@ Element_SNOW::Element_SNOW()
 
 	Weight = 50;
 
-	Temperature = R_TEMP-30.0f+273.15f;
+	DefaultProperties.temp = R_TEMP - 30.0f + 273.15f;
 	HeatConduct = 46;
 	Description = "Light particles. Created when ICE breaks under pressure.";
 

@@ -26,7 +26,6 @@ Element_BRMT::Element_BRMT()
 
 	Weight = 90;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 211;
 	Description = "Broken metal. Created when iron rusts or when metals break from pressure.";
 

@@ -26,7 +26,6 @@ Element_CAUS::Element_CAUS()
 
 	Weight = 1;
 
-	Temperature = R_TEMP+273.15f;
 	HeatConduct = 70;
 	Description = "Caustic Gas, acts like ACID.";
 
@@ -40,6 +39,8 @@ Element_CAUS::Element_CAUS()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
+
+	DefaultProperties.life = 75;
 
 	Update = &Element_CAUS::update;
 }

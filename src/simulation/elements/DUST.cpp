@@ -27,7 +27,6 @@ Element_DUST::Element_DUST()
 
 	Weight = 85;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
 	Description = "Very light dust. Flammable.";
 

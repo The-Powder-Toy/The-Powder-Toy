@@ -26,7 +26,7 @@ Element_BOMB::Element_BOMB()
 
 	Weight = 30;
 
-	Temperature = R_TEMP-2.0f	+273.15f;
+	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
 	HeatConduct = 29;
 	Description = "Bomb. Explodes and destroys all surrounding particles when it touches something.";
 

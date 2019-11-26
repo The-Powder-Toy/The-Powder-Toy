@@ -26,7 +26,6 @@ Element_THRM::Element_THRM()
 
 	Weight = 90;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 211;
 	Description = "Thermite. Burns at extremely high temperature.";
 

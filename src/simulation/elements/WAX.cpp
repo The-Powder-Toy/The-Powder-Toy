@@ -26,7 +26,6 @@ Element_WAX::Element_WAX()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 44;
 	Description = "Wax. Melts at moderately high temperatures.";
 

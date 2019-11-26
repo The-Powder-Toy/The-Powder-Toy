@@ -26,7 +26,6 @@ Element_SHLD1::Element_SHLD1()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 0;
 	Description = "Shield, spark it to grow.";
 

@@ -26,7 +26,7 @@ Element_WTRV::Element_WTRV()
 
 	Weight = 1;
 
-	Temperature = R_TEMP+100.0f+273.15f;
+	DefaultProperties.temp = R_TEMP + 100.0f + 273.15f;
 	HeatConduct = 48;
 	Description = "Steam. Produced from hot water.";
 

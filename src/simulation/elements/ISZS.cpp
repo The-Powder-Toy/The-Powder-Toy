@@ -26,7 +26,7 @@ Element_ISZS::Element_ISZS()
 
 	Weight = 100;
 
-	Temperature = 140.00f;
+	DefaultProperties.temp = 140.00f;
 	HeatConduct = 251;
 	Description = "Solid form of ISOZ, slowly decays into PHOT.";
 

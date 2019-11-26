@@ -26,7 +26,7 @@ Element_DLAY::Element_DLAY()
 
 	Weight = 100;
 
-	Temperature = 4.0f+273.15f;
+	DefaultProperties.temp = 4.0f + 273.15f;
 	HeatConduct = 0;
 	Description = "Conducts with temperature-dependent delay. (use HEAT/COOL).";
 

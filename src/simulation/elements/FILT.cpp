@@ -26,7 +26,6 @@ Element_FILT::Element_FILT()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
 	Description = "Filter for photons, changes the color.";
 

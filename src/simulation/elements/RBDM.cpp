@@ -26,7 +26,6 @@ Element_RBDM::Element_RBDM()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 240;
 	Description = "Rubidium. Explosive, especially on contact with water. Low melting point.";
 

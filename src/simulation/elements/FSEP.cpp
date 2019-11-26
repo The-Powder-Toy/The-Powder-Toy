@@ -26,7 +26,6 @@ Element_FSEP::Element_FSEP()
 
 	Weight = 70;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
 	Description = "Fuse Powder. Burns slowly like FUSE.";
 
@@ -40,6 +39,8 @@ Element_FSEP::Element_FSEP()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
+
+	DefaultProperties.life = 50;
 
 	Update = &Element_FSEP::update;
 }

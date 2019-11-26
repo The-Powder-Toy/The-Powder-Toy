@@ -27,7 +27,6 @@ Element_FIRW::Element_FIRW()
 
 	Weight = 55;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
 	Description = "Fireworks! Colorful, set off by fire.";
 

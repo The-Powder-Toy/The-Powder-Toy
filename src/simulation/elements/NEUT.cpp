@@ -26,7 +26,7 @@ Element_NEUT::Element_NEUT()
 
 	Weight = -1;
 
-	Temperature = R_TEMP+4.0f	+273.15f;
+	DefaultProperties.temp = R_TEMP + 4.0f + 273.15f;
 	HeatConduct = 60;
 	Description = "Neutrons. Interact with matter in odd ways.";
 

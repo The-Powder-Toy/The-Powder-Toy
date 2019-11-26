@@ -26,7 +26,7 @@ Element_BVBR::Element_BVBR()
 
 	Weight = 67;
 
-	Temperature = 273.15f;
+	DefaultProperties.temp = 273.15f;
 	HeatConduct = 164;
 	Description = "Broken vibranium.";
 

@@ -26,7 +26,6 @@ Element_WIFI::Element_WIFI()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 0;
 	Description = "Wireless transmitter, transfers spark to any other wifi on the same temperature channel.";
 

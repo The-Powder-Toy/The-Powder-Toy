@@ -26,7 +26,7 @@ Element_ELEC::Element_ELEC()
 
 	Weight = -1;
 
-	Temperature = R_TEMP+200.0f+273.15f;
+	DefaultProperties.temp = R_TEMP + 200.0f + 273.15f;
 	HeatConduct = 251;
 	Description = "Electrons. Sparks electronics, reacts with NEUT and WATR.";
 

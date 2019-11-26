@@ -26,7 +26,7 @@ Element_MORT::Element_MORT()
 
 	Weight = -1;
 
-	Temperature = R_TEMP+4.0f	+273.15f;
+	DefaultProperties.temp = R_TEMP + 4.0f + 273.15f;
 	HeatConduct = 60;
 	Description = "Steam Train.";
 
@@ -40,6 +40,9 @@ Element_MORT::Element_MORT()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
+
+	// CHOO CHOO
+	DefaultProperties.vx = 2.0f;
 
 	Update = &Element_MORT::update;
 }
