@@ -150,7 +150,7 @@ int Element_PCLN::graphics(GRAPHICS_FUNC_ARGS)
 //#TPT-Directive ElementHeader Element_PCLN static bool ctypeDraw(CTYPEDRAW_FUNC_ARGS)
 bool Element_PCLN::ctypeDraw(CTYPEDRAW_FUNC_ARGS)
 {
-	if (t == PT_PSCN || t == PT_NSCN)
+	if (t == PT_PSCN || t == PT_NSCN || t == PT_SPRK)
 	{
 		return false;
 	}
