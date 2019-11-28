@@ -3285,54 +3285,9 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 	parts[i].type = t;
 	parts[i].x = (float)x;
 	parts[i].y = (float)y;
-	if (t == PT_GLAS || t == PT_QRTZ || t == PT_TUNG)
-	{
-		parts[i].pavg[0] = 0.0f;
-		parts[i].pavg[1] = pv[y/CELL][x/CELL];
-	}
 
 	switch (t)
 	{
-	case PT_WARP:
-		parts[i].life = RNG::Ref().between(70, 164);
-		break;
-	case PT_LIFE:
-		if (v < NGOL)
-		{
-			parts[i].tmp = grule[v+1][9] - 1;
-			parts[i].ctype = v;
-		}
-		break;
-	case PT_SING:
-		parts[i].life = RNG::Ref().between(60, 109);
-		break;
-	case PT_QRTZ:
-	case PT_PQRT:
-		parts[i].tmp2 = RNG::Ref().between(0, 10);
-		break;
-	case PT_CLST:
-		parts[i].tmp = RNG::Ref().between(0, 6);
-		break;
-	case PT_FIRE:
-		parts[i].life = RNG::Ref().between(120, 169);
-		break;
-	case PT_PLSM:
-		parts[i].life = RNG::Ref().between(50, 199);
-		break;
-	case PT_CFLM:
-		parts[i].life = RNG::Ref().between(50, 199);
-		break;
-	case PT_LAVA:
-		parts[i].life = RNG::Ref().between(240, 359);
-		break;
-	case PT_TESC:
-		parts[i].tmp = v;
-		if (parts[i].tmp > 300)
-			parts[i].tmp=300;
-		break;
-	case PT_CRMC:
-		parts[i].tmp2 = RNG::Ref().between(0, 4);
-		break;
 	case PT_ETRD:
 		etrd_life0_count++;
 		break;
@@ -3340,7 +3295,6 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 	{
 		if (player.spwn == 0)
 		{
-			parts[i].life = 100;
 			Element_STKM::STKM_init_legs(this, &player, i);
 			player.spwn = 1;
 			player.rocketBoots = false;
@@ -3350,16 +3304,12 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 			parts[i].type = 0;
 			return -1;
 		}
-		int spawnID = create_part(-3, x, y, PT_SPAWN);
-		if (spawnID >= 0)
-			player.spawnID = spawnID;
 		break;
 	}
 	case PT_STKM2:
 	{
 		if (player2.spwn == 0)
 		{
-			parts[i].life = 100;
 			Element_STKM::STKM_init_legs(this, &player2, i);
 			player2.spwn = 1;
 			player2.rocketBoots = false;
@@ -3369,9 +3319,6 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 			parts[i].type = 0;
 			return -1;
 		}
-		int spawnID = create_part(-3, x, y, PT_SPAWN2);
-		if (spawnID >= 0)
-			player2.spawnID = spawnID;
 		break;
 	}
 	case PT_FIGH:
@@ -3380,7 +3327,6 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 		while (fcount < MAX_FIGHTERS && fighters[fcount].spwn==1) fcount++;
 		if (fcount < MAX_FIGHTERS && fighters[fcount].spwn == 0)
 		{
-			parts[i].life = 100;
 			parts[i].tmp = fcount;
 			Element_STKM::STKM_init_legs(this, &fighters[fcount], i);
 			fighters[fcount].spwn = 1;
@@ -3392,90 +3338,6 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 		parts[i].type=0;
 		return -1;
 	}
-	case PT_PHOT:
-	{
-		float a = RNG::Ref().between(0, 7) * 0.78540f;
-		parts[i].life = 680;
-		parts[i].ctype = 0x3FFFFFFF;
-		parts[i].vx = 3.0f*cosf(a);
-		parts[i].vy = 3.0f*sinf(a);
-		if (TYP(pmap[y][x]) == PT_FILT)
-			parts[i].ctype = Element_FILT::interactWavelengths(&parts[ID(pmap[y][x])], parts[i].ctype);
-		break;
-	}
-	case PT_ELEC:
-	{
-		float a = RNG::Ref().between(0, 359) * 3.14159f / 180.0f;
-		parts[i].life = 680;
-		parts[i].vx = 2.0f*cosf(a);
-		parts[i].vy = 2.0f*sinf(a);
-		break;
-	}
-	case PT_NEUT:
-	{
-		float r = RNG::Ref().between(128, 255) / 127.0f;
-		float a = RNG::Ref().between(0, 359) * 3.14159f / 180.0f;
-		parts[i].life = RNG::Ref().between(480, 959);
-		parts[i].vx = r*cosf(a);
-		parts[i].vy = r*sinf(a);
-		break;
-	}
-	case PT_PROT:
-	{
-		float a = RNG::Ref().between(0, 35) * 0.17453f;
-		parts[i].life = 680;
-		parts[i].vx = 2.0f*cosf(a);
-		parts[i].vy = 2.0f*sinf(a);
-		break;
-	}
-	case PT_GRVT:
-	{
-		float a = RNG::Ref().between(0, 359) * 3.14159f / 180.0f;
-		parts[i].life = RNG::Ref().between(250, 449);
-		parts[i].vx = 2.0f*cosf(a);
-		parts[i].vy = 2.0f*sinf(a);
-		parts[i].tmp = 7;
-		break;
-	}
-	case PT_TRON:
-	{
-		int randhue = RNG::Ref().between(0, 359);
-		int randomdir = RNG::Ref().between(0, 3);
-		parts[i].tmp = 1|(randomdir<<5)|(randhue<<7);//set as a head and a direction
-		parts[i].tmp2 = 4;//tail
-		parts[i].life = 5;
-		break;
-	}
-	case PT_LIGH:
-	{
-		float gx, gy, gsize;
-
-		if (v >= 0)
-		{
-			if (v > 55)
-				v = 55;
-			parts[i].life = v;
-		}
-		else
-			parts[i].life = 30;
-		parts[i].temp = parts[i].life*150.0f; // temperature of the lightning shows the power of the lightning
-		GetGravityField(x, y, 1.0f, 1.0f, gx, gy);
-		gsize = gx*gx+gy*gy;
-		if (gsize<0.0016f)
-		{
-			float angle = RNG::Ref().between(0, 6283) * 0.001f;//(in radians, between 0 and 2*pi)
-			gsize = sqrtf(gsize);
-			// randomness in weak gravity fields (more randomness with weaker fields)
-			gx += cosf(angle)*(0.04f-gsize);
-			gy += sinf(angle)*(0.04f-gsize);
-		}
-		parts[i].tmp = (((int)(atan2f(-gy, gx)*(180.0f/M_PI))) + RNG::Ref().between(340, 380)) % 360;
-		parts[i].tmp2 = 4;
-		break;
-	}
-	case PT_FILT:
-		parts[i].tmp = v;
-		break;
 	default:
 		break;
 	}
@@ -3497,6 +3359,13 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 		colb = colb>255 ? 255 : (colb<0 ? 0 : colb);
 		parts[i].dcolour = (RNG::Ref().between(0, 149)<<24) | (colr<<16) | (colg<<8) | colb;
 	}
+
+	// Set non-static properties (such as randomly generated ones)
+	if (elements[t].Create)
+	{
+		(*(elements[t].Create))(this, i, x, y, t, v);
+	}
+
 	elementCount[t]++;
 	return i;
 }

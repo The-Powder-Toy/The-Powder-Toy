@@ -45,6 +45,7 @@ Element_CFLM::Element_CFLM()
 
 	Update = NULL;
 	Graphics = &Element_CFLM::graphics;
+	Create = &Element_CFLM::create;
 }
 
 //#TPT-Directive ElementHeader Element_CFLM static int graphics(GRAPHICS_FUNC_ARGS)
@@ -67,5 +68,10 @@ int Element_CFLM::graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
+//#TPT-Directive ElementHeader Element_CFLM static void create(ELEMENT_CREATE_FUNC_ARGS)
+void Element_CFLM::create(ELEMENT_CREATE_FUNC_ARGS)
+{
+	sim->parts[i].life = RNG::Ref().between(50, 199);
+}
 
 Element_CFLM::~Element_CFLM() {}

@@ -41,6 +41,7 @@ Element_GLAS::Element_GLAS()
 	HighTemperatureTransition = PT_LAVA;
 
 	Update = &Element_GLAS::update;
+	Create = &Element_GLAS::create;
 }
 
 //#TPT-Directive ElementHeader Element_GLAS static int update(UPDATE_FUNC_ARGS)
@@ -56,5 +57,10 @@ int Element_GLAS::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
+//#TPT-Directive ElementHeader Element_GLAS static void create(ELEMENT_CREATE_FUNC_ARGS)
+void Element_GLAS::create(ELEMENT_CREATE_FUNC_ARGS)
+{
+	sim->parts[i].pavg[1] = sim->pv[y/CELL][x/CELL];
+}
 
 Element_GLAS::~Element_GLAS() {}

@@ -46,6 +46,7 @@ Element_STKM2::Element_STKM2()
 
 	Update = &Element_STKM2::update;
 	Graphics = &Element_STKM::graphics;
+	Create = &Element_STKM2::create;
 }
 
 //#TPT-Directive ElementHeader Element_STKM2 static int update(UPDATE_FUNC_ARGS)
@@ -53,6 +54,14 @@ int Element_STKM2::update(UPDATE_FUNC_ARGS)
 {
 	Element_STKM::run_stickman(&sim->player2, UPDATE_FUNC_SUBCALL_ARGS);
 	return 0;
+}
+
+//#TPT-Directive ElementHeader Element_STKM2 static void create(ELEMENT_CREATE_FUNC_ARGS)
+void Element_STKM2::create(ELEMENT_CREATE_FUNC_ARGS)
+{
+	int spawnID = sim->create_part(-3, x, y, PT_SPAWN2);
+	if (spawnID >= 0)
+		sim->player2.spawnID = spawnID;
 }
 
 Element_STKM2::~Element_STKM2() {}

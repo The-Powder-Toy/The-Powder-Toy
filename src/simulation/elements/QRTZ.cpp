@@ -42,6 +42,7 @@ Element_QRTZ::Element_QRTZ()
 
 	Update = &Element_QRTZ::update;
 	Graphics = &Element_QRTZ::graphics;
+	Create = &Element_QRTZ::create;
 }
 
 //#TPT-Directive ElementHeader Element_QRTZ static int update(UPDATE_FUNC_ARGS)
@@ -155,5 +156,11 @@ int Element_QRTZ::graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
+//#TPT-Directive ElementHeader Element_QRTZ static void create(ELEMENT_CREATE_FUNC_ARGS)
+void Element_QRTZ::create(ELEMENT_CREATE_FUNC_ARGS)
+{
+	sim->parts[i].tmp2 = RNG::Ref().between(0, 10);
+	sim->parts[i].pavg[1] = sim->pv[y/CELL][x/CELL];
+}
 
 Element_QRTZ::~Element_QRTZ() {}

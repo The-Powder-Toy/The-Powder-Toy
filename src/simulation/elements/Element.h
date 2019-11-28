@@ -52,6 +52,9 @@ public:
 
 	int (*Update) (UPDATE_FUNC_ARGS);
 	int (*Graphics) (GRAPHICS_FUNC_ARGS);
+
+	void (*Create)(ELEMENT_CREATE_FUNC_ARGS) = nullptr;
+
 	bool (*CtypeDraw) (CTYPEDRAW_FUNC_ARGS);
 
 	VideoBuffer * (*IconGenerator)(int, int, int);

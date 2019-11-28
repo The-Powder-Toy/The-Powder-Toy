@@ -43,6 +43,7 @@ Element_LIGH::Element_LIGH()
 
 	Update = &Element_LIGH::update;
 	Graphics = &Element_LIGH::graphics;
+	Create = &Element_LIGH::create;
 }
 
 #define LIGHTING_POWER 0.65
@@ -376,5 +377,31 @@ int Element_LIGH::graphics(GRAPHICS_FUNC_ARGS)
 	return 1;
 }
 
+//#TPT-Directive ElementHeader Element_LIGH static void create(ELEMENT_CREATE_FUNC_ARGS)
+void Element_LIGH::create(ELEMENT_CREATE_FUNC_ARGS)
+{
+	float gx, gy, gsize;
+	if (v >= 0)
+	{
+		if (v > 55)
+			v = 55;
+		sim->parts[i].life = v;
+	}
+	else
+		sim->parts[i].life = 30;
+	sim->parts[i].temp = sim->parts[i].life * 150.0f; // temperature of the lightning shows the power of the lightning
+	sim->GetGravityField(x, y, 1.0f, 1.0f, gx, gy);
+	gsize = gx * gx + gy * gy;
+	if (gsize < 0.0016f)
+	{
+		float angle = RNG::Ref().between(0, 6283) * 0.001f; //(in radians, between 0 and 2*pi)
+		gsize = sqrtf(gsize);
+		// randomness in weak gravity fields (more randomness with weaker fields)
+		gx += cosf(angle) * (0.04f - gsize);
+		gy += sinf(angle) * (0.04f - gsize);
+	}
+	sim->parts[i].tmp = (static_cast<int>(atan2f(-gy, gx) * (180.0f / M_PI)) + RNG::Ref().between(-20, 20) + 360) % 360;
+	sim->parts[i].tmp2 = 4;
+}
 
 Element_LIGH::~Element_LIGH() {}

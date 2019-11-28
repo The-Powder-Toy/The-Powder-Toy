@@ -44,6 +44,7 @@ Element_LAVA::Element_LAVA()
 
 	Update = &Element_FIRE::update;
 	Graphics = &Element_LAVA::graphics;
+	Create = &Element_LAVA::create;
 }
 
 
@@ -67,5 +68,10 @@ int Element_LAVA::graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
+//#TPT-Directive ElementHeader Element_LAVA static void create(ELEMENT_CREATE_FUNC_ARGS)
+void Element_LAVA::create(ELEMENT_CREATE_FUNC_ARGS)
+{
+	sim->parts[i].life = RNG::Ref().between(240, 359);
+}
 
 Element_LAVA::~Element_LAVA() {}

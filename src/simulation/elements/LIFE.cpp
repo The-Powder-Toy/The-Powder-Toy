@@ -47,8 +47,9 @@ Element_LIFE::Element_LIFE()
 
 	Update = NULL;
 	Graphics = &Element_LIFE::graphics;
+	Create = &Element_LIFE::create;
 
-	if(!Element_GOL_colourInit)
+	if (!Element_GOL_colourInit)
 	{
 		Element_GOL_colourInit = true;
 
@@ -120,5 +121,14 @@ int Element_LIFE::graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
+//#TPT-Directive ElementHeader Element_LIFE static void create(ELEMENT_CREATE_FUNC_ARGS)
+void Element_LIFE::create(ELEMENT_CREATE_FUNC_ARGS)
+{
+	if (v >= 0 && v < NGOL)
+	{
+		sim->parts[i].tmp = sim->grule[v+1][9] - 1;
+		sim->parts[i].ctype = v;
+	}
+}
 
 Element_LIFE::~Element_LIFE() {}

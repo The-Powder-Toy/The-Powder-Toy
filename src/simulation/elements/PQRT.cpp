@@ -42,6 +42,13 @@ Element_PQRT::Element_PQRT()
 
 	Update = &Element_QRTZ::update;
 	Graphics = &Element_QRTZ::graphics;
+	Create = &Element_PQRT::create;
+}
+
+//#TPT-Directive ElementHeader Element_PQRT static void create(ELEMENT_CREATE_FUNC_ARGS)
+void Element_PQRT::create(ELEMENT_CREATE_FUNC_ARGS)
+{
+	sim->parts[i].tmp2 = RNG::Ref().between(0, 10);
 }
 
 Element_PQRT::~Element_PQRT() {}

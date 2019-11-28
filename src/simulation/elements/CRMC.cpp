@@ -42,6 +42,7 @@ Element_CRMC::Element_CRMC()
 
 	Update = &Element_CRMC::update;
 	Graphics = &Element_CRMC::graphics;
+	Create = &Element_CRMC::create;
 }
 
 //#TPT-Directive ElementHeader Element_CRMC static int update(UPDATE_FUNC_ARGS)
@@ -60,6 +61,12 @@ int Element_CRMC::graphics(GRAPHICS_FUNC_ARGS)
 	*colg += z;
 	*colb += z;
 	return 0;
+}
+
+//#TPT-Directive ElementHeader Element_CRMC static void create(ELEMENT_CREATE_FUNC_ARGS)
+void Element_CRMC::create(ELEMENT_CREATE_FUNC_ARGS)
+{
+	sim->parts[i].tmp2 = RNG::Ref().between(0, 4);
 }
 
 Element_CRMC::~Element_CRMC() {}

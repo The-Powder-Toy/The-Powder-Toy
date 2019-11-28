@@ -42,6 +42,7 @@ Element_FILT::Element_FILT()
 
 	Update = NULL;
 	Graphics = &Element_FILT::graphics;
+	Create = &Element_FILT::create;
 }
 
 //#TPT-Directive ElementHeader Element_FILT static int graphics(GRAPHICS_FUNC_ARGS)
@@ -68,6 +69,12 @@ int Element_FILT::graphics(GRAPHICS_FUNC_ARGS)
 	*pixel_mode &= ~PMODE;
 	*pixel_mode |= PMODE_BLEND;
 	return 0;
+}
+
+//#TPT-Directive ElementHeader Element_FILT static void create(ELEMENT_CREATE_FUNC_ARGS)
+void Element_FILT::create(ELEMENT_CREATE_FUNC_ARGS)
+{
+	sim->parts[i].tmp = v;
 }
 
 //#TPT-Directive ElementHeader Element_FILT static int interactWavelengths(Particle* cpart, int origWl)

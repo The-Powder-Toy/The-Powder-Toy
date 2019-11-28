@@ -43,6 +43,7 @@ Element_TRON::Element_TRON()
 
 	Update = &Element_TRON::update;
 	Graphics = &Element_TRON::graphics;
+	Create = &Element_TRON::create;
 
 	Element_TRON::init_graphics();
 }
@@ -158,8 +159,6 @@ int Element_TRON::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-
-
 //#TPT-Directive ElementHeader Element_TRON static int graphics(GRAPHICS_FUNC_ARGS)
 int Element_TRON::graphics(GRAPHICS_FUNC_ARGS)
 {
@@ -184,6 +183,18 @@ int Element_TRON::graphics(GRAPHICS_FUNC_ARGS)
 		*cola = (int)((((float)cpart->life)/((float)cpart->tmp2))*255.0f);
 	}
 	return 0;
+}
+
+//#TPT-Directive ElementHeader Element_TRON static void create(ELEMENT_CREATE_FUNC_ARGS)
+void Element_TRON::create(ELEMENT_CREATE_FUNC_ARGS)
+{
+	int randhue = RNG::Ref().between(0, 359);
+	int randomdir = RNG::Ref().between(0, 3);
+	// Set as a head and a direction
+	sim->parts[i].tmp = 1 | (randomdir << 5) | (randhue << 7);
+	// Tail
+	sim->parts[i].tmp2 = 4;
+	sim->parts[i].life = 5;
 }
 
 //#TPT-Directive ElementHeader Element_TRON static int new_tronhead(Simulation * sim, int x, int y, int i, int direction)

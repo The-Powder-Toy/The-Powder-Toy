@@ -45,6 +45,7 @@ Element_FIRE::Element_FIRE()
 
 	Update = &Element_FIRE::update;
 	Graphics = &Element_FIRE::graphics;
+	Create = &Element_FIRE::create;
 }
 
 //#TPT-Directive ElementHeader Element_FIRE static int update(UPDATE_FUNC_ARGS)
@@ -263,6 +264,12 @@ int Element_FIRE::graphics(GRAPHICS_FUNC_ARGS)
 	*pixel_mode |= FIRE_ADD;
 	//Returning 0 means dynamic, do not cache
 	return 0;
+}
+
+//#TPT-Directive ElementHeader Element_FIRE static void create(ELEMENT_CREATE_FUNC_ARGS)
+void Element_FIRE::create(ELEMENT_CREATE_FUNC_ARGS)
+{
+	sim->parts[i].life = RNG::Ref().between(120, 169);
 }
 
 Element_FIRE::~Element_FIRE() {}

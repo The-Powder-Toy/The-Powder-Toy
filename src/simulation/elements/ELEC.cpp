@@ -43,6 +43,7 @@ Element_ELEC::Element_ELEC()
 
 	Update = &Element_ELEC::update;
 	Graphics = &Element_ELEC::graphics;
+	Create = &Element_ELEC::create;
 }
 
 //#TPT-Directive ElementHeader Element_ELEC static int update(UPDATE_FUNC_ARGS)
@@ -135,5 +136,13 @@ int Element_ELEC::graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
+//#TPT-Directive ElementHeader Element_ELEC static void create(ELEMENT_CREATE_FUNC_ARGS)
+void Element_ELEC::create(ELEMENT_CREATE_FUNC_ARGS)
+{
+	float a = RNG::Ref().between(0, 359) * 3.14159f / 180.0f;
+	sim->parts[i].life = 680;
+	sim->parts[i].vx = 2.0f * cosf(a);
+	sim->parts[i].vy = 2.0f * sinf(a);
+}
 
 Element_ELEC::~Element_ELEC() {}

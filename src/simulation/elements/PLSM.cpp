@@ -43,6 +43,7 @@ Element_PLSM::Element_PLSM()
 
 	Update = &Element_FIRE::update;
 	Graphics = &Element_PLSM::graphics;
+	Create = &Element_PLSM::create;
 }
 
 //#TPT-Directive ElementHeader Element_PLSM static int graphics(GRAPHICS_FUNC_ARGS)
@@ -65,5 +66,10 @@ int Element_PLSM::graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
+//#TPT-Directive ElementHeader Element_PLSM static void create(ELEMENT_CREATE_FUNC_ARGS)
+void Element_PLSM::create(ELEMENT_CREATE_FUNC_ARGS)
+{
+	sim->parts[i].life = RNG::Ref().between(50, 199);
+}
 
 Element_PLSM::~Element_PLSM() {}

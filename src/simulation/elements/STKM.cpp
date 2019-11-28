@@ -46,11 +46,11 @@ Element_STKM::Element_STKM()
 
 	Update = &Element_STKM::update;
 	Graphics = &Element_STKM::graphics;
+	Create = &Element_STKM::create;
 }
 
 //#TPT-Directive ElementHeader Element_STKM static int update(UPDATE_FUNC_ARGS)
 int Element_STKM::update(UPDATE_FUNC_ARGS)
-
 {
 	run_stickman(&sim->player, UPDATE_FUNC_SUBCALL_ARGS);
 	return 0;
@@ -64,6 +64,14 @@ int Element_STKM::graphics(GRAPHICS_FUNC_ARGS)
 	*colr = *colg = *colb = *cola = 0;
 	*pixel_mode = PSPEC_STICKMAN;
 	return 1;
+}
+
+//#TPT-Directive ElementHeader Element_STKM static void create(ELEMENT_CREATE_FUNC_ARGS)
+void Element_STKM::create(ELEMENT_CREATE_FUNC_ARGS)
+{
+	int spawnID = sim->create_part(-3, x, y, PT_SPAWN);
+	if (spawnID >= 0)
+		sim->player.spawnID = spawnID;
 }
 
 #define INBOND(x, y) ((x)>=0 && (y)>=0 && (x)<XRES && (y)<YRES)

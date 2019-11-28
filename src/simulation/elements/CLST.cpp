@@ -42,6 +42,7 @@ Element_CLST::Element_CLST()
 
 	Update = &Element_CLST::update;
 	Graphics = &Element_CLST::graphics;
+	Create = &Element_CLST::create;
 }
 
 //#TPT-Directive ElementHeader Element_CLST static int update(UPDATE_FUNC_ARGS)
@@ -98,5 +99,10 @@ int Element_CLST::graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
+//#TPT-Directive ElementHeader Element_CLST static void create(ELEMENT_CREATE_FUNC_ARGS)
+void Element_CLST::create(ELEMENT_CREATE_FUNC_ARGS)
+{
+	sim->parts[i].tmp = RNG::Ref().between(0, 6);
+}
 
 Element_CLST::~Element_CLST() {}

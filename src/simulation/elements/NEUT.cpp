@@ -43,6 +43,7 @@ Element_NEUT::Element_NEUT()
 
 	Update = &Element_NEUT::update;
 	Graphics = &Element_NEUT::graphics;
+	Create = &Element_NEUT::create;
 }
 
 //#TPT-Directive ElementHeader Element_NEUT static int update(UPDATE_FUNC_ARGS)
@@ -194,6 +195,16 @@ int Element_NEUT::graphics(GRAPHICS_FUNC_ARGS)
 
 	*pixel_mode |= FIRE_ADD;
 	return 1;
+}
+
+//#TPT-Directive ElementHeader Element_NEUT static void create(ELEMENT_CREATE_FUNC_ARGS)
+void Element_NEUT::create(ELEMENT_CREATE_FUNC_ARGS)
+{
+	float r = RNG::Ref().between(128, 255) / 127.0f;
+	float a = RNG::Ref().between(0, 359) * 3.14159f / 180.0f;
+	sim->parts[i].life = RNG::Ref().between(480, 959);
+	sim->parts[i].vx = r * cosf(a);
+	sim->parts[i].vy = r * sinf(a);
 }
 
 //#TPT-Directive ElementHeader Element_NEUT static int DeutExplosion(Simulation * sim, int n, int x, int y, float temp, int t)
