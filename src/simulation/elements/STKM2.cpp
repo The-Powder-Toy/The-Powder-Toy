@@ -47,6 +47,8 @@ Element_STKM2::Element_STKM2()
 	Update = &Element_STKM2::update;
 	Graphics = &Element_STKM::graphics;
 	Create = &Element_STKM2::create;
+	CreateAllowed = &Element_STKM2::createAllowed;
+	ChangeType = &Element_STKM2::changeType;
 }
 
 //#TPT-Directive ElementHeader Element_STKM2 static int update(UPDATE_FUNC_ARGS)
@@ -62,6 +64,24 @@ void Element_STKM2::create(ELEMENT_CREATE_FUNC_ARGS)
 	int spawnID = sim->create_part(-3, x, y, PT_SPAWN2);
 	if (spawnID >= 0)
 		sim->player2.spawnID = spawnID;
+}
+
+//#TPT-Directive ElementHeader Element_STKM2 static bool createAllowed(ELEMENT_CREATE_ALLOWED_FUNC_ARGS)
+bool Element_STKM2::createAllowed(ELEMENT_CREATE_ALLOWED_FUNC_ARGS)
+{
+	return sim->elementCount[PT_STKM2] <= 0 && !sim->player2.spwn;
+}
+
+//#TPT-Directive ElementHeader Element_STKM2 static void changeType(ELEMENT_CHANGETYPE_FUNC_ARGS)
+void Element_STKM2::changeType(ELEMENT_CHANGETYPE_FUNC_ARGS)
+{
+	if (to == PT_STKM2)
+	{
+		Element_STKM::STKM_init_legs(sim, &sim->player2, i);
+		sim->player2.spwn = 1;
+	}
+	else
+		sim->player2.spwn = 0;
 }
 
 Element_STKM2::~Element_STKM2() {}

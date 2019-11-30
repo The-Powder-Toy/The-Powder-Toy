@@ -47,6 +47,8 @@ Element_STKM::Element_STKM()
 	Update = &Element_STKM::update;
 	Graphics = &Element_STKM::graphics;
 	Create = &Element_STKM::create;
+	CreateAllowed = &Element_STKM::createAllowed;
+	ChangeType = &Element_STKM::changeType;
 }
 
 //#TPT-Directive ElementHeader Element_STKM static int update(UPDATE_FUNC_ARGS)
@@ -72,6 +74,24 @@ void Element_STKM::create(ELEMENT_CREATE_FUNC_ARGS)
 	int spawnID = sim->create_part(-3, x, y, PT_SPAWN);
 	if (spawnID >= 0)
 		sim->player.spawnID = spawnID;
+}
+
+//#TPT-Directive ElementHeader Element_STKM static bool createAllowed(ELEMENT_CREATE_ALLOWED_FUNC_ARGS)
+bool Element_STKM::createAllowed(ELEMENT_CREATE_ALLOWED_FUNC_ARGS)
+{
+	return sim->elementCount[PT_STKM] <= 0 && !sim->player.spwn;
+}
+
+//#TPT-Directive ElementHeader Element_STKM static void changeType(ELEMENT_CHANGETYPE_FUNC_ARGS)
+void Element_STKM::changeType(ELEMENT_CHANGETYPE_FUNC_ARGS)
+{
+	if (to == PT_STKM)
+	{
+		Element_STKM::STKM_init_legs(sim, &sim->player, i);
+		sim->player.spwn = 1;
+	}
+	else
+		sim->player.spwn = 0;
 }
 
 #define INBOND(x, y) ((x)>=0 && (y)>=0 && (x)<XRES && (y)<YRES)
@@ -692,7 +712,9 @@ void Element_STKM::STKM_init_legs(Simulation * sim, playerst *playerp, int i)
 	playerp->comm = 0;
 	playerp->pcomm = 0;
 	playerp->frames = 0;
+	playerp->spwn = 0;
 	playerp->fan = false;
+	playerp->rocketBoots = false;
 }
 
 //#TPT-Directive ElementHeader Element_STKM static void STKM_set_element(Simulation *sim, playerst *playerp, int element)

@@ -46,6 +46,8 @@ Element_FIGH::Element_FIGH()
 
 	Update = &Element_FIGH::update;
 	Graphics = &Element_STKM::graphics;
+	CreateAllowed = &Element_FIGH::createAllowed;
+	ChangeType = &Element_FIGH::changeType;
 }
 
 //#TPT-Directive ElementHeader Element_FIGH static int update(UPDATE_FUNC_ARGS)
@@ -141,6 +143,70 @@ int Element_FIGH::update(UPDATE_FUNC_ARGS)
 
 	Element_STKM::run_stickman(figh, UPDATE_FUNC_SUBCALL_ARGS);
 	return 0;
+}
+
+//#TPT-Directive ElementHeader Element_FIGH static bool createAllowed(ELEMENT_CREATE_ALLOWED_FUNC_ARGS)
+bool Element_FIGH::createAllowed(ELEMENT_CREATE_ALLOWED_FUNC_ARGS)
+{
+	return CanAlloc(sim);
+}
+
+//#TPT-Directive ElementHeader Element_FIGH static void changeType(ELEMENT_CHANGETYPE_FUNC_ARGS)
+void Element_FIGH::changeType(ELEMENT_CHANGETYPE_FUNC_ARGS)
+{
+	if (to == PT_FIGH)
+	{
+		sim->parts[i].tmp = Alloc(sim);
+		if (sim->parts[i].tmp >= 0)
+			NewFighter(sim, sim->parts[i].tmp, i, PT_DUST);
+	}
+	else
+	{
+		Free(sim, (unsigned char)sim->parts[i].tmp);
+	}
+}
+
+//#TPT-Directive ElementHeader Element_FIGH static bool CanAlloc(Simulation *sim)
+bool Element_FIGH::CanAlloc(Simulation *sim)
+{
+	return sim->fighcount < MAX_FIGHTERS;
+}
+
+//#TPT-Directive ElementHeader Element_FIGH static int Alloc(Simulation *sim)
+int Element_FIGH::Alloc(Simulation *sim)
+{
+	if (sim->fighcount >= MAX_FIGHTERS)
+		return -1;
+	int i = 0;
+	while (i < MAX_FIGHTERS && sim->fighters[i].spwn==1)
+		i++;
+	if (i < MAX_FIGHTERS)
+	{
+		sim->fighters[i].spwn = 1;
+		sim->fighters[i].elem = PT_DUST;
+		sim->fighcount++;
+		return i;
+	}
+	else return -1;
+}
+
+//#TPT-Directive ElementHeader Element_FIGH static void Free(Simulation *sim, unsigned char i)
+void Element_FIGH::Free(Simulation *sim, unsigned char i)
+{
+	if (sim->fighters[i].spwn)
+	{
+		sim->fighters[i].spwn = 0;
+		sim->fighcount--;
+	}
+}
+
+//#TPT-Directive ElementHeader Element_FIGH static void NewFighter(Simulation *sim, int fighterID, int i, int elem)
+void Element_FIGH::NewFighter(Simulation *sim, int fighterID, int i, int elem)
+{
+	Element_STKM::STKM_init_legs(sim, &sim->fighters[fighterID], i);
+	if (elem >= 0 && elem < PT_NUM)
+		sim->fighters[fighterID].elem = elem;
+	sim->fighters[fighterID].spwn = 1;
 }
 
 Element_FIGH::~Element_FIGH() {}

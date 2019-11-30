@@ -46,6 +46,7 @@ Element_SOAP::Element_SOAP()
 
 	Update = &Element_SOAP::update;
 	Graphics = &Element_SOAP::graphics;
+	ChangeType = &Element_SOAP::changeType;
 }
 
 //#TPT-Directive ElementHeader Element_SOAP static void detach(Simulation * sim, int i)
@@ -280,6 +281,15 @@ int Element_SOAP::graphics(GRAPHICS_FUNC_ARGS)
 {
 	*pixel_mode |= EFFECT_LINES|PMODE_BLUR;
 	return 1;
+}
+
+//#TPT-Directive ElementHeader Element_SOAP static void changeType(ELEMENT_CHANGETYPE_FUNC_ARGS)
+void Element_SOAP::changeType(ELEMENT_CHANGETYPE_FUNC_ARGS)
+{
+	if (from == PT_SOAP && to != PT_SOAP)
+	{
+		detach(sim, i);
+	}
 }
 
 Element_SOAP::~Element_SOAP() {}

@@ -41,6 +41,29 @@ Element_SPAWN2::Element_SPAWN2()
 	HighTemperatureTransition = NT;
 
 	Update = NULL;
+	CreateAllowed = &Element_SPAWN2::createAllowed;
+	ChangeType = &Element_SPAWN2::changeType;
+}
+
+//#TPT-Directive ElementHeader Element_SPAWN2 static bool createAllowed(ELEMENT_CREATE_ALLOWED_FUNC_ARGS)
+bool Element_SPAWN2::createAllowed(ELEMENT_CREATE_ALLOWED_FUNC_ARGS)
+{
+	return sim->player2.spawnID == -1;
+}
+
+//#TPT-Directive ElementHeader Element_SPAWN2 static void changeType(ELEMENT_CHANGETYPE_FUNC_ARGS)
+void Element_SPAWN2::changeType(ELEMENT_CHANGETYPE_FUNC_ARGS)
+{
+	if (to == PT_SPAWN2)
+	{
+		if (sim->player2.spawnID == -1)
+			sim->player2.spawnID = i;
+	}
+	else
+	{
+		if (sim->player2.spawnID == i)
+			sim->player2.spawnID = -1;
+	}
 }
 
 Element_SPAWN2::~Element_SPAWN2() {}

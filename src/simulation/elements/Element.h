@@ -54,6 +54,8 @@ public:
 	int (*Graphics) (GRAPHICS_FUNC_ARGS);
 
 	void (*Create)(ELEMENT_CREATE_FUNC_ARGS) = nullptr;
+	bool (*CreateAllowed)(ELEMENT_CREATE_ALLOWED_FUNC_ARGS) = nullptr;
+	void (*ChangeType)(ELEMENT_CHANGETYPE_FUNC_ARGS) = nullptr;
 
 	bool (*CtypeDraw) (CTYPEDRAW_FUNC_ARGS);
 

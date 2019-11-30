@@ -43,8 +43,21 @@ Element_ETRD::Element_ETRD()
 	HighTemperatureTransition = NT;
 
 	Update = NULL;
+	ChangeType = &Element_ETRD::changeType;
 
 	Element_ETRD::initDeltaPos();
+}
+
+//#TPT-Directive ElementHeader Element_ETRD static void changeType(ELEMENT_CHANGETYPE_FUNC_ARGS)
+void Element_ETRD::changeType(ELEMENT_CHANGETYPE_FUNC_ARGS)
+{
+	if (sim->etrd_count_valid)
+	{
+		if (from == PT_ETRD && sim->parts[i].life == 0)
+			sim->etrd_life0_count--;
+		if (to == PT_ETRD && sim->parts[i].life == 0)
+			sim->etrd_life0_count++;
+	}
 }
 
 class ETRD_deltaWithLength

@@ -47,6 +47,10 @@
 
 #define ELEMENT_CREATE_FUNC_ARGS Simulation *sim, int i, int x, int y, int t, int v
 
+#define ELEMENT_CREATE_ALLOWED_FUNC_ARGS Simulation *sim, int i, int x, int y, int t
+
+#define ELEMENT_CHANGETYPE_FUNC_ARGS Simulation *sim, int i, int x, int y, int from, int to
+
 #define CTYPEDRAW_FUNC_ARGS Simulation *sim, int i, int t, int v
 #define CTYPEDRAW_FUNC_SUBCALL_ARGS sim, i, t, v
 

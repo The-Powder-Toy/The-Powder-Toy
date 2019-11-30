@@ -105,9 +105,12 @@ int Simulation::Load(GameSave * save, bool includePressure, int fullX, int fullY
 		else
 			continue;
 
+		// Ensure we can spawn this element
 		if ((player.spwn == 1 && tempPart.type==PT_STKM) || (player2.spwn == 1 && tempPart.type==PT_STKM2))
 			continue;
 		if ((tempPart.type == PT_SPAWN && elementCount[PT_SPAWN]) || (tempPart.type == PT_SPAWN2 && elementCount[PT_SPAWN2]))
+			continue;
+		if (tempPart.type == PT_FIGH && !Element_FIGH::CanAlloc(this))
 			continue;
 		if (!elements[tempPart.type].Enabled)
 			continue;
@@ -172,7 +175,6 @@ int Simulation::Load(GameSave * save, bool includePressure, int fullX, int fullY
 			Element_STKM::STKM_init_legs(this, &player, i);
 			player.spwn = 1;
 			player.elem = PT_DUST;
-			player.rocketBoots = false;
 
 			if ((save->majorVersion < 93 && parts[i].ctype == SPC_AIR) ||
 			        (save->majorVersion < 88 && parts[i].ctype == OLD_SPC_AIR))
@@ -188,7 +190,6 @@ int Simulation::Load(GameSave * save, bool includePressure, int fullX, int fullY
 			Element_STKM::STKM_init_legs(this, &player2, i);
 			player2.spwn = 1;
 			player2.elem = PT_DUST;
-			player2.rocketBoots = false;
 			if ((save->majorVersion < 93 && parts[i].ctype == SPC_AIR) ||
 			        (save->majorVersion < 88 && parts[i].ctype == OLD_SPC_AIR))
 			{
@@ -206,37 +207,39 @@ int Simulation::Load(GameSave * save, bool includePressure, int fullX, int fullY
 			player2.spawnID = i;
 			break;
 		case PT_FIGH:
-			for (int fcount = 0; fcount < MAX_FIGHTERS; fcount++)
+		{
+			unsigned int oldTmp = parts[i].tmp;
+			parts[i].tmp = Element_FIGH::Alloc(this);
+			if (parts[i].tmp >= 0)
 			{
-				if (!fighters[fcount].spwn)
+				bool fan = false;
+				if ((save->majorVersion < 93 && parts[i].ctype == SPC_AIR)
+						|| (save->majorVersion < 88 && parts[i].ctype == OLD_SPC_AIR))
 				{
-					fighcount++;
-					unsigned int oldtmp = parts[i].tmp;
-					parts[i].tmp = fcount;
-					Element_STKM::STKM_init_legs(this, &(fighters[fcount]), i);
-					fighters[fcount].spwn = 1;
-					fighters[fcount].elem = PT_DUST;
-
-					if ((save->majorVersion < 93 && parts[i].ctype == SPC_AIR)
-					        || (save->majorVersion < 88 && parts[i].ctype == OLD_SPC_AIR))
-					{
-						parts[i].ctype = 0;
-						fighters[fcount].fan = true;
-					}
-					for (unsigned int fighNum : save->stkm.rocketBootsFigh)
-					{
-						if (fighNum == oldtmp)
-							fighters[fcount].rocketBoots = true;
-					}
-					for (unsigned int fighNum : save->stkm.fanFigh)
-					{
-						if (fighNum == oldtmp)
-							fighters[fcount].fan = true;
-					}
-					break;
+					fan = true;
+					parts[i].ctype = 0;
+				}
+				Element_FIGH::NewFighter(this, parts[i].tmp, i, parts[i].ctype);
+				if (fan)
+					fighters[parts[i].tmp].fan = true;
+				for (unsigned int fighNum : save->stkm.rocketBootsFigh)
+				{
+					if (fighNum == oldTmp)
+						fighters[parts[i].tmp].rocketBoots = true;
+				}
+				for (unsigned int fighNum : save->stkm.fanFigh)
+				{
+					if (fighNum == oldTmp)
+						fighters[parts[i].tmp].fan = true;
 				}
 			}
+			else
+			{
+				// Should not be possible because we verify with CanAlloc above this
+				parts[i].type = 0;
+			}
 			break;
+		}
 		case PT_SOAP:
 			soapList.insert(std::pair<unsigned int, unsigned int>(n, i));
 			break;
@@ -3030,48 +3033,28 @@ int Simulation::get_normal_interp(int pt, float x0, float y0, float dx, float dy
 
 void Simulation::kill_part(int i)//kills particle number i
 {
-	int x = (int)(parts[i].x+0.5f);
-	int y = (int)(parts[i].y+0.5f);
-	if (x>=0 && y>=0 && x<XRES && y<YRES) {
+	int x = (int)(parts[i].x + 0.5f);
+	int y = (int)(parts[i].y + 0.5f);
+
+	int t = parts[i].type;
+	if (t && elements[t].ChangeType)
+	{
+		(*(elements[t].ChangeType))(this, i, x, y, t, PT_NONE);
+	}
+
+	if (x >= 0 && y >= 0 && x < XRES && y < YRES)
+	{
 		if (ID(pmap[y][x]) == i)
 			pmap[y][x] = 0;
 		else if (ID(photons[y][x]) == i)
 			photons[y][x] = 0;
 	}
 
-	if (parts[i].type == PT_NONE)
+	// This shouldn't happen but ... you never know?
+	if (t == PT_NONE)
 		return;
 
-	if(parts[i].type > 0 && parts[i].type < PT_NUM && elementCount[parts[i].type])
-		elementCount[parts[i].type]--;
-	switch (parts[i].type)
-	{
-	case PT_STKM:
-		player.spwn = 0;
-		break;
-	case PT_STKM2:
-		player2.spwn = 0;
-		break;
-	case PT_SPAWN:
-		if (player.spawnID == i)
-			player.spawnID = -1;
-		break;
-	case PT_SPAWN2:
-		if (player2.spawnID == i)
-			player2.spawnID = -1;
-		break;
-	case PT_FIGH:
-		fighters[(unsigned char)parts[i].tmp].spwn = 0;
-		fighcount--;
-		break;
-	case PT_SOAP:
-		Element_SOAP::detach(this, i);
-		break;
-	case PT_ETRD:
-		if (parts[i].life == 0)
-			etrd_life0_count--;
-		break;
-	}
+	elementCount[t]--;
 
 	parts[i].type = PT_NONE;
 	parts[i].life = pfree;
@@ -3089,60 +3072,20 @@ bool Simulation::part_change_type(int i, int x, int y, int t)
 		kill_part(i);
 		return true;
 	}
-	else if ((t == PT_STKM || t == PT_STKM2 || t == PT_SPAWN || t == PT_SPAWN2) && elementCount[t])
+	if (elements[t].CreateAllowed)
 	{
-		kill_part(i);
-		return true;
-	}
-	else if ((t == PT_STKM && player.spwn) || (t == PT_STKM2 && player2.spwn))
-	{
-		kill_part(i);
-		return true;
+		if (!(*(elements[t].CreateAllowed))(this, i, x, y, t))
+			return false;
 	}
 
-	if (parts[i].type == PT_STKM)
-		player.spwn = 0;
-	else if (parts[i].type == PT_STKM2)
-		player2.spwn = 0;
-	else if (parts[i].type == PT_SPAWN)
-	{
-		if (player.spawnID == i)
-			player.spawnID = -1;
-	}
-	else if (parts[i].type == PT_SPAWN2)
-	{
-		if (player2.spawnID == i)
-			player2.spawnID = -1;
-	}
-	else if (parts[i].type == PT_FIGH)
-	{
-		fighters[(unsigned char)parts[i].tmp].spwn = 0;
-		fighcount--;
-	}
-	else if (parts[i].type == PT_SOAP)
-		Element_SOAP::detach(this, i);
-	else if (parts[i].type == PT_ETRD && parts[i].life == 0)
-		etrd_life0_count--;
+	if (elements[parts[i].type].ChangeType)
+		(*(elements[parts[i].type].ChangeType))(this, i, x, y, parts[i].type, t);
+	if (elements[t].ChangeType)
+		(*(elements[t].ChangeType))(this, i, x, y, parts[i].type, t);
 
 	if (parts[i].type > 0 && parts[i].type < PT_NUM && elementCount[parts[i].type])
 		elementCount[parts[i].type]--;
 	elementCount[t]++;
-
-	if (t == PT_SPAWN && player.spawnID < 0)
-		player.spawnID = i;
-	else if (t == PT_SPAWN2 && player2.spawnID < 0)
-		player2.spawnID = i;
-	else if (t == PT_STKM)
-		Element_STKM::STKM_init_legs(this, &player, i);
-	else if (t == PT_STKM2)
-		Element_STKM::STKM_init_legs(this, &player2, i);
-	else if (t == PT_FIGH)
-	{
-		if (parts[i].tmp >= 0 && parts[i].tmp < MAX_FIGHTERS)
-			Element_STKM::STKM_init_legs(this, &fighters[parts[i].tmp], i);
-	}
-	else if (t == PT_ETRD && parts[i].life == 0)
-		etrd_life0_count++;
 
 	parts[i].type = t;
 	if (elements[t].Properties & TYPE_ENERGY)
@@ -3164,7 +3107,7 @@ bool Simulation::part_change_type(int i, int x, int y, int t)
 //tv = Type (PMAPBITS bits) + Var (32-PMAPBITS bits), var is usually 0
 int Simulation::create_part(int p, int x, int y, int t, int v)
 {
-	int i;
+	int i, oldType = PT_NONE;
 
 	if (x<0 || y<0 || x>=XRES || y>=YRES)
 		return -1;
@@ -3195,53 +3138,51 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 			parts[index].temp = parts[index].temp+10.0f;
 		return index;
 	}
-	else if (t==PT_SPAWN && elementCount[PT_SPAWN])
-		return -1;
-	else if (t==PT_SPAWN2 && elementCount[PT_SPAWN2])
-		return -1;
 
-	if (p==-1)//creating from anything but brush
-	{
-		// If there is a particle, only allow creation if the new particle can occupy the same space as the existing particle
-		// If there isn't a particle but there is a wall, check whether the new particle is allowed to be in it
-		//   (not "!=2" for wall check because eval_move returns 1 for moving into empty space)
-		// If there's no particle and no wall, assume creation is allowed
-		if (pmap[y][x] ? (eval_move(t, x, y, NULL)!=2) : (bmap[y/CELL][x/CELL] && eval_move(t, x, y, NULL)==0))
-		{
-			if (TYP(pmap[y][x]) != PT_SPAWN && TYP(pmap[y][x]) != PT_SPAWN2)
-			{
-				if (t!=PT_STKM&&t!=PT_STKM2&&t!=PT_FIGH)
-				{
-					return -1;
-				}
-			}
-		}
-		if (pfree == -1)
-			return -1;
-		i = pfree;
-		pfree = parts[i].life;
-	}
-	else if (p==-2)//creating from brush
+	if (p == -2)
 	{
 		if (pmap[y][x])
 		{
 			int drawOn = TYP(pmap[y][x]);
 			if (elements[drawOn].CtypeDraw)
-			{
 				elements[drawOn].CtypeDraw(this, ID(pmap[y][x]), t, v);
-			}
 			return -1;
 		}
 		else if (IsWallBlocking(x, y, t))
 			return -1;
-		if (photons[y][x] && (elements[t].Properties & TYPE_ENERGY))
+		else if (photons[y][x] && (elements[t].Properties & TYPE_ENERGY))
 			return -1;
+	}
+
+	if (elements[t].CreateAllowed)
+	{
+		if (!(*(elements[t].CreateAllowed))(this, p, x, y, t))
+			return -1;
+	}
+
+	if (p == -1)//creating from anything but brush
+	{
+		// If there is a particle, only allow creation if the new particle can occupy the same space as the existing particle
+		// If there isn't a particle but there is a wall, check whether the new particle is allowed to be in it
+		//   (not "!=2" for wall check because eval_move returns 1 for moving into empty space)
+		// If there's no particle and no wall, assume creation is allowed
+		if (pmap[y][x] ? (eval_move(t, x, y, NULL) != 2) : (bmap[y/CELL][x/CELL] && eval_move(t, x, y, NULL) == 0))
+		{
+			return -1;
+		}
 		if (pfree == -1)
 			return -1;
 		i = pfree;
 		pfree = parts[i].life;
 	}
-	else if (p==-3)//skip pmap checks, e.g. for sing explosion
+	else if (p == -2)//creating from brush
+	{
+		if (pfree == -1)
+			return -1;
+		i = pfree;
+		pfree = parts[i].life;
+	}
+	else if (p == -3)//skip pmap checks, e.g. for sing explosion
 	{
 		if (pfree == -1)
 			return -1;
@@ -3250,32 +3191,20 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 	}
 	else
 	{
-		int oldX = (int)(parts[p].x+0.5f);
-		int oldY = (int)(parts[p].y+0.5f);
+		int oldX = (int)(parts[p].x + 0.5f);
+		int oldY = (int)(parts[p].y + 0.5f);
 		if (ID(pmap[oldY][oldX]) == p)
 			pmap[oldY][oldX] = 0;
 		if (ID(photons[oldY][oldX]) == p)
 			photons[oldY][oldX] = 0;
 
-		if (parts[p].type == PT_STKM)
-		{
-			player.spwn = 0;
-		}
-		else if (parts[p].type == PT_STKM2)
-		{
-			player2.spwn = 0;
-		}
-		else if (parts[p].type == PT_FIGH)
-		{
-			fighters[(unsigned char)parts[p].tmp].spwn = 0;
-			fighcount--;
-		}
-		else if (parts[p].type == PT_SOAP)
-		{
-			Element_SOAP::detach(this, p);
-		}
-		else if (parts[p].type == PT_ETRD && parts[p].life == 0)
-			etrd_life0_count--;
+		oldType = parts[p].type;
+
+		if (elements[oldType].ChangeType)
+			(*(elements[oldType].ChangeType))(this, p, oldX, oldY, oldType, t);
+		if (oldType)
+			elementCount[oldType]--;
+
 		i = p;
 	}
 
@@ -3286,61 +3215,6 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 	parts[i].x = (float)x;
 	parts[i].y = (float)y;
 
-	switch (t)
-	{
-	case PT_ETRD:
-		etrd_life0_count++;
-		break;
-	case PT_STKM:
-	{
-		if (player.spwn == 0)
-		{
-			Element_STKM::STKM_init_legs(this, &player, i);
-			player.spwn = 1;
-			player.rocketBoots = false;
-		}
-		else
-		{
-			parts[i].type = 0;
-			return -1;
-		}
-		break;
-	}
-	case PT_STKM2:
-	{
-		if (player2.spwn == 0)
-		{
-			Element_STKM::STKM_init_legs(this, &player2, i);
-			player2.spwn = 1;
-			player2.rocketBoots = false;
-		}
-		else
-		{
-			parts[i].type = 0;
-			return -1;
-		}
-		break;
-	}
-	case PT_FIGH:
-	{
-		unsigned char fcount = 0;
-		while (fcount < MAX_FIGHTERS && fighters[fcount].spwn==1) fcount++;
-		if (fcount < MAX_FIGHTERS && fighters[fcount].spwn == 0)
-		{
-			parts[i].tmp = fcount;
-			Element_STKM::STKM_init_legs(this, &fighters[fcount], i);
-			fighters[fcount].spwn = 1;
-			fighters[fcount].elem = PT_DUST;
-			fighters[fcount].rocketBoots = false;
-			fighcount++;
-			return i;
-		}
-		parts[i].type=0;
-		return -1;
-	}
-	default:
-		break;
-	}
 	//and finally set the pmap/photon maps to the newly created particle
 	if (elements[t].Properties & TYPE_ENERGY)
 		photons[y][x] = PMAP(i, t);
@@ -3362,9 +3236,10 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 
 	// Set non-static properties (such as randomly generated ones)
 	if (elements[t].Create)
-	{
 		(*(elements[t].Create))(this, i, x, y, t, v);
-	}
+
+	if (elements[t].ChangeType)
+		(*(elements[t].ChangeType))(this, i, x, y, oldType, t);
 
 	elementCount[t]++;
 	return i;
@@ -5232,7 +5107,7 @@ void Simulation::BeforeSim()
 		// spawn STKM and STK2
 		if (!player.spwn && player.spawnID >= 0)
 			create_part(-1, (int)parts[player.spawnID].x, (int)parts[player.spawnID].y, PT_STKM);
-		else if (!player2.spwn && player2.spawnID >= 0)
+		if (!player2.spwn && player2.spawnID >= 0)
 			create_part(-1, (int)parts[player2.spawnID].x, (int)parts[player2.spawnID].y, PT_STKM2);
 
 		// particle update happens right after this function (called separately)
