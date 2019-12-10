@@ -75,7 +75,8 @@ String *luacon_lastError;
 String lastCode;
 
 int *lua_el_mode;
-LuaSmartRef *lua_el_func, *lua_gr_func, *lua_cd_func;
+LuaSmartRef *lua_el_func, *lua_gr_func;
+std::vector<LuaSmartRef> luaCtypeDrawHandlers, luaCreateHandlers, luaCreateAllowedHandlers, luaChangeTypeHandlers;
 
 int getPartIndex_curIdx;
 int tptProperties; //Table for some TPT properties
@@ -333,14 +334,17 @@ tpt.partsdata = nil");
 	}
 	lua_setfield(l, tptProperties, "eltransition");
 
-	lua_cd_func_v = std::vector<LuaSmartRef>(PT_NUM, l);
-	lua_cd_func = &lua_cd_func_v[0];
 	lua_gr_func_v = std::vector<LuaSmartRef>(PT_NUM, l);
 	lua_gr_func = &lua_gr_func_v[0];
 	lua_el_func_v = std::vector<LuaSmartRef>(PT_NUM, l);
 	lua_el_func = &lua_el_func_v[0];
 	lua_el_mode_v = std::vector<int>(PT_NUM, 0);
 	lua_el_mode = &lua_el_mode_v[0];
+
+	luaCtypeDrawHandlers = std::vector<LuaSmartRef>(PT_NUM, l);
+	luaCreateHandlers = std::vector<LuaSmartRef>(PT_NUM, l);
+	luaCreateAllowedHandlers = std::vector<LuaSmartRef>(PT_NUM, l);
+	luaChangeTypeHandlers = std::vector<LuaSmartRef>(PT_NUM, l);
 
 	//make tpt.* a metatable
 	lua_newtable(l);
@@ -2685,12 +2689,73 @@ int LuaScriptInterface::elements_allocate(lua_State * l)
 	return 1;
 }
 
+void luaCreateWrapper(ELEMENT_CREATE_FUNC_ARGS)
+{
+	if (luaCreateHandlers[sim->parts[i].type])
+	{
+		lua_rawgeti(luacon_ci->l, LUA_REGISTRYINDEX, luaCreateHandlers[sim->parts[i].type]);
+		lua_pushinteger(luacon_ci->l, i);
+		lua_pushinteger(luacon_ci->l, x);
+		lua_pushinteger(luacon_ci->l, y);
+		lua_pushinteger(luacon_ci->l, t);
+		lua_pushinteger(luacon_ci->l, v);
+		if (lua_pcall(luacon_ci->l, 5, 0, 0))
+		{
+			luacon_ci->Log(CommandInterface::LogError, "In create func: " + luacon_geterror());
+			lua_pop(luacon_ci->l, 1);
+		}
+	}
+}
+
+bool luaCreateAllowedWrapper(ELEMENT_CREATE_ALLOWED_FUNC_ARGS)
+{
+	bool ret = false;
+	if (luaCreateAllowedHandlers[t])
+	{
+		lua_rawgeti(luacon_ci->l, LUA_REGISTRYINDEX, luaCreateAllowedHandlers[t]);
+		lua_pushinteger(luacon_ci->l, i);
+		lua_pushinteger(luacon_ci->l, x);
+		lua_pushinteger(luacon_ci->l, y);
+		lua_pushinteger(luacon_ci->l, t);
+		if (lua_pcall(luacon_ci->l, 4, 1, 0))
+		{
+			luacon_ci->Log(CommandInterface::LogError, "In create allowed: " + luacon_geterror());
+			lua_pop(luacon_ci->l, 1);
+		}
+		else
+		{
+			if (lua_isboolean(luacon_ci->l, -1))
+				ret = lua_toboolean(luacon_ci->l, -1);
+			lua_pop(luacon_ci->l, 1);
+		}
+	}
+	return ret;
+}
+
+void luaChangeTypeWrapper(ELEMENT_CHANGETYPE_FUNC_ARGS)
+{
+	if (luaChangeTypeHandlers[sim->parts[i].type])
+	{
+		lua_rawgeti(luacon_ci->l, LUA_REGISTRYINDEX, luaChangeTypeHandlers[sim->parts[i].type]);
+		lua_pushinteger(luacon_ci->l, i);
+		lua_pushinteger(luacon_ci->l, x);
+		lua_pushinteger(luacon_ci->l, y);
+		lua_pushinteger(luacon_ci->l, from);
+		lua_pushinteger(luacon_ci->l, to);
+		if (lua_pcall(luacon_ci->l, 5, 0, 0))
+		{
+			luacon_ci->Log(CommandInterface::LogError, "In change type: " + luacon_geterror());
+			lua_pop(luacon_ci->l, 1);
+		}
+	}
+}
+
 static bool luaCtypeDrawWrapper(CTYPEDRAW_FUNC_ARGS)
 {
 	bool ret = false;
-	if (lua_cd_func[sim->parts[i].type])
+	if (luaCtypeDrawHandlers[sim->parts[i].type])
 	{
-		lua_rawgeti(luacon_ci->l, LUA_REGISTRYINDEX, lua_cd_func[sim->parts[i].type]);
+		lua_rawgeti(luacon_ci->l, LUA_REGISTRYINDEX, luaCtypeDrawHandlers[sim->parts[i].type]);
 		lua_pushinteger(luacon_ci->l, i);
 		lua_pushinteger(luacon_ci->l, t);
 		lua_pushinteger(luacon_ci->l, v);
@@ -2758,16 +2823,71 @@ int LuaScriptInterface::elements_element(lua_State * l)
 		}
 		lua_pop(l, 1);
 
+		lua_getfield(l, -1, "Create");
+		if (lua_type(l, -1) == LUA_TFUNCTION)
+		{
+			luaCreateHandlers[id].Assign(-1);
+			luacon_sim->elements[id].Create = luaCreateWrapper;
+		}
+		else if (lua_type(l, -1) == LUA_TBOOLEAN && !lua_toboolean(l, -1))
+		{
+			luaCreateHandlers[id].Clear();
+			luacon_sim->elements[id].Create = nullptr;
+		}
+		lua_pop(l, 1);
+
+		lua_getfield(l, -1, "CreateAllowed");
+		if (lua_type(l, -1) == LUA_TFUNCTION)
+		{
+			luaCreateAllowedHandlers[id].Assign(-1);
+			luacon_sim->elements[id].CreateAllowed = luaCreateAllowedWrapper;
+		}
+		else if (lua_type(l, -1) == LUA_TBOOLEAN && !lua_toboolean(l, -1))
+		{
+			luaCreateAllowedHandlers[id].Clear();
+			luacon_sim->elements[id].CreateAllowed = nullptr;
+		}
+		lua_pop(l, 1);
+
+		lua_getfield(l, -1, "ChangeType");
+		if (lua_type(l, -1) == LUA_TFUNCTION)
+		{
+			luaChangeTypeHandlers[id].Assign(-1);
+			luacon_sim->elements[id].ChangeType = luaChangeTypeWrapper;
+		}
+		else if (lua_type(l, -1) == LUA_TBOOLEAN && !lua_toboolean(l, -1))
+		{
+			luaChangeTypeHandlers[id].Clear();
+			luacon_sim->elements[id].ChangeType = nullptr;
+		}
+		lua_pop(l, 1);
+
 		lua_getfield(l, -1, "CtypeDraw");
 		if (lua_type(l, -1) == LUA_TFUNCTION)
 		{
-			lua_cd_func[id].Assign(-1);
+			luaCtypeDrawHandlers[id].Assign(-1);
 			luacon_sim->elements[id].CtypeDraw = luaCtypeDrawWrapper;
 		}
 		else if (lua_type(l, -1) == LUA_TBOOLEAN && !lua_toboolean(l, -1))
 		{
-			lua_cd_func[id].Clear();
+			luaCtypeDrawHandlers[id].Clear();
 			luacon_sim->elements[id].CtypeDraw = nullptr;
+		}
+		lua_pop(l, 1);
+
+		lua_getfield(l, -1, "DefaultProperties");
+		if (lua_type(l, -1) == LUA_TTABLE)
+		{
+			for (auto &prop : Particle::GetProperties())
+			{
+				lua_getfield(l, -1, prop.Name.c_str());
+				if (lua_type(l, -1) != LUA_TNIL)
+				{
+					auto propertyAddress = reinterpret_cast<intptr_t>((reinterpret_cast<unsigned char*>(&luacon_sim->elements[id].DefaultProperties)) + prop.Offset);
+					LuaSetProperty(l, prop, propertyAddress, -1);
+				}
+				lua_pop(l, 1);
+			}
 		}
 		lua_pop(l, 1);
 
@@ -2787,8 +2907,20 @@ int LuaScriptInterface::elements_element(lua_State * l)
 			LuaGetProperty(l, prop, propertyAddress);
 			lua_setfield(l, -2, prop.Name.c_str());
 		}
+
 		lua_pushstring(l, luacon_sim->elements[id].Identifier.c_str());
 		lua_setfield(l, -2, "Identifier");
+
+		lua_newtable(l);
+		int tableIdx = lua_gettop(l);
+		for (auto &prop : Particle::GetProperties())
+		{
+			auto propertyAddress = reinterpret_cast<intptr_t>((reinterpret_cast<unsigned char*>(&luacon_sim->elements[id].DefaultProperties)) + prop.Offset);
+			LuaGetProperty(l, prop, propertyAddress);
+			lua_setfield(l, tableIdx, prop.Name.c_str());
+		}
+		lua_setfield(l, -2, "DefaultProperties");
+
 		return 1;
 	}
 }
@@ -2829,7 +2961,6 @@ int LuaScriptInterface::elements_property(lua_State * l)
 			luacon_model->BuildMenus();
 			luacon_sim->init_can_move();
 			luacon_ren->graphicscache[id].isready = 0;
-			return 0;
 		}
 		else if (propertyName == "Update")
 		{
@@ -2857,7 +2988,6 @@ int LuaScriptInterface::elements_property(lua_State * l)
 				lua_el_mode[id] = 0;
 				luacon_sim->elements[id].Update = NULL;
 			}
-			return 0;
 		}
 		else if (propertyName == "Graphics")
 		{
@@ -2871,26 +3001,78 @@ int LuaScriptInterface::elements_property(lua_State * l)
 				luacon_sim->elements[id].Graphics = NULL;
 			}
 			luacon_ren->graphicscache[id].isready = 0;
-			return 0;
+		}
+		else if (propertyName == "Create")
+		{
+			if (lua_type(l, 3) == LUA_TFUNCTION)
+			{
+				luaCreateHandlers[id].Assign(3);
+				luacon_sim->elements[id].Create = luaCreateWrapper;
+			}
+			else if (lua_type(l, 3) == LUA_TBOOLEAN && !lua_toboolean(l, 3))
+			{
+				luaCreateHandlers[id].Clear();
+				luacon_sim->elements[id].Create = nullptr;
+			}
+		}
+		else if (propertyName == "CreateAllowed")
+		{
+			if (lua_type(l, 3) == LUA_TFUNCTION)
+			{
+				luaCreateAllowedHandlers[id].Assign(3);
+				luacon_sim->elements[id].CreateAllowed = luaCreateAllowedWrapper;
+			}
+			else if (lua_type(l, 3) == LUA_TBOOLEAN && !lua_toboolean(l, 3))
+			{
+				luaCreateAllowedHandlers[id].Clear();
+				luacon_sim->elements[id].CreateAllowed = nullptr;
+			}
+		}
+		else if (propertyName == "ChangeType")
+		{
+			if (lua_type(l, 3) == LUA_TFUNCTION)
+			{
+				luaChangeTypeHandlers[id].Assign(3);
+				luacon_sim->elements[id].ChangeType = luaChangeTypeWrapper;
+			}
+			else if (lua_type(l, 3) == LUA_TBOOLEAN && !lua_toboolean(l, 3))
+			{
+				luaChangeTypeHandlers[id].Clear();
+				luacon_sim->elements[id].ChangeType = nullptr;
+			}
 		}
 		else if (propertyName == "CtypeDraw")
 		{
 			if (lua_type(l, 3) == LUA_TFUNCTION)
 			{
-				lua_cd_func[id].Assign(3);
+				luaCtypeDrawHandlers[id].Assign(3);
 				luacon_sim->elements[id].CtypeDraw = luaCtypeDrawWrapper;
 			}
 			else if (lua_type(l, 3) == LUA_TBOOLEAN && !lua_toboolean(l, 3))
 			{
-				lua_cd_func[id].Clear();
+				luaCtypeDrawHandlers[id].Clear();
 				luacon_sim->elements[id].CtypeDraw = nullptr;
 			}
-			return 0;
+		}
+		else if (propertyName == "DefaultProperties")
+		{
+			luaL_checktype(l, 3, LUA_TTABLE);
+			for (auto &prop : Particle::GetProperties())
+			{
+				lua_getfield(l, -1, prop.Name.c_str());
+				if (lua_type(l, -1) != LUA_TNIL)
+				{
+					auto propertyAddress = reinterpret_cast<intptr_t>((reinterpret_cast<unsigned char*>(&luacon_sim->elements[id].DefaultProperties)) + prop.Offset);
+					LuaSetProperty(l, prop, propertyAddress, -1);
+				}
+				lua_pop(l, 1);
+			}
 		}
 		else
 		{
 			return luaL_error(l, "Invalid element property");
 		}
+		return 0;
 	}
 	else
 	{
@@ -2903,6 +3085,18 @@ int LuaScriptInterface::elements_property(lua_State * l)
 		else if (propertyName == "Identifier")
 		{
 			lua_pushstring(l, luacon_sim->elements[id].Identifier.c_str());
+			return 1;
+		}
+		else if (propertyName == "DefaultProperties")
+		{
+			lua_newtable(l);
+			int tableIdx = lua_gettop(l);
+			for (auto &prop : Particle::GetProperties())
+			{
+				auto propertyAddress = reinterpret_cast<intptr_t>((reinterpret_cast<unsigned char*>(&luacon_sim->elements[id].DefaultProperties)) + prop.Offset);
+				LuaGetProperty(l, prop, propertyAddress);
+				lua_setfield(l, tableIdx, prop.Name.c_str());
+			}
 			return 1;
 		}
 		else
