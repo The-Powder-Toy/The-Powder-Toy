@@ -706,6 +706,14 @@ void GameModel::SetSave(SaveInfo * newSave, bool invertIncludePressure)
 	UpdateQuickOptions();
 }
 
+void GameModel::NotifyKeyBindingsChanged()
+{
+	for (auto observer : observers)
+	{
+		observer->NotifyKeyBindingsChanged(this);
+	}
+}
+
 SaveFile * GameModel::GetSaveFile()
 {
 	return currentFile;

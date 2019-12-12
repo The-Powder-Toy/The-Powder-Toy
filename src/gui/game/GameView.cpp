@@ -36,6 +36,7 @@
 #include "simulation/SimulationData.h"
 #include "simulation/ElementDefs.h"
 #include "ElementClasses.h"
+#include "gui/options/keyboardbindings/KeyboardBindingsMap.h"
 
 #ifdef GetUserName
 # undef GetUserName // dammit windows
@@ -462,6 +463,10 @@ GameView::GameView():
 	};
 	colourPicker = new ui::Button(ui::Point((XRES/2)-8, YRES+1), ui::Point(16, 16), "", "Pick Colour");
 	colourPicker->SetActionCallback(new ColourPickerAction(this));
+
+	// write keyboard bindings prefs if they are absent
+	keyboardBindingModel.LoadBindingPrefs();
+	keyboardBindingModel.WriteDefaultPrefs();
 }
 
 GameView::~GameView()
@@ -588,6 +593,12 @@ public:
 		}
 	}
 };
+
+void GameView::NotifyKeyBindingsChanged(GameModel * sender)
+{
+	// resync the model
+	keyboardBindingModel.LoadBindingPrefs();
+}
 
 void GameView::NotifyQuickOptionsChanged(GameModel * sender)
 {
@@ -1440,55 +1451,58 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 		}
 	}
 
+	int32_t functionId = keyboardBindingModel.GetFunctionForBinding(scan, shift, ctrl, alt);
+
 	if (repeat)
 		return;
 	bool didKeyShortcut = true;
-	switch(scan)
+
+	// please see KeyboardBindingsMap.h for mappings
+	switch(functionId)
 	{
-	case SDL_SCANCODE_GRAVE:
+	case KeyboardBindingFunction::TOGGLE_CONSOLE:
+	{
 		SDL_StopTextInput();
 		SDL_StartTextInput();
 		c->ShowConsole();
 		break;
-	case SDL_SCANCODE_SPACE: //Space
+	}
+	case KeyboardBindingFunction::PAUSE_SIMULATION: //Space
 		c->SetPaused();
 		break;
-	case SDL_SCANCODE_Z:
+	case KeyboardBindingFunction::UNDO:
 		if (selectMode != SelectNone && isMouseDown)
 			break;
-		if (ctrl && !isMouseDown)
+		if (!isMouseDown)
 		{
-			if (shift)
-				c->HistoryForward();
-			else
-				c->HistoryRestore();
-		}
-		else
-		{
-			isMouseDown = false;
-			zoomCursorFixed = false;
-			c->SetZoomEnabled(true);
+			c->HistoryRestore();
 		}
 		break;
-	case SDL_SCANCODE_P:
-	case SDL_SCANCODE_F2:
-		if (ctrl)
+	case KeyboardBindingFunction::REDO:
+		if (selectMode != SelectNone && isMouseDown)
+			break;
+		if (!isMouseDown)
 		{
-			if (shift)
-				c->SetActiveTool(1, "DEFAULT_UI_PROPERTY");
-			else
-				c->SetActiveTool(0, "DEFAULT_UI_PROPERTY");
+			c->HistoryForward();
 		}
-		else
-			screenshot();
 		break;
-	case SDL_SCANCODE_F3:
+	case KeyboardBindingFunction::ENABLE_ZOOM:
+	{
+		isMouseDown = false;
+		zoomCursorFixed = false;
+		c->SetZoomEnabled(true);
+		break;
+	}
+	case KeyboardBindingFunction::PROPERTY_TOOL:
+		c->SetActiveTool(1, "DEFAULT_UI_PROPERTY");
+		break;
+	case KeyboardBindingFunction::TOGGLE_DEBUG_HUD:
 		SetDebugHUD(!GetDebugHUD());
 		break;
-	case SDL_SCANCODE_F5:
+	case KeyboardBindingFunction::RELOAD_SIMULATION:
 		c->ReloadSim();
 		break;
-	case SDL_SCANCODE_A:
+	case KeyboardBindingFunction::SAVE_AUTHORSHIP_INFO:
 		if ((Client::Ref().GetAuthUser().UserElevation == User::ElevationModerator
 		     || Client::Ref().GetAuthUser().UserElevation == User::ElevationAdmin) && ctrl)
 		{
@@ -1496,120 +1510,96 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 			new InformationMessage("Save authorship info", authorString.FromUtf8(), true);
 		}
 		break;
-	case SDL_SCANCODE_R:
-		if (ctrl)
-			c->ReloadSim();
-		break;
-	case SDL_SCANCODE_E:
+	case KeyboardBindingFunction::OPEN_ELEMENT_SEARCH:
 		c->OpenElementSearch();
 		break;
-	case SDL_SCANCODE_F:
-		if (ctrl)
-		{
-			Tool *active = c->GetActiveTool(0);
-			if (!active->GetIdentifier().Contains("_PT_") || (ren->findingElement == active->GetToolID()))
-				ren->findingElement = 0;
-			else
-				ren->findingElement = active->GetToolID();
-		}
+	case KeyboardBindingFunction::FIND_MODE:
+	{
+		Tool *active = c->GetActiveTool(0);
+		if (!active->GetIdentifier().Contains("_PT_") || (ren->findingElement == active->GetToolID()))
+			ren->findingElement = 0;
 		else
-			c->FrameStep();
+			ren->findingElement = active->GetToolID();
 		break;
-	case SDL_SCANCODE_G:
-		if (ctrl)
-			c->ShowGravityGrid();
-		else if(shift)
-			c->AdjustGridSize(-1);
-		else
-			c->AdjustGridSize(1);
+	}
+	case KeyboardBindingFunction::FRAME_STEP:
+		c->FrameStep();
 		break;
-	case SDL_SCANCODE_F1:
+	case KeyboardBindingFunction::SHOW_GRAVITY_GRID:
+		c->ShowGravityGrid();
+		break;
+	case KeyboardBindingFunction::DECREASE_GRAVITY_GRID_SIZE:
+		c->AdjustGridSize(-1);
+		break;
+	case KeyboardBindingFunction::INCREASE_GRAVITY_GRID_SIZE:
+		c->AdjustGridSize(1);
+		break;
+	case KeyboardBindingFunction::TOGGLE_INTRO_TEXT:
 		if(!introText)
 			introText = 8047;
 		else
 			introText = 0;
 		break;
-	case SDL_SCANCODE_H:
-		if(ctrl)
-		{
-			if(!introText)
-				introText = 8047;
-			else
-				introText = 0;
-		}
-		else
-			showHud = !showHud;
+	case KeyboardBindingFunction::TOGGLE_HUD:
+		showHud = !showHud;
 		break;
-	case SDL_SCANCODE_B:
-		if(ctrl)
-			c->SetDecoration();
-		else
-			if (colourPicker->GetParentWindow())
-				c->SetActiveMenu(lastMenu);
-			else
-			{
-				c->SetDecoration(true);
-				c->SetPaused(true);
-				c->SetActiveMenu(SC_DECO);
-			}
+	case KeyboardBindingFunction::TOGGLE_DECORATIONS_LAYER:
+		c->SetDecoration();
 		break;
-	case SDL_SCANCODE_Y:
-		if (ctrl)
-		{
-			c->HistoryForward();
-		}
+	case KeyboardBindingFunction::TOGGLE_DECORATION_TOOL:
+		if (colourPicker->GetParentWindow())
+			c->SetActiveMenu(lastMenu);
 		else
 		{
-			c->SwitchAir();
+			c->SetDecoration(true);
+			c->SetPaused(true);
+			c->SetActiveMenu(SC_DECO);
 		}
 		break;
-	case SDL_SCANCODE_ESCAPE:
-	case SDL_SCANCODE_Q:
+	case KeyboardBindingFunction::TOGGLE_AIR_MODE:
+		c->SwitchAir();
+		break;
+	case KeyboardBindingFunction::QUIT:
 		ui::Engine::Ref().ConfirmExit();
 		break;
-	case SDL_SCANCODE_U:
+	case KeyboardBindingFunction::TOGGLE_HEAT:
 		c->ToggleAHeat();
 		break;
-	case SDL_SCANCODE_N:
+	case KeyboardBindingFunction::TOGGLE_NEWTONIAN_GRAVITY:
 		c->ToggleNewtonianGravity();
 		break;
-	case SDL_SCANCODE_EQUALS:
-		if(ctrl)
-			c->ResetSpark();
-		else
-			c->ResetAir();
+	case KeyboardBindingFunction::RESET_SPARK:
+		c->ResetSpark();
 		break;
-	case SDL_SCANCODE_C:
-		if(ctrl)
+	case KeyboardBindingFunction::RESET_AIR:
+		c->ResetAir();
+		break;
+	case KeyboardBindingFunction::COPY:
+	{
+		selectMode = SelectCopy;
+		selectPoint1 = selectPoint2 = ui::Point(-1, -1);
+		isMouseDown = false;
+		buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to copy (right click = cancel)";
+		buttonTipShow = 120;
+		break;
+	}
+	case KeyboardBindingFunction::CUT:
+	{
+		selectMode = SelectCut;
+		selectPoint1 = selectPoint2 = ui::Point(-1, -1);
+		isMouseDown = false;
+		buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to copy then cut (right click = cancel)";
+		buttonTipShow = 120;
+		break;
+	}
+	case KeyboardBindingFunction::PASTE:
+		if (c->LoadClipboard())
 		{
-			selectMode = SelectCopy;
-			selectPoint1 = selectPoint2 = ui::Point(-1, -1);
+			selectPoint1 = selectPoint2 = mousePosition;
 			isMouseDown = false;
-			buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to copy (right click = cancel)";
-			buttonTipShow = 120;
 		}
 		break;
-	case SDL_SCANCODE_X:
-		if(ctrl)
-		{
-			selectMode = SelectCut;
-			selectPoint1 = selectPoint2 = ui::Point(-1, -1);
-			isMouseDown = false;
-			buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to copy then cut (right click = cancel)";
-			buttonTipShow = 120;
-		}
-		break;
-	case SDL_SCANCODE_V:
-		if (ctrl)
-		{
-			if (c->LoadClipboard())
-			{
-				selectPoint1 = selectPoint2 = mousePosition;
-				isMouseDown = false;
-			}
-		}
-		break;
-	case SDL_SCANCODE_L:
+	case KeyboardBindingFunction::STAMP_TOOL:
 	{
 		std::vector<ByteString> stampList = Client::Ref().GetStamps(0, 1);
 		if (stampList.size())
@@ -1624,34 +1614,36 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 			break;
 		}
 	}
-	case SDL_SCANCODE_K:
+	case KeyboardBindingFunction::OPEN_STAMPS:
+	{
 		selectMode = SelectNone;
 		selectPoint1 = selectPoint2 = ui::Point(-1, -1);
 		c->OpenStamps();
 		break;
-	case SDL_SCANCODE_RIGHTBRACKET:
+	}
+	case KeyboardBindingFunction::INCREASE_BRUSH_SIZE:
 		if(zoomEnabled && !zoomCursorFixed)
 			c->AdjustZoomSize(1, !alt);
 		else
 			c->AdjustBrushSize(1, !alt, shiftBehaviour, ctrlBehaviour);
 		break;
-	case SDL_SCANCODE_LEFTBRACKET:
+	case KeyboardBindingFunction::DECREASE_BRUSH_SIZE:
 		if(zoomEnabled && !zoomCursorFixed)
 			c->AdjustZoomSize(-1, !alt);
 		else
 			c->AdjustBrushSize(-1, !alt, shiftBehaviour, ctrlBehaviour);
 		break;
-	case SDL_SCANCODE_I:
-		if(ctrl)
-			c->Install();
-		else
-			c->InvertAirSim();
+	case KeyboardBindingFunction::INSTALL_GAME:
+		c->Install();
 		break;
-	case SDL_SCANCODE_SEMICOLON:
-		if (ctrl)
-			c->SetReplaceModeFlags(c->GetReplaceModeFlags()^SPECIFIC_DELETE);
-		else
-			c->SetReplaceModeFlags(c->GetReplaceModeFlags()^REPLACE_MODE);
+	case KeyboardBindingFunction::INVERT_AIR_SIMULATION:
+		c->InvertAirSim();
+		break;
+	case KeyboardBindingFunction::TOGGLE_REPLACE_MODE:
+		c->SetReplaceModeFlags(c->GetReplaceModeFlags()^SPECIFIC_DELETE);
+		break;
+	case KeyboardBindingFunction::TOGGLE_SPECIFIC_DELETE_MODE:
+		c->SetReplaceModeFlags(c->GetReplaceModeFlags()^REPLACE_MODE);
 		break;
 	default:
 		didKeyShortcut = false;
