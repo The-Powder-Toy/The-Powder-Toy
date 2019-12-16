@@ -32,20 +32,6 @@ public:
 	void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
 	void OnTryExit(ExitMethod method) override;
 	virtual ~PropertyWindow() {}
-	class OkayAction: public ui::ButtonAction
-	{
-	public:
-		PropertyWindow * prompt;
-		OkayAction(PropertyWindow * prompt_) { prompt = prompt_; }
-		void ActionCallback(ui::Button * sender) override
-		{
-			prompt->CloseActiveWindow();
-			if(prompt->textField->GetText().length())
-				prompt->SetProperty();
-			prompt->SelfDestruct();
-			return;
-		}
-	};
 };
 
 PropertyWindow::PropertyWindow(PropertyTool * tool_, Simulation *sim_):
@@ -65,22 +51,17 @@ sim(sim_)
 	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	okayButton->Appearance.BorderInactive = ui::Colour(200, 200, 200);
-	okayButton->SetActionCallback(new OkayAction(this));
+	okayButton->SetActionCallback({ [this] {
+		CloseActiveWindow();
+		if (textField->GetText().length())
+			SetProperty();
+		SelfDestruct();
+	} });
 	AddComponent(okayButton);
 	SetOkayButton(okayButton);
 
-	class PropertyChanged: public ui::DropDownAction
-	{
-		PropertyWindow * w;
-	public:
-		PropertyChanged(PropertyWindow * w): w(w) { }
-		void OptionChanged(ui::DropDown * sender, std::pair<String, int> option) override
-		{
-			w->FocusComponent(w->textField);
-		}
-	};
 	property = new ui::DropDown(ui::Point(8, 25), ui::Point(Size.X-16, 16));
-	property->SetActionCallback(new PropertyChanged(this));
+	property->SetActionCallback({ [this] { FocusComponent(textField); } });
 	AddComponent(property);
 	for (size_t i = 0; i < properties.size(); i++)
 	{

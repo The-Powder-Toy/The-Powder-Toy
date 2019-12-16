@@ -15,20 +15,6 @@
 
 #include "graphics/Graphics.h"
 
-class ElementSearchActivity::ToolAction: public ui::ButtonAction
-{
-	ElementSearchActivity * a;
-public:
-	Tool * tool;
-	ToolAction(ElementSearchActivity * a, Tool * tool) : a(a), tool(tool) {  }
-	void ActionCallback(ui::Button * sender_) override
-	{
-		ToolButton *sender = (ToolButton*)sender_;
-		if(sender->GetSelectionState() >= 0 && sender->GetSelectionState() <= 2)
-			a->SetActiveTool(sender->GetSelectionState(), tool);
-	}
-};
-
 ElementSearchActivity::ElementSearchActivity(GameController * gameController, std::vector<Tool*> tools) :
 	WindowActivity(ui::Point(-1, -1), ui::Point(236, 302)),
 	firstResult(NULL),
@@ -47,50 +33,19 @@ ElementSearchActivity::ElementSearchActivity(GameController * gameController, st
 	title->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	AddComponent(title);
 
-	class SearchAction : public ui::TextboxAction
-	{
-	private:
-		ElementSearchActivity * a;
-	public:
-		SearchAction(ElementSearchActivity * a) : a(a) {}
-		void TextChangedCallback(ui::Textbox * sender) override {
-			a->searchTools(sender->GetText());
-		}
-	};
-
 	searchField = new ui::Textbox(ui::Point(8, 23), ui::Point(Size.X-16, 17), "");
-	searchField->SetActionCallback(new SearchAction(this));
+	searchField->SetActionCallback({ [this] { searchTools(searchField->GetText()); } });
 	searchField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	AddComponent(searchField);
 	FocusComponent(searchField);
 
-	class CloseAction: public ui::ButtonAction
-		{
-			ElementSearchActivity * a;
-		public:
-			CloseAction(ElementSearchActivity * a) : a(a) {  }
-			void ActionCallback(ui::Button * sender_) override
-			{
-				a->exit = true;
-			}
-		};
-
-	class OKAction: public ui::ButtonAction
-		{
-			ElementSearchActivity * a;
-		public:
-			OKAction(ElementSearchActivity * a) : a(a) {  }
-			void ActionCallback(ui::Button * sender_) override
-			{
-				if(a->GetFirstResult())
-					a->SetActiveTool(0, a->GetFirstResult());
-			}
-		};
-
 	ui::Button * closeButton = new ui::Button(ui::Point(0, Size.Y-15), ui::Point((Size.X/2)+1, 15), "Close");
-	closeButton->SetActionCallback(new CloseAction(this));
+	closeButton->SetActionCallback({ [this] { exit = true; } });
 	ui::Button * okButton = new ui::Button(ui::Point(Size.X/2, Size.Y-15), ui::Point(Size.X/2, 15), "OK");
-	okButton->SetActionCallback(new OKAction(this));
+	okButton->SetActionCallback({ [this] {
+		if (GetFirstResult())
+			SetActiveTool(0, GetFirstResult());
+	} });
 
 	AddComponent(okButton);
 	AddComponent(closeButton);
@@ -194,7 +149,10 @@ void ElementSearchActivity::searchTools(String query)
 
 		tempButton->Appearance.SetTexture(tempTexture);
 		tempButton->Appearance.BackgroundInactive = ui::Colour(tool->colRed, tool->colGreen, tool->colBlue);
-		tempButton->SetActionCallback(new ToolAction(this, tool));
+		tempButton->SetActionCallback({ [this, tempButton, tool] {
+			if (tempButton->GetSelectionState() >= 0 && tempButton->GetSelectionState() <= 2)
+				SetActiveTool(tempButton->GetSelectionState(), tool);
+		} });
 
 		if(gameController->GetActiveTool(0) == tool)
 		{

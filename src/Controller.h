@@ -1,14 +1,6 @@
 #ifndef CONTROLLER_H_
 #define CONTROLLER_H_
 
-class ControllerCallback
-{
-public:
-	ControllerCallback() {}
-	virtual void ControllerExit() {}
-	virtual ~ControllerCallback() {}
-};
-
 class Controller
 {
 private:

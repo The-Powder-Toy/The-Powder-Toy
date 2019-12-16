@@ -21,47 +21,27 @@ ProfileActivity::ProfileActivity(ByteString username) :
 {
 	editable = Client::Ref().GetAuthUser().UserID && Client::Ref().GetAuthUser().Username == username;
 
-
-	class CloseAction: public ui::ButtonAction
-	{
-		ProfileActivity * a;
-	public:
-		CloseAction(ProfileActivity * a) : a(a) {  }
-		void ActionCallback(ui::Button * sender_) override
-		{
-			a->Exit();
-		}
-	};
-
-	class SaveAction: public ui::ButtonAction
-	{
-		ProfileActivity * a;
-	public:
-		SaveAction(ProfileActivity * a) : a(a) {  }
-		void ActionCallback(ui::Button * sender_) override
-		{
-			if (!a->loading && !a->saving && a->editable)
-			{
-				sender_->Enabled = false;
-				sender_->SetText("Saving...");
-				a->saving = true;
-				a->info.location = ((ui::Textbox*)a->location)->GetText();
-				a->info.biography = ((ui::Textbox*)a->bio)->GetText();
-				a->SaveUserInfoRequestMonitor::RequestSetup(a->info);
-				a->SaveUserInfoRequestMonitor::RequestStart();
-			}
-		}
-	};
-
-
 	ui::Button * closeButton = new ui::Button(ui::Point(0, Size.Y-15), ui::Point(Size.X, 15), "Close");
-	closeButton->SetActionCallback(new CloseAction(this));
+	closeButton->SetActionCallback({ [this] {
+		Exit();
+	} });
 	if(editable)
 	{
 		closeButton->Size.X = (Size.X/2)+1;
 
 		ui::Button * saveButton = new ui::Button(ui::Point(Size.X/2, Size.Y-15), ui::Point(Size.X/2, 15), "Save");
-		saveButton->SetActionCallback(new SaveAction(this));
+		saveButton->SetActionCallback({ [this, saveButton] {
+			if (!loading && !saving && editable)
+			{
+				saveButton->Enabled = false;
+				saveButton->SetText("Saving...");
+				saving = true;
+				info.location = location->GetText();
+				info.biography = bio->GetText();
+				SaveUserInfoRequestMonitor::RequestSetup(info);
+				SaveUserInfoRequestMonitor::RequestStart();
+			}
+		} });
 		AddComponent(saveButton);
 	}
 
@@ -75,15 +55,6 @@ ProfileActivity::ProfileActivity(ByteString username) :
 
 void ProfileActivity::setUserInfo(UserInfo newInfo)
 {
-	class EditAvatarAction: public ui::ButtonAction
-	{
-	public:
-		void ActionCallback(ui::Button * sender_) override
-		{
-			Platform::OpenURI(SCHEME SERVER "/Profile/Avatar.html");
-		}
-	};
-
 	info = newInfo;
 
 	if (!info.biography.length() && !editable)
@@ -111,7 +82,9 @@ void ProfileActivity::setUserInfo(UserInfo newInfo)
 	if (editable)
 	{
 		ui::Button * editAvatar = new ui::Button(ui::Point(Size.X - (40 + 16 + 75), currentY), ui::Point(75, 15), "Edit Avatar");
-		editAvatar->SetActionCallback(new EditAvatarAction());
+		editAvatar->SetActionCallback({ [] {
+			Platform::OpenURI(SCHEME SERVER "/Profile/Avatar.html");
+		} });
 		scrollPanel->AddChild(editAvatar);
 	}
 	currentY += 23;
@@ -200,22 +173,11 @@ void ProfileActivity::setUserInfo(UserInfo newInfo)
 	scrollPanel->AddChild(bioTitle);
 	currentY += 17;
 
-	class BioChangedAction: public ui::TextboxAction
-	{
-	public:
-		ProfileActivity * profileActivity;
-		BioChangedAction(ProfileActivity * profileActivity_) { profileActivity = profileActivity_; }
-		void TextChangedCallback(ui::Textbox * sender) override
-		{
-			profileActivity->ResizeArea();
-		}
-	};
-
 	if (editable)
 	{
 		bio = new ui::Textbox(ui::Point(4, currentY), ui::Point(Size.X-12, -1), info.biography);
 		((ui::Textbox*)bio)->SetInputType(ui::Textbox::Multiline);
-		((ui::Textbox*)bio)->SetActionCallback(new BioChangedAction(this));
+		((ui::Textbox*)bio)->SetActionCallback({ [this] { ResizeArea(); } });
 		((ui::Textbox*)bio)->SetLimit(20000);
 	}
 	else

@@ -21,25 +21,6 @@
 
 #include "graphics/Graphics.h"
 
-class SaveSelectedAction: public ui::SaveButtonAction
-{
-	FileBrowserActivity * a;
-public:
-	SaveSelectedAction(FileBrowserActivity * _a) { a = _a; }
-	void ActionCallback(ui::SaveButton * sender) override
-	{
-		a->SelectSave(sender->GetSaveFile());
-	}
-	void AltActionCallback(ui::SaveButton * sender) override
-	{
-		a->RenameSave(sender->GetSaveFile());
-	}
-	void AltActionCallback2(ui::SaveButton * sender) override
-	{
-		a->DeleteSave(sender->GetSaveFile());
-	}
-};
-
 //Currently, reading is done on another thread, we can't render outside the main thread due to some bullshit with OpenGL
 class LoadFilesTask: public Task
 {
@@ -99,19 +80,9 @@ public:
 	}
 };
 
-class FileBrowserActivity::SearchAction: public ui::TextboxAction
-{
-public:
-	FileBrowserActivity * a;
-	SearchAction(FileBrowserActivity * a) : a(a) {}
-	void TextChangedCallback(ui::Textbox * sender) override {
-		a->DoSearch(sender->GetText().ToUtf8());
-	}
-};
-
-FileBrowserActivity::FileBrowserActivity(ByteString directory, FileSelectedCallback * callback):
+FileBrowserActivity::FileBrowserActivity(ByteString directory, OnSelected onSelected_):
 	WindowActivity(ui::Point(-1, -1), ui::Point(500, 350)),
-	callback(callback),
+	onSelected(onSelected_),
 	directory(directory),
 	totalFiles(0)
 {
@@ -125,7 +96,7 @@ FileBrowserActivity::FileBrowserActivity(ByteString directory, FileSelectedCallb
 	ui::Textbox * textField = new ui::Textbox(ui::Point(8, 25), ui::Point(Size.X-16, 16), "", "[search]");
 	textField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	textField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
-	textField->SetActionCallback(new SearchAction(this));
+	textField->SetActionCallback({ [this, textField] { DoSearch(textField->GetText().ToUtf8()); } });
 	AddComponent(textField);
 	FocusComponent(textField);
 
@@ -165,8 +136,8 @@ void FileBrowserActivity::DoSearch(ByteString search)
 
 void FileBrowserActivity::SelectSave(SaveFile * file)
 {
-	if(callback)
-		callback->FileSelected(new SaveFile(*file));
+	if (onSelected)
+		onSelected(std::unique_ptr<SaveFile>(new SaveFile(*file)));
 	Exit();
 }
 
@@ -303,7 +274,12 @@ void FileBrowserActivity::OnTick(float dt)
 						saveFile);
 		saveButton->AddContextMenu(1);
 		saveButton->Tick(dt);
-		saveButton->SetActionCallback(new SaveSelectedAction(this));
+		saveButton->SetActionCallback({
+			[this, saveButton] { SelectSave(saveButton->GetSaveFile()); },
+			[this, saveButton] { RenameSave(saveButton->GetSaveFile()); },
+			[this, saveButton] { DeleteSave(saveButton->GetSaveFile()); }
+		});
+
 		progressBar->SetStatus("Rendering thumbnails");
 		progressBar->SetProgress((float(totalFiles-files.size())/float(totalFiles))*100.0f);
 		componentsQueue.push_back(saveButton);
@@ -334,6 +310,5 @@ void FileBrowserActivity::OnDraw()
 
 FileBrowserActivity::~FileBrowserActivity()
 {
-	delete callback;
 	cleanup();
 }

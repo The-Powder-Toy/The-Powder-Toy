@@ -50,71 +50,6 @@ public:
 	}
 	virtual ~SignWindow() {}
 	void OnTryExit(ui::Window::ExitMethod method) override;
-	class OkayAction: public ui::ButtonAction
-	{
-	public:
-		SignWindow * prompt;
-		OkayAction(SignWindow * prompt_) { prompt = prompt_; }
-		void ActionCallback(ui::Button * sender) override
-		{
-			prompt->CloseActiveWindow();
-			if(prompt->signID==-1 && prompt->textField->GetText().length())
-			{
-				prompt->sim->signs.push_back(sign(prompt->textField->GetText(), prompt->signPosition.X, prompt->signPosition.Y, (sign::Justification)prompt->justification->GetOption().second));
-			}
-			else if(prompt->signID!=-1 && prompt->textField->GetText().length())
-			{
-				prompt->sim->signs[prompt->signID] = sign(sign(prompt->textField->GetText(), prompt->signPosition.X, prompt->signPosition.Y, (sign::Justification)prompt->justification->GetOption().second));
-			}
-			prompt->SelfDestruct();
-		}
-	};
-	class DeleteAction: public ui::ButtonAction
-	{
-	public:
-		SignWindow * prompt;
-		DeleteAction(SignWindow * prompt_) { prompt = prompt_; }
-		void ActionCallback(ui::Button * sender) override
-		{
-			prompt->CloseActiveWindow();
-			if(prompt->signID!=-1)
-			{
-				prompt->sim->signs.erase(prompt->sim->signs.begin()+prompt->signID);
-			}
-			prompt->SelfDestruct();
-		}
-	};
-
-	class SignTextAction: public ui::TextboxAction
-	{
-	public:
-		SignWindow * prompt;
-		SignTextAction(SignWindow * prompt_) { prompt = prompt_; }
-		void TextChangedCallback(ui::Textbox * sender) override
-		{
-			if(prompt->signID!=-1)
-			{
-				prompt->sim->signs[prompt->signID].text = sender->GetText();
-				prompt->sim->signs[prompt->signID].ju = (sign::Justification)prompt->justification->GetOption().second;
-			}
-		}
-	};
-
-	class MoveAction: public ui::ButtonAction
-	{
-	public:
-		SignWindow * prompt;
-		MoveAction(SignWindow * prompt_) { prompt = prompt_; }
-		void ActionCallback(ui::Button * sender) override
-		{
-			if(prompt->signID!=-1)
-			{
-				prompt->movingSign = &prompt->sim->signs[prompt->signID];
-				prompt->sim->signs[prompt->signID].ju = (sign::Justification)prompt->justification->GetOption().second;
-				prompt->signMoving = true;
-			}
-		}
-	};
 };
 
 SignWindow::SignWindow(SignTool * tool_, Simulation * sim_, int signID_, ui::Point position_):
@@ -136,7 +71,18 @@ SignWindow::SignWindow(SignTool * tool_, Simulation * sim_, int signID_, ui::Poi
 	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	okayButton->Appearance.BorderInactive = (ui::Colour(200, 200, 200));
-	okayButton->SetActionCallback(new OkayAction(this));
+	okayButton->SetActionCallback({ [this] {
+		CloseActiveWindow();
+		if(signID==-1 && textField->GetText().length())
+		{
+			sim->signs.push_back(sign(textField->GetText(), signPosition.X, signPosition.Y, (sign::Justification)justification->GetOption().second));
+		}
+		else if(signID!=-1 && textField->GetText().length())
+		{
+			sim->signs[signID] = sign(sign(textField->GetText(), signPosition.X, signPosition.Y, (sign::Justification)justification->GetOption().second));
+		}
+		SelfDestruct();
+	} });
 	AddComponent(okayButton);
 	SetOkayButton(okayButton);
 
@@ -158,7 +104,13 @@ SignWindow::SignWindow(SignTool * tool_, Simulation * sim_, int signID_, ui::Poi
 	textField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	textField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	textField->SetLimit(45);
-	textField->SetActionCallback(new SignTextAction(this));
+	textField->SetActionCallback({ [this] {
+		if (signID!=-1)
+		{
+			sim->signs[signID].text = textField->GetText();
+			sim->signs[signID].ju = (sign::Justification)justification->GetOption().second;
+		}
+	} });
 	AddComponent(textField);
 	FocusComponent(textField);
 
@@ -171,13 +123,27 @@ SignWindow::SignWindow(SignTool * tool_, Simulation * sim_, int signID_, ui::Poi
 
 		ui::Point position = ui::Point(justification->Position.X+justification->Size.X+3, 48);
 		ui::Button * moveButton = new ui::Button(position, ui::Point(((Size.X-position.X-8)/2)-2, 16), "Move");
-		moveButton->SetActionCallback(new MoveAction(this));
+		moveButton->SetActionCallback({ [this] {
+			if (signID!=-1)
+			{
+				movingSign = &sim->signs[signID];
+				sim->signs[signID].ju = (sign::Justification)justification->GetOption().second;
+				signMoving = true;
+			}
+		} });
 		AddComponent(moveButton);
 
 		position = ui::Point(justification->Position.X+justification->Size.X+3, 48)+ui::Point(moveButton->Size.X+3, 0);
 		ui::Button * deleteButton = new ui::Button(position, ui::Point((Size.X-position.X-8)-1, 16), "Delete");
 		//deleteButton->SetIcon(IconDelete);
-		deleteButton->SetActionCallback(new DeleteAction(this));
+		deleteButton->SetActionCallback({ [this] {
+			CloseActiveWindow();
+			if (signID!=-1)
+			{
+				sim->signs.erase(sim->signs.begin() + signID);
+			}
+			SelfDestruct();
+		} });
 
 		signPosition.X = sim->signs[signID].x;
 		signPosition.Y = sim->signs[signID].y;

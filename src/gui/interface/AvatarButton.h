@@ -10,25 +10,25 @@
 #include "client/http/RequestMonitor.h"
 
 #include <memory>
+#include <functional>
 
 namespace ui
 {
-class AvatarButton;
-class AvatarButtonAction
-{
-public:
-	virtual void ActionCallback(ui::AvatarButton * sender) {}
-	virtual ~AvatarButtonAction() {}
-};
-
 class AvatarButton : public Component, public http::RequestMonitor<http::AvatarRequest>
 {
 	std::unique_ptr<VideoBuffer> avatar;
 	ByteString name;
 	bool tried;
+
+	struct AvatarButtonAction
+	{
+		std::function<void ()> action;
+	};
+	AvatarButtonAction actionCallback;
+
 public:
 	AvatarButton(Point position, Point size, ByteString username);
-	virtual ~AvatarButton();
+	virtual ~AvatarButton() = default;
 
 	void OnMouseClick(int x, int y, unsigned int button) override;
 	void OnMouseUnclick(int x, int y, unsigned int button) override;
@@ -47,10 +47,9 @@ public:
 
 	void SetUsername(ByteString username) { name = username; }
 	ByteString GetUsername() { return name; }
-	void SetActionCallback(AvatarButtonAction * action);
+	inline void SetActionCallback(AvatarButtonAction const &action) { actionCallback = action; };
 protected:
 	bool isMouseInside, isButtonDown;
-	AvatarButtonAction * actionCallback;
 };
 }
 #endif /* AVATARBUTTON_H_ */

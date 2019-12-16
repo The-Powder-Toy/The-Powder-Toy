@@ -1,7 +1,8 @@
 #ifndef RENDERCONTROLLER_H_
 #define RENDERCONTROLLER_H_
 
-class ControllerCallback;
+#include <functional>
+
 class RenderView;
 class RenderModel;
 class Renderer;
@@ -9,10 +10,10 @@ class RenderController
 {
 	RenderView * renderView;
 	RenderModel * renderModel;
-	ControllerCallback * callback;
+	std::function<void ()> onDone;
 public:
 	bool HasExited;
-	RenderController(Renderer * ren, ControllerCallback * callback = nullptr);
+	RenderController(Renderer * ren, std::function<void ()> onDone = nullptr);
 	void Exit();
 	RenderView * GetView() { return renderView; }
 	virtual ~RenderController();

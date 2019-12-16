@@ -4,21 +4,18 @@
 #include "Activity.h"
 #include "gui/interface/Colour.h"
 
+#include <functional>
+
 namespace ui
 {
 	class Textbox;
 	class Label;
 }
 
-class ColourPickedCallback
+class ColourPickerActivity : public WindowActivity
 {
-public:
-	ColourPickedCallback() {}
-	virtual  ~ColourPickedCallback() {}
-	virtual void ColourPicked(ui::Colour colour) {}
-};
+	using OnPicked = std::function<void (ui::Colour)>;
 
-class ColourPickerActivity: public WindowActivity {
 	int currentHue;
 	int currentSaturation;
 	int currentValue;
@@ -33,16 +30,17 @@ class ColourPickerActivity: public WindowActivity {
 	ui::Textbox * aValue;
 	ui::Label * hexValue;
 
-	ColourPickedCallback * callback;
+	OnPicked onPicked;
 
 	void UpdateTextboxes(int r, int g, int b, int a);
 public:
+	ColourPickerActivity(ui::Colour initialColour, OnPicked onPicked = nullptr);
+	virtual ~ColourPickerActivity() = default;
+
 	void OnMouseMove(int x, int y, int dx, int dy) override;
 	void OnMouseDown(int x, int y, unsigned button) override;
 	void OnMouseUp(int x, int y, unsigned button) override;
 	void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
 	void OnTryExit(ExitMethod method) override;
-	ColourPickerActivity(ui::Colour initialColour, ColourPickedCallback * callback = NULL);
-	virtual ~ColourPickerActivity();
 	void OnDraw() override;
 };

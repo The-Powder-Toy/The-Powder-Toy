@@ -19,20 +19,10 @@ ConsoleView::ConsoleView():
 	ui::Window(ui::Point(0, 0), ui::Point(WINDOWW, 150)),
 	commandField(NULL)
 {
-	class CommandHighlighter: public ui::TextboxAction
-	{
-		ConsoleView * v;
-	public:
-		CommandHighlighter(ConsoleView * v_) { v = v_; }
-		void TextChangedCallback(ui::Textbox * sender) override
-		{
-			sender->SetDisplayText(v->c->FormatCommand(sender->GetText()));
-		}
-	};
 	commandField = new ui::Textbox(ui::Point(0, Size.Y-16), ui::Point(Size.X, 16), "");
 	commandField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	commandField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-	commandField->SetActionCallback(new CommandHighlighter(this));
+	commandField->SetActionCallback({ [this] { commandField->SetDisplayText(c->FormatCommand(commandField->GetText())); } });
 	AddComponent(commandField);
 	FocusComponent(commandField);
 	commandField->SetBorder(false);

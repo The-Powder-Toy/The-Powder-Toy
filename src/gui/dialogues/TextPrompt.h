@@ -3,31 +3,32 @@
 
 #include "gui/interface/Window.h"
 
+#include <functional>
+
 namespace ui
 {
 	class Textbox;
 }
 
-class TextDialogueCallback;
-class TextPrompt: public ui::Window
+class TextPrompt : public ui::Window
 {
+	struct TextDialogueCallback
+	{
+		std::function<void (String const &)> text;
+		std::function<void ()> cancel;
+	};
+
+	TextDialogueCallback callback;
+
 protected:
 	ui::Textbox * textField;
+
 public:
-	friend class CloseAction;
-	enum DialogueResult { ResultCancel, ResultOkay };
-	TextPrompt(String title, String message, String text, String placeholder, bool multiline, TextDialogueCallback * callback_);
+	TextPrompt(String title, String message, String text, String placeholder, bool multiline, TextDialogueCallback callback_ = {});
+	virtual ~TextPrompt() = default;
+
 	static String Blocking(String title, String message, String text, String placeholder, bool multiline);
 	void OnDraw() override;
-	virtual ~TextPrompt();
-	TextDialogueCallback * callback;
-};
-
-class TextDialogueCallback
-{
-	public:
-		virtual void TextCallback(TextPrompt::DialogueResult result, String resultText) {}
-		virtual ~TextDialogueCallback() {}
 };
 
 #endif /* TEXTPROMPT_H_ */

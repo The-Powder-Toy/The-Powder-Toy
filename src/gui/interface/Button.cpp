@@ -15,8 +15,7 @@ Button::Button(Point position, Point size, String buttonText, String toolTip):
 	isButtonDown(false),
 	isMouseInside(false),
 	isTogglable(false),
-	toggle(false),
-	actionCallback(NULL)
+	toggle(false)
 {
 	TextPosition(ButtonText);
 }
@@ -191,8 +190,8 @@ void Button::OnMouseEnter(int x, int y)
 	isMouseInside = true;
 	if(!Enabled)
 		return;
-	if(actionCallback)
-		actionCallback->MouseEnterCallback(this);
+	if (actionCallback.mouseEnter)
+		actionCallback.mouseEnter();
 }
 
 void Button::OnMouseHover(int x, int y)
@@ -213,27 +212,16 @@ void Button::DoAction()
 {
 	if(!Enabled)
 		return;
-	if(actionCallback)
-		actionCallback->ActionCallback(this);
+	if (actionCallback.action)
+		actionCallback.action();
 }
 
 void Button::DoAltAction()
 {
 	if(!Enabled)
 		return;
-	if(actionCallback)
-		actionCallback->AltActionCallback(this);
-}
-
-void Button::SetActionCallback(ButtonAction * action)
-{
-	delete actionCallback;
-	actionCallback = action;
-}
-
-Button::~Button()
-{
-	delete actionCallback;
+	if (actionCallback.altAction)
+		actionCallback.altAction();
 }
 
 } /* namespace ui */

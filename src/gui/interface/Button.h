@@ -4,23 +4,21 @@
 #include "common/String.h"
 #include "Component.h"
 
+#include <functional>
+
 namespace ui
 {
-class Button;
-class ButtonAction
-{
-public:
-	virtual void ActionCallback(ui::Button * sender) {}
-	virtual void AltActionCallback(ui::Button * sender) {}
-	virtual void MouseEnterCallback(ui::Button * sender) {}
-	virtual ~ButtonAction() {}
-};
 
 class Button : public Component
 {
+	struct ButtonAction
+	{
+		std::function<void ()> action, altAction, mouseEnter;
+	};
+	
 public:
 	Button(Point position = Point(0, 0), Point size = Point(0, 0), String buttonText = String(), String toolTip = String());
-	virtual ~Button();
+	virtual ~Button() = default;
 
 	void OnMouseClick(int x, int y, unsigned int button) override;
 	void OnMouseUnclick(int x, int y, unsigned int button) override;
@@ -40,21 +38,20 @@ public:
 	bool GetTogglable();
 	bool GetToggleState();
 	void SetToggleState(bool state);
-	void SetActionCallback(ButtonAction * action);
-	ButtonAction * GetActionCallback() { return actionCallback; }
+	inline void SetActionCallback(ButtonAction const &action) { actionCallback = action; }
+	// inline ButtonAction const &GetActionCallback() const { return actionCallback; }
 	void SetText(String buttonText);
 	void SetIcon(Icon icon);
 	inline String GetText() { return ButtonText; }
 	void SetToolTip(String newToolTip) { toolTip = newToolTip; }
-protected:
 
+protected:
 	String ButtonText;
 	String toolTip;
 	String buttonDisplayText;
 
 	bool isButtonDown, isAltButtonDown, state, isMouseInside, isTogglable, toggle;
-	ButtonAction * actionCallback;
-
+	ButtonAction actionCallback;
 };
 }
 #endif /* BUTTON_H_ */

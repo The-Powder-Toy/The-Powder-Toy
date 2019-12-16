@@ -24,8 +24,7 @@ Textbox::Textbox(Point position, Point size, String textboxText, String textboxP
 	characterDown(0),
 	mouseDown(false),
 	masked(false),
-	border(true),
-	actionCallback(NULL)
+	border(true)
 {
 	placeHolder = textboxPlaceholder;
 
@@ -36,11 +35,6 @@ Textbox::Textbox(Point position, Point size, String textboxText, String textboxP
 	menu->AddItem(ContextMenuItem("Cut", 1, true));
 	menu->AddItem(ContextMenuItem("Copy", 0, true));
 	menu->AddItem(ContextMenuItem("Paste", 2, true));
-}
-
-Textbox::~Textbox()
-{
-	delete actionCallback;
 }
 
 void Textbox::SetHidden(bool hidden)
@@ -181,8 +175,8 @@ void Textbox::cutSelection()
 	{
 		cursorPositionY = cursorPositionX = 0;
 	}
-	if(actionCallback)
-		actionCallback->TextChangedCallback(this);
+	if (actionCallback.change)
+		actionCallback.change();
 }
 
 void Textbox::pasteIntoSelection()
@@ -251,8 +245,8 @@ void Textbox::pasteIntoSelection()
 	{
 		cursorPositionY = cursorPositionX = 0;
 	}
-	if(actionCallback)
-		actionCallback->TextChangedCallback(this);
+	if (actionCallback.change)
+		actionCallback.change();
 }
 
 bool Textbox::CharacterValid(int character)
@@ -469,8 +463,8 @@ void Textbox::AfterTextChange(bool changed)
 	{
 		cursorPositionY = cursorPositionX = 0;
 	}
-	if (changed && actionCallback)
-		actionCallback->TextChangedCallback(this);
+	if (changed && actionCallback.change)
+		actionCallback.change();
 }
 
 void Textbox::OnTextInput(String text)

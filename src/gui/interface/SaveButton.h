@@ -8,6 +8,7 @@
 #include "client/http/RequestMonitor.h"
 
 #include <memory>
+#include <functional>
 
 class VideoBuffer;
 class SaveFile;
@@ -15,17 +16,6 @@ class SaveInfo;
 class ThumbnailRendererTask;
 namespace ui
 {
-class SaveButton;
-class SaveButtonAction
-{
-public:
-	virtual void ActionCallback(ui::SaveButton * sender) {}
-	virtual void AltActionCallback(ui::SaveButton * sender) {}
-	virtual void AltActionCallback2(ui::SaveButton * sender) {}
-	virtual void SelectedCallback(ui::SaveButton * sender) {}
-	virtual ~SaveButtonAction() {}
-};
-
 class SaveButton : public Component, public http::RequestMonitor<http::ThumbnailRequest>
 {
 	SaveFile * file;
@@ -44,6 +34,15 @@ class SaveButton : public Component, public http::RequestMonitor<http::Thumbnail
 	bool isMouseInsideHistory;
 	bool showVotes;
 	ThumbnailRendererTask *thumbnailRenderer;
+
+	struct SaveButtonAction
+	{
+		std::function<void ()> action, altAction, altAltAction, selected;
+	};
+	SaveButtonAction actionCallback;
+
+	SaveButton(Point position, Point size);
+
 public:
 	SaveButton(Point position, Point size, SaveInfo * save);
 	SaveButton(Point position, Point size, SaveFile * file);
@@ -78,10 +77,9 @@ public:
 	void DoAltAction();
 	void DoAltAction2();
 	void DoSelection();
-	void SetActionCallback(SaveButtonAction * action);
+	inline void SetActionCallback(SaveButtonAction action) { actionCallback = action; }
 protected:
 	bool isButtonDown, state, isMouseInside, selected, selectable;
-	SaveButtonAction * actionCallback;
 };
 }
 #endif /* BUTTON_H_ */

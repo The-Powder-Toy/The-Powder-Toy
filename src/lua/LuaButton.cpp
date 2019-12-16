@@ -32,17 +32,7 @@ LuaButton::LuaButton(lua_State * l) :
 
 	button = new ui::Button(ui::Point(posX, posY), ui::Point(sizeX, sizeY), text, toolTip);
 	component = button;
-	class ClickAction : public ui::ButtonAction
-	{
-		LuaButton * luaButton;
-	public:
-		ClickAction(LuaButton * luaButton) : luaButton(luaButton) {}
-		void ActionCallback(ui::Button * sender) override
-		{
-			luaButton->triggerAction();
-		}
-	};
-	button->SetActionCallback(new ClickAction(this));
+	button->SetActionCallback({ [this] { triggerAction(); } });
 }
 
 int LuaButton::enabled(lua_State * l)

@@ -15,15 +15,9 @@ namespace ui {
 AvatarButton::AvatarButton(Point position, Point size, ByteString username):
 	Component(position, size),
 	name(username),
-	tried(false),
-	actionCallback(NULL)
+	tried(false)
 {
 
-}
-
-AvatarButton::~AvatarButton()
-{
-	delete actionCallback;
 }
 
 void AvatarButton::OnResponse(std::unique_ptr<VideoBuffer> Avatar)
@@ -97,13 +91,8 @@ void AvatarButton::OnMouseLeave(int x, int y)
 
 void AvatarButton::DoAction()
 {
-	if(actionCallback)
-		actionCallback->ActionCallback(this);
-}
-
-void AvatarButton::SetActionCallback(AvatarButtonAction * action)
-{
-	actionCallback = action;
+	if( actionCallback.action)
+		actionCallback.action();
 }
 
 } /* namespace ui */

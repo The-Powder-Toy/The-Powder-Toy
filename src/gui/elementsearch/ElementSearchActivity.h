@@ -31,7 +31,6 @@ class ElementSearchActivity: public WindowActivity
 	void searchTools(String query);
 
 public:
-	class ToolAction;
 	bool exit;
 	Tool * GetFirstResult() { return firstResult; }
 	ElementSearchActivity(GameController * gameController, std::vector<Tool*> tools);

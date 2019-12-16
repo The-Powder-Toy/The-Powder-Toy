@@ -55,19 +55,9 @@ OptionsView::OptionsView():
 	
 	AddComponent(scrollPanel);
 
-	class HeatSimulationAction: public ui::CheckboxAction
-	{
-		OptionsView * v;
-	public:
-		HeatSimulationAction(OptionsView * v_){	v = v_;	}
-		void ActionCallback(ui::Checkbox * sender) override {
-			v->c->SetHeatSimulation(sender->GetChecked());
-		}
-	};
-
 	heatSimulation = new ui::Checkbox(ui::Point(8, currentY), ui::Point(1, 16), "Heat simulation \bgIntroduced in version 34", "");
 	autowidth(heatSimulation);
-	heatSimulation->SetActionCallback(new HeatSimulationAction(this));
+	heatSimulation->SetActionCallback({ [this] { c->SetHeatSimulation(heatSimulation->GetChecked()); } });
 	scrollPanel->AddChild(heatSimulation);
 	currentY+=14;
 	tempLabel = new ui::Label(ui::Point(24, currentY), ui::Point(1, 16), "\bgCan cause odd behaviour when disabled");
@@ -76,20 +66,10 @@ OptionsView::OptionsView():
 	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	scrollPanel->AddChild(tempLabel);
 
-	class AmbientHeatSimulationAction: public ui::CheckboxAction
-	{
-		OptionsView * v;
-	public:
-		AmbientHeatSimulationAction(OptionsView * v_){	v = v_;	}
-		void ActionCallback(ui::Checkbox * sender) override {
-			v->c->SetAmbientHeatSimulation(sender->GetChecked());
-		}
-	};
-
 	currentY+=16;
 	ambientHeatSimulation = new ui::Checkbox(ui::Point(8, currentY), ui::Point(1, 16), "Ambient heat simulation \bgIntroduced in version 50", "");
 	autowidth(ambientHeatSimulation);
-	ambientHeatSimulation->SetActionCallback(new AmbientHeatSimulationAction(this));
+	ambientHeatSimulation->SetActionCallback({ [this] { c->SetAmbientHeatSimulation(ambientHeatSimulation->GetChecked()); } });
 	scrollPanel->AddChild(ambientHeatSimulation);
 	currentY+=14;
 	tempLabel = new ui::Label(ui::Point(24, currentY), ui::Point(1, 16), "\bgCan cause odd / broken behaviour with many saves");
@@ -98,20 +78,10 @@ OptionsView::OptionsView():
 	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	scrollPanel->AddChild(tempLabel);
 
-	class NewtonianGravityAction: public ui::CheckboxAction
-	{
-		OptionsView * v;
-	public:
-		NewtonianGravityAction(OptionsView * v_){	v = v_;	}
-		void ActionCallback(ui::Checkbox * sender) override {
-			v->c->SetNewtonianGravity(sender->GetChecked());
-		}
-	};
-
 	currentY+=16;
 	newtonianGravity = new ui::Checkbox(ui::Point(8, currentY), ui::Point(1, 16), "Newtonian gravity \bgIntroduced in version 48", "");
 	autowidth(newtonianGravity);
-	newtonianGravity->SetActionCallback(new NewtonianGravityAction(this));
+	newtonianGravity->SetActionCallback({ [this] { c->SetNewtonianGravity(newtonianGravity->GetChecked()); } });
 	scrollPanel->AddChild(newtonianGravity);
 	currentY+=14;
 	tempLabel = new ui::Label(ui::Point(24, currentY), ui::Point(1, 16), "\bgMay cause poor performance on older computers");
@@ -120,20 +90,10 @@ OptionsView::OptionsView():
 	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	scrollPanel->AddChild(tempLabel);
 
-	class WaterEqualisationAction: public ui::CheckboxAction
-		{
-			OptionsView * v;
-		public:
-			WaterEqualisationAction(OptionsView * v_){	v = v_;	}
-			void ActionCallback(ui::Checkbox * sender) override {
-				v->c->SetWaterEqualisation(sender->GetChecked());
-			}
-		};
-
 	currentY+=16;
 	waterEqualisation = new ui::Checkbox(ui::Point(8, currentY), ui::Point(1, 16), "Water equalisation \bgIntroduced in version 61", "");
 	autowidth(waterEqualisation);
-	waterEqualisation->SetActionCallback(new WaterEqualisationAction(this));
+	waterEqualisation->SetActionCallback({ [this] { c->SetWaterEqualisation(waterEqualisation->GetChecked()); } });
 	scrollPanel->AddChild(waterEqualisation);
 	currentY+=14;
 	tempLabel = new ui::Label(ui::Point(24, currentY), ui::Point(1, 16), "\bgMay cause poor performance with a lot of water");
@@ -142,15 +102,6 @@ OptionsView::OptionsView():
 	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	scrollPanel->AddChild(tempLabel);
 
-	class AirModeChanged: public ui::DropDownAction
-	{
-		OptionsView * v;
-	public:
-		AirModeChanged(OptionsView * v): v(v) { }
-		void OptionChanged(ui::DropDown * sender, std::pair<String, int> option) override {
-			v->c->SetAirMode(option.second);
-		}
-	};
 	currentY+=19;
 	airMode = new ui::DropDown(ui::Point(Size.X-95, currentY), ui::Point(80, 16));
 	scrollPanel->AddChild(airMode);
@@ -159,22 +110,12 @@ OptionsView::OptionsView():
 	airMode->AddOption(std::pair<String, int>("Velocity off", 2));
 	airMode->AddOption(std::pair<String, int>("Off", 3));
 	airMode->AddOption(std::pair<String, int>("No Update", 4));
-	airMode->SetActionCallback(new AirModeChanged(this));
+	airMode->SetActionCallback({ [this] { c->SetAirMode(airMode->GetOption().second); } });
 
 	tempLabel = new ui::Label(ui::Point(8, currentY), ui::Point(Size.X-96, 16), "Air Simulation Mode");
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	scrollPanel->AddChild(tempLabel);
-
-	class GravityModeChanged: public ui::DropDownAction
-	{
-		OptionsView * v;
-	public:
-		GravityModeChanged(OptionsView * v): v(v) { }
-		void OptionChanged(ui::DropDown * sender, std::pair<String, int> option) override {
-			v->c->SetGravityMode(option.second);
-		}
-	};
 
 	currentY+=20;
 	gravityMode = new ui::DropDown(ui::Point(Size.X-95, currentY), ui::Point(80, 16));
@@ -182,29 +123,20 @@ OptionsView::OptionsView():
 	gravityMode->AddOption(std::pair<String, int>("Vertical", 0));
 	gravityMode->AddOption(std::pair<String, int>("Off", 1));
 	gravityMode->AddOption(std::pair<String, int>("Radial", 2));
-	gravityMode->SetActionCallback(new GravityModeChanged(this));
+	gravityMode->SetActionCallback({ [this] { c->SetGravityMode(gravityMode->GetOption().second); } });
 
 	tempLabel = new ui::Label(ui::Point(8, currentY), ui::Point(Size.X-96, 16), "Gravity Simulation Mode");
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	scrollPanel->AddChild(tempLabel);
 
-	class EdgeModeChanged: public ui::DropDownAction
-	{
-		OptionsView * v;
-	public:
-		EdgeModeChanged(OptionsView * v): v(v) { }
-		void OptionChanged(ui::DropDown * sender, std::pair<String, int> option) override {
-			v->c->SetEdgeMode(option.second);
-		}
-	};
 	currentY+=20;
 	edgeMode = new ui::DropDown(ui::Point(Size.X-95, currentY), ui::Point(80, 16));
 	scrollPanel->AddChild(edgeMode);
 	edgeMode->AddOption(std::pair<String, int>("Void", 0));
 	edgeMode->AddOption(std::pair<String, int>("Solid", 1));
 	edgeMode->AddOption(std::pair<String, int>("Loop", 2));
-	edgeMode->SetActionCallback(new EdgeModeChanged(this));
+	edgeMode->SetActionCallback({ [this] { c->SetEdgeMode(edgeMode->GetOption().second); } });
 
 	tempLabel = new ui::Label(ui::Point(8, currentY), ui::Point(Size.X-96, 16), "Edge Mode");
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
@@ -215,15 +147,6 @@ OptionsView::OptionsView():
 	tmpSeparator = new Separator(ui::Point(0, currentY), ui::Point(Size.X, 1));
 	scrollPanel->AddChild(tmpSeparator);
 
-	class ScaleAction: public ui::DropDownAction
-	{
-		OptionsView * v;
-	public:
-		ScaleAction(OptionsView * v): v(v) { }
-		void OptionChanged(ui::DropDown * sender, std::pair<String, int> option) override {
-			v->c->SetScale(option.second);
-		}
-	};
 	currentY+=4;
 	scale = new ui::DropDown(ui::Point(8, currentY), ui::Point(40, 16));
 	{
@@ -241,7 +164,7 @@ OptionsView::OptionsView():
 		if (!current_scale_valid)
 			scale->AddOption(std::pair<String, int>("current", current_scale));
 	}
-	scale->SetActionCallback(new ScaleAction(this));
+	scale->SetActionCallback({ [this] { c->SetScale(scale->GetOption().second); } });
 	scrollPanel->AddChild(scale);
 
 	tempLabel = new ui::Label(ui::Point(scale->Position.X+scale->Size.X+3, currentY), ui::Point(Size.X-40, 16), "\bg- Window scale factor for larger screens");
@@ -249,21 +172,10 @@ OptionsView::OptionsView():
 	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	scrollPanel->AddChild(tempLabel);
 
-
-	class ResizableAction: public ui::CheckboxAction
-	{
-		OptionsView * v;
-	public:
-		ResizableAction(OptionsView * v_){	v = v_;	}
-		void ActionCallback(ui::Checkbox * sender) override
-		{
-			v->c->SetResizable(sender->GetChecked());
-		}
-	};
 	currentY+=20;
 	resizable = new ui::Checkbox(ui::Point(8, currentY), ui::Point(1, 16), "Resizable", "");
 	autowidth(resizable);
-	resizable->SetActionCallback(new ResizableAction(this));
+	resizable->SetActionCallback({ [this] { c->SetResizable(resizable->GetChecked()); } });
 	tempLabel = new ui::Label(ui::Point(resizable->Position.X+Graphics::textwidth(resizable->GetText())+20, currentY), ui::Point(1, 16), "\bg- Allow resizing and maximizing window");
 	autowidth(tempLabel);
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
@@ -271,21 +183,10 @@ OptionsView::OptionsView():
 	scrollPanel->AddChild(tempLabel);
 	scrollPanel->AddChild(resizable);
 
-	class FullscreenAction: public ui::CheckboxAction
-	{
-		OptionsView * v;
-	public:
-		FullscreenAction(OptionsView * v_){	v = v_;	}
-		void ActionCallback(ui::Checkbox * sender) override
-		{
-			v->c->SetFullscreen(sender->GetChecked());
-		}
-	};
-
 	currentY+=20;
 	fullscreen = new ui::Checkbox(ui::Point(8, currentY), ui::Point(1, 16), "Fullscreen", "");
 	autowidth(fullscreen);
-	fullscreen->SetActionCallback(new FullscreenAction(this));
+	fullscreen->SetActionCallback({ [this] { c->SetFullscreen(fullscreen->GetChecked()); } });
 	tempLabel = new ui::Label(ui::Point(fullscreen->Position.X+Graphics::textwidth(fullscreen->GetText())+20, currentY), ui::Point(1, 16), "\bg- Fill the entire screen");
 	autowidth(tempLabel);
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
@@ -293,20 +194,10 @@ OptionsView::OptionsView():
 	scrollPanel->AddChild(tempLabel);
 	scrollPanel->AddChild(fullscreen);
 
-	class AltFullscreenAction: public ui::CheckboxAction
-	{
-		OptionsView * v;
-	public:
-		AltFullscreenAction(OptionsView * v_){	v = v_;	}
-		void ActionCallback(ui::Checkbox * sender) override
-		{
-			v->c->SetAltFullscreen(sender->GetChecked());
-		}
-	};
 	currentY+=20;
 	altFullscreen = new ui::Checkbox(ui::Point(23, currentY), ui::Point(1, 16), "Change Resolution", "");
 	autowidth(altFullscreen);
-	altFullscreen->SetActionCallback(new AltFullscreenAction(this));
+	altFullscreen->SetActionCallback({ [this] { c->SetAltFullscreen(altFullscreen->GetChecked()); } });
 	tempLabel = new ui::Label(ui::Point(altFullscreen->Position.X+Graphics::textwidth(altFullscreen->GetText())+20, currentY), ui::Point(1, 16), "\bg- Set optimial screen resolution");
 	autowidth(tempLabel);
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
@@ -314,21 +205,10 @@ OptionsView::OptionsView():
 	scrollPanel->AddChild(tempLabel);
 	scrollPanel->AddChild(altFullscreen);
 
-	class ForceIntegerScalingAction: public ui::CheckboxAction
-	{
-		OptionsView * v;
-	public:
-		ForceIntegerScalingAction(OptionsView * v_) { v = v_; }
-		void ActionCallback(ui::Checkbox * sender) override
-		{
-			v->c->SetForceIntegerScaling(sender->GetChecked());
-		}
-	};
-
 	currentY+=20;
 	forceIntegerScaling = new ui::Checkbox(ui::Point(23, currentY), ui::Point(1, 16), "Force Integer Scaling", "");
 	autowidth(forceIntegerScaling);
-	forceIntegerScaling->SetActionCallback(new ForceIntegerScalingAction(this));
+	forceIntegerScaling->SetActionCallback({ [this] { c->SetForceIntegerScaling(forceIntegerScaling->GetChecked()); } });
 	tempLabel = new ui::Label(ui::Point(altFullscreen->Position.X+Graphics::textwidth(forceIntegerScaling->GetText())+20, currentY), ui::Point(1, 16), "\bg- Less blurry");
 	autowidth(tempLabel);
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
@@ -336,20 +216,10 @@ OptionsView::OptionsView():
 	scrollPanel->AddChild(tempLabel);
 	scrollPanel->AddChild(forceIntegerScaling);
 
-
-	class FastQuitAction: public ui::CheckboxAction
-	{
-		OptionsView * v;
-	public:
-		FastQuitAction(OptionsView * v_){	v = v_;	}
-		void ActionCallback(ui::Checkbox * sender) override {
-			v->c->SetFastQuit(sender->GetChecked());
-		}
-	};
 	currentY+=20;
 	fastquit = new ui::Checkbox(ui::Point(8, currentY), ui::Point(1, 16), "Fast Quit", "");
 	autowidth(fastquit);
-	fastquit->SetActionCallback(new FastQuitAction(this));
+	fastquit->SetActionCallback({ [this] { c->SetFastQuit(fastquit->GetChecked()); } });
 	tempLabel = new ui::Label(ui::Point(fastquit->Position.X+Graphics::textwidth(fastquit->GetText())+20, currentY), ui::Point(1, 16), "\bg- Always exit completely when hitting close");
 	autowidth(tempLabel);
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
@@ -357,19 +227,10 @@ OptionsView::OptionsView():
 	scrollPanel->AddChild(tempLabel);
 	scrollPanel->AddChild(fastquit);
 
-	class ShowAvatarsAction: public ui::CheckboxAction
-	{
-		OptionsView * v;
-	public:
-		ShowAvatarsAction(OptionsView * v_){	v = v_;	}
-		void ActionCallback(ui::Checkbox * sender) override {
-			v->c->SetShowAvatars(sender->GetChecked());
-		}
-	};
 	currentY+=20;
 	showAvatars = new ui::Checkbox(ui::Point(8, currentY), ui::Point(1, 16), "Show Avatars", "");
 	autowidth(showAvatars);
-	showAvatars->SetActionCallback(new ShowAvatarsAction(this));
+	showAvatars->SetActionCallback({ [this] { c->SetShowAvatars(showAvatars->GetChecked()); } });
 	tempLabel = new ui::Label(ui::Point(showAvatars->Position.X+Graphics::textwidth(showAvatars->GetText())+20, currentY), ui::Point(1, 16), "\bg- Disable if you have a slow connection");
 	autowidth(tempLabel);
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
@@ -377,19 +238,10 @@ OptionsView::OptionsView():
 	scrollPanel->AddChild(tempLabel);
 	scrollPanel->AddChild(showAvatars);
 
-	class MouseClickRequiredAction: public ui::CheckboxAction
-	{
-		OptionsView * v;
-	public:
-		MouseClickRequiredAction(OptionsView * v_){	v = v_;	}
-		void ActionCallback(ui::Checkbox * sender) override {
-			v->c->SetMouseClickrequired(sender->GetChecked());
-		}
-	};
 	currentY+=20;
 	mouseClickRequired = new ui::Checkbox(ui::Point(8, currentY), ui::Point(1, 16), "Sticky Categories", "");
 	autowidth(mouseClickRequired);
-	mouseClickRequired->SetActionCallback(new MouseClickRequiredAction(this));
+	mouseClickRequired->SetActionCallback({ [this] { c->SetMouseClickrequired(mouseClickRequired->GetChecked()); } });
 	tempLabel = new ui::Label(ui::Point(mouseClickRequired->Position.X+Graphics::textwidth(mouseClickRequired->GetText())+20, currentY), ui::Point(1, 16), "\bg- Switch between categories by clicking");
 	autowidth(tempLabel);
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
@@ -397,19 +249,10 @@ OptionsView::OptionsView():
 	scrollPanel->AddChild(tempLabel);
 	scrollPanel->AddChild(mouseClickRequired);
 
-	class IncludePressureAction: public ui::CheckboxAction
-	{
-		OptionsView * v;
-	public:
-		IncludePressureAction(OptionsView * v_){	v = v_;	}
-		void ActionCallback(ui::Checkbox * sender) override {
-			v->c->SetIncludePressure(sender->GetChecked());
-		}
-	};
 	currentY+=20;
 	includePressure = new ui::Checkbox(ui::Point(8, currentY), ui::Point(1, 16), "Include Pressure", "");
 	autowidth(includePressure);
-	includePressure->SetActionCallback(new IncludePressureAction(this));
+	includePressure->SetActionCallback({ [this] { c->SetIncludePressure(includePressure->GetChecked()); } });
 	tempLabel = new ui::Label(ui::Point(includePressure->Position.X+Graphics::textwidth(includePressure->GetText())+20, currentY), ui::Point(1, 16), "\bg- When saving, copying, stamping, etc.");
 	autowidth(tempLabel);
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
@@ -417,18 +260,9 @@ OptionsView::OptionsView():
 	scrollPanel->AddChild(tempLabel);
 	scrollPanel->AddChild(includePressure);
 
-	class DecoSpaceAction: public ui::DropDownAction
-	{
-		OptionsView * v;
-	public:
-		DecoSpaceAction(OptionsView * v): v(v) { }
-		void OptionChanged(ui::DropDown * sender, std::pair<String, int> option) override {
-			v->c->SetDecoSpace(option.second);
-		}
-	};
 	currentY+=20;
 	decoSpace = new ui::DropDown(ui::Point(8, currentY), ui::Point(60, 16));
-	decoSpace->SetActionCallback(new DecoSpaceAction(this));
+	decoSpace->SetActionCallback({ [this] { c->SetDecoSpace(decoSpace->GetOption().second); } });
 	scrollPanel->AddChild(decoSpace);
 	decoSpace->AddOption(std::pair<String, int>("sRGB", 0));
 	decoSpace->AddOption(std::pair<String, int>("Linear", 1));
@@ -440,30 +274,23 @@ OptionsView::OptionsView():
 	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	scrollPanel->AddChild(tempLabel);
 
-	class DataFolderAction: public ui::ButtonAction
-	{
-	public:
-		DataFolderAction() { }
-		void ActionCallback(ui::Button * sender) override
-		{
-//one of these should always be defined
-#ifdef WIN
-			const char* openCommand = "explorer ";
-#elif MACOSX
-			const char* openCommand = "open ";
-//#elif LIN
-#else
-			const char* openCommand = "xdg-open ";
-#endif
-			char* workingDirectory = new char[FILENAME_MAX+strlen(openCommand)];
-			sprintf(workingDirectory, "%s\"%s\"", openCommand, getcwd(NULL, 0));
-			system(workingDirectory);
-			delete[] workingDirectory;
-		}
-	};
 	currentY+=20;
 	ui::Button * dataFolderButton = new ui::Button(ui::Point(8, currentY), ui::Point(90, 16), "Open Data Folder");
-	dataFolderButton->SetActionCallback(new DataFolderAction());
+	dataFolderButton->SetActionCallback({ [] {
+//one of these should always be defined
+#ifdef WIN
+		const char* openCommand = "explorer ";
+#elif MACOSX
+		const char* openCommand = "open ";
+//#elif LIN
+#else
+		const char* openCommand = "xdg-open ";
+#endif
+		char* workingDirectory = new char[FILENAME_MAX+strlen(openCommand)];
+		sprintf(workingDirectory, "%s\"%s\"", openCommand, getcwd(NULL, 0));
+		system(workingDirectory);
+		delete[] workingDirectory;
+	} });
 	scrollPanel->AddChild(dataFolderButton);
 
 	tempLabel = new ui::Label(ui::Point(dataFolderButton->Position.X+dataFolderButton->Size.X+3, currentY), ui::Point(1, 16), "\bg- Open the data and preferences folder");
@@ -472,19 +299,8 @@ OptionsView::OptionsView():
 	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	scrollPanel->AddChild(tempLabel);
 
-	class CloseAction: public ui::ButtonAction
-	{
-	public:
-		OptionsView * v;
-		CloseAction(OptionsView * v_) { v = v_; }
-		void ActionCallback(ui::Button * sender) override
-		{
-			v->c->Exit();
-		}
-	};
-
 	ui::Button * tempButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(Size.X, 16), "OK");
-	tempButton->SetActionCallback(new CloseAction(this));
+	tempButton->SetActionCallback({ [this] { c->Exit(); } });
 	AddComponent(tempButton);
 	SetCancelButton(tempButton);
 	SetOkayButton(tempButton);

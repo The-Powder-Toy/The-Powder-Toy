@@ -146,27 +146,18 @@ void UpdateActivity::Exit()
 
 void UpdateActivity::NotifyError(Task * sender)
 {
-	class ErrorMessageCallback: public ConfirmDialogueCallback
-	{
-		UpdateActivity * a;
-	public:
-		ErrorMessageCallback(UpdateActivity * a_) {	a = a_;	}
-		void ConfirmCallback(ConfirmPrompt::DialogueResult result) override {
-			if (result == ConfirmPrompt::ResultOkay)
-			{
-#ifndef UPDATESERVER
-				Platform::OpenURI(SCHEME "powdertoy.co.uk/Download.html");
-#endif
-			}
-			a->Exit();
-		}
-		virtual ~ErrorMessageCallback() { }
-	};
 #ifdef UPDATESERVER
-	new ConfirmPrompt("Autoupdate failed", "Please go online to manually download a newer version.\nError: " + sender->GetError(), new ErrorMessageCallback(this));
+# define FIRST_LINE "Please go online to manually download a newer version.\n"
 #else
-	new ConfirmPrompt("Autoupdate failed", "Please visit the website to download a newer version.\nError: " + sender->GetError(), new ErrorMessageCallback(this));
+# define FIRST_LINE "Please visit the website to download a newer version.\n"
 #endif
+	new ConfirmPrompt("Autoupdate failed", FIRST_LINE "Error: " + sender->GetError(), { [this] {
+#ifndef UPDATESERVER
+		Platform::OpenURI(SCHEME "powdertoy.co.uk/Download.html");
+#endif
+		Exit();
+	}, [this] { Exit(); } });
+#undef FIRST_LINE
 }
 
 

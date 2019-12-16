@@ -31,17 +31,7 @@ LuaCheckbox::LuaCheckbox(lua_State * l) :
 
 	checkbox = new ui::Checkbox(ui::Point(posX, posY), ui::Point(sizeX, sizeY), text, "");
 	component = checkbox;
-	class ClickAction : public ui::CheckboxAction
-	{
-		LuaCheckbox * luaCheckbox;
-	public:
-		ClickAction(LuaCheckbox * luaCheckbox) : luaCheckbox(luaCheckbox) {}
-		void ActionCallback(ui::Checkbox * sender) override
-		{
-			luaCheckbox->triggerAction();
-		}
-	};
-	checkbox->SetActionCallback(new ClickAction(this));
+	checkbox->SetActionCallback({ [this] { triggerAction(); } });
 }
 
 int LuaCheckbox::checked(lua_State * l)

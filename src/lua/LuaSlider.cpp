@@ -31,17 +31,7 @@ LuaSlider::LuaSlider(lua_State * l) :
 
 	slider = new ui::Slider(ui::Point(posX, posY), ui::Point(sizeX, sizeY), steps);
 	component = slider;
-	class ValueAction : public ui::SliderAction
-	{
-		LuaSlider * luaSlider;
-	public:
-		ValueAction(LuaSlider * luaSlider) : luaSlider(luaSlider) {}
-		void ValueChangedCallback(ui::Slider * sender) override
-		{
-			luaSlider->triggerOnValueChanged();
-		}
-	};
-	slider->SetActionCallback(new ValueAction(this));
+	slider->SetActionCallback({ [this] { triggerOnValueChanged(); } });
 }
 
 int LuaSlider::steps(lua_State * l)

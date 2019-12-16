@@ -3,6 +3,8 @@
 
 #include "gui/interface/Button.h"
 
+class Tool;
+
 class ToolButton: public ui::Button
 {
 	int currentSelection;
@@ -15,7 +17,7 @@ public:
 	void Draw(const ui::Point& screenPos) override;
 	void SetSelectionState(int state);
 	int GetSelectionState();
-	virtual ~ToolButton();
+	Tool *tool;
 };
 
 #endif /* TOOLBUTTON_H_ */

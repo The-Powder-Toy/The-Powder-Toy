@@ -29,18 +29,8 @@ LocalBrowserView::LocalBrowserView():
 	AddComponent(previousButton);
 	AddComponent(undeleteButton);
 
-	class PageNumAction : public ui::TextboxAction
-	{
-		LocalBrowserView * v;
-	public:
-		PageNumAction(LocalBrowserView * _v) { v = _v; }
-		void TextChangedCallback(ui::Textbox * sender) override
-		{
-			v->textChanged();
-		}
-	};
 	pageTextbox = new ui::Textbox(ui::Point(283, WINDOWH-18), ui::Point(41, 16), "");
-	pageTextbox->SetActionCallback(new PageNumAction(this));
+	pageTextbox->SetActionCallback({ [this] { textChanged(); } });
 	pageTextbox->SetInputType(ui::Textbox::Number);
 	pageLabel = new ui::Label(ui::Point(0, WINDOWH-18), ui::Point(30, 16), "Page"); //page [TEXTBOX] of y
 	pageLabel->Appearance.HorizontalAlign = ui::Appearance::AlignRight;
@@ -50,51 +40,19 @@ LocalBrowserView::LocalBrowserView():
 	AddComponent(pageCountLabel);
 	AddComponent(pageTextbox);
 
-	class RelativePageAction : public ui::ButtonAction
-	{
-		LocalBrowserView * v;
-		int offset;
-	public:
-		RelativePageAction(LocalBrowserView * _v, int _offset): v(_v), offset(_offset) {}
-		void ActionCallback(ui::Button * sender) override
-		{
-			v->c->SetPageRelative(offset);
-		}
-	};
-	nextButton->SetActionCallback(new RelativePageAction(this, 1));
+	nextButton->SetActionCallback({ [this] { c->SetPageRelative(1); } });
 	nextButton->Appearance.HorizontalAlign = ui::Appearance::AlignRight;
 	nextButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 
-	previousButton->SetActionCallback(new RelativePageAction(this, -1));
+	previousButton->SetActionCallback({ [this] { c->SetPageRelative(-1); } });
 	previousButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	previousButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 
-	class UndeleteAction : public ui::ButtonAction
-	{
-		LocalBrowserView * v;
-	public:
-		UndeleteAction(LocalBrowserView * _v) { v = _v; }
-		void ActionCallback(ui::Button * sender) override
-		{
-			v->c->RescanStamps();
-		}
-	};
-	undeleteButton->SetActionCallback(new UndeleteAction(this));
-
-	class RemoveSelectedAction : public ui::ButtonAction
-	{
-		LocalBrowserView * v;
-	public:
-		RemoveSelectedAction(LocalBrowserView * _v) { v = _v; }
-		void ActionCallback(ui::Button * sender) override
-		{
-			v->c->RemoveSelected();
-		}
-	};
+	undeleteButton->SetActionCallback({ [this] { c->RescanStamps(); } });
 
 	removeSelected = new ui::Button(ui::Point(((WINDOWW-100)/2), WINDOWH-18), ui::Point(100, 16), "Delete");
 	removeSelected->Visible = false;
-	removeSelected->SetActionCallback(new RemoveSelectedAction(this));
+	removeSelected->SetActionCallback({ [this] { c->RemoveSelected(); } });
 	AddComponent(removeSelected);
 }
 
@@ -178,22 +136,6 @@ void LocalBrowserView::NotifySavesListChanged(LocalBrowserModel * sender)
 	buttonAreaHeight = Size.Y - buttonYOffset - 18;
 	buttonWidth = (buttonAreaWidth/savesX) - buttonPadding*2;
 	buttonHeight = (buttonAreaHeight/savesY) - buttonPadding*2;
-	class SaveOpenAction: public ui::SaveButtonAction
-	{
-		LocalBrowserView * v;
-	public:
-		SaveOpenAction(LocalBrowserView * _v) { v = _v; }
-		void ActionCallback(ui::SaveButton * sender) override
-		{
-			if(sender->GetSaveFile())
-				v->c->OpenSave(sender->GetSaveFile());
-		}
-		void SelectedCallback(ui::SaveButton * sender) override
-		{
-			if(sender->GetSaveFile())
-				v->c->Selected(sender->GetSaveFile()->GetDisplayName().ToUtf8(), sender->GetSelected());
-		}
-	};
 	for (size_t i = 0; i < saves.size(); i++)
 	{
 		if(saveX == savesX)
@@ -212,7 +154,18 @@ void LocalBrowserView::NotifySavesListChanged(LocalBrowserModel * sender)
 					ui::Point(buttonWidth, buttonHeight),
 					saves[i]);
 		saveButton->SetSelectable(true);
-		saveButton->SetActionCallback(new SaveOpenAction(this));
+		saveButton->SetActionCallback({
+			[this, saveButton] {
+				if (saveButton->GetSaveFile())
+					c->OpenSave(saveButton->GetSaveFile());
+			},
+			nullptr,
+			nullptr,
+			[this, saveButton] {
+				if (saveButton->GetSaveFile())
+					c->Selected(saveButton->GetSaveFile()->GetDisplayName().ToUtf8(), saveButton->GetSelected());
+			}
+		});
 		stampButtons.push_back(saveButton);
 		AddComponent(saveButton);
 		saveX++;

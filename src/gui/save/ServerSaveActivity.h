@@ -5,6 +5,7 @@
 #include "tasks/TaskListener.h"
 
 #include <memory>
+#include <functional>
 
 namespace ui
 {
@@ -18,16 +19,12 @@ class Task;
 class VideoBuffer;
 class ServerSaveActivity: public WindowActivity, public TaskListener
 {
+	using OnUploaded = std::function<void (SaveInfo &)>;
+
+
 public:
-	class SaveUploadedCallback
-	{
-	public:
-		SaveUploadedCallback() {}
-		virtual  ~SaveUploadedCallback() {}
-		virtual void SaveUploaded(SaveInfo save) {}
-	};
-	ServerSaveActivity(SaveInfo save, SaveUploadedCallback * callback);
-	ServerSaveActivity(SaveInfo save, bool saveNow, SaveUploadedCallback * callback);
+	ServerSaveActivity(SaveInfo save, OnUploaded onUploaded);
+	ServerSaveActivity(SaveInfo save, bool saveNow, OnUploaded onUploaded);
 	void saveUpload();
 	void Save();
 	virtual void Exit() override;
@@ -43,16 +40,13 @@ protected:
 	ThumbnailRendererTask *thumbnailRenderer;
 	std::unique_ptr<VideoBuffer> thumbnail;
 	SaveInfo save;
-	SaveUploadedCallback * callback;
+private:
+	OnUploaded onUploaded;
+protected:
 	Task * saveUploadTask;
 	ui::Label * titleLabel;
 	ui::Textbox * nameField;
 	ui::Textbox * descriptionField;
 	ui::Checkbox * publishedCheckbox;
 	ui::Checkbox * pausedCheckbox;
-	class CancelAction;
-	class SaveAction;
-	class PublishingAction;
-	class RulesAction;
-	class NameChangedAction;
 };
