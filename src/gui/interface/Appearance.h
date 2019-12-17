@@ -1,5 +1,6 @@
 #ifndef APPEARANCE_H_
 #define APPEARANCE_H_
+#include "Config.h"
 
 #include "Border.h"
 #include "Colour.h"

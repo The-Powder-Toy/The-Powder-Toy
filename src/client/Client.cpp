@@ -11,8 +11,7 @@
 #include <dirent.h>
 
 #ifdef MACOSX
-#include <mach-o/dyld.h>
-#include <ApplicationServices/ApplicationServices.h>
+# include "common/macosx.h"
 #endif
 
 #ifdef WIN
@@ -104,11 +103,13 @@ Client::Client():
 
 void Client::Initialise(ByteString proxyString, bool disableNetwork)
 {
+#if !defined(FONTEDITOR) && !defined(RENDERER)
 	if (GetPrefBool("version.update", false))
 	{
 		SetPref("version.update", false);
 		update_finish();
 	}
+#endif
 
 #ifndef NOHTTP
 	if (!disableNetwork)

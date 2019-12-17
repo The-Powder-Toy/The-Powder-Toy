@@ -1,5 +1,6 @@
 #ifndef STAMPSMODEL_H_
 #define STAMPSMODEL_H_
+#include "Config.h"
 
 #include <vector>
 #include "common/String.h"

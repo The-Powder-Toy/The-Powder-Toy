@@ -1,6 +1,6 @@
-#ifndef RENDERER
-
+#include "Config.h"
 #include "common/tpt-minmax.h"
+
 #include <map>
 #include <ctime>
 #include <climits>
@@ -25,10 +25,14 @@
 #include <stdexcept>
 
 #ifndef WIN
-#include <unistd.h>
+# include <unistd.h>
 #endif
 #ifdef MACOSX
-#include <CoreServices/CoreServices.h>
+# ifdef DEBUG
+#  undef DEBUG
+#  define DEBUG 1
+# endif
+# include <CoreServices/CoreServices.h>
 #endif
 #include <sys/stat.h>
 
@@ -44,7 +48,6 @@
 
 #include "gui/game/GameController.h"
 #include "gui/game/GameView.h"
-#include "gui/font/FontEditor.h"
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/interface/Keys.h"
@@ -154,7 +157,7 @@ void blit(pixel * vid)
 }
 #endif
 
-void RecreateWindow();
+bool RecreateWindow();
 void SDLOpen()
 {
 	if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0)
@@ -163,7 +166,11 @@ void SDLOpen()
 		exit(-1);
 	}
 
-	RecreateWindow();
+	if (!RecreateWindow())
+	{
+		fprintf(stderr, "Creating SDL window: %s\n", SDL_GetError());
+		exit(-1);
+	}
 
 	int displayIndex = SDL_GetWindowDisplayIndex(sdl_window);
 	if (displayIndex >= 0)
@@ -240,7 +247,7 @@ void SDLSetScreen(int scale_, bool resizable_, bool fullscreen_, bool altFullscr
 	SDL_SetWindowResizable(sdl_window, resizable ? SDL_TRUE : SDL_FALSE);
 }
 
-void RecreateWindow()
+bool RecreateWindow()
 {
 	unsigned int flags = 0;
 	if (fullscreen)
@@ -261,6 +268,18 @@ void RecreateWindow()
 	sdl_window = SDL_CreateWindow("The Powder Toy", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOWW * scale, WINDOWH * scale,
 	                              flags);
 	sdl_renderer = SDL_CreateRenderer(sdl_window, -1, 0);
+	if (!sdl_renderer)
+	{
+		fprintf(stderr, "SDL_CreateRenderer failed; available renderers:\n");
+		int num = SDL_GetNumRenderDrivers();
+		for (int i = 0; i < num; ++i)
+		{
+			SDL_RendererInfo info;
+			SDL_GetRenderDriverInfo(i, &info);
+			fprintf(stderr, " - %s\n", info.name);
+		}
+		return false;
+	}
 	SDL_RenderSetLogicalSize(sdl_renderer, WINDOWW, WINDOWH);
 	if (forceIntegerScaling && fullscreen)
 		SDL_RenderSetIntegerScale(sdl_renderer, SDL_TRUE);
@@ -272,6 +291,8 @@ void RecreateWindow()
 
 	if (!Client::Ref().IsFirstRun())
 		LoadWindowPosition();
+
+	return true;
 }
 
 unsigned int GetTicks()
@@ -294,12 +315,17 @@ std::map<ByteString, ByteString> readArguments(int argc, char * argv[])
 	arguments["open"] = "";
 	arguments["ddir"] = "";
 	arguments["ptsave"] = "";
+	arguments["font"] = "";
 
 	for (int i=1; i<argc; i++)
 	{
 		if (!strncmp(argv[i], "scale:", 6) && argv[i]+6)
 		{
 			arguments["scale"] = argv[i]+6;
+		}
+		if (!strncmp(argv[i], "font:", 5) && argv[i]+5)
+		{
+			arguments["font"] = argv[i]+5;
 		}
 		else if (!strncmp(argv[i], "proxy:", 6))
 		{
@@ -670,7 +696,6 @@ int main(int argc, char * argv[])
 		fprintf(stderr, "Initializing SDL: %s\n", SDL_GetError());
 		return 1;
 	}
-	atexit(SDL_Quit);
 
 	std::map<ByteString, ByteString> arguments = readArguments(argc, argv);
 
@@ -835,7 +860,6 @@ int main(int argc, char * argv[])
 	try {
 #endif
 
-#ifndef FONTEDITOR
 		gameController = new GameController();
 		engine->ShowWindow(gameController->GetView());
 
@@ -923,28 +947,8 @@ int main(int argc, char * argv[])
 			}
 		}
 
-#else // FONTEDITOR
-		if(argc <= 1)
-			throw std::runtime_error("Usage: \n"
-				"    Edit the font:\n"
-				"        " + ByteString(argv[0]) + " ./data/font.cpp\n"
-				"    Copy characters from source to target:\n"
-				"        " + ByteString(argv[0]) + " <target/font.cpp> <source/font.cpp>\n");
-		if(argc <= 2)
-		{
-			engine->ShowWindow(new FontEditor(argv[1]));
-			EngineProcess();
-			SaveWindowPosition();
-		}
-		else
-		{
-			FontEditor(argv[1], argv[2]);
-		}
-#endif
-#ifndef FONTEDITOR
 		EngineProcess();
 		SaveWindowPosition();
-#endif
 
 #if !defined(DEBUG) && !defined(_DEBUG)
 	}
@@ -961,5 +965,3 @@ int main(int argc, char * argv[])
 	Client::Ref().Shutdown();
 	return 0;
 }
-
-#endif

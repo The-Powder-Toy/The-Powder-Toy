@@ -1,5 +1,6 @@
 #ifndef STYLE_H_
 #define STYLE_H_
+#include "Config.h"
 
 #include "gui/interface/Colour.h"
 

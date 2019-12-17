@@ -3,6 +3,8 @@
 // See unlicense.org text at the bottom of this file.
 #ifndef __RESAMPLER_H__
 #define __RESAMPLER_H__
+#include "Config.h"
+#include <cstdlib>
 
 #define RESAMPLER_DEBUG_OPS 0
 #define RESAMPLER_DEFAULT_FILTER "lanczos4"

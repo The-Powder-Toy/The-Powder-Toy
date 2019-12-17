@@ -1,46 +1,49 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#mesondefine CURL_STATICLIB
+#mesondefine ZLIB_WINAPI
+
+#mesondefine BETA
+#mesondefine DEBUG
+#mesondefine IGNORE_UPDATES
+#mesondefine LIN
+#mesondefine NATIVE
+#mesondefine NO_INSTALL_CHECK
+#mesondefine OGLI
+#mesondefine OGLR
+#mesondefine PIX32OGL
+#mesondefine SNAPSHOT
+#mesondefine WIN
+#mesondefine MACOSX
+#mesondefine X86
+#mesondefine X86_SSE
+#mesondefine X86_SSE2
+#mesondefine X86_SSE3
+#mesondefine _64BIT
 
 #ifdef WIN
-#define PATH_SEP "\\"
-#define PATH_SEP_CHAR '\\'
+# define PATH_SEP "\\"
+# define PATH_SEP_CHAR '\\'
 #else
-#define PATH_SEP "/"
-#define PATH_SEP_CHAR '/'
+# define PATH_SEP "/"
+# define PATH_SEP_CHAR '/'
 #endif
 
 //VersionInfoStart
-#ifndef SAVE_VERSION
-#define SAVE_VERSION 95
-#endif
+#mesondefine SAVE_VERSION
+#mesondefine MINOR_VERSION
+#mesondefine BUILD_NUM
+#mesondefine SNAPSHOT_ID
+#mesondefine MOD_ID
+#mesondefine FUTURE_SAVE_VERSION
+#mesondefine FUTURE_MINOR_VERSION
 
-#ifndef MINOR_VERSION
-#define MINOR_VERSION 0
-#endif
-
-#ifndef BUILD_NUM
-#define BUILD_NUM 345
-#endif
-
-#ifndef SNAPSHOT_ID
-#define SNAPSHOT_ID 0
-#endif
-
-// Mod ID, used on the https://starcatcher.us/TPT build server
-// The build server will compile for all platforms for you, and send updates in game
-// See jacob1 to get a mod ID
-#ifndef MOD_ID
-#define MOD_ID 0
-#endif
-
-#if defined(SNAPSHOT) || defined(BETA) || defined(DEBUG) || MOD_ID > 0
-#define FUTURE_SAVE_VERSION 96
-#define FUTURE_MINOR_VERSION 0
+#if !(defined(SNAPSHOT) || defined(BETA) || defined(DEBUG) || MOD_ID > 0)
+#undef FUTURE_SAVE_VERSION
+#undef FUTURE_MINOR_VERSION
 #endif
 //VersionInfoEnd
-
-//#define IGNORE_UPDATES //uncomment this for mods, to not get any update notifications
 
 #if !(defined(MACOSX) && defined(DEBUG))
 #define HIGH_QUALITY_RESAMPLE			//High quality image resampling, slower but much higher quality than my terribad linear interpolation
@@ -117,8 +120,6 @@
 
 #define WINDOWW (XRES+BARSIZE)
 #define WINDOWH (YRES+MENUSIZE)
-
-#define MAX_DISTANCE sqrt(pow((float)XRES, 2)+pow((float)YRES, 2))
 
 #define GRAV_DIFF
 

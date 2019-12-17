@@ -1,11 +1,11 @@
 #ifndef GRAPHICS_H
 #define GRAPHICS_H
+#include "Config.h"
 
 #include "common/String.h"
 #if defined(OGLI)
 #include "OpenGLHeaders.h"
 #endif
-#include "Config.h"
 #include "common/tpt-inline.h"
 #include "Pixel.h"
 #include "Icons.h"

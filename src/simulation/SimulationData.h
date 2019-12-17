@@ -1,5 +1,6 @@
 #ifndef SIMULATIONDATA_H
 #define SIMULATIONDATA_H
+#include "Config.h"
 
 #include <vector>
 #include <array>

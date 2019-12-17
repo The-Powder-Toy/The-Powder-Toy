@@ -18,19 +18,25 @@
 
 #ifdef _MSC_VER
 // less than VS2013. Untested since I don't use VS2012 anymore
-#if _MSC_VER < 1800
-#define fmin min
-#define fminf min
-#define fmax max
-#define fmaxf max
-#else
+# if _MSC_VER < 1800
+#  define fmin min
+#  define fminf min
+#  define fmax max
+#  define fmaxf max
+# else
 // >= VS2013
-#include <algorithm>
-#define NOMINMAX
-#endif
+#  include <algorithm>
+#  define NOMINMAX
+#  ifdef min
+#   undef min
+#  endif
+#  ifdef max
+#   undef max
+#  endif
+# endif
 #else
 // not using visual studio, std::min and std::max are normal
-#include <algorithm>
+# include <algorithm>
 #endif
 
 #endif

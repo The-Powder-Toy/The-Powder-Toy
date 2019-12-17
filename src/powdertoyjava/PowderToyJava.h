@@ -1,3 +1,4 @@
+#include "Config.h"
 #include <jni.h>
 
 #ifndef POWDERTOYJAVA

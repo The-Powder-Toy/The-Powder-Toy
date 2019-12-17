@@ -1,5 +1,6 @@
 #ifndef PARTICLE_H_
 #define PARTICLE_H_
+#include "Config.h"
 
 #include <vector>
 #include "StructProperty.h"

@@ -1,5 +1,6 @@
 #ifndef PREVIEWMODEL_H
 #define PREVIEWMODEL_H
+#include "Config.h"
 
 #include <vector>
 #include "common/String.h"

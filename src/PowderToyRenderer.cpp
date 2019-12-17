@@ -1,5 +1,4 @@
-#if defined(RENDERER)
-
+#include "Config.h"
 #include "graphics/Graphics.h"
 #include "graphics/Renderer.h"
 
@@ -9,7 +8,6 @@
 #include <vector>
 
 #include "common/String.h"
-#include "Config.h"
 #include "Format.h"
 #include "gui/interface/Engine.h"
 
@@ -56,9 +54,16 @@ void writeFile(ByteString filename, std::vector<char> & fileData)
 	}
 }
 
+// * On windows, sdl2 (which gets included somewhere along the way) defines
+//   main away to some identifier which sdl2main calls. The renderer is not
+//   linked against sdl2main, so we get an undefined reference to main. This
+//   can be fixed by removing the macro.
+#ifdef main
+# undef main
+#endif
+
 int main(int argc, char *argv[])
 {
-	ui::Engine * engine;
 	ByteString outputPrefix, inputFilename;
 	std::vector<char> inputFile;
 	ByteString ppmFilename, ptiFilename, ptiSmallFilename, pngFilename, pngSmallFilename;
@@ -79,11 +84,6 @@ int main(int argc, char *argv[])
 
 	readFile(inputFilename, inputFile);
 
-	ui::Engine::Ref().g = new Graphics();
-
-	engine = &ui::Engine::Ref();
-	engine->Begin(WINDOWW, WINDOWH);
-
 	GameSave * gameSave = NULL;
 	try
 	{
@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
 	}
 
 	Simulation * sim = new Simulation();
-	Renderer * ren = new Renderer(ui::Engine::Ref().g, sim);
+	Renderer * ren = new Renderer(new Graphics(), sim);
 
 	if (gameSave)
 	{
@@ -143,5 +143,3 @@ int main(int argc, char *argv[])
 	writeFile(pngFilename, pngFile);
 	writeFile(pngSmallFilename, pngSmallFile);
 }
-
-#endif

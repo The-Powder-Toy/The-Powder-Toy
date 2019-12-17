@@ -1,5 +1,6 @@
 #ifndef BRUSH_H_
 #define BRUSH_H_
+#include "Config.h"
 
 #include "gui/interface/Point.h"
 

@@ -1,3 +1,4 @@
+#include "Config.h"
 #ifndef NOHTTP
 #ifndef REQUESTMANAGER_H
 #define REQUESTMANAGER_H

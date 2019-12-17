@@ -4,6 +4,7 @@
 #include "OptionsModel.h"
 
 #include <cstdio>
+#include <cstring>
 #ifdef WIN
 #include <direct.h>
 #define getcwd _getcwd

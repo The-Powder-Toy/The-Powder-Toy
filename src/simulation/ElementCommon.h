@@ -1,5 +1,8 @@
 #ifndef ELEMENTCOMMON_H
 #define ELEMENTCOMMON_H
+
+#include "Config.h"
+
 // This header should be included by all files in src/elements/
 
 #include <cmath>

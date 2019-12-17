@@ -20,6 +20,7 @@
 
 #ifndef _BSON_H_
 #define _BSON_H_
+#include "Config.h"
 
 #include <ctime>
 #include <cstdlib>

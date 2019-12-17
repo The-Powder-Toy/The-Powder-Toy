@@ -1,5 +1,6 @@
 #ifndef SEARCHMODEL_H
 #define SEARCHMODEL_H
+#include "Config.h"
 
 #include <vector>
 #include "common/String.h"

@@ -38,6 +38,8 @@
 #include "simulation/ElementDefs.h"
 #include "simulation/ElementClasses.h"
 
+#include <cstring>
+
 #ifdef GetUserName
 # undef GetUserName // dammit windows
 #endif

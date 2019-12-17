@@ -1,5 +1,6 @@
 #ifndef SIMULATION_H
 #define SIMULATION_H
+#include "Config.h"
 
 #include <cstring>
 #include <cstddef>
@@ -13,7 +14,6 @@
 #include "ElementDefs.h"
 #include "BuiltinGOL.h"
 #include "MenuSection.h"
-
 #include "CoordStack.h"
 
 #include "Element.h"

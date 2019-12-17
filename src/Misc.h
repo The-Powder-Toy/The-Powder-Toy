@@ -1,5 +1,6 @@
 #ifndef UTILS_H
 #define UTILS_H
+#include "Config.h"
 #include <cstdio>
 #include <cstdlib>
 #include <vector>

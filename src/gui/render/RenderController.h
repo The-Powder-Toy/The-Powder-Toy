@@ -1,5 +1,6 @@
 #ifndef RENDERCONTROLLER_H_
 #define RENDERCONTROLLER_H_
+#include "Config.h"
 
 #include <functional>
 

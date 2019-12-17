@@ -1,9 +1,9 @@
 #ifndef The_Powder_Toy_GameSave_h
 #define The_Powder_Toy_GameSave_h
+#include "Config.h"
 
 #include <vector>
 #include "common/String.h"
-#include "Config.h"
 #include "Misc.h"
 
 #include "bson/BSON.h"

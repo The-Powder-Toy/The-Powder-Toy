@@ -2,9 +2,9 @@
 #define ELEMENTCLASS_H
 
 #include "graphics/Pixel.h"
-#include "simulation/ElementDefs.h"
-#include "simulation/Particle.h"
-#include "simulation/StructProperty.h"
+#include "ElementDefs.h"
+#include "Particle.h"
+#include "StructProperty.h"
 
 class Simulation;
 class Renderer;
@@ -64,7 +64,6 @@ public:
 	Particle DefaultProperties;
 
 	Element();
-	virtual ~Element() {}
 	static int defaultGraphics(GRAPHICS_FUNC_ARGS);
 	static int legacyUpdate(UPDATE_FUNC_ARGS);
 	static bool basicCtypeDraw(CTYPEDRAW_FUNC_ARGS);

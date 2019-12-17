@@ -1,5 +1,6 @@
 #ifndef SEARCHCONTROLLER_H
 #define SEARCHCONTROLLER_H
+#include "Config.h"
 
 #include "common/String.h"
 

@@ -1,5 +1,6 @@
 #ifndef TAGSCONTROLLER_H_
 #define TAGSCONTROLLER_H_
+#include "Config.h"
 
 #include "common/String.h"
 

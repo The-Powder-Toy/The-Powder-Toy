@@ -1,5 +1,6 @@
 #ifndef TPTSCRIPTINTERFACE_H_
 #define TPTSCRIPTINTERFACE_H_
+#include "Config.h"
 
 #include "CommandInterface.h"
 #include "TPTSTypes.h"

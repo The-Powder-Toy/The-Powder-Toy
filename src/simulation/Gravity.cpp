@@ -323,7 +323,7 @@ void Gravity::update_grav()
 
 void Gravity::update_grav(void)
 {
-	int x, y, i, j, changed = 0;
+	int x, y, i, j;
 	float val, distance;
 	th_gravchanged = 0;
 #ifndef GRAV_DIFF
@@ -374,7 +374,6 @@ void Gravity::update_grav(void)
 			}
 		}
 	}
-fin:
 	memcpy(th_ogravmap, th_gravmap, (XRES/CELL)*(YRES/CELL)*sizeof(float));
 }
 #endif

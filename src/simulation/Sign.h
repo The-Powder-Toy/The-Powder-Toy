@@ -1,5 +1,6 @@
 #ifndef SIGN_H_
 #define SIGN_H_
+#include "Config.h"
 
 #include "common/String.h"
 

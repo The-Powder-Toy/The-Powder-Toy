@@ -1,5 +1,6 @@
 #ifndef TPTSTYPES_H_
 #define TPTSTYPES_H_
+#include "Config.h"
 
 #include "common/String.h"
 #include "gui/interface/Point.h"

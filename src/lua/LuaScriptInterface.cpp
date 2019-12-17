@@ -1,3 +1,4 @@
+#include "Config.h"
 #ifdef LUACONSOLE
 
 #include "LuaScriptInterface.h"
@@ -6,7 +7,6 @@
 #include <fstream>
 #include <algorithm>
 
-#include "Config.h"
 #include "Format.h"
 #include "Platform.h"
 #include "PowderToy.h"

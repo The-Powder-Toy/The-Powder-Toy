@@ -1,3 +1,4 @@
+#include "Config.h"
 #ifdef LUACONSOLE
 #include "LuaSmartRef.h"
 

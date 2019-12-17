@@ -1,5 +1,6 @@
 #ifndef LOGINCONTROLLER_H_
 #define LOGINCONTROLLER_H_
+#include "Config.h"
 
 #include "common/String.h"
 #include "client/User.h"

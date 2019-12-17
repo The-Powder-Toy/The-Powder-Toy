@@ -1,0 +1,149 @@
+option(
+	'static',
+	type: 'combo',
+	choices: [ 'none', 'system', 'prebuilt' ],
+	value: 'none',
+	description: 'Build statically using libraries present on the system (\'system\') or using prebuilt libraries official builds use (\'prebuilt\')'
+)
+option(
+	'beta',
+	type: 'boolean',
+	value: false,
+	description: 'Beta build'
+)
+option(
+	'ignore_updates',
+	type: 'boolean',
+	value: true,
+	description: 'Don\'t show notifications about available updates'
+)
+option(
+	'install_check',
+	type: 'boolean',
+	value: false,
+	description: 'Do install check on startup'
+)
+option(
+	'http',
+	type: 'boolean',
+	value: true,
+	description: 'Enable HTTP via libcurl'
+)
+option(
+	'gravfft',
+	type: 'boolean',
+	value: true,
+	description: 'Enable FFT gravity via libfftw3'
+)
+option(
+	'snapshot',
+	type: 'boolean',
+	value: false,
+	description: 'Snapshot build'
+)
+option(
+	'version_major',
+	type: 'integer',
+	min: 0,
+	value: 95,
+	description: 'Major version'
+)
+option(
+	'version_minor',
+	type: 'integer',
+	min: 0,
+	value: 0,
+	description: 'Minor version'
+)
+option(
+	'version_build',
+	type: 'integer',
+	min: 0,
+	value: 345,
+	description: 'Build number'
+)
+option(
+	'snapshot_id',
+	type: 'integer',
+	min: 0,
+	value: 199,
+	description: 'Snapshot ID, only relevant if \'snapshot\' is true'
+)
+option(
+	'future_major',
+	type: 'integer',
+	min: 0,
+	value: 95,
+	description: 'Future major version, used for debugging and in snapshots, only relevant if at least one of \'debug\' and \'snapshot\' is true'
+)
+option(
+	'future_minor',
+	type: 'integer',
+	min: 0,
+	value: 0,
+	description: 'Future minor version, similar to \'future_major\''
+)
+option(
+	'mod_id',
+	type: 'integer',
+	min: 0,
+	value: 0,
+	description: 'Mod ID, used on the https://starcatcher.us/TPT build server, the build server will compile for all platforms for you and send updates in-game, see jacob1 to get a mod ID'
+)
+option(
+	'lua',
+	type: 'combo',
+	choices: [ 'none', 'lua5.1', 'lua5.2', 'luajit' ],
+	value: 'luajit',
+	description: 'Lua library to use'
+)
+option(
+	'ssl',
+	type: 'combo',
+	choices: [ 'openssl' ],
+	value: 'openssl',
+	description: 'SSL library to use'
+)
+option(
+	'x86_sse',
+	type: 'combo',
+	choices: [ 'none', 'sse', 'sse2', 'sse3', 'auto' ],
+	value: 'auto',
+	description: 'Enable SSE (available only on x86)'
+)
+option(
+	'native',
+	type: 'boolean',
+	value: false,
+	description: 'Build with optimizations specific to the local machine, may not run on other machines, overrides \'x86_sse\''
+)
+option(
+	'ogli',
+	type: 'boolean',
+	value: false,
+	description: 'Enable OpenGL interface rendering (currently defunct)'
+)
+option(
+	'oglr',
+	type: 'boolean',
+	value: false,
+	description: 'Enable OpenGL particle rendering (currently defunct)'
+)
+option(
+	'build_powder',
+	type: 'boolean',
+	value: true,
+	description: 'Build the game'
+)
+option(
+	'build_render',
+	type: 'boolean',
+	value: false,
+	description: 'Build the thumbnail renderer'
+)
+option(
+	'build_font',
+	type: 'boolean',
+	value: false,
+	description: 'Build the font editor'
+)

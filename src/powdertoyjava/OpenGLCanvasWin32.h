@@ -1,3 +1,4 @@
+#include "Config.h"
 #ifdef USE_JNI
 #import <jawt_md.h>
 

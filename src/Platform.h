@@ -1,5 +1,6 @@
 #ifndef PLATFORM_H
 #define PLATFORM_H
+#include "Config.h"
 
 #include "common/String.h"
 

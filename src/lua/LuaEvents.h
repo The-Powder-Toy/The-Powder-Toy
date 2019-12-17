@@ -1,5 +1,6 @@
 #ifndef LUAEVENTS_H
 #define LUAEVENTS_H
+#include "Config.h"
 
 #include "common/String.h"
 
@@ -15,6 +16,7 @@ protected:
 
 public:
 	virtual int PushToStack(lua_State * l) = 0;
+	virtual ~Event() = default;
 };
 
 class TextInputEvent : public Event

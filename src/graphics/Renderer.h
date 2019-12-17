@@ -1,5 +1,6 @@
 #ifndef RENDERER_H
 #define RENDERER_H
+#include "Config.h"
 
 #include <vector>
 #ifdef OGLR
@@ -7,7 +8,6 @@
 #endif
 
 #include "Graphics.h"
-#include "Config.h"
 #include "gui/interface/Point.h"
 
 class RenderPreset;

@@ -1,5 +1,6 @@
 #ifndef STAMPSCONTROLLER_H_
 #define STAMPSCONTROLLER_H_
+#include "Config.h"
 
 #include "common/String.h"
 

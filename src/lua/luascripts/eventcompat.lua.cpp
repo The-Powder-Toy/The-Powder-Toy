@@ -1,3 +1,4 @@
+#include "Config.h"
 #ifdef LUACONSOLE
 #ifdef _MSC_VER
 #include "Platform.h"

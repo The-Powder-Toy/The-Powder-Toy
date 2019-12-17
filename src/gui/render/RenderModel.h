@@ -1,5 +1,6 @@
 #ifndef RENDERMODEL_H_
 #define RENDERMODEL_H_
+#include "Config.h"
 
 #include <vector>
 

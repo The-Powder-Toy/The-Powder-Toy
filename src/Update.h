@@ -1,5 +1,6 @@
 #ifndef UPDATE_H_
 #define UPDATE_H_
+#include "Config.h"
 
 //char *exe_name(void);
 int update_start(char *data, unsigned int len);

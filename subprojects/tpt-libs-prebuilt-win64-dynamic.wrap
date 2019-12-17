@@ -1,0 +1,6 @@
+[wrap-file]
+directory = tpt-libs-prebuilt-win64-dynamic
+
+source_url = https://github.com/The-Powder-Toy/tpt-libs/releases/download/v20201112223015/tpt-libs-prebuilt-win64-dynamic.zip
+source_filename = tpt-libs-prebuilt-win64-dynamic.zip
+source_hash = 967179cef84b7c6d8f70a01529628a93e4769993c681e15cfbe7b90880ae707f

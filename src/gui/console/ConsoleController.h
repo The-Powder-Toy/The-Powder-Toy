@@ -1,5 +1,6 @@
 #ifndef CONSOLECONTROLLER_H_
 #define CONSOLECONTROLLER_H_
+#include "Config.h"
 
 #include "common/String.h"
 

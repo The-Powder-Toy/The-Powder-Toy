@@ -1,5 +1,6 @@
 #ifndef FAVORITE_H
 #define FAVORITE_H
+#include "Config.h"
 
 #include "common/String.h"
 #include <vector>

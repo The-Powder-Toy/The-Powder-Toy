@@ -1,5 +1,6 @@
 #ifndef COMMANDINTERFACE_H_
 #define COMMANDINTERFACE_H_
+#include "Config.h"
 
 #include "common/String.h"
 #include "lua/LuaEvents.h"

@@ -1,3 +1,5 @@
+#include "images.h"
+
 /**
  * Powder Toy - Images
  *

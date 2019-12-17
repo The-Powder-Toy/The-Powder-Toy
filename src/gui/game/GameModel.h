@@ -1,5 +1,6 @@
 #ifndef GAMEMODEL_H
 #define GAMEMODEL_H
+#include "Config.h"
 
 #include <vector>
 #include <deque>

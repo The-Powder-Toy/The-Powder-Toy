@@ -1,5 +1,6 @@
 #ifndef CONSOLEMODEL_H_
 #define CONSOLEMODEL_H_
+#include "Config.h"
 
 #include <vector>
 #include <deque>

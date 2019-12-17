@@ -1,5 +1,6 @@
 #ifndef SAVERENDERER_H_
 #define SAVERENDERER_H_
+#include "Config.h"
 #ifdef OGLI
 #include "graphics/OpenGLHeaders.h"
 #endif

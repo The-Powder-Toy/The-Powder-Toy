@@ -15,6 +15,8 @@
 #include "simulation/Simulation.h"
 #include "simulation/ElementClasses.h"
 
+#include "common/tpt-minmax.h"
+
 GameSave::GameSave(GameSave & save):
     majorVersion(save.majorVersion),
 	waterEEnabled(save.waterEEnabled),

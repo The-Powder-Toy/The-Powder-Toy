@@ -1,5 +1,6 @@
 #ifndef GAMECONTROLLER_H
 #define GAMECONTROLLER_H
+#include "Config.h"
 
 #include <vector>
 #include <utility>

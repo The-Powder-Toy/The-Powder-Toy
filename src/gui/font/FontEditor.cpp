@@ -16,7 +16,6 @@
 #include "gui/interface/ScrollPanel.h"
 #include "graphics/Graphics.h"
 
-#ifdef FONTEDITOR
 unsigned char *font_data;
 unsigned int *font_ptrs;
 unsigned int (*font_ranges)[2];
@@ -658,4 +657,3 @@ void FontEditor::Save()
 	WriteDataFile(dataFile, tmpFontData, tmpFontPtrs, tmpFontRanges);
 	savedButton->SetToggleState(true);
 }
-#endif

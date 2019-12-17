@@ -1,10 +1,10 @@
 #ifndef GRAVITY_H
 #define GRAVITY_H
+#include "Config.h"
 
 #include <thread>
 #include <mutex>
 #include <condition_variable>
-#include "Config.h"
 
 #ifdef GRAVFFT
 #include <fftw3.h>

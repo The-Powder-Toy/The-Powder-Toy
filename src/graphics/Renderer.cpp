@@ -112,10 +112,12 @@ void Renderer::RenderBegin()
 		std::fill(warpVid, warpVid+(VIDXRES*VIDYRES), 0);
 	}
 
+#ifndef FONTEDITOR
 	draw_air();
 	draw_grav();
 	DrawWalls();
 	render_parts();
+	
 	if(display_mode & DISPLAY_PERS)
 	{
 		int i,r,g,b;
@@ -138,6 +140,7 @@ void Renderer::RenderBegin()
 	draw_other();
 	draw_grav_zones();
 	DrawSigns();
+#endif
 
 	if(display_mode & DISPLAY_WARP)
 	{
@@ -523,11 +526,10 @@ void Renderer::RenderZoom()
 	#endif
 }
 
-std::vector<wall_type> Renderer_wtypes = LoadWalls();
-
-
+#ifndef FONTEDITOR
 VideoBuffer * Renderer::WallIcon(int wallID, int width, int height)
 {
+	static std::vector<wall_type> Renderer_wtypes = LoadWalls();
 	int i, j;
 	int wt = wallID;
 	if (wt<0 || wt>=(int)Renderer_wtypes.size())
@@ -688,6 +690,7 @@ VideoBuffer * Renderer::WallIcon(int wallID, int width, int height)
 	}
 	return newTexture;
 }
+#endif
 
 void Renderer::DrawBlob(int x, int y, unsigned char cr, unsigned char cg, unsigned char cb)
 {
@@ -976,6 +979,7 @@ void Renderer::DrawWalls()
 #endif
 }
 
+#ifndef FONTEDITOR
 void Renderer::DrawSigns()
 {
 	int x, y, w, h;
@@ -1023,6 +1027,7 @@ void Renderer::DrawSigns()
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, prevFbo);
 #endif
 }
+#endif
 
 void Renderer::render_gravlensing(pixel * source)
 {
@@ -1191,6 +1196,7 @@ void Renderer::prepare_alpha(int size, float intensity)
 #endif
 }
 
+#ifndef FONTEDITOR
 void Renderer::render_parts()
 {
 	int deca, decr, decg, decb, cola, colr, colg, colb, firea, firer, fireg, fireb, pixel_mode, q, i, t, nx, ny, x, y, caddress;
@@ -2330,6 +2336,7 @@ void Renderer::draw_other() // EMP effect
 #endif
 	}
 }
+#endif
 
 void Renderer::draw_grav()
 {

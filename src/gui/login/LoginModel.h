@@ -1,5 +1,6 @@
 #ifndef LOGINMODEL_H_
 #define LOGINMODEL_H_
+#include "Config.h"
 
 #include <vector>
 #include "common/String.h"

@@ -1,5 +1,6 @@
 #ifndef LUASCRIPTINTERFACE_H_
 #define LUASCRIPTINTERFACE_H_
+#include "Config.h"
 
 #include "LuaCompat.h"
 #include "LuaSmartRef.h"

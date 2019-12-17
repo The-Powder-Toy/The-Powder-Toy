@@ -1,5 +1,6 @@
 #ifndef TOOL_H_
 #define TOOL_H_
+#include "Config.h"
 
 #include "common/String.h"
 #include "gui/interface/Point.h"

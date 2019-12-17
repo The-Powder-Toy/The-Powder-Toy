@@ -1,5 +1,6 @@
 #ifndef OPTIONSMODEL_H_
 #define OPTIONSMODEL_H_
+#include "Config.h"
 
 #include <vector>
 
