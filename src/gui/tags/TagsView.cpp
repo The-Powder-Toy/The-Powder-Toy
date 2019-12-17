@@ -83,7 +83,7 @@ void TagsView::NotifyTagsChanged(TagsModel * sender)
 				tempButton->Appearance.Margin.Top += 2;
 				tempButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 				tempButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-				tempButton->SetActionCallback({ [this, &tag] { c->RemoveTag(tag); } });
+				tempButton->SetActionCallback({ [this, tag] { c->RemoveTag(tag); } });
 				tags.push_back(tempButton);
 				AddComponent(tempButton);
 			}

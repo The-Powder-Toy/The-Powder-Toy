@@ -34,7 +34,7 @@ SearchController::SearchController(std::function<void ()> onDone_):
 
 	searchModel->UpdateSaveList(1, "");
 
-	onDone = onDone;
+	onDone = onDone_;
 }
 
 SaveInfo * SearchController::GetLoadedSave()

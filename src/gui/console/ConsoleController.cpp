@@ -7,7 +7,7 @@
 
 #include "lua/CommandInterface.h"
 
-ConsoleController::ConsoleController(std::function<void ()> onDone, CommandInterface * commandInterface):
+ConsoleController::ConsoleController(std::function<void ()> onDone_, CommandInterface * commandInterface):
 	HasDone(false)
 {
 	consoleModel = new ConsoleModel();
@@ -15,7 +15,7 @@ ConsoleController::ConsoleController(std::function<void ()> onDone, CommandInter
 	consoleView->AttachController(this);
 	consoleModel->AddObserver(consoleView);
 
-	this->onDone = onDone;
+	onDone = onDone_;
 	this->commandInterface = commandInterface;
 }
 

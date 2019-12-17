@@ -438,7 +438,7 @@ void SearchView::NotifyTagListChanged(SearchModel * sender)
 				ui::Point(tagWidth, tagHeight),
 				tag.first.FromUtf8()
 				);
-			tagButton->SetActionCallback({ [this, &tag] {
+			tagButton->SetActionCallback({ [this, tag] {
 				Search(tag.first.FromUtf8());
 			} });
 			tagButton->Appearance.BorderInactive = ui::Colour(0, 0, 0);
