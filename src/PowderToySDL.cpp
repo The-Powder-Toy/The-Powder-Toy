@@ -350,7 +350,7 @@ unsigned int lastTick = 0;
 unsigned int lastFpsUpdate = 0;
 float fps = 0;
 ui::Engine * engine = NULL;
-bool showDoubleScreenDialog = false;
+bool showLargeScreenDialog = false;
 float currentWidth, currentHeight;
 
 int mousex = 0, mousey = 0;
@@ -480,12 +480,12 @@ void EventProcess(SDL_Event event)
 	}
 }
 
-void DoubleScreenDialog()
+void LargeScreenDialog()
 {
 	StringBuilder message;
-	message << "Switching to double size mode since your screen was determined to be large enough: ";
-	message << desktopWidth << "x" << desktopHeight << " detected, " << WINDOWW*2 << "x" << WINDOWH*2 << " required";
-	message << "\nTo undo this, hit Cancel. You can toggle double size mode in settings at any time.";
+	message << "Switching to " << scale << "x size mode since your screen was determined to be large enough: ";
+	message << desktopWidth << "x" << desktopHeight << " detected, " << WINDOWW*scale << "x" << WINDOWH*scale << " required";
+	message << "\nTo undo this, hit Cancel. You can change this in settings at any time.";
 	if (!ConfirmPrompt::Blocking("Large screen detected", message.Build()))
 	{
 		Client::Ref().SetPref("Scale", 1);
@@ -547,10 +547,10 @@ void EngineProcess()
 			lastTick = frameStart;
 			Client::Ref().Tick();
 		}
-		if (showDoubleScreenDialog)
+		if (showLargeScreenDialog)
 		{
-			showDoubleScreenDialog = false;
-			DoubleScreenDialog();
+			showLargeScreenDialog = false;
+			LargeScreenDialog();
 		}
 	}
 #ifdef DEBUG
@@ -636,7 +636,8 @@ void ChdirToDataDirectory()
 constexpr int SCALE_MAXIMUM = 10;
 constexpr int SCALE_MARGIN = 30;
 
-int guessBestScale() {
+int GuessBestScale()
+{
 	const int widthNoMargin = desktopWidth - SCALE_MARGIN;
 	const int widthGuess = widthNoMargin / WINDOWW;
 
@@ -728,11 +729,12 @@ int main(int argc, char * argv[])
 
 	if (Client::Ref().IsFirstRun())
 	{
-		scale = guessBestScale();
-		if(scale > 1) {
+		scale = GuessBestScale();
+		if (scale > 1)
+		{
 			Client::Ref().SetPref("Scale", scale);
 			SDL_SetWindowSize(sdl_window, WINDOWW * scale, WINDOWH * scale);
-			showDoubleScreenDialog = true;
+			showLargeScreenDialog = true;
 		}
 	}
 
