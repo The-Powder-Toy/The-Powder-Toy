@@ -222,7 +222,7 @@ public:
 	String BasicParticleInfo(Particle const &sample_part);
 
 private:
-	CoordStack& getCoordStackSingleton ();
+	CoordStack& getCoordStackSingleton();
 };
 
 #endif /* SIMULATION_H */

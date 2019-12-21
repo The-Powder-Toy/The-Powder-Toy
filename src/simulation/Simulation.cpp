@@ -596,8 +596,9 @@ bool Simulation::FloodFillPmapCheck(int x, int y, int type)
 		return TYP(pmap[y][x]) == type;
 }
 
-CoordStack& Simulation::getCoordStackSingleton ()
+CoordStack& Simulation::getCoordStackSingleton()
 {
+	// Future-proofing in case Simulation is later multithreaded
 	thread_local CoordStack cs;
 	return cs;
 }
