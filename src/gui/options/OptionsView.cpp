@@ -41,7 +41,7 @@ OptionsView::OptionsView():
 		Separator(ui::Point position, ui::Point size) : Component(position, size){}
 		virtual ~Separator(){}
 
-		void Draw(const ui::Point& screenPos)
+		void Draw(const ui::Point& screenPos) override
 		{
 			GetGraphics()->drawrect(screenPos.X, screenPos.Y, Size.X, Size.Y, 255, 255, 255, 180);
 		}		

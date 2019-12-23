@@ -730,28 +730,13 @@ SimulationSample Simulation::GetSample(int x, int y)
 
 #define PMAP_CMP_CONDUCTIVE(pmap, t) (TYP(pmap)==(t) || (TYP(pmap)==PT_SPRK && parts[ID(pmap)].ctype==(t)))
 
-int Simulation::FloodINST(int x, int y, int fullc, int cm)
+int Simulation::FloodINST(int x, int y)
 {
-	int c = TYP(fullc);
+	const int cm = PT_INST;
 	int x1, x2;
 	int created_something = 0;
 
-	if (c>=PT_NUM)
-		return 0;
-
-	if (cm==-1)
-	{
-		if (c==0)
-		{
-			cm = TYP(pmap[y][x]);
-			if (!cm)
-				return 0;
-		}
-		else
-			cm = 0;
-	}
-
-	if (TYP(pmap[y][x])!=cm || parts[ID(pmap[y][x])].life!=0)
+	if (TYP(pmap[y][x]) != cm || parts[ID(pmap[y][x])].life != 0)
 		return 1;
 
 	CoordStack& cs = getCoordStackSingleton();
@@ -786,7 +771,7 @@ int Simulation::FloodINST(int x, int y, int fullc, int cm)
 			// fill span
 			for (x=x1; x<=x2; x++)
 			{
-				if (create_part(-1, x, y, c, ID(fullc))>=0)
+				if (create_part(-1, x, y, PT_SPRK)>=0)
 					created_something = 1;
 			}
 
@@ -3141,7 +3126,7 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 			return -1;
 		if (p == -2 && type == PT_INST)
 		{
-			FloodINST(x, y, PT_SPRK, PT_INST);
+			FloodINST(x, y);
 			return index;
 		}
 		parts[index].type = PT_SPRK;
