@@ -52,6 +52,9 @@ int Element_DEUT::update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry, trade, np;
 	float gravtot = fabs(sim->gravy[(y/CELL)*(XRES/CELL)+(x/CELL)])+fabs(sim->gravx[(y/CELL)*(XRES/CELL)+(x/CELL)]);
+	// Prevent division by 0
+	if (parts[i].temp + 1 == 0)
+		parts[i].temp = 0;
 	int maxlife = ((10000/(parts[i].temp + 1))-1);
 	if (RNG::Ref().chance(10000 % static_cast<int>(parts[i].temp + 1), static_cast<int>(parts[i].temp + 1)))
 		maxlife++;
