@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/tpt-minmax.h"
 //#TPT-Directive ElementClass Element_DEUT PT_DEUT 95
 Element_DEUT::Element_DEUT()
 {
@@ -52,8 +53,10 @@ int Element_DEUT::update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry, trade, np;
 	float gravtot = fabs(sim->gravy[(y/CELL)*(XRES/CELL)+(x/CELL)])+fabs(sim->gravx[(y/CELL)*(XRES/CELL)+(x/CELL)]);
-	int maxlife = ((10000/(parts[i].temp + 1))-1);
-	if (RNG::Ref().chance(10000 % static_cast<int>(parts[i].temp + 1), static_cast<int>(parts[i].temp + 1)))
+	// Prevent division by 0
+	float temp = std::max(1.0f, (parts[i].temp + 1));
+	int maxlife = ((10000/(temp + 1))-1);
+	if (RNG::Ref().chance(10000 % static_cast<int>(temp + 1), static_cast<int>(temp + 1)))
 		maxlife++;
 	// Compress when Newtonian gravity is applied
 	// multiplier=1 when gravtot=0, multiplier -> 5 as gravtot -> inf
