@@ -1,6 +1,8 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_RIME PT_RIME 91
-Element_RIME::Element_RIME()
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_RIME()
 {
 	Identifier = "DEFAULT_PT_RIME";
 	Name = "RIME";
@@ -41,11 +43,10 @@ Element_RIME::Element_RIME()
 	HighTemperature = 273.15f;
 	HighTemperatureTransition = PT_WATR;
 
-	Update = &Element_RIME::update;
+	Update = &update;
 }
 
-//#TPT-Directive ElementHeader Element_RIME static int update(UPDATE_FUNC_ARGS)
-int Element_RIME::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry;
 	for (rx=-1; rx<2; rx++)
@@ -68,6 +69,3 @@ int Element_RIME::update(UPDATE_FUNC_ARGS)
 			}
 	return 0;
 }
-
-
-Element_RIME::~Element_RIME() {}

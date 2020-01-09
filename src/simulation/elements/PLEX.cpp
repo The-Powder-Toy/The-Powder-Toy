@@ -1,6 +1,6 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_PLEX PT_PLEX 11
-Element_PLEX::Element_PLEX()
+
+void Element::Element_PLEX()
 {
 	Identifier = "DEFAULT_PT_PLEX";
 	Name = "C-4";
@@ -40,8 +40,4 @@ Element_PLEX::Element_PLEX()
 	LowTemperatureTransition = NT;
 	HighTemperature = 673.0f;
 	HighTemperatureTransition = PT_FIRE;
-
-	Update = NULL;
 }
-
-Element_PLEX::~Element_PLEX() {}

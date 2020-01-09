@@ -1,6 +1,6 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_SAWD PT_SAWD 181
-Element_SAWD::Element_SAWD()
+
+void Element::Element_SAWD()
 {
 	Identifier = "DEFAULT_PT_SAWD";
 	Name = "SAWD";
@@ -40,8 +40,5 @@ Element_SAWD::Element_SAWD()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = NULL;
-	Graphics = NULL;
+	Graphics = NULL; // is this needed?
 }
-
-Element_SAWD::~Element_SAWD() {}

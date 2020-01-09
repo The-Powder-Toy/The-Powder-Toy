@@ -1,6 +1,6 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_INSL PT_INSL 38
-Element_INSL::Element_INSL()
+
+void Element::Element_INSL()
 {
 	Identifier = "DEFAULT_PT_INSL";
 	Name = "INSL";
@@ -39,8 +39,4 @@ Element_INSL::Element_INSL()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-
-	Update = NULL;
 }
-
-Element_INSL::~Element_INSL() {}

@@ -1,6 +1,8 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_IGNT PT_IGNT 140
-Element_IGNT::Element_IGNT()
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_IGNT()
 {
 	Identifier = "DEFAULT_PT_IGNT";
 	Name = "IGNC";
@@ -42,11 +44,10 @@ Element_IGNT::Element_IGNT()
 
 	DefaultProperties.life = 3;
 
-	Update = &Element_IGNT::update;
+	Update = &update;
 }
 
-//#TPT-Directive ElementHeader Element_IGNT static int update(UPDATE_FUNC_ARGS)
-int Element_IGNT::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	 int r, rx, ry, rt;
 	if(parts[i].tmp==0)
@@ -86,6 +87,3 @@ int Element_IGNT::update(UPDATE_FUNC_ARGS)
 	}
 	return 0;
 }
-
-
-Element_IGNT::~Element_IGNT() {}

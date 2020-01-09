@@ -1,6 +1,8 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_SHLD4 PT_SHLD4 122
-Element_SHLD4::Element_SHLD4()
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_SHLD4()
 {
 	Identifier = "DEFAULT_PT_SHLD4";
 	Name = "SHD4";
@@ -40,11 +42,10 @@ Element_SHLD4::Element_SHLD4()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_SHLD4::update;
+	Update = &update;
 }
 
-//#TPT-Directive ElementHeader Element_SHLD4 static int update(UPDATE_FUNC_ARGS)
-int Element_SHLD4::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int r, nnx, nny, rx, ry, np;
 	for (rx=-1; rx<2; rx++)
@@ -83,6 +84,3 @@ int Element_SHLD4::update(UPDATE_FUNC_ARGS)
 			}
 	return 0;
 }
-
-
-Element_SHLD4::~Element_SHLD4() {}

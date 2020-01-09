@@ -1,7 +1,10 @@
 #include "simulation/ElementCommon.h"
 #include "hmap.h"
-//#TPT-Directive ElementClass Element_FIRW PT_FIRW 69
-Element_FIRW::Element_FIRW()
+
+static int update(UPDATE_FUNC_ARGS);
+static int graphics(GRAPHICS_FUNC_ARGS);
+
+void Element::Element_FIRW()
 {
 	Identifier = "DEFAULT_PT_FIRW";
 	Name = "FIRW";
@@ -41,12 +44,11 @@ Element_FIRW::Element_FIRW()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_FIRW::update;
-	Graphics = &Element_FIRW::graphics;
+	Update = &update;
+	Graphics = &graphics;
 }
 
-//#TPT-Directive ElementHeader Element_FIRW static int update(UPDATE_FUNC_ARGS)
-int Element_FIRW::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry, rt, np;
 	if (parts[i].tmp<=0) {
@@ -113,10 +115,7 @@ int Element_FIRW::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-
-//#TPT-Directive ElementHeader Element_FIRW static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_FIRW::graphics(GRAPHICS_FUNC_ARGS)
-
+static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	if(cpart->tmp > 0)
 	{
@@ -124,6 +123,3 @@ int Element_FIRW::graphics(GRAPHICS_FUNC_ARGS)
 	}
 	return 0;
 }
-
-
-Element_FIRW::~Element_FIRW() {}

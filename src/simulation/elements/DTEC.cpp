@@ -1,6 +1,8 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_DTEC PT_DTEC 162
-Element_DTEC::Element_DTEC()
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_DTEC()
 {
 	Identifier = "DEFAULT_PT_DTEC";
 	Name = "DTEC";
@@ -42,12 +44,11 @@ Element_DTEC::Element_DTEC()
 
 	DefaultProperties.tmp2 = 2;
 
-	Update = &Element_DTEC::update;
+	Update = &update;
 	CtypeDraw = &Element::ctypeDrawVInTmp;
 }
 
-//#TPT-Directive ElementHeader Element_DTEC static int update(UPDATE_FUNC_ARGS)
-int Element_DTEC::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry, rt, rd = parts[i].tmp2;
 	if (rd > 25) parts[i].tmp2 = rd = 25;
@@ -117,7 +118,3 @@ int Element_DTEC::update(UPDATE_FUNC_ARGS)
 	}
 	return 0;
 }
-
-
-
-Element_DTEC::~Element_DTEC() {}

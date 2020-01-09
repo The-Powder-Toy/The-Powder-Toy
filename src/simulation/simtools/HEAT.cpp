@@ -1,15 +1,17 @@
 #include "simulation/ToolCommon.h"
 
-//#TPT-Directive ToolClass Tool_Heat TOOL_HEAT 0
-Tool_Heat::Tool_Heat()
+static int perform(Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength);
+
+void SimTool::Tool_HEAT()
 {
 	Identifier = "DEFAULT_TOOL_HEAT";
 	Name = "HEAT";
 	Colour = PIXPACK(0xFFDD00);
 	Description = "Heats the targeted element.";
+	Perform = &perform;
 }
 
-int Tool_Heat::Perform(Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength)
+static int perform(Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength)
 {
 	if(!cpart)
 		return 0;
@@ -24,5 +26,3 @@ int Tool_Heat::Perform(Simulation * sim, Particle * cpart, int x, int y, int bru
 		cpart->temp = 0;
 	return 1;
 }
-
-Tool_Heat::~Tool_Heat() {}

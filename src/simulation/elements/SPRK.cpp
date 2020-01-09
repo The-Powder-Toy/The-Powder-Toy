@@ -1,6 +1,10 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_SPRK PT_SPRK 15
-Element_SPRK::Element_SPRK()
+
+int Element_FIRE_update(UPDATE_FUNC_ARGS);
+static int update(UPDATE_FUNC_ARGS);
+static int graphics(GRAPHICS_FUNC_ARGS);
+
+void Element::Element_SPRK()
 {
 	Identifier = "DEFAULT_PT_SPRK";
 	Name = "SPRK";
@@ -41,15 +45,14 @@ Element_SPRK::Element_SPRK()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_SPRK::update;
-	Graphics = &Element_SPRK::graphics;
+	Update = &update;
+	Graphics = &graphics;
 }
 
-//#TPT-Directive ElementHeader Element_SPRK static int update(UPDATE_FUNC_ARGS)
-int Element_SPRK::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry, nearp, pavg, ct = parts[i].ctype, sender, receiver;
-	Element_FIRE::update(UPDATE_FUNC_SUBCALL_ARGS);
+	Element_FIRE_update(UPDATE_FUNC_SUBCALL_ARGS);
 
 	if (parts[i].life<=0)
 	{
@@ -77,12 +80,14 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 		return 1;
 	case PT_NTCT:
 	case PT_PTCT:
-		Element_NTCT::update(UPDATE_FUNC_SUBCALL_ARGS);
+		int Element_NTCT_update(UPDATE_FUNC_ARGS);
+		Element_NTCT_update(UPDATE_FUNC_SUBCALL_ARGS);
 		break;
 	case PT_ETRD:
 		if (parts[i].life==1)
 		{
-			nearp = Element_ETRD::nearestSparkablePart(sim, i);
+			int Element_ETRD_nearestSparkablePart(Simulation *sim, int targetId);
+			nearp = Element_ETRD_nearestSparkablePart(sim, i);
 			if (nearp!=-1 && sim->parts_avg(i, nearp, PT_INSL)!=PT_INSL)
 			{
 				sim->CreateLine(x, y, (int)(parts[nearp].x+0.5f), (int)(parts[nearp].y+0.5f), PT_PLSM);
@@ -229,8 +234,9 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 				case PT_PPIP:
 					if (parts[i].life == 3 && pavg!=PT_INSL)
 					{
+						void Element_PPIP_flood_trigger(Simulation * sim, int x, int y, int sparkedBy);
 						if (sender == PT_NSCN || sender == PT_PSCN || sender == PT_INST)
-							Element_PPIP::flood_trigger(sim, x+rx, y+ry, sender);
+							Element_PPIP_flood_trigger(sim, x+rx, y+ry, sender);
 					}
 					continue;
 				case PT_NTCT: case PT_PTCT: case PT_INWR:
@@ -359,11 +365,7 @@ int Element_SPRK::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-
-
-//#TPT-Directive ElementHeader Element_SPRK static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_SPRK::graphics(GRAPHICS_FUNC_ARGS)
-
+static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	*firea = 60;
 	*firer = *colr/2;
@@ -372,6 +374,3 @@ int Element_SPRK::graphics(GRAPHICS_FUNC_ARGS)
 	*pixel_mode |= FIRE_SPARK;
 	return 1;
 }
-
-
-Element_SPRK::~Element_SPRK() {}

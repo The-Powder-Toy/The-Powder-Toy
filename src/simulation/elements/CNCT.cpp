@@ -1,6 +1,6 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_CNCT PT_CNCT 24
-Element_CNCT::Element_CNCT()
+
+void Element::Element_CNCT()
 {
 	Identifier = "DEFAULT_PT_CNCT";
 	Name = "CNCT";
@@ -39,8 +39,4 @@ Element_CNCT::Element_CNCT()
 	LowTemperatureTransition = NT;
 	HighTemperature = 1123.0f;
 	HighTemperatureTransition = PT_LAVA;
-
-	Update = NULL;
 }
-
-Element_CNCT::~Element_CNCT() {}

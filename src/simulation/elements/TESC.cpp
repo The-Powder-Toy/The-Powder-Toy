@@ -1,6 +1,8 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_TESC PT_TESC 88
-Element_TESC::Element_TESC()
+
+static void create(ELEMENT_CREATE_FUNC_ARGS);
+
+void Element::Element_TESC()
 {
 	Identifier = "DEFAULT_PT_TESC";
 	Name = "TESC";
@@ -40,12 +42,10 @@ Element_TESC::Element_TESC()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = NULL;
-	Create = &Element_TESC::create;
+	Create = &create;
 }
 
-//#TPT-Directive ElementHeader Element_TESC static void create(ELEMENT_CREATE_FUNC_ARGS)
-void Element_TESC::create(ELEMENT_CREATE_FUNC_ARGS)
+static void create(ELEMENT_CREATE_FUNC_ARGS)
 {
 	if (v >= 0)
 	{
@@ -54,5 +54,3 @@ void Element_TESC::create(ELEMENT_CREATE_FUNC_ARGS)
 			sim->parts[i].tmp = 300;
 	}
 }
-
-Element_TESC::~Element_TESC() {}

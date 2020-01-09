@@ -1,6 +1,6 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_DRIC PT_DRIC 81
-Element_DRIC::Element_DRIC()
+
+void Element::Element_DRIC()
 {
 	Identifier = "DEFAULT_PT_DRIC";
 	Name = "DRIC";
@@ -40,8 +40,4 @@ Element_DRIC::Element_DRIC()
 	LowTemperatureTransition = NT;
 	HighTemperature = 195.65f;
 	HighTemperatureTransition = PT_CO2;
-
-	Update = NULL;
 }
-
-Element_DRIC::~Element_DRIC() {}

@@ -1,13 +1,3 @@
-import sys
-#run generator.py
-if not GetOption('clean'):
-	if sys.version_info[0] < 3:
-		execfile("generator.py")
-	else:
-		with open("generator.py") as f:
-			code = compile(f.read(), "generator.py", 'exec')
-			exec(code)
-
 AddOption('--builddir',dest="builddir",default="build",help="Directory to build to.")
 SConscript('SConscript', variant_dir=GetOption('builddir'), duplicate=0)
 if GetOption('clean'):

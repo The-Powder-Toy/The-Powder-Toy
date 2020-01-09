@@ -1,6 +1,8 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_LSNS PT_LSNS 185
-Element_LSNS::Element_LSNS()
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_LSNS()
 {
 	Identifier = "DEFAULT_PT_LSNS";
 	Name = "LSNS";
@@ -43,11 +45,10 @@ Element_LSNS::Element_LSNS()
 
 	DefaultProperties.tmp2 = 2;
 
-	Update = &Element_LSNS::update;
+	Update = &update;
 }
 
-//#TPT-Directive ElementHeader Element_LSNS static int update(UPDATE_FUNC_ARGS)
-int Element_LSNS::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int rd = parts[i].tmp2;
 	if (rd > 25) parts[i].tmp2 = rd = 25;
@@ -153,5 +154,3 @@ int Element_LSNS::update(UPDATE_FUNC_ARGS)
 
 	return 0;
 }
-
-Element_LSNS::~Element_LSNS() {}

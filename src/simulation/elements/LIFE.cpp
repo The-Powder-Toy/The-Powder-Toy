@@ -3,8 +3,10 @@
 bool Element_GOL_colourInit = false;
 pixel Element_GOL_colour[NGOL];
 
-//#TPT-Directive ElementClass Element_LIFE PT_LIFE 78
-Element_LIFE::Element_LIFE()
+static int graphics(GRAPHICS_FUNC_ARGS);
+static void create(ELEMENT_CREATE_FUNC_ARGS);
+
+void Element::Element_LIFE()
 {
 	Identifier = "DEFAULT_PT_LIFE";
 	Name = "LIFE";
@@ -45,9 +47,8 @@ Element_LIFE::Element_LIFE()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = NULL;
-	Graphics = &Element_LIFE::graphics;
-	Create = &Element_LIFE::create;
+	Graphics = &graphics;
+	Create = &create;
 
 	if (!Element_GOL_colourInit)
 	{
@@ -61,9 +62,7 @@ Element_LIFE::Element_LIFE()
 	}
 }
 
-//#TPT-Directive ElementHeader Element_LIFE static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_LIFE::graphics(GRAPHICS_FUNC_ARGS)
-
+static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	pixel pc;
 	if (cpart->ctype==NGT_LOTE)//colors for life states
@@ -121,8 +120,7 @@ int Element_LIFE::graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
-//#TPT-Directive ElementHeader Element_LIFE static void create(ELEMENT_CREATE_FUNC_ARGS)
-void Element_LIFE::create(ELEMENT_CREATE_FUNC_ARGS)
+static void create(ELEMENT_CREATE_FUNC_ARGS)
 {
 	if (v >= 0 && v < NGOL)
 	{
@@ -130,5 +128,3 @@ void Element_LIFE::create(ELEMENT_CREATE_FUNC_ARGS)
 		sim->parts[i].ctype = v;
 	}
 }
-
-Element_LIFE::~Element_LIFE() {}

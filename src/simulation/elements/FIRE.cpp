@@ -1,8 +1,12 @@
 #include "common/tpt-minmax.h"
 #include "simulation/ElementCommon.h"
 
-//#TPT-Directive ElementClass Element_FIRE PT_FIRE 4
-Element_FIRE::Element_FIRE()
+int Element_FIRE_update(UPDATE_FUNC_ARGS);
+static int updateLegacy(UPDATE_FUNC_ARGS);
+static int graphics(GRAPHICS_FUNC_ARGS);
+static void create(ELEMENT_CREATE_FUNC_ARGS);
+
+void Element::Element_FIRE()
 {
 	Identifier = "DEFAULT_PT_FIRE";
 	Name = "FIRE";
@@ -43,13 +47,12 @@ Element_FIRE::Element_FIRE()
 	HighTemperature = 2773.0f;
 	HighTemperatureTransition = PT_PLSM;
 
-	Update = &Element_FIRE::update;
-	Graphics = &Element_FIRE::graphics;
-	Create = &Element_FIRE::create;
+	Update = &Element_FIRE_update;
+	Graphics = &graphics;
+	Create = &create;
 }
 
-//#TPT-Directive ElementHeader Element_FIRE static int update(UPDATE_FUNC_ARGS)
-int Element_FIRE::update(UPDATE_FUNC_ARGS)
+int Element_FIRE_update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry, rt, t = parts[i].type;
 	switch (t)
@@ -173,8 +176,8 @@ int Element_FIRE::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-//#TPT-Directive ElementHeader Element_FIRE static int updateLegacy(UPDATE_FUNC_ARGS)
-int Element_FIRE::updateLegacy(UPDATE_FUNC_ARGS) {
+static int updateLegacy(UPDATE_FUNC_ARGS)
+{
 	int r, rx, ry, rt, lpv, t = parts[i].type;
 	for (rx=-2; rx<3; rx++)
 		for (ry=-2; ry<3; ry++)
@@ -246,9 +249,7 @@ int Element_FIRE::updateLegacy(UPDATE_FUNC_ARGS) {
 	return 0;
 }
 
-
-//#TPT-Directive ElementHeader Element_FIRE static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_FIRE::graphics(GRAPHICS_FUNC_ARGS)
+static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	int caddress = restrict_flt(restrict_flt((float)cpart->life, 0.0f, 200.0f)*3, 0.0f, (200.0f*3)-3);
 	*colr = (unsigned char)ren->flm_data[caddress];
@@ -266,10 +267,7 @@ int Element_FIRE::graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
-//#TPT-Directive ElementHeader Element_FIRE static void create(ELEMENT_CREATE_FUNC_ARGS)
-void Element_FIRE::create(ELEMENT_CREATE_FUNC_ARGS)
+static void create(ELEMENT_CREATE_FUNC_ARGS)
 {
 	sim->parts[i].life = RNG::Ref().between(120, 169);
 }
-
-Element_FIRE::~Element_FIRE() {}

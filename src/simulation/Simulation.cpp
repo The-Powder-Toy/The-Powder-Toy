@@ -35,6 +35,12 @@
 #include "lua/LuaScriptHelper.h"
 #endif
 
+extern int Element_PPIP_ppip_changed;
+extern int Element_LOLZ_RuleTable[9][9];
+extern int Element_LOLZ_lolz[XRES/9][YRES/9];
+extern int Element_LOVE_RuleTable[9][9];
+extern int Element_LOVE_love[XRES/9][YRES/9];
+
 int Simulation::Load(GameSave * save, bool includePressure)
 {
 	return Load(save, includePressure, 0, 0);
@@ -110,7 +116,8 @@ int Simulation::Load(GameSave * save, bool includePressure, int fullX, int fullY
 			continue;
 		if ((tempPart.type == PT_SPAWN && elementCount[PT_SPAWN]) || (tempPart.type == PT_SPAWN2 && elementCount[PT_SPAWN2]))
 			continue;
-		if (tempPart.type == PT_FIGH && !Element_FIGH::CanAlloc(this))
+		bool Element_FIGH_CanAlloc(Simulation *sim);
+		if (tempPart.type == PT_FIGH && !Element_FIGH_CanAlloc(this))
 			continue;
 		if (!elements[tempPart.type].Enabled)
 			continue;
@@ -169,10 +176,11 @@ int Simulation::Load(GameSave * save, bool includePressure, int fullX, int fullY
 			elementCount[tempPart.type]++;
 		}
 
+		void Element_STKM_init_legs(Simulation * sim, playerst *playerp, int i);
 		switch (parts[i].type)
 		{
 		case PT_STKM:
-			Element_STKM::STKM_init_legs(this, &player, i);
+			Element_STKM_init_legs(this, &player, i);
 			player.spwn = 1;
 			player.elem = PT_DUST;
 
@@ -187,7 +195,7 @@ int Simulation::Load(GameSave * save, bool includePressure, int fullX, int fullY
 				player.fan = true;
 			break;
 		case PT_STKM2:
-			Element_STKM::STKM_init_legs(this, &player2, i);
+			Element_STKM_init_legs(this, &player2, i);
 			player2.spwn = 1;
 			player2.elem = PT_DUST;
 			if ((save->majorVersion < 93 && parts[i].ctype == SPC_AIR) ||
@@ -209,7 +217,8 @@ int Simulation::Load(GameSave * save, bool includePressure, int fullX, int fullY
 		case PT_FIGH:
 		{
 			unsigned int oldTmp = parts[i].tmp;
-			parts[i].tmp = Element_FIGH::Alloc(this);
+			int Element_FIGH_Alloc(Simulation *sim);
+			parts[i].tmp = Element_FIGH_Alloc(this);
 			if (parts[i].tmp >= 0)
 			{
 				bool fan = false;
@@ -219,7 +228,8 @@ int Simulation::Load(GameSave * save, bool includePressure, int fullX, int fullY
 					fan = true;
 					parts[i].ctype = 0;
 				}
-				Element_FIGH::NewFighter(this, parts[i].tmp, i, parts[i].ctype);
+				void Element_FIGH_NewFighter(Simulation *sim, int fighterID, int i, int elem);
+				Element_FIGH_NewFighter(this, parts[i].tmp, i, parts[i].ctype);
 				if (fan)
 					fighters[parts[i].tmp].fan = true;
 				for (unsigned int fighNum : save->stkm.rocketBootsFigh)
@@ -260,7 +270,7 @@ int Simulation::Load(GameSave * save, bool includePressure, int fullX, int fullY
 	}
 	parts_lastActiveIndex = NPART-1;
 	force_stacking_check = true;
-	Element_PPIP::ppip_changed = 1;
+	Element_PPIP_ppip_changed = 1;
 	RecalcFreeParticles(false);
 
 	// fix SOAP links using soapList, a map of old particle ID -> new particle ID
@@ -1324,17 +1334,13 @@ void Simulation::ApplyDecorationFill(Renderer *ren, int x, int y, int colR, int 
 
 int Simulation::Tool(int x, int y, int tool, int brushX, int brushY, float strength)
 {
-	if(tools[tool])
-	{
-		Particle * cpart = NULL;
-		int r;
-		if ((r = pmap[y][x]))
-			cpart = &(parts[ID(r)]);
-		else if ((r = photons[y][x]))
-			cpart = &(parts[ID(r)]);
-		return tools[tool]->Perform(this, cpart, x, y, brushX, brushY, strength);
-	}
-	return 0;
+	Particle * cpart = NULL;
+	int r;
+	if ((r = pmap[y][x]))
+		cpart = &(parts[ID(r)]);
+	else if ((r = photons[y][x]))
+		cpart = &(parts[ID(r)]);
+	return tools[tool].Perform(this, cpart, x, y, brushX, brushY, strength);
 }
 
 int Simulation::ToolBrush(int positionX, int positionY, int tool, Brush * cBrush, float strength)
@@ -2583,6 +2589,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 		return 0;
 	}
 
+	int Element_FILT_interactWavelengths(Particle* cpart, int origWl);
 	if (e == 2) //if occupy same space
 	{
 		switch (parts[i].type)
@@ -2599,7 +2606,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 				}
 				break;
 			case PT_FILT:
-				parts[i].ctype = Element_FILT::interactWavelengths(&parts[ID(r)], parts[i].ctype);
+				parts[i].ctype = Element_FILT_interactWavelengths(&parts[ID(r)], parts[i].ctype);
 				break;
 			case PT_C5:
 				if (parts[ID(r)].life > 0 && (parts[ID(r)].ctype & parts[i].ctype & 0xFFFFFFC0))
@@ -2698,7 +2705,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 		case PT_BIZR:
 		case PT_BIZRG:
 			if (TYP(r) == PT_FILT)
-				parts[i].ctype = Element_FILT::interactWavelengths(&parts[ID(r)], parts[i].ctype);
+				parts[i].ctype = Element_FILT_interactWavelengths(&parts[ID(r)], parts[i].ctype);
 			break;
 		}
 		return 1;
@@ -5002,11 +5009,11 @@ void Simulation::BeforeSim()
 						kill_part(ID(r));
 					else if (parts[ID(r)].type==PT_LOVE)
 					{
-						Element_LOVE::love[nx/9][ny/9] = 1;
+						Element_LOVE_love[nx/9][ny/9] = 1;
 					}
 					else if (parts[ID(r)].type==PT_LOLZ)
 					{
-						Element_LOLZ::lolz[nx/9][ny/9] = 1;
+						Element_LOLZ_lolz[nx/9][ny/9] = 1;
 					}
 				}
 			}
@@ -5014,7 +5021,7 @@ void Simulation::BeforeSim()
 			{
 				for (ny=9; ny<=YRES-7; ny++)
 				{
-					if (Element_LOVE::love[nx/9][ny/9]==1)
+					if (Element_LOVE_love[nx/9][ny/9]==1)
 					{
 						for ( nnx=0; nnx<9; nnx++)
 							for ( nny=0; nny<9; nny++)
@@ -5022,17 +5029,17 @@ void Simulation::BeforeSim()
 								if (ny+nny>0&&ny+nny<YRES&&nx+nnx>=0&&nx+nnx<XRES)
 								{
 									rt=pmap[ny+nny][nx+nnx];
-									if (!rt&&Element_LOVE::RuleTable[nnx][nny]==1)
+									if (!rt&&Element_LOVE_RuleTable[nnx][nny]==1)
 										create_part(-1,nx+nnx,ny+nny,PT_LOVE);
 									else if (!rt)
 										continue;
-									else if (parts[ID(rt)].type==PT_LOVE&&Element_LOVE::RuleTable[nnx][nny]==0)
+									else if (parts[ID(rt)].type==PT_LOVE&&Element_LOVE_RuleTable[nnx][nny]==0)
 										kill_part(ID(rt));
 								}
 							}
 					}
-					Element_LOVE::love[nx/9][ny/9]=0;
-					if (Element_LOLZ::lolz[nx/9][ny/9]==1)
+					Element_LOVE_love[nx/9][ny/9]=0;
+					if (Element_LOLZ_lolz[nx/9][ny/9]==1)
 					{
 						for ( nnx=0; nnx<9; nnx++)
 							for ( nny=0; nny<9; nny++)
@@ -5040,17 +5047,17 @@ void Simulation::BeforeSim()
 								if (ny+nny>0&&ny+nny<YRES&&nx+nnx>=0&&nx+nnx<XRES)
 								{
 									rt=pmap[ny+nny][nx+nnx];
-									if (!rt&&Element_LOLZ::RuleTable[nny][nnx]==1)
+									if (!rt&&Element_LOLZ_RuleTable[nny][nnx]==1)
 										create_part(-1,nx+nnx,ny+nny,PT_LOLZ);
 									else if (!rt)
 										continue;
-									else if (parts[ID(rt)].type==PT_LOLZ&&Element_LOLZ::RuleTable[nny][nnx]==0)
+									else if (parts[ID(rt)].type==PT_LOLZ&&Element_LOLZ_RuleTable[nny][nnx]==0)
 										kill_part(ID(rt));
 
 								}
 							}
 					}
-					Element_LOLZ::lolz[nx/9][ny/9]=0;
+					Element_LOLZ_lolz[nx/9][ny/9]=0;
 				}
 			}
 		}
@@ -5072,7 +5079,7 @@ void Simulation::BeforeSim()
 		}
 
 		// update PPIP tmp?
-		if (Element_PPIP::ppip_changed)
+		if (Element_PPIP_ppip_changed)
 		{
 			for (int i = 0; i <= parts_lastActiveIndex; i++)
 			{
@@ -5082,7 +5089,7 @@ void Simulation::BeforeSim()
 					parts[i].tmp &= ~0xE0000000;
 				}
 			}
-			Element_PPIP::ppip_changed = 0;
+			Element_PPIP_ppip_changed = 0;
 		}
 
 		// Simulate GoL
@@ -5117,7 +5124,9 @@ void Simulation::AfterSim()
 {
 	if (emp_trigger_count)
 	{
-		Element_EMP::Trigger(this, emp_trigger_count);
+		// pitiful attempt at trying to keep code relating to a given element in the same file
+		void Element_EMP_Trigger(Simulation *sim, int triggerCount);
+		Element_EMP_Trigger(this, emp_trigger_count);
 		emp_trigger_count = 0;
 	}
 }
@@ -5126,8 +5135,6 @@ Simulation::~Simulation()
 {
 	delete grav;
 	delete air;
-	for (size_t i = 0; i < tools.size(); i++)
-		delete tools[i];
 }
 
 Simulation::Simulation():
@@ -5189,24 +5196,11 @@ Simulation::Simulation():
 	hv = air->hv;
 
 	msections = LoadMenus();
-
 	wtypes = LoadWalls();
-
 	platent = LoadLatent();
-
-	std::vector<Element> elementList = GetElements();
-	for(int i = 0; i < PT_NUM; i++)
-	{
-		if (i < (int)elementList.size())
-			elements[i] = elementList[i];
-		else
-			elements[i] = Element();
-	}
-
+	std::copy(GetElements().begin(), GetElements().end(), elements.begin());
 	tools = GetTools();
-
 	grule = LoadGOLRules();
-
 	gmenu = LoadGOLMenu();
 
 	player.comm = 0;

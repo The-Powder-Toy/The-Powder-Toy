@@ -1,8 +1,10 @@
 #include "common/tpt-minmax.h"
 #include "simulation/ElementCommon.h"
 
-//#TPT-Directive ElementClass Element_VINE PT_VINE 114
-Element_VINE::Element_VINE()
+static int update(UPDATE_FUNC_ARGS);
+static int graphics(GRAPHICS_FUNC_ARGS);
+
+void Element::Element_VINE()
 {
 	Identifier = "DEFAULT_PT_VINE";
 	Name = "VINE";
@@ -44,11 +46,11 @@ Element_VINE::Element_VINE()
 
 	DefaultProperties.tmp = 1;
 
-	Update = &Element_VINE::update;
+	Update = &update;
+	Graphics = &graphics; // this used to be missing, maybe for a reason?
 }
 
-//#TPT-Directive ElementHeader Element_VINE static int update(UPDATE_FUNC_ARGS)
-int Element_VINE::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int r, np, rx, ry, rndstore = RNG::Ref().gen();
 	rx = (rndstore % 3) - 1;
@@ -73,8 +75,7 @@ int Element_VINE::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-//#TPT-Directive ElementHeader Element_VINE static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_VINE::graphics(GRAPHICS_FUNC_ARGS)
+static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	float maxtemp = std::max((float)cpart->tmp2, cpart->temp);
 	if (maxtemp > 300)
@@ -90,6 +91,3 @@ int Element_VINE::graphics(GRAPHICS_FUNC_ARGS)
 	}
 	return 0;
 }
-
-
-Element_VINE::~Element_VINE() {}

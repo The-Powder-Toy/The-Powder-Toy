@@ -1,6 +1,8 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_FRAY PT_FRAY 159
-Element_FRAY::Element_FRAY()
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_FRAY()
 {
 	Identifier = "DEFAULT_PT_FRAY";
 	Name = "FRAY";
@@ -41,11 +43,10 @@ Element_FRAY::Element_FRAY()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_FRAY::update;
+	Update = &update;
 }
 
-//#TPT-Directive ElementHeader Element_FRAY static int update(UPDATE_FUNC_ARGS)
-int Element_FRAY::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int curlen;
 	if (parts[i].tmp > 0)
@@ -77,6 +78,3 @@ int Element_FRAY::update(UPDATE_FUNC_ARGS)
 			}
 	return 0;
 }
-
-
-Element_FRAY::~Element_FRAY() {}

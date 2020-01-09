@@ -1,6 +1,6 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_LNTG PT_LNTG 37
-Element_LNTG::Element_LNTG()
+
+void Element::Element_LNTG()
 {
 	Identifier = "DEFAULT_PT_LNTG";
 	Name = "LN2";
@@ -40,8 +40,4 @@ Element_LNTG::Element_LNTG()
 	LowTemperatureTransition = PT_NICE;
 	HighTemperature = 77.0f;
 	HighTemperatureTransition = PT_NONE;
-
-	Update = NULL;
 }
-
-Element_LNTG::~Element_LNTG() {}

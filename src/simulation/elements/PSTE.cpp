@@ -1,6 +1,6 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_PSTE PT_PSTE 111
-Element_PSTE::Element_PSTE()
+
+void Element::Element_PSTE()
 {
 	Identifier = "DEFAULT_PT_PSTE";
 	Name = "PSTE";
@@ -40,8 +40,4 @@ Element_PSTE::Element_PSTE()
 	LowTemperatureTransition = NT;
 	HighTemperature = 747.0f;
 	HighTemperatureTransition = PT_BRCK;
-
-	Update = NULL;
 }
-
-Element_PSTE::~Element_PSTE() {}

@@ -1,6 +1,9 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_BOMB PT_BOMB 129
-Element_BOMB::Element_BOMB()
+
+static int update(UPDATE_FUNC_ARGS);
+static int graphics(GRAPHICS_FUNC_ARGS);
+
+void Element::Element_BOMB()
 {
 	Identifier = "DEFAULT_PT_BOMB";
 	Name = "BOMB";
@@ -41,12 +44,11 @@ Element_BOMB::Element_BOMB()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_BOMB::update;
-	Graphics = &Element_BOMB::graphics;
+	Update = &update;
+	Graphics = &graphics;
 }
 
-//#TPT-Directive ElementHeader Element_BOMB static int update(UPDATE_FUNC_ARGS)
-int Element_BOMB::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry, rt, nb;
 
@@ -108,14 +110,8 @@ int Element_BOMB::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-
-//#TPT-Directive ElementHeader Element_BOMB static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_BOMB::graphics(GRAPHICS_FUNC_ARGS)
-
+static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	*pixel_mode |= PMODE_FLARE;
 	return 1;
 }
-
-
-Element_BOMB::~Element_BOMB() {}

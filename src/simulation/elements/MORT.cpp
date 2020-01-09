@@ -1,6 +1,8 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_MORT PT_MORT 77
-Element_MORT::Element_MORT()
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_MORT()
 {
 	Identifier = "DEFAULT_PT_MORT";
 	Name = "MORT";
@@ -44,15 +46,11 @@ Element_MORT::Element_MORT()
 	// CHOO CHOO
 	DefaultProperties.vx = 2.0f;
 
-	Update = &Element_MORT::update;
+	Update = &update;
 }
 
-//#TPT-Directive ElementHeader Element_MORT static int update(UPDATE_FUNC_ARGS)
-int Element_MORT::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	sim->create_part(-1, x, y-1, PT_SMKE);
 	return 0;
 }
-
-
-Element_MORT::~Element_MORT() {}

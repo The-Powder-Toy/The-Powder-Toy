@@ -1,6 +1,8 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_BCLN PT_BCLN 93
-Element_BCLN::Element_BCLN()
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_BCLN()
 {
 	Identifier = "DEFAULT_PT_BCLN";
 	Name = "BCLN";
@@ -40,14 +42,13 @@ Element_BCLN::Element_BCLN()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_BCLN::update;
+	Update = &update;
 	CtypeDraw = &Element::ctypeDrawVInTmp;
 }
 
-#define ADVECTION 0.1f
+constexpr float ADVECTION = 0.1f;
 
-//#TPT-Directive ElementHeader Element_BCLN static int update(UPDATE_FUNC_ARGS)
-int Element_BCLN::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	if (!parts[i].life && sim->pv[y/CELL][x/CELL]>4.0f)
 		parts[i].life = RNG::Ref().between(80, 119);
@@ -95,6 +96,3 @@ int Element_BCLN::update(UPDATE_FUNC_ARGS)
 	}
 	return 0;
 }
-
-
-Element_BCLN::~Element_BCLN() {}

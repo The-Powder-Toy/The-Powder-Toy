@@ -1,7 +1,10 @@
 #include "simulation/ElementCommon.h"
 #include "common/tpt-minmax.h"
-//#TPT-Directive ElementClass Element_DEUT PT_DEUT 95
-Element_DEUT::Element_DEUT()
+
+static int update(UPDATE_FUNC_ARGS);
+static int graphics(GRAPHICS_FUNC_ARGS);
+
+void Element::Element_DEUT()
 {
 	Identifier = "DEFAULT_PT_DEUT";
 	Name = "DEUT";
@@ -44,12 +47,11 @@ Element_DEUT::Element_DEUT()
 
 	DefaultProperties.life = 10;
 
-	Update = &Element_DEUT::update;
-	Graphics = &Element_DEUT::graphics;
+	Update = &update;
+	Graphics = &graphics;
 }
 
-//#TPT-Directive ElementHeader Element_DEUT static int update(UPDATE_FUNC_ARGS)
-int Element_DEUT::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry, trade, np;
 	float gravtot = fabs(sim->gravy[(y/CELL)*(XRES/CELL)+(x/CELL)])+fabs(sim->gravx[(y/CELL)*(XRES/CELL)+(x/CELL)]);
@@ -129,11 +131,7 @@ trade:
 	return 0;
 }
 
-
-
-//#TPT-Directive ElementHeader Element_DEUT static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_DEUT::graphics(GRAPHICS_FUNC_ARGS)
-
+static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	if(cpart->life>=240)
 	{
@@ -156,6 +154,3 @@ int Element_DEUT::graphics(GRAPHICS_FUNC_ARGS)
 	}
 	return 0;
 }
-
-
-Element_DEUT::~Element_DEUT() {}

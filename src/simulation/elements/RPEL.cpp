@@ -1,6 +1,8 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_RPEL PT_RPEL 160
-Element_RPEL::Element_RPEL()
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_RPEL()
 {
 	Identifier = "DEFAULT_PT_RPEL";
 	Name = "RPEL";
@@ -41,12 +43,11 @@ Element_RPEL::Element_RPEL()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_RPEL::update;
+	Update = &update;
 	CtypeDraw = &Element::basicCtypeDraw;
 }
 
-//#TPT-Directive ElementHeader Element_RPEL static int update(UPDATE_FUNC_ARGS)
-int Element_RPEL::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry, ri;
 	for(ri = 0; ri <= 10; ri++)
@@ -69,6 +70,3 @@ int Element_RPEL::update(UPDATE_FUNC_ARGS)
 	}
 	return 0;
 }
-
-
-Element_RPEL::~Element_RPEL() {}

@@ -1,6 +1,6 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_THRM PT_THRM 65
-Element_THRM::Element_THRM()
+
+void Element::Element_THRM()
 {
 	Identifier = "DEFAULT_PT_THRM";
 	Name = "THRM";
@@ -39,8 +39,4 @@ Element_THRM::Element_THRM()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-
-	Update = NULL;
 }
-
-Element_THRM::~Element_THRM() {}

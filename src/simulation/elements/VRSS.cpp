@@ -1,6 +1,9 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_VRSS PT_VRSS 175
-Element_VRSS::Element_VRSS()
+
+int Element_VIRS_update(UPDATE_FUNC_ARGS);
+static int graphics(GRAPHICS_FUNC_ARGS);
+
+void Element::Element_VRSS()
 {
 	Identifier = "DEFAULT_PT_VRSS";
 	Name = "VRSS";
@@ -43,15 +46,12 @@ Element_VRSS::Element_VRSS()
 
 	DefaultProperties.pavg[1] = 250;
 
-	Update = &Element_VIRS::update;
-	Graphics = &Element_VRSS::graphics;
+	Update = &Element_VIRS_update;
+	Graphics = &graphics;
 }
 
-//#TPT-Directive ElementHeader Element_VRSS static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_VRSS::graphics(GRAPHICS_FUNC_ARGS)
+static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	*pixel_mode |= NO_DECO;
 	return 1;
 }
-
-Element_VRSS::~Element_VRSS() {}

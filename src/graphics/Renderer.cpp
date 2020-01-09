@@ -18,7 +18,7 @@
 #include "simulation/ElementGraphics.h"
 #include "simulation/Air.h"
 #include "simulation/Gravity.h"
-#include "ElementClasses.h"
+#include "simulation/ElementClasses.h"
 
 #ifdef LUACONSOLE
 #include "lua/LuaScriptInterface.h"
@@ -1201,7 +1201,7 @@ void Renderer::render_parts()
 	if(!sim)
 		return;
 	parts = sim->parts;
-	elements = sim->elements;
+	elements = sim->elements.data();
 #ifdef OGLR
 	float fnx, fny;
 	int cfireV = 0, cfireC = 0, cfire = 0;

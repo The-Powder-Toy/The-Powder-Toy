@@ -1,6 +1,9 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_EMBR PT_EMBR 147
-Element_EMBR::Element_EMBR()
+
+static int update(UPDATE_FUNC_ARGS);
+static int graphics(GRAPHICS_FUNC_ARGS);
+
+void Element::Element_EMBR()
 {
 	Identifier = "DEFAULT_PT_EMBR";
 	Name = "EMBR";
@@ -43,12 +46,12 @@ Element_EMBR::Element_EMBR()
 
 	DefaultProperties.life = 50;
 
-	Update = &Element_EMBR::update;
-	Graphics = &Element_EMBR::graphics;
+	Update = &update;
+	Graphics = &graphics;
 }
 
-//#TPT-Directive ElementHeader Element_EMBR static int update(UPDATE_FUNC_ARGS)
-int Element_EMBR::update(UPDATE_FUNC_ARGS) {
+static int update(UPDATE_FUNC_ARGS)
+{
 	int r, rx, ry;
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)
@@ -66,8 +69,7 @@ int Element_EMBR::update(UPDATE_FUNC_ARGS) {
 	return 0;
 }
 
-//#TPT-Directive ElementHeader Element_EMBR static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_EMBR::graphics(GRAPHICS_FUNC_ARGS)
+static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	if (cpart->ctype&0xFFFFFF)
 	{
@@ -120,5 +122,3 @@ int Element_EMBR::graphics(GRAPHICS_FUNC_ARGS)
 	}
 	return 0;
 }
-
-Element_EMBR::~Element_EMBR() {}

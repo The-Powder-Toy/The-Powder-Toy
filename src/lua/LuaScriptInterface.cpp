@@ -37,8 +37,8 @@
 #include "simulation/ElementCommon.h"
 #include "simulation/Air.h"
 
-#include "ToolClasses.h"
-#include "ElementClasses.h"
+#include "simulation/ToolClasses.h"
+#include "simulation/ElementClasses.h"
 
 #include "client/GameSave.h"
 #include "client/SaveFile.h"
@@ -2582,7 +2582,7 @@ int LuaScriptInterface::elements_loadDefault(lua_State * l)
 		lua_pushnil(l);
 		lua_setfield(l, -2, luacon_sim->elements[id].Identifier.c_str());
 
-		std::vector<Element> elementList = GetElements();
+		auto const &elementList = GetElements();
 		if (id < (int)elementList.size())
 			luacon_sim->elements[id] = elementList[id];
 		else
@@ -2594,7 +2594,7 @@ int LuaScriptInterface::elements_loadDefault(lua_State * l)
 	}
 	else
 	{
-		std::vector<Element> elementList = GetElements();
+		auto const &elementList = GetElements();
 		for (int i = 0; i < PT_NUM; i++)
 		{
 			if (i < (int)elementList.size())

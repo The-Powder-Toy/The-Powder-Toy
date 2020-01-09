@@ -1,6 +1,10 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_ELEC PT_ELEC 136
-Element_ELEC::Element_ELEC()
+
+static int update(UPDATE_FUNC_ARGS);
+static int graphics(GRAPHICS_FUNC_ARGS);
+static void create(ELEMENT_CREATE_FUNC_ARGS);
+
+void Element::Element_ELEC()
 {
 	Identifier = "DEFAULT_PT_ELEC";
 	Name = "ELEC";
@@ -41,13 +45,12 @@ Element_ELEC::Element_ELEC()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_ELEC::update;
-	Graphics = &Element_ELEC::graphics;
-	Create = &Element_ELEC::create;
+	Update = &update;
+	Graphics = &graphics;
+	Create = &create;
 }
 
-//#TPT-Directive ElementHeader Element_ELEC static int update(UPDATE_FUNC_ARGS)
-int Element_ELEC::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int r, rt, rx, ry, nb, rrx, rry;
 	for (rx=-2; rx<=2; rx++)
@@ -123,9 +126,7 @@ int Element_ELEC::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-//#TPT-Directive ElementHeader Element_ELEC static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_ELEC::graphics(GRAPHICS_FUNC_ARGS)
-
+static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	*firea = 70;
 	*firer = *colr;
@@ -136,13 +137,10 @@ int Element_ELEC::graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
-//#TPT-Directive ElementHeader Element_ELEC static void create(ELEMENT_CREATE_FUNC_ARGS)
-void Element_ELEC::create(ELEMENT_CREATE_FUNC_ARGS)
+static void create(ELEMENT_CREATE_FUNC_ARGS)
 {
 	float a = RNG::Ref().between(0, 359) * 3.14159f / 180.0f;
 	sim->parts[i].life = 680;
 	sim->parts[i].vx = 2.0f * cosf(a);
 	sim->parts[i].vy = 2.0f * sinf(a);
 }
-
-Element_ELEC::~Element_ELEC() {}

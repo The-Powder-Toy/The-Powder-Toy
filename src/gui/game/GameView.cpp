@@ -36,7 +36,7 @@
 #include "simulation/SaveRenderer.h"
 #include "simulation/SimulationData.h"
 #include "simulation/ElementDefs.h"
-#include "ElementClasses.h"
+#include "simulation/ElementClasses.h"
 
 #ifdef GetUserName
 # undef GetUserName // dammit windows

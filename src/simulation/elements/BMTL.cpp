@@ -1,6 +1,8 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_BMTL PT_BMTL 29
-Element_BMTL::Element_BMTL()
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_BMTL()
 {
 	Identifier = "DEFAULT_PT_BMTL";
 	Name = "BMTL";
@@ -40,11 +42,10 @@ Element_BMTL::Element_BMTL()
 	HighTemperature = 1273.0f;
 	HighTemperatureTransition = PT_LAVA;
 
-	Update = &Element_BMTL::update;
+	Update = &update;
 }
 
-//#TPT-Directive ElementHeader Element_BMTL static int update(UPDATE_FUNC_ARGS)
-int Element_BMTL::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry;
 	if (parts[i].tmp>1)
@@ -71,6 +72,3 @@ int Element_BMTL::update(UPDATE_FUNC_ARGS)
 	}
 	return 0;
 }
-
-
-Element_BMTL::~Element_BMTL() {}

@@ -107,21 +107,21 @@ vcxproj.write(r"""<?xml version="1.0" encoding="utf-8"?>
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)Build\</OutDir>
     <TargetName>Powder</TargetName>
-    <IncludePath>$(ProjectDir)includes;$(ProjectDir)includes/SDL2;$(ProjectDir)includes/luajit-2.0;$(ProjectDir)data;$(ProjectDir)src;$(ProjectDir)generated;$(ProjectDir)resources;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)includes;$(ProjectDir)includes/SDL2;$(ProjectDir)includes/luajit-2.0;$(ProjectDir)data;$(ProjectDir)src;$(ProjectDir)resources;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)Libraries;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)Build\</OutDir>
     <TargetName>Powder</TargetName>
-    <IncludePath>$(ProjectDir)includes;$(ProjectDir)includes/SDL2;$(ProjectDir)includes/luajit-2.0;$(ProjectDir)data;$(ProjectDir)src;$(ProjectDir)generated;$(ProjectDir)resources;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)includes;$(ProjectDir)includes/SDL2;$(ProjectDir)includes/luajit-2.0;$(ProjectDir)data;$(ProjectDir)src;$(ProjectDir)resources;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)Libraries;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Static|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)Build\</OutDir>
     <TargetName>Powder</TargetName>
-    <IncludePath>$(ProjectDir)includes;$(ProjectDir)includes/SDL2;$(ProjectDir)includes/luajit-2.0;$(ProjectDir)data;$(ProjectDir)src;$(ProjectDir)generated;$(ProjectDir)resources;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)includes;$(ProjectDir)includes/SDL2;$(ProjectDir)includes/luajit-2.0;$(ProjectDir)data;$(ProjectDir)src;$(ProjectDir)resources;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)Staticlibs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -134,6 +134,7 @@ vcxproj.write(r"""<?xml version="1.0" encoding="utf-8"?>
       <Optimization>Disabled</Optimization>
       <FloatingPointModel>Fast</FloatingPointModel>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <ObjectFileName>$(IntDir)\%(RelativeDir)</ObjectFileName>
     </ClCompile>
     <Link>
       <TargetMachine>MachineX86</TargetMachine>
@@ -152,6 +153,7 @@ vcxproj.write(r"""<?xml version="1.0" encoding="utf-8"?>
       <FloatingPointModel>Fast</FloatingPointModel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <ObjectFileName>$(IntDir)\%(RelativeDir)</ObjectFileName>
     </ClCompile>
     <Link>
       <TargetMachine>MachineX86</TargetMachine>
@@ -172,6 +174,7 @@ vcxproj.write(r"""<?xml version="1.0" encoding="utf-8"?>
       <FloatingPointModel>Fast</FloatingPointModel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <ObjectFileName>$(IntDir)\%(RelativeDir)</ObjectFileName>
     </ClCompile>
     <Link>
       <TargetMachine>MachineX86</TargetMachine>
@@ -191,8 +194,6 @@ vcxproj.write(r"""<?xml version="1.0" encoding="utf-8"?>
     <ClCompile Include="data\hmap.cpp" />
     <ClCompile Include="data\icon.cpp" />
     <ClCompile Include="data\images.cpp" />
-    <ClCompile Include="generated\ElementClasses.cpp" />
-    <ClCompile Include="generated\ToolClasses.cpp" />
     """)
 vcxproj.write('\n    '.join([('<ClCompile Include="' + p + '" />') for p in cl_compile]))
 vcxproj.write(r"""
@@ -205,8 +206,6 @@ vcxproj.write(r"""
     <ClInclude Include="data\images.h" />
     <ClInclude Include="data\IntroText.h" />
     <ClInclude Include="data\Shaders.h" />
-    <ClInclude Include="generated\ElementClasses.h" />
-    <ClInclude Include="generated\ToolClasses.h" />
     <ClInclude Include="resources\resource.h" />
     """)
 vcxproj.write('\n    '.join([('<ClInclude Include="' + p + '" />') for p in cl_include]))
@@ -216,7 +215,6 @@ vcxproj.write(r"""
     <ResourceCompile Include="resources\powder-res.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="generator.py" />
     <None Include="vsproject.py" />
     <None Include="README.md" />
     <None Include="SConscript" />
@@ -249,31 +247,16 @@ filters.write(r"""<?xml version="1.0" encoding="utf-8"?>
     <Filter Include="data">
       <UniqueIdentifier>{fc5911e1-d5ba-4da3-9cfa-5631c6914487}</UniqueIdentifier>
     </Filter>
-    <Filter Include="generated">
-      <UniqueIdentifier>{bfb47e29-68f3-48bd-86c2-46b9f63d2597}</UniqueIdentifier>
-    </Filter>
     """)
 filters.write('\n    '.join([('<Filter Include="' + p + '">\n      <UniqueIdentifier>{' + str(uuid.uuid4()) + '}</UniqueIdentifier>\n    </Filter>') for p in source_dirs]))
 filters.write(r"""
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="generated\ElementClasses.cpp">
-      <Filter>generated</Filter>
-    </ClCompile>
-    <ClCompile Include="generated\ToolClasses.cpp">
-      <Filter>generated</Filter>
-    </ClCompile>
     """)
 filters.write('\n    '.join([('<ClCompile Include="' + p + '">\n      <Filter>' + os.path.dirname(p) + '</Filter>\n    </ClCompile>') for p in cl_compile]))
 filters.write(r"""
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="generated\ElementClasses.h">
-      <Filter>generated</Filter>
-    </ClInclude>
-    <ClInclude Include="generated\ToolClasses.h">
-      <Filter>generated</Filter>
-    </ClInclude>
     <ClInclude Include="src\simulation\elements\Element.h">
       <Filter>src\simulation</Filter>
     </ClInclude>
@@ -320,7 +303,6 @@ filters.write(r"""
     <None Include="src\graphics\RasterDrawMethods.inl">
       <Filter>src\graphics</Filter>
     </None>
-    <None Include="generator.py" />
     <None Include="vsproject.py" />
     <None Include="SConstruct" />
     <None Include="SConscript" />

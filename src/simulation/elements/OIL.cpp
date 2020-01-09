@@ -1,6 +1,6 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_OIL PT_OIL 3
-Element_OIL::Element_OIL()
+
+void Element::Element_OIL()
 {
 	Identifier = "DEFAULT_PT_OIL";
 	Name = "OIL";
@@ -39,8 +39,4 @@ Element_OIL::Element_OIL()
 	LowTemperatureTransition = NT;
 	HighTemperature = 333.0f;
 	HighTemperatureTransition = PT_GAS;
-
-	Update = NULL;
 }
-
-Element_OIL::~Element_OIL() {}

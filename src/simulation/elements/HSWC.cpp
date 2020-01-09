@@ -1,6 +1,9 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_HSWC PT_HSWC 75
-Element_HSWC::Element_HSWC()
+
+static int update(UPDATE_FUNC_ARGS);
+static int graphics(GRAPHICS_FUNC_ARGS);
+
+void Element::Element_HSWC()
 {
 	Identifier = "DEFAULT_PT_HSWC";
 	Name = "HSWC";
@@ -40,12 +43,11 @@ Element_HSWC::Element_HSWC()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_HSWC::update;
-	Graphics = &Element_HSWC::graphics;
+	Update = &update;
+	Graphics = &graphics;
 }
 
-//#TPT-Directive ElementHeader Element_HSWC static int update(UPDATE_FUNC_ARGS)
-int Element_HSWC::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry;
 	if (parts[i].life!=10)
@@ -84,15 +86,9 @@ int Element_HSWC::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-
-//#TPT-Directive ElementHeader Element_HSWC static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_HSWC::graphics(GRAPHICS_FUNC_ARGS)
-
+static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	int lifemod = ((cpart->life>10?10:cpart->life)*19);
 	*colr += lifemod;
 	return 0;
 }
-
-
-Element_HSWC::~Element_HSWC() {}

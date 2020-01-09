@@ -1,6 +1,6 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_WAX PT_WAX 33
-Element_WAX::Element_WAX()
+
+void Element::Element_WAX()
 {
 	Identifier = "DEFAULT_PT_WAX";
 	Name = "WAX";
@@ -39,8 +39,4 @@ Element_WAX::Element_WAX()
 	LowTemperatureTransition = NT;
 	HighTemperature = 319.0f;
 	HighTemperatureTransition = PT_MWAX;
-
-	Update = NULL;
 }
-
-Element_WAX::~Element_WAX() {}

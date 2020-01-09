@@ -1,6 +1,17 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_FIGH PT_FIGH 158
-Element_FIGH::Element_FIGH()
+
+static int update(UPDATE_FUNC_ARGS);
+static bool createAllowed(ELEMENT_CREATE_ALLOWED_FUNC_ARGS);
+static void changeType(ELEMENT_CHANGETYPE_FUNC_ARGS);
+static void Free(Simulation *sim, unsigned char i);
+bool Element_FIGH_CanAlloc(Simulation *sim);
+int Element_FIGH_Alloc(Simulation *sim);
+void Element_FIGH_NewFighter(Simulation *sim, int fighterID, int i, int elem);
+int Element_STKM_graphics(GRAPHICS_FUNC_ARGS);
+void Element_STKM_init_legs(Simulation * sim, playerst *playerp, int i);
+int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS);
+
+void Element::Element_FIGH()
 {
 	Identifier = "DEFAULT_PT_FIGH";
 	Name = "FIGH";
@@ -44,14 +55,13 @@ Element_FIGH::Element_FIGH()
 
 	DefaultProperties.life = 100;
 
-	Update = &Element_FIGH::update;
-	Graphics = &Element_STKM::graphics;
-	CreateAllowed = &Element_FIGH::createAllowed;
-	ChangeType = &Element_FIGH::changeType;
+	Update = &update;
+	Graphics = &Element_STKM_graphics;
+	CreateAllowed = &createAllowed;
+	ChangeType = &changeType;
 }
 
-//#TPT-Directive ElementHeader Element_FIGH static int update(UPDATE_FUNC_ARGS)
-int Element_FIGH::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	if (parts[i].tmp < 0 || parts[i].tmp >= MAX_FIGHTERS)
 	{
@@ -141,24 +151,22 @@ int Element_FIGH::update(UPDATE_FUNC_ARGS)
 
 	figh->pcomm = figh->comm;
 
-	Element_STKM::run_stickman(figh, UPDATE_FUNC_SUBCALL_ARGS);
+	Element_STKM_run_stickman(figh, UPDATE_FUNC_SUBCALL_ARGS);
 	return 0;
 }
 
-//#TPT-Directive ElementHeader Element_FIGH static bool createAllowed(ELEMENT_CREATE_ALLOWED_FUNC_ARGS)
-bool Element_FIGH::createAllowed(ELEMENT_CREATE_ALLOWED_FUNC_ARGS)
+static bool createAllowed(ELEMENT_CREATE_ALLOWED_FUNC_ARGS)
 {
-	return CanAlloc(sim);
+	return Element_FIGH_CanAlloc(sim);
 }
 
-//#TPT-Directive ElementHeader Element_FIGH static void changeType(ELEMENT_CHANGETYPE_FUNC_ARGS)
-void Element_FIGH::changeType(ELEMENT_CHANGETYPE_FUNC_ARGS)
+static void changeType(ELEMENT_CHANGETYPE_FUNC_ARGS)
 {
 	if (to == PT_FIGH)
 	{
-		sim->parts[i].tmp = Alloc(sim);
+		sim->parts[i].tmp = Element_FIGH_Alloc(sim);
 		if (sim->parts[i].tmp >= 0)
-			NewFighter(sim, sim->parts[i].tmp, i, PT_DUST);
+			Element_FIGH_NewFighter(sim, sim->parts[i].tmp, i, PT_DUST);
 	}
 	else
 	{
@@ -166,14 +174,12 @@ void Element_FIGH::changeType(ELEMENT_CHANGETYPE_FUNC_ARGS)
 	}
 }
 
-//#TPT-Directive ElementHeader Element_FIGH static bool CanAlloc(Simulation *sim)
-bool Element_FIGH::CanAlloc(Simulation *sim)
+bool Element_FIGH_CanAlloc(Simulation *sim)
 {
 	return sim->fighcount < MAX_FIGHTERS;
 }
 
-//#TPT-Directive ElementHeader Element_FIGH static int Alloc(Simulation *sim)
-int Element_FIGH::Alloc(Simulation *sim)
+int Element_FIGH_Alloc(Simulation *sim)
 {
 	if (sim->fighcount >= MAX_FIGHTERS)
 		return -1;
@@ -190,8 +196,7 @@ int Element_FIGH::Alloc(Simulation *sim)
 	else return -1;
 }
 
-//#TPT-Directive ElementHeader Element_FIGH static void Free(Simulation *sim, unsigned char i)
-void Element_FIGH::Free(Simulation *sim, unsigned char i)
+static void Free(Simulation *sim, unsigned char i)
 {
 	if (sim->fighters[i].spwn)
 	{
@@ -200,13 +205,10 @@ void Element_FIGH::Free(Simulation *sim, unsigned char i)
 	}
 }
 
-//#TPT-Directive ElementHeader Element_FIGH static void NewFighter(Simulation *sim, int fighterID, int i, int elem)
-void Element_FIGH::NewFighter(Simulation *sim, int fighterID, int i, int elem)
+void Element_FIGH_NewFighter(Simulation *sim, int fighterID, int i, int elem)
 {
-	Element_STKM::STKM_init_legs(sim, &sim->fighters[fighterID], i);
+	Element_STKM_init_legs(sim, &sim->fighters[fighterID], i);
 	if (elem >= 0 && elem < PT_NUM)
 		sim->fighters[fighterID].elem = elem;
 	sim->fighters[fighterID].spwn = 1;
 }
-
-Element_FIGH::~Element_FIGH() {}

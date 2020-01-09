@@ -1,6 +1,10 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_LAVA PT_LAVA 6
-Element_LAVA::Element_LAVA()
+
+int Element_FIRE_update(UPDATE_FUNC_ARGS);
+static int graphics(GRAPHICS_FUNC_ARGS);
+static void create(ELEMENT_CREATE_FUNC_ARGS);
+
+void Element::Element_LAVA()
 {
 	Identifier = "DEFAULT_PT_LAVA";
 	Name = "LAVA";
@@ -42,15 +46,12 @@ Element_LAVA::Element_LAVA()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_FIRE::update;
-	Graphics = &Element_LAVA::graphics;
-	Create = &Element_LAVA::create;
+	Update = &Element_FIRE_update;
+	Graphics = &graphics;
+	Create = &create;
 }
 
-
-//#TPT-Directive ElementHeader Element_LAVA static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_LAVA::graphics(GRAPHICS_FUNC_ARGS)
-
+static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	*colr = cpart->life * 2 + 0xE0;
 	*colg = cpart->life * 1 + 0x50;
@@ -68,10 +69,7 @@ int Element_LAVA::graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
-//#TPT-Directive ElementHeader Element_LAVA static void create(ELEMENT_CREATE_FUNC_ARGS)
-void Element_LAVA::create(ELEMENT_CREATE_FUNC_ARGS)
+static void create(ELEMENT_CREATE_FUNC_ARGS)
 {
 	sim->parts[i].life = RNG::Ref().between(240, 359);
 }
-
-Element_LAVA::~Element_LAVA() {}

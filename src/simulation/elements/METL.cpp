@@ -1,6 +1,6 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_METL PT_METL 14
-Element_METL::Element_METL()
+
+void Element::Element_METL()
 {
 	Identifier = "DEFAULT_PT_METL";
 	Name = "METL";
@@ -39,8 +39,4 @@ Element_METL::Element_METL()
 	LowTemperatureTransition = NT;
 	HighTemperature = 1273.0f;
 	HighTemperatureTransition = PT_LAVA;
-
-	Update = NULL;
 }
-
-Element_METL::~Element_METL() {}

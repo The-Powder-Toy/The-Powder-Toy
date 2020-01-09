@@ -1,6 +1,9 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_PPIP PT_PPIP 161
-Element_PPIP::Element_PPIP()
+
+int Element_PIPE_update(UPDATE_FUNC_ARGS);
+int Element_PIPE_graphics(GRAPHICS_FUNC_ARGS);
+
+void Element::Element_PPIP()
 {
 	Identifier = "DEFAULT_PT_PPIP";
 	Name = "PPIP";
@@ -43,20 +46,20 @@ Element_PPIP::Element_PPIP()
 
 	DefaultProperties.life = 60;
 
-	Update = &Element_PIPE::update;
-	Graphics = &Element_PIPE::graphics;
+	Update = &Element_PIPE_update;
+	Graphics = &Element_PIPE_graphics;
 }
 
-#define PFLAG_NORMALSPEED 0x00010000
+constexpr int PFLAG_NORMALSPEED            = 0x00010000;
 // parts[].tmp flags
 // trigger flags to be processed this frame (trigger flags for next frame are shifted 3 bits to the left):
-#define PPIP_TMPFLAG_TRIGGER_ON 0x10000000
-#define PPIP_TMPFLAG_TRIGGER_OFF 0x08000000
-#define PPIP_TMPFLAG_TRIGGER_REVERSE 0x04000000
-#define PPIP_TMPFLAG_TRIGGERS 0x1C000000
+constexpr int PPIP_TMPFLAG_TRIGGER_ON      = 0x10000000;
+constexpr int PPIP_TMPFLAG_TRIGGER_OFF     = 0x08000000;
+constexpr int PPIP_TMPFLAG_TRIGGER_REVERSE = 0x04000000;
+constexpr int PPIP_TMPFLAG_TRIGGERS        = 0x1C000000;
 // current status of the pipe
-#define PPIP_TMPFLAG_PAUSED 0x02000000
-#define PPIP_TMPFLAG_REVERSED 0x01000000
+constexpr int PPIP_TMPFLAG_PAUSED          = 0x02000000;
+constexpr int PPIP_TMPFLAG_REVERSED        = 0x01000000;
 // 0x000000FF element
 // 0x00000100 is single pixel pipe
 // 0x00000200 will transfer like a single pixel pipe when in forward mode
@@ -64,11 +67,9 @@ Element_PPIP::Element_PPIP()
 // 0x00002000 will transfer like a single pixel pipe when in reverse mode
 // 0x0001C000 reverse single pixel pipe direction
 
-//#TPT-Directive ElementHeader Element_PPIP static int ppip_changed
-int Element_PPIP::ppip_changed = 0;
+int Element_PPIP_ppip_changed = 0;
 
-//#TPT-Directive ElementHeader Element_PPIP static void flood_trigger(Simulation * sim, int x, int y, int sparkedBy)
-void Element_PPIP::flood_trigger(Simulation * sim, int x, int y, int sparkedBy)
+void Element_PPIP_flood_trigger(Simulation * sim, int x, int y, int sparkedBy)
 {
 	int coord_stack_limit = XRES*YRES;
 	unsigned short (*coord_stack)[2];
@@ -121,7 +122,7 @@ void Element_PPIP::flood_trigger(Simulation * sim, int x, int y, int sparkedBy)
 		for (x=x1; x<=x2; x++)
 		{
 			if (!(parts[ID(pmap[y][x])].tmp & prop))
-			ppip_changed = 1;
+			Element_PPIP_ppip_changed = 1;
 			parts[ID(pmap[y][x])].tmp |= prop;
 		}
 
@@ -157,5 +158,3 @@ void Element_PPIP::flood_trigger(Simulation * sim, int x, int y, int sparkedBy)
 	} while (coord_stack_size>0);
 	delete[] coord_stack;
 }
-
-Element_PPIP::~Element_PPIP() {}

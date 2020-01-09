@@ -1,6 +1,8 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_ISOZ PT_ISOZ 107
-Element_ISOZ::Element_ISOZ()
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_ISOZ()
 {
 	Identifier = "DEFAULT_PT_ISOZ";
 	Name = "ISOZ";
@@ -41,12 +43,11 @@ Element_ISOZ::Element_ISOZ()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_ISOZ::update;
+	Update = &update;
 }
 
-//#TPT-Directive ElementHeader Element_ISOZ static int update(UPDATE_FUNC_ARGS)
-int Element_ISOZ::update(UPDATE_FUNC_ARGS)
- { // for both ISZS and ISOZ
+static int update(UPDATE_FUNC_ARGS)
+{
 	float rr, rrr;
 	if (RNG::Ref().chance(1, 200) && RNG::Ref().chance(-4.0f * sim->pv[y/CELL][x/CELL], 1000))
 	{
@@ -58,6 +59,3 @@ int Element_ISOZ::update(UPDATE_FUNC_ARGS)
 	}
 	return 0;
 }
-
-
-Element_ISOZ::~Element_ISOZ() {}

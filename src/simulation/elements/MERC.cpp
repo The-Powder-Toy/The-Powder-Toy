@@ -1,6 +1,8 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_MERC PT_MERC 152
-Element_MERC::Element_MERC()
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_MERC()
 {
 	Identifier = "DEFAULT_PT_MERC";
 	Name = "MERC";
@@ -42,11 +44,10 @@ Element_MERC::Element_MERC()
 
 	DefaultProperties.tmp = 10;
 
-	Update = &Element_MERC::update;
+	Update = &update;
 }
 
-//#TPT-Directive ElementHeader Element_MERC static int update(UPDATE_FUNC_ARGS)
-int Element_MERC::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry, trade, np;
 	// Max number of particles that can be condensed into one
@@ -131,6 +132,3 @@ int Element_MERC::update(UPDATE_FUNC_ARGS)
 	}
 	return 0;
 }
-
-
-Element_MERC::~Element_MERC() {}

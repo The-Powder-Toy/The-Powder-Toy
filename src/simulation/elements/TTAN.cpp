@@ -1,7 +1,9 @@
 #include "simulation/ElementCommon.h"
 #include "simulation/Air.h"
-//#TPT-Directive ElementClass Element_TTAN PT_TTAN 144
-Element_TTAN::Element_TTAN()
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_TTAN()
 {
 	Identifier = "DEFAULT_PT_TTAN";
 	Name = "TTAN";
@@ -41,11 +43,10 @@ Element_TTAN::Element_TTAN()
 	HighTemperature = 1941.0f;
 	HighTemperatureTransition = PT_LAVA;
 
-	Update = &Element_TTAN::update;
+	Update = &update;
 }
 
-//#TPT-Directive ElementHeader Element_TTAN static int update(UPDATE_FUNC_ARGS)
-int Element_TTAN::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int ttan = 0;
 	if (nt <= 2)
@@ -70,6 +71,3 @@ int Element_TTAN::update(UPDATE_FUNC_ARGS)
 	}
 	return 0;
 }
-
-
-Element_TTAN::~Element_TTAN() {}

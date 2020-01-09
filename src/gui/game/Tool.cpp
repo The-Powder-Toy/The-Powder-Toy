@@ -4,7 +4,7 @@
 
 #include "simulation/Simulation.h"
 #include "simulation/SimulationData.h"
-#include "ElementClasses.h"
+#include "simulation/ElementClasses.h"
 
 Tool::Tool(int id, String name, String description, int r, int g, int b, ByteString identifier, VideoBuffer * (*textureGen)(int, int, int)):
 	textureGen(textureGen),

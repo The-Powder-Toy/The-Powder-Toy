@@ -1,6 +1,9 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_BIZR PT_BIZR 103
-Element_BIZR::Element_BIZR()
+
+int Element_BIZR_update(UPDATE_FUNC_ARGS);
+int Element_BIZR_graphics(GRAPHICS_FUNC_ARGS);
+
+void Element::Element_BIZR()
 {
 	Identifier = "DEFAULT_PT_BIZR";
 	Name = "BIZR";
@@ -42,14 +45,13 @@ Element_BIZR::Element_BIZR()
 
 	DefaultProperties.ctype = 0x47FFFF;
 
-	Update = &Element_BIZR::update;
-	Graphics = &Element_BIZR::graphics;
+	Update = &Element_BIZR_update;
+	Graphics = &Element_BIZR_graphics;
 }
 
-#define BLEND 0.95f
+constexpr float BLEND = 0.95f;
 
-//#TPT-Directive ElementHeader Element_BIZR static int update(UPDATE_FUNC_ARGS)
-int Element_BIZR::update(UPDATE_FUNC_ARGS)
+int Element_BIZR_update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry, nr, ng, nb, na;
 	float tr, tg, tb, ta, mr, mg, mb, ma;
@@ -85,9 +87,7 @@ int Element_BIZR::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-
-//#TPT-Directive ElementHeader Element_BIZR static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_BIZR::graphics(GRAPHICS_FUNC_ARGS)
+int Element_BIZR_graphics(GRAPHICS_FUNC_ARGS)
  //BIZR, BIZRG, BIZRS
 {
 	int x = 0;
@@ -121,6 +121,3 @@ int Element_BIZR::graphics(GRAPHICS_FUNC_ARGS)
 	*pixel_mode |= PMODE_BLUR;
 	return 0;
 }
-
-
-Element_BIZR::~Element_BIZR() {}

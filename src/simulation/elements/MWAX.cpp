@@ -1,6 +1,6 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_MWAX PT_MWAX 34
-Element_MWAX::Element_MWAX()
+
+void Element::Element_MWAX()
 {
 	Identifier = "DEFAULT_PT_MWAX";
 	Name = "MWAX";
@@ -40,8 +40,4 @@ Element_MWAX::Element_MWAX()
 	LowTemperatureTransition = PT_WAX;
 	HighTemperature = 673.0f;
 	HighTemperatureTransition = PT_FIRE;
-
-	Update = NULL;
 }
-
-Element_MWAX::~Element_MWAX() {}

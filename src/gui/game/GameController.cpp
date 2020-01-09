@@ -72,7 +72,7 @@
 #include "simulation/SimulationData.h"
 #include "simulation/Air.h"
 #include "simulation/Snapshot.h"
-#include "ElementClasses.h"
+#include "simulation/ElementClasses.h"
 
 #ifdef GetUserName
 # undef GetUserName // dammit windows
@@ -930,10 +930,11 @@ void GameController::Update()
 				rightSelected = sr;
 		}
 
+		void Element_STKM_set_element(Simulation *sim, playerst *playerp, int element);
 		if (!sim->player.spwn)
-			Element_STKM::STKM_set_element(sim, &sim->player, rightSelected);
+			Element_STKM_set_element(sim, &sim->player, rightSelected);
 		if (!sim->player2.spwn)
-			Element_STKM::STKM_set_element(sim, &sim->player2, rightSelected);
+			Element_STKM_set_element(sim, &sim->player2, rightSelected);
 	}
 	if(renderOptions && renderOptions->HasExited)
 	{

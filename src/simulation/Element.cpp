@@ -1,5 +1,5 @@
-#include "simulation/ElementCommon.h"
-#include "simulation/StructProperty.h"
+#include "ElementCommon.h"
+#include "StructProperty.h"
 
 Element::Element():
 	Identifier("DEFAULT_INVALID"),

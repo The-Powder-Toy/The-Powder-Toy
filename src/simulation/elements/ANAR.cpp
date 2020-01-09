@@ -1,6 +1,8 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_ANAR PT_ANAR 113
-Element_ANAR::Element_ANAR()
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_ANAR()
 {
 	Identifier = "DEFAULT_PT_ANAR";
 	Name = "ANAR";
@@ -41,11 +43,10 @@ Element_ANAR::Element_ANAR()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_ANAR::update;
+	Update = &update;
 }
 
-//#TPT-Directive ElementHeader Element_ANAR static int update(UPDATE_FUNC_ARGS)
-int Element_ANAR::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry;
 
@@ -68,6 +69,3 @@ int Element_ANAR::update(UPDATE_FUNC_ARGS)
 			}
 	return 0;
 }
-
-
-Element_ANAR::~Element_ANAR() {}

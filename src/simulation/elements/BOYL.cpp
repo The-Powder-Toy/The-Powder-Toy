@@ -1,6 +1,8 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_BOYL PT_BOYL 141
-Element_BOYL::Element_BOYL()
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_BOYL()
 {
 	Identifier = "DEFAULT_PT_BOYL";
 	Name = "BOYL";
@@ -41,11 +43,10 @@ Element_BOYL::Element_BOYL()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_BOYL::update;
+	Update = &update;
 }
 
-//#TPT-Directive ElementHeader Element_BOYL static int update(UPDATE_FUNC_ARGS)
-int Element_BOYL::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry;
 	float limit = parts[i].temp / 100;
@@ -85,6 +86,3 @@ int Element_BOYL::update(UPDATE_FUNC_ARGS)
 			}
 	return 0;
 }
-
-
-Element_BOYL::~Element_BOYL() {}

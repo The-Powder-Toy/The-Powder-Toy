@@ -1,6 +1,6 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_PSCN PT_PSCN 35
-Element_PSCN::Element_PSCN()
+
+void Element::Element_PSCN()
 {
 	Identifier = "DEFAULT_PT_PSCN";
 	Name = "PSCN";
@@ -40,8 +40,4 @@ Element_PSCN::Element_PSCN()
 	LowTemperatureTransition = NT;
 	HighTemperature = 1687.0f;
 	HighTemperatureTransition = PT_LAVA;
-
-	Update = NULL;
 }
-
-Element_PSCN::~Element_PSCN() {}

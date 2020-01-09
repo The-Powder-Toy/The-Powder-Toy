@@ -1,6 +1,6 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_STNE PT_STNE 5
-Element_STNE::Element_STNE()
+
+void Element::Element_STNE()
 {
 	Identifier = "DEFAULT_PT_STNE";
 	Name = "STNE";
@@ -39,8 +39,4 @@ Element_STNE::Element_STNE()
 	LowTemperatureTransition = NT;
 	HighTemperature = 983.0f;
 	HighTemperatureTransition = PT_LAVA;
-
-	Update = NULL;
 }
-
-Element_STNE::~Element_STNE() {}

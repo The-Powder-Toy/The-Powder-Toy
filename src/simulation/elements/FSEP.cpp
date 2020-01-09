@@ -1,6 +1,8 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_FSEP PT_FSEP 71
-Element_FSEP::Element_FSEP()
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_FSEP()
 {
 	Identifier = "DEFAULT_PT_FSEP";
 	Name = "FSEP";
@@ -42,11 +44,10 @@ Element_FSEP::Element_FSEP()
 
 	DefaultProperties.life = 50;
 
-	Update = &Element_FSEP::update;
+	Update = &update;
 }
 
-//#TPT-Directive ElementHeader Element_FSEP static int update(UPDATE_FUNC_ARGS)
-int Element_FSEP::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry;
 	if (parts[i].life<=0) {
@@ -79,6 +80,3 @@ int Element_FSEP::update(UPDATE_FUNC_ARGS)
 	}
 	return 0;
 }
-
-
-Element_FSEP::~Element_FSEP() {}

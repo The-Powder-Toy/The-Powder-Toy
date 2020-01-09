@@ -1,6 +1,6 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_WHOL PT_WHOL 40
-Element_WHOL::Element_WHOL()
+
+void Element::Element_WHOL()
 {
 	Identifier = "DEFAULT_PT_WHOL";
 	Name = "VENT";
@@ -40,8 +40,4 @@ Element_WHOL::Element_WHOL()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-
-	Update = NULL;
 }
-
-Element_WHOL::~Element_WHOL() {}

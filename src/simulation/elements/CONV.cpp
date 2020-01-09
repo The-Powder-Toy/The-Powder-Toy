@@ -1,6 +1,8 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_CONV PT_CONV 85
-Element_CONV::Element_CONV()
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_CONV()
 {
 	Identifier = "DEFAULT_PT_CONV";
 	Name = "CONV";
@@ -40,12 +42,11 @@ Element_CONV::Element_CONV()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_CONV::update;
+	Update = &update;
 	CtypeDraw = &Element::ctypeDrawVInCtype;
 }
 
-//#TPT-Directive ElementHeader Element_CONV static int update(UPDATE_FUNC_ARGS)
-int Element_CONV::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry;
 	int ctype = TYP(parts[i].ctype), ctypeExtra = ID(parts[i].ctype);
@@ -92,5 +93,3 @@ int Element_CONV::update(UPDATE_FUNC_ARGS)
 	}
 	return 0;
 }
-
-Element_CONV::~Element_CONV() {}

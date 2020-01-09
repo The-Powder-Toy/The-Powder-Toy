@@ -3,16 +3,18 @@
 #include "common/tpt-rand.h"
 #include <cmath>
 
-//#TPT-Directive ToolClass Tool_Mix TOOL_MIX 6
-Tool_Mix::Tool_Mix()
+static int perform(Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength);
+
+void SimTool::Tool_MIX()
 {
 	Identifier = "DEFAULT_TOOL_MIX";
 	Name = "MIX";
 	Colour = PIXPACK(0xFFD090);
 	Description = "Mixes particles.";
+	Perform = &perform;
 }
 
-int Tool_Mix::Perform(Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength)
+static int perform(Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength)
 {
 	int thisPart = sim->pmap[y][x];
 	if(!thisPart)
@@ -49,5 +51,3 @@ int Tool_Mix::Perform(Simulation * sim, Particle * cpart, int x, int y, int brus
 
 	return 1;
 }
-
-Tool_Mix::~Tool_Mix() {}

@@ -1,6 +1,10 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_GRVT PT_GRVT 177
-Element_GRVT::Element_GRVT()
+
+static int update(UPDATE_FUNC_ARGS);
+static int graphics(GRAPHICS_FUNC_ARGS);
+static void create(ELEMENT_CREATE_FUNC_ARGS);
+
+void Element::Element_GRVT()
 {
 	Identifier = "DEFAULT_PT_GRVT";
 	Name = "GRVT";
@@ -42,13 +46,12 @@ Element_GRVT::Element_GRVT()
 
 	DefaultProperties.tmp = 7;
 
-	Update = &Element_GRVT::update;
-	Graphics = &Element_GRVT::graphics;
-	Create = &Element_GRVT::create;
+	Update = &update;
+	Graphics = &graphics;
+	Create = &create;
 }
 
-//#TPT-Directive ElementHeader Element_GRVT static int update(UPDATE_FUNC_ARGS)
-int Element_GRVT::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	//at higher tmps they just go completely insane
 	if (parts[i].tmp >= 100)
@@ -60,8 +63,7 @@ int Element_GRVT::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-//#TPT-Directive ElementHeader Element_GRVT static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_GRVT::graphics(GRAPHICS_FUNC_ARGS)
+static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	*firea = 5;
 	*firer = 0;
@@ -72,13 +74,10 @@ int Element_GRVT::graphics(GRAPHICS_FUNC_ARGS)
 	return 1;
 }
 
-//#TPT-Directive ElementHeader Element_GRVT static void create(ELEMENT_CREATE_FUNC_ARGS)
-void Element_GRVT::create(ELEMENT_CREATE_FUNC_ARGS)
+static void create(ELEMENT_CREATE_FUNC_ARGS)
 {
 	float a = RNG::Ref().between(0, 359) * 3.14159f / 180.0f;
 	sim->parts[i].life = 250 + RNG::Ref().between(0, 199);
 	sim->parts[i].vx = 2.0f*cosf(a);
 	sim->parts[i].vy = 2.0f*sinf(a);
 }
-
-Element_GRVT::~Element_GRVT() {}

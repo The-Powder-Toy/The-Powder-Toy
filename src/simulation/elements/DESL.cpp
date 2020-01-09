@@ -1,6 +1,6 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_DESL PT_DESL 58
-Element_DESL::Element_DESL()
+
+void Element::Element_DESL()
 {
 	Identifier = "DEFAULT_PT_DESL";
 	Name = "DESL";
@@ -39,8 +39,4 @@ Element_DESL::Element_DESL()
 	LowTemperatureTransition = NT;
 	HighTemperature = 335.0f;
 	HighTemperatureTransition = PT_FIRE;
-
-	Update = NULL;
 }
-
-Element_DESL::~Element_DESL() {}

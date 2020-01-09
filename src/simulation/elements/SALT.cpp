@@ -1,6 +1,6 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_SALT PT_SALT 26
-Element_SALT::Element_SALT()
+
+void Element::Element_SALT()
 {
 	Identifier = "DEFAULT_PT_SALT";
 	Name = "SALT";
@@ -39,8 +39,4 @@ Element_SALT::Element_SALT()
 	LowTemperatureTransition = NT;
 	HighTemperature = 1173.0f;
 	HighTemperatureTransition = PT_LAVA;
-
-	Update = NULL;
 }
-
-Element_SALT::~Element_SALT() {}

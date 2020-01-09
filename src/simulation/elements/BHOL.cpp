@@ -1,6 +1,6 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_BHOL PT_BHOL 39
-Element_BHOL::Element_BHOL()
+
+void Element::Element_BHOL()
 {
 	Identifier = "DEFAULT_PT_BHOL";
 	Name = "VACU";
@@ -40,8 +40,4 @@ Element_BHOL::Element_BHOL()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-
-	Update = NULL;
 }
-
-Element_BHOL::~Element_BHOL() {}

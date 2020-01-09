@@ -1,6 +1,8 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_FRME PT_FRME 169
-Element_FRME::Element_FRME()
+
+static int graphics(GRAPHICS_FUNC_ARGS);
+
+void Element::Element_FRME()
 {
 	Identifier = "DEFAULT_PT_FRME";
 	Name = "FRME";
@@ -40,11 +42,10 @@ Element_FRME::Element_FRME()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Graphics = &Element_FRME::graphics;
+	Graphics = &graphics;
 }
 
-//#TPT-Directive ElementHeader Element_FRME static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_FRME::graphics(GRAPHICS_FUNC_ARGS)
+static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	if(cpart->tmp)
 	{
@@ -54,5 +55,3 @@ int Element_FRME::graphics(GRAPHICS_FUNC_ARGS)
 	}
 	return 0;
 }
-
-Element_FRME::~Element_FRME() {}

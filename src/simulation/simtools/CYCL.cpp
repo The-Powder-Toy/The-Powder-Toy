@@ -3,17 +3,18 @@
 
 #include <cmath>
 
+static int perform(Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength);
 
-//#TPT-Directive ToolClass Tool_Cycl TOOL_CYCL 7
-Tool_Cycl::Tool_Cycl()
+void SimTool::Tool_CYCL()
 {
 	Identifier = "DEFAULT_TOOL_CYCL";
 	Name = "CYCL";
 	Colour = PIXPACK(0x132f5b);
 	Description = "Cyclone, produces swirling air currents";
+	Perform = &perform;
 }
 
-int Tool_Cycl::Perform(Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength)
+static int perform(Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength)
 {
 	/*
 		Air velocity calculation.
@@ -49,5 +50,3 @@ int Tool_Cycl::Perform(Simulation * sim, Particle * cpart, int x, int y, int bru
 
 	return 1;
 }
-
-Tool_Cycl::~Tool_Cycl() {}

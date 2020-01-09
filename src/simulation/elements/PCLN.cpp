@@ -1,6 +1,10 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_PCLN PT_PCLN 74
-Element_PCLN::Element_PCLN()
+
+static int update(UPDATE_FUNC_ARGS);
+static int graphics(GRAPHICS_FUNC_ARGS);
+bool Element_PCLN_ctypeDraw(CTYPEDRAW_FUNC_ARGS);
+
+void Element::Element_PCLN()
 {
 	Identifier = "DEFAULT_PT_PCLN";
 	Name = "PCLN";
@@ -40,13 +44,12 @@ Element_PCLN::Element_PCLN()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_PCLN::update;
-	Graphics = &Element_PCLN::graphics;
-	CtypeDraw = &Element_PCLN::ctypeDraw;
+	Update = &update;
+	Graphics = &graphics;
+	CtypeDraw = &Element_PCLN_ctypeDraw;
 }
 
-//#TPT-Directive ElementHeader Element_PCLN static int update(UPDATE_FUNC_ARGS)
-int Element_PCLN::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry, rt;
 	if (parts[i].life>0 && parts[i].life!=10)
@@ -136,10 +139,7 @@ int Element_PCLN::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-
-//#TPT-Directive ElementHeader Element_PCLN static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_PCLN::graphics(GRAPHICS_FUNC_ARGS)
-
+static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	int lifemod = ((cpart->life>10?10:cpart->life)*10);
 	*colr += lifemod;
@@ -147,8 +147,7 @@ int Element_PCLN::graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
-//#TPT-Directive ElementHeader Element_PCLN static bool ctypeDraw(CTYPEDRAW_FUNC_ARGS)
-bool Element_PCLN::ctypeDraw(CTYPEDRAW_FUNC_ARGS)
+bool Element_PCLN_ctypeDraw(CTYPEDRAW_FUNC_ARGS)
 {
 	if (t == PT_PSCN || t == PT_NSCN || t == PT_SPRK)
 	{
@@ -156,5 +155,3 @@ bool Element_PCLN::ctypeDraw(CTYPEDRAW_FUNC_ARGS)
 	}
 	return Element::ctypeDrawVInTmp(CTYPEDRAW_FUNC_SUBCALL_ARGS);
 }
-
-Element_PCLN::~Element_PCLN() {}

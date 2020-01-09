@@ -1,6 +1,9 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_SPAWN2 PT_SPAWN2 117
-Element_SPAWN2::Element_SPAWN2()
+
+static bool createAllowed(ELEMENT_CREATE_ALLOWED_FUNC_ARGS);
+static void changeType(ELEMENT_CHANGETYPE_FUNC_ARGS);
+
+void Element::Element_SPAWN2()
 {
 	Identifier = "DEFAULT_PT_SPAWN2";
 	Name = "SPWN2";
@@ -40,19 +43,16 @@ Element_SPAWN2::Element_SPAWN2()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = NULL;
-	CreateAllowed = &Element_SPAWN2::createAllowed;
-	ChangeType = &Element_SPAWN2::changeType;
+	CreateAllowed = &createAllowed;
+	ChangeType = &changeType;
 }
 
-//#TPT-Directive ElementHeader Element_SPAWN2 static bool createAllowed(ELEMENT_CREATE_ALLOWED_FUNC_ARGS)
-bool Element_SPAWN2::createAllowed(ELEMENT_CREATE_ALLOWED_FUNC_ARGS)
+static bool createAllowed(ELEMENT_CREATE_ALLOWED_FUNC_ARGS)
 {
 	return sim->player2.spawnID == -1;
 }
 
-//#TPT-Directive ElementHeader Element_SPAWN2 static void changeType(ELEMENT_CHANGETYPE_FUNC_ARGS)
-void Element_SPAWN2::changeType(ELEMENT_CHANGETYPE_FUNC_ARGS)
+static void changeType(ELEMENT_CHANGETYPE_FUNC_ARGS)
 {
 	if (to == PT_SPAWN2)
 	{
@@ -65,5 +65,3 @@ void Element_SPAWN2::changeType(ELEMENT_CHANGETYPE_FUNC_ARGS)
 			sim->player2.spawnID = -1;
 	}
 }
-
-Element_SPAWN2::~Element_SPAWN2() {}

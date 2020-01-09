@@ -1,6 +1,8 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_FUSE PT_FUSE 70
-Element_FUSE::Element_FUSE()
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_FUSE()
 {
 	Identifier = "DEFAULT_PT_FUSE";
 	Name = "FUSE";
@@ -43,11 +45,10 @@ Element_FUSE::Element_FUSE()
 	DefaultProperties.life = 50;
 	DefaultProperties.tmp = 50;
 
-	Update = &Element_FUSE::update;
+	Update = &update;
 }
 
-//#TPT-Directive ElementHeader Element_FUSE static int update(UPDATE_FUNC_ARGS)
-int Element_FUSE::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry;
 	if (parts[i].life<=0) {
@@ -88,6 +89,3 @@ int Element_FUSE::update(UPDATE_FUNC_ARGS)
 			}
 	return 0;
 }
-
-
-Element_FUSE::~Element_FUSE() {}

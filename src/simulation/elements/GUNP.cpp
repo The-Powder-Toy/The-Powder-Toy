@@ -1,6 +1,6 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_GUNP PT_GUNP 7
-Element_GUNP::Element_GUNP()
+
+void Element::Element_GUNP()
 {
 	Identifier = "DEFAULT_PT_GUNP";
 	Name = "GUN";
@@ -39,8 +39,4 @@ Element_GUNP::Element_GUNP()
 	LowTemperatureTransition = NT;
 	HighTemperature = 673.0f;
 	HighTemperatureTransition = PT_FIRE;
-
-	Update = NULL;
 }
-
-Element_GUNP::~Element_GUNP() {}

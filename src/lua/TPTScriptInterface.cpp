@@ -11,7 +11,7 @@
 
 #include "simulation/Simulation.h"
 #include "simulation/Air.h"
-#include "ElementClasses.h"
+#include "simulation/ElementClasses.h"
 
 #include "gui/game/GameController.h"
 #include "gui/game/GameModel.h"

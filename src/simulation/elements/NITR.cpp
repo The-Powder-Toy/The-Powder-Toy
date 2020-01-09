@@ -1,6 +1,6 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_NITR PT_NITR 8
-Element_NITR::Element_NITR()
+
+void Element::Element_NITR()
 {
 	Identifier = "DEFAULT_PT_NITR";
 	Name = "NITR";
@@ -40,8 +40,4 @@ Element_NITR::Element_NITR()
 	LowTemperatureTransition = NT;
 	HighTemperature = 673.0f;
 	HighTemperatureTransition = PT_FIRE;
-
-	Update = NULL;
 }
-
-Element_NITR::~Element_NITR() {}

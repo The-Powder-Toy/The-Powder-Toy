@@ -170,7 +170,7 @@ if GetOption('universal'):
 		env.Append(CCFLAGS=['-arch', 'i386', '-arch', 'x86_64'])
 		env.Append(LINKFLAGS=['-arch', 'i386', '-arch', 'x86_64'])
 
-env.Append(CPPPATH=['src/', 'data/', 'generated/'])
+env.Append(CPPPATH=['src/', 'data/'])
 if GetOption("msvc"):
 	if GetOption("static"):
 		env.Append(LIBPATH=['StaticLibs/'])
@@ -385,11 +385,7 @@ def findLibs(env, conf):
 			FatalError("Cocoa framework not found or not installed")
 
 if GetOption('clean'):
-	import shutil
-	try:
-		shutil.rmtree("generated/")
-	except:
-		print("couldn't remove build/generated/")
+	pass
 elif not GetOption('help'):
 	conf = Configure(env)
 	conf.AddTest('CheckFramework', CheckFramework)

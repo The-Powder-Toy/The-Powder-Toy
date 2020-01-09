@@ -1,6 +1,6 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_116 PT_116 116
-Element_116::Element_116()
+
+void Element::Element_E116()
 {
 	Identifier = "DEFAULT_PT_116";
 	Name = "EQVE";
@@ -39,8 +39,4 @@ Element_116::Element_116()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-
-	Update = NULL;
 }
-
-Element_116::~Element_116() {}

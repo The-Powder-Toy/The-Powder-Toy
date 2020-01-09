@@ -1,6 +1,6 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_LO2 PT_LO2 60
-Element_LO2::Element_LO2()
+
+void Element::Element_LO2()
 {
 	Identifier = "DEFAULT_PT_LO2";
 	Name = "LOXY";
@@ -40,8 +40,4 @@ Element_LO2::Element_LO2()
 	LowTemperatureTransition = NT;
 	HighTemperature = 90.1f;
 	HighTemperatureTransition = PT_O2;
-
-	Update = NULL;
 }
-
-Element_LO2::~Element_LO2() {}
