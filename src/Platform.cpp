@@ -29,34 +29,26 @@ ByteString PrefFileDirectory()
 {
 #if defined(WIN)
 	char *appdata = getenv("APPDATA");
-	if(appdata != nullptr) return std::string(appdata) + "\\The Powder Toy\\";
-
+	if(appdata != nullptr) return ByteString(appdata) + "\\The Powder Toy\\";
 	char *homedrive = getenv("HOMEDRIVE");
 	char *homepath = getenv("HOMEPATH");
-	if(homedrive != nullptr && homepath != nullptr) return std::string(homedrive) + std::string(homepath) + "\\AppData\\Roaming\\The Powder Toy\\";
+	if(homedrive != nullptr && homepath != nullptr) return ByteString(homedrive) + homepath + "\\AppData\\Roaming\\The Powder Toy\\";
 #elif defined(LIN)
 	char *xdg_data = getenv("XDG_DATA_HOME");
-	if(xdg_data != nullptr) return std::string(xdg_data) + "/powdertoy/";
-
+	if(xdg_data != nullptr) return ByteString(xdg_data) + "/powdertoy/";
 	char *home = getenv("HOME");
-	if(home != nullptr) return std::string(home) + "/.local/share/powdertoy/";
-
+	if(home != nullptr) return ByteString(home) + "/.local/share/powdertoy/";
 	char *username = getlogin();
-	if(username != nullptr) return "/home/" + std::string(username) + "/.local/share/powdertoy/";
+	if(username != nullptr) return "/home/" + ByteString(username) + "/.local/share/powdertoy/";
 #elif defined(MACOSX)
 	FSRef ref;
 	OSType folderType = kApplicationSupportFolderType;
 	char path[PATH_MAX];
-
 	FSFindFolder( kUserDomain, folderType, kCreateFolder, &ref );
-
 	FSRefMakePath( &ref, (UInt8*)&path, PATH_MAX );
-
-	std::string tptPath = std::string(path) + "/The Powder Toy";
-	return tptPath;
+	return ByteString(path) + "/The Powder Toy";
 #endif
-
-	return ""; // give up
+	return "";
 }
 
 ByteString ExecutableName()
@@ -182,24 +174,13 @@ void LoadFileInResource(int name, int type, unsigned int& size, const char*& dat
 #endif
 }
 
-int MakeDirectory(const char * dirName)
+int MakeDirectory(ByteString const &dirName)
 {
 #ifdef WIN
-	return _mkdir(dirName);
+	return _mkdir(dirName.c_str());
 #else
-	return mkdir(dirName, 0755);
+	return mkdir(dirName.c_str(), 0755);
 #endif
-}
-
-int MakeDirectory(const ByteString &dirName)
-{
-	return MakeDirectory(dirName.c_str());
-}
-
-int MakeDirectoryChain(const char * dirName)
-{
-	ByteString dirStr = dirName;
-	return MakeDirectoryChain(dirStr);
 }
 
 int MakeDirectoryChain(ByteString dirName)
@@ -215,17 +196,13 @@ int MakeDirectoryChain(ByteString dirName)
 	// If it's something else, bail out and return failure.
 	if(errno != ENOENT) return -1;
 
-#ifdef WIN
-	unsigned long slashPos = dirName.find_last_of('\\', 0);
-#else
-	unsigned long slashPos = dirName.find_last_of('/', 0);
-#endif
+	unsigned long slashPos = dirName.find_last_of(PATH_SEP_CHAR, 0);
 
 	// No slash, means we can't descent further in path
-	if(slashPos == std::string::npos) return -1;
+	if(slashPos == dirName.npos) return -1;
 
 	// Descend in path and try again
-	dirName = dirName.Erase(slashPos, dirName.length());
+	dirName.Erase(slashPos, dirName.length());
 	return MakeDirectoryChain(dirName);
 }
 

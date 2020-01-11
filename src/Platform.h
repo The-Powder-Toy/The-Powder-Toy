@@ -1,6 +1,7 @@
 #ifndef PLATFORM_H
 #define PLATFORM_H
 
+#include "Config.h"
 #include "common/String.h"
 
 namespace Platform
@@ -16,9 +17,7 @@ namespace Platform
 
 	void LoadFileInResource(int name, int type, unsigned int& size, const char*& data);
 
-	int MakeDirectory(const char * dirname);
-	int MakeDirectory(const ByteString &dirname);
-	int MakeDirectoryChain(const char * dirname);
+	int MakeDirectory(ByteString const &dirname);
 	int MakeDirectoryChain(ByteString dirname);
 }
 
