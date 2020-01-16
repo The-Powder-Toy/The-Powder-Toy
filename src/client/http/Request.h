@@ -1,6 +1,7 @@
 #ifndef REQUEST_H
 #define REQUEST_H
 
+#include "Config.h"
 #include <map>
 #include "common/String.h"
 #ifndef NOHTTP
