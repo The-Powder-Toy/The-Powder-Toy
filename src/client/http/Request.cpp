@@ -164,7 +164,7 @@ namespace http
 #endif
 			else if (isPost)
 			{
-				curl_easy_setopt(easy, CURLOPT_POST, 1);
+				curl_easy_setopt(easy, CURLOPT_POST, 1L);
 				curl_easy_setopt(easy, CURLOPT_POSTFIELDS, "");
 			}
 			else
