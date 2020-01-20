@@ -47,6 +47,7 @@ namespace http
 
 		struct curl_slist *headers;
 
+		bool isPost = false;
 #ifdef REQUEST_USE_CURL_MIMEPOST
 		curl_mime *post_fields;
 #else

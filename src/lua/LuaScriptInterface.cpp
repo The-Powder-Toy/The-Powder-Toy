@@ -3694,7 +3694,7 @@ class RequestHandle
 	bool dead;
 
 public:
-	RequestHandle(ByteString &uri, std::map<ByteString, ByteString> &post_data, std::map<ByteString, ByteString> &headers)
+	RequestHandle(ByteString &uri, bool isPost, std::map<ByteString, ByteString> &post_data, std::map<ByteString, ByteString> &headers)
 	{
 		dead = false;
 		request = new http::Request(uri);
@@ -3702,7 +3702,8 @@ public:
 		{
 			request->AddHeader(header.first, header.second);
 		}
-		request->AddPostData(post_data);
+		if (isPost)
+			request->AddPostData(post_data);
 		request->Start();
 	}
 
@@ -3853,7 +3854,7 @@ static int http_request(lua_State *l, bool isPost)
 	{
 		return 0;
 	}
-	new(rh) RequestHandle(uri, post_data, headers);
+	new(rh) RequestHandle(uri, isPost, post_data, headers);
 	luaL_newmetatable(l, "HTTPRequest");
 	lua_setmetatable(l, -2);
 	return 1;
