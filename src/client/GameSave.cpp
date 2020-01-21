@@ -2419,7 +2419,7 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 		soapLinkData = new unsigned char[3*soapCount];
 		if (!soapLinkData)
 			throw BuildException("Save error, out of memory (SOAP)");
-		soapLinkDataPtr = std::move(std::unique_ptr<unsigned char[]>(soapLinkData));
+		soapLinkDataPtr = std::unique_ptr<unsigned char[]>(soapLinkData);
 
 		//Iterate through particles in the same order that they were saved
 		for (y=0;y<fullH;y++)

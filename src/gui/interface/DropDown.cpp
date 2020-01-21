@@ -12,7 +12,6 @@ class DropDownWindow : public ui::Window
 	DropDown * dropDown;
 	Appearance appearance;
 	std::vector<Button> buttons;
-	bool isMouseInside;
 
 public:
 	DropDownWindow(DropDown * dropDown):

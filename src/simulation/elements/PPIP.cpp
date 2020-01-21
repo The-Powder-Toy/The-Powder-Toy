@@ -50,16 +50,11 @@ void Element::Element_PPIP()
 	Graphics = &Element_PIPE_graphics;
 }
 
-constexpr int PFLAG_NORMALSPEED            = 0x00010000;
 // parts[].tmp flags
 // trigger flags to be processed this frame (trigger flags for next frame are shifted 3 bits to the left):
 constexpr int PPIP_TMPFLAG_TRIGGER_ON      = 0x10000000;
 constexpr int PPIP_TMPFLAG_TRIGGER_OFF     = 0x08000000;
 constexpr int PPIP_TMPFLAG_TRIGGER_REVERSE = 0x04000000;
-constexpr int PPIP_TMPFLAG_TRIGGERS        = 0x1C000000;
-// current status of the pipe
-constexpr int PPIP_TMPFLAG_PAUSED          = 0x02000000;
-constexpr int PPIP_TMPFLAG_REVERSED        = 0x01000000;
 // 0x000000FF element
 // 0x00000100 is single pixel pipe
 // 0x00000200 will transfer like a single pixel pipe when in forward mode

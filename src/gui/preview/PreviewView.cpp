@@ -602,7 +602,7 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 			if (showAvatars)
 			{
 				tempAvatar = new ui::AvatarButton(ui::Point(2, currentY+7), ui::Point(26, 26), comments->at(i)->authorName);
-				tempAvatar->SetActionCallback({ [this, tempAvatar] {
+				tempAvatar->SetActionCallback({ [tempAvatar] {
 					if (tempAvatar->GetUsername().size() > 0)
 					{
 						new ProfileActivity(tempAvatar->GetUsername());
