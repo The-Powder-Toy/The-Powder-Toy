@@ -330,7 +330,10 @@ namespace http
 	ByteString Request::SimpleAuth(ByteString uri, int *status, ByteString ID, ByteString session, std::map<ByteString, ByteString> post_data)
 	{
 		Request *request = new Request(uri);
-		request->AddPostData(post_data);
+		if (!post_data.empty())
+		{
+			request->AddPostData(post_data);
+		}
 		request->AuthHeaders(ID, session);
 		request->Start();
 		return request->Finish(status);
