@@ -497,9 +497,19 @@ void EngineProcess()
 {
 	double frameTimeAvg = 0.0f, correctedFrameTimeAvg = 0.0f;
 	SDL_Event event;
+
+
+	float drawingTimer = 0;
+	int oldFrameStart = 0;
+	int frameStart = 0;
+
 	while(engine->Running())
 	{
-		int frameStart = SDL_GetTicks();
+		oldFrameStart = frameStart;
+		frameStart = SDL_GetTicks();
+
+		drawingTimer += frameStart - oldFrameStart;
+
 		if(engine->Broken()) { engine->UnBreak(); break; }
 		event.type = 0;
 		while (SDL_PollEvent(&event))
@@ -510,7 +520,13 @@ void EngineProcess()
 		if(engine->Broken()) { engine->UnBreak(); break; }
 
 		engine->Tick();
-		engine->Draw();
+
+		if(drawingTimer > 1000/ui::Engine::Ref().GetDrawingFrequencyLimit())
+		{
+			engine->Draw();
+			drawingTimer = 0;
+		}
+		
 
 		if (scale != engine->Scale || fullscreen != engine->Fullscreen ||
 				altFullscreen != engine->GetAltFullscreen() ||

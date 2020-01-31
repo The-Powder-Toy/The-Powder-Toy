@@ -22,6 +22,20 @@ void OptionsModel::AddObserver(OptionsView* view)
 	view->NotifySettingsChanged(this);
 }
 
+bool OptionsModel::GetDrawingFrequencyLimit()
+{
+	return ui::Engine::Ref().GetDrawingFrequencyLimit();
+}
+
+void OptionsModel::SetDrawingFrequencyLimit(int limit)
+{
+	ui::Engine::Ref().SetDrawingFrequencyLimit(limit);
+
+	Client::Ref().SetPref("DrawFrqLimit", int(limit));
+	
+	notifySettingsChanged();
+}
+
 bool OptionsModel::GetHeatSimulation()
 {
 	return sim->legacy_enable?false:true;

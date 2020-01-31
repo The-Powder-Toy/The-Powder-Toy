@@ -119,6 +119,22 @@ OptionsView::OptionsView():
 	scrollPanel->AddChild(tempLabel);
 
 	currentY+=20;
+	drawingFrqLimit = new ui::DropDown(ui::Point(Size.X-95, currentY), ui::Point(80, 16));
+	scrollPanel->AddChild(drawingFrqLimit);
+	drawingFrqLimit->AddOption(std::pair<String, int>("240", 240));
+	drawingFrqLimit->AddOption(std::pair<String, int>("120", 120));
+	drawingFrqLimit->AddOption(std::pair<String, int>("60", 60));
+	drawingFrqLimit->AddOption(std::pair<String, int>("30", 30));
+	drawingFrqLimit->AddOption(std::pair<String, int>("20", 20));
+	drawingFrqLimit->SetActionCallback({ [this] { c->SetDrawingFrequencyLimit(drawingFrqLimit->GetOption().second); } });
+
+	tempLabel = new ui::Label(ui::Point(8, currentY), ui::Point(Size.X-96, 16), "Redraw frequency (simulation isn't affected)");
+	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	scrollPanel->AddChild(tempLabel);
+
+
+	currentY+=20;
 	gravityMode = new ui::DropDown(ui::Point(Size.X-95, currentY), ui::Point(80, 16));
 	scrollPanel->AddChild(gravityMode);
 	gravityMode->AddOption(std::pair<String, int>("Vertical", 0));

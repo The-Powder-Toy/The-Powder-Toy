@@ -16,6 +16,7 @@ class OptionsController;
 class OptionsView: public ui::Window
 {
 	OptionsController * c;
+	ui::DropDown * drawingFrqLimit;
 	ui::Checkbox * heatSimulation;
 	ui::Checkbox * ambientHeatSimulation;
 	ui::Checkbox * newtonianGravity;

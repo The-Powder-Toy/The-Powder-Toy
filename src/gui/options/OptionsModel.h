@@ -15,6 +15,8 @@ class OptionsModel
 public:
 	OptionsModel(GameModel * gModel);
 	void AddObserver(OptionsView* view);
+	bool GetDrawingFrequencyLimit();
+	void SetDrawingFrequencyLimit(int limit);
 	bool GetHeatSimulation();
 	void SetHeatSimulation(bool state);
 	bool GetAmbientHeatSimulation();
