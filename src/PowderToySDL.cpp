@@ -525,22 +525,24 @@ void EngineProcess()
 		{
 			engine->Draw();
 			drawingTimer = 0;
-		}
+		
 		
 
-		if (scale != engine->Scale || fullscreen != engine->Fullscreen ||
-				altFullscreen != engine->GetAltFullscreen() ||
-				forceIntegerScaling != engine->GetForceIntegerScaling() || resizable != engine->GetResizable())
-		{
-			SDLSetScreen(engine->Scale, engine->GetResizable(), engine->Fullscreen, engine->GetAltFullscreen(),
-						 engine->GetForceIntegerScaling());
-		}
+			if (scale != engine->Scale || fullscreen != engine->Fullscreen ||
+					altFullscreen != engine->GetAltFullscreen() ||
+					forceIntegerScaling != engine->GetForceIntegerScaling() || resizable != engine->GetResizable())
+			{
+				SDLSetScreen(engine->Scale, engine->GetResizable(), engine->Fullscreen, engine->GetAltFullscreen(),
+							engine->GetForceIntegerScaling());
+			}
 
-#ifdef OGLI
-		blit();
-#else
-		blit(engine->g->vid);
-#endif
+	#ifdef OGLI
+			blit();
+	#else
+			blit(engine->g->vid);
+	#endif
+
+		}
 
 		int frameTime = SDL_GetTicks() - frameStart;
 		frameTimeAvg = frameTimeAvg * 0.8 + frameTime * 0.2;
