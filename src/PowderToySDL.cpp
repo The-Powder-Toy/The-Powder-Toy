@@ -176,6 +176,12 @@ void SDLOpen()
 		}
 	}
 
+	SDL_DisplayMode displayMode;
+	SDL_GetCurrentDisplayMode(displayIndex, &displayMode);
+
+	if(displayMode.refresh_rate >= 60)
+		ui::Engine::Ref().SetDrawingFrequencyLimit(displayMode.refresh_rate);
+
 #ifdef WIN
 	SDL_SysWMinfo SysInfo;
 	SDL_VERSION(&SysInfo.version);
