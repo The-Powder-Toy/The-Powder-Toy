@@ -15,7 +15,6 @@ class OptionsController
 public:
 	bool HasExited;
 	OptionsController(GameModel * gModel_, std::function<void ()> onDone = nullptr);
-	void SetDrawingFrequencyLimit(int limit);
 	void SetHeatSimulation(bool state);
 	void SetAmbientHeatSimulation(bool state);
 	void SetNewtonianGravity(bool state);

@@ -1378,6 +1378,15 @@ int luatpt_setfpscap(lua_State* l)
 	return 0;
 }
 
+int luatpt_setdrawcap(lua_State* l)
+{
+	int drawcap = luaL_checkint(l, 1);
+	if(drawcap < 1) 
+		return luaL_error(l, "draw cap too small");
+	ui::Engine::Ref().drawingFrequencyLimit = drawcap;
+	return 0;
+}
+
 int luatpt_getscript(lua_State* l)
 {
 	int scriptID = luaL_checkinteger(l, 1);

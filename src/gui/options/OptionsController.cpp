@@ -17,11 +17,6 @@ OptionsController::OptionsController(GameModel * gModel_, std::function<void ()>
 	view->AttachController(this);
 }
 
-void OptionsController::SetDrawingFrequencyLimit(int limit)
-{
-	model->SetDrawingFrequencyLimit(limit);
-}
-
 void OptionsController::SetHeatSimulation(bool state)
 {
 	model->SetHeatSimulation(state);
