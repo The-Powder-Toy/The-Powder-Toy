@@ -32,6 +32,7 @@ public:
 	void SetShowAvatars(bool showAvatars);
 	void SetMouseClickrequired(bool mouseClickRequired);
 	void SetIncludePressure(bool includePressure);
+	void SetPerfectCircle(bool perfectCircle);
 	
 	void Exit();
 	OptionsView * GetView();
