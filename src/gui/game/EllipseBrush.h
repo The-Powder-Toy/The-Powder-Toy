@@ -9,8 +9,8 @@ class EllipseBrush: public Brush
 	bool perfectCircle;
 
 public:
-EllipseBrush(ui::Point size, bool perfectCircle = true):
-	Brush(size)
+	EllipseBrush(ui::Point size, bool perfectCircle = true):
+		Brush(size)
 	{
 		this->perfectCircle = perfectCircle;
 		SetRadius(size);
