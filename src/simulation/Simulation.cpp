@@ -1769,13 +1769,9 @@ int Simulation::CreatePartFlags(int x, int y, int c, int flags)
 			(photons[y][x] && TYP(photons[y][x]) == replaceModeSelected))
 		{
 			if (c)
-			{
-				part_change_type(photons[y][x] ? ID(photons[y][x]) : ID(pmap[y][x]), x, y, TYP(c));
-			}
+				create_part(photons[y][x] ? ID(photons[y][x]) : ID(pmap[y][x]), x, y, TYP(c));
 			else
-			{
 				delete_part(x, y);
-			}
 		}
 		return 0;
 	}
