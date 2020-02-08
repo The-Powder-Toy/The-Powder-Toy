@@ -339,6 +339,11 @@ def findLibs(env, conf):
 		else:
 			env.ParseConfig("curl-config --libs")
 
+		# Needed for ssl. Scons seems incapable of parsing this out of curl-config
+		if platform == "Darwin":
+			if not conf.CheckFramework('Security'):
+				FatalError("Could not find Security.Framework")
+
 	#Look for pthreads
 	if not conf.CheckLib(['pthread', 'pthreadVC2']):
 		FatalError("pthreads development library not found or not installed")
