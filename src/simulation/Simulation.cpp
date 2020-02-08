@@ -228,6 +228,7 @@ int Simulation::Load(GameSave * save, bool includePressure, int fullX, int fullY
 					fan = true;
 					parts[i].ctype = 0;
 				}
+				fighters[parts[i].tmp].elem = PT_DUST;
 				void Element_FIGH_NewFighter(Simulation *sim, int fighterID, int i, int elem);
 				Element_FIGH_NewFighter(this, parts[i].tmp, i, parts[i].ctype);
 				if (fan)
