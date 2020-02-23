@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
 	{
 		gameSave = new GameSave(inputFile);
 	}
-	catch (ParseException e)
+	catch (ParseException &e)
 	{
 		//Render the save again later or something? I don't know
 		if (ByteString(e.what()).FromUtf8() == "Save from newer version")
