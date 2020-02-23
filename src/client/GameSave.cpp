@@ -2457,6 +2457,20 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 		}
 	}
 
+	for (size_t i = 0; i < signs.size(); i++)
+	{
+		if(signs[i].text.length() && signs[i].x>=0 && signs[i].x<=fullW && signs[i].y>=0 && signs[i].y<=fullH)
+		{
+			int x, y, w, h;
+			bool v95 = false;
+			signs[i].getDisplayText(nullptr, x, y, w, h, true, &v95);
+			if (v95)
+			{
+				RESTRICTVERSION(95, 0);
+			}
+		}
+	}
+
 	bson b;
 	b.data = NULL;
 	auto bson_deleter = [](bson * b) { bson_destroy(b); };
