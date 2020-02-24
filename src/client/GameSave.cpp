@@ -2404,6 +2404,13 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 						RESTRICTVERSION(94, 0);
 					}
 				}
+				if (particles[i].type == PT_LSNS)
+				{
+					if (particles[i].tmp >= 1 || particles[i].tmp <= 3)
+					{
+						RESTRICTVERSION(95, 0);
+					}
+				}
 
 				//Get the pmap entry for the next particle in the same position
 				i = partsPosLink[i];
