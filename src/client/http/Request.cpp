@@ -56,9 +56,9 @@ namespace http
 	// add post data to a request
 	void Request::AddPostData(std::map<ByteString, ByteString> data)
 	{
+#ifndef NOHTTP
 		// Even if the map is empty, calling this function signifies you want to do a POST request
 		isPost = true;
-#ifndef NOHTTP
 		if (!data.size())
 		{
 			return;
