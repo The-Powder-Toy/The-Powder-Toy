@@ -228,6 +228,7 @@ int Simulation::Load(GameSave * save, bool includePressure, int fullX, int fullY
 					fan = true;
 					parts[i].ctype = 0;
 				}
+				fighters[parts[i].tmp].elem = PT_DUST;
 				void Element_FIGH_NewFighter(Simulation *sim, int fighterID, int i, int elem);
 				Element_FIGH_NewFighter(this, parts[i].tmp, i, parts[i].ctype);
 				if (fan)
@@ -1769,13 +1770,9 @@ int Simulation::CreatePartFlags(int x, int y, int c, int flags)
 			(photons[y][x] && TYP(photons[y][x]) == replaceModeSelected))
 		{
 			if (c)
-			{
-				part_change_type(photons[y][x] ? ID(photons[y][x]) : ID(pmap[y][x]), x, y, TYP(c));
-			}
+				create_part(photons[y][x] ? ID(photons[y][x]) : ID(pmap[y][x]), x, y, TYP(c));
 			else
-			{
 				delete_part(x, y);
-			}
 		}
 		return 0;
 	}
@@ -5267,3 +5264,14 @@ float Simulation::remainder_p(float x, float y)
 {
 	return std::fmod(x, y) + (x>=0 ? 0 : y);
 }
+
+constexpr size_t ce_log2(size_t n)
+{
+	return ((n < 2) ? 1 : 1 + ce_log2(n / 2));
+}
+static_assert(PMAPBITS <= 16, "PMAPBITS is too large");
+// * This will technically fail in some cases where (XRES * YRES) << PMAPBITS would
+//   fit in 31 bits but multiplication is evil and wraps around without you knowing it.
+// * Whoever runs into a problem with this (e.g. with XRES = 612, YRES = 384 and
+//   PMAPBITS = 13) should just remove the check and take responsibility otherwise.
+static_assert(ce_log2(XRES) + ce_log2(YRES) + PMAPBITS <= 31, "not enough space in pmap");

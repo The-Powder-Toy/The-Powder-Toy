@@ -2404,6 +2404,13 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 						RESTRICTVERSION(94, 0);
 					}
 				}
+				if (particles[i].type == PT_LSNS)
+				{
+					if (particles[i].tmp >= 1 || particles[i].tmp <= 3)
+					{
+						RESTRICTVERSION(95, 0);
+					}
+				}
 
 				//Get the pmap entry for the next particle in the same position
 				i = partsPosLink[i];
@@ -2419,7 +2426,7 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 		soapLinkData = new unsigned char[3*soapCount];
 		if (!soapLinkData)
 			throw BuildException("Save error, out of memory (SOAP)");
-		soapLinkDataPtr = std::move(std::unique_ptr<unsigned char[]>(soapLinkData));
+		soapLinkDataPtr = std::unique_ptr<unsigned char[]>(soapLinkData);
 
 		//Iterate through particles in the same order that they were saved
 		for (y=0;y<fullH;y++)
@@ -2453,6 +2460,20 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 					//Get the pmap entry for the next particle in the same position
 					i = partsPosLink[i];
 				}
+			}
+		}
+	}
+
+	for (size_t i = 0; i < signs.size(); i++)
+	{
+		if(signs[i].text.length() && signs[i].x>=0 && signs[i].x<=fullW && signs[i].y>=0 && signs[i].y<=fullH)
+		{
+			int x, y, w, h;
+			bool v95 = false;
+			signs[i].getDisplayText(nullptr, x, y, w, h, true, &v95);
+			if (v95)
+			{
+				RESTRICTVERSION(95, 0);
 			}
 		}
 	}

@@ -57,6 +57,8 @@ namespace http
 	void Request::AddPostData(std::map<ByteString, ByteString> data)
 	{
 #ifndef NOHTTP
+		// Even if the map is empty, calling this function signifies you want to do a POST request
+		isPost = true;
 		if (!data.size())
 		{
 			return;
@@ -134,10 +136,6 @@ namespace http
 			{
 				curl_easy_setopt(easy, CURLOPT_MIMEPOST, post_fields);
 			}
-			else
-			{
-				curl_easy_setopt(easy, CURLOPT_HTTPGET, 1L);
-			}
 #else
 			if (!post_fields_map.empty())
 			{
@@ -163,11 +161,16 @@ namespace http
 				}
 				curl_easy_setopt(easy, CURLOPT_HTTPPOST, post_fields_first);
 			}
+#endif
+			else if (isPost)
+			{
+				curl_easy_setopt(easy, CURLOPT_POST, 1L);
+				curl_easy_setopt(easy, CURLOPT_POSTFIELDS, "");
+			}
 			else
 			{
 				curl_easy_setopt(easy, CURLOPT_HTTPGET, 1L);
 			}
-#endif
 
 			curl_easy_setopt(easy, CURLOPT_FOLLOWLOCATION, 1L);
 #ifdef ENFORCE_HTTPS
@@ -201,7 +204,7 @@ namespace http
 			curl_easy_setopt(easy, CURLOPT_ERRORBUFFER, error_buffer);
 			error_buffer[0] = 0;
 
-			curl_easy_setopt(easy, CURLOPT_TIMEOUT, timeout);
+			curl_easy_setopt(easy, CURLOPT_CONNECTTIMEOUT, timeout);
 			curl_easy_setopt(easy, CURLOPT_HTTPHEADER, headers);
 			curl_easy_setopt(easy, CURLOPT_URL, uri.c_str());
 
@@ -327,7 +330,10 @@ namespace http
 	ByteString Request::SimpleAuth(ByteString uri, int *status, ByteString ID, ByteString session, std::map<ByteString, ByteString> post_data)
 	{
 		Request *request = new Request(uri);
-		request->AddPostData(post_data);
+		if (!post_data.empty())
+		{
+			request->AddPostData(post_data);
+		}
 		request->AuthHeaders(ID, session);
 		request->Start();
 		return request->Finish(status);

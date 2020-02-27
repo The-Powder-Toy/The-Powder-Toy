@@ -94,7 +94,15 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 		*colr = *colg = *colb = 255;
 	}
 
-	if (ren->decorations_enable && cpart->dcolour)
+	bool deco = false;
+	if (ren->decorations_enable && cpart->dcolour && (cpart->dcolour&0xFF000000))
+	{
+		if (!ren->blackDecorations) // if blackDecorations is off, always show deco
+			deco = true;
+		else if (((cpart->dcolour>>24)&0xFF) >= 250 && ((cpart->dcolour>>16)&0xFF) <= 5 && ((cpart->dcolour>>8)&0xFF) <= 5 && ((cpart->dcolour)&0xFF) <= 5) // else only render black deco
+			deco = true;
+	}
+	if (deco)
 	{
 		int a = (cpart->dcolour>>24)&0xFF;
 		*colr = (a*((cpart->dcolour>>16)&0xFF) + (255-a)**colr) >> 8;

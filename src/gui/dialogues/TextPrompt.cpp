@@ -81,7 +81,10 @@ String TextPrompt::Blocking(String title, String message, String text, String pl
 	String outputString;
 	new TextPrompt(title, message, text, placeholder, multiline, { [&outputString](String const &resultText) {
 		outputString = resultText;
-	} });
+		ui::Engine::Ref().Break();
+	}, [](){
+		ui::Engine::Ref().Break();
+	}});
 	EngineProcess();
 	return outputString;
 }

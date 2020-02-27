@@ -83,7 +83,16 @@ void TagsView::NotifyTagsChanged(TagsModel * sender)
 				tempButton->Appearance.Margin.Top += 2;
 				tempButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 				tempButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-				tempButton->SetActionCallback({ [this, tag] { c->RemoveTag(tag); } });
+				tempButton->SetActionCallback({ [this, tag] {
+					try
+					{
+						c->RemoveTag(tag);
+					}
+					catch(TagsModelException & ex)
+					{
+						new ErrorMessage("Could not remove tag", ByteString(ex.what()).FromUtf8());
+					}
+				} });
 				tags.push_back(tempButton);
 				AddComponent(tempButton);
 			}
@@ -125,7 +134,3 @@ void TagsView::addTag()
 	}
 	tagInput->SetText("");
 }
-
-TagsView::~TagsView() {
-}
-

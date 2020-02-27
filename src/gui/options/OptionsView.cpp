@@ -261,6 +261,19 @@ OptionsView::OptionsView():
 	scrollPanel->AddChild(includePressure);
 
 	currentY+=20;
+	perfectCirclePressure = new ui::Checkbox(ui::Point(8, currentY), ui::Point(1, 16), "Perfect Circle", "");
+	autowidth(perfectCirclePressure);
+	perfectCirclePressure->SetActionCallback({ [this] { c->SetPerfectCircle(perfectCirclePressure->GetChecked()); } });
+	tempLabel = new ui::Label(ui::Point(perfectCirclePressure->Position.X+Graphics::textwidth(perfectCirclePressure->GetText())+20, currentY), ui::Point(1, 16), "\bg- Better circle brush, without incorrect points on edges");
+	autowidth(tempLabel);
+	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	scrollPanel->AddChild(tempLabel);
+	scrollPanel->AddChild(perfectCirclePressure);
+
+	//perfectCirclePressure
+
+	currentY+=20;
 	decoSpace = new ui::DropDown(ui::Point(8, currentY), ui::Point(60, 16));
 	decoSpace->SetActionCallback({ [this] { c->SetDecoSpace(decoSpace->GetOption().second); } });
 	scrollPanel->AddChild(decoSpace);
@@ -327,6 +340,7 @@ void OptionsView::NotifySettingsChanged(OptionsModel * sender)
 	showAvatars->SetChecked(sender->GetShowAvatars());
 	mouseClickRequired->SetChecked(sender->GetMouseClickRequired());
 	includePressure->SetChecked(sender->GetIncludePressure());
+	perfectCirclePressure->SetChecked(sender->GetPerfectCircle());
 }
 
 void OptionsView::AttachController(OptionsController * c_)

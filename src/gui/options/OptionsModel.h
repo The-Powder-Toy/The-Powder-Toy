@@ -49,6 +49,8 @@ public:
 	void SetMouseClickRequired(bool mouseClickRequired);
 	bool GetIncludePressure();
 	void SetIncludePressure(bool includePressure);
+	bool GetPerfectCircle();
+	void SetPerfectCircle(bool perfectCircle);
 	virtual ~OptionsModel();
 };
 

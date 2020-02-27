@@ -2,6 +2,7 @@
 #ifndef REQUESTMANAGER_H
 #define REQUESTMANAGER_H
 
+#include "Config.h"
 #include "common/tpt-minmax.h" // for MSVC, ensures windows.h doesn't cause compile errors by defining min/max
 #include <thread>
 #include <mutex>

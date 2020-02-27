@@ -180,6 +180,10 @@ class LuaScriptInterface: public CommandInterface
 	static int event_unregister(lua_State * l);
 	static int event_getmodifiers(lua_State * l);
 
+	void initHttpAPI();
+	static int http_get(lua_State * l);
+	static int http_post(lua_State * l);
+
 	std::vector<LuaSmartRef> lua_el_func_v, lua_gr_func_v, lua_cd_func_v;
 	std::vector<int> lua_el_mode_v;
 

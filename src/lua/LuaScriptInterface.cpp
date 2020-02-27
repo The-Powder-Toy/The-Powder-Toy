@@ -44,6 +44,7 @@
 #include "client/SaveFile.h"
 #include "client/SaveInfo.h"
 #include "client/Client.h"
+#include "client/http/Request.h"
 
 #include "graphics/Graphics.h"
 #include "graphics/Renderer.h"
@@ -152,6 +153,7 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	initFileSystemAPI();
 	initPlatformAPI();
 	initEventAPI();
+	initHttpAPI();
 
 	//Old TPT API
 	int currentElementMeta, currentElement;
@@ -3686,6 +3688,212 @@ int LuaScriptInterface::event_getmodifiers(lua_State * l)
 	return 1;
 }
 
+class RequestHandle
+{
+	http::Request *request;
+	bool dead;
+
+public:
+	RequestHandle(ByteString &uri, bool isPost, std::map<ByteString, ByteString> &post_data, std::map<ByteString, ByteString> &headers)
+	{
+		dead = false;
+		request = new http::Request(uri);
+		for (auto &header : headers)
+		{
+			request->AddHeader(header.first, header.second);
+		}
+		if (isPost)
+			request->AddPostData(post_data);
+		request->Start();
+	}
+
+	~RequestHandle()
+	{
+		if (!Dead())
+		{
+			Cancel();
+		}
+	}
+
+	bool Dead() const
+	{
+		return dead;
+	}
+
+	bool Done() const
+	{
+		return dead || request->CheckDone();
+	}
+
+	void Progress(int *total, int *done)
+	{
+		if (!dead)
+		{
+			request->CheckProgress(total, done);
+		}
+	}
+
+	void Cancel()
+	{
+		if (!dead)
+		{
+			request->Cancel();
+			dead = true;
+		}
+	}
+
+	ByteString Finish(int *status_out)
+	{
+		ByteString data;
+		if (!dead)
+		{
+			if (request->CheckDone())
+			{
+				data = request->Finish(status_out);
+				dead = true;
+			}
+		}
+		return data;
+	}
+};
+
+static int http_request_gc(lua_State *l)
+{
+	auto *rh = (RequestHandle *)luaL_checkudata(l, 1, "HTTPRequest");
+	rh->~RequestHandle();
+	return 0;
+}
+
+static int http_request_status(lua_State *l)
+{
+	auto *rh = (RequestHandle *)luaL_checkudata(l, 1, "HTTPRequest");
+	if (rh->Dead())
+	{
+		lua_pushliteral(l, "dead");
+	}
+	else if (rh->Done())
+	{
+		lua_pushliteral(l, "done");
+	}
+	else
+	{
+		lua_pushliteral(l, "running");
+	}
+	return 1;
+}
+
+static int http_request_progress(lua_State *l)
+{
+	auto *rh = (RequestHandle *)luaL_checkudata(l, 1, "HTTPRequest");
+	if (!rh->Dead())
+	{
+		int total, done;
+		rh->Progress(&total, &done);
+		lua_pushinteger(l, total);
+		lua_pushinteger(l, done);
+		return 2;
+	}
+	return 0;
+}
+
+static int http_request_cancel(lua_State *l)
+{
+	auto *rh = (RequestHandle *)luaL_checkudata(l, 1, "HTTPRequest");
+	if (!rh->Dead())
+	{
+		rh->Cancel();
+	}
+	return 0;
+}
+
+static int http_request_finish(lua_State *l)
+{
+	auto *rh = (RequestHandle *)luaL_checkudata(l, 1, "HTTPRequest");
+	if (!rh->Dead())
+	{
+		int status_out;
+		ByteString data = rh->Finish(&status_out);
+		lua_pushlstring(l, data.c_str(), data.size());
+		lua_pushinteger(l, status_out);
+		return 2;
+	}
+	return 0;
+}
+
+static int http_request(lua_State *l, bool isPost)
+{
+	ByteString uri(luaL_checkstring(l, 1));
+	std::map<ByteString, ByteString> post_data;
+	if (isPost)
+	{
+		if (lua_istable(l, 2))
+		{
+			lua_pushnil(l);
+			while (lua_next(l, 2))
+			{
+				lua_pushvalue(l, -2);
+				post_data.emplace(lua_tostring(l, -1), lua_tostring(l, -2));
+				lua_pop(l, 2);
+			}
+		}
+	}
+
+	std::map<ByteString, ByteString> headers;
+	if (lua_istable(l, isPost ? 3 : 2))
+	{
+		lua_pushnil(l);
+		while (lua_next(l, isPost ? 3 : 2))
+		{
+			lua_pushvalue(l, -2);
+			headers.emplace(lua_tostring(l, -1), lua_tostring(l, -2));
+			lua_pop(l, 2);
+		}
+	}
+	auto *rh = (RequestHandle *)lua_newuserdata(l, sizeof(RequestHandle));
+	if (!rh)
+	{
+		return 0;
+	}
+	new(rh) RequestHandle(uri, isPost, post_data, headers);
+	luaL_newmetatable(l, "HTTPRequest");
+	lua_setmetatable(l, -2);
+	return 1;
+}
+
+
+int LuaScriptInterface::http_get(lua_State * l)
+{
+	return http_request(l, false);
+}
+
+int LuaScriptInterface::http_post(lua_State * l)
+{
+	return http_request(l, true);
+}
+
+void LuaScriptInterface::initHttpAPI()
+{
+	luaL_newmetatable(l, "HTTPRequest");
+	lua_pushcfunction(l, http_request_gc);
+	lua_setfield(l, -2, "__gc");
+	lua_newtable(l);
+	lua_pushcfunction(l, http_request_status);
+	lua_setfield(l, -2, "status");
+	lua_pushcfunction(l, http_request_progress);
+	lua_setfield(l, -2, "progress");
+	lua_pushcfunction(l, http_request_cancel);
+	lua_setfield(l, -2, "cancel");
+	lua_pushcfunction(l, http_request_finish);
+	lua_setfield(l, -2, "finish");
+	lua_setfield(l, -2, "__index");
+	struct luaL_Reg httpAPIMethods [] = {
+		{"get", http_get},
+		{"post", http_post},
+		{NULL, NULL}
+	};
+	luaL_register(l, "http", httpAPIMethods);
+}
+
 bool LuaScriptInterface::HandleEvent(LuaEvents::EventTypes eventType, Event * event)
 {
 	return LuaEvents::HandleEvent(this, event, ByteString::Build("tptevents-", eventType));
@@ -3792,7 +4000,6 @@ int strlcmp(const char* a, const char* b, int len)
 
 String highlight(String command)
 {
-#define CMP(X) (String(wstart, len) == X)
 	StringBuilder result;
 	int pos = 0;
 	String::value_type const*raw = command.c_str();
@@ -3806,12 +4013,14 @@ String highlight(String command)
 			String::value_type const* wstart = raw+pos;
 			while((w = wstart[len]) && ((w >= 'A' && w <= 'Z') || (w >= 'a' && w <= 'z') || (w >= '0' && w <= '9') || w == '_'))
 				len++;
+#define CMP(X) (String(wstart, len) == X)
 			if(CMP("and") || CMP("break") || CMP("do") || CMP("else") || CMP("elseif") || CMP("end") || CMP("for") || CMP("function") || CMP("if") || CMP("in") || CMP("local") || CMP("not") || CMP("or") || CMP("repeat") || CMP("return") || CMP("then") || CMP("until") || CMP("while"))
 				result << "\x0F\xB5\x89\x01" << String(wstart, len) << "\bw";
 			else if(CMP("false") || CMP("nil") || CMP("true"))
 				result << "\x0F\xCB\x4B\x16" << String(wstart, len) << "\bw";
 			else
 				result << "\x0F\x2A\xA1\x98" << String(wstart, len) << "\bw";
+#undef CMP
 			pos += len;
 		}
 		else if((c >= '0' && c <= '9') || (c == '.' && raw[pos + 1] >= '0' && raw[pos + 1] <= '9'))

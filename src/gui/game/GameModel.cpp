@@ -111,29 +111,8 @@ GameModel::GameModel():
 
 	BuildMenus();
 
-	//Set default brush palette
-	brushList.push_back(new EllipseBrush(ui::Point(4, 4)));
-	brushList.push_back(new Brush(ui::Point(4, 4)));
-	brushList.push_back(new TriangleBrush(ui::Point(4, 4)));
-
-	//Load more from brushes folder
-	std::vector<ByteString> brushFiles = Client::Ref().DirectorySearch(BRUSH_DIR, "", ".ptb");
-	for (size_t i = 0; i < brushFiles.size(); i++)
-	{
-		std::vector<unsigned char> brushData = Client::Ref().ReadFile(brushFiles[i]);
-		if(!brushData.size())
-		{
-			std::cout << "Brushes: Skipping " << brushFiles[i] << ". Could not open" << std::endl;
-			continue;
-		}
-		size_t dimension = std::sqrt((float)brushData.size());
-		if (dimension * dimension != brushData.size())
-		{
-			std::cout << "Brushes: Skipping " << brushFiles[i] << ". Invalid bitmap size" << std::endl;
-			continue;
-		}
-		brushList.push_back(new BitmapBrush(brushData, ui::Point(dimension, dimension)));
-	}
+	perfectCircle = Client::Ref().GetPrefBool("PerfectCircleBrush", true);
+	BuildBrushList();
 
 	//Set default decoration colour
 	unsigned char colourR = std::min(Client::Ref().GetPrefInteger("Decoration.Red", 200), 255);
@@ -426,6 +405,45 @@ void GameModel::BuildFavoritesMenu()
 	notifyToolListChanged();
 	notifyActiveToolsChanged();
 	notifyLastToolChanged();
+}
+
+void GameModel::BuildBrushList()
+{
+	bool hasStoredRadius = false;
+	ui::Point radius = ui::Point(0, 0);
+	if (brushList.size())
+	{
+		radius = brushList[currentBrush]->GetRadius();
+		hasStoredRadius = true;
+	}
+	brushList.clear();
+
+	brushList.push_back(new EllipseBrush(ui::Point(4, 4), perfectCircle));
+	brushList.push_back(new Brush(ui::Point(4, 4)));
+	brushList.push_back(new TriangleBrush(ui::Point(4, 4)));
+
+	//Load more from brushes folder
+	std::vector<ByteString> brushFiles = Client::Ref().DirectorySearch(BRUSH_DIR, "", ".ptb");
+	for (size_t i = 0; i < brushFiles.size(); i++)
+	{
+		std::vector<unsigned char> brushData = Client::Ref().ReadFile(brushFiles[i]);
+		if(!brushData.size())
+		{
+			std::cout << "Brushes: Skipping " << brushFiles[i] << ". Could not open" << std::endl;
+			continue;
+		}
+		size_t dimension = std::sqrt((float)brushData.size());
+		if (dimension * dimension != brushData.size())
+		{
+			std::cout << "Brushes: Skipping " << brushFiles[i] << ". Invalid bitmap size" << std::endl;
+			continue;
+		}
+		brushList.push_back(new BitmapBrush(brushData, ui::Point(dimension, dimension)));
+	}
+
+	if (hasStoredRadius && (size_t)currentBrush < brushList.size())
+		brushList[currentBrush]->SetRadius(radius);
+	notifyBrushChanged();
 }
 
 Tool *GameModel::GetToolFromIdentifier(ByteString const &identifier)
@@ -1328,9 +1346,9 @@ bool GameModel::GetMouseClickRequired()
 	return mouseClickRequired;
 }
 
-void GameModel::SetMouseClickRequired(bool mouseClickRequired_)
+void GameModel::SetMouseClickRequired(bool mouseClickRequired)
 {
-	mouseClickRequired = mouseClickRequired_;
+	this->mouseClickRequired = mouseClickRequired;
 }
 
 bool GameModel::GetIncludePressure()
@@ -1338,7 +1356,16 @@ bool GameModel::GetIncludePressure()
 	return includePressure;
 }
 
-void GameModel::SetIncludePressure(bool includePressure_)
+void GameModel::SetIncludePressure(bool includePressure)
 {
-	includePressure = includePressure_;
+	this->includePressure = includePressure;
+}
+
+void GameModel::SetPerfectCircle(bool perfectCircle)
+{
+	if (perfectCircle != this->perfectCircle)
+	{
+		this->perfectCircle = perfectCircle;
+		BuildBrushList();
+	}
 }

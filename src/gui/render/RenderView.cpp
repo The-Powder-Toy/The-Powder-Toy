@@ -48,7 +48,7 @@ RenderView::RenderView():
 		renderModes.push_back(renderModeCheckbox);
 		renderModeCheckbox->mode = mode;
 		renderModeCheckbox->SetIcon(icon);
-		renderModeCheckbox->SetActionCallback({ [this, mode, renderModeCheckbox] {
+		renderModeCheckbox->SetActionCallback({ [this, renderModeCheckbox] {
 			if (renderModeCheckbox->GetChecked())
 				c->SetRenderMode(renderModeCheckbox->mode);
 			else
@@ -69,7 +69,7 @@ RenderView::RenderView():
 		displayModes.push_back(displayModeCheckbox);
 		displayModeCheckbox->mode = mode;
 		displayModeCheckbox->SetIcon(icon);
-		displayModeCheckbox->SetActionCallback({ [this, mode, displayModeCheckbox] {
+		displayModeCheckbox->SetActionCallback({ [this, displayModeCheckbox] {
 			if (displayModeCheckbox->GetChecked())
 				c->SetDisplayMode(displayModeCheckbox->mode);
 			else
@@ -99,7 +99,7 @@ RenderView::RenderView():
 		colourModes.push_back(colourModeCheckbox);
 		colourModeCheckbox->mode = mode;
 		colourModeCheckbox->SetIcon(icon);
-		colourModeCheckbox->SetActionCallback({ [this, mode, colourModeCheckbox] {
+		colourModeCheckbox->SetActionCallback({ [this, colourModeCheckbox] {
 			if(colourModeCheckbox->GetChecked())
 				c->SetColourMode(colourModeCheckbox->mode);
 			else

@@ -214,6 +214,18 @@ void OptionsModel::SetIncludePressure(bool includePressure)
 	notifySettingsChanged();
 }
 
+bool OptionsModel::GetPerfectCircle()
+{
+	return Client::Ref().GetPrefBool("PerfectCircleBrush", true);
+}
+
+void OptionsModel::SetPerfectCircle(bool perfectCircle)
+{
+	Client::Ref().SetPref("PerfectCircleBrush", perfectCircle);
+	gModel->SetPerfectCircle(perfectCircle);
+	notifySettingsChanged();
+}
+
 void OptionsModel::notifySettingsChanged()
 {
 	for (size_t i = 0; i < observers.size(); i++)

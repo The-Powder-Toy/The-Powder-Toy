@@ -33,6 +33,7 @@ class OptionsView: public ui::Window
 	ui::Checkbox * showAvatars;
 	ui::Checkbox * mouseClickRequired;
 	ui::Checkbox * includePressure;
+	ui::Checkbox * perfectCirclePressure;
 	ui::ScrollPanel * scrollPanel;
 public:
 	OptionsView();

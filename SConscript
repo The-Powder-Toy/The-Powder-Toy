@@ -229,7 +229,7 @@ def findLibs(env, conf):
 		if msvc:
 			libChecks = ['shell32', 'wsock32', 'user32', 'Advapi32', 'ws2_32', 'Wldap32', 'crypt32']
 			if GetOption('static'):
-				libChecks += ['imm32', 'version', 'Ole32', 'OleAut32']
+				libChecks += ['imm32', 'version', 'Ole32', 'OleAut32', 'SetupApi']
 			for i in libChecks:
 				if not conf.CheckLib(i):
 					FatalError("Error: some windows libraries not found or not installed, make sure your compiler is set up correctly")
@@ -340,6 +340,11 @@ def findLibs(env, conf):
 			env.ParseConfig("curl-config --static-libs")
 		else:
 			env.ParseConfig("curl-config --libs")
+
+		# Needed for ssl. Scons seems incapable of parsing this out of curl-config
+		if platform == "Darwin":
+			if not conf.CheckFramework('Security'):
+				FatalError("Could not find Security.Framework")
 
 	#Look for pthreads
 	if not conf.CheckLib(['pthread', 'pthreadVC2']):
@@ -552,7 +557,7 @@ if GetOption('no-install-prompt'):
 
 
 #Generate list of sources to compile
-sources = Glob("src/*.cpp") + Glob("src/*/*.cpp") + Glob("src/*/*/*.cpp") + Glob("generated/*.cpp") + Glob("data/*.cpp")
+sources = Glob("src/*.cpp") + Glob("src/*/*.cpp") + Glob("src/*/*/*.cpp") + Glob("data/*.cpp")
 if not GetOption('nolua') and not GetOption('renderer') and not GetOption('font'):
 	sources += Glob("src/lua/socket/*.c") + Glob("src/lua/LuaCompat.c")
 

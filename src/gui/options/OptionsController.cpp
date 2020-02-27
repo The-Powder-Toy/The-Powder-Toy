@@ -107,6 +107,11 @@ void OptionsController::SetIncludePressure(bool includePressure)
 	model->SetIncludePressure(includePressure);
 }
 
+void OptionsController::SetPerfectCircle(bool perfectCircle)
+{
+	model->SetPerfectCircle(perfectCircle);
+}
+
 void OptionsController::Exit()
 {
 	view->CloseActiveWindow();

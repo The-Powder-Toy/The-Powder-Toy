@@ -1,4 +1,4 @@
-The Powder Toy - February 2019
+The Powder Toy - February 2020
 ==========================
 
 Get the latest version [from the Powder Toy website](https://powdertoy.co.uk/Download.html).
@@ -107,3 +107,5 @@ Command Line
 | `open FILE`           | Opens the file as a stamp or game save           |                                   |
 | `ddir DIRECTORY`      | Directory used for saving stamps and preferences |                                   |
 | `ptsave:SAVEID`       | Open online save, used by ptsave: URLs           | `ptsave:2198`                     |
+| `disable-network`     | Disables internet connections                    |                                   |
+| `redirect`            | Redirects output to stdout.txt / stderr.txt      |                                   |
