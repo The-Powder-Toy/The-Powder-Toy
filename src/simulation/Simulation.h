@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <vector>
 #include <array>
+#include <thread>
 
 #include "Particle.h"
 #include "Stickman.h"
@@ -166,6 +167,8 @@ public:
 	void CheckStacking();
 	void BeforeSim();
 	void AfterSim();
+	std::thread BeforeSimThread;
+
 	void rotate_area(int area_x, int area_y, int area_w, int area_h, int invert);
 	void clear_area(int area_x, int area_y, int area_w, int area_h);
 

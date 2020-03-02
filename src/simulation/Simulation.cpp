@@ -1,3 +1,5 @@
+#include <thread>
+
 #include "Simulation.h"
 
 #include <iostream>
@@ -3396,6 +3398,10 @@ void Simulation::UpdateParticles(int start, int end)
 	float pGravX, pGravY, pGravD;
 	bool transitionOccurred;
 
+ 	// join before sim thread if it's running
+	if (!(this->BeforeSimThread.get_id() == std::thread::id()))
+		this->BeforeSimThread.join();
+
 	//the main particle loop function, goes over all particles.
 	for (i = start; i <= end && i <= parts_lastActiveIndex; i++)
 		if (parts[i].type)
@@ -4628,6 +4634,8 @@ movedone:
 			continue;
 		}
 
+	this->BeforeSimThread = std::thread(&Simulation::BeforeSim, this);
+
 	//'f' was pressed (single frame)
 	if (framerender)
 		framerender--;
@@ -5130,6 +5138,7 @@ void Simulation::AfterSim()
 
 Simulation::~Simulation()
 {
+	this->BeforeSimThread.join();
 	delete grav;
 	delete air;
 }

@@ -910,7 +910,6 @@ void GameController::Update()
 		gameView->SetSample(gameModel->GetSimulation()->GetSample(pos.X, pos.Y));
 
 	Simulation * sim = gameModel->GetSimulation();
-	sim->BeforeSim();
 	if (!sim->sys_pause || sim->framerender)
 	{
 		sim->UpdateParticles(0, NPART);
