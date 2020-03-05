@@ -1,6 +1,8 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_NWHL PT_NWHL 151
-Element_NWHL::Element_NWHL()
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_NWHL()
 {
 	Identifier = "DEFAULT_PT_NWHL";
 	Name = "WHOL";
@@ -26,7 +28,6 @@ Element_NWHL::Element_NWHL()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 186;
 	Description = "White hole, pushes away other particles with gravity. (Requires Newtonian gravity)";
 
@@ -41,11 +42,10 @@ Element_NWHL::Element_NWHL()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_NWHL::update;
+	Update = &update;
 }
 
-//#TPT-Directive ElementHeader Element_NWHL static int update(UPDATE_FUNC_ARGS)
-int Element_NWHL::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	if (parts[i].tmp)
 		sim->gravmap[(y/CELL)*(XRES/CELL)+(x/CELL)] -= restrict_flt(0.001f*parts[i].tmp, 0.1f, 51.2f);
@@ -53,6 +53,3 @@ int Element_NWHL::update(UPDATE_FUNC_ARGS)
 		sim->gravmap[(y/CELL)*(XRES/CELL)+(x/CELL)] -= 0.1f;
 	return 0;
 }
-
-
-Element_NWHL::~Element_NWHL() {}

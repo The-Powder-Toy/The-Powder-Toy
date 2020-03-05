@@ -1,6 +1,6 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_NICE PT_NICE 51
-Element_NICE::Element_NICE()
+
+void Element::Element_NICE()
 {
 	Identifier = "DEFAULT_PT_NICE";
 	Name = "NICE";
@@ -26,7 +26,7 @@ Element_NICE::Element_NICE()
 
 	Weight = 100;
 
-	Temperature = 35.0f;
+	DefaultProperties.temp = 35.0f;
 	HeatConduct = 46;
 	Description = "Nitrogen Ice. Very cold, will melt into LN2 when heated only slightly.";
 
@@ -40,8 +40,4 @@ Element_NICE::Element_NICE()
 	LowTemperatureTransition = NT;
 	HighTemperature = 63.1f;
 	HighTemperatureTransition = PT_LNTG;
-
-	Update = NULL;
 }
-
-Element_NICE::~Element_NICE() {}

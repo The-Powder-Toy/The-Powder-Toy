@@ -1,6 +1,8 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_WTRV PT_WTRV 23
-Element_WTRV::Element_WTRV()
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_WTRV()
 {
 	Identifier = "DEFAULT_PT_WTRV";
 	Name = "WTRV";
@@ -26,7 +28,7 @@ Element_WTRV::Element_WTRV()
 
 	Weight = 1;
 
-	Temperature = R_TEMP+100.0f+273.15f;
+	DefaultProperties.temp = R_TEMP + 100.0f + 273.15f;
 	HeatConduct = 48;
 	Description = "Steam. Produced from hot water.";
 
@@ -41,11 +43,10 @@ Element_WTRV::Element_WTRV()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_WTRV::update;
+	Update = &update;
 }
 
-//#TPT-Directive ElementHeader Element_WTRV static int update(UPDATE_FUNC_ARGS)
-int Element_WTRV::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry;
 	for (rx=-1; rx<2; rx++)
@@ -66,6 +67,3 @@ int Element_WTRV::update(UPDATE_FUNC_ARGS)
 		parts[i].temp-=parts[i].temp/1000;
 	return 0;
 }
-
-
-Element_WTRV::~Element_WTRV() {}

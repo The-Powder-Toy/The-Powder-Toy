@@ -21,60 +21,6 @@
 
 #include "images.h"
 
-class ServerSaveActivity::CancelAction: public ui::ButtonAction
-{
-	ServerSaveActivity * a;
-public:
-	CancelAction(ServerSaveActivity * a) : a(a) {}
-	void ActionCallback(ui::Button * sender) override
-	{
-		a->Exit();
-	}
-};
-
-class ServerSaveActivity::SaveAction: public ui::ButtonAction
-{
-	ServerSaveActivity * a;
-public:
-	SaveAction(ServerSaveActivity * a) : a(a) {}
-	void ActionCallback(ui::Button * sender) override
-	{
-		a->Save();
-	}
-};
-
-class ServerSaveActivity::PublishingAction: public ui::ButtonAction
-{
-	ServerSaveActivity * a;
-public:
-	PublishingAction(ServerSaveActivity * a) : a(a) {}
-	void ActionCallback(ui::Button * sender) override
-	{
-		a->ShowPublishingInfo();
-	}
-};
-
-class ServerSaveActivity::RulesAction: public ui::ButtonAction
-{
-	ServerSaveActivity * a;
-public:
-	RulesAction(ServerSaveActivity * a) : a(a) {}
-	void ActionCallback(ui::Button * sender) override
-	{
-		a->ShowRules();
-	}
-};
-
-class ServerSaveActivity::NameChangedAction: public ui::TextboxAction
-{
-public:
-	ServerSaveActivity * a;
-	NameChangedAction(ServerSaveActivity * a) : a(a) {}
-	void TextChangedCallback(ui::Textbox * sender) override {
-		a->CheckName(sender->GetText());
-	}
-};
-
 class SaveUploadTask: public Task
 {
 	SaveInfo save;
@@ -108,11 +54,11 @@ public:
 	}
 };
 
-ServerSaveActivity::ServerSaveActivity(SaveInfo save, ServerSaveActivity::SaveUploadedCallback * callback) :
+ServerSaveActivity::ServerSaveActivity(SaveInfo save, OnUploaded onUploaded_) :
 	WindowActivity(ui::Point(-1, -1), ui::Point(440, 200)),
 	thumbnailRenderer(nullptr),
 	save(save),
-	callback(callback),
+	onUploaded(onUploaded_),
 	saveUploadTask(NULL)
 {
 	titleLabel = new ui::Label(ui::Point(4, 5), ui::Point((Size.X/2)-8, 16), "");
@@ -131,7 +77,7 @@ ServerSaveActivity::ServerSaveActivity(SaveInfo save, ServerSaveActivity::SaveUp
 	nameField = new ui::Textbox(ui::Point(8, 25), ui::Point((Size.X/2)-16, 16), save.GetName(), "[save name]");
 	nameField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	nameField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
-	nameField->SetActionCallback(new NameChangedAction(this));
+	nameField->SetActionCallback({ [this] { CheckName(nameField->GetText()); } });
 	AddComponent(nameField);
 	FocusComponent(nameField);
 
@@ -163,7 +109,9 @@ ServerSaveActivity::ServerSaveActivity(SaveInfo save, ServerSaveActivity::SaveUp
 	cancelButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	cancelButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	cancelButton->Appearance.BorderInactive = ui::Colour(200, 200, 200);
-	cancelButton->SetActionCallback(new CancelAction(this));
+	cancelButton->SetActionCallback({ [this] {
+		Exit();
+	} });
 	AddComponent(cancelButton);
 	SetCancelButton(cancelButton);
 
@@ -171,7 +119,9 @@ ServerSaveActivity::ServerSaveActivity(SaveInfo save, ServerSaveActivity::SaveUp
 	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	okayButton->Appearance.TextInactive = style::Colour::InformationTitle;
-	okayButton->SetActionCallback(new SaveAction(this));
+	okayButton->SetActionCallback({ [this] {
+		Save();
+	} });
 	AddComponent(okayButton);
 	SetOkayButton(okayButton);
 
@@ -179,14 +129,18 @@ ServerSaveActivity::ServerSaveActivity(SaveInfo save, ServerSaveActivity::SaveUp
 	PublishingInfoButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	PublishingInfoButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	PublishingInfoButton->Appearance.TextInactive = style::Colour::InformationTitle;
-	PublishingInfoButton->SetActionCallback(new PublishingAction(this));
+	PublishingInfoButton->SetActionCallback({ [this] {
+		ShowPublishingInfo();
+	} });
 	AddComponent(PublishingInfoButton);
 
 	ui::Button * RulesButton = new ui::Button(ui::Point((Size.X*3/4)-75, Size.Y-22), ui::Point(150, 16), "Save Uploading Rules");
 	RulesButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	RulesButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	RulesButton->Appearance.TextInactive = style::Colour::InformationTitle;
-	RulesButton->SetActionCallback(new RulesAction(this));
+	RulesButton->SetActionCallback({ [this] {
+		ShowRules();
+	} });
 	AddComponent(RulesButton);
 
 	if (save.GetGameSave())
@@ -196,11 +150,11 @@ ServerSaveActivity::ServerSaveActivity(SaveInfo save, ServerSaveActivity::SaveUp
 	}
 }
 
-ServerSaveActivity::ServerSaveActivity(SaveInfo save, bool saveNow, ServerSaveActivity::SaveUploadedCallback * callback) :
+ServerSaveActivity::ServerSaveActivity(SaveInfo save, bool saveNow, OnUploaded onUploaded_) :
 	WindowActivity(ui::Point(-1, -1), ui::Point(200, 50)),
 	thumbnailRenderer(nullptr),
 	save(save),
-	callback(callback),
+	onUploaded(onUploaded_),
 	saveUploadTask(NULL)
 {
 	ui::Label * titleLabel = new ui::Label(ui::Point(0, 0), Size, "Saving to server...");
@@ -225,9 +179,9 @@ void ServerSaveActivity::NotifyDone(Task * task)
 	}
 	else
 	{
-		if(callback)
+		if (onUploaded)
 		{
-			callback->SaveUploaded(save);
+			onUploaded(save);
 		}
 		Exit();
 	}
@@ -235,25 +189,14 @@ void ServerSaveActivity::NotifyDone(Task * task)
 
 void ServerSaveActivity::Save()
 {
-	class PublishConfirmation: public ConfirmDialogueCallback {
-	public:
-		ServerSaveActivity * a;
-		PublishConfirmation(ServerSaveActivity * a) : a(a) {}
-		void ConfirmCallback(ConfirmPrompt::DialogueResult result) override {
-			if (result == ConfirmPrompt::ResultOkay)
-			{
-				a->Exit();
-				a->saveUpload();
-			}
-		}
-		virtual ~PublishConfirmation() { }
-	};
-
 	if(nameField->GetText().length())
 	{
 		if(Client::Ref().GetAuthUser().Username != save.GetUserName() && publishedCheckbox->GetChecked())
 		{
-			new ConfirmPrompt("Publish", "This save was created by " + save.GetUserName().FromUtf8() + ", you're about to publish this under your own name; If you haven't been given permission by the author to do so, please uncheck the publish box, otherwise continue", new PublishConfirmation(this));
+			new ConfirmPrompt("Publish", "This save was created by " + save.GetUserName().FromUtf8() + ", you're about to publish this under your own name; If you haven't been given permission by the author to do so, please uncheck the publish box, otherwise continue", { [this] {
+				Exit();
+				saveUpload();
+			} });
 		}
 		else
 		{
@@ -295,10 +238,10 @@ void ServerSaveActivity::saveUpload()
 	{
 		new ErrorMessage("Error", "Upload failed with error:\n"+Client::Ref().GetLastError());
 	}
-	else if(callback)
+	else if (onUploaded)
 	{
 		new SaveIDMessage(save.GetID());
-		callback->SaveUploaded(save);
+		onUploaded(save);
 	}
 }
 
@@ -448,5 +391,4 @@ ServerSaveActivity::~ServerSaveActivity()
 		thumbnailRenderer->Abandon();
 	}
 	delete saveUploadTask;
-	delete callback;
 }

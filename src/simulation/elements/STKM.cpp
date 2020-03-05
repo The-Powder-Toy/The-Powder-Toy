@@ -1,6 +1,16 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_STKM PT_STKM 55
-Element_STKM::Element_STKM()
+
+static int update(UPDATE_FUNC_ARGS);
+int Element_STKM_graphics(GRAPHICS_FUNC_ARGS);
+static void create(ELEMENT_CREATE_FUNC_ARGS);
+static bool createAllowed(ELEMENT_CREATE_ALLOWED_FUNC_ARGS);
+static void changeType(ELEMENT_CHANGETYPE_FUNC_ARGS);
+void Element_STKM_init_legs(Simulation * sim, playerst *playerp, int i);
+int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS);
+void Element_STKM_set_element(Simulation *sim, playerst *playerp, int element);
+void Element_STKM_interact(Simulation *sim, playerst *playerp, int i, int x, int y);
+
+void Element::Element_STKM()
 {
 	Identifier = "DEFAULT_PT_STKM";
 	Name = "STKM";
@@ -15,6 +25,7 @@ Element_STKM::Element_STKM()
 	Loss = 1.0f;
 	Collision = 0.0f;
 	Gravity = 0.0f;
+	NewtonianGravity = 0.0f;
 	Diffusion = 0.0f;
 	HotAir = 0.00f	* CFDS;
 	Falldown = 0;
@@ -26,7 +37,7 @@ Element_STKM::Element_STKM()
 
 	Weight = 50;
 
-	Temperature = R_TEMP+14.6f+273.15f;
+	DefaultProperties.temp = R_TEMP + 14.6f + 273.15f;
 	HeatConduct = 0;
 	Description = "Stickman. Don't kill him! Control with the arrow keys.";
 
@@ -41,32 +52,55 @@ Element_STKM::Element_STKM()
 	HighTemperature = 620.0f;
 	HighTemperatureTransition = PT_FIRE;
 
-	Update = &Element_STKM::update;
-	Graphics = &Element_STKM::graphics;
+	DefaultProperties.life = 100;
+
+	Update = &update;
+	Graphics = &Element_STKM_graphics;
+	Create = &create;
+	CreateAllowed = &createAllowed;
+	ChangeType = &changeType;
 }
 
-//#TPT-Directive ElementHeader Element_STKM static int update(UPDATE_FUNC_ARGS)
-int Element_STKM::update(UPDATE_FUNC_ARGS)
-
+static int update(UPDATE_FUNC_ARGS)
 {
-	run_stickman(&sim->player, UPDATE_FUNC_SUBCALL_ARGS);
+	Element_STKM_run_stickman(&sim->player, UPDATE_FUNC_SUBCALL_ARGS);
 	return 0;
 }
 
-
-
-//#TPT-Directive ElementHeader Element_STKM static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_STKM::graphics(GRAPHICS_FUNC_ARGS)
+int Element_STKM_graphics(GRAPHICS_FUNC_ARGS)
 {
 	*colr = *colg = *colb = *cola = 0;
 	*pixel_mode = PSPEC_STICKMAN;
 	return 1;
 }
 
+static void create(ELEMENT_CREATE_FUNC_ARGS)
+{
+	int spawnID = sim->create_part(-3, x, y, PT_SPAWN);
+	if (spawnID >= 0)
+		sim->player.spawnID = spawnID;
+}
+
+static bool createAllowed(ELEMENT_CREATE_ALLOWED_FUNC_ARGS)
+{
+	return sim->elementCount[PT_STKM] <= 0 && !sim->player.spwn;
+}
+
+static void changeType(ELEMENT_CHANGETYPE_FUNC_ARGS)
+{
+	if (to == PT_STKM)
+	{
+		Element_STKM_init_legs(sim, &sim->player, i);
+		sim->player.spwn = 1;
+	}
+	else
+		sim->player.spwn = 0;
+}
+
 #define INBOND(x, y) ((x)>=0 && (y)>=0 && (x)<XRES && (y)<YRES)
 
-//#TPT-Directive ElementHeader Element_STKM static int run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
-int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
+int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
+{
 	int r, rx, ry;
 	int t = parts[i].type;
 	float pp, d;
@@ -79,7 +113,7 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 	float rocketBootsFeetEffectV = 0.45f;
 
 	if (!playerp->fan && parts[i].ctype && sim->IsValidElement(parts[i].ctype))
-		STKM_set_element(sim, playerp, parts[i].ctype);
+		Element_STKM_set_element(sim, playerp, parts[i].ctype);
 	playerp->frames++;
 
 	//Temperature handling
@@ -368,7 +402,7 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 				if (!r && !sim->bmap[(y+ry)/CELL][(x+rx)/CELL])
 					continue;
 
-				STKM_set_element(sim, playerp, TYP(r));
+				Element_STKM_set_element(sim, playerp, TYP(r));
 				if (TYP(r) == PT_PLNT && parts[i].life<100) //Plant gives him 5 HP
 				{
 					if (parts[i].life<=95)
@@ -391,7 +425,7 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 				else if (sim->bmap[(ry+y)/CELL][(rx+x)/CELL]==WL_GRAV /* && parts[i].type!=PT_FIGH */)
 					playerp->rocketBoots = true;
 				if (TYP(r)==PT_PRTI)
-					Element_STKM::STKM_interact(sim, playerp, i, rx, ry);
+					Element_STKM_interact(sim, playerp, i, rx, ry);
 				if (!parts[i].type)//STKM_interact may kill STKM
 					return 1;
 			}
@@ -570,10 +604,10 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 	}
 
 	//If legs touch something
-	Element_STKM::STKM_interact(sim, playerp, i, (int)(playerp->legs[4]+0.5), (int)(playerp->legs[5]+0.5));
-	Element_STKM::STKM_interact(sim, playerp, i, (int)(playerp->legs[12]+0.5), (int)(playerp->legs[13]+0.5));
-	Element_STKM::STKM_interact(sim, playerp, i, (int)(playerp->legs[4]+0.5), (int)playerp->legs[5]);
-	Element_STKM::STKM_interact(sim, playerp, i, (int)(playerp->legs[12]+0.5), (int)playerp->legs[13]);
+	Element_STKM_interact(sim, playerp, i, (int)(playerp->legs[4]+0.5), (int)(playerp->legs[5]+0.5));
+	Element_STKM_interact(sim, playerp, i, (int)(playerp->legs[12]+0.5), (int)(playerp->legs[13]+0.5));
+	Element_STKM_interact(sim, playerp, i, (int)(playerp->legs[4]+0.5), (int)playerp->legs[5]);
+	Element_STKM_interact(sim, playerp, i, (int)(playerp->legs[12]+0.5), (int)playerp->legs[13]);
 	if (!parts[i].type)
 		return 1;
 
@@ -581,8 +615,7 @@ int Element_STKM::run_stickman(playerst *playerp, UPDATE_FUNC_ARGS) {
 	return 0;
 }
 
-//#TPT-Directive ElementHeader Element_STKM static void STKM_interact(Simulation *sim, playerst *playerp, int i, int x, int y)
-void Element_STKM::STKM_interact(Simulation *sim, playerst *playerp, int i, int x, int y)
+void Element_STKM_interact(Simulation *sim, playerst *playerp, int i, int x, int y)
 {
 	int r;
 	if (x<0 || y<0 || x>=XRES || y>=YRES || !sim->parts[i].type)
@@ -648,8 +681,7 @@ void Element_STKM::STKM_interact(Simulation *sim, playerst *playerp, int i, int 
 	}
 }
 
-//#TPT-Directive ElementHeader Element_STKM static void STKM_init_legs(Simulation * sim, playerst *playerp, int i)
-void Element_STKM::STKM_init_legs(Simulation * sim, playerst *playerp, int i)
+void Element_STKM_init_legs(Simulation * sim, playerst *playerp, int i)
 {
 	int x, y;
 
@@ -681,11 +713,12 @@ void Element_STKM::STKM_init_legs(Simulation * sim, playerst *playerp, int i)
 	playerp->comm = 0;
 	playerp->pcomm = 0;
 	playerp->frames = 0;
+	playerp->spwn = 0;
 	playerp->fan = false;
+	playerp->rocketBoots = false;
 }
 
-//#TPT-Directive ElementHeader Element_STKM static void STKM_set_element(Simulation *sim, playerst *playerp, int element)
-void Element_STKM::STKM_set_element(Simulation *sim, playerst *playerp, int element)
+void Element_STKM_set_element(Simulation *sim, playerst *playerp, int element)
 {
 	if (sim->elements[element].Falldown != 0
 	    || sim->elements[element].Properties&TYPE_GAS
@@ -705,6 +738,3 @@ void Element_STKM::STKM_set_element(Simulation *sim, playerst *playerp, int elem
 		playerp->fan = false;
 	}
 }
-
-
-Element_STKM::~Element_STKM() {}

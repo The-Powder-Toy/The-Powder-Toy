@@ -1,6 +1,6 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_GUNP PT_GUNP 7
-Element_GUNP::Element_GUNP()
+
+void Element::Element_GUNP()
 {
 	Identifier = "DEFAULT_PT_GUNP";
 	Name = "GUN";
@@ -26,7 +26,6 @@ Element_GUNP::Element_GUNP()
 
 	Weight = 85;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 97;
 	Description = "Gunpowder. Light dust, explodes on contact with fire or spark.";
 
@@ -40,8 +39,4 @@ Element_GUNP::Element_GUNP()
 	LowTemperatureTransition = NT;
 	HighTemperature = 673.0f;
 	HighTemperatureTransition = PT_FIRE;
-
-	Update = NULL;
 }
-
-Element_GUNP::~Element_GUNP() {}

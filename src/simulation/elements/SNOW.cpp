@@ -1,6 +1,8 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_SNOW PT_SNOW 16
-Element_SNOW::Element_SNOW()
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_SNOW()
 {
 	Identifier = "DEFAULT_PT_SNOW";
 	Name = "SNOW";
@@ -27,7 +29,7 @@ Element_SNOW::Element_SNOW()
 
 	Weight = 50;
 
-	Temperature = R_TEMP-30.0f+273.15f;
+	DefaultProperties.temp = R_TEMP - 30.0f + 273.15f;
 	HeatConduct = 46;
 	Description = "Light particles. Created when ICE breaks under pressure.";
 
@@ -42,12 +44,11 @@ Element_SNOW::Element_SNOW()
 	HighTemperature = 252.05f;
 	HighTemperatureTransition = ST;
 
-	Update = &Element_SNOW::update;
+	Update = &update;
 }
 
-//#TPT-Directive ElementHeader Element_SNOW static int update(UPDATE_FUNC_ARGS)
-int Element_SNOW::update(UPDATE_FUNC_ARGS)
- { //currently used for snow as well
+static int update(UPDATE_FUNC_ARGS)
+{
 	int r, rx, ry;
 	if (parts[i].ctype==PT_FRZW)//get colder if it is from FRZW
 	{
@@ -68,6 +69,3 @@ int Element_SNOW::update(UPDATE_FUNC_ARGS)
 			}
 	return 0;
 }
-
-
-Element_SNOW::~Element_SNOW() {}

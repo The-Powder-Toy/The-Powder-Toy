@@ -14,28 +14,6 @@
 
 #include "Misc.h"
 
-class LoginView::LoginAction : public ui::ButtonAction
-{
-	LoginView * v;
-public:
-	LoginAction(LoginView * _v) { v = _v; }
-	void ActionCallback(ui::Button * sender) override
-	{
-		v->c->Login(v->usernameField->GetText().ToUtf8(), v->passwordField->GetText().ToUtf8());
-	}
-};
-
-class LoginView::CancelAction : public ui::ButtonAction
-{
-	LoginView * v;
-public:
-	CancelAction(LoginView * _v) { v = _v; }
-	void ActionCallback(ui::Button * sender) override
-	{
-		v->c->Exit();
-	}
-};
-
 LoginView::LoginView():
 	ui::Window(ui::Point(-1, -1), ui::Point(200, 87)),
 	loginButton(new ui::Button(ui::Point(200-100, 87-17), ui::Point(100, 17), "Sign in")),
@@ -60,11 +38,11 @@ LoginView::LoginView():
 	loginButton->Appearance.HorizontalAlign = ui::Appearance::AlignRight;
 	loginButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	loginButton->Appearance.TextInactive = style::Colour::ConfirmButton;
-	loginButton->SetActionCallback(new LoginAction(this));
+	loginButton->SetActionCallback({ [this] { c->Login(usernameField->GetText().ToUtf8(), passwordField->GetText().ToUtf8()); } });
 	AddComponent(cancelButton);
 	cancelButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	cancelButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-	cancelButton->SetActionCallback(new CancelAction(this));
+	cancelButton->SetActionCallback({ [this] { c->Exit(); } });
 	AddComponent(titleLabel);
 	titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	titleLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;

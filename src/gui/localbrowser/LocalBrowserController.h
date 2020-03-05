@@ -3,17 +3,18 @@
 
 #include "common/String.h"
 
-class ControllerCallback;
+#include <functional>
+
 class SaveFile;
 class LocalBrowserView;
 class LocalBrowserModel;
 class LocalBrowserController {
-	ControllerCallback * callback;
 	LocalBrowserView * browserView;
 	LocalBrowserModel * browserModel;
+	std::function<void ()> onDone;
 public:
 	bool HasDone;
-	LocalBrowserController(ControllerCallback * callback);
+	LocalBrowserController(std::function<void ()> onDone = nullptr);
 	LocalBrowserView * GetView() {return browserView;}
 	SaveFile * GetSave();
 	void RemoveSelected();

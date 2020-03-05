@@ -1,6 +1,9 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_PUMP PT_PUMP 97
-Element_PUMP::Element_PUMP()
+
+static int update(UPDATE_FUNC_ARGS);
+static int graphics(GRAPHICS_FUNC_ARGS);
+
+void Element::Element_PUMP()
 {
 	Identifier = "DEFAULT_PT_PUMP";
 	Name = "PUMP";
@@ -26,7 +29,7 @@ Element_PUMP::Element_PUMP()
 
 	Weight = 100;
 
-	Temperature = 273.15f;
+	DefaultProperties.temp = 273.15f;
 	HeatConduct = 0;
 	Description = "Pressure pump. Changes pressure to its temp when activated. (use HEAT/COOL).";
 
@@ -41,12 +44,13 @@ Element_PUMP::Element_PUMP()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_PUMP::update;
-	Graphics = &Element_PUMP::graphics;
+	DefaultProperties.life = 10;
+
+	Update = &update;
+	Graphics = &graphics;
 }
 
-//#TPT-Directive ElementHeader Element_PUMP static int update(UPDATE_FUNC_ARGS)
-int Element_PUMP::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry;
 	if (parts[i].life != 10)
@@ -101,15 +105,9 @@ int Element_PUMP::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-
-//#TPT-Directive ElementHeader Element_PUMP static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_PUMP::graphics(GRAPHICS_FUNC_ARGS)
-
+static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	int lifemod = ((cpart->life>10?10:cpart->life)*19);
 	*colb += lifemod;
 	return 0;
 }
-
-
-Element_PUMP::~Element_PUMP() {}

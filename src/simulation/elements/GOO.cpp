@@ -1,6 +1,8 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_GOO PT_GOO 12
-Element_GOO::Element_GOO()
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_GOO()
 {
 	Identifier = "DEFAULT_PT_GOO";
 	Name = "GOO";
@@ -27,7 +29,6 @@ Element_GOO::Element_GOO()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 75;
 	Description = "Deforms and disappears under pressure.";
 
@@ -42,13 +43,12 @@ Element_GOO::Element_GOO()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_GOO::update;
+	Update = &update;
 }
 
-#define ADVECTION 0.1f
+constexpr float ADVECTION = 0.1f;
 
-//#TPT-Directive ElementHeader Element_GOO static int update(UPDATE_FUNC_ARGS)
-int Element_GOO::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	if (!parts[i].life && sim->pv[y/CELL][x/CELL]>1.0f)
 		parts[i].life = RNG::Ref().between(300, 379);
@@ -59,6 +59,3 @@ int Element_GOO::update(UPDATE_FUNC_ARGS)
 	}
 	return 0;
 }
-
-
-Element_GOO::~Element_GOO() {}

@@ -3,18 +3,19 @@
 
 #include "common/String.h"
 
-class ControllerCallback;
+#include <functional>
+
 class SaveInfo;
 class TagsView;
 class TagsModel;
 class TagsController
 {
-	ControllerCallback * callback;
+	std::function<void ()> onDone;
 	TagsView * tagsView;
 	TagsModel * tagsModel;
 public:
 	bool HasDone;
-	TagsController(ControllerCallback * callback, SaveInfo * save);
+	TagsController(std::function<void ()> onDone, SaveInfo * save);
 	TagsView * GetView() {return tagsView;}
 	SaveInfo * GetSave();
 	void RemoveTag(ByteString tag);

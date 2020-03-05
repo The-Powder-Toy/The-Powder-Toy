@@ -4,17 +4,18 @@
 #include "common/String.h"
 #include "client/User.h"
 
+#include <functional>
+
 class LoginView;
 class LoginModel;
-class ControllerCallback;
 class LoginController
 {
 	LoginView * loginView;
 	LoginModel * loginModel;
-	ControllerCallback * callback;
+	std::function<void ()> onDone;
 public:
 	bool HasExited;
-	LoginController(ControllerCallback * callback = NULL);
+	LoginController(std::function<void ()> onDone = nullptr);
 	void Login(ByteString username, ByteString password);
 	void Exit();
 	LoginView * GetView() { return loginView; }

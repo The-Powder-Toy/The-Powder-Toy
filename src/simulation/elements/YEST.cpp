@@ -1,6 +1,8 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_YEST PT_YEST 63
-Element_YEST::Element_YEST()
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_YEST()
 {
 	Identifier = "DEFAULT_PT_YEST";
 	Name = "YEST";
@@ -26,7 +28,6 @@ Element_YEST::Element_YEST()
 
 	Weight = 80;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
 	Description = "Yeast, grows when warm (~37C).";
 
@@ -41,11 +42,10 @@ Element_YEST::Element_YEST()
 	HighTemperature = 373.0f;
 	HighTemperatureTransition = PT_DYST;
 
-	Update = &Element_YEST::update;
+	Update = &update;
 }
 
-//#TPT-Directive ElementHeader Element_YEST static int update(UPDATE_FUNC_ARGS)
-int Element_YEST::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry;
 	for (rx=-1; rx<2; rx++)
@@ -65,6 +65,3 @@ int Element_YEST::update(UPDATE_FUNC_ARGS)
 	}
 	return 0;
 }
-
-
-Element_YEST::~Element_YEST() {}

@@ -1,6 +1,10 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_PQRT PT_PQRT 133
-Element_PQRT::Element_PQRT()
+
+int Element_QRTZ_update(UPDATE_FUNC_ARGS);
+int Element_QRTZ_graphics(GRAPHICS_FUNC_ARGS);
+static void create(ELEMENT_CREATE_FUNC_ARGS);
+
+void Element::Element_PQRT()
 {
 	Identifier = "DEFAULT_PT_PQRT";
 	Name = "PQRT";
@@ -26,7 +30,6 @@ Element_PQRT::Element_PQRT()
 
 	Weight = 90;
 
-	Temperature = R_TEMP+273.15f;
 	HeatConduct = 3;
 	Description = "Powdered quartz, broken form of QRTZ.";
 
@@ -41,8 +44,12 @@ Element_PQRT::Element_PQRT()
 	HighTemperature = 2573.15f;
 	HighTemperatureTransition = PT_LAVA;
 
-	Update = &Element_QRTZ::update;
-	Graphics = &Element_QRTZ::graphics;
+	Update = &Element_QRTZ_update;
+	Graphics = &Element_QRTZ_graphics;
+	Create = &create;
 }
 
-Element_PQRT::~Element_PQRT() {}
+static void create(ELEMENT_CREATE_FUNC_ARGS)
+{
+	sim->parts[i].tmp2 = RNG::Ref().between(0, 10);
+}

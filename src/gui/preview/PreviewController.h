@@ -3,25 +3,24 @@
 
 #include "client/ClientListener.h"
 
+#include <functional>
+
 class SaveInfo;
-class ControllerCallback;
 class LoginController;
 class PreviewModel;
 class PreviewView;
 class PreviewController: public ClientListener {
 	int saveId;
-	int saveDate;
 	PreviewModel * previewModel;
 	PreviewView * previewView;
 	LoginController * loginWindow;
-	ControllerCallback * callback;
+	std::function<void ()> onDone;
 public:
 	void NotifyAuthUserChanged(Client * sender) override;
 	inline int SaveID() { return saveId; }
 
 	bool HasExited;
-	PreviewController(int saveID, bool instant, ControllerCallback * callback);
-	PreviewController(int saveID, int saveDate, bool instant, ControllerCallback * callback);
+	PreviewController(int saveID, int saveDate, bool instant, std::function<void ()> onDone = nullptr);
 	void Exit();
 	void DoOpen();
 	void OpenInBrowser();

@@ -1,16 +1,18 @@
 #include "simulation/ToolCommon.h"
 #include "simulation/Air.h"
 
-//#TPT-Directive ToolClass Tool_Air TOOL_AIR 2
-Tool_Air::Tool_Air()
+static int perform(Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength);
+
+void SimTool::Tool_AIR()
 {
 	Identifier = "DEFAULT_TOOL_AIR";
 	Name = "AIR";
 	Colour = PIXPACK(0xFFFFFF);
 	Description = "Air, creates airflow and pressure.";
+	Perform = &perform;
 }
 
-int Tool_Air::Perform(Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength)
+static int perform(Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength)
 {
 	sim->air->pv[y/CELL][x/CELL] += strength*0.05f;
 
@@ -20,5 +22,3 @@ int Tool_Air::Perform(Simulation * sim, Particle * cpart, int x, int y, int brus
 		sim->air->pv[y/CELL][x/CELL] = -256.0f;
 	return 1;
 }
-
-Tool_Air::~Tool_Air() {}

@@ -11,7 +11,7 @@
 
 #include "simulation/Simulation.h"
 #include "simulation/Air.h"
-#include "ElementClasses.h"
+#include "simulation/ElementClasses.h"
 
 #include "gui/game/GameController.h"
 #include "gui/game/GameModel.h"
@@ -575,7 +575,7 @@ AnyType TPTScriptInterface::tptS_reset(std::deque<String> * words)
 		{
 			if (sim->parts[i].type)
 			{
-				sim->parts[i].temp = sim->elements[sim->parts[i].type].Temperature;
+				sim->parts[i].temp = sim->elements[sim->parts[i].type].DefaultProperties.temp;
 			}
 		}
 	}

@@ -1,6 +1,6 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_DESL PT_DESL 58
-Element_DESL::Element_DESL()
+
+void Element::Element_DESL()
 {
 	Identifier = "DEFAULT_PT_DESL";
 	Name = "DESL";
@@ -26,7 +26,6 @@ Element_DESL::Element_DESL()
 
 	Weight = 15;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 42;
 	Description = "Liquid diesel. Explodes under high pressure and temperatures.";
 
@@ -40,8 +39,4 @@ Element_DESL::Element_DESL()
 	LowTemperatureTransition = NT;
 	HighTemperature = 335.0f;
 	HighTemperatureTransition = PT_FIRE;
-
-	Update = NULL;
 }
-
-Element_DESL::~Element_DESL() {}

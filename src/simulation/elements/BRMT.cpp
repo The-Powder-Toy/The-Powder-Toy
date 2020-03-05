@@ -1,6 +1,8 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_BRMT PT_BRMT 30
-Element_BRMT::Element_BRMT()
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_BRMT()
 {
 	Identifier = "DEFAULT_PT_BRMT";
 	Name = "BRMT";
@@ -26,7 +28,6 @@ Element_BRMT::Element_BRMT()
 
 	Weight = 90;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 211;
 	Description = "Broken metal. Created when iron rusts or when metals break from pressure.";
 
@@ -41,11 +42,10 @@ Element_BRMT::Element_BRMT()
 	HighTemperature = 1273.0f;
 	HighTemperatureTransition = ST;
 
-	Update = &Element_BRMT::update;
+	Update = &update;
 }
 
-//#TPT-Directive ElementHeader Element_BRMT static int update(UPDATE_FUNC_ARGS)
-int Element_BRMT::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry, tempFactor;
 	if (parts[i].temp > 523.15f)//250.0f+273.15f
@@ -73,6 +73,3 @@ int Element_BRMT::update(UPDATE_FUNC_ARGS)
 	}
 	return 0;
 }
-
-
-Element_BRMT::~Element_BRMT() {}

@@ -1,6 +1,11 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_PHOT PT_PHOT 31
-Element_PHOT::Element_PHOT()
+
+int Element_FIRE_update(UPDATE_FUNC_ARGS);
+static int update(UPDATE_FUNC_ARGS);
+static int graphics(GRAPHICS_FUNC_ARGS);
+static void create(ELEMENT_CREATE_FUNC_ARGS);
+
+void Element::Element_PHOT()
 {
 	Identifier = "DEFAULT_PT_PHOT";
 	Name = "PHOT";
@@ -26,7 +31,7 @@ Element_PHOT::Element_PHOT()
 
 	Weight = -1;
 
-	Temperature = R_TEMP+900.0f+273.15f;
+	DefaultProperties.temp = R_TEMP + 900.0f + 273.15f;
 	HeatConduct = 251;
 	Description = "Photons. Refracts through glass, scattered by quartz, and color-changed by different elements. Ignites flammable materials.";
 
@@ -41,12 +46,15 @@ Element_PHOT::Element_PHOT()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_PHOT::update;
-	Graphics = &Element_PHOT::graphics;
+	DefaultProperties.life = 680;
+	DefaultProperties.ctype = 0x3FFFFFFF;
+
+	Update = &update;
+	Graphics = &graphics;
+	Create = &create;
 }
 
-//#TPT-Directive ElementHeader Element_PHOT static int update(UPDATE_FUNC_ARGS)
-int Element_PHOT::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry;
 	float rr, rrr;
@@ -56,7 +64,7 @@ int Element_PHOT::update(UPDATE_FUNC_ARGS)
 	}
 	if (parts[i].temp > 506)
 		if (RNG::Ref().chance(1, 10))
-			Element_FIRE::update(UPDATE_FUNC_SUBCALL_ARGS);
+			Element_FIRE_update(UPDATE_FUNC_SUBCALL_ARGS);
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)
 			if (BOUNDS_CHECK) {
@@ -108,11 +116,7 @@ int Element_PHOT::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-
-
-//#TPT-Directive ElementHeader Element_PHOT static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_PHOT::graphics(GRAPHICS_FUNC_ARGS)
-
+static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	int x = 0;
 	*colr = *colg = *colb = 0;
@@ -141,5 +145,12 @@ int Element_PHOT::graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
-
-Element_PHOT::~Element_PHOT() {}
+static void create(ELEMENT_CREATE_FUNC_ARGS)
+{
+	float a = RNG::Ref().between(0, 7) * 0.78540f;
+	sim->parts[i].vx = 3.0f * cosf(a);
+	sim->parts[i].vy = 3.0f * sinf(a);
+	int Element_FILT_interactWavelengths(Particle* cpart, int origWl);
+	if (TYP(sim->pmap[y][x]) == PT_FILT)
+		sim->parts[i].ctype = Element_FILT_interactWavelengths(&sim->parts[ID(sim->pmap[y][x])], sim->parts[i].ctype);
+}

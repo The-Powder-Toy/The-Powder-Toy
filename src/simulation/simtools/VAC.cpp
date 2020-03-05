@@ -1,16 +1,18 @@
 #include "simulation/ToolCommon.h"
 #include "simulation/Air.h"
 
-//#TPT-Directive ToolClass Tool_Vac TOOL_VAC 3
-Tool_Vac::Tool_Vac()
+static int perform(Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength);
+
+void SimTool::Tool_VAC()
 {
 	Identifier = "DEFAULT_TOOL_VAC";
 	Name = "VAC";
 	Colour = PIXPACK(0x303030);
 	Description = "Vacuum, reduces air pressure.";
+	Perform = &perform;
 }
 
-int Tool_Vac::Perform(Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength)
+static int perform(Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength)
 {
 	sim->air->pv[y/CELL][x/CELL] -= strength*0.05f;
 
@@ -20,5 +22,3 @@ int Tool_Vac::Perform(Simulation * sim, Particle * cpart, int x, int y, int brus
 		sim->air->pv[y/CELL][x/CELL] = -256.0f;
 	return 1;
 }
-
-Tool_Vac::~Tool_Vac() {}

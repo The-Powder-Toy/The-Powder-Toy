@@ -1,6 +1,6 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_NSCN PT_NSCN 36
-Element_NSCN::Element_NSCN()
+
+void Element::Element_NSCN()
 {
 	Identifier = "DEFAULT_PT_NSCN";
 	Name = "NSCN";
@@ -27,7 +27,6 @@ Element_NSCN::Element_NSCN()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
 	Description = "N-Type Silicon, Will not transfer current to P-Type Silicon.";
 
@@ -41,8 +40,4 @@ Element_NSCN::Element_NSCN()
 	LowTemperatureTransition = NT;
 	HighTemperature = 1687.0f;
 	HighTemperatureTransition = PT_LAVA;
-
-	Update = NULL;
 }
-
-Element_NSCN::~Element_NSCN() {}

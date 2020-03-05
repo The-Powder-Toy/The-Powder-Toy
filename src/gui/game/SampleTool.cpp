@@ -7,7 +7,7 @@
 #include "gui/interface/Colour.h"
 
 #include "simulation/Simulation.h"
-#include "ElementClasses.h"
+#include "simulation/ElementClasses.h"
 
 #include "Menu.h"
 

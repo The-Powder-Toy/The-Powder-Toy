@@ -3,27 +3,24 @@
 
 #include "Label.h"
 
+#include <functional>
+
 namespace ui
 {
-class Textbox;
-class TextboxAction
+struct TextboxAction
 {
-public:
-	virtual void TextChangedCallback(ui::Textbox * sender) {}
-	virtual ~TextboxAction() {}
+	std::function<void ()> change;
 };
 
 class Textbox : public Label
 {
-	friend class TextboxAction;
-
 	void AfterTextChange(bool changed);
 
 public:
 	bool ReadOnly;
 	enum ValidInput { All, Multiline, Numeric, Number }; // Numeric doesn't delete trailing 0's
 	Textbox(Point position, Point size, String textboxText = String(), String textboxPlaceholder = String());
-	virtual ~Textbox();
+	virtual ~Textbox() = default;
 
 	void SetText(String text) override;
 	String GetText() override;
@@ -33,7 +30,7 @@ public:
 	void SetBorder(bool border) { this->border = border; }
 	void SetHidden(bool hidden);
 	bool GetHidden() { return masked; }
-	void SetActionCallback(TextboxAction * action) { actionCallback = action; }
+	void SetActionCallback(TextboxAction action) { actionCallback = action; }
 
 	void SetLimit(size_t limit);
 	size_t GetLimit();
@@ -67,7 +64,7 @@ protected:
 	bool mouseDown;
 	bool masked, border;
 	int cursor, cursorPositionX, cursorPositionY;
-	TextboxAction *actionCallback;
+	TextboxAction actionCallback;
 	String backingText;
 	String placeHolder;
 

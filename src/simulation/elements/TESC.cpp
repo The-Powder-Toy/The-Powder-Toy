@@ -1,6 +1,8 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_TESC PT_TESC 88
-Element_TESC::Element_TESC()
+
+static void create(ELEMENT_CREATE_FUNC_ARGS);
+
+void Element::Element_TESC()
 {
 	Identifier = "DEFAULT_PT_TESC";
 	Name = "TESC";
@@ -26,7 +28,6 @@ Element_TESC::Element_TESC()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
 	Description = "Tesla coil! Creates lightning when sparked.";
 
@@ -41,7 +42,15 @@ Element_TESC::Element_TESC()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = NULL;
+	Create = &create;
 }
 
-Element_TESC::~Element_TESC() {}
+static void create(ELEMENT_CREATE_FUNC_ARGS)
+{
+	if (v >= 0)
+	{
+		sim->parts[i].tmp = v;
+		if (sim->parts[i].tmp > 300)
+			sim->parts[i].tmp = 300;
+	}
+}

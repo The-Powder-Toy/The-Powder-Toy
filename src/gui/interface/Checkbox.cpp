@@ -11,8 +11,7 @@ Checkbox::Checkbox(ui::Point position, ui::Point size, String text, String toolT
 	text(text),
 	toolTip(toolTip),
 	checked(false),
-	isMouseOver(false),
-	actionCallback(NULL)
+	isMouseOver(false)
 {
 
 }
@@ -44,8 +43,8 @@ void Checkbox::OnMouseClick(int x, int y, unsigned int button)
 	{
 		checked = true;
 	}
-	if(actionCallback)
-		actionCallback->ActionCallback(this);
+	if (actionCallback.action)
+		actionCallback.action();
 }
 
 void Checkbox::OnMouseUp(int x, int y, unsigned int button)
@@ -97,14 +96,3 @@ void Checkbox::Draw(const Point& screenPos)
 			g->draw_icon(screenPos.X+iconPosition.X, screenPos.Y+iconPosition.Y, Appearance.icon, 200);
 	}
 }
-
-void Checkbox::SetActionCallback(CheckboxAction * action)
-{
-	delete actionCallback;
-	actionCallback = action;
-}
-
-Checkbox::~Checkbox() {
-	delete actionCallback;
-}
-

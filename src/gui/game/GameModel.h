@@ -69,6 +69,7 @@ private:
 	unsigned int undoHistoryLimit;
 	bool mouseClickRequired;
 	bool includePressure;
+	bool perfectCircle = true;
 
 	size_t activeColourPreset;
 	std::vector<ui::Colour> colourPresets;
@@ -76,6 +77,7 @@ private:
 	ui::Colour colour;
 
 	int edgeMode;
+	int decoSpace;
 
 	String infoTip;
 	String toolTip;
@@ -109,6 +111,8 @@ public:
 
 	void SetEdgeMode(int edgeMode);
 	int GetEdgeMode();
+	void SetDecoSpace(int decoSpace);
+	int GetDecoSpace();
 
 	void SetActiveColourPreset(size_t preset);
 	size_t GetActiveColourPreset();
@@ -130,6 +134,7 @@ public:
 
 	void BuildMenus();
 	void BuildFavoritesMenu();
+	void BuildBrushList();
 	void BuildQuickOptionMenu(GameController * controller);
 
 	std::deque<Snapshot*> GetHistory();
@@ -208,6 +213,7 @@ public:
 	void SetMouseClickRequired(bool mouseClickRequired);
 	bool GetIncludePressure();
 	void SetIncludePressure(bool includePressure);
+	void SetPerfectCircle(bool perfectCircle);
 
 	std::vector<Notification*> GetNotifications();
 	void AddNotification(Notification * notification);

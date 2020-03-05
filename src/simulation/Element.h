@@ -2,8 +2,9 @@
 #define ELEMENTCLASS_H
 
 #include "graphics/Pixel.h"
-#include "simulation/StructProperty.h"
 #include "simulation/ElementDefs.h"
+#include "simulation/Particle.h"
+#include "simulation/StructProperty.h"
 
 class Simulation;
 class Renderer;
@@ -25,6 +26,7 @@ public:
 	float Loss;
 	float Collision;
 	float Gravity;
+	float NewtonianGravity;
 	float Diffusion;
 	float HotAir;
 	int Falldown;
@@ -35,7 +37,6 @@ public:
 	// Photon wavelengths are ANDed with this value when a photon hits an element, meaning that only wavelengths present in both this value and the original photon will remain in the reflected photon
 	unsigned int PhotonReflectWavelengths;
 	int Weight;
-	float Temperature;
 	unsigned char HeatConduct;
 	String Description;
 	unsigned int Properties;
@@ -51,9 +52,16 @@ public:
 
 	int (*Update) (UPDATE_FUNC_ARGS);
 	int (*Graphics) (GRAPHICS_FUNC_ARGS);
+
+	void (*Create)(ELEMENT_CREATE_FUNC_ARGS) = nullptr;
+	bool (*CreateAllowed)(ELEMENT_CREATE_ALLOWED_FUNC_ARGS) = nullptr;
+	void (*ChangeType)(ELEMENT_CHANGETYPE_FUNC_ARGS) = nullptr;
+
 	bool (*CtypeDraw) (CTYPEDRAW_FUNC_ARGS);
 
 	VideoBuffer * (*IconGenerator)(int, int, int);
+
+	Particle DefaultProperties;
 
 	Element();
 	virtual ~Element() {}
@@ -66,6 +74,10 @@ public:
 	/** Returns a list of properties, their type and offset within the structure that can be changed
 	 by higher-level processes referring to them by name such as Lua or the property tool **/
 	static std::vector<StructProperty> const &GetProperties();
+
+#define ELEMENT_NUMBERS_DECLARE
+#include "ElementNumbers.h"
+#undef ELEMENT_NUMBERS_DECLARE
 };
 
 #endif

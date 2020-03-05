@@ -1,6 +1,9 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_GLAS PT_GLAS 45
-Element_GLAS::Element_GLAS()
+
+static int update(UPDATE_FUNC_ARGS);
+static void create(ELEMENT_CREATE_FUNC_ARGS);
+
+void Element::Element_GLAS()
 {
 	Identifier = "DEFAULT_PT_GLAS";
 	Name = "GLAS";
@@ -26,7 +29,6 @@ Element_GLAS::Element_GLAS()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 150;
 	Description = "Glass. Meltable. Shatters under pressure, and refracts photons.";
 
@@ -41,11 +43,11 @@ Element_GLAS::Element_GLAS()
 	HighTemperature = 1973.0f;
 	HighTemperatureTransition = PT_LAVA;
 
-	Update = &Element_GLAS::update;
+	Update = &update;
+	Create = &create;
 }
 
-//#TPT-Directive ElementHeader Element_GLAS static int update(UPDATE_FUNC_ARGS)
-int Element_GLAS::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	parts[i].pavg[0] = parts[i].pavg[1];
 	parts[i].pavg[1] = sim->pv[y/CELL][x/CELL];
@@ -57,5 +59,7 @@ int Element_GLAS::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-
-Element_GLAS::~Element_GLAS() {}
+static void create(ELEMENT_CREATE_FUNC_ARGS)
+{
+	sim->parts[i].pavg[1] = sim->pv[y/CELL][x/CELL];
+}

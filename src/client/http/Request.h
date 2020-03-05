@@ -1,12 +1,14 @@
 #ifndef REQUEST_H
 #define REQUEST_H
 
+#include "Config.h"
 #include <map>
+#include "common/String.h"
+#ifndef NOHTTP
 #include "common/tpt-minmax.h" // for MSVC, ensures windows.h doesn't cause compile errors by defining min/max
 #include <mutex>
 #include <condition_variable>
 #include <curl/curl.h>
-#include "common/String.h"
 
 #if defined(CURL_AT_LEAST_VERSION) && CURL_AT_LEAST_VERSION(7, 55, 0)
 # define REQUEST_USE_CURL_OFFSET_T
@@ -19,12 +21,14 @@
 #if defined(CURL_AT_LEAST_VERSION) && CURL_AT_LEAST_VERSION(7, 61, 0)
 # define REQUEST_USE_CURL_TLSV13CL
 #endif
+#endif
 
 namespace http
 {
 	class RequestManager;
 	class Request
 	{
+#ifndef NOHTTP
 		ByteString uri;
 		ByteString response_body;
 
@@ -43,6 +47,7 @@ namespace http
 
 		struct curl_slist *headers;
 
+		bool isPost = false;
 #ifdef REQUEST_USE_CURL_MIMEPOST
 		curl_mime *post_fields;
 #else
@@ -53,6 +58,7 @@ namespace http
 		std::condition_variable done_cv;
 
 		static size_t WriteDataHandler(char * ptr, size_t size, size_t count, void * userdata);
+#endif
 
 	public:
 		Request(ByteString uri);

@@ -23,8 +23,6 @@ class LoginView: public ui::Window
 	ui::Textbox * passwordField;
 	ui::Point targetSize;
 public:
-	class LoginAction;
-	class CancelAction;
 	LoginView();
 	void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
 	void OnTryExit(ExitMethod method) override;

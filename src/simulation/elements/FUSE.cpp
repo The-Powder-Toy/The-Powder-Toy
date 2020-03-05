@@ -1,6 +1,8 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_FUSE PT_FUSE 70
-Element_FUSE::Element_FUSE()
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_FUSE()
 {
 	Identifier = "DEFAULT_PT_FUSE";
 	Name = "FUSE";
@@ -26,7 +28,6 @@ Element_FUSE::Element_FUSE()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 200;
 	Description = "Burns slowly. Ignites at somewhat high temperatures or with electricity.";
 
@@ -41,11 +42,13 @@ Element_FUSE::Element_FUSE()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_FUSE::update;
+	DefaultProperties.life = 50;
+	DefaultProperties.tmp = 50;
+
+	Update = &update;
 }
 
-//#TPT-Directive ElementHeader Element_FUSE static int update(UPDATE_FUNC_ARGS)
-int Element_FUSE::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	if (parts[i].life<=0) {
 		int r = sim->create_part(i, x, y, PT_PLSM);
@@ -85,6 +88,3 @@ int Element_FUSE::update(UPDATE_FUNC_ARGS)
 			}
 	return 0;
 }
-
-
-Element_FUSE::~Element_FUSE() {}

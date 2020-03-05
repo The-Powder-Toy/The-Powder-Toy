@@ -1,6 +1,8 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_CAUS PT_CAUS 86
-Element_CAUS::Element_CAUS()
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_CAUS()
 {
 	Identifier = "DEFAULT_PT_CAUS";
 	Name = "CAUS";
@@ -26,7 +28,6 @@ Element_CAUS::Element_CAUS()
 
 	Weight = 1;
 
-	Temperature = R_TEMP+273.15f;
 	HeatConduct = 70;
 	Description = "Caustic Gas, acts like ACID.";
 
@@ -41,11 +42,12 @@ Element_CAUS::Element_CAUS()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_CAUS::update;
+	DefaultProperties.life = 75;
+
+	Update = &update;
 }
 
-//#TPT-Directive ElementHeader Element_CAUS static int update(UPDATE_FUNC_ARGS)
-int Element_CAUS::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	for (int rx = -2; rx <= 2; rx++)
 		for (int ry = -2; ry <= 2; ry++)
@@ -86,6 +88,3 @@ int Element_CAUS::update(UPDATE_FUNC_ARGS)
 			}
 	return 0;
 }
-
-
-Element_CAUS::~Element_CAUS() {}

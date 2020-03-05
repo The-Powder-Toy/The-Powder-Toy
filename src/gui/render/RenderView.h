@@ -4,10 +4,7 @@
 #include <vector>
 #include "gui/interface/Window.h"
 
-namespace ui
-{
-	class Checkbox;
-}
+class ModeCheckbox;
 
 class Renderer;
 class RenderController;
@@ -15,18 +12,14 @@ class RenderModel;
 class RenderView: public ui::Window {
 	RenderController * c;
 	Renderer * ren;
-	std::vector<ui::Checkbox*> renderModes;
-	std::vector<ui::Checkbox*> displayModes;
-	std::vector<ui::Checkbox*> colourModes;
+	std::vector<ModeCheckbox *> renderModes;
+	std::vector<ModeCheckbox *> displayModes;
+	std::vector<ModeCheckbox *> colourModes;
 	String toolTip;
 	int toolTipPresence;
 	bool isToolTipFadingIn;
 	int line1, line2, line3, line4;
 public:
-	class RenderModeAction;
-	class DisplayModeAction;
-	class ColourModeAction;
-	class RenderPresetAction;
 	RenderView();
 	void NotifyRendererChanged(RenderModel * sender);
 	void NotifyRenderChanged(RenderModel * sender);

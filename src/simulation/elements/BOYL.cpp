@@ -1,6 +1,8 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_BOYL PT_BOYL 141
-Element_BOYL::Element_BOYL()
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_BOYL()
 {
 	Identifier = "DEFAULT_PT_BOYL";
 	Name = "BOYL";
@@ -26,7 +28,7 @@ Element_BOYL::Element_BOYL()
 
 	Weight = 1;
 
-	Temperature = R_TEMP+2.0f	+273.15f;
+	DefaultProperties.temp = R_TEMP + 2.0f + 273.15f;
 	HeatConduct = 42;
 	Description = "Boyle, variable pressure gas. Expands when heated.";
 
@@ -41,11 +43,10 @@ Element_BOYL::Element_BOYL()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_BOYL::update;
+	Update = &update;
 }
 
-//#TPT-Directive ElementHeader Element_BOYL static int update(UPDATE_FUNC_ARGS)
-int Element_BOYL::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	float limit = parts[i].temp / 100;
 	if (sim->pv[y / CELL][x / CELL] < limit)
@@ -84,6 +85,3 @@ int Element_BOYL::update(UPDATE_FUNC_ARGS)
 			}
 	return 0;
 }
-
-
-Element_BOYL::~Element_BOYL() {}

@@ -1,6 +1,8 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_IGNT PT_IGNT 140
-Element_IGNT::Element_IGNT()
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_IGNT()
 {
 	Identifier = "DEFAULT_PT_IGNT";
 	Name = "IGNC";
@@ -26,7 +28,6 @@ Element_IGNT::Element_IGNT()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 88;
 	Description = "Ignition cord. Burns slowly with fire and sparks.";
 
@@ -41,11 +42,12 @@ Element_IGNT::Element_IGNT()
 	HighTemperature = 673.0f;
 	HighTemperatureTransition = PT_FIRE;
 
-	Update = &Element_IGNT::update;
+	DefaultProperties.life = 3;
+
+	Update = &update;
 }
 
-//#TPT-Directive ElementHeader Element_IGNT static int update(UPDATE_FUNC_ARGS)
-int Element_IGNT::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	 int r, rx, ry, rt;
 	if(parts[i].tmp==0)
@@ -85,6 +87,3 @@ int Element_IGNT::update(UPDATE_FUNC_ARGS)
 	}
 	return 0;
 }
-
-
-Element_IGNT::~Element_IGNT() {}

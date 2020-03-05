@@ -1,6 +1,8 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_ARAY PT_ARAY 126
-Element_ARAY::Element_ARAY()
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_ARAY()
 {
 	Identifier = "DEFAULT_PT_ARAY";
 	Name = "ARAY";
@@ -26,7 +28,6 @@ Element_ARAY::Element_ARAY()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 0;
 	Description = "Ray Emitter. Rays create points when they collide.";
 
@@ -41,11 +42,10 @@ Element_ARAY::Element_ARAY()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_ARAY::update;
+	Update = &update;
 }
 
-//#TPT-Directive ElementHeader Element_ARAY static int update(UPDATE_FUNC_ARGS)
-int Element_ARAY::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	if (!parts[i].life)
 	{
@@ -123,7 +123,8 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 								{
 									if (parts[r].tmp != 6)
 									{
-										colored = Element_FILT::interactWavelengths(&parts[r], colored);
+										int Element_FILT_interactWavelengths(Particle* cpart, int origWl);
+										colored = Element_FILT_interactWavelengths(&parts[r], colored);
 										if (!colored)
 											break;
 									}
@@ -207,6 +208,3 @@ int Element_ARAY::update(UPDATE_FUNC_ARGS)
 	}
 	return 0;
 }
-
-
-Element_ARAY::~Element_ARAY() {}

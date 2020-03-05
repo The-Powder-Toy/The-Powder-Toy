@@ -1,4 +1,4 @@
-The Powder Toy - February 2019
+The Powder Toy - February 2020
 ==========================
 
 Get the latest version [from the Powder Toy website](https://powdertoy.co.uk/Download.html).
@@ -15,10 +15,7 @@ There is a Lua API – you can automate your work or even make plugins for the g
 Build instructions
 ===========================================================================
 
-    sudo apt-get install build-essential libsdl2-dev libbz2-dev zlib1g-dev liblua5.1.0-dev git scons libfftw3-dev libcurl4-openssl-dev
-    scons
-
-For a list of flags for `scons`, see [the Powder Toy wiki](https://powdertoy.co.uk/Wiki/W/Scons_command_line_flags.html).
+See the _Powder Toy Development Help_ section [on the main page of the wiki](https://powdertoy.co.uk/Wiki/W/Main_Page.html).
 
 Thanks
 ===========================================================================
@@ -110,3 +107,5 @@ Command Line
 | `open FILE`           | Opens the file as a stamp or game save           |                                   |
 | `ddir DIRECTORY`      | Directory used for saving stamps and preferences |                                   |
 | `ptsave:SAVEID`       | Open online save, used by ptsave: URLs           | `ptsave:2198`                     |
+| `disable-network`     | Disables internet connections                    |                                   |
+| `redirect`            | Redirects output to stdout.txt / stderr.txt      |                                   |

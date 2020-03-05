@@ -45,6 +45,7 @@ AddSconsOption('msvc', False, False, "Use the Microsoft Visual Studio compiler."
 AddSconsOption("tool", False, True, "Tool prefix appended before gcc/g++.")
 
 AddSconsOption('beta', False, False, "Beta build.")
+AddSconsOption('no-install-prompt', False, False, "Disable the \"do you want to install Powder Toy?\" prompt.")
 AddSconsOption('save-version', False, True, "Save version.")
 AddSconsOption('minor-version', False, True, "Minor version.")
 AddSconsOption('build-number', False, True, "Build number.")
@@ -72,9 +73,10 @@ AddSconsOption('font', False, False, "Build the font editor.")
 AddSconsOption('wall', False, False, "Error on all warnings.")
 AddSconsOption('no-warnings', False, False, "Disable all compiler warnings.")
 AddSconsOption('nolua', False, False, "Disable Lua.")
-AddSconsOption('luajit', False, False, "Enable LuaJIT")
-AddSconsOption('lua52', False, False, "Compile using lua 5.2")
+AddSconsOption('luajit', False, False, "Enable LuaJIT.")
+AddSconsOption('lua52', False, False, "Compile using lua 5.2.")
 AddSconsOption('nofft', False, False, "Disable FFT.")
+AddSconsOption('nohttp', False, False, "Disable http requests and libcurl.")
 AddSconsOption("output", False, True, "Executable output name.")
 
 
@@ -168,7 +170,7 @@ if GetOption('universal'):
 		env.Append(CCFLAGS=['-arch', 'i386', '-arch', 'x86_64'])
 		env.Append(LINKFLAGS=['-arch', 'i386', '-arch', 'x86_64'])
 
-env.Append(CPPPATH=['src/', 'data/', 'generated/'])
+env.Append(CPPPATH=['src/', 'data/'])
 if GetOption("msvc"):
 	if GetOption("static"):
 		env.Append(LIBPATH=['StaticLibs/'])
@@ -225,7 +227,7 @@ def findLibs(env, conf):
 		if msvc:
 			libChecks = ['shell32', 'wsock32', 'user32', 'Advapi32', 'ws2_32', 'Wldap32', 'crypt32']
 			if GetOption('static'):
-				libChecks += ['imm32', 'version', 'Ole32', 'OleAut32']
+				libChecks += ['imm32', 'version', 'Ole32', 'OleAut32', 'SetupApi']
 			for i in libChecks:
 				if not conf.CheckLib(i):
 					FatalError("Error: some windows libraries not found or not installed, make sure your compiler is set up correctly")
@@ -311,7 +313,7 @@ def findLibs(env, conf):
 			conf.CheckLib('dl')
 
 	#Look for fftw
-	if not GetOption('nofft') and not conf.CheckLib(['fftw3f', 'fftw3f-3', 'libfftw3f-3', 'libfftw3f']):
+	if not GetOption('nofft') and not GetOption('renderer') and not conf.CheckLib(['fftw3f', 'fftw3f-3', 'libfftw3f-3', 'libfftw3f']):
 			FatalError("fftw3f development library not found or not installed")
 
 	#Look for bz2
@@ -327,14 +329,20 @@ def findLibs(env, conf):
 		FatalError("libz not found or not installed")
 
 	#Look for libcurl
-	if not conf.CheckLib(['curl', 'libcurl']):
+	useCurl = not GetOption('nohttp') and not GetOption('renderer')
+	if useCurl and not conf.CheckLib(['curl', 'libcurl']):
 		FatalError("libcurl not found or not installed")
 
-	if platform == "Linux" or compilePlatform == "Linux" or platform == "FreeBSD":
+	if useCurl and (platform == "Linux" or compilePlatform == "Linux" or platform == "FreeBSD"):
 		if GetOption('static'):
 			env.ParseConfig("curl-config --static-libs")
 		else:
 			env.ParseConfig("curl-config --libs")
+
+		# Needed for ssl. Scons seems incapable of parsing this out of curl-config
+		if platform == "Darwin":
+			if not conf.CheckFramework('Security'):
+				FatalError("Could not find Security.Framework")
 
 	#Look for pthreads
 	if not conf.CheckLib(['pthread', 'pthreadVC2']):
@@ -382,11 +390,7 @@ def findLibs(env, conf):
 			FatalError("Cocoa framework not found or not installed")
 
 if GetOption('clean'):
-	import shutil
-	try:
-		shutil.rmtree("generated/")
-	except:
-		print("couldn't remove build/generated/")
+	pass
 elif not GetOption('help'):
 	conf = Configure(env)
 	conf.AddTest('CheckFramework', CheckFramework)
@@ -496,10 +500,12 @@ if GetOption('static'):
 
 
 #Add other flags and defines
-if not GetOption('nofft'):
+if not GetOption('nofft') and not GetOption('renderer'):
 	env.Append(CPPDEFINES=['GRAVFFT'])
 if not GetOption('nolua') and not GetOption('renderer') and not GetOption('font'):
 	env.Append(CPPDEFINES=['LUACONSOLE'])
+if GetOption('nohttp') or GetOption('renderer'):
+	env.Append(CPPDEFINES=['NOHTTP'])
 
 if GetOption('opengl') or GetOption('opengl-renderer'):
 	env.Append(CPPDEFINES=['OGLI', 'PIX32OGL'])
@@ -541,10 +547,12 @@ elif GetOption('snapshot'):
 
 if GetOption('beta'):
 	env.Append(CPPDEFINES=['BETA'])
+if GetOption('no-install-prompt'):
+	env.Append(CPPDEFINES=['NO_INSTALL_CHECK'])
 
 
 #Generate list of sources to compile
-sources = Glob("src/*.cpp") + Glob("src/*/*.cpp") + Glob("src/*/*/*.cpp") + Glob("generated/*.cpp") + Glob("data/*.cpp")
+sources = Glob("src/*.cpp") + Glob("src/*/*.cpp") + Glob("src/*/*/*.cpp") + Glob("data/*.cpp")
 if not GetOption('nolua') and not GetOption('renderer') and not GetOption('font'):
 	sources += Glob("src/lua/socket/*.c") + Glob("src/lua/LuaCompat.c")
 

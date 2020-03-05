@@ -45,18 +45,8 @@ SearchView::SearchView():
 	}
 	catch (std::exception & e) { }
 
-	class PageNumAction : public ui::TextboxAction
-	{
-		SearchView * v;
-	public:
-		PageNumAction(SearchView * _v) { v = _v; }
-		void TextChangedCallback(ui::Textbox * sender) override
-		{
-			v->textChanged();
-		}
-	};
 	pageTextbox = new ui::Textbox(ui::Point(283, WINDOWH-18), ui::Point(41, 16), "");
-	pageTextbox->SetActionCallback(new PageNumAction(this));
+	pageTextbox->SetActionCallback({ [this] { textChanged(); } });
 	pageTextbox->SetInputType(ui::Textbox::Number);
 	pageLabel = new ui::Label(ui::Point(0, WINDOWH-18), ui::Point(30, 16), "Page"); //page [TEXTBOX] of y
 	pageLabel->Appearance.HorizontalAlign = ui::Appearance::AlignRight;
@@ -66,93 +56,42 @@ SearchView::SearchView():
 	AddComponent(pageCountLabel);
 	AddComponent(pageTextbox);
 
-	class SearchAction : public ui::TextboxAction
-	{
-		SearchView * v;
-	public:
-		SearchAction(SearchView * _v) { v = _v; }
-		void TextChangedCallback(ui::Textbox * sender) override
-		{
-			v->doSearch();
-		}
-	};
 	searchField = new ui::Textbox(ui::Point(60, 10), ui::Point(WINDOWW-238, 17), "", "[search]");
 	searchField->Appearance.icon = IconSearch;
 	searchField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	searchField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-	searchField->SetActionCallback(new SearchAction(this));
+	searchField->SetActionCallback({ [this] { doSearch(); } });
 	FocusComponent(searchField);
 
-
-	class SortAction : public ui::ButtonAction
-	{
-		SearchView * v;
-	public:
-		SortAction(SearchView * _v) { v = _v; }
-		void ActionCallback(ui::Button * sender) override
-		{
-			v->c->ChangeSort();
-		}
-	};
 	sortButton = new ui::Button(ui::Point(WINDOWW-140, 10), ui::Point(61, 17), "Sort");
 	sortButton->SetIcon(IconVoteSort);
 	sortButton->SetTogglable(true);
-	sortButton->SetActionCallback(new SortAction(this));
+	sortButton->SetActionCallback({ [this] { c->ChangeSort(); } });
 	sortButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	sortButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(sortButton);
 
-	class MyOwnAction : public ui::ButtonAction
-	{
-		SearchView * v;
-	public:
-		MyOwnAction(SearchView * _v) { v = _v; }
-		void ActionCallback(ui::Button * sender) override
-		{
-			v->c->ShowOwn(sender->GetToggleState());
-		}
-	};
 	ownButton = new ui::Button(ui::Point(WINDOWW-70, 10), ui::Point(61, 17), "My Own");
 	ownButton->SetIcon(IconMyOwn);
 	ownButton->SetTogglable(true);
-	ownButton->SetActionCallback(new MyOwnAction(this));
+	ownButton->SetActionCallback({ [this] { c->ShowOwn(ownButton->GetToggleState()); } });
 	ownButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	ownButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(ownButton);
 
-	class FavAction : public ui::ButtonAction
-	{
-		SearchView * v;
-	public:
-		FavAction(SearchView * _v) { v = _v; }
-		void ActionCallback(ui::Button * sender) override
-		{
-			v->c->ShowFavourite(sender->GetToggleState());
-		}
-	};
 	favButton = new ui::Button(searchField->Position+ui::Point(searchField->Size.X+15, 0), ui::Point(17, 17), "");
 	favButton->SetIcon(IconFavourite);
 	favButton->SetTogglable(true);
 	favButton->Appearance.Margin.Left+=2;
-	favButton->SetActionCallback(new FavAction(this));
+	favButton->SetActionCallback({ [this] { c->ShowFavourite(favButton->GetToggleState()); } });
 	favButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	favButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	favButton->Appearance.BorderInactive = ui::Colour(170,170,170);
 	AddComponent(favButton);
 
-	class ClearSearchAction : public ui::ButtonAction
-	{
-		SearchView * v;
-	public:
-		ClearSearchAction(SearchView * _v) { v = _v; }
-		void ActionCallback(ui::Button * sender) override
-		{
-			v->clearSearch();
-		}
-	};
 	ui::Button * clearSearchButton = new ui::Button(searchField->Position+ui::Point(searchField->Size.X-1, 0), ui::Point(17, 17), "");
 	clearSearchButton->SetIcon(IconClose);
-	clearSearchButton->SetActionCallback(new ClearSearchAction(this));
+	clearSearchButton->SetActionCallback({ [this] { clearSearch(); } });
 	clearSearchButton->Appearance.Margin.Left+=2;
 	clearSearchButton->Appearance.Margin.Top+=2;
 	clearSearchButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
@@ -160,22 +99,11 @@ SearchView::SearchView():
 	clearSearchButton->Appearance.BorderInactive = ui::Colour(170,170,170);
 	AddComponent(clearSearchButton);
 
-	class RelativePageAction : public ui::ButtonAction
-	{
-		SearchView * v;
-		int offset;
-	public:
-		RelativePageAction(SearchView * _v, int _offset): v(_v), offset(_offset) {}
-		void ActionCallback(ui::Button * sender) override
-		{
-			v->c->SetPageRelative(offset);
-		}
-	};
-	nextButton->SetActionCallback(new RelativePageAction(this, 1));
+	nextButton->SetActionCallback({ [this] { c->SetPageRelative(1); } });
 	nextButton->Appearance.HorizontalAlign = ui::Appearance::AlignRight;
 	nextButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	nextButton->Visible = false;
-	previousButton->SetActionCallback(new RelativePageAction(this, -1));
+	previousButton->SetActionCallback({ [this] { c->SetPageRelative(-1); } });
 	previousButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	previousButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	previousButton->Visible = false;
@@ -191,68 +119,24 @@ SearchView::SearchView():
 	searchPrompt->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(searchPrompt);
 
-	class RemoveSelectedAction : public ui::ButtonAction
-	{
-		SearchView * v;
-	public:
-		RemoveSelectedAction(SearchView * _v) { v = _v; }
-		void ActionCallback(ui::Button * sender) override
-		{
-			v->c->RemoveSelected();
-		}
-	};
-
-	class UnpublishSelectedAction : public ui::ButtonAction
-	{
-		SearchView * v;
-	public:
-		UnpublishSelectedAction(SearchView * _v) { v = _v; }
-		void ActionCallback(ui::Button * sender) override
-		{
-			v->c->UnpublishSelected(v->publishButtonShown);
-		}
-	};
-
-	class FavouriteSelectedAction : public ui::ButtonAction
-	{
-		SearchView * v;
-	public:
-		FavouriteSelectedAction(SearchView * _v) { v = _v; }
-		void ActionCallback(ui::Button * sender) override
-		{
-			v->c->FavouriteSelected();
-		}
-	};
-
-	class ClearSelectionAction : public ui::ButtonAction
-	{
-		SearchView * v;
-	public:
-		ClearSelectionAction(SearchView * _v) { v = _v; }
-		void ActionCallback(ui::Button * sender) override
-		{
-			v->c->ClearSelection();
-		}
-	};
-
 	removeSelected = new ui::Button(ui::Point(((WINDOWW-415)/2), WINDOWH-18), ui::Point(100, 16), "Delete");
 	removeSelected->Visible = false;
-	removeSelected->SetActionCallback(new RemoveSelectedAction(this));
+	removeSelected->SetActionCallback({ [this] { c->RemoveSelected(); } });
 	AddComponent(removeSelected);
 
 	unpublishSelected = new ui::Button(ui::Point(((WINDOWW-415)/2)+105, WINDOWH-18), ui::Point(100, 16), "Unpublish");
 	unpublishSelected->Visible = false;
-	unpublishSelected->SetActionCallback(new UnpublishSelectedAction(this));
+	unpublishSelected->SetActionCallback({ [this] { c->UnpublishSelected(publishButtonShown); } });
 	AddComponent(unpublishSelected);
 
 	favouriteSelected = new ui::Button(ui::Point(((WINDOWW-415)/2)+210, WINDOWH-18), ui::Point(100, 16), "Favourite");
 	favouriteSelected->Visible = false;
-	favouriteSelected->SetActionCallback(new FavouriteSelectedAction(this));
+	favouriteSelected->SetActionCallback({ [this] { c->FavouriteSelected(); } });
 	AddComponent(favouriteSelected);
 
 	clearSelection = new ui::Button(ui::Point(((WINDOWW-415)/2)+315, WINDOWH-18), ui::Point(100, 16), "Clear selection");
 	clearSelection->Visible = false;
-	clearSelection->SetActionCallback(new ClearSelectionAction(this));
+	clearSelection->SetActionCallback({ [this] { c->ClearSelection(); } });
 	AddComponent(clearSelection);
 
 	CheckAccess();
@@ -525,17 +409,6 @@ void SearchView::NotifyTagListChanged(SearchModel * sender)
 		}
 	}
 
-	class TagAction: public ui::ButtonAction
-	{
-		SearchView * v;
-		ByteString tag;
-	public:
-		TagAction(SearchView * v, ByteString tag) : v(v), tag(tag) {}
-		void ActionCallback(ui::Button * sender) override
-		{
-			v->Search(tag.FromUtf8());
-		}
-	};
 	if (sender->GetShowTags())
 	{
 		for (size_t i = 0; i < tags.size(); i++)
@@ -565,7 +438,9 @@ void SearchView::NotifyTagListChanged(SearchModel * sender)
 				ui::Point(tagWidth, tagHeight),
 				tag.first.FromUtf8()
 				);
-			tagButton->SetActionCallback(new TagAction(this, tag.first));
+			tagButton->SetActionCallback({ [this, tag] {
+				Search(tag.first.FromUtf8());
+			} });
 			tagButton->Appearance.BorderInactive = ui::Colour(0, 0, 0);
 			tagButton->Appearance.BorderHover = ui::Colour(0, 0, 0);
 			tagButton->Appearance.BorderActive = ui::Colour(0, 0, 0);
@@ -673,30 +548,6 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 		buttonWidth = (buttonAreaWidth/savesX) - buttonPadding*2;
 		buttonHeight = (buttonAreaHeight/savesY) - buttonPadding*2;
 
-
-
-		class SaveOpenAction: public ui::SaveButtonAction
-		{
-			SearchView * v;
-		public:
-			SaveOpenAction(SearchView * _v) { v = _v; }
-			void ActionCallback(ui::SaveButton * sender) override
-			{
-				v->c->OpenSave(sender->GetSave()->GetID(), sender->GetSave()->GetVersion());
-			}
-			void SelectedCallback(ui::SaveButton * sender) override
-			{
-				v->c->Selected(sender->GetSave()->GetID(), sender->GetSelected());
-			}
-			void AltActionCallback(ui::SaveButton * sender) override
-			{
-				v->Search(String::Build("history:", sender->GetSave()->GetID()));
-			}
-			void AltActionCallback2(ui::SaveButton * sender) override
-			{
-				v->Search(String::Build("user:", sender->GetSave()->GetUserName().FromUtf8()));
-			}
-		};
 		for (size_t i = 0; i < saves.size(); i++)
 		{
 			if (saveX == savesX)
@@ -715,7 +566,12 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 						ui::Point(buttonWidth, buttonHeight),
 						saves[i]);
 			saveButton->AddContextMenu(0);
-			saveButton->SetActionCallback(new SaveOpenAction(this));
+			saveButton->SetActionCallback({
+				[this, saveButton] { c->OpenSave(saveButton->GetSave()->GetID(), saveButton->GetSave()->GetVersion()); },
+				[this, saveButton] { Search(String::Build("history:", saveButton->GetSave()->GetID())); },
+				[this, saveButton] { Search(String::Build("user:", saveButton->GetSave()->GetUserName().FromUtf8())); },
+				[this, saveButton] { c->Selected(saveButton->GetSave()->GetID(), saveButton->GetSelected()); }
+			});
 			if(Client::Ref().GetAuthUser().UserID)
 				saveButton->SetSelectable(true);
 			if (saves[i]->GetUserName() == Client::Ref().GetAuthUser().Username || Client::Ref().GetAuthUser().UserElevation == User::ElevationAdmin || Client::Ref().GetAuthUser().UserElevation == User::ElevationModerator)

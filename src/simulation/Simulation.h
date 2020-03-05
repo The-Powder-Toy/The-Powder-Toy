@@ -4,6 +4,7 @@
 #include <cstring>
 #include <cstddef>
 #include <vector>
+#include <array>
 
 #include "Particle.h"
 #include "Stickman.h"
@@ -13,7 +14,9 @@
 #include "GOLMenu.h"
 #include "MenuSection.h"
 
-#include "elements/Element.h"
+#include "CoordStack.h"
+
+#include "Element.h"
 
 #define CHANNELS ((int)(MAX_TEMP-73)/100+2)
 
@@ -38,9 +41,9 @@ public:
 	Air * air;
 
 	std::vector<sign> signs;
-	Element elements[PT_NUM];
+	std::array<Element, PT_NUM> elements;
 	//Element * elements;
-	std::vector<SimTool*> tools;
+	std::vector<SimTool> tools;
 	std::vector<unsigned int> platent;
 	std::vector<wall_type> wtypes;
 	std::vector<gol_menu> gmenu;
@@ -113,6 +116,7 @@ public:
 	int pretty_powder;
 	int sandcolour;
 	int sandcolour_frame;
+	int deco_space;
 
 	int Load(GameSave * save, bool includePressure);
 	int Load(GameSave * save, bool includePressure, int x, int y);
@@ -143,7 +147,7 @@ public:
 	bool FloodFillPmapCheck(int x, int y, int type);
 	int flood_prop(int x, int y, size_t propoffset, PropertyValue propvalue, StructProperty::PropertyType proptype);
 	bool flood_water(int x, int y, int i);
-	int FloodINST(int x, int y, int fullc, int cm);
+	int FloodINST(int x, int y);
 	void detach(int i);
 	bool part_change_type(int i, int x, int y, int t);
 	//int InCurrentBrush(int i, int j, int rx, int ry);
@@ -166,6 +170,7 @@ public:
 	void clear_area(int area_x, int area_y, int area_w, int area_h);
 
 	void SetEdgeMode(int newEdgeMode);
+	void SetDecoSpace(int newDecoSpace);
 
 	//Drawing Deco
 	void ApplyDecoration(int x, int y, int colR, int colG, int colB, int colA, int mode);
@@ -218,6 +223,9 @@ public:
 
 	String ElementResolve(int type, int ctype);
 	String BasicParticleInfo(Particle const &sample_part);
+
+private:
+	CoordStack& getCoordStackSingleton();
 };
 
 #endif /* SIMULATION_H */

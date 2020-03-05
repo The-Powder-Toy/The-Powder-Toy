@@ -1,7 +1,10 @@
 #include "simulation/ElementCommon.h"
 #include "simulation/Air.h"
-//#TPT-Directive ElementClass Element_TUNG PT_TUNG 171
-Element_TUNG::Element_TUNG()
+
+static int update(UPDATE_FUNC_ARGS);
+static int graphics(GRAPHICS_FUNC_ARGS);
+
+void Element::Element_TUNG()
 {
 	Identifier = "DEFAULT_PT_TUNG";
 	Name = "TUNG";
@@ -27,7 +30,6 @@ Element_TUNG::Element_TUNG()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 251;
 	Description = "Tungsten. Brittle metal with a very high melting point.";
 
@@ -42,12 +44,11 @@ Element_TUNG::Element_TUNG()
 	HighTemperature = 3695.0f;// TUNG melts in its update function instead of in the normal way, but store the threshold here so that it can be changed from Lua
 	HighTemperatureTransition = NT;
 
-	Update = &Element_TUNG::update;
-	Graphics = &Element_TUNG::graphics;
+	Update = &update;
+	Graphics = &graphics;
 }
 
-//#TPT-Directive ElementHeader Element_TUNG static int update(UPDATE_FUNC_ARGS)
-int Element_TUNG::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	bool splode = false;
 	const float MELTING_POINT = sim->elements[PT_TUNG].HighTemperature;
@@ -104,9 +105,7 @@ int Element_TUNG::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-
-//#TPT-Directive ElementHeader Element_TUNG static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_TUNG::graphics(GRAPHICS_FUNC_ARGS)
+static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	const float MELTING_POINT = ren->sim->elements[PT_TUNG].HighTemperature;
 	double startTemp = (MELTING_POINT - 1500.0);
@@ -128,5 +127,3 @@ int Element_TUNG::graphics(GRAPHICS_FUNC_ARGS)
 	}
 	return 0;
 }
-
-Element_TUNG::~Element_TUNG() {}

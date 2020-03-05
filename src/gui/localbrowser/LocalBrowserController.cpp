@@ -12,7 +12,7 @@
 
 #include "common/tpt-minmax.h"
 
-LocalBrowserController::LocalBrowserController(ControllerCallback * callback):
+LocalBrowserController::LocalBrowserController(std::function<void ()> onDone_):
 	HasDone(false)
 {
 	browserModel = new LocalBrowserModel();
@@ -20,7 +20,7 @@ LocalBrowserController::LocalBrowserController(ControllerCallback * callback):
 	browserView->AttachController(this);
 	browserModel->AddObserver(browserView);
 
-	this->callback = callback;
+	onDone = onDone_;
 
 	browserModel->UpdateSavesList(1);
 }
@@ -37,23 +37,12 @@ SaveFile * LocalBrowserController::GetSave()
 
 void LocalBrowserController::RemoveSelected()
 {
-	class RemoveSelectedConfirmation: public ConfirmDialogueCallback {
-	public:
-		LocalBrowserController * c;
-		RemoveSelectedConfirmation(LocalBrowserController * c_) {	c = c_;	}
-		void ConfirmCallback(ConfirmPrompt::DialogueResult result) override {
-			if (result == ConfirmPrompt::ResultOkay)
-				c->removeSelectedC();
-		}
-		virtual ~RemoveSelectedConfirmation() { }
-	};
-
 	StringBuilder desc;
 	desc << "Are you sure you want to delete " << browserModel->GetSelected().size() << " stamp";
 	if(browserModel->GetSelected().size()>1)
 		desc << "s";
 	desc << "?";
-	new ConfirmPrompt("Delete stamps", desc.Build(), new RemoveSelectedConfirmation(this));
+	new ConfirmPrompt("Delete stamps", desc.Build(), { [this] { removeSelectedC(); } });
 }
 
 void LocalBrowserController::removeSelectedC()
@@ -87,19 +76,7 @@ void LocalBrowserController::removeSelectedC()
 
 void LocalBrowserController::RescanStamps()
 {
-	class RescanConfirmation: public ConfirmDialogueCallback {
-	public:
-		LocalBrowserController * c;
-		RescanConfirmation(LocalBrowserController * c_) {	c = c_;	}
-		void ConfirmCallback(ConfirmPrompt::DialogueResult result) override {
-			if (result == ConfirmPrompt::ResultOkay)
-				c->rescanStampsC();
-		}
-		virtual ~RescanConfirmation() { }
-	};
-
-	String desc = "Rescanning the stamps folder can find stamps added to the stamps folder or recover stamps when the stamps.def file has been lost or damaged. However, be warned that this will mess up the current sorting order";
-	new ConfirmPrompt("Rescan", desc, new RescanConfirmation(this));
+	new ConfirmPrompt("Rescan", "Rescanning the stamps folder can find stamps added to the stamps folder or recover stamps when the stamps.def file has been lost or damaged. However, be warned that this will mess up the current sorting order", { [this] { rescanStampsC(); } });
 }
 
 void LocalBrowserController::rescanStampsC()
@@ -161,15 +138,14 @@ void LocalBrowserController::SetMoveToFront(bool move)
 void LocalBrowserController::Exit()
 {
 	browserView->CloseActiveWindow();
-	if(callback)
-		callback->ControllerExit();
+	if (onDone)
+		onDone();
 	HasDone = true;
 }
 
 LocalBrowserController::~LocalBrowserController()
 {
 	browserView->CloseActiveWindow();
-	delete callback;
 	delete browserModel;
 	delete browserView;
 }

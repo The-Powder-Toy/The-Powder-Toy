@@ -13,7 +13,7 @@
 #include "hmap.h"
 
 #include "simulation/Simulation.h"
-#include "ElementClasses.h"
+#include "simulation/ElementClasses.h"
 
 GameSave::GameSave(GameSave & save):
     majorVersion(save.majorVersion),
@@ -732,7 +732,7 @@ void GameSave::readOPS(char * data, int dataLength)
 				while (bson_iterator_next(&stkmiter))
 				{
 					CheckBsonFieldBool(stkmiter, "rocketBoots1", &stkm.rocketBoots1);
-					CheckBsonFieldBool(stkmiter, "rocketBoots1", &stkm.rocketBoots1);
+					CheckBsonFieldBool(stkmiter, "rocketBoots2", &stkm.rocketBoots2);
 					CheckBsonFieldBool(stkmiter, "fan1", &stkm.fan1);
 					CheckBsonFieldBool(stkmiter, "fan2", &stkm.fan2);
 					if (!strcmp(bson_iterator_key(&stkmiter), "rocketBootsFigh") && bson_iterator_type(&stkmiter) == BSON_ARRAY)
@@ -755,8 +755,6 @@ void GameSave::readOPS(char * data, int dataLength)
 								stkm.fanFigh.push_back(bson_iterator_int(&fighiter));
 						}
 					}
-					else
-						fprintf(stderr, "Unknown stkm property %s\n", bson_iterator_key(&stkmiter));
 				}
 			}
 			else
@@ -1803,7 +1801,7 @@ void GameSave::readPSv(char * saveDataChar, int dataLength)
 			}
 			else
 			{
-				particles[i-1].temp = elements[particles[i-1].type].Temperature;
+				particles[i-1].temp = elements[particles[i-1].type].DefaultProperties.temp;
 			}
 		}
 	}
@@ -2406,6 +2404,13 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 						RESTRICTVERSION(94, 0);
 					}
 				}
+				if (particles[i].type == PT_LSNS)
+				{
+					if (particles[i].tmp >= 1 || particles[i].tmp <= 3)
+					{
+						RESTRICTVERSION(95, 0);
+					}
+				}
 
 				//Get the pmap entry for the next particle in the same position
 				i = partsPosLink[i];
@@ -2421,7 +2426,7 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 		soapLinkData = new unsigned char[3*soapCount];
 		if (!soapLinkData)
 			throw BuildException("Save error, out of memory (SOAP)");
-		soapLinkDataPtr = std::move(std::unique_ptr<unsigned char[]>(soapLinkData));
+		soapLinkDataPtr = std::unique_ptr<unsigned char[]>(soapLinkData);
 
 		//Iterate through particles in the same order that they were saved
 		for (y=0;y<fullH;y++)
@@ -2455,6 +2460,20 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 					//Get the pmap entry for the next particle in the same position
 					i = partsPosLink[i];
 				}
+			}
+		}
+	}
+
+	for (size_t i = 0; i < signs.size(); i++)
+	{
+		if(signs[i].text.length() && signs[i].x>=0 && signs[i].x<=fullW && signs[i].y>=0 && signs[i].y<=fullH)
+		{
+			int x, y, w, h;
+			bool v95 = false;
+			signs[i].getDisplayText(nullptr, x, y, w, h, true, &v95);
+			if (v95)
+			{
+				RESTRICTVERSION(95, 0);
 			}
 		}
 	}

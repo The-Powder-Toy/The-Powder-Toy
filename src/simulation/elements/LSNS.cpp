@@ -1,6 +1,8 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_LSNS PT_LSNS 185
-Element_LSNS::Element_LSNS()
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_LSNS()
 {
 	Identifier = "DEFAULT_PT_LSNS";
 	Name = "LSNS";
@@ -26,7 +28,7 @@ Element_LSNS::Element_LSNS()
 
 	Weight = 100;
 
-	Temperature = 4.0f + 273.15f;
+	DefaultProperties.temp = 4.0f + 273.15f;
 	HeatConduct = 0;
 	Description = "Life sensor, creates a spark when there's a nearby particle with a life higher than its temperature.";
 
@@ -41,11 +43,12 @@ Element_LSNS::Element_LSNS()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_LSNS::update;
+	DefaultProperties.tmp2 = 2;
+
+	Update = &update;
 }
 
-//#TPT-Directive ElementHeader Element_LSNS static int update(UPDATE_FUNC_ARGS)
-int Element_LSNS::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int rd = parts[i].tmp2;
 	if (rd > 25) parts[i].tmp2 = rd = 25;
@@ -151,5 +154,3 @@ int Element_LSNS::update(UPDATE_FUNC_ARGS)
 
 	return 0;
 }
-
-Element_LSNS::~Element_LSNS() {}

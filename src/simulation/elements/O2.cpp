@@ -1,6 +1,8 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_O2 PT_O2 61
-Element_O2::Element_O2()
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_O2()
 {
 	Identifier = "DEFAULT_PT_O2";
 	Name = "OXYG";
@@ -26,7 +28,6 @@ Element_O2::Element_O2()
 
 	Weight = 1;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
 	Description = "Oxygen gas. Ignites easily.";
 
@@ -41,11 +42,10 @@ Element_O2::Element_O2()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_O2::update;
+	Update = &update;
 }
 
-//#TPT-Directive ElementHeader Element_O2 static int update(UPDATE_FUNC_ARGS)
-int Element_O2::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int r,rx,ry;
 	for (rx=-2; rx<3; rx++)
@@ -115,6 +115,3 @@ int Element_O2::update(UPDATE_FUNC_ARGS)
 	}
 	return 0;
 }
-
-
-Element_O2::~Element_O2() {}

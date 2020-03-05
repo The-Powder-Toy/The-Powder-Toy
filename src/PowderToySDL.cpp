@@ -1,5 +1,6 @@
 #ifndef RENDERER
 
+#include "common/tpt-minmax.h"
 #include <map>
 #include <ctime>
 #include <climits>
@@ -350,7 +351,7 @@ unsigned int lastTick = 0;
 unsigned int lastFpsUpdate = 0;
 float fps = 0;
 ui::Engine * engine = NULL;
-bool showDoubleScreenDialog = false;
+bool showLargeScreenDialog = false;
 float currentWidth, currentHeight;
 
 int mousex = 0, mousey = 0;
@@ -480,12 +481,12 @@ void EventProcess(SDL_Event event)
 	}
 }
 
-void DoubleScreenDialog()
+void LargeScreenDialog()
 {
 	StringBuilder message;
-	message << "Switching to double size mode since your screen was determined to be large enough: ";
-	message << desktopWidth << "x" << desktopHeight << " detected, " << WINDOWW*2 << "x" << WINDOWH*2 << " required";
-	message << "\nTo undo this, hit Cancel. You can toggle double size mode in settings at any time.";
+	message << "Switching to " << scale << "x size mode since your screen was determined to be large enough: ";
+	message << desktopWidth << "x" << desktopHeight << " detected, " << WINDOWW*scale << "x" << WINDOWH*scale << " required";
+	message << "\nTo undo this, hit Cancel. You can change this in settings at any time.";
 	if (!ConfirmPrompt::Blocking("Large screen detected", message.Build()))
 	{
 		Client::Ref().SetPref("Scale", 1);
@@ -547,10 +548,10 @@ void EngineProcess()
 			lastTick = frameStart;
 			Client::Ref().Tick();
 		}
-		if (showDoubleScreenDialog)
+		if (showLargeScreenDialog)
 		{
-			showDoubleScreenDialog = false;
-			DoubleScreenDialog();
+			showLargeScreenDialog = false;
+			LargeScreenDialog();
 		}
 	}
 #ifdef DEBUG
@@ -633,6 +634,24 @@ void ChdirToDataDirectory()
 #endif
 }
 
+constexpr int SCALE_MAXIMUM = 10;
+constexpr int SCALE_MARGIN = 30;
+
+int GuessBestScale()
+{
+	const int widthNoMargin = desktopWidth - SCALE_MARGIN;
+	const int widthGuess = widthNoMargin / WINDOWW;
+
+	const int heightNoMargin = desktopHeight - SCALE_MARGIN;
+	const int heightGuess = heightNoMargin / WINDOWH;
+
+	int guess = std::min(widthGuess, heightGuess);
+	if(guess < 1 || guess > SCALE_MAXIMUM)
+		guess = 1;
+
+	return guess;
+}
+
 int main(int argc, char * argv[])
 {
 #if defined(_DEBUG) && defined(_MSC_VER)
@@ -704,17 +723,20 @@ int main(int argc, char * argv[])
 	Client::Ref().Initialise(proxyString, disableNetwork);
 
 	// TODO: maybe bind the maximum allowed scale to screen size somehow
-	if(scale < 1 || scale > 10)
+	if(scale < 1 || scale > SCALE_MAXIMUM)
 		scale = 1;
 
 	SDLOpen();
-	// TODO: mabe make a nice loop that automagically finds the optimal scale
-	if (Client::Ref().IsFirstRun() && desktopWidth > WINDOWW*2+30 && desktopHeight > WINDOWH*2+30)
+
+	if (Client::Ref().IsFirstRun())
 	{
-		scale = 2;
-		Client::Ref().SetPref("Scale", 2);
-		SDL_SetWindowSize(sdl_window, WINDOWW * 2, WINDOWH * 2);
-		showDoubleScreenDialog = true;
+		scale = GuessBestScale();
+		if (scale > 1)
+		{
+			Client::Ref().SetPref("Scale", scale);
+			SDL_SetWindowSize(sdl_window, WINDOWW * scale, WINDOWH * scale);
+			showLargeScreenDialog = true;
+		}
 	}
 
 #ifdef OGLI

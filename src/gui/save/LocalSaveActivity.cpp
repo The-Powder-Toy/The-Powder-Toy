@@ -16,34 +16,11 @@
 #include "gui/interface/Label.h"
 #include "gui/interface/Textbox.h"
 
-
-class LocalSaveActivity::CancelAction: public ui::ButtonAction
-{
-	LocalSaveActivity * a;
-public:
-	CancelAction(LocalSaveActivity * a) : a(a) {}
-	void ActionCallback(ui::Button * sender) override
-	{
-		a->Exit();
-	}
-};
-
-class LocalSaveActivity::SaveAction: public ui::ButtonAction
-{
-	LocalSaveActivity * a;
-public:
-	SaveAction(LocalSaveActivity * a) : a(a) {}
-	void ActionCallback(ui::Button * sender) override
-	{
-		a->Save();
-	}
-};
-
-LocalSaveActivity::LocalSaveActivity(SaveFile save, FileSavedCallback * callback) :
+LocalSaveActivity::LocalSaveActivity(SaveFile save, OnSaved onSaved_) :
 	WindowActivity(ui::Point(-1, -1), ui::Point(220, 200)),
 	save(save),
 	thumbnailRenderer(nullptr),
-	callback(callback)
+	onSaved(onSaved_)
 {
 	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 16), "Save to computer:");
 	titleLabel->SetTextColour(style::Colour::InformationTitle);
@@ -61,7 +38,9 @@ LocalSaveActivity::LocalSaveActivity(SaveFile save, FileSavedCallback * callback
 	cancelButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	cancelButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	cancelButton->Appearance.BorderInactive = ui::Colour(200, 200, 200);
-	cancelButton->SetActionCallback(new CancelAction(this));
+	cancelButton->SetActionCallback({ [this] {
+		Exit();
+	} });
 	AddComponent(cancelButton);
 	SetCancelButton(cancelButton);
 
@@ -69,7 +48,9 @@ LocalSaveActivity::LocalSaveActivity(SaveFile save, FileSavedCallback * callback
 	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	okayButton->Appearance.TextInactive = style::Colour::InformationTitle;
-	okayButton->SetActionCallback(new SaveAction(this));
+	okayButton->SetActionCallback({ [this] {
+		Save();
+	} });
 	AddComponent(okayButton);
 	SetOkayButton(okayButton);
 
@@ -95,20 +76,6 @@ void LocalSaveActivity::OnTick(float dt)
 
 void LocalSaveActivity::Save()
 {
-	class FileOverwriteConfirmation: public ConfirmDialogueCallback {
-	public:
-		LocalSaveActivity * a;
-		ByteString filename;
-		FileOverwriteConfirmation(LocalSaveActivity * a, ByteString finalFilename) : a(a), filename(finalFilename) {}
-		void ConfirmCallback(ConfirmPrompt::DialogueResult result) override {
-			if (result == ConfirmPrompt::ResultOkay)
-			{
-				a->saveWrite(filename);
-			}
-		}
-		virtual ~FileOverwriteConfirmation() { }
-	};
-
 	if (filenameField->GetText().Contains('/') || filenameField->GetText().BeginsWith("."))
 	{
 		new ErrorMessage("Error", "Invalid filename.");
@@ -120,7 +87,9 @@ void LocalSaveActivity::Save()
 		save.SetFileName(finalFilename);
 		if(Client::Ref().FileExists(finalFilename))
 		{
-			new ConfirmPrompt("Overwrite file", "Are you sure you wish to overwrite\n"+finalFilename.FromUtf8(), new FileOverwriteConfirmation(this, finalFilename));
+			new ConfirmPrompt("Overwrite file", "Are you sure you wish to overwrite\n"+finalFilename.FromUtf8(), { [this, finalFilename] {
+				saveWrite(finalFilename);
+			} });
 		}
 		else
 		{
@@ -151,7 +120,10 @@ void LocalSaveActivity::saveWrite(ByteString finalFilename)
 		new ErrorMessage("Error", "Unable to write save file.");
 	else
 	{
-		callback->FileSaved(&save);
+		if (onSaved)
+		{
+			onSaved(&save);
+		}
 		Exit();
 	}
 }
@@ -176,5 +148,4 @@ LocalSaveActivity::~LocalSaveActivity()
 	{
 		thumbnailRenderer->Abandon();
 	}
-	delete callback;
 }

@@ -1,6 +1,8 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_BRCK PT_BRCK 67
-Element_BRCK::Element_BRCK()
+
+static int graphics(GRAPHICS_FUNC_ARGS);
+
+void Element::Element_BRCK()
 {
 	Identifier = "DEFAULT_PT_BRCK";
 	Name = "BRCK";
@@ -26,7 +28,6 @@ Element_BRCK::Element_BRCK()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
 	Description = "Brick, breakable building material.";
 
@@ -41,12 +42,10 @@ Element_BRCK::Element_BRCK()
 	HighTemperature = 1223.0f;
 	HighTemperatureTransition = PT_LAVA;
 
-	Update = NULL;
-	Graphics = &Element_BRCK::graphics;
+	Graphics = &graphics;
 }
 
-//#TPT-Directive ElementHeader Element_BRCK static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_BRCK::graphics(GRAPHICS_FUNC_ARGS)
+static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	if (cpart->tmp == 1)
 	{
@@ -60,5 +59,3 @@ int Element_BRCK::graphics(GRAPHICS_FUNC_ARGS)
 	}
 	return 0;
 }
-
-Element_BRCK::~Element_BRCK() {}

@@ -1,6 +1,10 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_PBCN PT_PBCN 153
-Element_PBCN::Element_PBCN()
+
+static int update(UPDATE_FUNC_ARGS);
+static int graphics(GRAPHICS_FUNC_ARGS);
+bool Element_PCLN_ctypeDraw(CTYPEDRAW_FUNC_ARGS);
+
+void Element::Element_PBCN()
 {
 	Identifier = "DEFAULT_PT_PBCN";
 	Name = "PBCN";
@@ -26,7 +30,6 @@ Element_PBCN::Element_PBCN()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
 	Description = "Powered breakable clone.";
 
@@ -41,15 +44,14 @@ Element_PBCN::Element_PBCN()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_PBCN::update;
-	Graphics = &Element_PBCN::graphics;
-	CtypeDraw = &Element_PCLN::ctypeDraw;
+	Update = &update;
+	Graphics = &graphics;
+	CtypeDraw = &Element_PCLN_ctypeDraw;
 }
 
-#define ADVECTION 0.1f
+constexpr float ADVECTION = 0.1f;
 
-//#TPT-Directive ElementHeader Element_PBCN static int update(UPDATE_FUNC_ARGS)
-int Element_PBCN::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry, rt;
 	if (!parts[i].tmp2 && sim->pv[y/CELL][x/CELL]>4.0f)
@@ -148,16 +150,10 @@ int Element_PBCN::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-
-//#TPT-Directive ElementHeader Element_PBCN static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_PBCN::graphics(GRAPHICS_FUNC_ARGS)
-
+static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	int lifemod = ((cpart->life>10?10:cpart->life)*10);
 	*colr += lifemod;
 	*colg += lifemod/2;
 	return 0;
 }
-
-
-Element_PBCN::~Element_PBCN() {}

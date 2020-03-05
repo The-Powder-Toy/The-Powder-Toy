@@ -45,6 +45,12 @@
 #define GRAPHICS_FUNC_ARGS Renderer * ren, Particle *cpart, int nx, int ny, int *pixel_mode, int* cola, int *colr, int *colg, int *colb, int *firea, int *firer, int *fireg, int *fireb
 #define GRAPHICS_FUNC_SUBCALL_ARGS ren, cpart, nx, ny, pixel_mode, cola, colr, colg, colb, firea, firer, fireg, fireb
 
+#define ELEMENT_CREATE_FUNC_ARGS Simulation *sim, int i, int x, int y, int t, int v
+
+#define ELEMENT_CREATE_ALLOWED_FUNC_ARGS Simulation *sim, int i, int x, int y, int t
+
+#define ELEMENT_CHANGETYPE_FUNC_ARGS Simulation *sim, int i, int x, int y, int from, int to
+
 #define CTYPEDRAW_FUNC_ARGS Simulation *sim, int i, int t, int v
 #define CTYPEDRAW_FUNC_SUBCALL_ARGS sim, i, t, v
 
@@ -61,13 +67,6 @@
 #define PMAPID(id) ((id)<<PMAPBITS)
 
 #define PT_NUM	(1<<PMAPBITS)
-
-#if PMAPBITS > 16
-#error PMAPBITS is too large
-#endif
-#if ((XRES*YRES)<<PMAPBITS) > 0x100000000L
-#error not enough space in pmap
-#endif
 
 struct playerst;
 

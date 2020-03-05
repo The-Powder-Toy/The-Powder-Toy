@@ -1,6 +1,6 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_OIL PT_OIL 3
-Element_OIL::Element_OIL()
+
+void Element::Element_OIL()
 {
 	Identifier = "DEFAULT_PT_OIL";
 	Name = "OIL";
@@ -26,7 +26,6 @@ Element_OIL::Element_OIL()
 
 	Weight = 20;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 42;
 	Description = "Flammable, turns into GAS at low pressure or high temperature. Can be formed with NEUT and NITR.";
 
@@ -40,8 +39,4 @@ Element_OIL::Element_OIL()
 	LowTemperatureTransition = NT;
 	HighTemperature = 333.0f;
 	HighTemperatureTransition = PT_GAS;
-
-	Update = NULL;
 }
-
-Element_OIL::~Element_OIL() {}

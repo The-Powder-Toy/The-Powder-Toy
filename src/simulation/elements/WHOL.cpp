@@ -1,6 +1,6 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_WHOL PT_WHOL 40
-Element_WHOL::Element_WHOL()
+
+void Element::Element_WHOL()
 {
 	Identifier = "DEFAULT_PT_WHOL";
 	Name = "VENT";
@@ -26,7 +26,7 @@ Element_WHOL::Element_WHOL()
 
 	Weight = 100;
 
-	Temperature = R_TEMP-16.0f+273.15f;
+	DefaultProperties.temp = R_TEMP - 16.0f + 273.15f;
 	HeatConduct = 255;
 	Description = "Air vent, creates pressure and pushes other particles away.";
 
@@ -40,8 +40,4 @@ Element_WHOL::Element_WHOL()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-
-	Update = NULL;
 }
-
-Element_WHOL::~Element_WHOL() {}

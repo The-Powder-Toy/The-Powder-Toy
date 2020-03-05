@@ -1,6 +1,9 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_BCOL PT_BCOL 73
-Element_BCOL::Element_BCOL()
+
+int Element_COAL_update(UPDATE_FUNC_ARGS);
+int Element_COAL_graphics(GRAPHICS_FUNC_ARGS);
+
+void Element::Element_BCOL()
 {
 	Identifier = "DEFAULT_PT_BCOL";
 	Name = "BCOL";
@@ -27,7 +30,6 @@ Element_BCOL::Element_BCOL()
 
 	Weight = 90;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 150;
 	Description = "Broken Coal. Heavy particles, burns slowly.";
 
@@ -42,8 +44,8 @@ Element_BCOL::Element_BCOL()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_COAL::update;
-	Graphics = &Element_COAL::graphics;
-}
+	DefaultProperties.life = 110;
 
-Element_BCOL::~Element_BCOL() {}
+	Update = &Element_COAL_update;
+	Graphics = &Element_COAL_graphics;
+}

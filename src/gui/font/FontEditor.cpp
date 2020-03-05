@@ -272,204 +272,105 @@ FontEditor::FontEditor(ByteString _header):
 	int baseline = 8 + FONT_H * FONT_SCALE + 4 + FONT_H + 4 + 1;
 	int currentX = 1;
 
-	class PrevCharAction : public ui::ButtonAction
-	{
-		FontEditor *v;
-	public:
-		PrevCharAction(FontEditor *_v): v(_v) {}
-		void ActionCallback(ui::Button *)
-		{
-			v->PrevChar();
-		}
-	};
 	ui::Button *prev = new ui::Button(ui::Point(currentX, baseline), ui::Point(17, 17), 0xE016);
 	currentX += 18;
-	prev->SetActionCallback(new PrevCharAction(this));
+	prev->SetActionCallback({ [this] { PrevChar(); } });
 	AddComponent(prev);
 
-	class CharNumberAction : public ui::TextboxAction
-	{
-		FontEditor *v;
-	public:
-		CharNumberAction(FontEditor *_v): v(_v) {}
-		void TextChangedCallback(ui::Textbox *)
-		{
-			unsigned int number = v->currentCharTextbox->GetText().ToNumber<unsigned int>(Format::Hex(), true);
-			if(number <= 0x10FFFF)
-				v->currentChar = number;
-		}
-	};
 	currentCharTextbox = new ui::Textbox(ui::Point(currentX, baseline), ui::Point(31, 17));
 	currentX += 32;
-	currentCharTextbox->SetActionCallback(new CharNumberAction(this));
+	currentCharTextbox->SetActionCallback({ [this] {
+		unsigned int number = currentCharTextbox->GetText().ToNumber<unsigned int>(Format::Hex(), true);
+		if(number <= 0x10FFFF)
+			currentChar = number;
+	} });
 	UpdateCharNumber();
 	AddComponent(currentCharTextbox);
 
-	class NextCharAction : public ui::ButtonAction
-	{
-		FontEditor *v;
-	public:
-		NextCharAction(FontEditor *_v): v(_v) {}
-		void ActionCallback(ui::Button *)
-		{
-			v->NextChar();
-		}
-	};
 	ui::Button *next = new ui::Button(ui::Point(currentX, baseline), ui::Point(17, 17), 0xE015);
 	currentX += 18;
-	next->SetActionCallback(new NextCharAction(this));
+	next->SetActionCallback({ [this] { NextChar(); } });
 	AddComponent(next);
 
-	class ShrinkCharAction : public ui::ButtonAction
-	{
-		FontEditor *v;
-	public:
-		ShrinkCharAction(FontEditor *_v): v(_v) {}
-		void ActionCallback(ui::Button *)
-		{
-			v->ShrinkChar();
-		}
-	};
 	ui::Button *shrink = new ui::Button(ui::Point(currentX, baseline), ui::Point(17, 17), "><");
 	currentX += 18;
-	shrink->SetActionCallback(new ShrinkCharAction(this));
+	shrink->SetActionCallback({ [this] { ShrinkChar(); } });
 	AddComponent(shrink);
 
-	class GrowCharAction : public ui::ButtonAction
-	{
-		FontEditor *v;
-	public:
-		GrowCharAction(FontEditor *_v): v(_v) {}
-		void ActionCallback(ui::Button *)
-		{
-			v->GrowChar();
-		}
-	};
 	ui::Button *grow = new ui::Button(ui::Point(currentX, baseline), ui::Point(17, 17), "<>");
 	currentX += 18;
-	grow->SetActionCallback(new GrowCharAction(this));
+	grow->SetActionCallback({ [this] { GrowChar(); } });
 	AddComponent(grow);
 
-	class AddCharAction : public ui::ButtonAction
-	{
-		FontEditor *v;
-	public:
-		AddCharAction(FontEditor *_v): v(_v) {}
-		void ActionCallback(ui::Button *)
-		{
-			if(v->fontWidths.find(v->currentChar) == v->fontWidths.end())
-			{
-				v->savedButton->SetToggleState(false);
-				v->fontWidths[v->currentChar] = 5;
-				v->fontPixels[v->currentChar];
-			}
-		}
-	};
 	ui::Button *add = new ui::Button(ui::Point(currentX, baseline), ui::Point(36, 17), "Add");
 	currentX += 37;
-	add->SetActionCallback(new AddCharAction(this));
+	add->SetActionCallback({ [this] {
+		if (fontWidths.find(currentChar) == fontWidths.end())
+		{
+			savedButton->SetToggleState(false);
+			fontWidths[currentChar] = 5;
+			fontPixels[currentChar];
+		}
+	} });
 	AddComponent(add);
 
-	class RemoveCharAction : public ui::ButtonAction
-	{
-		FontEditor *v;
-	public:
-		RemoveCharAction(FontEditor *_v): v(_v) {}
-		void ActionCallback(ui::Button *)
-		{
-			if(v->fontWidths.find(v->currentChar) != v->fontWidths.end())
-			{
-				v->savedButton->SetToggleState(false);
-				v->fontWidths.erase(v->currentChar);
-				v->fontPixels.erase(v->currentChar);
-			}
-		}
-	};
 	ui::Button *remove = new ui::Button(ui::Point(currentX, baseline), ui::Point(36, 17), "Remove");
 	currentX += 37;
-	remove->SetActionCallback(new RemoveCharAction(this));
+	remove->SetActionCallback({ [this] {
+		if (fontWidths.find(currentChar) != fontWidths.end())
+		{
+			savedButton->SetToggleState(false);
+			fontWidths.erase(currentChar);
+			fontPixels.erase(currentChar);
+		}
+	} });
 	AddComponent(remove);
 	
-	class ToggleAction : public ui::ButtonAction
-	{
-		int &toggle;
-	public:
-		ToggleAction(int &_toggle): toggle(_toggle) {}
-		void ActionCallback(ui::Button *button)
-		{
-			toggle = button->GetToggleState();
-		}
-	};
-
 	ui::Button *showGrid = new ui::Button(ui::Point(currentX, baseline), ui::Point(32, 17), "Grid");
 	currentX += 33;
 	showGrid->SetTogglable(true);
 	showGrid->SetToggleState(grid);
-	showGrid->SetActionCallback(new ToggleAction(grid));
+	showGrid->SetActionCallback({ [this, showGrid] {
+		grid = showGrid->GetToggleState();
+	} });
 	AddComponent(showGrid);
 	
 	ui::Button *showRulers = new ui::Button(ui::Point(currentX, baseline), ui::Point(32, 17), "Rulers");
 	currentX += 33;
 	showRulers->SetTogglable(true);
-	showRulers->SetToggleState(grid);
-	showRulers->SetActionCallback(new ToggleAction(rulers));
+	showRulers->SetToggleState(rulers);
+	showRulers->SetActionCallback({ [this, showGrid] {
+		rulers = showGrid->GetToggleState();
+	} });
 	AddComponent(showRulers);
 
 	baseline += 18;
 	currentX = 1;
 	
-	class ColorComponentAction : public ui::TextboxAction
-	{
-		int &color;
-	public:
-		ColorComponentAction(int &_color): color(_color) {}
-		void TextChangedCallback(ui::Textbox *box)
-		{
-			color = box->GetText().ToNumber<int>(true);
-		}
-	};
 	int *refs[6] = {&fgR, &fgG, &fgB, &bgR, &bgG, &bgB};
 	for(int i = 0; i < 6; i++)
 	{
 		ui::Textbox *colorComponent = new ui::Textbox(ui::Point(currentX, baseline), ui::Point(27, 17), String::Build(*refs[i]));
 		currentX += 28;
-		colorComponent->SetActionCallback(new ColorComponentAction(*refs[i]));
+		colorComponent->SetActionCallback({ [colorComponent, refs, i] {
+			*refs[i] = colorComponent->GetText().ToNumber<int>(true);
+		} });
 		AddComponent(colorComponent);
 	}
 
 	baseline += 18;
 	currentX = 1;
 	
-	class RenderAction : public ui::ButtonAction
-	{
-		FontEditor *v;
-	public:
-		RenderAction(FontEditor *_v): v(_v) {}
-		void ActionCallback(ui::Button *)
-		{
-			v->Render();
-		}
-	};
 	ui::Button *render = new ui::Button(ui::Point(currentX, baseline), ui::Point(50, 17), "Render");
 	currentX += 51;
-	render->SetActionCallback(new RenderAction(this));
+	render->SetActionCallback({ [this] { Render(); } });
 	AddComponent(render);
 	
-	class SaveAction : public ui::ButtonAction
-	{
-		FontEditor *v;
-	public:
-		SaveAction(FontEditor *_v): v(_v) {}
-		void ActionCallback(ui::Button *)
-		{
-			v->Save();
-		}
-	};
 	savedButton = new ui::Button(ui::Point(currentX, baseline), ui::Point(50, 17), "Save");
 	currentX += 51;
 	savedButton->SetTogglable(true);
 	savedButton->SetToggleState(true);
-	savedButton->SetActionCallback(new SaveAction(this));
+	savedButton->SetActionCallback({ [this] { Save(); } });
 	AddComponent(savedButton);
 
 	baseline += 18;
@@ -480,41 +381,34 @@ FontEditor::FontEditor(ByteString _header):
 	outputPreview->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 	AddComponent(outputPreview);
 	
-	class PreviewAction : public ui::TextboxAction
-	{
-		FontEditor *v;
-	public:
-		PreviewAction(FontEditor *_v): v(_v) {}
-		void TextChangedCallback(ui::Textbox *box)
-		{
-			String str = box->GetText();
-			size_t at = 0;
-			StringBuilder text;
-			while(at < str.size())
-			{
-				unsigned int ch;
-				if(str[at] != ' ')
-					if(String::Split split = str.SplitNumber(ch, Format::Hex(), at))
-					{
-						text << String::value_type(ch);
-						at = split.PositionAfter();
-					}
-					else
-					{
-						text << str[at++];
-					}
-				else
-					at++;
-			}
-			v->outputPreview->SetText(text.Build());
-		}
-	};
 	ui::Textbox *inputPreview = new ui::Textbox(ui::Point(0, baseline), ui::Point(Size.X, (Size.Y - baseline) * 3 / 5));
 	inputPreview->SetMultiline(true);
 	inputPreview->SetInputType(ui::Textbox::Multiline);
 	inputPreview->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	inputPreview->Appearance.VerticalAlign = ui::Appearance::AlignTop;
-	inputPreview->SetActionCallback(new PreviewAction(this));
+	auto textChangedCallback = [this, inputPreview] {
+		String str = inputPreview->GetText();
+		size_t at = 0;
+		StringBuilder text;
+		while(at < str.size())
+		{
+			unsigned int ch;
+			if(str[at] != ' ')
+				if(String::Split split = str.SplitNumber(ch, Format::Hex(), at))
+				{
+					text << String::value_type(ch);
+					at = split.PositionAfter();
+				}
+				else
+				{
+					text << str[at++];
+				}
+			else
+				at++;
+		}
+		outputPreview->SetText(text.Build());
+	};
+	inputPreview->SetActionCallback({ textChangedCallback });
 
 	StringBuilder input;
 	input << Format::Hex() << Format::Width(2);
@@ -525,7 +419,7 @@ FontEditor::FontEditor(ByteString _header):
 		input << ch << " ";
 	}
 	inputPreview->SetText(input.Build());
-	PreviewAction(this).TextChangedCallback(inputPreview);
+	textChangedCallback();
 	AddComponent(inputPreview);
 }
 

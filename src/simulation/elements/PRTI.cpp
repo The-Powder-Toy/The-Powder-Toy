@@ -1,6 +1,11 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_PRTI PT_PRTI 109
-Element_PRTI::Element_PRTI()
+
+void Element_PIPE_transfer_pipe_to_part(Simulation * sim, Particle *pipe, Particle *part, bool STOR);
+static int update(UPDATE_FUNC_ARGS);
+static int graphics(GRAPHICS_FUNC_ARGS);
+void Element_SOAP_detach(Simulation * sim, int i);
+
+void Element::Element_PRTI()
 {
 	Identifier = "DEFAULT_PT_PRTI";
 	Name = "PRTI";
@@ -26,7 +31,6 @@ Element_PRTI::Element_PRTI()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 0;
 	Description = "Portal IN. Particles go in here. Also has temperature dependent channels. (same as WIFI)";
 
@@ -41,8 +45,8 @@ Element_PRTI::Element_PRTI()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_PRTI::update;
-	Graphics = &Element_PRTI::graphics;
+	Update = &update;
+	Graphics = &graphics;
 }
 
 /*these are the count values of where the particle gets stored, depending on where it came from
@@ -53,8 +57,7 @@ Element_PRTI::Element_PRTI()
    PRTO does +/-1 to the count, so it doesn't jam as easily
 */
 
-//#TPT-Directive ElementHeader Element_PRTI static int update(UPDATE_FUNC_ARGS)
-int Element_PRTI::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int fe = 0;
 
@@ -84,7 +87,7 @@ int Element_PRTI::update(UPDATE_FUNC_ARGS)
 				continue;// Handling these is a bit more complicated, and is done in STKM_interact()
 
 			if (TYP(r) == PT_SOAP)
-				Element_SOAP::detach(sim, ID(r));
+				Element_SOAP_detach(sim, ID(r));
 
 			for (int nnx=0; nnx<80; nnx++)
 				if (!sim->portalp[parts[i].tmp][count][nnx].type)
@@ -94,7 +97,7 @@ int Element_PRTI::update(UPDATE_FUNC_ARGS)
 						if (sim->IsValidElement(parts[ID(r)].tmp) && (sim->elements[parts[ID(r)].tmp].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY)))
 						{
 							// STOR uses same format as PIPE, so we can use this function to do the transfer
-							Element_PIPE::transfer_pipe_to_part(sim, parts+(ID(r)), &sim->portalp[parts[i].tmp][count][nnx], true);
+							Element_PIPE_transfer_pipe_to_part(sim, parts+(ID(r)), &sim->portalp[parts[i].tmp][count][nnx], true);
 							break;
 						}
 					}
@@ -142,10 +145,7 @@ int Element_PRTI::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-
-//#TPT-Directive ElementHeader Element_PRTI static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_PRTI::graphics(GRAPHICS_FUNC_ARGS)
-
+static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	*firea = 8;
 	*firer = 255;
@@ -157,6 +157,3 @@ int Element_PRTI::graphics(GRAPHICS_FUNC_ARGS)
 	*pixel_mode |= PMODE_ADD;
 	return 1;
 }
-
-
-Element_PRTI::~Element_PRTI() {}

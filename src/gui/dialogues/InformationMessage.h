@@ -3,11 +3,13 @@
 
 #include "gui/interface/Window.h"
 
-class InformationMessage: public ui::Window {
+class InformationMessage : public ui::Window
+{
 public:
 	InformationMessage(String title, String message, bool large);
+	virtual ~InformationMessage() = default;
+
 	void OnDraw() override;
-	virtual ~InformationMessage();
 };
 
 #endif /* INFORMATIONMESSAGE_H_ */

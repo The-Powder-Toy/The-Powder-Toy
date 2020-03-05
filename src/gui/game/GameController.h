@@ -51,15 +51,10 @@ private:
 	CommandInterface * commandInterface;
 	std::vector<DebugInfo*> debugInfo;
 	unsigned int debugFlags;
+	
+	void OpenSaveDone();
 public:
 	bool HasDone;
-	class SearchCallback;
-	class SSaveCallback;
-	class TagsCallback;
-	class StampsCallback;
-	class OptionsCallback;
-	class SaveOpenCallback;
-	friend class SaveOpenCallback;
 	GameController();
 	~GameController();
 	GameView * GetView();

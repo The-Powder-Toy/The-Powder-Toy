@@ -1,6 +1,9 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_SPNG PT_SPNG 90
-Element_SPNG::Element_SPNG()
+
+static int update(UPDATE_FUNC_ARGS);
+static int graphics(GRAPHICS_FUNC_ARGS);
+
+void Element::Element_SPNG()
 {
 	Identifier = "DEFAULT_PT_SPNG";
 	Name = "SPNG";
@@ -26,7 +29,6 @@ Element_SPNG::Element_SPNG()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 251;
 	Description = "Sponge, absorbs water. Is not a moving solid.";
 
@@ -41,12 +43,11 @@ Element_SPNG::Element_SPNG()
 	HighTemperature = 2730.0f;
 	HighTemperatureTransition = PT_FIRE;
 
-	Update = &Element_SPNG::update;
-	Graphics = &Element_SPNG::graphics;
+	Update = &update;
+	Graphics = &graphics;
 }
 
-//#TPT-Directive ElementHeader Element_SPNG static int update(UPDATE_FUNC_ARGS)
-int Element_SPNG::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int r, trade, rx, ry, tmp, np;
 	int limit = 50;
@@ -189,10 +190,7 @@ int Element_SPNG::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-
-//#TPT-Directive ElementHeader Element_SPNG static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_SPNG::graphics(GRAPHICS_FUNC_ARGS)
-
+static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	*colr -= cpart->life*15;
 	*colg -= cpart->life*15;
@@ -205,6 +203,3 @@ int Element_SPNG::graphics(GRAPHICS_FUNC_ARGS)
 		*colb = 20;
 	return 0;
 }
-
-
-Element_SPNG::~Element_SPNG() {}

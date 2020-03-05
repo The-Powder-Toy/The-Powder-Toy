@@ -1,6 +1,6 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_DYST PT_DYST 64
-Element_DYST::Element_DYST()
+
+void Element::Element_DYST()
 {
 	Identifier = "DEFAULT_PT_DYST";
 	Name = "DYST";
@@ -26,7 +26,6 @@ Element_DYST::Element_DYST()
 
 	Weight = 80;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
 	Description = "Dead Yeast.";
 
@@ -40,8 +39,4 @@ Element_DYST::Element_DYST()
 	LowTemperatureTransition = NT;
 	HighTemperature = 473.0f;
 	HighTemperatureTransition = PT_DUST;
-
-	Update = NULL;
 }
-
-Element_DYST::~Element_DYST() {}

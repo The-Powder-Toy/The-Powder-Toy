@@ -180,7 +180,7 @@ void Gravity::gravity_update_async()
 	unsigned int size = (XRES / CELL) * (YRES / CELL);
 	membwand(gravy, gravmask, size * sizeof(float), size * sizeof(unsigned));
 	membwand(gravx, gravmask, size * sizeof(float), size * sizeof(unsigned));
-	std::fill(&gravmap[0], &gravmap[size], 0);
+	std::fill(&gravmap[0], &gravmap[size], 0.0f);
 }
 
 void Gravity::update_grav_async()
@@ -188,11 +188,11 @@ void Gravity::update_grav_async()
 	int done = 0;
 	int thread_done = 0;
 	unsigned int size = (XRES / CELL) * (YRES / CELL);
-	std::fill(&th_ogravmap[0], &th_ogravmap[size], 0);
-	std::fill(&th_gravmap[0], &th_gravmap[size], 0);
-	std::fill(&th_gravy[0], &th_gravy[size], 0);
-	std::fill(&th_gravx[0], &th_gravx[size], 0);
-	std::fill(&th_gravp[0], &th_gravp[size], 0);
+	std::fill(&th_ogravmap[0], &th_ogravmap[size], 0.0f);
+	std::fill(&th_gravmap[0], &th_gravmap[size], 0.0f);
+	std::fill(&th_gravy[0], &th_gravy[size], 0.0f);
+	std::fill(&th_gravx[0], &th_gravx[size], 0.0f);
+	std::fill(&th_gravp[0], &th_gravp[size], 0.0f);
 
 #ifdef GRAVFFT
 	if (!grav_fft_status)
@@ -231,10 +231,10 @@ void Gravity::start_grav_async()
 	enabled = true;
 
 	unsigned int size = (XRES / CELL) * (YRES / CELL);
-	std::fill(&gravy[0], &gravy[size], 0);
-	std::fill(&gravx[0], &gravx[size], 0);
-	std::fill(&gravp[0], &gravp[size], 0);
-	std::fill(&gravmap[0], &gravmap[size], 0);
+	std::fill(&gravy[0], &gravy[size], 0.0f);
+	std::fill(&gravx[0], &gravx[size], 0.0f);
+	std::fill(&gravp[0], &gravp[size], 0.0f);
+	std::fill(&gravmap[0], &gravmap[size], 0.0f);
 }
 
 void Gravity::stop_grav_async()
@@ -251,10 +251,10 @@ void Gravity::stop_grav_async()
 	}
 	// Clear the grav velocities
 	unsigned int size = (XRES / CELL) * (YRES / CELL);
-	std::fill(&gravy[0], &gravy[size], 0);
-	std::fill(&gravx[0], &gravx[size], 0);
-	std::fill(&gravp[0], &gravp[size], 0);
-	std::fill(&gravmap[0], &gravmap[size], 0);
+	std::fill(&gravy[0], &gravy[size], 0.0f);
+	std::fill(&gravx[0], &gravx[size], 0.0f);
+	std::fill(&gravp[0], &gravp[size], 0.0f);
+	std::fill(&gravmap[0], &gravmap[size], 0.0f);
 }
 
 #ifdef GRAVFFT
@@ -376,7 +376,6 @@ void Gravity::update_grav(void)
 	}
 fin:
 	memcpy(th_ogravmap, th_gravmap, (XRES/CELL)*(YRES/CELL)*sizeof(float));
-	memcpy(obmap, bmap, (XRES/CELL)*(YRES/CELL)*sizeof(unsigned char));
 }
 #endif
 

@@ -14,9 +14,13 @@ public:
 	pixel Colour;
 	String Description;
 
+	int (*Perform)(Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength);
+
 	SimTool();
-	virtual ~SimTool() {}
-	virtual int Perform(Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength) { return 0; }
+
+#define TOOL_NUMBERS_DECLARE
+#include "ToolNumbers.h"
+#undef TOOL_NUMBERS_DECLARE
 };
 
 #endif

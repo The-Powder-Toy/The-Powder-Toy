@@ -1,6 +1,6 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_PSCN PT_PSCN 35
-Element_PSCN::Element_PSCN()
+
+void Element::Element_PSCN()
 {
 	Identifier = "DEFAULT_PT_PSCN";
 	Name = "PSCN";
@@ -27,7 +27,6 @@ Element_PSCN::Element_PSCN()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
 	Description = "P-Type Silicon, Will transfer current to any conductor.";
 
@@ -41,8 +40,4 @@ Element_PSCN::Element_PSCN()
 	LowTemperatureTransition = NT;
 	HighTemperature = 1687.0f;
 	HighTemperatureTransition = PT_LAVA;
-
-	Update = NULL;
 }
-
-Element_PSCN::~Element_PSCN() {}

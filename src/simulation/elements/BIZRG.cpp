@@ -1,6 +1,9 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_BIZRG PT_BIZRG 104
-Element_BIZRG::Element_BIZRG()
+
+int Element_BIZR_update(UPDATE_FUNC_ARGS);
+int Element_BIZR_graphics(GRAPHICS_FUNC_ARGS);
+
+void Element::Element_BIZRG()
 {
 	Identifier = "DEFAULT_PT_BIZRG";
 	Name = "BIZG";
@@ -26,7 +29,7 @@ Element_BIZRG::Element_BIZRG()
 
 	Weight = 1;
 
-	Temperature = R_TEMP-200.0f+273.15f;
+	DefaultProperties.temp = R_TEMP - 200.0f + 273.15f;
 	HeatConduct = 42;
 	Description = "Bizarre gas.";
 
@@ -41,8 +44,8 @@ Element_BIZRG::Element_BIZRG()
 	HighTemperature = 100.0f;
 	HighTemperatureTransition = PT_BIZR;
 
-	Update = &Element_BIZR::update;
-	Graphics = &Element_BIZR::graphics;
+	DefaultProperties.ctype = 0x47FFFF;
+
+	Update = &Element_BIZR_update;
+	Graphics = &Element_BIZR_graphics;
 }
-//BIZRG update is in BIZR.cpp
-Element_BIZRG::~Element_BIZRG() {}

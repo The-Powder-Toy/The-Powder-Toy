@@ -1,6 +1,9 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_SWCH PT_SWCH 56
-Element_SWCH::Element_SWCH()
+
+static int update(UPDATE_FUNC_ARGS);
+static int graphics(GRAPHICS_FUNC_ARGS);
+
+void Element::Element_SWCH()
 {
 	Identifier = "DEFAULT_PT_SWCH";
 	Name = "SWCH";
@@ -26,7 +29,6 @@ Element_SWCH::Element_SWCH()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
 	Description = "Only conducts when switched on. (PSCN switches on, NSCN switches off)";
 
@@ -41,17 +43,16 @@ Element_SWCH::Element_SWCH()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_SWCH::update;
-	Graphics = &Element_SWCH::graphics;
+	Update = &update;
+	Graphics = &graphics;
 }
 
-bool isRedBRAY(UPDATE_FUNC_ARGS, int xc, int yc)
+static bool isRedBRAY(UPDATE_FUNC_ARGS, int xc, int yc)
 {
 	return TYP(pmap[yc][xc]) == PT_BRAY && parts[ID(pmap[yc][xc])].tmp == 2;
 }
 
-//#TPT-Directive ElementHeader Element_SWCH static int update(UPDATE_FUNC_ARGS)
-int Element_SWCH::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int r, rt, rx, ry;
 	if (parts[i].life>0 && parts[i].life!=10)
@@ -93,10 +94,7 @@ int Element_SWCH::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-
-//#TPT-Directive ElementHeader Element_SWCH static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_SWCH::graphics(GRAPHICS_FUNC_ARGS)
-
+static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	if(cpart->life >= 10)
 	{
@@ -107,6 +105,3 @@ int Element_SWCH::graphics(GRAPHICS_FUNC_ARGS)
 	}
 	return 0;
 }
-
-
-Element_SWCH::~Element_SWCH() {}

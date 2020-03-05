@@ -1,6 +1,9 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_LCRY PT_LCRY 54
-Element_LCRY::Element_LCRY()
+
+static int update(UPDATE_FUNC_ARGS);
+static int graphics(GRAPHICS_FUNC_ARGS);
+
+void Element::Element_LCRY()
 {
 	Identifier = "DEFAULT_PT_LCRY";
 	Name = "LCRY";
@@ -26,7 +29,6 @@ Element_LCRY::Element_LCRY()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
 	Description = "Liquid Crystal. Changes colour when charged. (PSCN Charges, NSCN Discharges)";
 
@@ -41,13 +43,11 @@ Element_LCRY::Element_LCRY()
 	HighTemperature = 1273.0f;
 	HighTemperatureTransition = PT_BGLA;
 
-	Update = &Element_LCRY::update;
-	Graphics = &Element_LCRY::graphics;
+	Update = &update;
+	Graphics = &graphics;
 }
 
-//#TPT-Directive ElementHeader Element_LCRY static int update(UPDATE_FUNC_ARGS)
-int Element_LCRY::update(UPDATE_FUNC_ARGS)
-
+static int update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry, check, setto;
 	switch (parts[i].tmp)
@@ -100,9 +100,7 @@ int Element_LCRY::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-
-//#TPT-Directive ElementHeader Element_LCRY static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_LCRY::graphics(GRAPHICS_FUNC_ARGS)
+static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	bool deco = false;
 	if (ren->decorations_enable && cpart->dcolour && (cpart->dcolour&0xFF000000))
@@ -132,23 +130,5 @@ int Element_LCRY::graphics(GRAPHICS_FUNC_ARGS)
 	}
 	*pixel_mode |= NO_DECO;
 	return 0;
-
-	/*int lifemod = ((cpart->tmp2>10?10:cpart->tmp2)*10);
-	*colr += lifemod;
-	*colg += lifemod;
-	*colb += lifemod;
-	if(decorations_enable && cpart->dcolour && cpart->dcolour&0xFF000000)
-	{
-		lifemod *= 2.5f;
-		if(lifemod < 40)
-			lifemod = 40;
-		*colr = (lifemod*((cpart->dcolour>>16)&0xFF) + (255-lifemod)**colr) >> 8;
-		*colg = (lifemod*((cpart->dcolour>>8)&0xFF) + (255-lifemod)**colg) >> 8;
-		*colb = (lifemod*((cpart->dcolour)&0xFF) + (255-lifemod)**colb) >> 8;
-	}
-	*pixel_mode |= NO_DECO;
-	return 0;*/
 }
 
-
-Element_LCRY::~Element_LCRY() {}

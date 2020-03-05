@@ -1,8 +1,14 @@
 #include "common/tpt-minmax.h"
 #include "simulation/ElementCommon.h"
 
-//#TPT-Directive ElementClass Element_PSTN PT_PSTN 168
-Element_PSTN::Element_PSTN()
+struct StackData;
+static int update(UPDATE_FUNC_ARGS);
+static int graphics(GRAPHICS_FUNC_ARGS);
+static bool ctypeDraw(CTYPEDRAW_FUNC_ARGS);
+static StackData CanMoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int maxSize, int amount, bool retract, int block);
+static int MoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int maxSize, int amount, bool retract, int block, bool sticky, int callDepth = 0);
+
+void Element::Element_PSTN()
 {
 	Identifier = "DEFAULT_PT_PSTN";
 	Name = "PSTN";
@@ -28,7 +34,7 @@ Element_PSTN::Element_PSTN()
 
 	Weight = 100;
 
-	Temperature = 283.15f;
+	DefaultProperties.temp = 10.0f + 273.15f;
 	HeatConduct = 0;
 	Description = "Piston, extends and pushes particles.";
 
@@ -43,13 +49,12 @@ Element_PSTN::Element_PSTN()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_PSTN::update;
-	Graphics = &Element_PSTN::graphics;
-	CtypeDraw = &Element_PSTN::ctypeDraw;
+	Update = &update;
+	Graphics = &graphics;
+	CtypeDraw = &ctypeDraw;
 }
 
-//#TPT-Directive ElementHeader Element_PSTN struct StackData
-struct Element_PSTN::StackData
+struct StackData
 {
 	int pushed;
 	int spaces;
@@ -61,18 +66,16 @@ struct Element_PSTN::StackData
 	}
 };
 
-//#TPT-Directive ElementHeader Element_PSTN static int tempParts[XRES]
-int Element_PSTN::tempParts[XRES];
+int tempParts[XRES];
 
-#define PISTON_INACTIVE		0x00
-#define PISTON_RETRACT		0x01
-#define PISTON_EXTEND		0x02
-#define MAX_FRAME			0x0F
-#define DEFAULT_LIMIT		0x1F
-#define DEFAULT_ARM_LIMIT	0xFF
+constexpr int PISTON_INACTIVE   = 0x00;
+constexpr int PISTON_RETRACT    = 0x01;
+constexpr int PISTON_EXTEND     = 0x02;
+constexpr int MAX_FRAME         = 0x0F;
+constexpr int DEFAULT_LIMIT     = 0x1F;
+constexpr int DEFAULT_ARM_LIMIT = 0xFF;
 
-//#TPT-Directive ElementHeader Element_PSTN static int update(UPDATE_FUNC_ARGS)
-int Element_PSTN::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
  	if(parts[i].life)
  		return 0;
@@ -191,8 +194,7 @@ int Element_PSTN::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-//#TPT-Directive ElementHeader Element_PSTN static StackData CanMoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int maxSize, int amount, bool retract, int block)
-Element_PSTN::StackData Element_PSTN::CanMoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int maxSize, int amount, bool retract, int block)
+static StackData CanMoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int maxSize, int amount, bool retract, int block)
 {
 	int posX, posY, r, spaces = 0, currentPos = 0;
 	if (amount <= 0)
@@ -223,8 +225,7 @@ Element_PSTN::StackData Element_PSTN::CanMoveStack(Simulation * sim, int stackX,
 	return StackData(currentPos - spaces, spaces);
 }
 
-//#TPT-Directive ElementHeader Element_PSTN static int MoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int maxSize, int amount, bool retract, int block, bool sticky, int callDepth = 0)
-int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int maxSize, int amount, bool retract, int block, bool sticky, int callDepth)
+static int MoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int maxSize, int amount, bool retract, int block, bool sticky, int callDepth)
 {
 	int posX, posY, r;
 	r = sim->pmap[stackY][stackX];
@@ -337,9 +338,7 @@ int Element_PSTN::MoveStack(Simulation * sim, int stackX, int stackY, int direct
 	return 0;
 }
 
-
-//#TPT-Directive ElementHeader Element_PSTN static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_PSTN::graphics(GRAPHICS_FUNC_ARGS)
+static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	if(cpart->life)
 	{
@@ -349,8 +348,7 @@ int Element_PSTN::graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
-//#TPT-Directive ElementHeader Element_PSTN static bool ctypeDraw(CTYPEDRAW_FUNC_ARGS)
-bool Element_PSTN::ctypeDraw(CTYPEDRAW_FUNC_ARGS)
+static bool ctypeDraw(CTYPEDRAW_FUNC_ARGS)
 {
 	if (t == PT_FRME)
 	{
@@ -358,5 +356,3 @@ bool Element_PSTN::ctypeDraw(CTYPEDRAW_FUNC_ARGS)
 	}
 	return Element::basicCtypeDraw(CTYPEDRAW_FUNC_SUBCALL_ARGS);
 }
-
-Element_PSTN::~Element_PSTN() {}

@@ -72,99 +72,11 @@
 #include "simulation/SimulationData.h"
 #include "simulation/Air.h"
 #include "simulation/Snapshot.h"
-#include "ElementClasses.h"
+#include "simulation/ElementClasses.h"
 
 #ifdef GetUserName
 # undef GetUserName // dammit windows
 #endif
-
-class GameController::SearchCallback: public ControllerCallback
-{
-	GameController * cc;
-public:
-	SearchCallback(GameController * cc_) { cc = cc_; }
-
-	void ControllerExit() override
-	{
-		if(cc->search->GetLoadedSave())
-		{
-			try
-			{
-				cc->HistorySnapshot();
-				cc->gameModel->SetSave(cc->search->GetLoadedSave(), cc->gameView->ShiftBehaviour());
-				cc->search->ReleaseLoadedSave();
-			}
-			catch(GameModelException & ex)
-			{
-				new ErrorMessage("Cannot open save", ByteString(ex.what()).FromUtf8());
-			}
-		}
-	}
-};
-
-class GameController::SaveOpenCallback: public ControllerCallback
-{
-	GameController * cc;
-public:
-	SaveOpenCallback(GameController * cc_) { cc = cc_; }
-	void ControllerExit() override
-	{
-		if(cc->activePreview->GetDoOpen() && cc->activePreview->GetSaveInfo())
-		{
-			try
-			{
-				cc->HistorySnapshot();
-				cc->LoadSave(cc->activePreview->GetSaveInfo());
-			}
-			catch(GameModelException & ex)
-			{
-				new ErrorMessage("Cannot open save", ByteString(ex.what()).FromUtf8());
-			}
-		}
-	}
-};
-
-class GameController::OptionsCallback: public ControllerCallback
-{
-	GameController * cc;
-public:
-	OptionsCallback(GameController * cc_) { cc = cc_; }
-	void ControllerExit() override
-	{
-		cc->gameModel->UpdateQuickOptions();
-		Client::Ref().WritePrefs();
-	}
-};
-
-class GameController::TagsCallback: public ControllerCallback
-{
-	GameController * cc;
-public:
-	TagsCallback(GameController * cc_) { cc = cc_; }
-	void ControllerExit() override
-	{
-		cc->gameView->NotifySaveChanged(cc->gameModel);
-	}
-};
-
-class GameController::StampsCallback: public ControllerCallback
-{
-	GameController * cc;
-public:
-	StampsCallback(GameController * cc_) { cc = cc_; }
-	void ControllerExit() override
-	{
-		SaveFile *file = cc->localBrowser->GetSave();
-		if (file)
-		{
-			if (file->GetError().length())
-				new ErrorMessage("Error loading stamp", file->GetError());
-			else if (cc->localBrowser->GetMoveToFront())
-				Client::Ref().MoveStampToFront(file->GetDisplayName().ToUtf8());
-			cc->LoadStamp(file->GetGameSave());
-		}
-	}
-};
 
 GameController::GameController():
 	firstTick(true),
@@ -191,7 +103,6 @@ GameController::GameController():
 
 #ifdef LUACONSOLE
 	commandInterface = new LuaScriptInterface(this, gameModel);
-	((LuaScriptInterface*)commandInterface)->SetWindow(gameView);
 #else
 	commandInterface = new TPTScriptInterface(this, gameModel);
 #endif
@@ -386,26 +297,16 @@ void GameController::Install()
 #if defined(MACOSX)
 	new InformationMessage("No installation necessary", "You don't need to install The Powder Toy on OS X", false);
 #elif defined(WIN) || defined(LIN)
-	class InstallConfirmation: public ConfirmDialogueCallback {
-	public:
-		GameController * c;
-		InstallConfirmation(GameController * c_) {	c = c_;	}
-		void ConfirmCallback(ConfirmPrompt::DialogueResult result) override {
-			if (result == ConfirmPrompt::ResultOkay)
-			{
-				if(Client::Ref().DoInstallation())
-				{
-					new InformationMessage("Success", "Installation completed", false);
-				}
-				else
-				{
-					new ErrorMessage("Could not install", "The installation did not complete due to an error");
-				}
-			}
+	new ConfirmPrompt("Install The Powder Toy", "Do you wish to install The Powder Toy on this computer?\nThis allows you to open save files and saves directly from the website.", { [] {
+		if (Client::Ref().DoInstallation())
+		{
+			new InformationMessage("Success", "Installation completed", false);
 		}
-		virtual ~InstallConfirmation() { }
-	};
-	new ConfirmPrompt("Install The Powder Toy", "Do you wish to install The Powder Toy on this computer?\nThis allows you to open save files and saves directly from the website.", new InstallConfirmation(this));
+		else
+		{
+			new ErrorMessage("Could not install", "The installation did not complete due to an error");
+		}
+	} });
 #else
 	new ErrorMessage("Cannot install", "You cannot install The Powder Toy on this platform");
 #endif
@@ -446,11 +347,11 @@ void GameController::AdjustBrushSize(int delta, bool logarithmic, bool xAxis, bo
 		newSize.Y = 200;
 
 	if(xAxis)
-		gameModel->GetBrush()->SetRadius(ui::Point(newSize.X, oldSize.Y));
+		SetBrushSize(ui::Point(newSize.X, oldSize.Y));
 	else if(yAxis)
-		gameModel->GetBrush()->SetRadius(ui::Point(oldSize.X, newSize.Y));
+		SetBrushSize(ui::Point(oldSize.X, newSize.Y));
 	else
-		gameModel->GetBrush()->SetRadius(newSize);
+		SetBrushSize(newSize);
 }
 
 void GameController::SetBrushSize(ui::Point newSize)
@@ -1029,10 +930,11 @@ void GameController::Update()
 				rightSelected = sr;
 		}
 
+		void Element_STKM_set_element(Simulation *sim, playerst *playerp, int element);
 		if (!sim->player.spwn)
-			Element_STKM::STKM_set_element(sim, &sim->player, rightSelected);
+			Element_STKM_set_element(sim, &sim->player, rightSelected);
 		if (!sim->player2.spwn)
-			Element_STKM::STKM_set_element(sim, &sim->player2, rightSelected);
+			Element_STKM_set_element(sim, &sim->player2, rightSelected);
 	}
 	if(renderOptions && renderOptions->HasExited)
 	{
@@ -1251,7 +1153,21 @@ void GameController::SetReplaceModeFlags(int flags)
 void GameController::OpenSearch(String searchText)
 {
 	if(!search)
-		search = new SearchController(new SearchCallback(this));
+		search = new SearchController([this] {
+			if (search->GetLoadedSave())
+			{
+				try
+				{
+					HistorySnapshot();
+					gameModel->SetSave(search->GetLoadedSave(), gameView->ShiftBehaviour());
+					search->ReleaseLoadedSave();
+				}
+				catch(GameModelException & ex)
+				{
+					new ErrorMessage("Cannot open save", ByteString(ex.what()).FromUtf8());
+				}
+			}
+		});
 	if (searchText.length())
 		search->DoSearch2(searchText);
 	ui::Engine::Ref().ShowWindow(search->GetView());
@@ -1279,19 +1195,9 @@ void GameController::OpenLocalSaveWindow(bool asCurrent)
 
 		if (!asCurrent || !gameModel->GetSaveFile())
 		{
-			class LocalSaveCallback: public FileSavedCallback
-			{
-				GameController * c;
-			public:
-				LocalSaveCallback(GameController * _c): c(_c) {}
-				virtual  ~LocalSaveCallback() {}
-				void FileSaved(SaveFile* file) override
-				{
-					c->gameModel->SetSaveFile(file, c->gameView->ShiftBehaviour());
-				}
-			};
-
-			new LocalSaveActivity(tempSave, new LocalSaveCallback(this));
+			new LocalSaveActivity(tempSave, [this](SaveFile *file) {
+				gameModel->SetSaveFile(file, gameView->ShiftBehaviour());
+			});
 		}
 		else if (gameModel->GetSaveFile())
 		{
@@ -1327,9 +1233,25 @@ void GameController::LoadSave(SaveInfo * save)
 	gameModel->SetSave(save, gameView->ShiftBehaviour());
 }
 
+void GameController::OpenSaveDone()
+{
+	if (activePreview->GetDoOpen() && activePreview->GetSaveInfo())
+	{
+		try
+		{
+			HistorySnapshot();
+			LoadSave(activePreview->GetSaveInfo());
+		}
+		catch(GameModelException & ex)
+		{
+			new ErrorMessage("Cannot open save", ByteString(ex.what()).FromUtf8());
+		}
+	}
+}
+
 void GameController::OpenSavePreview(int saveID, int saveDate, bool instant)
 {
-	activePreview = new PreviewController(saveID, saveDate, instant, new SaveOpenCallback(this));
+	activePreview = new PreviewController(saveID, saveDate, instant, [this] { OpenSaveDone(); });
 	ui::Engine::Ref().ShowWindow(activePreview->GetView());
 }
 
@@ -1337,27 +1259,17 @@ void GameController::OpenSavePreview()
 {
 	if(gameModel->GetSave())
 	{
-		activePreview = new PreviewController(gameModel->GetSave()->GetID(), false, new SaveOpenCallback(this));
+		activePreview = new PreviewController(gameModel->GetSave()->GetID(), 0, false, [this] { OpenSaveDone(); });
 		ui::Engine::Ref().ShowWindow(activePreview->GetView());
 	}
 }
 
 void GameController::OpenLocalBrowse()
 {
-	class LocalSaveOpenCallback: public FileSelectedCallback
-	{
-		GameController * c;
-	public:
-		LocalSaveOpenCallback(GameController * _c): c(_c) {}
-		virtual  ~LocalSaveOpenCallback() {};
-		void FileSelected(SaveFile* file) override
-		{
-			c->HistorySnapshot();
-			c->LoadSaveFile(file);
-			delete file;
-		}
-	};
-	new FileBrowserActivity(LOCAL_SAVE_DIR PATH_SEP, new LocalSaveOpenCallback(this));
+	new FileBrowserActivity(LOCAL_SAVE_DIR PATH_SEP, [this](std::unique_ptr<SaveFile> file) {
+		HistorySnapshot();
+		LoadSaveFile(file.get());
+	});
 }
 
 void GameController::OpenLogin()
@@ -1399,18 +1311,9 @@ void GameController::OpenElementSearch()
 
 void GameController::OpenColourPicker()
 {
-	class ColourPickerCallback: public ColourPickedCallback
-	{
-		GameController * c;
-	public:
-		ColourPickerCallback(GameController * _c): c(_c) {}
-		virtual  ~ColourPickerCallback() {}
-		void ColourPicked(ui::Colour colour) override
-		{
-			c->SetColour(colour);
-		}
-	};
-	new ColourPickerActivity(gameModel->GetColourSelectorColour(), new ColourPickerCallback(this));
+	new ColourPickerActivity(gameModel->GetColourSelectorColour(), [this](ui::Colour colour) {
+		SetColour(colour);
+	});
 }
 
 void GameController::OpenTags()
@@ -1418,7 +1321,7 @@ void GameController::OpenTags()
 	if(gameModel->GetSave() && gameModel->GetSave()->GetID())
 	{
 		delete tagsWindow;
-		tagsWindow = new TagsController(new TagsCallback(this), gameModel->GetSave());
+		tagsWindow = new TagsController([this] { gameView->NotifySaveChanged(gameModel); }, gameModel->GetSave());
 		ui::Engine::Ref().ShowWindow(tagsWindow->GetView());
 	}
 	else
@@ -1429,13 +1332,26 @@ void GameController::OpenTags()
 
 void GameController::OpenStamps()
 {
-	localBrowser = new LocalBrowserController(new StampsCallback(this));
+	localBrowser = new LocalBrowserController([this] {
+		SaveFile *file = localBrowser->GetSave();
+		if (file)
+		{
+			if (file->GetError().length())
+				new ErrorMessage("Error loading stamp", file->GetError());
+			else if (localBrowser->GetMoveToFront())
+				Client::Ref().MoveStampToFront(file->GetDisplayName().ToUtf8());
+			LoadStamp(file->GetGameSave());
+		}
+	});
 	ui::Engine::Ref().ShowWindow(localBrowser->GetView());
 }
 
 void GameController::OpenOptions()
 {
-	options = new OptionsController(gameModel, new OptionsCallback(this));
+	options = new OptionsController(gameModel, [this] {
+		gameModel->UpdateQuickOptions();
+		Client::Ref().WritePrefs();
+	});
 	ui::Engine::Ref().ShowWindow(options->GetView());
 
 }
@@ -1463,19 +1379,6 @@ void GameController::OpenRenderOptions()
 
 void GameController::OpenSaveWindow()
 {
-	class SaveUploadedCallback: public ServerSaveActivity::SaveUploadedCallback
-	{
-		GameController * c;
-	public:
-		SaveUploadedCallback(GameController * _c): c(_c) {}
-		virtual  ~SaveUploadedCallback() {}
-		void SaveUploaded(SaveInfo save) override
-		{
-			save.SetVote(1);
-			save.SetVotesUp(1);
-			c->LoadSave(&save);
-		}
-	};
 	if(gameModel->GetUser().UserID)
 	{
 		Simulation * sim = gameModel->GetSimulation();
@@ -1492,13 +1395,21 @@ void GameController::OpenSaveWindow()
 			{
 				SaveInfo tempSave(*gameModel->GetSave());
 				tempSave.SetGameSave(gameSave);
-				new ServerSaveActivity(tempSave, new SaveUploadedCallback(this));
+				new ServerSaveActivity(tempSave, [this](SaveInfo &save) {
+					save.SetVote(1);
+					save.SetVotesUp(1);
+					LoadSave(&save);
+				});
 			}
 			else
 			{
 				SaveInfo tempSave(0, 0, 0, 0, 0, gameModel->GetUser().Username, "");
 				tempSave.SetGameSave(gameSave);
-				new ServerSaveActivity(tempSave, new SaveUploadedCallback(this));
+				new ServerSaveActivity(tempSave, [this](SaveInfo &save) {
+					save.SetVote(1);
+					save.SetVotesUp(1);
+					LoadSave(&save);
+				});
 			}
 		}
 	}
@@ -1510,19 +1421,6 @@ void GameController::OpenSaveWindow()
 
 void GameController::SaveAsCurrent()
 {
-
-	class SaveUploadedCallback: public ServerSaveActivity::SaveUploadedCallback
-	{
-		GameController * c;
-	public:
-		SaveUploadedCallback(GameController * _c): c(_c) {}
-		virtual  ~SaveUploadedCallback() {}
-		void SaveUploaded(SaveInfo save) override
-		{
-			c->LoadSave(&save);
-		}
-	};
-
 	if(gameModel->GetSave() && gameModel->GetUser().UserID && gameModel->GetUser().Username == gameModel->GetSave()->GetUserName())
 	{
 		Simulation * sim = gameModel->GetSimulation();
@@ -1539,13 +1437,13 @@ void GameController::SaveAsCurrent()
 			{
 				SaveInfo tempSave(*gameModel->GetSave());
 				tempSave.SetGameSave(gameSave);
-				new ServerSaveActivity(tempSave, true, new SaveUploadedCallback(this));
+				new ServerSaveActivity(tempSave, true, [this](SaveInfo &save) { LoadSave(&save); });
 			}
 			else
 			{
 				SaveInfo tempSave(0, 0, 0, 0, 0, gameModel->GetUser().Username, "");
 				tempSave.SetGameSave(gameSave);
-				new ServerSaveActivity(tempSave, true, new SaveUploadedCallback(this));
+				new ServerSaveActivity(tempSave, true, [this](SaveInfo &save) { LoadSave(&save); });
 			}
 		}
 	}
@@ -1582,7 +1480,9 @@ void GameController::Vote(int direction)
 
 void GameController::ChangeBrush()
 {
+	auto prev_size = gameModel->GetBrush()->GetRadius();
 	gameModel->SetBrushID(gameModel->GetBrushID()+1);
+	gameModel->GetBrush()->SetRadius(prev_size);
 }
 
 void GameController::ClearSim()
@@ -1672,19 +1572,6 @@ void GameController::NotifyNewNotification(Client * sender, std::pair<String, By
 
 void GameController::NotifyUpdateAvailable(Client * sender)
 {
-	class UpdateConfirmation: public ConfirmDialogueCallback {
-	public:
-		GameController * c;
-		UpdateConfirmation(GameController * c_) {	c = c_;	}
-		void ConfirmCallback(ConfirmPrompt::DialogueResult result) override {
-			if (result == ConfirmPrompt::ResultOkay)
-			{
-				c->RunUpdater();
-			}
-		}
-		virtual ~UpdateConfirmation() { }
-	};
-
 	class UpdateNotification : public Notification
 	{
 		GameController * c;
@@ -1714,7 +1601,7 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 
 			updateMessage << "\nNew version:\n ";
 			if (info.Type == UpdateInfo::Beta)
-				updateMessage << info.Major << " " << info.Minor << " Beta, Build " << info.Build;
+				updateMessage << info.Major << "." << info.Minor << " Beta, Build " << info.Build;
 			else if (info.Type == UpdateInfo::Snapshot)
 #if MOD_ID > 0
 				updateMessage << "Mod version " << info.Time;
@@ -1722,12 +1609,12 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 				updateMessage << "Snapshot " << info.Time;
 #endif
 			else if(info.Type == UpdateInfo::Stable)
-				updateMessage << info.Major << " " << info.Minor << " Stable, Build " << info.Build;
+				updateMessage << info.Major << "." << info.Minor << " Stable, Build " << info.Build;
 
 			if (info.Changelog.length())
 				updateMessage << "\n\nChangelog:\n" << info.Changelog;
 
-			new ConfirmPrompt("Run Updater", updateMessage.Build(), new UpdateConfirmation(c));
+			new ConfirmPrompt("Run Updater", updateMessage.Build(), { [this] { c->RunUpdater(); } });
 		}
 	};
 

@@ -33,17 +33,7 @@ LuaTextbox::LuaTextbox(lua_State * l) :
 
 	textbox = new ui::Textbox(ui::Point(posX, posY), ui::Point(sizeX, sizeY), text, placeholder);
 	textbox->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
-	class TextChangedAction : public ui::TextboxAction
-	{
-		LuaTextbox * t;
-	public:
-		TextChangedAction(LuaTextbox * t) : t(t) {}
-		void TextChangedCallback(ui::Textbox * sender) override
-		{
-			t->triggerOnTextChanged();
-		}
-	};
-	textbox->SetActionCallback(new TextChangedAction(this));
+	textbox->SetActionCallback({ [this] { triggerOnTextChanged(); } });
 	component = textbox;
 }
 

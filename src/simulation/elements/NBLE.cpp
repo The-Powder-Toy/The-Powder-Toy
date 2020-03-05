@@ -1,6 +1,8 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_NBLE PT_NBLE 52
-Element_NBLE::Element_NBLE()
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_NBLE()
 {
 	Identifier = "DEFAULT_PT_NBLE";
 	Name = "NBLE";
@@ -27,7 +29,7 @@ Element_NBLE::Element_NBLE()
 
 	Weight = 1;
 
-	Temperature = R_TEMP+2.0f	+273.15f;
+	DefaultProperties.temp = R_TEMP + 2.0f + 273.15f;
 	HeatConduct = 106;
 	Description = "Noble Gas. Diffuses and conductive. Ionizes into plasma when introduced to electricity.";
 
@@ -42,11 +44,10 @@ Element_NBLE::Element_NBLE()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_NBLE::update;
+	Update = &update;
 }
 
-//#TPT-Directive ElementHeader Element_NBLE static int update(UPDATE_FUNC_ARGS)
-int Element_NBLE::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	if (parts[i].temp > 5273.15 && sim->pv[y/CELL][x/CELL] > 100.0f)
 	{
@@ -89,6 +90,3 @@ int Element_NBLE::update(UPDATE_FUNC_ARGS)
 	}
 	return 0;
 }
-
-
-Element_NBLE::~Element_NBLE() {}

@@ -110,7 +110,3 @@ int ToolButton::GetSelectionState()
 {
 	return currentSelection;
 }
-
-ToolButton::~ToolButton() {
-}
-

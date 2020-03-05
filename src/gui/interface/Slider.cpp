@@ -35,9 +35,9 @@ void Slider::updatePosition(int position)
 
 	sliderPosition = newSliderPosition;
 
-	if(actionCallback)
+	if (actionCallback.change)
 	{
-		actionCallback->ValueChangedCallback(this);
+		actionCallback.change();
 	}
 }
 
@@ -130,10 +130,6 @@ void Slider::Draw(const Point& screenPos)
 
 	g->fillrect(screenPos.X+sliderX-2, screenPos.Y+1, 4, Size.Y-2, 20, 20, 20, 255);
 	g->drawrect(screenPos.X+sliderX-2, screenPos.Y+1, 4, Size.Y-2, 200, 200, 200, 255);
-}
-
-Slider::~Slider()
-{
 }
 
 } /* namespace ui */

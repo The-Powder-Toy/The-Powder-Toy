@@ -1,6 +1,10 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_PLSM PT_PLSM 49
-Element_PLSM::Element_PLSM()
+
+int Element_FIRE_update(UPDATE_FUNC_ARGS);
+static int graphics(GRAPHICS_FUNC_ARGS);
+static void create(ELEMENT_CREATE_FUNC_ARGS);
+
+void Element::Element_PLSM()
 {
 	Identifier = "DEFAULT_PT_PLSM";
 	Name = "PLSM";
@@ -26,7 +30,7 @@ Element_PLSM::Element_PLSM()
 
 	Weight = 1;
 
-	Temperature = 10000.0f		+273.15f;
+	DefaultProperties.temp = MAX_TEMP;
 	HeatConduct = 5;
 	Description = "Plasma, extremely hot.";
 
@@ -41,13 +45,12 @@ Element_PLSM::Element_PLSM()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_FIRE::update;
-	Graphics = &Element_PLSM::graphics;
+	Update = &Element_FIRE_update;
+	Graphics = &graphics;
+	Create = &create;
 }
 
-//#TPT-Directive ElementHeader Element_PLSM static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_PLSM::graphics(GRAPHICS_FUNC_ARGS)
-
+static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	int caddress = restrict_flt(restrict_flt((float)cpart->life, 0.0f, 200.0f)*3, 0.0f, (200.0f*3)-3);
 	*colr = (unsigned char)ren->plasma_data[caddress];
@@ -65,5 +68,7 @@ int Element_PLSM::graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
-
-Element_PLSM::~Element_PLSM() {}
+static void create(ELEMENT_CREATE_FUNC_ARGS)
+{
+	sim->parts[i].life = RNG::Ref().between(50, 199);
+}

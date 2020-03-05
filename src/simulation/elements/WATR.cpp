@@ -1,6 +1,8 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_WATR PT_WATR 2
-Element_WATR::Element_WATR()
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_WATR()
 {
 	Identifier = "DEFAULT_PT_WATR";
 	Name = "WATR";
@@ -26,7 +28,7 @@ Element_WATR::Element_WATR()
 
 	Weight = 30;
 
-	Temperature = R_TEMP-2.0f	+273.15f;
+	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
 	HeatConduct = 29;
 	Description = "Water. Conducts electricity, freezes, and extinguishes fires.";
 
@@ -41,11 +43,10 @@ Element_WATR::Element_WATR()
 	HighTemperature = 373.0f;
 	HighTemperatureTransition = PT_WTRV;
 
-	Update = &Element_WATR::update;
+	Update = &update;
 }
 
-//#TPT-Directive ElementHeader Element_WATR static int update(UPDATE_FUNC_ARGS)
-int Element_WATR::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry;
 	for (rx=-1; rx<2; rx++)
@@ -84,5 +85,3 @@ int Element_WATR::update(UPDATE_FUNC_ARGS)
 			}
 	return 0;
 }
-
-Element_WATR::~Element_WATR() {}

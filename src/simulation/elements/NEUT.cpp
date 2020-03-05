@@ -1,6 +1,12 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_NEUT PT_NEUT 18
-Element_NEUT::Element_NEUT()
+
+int Element_FIRE_update(UPDATE_FUNC_ARGS);
+static int update(UPDATE_FUNC_ARGS);
+static int graphics(GRAPHICS_FUNC_ARGS);
+static void create(ELEMENT_CREATE_FUNC_ARGS);
+static int DeutExplosion(Simulation * sim, int n, int x, int y, float temp, int t);
+
+void Element::Element_NEUT()
 {
 	Identifier = "DEFAULT_PT_NEUT";
 	Name = "NEUT";
@@ -26,7 +32,7 @@ Element_NEUT::Element_NEUT()
 
 	Weight = -1;
 
-	Temperature = R_TEMP+4.0f	+273.15f;
+	DefaultProperties.temp = R_TEMP + 4.0f + 273.15f;
 	HeatConduct = 60;
 	Description = "Neutrons. Interact with matter in odd ways.";
 
@@ -41,12 +47,12 @@ Element_NEUT::Element_NEUT()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_NEUT::update;
-	Graphics = &Element_NEUT::graphics;
+	Update = &update;
+	Graphics = &graphics;
+	Create = &create;
 }
 
-//#TPT-Directive ElementHeader Element_NEUT static int update(UPDATE_FUNC_ARGS)
-int Element_NEUT::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry;
 	unsigned int pressureFactor = 3 + (int)sim->pv[y/CELL][x/CELL];
@@ -84,7 +90,7 @@ int Element_NEUT::update(UPDATE_FUNC_ARGS)
 							parts[ID(r)].vy = 0.25f*parts[ID(r)].vy + parts[i].vy;
 						}
 						sim->pv[y/CELL][x/CELL] += 10.0f * CFDS; //Used to be 2, some people said nukes weren't powerful enough
-						Element_FIRE::update(UPDATE_FUNC_SUBCALL_ARGS);
+						Element_FIRE_update(UPDATE_FUNC_SUBCALL_ARGS);
 					}
 					break;
 #ifdef SDEUT
@@ -181,11 +187,7 @@ int Element_NEUT::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-
-
-//#TPT-Directive ElementHeader Element_NEUT static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_NEUT::graphics(GRAPHICS_FUNC_ARGS)
-
+static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	*firea = 120;
 	*firer = 10;
@@ -196,8 +198,16 @@ int Element_NEUT::graphics(GRAPHICS_FUNC_ARGS)
 	return 1;
 }
 
-//#TPT-Directive ElementHeader Element_NEUT static int DeutExplosion(Simulation * sim, int n, int x, int y, float temp, int t)
-int Element_NEUT::DeutExplosion(Simulation * sim, int n, int x, int y, float temp, int t)//testing a new deut create part
+static void create(ELEMENT_CREATE_FUNC_ARGS)
+{
+	float r = RNG::Ref().between(128, 255) / 127.0f;
+	float a = RNG::Ref().between(0, 359) * 3.14159f / 180.0f;
+	sim->parts[i].life = RNG::Ref().between(480, 959);
+	sim->parts[i].vx = r * cosf(a);
+	sim->parts[i].vy = r * sinf(a);
+}
+
+static int DeutExplosion(Simulation * sim, int n, int x, int y, float temp, int t)//testing a new deut create part
 {
 	int i;
 	n = (n/50);
@@ -217,5 +227,3 @@ int Element_NEUT::DeutExplosion(Simulation * sim, int n, int x, int y, float tem
 	sim->pv[y/CELL][x/CELL] += (6.0f * CFDS)*n;
 	return 0;
 }
-
-Element_NEUT::~Element_NEUT() {}

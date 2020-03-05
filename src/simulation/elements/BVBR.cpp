@@ -1,6 +1,9 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_BVBR PT_BVBR 166
-Element_BVBR::Element_BVBR()
+
+int Element_VIBR_update(UPDATE_FUNC_ARGS);
+int Element_VIBR_graphics(GRAPHICS_FUNC_ARGS);
+
+void Element::Element_BVBR()
 {
 	Identifier = "DEFAULT_PT_BVBR";
 	Name = "BVBR";
@@ -26,7 +29,7 @@ Element_BVBR::Element_BVBR()
 
 	Weight = 67;
 
-	Temperature = 273.15f;
+	DefaultProperties.temp = 273.15f;
 	HeatConduct = 164;
 	Description = "Broken vibranium.";
 
@@ -41,8 +44,6 @@ Element_BVBR::Element_BVBR()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_VIBR::update;
-	Graphics = &Element_VIBR::graphics;
+	Update = &Element_VIBR_update;
+	Graphics = &Element_VIBR_graphics;
 }
-
-Element_BVBR::~Element_BVBR() {}

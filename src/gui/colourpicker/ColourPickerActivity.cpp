@@ -10,64 +10,55 @@
 
 #include "Misc.h"
 
-ColourPickerActivity::ColourPickerActivity(ui::Colour initialColour, ColourPickedCallback * callback) :
+ColourPickerActivity::ColourPickerActivity(ui::Colour initialColour, OnPicked onPicked_) :
 	WindowActivity(ui::Point(-1, -1), ui::Point(266, 175)),
 	currentHue(0),
 	currentSaturation(0),
 	currentValue(0),
 	mouseDown(false),
 	valueMouseDown(false),
-	callback(callback)
+	onPicked(onPicked_)
 {
+	auto colourChange = [this] {
+		int r, g, b, alpha;
+		r = rValue->GetText().ToNumber<int>(true);
+		g = gValue->GetText().ToNumber<int>(true);
+		b = bValue->GetText().ToNumber<int>(true);
+		alpha = aValue->GetText().ToNumber<int>(true);
+		if (r > 255)
+			r = 255;
+		if (g > 255)
+			g = 255;
+		if (b > 255)
+			b = 255;
+		if (alpha > 255)
+			alpha = 255;
 
-	class ColourChange : public ui::TextboxAction
-	{
-		ColourPickerActivity * a;
-	public:
-		ColourChange(ColourPickerActivity * a) : a(a) {}
-
-		void TextChangedCallback(ui::Textbox * sender) override
-		{
-			int r, g, b, alpha;
-			r = a->rValue->GetText().ToNumber<int>(true);
-			g = a->gValue->GetText().ToNumber<int>(true);
-			b = a->bValue->GetText().ToNumber<int>(true);
-			alpha = a->aValue->GetText().ToNumber<int>(true);
-			if (r > 255)
-				r = 255;
-			if (g > 255)
-				g = 255;
-			if (b > 255)
-				b = 255;
-			if (alpha > 255)
-				alpha = 255;
-
-			RGB_to_HSV(r, g, b, &a->currentHue, &a->currentSaturation, &a->currentValue);
-			a->currentAlpha = alpha;
-			a->UpdateTextboxes(r, g, b, alpha);
-		}
+		RGB_to_HSV(r, g, b, &currentHue, &currentSaturation, &currentValue);
+		currentAlpha = alpha;
+		UpdateTextboxes(r, g, b, alpha);
 	};
 
 	rValue = new ui::Textbox(ui::Point(5, Size.Y-23), ui::Point(30, 17), "255");
-	rValue->SetActionCallback(new ColourChange(this));
+	rValue->SetActionCallback({ colourChange });
 	rValue->SetLimit(3);
 	rValue->SetInputType(ui::Textbox::Number);
 	AddComponent(rValue);
 
 	gValue = new ui::Textbox(ui::Point(40, Size.Y-23), ui::Point(30, 17), "255");
-	gValue->SetActionCallback(new ColourChange(this));
+	gValue->SetActionCallback({ colourChange });
 	gValue->SetLimit(3);
 	gValue->SetInputType(ui::Textbox::Number);
 	AddComponent(gValue);
 
 	bValue = new ui::Textbox(ui::Point(75, Size.Y-23), ui::Point(30, 17), "255");
-	bValue->SetActionCallback(new ColourChange(this));
+	bValue->SetActionCallback({ colourChange });
 	bValue->SetLimit(3);
 	bValue->SetInputType(ui::Textbox::Number);
 	AddComponent(bValue);
 
 	aValue = new ui::Textbox(ui::Point(110, Size.Y-23), ui::Point(30, 17), "255");
-	aValue->SetActionCallback(new ColourChange(this));
+	aValue->SetActionCallback({ colourChange });
 	aValue->SetLimit(3);
 	aValue->SetInputType(ui::Textbox::Number);
 	AddComponent(aValue);
@@ -75,26 +66,17 @@ ColourPickerActivity::ColourPickerActivity(ui::Colour initialColour, ColourPicke
 	hexValue = new::ui::Label(ui::Point(150, Size.Y-23), ui::Point(53, 17), "0xFFFFFFFF");
 	AddComponent(hexValue);
 
-	class OkayAction: public ui::ButtonAction
-	{
-		ColourPickerActivity * a;
-	public:
-		OkayAction(ColourPickerActivity * a) : a(a) { }
-		void ActionCallback(ui::Button * sender) override
-		{
-			int Red, Green, Blue;
-			Red = a->rValue->GetText().ToNumber<int>(true);
-			Green = a->gValue->GetText().ToNumber<int>(true);
-			Blue = a->bValue->GetText().ToNumber<int>(true);
-			ui::Colour col(Red, Green, Blue, a->currentAlpha);
-			if(a->callback)
-				a->callback->ColourPicked(col);
-			a->Exit();
-		}
-	};
-
 	ui::Button * doneButton = new ui::Button(ui::Point(Size.X-45, Size.Y-23), ui::Point(40, 17), "Done");
-	doneButton->SetActionCallback(new OkayAction(this));
+	doneButton->SetActionCallback({ [this] {
+		int Red, Green, Blue;
+		Red = rValue->GetText().ToNumber<int>(true);
+		Green = gValue->GetText().ToNumber<int>(true);
+		Blue = bValue->GetText().ToNumber<int>(true);
+		ui::Colour col(Red, Green, Blue, currentAlpha);
+		if (onPicked)
+			onPicked(col);
+		Exit();
+	} });
 	AddComponent(doneButton);
 	SetOkayButton(doneButton);
 
@@ -316,8 +298,3 @@ void ColourPickerActivity::OnDraw()
 	g->xor_line(offsetX+currentValueX, offsetY+4+128, offsetX+currentValueX, offsetY+13+128);
 	g->xor_line(offsetX+currentValueX+1, offsetY+4+128, offsetX+currentValueX+1, offsetY+13+128);
 }
-
-ColourPickerActivity::~ColourPickerActivity() {
-	delete callback;
-}
-

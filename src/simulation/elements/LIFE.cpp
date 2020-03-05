@@ -3,8 +3,10 @@
 bool Element_GOL_colourInit = false;
 pixel Element_GOL_colour[NGOL];
 
-//#TPT-Directive ElementClass Element_LIFE PT_LIFE 78
-Element_LIFE::Element_LIFE()
+static int graphics(GRAPHICS_FUNC_ARGS);
+static void create(ELEMENT_CREATE_FUNC_ARGS);
+
+void Element::Element_LIFE()
 {
 	Identifier = "DEFAULT_PT_LIFE";
 	Name = "LIFE";
@@ -30,7 +32,7 @@ Element_LIFE::Element_LIFE()
 
 	Weight = 100;
 
-	Temperature = 9000.0f;
+	DefaultProperties.temp = 9000.0f;
 	HeatConduct = 40;
 	Description = "Game Of Life! B3/S23";
 
@@ -45,10 +47,10 @@ Element_LIFE::Element_LIFE()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = NULL;
-	Graphics = &Element_LIFE::graphics;
+	Graphics = &graphics;
+	Create = &create;
 
-	if(!Element_GOL_colourInit)
+	if (!Element_GOL_colourInit)
 	{
 		Element_GOL_colourInit = true;
 
@@ -60,9 +62,7 @@ Element_LIFE::Element_LIFE()
 	}
 }
 
-//#TPT-Directive ElementHeader Element_LIFE static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_LIFE::graphics(GRAPHICS_FUNC_ARGS)
-
+static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	pixel pc;
 	if (cpart->ctype==NGT_LOTE)//colors for life states
@@ -120,5 +120,11 @@ int Element_LIFE::graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
-
-Element_LIFE::~Element_LIFE() {}
+static void create(ELEMENT_CREATE_FUNC_ARGS)
+{
+	if (v >= 0 && v < NGOL)
+	{
+		sim->parts[i].tmp = sim->grule[v+1][9] - 1;
+		sim->parts[i].ctype = v;
+	}
+}

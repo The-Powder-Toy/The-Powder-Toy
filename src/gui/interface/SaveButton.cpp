@@ -14,10 +14,11 @@
 
 namespace ui {
 
-SaveButton::SaveButton(Point position, Point size, SaveInfo * save):
+SaveButton::SaveButton(Point position, Point size) :
 	Component(position, size),
-	file(NULL),
-	save(save),
+	file(nullptr),
+	save(nullptr),
+	wantsDraw(false),
 	triedThumbnail(false),
 	isMouseInsideAuthor(false),
 	isMouseInsideHistory(false),
@@ -26,9 +27,13 @@ SaveButton::SaveButton(Point position, Point size, SaveInfo * save):
 	isButtonDown(false),
 	isMouseInside(false),
 	selected(false),
-	selectable(false),
-	actionCallback(NULL)
+	selectable(false)
 {
+}
+
+SaveButton::SaveButton(Point position, Point size, SaveInfo * save_) : SaveButton(position, size)
+{
+	save = save_;
 	if(save)
 	{
 		name = save->name;
@@ -87,22 +92,9 @@ SaveButton::SaveButton(Point position, Point size, SaveInfo * save):
 	}
 }
 
-SaveButton::SaveButton(Point position, Point size, SaveFile * file):
-	Component(position, size),
-	file(file),
-	save(NULL),
-	wantsDraw(false),
-	triedThumbnail(false),
-	isMouseInsideAuthor(false),
-	isMouseInsideHistory(false),
-	showVotes(false),
-	thumbnailRenderer(nullptr),
-	isButtonDown(false),
-	isMouseInside(false),
-	selected(false),
-	selectable(false),
-	actionCallback(NULL)
+SaveButton::SaveButton(Point position, Point size, SaveFile * file_) : SaveButton(position, size)
 {
+	file = file_;
 	if(file)
 	{
 		name = file->GetDisplayName();
@@ -121,7 +113,6 @@ SaveButton::~SaveButton()
 	{
 		thumbnailRenderer->Abandon();
 	}
-	delete actionCallback;
 	delete save;
 	delete file;
 }
@@ -407,20 +398,20 @@ void SaveButton::OnMouseLeave(int x, int y)
 
 void SaveButton::DoAltAction()
 {
-	if(actionCallback)
-		actionCallback->AltActionCallback(this);
+	if (actionCallback.altAction)
+		actionCallback.altAction();
 }
 
 void SaveButton::DoAltAction2()
 {
-	if(actionCallback)
-		actionCallback->AltActionCallback2(this);
+	if (actionCallback.altAltAction)
+		actionCallback.altAltAction();
 }
 
 void SaveButton::DoAction()
 {
-	if(actionCallback)
-		actionCallback->ActionCallback(this);
+	if (actionCallback.action)
+		actionCallback.action();
 }
 
 void SaveButton::DoSelection()
@@ -432,13 +423,8 @@ void SaveButton::DoSelection()
 		else
 			menu->SetItem(1, "Select");
 	}
-	if(selectable && actionCallback)
-		actionCallback->SelectedCallback(this);
-}
-
-void SaveButton::SetActionCallback(SaveButtonAction * action)
-{
-	actionCallback = action;
+	if (selectable && actionCallback.selected)
+		actionCallback.selected();
 }
 
 } /* namespace ui */

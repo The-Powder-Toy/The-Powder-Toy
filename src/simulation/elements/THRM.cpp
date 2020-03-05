@@ -1,6 +1,6 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_THRM PT_THRM 65
-Element_THRM::Element_THRM()
+
+void Element::Element_THRM()
 {
 	Identifier = "DEFAULT_PT_THRM";
 	Name = "THRM";
@@ -26,7 +26,6 @@ Element_THRM::Element_THRM()
 
 	Weight = 90;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 211;
 	Description = "Thermite. Burns at extremely high temperature.";
 
@@ -40,8 +39,4 @@ Element_THRM::Element_THRM()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-
-	Update = NULL;
 }
-
-Element_THRM::~Element_THRM() {}

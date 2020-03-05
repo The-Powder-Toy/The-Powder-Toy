@@ -1,6 +1,8 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_MORT PT_MORT 77
-Element_MORT::Element_MORT()
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_MORT()
 {
 	Identifier = "DEFAULT_PT_MORT";
 	Name = "MORT";
@@ -26,7 +28,7 @@ Element_MORT::Element_MORT()
 
 	Weight = -1;
 
-	Temperature = R_TEMP+4.0f	+273.15f;
+	DefaultProperties.temp = R_TEMP + 4.0f + 273.15f;
 	HeatConduct = 60;
 	Description = "Steam Train.";
 
@@ -41,15 +43,14 @@ Element_MORT::Element_MORT()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_MORT::update;
+	// CHOO CHOO
+	DefaultProperties.vx = 2.0f;
+
+	Update = &update;
 }
 
-//#TPT-Directive ElementHeader Element_MORT static int update(UPDATE_FUNC_ARGS)
-int Element_MORT::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	sim->create_part(-1, x, y-1, PT_SMKE);
 	return 0;
 }
-
-
-Element_MORT::~Element_MORT() {}

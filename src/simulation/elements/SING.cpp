@@ -1,6 +1,9 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_SING PT_SING 131
-Element_SING::Element_SING()
+
+static int update(UPDATE_FUNC_ARGS);
+static void create(ELEMENT_CREATE_FUNC_ARGS);
+
+void Element::Element_SING()
 {
 	Identifier = "DEFAULT_PT_SING";
 	Name = "SING";
@@ -26,7 +29,6 @@ Element_SING::Element_SING()
 
 	Weight = 86;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
 	Description = "Singularity. Creates huge amounts of negative pressure and destroys everything.";
 
@@ -41,11 +43,11 @@ Element_SING::Element_SING()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_SING::update;
+	Update = &update;
+	Create = &create;
 }
 
-//#TPT-Directive ElementHeader Element_SING static int update(UPDATE_FUNC_ARGS)
-int Element_SING::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry, cry, crx, nb, spawncount;
 	int singularity = -parts[i].life;
@@ -141,5 +143,7 @@ int Element_SING::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-
-Element_SING::~Element_SING() {}
+static void create(ELEMENT_CREATE_FUNC_ARGS)
+{
+	sim->parts[i].life = RNG::Ref().between(60, 109);
+}

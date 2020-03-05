@@ -1,8 +1,9 @@
 #include "common/tpt-minmax.h"
 #include "simulation/ElementCommon.h"
 
-//#TPT-Directive ElementClass Element_FWRK PT_FWRK 98
-Element_FWRK::Element_FWRK()
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_FWRK()
 {
 	Identifier = "DEFAULT_PT_FWRK";
 	Name = "FWRK";
@@ -28,7 +29,6 @@ Element_FWRK::Element_FWRK()
 
 	Weight = 97;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 100;
 	Description = "Original version of fireworks, activated by heat/neutrons.";
 
@@ -43,11 +43,10 @@ Element_FWRK::Element_FWRK()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_FWRK::update;
+	Update = &update;
 }
 
-//#TPT-Directive ElementHeader Element_FWRK static int update(UPDATE_FUNC_ARGS)
-int Element_FWRK::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	if (parts[i].life == 0 && ((surround_space && parts[i].temp>400 && RNG::Ref().chance(9+parts[i].temp/40, 100000)) || parts[i].ctype == PT_DUST))
 	{
@@ -113,6 +112,3 @@ int Element_FWRK::update(UPDATE_FUNC_ARGS)
 		parts[i].life=0;
 	return 0;
 }
-
-
-Element_FWRK::~Element_FWRK() {}

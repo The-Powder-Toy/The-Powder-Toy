@@ -1,6 +1,9 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_DEST PT_DEST 89
-Element_DEST::Element_DEST()
+
+static int update(UPDATE_FUNC_ARGS);
+static int graphics(GRAPHICS_FUNC_ARGS);
+
+void Element::Element_DEST()
 {
 	Identifier = "DEFAULT_PT_DEST";
 	Name = "DEST";
@@ -26,7 +29,6 @@ Element_DEST::Element_DEST()
 
 	Weight = 101;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 150;
 	Description = "More destructive Bomb, can break through virtually anything.";
 
@@ -41,12 +43,11 @@ Element_DEST::Element_DEST()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_DEST::update;
-	Graphics = &Element_DEST::graphics;
+	Update = &update;
+	Graphics = &graphics;
 }
 
-//#TPT-Directive ElementHeader Element_DEST static int update(UPDATE_FUNC_ARGS)
-int Element_DEST::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int rx = RNG::Ref().between(-2, 2);
 	int ry = RNG::Ref().between(-2, 2);
@@ -91,10 +92,7 @@ int Element_DEST::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-
-//#TPT-Directive ElementHeader Element_DEST static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_DEST::graphics(GRAPHICS_FUNC_ARGS)
-
+static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	if(cpart->life)
 	{
@@ -106,6 +104,3 @@ int Element_DEST::graphics(GRAPHICS_FUNC_ARGS)
 	}
 	return 0;
 }
-
-
-Element_DEST::~Element_DEST() {}

@@ -1,6 +1,6 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_146 PT_146 146
-Element_146::Element_146()
+
+void Element::Element_E146()
 {
 	Identifier = "DEFAULT_PT_146";
 	Name = "BRAN";
@@ -26,7 +26,7 @@ Element_146::Element_146()
 
 	Weight = 100;
 
-	Temperature = 9000.0f;
+	DefaultProperties.temp = 9000.0f;
 	HeatConduct = 40;
 	Description = "Brian 6 S6/B246/3";
 
@@ -40,8 +40,4 @@ Element_146::Element_146()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-
-	Update = NULL;
 }
-
-Element_146::~Element_146() {}

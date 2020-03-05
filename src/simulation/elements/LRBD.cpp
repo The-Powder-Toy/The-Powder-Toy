@@ -1,6 +1,6 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_LRBD PT_LRBD 42
-Element_LRBD::Element_LRBD()
+
+void Element::Element_LRBD()
 {
 	Identifier = "DEFAULT_PT_LRBD";
 	Name = "LRBD";
@@ -26,7 +26,7 @@ Element_LRBD::Element_LRBD()
 
 	Weight = 45;
 
-	Temperature = R_TEMP+45.0f+273.15f;
+	DefaultProperties.temp = R_TEMP + 45.0f + 273.15f;
 	HeatConduct = 170;
 	Description = "Liquid Rubidium.";
 
@@ -40,8 +40,4 @@ Element_LRBD::Element_LRBD()
 	LowTemperatureTransition = PT_RBDM;
 	HighTemperature = 961.0f;
 	HighTemperatureTransition = PT_FIRE;
-
-	Update = NULL;
 }
-
-Element_LRBD::~Element_LRBD() {}

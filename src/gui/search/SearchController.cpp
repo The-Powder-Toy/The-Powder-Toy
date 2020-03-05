@@ -19,26 +19,7 @@
 
 #include "common/tpt-minmax.h"
 
-class SearchController::OpenCallback: public ControllerCallback
-{
-	SearchController * cc;
-public:
-	OpenCallback(SearchController * cc_) { cc = cc_; }
-	void ControllerExit() override
-	{
-		if(cc->activePreview->GetDoOpen() && cc->activePreview->GetSaveInfo())
-		{
-			cc->searchModel->SetLoadedSave(cc->activePreview->GetSaveInfo());
-		}
-		else
-		{
-			cc->searchModel->SetLoadedSave(NULL);
-		}
-
-	}
-};
-
-SearchController::SearchController(ControllerCallback * callback):
+SearchController::SearchController(std::function<void ()> onDone_):
 	activePreview(NULL),
 	nextQueryTime(0.0f),
 	nextQueryDone(true),
@@ -53,7 +34,7 @@ SearchController::SearchController(ControllerCallback * callback):
 
 	searchModel->UpdateSaveList(1, "");
 
-	this->callback = callback;
+	onDone = onDone_;
 }
 
 SaveInfo * SearchController::GetLoadedSave()
@@ -97,8 +78,8 @@ void SearchController::Exit()
 {
 	InstantOpen(false);
 	searchView->CloseActiveWindow();
-	if(callback)
-		callback->ControllerExit();
+	if (onDone)
+		onDone();
 	//HasExited = true;
 }
 
@@ -108,7 +89,6 @@ SearchController::~SearchController()
 	searchView->CloseActiveWindow();
 	delete searchModel;
 	delete searchView;
-	delete callback;
 }
 
 void SearchController::DoSearch(String query, bool now)
@@ -202,12 +182,24 @@ void SearchController::InstantOpen(bool instant)
 	instantOpen = instant;
 }
 
+void SearchController::OpenSaveDone()
+{
+	if (activePreview->GetDoOpen() && activePreview->GetSaveInfo())
+	{
+		searchModel->SetLoadedSave(activePreview->GetSaveInfo());
+	}
+	else
+	{
+		searchModel->SetLoadedSave(NULL);
+	}
+}
+
 void SearchController::OpenSave(int saveID)
 {
 	delete activePreview;
 	Graphics * g = searchView->GetGraphics();
 	g->fillrect(XRES/3, WINDOWH-20, XRES/3, 20, 0, 0, 0, 150); //dim the "Page X of Y" a little to make the CopyTextButton more noticeable
-	activePreview = new PreviewController(saveID, instantOpen, new OpenCallback(this));
+	activePreview = new PreviewController(saveID, 0, instantOpen, [this] { OpenSaveDone(); });
 	activePreview->GetView()->MakeActiveWindow();
 }
 
@@ -216,7 +208,7 @@ void SearchController::OpenSave(int saveID, int saveDate)
 	delete activePreview;
 	Graphics * g = searchView->GetGraphics();
 	g->fillrect(XRES/3, WINDOWH-20, XRES/3, 20, 0, 0, 0, 150); //dim the "Page X of Y" a little to make the CopyTextButton more noticeable
-	activePreview = new PreviewController(saveID, saveDate, instantOpen, new OpenCallback(this));
+	activePreview = new PreviewController(saveID, saveDate, instantOpen, [this] { OpenSaveDone(); });
 	activePreview->GetView()->MakeActiveWindow();
 }
 
@@ -227,23 +219,14 @@ void SearchController::ClearSelection()
 
 void SearchController::RemoveSelected()
 {
-	class RemoveSelectedConfirmation: public ConfirmDialogueCallback {
-	public:
-		SearchController * c;
-		RemoveSelectedConfirmation(SearchController * c_) {	c = c_;	}
-		void ConfirmCallback(ConfirmPrompt::DialogueResult result) override {
-			if (result == ConfirmPrompt::ResultOkay)
-				c->removeSelectedC();
-		}
-		virtual ~RemoveSelectedConfirmation() { }
-	};
-
 	StringBuilder desc;
 	desc << "Are you sure you want to delete " << searchModel->GetSelected().size() << " save";
 	if(searchModel->GetSelected().size()>1)
 		desc << "s";
 	desc << "?";
-	new ConfirmPrompt("Delete saves", desc.Build(), new RemoveSelectedConfirmation(this));
+	new ConfirmPrompt("Delete saves", desc.Build(), { [this] {
+		removeSelectedC();
+	} });
 }
 
 void SearchController::removeSelectedC()
@@ -280,24 +263,14 @@ void SearchController::removeSelectedC()
 
 void SearchController::UnpublishSelected(bool publish)
 {
-	class UnpublishSelectedConfirmation: public ConfirmDialogueCallback {
-	public:
-		SearchController * c;
-		bool publish;
-		UnpublishSelectedConfirmation(SearchController * c_, bool publish_) { c = c_; publish = publish_; }
-		void ConfirmCallback(ConfirmPrompt::DialogueResult result) override {
-			if (result == ConfirmPrompt::ResultOkay)
-				c->unpublishSelectedC(publish);
-		}
-		virtual ~UnpublishSelectedConfirmation() { }
-	};
-
 	StringBuilder desc;
 	desc << "Are you sure you want to " << (publish ? String("publish ") : String("unpublish ")) << searchModel->GetSelected().size() << " save";
 	if (searchModel->GetSelected().size() > 1)
 		desc << "s";
 	desc << "?";
-	new ConfirmPrompt(publish ? String("Publish Saves") : String("Unpublish Saves"), desc.Build(), new UnpublishSelectedConfirmation(this, publish));
+	new ConfirmPrompt(publish ? String("Publish Saves") : String("Unpublish Saves"), desc.Build(), { [this, publish] {
+		unpublishSelectedC(publish);
+	} });
 }
 
 void SearchController::unpublishSelectedC(bool publish)

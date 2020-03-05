@@ -29,9 +29,11 @@ class OptionsView: public ui::Window
 	ui::Checkbox * altFullscreen;
 	ui::Checkbox * forceIntegerScaling;
 	ui::Checkbox * fastquit;
+	ui::DropDown * decoSpace;
 	ui::Checkbox * showAvatars;
 	ui::Checkbox * mouseClickRequired;
 	ui::Checkbox * includePressure;
+	ui::Checkbox * perfectCirclePressure;
 	ui::ScrollPanel * scrollPanel;
 public:
 	OptionsView();

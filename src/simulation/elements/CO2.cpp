@@ -1,6 +1,8 @@
 #include "simulation/ElementCommon.h"
-//#TPT-Directive ElementClass Element_CO2 PT_CO2 80
-Element_CO2::Element_CO2()
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_CO2()
 {
 	Identifier = "DEFAULT_PT_CO2";
 	Name = "CO2";
@@ -26,7 +28,6 @@ Element_CO2::Element_CO2()
 
 	Weight = 1;
 
-	Temperature = R_TEMP+273.15f;
 	HeatConduct = 88;
 	Description = "Carbon Dioxide. Heavy gas, drifts downwards. Carbonates water and turns to dry ice when cold.";
 
@@ -41,11 +42,10 @@ Element_CO2::Element_CO2()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_CO2::update;
+	Update = &update;
 }
 
-//#TPT-Directive ElementHeader Element_CO2 static int update(UPDATE_FUNC_ARGS)
-int Element_CO2::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	for (int rx=-1; rx<2; rx++)
 		for (int ry=-1; ry<2; ry++)
@@ -106,6 +106,3 @@ int Element_CO2::update(UPDATE_FUNC_ARGS)
 	}
 	return 0;
 }
-
-
-Element_CO2::~Element_CO2() {}
