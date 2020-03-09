@@ -50,7 +50,6 @@ private:
 
 	ui::Textbox *currentCharTextbox;
 	ui::Button *savedButton;
-	ui::Label *outputPreview;
 
 	String::value_type currentChar;
 	int fgR, fgG, fgB;
@@ -69,6 +68,7 @@ private:
 	void GrowChar();
 	void Render();
 	void Save();
+	void Translate(std::array<std::array<char, MAX_WIDTH>, FONT_H> &, int dx, int dy);
 
 public:
 	FontEditor(ByteString header);

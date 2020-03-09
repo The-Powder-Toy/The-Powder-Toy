@@ -41,6 +41,11 @@ namespace ui
 			return wrapped_text;
 		}
 
+		int WrappedLines() const
+		{
+			return wrapped_lines;
+		}
+
 		Index IndexBegin() const
 		{
 			return Index{ 0, 0, 0 };

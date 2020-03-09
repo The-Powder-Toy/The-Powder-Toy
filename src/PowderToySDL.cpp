@@ -873,7 +873,7 @@ int main(int argc, char * argv[])
 
 #else // FONTEDITOR
 		if(argc <= 1)
-			throw std::runtime_error("Not enough arguments");
+			throw std::runtime_error("Usage: " + ByteString(argv[0]) + " ./data/font.cpp");
 		engine->ShowWindow(new FontEditor(argv[1]));
 #endif
 
