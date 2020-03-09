@@ -20,7 +20,7 @@ namespace ui
 class FontEditor: public ui::Window
 {
 private:
-	ByteString header;
+	ByteString dataFile;
 	std::map<String::value_type, unsigned char> fontWidths;
 	std::map<String::value_type, std::array<std::array<char, MAX_WIDTH>, FONT_H> > fontPixels;
 
@@ -33,8 +33,8 @@ private:
 	ByteString afterFontPtrs;
 	ByteString afterFontRanges;
 
-	void ReadHeader(ByteString header);
-	void WriteHeader(ByteString header, std::vector<unsigned char> const &fontData, std::vector<unsigned short> const &fontPtrs, std::vector<std::array<unsigned int, 2> > const &fontRanges);
+	void ReadDataFile(ByteString dataFile);
+	void WriteDataFile(ByteString dataFile, std::vector<unsigned char> const &fontData, std::vector<unsigned short> const &fontPtrs, std::vector<std::array<unsigned int, 2> > const &fontRanges);
 	static void PackData(
 			std::map<String::value_type, unsigned char> const &fontWidths,
 			std::map<String::value_type, std::array<std::array<char, MAX_WIDTH>, FONT_H> > const &fontPixels,
@@ -71,7 +71,8 @@ private:
 	void Translate(std::array<std::array<char, MAX_WIDTH>, FONT_H> &, int dx, int dy);
 
 public:
-	FontEditor(ByteString header);
+	FontEditor(ByteString dataFile);
+	FontEditor(ByteString target, ByteString source); /* Merge mode */
 
 	void OnDraw() override;
 	void OnMouseDown(int x, int y, unsigned button) override;

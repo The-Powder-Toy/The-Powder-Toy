@@ -873,13 +873,26 @@ int main(int argc, char * argv[])
 
 #else // FONTEDITOR
 		if(argc <= 1)
-			throw std::runtime_error("Usage: " + ByteString(argv[0]) + " ./data/font.cpp");
-		engine->ShowWindow(new FontEditor(argv[1]));
+			throw std::runtime_error("Usage: \n"
+				"    Edit the font:\n"
+				"        " + ByteString(argv[0]) + " ./data/font.cpp\n"
+				"    Copy characters from source to target:\n"
+				"        " + ByteString(argv[0]) + " <target/font.cpp> <source/font.cpp>\n");
+		if(argc <= 2)
+		{
+			engine->ShowWindow(new FontEditor(argv[1]));
+			EngineProcess();
+			SaveWindowPosition();
+		}
+		else
+		{
+			FontEditor(argv[1], argv[2]);
+		}
 #endif
-
+#ifndef FONTEDITOR
 		EngineProcess();
-
 		SaveWindowPosition();
+#endif
 
 #if !defined(DEBUG) && !defined(_DEBUG)
 	}

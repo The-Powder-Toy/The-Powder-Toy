@@ -21,12 +21,12 @@ unsigned char *font_data;
 unsigned short *font_ptrs;
 unsigned int (*font_ranges)[2];
 
-void FontEditor::ReadHeader(ByteString header)
+void FontEditor::ReadDataFile(ByteString dataFile)
 {
 	std::fstream file;
-	file.open(header, std::ios_base::in);
+	file.open(dataFile, std::ios_base::in);
 	if(!file)
-		throw std::runtime_error("Could not open " + header);
+		throw std::runtime_error("Could not open " + dataFile);
 	file >> std::skipws;
 
 	ByteString word;
@@ -122,12 +122,12 @@ void FontEditor::ReadHeader(ByteString header)
 	file.close();
 }
 
-void FontEditor::WriteHeader(ByteString header, std::vector<unsigned char> const &fontData, std::vector<unsigned short> const &fontPtrs, std::vector<std::array<unsigned int, 2> > const &fontRanges)
+void FontEditor::WriteDataFile(ByteString dataFile, std::vector<unsigned char> const &fontData, std::vector<unsigned short> const &fontPtrs, std::vector<std::array<unsigned int, 2> > const &fontRanges)
 {
 	std::fstream file;
-	file.open(header, std::ios_base::out | std::ios_base::trunc);
+	file.open(dataFile, std::ios_base::out | std::ios_base::trunc);
 	if(!file)
-		throw std::runtime_error("Could not open " + header);
+		throw std::runtime_error("Could not open " + dataFile);
 
 	file << std::setfill('0') << std::hex << std::uppercase;
 	file << beforeFontData << std::endl;
@@ -276,15 +276,15 @@ public:
 };
 
 #define FONT_SCALE 16
-FontEditor::FontEditor(ByteString _header):
+FontEditor::FontEditor(ByteString _dataFile):
 	ui::Window(ui::Point(0, 0), ui::Point(WINDOWW, WINDOWH)),
-	header(_header),
+	dataFile(_dataFile),
 	currentChar(0x80),
 	fgR(255), fgG(255), fgB(255), bgR(0), bgG(0), bgB(0),
 	grid(1),
 	rulers(1)
 {
-	ReadHeader(header);
+	ReadDataFile(dataFile);
 	UnpackData(fontWidths, fontPixels, fontData, fontPtrs, fontRanges);
 	font_data = fontData.data();
 	font_ptrs = fontPtrs.data();
@@ -463,6 +463,39 @@ FontEditor::FontEditor(ByteString _header):
 	AddComponent(inputPreview);
 }
 
+FontEditor::FontEditor(ByteString target, ByteString source):
+	ui::Window(ui::Point(0, 0), ui::Point(WINDOWW, WINDOWH))
+{
+	ReadDataFile(target);
+	std::map<String::value_type, unsigned char> tgtFontWidths, srcFontWidths;
+	std::map<String::value_type, std::array<std::array<char, MAX_WIDTH>, FONT_H> > tgtFontPixels, srcFontPixels;
+	UnpackData(tgtFontWidths, tgtFontPixels, fontData, fontPtrs, fontRanges);
+	ReadDataFile(source);
+	UnpackData(srcFontWidths, srcFontPixels, fontData, fontPtrs, fontRanges);
+	for(auto const &p : srcFontPixels)
+		if(tgtFontPixels.count(p.first))
+		{
+			bool same = tgtFontWidths[p.first] == srcFontWidths[p.first];
+			if(same)
+				for(int j = 0; j < FONT_H; j++)
+					for(int i = 0; i < tgtFontWidths[p.first]; i++)
+						same = same && tgtFontPixels[p.first][j][i] == srcFontPixels[p.first][j][i];
+			if(!same)
+				std::cout << "U+" << std::hex << p.first << " is present in both files and is different!" << std::endl;
+		}
+		else
+		{
+			std::cout << "Adding U+" << std::hex << p.first << " to the target" << std::endl;
+			tgtFontWidths[p.first] = srcFontWidths[p.first];
+			tgtFontPixels[p.first] = p.second;
+		}
+	std::vector<unsigned char> tmpFontData;
+	std::vector<unsigned short> tmpFontPtrs;
+	std::vector<std::array<unsigned int, 2> > tmpFontRanges;
+	PackData(tgtFontWidths, tgtFontPixels, tmpFontData, tmpFontPtrs, tmpFontRanges);
+	WriteDataFile(target, tmpFontData, tmpFontPtrs, tmpFontRanges);
+}
+
 void FontEditor::OnDraw()
 {
 	Graphics *g = GetGraphics();
@@ -622,7 +655,7 @@ void FontEditor::Save()
 	std::vector<unsigned short> tmpFontPtrs;
 	std::vector<std::array<unsigned int, 2> > tmpFontRanges;
 	PackData(fontWidths, fontPixels, tmpFontData, tmpFontPtrs, tmpFontRanges);
-	WriteHeader(header, tmpFontData, tmpFontPtrs, tmpFontRanges);
+	WriteDataFile(dataFile, tmpFontData, tmpFontPtrs, tmpFontRanges);
 	savedButton->SetToggleState(true);
 }
 #endif
