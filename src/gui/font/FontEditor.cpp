@@ -448,14 +448,16 @@ FontEditor::FontEditor(ByteString _header):
 
 	StringBuilder input;
 	input << Format::Hex() << Format::Width(2);
-	for(unsigned int ch = 0x20; ch <= 0xFF; ch += 0x10)
-	{
-		if(ch == 0x80)
-			input << "\n";
-		else if(ch != 0x20)
-			input << " 0a ";
-		input << ch << ":" << (ch + 0x0F);
-	}
+	for(auto p : fontRanges)
+		if(p[1] >= 0x20)
+		{
+			if(p[0] < 0x20)
+				p[0] = 0x20;
+			if(p[0] == p[1])
+				input << p[0] << "\n";
+			else
+				input << p[0] << ":" << p[1] << "\n";
+		}
 	inputPreview->SetText(input.Build());
 	textChangedCallback();
 	AddComponent(inputPreview);
@@ -525,6 +527,7 @@ void FontEditor::Translate(std::array<std::array<char, MAX_WIDTH>, FONT_H> &pixe
 				pixels[j][i] = old[j - dy][i - dx];
 			else
 				pixels[j][i] = 0;
+	savedButton->SetToggleState(false);
 }
 
 void FontEditor::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
