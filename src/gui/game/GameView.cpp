@@ -190,7 +190,7 @@ GameView::GameView():
 	buttonTip(""),
 	isButtonTipFadingIn(false),
 	introText(2048),
-	introTextMessage(ByteString(introTextData).FromAscii()),
+	introTextMessage(ByteString(introTextData).FromUtf8()),
 
 	doScreenshot(false),
 	screenshotIndex(0),

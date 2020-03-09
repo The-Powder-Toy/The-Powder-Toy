@@ -181,7 +181,7 @@ void Textbox::cutSelection()
 
 void Textbox::pasteIntoSelection()
 {
-	String newText = format::CleanString(ClipboardPull().FromUtf8(), true, true, inputType != Multiline, inputType == Number || inputType == Numeric);
+	String newText = format::CleanString(ClipboardPull().FromUtf8(), false, true, inputType != Multiline, inputType == Number || inputType == Numeric);
 	if (HasSelection())
 	{
 		if (getLowerSelectionBound() < 0 || getHigherSelectionBound() > (int)backingText.length())
@@ -263,7 +263,7 @@ bool Textbox::CharacterValid(int character)
 				return true;
 		case All:
 		default:
-			return (character >= ' ' && character < 127);
+			return true;
 	}
 	return false;
 }
@@ -494,7 +494,7 @@ void Textbox::OnTextInput(String text)
 			{
 				backingText.Insert(cursor, text);
 			}
-			cursor++;
+			cursor += text.length();
 		}
 		ClearSelection();
 		AfterTextChange(true);

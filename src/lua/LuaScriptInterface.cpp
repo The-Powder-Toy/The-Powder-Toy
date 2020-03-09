@@ -3930,13 +3930,14 @@ int LuaScriptInterface::Command(String command)
 		if (lastCode.length())
 			lastCode += "\n";
 		lastCode += command;
-		String tmp = "return " + lastCode;
+		ByteString tmp = ("return " + lastCode).ToUtf8();
 		ui::Engine::Ref().LastTick(Platform::GetTime());
-		luaL_loadbuffer(l, tmp.ToUtf8().c_str(), tmp.length(), "@console");
+		luaL_loadbuffer(l, tmp.c_str(), tmp.length(), "@console");
 		if (lua_type(l, -1) != LUA_TFUNCTION)
 		{
 			lua_pop(l, 1);
-			luaL_loadbuffer(l, lastCode.ToUtf8().c_str(), lastCode.length(), "@console");
+			ByteString lastCodeUtf8 = lastCode.ToUtf8();
+			luaL_loadbuffer(l, lastCodeUtf8.c_str(), lastCodeUtf8.length(), "@console");
 		}
 		if (lua_type(l, -1) != LUA_TFUNCTION)
 		{
