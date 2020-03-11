@@ -32,6 +32,7 @@
 #include <sys/stat.h>
 #endif
 
+#include "localization/List.h"
 #include "Format.h"
 #include "Misc.h"
 
@@ -671,6 +672,11 @@ int main(int argc, char * argv[])
 #endif
 	else
 		ChdirToDataDirectory();
+
+	String localeName = Client::Ref().GetPrefString("Locale", "");
+	for(Locale *locale : locales)
+		if(locale->GetName() == localeName)
+			locale->Set();
 
 	scale = Client::Ref().GetPrefInteger("Scale", 1);
 	resizable = Client::Ref().GetPrefBool("Resizable", false);

@@ -555,7 +555,7 @@ if GetOption('ignore-updates'):
 
 
 #Generate list of sources to compile
-sources = Glob("src/*.cpp") + Glob("src/*/*.cpp") + Glob("src/*/*/*.cpp") + Glob("data/*.cpp")
+sources = Glob("src/*.cpp") + Glob("src/*/*.cpp") + Glob("src/*/*/*.cpp") + Glob("data/*.cpp") + Glob("data/localization/*.cpp")
 if not GetOption('nolua') and not GetOption('renderer') and not GetOption('font'):
 	sources += Glob("src/lua/socket/*.c") + Glob("src/lua/LuaCompat.c")
 
