@@ -263,7 +263,7 @@ bool Textbox::CharacterValid(int character)
 				return true;
 		case All:
 		default:
-			return character >= ' ';
+			return character >= ' ' && character <= 0x10FFFF && !(character >= 0xD800 && character <= 0xDFFF) && !(character >= 0xFDD0 && character <= 0xFDEF) && !((character & 0xFFFF) >= 0xFFFE);
 	}
 	return false;
 }
