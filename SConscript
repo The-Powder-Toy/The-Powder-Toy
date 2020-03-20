@@ -70,6 +70,7 @@ AddSconsOption('opengl', False, False, "Build with OpenGL interface support.")
 AddSconsOption('opengl-renderer', False, False, "Build with OpenGL renderer support (turns on --opengl).") #Note: this has nothing to do with --renderer, only tells the game to render particles with opengl
 AddSconsOption('renderer', False, False, "Build the save renderer.")
 AddSconsOption('font', False, False, "Build the font editor.")
+AddSconsOption('i18n-debug', False, False, "Instrument the binary for debugging internationalization")
 
 AddSconsOption('wall', False, False, "Error on all warnings.")
 AddSconsOption('no-warnings', False, False, "Disable all compiler warnings.")
@@ -404,7 +405,8 @@ elif not GetOption('help'):
 	env = conf.Finish()
 
 if not msvc:
-	env.Append(CXXFLAGS=['-std=c++11', '-U__STRICT_ANSI__'])
+	env.Append(CXXFLAGS=['-std=c++11' if not GetOption('i18n-debug') else '-std=c++14'])
+	env.Append(CXXFLAGS=['-U__STRICT_ANSI__'])
 	env.Append(CXXFLAGS=['-Wno-invalid-offsetof'])
 	if platform == "Linux":
 		env.Append(CXXFLAGS=['-Wno-unused-result'])
@@ -518,6 +520,9 @@ if GetOption('renderer'):
 
 if GetOption('font'):
 	env.Append(CPPDEFINES=['FONTEDITOR'])
+
+if GetOption('i18n-debug'):
+	env.Append(CPPDEFINES=['I18N_DEBUG'])
 
 if GetOption("wall"):
 	if msvc:

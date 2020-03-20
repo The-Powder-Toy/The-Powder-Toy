@@ -673,6 +673,16 @@ int main(int argc, char * argv[])
 	else
 		ChdirToDataDirectory();
 
+#ifdef I18N_DEBUG
+	for(auto const &key : i18n::activeKeys())
+	{
+		std::cout << "{";
+		for(auto const &s : key)
+			std::cout << "\"" << s << "\",";
+		std::cout << "}" << std::endl;
+	}
+#endif // I18N_DEBUG
+
 	String localeName = Client::Ref().GetPrefString("Locale", "");
 	for(Locale *locale : locales)
 		if(locale->GetName() == localeName)

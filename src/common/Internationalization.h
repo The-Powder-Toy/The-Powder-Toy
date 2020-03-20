@@ -2,6 +2,8 @@
 
 #include <array>
 #include <map>
+#include <set>
+#include <vector>
 
 #include "String.h"
 
@@ -31,7 +33,7 @@
 	Sometimes several pieces of strings are assembled into a larger string,
 	possibly with data inbetween, e.g.:
 		String::Build("Page ", page, " of ", total)
-	In the C world we could've gotten away with using a key with placeholders 
+	In the C world we could've gotten away with using a key with placeholders
 	such as "Page %d of %d" and then the translation would include the format
 	specifiers as well and it would all work out. Note that it is a bad idea to
 	introduce "Page" and "of" as separate keys as they don't make much sense on
@@ -62,6 +64,29 @@ namespace i18n
 
 	CanonicalPtr Canonicalize(LiteralPtr str);
 
+#ifdef I18N_DEBUG
+	std::set<std::vector<ByteString> > &activeKeys();
+
+	template<char... cs> struct Chars
+	{
+		static char const chars[];
+	};
+	template<char... cs> char const Chars<cs...>::chars[] = {cs..., 0};
+
+	template<char... cs> struct KeyUsage
+	{
+		KeyUsage() { activeKeys().insert({ByteString({cs..., 0})}); }
+	};
+
+	template<typename... Ts> struct MultiKeyUsage
+	{
+		MultiKeyUsage() { activeKeys().insert({Ts::chars...}); }
+	};
+
+	template<char... cs> KeyUsage<cs...> keyUsage;
+	template<typename... Ts> MultiKeyUsage<Ts...> multiKeyUsage;
+#endif
+
 	template<size_t n> struct TranslationMap
 	{
 		// This is not just a static field so that it is possible to use it
@@ -77,7 +102,7 @@ namespace i18n
 	{
 		return TranslationMap<1>::Map()[{Canonicalize(str)}][0];
 	}
-	
+
 	template<size_t n> inline std::array<String, n> &multiTranslation(std::array<CanonicalPtr, n> &cans, size_t)
 	{
 		return TranslationMap<n>::Map()[cans];
@@ -121,6 +146,8 @@ namespace i18n
 	}
 }
 
+#ifndef I18N_DEBUG
+
 inline String operator""_i18n(char const *str, size_t)
 {
 	return i18n::getTranslation<1>({str})[0];
@@ -131,3 +158,42 @@ template<typename... Ts> std::array<String, sizeof...(Ts)> i18nMulti(Ts&&... arg
 	std::array<i18n::LiteralPtr, sizeof...(Ts)> strs;
 	return i18n::getMultiTranslation(strs, 0, std::forward<Ts>(args)...);
 }
+
+#else // I18N_DEBUG
+
+template<typename T, T... cs> inline i18n::Chars<cs...> operator""_chars()
+{
+	return {};
+}
+
+template<typename T, T... cs> inline String operator""_i18n()
+{
+	(void)i18n::keyUsage<cs...>;
+	return i18n::getTranslation<1>({i18n::Chars<cs...>::chars})[0];
+}
+
+// Macros are hard
+// Expand i18nMulti("a", "b") into i18nMultiImpl<decltype("a"_chars), decltype("b"_chars)>()
+#define NARG_SELECT(_1, _2, _3, _4, _5, _6, _7, _8, _9, N, ...) N
+#define NARG(...) NARG_SELECT(__VA_ARGS__, 9, 8, 7, 6, 5, 4, 3, 2, 1)
+#define i18nMultiNargH(N, ...) i18nMultiNarg(N, __VA_ARGS__)
+#define i18nMultiNarg(N, ...) i18nMulti_##N(__VA_ARGS__)
+#define i18nMulti(...) i18nMultiNargH(NARG(__VA_ARGS__), __VA_ARGS__)
+#define i18nMulti_1(s1) i18nMultiImpl<decltype(s1##_chars)>()
+#define i18nMulti_2(s1, s2) i18nMultiImpl<decltype(s1##_chars), decltype(s2##_chars)>()
+#define i18nMulti_3(s1, s2, s3) i18nMultiImpl<decltype(s1##_chars), decltype(s2##_chars), decltype(s3##_chars)>()
+#define i18nMulti_4(s1, s2, s3, s4) i18nMultiImpl<decltype(s1##_chars), decltype(s2##_chars), decltype(s3##_chars), decltype(s4##_chars)>()
+#define i18nMulti_5(s1, s2, s3, s4, s5) i18nMultiImpl<decltype(s1##_chars), decltype(s2##_chars), decltype(s3##_chars), decltype(s4##_chars), decltype(s5##_chars)>()
+#define i18nMulti_6(s1, s2, s3, s4, s5, s6) i18nMultiImpl<decltype(s1##_chars), decltype(s2##_chars), decltype(s3##_chars), decltype(s4##_chars), decltype(s5##_chars), decltype(s6##_chars)>()
+#define i18nMulti_7(s1, s2, s3, s4, s5, s6, s7) i18nMultiImpl<decltype(s1##_chars), decltype(s2##_chars), decltype(s3##_chars), decltype(s4##_chars), decltype(s5##_chars), decltype(s6##_chars), decltype(s7##_chars)>()
+#define i18nMulti_8(s1, s2, s3, s4, s5, s6, s7, s8) i18nMultiImpl<decltype(s1##_chars), decltype(s2##_chars), decltype(s3##_chars), decltype(s4##_chars), decltype(s5##_chars), decltype(s6##_chars), decltype(s7##_chars), decltype(s8##_chars)>()
+#define i18nMulti_9(s1, s2, s3, s4, s5, s6, s7, s8, s9) i18nMultiImpl<decltype(s1##_chars), decltype(s2##_chars), decltype(s3##_chars), decltype(s4##_chars), decltype(s5##_chars), decltype(s6##_chars), decltype(s7##_chars), decltype(s8##_chars), decltype(s9##_chars)>()
+
+template<typename... Ts> std::array<String, sizeof...(Ts)> i18nMultiImpl()
+{
+	(void)i18n::multiKeyUsage<Ts...>;
+	std::array<i18n::LiteralPtr, sizeof...(Ts)> strs;
+	return i18n::getMultiTranslation(strs, 0, Ts::chars...);
+}
+
+#endif // I18N_DEBUG

@@ -28,4 +28,15 @@ namespace i18n
 		else
 			return it->second;
 	}
+
+#ifdef I18N_DEBUG
+
+    std::set<std::vector<ByteString> > &activeKeys()
+	{
+		static std::set<std::vector<ByteString> > activeKeys;
+		return activeKeys;
+	}
+
+#endif // I18N_DEBUG
+
 }
