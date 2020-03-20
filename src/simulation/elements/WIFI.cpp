@@ -6,7 +6,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_WIFI()
 {
 	Identifier = "DEFAULT_PT_WIFI";
-	Name = "WIFI";
+	Name = "WIFI"_ascii;
 	Colour = PIXPACK(0x40A060);
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
@@ -30,7 +30,7 @@ void Element::Element_WIFI()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = "Wireless transmitter, transfers spark to any other wifi on the same temperature channel.";
+	Description = "Wireless transmitter, transfers spark to any other wifi on the same temperature channel."_i18n;
 
 	Properties = TYPE_SOLID;
 

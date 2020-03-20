@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_DRAY()
 {
 	Identifier = "DEFAULT_PT_DRAY";
-	Name = "DRAY";
+	Name = "DRAY"_ascii;
 	Colour = PIXPACK(0xFFAA22);
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
@@ -29,7 +29,7 @@ void Element::Element_DRAY()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = "Duplicator ray. Replicates a line of particles in front of it.";
+	Description = "Duplicator ray. Replicates a line of particles in front of it."_i18n;
 
 	Properties = TYPE_SOLID | PROP_LIFE_DEC;
 

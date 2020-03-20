@@ -3,7 +3,7 @@
 void Element::Element_BGLA()
 {
 	Identifier = "DEFAULT_PT_BGLA";
-	Name = "BGLA";
+	Name = "BGLA"_ascii;
 	Colour = PIXPACK(0x606060);
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
@@ -27,7 +27,7 @@ void Element::Element_BGLA()
 	Weight = 90;
 
 	HeatConduct = 150;
-	Description = "Broken Glass, heavy particles formed when glass breaks under pressure. Meltable. Bagels.";
+	Description = "Broken Glass, heavy particles formed when glass breaks under pressure. Meltable. Bagels."_i18n;
 
 	Properties = TYPE_PART | PROP_HOT_GLOW;
 

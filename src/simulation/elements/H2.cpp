@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_H2()
 {
 	Identifier = "DEFAULT_PT_H2";
-	Name = "HYGN";
+	Name = "HYGN"_ascii;
 	Colour = PIXPACK(0x5070FF);
 	MenuVisible = 1;
 	MenuSection = SC_GAS;
@@ -29,7 +29,7 @@ void Element::Element_H2()
 	Weight = 1;
 
 	HeatConduct = 251;
-	Description = "Hydrogen. Combusts with OXYG to make WATR. Undergoes fusion at high temperature and pressure.";
+	Description = "Hydrogen. Combusts with OXYG to make WATR. Undergoes fusion at high temperature and pressure."_i18n;
 
 	Properties = TYPE_GAS;
 

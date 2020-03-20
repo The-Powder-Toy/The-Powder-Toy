@@ -3,7 +3,7 @@
 void Element::Element_LO2()
 {
 	Identifier = "DEFAULT_PT_LO2";
-	Name = "LOXY";
+	Name = "LOXY"_ascii;
 	Colour = PIXPACK(0x80A0EF);
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;
@@ -28,7 +28,7 @@ void Element::Element_LO2()
 
 	DefaultProperties.temp = 80.0f;
 	HeatConduct = 70;
-	Description = "Liquid Oxygen. Very cold. Reacts with fire.";
+	Description = "Liquid Oxygen. Very cold. Reacts with fire."_i18n;
 
 	Properties = TYPE_LIQUID;
 

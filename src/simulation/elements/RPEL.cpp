@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_RPEL()
 {
 	Identifier = "DEFAULT_PT_RPEL";
-	Name = "RPEL";
+	Name = "RPEL"_ascii;
 	Colour = PIXPACK(0x99CC00);
 	MenuVisible = 1;
 	MenuSection = SC_FORCE;
@@ -30,7 +30,7 @@ void Element::Element_RPEL()
 
 	DefaultProperties.temp = 20.0f + 273.15f;
 	HeatConduct = 0;
-	Description = "Repels or attracts particles based on its temperature.";
+	Description = "Repels or attracts particles based on its temperature."_i18n;
 
 	Properties = TYPE_SOLID;
 

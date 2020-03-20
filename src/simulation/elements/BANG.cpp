@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_BANG()
 {
 	Identifier = "DEFAULT_PT_BANG";
-	Name = "TNT";
+	Name = "TNT"_ascii;
 	Colour = PIXPACK(0xC05050);
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
@@ -29,7 +29,7 @@ void Element::Element_BANG()
 	Weight = 100;
 
 	HeatConduct = 88;
-	Description = "TNT, explodes all at once.";
+	Description = "TNT, explodes all at once."_i18n;
 
 	Properties = TYPE_SOLID | PROP_NEUTPENETRATE;
 

@@ -3,7 +3,7 @@
 void Element::Element_LOVE()
 {
 	Identifier = "DEFAULT_PT_LOVE";
-	Name = "LOVE";
+	Name = "LOVE"_ascii;
 	Colour = PIXPACK(0xFF30FF);
 	MenuVisible = 1;
 	MenuSection = SC_CRACKER2;
@@ -28,7 +28,7 @@ void Element::Element_LOVE()
 
 	DefaultProperties.temp = 373.0f;
 	HeatConduct = 40;
-	Description = "Love...";
+	Description = "Love..."_i18n;
 
 	Properties = TYPE_SOLID;
 

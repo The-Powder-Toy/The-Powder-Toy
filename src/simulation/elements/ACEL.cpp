@@ -6,7 +6,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_ACEL()
 {
 	Identifier = "DEFAULT_PT_ACEL";
-	Name = "ACEL";
+	Name = "ACEL"_ascii;
 	Colour = PIXPACK(0x0099CC);
 	MenuVisible = 1;
 	MenuSection = SC_FORCE;
@@ -30,7 +30,7 @@ void Element::Element_ACEL()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Accelerator, speeds up nearby elements.";
+	Description = "Accelerator, speeds up nearby elements."_i18n;
 
 	Properties = TYPE_SOLID;
 

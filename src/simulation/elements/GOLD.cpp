@@ -7,7 +7,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_GOLD()
 {
 	Identifier = "DEFAULT_PT_GOLD";
-	Name = "GOLD";
+	Name = "GOLD"_ascii;
 	Colour = PIXPACK(0xDCAD2C);
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
@@ -32,7 +32,7 @@ void Element::Element_GOLD()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Corrosion resistant metal, will reverse corrosion of iron.";
+	Description = "Corrosion resistant metal, will reverse corrosion of iron."_i18n;
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_HOT_GLOW|PROP_LIFE_DEC|PROP_NEUTPASS;
 

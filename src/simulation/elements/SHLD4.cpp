@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_SHLD4()
 {
 	Identifier = "DEFAULT_PT_SHLD4";
-	Name = "SHD4";
+	Name = "SHD4"_ascii;
 	Colour = PIXPACK(0x212121);
 	MenuVisible = 0;
 	MenuSection = SC_CRACKER2;
@@ -29,7 +29,7 @@ void Element::Element_SHLD4()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = "Shield lvl 4.";
+	Description = "Shield lvl 4."_i18n;
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 

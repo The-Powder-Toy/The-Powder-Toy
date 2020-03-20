@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_SLTW()
 {
 	Identifier = "DEFAULT_PT_SLTW";
-	Name = "SLTW";
+	Name = "SLTW"_ascii;
 	Colour = PIXPACK(0x4050F0);
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;
@@ -29,7 +29,7 @@ void Element::Element_SLTW()
 	Weight = 35;
 
 	HeatConduct = 75;
-	Description = "Saltwater, conducts electricity, difficult to freeze.";
+	Description = "Saltwater, conducts electricity, difficult to freeze."_i18n;
 
 	Properties = TYPE_LIQUID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_NEUTPENETRATE;
 

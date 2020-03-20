@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_SNOW()
 {
 	Identifier = "DEFAULT_PT_SNOW";
-	Name = "SNOW";
+	Name = "SNOW"_ascii;
 	Colour = PIXPACK(0xC0E0FF);
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
@@ -31,7 +31,7 @@ void Element::Element_SNOW()
 
 	DefaultProperties.temp = R_TEMP - 30.0f + 273.15f;
 	HeatConduct = 46;
-	Description = "Light particles. Created when ICE breaks under pressure.";
+	Description = "Light particles. Created when ICE breaks under pressure."_i18n;
 
 	Properties = TYPE_PART|PROP_NEUTPASS;
 

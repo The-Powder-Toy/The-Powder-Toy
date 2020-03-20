@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_RIME()
 {
 	Identifier = "DEFAULT_PT_RIME";
-	Name = "RIME";
+	Name = "RIME"_ascii;
 	Colour = PIXPACK(0xCCCCCC);
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
@@ -30,7 +30,7 @@ void Element::Element_RIME()
 
 	DefaultProperties.temp = -30.0f + 273.15f;
 	HeatConduct = 100;
-	Description = "Solid, created when steam cools rapidly and goes through sublimation.";
+	Description = "Solid, created when steam cools rapidly and goes through sublimation."_i18n;
 
 	Properties = TYPE_SOLID;
 

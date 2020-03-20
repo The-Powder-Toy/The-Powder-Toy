@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_FRAY()
 {
 	Identifier = "DEFAULT_PT_FRAY";
-	Name = "FRAY";
+	Name = "FRAY"_ascii;
 	Colour = PIXPACK(0x00BBFF);
 	MenuVisible = 1;
 	MenuSection = SC_FORCE;
@@ -30,7 +30,7 @@ void Element::Element_FRAY()
 
 	DefaultProperties.temp = 20.0f + 273.15f;
 	HeatConduct = 0;
-	Description = "Force Emitter. Pushes or pulls objects based on its temperature. Use like ARAY.";
+	Description = "Force Emitter. Pushes or pulls objects based on its temperature. Use like ARAY."_i18n;
 
 	Properties = TYPE_SOLID;
 

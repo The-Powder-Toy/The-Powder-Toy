@@ -7,7 +7,7 @@ static unsigned int wavelengthToDecoColour(int wavelength);
 void Element::Element_CRAY()
 {
 	Identifier = "DEFAULT_PT_CRAY";
-	Name = "CRAY";
+	Name = "CRAY"_ascii;
 	Colour = PIXPACK(0xBBFF00);
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
@@ -31,7 +31,7 @@ void Element::Element_CRAY()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = "Particle Ray Emitter. Creates a beam of particles set by its ctype, with a range set by tmp.";
+	Description = "Particle Ray Emitter. Creates a beam of particles set by its ctype, with a range set by tmp."_i18n;
 
 	Properties = TYPE_SOLID;
 

@@ -6,7 +6,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_SPNG()
 {
 	Identifier = "DEFAULT_PT_SPNG";
-	Name = "SPNG";
+	Name = "SPNG"_ascii;
 	Colour = PIXPACK(0xFFBE30);
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
@@ -30,7 +30,7 @@ void Element::Element_SPNG()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Sponge, absorbs water. Is not a moving solid.";
+	Description = "Sponge, absorbs water. Is not a moving solid."_i18n;
 
 	Properties = TYPE_SOLID;
 

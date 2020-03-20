@@ -7,7 +7,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_DEUT()
 {
 	Identifier = "DEFAULT_PT_DEUT";
-	Name = "DEUT";
+	Name = "DEUT"_ascii;
 	Colour = PIXPACK(0x00153F);
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
@@ -32,7 +32,7 @@ void Element::Element_DEUT()
 
 	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
 	HeatConduct = 251;
-	Description = "Deuterium oxide. Volume changes with temp, radioactive with neutrons.";
+	Description = "Deuterium oxide. Volume changes with temp, radioactive with neutrons."_i18n;
 
 	Properties = TYPE_LIQUID|PROP_NEUTPASS;
 

@@ -6,7 +6,7 @@ static void changeType(ELEMENT_CHANGETYPE_FUNC_ARGS);
 void Element::Element_SPAWN2()
 {
 	Identifier = "DEFAULT_PT_SPAWN2";
-	Name = "SPWN2";
+	Name = "SPWN2"_ascii;
 	Colour = PIXPACK(0xAAAAAA);
 	MenuVisible = 0;
 	MenuSection = SC_SOLIDS;
@@ -30,7 +30,7 @@ void Element::Element_SPAWN2()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = "STK2 spawn point.";
+	Description = "STK2 spawn point."_i18n;
 
 	Properties = TYPE_SOLID;
 

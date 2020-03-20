@@ -5,7 +5,7 @@ static VideoBuffer *iconGen(int wallID, int width, int height);
 void Element::Element_NONE()
 {
 	Identifier = "DEFAULT_PT_NONE";
-	Name = "";
+	Name = ""_ascii;
 	Colour = PIXPACK(0x000000);
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;
@@ -29,7 +29,7 @@ void Element::Element_NONE()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = "Erases particles.";
+	Description = "Erases particles."_i18n;
 
 	Properties = 0;
 

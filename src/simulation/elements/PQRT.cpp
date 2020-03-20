@@ -7,7 +7,7 @@ static void create(ELEMENT_CREATE_FUNC_ARGS);
 void Element::Element_PQRT()
 {
 	Identifier = "DEFAULT_PT_PQRT";
-	Name = "PQRT";
+	Name = "PQRT"_ascii;
 	Colour = PIXPACK(0x88BBBB);
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
@@ -31,7 +31,7 @@ void Element::Element_PQRT()
 	Weight = 90;
 
 	HeatConduct = 3;
-	Description = "Powdered quartz, broken form of QRTZ.";
+	Description = "Powdered quartz, broken form of QRTZ."_i18n;
 
 	Properties = TYPE_PART| PROP_HOT_GLOW;
 

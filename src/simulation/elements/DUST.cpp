@@ -3,7 +3,7 @@
 void Element::Element_DUST()
 {
 	Identifier = "DEFAULT_PT_DUST";
-	Name = "DUST";
+	Name = "DUST"_ascii;
 	Colour = PIXPACK(0xFFE0A0);
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
@@ -28,7 +28,7 @@ void Element::Element_DUST()
 	Weight = 85;
 
 	HeatConduct = 70;
-	Description = "Very light dust. Flammable.";
+	Description = "Very light dust. Flammable."_i18n;
 
 	Properties = TYPE_PART;
 

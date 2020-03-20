@@ -6,7 +6,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_TTAN()
 {
 	Identifier = "DEFAULT_PT_TTAN";
-	Name = "TTAN";
+	Name = "TTAN"_ascii;
 	Colour = PIXPACK(0x909090);
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
@@ -30,7 +30,7 @@ void Element::Element_TTAN()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Titanium. Higher melting temperature than most other metals, blocks all air pressure.";
+	Description = "Titanium. Higher melting temperature than most other metals, blocks all air pressure."_i18n;
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_HOT_GLOW|PROP_LIFE_DEC;
 

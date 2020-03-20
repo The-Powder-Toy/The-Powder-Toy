@@ -6,7 +6,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_VRSG()
 {
 	Identifier = "DEFAULT_PT_VRSG";
-	Name = "VRSG";
+	Name = "VRSG"_ascii;
 	Colour = PIXPACK(0xFE68FE);
 	MenuVisible = 0;
 	MenuSection = SC_GAS;
@@ -31,7 +31,7 @@ void Element::Element_VRSG()
 
 	DefaultProperties.temp = 522.0f + 273.15f;
 	HeatConduct = 251;
-	Description = "Gas Virus. Turns everything it touches into virus.";
+	Description = "Gas Virus. Turns everything it touches into virus."_i18n;
 
 	Properties = TYPE_GAS|PROP_DEADLY;
 

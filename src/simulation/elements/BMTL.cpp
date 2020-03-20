@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_BMTL()
 {
 	Identifier = "DEFAULT_PT_BMTL";
-	Name = "BMTL";
+	Name = "BMTL"_ascii;
 	Colour = PIXPACK(0x505070);
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
@@ -29,7 +29,7 @@ void Element::Element_BMTL()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Breakable metal. Common conductive building material, can melt and break under pressure.";
+	Description = "Breakable metal. Common conductive building material, can melt and break under pressure."_i18n;
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_HOT_GLOW;
 

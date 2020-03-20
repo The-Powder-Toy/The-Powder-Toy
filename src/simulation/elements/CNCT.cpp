@@ -3,7 +3,7 @@
 void Element::Element_CNCT()
 {
 	Identifier = "DEFAULT_PT_CNCT";
-	Name = "CNCT";
+	Name = "CNCT"_ascii;
 	Colour = PIXPACK(0xC0C0C0);
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
@@ -27,7 +27,7 @@ void Element::Element_CNCT()
 	Weight = 55;
 
 	HeatConduct = 100;
-	Description = "Concrete, stronger than stone.";
+	Description = "Concrete, stronger than stone."_i18n;
 
 	Properties = TYPE_PART|PROP_HOT_GLOW;
 

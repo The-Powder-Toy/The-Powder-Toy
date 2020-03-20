@@ -3,7 +3,7 @@
 void Element::Element_NSCN()
 {
 	Identifier = "DEFAULT_PT_NSCN";
-	Name = "NSCN";
+	Name = "NSCN"_ascii;
 	Colour = PIXPACK(0x505080);
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
@@ -28,7 +28,7 @@ void Element::Element_NSCN()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "N-Type Silicon, Will not transfer current to P-Type Silicon.";
+	Description = "N-Type Silicon, Will not transfer current to P-Type Silicon."_i18n;
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC;
 

@@ -6,7 +6,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_INVIS()
 {
 	Identifier = "DEFAULT_PT_INVIS";
-	Name = "INVS";
+	Name = "INVS"_ascii;
 	Colour = PIXPACK(0x00CCCC);
 	MenuVisible = 1;
 	MenuSection = SC_SENSOR;
@@ -30,7 +30,7 @@ void Element::Element_INVIS()
 	Weight = 100;
 
 	HeatConduct = 164;
-	Description = "Invisible to particles while under pressure.";
+	Description = "Invisible to particles while under pressure."_i18n;
 
 	Properties = TYPE_SOLID | PROP_NEUTPASS;
 

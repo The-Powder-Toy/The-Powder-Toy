@@ -3,7 +3,7 @@
 void Element::Element_SAND()
 {
 	Identifier = "DEFAULT_PT_SAND";
-	Name = "SAND";
+	Name = "SAND"_ascii;
 	Colour = PIXPACK(0xFFD090);
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
@@ -27,7 +27,7 @@ void Element::Element_SAND()
 	Weight = 90;
 
 	HeatConduct = 150;
-	Description = "Sand, Heavy particles. Melts into glass.";
+	Description = "Sand, Heavy particles. Melts into glass."_i18n;
 
 	Properties = TYPE_PART;
 

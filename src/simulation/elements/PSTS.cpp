@@ -3,7 +3,7 @@
 void Element::Element_PSTS()
 {
 	Identifier = "DEFAULT_PT_PSTS";
-	Name = "PSTS";
+	Name = "PSTS"_ascii;
 	Colour = PIXPACK(0x776677);
 	MenuVisible = 0;
 	MenuSection = SC_CRACKER;
@@ -28,7 +28,7 @@ void Element::Element_PSTS()
 
 	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
 	HeatConduct = 29;
-	Description = "Solid form of PSTE.";
+	Description = "Solid form of PSTE."_i18n;
 
 	Properties = TYPE_SOLID;
 

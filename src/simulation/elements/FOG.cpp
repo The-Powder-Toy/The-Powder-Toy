@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_FOG()
 {
 	Identifier = "DEFAULT_PT_FOG";
-	Name = "FOG";
+	Name = "FOG"_ascii;
 	Colour = PIXPACK(0xAAAAAA);
 	MenuVisible = 1;
 	MenuSection = SC_GAS;
@@ -30,7 +30,7 @@ void Element::Element_FOG()
 
 	DefaultProperties.temp = 243.15f;
 	HeatConduct = 100;
-	Description = "Fog, created when an electric current is passed through RIME.";
+	Description = "Fog, created when an electric current is passed through RIME."_i18n;
 
 	Properties = TYPE_GAS|PROP_LIFE_DEC;
 

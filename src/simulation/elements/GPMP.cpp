@@ -6,7 +6,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_GPMP()
 {
 	Identifier = "DEFAULT_PT_GPMP";
-	Name = "GPMP";
+	Name = "GPMP"_ascii;
 	Colour = PIXPACK(0x0A3B3B);
 	MenuVisible = 1;
 	MenuSection = SC_POWERED;
@@ -30,7 +30,7 @@ void Element::Element_GPMP()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = "Gravity pump. Changes gravity to its temp when activated. (use HEAT/COOL)";
+	Description = "Gravity pump. Changes gravity to its temp when activated. (use HEAT/COOL)"_i18n;
 
 	Properties = TYPE_SOLID;
 

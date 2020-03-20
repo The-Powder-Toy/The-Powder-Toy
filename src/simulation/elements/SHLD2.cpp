@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_SHLD2()
 {
 	Identifier = "DEFAULT_PT_SHLD2";
-	Name = "SHD2";
+	Name = "SHD2"_ascii;
 	Colour = PIXPACK(0x777777);
 	MenuVisible = 0;
 	MenuSection = SC_CRACKER2;
@@ -29,7 +29,7 @@ void Element::Element_SHLD2()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = "Shield lvl 2.";
+	Description = "Shield lvl 2."_i18n;
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 

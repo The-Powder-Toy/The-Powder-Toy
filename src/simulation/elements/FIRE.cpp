@@ -9,7 +9,7 @@ static void create(ELEMENT_CREATE_FUNC_ARGS);
 void Element::Element_FIRE()
 {
 	Identifier = "DEFAULT_PT_FIRE";
-	Name = "FIRE";
+	Name = "FIRE"_ascii;
 	Colour = PIXPACK(0xFF1000);
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
@@ -34,7 +34,7 @@ void Element::Element_FIRE()
 
 	DefaultProperties.temp = R_TEMP + 400.0f + 273.15f;
 	HeatConduct = 88;
-	Description = "Ignites flammable materials. Heats air.";
+	Description = "Ignites flammable materials. Heats air."_i18n;
 
 	Properties = TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL;
 

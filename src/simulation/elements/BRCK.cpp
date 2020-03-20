@@ -5,7 +5,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_BRCK()
 {
 	Identifier = "DEFAULT_PT_BRCK";
-	Name = "BRCK";
+	Name = "BRCK"_ascii;
 	Colour = PIXPACK(0x808080);
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
@@ -29,7 +29,7 @@ void Element::Element_BRCK()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Brick, breakable building material.";
+	Description = "Brick, breakable building material."_i18n;
 
 	Properties = TYPE_SOLID|PROP_HOT_GLOW;
 

@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_NWHL()
 {
 	Identifier = "DEFAULT_PT_NWHL";
-	Name = "WHOL";
+	Name = "WHOL"_ascii;
 	Colour = PIXPACK(0xFFFFFF);
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;
@@ -29,7 +29,7 @@ void Element::Element_NWHL()
 	Weight = 100;
 
 	HeatConduct = 186;
-	Description = "White hole, pushes away other particles with gravity. (Requires Newtonian gravity)";
+	Description = "White hole, pushes away other particles with gravity. (Requires Newtonian gravity)"_i18n;
 
 	Properties = TYPE_SOLID;
 

@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_ARAY()
 {
 	Identifier = "DEFAULT_PT_ARAY";
-	Name = "ARAY";
+	Name = "ARAY"_ascii;
 	Colour = PIXPACK(0xFFBB00);
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
@@ -29,7 +29,7 @@ void Element::Element_ARAY()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = "Ray Emitter. Rays create points when they collide.";
+	Description = "Ray Emitter. Rays create points when they collide."_i18n;
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 

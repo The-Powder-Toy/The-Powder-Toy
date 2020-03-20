@@ -6,7 +6,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_POLO()
 {
 	Identifier = "DEFAULT_PT_POLO";
-	Name = "POLO";
+	Name = "POLO"_ascii;
 	Colour = PIXPACK(0x506030);
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
@@ -32,7 +32,7 @@ void Element::Element_POLO()
 
 	DefaultProperties.temp = 388.15f;
 	HeatConduct = 251;
-	Description = "Polonium, highly radioactive. Decays into NEUT and heats up.";
+	Description = "Polonium, highly radioactive. Decays into NEUT and heats up."_i18n;
 
 	Properties = TYPE_PART|PROP_NEUTPASS|PROP_RADIOACTIVE|PROP_LIFE_DEC|PROP_DEADLY;
 

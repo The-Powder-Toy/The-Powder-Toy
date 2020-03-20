@@ -7,7 +7,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_VINE()
 {
 	Identifier = "DEFAULT_PT_VINE";
-	Name = "VINE";
+	Name = "VINE"_ascii;
 	Colour = PIXPACK(0x079A00);
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
@@ -31,7 +31,7 @@ void Element::Element_VINE()
 	Weight = 100;
 
 	HeatConduct = 65;
-	Description = "Vine, can grow along WOOD.";
+	Description = "Vine, can grow along WOOD."_i18n;
 
 	Properties = TYPE_SOLID;
 

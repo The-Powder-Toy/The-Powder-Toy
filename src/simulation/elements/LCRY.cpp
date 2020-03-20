@@ -6,7 +6,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_LCRY()
 {
 	Identifier = "DEFAULT_PT_LCRY";
-	Name = "LCRY";
+	Name = "LCRY"_ascii;
 	Colour = PIXPACK(0x505050);
 	MenuVisible = 1;
 	MenuSection = SC_POWERED;
@@ -30,7 +30,7 @@ void Element::Element_LCRY()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Liquid Crystal. Changes colour when charged. (PSCN Charges, NSCN Discharges)";
+	Description = "Liquid Crystal. Changes colour when charged. (PSCN Charges, NSCN Discharges)"_i18n;
 
 	Properties = TYPE_SOLID;
 

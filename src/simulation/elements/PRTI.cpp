@@ -8,7 +8,7 @@ void Element_SOAP_detach(Simulation * sim, int i);
 void Element::Element_PRTI()
 {
 	Identifier = "DEFAULT_PT_PRTI";
-	Name = "PRTI";
+	Name = "PRTI"_ascii;
 	Colour = PIXPACK(0xEB5917);
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;
@@ -32,7 +32,7 @@ void Element::Element_PRTI()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = "Portal IN. Particles go in here. Also has temperature dependent channels. (same as WIFI)";
+	Description = "Portal IN. Particles go in here. Also has temperature dependent channels. (same as WIFI)"_i18n;
 
 	Properties = TYPE_SOLID;
 

@@ -5,7 +5,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_FRME()
 {
 	Identifier = "DEFAULT_PT_FRME";
-	Name = "FRME";
+	Name = "FRME"_ascii;
 	Colour = PIXPACK(0x999988);
 	MenuVisible = 1;
 	MenuSection = SC_FORCE;
@@ -29,7 +29,7 @@ void Element::Element_FRME()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = "Frame, can be used with pistons to push many particles.";
+	Description = "Frame, can be used with pistons to push many particles."_i18n;
 
 	Properties = TYPE_SOLID;
 

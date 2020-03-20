@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_TSNS()
 {
 	Identifier = "DEFAULT_PT_TSNS";
-	Name = "TSNS";
+	Name = "TSNS"_ascii;
 	Colour = PIXPACK(0xFD00D5);
 	MenuVisible = 1;
 	MenuSection = SC_SENSOR;
@@ -29,7 +29,7 @@ void Element::Element_TSNS()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = "Temperature sensor, creates a spark when there's a nearby particle with a greater temperature.";
+	Description = "Temperature sensor, creates a spark when there's a nearby particle with a greater temperature."_i18n;
 
 	Properties = TYPE_SOLID;
 

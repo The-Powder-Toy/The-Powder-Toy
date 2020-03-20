@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_FUSE()
 {
 	Identifier = "DEFAULT_PT_FUSE";
-	Name = "FUSE";
+	Name = "FUSE"_ascii;
 	Colour = PIXPACK(0x0A5706);
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
@@ -29,7 +29,7 @@ void Element::Element_FUSE()
 	Weight = 100;
 
 	HeatConduct = 200;
-	Description = "Burns slowly. Ignites at somewhat high temperatures or with electricity.";
+	Description = "Burns slowly. Ignites at somewhat high temperatures or with electricity."_i18n;
 
 	Properties = TYPE_SOLID;
 

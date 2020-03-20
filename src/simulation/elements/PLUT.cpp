@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_PLUT()
 {
 	Identifier = "DEFAULT_PT_PLUT";
-	Name = "PLUT";
+	Name = "PLUT"_ascii;
 	Colour = PIXPACK(0x407020);
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
@@ -31,7 +31,7 @@ void Element::Element_PLUT()
 
 	DefaultProperties.temp = R_TEMP + 4.0f + 273.15f;
 	HeatConduct = 251;
-	Description = "Plutonium. Heavy, fissile particles. Generates neutrons under pressure.";
+	Description = "Plutonium. Heavy, fissile particles. Generates neutrons under pressure."_i18n;
 
 	Properties = TYPE_PART|PROP_NEUTPASS|PROP_RADIOACTIVE;
 

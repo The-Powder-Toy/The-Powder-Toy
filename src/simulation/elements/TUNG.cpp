@@ -7,7 +7,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_TUNG()
 {
 	Identifier = "DEFAULT_PT_TUNG";
-	Name = "TUNG";
+	Name = "TUNG"_ascii;
 	Colour = PIXPACK(0x505050);
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
@@ -31,7 +31,7 @@ void Element::Element_TUNG()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Tungsten. Brittle metal with a very high melting point.";
+	Description = "Tungsten. Brittle metal with a very high melting point."_i18n;
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC;
 

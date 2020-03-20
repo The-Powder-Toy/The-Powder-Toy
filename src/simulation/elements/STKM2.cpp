@@ -11,7 +11,7 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS);
 void Element::Element_STKM2()
 {
 	Identifier = "DEFAULT_PT_STKM2";
-	Name = "STK2";
+	Name = "STK2"_ascii;
 	Colour = PIXPACK(0x6464FF);
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;
@@ -37,7 +37,7 @@ void Element::Element_STKM2()
 
 	DefaultProperties.temp = R_TEMP + 14.6f + 273.15f;
 	HeatConduct = 0;
-	Description = "Second stickman. Don't kill him! Control with wasd.";
+	Description = "Second stickman. Don't kill him! Control with wasd."_i18n;
 
 	Properties = PROP_NOCTYPEDRAW;
 

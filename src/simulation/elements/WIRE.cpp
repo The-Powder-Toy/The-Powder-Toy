@@ -6,7 +6,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_WIRE()
 {
 	Identifier = "DEFAULT_PT_WIRE";
-	Name = "WWLD";
+	Name = "WWLD"_ascii;
 	Colour = PIXPACK(0xFFCC00);
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
@@ -30,7 +30,7 @@ void Element::Element_WIRE()
 	Weight = 100;
 
 	HeatConduct = 250;
-	Description = "WireWorld wires, conducts based on a set of GOL-like rules.";
+	Description = "WireWorld wires, conducts based on a set of GOL-like rules."_i18n;
 
 	Properties = TYPE_SOLID;
 

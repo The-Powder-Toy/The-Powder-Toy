@@ -6,7 +6,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_VRSS()
 {
 	Identifier = "DEFAULT_PT_VRSS";
-	Name = "VRSS";
+	Name = "VRSS"_ascii;
 	Colour = PIXPACK(0xD408CD);
 	MenuVisible = 0;
 	MenuSection = SC_SOLIDS;
@@ -31,7 +31,7 @@ void Element::Element_VRSS()
 
 	DefaultProperties.temp = R_TEMP + 273.15f;
 	HeatConduct = 251;
-	Description = "Solid Virus. Turns everything it touches into virus.";
+	Description = "Solid Virus. Turns everything it touches into virus."_i18n;
 
 	Properties = TYPE_SOLID|PROP_DEADLY;
 

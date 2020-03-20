@@ -3,7 +3,7 @@
 void Element::Element_VOID()
 {
 	Identifier = "DEFAULT_PT_VOID";
-	Name = "VOID";
+	Name = "VOID"_ascii;
 	Colour = PIXPACK(0x790B0B);
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;
@@ -27,7 +27,7 @@ void Element::Element_VOID()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Hole, will drain away any particles.";
+	Description = "Hole, will drain away any particles."_i18n;
 
 	Properties = TYPE_SOLID;
 

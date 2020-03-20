@@ -6,7 +6,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_DMG()
 {
 	Identifier = "DEFAULT_PT_DMG";
-	Name = "DMG";
+	Name = "DMG"_ascii;
 	Colour = PIXPACK(0x88FF88);
 	MenuVisible = 1;
 	MenuSection = SC_FORCE;
@@ -31,7 +31,7 @@ void Element::Element_DMG()
 
 	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
 	HeatConduct = 29;
-	Description = "Generates damaging pressure and breaks any elements it hits.";
+	Description = "Generates damaging pressure and breaks any elements it hits."_i18n;
 
 	Properties = TYPE_PART|PROP_SPARKSETTLE;
 

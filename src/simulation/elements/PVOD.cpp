@@ -6,7 +6,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_PVOD()
 {
 	Identifier = "DEFAULT_PT_PVOD";
-	Name = "PVOD";
+	Name = "PVOD"_ascii;
 	Colour = PIXPACK(0x792020);
 	MenuVisible = 1;
 	MenuSection = SC_POWERED;
@@ -30,7 +30,7 @@ void Element::Element_PVOD()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Powered VOID. When activated, destroys entering particles.";
+	Description = "Powered VOID. When activated, destroys entering particles."_i18n;
 
 	Properties = TYPE_SOLID;
 

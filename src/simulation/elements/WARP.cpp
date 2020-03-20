@@ -7,7 +7,7 @@ static void create(ELEMENT_CREATE_FUNC_ARGS);
 void Element::Element_WARP()
 {
 	Identifier = "DEFAULT_PT_WARP";
-	Name = "WARP";
+	Name = "WARP"_ascii;
 	Colour = PIXPACK(0x101010);
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
@@ -31,7 +31,7 @@ void Element::Element_WARP()
 	Weight = 1;
 
 	HeatConduct = 100;
-	Description = "Displaces other elements.";
+	Description = "Displaces other elements."_i18n;
 
 	Properties = TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL;
 

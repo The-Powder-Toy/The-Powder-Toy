@@ -7,7 +7,7 @@ bool Element_PCLN_ctypeDraw(CTYPEDRAW_FUNC_ARGS);
 void Element::Element_PBCN()
 {
 	Identifier = "DEFAULT_PT_PBCN";
-	Name = "PBCN";
+	Name = "PBCN"_ascii;
 	Colour = PIXPACK(0x3B1D0A);
 	MenuVisible = 1;
 	MenuSection = SC_POWERED;
@@ -31,7 +31,7 @@ void Element::Element_PBCN()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Powered breakable clone.";
+	Description = "Powered breakable clone."_i18n;
 
 	Properties = TYPE_SOLID | PROP_NOCTYPEDRAW;
 

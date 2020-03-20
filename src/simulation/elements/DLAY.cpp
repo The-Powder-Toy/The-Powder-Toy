@@ -6,7 +6,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_DLAY()
 {
 	Identifier = "DEFAULT_PT_DLAY";
-	Name = "DLAY";
+	Name = "DLAY"_ascii;
 	Colour = PIXPACK(0x753590);
 	MenuVisible = 1;
 	MenuSection = SC_POWERED;
@@ -31,7 +31,7 @@ void Element::Element_DLAY()
 
 	DefaultProperties.temp = 4.0f + 273.15f;
 	HeatConduct = 0;
-	Description = "Conducts with temperature-dependent delay. (use HEAT/COOL).";
+	Description = "Conducts with temperature-dependent delay. (use HEAT/COOL)."_i18n;
 
 	Properties = TYPE_SOLID;
 

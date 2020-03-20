@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_BRMT()
 {
 	Identifier = "DEFAULT_PT_BRMT";
-	Name = "BRMT";
+	Name = "BRMT"_ascii;
 	Colour = PIXPACK(0x705060);
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
@@ -29,7 +29,7 @@ void Element::Element_BRMT()
 	Weight = 90;
 
 	HeatConduct = 211;
-	Description = "Broken metal. Created when iron rusts or when metals break from pressure.";
+	Description = "Broken metal. Created when iron rusts or when metals break from pressure."_i18n;
 
 	Properties = TYPE_PART|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_HOT_GLOW;
 

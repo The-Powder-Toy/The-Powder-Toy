@@ -3,7 +3,7 @@
 void Element::Element_LNTG()
 {
 	Identifier = "DEFAULT_PT_LNTG";
-	Name = "LN2";
+	Name = "LN2"_ascii;
 	Colour = PIXPACK(0x80A0DF);
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;
@@ -28,7 +28,7 @@ void Element::Element_LNTG()
 
 	DefaultProperties.temp = 70.15f;
 	HeatConduct = 70;
-	Description = "Liquid Nitrogen. Very cold, disappears whenever it touches anything warmer.";
+	Description = "Liquid Nitrogen. Very cold, disappears whenever it touches anything warmer."_i18n;
 
 	Properties = TYPE_LIQUID;
 

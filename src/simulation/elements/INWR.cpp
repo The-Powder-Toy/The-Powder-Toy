@@ -3,7 +3,7 @@
 void Element::Element_INWR()
 {
 	Identifier = "DEFAULT_PT_INWR";
-	Name = "INWR";
+	Name = "INWR"_ascii;
 	Colour = PIXPACK(0x544141);
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
@@ -27,7 +27,7 @@ void Element::Element_INWR()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Insulated Wire. Doesn't conduct to metal or semiconductors.";
+	Description = "Insulated Wire. Doesn't conduct to metal or semiconductors."_i18n;
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC;
 

@@ -13,7 +13,7 @@ void Element_STKM_interact(Simulation *sim, playerst *playerp, int i, int x, int
 void Element::Element_STKM()
 {
 	Identifier = "DEFAULT_PT_STKM";
-	Name = "STKM";
+	Name = "STKM"_ascii;
 	Colour = PIXPACK(0xFFE0A0);
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;
@@ -39,7 +39,7 @@ void Element::Element_STKM()
 
 	DefaultProperties.temp = R_TEMP + 14.6f + 273.15f;
 	HeatConduct = 0;
-	Description = "Stickman. Don't kill him! Control with the arrow keys.";
+	Description = "Stickman. Don't kill him! Control with the arrow keys."_i18n;
 
 	Properties = PROP_NOCTYPEDRAW;
 

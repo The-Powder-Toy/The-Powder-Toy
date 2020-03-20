@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_URAN()
 {
 	Identifier = "DEFAULT_PT_URAN";
-	Name = "URAN";
+	Name = "URAN"_ascii;
 	Colour = PIXPACK(0x707020);
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
@@ -31,7 +31,7 @@ void Element::Element_URAN()
 
 	DefaultProperties.temp = R_TEMP + 30.0f + 273.15f;
 	HeatConduct = 251;
-	Description = "Uranium. Heavy particles. Generates heat under pressure.";
+	Description = "Uranium. Heavy particles. Generates heat under pressure."_i18n;
 
 	Properties = TYPE_PART | PROP_RADIOACTIVE;
 

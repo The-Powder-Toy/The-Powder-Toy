@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_ANAR()
 {
 	Identifier = "DEFAULT_PT_ANAR";
-	Name = "ANAR";
+	Name = "ANAR"_ascii;
 	Colour = PIXPACK(0xFFFFEE);
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
@@ -30,7 +30,7 @@ void Element::Element_ANAR()
 	Weight = 85;
 
 	HeatConduct = 70;
-	Description = "Anti-air. Very light dust, which behaves opposite gravity.";
+	Description = "Anti-air. Very light dust, which behaves opposite gravity."_i18n;
 
 	Properties = TYPE_PART;
 

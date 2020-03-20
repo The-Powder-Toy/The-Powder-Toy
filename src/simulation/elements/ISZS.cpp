@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_ISZS()
 {
 	Identifier = "DEFAULT_PT_ISZS";
-	Name = "ISZS";
+	Name = "ISZS"_ascii;
 	Colour = PIXPACK(0x662089);
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
@@ -30,7 +30,7 @@ void Element::Element_ISZS()
 
 	DefaultProperties.temp = 140.00f;
 	HeatConduct = 251;
-	Description = "Solid form of ISOZ, slowly decays into PHOT.";
+	Description = "Solid form of ISOZ, slowly decays into PHOT."_i18n;
 
 	Properties = TYPE_SOLID;
 

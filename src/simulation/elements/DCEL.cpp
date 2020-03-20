@@ -6,7 +6,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_DCEL()
 {
 	Identifier = "DEFAULT_PT_DCEL";
-	Name = "DCEL";
+	Name = "DCEL"_ascii;
 	Colour = PIXPACK(0x99CC00);
 	MenuVisible = 1;
 	MenuSection = SC_FORCE;
@@ -30,7 +30,7 @@ void Element::Element_DCEL()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Decelerator, slows down nearby elements.";
+	Description = "Decelerator, slows down nearby elements."_i18n;
 
 	Properties = TYPE_SOLID;
 

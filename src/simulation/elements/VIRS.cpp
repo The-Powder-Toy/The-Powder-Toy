@@ -6,7 +6,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_VIRS()
 {
 	Identifier = "DEFAULT_PT_VIRS";
-	Name = "VIRS";
+	Name = "VIRS"_ascii;
 	Colour = PIXPACK(0xFE11F6);
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;
@@ -31,7 +31,7 @@ void Element::Element_VIRS()
 
 	DefaultProperties.temp = 72.0f + 273.15f;
 	HeatConduct = 251;
-	Description = "Virus. Turns everything it touches into virus.";
+	Description = "Virus. Turns everything it touches into virus."_i18n;
 
 	Properties = TYPE_LIQUID|PROP_DEADLY;
 

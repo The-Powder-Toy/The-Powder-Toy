@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_FSEP()
 {
 	Identifier = "DEFAULT_PT_FSEP";
-	Name = "FSEP";
+	Name = "FSEP"_ascii;
 	Colour = PIXPACK(0x63AD5F);
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
@@ -29,7 +29,7 @@ void Element::Element_FSEP()
 	Weight = 70;
 
 	HeatConduct = 70;
-	Description = "Fuse Powder. Burns slowly like FUSE.";
+	Description = "Fuse Powder. Burns slowly like FUSE."_i18n;
 
 	Properties = TYPE_PART;
 

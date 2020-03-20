@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_BOYL()
 {
 	Identifier = "DEFAULT_PT_BOYL";
-	Name = "BOYL";
+	Name = "BOYL"_ascii;
 	Colour = PIXPACK(0x0A3200);
 	MenuVisible = 1;
 	MenuSection = SC_GAS;
@@ -30,7 +30,7 @@ void Element::Element_BOYL()
 
 	DefaultProperties.temp = R_TEMP + 2.0f + 273.15f;
 	HeatConduct = 42;
-	Description = "Boyle, variable pressure gas. Expands when heated.";
+	Description = "Boyle, variable pressure gas. Expands when heated."_i18n;
 
 	Properties = TYPE_GAS;
 

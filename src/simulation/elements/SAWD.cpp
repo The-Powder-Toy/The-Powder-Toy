@@ -3,7 +3,7 @@
 void Element::Element_SAWD()
 {
 	Identifier = "DEFAULT_PT_SAWD";
-	Name = "SAWD";
+	Name = "SAWD"_ascii;
 	Colour = PIXPACK(0xF0F0A0);
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
@@ -27,7 +27,7 @@ void Element::Element_SAWD()
 	Weight = 18;
 
 	HeatConduct = 70;
-	Description = "Sawdust. Floats on water.";
+	Description = "Sawdust. Floats on water."_i18n;
 
 	Properties = TYPE_PART | PROP_NEUTPASS;
 

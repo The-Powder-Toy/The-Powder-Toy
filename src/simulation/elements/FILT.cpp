@@ -8,7 +8,7 @@ int Element_FILT_getWavelengths(Particle* cpart);
 void Element::Element_FILT()
 {
 	Identifier = "DEFAULT_PT_FILT";
-	Name = "FILT";
+	Name = "FILT"_ascii;
 	Colour = PIXPACK(0x000056);
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
@@ -32,7 +32,7 @@ void Element::Element_FILT()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Filter for photons, changes the color.";
+	Description = "Filter for photons, changes the color."_i18n;
 
 	Properties = TYPE_SOLID | PROP_NOAMBHEAT | PROP_LIFE_DEC;
 

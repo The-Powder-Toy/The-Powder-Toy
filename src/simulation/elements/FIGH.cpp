@@ -14,7 +14,7 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS);
 void Element::Element_FIGH()
 {
 	Identifier = "DEFAULT_PT_FIGH";
-	Name = "FIGH";
+	Name = "FIGH"_ascii;
 	Colour = PIXPACK(0xFFE0A0);
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;
@@ -40,7 +40,7 @@ void Element::Element_FIGH()
 
 	DefaultProperties.temp = R_TEMP + 14.6f + 273.15f;
 	HeatConduct = 0;
-	Description = "Fighter. Tries to kill stickmen. You must first give it an element to kill him with.";
+	Description = "Fighter. Tries to kill stickmen. You must first give it an element to kill him with."_i18n;
 
 	Properties = PROP_NOCTYPEDRAW;
 

@@ -7,7 +7,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_SPRK()
 {
 	Identifier = "DEFAULT_PT_SPRK";
-	Name = "SPRK";
+	Name = "SPRK"_ascii;
 	Colour = PIXPACK(0xFFFF80);
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
@@ -32,7 +32,7 @@ void Element::Element_SPRK()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Electricity. The basis of all electronics in TPT, travels along wires and other conductive elements.";
+	Description = "Electricity. The basis of all electronics in TPT, travels along wires and other conductive elements."_i18n;
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 

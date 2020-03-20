@@ -13,7 +13,7 @@ void Element_SOAP_detach(Simulation * sim, int i);
 void Element::Element_PIPE()
 {
 	Identifier = "DEFAULT_PT_PIPE";
-	Name = "PIPE";
+	Name = "PIPE"_ascii;
 	Colour = PIXPACK(0x444444);
 	MenuVisible = 1;
 	MenuSection = SC_FORCE;
@@ -38,7 +38,7 @@ void Element::Element_PIPE()
 
 	DefaultProperties.temp = 273.15f;
 	HeatConduct = 0;
-	Description = "PIPE, moves particles around. Once the BRCK generates, erase some for the exit. Then the PIPE generates and is usable.";
+	Description = "PIPE, moves particles around. Once the BRCK generates, erase some for the exit. Then the PIPE generates and is usable."_i18n;
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 

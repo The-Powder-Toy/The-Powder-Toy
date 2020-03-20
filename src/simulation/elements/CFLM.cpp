@@ -7,7 +7,7 @@ static void create(ELEMENT_CREATE_FUNC_ARGS);
 void Element::Element_CFLM()
 {
 	Identifier = "DEFAULT_PT_HFLM";
-	Name = "CFLM";
+	Name = "CFLM"_ascii;
 	Colour = PIXPACK(0x8080FF);
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
@@ -32,7 +32,7 @@ void Element::Element_CFLM()
 
 	DefaultProperties.temp = 0.0f;
 	HeatConduct = 88;
-	Description = "Sub-zero flame.";
+	Description = "Sub-zero flame."_i18n;
 
 	Properties = TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL;
 

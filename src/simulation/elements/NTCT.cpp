@@ -5,7 +5,7 @@ int Element_NTCT_update(UPDATE_FUNC_ARGS);
 void Element::Element_NTCT()
 {
 	Identifier = "DEFAULT_PT_NTCT";
-	Name = "NTCT";
+	Name = "NTCT"_ascii;
 	Colour = PIXPACK(0x505040);
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
@@ -29,7 +29,7 @@ void Element::Element_NTCT()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Semi-conductor. Only conducts electricity when hot. (More than 100C)";
+	Description = "Semi-conductor. Only conducts electricity when hot. (More than 100C)"_i18n;
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC;
 

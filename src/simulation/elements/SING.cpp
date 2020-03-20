@@ -6,7 +6,7 @@ static void create(ELEMENT_CREATE_FUNC_ARGS);
 void Element::Element_SING()
 {
 	Identifier = "DEFAULT_PT_SING";
-	Name = "SING";
+	Name = "SING"_ascii;
 	Colour = PIXPACK(0x242424);
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
@@ -30,7 +30,7 @@ void Element::Element_SING()
 	Weight = 86;
 
 	HeatConduct = 70;
-	Description = "Singularity. Creates huge amounts of negative pressure and destroys everything.";
+	Description = "Singularity. Creates huge amounts of negative pressure and destroys everything."_i18n;
 
 	Properties = TYPE_PART|PROP_LIFE_DEC;
 

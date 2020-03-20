@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_IGNT()
 {
 	Identifier = "DEFAULT_PT_IGNT";
-	Name = "IGNC";
+	Name = "IGNC"_ascii;
 	Colour = PIXPACK(0xC0B050);
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
@@ -29,7 +29,7 @@ void Element::Element_IGNT()
 	Weight = 100;
 
 	HeatConduct = 88;
-	Description = "Ignition cord. Burns slowly with fire and sparks.";
+	Description = "Ignition cord. Burns slowly with fire and sparks."_i18n;
 
 	Properties = TYPE_SOLID | PROP_NEUTPENETRATE | PROP_SPARKSETTLE | PROP_LIFE_KILL;
 

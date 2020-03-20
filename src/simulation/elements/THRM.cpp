@@ -3,7 +3,7 @@
 void Element::Element_THRM()
 {
 	Identifier = "DEFAULT_PT_THRM";
-	Name = "THRM";
+	Name = "THRM"_ascii;
 	Colour = PIXPACK(0xA08090);
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
@@ -27,7 +27,7 @@ void Element::Element_THRM()
 	Weight = 90;
 
 	HeatConduct = 211;
-	Description = "Thermite. Burns at extremely high temperature.";
+	Description = "Thermite. Burns at extremely high temperature."_i18n;
 
 	Properties = TYPE_PART;
 

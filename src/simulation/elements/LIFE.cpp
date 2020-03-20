@@ -9,7 +9,7 @@ static void create(ELEMENT_CREATE_FUNC_ARGS);
 void Element::Element_LIFE()
 {
 	Identifier = "DEFAULT_PT_LIFE";
-	Name = "LIFE";
+	Name = "LIFE"_ascii;
 	Colour = PIXPACK(0x0CAC00);
 	MenuVisible = 0;
 	MenuSection = SC_LIFE;
@@ -34,7 +34,7 @@ void Element::Element_LIFE()
 
 	DefaultProperties.temp = 9000.0f;
 	HeatConduct = 40;
-	Description = "Game Of Life! B3/S23";
+	Description = "Game Of Life! B3/S23"_i18n;
 
 	Properties = TYPE_SOLID|PROP_LIFE;
 

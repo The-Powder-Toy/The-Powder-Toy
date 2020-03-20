@@ -3,7 +3,7 @@
 void Element::Element_DMND()
 {
 	Identifier = "DEFAULT_PT_DMND";
-	Name = "DMND";
+	Name = "DMND"_ascii;
 	Colour = PIXPACK(0xCCFFFF);
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;
@@ -27,7 +27,7 @@ void Element::Element_DMND()
 	Weight = 100;
 
 	HeatConduct = 186;
-	Description = "Diamond. Indestructible.";
+	Description = "Diamond. Indestructible."_i18n;
 
 	Properties = TYPE_SOLID;
 

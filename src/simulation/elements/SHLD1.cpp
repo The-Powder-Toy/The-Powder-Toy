@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_SHLD1()
 {
 	Identifier = "DEFAULT_PT_SHLD1";
-	Name = "SHLD";
+	Name = "SHLD"_ascii;
 	Colour = PIXPACK(0xAAAAAA);
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
@@ -29,7 +29,7 @@ void Element::Element_SHLD1()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = "Shield, spark it to grow.";
+	Description = "Shield, spark it to grow."_i18n;
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 

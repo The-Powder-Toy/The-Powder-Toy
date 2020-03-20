@@ -3,7 +3,7 @@
 void Element::Element_DRIC()
 {
 	Identifier = "DEFAULT_PT_DRIC";
-	Name = "DRIC";
+	Name = "DRIC"_ascii;
 	Colour = PIXPACK(0xE0E0E0);
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
@@ -28,7 +28,7 @@ void Element::Element_DRIC()
 
 	DefaultProperties.temp = 172.65f;
 	HeatConduct = 2;
-	Description = "Dry Ice, formed when CO2 is cooled.";
+	Description = "Dry Ice, formed when CO2 is cooled."_i18n;
 
 	Properties = TYPE_SOLID;
 

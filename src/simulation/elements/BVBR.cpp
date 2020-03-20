@@ -6,7 +6,7 @@ int Element_VIBR_graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_BVBR()
 {
 	Identifier = "DEFAULT_PT_BVBR";
-	Name = "BVBR";
+	Name = "BVBR"_ascii;
 	Colour = PIXPACK(0x005000);
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
@@ -31,7 +31,7 @@ void Element::Element_BVBR()
 
 	DefaultProperties.temp = 273.15f;
 	HeatConduct = 164;
-	Description = "Broken vibranium.";
+	Description = "Broken vibranium."_i18n;
 
 	Properties = TYPE_PART|PROP_LIFE_DEC;
 

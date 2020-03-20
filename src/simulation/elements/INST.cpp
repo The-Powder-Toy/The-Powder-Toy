@@ -3,7 +3,7 @@
 void Element::Element_INST()
 {
 	Identifier = "DEFAULT_PT_INST";
-	Name = "INST";
+	Name = "INST"_ascii;
 	Colour = PIXPACK(0x404039);
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
@@ -27,7 +27,7 @@ void Element::Element_INST()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Instantly conducts, PSCN to charge, NSCN to take.";
+	Description = "Instantly conducts, PSCN to charge, NSCN to take."_i18n;
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 

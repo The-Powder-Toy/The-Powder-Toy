@@ -3,7 +3,7 @@
 void Element::Element_E116()
 {
 	Identifier = "DEFAULT_PT_116";
-	Name = "EQVE";
+	Name = "EQVE"_ascii;
 	Colour = PIXPACK(0xFFE0A0);
 	MenuVisible = 0;
 	MenuSection = SC_CRACKER2;
@@ -27,7 +27,7 @@ void Element::Element_E116()
 	Weight = 85;
 
 	HeatConduct = 70;
-	Description = "A failed shared velocity test.";
+	Description = "A failed shared velocity test."_i18n;
 
 	Properties = TYPE_PART;
 

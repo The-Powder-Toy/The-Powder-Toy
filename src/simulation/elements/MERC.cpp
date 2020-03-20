@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_MERC()
 {
 	Identifier = "DEFAULT_PT_MERC";
-	Name = "MERC";
+	Name = "MERC"_ascii;
 	Colour = PIXPACK(0x736B6D);
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;
@@ -29,7 +29,7 @@ void Element::Element_MERC()
 	Weight = 91;
 
 	HeatConduct = 251;
-	Description = "Mercury. Volume changes with temperature, Conductive.";
+	Description = "Mercury. Volume changes with temperature, Conductive."_i18n;
 
 	Properties = TYPE_LIQUID|PROP_CONDUCTS|PROP_NEUTABSORB|PROP_LIFE_DEC;
 

@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_PTCT()
 {
 	Identifier = "DEFAULT_PT_PTCT";
-	Name = "PTCT";
+	Name = "PTCT"_ascii;
 	Colour = PIXPACK(0x405050);
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
@@ -29,7 +29,7 @@ void Element::Element_PTCT()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Semi-conductor. Only conducts electricity when cold. (Less than 100C)";
+	Description = "Semi-conductor. Only conducts electricity when cold. (Less than 100C)"_i18n;
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC;
 

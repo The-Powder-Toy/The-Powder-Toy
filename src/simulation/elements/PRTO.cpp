@@ -6,7 +6,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_PRTO()
 {
 	Identifier = "DEFAULT_PT_PRTO";
-	Name = "PRTO";
+	Name = "PRTO"_ascii;
 	Colour = PIXPACK(0x0020EB);
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;
@@ -30,7 +30,7 @@ void Element::Element_PRTO()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = "Portal OUT. Particles come out here. Also has temperature dependent channels. (same as WIFI)";
+	Description = "Portal OUT. Particles come out here. Also has temperature dependent channels. (same as WIFI)"_i18n;
 
 	Properties = TYPE_SOLID;
 

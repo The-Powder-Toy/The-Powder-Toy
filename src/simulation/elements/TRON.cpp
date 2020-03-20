@@ -11,7 +11,7 @@ static int new_tronhead(Simulation * sim, int x, int y, int i, int direction);
 void Element::Element_TRON()
 {
 	Identifier = "DEFAULT_PT_TRON";
-	Name = "TRON";
+	Name = "TRON"_ascii;
 	Colour = PIXPACK(0xA9FF00);
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;
@@ -36,7 +36,7 @@ void Element::Element_TRON()
 
 	DefaultProperties.temp = 0.0f;
 	HeatConduct = 40;
-	Description = "Smart particles, Travels in straight lines and avoids obstacles. Grows with time.";
+	Description = "Smart particles, Travels in straight lines and avoids obstacles. Grows with time."_i18n;
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC|PROP_LIFE_KILL;
 

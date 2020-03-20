@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_CO2()
 {
 	Identifier = "DEFAULT_PT_CO2";
-	Name = "CO2";
+	Name = "CO2"_ascii;
 	Colour = PIXPACK(0x666666);
 	MenuVisible = 1;
 	MenuSection = SC_GAS;
@@ -29,7 +29,7 @@ void Element::Element_CO2()
 	Weight = 1;
 
 	HeatConduct = 88;
-	Description = "Carbon Dioxide. Heavy gas, drifts downwards. Carbonates water and turns to dry ice when cold.";
+	Description = "Carbon Dioxide. Heavy gas, drifts downwards. Carbonates water and turns to dry ice when cold."_i18n;
 
 	Properties = TYPE_GAS;
 

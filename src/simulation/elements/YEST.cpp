@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_YEST()
 {
 	Identifier = "DEFAULT_PT_YEST";
-	Name = "YEST";
+	Name = "YEST"_ascii;
 	Colour = PIXPACK(0xEEE0C0);
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
@@ -29,7 +29,7 @@ void Element::Element_YEST()
 	Weight = 80;
 
 	HeatConduct = 70;
-	Description = "Yeast, grows when warm (~37C).";
+	Description = "Yeast, grows when warm (~37C)."_i18n;
 
 	Properties = TYPE_PART;
 

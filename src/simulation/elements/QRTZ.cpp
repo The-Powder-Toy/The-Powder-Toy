@@ -7,7 +7,7 @@ static void create(ELEMENT_CREATE_FUNC_ARGS);
 void Element::Element_QRTZ()
 {
 	Identifier = "DEFAULT_PT_QRTZ";
-	Name = "QRTZ";
+	Name = "QRTZ"_ascii;
 	Colour = PIXPACK(0xAADDDD);
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
@@ -31,7 +31,7 @@ void Element::Element_QRTZ()
 	Weight = 100;
 
 	HeatConduct = 3;
-	Description = "Quartz, breakable mineral. Conducts but becomes brittle at lower temperatures.";
+	Description = "Quartz, breakable mineral. Conducts but becomes brittle at lower temperatures."_i18n;
 
 	Properties = TYPE_SOLID|PROP_HOT_GLOW|PROP_LIFE_DEC;
 

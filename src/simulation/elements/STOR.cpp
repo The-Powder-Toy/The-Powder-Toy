@@ -8,7 +8,7 @@ static bool ctypeDraw(CTYPEDRAW_FUNC_ARGS);
 void Element::Element_STOR()
 {
 	Identifier = "DEFAULT_PT_STOR";
-	Name = "STOR";
+	Name = "STOR"_ascii;
 	Colour = PIXPACK(0x50DFDF);
 	MenuVisible = 1;
 	MenuSection = SC_POWERED;
@@ -32,7 +32,7 @@ void Element::Element_STOR()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = "Storage. Captures and stores a single particle. Releases when charged with PSCN, also passes to PIPE.";
+	Description = "Storage. Captures and stores a single particle. Releases when charged with PSCN, also passes to PIPE."_i18n;
 
 	Properties = TYPE_SOLID | PROP_NOCTYPEDRAW;
 

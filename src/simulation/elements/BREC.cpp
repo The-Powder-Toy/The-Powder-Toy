@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_BREC()
 {
 	Identifier = "DEFAULT_PT_BREC";
-	Name = "BREL";
+	Name = "BREL"_ascii;
 	Colour = PIXPACK(0x707060);
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
@@ -29,7 +29,7 @@ void Element::Element_BREC()
 	Weight = 90;
 
 	HeatConduct = 211;
-	Description = "Broken electronics. Formed from EMP blasts, and when constantly sparked while under pressure, turns to EXOT.";
+	Description = "Broken electronics. Formed from EMP blasts, and when constantly sparked while under pressure, turns to EXOT."_i18n;
 
 	Properties = TYPE_PART|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_HOT_GLOW;
 

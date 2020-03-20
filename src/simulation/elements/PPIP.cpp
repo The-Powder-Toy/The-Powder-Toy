@@ -6,7 +6,7 @@ int Element_PIPE_graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_PPIP()
 {
 	Identifier = "DEFAULT_PT_PPIP";
-	Name = "PPIP";
+	Name = "PPIP"_ascii;
 	Colour = PIXPACK(0x444466);
 	MenuVisible = 1;
 	MenuSection = SC_POWERED;
@@ -31,7 +31,7 @@ void Element::Element_PPIP()
 
 	DefaultProperties.temp = 273.15f;
 	HeatConduct = 0;
-	Description = "Powered version of PIPE, use PSCN/NSCN to Activate/Deactivate.";
+	Description = "Powered version of PIPE, use PSCN/NSCN to Activate/Deactivate."_i18n;
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 

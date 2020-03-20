@@ -3,7 +3,7 @@
 void Element::Element_SALT()
 {
 	Identifier = "DEFAULT_PT_SALT";
-	Name = "SALT";
+	Name = "SALT"_ascii;
 	Colour = PIXPACK(0xFFFFFF);
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
@@ -27,7 +27,7 @@ void Element::Element_SALT()
 	Weight = 75;
 
 	HeatConduct = 110;
-	Description = "Salt, dissolves in water.";
+	Description = "Salt, dissolves in water."_i18n;
 
 	Properties = TYPE_PART;
 

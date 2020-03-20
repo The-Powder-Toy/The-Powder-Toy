@@ -6,7 +6,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_DEST()
 {
 	Identifier = "DEFAULT_PT_DEST";
-	Name = "DEST";
+	Name = "DEST"_ascii;
 	Colour = PIXPACK(0xFF3311);
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
@@ -30,7 +30,7 @@ void Element::Element_DEST()
 	Weight = 101;
 
 	HeatConduct = 150;
-	Description = "More destructive Bomb, can break through virtually anything.";
+	Description = "More destructive Bomb, can break through virtually anything."_i18n;
 
 	Properties = TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
 

@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_BTRY()
 {
 	Identifier = "DEFAULT_PT_BTRY";
-	Name = "BTRY";
+	Name = "BTRY"_ascii;
 	Colour = PIXPACK(0x858505);
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
@@ -29,7 +29,7 @@ void Element::Element_BTRY()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Battery. Generates infinite electricity.";
+	Description = "Battery. Generates infinite electricity."_i18n;
 
 	Properties = TYPE_SOLID;
 

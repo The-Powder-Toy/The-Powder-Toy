@@ -7,7 +7,7 @@ static void changeType(ELEMENT_CHANGETYPE_FUNC_ARGS);
 void Element::Element_ETRD()
 {
 	Identifier = "DEFAULT_PT_ETRD";
-	Name = "ETRD";
+	Name = "ETRD"_ascii;
 	Colour = PIXPACK(0x404040);
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
@@ -31,7 +31,7 @@ void Element::Element_ETRD()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Electrode. Creates a surface that allows Plasma arcs. (Use sparingly)";
+	Description = "Electrode. Creates a surface that allows Plasma arcs. (Use sparingly)"_i18n;
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC;
 

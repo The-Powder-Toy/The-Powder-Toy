@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_CAUS()
 {
 	Identifier = "DEFAULT_PT_CAUS";
-	Name = "CAUS";
+	Name = "CAUS"_ascii;
 	Colour = PIXPACK(0x80FFA0);
 	MenuVisible = 1;
 	MenuSection = SC_GAS;
@@ -29,7 +29,7 @@ void Element::Element_CAUS()
 	Weight = 1;
 
 	HeatConduct = 70;
-	Description = "Caustic Gas, acts like ACID.";
+	Description = "Caustic Gas, acts like ACID."_i18n;
 
 	Properties = TYPE_GAS|PROP_DEADLY;
 

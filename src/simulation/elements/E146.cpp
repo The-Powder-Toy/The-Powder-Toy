@@ -3,7 +3,7 @@
 void Element::Element_E146()
 {
 	Identifier = "DEFAULT_PT_146";
-	Name = "BRAN";
+	Name = "BRAN"_ascii;
 	Colour = PIXPACK(0xCCCC00);
 	MenuVisible = 0;
 	MenuSection = SC_LIFE;
@@ -28,7 +28,7 @@ void Element::Element_E146()
 
 	DefaultProperties.temp = 9000.0f;
 	HeatConduct = 40;
-	Description = "Brian 6 S6/B246/3";
+	Description = "Brian 6 S6/B246/3"_i18n;
 
 	Properties = TYPE_SOLID|PROP_LIFE;
 

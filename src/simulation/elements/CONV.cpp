@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_CONV()
 {
 	Identifier = "DEFAULT_PT_CONV";
-	Name = "CONV";
+	Name = "CONV"_ascii;
 	Colour = PIXPACK(0x0AAB0A);
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;
@@ -29,7 +29,7 @@ void Element::Element_CONV()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Converter. Converts everything into whatever it first touches.";
+	Description = "Converter. Converts everything into whatever it first touches."_i18n;
 
 	Properties = TYPE_SOLID | PROP_NOCTYPEDRAW;
 

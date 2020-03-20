@@ -6,7 +6,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_GBMB()
 {
 	Identifier = "DEFAULT_PT_GBMB";
-	Name = "GBMB";
+	Name = "GBMB"_ascii;
 	Colour = PIXPACK(0x1144BB);
 	MenuVisible = 1;
 	MenuSection = SC_FORCE;
@@ -31,7 +31,7 @@ void Element::Element_GBMB()
 
 	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
 	HeatConduct = 29;
-	Description = "Gravity bomb. Sticks to the first object it touches then produces a strong gravity push.";
+	Description = "Gravity bomb. Sticks to the first object it touches then produces a strong gravity push."_i18n;
 
 	Properties = TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
 

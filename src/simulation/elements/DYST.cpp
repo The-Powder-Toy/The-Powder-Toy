@@ -3,7 +3,7 @@
 void Element::Element_DYST()
 {
 	Identifier = "DEFAULT_PT_DYST";
-	Name = "DYST";
+	Name = "DYST"_ascii;
 	Colour = PIXPACK(0xBBB0A0);
 	MenuVisible = 0;
 	MenuSection = SC_POWDERS;
@@ -27,7 +27,7 @@ void Element::Element_DYST()
 	Weight = 80;
 
 	HeatConduct = 70;
-	Description = "Dead Yeast.";
+	Description = "Dead Yeast."_i18n;
 
 	Properties = TYPE_PART;
 

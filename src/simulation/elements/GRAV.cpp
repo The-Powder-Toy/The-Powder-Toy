@@ -7,7 +7,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_GRAV()
 {
 	Identifier = "DEFAULT_PT_GRAV";
-	Name = "GRAV";
+	Name = "GRAV"_ascii;
 	Colour = PIXPACK(0x202020);
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
@@ -31,7 +31,7 @@ void Element::Element_GRAV()
 	Weight = 85;
 
 	HeatConduct = 70;
-	Description = "Very light dust. Changes colour based on velocity.";
+	Description = "Very light dust. Changes colour based on velocity."_i18n;
 
 	Properties = TYPE_PART | PROP_LIFE_DEC;
 

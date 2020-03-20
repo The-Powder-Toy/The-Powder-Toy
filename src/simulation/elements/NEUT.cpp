@@ -9,7 +9,7 @@ static int DeutExplosion(Simulation * sim, int n, int x, int y, float temp, int 
 void Element::Element_NEUT()
 {
 	Identifier = "DEFAULT_PT_NEUT";
-	Name = "NEUT";
+	Name = "NEUT"_ascii;
 	Colour = PIXPACK(0x20E0FF);
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
@@ -34,7 +34,7 @@ void Element::Element_NEUT()
 
 	DefaultProperties.temp = R_TEMP + 4.0f + 273.15f;
 	HeatConduct = 60;
-	Description = "Neutrons. Interact with matter in odd ways.";
+	Description = "Neutrons. Interact with matter in odd ways."_i18n;
 
 	Properties = TYPE_ENERGY|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
 

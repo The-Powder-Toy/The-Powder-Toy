@@ -6,7 +6,7 @@ int Element_BIZR_graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_BIZRG()
 {
 	Identifier = "DEFAULT_PT_BIZRG";
-	Name = "BIZG";
+	Name = "BIZG"_ascii;
 	Colour = PIXPACK(0x00FFBB);
 	MenuVisible = 1;
 	MenuSection = SC_CRACKER2;
@@ -31,7 +31,7 @@ void Element::Element_BIZRG()
 
 	DefaultProperties.temp = R_TEMP - 200.0f + 273.15f;
 	HeatConduct = 42;
-	Description = "Bizarre gas.";
+	Description = "Bizarre gas."_i18n;
 
 	Properties = TYPE_GAS;
 

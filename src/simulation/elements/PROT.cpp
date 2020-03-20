@@ -8,7 +8,7 @@ static int DeutImplosion(Simulation * sim, int n, int x, int y, float temp, int 
 void Element::Element_PROT()
 {
 	Identifier = "DEFAULT_PT_PROT";
-	Name = "PROT";
+	Name = "PROT"_ascii;
 	Colour = PIXPACK(0x990000);
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
@@ -32,7 +32,7 @@ void Element::Element_PROT()
 	Weight = -1;
 
 	HeatConduct = 61;
-	Description = "Protons. Transfer heat to materials, and removes sparks.";
+	Description = "Protons. Transfer heat to materials, and removes sparks."_i18n;
 
 	Properties = TYPE_ENERGY;
 

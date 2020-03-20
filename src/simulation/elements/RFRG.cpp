@@ -5,7 +5,7 @@ int Element_RFRG_update(UPDATE_FUNC_ARGS);
 void Element::Element_RFRG()
 {
 	Identifier = "DEFAULT_PT_RFRG";
-	Name = "RFRG";
+	Name = "RFRG"_ascii;
 	Colour = PIXPACK(0x72D2D4);
 	MenuVisible = 1;
 	MenuSection = SC_GAS;
@@ -29,7 +29,7 @@ void Element::Element_RFRG()
 	Weight = 1;
 
 	HeatConduct = 3;
-	Description = "Refrigerant. Heats up and liquefies under pressure.";
+	Description = "Refrigerant. Heats up and liquefies under pressure."_i18n;
 
 	Properties = TYPE_GAS|PROP_DEADLY;
 
