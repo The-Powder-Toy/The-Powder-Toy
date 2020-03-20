@@ -71,5 +71,3 @@ site_scons/site_tools/gch/*.pyc
 .vs/
 
 screenshot_*
-/src/includes
-/src/generated
