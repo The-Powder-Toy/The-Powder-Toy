@@ -47,7 +47,7 @@ class SignTool: public Tool
 public:
 	GameModel * gameModel;
 	SignTool(GameModel *model):
-	Tool(0, "SIGN", "Sign. Displays text. Click on a sign to edit it or anywhere else to place a new one.", 0, 0, 0, "DEFAULT_UI_SIGN", SignTool::GetIcon),
+	Tool(0, "SIGN"_ascii, "Sign. Displays text. Click on a sign to edit it or anywhere else to place a new one."_i18n, 0, 0, 0, "DEFAULT_UI_SIGN", SignTool::GetIcon),
 	  gameModel(model)
 	{
 	}
@@ -65,7 +65,7 @@ class SampleTool: public Tool
 	GameModel * gameModel;
 public:
 	SampleTool(GameModel *model):
-	Tool(0, "SMPL", "Sample an element on the screen.", 0, 0, 0, "DEFAULT_UI_SAMPLE", SampleTool::GetIcon),
+	Tool(0, "SMPL"_ascii, "Sample an element on the screen."_i18n, 0, 0, 0, "DEFAULT_UI_SAMPLE", SampleTool::GetIcon),
 	gameModel(model)
 	{
 	}
@@ -82,7 +82,7 @@ class PropertyTool: public Tool
 {
 public:
 	PropertyTool():
-	Tool(0, "PROP", "Property Drawing Tool. Use to alter the properties of elements in the field.", 0xfe, 0xa9, 0x00, "DEFAULT_UI_PROPERTY", NULL)
+	Tool(0, "PROP"_ascii, "Property Drawing Tool. Use to alter the properties of elements in the field."_i18n, 0xfe, 0xa9, 0x00, "DEFAULT_UI_PROPERTY", NULL)
 	{
 	}
 	StructProperty::PropertyType propType;

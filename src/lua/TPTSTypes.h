@@ -84,9 +84,10 @@ public:
 
 class InvalidConversionException: public GeneralException
 {
+	static auto getErrorMsg() { return i18nMulti("Invalid conversion from ", " to "); }
 public:
 	InvalidConversionException(ValueType from_, ValueType to_):
-	GeneralException("Invalid conversion from " + AnyType::TypeName(from_).FromAscii() + " to " + AnyType::TypeName(to_).FromAscii()) {
+	GeneralException(getErrorMsg()[0] + AnyType::TypeName(from_).FromAscii() + getErrorMsg()[1] + AnyType::TypeName(to_).FromAscii()) {
 	}
 };
 

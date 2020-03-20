@@ -8,7 +8,7 @@ public:
 	std::vector<unsigned int> DisplayModes;
 	unsigned int ColourMode;
 
-	RenderPreset(): Name(""), ColourMode(0) {}
+	RenderPreset(): Name(""_ascii), ColourMode(0) {}
 	RenderPreset(String name, std::vector<unsigned int> renderModes, std::vector<unsigned int> displayModes, unsigned int colourMode):
 		Name(name),
 		RenderModes(renderModes),

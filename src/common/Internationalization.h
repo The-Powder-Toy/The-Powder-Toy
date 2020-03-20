@@ -174,8 +174,8 @@ template<typename T, T... cs> inline String operator""_i18n()
 
 // Macros are hard
 // Expand i18nMulti("a", "b") into i18nMultiImpl<decltype("a"_chars), decltype("b"_chars)>()
-#define NARG_SELECT(_1, _2, _3, _4, _5, _6, _7, _8, _9, N, ...) N
-#define NARG(...) NARG_SELECT(__VA_ARGS__, 9, 8, 7, 6, 5, 4, 3, 2, 1)
+#define NARG_SELECT(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, N, ...) N
+#define NARG(...) NARG_SELECT(__VA_ARGS__, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
 #define i18nMultiNargH(N, ...) i18nMultiNarg(N, __VA_ARGS__)
 #define i18nMultiNarg(N, ...) i18nMulti_##N(__VA_ARGS__)
 #define i18nMulti(...) i18nMultiNargH(NARG(__VA_ARGS__), __VA_ARGS__)
@@ -188,6 +188,9 @@ template<typename T, T... cs> inline String operator""_i18n()
 #define i18nMulti_7(s1, s2, s3, s4, s5, s6, s7) i18nMultiImpl<decltype(s1##_chars), decltype(s2##_chars), decltype(s3##_chars), decltype(s4##_chars), decltype(s5##_chars), decltype(s6##_chars), decltype(s7##_chars)>()
 #define i18nMulti_8(s1, s2, s3, s4, s5, s6, s7, s8) i18nMultiImpl<decltype(s1##_chars), decltype(s2##_chars), decltype(s3##_chars), decltype(s4##_chars), decltype(s5##_chars), decltype(s6##_chars), decltype(s7##_chars), decltype(s8##_chars)>()
 #define i18nMulti_9(s1, s2, s3, s4, s5, s6, s7, s8, s9) i18nMultiImpl<decltype(s1##_chars), decltype(s2##_chars), decltype(s3##_chars), decltype(s4##_chars), decltype(s5##_chars), decltype(s6##_chars), decltype(s7##_chars), decltype(s8##_chars), decltype(s9##_chars)>()
+#define i18nMulti_10(s1, s2, s3, s4, s5, s6, s7, s8, s9, s10) i18nMultiImpl<decltype(s1##_chars), decltype(s2##_chars), decltype(s3##_chars), decltype(s4##_chars), decltype(s5##_chars), decltype(s6##_chars), decltype(s7##_chars), decltype(s8##_chars), decltype(s9##_chars), decltype(s10##_chars)>()
+#define i18nMulti_11(s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11) i18nMultiImpl<decltype(s1##_chars), decltype(s2##_chars), decltype(s3##_chars), decltype(s4##_chars), decltype(s5##_chars), decltype(s6##_chars), decltype(s7##_chars), decltype(s8##_chars), decltype(s9##_chars), decltype(s10##_chars), decltype(s11##_chars)>()
+#define i18nMulti_12(s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12) i18nMultiImpl<decltype(s1##_chars), decltype(s2##_chars), decltype(s3##_chars), decltype(s4##_chars), decltype(s5##_chars), decltype(s6##_chars), decltype(s7##_chars), decltype(s8##_chars), decltype(s9##_chars), decltype(s10##_chars), decltype(s11##_chars), decltype(s12##_chars)>()
 
 template<typename... Ts> std::array<String, sizeof...(Ts)> i18nMultiImpl()
 {

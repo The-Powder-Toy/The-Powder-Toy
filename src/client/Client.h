@@ -35,7 +35,7 @@ public:
 	int Build;
 	int Time;
 	BuildType Type;
-	UpdateInfo() : File(""), Changelog(""), Major(0), Minor(0), Build(0), Time(0), Type(Stable) {}
+	UpdateInfo() : File(""), Changelog(""_ascii), Major(0), Minor(0), Build(0), Time(0), Type(Stable) {}
 	UpdateInfo(int major, int minor, int build, ByteString file, String changelog, BuildType type) : File(file), Changelog(changelog), Major(major), Minor(minor), Build(build), Time(0), Type(type) {}
 	UpdateInfo(int time, ByteString file, String changelog, BuildType type) : File(file), Changelog(changelog), Major(0), Minor(0), Build(0), Time(time), Type(type) {}
 };
