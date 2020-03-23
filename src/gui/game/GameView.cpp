@@ -1784,8 +1784,7 @@ void GameView::NotifyPlaceSaveChanged(GameModel * sender)
 	placeSaveOffset = ui::Point(0, 0);
 	if(sender->GetPlaceSave())
 	{
-		SaveRenderer::Ref().CopyModes(sender->GetRenderer());
-		placeSaveThumb = SaveRenderer::Ref().Render(sender->GetPlaceSave());
+		placeSaveThumb = SaveRenderer::Ref().Render(sender->GetPlaceSave(), true, true, sender->GetRenderer());
 		selectMode = PlaceSave;
 		selectPoint2 = mousePosition;
 	}

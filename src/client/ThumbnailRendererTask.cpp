@@ -22,7 +22,6 @@ ThumbnailRendererTask::~ThumbnailRendererTask()
 
 bool ThumbnailRendererTask::doWork()
 {
-	SaveRenderer::Ref().ResetModes();
 	thumbnail = std::unique_ptr<VideoBuffer>(SaveRenderer::Ref().Render(Save.get(), Decorations, Fire));
 	if (thumbnail)
 	{

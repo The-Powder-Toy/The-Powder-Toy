@@ -460,7 +460,6 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 
 		if(save->GetGameSave())
 		{
-			SaveRenderer::Ref().ResetModes();
 			savePreview = SaveRenderer::Ref().Render(save->GetGameSave(), false, true);
 
 			if(savePreview && savePreview->Buffer && !(savePreview->Width == XRES/2 && savePreview->Height == YRES/2))

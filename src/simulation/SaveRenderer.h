@@ -19,10 +19,8 @@ class SaveRenderer: public Singleton<SaveRenderer> {
 	std::mutex renderMutex;
 public:
 	SaveRenderer();
-	VideoBuffer * Render(GameSave * save, bool decorations = true, bool fire = true);
+	VideoBuffer * Render(GameSave * save, bool decorations = true, bool fire = true, Renderer *renderModeSource = nullptr);
 	VideoBuffer * Render(unsigned char * saveData, int saveDataSize, bool decorations = true, bool fire = true);
-	void CopyModes(Renderer *source);
-	void ResetModes();
 	virtual ~SaveRenderer();
 
 private:
