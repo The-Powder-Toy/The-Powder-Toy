@@ -30,6 +30,7 @@ class Menu;
 class SaveInfo;
 class GameSave;
 class LoginController;
+class ControlMenuController;
 class TagsController;
 class ConsoleController;
 class GameController: public ClientListener
@@ -44,6 +45,7 @@ private:
 	SearchController * search;
 	RenderController * renderOptions;
 	LoginController * loginWindow;
+	ControlMenuController * controlMenuWindow;
 	ConsoleController * console;
 	TagsController * tagsWindow;
 	LocalBrowserController * localBrowser;
@@ -123,6 +125,7 @@ public:
 	void LoadSave(SaveInfo * save);
 	void OpenSearch(String searchText);
 	void OpenLogin();
+	void OpenControlMenu();
 	void OpenProfile();
 	void OpenTags();
 	void OpenSavePreview(int saveID, int saveDate, bool instant);

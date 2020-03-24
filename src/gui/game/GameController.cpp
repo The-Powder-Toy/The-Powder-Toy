@@ -59,6 +59,8 @@
 #include "debug/DebugLines.h"
 #include "debug/ParticleDebug.h"
 
+#include "mod/ControlMenuController.h"
+
 #ifdef LUACONSOLE
 #include "lua/LuaScriptInterface.h"
 #else
@@ -1276,6 +1278,12 @@ void GameController::OpenLogin()
 {
 	loginWindow = new LoginController();
 	ui::Engine::Ref().ShowWindow(loginWindow->GetView());
+}
+
+void GameController::OpenControlMenu()
+{
+	controlMenuWindow = new ControlMenuController();
+	//ui::Engine::Ref().ShowWindow(controlMenuWindow->GetView());
 }
 
 void GameController::OpenProfile()

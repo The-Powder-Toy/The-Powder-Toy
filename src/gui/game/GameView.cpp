@@ -314,11 +314,17 @@ GameView::GameView():
 	displayModeButton->SetActionCallback({ [this] { c->OpenRenderOptions(); } });
 	AddComponent(displayModeButton);
 
-	pauseButton = new ui::Button(ui::Point(Size.X-16, Size.Y-16), ui::Point(15, 15), "", "Pause/Resume the simulation");  //Pause
+	pauseButton = new ui::Button(ui::Point(Size.X - 16, Size.Y - 16), ui::Point(15, 15), "", "Pause/Resume the simulation"); //Pause
 	pauseButton->SetIcon(IconPause);
 	pauseButton->SetTogglable(true);
 	pauseButton->SetActionCallback({ [this] { c->SetPaused(pauseButton->GetToggleState()); } });
 	AddComponent(pauseButton);
+
+	controlMenuButton = new ui::Button(ui::Point(Size.X - 16, Size.Y - 304), ui::Point(15, 15), "", "Particle Control Menu");
+	controlMenuButton->SetIcon(IconPause);
+	controlMenuButton->SetTogglable(false);
+	controlMenuButton->SetActionCallback({ [this] { c->OpenControlMenu(); } }); 
+	AddComponent(controlMenuButton);
 
 	ui::Button * tempButton = new ui::Button(ui::Point(WINDOWW-16, WINDOWH-32), ui::Point(15, 15), 0xE065, "Search for elements");
 	tempButton->Appearance.Margin = ui::Border(0, 2, 3, 2);
