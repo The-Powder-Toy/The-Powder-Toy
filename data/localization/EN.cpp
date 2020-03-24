@@ -6,9 +6,16 @@ struct LocaleEN : public Locale
 {
 	String GetName() const { return "English"_ascii; }
 
+	size_t GetPluralIndex(size_t n) const
+	{
+		// 0: singular, 1: plural
+		return n == 1 ? 0 : 1;
+	}
+
 	void Set() const
 	{
 		using i18n::translation;
+		using i18n::pluralForm;
 	}
 
 	String GetIntroText() const
@@ -132,7 +139,6 @@ struct LocaleEN : public Locale
 			"\n"
 			"If you have any questions about what is and isn't against the rules, feel free to contact a moderator.";
 	}
-
 };
 
 Locale const &Locale_EN = LocaleEN{};

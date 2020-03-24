@@ -32,8 +32,14 @@ namespace i18n
 #ifdef I18N_DEBUG
     std::set<std::vector<ByteString> > &activeKeys()
 	{
-		static std::set<std::vector<ByteString> > activeKeys;
+		static std::set<std::vector<ByteString> > activeKeys{};
 		return activeKeys;
+	}
+
+	std::set<ByteString> &activePlurals()
+	{
+		static std::set<ByteString> activePlurals{};
+		return activePlurals;
 	}
 #endif // I18N_DEBUG
 }

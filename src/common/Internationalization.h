@@ -8,6 +8,8 @@
 #include "String.h"
 #include "Localization.h"
 
+extern Locale const *currentLocale;
+
 /*
 	We handle internationalization by maintaining a map from "key" strings, to
 	localized versions of those strings. The "keys" are strings in English, the
@@ -67,6 +69,7 @@ namespace i18n
 
 #ifdef I18N_DEBUG
 	std::set<std::vector<ByteString> > &activeKeys();
+	std::set<ByteString> &activePlurals();
 
 	template<char... cs> struct Chars
 	{
@@ -84,8 +87,14 @@ namespace i18n
 		MultiKeyUsage() { activeKeys().insert({Ts::chars...}); }
 	};
 
+	template<typename T> struct PluralUsage
+	{
+		PluralUsage() { activePlurals().insert(T::chars); }
+	};
+
 	template<char... cs> KeyUsage<cs...> keyUsage;
 	template<typename... Ts> MultiKeyUsage<Ts...> multiKeyUsage;
+	template<typename T> PluralUsage<T> pluralUsage;
 #endif
 
 	template<size_t n> struct TranslationMap
@@ -98,6 +107,17 @@ namespace i18n
 			return map;
 		}
 	};
+
+	inline std::map<CanonicalPtr, std::vector<String>> &pluralForms()
+	{
+		static std::map<CanonicalPtr, std::vector<String>> pluralForms{};
+		return pluralForms;
+	}
+
+	template<size_t N> std::vector<String> &pluralForm(char const (&str)[N])
+	{
+		return pluralForms()[Canonicalize(str)];
+	}
 
 	template<size_t N> String &translation(char const (&str)[N])
 	{
@@ -145,9 +165,15 @@ namespace i18n
 		strs[i] = lit;
 		return getMultiTranslation(strs, i + 1, std::forward<Ts>(args)...);
 	}
-}
 
-extern struct Locale const *currentLocale;
+	inline String getPlural(LiteralPtr str, size_t n)
+	{
+		auto it = pluralForms().find(Canonicalize(str));
+		if(it == pluralForms().end() || !currentLocale)
+			return ByteString(str).FromUtf8();
+		return it->second[currentLocale->GetPluralIndex(n)];
+	}
+}
 
 #ifndef I18N_DEBUG
 
@@ -160,6 +186,11 @@ template<typename... Ts> std::array<String, sizeof...(Ts)> i18nMulti(Ts&&... arg
 {
 	std::array<i18n::LiteralPtr, sizeof...(Ts)> strs;
 	return i18n::getMultiTranslation(strs, 0, std::forward<Ts>(args)...);
+}
+
+inline String i18nPlural(char const *str, size_t n)
+{
+	return i18n::getPlural(str, n);
 }
 
 #else // I18N_DEBUG
@@ -200,6 +231,14 @@ template<typename... Ts> std::array<String, sizeof...(Ts)> i18nMultiImpl()
 	(void)i18n::multiKeyUsage<Ts...>;
 	std::array<i18n::LiteralPtr, sizeof...(Ts)> strs;
 	return i18n::getMultiTranslation(strs, 0, Ts::chars...);
+}
+
+#define i18nPlural(str, n) i18nPluralImpl<decltype(str##_chars)>(n)
+
+template<typename T> String i18nPluralImpl(size_t n)
+{
+	(void)i18n::pluralUsage<T>;
+	return i18n::getPlural(T::chars, n);
 }
 
 #endif // I18N_DEBUG
