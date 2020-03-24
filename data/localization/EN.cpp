@@ -25,7 +25,7 @@ struct LocaleEN : public Locale
 	{
 		return
 			U"\blThe Powder Toy - Version " MTOS(SAVE_VERSION) "." MTOS(MINOR_VERSION) " - https://powdertoy.co.uk, irc.freenode.net #powder\n"
-			"\uE069\uE069\uE069\uE069\uE069\uE069\uE069\uE069\uE069\uE069\uE069\uE069\uE069\uE069\uE069\uE069\uE069\uE069\uE069\n"
+			U"\uE069\uE069\uE069\uE069\uE069\uE069\uE069\uE069\uE069\uE069\uE069\uE069\uE069\uE069\uE069\uE069\uE069\uE069\uE069\n"
 			"\n"
 			"\bgControl+C/V/X are Copy, Paste and cut respectively.\n"
 			"\bgTo choose a material, hover over one of the icons on the right, it will show a selection of elements in that group.\n"

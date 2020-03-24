@@ -120,7 +120,7 @@ std::pair<String, int> DropDown::GetOption()
 	{
 		return options[optionIndex];
 	}
-	return std::pair<String, int>("", -1);
+	return std::pair<String, int>(""_ascii, -1);
 }
 
 void DropDown::SetOption(String option)
