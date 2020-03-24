@@ -26,19 +26,23 @@ void ParticleDebug::Debug(int mode, int x, int y)
 		while (i < NPART && !sim->parts[i].type)
 			i++;
 		if (i == NPART)
-			logmessage = "End of particles reached, updated sim";
+			logmessage = "End of particles reached, updated sim"_i18n;
 		else
-			logmessage = String::Build("Updated particle #", i);
+			logmessage = String::Build("Updated particle #"_i18n, i);
 	}
 	else if (mode == 1)
 	{
 		if (x < 0 || x >= XRES || y < 0 || y >= YRES || !sim->pmap[y][x] || (i = ID(sim->pmap[y][x])) < debug_currentParticle)
 		{
 			i = NPART;
-			logmessage = String::Build("Updated particles from #", debug_currentParticle, " to end, updated sim");
+			auto updated = i18nMulti("Updated particles from #", " to end, updated sim");
+			logmessage = String::Build(updated[0], debug_currentParticle, updated[1]);
 		}
 		else
-			logmessage = String::Build("Updated particles #", debug_currentParticle, " through #", i);
+		{
+			auto updated = i18nMulti("Updated particles #", "through #");
+			logmessage = String::Build(updated[0], debug_currentParticle, updated[1], i);
+		}
 	}
 	model->Log(logmessage, false);
 
@@ -90,7 +94,8 @@ bool ParticleDebug::KeyPress(int key, int scan, bool shift, bool ctrl, bool alt,
 			{
 				sim->UpdateParticles(sim->debug_currentParticle, NPART);
 				sim->AfterSim();
-				String logmessage = String::Build("Updated particles from #", sim->debug_currentParticle, " to end, updated sim");
+				auto updated = i18nMulti("Updated particles from #", " to end, updated sim");
+				String logmessage = String::Build(updated[0], sim->debug_currentParticle, updated[1]);
 				model->Log(logmessage, false);
 				sim->debug_currentParticle = 0;
 			}

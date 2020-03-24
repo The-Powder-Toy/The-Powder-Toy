@@ -3,7 +3,7 @@
 
 Element::Element():
 	Identifier("DEFAULT_INVALID"),
-	Name(""),
+	Name(""_ascii),
 	Colour(PIXPACK(0xFF00FF)),
 	MenuVisible(0),
 	MenuSection(0),
@@ -29,7 +29,7 @@ Element::Element():
 	Weight(50),
 
 	HeatConduct(128),
-	Description("No description"),
+	Description("No description"_i18n),
 
 	Properties(TYPE_SOLID),
 

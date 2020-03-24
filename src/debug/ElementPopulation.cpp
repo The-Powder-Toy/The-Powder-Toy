@@ -74,7 +74,7 @@ void ElementPopulationDebug::Draw()
 		}
 	}
 
-	g->drawtext(xStart + bars + 5, yBottom-5, "0", 255, 255, 255, 255);
+	g->drawtext(xStart + bars + 5, yBottom-5, "0"_ascii, 255, 255, 255, 255);
 	g->drawtext(xStart + bars + 5, yBottom-132, halfValString, 255, 255, 255, 255);
 	g->drawtext(xStart + bars + 5, yBottom-260, maxValString, 255, 255, 255, 255);
 }

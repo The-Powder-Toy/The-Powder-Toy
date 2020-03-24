@@ -20,7 +20,7 @@ ElementSearchActivity::ElementSearchActivity(GameController * gameController, st
 	firstResult(NULL),
 	gameController(gameController),
 	tools(tools),
-	toolTip(""),
+	toolTip(""_ascii),
 	toolTipPresence(0),
 	shiftPressed(false),
 	ctrlPressed(false),
@@ -28,20 +28,20 @@ ElementSearchActivity::ElementSearchActivity(GameController * gameController, st
 	isToolTipFadingIn(false),
 	exit(false)
 {
-	ui::Label * title = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 15), "Element Search");
+	ui::Label * title = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 15), "Element Search"_i18n);
 	title->SetTextColour(style::Colour::InformationTitle);
 	title->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	AddComponent(title);
 
-	searchField = new ui::Textbox(ui::Point(8, 23), ui::Point(Size.X-16, 17), "");
+	searchField = new ui::Textbox(ui::Point(8, 23), ui::Point(Size.X-16, 17), ""_ascii);
 	searchField->SetActionCallback({ [this] { searchTools(searchField->GetText()); } });
 	searchField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	AddComponent(searchField);
 	FocusComponent(searchField);
 
-	ui::Button * closeButton = new ui::Button(ui::Point(0, Size.Y-15), ui::Point((Size.X/2)+1, 15), "Close");
+	ui::Button * closeButton = new ui::Button(ui::Point(0, Size.Y-15), ui::Point((Size.X/2)+1, 15), "Close"_i18n);
 	closeButton->SetActionCallback({ [this] { exit = true; } });
-	ui::Button * okButton = new ui::Button(ui::Point(Size.X/2, Size.Y-15), ui::Point(Size.X/2, 15), "OK");
+	ui::Button * okButton = new ui::Button(ui::Point(Size.X/2, Size.Y-15), ui::Point(Size.X/2, 15), "OK"_i18n);
 	okButton->SetActionCallback({ [this] {
 		if (GetFirstResult())
 			SetActiveTool(0, GetFirstResult());
@@ -50,7 +50,7 @@ ElementSearchActivity::ElementSearchActivity(GameController * gameController, st
 	AddComponent(okButton);
 	AddComponent(closeButton);
 
-	searchTools("");
+	searchTools(""_ascii);
 }
 
 void ElementSearchActivity::searchTools(String query)
@@ -143,7 +143,7 @@ void ElementSearchActivity::searchTools(String query)
 		ToolButton * tempButton;
 
 		if(tempTexture)
-			tempButton = new ToolButton(current+viewPosition, ui::Point(30, 18), "", tool->GetIdentifier(), tool->GetDescription());
+			tempButton = new ToolButton(current+viewPosition, ui::Point(30, 18), ""_ascii, tool->GetIdentifier(), tool->GetDescription());
 		else
 			tempButton = new ToolButton(current+viewPosition, ui::Point(30, 18), tool->GetName(), tool->GetIdentifier(), tool->GetDescription());
 

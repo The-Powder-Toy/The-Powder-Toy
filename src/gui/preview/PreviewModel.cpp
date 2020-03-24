@@ -39,9 +39,9 @@ void PreviewModel::SetFavourite(bool favourite)
 		if (Client::Ref().FavouriteSave(saveInfo->id, favourite) == RequestOkay)
 			saveInfo->Favourite = favourite;
 		else if (favourite)
-			throw PreviewModelException("Error, could not fav. the save: " + Client::Ref().GetLastError());
+			throw PreviewModelException("Error, could not fav. the save: "_i18n + Client::Ref().GetLastError());
 		else
-			throw PreviewModelException("Error, could not unfav. the save: " + Client::Ref().GetLastError());
+			throw PreviewModelException("Error, could not unfav. the save: "_i18n + Client::Ref().GetLastError());
 		notifySaveChanged();
 	}
 }
@@ -175,12 +175,12 @@ void PreviewModel::OnSaveReady()
 	{
 		GameSave *gameSave = new GameSave(*saveData);
 		if (gameSave->fromNewerVersion)
-			new ErrorMessage("This save is from a newer version", "Please update TPT in game or at https://powdertoy.co.uk");
+			new ErrorMessage("This save is from a newer version"_i18n, "Please update TPT in game or at "_i18n + ByteString(SCHEME SERVER).FromAscii());
 		saveInfo->SetGameSave(gameSave);
 	}
 	catch(ParseException &e)
 	{
-		new ErrorMessage("Error", ByteString(e.what()).FromUtf8());
+		new ErrorMessage("Error"_i18n, ByteString(e.what()).FromUtf8());
 		canOpen = false;
 	}
 	notifySaveChanged();
@@ -331,7 +331,7 @@ void PreviewModel::Update()
 			else
 			{
 				for (size_t i = 0; i < observers.size(); i++)
-					observers[i]->SaveLoadingError("Could not parse save info");
+					observers[i]->SaveLoadingError("Could not parse save info"_i18n);
 			}
 		}
 		else

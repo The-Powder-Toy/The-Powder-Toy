@@ -22,19 +22,20 @@ LocalBrowserView::LocalBrowserView():
 	lastChanged(0),
 	pageCount(0)
 {
-	nextButton = new ui::Button(ui::Point(WINDOWW-52, WINDOWH-18), ui::Point(50, 16), String("Next ") + 0xE015);
-	previousButton = new ui::Button(ui::Point(2, WINDOWH-18), ui::Point(50, 16), 0xE016 + String(" Prev"));
-	undeleteButton = new ui::Button(ui::Point(WINDOWW-122, WINDOWH-18), ui::Point(60, 16), "Rescan");
+	nextButton = new ui::Button(ui::Point(WINDOWW-52, WINDOWH-18), ui::Point(50, 16), "Next "_i18n + 0xE015);
+	previousButton = new ui::Button(ui::Point(2, WINDOWH-18), ui::Point(50, 16), 0xE016 + " Prev"_i18n);
+	undeleteButton = new ui::Button(ui::Point(WINDOWW-122, WINDOWH-18), ui::Point(60, 16), "Rescan"_i18n);
 	AddComponent(nextButton);
 	AddComponent(previousButton);
 	AddComponent(undeleteButton);
 
-	pageTextbox = new ui::Textbox(ui::Point(283, WINDOWH-18), ui::Point(41, 16), "");
+	pageTextbox = new ui::Textbox(ui::Point(283, WINDOWH-18), ui::Point(41, 16), ""_ascii);
 	pageTextbox->SetActionCallback({ [this] { textChanged(); } });
 	pageTextbox->SetInputType(ui::Textbox::Number);
-	pageLabel = new ui::Label(ui::Point(0, WINDOWH-18), ui::Point(30, 16), "Page"); //page [TEXTBOX] of y
+	auto pageOf = i18nMulti("Page", "of "); //page [TEXTBOX] of y
+	pageLabel = new ui::Label(ui::Point(0, WINDOWH-18), ui::Point(30, 16), pageOf[0]);
 	pageLabel->Appearance.HorizontalAlign = ui::Appearance::AlignRight;
-	pageCountLabel = new ui::Label(ui::Point(WINDOWW/2+6, WINDOWH-18), ui::Point(50, 16), "");
+	pageCountLabel = new ui::Label(ui::Point(WINDOWW/2+6, WINDOWH-18), ui::Point(50, 16), ""_ascii);
 	pageCountLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	AddComponent(pageLabel);
 	AddComponent(pageCountLabel);
@@ -50,7 +51,7 @@ LocalBrowserView::LocalBrowserView():
 
 	undeleteButton->SetActionCallback({ [this] { c->RescanStamps(); } });
 
-	removeSelected = new ui::Button(ui::Point(((WINDOWW-100)/2), WINDOWH-18), ui::Point(100, 16), "Delete");
+	removeSelected = new ui::Button(ui::Point(((WINDOWW-100)/2), WINDOWH-18), ui::Point(100, 16), "Delete"_i18n);
 	removeSelected->Visible = false;
 	removeSelected->SetActionCallback({ [this] { c->RemoveSelected(); } });
 	AddComponent(removeSelected);
@@ -59,10 +60,8 @@ LocalBrowserView::LocalBrowserView():
 void LocalBrowserView::textChanged()
 {
 	int num = pageTextbox->GetText().ToNumber<int>(true);
-	if (num < 0) //0 is allowed so that you can backspace the 1
-		pageTextbox->SetText("1");
-	else if (num > pageCount)
-		pageTextbox->SetText(String::Build(pageCount));
+	if(num < 0 || num > pageCount) //0 is allowed so that you can backspace the 1
+		pageTextbox->SetText(String::Build(num < 0 ? 1 : pageCount));
 	changed = true;
 	lastChanged = GetTicks()+600;
 }
@@ -86,7 +85,8 @@ void LocalBrowserView::NotifyPageChanged(LocalBrowserModel * sender)
 	}
 	else
 	{
-		String pageInfo = String::Build("of ", pageCount);
+		auto pageOf = i18nMulti("Page", "of ");
+		String pageInfo = String::Build(pageOf[1], pageCount);
 		pageCountLabel->SetText(pageInfo);
 		int width = Graphics::textwidth(pageInfo);
 

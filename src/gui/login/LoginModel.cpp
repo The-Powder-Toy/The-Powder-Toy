@@ -3,6 +3,7 @@
 #include "LoginView.h"
 
 #include "client/Client.h"
+#include "Config.h"
 
 LoginModel::LoginModel():
 	currentUser(0, "")
@@ -14,19 +15,19 @@ void LoginModel::Login(ByteString username, ByteString password)
 {
 	if (username.Contains("@"))
 	{
-		statusText = "Use your Powder Toy account to log in, not your email. If you don't have a Powder Toy account, you can create one at https://powdertoy.co.uk/Register.html";
+		statusText = "Use your Powder Toy account to log in, not your email. If you don't have a Powder Toy account, you can create one at "_i18n + ByteString(SCHEME SERVER "/Register.html").FromAscii();
 		loginStatus = false;
 		notifyStatusChanged();
 		return;
 	}
-	statusText = "Logging in...";
+	statusText = "Logging in..."_i18n;
 	loginStatus = false;
 	notifyStatusChanged();
 	LoginStatus status = Client::Ref().Login(username, password, currentUser);
 	switch(status)
 	{
 	case LoginOkay:
-		statusText = "Logged in";
+		statusText = "Logged in"_i18n;
 		loginStatus = true;
 		break;
 	case LoginError:

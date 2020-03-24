@@ -592,7 +592,7 @@ void Graphics::textnpos(String str, int n, int w, int *cx, int *cy)
 	while (*s&&n)
 	{
 		wordlen = 0;
-		while(*s && String(" .,!?\n").Contains(*s))
+		while(*s && String(" .,!?\n"_ascii).Contains(*s))
 			s++;
 		charspace = textwidthx(s, w-x);
 		if (charspace<wordlen && wordlen && w-x<w/3)
@@ -653,7 +653,7 @@ int Graphics::textwrapheight(String str, int width)
 	while (*s)
 	{
 		wordlen = 0;
-		while(*s && String(" .,!?\n").Contains(*s))
+		while(*s && String(" .,!?\n"_ascii).Contains(*s))
 			s++;
 		charspace = textwidthx(s, width-x);
 		if (charspace<wordlen && wordlen && width-x<width/3)
@@ -734,6 +734,7 @@ void Graphics::textsize(String str, int & width, int & height)
 
 void Graphics::draw_icon(int x, int y, Icon icon, unsigned char alpha, bool invert)
 {
+	static String voteText = "Vote"_i18n;
 	y--;
 	switch(icon)
 	{
@@ -759,12 +760,12 @@ void Graphics::draw_icon(int x, int y, Icon icon, unsigned char alpha, bool inve
 		if(invert)
 		{
 			drawchar(x-11, y+1, 0xE04B, 0, 100, 0, alpha);
-			drawtext(x+2, y+1, "Vote", 0, 100, 0, alpha);
+			drawtext(x+2, y+1, voteText, 0, 100, 0, alpha);
 		}
 		else
 		{
 			drawchar(x-11, y+1, 0xE04B, 0, 187, 18, alpha);
-			drawtext(x+2, y+1, "Vote", 0, 187, 18, alpha);
+			drawtext(x+2, y+1, voteText, 0, 187, 18, alpha);
 		}
 		break;
 	case IconVoteDown:

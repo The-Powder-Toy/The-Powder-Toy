@@ -58,7 +58,7 @@ bool PreviewController::SubmitComment(String comment)
 {
 	if(comment.length() < 4)
 	{
-		new ErrorMessage("Error", "Comment is too short");
+		new ErrorMessage("Error"_i18n, "Comment is too short"_i18n);
 		return false;
 	}
 	else
@@ -66,7 +66,7 @@ bool PreviewController::SubmitComment(String comment)
 		RequestStatus status = Client::Ref().AddComment(saveId, comment);
 		if(status != RequestOkay)
 		{
-			new ErrorMessage("Error submitting comment", Client::Ref().GetLastError());
+			new ErrorMessage("Error submitting comment"_i18n, Client::Ref().GetLastError());
 			return false;
 		}
 		else
@@ -109,10 +109,10 @@ void PreviewController::Report(String message)
 	if(Client::Ref().ReportSave(saveId, message) == RequestOkay)
 	{
 		Exit();
-		new InformationMessage("Information", "Report submitted", false);
+		new InformationMessage("Information"_i18n, "Report submitted"_i18n, false);
 	}
 	else
-		new ErrorMessage("Error", "Unable to file report: " + Client::Ref().GetLastError());
+		new ErrorMessage("Error"_i18n, "Unable to file report: "_i18n + Client::Ref().GetLastError());
 }
 
 void PreviewController::FavouriteSave()
@@ -128,7 +128,7 @@ void PreviewController::FavouriteSave()
 		}
 		catch (PreviewModelException & e)
 		{
-			new ErrorMessage("Error", ByteString(e.what()).FromUtf8());
+			new ErrorMessage("Error"_i18n, ByteString(e.what()).FromUtf8());
 		}
 	}
 }

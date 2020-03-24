@@ -54,7 +54,7 @@ AnyType::operator StringType()
 	else if (type == TypePoint && value.pt)
 	{
 		ui::Point thisPoint = *(value.pt);
-		return StringType(String::Build(thisPoint.X, ",", thisPoint.Y));
+		return StringType(String::Build(thisPoint.X, ',', thisPoint.Y));
 	}
 	else
 		throw InvalidConversionException(type, TypeString);
@@ -71,7 +71,7 @@ AnyType::operator PointType()
 	{
 		int x, y;
 		if(String::Split comma = (*value.str).SplitNumber(x))
-			if(comma.After().BeginsWith(","))
+			if(comma.After().BeginsWith(","_ascii))
 				if(String::Split end = comma.After().Substr(1).SplitNumber(y))
 					if(!end.After().size())
 						return PointType(x, y);

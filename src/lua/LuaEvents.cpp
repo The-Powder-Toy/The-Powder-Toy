@@ -205,7 +205,7 @@ bool LuaEvents::HandleEvent(LuaScriptInterface *luacon_ci, Event *event, ByteStr
 		int callret = lua_pcall(l, numArgs, 1, 0);
 		if (callret)
 		{
-			if (luacon_geterror(luacon_ci) == "Error: Script not responding")
+			if (luacon_geterror(luacon_ci) == "Error: Script not responding"_i18n) // probably not a good idea
 			{
 				ui::Engine::Ref().LastTick(Platform::GetTime());
 				for (int j = i; j <= len - 1; j++)

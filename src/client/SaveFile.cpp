@@ -15,7 +15,7 @@ SaveFile::SaveFile(ByteString filename):
 	gameSave(NULL),
 	filename(filename),
 	displayName(filename.FromUtf8()),
-	loadingError("")
+	loadingError(""_ascii)
 {
 
 }

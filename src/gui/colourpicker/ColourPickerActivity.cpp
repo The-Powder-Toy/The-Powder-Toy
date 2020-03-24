@@ -39,34 +39,34 @@ ColourPickerActivity::ColourPickerActivity(ui::Colour initialColour, OnPicked on
 		UpdateTextboxes(r, g, b, alpha);
 	};
 
-	rValue = new ui::Textbox(ui::Point(5, Size.Y-23), ui::Point(30, 17), "255");
+	rValue = new ui::Textbox(ui::Point(5, Size.Y-23), ui::Point(30, 17), "255"_ascii);
 	rValue->SetActionCallback({ colourChange });
 	rValue->SetLimit(3);
 	rValue->SetInputType(ui::Textbox::Number);
 	AddComponent(rValue);
 
-	gValue = new ui::Textbox(ui::Point(40, Size.Y-23), ui::Point(30, 17), "255");
+	gValue = new ui::Textbox(ui::Point(40, Size.Y-23), ui::Point(30, 17), "255"_ascii);
 	gValue->SetActionCallback({ colourChange });
 	gValue->SetLimit(3);
 	gValue->SetInputType(ui::Textbox::Number);
 	AddComponent(gValue);
 
-	bValue = new ui::Textbox(ui::Point(75, Size.Y-23), ui::Point(30, 17), "255");
+	bValue = new ui::Textbox(ui::Point(75, Size.Y-23), ui::Point(30, 17), "255"_ascii);
 	bValue->SetActionCallback({ colourChange });
 	bValue->SetLimit(3);
 	bValue->SetInputType(ui::Textbox::Number);
 	AddComponent(bValue);
 
-	aValue = new ui::Textbox(ui::Point(110, Size.Y-23), ui::Point(30, 17), "255");
+	aValue = new ui::Textbox(ui::Point(110, Size.Y-23), ui::Point(30, 17), "255"_ascii);
 	aValue->SetActionCallback({ colourChange });
 	aValue->SetLimit(3);
 	aValue->SetInputType(ui::Textbox::Number);
 	AddComponent(aValue);
 
-	hexValue = new::ui::Label(ui::Point(150, Size.Y-23), ui::Point(53, 17), "0xFFFFFFFF");
+	hexValue = new::ui::Label(ui::Point(150, Size.Y-23), ui::Point(53, 17), "0xFFFFFFFF"_ascii);
 	AddComponent(hexValue);
 
-	ui::Button * doneButton = new ui::Button(ui::Point(Size.X-45, Size.Y-23), ui::Point(40, 17), "Done");
+	ui::Button * doneButton = new ui::Button(ui::Point(Size.X-45, Size.Y-23), ui::Point(40, 17), "Done"_i18n);
 	doneButton->SetActionCallback({ [this] {
 		int Red, Green, Blue;
 		Red = rValue->GetText().ToNumber<int>(true);

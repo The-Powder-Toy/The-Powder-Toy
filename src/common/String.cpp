@@ -293,7 +293,7 @@ inline wchar_t narrow_wchar(String::value_type ch)
 
 char const numberChars[] = "-.+0123456789ABCDEFXabcdefx";
 ByteString numberByteString(numberChars);
-String numberString(numberChars);
+String numberString(numberByteString.FromAscii());
 
 struct LocaleImpl
 {

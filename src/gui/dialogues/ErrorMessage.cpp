@@ -29,7 +29,7 @@ ErrorMessage::ErrorMessage(String title, String message, DismissCallback callbac
 	Size.Y += messageLabel->Size.Y+12;
 	Position.Y = (ui::Engine::Ref().GetHeight()-Size.Y)/2;
 
-	ui::Button * okayButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(Size.X, 16), "Dismiss");
+	ui::Button * okayButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(Size.X, 16), "Dismiss"_i18n);
 	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	okayButton->Appearance.BorderInactive = ui::Colour(200, 200, 200);

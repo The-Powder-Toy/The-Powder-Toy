@@ -5219,7 +5219,7 @@ String Simulation::ElementResolve(int type, int ctype)
 	{
 		return elements[type].Name;
 	}
-	return "Empty";
+	return "Empty"_i18n;
 }
 
 String Simulation::BasicParticleInfo(Particle const &sample_part)
@@ -5230,17 +5230,17 @@ String Simulation::BasicParticleInfo(Particle const &sample_part)
 	int pavg1int = (int)sample_part.pavg[1];
 	if (type == PT_LAVA && ctype && IsValidElement(ctype))
 	{
-		sampleInfo << "Molten " << ElementResolve(ctype, -1);
+		sampleInfo << "Molten "_i18n << ElementResolve(ctype, -1);
 	}
 	else if ((type == PT_PIPE || type == PT_PPIP) && ctype && IsValidElement(ctype))
 	{
 		if (ctype == PT_LAVA && pavg1int && IsValidElement(pavg1int))
 		{
-			sampleInfo << ElementResolve(type, -1) << " with molten " << ElementResolve(pavg1int, -1);
+			sampleInfo << ElementResolve(type, -1) << " with molten "_i18n << ElementResolve(pavg1int, -1);
 		}
 		else
 		{
-			sampleInfo << ElementResolve(type, -1) << " with " << ElementResolve(ctype, pavg1int);
+			sampleInfo << ElementResolve(type, -1) << " with "_i18n << ElementResolve(ctype, pavg1int);
 		}
 	}
 	else

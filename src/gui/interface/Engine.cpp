@@ -77,7 +77,7 @@ void Engine::Exit()
 
 void Engine::ConfirmExit()
 {
-	new ConfirmPrompt("You are about to quit", "Are you sure you want to exit the game?", { [] {
+	new ConfirmPrompt("You are about to quit"_i18n, "Are you sure you want to exit the game?"_i18n, { [] {
 		ui::Engine::Ref().Exit();
 	} });
 }

@@ -18,7 +18,7 @@ TaskWindow::TaskWindow(String title_, Task * task_, bool closeOnDone):
 	progress(0),
 	done(false),
 	closeOnDone(closeOnDone),
-	progressStatus("0%")
+	progressStatus("0%"_ascii)
 {
 
 	ui::Label * tempLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 15), title);
@@ -27,7 +27,7 @@ TaskWindow::TaskWindow(String title_, Task * task_, bool closeOnDone):
 	tempLabel->SetTextColour(style::Colour::WarningTitle);
 	AddComponent(tempLabel);
 
-	statusLabel = new ui::Label(ui::Point(4, 23), ui::Point(Size.X-8, 15), "");
+	statusLabel = new ui::Label(ui::Point(4, 23), ui::Point(Size.X-8, 15), ""_ascii);
 	statusLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	statusLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(statusLabel);
@@ -45,7 +45,7 @@ void TaskWindow::NotifyStatus(Task * task)
 
 void TaskWindow::NotifyError(Task * task)
 {
-	new ErrorMessage("Error", task->GetError());
+	new ErrorMessage("Error"_i18n, task->GetError());
 	done = true;
 }
 
@@ -68,9 +68,9 @@ void TaskWindow::NotifyProgress(Task * task)
 {
 	progress = task->GetProgress();
 	if(progress>-1)
-		progressStatus = String::Build(progress, "%");
+		progressStatus = String::Build(progress, '%');
 	else
-		progressStatus = "Please wait...";
+		progressStatus = "Please wait..."_i18n;
 }
 
 void TaskWindow::OnTick(float dt)

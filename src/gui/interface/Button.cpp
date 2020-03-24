@@ -29,7 +29,7 @@ void Button::TextPosition(String ButtonText)
 		{
 			int position = Graphics::textwidthx(buttonDisplayText, Size.X - (Appearance.icon? 38 : 22));
 			buttonDisplayText = buttonDisplayText.erase(position, buttonDisplayText.length()-position);
-			buttonDisplayText += "...";
+			buttonDisplayText += "..."_ascii;
 		}
 	}
 

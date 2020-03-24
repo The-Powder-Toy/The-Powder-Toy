@@ -32,10 +32,10 @@ void DebugLines::Draw()
 		g->draw_line(drawPoint2.X, 0, drawPoint2.X, YRES, 255, 255, 255, 120);
 
 		String info;
-		info = String::Build(drawPoint2.X, " x ", drawPoint2.Y);
+		info = String::Build(drawPoint2.X, " x "_ascii, drawPoint2.Y);
 		g->drawtext_outline(drawPoint2.X+(drawPoint2.X>drawPoint1.X?3:-g->textwidth(info)-3), drawPoint2.Y+(drawPoint2.Y<drawPoint1.Y?-10:3), info, 255, 255, 255, 200);
 
-		info = String::Build(drawPoint1.X, " x ", drawPoint1.Y);
+		info = String::Build(drawPoint1.X, " x "_ascii, drawPoint1.Y);
 		g->drawtext_outline(drawPoint1.X+(drawPoint2.X<drawPoint1.X?3:-g->textwidth(info)-2), drawPoint1.Y+(drawPoint2.Y>drawPoint1.Y?-10:3), info, 255, 255, 255, 200);
 
 		info = String::Build(std::abs(drawPoint2.X-drawPoint1.X));

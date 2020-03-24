@@ -280,7 +280,7 @@ void luacon_hook(lua_State * l, lua_Debug * ar)
 {
 	if(ar->event == LUA_HOOKCOUNT && Platform::GetTime()-ui::Engine::Ref().LastTick() > 3000)
 	{
-		if(ConfirmPrompt::Blocking("Script not responding", "The Lua script may have stopped responding. There might be an infinite loop. Press \"Stop\" to stop it", "Stop"))
+		if(ConfirmPrompt::Blocking("Script not responding"_i18n, "The Lua script may have stopped responding. There might be an infinite loop. Press \"Stop\" to stop it"_i18n, "Stop"_i18n))
 			luaL_error(l, "Error: Script not responding");
 		ui::Engine::Ref().LastTick(Platform::GetTime());
 	}
@@ -459,7 +459,7 @@ int luatpt_graphics_func(lua_State *l)
 int luatpt_error(lua_State* l)
 {
 	String errorMessage = ByteString(luaL_optstring(l, 1, "Error text")).FromUtf8();
-	ErrorMessage::Blocking("Error", errorMessage);
+	ErrorMessage::Blocking("Error"_i18n, errorMessage);
 	return 0;
 }
 
@@ -560,12 +560,12 @@ int luatpt_setconsole(lua_State* l)
 int luatpt_log(lua_State* l)
 {
 	int args = lua_gettop(l);
-	String text = "";
+	String text = ""_ascii;
 	for(int i = 1; i <= args; i++)
 	{
 		luaL_tostring(l, -1);
 		if(text.length())
-			text=ByteString(luaL_optstring(l, -1, "")).FromUtf8() + ", " + text;
+			text=ByteString(luaL_optstring(l, -1, "")).FromUtf8() + ", "_ascii + text;
 		else
 			text=ByteString(luaL_optstring(l, -1, "")).FromUtf8();
 		lua_pop(l, 2);
@@ -573,7 +573,7 @@ int luatpt_log(lua_State* l)
 	if((*luacon_currentCommand))
 	{
 		if(luacon_lastError->length())
-			*luacon_lastError += "; ";
+			*luacon_lastError += "; "_ascii;
 		*luacon_lastError += text;
 	}
 	else
@@ -1386,7 +1386,7 @@ int luatpt_getscript(lua_State* l)
 	int confirmPrompt = luaL_optint(l, 4, 1);
 
 	ByteString url = ByteString::Build(SCHEME "starcatcher.us/scripts/main.lua?get=", scriptID);
-	if (confirmPrompt && !ConfirmPrompt::Blocking("Do you want to install script?", url.FromUtf8(), "Install"))
+	if (confirmPrompt && !ConfirmPrompt::Blocking("Do you want to install script?"_i18n, url.FromUtf8(), "Install"_i18n))
 		return 0;
 
 	int ret;
@@ -1410,7 +1410,7 @@ int luatpt_getscript(lua_State* l)
 	{
 		fclose(outputfile);
 		outputfile = NULL;
-		if (!confirmPrompt || ConfirmPrompt::Blocking("File already exists, overwrite?", ByteString(filename).FromUtf8(), "Overwrite"))
+		if (!confirmPrompt || ConfirmPrompt::Blocking("File already exists, overwrite?"_i18n, ByteString(filename).FromUtf8(), "Overwrite"_i18n))
 		{
 			outputfile = fopen(filename, "wb");
 		}

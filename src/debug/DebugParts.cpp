@@ -18,7 +18,7 @@ void DebugParts::Draw()
 	Graphics * g = ui::Engine::Ref().g;
 
 	int x = 0, y = 0, lpx = 0, lpy = 0;
-	String info = String::Build(sim->parts_lastActiveIndex, "/", NPART, " (", Format::Precision((float)sim->parts_lastActiveIndex/(NPART)*100.0f, 2), "%)");
+	String info = String::Build(sim->parts_lastActiveIndex, '/', NPART, " ("_ascii, Format::Precision((float)sim->parts_lastActiveIndex/(NPART)*100.0f, 2), "%)"_ascii);
 	for (int i = 0; i < NPART; i++)
 	{
 		if (sim->parts[i].type)

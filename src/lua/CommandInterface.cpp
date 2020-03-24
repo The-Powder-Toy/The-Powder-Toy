@@ -22,7 +22,7 @@ CommandInterface::CommandInterface(GameController * c, GameModel * m) {
 
 int CommandInterface::Command(String command)
 {
-	lastError = "No interpreter";
+	lastError = "No interpreter"_i18n;
 	return -1;
 }
 

@@ -19,7 +19,7 @@ ConsoleView::ConsoleView():
 	ui::Window(ui::Point(0, 0), ui::Point(WINDOWW, 150)),
 	commandField(NULL)
 {
-	commandField = new ui::Textbox(ui::Point(0, Size.Y-16), ui::Point(Size.X, 16), "");
+	commandField = new ui::Textbox(ui::Point(0, Size.Y-16), ui::Point(Size.X, 16), ""_ascii);
 	commandField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	commandField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	commandField->SetActionCallback({ [this] { commandField->SetDisplayText(c->FormatCommand(commandField->GetText())); } });
@@ -41,8 +41,8 @@ void ConsoleView::DoKeyPress(int key, int scan, bool repeat, bool shift, bool ct
 	case SDLK_RETURN:
 	case SDLK_KP_ENTER:
 		c->EvaluateCommand(commandField->GetText());
-		commandField->SetText("");
-		commandField->SetDisplayText("");
+		commandField->SetText(""_ascii);
+		commandField->SetDisplayText(""_ascii);
 		break;
 	case SDLK_DOWN:
 		c->NextCommand();
@@ -62,7 +62,7 @@ void ConsoleView::DoKeyPress(int key, int scan, bool repeat, bool shift, bool ct
 
 void ConsoleView::DoTextInput(String text)
 {
-	if (text == "~")
+	if (text == "~"_ascii)
 		doClose = false;
 	if (!doClose)
 		Window::DoTextInput(text);
