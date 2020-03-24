@@ -36,34 +36,35 @@ SearchView::SearchView():
 
 	Client::Ref().AddListener(this);
 
-	nextButton = new ui::Button(ui::Point(WINDOWW-52, WINDOWH-18), ui::Point(50, 16), String("Next ") + 0xE015);
-	previousButton = new ui::Button(ui::Point(2, WINDOWH-18), ui::Point(50, 16), 0xE016 + String(" Prev"));
-	tagsLabel  = new ui::Label(ui::Point(270, WINDOWH-18), ui::Point(WINDOWW-540, 16), "\boPopular Tags:");
+	nextButton = new ui::Button(ui::Point(WINDOWW-52, WINDOWH-18), ui::Point(50, 16), "Next "_i18n + 0xE015);
+	previousButton = new ui::Button(ui::Point(2, WINDOWH-18), ui::Point(50, 16), 0xE016 + " Prev"_i18n);
+	tagsLabel  = new ui::Label(ui::Point(270, WINDOWH-18), ui::Point(WINDOWW-540, 16), "\boPopular Tags:"_i18n);
 	try
 	{
 		motdLabel  = new ui::RichLabel(ui::Point(51, WINDOWH-18), ui::Point(WINDOWW-102, 16), Client::Ref().GetMessageOfTheDay());
 	}
 	catch (std::exception & e) { }
 
-	pageTextbox = new ui::Textbox(ui::Point(283, WINDOWH-18), ui::Point(41, 16), "");
+	pageTextbox = new ui::Textbox(ui::Point(283, WINDOWH-18), ui::Point(41, 16), ""_ascii);
 	pageTextbox->SetActionCallback({ [this] { textChanged(); } });
 	pageTextbox->SetInputType(ui::Textbox::Number);
-	pageLabel = new ui::Label(ui::Point(0, WINDOWH-18), ui::Point(30, 16), "Page"); //page [TEXTBOX] of y
+	auto pageOf = i18nMulti("Page", "of "); //page [TEXTBOX] of y
+	pageLabel = new ui::Label(ui::Point(0, WINDOWH-18), ui::Point(30, 16), pageOf[0]);
 	pageLabel->Appearance.HorizontalAlign = ui::Appearance::AlignRight;
-	pageCountLabel = new ui::Label(ui::Point(WINDOWW/2+6, WINDOWH-18), ui::Point(50, 16), "");
+	pageCountLabel = new ui::Label(ui::Point(WINDOWW/2+6, WINDOWH-18), ui::Point(50, 16), ""_ascii);
 	pageCountLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	AddComponent(pageLabel);
 	AddComponent(pageCountLabel);
 	AddComponent(pageTextbox);
 
-	searchField = new ui::Textbox(ui::Point(60, 10), ui::Point(WINDOWW-238, 17), "", "[search]");
+	searchField = new ui::Textbox(ui::Point(60, 10), ui::Point(WINDOWW-238, 17), ""_ascii, "[search]"_i18n);
 	searchField->Appearance.icon = IconSearch;
 	searchField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	searchField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	searchField->SetActionCallback({ [this] { doSearch(); } });
 	FocusComponent(searchField);
 
-	sortButton = new ui::Button(ui::Point(WINDOWW-140, 10), ui::Point(61, 17), "Sort");
+	sortButton = new ui::Button(ui::Point(WINDOWW-140, 10), ui::Point(61, 17), "Sort"_i18n);
 	sortButton->SetIcon(IconVoteSort);
 	sortButton->SetTogglable(true);
 	sortButton->SetActionCallback({ [this] { c->ChangeSort(); } });
@@ -71,7 +72,7 @@ SearchView::SearchView():
 	sortButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(sortButton);
 
-	ownButton = new ui::Button(ui::Point(WINDOWW-70, 10), ui::Point(61, 17), "My Own");
+	ownButton = new ui::Button(ui::Point(WINDOWW-70, 10), ui::Point(61, 17), "My Own"_i18n);
 	ownButton->SetIcon(IconMyOwn);
 	ownButton->SetTogglable(true);
 	ownButton->SetActionCallback({ [this] { c->ShowOwn(ownButton->GetToggleState()); } });
@@ -79,7 +80,7 @@ SearchView::SearchView():
 	ownButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(ownButton);
 
-	favButton = new ui::Button(searchField->Position+ui::Point(searchField->Size.X+15, 0), ui::Point(17, 17), "");
+	favButton = new ui::Button(searchField->Position+ui::Point(searchField->Size.X+15, 0), ui::Point(17, 17), ""_ascii);
 	favButton->SetIcon(IconFavourite);
 	favButton->SetTogglable(true);
 	favButton->Appearance.Margin.Left+=2;
@@ -89,7 +90,7 @@ SearchView::SearchView():
 	favButton->Appearance.BorderInactive = ui::Colour(170,170,170);
 	AddComponent(favButton);
 
-	ui::Button * clearSearchButton = new ui::Button(searchField->Position+ui::Point(searchField->Size.X-1, 0), ui::Point(17, 17), "");
+	ui::Button * clearSearchButton = new ui::Button(searchField->Position+ui::Point(searchField->Size.X-1, 0), ui::Point(17, 17), ""_ascii);
 	clearSearchButton->SetIcon(IconClose);
 	clearSearchButton->SetActionCallback({ [this] { clearSearch(); } });
 	clearSearchButton->Appearance.Margin.Left+=2;
@@ -114,27 +115,27 @@ SearchView::SearchView():
 	loadingSpinner = new ui::Spinner(ui::Point((WINDOWW/2)-12, (WINDOWH/2)+12), ui::Point(24, 24));
 	AddComponent(loadingSpinner);
 
-	ui::Label * searchPrompt = new ui::Label(ui::Point(10, 10), ui::Point(50, 16), "Search:");
+	ui::Label * searchPrompt = new ui::Label(ui::Point(10, 10), ui::Point(50, 16), "Search:"_i18n);
 	searchPrompt->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	searchPrompt->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(searchPrompt);
 
-	removeSelected = new ui::Button(ui::Point(((WINDOWW-415)/2), WINDOWH-18), ui::Point(100, 16), "Delete");
+	removeSelected = new ui::Button(ui::Point(((WINDOWW-415)/2), WINDOWH-18), ui::Point(100, 16), "Delete"_i18n);
 	removeSelected->Visible = false;
 	removeSelected->SetActionCallback({ [this] { c->RemoveSelected(); } });
 	AddComponent(removeSelected);
 
-	unpublishSelected = new ui::Button(ui::Point(((WINDOWW-415)/2)+105, WINDOWH-18), ui::Point(100, 16), "Unpublish");
+	unpublishSelected = new ui::Button(ui::Point(((WINDOWW-415)/2)+105, WINDOWH-18), ui::Point(100, 16), "Unpublish"_i18n);
 	unpublishSelected->Visible = false;
 	unpublishSelected->SetActionCallback({ [this] { c->UnpublishSelected(publishButtonShown); } });
 	AddComponent(unpublishSelected);
 
-	favouriteSelected = new ui::Button(ui::Point(((WINDOWW-415)/2)+210, WINDOWH-18), ui::Point(100, 16), "Favourite");
+	favouriteSelected = new ui::Button(ui::Point(((WINDOWW-415)/2)+210, WINDOWH-18), ui::Point(100, 16), "Favourite"_i18n);
 	favouriteSelected->Visible = false;
 	favouriteSelected->SetActionCallback({ [this] { c->FavouriteSelected(); } });
 	AddComponent(favouriteSelected);
 
-	clearSelection = new ui::Button(ui::Point(((WINDOWW-415)/2)+315, WINDOWH-18), ui::Point(100, 16), "Clear selection");
+	clearSelection = new ui::Button(ui::Point(((WINDOWW-415)/2)+315, WINDOWH-18), ui::Point(100, 16), "Clear selection"_i18n);
 	clearSelection->Visible = false;
 	clearSelection->SetActionCallback({ [this] { c->ClearSelection(); } });
 	AddComponent(clearSelection);
@@ -166,17 +167,15 @@ void SearchView::doSearch()
 
 void SearchView::clearSearch()
 {
-	searchField->SetText("");
+	searchField->SetText(""_ascii);
 	c->DoSearch(searchField->GetText(), true);
 }
 
 void SearchView::textChanged()
 {
 	int num = pageTextbox->GetText().ToNumber<int>(true);
-	if (num < 0) //0 is allowed so that you can backspace the 1
-		pageTextbox->SetText("1");
-	else if (num > pageCount)
-		pageTextbox->SetText(String::Build(pageCount));
+	if(num < 0 || num > pageCount) //0 is allowed so that you can backspace the 1
+		pageTextbox->SetText(String::Build(num < 0 ? 1 : pageCount));
 	changed = true;
 	lastChanged = GetTicks()+600;
 }
@@ -219,13 +218,13 @@ void SearchView::NotifySortChanged(SearchModel * sender)
 	if(sender->GetSort() == "best")
 	{
 		sortButton->SetToggleState(false);
-		sortButton->SetText("By votes");
+		sortButton->SetText("By votes"_i18n);
 		sortButton->SetIcon(IconVoteSort);
 	}
 	else
 	{
 		sortButton->SetToggleState(true);
-		sortButton->SetText("By date");
+		sortButton->SetText("By date"_i18n);
 		sortButton->SetIcon(IconDateSort);
 	}
 }
@@ -274,7 +273,8 @@ void SearchView::NotifyPageChanged(SearchModel * sender)
 	}
 	else
 	{
-		String pageInfo = String::Build("of ", pageCount);
+		auto pageof = i18nMulti("Page", "of ");
+		String pageInfo = String::Build(pageof[1], pageCount);
 		pageCountLabel->SetText(pageInfo);
 		int width = Graphics::textwidth(pageInfo);
 
@@ -465,9 +465,9 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 	//string messageOfTheDay = sender->GetMessageOfTheDay();
 
 	if(sender->GetShowFavourite())
-		favouriteSelected->SetText("Unfavourite");
+		favouriteSelected->SetText("Unfavourite"_i18n);
 	else
-		favouriteSelected->SetText("Favourite");
+		favouriteSelected->SetText("Favourite"_i18n);
 
 	for (size_t i = 0; i < saveButtons.size(); i++)
 	{
@@ -502,20 +502,20 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 		loadingSpinner->Visible = false;
 		if (!errorLabel)
 		{
-			errorLabel = new ui::Label(ui::Point((WINDOWW/2)-100, (WINDOWH/2)-6), ui::Point(200, 12), "Error");
+			errorLabel = new ui::Label(ui::Point((WINDOWW/2)-100, (WINDOWH/2)-6), ui::Point(200, 12), "Error"_i18n);
 			AddComponent(errorLabel);
 		}
 		if (!sender->GetSavesLoaded())
 		{
-			errorLabel->SetText("Loading...");
+			errorLabel->SetText("Loading..."_i18n);
 			loadingSpinner->Visible = true;
 		}
 		else
 		{
 			if(sender->GetLastError().length())
-				errorLabel->SetText("\bo" + sender->GetLastError());
+				errorLabel->SetText("\bo"_ascii + sender->GetLastError());
 			else
-				errorLabel->SetText("\boNo saves found");
+				errorLabel->SetText("\boNo saves found"_i18n);
 		}
 	}
 	else
@@ -568,8 +568,8 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 			saveButton->AddContextMenu(0);
 			saveButton->SetActionCallback({
 				[this, saveButton] { c->OpenSave(saveButton->GetSave()->GetID(), saveButton->GetSave()->GetVersion()); },
-				[this, saveButton] { Search(String::Build("history:", saveButton->GetSave()->GetID())); },
-				[this, saveButton] { Search(String::Build("user:", saveButton->GetSave()->GetUserName().FromUtf8())); },
+				[this, saveButton] { Search(String::Build("history:"_ascii, saveButton->GetSave()->GetID())); },
+				[this, saveButton] { Search(String::Build("user:"_ascii, saveButton->GetSave()->GetUserName().FromUtf8())); },
 				[this, saveButton] { c->Selected(saveButton->GetSave()->GetID(), saveButton->GetSelected()); }
 			});
 			if(Client::Ref().GetAuthUser().UserID)
@@ -612,12 +612,12 @@ void SearchView::NotifySelectedChanged(SearchModel * sender)
 		pageCountLabel->Visible = false;
 		if (published <= selected.size()/2)
 		{
-			unpublishSelected->SetText("Publish");
+			unpublishSelected->SetText("Publish"_i18n);
 			publishButtonShown = true;
 		}
 		else
 		{
-			unpublishSelected->SetText("Unpublish");
+			unpublishSelected->SetText("Unpublish"_i18n);
 			publishButtonShown = false;
 		}
 	}

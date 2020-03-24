@@ -2587,67 +2587,67 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 
 	//Render mode presets. Possibly load from config in future?
 	renderModePresets.push_back({
-		"Alternative Velocity Display",
+		"Alternative Velocity Display"_i18n,
 		{ RENDER_EFFE, RENDER_BASC },
 		{ DISPLAY_AIRC },
 		0
 	});
 	renderModePresets.push_back({
-		"Velocity Display",
+		"Velocity Display"_i18n,
 		{ RENDER_EFFE, RENDER_BASC },
 		{ DISPLAY_AIRV },
 		0
 	});
 	renderModePresets.push_back({
-		"Pressure Display",
+		"Pressure Display"_i18n,
 		{ RENDER_EFFE, RENDER_BASC },
 		{ DISPLAY_AIRP },
 		0
 	});
 	renderModePresets.push_back({
-		"Persistent Display",
+		"Persistent Display"_i18n,
 		{ RENDER_EFFE, RENDER_BASC },
 		{ DISPLAY_PERS },
 		0
 	});
 	renderModePresets.push_back({
-		"Fire Display",
+		"Fire Display"_i18n,
 		{ RENDER_FIRE, RENDER_SPRK, RENDER_EFFE, RENDER_BASC },
 		{ },
 		0
 	});
 	renderModePresets.push_back({
-		"Blob Display",
+		"Blob Display"_i18n,
 		{ RENDER_FIRE, RENDER_SPRK, RENDER_EFFE, RENDER_BLOB },
 		{ },
 		0
 	});
 	renderModePresets.push_back({
-		"Heat Display",
+		"Heat Display"_i18n,
 		{ RENDER_BASC },
 		{ DISPLAY_AIRH },
 		COLOUR_HEAT
 	});
 	renderModePresets.push_back({
-		"Fancy Display",
+		"Fancy Display"_i18n,
 		{ RENDER_FIRE, RENDER_SPRK, RENDER_GLOW, RENDER_BLUR, RENDER_EFFE, RENDER_BASC },
 		{ DISPLAY_WARP },
 		0
 	});
 	renderModePresets.push_back({
-		"Nothing Display",
+		"Nothing Display"_i18n,
 		{ RENDER_BASC },
 		{ },
 		0
 	});
 	renderModePresets.push_back({
-		"Heat Gradient Display",
+		"Heat Gradient Display"_i18n,
 		{ RENDER_BASC },
 		{ },
 		COLOUR_GRAD
 	});
 	renderModePresets.push_back({
-		"Life Gradient Display",
+		"Life Gradient Display"_i18n,
 		{ RENDER_BASC },
 		{ },
 		COLOUR_LIFE

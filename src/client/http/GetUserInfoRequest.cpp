@@ -30,7 +30,7 @@ namespace http
 				user["Username"].asString(),
 				ByteString(user["Biography"].asString()).FromUtf8(),
 				ByteString(user["Location"].asString()).FromUtf8(),
-				user["Website"].asString(),
+				ByteString(user["Website"].asString()).FromUtf8(),
 				user["Saves"]["Count"].asInt(),
 				user["Saves"]["AverageScore"].asInt(),
 				user["Saves"]["HighestScore"].asInt(),

@@ -34,7 +34,7 @@ private:
 		String error;
 		http::Request *request = new http::Request(updateName);
 		request->Start();
-		notifyStatus("Downloading update");
+		notifyStatus("Downloading update"_i18n);
 		notifyProgress(-1);
 		while(!request->CheckDone())
 		{
@@ -48,30 +48,31 @@ private:
 		ByteString data = request->Finish(&status);
 		if (status!=200)
 		{
-			error = String::Build("Server responded with Status ", status);
-			notifyError("Could not download update: " + error);
+			error = String::Build("Server responded with Status "_i18n, status);
+			notifyError("Could not download update: "_i18n + error);
 			return false;
 		}
 		if (!data.size())
 		{
-			error = "Server responded with nothing";
-			notifyError("Server did not return any data");
+			error = "Server responded with nothing"_i18n;
+			notifyError("Server did not return any data"_i18n);
 			return false;
 		}
 
-		notifyStatus("Unpacking update");
+		notifyStatus("Unpacking update"_i18n);
 		notifyProgress(-1);
 
 		unsigned int uncompressedLength;
 
 		if(data.size()<16)
 		{
-			error = String::Build("Unsufficient data, got ", data.size(), " bytes");
+			auto errMsg = i18nMulti("Insufficient data, got ", " bytes");
+			error = String::Build(errMsg[0], data.size(), errMsg[1]);
 			goto corrupt;
 		}
 		if (data[0]!=0x42 || data[1]!=0x75 || data[2]!=0x54 || data[3]!=0x54)
 		{
-			error = "Invalid update format";
+			error = "Invalid update format"_i18n;
 			goto corrupt;
 		}
 
@@ -84,7 +85,8 @@ private:
 		res = (char *)malloc(uncompressedLength);
 		if (!res)
 		{
-			error = String::Build("Unable to allocate ", uncompressedLength, " bytes of memory for decompression");
+			auto errMsg = i18nMulti("Unable to allocate ", " bytes of memory for decompression");
+			error = String::Build(errMsg[0], uncompressedLength, errMsg[1]);
 			goto corrupt;
 		}
 
@@ -92,12 +94,12 @@ private:
 		dstate = BZ2_bzBuffToBuffDecompress((char *)res, (unsigned *)&uncompressedLength, &data[8], data.size()-8, 0, 0);
 		if (dstate)
 		{
-			error = String::Build("Unable to decompress update: ", dstate);
+			error = String::Build("Unable to decompress update: "_i18n, dstate);
 			free(res);
 			goto corrupt;
 		}
 
-		notifyStatus("Applying update");
+		notifyStatus("Applying update"_i18n);
 		notifyProgress(-1);
 
 		Client::Ref().SetPref("version.update", true);
@@ -106,14 +108,14 @@ private:
 		{
 			Client::Ref().SetPref("version.update", false);
 			update_cleanup();
-			notifyError("Update failed - try downloading a new version.");
+			notifyError("Update failed - try downloading a new version."_i18n);
 			return false;
 		}
 
 		return true;
 
 	corrupt:
-		notifyError("Downloaded update is corrupted\n" + error);
+		notifyError("Downloaded update is corrupted\n"_i18n + error);
 		return false;
 	}
 };
@@ -126,7 +128,7 @@ UpdateActivity::UpdateActivity() {
 	file = ByteString::Build(SCHEME, SERVER, Client::Ref().GetUpdateInfo().File);
 #endif
 	updateDownloadTask = new UpdateDownloadTask(file, this);
-	updateWindow = new TaskWindow("Downloading update...", updateDownloadTask, true);
+	updateWindow = new TaskWindow("Downloading update..."_i18n, updateDownloadTask, true);
 }
 
 void UpdateActivity::NotifyDone(Task * sender)
@@ -147,11 +149,11 @@ void UpdateActivity::Exit()
 void UpdateActivity::NotifyError(Task * sender)
 {
 #ifdef UPDATESERVER
-# define FIRST_LINE "Please go online to manually download a newer version.\n"
+# define FIRST_LINE "Please go online to manually download a newer version.\n"_i18n
 #else
-# define FIRST_LINE "Please visit the website to download a newer version.\n"
+# define FIRST_LINE "Please visit the website to download a newer version.\n"_i18n
 #endif
-	new ConfirmPrompt("Autoupdate failed", FIRST_LINE "Error: " + sender->GetError(), { [this] {
+	new ConfirmPrompt("Autoupdate failed"_i18n, FIRST_LINE + "Error: "_i18n + sender->GetError(), { [this] {
 #ifndef UPDATESERVER
 		Platform::OpenURI(SCHEME "powdertoy.co.uk/Download.html");
 #endif

@@ -11,7 +11,7 @@ public:
 	ByteString username;
 	String biography;
 	String location;
-	ByteString website;
+	String website;
 
 	int saveCount;
 	float averageScore;
@@ -21,7 +21,7 @@ public:
 	int topicReplies;
 	int reputation;
 
-	UserInfo(int id, int age, ByteString username, String biography, String location, ByteString website, int saveCount, float averageScore, int highestScore, int topicCount, int topicReplies, int reputation):
+	UserInfo(int id, int age, ByteString username, String biography, String location, String website, int saveCount, float averageScore, int highestScore, int topicCount, int topicReplies, int reputation):
 		UserID(id),
 		age(age),
 		username(username),

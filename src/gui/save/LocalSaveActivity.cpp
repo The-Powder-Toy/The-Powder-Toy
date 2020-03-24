@@ -22,19 +22,19 @@ LocalSaveActivity::LocalSaveActivity(SaveFile save, OnSaved onSaved_) :
 	thumbnailRenderer(nullptr),
 	onSaved(onSaved_)
 {
-	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 16), "Save to computer:");
+	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 16), "Save to computer:"_i18n);
 	titleLabel->SetTextColour(style::Colour::InformationTitle);
 	titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	titleLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(titleLabel);
 
-	filenameField = new ui::Textbox(ui::Point(8, 25), ui::Point(Size.X-16, 16), save.GetDisplayName(), "[filename]");
+	filenameField = new ui::Textbox(ui::Point(8, 25), ui::Point(Size.X-16, 16), save.GetDisplayName(), "[filename]"_i18n);
 	filenameField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	filenameField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	AddComponent(filenameField);
 	FocusComponent(filenameField);
 
-	ui::Button * cancelButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(Size.X-75, 16), "Cancel");
+	ui::Button * cancelButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(Size.X-75, 16), "Cancel"_i18n);
 	cancelButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	cancelButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	cancelButton->Appearance.BorderInactive = ui::Colour(200, 200, 200);
@@ -44,7 +44,7 @@ LocalSaveActivity::LocalSaveActivity(SaveFile save, OnSaved onSaved_) :
 	AddComponent(cancelButton);
 	SetCancelButton(cancelButton);
 
-	ui::Button * okayButton = new ui::Button(ui::Point(Size.X-76, Size.Y-16), ui::Point(76, 16), "Save");
+	ui::Button * okayButton = new ui::Button(ui::Point(Size.X-76, Size.Y-16), ui::Point(76, 16), "Save"_i18n);
 	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	okayButton->Appearance.TextInactive = style::Colour::InformationTitle;
@@ -76,9 +76,9 @@ void LocalSaveActivity::OnTick(float dt)
 
 void LocalSaveActivity::Save()
 {
-	if (filenameField->GetText().Contains('/') || filenameField->GetText().BeginsWith("."))
+	if (filenameField->GetText().Contains('/') || filenameField->GetText().BeginsWith("."_ascii))
 	{
-		new ErrorMessage("Error", "Invalid filename.");
+		new ErrorMessage("Error"_i18n, "Invalid filename."_i18n);
 	}
 	else if (filenameField->GetText().length())
 	{
@@ -87,7 +87,7 @@ void LocalSaveActivity::Save()
 		save.SetFileName(finalFilename);
 		if(Client::Ref().FileExists(finalFilename))
 		{
-			new ConfirmPrompt("Overwrite file", "Are you sure you wish to overwrite\n"+finalFilename.FromUtf8(), { [this, finalFilename] {
+			new ConfirmPrompt("Overwrite file"_i18n, "Are you sure you wish to overwrite\n"_i18n+finalFilename.FromUtf8(), { [this, finalFilename] {
 				saveWrite(finalFilename);
 			} });
 		}
@@ -98,7 +98,7 @@ void LocalSaveActivity::Save()
 	}
 	else
 	{
-		new ErrorMessage("Error", "You must specify a filename.");
+		new ErrorMessage("Error"_i18n, "You must specify a filename."_i18n);
 	}
 }
 
@@ -115,9 +115,9 @@ void LocalSaveActivity::saveWrite(ByteString finalFilename)
 	gameSave->authors = localSaveInfo;
 	std::vector<char> saveData = gameSave->Serialise();
 	if (saveData.size() == 0)
-		new ErrorMessage("Error", "Unable to serialize game data.");
+		new ErrorMessage("Error"_i18n, "Unable to serialize game data."_i18n);
 	else if (Client::Ref().WriteFile(saveData, finalFilename))
-		new ErrorMessage("Error", "Unable to write save file.");
+		new ErrorMessage("Error"_i18n, "Unable to write save file."_i18n);
 	else
 	{
 		if (onSaved)

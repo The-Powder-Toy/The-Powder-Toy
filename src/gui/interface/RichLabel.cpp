@@ -18,7 +18,7 @@ using namespace ui;
 struct RichTextParseException: public std::exception {
 	ByteString message;
 public:
-	RichTextParseException(String message = String("Parse error")): message(message.ToUtf8()) {}
+	RichTextParseException(String message = String("Parse error"_i18n)): message(message.ToUtf8()) {}
 	const char * what() const throw() override
 	{
 		return message.c_str();
@@ -29,7 +29,7 @@ public:
 RichLabel::RichLabel(Point position, Point size, String labelText):
 	Component(position, size),
 	textSource(labelText),
-	displayText("")
+	displayText(""_ascii)
 {
 	updateRichText();
 }
@@ -42,7 +42,7 @@ RichLabel::~RichLabel()
 void RichLabel::updateRichText()
 {
 	regions.clear();
-	displayText = "";
+	displayText = ""_ascii;
 
 	if(textSource.length())
 	{
@@ -77,7 +77,7 @@ void RichLabel::updateRichText()
 					if(current == '{')
 					{
 						if(stackPos > 255)
-							throw RichTextParseException("Too many nested regions");
+							throw RichTextParseException("Too many nested regions"_i18n);
 						stackPos++;
 						regionsStack[stackPos].start = finalTextPos;
 						regionsStack[stackPos].finish = finalTextPos;
@@ -94,7 +94,7 @@ void RichLabel::updateRichText()
 						}
 						else
 						{
-							throw RichTextParseException("Unexpected '}'");
+							throw RichTextParseException("Unexpected '}'"_i18n);
 						}
 					}
 					else
@@ -123,7 +123,7 @@ void RichLabel::updateRichText()
 				{
 					if(current != ':')
 					{
-						throw RichTextParseException("Expected ':'");
+						throw RichTextParseException("Expected ':'"_i18n);
 					}
 					state = ReadData;
 					currentDataPos = 0;
@@ -145,14 +145,15 @@ void RichLabel::updateRichText()
 			}
 
 			if(stackPos != -1)
-				throw RichTextParseException("Unclosed region");
+				throw RichTextParseException("Unclosed region"_i18n);
 
 			finalText[finalTextPos] = 0;
 			displayText = String(finalText);
 		}
 		catch (const RichTextParseException & e)
 		{
-			displayText = "\br[Parse exception: " + ByteString(e.what()).FromUtf8() + "]";
+			auto errMsg = i18nMulti("\br[Parse exception: ", "]");
+			displayText = errMsg[0] + ByteString(e.what()).FromUtf8() + errMsg[1];
 			regions.clear();
 		}
 		delete[] currentData;

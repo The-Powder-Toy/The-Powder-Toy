@@ -54,7 +54,7 @@ void SearchModel::updateSaveListT()
 void SearchModel::updateTagListT()
 {
 	int tagResultCount;
-	std::vector<std::pair<ByteString, int> > * tagList = Client::Ref().GetTags(0, 24, "", tagResultCount);
+	std::vector<std::pair<ByteString, int> > * tagList = Client::Ref().GetTags(0, 24, ""_ascii, tagResultCount);
 
 	updateTagListResult = tagList;
 	updateTagListFinished = true;
@@ -66,13 +66,13 @@ bool SearchModel::UpdateSaveList(int pageNumber, String query)
 	if (!updateSaveListWorking)
 	{
 		lastQuery = query;
-		lastError = "";
+		lastError = ""_ascii;
 		saveListLoaded = false;
 		saveList.clear();
 		//resultCount = 0;
 		currentPage = pageNumber;
 
-		if(pageNumber == 1 && !showOwn && !showFavourite && currentSort == "best" && query == "")
+		if(pageNumber == 1 && !showOwn && !showFavourite && currentSort == "best" && query == ""_ascii)
 			SetShowTags(true);
 		else
 			SetShowTags(false);
@@ -133,7 +133,7 @@ void SearchModel::Update()
 		if(updateSaveListFinished)
 		{
 			updateSaveListWorking = false;
-			lastError = "";
+			lastError = ""_ascii;
 			saveListLoaded = true;
 
 			std::vector<SaveInfo *> *tempSaveList = updateSaveListResult;
@@ -148,8 +148,8 @@ void SearchModel::Update()
 			if(!saveList.size())
 			{
 				lastError = Client::Ref().GetLastError();
-				if (lastError == "Unspecified Error")
-					lastError = "";
+				if (lastError == "Unspecified Error"_i18n)
+					lastError = ""_ascii;
 			}
 
 			resultCount = thResultCount;
@@ -286,7 +286,7 @@ SearchModel::~SearchModel()
 
 int SearchModel::GetPageCount()
 {
-	if (!showOwn && !showFavourite && currentSort == "best" && lastQuery == "")
+	if (!showOwn && !showFavourite && currentSort == "best" && lastQuery == ""_ascii)
 		return std::max(1, (int)(ceil(resultCount/20.0f))+1); //add one for front page (front page saves are repeated twice)
 	else
 		return std::max(1, (int)(ceil(resultCount/20.0f)));

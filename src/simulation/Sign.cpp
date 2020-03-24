@@ -55,7 +55,7 @@ String sign::getDisplayText(Simulation *sim, int &x0, int &y0, int &w, int &h, b
 					formatted_text << split_left_curly.Before();
 					remaining_text = split_right_curly.After();
 					String between_curlies = split_right_curly.Before();
-					if (between_curlies == "t" || between_curlies == "temp")
+					if (between_curlies == "t"_ascii || between_curlies == "temp"_ascii)
 					{
 						formatted_text << Format::Precision(Format::ShowPoint(part ? part->temp - 273.15f : 0.0f), 2);
 						// * We would really only need to do this if the sign used the new
@@ -65,43 +65,43 @@ String sign::getDisplayText(Simulation *sim, int &x0, int &y0, int &w, int &h, b
 						if (v95)
 							*v95 = true;
 					}
-					else if (between_curlies == "p" || between_curlies == "pres")
+					else if (between_curlies == "p"_ascii || between_curlies == "pres"_ascii)
 					{
 						formatted_text << Format::Precision(Format::ShowPoint(pressure), 2);
 						if (v95)
 							*v95 = true;
 					}
-					else if (between_curlies == "a" || between_curlies == "aheat")
+					else if (between_curlies == "a"_ascii || between_curlies == "aheat"_ascii)
 					{
 						formatted_text << Format::Precision(Format::ShowPoint(aheat), 2);
 						if (v95)
 							*v95 = true;
 					}
-					else if (between_curlies == "type")
+					else if (between_curlies == "type"_ascii)
 					{
-						formatted_text << (part ? sim->BasicParticleInfo(*part) : (formatted_text.Size() ? String::Build("empty") : String::Build("Empty")));
+						formatted_text << (part ? sim->BasicParticleInfo(*part) : (formatted_text.Size() ? "empty"_i18n : "Empty"_i18n));
 						if (v95)
 							*v95 = true;
 					}
-					else if (between_curlies == "ctype")
+					else if (between_curlies == "ctype"_ascii)
 					{
-						formatted_text << (part ? ((part->ctype && sim->IsValidElement(part->ctype)) ? sim->ElementResolve(part->ctype, -1) : String::Build(part->ctype)) : (formatted_text.Size() ? String::Build("empty") : String::Build("Empty")));
+						formatted_text << (part ? ((part->ctype && sim->IsValidElement(part->ctype)) ? sim->ElementResolve(part->ctype, -1) : String::Build(part->ctype)) : (formatted_text.Size() ? "empty"_i18n : "Empty"_i18n));
 						if (v95)
 							*v95 = true;
 					}
-					else if (between_curlies == "life")
+					else if (between_curlies == "life"_ascii)
 					{
 						formatted_text << (part ? part->life : 0);
 						if (v95)
 							*v95 = true;
 					}
-					else if (between_curlies == "tmp")
+					else if (between_curlies == "tmp"_ascii)
 					{
 						formatted_text << (part ? part->tmp : 0);
 						if (v95)
 							*v95 = true;
 					}
-					else if (between_curlies == "tmp2")
+					else if (between_curlies == "tmp2"_ascii)
 					{
 						formatted_text << (part ? part->tmp2 : 0);
 						if (v95)
@@ -127,10 +127,10 @@ String sign::getDisplayText(Simulation *sim, int &x0, int &y0, int &w, int &h, b
 		switch (si.second)
 		{
 		case Normal: break;
-		case Save:   drawable_text = "\bt" + drawable_text; break;
-		case Thread: drawable_text = "\bl" + drawable_text; break;
-		case Button: drawable_text = "\bo" + drawable_text; break;
-		case Search: drawable_text = "\bu" + drawable_text; break;
+		case Save:   drawable_text = "\bt"_ascii + drawable_text; break;
+		case Thread: drawable_text = "\bl"_ascii + drawable_text; break;
+		case Button: drawable_text = "\bo"_ascii + drawable_text; break;
+		case Search: drawable_text = "\bu"_ascii + drawable_text; break;
 		}
 	}
 

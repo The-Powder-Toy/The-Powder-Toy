@@ -485,11 +485,14 @@ void EventProcess(SDL_Event event)
 
 void LargeScreenDialog()
 {
+	auto switching = i18nMulti("Switching to ", "x size mode since your screen was determined to be large enough: ",
+		" detected, ", " required",
+		"\nTo undo this, hit Cancel. You can change this in settings at any time.");
 	StringBuilder message;
-	message << "Switching to " << scale << "x size mode since your screen was determined to be large enough: ";
-	message << desktopWidth << "x" << desktopHeight << " detected, " << WINDOWW*scale << "x" << WINDOWH*scale << " required";
-	message << "\nTo undo this, hit Cancel. You can change this in settings at any time.";
-	if (!ConfirmPrompt::Blocking("Large screen detected", message.Build()))
+	message << switching[0] << scale << switching[1];
+	message << desktopWidth << 'x' << desktopHeight << switching[2] << WINDOWW*scale << 'x' << WINDOWH*scale << switching[3];
+	message << switching[4];
+	if (!ConfirmPrompt::Blocking("Large screen detected"_i18n, message.Build()))
 	{
 		Client::Ref().SetPref("Scale", 1);
 		engine->SetScale(1);
@@ -566,9 +569,9 @@ void BlueScreen(String detailMessage)
 	ui::Engine * engine = &ui::Engine::Ref();
 	engine->g->fillrect(0, 0, engine->GetWidth(), engine->GetHeight(), 17, 114, 169, 210);
 
-	String errorTitle = "ERROR";
-	String errorDetails = "Details: " + detailMessage;
-	String errorHelp = "An unrecoverable fault has occurred, please report the error by visiting the website below\n"
+	String errorTitle = "ERROR"_i18n;
+	String errorDetails = "Details: "_i18n + detailMessage;
+	String errorHelp = "An unrecoverable fault has occurred, please report the error by visiting the website below\n"_i18n
 		+ ByteString(SCHEME SERVER).FromAscii();
 	int currentY = 0, width, height;
 	int errorWidth = 0;
@@ -605,16 +608,16 @@ void SigHandler(int signal)
 {
 	switch(signal){
 	case SIGSEGV:
-		BlueScreen("Memory read/write error");
+		BlueScreen("Memory read/write error"_i18n);
 		break;
 	case SIGFPE:
-		BlueScreen("Floating point exception");
+		BlueScreen("Floating point exception"_i18n);
 		break;
 	case SIGILL:
-		BlueScreen("Program execution exception");
+		BlueScreen("Program execution exception"_i18n);
 		break;
 	case SIGABRT:
-		BlueScreen("Unexpected program abort");
+		BlueScreen("Unexpected program abort"_i18n);
 		break;
 	}
 }
@@ -684,7 +687,7 @@ int main(int argc, char * argv[])
 	}
 #endif // I18N_DEBUG
 
-	String localeName = Client::Ref().GetPrefString("Locale", "");
+	String localeName = Client::Ref().GetPrefString("Locale", ""_ascii);
 	currentLocale = locales[0];
 	for(Locale const *locale : locales)
 		if(locale->GetName() == localeName)
@@ -730,7 +733,7 @@ int main(int argc, char * argv[])
 			Client::Ref().SetPref("Proxy", arguments["proxy"]);
 		}
 	}
-	else if(Client::Ref().GetPrefString("Proxy", "").length())
+	else if(Client::Ref().GetPrefString("Proxy", ""_ascii).length())
 	{
 		proxyString = (Client::Ref().GetPrefByteString("Proxy", ""));
 	}
@@ -818,7 +821,7 @@ int main(int argc, char * argv[])
 					std::vector<unsigned char> gameSaveData = Client::Ref().ReadFile(arguments["open"]);
 					if(!gameSaveData.size())
 					{
-						new ErrorMessage("Error", "Could not read file");
+						new ErrorMessage("Error"_i18n, "Could not read file"_i18n);
 					}
 					else
 					{
@@ -832,12 +835,12 @@ int main(int argc, char * argv[])
 				}
 				catch(std::exception & e)
 				{
-					new ErrorMessage("Error", "Could not open save file:\n" + ByteString(e.what()).FromUtf8()) ;
+					new ErrorMessage("Error"_i18n, "Could not open save file:\n"_i18n + ByteString(e.what()).FromUtf8()) ;
 				}
 			}
 			else
 			{
-				new ErrorMessage("Error", "Could not open file");
+				new ErrorMessage("Error"_i18n, "Could not open file"_i18n);
 			}
 		}
 
@@ -845,7 +848,7 @@ int main(int argc, char * argv[])
 		{
 			engine->g->fillrect((engine->GetWidth()/2)-101, (engine->GetHeight()/2)-26, 202, 52, 0, 0, 0, 210);
 			engine->g->drawrect((engine->GetWidth()/2)-100, (engine->GetHeight()/2)-25, 200, 50, 255, 255, 255, 180);
-			engine->g->drawtext((engine->GetWidth()/2)-(Graphics::textwidth("Loading save...")/2), (engine->GetHeight()/2)-5, "Loading save...", style::Colour::InformationTitle.Red, style::Colour::InformationTitle.Green, style::Colour::InformationTitle.Blue, 255);
+			engine->g->drawtext((engine->GetWidth()/2)-(Graphics::textwidth("Loading save..."_i18n)/2), (engine->GetHeight()/2)-5, "Loading save..."_i18n, style::Colour::InformationTitle.Red, style::Colour::InformationTitle.Green, style::Colour::InformationTitle.Blue, 255);
 
 #ifdef OGLI
 			blit();
@@ -877,7 +880,7 @@ int main(int argc, char * argv[])
 					throw std::runtime_error("Could not load save info");
 				std::vector<unsigned char> saveData = Client::Ref().GetSaveData(saveId, 0);
 				if (!saveData.size())
-					throw std::runtime_error(("Could not load save\n" + Client::Ref().GetLastError()).ToUtf8());
+					throw std::runtime_error(("Could not load save\n"_i18n + Client::Ref().GetLastError()).ToUtf8());
 				GameSave * newGameSave = new GameSave(saveData);
 				newSave->SetGameSave(newGameSave);
 
@@ -886,7 +889,7 @@ int main(int argc, char * argv[])
 			}
 			catch (std::exception & e)
 			{
-				new ErrorMessage("Error", ByteString(e.what()).FromUtf8());
+				new ErrorMessage("Error"_i18n, ByteString(e.what()).FromUtf8());
 			}
 		}
 

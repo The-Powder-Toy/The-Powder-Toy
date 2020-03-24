@@ -18,20 +18,20 @@
 TagsView::TagsView():
 	ui::Window(ui::Point(-1, -1), ui::Point(195, 250))
 {
-	closeButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(195, 16), "Close");
+	closeButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(195, 16), "Close"_i18n);
 	closeButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	closeButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	closeButton->SetActionCallback({ [this] { c->Exit(); } });
 	AddComponent(closeButton);
 	SetCancelButton(closeButton);
 
-	tagInput = new ui::Textbox(ui::Point(8, Size.Y-40), ui::Point(Size.X-60, 16), "", "[new tag]");
+	tagInput = new ui::Textbox(ui::Point(8, Size.Y-40), ui::Point(Size.X-60, 16), ""_ascii, "[new tag]"_i18n);
 	tagInput->Appearance.icon = IconTag;
 	tagInput->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	tagInput->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(tagInput);
 
-	addButton = new ui::Button(ui::Point(tagInput->Position.X+tagInput->Size.X+4, tagInput->Position.Y), ui::Point(40, 16), "Add");
+	addButton = new ui::Button(ui::Point(tagInput->Position.X+tagInput->Size.X+4, tagInput->Position.Y), ui::Point(40, 16), "Add"_i18n);
 	addButton->Appearance.icon = IconAdd;
 	addButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	addButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
@@ -41,7 +41,7 @@ TagsView::TagsView():
 	if (!Client::Ref().GetAuthUser().UserID)
 		addButton->Enabled = false;
 
-	title = new ui::Label(ui::Point(5, 5), ui::Point(185, 28), "Manage tags:    \bgTags are only to \nbe used to improve search results");
+	title = new ui::Label(ui::Point(5, 5), ui::Point(185, 28), "Manage tags:    \bgTags are only to \nbe used to improve search results"_i18n);
 	title->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	title->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 	title->SetMultiline(true);
@@ -90,7 +90,7 @@ void TagsView::NotifyTagsChanged(TagsModel * sender)
 					}
 					catch(TagsModelException & ex)
 					{
-						new ErrorMessage("Could not remove tag", ByteString(ex.what()).FromUtf8());
+						new ErrorMessage("Could not remove tag"_i18n, ByteString(ex.what()).FromUtf8());
 					}
 				} });
 				tags.push_back(tempButton);
@@ -121,7 +121,7 @@ void TagsView::addTag()
 {
 	if (tagInput->GetText().length() < 4)
 	{
-		new ErrorMessage("Tag not long enough", "Must be at least 4 letters");
+		new ErrorMessage("Tag not long enough"_i18n, "Must be at least 4 letters"_i18n);
 		return;
 	}
 	try
@@ -130,7 +130,7 @@ void TagsView::addTag()
 	}
 	catch(TagsModelException & ex)
 	{
-		new ErrorMessage("Could not add tag", ByteString(ex.what()).FromUtf8());
+		new ErrorMessage("Could not add tag"_i18n, ByteString(ex.what()).FromUtf8());
 	}
-	tagInput->SetText("");
+	tagInput->SetText(""_ascii);
 }

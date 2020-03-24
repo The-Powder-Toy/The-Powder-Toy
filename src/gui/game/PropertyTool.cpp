@@ -41,13 +41,13 @@ sim(sim_)
 {
 	properties = Particle::GetProperties();
 
-	ui::Label * messageLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 14), "Edit property");
+	ui::Label * messageLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 14), "Edit property"_i18n);
 	messageLabel->SetTextColour(style::Colour::InformationTitle);
 	messageLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	messageLabel->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 	AddComponent(messageLabel);
 
-	ui::Button * okayButton = new ui::Button(ui::Point(0, Size.Y-17), ui::Point(Size.X, 17), "OK");
+	ui::Button * okayButton = new ui::Button(ui::Point(0, Size.Y-17), ui::Point(Size.X, 17), "OK"_i18n);
 	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	okayButton->Appearance.BorderInactive = ui::Colour(200, 200, 200);
@@ -69,10 +69,10 @@ sim(sim_)
 	}
 	property->SetOption(Client::Ref().GetPrefInteger("Prop.Type", 0));
 
-	textField = new ui::Textbox(ui::Point(8, 46), ui::Point(Size.X-16, 16), "", "[value]");
+	textField = new ui::Textbox(ui::Point(8, 46), ui::Point(Size.X-16, 16), ""_ascii, "[value]"_i18n);
 	textField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	textField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-	textField->SetText(Client::Ref().GetPrefString("Prop.Value", ""));
+	textField->SetText(Client::Ref().GetPrefString("Prop.Value", ""_ascii));
 	AddComponent(textField);
 	FocusComponent(textField);
 
@@ -91,12 +91,12 @@ void PropertyWindow::SetProperty()
 				case StructProperty::ParticleType:
 				{
 					int v;
-					if(value.length() > 2 && value.BeginsWith("0x"))
+					if(value.length() > 2 && value.BeginsWith("0x"_ascii))
 					{
 						//0xC0FFEE
 						v = value.Substr(2).ToNumber<unsigned int>(Format::Hex());
 					}
-					else if(value.length() > 1 && value.BeginsWith("#"))
+					else if(value.length() > 1 && value.BeginsWith("#"_ascii))
 					{
 						//#C0FFEE
 						v = value.Substr(1).ToNumber<unsigned int>(Format::Hex());
@@ -120,7 +120,7 @@ void PropertyWindow::SetProperty()
 
 					if (properties[property->GetOption().second].Name == "type" && (v < 0 || v >= PT_NUM || !sim->elements[v].Enabled))
 					{
-						new ErrorMessage("Could not set property", "Invalid particle type");
+						new ErrorMessage("Could not set property"_i18n, "Invalid particle type"_i18n);
 						return;
 					}
 
@@ -134,12 +134,12 @@ void PropertyWindow::SetProperty()
 				case StructProperty::UInteger:
 				{
 					unsigned int v;
-					if(value.length() > 2 && value.BeginsWith("0x"))
+					if(value.length() > 2 && value.BeginsWith("0x"_ascii))
 					{
 						//0xC0FFEE
 						v = value.Substr(2).ToNumber<unsigned int>(Format::Hex());
 					}
-					else if(value.length() > 1 && value.BeginsWith("#"))
+					else if(value.length() > 1 && value.BeginsWith("#"_ascii))
 					{
 						//#C0FFEE
 						v = value.Substr(1).ToNumber<unsigned int>(Format::Hex());
@@ -156,12 +156,12 @@ void PropertyWindow::SetProperty()
 				}
 				case StructProperty::Float:
 				{
-					if (value.EndsWith("C"))
+					if (value.EndsWith("C"_ascii))
 					{
 						float v = value.SubstrFromEnd(1).ToNumber<float>();
 						tool->propValue.Float = v + 273.15;
 					}
-					else if(value.EndsWith("F"))
+					else if(value.EndsWith("F"_ascii))
 					{
 						float v = value.SubstrFromEnd(1).ToNumber<float>();
 						tool->propValue.Float = (v-32.0f)*5/9+273.15f;
@@ -176,14 +176,14 @@ void PropertyWindow::SetProperty()
 				}
 					break;
 				default:
-					new ErrorMessage("Could not set property", "Invalid property");
+					new ErrorMessage("Could not set property"_i18n, "Invalid property"_i18n);
 					return;
 			}
 			tool->propOffset = properties[property->GetOption().second].Offset;
 			tool->propType = properties[property->GetOption().second].Type;
 			tool->changeType = properties[property->GetOption().second].Name == "type";
 		} catch (const std::exception& ex) {
-			new ErrorMessage("Could not set property", "Invalid value provided");
+			new ErrorMessage("Could not set property"_i18n, "Invalid value provided"_i18n);
 			return;
 		}
 		Client::Ref().SetPref("Prop.Type", property->GetOption().second);

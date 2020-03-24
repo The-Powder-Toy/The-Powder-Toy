@@ -87,13 +87,13 @@ FileBrowserActivity::FileBrowserActivity(ByteString directory, OnSelected onSele
 	totalFiles(0)
 {
 
-	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 18), "Save Browser");
+	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 18), "Save Browser"_i18n);
 	titleLabel->SetTextColour(style::Colour::WarningTitle);
 	titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	titleLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(titleLabel);
 
-	ui::Textbox * textField = new ui::Textbox(ui::Point(8, 25), ui::Point(Size.X-16, 16), "", "[search]");
+	ui::Textbox * textField = new ui::Textbox(ui::Point(8, 25), ui::Point(Size.X-16, 16), ""_ascii, "[search]"_i18n);
 	textField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	textField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	textField->SetActionCallback({ [this, textField] { DoSearch(textField->GetText().ToUtf8()); } });
@@ -107,7 +107,7 @@ FileBrowserActivity::FileBrowserActivity(ByteString directory, OnSelected onSele
 	progressBar = new ui::ProgressBar(ui::Point((Size.X-200)/2, 45+(Size.Y-66)/2), ui::Point(200, 17));
 	AddComponent(progressBar);
 
-	infoText = new ui::Label(ui::Point((Size.X-200)/2, 45+(Size.Y-66)/2), ui::Point(200, 17), "No saves found");
+	infoText = new ui::Label(ui::Point((Size.X-200)/2, 45+(Size.Y-66)/2), ui::Point(200, 17), "No saves found"_i18n);
 	AddComponent(infoText);
 
 	filesX = 4;
@@ -143,8 +143,9 @@ void FileBrowserActivity::SelectSave(SaveFile * file)
 
 void FileBrowserActivity::DeleteSave(SaveFile * file)
 {
-	String deleteMessage = "Are you sure you want to delete " + file->GetDisplayName() + ".cps?";
-	if (ConfirmPrompt::Blocking("Delete Save", deleteMessage))
+	auto deleteConfirm = i18nMulti("Are you sure you want to delete ", "?");
+	String deleteMessage = deleteConfirm[0] + file->GetDisplayName() + ".cps"_ascii + deleteConfirm[1];
+	if (ConfirmPrompt::Blocking("Delete Save"_i18n, deleteMessage))
 	{
 		remove(file->GetName().c_str());
 		loadDirectory(directory, "");
@@ -153,18 +154,18 @@ void FileBrowserActivity::DeleteSave(SaveFile * file)
 
 void FileBrowserActivity::RenameSave(SaveFile * file)
 {
-	ByteString newName = TextPrompt::Blocking("Rename", "Change save name", file->GetDisplayName(), "", 0).ToUtf8();
+	ByteString newName = TextPrompt::Blocking("Rename"_i18n, "Change save name"_i18n, file->GetDisplayName(), ""_ascii, 0).ToUtf8();
 	if (newName.length())
 	{
 		newName = directory + PATH_SEP + newName + ".cps";
 		int ret = rename(file->GetName().c_str(), newName.c_str());
 		if (ret)
-			ErrorMessage::Blocking("Error", "Could not rename file");
+			ErrorMessage::Blocking("Error"_i18n, "Could not rename file"_i18n);
 		else
 			loadDirectory(directory, "");
 	}
 	else
-		ErrorMessage::Blocking("Error", "No save name given");
+		ErrorMessage::Blocking("Error"_i18n, "No save name given"_i18n);
 }
 
 void FileBrowserActivity::cleanup()
@@ -196,7 +197,7 @@ void FileBrowserActivity::loadDirectory(ByteString directory, ByteString search)
 	itemList->Visible = false;
 	progressBar->Visible = true;
 	progressBar->SetProgress(-1);
-	progressBar->SetStatus("Loading files");
+	progressBar->SetStatus("Loading files"_i18n);
 	loadFiles = new LoadFilesTask(directory, search);
 	loadFiles->AddTaskListener(this);
 	loadFiles->Start();
@@ -280,7 +281,7 @@ void FileBrowserActivity::OnTick(float dt)
 			[this, saveButton] { DeleteSave(saveButton->GetSaveFile()); }
 		});
 
-		progressBar->SetStatus("Rendering thumbnails");
+		progressBar->SetStatus("Rendering thumbnails"_i18n);
 		progressBar->SetProgress((float(totalFiles-files.size())/float(totalFiles))*100.0f);
 		componentsQueue.push_back(saveButton);
 		fileX++;

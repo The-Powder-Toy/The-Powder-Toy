@@ -61,34 +61,34 @@ ServerSaveActivity::ServerSaveActivity(SaveInfo save, OnUploaded onUploaded_) :
 	onUploaded(onUploaded_),
 	saveUploadTask(NULL)
 {
-	titleLabel = new ui::Label(ui::Point(4, 5), ui::Point((Size.X/2)-8, 16), "");
+	titleLabel = new ui::Label(ui::Point(4, 5), ui::Point((Size.X/2)-8, 16), ""_ascii);
 	titleLabel->SetTextColour(style::Colour::InformationTitle);
 	titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	titleLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(titleLabel);
 	CheckName(save.GetName()); //set titleLabel text
 
-	ui::Label * previewLabel = new ui::Label(ui::Point((Size.X/2)+4, 5), ui::Point((Size.X/2)-8, 16), "Preview:");
+	ui::Label * previewLabel = new ui::Label(ui::Point((Size.X/2)+4, 5), ui::Point((Size.X/2)-8, 16), "Preview:"_i18n);
 	previewLabel->SetTextColour(style::Colour::InformationTitle);
 	previewLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	previewLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(previewLabel);
 
-	nameField = new ui::Textbox(ui::Point(8, 25), ui::Point((Size.X/2)-16, 16), save.GetName(), "[save name]");
+	nameField = new ui::Textbox(ui::Point(8, 25), ui::Point((Size.X/2)-16, 16), save.GetName(), "[save name]"_i18n);
 	nameField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	nameField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	nameField->SetActionCallback({ [this] { CheckName(nameField->GetText()); } });
 	AddComponent(nameField);
 	FocusComponent(nameField);
 
-	descriptionField = new ui::Textbox(ui::Point(8, 65), ui::Point((Size.X/2)-16, Size.Y-(65+16+4)), save.GetDescription(), "[save description]");
+	descriptionField = new ui::Textbox(ui::Point(8, 65), ui::Point((Size.X/2)-16, Size.Y-(65+16+4)), save.GetDescription(), "[save description]"_i18n);
 	descriptionField->SetMultiline(true);
 	descriptionField->SetLimit(254);
 	descriptionField->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 	descriptionField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	AddComponent(descriptionField);
 
-	publishedCheckbox = new ui::Checkbox(ui::Point(8, 45), ui::Point((Size.X/2)-80, 16), "Publish", "");
+	publishedCheckbox = new ui::Checkbox(ui::Point(8, 45), ui::Point((Size.X/2)-80, 16), "Publish"_i18n, ""_ascii);
 	if(Client::Ref().GetAuthUser().Username != save.GetUserName())
 	{
 		//Save is not owned by the user, disable by default
@@ -101,11 +101,11 @@ ServerSaveActivity::ServerSaveActivity(SaveInfo save, OnUploaded onUploaded_) :
 	}
 	AddComponent(publishedCheckbox);
 
-	pausedCheckbox = new ui::Checkbox(ui::Point(160, 45), ui::Point(55, 16), "Paused", "");
+	pausedCheckbox = new ui::Checkbox(ui::Point(160, 45), ui::Point(55, 16), "Paused"_i18n, ""_ascii);
 	pausedCheckbox->SetChecked(save.GetGameSave()->paused);
 	AddComponent(pausedCheckbox);
 
-	ui::Button * cancelButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point((Size.X/2)-75, 16), "Cancel");
+	ui::Button * cancelButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point((Size.X/2)-75, 16), "Cancel"_i18n);
 	cancelButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	cancelButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	cancelButton->Appearance.BorderInactive = ui::Colour(200, 200, 200);
@@ -115,7 +115,7 @@ ServerSaveActivity::ServerSaveActivity(SaveInfo save, OnUploaded onUploaded_) :
 	AddComponent(cancelButton);
 	SetCancelButton(cancelButton);
 
-	ui::Button * okayButton = new ui::Button(ui::Point((Size.X/2)-76, Size.Y-16), ui::Point(76, 16), "Save");
+	ui::Button * okayButton = new ui::Button(ui::Point((Size.X/2)-76, Size.Y-16), ui::Point(76, 16), "Save"_i18n);
 	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	okayButton->Appearance.TextInactive = style::Colour::InformationTitle;
@@ -125,7 +125,7 @@ ServerSaveActivity::ServerSaveActivity(SaveInfo save, OnUploaded onUploaded_) :
 	AddComponent(okayButton);
 	SetOkayButton(okayButton);
 
-	ui::Button * PublishingInfoButton = new ui::Button(ui::Point((Size.X*3/4)-75, Size.Y-42), ui::Point(150, 16), "Publishing Info");
+	ui::Button * PublishingInfoButton = new ui::Button(ui::Point((Size.X*3/4)-75, Size.Y-42), ui::Point(150, 16), "Publishing Info"_i18n);
 	PublishingInfoButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	PublishingInfoButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	PublishingInfoButton->Appearance.TextInactive = style::Colour::InformationTitle;
@@ -134,7 +134,7 @@ ServerSaveActivity::ServerSaveActivity(SaveInfo save, OnUploaded onUploaded_) :
 	} });
 	AddComponent(PublishingInfoButton);
 
-	ui::Button * RulesButton = new ui::Button(ui::Point((Size.X*3/4)-75, Size.Y-22), ui::Point(150, 16), "Save Uploading Rules");
+	ui::Button * RulesButton = new ui::Button(ui::Point((Size.X*3/4)-75, Size.Y-22), ui::Point(150, 16), "Save Uploading Rules"_i18n);
 	RulesButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	RulesButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	RulesButton->Appearance.TextInactive = style::Colour::InformationTitle;
@@ -157,7 +157,7 @@ ServerSaveActivity::ServerSaveActivity(SaveInfo save, bool saveNow, OnUploaded o
 	onUploaded(onUploaded_),
 	saveUploadTask(NULL)
 {
-	ui::Label * titleLabel = new ui::Label(ui::Point(0, 0), Size, "Saving to server...");
+	ui::Label * titleLabel = new ui::Label(ui::Point(0, 0), Size, "Saving to server..."_i18n);
 	titleLabel->SetTextColour(style::Colour::InformationTitle);
 	titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	titleLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
@@ -175,7 +175,7 @@ void ServerSaveActivity::NotifyDone(Task * task)
 	if(!task->GetSuccess())
 	{
 		Exit();
-		new ErrorMessage("Error", Client::Ref().GetLastError());
+		new ErrorMessage("Error"_i18n, Client::Ref().GetLastError());
 	}
 	else
 	{
@@ -193,7 +193,8 @@ void ServerSaveActivity::Save()
 	{
 		if(Client::Ref().GetAuthUser().Username != save.GetUserName() && publishedCheckbox->GetChecked())
 		{
-			new ConfirmPrompt("Publish", "This save was created by " + save.GetUserName().FromUtf8() + ", you're about to publish this under your own name; If you haven't been given permission by the author to do so, please uncheck the publish box, otherwise continue", { [this] {
+			auto authorWarning = i18nMulti("This save was created by ", ", you're about to publish this under your own name; If you haven't been given permission by the author to do so, please uncheck the publish box, otherwise continue");
+			new ConfirmPrompt("Publish"_i18n, authorWarning[0] + save.GetUserName().FromUtf8() + authorWarning[1], { [this] {
 				Exit();
 				saveUpload();
 			} });
@@ -206,7 +207,7 @@ void ServerSaveActivity::Save()
 	}
 	else
 	{
-		new ErrorMessage("Error", "You must specify a save name.");
+		new ErrorMessage("Error"_i18n, "You must specify a save name."_i18n);
 	}
 }
 
@@ -236,7 +237,7 @@ void ServerSaveActivity::saveUpload()
 
 	if(Client::Ref().UploadSave(save) != RequestOkay)
 	{
-		new ErrorMessage("Error", "Upload failed with error:\n"+Client::Ref().GetLastError());
+		new ErrorMessage("Error"_i18n, "Upload failed with error:\n"_i18n+Client::Ref().GetLastError());
 	}
 	else if (onUploaded)
 	{
@@ -252,20 +253,20 @@ void ServerSaveActivity::Exit()
 
 void ServerSaveActivity::ShowPublishingInfo()
 {
-	new InformationMessage("Publishing Info", currentLocale->GetSavePublishingInfo(), true);
+	new InformationMessage("Publishing Info"_i18n, currentLocale->GetSavePublishingInfo(), true);
 }
 
 void ServerSaveActivity::ShowRules()
 {
-	new InformationMessage("Save Uploading Rules", currentLocale->GetRules(), true);
+	new InformationMessage("Save Uploading Rules"_i18n, currentLocale->GetRules(), true);
 }
 
 void ServerSaveActivity::CheckName(String newname)
 {
 	if (newname.length() && newname == save.GetName() && save.GetUserName() == Client::Ref().GetAuthUser().Username)
-		titleLabel->SetText("Modify simulation properties:");
+		titleLabel->SetText("Modify simulation properties:"_i18n);
 	else
-		titleLabel->SetText("Upload new simulation:");
+		titleLabel->SetText("Upload new simulation:"_i18n);
 }
 
 void ServerSaveActivity::OnTick(float dt)

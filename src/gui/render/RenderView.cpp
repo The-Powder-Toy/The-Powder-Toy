@@ -21,30 +21,30 @@ public:
 RenderView::RenderView():
 	ui::Window(ui::Point(0, 0), ui::Point(XRES, WINDOWH)),
 	ren(NULL),
-	toolTip(""),
+	toolTip(""_ascii),
 	toolTipPresence(0),
 	isToolTipFadingIn(false)
 {
 	auto addPresetButton = [this](int index, Icon icon, ui::Point offset, String tooltip) {
-		auto *presetButton = new ui::Button(ui::Point(XRES, YRES) + offset, ui::Point(30, 13), "", tooltip);
+		auto *presetButton = new ui::Button(ui::Point(XRES, YRES) + offset, ui::Point(30, 13), ""_ascii, tooltip);
 		presetButton->SetIcon(icon);
 		presetButton->SetActionCallback({ [this, index] { c->LoadRenderPreset(index); } });
 		AddComponent(presetButton);
 	};
-	addPresetButton( 1, IconVelocity  , ui::Point( -37,  6), "Velocity display mode preset");
-	addPresetButton( 2, IconPressure  , ui::Point( -37, 24), "Pressure display mode preset");
-	addPresetButton( 3, IconPersistant, ui::Point( -76,  6), "Persistent display mode preset");
-	addPresetButton( 4, IconFire      , ui::Point( -76, 24), "Fire display mode preset");
-	addPresetButton( 5, IconBlob      , ui::Point(-115,  6), "Blob display mode preset");
-	addPresetButton( 6, IconHeat      , ui::Point(-115, 24), "Heat display mode preset");
-	addPresetButton( 7, IconBlur      , ui::Point(-154,  6), "Fancy display mode preset");
-	addPresetButton( 8, IconBasic     , ui::Point(-154, 24), "Nothing display mode preset");
-	addPresetButton( 9, IconGradient  , ui::Point(-193,  6), "Heat gradient display mode preset");
-	addPresetButton( 0, IconAltAir    , ui::Point(-193, 24), "Alternative Velocity display mode preset");
-	addPresetButton(10, IconLife      , ui::Point(-232,  6), "Life display mode preset");
+	addPresetButton( 1, IconVelocity  , ui::Point( -37,  6), "Velocity display mode preset"_i18n);
+	addPresetButton( 2, IconPressure  , ui::Point( -37, 24), "Pressure display mode preset"_i18n);
+	addPresetButton( 3, IconPersistant, ui::Point( -76,  6), "Persistent display mode preset"_i18n);
+	addPresetButton( 4, IconFire      , ui::Point( -76, 24), "Fire display mode preset"_i18n);
+	addPresetButton( 5, IconBlob      , ui::Point(-115,  6), "Blob display mode preset"_i18n);
+	addPresetButton( 6, IconHeat      , ui::Point(-115, 24), "Heat display mode preset"_i18n);
+	addPresetButton( 7, IconBlur      , ui::Point(-154,  6), "Fancy display mode preset"_i18n);
+	addPresetButton( 8, IconBasic     , ui::Point(-154, 24), "Nothing display mode preset"_i18n);
+	addPresetButton( 9, IconGradient  , ui::Point(-193,  6), "Heat gradient display mode preset"_i18n);
+	addPresetButton( 0, IconAltAir    , ui::Point(-193, 24), "Alternative Velocity display mode preset"_i18n);
+	addPresetButton(10, IconLife      , ui::Point(-232,  6), "Life display mode preset"_i18n);
 
 	auto addRenderModeCheckbox = [this](unsigned int mode, Icon icon, ui::Point offset, String tooltip) {
-		auto *renderModeCheckbox = new ModeCheckbox(ui::Point(0, YRES) + offset, ui::Point(30, 16), "", tooltip);
+		auto *renderModeCheckbox = new ModeCheckbox(ui::Point(0, YRES) + offset, ui::Point(30, 16), ""_ascii, tooltip);
 		renderModes.push_back(renderModeCheckbox);
 		renderModeCheckbox->mode = mode;
 		renderModeCheckbox->SetIcon(icon);
@@ -56,16 +56,16 @@ RenderView::RenderView():
 		} });
 		AddComponent(renderModeCheckbox);
 	};
-	addRenderModeCheckbox(RENDER_EFFE, IconEffect, ui::Point( 1,  4), "Adds Special flare effects to some elements");
-	addRenderModeCheckbox(RENDER_FIRE, IconFire  , ui::Point( 1, 22), "Fire effect for gasses");
-	addRenderModeCheckbox(RENDER_GLOW, IconGlow  , ui::Point(33,  4), "Glow effect on some elements");
-	addRenderModeCheckbox(RENDER_BLUR, IconBlur  , ui::Point(33, 22), "Blur effect for liquids");
-	addRenderModeCheckbox(RENDER_BLOB, IconBlob  , ui::Point(65,  4), "Makes everything be drawn like a blob");
-	addRenderModeCheckbox(RENDER_BASC, IconBasic , ui::Point(65, 22), "Basic rendering, without this, most things will be invisible");
-	addRenderModeCheckbox(RENDER_SPRK, IconEffect, ui::Point(97,  4), "Glow effect on sparks");
+	addRenderModeCheckbox(RENDER_EFFE, IconEffect, ui::Point( 1,  4), "Adds Special flare effects to some elements"_i18n);
+	addRenderModeCheckbox(RENDER_FIRE, IconFire  , ui::Point( 1, 22), "Fire effect for gasses"_i18n);
+	addRenderModeCheckbox(RENDER_GLOW, IconGlow  , ui::Point(33,  4), "Glow effect on some elements"_i18n);
+	addRenderModeCheckbox(RENDER_BLUR, IconBlur  , ui::Point(33, 22), "Blur effect for liquids"_i18n);
+	addRenderModeCheckbox(RENDER_BLOB, IconBlob  , ui::Point(65,  4), "Makes everything be drawn like a blob"_i18n);
+	addRenderModeCheckbox(RENDER_BASC, IconBasic , ui::Point(65, 22), "Basic rendering, without this, most things will be invisible"_i18n);
+	addRenderModeCheckbox(RENDER_SPRK, IconEffect, ui::Point(97,  4), "Glow effect on sparks"_i18n);
 
 	auto addDisplayModeCheckbox = [this](unsigned int mode, Icon icon, ui::Point offset, String tooltip) {
-		auto *displayModeCheckbox = new ModeCheckbox(ui::Point(0, YRES) + offset, ui::Point(30, 16), "", tooltip);
+		auto *displayModeCheckbox = new ModeCheckbox(ui::Point(0, YRES) + offset, ui::Point(30, 16), ""_ascii, tooltip);
 		displayModes.push_back(displayModeCheckbox);
 		displayModeCheckbox->mode = mode;
 		displayModeCheckbox->SetIcon(icon);
@@ -78,24 +78,24 @@ RenderView::RenderView():
 		AddComponent(displayModeCheckbox);
 	};
 	line1 = 130;
-	addDisplayModeCheckbox(DISPLAY_AIRC, IconAltAir    , ui::Point(135,  4), "Displays pressure as red and blue, and velocity as white");
-	addDisplayModeCheckbox(DISPLAY_AIRP, IconPressure  , ui::Point(135, 22), "Displays pressure, red is positive and blue is negative");
-	addDisplayModeCheckbox(DISPLAY_AIRV, IconVelocity  , ui::Point(167,  4), "Displays velocity and positive pressure: up/down adds blue, right/left adds red, still pressure adds green");
-	addDisplayModeCheckbox(DISPLAY_AIRH, IconHeat      , ui::Point(167, 22), "Displays the temperature of the air like heat display does");
+	addDisplayModeCheckbox(DISPLAY_AIRC, IconAltAir    , ui::Point(135,  4), "Displays pressure as red and blue, and velocity as white"_i18n);
+	addDisplayModeCheckbox(DISPLAY_AIRP, IconPressure  , ui::Point(135, 22), "Displays pressure, red is positive and blue is negative"_i18n);
+	addDisplayModeCheckbox(DISPLAY_AIRV, IconVelocity  , ui::Point(167,  4), "Displays velocity and positive pressure: up/down adds blue, right/left adds red, still pressure adds green"_i18n);
+	addDisplayModeCheckbox(DISPLAY_AIRH, IconHeat      , ui::Point(167, 22), "Displays the temperature of the air like heat display does"_i18n);
 	line2 = 200;
-	addDisplayModeCheckbox(DISPLAY_WARP, IconWarp      , ui::Point(205, 22), "Gravity lensing, Newtonian Gravity bends light with this on");
+	addDisplayModeCheckbox(DISPLAY_WARP, IconWarp      , ui::Point(205, 22), "Gravity lensing, Newtonian Gravity bends light with this on"_i18n);
 #ifdef OGLR
-# define TOOLTIP "Some type of OpenGL effect ... maybe"
+# define TOOLTIP "Some type of OpenGL effect ... maybe"_i18n
 #else
-# define TOOLTIP "Enables moving solids, stickmen guns, and premium(tm) graphics"
+# define TOOLTIP "Enables moving solids, stickmen guns, and premium(tm) graphics"_i18n
 #endif
 	addDisplayModeCheckbox(DISPLAY_EFFE, IconEffect    , ui::Point(205,  4), TOOLTIP);
 #undef TOOLTIP
-	addDisplayModeCheckbox(DISPLAY_PERS, IconPersistant, ui::Point(237,  4), "Element paths persist on the screen for a while");
+	addDisplayModeCheckbox(DISPLAY_PERS, IconPersistant, ui::Point(237,  4), "Element paths persist on the screen for a while"_i18n);
 	line3 = 270;
 
 	auto addColourModeCheckbox = [this](unsigned int mode, Icon icon, ui::Point offset, String tooltip) {
-		auto *colourModeCheckbox = new ModeCheckbox(ui::Point(0, YRES) + offset, ui::Point(30, 16), "", tooltip);
+		auto *colourModeCheckbox = new ModeCheckbox(ui::Point(0, YRES) + offset, ui::Point(30, 16), ""_ascii, tooltip);
 		colourModes.push_back(colourModeCheckbox);
 		colourModeCheckbox->mode = mode;
 		colourModeCheckbox->SetIcon(icon);
@@ -107,10 +107,10 @@ RenderView::RenderView():
 		} });
 		AddComponent(colourModeCheckbox);
 	};
-	addColourModeCheckbox(COLOUR_HEAT, IconHeat    , ui::Point(275,  4), "Displays temperatures of the elements, dark blue is coldest, pink is hottest");
-	addColourModeCheckbox(COLOUR_LIFE, IconLife    , ui::Point(275, 22), "Displays the life value of elements in greyscale gradients");
-	addColourModeCheckbox(COLOUR_GRAD, IconGradient, ui::Point(307, 22), "Changes colors of elements slightly to show heat diffusing through them");
-	addColourModeCheckbox(COLOUR_BASC, IconBasic   , ui::Point(307,  4), "No special effects at all for anything, overrides all other options and deco");
+	addColourModeCheckbox(COLOUR_HEAT, IconHeat    , ui::Point(275,  4), "Displays temperatures of the elements, dark blue is coldest, pink is hottest"_i18n);
+	addColourModeCheckbox(COLOUR_LIFE, IconLife    , ui::Point(275, 22), "Displays the life value of elements in greyscale gradients"_i18n);
+	addColourModeCheckbox(COLOUR_GRAD, IconGradient, ui::Point(307, 22), "Changes colors of elements slightly to show heat diffusing through them"_i18n);
+	addColourModeCheckbox(COLOUR_BASC, IconBasic   , ui::Point(307,  4), "No special effects at all for anything, overrides all other options and deco"_i18n);
 	line4 = 340;
 }
 

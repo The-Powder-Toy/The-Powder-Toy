@@ -41,7 +41,7 @@ SaveButton::SaveButton(Point position, Point size, SaveInfo * save_) : SaveButto
 		{
 			int position = Graphics::textwidthx(name, Size.X - 22);
 			name = name.erase(position, name.length()-position);
-			name += "...";
+			name += "..."_ascii;
 		}
 
 		String votes, icon;
@@ -102,7 +102,7 @@ SaveButton::SaveButton(Point position, Point size, SaveFile * file_) : SaveButto
 		{
 			int position = Graphics::textwidthx(name, Size.X - 22);
 			name = name.erase(position, name.length()-position);
-			name += "...";
+			name += "..."_ascii;
 		}
 	}
 }
@@ -194,7 +194,7 @@ void SaveButton::Draw(const Point& screenPos)
 			g->draw_image(thumbnail.get(), screenPos.X+(Size.X-thumbSize.X)/2, screenPos.Y+(Size.Y-21-thumbSize.Y)/2, 255);
 	}
 	else if (file && !file->GetGameSave())
-		g->drawtext(screenPos.X+(Size.X-Graphics::textwidth("Error loading save"))/2, screenPos.Y+(Size.Y-28)/2, "Error loading save", 180, 180, 180, 255);
+		g->drawtext(screenPos.X+(Size.X-Graphics::textwidth("Error loading save"_i18n))/2, screenPos.Y+(Size.Y-28)/2, "Error loading save"_i18n, 180, 180, 180, 255);
 	if(save)
 	{
 		if(save->id)
@@ -317,18 +317,18 @@ void SaveButton::AddContextMenu(int menuType)
 	if (menuType == 0) //Save browser
 	{
 		menu = new ContextMenu(this);
-		menu->AddItem(ContextMenuItem("Open", 0, true));
+		menu->AddItem(ContextMenuItem("Open"_i18n, 0, true));
 		if (Client::Ref().GetAuthUser().UserID)
-			menu->AddItem(ContextMenuItem("Select", 1, true));
-		menu->AddItem(ContextMenuItem("View History", 2, true));
-		menu->AddItem(ContextMenuItem("More by this user", 3, true));
+			menu->AddItem(ContextMenuItem("Select"_i18n, 1, true));
+		menu->AddItem(ContextMenuItem("View History"_i18n, 2, true));
+		menu->AddItem(ContextMenuItem("More by this user"_i18n, 3, true));
 	}
 	else if (menuType == 1) //Local save browser
 	{
 		menu = new ContextMenu(this);
-		menu->AddItem(ContextMenuItem("Open", 0, true));
-		menu->AddItem(ContextMenuItem("Rename", 2, true));
-		menu->AddItem(ContextMenuItem("Delete", 3, true));
+		menu->AddItem(ContextMenuItem("Open"_i18n, 0, true));
+		menu->AddItem(ContextMenuItem("Rename"_i18n, 2, true));
+		menu->AddItem(ContextMenuItem("Delete"_i18n, 3, true));
 	}
 }
 
@@ -419,9 +419,9 @@ void SaveButton::DoSelection()
 	if(menu)
 	{
 		if(selected)
-			menu->SetItem(1, "Deselect");
+			menu->SetItem(1, "Deselect"_i18n);
 		else
-			menu->SetItem(1, "Select");
+			menu->SetItem(1, "Select"_i18n);
 	}
 	if (selectable && actionCallback.selected)
 		actionCallback.selected();

@@ -16,7 +16,7 @@
 using namespace ui;
 
 Textbox::Textbox(Point position, Point size, String textboxText, String textboxPlaceholder):
-	Label(position, size, ""),
+	Label(position, size, ""_ascii),
 	ReadOnly(false),
 	inputType(All),
 	limit(String::npos),
@@ -32,9 +32,9 @@ Textbox::Textbox(Point position, Point size, String textboxText, String textboxP
 	cursor = text.length();
 
 	menu->RemoveItem(0);
-	menu->AddItem(ContextMenuItem("Cut", 1, true));
-	menu->AddItem(ContextMenuItem("Copy", 0, true));
-	menu->AddItem(ContextMenuItem("Paste", 2, true));
+	menu->AddItem(ContextMenuItem("Cut"_i18n, 1, true));
+	menu->AddItem(ContextMenuItem("Copy"_i18n, 0, true));
+	menu->AddItem(ContextMenuItem("Paste"_i18n, 2, true));
 }
 
 void Textbox::SetHidden(bool hidden)
@@ -42,9 +42,9 @@ void Textbox::SetHidden(bool hidden)
 	menu->RemoveItem(0);
 	menu->RemoveItem(1);
 	menu->RemoveItem(2);
-	menu->AddItem(ContextMenuItem("Cut", 1, !hidden));
-	menu->AddItem(ContextMenuItem("Copy", 0, !hidden));
-	menu->AddItem(ContextMenuItem("Paste", 2, true));
+	menu->AddItem(ContextMenuItem("Cut"_i18n, 1, !hidden));
+	menu->AddItem(ContextMenuItem("Copy"_i18n, 0, !hidden));
+	menu->AddItem(ContextMenuItem("Paste"_i18n, 2, true));
 
 	masked = hidden;
 }
@@ -369,8 +369,8 @@ void Textbox::OnVKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 				if (ctrl)
 				{
 					size_t stopChar;
-					stopChar = backingText.SplitByNot(" .,!?\n", cursor).PositionBefore();
-					stopChar = backingText.SplitByAny(" .,!?\n", stopChar).PositionBefore();
+					stopChar = backingText.SplitByNot(" .,!?\n"_ascii, cursor).PositionBefore();
+					stopChar = backingText.SplitByAny(" .,!?\n"_ascii, stopChar).PositionBefore();
 					backingText.EraseBetween(cursor, stopChar);
 				}
 				else
@@ -395,11 +395,11 @@ void Textbox::OnVKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 				if (ctrl)
 				{
 					size_t stopChar;
-					stopChar = backingText.SplitFromEndByNot(" .,!?\n", cursor).PositionBefore();
+					stopChar = backingText.SplitFromEndByNot(" .,!?\n"_ascii, cursor).PositionBefore();
 					if (stopChar == backingText.npos)
 						stopChar = -1;
 					else
-						stopChar = backingText.SplitFromEndByAny(" .,!?\n", stopChar).PositionBefore();
+						stopChar = backingText.SplitFromEndByAny(" .,!?\n"_ascii, stopChar).PositionBefore();
 					backingText.EraseBetween(stopChar+1, cursor);
 					cursor = stopChar+1;
 				}
@@ -413,14 +413,14 @@ void Textbox::OnVKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 			ClearSelection();
 			break;
 		case SDLK_RETURN:
-			OnTextInput("\n");
+			OnTextInput("\n"_ascii);
 			break;
 		}
 	}
 	catch (std::out_of_range &e)
 	{
 		cursor = 0;
-		backingText = "";
+		backingText = ""_ascii;
 	}
 	AfterTextChange(changed);
 }
