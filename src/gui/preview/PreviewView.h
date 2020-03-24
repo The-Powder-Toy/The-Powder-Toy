@@ -58,7 +58,7 @@ class PreviewView: public ui::Window
 	float commentBoxSizeY;
 	bool commentHelpText;
 
-	std::set<String> swearWords;
+	std::map<ByteString, size_t> swearWords; // MD5(word), len(word)
 
 	void displayComments();
 	void commentBoxAutoHeight();

@@ -4,6 +4,7 @@
 
 #include "client/Client.h"
 #include "client/SaveInfo.h"
+#include "client/MD5.h"
 
 #include "gui/dialogues/TextPrompt.h"
 #include "gui/profile/ProfileActivity.h"
@@ -43,7 +44,18 @@ PreviewView::PreviewView():
 	showAvatars(true),
 	prevPage(false),
 	commentBoxHeight(20),
-	commentHelpText(false)
+	commentHelpText(false),
+	swearWords{
+		{"99754106633f94d350db34d548d6091a", 4},
+		{"316928e0d260556eaccb6627f2ed657b", 5},
+		{"78b34eebadbdb3d7d9b4e4833598623a", 5},
+		{"0b9a54438fba2dc0d39be8f7c6c71a58", 7},
+		{"7f55a0ed8b021080de00960cc73768fb", 4},
+		{"b52b073595ccb35eaebb87178227b779", 4},
+		{"a3198e07522baec3f48fac455926cba2", 7},
+		{"cb205edee16b24366c871cf55e781346", 6},
+		{"b529d8871187ecc7fe5f152142b3440a", 7},
+	}
 {
 	showAvatars = Client::Ref().GetPrefBool("ShowAvatars", true);
 
@@ -130,16 +142,6 @@ PreviewView::PreviewView():
 
 	commentsPanel = new ui::ScrollPanel(ui::Point((XRES/2)+1, 1), ui::Point((Size.X-(XRES/2))-2, Size.Y-commentBoxHeight));
 	AddComponent(commentsPanel);
-
-	swearWords.insert("fuck");
-	swearWords.insert("bitch");
-	swearWords.insert("shit ");
-	swearWords.insert("asshole");
-	swearWords.insert("dick");
-	swearWords.insert("cunt");
-	swearWords.insert(" nigger");
-	swearWords.insert("faggot");
-	swearWords.insert("dumbass");
 }
 
 void PreviewView::AttachController(PreviewController * controller)
@@ -204,9 +206,15 @@ void PreviewView::commentBoxAutoHeight()
 
 bool PreviewView::CheckSwearing(String text)
 {
-	for (std::set<String>::iterator iter = swearWords.begin(), end = swearWords.end(); iter != end; iter++)
-		if (text.Contains(*iter))
-			return true;
+	char hash[33];
+	ByteString bytes = text.ToUtf8();
+	for(auto const &pair : swearWords)
+		for(size_t i = 0; i + pair.second <= bytes.length(); i++)
+		{
+			md5_ascii(hash, (unsigned char *)(bytes.data() + i), pair.second);
+			if(pair.first == hash)
+				return true;
+		}
 	return false;
 }
 
