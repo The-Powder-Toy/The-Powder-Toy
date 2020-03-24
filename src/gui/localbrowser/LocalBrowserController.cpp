@@ -37,12 +37,9 @@ SaveFile * LocalBrowserController::GetSave()
 
 void LocalBrowserController::RemoveSelected()
 {
-	StringBuilder desc;
-	desc << "Are you sure you want to delete " << browserModel->GetSelected().size() << " stamp";
-	if(browserModel->GetSelected().size()>1)
-		desc << "s";
-	desc << "?";
-	new ConfirmPrompt("Delete stamps", desc.Build(), { [this] { removeSelectedC(); } });
+	auto deleteConfirm = i18nMulti("Are you sure you want to delete ", "?");
+	size_t count = browserModel->GetSelected().size();
+	new ConfirmPrompt("Delete stamps"_i18n, String::Build(deleteConfirm[0], count, ' ', i18nPlural("stamp", count), deleteConfirm[1]), { [this] { removeSelectedC(); } });
 }
 
 void LocalBrowserController::removeSelectedC()
@@ -57,7 +54,8 @@ void LocalBrowserController::removeSelectedC()
 		{
 			for (size_t i = 0; i < saves.size(); i++)
 			{
-				notifyStatus(String::Build("Deleting stamp [", saves[i].FromUtf8(), "] ..."));
+				auto deleting = i18nMulti("Deleting stamp [", "] ...");
+				notifyStatus(String::Build(deleting[0], saves[i].FromUtf8(), deleting[1]));
 				Client::Ref().DeleteStamp(saves[i]);
 				notifyProgress((float(i+1)/float(saves.size())*100));
 			}
@@ -71,12 +69,12 @@ void LocalBrowserController::removeSelectedC()
 	};
 
 	std::vector<ByteString> selected = browserModel->GetSelected();
-	new TaskWindow("Removing stamps", new RemoveSavesTask(this, selected));
+	new TaskWindow("Removing stamps"_i18n, new RemoveSavesTask(this, selected));
 }
 
 void LocalBrowserController::RescanStamps()
 {
-	new ConfirmPrompt("Rescan", "Rescanning the stamps folder can find stamps added to the stamps folder or recover stamps when the stamps.def file has been lost or damaged. However, be warned that this will mess up the current sorting order", { [this] { rescanStampsC(); } });
+	new ConfirmPrompt("Rescan"_i18n, "Rescanning the stamps folder can find stamps added to the stamps folder or recover stamps when the stamps.def file has been lost or damaged. However, be warned that this will mess up the current sorting order"_i18n, { [this] { rescanStampsC(); } });
 }
 
 void LocalBrowserController::rescanStampsC()

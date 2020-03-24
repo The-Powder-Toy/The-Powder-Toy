@@ -32,7 +32,7 @@ SearchController::SearchController(std::function<void ()> onDone_):
 	searchModel->AddObserver(searchView);
 	searchView->AttachController(this);
 
-	searchModel->UpdateSaveList(1, "");
+	searchModel->UpdateSaveList(1, ""_ascii);
 
 	onDone = onDone_;
 }
@@ -219,12 +219,9 @@ void SearchController::ClearSelection()
 
 void SearchController::RemoveSelected()
 {
-	StringBuilder desc;
-	desc << "Are you sure you want to delete " << searchModel->GetSelected().size() << " save";
-	if(searchModel->GetSelected().size()>1)
-		desc << "s";
-	desc << "?";
-	new ConfirmPrompt("Delete saves", desc.Build(), { [this] {
+	auto deleteConfirm = i18nMulti("Are you sure you want to delete ", "?");
+	size_t count = searchModel->GetSelected().size();
+	new ConfirmPrompt("Delete saves"_i18n, String::Build(deleteConfirm[0], count, ' ', i18nPlural("save", count), deleteConfirm[1]), { [this] {
 		removeSelectedC();
 	} });
 }
@@ -241,10 +238,12 @@ void SearchController::removeSelectedC()
 		{
 			for (size_t i = 0; i < saves.size(); i++)
 			{
-				notifyStatus(String::Build("Deleting save [", saves[i], "] ..."));
+				auto deleting = i18nMulti("Deleting save [", "] ...");
+				notifyStatus(String::Build(deleting[0], saves[i], deleting[1]));
 				if (Client::Ref().DeleteSave(saves[i])!=RequestOkay)
 				{
-					notifyError(String::Build("Failed to delete [", saves[i], "]: ", Client::Ref().GetLastError()));
+					auto failed = i18nMulti("Failed to delete [", "]: ");
+					notifyError(String::Build(failed[0], saves[i], failed[1], Client::Ref().GetLastError()));
 					c->Refresh();
 					return false;
 				}
@@ -256,19 +255,16 @@ void SearchController::removeSelectedC()
 	};
 
 	std::vector<int> selected = searchModel->GetSelected();
-	new TaskWindow("Removing saves", new RemoveSavesTask(selected, this));
+	new TaskWindow("Removing saves"_i18n, new RemoveSavesTask(selected, this));
 	ClearSelection();
 	searchModel->UpdateSaveList(searchModel->GetPageNum(), searchModel->GetLastQuery());
 }
 
 void SearchController::UnpublishSelected(bool publish)
 {
-	StringBuilder desc;
-	desc << "Are you sure you want to " << (publish ? String("publish ") : String("unpublish ")) << searchModel->GetSelected().size() << " save";
-	if (searchModel->GetSelected().size() > 1)
-		desc << "s";
-	desc << "?";
-	new ConfirmPrompt(publish ? String("Publish Saves") : String("Unpublish Saves"), desc.Build(), { [this, publish] {
+	auto publishConfirm = publish ? i18nMulti("Are you sure you want to publish ", "?") : i18nMulti("Are you sure you want to unpublish ", "?");
+	size_t count = searchModel->GetSelected().size();
+	new ConfirmPrompt(publish ? "Publish Saves"_i18n : "Unpublish Saves"_i18n, String::Build(publishConfirm[0], count, ' ', i18nPlural("save", count), publishConfirm[1]), { [this, publish] {
 		unpublishSelectedC(publish);
 	} });
 }
@@ -285,7 +281,8 @@ void SearchController::unpublishSelectedC(bool publish)
 
 		bool PublishSave(int saveID)
 		{
-			notifyStatus(String::Build("Publishing save [", saveID, "]"));
+			auto publishing = i18nMulti("Publishing save [", "]");
+			notifyStatus(String::Build(publishing[0], saveID, publishing[1]));
 			if (Client::Ref().PublishSave(saveID) != RequestOkay)
 				return false;
 			return true;
@@ -293,7 +290,8 @@ void SearchController::unpublishSelectedC(bool publish)
 
 		bool UnpublishSave(int saveID)
 		{
-			notifyStatus(String::Build("Unpublishing save [", saveID, "]"));
+			auto unpublishing = i18nMulti("Unpublishing save [", "]");
+			notifyStatus(String::Build(unpublishing[0], saveID, unpublishing[1]));
 			if (Client::Ref().UnpublishSave(saveID) != RequestOkay)
 				return false;
 			return true;
@@ -311,9 +309,15 @@ void SearchController::unpublishSelectedC(bool publish)
 				if (!ret)
 				{
 					if (publish) // uses html page so error message will be spam
-						notifyError(String::Build("Failed to publish [", saves[i], "], is this save yours?"));
+					{
+						auto failed = i18nMulti("Failed to publish [", "], is this save yours?");
+						notifyError(String::Build(failed[0], saves[i], failed[1]));
+					}
 					else
-						notifyError(String::Build("Failed to unpublish [", saves[i], "]: " + Client::Ref().GetLastError()));
+					{
+						auto failed = i18nMulti("Failed to unpublish [", "]: ");
+						notifyError(String::Build(failed[0], saves[i], failed[1], Client::Ref().GetLastError()));
+					}
 					c->Refresh();
 					return false;
 				}
@@ -325,7 +329,7 @@ void SearchController::unpublishSelectedC(bool publish)
 	};
 
 	std::vector<int> selected = searchModel->GetSelected();
-	new TaskWindow(publish ? String("Publishing Saves") : String("Unpublishing Saves"), new UnpublishSavesTask(selected, this, publish));
+	new TaskWindow(publish ? "Publishing Saves"_i18n : "Unpublishing Saves"_i18n, new UnpublishSavesTask(selected, this, publish));
 }
 
 void SearchController::FavouriteSelected()
@@ -339,10 +343,12 @@ void SearchController::FavouriteSelected()
 		{
 			for (size_t i = 0; i < saves.size(); i++)
 			{
-				notifyStatus(String::Build("Favouring save [", saves[i], "]"));
+				auto favouring = i18nMulti("Favouring save [", "]");
+				notifyStatus(String::Build(favouring[0], saves[i], favouring[1]));
 				if (Client::Ref().FavouriteSave(saves[i], true)!=RequestOkay)
 				{
-					notifyError(String::Build("Failed to favourite [", saves[i], "]: " + Client::Ref().GetLastError()));
+					auto failed = i18nMulti("Failed to favourite [", "]: ");
+					notifyError(String::Build(failed[0], saves[i], failed[1], Client::Ref().GetLastError()));
 					return false;
 				}
 				notifyProgress((float(i+1)/float(saves.size())*100));
@@ -360,10 +366,12 @@ void SearchController::FavouriteSelected()
 		{
 			for (size_t i = 0; i < saves.size(); i++)
 			{
-				notifyStatus(String::Build("Unfavouring save [", saves[i], "]"));
+				auto unfavouring = i18nMulti("Unfavouring save [", "]");
+				notifyStatus(String::Build(unfavouring[0], saves[i], unfavouring[1]));
 				if (Client::Ref().FavouriteSave(saves[i], false)!=RequestOkay)
 				{
-					notifyError(String::Build("Failed to unfavourite [", saves[i], "]: " + Client::Ref().GetLastError()));
+					auto failed = i18nMulti("Failed to unfavourite [", "]: ");
+					notifyError(String::Build(failed[0], saves[i], failed[1], Client::Ref().GetLastError()));
 					return false;
 				}
 				notifyProgress((float(i+1)/float(saves.size())*100));
@@ -374,8 +382,8 @@ void SearchController::FavouriteSelected()
 
 	std::vector<int> selected = searchModel->GetSelected();
 	if (!searchModel->GetShowFavourite())
-		new TaskWindow("Favouring saves", new FavouriteSavesTask(selected));
+		new TaskWindow("Favouring saves"_i18n, new FavouriteSavesTask(selected));
 	else
-		new TaskWindow("Unfavouring saves", new UnfavouriteSavesTask(selected));
+		new TaskWindow("Unfavouring saves"_i18n, new UnfavouriteSavesTask(selected));
 	ClearSelection();
 }

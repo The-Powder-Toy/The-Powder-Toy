@@ -16,6 +16,9 @@ struct LocaleEN : public Locale
 	{
 		using i18n::translation;
 		using i18n::pluralForm;
+
+		pluralForm("save") = {"save"_ascii, "saves"_ascii};
+		pluralForm("stamp") = {"stamp"_ascii, "stamps"_ascii};
 	}
 
 	String GetIntroText() const
