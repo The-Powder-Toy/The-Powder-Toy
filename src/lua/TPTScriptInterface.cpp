@@ -26,7 +26,7 @@ TPTScriptInterface::TPTScriptInterface(GameController * c, GameModel * m): Comma
 
 int TPTScriptInterface::Command(String command)
 {
-	lastError = "";
+	lastError = ""_ascii;
 	std::deque<String> words;
 	std::deque<AnyType> commandWords;
 	int retCode = -1;
@@ -62,21 +62,21 @@ ValueType TPTScriptInterface::testType(String word)
 	size_t i = 0;
 	String::value_type const *rawWord = word.c_str();
 	//Function
-	if (word == "set")
+	if (word == "set"_ascii)
 		return TypeFunction;
-	else if (word == "create")
+	else if (word == "create"_ascii)
 		return TypeFunction;
-	else if (word == "delete")
+	else if (word == "delete"_ascii)
 		return TypeFunction;
-	else if (word == "kill")
+	else if (word == "kill"_ascii)
 		return TypeFunction;
-	else if (word == "load")
+	else if (word == "load"_ascii)
 		return TypeFunction;
-	else if (word == "reset")
+	else if (word == "reset"_ascii)
 		return TypeFunction;
-	else if (word == "bubble")
+	else if (word == "bubble"_ascii)
 		return TypeFunction;
-	else if (word == "quit")
+	else if (word == "quit"_ascii)
 		return TypeFunction;
 
 	//Basic type
@@ -181,19 +181,19 @@ AnyType TPTScriptInterface::eval(std::deque<String> * words)
 	switch(wordType)
 	{
 	case TypeFunction:
-		if(word == "set")
+		if(word == "set"_ascii)
 			return tptS_set(words);
-		else if(word == "create")
+		else if(word == "create"_ascii)
 			return tptS_create(words);
-		else if(word == "delete" || word == "kill")
+		else if(word == "delete"_ascii || word == "kill"_ascii)
 			return tptS_delete(words);
-		else if(word == "load")
+		else if(word == "load"_ascii)
 			return tptS_load(words);
-		else if(word == "reset")
+		else if(word == "reset"_ascii)
 			return tptS_reset(words);
-		else if(word == "bubble")
+		else if(word == "bubble"_ascii)
 			return tptS_bubble(words);
-		else if(word == "quit")
+		else if(word == "quit"_ascii)
 			return tptS_quit(words);
 		break;
 	case TypeNumber:
@@ -204,7 +204,7 @@ AnyType TPTScriptInterface::eval(std::deque<String> * words)
 	{
 		int x, y;
 		if(String::Split comma = word.SplitNumber(x))
-			if(comma.After().BeginsWith(","))
+			if(comma.After().BeginsWith(","_ascii))
 				if(comma.After().Substr(1).SplitNumber(y))
 					return PointType(x, y);
 		return PointType(0, 0);
@@ -232,20 +232,20 @@ String TPTScriptInterface::FormatCommand(String command)
 		switch(cType)
 		{
 		case TypeFunction:
-			outputData += "\bt";
+			outputData += "\bt"_ascii;
 			break;
 		case TypeNumber:
 		case TypePoint:
-			outputData += "\bo";
+			outputData += "\bo"_ascii;
 			break;
 		case TypeString:
-			outputData += "\bg";
+			outputData += "\bg"_ascii;
 			break;
 		default:
-			outputData += "\bw";
+			outputData += "\bw"_ascii;
 			break;
 		}
-		outputData += words.front() + " ";
+		outputData += words.front() + " "_ascii;
 		words.pop_front();
 	}
 	return outputData;
@@ -266,7 +266,7 @@ AnyType TPTScriptInterface::tptS_set(std::deque<String> * words)
 	FormatType propertyFormat;
 	int propertyOffset = GetPropertyOffset(property.Value().ToUtf8(), propertyFormat);
 	if (propertyOffset == -1)
-		throw GeneralException("Invalid property");
+		throw GeneralException("Invalid property"_i18n);
 
 	//Selector
 	int newValue = 0;
@@ -281,7 +281,7 @@ AnyType TPTScriptInterface::tptS_set(std::deque<String> * words)
 	}
 	else if(value.GetType() == TypeString)
 	{
-		if (property.Value() == "temp")
+		if (property.Value() == "temp"_ascii)
 		{
 			String newString = ((StringType)value).Value();
 			if (newString.at(newString.length()-1) == 'C')
@@ -289,7 +289,7 @@ AnyType TPTScriptInterface::tptS_set(std::deque<String> * words)
 			else if (newString.at(newString.length()-1) == 'F')
 				newValuef = (atof(newString.SubstrFromEnd(1).ToUtf8().c_str())-32.0f)*5/9+273.15f;
 			else
-				throw GeneralException("Invalid value for assignment");
+				throw GeneralException("Invalid value for assignment"_i18n);
 		}
 		else
 		{
@@ -298,15 +298,15 @@ AnyType TPTScriptInterface::tptS_set(std::deque<String> * words)
 			{
 				// TODO: add element CAKE to invalidate this
 				if (!strcasecmp(((StringType)value).Value().ToUtf8().c_str(),"cake"))
-					throw GeneralException("Cake is a lie, not an element");
-				throw GeneralException("Invalid element");
+					throw GeneralException("Cake is a lie, not an element"_i18n);
+				throw GeneralException("Invalid element"_i18n);
 			}
 		}
 	}
 	else
-		throw GeneralException("Invalid value for assignment");
-	if (property.Value() == "type" && (newValue < 0 || newValue >= PT_NUM || !sim->elements[newValue].Enabled))
-		throw GeneralException("Invalid element");
+		throw GeneralException("Invalid value for assignment"_i18n);
+	if (property.Value() == "type"_ascii && (newValue < 0 || newValue >= PT_NUM || !sim->elements[newValue].Enabled))
+		throw GeneralException("Invalid element"_i18n);
 
 	if (selector.GetType() == TypePoint || selector.GetType() == TypeNumber)
 	{
@@ -315,13 +315,13 @@ AnyType TPTScriptInterface::tptS_set(std::deque<String> * words)
 		{
 			ui::Point tempPoint = ((PointType)selector).Value();
 			if(tempPoint.X<0 || tempPoint.Y<0 || tempPoint.Y >= YRES || tempPoint.X >= XRES)
-				throw GeneralException("Invalid position");
+				throw GeneralException("Invalid position"_i18n);
 
 		}
 		else
 			partIndex = ((NumberType)selector).Value();
 		if(partIndex<0 || partIndex>NPART || sim->parts[partIndex].type==0)
-			throw GeneralException("Invalid particle");
+			throw GeneralException("Invalid particle"_i18n);
 
 		switch(propertyFormat)
 		{
@@ -339,7 +339,7 @@ AnyType TPTScriptInterface::tptS_set(std::deque<String> * words)
 		}
 		returnValue = 1;
 	}
-	else if (selector.GetType() == TypeString && ((StringType)selector).Value() == "all")
+	else if (selector.GetType() == TypeString && ((StringType)selector).Value() == "all"_ascii)
 	{
 		switch(propertyFormat)
 		{
@@ -386,9 +386,9 @@ AnyType TPTScriptInterface::tptS_set(std::deque<String> * words)
 			type = m->GetSimulation()->GetParticleType(((StringType)selector).Value().ToUtf8());
 
 		if (type<0 || type>=PT_NUM)
-			throw GeneralException("Invalid particle type");
+			throw GeneralException("Invalid particle type"_i18n);
 		if (type==0)
-			throw GeneralException("Cannot set properties of particles that do not exist");
+			throw GeneralException("Cannot set properties of particles that do not exist"_i18n);
 		switch(propertyFormat)
 		{
 		case FormatInt:
@@ -426,7 +426,7 @@ AnyType TPTScriptInterface::tptS_set(std::deque<String> * words)
 		}
 	}
 	else
-		throw GeneralException("Invalid selector");
+		throw GeneralException("Invalid selector"_i18n);
 	return NumberType(returnValue);
 }
 
@@ -444,14 +444,14 @@ AnyType TPTScriptInterface::tptS_create(std::deque<String> * words)
 	else if(createType.GetType() == TypeString)
 		type = m->GetSimulation()->GetParticleType(((StringType)createType).Value().ToUtf8());
 	else
-		throw GeneralException("Invalid type");
+		throw GeneralException("Invalid type"_i18n);
 
 	if(type == -1)
-		throw GeneralException("Invalid particle type");
+		throw GeneralException("Invalid particle type"_i18n);
 
 	ui::Point tempPoint = position.Value();
 	if(tempPoint.X<0 || tempPoint.Y<0 || tempPoint.Y >= YRES || tempPoint.X >= XRES)
-				throw GeneralException("Invalid position");
+				throw GeneralException("Invalid position"_i18n);
 
 	int v = -1;
 	if (ID(type))
@@ -475,18 +475,18 @@ AnyType TPTScriptInterface::tptS_delete(std::deque<String> * words)
 	{
 		ui::Point deletePoint = ((PointType)partRef).Value();
 		if(deletePoint.X<0 || deletePoint.Y<0 || deletePoint.Y >= YRES || deletePoint.X >= XRES)
-			throw GeneralException("Invalid position");
+			throw GeneralException("Invalid position"_i18n);
 		sim->delete_part(deletePoint.X, deletePoint.Y);
 	}
 	else if(partRef.GetType() == TypeNumber)
 	{
 		int partIndex = ((NumberType)partRef).Value();
 		if(partIndex < 0 || partIndex >= NPART)
-			throw GeneralException("Invalid particle index");
+			throw GeneralException("Invalid particle index"_i18n);
 		sim->kill_part(partIndex);
 	}
 	else
-		throw GeneralException("Invalid particle reference");
+		throw GeneralException("Invalid particle reference"_i18n);
 
 	return NumberType(0);
 }
@@ -502,7 +502,7 @@ AnyType TPTScriptInterface::tptS_load(std::deque<String> * words)
 		return NumberType(0);
 	}
 	else
-		throw GeneralException("Invalid save ID");
+		throw GeneralException("Invalid save ID"_i18n);
 }
 
 AnyType TPTScriptInterface::tptS_bubble(std::deque<String> * words)
@@ -512,7 +512,7 @@ AnyType TPTScriptInterface::tptS_bubble(std::deque<String> * words)
 	ui::Point bubblePos = bubblePosA.Value();
 
 	if(bubblePos.X<0 || bubblePos.Y<0 || bubblePos.Y >= YRES || bubblePos.X >= XRES)
-			throw GeneralException("Invalid position");
+			throw GeneralException("Invalid position"_i18n);
 
 	Simulation * sim = m->GetSimulation();
 
@@ -548,7 +548,7 @@ AnyType TPTScriptInterface::tptS_reset(std::deque<String> * words)
 
 	Simulation * sim = m->GetSimulation();
 
-	if (resetStr == "pressure")
+	if (resetStr == "pressure"_ascii)
 	{
 		for (int nx = 0; nx < XRES/CELL; nx++)
 			for (int ny = 0; ny < YRES/CELL; ny++)
@@ -556,7 +556,7 @@ AnyType TPTScriptInterface::tptS_reset(std::deque<String> * words)
 				sim->air->pv[ny][nx] = 0;
 			}
 	}
-	else if (resetStr == "velocity")
+	else if (resetStr == "velocity"_ascii)
 	{
 		for (int nx = 0; nx < XRES/CELL; nx++)
 			for (int ny = 0; ny < YRES/CELL; ny++)
@@ -565,11 +565,11 @@ AnyType TPTScriptInterface::tptS_reset(std::deque<String> * words)
 				sim->air->vy[ny][nx] = 0;
 			}
 	}
-	else if (resetStr == "sparks")
+	else if (resetStr == "sparks"_ascii)
 	{
 		c->ResetSpark();
 	}
-	else if (resetStr == "temp")
+	else if (resetStr == "temp"_ascii)
 	{
 		for (int i = 0; i < NPART; i++)
 		{
@@ -581,7 +581,7 @@ AnyType TPTScriptInterface::tptS_reset(std::deque<String> * words)
 	}
 	else
 	{
-		throw GeneralException("Unknown reset command");
+		throw GeneralException("Unknown reset command"_i18n);
 	}
 
 	return NumberType(0);

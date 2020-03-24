@@ -58,7 +58,7 @@ extern "C"
 
 
 Client::Client():
-	messageOfTheDay("Fetching the message of the day..."),
+	messageOfTheDay("Fetching the message of the day..."_i18n),
 	versionCheckRequest(nullptr),
 	alternateVersionCheckRequest(nullptr),
 	usingAltUpdateServer(false),
@@ -648,7 +648,7 @@ std::vector<std::pair<String, ByteString> > Client::GetServerNotifications()
 
 RequestStatus Client::ParseServerReturn(ByteString &result, int status, bool json)
 {
-	lastError = "";
+	lastError = ""_ascii;
 	// no server response, return "Malformed Response"
 	if (status == 200 && !result.size())
 	{
@@ -658,7 +658,8 @@ RequestStatus Client::ParseServerReturn(ByteString &result, int status, bool jso
 		return RequestOkay;
 	if (status != 200)
 	{
-		lastError = String::Build("HTTP Error ", status, ": ", http::StatusText(status));
+		auto errMsg = i18nMulti("HTTP Error ", ": ");
+		lastError = String::Build(errMsg[0], status, errMsg[1], http::StatusText(status));
 		return RequestFailure;
 	}
 
@@ -687,11 +688,12 @@ RequestStatus Client::ParseServerReturn(ByteString &result, int status, bool jso
 			// sometimes the server returns a 200 with the text "Error: 401"
 			if (!strncmp(result.c_str(), "Error: ", 7))
 			{
+				auto errMsg = i18nMulti("HTTP Error ", ": ");
 				status = ByteString(result.begin() + 7, result.end()).ToNumber<int>();
-				lastError = String::Build("HTTP Error ", status, ": ", http::StatusText(status));
+				lastError = String::Build(errMsg[0], status, errMsg[1], http::StatusText(status));
 				return RequestFailure;
 			}
-			lastError = "Could not read response: " + ByteString(e.what()).FromUtf8();
+			lastError = "Could not read response: "_i18n + ByteString(e.what()).FromUtf8();
 			return RequestFailure;
 		}
 	}
@@ -732,7 +734,10 @@ bool Client::CheckUpdate(http::Request *updateRequest, bool checkSession)
 		{
 			//free(data);
 			if (usingAltUpdateServer && !checkSession)
-				this->messageOfTheDay = String::Build("HTTP Error ", status, " while checking for updates: ", http::StatusText(status));
+			{
+				auto errMsg = i18nMulti("HTTP Error ", " while checking for updates: ");
+				this->messageOfTheDay = String::Build(errMsg[0], status, errMsg[1], http::StatusText(status));
+			}
 		}
 		else if(data.size())
 		{
@@ -952,7 +957,7 @@ User Client::GetAuthUser()
 
 RequestStatus Client::UploadSave(SaveInfo & save)
 {
-	lastError = "";
+	lastError = ""_ascii;
 	unsigned int gameDataLength;
 	char * gameData = NULL;
 	int dataStatus;
@@ -962,7 +967,7 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 	{
 		if (!save.GetGameSave())
 		{
-			lastError = "Empty game save";
+			lastError = "Empty game save"_i18n;
 			return RequestFailure;
 		}
 
@@ -972,13 +977,13 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 
 		if (!gameData)
 		{
-			lastError = "Cannot serialize game save";
+			lastError = "Cannot serialize game save"_i18n;
 			return RequestFailure;
 		}
 #if defined(SNAPSHOT) || defined(BETA) || defined(DEBUG)
 		else if (save.gameSave->fromNewerVersion)
 		{
-			lastError = "Cannot upload save, incompatible with latest release version";
+			lastError = "Cannot upload save, incompatible with latest release version"_i18n;
 			return RequestFailure;
 		}
 #endif
@@ -992,7 +997,7 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 	}
 	else
 	{
-		lastError = "Not authenticated";
+		lastError = "Not authenticated"_i18n;
 		return RequestFailure;
 	}
 
@@ -1002,7 +1007,7 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 		int saveID = ByteString(data.begin() + 3, data.end()).ToNumber<int>();
 		if (!saveID)
 		{
-			lastError = "Server did not return Save ID";
+			lastError = "Server did not return Save ID"_i18n;
 			ret = RequestFailure;
 		}
 		else
@@ -1161,7 +1166,7 @@ std::vector<ByteString> Client::GetStamps(int start, int count)
 
 RequestStatus Client::ExecVote(int saveID, int direction)
 {
-	lastError = "";
+	lastError = ""_ascii;
 	int dataStatus;
 	ByteString data;
 
@@ -1176,7 +1181,7 @@ RequestStatus Client::ExecVote(int saveID, int direction)
 	}
 	else
 	{
-		lastError = "Not authenticated";
+		lastError = "Not authenticated"_i18n;
 		return RequestFailure;
 	}
 	RequestStatus ret = ParseServerReturn(data, dataStatus, false);
@@ -1185,7 +1190,7 @@ RequestStatus Client::ExecVote(int saveID, int direction)
 
 std::vector<unsigned char> Client::GetSaveData(int saveID, int saveDate)
 {
-	lastError = "";
+	lastError = ""_ascii;
 	int dataStatus;
 	ByteString data;
 	ByteString urlStr;
@@ -1207,7 +1212,7 @@ std::vector<unsigned char> Client::GetSaveData(int saveID, int saveDate)
 
 LoginStatus Client::Login(ByteString username, ByteString password, User & user)
 {
-	lastError = "";
+	lastError = ""_ascii;
 	char passwordHash[33];
 	char totalHash[33];
 
@@ -1269,7 +1274,7 @@ LoginStatus Client::Login(ByteString username, ByteString password, User & user)
 		}
 		catch (std::exception &e)
 		{
-			lastError = "Could not read response: " + ByteString(e.what()).FromUtf8();
+			lastError = "Could not read response: "_i18n + ByteString(e.what()).FromUtf8();
 			return LoginError;
 		}
 	}
@@ -1278,7 +1283,7 @@ LoginStatus Client::Login(ByteString username, ByteString password, User & user)
 
 RequestStatus Client::DeleteSave(int saveID)
 {
-	lastError = "";
+	lastError = ""_ascii;
 	ByteString data;
 	ByteString url = ByteString::Build(SCHEME, SERVER, "/Browse/Delete.json?ID=", saveID, "&Mode=Delete&Key=", authUser.SessionKey);
 	int dataStatus;
@@ -1289,7 +1294,7 @@ RequestStatus Client::DeleteSave(int saveID)
 	}
 	else
 	{
-		lastError = "Not authenticated";
+		lastError = "Not authenticated"_i18n;
 		return RequestFailure;
 	}
 	RequestStatus ret = ParseServerReturn(data, dataStatus, true);
@@ -1298,7 +1303,7 @@ RequestStatus Client::DeleteSave(int saveID)
 
 RequestStatus Client::AddComment(int saveID, String comment)
 {
-	lastError = "";
+	lastError = ""_ascii;
 	ByteString data;
 	int dataStatus;
 	ByteString url = ByteString::Build(SCHEME, SERVER, "/Browse/Comments.json?ID=", saveID);
@@ -1311,7 +1316,7 @@ RequestStatus Client::AddComment(int saveID, String comment)
 	}
 	else
 	{
-		lastError = "Not authenticated";
+		lastError = "Not authenticated"_i18n;
 		return RequestFailure;
 	}
 	RequestStatus ret = ParseServerReturn(data, dataStatus, true);
@@ -1320,7 +1325,7 @@ RequestStatus Client::AddComment(int saveID, String comment)
 
 RequestStatus Client::FavouriteSave(int saveID, bool favourite)
 {
-	lastError = "";
+	lastError = ""_ascii;
 	ByteStringBuilder urlStream;
 	ByteString data;
 	int dataStatus;
@@ -1334,7 +1339,7 @@ RequestStatus Client::FavouriteSave(int saveID, bool favourite)
 	}
 	else
 	{
-		lastError = "Not authenticated";
+		lastError = "Not authenticated"_i18n;
 		return RequestFailure;
 	}
 	RequestStatus ret = ParseServerReturn(data, dataStatus, true);
@@ -1343,7 +1348,7 @@ RequestStatus Client::FavouriteSave(int saveID, bool favourite)
 
 RequestStatus Client::ReportSave(int saveID, String message)
 {
-	lastError = "";
+	lastError = ""_ascii;
 	ByteString data;
 	int dataStatus;
 	ByteString url = ByteString::Build(SCHEME, SERVER, "/Browse/Report.json?ID=", saveID, "&Key=", authUser.SessionKey);
@@ -1356,7 +1361,7 @@ RequestStatus Client::ReportSave(int saveID, String message)
 	}
 	else
 	{
-		lastError = "Not authenticated";
+		lastError = "Not authenticated"_i18n;
 		return RequestFailure;
 	}
 	RequestStatus ret = ParseServerReturn(data, dataStatus, true);
@@ -1365,7 +1370,7 @@ RequestStatus Client::ReportSave(int saveID, String message)
 
 RequestStatus Client::UnpublishSave(int saveID)
 {
-	lastError = "";
+	lastError = ""_ascii;
 	ByteString data;
 	int dataStatus;
 	ByteString url = ByteString::Build(SCHEME, SERVER, "/Browse/Delete.json?ID=", saveID, "&Mode=Unpublish&Key=", authUser.SessionKey);
@@ -1376,7 +1381,7 @@ RequestStatus Client::UnpublishSave(int saveID)
 	}
 	else
 	{
-		lastError = "Not authenticated";
+		lastError = "Not authenticated"_i18n;
 		return RequestFailure;
 	}
 	RequestStatus ret = ParseServerReturn(data, dataStatus, true);
@@ -1385,7 +1390,7 @@ RequestStatus Client::UnpublishSave(int saveID)
 
 RequestStatus Client::PublishSave(int saveID)
 {
-	lastError = "";
+	lastError = ""_ascii;
 	ByteString data;
 	int dataStatus;
 	ByteString url = ByteString::Build(SCHEME, SERVER, "/Browse/View.json?ID=", saveID, "&Key=", authUser.SessionKey);
@@ -1398,7 +1403,7 @@ RequestStatus Client::PublishSave(int saveID)
 	}
 	else
 	{
-		lastError = "Not authenticated";
+		lastError = "Not authenticated"_i18n;
 		return RequestFailure;
 	}
 	RequestStatus ret = ParseServerReturn(data, dataStatus, true);
@@ -1407,7 +1412,7 @@ RequestStatus Client::PublishSave(int saveID)
 
 SaveInfo * Client::GetSave(int saveID, int saveDate)
 {
-	lastError = "";
+	lastError = ""_ascii;
 	ByteStringBuilder urlStream;
 	urlStream << SCHEME << SERVER  << "/Browse/View.json?ID=" << saveID;
 	if(saveDate)
@@ -1465,7 +1470,7 @@ SaveInfo * Client::GetSave(int saveID, int saveDate)
 		}
 		catch (std::exception & e)
 		{
-			lastError = "Could not read response: " + ByteString(e.what()).FromUtf8();
+			lastError = "Could not read response: "_i18n + ByteString(e.what()).FromUtf8();
 			return NULL;
 		}
 	}
@@ -1496,7 +1501,7 @@ SaveFile * Client::LoadSaveFile(ByteString filename)
 
 std::vector<std::pair<ByteString, int> > * Client::GetTags(int start, int count, String query, int & resultCount)
 {
-	lastError = "";
+	lastError = ""_ascii;
 	resultCount = 0;
 	std::vector<std::pair<ByteString, int> > * tagArray = new std::vector<std::pair<ByteString, int> >();
 	ByteStringBuilder urlStream;
@@ -1530,7 +1535,7 @@ std::vector<std::pair<ByteString, int> > * Client::GetTags(int start, int count,
 		}
 		catch (std::exception & e)
 		{
-			lastError = "Could not read response: " + ByteString(e.what()).FromUtf8();
+			lastError = "Could not read response: "_i18n + ByteString(e.what()).FromUtf8();
 		}
 	}
 	else
@@ -1542,7 +1547,7 @@ std::vector<std::pair<ByteString, int> > * Client::GetTags(int start, int count,
 
 std::vector<SaveInfo*> * Client::SearchSaves(int start, int count, String query, ByteString sort, ByteString category, int & resultCount)
 {
-	lastError = "";
+	lastError = ""_ascii;
 	resultCount = 0;
 	std::vector<SaveInfo*> * saveArray = new std::vector<SaveInfo*>();
 	ByteStringBuilder urlStream;
@@ -1604,7 +1609,7 @@ std::vector<SaveInfo*> * Client::SearchSaves(int start, int count, String query,
 		}
 		catch (std::exception &e)
 		{
-			lastError = "Could not read response: " + ByteString(e.what()).FromUtf8();
+			lastError = "Could not read response: "_i18n + ByteString(e.what()).FromUtf8();
 		}
 	}
 	return saveArray;
@@ -1612,7 +1617,7 @@ std::vector<SaveInfo*> * Client::SearchSaves(int start, int count, String query,
 
 std::list<ByteString> * Client::RemoveTag(int saveID, ByteString tag)
 {
-	lastError = "";
+	lastError = ""_ascii;
 	std::list<ByteString> * tags = NULL;
 	ByteString data;
 	int dataStatus;
@@ -1624,7 +1629,7 @@ std::list<ByteString> * Client::RemoveTag(int saveID, ByteString tag)
 	}
 	else
 	{
-		lastError = "Not authenticated";
+		lastError = "Not authenticated"_i18n;
 		return NULL;
 	}
 	RequestStatus ret = ParseServerReturn(data, dataStatus, true);
@@ -1643,7 +1648,7 @@ std::list<ByteString> * Client::RemoveTag(int saveID, ByteString tag)
 		}
 		catch (std::exception &e)
 		{
-			lastError = "Could not read response: " + ByteString(e.what()).FromUtf8();
+			lastError = "Could not read response: "_i18n + ByteString(e.what()).FromUtf8();
 		}
 	}
 	return tags;
@@ -1651,7 +1656,7 @@ std::list<ByteString> * Client::RemoveTag(int saveID, ByteString tag)
 
 std::list<ByteString> * Client::AddTag(int saveID, ByteString tag)
 {
-	lastError = "";
+	lastError = ""_ascii;
 	std::list<ByteString> * tags = NULL;
 	ByteString data;
 	int dataStatus;
@@ -1663,7 +1668,7 @@ std::list<ByteString> * Client::AddTag(int saveID, ByteString tag)
 	}
 	else
 	{
-		lastError = "Not authenticated";
+		lastError = "Not authenticated"_i18n;
 		return NULL;
 	}
 	RequestStatus ret = ParseServerReturn(data, dataStatus, true);
@@ -1682,7 +1687,7 @@ std::list<ByteString> * Client::AddTag(int saveID, ByteString tag)
 		}
 		catch (std::exception & e)
 		{
-			lastError = "Could not read response: " + ByteString(e.what()).FromUtf8();
+			lastError = "Could not read response: "_i18n + ByteString(e.what()).FromUtf8();
 		}
 	}
 	return tags;
