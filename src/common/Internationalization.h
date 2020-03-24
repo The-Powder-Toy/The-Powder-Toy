@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "String.h"
+#include "Localization.h"
 
 /*
 	We handle internationalization by maintaining a map from "key" strings, to
@@ -145,6 +146,8 @@ namespace i18n
 		return getMultiTranslation(strs, i + 1, std::forward<Ts>(args)...);
 	}
 }
+
+extern struct Locale const *currentLocale;
 
 #ifndef I18N_DEBUG
 

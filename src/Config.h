@@ -159,4 +159,60 @@
 
 #define SDEUT
 
+// Detailed build information string
+
+#ifdef SNAPSHOT
+#define SNAPSHOT_VER "SNAPSHOT " MTOS(SNAPSHOT_ID) " "
+#elif MOD_ID > 0
+#define SNAPSHOT_VER "MODVER " MTOS(SNAPSHOT_ID) " "
+#else
+#define SNAPSHOT_VER
+#endif
+
+#ifdef X86
+#define HAVE_X86 "X86 "
+#else
+#define HAVE_X86 ""
+#endif
+
+#ifdef X86_SSE
+#define HAVE_X86_SSE "X86_SSE "
+#else
+#define HAVE_X86_SSE ""
+#endif
+
+#ifdef X86_SSE2
+#define HAVE_X86_SSE2 "X86_SSE2 "
+#else
+#define HAVE_X86_SSE2 ""
+#endif
+
+#ifdef X86_SSE3
+#define HAVE_X86_SSE3 "X86_SSE3 "
+#else
+#define HAVE_X86_SSE3 ""
+#endif
+
+#ifdef LUACONSOLE
+#define HAVE_LUACONSOLE "LUACONSOLE "
+#else
+#define HAVE_LUACONSOLE ""
+#endif
+
+#ifdef GRAVFFT
+#define HAVE_GRAVFFT "GRAVFFT "
+#else
+#define HAVE_GRAVFFT ""
+#endif
+
+#ifdef REALISTIC
+#define HAVE_REALISTIC "REALISTIC "
+#else
+#define HAVE_REALISTIC ""
+#endif
+
+#define BUILD_FLAVOR_STRING \
+	MTOS(SAVE_VERSION) "." MTOS(MINOR_VERSION) "." MTOS(BUILD_NUM) " " IDENT_PLATFORM " " \
+	SNAPSHOT_VER HAVE_X86 HAVE_X86_SSE HAVE_X86_SSE2 HAVE_X86_SSE3 HAVE_LUACONSOLE HAVE_GRAVFFT HAVE_REALISTIC
+
 #endif /* CONFIG_H */

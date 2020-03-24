@@ -4,13 +4,16 @@
 
 #include "String.h"
 
-class Locale
+struct Locale
 {
-public:
 	// The name of the language this locale is for, readable in both the native
 	// language and in English;
-	std::function<String()> GetName;
+	virtual String GetName() const = 0;
 
 	// Populate the translations map.
-	std::function<void()> Set;
+	virtual void Set() const = 0;
+
+	virtual String GetIntroText() const = 0;
+	virtual String GetSavePublishingInfo() const = 0;
+	virtual String GetRules() const = 0;
 };

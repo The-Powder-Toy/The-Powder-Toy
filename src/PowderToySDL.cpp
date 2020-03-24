@@ -33,6 +33,7 @@
 #endif
 
 #include "localization/List.h"
+#include "common/Internationalization.h"
 #include "Format.h"
 #include "Misc.h"
 
@@ -684,9 +685,11 @@ int main(int argc, char * argv[])
 #endif // I18N_DEBUG
 
 	String localeName = Client::Ref().GetPrefString("Locale", "");
-	for(Locale *locale : locales)
+	currentLocale = locales[0];
+	for(Locale const *locale : locales)
 		if(locale->GetName() == localeName)
-			locale->Set();
+			currentLocale = locale;
+	currentLocale->Set();
 
 	scale = Client::Ref().GetPrefInteger("Scale", 1);
 	resizable = Client::Ref().GetPrefBool("Resizable", false);

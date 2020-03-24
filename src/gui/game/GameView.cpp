@@ -10,7 +10,6 @@
 
 #include "Notification.h"
 #include "Brush.h"
-#include "IntroText.h"
 #include "QuickOptions.h"
 #include "DecorationTool.h"
 #include "ToolButton.h"
@@ -190,7 +189,7 @@ GameView::GameView():
 	buttonTip(""_ascii),
 	isButtonTipFadingIn(false),
 	introText(2048),
-	introTextMessage(ByteString(introTextData).FromUtf8()),
+	introTextMessage(currentLocale->GetIntroText() + "\n\bt" BUILD_FLAVOR_STRING ""_ascii),
 
 	doScreenshot(false),
 	screenshotIndex(0),
