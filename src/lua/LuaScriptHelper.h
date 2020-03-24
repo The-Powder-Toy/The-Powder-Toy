@@ -37,7 +37,7 @@ extern LuaSmartRef *tptPart;
 void luaopen_eventcompat(lua_State *l);
 void luacon_hook(lua_State *L, lua_Debug *ar);
 int luacon_eval(const char *command);
-String luacon_geterror();
+ByteString luacon_geterror();
 void luacon_close();
 void initLegacyProps();
 int luacon_partsread(lua_State* l);

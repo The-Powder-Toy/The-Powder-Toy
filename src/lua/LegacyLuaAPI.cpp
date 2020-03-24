@@ -286,10 +286,10 @@ void luacon_hook(lua_State * l, lua_Debug * ar)
 	}
 }
 
-String luacon_geterror()
+ByteString luacon_geterror()
 {
 	luaL_tostring(luacon_ci->l, -1);
-	String err = ByteString(luaL_optstring(luacon_ci->l, -1, "failed to execute")).FromUtf8();
+	ByteString err = luaL_optstring(luacon_ci->l, -1, "failed to execute");
 	lua_pop(luacon_ci->l, 1);
 	return err;
 }
@@ -331,7 +331,7 @@ int luacon_elementReplacement(UPDATE_FUNC_ARGS)
 		lua_pushinteger(luacon_ci->l, nt);
 		callret = lua_pcall(luacon_ci->l, 5, 1, 0);
 		if (callret)
-			luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
+			luacon_ci->Log(CommandInterface::LogError, luacon_geterror().FromUtf8());
 		if(lua_isboolean(luacon_ci->l, -1)){
 			retval = lua_toboolean(luacon_ci->l, -1);
 		}
@@ -391,7 +391,7 @@ int luacon_graphicsReplacement(GRAPHICS_FUNC_ARGS, int i)
 	callret = lua_pcall(luacon_ci->l, 4, 10, 0);
 	if (callret)
 	{
-		luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
+		luacon_ci->Log(CommandInterface::LogError, luacon_geterror().FromUtf8());
 		lua_pop(luacon_ci->l, 1);
 	}
 	else

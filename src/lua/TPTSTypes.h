@@ -84,7 +84,7 @@ public:
 
 class InvalidConversionException: public GeneralException
 {
-	static auto getErrorMsg() { return i18nMulti("Invalid conversion from ", " to "); }
+	static std::array<String, 2> getErrorMsg() { return i18nMulti("Invalid conversion from ", " to "); }
 public:
 	InvalidConversionException(ValueType from_, ValueType to_):
 	GeneralException(getErrorMsg()[0] + AnyType::TypeName(from_).FromAscii() + getErrorMsg()[1] + AnyType::TypeName(to_).FromAscii()) {

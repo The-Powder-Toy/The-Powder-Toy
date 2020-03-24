@@ -295,20 +295,20 @@ void GameController::PlaceSave(ui::Point position)
 void GameController::Install()
 {
 #if defined(MACOSX)
-	new InformationMessage("No installation necessary", "You don't need to install The Powder Toy on OS X", false);
+	new InformationMessage("No installation necessary"_i18n, "You don't need to install The Powder Toy on OS X"_i18n, false);
 #elif defined(WIN) || defined(LIN)
-	new ConfirmPrompt("Install The Powder Toy", "Do you wish to install The Powder Toy on this computer?\nThis allows you to open save files and saves directly from the website.", { [] {
+	new ConfirmPrompt("Install The Powder Toy"_i18n, "Do you wish to install The Powder Toy on this computer?\nThis allows you to open save files and saves directly from the website."_i18n, { [] {
 		if (Client::Ref().DoInstallation())
 		{
-			new InformationMessage("Success", "Installation completed", false);
+			new InformationMessage("Success"_i18n, "Installation completed"_i18n, false);
 		}
 		else
 		{
-			new ErrorMessage("Could not install", "The installation did not complete due to an error");
+			new ErrorMessage("Could not install"_i18n, "The installation did not complete due to an error"_i18n);
 		}
 	} });
 #else
-	new ErrorMessage("Cannot install", "You cannot install The Powder Toy on this platform");
+	new ErrorMessage("Cannot install"_i18n, "You cannot install The Powder Toy on this platform"_i18n);
 #endif
 }
 
@@ -519,12 +519,12 @@ ByteString GameController::StampRegion(ui::Point point1, ui::Point point2)
 		ByteString stampName = Client::Ref().AddStamp(newSave);
 		delete newSave;
 		if (stampName.length() == 0)
-			new ErrorMessage("Could not create stamp", "Error serializing save file");
+			new ErrorMessage("Could not create stamp"_i18n, "Error serializing save file"_i18n);
 		return stampName;
 	}
 	else
 	{
-		new ErrorMessage("Could not create stamp", "Error generating save file");
+		new ErrorMessage("Could not create stamp"_i18n, "Error generating save file"_i18n);
 		return "";
 	}
 }
@@ -840,13 +840,13 @@ void GameController::SwitchGravity()
 	switch (gameModel->GetSimulation()->gravityMode)
 	{
 	case 0:
-		gameModel->SetInfoTip("Gravity: Vertical");
+		gameModel->SetInfoTip("Gravity: Vertical"_i18n);
 		break;
 	case 1:
-		gameModel->SetInfoTip("Gravity: Off");
+		gameModel->SetInfoTip("Gravity: Off"_i18n);
 		break;
 	case 2:
-		gameModel->SetInfoTip("Gravity: Radial");
+		gameModel->SetInfoTip("Gravity: Radial"_i18n);
 		break;
 	}
 }
@@ -858,19 +858,19 @@ void GameController::SwitchAir()
 	switch (gameModel->GetSimulation()->air->airMode)
 	{
 	case 0:
-		gameModel->SetInfoTip("Air: On");
+		gameModel->SetInfoTip("Air: On"_i18n);
 		break;
 	case 1:
-		gameModel->SetInfoTip("Air: Pressure Off");
+		gameModel->SetInfoTip("Air: Pressure Off"_i18n);
 		break;
 	case 2:
-		gameModel->SetInfoTip("Air: Velocity Off");
+		gameModel->SetInfoTip("Air: Velocity Off"_i18n);
 		break;
 	case 3:
-		gameModel->SetInfoTip("Air: Off");
+		gameModel->SetInfoTip("Air: Off"_i18n);
 		break;
 	case 4:
-		gameModel->SetInfoTip("Air: No Update");
+		gameModel->SetInfoTip("Air: No Update"_i18n);
 		break;
 	}
 }
@@ -1164,7 +1164,7 @@ void GameController::OpenSearch(String searchText)
 				}
 				catch(GameModelException & ex)
 				{
-					new ErrorMessage("Cannot open save", ByteString(ex.what()).FromUtf8());
+					new ErrorMessage("Cannot open save"_i18n, ByteString(ex.what()).FromUtf8());
 				}
 			}
 		});
@@ -1179,7 +1179,7 @@ void GameController::OpenLocalSaveWindow(bool asCurrent)
 	GameSave * gameSave = sim->Save(gameModel->GetIncludePressure() != gameView->ShiftBehaviour());
 	if(!gameSave)
 	{
-		new ErrorMessage("Error", "Unable to build save.");
+		new ErrorMessage("Error"_i18n, "Unable to build save."_i18n);
 	}
 	else
 	{
@@ -1213,11 +1213,11 @@ void GameController::OpenLocalSaveWindow(bool asCurrent)
 			Client::Ref().MakeDirectory(LOCAL_SAVE_DIR);
 			std::vector<char> saveData = gameSave->Serialise();
 			if (saveData.size() == 0)
-				new ErrorMessage("Error", "Unable to serialize game data.");
+				new ErrorMessage("Error"_i18n, "Unable to serialize game data."_i18n);
 			else if (Client::Ref().WriteFile(saveData, gameModel->GetSaveFile()->GetName()))
-				new ErrorMessage("Error", "Unable to write save file.");
+				new ErrorMessage("Error"_i18n, "Unable to write save file."_i18n);
 			else
-				gameModel->SetInfoTip("Saved Successfully");
+				gameModel->SetInfoTip("Saved Successfully"_i18n);
 		}
 	}
 }
@@ -1244,7 +1244,7 @@ void GameController::OpenSaveDone()
 		}
 		catch(GameModelException & ex)
 		{
-			new ErrorMessage("Cannot open save", ByteString(ex.what()).FromUtf8());
+			new ErrorMessage("Cannot open save"_i18n, ByteString(ex.what()).FromUtf8());
 		}
 	}
 }
@@ -1326,7 +1326,7 @@ void GameController::OpenTags()
 	}
 	else
 	{
-		new ErrorMessage("Error", "No save open");
+		new ErrorMessage("Error"_i18n, "No save open"_i18n);
 	}
 }
 
@@ -1337,7 +1337,7 @@ void GameController::OpenStamps()
 		if (file)
 		{
 			if (file->GetError().length())
-				new ErrorMessage("Error loading stamp", file->GetError());
+				new ErrorMessage("Error loading stamp"_i18n, file->GetError());
 			else if (localBrowser->GetMoveToFront())
 				Client::Ref().MoveStampToFront(file->GetDisplayName().ToUtf8());
 			LoadStamp(file->GetGameSave());
@@ -1385,7 +1385,7 @@ void GameController::OpenSaveWindow()
 		GameSave * gameSave = sim->Save(gameModel->GetIncludePressure() != gameView->ShiftBehaviour());
 		if(!gameSave)
 		{
-			new ErrorMessage("Error", "Unable to build save.");
+			new ErrorMessage("Error"_i18n, "Unable to build save."_i18n);
 		}
 		else
 		{
@@ -1403,7 +1403,7 @@ void GameController::OpenSaveWindow()
 			}
 			else
 			{
-				SaveInfo tempSave(0, 0, 0, 0, 0, gameModel->GetUser().Username, "");
+				SaveInfo tempSave(0, 0, 0, 0, 0, gameModel->GetUser().Username, ""_ascii);
 				tempSave.SetGameSave(gameSave);
 				new ServerSaveActivity(tempSave, [this](SaveInfo &save) {
 					save.SetVote(1);
@@ -1415,7 +1415,7 @@ void GameController::OpenSaveWindow()
 	}
 	else
 	{
-		new ErrorMessage("Error", "You need to login to upload saves.");
+		new ErrorMessage("Error"_i18n, "You need to login to upload saves."_i18n);
 	}
 }
 
@@ -1427,7 +1427,7 @@ void GameController::SaveAsCurrent()
 		GameSave * gameSave = sim->Save(gameModel->GetIncludePressure() != gameView->ShiftBehaviour());
 		if(!gameSave)
 		{
-			new ErrorMessage("Error", "Unable to build save.");
+			new ErrorMessage("Error"_i18n, "Unable to build save."_i18n);
 		}
 		else
 		{
@@ -1441,7 +1441,7 @@ void GameController::SaveAsCurrent()
 			}
 			else
 			{
-				SaveInfo tempSave(0, 0, 0, 0, 0, gameModel->GetUser().Username, "");
+				SaveInfo tempSave(0, 0, 0, 0, 0, gameModel->GetUser().Username, ""_ascii);
 				tempSave.SetGameSave(gameSave);
 				new ServerSaveActivity(tempSave, true, [this](SaveInfo &save) { LoadSave(&save); });
 			}
@@ -1453,7 +1453,7 @@ void GameController::SaveAsCurrent()
 	}
 	else
 	{
-		new ErrorMessage("Error", "You need to login to upload saves.");
+		new ErrorMessage("Error"_i18n, "You need to login to upload saves."_i18n);
 	}
 }
 
@@ -1473,7 +1473,7 @@ void GameController::Vote(int direction)
 		}
 		catch(GameModelException & ex)
 		{
-			new ErrorMessage("Error while voting", ByteString(ex.what()).FromUtf8());
+			new ErrorMessage("Error while voting"_i18n, ByteString(ex.what()).FromUtf8());
 		}
 	}
 }
@@ -1498,7 +1498,7 @@ String GameController::ElementResolve(int type, int ctype)
 	{
 		return gameModel->GetSimulation()->ElementResolve(type, ctype);
 	}
-	return "";
+	return ""_ascii;
 }
 
 String GameController::BasicParticleInfo(Particle const &sample_part)
@@ -1507,7 +1507,7 @@ String GameController::BasicParticleInfo(Particle const &sample_part)
 	{
 		return gameModel->GetSimulation()->BasicParticleInfo(sample_part);
 	}
-	return "";
+	return ""_ascii;
 }
 
 void GameController::ReloadSim()
@@ -1584,37 +1584,37 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 			UpdateInfo info = Client::Ref().GetUpdateInfo();
 			StringBuilder updateMessage;
 #ifndef MACOSX
-			updateMessage << "Are you sure you want to run the updater? Please save any changes before updating.\n\nCurrent version:\n ";
+			updateMessage << "Are you sure you want to run the updater? Please save any changes before updating.\n\nCurrent version:\n "_i18n;
 #else
-			updateMessage << "Click \"Continue\" to download the latest version from our website.\n\nCurrent version:\n ";
+			updateMessage << "Click \"Continue\" to download the latest version from our website.\n\nCurrent version:\n "_i18n;
 #endif
 
 #ifdef SNAPSHOT
-			updateMessage << "Snapshot " << SNAPSHOT_ID;
+			updateMessage << "Snapshot "_i18n << SNAPSHOT_ID;
 #elif MOD_ID > 0
-			updateMessage << "Mod version " << SNAPSHOT_ID;
+			updateMessage << "Mod version "_i18n << SNAPSHOT_ID;
 #elif defined(BETA)
-			updateMessage << SAVE_VERSION << "." << MINOR_VERSION << " Beta, Build " << BUILD_NUM;
+			updateMessage << SAVE_VERSION << '.' << MINOR_VERSION << " Beta, Build "_i18n << BUILD_NUM;
 #else
-			updateMessage << SAVE_VERSION << "." << MINOR_VERSION << " Stable, Build " << BUILD_NUM;
+			updateMessage << SAVE_VERSION << '.' << MINOR_VERSION << " Stable, Build "_i18n << BUILD_NUM;
 #endif
 
-			updateMessage << "\nNew version:\n ";
+			updateMessage << "\nNew version:\n "_i18n;
 			if (info.Type == UpdateInfo::Beta)
-				updateMessage << info.Major << "." << info.Minor << " Beta, Build " << info.Build;
+				updateMessage << info.Major << '.' << info.Minor << " Beta, Build "_i18n << info.Build;
 			else if (info.Type == UpdateInfo::Snapshot)
 #if MOD_ID > 0
-				updateMessage << "Mod version " << info.Time;
+				updateMessage << "Mod version "_i18n << info.Time;
 #else
-				updateMessage << "Snapshot " << info.Time;
+				updateMessage << "Snapshot "_i18n << info.Time;
 #endif
 			else if(info.Type == UpdateInfo::Stable)
-				updateMessage << info.Major << "." << info.Minor << " Stable, Build " << info.Build;
+				updateMessage << info.Major << '.' << info.Minor << " Stable, Build "_i18n << info.Build;
 
 			if (info.Changelog.length())
-				updateMessage << "\n\nChangelog:\n" << info.Changelog;
+				updateMessage << "\n\nChangelog:\n"_i18n << info.Changelog;
 
-			new ConfirmPrompt("Run Updater", updateMessage.Build(), { [this] { c->RunUpdater(); } });
+			new ConfirmPrompt("Run Updater"_i18n, updateMessage.Build(), { [this] { c->RunUpdater(); } });
 		}
 	};
 
@@ -1622,16 +1622,16 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 	{
 		case UpdateInfo::Snapshot:
 #if MOD_ID > 0
-			gameModel->AddNotification(new UpdateNotification(this, "A new mod update is available - click here to update"));
+			gameModel->AddNotification(new UpdateNotification(this, "A new mod update is available - click here to update"_i18n));
 #else
-			gameModel->AddNotification(new UpdateNotification(this, "A new snapshot is available - click here to update"));
+			gameModel->AddNotification(new UpdateNotification(this, "A new snapshot is available - click here to update"_i18n));
 #endif
 			break;
 		case UpdateInfo::Stable:
-			gameModel->AddNotification(new UpdateNotification(this, "A new version is available - click here to update"));
+			gameModel->AddNotification(new UpdateNotification(this, "A new version is available - click here to update"_i18n));
 			break;
 		case UpdateInfo::Beta:
-			gameModel->AddNotification(new UpdateNotification(this, "A new beta is available - click here to update"));
+			gameModel->AddNotification(new UpdateNotification(this, "A new beta is available - click here to update"_i18n));
 			break;
 	}
 }
