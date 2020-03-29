@@ -29,7 +29,7 @@ void Element::Element_ESNG()
   HeatConduct = 255;
   DefaultProperties.temp = 0.0f;
   
-  Description = "Energetic Singularity. Absorbs heat and releases it as energy on touch.";
+  Description = "Energetic Singularity. Absorbs heat and releases it as energy on touch. VERY DANGEROUS!";
   
 	Properties = TYPE_ENERGY;
 
