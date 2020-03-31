@@ -3,7 +3,7 @@
 void Element::Element_E146()
 {
 	Identifier = "DEFAULT_PT_146";
-	Name = "BRAN"_ascii;
+	Name = "BRAN";
 	Colour = PIXPACK(0xCCCC00);
 	MenuVisible = 0;
 	MenuSection = SC_LIFE;

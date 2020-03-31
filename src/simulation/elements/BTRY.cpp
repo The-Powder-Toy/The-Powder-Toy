@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_BTRY()
 {
 	Identifier = "DEFAULT_PT_BTRY";
-	Name = "BTRY"_ascii;
+	Name = "BTRY";
 	Colour = PIXPACK(0x858505);
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;

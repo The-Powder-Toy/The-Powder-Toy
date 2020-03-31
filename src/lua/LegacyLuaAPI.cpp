@@ -560,12 +560,12 @@ int luatpt_setconsole(lua_State* l)
 int luatpt_log(lua_State* l)
 {
 	int args = lua_gettop(l);
-	String text = ""_ascii;
+	String text = "";
 	for(int i = 1; i <= args; i++)
 	{
 		luaL_tostring(l, -1);
 		if(text.length())
-			text=ByteString(luaL_optstring(l, -1, "")).FromUtf8() + ", "_ascii + text;
+			text=ByteString(luaL_optstring(l, -1, "")).FromUtf8() + ", " + text;
 		else
 			text=ByteString(luaL_optstring(l, -1, "")).FromUtf8();
 		lua_pop(l, 2);
@@ -573,7 +573,7 @@ int luatpt_log(lua_State* l)
 	if((*luacon_currentCommand))
 	{
 		if(luacon_lastError->length())
-			*luacon_lastError += "; "_ascii;
+			*luacon_lastError += "; ";
 		*luacon_lastError += text;
 	}
 	else

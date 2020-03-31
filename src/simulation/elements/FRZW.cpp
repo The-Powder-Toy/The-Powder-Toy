@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_FRZW()
 {
 	Identifier = "DEFAULT_PT_FRZW";
-	Name = "FRZW"_ascii;
+	Name = "FRZW";
 	Colour = PIXPACK(0x1020C0);
 	MenuVisible = 1;
 	MenuSection = SC_CRACKER2;

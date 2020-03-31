@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_ARAY()
 {
 	Identifier = "DEFAULT_PT_ARAY";
-	Name = "ARAY"_ascii;
+	Name = "ARAY";
 	Colour = PIXPACK(0xFFBB00);
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;

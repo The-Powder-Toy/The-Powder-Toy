@@ -5,7 +5,7 @@ int Element_RFRG_update(UPDATE_FUNC_ARGS);
 void Element::Element_RFGL()
 {
 	Identifier = "DEFAULT_PT_RFGL";
-	Name = "RFGL"_ascii;
+	Name = "RFGL";
 	Colour = PIXPACK(0x84C2CF);
 	MenuVisible = 0;
 	MenuSection = SC_LIQUID;

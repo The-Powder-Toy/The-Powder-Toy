@@ -6,7 +6,7 @@ int Element_PIPE_graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_PPIP()
 {
 	Identifier = "DEFAULT_PT_PPIP";
-	Name = "PPIP"_ascii;
+	Name = "PPIP";
 	Colour = PIXPACK(0x444466);
 	MenuVisible = 1;
 	MenuSection = SC_POWERED;

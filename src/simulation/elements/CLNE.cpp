@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_CLNE()
 {
 	Identifier = "DEFAULT_PT_CLNE";
-	Name = "CLNE"_ascii;
+	Name = "CLNE";
 	Colour = PIXPACK(0xFFD010);
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;

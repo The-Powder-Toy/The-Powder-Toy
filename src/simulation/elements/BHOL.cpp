@@ -3,7 +3,7 @@
 void Element::Element_BHOL()
 {
 	Identifier = "DEFAULT_PT_BHOL";
-	Name = "VACU"_ascii;
+	Name = "VACU";
 	Colour = PIXPACK(0x303030);
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;

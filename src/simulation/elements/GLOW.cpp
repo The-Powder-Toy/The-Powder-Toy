@@ -6,7 +6,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_GLOW()
 {
 	Identifier = "DEFAULT_PT_GLOW";
-	Name = "GLOW"_ascii;
+	Name = "GLOW";
 	Colour = PIXPACK(0x445464);
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;

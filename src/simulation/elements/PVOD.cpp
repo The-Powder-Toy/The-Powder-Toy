@@ -6,7 +6,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_PVOD()
 {
 	Identifier = "DEFAULT_PT_PVOD";
-	Name = "PVOD"_ascii;
+	Name = "PVOD";
 	Colour = PIXPACK(0x792020);
 	MenuVisible = 1;
 	MenuSection = SC_POWERED;

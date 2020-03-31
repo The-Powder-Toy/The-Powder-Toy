@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_BCLN()
 {
 	Identifier = "DEFAULT_PT_BCLN";
-	Name = "BCLN"_ascii;
+	Name = "BCLN";
 	Colour = PIXPACK(0xFFD040);
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;

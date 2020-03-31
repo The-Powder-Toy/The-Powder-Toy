@@ -25,7 +25,7 @@ TagsView::TagsView():
 	AddComponent(closeButton);
 	SetCancelButton(closeButton);
 
-	tagInput = new ui::Textbox(ui::Point(8, Size.Y-40), ui::Point(Size.X-60, 16), ""_ascii, "[new tag]"_i18n);
+	tagInput = new ui::Textbox(ui::Point(8, Size.Y-40), ui::Point(Size.X-60, 16), "", "[new tag]"_i18n);
 	tagInput->Appearance.icon = IconTag;
 	tagInput->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	tagInput->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
@@ -132,5 +132,5 @@ void TagsView::addTag()
 	{
 		new ErrorMessage("Could not add tag"_i18n, ByteString(ex.what()).FromUtf8());
 	}
-	tagInput->SetText(""_ascii);
+	tagInput->SetText("");
 }

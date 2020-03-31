@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_BMTL()
 {
 	Identifier = "DEFAULT_PT_BMTL";
-	Name = "BMTL"_ascii;
+	Name = "BMTL";
 	Colour = PIXPACK(0x505070);
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;

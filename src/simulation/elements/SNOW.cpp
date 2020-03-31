@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_SNOW()
 {
 	Identifier = "DEFAULT_PT_SNOW";
-	Name = "SNOW"_ascii;
+	Name = "SNOW";
 	Colour = PIXPACK(0xC0E0FF);
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;

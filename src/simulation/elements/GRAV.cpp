@@ -7,7 +7,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_GRAV()
 {
 	Identifier = "DEFAULT_PT_GRAV";
-	Name = "GRAV"_ascii;
+	Name = "GRAV";
 	Colour = PIXPACK(0x202020);
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;

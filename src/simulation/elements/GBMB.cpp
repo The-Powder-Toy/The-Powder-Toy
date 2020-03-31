@@ -6,7 +6,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_GBMB()
 {
 	Identifier = "DEFAULT_PT_GBMB";
-	Name = "GBMB"_ascii;
+	Name = "GBMB";
 	Colour = PIXPACK(0x1144BB);
 	MenuVisible = 1;
 	MenuSection = SC_FORCE;

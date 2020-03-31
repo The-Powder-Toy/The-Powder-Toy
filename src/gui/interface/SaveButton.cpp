@@ -41,7 +41,7 @@ SaveButton::SaveButton(Point position, Point size, SaveInfo * save_) : SaveButto
 		{
 			int position = Graphics::textwidthx(name, Size.X - 22);
 			name = name.erase(position, name.length()-position);
-			name += "..."_ascii;
+			name += "...";
 		}
 
 		String votes, icon;
@@ -102,7 +102,7 @@ SaveButton::SaveButton(Point position, Point size, SaveFile * file_) : SaveButto
 		{
 			int position = Graphics::textwidthx(name, Size.X - 22);
 			name = name.erase(position, name.length()-position);
-			name += "..."_ascii;
+			name += "...";
 		}
 	}
 }

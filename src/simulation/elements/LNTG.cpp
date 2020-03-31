@@ -3,7 +3,7 @@
 void Element::Element_LNTG()
 {
 	Identifier = "DEFAULT_PT_LNTG";
-	Name = "LN2"_ascii;
+	Name = "LN2";
 	Colour = PIXPACK(0x80A0DF);
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;

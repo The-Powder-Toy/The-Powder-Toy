@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_ANAR()
 {
 	Identifier = "DEFAULT_PT_ANAR";
-	Name = "ANAR"_ascii;
+	Name = "ANAR";
 	Colour = PIXPACK(0xFFFFEE);
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;

@@ -8,7 +8,7 @@ void Element_SOAP_detach(Simulation * sim, int i);
 void Element::Element_PRTI()
 {
 	Identifier = "DEFAULT_PT_PRTI";
-	Name = "PRTI"_ascii;
+	Name = "PRTI";
 	Colour = PIXPACK(0xEB5917);
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;

@@ -6,7 +6,7 @@ int Element_VIBR_graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_VIBR()
 {
 	Identifier = "DEFAULT_PT_VIBR";
-	Name = "VIBR"_ascii;
+	Name = "VIBR";
 	Colour = PIXPACK(0x005000);
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;

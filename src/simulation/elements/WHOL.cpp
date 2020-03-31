@@ -3,7 +3,7 @@
 void Element::Element_WHOL()
 {
 	Identifier = "DEFAULT_PT_WHOL";
-	Name = "VENT"_ascii;
+	Name = "VENT";
 	Colour = PIXPACK(0xEFEFEF);
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;

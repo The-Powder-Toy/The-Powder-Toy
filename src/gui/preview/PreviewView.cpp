@@ -40,7 +40,7 @@ PreviewView::PreviewView():
 	userIsAuthor(false),
 	doOpen(false),
 	doError(false),
-	doErrorMessage(""_ascii),
+	doErrorMessage(""),
 	showAvatars(true),
 	prevPage(false),
 	commentBoxHeight(20),
@@ -72,7 +72,7 @@ PreviewView::PreviewView():
 	reportButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	reportButton->SetIcon(IconReport);
 	reportButton->SetActionCallback({ [this] {
-		new TextPrompt("Report Save"_i18n, "Things to consider when reporting:\n\bw1)\bg When reporting stolen saves, please include the ID of the original save.\n\bw2)\bg Do not ask for saves to be removed from front page unless they break the rules.\n\bw3)\bg You may report saves for comments or tags too (including your own saves)"_i18n, ""_ascii, "[reason]"_i18n, true, { [this](String const &resultText) {
+		new TextPrompt("Report Save"_i18n, "Things to consider when reporting:\n\bw1)\bg When reporting stolen saves, please include the ID of the original save.\n\bw2)\bg Do not ask for saves to be removed from front page unless they break the rules.\n\bw3)\bg You may report saves for comments or tags too (including your own saves)"_i18n, "", "[reason]"_i18n, true, { [this](String const &resultText) {
 			c->Report(resultText);
 		} });
 	} });
@@ -94,17 +94,17 @@ PreviewView::PreviewView():
 	AddComponent(browserOpenButton);
 
 	if(showAvatars)
-		saveNameLabel = new ui::Label(ui::Point(39, (YRES/2)+4), ui::Point(100, 16), ""_ascii);
+		saveNameLabel = new ui::Label(ui::Point(39, (YRES/2)+4), ui::Point(100, 16), "");
 	else
-		saveNameLabel = new ui::Label(ui::Point(5, (YRES/2)+4), ui::Point(100, 16), ""_ascii);
+		saveNameLabel = new ui::Label(ui::Point(5, (YRES/2)+4), ui::Point(100, 16), "");
 	saveNameLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	saveNameLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(saveNameLabel);
 
 	if(showAvatars)
-		saveDescriptionLabel = new ui::Label(ui::Point(5, (YRES/2)+4+15+21), ui::Point((XRES/2)-10, Size.Y-((YRES/2)+4+15+17)-25), ""_ascii);
+		saveDescriptionLabel = new ui::Label(ui::Point(5, (YRES/2)+4+15+21), ui::Point((XRES/2)-10, Size.Y-((YRES/2)+4+15+17)-25), "");
 	else
-		saveDescriptionLabel = new ui::Label(ui::Point(5, (YRES/2)+4+15+19), ui::Point((XRES/2)-10, Size.Y-((YRES/2)+4+15+17)-23), ""_ascii);
+		saveDescriptionLabel = new ui::Label(ui::Point(5, (YRES/2)+4+15+19), ui::Point((XRES/2)-10, Size.Y-((YRES/2)+4+15+17)-23), "");
 	saveDescriptionLabel->SetMultiline(true);
 	saveDescriptionLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	saveDescriptionLabel->Appearance.VerticalAlign = ui::Appearance::AlignTop;
@@ -112,9 +112,9 @@ PreviewView::PreviewView():
 	AddComponent(saveDescriptionLabel);
 
 	if(showAvatars)
-		authorDateLabel = new ui::Label(ui::Point(39, (YRES/2)+4+15), ui::Point(180, 16), ""_ascii);
+		authorDateLabel = new ui::Label(ui::Point(39, (YRES/2)+4+15), ui::Point(180, 16), "");
 	else
-		authorDateLabel = new ui::Label(ui::Point(5, (YRES/2)+4+15), ui::Point(200, 16), ""_ascii);
+		authorDateLabel = new ui::Label(ui::Point(5, (YRES/2)+4+15), ui::Point(200, 16), "");
 	authorDateLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	authorDateLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(authorDateLabel);
@@ -131,12 +131,12 @@ PreviewView::PreviewView():
 		AddComponent(avatarButton);
 	}
 
-	viewsLabel = new ui::Label(ui::Point((XRES/2)-80, (YRES/2)+4+15), ui::Point(80, 16), ""_ascii);
+	viewsLabel = new ui::Label(ui::Point((XRES/2)-80, (YRES/2)+4+15), ui::Point(80, 16), "");
 	viewsLabel->Appearance.HorizontalAlign = ui::Appearance::AlignRight;
 	viewsLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(viewsLabel);
 
-	pageInfo = new ui::Label(ui::Point((XRES/2) + 85, Size.Y+1), ui::Point(70, 16), ""_ascii);
+	pageInfo = new ui::Label(ui::Point((XRES/2) + 85, Size.Y+1), ui::Point(70, 16), "");
 	pageInfo->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	AddComponent(pageInfo);
 
@@ -211,7 +211,7 @@ bool PreviewView::CheckSwearing(String text)
 	for(auto const &pair : swearWords)
 		for(size_t i = 0; i + pair.second <= bytes.length(); i++)
 		{
-			md5_ascii(hash, (unsigned char *)(bytes.data() + i), pair.second);
+			md5(hash, (unsigned char *)(bytes.data() + i), pair.second);
 			if(pair.first == hash)
 				return true;
 		}
@@ -223,7 +223,7 @@ void PreviewView::CheckComment()
 	if (!commentWarningLabel)
 		return;
 	String text = addCommentBox->GetText().ToLower();
-	if (!userIsAuthor && (text.Contains("stolen"_ascii) || text.Contains("copied"_ascii)))
+	if (!userIsAuthor && (text.Contains("stolen") || text.Contains("copied")))
 	{
 		if (!commentHelpText)
 		{
@@ -234,7 +234,7 @@ void PreviewView::CheckComment()
 			commentHelpText = true;
 		}
 	}
-	else if (userIsAuthor && text.Contains("vote"_ascii))
+	else if (userIsAuthor && text.Contains("vote"))
 	{
 		commentWarningLabel->SetText("Do not ask for votes"_i18n);
 		commentHelpText = true;
@@ -438,11 +438,11 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 		if (showAvatars)
 		{
 			avatarButton->SetUsername(save->userName);
-			authorDateLabel->SetText("\bw"_ascii + save->userName.FromUtf8() + " \bg"_ascii + dateType + " \bw"_ascii + format::UnixtimeToDateMini(save->updatedDate).FromAscii());
+			authorDateLabel->SetText("\bw" + save->userName.FromUtf8() + " \bg" + dateType + " \bw" + format::UnixtimeToDateMini(save->updatedDate).FromAscii());
 		}
 		else
 		{
-			authorDateLabel->SetText("\bgAuthor:\bw "_i18n + save->userName.FromUtf8() + " \bg"_ascii + dateType + " \bw"_ascii + format::UnixtimeToDateMini(save->updatedDate).FromAscii());
+			authorDateLabel->SetText("\bgAuthor:\bw "_i18n + save->userName.FromUtf8() + " \bg" + dateType + " \bw" + format::UnixtimeToDateMini(save->updatedDate).FromAscii());
 		}
 		if (Client::Ref().GetAuthUser().UserID && save->userName == Client::Ref().GetAuthUser().Username)
 			userIsAuthor = true;
@@ -490,9 +490,9 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 	{
 		votesUp = 0;
 		votesDown = 0;
-		saveNameLabel->SetText(""_ascii);
-		authorDateLabel->SetText(""_ascii);
-		saveDescriptionLabel->SetText(""_ascii);
+		saveNameLabel->SetText("");
+		authorDateLabel->SetText("");
+		saveDescriptionLabel->SetText("");
 		favButton->Enabled = false;
 		if (!sender->GetCanOpen())
 			openButton->Enabled = false;
@@ -505,7 +505,7 @@ void PreviewView::submitComment()
 	{
 		String comment = addCommentBox->GetText();
 		submitCommentButton->Enabled = false;
-		addCommentBox->SetText(""_ascii);
+		addCommentBox->SetText("");
 		addCommentBox->SetPlaceholder("Submitting comment"_i18n); //This doesn't appear to ever show since no separate thread is created
 		FocusComponent(NULL);
 
@@ -540,7 +540,7 @@ void PreviewView::NotifyCommentBoxEnabledChanged(PreviewModel * sender)
 		commentBoxSizeX = Size.X-(XRES/2)-48;
 		commentBoxSizeY = 17;
 
-		addCommentBox = new ui::Textbox(ui::Point((XRES/2)+4, Size.Y-19), ui::Point(Size.X-(XRES/2)-48, 17), ""_ascii, "Add Comment"_i18n);
+		addCommentBox = new ui::Textbox(ui::Point((XRES/2)+4, Size.Y-19), ui::Point(Size.X-(XRES/2)-48, 17), "", "Add Comment"_i18n);
 		addCommentBox->SetActionCallback({ [this] {
 			CheckComment();
 			commentBoxAutoHeight();

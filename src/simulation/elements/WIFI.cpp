@@ -6,7 +6,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_WIFI()
 {
 	Identifier = "DEFAULT_PT_WIFI";
-	Name = "WIFI"_ascii;
+	Name = "WIFI";
 	Colour = PIXPACK(0x40A060);
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;

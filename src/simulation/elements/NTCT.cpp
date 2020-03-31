@@ -5,7 +5,7 @@ int Element_NTCT_update(UPDATE_FUNC_ARGS);
 void Element::Element_NTCT()
 {
 	Identifier = "DEFAULT_PT_NTCT";
-	Name = "NTCT"_ascii;
+	Name = "NTCT";
 	Colour = PIXPACK(0x505040);
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;

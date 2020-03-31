@@ -6,7 +6,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_HSWC()
 {
 	Identifier = "DEFAULT_PT_HSWC";
-	Name = "HSWC"_ascii;
+	Name = "HSWC";
 	Colour = PIXPACK(0x3B0A0A);
 	MenuVisible = 1;
 	MenuSection = SC_POWERED;

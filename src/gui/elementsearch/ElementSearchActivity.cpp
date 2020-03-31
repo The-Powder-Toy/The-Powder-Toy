@@ -20,7 +20,7 @@ ElementSearchActivity::ElementSearchActivity(GameController * gameController, st
 	firstResult(NULL),
 	gameController(gameController),
 	tools(tools),
-	toolTip(""_ascii),
+	toolTip(""),
 	toolTipPresence(0),
 	shiftPressed(false),
 	ctrlPressed(false),
@@ -33,7 +33,7 @@ ElementSearchActivity::ElementSearchActivity(GameController * gameController, st
 	title->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	AddComponent(title);
 
-	searchField = new ui::Textbox(ui::Point(8, 23), ui::Point(Size.X-16, 17), ""_ascii);
+	searchField = new ui::Textbox(ui::Point(8, 23), ui::Point(Size.X-16, 17), "");
 	searchField->SetActionCallback({ [this] { searchTools(searchField->GetText()); } });
 	searchField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	AddComponent(searchField);
@@ -50,7 +50,7 @@ ElementSearchActivity::ElementSearchActivity(GameController * gameController, st
 	AddComponent(okButton);
 	AddComponent(closeButton);
 
-	searchTools(""_ascii);
+	searchTools("");
 }
 
 void ElementSearchActivity::searchTools(String query)
@@ -143,7 +143,7 @@ void ElementSearchActivity::searchTools(String query)
 		ToolButton * tempButton;
 
 		if(tempTexture)
-			tempButton = new ToolButton(current+viewPosition, ui::Point(30, 18), ""_ascii, tool->GetIdentifier(), tool->GetDescription());
+			tempButton = new ToolButton(current+viewPosition, ui::Point(30, 18), "", tool->GetIdentifier(), tool->GetDescription());
 		else
 			tempButton = new ToolButton(current+viewPosition, ui::Point(30, 18), tool->GetName(), tool->GetIdentifier(), tool->GetDescription());
 

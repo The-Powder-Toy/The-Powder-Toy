@@ -7,7 +7,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_TUNG()
 {
 	Identifier = "DEFAULT_PT_TUNG";
-	Name = "TUNG"_ascii;
+	Name = "TUNG";
 	Colour = PIXPACK(0x505050);
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;

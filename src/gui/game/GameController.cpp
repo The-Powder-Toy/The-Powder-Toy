@@ -1403,7 +1403,7 @@ void GameController::OpenSaveWindow()
 			}
 			else
 			{
-				SaveInfo tempSave(0, 0, 0, 0, 0, gameModel->GetUser().Username, ""_ascii);
+				SaveInfo tempSave(0, 0, 0, 0, 0, gameModel->GetUser().Username, "");
 				tempSave.SetGameSave(gameSave);
 				new ServerSaveActivity(tempSave, [this](SaveInfo &save) {
 					save.SetVote(1);
@@ -1441,7 +1441,7 @@ void GameController::SaveAsCurrent()
 			}
 			else
 			{
-				SaveInfo tempSave(0, 0, 0, 0, 0, gameModel->GetUser().Username, ""_ascii);
+				SaveInfo tempSave(0, 0, 0, 0, 0, gameModel->GetUser().Username, "");
 				tempSave.SetGameSave(gameSave);
 				new ServerSaveActivity(tempSave, true, [this](SaveInfo &save) { LoadSave(&save); });
 			}
@@ -1498,7 +1498,7 @@ String GameController::ElementResolve(int type, int ctype)
 	{
 		return gameModel->GetSimulation()->ElementResolve(type, ctype);
 	}
-	return ""_ascii;
+	return "";
 }
 
 String GameController::BasicParticleInfo(Particle const &sample_part)
@@ -1507,7 +1507,7 @@ String GameController::BasicParticleInfo(Particle const &sample_part)
 	{
 		return gameModel->GetSimulation()->BasicParticleInfo(sample_part);
 	}
-	return ""_ascii;
+	return "";
 }
 
 void GameController::ReloadSim()

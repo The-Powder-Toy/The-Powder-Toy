@@ -6,7 +6,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_CBNW()
 {
 	Identifier = "DEFAULT_PT_CBNW";
-	Name = "BUBW"_ascii;
+	Name = "BUBW";
 	Colour = PIXPACK(0x2030D0);
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;

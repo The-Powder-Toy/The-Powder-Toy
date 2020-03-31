@@ -23,7 +23,7 @@ void ConsoleController::EvaluateCommand(String command)
 {
 	if(command.length())
 	{
-		if (command.BeginsWith("!load "_ascii))
+		if (command.BeginsWith("!load "))
 			CloseConsole();
 		int returnCode = commandInterface->Command(command);
 		consoleModel->AddLastCommand(ConsoleCommand(command, returnCode, commandInterface->GetLastError()));

@@ -6,7 +6,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_EMP()
 {
 	Identifier = "DEFAULT_PT_EMP";
-	Name = "EMP"_ascii;
+	Name = "EMP";
 	Colour = PIXPACK(0x66AAFF);
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;

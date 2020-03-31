@@ -6,7 +6,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_AMTR()
 {
 	Identifier = "DEFAULT_PT_AMTR";
-	Name = "AMTR"_ascii;
+	Name = "AMTR";
 	Colour = PIXPACK(0x808080);
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;

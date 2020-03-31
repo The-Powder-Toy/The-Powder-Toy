@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_NWHL()
 {
 	Identifier = "DEFAULT_PT_NWHL";
-	Name = "WHOL"_ascii;
+	Name = "WHOL";
 	Colour = PIXPACK(0xFFFFFF);
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;

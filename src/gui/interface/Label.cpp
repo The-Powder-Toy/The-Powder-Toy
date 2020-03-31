@@ -206,8 +206,8 @@ void Label::updateSelection()
 	{
 		auto indexL = displayTextWrapper.Clear2Index(selectionIndexL.clear_index);
 		auto indexH = displayTextWrapper.Clear2Index(selectionIndexH.clear_index);
-		displayTextWithSelection.Insert(indexL.wrapped_index    , "\x01"_ascii);
-		displayTextWithSelection.Insert(indexH.wrapped_index + 1, "\x01"_ascii);
+		displayTextWithSelection.Insert(indexL.wrapped_index    , "\x01");
+		displayTextWithSelection.Insert(indexH.wrapped_index + 1, "\x01");
 	}
 }
 

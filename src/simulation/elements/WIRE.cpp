@@ -6,7 +6,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_WIRE()
 {
 	Identifier = "DEFAULT_PT_WIRE";
-	Name = "WWLD"_ascii;
+	Name = "WWLD";
 	Colour = PIXPACK(0xFFCC00);
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;

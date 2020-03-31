@@ -8,7 +8,7 @@ static int perform(Simulation * sim, Particle * cpart, int x, int y, int brushX,
 void SimTool::Tool_MIX()
 {
 	Identifier = "DEFAULT_TOOL_MIX";
-	Name = "MIX"_ascii;
+	Name = "MIX";
 	Colour = PIXPACK(0xFFD090);
 	Description = "Mixes particles."_i18n;
 	Perform = &perform;

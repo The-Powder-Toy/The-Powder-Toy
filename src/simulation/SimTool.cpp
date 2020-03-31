@@ -11,7 +11,7 @@
 
 SimTool::SimTool():
 Identifier("DEFAULT_TOOL_INVALID"),
-Name(""_ascii),
+Name(""),
 Colour(PIXPACK(0xFFFFFF)),
 Description("NULL Tool, does NOTHING"_i18n)
 {

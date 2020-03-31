@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_ISOZ()
 {
 	Identifier = "DEFAULT_PT_ISOZ";
-	Name = "ISOZ"_ascii;
+	Name = "ISOZ";
 	Colour = PIXPACK(0xAA30D0);
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;

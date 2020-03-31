@@ -6,7 +6,7 @@ static void changeType(ELEMENT_CHANGETYPE_FUNC_ARGS);
 void Element::Element_SPAWN2()
 {
 	Identifier = "DEFAULT_PT_SPAWN2";
-	Name = "SPWN2"_ascii;
+	Name = "SPWN2";
 	Colour = PIXPACK(0xAAAAAA);
 	MenuVisible = 0;
 	MenuSection = SC_SOLIDS;

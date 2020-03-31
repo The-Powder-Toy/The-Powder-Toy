@@ -6,7 +6,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_DCEL()
 {
 	Identifier = "DEFAULT_PT_DCEL";
-	Name = "DCEL"_ascii;
+	Name = "DCEL";
 	Colour = PIXPACK(0x99CC00);
 	MenuVisible = 1;
 	MenuSection = SC_FORCE;

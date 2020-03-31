@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_IGNT()
 {
 	Identifier = "DEFAULT_PT_IGNT";
-	Name = "IGNC"_ascii;
+	Name = "IGNC";
 	Colour = PIXPACK(0xC0B050);
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;

@@ -6,7 +6,7 @@ int Element_COAL_graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_COAL()
 {
 	Identifier = "DEFAULT_PT_COAL";
-	Name = "COAL"_ascii;
+	Name = "COAL";
 	Colour = PIXPACK(0x222222);
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;

@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_URAN()
 {
 	Identifier = "DEFAULT_PT_URAN";
-	Name = "URAN"_ascii;
+	Name = "URAN";
 	Colour = PIXPACK(0x707020);
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;

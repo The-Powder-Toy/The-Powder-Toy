@@ -6,7 +6,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_SWCH()
 {
 	Identifier = "DEFAULT_PT_SWCH";
-	Name = "SWCH"_ascii;
+	Name = "SWCH";
 	Colour = PIXPACK(0x103B11);
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;

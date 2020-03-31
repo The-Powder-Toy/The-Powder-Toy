@@ -221,7 +221,7 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	luacon_currentCommand = &currentCommand;
 	luacon_lastError = &lastError;
 
-	lastCode = ""_ascii;
+	lastCode = "";
 
 	//Replace print function with our screen logging thingy
 	lua_pushcfunction(l, luatpt_log);
@@ -2703,7 +2703,7 @@ void luaCreateWrapper(ELEMENT_CREATE_FUNC_ARGS)
 		lua_pushinteger(luacon_ci->l, v);
 		if (lua_pcall(luacon_ci->l, 5, 0, 0))
 		{
-			luacon_ci->Log(CommandInterface::LogError, "In create func: "_ascii + luacon_geterror().FromUtf8());
+			luacon_ci->Log(CommandInterface::LogError, "In create func: " + luacon_geterror().FromUtf8());
 			lua_pop(luacon_ci->l, 1);
 		}
 	}
@@ -2721,7 +2721,7 @@ bool luaCreateAllowedWrapper(ELEMENT_CREATE_ALLOWED_FUNC_ARGS)
 		lua_pushinteger(luacon_ci->l, t);
 		if (lua_pcall(luacon_ci->l, 4, 1, 0))
 		{
-			luacon_ci->Log(CommandInterface::LogError, "In create allowed: "_ascii + luacon_geterror().FromUtf8());
+			luacon_ci->Log(CommandInterface::LogError, "In create allowed: " + luacon_geterror().FromUtf8());
 			lua_pop(luacon_ci->l, 1);
 		}
 		else
@@ -2746,7 +2746,7 @@ void luaChangeTypeWrapper(ELEMENT_CHANGETYPE_FUNC_ARGS)
 		lua_pushinteger(luacon_ci->l, to);
 		if (lua_pcall(luacon_ci->l, 5, 0, 0))
 		{
-			luacon_ci->Log(CommandInterface::LogError, "In change type: "_ascii + luacon_geterror().FromUtf8());
+			luacon_ci->Log(CommandInterface::LogError, "In change type: " + luacon_geterror().FromUtf8());
 			lua_pop(luacon_ci->l, 1);
 		}
 	}
@@ -3916,7 +3916,7 @@ int LuaScriptInterface::Command(String command)
 {
 	if (command[0] == '!')
 	{
-		lastError = ""_ascii;
+		lastError = "";
 		int ret = legacy->Command(command.Substr(1));
 		lastError = legacy->GetLastError();
 		return ret;
@@ -3924,13 +3924,13 @@ int LuaScriptInterface::Command(String command)
 	else
 	{
 		int level = lua_gettop(l), ret = -1;
-		String text = ""_ascii;
-		lastError = ""_ascii;
+		String text = "";
+		lastError = "";
 		currentCommand = true;
 		if (lastCode.length())
-			lastCode += "\n"_ascii;
+			lastCode += "\n";
 		lastCode += command;
-		ByteString tmp = ("return "_ascii + lastCode).ToUtf8();
+		ByteString tmp = ("return " + lastCode).ToUtf8();
 		ui::Engine::Ref().LastTick(Platform::GetTime());
 		luaL_loadbuffer(l, tmp.c_str(), tmp.length(), "@console");
 		if (lua_type(l, -1) != LUA_TFUNCTION)
@@ -3944,13 +3944,13 @@ int LuaScriptInterface::Command(String command)
 			ByteString err = luacon_geterror();
 			lastError = err.FromUtf8();
 			if (err.Contains("near '<eof>'")) //the idea stolen from lua-5.1.5/lua.c
-				lastError = "..."_ascii;
+				lastError = "...";
 			else
-				lastCode = ""_ascii;
+				lastCode = "";
 		}
 		else
 		{
-			lastCode = ""_ascii;
+			lastCode = "";
 			ret = lua_pcall(l, 0, LUA_MULTRET, 0);
 			if (ret)
 				lastError = luacon_geterror().FromUtf8();
@@ -3960,7 +3960,7 @@ int LuaScriptInterface::Command(String command)
 				{
 					luaL_tostring(l, level);
 					if (text.length())
-						text += ", "_ascii + ByteString(luaL_optstring(l, -1, "")).FromUtf8();
+						text += ", " + ByteString(luaL_optstring(l, -1, "")).FromUtf8();
 					else
 						text = ByteString(luaL_optstring(l, -1, "")).FromUtf8();
 					lua_pop(l, 1);
@@ -3968,7 +3968,7 @@ int LuaScriptInterface::Command(String command)
 				if (text.length())
 				{
 					if (lastError.length())
-						lastError += "; "_ascii + text;
+						lastError += "; " + text;
 					else
 						lastError = text;
 				}
@@ -4014,13 +4014,13 @@ String highlight(String command)
 			String::value_type const *wstart = raw + pos;
 			while((w = wstart[len]) && ((w >= 'A' && w <= 'Z') || (w >= 'a' && w <= 'z') || (w >= '0' && w <= '9') || w == '_'))
 				len++;
-#define CMP(X) (String(wstart, len) == X##_ascii)
+#define CMP(X) (String(wstart, len) == X)
 			if(CMP("and") || CMP("break") || CMP("do") || CMP("else") || CMP("elseif") || CMP("end") || CMP("for") || CMP("function") || CMP("if") || CMP("in") || CMP("local") || CMP("not") || CMP("or") || CMP("repeat") || CMP("return") || CMP("then") || CMP("until") || CMP("while"))
-				result << "\x0F\xB5\x89\x01"_ascii << String(wstart, len) << "\bw"_ascii;
+				result << "\x0F\xB5\x89\x01" << String(wstart, len) << "\bw";
 			else if(CMP("false") || CMP("nil") || CMP("true"))
-				result << "\x0F\xCB\x4B\x16"_ascii << String(wstart, len) << "\bw"_ascii;
+				result << "\x0F\xCB\x4B\x16" << String(wstart, len) << "\bw";
 			else
-				result << "\x0F\x2A\xA1\x98"_ascii << String(wstart, len) << "\bw"_ascii;
+				result << "\x0F\x2A\xA1\x98" << String(wstart, len) << "\bw";
 #undef CMP
 			pos += len;
 		}
@@ -4033,7 +4033,7 @@ String highlight(String command)
 				String::value_type const *wstart = raw + pos;
 				while((w = wstart[len]) && ((w >= '0' && w <= '9') || (w >= 'A' && w <= 'F') || (w >= 'a' && w <= 'f')))
 					len++;
-				result << "\x0F\xD3\x36\x82"_ascii << String(wstart, len) << "\bw"_ascii;
+				result << "\x0F\xD3\x36\x82" << String(wstart, len) << "\bw";
 				pos += len;
 			}
 			else
@@ -4062,7 +4062,7 @@ String highlight(String command)
 					while((w = wstart[len]) && (w >= '0' && w <= '9'))
 						len++;
 				}
-				result << "\x0F\xD3\x36\x82"_ascii << String(wstart, len) << "\bw"_ascii;
+				result << "\x0F\xD3\x36\x82" << String(wstart, len) << "\bw";
 				pos += len;
 			}
 		}
@@ -4094,7 +4094,7 @@ String highlight(String command)
 					}
 					len++;
 				}
-				result << "\x0F\xDC\x32\x2F"_ascii << String(wstart, len) << "\bw"_ascii;
+				result << "\x0F\xDC\x32\x2F" << String(wstart, len) << "\bw";
 				pos += len;
 			}
 			else
@@ -4110,7 +4110,7 @@ String highlight(String command)
 				}
 				if(w == c)
 					len++;
-				result << "\x0F\xDC\x32\x2F"_ascii << String(wstart, len) << "\bw"_ascii;
+				result << "\x0F\xDC\x32\x2F" << String(wstart, len) << "\bw";
 				pos += len;
 			}
 		}
@@ -4142,7 +4142,7 @@ String highlight(String command)
 					}
 					len++;
 				}
-				result << "\x0F\x85\x99\x01"_ascii << String(wstart, len) << "\bw"_ascii;
+				result << "\x0F\x85\x99\x01" << String(wstart, len) << "\bw";
 				pos += len;
 			}
 			else
@@ -4152,18 +4152,18 @@ String highlight(String command)
 				String::value_type const *wstart = raw + pos;
 				while((w = wstart[len]) && (w != '\n'))
 					len++;
-				result << "\x0F\x85\x99\x01"_ascii << String(wstart, len) << "\bw"_ascii;
+				result << "\x0F\x85\x99\x01" << String(wstart, len) << "\bw";
 				pos += len;
 			}
 		}
 		else if(c == '{' || c == '}')
 		{
-			result << "\x0F\xCB\x4B\x16"_ascii << c << "\bw"_ascii;
+			result << "\x0F\xCB\x4B\x16" << c << "\bw";
 			pos++;
 		}
 		else if(c == '.' && raw[pos + 1] == '.' && raw[pos + 2] == '.')
 		{
-			result << "\x0F\x2A\xA1\x98...\bw"_ascii;
+			result << "\x0F\x2A\xA1\x98...\bw";
 			pos += 3;
 		}
 		else
@@ -4179,7 +4179,7 @@ String LuaScriptInterface::FormatCommand(String command)
 {
 	if(command.size() && command[0] == '!')
 	{
-		return "!"_ascii + legacy->FormatCommand(command.Substr(1));
+		return "!" + legacy->FormatCommand(command.Substr(1));
 	}
 	else
 		return highlight(command);

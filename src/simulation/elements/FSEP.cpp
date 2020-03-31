@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_FSEP()
 {
 	Identifier = "DEFAULT_PT_FSEP";
-	Name = "FSEP"_ascii;
+	Name = "FSEP";
 	Colour = PIXPACK(0x63AD5F);
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;

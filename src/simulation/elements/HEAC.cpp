@@ -6,7 +6,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_HEAC()
 {
 	Identifier = "DEFAULT_PT_HEAC";
-	Name = "HEAC"_ascii;
+	Name = "HEAC";
 	Colour = PIXPACK(0xCB6351);
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;

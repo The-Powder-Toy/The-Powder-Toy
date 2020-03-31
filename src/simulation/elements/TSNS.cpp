@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_TSNS()
 {
 	Identifier = "DEFAULT_PT_TSNS";
-	Name = "TSNS"_ascii;
+	Name = "TSNS";
 	Colour = PIXPACK(0xFD00D5);
 	MenuVisible = 1;
 	MenuSection = SC_SENSOR;

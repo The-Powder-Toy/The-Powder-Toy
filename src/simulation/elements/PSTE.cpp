@@ -3,7 +3,7 @@
 void Element::Element_PSTE()
 {
 	Identifier = "DEFAULT_PT_PSTE";
-	Name = "PSTE"_ascii;
+	Name = "PSTE";
 	Colour = PIXPACK(0xAA99AA);
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;

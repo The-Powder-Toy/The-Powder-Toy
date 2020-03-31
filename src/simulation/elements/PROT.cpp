@@ -8,7 +8,7 @@ static int DeutImplosion(Simulation * sim, int n, int x, int y, float temp, int 
 void Element::Element_PROT()
 {
 	Identifier = "DEFAULT_PT_PROT";
-	Name = "PROT"_ascii;
+	Name = "PROT";
 	Colour = PIXPACK(0x990000);
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;

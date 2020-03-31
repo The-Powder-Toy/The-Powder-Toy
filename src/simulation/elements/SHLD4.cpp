@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_SHLD4()
 {
 	Identifier = "DEFAULT_PT_SHLD4";
-	Name = "SHD4"_ascii;
+	Name = "SHD4";
 	Colour = PIXPACK(0x212121);
 	MenuVisible = 0;
 	MenuSection = SC_CRACKER2;

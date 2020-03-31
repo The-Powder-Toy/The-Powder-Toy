@@ -3,7 +3,7 @@
 void Element::Element_THRM()
 {
 	Identifier = "DEFAULT_PT_THRM";
-	Name = "THRM"_ascii;
+	Name = "THRM";
 	Colour = PIXPACK(0xA08090);
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;

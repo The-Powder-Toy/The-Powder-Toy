@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_CONV()
 {
 	Identifier = "DEFAULT_PT_CONV";
-	Name = "CONV"_ascii;
+	Name = "CONV";
 	Colour = PIXPACK(0x0AAB0A);
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;

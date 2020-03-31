@@ -32,7 +32,7 @@ SearchController::SearchController(std::function<void ()> onDone_):
 	searchModel->AddObserver(searchView);
 	searchView->AttachController(this);
 
-	searchModel->UpdateSaveList(1, ""_ascii);
+	searchModel->UpdateSaveList(1, "");
 
 	onDone = onDone_;
 }

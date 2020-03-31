@@ -7,7 +7,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_SPRK()
 {
 	Identifier = "DEFAULT_PT_SPRK";
-	Name = "SPRK"_ascii;
+	Name = "SPRK";
 	Colour = PIXPACK(0xFFFF80);
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;

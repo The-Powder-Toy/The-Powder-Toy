@@ -687,7 +687,7 @@ int main(int argc, char * argv[])
 	}
 #endif // I18N_DEBUG
 
-	String localeName = Client::Ref().GetPrefString("Locale", ""_ascii);
+	String localeName = Client::Ref().GetPrefString("Locale", "");
 	currentLocale = locales[0];
 	for(Locale const *locale : locales)
 		if(locale->GetName() == localeName)
@@ -733,7 +733,7 @@ int main(int argc, char * argv[])
 			Client::Ref().SetPref("Proxy", arguments["proxy"]);
 		}
 	}
-	else if(Client::Ref().GetPrefString("Proxy", ""_ascii).length())
+	else if(Client::Ref().GetPrefString("Proxy", "").length())
 	{
 		proxyString = (Client::Ref().GetPrefByteString("Proxy", ""));
 	}

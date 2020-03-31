@@ -7,7 +7,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_PLNT()
 {
 	Identifier = "DEFAULT_PT_PLNT";
-	Name = "PLNT"_ascii;
+	Name = "PLNT";
 	Colour = PIXPACK(0x0CAC00);
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;

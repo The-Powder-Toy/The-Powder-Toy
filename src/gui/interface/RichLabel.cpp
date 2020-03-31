@@ -29,7 +29,7 @@ public:
 RichLabel::RichLabel(Point position, Point size, String labelText):
 	Component(position, size),
 	textSource(labelText),
-	displayText(""_ascii)
+	displayText("")
 {
 	updateRichText();
 }
@@ -42,7 +42,7 @@ RichLabel::~RichLabel()
 void RichLabel::updateRichText()
 {
 	regions.clear();
-	displayText = ""_ascii;
+	displayText = "";
 
 	if(textSource.length())
 	{

@@ -3,7 +3,7 @@
 void Element::Element_DMND()
 {
 	Identifier = "DEFAULT_PT_DMND";
-	Name = "DMND"_ascii;
+	Name = "DMND";
 	Colour = PIXPACK(0xCCFFFF);
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;

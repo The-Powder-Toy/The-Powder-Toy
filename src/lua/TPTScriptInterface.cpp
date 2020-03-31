@@ -26,7 +26,7 @@ TPTScriptInterface::TPTScriptInterface(GameController * c, GameModel * m): Comma
 
 int TPTScriptInterface::Command(String command)
 {
-	lastError = ""_ascii;
+	lastError = "";
 	std::deque<String> words;
 	std::deque<AnyType> commandWords;
 	int retCode = -1;
@@ -62,21 +62,21 @@ ValueType TPTScriptInterface::testType(String word)
 	size_t i = 0;
 	String::value_type const *rawWord = word.c_str();
 	//Function
-	if (word == "set"_ascii)
+	if (word == "set")
 		return TypeFunction;
-	else if (word == "create"_ascii)
+	else if (word == "create")
 		return TypeFunction;
-	else if (word == "delete"_ascii)
+	else if (word == "delete")
 		return TypeFunction;
-	else if (word == "kill"_ascii)
+	else if (word == "kill")
 		return TypeFunction;
-	else if (word == "load"_ascii)
+	else if (word == "load")
 		return TypeFunction;
-	else if (word == "reset"_ascii)
+	else if (word == "reset")
 		return TypeFunction;
-	else if (word == "bubble"_ascii)
+	else if (word == "bubble")
 		return TypeFunction;
-	else if (word == "quit"_ascii)
+	else if (word == "quit")
 		return TypeFunction;
 
 	//Basic type
@@ -181,19 +181,19 @@ AnyType TPTScriptInterface::eval(std::deque<String> * words)
 	switch(wordType)
 	{
 	case TypeFunction:
-		if(word == "set"_ascii)
+		if(word == "set")
 			return tptS_set(words);
-		else if(word == "create"_ascii)
+		else if(word == "create")
 			return tptS_create(words);
-		else if(word == "delete"_ascii || word == "kill"_ascii)
+		else if(word == "delete" || word == "kill")
 			return tptS_delete(words);
-		else if(word == "load"_ascii)
+		else if(word == "load")
 			return tptS_load(words);
-		else if(word == "reset"_ascii)
+		else if(word == "reset")
 			return tptS_reset(words);
-		else if(word == "bubble"_ascii)
+		else if(word == "bubble")
 			return tptS_bubble(words);
-		else if(word == "quit"_ascii)
+		else if(word == "quit")
 			return tptS_quit(words);
 		break;
 	case TypeNumber:
@@ -204,7 +204,7 @@ AnyType TPTScriptInterface::eval(std::deque<String> * words)
 	{
 		int x, y;
 		if(String::Split comma = word.SplitNumber(x))
-			if(comma.After().BeginsWith(","_ascii))
+			if(comma.After().BeginsWith(","))
 				if(comma.After().Substr(1).SplitNumber(y))
 					return PointType(x, y);
 		return PointType(0, 0);
@@ -232,20 +232,20 @@ String TPTScriptInterface::FormatCommand(String command)
 		switch(cType)
 		{
 		case TypeFunction:
-			outputData += "\bt"_ascii;
+			outputData += "\bt";
 			break;
 		case TypeNumber:
 		case TypePoint:
-			outputData += "\bo"_ascii;
+			outputData += "\bo";
 			break;
 		case TypeString:
-			outputData += "\bg"_ascii;
+			outputData += "\bg";
 			break;
 		default:
-			outputData += "\bw"_ascii;
+			outputData += "\bw";
 			break;
 		}
-		outputData += words.front() + " "_ascii;
+		outputData += words.front() + " ";
 		words.pop_front();
 	}
 	return outputData;
@@ -281,7 +281,7 @@ AnyType TPTScriptInterface::tptS_set(std::deque<String> * words)
 	}
 	else if(value.GetType() == TypeString)
 	{
-		if (property.Value() == "temp"_ascii)
+		if (property.Value() == "temp")
 		{
 			String newString = ((StringType)value).Value();
 			if (newString.at(newString.length()-1) == 'C')
@@ -305,7 +305,7 @@ AnyType TPTScriptInterface::tptS_set(std::deque<String> * words)
 	}
 	else
 		throw GeneralException("Invalid value for assignment"_i18n);
-	if (property.Value() == "type"_ascii && (newValue < 0 || newValue >= PT_NUM || !sim->elements[newValue].Enabled))
+	if (property.Value() == "type" && (newValue < 0 || newValue >= PT_NUM || !sim->elements[newValue].Enabled))
 		throw GeneralException("Invalid element"_i18n);
 
 	if (selector.GetType() == TypePoint || selector.GetType() == TypeNumber)
@@ -339,7 +339,7 @@ AnyType TPTScriptInterface::tptS_set(std::deque<String> * words)
 		}
 		returnValue = 1;
 	}
-	else if (selector.GetType() == TypeString && ((StringType)selector).Value() == "all"_ascii)
+	else if (selector.GetType() == TypeString && ((StringType)selector).Value() == "all")
 	{
 		switch(propertyFormat)
 		{
@@ -548,7 +548,7 @@ AnyType TPTScriptInterface::tptS_reset(std::deque<String> * words)
 
 	Simulation * sim = m->GetSimulation();
 
-	if (resetStr == "pressure"_ascii)
+	if (resetStr == "pressure")
 	{
 		for (int nx = 0; nx < XRES/CELL; nx++)
 			for (int ny = 0; ny < YRES/CELL; ny++)
@@ -556,7 +556,7 @@ AnyType TPTScriptInterface::tptS_reset(std::deque<String> * words)
 				sim->air->pv[ny][nx] = 0;
 			}
 	}
-	else if (resetStr == "velocity"_ascii)
+	else if (resetStr == "velocity")
 	{
 		for (int nx = 0; nx < XRES/CELL; nx++)
 			for (int ny = 0; ny < YRES/CELL; ny++)
@@ -565,11 +565,11 @@ AnyType TPTScriptInterface::tptS_reset(std::deque<String> * words)
 				sim->air->vy[ny][nx] = 0;
 			}
 	}
-	else if (resetStr == "sparks"_ascii)
+	else if (resetStr == "sparks")
 	{
 		c->ResetSpark();
 	}
-	else if (resetStr == "temp"_ascii)
+	else if (resetStr == "temp")
 	{
 		for (int i = 0; i < NPART; i++)
 		{

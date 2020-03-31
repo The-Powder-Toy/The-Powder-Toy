@@ -38,7 +38,7 @@ SaveInfo::SaveInfo(int _id, int _createdDate, int _updatedDate, int _votesUp, in
 	Version(0),
 	userName(_userName),
 	name(_name),
-	Description(""_ascii),
+	Description(""),
 	Published(false),
 	tags(),
 	gameSave(NULL)

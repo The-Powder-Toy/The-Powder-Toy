@@ -7,7 +7,7 @@ bool Element_PCLN_ctypeDraw(CTYPEDRAW_FUNC_ARGS);
 void Element::Element_PCLN()
 {
 	Identifier = "DEFAULT_PT_PCLN";
-	Name = "PCLN"_ascii;
+	Name = "PCLN";
 	Colour = PIXPACK(0x3B3B0A);
 	MenuVisible = 1;
 	MenuSection = SC_POWERED;

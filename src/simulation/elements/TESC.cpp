@@ -5,7 +5,7 @@ static void create(ELEMENT_CREATE_FUNC_ARGS);
 void Element::Element_TESC()
 {
 	Identifier = "DEFAULT_PT_TESC";
-	Name = "TESC"_ascii;
+	Name = "TESC";
 	Colour = PIXPACK(0x707040);
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;

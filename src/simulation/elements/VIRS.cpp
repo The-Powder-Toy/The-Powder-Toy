@@ -6,7 +6,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_VIRS()
 {
 	Identifier = "DEFAULT_PT_VIRS";
-	Name = "VIRS"_ascii;
+	Name = "VIRS";
 	Colour = PIXPACK(0xFE11F6);
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;

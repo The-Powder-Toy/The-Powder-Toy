@@ -7,7 +7,7 @@ static void changeType(ELEMENT_CHANGETYPE_FUNC_ARGS);
 void Element::Element_SOAP()
 {
 	Identifier = "DEFAULT_PT_SOAP";
-	Name = "SOAP"_ascii;
+	Name = "SOAP";
 	Colour = PIXPACK(0xF5F5DC);
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;

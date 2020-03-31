@@ -7,7 +7,7 @@ static void changeType(ELEMENT_CHANGETYPE_FUNC_ARGS);
 void Element::Element_ETRD()
 {
 	Identifier = "DEFAULT_PT_ETRD";
-	Name = "ETRD"_ascii;
+	Name = "ETRD";
 	Colour = PIXPACK(0x404040);
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;

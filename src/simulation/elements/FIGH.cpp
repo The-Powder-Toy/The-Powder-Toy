@@ -14,7 +14,7 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS);
 void Element::Element_FIGH()
 {
 	Identifier = "DEFAULT_PT_FIGH";
-	Name = "FIGH"_ascii;
+	Name = "FIGH";
 	Colour = PIXPACK(0xFFE0A0);
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;

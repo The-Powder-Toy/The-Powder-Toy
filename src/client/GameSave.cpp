@@ -675,7 +675,7 @@ void GameSave::readOPS(char * data, int dataLength)
 							bson_iterator signiter;
 							bson_iterator_subiterator(&subiter, &signiter);
 
-							sign tempSign(""_ascii, 0, 0, sign::Left);
+							sign tempSign("", 0, 0, sign::Left);
 							while (bson_iterator_next(&signiter))
 							{
 								if (!strcmp(bson_iterator_key(&signiter), "text") && bson_iterator_type(&signiter) == BSON_STRING)
@@ -683,13 +683,13 @@ void GameSave::readOPS(char * data, int dataLength)
 									tempSign.text = format::CleanString(ByteString(bson_iterator_string(&signiter)).FromUtf8(), true, true, true).Substr(0, 45);
 									if (majorVersion < 94 || (majorVersion == 94 && minorVersion < 2))
 									{
-										if (tempSign.text == "{t}"_ascii)
+										if (tempSign.text == "{t}")
 										{
-											tempSign.text = "Temp: {t}"_ascii;
+											tempSign.text = "Temp: {t}";
 										}
-										else if (tempSign.text == "{p}"_ascii)
+										else if (tempSign.text == "{p}")
 										{
-											tempSign.text = "Pressure: {p}"_ascii;
+											tempSign.text = "Pressure: {p}";
 										}
 									}
 								}
@@ -826,7 +826,7 @@ void GameSave::readOPS(char * data, int dataLength)
 				if (major > SAVE_VERSION || (major == SAVE_VERSION && minor > MINOR_VERSION))
 #endif
 				{
-					String errorMessage = String::Build("Save from a newer version: Requires version "_i18n, major, "."_ascii, minor);
+					String errorMessage = String::Build("Save from a newer version: Requires version "_i18n, major, ".", minor);
 					throw ParseException(ParseException::WrongVersion, errorMessage);
 				}
 #if defined(SNAPSHOT) || defined(DEBUG)
@@ -1358,7 +1358,7 @@ void GameSave::readPSv(char * saveDataChar, int dataLength)
 
 	std::vector<sign> tempSigns;
 	char tempSignText[255];
-	sign tempSign(""_ascii, 0, 0, sign::Left);
+	sign tempSign("", 0, 0, sign::Left);
 
 	//Gol data used to read older saves
 	std::vector<int> goltype = LoadGOLTypes();
@@ -1979,13 +1979,13 @@ void GameSave::readPSv(char * saveDataChar, int dataLength)
 		memcpy(tempSignText, data+p, x);
 		tempSignText[x] = 0;
 		tempSign.text = format::CleanString(ByteString(tempSignText).FromUtf8(), true, true, true).Substr(0, 45);
-		if (tempSign.text == "{t}"_ascii)
+		if (tempSign.text == "{t}")
 		{
-			tempSign.text = "Temp: {t}"_ascii;
+			tempSign.text = "Temp: {t}";
 		}
-		else if (tempSign.text == "{p}"_ascii)
+		else if (tempSign.text == "{p}")
 		{
-			tempSign.text = "Pressure: {p}"_ascii;
+			tempSign.text = "Pressure: {p}";
 		}
 		tempSigns.push_back(tempSign);
 		p += x;

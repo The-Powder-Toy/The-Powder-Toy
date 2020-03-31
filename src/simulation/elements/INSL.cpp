@@ -3,7 +3,7 @@
 void Element::Element_INSL()
 {
 	Identifier = "DEFAULT_PT_INSL";
-	Name = "INSL"_ascii;
+	Name = "INSL";
 	Colour = PIXPACK(0x9EA3B6);
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;

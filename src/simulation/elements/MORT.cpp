@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_MORT()
 {
 	Identifier = "DEFAULT_PT_MORT";
-	Name = "MORT"_ascii;
+	Name = "MORT";
 	Colour = PIXPACK(0xE0E0E0);
 	MenuVisible = 1;
 	MenuSection = SC_CRACKER2;

@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_CAUS()
 {
 	Identifier = "DEFAULT_PT_CAUS";
-	Name = "CAUS"_ascii;
+	Name = "CAUS";
 	Colour = PIXPACK(0x80FFA0);
 	MenuVisible = 1;
 	MenuSection = SC_GAS;

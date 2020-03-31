@@ -69,10 +69,10 @@ sim(sim_)
 	}
 	property->SetOption(Client::Ref().GetPrefInteger("Prop.Type", 0));
 
-	textField = new ui::Textbox(ui::Point(8, 46), ui::Point(Size.X-16, 16), ""_ascii, "[value]"_i18n);
+	textField = new ui::Textbox(ui::Point(8, 46), ui::Point(Size.X-16, 16), "", "[value]"_i18n);
 	textField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	textField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-	textField->SetText(Client::Ref().GetPrefString("Prop.Value", ""_ascii));
+	textField->SetText(Client::Ref().GetPrefString("Prop.Value", ""));
 	AddComponent(textField);
 	FocusComponent(textField);
 
@@ -91,12 +91,12 @@ void PropertyWindow::SetProperty()
 				case StructProperty::ParticleType:
 				{
 					int v;
-					if(value.length() > 2 && value.BeginsWith("0x"_ascii))
+					if(value.length() > 2 && value.BeginsWith("0x"))
 					{
 						//0xC0FFEE
 						v = value.Substr(2).ToNumber<unsigned int>(Format::Hex());
 					}
-					else if(value.length() > 1 && value.BeginsWith("#"_ascii))
+					else if(value.length() > 1 && value.BeginsWith("#"))
 					{
 						//#C0FFEE
 						v = value.Substr(1).ToNumber<unsigned int>(Format::Hex());
@@ -134,12 +134,12 @@ void PropertyWindow::SetProperty()
 				case StructProperty::UInteger:
 				{
 					unsigned int v;
-					if(value.length() > 2 && value.BeginsWith("0x"_ascii))
+					if(value.length() > 2 && value.BeginsWith("0x"))
 					{
 						//0xC0FFEE
 						v = value.Substr(2).ToNumber<unsigned int>(Format::Hex());
 					}
-					else if(value.length() > 1 && value.BeginsWith("#"_ascii))
+					else if(value.length() > 1 && value.BeginsWith("#"))
 					{
 						//#C0FFEE
 						v = value.Substr(1).ToNumber<unsigned int>(Format::Hex());
@@ -156,12 +156,12 @@ void PropertyWindow::SetProperty()
 				}
 				case StructProperty::Float:
 				{
-					if (value.EndsWith("C"_ascii))
+					if (value.EndsWith("C"))
 					{
 						float v = value.SubstrFromEnd(1).ToNumber<float>();
 						tool->propValue.Float = v + 273.15;
 					}
-					else if(value.EndsWith("F"_ascii))
+					else if(value.EndsWith("F"))
 					{
 						float v = value.SubstrFromEnd(1).ToNumber<float>();
 						tool->propValue.Float = (v-32.0f)*5/9+273.15f;

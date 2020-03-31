@@ -6,7 +6,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_BOMB()
 {
 	Identifier = "DEFAULT_PT_BOMB";
-	Name = "BOMB"_ascii;
+	Name = "BOMB";
 	Colour = PIXPACK(0xFFF288);
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;

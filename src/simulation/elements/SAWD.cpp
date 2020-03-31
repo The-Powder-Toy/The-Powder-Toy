@@ -3,7 +3,7 @@
 void Element::Element_SAWD()
 {
 	Identifier = "DEFAULT_PT_SAWD";
-	Name = "SAWD"_ascii;
+	Name = "SAWD";
 	Colour = PIXPACK(0xF0F0A0);
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;

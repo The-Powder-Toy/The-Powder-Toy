@@ -93,7 +93,7 @@ FileBrowserActivity::FileBrowserActivity(ByteString directory, OnSelected onSele
 	titleLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(titleLabel);
 
-	ui::Textbox * textField = new ui::Textbox(ui::Point(8, 25), ui::Point(Size.X-16, 16), ""_ascii, "[search]"_i18n);
+	ui::Textbox * textField = new ui::Textbox(ui::Point(8, 25), ui::Point(Size.X-16, 16), "", "[search]"_i18n);
 	textField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	textField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	textField->SetActionCallback({ [this, textField] { DoSearch(textField->GetText().ToUtf8()); } });
@@ -144,7 +144,7 @@ void FileBrowserActivity::SelectSave(SaveFile * file)
 void FileBrowserActivity::DeleteSave(SaveFile * file)
 {
 	auto deleteConfirm = i18nMulti("Are you sure you want to delete ", "?");
-	String deleteMessage = deleteConfirm[0] + file->GetDisplayName() + ".cps"_ascii + deleteConfirm[1];
+	String deleteMessage = deleteConfirm[0] + file->GetDisplayName() + ".cps" + deleteConfirm[1];
 	if (ConfirmPrompt::Blocking("Delete Save"_i18n, deleteMessage))
 	{
 		remove(file->GetName().c_str());
@@ -154,7 +154,7 @@ void FileBrowserActivity::DeleteSave(SaveFile * file)
 
 void FileBrowserActivity::RenameSave(SaveFile * file)
 {
-	ByteString newName = TextPrompt::Blocking("Rename"_i18n, "Change save name"_i18n, file->GetDisplayName(), ""_ascii, 0).ToUtf8();
+	ByteString newName = TextPrompt::Blocking("Rename"_i18n, "Change save name"_i18n, file->GetDisplayName(), "", 0).ToUtf8();
 	if (newName.length())
 	{
 		newName = directory + PATH_SEP + newName + ".cps";

@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_DSTW()
 {
 	Identifier = "DEFAULT_PT_DSTW";
-	Name = "DSTW"_ascii;
+	Name = "DSTW";
 	Colour = PIXPACK(0x1020C0);
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;

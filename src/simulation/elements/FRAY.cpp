@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_FRAY()
 {
 	Identifier = "DEFAULT_PT_FRAY";
-	Name = "FRAY"_ascii;
+	Name = "FRAY";
 	Colour = PIXPACK(0x00BBFF);
 	MenuVisible = 1;
 	MenuSection = SC_FORCE;

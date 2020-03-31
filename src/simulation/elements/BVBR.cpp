@@ -6,7 +6,7 @@ int Element_VIBR_graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_BVBR()
 {
 	Identifier = "DEFAULT_PT_BVBR";
-	Name = "BVBR"_ascii;
+	Name = "BVBR";
 	Colour = PIXPACK(0x005000);
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;

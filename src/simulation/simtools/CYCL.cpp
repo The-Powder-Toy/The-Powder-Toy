@@ -8,7 +8,7 @@ static int perform(Simulation * sim, Particle * cpart, int x, int y, int brushX,
 void SimTool::Tool_CYCL()
 {
 	Identifier = "DEFAULT_TOOL_CYCL";
-	Name = "CYCL"_ascii;
+	Name = "CYCL";
 	Colour = PIXPACK(0x132f5b);
 	Description = "Cyclone, produces swirling air currents"_i18n;
 	Perform = &perform;

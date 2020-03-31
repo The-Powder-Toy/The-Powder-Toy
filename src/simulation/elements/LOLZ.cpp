@@ -3,7 +3,7 @@
 void Element::Element_LOLZ()
 {
 	Identifier = "DEFAULT_PT_LOLZ";
-	Name = "LOLZ"_ascii;
+	Name = "LOLZ";
 	Colour = PIXPACK(0x569212);
 	MenuVisible = 1;
 	MenuSection = SC_CRACKER2;

@@ -3,7 +3,7 @@
 void Element::Element_INWR()
 {
 	Identifier = "DEFAULT_PT_INWR";
-	Name = "INWR"_ascii;
+	Name = "INWR";
 	Colour = PIXPACK(0x544141);
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;

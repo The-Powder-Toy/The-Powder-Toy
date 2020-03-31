@@ -10,7 +10,7 @@ ConsoleModel::ConsoleModel() {
 	{
 		if(previousCommands.size()<25)
 		{
-			previousCommands.push_front(ConsoleCommand(*iter, 0, ""_ascii));
+			previousCommands.push_front(ConsoleCommand(*iter, 0, ""));
 			currentCommandIndex = previousCommands.size();
 		}
 	}
@@ -37,7 +37,7 @@ ConsoleCommand ConsoleModel::GetCurrentCommand()
 {
 	if (currentCommandIndex >= previousCommands.size())
 	{
-		return ConsoleCommand(""_ascii, 0, ""_ascii);
+		return ConsoleCommand("", 0, "");
 	}
 	return previousCommands[currentCommandIndex];
 }

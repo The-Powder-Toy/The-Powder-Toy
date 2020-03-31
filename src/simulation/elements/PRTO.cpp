@@ -6,7 +6,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_PRTO()
 {
 	Identifier = "DEFAULT_PT_PRTO";
-	Name = "PRTO"_ascii;
+	Name = "PRTO";
 	Colour = PIXPACK(0x0020EB);
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;

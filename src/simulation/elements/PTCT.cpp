@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_PTCT()
 {
 	Identifier = "DEFAULT_PT_PTCT";
-	Name = "PTCT"_ascii;
+	Name = "PTCT";
 	Colour = PIXPACK(0x405050);
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;

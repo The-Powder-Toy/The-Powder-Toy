@@ -7,7 +7,7 @@ static void create(ELEMENT_CREATE_FUNC_ARGS);
 void Element::Element_CLST()
 {
 	Identifier = "DEFAULT_PT_CLST";
-	Name = "CLST"_ascii;
+	Name = "CLST";
 	Colour = PIXPACK(0xE4A4A4);
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;

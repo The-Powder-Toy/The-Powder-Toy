@@ -3,7 +3,7 @@
 void Element::Element_BGLA()
 {
 	Identifier = "DEFAULT_PT_BGLA";
-	Name = "BGLA"_ascii;
+	Name = "BGLA";
 	Colour = PIXPACK(0x606060);
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;

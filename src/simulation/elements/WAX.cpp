@@ -3,7 +3,7 @@
 void Element::Element_WAX()
 {
 	Identifier = "DEFAULT_PT_WAX";
-	Name = "WAX"_ascii;
+	Name = "WAX";
 	Colour = PIXPACK(0xF0F0BB);
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;

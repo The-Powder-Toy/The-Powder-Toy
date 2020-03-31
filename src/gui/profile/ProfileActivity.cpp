@@ -17,7 +17,7 @@ ProfileActivity::ProfileActivity(ByteString username) :
 	loading(false),
 	saving(false),
 	doError(false),
-	doErrorMessage(""_ascii)
+	doErrorMessage("")
 {
 	editable = Client::Ref().GetAuthUser().UserID && Client::Ref().GetAuthUser().Username == username;
 

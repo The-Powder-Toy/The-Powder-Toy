@@ -6,7 +6,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_GEL()
 {
 	Identifier = "DEFAULT_PT_GEL";
-	Name = "GEL"_ascii;
+	Name = "GEL";
 	Colour = PIXPACK(0xFF9900);
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;

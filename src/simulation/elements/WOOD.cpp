@@ -7,7 +7,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_WOOD()
 {
 	Identifier = "DEFAULT_PT_WOOD";
-	Name = "WOOD"_ascii;
+	Name = "WOOD";
 	Colour = PIXPACK(0xC0A040);
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;

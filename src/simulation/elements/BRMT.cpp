@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_BRMT()
 {
 	Identifier = "DEFAULT_PT_BRMT";
-	Name = "BRMT"_ascii;
+	Name = "BRMT";
 	Colour = PIXPACK(0x705060);
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;

@@ -3,7 +3,7 @@
 void Element::Element_INST()
 {
 	Identifier = "DEFAULT_PT_INST";
-	Name = "INST"_ascii;
+	Name = "INST";
 	Colour = PIXPACK(0x404039);
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;

@@ -7,7 +7,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_DEUT()
 {
 	Identifier = "DEFAULT_PT_DEUT";
-	Name = "DEUT"_ascii;
+	Name = "DEUT";
 	Colour = PIXPACK(0x00153F);
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;

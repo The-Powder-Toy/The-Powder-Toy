@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_MERC()
 {
 	Identifier = "DEFAULT_PT_MERC";
-	Name = "MERC"_ascii;
+	Name = "MERC";
 	Colour = PIXPACK(0x736B6D);
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;

@@ -7,7 +7,7 @@ static void create(ELEMENT_CREATE_FUNC_ARGS);
 void Element::Element_LAVA()
 {
 	Identifier = "DEFAULT_PT_LAVA";
-	Name = "LAVA"_ascii;
+	Name = "LAVA";
 	Colour = PIXPACK(0xE05010);
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;

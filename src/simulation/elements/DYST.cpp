@@ -3,7 +3,7 @@
 void Element::Element_DYST()
 {
 	Identifier = "DEFAULT_PT_DYST";
-	Name = "DYST"_ascii;
+	Name = "DYST";
 	Colour = PIXPACK(0xBBB0A0);
 	MenuVisible = 0;
 	MenuSection = SC_POWDERS;

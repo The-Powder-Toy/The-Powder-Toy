@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_ICEI()
 {
 	Identifier = "DEFAULT_PT_ICEI";
-	Name = "ICE"_ascii;
+	Name = "ICE";
 	Colour = PIXPACK(0xA0C0FF);
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;

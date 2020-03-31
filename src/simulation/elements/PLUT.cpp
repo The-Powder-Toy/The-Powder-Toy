@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_PLUT()
 {
 	Identifier = "DEFAULT_PT_PLUT";
-	Name = "PLUT"_ascii;
+	Name = "PLUT";
 	Colour = PIXPACK(0x407020);
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;

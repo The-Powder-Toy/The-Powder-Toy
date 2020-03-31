@@ -6,7 +6,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_EXOT()
 {
 	Identifier = "DEFAULT_PT_EXOT";
-	Name = "EXOT"_ascii;
+	Name = "EXOT";
 	Colour = PIXPACK(0x247BFE);
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;

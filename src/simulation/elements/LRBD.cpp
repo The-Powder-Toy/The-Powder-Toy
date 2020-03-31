@@ -3,7 +3,7 @@
 void Element::Element_LRBD()
 {
 	Identifier = "DEFAULT_PT_LRBD";
-	Name = "LRBD"_ascii;
+	Name = "LRBD";
 	Colour = PIXPACK(0xAAAAAA);
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;

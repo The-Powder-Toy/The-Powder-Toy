@@ -6,7 +6,7 @@ int Element_BIZR_graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_BIZRS()
 {
 	Identifier = "DEFAULT_PT_BIZRS";
-	Name = "BIZS"_ascii;
+	Name = "BIZS";
 	Colour = PIXPACK(0x00E455);
 	MenuVisible = 1;
 	MenuSection = SC_CRACKER2;

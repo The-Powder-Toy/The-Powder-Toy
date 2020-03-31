@@ -648,7 +648,7 @@ std::vector<std::pair<String, ByteString> > Client::GetServerNotifications()
 
 RequestStatus Client::ParseServerReturn(ByteString &result, int status, bool json)
 {
-	lastError = ""_ascii;
+	lastError = "";
 	// no server response, return "Malformed Response"
 	if (status == 200 && !result.size())
 	{
@@ -957,7 +957,7 @@ User Client::GetAuthUser()
 
 RequestStatus Client::UploadSave(SaveInfo & save)
 {
-	lastError = ""_ascii;
+	lastError = "";
 	unsigned int gameDataLength;
 	char * gameData = NULL;
 	int dataStatus;
@@ -1166,7 +1166,7 @@ std::vector<ByteString> Client::GetStamps(int start, int count)
 
 RequestStatus Client::ExecVote(int saveID, int direction)
 {
-	lastError = ""_ascii;
+	lastError = "";
 	int dataStatus;
 	ByteString data;
 
@@ -1190,7 +1190,7 @@ RequestStatus Client::ExecVote(int saveID, int direction)
 
 std::vector<unsigned char> Client::GetSaveData(int saveID, int saveDate)
 {
-	lastError = ""_ascii;
+	lastError = "";
 	int dataStatus;
 	ByteString data;
 	ByteString urlStr;
@@ -1212,7 +1212,7 @@ std::vector<unsigned char> Client::GetSaveData(int saveID, int saveDate)
 
 LoginStatus Client::Login(ByteString username, ByteString password, User & user)
 {
-	lastError = ""_ascii;
+	lastError = "";
 	char passwordHash[33];
 	char totalHash[33];
 
@@ -1222,10 +1222,10 @@ LoginStatus Client::Login(ByteString username, ByteString password, User & user)
 	user.SessionKey = "";
 
 	//Doop
-	md5_ascii(passwordHash, (const unsigned char *)password.c_str(), password.length());
+	md5(passwordHash, (const unsigned char *)password.c_str(), password.length());
 	passwordHash[32] = 0;
 	ByteString total = ByteString::Build(username, "-", passwordHash);
-	md5_ascii(totalHash, (const unsigned char *)(total.c_str()), total.size());
+	md5(totalHash, (const unsigned char *)(total.c_str()), total.size());
 	totalHash[32] = 0;
 
 	ByteString data;
@@ -1283,7 +1283,7 @@ LoginStatus Client::Login(ByteString username, ByteString password, User & user)
 
 RequestStatus Client::DeleteSave(int saveID)
 {
-	lastError = ""_ascii;
+	lastError = "";
 	ByteString data;
 	ByteString url = ByteString::Build(SCHEME, SERVER, "/Browse/Delete.json?ID=", saveID, "&Mode=Delete&Key=", authUser.SessionKey);
 	int dataStatus;
@@ -1303,7 +1303,7 @@ RequestStatus Client::DeleteSave(int saveID)
 
 RequestStatus Client::AddComment(int saveID, String comment)
 {
-	lastError = ""_ascii;
+	lastError = "";
 	ByteString data;
 	int dataStatus;
 	ByteString url = ByteString::Build(SCHEME, SERVER, "/Browse/Comments.json?ID=", saveID);
@@ -1325,7 +1325,7 @@ RequestStatus Client::AddComment(int saveID, String comment)
 
 RequestStatus Client::FavouriteSave(int saveID, bool favourite)
 {
-	lastError = ""_ascii;
+	lastError = "";
 	ByteStringBuilder urlStream;
 	ByteString data;
 	int dataStatus;
@@ -1348,7 +1348,7 @@ RequestStatus Client::FavouriteSave(int saveID, bool favourite)
 
 RequestStatus Client::ReportSave(int saveID, String message)
 {
-	lastError = ""_ascii;
+	lastError = "";
 	ByteString data;
 	int dataStatus;
 	ByteString url = ByteString::Build(SCHEME, SERVER, "/Browse/Report.json?ID=", saveID, "&Key=", authUser.SessionKey);
@@ -1370,7 +1370,7 @@ RequestStatus Client::ReportSave(int saveID, String message)
 
 RequestStatus Client::UnpublishSave(int saveID)
 {
-	lastError = ""_ascii;
+	lastError = "";
 	ByteString data;
 	int dataStatus;
 	ByteString url = ByteString::Build(SCHEME, SERVER, "/Browse/Delete.json?ID=", saveID, "&Mode=Unpublish&Key=", authUser.SessionKey);
@@ -1390,7 +1390,7 @@ RequestStatus Client::UnpublishSave(int saveID)
 
 RequestStatus Client::PublishSave(int saveID)
 {
-	lastError = ""_ascii;
+	lastError = "";
 	ByteString data;
 	int dataStatus;
 	ByteString url = ByteString::Build(SCHEME, SERVER, "/Browse/View.json?ID=", saveID, "&Key=", authUser.SessionKey);
@@ -1412,7 +1412,7 @@ RequestStatus Client::PublishSave(int saveID)
 
 SaveInfo * Client::GetSave(int saveID, int saveDate)
 {
-	lastError = ""_ascii;
+	lastError = "";
 	ByteStringBuilder urlStream;
 	urlStream << SCHEME << SERVER  << "/Browse/View.json?ID=" << saveID;
 	if(saveDate)
@@ -1501,7 +1501,7 @@ SaveFile * Client::LoadSaveFile(ByteString filename)
 
 std::vector<std::pair<ByteString, int> > * Client::GetTags(int start, int count, String query, int & resultCount)
 {
-	lastError = ""_ascii;
+	lastError = "";
 	resultCount = 0;
 	std::vector<std::pair<ByteString, int> > * tagArray = new std::vector<std::pair<ByteString, int> >();
 	ByteStringBuilder urlStream;
@@ -1547,7 +1547,7 @@ std::vector<std::pair<ByteString, int> > * Client::GetTags(int start, int count,
 
 std::vector<SaveInfo*> * Client::SearchSaves(int start, int count, String query, ByteString sort, ByteString category, int & resultCount)
 {
-	lastError = ""_ascii;
+	lastError = "";
 	resultCount = 0;
 	std::vector<SaveInfo*> * saveArray = new std::vector<SaveInfo*>();
 	ByteStringBuilder urlStream;
@@ -1617,7 +1617,7 @@ std::vector<SaveInfo*> * Client::SearchSaves(int start, int count, String query,
 
 std::list<ByteString> * Client::RemoveTag(int saveID, ByteString tag)
 {
-	lastError = ""_ascii;
+	lastError = "";
 	std::list<ByteString> * tags = NULL;
 	ByteString data;
 	int dataStatus;
@@ -1656,7 +1656,7 @@ std::list<ByteString> * Client::RemoveTag(int saveID, ByteString tag)
 
 std::list<ByteString> * Client::AddTag(int saveID, ByteString tag)
 {
-	lastError = ""_ascii;
+	lastError = "";
 	std::list<ByteString> * tags = NULL;
 	ByteString data;
 	int dataStatus;

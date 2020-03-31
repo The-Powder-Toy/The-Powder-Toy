@@ -8,7 +8,7 @@ int Element_FILT_getWavelengths(Particle* cpart);
 void Element::Element_FILT()
 {
 	Identifier = "DEFAULT_PT_FILT";
-	Name = "FILT"_ascii;
+	Name = "FILT";
 	Colour = PIXPACK(0x000056);
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;

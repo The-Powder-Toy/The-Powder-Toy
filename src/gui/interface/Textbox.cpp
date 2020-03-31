@@ -16,7 +16,7 @@
 using namespace ui;
 
 Textbox::Textbox(Point position, Point size, String textboxText, String textboxPlaceholder):
-	Label(position, size, ""_ascii),
+	Label(position, size, ""),
 	ReadOnly(false),
 	inputType(All),
 	limit(String::npos),
@@ -369,8 +369,8 @@ void Textbox::OnVKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 				if (ctrl)
 				{
 					size_t stopChar;
-					stopChar = backingText.SplitByNot(" .,!?\n"_ascii, cursor).PositionBefore();
-					stopChar = backingText.SplitByAny(" .,!?\n"_ascii, stopChar).PositionBefore();
+					stopChar = backingText.SplitByNot(" .,!?\n", cursor).PositionBefore();
+					stopChar = backingText.SplitByAny(" .,!?\n", stopChar).PositionBefore();
 					backingText.EraseBetween(cursor, stopChar);
 				}
 				else
@@ -395,11 +395,11 @@ void Textbox::OnVKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 				if (ctrl)
 				{
 					size_t stopChar;
-					stopChar = backingText.SplitFromEndByNot(" .,!?\n"_ascii, cursor).PositionBefore();
+					stopChar = backingText.SplitFromEndByNot(" .,!?\n", cursor).PositionBefore();
 					if (stopChar == backingText.npos)
 						stopChar = -1;
 					else
-						stopChar = backingText.SplitFromEndByAny(" .,!?\n"_ascii, stopChar).PositionBefore();
+						stopChar = backingText.SplitFromEndByAny(" .,!?\n", stopChar).PositionBefore();
 					backingText.EraseBetween(stopChar+1, cursor);
 					cursor = stopChar+1;
 				}
@@ -413,14 +413,14 @@ void Textbox::OnVKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 			ClearSelection();
 			break;
 		case SDLK_RETURN:
-			OnTextInput("\n"_ascii);
+			OnTextInput("\n");
 			break;
 		}
 	}
 	catch (std::out_of_range &e)
 	{
 		cursor = 0;
-		backingText = ""_ascii;
+		backingText = "";
 	}
 	AfterTextChange(changed);
 }

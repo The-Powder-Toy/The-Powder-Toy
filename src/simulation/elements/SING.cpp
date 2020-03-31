@@ -6,7 +6,7 @@ static void create(ELEMENT_CREATE_FUNC_ARGS);
 void Element::Element_SING()
 {
 	Identifier = "DEFAULT_PT_SING";
-	Name = "SING"_ascii;
+	Name = "SING";
 	Colour = PIXPACK(0x242424);
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;

@@ -5,7 +5,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_BRCK()
 {
 	Identifier = "DEFAULT_PT_BRCK";
-	Name = "BRCK"_ascii;
+	Name = "BRCK";
 	Colour = PIXPACK(0x808080);
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;

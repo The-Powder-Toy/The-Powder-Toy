@@ -3,7 +3,7 @@
 void Element::Element_PSTS()
 {
 	Identifier = "DEFAULT_PT_PSTS";
-	Name = "PSTS"_ascii;
+	Name = "PSTS";
 	Colour = PIXPACK(0x776677);
 	MenuVisible = 0;
 	MenuSection = SC_CRACKER;

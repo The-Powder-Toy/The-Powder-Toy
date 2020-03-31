@@ -7,7 +7,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_FIRW()
 {
 	Identifier = "DEFAULT_PT_FIRW";
-	Name = "FIRW"_ascii;
+	Name = "FIRW";
 	Colour = PIXPACK(0xFFA040);
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;

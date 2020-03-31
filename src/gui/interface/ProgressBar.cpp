@@ -12,7 +12,7 @@ ProgressBar::ProgressBar(Point position, Point size, int startProgress, String s
 	Component(position, size),
 	progress(0),
 	intermediatePos(0.0f),
-	progressStatus(""_ascii)
+	progressStatus("")
 {
 	SetStatus(startStatus);
 	SetProgress(startProgress);

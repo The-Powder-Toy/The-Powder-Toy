@@ -6,7 +6,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_TTAN()
 {
 	Identifier = "DEFAULT_PT_TTAN";
-	Name = "TTAN"_ascii;
+	Name = "TTAN";
 	Colour = PIXPACK(0x909090);
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;

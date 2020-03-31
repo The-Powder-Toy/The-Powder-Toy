@@ -3,7 +3,7 @@
 void Element::Element_DESL()
 {
 	Identifier = "DEFAULT_PT_DESL";
-	Name = "DESL"_ascii;
+	Name = "DESL";
 	Colour = PIXPACK(0x440000);
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;

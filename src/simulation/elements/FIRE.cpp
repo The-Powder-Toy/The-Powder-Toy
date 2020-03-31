@@ -9,7 +9,7 @@ static void create(ELEMENT_CREATE_FUNC_ARGS);
 void Element::Element_FIRE()
 {
 	Identifier = "DEFAULT_PT_FIRE";
-	Name = "FIRE"_ascii;
+	Name = "FIRE";
 	Colour = PIXPACK(0xFF1000);
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;

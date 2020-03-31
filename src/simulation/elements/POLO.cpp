@@ -6,7 +6,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_POLO()
 {
 	Identifier = "DEFAULT_PT_POLO";
-	Name = "POLO"_ascii;
+	Name = "POLO";
 	Colour = PIXPACK(0x506030);
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;

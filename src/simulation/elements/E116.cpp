@@ -3,7 +3,7 @@
 void Element::Element_E116()
 {
 	Identifier = "DEFAULT_PT_116";
-	Name = "EQVE"_ascii;
+	Name = "EQVE";
 	Colour = PIXPACK(0xFFE0A0);
 	MenuVisible = 0;
 	MenuSection = SC_CRACKER2;

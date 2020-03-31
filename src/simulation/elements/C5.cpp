@@ -6,7 +6,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_C5()
 {
 	Identifier = "DEFAULT_PT_C5";
-	Name = "C-5"_ascii;
+	Name = "C-5";
 	Colour = PIXPACK(0x2050E0);
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;

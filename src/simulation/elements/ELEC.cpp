@@ -7,7 +7,7 @@ static void create(ELEMENT_CREATE_FUNC_ARGS);
 void Element::Element_ELEC()
 {
 	Identifier = "DEFAULT_PT_ELEC";
-	Name = "ELEC"_ascii;
+	Name = "ELEC";
 	Colour = PIXPACK(0xDFEFFF);
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;

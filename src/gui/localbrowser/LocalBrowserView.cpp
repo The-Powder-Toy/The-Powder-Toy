@@ -29,13 +29,13 @@ LocalBrowserView::LocalBrowserView():
 	AddComponent(previousButton);
 	AddComponent(undeleteButton);
 
-	pageTextbox = new ui::Textbox(ui::Point(283, WINDOWH-18), ui::Point(41, 16), ""_ascii);
+	pageTextbox = new ui::Textbox(ui::Point(283, WINDOWH-18), ui::Point(41, 16), "");
 	pageTextbox->SetActionCallback({ [this] { textChanged(); } });
 	pageTextbox->SetInputType(ui::Textbox::Number);
 	auto pageOf = i18nMulti("Page", "of "); //page [TEXTBOX] of y
 	pageLabel = new ui::Label(ui::Point(0, WINDOWH-18), ui::Point(30, 16), pageOf[0]);
 	pageLabel->Appearance.HorizontalAlign = ui::Appearance::AlignRight;
-	pageCountLabel = new ui::Label(ui::Point(WINDOWW/2+6, WINDOWH-18), ui::Point(50, 16), ""_ascii);
+	pageCountLabel = new ui::Label(ui::Point(WINDOWW/2+6, WINDOWH-18), ui::Point(50, 16), "");
 	pageCountLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	AddComponent(pageLabel);
 	AddComponent(pageCountLabel);

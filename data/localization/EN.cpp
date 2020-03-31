@@ -4,7 +4,7 @@
 
 struct LocaleEN : public Locale
 {
-	String GetName() const { return "English"_ascii; }
+	String GetName() const { return "English"; }
 
 	size_t GetPluralIndex(size_t n) const
 	{
@@ -17,8 +17,8 @@ struct LocaleEN : public Locale
 		using i18n::translation;
 		using i18n::pluralForm;
 
-		pluralForm("save") = {"save"_ascii, "saves"_ascii};
-		pluralForm("stamp") = {"stamp"_ascii, "stamps"_ascii};
+		pluralForm("save") = {"save", "saves"};
+		pluralForm("stamp") = {"stamp", "stamps"};
 	}
 
 	String GetIntroText() const

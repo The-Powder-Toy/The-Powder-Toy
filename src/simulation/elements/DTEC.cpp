@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_DTEC()
 {
 	Identifier = "DEFAULT_PT_DTEC";
-	Name = "DTEC"_ascii;
+	Name = "DTEC";
 	Colour = PIXPACK(0xFD9D18);
 	MenuVisible = 1;
 	MenuSection = SC_SENSOR;

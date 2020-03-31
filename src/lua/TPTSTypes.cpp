@@ -71,7 +71,7 @@ AnyType::operator PointType()
 	{
 		int x, y;
 		if(String::Split comma = (*value.str).SplitNumber(x))
-			if(comma.After().BeginsWith(","_ascii))
+			if(comma.After().BeginsWith(","))
 				if(String::Split end = comma.After().Substr(1).SplitNumber(y))
 					if(!end.After().size())
 						return PointType(x, y);

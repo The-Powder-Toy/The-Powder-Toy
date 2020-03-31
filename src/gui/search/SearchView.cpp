@@ -45,19 +45,19 @@ SearchView::SearchView():
 	}
 	catch (std::exception & e) { }
 
-	pageTextbox = new ui::Textbox(ui::Point(283, WINDOWH-18), ui::Point(41, 16), ""_ascii);
+	pageTextbox = new ui::Textbox(ui::Point(283, WINDOWH-18), ui::Point(41, 16), "");
 	pageTextbox->SetActionCallback({ [this] { textChanged(); } });
 	pageTextbox->SetInputType(ui::Textbox::Number);
 	auto pageOf = i18nMulti("Page", "of "); //page [TEXTBOX] of y
 	pageLabel = new ui::Label(ui::Point(0, WINDOWH-18), ui::Point(30, 16), pageOf[0]);
 	pageLabel->Appearance.HorizontalAlign = ui::Appearance::AlignRight;
-	pageCountLabel = new ui::Label(ui::Point(WINDOWW/2+6, WINDOWH-18), ui::Point(50, 16), ""_ascii);
+	pageCountLabel = new ui::Label(ui::Point(WINDOWW/2+6, WINDOWH-18), ui::Point(50, 16), "");
 	pageCountLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	AddComponent(pageLabel);
 	AddComponent(pageCountLabel);
 	AddComponent(pageTextbox);
 
-	searchField = new ui::Textbox(ui::Point(60, 10), ui::Point(WINDOWW-238, 17), ""_ascii, "[search]"_i18n);
+	searchField = new ui::Textbox(ui::Point(60, 10), ui::Point(WINDOWW-238, 17), "", "[search]"_i18n);
 	searchField->Appearance.icon = IconSearch;
 	searchField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	searchField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
@@ -80,7 +80,7 @@ SearchView::SearchView():
 	ownButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(ownButton);
 
-	favButton = new ui::Button(searchField->Position+ui::Point(searchField->Size.X+15, 0), ui::Point(17, 17), ""_ascii);
+	favButton = new ui::Button(searchField->Position+ui::Point(searchField->Size.X+15, 0), ui::Point(17, 17), "");
 	favButton->SetIcon(IconFavourite);
 	favButton->SetTogglable(true);
 	favButton->Appearance.Margin.Left+=2;
@@ -90,7 +90,7 @@ SearchView::SearchView():
 	favButton->Appearance.BorderInactive = ui::Colour(170,170,170);
 	AddComponent(favButton);
 
-	ui::Button * clearSearchButton = new ui::Button(searchField->Position+ui::Point(searchField->Size.X-1, 0), ui::Point(17, 17), ""_ascii);
+	ui::Button * clearSearchButton = new ui::Button(searchField->Position+ui::Point(searchField->Size.X-1, 0), ui::Point(17, 17), "");
 	clearSearchButton->SetIcon(IconClose);
 	clearSearchButton->SetActionCallback({ [this] { clearSearch(); } });
 	clearSearchButton->Appearance.Margin.Left+=2;
@@ -167,7 +167,7 @@ void SearchView::doSearch()
 
 void SearchView::clearSearch()
 {
-	searchField->SetText(""_ascii);
+	searchField->SetText("");
 	c->DoSearch(searchField->GetText(), true);
 }
 
@@ -513,7 +513,7 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 		else
 		{
 			if(sender->GetLastError().length())
-				errorLabel->SetText("\bo"_ascii + sender->GetLastError());
+				errorLabel->SetText("\bo" + sender->GetLastError());
 			else
 				errorLabel->SetText("\boNo saves found"_i18n);
 		}
@@ -568,8 +568,8 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 			saveButton->AddContextMenu(0);
 			saveButton->SetActionCallback({
 				[this, saveButton] { c->OpenSave(saveButton->GetSave()->GetID(), saveButton->GetSave()->GetVersion()); },
-				[this, saveButton] { Search(String::Build("history:"_ascii, saveButton->GetSave()->GetID())); },
-				[this, saveButton] { Search(String::Build("user:"_ascii, saveButton->GetSave()->GetUserName().FromUtf8())); },
+				[this, saveButton] { Search(String::Build("history:", saveButton->GetSave()->GetID())); },
+				[this, saveButton] { Search(String::Build("user:", saveButton->GetSave()->GetUserName().FromUtf8())); },
 				[this, saveButton] { c->Selected(saveButton->GetSave()->GetID(), saveButton->GetSelected()); }
 			});
 			if(Client::Ref().GetAuthUser().UserID)

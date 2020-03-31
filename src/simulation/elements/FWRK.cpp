@@ -6,7 +6,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_FWRK()
 {
 	Identifier = "DEFAULT_PT_FWRK";
-	Name = "FWRK"_ascii;
+	Name = "FWRK";
 	Colour = PIXPACK(0x666666);
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;

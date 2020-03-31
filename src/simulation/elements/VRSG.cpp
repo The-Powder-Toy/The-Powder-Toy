@@ -6,7 +6,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_VRSG()
 {
 	Identifier = "DEFAULT_PT_VRSG";
-	Name = "VRSG"_ascii;
+	Name = "VRSG";
 	Colour = PIXPACK(0xFE68FE);
 	MenuVisible = 0;
 	MenuSection = SC_GAS;

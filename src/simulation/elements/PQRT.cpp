@@ -7,7 +7,7 @@ static void create(ELEMENT_CREATE_FUNC_ARGS);
 void Element::Element_PQRT()
 {
 	Identifier = "DEFAULT_PT_PQRT";
-	Name = "PQRT"_ascii;
+	Name = "PQRT";
 	Colour = PIXPACK(0x88BBBB);
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;

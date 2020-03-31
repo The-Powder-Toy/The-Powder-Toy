@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_SHLD3()
 {
 	Identifier = "DEFAULT_PT_SHLD3";
-	Name = "SHD3"_ascii;
+	Name = "SHD3";
 	Colour = PIXPACK(0x444444);
 	MenuVisible = 0;
 	MenuSection = SC_CRACKER2;

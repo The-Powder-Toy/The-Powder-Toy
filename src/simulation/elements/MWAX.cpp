@@ -3,7 +3,7 @@
 void Element::Element_MWAX()
 {
 	Identifier = "DEFAULT_PT_MWAX";
-	Name = "MWAX"_ascii;
+	Name = "MWAX";
 	Colour = PIXPACK(0xE0E0AA);
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;

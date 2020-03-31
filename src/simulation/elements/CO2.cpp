@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_CO2()
 {
 	Identifier = "DEFAULT_PT_CO2";
-	Name = "CO2"_ascii;
+	Name = "CO2";
 	Colour = PIXPACK(0x666666);
 	MenuVisible = 1;
 	MenuSection = SC_GAS;

@@ -3,7 +3,7 @@
 void Element::Element_PLEX()
 {
 	Identifier = "DEFAULT_PT_PLEX";
-	Name = "C-4"_ascii;
+	Name = "C-4";
 	Colour = PIXPACK(0xD080E0);
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;

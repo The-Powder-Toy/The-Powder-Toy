@@ -209,7 +209,7 @@ void md5_transform(unsigned buf[4], const unsigned char inraw[64])
 }
 
 static char hexChars[] = "0123456789abcdef";
-void md5_ascii(char *result, unsigned char const *buf, unsigned len)
+void md5(char *result, unsigned char const *buf, unsigned len)
 {
 	struct md5_context md5;
 	unsigned char hash[16];

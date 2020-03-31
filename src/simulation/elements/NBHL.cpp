@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_NBHL()
 {
 	Identifier = "DEFAULT_PT_NBHL";
-	Name = "BHOL"_ascii;
+	Name = "BHOL";
 	Colour = PIXPACK(0x202020);
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;

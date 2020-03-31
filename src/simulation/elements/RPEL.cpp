@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_RPEL()
 {
 	Identifier = "DEFAULT_PT_RPEL";
-	Name = "RPEL"_ascii;
+	Name = "RPEL";
 	Colour = PIXPACK(0x99CC00);
 	MenuVisible = 1;
 	MenuSection = SC_FORCE;

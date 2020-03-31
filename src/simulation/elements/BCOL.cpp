@@ -6,7 +6,7 @@ int Element_COAL_graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_BCOL()
 {
 	Identifier = "DEFAULT_PT_BCOL";
-	Name = "BCOL"_ascii;
+	Name = "BCOL";
 	Colour = PIXPACK(0x333333);
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;

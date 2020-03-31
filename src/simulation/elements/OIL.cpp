@@ -3,7 +3,7 @@
 void Element::Element_OIL()
 {
 	Identifier = "DEFAULT_PT_OIL";
-	Name = "OIL"_ascii;
+	Name = "OIL";
 	Colour = PIXPACK(0x404010);
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;

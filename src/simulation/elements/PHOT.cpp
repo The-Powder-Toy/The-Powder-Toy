@@ -8,7 +8,7 @@ static void create(ELEMENT_CREATE_FUNC_ARGS);
 void Element::Element_PHOT()
 {
 	Identifier = "DEFAULT_PT_PHOT";
-	Name = "PHOT"_ascii;
+	Name = "PHOT";
 	Colour = PIXPACK(0xFFFFFF);
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;

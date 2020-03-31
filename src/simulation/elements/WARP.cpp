@@ -7,7 +7,7 @@ static void create(ELEMENT_CREATE_FUNC_ARGS);
 void Element::Element_WARP()
 {
 	Identifier = "DEFAULT_PT_WARP";
-	Name = "WARP"_ascii;
+	Name = "WARP";
 	Colour = PIXPACK(0x101010);
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;

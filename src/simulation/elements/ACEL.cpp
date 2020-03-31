@@ -6,7 +6,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_ACEL()
 {
 	Identifier = "DEFAULT_PT_ACEL";
-	Name = "ACEL"_ascii;
+	Name = "ACEL";
 	Colour = PIXPACK(0x0099CC);
 	MenuVisible = 1;
 	MenuSection = SC_FORCE;

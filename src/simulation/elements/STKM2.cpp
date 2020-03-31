@@ -11,7 +11,7 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS);
 void Element::Element_STKM2()
 {
 	Identifier = "DEFAULT_PT_STKM2";
-	Name = "STK2"_ascii;
+	Name = "STK2";
 	Colour = PIXPACK(0x6464FF);
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;

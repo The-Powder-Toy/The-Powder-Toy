@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_BANG()
 {
 	Identifier = "DEFAULT_PT_BANG";
-	Name = "TNT"_ascii;
+	Name = "TNT";
 	Colour = PIXPACK(0xC05050);
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;

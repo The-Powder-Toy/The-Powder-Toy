@@ -76,7 +76,7 @@ void LocalSaveActivity::OnTick(float dt)
 
 void LocalSaveActivity::Save()
 {
-	if (filenameField->GetText().Contains('/') || filenameField->GetText().BeginsWith("."_ascii))
+	if (filenameField->GetText().Contains('/') || filenameField->GetText().BeginsWith("."))
 	{
 		new ErrorMessage("Error"_i18n, "Invalid filename."_i18n);
 	}

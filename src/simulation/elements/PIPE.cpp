@@ -13,7 +13,7 @@ void Element_SOAP_detach(Simulation * sim, int i);
 void Element::Element_PIPE()
 {
 	Identifier = "DEFAULT_PT_PIPE";
-	Name = "PIPE"_ascii;
+	Name = "PIPE";
 	Colour = PIXPACK(0x444444);
 	MenuVisible = 1;
 	MenuSection = SC_FORCE;

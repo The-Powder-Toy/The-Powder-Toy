@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_YEST()
 {
 	Identifier = "DEFAULT_PT_YEST";
-	Name = "YEST"_ascii;
+	Name = "YEST";
 	Colour = PIXPACK(0xEEE0C0);
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;

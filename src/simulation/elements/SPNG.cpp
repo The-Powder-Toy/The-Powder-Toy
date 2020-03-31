@@ -6,7 +6,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_SPNG()
 {
 	Identifier = "DEFAULT_PT_SPNG";
-	Name = "SPNG"_ascii;
+	Name = "SPNG";
 	Colour = PIXPACK(0xFFBE30);
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;

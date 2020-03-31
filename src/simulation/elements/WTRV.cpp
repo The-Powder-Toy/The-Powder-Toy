@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_WTRV()
 {
 	Identifier = "DEFAULT_PT_WTRV";
-	Name = "WTRV"_ascii;
+	Name = "WTRV";
 	Colour = PIXPACK(0xA0A0FF);
 	MenuVisible = 1;
 	MenuSection = SC_GAS;

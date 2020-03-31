@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_ISZS()
 {
 	Identifier = "DEFAULT_PT_ISZS";
-	Name = "ISZS"_ascii;
+	Name = "ISZS";
 	Colour = PIXPACK(0x662089);
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;

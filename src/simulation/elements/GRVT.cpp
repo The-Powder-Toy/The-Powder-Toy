@@ -7,7 +7,7 @@ static void create(ELEMENT_CREATE_FUNC_ARGS);
 void Element::Element_GRVT()
 {
 	Identifier = "DEFAULT_PT_GRVT";
-	Name = "GRVT"_ascii;
+	Name = "GRVT";
 	Colour = PIXPACK(0x00EE76);
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;

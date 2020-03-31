@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_NBLE()
 {
 	Identifier = "DEFAULT_PT_NBLE";
-	Name = "NBLE"_ascii;
+	Name = "NBLE";
 	Colour = PIXPACK(0xEB4917);
 	MenuVisible = 1;
 	MenuSection = SC_GAS;

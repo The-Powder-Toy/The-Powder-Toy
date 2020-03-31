@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_BREC()
 {
 	Identifier = "DEFAULT_PT_BREC";
-	Name = "BREL"_ascii;
+	Name = "BREL";
 	Colour = PIXPACK(0x707060);
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;

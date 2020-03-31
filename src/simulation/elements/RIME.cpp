@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_RIME()
 {
 	Identifier = "DEFAULT_PT_RIME";
-	Name = "RIME"_ascii;
+	Name = "RIME";
 	Colour = PIXPACK(0xCCCCCC);
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;

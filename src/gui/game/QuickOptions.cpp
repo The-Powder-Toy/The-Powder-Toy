@@ -6,7 +6,7 @@
 #include "simulation/Simulation.h"
 
 SandEffectOption::SandEffectOption(GameModel * m):
-QuickOption("P"_ascii, "Sand effect"_i18n, m, Toggle)
+QuickOption("P", "Sand effect"_i18n, m, Toggle)
 {
 
 }
@@ -22,7 +22,7 @@ void SandEffectOption::perform()
 
 
 DrawGravOption::DrawGravOption(GameModel * m):
-QuickOption("G"_ascii, "Draw gravity field \bg(ctrl+g)"_i18n, m, Toggle)
+QuickOption("G", "Draw gravity field \bg(ctrl+g)"_i18n, m, Toggle)
 {
 
 }
@@ -38,7 +38,7 @@ void DrawGravOption::perform()
 
 
 DecorationsOption::DecorationsOption(GameModel * m):
-QuickOption("D"_ascii, "Draw decorations \bg(ctrl+b)"_i18n, m, Toggle)
+QuickOption("D", "Draw decorations \bg(ctrl+b)"_i18n, m, Toggle)
 {
 
 }
@@ -54,7 +54,7 @@ void DecorationsOption::perform()
 
 
 NGravityOption::NGravityOption(GameModel * m):
-QuickOption("N"_ascii, "Newtonian Gravity \bg(n)"_i18n, m, Toggle)
+QuickOption("N", "Newtonian Gravity \bg(n)"_i18n, m, Toggle)
 {
 
 }
@@ -70,7 +70,7 @@ void NGravityOption::perform()
 
 
 AHeatOption::AHeatOption(GameModel * m):
-QuickOption("A"_ascii, "Ambient heat \bg(u)"_i18n, m, Toggle)
+QuickOption("A", "Ambient heat \bg(u)"_i18n, m, Toggle)
 {
 
 }
@@ -86,7 +86,7 @@ void AHeatOption::perform()
 
 
 ConsoleShowOption::ConsoleShowOption(GameModel * m, GameController * c_):
-QuickOption("C"_ascii, "Show Console \bg(~)"_i18n, m, Toggle)
+QuickOption("C", "Show Console \bg(~)"_i18n, m, Toggle)
 {
 	c = c_;
 }

@@ -3,7 +3,7 @@
 void Element::Element_RBDM()
 {
 	Identifier = "DEFAULT_PT_RBDM";
-	Name = "RBDM"_ascii;
+	Name = "RBDM";
 	Colour = PIXPACK(0xCCCCCC);
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;

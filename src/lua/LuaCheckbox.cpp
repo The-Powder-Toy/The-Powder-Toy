@@ -29,7 +29,7 @@ LuaCheckbox::LuaCheckbox(lua_State * l) :
 	int sizeY = luaL_optinteger(l, 4, 10);
 	String text = ByteString(luaL_optstring(l, 5, "")).FromUtf8();
 
-	checkbox = new ui::Checkbox(ui::Point(posX, posY), ui::Point(sizeX, sizeY), text, ""_ascii);
+	checkbox = new ui::Checkbox(ui::Point(posX, posY), ui::Point(sizeX, sizeY), text, "");
 	component = checkbox;
 	checkbox->SetActionCallback({ [this] { triggerAction(); } });
 }

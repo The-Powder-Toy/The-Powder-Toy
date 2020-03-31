@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_DRAY()
 {
 	Identifier = "DEFAULT_PT_DRAY";
-	Name = "DRAY"_ascii;
+	Name = "DRAY";
 	Colour = PIXPACK(0xFFAA22);
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;

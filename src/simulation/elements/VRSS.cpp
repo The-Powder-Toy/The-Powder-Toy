@@ -6,7 +6,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_VRSS()
 {
 	Identifier = "DEFAULT_PT_VRSS";
-	Name = "VRSS"_ascii;
+	Name = "VRSS";
 	Colour = PIXPACK(0xD408CD);
 	MenuVisible = 0;
 	MenuSection = SC_SOLIDS;

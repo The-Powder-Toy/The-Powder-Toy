@@ -9,7 +9,7 @@ static int DeutExplosion(Simulation * sim, int n, int x, int y, float temp, int 
 void Element::Element_NEUT()
 {
 	Identifier = "DEFAULT_PT_NEUT";
-	Name = "NEUT"_ascii;
+	Name = "NEUT";
 	Colour = PIXPACK(0x20E0FF);
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;

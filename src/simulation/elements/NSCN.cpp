@@ -3,7 +3,7 @@
 void Element::Element_NSCN()
 {
 	Identifier = "DEFAULT_PT_NSCN";
-	Name = "NSCN"_ascii;
+	Name = "NSCN";
 	Colour = PIXPACK(0x505080);
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;

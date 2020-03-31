@@ -5,7 +5,7 @@ static int perform(Simulation * sim, Particle * cpart, int x, int y, int brushX,
 void SimTool::Tool_COOL()
 {
 	Identifier = "DEFAULT_TOOL_COOL";
-	Name = "COOL"_ascii;
+	Name = "COOL";
 	Colour = PIXPACK(0x00DDFF);
 	Description = "Cools the targeted element."_i18n;
 	Perform = &perform;

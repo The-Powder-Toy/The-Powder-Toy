@@ -5,7 +5,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_O2()
 {
 	Identifier = "DEFAULT_PT_O2";
-	Name = "OXYG"_ascii;
+	Name = "OXYG";
 	Colour = PIXPACK(0x80A0FF);
 	MenuVisible = 1;
 	MenuSection = SC_GAS;

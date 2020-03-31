@@ -236,8 +236,8 @@ void Window::DoDraw()
 			Graphics * g = ui::Engine::Ref().g;
 			String tempString, tempString2;
 
-			tempString = String::Build("Position: L "_ascii, focusedComponent_->Position.X, ", R "_ascii, Size.X-(focusedComponent_->Position.X+focusedComponent_->Size.X), ", T: "_ascii, focusedComponent_->Position.Y, ", B: "_ascii, Size.Y-(focusedComponent_->Position.Y+focusedComponent_->Size.Y));
-			tempString2 = String::Build("Size: "_ascii, focusedComponent_->Size.X, ", "_ascii, focusedComponent_->Size.Y);
+			tempString = String::Build("Position: L ", focusedComponent_->Position.X, ", R ", Size.X-(focusedComponent_->Position.X+focusedComponent_->Size.X), ", T: ", focusedComponent_->Position.Y, ", B: ", Size.Y-(focusedComponent_->Position.Y+focusedComponent_->Size.Y));
+			tempString2 = String::Build("Size: ", focusedComponent_->Size.X, ", ", focusedComponent_->Size.Y);
 
 			if (Graphics::textwidth(tempString)+xPos > WINDOWW)
 				xPos = WINDOWW-(Graphics::textwidth(tempString)+5);

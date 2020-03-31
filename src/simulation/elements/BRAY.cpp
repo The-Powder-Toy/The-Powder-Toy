@@ -5,7 +5,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_BRAY()
 {
 	Identifier = "DEFAULT_PT_BRAY";
-	Name = "BRAY"_ascii;
+	Name = "BRAY";
 	Colour = PIXPACK(0xFFFFFF);
 	MenuVisible = 0;
 	MenuSection = SC_ELEC;

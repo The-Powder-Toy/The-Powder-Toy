@@ -11,7 +11,7 @@ static int MoveStack(Simulation * sim, int stackX, int stackY, int directionX, i
 void Element::Element_PSTN()
 {
 	Identifier = "DEFAULT_PT_PSTN";
-	Name = "PSTN"_ascii;
+	Name = "PSTN";
 	Colour = PIXPACK(0xAA9999);
 	MenuVisible = 1;
 	MenuSection = SC_FORCE;

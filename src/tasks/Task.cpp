@@ -104,7 +104,7 @@ void Task::before()
 
 bool Task::doWork()
 {
-	notifyStatus("Fake progress"_ascii);
+	notifyStatus("Fake progress");
 	for(int i = 0; i < 100; i++)
 	{
 		notifyProgress(i);
