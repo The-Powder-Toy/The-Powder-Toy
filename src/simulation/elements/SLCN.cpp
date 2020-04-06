@@ -99,7 +99,7 @@ static int SLCN_SPARKLE_FX[16] = {
 };
 
 float SPARKLE_RATE = 0.01f;
-float VELOCITY_MULTIPLIER = 1.2f;
+float VELOCITY_MULTIPLIER = 7.0f;
 float PHASE_THRESHOLD = 60.0f;
 
 static int update(UPDATE_FUNC_ARGS)
