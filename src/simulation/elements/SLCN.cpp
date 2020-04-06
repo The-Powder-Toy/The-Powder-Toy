@@ -31,7 +31,7 @@ void Element::Element_SLCN()
 	Weight = 90;
 
 	HeatConduct = 3;
-	Description = "Powdered quartz, broken form of QRTZ.";
+	Description = "Powdered Silicon. A key element in multiple materials.";
 
 	Properties = TYPE_PART | PROP_CONDUCTS | PROP_HOT_GLOW | PROP_LIFE_DEC;
 
