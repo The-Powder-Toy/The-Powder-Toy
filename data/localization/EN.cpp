@@ -4,15 +4,15 @@
 
 struct LocaleEN : public Locale
 {
-	String GetName() const { return "English"; }
+	String GetName() const override { return "English"; }
 
-	size_t GetPluralIndex(size_t n) const
+	size_t GetPluralIndex(size_t n) const override
 	{
 		// 0: singular, 1: plural
 		return n == 1 ? 0 : 1;
 	}
 
-	void Set() const
+	void Set() const override
 	{
 		using i18n::translation;
 		using i18n::pluralForm;
@@ -21,7 +21,7 @@ struct LocaleEN : public Locale
 		pluralForm("stamp") = {"stamp", "stamps"};
 	}
 
-	String GetIntroText() const
+	String GetIntroText() const override
 	{
 		return
 			U"\blThe Powder Toy - Version " MTOS(SAVE_VERSION) "." MTOS(MINOR_VERSION) " - https://powdertoy.co.uk, irc.freenode.net #powder\n"
@@ -55,7 +55,7 @@ struct LocaleEN : public Locale
 			;
 	}
 
-	String GetSavePublishingInfo() const
+	String GetSavePublishingInfo() const override
 	{
 		return
 			U"In The Powder Toy, one can save simulations to their account in two privacy levels: Published and unpublished. You can choose which one by checking or unchecking the 'publish' checkbox. Saves are unpublished by default, so if you do not check publish nobody will be able to see your saves.\n"
@@ -69,7 +69,7 @@ struct LocaleEN : public Locale
 			"Once you make a save, you can resave it as many times as you want. A short previous \btsave history\bw is saved, just right click any save in the save browser and select 'View History' to view it. This is useful for when you accidentally save something you didn't mean to and want to go back to the old version.\n";
 	}
 
-	String GetRules() const
+	String GetRules() const override
 	{
 		return
 			U"\boSection S: Social and Community Rules\n"
