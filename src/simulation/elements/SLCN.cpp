@@ -30,7 +30,7 @@ void Element::Element_SLCN()
 
 	Weight = 90;
 
-	HeatConduct = 3;
+	HeatConduct = 100;
 	Description = "Powdered Silicon. A key element in multiple materials.";
 
 	Properties = TYPE_PART | PROP_CONDUCTS | PROP_HOT_GLOW | PROP_LIFE_DEC;
@@ -98,13 +98,12 @@ static int SLCN_SPARKLE_FX[16] = {
 	PMODE_SPARK,
 };
 
-float SPARKLE_RATE = 0.01f;
-float VELOCITY_MULTIPLIER = 7.0f;
-float PHASE_THRESHOLD = 60.0f;
+static const float SPARKLE_RATE = 0.01f;
+static const float VELOCITY_MULTIPLIER = 7.0f;
+static const float PHASE_THRESHOLD = 60.0f;
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	// update code here
 	Particle &self = parts[i];
 
 	float velocity = std::sqrt(std::pow(self.vx, 2) + std::pow(self.vy, 2));
@@ -114,11 +113,11 @@ static int update(UPDATE_FUNC_ARGS)
 	{
 		for (int j = 0; j < 4; j++)
 		{ 
-			int checkCoordsX[] = { -4, 4, 0, 0 };
-			int checkCoordsY[] = { 0, 0, -4, 4 };
+			int check_coords_x[] = { -4, 4, 0, 0 };
+			int check_coords_y[] = { 0, 0, -4, 4 };
 
-			int neighbour_x = checkCoordsX[j];
-			int neighbour_y = checkCoordsY[j];
+			int neighbour_x = check_coords_x[j];
+			int neighbour_y = check_coords_y[j];
 
 			int neighbour_id = pmap[y + neighbour_y][x + neighbour_x];
 
@@ -147,7 +146,7 @@ static int update(UPDATE_FUNC_ARGS)
 
 			int neighbour_type = TYP(neighbour_id);
 			Particle &neighbour = parts[ID(neighbour_id)];
-			if (neighbour_type = PT_SLCN)
+			if (neighbour_type == PT_SLCN)
 			{
 				if (self.tmp == neighbour.tmp)
 				{
@@ -162,6 +161,10 @@ static int update(UPDATE_FUNC_ARGS)
 
 	float &clr_phse_transition_cnt = self.pavg[0];
 	float &sprk_phse_transition_cnt = self.pavg[1];
+
+	// prevent these values from going through the roof.
+	clr_phse_transition_cnt = clamp_flt(clr_phse_transition_cnt, 0.0f, PHASE_THRESHOLD * 2);
+	sprk_phse_transition_cnt = clamp_flt(sprk_phse_transition_cnt, 0.0f, PHASE_THRESHOLD * 2);
 
 	clr_phse_transition_cnt += (velocity * VELOCITY_MULTIPLIER) + SPARKLE_RATE + (RNG::Ref().uniform01() * SPARKLE_RATE);
 	self.pavg[1] += (velocity * VELOCITY_MULTIPLIER) + SPARKLE_RATE + (RNG::Ref().uniform01() * SPARKLE_RATE);
@@ -184,7 +187,7 @@ static int update(UPDATE_FUNC_ARGS)
 
 	// check if currently in a FX phase, and if so, greatly accelerate phase change.
 	if (SLCN_SPARKLE_FX[self.tmp2] != 0) {
-		sprk_phse_transition_cnt += RNG::Ref().uniform01() * PHASE_THRESHOLD * 2; // good chance of skipping the phase.
+		sprk_phse_transition_cnt += RNG::Ref().uniform01() * PHASE_THRESHOLD; // good chance of skipping the phase.
 	}
 
 	if (self.pavg[1] > PHASE_THRESHOLD) {
@@ -197,8 +200,6 @@ static int update(UPDATE_FUNC_ARGS)
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
-	// graphics code here
-	// return 1 if nothing dymanic happens here
 	int phase = cpart->tmp & 31;
 
 	int selected_color = 0xFF00FF; // Debug color. will be shown in case of error.

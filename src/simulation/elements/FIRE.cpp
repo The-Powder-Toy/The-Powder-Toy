@@ -132,7 +132,7 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 							parts[i].ctype = PT_METL;
 							sim->kill_part(ID(r));
 						} 
-						else if (parts[i].ctype == PT_STNE && RNG::Ref().chance(1, 60))
+						else if ((parts[i].ctype == PT_STNE || parts[i].ctype == PT_NONE) && RNG::Ref().chance(1, 60))
 						{
 							parts[i].ctype = PT_SLCN;
 							sim->kill_part(ID(r));
