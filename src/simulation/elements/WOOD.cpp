@@ -52,6 +52,14 @@ static int update(UPDATE_FUNC_ARGS)
 {
 	if (parts[i].temp > 450 && parts[i].temp > parts[i].tmp)
 		parts[i].tmp = (int)parts[i].temp;
+
+	if (parts[i].temp > 773.0f && sim->pv[y/CELL][x/CELL] <= -10.0f)
+	{
+		float temp = parts[i].temp;
+		sim->create_part(i, x, y, PT_BCOL);
+		parts[i].temp = temp;
+	}
+
 	return 0;
 }
 
