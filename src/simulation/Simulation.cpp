@@ -3153,6 +3153,8 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 		}
 		else if (IsWallBlocking(x, y, t))
 			return -1;
+		else if (bmap[y/CELL][x/CELL]==WL_DETECT && elements[t].Properties & TYPE_SOLID)
+			return -1;
 		else if (photons[y][x] && (elements[t].Properties & TYPE_ENERGY))
 			return -1;
 	}
@@ -3415,8 +3417,7 @@ void Simulation::UpdateParticles(int start, int end)
 			          (bmap[y/CELL][x/CELL]==WL_ALLOWLIQUID && !(elements[t].Properties&TYPE_LIQUID)) ||
 			          (bmap[y/CELL][x/CELL]==WL_ALLOWPOWDER && !(elements[t].Properties&TYPE_PART)) ||
 			          (bmap[y/CELL][x/CELL]==WL_ALLOWGAS && !(elements[t].Properties&TYPE_GAS)) || //&& elements[t].Falldown!=0 && parts[i].type!=PT_FIRE && parts[i].type!=PT_SMKE && parts[i].type!=PT_CFLM) ||
-			          (bmap[y/CELL][x/CELL]==WL_ALLOWENERGY && !(elements[t].Properties&TYPE_ENERGY)) ||
-					  (bmap[y/CELL][x/CELL]==WL_DETECT && (t==PT_METL || t==PT_SPRK)) ||
+					  (bmap[y/CELL][x/CELL]==WL_ALLOWENERGY && !(elements[t].Properties&TYPE_ENERGY)) ||
 			          (bmap[y/CELL][x/CELL]==WL_EWALL && !emap[y/CELL][x/CELL])) && (t!=PT_STKM) && (t!=PT_STKM2) && (t!=PT_FIGH)))
 			{
 				kill_part(i);
