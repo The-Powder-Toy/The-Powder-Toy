@@ -38,6 +38,8 @@
 extern int Element_PPIP_ppip_changed;
 extern int Element_LOLZ_RuleTable[9][9];
 extern int Element_LOLZ_lolz[XRES/9][YRES/9];
+extern int Element_WALL_RuleTable[9][9];
+extern int Element_WALL_wall[XRES / 9][YRES / 9];
 extern int Element_LOVE_RuleTable[9][9];
 extern int Element_LOVE_love[XRES/9][YRES/9];
 
@@ -2171,7 +2173,7 @@ void Simulation::set_emap(int x, int y)
 
 int Simulation::parts_avg(int ci, int ni,int t)
 {
-	if (t==PT_INSL)//to keep electronics working
+	if (t==PT_INSL || t == PT_DMRN)//to keep electronics working
 	{
 		int pmr = pmap[((int)(parts[ci].y+0.5f) + (int)(parts[ni].y+0.5f))/2][((int)(parts[ci].x+0.5f) + (int)(parts[ni].x+0.5f))/2];
 		if (pmr)
@@ -2368,6 +2370,7 @@ void Simulation::init_can_move()
 		can_move[movingType][PT_FIGH] = 0;
 		//INVS behaviour varies with pressure
 		can_move[movingType][PT_INVIS] = 3;
+		can_move[movingType][PT_PINV] = 3;
 		//stop CNCT from being displaced by other particles
 		can_move[movingType][PT_CNCT] = 0;
 		//VOID and PVOD behaviour varies with powered state and ctype
@@ -2391,13 +2394,13 @@ void Simulation::init_can_move()
 	// TODO: replace with property
 	for (destinationType = 0; destinationType < PT_NUM; destinationType++)
 	{
-		if (destinationType == PT_GLAS || destinationType == PT_PHOT || destinationType == PT_FILT || destinationType == PT_INVIS
+		if (destinationType == PT_GLAS || destinationType == PT_PHOT || destinationType == PT_FILT || destinationType == PT_INVIS || destinationType == PT_PINV
 		 || destinationType == PT_CLNE || destinationType == PT_PCLN || destinationType == PT_BCLN || destinationType == PT_PBCN
 		 || destinationType == PT_WATR || destinationType == PT_DSTW || destinationType == PT_SLTW || destinationType == PT_GLOW
 		 || destinationType == PT_ISOZ || destinationType == PT_ISZS || destinationType == PT_QRTZ || destinationType == PT_PQRT
 		 || destinationType == PT_H2   || destinationType == PT_BGLA || destinationType == PT_C5)
 			can_move[PT_PHOT][destinationType] = 2;
-		if (destinationType != PT_DMND && destinationType != PT_INSL && destinationType != PT_VOID && destinationType != PT_PVOD && destinationType != PT_VIBR && destinationType != PT_BVBR && destinationType != PT_PRTI && destinationType != PT_PRTO)
+		if (destinationType != PT_DMND && destinationType != PT_INSL && destinationType != PT_DMRN && destinationType != PT_VOID && destinationType != PT_PVOD && destinationType != PT_VIBR && destinationType != PT_BVBR && destinationType != PT_PRTI && destinationType != PT_PRTO)
 		{
 			can_move[PT_PROT][destinationType] = 2;
 			can_move[PT_GRVT][destinationType] = 2;
@@ -2412,6 +2415,7 @@ void Simulation::init_can_move()
 	can_move[PT_DEST][PT_PBCN] = 0;
 
 	can_move[PT_NEUT][PT_INVIS] = 2;
+	can_move[PT_NEUT][PT_PINV] = 2;
 	can_move[PT_ELEC][PT_LCRY] = 2;
 	can_move[PT_ELEC][PT_EXOT] = 2;
 	can_move[PT_ELEC][PT_GLOW] = 2;
@@ -2478,6 +2482,15 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr)
 				pressureResistance = 4.0f;
 
 			if (pv[ny/CELL][nx/CELL] < -pressureResistance || pv[ny/CELL][nx/CELL] > pressureResistance)
+				result = 2;
+			else
+				result = 0;
+			break;
+		}
+		case PT_PINV:
+		{
+
+			if (parts[ID(r)].life == 10)
 				result = 2;
 			else
 				result = 0;
@@ -2643,6 +2656,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 				}
 				break;
 			case PT_INVIS:
+			case PT_PINV:
 			{
 				float pressureResistance = 0.0f;
 				if (parts[ID(r)].tmp > 0)
@@ -2688,6 +2702,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 				if (RNG::Ref().chance(9, 10))
 					create_cherenkov_photon(i);
 			break;
+
 		case PT_ELEC:
 			if (TYP(r) == PT_GLOW)
 			{
@@ -2695,8 +2710,9 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 				parts[i].ctype = 0x3FFFFFFF;
 			}
 			break;
+
 		case PT_PROT:
-			if (TYP(r) == PT_INVIS)
+			if (TYP(r) == PT_INVIS|| TYP(r) == PT_PINV)
 				part_change_type(i, x, y, PT_NEUT);
 			break;
 		case PT_BIZR:
@@ -3153,8 +3169,6 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 		}
 		else if (IsWallBlocking(x, y, t))
 			return -1;
-		else if (bmap[y/CELL][x/CELL]==WL_DETECT && elements[t].Properties & TYPE_SOLID)
-			return -1;
 		else if (photons[y][x] && (elements[t].Properties & TYPE_ENERGY))
 			return -1;
 	}
@@ -3269,6 +3283,12 @@ void Simulation::GetGravityField(int x, int y, float particleGrav, float newtonG
 				pGravX -= pGravMult * (float)(x - XCNTR);
 				pGravY -= pGravMult * (float)(y - YCNTR);
 			}
+		case 3: //Inverted
+			pGravY = -particleGrav;
+			break;
+		case 4: //Accelerated.
+			pGravY += particleGrav*10.0;
+			break;
 	}
 }
 
@@ -3417,7 +3437,8 @@ void Simulation::UpdateParticles(int start, int end)
 			          (bmap[y/CELL][x/CELL]==WL_ALLOWLIQUID && !(elements[t].Properties&TYPE_LIQUID)) ||
 			          (bmap[y/CELL][x/CELL]==WL_ALLOWPOWDER && !(elements[t].Properties&TYPE_PART)) ||
 			          (bmap[y/CELL][x/CELL]==WL_ALLOWGAS && !(elements[t].Properties&TYPE_GAS)) || //&& elements[t].Falldown!=0 && parts[i].type!=PT_FIRE && parts[i].type!=PT_SMKE && parts[i].type!=PT_CFLM) ||
-					  (bmap[y/CELL][x/CELL]==WL_ALLOWENERGY && !(elements[t].Properties&TYPE_ENERGY)) ||
+			          (bmap[y/CELL][x/CELL]==WL_ALLOWENERGY && !(elements[t].Properties&TYPE_ENERGY)) ||
+					  (bmap[y/CELL][x/CELL]==WL_DETECT && (t==PT_METL || t==PT_SPRK)) ||
 			          (bmap[y/CELL][x/CELL]==WL_EWALL && !emap[y/CELL][x/CELL])) && (t!=PT_STKM) && (t!=PT_STKM2) && (t!=PT_FIGH)))
 			{
 				kill_part(i);
@@ -3487,7 +3508,16 @@ void Simulation::UpdateParticles(int start, int end)
 						pGravX = elements[t].Gravity * ((float)(x - XCNTR) / pGravD);
 						pGravY = elements[t].Gravity * ((float)(y - YCNTR) / pGravD);
 						break;
+					case 3:
+						pGravX = 0.0f;
+						pGravY = -elements[t].Gravity;
+						break;
+					case 4:
+						pGravX = 0.0f;
+						pGravY = elements[t].Gravity*10;
+						break;
 					}
+
 				}
 				if (elements[t].NewtonianGravity)
 				{
@@ -4501,6 +4531,7 @@ killed:
 										pGravX = 0.0f;
 										pGravY = ptGrav;
 										break;
+									
 									case 1:
 										pGravX = pGravY = 0.0f;
 										break;
@@ -4508,6 +4539,14 @@ killed:
 										pGravD = 0.01f - hypotf((nx - XCNTR), (ny - YCNTR));
 										pGravX = ptGrav * ((float)(nx - XCNTR) / pGravD);
 										pGravY = ptGrav * ((float)(ny - YCNTR) / pGravD);
+										break;
+									case 3:
+										pGravX = 0.0f;
+										pGravY = -ptGrav;
+										break;
+									case 4:
+										pGravX = 0.0f;
+										pGravY = ptGrav*10;
 										break;
 								}
 								pGravX += gravx[(ny/CELL)*(XRES/CELL)+(nx/CELL)];
@@ -4580,6 +4619,14 @@ killed:
 											pGravD = 0.01f - hypotf((nx - XCNTR), (ny - YCNTR));
 											pGravX = ptGrav * ((float)(nx - XCNTR) / pGravD);
 											pGravY = ptGrav * ((float)(ny - YCNTR) / pGravD);
+											break;
+										case 3:
+											pGravX = 0.0f;
+											pGravY = -ptGrav;
+											break;
+										case 4:
+											pGravX = 0.0f;
+											pGravY = ptGrav*10;
 											break;
 									}
 									pGravX += gravx[(ny/CELL)*(XRES/CELL)+(nx/CELL)];
@@ -4794,7 +4841,7 @@ void Simulation::RecalcFreeParticles(bool do_life_dec)
 				{
 					// Particles are sometimes allowed to go inside INVS and FILT
 					// To make particles collide correctly when inside these elements, these elements must not overwrite an existing pmap entry from particles inside them
-					if (!pmap[y][x] || (t!=PT_INVIS && t!= PT_FILT))
+					if (!pmap[y][x] || (t!=PT_INVIS && t!= PT_FILT && t != PT_PINV))
 						pmap[y][x] = PMAP(i, t);
 					// (there are a few exceptions, including energy particles - currently no limit on stacking those)
 					if (t!=PT_THDR && t!=PT_EMBR && t!=PT_FIGH && t!=PT_PLSM)
@@ -4991,7 +5038,7 @@ void Simulation::BeforeSim()
 		}
 
 		// LOVE and LOLZ element handling
-		if (elementCount[PT_LOVE] > 0 || elementCount[PT_LOLZ] > 0)
+		if (elementCount[PT_LOVE] > 0 || elementCount[PT_LOLZ] > 0 || elementCount[PT_WALL] > 0)
 		{
 			int nx, nnx, ny, nny, r, rt;
 			for (ny=0; ny<YRES-4; ny++)
@@ -5008,6 +5055,10 @@ void Simulation::BeforeSim()
 					else if (parts[ID(r)].type==PT_LOVE)
 					{
 						Element_LOVE_love[nx/9][ny/9] = 1;
+					}
+					else if (parts[ID(r)].type == PT_WALL)
+					{
+						Element_WALL_wall[nx / 9][ny / 9] = 1;
 					}
 					else if (parts[ID(r)].type==PT_LOLZ)
 					{
@@ -5056,6 +5107,29 @@ void Simulation::BeforeSim()
 							}
 					}
 					Element_LOLZ_lolz[nx/9][ny/9]=0;
+
+
+
+					if (Element_WALL_wall[nx / 9][ny / 9] == 1)
+					{
+						for (nnx = 0; nnx < 9; nnx++)
+							for (nny = 0; nny < 9; nny++)
+							{
+								if (ny + nny > 0 && ny + nny < YRES&&nx + nnx >= 0 && nx + nnx < XRES)
+								{
+									rt = pmap[ny + nny][nx + nnx];
+									if (!rt&&Element_WALL_RuleTable[nny][nnx] == 1)
+										create_part(-1, nx + nnx, ny + nny, PT_WALL);
+									else if (!rt)
+										continue;
+									else if (parts[ID(rt)].type == PT_WALL && Element_WALL_RuleTable[nny][nnx] == 0)
+										kill_part(ID(rt));
+
+								}
+							}
+					}
+					Element_WALL_wall[nx / 9][ny / 9] = 0;
+
 				}
 			}
 		}

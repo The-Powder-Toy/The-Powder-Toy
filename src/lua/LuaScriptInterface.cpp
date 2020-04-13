@@ -362,6 +362,7 @@ tpt.partsdata = nil");
 
 	ui::Engine::Ref().LastTick(Platform::GetTime());
 	luaopen_eventcompat(l);
+	luaopen_crackerk(l);
 }
 
 void LuaScriptInterface::Init()

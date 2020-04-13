@@ -4,7 +4,6 @@
 #include "resource.h"
 #endif
 #include "lua/LuaCompat.h"
-
 void luaopen_eventcompat(lua_State *l)
 {
 #ifndef _MSC_VER

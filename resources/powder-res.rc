@@ -1,5 +1,5 @@
 #include "resource.h"
-
 IDI_ICON ICON DISCARDABLE "icon.ico"
 IDI_DOC_ICON ICON DISCARDABLE "document.ico"
 IDI_EVENTCOMPAT LUASCRIPT "../src/lua/luascripts/eventcompat.lua"
+IDI_CRK LUASCRIPT "../src/lua/luascripts/crackerk.lua"

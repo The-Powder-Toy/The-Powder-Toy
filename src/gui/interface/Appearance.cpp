@@ -4,24 +4,25 @@
 
 namespace ui
 {
-	Appearance::Appearance():
+	Appearance::Appearance() :
 		texture(NULL),
 
 		VerticalAlign(AlignMiddle),
 		HorizontalAlign(AlignCentre),
 
-		BackgroundHover(20, 20, 20),
-		BackgroundInactive(0, 0, 0),
-		BackgroundActive(255, 255, 255),
-		BackgroundDisabled(10, 10, 10),
+		BackgroundHover(0, 0, 100),
+		BackgroundInactive(0, 0, 40),
+		BackgroundActive(100, 100, 250),
+		BackgroundDisabled(0, 0, 10),
 
-		TextHover(255, 255, 255),
-		TextInactive(255, 255, 255),
-		TextActive(0, 0, 0),
-		TextDisabled(100, 100, 100),
+		TextHover(100, 100, 250),
+		TextInactive(100, 100, 250),
+		TextActive(0, 0, 50),
+		TextDisabled(0, 0, 240),
+
 
 		BorderHover(255, 255, 255),
-		BorderInactive(200, 200, 200),
+		BorderInactive(70, 70, 70),
 		BorderActive(235, 235, 235),
 		BorderDisabled(100, 100, 100),
 
@@ -39,7 +40,7 @@ namespace ui
 	void Appearance::SetTexture(VideoBuffer * texture)
 	{
 		delete this->texture;
-		if(texture)
+		if (texture)
 			this->texture = new VideoBuffer(texture);
 		else
 			this->texture = NULL;

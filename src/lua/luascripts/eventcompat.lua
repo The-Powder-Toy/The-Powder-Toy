@@ -1,7 +1,6 @@
 if not event then
 	return
 end
-
 local deprecated_scripts = {}
 local timer = nil
 local function print_deprecation_warnings()

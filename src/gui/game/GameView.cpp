@@ -2267,7 +2267,7 @@ void GameView::OnDraw()
 
 			textWidth = Graphics::textwidth(sampleInfo.Build());
 			g->fillrect(XRES-20-textWidth, 27, textWidth+8, 14, 0, 0, 0, alpha*0.5f);
-			g->drawtext(XRES-16-textWidth, 30, sampleInfo.Build(), 255, 255, 255, alpha*0.75f);
+			g->drawtext(XRES-16-textWidth, 30, sampleInfo.Build(), 155, 155, 255, alpha*0.75f);
 		}
 	}
 
@@ -2275,7 +2275,7 @@ void GameView::OnDraw()
 	{
 		//FPS and some version info
 		StringBuilder fpsInfo;
-		fpsInfo << Format::Precision(2) << "FPS: " << ui::Engine::Ref().GetFps();
+		fpsInfo << Format::Precision(2) << "" << ui::Engine::Ref().GetFps();
 
 		if (showDebug)
 		{
@@ -2296,7 +2296,7 @@ void GameView::OnDraw()
 		int textWidth = Graphics::textwidth(fpsInfo.Build());
 		int alpha = 255-introText*5;
 		g->fillrect(12, 12, textWidth+8, 15, 0, 0, 0, alpha*0.5);
-		g->drawtext(16, 16, fpsInfo.Build(), 32, 216, 255, alpha*0.75);
+		g->drawtext(16, 16, fpsInfo.Build(), 0, 0, 255, alpha*0.75);
 	}
 
 	//Tooltips
@@ -2309,9 +2309,9 @@ void GameView::OnDraw()
 	if(toolTipPresence && toolTipPosition.X!=-1 && toolTipPosition.Y!=-1 && toolTip.length())
 	{
 		if (toolTipPosition.Y == Size.Y-MENUSIZE-10)
-			g->drawtext_outline(toolTipPosition.X, toolTipPosition.Y, toolTip, 255, 255, 255, toolTipPresence>51?255:toolTipPresence*5);
+			g->drawtext_outline(toolTipPosition.X, toolTipPosition.Y, toolTip, 12, 100, 250, toolTipPresence>51?255:toolTipPresence*5);
 		else
-			g->drawtext(toolTipPosition.X, toolTipPosition.Y, toolTip, 255, 255, 255, toolTipPresence>51?255:toolTipPresence*5);
+			g->drawtext(toolTipPosition.X, toolTipPosition.Y, toolTip,12 ,100, 250, toolTipPresence>51?255:toolTipPresence*5);
 	}
 
 	if(buttonTipShow > 0)
@@ -2322,7 +2322,7 @@ void GameView::OnDraw()
 	//Introduction text
 	if(introText)
 	{
-		g->fillrect(0, 0, WINDOWW, WINDOWH, 0, 0, 0, introText>51?102:introText*2);
+		g->fillrect(0, 0, WINDOWW, WINDOWH, 50, 0, 100, introText>51?102:introText*2);
 		g->drawtext(16, 20, introTextMessage, 255, 255, 255, introText>51?255:introText*5);
 	}
 

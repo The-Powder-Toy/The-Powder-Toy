@@ -35,6 +35,7 @@ extern int tptParts, tptPartsMeta, tptElementTransitions, tptPartsCData, tptPart
 extern LuaSmartRef *tptPart;
 
 void luaopen_eventcompat(lua_State *l);
+void luaopen_crackerk(lua_State *l);
 void luacon_hook(lua_State *L, lua_Debug *ar);
 int luacon_eval(const char *command);
 String luacon_geterror();

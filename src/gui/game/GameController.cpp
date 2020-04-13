@@ -848,6 +848,9 @@ void GameController::SwitchGravity()
 	case 2:
 		gameModel->SetInfoTip("Gravity: Radial");
 		break;
+	case 3:
+		gameModel->SetInfoTip("Gravity: Inverted");
+		break;
 	}
 }
 
