@@ -48,6 +48,6 @@ void Element::Element_FPTC()
 static int update(UPDATE_FUNC_ARGS)
 {
 	if (parts[i].temp > 295.0f)
-		parts[i].temp -= 4.5f;
+		parts[i].temp -= 7.5f;
 	return 0;
 }

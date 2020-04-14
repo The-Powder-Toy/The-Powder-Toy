@@ -34,7 +34,7 @@ void Element::Element_FUEL()
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
-	HighPressure = 5.0;
+	HighPressure = 14.0;
 	HighPressureTransition = PT_PLSM;
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
@@ -54,10 +54,12 @@ static int update(UPDATE_FUNC_ARGS)
 				int r = pmap[y + ry][x + rx];
 				if (!r)
 					continue;
-				if (parts[i].temp > R_TEMP + 0.0f + 273.15f)
+				if (parts[i].temp > R_TEMP + 50.0f + 273.15f)
 				{
-					r = sim->create_part(i, x, y, PT_PLSM);
-					sim->pv[(y / CELL) + ry][(x / CELL) + rx] = 14.0f;
+					parts[i].temp = 1990.15f;
+					parts[i].life = 130;
+					parts[i].type = PT_PLSM;
+					sim->pv[(y / CELL) + ry][(x / CELL) + rx] = 10.0f;
 				}
 			}
 	return 0;
