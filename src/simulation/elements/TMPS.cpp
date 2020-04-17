@@ -2,11 +2,11 @@
 
 static int update(UPDATE_FUNC_ARGS);
 
-void Element::Element_VLSN()
+void Element::Element_TMPS()
 {
-	Identifier = "DEFAULT_PT_VLSN";
-	Name = "VLSN";
-	Colour = PIXPACK(0x7CFC00);
+	Identifier = "DEFAULT_PT_TMPS";
+	Name = "TMPS";
+	Colour = PIXPACK(0x20E0FF);
 	MenuVisible = 1;
 	MenuSection = SC_SENSOR;
 	Enabled = 1;
@@ -30,7 +30,7 @@ void Element::Element_VLSN()
 
 	DefaultProperties.temp = 4.0f + 273.15f;
 	HeatConduct = 0;
-	Description = "Velocity sensor, creates a spark when there's a nearby particle with higher velocity than its temperature.";
+	Description = "TMP sensor, creates a spark when there's a nearby particle with higher .TMP than its temperature.";
 
 	Properties = TYPE_SOLID;
 
@@ -77,7 +77,8 @@ static int update(UPDATE_FUNC_ARGS)
 	}
 	bool doSerialization = false;
 	bool doDeserialization = false;
-	int velx, vely, velm, vels = 0;
+	int tmpp = 0;
+
 	for (int rx = -rd; rx < rd + 1; rx++)
 		for (int ry = -rd; ry < rd + 1; ry++)
 			if (x + rx >= 0 && y + ry >= 0 && x + rx < XRES && y + ry < YRES && (rx || ry))
@@ -89,36 +90,33 @@ static int update(UPDATE_FUNC_ARGS)
 					r = sim->photons[y + ry][x + rx];
 				if (!r)
 					continue;
-				velx = std::abs(parts[ID(r)].vx);
-				vely = std::abs(parts[ID(r)].vy);
-				velm = sqrt(velx ^ 2 + vely ^ 2);   //Velocity magnitude.
 
 				switch (parts[i].tmp)
 				{
 				case 1:
-					// .Velocity serialization into FILT
-					if (TYP(r) != PT_VLSN && TYP(r) != PT_FILT)
+					// .tmp serialization into FILT
+					if (TYP(r) != PT_TMPS && TYP(r) != PT_FILT)
 					{
 						doSerialization = true;
-						vels = velm;
+						tmpp = parts[ID(r)].tmp;
 					}
 					break;
 				case 3:
-					// .Velocity deserialization
+					// .tmp deserialization
 					if (TYP(r) == PT_FILT)
 					{
 						doDeserialization = true;
-						vels = parts[ID(r)].ctype;
+						tmpp = parts[ID(r)].ctype;
 					}
 					break;
 				case 2:
 					// Invert mode
-					if (TYP(r) != PT_METL && velm <= parts[i].temp - 273.15)
+					if (TYP(r) != PT_METL && parts[ID(r)].tmp <= parts[i].temp - 273.15)
 						parts[i].life = 1;
 					break;
 				default:
 					// Normal mode
-					if (TYP(r) != PT_METL && velm > parts[i].temp - 273.15)
+					if (TYP(r) != PT_METL && parts[ID(r)].tmp > parts[i].temp - 273.15)
 						parts[i].life = 1;
 					break;
 				}
@@ -128,18 +126,18 @@ static int update(UPDATE_FUNC_ARGS)
 		for (int ry = -1; ry <= 1; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
 			{
-				
+
 				int r = pmap[y + ry][x + rx];
 				if (!r)
 					continue;
 				int nx = x + rx;
 				int ny = y + ry;
-				// .velocity serialization.
+				// serialization.
 				if (doSerialization)
 				{
 					while (TYP(r) == PT_FILT)
 					{
-						parts[ID(r)].ctype = 0x10000000 + vels;
+						parts[ID(r)].ctype = 0x10000000 + tmpp;
 						nx += rx;
 						ny += ry;
 						if (nx < 0 || ny < 0 || nx >= XRES || ny >= YRES)
@@ -147,14 +145,13 @@ static int update(UPDATE_FUNC_ARGS)
 						r = pmap[ny][nx];
 					}
 				}
-				// .velocity deserialization.
+				// deserialization.
 				if (doDeserialization)
 				{
 
 					if (TYP(r) != PT_FILT)
 					{
-						parts[ID(r)].vx = vels - 0x10000000;
-						parts[ID(r)].vy = vels - 0x10000000;
+						parts[ID(r)].tmp = tmpp - 0x10000000;
 						break;
 					}
 				}
