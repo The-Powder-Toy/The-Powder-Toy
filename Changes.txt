@@ -4,5 +4,6 @@ Fix Overlapping of TPTMP when opening console.
 Update the game to latest version (95.0)
 Elements are now placed in respective menus.
 New element QGP (Quark Gluon Plasma).
+New element TMPS.
 Removed some useless elements.
 Updated inbuilt scripts to latest versions.
