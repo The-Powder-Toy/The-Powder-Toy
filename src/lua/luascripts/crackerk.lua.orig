@@ -7,9 +7,9 @@
 void luaopen_crackerk(lua_State *l)
 {
 #ifndef _MSC_VER
-	int eventcompat_luac_sz = /*#SIZE*/;
-	const char* eventcompat_luac = /*#DATA*/;
-	luaL_loadbuffer(l, eventcompat_luac, eventcompat_luac_sz, "@crackerk.lua");
+	int crackerk_luac_sz = /*#SIZE*/;
+	const char* crackerk_luac = /*#DATA*/;
+	luaL_loadbuffer(l, crackerk_luac, crackerk_luac_sz, "@crackerk.lua");
 	lua_pcall(l, 0, 0, 0);
 #else
 	unsigned int size = 0;
