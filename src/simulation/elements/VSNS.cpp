@@ -2,10 +2,10 @@
 
 static int update(UPDATE_FUNC_ARGS);
 
-void Element::Element_VLSN()
+void Element::Element_VSNS()
 {
-	Identifier = "DEFAULT_PT_VLSN";
-	Name = "VLSN";
+	Identifier = "DEFAULT_PT_VSNS";
+	Name = "VSNS";
 	Colour = PIXPACK(0x7CFC00);
 	MenuVisible = 1;
 	MenuSection = SC_SENSOR;
@@ -30,7 +30,7 @@ void Element::Element_VLSN()
 
 	DefaultProperties.temp = 4.0f + 273.15f;
 	HeatConduct = 0;
-	Description = "Velocity sensor, creates a spark when there's a nearby particle with higher velocity than its temperature.";
+	Description = "Velocity sensor, creates a spark when there's a nearby particle with velocity higher than its temperature.";
 
 	Properties = TYPE_SOLID;
 
@@ -65,7 +65,7 @@ static int update(UPDATE_FUNC_ARGS)
 					int rt = TYP(r);
 					if (sim->parts_avg(i, ID(r), PT_INSL) != PT_INSL)
 					{
-						if ((sim->elements[rt].Properties&PROP_CONDUCTS) && !(rt == PT_WATR || rt == PT_SLTW || rt == PT_NTCT || rt == PT_PTCT || rt == PT_INWR) && parts[ID(r)].life == 0)
+						if ((sim->elements[rt].Properties &PROP_CONDUCTS) && !(rt == PT_WATR || rt == PT_SLTW || rt == PT_NTCT || rt == PT_PTCT || rt == PT_INWR) && parts[ID(r)].life == 0)
 						{
 							parts[ID(r)].life = 4;
 							parts[ID(r)].ctype = rt;
@@ -77,7 +77,7 @@ static int update(UPDATE_FUNC_ARGS)
 	}
 	bool doSerialization = false;
 	bool doDeserialization = false;
-	int velx, vely, velm, vels = 0;
+	float Vx = 0, Vy = 0, Vm = 0, Vs = 0;
 	for (int rx = -rd; rx < rd + 1; rx++)
 		for (int ry = -rd; ry < rd + 1; ry++)
 			if (x + rx >= 0 && y + ry >= 0 && x + rx < XRES && y + ry < YRES && (rx || ry))
@@ -89,41 +89,41 @@ static int update(UPDATE_FUNC_ARGS)
 					r = sim->photons[y + ry][x + rx];
 				if (!r)
 					continue;
-				velx = std::abs(parts[ID(r)].vx);
-				vely = std::abs(parts[ID(r)].vy);
-				velm = sqrt(velx ^ 2 + vely ^ 2);   //Velocity magnitude.
+				Vx = parts[ID(r)].vx;
+				Vy = parts[ID(r)].vy;
+				Vm = sqrt(Vx*Vx + Vy*Vy);
 
 				switch (parts[i].tmp)
 				{
 				case 1:
-					// .Velocity serialization into FILT
-					if (TYP(r) != PT_VLSN && TYP(r) != PT_FILT)
+					// serialization
+					if (TYP(r) != PT_VSNS && TYP(r) != PT_FILT && sim->elements[TYP(r)].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY))
 					{
 						doSerialization = true;
-						vels = velm;
+						Vs = Vm;
 					}
 					break;
 				case 3:
-					// .Velocity deserialization
+					// deserialization
 					if (TYP(r) == PT_FILT)
 					{
 						doDeserialization = true;
-						vels = parts[ID(r)].ctype;
+						Vs = parts[ID(r)].ctype;
 					}
 					break;
 				case 2:
 					// Invert mode
-					if (TYP(r) != PT_METL && velm <= parts[i].temp - 273.15)
+					if (TYP(r) != PT_METL && Vm <= parts[i].temp - 273.15 && sim->elements[TYP(r)].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY))
 						parts[i].life = 1;
 					break;
 				default:
 					// Normal mode
-					if (TYP(r) != PT_METL && velm > parts[i].temp - 273.15)
+					if (TYP(r) != PT_METL && Vm > parts[i].temp - 273.15 && sim->elements[TYP(r)].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY))
 						parts[i].life = 1;
 					break;
 				}
 			}
-
+	float Newx = Vx / Vm, Newy = Vy / Vm;
 	for (int rx = -1; rx <= 1; rx++)
 		for (int ry = -1; ry <= 1; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
@@ -134,12 +134,12 @@ static int update(UPDATE_FUNC_ARGS)
 					continue;
 				int nx = x + rx;
 				int ny = y + ry;
-				// .velocity serialization.
+				//Serialization.
 				if (doSerialization)
 				{
 					while (TYP(r) == PT_FILT)
 					{
-						parts[ID(r)].ctype = 0x10000000 + vels;
+						parts[ID(r)].ctype = 0x10000000 + Vs;
 						nx += rx;
 						ny += ry;
 						if (nx < 0 || ny < 0 || nx >= XRES || ny >= YRES)
@@ -147,14 +147,13 @@ static int update(UPDATE_FUNC_ARGS)
 						r = pmap[ny][nx];
 					}
 				}
-				// .velocity deserialization.
+				//Deserialization.
 				if (doDeserialization)
 				{
-
 					if (TYP(r) != PT_FILT)
 					{
-						parts[ID(r)].vx = vels - 0x10000000;
-						parts[ID(r)].vy = vels - 0x10000000;
+						parts[ID(r)].vx = Newx * (Vs-0x10000000);
+						parts[ID(r)].vy = Newy * (Vs-0x10000000);
 						break;
 					}
 				}
