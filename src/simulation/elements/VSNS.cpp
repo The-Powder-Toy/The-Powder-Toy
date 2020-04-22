@@ -97,7 +97,7 @@ static int update(UPDATE_FUNC_ARGS)
 				{
 				case 1:
 					// serialization
-					if (TYP(r) != PT_VSNS && TYP(r) != PT_FILT && sim->elements[TYP(r)].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY))
+					if (TYP(r) != PT_VSNS && TYP(r) != PT_FILT && !(sim->elements[TYP(r)].Properties & (TYPE_SOLID)))
 					{
 						doSerialization = true;
 						Vs = Vm;
@@ -113,17 +113,17 @@ static int update(UPDATE_FUNC_ARGS)
 					break;
 				case 2:
 					// Invert mode
-					if (TYP(r) != PT_METL && Vm <= parts[i].temp - 273.15 && sim->elements[TYP(r)].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY))
+					if (TYP(r) != PT_METL && Vm <= parts[i].temp - 273.15 && !(sim->elements[TYP(r)].Properties & (TYPE_SOLID)))
 						parts[i].life = 1;
 					break;
 				default:
 					// Normal mode
-					if (TYP(r) != PT_METL && Vm > parts[i].temp - 273.15 && sim->elements[TYP(r)].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY))
+					if (TYP(r) != PT_METL && Vm > parts[i].temp - 273.15 && !(sim->elements[TYP(r)].Properties & (TYPE_SOLID)))
 						parts[i].life = 1;
 					break;
 				}
 			}
-	float Newx = Vx / Vm, Newy = Vy / Vm;
+
 	for (int rx = -1; rx <= 1; rx++)
 		for (int ry = -1; ry <= 1; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
@@ -150,10 +150,10 @@ static int update(UPDATE_FUNC_ARGS)
 				//Deserialization.
 				if (doDeserialization)
 				{
-					if (TYP(r) != PT_FILT)
+					if (TYP(r) != PT_FILT && !(sim->elements[TYP(r)].Properties & (TYPE_SOLID)))
 					{
-						parts[ID(r)].vx = Newx * (Vs-0x10000000);
-						parts[ID(r)].vy = Newy * (Vs-0x10000000);
+						parts[ID(r)].vx = (Vx/Vm)*(Vs-0x10000000);
+						parts[ID(r)].vy = (Vy/Vm)*(Vs-0x10000000);
 						break;
 					}
 				}
