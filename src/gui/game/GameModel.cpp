@@ -1018,6 +1018,11 @@ bool GameModel::GetAHeatEnable()
 	return sim->aheat_enable;
 }
 
+void GameModel::ResetAHeat()
+{
+	sim->air->ClearAirH();
+}
+
 void GameModel::SetNewtonianGravity(bool newtonainGravity)
 {
     if (newtonainGravity)

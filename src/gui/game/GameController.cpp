@@ -885,6 +885,11 @@ bool GameController::GetAHeatEnable()
 	return gameModel->GetAHeatEnable();
 }
 
+void GameController::ResetAHeat()
+{
+	gameModel->ResetAHeat();
+}
+
 void GameController::ToggleNewtonianGravity()
 {
 	gameModel->SetNewtonianGravity(!gameModel->GetNewtonianGrvity());
