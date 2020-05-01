@@ -47,6 +47,7 @@ void Element::Element_ARAY()
 
 static int update(UPDATE_FUNC_ARGS)
 {
+	int long_bray_life = parts[i].life > 0 ? parts[i].life : 1020;
 	for (int rx = -1; rx <= 1; rx++)
 	{
 		for (int ry = -1; ry <= 1; ry++)
@@ -99,7 +100,7 @@ static int update(UPDATE_FUNC_ARGS)
 								case 0:
 									if (nyy != 0 || nxx !=0)
 									{
-										parts[r].life = 1020; // makes it last a while
+										parts[r].life = long_bray_life; // makes it last a while
 										parts[r].tmp = 1;
 										if (!parts[r].ctype) // and colors it if it isn't already
 											parts[r].ctype = colored;
@@ -111,7 +112,7 @@ static int update(UPDATE_FUNC_ARGS)
 									break;
 								// long life, reset it
 								case 1:
-									parts[r].life = 1020;
+									parts[r].life = long_bray_life;
 									//docontinue = 1;
 									break;
 								}
