@@ -123,7 +123,7 @@ static int update(UPDATE_FUNC_ARGS)
 					break;
 				}
 			}
-
+	
 	for (int rx = -1; rx <= 1; rx++)
 		for (int ry = -1; ry <= 1; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
@@ -152,9 +152,8 @@ static int update(UPDATE_FUNC_ARGS)
 				{
 					if (TYP(r) != PT_FILT && !(sim->elements[TYP(r)].Properties & (TYPE_SOLID)))
 					{
-						parts[ID(r)].vx = (Vx/Vm)*(Vs-0x10000000);
-						parts[ID(r)].vy = (Vy/Vm)*(Vs-0x10000000);
-						break;
+						//to be done
+						continue;
 					}
 				}
 			}

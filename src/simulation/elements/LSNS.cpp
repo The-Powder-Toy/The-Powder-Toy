@@ -147,7 +147,7 @@ static int update(UPDATE_FUNC_ARGS)
 					if (TYP(r) != PT_FILT)
 					{
 						parts[ID(r)].life = life - 0x10000000;
-						break;
+						continue;
 					}
 				}
 			}
