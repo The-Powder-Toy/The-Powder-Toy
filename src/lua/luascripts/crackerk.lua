@@ -3309,9 +3309,13 @@ local Ruler = Button:new(320,106,75,10, "Ruler", "Toggles in game hud ruler.")
 local Ry = Button:new(410,106,40,10,"Hide", "Hides the Ruler")
 local Rn = Button:new(410,116,40,10,"Show", "Shows the Ruler")
 
-local mp = Button:new(320,126,75,10,"Multiplayer", "Options for multiplayer script")
-local mp1 = Button:new(410,126,75,10,"Download", "Download the script (connection required!)")
-local mp2 = Button:new(410,136,75,10,"Disable", "Disable the muyltiplayer script.")
+local mp = Button:new(320,126,75,10,"Theme", "Changes game's theme")
+local mp1 = Button:new(410,126,75,10,"Default", "Change the theme to default")
+local mp2 = Button:new(410,136,75,10,"Aqua", "Change the theme to Blue")
+local mp3 = Button:new(410,146,75,10,"Fire", "Change the theme to Red")
+local mp4 = Button:new(410,156,75,10,"Forest", "Change the theme to Green")
+local mp5 = Button:new(410,166,75,10,"Sun", "Change the theme to Yellow")
+
 
 
 local rc = Button:new(320,146,75,10,"Record", "Options for recording frames")
@@ -3378,6 +3382,9 @@ interface.removeComponent(FPS1)
 interface.removeComponent(FPS2)
 interface.removeComponent(mp1)
 interface.removeComponent(mp2)
+interface.removeComponent(mp3)
+interface.removeComponent(mp4)
+interface.removeComponent(mp5)
 interface.removeComponent(bary)
 interface.removeComponent(barn)
 interface.removeComponent(wikiy)
@@ -3514,8 +3521,8 @@ tpt.register_step(backy)
 end)
 
 function topbar()
-tpt.drawline(1, 0, 310, 0, tgr, tgg, tgb,200)
-tpt.drawline(340, 0, 610, 0,tgr, tgg, tgb, 200)
+tpt.drawline(1, 0, 310, 0, ar, ag, ab,200)
+tpt.drawline(340, 0, 610, 0,ar, ag, ab, 200)
 end
 
 tpt.register_step(topbar)
@@ -3561,19 +3568,70 @@ mp:action(function(sender)
 clearsb()
 interface.addComponent(mp1)
 interface.addComponent(mp2)
+interface.addComponent(mp3)
+interface.addComponent(mp4)
+interface.addComponent(mp5)
 end)
 
-mp1:action(function(sender)
-tpt.getscript(2, "autorun.lua", 1)
+function mpremove()
 interface.removeComponent(mp1)
 interface.removeComponent(mp2)
+interface.removeComponent(mp3)
+interface.removeComponent(mp4)
+interface.removeComponent(mp5)
+end
+
+ar =  100
+ag = 100
+ab = 100
+function theme()
+tpt.drawrect(613,1,14,405,ar,ag,ab,255)
+tpt.drawline(613,95,627,95,ar,ag,ab,255)
+tpt.drawrect(1,408,626,14,ar,ag,ab,255)
+end
+
+mp1:action(function(sender)
+tpt.unregister_step(theme)
+ar =  100
+ag = 100
+ab = 100
+mpremove()
 end)
 
 mp2:action(function(sender)
-TPTMP.disableMultiplayer()
-interface.removeComponent(mp1)
-interface.removeComponent(mp2)
+tpt.register_step(theme)
+ar = 0
+ag = 0
+ab = 255
+mpremove()
 end)
+
+mp3:action(function(sender)
+tpt.register_step(theme)
+ar = 255
+ag = 0
+ab = 0
+
+mpremove()
+end)
+
+mp4:action(function(sender)
+tpt.register_step(theme)
+ar = 0
+ag = 255
+ab = 0
+mpremove()
+end)
+
+mp5:action(function(sender)
+tpt.register_step(theme)
+ar = 250
+ag = 250
+ab = 0
+mpremove()
+end)
+
+
 
 Ruler:action(function(sender)
 clearsb()
@@ -3607,7 +3665,7 @@ end)
 
 function UIhide()
 tpt.hud(0)
-tpt.fillrect(0,385,614,40,0,0,0,255)
+tpt.fillrect(0,382,616,42,0,0,0,255)
 tpt.fillrect(612,0,17,424,0,0,0,255)
 end
 UIhidey:action(function(sender)
@@ -3623,6 +3681,7 @@ tpt.hud(0)
 interface.removeComponent(UIhiden)
 interface.removeComponent(UIhidey)
 tpt.unregister_step(UIhide)
+tpt.register_step(topbar)
 end)
 
 FPS:action(function(sender)
@@ -3680,6 +3739,7 @@ tpt.setwindowsize(1)
 tpt.newtonian_gravity(0)
 tpt.decorations_enable(0)
 sim.resetPressure()
+tpt.unregister_step(theme)
 tpt.ambient_heat(0)
 sim.resetTemp()
 tpt.reset_velocity(1,380,300,300)
@@ -3690,7 +3750,7 @@ sim.clearSim()
 end)
 
 info:action(function(sender)
-tpt.message_box("Cracker1000's Script Check","Version 6.0")
+tpt.message_box("Cracker1000's Script Check","Version 7.0")
 end)
 
 hide:action(function(sender)

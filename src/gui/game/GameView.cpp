@@ -2190,7 +2190,7 @@ void GameView::OnDraw()
 			else
 			{
 				sampleInfo << c->BasicParticleInfo(sample.particle);
-				sampleInfo << ", Temp: " << sample.particle.temp - 273.15f << " C";
+				sampleInfo << ", Temp: " << sample.particle.temp - 273.15f<< " C";
 				sampleInfo << ", Pressure: " << sample.AirPressure;
 			}
 		}
@@ -2209,8 +2209,8 @@ void GameView::OnDraw()
 		}
 
 		int textWidth = Graphics::textwidth(sampleInfo.Build());
-		g->fillrect(XRES-20-textWidth, 12, textWidth+8, 15, 0, 0, 0, alpha*0.5f);
-		g->drawtext(XRES-16-textWidth, 16, sampleInfo.Build(), 255, 255, 255, alpha*0.75f);
+		g->fillrect(XRES-20-textWidth, 12, textWidth+8, 15, 0, 0, 155, alpha*0.5f);
+		g->drawtext(XRES-16-textWidth, 16, sampleInfo.Build(), 100, 100, 250, alpha*0.75f);
 
 #ifndef OGLI
 		if (wavelengthGfx)
