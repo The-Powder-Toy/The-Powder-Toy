@@ -1,9 +1,6 @@
-New Dark theme.
-In-game wiki is now accessible from new menu.
-Fix Overlapping of TPTMP when opening console.
-Update the game to latest version (95.0)
-Elements are now placed in respective menus.
-New element QGP (Quark Gluon Plasma).
-New element TMPS.
-Removed some useless elements.
-Updated inbuilt scripts to latest versions.
+Version 13.0
+New themes option.
+Fix various bugs with crackerK script
+New elements:
+Added a Clock to the mod.
+Fix lsns and VSNS

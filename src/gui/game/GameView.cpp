@@ -2297,6 +2297,22 @@ void GameView::OnDraw()
 		int alpha = 255-introText*5;
 		g->fillrect(12, 12, textWidth+8, 15, 0, 0, 0, alpha*0.5);
 		g->drawtext(16, 16, fpsInfo.Build(), 0, 0, 255, alpha*0.75);
+		// Second line
+		StringBuilder fpsInfo2;
+
+		time_t rawtime;
+		struct tm * timeinfo;
+		char buffer[80];
+		time(&rawtime);
+		timeinfo = localtime(&rawtime);
+		strftime(buffer, 80, showDebug ?
+			"%Y-%m-%d %I:%M %p" :
+			"%I:%M %p", timeinfo);
+		fpsInfo2 << buffer << " ";
+
+		int textWidth2 = Graphics::textwidth(fpsInfo2.Build());
+		g->fillrect(12, 26, textWidth2 + 8, 15, 0, 0, 0, alpha * 0.5);
+		g->drawtext(16, 29, fpsInfo2.Build(), 0, 0, 255, alpha * 0.75);
 	}
 
 	//Tooltips
