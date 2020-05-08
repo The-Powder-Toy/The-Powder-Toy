@@ -3311,8 +3311,8 @@ local Rn = Button:new(410,116,40,10,"Show", "Shows the Ruler")
 
 local mp = Button:new(320,126,75,10,"Theme", "Changes game's theme")
 local mp1 = Button:new(410,126,75,10,"Default", "Change the theme to default")
-local mp2 = Button:new(410,136,75,10,"Aqua", "Change the theme to Blue")
-local mp3 = Button:new(410,146,75,10,"Fire", "Change the theme to Red")
+local mp2 = Button:new(410,136,75,10,"Fire", "Change the theme to Blue")
+local mp3 = Button:new(410,146,75,10,"Aqua", "Change the theme to Red")
 local mp4 = Button:new(410,156,75,10,"Forest", "Change the theme to Green")
 local mp5 = Button:new(410,166,75,10,"Sun", "Change the theme to Yellow")
 
@@ -3405,7 +3405,7 @@ end)
 
 
 function wikii()
-gfx.drawText(10,10, " WELCOME TO IN GAME WIKI: \n\n WAll: Hybrid of walls and elements.\n VLSN: Velocity sensor.  Creates SPRK when nearby velocity's higher than it's temp, Configured with .tmp modes.\n TIMC: Time based convertor, converts into it's ctype when sparked with PSCN. Timer set using .tmp, default is 100.\n FUEL: FUEL. Fuel having high calorific value.\n THRM: Thermostat. Sets the temp of surrounding according to its own temp.\n CLNT: Coolant. Cools down the temp of the system, evaporates at high temperatures. Use .tmp to configure. \n DMRN: Demron. Radioactive shielding material and a better insulator.\n FNTC & FPTC: Faster versions of NTCT and PTCT.\n PINV: Powered Invisible, allows particles to move through when activated.\n UVRD: Ultra violet radiations, interacts with different elements as irl.\n SUN.: Sun, PLNT grow in direction of sunlight, emits radiation, makes PSCN spark and heals STKMs.\n LITH: Lithium ion battery, Use with PSCN and NSCN. Charges with INST when deactivated. Temp sets capacity.\n .tmp2 = 1 activates powered battery mode.\n Reacts with different elements like O2, WATR, ACID etc as IRL.\n LED:  Light Emmiting Diode. Use with PSCN and NSCN. Temp sets the brightness.\n Different .tmp2 modes: 0 = white, 1= red, 2= green, 3 =blue, 4= yellow and 5 = pink. \n QGP: Quark Gluon Plasma, bursts out radiation afer sometime. Extremely violent. \n Turns into Purple QGP when under 100C which is stable.\n TMPS: .tmp sensor, creats sprk when there is an element with higher .tmp than its temp.\n PHOS: White, slowly turns into red phosphorus. Burns blue when in contact with O2.\n Melts at 45C.")
+gfx.drawText(10,10, " WELCOME TO IN GAME WIKI: \n\n WAll: Hybrid of walls and elements.\n VLSN: Velocity sensor.  Creates SPRK when nearby velocity's higher than it's temp, Configured with .tmp modes.\n TIMC: Time based convertor, converts into it's ctype when sparked with PSCN. Timer set using .tmp, default is 100.\n FUEL: FUEL. Fuel having high calorific value.\n THRM: Thermostat. Sets the temp of surrounding according to its own temp.\n CLNT: Coolant. Cools down the temp of the system, evaporates at high temperatures. Use .tmp to configure. \n DMRN: Demron. Radioactive shielding material and a better insulator.\n FNTC & FPTC: Faster versions of NTCT and PTCT.\n PINV: Powered Invisible, allows particles to move through when activated.\n UVRD: Ultra violet radiations, interacts with different elements as irl.\n SUN.: Sun, PLNT grow in direction of sunlight, emits radiation, makes PSCN spark and heals STKMs.\n LITH: Lithium ion battery, Use with PSCN and NSCN. Charges with INST when deactivated. Temp sets capacity.\n .tmp2 = 1 activates powered battery mode.\n Reacts with different elements like O2, WATR, ACID etc as IRL.\n LED:  Light Emmiting Diode. Use with PSCN and NSCN. Temp sets the brightness.\n Different .tmp2 modes: 0 = white, 1= red, 2= green, 3 =blue, 4= yellow and 5 = pink. \n QGP: Quark Gluon Plasma, bursts out radiation afer sometime. Extremely violent. \n Turns into Purple QGP when under 100C which is stable.\n TMPS: .tmp sensor, creats sprk when there is an element with higher .tmp than its temp.\n PHOS: White, slowly turns into red phosphorus. Burns blue when in contact with O2.\n Melts at 45C.\n PTNM: Platinum, conducts like gold, catalyses reactions and reacts with SMKE, ISOZ, GAS, BREL and HYGN under certain conditions.")
 end
 
 wikiy:action(function(sender)
@@ -3581,37 +3581,39 @@ interface.removeComponent(mp4)
 interface.removeComponent(mp5)
 end
 
-ar =  100
-ag = 100
-ab = 100
+ar =  110
+ag = 110
+ab = 110
 function theme()
 tpt.drawrect(613,1,14,405,ar,ag,ab,255)
 tpt.drawline(613,95,627,95,ar,ag,ab,255)
+tpt.drawline(187,409,187,422,ar,ag,ab,255)
+tpt.drawline(469,409,469,422,ar,ag,ab,255)
+tpt.drawline(581,409,581,422,ar,ag,ab,255)
 tpt.drawrect(1,408,626,14,ar,ag,ab,255)
 end
 
 mp1:action(function(sender)
 tpt.unregister_step(theme)
-ar =  100
-ag = 100
-ab = 100
+ar =  110
+ag = 110
+ab = 110
 mpremove()
 end)
 
 mp2:action(function(sender)
 tpt.register_step(theme)
-ar = 0
+ar = 255
 ag = 0
-ab = 255
+ab = 0
 mpremove()
 end)
 
 mp3:action(function(sender)
 tpt.register_step(theme)
-ar = 255
+ar = 0
 ag = 0
-ab = 0
-
+ab = 255
 mpremove()
 end)
 

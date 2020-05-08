@@ -6,7 +6,7 @@ void Element::Element_TMPS()
 {
 	Identifier = "DEFAULT_PT_TMPS";
 	Name = "TMPS";
-	Colour = PIXPACK(0x20E0FF);
+	Colour = PIXPACK(0x0A0A3B);
 	MenuVisible = 1;
 	MenuSection = SC_SENSOR;
 	Enabled = 1;

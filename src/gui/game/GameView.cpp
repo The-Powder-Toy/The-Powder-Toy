@@ -2306,7 +2306,7 @@ void GameView::OnDraw()
 		time(&rawtime);
 		timeinfo = localtime(&rawtime);
 		strftime(buffer, 80, showDebug ?
-			"%Y-%m-%d %I:%M %p" :
+			"%Y-%m-%d %I:%M:%S %p" :
 			"%I:%M %p", timeinfo);
 		fpsInfo2 << buffer << " ";
 

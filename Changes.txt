@@ -1,6 +1,7 @@
 Version 13.0
 New themes option.
+Update the wiki.
 Fix various bugs with crackerK script
-New elements:
+New elements: PTNM
 Added a Clock to the mod.
 Fix lsns and VSNS
