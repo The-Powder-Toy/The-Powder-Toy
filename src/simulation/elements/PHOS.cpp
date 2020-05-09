@@ -29,7 +29,7 @@ void Element::Element_PHOS()
 	Weight = 75;
 
 	HeatConduct = 110;
-	Description = "Phosphorus, slowly turns red, melts at 45C and reacts with O2.";
+	Description = "Phosphorus, slowly turns red, melts at 45C and reacts violently with O2.";
 
 	Properties = TYPE_PART;
 
@@ -53,7 +53,7 @@ static int update(UPDATE_FUNC_ARGS)
 		parts[i].tmp++;
 	}
 
-	int r, rx, ry, np, rndstore;
+	int r, rx, ry;
 	for (rx = -1; rx < 2; rx++)
 		for (ry = -1; ry < 2; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
@@ -63,16 +63,23 @@ static int update(UPDATE_FUNC_ARGS)
 				{
 				case PT_O2:
 				{
-					parts[i].life = 200;
-					parts[i].type = PT_PLSM;
-				}
-				case PT_PLSM:
-				{
-					parts[i].life = 200;
-					parts[i].type = PT_PLSM;
+					parts[i].life = 100;
+					parts[i].type = PT_CFLM;
+					
 				}
 				break;
-
+				case PT_OIL:
+				{
+					parts[i].tmp = 40;
+					
+				}
+				break;
+				case PT_CFLM:
+				{
+					parts[i].life = 100;
+					parts[i].type = PT_CFLM;
+				}
+				break;
 				}
 			}
 	return 0;
