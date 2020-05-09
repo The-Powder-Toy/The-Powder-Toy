@@ -447,7 +447,7 @@ int LuaScriptInterface::tpt_newIndex(lua_State *l)
 	else if (!key.compare("brushx"))
 	{
 		int brushx = luaL_checkinteger(l, 3);
-		if(brushx < 0 || brushx >= XRES)
+		if (brushx < 0 || brushx >= XRES)
 			luaL_error(l, "Invalid brush width");
 
 		c->SetBrushSize(ui::Point(brushx, m->GetBrush()->GetRadius().Y));
@@ -455,7 +455,7 @@ int LuaScriptInterface::tpt_newIndex(lua_State *l)
 	else if (!key.compare("brushy"))
 	{
 		int brushy = luaL_checkinteger(l, 3);
-		if(brushy < 0 || brushy >= YRES)
+		if (brushy < 0 || brushy >= YRES)
 			luaL_error(l, "Invalid brush height");
 
 		c->SetBrushSize(ui::Point(m->GetBrush()->GetRadius().X, brushy));
