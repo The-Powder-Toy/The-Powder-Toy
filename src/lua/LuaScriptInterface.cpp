@@ -411,7 +411,6 @@ int LuaScriptInterface::tpt_index(lua_State *l)
 
 int LuaScriptInterface::tpt_newIndex(lua_State *l)
 {
-	int brushx, brushy;
 	ByteString key = luaL_checkstring(l, 2);
 	if (!key.compare("selectedl"))
 	{
@@ -445,19 +444,21 @@ int LuaScriptInterface::tpt_newIndex(lua_State *l)
 		else
 			luaL_error(l, "Invalid tool identifier: %s", lua_tostring(l, 3));
 	}
-	else if (!key.compare("brushx")){
-		brushx = luaL_checkinteger(l, 3);
+	else if (!key.compare("brushx"))
+	{
+		int brushx = luaL_checkinteger(l, 3);
 		if(brushx < 0 || brushx >= XRES)
 			luaL_error(l, "Invalid brush width");
 
-		c->SetBrushSize(ui::Point(luaL_checkinteger(l, 3), m->GetBrush()->GetRadius().Y));
+		c->SetBrushSize(ui::Point(brushx, m->GetBrush()->GetRadius().Y));
 	}
-	else if (!key.compare("brushy")){
-		brushy = luaL_checkinteger(l, 3);
+	else if (!key.compare("brushy"))
+	{
+		int brushy = luaL_checkinteger(l, 3);
 		if(brushy < 0 || brushy >= YRES)
 			luaL_error(l, "Invalid brush height");
 
-		c->SetBrushSize(ui::Point(m->GetBrush()->GetRadius().X, luaL_checkinteger(l, 3)));
+		c->SetBrushSize(ui::Point(m->GetBrush()->GetRadius().X, brushy));
 	}
 	else if (!key.compare("brushID"))
 		m->SetBrushID(luaL_checkinteger(l, 3));
