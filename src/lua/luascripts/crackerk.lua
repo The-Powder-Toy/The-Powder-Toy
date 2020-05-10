@@ -3280,7 +3280,7 @@ evt.register(evt.textinput, textinput)
 evt.register(evt.blur, blur)
 
 
---Cracker1000's TPT unleashed script version 6.0
+--Cracker1000's TPT unleashed script version 7.0
 --For beta version warning, 1 is on.
 local beta = 0
 if beta == 1 then
@@ -3590,6 +3590,10 @@ tpt.drawline(613,95,627,95,ar,ag,ab,255)
 tpt.drawline(613,135,627,135,ar,ag,ab,255)
 tpt.drawline(187,409,187,422,ar,ag,ab,255)
 tpt.drawline(469,408,469,421,ar,ag,ab,255)
+tpt.drawline(487,408,487,421,ar,ag,ab,255)
+tpt.drawline(241,408,241,421,ar,ag,ab,255)
+tpt.drawline(36,408,36,421,ar,ag,ab,255)
+tpt.drawline(18,408,18,421,ar,ag,ab,255)
 tpt.drawline(580,409,580,422,ar,ag,ab,255)
 tpt.drawrect(1,408,626,14,ar,ag,ab,255)
 end

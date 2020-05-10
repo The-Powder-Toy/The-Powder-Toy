@@ -32,7 +32,7 @@ void Element::Element_CMNT()
 
 	Weight = 55;
 	HeatConduct = 100;
-	Description = "Cement, starts to solidify when mixed with water.";
+	Description = "Cement, starts to solidify when mixed with water. Usefull in making buildings.";
 
 	Properties = TYPE_PART;
 
@@ -88,9 +88,9 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 	}
 	else if (cpart->tmp == 1)
 	{
-	*colr = 90;
-	*colg = 90;
-	*colb = 90;
+	*colr = 70;
+	*colg = 70;
+	*colb = 70;
 	
 }
 	return 0;
