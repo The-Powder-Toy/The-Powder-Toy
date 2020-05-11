@@ -1900,6 +1900,7 @@ int Simulation::FloodParts(int x, int y, int fullc, int cm, int flags)
 			return 1;
 		else if (x < 0 || x >= XRES || y < 0 || y >= YRES)
 			return 1;
+		
 		if (c == 0)
 		{
 			cm = TYP(pmap[y][x]);
@@ -1918,6 +1919,7 @@ int Simulation::FloodParts(int x, int y, int fullc, int cm, int flags)
 		else
 			cm = 0;
 	}
+	
 	if (c != 0 && IsWallBlocking(x, y, c))
 		return 1;
 
@@ -3036,6 +3038,9 @@ int Simulation::get_normal_interp(int pt, float x0, float y0, float dx, float dy
 
 void Simulation::kill_part(int i)//kills particle number i
 {
+	if (i < 0 || i >= NPART)
+		return;
+	
 	int x = (int)(parts[i].x + 0.5f);
 	int y = (int)(parts[i].y + 0.5f);
 
