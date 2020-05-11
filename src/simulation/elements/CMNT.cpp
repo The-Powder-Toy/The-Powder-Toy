@@ -66,7 +66,7 @@ static int update(UPDATE_FUNC_ARGS)
 					int r = pmap[y + ry][x + rx];
 					if (!r)
 						continue;
-					if (TYP(r) == PT_WATR|| TYP(r) == PT_DSTW|| TYP(r) == PT_SLTW|| TYP(r) == PT_CBNW && parts[i].tmp !=1)
+					if ((TYP(r) == PT_WATR|| TYP(r) == PT_DSTW|| TYP(r) == PT_SLTW|| TYP(r) == PT_CBNW) && (parts[i].tmp !=1))
 					{
 						    parts[i].temp = 364.15f;
 							parts[i].tmp = 1;

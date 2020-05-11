@@ -181,9 +181,9 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 
 	if (cpart->tmp2 == 0)
 	{
-		*colr += 40;
-		*colg += 40;
-		*colb += 40;
+		*colr += 70;
+		*colg += 70;
+		*colb += 70;
 	}
 	if (*colg > 255)
 		*colg = 255;
