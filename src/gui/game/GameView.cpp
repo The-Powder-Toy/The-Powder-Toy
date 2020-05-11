@@ -1387,7 +1387,10 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 		ui::Engine::Ref().ConfirmExit();
 		break;
 	case SDL_SCANCODE_U:
-		c->ToggleAHeat();
+		if (ctrl)
+			c->ResetAHeat();
+		else
+			c->ToggleAHeat();
 		break;
 	case SDL_SCANCODE_N:
 		c->ToggleNewtonianGravity();

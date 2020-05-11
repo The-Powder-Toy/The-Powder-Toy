@@ -68,5 +68,7 @@ site_scons/site_tools/mfprogram/*.pyc
 site_scons/site_tools/gch/*.pyc
 .vscode/
 .vs/
+# Intentional merge conflict (meson stuff)
+subprojects/
 
 screenshot_*
