@@ -2,19 +2,19 @@
 
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
+static void create(ELEMENT_CREATE_FUNC_ARGS);
 
 void Element::Element_LITH()
 {
 	Identifier = "DEFAULT_PT_LITH";
 	Name = "LITH";
-	Colour = PIXPACK(0X707070);
+	Colour = PIXPACK(0xFF0000);
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
 	Enabled = 1;
-
 	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
-	AirLoss = 0.95f;
+	AirLoss = 0.90f;
 	Loss = 0.00f;
 	Collision = 0.0f;
 	Gravity = 0.0f;
@@ -23,13 +23,14 @@ void Element::Element_LITH()
 	Falldown = 0;
 
 	Flammable = 0;
-	Explosive = 0;
-	Meltable = 1;
-	Hardness = 10;
+	Explosive = 1;
+	Meltable = 0;
+	Hardness = 15;
 
 	Weight = 100;
-	HeatConduct = 0;
-	Description = "Lithium battery. Charge with INST when deactivated, discharges to INST when activated. (use Heat/Cool)";
+
+	HeatConduct = 200;
+	Description = "Lithium ion battery. Charge with INST when deactivated, discharges to INST when activated. (use Heat/Cool)";
 
 	Properties = TYPE_SOLID;
 	LowPressure = IPL;
@@ -38,36 +39,31 @@ void Element::Element_LITH()
 	HighPressureTransition = NT;
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
-	HighTemperature = ITH;
-	HighTemperatureTransition = NT;
+	HighTemperature = 454.15f; //Melts at 180C.
+	HighTemperatureTransition = PT_FIRE;
 
 	Update = &update;
 	Graphics = &graphics;
+	Create = &create;
 }
 
 static int update(UPDATE_FUNC_ARGS)
 
 {
-	//Prevent setting capacity below 1.
-	if (parts[i].temp <= 1.0f + 273.15f)
-		parts[i].temp = 1.0f + 273.15f;
+	//Prevent setting capacity below 1. Default set to 100.
+	if (parts[i].life <= 1)
+		parts[i].life = 1;
 
-	//Explosion code ( Gets ignored in powered mode)
-	if (parts[i].tmp > parts[i].temp - 272.0f && parts[i].tmp2 != 1)
+	//Explosion code (Burns out if charged above the set life.)
+	if (parts[i].tmp > parts[i].life)
 	{
 		parts[i].type = PT_FIRE;
-		parts[i].life = 50;
-	}
-	//Powered battery mode. (.tmp2 = 1 turns it into never discharging powered battery.)
-	if (parts[i].tmp2 == 1)
-	{
-		parts[i].tmp = parts[i].temp - 273.15f;
 	}
 	//Activation and Deactivation.
-	if (parts[i].life != 10)
+	if (parts[i].tmp2 != 10)
 	{
-		if (parts[i].life > 0)
-			parts[i].life--;
+		if (parts[i].tmp2 > 0)
+			parts[i].tmp2--;
 	}
 
 	else
@@ -81,10 +77,10 @@ static int update(UPDATE_FUNC_ARGS)
 						continue;
 					if (TYP(r) == PT_LITH)
 					{
-						if (parts[ID(r)].life < 10 && parts[ID(r)].life>0)
-							parts[i].life = 9;
-						else if (parts[ID(r)].life == 0)
-							parts[ID(r)].life = 10;
+						if (parts[ID(r)].tmp2 < 10 && parts[ID(r)].tmp2>0)
+							parts[i].tmp2 = 9;
+						else if (parts[ID(r)].tmp2 == 0)
+							parts[ID(r)].tmp2 = 10;
 					}
 				}
 	}
@@ -93,24 +89,25 @@ static int update(UPDATE_FUNC_ARGS)
 			if (BOUNDS_CHECK && (rx || ry))
 			{
 				int r = pmap[y + ry][x + rx];
-				if (!r || sim->parts_avg(ID(r), i, PT_INSL) == PT_INSL)
+				if (!r)
 					continue;
 				//Battery discharging.
 				switch (TYP(r))
 				{
-				case PT_INST:
-					if (parts[i].tmp > 0 && parts[i].life == 0)
-					{
-						parts[i].tmp -= 1;
-						sim->FloodINST(x + rx, y + ry);
-					}
-					break;
+					case PT_INST:
+						if (parts[i].tmp > 0 && parts[i].tmp2 == 0)
+						{
+							parts[i].tmp -= 1;
+							sim->FloodINST(x + rx, y + ry);
+						}
+						break;
 					//Various reactions with different kinds of water elements. Slowly reacts with water and releases H2 gas.
 				   //Exothermic reaction while reacting with water, heats nearby water as per its stored charge.
 				case PT_WATR:
 				case PT_SLTW:
 				case PT_CBNW:
 				case PT_DSTW:
+				                                    
 				{  if (RNG::Ref().chance(1, 30))
 				{
 					parts[i].type = PT_H2;
@@ -121,10 +118,9 @@ static int update(UPDATE_FUNC_ARGS)
 				}
 				}
 				break;
-				case PT_O2:
+				case PT_O2: //Burns blue when in contact with O2.
 				{
 					parts[i].type = PT_PLSM;
-					parts[i].life = 20;
 					sim->pv[(y / CELL) + ry][(x / CELL) + rx] += 4.0;
 				}
 				break;
@@ -137,7 +133,6 @@ static int update(UPDATE_FUNC_ARGS)
 					{
 
 						parts[i].type = PT_FIRE;
-						parts[i].life = 100;
 					}
 				}
 				break;
@@ -177,38 +172,25 @@ static int update(UPDATE_FUNC_ARGS)
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	// Charging/discharging.
-	if (cpart->life == 0)
-	{
-		*colr = 165;
-		*colg = 165;
-		*colb = 165;
+	{	
+	int chargingstate = (int)(((float)cpart->tmp / (cpart->life))*100.0f);
+	*colg += chargingstate * 3;
+	*colr -= chargingstate * 2;
+	*colb -= chargingstate * 2;
 	}
-	if (cpart->tmp2 != 1)
-	{
-		if (cpart->tmp >= 1)
-		{
-			int chargingstate = (int)(((float)cpart->tmp / (cpart->temp - 273.15))*100.0f);
-			*colg += chargingstate + 25;
-			*colr -= chargingstate;
-			*colb -= chargingstate;
 
-		}
-		if (cpart->tmp < 1 && cpart->life == 0)
-		{
-			*colg = 1;
-			*colr = 220;
-			*colb = 0;
-
-		}
-	}
-	//Powered battery mode, can also be used to charge the battery.
-	if (cpart->tmp2 == 1)
+	if (cpart->tmp2 == 0)
 	{
-		*colb = 255;
+		*colr += 40;
+		*colg += 40;
+		*colb += 40;
 	}
 	if (*colg > 255)
-	{
 		*colg = 255;
-	}
+
 	return 0;
+}
+static void create(ELEMENT_CREATE_FUNC_ARGS)
+{
+	sim->parts[i].life = 100;
 }

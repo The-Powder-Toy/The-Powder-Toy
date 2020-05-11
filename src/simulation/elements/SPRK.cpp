@@ -227,15 +227,14 @@ static int update(UPDATE_FUNC_ARGS)
 				case PT_LITH:
 					if (pavg != PT_INSL)
 					{
-						if (sender == PT_INST && parts[ID(r)].life == 10 && parts[ID(r)].tmp < parts[ID(r)].temp - 273.15f)
+						if (sender == PT_INST && parts[ID(r)].tmp2 == 10 && parts[ID(r)].tmp < parts[ID(r)].life)
 						{
 							parts[ID(r)].tmp += 1;
 						}
-
-						if (parts[i].life < 4)
+						else if (parts[i].tmp2 < 4)
 						{
-							if (sender == PT_NSCN) parts[ID(r)].life = 10;
-							else if (sender == PT_PSCN && parts[ID(r)].life >= 10) parts[ID(r)].life = 9;
+							if (sender == PT_NSCN) parts[ID(r)].tmp2 = 10;
+							else if (sender == PT_PSCN && parts[ID(r)].tmp2 >= 10) parts[ID(r)].tmp2 = 9;
 						}
 					}
 					continue;
