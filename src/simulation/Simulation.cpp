@@ -1892,13 +1892,15 @@ int Simulation::FloodParts(int x, int y, int fullc, int cm, int flags)
 	unsigned short (*coord_stack)[2];
 	int coord_stack_size = 0;
 	int created_something = 0;
+	
+	if (x < CELL || x >= XRES-CELL || y < CELL || y >= YRES-CELL)
+		return 1;
+	else if (x < 0 || x >= XRES || y < 0 || y >= YRES)
+		return 1;
 
 	if (cm==-1)
 	{
-		//if initial flood point is out of bounds, do nothing
-		if (c != 0 && (x < CELL || x >= XRES-CELL || y < CELL || y >= YRES-CELL || c == PT_SPRK))
-			return 1;
-		else if (x < 0 || x >= XRES || y < 0 || y >= YRES)
+		if (c == PT_SPRK)
 			return 1;
 		if (c == 0)
 		{
@@ -1918,6 +1920,7 @@ int Simulation::FloodParts(int x, int y, int fullc, int cm, int flags)
 		else
 			cm = 0;
 	}
+	
 	if (c != 0 && IsWallBlocking(x, y, c))
 		return 1;
 
@@ -3036,6 +3039,9 @@ int Simulation::get_normal_interp(int pt, float x0, float y0, float dx, float dy
 
 void Simulation::kill_part(int i)//kills particle number i
 {
+	if (i < 0 || i >= NPART)
+		return;
+	
 	int x = (int)(parts[i].x + 0.5f);
 	int y = (int)(parts[i].y + 0.5f);
 
