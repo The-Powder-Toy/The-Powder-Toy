@@ -1895,8 +1895,11 @@ int Simulation::FloodParts(int x, int y, int fullc, int cm, int flags)
 
 	if (cm==-1)
 	{
-		if (c == PT_SPRK)
+		if (c != 0 && (x < CELL || x >= XRES-CELL || y < CELL || y >= YRES-CELL || c == PT_SPRK))
 			return 1;
+		else if (x < 0 || x >= XRES || y < 0 || y >= YRES)
+			return 1;
+		
 		if (c == 0)
 		{
 			cm = TYP(pmap[y][x]);
