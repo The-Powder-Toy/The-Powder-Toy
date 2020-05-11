@@ -1892,11 +1892,6 @@ int Simulation::FloodParts(int x, int y, int fullc, int cm, int flags)
 	unsigned short (*coord_stack)[2];
 	int coord_stack_size = 0;
 	int created_something = 0;
-	
-	if (x < CELL || x >= XRES-CELL || y < CELL || y >= YRES-CELL)
-		return 1;
-	else if (x < 0 || x >= XRES || y < 0 || y >= YRES)
-		return 1;
 
 	if (cm==-1)
 	{
