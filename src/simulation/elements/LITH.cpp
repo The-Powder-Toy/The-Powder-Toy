@@ -30,7 +30,7 @@ void Element::Element_LITH()
 	Weight = 100;
 
 	HeatConduct = 200;
-	Description = "Lithium battery. Charge with INST when deactivated, discharges to INST when activated. (use Heat/Cool)";
+	Description = "Lithium ion battery. Charge with INST when deactivated, discharges to INST when activated. (use Heat/Cool)";
 
 	Properties = TYPE_SOLID;
 	LowPressure = IPL;
@@ -39,7 +39,7 @@ void Element::Element_LITH()
 	HighPressureTransition = NT;
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
-	HighTemperature = 454.15f;
+	HighTemperature = 454.15f; //Melts at 180C.
 	HighTemperatureTransition = PT_FIRE;
 
 	Update = &update;
@@ -50,11 +50,11 @@ void Element::Element_LITH()
 static int update(UPDATE_FUNC_ARGS)
 
 {
-	//Prevent setting capacity below 1.
+	//Prevent setting capacity below 1. Default set to 100.
 	if (parts[i].life <= 1)
 		parts[i].life = 1;
 
-	//Explosion code ( Gets ignored in powered mode)
+	//Explosion code (Burns out if charged above the set life.)
 	if (parts[i].tmp > parts[i].life)
 	{
 		parts[i].type = PT_FIRE;
@@ -107,6 +107,7 @@ static int update(UPDATE_FUNC_ARGS)
 				case PT_SLTW:
 				case PT_CBNW:
 				case PT_DSTW:
+				                                    
 				{  if (RNG::Ref().chance(1, 30))
 				{
 					parts[i].type = PT_H2;
@@ -117,7 +118,7 @@ static int update(UPDATE_FUNC_ARGS)
 				}
 				}
 				break;
-				case PT_O2:
+				case PT_O2: //Burns blue when in contact with O2.
 				{
 					parts[i].type = PT_PLSM;
 					sim->pv[(y / CELL) + ry][(x / CELL) + rx] += 4.0;
@@ -171,7 +172,8 @@ static int update(UPDATE_FUNC_ARGS)
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	// Charging/discharging.
-	{	int chargingstate = (int)(((float)cpart->tmp / (cpart->life))*100.0f);
+	{	
+	int chargingstate = (int)(((float)cpart->tmp / (cpart->life))*100.0f);
 	*colg += chargingstate * 3;
 	*colr -= chargingstate * 2;
 	*colb -= chargingstate * 2;
@@ -183,12 +185,9 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 		*colg += 40;
 		*colb += 40;
 	}
-
-		
 	if (*colg > 255)
-	{
 		*colg = 255;
-	}
+
 	return 0;
 }
 static void create(ELEMENT_CREATE_FUNC_ARGS)
