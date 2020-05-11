@@ -1355,6 +1355,10 @@ int LuaScriptInterface::simulation_floodParts(lua_State * l)
 	int c = luaL_optint(l,3,luacon_model->GetActiveTool(0)->GetToolID());
 	int cm = luaL_optint(l,4,-1);
 	int flags = luaL_optint(l,5,luacon_sim->replaceModeFlags);
+	
+	if (x < CELL || x >= XRES-CELL || y < CELL || y >= YRES-CELL)
+		return luaL_error(l, "coordinates out of range (%d,%d)", x, y);
+	
 	int ret = luacon_sim->FloodParts(x, y, c, cm, flags);
 	lua_pushinteger(l, ret);
 	return 1;
