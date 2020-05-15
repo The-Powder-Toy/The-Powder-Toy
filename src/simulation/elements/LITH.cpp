@@ -8,7 +8,7 @@ void Element::Element_LITH()
 {
 	Identifier = "DEFAULT_PT_LITH";
 	Name = "LITH";
-	Colour = PIXPACK(0xFF0000);
+	Colour = PIXPACK(0x707080);
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
 	Enabled = 1;
@@ -174,11 +174,10 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 	// Charging/discharging.
 	{	
 	int chargingstate = (int)(((float)cpart->tmp / (cpart->life))*100.0f);
-	*colg += chargingstate * 3;
-	*colr -= chargingstate * 2;
-	*colb -= chargingstate * 2;
+	*colg += chargingstate + 30;
+	*colr -= chargingstate;
+	*colb -= chargingstate;
 	}
-
 	if (cpart->tmp2 == 0)
 	{
 		*colr += 70;
