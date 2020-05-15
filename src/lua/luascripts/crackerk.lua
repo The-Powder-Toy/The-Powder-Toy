@@ -236,7 +236,7 @@ ui_box = {
 new = function(x,y,w,h,r,g,b)
 	local box=ui_base.new()
 	box.x=x box.y=y box.w=w box.h=h box.x2=x+w box.y2=y+h
-	box.r=r or 255 box.g=g or 255 box.b=b or 255
+	box.r=r or 100 box.g=g or 100 box.b= 255
 	function box:setcolor(r,g,b) self.r=r self.g=g self.b=b end
 	function box:setbackground(r,g,b,a) self.br=r self.bg=g self.bb=b self.ba=a end
 	box.drawbox=true
@@ -901,8 +901,8 @@ local function keypress(key,nkey,modifier,event)
 	return false
 end
 --small button on right to bring up main menu
-local WHITE = {0,0,255,255}
-local BLACK = {255,0,0,255}
+local WHITE = {50,50,255,255}
+local BLACK = {0,0,255,255}
 local ICON = math.random(2) --pick a random icon
 local lua_letters= {{{2,2,2,7},{2,7,4,7},{6,7,6,11},{6,11,8,11},{8,7,8,11},{10,11,12,11},{10,11,10,15},{11,13,11,13},{12,11,12,15},},
 	{{2,3,2,13},{2,14,7,14},{4,3,4,12},{4,12,7,12},{7,3,7,12},{9,3,12,3},{9,3,9,14},{10,8,11,8},{12,3,12,14},}}
@@ -2008,7 +2008,7 @@ local function getypos()
 	return ypos
 end
 local jacobsmod_old_menu_check = false
-local showbutton = ui_button.new(613,getypos(),14,14,function() if using_manager and not MANAGER.hidden then _print("minimize the manager before opening TPTMP") return end if not hooks_enabled then TPTMP.enableMultiplayer() end L.chatHidden=false TPTMP.chatHidden=false L.flashChat=false end,"MP")
+local showbutton = ui_button.new(613,getypos(),14,14,function() if using_manager and not MANAGER.hidden then _print("minimize the manager before opening TPTMP") return end if not hooks_enabled then TPTMP.enableMultiplayer() end L.chatHidden=false TPTMP.chatHidden=false L.flashChat=false end,"Mp")
 local flashCount=0
 showbutton.drawbox = true showbutton:drawadd(function(self) if L.flashChat then self.almostselected=true flashCount=flashCount+1 if flashCount%25==0 then self.invert=not self.invert end end end)
 if using_manager then
@@ -3339,8 +3339,6 @@ local barn = Button:new(410,216,75,10,"Hide", "Hides the bar")
 
 
 local wiki  =  Button:new(320,226,75,10,"Wiki", "Element wiki!")
-local wikiy = Button:new(410,226,75,10,"Show", "Open wiki")
-local wikin = Button:new(410,236,75,10,"Hide", " Close wiki!")
 local wikin2 = Button:new(10,350,75,20,"Hide wiki ", " Close wiki!")
 
 local hide= Button:new(320,246,15,10, "^", "Hide.")
@@ -3387,8 +3385,6 @@ interface.removeComponent(mp4)
 interface.removeComponent(mp5)
 interface.removeComponent(bary)
 interface.removeComponent(barn)
-interface.removeComponent(wikiy)
-interface.removeComponent(wikin)
 interface.removeComponent(wikin2)
 end
 
@@ -3399,8 +3395,11 @@ end)
 
 wiki:action(function(sender)
 clearsb()
-interface.addComponent(wikiy)
-interface.addComponent(wikin)
+clearm()
+tpt.hud(0)
+interface.addComponent(wikin2)
+tpt.register_step(wikii)
+tpt.register_step(backb)
 end)
 
 
@@ -3408,26 +3407,12 @@ function wikii()
 gfx.drawText(10,10, " WELCOME TO IN GAME WIKI: \n\n WAll: Hybrid of walls and elements.\n VLSN: Velocity sensor.  Creates SPRK when nearby velocity's higher than it's temp, Configured with .tmp modes.\n TIMC: Time based convertor, converts into it's ctype when sparked with PSCN. Timer set using .tmp, default is 100.\n FUEL: FUEL. Fuel having high calorific value.\n THRM: Thermostat. Sets the temp of surrounding according to its own temp.\n CLNT: Coolant. Cools down the temp of the system, evaporates at high temperatures. Use .tmp to configure. \n DMRN: Demron. Radioactive shielding material and a better insulator.\n FNTC & FPTC: Faster versions of NTCT and PTCT.\n PINV: Powered Invisible, allows particles to move through when activated.\n UVRD: Ultra violet radiations, interacts with different elements as irl.\n SUN.: Sun, PLNT grow in direction of sunlight, emits radiation, makes PSCN spark and heals STKMs.\n LITH: Lithium ion battery, Use with PSCN and NSCN. Charges with INST when deactivated. Life sets capacity.\n Reacts with different elements like O2, WATR, ACID etc as IRL.\n LED:  Light Emmiting Diode. Use with PSCN and NSCN. Temp sets the brightness.\n Different .tmp2 modes: 0 = white, 1= red, 2= green, 3 =blue, 4= yellow and 5 = pink. \n QGP: Quark Gluon Plasma, bursts out radiation afer sometime. Extremely violent. \n Turns into Purple QGP when under 100C which is stable.\n TMPS: .tmp sensor, creats sprk when there is an element with higher .tmp than its temp.\n PHOS: White, slowly turns into red phosphorus with time. Burns blue when in contact with O2. Protect it with OIL.\n Melts at 45C.\n PTNM: Platinum, conducts like gold, catalyses reactions and reacts with SMKE, ISOZ, GAS, BREL and HYGN.\n CMNT: Cement, heats up when mixed with water and gets solidified, darkens when solidified.")
 end
 
-wikiy:action(function(sender)
-clearsb()
-clearm()
-interface.addComponent(toggle)
-tpt.register_step(wikii)
-tpt.register_step(backb)
-interface.addComponent(wikin2)
-end)
-
-wikin:action(function(sender)
-clearsb()
-tpt.unregister_step(wikii)
-tpt.unregister_step(backb)
-end)
-
 wikin2:action(function(sender)
 clearsb()
 clearm()
 tpt.unregister_step(wikii)
 tpt.unregister_step(backb)
+interface.addComponent(toggle)
 tpt.hud(1)
 end)
 
@@ -3735,6 +3720,9 @@ reset:action(function(sender)
 tgr = 0
 tgg  = 0
 tgb = 200
+ar =  110
+ag = 110
+ab = 110
 tpt.unregister_step(wikii)
 tpt.unregister_step(topbar)
 tpt.unregister_step(UIhide)
@@ -3743,6 +3731,7 @@ tpt.watertest(0)
 sim.edgeMode(0) 
 tpt.setfpscap(60)
 tpt.setwindowsize(1)
+tpt.register_step(topbar)
 tpt.newtonian_gravity(0)
 tpt.decorations_enable(0)
 sim.resetPressure()
