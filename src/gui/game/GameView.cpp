@@ -2299,7 +2299,7 @@ void GameView::OnDraw()
 		int textWidth = Graphics::textwidth(fpsInfo.Build());
 		int alpha = 255-introText*5;
 		g->fillrect(12, 12, textWidth+8, 15, 0, 0, 0, alpha*0.5);
-		g->drawtext(16, 16, fpsInfo.Build(), 0, 0, 200, alpha*0.75);
+		g->drawtext(16, 16, fpsInfo.Build(), 0, 0, 250, alpha*0.75);
 		// Second line
 		StringBuilder fpsInfo2;
 
@@ -2315,7 +2315,7 @@ void GameView::OnDraw()
 
 		int textWidth2 = Graphics::textwidth(fpsInfo2.Build());
 		g->fillrect(12, 26, textWidth2 + 8, 15, 0, 0, 0, alpha * 0.5);
-		g->drawtext(16, 29, fpsInfo2.Build(), 0, 0, 200, alpha * 0.75);
+		g->drawtext(16, 29, fpsInfo2.Build(), 0, 0, 250, alpha * 0.75);
 	}
 
 	//Tooltips

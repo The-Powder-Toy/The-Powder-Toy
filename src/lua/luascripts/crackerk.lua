@@ -3315,7 +3315,7 @@ local mp2 = Button:new(410,136,75,10,"Fire", "Change the theme to Blue")
 local mp3 = Button:new(410,146,75,10,"Aqua", "Change the theme to Red")
 local mp4 = Button:new(410,156,75,10,"Forest", "Change the theme to Green")
 local mp5 = Button:new(410,166,75,10,"Sun", "Change the theme to Yellow")
-
+local mp6 = Button:new(410,176,75,10,"Pulse", "Smooth changing colours")
 
 
 local rc = Button:new(320,146,75,10,"Record", "Options for recording frames")
@@ -3383,6 +3383,7 @@ interface.removeComponent(mp2)
 interface.removeComponent(mp3)
 interface.removeComponent(mp4)
 interface.removeComponent(mp5)
+interface.removeComponent(mp6)
 interface.removeComponent(bary)
 interface.removeComponent(barn)
 interface.removeComponent(wikin2)
@@ -3558,6 +3559,7 @@ interface.addComponent(mp2)
 interface.addComponent(mp3)
 interface.addComponent(mp4)
 interface.addComponent(mp5)
+interface.addComponent(mp6)
 end)
 
 function mpremove()
@@ -3566,11 +3568,42 @@ interface.removeComponent(mp2)
 interface.removeComponent(mp3)
 interface.removeComponent(mp4)
 interface.removeComponent(mp5)
+interface.removeComponent(mp6)
 end
 
 ar =  110
 ag = 110
 ab = 110
+local frameCount = 0
+
+function pulse()
+ if frameCount > 1529 then frameCount = 0 else frameCount = frameCount + 1 end
+ if frameCount > 0 and frameCount < 255 then
+  ar = 255
+  if ag > 254 then else ag = ag + 1 end
+ end
+ if frameCount > 254 and frameCount < 510 then
+  ag = 255
+  if ar == 0 then else ar = ar - 1 end
+ end
+ if frameCount > 510 and frameCount < 765 then
+  ag = 255
+  if ab > 254 then else ab = ab + 1 end
+ end
+ if frameCount > 764 and frameCount < 1020 then
+ ab = 255
+  if ag == 0 then else ag = ag - 1 end
+ end
+ if frameCount > 1020 and frameCount < 1275 then
+  ab = 255
+  if ar > 254 then else ar = ar + 1 end
+ end
+ if frameCount > 1274 and frameCount < 1530 then
+ ar = 255
+  if ab == 0 then else ab = ab - 1 end
+ end
+end
+
 function theme()
 tpt.drawrect(613,1,14,405,ar,ag,ab,255)
 tpt.drawline(613,95,627,95,ar,ag,ab,255)
@@ -3578,6 +3611,8 @@ tpt.drawline(613,135,627,135,ar,ag,ab,255)
 tpt.drawline(187,409,187,422,ar,ag,ab,255)
 tpt.drawline(469,408,469,421,ar,ag,ab,255)
 tpt.drawline(487,408,487,421,ar,ag,ab,255)
+tpt.drawline(506,408,506,421,ar,ag,ab,255)
+tpt.drawline(612,408,612,421,ar,ag,ab,255)
 tpt.drawline(241,408,241,421,ar,ag,ab,255)
 tpt.drawline(36,408,36,421,ar,ag,ab,255)
 tpt.drawline(18,408,18,421,ar,ag,ab,255)
@@ -3587,6 +3622,7 @@ end
 
 mp1:action(function(sender)
 tpt.unregister_step(theme)
+tpt.unregister_step(pulse)
 ar =  110
 ag = 110
 ab = 110
@@ -3594,6 +3630,7 @@ mpremove()
 end)
 
 mp2:action(function(sender)
+tpt.unregister_step(pulse)
 tpt.register_step(theme)
 ar = 255
 ag = 0
@@ -3602,6 +3639,7 @@ mpremove()
 end)
 
 mp3:action(function(sender)
+tpt.unregister_step(pulse)
 tpt.register_step(theme)
 ar = 0
 ag = 0
@@ -3610,6 +3648,7 @@ mpremove()
 end)
 
 mp4:action(function(sender)
+tpt.unregister_step(pulse)
 tpt.register_step(theme)
 ar = 0
 ag = 255
@@ -3618,10 +3657,20 @@ mpremove()
 end)
 
 mp5:action(function(sender)
+tpt.unregister_step(pulse)
 tpt.register_step(theme)
 ar = 250
 ag = 250
 ab = 0
+mpremove()
+end)
+
+mp6:action(function(sender)
+ar =  0
+ag = 0
+ab = 0
+tpt.register_step(theme)
+tpt.register_step(pulse)
 mpremove()
 end)
 
@@ -3726,6 +3775,7 @@ ar =  110
 ag = 110
 ab = 110
 tpt.unregister_step(wikii)
+tpt.unregister_step(pulse)
 tpt.unregister_step(topbar)
 tpt.unregister_step(UIhide)
 tpt.display_mode(3)
@@ -3748,7 +3798,7 @@ sim.clearSim()
 end)
 
 info:action(function(sender)
-tpt.message_box("Cracker1000's Script Check","Version 7.0")
+tpt.message_box("Cracker1000's Script Check","Version 8.0")
 end)
 
 hide:action(function(sender)
