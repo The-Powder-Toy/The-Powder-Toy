@@ -3280,13 +3280,7 @@ evt.register(evt.textinput, textinput)
 evt.register(evt.blur, blur)
 
 
---Cracker1000's TPT unleashed script version 7.0
---For beta version warning, 1 is on.
-local beta = 0
-if beta == 1 then
-tpt.message_box("You are using beta version!","Some features might not work.")
-end
-
+--Cracker1000's TPT unleashed script version 8.0
 local toggle = Button:new(320,0,13,8, "V", "Toggle additional menus.")
 
 local deletesparkButton = Button:new(320,6,75,10,"Interface", "shows UI related stuff.")
@@ -3606,18 +3600,26 @@ end
 
 function theme()
 tpt.drawrect(613,1,14,405,ar,ag,ab,255)
-tpt.drawline(613,95,627,95,ar,ag,ab,255)
-tpt.drawline(613,135,627,135,ar,ag,ab,255)
+tpt.drawline(613,136,627,136,ar,ag,ab,255)
+tpt.drawline(612,408,612,421,ar,ag,ab,255)
 tpt.drawline(187,409,187,422,ar,ag,ab,255)
 tpt.drawline(469,408,469,421,ar,ag,ab,255)
 tpt.drawline(487,408,487,421,ar,ag,ab,255)
 tpt.drawline(506,408,506,421,ar,ag,ab,255)
-tpt.drawline(612,408,612,421,ar,ag,ab,255)
+
 tpt.drawline(241,408,241,421,ar,ag,ab,255)
 tpt.drawline(36,408,36,421,ar,ag,ab,255)
 tpt.drawline(18,408,18,421,ar,ag,ab,255)
 tpt.drawline(580,409,580,422,ar,ag,ab,255)
+tpt.drawline(595,409,595,422,ar,ag,ab,255)
 tpt.drawrect(1,408,626,14,ar,ag,ab,255)
+
+tpt.drawline(613,96,627,96,ar,ag,ab,255)
+tpt.drawline(613,16,627,16,ar,ag,ab,255)
+tpt.drawline(613,32,627,32,ar,ag,ab,255)
+tpt.drawline(613,48,627,48,ar,ag,ab,255)
+tpt.drawline(613,64,627,64,ar,ag,ab,255)
+tpt.drawline(613,80,627,80,ar,ag,ab,255)
 end
 
 mp1:action(function(sender)
