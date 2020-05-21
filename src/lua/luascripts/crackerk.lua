@@ -3303,18 +3303,21 @@ local Ruler = Button:new(320,106,75,10, "Ruler", "Toggles in game hud ruler.")
 local Ry = Button:new(410,106,40,10,"Hide", "Hides the Ruler")
 local Rn = Button:new(410,116,40,10,"Show", "Shows the Ruler")
 
+
 local mp = Button:new(320,126,75,10,"Theme", "Changes game's theme")
 local mp1 = Button:new(410,126,75,10,"Default", "Change the theme to default")
 local mp2 = Button:new(410,136,75,10,"Fire", "Change the theme to Blue")
 local mp3 = Button:new(410,146,75,10,"Aqua", "Change the theme to Red")
 local mp4 = Button:new(410,156,75,10,"Forest", "Change the theme to Green")
 local mp5 = Button:new(410,166,75,10,"Sun", "Change the theme to Yellow")
-local mp6 = Button:new(410,176,75,10,"Pulse", "Smooth changing colours")
+local mp6 = Button:new(410,176,75,10,"Pulse", "Smooth changing RGB colours")
+local mp7 = Button:new(410,186,75,10,"White", "Change the theme back to Plain white")
 
 
 local rc = Button:new(320,146,75,10,"Record", "Options for recording frames")
 local rc1 = Button:new(410,146,40,10,"Start", "Starts recording")
 local rc2 = Button:new(410,156,40,10,"Stop","Stops recording")
+
 
 local bg = Button:new(320,166,75,10,"Backgrounds", "Sets different backgrounds.")
 local bgI = Button:new(470,166,30,10,"^", "Increase brightness")
@@ -3378,6 +3381,7 @@ interface.removeComponent(mp3)
 interface.removeComponent(mp4)
 interface.removeComponent(mp5)
 interface.removeComponent(mp6)
+interface.removeComponent(mp7)
 interface.removeComponent(bary)
 interface.removeComponent(barn)
 interface.removeComponent(wikin2)
@@ -3554,6 +3558,7 @@ interface.addComponent(mp3)
 interface.addComponent(mp4)
 interface.addComponent(mp5)
 interface.addComponent(mp6)
+interface.addComponent(mp7)
 end)
 
 function mpremove()
@@ -3563,6 +3568,7 @@ interface.removeComponent(mp3)
 interface.removeComponent(mp4)
 interface.removeComponent(mp5)
 interface.removeComponent(mp6)
+interface.removeComponent(mp7)
 end
 
 ar =  110
@@ -3600,18 +3606,17 @@ end
 
 function theme()
 tpt.drawrect(613,1,14,405,ar,ag,ab,255)
-tpt.drawline(613,136,627,136,ar,ag,ab,255)
 tpt.drawline(612,408,612,421,ar,ag,ab,255)
 tpt.drawline(187,409,187,422,ar,ag,ab,255)
 tpt.drawline(469,408,469,421,ar,ag,ab,255)
 tpt.drawline(487,408,487,421,ar,ag,ab,255)
-tpt.drawline(506,408,506,421,ar,ag,ab,255)
+tpt.drawline(507,408,507,421,ar,ag,ab,255)
 
 tpt.drawline(241,408,241,421,ar,ag,ab,255)
 tpt.drawline(36,408,36,421,ar,ag,ab,255)
 tpt.drawline(18,408,18,421,ar,ag,ab,255)
 tpt.drawline(580,409,580,422,ar,ag,ab,255)
-tpt.drawline(595,409,595,422,ar,ag,ab,255)
+tpt.drawline(596,409,596,422,ar,ag,ab,255)
 tpt.drawrect(1,408,626,14,ar,ag,ab,255)
 
 tpt.drawline(613,96,627,96,ar,ag,ab,255)
@@ -3673,6 +3678,15 @@ ag = 0
 ab = 0
 tpt.register_step(theme)
 tpt.register_step(pulse)
+mpremove()
+end)
+
+mp7:action(function(sender)
+tpt.unregister_step(pulse)
+tpt.register_step(theme)
+ar =  250
+ag = 250
+ab = 250
 mpremove()
 end)
 
