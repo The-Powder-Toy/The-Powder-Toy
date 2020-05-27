@@ -130,6 +130,7 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 						if (parts[i].ctype == PT_IRON && RNG::Ref().chance(1, 500)) {
 							parts[i].ctype = PT_METL;
 							sim->kill_part(ID(r));
+							continue;
 						}
 					}
 				}
