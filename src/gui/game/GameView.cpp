@@ -2168,6 +2168,8 @@ void GameView::OnDraw()
 				}
 				sampleInfo << ", Temp: " << (sample.particle.temp - 273.15f) << " C";
 				sampleInfo << ", Life: " << sample.particle.life;
+				sampleInfo << ", Vx: " << (sample.particle.vx) << "";
+				sampleInfo << ", Vy: " << (sample.particle.vy) << "";
 				if (sample.particle.type != PT_RFRG && sample.particle.type != PT_RFGL)
 				{
 					if (sample.particle.type == PT_CONV)

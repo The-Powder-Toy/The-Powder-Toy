@@ -7,8 +7,8 @@ static void create(ELEMENT_CREATE_FUNC_ARGS);
 void Element::Element_UVRD()
 {
 	Identifier = "DEFAULT_PT_UVRD";
-	Name = "UVRD";
-	Colour = PIXPACK(0xDA70D6);
+	Name = "UV";
+	Colour = PIXPACK(0x4B0082);
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
 	Enabled = 1;
@@ -32,7 +32,7 @@ void Element::Element_UVRD()
 
 	DefaultProperties.temp = R_TEMP + 100.0f + 273.15f;
 	HeatConduct = 251;
-	Description = "Invisible UV rays emitted by SUN, reacts differently with different elements.";
+	Description = "UV rays emitted by SUN, reacts differently with different elements.";
 
 	Properties = TYPE_ENERGY | PROP_LIFE_DEC | PROP_LIFE_KILL_DEC;
 
@@ -97,7 +97,6 @@ static int update(UPDATE_FUNC_ARGS)
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 	{
-		*colr = *colg = *colb = 0;
 		*pixel_mode |= NO_DECO;
 		return 1;
 	}

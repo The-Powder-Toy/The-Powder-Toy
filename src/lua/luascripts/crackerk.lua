@@ -1,5 +1,596 @@
-local jacobsmod = tpt.version.jacob1s_mod
+--Cracker1000's TPT unleashed script 
+local version = 08
+local toggle = Button:new(320,0,13,8, "V", "Toggle additional menus.")
 
+local deletesparkButton = Button:new(320,6,75,10,"Interface", "shows UI related stuff.")
+local UIhidey = Button:new(410,6,40,10,"Hide", "Hides the UI")
+local UIhiden = Button:new(410,16,40,10,"Show", "Shows the UI")
+
+local FPS = Button:new(320,26,75,10, "Frame limiter", "Turns the frame limiter on/off.")
+local FPS1 = Button:new(410,26,80,10, "On", "Turns the frame limiter on.")
+local FPS2 = Button:new(410,36,80,10, "Off", "Turns the frame limiter off.")
+
+local screen= Button:new(320,46,75,10,"Screenshot", "Take a screen shot.")
+local screen1= Button:new(300,0,15,9,"Y", "Take the screen shot.")
+local screen2= Button:new(325,0,15,9,"N", "Cancel the screen shot.")
+
+local reset= Button:new(320,66,75,10,"Reset", "Reset everything.")
+
+local info= Button:new(320,86,75,10,"Version check", "Check for latest version.")
+
+local Ruler = Button:new(320,106,75,10, "Ruler", "Toggles in game hud ruler.")
+local Ry = Button:new(410,106,40,10,"Hide", "Hides the Ruler")
+local Rn = Button:new(410,116,40,10,"Show", "Shows the Ruler")
+
+
+local mp = Button:new(320,126,75,10,"Theme", "Changes game's theme")
+local mp1 = Button:new(410,126,75,10,"Default", "Change the theme to default")
+local mp2 = Button:new(410,136,75,10,"Fire", "Change the theme to Blue")
+local mp3 = Button:new(410,146,75,10,"Aqua", "Change the theme to Red")
+local mp4 = Button:new(410,156,75,10,"Forest", "Change the theme to Green")
+local mp5 = Button:new(410,166,75,10,"Sun", "Change the theme to Yellow")
+local mp6 = Button:new(410,176,75,10,"Pulse", "Smooth changing RGB colours")
+local mp7 = Button:new(410,186,75,10,"White", "Change the theme back to Plain white")
+
+
+local rc = Button:new(320,146,75,10,"Record", "Options for recording frames")
+local rc1 = Button:new(410,146,40,10,"Start", "Starts recording")
+local rc2 = Button:new(410,156,40,10,"Stop","Stops recording")
+
+
+local bg = Button:new(320,166,75,10,"Backgrounds", "Sets different backgrounds.")
+local bgI = Button:new(470,166,30,10,"^", "Increase brightness")
+local bgD = Button:new(470,176,30,10,"v", "Decrease brightness")
+local bg1 = Button:new(410,166,60,10,"BLACK", "Default")
+local bg2 = Button:new(410,176,60,10,"BLUE", "Blue background")
+local bg3 = Button:new(410,186,60,10,"RED", "Red background")
+local bg4 = Button:new(410,196,60,10,"GREEN", "Green background")
+local bg5 = Button:new(410,206,60,10,"YELLOW", "Yellow background")
+
+local bug = Button:new(320,186,75,10,"Bug report", "Direct to Mod thread for bug report.")
+
+local bar = Button:new(320,206,75,10,"Top bar", "Toggle top bar")
+local bary = Button:new(410,206,75,10,"Show", "Shows the bar at top")
+local barn = Button:new(410,216,75,10,"Hide", "Hides the bar")
+
+
+local wiki  =  Button:new(320,226,75,10,"Wiki", "Element wiki!")
+local wikin2 = Button:new(10,350,75,20,"Hide wiki ", " Close wiki!")
+
+local hide= Button:new(320,246,15,10, "^", "Hide.")
+
+
+function clearm()
+interface.removeComponent(reset)
+interface.removeComponent(screen)
+interface.removeComponent(FPS)
+interface.removeComponent(deletesparkButton)
+interface.removeComponent(hide)
+interface.removeComponent(info)
+interface.removeComponent(Ruler)
+interface.removeComponent(mp)
+interface.removeComponent(rc)
+interface.removeComponent(bg)
+interface.removeComponent(bug)
+interface.removeComponent(bar)
+interface.removeComponent(wiki)
+end
+
+function clearsb()
+interface.removeComponent(UIhiden)
+interface.removeComponent(UIhidey)
+interface.removeComponent(Ry)
+interface.removeComponent(Rn)
+interface.removeComponent(rc1)
+interface.removeComponent(rc2)
+interface.removeComponent(bg1)
+interface.removeComponent(bg2)
+interface.removeComponent(bg3)
+interface.removeComponent(bg4)
+interface.removeComponent(bg5)
+interface.removeComponent(bgI)
+interface.removeComponent(bgD)
+interface.removeComponent(screen1)
+interface.removeComponent(screen2)
+interface.removeComponent(FPS1)
+interface.removeComponent(FPS2)
+interface.removeComponent(mp1)
+interface.removeComponent(mp2)
+interface.removeComponent(mp3)
+interface.removeComponent(mp4)
+interface.removeComponent(mp5)
+interface.removeComponent(mp6)
+interface.removeComponent(mp7)
+interface.removeComponent(bary)
+interface.removeComponent(barn)
+interface.removeComponent(wikin2)
+end
+
+clearm()
+bug:action(function(sender)
+platform.openLink("https://powdertoy.co.uk/Discussions/Thread/View.html?Thread=23279")
+end)
+
+wiki:action(function(sender)
+clearsb()
+clearm()
+tpt.hud(0)
+interface.addComponent(wikin2)
+tpt.register_step(wikii)
+tpt.register_step(backb)
+tpt.register_step(UIhide)
+end)
+
+
+function wikii()
+gfx.drawText(10,10, " WELCOME TO IN GAME WIKI: \n\n WAll: Hybrid of walls and elements.\n VLSN: Velocity sensor.  Creates SPRK when nearby velocity's higher than it's temp, Configured with .tmp modes.\n TIMC: Time based convertor, converts into it's ctype when sparked with PSCN. Timer set using .tmp, default is 100.\n FUEL: FUEL. Fuel having high calorific value.\n THRM: Thermostat. Sets the temp of surrounding according to its own temp.\n CLNT: Coolant. Cools down the temp of the system, evaporates at high temperatures. Use .tmp to configure. \n DMRN: Demron. Radioactive shielding material and a better insulator.\n FNTC & FPTC: Faster versions of NTCT and PTCT.\n PINV: Powered Invisible, allows particles to move through when activated.\n UV: Ultra violet rays, heals stkm and figh, grows plnt, can sprk pscn and evaporates watr.\n SUN.: Sun, PLNT grow in direction of sunlight, emits radiation, makes PSCN spark and heals STKMs.\n LITH: Lithium ion battery, Use with PSCN and NSCN. Charges with INST when deactivated. Life sets capacity.\n Reacts with different elements like O2, WATR, ACID etc as IRL.\n LED:  Light Emmiting Diode. Use with PSCN and NSCN. Temp sets the brightness.\n Different .tmp2 modes: 0 = white, 1= red, 2= green, 3 =blue, 4= yellow and 5 = pink. \n QGP: Quark Gluon Plasma, bursts out radiation afer sometime. Extremely violent. \n Turns into Purple QGP when under 100C which is stable.\n TMPS: .tmp sensor, creats sprk when there is an element with higher .tmp than its temp.\n PHOS: White, slowly turns into red phosphorus with time. When in contact with O2, burns blue or red based on .tmp.\n Oil reverses the oxidation turning it back into white PHOS.\n Melts at 45C.\n PTNM: Platinum, conducts like gold, catalyses reactions and reacts with SMKE, ISOZ, GAS, BREL and HYGN.\n CMNT: Cement, heats up when mixed with water and gets solidified, darkens when solidified.\n NTRG: Nitrogen gas, liquifies to LN2 when cooled or when under pressure, reacts with H2 to make NITR and puts out fire.")
+end
+
+wikin2:action(function(sender)
+clearsb()
+clearm()
+tpt.unregister_step(wikii)
+tpt.unregister_step(backb)
+interface.addComponent(toggle)
+tpt.unregister_step(UIhide)
+tpt.hud(1)
+end)
+
+bg:action(function(sender)
+clearsb()
+interface.addComponent(bg1)
+interface.addComponent(bg2)
+interface.addComponent(bg3)
+interface.addComponent(bg4)
+interface.addComponent(bg5)
+interface.addComponent(bgI)
+interface.addComponent(bgD)
+end)
+
+local as = 60
+
+function backb()
+tpt.fillrect(0,0,610,385,0,0,255,as)
+end
+function backr()
+tpt.fillrect(0,0,610,385,255,0,0,as)
+end
+function backg()
+tpt.fillrect(0,0,610,385,0,255,0,as)
+end
+function backy()
+tpt.fillrect(0,0,610,385,255,255,0,as)
+end
+
+function clearbg()
+interface.removeComponent(bgI)
+interface.removeComponent(bgD)
+interface.removeComponent(bg5)
+interface.removeComponent(bg4)
+interface.removeComponent(bg3)
+interface.removeComponent(bg2)
+interface.removeComponent(bg1)
+tpt.unregister_step(backy)
+tpt.unregister_step(backb)
+tpt.unregister_step(backr)
+tpt.unregister_step(backg)
+end
+
+tgr = 0
+tgg  = 0
+tgb = 200
+
+bgI:action(function(sender)
+as = as+30
+end)
+bgD:action(function(sender)
+as = as-30
+end)
+
+bg1:action(function(sender)
+clearbg()
+tgr = 0
+tgg  = 0
+tgb = 200
+end)
+bg2:action(function(sender)
+tgr = 0
+tgg  = 0
+tgb = 200
+clearbg()
+tpt.register_step(backb)
+end)
+
+bg3:action(function(sender)
+tgr = 200
+tgg  = 0
+tgb = 0
+clearbg()
+tpt.register_step(backr)
+end)
+
+bg4:action(function(sender)
+tgr = 0
+tgg  = 200
+tgb = 0
+clearbg()
+tpt.register_step(backg)
+end)
+
+bg5:action(function(sender)
+tgr = 200
+tgg  = 200
+tgb = 0
+clearbg()
+tpt.register_step(backy)
+end)
+
+
+barn:action(function(sender)
+tpt.unregister_step(topbar)
+clearsb()
+end)
+
+rc:action(function(sender)
+clearsb()
+interface.addComponent(rc1)
+interface.addComponent(rc2)
+end)
+
+
+rc1:action(function(sender)
+tpt.record(true)
+interface.removeComponent(rc1)
+interface.removeComponent(rc2)
+
+end)
+
+rc2:action(function(sender)
+tpt.record(false)
+interface.removeComponent(rc1)
+interface.removeComponent(rc2)
+end)
+
+mp:action(function(sender)
+clearsb()
+interface.addComponent(mp1)
+interface.addComponent(mp2)
+interface.addComponent(mp3)
+interface.addComponent(mp4)
+interface.addComponent(mp5)
+interface.addComponent(mp6)
+interface.addComponent(mp7)
+end)
+
+function mpremove()
+interface.removeComponent(mp1)
+interface.removeComponent(mp2)
+interface.removeComponent(mp3)
+interface.removeComponent(mp4)
+interface.removeComponent(mp5)
+interface.removeComponent(mp6)
+interface.removeComponent(mp7)
+end
+local frameCount = 0
+
+function pulse()
+ if frameCount > 1529 then frameCount = 0 else frameCount = frameCount + 1 end
+ if frameCount > 0 and frameCount < 255 then
+  ar = 255
+  if ag > 254 then else ag = ag + 1 end
+ end
+ if frameCount > 254 and frameCount < 510 then
+  ag = 255
+  if ar == 0 then else ara = ar - 1 end
+ end
+ if frameCount > 510 and frameCount < 765 then
+  ag = 255
+  if ab > 254 then else ab = ab + 1 end
+ end
+ if frameCount > 764 and frameCount < 1020 then
+ ab = 255
+  if ag == 0 then else ag = ag - 1 end
+ end
+ if frameCount > 1020 and frameCount < 1275 then
+  ab = 255
+  if ar > 254 then else ar = ar + 1 end
+ end
+ if frameCount > 1274 and frameCount < 1530 then
+ ar = 255
+  if ab == 0 then else ab = ab - 1 end
+ end
+end
+
+function theme()
+al =  MANAGER.getsetting("CR1K", "al")
+ar =  MANAGER.getsetting("CR1K", "ar")
+ag = MANAGER.getsetting("CR1K", "ag")
+ab = MANAGER.getsetting("CR1K", "ab")
+tpt.drawrect(613,1,14,405,ar,ag,ab,al)
+tpt.drawline(612,408,612,421,ar,ag,ab,al)
+tpt.drawline(187,409,187,422,ar,ag,ab,al)
+tpt.drawline(469,408,469,421,ar,ag,ab,al)
+tpt.drawline(487,408,487,421,ar,ag,ab,al)
+tpt.drawline(507,408,507,421,ar,ag,ab,al)
+
+tpt.drawline(241,408,241,421,ar,ag,ab,al)
+tpt.drawline(36,408,36,421,ar,ag,ab,al)
+tpt.drawline(18,408,18,421,ar,ag,ab,al)
+tpt.drawline(580,409,580,422,ar,ag,ab,al)
+tpt.drawline(596,409,596,422,ar,ag,ab,al)
+tpt.drawrect(1,408,626,14,ar,ag,ab,al)
+
+tpt.drawline(613,96,627,96,ar,ag,ab,al)
+tpt.drawline(613,16,627,16,ar,ag,ab,al)
+tpt.drawline(613,32,627,32,ar,ag,ab,al)
+tpt.drawline(613,48,627,48,ar,ag,ab,al)
+tpt.drawline(613,64,627,64,ar,ag,ab,al)
+tpt.drawline(613,80,627,80,ar,ag,ab,al)
+end
+
+tpt.register_step(theme)
+
+mp1:action(function(sender)
+tpt.unregister_step(pulse)
+tpt.unregister_step(theme)
+ar = 110
+ag = 110
+ab = 110
+al = 0
+MANAGER.savesetting("CR1K", "ar", 110) 
+MANAGER.savesetting("CR1K", "ag", 110) 
+MANAGER.savesetting("CR1K", "ab", 110) 
+MANAGER.savesetting("CR1K", "al", 0) 
+mpremove()
+end)
+
+mp2:action(function(sender)
+tpt.unregister_step(pulse)
+tpt.register_step(theme)
+MANAGER.savesetting("CR1K", "ar", 255) 
+MANAGER.savesetting("CR1K", "ag", 0) 
+MANAGER.savesetting("CR1K", "ab", 0) 
+MANAGER.savesetting("CR1K", "al", 255) 
+mpremove()
+end)
+
+mp3:action(function(sender)
+MANAGER.savesetting("CR1K", "ar", 0) 
+MANAGER.savesetting("CR1K", "ag", 0) 
+MANAGER.savesetting("CR1K", "ab", 255) 
+MANAGER.savesetting("CR1K", "al", 255) 
+tpt.unregister_step(pulse)
+tpt.register_step(theme)
+mpremove()
+end)
+
+mp4:action(function(sender)
+MANAGER.savesetting("CR1K", "ar", 0) 
+MANAGER.savesetting("CR1K", "ag", 255) 
+MANAGER.savesetting("CR1K", "ab", 0) 
+MANAGER.savesetting("CR1K", "al", 255) 
+tpt.unregister_step(pulse)
+tpt.register_step(theme)
+mpremove()
+end)
+
+mp5:action(function(sender)
+MANAGER.savesetting("CR1K", "ar", 250) 
+MANAGER.savesetting("CR1K", "ag", 250) 
+MANAGER.savesetting("CR1K", "ab", 0) 
+MANAGER.savesetting("CR1K", "al", 255) 
+tpt.unregister_step(pulse)
+tpt.register_step(theme)
+mpremove()
+end)
+
+mp6:action(function(sender)
+MANAGER.savesetting("CR1K", "ar", 0) 
+MANAGER.savesetting("CR1K", "ag", 0) 
+MANAGER.savesetting("CR1K", "ab", 0) 
+MANAGER.savesetting("CR1K", "al", 255) 
+tpt.register_step(pulse)
+tpt.register_step(theme)
+mpremove()
+end)
+
+mp7:action(function(sender)
+MANAGER.savesetting("CR1K", "ar", 250) 
+MANAGER.savesetting("CR1K", "ag", 250) 
+MANAGER.savesetting("CR1K", "ab", 250) 
+MANAGER.savesetting("CR1K", "al", 255) 
+tpt.unregister_step(pulse)
+tpt.register_step(theme)
+mpremove()
+end)
+
+function topbar()
+tpt.drawline(1, 0, 310, 0, ar, ag, ab,200)
+tpt.drawline(340, 0, 610, 0,ar, ag, ab, 200)
+end
+
+tpt.register_step(topbar)
+
+bar:action(function(sender)
+clearsb()
+interface.addComponent(bary)
+interface.addComponent(barn)
+end)
+
+bary:action(function(sender)
+tpt.register_step(topbar)
+clearsb()
+end)
+
+Ruler:action(function(sender)
+clearsb()
+interface.addComponent(Ry)
+interface.addComponent(Rn)
+end)
+
+
+Ry:action(function(sender)
+tpt.setdebug(0X0)
+interface.removeComponent(Ry)
+interface.removeComponent(Rn)
+end)
+
+Rn:action(function(sender)
+
+tpt.setdebug(0X4)
+interface.removeComponent(Ry)
+interface.removeComponent(Rn)
+end)
+
+deletesparkButton:action(function(sender)
+clearsb()
+tpt.hud(0)
+interface.addComponent(UIhidey)
+interface.addComponent(UIhiden)
+end)
+
+
+function UIhide()
+tpt.hud(0)
+tpt.fillrect(0,382,616,42,0,0,0,255)
+tpt.fillrect(612,0,17,424,0,0,0,255)
+end
+UIhidey:action(function(sender)
+tpt.hud(0)
+interface.removeComponent(UIhiden)
+interface.removeComponent(UIhidey)
+tpt.unregister_step(topbar)
+tpt.register_step(UIhide)
+end)
+
+UIhiden:action(function(sender)
+tpt.hud(0)
+interface.removeComponent(UIhiden)
+interface.removeComponent(UIhidey)
+tpt.unregister_step(UIhide)
+tpt.register_step(topbar)
+end)
+
+FPS:action(function(sender)
+clearsb()
+interface.addComponent(FPS1)
+interface.addComponent(FPS2)
+end)
+
+
+FPS1:action(function(sender)
+interface.removeComponent(FPS1)
+interface.removeComponent(FPS2)
+tpt.setfpscap(60)
+end)
+
+FPS2:action(function(sender)
+interface.removeComponent(FPS1)
+interface.removeComponent(FPS2)
+tpt.setfpscap(160)
+end)
+
+screen1:action(function(sender)
+interface.removeComponent(screen1)
+interface.removeComponent(screen2)
+tpt.drawtext(327,368,"Cracker1000's script", 0 , 0,255, 255)
+tpt.screenshot(0)
+interface.addComponent(toggle)
+end)
+
+screen2:action(function(sender)
+interface.removeComponent(screen1)
+interface.removeComponent(screen2)
+interface.addComponent(toggle)
+end)
+
+screen:action(function(sender)
+clearsb()
+clearm()
+interface.addComponent(screen1)
+interface.addComponent(screen2)
+end)
+
+reset:action(function(sender)
+tgr = 0
+tgg  = 0
+tgb = 200
+ar =  110
+ag = 110
+ab = 110
+al = 0
+MANAGER.delsetting("CR1K", "ar") 
+MANAGER.delsetting("CR1K", "ag") 
+MANAGER.delsetting("CR1K", "ab") 
+MANAGER.delsetting("CR1K", "al") 
+tpt.unregister_step(wikii)
+tpt.unregister_step(pulse)
+tpt.unregister_step(topbar)
+tpt.unregister_step(UIhide)
+tpt.display_mode(3)
+tpt.watertest(0)
+sim.edgeMode(0) 
+tpt.setfpscap(60)
+tpt.setwindowsize(1)
+tpt.register_step(topbar)
+tpt.newtonian_gravity(0)
+tpt.decorations_enable(0)
+sim.resetPressure()
+tpt.unregister_step(theme)
+tpt.ambient_heat(0)
+sim.resetTemp()
+tpt.reset_velocity(1,380,300,300)
+clearbg()
+clearsb()
+tpt.setdebug(0X0)
+sim.clearSim()
+end)
+
+info:action(function(sender)
+tpt.message_box("Cracker1000's Script Check",version)
+end)
+
+hide:action(function(sender)
+interface.addComponent(toggle)
+clearsb()
+clearm()
+tpt.hud(1)
+tpt.set_pause(0)
+end)
+
+toggle:action(function(sender)
+tpt.set_pause(1)
+tpt.hud(0)
+interface.removeComponent(screen1)
+interface.removeComponent(screen2)
+interface.addComponent(deletesparkButton)
+interface.addComponent(FPS)
+interface.addComponent(screen)
+interface.addComponent(info)
+interface.addComponent(reset)
+interface.addComponent(hide)
+interface.addComponent(Ruler)
+interface.addComponent(rc)
+interface.addComponent(bg)
+interface.addComponent(mp)
+interface.addComponent(bug)
+interface.addComponent(bar)
+interface.addComponent(wiki)
+interface.removeComponent(toggle)
+end)
+interface.addComponent(toggle)
+
+
+
+
+
+
+
+
+
+
+
+local jacobsmod = tpt.version.jacob1s_mod
 local icons = {
 	["delete1"] = "\xEE\x80\x85",
 	["delete2"] = "\xEE\x80\x86",
@@ -3278,574 +3869,3 @@ evt.register(evt.keypress, keypress)
 evt.register(evt.keyrelease, keyrelease)
 evt.register(evt.textinput, textinput)
 evt.register(evt.blur, blur)
-
-
---Cracker1000's TPT unleashed script version 8.0
-local toggle = Button:new(320,0,13,8, "V", "Toggle additional menus.")
-
-local deletesparkButton = Button:new(320,6,75,10,"Interface", "shows UI related stuff.")
-local UIhidey = Button:new(410,6,40,10,"Hide", "Hides the UI")
-local UIhiden = Button:new(410,16,40,10,"Show", "Shows the UI")
-
-local FPS = Button:new(320,26,75,10, "Frame limiter", "Turns the frame limiter on/off.")
-local FPS1 = Button:new(410,26,80,10, "On", "Turns the frame limiter on.")
-local FPS2 = Button:new(410,36,80,10, "Off", "Turns the frame limiter off.")
-
-local screen= Button:new(320,46,75,10,"Screenshot", "Take a screen shot.")
-local screen1= Button:new(300,0,15,9,"Y", "Take the screen shot.")
-local screen2= Button:new(325,0,15,9,"N", "Cancel the screen shot.")
-
-local reset= Button:new(320,66,75,10,"Reset", "Reset everything.")
-
-local info= Button:new(320,86,75,10,"Version check", "Check for latest version.")
-
-local Ruler = Button:new(320,106,75,10, "Ruler", "Toggles in game hud ruler.")
-local Ry = Button:new(410,106,40,10,"Hide", "Hides the Ruler")
-local Rn = Button:new(410,116,40,10,"Show", "Shows the Ruler")
-
-
-local mp = Button:new(320,126,75,10,"Theme", "Changes game's theme")
-local mp1 = Button:new(410,126,75,10,"Default", "Change the theme to default")
-local mp2 = Button:new(410,136,75,10,"Fire", "Change the theme to Blue")
-local mp3 = Button:new(410,146,75,10,"Aqua", "Change the theme to Red")
-local mp4 = Button:new(410,156,75,10,"Forest", "Change the theme to Green")
-local mp5 = Button:new(410,166,75,10,"Sun", "Change the theme to Yellow")
-local mp6 = Button:new(410,176,75,10,"Pulse", "Smooth changing RGB colours")
-local mp7 = Button:new(410,186,75,10,"White", "Change the theme back to Plain white")
-
-
-local rc = Button:new(320,146,75,10,"Record", "Options for recording frames")
-local rc1 = Button:new(410,146,40,10,"Start", "Starts recording")
-local rc2 = Button:new(410,156,40,10,"Stop","Stops recording")
-
-
-local bg = Button:new(320,166,75,10,"Backgrounds", "Sets different backgrounds.")
-local bgI = Button:new(470,166,30,10,"^", "Increase brightness")
-local bgD = Button:new(470,176,30,10,"v", "Decrease brightness")
-local bg1 = Button:new(410,166,60,10,"BLACK", "Default")
-local bg2 = Button:new(410,176,60,10,"BLUE", "Blue background")
-local bg3 = Button:new(410,186,60,10,"RED", "Red background")
-local bg4 = Button:new(410,196,60,10,"GREEN", "Green background")
-local bg5 = Button:new(410,206,60,10,"YELLOW", "Yellow background")
-
-local bug = Button:new(320,186,75,10,"Bug report", "Direct to Mod thread for bug report.")
-
-local bar = Button:new(320,206,75,10,"Top bar", "Toggle top bar")
-local bary = Button:new(410,206,75,10,"Show", "Shows the bar at top")
-local barn = Button:new(410,216,75,10,"Hide", "Hides the bar")
-
-
-local wiki  =  Button:new(320,226,75,10,"Wiki", "Element wiki!")
-local wikin2 = Button:new(10,350,75,20,"Hide wiki ", " Close wiki!")
-
-local hide= Button:new(320,246,15,10, "^", "Hide.")
-
-
-function clearm()
-interface.removeComponent(reset)
-interface.removeComponent(screen)
-interface.removeComponent(FPS)
-interface.removeComponent(deletesparkButton)
-interface.removeComponent(hide)
-interface.removeComponent(info)
-interface.removeComponent(Ruler)
-interface.removeComponent(mp)
-interface.removeComponent(rc)
-interface.removeComponent(bg)
-interface.removeComponent(bug)
-interface.removeComponent(bar)
-interface.removeComponent(wiki)
-end
-
-function clearsb()
-interface.removeComponent(UIhiden)
-interface.removeComponent(UIhidey)
-interface.removeComponent(Ry)
-interface.removeComponent(Rn)
-interface.removeComponent(rc1)
-interface.removeComponent(rc2)
-interface.removeComponent(bg1)
-interface.removeComponent(bg2)
-interface.removeComponent(bg3)
-interface.removeComponent(bg4)
-interface.removeComponent(bg5)
-interface.removeComponent(bgI)
-interface.removeComponent(bgD)
-interface.removeComponent(screen1)
-interface.removeComponent(screen2)
-interface.removeComponent(FPS1)
-interface.removeComponent(FPS2)
-interface.removeComponent(mp1)
-interface.removeComponent(mp2)
-interface.removeComponent(mp3)
-interface.removeComponent(mp4)
-interface.removeComponent(mp5)
-interface.removeComponent(mp6)
-interface.removeComponent(mp7)
-interface.removeComponent(bary)
-interface.removeComponent(barn)
-interface.removeComponent(wikin2)
-end
-
-clearm()
-bug:action(function(sender)
-platform.openLink("https://powdertoy.co.uk/Discussions/Thread/View.html?Thread=23279")
-end)
-
-wiki:action(function(sender)
-clearsb()
-clearm()
-tpt.hud(0)
-interface.addComponent(wikin2)
-tpt.register_step(wikii)
-tpt.register_step(backb)
-tpt.register_step(UIhide)
-end)
-
-
-function wikii()
-gfx.drawText(10,10, " WELCOME TO IN GAME WIKI: \n\n WAll: Hybrid of walls and elements.\n VLSN: Velocity sensor.  Creates SPRK when nearby velocity's higher than it's temp, Configured with .tmp modes.\n TIMC: Time based convertor, converts into it's ctype when sparked with PSCN. Timer set using .tmp, default is 100.\n FUEL: FUEL. Fuel having high calorific value.\n THRM: Thermostat. Sets the temp of surrounding according to its own temp.\n CLNT: Coolant. Cools down the temp of the system, evaporates at high temperatures. Use .tmp to configure. \n DMRN: Demron. Radioactive shielding material and a better insulator.\n FNTC & FPTC: Faster versions of NTCT and PTCT.\n PINV: Powered Invisible, allows particles to move through when activated.\n UVRD: Ultra violet radiations, interacts with different elements as irl.\n SUN.: Sun, PLNT grow in direction of sunlight, emits radiation, makes PSCN spark and heals STKMs.\n LITH: Lithium ion battery, Use with PSCN and NSCN. Charges with INST when deactivated. Life sets capacity.\n Reacts with different elements like O2, WATR, ACID etc as IRL.\n LED:  Light Emmiting Diode. Use with PSCN and NSCN. Temp sets the brightness.\n Different .tmp2 modes: 0 = white, 1= red, 2= green, 3 =blue, 4= yellow and 5 = pink. \n QGP: Quark Gluon Plasma, bursts out radiation afer sometime. Extremely violent. \n Turns into Purple QGP when under 100C which is stable.\n TMPS: .tmp sensor, creats sprk when there is an element with higher .tmp than its temp.\n PHOS: White, slowly turns into red phosphorus with time. Burns blue when in contact with O2. Protect it with OIL.\n Melts at 45C.\n PTNM: Platinum, conducts like gold, catalyses reactions and reacts with SMKE, ISOZ, GAS, BREL and HYGN.\n CMNT: Cement, heats up when mixed with water and gets solidified, darkens when solidified.\n NTRG: Nitrogen gas, liquifies to LN2 when cooled or when under pressure, reacts with H2 to make NITR and puts out fire.")
-end
-
-wikin2:action(function(sender)
-clearsb()
-clearm()
-tpt.unregister_step(wikii)
-tpt.unregister_step(backb)
-interface.addComponent(toggle)
-tpt.unregister_step(UIhide)
-tpt.hud(1)
-end)
-
-bg:action(function(sender)
-clearsb()
-interface.addComponent(bg1)
-interface.addComponent(bg2)
-interface.addComponent(bg3)
-interface.addComponent(bg4)
-interface.addComponent(bg5)
-interface.addComponent(bgI)
-interface.addComponent(bgD)
-end)
-
-local as = 60
-
-function backb()
-tpt.fillrect(0,0,610,385,0,0,255,as)
-end
-function backr()
-tpt.fillrect(0,0,610,385,255,0,0,as)
-end
-function backg()
-tpt.fillrect(0,0,610,385,0,255,0,as)
-end
-function backy()
-tpt.fillrect(0,0,610,385,255,255,0,as)
-end
-
-function clearbg()
-interface.removeComponent(bgI)
-interface.removeComponent(bgD)
-interface.removeComponent(bg5)
-interface.removeComponent(bg4)
-interface.removeComponent(bg3)
-interface.removeComponent(bg2)
-interface.removeComponent(bg1)
-tpt.unregister_step(backy)
-tpt.unregister_step(backb)
-tpt.unregister_step(backr)
-tpt.unregister_step(backg)
-end
-
-tgr = 0
-tgg  = 0
-tgb = 200
-
-bgI:action(function(sender)
-as = as+30
-end)
-bgD:action(function(sender)
-as = as-30
-end)
-
-bg1:action(function(sender)
-clearbg()
-tgr = 0
-tgg  = 0
-tgb = 200
-end)
-bg2:action(function(sender)
-tgr = 0
-tgg  = 0
-tgb = 200
-clearbg()
-tpt.register_step(backb)
-end)
-
-bg3:action(function(sender)
-tgr = 200
-tgg  = 0
-tgb = 0
-clearbg()
-tpt.register_step(backr)
-end)
-
-bg4:action(function(sender)
-tgr = 0
-tgg  = 200
-tgb = 0
-clearbg()
-tpt.register_step(backg)
-end)
-
-bg5:action(function(sender)
-tgr = 200
-tgg  = 200
-tgb = 0
-clearbg()
-tpt.register_step(backy)
-end)
-
-function topbar()
-tpt.drawline(1, 0, 310, 0, ar, ag, ab,200)
-tpt.drawline(340, 0, 610, 0,ar, ag, ab, 200)
-end
-
-tpt.register_step(topbar)
-
-bar:action(function(sender)
-clearsb()
-interface.addComponent(bary)
-interface.addComponent(barn)
-end)
-
-bary:action(function(sender)
-tpt.register_step(topbar)
-clearsb()
-end)
-
-
-barn:action(function(sender)
-tpt.unregister_step(topbar)
-clearsb()
-end)
-
-rc:action(function(sender)
-clearsb()
-interface.addComponent(rc1)
-interface.addComponent(rc2)
-end)
-
-
-rc1:action(function(sender)
-tpt.record(true)
-interface.removeComponent(rc1)
-interface.removeComponent(rc2)
-
-end)
-
-rc2:action(function(sender)
-tpt.record(false)
-interface.removeComponent(rc1)
-interface.removeComponent(rc2)
-end)
-
-mp:action(function(sender)
-clearsb()
-interface.addComponent(mp1)
-interface.addComponent(mp2)
-interface.addComponent(mp3)
-interface.addComponent(mp4)
-interface.addComponent(mp5)
-interface.addComponent(mp6)
-interface.addComponent(mp7)
-end)
-
-function mpremove()
-interface.removeComponent(mp1)
-interface.removeComponent(mp2)
-interface.removeComponent(mp3)
-interface.removeComponent(mp4)
-interface.removeComponent(mp5)
-interface.removeComponent(mp6)
-interface.removeComponent(mp7)
-end
-
-ar =  110
-ag = 110
-ab = 110
-local frameCount = 0
-
-function pulse()
- if frameCount > 1529 then frameCount = 0 else frameCount = frameCount + 1 end
- if frameCount > 0 and frameCount < 255 then
-  ar = 255
-  if ag > 254 then else ag = ag + 1 end
- end
- if frameCount > 254 and frameCount < 510 then
-  ag = 255
-  if ar == 0 then else ar = ar - 1 end
- end
- if frameCount > 510 and frameCount < 765 then
-  ag = 255
-  if ab > 254 then else ab = ab + 1 end
- end
- if frameCount > 764 and frameCount < 1020 then
- ab = 255
-  if ag == 0 then else ag = ag - 1 end
- end
- if frameCount > 1020 and frameCount < 1275 then
-  ab = 255
-  if ar > 254 then else ar = ar + 1 end
- end
- if frameCount > 1274 and frameCount < 1530 then
- ar = 255
-  if ab == 0 then else ab = ab - 1 end
- end
-end
-
-function theme()
-tpt.drawrect(613,1,14,405,ar,ag,ab,255)
-tpt.drawline(612,408,612,421,ar,ag,ab,255)
-tpt.drawline(187,409,187,422,ar,ag,ab,255)
-tpt.drawline(469,408,469,421,ar,ag,ab,255)
-tpt.drawline(487,408,487,421,ar,ag,ab,255)
-tpt.drawline(507,408,507,421,ar,ag,ab,255)
-
-tpt.drawline(241,408,241,421,ar,ag,ab,255)
-tpt.drawline(36,408,36,421,ar,ag,ab,255)
-tpt.drawline(18,408,18,421,ar,ag,ab,255)
-tpt.drawline(580,409,580,422,ar,ag,ab,255)
-tpt.drawline(596,409,596,422,ar,ag,ab,255)
-tpt.drawrect(1,408,626,14,ar,ag,ab,255)
-
-tpt.drawline(613,96,627,96,ar,ag,ab,255)
-tpt.drawline(613,16,627,16,ar,ag,ab,255)
-tpt.drawline(613,32,627,32,ar,ag,ab,255)
-tpt.drawline(613,48,627,48,ar,ag,ab,255)
-tpt.drawline(613,64,627,64,ar,ag,ab,255)
-tpt.drawline(613,80,627,80,ar,ag,ab,255)
-end
-
-mp1:action(function(sender)
-tpt.unregister_step(theme)
-tpt.unregister_step(pulse)
-ar =  110
-ag = 110
-ab = 110
-mpremove()
-end)
-
-mp2:action(function(sender)
-tpt.unregister_step(pulse)
-tpt.register_step(theme)
-ar = 255
-ag = 0
-ab = 0
-mpremove()
-end)
-
-mp3:action(function(sender)
-tpt.unregister_step(pulse)
-tpt.register_step(theme)
-ar = 0
-ag = 0
-ab = 255
-mpremove()
-end)
-
-mp4:action(function(sender)
-tpt.unregister_step(pulse)
-tpt.register_step(theme)
-ar = 0
-ag = 255
-ab = 0
-mpremove()
-end)
-
-mp5:action(function(sender)
-tpt.unregister_step(pulse)
-tpt.register_step(theme)
-ar = 250
-ag = 250
-ab = 0
-mpremove()
-end)
-
-mp6:action(function(sender)
-ar =  0
-ag = 0
-ab = 0
-tpt.register_step(theme)
-tpt.register_step(pulse)
-mpremove()
-end)
-
-mp7:action(function(sender)
-tpt.unregister_step(pulse)
-tpt.register_step(theme)
-ar =  250
-ag = 250
-ab = 250
-mpremove()
-end)
-
-
-
-Ruler:action(function(sender)
-clearsb()
-interface.addComponent(Ry)
-interface.addComponent(Rn)
-end)
-
-
-Ry:action(function(sender)
-tpt.setdebug(0X0)
-interface.removeComponent(Ry)
-interface.removeComponent(Rn)
-end)
-
-Rn:action(function(sender)
-
-tpt.setdebug(0X4)
-interface.removeComponent(Ry)
-interface.removeComponent(Rn)
-end)
-
-
-
-deletesparkButton:action(function(sender)
-clearsb()
-tpt.hud(0)
-interface.addComponent(UIhidey)
-interface.addComponent(UIhiden)
-end)
-
-
-function UIhide()
-tpt.hud(0)
-tpt.fillrect(0,382,616,42,0,0,0,255)
-tpt.fillrect(612,0,17,424,0,0,0,255)
-end
-UIhidey:action(function(sender)
-tpt.hud(0)
-interface.removeComponent(UIhiden)
-interface.removeComponent(UIhidey)
-tpt.unregister_step(topbar)
-tpt.register_step(UIhide)
-end)
-
-UIhiden:action(function(sender)
-tpt.hud(0)
-interface.removeComponent(UIhiden)
-interface.removeComponent(UIhidey)
-tpt.unregister_step(UIhide)
-tpt.register_step(topbar)
-end)
-
-FPS:action(function(sender)
-clearsb()
-interface.addComponent(FPS1)
-interface.addComponent(FPS2)
-end)
-
-
-FPS1:action(function(sender)
-interface.removeComponent(FPS1)
-interface.removeComponent(FPS2)
-tpt.setfpscap(60)
-end)
-
-FPS2:action(function(sender)
-interface.removeComponent(FPS1)
-interface.removeComponent(FPS2)
-tpt.setfpscap(160)
-end)
-
-screen1:action(function(sender)
-interface.removeComponent(screen1)
-interface.removeComponent(screen2)
-tpt.drawtext(327,368,"Cracker1000's script", 0 , 0,255, 255)
-tpt.screenshot(0)
-interface.addComponent(toggle)
-end)
-
-screen2:action(function(sender)
-interface.removeComponent(screen1)
-interface.removeComponent(screen2)
-interface.addComponent(toggle)
-end)
-
-screen:action(function(sender)
-clearsb()
-clearm()
-interface.addComponent(screen1)
-interface.addComponent(screen2)
-end)
-
-reset:action(function(sender)
-tgr = 0
-tgg  = 0
-tgb = 200
-ar =  110
-ag = 110
-ab = 110
-tpt.unregister_step(wikii)
-tpt.unregister_step(pulse)
-tpt.unregister_step(topbar)
-tpt.unregister_step(UIhide)
-tpt.display_mode(3)
-tpt.watertest(0)
-sim.edgeMode(0) 
-tpt.setfpscap(60)
-tpt.setwindowsize(1)
-tpt.register_step(topbar)
-tpt.newtonian_gravity(0)
-tpt.decorations_enable(0)
-sim.resetPressure()
-tpt.unregister_step(theme)
-tpt.ambient_heat(0)
-sim.resetTemp()
-tpt.reset_velocity(1,380,300,300)
-clearbg()
-clearsb()
-tpt.setdebug(0X0)
-sim.clearSim()
-end)
-
-info:action(function(sender)
-tpt.message_box("Cracker1000's Script Check","Version 8.0")
-end)
-
-hide:action(function(sender)
-interface.addComponent(toggle)
-clearsb()
-clearm()
-tpt.hud(1)
-tpt.set_pause(0)
-end)
-
-toggle:action(function(sender)
-tpt.set_pause(1)
-tpt.hud(0)
-interface.removeComponent(screen1)
-interface.removeComponent(screen2)
-interface.addComponent(deletesparkButton)
-interface.addComponent(FPS)
-interface.addComponent(screen)
-interface.addComponent(info)
-interface.addComponent(reset)
-interface.addComponent(hide)
-interface.addComponent(Ruler)
-interface.addComponent(rc)
-interface.addComponent(bg)
-interface.addComponent(mp)
-interface.addComponent(bug)
-interface.addComponent(bar)
-interface.addComponent(wiki)
-interface.removeComponent(toggle)
-end)
-interface.addComponent(toggle)
-
-
-

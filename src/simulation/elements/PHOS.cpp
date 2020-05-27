@@ -48,7 +48,7 @@ void Element::Element_PHOS()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	if (parts[i].tmp < 555 && (RNG::Ref().chance(1, 5)))
+	if (parts[i].tmp < 800 && (RNG::Ref().chance(1, 5)))
 	{
 		parts[i].tmp++;
 	}
@@ -62,15 +62,23 @@ static int update(UPDATE_FUNC_ARGS)
 				switch (TYP(r))
 				{
 				case PT_O2:
-				{
-					parts[i].life = 100;
-					parts[i].type = PT_CFLM;
-					
+				{ 
+					if (parts[i].tmp < 300)
+					{
+						parts[i].life = 100;
+						parts[i].type = PT_FIRE;
+					}
+					else if (parts[i].tmp >= 300)
+					{
+						parts[i].life = 100;
+						parts[i].type = PT_CFLM;
+					}
 				}
 				break;
 				case PT_OIL:
 				{
-					parts[i].tmp = 40;
+					if(parts[i].tmp>0)
+					parts[i].tmp--;
 					
 				}
 				break;
@@ -78,6 +86,12 @@ static int update(UPDATE_FUNC_ARGS)
 				{
 					parts[i].life = 100;
 					parts[i].type = PT_CFLM;
+				}
+				break;
+				case PT_FIRE:
+				{
+					parts[i].life = 100;
+					parts[i].type = PT_FIRE;
 				}
 				break;
 				}

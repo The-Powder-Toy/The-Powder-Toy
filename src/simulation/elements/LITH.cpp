@@ -30,7 +30,7 @@ void Element::Element_LITH()
 	Weight = 100;
 
 	HeatConduct = 200;
-	Description = "Lithium ion battery. Charge with INST when deactivated, discharges to INST when activated. (use Heat/Cool)";
+	Description = "Lithium ion battery. Charge with INST when deactivated, discharges to INST when activated. (use .life for capacity)";
 
 	Properties = TYPE_SOLID;
 	LowPressure = IPL;

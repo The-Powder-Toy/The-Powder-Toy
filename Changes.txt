@@ -1,13 +1,3 @@
-Version 13.0
-New themes option ( Users can now change the UI colour as per their choice.)
-TMPS has better colour now.
-Fix TPTMP and script manager icon (were slightly offcentered).
-Update the wiki.
-Fix various bugs with crackerK script.
-Fix PHOS,VSNS and LSNS.
-New elements: PTNM, CMNT, NTRG.
-New reaction: NITR can now be created in game using NTRG and H2.
-WIki is opened up in a new way, hiding the UI and is slightly improved.
-Added a Clock to the mod (shows seconds only when in Debug mode).
-Merge changes from master branch.
-CTRL + U resets ambient air temp.
+Version 14.0
+2 new themes: Pulse and white.
+Minor adjutments to scripts.
