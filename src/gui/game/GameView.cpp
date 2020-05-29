@@ -2166,10 +2166,10 @@ void GameView::OnDraw()
 					else
 						sampleInfo << " ()";
 				}
-				sampleInfo << ", Temp: " << (sample.particle.temp - 273.15f) << " C";
+				sampleInfo << ", Temp: " << (sample.particle.temp - 273.15f) << " C "<<sample.particle.temp << "f";
 				sampleInfo << ", Life: " << sample.particle.life;
-				sampleInfo << ", Vx: " << (sample.particle.vx) << "";
-				sampleInfo << ", Vy: " << (sample.particle.vy) << "";
+				sampleInfo << ", Vx: " << sample.particle.vx;
+				sampleInfo << ", Vy: " << sample.particle.vy;
 				if (sample.particle.type != PT_RFRG && sample.particle.type != PT_RFGL)
 				{
 					if (sample.particle.type == PT_CONV)
@@ -2195,7 +2195,7 @@ void GameView::OnDraw()
 			else
 			{
 				sampleInfo << c->BasicParticleInfo(sample.particle);
-				sampleInfo << ", Temp: " << sample.particle.temp - 273.15f<< " C";
+				sampleInfo << ", Temp: " << sample.particle.temp - 273.15f << " C " << sample.particle.temp << "f";
 				sampleInfo << ", Pressure: " << sample.AirPressure;
 			}
 		}

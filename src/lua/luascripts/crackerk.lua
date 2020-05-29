@@ -1,5 +1,5 @@
 --Cracker1000's TPT unleashed script 
-local version = 08
+local version = 09
 local toggle = Button:new(320,0,13,8, "V", "Toggle additional menus.")
 
 local deletesparkButton = Button:new(320,6,75,10,"Interface", "shows UI related stuff.")
@@ -251,28 +251,48 @@ interface.removeComponent(rc1)
 interface.removeComponent(rc2)
 end)
 
-mp:action(function(sender)
-clearsb()
-interface.addComponent(mp1)
-interface.addComponent(mp2)
-interface.addComponent(mp3)
-interface.addComponent(mp4)
-interface.addComponent(mp5)
-interface.addComponent(mp6)
-interface.addComponent(mp7)
-end)
+function theme()
+tpt.drawrect(613,1,14,95,ar,ag,ab,al)
+tpt.drawrect(613,136,14,269,ar,ag,ab,al)
+tpt.drawline(612,408,612,421,ar,ag,ab,al)
+tpt.drawline(187,409,187,422,ar,ag,ab,al)
+tpt.drawline(469,408,469,421,ar,ag,ab,al)
+tpt.drawline(487,408,487,421,ar,ag,ab,al)
+tpt.drawline(507,408,507,421,ar,ag,ab,al)
 
-function mpremove()
-interface.removeComponent(mp1)
-interface.removeComponent(mp2)
-interface.removeComponent(mp3)
-interface.removeComponent(mp4)
-interface.removeComponent(mp5)
-interface.removeComponent(mp6)
-interface.removeComponent(mp7)
+tpt.drawline(241,408,241,421,ar,ag,ab,al)
+tpt.drawline(36,408,36,421,ar,ag,ab,al)
+tpt.drawline(18,408,18,421,ar,ag,ab,al)
+tpt.drawline(580,409,580,422,ar,ag,ab,al)
+tpt.drawline(596,409,596,422,ar,ag,ab,al)
+tpt.drawrect(1,408,626,14,ar,ag,ab,al)
+
+tpt.drawline(613,96,627,96,ar,ag,ab,al)
+tpt.drawline(613,16,627,16,ar,ag,ab,al)
+tpt.drawline(613,32,627,32,ar,ag,ab,al)
+tpt.drawline(613,48,627,48,ar,ag,ab,al)
+tpt.drawline(613,64,627,64,ar,ag,ab,al)
+tpt.drawline(613,80,627,80,ar,ag,ab,al)
+
+tpt.drawline(613,151,627,151,ar,ag,ab,al)
+tpt.drawline(613,167,627,167,ar,ag,ab,al)
+tpt.drawline(613,183,627,183,ar,ag,ab,al)
+tpt.drawline(613,199,627,199,ar,ag,ab,al)
+tpt.drawline(613,215,627,215,ar,ag,ab,al)
+tpt.drawline(613,231,627,231,ar,ag,ab,al)
+tpt.drawline(613,247,627,247,ar,ag,ab,al)
+tpt.drawline(613,263,627,263,ar,ag,ab,al)
+tpt.drawline(613,279,627,279,ar,ag,ab,al)
+tpt.drawline(613,295,627,295,ar,ag,ab,al)
+tpt.drawline(613,311,627,311,ar,ag,ab,al)
+tpt.drawline(613,327,627,327,ar,ag,ab,al)
+tpt.drawline(613,343,627,343,ar,ag,ab,al)
+tpt.drawline(613,359,627,359,ar,ag,ab,al)
+tpt.drawline(613,375,627,375,ar,ag,ab,al)
+tpt.drawline(613,391,627,391,ar,ag,ab,al)
 end
-local frameCount = 0
 
+local frameCount = 0
 function pulse()
  if frameCount > 1529 then frameCount = 0 else frameCount = frameCount + 1 end
  if frameCount > 0 and frameCount < 255 then
@@ -301,104 +321,94 @@ function pulse()
  end
 end
 
-function theme()
-al =  MANAGER.getsetting("CR1K", "al")
-ar =  MANAGER.getsetting("CR1K", "ar")
-ag = MANAGER.getsetting("CR1K", "ag")
-ab = MANAGER.getsetting("CR1K", "ab")
-tpt.drawrect(613,1,14,405,ar,ag,ab,al)
-tpt.drawline(612,408,612,421,ar,ag,ab,al)
-tpt.drawline(187,409,187,422,ar,ag,ab,al)
-tpt.drawline(469,408,469,421,ar,ag,ab,al)
-tpt.drawline(487,408,487,421,ar,ag,ab,al)
-tpt.drawline(507,408,507,421,ar,ag,ab,al)
-
-tpt.drawline(241,408,241,421,ar,ag,ab,al)
-tpt.drawline(36,408,36,421,ar,ag,ab,al)
-tpt.drawline(18,408,18,421,ar,ag,ab,al)
-tpt.drawline(580,409,580,422,ar,ag,ab,al)
-tpt.drawline(596,409,596,422,ar,ag,ab,al)
-tpt.drawrect(1,408,626,14,ar,ag,ab,al)
-
-tpt.drawline(613,96,627,96,ar,ag,ab,al)
-tpt.drawline(613,16,627,16,ar,ag,ab,al)
-tpt.drawline(613,32,627,32,ar,ag,ab,al)
-tpt.drawline(613,48,627,48,ar,ag,ab,al)
-tpt.drawline(613,64,627,64,ar,ag,ab,al)
-tpt.drawline(613,80,627,80,ar,ag,ab,al)
-end
-
 tpt.register_step(theme)
 
+mp:action(function(sender)
+clearsb()
+interface.addComponent(mp1)
+interface.addComponent(mp2)
+interface.addComponent(mp3)
+interface.addComponent(mp4)
+interface.addComponent(mp5)
+interface.addComponent(mp6)
+interface.addComponent(mp7)
+end)
+
+function mpremove()
+interface.removeComponent(mp1)
+interface.removeComponent(mp2)
+interface.removeComponent(mp3)
+interface.removeComponent(mp4)
+interface.removeComponent(mp5)
+interface.removeComponent(mp6)
+interface.removeComponent(mp7)
+end
+
 mp1:action(function(sender)
-tpt.unregister_step(pulse)
 tpt.unregister_step(theme)
-ar = 110
-ag = 110
-ab = 110
-al = 0
-MANAGER.savesetting("CR1K", "ar", 110) 
-MANAGER.savesetting("CR1K", "ag", 110) 
-MANAGER.savesetting("CR1K", "ab", 110) 
-MANAGER.savesetting("CR1K", "al", 0) 
+tpt.unregister_step(pulse)
+ar=110
+ag=110
+ab=110
+al=0
 mpremove()
 end)
 
 mp2:action(function(sender)
-tpt.unregister_step(pulse)
 tpt.register_step(theme)
-MANAGER.savesetting("CR1K", "ar", 255) 
-MANAGER.savesetting("CR1K", "ag", 0) 
-MANAGER.savesetting("CR1K", "ab", 0) 
-MANAGER.savesetting("CR1K", "al", 255) 
+tpt.unregister_step(pulse)
+ar=255
+ag=0
+ab=0
+al=255
 mpremove()
 end)
 
 mp3:action(function(sender)
-MANAGER.savesetting("CR1K", "ar", 0) 
-MANAGER.savesetting("CR1K", "ag", 0) 
-MANAGER.savesetting("CR1K", "ab", 255) 
-MANAGER.savesetting("CR1K", "al", 255) 
-tpt.unregister_step(pulse)
+ar=0
+ag=0
+ab=255
+al=255
 tpt.register_step(theme)
+tpt.unregister_step(pulse)
 mpremove()
 end)
 
 mp4:action(function(sender)
-MANAGER.savesetting("CR1K", "ar", 0) 
-MANAGER.savesetting("CR1K", "ag", 255) 
-MANAGER.savesetting("CR1K", "ab", 0) 
-MANAGER.savesetting("CR1K", "al", 255) 
-tpt.unregister_step(pulse)
+ar=0
+ag=255
+ab=0
+al=255
 tpt.register_step(theme)
+tpt.unregister_step(pulse)
 mpremove()
 end)
 
 mp5:action(function(sender)
-MANAGER.savesetting("CR1K", "ar", 250) 
-MANAGER.savesetting("CR1K", "ag", 250) 
-MANAGER.savesetting("CR1K", "ab", 0) 
-MANAGER.savesetting("CR1K", "al", 255) 
-tpt.unregister_step(pulse)
+ar=255
+ag=255
+ab=0
+al=255
 tpt.register_step(theme)
+tpt.unregister_step(pulse)
 mpremove()
 end)
 
 mp6:action(function(sender)
-MANAGER.savesetting("CR1K", "ar", 0) 
-MANAGER.savesetting("CR1K", "ag", 0) 
-MANAGER.savesetting("CR1K", "ab", 0) 
-MANAGER.savesetting("CR1K", "al", 255) 
+ar=0
+ag=0
+ab=0
+al=255
 tpt.register_step(pulse)
 tpt.register_step(theme)
 mpremove()
 end)
 
 mp7:action(function(sender)
-MANAGER.savesetting("CR1K", "ar", 250) 
-MANAGER.savesetting("CR1K", "ag", 250) 
-MANAGER.savesetting("CR1K", "ab", 250) 
-MANAGER.savesetting("CR1K", "al", 255) 
+ar=255
+ag=255
+ab=255
+al=255
 tpt.unregister_step(pulse)
 tpt.register_step(theme)
 mpremove()
@@ -427,7 +437,6 @@ clearsb()
 interface.addComponent(Ry)
 interface.addComponent(Rn)
 end)
-
 
 Ry:action(function(sender)
 tpt.setdebug(0X0)
@@ -519,12 +528,7 @@ ar =  110
 ag = 110
 ab = 110
 al = 0
-MANAGER.delsetting("CR1K", "ar") 
-MANAGER.delsetting("CR1K", "ag") 
-MANAGER.delsetting("CR1K", "ab") 
-MANAGER.delsetting("CR1K", "al") 
 tpt.unregister_step(wikii)
-tpt.unregister_step(pulse)
 tpt.unregister_step(topbar)
 tpt.unregister_step(UIhide)
 tpt.display_mode(3)
@@ -579,13 +583,6 @@ interface.addComponent(wiki)
 interface.removeComponent(toggle)
 end)
 interface.addComponent(toggle)
-
-
-
-
-
-
-
 
 
 
