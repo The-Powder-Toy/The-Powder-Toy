@@ -2166,10 +2166,8 @@ void GameView::OnDraw()
 					else
 						sampleInfo << " ()";
 				}
-				sampleInfo << ", Temp: " << (sample.particle.temp - 273.15f) << " C "<<sample.particle.temp << "f";
+				sampleInfo << ", Temp: " << (sample.particle.temp - 273.15f) << " C ";
 				sampleInfo << ", Life: " << sample.particle.life;
-				sampleInfo << ", Vx: " << sample.particle.vx;
-				sampleInfo << ", Vy: " << sample.particle.vy;
 				if (sample.particle.type != PT_RFRG && sample.particle.type != PT_RFGL)
 				{
 					if (sample.particle.type == PT_CONV)
@@ -2195,7 +2193,7 @@ void GameView::OnDraw()
 			else
 			{
 				sampleInfo << c->BasicParticleInfo(sample.particle);
-				sampleInfo << ", Temp: " << sample.particle.temp - 273.15f << " C " << sample.particle.temp << "f";
+				sampleInfo << ", Temp: " << sample.particle.temp - 273.15f << " C ";
 				sampleInfo << ", Pressure: " << sample.AirPressure;
 			}
 		}
@@ -2260,9 +2258,14 @@ void GameView::OnDraw()
 			sampleInfo << Format::Precision(2);
 
 			if (type)
+			{
+				sampleInfo <<"Temp: "<<sample.particle.temp << " f" << ", ";
+				sampleInfo << "Vx: " << sample.particle.vx;
+				sampleInfo << ", Vy: " << sample.particle.vy << ", ";
 				sampleInfo << "#" << sample.ParticleID << ", ";
-
-			sampleInfo << "X:" << sample.PositionX << " Y:" << sample.PositionY;
+				sampleInfo << "X:" << sample.PositionX << " Y:" << sample.PositionY;
+			}
+			
 
 			if (sample.Gravity)
 				sampleInfo << ", GX: " << sample.GravityVelocityX << " GY: " << sample.GravityVelocityY;

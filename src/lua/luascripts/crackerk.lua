@@ -321,8 +321,6 @@ function pulse()
  end
 end
 
-tpt.register_step(theme)
-
 mp:action(function(sender)
 clearsb()
 interface.addComponent(mp1)
