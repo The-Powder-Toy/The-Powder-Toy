@@ -1,12 +1,11 @@
-Version 14.0
-Themes are now saved when closing game.
-Merge commits from master branch.
+Changelog for Version 14.0:
+Themes are now saved automatically.
+Fix inconsistencies with the scripts among different windows and other OS.
 New element: PRMT (Promethium), radioactive element.
+Merge commits from master branch.
 New UI called K-light UI. (No more ugly blue text.)
 2 new themes: Pulse and white.
 HUD (while in debug mode) now shows VX, VY and temp in farenhite.
-
-Changes:
 Oil can now revert the oxidation of PHOS.
 UVRD is now UV (is slightly visible now)
 PHOS reacts with both fire and cflm based on .tmp values.
