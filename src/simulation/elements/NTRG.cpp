@@ -29,7 +29,7 @@ void Element::Element_NTRG()
 
 	DefaultProperties.temp = R_TEMP + 2.0f + 273.15f;
 	HeatConduct = 42;
-	Description = "Nitrogen, colourless and odourless gas. Liquefies into LN2 when cooled below 190C or when under pressure.";
+	Description = "Nitrogen, colourless gas. Makes NITR with H2 Liquefies into LN2 when cooled below 190C or when under pressure.";
 
 	Properties = TYPE_GAS| PROP_NEUTPASS;
 
