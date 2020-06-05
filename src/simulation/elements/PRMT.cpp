@@ -36,7 +36,7 @@ void Element::Element_PRMT()
 	Weight = 100;
 
 	HeatConduct = 35;
-	Description = "Promethium, cathes fire at high velocity, emits NEUT at low temp and with PLUT, explosive at high temp.";
+	Description = "Promethium, cathes fire at high velocity, emits NEUT at high temp and with PLUT, explosive at low temp.";
 
 	Properties = TYPE_PART | PROP_NEUTPASS | PROP_RADIOACTIVE;
 
@@ -61,13 +61,13 @@ static int update(UPDATE_FUNC_ARGS)
 		parts[i].life = 200;
 		parts[i].temp = 574.15f;
 	}
-    if (parts[i].temp >= 874.15f)
+    if (parts[i].temp <= 274.15f)
 	{
 		parts[i].type = PT_SING;
 		parts[i].tmp = 20;
 	}
-
-   if (parts[i].temp <= 274.15f)
+	
+   if (parts[i].temp >= 874.15f)
 	{
 		 if (RNG::Ref().chance(1, 100))
 		 {

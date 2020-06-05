@@ -57,7 +57,12 @@ local barn = Button:new(410,216,75,10,"Hide", "Hides the bar")
 local wiki  =  Button:new(320,226,75,10,"Wiki", "Element wiki!")
 local wikin2 = Button:new(10,350,75,20,"Hide wiki ", " Close wiki!")
 
-local hide= Button:new(320,246,15,10, "^", "Hide.")
+local bare = Button:new(320,246,75,10,"Elements", "Toggle hidden elements.")
+local barye = Button:new(410,246,75,10,"Show", "Shows hidden elements")
+local barne = Button:new(410,256,75,10,"Hide", "Hides elements")
+
+
+local hide= Button:new(320,266,15,10, "^", "Hide.")
 
 
 function clearm()
@@ -73,6 +78,7 @@ interface.removeComponent(rc)
 interface.removeComponent(bg)
 interface.removeComponent(bug)
 interface.removeComponent(bar)
+interface.removeComponent(bare)
 interface.removeComponent(wiki)
 end
 
@@ -103,12 +109,78 @@ interface.removeComponent(mp6)
 interface.removeComponent(mp7)
 interface.removeComponent(bary)
 interface.removeComponent(barn)
+interface.removeComponent(barye)
+interface.removeComponent(barne)
 interface.removeComponent(wikin2)
 end
 
 clearm()
 bug:action(function(sender)
 platform.openLink("https://powdertoy.co.uk/Discussions/Thread/View.html?Thread=23279")
+end)
+
+bare:action(function(sender)
+clearsb()
+interface.addComponent(barye)
+interface.addComponent(barne)
+end)
+
+barye:action(function(sender)
+tpt.el.dyst.menusection=7
+tpt.el.eqve.menusection=7
+tpt.el.shd4.menusection=8
+tpt.el.shd3.menusection=8
+tpt.el.shd2.menusection=8
+tpt.el.lolz.menusection=10
+tpt.el.love.menusection=10
+tpt.el.embr.menusection=4
+tpt.el.spwn.menusection=10
+tpt.el.spwn2.menusection=10
+tpt.el.frzw.menusection=6
+tpt.el.bizs.menusection=8
+tpt.el.bizg.menusection=5
+tpt.el.bray.menusection=10
+tpt.el.psts.menusection=8
+tpt.el.mort.menusection=7
+tpt.el.dyst.menu=1
+tpt.el.eqve.menu=1
+tpt.el.shd4.menu=1
+tpt.el.shd3.menu=1
+tpt.el.shd2.menu=1
+tpt.el.lolz.menu=1
+tpt.el.love.menu=1
+tpt.el.embr.menu=1
+tpt.el.spwn.menu=1
+tpt.el.spwn2.menu=1
+tpt.el.frzw.menu=1
+tpt.el.bizs.menu=1
+tpt.el.bizg.menu=1
+tpt.el.bray.menu=1
+tpt.el.psts.menu=1
+tpt.el.mort.menu=1
+clearsb()
+end)
+
+
+
+barne:action(function(sender)
+tpt.el.dyst.menu=0
+tpt.el.eqve.menu=0
+tpt.el.shd4.menu=0
+tpt.el.shd3.menu=0
+tpt.el.shd2.menu=0
+tpt.el.lolz.menu=0
+tpt.el.love.menu=0
+tpt.el.embr.menu=0
+tpt.el.spwn.menu=0
+tpt.el.spwn2.menu=0
+tpt.el.frzw.menu=0
+tpt.el.bizs.menu=0
+tpt.el.bizg.menu=0
+tpt.el.bray.menu=0
+tpt.el.psts.menu=0
+tpt.el.mort.menu=0
+clearsb()
 end)
 
 wiki:action(function(sender)
@@ -123,7 +195,7 @@ end)
 
 
 function wikii()
-gfx.drawText(10,10, " WELCOME TO IN GAME WIKI: \n\n WAll: Hybrid of walls and elements.\n VLSN: Velocity sensor.  Creates SPRK when nearby velocity's higher than it's temp, Configured with .tmp modes.\n TIMC: Time based convertor, converts into it's ctype when sparked with PSCN. Timer set using .tmp, default is 100.\n FUEL: FUEL. Fuel having high calorific value.\n THRM: Thermostat. Sets the temp of surrounding according to its own temp.\n CLNT: Coolant. Cools down the temp of the system, evaporates at high temperatures. Use .tmp to configure. \n DMRN: Demron. Radioactive shielding material and a better insulator.\n FNTC & FPTC: Faster versions of NTCT and PTCT.\n PINV: Powered Invisible, allows particles to move through when activated.\n UV: Ultra violet rays, heals stkm and figh, grows plnt, can sprk pscn and evaporates watr.\n SUN.: Sun, PLNT grow in direction of sunlight, emits radiation, makes PSCN spark and heals STKMs.\n LITH: Lithium ion battery, Use with PSCN and NSCN. Charges with INST when deactivated. Life sets capacity.\n Reacts with different elements like O2, WATR, ACID etc as IRL.\n LED:  Light Emmiting Diode. Use with PSCN and NSCN. Temp sets the brightness.\n Different .tmp2 modes: 0 = white, 1= red, 2= green, 3 =blue, 4= yellow and 5 = pink. \n QGP: Quark Gluon Plasma, bursts out radiation afer sometime. Extremely violent. \n Turns into Purple QGP when under 100C which is stable.\n TMPS: .tmp sensor, creats sprk when there is an element with higher .tmp than its temp.\n PHOS: White, slowly turns into red phosphorus with time. When in contact with O2, burns blue or red based on .tmp.\n Oil reverses the oxidation turning it back into white PHOS.\n Melts at 45C.\n PTNM: Platinum, conducts like gold, catalyses reactions and reacts with SMKE, ISOZ, GAS, BREL and HYGN.\n CMNT: Cement, heats up when mixed with water and gets solidified, darkens when solidified.\n NTRG: Nitrogen gas, liquifies to LN2 when cooled or when under pressure, reacts with H2 to make NITR and puts out fire.\n PRMT: Promethium, radioactive. Catches fire at high velocity (12), creats neut and low pressure when in contact with PLUT. \n Explodes at high temp and emits neut at low temp.")
+gfx.drawText(10,10, " WELCOME TO IN GAME WIKI: \n\n WAll: Hybrid of walls and elements.\n VLSN: Velocity sensor.  Creates SPRK when nearby velocity's higher than it's temp, Configured with .tmp modes.\n TIMC: Time based convertor, converts into it's ctype when sparked with PSCN. Timer set using .tmp, default is 100.\n FUEL: FUEL. Fuel having high calorific value.\n THRM: Thermostat. Sets the temp of surrounding according to its own temp.\n CLNT: Coolant. Cools down the temp of the system, evaporates at high temperatures. Use .tmp to configure. \n DMRN: Demron. Radioactive shielding material and a better insulator.\n FNTC & FPTC: Faster versions of NTCT and PTCT.\n PINV: Powered Invisible, allows particles to move through when activated.\n UV: Ultra violet rays, heals stkm and figh, grows plnt, can sprk pscn and evaporates watr.\n SUN.: Sun, PLNT grow in direction of sunlight, emits radiation, makes PSCN spark and heals STKMs.\n LITH: Lithium ion battery, Use with PSCN and NSCN. Charges with INST when deactivated. Life sets capacity.\n Reacts with different elements like O2, WATR, ACID etc as IRL.\n LED:  Light Emmiting Diode. Use with PSCN and NSCN. Temp sets the brightness.\n Different .tmp2 modes: 0 = white, 1= red, 2= green, 3 =blue, 4= yellow and 5 = pink. \n QGP: Quark Gluon Plasma, bursts out radiation afer sometime. Extremely violent. \n Turns into Purple QGP when under 100C which is stable.\n TMPS: .tmp sensor, creats sprk when there is an element with higher .tmp than its temp.\n PHOS: White, slowly turns into red phosphorus with time. When in contact with O2, burns blue or red based on .tmp.\n Oil reverses the oxidation turning it back into white PHOS.\n Melts at 45C.\n PTNM: Platinum, conducts like gold, catalyses reactions and reacts with SMKE, ISOZ, GAS, BREL and HYGN.\n CMNT: Cement, heats up when mixed with water and gets solidified, darkens when solidified.\n NTRG: Nitrogen gas, liquifies to LN2 when cooled or when under pressure, reacts with H2 to make NITR and puts out fire.\n PRMT: Promethium, radioactive. Catches fire at high velocity (>12), creats NEUT when in reacted with PLUT. \n Explodes at low temp and emits neut at high temp.")
 end
 
 wikin2:action(function(sender)
@@ -225,12 +297,6 @@ clearbg()
 tpt.register_step(backy)
 end)
 
-
-barn:action(function(sender)
-tpt.unregister_step(topbar)
-clearsb()
-end)
-
 rc:action(function(sender)
 clearsb()
 interface.addComponent(rc1)
@@ -250,9 +316,6 @@ tpt.record(false)
 interface.removeComponent(rc1)
 interface.removeComponent(rc2)
 end)
-
-
---theme start
 
 function theme()
 tpt.drawrect(613,1,14,95,ar,ag,ab,al)
@@ -433,8 +496,11 @@ tpt.register_step(topbar)
 clearsb()
 end)
 
+barn:action(function(sender)
+tpt.unregister_step(topbar)
+clearsb()
+end)
 
---theme end
 
 Ruler:action(function(sender)
 clearsb()
@@ -532,6 +598,22 @@ ar =  110
 ag = 110
 ab = 110
 al = 0
+tpt.el.dyst.menu=0
+tpt.el.eqve.menu=0
+tpt.el.shd4.menu=0
+tpt.el.shd3.menu=0
+tpt.el.shd2.menu=0
+tpt.el.lolz.menu=0
+tpt.el.love.menu=0
+tpt.el.embr.menu=0
+tpt.el.spwn.menu=0
+tpt.el.spwn2.menu=0
+tpt.el.frzw.menu=0
+tpt.el.bizs.menu=0
+tpt.el.bizg.menu=0
+tpt.el.bray.menu=0
+tpt.el.psts.menu=0
+tpt.el.mort.menu=0
 tpt.unregister_step(wikii)
 tpt.unregister_step(topbar)
 tpt.unregister_step(UIhide)
@@ -583,6 +665,7 @@ interface.addComponent(bg)
 interface.addComponent(mp)
 interface.addComponent(bug)
 interface.addComponent(bar)
+interface.addComponent(bare)
 interface.addComponent(wiki)
 interface.removeComponent(toggle)
 end)
