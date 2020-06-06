@@ -1,5 +1,4 @@
 --Cracker1000's TPT unleashed script 
-fs.makeDirectory("scripts")
 local version = 10
 local toggle = Button:new(320,0,13,8, "V", "Toggle additional menus.")
 
@@ -30,7 +29,7 @@ local mp2 = Button:new(410,136,75,10,"Fire", "Change the theme to Blue")
 local mp3 = Button:new(410,146,75,10,"Aqua", "Change the theme to Red")
 local mp4 = Button:new(410,156,75,10,"Forest", "Change the theme to Green")
 local mp5 = Button:new(410,166,75,10,"Sun", "Change the theme to Yellow")
-local mp6 = Button:new(410,176,75,10,"Pulse", "Smooth changing RGB colours")
+local mp6 = Button:new(410,176,75,10,"Orange", "Change the theme to Orange")
 local mp7 = Button:new(410,186,75,10,"Vanilla", "Change the theme back to Plain white")
 
 
@@ -319,7 +318,6 @@ function theme()
 ar =  MANAGER.getsetting("CRK","ar")
 ag = MANAGER.getsetting("CRK","ag")
 ab = MANAGER.getsetting("CRK","ab")
-al = MANAGER.getsetting("CRK","al")
 tpt.drawrect(613,1,14,95,ar,ag,ab,al)
 tpt.drawrect(613,136,14,269,ar,ag,ab,al)
 tpt.drawline(612,408,612,421,ar,ag,ab,al)
@@ -360,37 +358,11 @@ tpt.drawline(613,375,627,375,ar,ag,ab,al)
 tpt.drawline(613,391,627,391,ar,ag,ab,al)
 end
 
-local frameCount = 0
-function pulse()
- if frameCount > 1529 then frameCount = 0 else frameCount = frameCount + 1 end
- if frameCount > 0 and frameCount < 255 then
-  ar = 255
-  if ag > 254 then else ag = ag + 1 end
- end
- if frameCount > 254 and frameCount < 510 then
-  ag = 255
-  if ar == 0 then else ara = ar - 1 end
- end
- if frameCount > 510 and frameCount < 765 then
-  ag = 255
-  if ab > 254 then else ab = ab + 1 end
- end
- if frameCount > 764 and frameCount < 1020 then
- ab = 255
-  if ag == 0 then else ag = ag - 1 end
- end
- if frameCount > 1020 and frameCount < 1275 then
-  ab = 255
-  if ar > 254 then else ar = ar + 1 end
- end
- if frameCount > 1274 and frameCount < 1530 then
- ar = 255
-  if ab == 0 then else ab = ab - 1 end
- end
-end
+tpt.register_step(theme)
 
 mp:action(function(sender)
 clearsb()
+fs.makeDirectory("scripts")
 interface.addComponent(mp1)
 interface.addComponent(mp2)
 interface.addComponent(mp3)
@@ -410,21 +382,12 @@ interface.removeComponent(mp6)
 interface.removeComponent(mp7)
 end
 
-function startup()
-al = MANAGER.getsetting("CRK","al")
-if al == "255" then
-tpt.register_step(theme)
-end
-end
-tpt.register_step(startup)
-
 mp1:action(function(sender)
 MANAGER.savesetting("CRK","ar",110)
 MANAGER.savesetting("CRK","ag",110)
 MANAGER.savesetting("CRK","ab",110)
 MANAGER.savesetting("CRK","al",0)
 tpt.unregister_step(theme)
-tpt.unregister_step(pulse)
 mpremove()
 end)
 
@@ -433,7 +396,6 @@ MANAGER.savesetting("CRK","ar",255)
 MANAGER.savesetting("CRK","ag",0)
 MANAGER.savesetting("CRK","ab",0)
 MANAGER.savesetting("CRK","al",255)
-tpt.unregister_step(pulse)
 mpremove()
 end)
 
@@ -442,7 +404,6 @@ MANAGER.savesetting("CRK","ar",0)
 MANAGER.savesetting("CRK","ag",0)
 MANAGER.savesetting("CRK","ab",255)
 MANAGER.savesetting("CRK","al",255)
-tpt.unregister_step(pulse)
 mpremove()
 end)
 
@@ -451,7 +412,6 @@ MANAGER.savesetting("CRK","ar",0)
 MANAGER.savesetting("CRK","ag",255)
 MANAGER.savesetting("CRK","ab",0)
 MANAGER.savesetting("CRK","al",255)
-tpt.unregister_step(pulse)
 mpremove()
 end)
 
@@ -460,16 +420,14 @@ MANAGER.savesetting("CRK","ar",255)
 MANAGER.savesetting("CRK","ag",255)
 MANAGER.savesetting("CRK","ab",0)
 MANAGER.savesetting("CRK","al",255)
-tpt.unregister_step(pulse)
 mpremove()
 end)
 
 mp6:action(function(sender)
-MANAGER.savesetting("CRK","ar",0)
-MANAGER.savesetting("CRK","ag",0)
+MANAGER.savesetting("CRK","ar",255)
+MANAGER.savesetting("CRK","ag",150)
 MANAGER.savesetting("CRK","ab",0)
 MANAGER.savesetting("CRK","al",255)
-tpt.register_step(pulse)
 mpremove()
 end)
 
@@ -478,7 +436,6 @@ MANAGER.savesetting("CRK","ar",255)
 MANAGER.savesetting("CRK","ag",255)
 MANAGER.savesetting("CRK","ab",255)
 MANAGER.savesetting("CRK","al",255)
-tpt.unregister_step(pulse)
 mpremove()
 end)
 

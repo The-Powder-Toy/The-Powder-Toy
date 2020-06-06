@@ -1,6 +1,6 @@
 Changelog for Version 14.0:
 Themes are improved and are also saved automatically.
-2 new themes: Pulse and vanilla.
+2 new themes: Orange and vanilla.
 Fix inconsistencies with the scripts among different windows and other OS.
 New element: PRMT (Promethium), radioactive element.
 Merge commits from master branch.
