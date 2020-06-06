@@ -29,8 +29,8 @@
 #endif
 #ifdef MACOSX
 #include <CoreServices/CoreServices.h>
-#include <sys/stat.h>
 #endif
+#include <sys/stat.h>
 
 #include "Format.h"
 #include "Misc.h"
@@ -154,12 +154,12 @@ void blit(pixel * vid)
 #endif
 
 void RecreateWindow();
-int SDLOpen()
+void SDLOpen()
 {
-	if (SDL_Init(SDL_INIT_VIDEO) < 0)
+	if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0)
 	{
-		fprintf(stderr, "Initializing SDL: %s\n", SDL_GetError());
-		return 1;
+		fprintf(stderr, "Initializing SDL (video subsystem): %s\n", SDL_GetError());
+		exit(-1);
 	}
 
 	RecreateWindow();
@@ -197,9 +197,6 @@ int SDLOpen()
 	SDL_SetWindowIcon(sdl_window, icon);
 	SDL_FreeSurface(icon);
 #endif
-	atexit(SDL_Quit);
-
-	return 0;
 }
 
 void SDLSetScreen(int scale_, bool resizable_, bool fullscreen_, bool altFullscreen_, bool forceIntegerScaling_)
@@ -617,23 +614,6 @@ void SigHandler(int signal)
 	}
 }
 
-void ChdirToDataDirectory()
-{
-#ifdef MACOSX
-	FSRef ref;
-	OSType folderType = kApplicationSupportFolderType;
-	char path[PATH_MAX];
-
-	FSFindFolder( kUserDomain, folderType, kCreateFolder, &ref );
-
-	FSRefMakePath( &ref, (UInt8*)&path, PATH_MAX );
-
-	std::string tptPath = std::string(path) + "/The Powder Toy";
-	mkdir(tptPath.c_str(), 0755);
-	chdir(tptPath.c_str());
-#endif
-}
-
 constexpr int SCALE_MAXIMUM = 10;
 constexpr int SCALE_MARGIN = 30;
 
@@ -661,6 +641,14 @@ int main(int argc, char * argv[])
 	currentHeight = WINDOWH;
 
 
+	// https://bugzilla.libsdl.org/show_bug.cgi?id=3796
+	if (SDL_Init(0) < 0)
+	{
+		fprintf(stderr, "Initializing SDL: %s\n", SDL_GetError());
+		return 1;
+	}
+	atexit(SDL_Quit);
+
 	std::map<ByteString, ByteString> arguments = readArguments(argc, argv);
 
 	if(arguments["ddir"].length())
@@ -670,7 +658,27 @@ int main(int argc, char * argv[])
 		chdir(arguments["ddir"].c_str());
 #endif
 	else
-		ChdirToDataDirectory();
+	{
+#ifdef WIN
+		struct _stat s;
+		if(_stat("powder.pref", &s) != 0)
+#else
+		struct stat s;
+		if(stat("powder.pref", &s) != 0)
+#endif
+		{
+			char *ddir = SDL_GetPrefPath(NULL, "The Powder Toy");
+			if(ddir)
+			{
+#ifdef WIN
+				_chdir(ddir);
+#else
+				chdir(ddir);
+#endif
+				SDL_free(ddir);
+			}
+		}
+	}
 
 	scale = Client::Ref().GetPrefInteger("Scale", 1);
 	resizable = Client::Ref().GetPrefBool("Resizable", false);
