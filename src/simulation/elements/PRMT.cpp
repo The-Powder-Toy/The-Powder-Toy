@@ -2,6 +2,7 @@
 
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
+static void create(ELEMENT_CREATE_FUNC_ARGS);
 
 void Element::Element_PRMT()
 {
@@ -51,6 +52,7 @@ void Element::Element_PRMT()
 
 	Update = &update;
 	Graphics = &graphics;
+	Create = &create;
 }
 
 static int update(UPDATE_FUNC_ARGS)
@@ -103,6 +105,11 @@ static int update(UPDATE_FUNC_ARGS)
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
+	int z = (cpart->tmp2 - 2) * 8;
+	*colr += z;
+	*colg += z;
+	*colb += z;
+
 	if (cpart->temp <= 274.15f)
 	{
 		*colb = 105;
@@ -111,9 +118,14 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 	}
 	if (cpart->temp >= 600.15f)
 	{
-		*colb = 0;
-		*colr = 105;
-		*colg = 65;
+		*colb = 15;
+		*colr = 205;
+		*colg = 15;
 	}
 	return 0;
+}
+
+static void create(ELEMENT_CREATE_FUNC_ARGS)
+{
+	sim->parts[i].tmp2 = RNG::Ref().between(0, 10);
 }

@@ -1,12 +1,12 @@
 Changelog for Version 14.0:
-Themes are now saved automatically.
+Themes are improved and are also saved automatically.
+2 new themes: Pulse and vanilla.
 Fix inconsistencies with the scripts among different windows and other OS.
 New element: PRMT (Promethium), radioactive element.
 Merge commits from master branch.
 New UI called K-light UI. (No more ugly blue text.)
-2 new themes: Pulse and white.
 HUD (while in debug mode) now shows VX, VY and temp in farenhite.
 Oil can now revert the oxidation of PHOS.
 UVRD is now UV (is slightly visible now)
 PHOS reacts with both fire and cflm based on .tmp values.
-Minor adjutments to scripts and element menus utilise the new themes.
+Minor adjutments to scripts and element menus can now utilise the new themes.
