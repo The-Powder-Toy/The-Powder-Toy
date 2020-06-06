@@ -1,4 +1,5 @@
 --Cracker1000's TPT unleashed script 
+fs.makeDirectory("scripts")
 local version = 10
 local toggle = Button:new(320,0,13,8, "V", "Toggle additional menus.")
 
