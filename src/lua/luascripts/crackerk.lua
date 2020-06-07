@@ -595,7 +595,6 @@ clearbg()
 clearsb()
 tpt.setdebug(0X0)
 sim.clearSim()
-platform.restart()
 end)
 
 info:action(function(sender)
