@@ -98,15 +98,19 @@ static int SLCN_SPARKLE_FX[16] = {
 	PMODE_SPARK,
 };
 
-static const float SPARKLE_RATE = 0.01f;
-static const float VELOCITY_MULTIPLIER = 7.0f;
+static const float SPARKLE_RATE = 1.0f;
+static const float VELOCITY_MULTIPLIER = 1.0f;
 static const float PHASE_THRESHOLD = 60.0f;
+
+static float clamp(float n, float low, float high) {
+  return std::max(low, std::min(n, high));
+}
 
 static int update(UPDATE_FUNC_ARGS)
 {
 	Particle &self = parts[i];
 
-	float velocity = std::sqrt(std::pow(self.vx, 2) + std::pow(self.vy, 2));
+	float velocity = std::abs(std::sqrt(std::pow(self.vx, 2) + std::pow(self.vy, 2)));
 
 	//FROM: GOLD.cpp:74 but prettied up a bit.
 	if (self.life == 0 && self.temp < 373.15f)
@@ -136,7 +140,7 @@ static int update(UPDATE_FUNC_ARGS)
 	}
 
 	int gt_phase_count = 0;
-
+	
 	for (int neighbour_x=-2; neighbour_x<3; neighbour_x++)
 		for (int neighbour_y=-2; neighbour_y<3; neighbour_y++) 
 		{
@@ -163,15 +167,14 @@ static int update(UPDATE_FUNC_ARGS)
 	float &sprk_phse_transition_cnt = self.pavg[1];
 
 	// prevent these values from going through the roof.
-	clr_phse_transition_cnt = clamp_flt(clr_phse_transition_cnt, 0.0f, PHASE_THRESHOLD * 2);
-	sprk_phse_transition_cnt = clamp_flt(sprk_phse_transition_cnt, 0.0f, PHASE_THRESHOLD * 2);
+	clr_phse_transition_cnt = clamp(clr_phse_transition_cnt, 0.0f, PHASE_THRESHOLD * 2);
+	sprk_phse_transition_cnt = clamp(sprk_phse_transition_cnt, 0.0f, PHASE_THRESHOLD * 2);
 
-	clr_phse_transition_cnt += (velocity * VELOCITY_MULTIPLIER) + SPARKLE_RATE + (RNG::Ref().uniform01() * SPARKLE_RATE);
-	self.pavg[1] += (velocity * VELOCITY_MULTIPLIER) + SPARKLE_RATE + (RNG::Ref().uniform01() * SPARKLE_RATE);
+	clr_phse_transition_cnt += (velocity * VELOCITY_MULTIPLIER) + SPARKLE_RATE + std::abs(RNG::Ref().uniform01() * SPARKLE_RATE);
+	sprk_phse_transition_cnt += (velocity * VELOCITY_MULTIPLIER) + SPARKLE_RATE + std::abs(RNG::Ref().uniform01() * SPARKLE_RATE);
 
 	// evil trick to combat syncronization.
 	if (gt_phase_count > 3) {
-		clr_phse_transition_cnt -= 0.2;
 		if (RNG::Ref().chance(1, 30)) {
 			self.tmp = RNG::Ref().between(0, 31);
 			self.tmp2 = RNG::Ref().between(0, 15);
@@ -190,7 +193,7 @@ static int update(UPDATE_FUNC_ARGS)
 		sprk_phse_transition_cnt += RNG::Ref().uniform01() * PHASE_THRESHOLD; // good chance of skipping the phase.
 	}
 
-	if (self.pavg[1] > PHASE_THRESHOLD) {
+	if (sprk_phse_transition_cnt > PHASE_THRESHOLD) {
 		sprk_phse_transition_cnt -= PHASE_THRESHOLD;
 		self.tmp2 = (current_spark_phase + 1) & 15;
 	}
