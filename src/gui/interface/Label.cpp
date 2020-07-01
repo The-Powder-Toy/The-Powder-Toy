@@ -247,37 +247,37 @@ void Label::Draw(const Point& screenPos)
 		if (selectionLineH == selectionLineL)
 		{
 			g->fillrect(
-				screenPos.X + textPosition.X + selectionXL,
-				screenPos.Y + textPosition.Y + selectionYL - 1,
-				selectionXH - selectionXL,
-				FONT_H - 2,
+				screenPos.X + textPosition.X + selectionXL - 1,
+				screenPos.Y + textPosition.Y + selectionYL - 2,
+				selectionXH - selectionXL + 1,
+				FONT_H,
 				255, 255, 255, 255
 			);
 		}
 		else
 		{
 			g->fillrect(
-				screenPos.X + textPosition.X + selectionXL,
-				screenPos.Y + textPosition.Y + selectionYL - 1,
-				textSize.X - selectionXL,
-				FONT_H - 2,
+				screenPos.X + textPosition.X + selectionXL - 1,
+				screenPos.Y + textPosition.Y + selectionYL - 2,
+				textSize.X - selectionXL + 1,
+				FONT_H,
 				255, 255, 255, 255
 			);
 			for (int i = 1; i < selectionLineH - selectionLineL; ++i)
 			{
 				g->fillrect(
-					screenPos.X + textPosition.X,
-					screenPos.Y + textPosition.Y + selectionYL - 1 + i * FONT_H,
-					textSize.X,
-					FONT_H - 2,
+					screenPos.X + textPosition.X - 1,
+					screenPos.Y + textPosition.Y + selectionYL - 2 + i * FONT_H,
+					textSize.X + 1,
+					FONT_H,
 					255, 255, 255, 255
 				);
 			}
 			g->fillrect(
-				screenPos.X + textPosition.X,
-				screenPos.Y + textPosition.Y + selectionYH - 1,
-				selectionXH,
-				FONT_H - 2,
+				screenPos.X + textPosition.X - 1,
+				screenPos.Y + textPosition.Y + selectionYH - 2,
+				selectionXH + 1,
+				FONT_H,
 				255, 255, 255, 255
 			);
 		}
