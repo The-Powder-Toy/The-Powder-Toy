@@ -121,7 +121,8 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 				{
 					if ((t==PT_FIRE || t==PT_PLSM))
 					{
-						if (parts[ID(r)].life>100 && RNG::Ref().chance(1, 500)) {
+						if (parts[ID(r)].life>100 && RNG::Ref().chance(1, 500))
+						{
 							parts[ID(r)].life = 99;
 						}
 					}
@@ -131,11 +132,13 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 						{
 							parts[i].ctype = PT_METL;
 							sim->kill_part(ID(r));
-						} 
-						else if ((parts[i].ctype == PT_STNE || parts[i].ctype == PT_NONE) && RNG::Ref().chance(1, 60))
+							continue;
+						}
+						if ((parts[i].ctype == PT_STNE || parts[i].ctype == PT_NONE) && RNG::Ref().chance(1, 60))
 						{
 							parts[i].ctype = PT_SLCN;
 							sim->kill_part(ID(r));
+							continue;
 						}
 					}
 				}
@@ -154,30 +157,29 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 					}
 					else if (rt == PT_O2 && parts[i].ctype == PT_SLCN)
 					{
-						switch (RNG::Ref().between(0, 2)) {
-							case 0:
-								parts[i].ctype = PT_SAND;
-								
-								break;
-							case 1:
-								parts[i].ctype = PT_CLST;
-								// avoid creating CRMC.
-								if (parts[i].temp >= sim->elements[PT_PQRT].HighTemperature * 3)
-								{
-									parts[i].ctype = PT_PQRT;
-								}
-								break;
-							case 2:
-								parts[i].ctype = PT_STNE;
-								break;
+						switch (RNG::Ref().between(0, 2))
+						{
+						case 0:
+							parts[i].ctype = PT_SAND;
+							break;
+
+						case 1:
+							parts[i].ctype = PT_CLST;
+							// avoid creating CRMC.
+							if (parts[i].temp >= sim->elements[PT_PQRT].HighTemperature * 3)
+							{
+								parts[i].ctype = PT_PQRT;
+							}
+							break;
+
+						case 2:
+							parts[i].ctype = PT_STNE;
+							break;
 						}
 						sim->kill_part(ID(r));
+						continue;
 					}
-					else if (
-						rt == PT_LAVA && (parts[ID(r)].ctype == PT_METL || parts[ID(r)].ctype == PT_BMTL)
-						&&
-						parts[i].ctype == PT_SLCN
-						)
+					else if (rt == PT_LAVA && (parts[ID(r)].ctype == PT_METL || parts[ID(r)].ctype == PT_BMTL) && parts[i].ctype == PT_SLCN)
 					{
 						parts[i].ctype = PT_NSCN;
 						parts[ID(r)].ctype = PT_PSCN;
