@@ -18,7 +18,7 @@
 
 #ifdef FONTEDITOR
 unsigned char *font_data;
-unsigned short *font_ptrs;
+unsigned int *font_ptrs;
 unsigned int (*font_ranges)[2];
 
 void FontEditor::ReadDataFile(ByteString dataFile)
@@ -122,7 +122,7 @@ void FontEditor::ReadDataFile(ByteString dataFile)
 	file.close();
 }
 
-void FontEditor::WriteDataFile(ByteString dataFile, std::vector<unsigned char> const &fontData, std::vector<unsigned short> const &fontPtrs, std::vector<std::array<unsigned int, 2> > const &fontRanges)
+void FontEditor::WriteDataFile(ByteString dataFile, std::vector<unsigned char> const &fontData, std::vector<unsigned int> const &fontPtrs, std::vector<std::array<unsigned int, 2> > const &fontRanges)
 {
 	std::fstream file;
 	file.open(dataFile, std::ios_base::out | std::ios_base::trunc);
@@ -155,7 +155,7 @@ void FontEditor::WriteDataFile(ByteString dataFile, std::vector<unsigned char> c
 			else
 				file << " ";
 			first = false;
-			file << "0x" << std::setw(4) << (unsigned int)fontPtrs[pos++] << ",";
+			file << "0x" << std::setw(8) << (unsigned int)fontPtrs[pos++] << ",";
 		}
 		file << std::endl;
 	}
@@ -171,7 +171,7 @@ void FontEditor::UnpackData(
 		std::map<String::value_type, unsigned char> &fontWidths,
 		std::map<String::value_type, std::array<std::array<char, MAX_WIDTH>, FONT_H> > &fontPixels,
 		std::vector<unsigned char> const &fontData,
-		std::vector<unsigned short> const &fontPtrs,
+		std::vector<unsigned int> const &fontPtrs,
 		std::vector<std::array<unsigned int, 2> > const &fontRanges)
 {
 	fontWidths.clear();
@@ -204,7 +204,7 @@ void FontEditor::PackData(
 		std::map<String::value_type, unsigned char> const &fontWidths,
 		std::map<String::value_type, std::array<std::array<char, MAX_WIDTH>, FONT_H> > const &fontPixels,
 		std::vector<unsigned char> &fontData,
-		std::vector<unsigned short> &fontPtrs,
+		std::vector<unsigned int> &fontPtrs,
 		std::vector<std::array<unsigned int, 2> > &fontRanges)
 {
 	fontData.clear();
@@ -490,7 +490,7 @@ FontEditor::FontEditor(ByteString target, ByteString source):
 			tgtFontPixels[p.first] = p.second;
 		}
 	std::vector<unsigned char> tmpFontData;
-	std::vector<unsigned short> tmpFontPtrs;
+	std::vector<unsigned int> tmpFontPtrs;
 	std::vector<std::array<unsigned int, 2> > tmpFontRanges;
 	PackData(tgtFontWidths, tgtFontPixels, tmpFontData, tmpFontPtrs, tmpFontRanges);
 	WriteDataFile(target, tmpFontData, tmpFontPtrs, tmpFontRanges);
@@ -652,7 +652,7 @@ void FontEditor::Render()
 void FontEditor::Save()
 {
 	std::vector<unsigned char> tmpFontData;
-	std::vector<unsigned short> tmpFontPtrs;
+	std::vector<unsigned int> tmpFontPtrs;
 	std::vector<std::array<unsigned int, 2> > tmpFontRanges;
 	PackData(fontWidths, fontPixels, tmpFontData, tmpFontPtrs, tmpFontRanges);
 	WriteDataFile(dataFile, tmpFontData, tmpFontPtrs, tmpFontRanges);
