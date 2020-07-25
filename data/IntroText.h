@@ -1,7 +1,7 @@
 #pragma once
 const char *const introTextData =
 "\bl                                         << WELCOME TO THE \boCRACKER1000 \blMOD >> \n"
-"\blVERSION:\bo MOD: 14.0  TPT: 95.0 \n "
+"\blVERSION:\bo MOD: 15.0  TPT: 95.0 \n "
 "\bl \n"
 "\bg<------------------------------------------------------------------------------------------------------------------>\n"
 "\n"

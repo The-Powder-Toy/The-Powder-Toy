@@ -4,7 +4,7 @@ static int update(UPDATE_FUNC_ARGS);
 void Element::Element_COND()
 {
 	Identifier = "DEFAULT_PT_COND";
-	Name = "THRM";
+	Name = "THMO";
 	Colour = PIXPACK(0x005000);
 	MenuVisible = 1;
 	MenuSection = SC_FORCE;

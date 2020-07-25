@@ -57,7 +57,7 @@ local barn = Button:new(410,216,75,10,"Hide", "Hides the bar")
 local wiki  =  Button:new(320,226,75,10,"Wiki", "Element wiki!")
 local wikin2 = Button:new(10,350,75,20,"Hide wiki ", " Close wiki!")
 
-local bare = Button:new(320,246,75,10,"Elements", "Toggle hidden elements.")
+local bare = Button:new(320,246,75,10,"Hidden Elem.", "Toggle hidden elements.")
 local barye = Button:new(410,246,75,10,"Show", "Shows hidden elements")
 local barne = Button:new(410,256,75,10,"Hide", "Hides elements")
 
@@ -126,22 +126,22 @@ interface.addComponent(barne)
 end)
 
 barye:action(function(sender)
-tpt.el.dyst.menusection=7
-tpt.el.eqve.menusection=7
-tpt.el.shd4.menusection=8
-tpt.el.shd3.menusection=8
-tpt.el.shd2.menusection=8
-tpt.el.lolz.menusection=10
-tpt.el.love.menusection=10
+tpt.el.dyst.menusection=8
+tpt.el.eqve.menusection=8
+tpt.el.shd4.menusection=9
+tpt.el.shd3.menusection=9
+tpt.el.shd2.menusection=9
+tpt.el.lolz.menusection=11
+tpt.el.love.menusection=11
 tpt.el.embr.menusection=4
-tpt.el.spwn.menusection=10
-tpt.el.spwn2.menusection=10
-tpt.el.frzw.menusection=6
-tpt.el.bizs.menusection=8
-tpt.el.bizg.menusection=5
-tpt.el.bray.menusection=10
+tpt.el.spwn.menusection=11
+tpt.el.spwn2.menusection=11
+tpt.el.frzw.menusection=7
+tpt.el.bizs.menusection=9
+tpt.el.bizg.menusection=6
+tpt.el.bray.menusection=9
 tpt.el.psts.menusection=8
-tpt.el.mort.menusection=7
+tpt.el.mort.menusection=5
 tpt.el.dyst.menu=1
 tpt.el.eqve.menu=1
 tpt.el.shd4.menu=1

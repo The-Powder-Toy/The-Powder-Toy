@@ -27,10 +27,10 @@ void Element::Element_CMNT()
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 2;
-	Hardness = 2;
+	Hardness = 1;
 
 
-	Weight = 55;
+	Weight = 91;
 	HeatConduct = 100;
 	Description = "Cement, starts to solidify when mixed with water. Usefull in making buildings.";
 
