@@ -654,6 +654,8 @@ void SearchView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctr
 		return;
 	if (key == SDLK_ESCAPE)
 		c->Exit();
+	else if (key == SDLK_a && ctrl)
+		c->SelectAllSaves();
 	else if (key == SDLK_LCTRL || key == SDLK_RCTRL)
 		c->InstantOpen(true);
 }

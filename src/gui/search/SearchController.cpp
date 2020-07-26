@@ -177,6 +177,17 @@ void SearchController::Selected(int saveID, bool selected)
 		searchModel->DeselectSave(saveID);
 }
 
+void SearchController::SelectAllSaves() 
+{
+	if (!Client::Ref().GetAuthUser().UserID)
+		return;
+	if (searchModel->GetShowOwn() || 
+		Client::Ref().GetAuthUser().UserElevation == User::ElevationModerator || 
+		Client::Ref().GetAuthUser().UserElevation == User::ElevationAdmin)
+		searchModel->SelectAllSaves();
+
+}
+
 void SearchController::InstantOpen(bool instant)
 {
 	instantOpen = instant;
