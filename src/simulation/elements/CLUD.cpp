@@ -1,8 +1,5 @@
 #include "simulation/ElementCommon.h"
-
 static int update(UPDATE_FUNC_ARGS);
-static int graphics(GRAPHICS_FUNC_ARGS);
-
 void Element::Element_CLUD()
 {
 	Identifier = "DEFAULT_PT_CLUD";
@@ -34,7 +31,6 @@ void Element::Element_CLUD()
 	Description = "Cloud, rains when fed with WATR. Produces LIGH";
 
 	Properties = TYPE_GAS;
-
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -45,10 +41,7 @@ void Element::Element_CLUD()
 	HighTemperatureTransition = NT;
 
 	Update = &update;
-	Graphics = &graphics;
 }
-
-
 static int update(UPDATE_FUNC_ARGS)
 {
 		int r, rx, ry, rndstore;
@@ -63,36 +56,21 @@ static int update(UPDATE_FUNC_ARGS)
 					{
 						parts[i].tmp += 1;
 					}
-					if (RNG::Ref().chance(1, 900))
+					
+					else if (RNG::Ref().chance(1, 10000000))
 					{
-						parts[i].tmp2 = 1;
+						sim->create_part(-1, x, y + 40, PT_LIGH);
 					}
-
 					if (parts[i].tmp >= 40)
 					{
-						sim->pv[(y / CELL) + ry][(x / CELL) + rx] = 0.5f;
-						sim->create_part(-1, x, y + 25, PT_WATR);
-						parts[i].tmp = 0;
+						sim->pv[(y / CELL) + ry][(x / CELL) + rx] = 0.2f;
+						sim->create_part(-1, x, y + 30, PT_WATR);
+						parts[i].tmp -= 30;
 					}
-					if (parts[i].tmp2 == 1)
-					{
-						sim->create_part(-1, x, y + 25, PT_LIGH);
-						parts[i].tmp2 = 0;
-					}
+					
 		}
 	return 0;
 }
 
-static int graphics(GRAPHICS_FUNC_ARGS)
-{
-	*firea = 75;
-	*firer = 55;
-	*fireg = 55;
-	*fireb = 55;
 
-	*pixel_mode = PMODE_NONE;
-	*pixel_mode |= FIRE_BLEND;
-
-	return 1;
-}
 
