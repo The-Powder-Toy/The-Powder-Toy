@@ -1,5 +1,5 @@
 --Cracker1000's TPT unleashed script 
-local version = 10
+local version = 11
 local toggle = Button:new(320,0,13,8, "V", "Toggle additional menus.")
 
 local deletesparkButton = Button:new(320,6,75,10,"Interface", "shows UI related stuff.")
@@ -31,6 +31,7 @@ local mp4 = Button:new(410,156,75,10,"Forest", "Change the theme to Green")
 local mp5 = Button:new(410,166,75,10,"Sun", "Change the theme to Yellow")
 local mp6 = Button:new(410,176,75,10,"Orange", "Change the theme to Orange")
 local mp7 = Button:new(410,186,75,10,"Vanilla", "Change the theme back to Plain white")
+local mp8 = Button:new(410,196,75,10,"Velvet", "Change the theme back to maroon")
 
 
 local rc = Button:new(320,146,75,10,"Record", "Options for recording frames")
@@ -107,6 +108,7 @@ interface.removeComponent(mp4)
 interface.removeComponent(mp5)
 interface.removeComponent(mp6)
 interface.removeComponent(mp7)
+interface.removeComponent(mp8)
 interface.removeComponent(bary)
 interface.removeComponent(barn)
 interface.removeComponent(barye)
@@ -192,7 +194,7 @@ tpt.register_step(UIhide)
 end)
 
 function wikii()
-gfx.drawText(10,10, " WELCOME TO IN GAME WIKI: \n\n WAll: Hybrid of walls and elements.\n VLSN: Velocity sensor.  Creates SPRK when nearby velocity's higher than it's temp, Configured with .tmp modes.\n TIMC: Time based convertor, converts into it's ctype when sparked with PSCN. Timer set using .tmp, default is 100.\n FUEL: FUEL. Fuel having high calorific value.\n THRM: Thermostat. Sets the temp of surrounding according to its own temp.\n CLNT: Coolant. Cools down the temp of the system, evaporates at high temperatures. Use .tmp to configure. \n DMRN: Demron. Radioactive shielding material and a better insulator.\n FNTC & FPTC: Faster versions of NTCT and PTCT.\n PINV: Powered Invisible, allows particles to move through when activated.\n UV: Ultra violet rays, heals stkm and figh, grows plnt, can sprk pscn and evaporates watr.\n SUN.: Sun, PLNT grow in direction of sunlight, emits radiation, makes PSCN spark and heals STKMs.\n LITH: Lithium ion battery, Use with PSCN and NSCN. Charges with INST when deactivated. Life sets capacity.\n Reacts with different elements like O2, WATR, ACID etc as IRL.\n LED:  Light Emmiting Diode. Use with PSCN and NSCN. Temp sets the brightness.\n Different .tmp2 modes: 0 = white, 1= red, 2= green, 3 =blue, 4= yellow and 5 = pink. \n QGP: Quark Gluon Plasma, bursts out radiation afer sometime. Extremely violent. \n Turns into Purple QGP when under 100C which is stable.\n TMPS: .tmp sensor, creats sprk when there is an element with higher .tmp than its temp.\n PHOS: White, slowly turns into red phosphorus with time. When in contact with O2, burns blue or red based on .tmp.\n Oil reverses the oxidation turning it back into white PHOS. Melts at 45C.\n PTNM: Platinum, conducts like gold, catalyses reactions and reacts with SMKE, ISOZ, GAS, BREL and HYGN.\n CMNT: Cement, heats up when mixed with water and gets solidified, darkens when solidified.\n NTRG: Nitrogen gas, liquifies to LN2 when cooled or when under pressure, reacts with H2 to make NITR and puts out fire.\n PRMT: Promethium, radioactive. Catches fire at high velocity (>12), creats NEUT when in reacted with PLUT. \n Explodes at low temp and emits neut at high temp.\n CLUD: Cloud, creates WATR and LIGH with slight pressure at random points.")
+gfx.drawText(10,10, " WELCOME TO IN GAME WIKI: \n\n WAll: Hybrid of walls and elements.\n VLSN: Velocity sensor.  Creates SPRK when nearby velocity's higher than it's temp, Configured with .tmp modes.\n TIMC: Time based convertor, converts into it's ctype when sparked with PSCN. Timer set using .tmp, default is 100.\n FUEL: FUEL. Fuel having high calorific value.\n THRM: Thermostat. Sets the temp of surrounding according to its own temp.\n CLNT: Coolant. Cools down the temp of the system, evaporates at high temperatures. Use .tmp to configure. \n DMRN: Demron. Radioactive shielding material and a better insulator.\n FNTC & FPTC: Faster versions of NTCT and PTCT.\n PINV: Powered Invisible, allows particles to move through when activated.\n UV: Ultra violet rays, heals stkm and figh, grows plnt, can sprk pscn and evaporates watr.\n SUN.: Sun, PLNT grow in direction of sunlight, emits radiation, makes PSCN spark and heals STKMs.\n LITH: Lithium ion battery, Use with PSCN and NSCN. Charges with INST when deactivated. Life sets capacity.\n Reacts with different elements like O2, WATR, ACID etc as IRL.\n LED:  Light Emmiting Diode. Use with PSCN and NSCN. Temp sets the brightness.\n Different .tmp2 modes: 0 = white, 1= red, 2= green, 3 =blue, 4= yellow and 5 = pink. \n QGP: Quark Gluon Plasma, bursts out radiation afer sometime. Extremely violent. \n Turns into Purple QGP when under 100C which is stable.\n TMPS: .tmp sensor, creats sprk when there is an element with higher .tmp than its temp.\n PHOS: White, slowly turns into red phosphorus with time. When in contact with O2, burns blue or red based on .tmp.\n Oil reverses the oxidation turning it back into white PHOS. Melts at 45C.\n CMNT: Cement, heats up when mixed with water and gets solidified, darkens when solidified.\n NTRG: Nitrogen gas, liquifies to LN2 when cooled or when under pressure, reacts with H2 to make NITR and puts out fire.\n PRMT: Promethium, radioactive. Catches fire at high velocity (>12), creats NEUT when in reacted with PLUT. \n Explodes at low temp and emits neut at high temp.\n CLUD: Cloud, creates WATR and LIGH with slight pressure at random points. React with CAUS to make Acid cloud.")
 end
 
 wikin2:action(function(sender)
@@ -315,9 +317,16 @@ interface.removeComponent(rc2)
 end)
 
 function theme()
+if MANAGER.getsetting("CRK", "ar") == nil then ar = 0 else
 ar =  MANAGER.getsetting("CRK","ar")
-ag = MANAGER.getsetting("CRK","ag")
-ab = MANAGER.getsetting("CRK","ab")
+end
+if MANAGER.getsetting("CRK", "ag") == nil then ag = 0 else
+ag =  MANAGER.getsetting("CRK","ag")
+end
+if MANAGER.getsetting("CRK", "ab") == nil then ab = 255 else
+ab =  MANAGER.getsetting("CRK","ab")
+end
+
 tpt.drawrect(613,1,14,95,ar,ag,ab,al)
 tpt.drawrect(613,136,14,269,ar,ag,ab,al)
 tpt.drawline(612,408,612,421,ar,ag,ab,al)
@@ -370,6 +379,7 @@ interface.addComponent(mp4)
 interface.addComponent(mp5)
 interface.addComponent(mp6)
 interface.addComponent(mp7)
+interface.addComponent(mp8)
 end)
 
 function mpremove()
@@ -380,14 +390,14 @@ interface.removeComponent(mp4)
 interface.removeComponent(mp5)
 interface.removeComponent(mp6)
 interface.removeComponent(mp7)
+interface.removeComponent(mp8)
 end
 
 mp1:action(function(sender)
-MANAGER.savesetting("CRK","ar",110)
-MANAGER.savesetting("CRK","ag",110)
-MANAGER.savesetting("CRK","ab",110)
-MANAGER.savesetting("CRK","al",0)
-tpt.unregister_step(theme)
+MANAGER.savesetting("CRK","ar",70)
+MANAGER.savesetting("CRK","ag",70)
+MANAGER.savesetting("CRK","ab",70)
+MANAGER.savesetting("CRK","al",255)
 mpremove()
 end)
 
@@ -440,6 +450,15 @@ mp7:action(function(sender)
 MANAGER.savesetting("CRK","ar",255)
 MANAGER.savesetting("CRK","ag",255)
 MANAGER.savesetting("CRK","ab",255)
+MANAGER.savesetting("CRK","al",255)
+tpt.register_step(theme)
+mpremove()
+end)
+
+mp8:action(function(sender)
+MANAGER.savesetting("CRK","ar",120)
+MANAGER.savesetting("CRK","ag",0)
+MANAGER.savesetting("CRK","ab",0)
 MANAGER.savesetting("CRK","al",255)
 tpt.register_step(theme)
 mpremove()
@@ -561,10 +580,10 @@ reset:action(function(sender)
 tgr = 0
 tgg  = 0
 tgb = 200
-MANAGER.savesetting("CRK","ar",110)
-MANAGER.savesetting("CRK","ag",110)
-MANAGER.savesetting("CRK","ab",110)
-MANAGER.savesetting("CRK","al",0)
+MANAGER.savesetting("CRK","ar",0)
+MANAGER.savesetting("CRK","ag",0)
+MANAGER.savesetting("CRK","ab",255)
+MANAGER.savesetting("CRK","al",255)
 tpt.el.dyst.menu=0
 tpt.el.eqve.menu=0
 tpt.el.shd4.menu=0
@@ -581,8 +600,8 @@ tpt.el.bizg.menu=0
 tpt.el.bray.menu=0
 tpt.el.psts.menu=0
 tpt.el.mort.menu=0
+tpt.unregister_step(verno)
 tpt.unregister_step(wikii)
-tpt.unregister_step(topbar)
 tpt.unregister_step(UIhide)
 tpt.display_mode(3)
 tpt.watertest(0)
@@ -593,7 +612,6 @@ tpt.register_step(topbar)
 tpt.newtonian_gravity(0)
 tpt.decorations_enable(0)
 sim.resetPressure()
-tpt.unregister_step(theme)
 tpt.ambient_heat(0)
 sim.resetTemp()
 tpt.reset_velocity(1,380,300,300)
@@ -603,22 +621,25 @@ tpt.setdebug(0X0)
 sim.clearSim()
 end)
 
-info:action(function(sender)
-tpt.message_box("Cracker1000's Script Check",version)
-end)
-
 hide:action(function(sender)
 interface.addComponent(toggle)
+tpt.unregister_step(verno)
 clearsb()
 clearm()
 tpt.hud(1)
 tpt.set_pause(0)
 end)
 
+function verno()
+gfx.drawText(10,10, "Script Version:\nBuild ID: 20k7m6") 
+gfx.drawText(85,10, version) 
+end
+
 toggle:action(function(sender)
 tpt.set_pause(1)
 tpt.hud(0)
 interface.removeComponent(screen1)
+tpt.register_step(verno)
 interface.removeComponent(screen2)
 interface.addComponent(deletesparkButton)
 interface.addComponent(FPS)

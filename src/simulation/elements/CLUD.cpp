@@ -27,8 +27,8 @@ void Element::Element_CLUD()
 	Weight = 91;
 
 	DefaultProperties.temp = R_TEMP + 2.0f + 273.15f;
-	HeatConduct = 42;
-	Description = "Cloud, rains when fed with WATR. Produces LIGH";
+	HeatConduct = 22;
+	Description = "Cloud, reacts with CAUS to produce Acid clouds. Randomly creates LIGH.";
 
 	Properties = TYPE_GAS;
 	LowPressure = IPL;
@@ -57,16 +57,29 @@ static int update(UPDATE_FUNC_ARGS)
 						parts[i].tmp += 1;
 					}
 					
-					else if (RNG::Ref().chance(1, 10000000))
+					else if (RNG::Ref().chance(6, 100000000))
 					{
 						sim->create_part(-1, x, y + 40, PT_LIGH);
 					}
-					if (parts[i].tmp >= 40)
+					if (parts[i].tmp >= 40 && parts[i].tmp2 !=1)
 					{
 						sim->pv[(y / CELL) + ry][(x / CELL) + rx] = 0.2f;
 						sim->create_part(-1, x, y + 30, PT_WATR);
 						parts[i].tmp -= 30;
 					}
+
+					if (parts[i].tmp >= 40 && parts[i].tmp2 == 1)
+					{
+						sim->pv[(y / CELL) + ry][(x / CELL) + rx] = 0.2f;
+						sim->create_part(-1, x, y + 30, PT_ACID);
+						parts[i].tmp -= 30;
+					}
+
+					if (parts[ID(r)].type == PT_CAUS)
+					{
+						parts[i].tmp2 = 1;
+					}
+
 					
 		}
 	return 0;
