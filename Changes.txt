@@ -1,7 +1,6 @@
 Changelog for Version 15.0:
 
 #Bug Fixes:
-
 Fix reset button selecting wrong theme for startup. 
 Fix W key not switching between gravity modes properly.
 Fix CMNT's properties.
@@ -14,12 +13,15 @@ Place Hidden elements in correct menus.
 
 
 #Additions/changes:
-
+Add Stack tool, removes top most particle from a stack.
 Auto select latest theme if nothing was selected.
+Much more refined experience.
 Script version in now separately shown when opening the additional menus.
 Merge changes from version 96.0
+Added new theme.
 Update/change text for 15.0
 Replace version check option.
+
 
 TODO:
 Add support for multiple wiki pages.

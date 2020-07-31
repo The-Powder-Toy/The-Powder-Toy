@@ -3,12 +3,12 @@ local version = 11
 local toggle = Button:new(320,0,13,8, "V", "Toggle additional menus.")
 
 local deletesparkButton = Button:new(320,6,75,10,"Interface", "shows UI related stuff.")
-local UIhidey = Button:new(410,6,40,10,"Hide", "Hides the UI")
-local UIhiden = Button:new(410,16,40,10,"Show", "Shows the UI")
+local UIhidey = Button:new(410,6,40,20,"Hide", "Hides the UI")
+local UIhiden = Button:new(410,26,40,20,"Show", "Shows the UI")
 
 local FPS = Button:new(320,26,75,10, "Frame limiter", "Turns the frame limiter on/off.")
-local FPS1 = Button:new(410,26,80,10, "On", "Turns the frame limiter on.")
-local FPS2 = Button:new(410,36,80,10, "Off", "Turns the frame limiter off.")
+local FPS1 = Button:new(410,26,80,20, "On", "Turns the frame limiter on.")
+local FPS2 = Button:new(410,46,80,20, "Off", "Turns the frame limiter off.")
 
 local screen= Button:new(320,46,75,10,"Screenshot", "Take a screen shot.")
 local screen1= Button:new(300,0,15,9,"Y", "Take the screen shot.")
@@ -16,11 +16,13 @@ local screen2= Button:new(325,0,15,9,"N", "Cancel the screen shot.")
 
 local reset= Button:new(320,66,75,10,"Reset", "Reset everything.")
 
-local info= Button:new(320,86,75,10,"Version check", "Check for latest version.")
+local info= Button:new(320,86,75,10,"Stack tools", "Usefull for subframe.")
+local info1= Button:new(410,86,40,20,"Remove", "Removes top most particle from stack.")
+local info2= Button:new(410,106,40,20,"De-stack", "Leaves top particle and PHOT but remove everything else.")
 
-local Ruler = Button:new(320,106,75,10, "Ruler", "Toggles in game hud ruler.")
-local Ry = Button:new(410,106,40,10,"Hide", "Hides the Ruler")
-local Rn = Button:new(410,116,40,10,"Show", "Shows the Ruler")
+local Ruler = Button:new(320,106,75,10, "Ruler", "Toggles in game ruler.")
+local Ry = Button:new(410,106,40,20,"Hide", "Hides the Ruler")
+local Rn = Button:new(410,126,40,20,"Show", "Shows the Ruler. (Press SHIFT)")
 
 
 local mp = Button:new(320,126,75,10,"Theme", "Changes game's theme")
@@ -35,8 +37,8 @@ local mp8 = Button:new(410,196,75,10,"Velvet", "Change the theme back to maroon"
 
 
 local rc = Button:new(320,146,75,10,"Record", "Options for recording frames")
-local rc1 = Button:new(410,146,40,10,"Start", "Starts recording")
-local rc2 = Button:new(410,156,40,10,"Stop","Stops recording")
+local rc1 = Button:new(410,146,40,20,"Start", "Starts recording")
+local rc2 = Button:new(410,166,40,20,"Stop","Stops recording")
 
 
 local bg = Button:new(320,166,75,10,"Backgrounds", "Sets different backgrounds.")
@@ -51,16 +53,16 @@ local bg5 = Button:new(410,206,60,10,"YELLOW", "Yellow background")
 local bug = Button:new(320,186,75,10,"Bug report", "Direct to Mod thread for bug report.")
 
 local bar = Button:new(320,206,75,10,"Top bar", "Toggle top bar")
-local bary = Button:new(410,206,75,10,"Show", "Shows the bar at top")
-local barn = Button:new(410,216,75,10,"Hide", "Hides the bar")
+local bary = Button:new(410,206,75,20,"Show", "Shows the bar at top")
+local barn = Button:new(410,226,75,20,"Hide", "Hides the bar")
 
 
 local wiki  =  Button:new(320,226,75,10,"Wiki", "Element wiki!")
 local wikin2 = Button:new(10,360,75,20,"Hide wiki ", " Close wiki!")
 
 local bare = Button:new(320,246,75,10,"Hidden Elem.", "Toggle hidden elements.")
-local barye = Button:new(410,246,75,10,"Show", "Shows hidden elements")
-local barne = Button:new(410,256,75,10,"Hide", "Hides elements")
+local barye = Button:new(410,246,75,20,"Show", "Shows hidden elements")
+local barne = Button:new(410,266,75,20,"Hide", "Hides elements")
 
 
 local hide= Button:new(320,266,15,10, "^", "Hide.")
@@ -113,6 +115,8 @@ interface.removeComponent(bary)
 interface.removeComponent(barn)
 interface.removeComponent(barye)
 interface.removeComponent(barne)
+interface.removeComponent(info1)
+interface.removeComponent(info2)
 interface.removeComponent(wikin2)
 end
 
@@ -196,6 +200,30 @@ end)
 function wikii()
 gfx.drawText(10,10, " WELCOME TO IN GAME WIKI: \n\n WAll: Hybrid of walls and elements.\n VLSN: Velocity sensor.  Creates SPRK when nearby velocity's higher than it's temp, Configured with .tmp modes.\n TIMC: Time based convertor, converts into it's ctype when sparked with PSCN. Timer set using .tmp, default is 100.\n FUEL: FUEL. Fuel having high calorific value.\n THRM: Thermostat. Sets the temp of surrounding according to its own temp.\n CLNT: Coolant. Cools down the temp of the system, evaporates at high temperatures. Use .tmp to configure. \n DMRN: Demron. Radioactive shielding material and a better insulator.\n FNTC & FPTC: Faster versions of NTCT and PTCT.\n PINV: Powered Invisible, allows particles to move through when activated.\n UV: Ultra violet rays, heals stkm and figh, grows plnt, can sprk pscn and evaporates watr.\n SUN.: Sun, PLNT grow in direction of sunlight, emits radiation, makes PSCN spark and heals STKMs.\n LITH: Lithium ion battery, Use with PSCN and NSCN. Charges with INST when deactivated. Life sets capacity.\n Reacts with different elements like O2, WATR, ACID etc as IRL.\n LED:  Light Emmiting Diode. Use with PSCN and NSCN. Temp sets the brightness.\n Different .tmp2 modes: 0 = white, 1= red, 2= green, 3 =blue, 4= yellow and 5 = pink. \n QGP: Quark Gluon Plasma, bursts out radiation afer sometime. Extremely violent. \n Turns into Purple QGP when under 100C which is stable.\n TMPS: .tmp sensor, creats sprk when there is an element with higher .tmp than its temp.\n PHOS: White, slowly turns into red phosphorus with time. When in contact with O2, burns blue or red based on .tmp.\n Oil reverses the oxidation turning it back into white PHOS. Melts at 45C.\n CMNT: Cement, heats up when mixed with water and gets solidified, darkens when solidified.\n NTRG: Nitrogen gas, liquifies to LN2 when cooled or when under pressure, reacts with H2 to make NITR and puts out fire.\n PRMT: Promethium, radioactive. Catches fire at high velocity (>12), creats NEUT when in reacted with PLUT. \n Explodes at low temp and emits neut at high temp.\n CLUD: Cloud, creates WATR and LIGH with slight pressure at random points. React with CAUS to make Acid cloud.")
 end
+
+info:action(function(sender)
+clearsb()
+interface.addComponent(info1)
+interface.addComponent(info2)
+end)
+
+info1:action(function(sender)
+for i in sim.parts() do
+		local x,y = sim.partProperty(i, sim.FIELD_X),sim.partProperty(i, sim.FIELD_Y)
+		if sim.pmap (x, y) == i then 
+                                tpt.delete(i)
+		end
+	end
+end)
+
+info2:action(function(sender)
+for i in sim.parts() do
+		local x,y = sim.partProperty(i, sim.FIELD_X),sim.partProperty(i, sim.FIELD_Y)
+		if sim.pmap(x, y) ~= i and bit.band(elem.property(sim.partProperty(i, sim.FIELD_TYPE), "Properties"), elem.TYPE_ENERGY) == 0 then
+			tpt.delete(i)
+		end
+	end
+end)
 
 wikin2:action(function(sender)
 clearsb()
@@ -899,7 +927,9 @@ ui_box = {
 new = function(x,y,w,h,r,g,b)
 	local box=ui_base.new()
 	box.x=x box.y=y box.w=w box.h=h box.x2=x+w box.y2=y+h
-	box.r= 55 box.g= 55 box.b= 55
+	box.r= 70
+                box.g=70
+                box.b= 70
 	function box:setcolor(r,g,b) self.r=r self.g=g self.b=b end
 	function box:setbackground(r,g,b,a) self.br=r self.bg=g self.bb=b self.ba=a end
 	box.drawbox=true
@@ -1047,7 +1077,7 @@ new = function(x,y,w,h,f,text)
 	b.clicked=false
 	b.almostselected=false
 	b.invert=true
-	b:setbackground(127,127,127,125)
+	b:setbackground(127,127,227,125)
 	b:drawadd(function(self)
 		if self.invert and self.almostselected then
 			self.almostselected=false
