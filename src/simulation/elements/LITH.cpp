@@ -57,7 +57,7 @@ static int update(UPDATE_FUNC_ARGS)
 	//Explosion code (Burns out if charged above the set life.)
 	if (parts[i].tmp > parts[i].life)
 	{
-		parts[i].type = PT_FIRE;
+		sim->part_change_type(i, x , y, PT_LIFE);
 	}
 	//Activation and Deactivation.
 	if (parts[i].tmp2 != 10)
@@ -111,7 +111,7 @@ static int update(UPDATE_FUNC_ARGS)
 				{  if (RNG::Ref().chance(1, 30))
 				{
 					parts[i].type = PT_H2;
-					parts[ID(r)].type = PT_BRMT;
+					sim->part_change_type(ID(r), x + rx, y + ry, PT_BRMT);
 					sim->pv[(y / CELL) + ry][(x / CELL) + rx] += 1.0;
 					if (parts[ID(r)].tmp >= 22)
 						parts[i].temp += parts[ID(r)].tmp;
@@ -120,20 +120,15 @@ static int update(UPDATE_FUNC_ARGS)
 				break;
 				case PT_O2: //Burns blue when in contact with O2.
 				{
-					parts[i].type = PT_PLSM;
+					sim->part_change_type(i, x + rx, y + ry, PT_PLSM);
 					sim->pv[(y / CELL) + ry][(x / CELL) + rx] += 4.0;
 				}
 				break;
 				case PT_ACID:
 				{
-
-					parts[i].type = PT_H2;
+					sim->part_change_type(ID(r), x + rx, y + ry, PT_NONE);
+					sim->part_change_type(i, x + rx, y + ry, PT_H2);
 					sim->pv[(y / CELL) + ry][(x / CELL) + rx] += 0.5;
-					if (RNG::Ref().chance(1, 800))
-					{
-
-						parts[i].type = PT_FIRE;
-					}
 				}
 				break;
 				}

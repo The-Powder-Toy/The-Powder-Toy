@@ -66,12 +66,12 @@ static int update(UPDATE_FUNC_ARGS)
 					if (parts[i].tmp < 300)
 					{
 						parts[i].life = 100;
-						parts[i].type = PT_FIRE;
+						sim->part_change_type(i, x + rx, y + ry, PT_FIRE);
 					}
 					else if (parts[i].tmp >= 300)
 					{
 						parts[i].life = 100;
-						parts[i].type = PT_CFLM;
+						sim->part_change_type(i, x + rx, y + ry, PT_CFLM);
 					}
 				}
 				break;
@@ -85,13 +85,13 @@ static int update(UPDATE_FUNC_ARGS)
 				case PT_CFLM:
 				{
 					parts[i].life = 100;
-					parts[i].type = PT_CFLM;
+					sim->part_change_type(i, x + rx, y + ry, PT_CFLM);
 				}
 				break;
 				case PT_FIRE:
 				{
 					parts[i].life = 100;
-					parts[i].type = PT_FIRE;
+					sim->part_change_type(i, x + rx, y + ry, PT_FIRE);
 				}
 				break;
 				}

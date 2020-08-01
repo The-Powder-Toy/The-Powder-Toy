@@ -1,8 +1,9 @@
 Changelog for Version 15.0:
 
 #Bug Fixes:
+Fix PHOS behaving oddly with CFLM and FIRE.
 Fix reset button selecting wrong theme for startup. 
-Fix W key not switching between gravity modes properly.
+Fix W key not switching between new gravity modes properly.
 Fix CMNT's properties.
 Fix UI hide option showing some parts when selecting solids.
 
@@ -12,10 +13,11 @@ New elements: CLOUD, BEE, SLCN.
 Place Hidden elements in correct menus.
 
 #Additions/changes:
-Add some Stack tools.
+Optimisations to some of the new elements.
+Add Stack tools.
 Auto select latest theme if nothing was selected.
-Much more refined experience.
-Script version in now separately shown when opening the additional menus.
+Expect overall more refined experience.
+Script version in now shown separately when opening the menu.
 Merge changes from version 96.0
 Added new theme.
 Update/change text for 15.0

@@ -29,7 +29,7 @@ void Element::Element_CLNT()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Coolant for reactors and Engines. Turns into WTRV upon excess heating, Use .tmp to set cooling.";
+	Description = "Coolant for reactors and Engines. Use .tmp to set cooling.";
 
 	Properties = TYPE_LIQUID | PROP_HOT_GLOW;
 

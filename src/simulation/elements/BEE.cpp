@@ -1,13 +1,14 @@
 #include "simulation/ElementCommon.h"
 
 static int update(UPDATE_FUNC_ARGS);
+static int graphics(GRAPHICS_FUNC_ARGS);
 static void create(ELEMENT_CREATE_FUNC_ARGS);
 
 void Element::Element_BEE()
 {
 	Identifier = "DEFAULT_PT_BEE";
 	Name = "BEE";
-	Colour = PIXPACK(0xE0FF20);
+	Colour = PIXPACK(0xff8000);
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;
 	Enabled = 1;
@@ -45,18 +46,21 @@ void Element::Element_BEE()
 	HighTemperatureTransition = NT;
 
 	Update = &update;
+	Graphics = &graphics;
 	Create = &create;
 }
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	if (RNG::Ref().chance(1, 70))
-		parts[i].life -= 1;
 
-	if (parts[i].life >= 100)
+	if (RNG::Ref().chance(1, 50)) //Slowly loses life if there's nothing to eat.
+	{
+		parts[i].life -= 1;
+	}
+	if (parts[i].life >= 100)   //Life check, god sees everything.
 		parts[i].life = 100;
 
-	if (parts[i].life <= 1)
+	else if (parts[i].life <= 1)  //Everyone has to die one day.
 		parts[i].type = PT_NONE;
 
 	int r, rx, ry;
@@ -65,38 +69,56 @@ static int update(UPDATE_FUNC_ARGS)
 			if (BOUNDS_CHECK && (rx || ry))
 			{
 				r = pmap[y + ry][x + rx];
-				if (!r)
-					continue;
-				sim->pv[(y / CELL) + ry][(x / CELL) + rx] = 0.2f;
-
 				if (parts[i].life <= 30)
-					sim->pv[(y / CELL) + ry][(x / CELL) + rx] = 0.7f;
-
-				if (TYP(r) == PT_PLNT)
+				{
+					sim->pv[(y / CELL) + ry][(x / CELL) + rx] = 0.7f;  //Search wider areas for food if life drops below 30.
+				}
+				switch (TYP(r))
+				{
+				case PT_PLNT:
 				{
 					if (RNG::Ref().chance(1, 90))
+					{
 						sim->part_change_type(ID(r), x + rx, y + ry, PT_MWAX);
-					parts[ID(r)].temp = 323.15f;
-				}
-				if (TYP(r) == PT_WOOD)
+						parts[ID(r)].temp = 323.15f;
+					}
 
+				}
+				break;
+				case PT_WOOD:
 				{
 					parts[i].life += 50;
 					if (RNG::Ref().chance(1, 90))
 					{
 						sim->create_part(-1, x + 4, y + 4, PT_BEE);
-							sim->part_change_type(ID(r), x + rx, y + ry, PT_NONE);
+						sim->part_change_type(ID(r), x + rx, y + ry, PT_NONE);
 					}
 				}
-				if (TYP(r) == PT_FIGH|| PT_STKM||PT_STKM2)
+				break;
+				case PT_FIGH:
+				case PT_STKM:
+				case PT_STKM2:
 				{
-					if (RNG::Ref().chance(1, 30))
+					if (RNG::Ref().chance(1, 30))  //Attack stkms.
 						parts[ID(r)].life -= 5;
 				}
-			
+				break;
 				}
+			}
 	return 0;
 }
+
+static int graphics(GRAPHICS_FUNC_ARGS)
+{
+	if (cpart->life <= 30)
+	{
+		*colr = 180;
+		*colg = 120;
+		*colb = 0;
+	}
+	return 0;
+}
+
 
 
 static void create(ELEMENT_CREATE_FUNC_ARGS)
