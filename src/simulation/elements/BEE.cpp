@@ -32,7 +32,7 @@ void Element::Element_BEE()
 
 	DefaultProperties.temp = R_TEMP + 2.0f + 273.15f;
 	HeatConduct = 42;
-	Description = "BEE, Eats PLNT and secretes wax, Attacks figh/stkm. Eats wood to stay alive.";
+	Description = "BEE, converts wood into wax, attacks figh/stkm. Eats PLNT to stay alive and multiply.";
 
 	Properties = TYPE_GAS;
 
@@ -53,7 +53,7 @@ void Element::Element_BEE()
 static int update(UPDATE_FUNC_ARGS)
 {
 
-	if (RNG::Ref().chance(1, 50)) //Slowly loses life if there's nothing to eat.
+	if (RNG::Ref().chance(1, 40)) //Slowly loses life if there's nothing to eat.
 	{
 		parts[i].life -= 1;
 	}
@@ -64,29 +64,44 @@ static int update(UPDATE_FUNC_ARGS)
 		parts[i].type = PT_NONE;
 
 	int r, rx, ry;
-	for (rx = -1; rx < 2; rx++)
-		for (ry = -1; ry < 2; ry++)
+	for (rx = -2; rx < 3; rx++)
+		for (ry = -2; ry < 3; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
 			{
 				r = pmap[y + ry][x + rx];
+				if (parts[i].life < 90)
+				{
+					sim->pv[(y / CELL) + ry][(x / CELL) + rx] = 0.2f;  //Search areas for food if life drops below 90.
+				}
 				if (parts[i].life <= 30)
 				{
-					sim->pv[(y / CELL) + ry][(x / CELL) + rx] = 0.7f;  //Search wider areas for food if life drops below 30.
+					sim->pv[(y / CELL) + ry][(x / CELL) + rx] = 0.8f;  //Search wider areas for food if life drops below 30.
 				}
 				switch (TYP(r))
 				{
-				case PT_PLNT:
+				case PT_WOOD:
 				{
+					sim->pv[(y / CELL) + ry][(x / CELL) + rx] = -2.0f;
 					if (RNG::Ref().chance(1, 90))
 					{
 						sim->part_change_type(ID(r), x + rx, y + ry, PT_MWAX);
-						parts[ID(r)].temp = 323.15f;
+						parts[ID(r)].temp = 373.15f;
 					}
 
 				}
 				break;
-				case PT_WOOD:
+				case PT_MWAX:
+				case PT_WAX:
 				{
+					
+						parts[ID(r)].temp = 373.15f;
+
+				}
+				break;
+				case PT_PLNT:
+				{
+					
+					sim->pv[(y / CELL) + ry][(x / CELL) + rx] = -2.0f;
 					parts[i].life += 50;
 					if (RNG::Ref().chance(1, 90))
 					{
@@ -110,16 +125,16 @@ static int update(UPDATE_FUNC_ARGS)
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
+	*pixel_mode |= PMODE_FLARE;
 	if (cpart->life <= 30)
 	{
 		*colr = 180;
-		*colg = 120;
+		*colg = 180;
 		*colb = 0;
 	}
+
 	return 0;
 }
-
-
 
 static void create(ELEMENT_CREATE_FUNC_ARGS)
 {

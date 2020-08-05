@@ -1,19 +1,11 @@
 Changelog for Version 15.0:
 
-#Bug Fixes:
-Fix PHOS behaving oddly with CFLM and FIRE.
-Fix reset button selecting wrong theme for startup. 
-Fix W key not switching between new gravity modes properly.
-Fix CMNT's properties.
-Fix UI hide option showing some parts when selecting solids.
-
-#Elements:
-THRM is now THMO (Preventing confusion with THRM i.e thermite.)
-New elements: CLOUD, BEE, SLCN.
-Place Hidden elements in correct menus.
-
 #Additions/changes:
+THRM is now THMO (Preventing confusion with THRM i.e thermite.)
+New elements: CLOUD, BEE, SLCN. (read wiki!)
+Place Hidden elements in correct menus.
 Optimisations to some of the new elements.
+Remove the watermark from screenshots.
 Add Stack tools.
 Auto select latest theme if nothing was selected.
 Expect overall more refined experience.
@@ -24,6 +16,9 @@ Update/change text for 15.0
 Replace version check option.
 
 
-TODO:
-Add support for multiple wiki pages.
-
+#Bug Fixes:
+Fix PHOS behaving oddly with CFLM and FIRE.
+Fix reset button selecting wrong theme for startup. 
+Fix W key not switching between new gravity modes properly.
+Fix CMNT's properties.
+Fix UI hide option showing some parts when selecting solids.
