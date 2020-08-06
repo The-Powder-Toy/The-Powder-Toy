@@ -301,7 +301,10 @@ OptionsView::OptionsView():
 #endif
 		char* workingDirectory = new char[FILENAME_MAX+strlen(openCommand)];
 		sprintf(workingDirectory, "%s\"%s\"", openCommand, getcwd(NULL, 0));
-		system(workingDirectory);
+		if (system(workingDirectory))
+		{
+			fprintf(stderr, "system(cmd) return non-zero value\n");
+		}
 		delete[] workingDirectory;
 	} });
 	scrollPanel->AddChild(dataFolderButton);

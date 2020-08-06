@@ -652,11 +652,17 @@ int main(int argc, char * argv[])
 	std::map<ByteString, ByteString> arguments = readArguments(argc, argv);
 
 	if(arguments["ddir"].length())
+	{
 #ifdef WIN
-		_chdir(arguments["ddir"].c_str());
+		int failure = _chdir(arguments["ddir"].c_str());
 #else
-		chdir(arguments["ddir"].c_str());
+		int failure = chdir(arguments["ddir"].c_str());
 #endif
+		if (failure)
+		{
+			perror("failed to chdir to requested ddir");
+		}
+	}
 	else
 	{
 #ifdef WIN
@@ -671,10 +677,14 @@ int main(int argc, char * argv[])
 			if(ddir)
 			{
 #ifdef WIN
-				_chdir(ddir);
+				int failure = _chdir(ddir);
 #else
-				chdir(ddir);
+				int failure = chdir(ddir);
 #endif
+				if (failure)
+				{
+					perror("failed to chdir to default ddir");
+				}
 				SDL_free(ddir);
 			}
 		}
@@ -695,8 +705,17 @@ int main(int argc, char * argv[])
 
 	if(arguments["redirect"] == "true")
 	{
-		freopen("stdout.log", "w", stdout);
-		freopen("stderr.log", "w", stderr);
+		FILE *new_stdout = freopen("stdout.log", "w", stdout);
+		FILE *new_stderr = freopen("stderr.log", "w", stderr);
+		if (!new_stdout || !new_stderr)
+		{
+			// no point in printing an error to stdout/stderr since the user probably
+			// requests those streams be redirected because they can't see them
+			// otherwise. so just throw an exception instead anf hope that the OS
+			// and the standard library is smart enough to display the error message
+			// in some useful manner.
+			throw std::runtime_error("cannot honour request to redirect standard streams to log files");
+		}
 	}
 
 	if(arguments["scale"].length())

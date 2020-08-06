@@ -96,12 +96,18 @@ void OpenURI(ByteString uri)
 	char *cmd = (char*)malloc(7+uri.length());
 	strcpy(cmd, "open ");
 	strappend(cmd, (char*)uri.c_str());
-	system(cmd);
+	if (system(cmd))
+	{
+		fprintf(stderr, "system(cmd) return non-zero value\n");
+	}
 #elif defined(LIN)
 	char *cmd = (char*)malloc(11+uri.length());
 	strcpy(cmd, "xdg-open ");
 	strappend(cmd, (char*)uri.c_str());
-	system(cmd);
+	if (system(cmd))
+	{
+		fprintf(stderr, "system(cmd) return non-zero value\n");
+	}
 #else
 	printf("Cannot open browser\n");
 #endif
