@@ -654,7 +654,7 @@ void SearchView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctr
 		return;
 	if (key == SDLK_ESCAPE)
 		c->Exit();
-	else if (key == SDLK_a && ctrl)
+	else if ((focusedComponent_ != pageTextbox && focusedComponent_ != searchField) && scan == SDL_SCANCODE_A && ctrl)
 		c->SelectAllSaves();
 	else if (key == SDLK_LCTRL || key == SDLK_RCTRL)
 		c->InstantOpen(true);

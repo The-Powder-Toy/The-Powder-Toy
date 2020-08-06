@@ -201,9 +201,19 @@ void SearchModel::SelectSave(int saveID)
 
 void SearchModel::SelectAllSaves()
 {
-	for (int i = 0; i < saveList.size(); i++)
+	if (selected.size() == saveList.size())
 	{
-		SelectSave(saveList[i]->id);
+		for (auto &save : saveList)
+		{
+			DeselectSave(save->id);
+		}
+	}
+	else
+	{
+		for (auto &save : saveList)
+		{
+			SelectSave(save->id);
+		}
 	}
 }
 
