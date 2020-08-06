@@ -47,7 +47,7 @@ class FontTool:
 				data_ptr += math.ceil(self.code_points[cp][0] * FONT_HEIGHT / 4) + 1
 			font_ptrs_wrapped = []
 			for i in range(0, len(block), PTRS_PER_LINE):
-				font_ptrs_wrapped.append(', '.join([ '0x%04X' % v for v in block[i : (i + PTRS_PER_LINE)] ]))
+				font_ptrs_wrapped.append(', '.join([ '0x%08X' % v for v in block[i : (i + PTRS_PER_LINE)] ]))
 			font_ptrs_blocks.append(',\n    '.join(font_ptrs_wrapped))
 		font_cpp_data = re.sub(r'font_ptrs[^{]*{([^;]+);', 'font_ptrs[] = {\n    ' + ',\n\n    '.join(font_ptrs_blocks) + ',\n};', font_cpp_data)
 		font_ranges_lines = [ '{ 0x%06X, 0x%06X },' % ( r[0], r[1] ) for r in new_ranges ]
