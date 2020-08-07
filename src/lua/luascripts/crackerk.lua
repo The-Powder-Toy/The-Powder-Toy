@@ -17,13 +17,12 @@ local screen2= Button:new(325,0,15,9,"N", "Cancel the screen shot.")
 local reset= Button:new(320,66,75,10,"Reset", "Reset everything.")
 
 local info= Button:new(320,86,75,10,"Stack tools", "Usefull for subframe.")
-local info1= Button:new(410,86,40,20,"Remove", "Removes top most particle from stack.")
-local info2= Button:new(410,106,40,20,"De-stack", "Leaves top particle and PHOT but remove everything else.")
+local info1= Button:new(410,86,40,20,"Separate", "Removes top most particle from stack.")
+local info2= Button:new(410,106,40,20,"Delete", "Leaves top particle and PHOT but remove everything else.")
 
 local Ruler = Button:new(320,106,75,10, "Ruler", "Toggles in game ruler.")
 local Ry = Button:new(410,106,40,20,"Hide", "Hides the Ruler")
 local Rn = Button:new(410,126,40,20,"Show", "Shows the Ruler. (Press SHIFT)")
-
 
 local mp = Button:new(320,126,75,10,"Theme", "Changes game's theme")
 local mp1 = Button:new(410,126,75,10,"Dark", "Change the theme to default")
@@ -35,11 +34,9 @@ local mp6 = Button:new(410,176,75,10,"Orange", "Change the theme to Orange")
 local mp7 = Button:new(410,186,75,10,"Vanilla", "Change the theme back to Plain white")
 local mp8 = Button:new(410,196,75,10,"Velvet", "Change the theme back to maroon")
 
-
 local rc = Button:new(320,146,75,10,"Record", "Options for recording frames")
 local rc1 = Button:new(410,146,40,20,"Start", "Starts recording")
 local rc2 = Button:new(410,166,40,20,"Stop","Stops recording")
-
 
 local bg = Button:new(320,166,75,10,"Backgrounds", "Sets different backgrounds.")
 local bgI = Button:new(470,166,30,10,"^", "Increase brightness")
@@ -56,7 +53,6 @@ local bar = Button:new(320,206,75,10,"Top bar", "Toggle top bar")
 local bary = Button:new(410,206,75,20,"Show", "Shows the bar at top")
 local barn = Button:new(410,226,75,20,"Hide", "Hides the bar")
 
-
 local wiki  =  Button:new(320,226,75,10,"Wiki", "Element wiki!")
 local wikin2 = Button:new(10,360,75,20,"Hide wiki ", " Close wiki!")
 
@@ -64,9 +60,7 @@ local bare = Button:new(320,246,75,10,"Hidden Elem.", "Toggle hidden elements.")
 local barye = Button:new(410,246,75,20,"Show", "Shows hidden elements")
 local barne = Button:new(410,266,75,20,"Hide", "Hides elements")
 
-
 local hide= Button:new(320,266,15,10, "^", "Hide.")
-
 
 function clearm()
 interface.removeComponent(reset)
@@ -225,6 +219,7 @@ for i in sim.parts() do
 		end
 	end
 end)
+
 
 wikin2:action(function(sender)
 clearsb()
@@ -1078,7 +1073,7 @@ new = function(x,y,w,h,f,text)
 	b.clicked=false
 	b.almostselected=false
 	b.invert=true
-	b:setbackground(127,127,227,125)
+	b:setbackground(50,250,50,155)
 	b:drawadd(function(self)
 		if self.invert and self.almostselected then
 			self.almostselected=false
@@ -1595,7 +1590,7 @@ local function keypress(key,nkey,modifier,event)
 	return false
 end
 --small button on right to bring up main menu
-local WHITE = {255,255,255,255}
+local WHITE = {70,70,70,255}
 local BLACK = {0,0,0,255}
 local ICON = math.random(2) --pick a random icon
 local lua_letters= {{{2,2,2,7},{2,7,4,7},{6,7,6,11},{6,11,8,11},{8,7,8,11},{10,11,12,11},{10,11,10,15},{11,13,11,13},{12,11,12,15},},
@@ -2132,7 +2127,7 @@ ui_box = {
 new = function(x,y,w,h,r,g,b)
 	local box=ui_base.new()
 	box.x=x box.y=y box.w=w box.h=h box.x2=x+w box.y2=y+h
-	box.r=55 box.g=55 box.b= 55
+	box.r=70 box.g=70 box.b= 70
 	function box:setcolor(r,g,b) self.r=r self.g=g self.b=b end
 	function box:setbackground(r,g,b,a) self.br=r self.bg=g self.bb=b self.ba=a end
 	box.drawbox=true

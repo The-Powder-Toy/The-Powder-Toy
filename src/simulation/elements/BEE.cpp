@@ -64,8 +64,8 @@ static int update(UPDATE_FUNC_ARGS)
 		parts[i].type = PT_NONE;
 
 	int r, rx, ry;
-	for (rx = -2; rx < 3; rx++)
-		for (ry = -2; ry < 3; ry++)
+	for (rx = -4; rx < 3; rx++)
+		for (ry = -4; ry < 3; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
 			{
 				r = pmap[y + ry][x + rx];
@@ -75,7 +75,7 @@ static int update(UPDATE_FUNC_ARGS)
 				}
 				if (parts[i].life <= 30)
 				{
-					sim->pv[(y / CELL) + ry][(x / CELL) + rx] = 0.8f;  //Search wider areas for food if life drops below 30.
+					sim->pv[(y / CELL) + ry][(x / CELL) + rx] = 0.9f;  //Search wider areas for food if life drops below 30.
 				}
 				switch (TYP(r))
 				{
@@ -102,7 +102,7 @@ static int update(UPDATE_FUNC_ARGS)
 				{
 					
 					sim->pv[(y / CELL) + ry][(x / CELL) + rx] = -2.0f;
-					parts[i].life += 50;
+					parts[i].life = 100;
 					if (RNG::Ref().chance(1, 90))
 					{
 						sim->create_part(-1, x + 4, y + 4, PT_BEE);
@@ -114,6 +114,7 @@ static int update(UPDATE_FUNC_ARGS)
 				case PT_STKM:
 				case PT_STKM2:
 				{
+					sim->pv[(y / CELL) + ry][(x / CELL) + rx] = -2.0f;
 					if (RNG::Ref().chance(1, 30))  //Attack stkms.
 						parts[ID(r)].life -= 5;
 				}
