@@ -27,10 +27,10 @@ void Element::Element_ECLR()
 
 	Weight = 100;
 
-	HeatConduct = 35;
+	HeatConduct = 0;
 	Description = "Electronic eraser, clears surrounding when sparked with PSCN. Use. tmp to set radius.";
 
-	Properties = TYPE_SOLID | PROP_NEUTPASS;
+	Properties = TYPE_SOLID;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
@@ -38,8 +38,8 @@ void Element::Element_ECLR()
 	HighPressureTransition = NT;
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
-	HighTemperature = 2887.15f;
-	HighTemperatureTransition = ST;
+	HighTemperature = ITH;
+	HighTemperatureTransition = NT;
 	DefaultProperties.tmp = 10;
 	Update = &update;
 }
