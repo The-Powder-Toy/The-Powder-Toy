@@ -2256,6 +2256,7 @@ void GameView::OnDraw()
 		{
 			StringBuilder sampleInfo;
 			sampleInfo << Format::Precision(2);
+			sampleInfo << "X:" << sample.PositionX << " Y:" << sample.PositionY;
 
 			if (type)
 			{
@@ -2263,7 +2264,6 @@ void GameView::OnDraw()
 				sampleInfo << "Vx: " << sample.particle.vx;
 				sampleInfo << ", Vy: " << sample.particle.vy << ", ";
 				sampleInfo << "#" << sample.ParticleID << ", ";
-				sampleInfo << "X:" << sample.PositionX << " Y:" << sample.PositionY;
 			}
 			
 
