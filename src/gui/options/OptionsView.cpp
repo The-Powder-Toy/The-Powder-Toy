@@ -11,6 +11,7 @@
 #include <unistd.h>
 #endif
 #include "SDLCompat.h"
+#include "Platform.h"
 
 #include "gui/Style.h"
 #include "gui/interface/Button.h"
@@ -290,22 +291,15 @@ OptionsView::OptionsView():
 	currentY+=20;
 	ui::Button * dataFolderButton = new ui::Button(ui::Point(8, currentY), ui::Point(90, 16), "Open Data Folder");
 	dataFolderButton->SetActionCallback({ [] {
-//one of these should always be defined
-#ifdef WIN
-		const char* openCommand = "explorer ";
-#elif MACOSX
-		const char* openCommand = "open ";
-//#elif LIN
-#else
-		const char* openCommand = "xdg-open ";
-#endif
-		char* workingDirectory = new char[FILENAME_MAX+strlen(openCommand)];
-		sprintf(workingDirectory, "%s\"%s\"", openCommand, getcwd(NULL, 0));
-		if (system(workingDirectory))
+		auto *cwd = getcwd(NULL, 0);
+		if (cwd)
 		{
-			fprintf(stderr, "system(cmd) return non-zero value\n");
+			Platform::OpenURI(cwd);
 		}
-		delete[] workingDirectory;
+		else
+		{
+			fprintf(stderr, "cannot open data folder: getcwd(...) failed\n");
+		}
 	} });
 	scrollPanel->AddChild(dataFolderButton);
 

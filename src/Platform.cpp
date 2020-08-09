@@ -91,25 +91,22 @@ void DoRestart()
 void OpenURI(ByteString uri)
 {
 #if defined(WIN)
-	ShellExecute(0, "OPEN", uri.c_str(), NULL, NULL, 0);
-#elif defined(MACOSX)
-	char *cmd = (char*)malloc(7+uri.length());
-	strcpy(cmd, "open ");
-	strappend(cmd, (char*)uri.c_str());
-	if (system(cmd))
+	if ((int)ShellExecute(NULL, NULL, uri.c_str(), NULL, NULL, SW_SHOWNORMAL) <= 32)
 	{
-		fprintf(stderr, "system(cmd) return non-zero value\n");
+		fprintf(stderr, "cannot open URI: ShellExecute(...) failed\n");
+	}
+#elif defined(MACOSX)
+	if (system(("open \"" + uri + "\"").c_str()))
+	{
+		fprintf(stderr, "cannot open URI: system(...) failed\n");
 	}
 #elif defined(LIN)
-	char *cmd = (char*)malloc(11+uri.length());
-	strcpy(cmd, "xdg-open ");
-	strappend(cmd, (char*)uri.c_str());
-	if (system(cmd))
+	if (system(("xdg-open \"" + uri + "\"").c_str()))
 	{
-		fprintf(stderr, "system(cmd) return non-zero value\n");
+		fprintf(stderr, "cannot open URI: system(...) failed\n");
 	}
 #else
-	printf("Cannot open browser\n");
+	fprintf(stderr, "cannot open URI: not implemented\n");
 #endif
 }
 
