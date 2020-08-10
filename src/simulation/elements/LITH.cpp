@@ -84,21 +84,24 @@ static int update(UPDATE_FUNC_ARGS)
 			{
 				int neighbour_data = pmap[y+ry][x+rx];
 
-				if (!neighbour_data) {
+				if (!neighbour_data)
+				{
 					if (self.life > 12 && RNG::Ref().chance(1,10))
 						sim->create_part(-1, x + rx, y + ry, PT_FIRE);
 					continue;
 				}
-				
+
 				Particle& neighbour = parts[ID(neighbour_data)];
 
-				switch (TYP(neighbour_data)) {
+				switch (TYP(neighbour_data))
+				{
 					case PT_SLTW:
 					case PT_WTRV:
 					case PT_WATR:
 					case PT_DSTW:
 					case PT_CBNW:
-						if (self.life > 16) {
+						if (self.life > 16)
+						{
 							sim->part_change_type(ID(neighbour_data), x + rx, y + ry, PT_WTRV);
 							
 							neighbour.temp = 453.65f;
@@ -107,11 +110,14 @@ static int update(UPDATE_FUNC_ARGS)
 
 						if (hydrogenation_factor + carbonation_factor >= 10)
 							continue;
-						if (self.temp > 453.65) {
+						if (self.temp > 453.65)
+						{
 							self.life = 24 + (stored_energy > 24 ? 24 : stored_energy);
 							sim->part_change_type(ID(neighbour_data), x + rx, y + ry, PT_H2);
 							hydrogenation_factor = 10;
-						} else {
+						} 
+						else
+						{
 							self.temp += restrict_flt(20.365f + stored_energy * (stored_energy * 1.5f), MIN_TEMP, MAX_TEMP);
 							sim->part_change_type(ID(neighbour_data), x + rx, y + ry, PT_H2);
 							hydrogenation_factor += 1;
@@ -120,6 +126,7 @@ static int update(UPDATE_FUNC_ARGS)
 					case PT_CO2:
 						if (hydrogenation_factor + carbonation_factor >= 10)
 							continue;
+
 						sim->kill_part(ID(neighbour_data));
 						carbonation_factor += 1;
 						break;
