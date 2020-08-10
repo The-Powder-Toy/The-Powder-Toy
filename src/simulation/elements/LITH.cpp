@@ -82,25 +82,26 @@ static int update(UPDATE_FUNC_ARGS)
 		for (int ry = -1; ry < 2; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
 			{
-				int nghbr_dat = pmap[y+ry][x+rx];
-				if (!nghbr_dat) {
+				int neighbour_data = pmap[y+ry][x+rx];
+
+				if (!neighbour_data) {
 					if (self.life > 12 && RNG::Ref().chance(1,10))
 						sim->create_part(-1, x + rx, y + ry, PT_FIRE);
 					continue;
 				}
-				int nghbr_typ = TYP(nghbr_dat);
-				Particle& nghbr = parts[ID(nghbr_dat)];
+				
+				Particle& neighbour = parts[ID(neighbour_data)];
 
-				switch (nghbr_typ) {
+				switch (TYP(neighbour_data)) {
 					case PT_SLTW:
 					case PT_WTRV:
 					case PT_WATR:
 					case PT_DSTW:
 					case PT_CBNW:
 						if (self.life > 16) {
-							sim->part_change_type(ID(nghbr_dat), x + rx, y + ry, PT_WTRV);
+							sim->part_change_type(ID(neighbour_data), x + rx, y + ry, PT_WTRV);
 							
-							nghbr.temp = 453.65f;
+							neighbour.temp = 453.65f;
 							continue;
 						} 
 
@@ -108,33 +109,33 @@ static int update(UPDATE_FUNC_ARGS)
 							continue;
 						if (self.temp > 453.65) {
 							self.life = 24 + (stored_energy > 24 ? 24 : stored_energy);
-							sim->part_change_type(ID(nghbr_dat), x + rx, y + ry, PT_H2);
+							sim->part_change_type(ID(neighbour_data), x + rx, y + ry, PT_H2);
 							hydrogenation_factor = 10;
 						} else {
 							self.temp += restrict_flt(20.365f + stored_energy * (stored_energy * 1.5f), MIN_TEMP, MAX_TEMP);
-							sim->part_change_type(ID(nghbr_dat), x + rx, y + ry, PT_H2);
+							sim->part_change_type(ID(neighbour_data), x + rx, y + ry, PT_H2);
 							hydrogenation_factor += 1;
 						}
 						break;
 					case PT_CO2:
 						if (hydrogenation_factor + carbonation_factor >= 10)
 							continue;
-						sim->delete_part(x + rx, y + ry);
+						sim->kill_part(ID(neighbour_data));
 						carbonation_factor += 1;
 						break;
 					case PT_SPRK:
 						if (hydrogenation_factor + carbonation_factor >= 5)
 							continue; // too impure to do battery things.
-						if (nghbr.ctype == PT_PSCN && nghbr.life == 4 && RNG::Ref().chance(1,10)) {
+						if (neighbour.ctype == PT_PSCN && neighbour.life == 4 && RNG::Ref().chance(1,10)) {
 							stored_energy += 1;
 						}
 						break;
 					case PT_NSCN:
-						if (nghbr.life == 0 && stored_energy > 2)
+						if (neighbour.life == 0 && stored_energy > 2)
 						{
-							sim->part_change_type(ID(nghbr_dat), x + rx, y + ry, PT_SPRK);
-							nghbr.life = 4;
-							nghbr.ctype = PT_NSCN;
+							sim->part_change_type(ID(neighbour_data), x + rx, y + ry, PT_SPRK);
+							neighbour.life = 4;
+							neighbour.ctype = PT_NSCN;
 							stored_energy -= 2;
 						}
 						break;
@@ -158,12 +159,12 @@ static int update(UPDATE_FUNC_ARGS)
 				continue;
 			Particle& ngbhr = parts[ID(nghbr_dat)];
 
-			int& nghbr_stored_energy = ngbhr.ctype;
+			int& neighbour_stored_energy = ngbhr.ctype;
 
-			if (stored_energy > nghbr_stored_energy)
+			if (stored_energy > neighbour_stored_energy)
 			{
-				int transfer = stored_energy - nghbr_stored_energy;
-				nghbr_stored_energy += transfer / 2;
+				int transfer = stored_energy - neighbour_stored_energy;
+				neighbour_stored_energy += transfer / 2;
 				stored_energy -= transfer / 2;
 				break;
 			}
