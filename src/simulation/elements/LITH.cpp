@@ -17,7 +17,7 @@ void Element::Element_LITH()
 	AirLoss = 0.96f;
 	Loss = 0.95f;
 	Collision = -0.1f;
-	Gravity = 0.1f;
+	Gravity = 0.2f;
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 1;
@@ -27,10 +27,10 @@ void Element::Element_LITH()
 	Meltable = 0;
 	Hardness = 30;
 
-	Weight = 55;
+	Weight = 17;
 
 	HeatConduct = 70;
-	Description = "Lithium. Reactive element that explodes on contact with water";
+	Description = "Lithium. Reactive element that explodes on contact with water.";
 
 	Properties = TYPE_PART|PROP_LIFE_DEC;
 	
@@ -100,18 +100,18 @@ static int update(UPDATE_FUNC_ARGS)
 						if (self.life > 16) {
 							sim->part_change_type(ID(nghbr_dat), x + rx, y + ry, PT_WTRV);
 							
-							nghbr.temp = 642.0f;
+							nghbr.temp = 453.65f;
 							continue;
 						} 
 
 						if (hydrogenation_factor + carbonation_factor >= 10)
 							continue;
-						if (self.temp > 1000.0f) {
+						if (self.temp > 453.65) {
 							self.life = 24 + (stored_energy > 24 ? 24 : stored_energy);
 							sim->part_change_type(ID(nghbr_dat), x + rx, y + ry, PT_H2);
 							hydrogenation_factor = 10;
 						} else {
-							self.temp += restrict_flt(100.0f + stored_energy * (stored_energy * 1.5f), MIN_TEMP, MAX_TEMP);
+							self.temp += restrict_flt(20.365f + stored_energy * (stored_energy * 1.5f), MIN_TEMP, MAX_TEMP);
 							sim->part_change_type(ID(nghbr_dat), x + rx, y + ry, PT_H2);
 							hydrogenation_factor += 1;
 						}
@@ -125,7 +125,7 @@ static int update(UPDATE_FUNC_ARGS)
 					case PT_SPRK:
 						if (hydrogenation_factor + carbonation_factor >= 5)
 							continue; // too impure to do battery things.
-						if (nghbr.ctype == PT_PTNM && nghbr.life == 4 && RNG::Ref().chance(1,10)) {
+						if (nghbr.ctype == PT_PSCN && nghbr.life == 4 && RNG::Ref().chance(1,10)) {
 							stored_energy += 1;
 						}
 						break;
@@ -169,7 +169,7 @@ static int update(UPDATE_FUNC_ARGS)
 			}
 		}
 	}
-	if (self.temp > 1000.0f && self.life == 0) 
+	if (self.temp > 453.65f && self.life == 0) 
 	{
 		
 		sim->part_change_type(i, x, y, PT_LAVA);
