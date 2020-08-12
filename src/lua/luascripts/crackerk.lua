@@ -1,5 +1,6 @@
 --Cracker1000's TPT unleashed script 
-local version = 11
+local version = 12
+
 local toggle = Button:new(320,0,13,8, "V", "Toggle additional menus.")
 
 local deletesparkButton = Button:new(320,6,75,10,"Interface", "shows UI related stuff.")
