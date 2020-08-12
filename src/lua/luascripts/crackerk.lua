@@ -1,9 +1,8 @@
 --Cracker1000's TPT unleashed script 
 local version = 12
-
 local toggle = Button:new(320,0,13,8, "V", "Toggle additional menus.")
 
-local deletesparkButton = Button:new(320,6,75,10,"Interface", "shows UI related stuff.")
+local deletesparkButton =  Button:new(320,6,75,10,"Interface", "shows UI related stuff.")
 local UIhidey = Button:new(410,6,40,20,"Hide", "Hides the UI")
 local UIhiden = Button:new(410,26,40,20,"Show", "Shows the UI")
 
@@ -33,7 +32,7 @@ local mp4 = Button:new(410,156,75,10,"Forest", "Change the theme to Green")
 local mp5 = Button:new(410,166,75,10,"Sun", "Change the theme to Yellow")
 local mp6 = Button:new(410,176,75,10,"Orange", "Change the theme to Orange")
 local mp7 = Button:new(410,186,75,10,"Vanilla", "Change the theme back to Plain white")
-local mp8 = Button:new(410,196,75,10,"Velvet", "Change the theme back to maroon")
+local mp8 = Button:new(410,196,75,10,"Pulse", "RBG makes everything better.")
 
 local rc = Button:new(320,146,75,10,"Record", "Options for recording frames")
 local rc1 = Button:new(410,146,40,20,"Start", "Starts recording")
@@ -342,16 +341,11 @@ interface.removeComponent(rc2)
 end)
 
 function theme()
-if MANAGER.getsetting("CRK", "ar") == nil then ar = 120 else
-ar =  MANAGER.getsetting("CRK","ar")
-end
-if MANAGER.getsetting("CRK", "ag") == nil then ag = 0 else
-ag =  MANAGER.getsetting("CRK","ag")
-end
-if MANAGER.getsetting("CRK", "ab") == nil then ab = 0 else
-ab =  MANAGER.getsetting("CRK","ab")
-end
-
+if MANAGER.getsetting("CRK", "savergb") == "0" then 
+ar = MANAGER.getsetting("CRK", "ar")
+ag = MANAGER.getsetting("CRK", "ag")
+ab = MANAGER.getsetting("CRK", "ab")
+al = MANAGER.getsetting("CRK", "al")
 tpt.drawrect(613,1,14,95,ar,ag,ab,al)
 tpt.drawrect(613,136,14,269,ar,ag,ab,al)
 tpt.drawline(612,408,612,421,ar,ag,ab,al)
@@ -391,9 +385,84 @@ tpt.drawline(613,359,627,359,ar,ag,ab,al)
 tpt.drawline(613,375,627,375,ar,ag,ab,al)
 tpt.drawline(613,391,627,391,ar,ag,ab,al)
 end
+end
 
+frameCount,colourRED,colourGRN,colourBLU = 0,0,0,0
+function colourblender()
+if MANAGER.getsetting("CRK", "savergb") == nil then
+savergb = 1
+end 
+
+ colourRGB = {colourRED,colourGRN,colourBLU}
+ if frameCount > 1529 then frameCount = 0 else frameCount = frameCount + 1 end
+ if frameCount > 0 and frameCount < 255 then
+  colourRED = 255
+  if colourGRN > 254 then else colourGRN = colourGRN + 1 end
+ end
+ if frameCount > 254 and frameCount < 510 then
+  colourGRN = 255
+  if colourRED == 0 then else colourRED = colourRED - 1 end
+ end
+ if frameCount > 510 and frameCount < 765 then
+  colourGRN = 255
+  if colourBLU > 254 then else colourBLU = colourBLU + 1 end
+ end
+ if frameCount > 764 and frameCount < 1020 then
+  colourBLU = 255
+  if colourGRN == 0 then else colourGRN = colourGRN - 1 end
+ end
+ if frameCount > 1020 and frameCount < 1275 then
+  colourBLU = 255
+  if colourRED > 254 then else colourRED = colourRED + 1 end
+ end
+ if frameCount > 1274 and frameCount < 1530 then
+  colourRED = 255
+  if colourBLU == 0 then else colourBLU = colourBLU - 1 end
+ end
+tpt.drawrect(613,1,14,95,colourRED,colourGRN,colourBLU,255)
+tpt.drawrect(613,136,14,269,colourRED,colourGRN,colourBLU,255)
+tpt.drawline(612,408,612,421,colourRED,colourGRN,colourBLU,255)
+tpt.drawline(187,409,187,422,colourRED,colourGRN,colourBLU,255)
+tpt.drawline(469,408,469,421,colourRED,colourGRN,colourBLU,255)
+tpt.drawline(487,408,487,421,colourRED,colourGRN,colourBLU,255)
+tpt.drawline(507,408,507,421,colourRED,colourGRN,colourBLU,255)
+
+tpt.drawline(241,408,241,421,colourRED,colourGRN,colourBLU,255)
+tpt.drawline(36,408,36,421,colourRED,colourGRN,colourBLU,255)
+tpt.drawline(18,408,18,421,colourRED,colourGRN,colourBLU,255)
+tpt.drawline(580,409,580,422,colourRED,colourGRN,colourBLU,255)
+tpt.drawline(596,409,596,422,colourRED,colourGRN,colourBLU,255)
+tpt.drawrect(1,408,626,14,colourRED,colourGRN,colourBLU,255)
+
+tpt.drawline(613,96,627,96,colourRED,colourGRN,colourBLU,255)
+tpt.drawline(613,16,627,16,colourRED,colourGRN,colourBLU,255)
+tpt.drawline(613,32,627,32,colourRED,colourGRN,colourBLU,255)
+tpt.drawline(613,48,627,48,colourRED,colourGRN,colourBLU,255)
+tpt.drawline(613,64,627,64,colourRED,colourGRN,colourBLU,255)
+tpt.drawline(613,80,627,80,colourRED,colourGRN,colourBLU,255)
+
+tpt.drawline(613,151,627,151,colourRED,colourGRN,colourBLU,255)
+tpt.drawline(613,167,627,167,colourRED,colourGRN,colourBLU,255)
+tpt.drawline(613,183,627,183,colourRED,colourGRN,colourBLU,255)
+tpt.drawline(613,199,627,199,colourRED,colourGRN,colourBLU,255)
+tpt.drawline(613,215,627,215,colourRED,colourGRN,colourBLU,255)
+tpt.drawline(613,231,627,231,colourRED,colourGRN,colourBLU,255)
+tpt.drawline(613,247,627,247,colourRED,colourGRN,colourBLU,255)
+tpt.drawline(613,263,627,263,colourRED,colourGRN,colourBLU,255)
+tpt.drawline(613,279,627,279,colourRED,colourGRN,colourBLU,255)
+tpt.drawline(613,295,627,295,colourRED,colourGRN,colourBLU,255)
+tpt.drawline(613,311,627,311,colourRED,colourGRN,colourBLU,255)
+tpt.drawline(613,327,627,327,colourRED,colourGRN,colourBLU,255)
+tpt.drawline(613,343,627,343,colourRED,colourGRN,colourBLU,255)
+tpt.drawline(613,359,627,359,colourRED,colourGRN,colourBLU,255)
+tpt.drawline(613,375,627,375,colourRED,colourGRN,colourBLU,255)
+tpt.drawline(613,391,627,391,colourRED,colourGRN,colourBLU,255)
+tpt.drawline(1, 0, 310, 0, colourRED,colourGRN,colourBLU,255)
+tpt.drawline(340, 0, 610, 0,colourRED,colourGRN,colourBLU,255)
+end
+
+tpt.register_step(colourblender)
 tpt.register_step(theme)
-
 mp:action(function(sender)
 clearsb()
 fs.makeDirectory("scripts")
@@ -419,79 +488,92 @@ interface.removeComponent(mp8)
 end
 
 mp1:action(function(sender)
+MANAGER.savesetting("CRK","savergb",0)
 MANAGER.savesetting("CRK","ar",70)
 MANAGER.savesetting("CRK","ag",70)
 MANAGER.savesetting("CRK","ab",70)
 MANAGER.savesetting("CRK","al",255)
+tpt.unregister_step(colourblender)
+tpt.register_step(theme)
 mpremove()
 end)
 
 mp2:action(function(sender)
+MANAGER.savesetting("CRK","savergb",0)
 MANAGER.savesetting("CRK","ar",255)
 MANAGER.savesetting("CRK","ag",0)
 MANAGER.savesetting("CRK","ab",0)
 MANAGER.savesetting("CRK","al",255)
 tpt.register_step(theme)
+tpt.unregister_step(colourblender)
 mpremove()
 end)
 
 mp3:action(function(sender)
+MANAGER.savesetting("CRK","savergb",0)
 MANAGER.savesetting("CRK","ar",0)
 MANAGER.savesetting("CRK","ag",0)
 MANAGER.savesetting("CRK","ab",255)
 MANAGER.savesetting("CRK","al",255)
 tpt.register_step(theme)
+tpt.unregister_step(colourblender)
 mpremove()
 end)
 
 mp4:action(function(sender)
+MANAGER.savesetting("CRK","savergb",0)
 MANAGER.savesetting("CRK","ar",0)
 MANAGER.savesetting("CRK","ag",255)
 MANAGER.savesetting("CRK","ab",0)
 MANAGER.savesetting("CRK","al",255)
 tpt.register_step(theme)
+tpt.unregister_step(colourblender)
 mpremove()
 end)
 
 mp5:action(function(sender)
+MANAGER.savesetting("CRK","savergb",0)
 MANAGER.savesetting("CRK","ar",255)
 MANAGER.savesetting("CRK","ag",255)
 MANAGER.savesetting("CRK","ab",0)
 MANAGER.savesetting("CRK","al",255)
 tpt.register_step(theme)
+tpt.unregister_step(colourblender)
 mpremove()
 end)
 
 mp6:action(function(sender)
+MANAGER.savesetting("CRK","savergb",0)
 MANAGER.savesetting("CRK","ar",255)
 MANAGER.savesetting("CRK","ag",150)
 MANAGER.savesetting("CRK","ab",0)
 MANAGER.savesetting("CRK","al",255)
 tpt.register_step(theme)
+tpt.unregister_step(colourblender)
 mpremove()
 end)
 
 mp7:action(function(sender)
+MANAGER.savesetting("CRK","savergb",0)
 MANAGER.savesetting("CRK","ar",255)
 MANAGER.savesetting("CRK","ag",255)
 MANAGER.savesetting("CRK","ab",255)
 MANAGER.savesetting("CRK","al",255)
 tpt.register_step(theme)
+tpt.unregister_step(colourblender)
 mpremove()
 end)
 
 mp8:action(function(sender)
-MANAGER.savesetting("CRK","ar",120)
-MANAGER.savesetting("CRK","ag",0)
-MANAGER.savesetting("CRK","ab",0)
-MANAGER.savesetting("CRK","al",255)
-tpt.register_step(theme)
+MANAGER.savesetting("CRK","savergb",1)
+tpt.register_step(colourblender)
+tpt.unregister_step(theme)
 mpremove()
 end)
 
 function topbar()
-tpt.drawline(1, 0, 310, 0, ar, ag, ab,200)
-tpt.drawline(340, 0, 610, 0,ar, ag, ab, 200)
+tpt.drawline(1, 0, 310, 0, ar, ag, ab,150)
+tpt.drawline(340, 0, 610, 0,ar, ag, ab,150)
 end
 
 tpt.register_step(topbar)
@@ -605,10 +687,6 @@ reset:action(function(sender)
 tgr = 0
 tgg  = 0
 tgb = 200
-MANAGER.savesetting("CRK","ar",120)
-MANAGER.savesetting("CRK","ag",0)
-MANAGER.savesetting("CRK","ab",0)
-MANAGER.savesetting("CRK","al",255)
 tpt.el.dyst.menu=0
 tpt.el.eqve.menu=0
 tpt.el.shd4.menu=0
@@ -633,6 +711,7 @@ tpt.watertest(0)
 sim.edgeMode(0) 
 tpt.setfpscap(60)
 tpt.setwindowsize(1)
+tpt.register_step(colourblender)
 tpt.register_step(topbar)
 tpt.newtonian_gravity(0)
 tpt.decorations_enable(0)
