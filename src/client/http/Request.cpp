@@ -199,6 +199,13 @@ namespace http
 #endif
 			// TODO: Find out what TLS1.2 is supported on, might need to also allow TLS1.0
 			curl_easy_setopt(easy, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
+#if defined(CURL_AT_LEAST_VERSION) && CURL_AT_LEAST_VERSION(7, 70, 0)
+			curl_easy_setopt(easy, CURLOPT_SSL_OPTIONS, CURLSSLOPT_REVOKE_BEST_EFFORT);
+#elif defined(CURL_AT_LEAST_VERSION) && CURL_AT_LEAST_VERSION(7, 44, 0)
+			curl_easy_setopt(easy, CURLOPT_SSL_OPTIONS, CURLSSLOPT_NO_REVOKE);
+#elif defined(WIN)
+# error "That's unfortunate."
+#endif
 			curl_easy_setopt(easy, CURLOPT_MAXREDIRS, 10L);
 
 			curl_easy_setopt(easy, CURLOPT_ERRORBUFFER, error_buffer);
