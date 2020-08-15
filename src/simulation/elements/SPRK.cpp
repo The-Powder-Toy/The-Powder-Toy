@@ -240,6 +240,21 @@ static int update(UPDATE_FUNC_ARGS)
 						}
 					}
 					continue;
+
+				case PT_ECLR:
+				{
+					if (sender == PT_PSCN)
+					{
+						parts[ID(r)].life = 10;
+						parts[ID(r)].tmp2 = 10;
+					}
+					if (sender == PT_NSCN)
+					{
+						parts[ID(r)].life = 10;
+						parts[ID(r)].tmp2 = 20;
+					}
+				}
+					continue;
 				case PT_LED:
 					if (parts[i].life < 4)
 					{

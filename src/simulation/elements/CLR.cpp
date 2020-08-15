@@ -1,6 +1,7 @@
 #include "simulation/ElementCommon.h"
 
 static int update(UPDATE_FUNC_ARGS);
+static int graphics(GRAPHICS_FUNC_ARGS);
 void Element::Element_ECLR()
 {
 	Identifier = "DEFAULT_PT_ECLR";
@@ -28,7 +29,7 @@ void Element::Element_ECLR()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = "Electronic eraser, clears surrounding when sparked with PSCN. Use. tmp to set radius.";
+	Description = "Electronic eraser, clears surrounding when sparked with PSCN & NSCN. Use .tmp to set radius.";
 
 	Properties = TYPE_SOLID;
 
@@ -42,6 +43,7 @@ void Element::Element_ECLR()
 	HighTemperatureTransition = NT;
 	DefaultProperties.tmp = 10;
 	Update = &update;
+	Graphics = &graphics;
 }
 
 static int update(UPDATE_FUNC_ARGS)
@@ -49,6 +51,11 @@ static int update(UPDATE_FUNC_ARGS)
 	int range = parts[i].tmp;
 	if (parts [i].tmp > 100|| parts[i].tmp < 0)
 		parts[i].tmp = 10;
+	if (parts[i].life > 0)
+		parts[i].life--;
+	if (parts[i].tmp2 > 0)
+		parts[i].tmp2--;
+
 	for (int rx = -range; rx < range + 1; rx++)
 		for (int ry = -range; ry < range + 1; ry++)
 			if (x + rx >= 0 && y + ry >= 0 && x + rx < XRES && y + ry < YRES && (rx || ry))
@@ -58,19 +65,36 @@ static int update(UPDATE_FUNC_ARGS)
 					r = sim->photons[y + ry][x + rx];
 				if (!r)
 					continue;
-				if (parts[i].life == 1 && parts[ID(r)].type != PT_PSCN && parts[ID(r)].type != PT_SPRK)
+				if (parts[i].life == 1 && parts[ID(r)].type != PT_PSCN && parts[ID(r)].type != PT_ECLR)
 				{
 					sim->part_change_type(ID(r), x + rx, y + ry, PT_NONE);
 					continue;
 				}
-				if (parts[ID(r)].type == PT_SPRK)
+				if (parts[i].life == 1 && parts[i].tmp2 == 20)
 				{
-						parts[i].life = 1;
-				}
-				else
-				{
-					parts[i].life = 0;
+					sim->part_change_type(ID(r), x + rx, y + ry, PT_NONE);
+					continue;
 				}
 			}
+	return 0;
+}
+
+static int graphics(GRAPHICS_FUNC_ARGS)
+{
+	if (cpart->tmp2 > 1 && cpart->tmp2 < 20)
+	{
+		*colr = 255;
+		*colg = 0;
+		*colb = 0;
+		*pixel_mode |= PMODE_LFLARE;
+	}
+
+	if (cpart->tmp2 > 10)
+	{
+		*colr = 0;
+		*colg = 0;
+		*colb = 255;
+		*pixel_mode |= PMODE_LFLARE;
+	}
 	return 0;
 }
