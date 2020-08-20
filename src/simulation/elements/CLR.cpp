@@ -29,7 +29,7 @@ void Element::Element_ECLR()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = "Electronic eraser, clears surrounding when sparked with PSCN & NSCN. Use .tmp to set radius.";
+	Description = "Electronic eraser, clears surrounding when sparked with PSCN & NSCN. Use .tmp to set radius. Read wiki!";
 
 	Properties = TYPE_SOLID;
 
@@ -53,8 +53,6 @@ static int update(UPDATE_FUNC_ARGS)
 		parts[i].tmp = 10;
 	if (parts[i].life > 0)
 		parts[i].life--;
-	if (parts[i].tmp2 > 0)
-		parts[i].tmp2--;
 
 	for (int rx = -range; rx < range + 1; rx++)
 		for (int ry = -range; ry < range + 1; ry++)
@@ -65,14 +63,15 @@ static int update(UPDATE_FUNC_ARGS)
 					r = sim->photons[y + ry][x + rx];
 				if (!r)
 					continue;
-				if (parts[i].life == 1 && parts[ID(r)].type != PT_PSCN && parts[ID(r)].type != PT_ECLR)
+				if (parts[i].life > 0 && parts[i].life < 14 && parts[ID(r)].type != PT_PSCN && parts[ID(r)].type != PT_WIFI && parts[ID(r)].ctype != PT_PSCN)
 				{
 					sim->part_change_type(ID(r), x + rx, y + ry, PT_NONE);
 					continue;
 				}
-				if (parts[i].life == 1 && parts[i].tmp2 == 20)
+				else if  (parts[i].life >= 14 )
 				{
 					sim->part_change_type(ID(r), x + rx, y + ry, PT_NONE);
+					sim->part_change_type(i, x, y, PT_NONE);
 					continue;
 				}
 			}
@@ -81,7 +80,7 @@ static int update(UPDATE_FUNC_ARGS)
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
-	if (cpart->tmp2 > 1 && cpart->tmp2 < 20)
+	if (cpart->life > 0 )
 	{
 		*colr = 255;
 		*colg = 0;
@@ -89,12 +88,11 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 		*pixel_mode |= PMODE_LFLARE;
 	}
 
-	if (cpart->tmp2 > 10)
-	{
-		*colr = 0;
+	if (cpart->life > 15)
+	{	*colr = 0;
 		*colg = 0;
 		*colb = 255;
 		*pixel_mode |= PMODE_LFLARE;
 	}
-	return 0;
+		return 0;
 }

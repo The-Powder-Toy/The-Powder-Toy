@@ -246,12 +246,10 @@ static int update(UPDATE_FUNC_ARGS)
 					if (sender == PT_PSCN)
 					{
 						parts[ID(r)].life = 10;
-						parts[ID(r)].tmp2 = 10;
 					}
 					if (sender == PT_NSCN)
 					{
-						parts[ID(r)].life = 10;
-						parts[ID(r)].tmp2 = 20;
+						parts[ID(r)].life = 20;
 					}
 				}
 					continue;
