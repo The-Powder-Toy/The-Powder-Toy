@@ -55,7 +55,7 @@ int LuaTextbox::readonly(lua_State * l)
 
 int LuaTextbox::onTextChanged(lua_State * l)
 {
-	return onTextChangedFunction.CheckAndAssignArg1();
+	return onTextChangedFunction.CheckAndAssignArg1(l);
 }
 
 void LuaTextbox::triggerOnTextChanged()

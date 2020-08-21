@@ -53,7 +53,7 @@ int LuaButton::enabled(lua_State * l)
 
 int LuaButton::action(lua_State * l)
 {
-	return actionFunction.CheckAndAssignArg1();
+	return actionFunction.CheckAndAssignArg1(l);
 }
 
 int LuaButton::text(lua_State * l)

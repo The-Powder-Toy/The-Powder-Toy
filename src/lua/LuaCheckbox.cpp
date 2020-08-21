@@ -51,7 +51,7 @@ int LuaCheckbox::checked(lua_State * l)
 
 int LuaCheckbox::action(lua_State * l)
 {
-	return actionFunction.CheckAndAssignArg1();
+	return actionFunction.CheckAndAssignArg1(l);
 }
 
 int LuaCheckbox::text(lua_State * l)

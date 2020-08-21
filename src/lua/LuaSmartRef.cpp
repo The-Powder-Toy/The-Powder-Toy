@@ -3,14 +3,16 @@
 
 void LuaSmartRef::Clear()
 {
-	luaL_unref(l, LUA_REGISTRYINDEX, ref);
+	luaL_unref(rootl, LUA_REGISTRYINDEX, ref);
 	ref = LUA_REFNIL;
 }
 
-LuaSmartRef::LuaSmartRef(lua_State *state) :
-	ref(LUA_REFNIL),
-	l(state)
+LuaSmartRef::LuaSmartRef(lua_State *l) :
+	ref(LUA_REFNIL)
 {
+	tpt_lua_getmainthread(l);
+	rootl = lua_tothread(l, -1);
+	lua_pop(l, 1);
 }
 
 LuaSmartRef::~LuaSmartRef()
@@ -18,20 +20,21 @@ LuaSmartRef::~LuaSmartRef()
 	Clear();
 }
 
-void LuaSmartRef::Assign(int index)
+void LuaSmartRef::Assign(lua_State *l, int index)
 {
+	if (index < 0)
+	{
+		index = lua_gettop(l) + index + 1;
+	}
 	Clear();
 	lua_pushvalue(l, index);
 	ref = luaL_ref(l, LUA_REGISTRYINDEX);
 }
 
-LuaSmartRef::operator int() const
+int LuaSmartRef::Push(lua_State *l)
 {
-	return ref;
+	lua_rawgeti(l, LUA_REGISTRYINDEX, ref);
+	return lua_type(l, -1);
 }
 
-LuaSmartRef::operator bool() const
-{
-	return ref != LUA_REFNIL;
-}
 #endif

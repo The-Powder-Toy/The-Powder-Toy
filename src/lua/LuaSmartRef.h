@@ -5,16 +5,22 @@
 class LuaSmartRef
 {
 	int ref;
-
-protected:
-	lua_State *l;
+	lua_State *rootl;
 
 public:
 	LuaSmartRef(lua_State *l);
 	~LuaSmartRef();
-	void Assign(int index); // Copies the value before getting reference, stack unchanged.
+	void Assign(lua_State *l, int index); // Copies the value before getting reference, stack unchanged.
 	void Clear();
-	operator int() const;
-	operator bool() const;
-};
+	int Push(lua_State *l); // Always pushes exactly one value, possibly nil.
 
+	inline operator int() const
+	{
+		return ref;
+	}
+
+	inline operator bool() const
+	{
+		return ref != LUA_REFNIL;
+	}
+};

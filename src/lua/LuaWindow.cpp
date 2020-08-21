@@ -131,7 +131,7 @@ int LuaWindow::addComponent(lua_State * l)
 		if (ok.second)
 		{
 			auto it = ok.first;
-			it->second.Assign(1);
+			it->second.Assign(l, 1);
 			it->first->owner_ref = it->second;
 		}
 		window->AddComponent(luaComponent->GetComponent());
@@ -416,72 +416,72 @@ void LuaWindow::triggerOnKeyRelease(int key, int scan, bool repeat, bool shift, 
 
 int LuaWindow::onInitialized(lua_State * l)
 {
-	return onInitializedFunction.CheckAndAssignArg1();
+	return onInitializedFunction.CheckAndAssignArg1(l);
 }
 
 int LuaWindow::onExit(lua_State * l)
 {
-	return onExitFunction.CheckAndAssignArg1();
+	return onExitFunction.CheckAndAssignArg1(l);
 }
 
 int LuaWindow::onTick(lua_State * l)
 {
-	return onTickFunction.CheckAndAssignArg1();
+	return onTickFunction.CheckAndAssignArg1(l);
 }
 
 int LuaWindow::onDraw(lua_State * l)
 {
-	return onDrawFunction.CheckAndAssignArg1();
+	return onDrawFunction.CheckAndAssignArg1(l);
 }
 
 int LuaWindow::onFocus(lua_State * l)
 {
-	return onFocusFunction.CheckAndAssignArg1();
+	return onFocusFunction.CheckAndAssignArg1(l);
 }
 
 int LuaWindow::onBlur(lua_State * l)
 {
-	return onBlurFunction.CheckAndAssignArg1();
+	return onBlurFunction.CheckAndAssignArg1(l);
 }
 
 int LuaWindow::onTryExit(lua_State * l)
 {
-	return onTryExitFunction.CheckAndAssignArg1();
+	return onTryExitFunction.CheckAndAssignArg1(l);
 }
 
 int LuaWindow::onTryOkay(lua_State * l)
 {
-	return onTryOkayFunction.CheckAndAssignArg1();
+	return onTryOkayFunction.CheckAndAssignArg1(l);
 }
 
 int LuaWindow::onMouseMove(lua_State * l)
 {
-	return onMouseMoveFunction.CheckAndAssignArg1();
+	return onMouseMoveFunction.CheckAndAssignArg1(l);
 }
 
 int LuaWindow::onMouseDown(lua_State * l)
 {
-	return onMouseDownFunction.CheckAndAssignArg1();
+	return onMouseDownFunction.CheckAndAssignArg1(l);
 }
 
 int LuaWindow::onMouseUp(lua_State * l)
 {
-	return onMouseUpFunction.CheckAndAssignArg1();
+	return onMouseUpFunction.CheckAndAssignArg1(l);
 }
 
 int LuaWindow::onMouseWheel(lua_State * l)
 {
-	return onMouseWheelFunction.CheckAndAssignArg1();
+	return onMouseWheelFunction.CheckAndAssignArg1(l);
 }
 
 int LuaWindow::onKeyPress(lua_State * l)
 {
-	return onKeyPressFunction.CheckAndAssignArg1();
+	return onKeyPressFunction.CheckAndAssignArg1(l);
 }
 
 int LuaWindow::onKeyRelease(lua_State * l)
 {
-	return onKeyReleaseFunction.CheckAndAssignArg1();
+	return onKeyReleaseFunction.CheckAndAssignArg1(l);
 }
 
 

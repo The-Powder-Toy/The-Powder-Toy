@@ -14,7 +14,7 @@ class LuaComponentCallback : public LuaSmartRef
 {
 public:
 	using LuaSmartRef::LuaSmartRef;
-	int CheckAndAssignArg1();
+	int CheckAndAssignArg1(lua_State *l);
 };
 
 class LuaComponent
