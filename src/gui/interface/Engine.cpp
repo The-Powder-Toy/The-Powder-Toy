@@ -276,6 +276,12 @@ void Engine::onMouseUnclick(int x, int y, unsigned button)
 		state_->DoMouseUp(x, y, button);
 }
 
+void Engine::initialMouse(int x, int y)
+{
+	mousexp_ = x;
+	mouseyp_ = y;
+}
+
 void Engine::onMouseMove(int x, int y)
 {
 	mousex_ = x;

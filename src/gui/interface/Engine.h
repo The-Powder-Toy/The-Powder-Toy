@@ -25,6 +25,7 @@ namespace ui
 		void ShowWindow(Window * window);
 		int CloseWindow();
 
+		void initialMouse(int x, int y);
 		void onMouseMove(int x, int y);
 		void onMouseClick(int x, int y, unsigned button);
 		void onMouseUnclick(int x, int y, unsigned button);

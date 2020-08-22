@@ -406,11 +406,11 @@ void EventProcess(SDL_Event event)
 		// if mouse hasn't moved yet, sdl will send 0,0. We don't want that
 		if (hasMouseMoved)
 		{
-			mousex = event.motion.x;
-			mousey = event.motion.y;
+			mousex = event.button.x;
+			mousey = event.button.y;
 		}
 		mouseButton = event.button.button;
-		engine->onMouseClick(event.motion.x, event.motion.y, mouseButton);
+		engine->onMouseClick(mousex, mousey, mouseButton);
 
 		mouseDown = true;
 #if !defined(NDEBUG) && !defined(DEBUG)
@@ -421,8 +421,8 @@ void EventProcess(SDL_Event event)
 		// if mouse hasn't moved yet, sdl will send 0,0. We don't want that
 		if (hasMouseMoved)
 		{
-			mousex = event.motion.x;
-			mousey = event.motion.y;
+			mousex = event.button.x;
+			mousey = event.button.y;
 		}
 		mouseButton = event.button.button;
 		engine->onMouseUnclick(mousex, mousey, mouseButton);
@@ -441,6 +441,7 @@ void EventProcess(SDL_Event event)
 			{
 				//initial mouse coords, sdl won't tell us this if mouse hasn't moved
 				CalculateMousePosition(&mousex, &mousey);
+				engine->initialMouse(mousex, mousey);
 				engine->onMouseMove(mousex, mousey);
 				calculatedInitialMouse = true;
 			}
