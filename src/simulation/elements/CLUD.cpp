@@ -4,7 +4,7 @@ void Element::Element_CLUD()
 {
 	Identifier = "DEFAULT_PT_CLUD";
 	Name = "CLUD";
-	Colour = PIXPACK(0x404039);
+	Colour = PIXPACK(0x303035);
 	MenuVisible = 1;
 	MenuSection = SC_GAS;
 	Enabled = 1;

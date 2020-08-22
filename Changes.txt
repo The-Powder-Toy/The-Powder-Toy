@@ -10,14 +10,13 @@ Optimisations to some of the new elements (better performance.)
 Remove the watermark from screenshots.
 Add Stack tools.
 Auto select latest theme if nothing was selected.
-Script version in now shown separately when opening the menu.
-Merge changes from version 96.0
+Script version is now shown separately when opening the menu.
 Added new themes.
 Update/change text for 15.0
 Replace version check option with new tools.
 
 #Bug Fixes:
-Fix X and Y coords not showing up correctly.
+Fix X and Y coords not showing up correctly (while in debug mode.)
 Fix PHOS behaving oddly with CFLM and FIRE.
 Fix reset button selecting wrong theme for startup. 
 Fix W key not switching between new gravity modes properly.

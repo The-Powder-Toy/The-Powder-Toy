@@ -64,6 +64,18 @@ static int update(UPDATE_FUNC_ARGS)
 					parts[i].type = PT_SING;
 				}
 
+
+				int r, rx, ry;
+				for (rx = -4; rx < 3; rx++)
+					for (ry = -4; ry < 3; ry++)
+						if (BOUNDS_CHECK && (rx || ry))
+						{
+							r = pmap[y + ry][x + rx];
+							if (parts[i].tmp <= 150 && parts[i].temp >= 474.15f)
+							{
+								sim->pv[(y / CELL) + ry][(x / CELL) + rx] = -4.0f;
+							}
+						}
 	return 0;
 }
 
