@@ -71,7 +71,7 @@ static int update(UPDATE_FUNC_ARGS)
 						if (BOUNDS_CHECK && (rx || ry))
 						{
 							r = pmap[y + ry][x + rx];
-							if (parts[i].tmp <= 150 && parts[i].temp >= 474.15f)
+							if (parts[i].tmp <= 170 && parts[i].temp >= 474.15f)
 							{
 								sim->pv[(y / CELL) + ry][(x / CELL) + rx] = -4.0f;
 							}
@@ -85,6 +85,12 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 	{
 		*pixel_mode |= PMODE_LFLARE;
 	}
+	if (cpart->tmp <= 50)
+	{
+		*colb = 50;
+		*colg = 225;
+		*colr = 225;
+	}
 	if (cpart->temp > 273.15f && cpart->temp < 373.15f)
 	{
 		*colb = 200;
@@ -93,7 +99,7 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 		*pixel_mode |= PMODE_FLARE;
 		
 	}
-	if (cpart->temp >= 374.15f)
+	if (cpart->temp >= 374.15f && cpart->tmp >50)
 	{
 		*colb = cpart->tmp2 / 5;
 		*colg = cpart->tmp2 / 5;

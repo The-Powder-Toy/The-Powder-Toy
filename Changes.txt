@@ -3,7 +3,7 @@ Changelog for Version 15.0:
 #Additions/changes:
 Pulse theme is now set as default when launching game for first time.
 THRM is now THMO (Preventing confusion with THRM i.e thermite.)
-New elements: CLOUD, BEE, SLCN and ELCR (read wiki!)
+New elements: CLOUD, BEE, SLCN, C-16 and ELCR (read wiki!)
 QGP explodes in a much better way now.
 Bigger buttons for new menu.
 Place Hidden elements in the correct menus.
