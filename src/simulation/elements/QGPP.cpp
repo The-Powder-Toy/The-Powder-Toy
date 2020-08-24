@@ -81,21 +81,21 @@ static int update(UPDATE_FUNC_ARGS)
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
-	if (cpart->tmp <= 400)
+	if (cpart->tmp <= 400 && cpart->temp >= 374.15f)
 	{
 		*pixel_mode |= PMODE_LFLARE;
 	}
-	if (cpart->tmp <= 50)
+	if (cpart->tmp <= 50 && cpart->temp >= 374.15f)
 	{
 		*colb = 50;
 		*colg = 225;
 		*colr = 225;
 	}
-	if (cpart->temp > 273.15f && cpart->temp < 373.15f)
+	if (cpart->temp < 373.15f)
 	{
-		*colb = 200;
-		*colg = 150;
-		*colr = 150;
+		*colb = 139;
+		*colg = 0;
+		*colr = 139;
 		*pixel_mode |= PMODE_FLARE;
 		
 	}
@@ -103,7 +103,7 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 	{
 		*colb = cpart->tmp2 / 5;
 		*colg = cpart->tmp2 / 5;
-		*colr = 210;
+		*colr = 240;
 		*pixel_mode |= PMODE_FLARE;
 	}
 
