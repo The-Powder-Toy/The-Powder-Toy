@@ -64,6 +64,10 @@ int main(int argc, char *argv[])
 	ByteString ppmFilename, ptiFilename, ptiSmallFilename, pngFilename, pngSmallFilename;
 	std::vector<char> ppmFile, ptiFile, ptiSmallFile, pngFile, pngSmallFile;
 
+	if (!argv[1] || !argv[2]) {
+		std::cout << "Usage: " << argv[0] << " <inputFilename> <outputPrefix>" << std::endl;
+		return 1;
+	}
 	inputFilename = argv[1];
 	outputPrefix = argv[2];
 
