@@ -1,8 +1,5 @@
 #include "simulation/ElementCommon.h"
 
-bool Element_GOL_colourInit = false;
-pixel Element_GOL_colour[NGOL];
-
 static int graphics(GRAPHICS_FUNC_ARGS);
 static void create(ELEMENT_CREATE_FUNC_ARGS);
 
@@ -49,17 +46,6 @@ void Element::Element_LIFE()
 
 	Graphics = &graphics;
 	Create = &create;
-
-	if (!Element_GOL_colourInit)
-	{
-		Element_GOL_colourInit = true;
-
-		std::vector<gol_menu> golMenuT = LoadGOLMenu();
-		for(int i = 0; i < NGOL; i++)
-		{
-			Element_GOL_colour[i] = golMenuT[i].colour;
-		}
-	}
 }
 
 static int graphics(GRAPHICS_FUNC_ARGS)
@@ -110,7 +96,7 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 	}
 	else if (cpart->ctype >= 0 && cpart->ctype < NGOL)
 	{
-		pc = Element_GOL_colour[cpart->ctype];
+		pc = builtinGol[cpart->ctype].colour;
 	}
 	else
 		pc = ren->sim->elements[cpart->type].Colour;
@@ -124,7 +110,7 @@ static void create(ELEMENT_CREATE_FUNC_ARGS)
 {
 	if (v >= 0 && v < NGOL)
 	{
-		sim->parts[i].tmp = sim->grule[v+1][9] - 1;
+		sim->parts[i].tmp = (builtinGol[v].ruleset >> 17) + 1;
 		sim->parts[i].ctype = v;
 	}
 }

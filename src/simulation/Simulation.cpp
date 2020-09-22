@@ -2250,7 +2250,7 @@ void Simulation::clear_sim(void)
 	memset(fvy, 0, sizeof(fvy));
 	memset(photons, 0, sizeof(photons));
 	memset(wireless, 0, sizeof(wireless));
-	memset(gol2, 0, sizeof(gol2));
+	memset(gol, 0, sizeof(gol));
 	memset(portalp, 0, sizeof(portalp));
 	memset(fighters, 0, sizeof(fighters));
 	std::fill(elementCount, elementCount+PT_NUM, 0);
@@ -4659,120 +4659,6 @@ int Simulation::GetParticleType(ByteString type)
 	return -1;
 }
 
-void Simulation::SimulateGoL()
-{
-	CGOL = 0;
-	//TODO: maybe this should only loop through active particles
-	for (int ny = CELL; ny < YRES-CELL; ny++)
-	{
-		//go through every particle and set neighbor map
-		for (int nx = CELL; nx < XRES-CELL; nx++)
-		{
-			int r = pmap[ny][nx];
-			if (!r)
-			{
-				gol[ny][nx] = 0;
-				continue;
-			}
-			if (TYP(r) == PT_LIFE)
-			{
-				int golnum = parts[ID(r)].ctype + 1;
-				if (golnum <= 0 || golnum > NGOL)
-				{
-					kill_part(ID(r));
-					continue;
-				}
-				gol[ny][nx] = golnum;
-				if (parts[ID(r)].tmp == grule[golnum][9]-1)
-				{
-					for (int nnx = -1; nnx < 2; nnx++)
-					{
-						//it will count itself as its own neighbor, which is needed, but will have 1 extra for delete check
-						for (int nny = -1; nny < 2; nny++)
-						{
-							int adx = ((nx+nnx+XRES-3*CELL)%(XRES-2*CELL))+CELL;
-							int ady = ((ny+nny+YRES-3*CELL)%(YRES-2*CELL))+CELL;
-							int rt = pmap[ady][adx];
-							if (!rt || TYP(rt) == PT_LIFE)
-							{
-								//the total neighbor count is in 0
-								gol2[ady][adx][0] ++;
-								//insert golnum into neighbor table
-								for (int i = 1; i < 9; i++)
-								{
-									if (!gol2[ady][adx][i])
-									{
-										gol2[ady][adx][i] = (golnum<<4)+1;
-										break;
-									}
-									else if((gol2[ady][adx][i]>>4)==golnum)
-									{
-										gol2[ady][adx][i]++;
-										break;
-									}
-								}
-							}
-						}
-					}
-				}
-				else
-				{
-					if (!(bmap[ny/CELL][nx/CELL] == WL_STASIS && emap[ny/CELL][nx/CELL] < 8))
-					{
-						parts[ID(r)].tmp --;
-					}
-				}
-			}
-		}
-	}
-	for (int ny = CELL; ny < YRES-CELL; ny++)
-	{
-		//go through every particle again, but check neighbor map, then update particles
-		for (int nx = CELL; nx < XRES-CELL; nx++)
-		{
-			int r = pmap[ny][nx];
-			if (r && TYP(r)!=PT_LIFE)
-				continue;
-			int neighbors = gol2[ny][nx][0];
-			if (neighbors)
-			{
-				if (!(bmap[ny/CELL][nx/CELL] == WL_STASIS && emap[ny/CELL][nx/CELL] < 8))
-				{
-					int golnum = gol[ny][nx];
-					if (!r)
-					{
-						//Find which type we can try and create
-						int creategol = 0xFF;
-						for (int i = 1; i < 9; i++)
-						{
-							if (!gol2[ny][nx][i]) break;
-							golnum = (gol2[ny][nx][i]>>4);
-							if (grule[golnum][neighbors]>= 2 && (gol2[ny][nx][i]&0xF) >= (neighbors%2)+neighbors/2)
-							{
-								if (golnum < creategol)
-									creategol = golnum;
-							}
-						}
-						if (creategol < 0xFF)
-							create_part(-1, nx, ny, PT_LIFE, creategol-1);
-					}
-					else if (grule[golnum][neighbors-1] == 0 || grule[golnum][neighbors-1] == 2)//subtract 1 because it counted itself
-					{
-						if (parts[ID(r)].tmp == grule[golnum][9]-1)
-							parts[ID(r)].tmp--;
-					}
-				}
-				for (int z = 0; z < 9; z++)
-					gol2[ny][nx][z] = 0;//this improves performance A LOT compared to the memset, i was getting ~23 more fps with this.
-			}
-			//we still need to kill things with 0 neighbors (higher state life)
-			if (r && parts[ID(r)].tmp <= 0)
-				kill_part(ID(r));
-		}
-	}
-	//memset(gol2, 0, sizeof(gol2));
-}
-
 void Simulation::RecalcFreeParticles(bool do_life_dec)
 {
 	int x, y, t;
@@ -4868,6 +4754,174 @@ void Simulation::RecalcFreeParticles(bool do_life_dec)
 	parts_lastActiveIndex = lastPartUsed;
 	if (elementRecount && (!sys_pause || framerender))
 		elementRecount = false;
+}
+
+void Simulation::SimulateGoL()
+{
+	CGOL = 0;
+	for (int i = 0; i <= parts_lastActiveIndex; ++i)
+	{
+		auto &part = parts[i];
+		if (part.type != PT_LIFE || part.ctype < 0 || part.ctype >= NGOL)
+		{
+			continue;
+		}
+		auto x = int(part.x + 0.5f);
+		auto y = int(part.y + 0.5f);
+		if (x < CELL || y < CELL || x >= XRES - CELL || y >= YRES - CELL)
+		{
+			continue;
+		}
+		unsigned int ruleset = part.ctype;
+		unsigned int golnum = part.ctype;
+		if (ruleset < NGOL)
+		{
+			ruleset = builtinGol[ruleset].ruleset;
+			golnum += 1;
+		}
+		if (part.tmp == (ruleset >> 17) + 1)
+		{
+			for (int yy = -1; yy <= 1; ++yy)
+			{
+				for (int xx = -1; xx <= 1; ++xx)
+				{
+					if (xx || yy)
+					{
+						// * Calculate address of the neighbourList, taking wraparound
+						//   into account. The fact that the GOL space is 2 CELL's worth
+						//   narrower in both dimensions than the simulation area makes
+						//   this a bit awkward.
+						int ax = ((x + xx + XRES - 3 * CELL) % (XRES - 2 * CELL)) + CELL;
+						int ay = ((y + yy + YRES - 3 * CELL) % (YRES - 2 * CELL)) + CELL;
+						unsigned int (&neighbourList)[5] = gol[ay][ax];
+						// * Bump overall neighbour counter (bits 30..28) for the entire list.
+						neighbourList[0] += 1U << 28;
+						for (int l = 0; l < 5; ++l)
+						{
+							auto neighbourGolnum = neighbourList[l] & 0x001FFFFFU;
+							if (neighbourGolnum == golnum)
+							{
+								// * Bump population counter (bits 23..21) of the
+								//   same kind of cell.
+								neighbourList[l] += 1U << 21;
+								break;
+							}
+							if (neighbourGolnum == 0)
+							{
+								// * Add the new kind of cell to the population. Both counters
+								//   have a bias of -1, so they're intentionally initialised
+								//   to 0 instead of 1 here. This is all so they can both
+								//   fit in 3 bits.
+								neighbourList[l] = ((yy & 3) << 26) | ((xx & 3) << 24) | golnum;
+								break;
+							}
+							// * If after 5 iterations the cell still hasn't contributed
+							//   to a list entry, it's surely a 6th kind of cell, meaning
+							//   there could be at most 3 of it in the neighbourhood,
+							//   as there are already 5 other kinds of cells present in
+							//   the list. This in turn means that it couldn't possibly
+							//   win the population ratio-based contest later on.
+						}
+					}
+				}
+			}
+		}
+		else
+		{
+			if (!(bmap[y / CELL][x / CELL] == WL_STASIS && emap[y / CELL][x / CELL] < 8))
+			{
+				part.tmp -= 1;
+			}
+		}
+	}
+	for (int y = CELL; y < YRES - CELL; ++y)
+	{
+		for (int x = CELL; x < XRES - CELL; ++x)
+		{
+			int r = pmap[y][x];
+			if (r && TYP(r) != PT_LIFE)
+			{
+				continue;
+			}
+			unsigned int (&neighbourList)[5] = gol[y][x];
+			auto nl0 = neighbourList[0];
+			if (r || nl0)
+			{
+				// * Get overall neighbour count (bits 30..28).
+				unsigned int neighbours = nl0 ? ((nl0 >> 28) & 7) + 1 : 0;
+				if (!(bmap[y / CELL][x / CELL] == WL_STASIS && emap[y / CELL][x / CELL] < 8))
+				{
+					if (r)
+					{
+						auto &part = parts[ID(r)];
+						unsigned int ruleset = part.ctype;
+						if (ruleset < NGOL)
+						{
+							ruleset = builtinGol[ruleset].ruleset;
+						}
+						if (!((ruleset >> neighbours) & 1) && part.tmp == (ruleset >> 17) + 1)
+						{
+							// * Start death sequence.
+							part.tmp -= 1;
+						}
+					}
+					else
+					{
+						unsigned int golnumToCreate = 0xFFFFFFFFU;
+						unsigned int createFromEntry = 0U;
+						unsigned int majority = neighbours / 2 + neighbours % 2;
+						for (int l = 0; l < 5; ++l)
+						{
+							auto golnum = neighbourList[l] & 0x001FFFFFU;
+							if (!golnum)
+							{
+								break;
+							}
+							auto ruleset = golnum;
+							if (ruleset < NGOL + 1)
+							{
+								golnum -= 1;
+								ruleset = builtinGol[golnum].ruleset;
+							}
+							if ((ruleset >> (neighbours + 8)) & 1 && ((neighbourList[l] >> 21) & 7) + 1 >= majority && golnum < golnumToCreate)
+							{
+								golnumToCreate = golnum;
+								createFromEntry = neighbourList[l];
+							}
+						}
+						if (golnumToCreate != 0xFFFFFFFFU)
+						{
+							int i = create_part(-1, x, y, PT_LIFE, golnumToCreate);
+							int xx = (createFromEntry >> 24) & 3;
+							int yy = (createFromEntry >> 26) & 3;
+							if (xx == 3) xx = -1;
+							if (yy == 3) yy = -1;
+							int ax = ((x - xx + XRES - 3 * CELL) % (XRES - 2 * CELL)) + CELL;
+							int ay = ((y - yy + YRES - 3 * CELL) % (YRES - 2 * CELL)) + CELL;
+							auto &sample = parts[ID(pmap[ay][ax])];
+							parts[i].dcolour = sample.dcolour;
+							parts[i].tmp2 = sample.tmp2;
+						}
+					}
+				}
+				for (int l = 0; l < 5 && neighbourList[l]; ++l)
+				{
+					neighbourList[l] = 0;
+				}
+			}
+		}
+	}
+	for (int y = CELL; y < YRES - CELL; ++y)
+	{
+		for (int x = CELL; x < XRES - CELL; ++x)
+		{
+			int r = pmap[y][x];
+			if (r && TYP(r) == PT_LIFE && parts[ID(r)].tmp <= 0)
+			{
+				kill_part(ID(r));
+			}
+		}
+	}
 }
 
 void Simulation::CheckStacking()
@@ -5205,8 +5259,6 @@ Simulation::Simulation():
 	platent = LoadLatent();
 	std::copy(GetElements().begin(), GetElements().end(), elements.begin());
 	tools = GetTools();
-	grule = LoadGOLRules();
-	gmenu = LoadGOLMenu();
 
 	player.comm = 0;
 	player2.comm = 0;
@@ -5221,7 +5273,7 @@ String Simulation::ElementResolve(int type, int ctype)
 {
 	if (type == PT_LIFE && ctype >= 0 && ctype < NGOL)
 	{
-		return gmenu[ctype].name;
+		return builtinGol[ctype].name;
 	}
 	else if (type >= 0 && type < PT_NUM)
 	{

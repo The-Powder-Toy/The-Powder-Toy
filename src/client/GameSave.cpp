@@ -1359,10 +1359,6 @@ void GameSave::readPSv(char * saveDataChar, int dataLength)
 	char tempSignText[255];
 	sign tempSign("", 0, 0, sign::Left);
 
-	//Gol data used to read older saves
-	std::vector<int> goltype = LoadGOLTypes();
-	std::vector<std::array<int, 10> > grule = LoadGOLRules();
-
 	std::vector<Element> elements = GetElements();
 
 	//New file header uses PSv, replacing fuC. This is to detect if the client uses a new save format for temperatures
@@ -1658,9 +1654,9 @@ void GameSave::readPSv(char * saveDataChar, int dataLength)
 					ttv |= (data[p++]);
 					particles[i-1].tmp = ttv;
 					if (ver<53 && !particles[i-1].tmp)
-						for (q = 1; q<=NGOL; q++) {
-							if (particles[i-1].type==goltype[q-1] && grule[q][9]==2)
-								particles[i-1].tmp = grule[q][9]-1;
+						for (q = 0; q < NGOL; q++) {
+							if (particles[i-1].type==builtinGol[q].oldtype && (builtinGol[q].ruleset >> 17)==0)
+								particles[i-1].tmp = (builtinGol[q].ruleset >> 17)+1;
 						}
 					if (ver>=51 && ver<53 && particles[i-1].type==PT_PBCN)
 					{
@@ -1844,7 +1840,7 @@ void GameSave::readPSv(char * saveDataChar, int dataLength)
 				//Replace old GOL
 				particles[i-1].type = PT_LIFE;
 				for (gnum = 0; gnum<NGOL; gnum++){
-					if (ty==goltype[gnum])
+					if (ty==builtinGol[gnum].oldtype)
 						particles[i-1].ctype = gnum;
 				}
 				ty = PT_LIFE;
@@ -1852,7 +1848,7 @@ void GameSave::readPSv(char * saveDataChar, int dataLength)
 			if(ver<52 && (ty==PT_CLNE || ty==PT_PCLN || ty==PT_BCLN)){
 				//Replace old GOL ctypes in clone
 				for (gnum = 0; gnum<NGOL; gnum++){
-					if (particles[i-1].ctype==goltype[gnum])
+					if (particles[i-1].ctype==builtinGol[gnum].oldtype)
 					{
 						particles[i-1].ctype = PT_LIFE;
 						particles[i-1].tmp = gnum;

@@ -303,7 +303,7 @@ void GameModel::BuildMenus()
 	//Build menu for GOL types
 	for(int i = 0; i < NGOL; i++)
 	{
-		Tool * tempTool = new ElementTool(PT_LIFE|PMAPID(i), sim->gmenu[i].name, sim->gmenu[i].description, PIXR(sim->gmenu[i].colour), PIXG(sim->gmenu[i].colour), PIXB(sim->gmenu[i].colour), "DEFAULT_PT_LIFE_"+sim->gmenu[i].name.ToAscii());
+		Tool * tempTool = new ElementTool(PT_LIFE|PMAPID(i), builtinGol[i].name, builtinGol[i].description, PIXR(builtinGol[i].colour), PIXG(builtinGol[i].colour), PIXB(builtinGol[i].colour), "DEFAULT_PT_LIFE_"+builtinGol[i].name.ToAscii());
 		menuList[SC_LIFE]->AddTool(tempTool);
 	}
 
