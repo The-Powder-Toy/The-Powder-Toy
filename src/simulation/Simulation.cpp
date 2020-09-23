@@ -4762,7 +4762,7 @@ void Simulation::SimulateGoL()
 	for (int i = 0; i <= parts_lastActiveIndex; ++i)
 	{
 		auto &part = parts[i];
-		if (part.type != PT_LIFE || part.ctype < 0 || part.ctype >= NGOL)
+		if (part.type != PT_LIFE)
 		{
 			continue;
 		}
@@ -4779,7 +4779,7 @@ void Simulation::SimulateGoL()
 			ruleset = builtinGol[ruleset].ruleset;
 			golnum += 1;
 		}
-		if (part.tmp == (ruleset >> 17) + 1)
+		if (part.tmp == int(ruleset >> 17) + 1)
 		{
 			for (int yy = -1; yy <= 1; ++yy)
 			{
@@ -4859,7 +4859,7 @@ void Simulation::SimulateGoL()
 						{
 							ruleset = builtinGol[ruleset].ruleset;
 						}
-						if (!((ruleset >> neighbours) & 1) && part.tmp == (ruleset >> 17) + 1)
+						if (!((ruleset >> neighbours) & 1) && part.tmp == int(ruleset >> 17) + 1)
 						{
 							// * Start death sequence.
 							part.tmp -= 1;
@@ -5271,9 +5271,37 @@ Simulation::Simulation():
 
 String Simulation::ElementResolve(int type, int ctype)
 {
-	if (type == PT_LIFE && ctype >= 0 && ctype < NGOL)
+	if (type == PT_LIFE)
 	{
-		return builtinGol[ctype].name;
+		if (ctype >= 0 && ctype < NGOL)
+		{
+			return builtinGol[ctype].name;
+		}
+		else
+		{
+			StringBuilder golName;
+			golName << "B";
+			for (int i = 1; i < 9; ++i)
+			{
+				if ((ctype >> (i + 8)) & 1)
+				{
+					golName << char('0' + i);
+				}
+			}
+			golName << "/S";
+			for (int i = 0; i < 9; ++i)
+			{
+				if ((ctype >> i) & 1)
+				{
+					golName << char('0' + i);
+				}
+			}
+			if (ctype >> 17)
+			{
+				golName << "/" << (ctype >> 17) + 2;
+			}
+			return golName.Build();
+		}
 	}
 	else if (type >= 0 && type < PT_NUM)
 	{

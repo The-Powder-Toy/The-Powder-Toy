@@ -50,7 +50,7 @@ void Element::Element_LIFE()
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
-	pixel pc;
+	pixel pc = 0;
 	if (cpart->ctype==NGT_LOTE)//colors for life states
 	{
 		if (cpart->tmp==2)
@@ -98,19 +98,35 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 	{
 		pc = builtinGol[cpart->ctype].colour;
 	}
+	if (pc)
+	{
+		*colr = PIXR(pc);
+		*colg = PIXG(pc);
+		*colb = PIXB(pc);
+	}
 	else
-		pc = ren->sim->elements[cpart->type].Colour;
-	*colr = PIXR(pc);
-	*colg = PIXG(pc);
-	*colb = PIXB(pc);
+	{
+		auto colour = cpart->dcolour;
+		if (!colour)
+		{
+			colour = PIXPACK(0xFF00FF);
+		}
+		auto mul = cpart->tmp / float((cpart->ctype >> 17) + 1);
+		*colr = PIXR(colour) * mul;
+		*colg = PIXG(colour) * mul;
+		*colb = PIXB(colour) * mul;
+	}
+	*pixel_mode |= NO_DECO;
 	return 0;
 }
 
 static void create(ELEMENT_CREATE_FUNC_ARGS)
 {
-	if (v >= 0 && v < NGOL)
+	sim->parts[i].ctype = v;
+	auto ruleset = (unsigned int)v;
+	if (ruleset < NGOL)
 	{
-		sim->parts[i].tmp = (builtinGol[v].ruleset >> 17) + 1;
-		sim->parts[i].ctype = v;
+		ruleset = builtinGol[ruleset].ruleset;
 	}
+	sim->parts[i].tmp = (ruleset >> 17) + 1;
 }

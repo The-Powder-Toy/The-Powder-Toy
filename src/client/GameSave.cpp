@@ -2407,6 +2407,14 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 						RESTRICTVERSION(95, 0);
 					}
 				}
+				if (particles[i].type == PT_LIFE)
+				{
+					if (particles[i].ctype >= NGOL)
+					{
+						// * TODO: figure out correct version to restrict to
+						// RESTRICTVERSION(95, 1);
+					}
+				}
 
 				//Get the pmap entry for the next particle in the same position
 				i = partsPosLink[i];

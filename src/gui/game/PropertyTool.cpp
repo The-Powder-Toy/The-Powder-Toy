@@ -83,7 +83,7 @@ void PropertyWindow::SetProperty()
 {
 	if(property->GetOption().second!=-1 && textField->GetText().length() > 0)
 	{
-		String value = textField->GetText();
+		String value = textField->GetText().ToLower();
 		try {
 			switch(properties[property->GetOption().second].Type)
 			{
@@ -100,6 +100,55 @@ void PropertyWindow::SetProperty()
 					{
 						//#C0FFEE
 						v = value.Substr(1).ToNumber<unsigned int>(Format::Hex());
+					}
+					else if (value.length() > 1 && value.BeginsWith("b") && value.Contains("/"))
+					{
+						class InvalidGOLString : public std::exception
+						{
+						};
+						// * Most likely a GOL string.
+						auto it = value.begin() + 1;
+						auto begin = 0U;
+						auto stay = 0U;
+						auto states = 2U;
+
+						for (; it != value.end() && it[0] >= '1' && it[0] <= '8'; ++it)
+						{
+							begin |= 1U << (it[0] - '0');
+						}
+
+						if (it < value.end() - 1 && it[0] == '/' && it[1] == 's')
+						{
+							it += 2;
+						}
+						else
+						{
+							throw InvalidGOLString();
+						}
+
+						for (; it != value.end() && it[0] >= '1' && it[0] <= '8'; ++it)
+						{
+							stay |= 1U << (it[0] - '0');
+						}
+
+						if (it != value.end())
+						{
+							if (it[0] == '/')
+							{
+								it += 1;
+							}
+							else
+							{
+								throw InvalidGOLString();
+							}
+							states = String(it, value.end()).ToNumber<unsigned int>();
+							if (states < 2 || states > 17)
+							{
+								throw InvalidGOLString();
+							}
+						}
+
+						v = stay | (begin << 8) | ((states - 2) << 17);
 					}
 					else
 					{
@@ -156,12 +205,12 @@ void PropertyWindow::SetProperty()
 				}
 				case StructProperty::Float:
 				{
-					if (value.EndsWith("C"))
+					if (value.EndsWith("c"))
 					{
 						float v = value.SubstrFromEnd(1).ToNumber<float>();
 						tool->propValue.Float = v + 273.15;
 					}
-					else if(value.EndsWith("F"))
+					else if(value.EndsWith("f"))
 					{
 						float v = value.SubstrFromEnd(1).ToNumber<float>();
 						tool->propValue.Float = (v-32.0f)*5/9+273.15f;
