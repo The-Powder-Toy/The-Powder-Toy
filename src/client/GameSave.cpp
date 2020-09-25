@@ -1298,6 +1298,17 @@ void GameSave::readOPS(char * data, int dataLength)
 							particles[newIndex].tmp = 0;
 						}
 						break;
+					case PT_LIFE:
+						if (savedVersion < 95 || minorVersion < 1)
+						{
+							if (particles[newIndex].ctype >= 0 && particles[newIndex].ctype < NGOL)
+							{
+								particles[newIndex].tmp2 = particles[newIndex].tmp;
+								particles[newIndex].dcolour = builtinGol[particles[newIndex].ctype].colour;
+								particles[newIndex].tmp = builtinGol[particles[newIndex].ctype].colour2;
+								particles[newIndex].ctype = builtinGol[particles[newIndex].ctype].ruleset;
+							}
+						}
 					}
 					//note: PSv was used in version 77.0 and every version before, add something in PSv too if the element is that old
 					newIndex++;
@@ -1841,7 +1852,7 @@ void GameSave::readPSv(char * saveDataChar, int dataLength)
 				particles[i-1].type = PT_LIFE;
 				for (gnum = 0; gnum<NGOL; gnum++){
 					if (ty==builtinGol[gnum].oldtype)
-						particles[i-1].ctype = gnum;
+						particles[i-1].ctype = builtinGol[gnum].ruleset;
 				}
 				ty = PT_LIFE;
 			}
@@ -1851,7 +1862,23 @@ void GameSave::readPSv(char * saveDataChar, int dataLength)
 					if (particles[i-1].ctype==builtinGol[gnum].oldtype)
 					{
 						particles[i-1].ctype = PT_LIFE;
-						particles[i-1].tmp = gnum;
+						particles[i-1].tmp = builtinGol[gnum].ruleset;
+					}
+				}
+			}
+			if (particles[i-1].type == PT_LIFE)
+			{
+				particles[i-1].tmp2 = particles[i-1].tmp;
+				for (auto golnum = 0; golnum < NGOL; ++golnum)
+				{
+					if (particles[i-1].ctype == golnum)
+					{
+						particles[i-1].ctype = builtinGol[golnum].ruleset;
+					}
+					if (particles[i-1].ctype == builtinGol[golnum].ruleset)
+					{
+						particles[i-1].dcolour = builtinGol[golnum].colour;
+						particles[i-1].tmp = builtinGol[golnum].colour2;
 					}
 				}
 			}
@@ -2409,11 +2436,7 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 				}
 				if (particles[i].type == PT_LIFE)
 				{
-					if (particles[i].ctype >= NGOL)
-					{
-						// * TODO: figure out correct version to restrict to
-						// RESTRICTVERSION(95, 1);
-					}
+					// * TODO: restrict version unconditionally?
 				}
 
 				//Get the pmap entry for the next particle in the same position

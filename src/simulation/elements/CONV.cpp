@@ -49,8 +49,8 @@ void Element::Element_CONV()
 static int update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry;
-	int ctype = TYP(parts[i].ctype), ctypeExtra = ID(parts[i].ctype);
-	if (ctype<=0 || ctype>=PT_NUM || !sim->elements[ctype].Enabled || ctype==PT_CONV || (ctype==PT_LIFE && (ctypeExtra<0 || ctypeExtra>=NGOL)))
+	int ctype = TYP(parts[i].ctype);
+	if (ctype<=0 || ctype>=PT_NUM || !sim->elements[ctype].Enabled || ctype==PT_CONV)
 	{
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)

@@ -50,71 +50,25 @@ void Element::Element_LIFE()
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
-	pixel pc = 0;
-	if (cpart->ctype==NGT_LOTE)//colors for life states
+	auto colour1 = cpart->dcolour;
+	auto colour2 = cpart->tmp;
+	if (!colour1)
 	{
-		if (cpart->tmp==2)
-			pc = PIXRGB(255, 128, 0);
-		else if (cpart->tmp==1)
-			pc = PIXRGB(255, 255, 0);
-		else
-			pc = PIXRGB(255, 0, 0);
+		colour1 = PIXPACK(0xFFFFFF);
 	}
-	else if (cpart->ctype==NGT_FRG2)//colors for life states
+	auto states = (cpart->ctype >> 17) + 2;
+	if (states == 2)
 	{
-		if (cpart->tmp==2)
-			pc = PIXRGB(0, 100, 50);
-		else
-			pc = PIXRGB(0, 255, 90);
-	}
-	else if (cpart->ctype==NGT_STAR)//colors for life states
-	{
-		if (cpart->tmp==4)
-			pc = PIXRGB(0, 0, 128);
-		else if (cpart->tmp==3)
-			pc = PIXRGB(0, 0, 150);
-		else if (cpart->tmp==2)
-			pc = PIXRGB(0, 0, 190);
-		else if (cpart->tmp==1)
-			pc = PIXRGB(0, 0, 230);
-		else
-			pc = PIXRGB(0, 0, 70);
-	}
-	else if (cpart->ctype==NGT_FROG)//colors for life states
-	{
-		if (cpart->tmp==2)
-			pc = PIXRGB(0, 100, 0);
-		else
-			pc = PIXRGB(0, 255, 0);
-	}
-	else if (cpart->ctype==NGT_BRAN)//colors for life states
-	{
-		if (cpart->tmp==1)
-			pc = PIXRGB(150, 150, 0);
-		else
-			pc = PIXRGB(255, 255, 0);
-	}
-	else if (cpart->ctype >= 0 && cpart->ctype < NGOL)
-	{
-		pc = builtinGol[cpart->ctype].colour;
-	}
-	if (pc)
-	{
-		*colr = PIXR(pc);
-		*colg = PIXG(pc);
-		*colb = PIXB(pc);
+		*colr = PIXR(colour1);
+		*colg = PIXG(colour1);
+		*colb = PIXB(colour1);
 	}
 	else
 	{
-		auto colour = cpart->dcolour;
-		if (!colour)
-		{
-			colour = PIXPACK(0xFF00FF);
-		}
-		auto mul = cpart->tmp / float((cpart->ctype >> 17) + 1);
-		*colr = PIXR(colour) * mul;
-		*colg = PIXG(colour) * mul;
-		*colb = PIXB(colour) * mul;
+		auto mul = (cpart->tmp2 - 1) / float(states - 2);
+		*colr = PIXR(colour1) * mul + PIXR(colour2) * (1.f - mul);
+		*colg = PIXG(colour1) * mul + PIXG(colour2) * (1.f - mul);
+		*colb = PIXB(colour1) * mul + PIXB(colour2) * (1.f - mul);
 	}
 	*pixel_mode |= NO_DECO;
 	return 0;
@@ -122,11 +76,12 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 
 static void create(ELEMENT_CREATE_FUNC_ARGS)
 {
-	sim->parts[i].ctype = v;
-	auto ruleset = (unsigned int)v;
-	if (ruleset < NGOL)
+	if (v < NGOL)
 	{
-		ruleset = builtinGol[ruleset].ruleset;
+		sim->parts[i].dcolour = builtinGol[v].colour;
+		sim->parts[i].tmp = builtinGol[v].colour2;
+		v = builtinGol[v].ruleset;
 	}
-	sim->parts[i].tmp = (ruleset >> 17) + 1;
+	sim->parts[i].ctype = v;
+	sim->parts[i].tmp2 = (v >> 17) + 1;
 }

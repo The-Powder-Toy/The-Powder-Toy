@@ -5,7 +5,7 @@ struct BuiltinGOL
 	String name;
 	int oldtype;
 	int ruleset;
-	pixel colour;
+	pixel colour, colour2;
 	int goltype;
 	String description;
 };

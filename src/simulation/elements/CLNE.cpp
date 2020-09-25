@@ -48,7 +48,7 @@ void Element::Element_CLNE()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	if (parts[i].ctype<=0 || parts[i].ctype>=PT_NUM || !sim->elements[parts[i].ctype].Enabled || (parts[i].ctype==PT_LIFE && (parts[i].tmp<0 || parts[i].tmp>=NGOL)))
+	if (parts[i].ctype<=0 || parts[i].ctype>=PT_NUM || !sim->elements[parts[i].ctype].Enabled)
 	{
 		int r, rx, ry, rt;
 		for (rx=-1; rx<2; rx++)

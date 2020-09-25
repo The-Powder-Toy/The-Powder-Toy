@@ -4773,13 +4773,7 @@ void Simulation::SimulateGoL()
 			continue;
 		}
 		unsigned int ruleset = part.ctype;
-		unsigned int golnum = part.ctype;
-		if (ruleset < NGOL)
-		{
-			ruleset = builtinGol[ruleset].ruleset;
-			golnum += 1;
-		}
-		if (part.tmp == int(ruleset >> 17) + 1)
+		if (part.tmp2 == int(ruleset >> 17) + 1)
 		{
 			for (int yy = -1; yy <= 1; ++yy)
 			{
@@ -4798,21 +4792,21 @@ void Simulation::SimulateGoL()
 						neighbourList[0] += 1U << 28;
 						for (int l = 0; l < 5; ++l)
 						{
-							auto neighbourGolnum = neighbourList[l] & 0x001FFFFFU;
-							if (neighbourGolnum == golnum)
+							auto neighbourRuleset = neighbourList[l] & 0x001FFFFFU;
+							if (neighbourRuleset == ruleset)
 							{
 								// * Bump population counter (bits 23..21) of the
 								//   same kind of cell.
 								neighbourList[l] += 1U << 21;
 								break;
 							}
-							if (neighbourGolnum == 0)
+							if (neighbourRuleset == 0)
 							{
 								// * Add the new kind of cell to the population. Both counters
 								//   have a bias of -1, so they're intentionally initialised
 								//   to 0 instead of 1 here. This is all so they can both
 								//   fit in 3 bits.
-								neighbourList[l] = ((yy & 3) << 26) | ((xx & 3) << 24) | golnum;
+								neighbourList[l] = ((yy & 3) << 26) | ((xx & 3) << 24) | ruleset;
 								break;
 							}
 							// * If after 5 iterations the cell still hasn't contributed
@@ -4830,7 +4824,7 @@ void Simulation::SimulateGoL()
 		{
 			if (!(bmap[y / CELL][x / CELL] == WL_STASIS && emap[y / CELL][x / CELL] < 8))
 			{
-				part.tmp -= 1;
+				part.tmp2 -= 1;
 			}
 		}
 	}
@@ -4855,43 +4849,33 @@ void Simulation::SimulateGoL()
 					{
 						auto &part = parts[ID(r)];
 						unsigned int ruleset = part.ctype;
-						if (ruleset < NGOL)
-						{
-							ruleset = builtinGol[ruleset].ruleset;
-						}
-						if (!((ruleset >> neighbours) & 1) && part.tmp == int(ruleset >> 17) + 1)
+						if (!((ruleset >> neighbours) & 1) && part.tmp2 == int(ruleset >> 17) + 1)
 						{
 							// * Start death sequence.
-							part.tmp -= 1;
+							part.tmp2 -= 1;
 						}
 					}
 					else
 					{
-						unsigned int golnumToCreate = 0xFFFFFFFFU;
+						unsigned int rulesetToCreate = 0xFFFFFFFFU;
 						unsigned int createFromEntry = 0U;
 						unsigned int majority = neighbours / 2 + neighbours % 2;
 						for (int l = 0; l < 5; ++l)
 						{
-							auto golnum = neighbourList[l] & 0x001FFFFFU;
-							if (!golnum)
+							auto ruleset = neighbourList[l] & 0x001FFFFFU;
+							if (!ruleset)
 							{
 								break;
 							}
-							auto ruleset = golnum;
-							if (ruleset < NGOL + 1)
+							if ((ruleset >> (neighbours + 8)) & 1 && ((neighbourList[l] >> 21) & 7) + 1 >= majority && ruleset < rulesetToCreate)
 							{
-								golnum -= 1;
-								ruleset = builtinGol[golnum].ruleset;
-							}
-							if ((ruleset >> (neighbours + 8)) & 1 && ((neighbourList[l] >> 21) & 7) + 1 >= majority && golnum < golnumToCreate)
-							{
-								golnumToCreate = golnum;
+								rulesetToCreate = ruleset;
 								createFromEntry = neighbourList[l];
 							}
 						}
-						if (golnumToCreate != 0xFFFFFFFFU)
+						if (rulesetToCreate != 0xFFFFFFFFU)
 						{
-							int i = create_part(-1, x, y, PT_LIFE, golnumToCreate);
+							int i = create_part(-1, x, y, PT_LIFE, rulesetToCreate);
 							int xx = (createFromEntry >> 24) & 3;
 							int yy = (createFromEntry >> 26) & 3;
 							if (xx == 3) xx = -1;
@@ -4900,7 +4884,7 @@ void Simulation::SimulateGoL()
 							int ay = ((y - yy + YRES - 3 * CELL) % (YRES - 2 * CELL)) + CELL;
 							auto &sample = parts[ID(pmap[ay][ax])];
 							parts[i].dcolour = sample.dcolour;
-							parts[i].tmp2 = sample.tmp2;
+							parts[i].tmp = sample.tmp;
 						}
 					}
 				}
@@ -4916,7 +4900,7 @@ void Simulation::SimulateGoL()
 		for (int x = CELL; x < XRES - CELL; ++x)
 		{
 			int r = pmap[y][x];
-			if (r && TYP(r) == PT_LIFE && parts[ID(r)].tmp <= 0)
+			if (r && TYP(r) == PT_LIFE && parts[ID(r)].tmp2 <= 0)
 			{
 				kill_part(ID(r));
 			}
@@ -5273,35 +5257,35 @@ String Simulation::ElementResolve(int type, int ctype)
 {
 	if (type == PT_LIFE)
 	{
-		if (ctype >= 0 && ctype < NGOL)
+		for (auto i = 0; i < NGOL; ++i)
 		{
-			return builtinGol[ctype].name;
+			if (builtinGol[i].ruleset == ctype)
+			{
+				return builtinGol[i].name;
+			}
 		}
-		else
+		StringBuilder golName;
+		golName << "B";
+		for (int i = 1; i < 9; ++i)
 		{
-			StringBuilder golName;
-			golName << "B";
-			for (int i = 1; i < 9; ++i)
+			if ((ctype >> (i + 8)) & 1)
 			{
-				if ((ctype >> (i + 8)) & 1)
-				{
-					golName << char('0' + i);
-				}
+				golName << char('0' + i);
 			}
-			golName << "/S";
-			for (int i = 0; i < 9; ++i)
-			{
-				if ((ctype >> i) & 1)
-				{
-					golName << char('0' + i);
-				}
-			}
-			if (ctype >> 17)
-			{
-				golName << "/" << (ctype >> 17) + 2;
-			}
-			return golName.Build();
 		}
+		golName << "/S";
+		for (int i = 0; i < 9; ++i)
+		{
+			if ((ctype >> i) & 1)
+			{
+				golName << char('0' + i);
+			}
+		}
+		if (ctype >> 17)
+		{
+			golName << "/" << (ctype >> 17) + 2;
+		}
+		return golName.Build();
 	}
 	else if (type >= 0 && type < PT_NUM)
 	{
