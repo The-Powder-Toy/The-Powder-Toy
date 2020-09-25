@@ -1,5 +1,6 @@
 #include "ElementSearchActivity.h"
 
+#include <set>
 #include <map>
 #include <algorithm>
 
@@ -12,6 +13,7 @@
 #include "gui/game/Favorite.h"
 #include "gui/game/GameController.h"
 #include "gui/game/ToolButton.h"
+#include "gui/game/Favorite.h"
 
 #include "graphics/Graphics.h"
 
@@ -69,22 +71,29 @@ void ElementSearchActivity::searchTools(String query)
 
 	struct Match
 	{
-		int tool_index; // relevance by position of tool in tools vector
-		int hs_org; // relevance by origin of haystack
-		int nd_pos; // relevance by position of needle in haystack
+		int favouritePriority; // relevant by whether the tool is favourited
+		int toolIndex; // relevance by position of tool in tools vector
+		int haystackOrigin; // relevance by origin of haystack
+		int needlePosition; // relevance by position of needle in haystack
 
 		bool operator <(Match const &other) const
 		{
-			return std::tie(hs_org, nd_pos, tool_index) < std::tie(other.hs_org, other.nd_pos, other.tool_index);
+			return std::tie(favouritePriority, haystackOrigin, needlePosition, toolIndex) < std::tie(other.favouritePriority, other.haystackOrigin, other.needlePosition, other.toolIndex);
 		}
 	};
 
-	std::map<int, Match> index_to_match;
-	auto push = [ &index_to_match ](Match match) {
-		auto it = index_to_match.find(match.tool_index);
-		if (it == index_to_match.end())
+	std::set<ByteString> favs;
+	for (auto fav : Favorite::Ref().GetFavoritesList())
+	{
+		favs.insert(fav);
+	}
+
+	std::map<int, Match> indexToMatch;
+	auto push = [ &indexToMatch ](Match match) {
+		auto it = indexToMatch.find(match.toolIndex);
+		if (it == indexToMatch.end())
 		{
-			index_to_match.insert(std::make_pair(match.tool_index, match));
+			indexToMatch.insert(std::make_pair(match.toolIndex, match));
 		}
 		else if (match < it->second)
 		{
@@ -92,18 +101,18 @@ void ElementSearchActivity::searchTools(String query)
 		}
 	};
 
-	auto push_if_matches = [ &queryLower, &push ](String infoLower, int tool_index, int haystack_relevance) {
+	auto pushIfMatches = [ &queryLower, &push ](String infoLower, int toolIndex, int favouritePriority, int haystackRelevance) {
 		if (infoLower == queryLower)
 		{
-			push(Match{ tool_index, haystack_relevance, 0 });
+			push(Match{ favouritePriority, toolIndex, haystackRelevance, 0 });
 		}
 		if (infoLower.BeginsWith(queryLower))
 		{
-			push(Match{ tool_index, haystack_relevance, 1 });
+			push(Match{ favouritePriority, toolIndex, haystackRelevance, 1 });
 		}
 		if (infoLower.Contains(queryLower))
 		{
-			push(Match{ tool_index, haystack_relevance, 2 });
+			push(Match{ favouritePriority, toolIndex, haystackRelevance, 2 });
 		}
 	};
 
@@ -116,25 +125,26 @@ void ElementSearchActivity::searchTools(String query)
 		}
 	}
 
-	for (int tool_index = 0; tool_index < (int)tools.size(); ++tool_index)
+	for (int toolIndex = 0; toolIndex < (int)tools.size(); ++toolIndex)
 	{
-		push_if_matches(tools[tool_index]->GetName().ToLower(), tool_index, 0);
-		push_if_matches(tools[tool_index]->GetDescription().ToLower(), tool_index, 1);
-		auto it = menudescriptionLower.find(tools[tool_index]);
+		int favouritePriority = favs.find(tools[toolIndex]->GetIdentifier()) != favs.end() ? 0 : 1;
+		pushIfMatches(tools[toolIndex]->GetName().ToLower(), toolIndex, favouritePriority, 0);
+		pushIfMatches(tools[toolIndex]->GetDescription().ToLower(), toolIndex, favouritePriority, 1);
+		auto it = menudescriptionLower.find(tools[toolIndex]);
 		if (it != menudescriptionLower.end())
 		{
-			push_if_matches(it->second, tool_index, 2);
+			pushIfMatches(it->second, toolIndex, favouritePriority, 2);
 		}
 	}
 
 	std::vector<Match> matches;
-	std::transform(index_to_match.begin(), index_to_match.end(), std::back_inserter(matches), [](decltype(index_to_match)::value_type const &pair) {
+	std::transform(indexToMatch.begin(), indexToMatch.end(), std::back_inserter(matches), [](decltype(indexToMatch)::value_type const &pair) {
 		return pair.second;
 	});
 	std::sort(matches.begin(), matches.end());
 	for (auto &match : matches)
 	{
-		Tool *tool = tools[match.tool_index];
+		Tool *tool = tools[match.toolIndex];
 
 		if(!firstResult)
 			firstResult = tool;
