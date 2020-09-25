@@ -1306,7 +1306,6 @@ void GameSave::readOPS(char * data, int dataLength)
 								particles[newIndex].tmp2 = particles[newIndex].tmp;
 								particles[newIndex].dcolour = builtinGol[particles[newIndex].ctype].colour;
 								particles[newIndex].tmp = builtinGol[particles[newIndex].ctype].colour2;
-								particles[newIndex].ctype = builtinGol[particles[newIndex].ctype].ruleset;
 							}
 						}
 					}
@@ -1852,7 +1851,7 @@ void GameSave::readPSv(char * saveDataChar, int dataLength)
 				particles[i-1].type = PT_LIFE;
 				for (gnum = 0; gnum<NGOL; gnum++){
 					if (ty==builtinGol[gnum].oldtype)
-						particles[i-1].ctype = builtinGol[gnum].ruleset;
+						particles[i-1].ctype = gnum;
 				}
 				ty = PT_LIFE;
 			}
@@ -1862,24 +1861,18 @@ void GameSave::readPSv(char * saveDataChar, int dataLength)
 					if (particles[i-1].ctype==builtinGol[gnum].oldtype)
 					{
 						particles[i-1].ctype = PT_LIFE;
-						particles[i-1].tmp = builtinGol[gnum].ruleset;
+						particles[i-1].tmp = gnum;
 					}
 				}
 			}
 			if (particles[i-1].type == PT_LIFE)
 			{
 				particles[i-1].tmp2 = particles[i-1].tmp;
-				for (auto golnum = 0; golnum < NGOL; ++golnum)
+				particles[i-1].tmp = 0;
+				if (particles[i-1].ctype >= 0 && particles[i-1].ctype < NGOL)
 				{
-					if (particles[i-1].ctype == golnum)
-					{
-						particles[i-1].ctype = builtinGol[golnum].ruleset;
-					}
-					if (particles[i-1].ctype == builtinGol[golnum].ruleset)
-					{
-						particles[i-1].dcolour = builtinGol[golnum].colour;
-						particles[i-1].tmp = builtinGol[golnum].colour2;
-					}
+					particles[i-1].dcolour = builtinGol[particles[i-1].ctype].colour;
+					particles[i-1].tmp = builtinGol[particles[i-1].ctype].colour2;
 				}
 			}
 			if(ty==PT_LCRY){

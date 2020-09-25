@@ -56,7 +56,12 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 	{
 		colour1 = PIXPACK(0xFFFFFF);
 	}
-	auto states = (cpart->ctype >> 17) + 2;
+	auto ruleset = cpart->ctype;
+	if (ruleset >= 0 && ruleset < NGOL)
+	{
+		ruleset = builtinGol[ruleset].ruleset;
+	}
+	auto states = (ruleset >> 17) + 2;
 	if (states == 2)
 	{
 		*colr = PIXR(colour1);
@@ -76,12 +81,12 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 
 static void create(ELEMENT_CREATE_FUNC_ARGS)
 {
+	sim->parts[i].ctype = v;
 	if (v < NGOL)
 	{
 		sim->parts[i].dcolour = builtinGol[v].colour;
 		sim->parts[i].tmp = builtinGol[v].colour2;
 		v = builtinGol[v].ruleset;
 	}
-	sim->parts[i].ctype = v;
 	sim->parts[i].tmp2 = (v >> 17) + 1;
 }
