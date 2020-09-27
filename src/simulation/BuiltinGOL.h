@@ -1,5 +1,8 @@
 #pragma once
 
+#include "graphics/Pixel.h"
+#include "common/String.h"
+
 struct BuiltinGOL
 {
 	String name;

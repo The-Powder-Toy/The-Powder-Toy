@@ -12,7 +12,9 @@
 #include "gui/interface/Keys.h"
 #include "gui/dialogues/ErrorMessage.h"
 
+#include "simulation/BuiltinGOL.h"
 #include "simulation/Simulation.h"
+#include "simulation/SimulationData.h"
 
 #include "graphics/Graphics.h"
 
@@ -83,7 +85,7 @@ void PropertyWindow::SetProperty()
 {
 	if(property->GetOption().second!=-1 && textField->GetText().length() > 0)
 	{
-		String value = textField->GetText().ToLower();
+		String value = textField->GetText().ToUpper();
 		try {
 			switch(properties[property->GetOption().second].Type)
 			{
@@ -91,7 +93,7 @@ void PropertyWindow::SetProperty()
 				case StructProperty::ParticleType:
 				{
 					int v;
-					if(value.length() > 2 && value.BeginsWith("0x"))
+					if(value.length() > 2 && value.BeginsWith("0X"))
 					{
 						//0xC0FFEE
 						v = value.Substr(2).ToNumber<unsigned int>(Format::Hex());
@@ -101,7 +103,7 @@ void PropertyWindow::SetProperty()
 						//#C0FFEE
 						v = value.Substr(1).ToNumber<unsigned int>(Format::Hex());
 					}
-					else if (value.length() > 1 && value.BeginsWith("b") && value.Contains("/"))
+					else if (value.length() > 1 && value.BeginsWith("B") && value.Contains("/"))
 					{
 						class InvalidGOLString : public std::exception
 						{
@@ -117,7 +119,7 @@ void PropertyWindow::SetProperty()
 							begin |= 1U << (it[0] - '0');
 						}
 
-						if (it < value.end() - 1 && it[0] == '/' && it[1] == 's')
+						if (it < value.end() - 1 && it[0] == '/' && it[1] == 'S')
 						{
 							it += 2;
 						}
@@ -152,16 +154,19 @@ void PropertyWindow::SetProperty()
 					}
 					else
 					{
-						int type;
-						if ((type = sim->GetParticleType(value.ToUtf8())) != -1)
+						v = sim->GetParticleType(value.ToUtf8());
+						if (v == -1)
 						{
-							v = type;
-
-#ifdef DEBUG
-							std::cout << "Got type from particle name" << std::endl;
-#endif
+							for (auto i = 0; i < NGOL; ++i)
+							{
+								if (i != NGT_GOL && value == builtinGol[i].name)
+								{
+									v = i;
+									break;
+								}
+							}
 						}
-						else
+						if (v == -1)
 						{
 							v = value.ToNumber<int>();
 						}
@@ -183,7 +188,7 @@ void PropertyWindow::SetProperty()
 				case StructProperty::UInteger:
 				{
 					unsigned int v;
-					if(value.length() > 2 && value.BeginsWith("0x"))
+					if(value.length() > 2 && value.BeginsWith("0X"))
 					{
 						//0xC0FFEE
 						v = value.Substr(2).ToNumber<unsigned int>(Format::Hex());
@@ -205,12 +210,12 @@ void PropertyWindow::SetProperty()
 				}
 				case StructProperty::Float:
 				{
-					if (value.EndsWith("c"))
+					if (value.EndsWith("C"))
 					{
 						float v = value.SubstrFromEnd(1).ToNumber<float>();
 						tool->propValue.Float = v + 273.15;
 					}
-					else if(value.EndsWith("f"))
+					else if(value.EndsWith("F"))
 					{
 						float v = value.SubstrFromEnd(1).ToNumber<float>();
 						tool->propValue.Float = (v-32.0f)*5/9+273.15f;
