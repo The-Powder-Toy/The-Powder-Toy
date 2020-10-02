@@ -57,7 +57,7 @@ unsigned int SmallKBinomialGenerator::calc(float randFloat)
 {
 	for (unsigned int k=0; k<maxK; k++)
 	{
-		if (randFloat<cdf[k])
+		if (randFloat<cdf[k])  //this will give random float integer.
 			return k;
 	}
 	return maxK;
