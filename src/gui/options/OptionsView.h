@@ -31,6 +31,7 @@ class OptionsView: public ui::Window
 	ui::Checkbox * fastquit;
 	ui::DropDown * decoSpace;
 	ui::Checkbox * showAvatars;
+	ui::Checkbox * momentumScroll;
 	ui::Checkbox * mouseClickRequired;
 	ui::Checkbox * includePressure;
 	ui::Checkbox * perfectCirclePressure;

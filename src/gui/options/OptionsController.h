@@ -33,6 +33,7 @@ public:
 	void SetMouseClickrequired(bool mouseClickRequired);
 	void SetIncludePressure(bool includePressure);
 	void SetPerfectCircle(bool perfectCircle);
+	void SetMomentumScroll(bool momentumScroll);
 	
 	void Exit();
 	OptionsView * GetView();

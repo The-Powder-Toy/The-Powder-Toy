@@ -4,6 +4,8 @@
 
 #include "common/tpt-minmax.h"
 
+#include "client/Client.h"
+
 using namespace ui;
 
 ScrollPanel::ScrollPanel(Point position, Point size):
@@ -19,9 +21,10 @@ ScrollPanel::ScrollPanel(Point position, Point size):
 	scrollbarSelected(false),
 	scrollbarInitialYOffset(0),
 	scrollbarInitialYClick(0),
-	scrollbarClickLocation(0)
+	scrollbarClickLocation(0),
+	momentumScroll(false)
 {
-
+	momentumScroll = Client::Ref().GetPrefBool("MomentumScroll", true);
 }
 
 int ScrollPanel::GetScrollLimit()
@@ -43,7 +46,10 @@ void ScrollPanel::XOnMouseWheelInside(int localx, int localy, int d)
 {
 	if (!d)
 		return;
-	yScrollVel -= d*2;
+	if (momentumScroll)
+		yScrollVel -= d * 2;
+	else
+		yScrollVel -= d * 20;
 }
 
 void ScrollPanel::Draw(const Point& screenPos)
@@ -124,9 +130,6 @@ void ScrollPanel::XOnMouseMoved(int x, int y, int dx, int dy)
 
 void ScrollPanel::XTick(float dt)
 {
-	if (yScrollVel > -0.5f && yScrollVel < 0.5)
-		yScrollVel = 0;
-
 	if (xScrollVel > 7.0f) xScrollVel = 7.0f;
 	if (xScrollVel < -7.0f) xScrollVel = -7.0f;
 	if (xScrollVel > -0.5f && xScrollVel < 0.5)
@@ -140,7 +143,18 @@ void ScrollPanel::XTick(float dt)
 	offsetY += yScrollVel;
 	offsetX += xScrollVel;
 
-	yScrollVel*=0.98f;
+
+	if (momentumScroll)
+	{
+		if (yScrollVel > -0.5f && yScrollVel < 0.5)
+			yScrollVel = 0;
+		yScrollVel *= 0.98f;
+	}
+	else
+	{
+		yScrollVel = 0.0f;
+	}
+
 	xScrollVel*=0.98f;
 
 	if (oldOffsetY!=int(offsetY))

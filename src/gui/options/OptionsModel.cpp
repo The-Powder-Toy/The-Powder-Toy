@@ -226,6 +226,17 @@ void OptionsModel::SetPerfectCircle(bool perfectCircle)
 	notifySettingsChanged();
 }
 
+bool OptionsModel::GetMomentumScroll()
+{
+	return Client::Ref().GetPrefBool("MomentumScroll", true);
+}
+
+void OptionsModel::SetMomentumScroll(bool state)
+{
+	Client::Ref().SetPref("MomentumScroll", state);
+	notifySettingsChanged();
+}
+
 void OptionsModel::notifySettingsChanged()
 {
 	for (size_t i = 0; i < observers.size(); i++)

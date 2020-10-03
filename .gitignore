@@ -20,6 +20,8 @@ generated/*
 includes/*
 recordings/
 font/*
+Debug/*
+Release/*
 generate
 Makefile.me
 *.xcodeproj
