@@ -27,6 +27,7 @@
 #include "simulation/Gravity.h"
 #include "simulation/ElementGraphics.h"
 #include "simulation/ElementClasses.h"
+#include "simulation/GOLString.h"
 
 #include "gui/game/DecorationTool.h"
 #include "gui/interface/Engine.h"
@@ -306,6 +307,42 @@ void GameModel::BuildMenus()
 		Tool * tempTool = new ElementTool(PT_LIFE|PMAPID(i), builtinGol[i].name, builtinGol[i].description, PIXR(builtinGol[i].colour), PIXG(builtinGol[i].colour), PIXB(builtinGol[i].colour), "DEFAULT_PT_LIFE_"+builtinGol[i].name.ToAscii());
 		menuList[SC_LIFE]->AddTool(tempTool);
 	}
+	{
+		auto custom_gols = Client::Ref().GetPrefByteStringArray("CustomGOL.Types");
+		for (auto gol : custom_gols)
+		{
+			auto parts = gol.FromUtf8().PartitionBy(' ');
+			if (parts.size() != 4)
+			{
+				continue;
+			}
+			auto &nameString = parts[0];
+			auto &ruleString = parts[1];
+			auto &colour1String = parts[2];
+			auto &colour2String = parts[3];
+			if (!ValidateGOLName(nameString))
+			{
+				continue;
+			}
+			auto rule = ParseGOLString(ruleString);
+			if (rule == -1)
+			{
+				continue;
+			}
+			int colour1, colour2;
+			try
+			{
+				colour1 = colour1String.ToNumber<int>();
+				colour2 = colour2String.ToNumber<int>();
+			}
+			catch (std::exception &)
+			{
+				continue;
+			}
+			Tool * tempTool = new ElementTool(PT_LIFE|PMAPID(rule), nameString, "Custom GOL type: " + ruleString, PIXR(colour1), PIXG(colour1), PIXB(colour1), "DEFAULT_PT_LIFECUST_"+nameString.ToAscii(), NULL, colour1, colour2);
+			menuList[SC_LIFE]->AddTool(tempTool);
+		}
+	}
 
 	//Build other menus from wall data
 	for(int i = 0; i < UI_WALLCOUNT; i++)
@@ -334,6 +371,7 @@ void GameModel::BuildMenus()
 	menuList[SC_TOOL]->AddTool(new PropertyTool());
 	menuList[SC_TOOL]->AddTool(new SignTool(this));
 	menuList[SC_TOOL]->AddTool(new SampleTool(this));
+	menuList[SC_LIFE]->AddTool(new GOLTool(this));
 
 	//Add decoration tools to menu
 	menuList[SC_DECO]->AddTool(new DecorationTool(ren, DECO_ADD, "ADD", "Colour blending: Add.", 0, 0, 0, "DEFAULT_DECOR_ADD"));
@@ -1373,4 +1411,28 @@ void GameModel::SetPerfectCircle(bool perfectCircle)
 		this->perfectCircle = perfectCircle;
 		BuildBrushList();
 	}
+}
+
+void GameModel::RemoveCustomGOLType(const ByteString &identifier)
+{
+	auto customGOLTypes = Client::Ref().GetPrefByteStringArray("CustomGOL.Types");
+	Json::Value newCustomGOLTypes(Json::arrayValue);
+	for (auto gol : customGOLTypes)
+	{
+		auto parts = gol.PartitionBy(' ');
+		bool remove = false;
+		if (parts.size())
+		{
+			if ("DEFAULT_PT_LIFECUST_" + parts[0] == identifier)
+			{
+				remove = true;
+			}
+		}
+		if (!remove)
+		{
+			newCustomGOLTypes.append(gol);
+		}
+	}
+	Client::Ref().SetPref("CustomGOL.Types", newCustomGOLTypes);
+	BuildMenus();
 }

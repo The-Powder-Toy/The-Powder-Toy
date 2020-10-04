@@ -41,6 +41,7 @@ public:
 };
 
 class GameModel;
+class GameController;
 
 class SignTool: public Tool
 {
@@ -100,11 +101,32 @@ public:
 	void DrawFill(Simulation * sim, Brush * brush, ui::Point position) override;
 };
 
+class GOLTool: public Tool
+{
+public:
+	String selectGOLType;
+	GameController * gameController;
+	GameModel * gameModel;
+	GOLTool(GameModel * gameModel):
+	Tool(0, "CUST", "Add a new custom GOL type.", 0xfe, 0xa9, 0x00, "DEFAULT_UI_ADDLIFE", NULL),
+	gameModel(gameModel)
+	{
+	}
+	void OpenWindow(Simulation *sim, int toolSelection, GameController *gameController);
+	virtual ~GOLTool() {}
+	void Click(Simulation * sim, Brush * brush, ui::Point position) override { }
+	void Draw(Simulation *sim, Brush *brush, ui::Point position) override { };
+	void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false) override { };
+	void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) override { };
+	void DrawFill(Simulation * sim, Brush * brush, ui::Point position) override { };
+};
+
 
 class ElementTool: public Tool
 {
+	int dcolour, tmp;
 public:
-	ElementTool(int id, String name, String description, int r, int g, int b, ByteString identifier, VideoBuffer * (*textureGen)(int, int, int) = NULL);
+	ElementTool(int id, String name, String description, int r, int g, int b, ByteString identifier, VideoBuffer * (*textureGen)(int, int, int) = NULL, int dcolour = 0, int tmp = 0);
 	virtual ~ElementTool();
 	void Draw(Simulation * sim, Brush * brush, ui::Point position) override;
 	void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false) override;

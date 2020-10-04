@@ -55,6 +55,8 @@ private:
 	void OpenSaveDone();
 public:
 	bool HasDone;
+	ByteString SelectOnNextTick;
+	int SelectOnNextTickWith;
 	GameController();
 	~GameController();
 	GameView * GetView();
@@ -174,6 +176,8 @@ public:
 	void NotifyNewNotification(Client * sender, std::pair<String, ByteString> notification) override;
 	void RunUpdater();
 	bool GetMouseClickRequired();
+
+	void RemoveCustomGOLType(const ByteString &identifier);
 };
 
 #endif // GAMECONTROLLER_H

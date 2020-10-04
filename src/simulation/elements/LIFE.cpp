@@ -61,19 +61,22 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 	{
 		ruleset = builtinGol[ruleset].ruleset;
 	}
-	auto states = (ruleset >> 17) + 2;
-	if (states == 2)
+	if (ren->decorations_enable)
 	{
-		*colr = PIXR(colour1);
-		*colg = PIXG(colour1);
-		*colb = PIXB(colour1);
-	}
-	else
-	{
-		auto mul = (cpart->tmp2 - 1) / float(states - 2);
-		*colr = PIXR(colour1) * mul + PIXR(colour2) * (1.f - mul);
-		*colg = PIXG(colour1) * mul + PIXG(colour2) * (1.f - mul);
-		*colb = PIXB(colour1) * mul + PIXB(colour2) * (1.f - mul);
+		auto states = (ruleset >> 17) + 2;
+		if (states == 2)
+		{
+			*colr = PIXR(colour1);
+			*colg = PIXG(colour1);
+			*colb = PIXB(colour1);
+		}
+		else
+		{
+			auto mul = (cpart->tmp2 - 1) / float(states - 2);
+			*colr = PIXR(colour1) * mul + PIXR(colour2) * (1.f - mul);
+			*colg = PIXG(colour1) * mul + PIXG(colour2) * (1.f - mul);
+			*colb = PIXB(colour1) * mul + PIXB(colour2) * (1.f - mul);
+		}
 	}
 	*pixel_mode |= NO_DECO;
 	return 0;

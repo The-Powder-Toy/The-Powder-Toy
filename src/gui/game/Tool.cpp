@@ -50,22 +50,24 @@ void Tool::DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Po
 void Tool::DrawFill(Simulation * sim, Brush * brush, ui::Point position) {}
 
 
-ElementTool::ElementTool(int id, String name, String description, int r, int g, int b, ByteString identifier, VideoBuffer * (*textureGen)(int, int, int)):
-	Tool(id, name, description, r, g, b, identifier, textureGen)
+ElementTool::ElementTool(int id, String name, String description, int r, int g, int b, ByteString identifier, VideoBuffer * (*textureGen)(int, int, int), int dcolour, int tmp):
+	Tool(id, name, description, r, g, b, identifier, textureGen),
+	dcolour(dcolour),
+	tmp(tmp)
 {
 }
 ElementTool::~ElementTool() {}
 void ElementTool::Draw(Simulation * sim, Brush * brush, ui::Point position){
-	sim->CreateParts(position.X, position.Y, toolID, brush);
+	sim->CreateParts(position.X, position.Y, toolID, brush, -1, dcolour, tmp);
 }
 void ElementTool::DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging) {
-	sim->CreateLine(position1.X, position1.Y, position2.X, position2.Y, toolID, brush);
+	sim->CreateLine(position1.X, position1.Y, position2.X, position2.Y, toolID, brush, -1, dcolour, tmp);
 }
 void ElementTool::DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) {
-	sim->CreateBox(position1.X, position1.Y, position2.X, position2.Y, toolID);
+	sim->CreateBox(position1.X, position1.Y, position2.X, position2.Y, toolID, -1, dcolour, tmp);
 }
 void ElementTool::DrawFill(Simulation * sim, Brush * brush, ui::Point position) {
-	sim->FloodParts(position.X, position.Y, toolID, -1);
+	sim->FloodParts(position.X, position.Y, toolID, -1, dcolour, tmp);
 }
 
 

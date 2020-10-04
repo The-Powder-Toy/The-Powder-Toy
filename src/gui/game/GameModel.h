@@ -219,6 +219,8 @@ public:
 	std::vector<Notification*> GetNotifications();
 	void AddNotification(Notification * notification);
 	void RemoveNotification(Notification * notification);
+
+	void RemoveCustomGOLType(const ByteString &identifier);
 };
 
 #endif // GAMEMODEL_H

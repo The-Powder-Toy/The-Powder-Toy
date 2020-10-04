@@ -12,6 +12,7 @@
 #include "gui/interface/Keys.h"
 #include "gui/dialogues/ErrorMessage.h"
 
+#include "simulation/GOLString.h"
 #include "simulation/BuiltinGOL.h"
 #include "simulation/Simulation.h"
 #include "simulation/SimulationData.h"
@@ -105,52 +106,14 @@ void PropertyWindow::SetProperty()
 					}
 					else if (value.length() > 1 && value.BeginsWith("B") && value.Contains("/"))
 					{
-						class InvalidGOLString : public std::exception
+						v = ParseGOLString(value);
+						if (v == -1)
 						{
-						};
-						// * Most likely a GOL string.
-						auto it = value.begin() + 1;
-						auto begin = 0U;
-						auto stay = 0U;
-						auto states = 2U;
-
-						for (; it != value.end() && it[0] >= '1' && it[0] <= '8'; ++it)
-						{
-							begin |= 1U << (it[0] - '0');
-						}
-
-						if (it < value.end() - 1 && it[0] == '/' && it[1] == 'S')
-						{
-							it += 2;
-						}
-						else
-						{
+							class InvalidGOLString : public std::exception
+							{
+							};
 							throw InvalidGOLString();
 						}
-
-						for (; it != value.end() && it[0] >= '1' && it[0] <= '8'; ++it)
-						{
-							stay |= 1U << (it[0] - '0');
-						}
-
-						if (it != value.end())
-						{
-							if (it[0] == '/')
-							{
-								it += 1;
-							}
-							else
-							{
-								throw InvalidGOLString();
-							}
-							states = String(it, value.end()).ToNumber<unsigned int>();
-							if (states < 2 || states > 17)
-							{
-								throw InvalidGOLString();
-							}
-						}
-
-						v = stay | (begin << 8) | ((states - 2) << 17);
 					}
 					else
 					{
