@@ -32,8 +32,8 @@ Textbox::Textbox(Point position, Point size, String textboxText, String textboxP
 	cursor = text.length();
 
 	menu->RemoveItem(0);
-	// menu->AddItem(ContextMenuItem("Cut", 1, true));
-	// menu->AddItem(ContextMenuItem("Copy", 0, true));
+	menu->AddItem(ContextMenuItem("Cut", 1, true));
+	menu->AddItem(ContextMenuItem("Copy", 0, true));
 	menu->AddItem(ContextMenuItem("Paste", 2, true));
 }
 
