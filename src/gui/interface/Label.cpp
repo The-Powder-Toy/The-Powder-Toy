@@ -91,7 +91,7 @@ void Label::OnMouseClick(int x, int y, unsigned button)
 {
 	if(button == SDL_BUTTON_RIGHT)
 	{
-		if (menu)
+		if (menu && HasSelection())
 		{
 			menu->Show(GetScreenPos() + ui::Point(x, y));
 		}
