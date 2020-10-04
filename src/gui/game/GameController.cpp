@@ -779,11 +779,11 @@ void GameController::Tick()
 #endif
 		firstTick = false;
 	}
-	if (SelectOnNextTick.length())
+	if (gameModel->SelectNextIdentifier.length())
 	{
 		gameModel->BuildMenus();
-		gameModel->SetActiveTool(SelectOnNextTickWith, gameModel->GetToolFromIdentifier(SelectOnNextTick));
-		SelectOnNextTick.clear();
+		gameModel->SetActiveTool(gameModel->SelectNextTool, gameModel->GetToolFromIdentifier(gameModel->SelectNextIdentifier));
+		gameModel->SelectNextIdentifier.clear();
 	}
 	for(std::vector<DebugInfo*>::iterator iter = debugInfo.begin(), end = debugInfo.end(); iter != end; iter++)
 	{
@@ -1122,7 +1122,7 @@ void GameController::SetActiveTool(int toolSelection, Tool * tool)
 		((PropertyTool *)tool)->OpenWindow(gameModel->GetSimulation());
 	if(tool->GetIdentifier() == "DEFAULT_UI_ADDLIFE")
 	{
-		((GOLTool *)tool)->OpenWindow(gameModel->GetSimulation(), toolSelection, this);
+		((GOLTool *)tool)->OpenWindow(gameModel->GetSimulation(), toolSelection);
 	}
 }
 

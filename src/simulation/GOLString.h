@@ -5,3 +5,4 @@
 
 bool ValidateGOLName(const String &value);
 int ParseGOLString(const String &value);
+String SerialiseGOLRule(int rule);

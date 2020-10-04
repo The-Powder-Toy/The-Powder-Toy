@@ -2429,7 +2429,7 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 				}
 				if (particles[i].type == PT_LIFE)
 				{
-					// * TODO: restrict version unconditionally?
+					RESTRICTVERSION(95, 1);
 				}
 
 				//Get the pmap entry for the next particle in the same position

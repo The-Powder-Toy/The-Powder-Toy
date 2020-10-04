@@ -7,7 +7,6 @@
 
 #include "gui/Style.h"
 #include "gui/game/GameModel.h"
-#include "gui/game/GameController.h"
 #include "gui/interface/Window.h"
 #include "gui/interface/Button.h"
 #include "gui/interface/Label.h"
@@ -28,14 +27,14 @@ public:
 	GOLTool * tool;
 	Simulation *sim;
 	int toolSelection;
-	GOLWindow(GOLTool *tool_, Simulation *sim, int toolSelection);
+	GOLWindow(GOLTool *tool_, Simulation *sim, int toolSelection, int rule, int colour1, int colour2);
 	void Validate();
 	void OnDraw() override;
 	void OnTryExit(ExitMethod method) override;
 	virtual ~GOLWindow() {}
 };
 
-GOLWindow::GOLWindow(GOLTool * tool_, Simulation *sim_, int toolSelection):
+GOLWindow::GOLWindow(GOLTool * tool_, Simulation *sim_, int toolSelection, int rule, int colour1, int colour2):
 ui::Window(ui::Point(-1, -1), ui::Point(200, 108)),
 tool(tool_),
 sim(sim_),
@@ -65,14 +64,12 @@ toolSelection(toolSelection)
 	nameField = new ui::Textbox(ui::Point(8, 25), ui::Point(Size.X-16, 16), "", "[name]");
 	nameField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	nameField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-	nameField->SetText(Client::Ref().GetPrefString("CustomGOL.Name", "CGOL"));
 	AddComponent(nameField);
 	FocusComponent(nameField);
 
 	ruleField = new ui::Textbox(ui::Point(8, 46), ui::Point(Size.X-16, 16), "", "[rule]");
 	ruleField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	ruleField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-	ruleField->SetText(Client::Ref().GetPrefString("CustomGOL.Rule", "B3/S23"));
 	AddComponent(ruleField);
 	FocusComponent(ruleField);
 
@@ -94,13 +91,29 @@ toolSelection(toolSelection)
 	} });
 	AddComponent(lowColourButton);
 
-	highColour.Red = random_gen.between(0x80, 0xFF);
-	highColour.Green = random_gen.between(0x80, 0xFF);
-	highColour.Blue = random_gen.between(0x80, 0xFF);
+	if (rule)
+	{
+		ruleField->SetText(SerialiseGOLRule(rule));
+		nameField->SetText("");
+		highColour.Red = PIXR(colour1);
+		highColour.Green = PIXG(colour1);
+		highColour.Blue = PIXB(colour1);
+		lowColour.Red = PIXR(colour2);
+		lowColour.Green = PIXG(colour2);
+		lowColour.Blue = PIXB(colour2);
+	}
+	else
+	{
+		ruleField->SetText(Client::Ref().GetPrefString("CustomGOL.Rule", "B3/S23"));
+		nameField->SetText(Client::Ref().GetPrefString("CustomGOL.Name", "CGOL"));
+		highColour.Red = random_gen.between(0x80, 0xFF);
+		highColour.Green = random_gen.between(0x80, 0xFF);
+		highColour.Blue = random_gen.between(0x80, 0xFF);
+		lowColour.Red = random_gen.between(0x00, 0x7F);
+		lowColour.Green = random_gen.between(0x00, 0x7F);
+		lowColour.Blue = random_gen.between(0x00, 0x7F);
+	}
 	highColour.Alpha = 255;
-	lowColour.Red = random_gen.between(0x00, 0x7F);
-	lowColour.Green = random_gen.between(0x00, 0x7F);
-	lowColour.Blue = random_gen.between(0x00, 0x7F);
 	lowColour.Alpha = 255;
 	UpdateGradient();
 
@@ -131,8 +144,6 @@ void GOLWindow::Validate()
 		new ErrorMessage("Could not add GOL type", "Invalid rule provided");
 		return;
 	}
-	Client::Ref().SetPrefUnicode("CustomGOL.Name", nameString);
-	Client::Ref().SetPrefUnicode("CustomGOL.Rule", ruleString);
 
 	auto customGOLTypes = Client::Ref().GetPrefByteStringArray("CustomGOL.Types");
 	Json::Value newCustomGOLTypes(Json::arrayValue);
@@ -154,14 +165,17 @@ void GOLWindow::Validate()
 		new ErrorMessage("Could not add GOL type", "Name already taken");
 		return;
 	}
+	
 	StringBuilder sb;
 	auto colour1 = (((highColour.Red << 8) | highColour.Green) << 8) | highColour.Blue;
 	auto colour2 = (((lowColour.Red << 8) | lowColour.Green) << 8) | lowColour.Blue;
 	sb << nameString << " " << ruleString << " " << colour1 << " " << colour2;
 	newCustomGOLTypes.append(sb.Build().ToUtf8());
+	Client::Ref().SetPrefUnicode("CustomGOL.Name", nameString);
+	Client::Ref().SetPrefUnicode("CustomGOL.Rule", ruleString);
 	Client::Ref().SetPref("CustomGOL.Types", newCustomGOLTypes);
-	tool->gameController->SelectOnNextTick = "DEFAULT_PT_LIFECUST_" + nameString.ToAscii();
-	tool->gameController->SelectOnNextTickWith = toolSelection;
+	tool->gameModel->SelectNextIdentifier = "DEFAULT_PT_LIFECUST_" + nameString.ToAscii();
+	tool->gameModel->SelectNextTool = toolSelection;
 }
 
 void GOLWindow::OnTryExit(ExitMethod method)
@@ -191,8 +205,7 @@ void GOLWindow::OnDraw()
 	}
 }
 
-void GOLTool::OpenWindow(Simulation *sim, int toolSelection, GameController *gc)
+void GOLTool::OpenWindow(Simulation *sim, int toolSelection, int rule, int colour1, int colour2)
 {
-	gameController = gc;
-	new GOLWindow(this, sim, toolSelection);
+	new GOLWindow(this, sim, toolSelection, rule, colour1, colour2);
 }

@@ -1,7 +1,9 @@
 #include "Tool.h"
 
 #include "client/Client.h"
+#include "Menu.h"
 
+#include "gui/game/GameModel.h"
 #include "gui/Style.h"
 #include "gui/game/Brush.h"
 #include "gui/interface/Window.h"
@@ -120,11 +122,11 @@ void PropertyWindow::SetProperty()
 						v = sim->GetParticleType(value.ToUtf8());
 						if (v == -1)
 						{
-							for (auto i = 0; i < NGOL; ++i)
+							for (auto *elementTool : tool->gameModel->GetMenuList()[SC_LIFE]->GetToolList())
 							{
-								if (i != NGT_GOL && value == builtinGol[i].name)
+								if (elementTool && elementTool->GetName() == value)
 								{
-									v = i;
+									v = ID(elementTool->GetToolID());
 									break;
 								}
 							}

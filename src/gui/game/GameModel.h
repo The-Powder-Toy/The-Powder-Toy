@@ -221,6 +221,9 @@ public:
 	void RemoveNotification(Notification * notification);
 
 	void RemoveCustomGOLType(const ByteString &identifier);
+	
+	ByteString SelectNextIdentifier;
+	int SelectNextTool;
 };
 
 #endif // GAMEMODEL_H

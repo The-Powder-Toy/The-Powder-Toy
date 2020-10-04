@@ -21,6 +21,7 @@
 #include "ToolClasses.h"
 #include "Config.h"
 #include "SimulationData.h"
+#include "GOLString.h"
 
 #include "graphics/Renderer.h"
 
@@ -5308,28 +5309,7 @@ String Simulation::ElementResolve(int type, int ctype)
 				return it->second;
 			}
 		}
-		StringBuilder golName;
-		golName << "B";
-		for (int i = 1; i < 9; ++i)
-		{
-			if ((ctype >> (i + 8)) & 1)
-			{
-				golName << char('0' + i);
-			}
-		}
-		golName << "/S";
-		for (int i = 0; i < 9; ++i)
-		{
-			if ((ctype >> i) & 1)
-			{
-				golName << char('0' + i);
-			}
-		}
-		if (ctype >> 17)
-		{
-			golName << "/" << (ctype >> 17) + 2;
-		}
-		return golName.Build();
+		return SerialiseGOLRule(ctype);
 	}
 	else if (type >= 0 && type < PT_NUM)
 	{

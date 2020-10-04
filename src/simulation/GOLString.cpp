@@ -59,3 +59,29 @@ bool ValidateGOLName(const String &value)
 	}
 	return nameOk;
 }
+
+String SerialiseGOLRule(int rule)
+{
+	StringBuilder golName;
+	golName << "B";
+	for (int i = 1; i < 9; ++i)
+	{
+		if ((rule >> (i + 8)) & 1)
+		{
+			golName << char('0' + i);
+		}
+	}
+	golName << "/S";
+	for (int i = 0; i < 9; ++i)
+	{
+		if ((rule >> i) & 1)
+		{
+			golName << char('0' + i);
+		}
+	}
+	if (rule >> 17)
+	{
+		golName << "/" << (rule >> 17) + 2;
+	}
+	return golName.Build();
+}

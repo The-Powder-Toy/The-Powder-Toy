@@ -55,8 +55,6 @@ private:
 	void OpenSaveDone();
 public:
 	bool HasDone;
-	ByteString SelectOnNextTick;
-	int SelectOnNextTickWith;
 	GameController();
 	~GameController();
 	GameView * GetView();
