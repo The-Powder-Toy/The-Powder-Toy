@@ -220,6 +220,8 @@ public:
 	String ElementResolve(int type, int ctype);
 	String BasicParticleInfo(Particle const &sample_part);
 
+	std::vector<std::pair<int, String>> GolMap;
+
 private:
 	CoordStack& getCoordStackSingleton();
 };

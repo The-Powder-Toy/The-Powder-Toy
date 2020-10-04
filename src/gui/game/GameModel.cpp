@@ -33,6 +33,7 @@
 #include "gui/interface/Engine.h"
 
 #include <iostream>
+#include <algorithm>
 
 GameModel::GameModel():
 	clipboard(NULL),
@@ -308,40 +309,59 @@ void GameModel::BuildMenus()
 		menuList[SC_LIFE]->AddTool(tempTool);
 	}
 	{
-		auto custom_gols = Client::Ref().GetPrefByteStringArray("CustomGOL.Types");
-		for (auto gol : custom_gols)
+		auto customGOLTypes = Client::Ref().GetPrefByteStringArray("CustomGOL.Types");
+		struct GOLData
+		{
+			int rule, colour1, colour2;
+			String nameString, ruleString;
+
+			bool operator <(const GOLData &other) const
+			{
+				return rule < other.rule;
+			}
+		};
+		std::vector<GOLData> golMenu;
+		for (auto gol : customGOLTypes)
 		{
 			auto parts = gol.FromUtf8().PartitionBy(' ');
 			if (parts.size() != 4)
 			{
 				continue;
 			}
-			auto &nameString = parts[0];
-			auto &ruleString = parts[1];
+			GOLData gd;
+			gd.nameString = parts[0];
+			gd.ruleString = parts[1];
 			auto &colour1String = parts[2];
 			auto &colour2String = parts[3];
-			if (!ValidateGOLName(nameString))
+			if (!ValidateGOLName(gd.nameString))
 			{
 				continue;
 			}
-			auto rule = ParseGOLString(ruleString);
-			if (rule == -1)
+			gd.rule = ParseGOLString(gd.ruleString);
+			if (gd.rule == -1)
 			{
 				continue;
 			}
-			int colour1, colour2;
 			try
 			{
-				colour1 = colour1String.ToNumber<int>();
-				colour2 = colour2String.ToNumber<int>();
+				gd.colour1 = colour1String.ToNumber<int>();
+				gd.colour2 = colour2String.ToNumber<int>();
 			}
 			catch (std::exception &)
 			{
 				continue;
 			}
-			Tool * tempTool = new ElementTool(PT_LIFE|PMAPID(rule), nameString, "Custom GOL type: " + ruleString, PIXR(colour1), PIXG(colour1), PIXB(colour1), "DEFAULT_PT_LIFECUST_"+nameString.ToAscii(), NULL, colour1, colour2);
-			menuList[SC_LIFE]->AddTool(tempTool);
+			golMenu.push_back(gd);
 		}
+		std::vector<std::pair<int, String>> golMap;
+		std::sort(golMenu.begin(), golMenu.end());
+		for (auto &gd : golMenu)
+		{
+			Tool * tempTool = new ElementTool(PT_LIFE|PMAPID(gd.rule), gd.nameString, "Custom GOL type: " + gd.ruleString, PIXR(gd.colour1), PIXG(gd.colour1), PIXB(gd.colour1), "DEFAULT_PT_LIFECUST_"+gd.nameString.ToAscii(), NULL, gd.colour1, gd.colour2);
+			menuList[SC_LIFE]->AddTool(tempTool);
+			golMap.push_back(std::make_pair(gd.rule, gd.nameString));
+		}
+		sim->GolMap = golMap;
 	}
 
 	//Build other menus from wall data

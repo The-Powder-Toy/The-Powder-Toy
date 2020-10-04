@@ -2285,7 +2285,7 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 				}
 
 				//Dcolour (optional), 4 bytes
-				if(particles[i].dcolour && (particles[i].dcolour & 0xFF000000))
+				if(particles[i].dcolour && (particles[i].dcolour & 0xFF000000 || particles[i].type == PT_LIFE))
 				{
 					fieldDesc |= 1 << 6;
 					partsData[partsDataLen++] = (particles[i].dcolour&0xFF000000)>>24;

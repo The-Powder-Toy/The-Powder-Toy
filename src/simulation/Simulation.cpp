@@ -5299,6 +5299,15 @@ String Simulation::ElementResolve(int type, int ctype)
 		{
 			return builtinGol[ctype].name; 
 		}
+		{
+			auto it = std::lower_bound(GolMap.begin(), GolMap.end(), ctype, [](std::pair<int, String> item, int ctype) {
+				return item.first < ctype;
+			});
+			if (!(it == GolMap.end()) && !(ctype < it->first))
+			{
+				return it->second;
+			}
+		}
 		StringBuilder golName;
 		golName << "B";
 		for (int i = 1; i < 9; ++i)
