@@ -61,7 +61,7 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 	{
 		ruleset = builtinGol[ruleset].ruleset;
 	}
-	if (ren->decorations_enable)
+	if (!ren->blackDecorations)
 	{
 		auto states = (ruleset >> 17) + 2;
 		if (states == 2)
