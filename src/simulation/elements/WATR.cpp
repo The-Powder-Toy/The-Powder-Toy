@@ -82,6 +82,13 @@ static int update(UPDATE_FUNC_ARGS)
 				{
 					sim->part_change_type(i,x,y,PT_SLTW);
 				}
+				else if (TYP(r)==PT_ROCK && fabs(parts[i].vx)+fabs(parts[i].vy) >= 0.5 && RNG::Ref().chance(1, 1000)) // ROCK erosion
+				{
+					if (RNG::Ref().chance(1,3))
+						sim->part_change_type(ID(r),x+rx,y+ry,PT_SAND);
+					else
+						sim->part_change_type(ID(r),x+rx,y+ry,PT_STNE);
+				}
 			}
 	return 0;
 }

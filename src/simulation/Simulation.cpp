@@ -2370,8 +2370,9 @@ void Simulation::init_can_move()
 		can_move[movingType][PT_FIGH] = 0;
 		//INVS behaviour varies with pressure
 		can_move[movingType][PT_INVIS] = 3;
-		//stop CNCT from being displaced by other particles
+		//stop CNCT and ROCK from being displaced by other particles
 		can_move[movingType][PT_CNCT] = 0;
+		can_move[movingType][PT_ROCK] = 0;
 		//VOID and PVOD behaviour varies with powered state and ctype
 		can_move[movingType][PT_PVOD] = 3;
 		can_move[movingType][PT_VOID] = 3;
@@ -2772,7 +2773,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 		}
 		break;
 	case PT_CNCT:
-		if (y < ny && TYP(pmap[y+1][x]) == PT_CNCT) //check below CNCT for another CNCT
+		if (y < ny && (TYP(pmap[y+1][x]) == PT_CNCT || TYP(pmap[y+1][x]) == PT_ROCK)) //check below CNCT for another CNCT or ROCK
 			return 0;
 		break;
 	case PT_GBMB:
