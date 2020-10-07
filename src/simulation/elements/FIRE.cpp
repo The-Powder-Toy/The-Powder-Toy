@@ -58,38 +58,40 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 	switch (t)
 	{
 	case PT_PLSM:
-		if (parts[i].life <= 1)
+		if (parts[i].life <=1)
 		{
 			if (parts[i].ctype == PT_NBLE)
 			{
-				sim->part_change_type(i, x, y, PT_NBLE);
+				sim->part_change_type(i,x,y,PT_NBLE);
 				parts[i].life = 0;
 			}
-			else if ((parts[i].tmp & 0x3) == 3) {
-				sim->part_change_type(i, x, y, PT_DSTW);
+			else if ((parts[i].tmp&0x3) == 3){
+				sim->part_change_type(i,x,y,PT_DSTW);
 				parts[i].life = 0;
 				parts[i].ctype = PT_FIRE;
 			}
 		}
 		break;
 	case PT_FIRE:
-		if (parts[i].life <= 1)
+		if (parts[i].life <=1)
 		{
-			if ((parts[i].tmp & 0x3) == 3) {
-				sim->part_change_type(i, x, y, PT_DSTW);
+			if ((parts[i].tmp&0x3) == 3){
+				sim->part_change_type(i,x,y,PT_DSTW);
 				parts[i].life = 0;
 				parts[i].ctype = PT_FIRE;
 			}
-			else if (parts[i].temp < 625)
+			else if (parts[i].temp<625)
 			{
-				sim->part_change_type(i, x, y, PT_SMKE);
+				sim->part_change_type(i,x,y,PT_SMKE);
 				parts[i].life = RNG::Ref().between(250, 269);
 			}
 		}
 		break;
 	case PT_TLRY:
-		for (rx = -2; rx < 3; rx++)
-			for (ry = -2; ry < 3; ry++)
+		for (rx = -2; rx <= 2; ++rx)
+		{
+			for (ry = -2; ry <= 2; ++ry)
+			{
 				if (BOUNDS_CHECK && (rx || ry))
 				{
 					r = pmap[y + ry][x + rx];
@@ -97,39 +99,43 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 						continue;
 					rt = TYP(r);
 
-					if ((parts[i].vx + parts[i].vy >= 1.1) || (parts[ID(r)].vx + parts[ID(r)].vy >= 1.1) || (parts[i].temp >= 2000))
+					if ((rt != PT_TLRY && rt != PT_FIRE && rt != PT_PLSM && rt != PT_SMKE && rt != PT_DMND && rt != parts[i].ctype && fabs(parts[i].vx) + fabs(parts[i].vy) >= 1.1) || parts[i].temp >= 2000)
 					{
-						if (((rt != PT_TLRY) && (rt != PT_FIRE) && (rt != PT_PLSM) && (rt != PT_SMKE)) || (parts[i].temp >= 2000))
+						for (int sx = -5; sx <= 5; ++sx)
 						{
-							int sx, sy, rr;
-							for (sx = -5; sx < 6; sx++)
-								for (sy = -5; sy < 6; sy++)
-									if (RNG::Ref().chance(1, 5))
+							for (int sy = -5; sy <= 5; ++sy)
+							{
+								if (RNG::Ref().chance(1, 5))
+								{
+									sim->create_part(-1, x + sx, y + sy, PT_PLSM);
+								}
+								else if (RNG::Ref().chance(1, 15))
+								{
+									int s = sim->create_part(-1, x + sx, y + sy, PT_BRMT);
+									if (s != -1)
 									{
-										sim->create_part(-1, x + sx, y + sy, PT_PLSM);
+										parts[s].vx = RNG::Ref().between(-20, 20);
+										parts[s].vy = RNG::Ref().between(-20, 20);
 									}
-									else if (RNG::Ref().chance(1, 15))
-									{
-										rr = pmap[y + sy][x + sx];
-										sim->create_part(-1, x + sx, y + sy, PT_BRMT);
-										parts[ID(rr)].vx = RNG::Ref().between(-20, 20);
-										parts[ID(rr)].vy = RNG::Ref().between(-20, 20);
-									}
-									else
-									{
-										sim->create_part(-1, x + sx, y + sy, PT_FIRE);
-									}
-
-							sim->create_part(i, x, y, PT_FIRE);
-							sim->pv[y / CELL][x / CELL] = 75;
+								}
+								else
+								{
+									sim->create_part(-1, x + sx, y + sy, PT_FIRE);
+								}
+							}
 						}
+
+						sim->create_part(i, x, y, PT_FIRE);
+						sim->pv[y / CELL][x / CELL] = 75;
 					}
 				}
+			}
+		}
 		break;
 	default:
 		break;
 	}
-	
+
 	for (rx=-2; rx<3; rx++)
 		for (ry=-2; ry<3; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
