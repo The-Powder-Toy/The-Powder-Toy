@@ -125,6 +125,8 @@ static int update(UPDATE_FUNC_ARGS)
 			{
 				int r = pmap[y + ry][x + rx];
 				if (!r)
+					r = sim->photons[y + ry][x + rx];
+				if (!r)
 					continue;
 				int nx = x + rx;
 				int ny = y + ry;

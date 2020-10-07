@@ -64,6 +64,8 @@ static int update(UPDATE_FUNC_ARGS)
 				{
 					r = pmap[y+ry][x+rx];
 					if (!r)
+						r = sim->photons[y+ry][x+rx];
+					if (!r)
 						continue;
 					if (TYP(r) == PT_HSWC)
 					{
