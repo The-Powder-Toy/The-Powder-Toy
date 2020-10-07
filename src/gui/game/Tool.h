@@ -108,7 +108,7 @@ public:
 	String selectGOLType;
 	GameModel * gameModel;
 	GOLTool(GameModel * gameModel):
-	Tool(0, "CUST", "Add a new custom GOL type.", 0xfe, 0xa9, 0x00, "DEFAULT_UI_ADDLIFE", NULL),
+	Tool(0, "CUST", "Add a new custom GOL type. (Use ctrl+shift+rightclick to remove them)", 0xfe, 0xa9, 0x00, "DEFAULT_UI_ADDLIFE", NULL),
 	gameModel(gameModel)
 	{
 	}
