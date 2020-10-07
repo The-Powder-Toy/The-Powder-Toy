@@ -32,8 +32,8 @@ void Element::Element_LITH()
 	HeatConduct = 70;
 	Description = "Lithium. Reactive element that explodes on contact with water.";
 
-	Properties = TYPE_PART|PROP_LIFE_DEC;
-	
+	Properties = TYPE_PART | PROP_LIFE_DEC;
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -47,143 +47,162 @@ void Element::Element_LITH()
 	Graphics = &graphics;
 }
 
-/* Element property allocations
-*  tmp2: carbonation factor
-*  life:  burn timer
-*  tmp:   hydrogenation factor
-*  ctype:  absorbed energy
-*/
+/*
 
-/* General docs
-* For game reasons, baseline LITH has the reactions of both it's pure form and
-* it's hydroxide, and also has basic li-ion battery-like behavior.
-* It absorbs CO2 like it's hydroxide form, but can only be converted into GLAS
-* after having absorbed CO2.
-*
-* If LITH comes in contact with water, it will consume 1 WATR, increment tmp,
-* and heat itself up by 400K. At 1000K it bursts into flames and sets tmp to 10
-* if still in contact with WATR, setting it's life to 24 and insta-boiling
-* water in it's immediate vincity. 
+tmp2:  carbonation factor
+life:  burn timer
+tmp:   hydrogenation factor
+ctype: absorbed energy
+
+For game reasons, baseline LITH has the reactions of both its pure form and
+its hydroxide, and also has basic li-ion battery-like behavior.
+It absorbs CO2 like its hydroxide form, but can only be converted into GLAS
+after having absorbed CO2.
+
+If LITH comes in contact with water, it will consume 1 WATR, increment tmp,
+and heat itself up by 400K. At 1000K it bursts into flames and sets tmp to 10
+if still in contact with WATR, setting its life to 24 and insta-boiling
+water in its immediate vincity.
+
 */
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	Particle& self = parts[i];
+	Particle &self = parts[i];
 
-	int& hydrogenation_factor = self.tmp;
-	int& burn_timer = self.life;
-	int& carbonation_factor = self.tmp2;
-	int& stored_energy = self.ctype;
-	if (stored_energy < 0)
-		stored_energy = 0;
-		
+	int &hydrogenationFactor = self.tmp;
+	int &burnTimer = self.life;
+	int &carbonationFactor = self.tmp2;
+	int &storedEnergy = self.ctype;
+	if (storedEnergy < 0)
+	{
+		storedEnergy = 0;
+	}
 
-	for (int rx = -1; rx < 2; rx++)
-		for (int ry = -1; ry < 2; ry++)
+	for (int rx = -1; rx <= 1; ++rx)
+	{
+		for (int ry = -1; ry <= 1; ++ry)
+		{
 			if (BOUNDS_CHECK && (rx || ry))
 			{
-				int neighbor_data = pmap[y+ry][x+rx];
-
-				if (!neighbor_data)
+				int neighborData = pmap[y + ry][x + rx];
+				if (!neighborData)
 				{
-					if (self.life > 12 && RNG::Ref().chance(1,10))
+					if (burnTimer > 12 && RNG::Ref().chance(1, 10))
+					{
 						sim->create_part(-1, x + rx, y + ry, PT_FIRE);
+					}
 					continue;
 				}
+				Particle &neighbor = parts[ID(neighborData)];
 
-				Particle& neighbor = parts[ID(neighbor_data)];
-
-				switch (TYP(neighbor_data))
+				switch (TYP(neighborData))
 				{
-					case PT_SLTW:
-					case PT_WTRV:
-					case PT_WATR:
-					case PT_DSTW:
-					case PT_CBNW:
-						if (self.life > 16)
-						{
-							sim->part_change_type(ID(neighbor_data), x + rx, y + ry, PT_WTRV);
-							
-							neighbor.temp = 453.65f;
-							continue;
-						} 
+				case PT_SLTW:
+				case PT_WTRV:
+				case PT_WATR:
+				case PT_DSTW:
+				case PT_CBNW:
+					if (burnTimer > 16)
+					{
+						sim->part_change_type(ID(neighborData), x + rx, y + ry, PT_WTRV);
+						neighbor.temp = 453.65f;
+						continue;
+					}
 
-						if (hydrogenation_factor + carbonation_factor >= 10)
-							continue;
-						if (self.temp > 453.65)
-						{
-							self.life = 24 + (stored_energy > 24 ? 24 : stored_energy);
-							sim->part_change_type(ID(neighbor_data), x + rx, y + ry, PT_H2);
-							hydrogenation_factor = 10;
-						} 
-						else
-						{
-							self.temp += restrict_flt(20.365f + stored_energy * (stored_energy * 1.5f), MIN_TEMP, MAX_TEMP);
-							sim->part_change_type(ID(neighbor_data), x + rx, y + ry, PT_H2);
-							hydrogenation_factor += 1;
-						}
-						break;
-					case PT_CO2:
-						if (hydrogenation_factor + carbonation_factor >= 10)
-							continue;
+					if (hydrogenationFactor + carbonationFactor >= 10)
+					{
+						continue;
+					}
+					if (self.temp > 453.65)
+					{
+						burnTimer = 24 + (storedEnergy > 24 ? 24 : storedEnergy);
+						sim->part_change_type(ID(neighborData), x + rx, y + ry, PT_H2);
+						hydrogenationFactor = 10;
+					}
+					else
+					{
+						self.temp = restrict_flt(self.temp + 20.365f + storedEnergy * storedEnergy * 1.5f, MIN_TEMP, MAX_TEMP);
+						sim->part_change_type(ID(neighborData), x + rx, y + ry, PT_H2);
+						hydrogenationFactor += 1;
+					}
+					break;
 
-						sim->kill_part(ID(neighbor_data));
-						carbonation_factor += 1;
-						break;
-					case PT_SPRK:
-						if (hydrogenation_factor + carbonation_factor >= 5)
-							continue; // too impure to do battery things.
-						if (neighbor.ctype == PT_PSCN && neighbor.life == 4 && RNG::Ref().chance(1,10)) {
-							stored_energy += 1;
-						}
-						break;
-					case PT_NSCN:
-						if (neighbor.life == 0 && stored_energy > 2)
-						{
-							sim->part_change_type(ID(neighbor_data), x + rx, y + ry, PT_SPRK);
-							neighbor.life = 4;
-							neighbor.ctype = PT_NSCN;
-							stored_energy -= 2;
-						}
-						break;
-					case PT_FIRE:
-						if (self.temp > 543.0f && RNG::Ref().chance(1,40) && hydrogenation_factor < 6)
-						{
-							self.life = 13;
-							hydrogenation_factor += 1;
-						}
+				case PT_CO2:
+					if (hydrogenationFactor + carbonationFactor >= 10)
+					{
+						continue;
+					}
+
+					sim->kill_part(ID(neighborData));
+					carbonationFactor += 1;
+					break;
+
+				case PT_SPRK:
+					if (hydrogenationFactor + carbonationFactor >= 5)
+					{
+						continue; // too impure to do battery things.
+					}
+					if (neighbor.ctype == PT_PSCN && neighbor.life == 4 && RNG::Ref().chance(1, 10))
+					{
+						storedEnergy += 1;
+					}
+					break;
+
+				case PT_NSCN:
+					if (neighbor.life == 0 && storedEnergy > 2)
+					{
+						sim->part_change_type(ID(neighborData), x + rx, y + ry, PT_SPRK);
+						neighbor.life = 4;
+						neighbor.ctype = PT_NSCN;
+						storedEnergy -= 2;
+					}
+					break;
+
+				case PT_FIRE:
+					if (self.temp > 543.0f && RNG::Ref().chance(1,40) && hydrogenationFactor < 6)
+					{
+						burnTimer = 13;
+						hydrogenationFactor += 1;
+					}
+					break;
 				}
 			}
+		}
+	}
 
-	for (int trade = 0; trade < 9; trade++)
+	for (int trade = 0; trade < 9; ++trade)
 	{
 		int rx = RNG::Ref().between(-3, 3);
 		int ry = RNG::Ref().between(-3, 3);
 		if (BOUNDS_CHECK && (rx || ry))
 		{
-			int neighbor_data = pmap[y + ry][x + rx];
-			if (TYP(neighbor_data) != PT_LITH)
-				continue;
-			Particle& neighbor = parts[ID(neighbor_data)];
-
-			int& neighbor_stored_energy = neighbor.ctype;
-
-			if (stored_energy > neighbor_stored_energy)
+			int neighborData = pmap[y + ry][x + rx];
+			if (TYP(neighborData) != PT_LITH)
 			{
-				int transfer = stored_energy - neighbor_stored_energy;
-				neighbor_stored_energy += transfer / 2;
-				stored_energy -= transfer / 2;
+				continue;
+			}
+			Particle &neighbor = parts[ID(neighborData)];
+
+			int &neighborStoredEnergy = neighbor.ctype;
+			if (storedEnergy > neighborStoredEnergy)
+			{
+				int transfer = (storedEnergy - neighborStoredEnergy) / 2;
+				neighborStoredEnergy += transfer;
+				storedEnergy -= transfer;
 				break;
 			}
 		}
 	}
-	if (self.temp > 453.65f && self.life == 0) 
+	if (self.temp > 453.65f && burnTimer == 0)
 	{
-		
 		sim->part_change_type(i, x, y, PT_LAVA);
-		if (carbonation_factor < 3) {
+		if (carbonationFactor < 3)
+		{
 			self.ctype = PT_LITH;
-		} else {
+		}
+		else
+		{
 			self.ctype = PT_GLAS;
 		}
 	}
@@ -192,13 +211,14 @@ static int update(UPDATE_FUNC_ARGS)
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
-	if (cpart->life != 0) {
-		*colr = PIXR(0xFFA040);
-		*colg = PIXG(0xFFA040);
-		*colb = PIXB(0xFFA040);
+	if (cpart->life != 0)
+	{
+		int colour = 0xFFA040;
+		*colr = PIXR(colour);
+		*colg = PIXG(colour);
+		*colb = PIXB(colour);
 		*pixel_mode |= PMODE_FLARE | PMODE_GLOW;
 	}
-
 	return 0;
 }
 
