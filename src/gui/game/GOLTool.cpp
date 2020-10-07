@@ -106,12 +106,12 @@ toolSelection(toolSelection)
 	{
 		ruleField->SetText(Client::Ref().GetPrefString("CustomGOL.Rule", "B3/S23"));
 		nameField->SetText(Client::Ref().GetPrefString("CustomGOL.Name", "CGOL"));
-		highColour.Red = random_gen.between(0x80, 0xFF);
-		highColour.Green = random_gen.between(0x80, 0xFF);
-		highColour.Blue = random_gen.between(0x80, 0xFF);
-		lowColour.Red = random_gen.between(0x00, 0x7F);
-		lowColour.Green = random_gen.between(0x00, 0x7F);
-		lowColour.Blue = random_gen.between(0x00, 0x7F);
+		highColour.Red = RNG::Ref().between(0x80, 0xFF);
+		highColour.Green = RNG::Ref().between(0x80, 0xFF);
+		highColour.Blue = RNG::Ref().between(0x80, 0xFF);
+		lowColour.Red = RNG::Ref().between(0x00, 0x7F);
+		lowColour.Green = RNG::Ref().between(0x00, 0x7F);
+		lowColour.Blue = RNG::Ref().between(0x00, 0x7F);
 	}
 	highColour.Alpha = 255;
 	lowColour.Alpha = 255;
