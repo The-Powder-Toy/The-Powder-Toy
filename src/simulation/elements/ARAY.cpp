@@ -47,6 +47,7 @@ void Element::Element_ARAY()
 
 static int update(UPDATE_FUNC_ARGS)
 {
+	int short_bray_life = parts[i].life > 0 ? parts[i].life : 30;
 	int long_bray_life = parts[i].life > 0 ? parts[i].life : 1020;
 	for (int rx = -1; rx <= 1; rx++)
 	{
@@ -83,7 +84,10 @@ static int update(UPDATE_FUNC_ARGS)
 									parts[nr].life = 2;
 								}
 								else
+								{
 									parts[nr].ctype = colored;
+									parts[nr].life = short_bray_life;
+								}
 								parts[nr].temp = parts[i].temp;
 								if (isBlackDeco)
 									parts[nr].dcolour = 0xFF000000;
