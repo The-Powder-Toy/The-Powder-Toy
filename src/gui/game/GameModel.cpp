@@ -310,6 +310,7 @@ void GameModel::BuildMenus()
 	}
 	{
 		auto customGOLTypes = Client::Ref().GetPrefByteStringArray("CustomGOL.Types");
+		Json::Value validatedCustomLifeTypes(Json::arrayValue);
 		struct GOLData
 		{
 			int rule, colour1, colour2;
@@ -352,7 +353,10 @@ void GameModel::BuildMenus()
 				continue;
 			}
 			golMenu.push_back(gd);
+			validatedCustomLifeTypes.append(gol);
 		}
+		// All custom rules that fail validation will be removed
+		Client::Ref().SetPref("CustomGOL.Types", validatedCustomLifeTypes);
 		std::vector<std::pair<int, String>> golMap;
 		std::sort(golMenu.begin(), golMenu.end());
 		for (auto &gd : golMenu)
