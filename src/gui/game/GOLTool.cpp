@@ -145,6 +145,7 @@ void GOLWindow::Validate()
 		new ErrorMessage("Could not add GOL type", "Invalid rule provided");
 		return;
 	}
+	ruleString = SerialiseGOLRule(rule); // * Make it canonical.
 
 	Client::Ref().SetPrefUnicode("CustomGOL.Name", nameString);
 	Client::Ref().SetPrefUnicode("CustomGOL.Rule", ruleString);

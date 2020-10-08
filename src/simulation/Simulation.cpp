@@ -1624,7 +1624,7 @@ int Simulation::FloodWalls(int x, int y, int wall, int bm)
 	return 1;
 }
 
-int Simulation::CreateParts(int positionX, int positionY, int c, Brush * cBrush, int flags, int dcolour, int tmp)
+int Simulation::CreateParts(int positionX, int positionY, int c, Brush * cBrush, int flags)
 {
 	if (flags == -1)
 		flags = replaceModeFlags;
@@ -1643,7 +1643,7 @@ int Simulation::CreateParts(int positionX, int positionY, int c, Brush * cBrush,
 				newlife = 55;
 			c = PMAP(newlife, c);
 			lightningRecreate = currentTick+newlife/4;
-			return CreatePartFlags(positionX, positionY, c, flags, dcolour, tmp);
+			return CreatePartFlags(positionX, positionY, c, flags);
 		}
 		else if (c == PT_TESC)
 		{
@@ -1659,7 +1659,7 @@ int Simulation::CreateParts(int positionX, int positionY, int c, Brush * cBrush,
 			{
 				if (bitmap[(y*sizeX)+x] && (positionX+(x-radiusX) >= 0 && positionY+(y-radiusY) >= 0 && positionX+(x-radiusX) < XRES && positionY+(y-radiusY) < YRES))
 				{
-					CreatePartFlags(positionX+(x-radiusX), positionY+(y-radiusY), c, flags, dcolour, tmp);
+					CreatePartFlags(positionX+(x-radiusX), positionY+(y-radiusY), c, flags);
 				}
 			}
 		}
@@ -1667,7 +1667,7 @@ int Simulation::CreateParts(int positionX, int positionY, int c, Brush * cBrush,
 	return 0;
 }
 
-int Simulation::CreateParts(int x, int y, int rx, int ry, int c, int flags, int dcolour, int tmp)
+int Simulation::CreateParts(int x, int y, int rx, int ry, int c, int flags)
 {
 	bool created = false;
 
@@ -1696,12 +1696,12 @@ int Simulation::CreateParts(int x, int y, int rx, int ry, int c, int flags, int 
 
 	for (int j = -ry; j <= ry; j++)
 		for (int i = -rx; i <= rx; i++)
-			if (CreatePartFlags(x+i, y+j, c, flags, dcolour, tmp))
+			if (CreatePartFlags(x+i, y+j, c, flags))
 				created = true;
 	return !created;
 }
 
-void Simulation::CreateLine(int x1, int y1, int x2, int y2, int c, Brush * cBrush, int flags, int dcolour, int tmp)
+void Simulation::CreateLine(int x1, int y1, int x2, int y2, int c, Brush * cBrush, int flags)
 {
 	int x, y, dx, dy, sy, rx = cBrush->GetRadius().X, ry = cBrush->GetRadius().Y;
 	bool reverseXY = abs(y2-y1) > abs(x2-x1);
@@ -1735,9 +1735,9 @@ void Simulation::CreateLine(int x1, int y1, int x2, int y2, int c, Brush * cBrus
 	for (x=x1; x<=x2; x++)
 	{
 		if (reverseXY)
-			CreateParts(y, x, c, cBrush, flags, dcolour, tmp);
+			CreateParts(y, x, c, cBrush, flags);
 		else
-			CreateParts(x, y, c, cBrush, flags, dcolour, tmp);
+			CreateParts(x, y, c, cBrush, flags);
 		e += de;
 		if (e >= 0.5f)
 		{
@@ -1745,16 +1745,16 @@ void Simulation::CreateLine(int x1, int y1, int x2, int y2, int c, Brush * cBrus
 			if (!(rx+ry) && ((y1<y2) ? (y<=y2) : (y>=y2)))
 			{
 				if (reverseXY)
-					CreateParts(y, x, c, cBrush, flags, dcolour, tmp);
+					CreateParts(y, x, c, cBrush, flags);
 				else
-					CreateParts(x, y, c, cBrush, flags, dcolour, tmp);
+					CreateParts(x, y, c, cBrush, flags);
 			}
 			e -= 1.0f;
 		}
 	}
 }
 
-int Simulation::CreatePartFlags(int x, int y, int c, int flags, int dcolour, int tmp)
+int Simulation::CreatePartFlags(int x, int y, int c, int flags)
 {
 	if (x < 0 || y < 0 || x >= XRES || y >= YRES)
 	{
@@ -1771,14 +1771,7 @@ int Simulation::CreatePartFlags(int x, int y, int c, int flags, int dcolour, int
 			(photons[y][x] && TYP(photons[y][x]) == replaceModeSelected))
 		{
 			if (c)
-			{
-				int i = create_part(photons[y][x] ? ID(photons[y][x]) : ID(pmap[y][x]), x, y, TYP(c), ID(c));
-				if (i != -1)
-				{
-					if (dcolour) parts[i].dcolour = dcolour;
-					if (tmp) parts[i].tmp = tmp;
-				}
-			}
+				create_part(photons[y][x] ? ID(photons[y][x]) : ID(pmap[y][x]), x, y, TYP(c));
 			else
 				delete_part(x, y);
 		}
@@ -1804,13 +1797,10 @@ int Simulation::CreatePartFlags(int x, int y, int c, int flags, int dcolour, int
 	}
 	else
 	{
-		int i = create_part(-2, x, y, TYP(c), ID(c));
-		if (i == -1)
+		if (create_part(-2, x, y, TYP(c), ID(c)) == -1)
 		{
 			return 1;
 		}
-		if (dcolour) parts[i].dcolour = dcolour;
-		if (tmp) parts[i].tmp = tmp;
 		return 0;
 	}
 
@@ -1819,7 +1809,7 @@ int Simulation::CreatePartFlags(int x, int y, int c, int flags, int dcolour, int
 }
 
 //Now simply creates a 0 pixel radius line without all the complicated flags / other checks
-void Simulation::CreateLine(int x1, int y1, int x2, int y2, int c, int dcolour, int tmp)
+void Simulation::CreateLine(int x1, int y1, int x2, int y2, int c)
 {
 	bool reverseXY = abs(y2-y1) > abs(x2-x1);
 	int x, y, dx, dy, sy;
@@ -1855,39 +1845,27 @@ void Simulation::CreateLine(int x1, int y1, int x2, int y2, int c, int dcolour, 
 	sy = (y1<y2) ? 1 : -1;
 	for (x=x1; x<=x2; x++)
 	{
-		int i;
 		if (reverseXY)
-			i = create_part(-1, y, x, c, v);
+			create_part(-1, y, x, c, v);
 		else
-			i = create_part(-1, x, y, c, v);
-		if (i != -1)
-		{
-			if (dcolour) parts[i].dcolour = dcolour;
-			if (tmp) parts[i].tmp = tmp;
-		}
+			create_part(-1, x, y, c, v);
 		e += de;
 		if (e >= 0.5f)
 		{
 			y += sy;
 			if ((y1<y2) ? (y<=y2) : (y>=y2))
 			{
-				int i;
 				if (reverseXY)
-					i = create_part(-1, y, x, c, v);
+					create_part(-1, y, x, c, v);
 				else
-					i = create_part(-1, x, y, c, v);
-				if (i != -1)
-				{
-					if (dcolour) parts[i].dcolour = dcolour;
-					if (tmp) parts[i].tmp = tmp;
-				}
+					create_part(-1, x, y, c, v);
 			}
 			e -= 1.0f;
 		}
 	}
 }
 
-void Simulation::CreateBox(int x1, int y1, int x2, int y2, int c, int flags, int dcolour, int tmp)
+void Simulation::CreateBox(int x1, int y1, int x2, int y2, int c, int flags)
 {
 	int i, j;
 	if (x1>x2)
@@ -1904,10 +1882,10 @@ void Simulation::CreateBox(int x1, int y1, int x2, int y2, int c, int flags, int
 	}
 	for (j=y2; j>=y1; j--)
 		for (i=x1; i<=x2; i++)
-			CreateParts(i, j, 0, 0, c, flags, dcolour, tmp);
+			CreateParts(i, j, 0, 0, c, flags);
 }
 
-int Simulation::FloodParts(int x, int y, int fullc, int cm, int flags, int dcolour, int tmp)
+int Simulation::FloodParts(int x, int y, int fullc, int cm, int flags)
 {
 	int c = TYP(fullc);
 	int x1, x2, dy = (c<PT_NUM)?1:CELL;
@@ -1997,7 +1975,7 @@ int Simulation::FloodParts(int x, int y, int fullc, int cm, int flags, int dcolo
 					created_something = 1;
 				}
 			}
-			else if (CreateParts(x, y, 0, 0, fullc, flags, dcolour, tmp))
+			else if (CreateParts(x, y, 0, 0, fullc, flags))
 				created_something = 1;
 		}
 

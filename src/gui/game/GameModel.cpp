@@ -349,7 +349,7 @@ void GameModel::BuildMenus()
 		Client::Ref().SetPref("CustomGOL.Types", validatedCustomLifeTypes);
 		for (auto &gd : newCustomGol)
 		{
-			Tool * tempTool = new ElementTool(PT_LIFE|PMAPID(gd.rule), gd.nameString, "Custom GOL type: " + gd.ruleString, PIXR(gd.colour1), PIXG(gd.colour1), PIXB(gd.colour1), "DEFAULT_PT_LIFECUST_"+gd.nameString.ToAscii(), NULL, gd.colour1, gd.colour2);
+			Tool * tempTool = new ElementTool(PT_LIFE|PMAPID(gd.rule), gd.nameString, "Custom GOL type: " + gd.ruleString, PIXR(gd.colour1), PIXG(gd.colour1), PIXB(gd.colour1), "DEFAULT_PT_LIFECUST_"+gd.nameString.ToAscii(), NULL);
 			menuList[SC_LIFE]->AddTool(tempTool);
 		}
 		sim->SetCustomGOL(newCustomGol);

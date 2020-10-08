@@ -124,9 +124,8 @@ public:
 
 class ElementTool: public Tool
 {
-	int dcolour, tmp;
 public:
-	ElementTool(int id, String name, String description, int r, int g, int b, ByteString identifier, VideoBuffer * (*textureGen)(int, int, int) = NULL, int dcolour = 0, int tmp = 0);
+	ElementTool(int id, String name, String description, int r, int g, int b, ByteString identifier, VideoBuffer * (*textureGen)(int, int, int) = NULL);
 	virtual ~ElementTool();
 	void Draw(Simulation * sim, Brush * brush, ui::Point position) override;
 	void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false) override;

@@ -189,13 +189,13 @@ public:
 	int FloodWalls(int x, int y, int wall, int bm);
 
 	//Drawing Particles
-	int CreateParts(int positionX, int positionY, int c, Brush * cBrush, int flags = -1, int dcolour = 0, int tmp = 0);
-	int CreateParts(int x, int y, int rx, int ry, int c, int flags = -1, int dcolour = 0, int tmp = 0);
-	int CreatePartFlags(int x, int y, int c, int flags, int dcolour = 0, int tmp = 0);
-	void CreateLine(int x1, int y1, int x2, int y2, int c, Brush * cBrush, int flags = -1, int dcolour = 0, int tmp = 0);
-	void CreateLine(int x1, int y1, int x2, int y2, int c, int dcolour = 0, int tmp = 0);
-	void CreateBox(int x1, int y1, int x2, int y2, int c, int flags = -1, int dcolour = 0, int tmp = 0);
-	int FloodParts(int x, int y, int c, int cm, int flags = -1, int dcolour = 0, int tmp = 0);
+	int CreateParts(int positionX, int positionY, int c, Brush * cBrush, int flags = -1);
+	int CreateParts(int x, int y, int rx, int ry, int c, int flags = -1);
+	int CreatePartFlags(int x, int y, int c, int flags);
+	void CreateLine(int x1, int y1, int x2, int y2, int c, Brush * cBrush, int flags = -1);
+	void CreateLine(int x1, int y1, int x2, int y2, int c);
+	void CreateBox(int x1, int y1, int x2, int y2, int c, int flags = -1);
+	int FloodParts(int x, int y, int c, int cm, int flags = -1);
 
 
 	void GetGravityField(int x, int y, float particleGrav, float newtonGrav, float & pGravX, float & pGravY);
