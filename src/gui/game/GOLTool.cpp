@@ -138,12 +138,16 @@ void GOLWindow::Validate()
 		new ErrorMessage("Could not add GOL type", "Invalid name provided");
 		return;
 	}
+	nameString = nameString.ToUpper();
 	int rule = ParseGOLString(ruleString);
 	if (rule == -1)
 	{
 		new ErrorMessage("Could not add GOL type", "Invalid rule provided");
 		return;
 	}
+
+	Client::Ref().SetPrefUnicode("CustomGOL.Name", nameString);
+	Client::Ref().SetPrefUnicode("CustomGOL.Rule", ruleString);
 
 	auto customGOLTypes = Client::Ref().GetPrefByteStringArray("CustomGOL.Types");
 	Json::Value newCustomGOLTypes(Json::arrayValue);
@@ -171,8 +175,6 @@ void GOLWindow::Validate()
 	auto colour2 = (((lowColour.Red << 8) | lowColour.Green) << 8) | lowColour.Blue;
 	sb << nameString << " " << ruleString << " " << colour1 << " " << colour2;
 	newCustomGOLTypes.append(sb.Build().ToUtf8());
-	Client::Ref().SetPrefUnicode("CustomGOL.Name", nameString);
-	Client::Ref().SetPrefUnicode("CustomGOL.Rule", ruleString);
 	Client::Ref().SetPref("CustomGOL.Types", newCustomGOLTypes);
 	tool->gameModel->SelectNextIdentifier = "DEFAULT_PT_LIFECUST_" + nameString.ToAscii();
 	tool->gameModel->SelectNextTool = toolSelection;
