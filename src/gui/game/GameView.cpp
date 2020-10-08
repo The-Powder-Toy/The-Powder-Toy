@@ -2165,6 +2165,8 @@ void GameView::OnDraw()
 					// Some elements store extra LIFE info in upper bits of ctype, instead of tmp/tmp2
 					else if (type == PT_CRAY || type == PT_DRAY || type == PT_CONV)
 						sampleInfo << " (" << c->ElementResolve(TYP(ctype), ID(ctype)) << ")";
+					else if (type == PT_CLNE || type == PT_BCLN || type == PT_PCLN || type == PT_PBCN)
+						sampleInfo << " (" << c->ElementResolve(ctype, sample.particle.tmp) << ")";
 					else if (c->IsValidElement(ctype))
 						sampleInfo << " (" << c->ElementResolve(ctype, -1) << ")";
 					else
