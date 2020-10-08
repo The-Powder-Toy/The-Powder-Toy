@@ -8,11 +8,13 @@ int ParseGOLString(const String &value)
 	auto stay = 0U;
 	auto states = 2U;
 
+	// Scan 'B' section, must be between 1 and 8
 	for (; it != value.end() && it[0] >= '1' && it[0] <= '8'; ++it)
 	{
 		begin |= 1U << (it[0] - '0');
 	}
 
+	// Must have a /S immediately afterwards
 	if (it < value.end() - 1 && it[0] == '/' && it[1] == 'S')
 	{
 		it += 2;
@@ -22,11 +24,13 @@ int ParseGOLString(const String &value)
 		return -1;
 	}
 
-	for (; it != value.end() && it[0] >= '1' && it[0] <= '8'; ++it)
+	// Scan 'S' section, must be between 0 and 8
+	for (; it != value.end() && it[0] >= '0' && it[0] <= '8'; ++it)
 	{
 		stay |= 1U << (it[0] - '0');
 	}
 
+	// Optionally can have a 3rd section, with the number of frames to remain after dying
 	if (it != value.end())
 	{
 		if (it[0] == '/')
@@ -37,7 +41,7 @@ int ParseGOLString(const String &value)
 		{
 			return -1;
 		}
-		states = String(it, value.end()).ToNumber<unsigned int>();
+		states = String(it, value.end()).ToNumber<unsigned int>(true);
 		if (states < 2 || states > 17)
 		{
 			return -1;
