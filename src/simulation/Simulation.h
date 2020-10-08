@@ -220,7 +220,24 @@ public:
 	String ElementResolve(int type, int ctype);
 	String BasicParticleInfo(Particle const &sample_part);
 
-	std::vector<std::pair<int, String>> GolMap;
+
+	struct CustomGOLData
+	{
+		int rule, colour1, colour2;
+		String nameString, ruleString;
+
+		inline bool operator <(const CustomGOLData &other) const
+		{
+			return rule < other.rule;
+		}
+	};
+
+private:
+	std::vector<CustomGOLData> customGol;
+
+public:
+	const CustomGOLData *GetCustomGOLByRule(int rule) const;
+	void SetCustomGOL(std::vector<CustomGOLData> newCustomGol);
 
 private:
 	CoordStack& getCoordStackSingleton();

@@ -4802,7 +4802,7 @@ void Simulation::SimulateGoL()
 			ruleset = builtinGol[golnum].ruleset;
 			golnum += 1;
 		}
-		if (part.tmp2 == int(ruleset >> 17) + 1)
+		if (part.tmp2 == int((ruleset >> 17) & 0xF) + 1)
 		{
 			for (int yy = -1; yy <= 1; ++yy)
 			{
@@ -4914,7 +4914,8 @@ void Simulation::SimulateGoL()
 						}
 						if (golnumToCreate != 0xFFFFFFFFU)
 						{
-							int i = create_part(-1, x, y, PT_LIFE, golnumToCreate);
+							// * 0x200000: No need to look for colours, they'll be set later anyway.
+							int i = create_part(-1, x, y, PT_LIFE, golnumToCreate | 0x200000);
 							int xx = (createFromEntry >> 24) & 3;
 							int yy = (createFromEntry >> 26) & 3;
 							if (xx == 3) xx = -1;
@@ -5292,6 +5293,25 @@ Simulation::Simulation():
 	grav->gravity_mask();
 }
 
+const Simulation::CustomGOLData *Simulation::GetCustomGOLByRule(int rule) const
+{
+	// * Binary search. customGol is already sorted, see SetCustomGOL.
+	auto it = std::lower_bound(customGol.begin(), customGol.end(), rule, [](const CustomGOLData &item, int rule) {
+		return item.rule < rule;
+	});
+	if (it != customGol.end() && !(rule < it->rule))
+	{
+		return &*it;
+	}
+	return nullptr;
+}
+
+void Simulation::SetCustomGOL(std::vector<CustomGOLData> newCustomGol)
+{
+	std::sort(newCustomGol.begin(), newCustomGol.end());
+	customGol = newCustomGol;
+}
+
 String Simulation::ElementResolve(int type, int ctype)
 {
 	if (type == PT_LIFE)
@@ -5300,14 +5320,10 @@ String Simulation::ElementResolve(int type, int ctype)
 		{
 			return builtinGol[ctype].name; 
 		}
+		auto *cgol = GetCustomGOLByRule(ctype);
+		if (cgol)
 		{
-			auto it = std::lower_bound(GolMap.begin(), GolMap.end(), ctype, [](std::pair<int, String> item, int ctype) {
-				return item.first < ctype;
-			});
-			if (!(it == GolMap.end()) && !(ctype < it->first))
-			{
-				return it->second;
-			}
+			return cgol->nameString;
 		}
 		return SerialiseGOLRule(ctype);
 	}

@@ -63,7 +63,7 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 	}
 	if (!ren->blackDecorations)
 	{
-		auto states = (ruleset >> 17) + 2;
+		auto states = ((ruleset >> 17) & 0xF) + 2;
 		if (states == 2)
 		{
 			*colr = PIXR(colour1);
@@ -84,12 +84,21 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 
 static void create(ELEMENT_CREATE_FUNC_ARGS)
 {
-	sim->parts[i].ctype = v;
+	sim->parts[i].ctype = v & 0x1FFFFF;
 	if (v < NGOL)
 	{
 		sim->parts[i].dcolour = builtinGol[v].colour;
 		sim->parts[i].tmp = builtinGol[v].colour2;
 		v = builtinGol[v].ruleset;
 	}
-	sim->parts[i].tmp2 = (v >> 17) + 1;
+	else if (!(v & 0x200000)) // * 0x200000: No need to look for colours, they'll be set later anyway.
+	{
+		auto *cgol = sim->GetCustomGOLByRule(v & 0x1FFFFF);
+		if (cgol)
+		{
+			sim->parts[i].dcolour = cgol->colour1;
+			sim->parts[i].tmp = cgol->colour2;
+		}
+	}
+	sim->parts[i].tmp2 = ((v >> 17) & 0xF) + 1;
 }

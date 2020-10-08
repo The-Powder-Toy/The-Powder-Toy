@@ -311,17 +311,7 @@ void GameModel::BuildMenus()
 	{
 		auto customGOLTypes = Client::Ref().GetPrefByteStringArray("CustomGOL.Types");
 		Json::Value validatedCustomLifeTypes(Json::arrayValue);
-		struct GOLData
-		{
-			int rule, colour1, colour2;
-			String nameString, ruleString;
-
-			bool operator <(const GOLData &other) const
-			{
-				return rule < other.rule;
-			}
-		};
-		std::vector<GOLData> golMenu;
+		std::vector<Simulation::CustomGOLData> newCustomGol;
 		for (auto gol : customGOLTypes)
 		{
 			auto parts = gol.FromUtf8().PartitionBy(' ');
@@ -329,7 +319,7 @@ void GameModel::BuildMenus()
 			{
 				continue;
 			}
-			GOLData gd;
+			Simulation::CustomGOLData gd;
 			gd.nameString = parts[0];
 			gd.ruleString = parts[1];
 			auto &colour1String = parts[2];
@@ -352,20 +342,17 @@ void GameModel::BuildMenus()
 			{
 				continue;
 			}
-			golMenu.push_back(gd);
+			newCustomGol.push_back(gd);
 			validatedCustomLifeTypes.append(gol);
 		}
 		// All custom rules that fail validation will be removed
 		Client::Ref().SetPref("CustomGOL.Types", validatedCustomLifeTypes);
-		std::vector<std::pair<int, String>> golMap;
-		std::sort(golMenu.begin(), golMenu.end());
-		for (auto &gd : golMenu)
+		for (auto &gd : newCustomGol)
 		{
 			Tool * tempTool = new ElementTool(PT_LIFE|PMAPID(gd.rule), gd.nameString, "Custom GOL type: " + gd.ruleString, PIXR(gd.colour1), PIXG(gd.colour1), PIXB(gd.colour1), "DEFAULT_PT_LIFECUST_"+gd.nameString.ToAscii(), NULL, gd.colour1, gd.colour2);
 			menuList[SC_LIFE]->AddTool(tempTool);
-			golMap.push_back(std::make_pair(gd.rule, gd.nameString));
 		}
-		sim->GolMap = golMap;
+		sim->SetCustomGOL(newCustomGol);
 	}
 
 	//Build other menus from wall data

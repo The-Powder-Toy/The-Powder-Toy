@@ -83,9 +83,9 @@ String SerialiseGOLRule(int rule)
 			golName << char('0' + i);
 		}
 	}
-	if (rule >> 17)
+	if ((rule >> 17) & 0xF)
 	{
-		golName << "/" << (rule >> 17) + 2;
+		golName << "/" << ((rule >> 17) & 0xF) + 2;
 	}
 	return golName.Build();
 }
