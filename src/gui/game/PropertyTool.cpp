@@ -1,7 +1,9 @@
 #include "Tool.h"
 
 #include "client/Client.h"
+#include "Menu.h"
 
+#include "gui/game/GameModel.h"
 #include "gui/Style.h"
 #include "gui/game/Brush.h"
 #include "gui/interface/Window.h"
@@ -12,7 +14,10 @@
 #include "gui/interface/Keys.h"
 #include "gui/dialogues/ErrorMessage.h"
 
+#include "simulation/GOLString.h"
+#include "simulation/BuiltinGOL.h"
 #include "simulation/Simulation.h"
+#include "simulation/SimulationData.h"
 
 #include "graphics/Graphics.h"
 
@@ -83,7 +88,7 @@ void PropertyWindow::SetProperty()
 {
 	if(property->GetOption().second!=-1 && textField->GetText().length() > 0)
 	{
-		String value = textField->GetText();
+		String value = textField->GetText().ToUpper();
 		try {
 			switch(properties[property->GetOption().second].Type)
 			{
@@ -91,7 +96,7 @@ void PropertyWindow::SetProperty()
 				case StructProperty::ParticleType:
 				{
 					int v;
-					if(value.length() > 2 && value.BeginsWith("0x"))
+					if(value.length() > 2 && value.BeginsWith("0X"))
 					{
 						//0xC0FFEE
 						v = value.Substr(2).ToNumber<unsigned int>(Format::Hex());
@@ -101,18 +106,32 @@ void PropertyWindow::SetProperty()
 						//#C0FFEE
 						v = value.Substr(1).ToNumber<unsigned int>(Format::Hex());
 					}
+					else if (value.length() > 1 && value.BeginsWith("B") && value.Contains("/"))
+					{
+						v = ParseGOLString(value);
+						if (v == -1)
+						{
+							class InvalidGOLString : public std::exception
+							{
+							};
+							throw InvalidGOLString();
+						}
+					}
 					else
 					{
-						int type;
-						if ((type = sim->GetParticleType(value.ToUtf8())) != -1)
+						v = sim->GetParticleType(value.ToUtf8());
+						if (v == -1)
 						{
-							v = type;
-
-#ifdef DEBUG
-							std::cout << "Got type from particle name" << std::endl;
-#endif
+							for (auto *elementTool : tool->gameModel->GetMenuList()[SC_LIFE]->GetToolList())
+							{
+								if (elementTool && elementTool->GetName() == value)
+								{
+									v = ID(elementTool->GetToolID());
+									break;
+								}
+							}
 						}
-						else
+						if (v == -1)
 						{
 							v = value.ToNumber<int>();
 						}
@@ -134,7 +153,7 @@ void PropertyWindow::SetProperty()
 				case StructProperty::UInteger:
 				{
 					unsigned int v;
-					if(value.length() > 2 && value.BeginsWith("0x"))
+					if(value.length() > 2 && value.BeginsWith("0X"))
 					{
 						//0xC0FFEE
 						v = value.Substr(2).ToNumber<unsigned int>(Format::Hex());

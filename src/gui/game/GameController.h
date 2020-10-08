@@ -174,6 +174,8 @@ public:
 	void NotifyNewNotification(Client * sender, std::pair<String, ByteString> notification) override;
 	void RunUpdater();
 	bool GetMouseClickRequired();
+
+	void RemoveCustomGOLType(const ByteString &identifier);
 };
 
 #endif // GAMECONTROLLER_H

@@ -81,8 +81,10 @@ public:
 class PropertyTool: public Tool
 {
 public:
-	PropertyTool():
-	Tool(0, "PROP", "Property Drawing Tool. Use to alter the properties of elements in the field.", 0xfe, 0xa9, 0x00, "DEFAULT_UI_PROPERTY", NULL)
+	GameModel * gameModel;
+	PropertyTool(GameModel *model):
+	Tool(0, "PROP", "Property Drawing Tool. Use to alter the properties of elements in the field.", 0xfe, 0xa9, 0x00, "DEFAULT_UI_PROPERTY", NULL),
+	gameModel(model)
 	{
 	}
 	StructProperty::PropertyType propType;
@@ -98,6 +100,25 @@ public:
 	void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false) override;
 	void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) override;
 	void DrawFill(Simulation * sim, Brush * brush, ui::Point position) override;
+};
+
+class GOLTool: public Tool
+{
+public:
+	String selectGOLType;
+	GameModel * gameModel;
+	GOLTool(GameModel * gameModel):
+	Tool(0, "CUST", "Add a new custom GOL type. (Use ctrl+shift+rightclick to remove them)", 0xfe, 0xa9, 0x00, "DEFAULT_UI_ADDLIFE", NULL),
+	gameModel(gameModel)
+	{
+	}
+	void OpenWindow(Simulation *sim, int toolSelection, int rule = 0, int colour1 = 0, int colour2 = 0);
+	virtual ~GOLTool() {}
+	void Click(Simulation * sim, Brush * brush, ui::Point position) override { }
+	void Draw(Simulation *sim, Brush *brush, ui::Point position) override { };
+	void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging = false) override { };
+	void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) override { };
+	void DrawFill(Simulation * sim, Brush * brush, ui::Point position) override { };
 };
 
 

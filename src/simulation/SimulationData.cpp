@@ -4,106 +4,48 @@
 #include "ElementDefs.h"
 #include "ElementClasses.h"
 
-#include "GOLMenu.h"
+#include "BuiltinGOL.h"
 #include "WallType.h"
 #include "MenuSection.h"
 
 #include "graphics/Renderer.h"
 
-std::vector<gol_menu> LoadGOLMenu()
-{
-	return
-	std::vector<gol_menu>{
-		{"GOL",		PIXPACK(0x0CAC00), 0, String("Game Of Life: Begin 3/Stay 23")},
-		{"HLIF",	PIXPACK(0xFF0000), 1, String("High Life: B36/S23")},
-		{"ASIM",	PIXPACK(0x0000FF), 2, String("Assimilation: B345/S4567")},
-		{"2x2",		PIXPACK(0xFFFF00), 3, String("2x2: B36/S125")},
-		{"DANI",	PIXPACK(0x00FFFF), 4, String("Day and Night: B3678/S34678")},
-		{"AMOE",	PIXPACK(0xFF00FF), 5, String("Amoeba: B357/S1358")},
-		{"MOVE",	PIXPACK(0xFFFFFF), 6, String("'Move' particles. Does not move things.. it is a life type: B368/S245")},
-		{"PGOL",	PIXPACK(0xE05010), 7, String("Pseudo Life: B357/S238")},
-		{"DMOE",	PIXPACK(0x500000), 8, String("Diamoeba: B35678/S5678")},
-		{"34",		PIXPACK(0x500050), 9, String("34: B34/S34")},
-		{"LLIF",	PIXPACK(0x505050), 10, String("Long Life: B345/S5")},
-		{"STAN",	PIXPACK(0x5000FF), 11, String("Stains: B3678/S235678")},
-		{"SEED",	PIXPACK(0xFBEC7D), 12, String("Seeds: B2/S")},
-		{"MAZE",	PIXPACK(0xA8E4A0), 13, String("Maze: B3/S12345")},
-		{"COAG",	PIXPACK(0x9ACD32), 14, String("Coagulations: B378/S235678")},
-		{"WALL",	PIXPACK(0x0047AB), 15, String("Walled cities: B45678/S2345")},
-		{"GNAR",	PIXPACK(0xE5B73B), 16, String("Gnarl: B1/S1")},
-		{"REPL",	PIXPACK(0x259588), 17, String("Replicator: B1357/S1357")},
-		{"MYST",	PIXPACK(0x0C3C00), 18, String("Mystery: B3458/S05678")},
-		{"LOTE",	PIXPACK(0xFF0000), 19, String("Living on the Edge: B37/S3458/4")},
-		{"FRG2",	PIXPACK(0x00FF00), 20, String("Like Frogs rule: B3/S124/3")},
-		{"STAR",	PIXPACK(0x0000FF), 21, String("Like Star Wars rule: B278/S3456/6")},
-		{"FROG",	PIXPACK(0x00AA00), 22, String("Frogs: B34/S12/3")},
-		{"BRAN",	PIXPACK(0xCCCC00), 23, String("Brian 6: B246/S6/3")}
-	};
-}
-
-std::vector<std::array<int, 10> > LoadGOLRules()
-{
-	return
-	std::vector<std::array<int, 10> >{
-	//	 0,1,2,3,4,5,6,7,8,STATES    live=1  spawn=2 spawn&live=3   States are kind of how long until it dies, normal ones use two states(living,dead) for others the intermediate states live but do nothing
-		{0,0,0,0,0,0,0,0,0,2},//blank
-		{0,0,1,3,0,0,0,0,0,2},//GOL
-		{0,0,1,3,0,0,2,0,0,2},//HLIF
-		{0,0,0,2,3,3,1,1,0,2},//ASIM
-		{0,1,1,2,0,1,2,0,0,2},//2x2
-		{0,0,0,3,1,0,3,3,3,2},//DANI
-		{0,1,0,3,0,3,0,2,1,2},//AMOE
-		{0,0,1,2,1,1,2,0,2,2},//MOVE
-		{0,0,1,3,0,2,0,2,1,2},//PGOL
-		{0,0,0,2,0,3,3,3,3,2},//DMOE
-		{0,0,0,3,3,0,0,0,0,2},//34
-		{0,0,0,2,2,3,0,0,0,2},//LLIF
-		{0,0,1,3,0,1,3,3,3,2},//STAN
-		{0,0,2,0,0,0,0,0,0,2},//SEED
-		{0,1,1,3,1,1,0,0,0,2},//MAZE
-		{0,0,1,3,0,1,1,3,3,2},//COAG
-		{0,0,1,1,3,3,2,2,2,2},//WALL
-		{0,3,0,0,0,0,0,0,0,2},//GNAR
-		{0,3,0,3,0,3,0,3,0,2},//REPL
-		{1,0,0,2,2,3,1,1,3,2},//MYST
-		{0,0,0,3,1,1,0,2,1,4},//LOTE
-		{0,1,1,2,1,0,0,0,0,3},//FRG2
-		{0,0,2,1,1,1,1,2,2,6},//STAR
-		{0,1,1,2,2,0,0,0,0,3},//FROG
-		{0,0,2,0,2,0,3,0,0,3},//BRAN
-	};
-}
-
-std::vector<int> LoadGOLTypes()
-{
-	return 
-	std::vector<int>{
-		GT_GOL,
-		GT_HLIF,
-		GT_ASIM,
-		GT_2x2,
-		GT_DANI,
-		GT_AMOE,
-		GT_MOVE,
-		GT_PGOL,
-		GT_DMOE,
-		GT_34,
-		GT_LLIF,
-		GT_STAN,
-		GT_SEED,
-		GT_MAZE,
-		GT_COAG,
-		GT_WALL,
-		GT_GNAR,
-		GT_REPL,
-		GT_MYST,
-		GT_LOTE,
-		GT_FRG2,
-		GT_STAR,
-		GT_FROG,
-		GT_BRAN,
-	};
-}
+const BuiltinGOL builtinGol[NGOL] = {
+	// * Ruleset:
+	//   * bits x = 8..0: stay if x neighbours present
+	//   * bits x = 16..9: begin if x-8 neighbours present
+	//   * bits 20..17: 4-bit unsigned int encoding the number of states minus 2; 2 states is
+	//     encoded as 0, 3 states as 1, etc.
+	//   * states are kind of long until a cell dies; normal ones use two states (living and dead),
+	//     for others the intermediate states live but do nothing
+	//   * the ruleset constants below look 20-bit, but rulesets actually consist of 21
+	//     bits of data; bit 20 just happens to not be set for any of the built-in types,
+	//     as none of them have 10 or more states
+	{ "GOL",  GT_GOL , 0x0080C, PIXPACK(0x0CAC00), PIXPACK(0x0CAC00), NGT_GOL,  String("Game Of Life: Begin 3/Stay 23") },
+	{ "HLIF", GT_HLIF, 0x0480C, PIXPACK(0xFF0000), PIXPACK(0xFF0000), NGT_HLIF, String("High Life: B36/S23") },
+	{ "ASIM", GT_ASIM, 0x038F0, PIXPACK(0x0000FF), PIXPACK(0x0000FF), NGT_ASIM, String("Assimilation: B345/S4567") },
+	{ "2X2",  GT_2x2 , 0x04826, PIXPACK(0xFFFF00), PIXPACK(0xFFFF00), NGT_2x2,  String("2X2: B36/S125") },
+	{ "DANI", GT_DANI, 0x1C9D8, PIXPACK(0x00FFFF), PIXPACK(0x00FFFF), NGT_DANI, String("Day and Night: B3678/S34678") },
+	{ "AMOE", GT_AMOE, 0x0A92A, PIXPACK(0xFF00FF), PIXPACK(0xFF00FF), NGT_AMOE, String("Amoeba: B357/S1358") },
+	{ "MOVE", GT_MOVE, 0x14834, PIXPACK(0xFFFFFF), PIXPACK(0xFFFFFF), NGT_MOVE, String("'Move' particles. Does not move things.. it is a life type: B368/S245") },
+	{ "PGOL", GT_PGOL, 0x0A90C, PIXPACK(0xE05010), PIXPACK(0xE05010), NGT_PGOL, String("Pseudo Life: B357/S238") },
+	{ "DMOE", GT_DMOE, 0x1E9E0, PIXPACK(0x500000), PIXPACK(0x500000), NGT_DMOE, String("Diamoeba: B35678/S5678") },
+	{ "3-4",  GT_34  , 0x01818, PIXPACK(0x500050), PIXPACK(0x500050), NGT_34,   String("3-4: B34/S34") },
+	{ "LLIF", GT_LLIF, 0x03820, PIXPACK(0x505050), PIXPACK(0x505050), NGT_LLIF, String("Long Life: B345/S5") },
+	{ "STAN", GT_STAN, 0x1C9EC, PIXPACK(0x5000FF), PIXPACK(0x5000FF), NGT_STAN, String("Stains: B3678/S235678") },
+	{ "SEED", GT_SEED, 0x00400, PIXPACK(0xFBEC7D), PIXPACK(0xFBEC7D), NGT_SEED, String("Seeds: B2/S") },
+	{ "MAZE", GT_MAZE, 0x0083E, PIXPACK(0xA8E4A0), PIXPACK(0xA8E4A0), NGT_MAZE, String("Maze: B3/S12345") },
+	{ "COAG", GT_COAG, 0x189EC, PIXPACK(0x9ACD32), PIXPACK(0x9ACD32), NGT_COAG, String("Coagulations: B378/S235678") },
+	{ "WALL", GT_WALL, 0x1F03C, PIXPACK(0x0047AB), PIXPACK(0x0047AB), NGT_WALL, String("Walled cities: B45678/S2345") },
+	{ "GNAR", GT_GNAR, 0x00202, PIXPACK(0xE5B73B), PIXPACK(0xE5B73B), NGT_GNAR, String("Gnarl: B1/S1") },
+	{ "REPL", GT_REPL, 0x0AAAA, PIXPACK(0x259588), PIXPACK(0x259588), NGT_REPL, String("Replicator: B1357/S1357") },
+	{ "MYST", GT_MYST, 0x139E1, PIXPACK(0x0C3C00), PIXPACK(0x0C3C00), NGT_MYST, String("Mystery: B3458/S05678") },
+	{ "LOTE", GT_LOTE, 0x48938, PIXPACK(0xFF0000), PIXPACK(0xFFFF00), NGT_LOTE, String("Living on the Edge: B37/S3458/4") },
+	{ "FRG2", GT_FRG2, 0x20816, PIXPACK(0x006432), PIXPACK(0x00FF5A), NGT_FRG2, String("Like Frogs rule: B3/S124/3") },
+	{ "STAR", GT_STAR, 0x98478, PIXPACK(0x000040), PIXPACK(0x0000E6), NGT_STAR, String("Like Star Wars rule: B278/S3456/6") },
+	{ "FROG", GT_FROG, 0x21806, PIXPACK(0x006400), PIXPACK(0x00FF00), NGT_FROG, String("Frogs: B34/S12/3") },
+	{ "BRAN", GT_BRAN, 0x25440, PIXPACK(0xFFFF00), PIXPACK(0x969600), NGT_BRAN, String("Brian 6: B246/S6/3" )}
+};
 
 std::vector<wall_type> LoadWalls()
 {

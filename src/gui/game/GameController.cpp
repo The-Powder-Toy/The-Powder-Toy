@@ -779,6 +779,12 @@ void GameController::Tick()
 #endif
 		firstTick = false;
 	}
+	if (gameModel->SelectNextIdentifier.length())
+	{
+		gameModel->BuildMenus();
+		gameModel->SetActiveTool(gameModel->SelectNextTool, gameModel->GetToolFromIdentifier(gameModel->SelectNextIdentifier));
+		gameModel->SelectNextIdentifier.clear();
+	}
 	for(std::vector<DebugInfo*>::iterator iter = debugInfo.begin(), end = debugInfo.end(); iter != end; iter++)
 	{
 		if ((*iter)->debugID & debugFlags)
@@ -1114,6 +1120,10 @@ void GameController::SetActiveTool(int toolSelection, Tool * tool)
 	}
 	if(tool->GetIdentifier() == "DEFAULT_UI_PROPERTY")
 		((PropertyTool *)tool)->OpenWindow(gameModel->GetSimulation());
+	if(tool->GetIdentifier() == "DEFAULT_UI_ADDLIFE")
+	{
+		((GOLTool *)tool)->OpenWindow(gameModel->GetSimulation(), toolSelection);
+	}
 }
 
 void GameController::SetActiveTool(int toolSelection, ByteString identifier)
@@ -1671,4 +1681,9 @@ void GameController::RunUpdater()
 bool GameController::GetMouseClickRequired()
 {
 	return gameModel->GetMouseClickRequired();
+}
+
+void GameController::RemoveCustomGOLType(const ByteString &identifier)
+{
+	gameModel->RemoveCustomGOLType(identifier);
 }

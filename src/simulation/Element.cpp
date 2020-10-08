@@ -250,7 +250,7 @@ bool Element::ctypeDrawVInTmp(CTYPEDRAW_FUNC_ARGS)
 	{
 		return false;
 	}
-	if (t == PT_LIFE && v >= 0 && v < NGOL)
+	if (t == PT_LIFE)
 	{
 		sim->parts[i].tmp = v;
 	}
@@ -263,7 +263,7 @@ bool Element::ctypeDrawVInCtype(CTYPEDRAW_FUNC_ARGS)
 	{
 		return false;
 	}
-	if (t == PT_LIFE && v >= 0 && v < NGOL)
+	if (t == PT_LIFE)
 	{
 		sim->parts[i].ctype |= PMAPID(v);
 	}
