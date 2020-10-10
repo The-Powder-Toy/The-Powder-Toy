@@ -119,6 +119,19 @@ namespace ui
 
 		int maxWidth;
 		int maxHeight;
+
+		bool momentumScroll;
+
+	public:
+		inline void SetMomentumScroll(bool newMomentumScroll)
+		{
+			momentumScroll = newMomentumScroll;
+		}
+
+		inline bool GetMomentumScroll() const
+		{
+			return momentumScroll;
+		}
 	};
 
 }

@@ -16,7 +16,6 @@ namespace ui
 		bool isMouseInsideScrollbar;
 		bool isMouseInsideScrollbarArea;
 		bool scrollbarSelected;
-		bool momentumScroll;
 		int scrollbarInitialYOffset;
 		int scrollbarInitialYClick;
 		int scrollbarClickLocation;

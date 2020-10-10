@@ -1,4 +1,5 @@
 #include "ScrollPanel.h"
+#include "Engine.h"
 
 #include "graphics/Graphics.h"
 
@@ -21,10 +22,8 @@ ScrollPanel::ScrollPanel(Point position, Point size):
 	scrollbarSelected(false),
 	scrollbarInitialYOffset(0),
 	scrollbarInitialYClick(0),
-	scrollbarClickLocation(0),
-	momentumScroll(false)
+	scrollbarClickLocation(0)
 {
-	momentumScroll = Client::Ref().GetPrefBool("MomentumScroll", true);
 }
 
 int ScrollPanel::GetScrollLimit()
@@ -46,7 +45,7 @@ void ScrollPanel::XOnMouseWheelInside(int localx, int localy, int d)
 {
 	if (!d)
 		return;
-	if (momentumScroll)
+	if (ui::Engine::Ref().GetMomentumScroll())
 		yScrollVel -= d * 2;
 	else
 		yScrollVel -= d * 20;
@@ -144,7 +143,7 @@ void ScrollPanel::XTick(float dt)
 	offsetX += xScrollVel;
 
 
-	if (momentumScroll)
+	if (ui::Engine::Ref().GetMomentumScroll())
 	{
 		if (yScrollVel > -0.5f && yScrollVel < 0.5)
 			yScrollVel = 0;

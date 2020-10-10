@@ -234,6 +234,7 @@ bool OptionsModel::GetMomentumScroll()
 void OptionsModel::SetMomentumScroll(bool state)
 {
 	Client::Ref().SetPref("MomentumScroll", state);
+	ui::Engine::Ref().SetMomentumScroll(state);
 	notifySettingsChanged();
 }
 

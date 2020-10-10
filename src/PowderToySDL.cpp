@@ -64,6 +64,7 @@ bool fullscreen = false;
 bool altFullscreen = false;
 bool forceIntegerScaling = true;
 bool resizable = false;
+bool momentumScroll = true;
 
 
 void ClipboardPush(ByteString text)
@@ -696,6 +697,7 @@ int main(int argc, char * argv[])
 	fullscreen = Client::Ref().GetPrefBool("Fullscreen", false);
 	altFullscreen = Client::Ref().GetPrefBool("AltFullscreen", false);
 	forceIntegerScaling = Client::Ref().GetPrefBool("ForceIntegerScaling", true);
+	momentumScroll = Client::Ref().GetPrefBool("MomentumScroll", true);
 
 
 	if(arguments["kiosk"] == "true")
@@ -785,6 +787,7 @@ int main(int argc, char * argv[])
 	ui::Engine::Ref().Fullscreen = fullscreen;
 	ui::Engine::Ref().SetAltFullscreen(altFullscreen);
 	ui::Engine::Ref().SetForceIntegerScaling(forceIntegerScaling);
+	ui::Engine::Ref().SetMomentumScroll(momentumScroll);
 
 	engine = &ui::Engine::Ref();
 	engine->SetMaxSize(desktopWidth, desktopHeight);

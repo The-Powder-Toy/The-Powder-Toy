@@ -34,7 +34,8 @@ Engine::Engine():
 	mousexp_(0),
 	mouseyp_(0),
 	maxWidth(0),
-	maxHeight(0)
+	maxHeight(0),
+	momentumScroll(false)
 {
 }
 
