@@ -176,6 +176,17 @@ void SDLOpen()
 		}
 	}
 
+	if (Client::Ref().GetPrefBool("AutoDrawLimit", false))
+	{
+		SDL_DisplayMode displayMode;
+		SDL_GetCurrentDisplayMode(displayIndex, &displayMode);
+
+		if(displayMode.refresh_rate >= 60)
+		{
+			ui::Engine::Ref().SetDrawingFrequencyLimit(displayMode.refresh_rate);
+		}
+	}
+
 #ifdef WIN
 	SDL_SysWMinfo SysInfo;
 	SDL_VERSION(&SysInfo.version);
@@ -497,9 +508,16 @@ void EngineProcess()
 {
 	double frameTimeAvg = 0.0f, correctedFrameTimeAvg = 0.0f;
 	SDL_Event event;
+
+	int drawingTimer = 0;
+	int frameStart = 0;
+
 	while(engine->Running())
 	{
-		int frameStart = SDL_GetTicks();
+		int oldFrameStart = frameStart;
+		frameStart = SDL_GetTicks();
+		drawingTimer += frameStart - oldFrameStart;
+
 		if(engine->Broken()) { engine->UnBreak(); break; }
 		event.type = 0;
 		while (SDL_PollEvent(&event))
@@ -510,21 +528,27 @@ void EngineProcess()
 		if(engine->Broken()) { engine->UnBreak(); break; }
 
 		engine->Tick();
-		engine->Draw();
 
-		if (scale != engine->Scale || fullscreen != engine->Fullscreen ||
-				altFullscreen != engine->GetAltFullscreen() ||
-				forceIntegerScaling != engine->GetForceIntegerScaling() || resizable != engine->GetResizable())
+		int drawcap = ui::Engine::Ref().GetDrawingFrequencyLimit();
+		if (!drawcap || drawingTimer > 1000.f/drawcap)
 		{
-			SDLSetScreen(engine->Scale, engine->GetResizable(), engine->Fullscreen, engine->GetAltFullscreen(),
-						 engine->GetForceIntegerScaling());
-		}
+			engine->Draw();
+			drawingTimer = 0;
+
+			if (scale != engine->Scale || fullscreen != engine->Fullscreen ||
+					altFullscreen != engine->GetAltFullscreen() ||
+					forceIntegerScaling != engine->GetForceIntegerScaling() || resizable != engine->GetResizable())
+			{
+				SDLSetScreen(engine->Scale, engine->GetResizable(), engine->Fullscreen, engine->GetAltFullscreen(),
+							 engine->GetForceIntegerScaling());
+			}
 
 #ifdef OGLI
-		blit();
+			blit();
 #else
-		blit(engine->g->vid);
+			blit(engine->g->vid);
 #endif
+		}
 
 		int frameTime = SDL_GetTicks() - frameStart;
 		frameTimeAvg = frameTimeAvg * 0.8 + frameTime * 0.2;

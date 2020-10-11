@@ -250,6 +250,17 @@ OptionsView::OptionsView():
 	scrollPanel->AddChild(tempLabel);
 	scrollPanel->AddChild(momentumScroll);
 
+	currentY += 20;
+	autoDrawLimit = new ui::Checkbox(ui::Point(8, currentY), ui::Point(1, 16), "Auto Draw Rate", "");
+	autowidth(autoDrawLimit);
+	autoDrawLimit->SetActionCallback({ [this] { c->SetAutoDrawLimit(autoDrawLimit->GetChecked()); } });
+	tempLabel = new ui::Label(ui::Point(autoDrawLimit->Position.X + Graphics::textwidth(autoDrawLimit->GetText()) + 20, currentY), ui::Point(1, 16), "\bg- Based on monitor refresh rate at startup");
+	autowidth(tempLabel);
+	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	scrollPanel->AddChild(tempLabel);
+	scrollPanel->AddChild(autoDrawLimit);
+
 	currentY+=20;
 	mouseClickRequired = new ui::Checkbox(ui::Point(8, currentY), ui::Point(1, 16), "Sticky Categories", "");
 	autowidth(mouseClickRequired);
@@ -350,6 +361,7 @@ void OptionsView::NotifySettingsChanged(OptionsModel * sender)
 	includePressure->SetChecked(sender->GetIncludePressure());
 	perfectCirclePressure->SetChecked(sender->GetPerfectCircle());
 	momentumScroll->SetChecked(sender->GetMomentumScroll());
+	autoDrawLimit->SetChecked(sender->GetAutoDrawLimit());
 }
 
 void OptionsView::AttachController(OptionsController * c_)
