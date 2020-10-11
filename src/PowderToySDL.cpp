@@ -176,11 +176,16 @@ void SDLOpen()
 		}
 	}
 
-	SDL_DisplayMode displayMode;
-	SDL_GetCurrentDisplayMode(displayIndex, &displayMode);
+	if (Client::Ref().GetPrefBool("AutoDrawLimit", false))
+	{
+		SDL_DisplayMode displayMode;
+		SDL_GetCurrentDisplayMode(displayIndex, &displayMode);
 
-	if(displayMode.refresh_rate >= 60)
-		ui::Engine::Ref().SetDrawingFrequencyLimit(displayMode.refresh_rate);
+		if(displayMode.refresh_rate >= 60)
+		{
+			ui::Engine::Ref().SetDrawingFrequencyLimit(displayMode.refresh_rate);
+		}
+	}
 
 #ifdef WIN
 	SDL_SysWMinfo SysInfo;
@@ -504,16 +509,13 @@ void EngineProcess()
 	double frameTimeAvg = 0.0f, correctedFrameTimeAvg = 0.0f;
 	SDL_Event event;
 
-
-	float drawingTimer = 0;
-	int oldFrameStart = 0;
+	int drawingTimer = 0;
 	int frameStart = 0;
 
 	while(engine->Running())
 	{
-		oldFrameStart = frameStart;
+		int oldFrameStart = frameStart;
 		frameStart = SDL_GetTicks();
-
 		drawingTimer += frameStart - oldFrameStart;
 
 		if(engine->Broken()) { engine->UnBreak(); break; }
@@ -527,27 +529,25 @@ void EngineProcess()
 
 		engine->Tick();
 
-		if(drawingTimer > 1000/ui::Engine::Ref().GetDrawingFrequencyLimit())
+		int drawcap = ui::Engine::Ref().GetDrawingFrequencyLimit();
+		if (!drawcap || drawingTimer > 1000.f/drawcap)
 		{
 			engine->Draw();
 			drawingTimer = 0;
-		
-		
 
 			if (scale != engine->Scale || fullscreen != engine->Fullscreen ||
 					altFullscreen != engine->GetAltFullscreen() ||
 					forceIntegerScaling != engine->GetForceIntegerScaling() || resizable != engine->GetResizable())
 			{
 				SDLSetScreen(engine->Scale, engine->GetResizable(), engine->Fullscreen, engine->GetAltFullscreen(),
-							engine->GetForceIntegerScaling());
+							 engine->GetForceIntegerScaling());
 			}
 
-	#ifdef OGLI
+#ifdef OGLI
 			blit();
-	#else
+#else
 			blit(engine->g->vid);
-	#endif
-
+#endif
 		}
 
 		int frameTime = SDL_GetTicks() - frameStart;

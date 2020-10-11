@@ -17,7 +17,7 @@ using namespace ui;
 
 Engine::Engine():
 	FpsLimit(60.0f),
-	drawingFrequencyLimit(60),
+	drawingFrequencyLimit(0),
 	Scale(1),
 	Fullscreen(false),
 	FrameIndex(0),

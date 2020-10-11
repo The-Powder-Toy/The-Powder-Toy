@@ -84,7 +84,7 @@ namespace ui
 		//inline State* GetState() { return state_; }
 		inline Window* GetWindow() { return state_; }
 		float FpsLimit;
-		float drawingFrequencyLimit;
+		int drawingFrequencyLimit;
 		Graphics * g;
 		int Scale;
 		bool Fullscreen;

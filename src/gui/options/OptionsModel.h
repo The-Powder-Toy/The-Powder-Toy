@@ -53,6 +53,8 @@ public:
 	void SetPerfectCircle(bool perfectCircle);
 	bool GetMomentumScroll();
 	void SetMomentumScroll(bool momentumScroll);
+	bool GetAutoDrawLimit();
+	void SetAutoDrawLimit(bool autoDrawLimit);
 	virtual ~OptionsModel();
 };
 

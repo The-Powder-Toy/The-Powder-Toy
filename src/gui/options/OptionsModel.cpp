@@ -238,6 +238,17 @@ void OptionsModel::SetMomentumScroll(bool state)
 	notifySettingsChanged();
 }
 
+bool OptionsModel::GetAutoDrawLimit()
+{
+	return Client::Ref().GetPrefBool("AutoDrawLimit", false);
+}
+
+void OptionsModel::SetAutoDrawLimit(bool state)
+{
+	Client::Ref().SetPref("AutoDrawLimit", state);
+	notifySettingsChanged();
+}
+
 void OptionsModel::notifySettingsChanged()
 {
 	for (size_t i = 0; i < observers.size(); i++)
