@@ -113,6 +113,10 @@ void Label::copySelection()
 	{
 		ClipboardPush(format::CleanString(text.Between(selectionIndexL.raw_index, selectionIndexH.raw_index), false, true, false).ToUtf8());
 	}
+	else
+	{
+		ClipboardPush(format::CleanString(text, false, true, false).ToUtf8());
+	}
 }
 
 void Label::OnMouseUp(int x, int y, unsigned button)

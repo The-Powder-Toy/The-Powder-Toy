@@ -503,25 +503,6 @@ void Textbox::OnTextInput(String text)
 
 void Textbox::OnMouseClick(int x, int y, unsigned button)
 {
-	if (button == SDL_BUTTON_RIGHT)
-	{
-		if (HasSelection())
-		{
-			menu->RemoveItem(0);
-			menu->RemoveItem(1);
-			menu->RemoveItem(2);
-			menu->AddItem(ContextMenuItem("Cut", 1, true));
-			menu->AddItem(ContextMenuItem("Copy", 0, true));
-			menu->AddItem(ContextMenuItem("Paste", 2, true));
-		}
-		else
-		{
-			menu->RemoveItem(0);
-			menu->RemoveItem(1);
-			menu->RemoveItem(2);
-			menu->AddItem(ContextMenuItem("Paste", 2, true));
-		}
-	}
 	if (button != SDL_BUTTON_RIGHT)
 	{
 		mouseDown = true;
