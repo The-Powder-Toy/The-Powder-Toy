@@ -174,16 +174,13 @@ void SDLOpen()
 			desktopWidth = rect.w;
 			desktopHeight = rect.h;
 		}
-	}
-
-	if (Client::Ref().GetPrefBool("AutoDrawLimit", false))
-	{
-		SDL_DisplayMode displayMode;
-		SDL_GetCurrentDisplayMode(displayIndex, &displayMode);
-
-		if(displayMode.refresh_rate >= 60)
+		if (Client::Ref().GetPrefBool("AutoDrawLimit", false))
 		{
-			ui::Engine::Ref().SetDrawingFrequencyLimit(displayMode.refresh_rate);
+			SDL_DisplayMode displayMode;
+			if (!SDL_GetCurrentDisplayMode(displayIndex, &displayMode) && displayMode.refresh_rate >= 60)
+			{
+				ui::Engine::Ref().SetDrawingFrequencyLimit(displayMode.refresh_rate);
+			}
 		}
 	}
 
