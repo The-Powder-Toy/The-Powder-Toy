@@ -51,12 +51,12 @@ toolSelection(toolSelection)
 	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	okayButton->Appearance.BorderInactive = ui::Colour(200, 200, 200);
 	okayButton->SetActionCallback({ [this] {
-		CloseActiveWindow();
 		if (nameField->GetText().length() && ruleField->GetText().length())
 		{
+			CloseActiveWindow();
 			Validate();
+			SelfDestruct();
 		}
-		SelfDestruct();
 	} });
 	AddComponent(okayButton);
 	SetOkayButton(okayButton);

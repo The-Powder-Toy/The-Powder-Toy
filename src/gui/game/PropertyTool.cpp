@@ -57,10 +57,12 @@ sim(sim_)
 	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	okayButton->Appearance.BorderInactive = ui::Colour(200, 200, 200);
 	okayButton->SetActionCallback({ [this] {
-		CloseActiveWindow();
 		if (textField->GetText().length())
+		{
+			CloseActiveWindow();
 			SetProperty();
-		SelfDestruct();
+			SelfDestruct();
+		}
 	} });
 	AddComponent(okayButton);
 	SetOkayButton(okayButton);
