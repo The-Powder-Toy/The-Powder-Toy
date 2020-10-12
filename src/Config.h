@@ -35,7 +35,7 @@
 #endif
 
 #if defined(SNAPSHOT) || defined(DEBUG)
-#define FUTURE_SAVE_VERSION 95
+#define FUTURE_SAVE_VERSION 96
 #define FUTURE_MINOR_VERSION 0
 #endif
 //VersionInfoEnd
