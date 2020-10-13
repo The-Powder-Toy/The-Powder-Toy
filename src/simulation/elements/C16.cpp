@@ -6,7 +6,7 @@ void Element::Element_C16()
 {
 	Identifier = "DEFAULT_PT_C16";
 	Name = "C-16";
-	Colour = PIXPACK(0x228B22);
+	Colour = PIXPACK(0x58d68d);
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;
@@ -26,7 +26,7 @@ void Element::Element_C16()
 	Meltable = 0;
 	Hardness = 10;
 	Weight = 100;
-	PhotonReflectWavelengths = 0x228B22;
+	PhotonReflectWavelengths = 0x58d68d;
 
 	HeatConduct = 250;
 	Description = "C-16, extremely powerful explosive.";

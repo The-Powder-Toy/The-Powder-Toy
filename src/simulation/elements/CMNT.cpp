@@ -32,7 +32,7 @@ void Element::Element_CMNT()
 
 	Weight = 91;
 	HeatConduct = 100;
-	Description = "Cement, starts to solidify when mixed with water. Usefull in making buildings.";
+	Description = "Cement, starts to solidify when mixed with water. Useful in making buildings.";
 
 	Properties = TYPE_PART;
 

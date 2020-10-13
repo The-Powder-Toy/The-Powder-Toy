@@ -1,25 +1,7 @@
-Changelog for Version 15.0:
+Changelog for Version 16.0
+Fix some element's description.
+Merge changes from version 96.0
+New elements: CWIR, DRMV and ROCK.
+Change C-16's colour and update VSNS.
 
-#Additions/changes:
-Pulse theme is now set as default when launching game for first time.
-THRM is now THMO (Preventing confusion with THRM i.e thermite.)
-New elements: CLOUD, BEE, SLCN, C-16 and ELCR (read wiki!)
-QGP explodes in a much better way now.
-Bigger buttons for new menu.
-Place Hidden elements in the correct menus.
-Optimisations to some of the new elements (better performance.)
-Remove the watermark from screenshots.
-Add Stack tools.
-Auto select latest theme if nothing was selected.
-Script version is now shown separately when opening the menu.
-Added new themes.
-Update/change text for 15.0
-Replace version check option with new tools.
-
-#Bug Fixes:
-Fix X and Y coords not showing up correctly (while in debug mode.)
-Fix PHOS behaving oddly with CFLM and FIRE.
-Fix reset button selecting wrong theme for startup. 
-Fix W key not switching between new gravity modes properly.
-Fix CMNT's properties.
-Fix UI hide option showing some parts when selecting solids.
+ 

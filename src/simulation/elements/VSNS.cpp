@@ -6,7 +6,7 @@ void Element::Element_VSNS()
 {
 	Identifier = "DEFAULT_PT_VSNS";
 	Name = "VSNS";
-	Colour = PIXPACK(0x7CFC00);
+	Colour = PIXPACK(0x7C9C00);
 	MenuVisible = 1;
 	MenuSection = SC_SENSOR;
 	Enabled = 1;
@@ -72,32 +72,29 @@ static int update(UPDATE_FUNC_ARGS)
 							sim->part_change_type(ID(r), x + rx, y + ry, PT_SPRK);
 						}
 					}
-
 				}
 	}
 	bool doSerialization = false;
 	bool doDeserialization = false;
-	float Vx = 0, Vy = 0, Vm = 0, Vs = 0;
+	float Vs = 0;
 	for (int rx = -rd; rx < rd + 1; rx++)
 		for (int ry = -rd; ry < rd + 1; ry++)
 			if (x + rx >= 0 && y + ry >= 0 && x + rx < XRES && y + ry < YRES && (rx || ry))
-
-
 			{
 				int r = pmap[y + ry][x + rx];
 				if (!r)
 					r = sim->photons[y + ry][x + rx];
 				if (!r)
 					continue;
-				Vx = parts[ID(r)].vx;
-				Vy = parts[ID(r)].vy;
-				Vm = sqrt(Vx*Vx + Vy*Vy);
+				float Vx = parts[ID(r)].vx;
+				float Vy = parts[ID(r)].vy;
+				float Vm = sqrt(Vx*Vx + Vy * Vy);
 
 				switch (parts[i].tmp)
 				{
 				case 1:
 					// serialization
-					if (TYP(r) != PT_VSNS && TYP(r) != PT_FILT && !(sim->elements[TYP(r)].Properties & (TYPE_SOLID)))
+					if (TYP(r) != PT_VSNS && TYP(r) != PT_FILT && !(sim->elements[TYP(r)].Properties & TYPE_SOLID))
 					{
 						doSerialization = true;
 						Vs = Vm;
@@ -107,29 +104,34 @@ static int update(UPDATE_FUNC_ARGS)
 					// deserialization
 					if (TYP(r) == PT_FILT)
 					{
-						doDeserialization = true;
-						Vs = parts[ID(r)].ctype;
+						int vel = parts[ID(r)].ctype - 0x10000000;
+						if (vel >= 0 && vel < SIM_MAXVELOCITY)
+						{
+							doDeserialization = true;
+							Vs = vel;
+						}
 					}
 					break;
 				case 2:
 					// Invert mode
-					if (TYP(r) != PT_METL && Vm <= parts[i].temp - 273.15 && !(sim->elements[TYP(r)].Properties & (TYPE_SOLID)))
+					if (!(sim->elements[TYP(r)].Properties & TYPE_SOLID) && Vm <= parts[i].temp - 273.15)
 						parts[i].life = 1;
 					break;
 				default:
 					// Normal mode
-					if (TYP(r) != PT_METL && Vm > parts[i].temp - 273.15 && !(sim->elements[TYP(r)].Properties & (TYPE_SOLID)))
+					if (!(sim->elements[TYP(r)].Properties & TYPE_SOLID) && Vm > parts[i].temp - 273.15)
 						parts[i].life = 1;
 					break;
 				}
 			}
-	
+
 	for (int rx = -1; rx <= 1; rx++)
 		for (int ry = -1; ry <= 1; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
 			{
-				
 				int r = pmap[y + ry][x + rx];
+				if (!r)
+					r = sim->photons[y + ry][x + rx];
 				if (!r)
 					continue;
 				int nx = x + rx;
@@ -139,7 +141,7 @@ static int update(UPDATE_FUNC_ARGS)
 				{
 					while (TYP(r) == PT_FILT)
 					{
-						parts[ID(r)].ctype = 0x10000000 + Vs;
+						parts[ID(r)].ctype = 0x10000000 + (int)(Vs + 0.5f);
 						nx += rx;
 						ny += ry;
 						if (nx < 0 || ny < 0 || nx >= XRES || ny >= YRES)
@@ -150,10 +152,17 @@ static int update(UPDATE_FUNC_ARGS)
 				//Deserialization.
 				if (doDeserialization)
 				{
-					if (TYP(r) != PT_FILT && !(sim->elements[TYP(r)].Properties & (TYPE_SOLID)))
+					if (TYP(r) != PT_FILT && !(sim->elements[TYP(r)].Properties & TYPE_SOLID))
 					{
-						//to be done
-						continue;
+						float Vx = parts[ID(r)].vx;
+						float Vy = parts[ID(r)].vy;
+						float Vm = sqrt(Vx*Vx + Vy * Vy);
+						if (Vm > 0)
+						{
+							parts[ID(r)].vx *= Vs / Vm;
+							parts[ID(r)].vy *= Vs / Vm;
+						}
+						break;
 					}
 				}
 			}

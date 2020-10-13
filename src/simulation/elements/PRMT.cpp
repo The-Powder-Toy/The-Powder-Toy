@@ -37,7 +37,7 @@ void Element::Element_PRMT()
 	Weight = 100;
 
 	HeatConduct = 35;
-	Description = "Promethium, cathes fire at high velocity, emits NEUT at high temp and with PLUT, explosive at low temp.";
+	Description = "Promethium, catches fire at high velocity, emits NEUT at high temp and with PLUT, explosive at low temp.";
 
 	Properties = TYPE_PART | PROP_NEUTPASS | PROP_RADIOACTIVE;
 
