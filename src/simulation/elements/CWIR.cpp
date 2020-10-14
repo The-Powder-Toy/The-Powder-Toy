@@ -7,7 +7,7 @@ void Element::Element_CWIR()
 {
 	Identifier = "DEFAULT_PT_CWIR";
 	Name = "CWIR";
-	Colour = PIXPACK(0xe74c3c);
+	Colour = PIXPACK(0xff0000);
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
 	Enabled = 1;
@@ -26,7 +26,7 @@ void Element::Element_CWIR()
 	Explosive = 0;
 	Meltable = 1;
 	Hardness = 0;
-	PhotonReflectWavelengths = 0xe74c3c;
+	PhotonReflectWavelengths = 0xb266ff;
 
 	Weight = 100;
 
@@ -56,8 +56,8 @@ static int update(UPDATE_FUNC_ARGS)
 		parts[i].tmp = 4;
 	}
 
- int checkCoordsX[] = { -cust, cust, 0, 0 };
- int checkCoordsY[] = { 0, 0, -cust, cust };
+	int checkCoordsX[] = { -cust, cust, 0, 0 };
+	int checkCoordsY[] = { 0, 0, -cust, cust };
 
 	if (!parts[i].life)
 	{

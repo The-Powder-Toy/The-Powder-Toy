@@ -32,7 +32,7 @@ void Element::Element_BEE()
 
 	DefaultProperties.temp = R_TEMP + 2.0f + 273.15f;
 	HeatConduct = 42;
-	Description = "BEE, converts wood into wax, attacks figh/stkm. Eats PLNT to stay alive and multiply.";
+	Description = "BEE, Secretes wax, attacks figh/stkm, eats plant to stay alive and multiply.";
 
 	Properties = TYPE_GAS;
 
@@ -42,8 +42,8 @@ void Element::Element_BEE()
 	HighPressureTransition = NT;
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
-	HighTemperature = ITH;
-	HighTemperatureTransition = NT;
+	HighTemperature = 374.15f;
+	HighTemperatureTransition = PT_NONE;
 
 	Update = &update;
 	Graphics = &graphics;
@@ -81,13 +81,22 @@ static int update(UPDATE_FUNC_ARGS)
 				{
 				case PT_WOOD:
 				{
-					sim->pv[(y / CELL) + ry][(x / CELL) + rx] = -2.0f;
+					sim->pv[(y / CELL) + ry][(x / CELL) + rx] = -1.0f;
 					if (RNG::Ref().chance(1, 90))
 					{
-						sim->part_change_type(ID(r), x + rx, y + ry, PT_MWAX);
-						parts[ID(r)].temp = 373.15f;
+						if (parts[i].life > 75)
+						{
+							sim->create_part(-1, x + 4, y + 4, PT_WAX);
+							parts[ID(r)].temp = 373.15f;
+							parts[i].life--;
+						}
 					}
-
+				}
+				break;
+				case PT_FIRE:
+				case PT_PLSM:
+				{
+					sim->pv[(y / CELL) + ry][(x / CELL) + rx] = 3.0f;
 				}
 				break;
 				case PT_MWAX:

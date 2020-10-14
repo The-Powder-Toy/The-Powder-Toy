@@ -1,21 +1,24 @@
 #include "simulation/ElementCommon.h"
+
 static int update(UPDATE_FUNC_ARGS);
+static int graphics(GRAPHICS_FUNC_ARGS);
+
 void Element::Element_CLUD()
 {
 	Identifier = "DEFAULT_PT_CLUD";
 	Name = "CLUD";
-	Colour = PIXPACK(0x303035);
+	Colour = PIXPACK(0xAAAAAA);
 	MenuVisible = 1;
 	MenuSection = SC_GAS;
 	Enabled = 1;
 
-	Advection = 1.0f;
-	AirDrag = 0.001f * CFDS;
-	AirLoss = 0.9f;
-	Loss = 0.002f;
-	Collision = 0.0f;
+	Advection = 0.0f;
+	AirDrag = 0.00f * CFDS;
+	AirLoss = 0.0f;
+	Loss = 0.00f;
+	Collision = -0.1f;
 	Gravity = 0.0f;
-	Diffusion = 0.1f;
+	Diffusion = 0.09f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
 
@@ -24,13 +27,14 @@ void Element::Element_CLUD()
 	Meltable = 0;
 	Hardness = 0;
 
-	Weight = 91;
+	Weight = 31;
 
-	DefaultProperties.temp = R_TEMP + 2.0f + 273.15f;
-	HeatConduct = 22;
-	Description = "Cloud, reacts with CAUS to produce Acid clouds. Randomly creates LIGH.";
+	DefaultProperties.temp = 353.15f;
+	HeatConduct = 0;
+	Description = "CLUD, Rains after sometime and creates LIGH.";
 
 	Properties = TYPE_GAS;
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
@@ -41,49 +45,49 @@ void Element::Element_CLUD()
 	HighTemperatureTransition = NT;
 
 	Update = &update;
+	Graphics = &graphics;
 }
+
 static int update(UPDATE_FUNC_ARGS)
 {
-		int r, rx, ry, rndstore;
-		for (int rx = -2; rx < 3; rx++)
-			for (int ry = -2; ry < 3; ry++)
-				if (BOUNDS_CHECK && (rx || ry))
-				{
-					int r = pmap[y + ry][x + rx];
-					if (!r)
-						continue;
-					if (RNG::Ref().chance(1, 200))
-					{
-						parts[i].tmp += 1;
-					}
-					
-					else if (RNG::Ref().chance(6, 100000000))
-					{
-						sim->create_part(-1, x, y + 40, PT_LIGH);
-					}
-					if (parts[i].tmp >= 40 && parts[i].tmp2 !=1)
-					{
-						sim->pv[(y / CELL) + ry][(x / CELL) + rx] = 0.2f;
-						sim->create_part(-1, x, y + 30, PT_WATR);
-						parts[i].tmp -= 30;
-					}
-
-					if (parts[i].tmp >= 40 && parts[i].tmp2 == 1)
-					{
-						sim->pv[(y / CELL) + ry][(x / CELL) + rx] = 0.2f;
-						sim->create_part(-1, x, y + 30, PT_ACID);
-						parts[i].tmp -= 30;
-					}
-
-					if (parts[ID(r)].type == PT_CAUS)
-					{
-						parts[i].tmp2 = 1;
-					}
-
-					
+	if (parts[i].tmp < 1000 && parts[i].tmp2 != 1)
+	{
+			parts[i].tmp++;
+	}
+	if (parts[i].tmp == 1000)
+	{
+		parts[i].tmp2 = 1;
+		if (RNG::Ref().chance(1, 1000))
+		{
+			sim->create_part(-1, x, y + 30, PT_LIGH);
 		}
+		
+	}
+	if (parts[i].tmp2 == 1 && parts[i].tmp > -5)
+	{
+		parts[i].tmp --;
+		if (RNG::Ref().chance(1, 50))
+		{
+			sim->create_part(-1, x, y + 1, PT_WATR);
+		}
+	}
+	if (parts[i].tmp < 0)
+	{
+		parts[i].tmp2 = 0;
+	}
 	return 0;
 }
 
+static int graphics(GRAPHICS_FUNC_ARGS)
+{
+		*colb -= cpart->tmp/8;
+		*colr -= cpart->tmp/8;
+		*colg -= cpart->tmp/8;
+		*firea = 40;
+		*firer = *colr;
+		*fireg = *colg;
+		*fireb = *colb;
+		*pixel_mode |= FIRE_BLEND;
 
-
+	return 0;
+}

@@ -1,7 +1,17 @@
-Changelog for Version 16.0
-Fix some element's description.
-Merge changes from version 96.0
-New elements: CWIR, DRMV and ROCK.
-Change C-16's colour and update VSNS.
+Changelog for Version 16.0:
+
+1) Fix some element descriptions.
+2) Merge changes from version 96.0
+3) New elements: CWIR and ROCK.
+4) Change C-16's colour and update VSNS.
+5) Cloud and BEE are now much more better and realistic.
+6)
+7)
+8)
+9)
+10)
+
+todo
+Update LSNS and HSWC.
 
  

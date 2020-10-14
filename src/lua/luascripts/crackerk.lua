@@ -1,5 +1,5 @@
 --Cracker1000's TPT unleashed script 
-local version = 12
+local version = 13
 local toggle = Button:new(320,0,13,8, "V", "Toggle additional menus.")
 
 local deletesparkButton =  Button:new(320,6,75,10,"Interface", "shows UI related stuff.")
@@ -187,13 +187,13 @@ clearm()
 tpt.hud(0)
 interface.addComponent(wikin2)
 tpt.register_step(wikii)
-tpt.register_step(backb)
+tpt.register_step(backr)
 tpt.register_step(UIhide)
 end)
 
 function wikii()
 tpt.unregister_step(verno)
-gfx.drawText(10,10, " WELCOME TO THE WIKI.\n CWIR: Customisable wire, conducts sprk at variable speed. User .tmp to customise. (Range 0 to 30)\n VLSN: Velocity sensor.  Creates SPRK when nearby velocity's higher than it's temp, Configured with .tmp modes.\n C-16: A powerful explosive. Explodes creating pressure about 40 units when above 65C.\n TIMC: Time based convertor, converts into it's ctype when sparked with PSCN. Timer set using .tmp, default is 100.\n FUEL: FUEL. Fuel having high calorific value.\n THRM: Thermostat. Sets the temp of surrounding according to its own temp.\n CLNT: Coolant. Cools down the temp of the system, Use .tmp to configure the cooling/heating power. \n DMRN: Demron. Radioactive shielding material and a better insulator.\n FNTC & FPTC: Faster versions of NTCT and PTCT.\n PINV: Powered Invisible, allows particles to move through when activated.\n UV: Ultra violet rays, heals stkm and figh, grows plnt, can sprk pscn and evaporates watr.\n SUN.: Sun, PLNT grow in direction of sunlight, emits radiation, makes PSCN spark and heals STKMs.\n LITH: Lithium ion battery, Use with PSCN and NSCN. Charges with INST when deactivated. Life sets capacity.\n Reacts with different elements like O2, WATR, ACID etc as IRL.\n LED:  Light Emmiting Diode. Use with PSCN and NSCN. Temp sets the brightness.\n Different .tmp2 modes: 0 = white, 1= red, 2= green, 3 =blue, 4= yellow and 5 = pink. \n QGP: Quark Gluon Plasma, bursts out radiation afer sometime. Turns into Purple QGP when under 100C which is stable.\n TMPS: .tmp sensor, creats sprk when there is an element with higher .tmp than its temp.\n PHOS: White, slowly turns into red phosphorus with time. When in contact with O2, burns blue or red based on .tmp.\n Oil reverses the oxidation turning it back into white PHOS. Melts at 45C.\n CMNT: Cement, heats up when mixed with water and gets solidified, darkens when solidified.\n NTRG: Nitrogen gas, liquifies to LN2 when cooled or when under pressure, reacts with H2 to make NITR and puts out fire.\n PRMT: Promethium, radioactive. Catches fire at high velocity (>12), creats NEUT when in reacted with PLUT. \n Explodes at low temp and emits neut at high temp.\n CLUD: Cloud, creates WATR and LIGH with slight pressure at random points. React with CAUS to make it rain acid.\n BEE: Eats PLNT and WOOD, convert WOOD into WAX.  Attacks STKMs and FIGH. Eats PLNT to stay alive\n Gets aggresive if life gets below 30. Uses pressure waves to communicate!\n ECLR: Electronic eraser, clears the defined radius when sparked with PSCN. NSCN clears everything. Use.tmp as radius.")
+gfx.drawText(10,10, " Welcome to the offline wiki.\n\n CWIR: Customisable wire, conducts sprk at variable speed. Use .tmp to customise. (Range 0 to 30).\n C-16: A powerful explosive. Explodes creating pressure about 40 units when above 65C.\n TIMC: Time based convertor, converts into it's ctype when sparked with PSCN. Timer set using .tmp, default is 100.\n FUEL: FUEL. Fuel having high calorific value.\n THRM: Thermostat. Sets the temp of surrounding according to its own temp.\n CLNT: Coolant. Cools down the temp of the system, Use .tmp to configure the cooling/heating power. \n DMRN: Demron. Radioactive shielding material and a better insulator.\n FNTC & FPTC: Faster versions of NTCT and PTCT.\n PINV: Powered Invisible, allows particles to move through when activated.\n UV: Ultra violet rays, heals stkm and figh, grows plnt, can sprk pscn and evaporates watr.\n SUN.: Sun, PLNT grow in direction of sunlight, emits radiation, makes PSCN spark and heals STKMs.\n LITH: Lithium ion battery, Use with PSCN and NSCN. Charges with INST when deactivated. Life sets capacity.\n Reacts with different elements like O2, WATR, ACID etc as IRL.\n LED:  Light Emmiting Diode. Use with PSCN and NSCN. Temp sets the brightness.\n Different .tmp2 modes: 0 = white, 1= red, 2= green, 3 =blue, 4= yellow and 5 = pink. \n QGP: Quark Gluon Plasma, bursts out radiation afer sometime. Turns into Purple QGP when under 100C which is stable.\n TMPS: .tmp sensor, creats sprk when there is an element with higher .tmp than its temp.\n PHOS: White, slowly turns into red phosphorus with time. When in contact with O2, burns blue or red based on .tmp.\n Oil reverses the oxidation turning it back into white PHOS. Melts at 45C.\n CMNT: Cement, heats up when mixed with water and gets solidified, darkens when solidified.\n NTRG: Nitrogen gas, liquifies to LN2 when cooled or when under pressure, reacts with H2 to make NITR and puts out fire.\n PRMT: Promethium, radioactive. Catches fire at high velocity (>12), creats NEUT when in reacted with PLUT. \n Explodes at low temp and emits neut at high temp.\n CLUD: Realistic cloud, rains and creates LIGH after sometime.\n BEE: Eats PLNT. Secretes wax when in contact with wood and life > 75.  Attacks STKMs and FIGH.\n Gets aggresive if life gets below 30. Uses pressure waves to communicate when in danger!\n ECLR: Electronic eraser, clears the defined radius when sparked with PSCN. NSCN clears everything. Use.tmp as radius.")
 end
 
 info:action(function(sender)
@@ -225,7 +225,7 @@ wikin2:action(function(sender)
 clearsb()
 clearm()
 tpt.unregister_step(wikii)
-tpt.unregister_step(backb)
+tpt.unregister_step(backr)
 interface.addComponent(toggle)
 tpt.unregister_step(UIhide)
 tpt.hud(1)
@@ -735,7 +735,7 @@ tpt.set_pause(0)
 end)
 
 function verno()
-gfx.drawText(10,10, "Script Version:\nBuild ID: 20k7m6") 
+gfx.drawText(10,10, "Script Version:\nBuild ID: 20K14.10") 
 gfx.drawText(85,10, version) 
 end
 
