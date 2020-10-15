@@ -18,7 +18,7 @@ void Element::Element_CLUD()
 	Loss = 0.00f;
 	Collision = -0.1f;
 	Gravity = 0.0f;
-	Diffusion = 0.09f;
+	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
 
@@ -27,7 +27,7 @@ void Element::Element_CLUD()
 	Meltable = 0;
 	Hardness = 0;
 
-	Weight = 31;
+	Weight = 35;
 
 	DefaultProperties.temp = 353.15f;
 	HeatConduct = 0;
@@ -80,13 +80,14 @@ static int update(UPDATE_FUNC_ARGS)
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
-		*colb -= cpart->tmp/8;
-		*colr -= cpart->tmp/8;
-		*colg -= cpart->tmp/8;
-		*firea = 30;
+		*colb -= cpart->tmp/9;
+		*colr -= cpart->tmp/9;
+		*colg -= cpart->tmp/9;
+		*firea = 35;
+		*fireb = *colb;
 		*firer = *colr;
 		*fireg = *colg;
-		*fireb = *colb;
+		*pixel_mode = PMODE_NONE; //Clear default, don't draw pixel
 		*pixel_mode |= FIRE_BLEND;
 
 	return 0;
