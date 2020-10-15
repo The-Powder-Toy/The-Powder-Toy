@@ -61,7 +61,7 @@ static int update(UPDATE_FUNC_ARGS)
 		parts[i].life = 100;
 
 	else if (parts[i].life <= 1)  //Everyone has to die one day.
-		parts[i].type = PT_NONE;
+		sim->kill_part(i);
 
 	int r, rx, ry;
 	for (rx = -4; rx < 3; rx++)

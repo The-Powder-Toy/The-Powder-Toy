@@ -7,7 +7,7 @@ void Element::Element_CWIR()
 {
 	Identifier = "DEFAULT_PT_CWIR";
 	Name = "CWIR";
-	Colour = PIXPACK(0xff0000);
+	Colour = PIXPACK(0xCC0000);
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
 	Enabled = 1;
@@ -26,7 +26,7 @@ void Element::Element_CWIR()
 	Explosive = 0;
 	Meltable = 1;
 	Hardness = 0;
-	PhotonReflectWavelengths = 0xb266ff;
+	PhotonReflectWavelengths = 0xCC0000;
 
 	Weight = 100;
 

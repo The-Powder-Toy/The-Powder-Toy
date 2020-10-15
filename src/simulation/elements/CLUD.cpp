@@ -83,7 +83,7 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 		*colb -= cpart->tmp/8;
 		*colr -= cpart->tmp/8;
 		*colg -= cpart->tmp/8;
-		*firea = 40;
+		*firea = 30;
 		*firer = *colr;
 		*fireg = *colg;
 		*fireb = *colb;

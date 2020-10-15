@@ -2,7 +2,6 @@
 
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
-static void create(ELEMENT_CREATE_FUNC_ARGS);
 
 void Element::Element_CMNT()
 {
@@ -47,18 +46,21 @@ void Element::Element_CMNT()
 
 	Update = &update;
 	Graphics = &graphics;
-	Create = &create;
 }
 
 static int update(UPDATE_FUNC_ARGS)
 {
 	{
-		if (parts[i].tmp == 1)
+		if (parts[i].tmp2 == 1 && parts[i].tmp < 150)
+		{
+			parts[i].tmp++;
+		}
+		if (parts[i].tmp == 150)
 		{
 			parts[i].vx = 0;
 			parts[i].vy = 0;
+			parts[i].temp = 344.15f;
 		}
-		
 		for (int rx = -2; rx < 3; rx++)
 			for (int ry = -2; ry < 3; ry++)
 				if (BOUNDS_CHECK && (rx || ry))
@@ -66,11 +68,11 @@ static int update(UPDATE_FUNC_ARGS)
 					int r = pmap[y + ry][x + rx];
 					if (!r)
 						continue;
-					if ((TYP(r) == PT_WATR|| TYP(r) == PT_DSTW|| TYP(r) == PT_SLTW|| TYP(r) == PT_CBNW) && (parts[i].tmp !=1))
+					if ((TYP(r) == PT_WATR|| TYP(r) == PT_DSTW|| TYP(r) == PT_SLTW|| TYP(r) == PT_CBNW) && (parts[i].tmp2 !=1))
 					{
 						    parts[i].temp = 364.15f;
-							parts[i].tmp = 1;
-							parts[ID(r)].type = PT_NONE;
+							parts[i].tmp2 = 1;
+							sim->kill_part(ID(r));
 					}
 				}
 	}
@@ -79,14 +81,8 @@ static int update(UPDATE_FUNC_ARGS)
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
-	if (cpart->tmp != 1)
-	{
-		int z = (cpart->tmp2 - 2) * 8;
-		*colr += z;
-		*colg += z;
-		*colb += z;
-	}
-	else if (cpart->tmp == 1)
+
+  if (cpart->tmp == 150)
 	{
 	*colr = 70;
 	*colg = 70;
@@ -94,9 +90,4 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 	
 }
 	return 0;
-}
-
-static void create(ELEMENT_CREATE_FUNC_ARGS)
-{
-	sim->parts[i].tmp2 = RNG::Ref().between(0, 4);
 }

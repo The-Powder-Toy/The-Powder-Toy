@@ -56,19 +56,17 @@ static int update(UPDATE_FUNC_ARGS)
 				{
 				case PT_H2:
 				{
-					parts[i].type = PT_NITR;
-					parts[ID(r)].type = PT_NONE;
+					sim->part_change_type(i, x + rx, y + ry, PT_NITR);
+					sim->kill_part(ID(r));
 
 				}
 				break;
 				case PT_FIRE:
 				case PT_PLSM:
 				{
-					parts[ID(r)].type = PT_NONE;
+					sim->kill_part(ID(r));
 				}
 				break;
-				default:
-				continue;
 				}
 
 			}

@@ -86,7 +86,7 @@ static int update(UPDATE_FUNC_ARGS)
 					}
 					if (parts[i].tmp2 == 1)
 					{
-						parts[i].type = parts[i].ctype;
+						sim->part_change_type(i, x + rx, y + ry, parts[i].ctype);
 					}
 				}
 		//}

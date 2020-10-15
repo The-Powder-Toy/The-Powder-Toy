@@ -59,13 +59,13 @@ static int update(UPDATE_FUNC_ARGS)
 {
 	if (parts[i].vx >= 12.0 || parts[i].vy >= 12.0)
 	{
-		parts[i].type = PT_FIRE;
+		sim->part_change_type(i, x , y, PT_FIRE);
 		parts[i].life = 200;
 		parts[i].temp = 574.15f;
 	}
     if (parts[i].temp <= 274.15f)
 	{
-		parts[i].type = PT_SING;
+		sim->part_change_type(i, x , y, PT_SING);
 		parts[i].tmp = 20;
 	}
 	
