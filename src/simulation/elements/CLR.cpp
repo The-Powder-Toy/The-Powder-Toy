@@ -65,13 +65,13 @@ static int update(UPDATE_FUNC_ARGS)
 					continue;
 				if (parts[i].life > 0 && parts[i].life < 14 && parts[ID(r)].type != PT_PSCN && parts[ID(r)].type != PT_WIFI && parts[ID(r)].ctype != PT_PSCN)
 				{
-					sim->part_change_type(ID(r), x + rx, y + ry, PT_NONE);
+					sim->kill_part(ID(r));
 					continue;
 				}
 				else if  (parts[i].life >= 14 )
 				{
-					sim->part_change_type(ID(r), x + rx, y + ry, PT_NONE);
-					sim->part_change_type(i, x, y, PT_NONE);
+					sim->kill_part(i);
+					sim->kill_part(ID(r));
 					continue;
 				}
 			}
