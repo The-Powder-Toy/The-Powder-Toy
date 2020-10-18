@@ -7,6 +7,7 @@ const char *const introTextData =
 "\bl \n"
 "\bt* Important instructions:\n"
 "\bg* There's a new 'V' drop down button on top, press it to open additional menus.\n"
+"* Or press 'J' to bring up the menu anytime.\n"
 "* Select WIKI from that new menu to get a quick information regarding new elements.\n"
 "* You can change the theme from 'themes' option (Selected themes are now automatically saved.)\n"
 "* You can now unhide all the hidden elements using 'Hidden elements' option.\n"
