@@ -686,6 +686,7 @@ tpt.setfpscap(160)
 end)
 
 reset:action(function(sender)
+tpt.unregister_step(autohidehud)
 tpt.hud(1)
 ui.closeWindow(newmenu) 
 tgr = 0
