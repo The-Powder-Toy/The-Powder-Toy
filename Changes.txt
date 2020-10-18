@@ -7,8 +7,8 @@ Changelog for Version 16.0:
 **  Cloud and BEE are now much more better and realistic.
 **  CMNT now takes some time to solidify.
 **  Tons of code refactoring for new elements.
-** 
-** 
+**  Revamped menus and wiki.
+**  Add option for in game save feedback (accessible via BUG report button.)
 
 todo
 Update LSNS and HSWC.
