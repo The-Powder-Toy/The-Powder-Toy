@@ -11,7 +11,6 @@ const char *const introTextData =
 "* Select WIKI to get a quick information regarding new elements.\n"
 "* You can change the theme from 'themes' option (Selected themes are now automatically saved.)\n"
 "* You can now unhide all the hidden elements using 'Hidden elements' option.\n"
-"* Bug report button can be used for quick feedback or help.\n"
-"* Feel free to give new element suggestions/feedback at https://tpt.io/:23279\n"
+"* Now you can give suggestions or feedback either on the mod thread or using in-game save using the feedback option.\n"
 "\n"
 "\blPress any key (except power) to continue.....";

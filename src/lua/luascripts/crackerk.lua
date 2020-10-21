@@ -2,7 +2,7 @@
 
 local toggle = Button:new(314,0,23,12, "V", "Toggle additional menus.")
 local newmenu = Window:new(-15,-15, 610, 300)
-local creditstxt1 = Label:new(130,-20,80, 60,"Welcome to the script settings version 2.0, press 'J' as a shortcut")
+local creditstxt1 = Label:new(140,-20,80, 60,"Welcome to the Crackerk script 2.0. Tip: 'J' can be used as a shortcut.")
 newmenu:addComponent(creditstxt1)
 
 local deletesparkButton =  Button:new(10,28,75,30,"Interface", "shows UI related stuff.")
@@ -32,7 +32,7 @@ local bar = Button:new(10,220,75,30,"Top bar", "Toggle top bar")
 local bary = Button:new(90,220,80,20,"Show", "Shows the bar at top")
 local barn = Button:new(90,240,80,20,"Hide", "Hides the bar")
 
-local bug = Button:new(10,252,75,30,"Bug report", "Direct to Mod thread for bug report.")
+local bug = Button:new(10,252,75,30,"Feedback", "Direct to Mod thread for bug report.")
 local bug1 = Button:new(90,252,80,30,"Website", "Direct to Mod thread for bug report.")
 local bug2 = Button:new(180,252,80,30,"In game", "Direct to Mod thread for bug report.")
 
@@ -736,7 +736,10 @@ clearm()
 tpt.hud(1)
 tpt.set_pause(0)
 end)
-function keyclicky(key, nkey, modifier, event)
+
+
+
+function keyclicky(key)
     if (key == "j") then 
   ui.showWindow(newmenu) 
 tpt.set_pause(1)

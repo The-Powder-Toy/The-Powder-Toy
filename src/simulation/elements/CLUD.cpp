@@ -31,7 +31,7 @@ void Element::Element_CLUD()
 
 	DefaultProperties.temp = 353.15f;
 	HeatConduct = 0;
-	Description = "CLUD, Rains after sometime and creates LIGH.";
+	Description = "Cloud, rains after sometime and creates LIGH.";
 
 	Properties = TYPE_GAS;
 
@@ -61,8 +61,8 @@ static int update(UPDATE_FUNC_ARGS)
 		{
 			sim->create_part(-1, x, y + 30, PT_LIGH);
 		}
-		
 	}
+
 	if (parts[i].tmp2 == 1 && parts[i].tmp > -5)
 	{
 		parts[i].tmp --;
@@ -87,7 +87,7 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 		*fireb = *colb;
 		*firer = *colr;
 		*fireg = *colg;
-		*pixel_mode = PMODE_NONE; //Clear default, don't draw pixel
+		*pixel_mode = PMODE_NONE;
 		*pixel_mode |= FIRE_BLEND;
 
 	return 0;

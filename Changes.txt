@@ -1,14 +1,15 @@
 Changelog for Version 16.0:
 
-**  Fix some element descriptions.
-**  Merge changes from version 96.0
-**  New elements: CWIR and ROCK.
-**  Change C-16's colour and update VSNS.
-**  Cloud and BEE are now much more better and realistic.
-**  CMNT now takes some time to solidify.
-**  Tons of code refactoring for new elements.
-**  Revamped menus and wiki.
-**  Add option for in game save feedback (accessible via BUG report button.)
+Fix some element descriptions.
+Merge changes from version 96.0
+New elements: CWIR and ROCK.
+Change C-16's colour and update VSNS.
+Cloud and BEE are now much better and realistic.
+CMNT now takes some time to solidify.
+Fix codes for new elements that could corrupt the simulation.
+New menus and wiki.
+J as a key can now be used as a shortcut..
+Add option for in game save feedback (accessible via feedback button.)
 
 todo
 Update LSNS and HSWC.
