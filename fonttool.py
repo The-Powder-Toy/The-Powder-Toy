@@ -3,6 +3,7 @@
 import math
 import sys
 import re
+import argparse
 
 CP_MAX = 0x10FFFF
 FONT_CPP = "data/font.cpp"
@@ -205,9 +206,8 @@ class BDFReader:
                         global_dw = char_dw
 
 
-if __name__ == "__main__":
-    def print_usage_and_exit():
-        print("""Usage:
+def print_usage_and_exit():
+    print("""Usage:
   * fonttool.py addbdf FIRST LAST BDFFILE [XOFFS YOFFS]
   * fonttool.py addraw FIRST LAST RAWFILE
   * fonttool.py remove FIRST [LAST]
@@ -225,8 +225,24 @@ structures laid out as follows:
   * width times %i brightness levels between 0 and 3, a row-major matrix.
 
 This script is also an importable module.""" % FONT_HEIGHT)
-        exit(1)
+    exit(1)
 
+
+if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser("fonttool.py", description="font tools for managing fonts, this script can be"
+                                                                " imported as a module",
+                                     fromfile_prefix_chars="@")
+    command = parser.add_subparsers(dest="command", required=True)
+
+    addbdf = command.add_parser("addbdf", help="Adds BDF")
+    addbdf.add_argument("first", metavar="FIRST")
+    addbdf.add_argument("last", metavar="LAST")
+    addbdf.add_argument("bdffile", metavar="BDFFILE", help="BDF is an archaic bitmap font format")
+    addbdf.add_argument("xoffs", metavar="XOFFS", nargs="?", default=0, type=int, help="Defaults to 0")
+    addbdf.add_argument("yoffs", metavar="YOFFS", nargs="?", default=0, type=int, help="Defaults to 0")
+
+    args = parser.parse_args()
 
     if len(sys.argv) < 3:
         print_usage_and_exit()
@@ -242,15 +258,9 @@ This script is also an importable module.""" % FONT_HEIGHT)
 
     ft = FontTool()
 
-    if sys.argv[1] == 'addbdf':
-        if len(sys.argv) < 5:
-            print_usage_and_exit()
-        xoffs = 0
-        yoffs = 0
-        if len(sys.argv) >= 6:
-            xoffs = int(sys.argv[5])
-        if len(sys.argv) >= 7:
-            yoffs = int(sys.argv[6])
+    if args.command == "addbdf":
+        xoffs = args.xoffs
+        yoffs = args.yoffs
         bdfr = BDFReader(sys.argv[4], xoffs, yoffs)
         for i in range(cp_first, cp_last + 1):
             if bdfr.code_points[i] and not ft.code_points[i]:
