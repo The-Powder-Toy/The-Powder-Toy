@@ -235,7 +235,7 @@ structures laid out as follows:
     remove.add_argument("first", metavar="FIRST", type=int)
     remove.add_argument("last", metavar="LAST", type=int, default=None, nargs="?", help="Defaults to FIRST")
 
-    inspect = command.add_parser("remove", help="Inspect")
+    inspect = command.add_parser("inspect", help="Inspect")
     inspect.add_argument("first", metavar="FIRST", type=int)
     inspect.add_argument("last", metavar="LAST", type=int, default=None, nargs="?", help="Defaults to FIRST")
 
