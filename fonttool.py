@@ -205,28 +205,6 @@ class BDFReader:
                         global_dw = char_dw
 
 
-def print_usage_and_exit():
-    print("""Usage:
-  * fonttool.py addbdf FIRST LAST BDFFILE [XOFFS YOFFS]
-  * fonttool.py addraw FIRST LAST RAWFILE
-  * fonttool.py remove FIRST [LAST]
-  * fonttool.py inspect FIRST [LAST]
-
-LAST defaults to FIRST, XOFFS and YOFFS default to 0. BDF is an
-archaic bitmap font format; look it up.
-
-"Raw" files are simply ASCII-encoded white-space delimited lists
-of decimal integer constants. These lists of integers encode
-characters as any number of consecutive character description
-structures laid out as follows:
-  * the code point corresponding to the character being described;
-  * the width in pixels of the character being described;
-  * width times %i brightness levels between 0 and 3, a row-major matrix.
-
-This script is also an importable module.""" % FONT_HEIGHT)
-    exit(1)
-
-
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser("fonttool.py", description="font tools for managing fonts, this script can be"
