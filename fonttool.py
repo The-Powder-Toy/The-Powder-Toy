@@ -235,6 +235,11 @@ structures laid out as follows:
     remove.add_argument("first", metavar="FIRST", type=int)
     remove.add_argument("last", metavar="LAST", type=int, default=None, nargs="?", help="Defaults to FIRST")
 
+    copy = command.add_parser("copy", help="Copy")
+    copy.add_argument("dest", metavar="DSTFIRST", type=int)
+    copy.add_argument("first", metavar="SRCFIRST", type=int)
+    copy.add_argument("last", metavar="SRCLAST", type=int, default=None, nargs="?", help="Defaults to SRCFIRST")
+
     inspect = command.add_parser("inspect", help="Inspect")
     inspect.add_argument("first", metavar="FIRST", type=int)
     inspect.add_argument("last", metavar="LAST", type=int, default=None, nargs="?", help="Defaults to FIRST")
@@ -242,6 +247,7 @@ structures laid out as follows:
     args = parser.parse_args()
 
     cp_first = args.first
+    cp_dest = args.dest
     if args.last is None:
         cp_last = cp_first
     else:
@@ -269,6 +275,10 @@ structures laid out as follows:
     elif args.command == 'remove':
         for i in range(cp_first, cp_last + 1):
             ft.code_points[i] = False
+        ft.commit()
+    elif args.command == 'copy':
+        for i in range(cp_first, cp_last + 1):
+            ft.code_points[i + (cp_dest - cp_first)] = ft.code_points[i]
         ft.commit()
     elif args.command == 'inspect':
         lut = ['  ', '░░', '▒▒', '▓▓']
