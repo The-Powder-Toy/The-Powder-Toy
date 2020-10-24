@@ -235,23 +235,40 @@ if __name__ == "__main__":
                                      fromfile_prefix_chars="@")
     command = parser.add_subparsers(dest="command", required=True)
 
-    addbdf = command.add_parser("addbdf", help="Adds BDF")
-    addbdf.add_argument("first", metavar="FIRST")
-    addbdf.add_argument("last", metavar="LAST")
+    addbdf = command.add_parser("addbdf", help="Adds BDF Formated Font")
+    addbdf.add_argument("first", metavar="FIRST", type=int)
+    addbdf.add_argument("last", metavar="LAST", type=int)
     addbdf.add_argument("bdffile", metavar="BDFFILE", help="BDF is an archaic bitmap font format")
     addbdf.add_argument("xoffs", metavar="XOFFS", nargs="?", default=0, type=int, help="Defaults to 0")
     addbdf.add_argument("yoffs", metavar="YOFFS", nargs="?", default=0, type=int, help="Defaults to 0")
 
+    addraw = command.add_parser("addraw", help="Adds a Raw Formated Font")
+    addraw.add_argument("first", metavar="FIRST", type=int)
+    addraw.add_argument("last", metavar="LAST", type=int)
+    addraw.add_argument("rawfile", metavar="RAWFILE", help=""""Raw" files are simply ASCII-encoded white-space delimited \
+lists
+of decimal integer constants. These lists of integers encode
+characters as any number of consecutive character description
+structures laid out as follows:
+  * the code point corresponding to the character being described;
+  * the width in pixels of the character being described;
+  * width times %i brightness levels between 0 and 3, a row-major matrix.""")
+
+    remove = command.add_parser("remove", help="Remove")
+    remove.add_argument("first", metavar="FIRST", type=int)
+    remove.add_argument("last", metavar="LAST", type=int, default=None, nargs="?", help="Defaults to FIRST")
+
+    inspect = command.add_parser("remove", help="Inspect")
+    inspect.add_argument("first", metavar="FIRST", type=int)
+    inspect.add_argument("last", metavar="LAST", type=int, default=None, nargs="?", help="Defaults to FIRST")
+
     args = parser.parse_args()
 
-    if len(sys.argv) < 3:
-        print_usage_and_exit()
-
-    cp_first = int(sys.argv[2])
-    if len(sys.argv) < 4:
+    cp_first = args.first
+    if args.last is None:
         cp_last = cp_first
     else:
-        cp_last = int(sys.argv[3])
+        cp_last = args.last
     if cp_first < 0 or cp_last > CP_MAX or cp_first > cp_last:
         print('invalid range')
         exit(1)
@@ -261,24 +278,22 @@ if __name__ == "__main__":
     if args.command == "addbdf":
         xoffs = args.xoffs
         yoffs = args.yoffs
-        bdfr = BDFReader(sys.argv[4], xoffs, yoffs)
+        bdfr = BDFReader(args.bdffile, xoffs, yoffs)
         for i in range(cp_first, cp_last + 1):
             if bdfr.code_points[i] and not ft.code_points[i]:
                 ft.code_points[i] = bdfr.code_points[i]
         ft.commit()
-    elif sys.argv[1] == 'addraw':
-        if len(sys.argv) < 5:
-            print_usage_and_exit()
-        rr = RawReader(sys.argv[4])
+    elif args.command == 'addraw':
+        rr = RawReader(args.rawfile)
         for i in range(cp_first, cp_last + 1):
             if rr.code_points[i] and not ft.code_points[i]:
                 ft.code_points[i] = rr.code_points[i]
         ft.commit()
-    elif sys.argv[1] == 'remove':
+    elif args.command == 'remove':
         for i in range(cp_first, cp_last + 1):
             ft.code_points[i] = False
         ft.commit()
-    elif sys.argv[1] == 'inspect':
+    elif args.command == 'inspect':
         lut = ['  ', '░░', '▒▒', '▓▓']
         for i in range(cp_first, cp_last + 1):
             if ft.code_points[i]:
@@ -288,5 +303,3 @@ if __name__ == "__main__":
                 print('')
             else:
                 print('code point %i (%c) is not available' % (i, i))
-    else:
-        print_usage_and_exit()
