@@ -149,8 +149,8 @@ class BDFReader:
                             cv = 0
                             xx = x + xoffs
                             yy = FONT_HEIGHT - 1 - y + yoffs
-                            if xx >= char_bbx[2] and xx < char_bbx[0] + char_bbx[2] and yy >= char_bbx[3] and yy < \
-                                    char_bbx[1] + char_bbx[3]:
+                            if char_bbx[2] <= xx < char_bbx[0] + char_bbx[2] and char_bbx[3] <= yy < char_bbx[1] + \
+                                    char_bbx[3]:
                                 cv = bitmap[char_bbx[1] - 1 - (yy - char_bbx[3])][xx - char_bbx[2]] * 3
                             cp_matrix[-1].append(cv)
                     self.code_points[char_cp] = FontTool.pack(cp_matrix)
