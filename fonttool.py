@@ -2,7 +2,6 @@
 
 import math
 import sys
-import os
 import re
 
 CP_MAX = 0x10FFFF
@@ -11,6 +10,9 @@ FONT_HEIGHT = 12
 PTRS_PER_LINE = 8
 
 
+class ReadBDFError(RuntimeError):
+    def __init__(self, line_number, message):
+        super().__init__(self, 'line %i: %s' % (line_number, message))
 
 
 class FontTool:
@@ -120,9 +122,6 @@ class RawReader:
 
 
 class BDFReader:
-    class ReadBDFError:
-        def __init__(line_number, message):
-            super(RuntimeError, self).__init__('line %i: %s' % (line_number, message))
 
     def __init__(self, path, xoffs, yoffs):
         self.code_points = [False for _ in range(CP_MAX + 2)]
