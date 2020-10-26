@@ -57,11 +57,13 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 		colour1 = PIXPACK(0xFFFFFF);
 	}
 	auto ruleset = cpart->ctype;
+	bool renderDeco = !ren->blackDecorations;
 	if (ruleset >= 0 && ruleset < NGOL)
 	{
 		ruleset = builtinGol[ruleset].ruleset;
+		renderDeco = true;
 	}
-	if (!ren->blackDecorations)
+	if (renderDeco)
 	{
 		auto states = ((ruleset >> 17) & 0xF) + 2;
 		if (states == 2)
