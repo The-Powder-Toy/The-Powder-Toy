@@ -104,13 +104,13 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 	int r, rx, ry;
 	int t = parts[i].type;
 	float pp, d;
-	float dt = 0.9;///(FPSB*FPSB);  //Delta time in square
+	float dt = 0.9;///(FPSB*FPSB);  //Delta time in line
 	float gvx, gvy;
 	float gx, gy, dl, dr;
-	float rocketBootsHeadEffect = 0.35f;
-	float rocketBootsFeetEffect = 0.15f;
-	float rocketBootsHeadEffectV = 0.3f;// stronger acceleration vertically, to counteract gravity
-	float rocketBootsFeetEffectV = 0.45f;
+	float swordHeadEffect = 0.35f;
+	float swordFeetEffect = 0.15f;
+	float swordHeadEffectV = 0.3f;// able to cut through solids, and able to kill fighter
+	float swordFeetEffectV = 0.45f;
 
 	if (!playerp->fan && parts[i].ctype && sim->IsValidElement(parts[i].ctype))
 		Element_STKM_set_element(sim, playerp, parts[i].ctype);
@@ -183,8 +183,8 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 	rby *= tmp;
 	if (rbLowGrav)
 	{
-		rocketBootsHeadEffectV = rocketBootsHeadEffect;
-		rocketBootsFeetEffectV = rocketBootsFeetEffect;
+		swordHeadEffectV = swordHeadEffect;
+		swordFeetEffectV = swordFeetEffect;
 	}
 
 	parts[i].vx -= gvx*dt;  //Head up!
@@ -263,20 +263,20 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 				moved = true;
 			}
 		}
-		if (!moved && playerp->rocketBoots)
-		{
-			parts[i].vx -= rocketBootsHeadEffect*rby;
-			parts[i].vy += rocketBootsHeadEffect*rbx;
-			playerp->accs[2] -= rocketBootsFeetEffect*rby;
-			playerp->accs[6] -= rocketBootsFeetEffect*rby;
-			playerp->accs[3] += rocketBootsFeetEffect*rbx;
-			playerp->accs[7] += rocketBootsFeetEffect*rbx;
+		if (!moved && playerp->sword)
+    {
+			parts[i].vx -= swordHeadEffect*rby;
+			parts[i].vy += swordHeadEffect*rbx;
+			playerp->accs[2] -= swordFeetEffect*rby;
+			playerp->accs[6] -= swordFeetEffect*rby;
+			playerp->accs[3] += swordFeetEffect*rbx;
+			playerp->accs[7] += swordFeetEffect*rbx;
 			for (int leg=0; leg<2; leg++)
 			{
 				if (leg==1 && (((int)(playerp->comm)&0x02) == 0x02))
 					continue;
 				int footX = playerp->legs[leg*8+4], footY = playerp->legs[leg*8+5];
-				int np = sim->create_part(-1, footX, footY, PT_PLSM);
+				int np = sim->create_part(-1, footX, footY, PT_LIGH);
 				if (np>=0)
 				{
 					parts[np].vx = parts[i].vx+rby*25;
@@ -313,20 +313,20 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 				moved = true;
 			}
 		}
-		if (!moved && playerp->rocketBoots)
+		if (!moved && playerp->sword)
 		{
-			parts[i].vx += rocketBootsHeadEffect*rby;
-			parts[i].vy -= rocketBootsHeadEffect*rbx;
-			playerp->accs[2] += rocketBootsFeetEffect*rby;
-			playerp->accs[6] += rocketBootsFeetEffect*rby;
-			playerp->accs[3] -= rocketBootsFeetEffect*rbx;
-			playerp->accs[7] -= rocketBootsFeetEffect*rbx;
+			parts[i].vx += swordHeadEffect*rby;
+			parts[i].vy -= swordHeadEffect*rbx;
+			playerp->accs[2] += swordFeetEffect*rby;
+			playerp->accs[6] += swordFeetEffect*rby;
+			playerp->accs[3] -= swordFeetEffect*rbx;
+			playerp->accs[7] -= swordFeetEffect*rbx;
 			for (int leg=0; leg<2; leg++)
 			{
 				if (leg==0 && (((int)(playerp->comm)&0x01) == 0x01))
 					continue;
 				int footX = playerp->legs[leg*8+4], footY = playerp->legs[leg*8+5];
-				int np = sim->create_part(-1, footX, footY, PT_PLSM);
+				int np = sim->create_part(-1, footX, footY, PT_LIGH);
 				if (np>=0)
 				{
 					parts[np].vx = parts[i].vx-rby*25;
@@ -337,7 +337,7 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 		}
 	}
 
-	if (playerp->rocketBoots && ((int)(playerp->comm)&0x03) == 0x03)
+	if (playerp->sword && ((int)(playerp->comm)&0x03) == 0x03)
 	{
 		// Pressing left and right simultaneously with rocket boots on slows the stickman down
 		// Particularly useful in zero gravity
@@ -350,18 +350,18 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 	//Jump
 	if (((int)(playerp->comm)&0x04) == 0x04)
 	{
-		if (playerp->rocketBoots)
+		if (playerp->sword)
 		{
-			parts[i].vx -= rocketBootsHeadEffectV*rbx;
-			parts[i].vy -= rocketBootsHeadEffectV*rby;
-			playerp->accs[2] -= rocketBootsFeetEffectV*rbx;
-			playerp->accs[6] -= rocketBootsFeetEffectV*rbx;
-			playerp->accs[3] -= rocketBootsFeetEffectV*rby;
-			playerp->accs[7] -= rocketBootsFeetEffectV*rby;
+			parts[i].vx -= swordHeadEffectV*rbx;
+			parts[i].vy -= swordHeadEffectV*rby;
+			playerp->accs[2] -= swordFeetEffectV*rbx;
+			playerp->accs[6] -= swordFeetEffectV*rbx;
+			playerp->accs[3] -= swordFeetEffectV*rby;
+			playerp->accs[7] -= swordFeetEffectV*rby;
 			for (int leg=0; leg<2; leg++)
 			{
 				int footX = playerp->legs[leg*8+4], footY = playerp->legs[leg*8+5];
-				int np = sim->create_part(-1, footX, footY+1, PT_PLSM);
+				int np = sim->create_part(-1, footX, footY+1, PT_LIGH);
 				if (np>=0)
 				{
 					parts[np].vx = parts[i].vx+rbx*30;
@@ -421,9 +421,9 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 				if (sim->bmap[(ry+y)/CELL][(rx+x)/CELL]==WL_FAN)
 					playerp->fan = true;
 				else if (sim->bmap[(ry+y)/CELL][(rx+x)/CELL]==WL_EHOLE)
-					playerp->rocketBoots = false;
+					playerp->sword = false;
 				else if (sim->bmap[(ry+y)/CELL][(rx+x)/CELL]==WL_GRAV /* && parts[i].type!=PT_FIGH */)
-					playerp->rocketBoots = true;
+					playerp->sword = true;
 				if (TYP(r)==PT_PRTI)
 					Element_STKM_interact(sim, playerp, i, rx, ry);
 				if (!parts[i].type)//STKM_interact may kill STKM
@@ -715,7 +715,7 @@ void Element_STKM_init_legs(Simulation * sim, playerst *playerp, int i)
 	playerp->frames = 0;
 	playerp->spwn = 0;
 	playerp->fan = false;
-	playerp->rocketBoots = false;
+	playerp->sword = false;
 }
 
 void Element_STKM_set_element(Simulation *sim, playerst *playerp, int element)
