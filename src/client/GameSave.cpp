@@ -1299,7 +1299,7 @@ void GameSave::readOPS(char * data, int dataLength)
 						}
 						break;
 					case PT_LIFE:
-						if (savedVersion < 95 || minorVersion < 1)
+						if (savedVersion < 96 && !fakeNewerVersion)
 						{
 							if (particles[newIndex].ctype >= 0 && particles[newIndex].ctype < NGOL)
 							{
