@@ -14,7 +14,7 @@ jobs:
     - name: install dependencies
       run: sudo apt-get install build-essential libsdl2-dev libbz2-dev zlib1g-dev liblua5.1-0-dev git scons libfftw3-dev libcurl4-openssl-dev
     - name: build
-      run: scons -j$(nproc)
+      run: scons -j2
     - name: upload artifact
       uses: actions/upload-artifact@v2.2.0
       with:
@@ -28,7 +28,7 @@ jobs:
       - name: install dependencies
         run: brew install fftw scons sdl2 lua@5.1
       - name: build
-        run: scons -j$(nproc)
+        run: scons -j2
       - name: upload artifact
         uses: actions/upload-artifact@v2.2.0
         with:
