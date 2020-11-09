@@ -1,0 +1,36 @@
+name: Build
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  linux-build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: install dependencies
+      run: sudo apt-get install build-essential libsdl2-dev libbz2-dev zlib1g-dev liblua5.1-0-dev git scons libfftw3-dev libcurl4-openssl-dev
+    - name: build
+      run: scons -j$(nproc)
+    - name: upload artifact
+      uses: actions/upload-artifact@v2.2.0
+      with:
+        name: linux
+        path: ${{ github.workspace }}/build/powder64
+
+  osx-build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: install dependencies
+        run: brew install fftw scons sdl2 lua@5.1
+      - name: build
+        run: scons -j$(nproc)
+      - name: upload artifact
+        uses: actions/upload-artifact@v2.2.0
+        with:
+          name: osx
+          path: ${{ github.workspace }}/build/powder64-x
