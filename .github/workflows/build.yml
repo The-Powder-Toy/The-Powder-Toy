@@ -41,7 +41,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: install dependencies
         run: |
-          "C:\Program Files\Python37\python.exe" vsproject.py
+          python vsproject.py
           Invoke-WebRequest https://starcatcher.us/TPT/Required%20Libraries.zip -O Libraries.zip
           Expand-Archive -Path Libraries.zip -Force       
       - name: build
