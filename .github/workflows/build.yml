@@ -43,7 +43,7 @@ jobs:
         run: |
           python vsproject.py
           Invoke-WebRequest https://starcatcher.us/TPT/Required%20Libraries.zip -O Libraries.zip
-          Expand-Archive -Path Libraries.zip -Force
+          Expand-Archive -Path Libraries.zip -Force -DestinationPath .
       - name: build
         shell: cmd
         run: |
