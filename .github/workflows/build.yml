@@ -44,9 +44,10 @@ jobs:
           python vsproject.py
           Invoke-WebRequest https://starcatcher.us/TPT/Required%20Libraries.zip -O Libraries.zip
           Expand-Archive -Path Libraries.zip -Force
-          "C:\Program Files (x86)\Microsoft Visual Studio\2019\*\VC\Auxiliary\Build\vcvarsamd64_x86.bat"
       - name: build
-        run: msbuild /p:Platform="Win32"
+        run: |
+          "C:\Program Files (x86)\Microsoft Visual Studio\2019\*\VC\Auxiliary\Build\vcvarsamd64_x86.bat"
+          msbuild /p:Platform="Win32"
       - name: upload artifact
         uses: actions/upload-artifact@v2.2.0
         with:
