@@ -34,3 +34,20 @@ jobs:
         with:
           name: osx
           path: ${{ github.workspace }}/build/powder64-x
+
+  windows-build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: install dependencies
+        run: |
+          python3 vsproject.py
+          Invoke-WebRequest https://starcatcher.us/TPT/Required%20Libraries.zip -O Libraries.zip
+          Expand-Archive -Path Libraries.zip -Force       
+      - name: build
+        run: msbuild /p:Platform="Win32"
+      - name: upload artifact
+        uses: actions/upload-artifact@v2.2.0
+        with:
+          name: windows
+          path: ${{ github.workspace }}/Build/Powder.exe
