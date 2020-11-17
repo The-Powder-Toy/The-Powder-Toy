@@ -60,7 +60,7 @@ static int update(UPDATE_FUNC_ARGS)
 static int graphics(GRAPHICS_FUNC_ARGS)
 {{
 	// graphics code here
-	// return 1 if nothing dymanic happens here
+	// return 1 if nothing dynamic happens here
 
 	return 0;
 }}
