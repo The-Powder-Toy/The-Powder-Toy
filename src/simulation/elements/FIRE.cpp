@@ -176,11 +176,13 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 							parts[i].ctype = PT_STNE;
 							break;
 						}
+						parts[i].tmp = 0;
 						sim->kill_part(ID(r));
 						continue;
 					}
 					else if (rt == PT_LAVA && (parts[ID(r)].ctype == PT_METL || parts[ID(r)].ctype == PT_BMTL) && parts[i].ctype == PT_SLCN)
 					{
+						parts[i].tmp = 0;
 						parts[i].ctype = PT_NSCN;
 						parts[ID(r)].ctype = PT_PSCN;
 					}
