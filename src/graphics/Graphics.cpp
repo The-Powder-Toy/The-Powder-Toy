@@ -539,7 +539,7 @@ int Graphics::textwidth(String str)
 	String::value_type const *s = str.c_str();
 	for (; *s; s++)
 	{
-		if(((char)*s)=='\b')
+		if(*s=='\b')
 		{
 			if(!s[1]) break;
 			s++;
@@ -567,7 +567,7 @@ int Graphics::textnwidth(String str, int n)
 	{
 		if (!n)
 			break;
-		if(((char)*s)=='\b')
+		if(*s=='\b')
 		{
 			if(!s[1]) break;
 			s++;
@@ -624,7 +624,7 @@ int Graphics::textwidthx(String str, int w)
 	String::value_type const *s = str.c_str();
 	for (; *s; s++)
 	{
-		if((char)*s == '\b')
+		if(*s == '\b')
 		{
 			if(!s[1]) break;
 			s++;
