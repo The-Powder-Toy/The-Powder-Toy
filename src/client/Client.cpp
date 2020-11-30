@@ -975,10 +975,10 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 			lastError = "Cannot serialize game save";
 			return RequestFailure;
 		}
-#if defined(SNAPSHOT) || defined(BETA) || defined(DEBUG)
-		else if (save.gameSave->fromNewerVersion)
+#if defined(SNAPSHOT) || defined(BETA) || defined(DEBUG) || MOD_ID > 0
+		else if (save.gameSave->fromNewerVersion && save.GetPublished())
 		{
-			lastError = "Cannot upload save, incompatible with latest release version";
+			lastError = "Cannot publish save, incompatible with latest release version.";
 			return RequestFailure;
 		}
 #endif
