@@ -69,6 +69,7 @@ public:
 	static int legacyUpdate(UPDATE_FUNC_ARGS);
 	static bool basicCtypeDraw(CTYPEDRAW_FUNC_ARGS);
 	static bool ctypeDrawVInTmp(CTYPEDRAW_FUNC_ARGS);
+	static bool ctypeDrawVInpavg(CTYPEDRAW_FUNC_ARGS);
 	static bool ctypeDrawVInCtype(CTYPEDRAW_FUNC_ARGS);
 
 	/** Returns a list of properties, their type and offset within the structure that can be changed

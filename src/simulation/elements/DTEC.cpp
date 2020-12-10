@@ -1,5 +1,4 @@
 #include "simulation/ElementCommon.h"
-
 static int update(UPDATE_FUNC_ARGS);
 
 void Element::Element_DTEC()
@@ -45,76 +44,90 @@ void Element::Element_DTEC()
 	DefaultProperties.tmp2 = 2;
 
 	Update = &update;
-	CtypeDraw = &Element::ctypeDrawVInTmp;
+	CtypeDraw = &Element::ctypeDrawVInpavg;
+
 }
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry, rt, rd = parts[i].tmp2;
-	if (rd > 25) parts[i].tmp2 = rd = 25;
-	if (parts[i].life)
-	{
-		parts[i].life = 0;
-		for (rx=-2; rx<3; rx++)
-			for (ry=-2; ry<3; ry++)
-				if (BOUNDS_CHECK && (rx || ry))
-				{
-					r = pmap[y+ry][x+rx];
-					if (!r)
-						continue;
-					rt = TYP(r);
-					if (sim->parts_avg(i,ID(r),PT_INSL) != PT_INSL)
+		int r, rx, ry, rt, rd = parts[i].tmp2;
+		if (rd > 25) parts[i].tmp2 = rd = 25;
+		if (parts[i].life)
+		{
+			parts[i].life = 0;
+			for (rx = -2; rx < 3; rx++)
+				for (ry = -2; ry < 3; ry++)
+					if (BOUNDS_CHECK && (rx || ry))
 					{
-						if ((sim->elements[rt].Properties&PROP_CONDUCTS) && !(rt==PT_WATR||rt==PT_SLTW||rt==PT_NTCT||rt==PT_PTCT||rt==PT_INWR) && parts[ID(r)].life==0)
+						r = pmap[y + ry][x + rx];
+						if (!r)
+							continue;
+						rt = TYP(r);
+						if (sim->parts_avg(i, ID(r), PT_INSL) != PT_INSL)
 						{
-							parts[ID(r)].life = 4;
-							parts[ID(r)].ctype = rt;
-							sim->part_change_type(ID(r),x+rx,y+ry,PT_SPRK);
+							if ((sim->elements[rt].Properties & PROP_CONDUCTS) && !(rt == PT_WATR || rt == PT_SLTW || rt == PT_NTCT || rt == PT_PTCT || rt == PT_INWR) && parts[ID(r)].life == 0)
+							{
+								parts[ID(r)].life = 4;
+								parts[ID(r)].ctype = rt;
+								sim->part_change_type(ID(r), x + rx, y + ry, PT_SPRK);
+							}
 						}
 					}
-				}
-	}
-	bool setFilt = false;
-	int photonWl = 0;
-	for (rx=-rd; rx<rd+1; rx++)
-		for (ry=-rd; ry<rd+1; ry++)
-			if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES && (rx || ry))
-			{
-				r = pmap[y+ry][x+rx];
-				if(!r)
-					r = sim->photons[y+ry][x+rx];
-				if(!r)
-					continue;
-				if (TYP(r) == parts[i].ctype && (parts[i].ctype != PT_LIFE || parts[i].tmp == parts[ID(r)].ctype || !parts[i].tmp))
-					parts[i].life = 1;
-				if (TYP(r) == PT_PHOT || (TYP(r) == PT_BRAY && parts[ID(r)].tmp!=2))
+		}
+		bool setFilt = false; //Preserving the old code (Different from one used in some newer sensors.)
+		int photonWl = 0;
+		for (rx = -rd; rx < rd + 1; rx++)
+			for (ry = -rd; ry < rd + 1; ry++)
+				if (x + rx >= 0 && y + ry >= 0 && x + rx < XRES && y + ry < YRES && (rx || ry))
 				{
-					setFilt = true;
-					photonWl = parts[ID(r)].ctype;
-				}
-			}
-	if (setFilt)
-	{
-		int nx, ny;
-		for (rx=-1; rx<2; rx++)
-			for (ry=-1; ry<2; ry++)
-				if (BOUNDS_CHECK && (rx || ry))
-				{
-					r = pmap[y+ry][x+rx];
+					r = pmap[y + ry][x + rx];
+					if (!r)
+						r = sim->photons[y + ry][x + rx];
 					if (!r)
 						continue;
-					nx = x+rx;
-					ny = y+ry;
-					while (TYP(r)==PT_FILT)
+					//Normal mode.
+					if (TYP(r) == parts[i].ctype && (parts[i].ctype != PT_LIFE || parts[i].pavg[0] == parts[ID(r)].ctype || !parts[i].pavg[0]) && parts[i].tmp != 1 && parts[i].tmp != 2)
 					{
-						parts[ID(r)].ctype = photonWl;
-						nx += rx;
-						ny += ry;
-						if (nx<0 || ny<0 || nx>=XRES || ny>=YRES)
-							break;
-						r = pmap[ny][nx];
+						parts[i].life = 1;
+					}
+
+					//invert mode. Stops if it detects the ctype nearby, otherwise on.
+					if (parts[i].tmp == 2)
+					{
+						if (TYP(r) == parts[i].ctype && (parts[i].ctype != PT_LIFE || parts[i].pavg[0] == parts[ID(r)].ctype || !parts[i].pavg[0]))
+							parts[i].life = 0;
+						else if (TYP(r) != parts[i].ctype && (parts[i].ctype != PT_LIFE || parts[i].pavg[0] != parts[ID(r)].ctype || !parts[i].pavg[0]))
+							parts[i].life = 1;
+					}
+					//Serialisation mode.
+					if (parts[i].tmp == 1 && (TYP(r) == PT_PHOT || (TYP(r) == PT_BRAY && parts[ID(r)].tmp != 2)))
+					{
+						setFilt = true;
+						photonWl = parts[ID(r)].ctype;
 					}
 				}
-	}
+		if (setFilt)
+		{
+			int nx, ny;
+			for (rx = -1; rx < 2; rx++)
+				for (ry = -1; ry < 2; ry++)
+					if (BOUNDS_CHECK && (rx || ry))
+					{
+						r = pmap[y + ry][x + rx];
+						if (!r)
+							continue;
+						nx = x + rx;
+						ny = y + ry;
+						while (TYP(r) == PT_FILT)
+						{
+							parts[ID(r)].ctype = photonWl;
+							nx += rx;
+							ny += ry;
+							if (nx < 0 || ny < 0 || nx >= XRES || ny >= YRES)
+								break;
+							r = pmap[ny][nx];
+						}
+					}
+		}
 	return 0;
 }

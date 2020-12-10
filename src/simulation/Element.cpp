@@ -257,6 +257,21 @@ bool Element::ctypeDrawVInTmp(CTYPEDRAW_FUNC_ARGS)
 	return true;
 }
 
+bool Element::ctypeDrawVInpavg(CTYPEDRAW_FUNC_ARGS)
+{
+	if (!Element::basicCtypeDraw(CTYPEDRAW_FUNC_SUBCALL_ARGS))
+	{
+		return false;
+	}
+	if (t == PT_LIFE)
+	{
+		sim->parts[i].pavg[0] = v;
+	}
+	return true;
+}
+
+
+
 bool Element::ctypeDrawVInCtype(CTYPEDRAW_FUNC_ARGS)
 {
 	if (!Element::basicCtypeDraw(CTYPEDRAW_FUNC_SUBCALL_ARGS))
