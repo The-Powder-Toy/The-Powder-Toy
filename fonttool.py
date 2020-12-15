@@ -247,7 +247,6 @@ structures laid out as follows:
     args = parser.parse_args()
 
     cp_first = args.first
-    cp_dest = args.dest
     if args.last is None:
         cp_last = cp_first
     else:
@@ -278,7 +277,7 @@ structures laid out as follows:
         ft.commit()
     elif args.command == 'copy':
         for i in range(cp_first, cp_last + 1):
-            ft.code_points[i + (cp_dest - cp_first)] = ft.code_points[i]
+            ft.code_points[i + (args.dest - cp_first)] = ft.code_points[i]
         ft.commit()
     elif args.command == 'inspect':
         lut = ['  ', '░░', '▒▒', '▓▓']

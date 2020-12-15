@@ -39,7 +39,6 @@ subdir('json')
 if uopt_lua != 'none'
 	subdir('lua')
 endif
-subdir('powdertoyjava')
 subdir('resampler')
 subdir('simulation')
 subdir('tasks')
