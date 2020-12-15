@@ -53,9 +53,15 @@ fi
 if [ $PLATFORM_SHORT == "win" ]; then
 	bin_postfix=$bin_postfix.exe
 fi
+if echo $RELTYPECFG | base64 -d | grep snapshot; then
+	other_flags+=$'\t-Dupdate_server=starcatcher.us/TPT'
+fi
 meson -Dbuildtype=release -Dbuild_render=true -Dbuild_font=true -Db_pie=false -Db_staticpic=false -Db_lto=true $static_flag -Dinstall_check=true $other_flags `echo $RELTYPECFG | base64 -d` build
 cd build
 ninja
+if [ $PLATFORM_SHORT == "lin" ] || [ $PLATFORM_SHORT == "mac" ]; then
+	strip powder$bin_postfix render$bin_postfix font$bin_postfix
+fi
 7z a ../powder.zip powder$bin_postfix render$bin_postfix font$bin_postfix
 cd ..
 7z a powder.zip README.md LICENSE

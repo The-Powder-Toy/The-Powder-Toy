@@ -21,6 +21,9 @@
 #mesondefine X86_SSE2
 #mesondefine X86_SSE3
 #mesondefine _64BIT
+#mesondefine SERVER
+#mesondefine STATICSERVER
+#mesondefine UPDATESERVER
 
 #ifdef WIN
 # define PATH_SEP "\\"
@@ -89,9 +92,7 @@
 #define MTOS(str) MTOS_EXPAND(str)
 
 #define SCHEME "https://"
-#define SERVER "powdertoy.co.uk"
 #define STATICSCHEME "https://"
-#define STATICSERVER "static.powdertoy.co.uk"
 #define ENFORCE_HTTPS
 
 #define LOCAL_SAVE_DIR "Saves"

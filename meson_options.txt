@@ -147,3 +147,21 @@ option(
 	value: false,
 	description: 'Build the font editor'
 )
+option(
+	'server',
+	type: 'string',
+	value: 'powdertoy.co.uk',
+	description: 'Simulation server'
+)
+option(
+	'static_server',
+	type: 'string',
+	value: 'static.powdertoy.co.uk',
+	description: 'Static simulation server'
+)
+option(
+	'update_server',
+	type: 'string',
+	value: '',
+	description: 'Update server, only used by snapshots and mods, see \'snapshot_id\' and \'mod_id\''
+)

@@ -74,7 +74,7 @@ jobs:
         with:
           upload_url: ${{ steps.get_release_info.outputs.upload_url }}
           asset_path: powder.zip
-          asset_name: powder-${{ matrix.platform_short }}-${{ steps.get_type.outputs.NAME }}64.zip
+          asset_name: powder-${{ steps.get_type.outputs.NAME }}-${{ matrix.platform_short }}64.zip
           asset_content_type: application/zip
       - uses: actions/upload-artifact@v2
         if: steps.get_type.outputs.TYPE == 'dev' && matrix.static_dynamic == 'static'

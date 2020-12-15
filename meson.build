@@ -228,6 +228,13 @@ conf_data.set('SNAPSHOT', get_option('snapshot'))
 conf_data.set('SNAPSHOT_ID', get_option('snapshot_id'))
 conf_data.set('FUTURE_SAVE_VERSION', get_option('future_major'))
 conf_data.set('FUTURE_MINOR_VERSION', get_option('future_minor'))
+conf_data.set('SERVER', '"' + get_option('server') + '"')
+conf_data.set('STATICSERVER', '"' + get_option('static_server') + '"')
+if get_option('update_server') != ''
+	conf_data.set('UPDATESERVER', '"' + get_option('update_server') + '"')
+else
+	conf_data.set('UPDATESERVER', false)
+endif
 
 resources_files = []
 
