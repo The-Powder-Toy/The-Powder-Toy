@@ -409,6 +409,10 @@ void GameSave::Transform(matrix2d transform, vector2d translate, vector2d transl
 	velocityYNew = Allocate2DArray<float>(newBlockWidth, newBlockHeight, 0.0f);
 	ambientHeatNew = Allocate2DArray<float>(newBlockWidth, newBlockHeight, 0.0f);
 
+
+	// * Patch pipes if the transform is (looks close enough to) a 90-degree counter-clockwise rotation.
+	bool patchPipe90 = fabsf(transform.a * transform.d - transform.b * transform.c - 1) < 1e-3 && fabs(atan2f(transform.b, transform.a) - (0.5f * M_PI)) < 1e-3;
+
 	// rotate and translate signs, parts, walls
 	for (size_t i = 0; i < signs.size(); i++)
 	{
@@ -442,6 +446,11 @@ void GameSave::Transform(matrix2d transform, vector2d translate, vector2d transl
 		vel = m2d_multiply_v2d(transform, vel);
 		particles[i].vx = vel.x;
 		particles[i].vy = vel.y;
+		if (patchPipe90 && (particles[i].type == PT_PIPE || particles[i].type == PT_PPIP))
+		{
+			void Element_PIPE_patch90(Particle &part);
+			Element_PIPE_patch90(particles[i]);
+		}
 	}
 
 	// translate walls and other grid items when the stamp is shifted more than 4 pixels in any direction
