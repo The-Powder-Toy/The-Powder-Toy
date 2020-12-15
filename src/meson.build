@@ -8,6 +8,10 @@ powder_files = files(
 	'SDLCompat.cpp',
 	'Update.cpp',
 	'PowderToySDL.cpp',
+	'lua/CommandInterface.cpp',
+	'lua/LuaEvents.cpp',
+	'lua/TPTScriptInterface.cpp',
+	'lua/TPTSTypes.cpp',
 )
 
 render_files = files(
@@ -32,7 +36,9 @@ subdir('debug')
 subdir('graphics')
 subdir('gui')
 subdir('json')
-subdir('lua')
+if uopt_lua != 'none'
+	subdir('lua')
+endif
 subdir('powdertoyjava')
 subdir('resampler')
 subdir('simulation')

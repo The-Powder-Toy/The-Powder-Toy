@@ -60,11 +60,11 @@
 #include "debug/ParticleDebug.h"
 
 #ifdef LUACONSOLE
-#include "lua/LuaScriptInterface.h"
+# include "lua/LuaScriptInterface.h"
+# include "lua/LuaEvents.h"
 #else
-#include "lua/TPTScriptInterface.h"
+# include "lua/TPTScriptInterface.h"
 #endif
-#include "lua/LuaEvents.h"
 
 #include "graphics/Renderer.h"
 

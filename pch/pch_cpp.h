@@ -89,7 +89,7 @@
 #include <json/json.h>
 #include <zlib.h>
 
-#if !defined(FONTEDITOR) && !defined(RENDERER)
+#if !defined(FONTEDITOR) && !defined(RENDERER) && LUACONSOLE
 # include "lua/LuaCompat.h"
 #endif
 #include "SDLCompat.h"
