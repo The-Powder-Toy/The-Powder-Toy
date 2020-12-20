@@ -1,6 +1,17 @@
-#include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_FIGH PT_FIGH 158
-Element_FIGH::Element_FIGH()
+#include "simulation/ElementCommon.h"
+
+static int update(UPDATE_FUNC_ARGS);
+static bool createAllowed(ELEMENT_CREATE_ALLOWED_FUNC_ARGS);
+static void changeType(ELEMENT_CHANGETYPE_FUNC_ARGS);
+static void Free(Simulation *sim, unsigned char i);
+bool Element_FIGH_CanAlloc(Simulation *sim);
+int Element_FIGH_Alloc(Simulation *sim);
+void Element_FIGH_NewFighter(Simulation *sim, int fighterID, int i, int elem);
+int Element_STKM_graphics(GRAPHICS_FUNC_ARGS);
+void Element_STKM_init_legs(Simulation * sim, playerst *playerp, int i);
+int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS);
+
+void Element::Element_FIGH()
 {
 	Identifier = "DEFAULT_PT_FIGH";
 	Name = "FIGH";
@@ -15,6 +26,7 @@ Element_FIGH::Element_FIGH()
 	Loss = 1.0f;
 	Collision = 0.0f;
 	Gravity = 0.0f;
+	NewtonianGravity = 0.0f;
 	Diffusion = 0.0f;
 	HotAir = 0.00f	* CFDS;
 	Falldown = 0;
@@ -26,7 +38,7 @@ Element_FIGH::Element_FIGH()
 
 	Weight = 50;
 
-	Temperature = R_TEMP+14.6f+273.15f;
+	DefaultProperties.temp = R_TEMP + 14.6f + 273.15f;
 	HeatConduct = 0;
 	Description = "Fighter. Tries to kill stickmen. You must first give it an element to kill him with.";
 
@@ -41,12 +53,15 @@ Element_FIGH::Element_FIGH()
 	HighTemperature = 620.0f;
 	HighTemperatureTransition = PT_FIRE;
 
-	Update = &Element_FIGH::update;
-	Graphics = &Element_STKM::graphics;
+	DefaultProperties.life = 100;
+
+	Update = &update;
+	Graphics = &Element_STKM_graphics;
+	CreateAllowed = &createAllowed;
+	ChangeType = &changeType;
 }
 
-//#TPT-Directive ElementHeader Element_FIGH static int update(UPDATE_FUNC_ARGS)
-int Element_FIGH::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	if (parts[i].tmp < 0 || parts[i].tmp >= MAX_FIGHTERS)
 	{
@@ -88,8 +103,8 @@ int Element_FIGH::update(UPDATE_FUNC_ARGS)
 		if ((pow(float(tarx-x), 2) + pow(float(tary-y), 2))<600)
 		{
 			if (figh->elem == PT_LIGH || figh->elem == PT_NEUT
-			    || sim->elements[figh->elem].Properties&(PROP_DEADLY|PROP_RADIOACTIVE)
-			    || sim->elements[figh->elem].Temperature>=323 || sim->elements[figh->elem].Temperature<=243)
+			    || sim->elements[figh->elem].Properties & (PROP_DEADLY | PROP_RADIOACTIVE)
+			    || sim->elements[figh->elem].DefaultProperties.temp >= 323 || sim->elements[figh->elem].DefaultProperties.temp <= 243)
 				figh->comm = (int)figh->comm | 0x08;
 		}
 		else if (tarx<x)
@@ -136,8 +151,64 @@ int Element_FIGH::update(UPDATE_FUNC_ARGS)
 
 	figh->pcomm = figh->comm;
 
-	Element_STKM::run_stickman(figh, UPDATE_FUNC_SUBCALL_ARGS);
+	Element_STKM_run_stickman(figh, UPDATE_FUNC_SUBCALL_ARGS);
 	return 0;
 }
 
-Element_FIGH::~Element_FIGH() {}
+static bool createAllowed(ELEMENT_CREATE_ALLOWED_FUNC_ARGS)
+{
+	return Element_FIGH_CanAlloc(sim);
+}
+
+static void changeType(ELEMENT_CHANGETYPE_FUNC_ARGS)
+{
+	if (to == PT_FIGH)
+	{
+		sim->parts[i].tmp = Element_FIGH_Alloc(sim);
+		if (sim->parts[i].tmp >= 0)
+			Element_FIGH_NewFighter(sim, sim->parts[i].tmp, i, PT_DUST);
+	}
+	else
+	{
+		Free(sim, (unsigned char)sim->parts[i].tmp);
+	}
+}
+
+bool Element_FIGH_CanAlloc(Simulation *sim)
+{
+	return sim->fighcount < MAX_FIGHTERS;
+}
+
+int Element_FIGH_Alloc(Simulation *sim)
+{
+	if (sim->fighcount >= MAX_FIGHTERS)
+		return -1;
+	int i = 0;
+	while (i < MAX_FIGHTERS && sim->fighters[i].spwn==1)
+		i++;
+	if (i < MAX_FIGHTERS)
+	{
+		sim->fighters[i].spwn = 1;
+		sim->fighters[i].elem = PT_DUST;
+		sim->fighcount++;
+		return i;
+	}
+	else return -1;
+}
+
+static void Free(Simulation *sim, unsigned char i)
+{
+	if (sim->fighters[i].spwn)
+	{
+		sim->fighters[i].spwn = 0;
+		sim->fighcount--;
+	}
+}
+
+void Element_FIGH_NewFighter(Simulation *sim, int fighterID, int i, int elem)
+{
+	Element_STKM_init_legs(sim, &sim->fighters[fighterID], i);
+	if (elem > 0 && elem < PT_NUM)
+		sim->fighters[fighterID].elem = elem;
+	sim->fighters[fighterID].spwn = 1;
+}

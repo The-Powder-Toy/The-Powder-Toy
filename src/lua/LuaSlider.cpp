@@ -1,8 +1,10 @@
+#include "Config.h"
 #ifdef LUACONSOLE
 
-#include <iostream>
 #include "LuaSlider.h"
+
 #include "LuaScriptInterface.h"
+
 #include "gui/interface/Slider.h"
 
 const char LuaSlider::className[] = "Slider";
@@ -20,7 +22,7 @@ Luna<LuaSlider>::RegType LuaSlider::methods[] = {
 
 LuaSlider::LuaSlider(lua_State * l) :
 	LuaComponent(l),
-	onValueChangedFunction(0)
+	onValueChangedFunction(l)
 {
 	int posX = luaL_optinteger(l, 1, 0);
 	int posY = luaL_optinteger(l, 2, 0);
@@ -30,17 +32,7 @@ LuaSlider::LuaSlider(lua_State * l) :
 
 	slider = new ui::Slider(ui::Point(posX, posY), ui::Point(sizeX, sizeY), steps);
 	component = slider;
-	class ValueAction : public ui::SliderAction
-	{
-		LuaSlider * luaSlider;
-	public:
-		ValueAction(LuaSlider * luaSlider) : luaSlider(luaSlider) {}
-		void ValueChangedCallback(ui::Slider * sender)
-		{
-			luaSlider->triggerOnValueChanged();
-		}
-	};
-	slider->SetActionCallback(new ValueAction(this));
+	slider->SetActionCallback({ [this] { triggerOnValueChanged(); } });
 }
 
 int LuaSlider::steps(lua_State * l)
@@ -60,17 +52,7 @@ int LuaSlider::steps(lua_State * l)
 
 int LuaSlider::onValueChanged(lua_State * l)
 {
-	if(lua_type(l, 1) != LUA_TNIL)
-	{
-		luaL_checktype(l, 1, LUA_TFUNCTION);
-		lua_pushvalue(l, 1);
-		onValueChangedFunction = luaL_ref(l, LUA_REGISTRYINDEX);
-	}
-	else
-	{
-		onValueChangedFunction = 0;
-	}
-	return 0;
+	return onValueChangedFunction.CheckAndAssignArg1(l);
 }
 
 int LuaSlider::value(lua_State * l)
@@ -93,7 +75,7 @@ void LuaSlider::triggerOnValueChanged()
 	if(onValueChangedFunction)
 	{
 		lua_rawgeti(l, LUA_REGISTRYINDEX, onValueChangedFunction);
-		lua_rawgeti(l, LUA_REGISTRYINDEX, UserData);
+		lua_rawgeti(l, LUA_REGISTRYINDEX, owner_ref);
 		lua_pushinteger(l, slider->GetValue());
 		if (lua_pcall(l, 2, 0, 0))
 		{

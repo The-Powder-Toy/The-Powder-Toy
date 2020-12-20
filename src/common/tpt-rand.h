@@ -1,5 +1,6 @@
 #ifndef TPT_RAND_
 #define TPT_RAND_
+#include "Config.h"
 
 #include <stdint.h>
 #include "Singleton.h"

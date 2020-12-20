@@ -1,17 +1,16 @@
 #ifndef The_Powder_Toy_GameSave_h
 #define The_Powder_Toy_GameSave_h
+#include "Config.h"
 
 #include <vector>
 #include "common/String.h"
-#include "Config.h"
 #include "Misc.h"
 
 #include "bson/BSON.h"
 #include "json/json.h"
-#include "simulation/Sign.h"
-#include "simulation/Particle.h"
 
-//using namespace std;
+struct sign;
+struct Particle;
 
 struct ParseException: public std::exception {
 	enum ParseResult { OK = 0, Corrupt, WrongVersion, InvalidDimensions, InternalError, MissingElement };
@@ -73,7 +72,7 @@ public:
 
 	int blockWidth, blockHeight;
 	bool fromNewerVersion;
-	int majorVersion;
+	int majorVersion, minorVersion;
 	bool hasPressure;
 	bool hasAmbientHeat;
 
@@ -134,21 +133,8 @@ public:
 	static bool TypeInTmp(int type);
 	static bool TypeInTmp2(int type, int tmp2);
 
-	inline GameSave& operator << (Particle v)
-	{
-		if(particlesCount<NPART && v.type)
-		{
-			particles[particlesCount++] = v;
-		}
-		return *this;
-	}
-
-	inline GameSave& operator << (sign v)
-	{
-		if(signs.size()<MAXSIGNS && v.text.length())
-			signs.push_back(v);
-		return *this;
-	}
+	GameSave& operator << (Particle &v);
+	GameSave& operator << (sign &v);
 
 private:
 	bool expanded;

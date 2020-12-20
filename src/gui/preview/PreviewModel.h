@@ -1,21 +1,23 @@
 #ifndef PREVIEWMODEL_H
 #define PREVIEWMODEL_H
+#include "Config.h"
 
 #include <vector>
-#include <iostream>
-#include "PreviewView.h"
-#include "client/SaveInfo.h"
-#include "gui/preview/Comment.h"
-#include "gui/search/Thumbnail.h"
-#include "client/Download.h"
+#include "common/String.h"
 
-using namespace std;
+namespace http
+{
+	class Request;
+}
 
 class PreviewView;
-class PreviewModel {
+class SaveInfo;
+class SaveComment;
+class PreviewModel
+{
 	bool doOpen;
 	bool canOpen;
-	vector<PreviewView*> observers;
+	std::vector<PreviewView*> observers;
 	SaveInfo * saveInfo;
 	std::vector<unsigned char> * saveData;
 	std::vector<SaveComment*> * saveComments;
@@ -24,9 +26,9 @@ class PreviewModel {
 	void notifyCommentsPageChanged();
 	void notifyCommentBoxEnabledChanged();
 
-	Download * saveDataDownload;
-	Download * saveInfoDownload;
-	Download * commentsDownload;
+	http::Request * saveDataDownload;
+	http::Request * saveInfoDownload;
+	http::Request * commentsDownload;
 	int saveID;
 	int saveDate;
 
@@ -58,8 +60,8 @@ public:
 	void Update();
 	void ClearComments();
 	void OnSaveReady();
-	bool ParseSaveInfo(char * saveInfoResponse);
-	bool ParseComments(char * commentsResponse);
+	bool ParseSaveInfo(ByteString &saveInfoResponse);
+	bool ParseComments(ByteString &commentsResponse);
 	virtual ~PreviewModel();
 };
 

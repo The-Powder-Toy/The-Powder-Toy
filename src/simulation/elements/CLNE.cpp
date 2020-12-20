@@ -1,6 +1,8 @@
-#include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_CLNE PT_CLNE 9
-Element_CLNE::Element_CLNE()
+#include "simulation/ElementCommon.h"
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_CLNE()
 {
 	Identifier = "DEFAULT_PT_CLNE";
 	Name = "CLNE";
@@ -26,11 +28,10 @@ Element_CLNE::Element_CLNE()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
 	Description = "Clone. Duplicates any particles it touches.";
 
-	Properties = TYPE_SOLID|PROP_DRAWONCTYPE|PROP_NOCTYPEDRAW;
+	Properties = TYPE_SOLID | PROP_NOCTYPEDRAW;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
@@ -41,13 +42,13 @@ Element_CLNE::Element_CLNE()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_CLNE::update;
+	Update = &update;
+	CtypeDraw = &Element::ctypeDrawVInTmp;
 }
 
-//#TPT-Directive ElementHeader Element_CLNE static int update(UPDATE_FUNC_ARGS)
-int Element_CLNE::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
-	if (parts[i].ctype<=0 || parts[i].ctype>=PT_NUM || !sim->elements[parts[i].ctype].Enabled || (parts[i].ctype==PT_LIFE && (parts[i].tmp<0 || parts[i].tmp>=NGOL)))
+	if (parts[i].ctype<=0 || parts[i].ctype>=PT_NUM || !sim->elements[parts[i].ctype].Enabled)
 	{
 		int r, rx, ry, rt;
 		for (rx=-1; rx<2; rx++)
@@ -86,6 +87,3 @@ int Element_CLNE::update(UPDATE_FUNC_ARGS)
 	}
 	return 0;
 }
-
-
-Element_CLNE::~Element_CLNE() {}

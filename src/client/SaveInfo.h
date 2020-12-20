@@ -1,11 +1,13 @@
 #ifndef SAVE_H
 #define SAVE_H
+#include "Config.h"
 
 #include <list>
-#include <vector>
 #include "common/String.h"
-#include <cstdlib>
-#include <iostream>
+
+#ifdef GetUserName
+# undef GetUserName // dammit windows
+#endif
 
 class GameSave;
 

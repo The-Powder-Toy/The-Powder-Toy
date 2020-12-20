@@ -1,10 +1,9 @@
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 
-bool Element_GOL_colourInit = false;
-pixel Element_GOL_colour[NGOL];
+static int graphics(GRAPHICS_FUNC_ARGS);
+static void create(ELEMENT_CREATE_FUNC_ARGS);
 
-//#TPT-Directive ElementClass Element_LIFE PT_LIFE 78
-Element_LIFE::Element_LIFE()
+void Element::Element_LIFE()
 {
 	Identifier = "DEFAULT_PT_LIFE";
 	Name = "LIFE";
@@ -30,7 +29,7 @@ Element_LIFE::Element_LIFE()
 
 	Weight = 100;
 
-	Temperature = 9000.0f;
+	DefaultProperties.temp = 9000.0f;
 	HeatConduct = 40;
 	Description = "Game Of Life! B3/S23";
 
@@ -45,80 +44,71 @@ Element_LIFE::Element_LIFE()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = NULL;
-	Graphics = &Element_LIFE::graphics;
-
-	if(!Element_GOL_colourInit)
-	{
-		Element_GOL_colourInit = true;
-
-		std::vector<gol_menu> golMenuT = LoadGOLMenu();
-		for(int i = 0; i < NGOL; i++)
-		{
-			Element_GOL_colour[i] = golMenuT[i].colour;
-		}
-	}
+	Graphics = &graphics;
+	Create = &create;
 }
 
-//#TPT-Directive ElementHeader Element_LIFE static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_LIFE::graphics(GRAPHICS_FUNC_ARGS)
-
+static int graphics(GRAPHICS_FUNC_ARGS)
 {
-	pixel pc;
-	if (cpart->ctype==NGT_LOTE)//colors for life states
+	auto colour1 = cpart->dcolour;
+	auto colour2 = cpart->tmp;
+	if (!colour1)
 	{
-		if (cpart->tmp==2)
-			pc = PIXRGB(255, 128, 0);
-		else if (cpart->tmp==1)
-			pc = PIXRGB(255, 255, 0);
+		colour1 = PIXPACK(0xFFFFFF);
+	}
+	auto ruleset = cpart->ctype;
+	bool renderDeco = !ren->blackDecorations;
+	if (ruleset >= 0 && ruleset < NGOL)
+	{
+		if (!renderDeco)
+		{
+			colour1 = builtinGol[ruleset].colour;
+			colour2 = builtinGol[ruleset].colour2;
+			renderDeco = true;
+		}
+		ruleset = builtinGol[ruleset].ruleset;
+	}
+	if (renderDeco)
+	{
+		auto states = ((ruleset >> 17) & 0xF) + 2;
+		if (states == 2)
+		{
+			*colr = PIXR(colour1);
+			*colg = PIXG(colour1);
+			*colb = PIXB(colour1);
+		}
 		else
-			pc = PIXRGB(255, 0, 0);
+		{
+			auto mul = (cpart->tmp2 - 1) / float(states - 2);
+			*colr = PIXR(colour1) * mul + PIXR(colour2) * (1.f - mul);
+			*colg = PIXG(colour1) * mul + PIXG(colour2) * (1.f - mul);
+			*colb = PIXB(colour1) * mul + PIXB(colour2) * (1.f - mul);
+		}
 	}
-	else if (cpart->ctype==NGT_FRG2)//colors for life states
-	{
-		if (cpart->tmp==2)
-			pc = PIXRGB(0, 100, 50);
-		else
-			pc = PIXRGB(0, 255, 90);
-	}
-	else if (cpart->ctype==NGT_STAR)//colors for life states
-	{
-		if (cpart->tmp==4)
-			pc = PIXRGB(0, 0, 128);
-		else if (cpart->tmp==3)
-			pc = PIXRGB(0, 0, 150);
-		else if (cpart->tmp==2)
-			pc = PIXRGB(0, 0, 190);
-		else if (cpart->tmp==1)
-			pc = PIXRGB(0, 0, 230);
-		else
-			pc = PIXRGB(0, 0, 70);
-	}
-	else if (cpart->ctype==NGT_FROG)//colors for life states
-	{
-		if (cpart->tmp==2)
-			pc = PIXRGB(0, 100, 0);
-		else
-			pc = PIXRGB(0, 255, 0);
-	}
-	else if (cpart->ctype==NGT_BRAN)//colors for life states
-	{
-		if (cpart->tmp==1)
-			pc = PIXRGB(150, 150, 0);
-		else
-			pc = PIXRGB(255, 255, 0);
-	}
-	else if (cpart->ctype >= 0 && cpart->ctype < NGOL)
-	{
-		pc = Element_GOL_colour[cpart->ctype];
-	}
-	else
-		pc = ren->sim->elements[cpart->type].Colour;
-	*colr = PIXR(pc);
-	*colg = PIXG(pc);
-	*colb = PIXB(pc);
+	*pixel_mode |= NO_DECO;
 	return 0;
 }
 
-
-Element_LIFE::~Element_LIFE() {}
+static void create(ELEMENT_CREATE_FUNC_ARGS)
+{
+	// * 0x200000: No need to look for colours, they'll be set later anyway.
+	bool skipLookup = v & 0x200000;
+	v &= 0x1FFFFF;
+	sim->parts[i].ctype = v;
+	if (v < NGOL)
+	{
+		sim->parts[i].dcolour = builtinGol[v].colour;
+		sim->parts[i].tmp = builtinGol[v].colour2;
+		v = builtinGol[v].ruleset;
+	}
+	else if (!skipLookup)
+	{
+		auto *cgol = sim->GetCustomGOLByRule(v);
+		if (cgol)
+		{
+			sim->parts[i].dcolour = cgol->colour1;
+			sim->parts[i].tmp = cgol->colour2;
+		}
+	}
+	sim->parts[i].tmp2 = ((v >> 17) & 0xF) + 1;
+}

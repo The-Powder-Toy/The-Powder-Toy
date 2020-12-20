@@ -1,6 +1,8 @@
-#include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_H2 PT_H2 148
-Element_H2::Element_H2()
+#include "simulation/ElementCommon.h"
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_H2()
 {
 	Identifier = "DEFAULT_PT_H2";
 	Name = "HYGN";
@@ -26,7 +28,6 @@ Element_H2::Element_H2()
 
 	Weight = 1;
 
-	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 251;
 	Description = "Hydrogen. Combusts with OXYG to make WATR. Undergoes fusion at high temperature and pressure.";
 
@@ -41,11 +42,10 @@ Element_H2::Element_H2()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_H2::update;
+	Update = &update;
 }
 
-//#TPT-Directive ElementHeader Element_H2 static int update(UPDATE_FUNC_ARGS)
-int Element_H2::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int r,rx,ry,rt;
 	for (rx=-2; rx<3; rx++)
@@ -132,6 +132,3 @@ int Element_H2::update(UPDATE_FUNC_ARGS)
 	}
 	return 0;
 }
-
-
-Element_H2::~Element_H2() {}

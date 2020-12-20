@@ -1,9 +1,12 @@
-#include "gui/Style.h"
 #include "InformationMessage.h"
+
+#include "gui/Style.h"
 #include "gui/interface/Button.h"
 #include "gui/interface/Engine.h"
 #include "gui/interface/Label.h"
 #include "gui/interface/ScrollPanel.h"
+
+#include "graphics/Graphics.h"
 
 InformationMessage::InformationMessage(String title, String message, bool large):
 	ui::Window(ui::Point(-1, -1), ui::Point(200, 35))
@@ -52,23 +55,14 @@ InformationMessage::InformationMessage(String title, String message, bool large)
 	titleLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(titleLabel);
 
-	class DismissAction: public ui::ButtonAction
-	{
-		InformationMessage * message;
-	public:
-		DismissAction(InformationMessage * message_) { message = message_; }
-		void ActionCallback(ui::Button * sender)
-		{
-			message->CloseActiveWindow();
-			message->SelfDestruct(); //TODO: Fix component disposal
-		}
-	};
-
 	ui::Button * okayButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(Size.X, 16), "Dismiss");
 	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	okayButton->Appearance.BorderInactive = ui::Colour(200, 200, 200);
-	okayButton->SetActionCallback(new DismissAction(this));
+	okayButton->SetActionCallback({ [this] {
+		CloseActiveWindow();
+		SelfDestruct(); //TODO: Fix component disposal
+	} });
 	AddComponent(okayButton);
 	SetOkayButton(okayButton);
 	SetCancelButton(okayButton);
@@ -83,7 +77,3 @@ void InformationMessage::OnDraw()
 	g->clearrect(Position.X-2, Position.Y-2, Size.X+3, Size.Y+3);
 	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 200, 200, 200, 255);
 }
-
-InformationMessage::~InformationMessage() {
-}
-

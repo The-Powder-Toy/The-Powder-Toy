@@ -1,6 +1,11 @@
-#include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_STOR PT_STOR 83
-Element_STOR::Element_STOR()
+#include "simulation/ElementCommon.h"
+
+void Element_SOAP_detach(Simulation * sim, int i);
+static int update(UPDATE_FUNC_ARGS);
+static int graphics(GRAPHICS_FUNC_ARGS);
+static bool ctypeDraw(CTYPEDRAW_FUNC_ARGS);
+
+void Element::Element_STOR()
 {
 	Identifier = "DEFAULT_PT_STOR";
 	Name = "STOR";
@@ -26,11 +31,10 @@ Element_STOR::Element_STOR()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 0;
 	Description = "Storage. Captures and stores a single particle. Releases when charged with PSCN, also passes to PIPE.";
 
-	Properties = TYPE_SOLID|PROP_NOCTYPEDRAW;
+	Properties = TYPE_SOLID | PROP_NOCTYPEDRAW;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
@@ -41,12 +45,12 @@ Element_STOR::Element_STOR()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_STOR::update;
-	Graphics = &Element_STOR::graphics;
+	Update = &update;
+	Graphics = &graphics;
+	CtypeDraw = &ctypeDraw;
 }
 
-//#TPT-Directive ElementHeader Element_STOR static int update(UPDATE_FUNC_ARGS)
-int Element_STOR::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry, np, rx1, ry1;
 	if (!sim->IsValidElement(parts[i].tmp))
@@ -63,7 +67,7 @@ int Element_STOR::update(UPDATE_FUNC_ARGS)
 				if (!parts[i].tmp && !parts[i].life && TYP(r)!=PT_STOR && !(sim->elements[TYP(r)].Properties&TYPE_SOLID) && (!parts[i].ctype || TYP(r)==parts[i].ctype))
 				{
 					if (TYP(r) == PT_SOAP)
-						Element_SOAP::detach(sim, ID(r));
+						Element_SOAP_detach(sim, ID(r));
 					parts[i].tmp = parts[ID(r)].type;
 					parts[i].temp = parts[ID(r)].temp;
 					parts[i].tmp2 = parts[ID(r)].life;
@@ -93,10 +97,7 @@ int Element_STOR::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-
-//#TPT-Directive ElementHeader Element_STOR static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_STOR::graphics(GRAPHICS_FUNC_ARGS)
-
+static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	if(cpart->tmp){
 		*pixel_mode |= PMODE_GLOW;
@@ -111,5 +112,11 @@ int Element_STOR::graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
-
-Element_STOR::~Element_STOR() {}
+static bool ctypeDraw(CTYPEDRAW_FUNC_ARGS)
+{
+	if (sim->elements[t].Properties & TYPE_SOLID)
+	{
+		return false;
+	}
+	return Element::basicCtypeDraw(CTYPEDRAW_FUNC_SUBCALL_ARGS);
+}

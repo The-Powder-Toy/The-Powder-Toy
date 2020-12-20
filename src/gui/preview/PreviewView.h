@@ -4,17 +4,14 @@
 #include <vector>
 #include <set>
 #include "common/String.h"
-#include "Comment.h"
 #include "gui/interface/Window.h"
-#include "gui/preview/PreviewController.h"
-#include "gui/preview/PreviewModel.h"
-#include "gui/interface/Button.h"
-#include "gui/interface/CopyTextButton.h"
-#include "gui/interface/Label.h"
-#include "gui/interface/Textbox.h"
 
 namespace ui
 {
+	class Button;
+	class CopyTextButton;
+	class Label;
+	class Textbox;
 	class ScrollPanel;
 	class AvatarButton;
 }
@@ -22,11 +19,8 @@ namespace ui
 class VideoBuffer;
 class PreviewModel;
 class PreviewController;
-class PreviewView: public ui::Window {
-	class SubmitCommentAction;
-	class LoginAction;
-	class AutoCommentSizeAction;
-	class AvatarAction;
+class PreviewView: public ui::Window
+{
 	PreviewController * c;
 	VideoBuffer * savePreview;
 	ui::Button * openButton;
@@ -79,13 +73,13 @@ public:
 	void NotifyCommentsPageChanged(PreviewModel * sender);
 	void NotifyCommentBoxEnabledChanged(PreviewModel * sender);
 	void SaveLoadingError(String errorMessage);
-	virtual void OnDraw();
-	virtual void DoDraw();
-	virtual void OnTick(float dt);
-	virtual void OnTryExit(ExitMethod method);
-	virtual void OnMouseWheel(int x, int y, int d);
-	virtual void OnMouseUp(int x, int y, unsigned int button);
-	virtual void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
+	void OnDraw() override;
+	void DoDraw() override;
+	void OnTick(float dt) override;
+	void OnTryExit(ExitMethod method) override;
+	void OnMouseWheel(int x, int y, int d) override;
+	void OnMouseUp(int x, int y, unsigned int button) override;
+	void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
 	virtual ~PreviewView();
 };
 

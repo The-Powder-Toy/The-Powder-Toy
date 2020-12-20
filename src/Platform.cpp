@@ -1,3 +1,5 @@
+#include "Platform.h"
+
 #include <cstdlib>
 #include <cstring>
 #include <cstdio>
@@ -15,7 +17,7 @@
 #ifdef MACOSX
 #include <mach-o/dyld.h>
 #endif
-#include "Platform.h"
+
 #include "Misc.h"
 
 namespace Platform
@@ -89,19 +91,22 @@ void DoRestart()
 void OpenURI(ByteString uri)
 {
 #if defined(WIN)
-	ShellExecute(0, "OPEN", uri.c_str(), NULL, NULL, 0);
+	if ((int)ShellExecute(NULL, NULL, uri.c_str(), NULL, NULL, SW_SHOWNORMAL) <= 32)
+	{
+		fprintf(stderr, "cannot open URI: ShellExecute(...) failed\n");
+	}
 #elif defined(MACOSX)
-	char *cmd = (char*)malloc(7+uri.length());
-	strcpy(cmd, "open ");
-	strappend(cmd, (char*)uri.c_str());
-	system(cmd);
+	if (system(("open \"" + uri + "\"").c_str()))
+	{
+		fprintf(stderr, "cannot open URI: system(...) failed\n");
+	}
 #elif defined(LIN)
-	char *cmd = (char*)malloc(11+uri.length());
-	strcpy(cmd, "xdg-open ");
-	strappend(cmd, (char*)uri.c_str());
-	system(cmd);
+	if (system(("xdg-open \"" + uri + "\"").c_str()))
+	{
+		fprintf(stderr, "cannot open URI: system(...) failed\n");
+	}
 #else
-	printf("Cannot open browser\n");
+	fprintf(stderr, "cannot open URI: not implemented\n");
 #endif
 }
 
@@ -129,6 +134,18 @@ long unsigned int GetTime()
 	struct timespec s;
 	clock_gettime(CLOCK_MONOTONIC, &s);
 	return s.tv_sec * 1000 + s.tv_nsec / 1000000;
+#endif
+}
+
+
+void LoadFileInResource(int name, int type, unsigned int& size, const char*& data)
+{
+#ifdef _MSC_VER
+	HMODULE handle = ::GetModuleHandle(NULL);
+	HRSRC rc = ::FindResource(handle, MAKEINTRESOURCE(name), MAKEINTRESOURCE(type));
+	HGLOBAL rcData = ::LoadResource(handle, rc);
+	size = ::SizeofResource(handle, rc);
+	data = static_cast<const char*>(::LockResource(rcData));
 #endif
 }
 

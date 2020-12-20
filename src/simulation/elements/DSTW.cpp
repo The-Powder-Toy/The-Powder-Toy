@@ -1,6 +1,8 @@
-#include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_DSTW PT_DSTW 25
-Element_DSTW::Element_DSTW()
+#include "simulation/ElementCommon.h"
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_DSTW()
 {
 	Identifier = "DEFAULT_PT_DSTW";
 	Name = "DSTW";
@@ -26,7 +28,7 @@ Element_DSTW::Element_DSTW()
 
 	Weight = 30;
 
-	Temperature = R_TEMP-2.0f	+273.15f;
+	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
 	HeatConduct = 23;
 	Description = "Distilled water, does not conduct electricity.";
 
@@ -41,11 +43,10 @@ Element_DSTW::Element_DSTW()
 	HighTemperature = 373.0f;
 	HighTemperatureTransition = PT_WTRV;
 
-	Update = &Element_DSTW::update;
+	Update = &update;
 }
 
-//#TPT-Directive ElementHeader Element_DSTW static int update(UPDATE_FUNC_ARGS)
-int Element_DSTW::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry;
 	for (rx=-1; rx<2; rx++)
@@ -98,6 +99,3 @@ int Element_DSTW::update(UPDATE_FUNC_ARGS)
 			}
 	return 0;
 }
-
-
-Element_DSTW::~Element_DSTW() {}

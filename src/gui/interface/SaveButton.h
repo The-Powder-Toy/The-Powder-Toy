@@ -4,30 +4,24 @@
 #include "common/String.h"
 
 #include "Component.h"
-#include "client/SaveFile.h"
-#include "client/SaveInfo.h"
-#include "client/requestbroker/RequestListener.h"
-#include "graphics/Graphics.h"
-#include "gui/interface/Colour.h"
+#include "client/http/ThumbnailRequest.h"
+#include "client/http/RequestMonitor.h"
 
+#include <memory>
+#include <functional>
+
+class VideoBuffer;
+class SaveFile;
+class SaveInfo;
+class ThumbnailRendererTask;
 namespace ui
 {
-class SaveButton;
-class SaveButtonAction
-{
-public:
-	virtual void ActionCallback(ui::SaveButton * sender) {}
-	virtual void AltActionCallback(ui::SaveButton * sender) {}
-	virtual void AltActionCallback2(ui::SaveButton * sender) {}
-	virtual void SelectedCallback(ui::SaveButton * sender) {}
-	virtual ~SaveButtonAction() {}
-};
-
-class SaveButton : public Component, public RequestListener
+class SaveButton : public Component, public http::RequestMonitor<http::ThumbnailRequest>
 {
 	SaveFile * file;
 	SaveInfo * save;
-	VideoBuffer * thumbnail;
+	std::unique_ptr<VideoBuffer> thumbnail;
+	ui::Point thumbSize = ui::Point(0, 0);
 	String name;
 	String votesString;
 	String votesBackground;
@@ -35,30 +29,40 @@ class SaveButton : public Component, public RequestListener
 	int voteBarHeightUp;
 	int voteBarHeightDown;
 	bool wantsDraw;
-	bool waitingForThumb;
+	bool triedThumbnail;
 	bool isMouseInsideAuthor;
 	bool isMouseInsideHistory;
 	bool showVotes;
+	ThumbnailRendererTask *thumbnailRenderer;
+
+	struct SaveButtonAction
+	{
+		std::function<void ()> action, altAction, altAltAction, selected;
+	};
+	SaveButtonAction actionCallback;
+
+	SaveButton(Point position, Point size);
+
 public:
 	SaveButton(Point position, Point size, SaveInfo * save);
 	SaveButton(Point position, Point size, SaveFile * file);
 	virtual ~SaveButton();
 
-	virtual void OnMouseClick(int x, int y, unsigned int button);
-	virtual void OnMouseUnclick(int x, int y, unsigned int button);
+	void OnMouseClick(int x, int y, unsigned int button) override;
+	void OnMouseUnclick(int x, int y, unsigned int button) override;
 
-	virtual void OnMouseEnter(int x, int y);
-	virtual void OnMouseLeave(int x, int y);
+	void OnMouseEnter(int x, int y) override;
+	void OnMouseLeave(int x, int y) override;
 
-	virtual void OnMouseMovedInside(int x, int y, int dx, int dy);
+	void OnMouseMovedInside(int x, int y, int dx, int dy) override;
 
 	void AddContextMenu(int menuType);
-	virtual void OnContextMenuAction(int item);
+	void OnContextMenuAction(int item) override;
 
-	virtual void Draw(const Point& screenPos);
-	virtual void Tick(float dt);
+	void Draw(const Point& screenPos) override;
+	void Tick(float dt) override;
 
-	virtual void OnResponseReady(void * imagePtr, int identifier);
+	void OnResponse(std::unique_ptr<VideoBuffer> thumbnail) override;
 
 	void SetSelected(bool selected_) { selected = selected_; }
 	bool GetSelected() { return selected; }
@@ -69,14 +73,13 @@ public:
 	SaveInfo * GetSave() { return save; }
 	SaveFile * GetSaveFile() { return file; }
 	inline bool GetState() { return state; }
-	virtual void DoAction();
-	virtual void DoAltAction();
-	virtual void DoAltAction2();
-	virtual void DoSelection();
-	void SetActionCallback(SaveButtonAction * action);
+	void DoAction();
+	void DoAltAction();
+	void DoAltAction2();
+	void DoSelection();
+	inline void SetActionCallback(SaveButtonAction action) { actionCallback = action; }
 protected:
 	bool isButtonDown, state, isMouseInside, selected, selectable;
-	SaveButtonAction * actionCallback;
 };
 }
 #endif /* BUTTON_H_ */

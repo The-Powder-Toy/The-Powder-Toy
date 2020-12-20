@@ -1,8 +1,13 @@
 #include "LocalBrowserModel.h"
+
 #include "LocalBrowserView.h"
-#include "LocalBrowserModelException.h"
+
+#include <cmath>
+
 #include "client/Client.h"
 #include "client/SaveFile.h"
+
+#include "common/tpt-minmax.h"
 
 LocalBrowserModel::LocalBrowserModel():
 	stamp(NULL),

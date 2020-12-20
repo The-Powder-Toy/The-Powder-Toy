@@ -1,3 +1,4 @@
+#include "Config.h"
 #ifdef LUACONSOLE
 /*
 ** Lua BitOp -- a bit operations library for Lua 5.1/5.2.
@@ -26,6 +27,7 @@
 **
 ** [ MIT license: http://www.opensource.org/licenses/mit-license.php ]
 */
+#include "LuaBit.h"
 
 #define LUA_BITOP_VERSION	"1.0.2"
 
@@ -37,7 +39,7 @@ typedef __int32 int32_t;
 typedef unsigned __int32 uint32_t;
 typedef unsigned __int64 uint64_t;
 #else
-#include <stdint.h>
+#include <cstdint>
 #endif
 
 typedef int32_t SBits;

@@ -1,3 +1,5 @@
+#include "Renderer.h"
+
 #include <cmath>
 #include <iostream>
 #include <iomanip>
@@ -6,18 +8,22 @@
 #include <cstdlib>
 #include "Config.h"
 #include "Misc.h"
-#include "Renderer.h"
-#include "Graphics.h"
-#include "common/tpt-compat.h"
-#include "common/tpt-minmax.h"
+
 #include "common/tpt-rand.h"
+#include "common/tpt-compat.h"
+
 #include "gui/game/RenderPreset.h"
-#include "simulation/Elements.h"
+
+#include "simulation/Simulation.h"
 #include "simulation/ElementGraphics.h"
 #include "simulation/Air.h"
+#include "simulation/Gravity.h"
+#include "simulation/ElementClasses.h"
+
 #ifdef LUACONSOLE
 #include "lua/LuaScriptInterface.h"
 #include "lua/LuaScriptHelper.h"
+#include "lua/LuaSmartRef.h"
 #endif
 #include "hmap.h"
 #ifdef OGLR
@@ -106,10 +112,12 @@ void Renderer::RenderBegin()
 		std::fill(warpVid, warpVid+(VIDXRES*VIDYRES), 0);
 	}
 
+#ifndef FONTEDITOR
 	draw_air();
 	draw_grav();
 	DrawWalls();
 	render_parts();
+	
 	if(display_mode & DISPLAY_PERS)
 	{
 		int i,r,g,b;
@@ -132,6 +140,7 @@ void Renderer::RenderBegin()
 	draw_other();
 	draw_grav_zones();
 	DrawSigns();
+#endif
 
 	if(display_mode & DISPLAY_WARP)
 	{
@@ -517,11 +526,10 @@ void Renderer::RenderZoom()
 	#endif
 }
 
-std::vector<wall_type> Renderer_wtypes = LoadWalls();
-
-
+#ifndef FONTEDITOR
 VideoBuffer * Renderer::WallIcon(int wallID, int width, int height)
 {
+	static std::vector<wall_type> Renderer_wtypes = LoadWalls();
 	int i, j;
 	int wt = wallID;
 	if (wt<0 || wt>=(int)Renderer_wtypes.size())
@@ -682,6 +690,7 @@ VideoBuffer * Renderer::WallIcon(int wallID, int width, int height)
 	}
 	return newTexture;
 }
+#endif
 
 void Renderer::DrawBlob(int x, int y, unsigned char cr, unsigned char cg, unsigned char cb)
 {
@@ -970,6 +979,7 @@ void Renderer::DrawWalls()
 #endif
 }
 
+#ifndef FONTEDITOR
 void Renderer::DrawSigns()
 {
 	int x, y, w, h;
@@ -980,28 +990,21 @@ void Renderer::DrawSigns()
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, partsFbo);
 	glTranslated(0, MENUSIZE, 0);
 #endif
-	for (size_t i = 0; i < signs.size(); i++)
-		if (signs[i].text.length())
+	for (auto &currentSign : signs)
+	{
+		if (currentSign.text.length())
 		{
-			String::value_type type = 0;
-			String text = signs[i].getText(sim);
-			sign::splitsign(signs[i].text, &type);
-			signs[i].pos(text, x, y, w, h);
+			String text = currentSign.getDisplayText(sim, x, y, w, h);
 			clearrect(x, y, w+1, h);
 			drawrect(x, y, w+1, h, 192, 192, 192, 255);
-			if (!type)
-				drawtext(x+3, y+3, text, 255, 255, 255, 255);
-			else if(type == 'b')
-				drawtext(x+3, y+3, text, 211, 211, 40, 255);
-			else
-				drawtext(x+3, y+3, text, 0, 191, 255, 255);
+			drawtext(x+3, y+3, text, 255, 255, 255, 255);
 
-			if (signs[i].ju != sign::None)
+			if (currentSign.ju != sign::None)
 			{
-				int x = signs[i].x;
-				int y = signs[i].y;
-				int dx = 1 - signs[i].ju;
-				int dy = (signs[i].y > 18) ? -1 : 1;
+				int x = currentSign.x;
+				int y = currentSign.y;
+				int dx = 1 - currentSign.ju;
+				int dy = (currentSign.y > 18) ? -1 : 1;
 #ifdef OGLR
 				glBegin(GL_LINES);
 				glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -1018,11 +1021,13 @@ void Renderer::DrawSigns()
 #endif
 			}
 		}
+	}
 #ifdef OGLR
 	glTranslated(0, -MENUSIZE, 0);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, prevFbo);
 #endif
 }
+#endif
 
 void Renderer::render_gravlensing(pixel * source)
 {
@@ -1191,6 +1196,7 @@ void Renderer::prepare_alpha(int size, float intensity)
 #endif
 }
 
+#ifndef FONTEDITOR
 void Renderer::render_parts()
 {
 	int deca, decr, decg, decb, cola, colr, colg, colb, firea, firer, fireg, fireb, pixel_mode, q, i, t, nx, ny, x, y, caddress;
@@ -1201,7 +1207,7 @@ void Renderer::render_parts()
 	if(!sim)
 		return;
 	parts = sim->parts;
-	elements = sim->elements;
+	elements = sim->elements.data();
 #ifdef OGLR
 	float fnx, fny;
 	int cfireV = 0, cfireC = 0, cfire = 0;
@@ -1422,7 +1428,8 @@ void Renderer::render_parts()
 
 				if (findingElement)
 				{
-					if (findingElement == parts[i].type)
+					if (TYP(findingElement) == parts[i].type &&
+							(parts[i].type != PT_LIFE || (ID(findingElement) == parts[i].ctype)))
 					{
 						colr = firer = 255;
 						colg = fireg = colb = fireb = 0;
@@ -2329,6 +2336,7 @@ void Renderer::draw_other() // EMP effect
 #endif
 	}
 }
+#endif
 
 void Renderer::draw_grav()
 {
@@ -2582,74 +2590,79 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 	memset(fire_b, 0, sizeof(fire_b));
 
 	//Set defauly display modes
-	SetColourMode(COLOUR_DEFAULT);
-	AddRenderMode(RENDER_BASC);
-	AddRenderMode(RENDER_FIRE);
-	AddRenderMode(RENDER_SPRK);
+	ResetModes();
 
 	//Render mode presets. Possibly load from config in future?
-	renderModePresets = new RenderPreset[11];
-
-	renderModePresets[0].Name = "Alternative Velocity Display";
-	renderModePresets[0].RenderModes.push_back(RENDER_EFFE);
-	renderModePresets[0].RenderModes.push_back(RENDER_BASC);
-	renderModePresets[0].DisplayModes.push_back(DISPLAY_AIRC);
-
-	renderModePresets[1].Name = "Velocity Display";
-	renderModePresets[1].RenderModes.push_back(RENDER_EFFE);
-	renderModePresets[1].RenderModes.push_back(RENDER_BASC);
-	renderModePresets[1].DisplayModes.push_back(DISPLAY_AIRV);
-
-	renderModePresets[2].Name = "Pressure Display";
-	renderModePresets[2].RenderModes.push_back(RENDER_EFFE);
-	renderModePresets[2].RenderModes.push_back(RENDER_BASC);
-	renderModePresets[2].DisplayModes.push_back(DISPLAY_AIRP);
-
-	renderModePresets[3].Name = "Persistent Display";
-	renderModePresets[3].RenderModes.push_back(RENDER_EFFE);
-	renderModePresets[3].RenderModes.push_back(RENDER_BASC);
-	renderModePresets[3].DisplayModes.push_back(DISPLAY_PERS);
-
-	renderModePresets[4].Name = "Fire Display";
-	renderModePresets[4].RenderModes.push_back(RENDER_FIRE);
-	renderModePresets[4].RenderModes.push_back(RENDER_SPRK);
-	renderModePresets[4].RenderModes.push_back(RENDER_EFFE);
-	renderModePresets[4].RenderModes.push_back(RENDER_BASC);
-
-	renderModePresets[5].Name = "Blob Display";
-	renderModePresets[5].RenderModes.push_back(RENDER_FIRE);
-	renderModePresets[5].RenderModes.push_back(RENDER_SPRK);
-	renderModePresets[5].RenderModes.push_back(RENDER_EFFE);
-	renderModePresets[5].RenderModes.push_back(RENDER_BLOB);
-
-	renderModePresets[6].Name = "Heat Display";
-	renderModePresets[6].RenderModes.push_back(RENDER_BASC);
-	renderModePresets[6].DisplayModes.push_back(DISPLAY_AIRH);
-	renderModePresets[6].ColourMode = COLOUR_HEAT;
-
-	renderModePresets[7].Name = "Fancy Display";
-	renderModePresets[7].RenderModes.push_back(RENDER_FIRE);
-	renderModePresets[7].RenderModes.push_back(RENDER_SPRK);
-	renderModePresets[7].RenderModes.push_back(RENDER_GLOW);
-	renderModePresets[7].RenderModes.push_back(RENDER_BLUR);
-	renderModePresets[7].RenderModes.push_back(RENDER_EFFE);
-	renderModePresets[7].RenderModes.push_back(RENDER_BASC);
-	renderModePresets[7].DisplayModes.push_back(DISPLAY_WARP);
-
-	renderModePresets[8].Name = "Nothing Display";
-	renderModePresets[8].RenderModes.push_back(RENDER_BASC);
-
-	renderModePresets[9].Name = "Heat Gradient Display";
-	renderModePresets[9].RenderModes.push_back(RENDER_BASC);
-	renderModePresets[9].ColourMode = COLOUR_GRAD;
-
-	renderModePresets[10].Name = "Life Gradient Display";
-	renderModePresets[10].RenderModes.push_back(RENDER_BASC);
-	renderModePresets[10].ColourMode = COLOUR_LIFE;
+	renderModePresets.push_back({
+		"Alternative Velocity Display",
+		{ RENDER_EFFE, RENDER_BASC },
+		{ DISPLAY_AIRC },
+		0
+	});
+	renderModePresets.push_back({
+		"Velocity Display",
+		{ RENDER_EFFE, RENDER_BASC },
+		{ DISPLAY_AIRV },
+		0
+	});
+	renderModePresets.push_back({
+		"Pressure Display",
+		{ RENDER_EFFE, RENDER_BASC },
+		{ DISPLAY_AIRP },
+		0
+	});
+	renderModePresets.push_back({
+		"Persistent Display",
+		{ RENDER_EFFE, RENDER_BASC },
+		{ DISPLAY_PERS },
+		0
+	});
+	renderModePresets.push_back({
+		"Fire Display",
+		{ RENDER_FIRE, RENDER_SPRK, RENDER_EFFE, RENDER_BASC },
+		{ },
+		0
+	});
+	renderModePresets.push_back({
+		"Blob Display",
+		{ RENDER_FIRE, RENDER_SPRK, RENDER_EFFE, RENDER_BLOB },
+		{ },
+		0
+	});
+	renderModePresets.push_back({
+		"Heat Display",
+		{ RENDER_BASC },
+		{ DISPLAY_AIRH },
+		COLOUR_HEAT
+	});
+	renderModePresets.push_back({
+		"Fancy Display",
+		{ RENDER_FIRE, RENDER_SPRK, RENDER_GLOW, RENDER_BLUR, RENDER_EFFE, RENDER_BASC },
+		{ DISPLAY_WARP },
+		0
+	});
+	renderModePresets.push_back({
+		"Nothing Display",
+		{ RENDER_BASC },
+		{ },
+		0
+	});
+	renderModePresets.push_back({
+		"Heat Gradient Display",
+		{ RENDER_BASC },
+		{ },
+		COLOUR_GRAD
+	});
+	renderModePresets.push_back({
+		"Life Gradient Display",
+		{ RENDER_BASC },
+		{ },
+		COLOUR_LIFE
+	});
 
 	//Prepare the graphics cache
-	graphicscache = (gcache_item *)malloc(sizeof(gcache_item)*PT_NUM);
-	memset(graphicscache, 0, sizeof(gcache_item)*PT_NUM);
+	graphicscache = new gcache_item[PT_NUM];
+	std::fill(&graphicscache[0], &graphicscache[PT_NUM], gcache_item());
 
 	int fireColoursCount = 4;
 	pixel fireColours[] = {PIXPACK(0xAF9F0F), PIXPACK(0xDFBF6F), PIXPACK(0x60300F), PIXPACK(0x000000)};
@@ -2932,6 +2945,13 @@ unsigned int Renderer::GetColourMode()
 	return colour_mode;
 }
 
+void Renderer::ResetModes()
+{
+	SetRenderMode({ RENDER_BASC, RENDER_FIRE, RENDER_SPRK, RENDER_EFFE });
+	SetDisplayMode({ });
+	SetColourMode(COLOUR_DEFAULT);
+}
+
 VideoBuffer Renderer::DumpFrame()
 {
 #ifdef OGLR
@@ -2951,8 +2971,6 @@ VideoBuffer Renderer::DumpFrame()
 
 Renderer::~Renderer()
 {
-	delete[] renderModePresets;
-
 #if !defined(OGLR)
 #if defined(OGLI)
 	delete[] vid;
@@ -2960,7 +2978,7 @@ Renderer::~Renderer()
 	delete[] persistentVid;
 	delete[] warpVid;
 #endif
-	free(graphicscache);
+	delete[] graphicscache;
 	free(flm_data);
 	free(plasma_data);
 }

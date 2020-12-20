@@ -1,7 +1,7 @@
 #pragma once
+#include "Config.h"
 
 #include "gui/interface/Point.h"
-#include "common/tpt-compat.h"
 
 class DebugInfo
 {

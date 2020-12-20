@@ -1,6 +1,9 @@
-#include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_AMTR PT_AMTR 72
-Element_AMTR::Element_AMTR()
+#include "simulation/ElementCommon.h"
+
+static int update(UPDATE_FUNC_ARGS);
+static int graphics(GRAPHICS_FUNC_ARGS);
+
+void Element::Element_AMTR()
 {
 	Identifier = "DEFAULT_PT_AMTR";
 	Name = "AMTR";
@@ -26,7 +29,6 @@ Element_AMTR::Element_AMTR()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f +273.15f;
 	HeatConduct = 70;
 	Description = "Anti-Matter, destroys a majority of particles.";
 
@@ -41,12 +43,11 @@ Element_AMTR::Element_AMTR()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_AMTR::update;
-	Graphics = &Element_AMTR::graphics;
+	Update = &update;
+	Graphics = &graphics;
 }
 
-//#TPT-Directive ElementHeader Element_AMTR static int update(UPDATE_FUNC_ARGS)
-int Element_AMTR::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry, rt;
 	for (rx=-1; rx<2; rx++)
@@ -75,13 +76,9 @@ int Element_AMTR::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-
-//#TPT-Directive ElementHeader Element_AMTR static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_AMTR::graphics(GRAPHICS_FUNC_ARGS)
+static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	// don't render AMTR as a gas
 	// this function just overrides the default graphics
 	return 1;
 }
-
-Element_AMTR::~Element_AMTR() {}

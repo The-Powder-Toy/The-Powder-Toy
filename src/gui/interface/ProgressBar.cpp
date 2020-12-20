@@ -1,7 +1,10 @@
 #include "ProgressBar.h"
-#include "common/tpt-minmax.h"
+
 #include "graphics/Graphics.h"
+
 #include "gui/Style.h"
+
+#include "common/tpt-minmax.h"
 
 using namespace ui;
 

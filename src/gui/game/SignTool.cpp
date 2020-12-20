@@ -1,13 +1,16 @@
-#include <iostream>
-#include "gui/Style.h"
-#include "simulation/Simulation.h"
 #include "Tool.h"
+
+#include "simulation/Simulation.h"
+
+#include "gui/Style.h"
 #include "gui/interface/Window.h"
 #include "gui/interface/Button.h"
 #include "gui/interface/Label.h"
 #include "gui/interface/Textbox.h"
 #include "gui/interface/DropDown.h"
 #include "gui/game/GameModel.h"
+
+#include "graphics/Graphics.h"
 
 class SignWindow: public ui::Window
 {
@@ -21,81 +24,32 @@ public:
 	int signID;
 	ui::Point signPosition;
 	SignWindow(SignTool * tool_, Simulation * sim_, int signID_, ui::Point position_);
-	virtual void OnDraw();
-	virtual void DoDraw();
-	virtual void DoMouseMove(int x, int y, int dx, int dy);
-	virtual void DoMouseDown(int x, int y, unsigned button);
-	virtual void DoMouseUp(int x, int y, unsigned button) { if(!signMoving) ui::Window::DoMouseUp(x, y, button); }
-	virtual void DoMouseWheel(int x, int y, int d) { if(!signMoving) ui::Window::DoMouseWheel(x, y, d); }
-	virtual void DoKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) { if(!signMoving) ui::Window::DoKeyPress(key, scan, repeat, shift, ctrl, alt); }
-	virtual void DoKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) { if(!signMoving) ui::Window::DoKeyRelease(key, scan, repeat, shift, ctrl, alt); }
+	void OnDraw() override;
+	void DoDraw() override;
+	void DoMouseMove(int x, int y, int dx, int dy) override;
+	void DoMouseDown(int x, int y, unsigned button) override;
+	void DoMouseUp(int x, int y, unsigned button) override
+	{
+		if(!signMoving)
+			ui::Window::DoMouseUp(x, y, button);
+	}
+	void DoMouseWheel(int x, int y, int d) override
+	{
+		if(!signMoving)
+			ui::Window::DoMouseWheel(x, y, d);
+	}
+	void DoKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override
+	{
+		if(!signMoving)
+			ui::Window::DoKeyPress(key, scan, repeat, shift, ctrl, alt);
+	}
+	void DoKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override
+	{
+		if(!signMoving)
+			ui::Window::DoKeyRelease(key, scan, repeat, shift, ctrl, alt);
+	}
 	virtual ~SignWindow() {}
-	virtual void OnTryExit(ui::Window::ExitMethod method);
-	class OkayAction: public ui::ButtonAction
-	{
-	public:
-		SignWindow * prompt;
-		OkayAction(SignWindow * prompt_) { prompt = prompt_; }
-		void ActionCallback(ui::Button * sender)
-		{
-			prompt->CloseActiveWindow();
-			if(prompt->signID==-1 && prompt->textField->GetText().length())
-			{
-				prompt->sim->signs.push_back(sign(prompt->textField->GetText(), prompt->signPosition.X, prompt->signPosition.Y, (sign::Justification)prompt->justification->GetOption().second));
-			}
-			else if(prompt->signID!=-1 && prompt->textField->GetText().length())
-			{
-				prompt->sim->signs[prompt->signID] = sign(sign(prompt->textField->GetText(), prompt->signPosition.X, prompt->signPosition.Y, (sign::Justification)prompt->justification->GetOption().second));
-			}
-			prompt->SelfDestruct();
-		}
-	};
-	class DeleteAction: public ui::ButtonAction
-	{
-	public:
-		SignWindow * prompt;
-		DeleteAction(SignWindow * prompt_) { prompt = prompt_; }
-		void ActionCallback(ui::Button * sender)
-		{
-			prompt->CloseActiveWindow();
-			if(prompt->signID!=-1)
-			{
-				prompt->sim->signs.erase(prompt->sim->signs.begin()+prompt->signID);
-			}
-			prompt->SelfDestruct();
-		}
-	};
-
-	class SignTextAction: public ui::TextboxAction
-	{
-	public:
-		SignWindow * prompt;
-		SignTextAction(SignWindow * prompt_) { prompt = prompt_; }
-		virtual void TextChangedCallback(ui::Textbox * sender)
-		{
-			if(prompt->signID!=-1)
-			{
-				prompt->sim->signs[prompt->signID].text = sender->GetText();
-				prompt->sim->signs[prompt->signID].ju = (sign::Justification)prompt->justification->GetOption().second;
-			}
-		}
-	};
-
-	class MoveAction: public ui::ButtonAction
-	{
-	public:
-		SignWindow * prompt;
-		MoveAction(SignWindow * prompt_) { prompt = prompt_; }
-		void ActionCallback(ui::Button * sender)
-		{
-			if(prompt->signID!=-1)
-			{
-				prompt->movingSign = &prompt->sim->signs[prompt->signID];
-				prompt->sim->signs[prompt->signID].ju = (sign::Justification)prompt->justification->GetOption().second;
-				prompt->signMoving = true;
-			}
-		}
-	};
+	void OnTryExit(ui::Window::ExitMethod method) override;
 };
 
 SignWindow::SignWindow(SignTool * tool_, Simulation * sim_, int signID_, ui::Point position_):
@@ -117,7 +71,18 @@ SignWindow::SignWindow(SignTool * tool_, Simulation * sim_, int signID_, ui::Poi
 	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	okayButton->Appearance.BorderInactive = (ui::Colour(200, 200, 200));
-	okayButton->SetActionCallback(new OkayAction(this));
+	okayButton->SetActionCallback({ [this] {
+		CloseActiveWindow();
+		if(signID==-1 && textField->GetText().length())
+		{
+			sim->signs.push_back(sign(textField->GetText(), signPosition.X, signPosition.Y, (sign::Justification)justification->GetOption().second));
+		}
+		else if(signID!=-1 && textField->GetText().length())
+		{
+			sim->signs[signID] = sign(sign(textField->GetText(), signPosition.X, signPosition.Y, (sign::Justification)justification->GetOption().second));
+		}
+		SelfDestruct();
+	} });
 	AddComponent(okayButton);
 	SetOkayButton(okayButton);
 
@@ -126,7 +91,7 @@ SignWindow::SignWindow(SignTool * tool_, Simulation * sim_, int signID_, ui::Poi
 	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(tempLabel);
 
-	justification = new ui::DropDown(ui::Point(52, 48), ui::Point(50, 16));
+	justification = new ui::DropDown(ui::Point(52, 48), ui::Point(55, 16));
 	AddComponent(justification);
 	justification->AddOption(std::pair<String, int>(0xE020 + String(" Left"), (int)sign::Left));
 	justification->AddOption(std::pair<String, int>(0xE01E + String(" Middle"), (int)sign::Middle));
@@ -139,7 +104,13 @@ SignWindow::SignWindow(SignTool * tool_, Simulation * sim_, int signID_, ui::Poi
 	textField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	textField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	textField->SetLimit(45);
-	textField->SetActionCallback(new SignTextAction(this));
+	textField->SetActionCallback({ [this] {
+		if (signID!=-1)
+		{
+			sim->signs[signID].text = textField->GetText();
+			sim->signs[signID].ju = (sign::Justification)justification->GetOption().second;
+		}
+	} });
 	AddComponent(textField);
 	FocusComponent(textField);
 
@@ -152,13 +123,27 @@ SignWindow::SignWindow(SignTool * tool_, Simulation * sim_, int signID_, ui::Poi
 
 		ui::Point position = ui::Point(justification->Position.X+justification->Size.X+3, 48);
 		ui::Button * moveButton = new ui::Button(position, ui::Point(((Size.X-position.X-8)/2)-2, 16), "Move");
-		moveButton->SetActionCallback(new MoveAction(this));
+		moveButton->SetActionCallback({ [this] {
+			if (signID!=-1)
+			{
+				movingSign = &sim->signs[signID];
+				sim->signs[signID].ju = (sign::Justification)justification->GetOption().second;
+				signMoving = true;
+			}
+		} });
 		AddComponent(moveButton);
 
 		position = ui::Point(justification->Position.X+justification->Size.X+3, 48)+ui::Point(moveButton->Size.X+3, 0);
 		ui::Button * deleteButton = new ui::Button(position, ui::Point((Size.X-position.X-8)-1, 16), "Delete");
 		//deleteButton->SetIcon(IconDelete);
-		deleteButton->SetActionCallback(new DeleteAction(this));
+		deleteButton->SetActionCallback({ [this] {
+			CloseActiveWindow();
+			if (signID!=-1)
+			{
+				sim->signs.erase(sim->signs.begin() + signID);
+			}
+			SelfDestruct();
+		} });
 
 		signPosition.X = sim->signs[signID].x;
 		signPosition.Y = sim->signs[signID].y;
@@ -177,23 +162,15 @@ void SignWindow::OnTryExit(ui::Window::ExitMethod method)
 
 void SignWindow::DoDraw()
 {
-	for(std::vector<sign>::iterator iter = sim->signs.begin(), end = sim->signs.end(); iter != end; ++iter)
+	for (auto &currentSign : sim->signs)
 	{
-		sign & currentSign = *iter;
 		int x, y, w, h, dx, dy;
-		String::value_type type = 0;
 		Graphics * g = GetGraphics();
-		String text = currentSign.getText(sim);
-		sign::splitsign(currentSign.text, &type);
-		currentSign.pos(text, x, y, w, h);
+
+		String text = currentSign.getDisplayText(sim, x, y, w, h);
 		g->clearrect(x, y, w+1, h);
 		g->drawrect(x, y, w+1, h, 192, 192, 192, 255);
-		if (!type)
-			g->drawtext(x+3, y+3, text, 255, 255, 255, 255);
-		else if(type == 'b')
-			g->drawtext(x+3, y+3, text, 211, 211, 40, 255);
-		else
-			g->drawtext(x+3, y+3, text, 0, 191, 255, 255);
+		g->drawtext(x+3, y+3, text, 255, 255, 255, 255);
 
 		if (currentSign.ju != sign::None)
 		{
@@ -278,7 +255,7 @@ void SignTool::Click(Simulation * sim, Brush * brush, ui::Point position)
 	int signX, signY, signW, signH, signIndex = -1;
 	for (size_t i = 0; i < sim->signs.size(); i++)
 	{
-		sim->signs[i].pos(sim->signs[i].getText(sim), signX, signY, signW, signH);
+		sim->signs[i].getDisplayText(sim, signX, signY, signW, signH);
 		if (position.X > signX && position.X < signX+signW && position.Y > signY && position.Y < signY+signH)
 		{
 			signIndex = i;

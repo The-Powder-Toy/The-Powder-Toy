@@ -1,16 +1,12 @@
 #ifndef SEARCHMODEL_H
 #define SEARCHMODEL_H
+#include "Config.h"
 
 #include <vector>
 #include "common/String.h"
-#include "common/tpt-minmax.h"
-#include "common/tpt-thread.h"
-#include <cmath>
-#include "client/SaveInfo.h"
-#include "SearchView.h"
+#include <atomic>
 
-using namespace std;
-
+class SaveInfo;
 class SearchView;
 class SearchModel
 {
@@ -19,10 +15,10 @@ private:
 	ByteString currentSort;
 	String lastQuery;
 	String lastError;
-	vector<int> selected;
-	vector<SearchView*> observers;
-	vector<SaveInfo*> saveList;
-	vector<pair<ByteString, int> > tagList;
+	std::vector<int> selected;
+	std::vector<SearchView*> observers;
+	std::vector<SaveInfo*> saveList;
+	std::vector<std::pair<ByteString, int> > tagList;
 	int currentPage;
 	int resultCount;
 	int thResultCount;
@@ -40,16 +36,14 @@ private:
 	//Variables and methods for background save request
 	bool saveListLoaded;
 	bool updateSaveListWorking;
-	volatile bool updateSaveListFinished;
-	pthread_t updateSaveListThread;
-	TH_ENTRY_POINT static void * updateSaveListTHelper(void * obj);
-	void * updateSaveListT();
+	std::atomic<bool> updateSaveListFinished;
+	void updateSaveListT();
+	std::vector<SaveInfo *> *updateSaveListResult;
 
 	bool updateTagListWorking;
-	volatile bool updateTagListFinished;
-	pthread_t updateTagListThread;
-	TH_ENTRY_POINT static void * updateTagListTHelper(void * obj);
-	void * updateTagListT();
+	std::atomic<bool> updateTagListFinished;
+	void updateTagListT();
+	std::vector<std::pair<ByteString, int>> *updateTagListResult;
 public:
     SearchModel();
     virtual ~SearchModel();
@@ -58,16 +52,10 @@ public:
     bool GetShowTags();
 	void AddObserver(SearchView * observer);
 	bool UpdateSaveList(int pageNumber, String query);
-	vector<SaveInfo*> GetSaveList();
-	vector<pair<ByteString, int> > GetTagList();
+	std::vector<SaveInfo*> GetSaveList();
+	std::vector<std::pair<ByteString, int> > GetTagList();
 	String GetLastError() { return lastError; }
-	int GetPageCount()
-	{
-		if (!showOwn && !showFavourite && currentSort == "best" && lastQuery == "")
-			return std::max(1, (int)(ceil(resultCount/20.0f))+1); //add one for front page (front page saves are repeated twice)
-		else
-			return std::max(1, (int)(ceil(resultCount/20.0f)));
-	}
+	int GetPageCount();
 	int GetPageNum() { return currentPage; }
 	String GetLastQuery() { return lastQuery; }
 	void SetSort(ByteString sort) { if(!updateSaveListWorking) { currentSort = sort; } notifySortChanged(); }
@@ -79,9 +67,10 @@ public:
 	void SetLoadedSave(SaveInfo * save);
 	SaveInfo * GetLoadedSave();
 	bool GetSavesLoaded() { return saveListLoaded; }
-	vector<int> GetSelected() { return selected; }
+	std::vector<int> GetSelected() { return selected; }
 	void ClearSelected() { selected.clear(); notifySelectedChanged(); }
 	void SelectSave(int saveID);
+	void SelectAllSaves();
 	void DeselectSave(int saveID);
 	void Update();
 };

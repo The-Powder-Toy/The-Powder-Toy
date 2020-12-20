@@ -1,3 +1,7 @@
+#ifndef SIMULATIONDATA_H
+#define SIMULATIONDATA_H
+#include "Config.h"
+
 #include <vector>
 #include <array>
 
@@ -130,24 +134,17 @@
 #define REPLACE_MODE 0x1
 #define SPECIFIC_DELETE 0x2
 
-#ifndef SIMULATIONDATA_H
-#define SIMULATIONDATA_H
-
 struct part_type;
 struct part_transition;
 
 struct wall_type;
-struct gol_menu;
+struct BuiltinGOL;
 struct menu_section;
 
 class SimTool;
 class Element;
 
-std::vector<gol_menu> LoadGOLMenu();
-
-std::vector<int> LoadGOLTypes();
-
-std::vector<std::array<int, 10> > LoadGOLRules();
+extern const BuiltinGOL builtinGol[];
 
 std::vector<wall_type> LoadWalls();
 

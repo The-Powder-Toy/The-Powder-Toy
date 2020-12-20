@@ -15,6 +15,7 @@
 
 #ifndef tptmath_h
 #define tptmath_h
+#include "Config.h"
 
 // This file is used for EMP, to simulate many EMP going off at once at the end of the frame
 

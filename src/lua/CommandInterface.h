@@ -1,14 +1,17 @@
 #ifndef COMMANDINTERFACE_H_
 #define COMMANDINTERFACE_H_
+#include "Config.h"
 
 #include "common/String.h"
-#include "gui/interface/Engine.h"
-//#include "game/GameModel.h"
+#include "lua/LuaEvents.h"
 
+class Event;
 class GameModel;
 class GameController;
 class Tool;
-class CommandInterface {
+
+class CommandInterface
+{
 protected:
 	String lastError;
 	GameModel * m;
@@ -20,15 +23,11 @@ public:
 	int GetPropertyOffset(ByteString key, FormatType & format);
 	void Log(LogType type, String message);
 	//void AttachGameModel(GameModel * m);
-	virtual bool OnActiveToolChanged(int toolSelection, Tool * tool) {return true;}
-	virtual bool OnMouseMove(int x, int y, int dx, int dy) {return true;}
-	virtual bool OnMouseDown(int x, int y, unsigned button) {return true;}
-	virtual bool OnMouseUp(int x, int y, unsigned button, char type) {return true;}
-	virtual bool OnMouseWheel(int x, int y, int d) {return true;}
-	virtual bool OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) {return true;}
-	virtual bool OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) {return true;}
-	virtual bool OnMouseTick() { return true; }
+
 	virtual void OnTick() { }
+
+	virtual bool HandleEvent(LuaEvents::EventTypes eventType, Event * event) { return true; }
+
 	virtual int Command(String command);
 	virtual String FormatCommand(String command);
 	String GetLastError();

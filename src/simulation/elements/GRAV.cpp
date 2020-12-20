@@ -1,8 +1,10 @@
 #include "common/tpt-minmax.h"
-#include "simulation/Elements.h"
+#include "simulation/ElementCommon.h"
 
-//#TPT-Directive ElementClass Element_GRAV PT_GRAV 102
-Element_GRAV::Element_GRAV()
+static int update(UPDATE_FUNC_ARGS);
+static int graphics(GRAPHICS_FUNC_ARGS);
+
+void Element::Element_GRAV()
 {
 	Identifier = "DEFAULT_PT_GRAV";
 	Name = "GRAV";
@@ -28,7 +30,6 @@ Element_GRAV::Element_GRAV()
 
 	Weight = 85;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
 	Description = "Very light dust. Changes colour based on velocity.";
 
@@ -43,12 +44,11 @@ Element_GRAV::Element_GRAV()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_GRAV::update;
-	Graphics = &Element_GRAV::graphics;
+	Update = &update;
+	Graphics = &graphics;
 }
 
-//#TPT-Directive ElementHeader Element_GRAV static int update(UPDATE_FUNC_ARGS)
-int Element_GRAV::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	if (parts[i].vx*parts[i].vx + parts[i].vy*parts[i].vy >= 0.1f && RNG::Ref().chance(1, 512))
 	{
@@ -59,8 +59,7 @@ int Element_GRAV::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-//#TPT-Directive ElementHeader Element_GRAV static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_GRAV::graphics(GRAPHICS_FUNC_ARGS)
+static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	int GRAV_R, GRAV_B, GRAV_G, GRAV_R2, GRAV_B2, GRAV_G2;
 
@@ -116,6 +115,3 @@ int Element_GRAV::graphics(GRAPHICS_FUNC_ARGS)
 
 	return 0;
 }
-
-
-Element_GRAV::~Element_GRAV() {}

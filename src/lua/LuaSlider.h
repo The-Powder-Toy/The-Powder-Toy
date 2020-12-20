@@ -13,7 +13,7 @@ class LuaScriptInterface;
 class LuaSlider: public LuaComponent
 {
 	ui::Slider * slider;
-	int onValueChangedFunction;
+	LuaComponentCallback onValueChangedFunction;
 	void triggerOnValueChanged();
 	int onValueChanged(lua_State * l);
 	int steps(lua_State * l);

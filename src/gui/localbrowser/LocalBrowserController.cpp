@@ -1,14 +1,18 @@
-#include "client/Client.h"
 #include "LocalBrowserController.h"
-#include "gui/interface/Engine.h"
-#include "gui/dialogues/ConfirmPrompt.h"
-#include "tasks/TaskWindow.h"
-#include "tasks/Task.h"
 
 #include "LocalBrowserModel.h"
 #include "LocalBrowserView.h"
 
-LocalBrowserController::LocalBrowserController(ControllerCallback * callback):
+#include "client/Client.h"
+#include "gui/dialogues/ConfirmPrompt.h"
+#include "tasks/TaskWindow.h"
+#include "tasks/Task.h"
+
+#include "Controller.h"
+
+#include "common/tpt-minmax.h"
+
+LocalBrowserController::LocalBrowserController(std::function<void ()> onDone_):
 	HasDone(false)
 {
 	browserModel = new LocalBrowserModel();
@@ -16,7 +20,7 @@ LocalBrowserController::LocalBrowserController(ControllerCallback * callback):
 	browserView->AttachController(this);
 	browserModel->AddObserver(browserView);
 
-	this->callback = callback;
+	onDone = onDone_;
 
 	browserModel->UpdateSavesList(1);
 }
@@ -33,23 +37,12 @@ SaveFile * LocalBrowserController::GetSave()
 
 void LocalBrowserController::RemoveSelected()
 {
-	class RemoveSelectedConfirmation: public ConfirmDialogueCallback {
-	public:
-		LocalBrowserController * c;
-		RemoveSelectedConfirmation(LocalBrowserController * c_) {	c = c_;	}
-		virtual void ConfirmCallback(ConfirmPrompt::DialogueResult result) {
-			if (result == ConfirmPrompt::ResultOkay)
-				c->removeSelectedC();
-		}
-		virtual ~RemoveSelectedConfirmation() { }
-	};
-
 	StringBuilder desc;
 	desc << "Are you sure you want to delete " << browserModel->GetSelected().size() << " stamp";
 	if(browserModel->GetSelected().size()>1)
 		desc << "s";
 	desc << "?";
-	new ConfirmPrompt("Delete stamps", desc.Build(), new RemoveSelectedConfirmation(this));
+	new ConfirmPrompt("Delete stamps", desc.Build(), { [this] { removeSelectedC(); } });
 }
 
 void LocalBrowserController::removeSelectedC()
@@ -60,7 +53,7 @@ void LocalBrowserController::removeSelectedC()
 		LocalBrowserController * c;
 	public:
 		RemoveSavesTask(LocalBrowserController * c, std::vector<ByteString> saves_) : c(c) { saves = saves_; }
-		virtual bool doWork()
+		bool doWork() override
 		{
 			for (size_t i = 0; i < saves.size(); i++)
 			{
@@ -70,7 +63,7 @@ void LocalBrowserController::removeSelectedC()
 			}
 			return true;
 		}
-		virtual void after()
+		void after() override
 		{
 			Client::Ref().updateStamps();
 			c->RefreshSavesList();
@@ -83,19 +76,7 @@ void LocalBrowserController::removeSelectedC()
 
 void LocalBrowserController::RescanStamps()
 {
-	class RescanConfirmation: public ConfirmDialogueCallback {
-	public:
-		LocalBrowserController * c;
-		RescanConfirmation(LocalBrowserController * c_) {	c = c_;	}
-		virtual void ConfirmCallback(ConfirmPrompt::DialogueResult result) {
-			if (result == ConfirmPrompt::ResultOkay)
-				c->rescanStampsC();
-		}
-		virtual ~RescanConfirmation() { }
-	};
-
-	String desc = "Rescanning the stamps folder can find stamps added to the stamps folder or recover stamps when the stamps.def file has been lost or damaged. However, be warned that this will mess up the current sorting order";
-	new ConfirmPrompt("Rescan", desc, new RescanConfirmation(this));
+	new ConfirmPrompt("Rescan", "Rescanning the stamps folder can find stamps added to the stamps folder or recover stamps when the stamps.def file has been lost or damaged. However, be warned that this will mess up the current sorting order", { [this] { rescanStampsC(); } });
 }
 
 void LocalBrowserController::rescanStampsC()
@@ -157,15 +138,14 @@ void LocalBrowserController::SetMoveToFront(bool move)
 void LocalBrowserController::Exit()
 {
 	browserView->CloseActiveWindow();
-	if(callback)
-		callback->ControllerExit();
+	if (onDone)
+		onDone();
 	HasDone = true;
 }
 
 LocalBrowserController::~LocalBrowserController()
 {
 	browserView->CloseActiveWindow();
-	delete callback;
 	delete browserModel;
 	delete browserView;
 }

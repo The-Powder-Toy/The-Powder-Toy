@@ -1,14 +1,11 @@
 #ifndef GRAPHICS_H
 #define GRAPHICS_H
+#include "Config.h"
 
 #include "common/String.h"
-#include <cstdlib>
-#include <cstring>
-#include <vector>
 #if defined(OGLI)
 #include "OpenGLHeaders.h"
 #endif
-#include "Config.h"
 #include "common/tpt-inline.h"
 #include "Pixel.h"
 #include "Icons.h"
@@ -116,8 +113,6 @@ public:
 	static pixel *render_packed_rgb(void *image, int width, int height, int cmp_size);
 
 	//Font/text metrics
-	static int CharIndexAtPosition(String s, int positionX, int positionY);
-	static int PositionAtCharIndex(String s, int charIndex, int & positionX, int & positionY);
 	static int CharWidth(String::value_type c);
 	static int textnwidth(String s, int n);
 	static void textnpos(String s, int n, int w, int *cx, int *cy);
@@ -127,9 +122,6 @@ public:
 	static void textsize(String s, int & width, int & height);
 
 	VideoBuffer DumpFrame();
-
-	void Acquire();
-	void Release();
 
 	void blendpixel(int x, int y, int r, int g, int b, int a);
 	void addpixel(int x, int y, int r, int g, int b, int a);
@@ -158,8 +150,8 @@ public:
 	void gradientrect(int x, int y, int width, int height, int r, int g, int b, int a, int r2, int g2, int b2, int a2);
 
 	void draw_image(pixel *img, int x, int y, int w, int h, int a);
-	void draw_image(const VideoBuffer & vidBuf, int w, int h, int a);
-	void draw_image(VideoBuffer * vidBuf, int w, int h, int a);
+	void draw_image(const VideoBuffer & vidBuf, int x, int y, int a);
+	void draw_image(VideoBuffer * vidBuf, int x, int y, int a);
 	void draw_rgba_image(const unsigned char *data, int x, int y, float alpha);
 
 	Graphics();

@@ -1,8 +1,10 @@
+#include "Config.h"
 #ifdef LUACONSOLE
 
-#include <iostream>
 #include "LuaScriptInterface.h"
+
 #include "LuaLabel.h"
+
 #include "gui/interface/Label.h"
 
 const char LuaLabel::className[] = "Label";

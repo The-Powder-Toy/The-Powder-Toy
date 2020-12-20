@@ -3,17 +3,17 @@
 
 #include "common/String.h"
 #include <exception>
-using namespace std;
 
-struct PreviewModelException: public exception {
+struct PreviewModelException: public std::exception
+{
 	String message;
 public:
 	PreviewModelException(String message_): message(message_) {}
-	const char * what() const throw()
+	const char * what() const throw() override
 	{
 		return message.ToUtf8().c_str();
 	}
-	~PreviewModelException() throw() {};
+	~PreviewModelException() throw() {}
 };
 
 #endif /* PREVIEWMODELEXCEPTION_H_ */

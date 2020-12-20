@@ -1,22 +1,21 @@
 #ifndef OPTIONSCONTROLLER_H_
 #define OPTIONSCONTROLLER_H_
+#include "Config.h"
 
-#include "Controller.h"
-#include "simulation/Simulation.h"
-#include "OptionsView.h"
-#include "OptionsModel.h"
+#include <functional>
 
 class GameModel;
 class OptionsModel;
 class OptionsView;
-class OptionsController {
+class OptionsController
+{
 	GameModel * gModel;
 	OptionsView * view;
 	OptionsModel * model;
-	ControllerCallback * callback;
+	std::function<void ()> onDone;
 public:
 	bool HasExited;
-	OptionsController(GameModel * gModel_, ControllerCallback * callback_);
+	OptionsController(GameModel * gModel_, std::function<void ()> onDone = nullptr);
 	void SetHeatSimulation(bool state);
 	void SetAmbientHeatSimulation(bool state);
 	void SetNewtonianGravity(bool state);
@@ -26,10 +25,18 @@ public:
 	void SetEdgeMode(int edgeMode);
 	void SetFullscreen(bool fullscreen);
 	void SetAltFullscreen(bool altFullscreen);
+	void SetForceIntegerScaling(bool forceIntegerScaling);
 	void SetScale(int scale);
 	void SetResizable(bool resizable);
 	void SetFastQuit(bool fastquit);
+	void SetDecoSpace(int decoSpace);
 	void SetShowAvatars(bool showAvatars);
+	void SetMouseClickrequired(bool mouseClickRequired);
+	void SetIncludePressure(bool includePressure);
+	void SetPerfectCircle(bool perfectCircle);
+	void SetMomentumScroll(bool momentumScroll);
+	void SetAutoDrawLimit(bool autoDrawLimit);
+	
 	void Exit();
 	OptionsView * GetView();
 	virtual ~OptionsController();

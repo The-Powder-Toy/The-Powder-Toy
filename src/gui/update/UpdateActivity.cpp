@@ -1,13 +1,19 @@
+#include "UpdateActivity.h"
+
 #include <bzlib.h>
+
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/interface/Engine.h"
-#include "UpdateActivity.h"
-#include "tasks/Task.h"
-#include "client/HTTP.h"
-#include "client/Client.h"
-#include "Update.h"
-#include "Platform.h"
 
+#include "tasks/Task.h"
+#include "tasks/TaskWindow.h"
+
+#include "client/Client.h"
+#include "client/http/Request.h"
+
+#include "Update.h"
+#include "Config.h"
+#include "Platform.h"
 
 class UpdateDownloadTask : public Task
 {
@@ -16,37 +22,37 @@ public:
 private:
 	UpdateActivity * a;
 	ByteString updateName;
-	virtual void notifyDoneMain(){
+	void notifyDoneMain() override {
 		a->NotifyDone(this);
 	}
-	virtual void notifyErrorMain()
+	void notifyErrorMain() override
 	{
 		a->NotifyError(this);
 	}
-	virtual bool doWork()
+	bool doWork() override
 	{
 		String error;
-		void * request = http_async_req_start(NULL, (char*)updateName.c_str(), NULL, 0, 0);
+		http::Request *request = new http::Request(updateName);
+		request->Start();
 		notifyStatus("Downloading update");
 		notifyProgress(-1);
-		while(!http_async_req_status(request))
+		while(!request->CheckDone())
 		{
 			int total, done;
-			http_async_get_length(request, &total, &done);
+			request->CheckProgress(&total, &done);
 			notifyProgress((float(done)/float(total))*100.0f);
+			Platform::Millisleep(1);
 		}
 
-		char * data;
-		int dataLength, status;
-		data = http_async_req_stop(request, &status, &dataLength);
+		int status;
+		ByteString data = request->Finish(&status);
 		if (status!=200)
 		{
-			free(data);
 			error = String::Build("Server responded with Status ", status);
 			notifyError("Could not download update: " + error);
 			return false;
 		}
-		if (!data)
+		if (!data.size())
 		{
 			error = "Server responded with nothing";
 			notifyError("Server did not return any data");
@@ -58,9 +64,9 @@ private:
 
 		unsigned int uncompressedLength;
 
-		if(dataLength<16)
+		if(data.size()<16)
 		{
-			error = String::Build("Unsufficient data, got ", dataLength, " bytes");
+			error = String::Build("Unsufficient data, got ", data.size(), " bytes");
 			goto corrupt;
 		}
 		if (data[0]!=0x42 || data[1]!=0x75 || data[2]!=0x54 || data[3]!=0x54)
@@ -83,15 +89,13 @@ private:
 		}
 
 		int dstate;
-		dstate = BZ2_bzBuffToBuffDecompress((char *)res, (unsigned *)&uncompressedLength, (char *)(data+8), dataLength-8, 0, 0);
+		dstate = BZ2_bzBuffToBuffDecompress((char *)res, (unsigned *)&uncompressedLength, &data[8], data.size()-8, 0, 0);
 		if (dstate)
 		{
 			error = String::Build("Unable to decompress update: ", dstate);
 			free(res);
 			goto corrupt;
 		}
-
-		free(data);
 
 		notifyStatus("Applying update");
 		notifyProgress(-1);
@@ -110,7 +114,6 @@ private:
 
 	corrupt:
 		notifyError("Downloaded update is corrupted\n" + error);
-		free(data);
 		return false;
 	}
 };
@@ -118,9 +121,9 @@ private:
 UpdateActivity::UpdateActivity() {
 	ByteString file;
 #ifdef UPDATESERVER
-	file = ByteString::Build("http://", UPDATESERVER, Client::Ref().GetUpdateInfo().File);
+	file = ByteString::Build(SCHEME, UPDATESERVER, Client::Ref().GetUpdateInfo().File);
 #else
-	file = ByteString::Build("http://", SERVER, Client::Ref().GetUpdateInfo().File);
+	file = ByteString::Build(SCHEME, SERVER, Client::Ref().GetUpdateInfo().File);
 #endif
 	updateDownloadTask = new UpdateDownloadTask(file, this);
 	updateWindow = new TaskWindow("Downloading update...", updateDownloadTask, true);
@@ -143,27 +146,18 @@ void UpdateActivity::Exit()
 
 void UpdateActivity::NotifyError(Task * sender)
 {
-	class ErrorMessageCallback: public ConfirmDialogueCallback
-	{
-		UpdateActivity * a;
-	public:
-		ErrorMessageCallback(UpdateActivity * a_) {	a = a_;	}
-		virtual void ConfirmCallback(ConfirmPrompt::DialogueResult result) {
-			if (result == ConfirmPrompt::ResultOkay)
-			{
-#ifndef UPDATESERVER
-				Platform::OpenURI("http://powdertoy.co.uk/Download.html");
-#endif
-			}
-			a->Exit();
-		}
-		virtual ~ErrorMessageCallback() { }
-	};
 #ifdef UPDATESERVER
-	new ConfirmPrompt("Autoupdate failed", "Please go online to manually download a newer version.\nError: " + sender->GetError(), new ErrorMessageCallback(this));
+# define FIRST_LINE "Please go online to manually download a newer version.\n"
 #else
-	new ConfirmPrompt("Autoupdate failed", "Please visit the website to download a newer version.\nError: " + sender->GetError(), new ErrorMessageCallback(this));
+# define FIRST_LINE "Please visit the website to download a newer version.\n"
 #endif
+	new ConfirmPrompt("Autoupdate failed", FIRST_LINE "Error: " + sender->GetError(), { [this] {
+#ifndef UPDATESERVER
+		Platform::OpenURI(SCHEME "powdertoy.co.uk/Download.html");
+#endif
+		Exit();
+	}, [this] { Exit(); } });
+#undef FIRST_LINE
 }
 
 

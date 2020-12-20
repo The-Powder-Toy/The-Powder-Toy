@@ -1,6 +1,8 @@
-#include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_FRAY PT_FRAY 159
-Element_FRAY::Element_FRAY()
+#include "simulation/ElementCommon.h"
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_FRAY()
 {
 	Identifier = "DEFAULT_PT_FRAY";
 	Name = "FRAY";
@@ -26,7 +28,7 @@ Element_FRAY::Element_FRAY()
 
 	Weight = 100;
 
-	Temperature = 20.0f+0.0f +273.15f;
+	DefaultProperties.temp = 20.0f + 273.15f;
 	HeatConduct = 0;
 	Description = "Force Emitter. Pushes or pulls objects based on its temperature. Use like ARAY.";
 
@@ -41,11 +43,10 @@ Element_FRAY::Element_FRAY()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_FRAY::update;
+	Update = &update;
 }
 
-//#TPT-Directive ElementHeader Element_FRAY static int update(UPDATE_FUNC_ARGS)
-int Element_FRAY::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int curlen;
 	if (parts[i].tmp > 0)
@@ -69,14 +70,11 @@ int Element_FRAY::update(UPDATE_FUNC_ARGS)
 						if (!r)
 							r = sim->photons[y+nyi+nyy][x+nxi+nxx];
 						if (r && !(sim->elements[TYP(r)].Properties & TYPE_SOLID)){
-							parts[ID(r)].vx += nxi*((parts[i].temp-273.15)/10.0f);
-							parts[ID(r)].vy += nyi*((parts[i].temp-273.15)/10.0f);
+							parts[ID(r)].vx += nxi*((parts[i].temp-273.15f)/10.0f);
+							parts[ID(r)].vy += nyi*((parts[i].temp-273.15f)/10.0f);
 						}
 					}
 				}
 			}
 	return 0;
 }
-
-
-Element_FRAY::~Element_FRAY() {}

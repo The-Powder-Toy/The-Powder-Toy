@@ -1,13 +1,14 @@
 #ifndef OPTIONSMODEL_H_
 #define OPTIONSMODEL_H_
+#include "Config.h"
+
 #include <vector>
-#include "OptionsView.h"
-#include "simulation/Simulation.h"
 
 class GameModel;
 class Simulation;
 class OptionsView;
-class OptionsModel {
+class OptionsModel
+{
 	GameModel * gModel;
 	Simulation * sim;
 	std::vector<OptionsView*> observers;
@@ -39,8 +40,22 @@ public:
 	void SetFullscreen(bool fullscreen);
 	bool GetAltFullscreen();
 	void SetAltFullscreen(bool oldFullscreen);
+	bool GetForceIntegerScaling();
+	void SetForceIntegerScaling(bool forceIntegerScaling);
 	bool GetFastQuit();
 	void SetFastQuit(bool fastquit);
+	int GetDecoSpace();
+	void SetDecoSpace(int decoSpace);
+	bool GetMouseClickRequired();
+	void SetMouseClickRequired(bool mouseClickRequired);
+	bool GetIncludePressure();
+	void SetIncludePressure(bool includePressure);
+	bool GetPerfectCircle();
+	void SetPerfectCircle(bool perfectCircle);
+	bool GetMomentumScroll();
+	void SetMomentumScroll(bool momentumScroll);
+	bool GetAutoDrawLimit();
+	void SetAutoDrawLimit(bool autoDrawLimit);
 	virtual ~OptionsModel();
 };
 

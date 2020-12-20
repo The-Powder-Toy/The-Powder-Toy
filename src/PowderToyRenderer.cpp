@@ -1,4 +1,6 @@
-#if defined(RENDERER)
+#include "Config.h"
+#include "graphics/Graphics.h"
+#include "graphics/Renderer.h"
 
 #include <ctime>
 #include <iostream>
@@ -6,11 +8,8 @@
 #include <vector>
 
 #include "common/String.h"
-#include "Config.h"
 #include "Format.h"
 #include "gui/interface/Engine.h"
-#include "graphics/Graphics.h"
-#include "graphics/Renderer.h"
 
 #include "client/GameSave.h"
 #include "simulation/Simulation.h"
@@ -55,14 +54,25 @@ void writeFile(ByteString filename, std::vector<char> & fileData)
 	}
 }
 
+// * On windows, sdl2 (which gets included somewhere along the way) defines
+//   main away to some identifier which sdl2main calls. The renderer is not
+//   linked against sdl2main, so we get an undefined reference to main. This
+//   can be fixed by removing the macro.
+#ifdef main
+# undef main
+#endif
+
 int main(int argc, char *argv[])
 {
-	ui::Engine * engine;
 	ByteString outputPrefix, inputFilename;
 	std::vector<char> inputFile;
 	ByteString ppmFilename, ptiFilename, ptiSmallFilename, pngFilename, pngSmallFilename;
 	std::vector<char> ppmFile, ptiFile, ptiSmallFile, pngFile, pngSmallFile;
 
+	if (!argv[1] || !argv[2]) {
+		std::cout << "Usage: " << argv[0] << " <inputFilename> <outputPrefix>" << std::endl;
+		return 1;
+	}
 	inputFilename = argv[1];
 	outputPrefix = argv[2];
 
@@ -74,17 +84,12 @@ int main(int argc, char *argv[])
 
 	readFile(inputFilename, inputFile);
 
-	ui::Engine::Ref().g = new Graphics();
-
-	engine = &ui::Engine::Ref();
-	engine->Begin(WINDOWW, WINDOWH);
-
 	GameSave * gameSave = NULL;
 	try
 	{
 		gameSave = new GameSave(inputFile);
 	}
-	catch (ParseException e)
+	catch (ParseException &e)
 	{
 		//Render the save again later or something? I don't know
 		if (ByteString(e.what()).FromUtf8() == "Save from newer version")
@@ -92,11 +97,11 @@ int main(int argc, char *argv[])
 	}
 
 	Simulation * sim = new Simulation();
-	Renderer * ren = new Renderer(ui::Engine::Ref().g, sim);
+	Renderer * ren = new Renderer(new Graphics(), sim);
 
 	if (gameSave)
 	{
-		sim->Load(gameSave);
+		sim->Load(gameSave, true);
 
 		//Render save
 		ren->decorations_enable = true;
@@ -138,5 +143,3 @@ int main(int argc, char *argv[])
 	writeFile(pngFilename, pngFile);
 	writeFile(pngSmallFilename, pngSmallFile);
 }
-
-#endif

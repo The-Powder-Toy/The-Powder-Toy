@@ -1,6 +1,8 @@
-#include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_ANAR PT_ANAR 113
-Element_ANAR::Element_ANAR()
+#include "simulation/ElementCommon.h"
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_ANAR()
 {
 	Identifier = "DEFAULT_PT_ANAR";
 	Name = "ANAR";
@@ -15,6 +17,7 @@ Element_ANAR::Element_ANAR()
 	Loss = 0.80f;
 	Collision = 0.1f;
 	Gravity = -0.1f;
+	NewtonianGravity = -1.f;
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 1;
@@ -26,7 +29,6 @@ Element_ANAR::Element_ANAR()
 
 	Weight = 85;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 70;
 	Description = "Anti-air. Very light dust, which behaves opposite gravity.";
 
@@ -41,11 +43,10 @@ Element_ANAR::Element_ANAR()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_ANAR::update;
+	Update = &update;
 }
 
-//#TPT-Directive ElementHeader Element_ANAR static int update(UPDATE_FUNC_ARGS)
-int Element_ANAR::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry;
 
@@ -68,6 +69,3 @@ int Element_ANAR::update(UPDATE_FUNC_ARGS)
 			}
 	return 0;
 }
-
-
-Element_ANAR::~Element_ANAR() {}

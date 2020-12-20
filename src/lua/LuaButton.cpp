@@ -1,8 +1,10 @@
+#include "Config.h"
 #ifdef LUACONSOLE
 
-#include <iostream>
 #include "LuaButton.h"
+
 #include "LuaScriptInterface.h"
+
 #include "gui/interface/Button.h"
 
 const char LuaButton::className[] = "Button";
@@ -20,7 +22,7 @@ Luna<LuaButton>::RegType LuaButton::methods[] = {
 
 LuaButton::LuaButton(lua_State * l) :
 	LuaComponent(l),
-	actionFunction(0)
+	actionFunction(l)
 {
 	int posX = luaL_optinteger(l, 1, 0);
 	int posY = luaL_optinteger(l, 2, 0);
@@ -31,17 +33,7 @@ LuaButton::LuaButton(lua_State * l) :
 
 	button = new ui::Button(ui::Point(posX, posY), ui::Point(sizeX, sizeY), text, toolTip);
 	component = button;
-	class ClickAction : public ui::ButtonAction
-	{
-		LuaButton * luaButton;
-	public:
-		ClickAction(LuaButton * luaButton) : luaButton(luaButton) {}
-		void ActionCallback(ui::Button * sender)
-		{
-			luaButton->triggerAction();
-		}
-	};
-	button->SetActionCallback(new ClickAction(this));
+	button->SetActionCallback({ [this] { triggerAction(); } });
 }
 
 int LuaButton::enabled(lua_State * l)
@@ -62,17 +54,7 @@ int LuaButton::enabled(lua_State * l)
 
 int LuaButton::action(lua_State * l)
 {
-	if(lua_type(l, 1) != LUA_TNIL)
-	{
-		luaL_checktype(l, 1, LUA_TFUNCTION);
-		lua_pushvalue(l, 1);
-		actionFunction = luaL_ref(l, LUA_REGISTRYINDEX);
-	}
-	else
-	{
-		actionFunction = 0;
-	}
-	return 0;
+	return actionFunction.CheckAndAssignArg1(l);
 }
 
 int LuaButton::text(lua_State * l)
@@ -96,7 +78,7 @@ void LuaButton::triggerAction()
 	if(actionFunction)
 	{
 		lua_rawgeti(l, LUA_REGISTRYINDEX, actionFunction);
-		lua_rawgeti(l, LUA_REGISTRYINDEX, UserData);
+		lua_rawgeti(l, LUA_REGISTRYINDEX, owner_ref);
 		if (lua_pcall(l, 1, 0, 0))
 		{
 			ci->Log(CommandInterface::LogError, ByteString(lua_tostring(l, -1)).FromUtf8());

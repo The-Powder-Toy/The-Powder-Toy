@@ -1,6 +1,8 @@
-#include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_WATR PT_WATR 2
-Element_WATR::Element_WATR()
+#include "simulation/ElementCommon.h"
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_WATR()
 {
 	Identifier = "DEFAULT_PT_WATR";
 	Name = "WATR";
@@ -26,7 +28,7 @@ Element_WATR::Element_WATR()
 
 	Weight = 30;
 
-	Temperature = R_TEMP-2.0f	+273.15f;
+	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
 	HeatConduct = 29;
 	Description = "Water. Conducts electricity, freezes, and extinguishes fires.";
 
@@ -41,11 +43,10 @@ Element_WATR::Element_WATR()
 	HighTemperature = 373.0f;
 	HighTemperatureTransition = PT_WTRV;
 
-	Update = &Element_WATR::update;
+	Update = &update;
 }
 
-//#TPT-Directive ElementHeader Element_WATR static int update(UPDATE_FUNC_ARGS)
-int Element_WATR::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry;
 	for (rx=-1; rx<2; rx++)
@@ -81,8 +82,13 @@ int Element_WATR::update(UPDATE_FUNC_ARGS)
 				{
 					sim->part_change_type(i,x,y,PT_SLTW);
 				}
+				else if (TYP(r)==PT_ROCK && fabs(parts[i].vx)+fabs(parts[i].vy) >= 0.5 && RNG::Ref().chance(1, 1000)) // ROCK erosion
+				{
+					if (RNG::Ref().chance(1,3))
+						sim->part_change_type(ID(r),x+rx,y+ry,PT_SAND);
+					else
+						sim->part_change_type(ID(r),x+rx,y+ry,PT_STNE);
+				}
 			}
 	return 0;
 }
-
-Element_WATR::~Element_WATR() {}

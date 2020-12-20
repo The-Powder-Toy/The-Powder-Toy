@@ -13,7 +13,7 @@ class LuaScriptInterface;
 class LuaButton: public LuaComponent
 {
 	ui::Button * button;
-	int actionFunction;
+	LuaComponentCallback actionFunction;
 	void triggerAction();
 	int action(lua_State * l);
 	int text(lua_State * l);

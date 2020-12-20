@@ -13,7 +13,7 @@ class LuaScriptInterface;
 class LuaCheckbox: public LuaComponent
 {
 	ui::Checkbox * checkbox;
-	int actionFunction;
+	LuaComponentCallback actionFunction;
 	void triggerAction();
 	int action(lua_State * l);
 	int checked(lua_State * l);

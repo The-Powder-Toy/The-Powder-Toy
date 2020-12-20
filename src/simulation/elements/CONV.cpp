@@ -1,6 +1,8 @@
-#include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_CONV PT_CONV 85
-Element_CONV::Element_CONV()
+#include "simulation/ElementCommon.h"
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_CONV()
 {
 	Identifier = "DEFAULT_PT_CONV";
 	Name = "CONV";
@@ -26,11 +28,10 @@ Element_CONV::Element_CONV()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 251;
 	Description = "Converter. Converts everything into whatever it first touches.";
 
-	Properties = TYPE_SOLID|PROP_DRAWONCTYPE|PROP_NOCTYPEDRAW;
+	Properties = TYPE_SOLID | PROP_NOCTYPEDRAW;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
@@ -41,15 +42,15 @@ Element_CONV::Element_CONV()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_CONV::update;
+	Update = &update;
+	CtypeDraw = &Element::ctypeDrawVInCtype;
 }
 
-//#TPT-Directive ElementHeader Element_CONV static int update(UPDATE_FUNC_ARGS)
-int Element_CONV::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry;
-	int ctype = TYP(parts[i].ctype), ctypeExtra = ID(parts[i].ctype);
-	if (ctype<=0 || ctype>=PT_NUM || !sim->elements[ctype].Enabled || ctype==PT_CONV || (ctype==PT_LIFE && (ctypeExtra<0 || ctypeExtra>=NGOL)))
+	int ctype = TYP(parts[i].ctype);
+	if (ctype<=0 || ctype>=PT_NUM || !sim->elements[ctype].Enabled || ctype==PT_CONV)
 	{
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
@@ -92,6 +93,3 @@ int Element_CONV::update(UPDATE_FUNC_ARGS)
 	}
 	return 0;
 }
-
-
-Element_CONV::~Element_CONV() {}

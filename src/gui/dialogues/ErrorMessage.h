@@ -3,21 +3,23 @@
 
 #include "gui/interface/Window.h"
 
-class ErrorMessageCallback;
-class ErrorMessage: public ui::Window {
-	ErrorMessageCallback * callback;
-public:
-	ErrorMessage(String title, String message, ErrorMessageCallback * callback_ = NULL);
-	static void Blocking(String title, String message);
-	virtual void OnDraw();
-	virtual ~ErrorMessage();
-};
+#include <functional>
 
-class ErrorMessageCallback
+class ErrorMessage : public ui::Window
 {
-	public:
-		virtual void DismissCallback() {}
-		virtual ~ErrorMessageCallback() {}
+	struct DismissCallback
+	{
+		std::function<void ()> dismiss;
+	};
+
+	DismissCallback callback;
+
+public:
+	ErrorMessage(String title, String message, DismissCallback callback_ = {});
+	virtual ~ErrorMessage() = default;
+
+	static void Blocking(String title, String message);
+	void OnDraw() override;
 };
 
 #endif /* ERRORMESSAGE_H_ */

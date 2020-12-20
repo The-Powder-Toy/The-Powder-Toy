@@ -1,29 +1,29 @@
-#include <iostream>
-#include <stack>
-#include <cstdio>
+#include "gui/interface/Engine.h"
+
+#include "Window.h"
+
 #include <cmath>
+#include <cstring>
+
+#include "gui/dialogues/ConfirmPrompt.h"
+
+#include "graphics/Graphics.h"
 
 #include "Config.h"
 #include "Platform.h"
-#include "gui/interface/Window.h"
-#include "gui/interface/Engine.h"
-#include "gui/dialogues/ConfirmPrompt.h"
-#include "graphics/Graphics.h"
+#include "PowderToy.h"
 
 using namespace ui;
-using namespace std;
 
 Engine::Engine():
 	FpsLimit(60.0f),
+	drawingFrequencyLimit(0),
 	Scale(1),
 	Fullscreen(false),
 	FrameIndex(0),
 	altFullscreen(false),
 	resizable(false),
 	lastBuffer(NULL),
-	prevBuffers(stack<pixel*>()),
-	windows(stack<Window*>()),
-	mousePositions(stack<Point>()),
 	state_(NULL),
 	windowTargetPosition(0, 0),
 	break_(false),
@@ -35,7 +35,8 @@ Engine::Engine():
 	mousexp_(0),
 	mouseyp_(0),
 	maxWidth(0),
-	maxHeight(0)
+	maxHeight(0),
+	momentumScroll(false)
 {
 }
 
@@ -72,23 +73,15 @@ void Engine::UnBreak()
 
 void Engine::Exit()
 {
+	onClose();
 	running_ = false;
 }
 
 void Engine::ConfirmExit()
 {
-	class ExitConfirmation: public ConfirmDialogueCallback {
-	public:
-		ExitConfirmation() {}
-		virtual void ConfirmCallback(ConfirmPrompt::DialogueResult result) {
-			if (result == ConfirmPrompt::ResultOkay)
-			{
-				ui::Engine::Ref().Exit();
-			}
-		}
-		virtual ~ExitConfirmation() { }
-	};
-	new ConfirmPrompt("You are about to quit", "Are you sure you want to exit the game?", new ExitConfirmation());
+	new ConfirmPrompt("You are about to quit", "Are you sure you want to exit the game?", { [] {
+		ui::Engine::Ref().Exit();
+	} });
 }
 
 void Engine::ShowWindow(Window * window)
@@ -224,7 +217,6 @@ void Engine::Draw()
 {
 	if(lastBuffer && !(state_ && state_->Position.X == 0 && state_->Position.Y == 0 && state_->Size.X == width_ && state_->Size.Y == height_))
 	{
-		g->Acquire();
 		g->Clear();
 #ifndef OGLI
 		memcpy(g->vid, lastBuffer, (width_ * height_) * PIXELSIZE);
@@ -241,7 +233,6 @@ void Engine::Draw()
 		state_->DoDraw();
 
 	g->Finalise();
-	g->Release();
 	FrameIndex++;
 	FrameIndex %= 7200;
 }
@@ -287,6 +278,12 @@ void Engine::onMouseUnclick(int x, int y, unsigned button)
 		state_->DoMouseUp(x, y, button);
 }
 
+void Engine::initialMouse(int x, int y)
+{
+	mousexp_ = x;
+	mouseyp_ = y;
+}
+
 void Engine::onMouseMove(int x, int y)
 {
 	mousex_ = x;
@@ -314,4 +311,10 @@ void Engine::onClose()
 {
 	if (state_)
 		state_->DoExit();
+}
+
+void Engine::onFileDrop(ByteString filename)
+{
+	if (state_)
+		state_->DoFileDrop(filename);
 }

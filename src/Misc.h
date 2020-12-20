@@ -1,5 +1,6 @@
 #ifndef UTILS_H
 #define UTILS_H
+#include "Config.h"
 #include <cstdio>
 #include <cstdlib>
 #include <vector>
@@ -17,20 +18,6 @@ int isign(float i);
 unsigned clamp_flt(float f, float min, float max);
 
 float restrict_flt(float f, float min, float max);
-
-char *mystrdup(const char *s);
-
-struct strlist
-{
-	char *str;
-	struct strlist *next;
-};
-
-void strlist_add(struct strlist **list, char *str);
-
-int strlist_find(struct strlist **list, char *str);
-
-void strlist_free(struct strlist **list);
 
 void save_presets(int do_update);
 

@@ -1,6 +1,8 @@
 #include "Favorite.h"
+
 #include "json/json.h"
 #include "client/Client.h"
+
 #include <algorithm>
 
 Favorite::Favorite():

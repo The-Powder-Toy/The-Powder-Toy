@@ -1,5 +1,3 @@
-#include <iostream>
-#include <stdint.h>
 #include "TPTSTypes.h"
 
 AnyType::AnyType(ValueType type_, ValueValue value_):

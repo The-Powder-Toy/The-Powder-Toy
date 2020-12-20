@@ -1,13 +1,14 @@
 #ifndef CONSOLEMODEL_H_
 #define CONSOLEMODEL_H_
+#include "Config.h"
 
 #include <vector>
 #include <deque>
-#include "ConsoleView.h"
 #include "ConsoleCommand.h"
 
 class ConsoleView;
-class ConsoleModel {
+class ConsoleModel
+{
 	size_t currentCommandIndex;
 	std::vector<ConsoleView*> observers;
 	std::deque<ConsoleCommand> previousCommands;

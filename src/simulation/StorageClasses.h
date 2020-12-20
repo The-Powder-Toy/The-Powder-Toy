@@ -1,7 +1,8 @@
 #ifndef STORAGECLASSES_H_
 #define STORAGECLASSES_H_
 
-#include "Elements.h"
+#include "ElementDefs.h"
+#include "ElementClasses.h"
 
 class Renderer;
 class Simulation;

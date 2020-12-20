@@ -1,89 +1,41 @@
 #include "ServerSaveActivity.h"
+
 #include "graphics/Graphics.h"
+
 #include "gui/interface/Label.h"
 #include "gui/interface/Textbox.h"
 #include "gui/interface/Button.h"
 #include "gui/interface/Checkbox.h"
-#include "client/requestbroker/RequestBroker.h"
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/dialogues/SaveIDMessage.h"
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/dialogues/InformationMessage.h"
+
 #include "client/Client.h"
-#include "tasks/Task.h"
-#include "gui/Style.h"
+#include "client/ThumbnailRendererTask.h"
 #include "client/GameSave.h"
+
+#include "tasks/Task.h"
+
+#include "gui/Style.h"
+
 #include "images.h"
-
-class ServerSaveActivity::CancelAction: public ui::ButtonAction
-{
-	ServerSaveActivity * a;
-public:
-	CancelAction(ServerSaveActivity * a) : a(a) {}
-	virtual void ActionCallback(ui::Button * sender)
-	{
-		a->Exit();
-	}
-};
-
-class ServerSaveActivity::SaveAction: public ui::ButtonAction
-{
-	ServerSaveActivity * a;
-public:
-	SaveAction(ServerSaveActivity * a) : a(a) {}
-	virtual void ActionCallback(ui::Button * sender)
-	{
-		a->Save();
-	}
-};
-
-class ServerSaveActivity::PublishingAction: public ui::ButtonAction
-{
-	ServerSaveActivity * a;
-public:
-	PublishingAction(ServerSaveActivity * a) : a(a) {}
-	virtual void ActionCallback(ui::Button * sender)
-	{
-		a->ShowPublishingInfo();
-	}
-};
-
-class ServerSaveActivity::RulesAction: public ui::ButtonAction
-{
-	ServerSaveActivity * a;
-public:
-	RulesAction(ServerSaveActivity * a) : a(a) {}
-	virtual void ActionCallback(ui::Button * sender)
-	{
-		a->ShowRules();
-	}
-};
-
-class ServerSaveActivity::NameChangedAction: public ui::TextboxAction
-{
-public:
-	ServerSaveActivity * a;
-	NameChangedAction(ServerSaveActivity * a) : a(a) {}
-	virtual void TextChangedCallback(ui::Textbox * sender) {
-		a->CheckName(sender->GetText());
-	}
-};
 
 class SaveUploadTask: public Task
 {
 	SaveInfo save;
 
-	virtual void before()
+	void before() override
 	{
 
 	}
 
-	virtual void after()
+	void after() override
 	{
 
 	}
 
-	virtual bool doWork()
+	bool doWork() override
 	{
 		notifyProgress(-1);
 		return Client::Ref().UploadSave(save) == RequestOkay;
@@ -102,11 +54,11 @@ public:
 	}
 };
 
-ServerSaveActivity::ServerSaveActivity(SaveInfo save, ServerSaveActivity::SaveUploadedCallback * callback) :
+ServerSaveActivity::ServerSaveActivity(SaveInfo save, OnUploaded onUploaded_) :
 	WindowActivity(ui::Point(-1, -1), ui::Point(440, 200)),
-	thumbnail(NULL),
+	thumbnailRenderer(nullptr),
 	save(save),
-	callback(callback),
+	onUploaded(onUploaded_),
 	saveUploadTask(NULL)
 {
 	titleLabel = new ui::Label(ui::Point(4, 5), ui::Point((Size.X/2)-8, 16), "");
@@ -125,7 +77,7 @@ ServerSaveActivity::ServerSaveActivity(SaveInfo save, ServerSaveActivity::SaveUp
 	nameField = new ui::Textbox(ui::Point(8, 25), ui::Point((Size.X/2)-16, 16), save.GetName(), "[save name]");
 	nameField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	nameField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
-	nameField->SetActionCallback(new NameChangedAction(this));
+	nameField->SetActionCallback({ [this] { CheckName(nameField->GetText()); } });
 	AddComponent(nameField);
 	FocusComponent(nameField);
 
@@ -157,7 +109,9 @@ ServerSaveActivity::ServerSaveActivity(SaveInfo save, ServerSaveActivity::SaveUp
 	cancelButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	cancelButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	cancelButton->Appearance.BorderInactive = ui::Colour(200, 200, 200);
-	cancelButton->SetActionCallback(new CancelAction(this));
+	cancelButton->SetActionCallback({ [this] {
+		Exit();
+	} });
 	AddComponent(cancelButton);
 	SetCancelButton(cancelButton);
 
@@ -165,7 +119,9 @@ ServerSaveActivity::ServerSaveActivity(SaveInfo save, ServerSaveActivity::SaveUp
 	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	okayButton->Appearance.TextInactive = style::Colour::InformationTitle;
-	okayButton->SetActionCallback(new SaveAction(this));
+	okayButton->SetActionCallback({ [this] {
+		Save();
+	} });
 	AddComponent(okayButton);
 	SetOkayButton(okayButton);
 
@@ -173,25 +129,32 @@ ServerSaveActivity::ServerSaveActivity(SaveInfo save, ServerSaveActivity::SaveUp
 	PublishingInfoButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	PublishingInfoButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	PublishingInfoButton->Appearance.TextInactive = style::Colour::InformationTitle;
-	PublishingInfoButton->SetActionCallback(new PublishingAction(this));
+	PublishingInfoButton->SetActionCallback({ [this] {
+		ShowPublishingInfo();
+	} });
 	AddComponent(PublishingInfoButton);
 
 	ui::Button * RulesButton = new ui::Button(ui::Point((Size.X*3/4)-75, Size.Y-22), ui::Point(150, 16), "Save Uploading Rules");
 	RulesButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	RulesButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	RulesButton->Appearance.TextInactive = style::Colour::InformationTitle;
-	RulesButton->SetActionCallback(new RulesAction(this));
+	RulesButton->SetActionCallback({ [this] {
+		ShowRules();
+	} });
 	AddComponent(RulesButton);
 
-	if(save.GetGameSave())
-		RequestBroker::Ref().RenderThumbnail(save.GetGameSave(), false, true, (Size.X/2)-16, -1, this);
+	if (save.GetGameSave())
+	{
+		thumbnailRenderer = new ThumbnailRendererTask(save.GetGameSave(), (Size.X/2)-16, -1, false, false, true);
+		thumbnailRenderer->Start();
+	}
 }
 
-ServerSaveActivity::ServerSaveActivity(SaveInfo save, bool saveNow, ServerSaveActivity::SaveUploadedCallback * callback) :
+ServerSaveActivity::ServerSaveActivity(SaveInfo save, bool saveNow, OnUploaded onUploaded_) :
 	WindowActivity(ui::Point(-1, -1), ui::Point(200, 50)),
-	thumbnail(NULL),
+	thumbnailRenderer(nullptr),
 	save(save),
-	callback(callback),
+	onUploaded(onUploaded_),
 	saveUploadTask(NULL)
 {
 	ui::Label * titleLabel = new ui::Label(ui::Point(0, 0), Size, "Saving to server...");
@@ -216,9 +179,9 @@ void ServerSaveActivity::NotifyDone(Task * task)
 	}
 	else
 	{
-		if(callback)
+		if (onUploaded)
 		{
-			callback->SaveUploaded(save);
+			onUploaded(save);
 		}
 		Exit();
 	}
@@ -226,25 +189,14 @@ void ServerSaveActivity::NotifyDone(Task * task)
 
 void ServerSaveActivity::Save()
 {
-	class PublishConfirmation: public ConfirmDialogueCallback {
-	public:
-		ServerSaveActivity * a;
-		PublishConfirmation(ServerSaveActivity * a) : a(a) {}
-		virtual void ConfirmCallback(ConfirmPrompt::DialogueResult result) {
-			if (result == ConfirmPrompt::ResultOkay)
-			{
-				a->Exit();
-				a->saveUpload();
-			}
-		}
-		virtual ~PublishConfirmation() { }
-	};
-
 	if(nameField->GetText().length())
 	{
 		if(Client::Ref().GetAuthUser().Username != save.GetUserName() && publishedCheckbox->GetChecked())
 		{
-			new ConfirmPrompt("Publish", "This save was created by " + save.GetUserName().FromUtf8() + ", you're about to publish this under your own name; If you haven't been given permission by the author to do so, please uncheck the publish box, otherwise continue", new PublishConfirmation(this));
+			new ConfirmPrompt("Publish", "This save was created by " + save.GetUserName().FromUtf8() + ", you're about to publish this under your own name; If you haven't been given permission by the author to do so, please uncheck the publish box, otherwise continue", { [this] {
+				Exit();
+				saveUpload();
+			} });
 		}
 		else
 		{
@@ -286,10 +238,10 @@ void ServerSaveActivity::saveUpload()
 	{
 		new ErrorMessage("Error", "Upload failed with error:\n"+Client::Ref().GetLastError());
 	}
-	else if(callback)
+	else if (onUploaded)
 	{
 		new SaveIDMessage(save.GetID());
-		callback->SaveUploaded(save);
+		onUploaded(save);
 	}
 }
 
@@ -401,6 +353,16 @@ void ServerSaveActivity::CheckName(String newname)
 
 void ServerSaveActivity::OnTick(float dt)
 {
+	if (thumbnailRenderer)
+	{
+		thumbnailRenderer->Poll();
+		if (thumbnailRenderer->GetDone())
+		{
+			thumbnail = thumbnailRenderer->Finish();
+			thumbnailRenderer = nullptr;
+		}
+	}
+
 	if(saveUploadTask)
 		saveUploadTask->Poll();
 }
@@ -417,21 +379,16 @@ void ServerSaveActivity::OnDraw()
 
 	if(thumbnail)
 	{
-		g->draw_image(thumbnail, Position.X+(Size.X/2)+((Size.X/2)-thumbnail->Width)/2, Position.Y+25, 255);
+		g->draw_image(thumbnail.get(), Position.X+(Size.X/2)+((Size.X/2)-thumbnail->Width)/2, Position.Y+25, 255);
 		g->drawrect(Position.X+(Size.X/2)+((Size.X/2)-thumbnail->Width)/2, Position.Y+25, thumbnail->Width, thumbnail->Height, 180, 180, 180, 255);
 	}
 }
 
-void ServerSaveActivity::OnResponseReady(void * imagePtr, int identifier)
-{
-	delete thumbnail;
-	thumbnail = (VideoBuffer *)imagePtr;
-}
-
 ServerSaveActivity::~ServerSaveActivity()
 {
-	RequestBroker::Ref().DetachRequestListener(this);
+	if (thumbnailRenderer)
+	{
+		thumbnailRenderer->Abandon();
+	}
 	delete saveUploadTask;
-	delete callback;
-	delete thumbnail;
 }

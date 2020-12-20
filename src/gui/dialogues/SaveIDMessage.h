@@ -3,12 +3,14 @@
 
 #include "gui/interface/Window.h"
 
-class SaveIDMessage: public ui::Window {
+class SaveIDMessage : public ui::Window
+{
 public:
 	SaveIDMessage(int id);
-	virtual void OnDraw();
-	virtual void OnTryExit(ExitMethod method);
-	virtual ~SaveIDMessage();
+	virtual ~SaveIDMessage() = default;
+
+	void OnDraw() override;
+	void OnTryExit(ExitMethod method) override;
 };
 
 #endif /* SAVEIDMESSAGE_H */

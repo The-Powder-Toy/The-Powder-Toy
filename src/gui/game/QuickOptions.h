@@ -1,111 +1,52 @@
 #include "QuickOption.h"
-#include "GameModel.h"
+
+class GameController;
 
 class SandEffectOption: public QuickOption
 {
 public:
-	SandEffectOption(GameModel * m):
-	QuickOption("P", "Sand effect", m, Toggle)
-	{
-
-	}
-	virtual bool GetToggle()
-	{
-		return m->GetSimulation()->pretty_powder;
-	}
-	virtual void perform()
-	{
-		m->GetSimulation()->pretty_powder = !m->GetSimulation()->pretty_powder;
-	}
+	SandEffectOption(GameModel * m);
+	bool GetToggle() override;
+	void perform() override;
 };
 
 class DrawGravOption: public QuickOption
 {
 public:
-	DrawGravOption(GameModel * m):
-	QuickOption("G", "Draw gravity field \bg(ctrl+g)", m, Toggle)
-	{
-
-	}
-	virtual bool GetToggle()
-	{
-		return m->GetGravityGrid();
-	}
-	virtual void perform()
-	{
-		m->ShowGravityGrid(!m->GetGravityGrid());
-	}
+	DrawGravOption(GameModel * m);
+	bool GetToggle() override;
+	void perform() override;
 };
 
 class DecorationsOption: public QuickOption
 {
 public:
-	DecorationsOption(GameModel * m):
-	QuickOption("D", "Draw decorations \bg(ctrl+b)", m, Toggle)
-	{
-
-	}
-	virtual bool GetToggle()
-	{
-		return m->GetDecoration();
-	}
-	virtual void perform()
-	{
-		m->SetDecoration(!m->GetDecoration());
-	}
+	DecorationsOption(GameModel * m);
+	bool GetToggle() override;
+	void perform() override;
 };
 
 class NGravityOption: public QuickOption
 {
 public:
-	NGravityOption(GameModel * m):
-	QuickOption("N", "Newtonian Gravity \bg(n)", m, Toggle)
-	{
-
-	}
-	virtual bool GetToggle()
-	{
-		return m->GetNewtonianGrvity();
-	}
-	virtual void perform()
-	{
-		m->SetNewtonianGravity(!m->GetNewtonianGrvity());
-	}
+	NGravityOption(GameModel * m);
+	bool GetToggle() override;
+	void perform() override;
 };
 
 class AHeatOption: public QuickOption
 {
 public:
-	AHeatOption(GameModel * m):
-	QuickOption("A", "Ambient heat \bg(u)", m, Toggle)
-	{
-
-	}
-	virtual bool GetToggle()
-	{
-		return m->GetAHeatEnable();
-	}
-	virtual void perform()
-	{
-		m->SetAHeatEnable(!m->GetAHeatEnable());
-	}
+	AHeatOption(GameModel * m);
+	bool GetToggle() override;
+	void perform() override;
 };
 
 class ConsoleShowOption: public QuickOption
 {
 	GameController * c;
 public:
-	ConsoleShowOption(GameModel * m, GameController * c_):
-	QuickOption("C", "Show Console \bg(~)", m, Toggle)
-	{
-		c = c_;
-	}
-	virtual bool GetToggle()
-	{
-		return 0;
-	}
-	virtual void perform()
-	{
-		c->ShowConsole();
-	}
+	ConsoleShowOption(GameModel * m, GameController * c_);
+	bool GetToggle() override;
+	void perform() override;
 };

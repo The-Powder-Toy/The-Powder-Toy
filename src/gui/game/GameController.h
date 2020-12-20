@@ -1,30 +1,37 @@
 #ifndef GAMECONTROLLER_H
 #define GAMECONTROLLER_H
+#include "Config.h"
 
-#include <queue>
-#include "GameView.h"
-#include "GameModel.h"
-#include "simulation/Simulation.h"
-#include "gui/interface/Point.h"
-#include "gui/search/SearchController.h"
-#include "gui/render/RenderController.h"
-#include "gui/preview/PreviewController.h"
-#include "gui/login/LoginController.h"
-#include "gui/tags/TagsController.h"
-#include "gui/console/ConsoleController.h"
-#include "gui/localbrowser/LocalBrowserController.h"
-#include "gui/options/OptionsController.h"
+#include <vector>
+#include <utility>
+
 #include "client/ClientListener.h"
-#include "RenderPreset.h"
-#include "Menu.h"
 
-using namespace std;
+#include "gui/interface/Point.h"
+#include "gui/interface/Colour.h"
+
+#include "simulation/Sign.h"
+#include "simulation/Particle.h"
+
+#include "Misc.h"
 
 class DebugInfo;
+class SaveFile;
 class Notification;
 class GameModel;
 class GameView;
+class OptionsController;
+class LocalBrowserController;
+class SearchController;
+class PreviewController;
+class RenderController;
 class CommandInterface;
+class Tool;
+class Menu;
+class SaveInfo;
+class GameSave;
+class LoginController;
+class TagsController;
 class ConsoleController;
 class GameController: public ClientListener
 {
@@ -43,31 +50,28 @@ private:
 	LocalBrowserController * localBrowser;
 	OptionsController * options;
 	CommandInterface * commandInterface;
-	vector<DebugInfo*> debugInfo;
+	std::vector<DebugInfo*> debugInfo;
 	unsigned int debugFlags;
+	
+	void OpenSaveDone();
 public:
 	bool HasDone;
-	class SearchCallback;
-	class SSaveCallback;
-	class TagsCallback;
-	class StampsCallback;
-	class OptionsCallback;
-	class SaveOpenCallback;
-	friend class SaveOpenCallback;
 	GameController();
 	~GameController();
 	GameView * GetView();
 	int GetSignAt(int x, int y);
 	String GetSignText(int signID);
+	std::pair<int, sign::Type> GetSignSplit(int signID);
 
 	bool MouseMove(int x, int y, int dx, int dy);
 	bool MouseDown(int x, int y, unsigned button);
 	bool MouseUp(int x, int y, unsigned button, char type);
 	bool MouseWheel(int x, int y, int d);
+	bool TextInput(String text);
 	bool KeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
 	bool KeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
-	bool MouseTick();
 	void Tick();
+	void Blur();
 	void Exit();
 
 	void Install();
@@ -89,9 +93,9 @@ public:
 	void DrawRect(int toolSelection, ui::Point point1, ui::Point point2);
 	void DrawLine(int toolSelection, ui::Point point1, ui::Point point2);
 	void DrawFill(int toolSelection, ui::Point point);
-	ByteString StampRegion(ui::Point point1, ui::Point point2, bool includePressure);
-	void CopyRegion(ui::Point point1, ui::Point point2, bool includePressure);
-	void CutRegion(ui::Point point1, ui::Point point2, bool includePressure);
+	ByteString StampRegion(ui::Point point1, ui::Point point2);
+	void CopyRegion(ui::Point point1, ui::Point point2);
+	void CutRegion(ui::Point point1, ui::Point point2);
 	void Update();
 	void SetPaused(bool pauseState);
 	void SetPaused();
@@ -113,7 +117,6 @@ public:
 	void SetLastTool(Tool * tool);
 	int GetReplaceModeFlags();
 	void SetReplaceModeFlags(int flags);
-	void ActiveToolChanged(int toolSelection, Tool *tool);
 	void SetActiveColourPreset(int preset);
 	void SetColour(ui::Colour colour);
 	void SetToolStrength(float value);
@@ -134,7 +137,7 @@ public:
 	void OpenStamps();
 	void OpenElementSearch();
 	void OpenColourPicker();
-	void PlaceSave(ui::Point position, bool includePressure);
+	void PlaceSave(ui::Point position);
 	void ClearSim();
 	void ReloadSim();
 	void Vote(int direction);
@@ -147,7 +150,8 @@ public:
 	bool MouseInZoom(ui::Point position);
 	ui::Point PointTranslate(ui::Point point);
 	ui::Point NormaliseBlockCoord(ui::Point point);
-	ByteString ElementResolve(int type, int ctype);
+	String ElementResolve(int type, int ctype);
+	String BasicParticleInfo(Particle const &sample_part);
 	bool IsValidElement(int type);
 	String WallName(int type);
 	int Record(bool record);
@@ -158,6 +162,7 @@ public:
 	void SwitchAir();
 	void ToggleAHeat();
 	bool GetAHeatEnable();
+	void ResetAHeat();
 	void ToggleNewtonianGravity();
 
 	bool LoadClipboard();
@@ -165,10 +170,13 @@ public:
 
 	void RemoveNotification(Notification * notification);
 
-	virtual void NotifyUpdateAvailable(Client * sender);
-	virtual void NotifyAuthUserChanged(Client * sender);
-	virtual void NotifyNewNotification(Client * sender, std::pair<String, ByteString> notification);
+	void NotifyUpdateAvailable(Client * sender) override;
+	void NotifyAuthUserChanged(Client * sender) override;
+	void NotifyNewNotification(Client * sender, std::pair<String, ByteString> notification) override;
 	void RunUpdater();
+	bool GetMouseClickRequired();
+
+	void RemoveCustomGOLType(const ByteString &identifier);
 };
 
 #endif // GAMECONTROLLER_H

@@ -1,27 +1,21 @@
-#include <algorithm>
-#include "common/String.h"
 #include "ElementSearchActivity.h"
+
+#include <set>
+#include <map>
+#include <algorithm>
+
 #include "gui/interface/Textbox.h"
 #include "gui/interface/Label.h"
 #include "gui/interface/Keys.h"
 #include "gui/game/Tool.h"
+#include "gui/game/Menu.h"
 #include "gui/Style.h"
 #include "gui/game/Favorite.h"
 #include "gui/game/GameController.h"
+#include "gui/game/ToolButton.h"
+#include "gui/game/Favorite.h"
 
-class ElementSearchActivity::ToolAction: public ui::ButtonAction
-{
-	ElementSearchActivity * a;
-public:
-	Tool * tool;
-	ToolAction(ElementSearchActivity * a, Tool * tool) : a(a), tool(tool) {  }
-	void ActionCallback(ui::Button * sender_)
-	{
-		ToolButton *sender = (ToolButton*)sender_;
-		if(sender->GetSelectionState() >= 0 && sender->GetSelectionState() <= 2)
-			a->SetActiveTool(sender->GetSelectionState(), tool);
-	}
-};
+#include "graphics/Graphics.h"
 
 ElementSearchActivity::ElementSearchActivity(GameController * gameController, std::vector<Tool*> tools) :
 	WindowActivity(ui::Point(-1, -1), ui::Point(236, 302)),
@@ -41,50 +35,19 @@ ElementSearchActivity::ElementSearchActivity(GameController * gameController, st
 	title->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	AddComponent(title);
 
-	class SearchAction : public ui::TextboxAction
-	{
-	private:
-		ElementSearchActivity * a;
-	public:
-		SearchAction(ElementSearchActivity * a) : a(a) {}
-		virtual void TextChangedCallback(ui::Textbox * sender) {
-			a->searchTools(sender->GetText());
-		}
-	};
-
 	searchField = new ui::Textbox(ui::Point(8, 23), ui::Point(Size.X-16, 17), "");
-	searchField->SetActionCallback(new SearchAction(this));
+	searchField->SetActionCallback({ [this] { searchTools(searchField->GetText()); } });
 	searchField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	AddComponent(searchField);
 	FocusComponent(searchField);
 
-	class CloseAction: public ui::ButtonAction
-		{
-			ElementSearchActivity * a;
-		public:
-			CloseAction(ElementSearchActivity * a) : a(a) {  }
-			void ActionCallback(ui::Button * sender_)
-			{
-				a->exit = true;
-			}
-		};
-
-	class OKAction: public ui::ButtonAction
-		{
-			ElementSearchActivity * a;
-		public:
-			OKAction(ElementSearchActivity * a) : a(a) {  }
-			void ActionCallback(ui::Button * sender_)
-			{
-				if(a->GetFirstResult())
-					a->SetActiveTool(0, a->GetFirstResult());
-			}
-		};
-
 	ui::Button * closeButton = new ui::Button(ui::Point(0, Size.Y-15), ui::Point((Size.X/2)+1, 15), "Close");
-	closeButton->SetActionCallback(new CloseAction(this));
+	closeButton->SetActionCallback({ [this] { exit = true; } });
 	ui::Button * okButton = new ui::Button(ui::Point(Size.X/2, Size.Y-15), ui::Point(Size.X/2, 15), "OK");
-	okButton->SetActionCallback(new OKAction(this));
+	okButton->SetActionCallback({ [this] {
+		if (GetFirstResult())
+			SetActiveTool(0, GetFirstResult());
+	} });
 
 	AddComponent(okButton);
 	AddComponent(closeButton);
@@ -95,38 +58,93 @@ ElementSearchActivity::ElementSearchActivity(GameController * gameController, st
 void ElementSearchActivity::searchTools(String query)
 {
 	firstResult = NULL;
-	for(std::vector<ToolButton*>::iterator iter = toolButtons.begin(), end = toolButtons.end(); iter != end; ++iter) {
-		delete *iter;
-		RemoveComponent(*iter);
+	for (auto &toolButton : toolButtons) {
+		RemoveComponent(toolButton);
+		delete toolButton;
 	}
 	toolButtons.clear();
 
 	ui::Point viewPosition = searchField->Position + ui::Point(2+0, searchField->Size.Y+2+8);
 	ui::Point current = ui::Point(0, 0);
 
-	ByteString queryLower = query.ToUtf8().ToLower();
+	String queryLower = query.ToLower();
 
-	std::vector<Tool *> matches;
-	std::vector<Tool *> frontmatches;
-	std::vector<Tool *> exactmatches;
-
-	for(std::vector<Tool*>::const_iterator iter = tools.begin(), end = tools.end(); iter != end; ++iter)
+	struct Match
 	{
-		ByteString nameLower = (*iter)->GetName().ToLower();
-		if(nameLower == queryLower)
-			exactmatches.push_back(*iter);
-		else if(nameLower.BeginsWith(queryLower))
-			frontmatches.push_back(*iter);
-		else if(nameLower.Contains(queryLower))
-			matches.push_back(*iter);
+		int favouritePriority; // relevant by whether the tool is favourited
+		int toolIndex; // relevance by position of tool in tools vector
+		int haystackOrigin; // relevance by origin of haystack
+		int needlePosition; // relevance by position of needle in haystack
+
+		bool operator <(Match const &other) const
+		{
+			return std::tie(favouritePriority, haystackOrigin, needlePosition, toolIndex) < std::tie(other.favouritePriority, other.haystackOrigin, other.needlePosition, other.toolIndex);
+		}
+	};
+
+	std::set<ByteString> favs;
+	for (auto fav : Favorite::Ref().GetFavoritesList())
+	{
+		favs.insert(fav);
 	}
 
-	matches.insert(matches.begin(), frontmatches.begin(), frontmatches.end());
-	matches.insert(matches.begin(), exactmatches.begin(), exactmatches.end());
+	std::map<int, Match> indexToMatch;
+	auto push = [ &indexToMatch ](Match match) {
+		auto it = indexToMatch.find(match.toolIndex);
+		if (it == indexToMatch.end())
+		{
+			indexToMatch.insert(std::make_pair(match.toolIndex, match));
+		}
+		else if (match < it->second)
+		{
+			it->second = match;
+		}
+	};
 
-	for(std::vector<Tool*>::const_iterator iter = matches.begin(), end = matches.end(); iter != end; ++iter)
+	auto pushIfMatches = [ &queryLower, &push ](String infoLower, int toolIndex, int favouritePriority, int haystackRelevance) {
+		if (infoLower == queryLower)
+		{
+			push(Match{ favouritePriority, toolIndex, haystackRelevance, 0 });
+		}
+		if (infoLower.BeginsWith(queryLower))
+		{
+			push(Match{ favouritePriority, toolIndex, haystackRelevance, 1 });
+		}
+		if (infoLower.Contains(queryLower))
+		{
+			push(Match{ favouritePriority, toolIndex, haystackRelevance, 2 });
+		}
+	};
+
+	std::map<Tool *, String> menudescriptionLower;
+	for (auto *menu : gameController->GetMenuList())
 	{
-		Tool * tool = *iter;
+		for (auto *tool : menu->GetToolList())
+		{
+			menudescriptionLower.insert(std::make_pair(tool, menu->GetDescription().ToLower()));
+		}
+	}
+
+	for (int toolIndex = 0; toolIndex < (int)tools.size(); ++toolIndex)
+	{
+		int favouritePriority = favs.find(tools[toolIndex]->GetIdentifier()) != favs.end() ? 0 : 1;
+		pushIfMatches(tools[toolIndex]->GetName().ToLower(), toolIndex, favouritePriority, 0);
+		pushIfMatches(tools[toolIndex]->GetDescription().ToLower(), toolIndex, favouritePriority, 1);
+		auto it = menudescriptionLower.find(tools[toolIndex]);
+		if (it != menudescriptionLower.end())
+		{
+			pushIfMatches(it->second, toolIndex, favouritePriority, 2);
+		}
+	}
+
+	std::vector<Match> matches;
+	std::transform(indexToMatch.begin(), indexToMatch.end(), std::back_inserter(matches), [](decltype(indexToMatch)::value_type const &pair) {
+		return pair.second;
+	});
+	std::sort(matches.begin(), matches.end());
+	for (auto &match : matches)
+	{
+		Tool *tool = tools[match.toolIndex];
 
 		if(!firstResult)
 			firstResult = tool;
@@ -141,7 +159,10 @@ void ElementSearchActivity::searchTools(String query)
 
 		tempButton->Appearance.SetTexture(tempTexture);
 		tempButton->Appearance.BackgroundInactive = ui::Colour(tool->colRed, tool->colGreen, tool->colBlue);
-		tempButton->SetActionCallback(new ToolAction(this, tool));
+		tempButton->SetActionCallback({ [this, tempButton, tool] {
+			if (tempButton->GetSelectionState() >= 0 && tempButton->GetSelectionState() <= 2)
+				SetActiveTool(tempButton->GetSelectionState(), tool);
+		} });
 
 		if(gameController->GetActiveTool(0) == tool)
 		{

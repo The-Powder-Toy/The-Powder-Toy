@@ -1,10 +1,11 @@
-#include <iostream>
 #include "Window.h"
+
 #include "Engine.h"
 #include "Keys.h"
 #include "Component.h"
-#include "gui/interface/Point.h"
 #include "gui/interface/Button.h"
+
+#include "graphics/Graphics.h"
 
 using namespace ui;
 
@@ -80,6 +81,7 @@ void Window::RemoveComponent(Component* c)
 			Components.erase(Components.begin() + i);
 
 			// we're done
+			c->SetParentWindow(NULL);
 			return;
 		}
 	}
@@ -158,6 +160,11 @@ void Window::DoBlur()
 void Window::DoFocus()
 {
 	OnFocus();
+}
+
+void Window::DoFileDrop(ByteString filename)
+{
+	OnFileDrop(filename);
 }
 
 void Window::DoDraw()

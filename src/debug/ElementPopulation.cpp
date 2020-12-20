@@ -1,7 +1,10 @@
 #include "ElementPopulation.h"
+
 #include "gui/interface/Engine.h"
+
 #include "simulation/Simulation.h"
-#include "Format.h"
+
+#include "graphics/Graphics.h"
 
 ElementPopulationDebug::ElementPopulationDebug(unsigned int id, Simulation * sim):
 	DebugInfo(id),

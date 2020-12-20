@@ -1,6 +1,8 @@
-#include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_FRZZ PT_FRZZ 100
-Element_FRZZ::Element_FRZZ()
+#include "simulation/ElementCommon.h"
+
+static int update(UPDATE_FUNC_ARGS);
+
+void Element::Element_FRZZ()
 {
 	Identifier = "DEFAULT_PT_FRZZ";
 	Name = "FRZZ";
@@ -26,7 +28,7 @@ Element_FRZZ::Element_FRZZ()
 
 	Weight = 50;
 
-	Temperature = 253.15f;
+	DefaultProperties.temp = 253.15f;
 	HeatConduct = 46;
 	Description = "Freeze powder. When melted, forms ice that always cools. Spreads with regular water.";
 
@@ -41,11 +43,10 @@ Element_FRZZ::Element_FRZZ()
 	HighTemperature = 273.15;
 	HighTemperatureTransition = PT_FRZW;
 
-	Update = &Element_FRZZ::update;
+	Update = &update;
 }
 
-//#TPT-Directive ElementHeader Element_FRZZ static int update(UPDATE_FUNC_ARGS)
-int Element_FRZZ::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry;
 	for (rx=-1; rx<2; rx++)
@@ -65,6 +66,3 @@ int Element_FRZZ::update(UPDATE_FUNC_ARGS)
 			}
 	return 0;
 }
-
-
-Element_FRZZ::~Element_FRZZ() {}

@@ -1,0 +1,83 @@
+name: build
+
+on:
+  push:
+    branches:
+      - '*'
+    tags:
+      - 'v*.*'
+      - 'snapshot-*'
+  pull_request:
+    branches:
+      - '*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+      - id: get_type
+        run: python ./.github/get-type.py ${{ github.ref }}
+      - id: create_release
+        if: steps.get_type.outputs.TYPE != 'dev'
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ steps.get_type.outputs.NAME }}
+          draft: true
+          prerelease: false
+      - run: echo "${{ steps.create_release.outputs.upload_url }}" > release_url.txt
+      - uses: actions/upload-artifact@v1
+        with:
+          name: release_url
+          path: release_url.txt
+  build:
+    runs-on: ${{ matrix.os }}
+    needs: [release]
+    strategy:
+      matrix:
+        platform_short: [lin, mac, win]
+        static_dynamic: [static, dynamic]
+        include:
+          - platform_short: lin
+            os: ubuntu-latest
+          - platform_short: mac
+            os: macos-latest
+          - platform_short: win
+            os: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+      - id: get_type
+        run: python ./.github/get-type.py ${{ github.ref }}
+      - uses: actions/download-artifact@v1
+        with:
+          name: release_url
+      - id: get_release_info
+        if: steps.get_type.outputs.TYPE != 'dev'
+        run: bash -c "./.github/get-release-info.sh" ## gg github, this is terrible
+      - if: matrix.platform_short == 'mac'
+        run: brew install pkg-config
+      - if: matrix.platform_short == 'mac' && matrix.static_dynamic != 'static'
+        run: brew install luajit curl fftw zlib sdl2
+      - if: matrix.platform_short == 'lin' && matrix.static_dynamic != 'static'
+        run: sudo apt update && sudo apt install libluajit-5.1-dev libcurl4-openssl-dev libfftw3-dev zlib1g-dev libsdl2-dev
+      - run: python -m pip install meson ninja
+      - run: bash -c 'PLATFORM_SHORT=${{ matrix.platform_short }} STATIC_DYNAMIC=${{ matrix.static_dynamic }} RELTYPECFG=${{ steps.get_type.outputs.RELTYPECFG }}  ./.github/build.sh'
+      - uses: actions/upload-release-asset@v1
+        if: steps.get_type.outputs.TYPE != 'dev' && matrix.static_dynamic == 'static'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get_release_info.outputs.upload_url }}
+          asset_path: powder.zip
+          asset_name: powder-${{ steps.get_type.outputs.NAME }}-${{ matrix.platform_short }}64.zip
+          asset_content_type: application/zip
+      - uses: actions/upload-artifact@v2
+        if: steps.get_type.outputs.TYPE == 'dev' && matrix.static_dynamic == 'static'
+        with:
+          path: powder.zip
+          name: powder-${{ steps.get_type.outputs.NAME }}-${{ matrix.static_dynamic }}-${{ matrix.platform_short }}64.zip

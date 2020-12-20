@@ -1,6 +1,9 @@
-#include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_EMBR PT_EMBR 147
-Element_EMBR::Element_EMBR()
+#include "simulation/ElementCommon.h"
+
+static int update(UPDATE_FUNC_ARGS);
+static int graphics(GRAPHICS_FUNC_ARGS);
+
+void Element::Element_EMBR()
 {
 	Identifier = "DEFAULT_PT_EMBR";
 	Name = "EMBR";
@@ -26,7 +29,7 @@ Element_EMBR::Element_EMBR()
 
 	Weight = 30;
 
-	Temperature = 500.0f +273.15f;
+	DefaultProperties.temp = 500.0f + 273.15f;
 	HeatConduct = 29;
 	Description = "Sparks. Formed by explosions.";
 
@@ -41,12 +44,14 @@ Element_EMBR::Element_EMBR()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_EMBR::update;
-	Graphics = &Element_EMBR::graphics;
+	DefaultProperties.life = 50;
+
+	Update = &update;
+	Graphics = &graphics;
 }
 
-//#TPT-Directive ElementHeader Element_EMBR static int update(UPDATE_FUNC_ARGS)
-int Element_EMBR::update(UPDATE_FUNC_ARGS) {
+static int update(UPDATE_FUNC_ARGS)
+{
 	int r, rx, ry;
 	for (rx=-1; rx<2; rx++)
 		for (ry=-1; ry<2; ry++)
@@ -64,8 +69,7 @@ int Element_EMBR::update(UPDATE_FUNC_ARGS) {
 	return 0;
 }
 
-//#TPT-Directive ElementHeader Element_EMBR static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_EMBR::graphics(GRAPHICS_FUNC_ARGS)
+static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	if (cpart->ctype&0xFFFFFF)
 	{
@@ -90,7 +94,15 @@ int Element_EMBR::graphics(GRAPHICS_FUNC_ARGS)
 		*colr = *colg = *colb = 255;
 	}
 
-	if (ren->decorations_enable && cpart->dcolour)
+	bool deco = false;
+	if (ren->decorations_enable && cpart->dcolour && (cpart->dcolour&0xFF000000))
+	{
+		if (!ren->blackDecorations) // if blackDecorations is off, always show deco
+			deco = true;
+		else if (((cpart->dcolour>>24)&0xFF) >= 250 && ((cpart->dcolour>>16)&0xFF) <= 5 && ((cpart->dcolour>>8)&0xFF) <= 5 && ((cpart->dcolour)&0xFF) <= 5) // else only render black deco
+			deco = true;
+	}
+	if (deco)
 	{
 		int a = (cpart->dcolour>>24)&0xFF;
 		*colr = (a*((cpart->dcolour>>16)&0xFF) + (255-a)**colr) >> 8;
@@ -118,5 +130,3 @@ int Element_EMBR::graphics(GRAPHICS_FUNC_ARGS)
 	}
 	return 0;
 }
-
-Element_EMBR::~Element_EMBR() {}

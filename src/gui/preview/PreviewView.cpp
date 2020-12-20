@@ -1,69 +1,34 @@
-#include <vector>
-#include <cmath>
-#include <algorithm>
 #include "PreviewView.h"
-#include "gui/dialogues/TextPrompt.h"
+
 #include "simulation/SaveRenderer.h"
-#include "gui/interface/Point.h"
-#include "gui/interface/Window.h"
-#include "gui/interface/Textbox.h"
-#include "gui/Style.h"
-#include "Format.h"
-#include "gui/search/Thumbnail.h"
-#include "gui/profile/ProfileActivity.h"
+
 #include "client/Client.h"
+#include "client/SaveInfo.h"
+
+#include "gui/dialogues/TextPrompt.h"
+#include "gui/profile/ProfileActivity.h"
 #include "gui/interface/ScrollPanel.h"
 #include "gui/interface/AvatarButton.h"
+#include "gui/preview/PreviewController.h"
+#include "gui/preview/PreviewModel.h"
+#include "gui/interface/Button.h"
 #include "gui/interface/Keys.h"
+#include "gui/interface/CopyTextButton.h"
+#include "gui/interface/Label.h"
+#include "gui/interface/Textbox.h"
 #include "gui/dialogues/ErrorMessage.h"
+#include "gui/interface/Point.h"
+#include "gui/interface/Window.h"
+#include "gui/Style.h"
+
 #include "common/tpt-rand.h"
+#include "Comment.h"
+#include "Format.h"
+#include "Misc.h"
 
-class PreviewView::LoginAction: public ui::ButtonAction
-{
-	PreviewView * v;
-public:
-	LoginAction(PreviewView * v_){ v = v_; }
-	virtual void ActionCallback(ui::Button * sender)
-	{
-		v->c->ShowLogin();
-	}
-};
-
-class PreviewView::SubmitCommentAction: public ui::ButtonAction
-{
-	PreviewView * v;
-public:
-	SubmitCommentAction(PreviewView * v_){ v = v_; }
-	virtual void ActionCallback(ui::Button * sender)
-	{
-		v->submitComment();
-	}
-};
-
-class PreviewView::AutoCommentSizeAction: public ui::TextboxAction
-{
-	PreviewView * v;
-public:
-	AutoCommentSizeAction(PreviewView * v): v(v) {}
-	virtual void TextChangedCallback(ui::Textbox * sender) {
-		v->CheckComment();
-		v->commentBoxAutoHeight();
-	}
-};
-
-class PreviewView::AvatarAction: public ui::AvatarButtonAction
-{
-	PreviewView * v;
-public:
-	AvatarAction(PreviewView * v_){ v = v_; }
-	virtual void ActionCallback(ui::AvatarButton * sender)
-	{
-		if(sender->GetUsername().size() > 0)
-		{
-			new ProfileActivity(sender->GetUsername());
-		}
-	}
-};
+#ifdef GetUserName
+# undef GetUserName // dammit windows
+#endif
 
 PreviewView::PreviewView():
 	ui::Window(ui::Point(-1, -1), ui::Point((XRES/2)+210, (YRES/2)+150)),
@@ -80,85 +45,40 @@ PreviewView::PreviewView():
 	commentBoxHeight(20),
 	commentHelpText(false)
 {
-	class FavAction: public ui::ButtonAction
-	{
-		PreviewView * v;
-	public:
-		FavAction(PreviewView * v_){ v = v_; }
-		virtual void ActionCallback(ui::Button * sender)
-		{
-			v->c->FavouriteSave();
-		}
-	};
-
 	showAvatars = Client::Ref().GetPrefBool("ShowAvatars", true);
 
 	favButton = new ui::Button(ui::Point(50, Size.Y-19), ui::Point(51, 19), "Fav");
-	favButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	favButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	favButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	favButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	favButton->SetIcon(IconFavourite);
-	favButton->SetActionCallback(new FavAction(this));
+	favButton->SetActionCallback({ [this] { c->FavouriteSave(); } });
 	favButton->Enabled = Client::Ref().GetAuthUser().UserID?true:false;
 	AddComponent(favButton);
 
-	class ReportPromptCallback: public TextDialogueCallback {
-	public:
-		PreviewView * v;
-		ReportPromptCallback(PreviewView * v_) { v = v_;	}
-		virtual void TextCallback(TextPrompt::DialogueResult result, String resultText) {
-			if (result == TextPrompt::ResultOkay)
-				v->c->Report(resultText);
-		}
-		virtual ~ReportPromptCallback() { }
-	};
-
-	class ReportAction: public ui::ButtonAction
-	{
-		PreviewView * v;
-	public:
-		ReportAction(PreviewView * v_){ v = v_; }
-		virtual void ActionCallback(ui::Button * sender)
-		{
-			new TextPrompt("Report Save", "Things to consider when reporting:\n\bw1)\bg When reporting stolen saves, please include the ID of the original save.\n\bw2)\bg Do not ask for saves to be removed from front page unless they break the rules.\n\bw3)\bg You may report saves for comments or tags too (including your own saves)", "", "[reason]", true, new ReportPromptCallback(v));
-		}
-	};
 	reportButton = new ui::Button(ui::Point(100, Size.Y-19), ui::Point(51, 19), "Report");
-	reportButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	reportButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	reportButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	reportButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	reportButton->SetIcon(IconReport);
-	reportButton->SetActionCallback(new ReportAction(this));
+	reportButton->SetActionCallback({ [this] {
+		new TextPrompt("Report Save", "Things to consider when reporting:\n\bw1)\bg When reporting stolen saves, please include the ID of the original save.\n\bw2)\bg Do not ask for saves to be removed from front page unless they break the rules.\n\bw3)\bg You may report saves for comments or tags too (including your own saves)", "", "[reason]", true, { [this](String const &resultText) {
+			c->Report(resultText);
+		} });
+	} });
 	reportButton->Enabled = Client::Ref().GetAuthUser().UserID?true:false;
 	AddComponent(reportButton);
 
-	class OpenAction: public ui::ButtonAction
-	{
-		PreviewView * v;
-	public:
-		OpenAction(PreviewView * v_){ v = v_; }
-		virtual void ActionCallback(ui::Button * sender)
-		{
-			v->c->DoOpen();
-		}
-	};
 	openButton = new ui::Button(ui::Point(0, Size.Y-19), ui::Point(51, 19), "Open");
-	openButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	openButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	openButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	openButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	openButton->SetIcon(IconOpen);
-	openButton->SetActionCallback(new OpenAction(this));
+	openButton->SetActionCallback({ [this] { c->DoOpen(); } });
 	AddComponent(openButton);
 
-	class BrowserOpenAction: public ui::ButtonAction
-	{
-		PreviewView * v;
-	public:
-		BrowserOpenAction(PreviewView * v_){ v = v_; }
-		virtual void ActionCallback(ui::Button * sender)
-		{
-			v->c->OpenInBrowser();
-		}
-	};
-
 	browserOpenButton = new ui::Button(ui::Point((XRES/2)-107, Size.Y-19), ui::Point(108, 19), "Open in browser");
-	browserOpenButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;	browserOpenButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	browserOpenButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	browserOpenButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	browserOpenButton->SetIcon(IconOpen);
-	browserOpenButton->SetActionCallback(new BrowserOpenAction(this));
+	browserOpenButton->SetActionCallback({ [this] { c->OpenInBrowser(); } });
 	AddComponent(browserOpenButton);
 
 	if(showAvatars)
@@ -190,7 +110,12 @@ PreviewView::PreviewView():
 	if(showAvatars)
 	{
 		avatarButton = new ui::AvatarButton(ui::Point(4, (YRES/2)+4), ui::Point(34, 34), "");
-		avatarButton->SetActionCallback(new AvatarAction(this));
+		avatarButton->SetActionCallback({ [this] {
+			if (avatarButton->GetUsername().size() > 0)
+			{
+				new ProfileActivity(avatarButton->GetUsername());
+			}
+		} });
 		AddComponent(avatarButton);
 	}
 
@@ -607,12 +532,15 @@ void PreviewView::NotifyCommentBoxEnabledChanged(PreviewModel * sender)
 		commentBoxSizeY = 17;
 
 		addCommentBox = new ui::Textbox(ui::Point((XRES/2)+4, Size.Y-19), ui::Point(Size.X-(XRES/2)-48, 17), "", "Add Comment");
-		addCommentBox->SetActionCallback(new AutoCommentSizeAction(this));
+		addCommentBox->SetActionCallback({ [this] {
+			CheckComment();
+			commentBoxAutoHeight();
+		} });
 		addCommentBox->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 		addCommentBox->SetMultiline(true);
 		AddComponent(addCommentBox);
 		submitCommentButton = new ui::Button(ui::Point(Size.X-40, Size.Y-19), ui::Point(40, 19), "Submit");
-		submitCommentButton->SetActionCallback(new SubmitCommentAction(this));
+		submitCommentButton->SetActionCallback({ [this] { submitComment(); } });
 		//submitCommentButton->Enabled = false;
 		AddComponent(submitCommentButton);
 
@@ -625,7 +553,7 @@ void PreviewView::NotifyCommentBoxEnabledChanged(PreviewModel * sender)
 	else
 	{
 		submitCommentButton = new ui::Button(ui::Point(XRES/2, Size.Y-19), ui::Point(Size.X-(XRES/2), 19), "Login to comment");
-		submitCommentButton->SetActionCallback(new LoginAction(this));
+		submitCommentButton->SetActionCallback({ [this] { c->ShowLogin(); } });
 		AddComponent(submitCommentButton);
 	}
 }
@@ -673,7 +601,12 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 			if (showAvatars)
 			{
 				tempAvatar = new ui::AvatarButton(ui::Point(2, currentY+7), ui::Point(26, 26), comments->at(i)->authorName);
-				tempAvatar->SetActionCallback(new AvatarAction(this));
+				tempAvatar->SetActionCallback({ [tempAvatar] {
+					if (tempAvatar->GetUsername().size() > 0)
+					{
+						new ProfileActivity(tempAvatar->GetUsername());
+					}
+				} });
 				commentComponents.push_back(tempAvatar);
 				commentsPanel->AddChild(tempAvatar);
 			}

@@ -1,5 +1,8 @@
-#include "client/Client.h"
 #include "ConsoleModel.h"
+
+#include "ConsoleView.h"
+
+#include "client/Client.h"
 
 ConsoleModel::ConsoleModel() {
 	std::vector<String> previousHistory = Client::Ref().GetPrefStringArray("Console.History");

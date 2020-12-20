@@ -1,7 +1,7 @@
 #pragma once
+#include "Config.h"
 
 #include "common/String.h"
-#include "common/tpt-compat.h"
 #include "Appearance.h"
 #include "Point.h"
 

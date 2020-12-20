@@ -1,10 +1,11 @@
+#include "Graphics.h"
+
 #include <cmath>
 #include <iostream>
+#include <cstdlib>
+#include <cstring>
 #include <bzlib.h>
-#include "common/String.h"
-#include "Config.h"
-#include "Misc.h"
-#include "Graphics.h"
+
 #include "FontReader.h"
 #ifdef HIGH_QUALITY_RESAMPLE
 #include "resampler/resampler.h"
@@ -538,7 +539,7 @@ int Graphics::textwidth(String str)
 	String::value_type const *s = str.c_str();
 	for (; *s; s++)
 	{
-		if(((char)*s)=='\b')
+		if(*s=='\b')
 		{
 			if(!s[1]) break;
 			s++;
@@ -566,7 +567,7 @@ int Graphics::textnwidth(String str, int n)
 	{
 		if (!n)
 			break;
-		if(((char)*s)=='\b')
+		if(*s=='\b')
 		{
 			if(!s[1]) break;
 			s++;
@@ -623,7 +624,7 @@ int Graphics::textwidthx(String str, int w)
 	String::value_type const *s = str.c_str();
 	for (; *s; s++)
 	{
-		if((char)*s == '\b')
+		if(*s == '\b')
 		{
 			if(!s[1]) break;
 			s++;
@@ -642,71 +643,6 @@ int Graphics::textwidthx(String str, int w)
 	}
 	return n;
 }
-
-int Graphics::PositionAtCharIndex(String str, int charIndex, int & positionX, int & positionY)
-{
-	int x = 0, y = 0, lines = 1;
-	String::value_type const *s = str.c_str();
-	for (; *s; s++)
-	{
-		if (!charIndex)
-			break;
-		if(*s == '\n') {
-			lines++;
-			x = 0;
-			y += FONT_H;
-			charIndex--;
-			continue;
-		} else if(*s =='\b') {
-			if(!s[1]) break;
-			s++;
-			charIndex-=2;
-			continue;
-		} else if(*s == '\x0F') {
-			if(!s[1] || !s[2] || !s[3]) break;
-			s+=3;
-			charIndex-=4;
-			continue;
-		}
-		x += FontReader(*s).GetWidth();
-		charIndex--;
-	}
-	positionX = x;
-	positionY = y;
-	return lines;
-}
-
-int Graphics::CharIndexAtPosition(String str, int positionX, int positionY)
-{
-	int x=0, y=-2,charIndex=0,cw;
-	String::value_type const *s = str.c_str();
-	for (; *s; s++)
-	{
-		if(*s == '\n') {
-			x = 0;
-			y += FONT_H;
-			charIndex++;
-			continue;
-		} else if(*s == '\b') {
-			if(!s[1]) break;
-			s++;
-			charIndex+=2;
-			continue;
-		} else if (*s == '\x0F') {
-			if(!s[1] || !s[2] || !s[3]) break;
-			s+=3;
-			charIndex+=4;
-			continue;
-		}
-		cw = FontReader(*s).GetWidth();
-		if ((x+(cw/2) >= positionX && y+FONT_H >= positionY) || y > positionY)
-			break;
-		x += cw;
-		charIndex++;
-	}
-	return charIndex;
-}
-
 
 int Graphics::textwrapheight(String str, int width)
 {

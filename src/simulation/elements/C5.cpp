@@ -1,6 +1,9 @@
-#include "simulation/Elements.h"
-//#TPT-Directive ElementClass Element_C5 PT_C5 130
-Element_C5::Element_C5()
+#include "simulation/ElementCommon.h"
+
+static int update(UPDATE_FUNC_ARGS);
+static int graphics(GRAPHICS_FUNC_ARGS);
+
+void Element::Element_C5()
 {
 	Identifier = "DEFAULT_PT_C5";
 	Name = "C-5";
@@ -26,7 +29,6 @@ Element_C5::Element_C5()
 
 	Weight = 100;
 
-	Temperature = R_TEMP+0.0f	+273.15f;
 	HeatConduct = 88;
 	Description = "Cold explosive, set off by anything cold.";
 
@@ -41,12 +43,11 @@ Element_C5::Element_C5()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Update = &Element_C5::update;
-	Graphics = &Element_C5::graphics;
+	Update = &update;
+	Graphics = &graphics;
 }
 
-//#TPT-Directive ElementHeader Element_C5 static int update(UPDATE_FUNC_ARGS)
-int Element_C5::update(UPDATE_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry;
 	for (rx=-2; rx<3; rx++)
@@ -90,9 +91,7 @@ int Element_C5::update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-//#TPT-Directive ElementHeader Element_C5 static int graphics(GRAPHICS_FUNC_ARGS)
-int Element_C5::graphics(GRAPHICS_FUNC_ARGS)
-
+static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	if(!cpart->ctype)
 		return 0;
@@ -119,5 +118,3 @@ int Element_C5::graphics(GRAPHICS_FUNC_ARGS)
 	*pixel_mode |= FIRE_ADD | PMODE_ADD | NO_DECO;
 	return 0;
 }
-
-Element_C5::~Element_C5() {}

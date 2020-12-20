@@ -1,20 +1,10 @@
 #include "ContextMenu.h"
-#include "common/tpt-minmax.h"
+
 #include "graphics/Graphics.h"
 
-using namespace ui;
+#include "common/tpt-minmax.h"
 
-class ContextMenu::ItemSelectedAction: public ButtonAction
-{
-	ContextMenu * window;
-	int item;
-public:
-	ItemSelectedAction(ContextMenu * window, int itemID): window(window), item(itemID) { }
-	virtual void ActionCallback(ui::Button *sender)
-	{
-		window->ActionCallbackItem(sender, item);
-	}
-};
+using namespace ui;
 
 ContextMenu::ContextMenu(Component * source):
 		Window(ui::Point(0, 0), ui::Point(0, 0)),
@@ -47,7 +37,10 @@ void ContextMenu::Show(ui::Point position)
 		Button * tempButton = new Button(Point(1, currentY), Point(Size.X-2, 16), items[i].Text);
 		tempButton->Appearance = Appearance;
 		tempButton->Enabled = items[i].Enabled;
-		tempButton->SetActionCallback(new ItemSelectedAction(this, items[i].ID));
+		auto item = items[i].ID;
+		tempButton->SetActionCallback({ [this, item, tempButton] {
+			ActionCallbackItem(tempButton, item);
+		} });
 		buttons.push_back(tempButton);
 		AddComponent(tempButton);
 		currentY += 15;

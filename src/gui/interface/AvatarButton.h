@@ -6,48 +6,50 @@
 #include "Component.h"
 #include "graphics/Graphics.h"
 #include "gui/interface/Colour.h"
-#include "client/requestbroker/RequestListener.h"
+#include "client/http/AvatarRequest.h"
+#include "client/http/RequestMonitor.h"
+
+#include <memory>
+#include <functional>
 
 namespace ui
 {
-class AvatarButton;
-class AvatarButtonAction
+class AvatarButton : public Component, public http::RequestMonitor<http::AvatarRequest>
 {
-public:
-	virtual void ActionCallback(ui::AvatarButton * sender) {}
-	virtual ~AvatarButtonAction() {}
-};
-
-class AvatarButton : public Component, public RequestListener
-{
-	VideoBuffer * avatar;
+	std::unique_ptr<VideoBuffer> avatar;
 	ByteString name;
 	bool tried;
+
+	struct AvatarButtonAction
+	{
+		std::function<void ()> action;
+	};
+	AvatarButtonAction actionCallback;
+
 public:
 	AvatarButton(Point position, Point size, ByteString username);
-	virtual ~AvatarButton();
+	virtual ~AvatarButton() = default;
 
-	virtual void OnMouseClick(int x, int y, unsigned int button);
-	virtual void OnMouseUnclick(int x, int y, unsigned int button);
+	void OnMouseClick(int x, int y, unsigned int button) override;
+	void OnMouseUnclick(int x, int y, unsigned int button) override;
 
-	virtual void OnMouseEnter(int x, int y);
-	virtual void OnMouseLeave(int x, int y);
+	void OnMouseEnter(int x, int y) override;
+	void OnMouseLeave(int x, int y) override;
 
-	virtual void OnContextMenuAction(int item);
+	void OnContextMenuAction(int item) override;
 
-	virtual void Draw(const Point& screenPos);
-	virtual void Tick(float dt);
+	void Draw(const Point& screenPos) override;
+	void Tick(float dt) override;
 
-	virtual void OnResponseReady(void * imagePtr, int identifier);
+	void OnResponse(std::unique_ptr<VideoBuffer> avatar) override;
 
-	virtual void DoAction();
+	void DoAction();
 
 	void SetUsername(ByteString username) { name = username; }
 	ByteString GetUsername() { return name; }
-	void SetActionCallback(AvatarButtonAction * action);
+	inline void SetActionCallback(AvatarButtonAction const &action) { actionCallback = action; };
 protected:
 	bool isMouseInside, isButtonDown;
-	AvatarButtonAction * actionCallback;
 };
 }
 #endif /* AVATARBUTTON_H_ */

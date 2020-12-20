@@ -1,11 +1,20 @@
-#include <cmath>
 #include "PreviewModel.h"
+
+#include <cmath>
+#include <iostream>
+
 #include "Format.h"
+
 #include "client/Client.h"
 #include "client/GameSave.h"
-#include "common/tpt-minmax.h"
+#include "client/SaveInfo.h"
+#include "client/http/Request.h"
+
 #include "gui/dialogues/ErrorMessage.h"
+#include "gui/preview/Comment.h"
+
 #include "PreviewModelException.h"
+#include "PreviewView.h"
 
 PreviewModel::PreviewModel():
 	doOpen(false),
@@ -72,16 +81,16 @@ void PreviewModel::UpdateSave(int saveID, int saveDate)
 
 	ByteString url;
 	if (saveDate)
-		url = ByteString::Build("http://", STATICSERVER, "/", saveID, "_", saveDate, ".cps");
+		url = ByteString::Build(STATICSCHEME, STATICSERVER, "/", saveID, "_", saveDate, ".cps");
 	else
-		url = ByteString::Build("http://", STATICSERVER, "/", saveID, ".cps");
-	saveDataDownload = new Download(url);
+		url = ByteString::Build(STATICSCHEME, STATICSERVER, "/", saveID, ".cps");
+	saveDataDownload = new http::Request(url);
 	saveDataDownload->Start();
 
-	url = ByteString::Build("http://", SERVER , "/Browse/View.json?ID=", saveID);
+	url = ByteString::Build(SCHEME, SERVER , "/Browse/View.json?ID=", saveID);
 	if (saveDate)
 		url += ByteString::Build("&Date=", saveDate);
-	saveInfoDownload = new Download(url);
+	saveInfoDownload = new http::Request(url);
 	saveInfoDownload->AuthHeaders(ByteString::Build(Client::Ref().GetAuthUser().UserID), Client::Ref().GetAuthUser().SessionID);
 	saveInfoDownload->Start();
 
@@ -89,8 +98,8 @@ void PreviewModel::UpdateSave(int saveID, int saveDate)
 	{
 		commentsLoaded = false;
 
-		url = ByteString::Build("http://", SERVER, "/Browse/Comments.json?ID=", saveID, "&Start=", (commentsPageNumber-1)*20, "&Count=20");
-		commentsDownload = new Download(url);
+		url = ByteString::Build(SCHEME, SERVER, "/Browse/Comments.json?ID=", saveID, "&Start=", (commentsPageNumber-1)*20, "&Count=20");
+		commentsDownload = new http::Request(url);
 		commentsDownload->AuthHeaders(ByteString::Build(Client::Ref().GetAuthUser().UserID), Client::Ref().GetAuthUser().SessionID);
 		commentsDownload->Start();
 	}
@@ -141,8 +150,8 @@ void PreviewModel::UpdateComments(int pageNumber)
 		commentsPageNumber = pageNumber;
 		if (!GetDoOpen())
 		{
-			ByteString url = ByteString::Build("http://", SERVER, "/Browse/Comments.json?ID=", saveID, "&Start=", (commentsPageNumber-1)*20, "&Count=20");
-			commentsDownload = new Download(url);
+			ByteString url = ByteString::Build(SCHEME, SERVER, "/Browse/Comments.json?ID=", saveID, "&Start=", (commentsPageNumber-1)*20, "&Count=20");
+			commentsDownload = new http::Request(url);
 			commentsDownload->AuthHeaders(ByteString::Build(Client::Ref().GetAuthUser().UserID), Client::Ref().GetAuthUser().SessionID);
 			commentsDownload->Start();
 		}
@@ -166,7 +175,7 @@ void PreviewModel::OnSaveReady()
 	{
 		GameSave *gameSave = new GameSave(*saveData);
 		if (gameSave->fromNewerVersion)
-			new ErrorMessage("This save is from a newer version", "Please update TPT in game or at http://powdertoy.co.uk");
+			new ErrorMessage("This save is from a newer version", "Please update TPT in game or at https://powdertoy.co.uk");
 		saveInfo->SetGameSave(gameSave);
 	}
 	catch(ParseException &e)
@@ -193,7 +202,7 @@ void PreviewModel::ClearComments()
 	}
 }
 
-bool PreviewModel::ParseSaveInfo(char * saveInfoResponse)
+bool PreviewModel::ParseSaveInfo(ByteString &saveInfoResponse)
 {
 	delete saveInfo;
 
@@ -239,7 +248,7 @@ bool PreviewModel::ParseSaveInfo(char * saveInfoResponse)
 				saveDataDownload->Cancel();
 			delete saveData;
 			saveData = NULL;
-			saveDataDownload = new Download(ByteString::Build("http://", STATICSERVER, "/2157797.cps"));
+			saveDataDownload = new http::Request(ByteString::Build(STATICSCHEME, STATICSERVER, "/2157797.cps"));
 			saveDataDownload->Start();
 		}
 		return true;
@@ -251,7 +260,7 @@ bool PreviewModel::ParseSaveInfo(char * saveInfoResponse)
 	}
 }
 
-bool PreviewModel::ParseComments(char *commentsResponse)
+bool PreviewModel::ParseComments(ByteString &commentsResponse)
 {
 	ClearComments();
 	saveComments = new std::vector<SaveComment*>();
@@ -283,14 +292,15 @@ void PreviewModel::Update()
 {
 	if (saveDataDownload && saveDataDownload->CheckDone())
 	{
-		int status, length;
-		char *ret = saveDataDownload->Finish(&length, &status);
+		int status;
+		ByteString ret = saveDataDownload->Finish(&status);
 
-		Client::Ref().ParseServerReturn(NULL, status, true);
-		if (status == 200 && ret)
+		ByteString nothing;
+		Client::Ref().ParseServerReturn(nothing, status, true);
+		if (status == 200 && ret.size())
 		{
 			delete saveData;
-			saveData = new std::vector<unsigned char>(ret, ret+length);
+			saveData = new std::vector<unsigned char>(ret.begin(), ret.end());
 			if (saveInfo && saveData)
 				OnSaveReady();
 		}
@@ -302,16 +312,16 @@ void PreviewModel::Update()
 			}
 		}
 		saveDataDownload = NULL;
-		free(ret);
 	}
 
 	if (saveInfoDownload && saveInfoDownload->CheckDone())
 	{
 		int status;
-		char *ret = saveInfoDownload->Finish(NULL, &status);
+		ByteString ret = saveInfoDownload->Finish(&status);
 
-		Client::Ref().ParseServerReturn(NULL, status, true);
-		if (status == 200 && ret)
+		ByteString nothing;
+		Client::Ref().ParseServerReturn(nothing, status, true);
+		if (status == 200 && ret.size())
 		{
 			if (ParseSaveInfo(ret))
 			{
@@ -330,17 +340,17 @@ void PreviewModel::Update()
 				observers[i]->SaveLoadingError(Client::Ref().GetLastError());
 		}
 		saveInfoDownload = NULL;
-		free(ret);
 	}
 
 	if (commentsDownload && commentsDownload->CheckDone())
 	{
 		int status;
-		char *ret = commentsDownload->Finish(NULL, &status);
+		ByteString ret = commentsDownload->Finish(&status);
 		ClearComments();
 
-		Client::Ref().ParseServerReturn(NULL, status, true);
-		if (status == 200 && ret)
+		ByteString nothing;
+		Client::Ref().ParseServerReturn(nothing, status, true);
+		if (status == 200 && ret.size())
 			ParseComments(ret);
 
 		commentsLoaded = true;
@@ -348,7 +358,6 @@ void PreviewModel::Update()
 		notifyCommentsPageChanged();
 
 		commentsDownload = NULL;
-		free(ret);
 	}
 }
 

@@ -10,6 +10,6 @@ class DebugLines : public DebugInfo
 	GameController * controller;
 public:
 	DebugLines(unsigned int id, GameView * view, GameController * controller);
-	virtual void Draw();
+	void Draw() override;
 	virtual ~DebugLines();
 };

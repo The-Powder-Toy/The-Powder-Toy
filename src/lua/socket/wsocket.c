@@ -1,4 +1,3 @@
-#ifdef WIN
 /*=========================================================================*\
 * Socket compatibilization module for Win32
 * LuaSocket toolkit
@@ -400,4 +399,3 @@ static const char *wstrerror(int err) {
         default: return "Unknown error";
     }
 }
-#endif

@@ -1,18 +1,17 @@
 #ifndef RENDERER_H
 #define RENDERER_H
+#include "Config.h"
 
 #include <vector>
 #ifdef OGLR
 #include "OpenGLHeaders.h"
 #endif
 
-#include "Config.h"
 #include "Graphics.h"
 #include "gui/interface/Point.h"
 
 class RenderPreset;
 class Simulation;
-class Graphics;
 
 struct gcache_item
 {
@@ -48,7 +47,7 @@ public:
 	unsigned int colour_mode;
 	std::vector<unsigned int> display_modes;
 	unsigned int display_mode;
-	RenderPreset * renderModePresets;
+	std::vector<RenderPreset> renderModePresets;
 	//
 	unsigned char fire_r[YRES/CELL][XRES/CELL];
 	unsigned char fire_g[YRES/CELL][XRES/CELL];
@@ -154,6 +153,8 @@ public:
 	std::vector<unsigned int> GetDisplayMode();
 	void SetColourMode(unsigned int mode);
 	unsigned int GetColourMode();
+
+	void ResetModes();
 
 	int GetGridSize() { return gridSize; }
 	void SetGridSize(int value) { gridSize = value; }

@@ -1,0 +1,56 @@
+.TH POWDER 6 "2019-09-25" "" "Games manual"
+.
+.SH NAME
+powder \- a physics sandbox game
+.
+.SH SYNOPSIS
+.SY powder
+[\fIOPTIONS...\fR]
+.YS
+.
+.SH DESCRIPTION
+The Powder Toy is a free physics sandbox game, which simulates
+air pressure and velocity, heat, gravity and a number of other interactions
+between different substances.
+The game provides the player with various building materials, liquids,
+gases and electronic components which can be used to construct
+complex machines, guns, bombs, realistic terrains and almost anything else.
+The player can then mine them and watch cool explosions, add intricate wirings,
+play with little stickmen or operate their machine. 
+
+The game also features a Lua API, which allows to automate work or even
+make plugins for the program.
+.
+.SH OPTIONS
+\fBNOTE:\fR Program options should be written exactly as specified on this
+man page \- there are \fBno leading dashes\fR in front of their names.
+.TP
+\fBddir\fR \fIDIRECTORY\fR
+Load and save preferences, savegames etc. in \fIDIRECTORY\fR.
+The directory must already exist (if missing, it will not be created).
+.TP
+.B disable-network
+Disable network access.
+.TP
+.B kiosk
+Run in fullscreen mode.
+.TP
+\fBopen\fR \fIFILE\fR
+Open the specified savegame on program start.
+.TP
+\fBproxy\fR:\fISERVER\fR[:\fIPORT\fR]
+Use the specified proxy server.
+.TP
+\fBptsave\fR:\fISAVEID\fR
+Open an on-line save with the given ID.
+.TP
+.B redirect
+Do not print anything to standard output nor the standard error stream;
+redirect all messages to \fIstdout.log\fR and \fIstderr.log\fR files.
+.
+.SH SEE ALSO
+.TP
+.B https://powdertoy.co.uk/
+Official website. To use on-line features, such as saving and sharing their
+creations, players need to register an account.
+
