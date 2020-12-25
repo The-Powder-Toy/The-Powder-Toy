@@ -2,7 +2,8 @@
 #include <cstddef>
 
 #include "common/String.h"
-#include "font.h"
+
+#define FONT_H 12
 
 class FontReader
 {

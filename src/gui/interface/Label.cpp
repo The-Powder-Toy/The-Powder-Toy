@@ -8,6 +8,7 @@
 #include "ContextMenu.h"
 
 #include "graphics/Graphics.h"
+#include "graphics/FontReader.h"
 
 using namespace ui;
 

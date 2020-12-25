@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "FontEditor.h"
+#include "common/bz2wrap.h"
 
 #include "Config.h"
 #include "gui/interface/Textbox.h"
@@ -16,153 +17,128 @@
 #include "gui/interface/ScrollPanel.h"
 #include "graphics/Graphics.h"
 
-unsigned char *font_data;
-unsigned int *font_ptrs;
-unsigned int (*font_ranges)[2];
+extern unsigned char *font_data;
+extern unsigned int *font_ptrs;
+extern unsigned int (*font_ranges)[2];
 
 void FontEditor::ReadDataFile(ByteString dataFile)
 {
 	std::fstream file;
-	file.open(dataFile, std::ios_base::in);
+	file.open(dataFile, std::ios_base::in | std::ios_base::binary);
 	if(!file)
 		throw std::runtime_error("Could not open " + dataFile);
-	file >> std::skipws;
+	file.seekg(0, std::ios_base::end);
+	std::vector<char> fileData(file.tellg());
+	file.seekg(0);
+	file.read(&fileData[0], fileData.size());
+	file.close();
 
-	ByteString word;
-
-	while(word != "font_data[]")
-		file >> word;
-	file >> word >> word;
-
-	size_t startFontData = file.tellg();
+	std::vector<char> fontDataBuf;
+	std::vector<int> fontPtrsBuf;
+	std::vector< std::array<int, 2> > fontRangesBuf;
+	if (BZ2WDecompress(fontDataBuf, fileData.data(), fileData.size()) != BZ2WDecompressOk)
+	{
+		throw std::runtime_error("Could not decompress font data");
+	}
+	int first = -1;
+	int last = -1;
+	char *begin = &fontDataBuf[0];
+	char *ptr = &fontDataBuf[0];
+	char *end = &fontDataBuf[0] + fontDataBuf.size();
+	while (ptr != end)
+	{
+		if (ptr + 4 > end)
+		{
+			throw std::runtime_error("Could not decompress font data");
+		}
+		auto codePoint = *reinterpret_cast<uint32_t *>(ptr) & 0xFFFFFFU;
+		if (codePoint >= 0x110000U)
+		{
+			throw std::runtime_error("Could not decompress font data");
+		}
+		auto width = *reinterpret_cast<uint8_t *>(ptr + 3);
+		if (width > 64)
+		{
+			throw std::runtime_error("Could not decompress font data");
+		}
+		if (ptr + 4 + width * 3 > end)
+		{
+			throw std::runtime_error("Could not decompress font data");
+		}
+		auto cp = (int)codePoint;
+		if (last >= cp)
+		{
+			throw std::runtime_error("Could not decompress font data");
+		}
+		if (first != -1 && last + 1 < cp)
+		{
+			fontRangesBuf.push_back({ { first, last } });
+			first = -1;
+		}
+		if (first == -1)
+		{
+			first = cp;
+		}
+		last = cp;
+		fontPtrsBuf.push_back(ptr + 3 - begin);
+		ptr += width * 3 + 4;
+	}
+	if (first != -1)
+	{
+		fontRangesBuf.push_back({ { first, last } });
+	}
+	fontRangesBuf.push_back({ { 0, 0 } });
 
 	fontData.clear();
-	do
+	for (auto ch : fontDataBuf)
 	{
-		unsigned int value;
-		file >> std::hex >> value;
-		if(!file.fail())
-		{
-			fontData.push_back(value);
-			file >> word;
-		}
+		fontData.push_back(ch);
 	}
-	while(!file.fail());
-	file.clear();
-
-	size_t endFontData = file.tellg();
-
-	while(word != "font_ptrs[]")
-		file >> word;
-	file >> word >> word;
-
-	size_t startFontPtrs = file.tellg();
-
 	fontPtrs.clear();
-	do
+	for (auto ptr : fontPtrsBuf)
 	{
-		unsigned int value;
-		file >> std::hex >> value;
-		if(!file.fail())
-		{
-			fontPtrs.push_back(value);
-			file >> word;
-		}
+		fontPtrs.push_back(ptr);
 	}
-	while(!file.fail());
-	file.clear();
-
-	size_t endFontPtrs = file.tellg();
-
-	while(word != "font_ranges[][2]")
-		file >> word;
-	file >> word >> word;
-
-	size_t startFontRanges = file.tellg();
-
 	fontRanges.clear();
-	while(true)
+	for (auto rng : fontRangesBuf)
 	{
-		unsigned int value1, value2;
-		file >> word >> std::hex >> value1 >> word >> std::hex >> value2 >> word;
-		if(file.fail())
-			break;
-		fontRanges.push_back({value1, value2});
-		if(!value2)
-			break;
+		fontRanges.push_back({ { (unsigned int)rng[0], (unsigned int)rng[1] } });
 	}
-	file.clear();
-
-	size_t endFontRanges = file.tellg();
-
-	do
-	{
-		file >> word;
-	}
-	while(!file.fail());
-	file.clear();
-	size_t eof = file.tellg();
-
-	file.seekg(0);
-	beforeFontData = ByteString(startFontData, 0);
-	file.read(&beforeFontData[0], startFontData);
-
-	file.seekg(endFontData);
-	afterFontData = ByteString(startFontPtrs - endFontData, 0);
-	file.read(&afterFontData[0], startFontPtrs - endFontData);
-
-	file.seekg(endFontPtrs);
-	afterFontPtrs = ByteString(startFontRanges - endFontPtrs, 0);
-	file.read(&afterFontPtrs[0], startFontRanges - endFontPtrs);
-
-	file.seekg(endFontRanges);
-	afterFontRanges = ByteString(eof - endFontRanges, 0);
-	file.read(&afterFontRanges[0], eof - endFontRanges);
-	file.close();
 }
 
 void FontEditor::WriteDataFile(ByteString dataFile, std::vector<unsigned char> const &fontData, std::vector<unsigned int> const &fontPtrs, std::vector<std::array<unsigned int, 2> > const &fontRanges)
 {
 	std::fstream file;
-	file.open(dataFile, std::ios_base::out | std::ios_base::trunc);
+	file.open(dataFile, std::ios_base::out | std::ios_base::trunc | std::ios_base::binary);
 	if(!file)
 		throw std::runtime_error("Could not open " + dataFile);
 
-	file << std::setfill('0') << std::hex << std::uppercase;
-	file << beforeFontData << std::endl;
-
+	std::vector<char> uncompressed;
 	size_t pos = 0;
-	size_t ptrpos = 0;
-	while(pos < fontData.size())
+	for (size_t i = 0; pos < fontPtrs.size() && fontRanges[i][1]; i++)
 	{
-		file << "    " << "0x" << std::setw(2) << (unsigned int)fontData[pos] << ",  ";
-		for(pos++; pos < fontData.size() && (ptrpos == fontPtrs.size() - 1 || pos < (size_t)fontPtrs[ptrpos + 1]); pos++)
-			file << " " << "0x" << std::setw(2) << (unsigned int)fontData[pos] << ",";
-		file << std::endl;
-		ptrpos++;
-	}
-	file << afterFontData;
-
-	pos = 0;
-	for(size_t i = 0; pos < fontPtrs.size() && fontRanges[i][1]; i++)
-	{
-		bool first = true;
-		for(String::value_type ch = fontRanges[i][0]; ch <= fontRanges[i][1]; ch++)
+		for (String::value_type ch = fontRanges[i][0]; ch <= fontRanges[i][1]; ch++)
 		{
-			if(!(ch & 0x7) || first)
-				file << std::endl << "    ";
-			else
-				file << " ";
-			first = false;
-			file << "0x" << std::setw(8) << (unsigned int)fontPtrs[pos++] << ",";
+			uncompressed.push_back((char)ch);
+			uncompressed.push_back((char)(ch >> 8));
+			uncompressed.push_back((char)(ch >> 16));
+			auto ptr = fontPtrs[pos++];
+			auto width = fontData[ptr];
+			uncompressed.push_back(width);
+			for (auto j = 0; j < 3 * width; ++j)
+			{
+				uncompressed.push_back(fontData[ptr + 1 + j]);
+			}
 		}
-		file << std::endl;
 	}
-	file << afterFontPtrs << std::endl;
-	for(size_t i = 0; i < fontRanges.size() - 1; i++)
-		file << "    { 0x" << std::setw(6) << (unsigned int)fontRanges[i][0] << ", 0x" << std::setw(6) << (unsigned int)fontRanges[i][1] << " }," << std::endl;
-	file << "    { 0, 0 },";
-	file << afterFontRanges;
+
+	std::vector<char> compressed;
+	if (BZ2WCompress(compressed, uncompressed.data(), uncompressed.size()) != BZ2WCompressOk)
+	{
+		throw std::runtime_error("Could not compress font data");
+	}
+	file.write(compressed.data(), compressed.size());
+
 	file.close();
 }
 

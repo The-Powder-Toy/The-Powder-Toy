@@ -2,7 +2,6 @@
 
 #include "common/String.h"
 #include "Point.h"
-#include "font.h"
 
 #include <vector>
 

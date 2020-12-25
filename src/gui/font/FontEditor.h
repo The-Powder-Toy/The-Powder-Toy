@@ -5,8 +5,7 @@
 #include <array>
 #include <map>
 
-#include "font.h"
-
+#include "graphics/FontReader.h"
 #include "gui/interface/Window.h"
 
 namespace ui

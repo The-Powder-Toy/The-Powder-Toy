@@ -4,6 +4,7 @@ project('the-powder-toy', [ 'c', 'cpp' ], version: 'the.cake.is.a.lie', default_
 	'backend_startup_project=powder',
 ])
 
+prog_python3 = import('python').find_installation('python3')
 cpp_compiler = meson.get_compiler('cpp')
 
 project_c_args = []

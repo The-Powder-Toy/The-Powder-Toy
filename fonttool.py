@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 
+import bz2
 import math
 import re
 import argparse
 
 CP_MAX = 0x10FFFF
-FONT_CPP = "data/font.cpp"
+FONT_CPP = "data/font.bz2"
 FONT_HEIGHT = 12
-PTRS_PER_LINE = 8
 
 
 class ReadBDFError(RuntimeError):
@@ -17,57 +17,27 @@ class ReadBDFError(RuntimeError):
 
 class FontTool:
     def __init__(self):
-        with open(FONT_CPP) as font_cpp:
-            self.font_cpp_data = font_cpp.read()
-        font_data = ([int(s, 16) for s in re.findall(r'\w+', re.search(r'font_data[^{]*{([^;]+);', self.font_cpp_data,
-                                                                       re.MULTILINE | re.DOTALL)[1])])
-        font_ptrs = ([int(s, 16) for s in re.findall(r'\w+', re.search(r'font_ptrs[^{]*{([^;]+);', self.font_cpp_data,
-                                                                       re.MULTILINE | re.DOTALL)[1])])
-        font_ranges = ([int(s, 16) for s in re.findall(r'\w+',
-                                                       re.search(r'font_ranges[^{]*{([^;]+);', self.font_cpp_data,
-                                                                 re.MULTILINE | re.DOTALL)[1])])
+        with open(FONT_CPP, 'rb') as font_cpp:
+            font_cpp_data = bz2.decompress(font_cpp.read())
+        i = 0
         self.code_points = [False for _ in range(CP_MAX + 2)]
-        ptrs_ptr = 0
-        for i in range(len(font_ranges) // 2 - 1):
-            for cp in range(font_ranges[i * 2], font_ranges[i * 2 + 1] + 1):
-                base = font_ptrs[ptrs_ptr]
-                self.code_points[cp] = font_data[base: (base + math.ceil(font_data[base] * FONT_HEIGHT / 4) + 1)]
-                ptrs_ptr += 1
+        while i < len(font_cpp_data):
+            cp = font_cpp_data[i] | (font_cpp_data[i + 1] << 8) | (font_cpp_data[i + 2] << 16)
+            width = font_cpp_data[i + 3]
+            n = i + 4 + 3 * width
+            self.code_points[cp] = font_cpp_data[(i + 3): n]
+            i = n
 
     def commit(self):
-        new_ranges = []
-        in_range = False
+        l = []
         for i, data in enumerate(self.code_points):
-            if in_range and not data:
-                new_ranges[-1].append(i - 1)
-                in_range = False
-            elif not in_range and data:
-                in_range = True
-                new_ranges.append([i])
-        font_data_lines_hex = [['0x%02X' % v for v in d] for d in filter(lambda x: x, self.code_points)]
-        font_data_lines = [len(h) > 1 and h[0] + ',   ' + ', '.join(h[1:]) + ',' or '0x00,  ' for h in
-                           font_data_lines_hex]
-        font_cpp_data = re.sub(r'font_data[^{]*{([^;]+);',
-                               'font_data[] = {\n    ' + '\n    '.join(font_data_lines) + '\n};', self.font_cpp_data)
-        font_ptrs_blocks = []
-        data_ptr = 0
-        for ran in new_ranges:
-            block = []
-            for cp in range(ran[0], ran[1] + 1):
-                block.append(data_ptr)
-                data_ptr += math.ceil(self.code_points[cp][0] * FONT_HEIGHT / 4) + 1
-            font_ptrs_wrapped = []
-            for i in range(0, len(block), PTRS_PER_LINE):
-                font_ptrs_wrapped.append(', '.join(['0x%08X' % v for v in block[i: (i + PTRS_PER_LINE)]]))
-            font_ptrs_blocks.append(',\n    '.join(font_ptrs_wrapped))
-        font_cpp_data = re.sub(r'font_ptrs[^{]*{([^;]+);',
-                               'font_ptrs[] = {\n    ' + ',\n\n    '.join(font_ptrs_blocks) + ',\n};', font_cpp_data)
-        font_ranges_lines = ['{ 0x%06X, 0x%06X },' % (r[0], r[1]) for r in new_ranges]
-        font_cpp_data = re.sub(r'font_ranges[^{]*{([^;]+);',
-                               'font_ranges[][2] = {\n    ' + '\n    '.join(font_ranges_lines) + '\n    { 0, 0 },\n};',
-                               font_cpp_data)
-        with open(FONT_CPP, 'w') as font_cpp:
-            font_cpp.write(font_cpp_data)
+            if data:
+                l.append(i & 0xFF)
+                l.append((i >> 8) & 0xFF)
+                l.append((i >> 16) & 0xFF)
+                l += data
+        with open(FONT_CPP, 'wb') as font_cpp:
+            font_cpp.write(bz2.compress(bytes(l)))
 
     def pack(cp_matrix):
         width = 0
