@@ -170,7 +170,7 @@ void SignWindow::DoDraw()
 		String text = currentSign.getDisplayText(sim, x, y, w, h);
 		g->clearrect(x, y, w+1, h);
 		g->drawrect(x, y, w+1, h, 192, 192, 192, 255);
-		g->drawtext(x+3, y+3, text, 255, 255, 255, 255);
+		g->drawtext(x+3, y+4, text, 255, 255, 255, 255);
 
 		if (currentSign.ju != sign::None)
 		{
