@@ -5,9 +5,9 @@
 #include <climits>
 #include <memory>
 #include <set>
-#include <bzlib.h>
 #include <cmath>
 
+#include "bzip2/bzlib.h"
 #include "Config.h"
 #include "Format.h"
 #include "hmap.h"

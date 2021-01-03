@@ -82,7 +82,6 @@
 # include <winsock.h>
 #endif
 
-#include <bzlib.h>
 #include <curl/curl.h>
 #include <bson/BSON.h>
 #include <json/json-forwards.h>

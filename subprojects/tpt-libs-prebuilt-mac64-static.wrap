@@ -1,6 +1,0 @@
-[wrap-file]
-directory = tpt-libs-prebuilt-mac64-static
-
-source_url = https://github.com/LBPHacker/tpt-libs/releases/download/v20210103011010/tpt-libs-prebuilt-mac64-static.zip
-source_filename = tpt-libs-prebuilt-mac64-static.zip
-source_hash = 3e848020919ed5993fcef0f579d1401227659a31a621324e0830d7bebb4b9b10

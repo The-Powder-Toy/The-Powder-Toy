@@ -4,7 +4,8 @@
 #include <iostream>
 #include <cstdlib>
 #include <cstring>
-#include <bzlib.h>
+
+#include "bzip2/bzlib.h"
 
 #include "FontReader.h"
 #ifdef HIGH_QUALITY_RESAMPLE

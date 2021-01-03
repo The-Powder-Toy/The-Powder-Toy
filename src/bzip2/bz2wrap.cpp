@@ -1,6 +1,6 @@
 #include "bz2wrap.h"
 
-#include <bzlib.h>
+#include "bzlib.h"
 
 #include <memory>
 #include <functional>

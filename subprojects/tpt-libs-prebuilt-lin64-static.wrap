@@ -1,6 +1,0 @@
-[wrap-file]
-directory = tpt-libs-prebuilt-lin64-static
-
-source_url = https://github.com/LBPHacker/tpt-libs/releases/download/v20210103011010/tpt-libs-prebuilt-lin64-static.zip
-source_filename = tpt-libs-prebuilt-lin64-static.zip
-source_hash = 042c9687cc418c1425c2c95c9d48bb76972f3df9b06d131409c1d3c67c22c53a

@@ -30,6 +30,7 @@ common_files = files(
 )
 
 subdir('bson')
+subdir('bzip2')
 subdir('client')
 subdir('common')
 subdir('debug')

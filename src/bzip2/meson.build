@@ -1,5 +1,6 @@
-bzip2_src = files(
+common_files += files(
 	'blocksort.c',
+	'bz2wrap.cpp',
 	'bzlib.c',
 	'compress.c',
 	'crctable.c',

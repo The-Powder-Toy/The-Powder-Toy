@@ -5,7 +5,7 @@
 #include <iostream>
 
 #include "FontEditor.h"
-#include "common/bz2wrap.h"
+#include "bzip2/bz2wrap.h"
 
 #include "Config.h"
 #include "gui/interface/Textbox.h"

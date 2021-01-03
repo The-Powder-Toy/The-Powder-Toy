@@ -1,6 +1,6 @@
 #include "UpdateActivity.h"
 
-#include <bzlib.h>
+#include "bzip2/bzlib.h"
 
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/interface/Engine.h"

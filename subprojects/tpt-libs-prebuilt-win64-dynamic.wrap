@@ -1,6 +1,0 @@
-[wrap-file]
-directory = tpt-libs-prebuilt-win64-dynamic
-
-source_url = https://github.com/LBPHacker/tpt-libs/releases/download/v20210103011010/tpt-libs-prebuilt-win64-dynamic.zip
-source_filename = tpt-libs-prebuilt-win64-dynamic.zip
-source_hash = 5e1fbee5b39413ef9703ea0455e9f2c117a6f34c59c225945381a50fe10e5aef

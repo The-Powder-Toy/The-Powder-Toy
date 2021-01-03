@@ -1,6 +1,6 @@
 #include "FontReader.h"
 
-#include "common/bz2wrap.h"
+#include "bzip2/bz2wrap.h"
 #include "font.h"
 
 unsigned char *font_data = nullptr;

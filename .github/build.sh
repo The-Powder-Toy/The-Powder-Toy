@@ -41,7 +41,7 @@ static_flag=
 if [ $STATIC_DYNAMIC == "static" ]; then
 	static_flag=-Dstatic=prebuilt
 	if [ $PLATFORM_SHORT == "win" ]; then
-		other_flags+=$'\t-Db_vscrt=mt'
+		other_flags+=$'\t-Db_vscrt=static_from_buildtype'
 	fi
 fi
 if [ $PLATFORM_SHORT == "lin" ]; then

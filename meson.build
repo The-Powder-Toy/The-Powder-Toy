@@ -1,7 +1,5 @@
 project('the-powder-toy', [ 'c', 'cpp' ], version: 'the.cake.is.a.lie', default_options: [
 	'cpp_std=c++11',
-	'b_vscrt=md',
-	'backend_startup_project=powder',
 ])
 
 prog_python3 = import('python').find_installation('python3')
@@ -45,6 +43,7 @@ endif
 
 uopt_static = get_option('static')
 use_tpt_libs = false
+tpt_libs_vtag = 'v20210103095432'
 if uopt_static == 'system'
 	if copt_platform == 'windows'
 		error('no way to find static system libraries on windows')
@@ -52,18 +51,18 @@ if uopt_static == 'system'
 elif uopt_static == 'prebuilt'
 	if copt_platform == 'windows'
 		use_tpt_libs = true
-		tpt_libs = subproject('tpt-libs-prebuilt-win64-static')
+		tpt_libs = subproject('tpt-libs-prebuilt-win64-static-' + tpt_libs_vtag)
 	elif copt_platform == 'linux'
 		use_tpt_libs = true
-		tpt_libs = subproject('tpt-libs-prebuilt-lin64-static')
+		tpt_libs = subproject('tpt-libs-prebuilt-lin64-static-' + tpt_libs_vtag)
 	elif copt_platform == 'macosx'
 		use_tpt_libs = true
-		tpt_libs = subproject('tpt-libs-prebuilt-mac64-static')
+		tpt_libs = subproject('tpt-libs-prebuilt-mac64-static-' + tpt_libs_vtag)
 	endif
 else
 	if copt_platform == 'windows'
 		use_tpt_libs = true
-		tpt_libs = subproject('tpt-libs-prebuilt-win64-dynamic')
+		tpt_libs = subproject('tpt-libs-prebuilt-win64-dynamic-' + tpt_libs_vtag)
 	endif
 endif
 
@@ -112,7 +111,6 @@ endif
 threads_dep = dependency('threads')
 zlib_dep = use_tpt_libs ? tpt_libs.get_variable('zlib_dep') : dependency('zlib', static: uopt_static == 'system')
 sdl2_dep = use_tpt_libs ? tpt_libs.get_variable('sdl2_dep') : dependency('sdl2', static: uopt_static == 'system')
-bzip2_dep = subproject('tpt-bzip2').get_variable('bzip2_dep')
 
 if copt_msvc
 	if uopt_x86_sse_level >= 30
@@ -258,7 +256,6 @@ if get_option('build_powder')
 		threads_dep,
 		zlib_dep,
 		sdl2_dep,
-		bzip2_dep,
 		lua_opt_dep,
 		curl_opt_dep,
 		fftw_opt_dep,
@@ -285,7 +282,6 @@ if get_option('build_render')
 	render_deps = [
 		threads_dep,
 		zlib_dep,
-		bzip2_dep,
 	]
 	executable(
 		'render',
@@ -305,7 +301,6 @@ if get_option('build_font')
 		threads_dep,
 		zlib_dep,
 		sdl2_dep,
-		bzip2_dep,
 	]
 	if copt_platform == 'windows'
 		font_deps += other_dep
