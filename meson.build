@@ -88,9 +88,9 @@ uopt_lua = get_option('lua')
 if uopt_lua == 'luajit'
 	lua_opt_dep = [ use_tpt_libs ? tpt_libs.get_variable('luajit_dep') : dependency('luajit', static: uopt_static == 'system') ]
 elif uopt_lua == 'lua5.2'
-	lua_opt_dep = [ use_tpt_libs ? tpt_libs.get_variable('lua52_dep') : dependency('lua5.2', static: uopt_static == 'system') ]
+	lua_opt_dep = [ use_tpt_libs ? tpt_libs.get_variable('lua52_dep') : dependency('lua5.2-c++', static: uopt_static == 'system') ]
 elif uopt_lua == 'lua5.1'
-	lua_opt_dep = [ use_tpt_libs ? tpt_libs.get_variable('lua51_dep') : dependency('lua5.1', static: uopt_static == 'system') ]
+	lua_opt_dep = [ use_tpt_libs ? tpt_libs.get_variable('lua51_dep') : dependency('lua5.1-c++', static: uopt_static == 'system') ]
 else
 	lua_opt_dep = []
 endif
