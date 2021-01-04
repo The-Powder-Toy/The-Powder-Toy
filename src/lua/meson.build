@@ -8,26 +8,13 @@ luaconsole_files = files(
 	'LuaLabel.cpp',
 	'LuaProgressBar.cpp',
 	'LuaScriptInterface.cpp',
-	'luascripts/eventcompat.lua.cpp',
 	'LuaSlider.cpp',
 	'LuaSmartRef.cpp',
 	'LuaTextbox.cpp',
 	'LuaWindow.cpp',
-	'socket/auxiliar.c',
-	'socket/buffer.c',
-	'socket/except.c',
-	'socket/inet.c',
-	'socket/io.c',
-	'socket/luasocket.c',
-	'socket/options.c',
-	'socket/select.c',
-	'socket/socket.lua.cpp',
-	'socket/tcp.c',
-	'socket/timeout.c',
-	'socket/udp.c',
 )
 
+subdir('luasocket')
 subdir('luascripts')
-subdir('socket')
 
 powder_files += luaconsole_files

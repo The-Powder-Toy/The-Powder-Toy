@@ -2,7 +2,12 @@ project('the-powder-toy', [ 'c', 'cpp' ], version: 'the.cake.is.a.lie', default_
 	'cpp_std=c++11',
 ])
 
-prog_python3 = import('python').find_installation('python3')
+to_array = generator(
+	import('python').find_installation('python3'),
+	output: [ '@PLAINNAME@.cpp', '@PLAINNAME@.h' ],
+	arguments: [ join_paths(meson.current_source_dir(), 'to_array.py'), '@BUILD_DIR@', '@OUTPUT0@', '@OUTPUT1@', '@INPUT@', '@EXTRA_ARGS@' ]
+)
+
 cpp_compiler = meson.get_compiler('cpp')
 
 project_c_args = []

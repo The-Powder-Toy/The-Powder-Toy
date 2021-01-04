@@ -60,9 +60,10 @@ extern "C"
 #endif
 #include <sys/stat.h>
 #include <dirent.h>
-#include "socket/luasocket.h"
+#include "luasocket/luasocket.h"
 }
-#include "socket/socket.lua.h"
+#include "socket.lua.h"
+#include "eventcompat.lua.h"
 
 GameModel * luacon_model;
 GameController * luacon_controller;
@@ -129,17 +130,22 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	lua_atpanic(l, atPanic);
 	luaL_openlibs(l);
 	luaopen_bit(l);
-	luaopen_socket_core(l);
+
+	// load built-in luasocket and luasec
 	lua_getglobal(l, "package");
-	lua_pushstring(l, "loaded");
-	lua_rawget(l, -2);
-	lua_pushstring(l, "socket");
-	lua_rawget(l, -2);
-	lua_pushstring(l, "socket.core");
-	lua_pushvalue(l, -2);
-	lua_rawset(l, -4);
-	lua_pop(l, 3);
-	luaopen_socket(l);
+	lua_getfield(l, -1, "preload");
+	lua_pushcfunction(l, luaopen_socket_core);
+	lua_setfield(l, -2, "socket.core");
+	if (luaL_loadbuffer(l, (const char *)socket_lua, socket_lua_size, "@[built-in socket.lua]"))
+	{
+		throw std::runtime_error(ByteString("failed to load built-in luasocket: ") + lua_tostring(l, -1));
+	}
+	lua_setfield(l, -2, "socket");
+	lua_pop(l, 2);
+	if (luaL_dostring(l, "socket = require(\"socket\")"))
+	{
+		throw std::runtime_error(ByteString("failed to load built-in luasocket: ") + lua_tostring(l, -1));
+	}
 
 	lua_pushstring(l, "Luacon_ci");
 	lua_pushlightuserdata(l, this);
@@ -363,7 +369,10 @@ tpt.partsdata = nil");
 	initLegacyProps();
 
 	ui::Engine::Ref().LastTick(Platform::GetTime());
-	luaopen_eventcompat(l);
+	if (luaL_loadbuffer(l, (const char *)eventcompat_lua, eventcompat_lua_size, "@[built-in eventcompat.lua]") || lua_pcall(l, 0, 0, 0))
+	{
+		throw std::runtime_error(ByteString("failed to load built-in eventcompat: ") + lua_tostring(l, -1));
+	}
 }
 
 void LuaScriptInterface::Init()

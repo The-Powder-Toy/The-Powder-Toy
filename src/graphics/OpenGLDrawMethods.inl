@@ -1,4 +1,4 @@
-#include "../data/font.h"
+#include "../data/font.bz2.h"
 #include <cmath>
 #include <cstring>
 
