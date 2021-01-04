@@ -83,8 +83,11 @@ int LuaComponent::visible(lua_State * l)
 
 LuaComponent::~LuaComponent()
 {
-	if(component && component->GetParentWindow())
-		component->GetParentWindow()->RemoveComponent(component);
-	delete component;
+	if (component)
+	{
+		if (component->GetParentWindow())
+			component->GetParentWindow()->RemoveComponent(component);
+		delete component;
+	}
 }
 #endif
