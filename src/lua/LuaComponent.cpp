@@ -18,7 +18,7 @@ int LuaComponentCallback::CheckAndAssignArg1(lua_State *l)
 	return 0;
 }
 
-LuaComponent::LuaComponent(lua_State * l) : owner_ref(LUA_REFNIL)
+LuaComponent::LuaComponent(lua_State * l) : component(nullptr), owner_ref(LUA_REFNIL)
 {
 	this->l = l; // I don't get how this doesn't cause crashes later on
 	
@@ -83,7 +83,7 @@ int LuaComponent::visible(lua_State * l)
 
 LuaComponent::~LuaComponent()
 {
-	if(component->GetParentWindow())
+	if(component && component->GetParentWindow())
 		component->GetParentWindow()->RemoveComponent(component);
 	delete component;
 }
