@@ -471,5 +471,6 @@ int main(int argc, char * argv[])
 	ui::Engine::Ref().CloseWindow();
 	delete gameController;
 	delete ui::Engine::Ref().g;
+	SDL_Quit();
 	return 0;
 }

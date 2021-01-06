@@ -963,5 +963,6 @@ int main(int argc, char * argv[])
 	delete gameController;
 	delete ui::Engine::Ref().g;
 	Client::Ref().Shutdown();
+	SDL_Quit();
 	return 0;
 }
