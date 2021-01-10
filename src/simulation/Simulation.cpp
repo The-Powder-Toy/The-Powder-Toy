@@ -746,15 +746,20 @@ SimulationSample Simulation::GetSample(int x, int y)
 	return sample;
 }
 
-#define PMAP_CMP_CONDUCTIVE(pmap, t) (TYP(pmap)==(t) || (TYP(pmap)==PT_SPRK && parts[ID(pmap)].ctype==(t)))
-
 int Simulation::FloodINST(int x, int y)
 {
-	const int cm = PT_INST;
 	int x1, x2;
 	int created_something = 0;
 
-	if (TYP(pmap[y][x]) != cm || parts[ID(pmap[y][x])].life != 0)
+	const auto isSparkableInst = [this](int x, int y) -> bool {
+		return TYP(pmap[y][x])==PT_INST && parts[ID(pmap[y][x])].life==0;
+	};
+
+	const auto isInst = [this](int x, int y) -> bool {
+		return TYP(pmap[y][x])==PT_INST || (TYP(pmap[y][x])==PT_SPRK  && parts[ID(pmap[y][x])].ctype==PT_INST);
+	};
+
+	if (!isSparkableInst(x,y))
 		return 1;
 
 	CoordStack& cs = getCoordStackSingleton();
@@ -769,21 +774,13 @@ int Simulation::FloodINST(int x, int y)
 			cs.pop(x, y);
 			x1 = x2 = x;
 			// go left as far as possible
-			while (x1>=CELL)
+			while (x1>=CELL && isSparkableInst(x1-1, y))
 			{
-				if (TYP(pmap[y][x1-1])!=cm || parts[ID(pmap[y][x1-1])].life!=0)
-				{
-					break;
-				}
 				x1--;
 			}
 			// go right as far as possible
-			while (x2<XRES-CELL)
+			while (x2<XRES-CELL && isSparkableInst(x2+1, y))
 			{
-				if (TYP(pmap[y][x2+1])!=cm || parts[ID(pmap[y][x2+1])].life!=0)
-				{
-					break;
-				}
 				x2++;
 			}
 			// fill span
@@ -796,11 +793,11 @@ int Simulation::FloodINST(int x, int y)
 			// add vertically adjacent pixels to stack
 			// (wire crossing for INST)
 			if (y>=CELL+1 && x1==x2 &&
-					PMAP_CMP_CONDUCTIVE(pmap[y-1][x1-1], cm) && PMAP_CMP_CONDUCTIVE(pmap[y-1][x1], cm) && PMAP_CMP_CONDUCTIVE(pmap[y-1][x1+1], cm) &&
-					!PMAP_CMP_CONDUCTIVE(pmap[y-2][x1-1], cm) && PMAP_CMP_CONDUCTIVE(pmap[y-2][x1], cm) && !PMAP_CMP_CONDUCTIVE(pmap[y-2][x1+1], cm))
+				isInst(x1-1, y-1) && isInst(x1, y-1) && isInst(x1+1, y-1) &&
+				!isInst(x1-1, y-2) && isInst(x1, y-2) && !isInst(x1+1, y-2))
 			{
 				// travelling vertically up, skipping a horizontal line
-				if (TYP(pmap[y-2][x1])==cm && !parts[ID(pmap[y-2][x1])].life)
+				if (isSparkableInst(x1, y-2))
 				{
 						cs.push(x1, y-2);
 				}
@@ -809,9 +806,9 @@ int Simulation::FloodINST(int x, int y)
 			{
 				for (x=x1; x<=x2; x++)
 				{
-					if (TYP(pmap[y-1][x])==cm && !parts[ID(pmap[y-1][x])].life)
+					if (isSparkableInst(x, y-1))
 					{
-						if (x==x1 || x==x2 || y>=YRES-CELL-1 || !PMAP_CMP_CONDUCTIVE(pmap[y+1][x], cm) || PMAP_CMP_CONDUCTIVE(pmap[y+1][x+1], cm) || PMAP_CMP_CONDUCTIVE(pmap[y+1][x-1], cm))
+						if (x==x1 || x==x2 || y>=YRES-CELL-1 || !isInst(x, y+1) || isInst(x+1, y+1) || isInst(x-1, y+1))
 						{
 							// if at the end of a horizontal section, or if it's a T junction or not a 1px wire crossing
 							cs.push(x, y-1);
@@ -821,11 +818,11 @@ int Simulation::FloodINST(int x, int y)
 			}
 
 			if (y<YRES-CELL-1 && x1==x2 &&
-					PMAP_CMP_CONDUCTIVE(pmap[y+1][x1-1], cm) && PMAP_CMP_CONDUCTIVE(pmap[y+1][x1], cm) && PMAP_CMP_CONDUCTIVE(pmap[y+1][x1+1], cm) &&
-					!PMAP_CMP_CONDUCTIVE(pmap[y+2][x1-1], cm) && PMAP_CMP_CONDUCTIVE(pmap[y+2][x1], cm) && !PMAP_CMP_CONDUCTIVE(pmap[y+2][x1+1], cm))
+				isInst(x1-1, y+1) && isInst(x1, y+1) && isInst(x1+1, y+1) &&
+				!isInst(x1-1, y+2) && isInst(x1, y+2) && !isInst(x1+1, y+2))
 			{
 				// travelling vertically down, skipping a horizontal line
-				if (TYP(pmap[y+2][x1])==cm && !parts[ID(pmap[y+2][x1])].life)
+				if (isSparkableInst(x1, y+2))
 				{
 					cs.push(x1, y+2);
 				}
@@ -834,9 +831,9 @@ int Simulation::FloodINST(int x, int y)
 			{
 				for (x=x1; x<=x2; x++)
 				{
-					if (TYP(pmap[y+1][x])==cm && !parts[ID(pmap[y+1][x])].life)
+					if (isSparkableInst(x, y+1))
 					{
-						if (x==x1 || x==x2 || y<0 || !PMAP_CMP_CONDUCTIVE(pmap[y-1][x], cm) || PMAP_CMP_CONDUCTIVE(pmap[y-1][x+1], cm) || PMAP_CMP_CONDUCTIVE(pmap[y-1][x-1], cm))
+						if (x==x1 || x==x2 || y<0 || !isInst(x, y-1) || isInst(x+1, y-1) || isInst(x-1, y-1))
 						{
 							// if at the end of a horizontal section, or if it's a T junction or not a 1px wire crossing
 							cs.push(x, y+1);
