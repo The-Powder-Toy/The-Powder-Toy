@@ -247,16 +247,6 @@ subdir('data')
 subdir('resources')
 
 if get_option('build_powder')
-	powder_args = []
-	if uopt_lua != 'none'
-		powder_args += '-DLUACONSOLE'
-	endif
-	if not uopt_http
-		powder_args += '-DNOHTTP'
-	endif
-	if uopt_fftw
-		powder_args += '-DGRAVFFT'
-	endif
 	powder_deps = [
 		threads_dep,
 		zlib_dep,
@@ -272,9 +262,9 @@ if get_option('build_powder')
 	executable(
 		'powder',
 		sources: powder_files,
-		include_directories: project_inc,
-		c_args: project_c_args + powder_args,
-		cpp_args: project_cpp_args + powder_args,
+		include_directories: [ project_inc, powder_inc ],
+		c_args: project_c_args,
+		cpp_args: project_cpp_args,
 		cpp_pch: 'pch/pch_cpp.h',
 		gui_app: true,
 		link_args: project_link_args,
@@ -283,7 +273,6 @@ if get_option('build_powder')
 endif
 
 if get_option('build_render')
-	render_args = [ '-DRENDERER', '-DNOHTTP' ]
 	render_deps = [
 		threads_dep,
 		zlib_dep,
@@ -291,9 +280,9 @@ if get_option('build_render')
 	executable(
 		'render',
 		sources: render_files,
-		include_directories: project_inc,
-		c_args: project_c_args + render_args,
-		cpp_args: project_cpp_args + render_args,
+		include_directories: [ project_inc, render_inc ],
+		c_args: project_c_args,
+		cpp_args: project_cpp_args,
 		cpp_pch: 'pch/pch_cpp.h',
 		link_args: project_link_args,
 		dependencies: render_deps,
@@ -301,7 +290,6 @@ if get_option('build_render')
 endif
 
 if get_option('build_font')
-	font_args = [ '-DFONTEDITOR', '-DNOHTTP' ]
 	font_deps = [
 		threads_dep,
 		zlib_dep,
@@ -314,9 +302,9 @@ if get_option('build_font')
 	executable(
 		'font',
 		sources: font_files,
-		include_directories: project_inc,
-		c_args: project_c_args + font_args,
-		cpp_args: project_cpp_args + font_args,
+		include_directories: [ project_inc, font_inc ],
+		c_args: project_c_args,
+		cpp_args: project_cpp_args,
 		cpp_pch: 'pch/pch_cpp.h',
 		gui_app: true,
 		link_args: project_link_args,

@@ -4,6 +4,12 @@
 #mesondefine CURL_STATICLIB
 #mesondefine ZLIB_WINAPI
 
+#mesondefine LUACONSOLE
+#mesondefine NOHTTP
+#mesondefine GRAVFFT
+#mesondefine RENDERER
+#mesondefine FONTEDITOR
+
 #mesondefine BETA
 #mesondefine DEBUG
 #mesondefine IGNORE_UPDATES
