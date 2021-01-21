@@ -44,10 +44,13 @@ jobs:
         include:
           - platform_short: lin
             os: ubuntu-latest
+            suffix: ''
           - platform_short: mac
             os: macos-latest
+            suffix: ''
           - platform_short: win
             os: windows-latest
+            suffix: '.exe'
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -73,11 +76,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.get_release_info.outputs.upload_url }}
-          asset_path: powder.zip
-          asset_name: powder-${{ steps.get_type.outputs.NAME }}-${{ matrix.platform_short }}64.zip
+          asset_path: powder${{ matrix.suffix }}
+          asset_name: powder-${{ steps.get_type.outputs.NAME }}-${{ matrix.platform_short }}64${{ matrix.suffix }}
           asset_content_type: application/zip
       - uses: actions/upload-artifact@v2
         if: steps.get_type.outputs.TYPE == 'dev' && matrix.static_dynamic == 'static'
         with:
-          path: powder.zip
-          name: powder-${{ steps.get_type.outputs.NAME }}-${{ matrix.static_dynamic }}-${{ matrix.platform_short }}64.zip
+          path: powder${{ matrix.suffix }}
+          name: powder-${{ steps.get_type.outputs.NAME }}-${{ matrix.static_dynamic }}-${{ matrix.platform_short }}64${{ matrix.suffix }}

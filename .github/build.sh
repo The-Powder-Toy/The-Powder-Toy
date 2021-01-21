@@ -36,7 +36,7 @@ BUILD_INIT_BAT
 fi
 
 other_flags=
-bin_postfix=
+bin_suffix=
 static_flag=
 if [ $STATIC_DYNAMIC == "static" ]; then
 	static_flag=-Dstatic=prebuilt
@@ -49,19 +49,20 @@ if [ $PLATFORM_SHORT == "lin" ]; then
 	# pthread_create, thanks to weak symbols in libstdc++.so (or something). See
 	# https://gcc.gnu.org/legacy-ml/gcc-help/2017-03/msg00081.html
 	other_flags+=$'\t-Db_asneeded=false\t-Dcpp_link_args=-Wl,--no-as-needed'
+	if [ $STATIC_DYNAMIC == "static" ]; then
+		other_flags+=$'\t-Dbuild_render=true\t-Dbuild_font=true'
+	fi
 fi
 if [ $PLATFORM_SHORT == "win" ]; then
-	bin_postfix=$bin_postfix.exe
+	bin_suffix=$bin_suffix.exe
 fi
 if echo $RELTYPECFG | base64 -d | grep snapshot; then
 	other_flags+=$'\t-Dupdate_server=starcatcher.us/TPT'
 fi
-meson -Dbuildtype=release -Dbuild_render=true -Dbuild_font=true -Db_pie=false -Db_staticpic=false -Db_lto=true $static_flag -Dinstall_check=true $other_flags `echo $RELTYPECFG | base64 -d` build
+meson -Dbuildtype=release -Db_pie=false -Db_staticpic=false -Db_lto=true $static_flag -Dinstall_check=true $other_flags `echo $RELTYPECFG | base64 -d` build
 cd build
 ninja
 if [ $PLATFORM_SHORT == "lin" ] || [ $PLATFORM_SHORT == "mac" ]; then
-	strip powder$bin_postfix render$bin_postfix font$bin_postfix
+	strip powder$bin_suffix
 fi
-7z a ../powder.zip powder$bin_postfix render$bin_postfix font$bin_postfix
-cd ..
-7z a powder.zip README.md LICENSE
+cp powder$bin_suffix ..
