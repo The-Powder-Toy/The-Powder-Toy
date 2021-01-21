@@ -23,23 +23,13 @@ copt_64bit = host_machine.cpu_family() in [ 'x86_64', 'aarch64' ]
 copt_msvc = cpp_compiler.get_id() in [ 'msvc' ]
 
 if host_machine.system() in [ 'linux', 'freebsd' ]
-	copt_platform = 'linux'
+	copt_platform = 'lin'
 elif host_machine.system() in [ 'windows' ]
-	copt_platform = 'windows'
+	copt_platform = 'win'
 elif host_machine.system() in [ 'darwin' ]
-	copt_platform = 'macosx'
+	copt_platform = 'mac'
 else
 	error('unsupported platform: ' + host_machine.system())
-endif
-
-if copt_platform == 'linux' and not copt_64bit
-	error('lin32 is not supported')
-endif
-if copt_platform == 'windows' and not copt_64bit
-	error('win32 is not supported')
-endif
-if copt_platform == 'macosx' and not copt_64bit
-	error('mac32 is not even a thing')
 endif
 
 if get_option('ogli') or get_option('oglr')
@@ -47,28 +37,24 @@ if get_option('ogli') or get_option('oglr')
 endif
 
 uopt_static = get_option('static')
-use_tpt_libs = false
+use_tpt_libs = 'no'
 tpt_libs_vtag = 'v20210103095432'
 if uopt_static == 'system'
-	if copt_platform == 'windows'
+	if copt_platform == 'win'
 		error('no way to find static system libraries on windows')
 	endif
 elif uopt_static == 'prebuilt'
-	if copt_platform == 'windows'
-		use_tpt_libs = true
-		tpt_libs = subproject('tpt-libs-prebuilt-win64-static-' + tpt_libs_vtag)
-	elif copt_platform == 'linux'
-		use_tpt_libs = true
-		tpt_libs = subproject('tpt-libs-prebuilt-lin64-static-' + tpt_libs_vtag)
-	elif copt_platform == 'macosx'
-		use_tpt_libs = true
-		tpt_libs = subproject('tpt-libs-prebuilt-mac64-static-' + tpt_libs_vtag)
-	endif
+	use_tpt_libs = 'static'
 else
-	if copt_platform == 'windows'
-		use_tpt_libs = true
-		tpt_libs = subproject('tpt-libs-prebuilt-win64-dynamic-' + tpt_libs_vtag)
+	if copt_platform == 'win'
+		use_tpt_libs = 'dynamic'
 	endif
+endif
+if use_tpt_libs != 'no'
+	if host_machine.cpu_family() != 'x86_64'
+		error('we do not currently provide prebuilt @0@ libraries for @1@ on @2@'.format(use_tpt_libs, host_machine.system(), host_machine.cpu_family()))
+	endif
+	tpt_libs = subproject('tpt-libs-prebuilt-@0@64-@1@-@2@'.format(copt_platform, use_tpt_libs, tpt_libs_vtag))
 endif
 
 uopt_native = get_option('native')
@@ -90,32 +76,32 @@ endif
 
 uopt_lua = get_option('lua')
 if uopt_lua == 'luajit'
-	lua_opt_dep = [ use_tpt_libs ? tpt_libs.get_variable('luajit_dep') : dependency('luajit', static: uopt_static == 'system') ]
+	lua_opt_dep = [ use_tpt_libs != 'no' ? tpt_libs.get_variable('luajit_dep') : dependency('luajit', static: uopt_static == 'system') ]
 elif uopt_lua == 'lua5.2'
-	lua_opt_dep = [ use_tpt_libs ? tpt_libs.get_variable('lua52_dep') : dependency('lua5.2-c++', static: uopt_static == 'system') ]
+	lua_opt_dep = [ use_tpt_libs != 'no' ? tpt_libs.get_variable('lua52_dep') : dependency('lua5.2-c++', static: uopt_static == 'system') ]
 elif uopt_lua == 'lua5.1'
-	lua_opt_dep = [ use_tpt_libs ? tpt_libs.get_variable('lua51_dep') : dependency('lua5.1-c++', static: uopt_static == 'system') ]
+	lua_opt_dep = [ use_tpt_libs != 'no' ? tpt_libs.get_variable('lua51_dep') : dependency('lua5.1-c++', static: uopt_static == 'system') ]
 else
 	lua_opt_dep = []
 endif
 
 uopt_http = get_option('http')
 if uopt_http
-	curl_opt_dep = [ use_tpt_libs ? tpt_libs.get_variable('libcurl_dep') : dependency('libcurl', static: uopt_static == 'system') ]
+	curl_opt_dep = [ use_tpt_libs != 'no' ? tpt_libs.get_variable('libcurl_dep') : dependency('libcurl', static: uopt_static == 'system') ]
 else
 	curl_opt_dep = []
 endif
 
 uopt_fftw = get_option('gravfft')
 if uopt_fftw
-	fftw_opt_dep = [ use_tpt_libs ? tpt_libs.get_variable('fftw_dep') : dependency('fftw3f', static: uopt_static == 'system') ]
+	fftw_opt_dep = [ use_tpt_libs != 'no' ? tpt_libs.get_variable('fftw_dep') : dependency('fftw3f', static: uopt_static == 'system') ]
 else
 	fftw_opt_dep = []
 endif
 
 threads_dep = dependency('threads')
-zlib_dep = use_tpt_libs ? tpt_libs.get_variable('zlib_dep') : dependency('zlib', static: uopt_static == 'system')
-sdl2_dep = use_tpt_libs ? tpt_libs.get_variable('sdl2_dep') : dependency('sdl2', static: uopt_static == 'system')
+zlib_dep = use_tpt_libs != 'no' ? tpt_libs.get_variable('zlib_dep') : dependency('zlib', static: uopt_static == 'system')
+sdl2_dep = use_tpt_libs != 'no' ? tpt_libs.get_variable('sdl2_dep') : dependency('sdl2', static: uopt_static == 'system')
 
 if copt_msvc
 	if uopt_x86_sse_level >= 30
@@ -151,7 +137,7 @@ if copt_msvc
 		project_cpp_args += args_msvc_opt
 	endif
 else
-	if copt_platform == 'macosx'
+	if copt_platform == 'mac'
 		if uopt_x86_sse_level >= 0
 			message('SSE level explicitly configured but unavailable on macosx')
 			uopt_x86_sse_level = 0
@@ -186,7 +172,7 @@ else
 	endif
 endif
 
-if copt_platform == 'windows'
+if copt_platform == 'win'
 	other_dep = tpt_libs.get_variable('other_dep')
 	sdl2main_dep = tpt_libs.get_variable('sdl2main_dep')
 	project_c_args   += [ '-D_WIN32_WINNT=0x0501' ]
@@ -202,15 +188,15 @@ if copt_platform == 'windows'
 	endif
 endif
 
-if copt_platform == 'macosx' and uopt_lua == 'luajit'
+if copt_platform == 'mac' and uopt_lua == 'luajit'
 	project_link_args += [ '-pagezero_size', '10000', '-image_base', '100000000' ]
 endif
 
 project_inc = include_directories([ 'src', 'data', 'resources' ])
 
-conf_data.set('LIN', copt_platform == 'linux')
-conf_data.set('WIN', copt_platform == 'windows')
-conf_data.set('MACOSX', copt_platform == 'macosx')
+conf_data.set('LIN', copt_platform == 'lin')
+conf_data.set('WIN', copt_platform == 'win')
+conf_data.set('MACOSX', copt_platform == 'mac')
 conf_data.set('X86', copt_x86)
 conf_data.set('X86_SSE3', uopt_x86_sse_level >= 30)
 conf_data.set('X86_SSE2', uopt_x86_sse_level >= 20)
@@ -255,7 +241,7 @@ if get_option('build_powder')
 		curl_opt_dep,
 		fftw_opt_dep,
 	]
-	if copt_platform == 'windows'
+	if copt_platform == 'win'
 		powder_deps += other_dep
 		powder_deps += sdl2main_dep
 	endif
@@ -295,7 +281,7 @@ if get_option('build_font')
 		zlib_dep,
 		sdl2_dep,
 	]
-	if copt_platform == 'windows'
+	if copt_platform == 'win'
 		font_deps += other_dep
 		font_deps += sdl2main_dep
 	endif

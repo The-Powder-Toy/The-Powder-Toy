@@ -14,7 +14,7 @@ luaconsole_files += files(
 )
 luaconsole_files += to_array.process('socket.lua', extra_args: 'socket_lua')
 
-if copt_platform == 'windows'
+if copt_platform == 'win'
 	luaconsole_files += files(
 		'wsocket.c',
 	)
