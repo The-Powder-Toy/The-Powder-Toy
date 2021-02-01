@@ -73,8 +73,8 @@ option(
 	'future_major',
 	type: 'integer',
 	min: 0,
-	value: 95,
-	description: 'Future major version, used for debugging and in snapshots, only relevant if at least one of \'debug\' and \'snapshot\' is true'
+	value: 96,
+	description: 'Future major version, used for debugging and in snapshots, only relevant if at least one of \'snapshot\', \'beta\', or \'debug\' is true, or if \'mod_id\' is set'
 )
 option(
 	'future_minor',
