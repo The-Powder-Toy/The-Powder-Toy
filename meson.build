@@ -135,6 +135,9 @@ if copt_msvc
 		args_msvc_opt = [ '/Oy-', '/fp:fast' ]
 		project_c_args += args_msvc_opt
 		project_cpp_args += args_msvc_opt
+		project_link_args += [
+			'/NODEFAULTLIB:LIBCMT',
+		]
 	endif
 else
 	if copt_platform == 'mac'

@@ -19,6 +19,7 @@
 #endif
 
 #include "Misc.h"
+#include "client/Client.h"
 
 namespace Platform
 {
@@ -80,10 +81,25 @@ void DoRestart()
 	if (exename.length())
 	{
 #ifdef WIN
-		ShellExecute(NULL, "open", exename.c_str(), NULL, NULL, SW_SHOWNORMAL);
+		int ret = (int)ShellExecute(NULL, NULL, exename.c_str(), NULL, NULL, SW_SHOWNORMAL);
+		if (ret <= 32)
+		{
+			fprintf(stderr, "cannot restart: ShellExecute(...) failed: code %i\n", ret);
+		}
+		else
+		{
+			Client::Ref().Shutdown(); // very ugly hack; will fix soon(tm)
+			exit(0);
+		}
 #elif defined(LIN) || defined(MACOSX)
 		execl(exename.c_str(), "powder", NULL);
+		int ret = errno;
+		fprintf(stderr, "cannot restart: execl(...) failed: code %i\n", ret);
 #endif
+	}
+	else
+	{
+		fprintf(stderr, "cannot restart: no executable name???\n");
 	}
 	exit(-1);
 }
