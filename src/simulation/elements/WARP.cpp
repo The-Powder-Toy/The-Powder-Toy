@@ -72,10 +72,10 @@ static int update(UPDATE_FUNC_ARGS)
 			{
 				parts[i].x = parts[ID(r)].x;
 				parts[i].y = parts[ID(r)].y;
-				parts[ID(r)].x = x;
-				parts[ID(r)].y = y;
+				parts[ID(r)].x = float(x);
+				parts[ID(r)].y = float(y);
 				parts[ID(r)].vx = RNG::Ref().chance(-2, 1) + 0.5f;
-				parts[ID(r)].vy = RNG::Ref().between(-2, 1);
+				parts[ID(r)].vy = float(RNG::Ref().between(-2, 1));
 				parts[i].life += 4;
 				pmap[y][x] = r;
 				pmap[y+ry][x+rx] = PMAP(i, parts[i].type);

@@ -286,14 +286,14 @@ vector2d GameSave::Translate(vector2d translate)
 {
 	if (Collapsed())
 		Expand();
-	int nx, ny;
+	float nx, ny;
 	vector2d pos;
 	vector2d translateReal = translate;
 	float minx = 0, miny = 0, maxx = 0, maxy = 0;
 	// determine minimum and maximum position of all particles / signs
 	for (size_t i = 0; i < signs.size(); i++)
 	{
-		pos = v2d_new(signs[i].x, signs[i].y);
+		pos = v2d_new(float(signs[i].x), float(signs[i].y));
 		pos = v2d_add(pos,translate);
 		nx = floor(pos.x+0.5f);
 		ny = floor(pos.y+0.5f);
@@ -329,13 +329,13 @@ vector2d GameSave::Translate(vector2d translate)
 	);
 	int blockBoundsX = int(maxx / CELL) + 1, blockBoundsY = int(maxy / CELL) + 1;
 	vector2d frontCorrection = v2d_new(
-		(blockBoundsX > blockWidth) ? (blockBoundsX - blockWidth) : 0,
-		(blockBoundsY > blockHeight) ? (blockBoundsY - blockHeight) : 0
+		float((blockBoundsX > blockWidth) ? (blockBoundsX - blockWidth) : 0),
+		float((blockBoundsY > blockHeight) ? (blockBoundsY - blockHeight) : 0)
 	);
 
 	// get new width based on corrections
-	int newWidth = (blockWidth + backCorrection.x + frontCorrection.x) * CELL;
-	int newHeight = (blockHeight + backCorrection.y + frontCorrection.y) * CELL;
+	auto newWidth = int((blockWidth + backCorrection.x + frontCorrection.x) * CELL);
+	auto newHeight = int((blockHeight + backCorrection.y + frontCorrection.y) * CELL);
 	if (newWidth > XRES)
 		frontCorrection.x = backCorrection.x = 0;
 	if (newHeight > YRES)
@@ -344,8 +344,8 @@ vector2d GameSave::Translate(vector2d translate)
 	// call Transform to do the transformation we wanted when calling this function
 	translate = v2d_add(translate, v2d_multiply_float(backCorrection, CELL));
 	Transform(m2d_identity, translate, translateReal,
-	    (blockWidth + backCorrection.x + frontCorrection.x) * CELL,
-	    (blockHeight + backCorrection.y + frontCorrection.y) * CELL
+	    int((blockWidth + backCorrection.x + frontCorrection.x) * CELL),
+	    int((blockHeight + backCorrection.y + frontCorrection.y) * CELL)
 	);
 
 	// return how much we corrected. This is used to offset the position of the current stamp
@@ -364,9 +364,9 @@ void GameSave::Transform(matrix2d transform, vector2d translate)
 	vector2d translateReal = translate;
 	// undo any translation caused by rotation
 	cornerso[0] = v2d_new(0,0);
-	cornerso[1] = v2d_new(width-1,0);
-	cornerso[2] = v2d_new(0,height-1);
-	cornerso[3] = v2d_new(width-1,height-1);
+	cornerso[1] = v2d_new(float(width-1),0);
+	cornerso[2] = v2d_new(0,float(height-1));
+	cornerso[3] = v2d_new(float(width-1),float(height-1));
 	for (int i = 0; i < 4; i++)
 	{
 		tmp = m2d_multiply_v2d(transform,cornerso[i]);
@@ -379,8 +379,8 @@ void GameSave::Transform(matrix2d transform, vector2d translate)
 	// casting as int doesn't quite do what we want with negative numbers, so use floor()
 	tmp = v2d_new(floor(ctl.x+0.5f),floor(ctl.y+0.5f));
 	translate = v2d_sub(translate,tmp);
-	newWidth = floor(cbr.x+0.5f)-floor(ctl.x+0.5f)+1;
-	newHeight = floor(cbr.y+0.5f)-floor(ctl.y+0.5f)+1;
+	newWidth = int(floor(cbr.x+0.5f))-int(floor(ctl.x+0.5f))+1;
+	newHeight = int(floor(cbr.y+0.5f))-int(floor(ctl.y+0.5f))+1;
 	Transform(transform, translate, translateReal, newWidth, newHeight);
 }
 
@@ -416,10 +416,10 @@ void GameSave::Transform(matrix2d transform, vector2d translate, vector2d transl
 	// rotate and translate signs, parts, walls
 	for (size_t i = 0; i < signs.size(); i++)
 	{
-		pos = v2d_new(signs[i].x, signs[i].y);
+		pos = v2d_new(float(signs[i].x), float(signs[i].y));
 		pos = v2d_add(m2d_multiply_v2d(transform,pos),translate);
-		nx = floor(pos.x+0.5f);
-		ny = floor(pos.y+0.5f);
+		nx = int(floor(pos.x+0.5f));
+		ny = int(floor(pos.y+0.5f));
 		if (nx<0 || nx>=newWidth || ny<0 || ny>=newHeight)
 		{
 			signs[i].text[0] = 0;
@@ -433,15 +433,15 @@ void GameSave::Transform(matrix2d transform, vector2d translate, vector2d transl
 		if (!particles[i].type) continue;
 		pos = v2d_new(particles[i].x, particles[i].y);
 		pos = v2d_add(m2d_multiply_v2d(transform,pos),translate);
-		nx = floor(pos.x+0.5f);
-		ny = floor(pos.y+0.5f);
+		nx = int(floor(pos.x+0.5f));
+		ny = int(floor(pos.y+0.5f));
 		if (nx<0 || nx>=newWidth || ny<0 || ny>=newHeight)
 		{
 			particles[i].type = PT_NONE;
 			continue;
 		}
-		particles[i].x = nx;
-		particles[i].y = ny;
+		particles[i].x = float(nx);
+		particles[i].y = float(ny);
 		vel = v2d_new(particles[i].vx, particles[i].vy);
 		vel = m2d_multiply_v2d(transform, vel);
 		particles[i].vx = vel.x;
@@ -473,8 +473,8 @@ void GameSave::Transform(matrix2d transform, vector2d translate, vector2d transl
 		{
 			pos = v2d_new(x*CELL+CELL*0.4f+translateX, y*CELL+CELL*0.4f+translateY);
 			pos = v2d_add(m2d_multiply_v2d(transform,pos),translate);
-			nx = pos.x/CELL;
-			ny = pos.y/CELL;
+			nx = int(pos.x/CELL);
+			ny = int(pos.y/CELL);
 			if (pos.x<0 || nx>=newBlockWidth || pos.y<0 || ny>=newBlockHeight)
 				continue;
 			if (blockMap[y][x])
@@ -996,7 +996,7 @@ void GameSave::readOPS(char * data, int dataLength)
 			{
 				tempTemp = ambientData[i++];
 				tempTemp |= (((unsigned)ambientData[i++]) << 8);
-				ambientHeat[blockY+y][blockX+x] = tempTemp;
+				ambientHeat[blockY+y][blockX+x] = float(tempTemp);
 			}
 		}
 		hasAmbientHeat = true;
@@ -1046,8 +1046,8 @@ void GameSave::readOPS(char * data, int dataLength)
 
 					//Required fields
 					particles[newIndex].type = partsData[i];
-					particles[newIndex].x = x;
-					particles[newIndex].y = y;
+					particles[newIndex].x = float(x);
+					particles[newIndex].y = float(y);
 					i+=3;
 
 					// Read type (2nd byte)
@@ -1060,7 +1060,7 @@ void GameSave::readOPS(char * data, int dataLength)
 						//Full 16bit int
 						tempTemp = partsData[i++];
 						tempTemp |= (((unsigned)partsData[i++]) << 8);
-						particles[newIndex].temp = tempTemp;
+						particles[newIndex].temp = float(tempTemp);
 					}
 					else
 					{
@@ -1220,7 +1220,7 @@ void GameSave::readOPS(char * data, int dataLength)
 					case PT_FIRW:
 						if (particles[newIndex].tmp>=2 && savedVersion < 81)
 						{
-							int caddress = restrict_flt(restrict_flt((float)(particles[newIndex].tmp-4), 0.0f, 200.0f)*3, 0.0f, (200.0f*3)-3);
+							auto caddress = int(restrict_flt(float(particles[newIndex].tmp-4), 0.0f, 199.0f)) * 3;
 							particles[newIndex].type = PT_EMBR;
 							particles[newIndex].tmp = 1;
 							particles[newIndex].ctype = (((firw_data[caddress]))<<16) | (((firw_data[caddress+1]))<<8) | ((firw_data[caddress+2]));
@@ -1230,7 +1230,7 @@ void GameSave::readOPS(char * data, int dataLength)
 						if (savedVersion < 87 && particles[newIndex].ctype)
 							particles[newIndex].life = 1;
 						if (savedVersion < 91)
-							particles[newIndex].temp = 283.15;
+							particles[newIndex].temp = 283.15f;
 						break;
 					case PT_FILT:
 						if (savedVersion < 89)
@@ -1799,13 +1799,13 @@ void GameSave::readPSv(char * saveDataChar, int dataLength)
 							if (particles[i-1].type==PT_PUMP) {
 								particles[i-1].temp = ttv + 0.15;//fix PUMP saved at 0, so that it loads at 0.
 							} else {
-								particles[i-1].temp = ttv;
+								particles[i-1].temp = float(ttv);
 							}
 						} else {
-							particles[i-1].temp = (data[p++]*((MAX_TEMP+(-MIN_TEMP))/255))+MIN_TEMP;
+							particles[i-1].temp = float((data[p++]*((MAX_TEMP+(-MIN_TEMP))/255))+MIN_TEMP);
 						}
 					} else {
-						particles[i-1].temp = ((data[p++]*((O_MAX_TEMP+(-O_MIN_TEMP))/255))+O_MIN_TEMP)+273;
+						particles[i-1].temp = float(((data[p++]*((O_MAX_TEMP+(-O_MIN_TEMP))/255))+O_MIN_TEMP)+273);
 					}
 				}
 				else
@@ -1930,7 +1930,7 @@ void GameSave::readPSv(char * saveDataChar, int dataLength)
 				}
 				if (particles[i-1].type==PT_FIRW && particles[i-1].tmp>=2)
 				{
-					int caddress = restrict_flt(restrict_flt((float)(particles[i-1].tmp-4), 0.0f, 200.0f)*3, 0.0f, (200.0f*3)-3);
+					auto caddress = int(restrict_flt(float(particles[i-1].tmp-4), 0.0f, 199.0f))*3;
 					particles[i-1].type = PT_EMBR;
 					particles[i-1].tmp = 1;
 					particles[i-1].ctype = (((firw_data[caddress]))<<16) | (((firw_data[caddress+1]))<<8) | ((firw_data[caddress+2]));
@@ -2235,7 +2235,7 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 				//Store temperature as an offset of 21C(294.15K) or go into a 16byte int and store the whole thing
 				if(fabs(particles[i].temp-294.15f)<127)
 				{
-					tempTemp = floor(particles[i].temp-294.15f+0.5f);
+					tempTemp = int(floor(particles[i].temp-294.15f+0.5f));
 					partsData[partsDataLen++] = tempTemp;
 				}
 				else
@@ -2581,7 +2581,7 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 	bson_append_int(&b, "pmapbits", pmapbits);
 	if (partsData && partsDataLen)
 	{
-		bson_append_binary(&b, "parts", BSON_BIN_USER, (const char *)partsData.get(), partsDataLen);
+		bson_append_binary(&b, "parts", (char)BSON_BIN_USER, (const char *)partsData.get(), partsDataLen);
 
 		if (palette.size())
 		{
@@ -2594,12 +2594,12 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 		}
 
 		if (partsPosData && partsPosDataLen)
-			bson_append_binary(&b, "partsPos", BSON_BIN_USER, (const char *)partsPosData.get(), partsPosDataLen);
+			bson_append_binary(&b, "partsPos", (char)BSON_BIN_USER, (const char *)partsPosData.get(), partsPosDataLen);
 	}
 	if (wallData && hasWallData)
-		bson_append_binary(&b, "wallMap", BSON_BIN_USER, (const char *)wallData.get(), wallDataLen);
+		bson_append_binary(&b, "wallMap", (char)BSON_BIN_USER, (const char *)wallData.get(), wallDataLen);
 	if (fanData && fanDataLen)
-		bson_append_binary(&b, "fanMap", BSON_BIN_USER, (const char *)fanData.get(), fanDataLen);
+		bson_append_binary(&b, "fanMap", (char)BSON_BIN_USER, (const char *)fanData.get(), fanDataLen);
 	if (pressData && hasPressure && pressDataLen)
 		bson_append_binary(&b, "pressMap", (char)BSON_BIN_USER, (const char*)pressData.get(), pressDataLen);
 	if (vxData && hasPressure && vxDataLen)
@@ -2609,7 +2609,7 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 	if (ambientData && hasAmbientHeat && this->aheatEnable && ambientDataLen)
 		bson_append_binary(&b, "ambientMap", (char)BSON_BIN_USER, (const char*)ambientData.get(), ambientDataLen);
 	if (soapLinkData && soapLinkDataLen)
-		bson_append_binary(&b, "soapLinks", BSON_BIN_USER, (const char *)soapLinkData, soapLinkDataLen);
+		bson_append_binary(&b, "soapLinks", (char)BSON_BIN_USER, (const char *)soapLinkData, soapLinkDataLen);
 	unsigned int signsCount = 0;
 	for (size_t i = 0; i < signs.size(); i++)
 	{

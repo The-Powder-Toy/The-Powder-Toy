@@ -65,20 +65,20 @@ int Element_BIZR_update(UPDATE_FUNC_ARGS)
 						continue;
 					if (TYP(r)!=PT_BIZR && TYP(r)!=PT_BIZRG  && TYP(r)!=PT_BIZRS)
 					{
-						tr = (parts[ID(r)].dcolour>>16)&0xFF;
-						tg = (parts[ID(r)].dcolour>>8)&0xFF;
-						tb = (parts[ID(r)].dcolour)&0xFF;
-						ta = (parts[ID(r)].dcolour>>24)&0xFF;
+						tr = float((parts[ID(r)].dcolour>>16)&0xFF);
+						tg = float((parts[ID(r)].dcolour>>8)&0xFF);
+						tb = float((parts[ID(r)].dcolour)&0xFF);
+						ta = float((parts[ID(r)].dcolour>>24)&0xFF);
 
-						mr = (parts[i].dcolour>>16)&0xFF;
-						mg = (parts[i].dcolour>>8)&0xFF;
-						mb = (parts[i].dcolour)&0xFF;
-						ma = (parts[i].dcolour>>24)&0xFF;
+						mr = float((parts[i].dcolour>>16)&0xFF);
+						mg = float((parts[i].dcolour>>8)&0xFF);
+						mb = float((parts[i].dcolour)&0xFF);
+						ma = float((parts[i].dcolour>>24)&0xFF);
 
-						nr = (tr*BLEND) + (mr*(1 - BLEND));
-						ng = (tg*BLEND) + (mg*(1 - BLEND));
-						nb = (tb*BLEND) + (mb*(1 - BLEND));
-						na = (ta*BLEND) + (ma*(1 - BLEND));
+						nr = int((tr*BLEND) + (mr*(1 - BLEND)));
+						ng = int((tg*BLEND) + (mg*(1 - BLEND)));
+						nb = int((tb*BLEND) + (mb*(1 - BLEND)));
+						na = int((ta*BLEND) + (ma*(1 - BLEND)));
 
 						parts[ID(r)].dcolour = nr<<16 | ng<<8 | nb | na<<24;
 					}
@@ -113,9 +113,9 @@ int Element_BIZR_graphics(GRAPHICS_FUNC_ARGS)
 	{
 		brightness /= 5;
 		*firea = 255;
-		*fireg = *colg * brightness;
-		*fireb = *colb * brightness;
-		*firer = *colr * brightness;
+		*fireg = int(*colg * brightness);
+		*fireb = int(*colb * brightness);
+		*firer = int(*colr * brightness);
 		*pixel_mode |= FIRE_ADD;
 	}
 	*pixel_mode |= PMODE_BLUR;

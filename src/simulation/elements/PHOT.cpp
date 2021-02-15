@@ -75,8 +75,8 @@ static int update(UPDATE_FUNC_ARGS)
 				{
 					if (RNG::Ref().chance(1, 400))
 					{
-						parts[i].vx *= 0.90;
-						parts[i].vy *= 0.90;
+						parts[i].vx *= 0.90f;
+						parts[i].vy *= 0.90f;
 						sim->create_part(ID(r), x+rx, y+ry, PT_PHOT);
 						rrr = RNG::Ref().between(0, 359) * 3.14159f / 180.0f;
 						if (TYP(r) == PT_ISOZ)

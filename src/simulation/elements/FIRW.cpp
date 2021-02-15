@@ -104,7 +104,7 @@ static int update(UPDATE_FUNC_ARGS)
 				parts[np].ctype = col;
 				parts[np].tmp = 1;
 				parts[np].life = RNG::Ref().between(70, 109);
-				parts[np].temp = RNG::Ref().between(5750, 6249);
+				parts[np].temp = float(RNG::Ref().between(5750, 6249));
 				parts[np].dcolour = parts[i].dcolour;
 			}
 		}

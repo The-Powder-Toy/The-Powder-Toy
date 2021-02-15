@@ -162,8 +162,8 @@ static int update(UPDATE_FUNC_ARGS)
 								parts[p] = parts[ID(sim->photons[yCurrent][xCurrent])];
 							else
 								parts[p] = parts[ID(pmap[yCurrent][xCurrent])];
-							parts[p].x = xCopyTo;
-							parts[p].y = yCopyTo;
+							parts[p].x = float(xCopyTo);
+							parts[p].y = float(yCopyTo);
 						}
 					}
 				}

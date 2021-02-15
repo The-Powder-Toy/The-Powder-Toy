@@ -59,7 +59,7 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 	{
 		*pixel_mode |= FIRE_ADD;
 
-		*firea = ((cpart->temp)-810.15)/45;
+		*firea = int(((cpart->temp)-810.15)/45);
 		*firer = *colr;
 		*fireg = *colg;
 		*fireb = *colb;

@@ -56,17 +56,17 @@ void ProgressBar::Draw(const Point & screenPos)
 				progress = 100;
 			float size = float(Size.X-4)*(float(progress)/100.0f); // TIL...
 			size = std::min(std::max(size, 0.0f), float(Size.X-4));
-			g->fillrect(screenPos.X + 2, screenPos.Y + 2, size, Size.Y-4, progressBarColour.Red, progressBarColour.Green, progressBarColour.Blue, 255);
+			g->fillrect(screenPos.X + 2, screenPos.Y + 2, int(size), Size.Y-4, progressBarColour.Red, progressBarColour.Green, progressBarColour.Blue, 255);
 		}
 	} else {
 		int size = 40, rsize = 0;
 		float position = float(Size.X-4)*(intermediatePos/100.0f);
 		if(position + size - 1 > Size.X-4)
 		{
-			size = (Size.X-4)-position+1;
+			size = int((Size.X-4)-position+1);
 			rsize = 40-size;
 		}
-		g->fillrect(screenPos.X + 2 + position, screenPos.Y + 2, size, Size.Y-4, progressBarColour.Red, progressBarColour.Green, progressBarColour.Blue, 255);
+		g->fillrect(screenPos.X + 2 + int(position), screenPos.Y + 2, size, Size.Y-4, progressBarColour.Red, progressBarColour.Green, progressBarColour.Blue, 255);
 		if(rsize)
 		{
 			g->fillrect(screenPos.X + 2, screenPos.Y + 2, rsize, Size.Y-4, progressBarColour.Red, progressBarColour.Green, progressBarColour.Blue, 255);

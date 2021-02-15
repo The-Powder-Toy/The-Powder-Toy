@@ -85,9 +85,9 @@ constexpr float FREQUENCY = 0.0628f;
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	int q = (int)((cpart->temp-73.15f)/100+1);
-	*colr = sin(FREQUENCY*q + 0) * 127 + 128;
-	*colg = sin(FREQUENCY*q + 2) * 127 + 128;
-	*colb = sin(FREQUENCY*q + 4) * 127 + 128;
+	*colr = int(sin(FREQUENCY*q + 0) * 127 + 128);
+	*colg = int(sin(FREQUENCY*q + 2) * 127 + 128);
+	*colb = int(sin(FREQUENCY*q + 4) * 127 + 128);
 	*pixel_mode |= EFFECT_DBGLINES;
 	return 0;
 }

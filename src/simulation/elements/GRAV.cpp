@@ -76,29 +76,29 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 	*colb = 20;
 	if (cpart->vx>0)
 	{
-		*colr += (cpart->vx)*GRAV_R;
-		*colg += (cpart->vx)*GRAV_G;
-		*colb += (cpart->vx)*GRAV_B;
+		*colr += int((cpart->vx)*GRAV_R);
+		*colg += int((cpart->vx)*GRAV_G);
+		*colb += int((cpart->vx)*GRAV_B);
 	}
 	if (cpart->vy>0)
 	{
-		*colr += (cpart->vy)*GRAV_G;
-		*colg += (cpart->vy)*GRAV_B;
-		*colb += (cpart->vy)*GRAV_R;
+		*colr += int((cpart->vy)*GRAV_G);
+		*colg += int((cpart->vy)*GRAV_B);
+		*colb += int((cpart->vy)*GRAV_R);
 
 	}
 	if (cpart->vx<0)
 	{
-		*colr -= (cpart->vx)*GRAV_B;
-		*colg -= (cpart->vx)*GRAV_R;
-		*colb -= (cpart->vx)*GRAV_G;
+		*colr -= int((cpart->vx)*GRAV_B);
+		*colg -= int((cpart->vx)*GRAV_R);
+		*colb -= int((cpart->vx)*GRAV_G);
 
 	}
 	if (cpart->vy<0)
 	{
-		*colr -= (cpart->vy)*GRAV_R2;
-		*colg -= (cpart->vy)*GRAV_G2;
-		*colb -= (cpart->vy)*GRAV_B2;
+		*colr -= int((cpart->vy)*GRAV_R2);
+		*colg -= int((cpart->vy)*GRAV_G2);
+		*colb -= int((cpart->vy)*GRAV_B2);
 	}
 
 	if (cpart->life)

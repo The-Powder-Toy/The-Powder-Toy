@@ -68,8 +68,8 @@ static int update(UPDATE_FUNC_ARGS)
 						sim->part_change_type(ID(r),x+rx,y+ry,PT_DSTW);
 				case PT_ICEI:
 				case PT_SNOW:
-					parts[i].vx *= 0.995;
-					parts[i].vy *= 0.995;
+					parts[i].vx *= 0.995f;
+					parts[i].vy *= 0.995f;
 					break;
 				case PT_PLUT:
 					if (RNG::Ref().chance(pressureFactor, 1000))

@@ -94,7 +94,7 @@ static int update(UPDATE_FUNC_ARGS)
 				if (parts[i].tmp == 1 && TYP(r) != PT_TSNS && TYP(r) != PT_FILT)
 				{
 					setFilt = true;
-					photonWl = parts[ID(r)].temp;
+					photonWl = int(parts[ID(r)].temp);
 				}
 			}
 	if (setFilt)

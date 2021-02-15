@@ -51,7 +51,7 @@ void Element::Element_CFLM()
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
-	int caddress = restrict_flt(restrict_flt((float)((int)(cpart->life/2)), 0.0f, 200.0f)*3, 0.0f, (200.0f*3)-3);
+	int caddress = int(restrict_flt(float(cpart->life / 2), 0, 199)) * 3;
 	*colr = hflm_data[caddress];
 	*colg = hflm_data[caddress+1];
 	*colb = hflm_data[caddress+2];

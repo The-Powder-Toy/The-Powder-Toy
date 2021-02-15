@@ -176,9 +176,9 @@ void PreviewView::commentBoxAutoHeight()
 
 		commentBoxHeight = newSize+22;
 		commentBoxPositionX = (XRES/2)+4;
-		commentBoxPositionY = Size.Y-(newSize+21);
-		commentBoxSizeX = Size.X-(XRES/2)-8;
-		commentBoxSizeY = newSize;
+		commentBoxPositionY = float(Size.Y-(newSize+21));
+		commentBoxSizeX = float(Size.X-(XRES/2)-8);
+		commentBoxSizeY = float(newSize);
 
 		if (commentWarningLabel && commentHelpText && !commentWarningLabel->Visible && addCommentBox->Position.Y+addCommentBox->Size.Y < Size.Y-14)
 		{
@@ -191,8 +191,8 @@ void PreviewView::commentBoxAutoHeight()
 		addCommentBox->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 
 		commentBoxPositionX = (XRES/2)+4;
-		commentBoxPositionY = Size.Y-19;
-		commentBoxSizeX = Size.X-(XRES/2)-48;
+		commentBoxPositionY = float(Size.Y-19);
+		commentBoxSizeX = float(Size.X-(XRES/2)-48);
 		commentBoxSizeY = 17;
 
 		if (commentWarningLabel && commentWarningLabel->Visible)
@@ -299,14 +299,14 @@ void PreviewView::OnDraw()
 		if (50>lv)
 		{
 			ryf = 50.0f/((float)lv);
-			nyu = votesUp*ryf;
-			nyd = votesDown*ryf;
+			nyu = int(votesUp*ryf);
+			nyd = int(votesDown*ryf);
 		}
 		else
 		{
 			ryf = ((float)lv)/50.0f;
-			nyu = votesUp/ryf;
-			nyd = votesDown/ryf;
+			nyu = int(votesUp/ryf);
+			nyd = int(votesDown/ryf);
 		}
 		nyu = nyu>50?50:nyu;
 		nyd = nyd>50?50:nyd;
@@ -325,8 +325,8 @@ void PreviewView::OnTick(float dt)
 {
 	if(addCommentBox)
 	{
-		ui::Point positionDiff = ui::Point(commentBoxPositionX, commentBoxPositionY)-addCommentBox->Position;
-		ui::Point sizeDiff = ui::Point(commentBoxSizeX, commentBoxSizeY)-addCommentBox->Size;
+		ui::Point positionDiff = ui::Point(int(commentBoxPositionX), int(commentBoxPositionY))-addCommentBox->Position;
+		ui::Point sizeDiff = ui::Point(int(commentBoxSizeX), int(commentBoxSizeY))-addCommentBox->Size;
 
 		if(positionDiff.X!=0)
 		{
@@ -468,10 +468,10 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 				float factorX = ((float)XRES/2)/((float)savePreview->Width);
 				float factorY = ((float)YRES/2)/((float)savePreview->Height);
 				float scaleFactor = factorY < factorX ? factorY : factorX;
-				savePreview->Buffer = Graphics::resample_img(oldData, savePreview->Width, savePreview->Height, savePreview->Width*scaleFactor, savePreview->Height*scaleFactor);
+				savePreview->Buffer = Graphics::resample_img(oldData, savePreview->Width, savePreview->Height, int(savePreview->Width*scaleFactor), int(savePreview->Height*scaleFactor));
 				delete[] oldData;
-				savePreview->Width *= scaleFactor;
-				savePreview->Height *= scaleFactor;
+				savePreview->Width = int(savePreview->Width * scaleFactor);
+				savePreview->Height = int(savePreview->Height * scaleFactor);
 			}
 		}
 		else if (!sender->GetCanOpen())
@@ -527,8 +527,8 @@ void PreviewView::NotifyCommentBoxEnabledChanged(PreviewModel * sender)
 	if(sender->GetCommentBoxEnabled())
 	{
 		commentBoxPositionX = (XRES/2)+4;
-		commentBoxPositionY = Size.Y-19;
-		commentBoxSizeX = Size.X-(XRES/2)-48;
+		commentBoxPositionY = float(Size.Y-19);
+		commentBoxSizeX = float(Size.X-(XRES/2)-48);
 		commentBoxSizeY = 17;
 
 		addCommentBox = new ui::Textbox(ui::Point((XRES/2)+4, Size.Y-19), ui::Point(Size.X-(XRES/2)-48, 17), "", "Add Comment");

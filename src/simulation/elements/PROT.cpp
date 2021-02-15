@@ -114,7 +114,7 @@ static int update(UPDATE_FUNC_ARGS)
 		if (parts[i].temp > 273.15f + 500.0f && (sim->elements[utype].Flammable || sim->elements[utype].Explosive || utype == PT_BANG))
 		{
 			sim->create_part(uID, x, y, PT_FIRE);
-			parts[uID].temp += restrict_flt(sim->elements[utype].Flammable * 5, MIN_TEMP, MAX_TEMP);
+			parts[uID].temp += restrict_flt(float(sim->elements[utype].Flammable * 5), MIN_TEMP, MAX_TEMP);
 			sim->pv[y / CELL][x / CELL] += 1.00f;
 		}
 		//prevent inactive sparkable elements from being sparked

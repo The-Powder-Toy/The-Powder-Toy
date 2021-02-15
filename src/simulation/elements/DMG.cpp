@@ -68,7 +68,7 @@ static int update(UPDATE_FUNC_ARGS)
 						for (nxi=-rad; nxi<=rad; nxi++)
 							if (x+nxi>=0 && y+nxj>=0 && x+nxi<XRES && y+nxj<YRES && (nxi || nxj))
 							{
-								dist = sqrt(pow(nxi, 2.0f)+pow(nxj, 2.0f));//;(pow((float)nxi,2))/(pow((float)rad,2))+(pow((float)nxj,2))/(pow((float)rad,2));
+								dist = int(sqrt(pow(nxi, 2.0f)+pow(nxj, 2.0f)));//;(pow((float)nxi,2))/(pow((float)rad,2))+(pow((float)nxj,2))/(pow((float)rad,2));
 								if (!dist || (dist <= rad))
 								{
 									rr = pmap[y+nxj][x+nxi];

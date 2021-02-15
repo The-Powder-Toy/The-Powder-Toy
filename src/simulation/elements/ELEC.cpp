@@ -73,8 +73,8 @@ static int update(UPDATE_FUNC_ARGS)
 									parts[nb].tmp = 0;
 									parts[nb].life = 50;
 									parts[nb].temp = parts[i].temp*0.8f;
-									parts[nb].vx = RNG::Ref().between(-10, 10);
-									parts[nb].vy = RNG::Ref().between(-10, 10);
+									parts[nb].vx = float(RNG::Ref().between(-10, 10));
+									parts[nb].vy = float(RNG::Ref().between(-10, 10));
 								}
 							}
 					sim->kill_part(i);

@@ -53,7 +53,7 @@ static int update(UPDATE_FUNC_ARGS)
 	float multiplier;
 	if (parts[i].life!=0)
 	{
-		float change = parts[i].life > 1000 ? 1000 : (parts[i].life < 0 ? 0 : parts[i].life);
+		auto change = parts[i].life > 1000 ? 1000 : (parts[i].life < 0 ? 0 : parts[i].life);
 		multiplier = 1.0f+(change/100.0f);
 	}
 	else

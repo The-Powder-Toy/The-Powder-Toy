@@ -55,8 +55,8 @@ static int update(UPDATE_FUNC_ARGS)
 	// Obscure division by 0 fix
 	if (parts[i].temp + 1 == 0)
 		parts[i].temp = 0;
-	int maxtmp = (absorbScale/(parts[i].temp + 1))-1;
-	if (RNG::Ref().chance(absorbScale%((int)parts[i].temp+1), parts[i].temp+1))
+	int maxtmp = int(absorbScale/(parts[i].temp + 1))-1;
+	if (RNG::Ref().chance(absorbScale%(int(parts[i].temp)+1), int(parts[i].temp)+1))
 		maxtmp ++;
 
 	if (parts[i].tmp < 0)

@@ -66,7 +66,7 @@ static int update(UPDATE_FUNC_ARGS)
 					return 1;
 				}
 			}
-	parts[i].ctype = sim->pv[y/CELL][x/CELL]*16;
+	parts[i].ctype = int(sim->pv[y/CELL][x/CELL]*16);
 	parts[i].tmp = abs((int)((sim->vx[y/CELL][x/CELL]+sim->vy[y/CELL][x/CELL])*16.0f)) + abs((int)((parts[i].vx+parts[i].vy)*64.0f));
 
 	return 0;
@@ -74,13 +74,13 @@ static int update(UPDATE_FUNC_ARGS)
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
-	*firer = restrict_flt(cpart->temp-(275.13f+32.0f), 0, 128)/50.0f;
-	*fireg = restrict_flt(cpart->ctype, 0, 128)/50.0f;
-	*fireb = restrict_flt(cpart->tmp, 0, 128)/50.0f;
+	*firer = int(restrict_flt(cpart->temp-(275.13f+32.0f), 0, 128)/50.0f);
+	*fireg = int(restrict_flt(float(cpart->ctype), 0, 128)/50.0f);
+	*fireb = int(restrict_flt(float(cpart->tmp), 0, 128)/50.0f);
 
-	*colr = restrict_flt(64.0f+cpart->temp-(275.13f+32.0f), 0, 255);
-	*colg = restrict_flt(64.0f+cpart->ctype, 0, 255);
-	*colb = restrict_flt(64.0f+cpart->tmp, 0, 255);
+	*colr = int(restrict_flt(64.0f+cpart->temp-(275.13f+32.0f), 0, 255));
+	*colg = int(restrict_flt(64.0f+cpart->ctype, 0, 255));
+	*colb = int(restrict_flt(64.0f+cpart->tmp, 0, 255));
 
 	*pixel_mode |= FIRE_ADD;
 	return 0;

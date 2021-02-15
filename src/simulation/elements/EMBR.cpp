@@ -84,9 +84,9 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 		if (maxComponent<60)//make sure it isn't too dark to see
 		{
 			float multiplier = 60.0f/maxComponent;
-			*colr *= multiplier;
-			*colg *= multiplier;
-			*colb *= multiplier;
+			*colr = int(*colr * multiplier);
+			*colg = int(*colg * multiplier);
+			*colb = int(*colb * multiplier);
 		}
 	}
 	else if (cpart->tmp != 0)

@@ -65,6 +65,14 @@ extern "C"
 #include "socket.lua.h"
 #include "eventcompat.lua.h"
 
+// idea from mniip, makes things much simpler
+#define SETCONST(L, NAME)\
+	lua_pushinteger(L, NAME);\
+	lua_setfield(L, -2, #NAME)
+#define SETCONSTF(L, NAME)\
+	lua_pushnumber(L, NAME);\
+	lua_setfield(L, -2, #NAME)
+
 GameModel * luacon_model;
 GameController * luacon_controller;
 Simulation * luacon_sim;
@@ -733,7 +741,7 @@ int LuaScriptInterface::simulation_newsign(lua_State *l)
 
 	luacon_sim->signs.push_back(sign(text, x, y, (sign::Justification)ju));
 
-	lua_pushnumber(l, luacon_sim->signs.size());
+	lua_pushinteger(l, luacon_sim->signs.size());
 	return 1;
 }
 
@@ -829,8 +837,8 @@ void LuaScriptInterface::initSimulationAPI()
 	SETCONST(l, ST);
 	SETCONST(l, ITH);
 	SETCONST(l, ITL);
-	SETCONST(l, IPH);
-	SETCONST(l, IPL);
+	SETCONSTF(l, IPH);
+	SETCONSTF(l, IPL);
 	SETCONST(l, PT_NUM);
 	lua_pushinteger(l, 0); lua_setfield(l, -2, "NUM_PARTS");
 	SETCONST(l, R_TEMP);
@@ -964,7 +972,7 @@ int LuaScriptInterface::simulation_partChangeType(lua_State * l)
 	int partIndex = lua_tointeger(l, 1);
 	if(partIndex < 0 || partIndex >= NPART || !luacon_sim->parts[partIndex].type)
 		return 0;
-	luacon_sim->part_change_type(partIndex, luacon_sim->parts[partIndex].x+0.5f, luacon_sim->parts[partIndex].y+0.5f, lua_tointeger(l, 2));
+	luacon_sim->part_change_type(partIndex, int(luacon_sim->parts[partIndex].x+0.5f), int(luacon_sim->parts[partIndex].y+0.5f), lua_tointeger(l, 2));
 	return 0;
 }
 
@@ -1092,7 +1100,7 @@ int LuaScriptInterface::simulation_partProperty(lua_State * l)
 	{
 		if (prop == properties.begin() + 0) // i.e. it's .type
 		{
-			luacon_sim->part_change_type(particleID, luacon_sim->parts[particleID].x+0.5f, luacon_sim->parts[particleID].y+0.5f, luaL_checkinteger(l, 3));
+			luacon_sim->part_change_type(particleID, int(luacon_sim->parts[particleID].x+0.5f), int(luacon_sim->parts[particleID].y+0.5f), luaL_checkinteger(l, 3));
 		}
 		else
 		{

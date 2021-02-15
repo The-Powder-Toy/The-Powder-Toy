@@ -29,8 +29,8 @@ static int perform(Simulation * sim, Particle * cpart, int x, int y, int brushX,
 		float *vx = &sim->air->vx[y / CELL][x / CELL];
 		float *vy = &sim->air->vy[y / CELL][x / CELL];
 
-		float dvx = brushX - x;
-		float dvy = brushY - y;
+		auto dvx = float(brushX - x);
+		auto dvy = float(brushY - y);
 		float invsqr = 1/sqrtf(dvx*dvx + dvy*dvy);
 
 		*vx -= (strength / 16) * (-dvy)*invsqr;

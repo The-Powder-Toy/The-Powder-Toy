@@ -40,7 +40,7 @@ void Element::Element_FRZZ()
 	HighPressureTransition = PT_SNOW;
 	LowTemperature = 50.0f;
 	LowTemperatureTransition = PT_ICEI;
-	HighTemperature = 273.15;
+	HighTemperature = 273.15f;
 	HighTemperatureTransition = PT_FRZW;
 
 	Update = &update;

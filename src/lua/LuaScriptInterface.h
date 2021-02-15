@@ -33,11 +33,6 @@ class Tool;
 #define LUACON_EL_MODIFIED_GRAPHICS 0x2
 #define LUACON_EL_MODIFIED_MENUS 0x4
 
-// idea from mniip, makes things much simpler
-#define SETCONST(L, NAME)\
-	lua_pushinteger(L, NAME);\
-	lua_setfield(L, -2, #NAME)
-
 class Simulation;
 class TPTScriptInterface;
 class LuaComponent;

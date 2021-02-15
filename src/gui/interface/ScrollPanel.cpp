@@ -37,7 +37,7 @@ int ScrollPanel::GetScrollLimit()
 
 void ScrollPanel::SetScrollPosition(int position)
 {
-	offsetY = position;
+	offsetY = float(position);
 	ViewportPosition.Y = -position;
 }
 
@@ -68,7 +68,7 @@ void ScrollPanel::Draw(const Point& screenPos)
 		}
 
 		g->fillrect(screenPos.X+(Size.X-scrollBarWidth), screenPos.Y, scrollBarWidth, Size.Y, 125, 125, 125, 100);
-		g->fillrect(screenPos.X+(Size.X-scrollBarWidth), screenPos.Y+scrollPos, scrollBarWidth, scrollHeight+1, 255, 255, 255, 255);
+		g->fillrect(screenPos.X+(Size.X-scrollBarWidth), screenPos.Y+int(scrollPos), scrollBarWidth, int(scrollHeight)+1, 255, 255, 255, 255);
 	}
 }
 
@@ -77,7 +77,7 @@ void ScrollPanel::XOnMouseClick(int x, int y, unsigned int button)
 	if (isMouseInsideScrollbar)
 	{
 		scrollbarSelected = true;
-		scrollbarInitialYOffset = offsetY;
+		scrollbarInitialYOffset = int(offsetY);
 	}
 	scrollbarInitialYClick = y;
 	scrollbarClickLocation = 100;
@@ -105,14 +105,14 @@ void ScrollPanel::XOnMouseMoved(int x, int y, int dx, int dy)
 		{
 			if (x > 0)
 			{
-				int scrollY = float(y-scrollbarInitialYClick)/float(Size.Y)*float(InnerSize.Y)+scrollbarInitialYOffset;
+				auto scrollY = int(float(y-scrollbarInitialYClick)/float(Size.Y)*float(InnerSize.Y)+scrollbarInitialYOffset);
 				ViewportPosition.Y = -scrollY;
-				offsetY = scrollY;
+				offsetY = float(scrollY);
 			}
 			else
 			{
 				ViewportPosition.Y = -scrollbarInitialYOffset;
-				offsetY = scrollbarInitialYOffset;
+				offsetY = float(scrollbarInitialYOffset);
 			}
 		}
 
@@ -138,7 +138,7 @@ void ScrollPanel::XTick(float dt)
 	maxOffset.Y = std::max(0, maxOffset.Y);
 	maxOffset.X = std::max(0, maxOffset.X);
 
-	int oldOffsetY = offsetY;
+	auto oldOffsetY = int(offsetY);
 	offsetY += yScrollVel;
 	offsetX += xScrollVel;
 
@@ -165,10 +165,10 @@ void ScrollPanel::XTick(float dt)
 		}
 		else if (offsetY>maxOffset.Y)
 		{
-			offsetY = maxOffset.Y;
+			offsetY = float(maxOffset.Y);
 			yScrollVel = 0;
 		}
-		ViewportPosition.Y = -offsetY;
+		ViewportPosition.Y = -int(offsetY);
 	}
 	else
 	{
@@ -176,12 +176,12 @@ void ScrollPanel::XTick(float dt)
 		{
 			offsetY = 0;
 			yScrollVel = 0;
-			ViewportPosition.Y = -offsetY;
+			ViewportPosition.Y = -int(offsetY);
 		}
 		else if (offsetY>maxOffset.Y)
 		{
-			offsetY = maxOffset.Y;
-			ViewportPosition.Y = -offsetY;
+			offsetY = float(maxOffset.Y);
+			ViewportPosition.Y = -int(offsetY);
 		}
 	}
 
@@ -205,6 +205,6 @@ void ScrollPanel::XTick(float dt)
 			scrollbarClickLocation = 0;
 
 		offsetY += scrollbarClickLocation*scrollHeight/10;
-		ViewportPosition.Y -= scrollbarClickLocation*scrollHeight/10;
+		ViewportPosition.Y -= int(scrollbarClickLocation*scrollHeight/10);
 	}
 }

@@ -160,7 +160,7 @@ std::pair<int, sign::Type> sign::split()
 						return std::make_pair(0, Type::Normal);
 					}
 				}
-				return std::make_pair(pipe, text[1] == 'c' ? Type::Save : Type::Thread);
+				return std::make_pair(int(pipe), text[1] == 'c' ? Type::Save : Type::Thread);
 			}
 			break;
 
@@ -174,7 +174,7 @@ std::pair<int, sign::Type> sign::split()
 		case 's':
 			if (text[2] == ':' && (pipe = text.find('|', 3)) != text.npos)
 			{
-				return std::make_pair(pipe, Type::Search);
+				return std::make_pair(int(pipe), Type::Search);
 			}
 			break;
 		}

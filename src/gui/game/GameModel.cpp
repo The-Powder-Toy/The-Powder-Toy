@@ -481,7 +481,7 @@ void GameModel::BuildBrushList()
 			std::cout << "Brushes: Skipping " << brushFiles[i] << ". Could not open" << std::endl;
 			continue;
 		}
-		size_t dimension = std::sqrt((float)brushData.size());
+		auto dimension = size_t(std::sqrt(float(brushData.size())));
 		if (dimension * dimension != brushData.size())
 		{
 			std::cout << "Brushes: Skipping " << brushFiles[i] << ". Invalid bitmap size" << std::endl;

@@ -129,7 +129,7 @@ void SaveButton::Tick(float dt)
 		if (!triedThumbnail)
 		{
 			float scaleFactor = (Size.Y-25)/((float)YRES);
-			ui::Point thumbBoxSize = ui::Point(((float)XRES)*scaleFactor, ((float)YRES)*scaleFactor);
+			ui::Point thumbBoxSize = ui::Point(int(XRES*scaleFactor), int(YRES*scaleFactor));
 			if (save)
 			{
 				if(save->GetGameSave())
@@ -176,7 +176,7 @@ void SaveButton::Draw(const Point& screenPos)
 {
 	Graphics * g = GetGraphics();
 	float scaleFactor = (Size.Y-25)/((float)YRES);
-	ui::Point thumbBoxSize = ui::Point(((float)XRES)*scaleFactor, ((float)YRES)*scaleFactor);
+	ui::Point thumbBoxSize = ui::Point(int(XRES*scaleFactor), int(YRES*scaleFactor));
 
 	wantsDraw = true;
 

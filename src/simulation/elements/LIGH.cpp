@@ -3,7 +3,7 @@
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
 static void create(ELEMENT_CREATE_FUNC_ARGS);
-static void create_line_par(Simulation * sim, int x1, int y1, int x2, int y2, int c, int temp, int life, int tmp, int tmp2);
+static void create_line_par(Simulation * sim, int x1, int y1, int x2, int y2, int c, float temp, int life, int tmp, int tmp2);
 
 void Element::Element_LIGH()
 {
@@ -71,7 +71,7 @@ static int update(UPDATE_FUNC_ARGS)
 	*/
 	int r,rx,ry,rt, multipler, powderful;
 	float angle, angle2=-1;
-	powderful = parts[i].temp*(1+parts[i].life/40)*LIGHTING_POWER;
+	powderful = int(parts[i].temp*(1+parts[i].life/40)*LIGHTING_POWER);
 	//Element_FIRE::update(UPDATE_FUNC_SUBCALL_ARGS);
 	if (sim->aheat_enable)
 	{
@@ -93,7 +93,7 @@ static int update(UPDATE_FUNC_ARGS)
 				rt = TYP(r);
 				if ((surround_space || sim->elements[rt].Explosive) &&
 				    (rt!=PT_SPNG || parts[ID(r)].life==0) &&
-					sim->elements[rt].Flammable && RNG::Ref().chance(sim->elements[rt].Flammable + sim->pv[(y+ry)/CELL][(x+rx)/CELL] * 10.0f, 1000))
+					sim->elements[rt].Flammable && RNG::Ref().chance(sim->elements[rt].Flammable + int(sim->pv[(y+ry)/CELL][(x+rx)/CELL] * 10.0f), 1000))
 				{
 					sim->part_change_type(ID(r),x+rx,y+ry,PT_FIRE);
 					parts[ID(r)].temp = restrict_flt(sim->elements[PT_FIRE].DefaultProperties.temp + (sim->elements[rt].Flammable/2), MIN_TEMP, MAX_TEMP);
@@ -121,8 +121,8 @@ static int update(UPDATE_FUNC_ARGS)
 					{
 						sim->part_change_type(ID(r),x+rx,y+ry,PT_NEUT);
 						parts[ID(r)].life = RNG::Ref().between(480, 959);
-						parts[ID(r)].vx = RNG::Ref().between(-5, 5);
-						parts[ID(r)].vy = RNG::Ref().between(-5, 5);
+						parts[ID(r)].vx = float(RNG::Ref().between(-5, 5));
+						parts[ID(r)].vy = float(RNG::Ref().between(-5, 5));
 					}
 					break;
 				case PT_COAL:
@@ -172,29 +172,29 @@ static int update(UPDATE_FUNC_ARGS)
 		return 1;
 	}
 
-	angle = (parts[i].tmp + RNG::Ref().between(-30, 30)) % 360;
-	multipler = parts[i].life * 1.5 + RNG::Ref().between(0, parts[i].life);
-	rx=cos(angle*M_PI/180)*multipler;
-	ry=-sin(angle*M_PI/180)*multipler;
-	create_line_par(sim, x, y, x+rx, y+ry, PT_LIGH, parts[i].temp, parts[i].life, angle, parts[i].tmp2);
+	angle = float((parts[i].tmp + RNG::Ref().between(-30, 30)) % 360);
+	multipler = int(parts[i].life * 1.5) + RNG::Ref().between(0, parts[i].life);
+	rx=int(cos(angle*M_PI/180)*multipler);
+	ry=int(-sin(angle*M_PI/180)*multipler);
+	create_line_par(sim, x, y, x+rx, y+ry, PT_LIGH, parts[i].temp, parts[i].life, int(angle), parts[i].tmp2);
 	if (parts[i].tmp2==2)// && pNear==-1)
 	{
-		angle2 = ((int)angle + RNG::Ref().between(-100, 100)) % 360;
-		rx=cos(angle2*M_PI/180)*multipler;
-		ry=-sin(angle2*M_PI/180)*multipler;
-		create_line_par(sim, x, y, x+rx, y+ry, PT_LIGH, parts[i].temp, parts[i].life, angle2, parts[i].tmp2);
+		angle2 = float(((int)angle + RNG::Ref().between(-100, 100)) % 360);
+		rx=int(cos(angle2*M_PI/180)*multipler);
+		ry=int(-sin(angle2*M_PI/180)*multipler);
+		create_line_par(sim, x, y, x+rx, y+ry, PT_LIGH, parts[i].temp, parts[i].life, int(angle2), parts[i].tmp2);
 	}
 
 	parts[i].tmp2=-1;
 	return 1;
 }
 
-static bool create_LIGH(Simulation * sim, int x, int y, int c, int temp, int life, int tmp, int tmp2, bool last)
+static bool create_LIGH(Simulation * sim, int x, int y, int c, float temp, int life, int tmp, int tmp2, bool last)
 {
 	int p = sim->create_part(-1, x, y,c);
 	if (p != -1)
 	{
-		sim->parts[p].temp = temp;
+		sim->parts[p].temp = float(temp);
 		sim->parts[p].tmp = tmp;
 		if (last)
 		{
@@ -217,7 +217,7 @@ static bool create_LIGH(Simulation * sim, int x, int y, int c, int temp, int lif
 	return false;
 }
 
-static void create_line_par(Simulation * sim, int x1, int y1, int x2, int y2, int c, int temp, int life, int tmp, int tmp2)
+static void create_line_par(Simulation * sim, int x1, int y1, int x2, int y2, int c, float temp, int life, int tmp, int tmp2)
 {
 	bool reverseXY = abs(y2-y1) > abs(x2-x1), back = false;
 	int x, y, dx, dy, Ystep;

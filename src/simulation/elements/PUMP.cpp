@@ -60,10 +60,10 @@ static int update(UPDATE_FUNC_ARGS)
 	}
 	else
 	{
-		if (parts[i].temp >= 256.0+273.15)
-			parts[i].temp = 256.0+273.15;
-		if (parts[i].temp <= -256.0+273.15)
-			parts[i].temp = -256.0+273.15;
+		if (parts[i].temp >= 256.0f+273.15f)
+			parts[i].temp = 256.0f+273.15f;
+		if (parts[i].temp <= -256.0f+273.15f)
+			parts[i].temp = -256.0f+273.15f;
 
 		for (rx = -1; rx <= 1; rx++)
 			for (ry = -1; ry <= 1; ry++)
@@ -81,7 +81,7 @@ static int update(UPDATE_FUNC_ARGS)
 						int newPressure = parts[ID(r)].ctype - 0x10000000;
 						if (newPressure >= 0 && newPressure <= 512)
 						{
-							sim->pv[(y + ry) / CELL][(x + rx) / CELL] = newPressure - 256;
+							sim->pv[(y + ry) / CELL][(x + rx) / CELL] = float(newPressure - 256);
 						}
 					}
 				}

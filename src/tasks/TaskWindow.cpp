@@ -101,17 +101,17 @@ void TaskWindow::OnDraw()
 				progress = 100;
 			float size = float(Size.X-4)*(float(progress)/100.0f); // TIL...
 			size = std::min(std::max(size, 0.0f), float(Size.X-4));
-			g->fillrect(Position.X + 2, Position.Y + Size.Y-15, size, 13, progressBarColour.Red, progressBarColour.Green, progressBarColour.Blue, 255);
+			g->fillrect(Position.X + 2, Position.Y + Size.Y-15, int(size), 13, progressBarColour.Red, progressBarColour.Green, progressBarColour.Blue, 255);
 		}
 	} else {
 		int size = 40, rsize = 0;
 		float position = float(Size.X-4)*(intermediatePos/100.0f);
 		if(position + size - 1 > Size.X-4)
 		{
-			size = (Size.X-4)-position+1;
+			size = (Size.X-4)-int(position)+1;
 			rsize = 40-size;
 		}
-		g->fillrect(Position.X + 2 + position, Position.Y + Size.Y-15, size, 13, progressBarColour.Red, progressBarColour.Green, progressBarColour.Blue, 255);
+		g->fillrect(Position.X + 2 + int(position), Position.Y + Size.Y-15, size, 13, progressBarColour.Red, progressBarColour.Green, progressBarColour.Blue, 255);
 		if(rsize)
 		{
 			g->fillrect(Position.X + 2, Position.Y + Size.Y-15, rsize, 13, progressBarColour.Red, progressBarColour.Green, progressBarColour.Blue, 255);

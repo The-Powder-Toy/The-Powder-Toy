@@ -76,13 +76,13 @@ static int update(UPDATE_FUNC_ARGS)
 				else if (TYP(r)==PT_CLST)
 				{
 					if(parts[i].temp <195)
-						cxy = 0.05;
+						cxy = 0.05f;
 					else if(parts[i].temp <295)
-						cxy = 0.015;
+						cxy = 0.015f;
 					else if(parts[i].temp <350)
-						cxy = 0.01;
+						cxy = 0.01f;
 					else
-						cxy = 0.005;
+						cxy = 0.005f;
 					parts[i].vx += cxy*rx;
 					parts[i].vy += cxy*ry;//These two can be set not to calculate over 350 later. They do virtually nothing over 0.005.
 				}

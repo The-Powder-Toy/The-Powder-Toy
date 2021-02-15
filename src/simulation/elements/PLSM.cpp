@@ -52,7 +52,7 @@ void Element::Element_PLSM()
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
-	int caddress = restrict_flt(restrict_flt((float)cpart->life, 0.0f, 200.0f)*3, 0.0f, (200.0f*3)-3);
+	int caddress = int(restrict_flt(float(cpart->life), 0, 199)) * 3;
 	*colr = (unsigned char)ren->plasma_data[caddress];
 	*colg = (unsigned char)ren->plasma_data[caddress+1];
 	*colb = (unsigned char)ren->plasma_data[caddress+2];

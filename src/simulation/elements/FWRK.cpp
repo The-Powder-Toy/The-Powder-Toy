@@ -48,7 +48,7 @@ void Element::Element_FWRK()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	if (parts[i].life == 0 && ((surround_space && parts[i].temp>400 && RNG::Ref().chance(9+parts[i].temp/40, 100000)) || parts[i].ctype == PT_DUST))
+	if (parts[i].life == 0 && ((surround_space && parts[i].temp>400 && RNG::Ref().chance(int(9+parts[i].temp/40), 100000)) || parts[i].ctype == PT_DUST))
 	{
 		float gx, gy, multiplier, gmax;
 		int randTmp;
@@ -100,7 +100,7 @@ static int update(UPDATE_FUNC_ARGS)
 				parts[np].ctype = col;
 				parts[np].tmp = 1;
 				parts[np].life = RNG::Ref().between(70, 109);
-				parts[np].temp = RNG::Ref().between(5750, 6249);
+				parts[np].temp = float(RNG::Ref().between(5750, 6249));
 				parts[np].dcolour = parts[i].dcolour;
 			}
 		}

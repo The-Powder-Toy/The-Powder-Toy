@@ -105,7 +105,7 @@ void ColourPickerActivity::OnMouseMove(int x, int y, int dx, int dy)
 		x -= Position.X+5;
 		y -= Position.Y+5;
 
-		currentHue = (float(x)/float(255))*359.0f;
+		currentHue = int((float(x)/float(255))*359.0f);
 		currentSaturation = 255-(y*2);
 
 		if(currentSaturation > 255)
@@ -146,7 +146,7 @@ void ColourPickerActivity::OnMouseDown(int x, int y, unsigned button)
 	if(x >= 0 && x < 256 && y >= 0 && y <= 128)
 	{
 		mouseDown = true;
-		currentHue = (float(x)/float(255))*359.0f;
+		currentHue = int((float(x)/float(255))*359.0f);
 		currentSaturation = 255-(y*2);
 
 		if(currentSaturation > 255)
@@ -193,7 +193,7 @@ void ColourPickerActivity::OnMouseUp(int x, int y, unsigned button)
 		x -= Position.X+5;
 		y -= Position.Y+5;
 
-		currentHue = (float(x)/float(255))*359.0f;
+		currentHue = int((float(x)/float(255))*359.0f);
 		currentSaturation = 255-(y*2);
 
 		if(currentSaturation > 255)
@@ -261,7 +261,7 @@ void ColourPickerActivity::OnDraw()
 	{
 		for(int hue = 0; hue <= 359; hue++)
 		{
-			currx = clamp_flt(hue, 0, 359)+offsetX;
+			currx = int(restrict_flt(float(hue), 0, 359))+offsetX;
 			if (currx == lastx)
 				continue;
 			lastx = currx;
@@ -286,7 +286,7 @@ void ColourPickerActivity::OnDraw()
 		}
 
 	//draw color square pointer
-	int currentHueX = clamp_flt(currentHue, 0, 359);
+	int currentHueX = int(restrict_flt(float(currentHue), 0, 359));
 	int currentSaturationY = ((255-currentSaturation)/2);
 	g->xor_line(offsetX+currentHueX, offsetY+currentSaturationY-5, offsetX+currentHueX, offsetY+currentSaturationY-1);
 	g->xor_line(offsetX+currentHueX, offsetY+currentSaturationY+1, offsetX+currentHueX, offsetY+currentSaturationY+5);
@@ -294,7 +294,7 @@ void ColourPickerActivity::OnDraw()
 	g->xor_line(offsetX+currentHueX+1, offsetY+currentSaturationY, offsetX+currentHueX+5, offsetY+currentSaturationY);
 
 	//draw brightness bar pointer
-	int currentValueX = restrict_flt(currentValue, 0, 254);
+	int currentValueX = int(restrict_flt(float(currentValue), 0, 254));
 	g->xor_line(offsetX+currentValueX, offsetY+4+128, offsetX+currentValueX, offsetY+13+128);
 	g->xor_line(offsetX+currentValueX+1, offsetY+4+128, offsetX+currentValueX+1, offsetY+13+128);
 }

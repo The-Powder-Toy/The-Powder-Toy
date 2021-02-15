@@ -81,7 +81,7 @@ void DoRestart()
 	if (exename.length())
 	{
 #ifdef WIN
-		int ret = (int)ShellExecute(NULL, NULL, exename.c_str(), NULL, NULL, SW_SHOWNORMAL);
+		int ret = int(INT_PTR(ShellExecute(NULL, NULL, exename.c_str(), NULL, NULL, SW_SHOWNORMAL)));
 		if (ret <= 32)
 		{
 			fprintf(stderr, "cannot restart: ShellExecute(...) failed: code %i\n", ret);
@@ -109,7 +109,7 @@ void DoRestart()
 void OpenURI(ByteString uri)
 {
 #if defined(WIN)
-	if ((int)ShellExecute(NULL, NULL, uri.c_str(), NULL, NULL, SW_SHOWNORMAL) <= 32)
+	if (int(INT_PTR(ShellExecute(NULL, NULL, uri.c_str(), NULL, NULL, SW_SHOWNORMAL))) <= 32)
 	{
 		fprintf(stderr, "cannot open URI: ShellExecute(...) failed\n");
 	}

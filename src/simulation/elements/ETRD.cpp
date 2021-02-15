@@ -102,7 +102,7 @@ int Element_ETRD_nearestSparkablePart(Simulation *sim, int targetId)
 	Particle *parts = sim->parts;
 	int foundDistance = XRES + YRES;
 	int foundI = -1;
-	ui::Point targetPos = ui::Point(parts[targetId].x, parts[targetId].y);
+	ui::Point targetPos = ui::Point(int(parts[targetId].x), int(parts[targetId].y));
 
 	if (sim->etrd_count_valid)
 	{
@@ -141,7 +141,7 @@ int Element_ETRD_nearestSparkablePart(Simulation *sim, int targetId)
 			{
 				if (parts[i].type == PT_ETRD && !parts[i].life)
 				{
-					ui::Point checkPos = ui::Point(parts[i].x-targetPos.X, parts[i].y-targetPos.Y);
+					ui::Point checkPos = ui::Point(int(parts[i].x)-targetPos.X, int(parts[i].y)-targetPos.Y);
 					int checkDistance = std::abs(checkPos.X) + std::abs(checkPos.Y);
 					if (checkDistance < foundDistance && i != targetId)
 					{
@@ -161,7 +161,7 @@ int Element_ETRD_nearestSparkablePart(Simulation *sim, int targetId)
 			if (parts[i].type == PT_ETRD && !parts[i].life)
 			{
 				countLife0++;
-				ui::Point checkPos = ui::Point(parts[i].x-targetPos.X, parts[i].y-targetPos.Y);
+				ui::Point checkPos = ui::Point(int(parts[i].x)-targetPos.X, int(parts[i].y)-targetPos.Y);
 				int checkDistance = std::abs(checkPos.X) + std::abs(checkPos.Y);
 				if (checkDistance < foundDistance && i != targetId)
 				{

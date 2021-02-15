@@ -176,7 +176,7 @@ static int update(UPDATE_FUNC_ARGS)
 	{
 		parts[i].vx = 0;
 		parts[i].vy = 0;
-		sim->pv[y/CELL][x/CELL] -= 0.01;
+		sim->pv[y/CELL][x/CELL] -= 0.01f;
 		parts[i].tmp--;
 	}
 	return 0;
@@ -184,17 +184,17 @@ static int update(UPDATE_FUNC_ARGS)
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
-	int q = cpart->temp;
-	int b = cpart->tmp;
-	int c = cpart->tmp2;
+	auto q = cpart->temp;
+	auto b = cpart->tmp;
+	auto c = cpart->tmp2;
 	if (cpart->life < 1001)
 	{
 		if (RNG::Ref().chance(cpart->tmp2 - 1, 1000))
 		{
-			float frequency = 0.04045;
-			*colr = (sin(frequency*c + 4) * 127 + 150);
-			*colg = (sin(frequency*c + 6) * 127 + 150);
-			*colb = (sin(frequency*c + 8) * 127 + 150);
+			float frequency = 0.04045f;
+			*colr = int(sin(frequency*c + 4) * 127 + 150);
+			*colg = int(sin(frequency*c + 6) * 127 + 150);
+			*colb = int(sin(frequency*c + 8) * 127 + 150);
 
 			*firea = 100;
 			*firer = 0;
@@ -206,10 +206,10 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 		}
 		else
 		{
-			float frequency = 0.00045;
-			*colr = (sin(frequency*q + 4) * 127 + (b/1.7));
-			*colg = (sin(frequency*q + 6) * 127 + (b/1.7));
-			*colb = (sin(frequency*q + 8) * 127 + (b/1.7));
+			float frequency = 0.00045f;
+			*colr = int(sin(frequency*q + 4) * 127 + (b/1.7));
+			*colg = int(sin(frequency*q + 6) * 127 + (b/1.7));
+			*colb = int(sin(frequency*q + 8) * 127 + (b/1.7));
 			*cola = cpart->tmp / 6;
 
 			*firea = *cola;
@@ -223,10 +223,10 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 	}
 	else
 	{
-		float frequency = 0.01300;
-		*colr = (sin(frequency*q + 6.00) * 127 + ((b/2.9) + 80));
-		*colg = (sin(frequency*q + 6.00) * 127 + ((b/2.9) + 80));
-		*colb = (sin(frequency*q + 6.00) * 127 + ((b/2.9) + 80));
+		float frequency = 0.01300f;
+		*colr = int(sin(frequency*q + 6.00) * 127 + ((b/2.9) + 80));
+		*colg = int(sin(frequency*q + 6.00) * 127 + ((b/2.9) + 80));
+		*colb = int(sin(frequency*q + 6.00) * 127 + ((b/2.9) + 80));
 		*cola = cpart->tmp / 6;
 		*firea = *cola;
 		*firer = *colr;

@@ -55,18 +55,18 @@ void BitmapBrush::GenerateBitmap()
 					float originalY = ((float)y)*factorY;
 					float originalX = ((float)x)*factorX;
 
-					int lowerX = std::floor(originalX);
-					int upperX = std::min((float)(origSize.X-1), std::floor(originalX+1.0f));
-					int lowerY = std::floor(originalY);
-					int upperY = std::min((float)(origSize.Y-1), std::floor(originalY+1.0f));
+					auto lowerX = int(std::floor(originalX));
+					auto upperX = int(std::min((float)(origSize.X-1), std::floor(originalX+1.0f)));
+					auto lowerY = int(std::floor(originalY));
+					auto upperY = int(std::min((float)(origSize.Y-1), std::floor(originalY+1.0f)));
 
 					unsigned char topRight = origBitmap[(lowerY*origSize.X)+upperX];
 					unsigned char topLeft = origBitmap[(lowerY*origSize.X)+lowerX];
 					unsigned char bottomRight = origBitmap[(upperY*origSize.X)+upperX];
 					unsigned char bottomLeft = origBitmap[(upperY*origSize.X)+lowerX];
-					float top = LinearInterpolate<float>(topLeft, topRight, lowerX, upperX, originalX);
-					float bottom = LinearInterpolate<float>(bottomLeft, bottomRight, lowerX, upperX, originalX);
-					float mid = LinearInterpolate<float>(top, bottom, lowerY, upperY, originalY);
+					float top = LinearInterpolate<float>(topLeft, topRight, float(lowerX), float(upperX), originalX);
+					float bottom = LinearInterpolate<float>(bottomLeft, bottomRight, float(lowerX), float(upperX), originalX);
+					float mid = LinearInterpolate<float>(top, bottom, float(lowerY), float(upperY), originalY);
 					bitmap[(y*size.X)+x] = mid > 128 ? 255 : 0;
 				}
 			}

@@ -442,7 +442,7 @@ int bson_iterator_int( const bson_iterator *i ) {
 	case BSON_LONG:
 		return bson_iterator_long_raw( i );
 	case BSON_DOUBLE:
-		return bson_iterator_double_raw( i );
+		return int(bson_iterator_double_raw( i ));
 	default:
 		return 0;
 	}
@@ -453,7 +453,7 @@ double bson_iterator_double( const bson_iterator *i ) {
 	case BSON_INT:
 		return bson_iterator_int_raw( i );
 	case BSON_LONG:
-		return bson_iterator_long_raw( i );
+		return double(bson_iterator_long_raw( i ));
 	case BSON_DOUBLE:
 		return bson_iterator_double_raw( i );
 	default:
@@ -468,7 +468,7 @@ int64_t bson_iterator_long( const bson_iterator *i ) {
 	case BSON_LONG:
 		return bson_iterator_long_raw( i );
 	case BSON_DOUBLE:
-		return bson_iterator_double_raw( i );
+		return int64_t(bson_iterator_double_raw( i ));
 	default:
 		return 0;
 	}
@@ -625,7 +625,7 @@ int bson_ensure_space( bson *b, const int bytesNeeded ) {
 	if ( pos + bytesNeeded <= b->dataSize )
 		return BSON_OK;
 
-	new_size = 1.5 * ( b->dataSize + bytesNeeded );
+	new_size = int(1.5 * ( b->dataSize + bytesNeeded ));
 
 	if( new_size < b->dataSize ) {
 		if( ( b->dataSize + bytesNeeded ) < INT_MAX )

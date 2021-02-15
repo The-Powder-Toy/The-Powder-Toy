@@ -108,7 +108,7 @@ static int update(UPDATE_FUNC_ARGS)
 						if (vel >= 0 && vel < SIM_MAXVELOCITY)
 						{
 							doDeserialization = true;
-							Vs = vel;
+							Vs = float(vel);
 						}
 					}
 					break;

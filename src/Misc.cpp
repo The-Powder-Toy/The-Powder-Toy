@@ -9,34 +9,6 @@
 
 #include "common/tpt-minmax.h"
 
-//Signum function
-int isign(float i) //TODO: INline or macro
-{
-	if (i<0)
-		return -1;
-	if (i>0)
-		return 1;
-	return 0;
-}
-
-unsigned clamp_flt(float f, float min, float max) //TODO: Also inline/macro
-{
-	if (f<min)
-		return 0;
-	if (f>max)
-		return 255;
-	return (int)(255.0f*(f-min)/(max-min));
-}
-
-float restrict_flt(float f, float min, float max) //TODO Inline or macro or something
-{
-	if (f<min)
-		return min;
-	if (f>max)
-		return max;
-	return f;
-}
-
 const static char hex[] = "0123456789ABCDEF";
 void strcaturl(char *dst, char *src)
 {
@@ -227,7 +199,7 @@ void RGB_to_HSV(int r,int g,int b,int *h,int *s,int *v)//convert 0-255 RGB value
 	else
 	{
  		c = (rr==a) ? gg-bb : ((bb==a) ? rr-gg : bb-rr);
- 		d = (rr==a) ? 3 : ((bb==a) ? 1 : 5);
+ 		d = (rr==a) ? 3.f : ((bb==a) ? 1.f : 5.f);
  		*h = (int)(60.0*(d - c/(x - a)));
  		*s = (int)(255.0*((x - a)/x));
  		*v = (int)(255.0*x);

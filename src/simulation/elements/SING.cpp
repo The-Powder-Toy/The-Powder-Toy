@@ -77,7 +77,7 @@ static int update(UPDATE_FUNC_ARGS)
 			}
 		}
 		spawncount = std::abs(parts[i].tmp);
-		spawncount = (spawncount>255) ? 3019 : std::pow((double)(spawncount/8), 2)*M_PI;
+		spawncount = (spawncount>255) ? 3019 : int(std::pow((double)(spawncount/8), 2)*M_PI);
 		for (int j = 0;j < spawncount; j++)
 		{
 			switch (RNG::Ref().gen() % 3)

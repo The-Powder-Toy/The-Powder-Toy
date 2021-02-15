@@ -108,8 +108,8 @@ void Element_EMP_Trigger(Simulation *sim, int triggerCount)
 	for (int r = 0; r <=sim->parts_lastActiveIndex; r++)
 	{
 		int t = parts[r].type;
-		int rx = parts[r].x;
-		int ry = parts[r].y;
+		auto rx = int(parts[r].x);
+		auto ry = int(parts[r].y);
 		if (t==PT_SPRK || (t==PT_SWCH && parts[r].life!=0 && parts[r].life!=10) || (t==PT_WIRE && parts[r].ctype>0))
 		{
 			bool is_elec = false;
@@ -165,7 +165,7 @@ void Element_EMP_Trigger(Simulation *sim, int triggerCount)
 								if (RNG::Ref().uniform01() < prob_randWIFI)
 								{
 									// Randomize channel
-									parts[n].temp = RNG::Ref().between(0, MAX_TEMP-1);
+									parts[n].temp = float(RNG::Ref().between(0, MAX_TEMP-1));
 								}
 								if (RNG::Ref().uniform01() < prob_breakWIFI)
 								{
@@ -210,8 +210,8 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	if(cpart->life)
 	{
-		*colr = cpart->life*1.5;
-		*colg = cpart->life*1.5;
+		*colr = int(cpart->life*1.5);
+		*colg = int(cpart->life*1.5);
 		*colb = 200-(cpart->life);
 	}
 	return 0;

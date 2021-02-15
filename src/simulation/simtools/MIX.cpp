@@ -42,12 +42,12 @@ static int perform(Simulation * sim, Particle * cpart, int x, int y, int brushX,
 		return 0;
 
 	sim->pmap[y][x] = thatPart;
-	sim->parts[ID(thatPart)].x = x;
-	sim->parts[ID(thatPart)].y = y;
+	sim->parts[ID(thatPart)].x = float(x);
+	sim->parts[ID(thatPart)].y = float(y);
 
 	sim->pmap[newY][newX] = thisPart;
-	sim->parts[ID(thisPart)].x = newX;
-	sim->parts[ID(thisPart)].y = newY;
+	sim->parts[ID(thisPart)].x = float(newX);
+	sim->parts[ID(thisPart)].y = float(newY);
 
 	return 1;
 }

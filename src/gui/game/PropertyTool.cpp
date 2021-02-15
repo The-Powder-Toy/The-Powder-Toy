@@ -70,7 +70,7 @@ sim(sim_)
 	property = new ui::DropDown(ui::Point(8, 25), ui::Point(Size.X-16, 16));
 	property->SetActionCallback({ [this] { FocusComponent(textField); } });
 	AddComponent(property);
-	for (size_t i = 0; i < properties.size(); i++)
+	for (int i = 0; i < int(properties.size()); i++)
 	{
 		property->AddOption(std::pair<String, int>(properties[i].Name.FromAscii(), i));
 	}
@@ -251,7 +251,7 @@ void PropertyTool::SetProperty(Simulation *sim, ui::Point position)
 
 	if (changeType)
 	{
-		sim->part_change_type(ID(i), sim->parts[ID(i)].x+0.5f, sim->parts[ID(i)].y+0.5f, propValue.Integer);
+		sim->part_change_type(ID(i), int(sim->parts[ID(i)].x+0.5f), int(sim->parts[ID(i)].y+0.5f), propValue.Integer);
 		return;
 	}
 

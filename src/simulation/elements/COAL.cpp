@@ -72,16 +72,16 @@ int Element_COAL_update(UPDATE_FUNC_ARGS)
 		}
 	}
 	if(parts[i].temp > parts[i].tmp2)
-		parts[i].tmp2 = parts[i].temp;
+		parts[i].tmp2 = int(parts[i].temp);
 	return 0;
 }
 
-constexpr float FREQUENCY = 3.1415/(2*300.0f-(300.0f-200.0f));
+constexpr float FREQUENCY = 3.1415f/(2*300.0f-(300.0f-200.0f));
 
 int Element_COAL_graphics(GRAPHICS_FUNC_ARGS)
  //Both COAL and Broken Coal
 {
-	*colr += (cpart->tmp2-295.15f)/3;
+	*colr += int((cpart->tmp2-295.15f)/3);
 
 	if (*colr > 170)
 		*colr = 170;
@@ -94,11 +94,11 @@ int Element_COAL_graphics(GRAPHICS_FUNC_ARGS)
 	if (cpart->temp > 395.15f)
 	{
 		//  q = ((cpart->temp-295.15f)>300.0f)?300.0f-(300.0f-200.0f):(cpart->temp-295.15f)-(300.0f-200.0f);
-		int q = (cpart->temp > 595.15f) ? 200.0f : cpart->temp - 395.15f;
+		auto q = int((cpart->temp > 595.15f) ? 200.0f : cpart->temp - 395.15f);
 
-		*colr += sin(FREQUENCY*q) * 226;
-		*colg += sin(FREQUENCY*q*4.55 + 3.14) * 34;
-		*colb += sin(FREQUENCY*q*2.22 + 3.14) * 64;
+		*colr += int(sin(FREQUENCY*q) * 226);
+		*colg += int(sin(FREQUENCY*q*4.55 + 3.14) * 34);
+		*colb += int(sin(FREQUENCY*q*2.22 + 3.14) * 64);
 	}
 	return 0;
 }

@@ -390,12 +390,12 @@ void EngineProcess()
 
 		int frameTime = SDL_GetTicks() - frameStart;
 		frameTimeAvg = frameTimeAvg * 0.8 + frameTime * 0.2;
-		int fpsLimit = ui::Engine::Ref().FpsLimit;
+		float fpsLimit = ui::Engine::Ref().FpsLimit;
 		if(fpsLimit > 2)
 		{
 			double offset = 1000.0 / fpsLimit - frameTimeAvg;
 			if(offset > 0)
-				SDL_Delay(offset + 0.5);
+				SDL_Delay(Uint32(offset + 0.5));
 		}
 		int correctedFrameTime = SDL_GetTicks() - frameStart;
 		correctedFrameTimeAvg = correctedFrameTimeAvg * 0.95 + correctedFrameTime * 0.05;
@@ -464,7 +464,8 @@ int main(int argc, char * argv[])
 	}
 	else
 	{
-		throw std::runtime_error("path to font.cpp not supplied");
+		std::cerr << "path to font.cpp not supplied" << std::endl;
+		exit(1);
 	}
 
 	EngineProcess();

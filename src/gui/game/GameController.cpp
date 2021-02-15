@@ -485,12 +485,12 @@ void GameController::LoadStamp(GameSave *stamp)
 
 void GameController::TranslateSave(ui::Point point)
 {
-	vector2d translate = v2d_new(point.X, point.Y);
+	vector2d translate = v2d_new(float(point.X), float(point.Y));
 	vector2d translated = gameModel->GetPlaceSave()->Translate(translate);
 	ui::Point currentPlaceSaveOffset = gameView->GetPlaceSaveOffset();
 	// resets placeSaveOffset to 0, which is why we back it up first
 	gameModel->SetPlaceSave(gameModel->GetPlaceSave());
-	gameView->SetPlaceSaveOffset(ui::Point(translated.x, translated.y) + currentPlaceSaveOffset);
+	gameView->SetPlaceSaveOffset(ui::Point(int(translated.x), int(translated.y)) + currentPlaceSaveOffset);
 }
 
 void GameController::TransformSave(matrix2d transform)

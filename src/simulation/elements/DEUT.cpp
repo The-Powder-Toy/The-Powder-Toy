@@ -57,12 +57,12 @@ static int update(UPDATE_FUNC_ARGS)
 	float gravtot = fabs(sim->gravy[(y/CELL)*(XRES/CELL)+(x/CELL)])+fabs(sim->gravx[(y/CELL)*(XRES/CELL)+(x/CELL)]);
 	// Prevent division by 0
 	float temp = std::max(1.0f, (parts[i].temp + 1));
-	int maxlife = ((10000/(temp + 1))-1);
+	auto maxlife = int(((10000/(temp + 1))-1));
 	if (RNG::Ref().chance(10000 % static_cast<int>(temp + 1), static_cast<int>(temp + 1)))
 		maxlife++;
 	// Compress when Newtonian gravity is applied
 	// multiplier=1 when gravtot=0, multiplier -> 5 as gravtot -> inf
-	maxlife = maxlife*(5.0f - 8.0f/(gravtot+2.0f));
+	maxlife = maxlife*int(5.0f - 8.0f/(gravtot+2.0f));
 	if (parts[i].life < maxlife)
 	{
 		for (rx=-1; rx<2; rx++)

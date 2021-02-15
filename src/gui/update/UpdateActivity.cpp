@@ -40,7 +40,7 @@ private:
 		{
 			int total, done;
 			request->CheckProgress(&total, &done);
-			notifyProgress((float(done)/float(total))*100.0f);
+			notifyProgress(total ? done * 100 / total : 0);
 			Platform::Millisleep(1);
 		}
 

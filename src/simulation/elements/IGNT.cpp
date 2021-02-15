@@ -74,8 +74,8 @@ static int update(UPDATE_FUNC_ARGS)
 			if (nb!=-1) {
 				parts[nb].tmp = 0;
 				parts[nb].life = 30;
-				parts[nb].vx = RNG::Ref().between(-10, 10);
-				parts[nb].vy = RNG::Ref().between(-10, 10);
+				parts[nb].vx = float(RNG::Ref().between(-10, 10));
+				parts[nb].vy = float(RNG::Ref().between(-10, 10));
 				parts[nb].temp = restrict_flt(parts[i].temp-273.15f+400.0f, MIN_TEMP, MAX_TEMP);
 			}
 		}

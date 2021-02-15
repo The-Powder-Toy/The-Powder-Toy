@@ -222,7 +222,7 @@ void Engine::Draw()
 		memcpy(g->vid, lastBuffer, (width_ * height_) * PIXELSIZE);
 		if(windowOpenState < 20)
 			windowOpenState++;
-		g->fillrect(0, 0, width_, height_, 0, 0, 0, 255-std::pow(.98, windowOpenState)*255);
+		g->fillrect(0, 0, width_, height_, 0, 0, 0, int(255-std::pow(.98, windowOpenState)*255));
 #endif
 	}
 	else

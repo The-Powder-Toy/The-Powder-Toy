@@ -33,7 +33,7 @@ void ElementPopulationDebug::Draw()
 		if(sim->elements[i].Enabled)
 		{
 			if(maxVal < sim->elementCount[i])
-				maxVal = sim->elementCount[i];
+				maxVal = float(sim->elementCount[i]);
 			bars++;
 		}
 	}
@@ -51,8 +51,8 @@ void ElementPopulationDebug::Draw()
 	{
 		if(sim->elements[i].Enabled)
 		{
-			float count = sim->elementCount[i];
-			int barSize = (count * scale - 0.5f);
+			auto count = sim->elementCount[i];
+			auto barSize = int(count * scale - 0.5f);
 			int barX = bars;//*2;
 
 			g->draw_line(xStart+barX, yBottom+3, xStart+barX, yBottom+2, PIXR(sim->elements[i].Colour), PIXG(sim->elements[i].Colour), PIXB(sim->elements[i].Colour), 255);

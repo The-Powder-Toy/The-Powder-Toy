@@ -281,7 +281,7 @@ void FileBrowserActivity::OnTick(float dt)
 		});
 
 		progressBar->SetStatus("Rendering thumbnails");
-		progressBar->SetProgress((float(totalFiles-files.size())/float(totalFiles))*100.0f);
+		progressBar->SetProgress(totalFiles ? (totalFiles - files.size()) * 100 / totalFiles : 0);
 		componentsQueue.push_back(saveButton);
 		fileX++;
 	}

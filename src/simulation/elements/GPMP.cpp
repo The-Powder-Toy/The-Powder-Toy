@@ -59,10 +59,10 @@ static int update(UPDATE_FUNC_ARGS)
 	}
 	else
 	{
-		if (parts[i].temp>=256.0+273.15)
-			parts[i].temp=256.0+273.15;
-		if (parts[i].temp<= -256.0+273.15)
-			parts[i].temp = -256.0+273.15;
+		if (parts[i].temp>=256.0f+273.15f)
+			parts[i].temp=256.0f+273.15f;
+		if (parts[i].temp<= -256.0f+273.15f)
+			parts[i].temp = -256.0f+273.15f;
 
 		sim->gravmap[(y/CELL)*(XRES/CELL)+(x/CELL)] = 0.2f*(parts[i].temp-273.15);
 		for (rx=-2; rx<3; rx++)

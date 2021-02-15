@@ -256,7 +256,7 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 				}
 
 				if ((surround_space || sim->elements[rt].Explosive) &&
-				    sim->elements[rt].Flammable && RNG::Ref().chance(sim->elements[rt].Flammable + (sim->pv[(y+ry)/CELL][(x+rx)/CELL] * 10.0f), 1000) &&
+				    sim->elements[rt].Flammable && RNG::Ref().chance(int(sim->elements[rt].Flammable + (sim->pv[(y+ry)/CELL][(x+rx)/CELL] * 10.0f)), 1000) &&
 				    //exceptions, t is the thing causing the spark and rt is what's burning
 				    (t != PT_SPRK || (rt != PT_RBDM && rt != PT_LRBD && rt != PT_INSL)) &&
 				    (t != PT_PHOT || rt != PT_INSL) &&
@@ -350,7 +350,7 @@ static int updateLegacy(UPDATE_FUNC_ARGS)
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
-	int caddress = restrict_flt(restrict_flt((float)cpart->life, 0.0f, 200.0f)*3, 0.0f, (200.0f*3)-3);
+	int caddress = int(restrict_flt(float(cpart->life), 0, 199)) * 3;
 	*colr = (unsigned char)ren->flm_data[caddress];
 	*colg = (unsigned char)ren->flm_data[caddress+1];
 	*colb = (unsigned char)ren->flm_data[caddress+2];

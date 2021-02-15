@@ -32,7 +32,7 @@ namespace http
 				ByteString(user["Location"].asString()).FromUtf8(),
 				user["Website"].asString(),
 				user["Saves"]["Count"].asInt(),
-				user["Saves"]["AverageScore"].asInt(),
+				user["Saves"]["AverageScore"].asFloat(),
 				user["Saves"]["HighestScore"].asInt(),
 				user["Forum"]["Topics"].asInt(),
 				user["Forum"]["Replies"].asInt(),

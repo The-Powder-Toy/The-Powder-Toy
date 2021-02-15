@@ -1348,10 +1348,10 @@ void Renderer::render_parts()
 				if((elements[t].Properties & PROP_HOT_GLOW) && sim->parts[i].temp>(elements[t].HighTemperature-800.0f))
 				{
 					gradv = 3.1415/(2*elements[t].HighTemperature-(elements[t].HighTemperature-800.0f));
-					caddress = (sim->parts[i].temp>elements[t].HighTemperature)?elements[t].HighTemperature-(elements[t].HighTemperature-800.0f):sim->parts[i].temp-(elements[t].HighTemperature-800.0f);
-					colr += sin(gradv*caddress) * 226;;
-					colg += sin(gradv*caddress*4.55 +3.14) * 34;
-					colb += sin(gradv*caddress*2.22 +3.14) * 64;
+					caddress = int((sim->parts[i].temp>elements[t].HighTemperature)?elements[t].HighTemperature-(elements[t].HighTemperature-800.0f):sim->parts[i].temp-(elements[t].HighTemperature-800.0f));
+					colr += int(sin(gradv*caddress) * 226);
+					colg += int(sin(gradv*caddress*4.55 +3.14) * 34);
+					colb += int(sin(gradv*caddress*2.22 +3.14) * 64);
 				}
 
 				if((pixel_mode & FIRE_ADD) && !(render_mode & FIRE_ADD))
@@ -1370,7 +1370,9 @@ void Renderer::render_parts()
 				//Alter colour based on display mode
 				if(colour_mode & COLOUR_HEAT)
 				{
-					caddress = restrict_flt((int)( restrict_flt((float)(sim->parts[i].temp+(-MIN_TEMP)), 0.0f, MAX_TEMP+(-MIN_TEMP)) / ((MAX_TEMP+(-MIN_TEMP))/1024) ) *3, 0.0f, (1024.0f*3)-3);
+					constexpr float min_temp = MIN_TEMP;
+					constexpr float max_temp = MAX_TEMP;
+					caddress = int(restrict_flt((sim->parts[i].temp - min_temp) / (max_temp - min_temp) * 1024, 0, 1023)) * 3;
 					firea = 255;
 					firer = colr = color_data[caddress];
 					fireg = colg = color_data[caddress+1];
@@ -1387,10 +1389,10 @@ void Renderer::render_parts()
 				{
 					gradv = 0.4f;
 					if (!(sim->parts[i].life<5))
-						q = sqrt((float)sim->parts[i].life);
+						q = int(sqrt((float)sim->parts[i].life));
 					else
 						q = sim->parts[i].life;
-					colr = colg = colb = sin(gradv*q) * 100 + 128;
+					colr = colg = colb = int(sin(gradv*q) * 100 + 128);
 					cola = 255;
 					if(pixel_mode & (FIREMODE | PMODE_GLOW))
 						pixel_mode = (pixel_mode & ~(FIREMODE|PMODE_GLOW)) | PMODE_BLUR;
@@ -1448,11 +1450,11 @@ void Renderer::render_parts()
 
 				if (colour_mode & COLOUR_GRAD)
 				{
-					float frequency = 0.05;
-					int q = sim->parts[i].temp-40;
-					colr = sin(frequency*q) * 16 + colr;
-					colg = sin(frequency*q) * 16 + colg;
-					colb = sin(frequency*q) * 16 + colb;
+					auto frequency = 0.05f;
+					auto q = int(sim->parts[i].temp-40);
+					colr = int(sin(frequency*q) * 16 + colr);
+					colg = int(sin(frequency*q) * 16 + colg);
+					colb = int(sin(frequency*q) * 16 + colb);
 					if(pixel_mode & (FIREMODE | PMODE_GLOW)) pixel_mode = (pixel_mode & ~(FIREMODE|PMODE_GLOW)) | PMODE_BLUR;
 				}
 
@@ -1625,15 +1627,15 @@ void Renderer::render_parts()
 						draw_line(nx+2, ny-2, nx+2, ny+2, colr, colg, colb, 255);
 					}
 					//legs
-					draw_line(nx, ny+3, cplayer->legs[0], cplayer->legs[1], legr, legg, legb, 255);
-					draw_line(cplayer->legs[0], cplayer->legs[1], cplayer->legs[4], cplayer->legs[5], legr, legg, legb, 255);
-					draw_line(nx, ny+3, cplayer->legs[8], cplayer->legs[9], legr, legg, legb, 255);
-					draw_line(cplayer->legs[8], cplayer->legs[9], cplayer->legs[12], cplayer->legs[13], legr, legg, legb, 255);
+					draw_line(nx, ny+3, int(cplayer->legs[0]), int(cplayer->legs[1]), legr, legg, legb, 255);
+					draw_line(int(cplayer->legs[0]), int(cplayer->legs[1]), int(cplayer->legs[4]), int(cplayer->legs[5]), legr, legg, legb, 255);
+					draw_line(nx, ny+3, int(cplayer->legs[8]), int(cplayer->legs[9]), legr, legg, legb, 255);
+					draw_line(int(cplayer->legs[8]), int(cplayer->legs[9]), int(cplayer->legs[12]), int(cplayer->legs[13]), legr, legg, legb, 255);
 					if (cplayer->rocketBoots)
 					{
 						for (int leg=0; leg<2; leg++)
 						{
-							int nx = cplayer->legs[leg*8+4], ny = cplayer->legs[leg*8+5];
+							int nx = int(cplayer->legs[leg*8+4]), ny = int(cplayer->legs[leg*8+5]);
 							int colr = 255, colg = 0, colb = 255;
 							if (((int)(cplayer->comm)&0x04) == 0x04 || (((int)(cplayer->comm)&0x01) == 0x01 && leg==0) || (((int)(cplayer->comm)&0x02) == 0x02 && leg==1))
 								blendpixel(nx, ny, 0, 255, 0, 255);
@@ -1779,7 +1781,7 @@ void Renderer::render_parts()
 				}
 				if(pixel_mode & PMODE_SPARK)
 				{
-					flicker = random_gen()%20;
+					flicker = float(random_gen()%20);
 #ifdef OGLR
 					//Oh god, this is awful
 					lineC[clineC++] = ((float)colr)/255.0f;
@@ -1832,18 +1834,18 @@ void Renderer::render_parts()
 #else
 					gradv = 4*sim->parts[i].life + flicker;
 					for (x = 0; gradv>0.5; x++) {
-						addpixel(nx+x, ny, colr, colg, colb, gradv);
-						addpixel(nx-x, ny, colr, colg, colb, gradv);
+						addpixel(nx+x, ny, colr, colg, colb, int(gradv));
+						addpixel(nx-x, ny, colr, colg, colb, int(gradv));
 
-						addpixel(nx, ny+x, colr, colg, colb, gradv);
-						addpixel(nx, ny-x, colr, colg, colb, gradv);
+						addpixel(nx, ny+x, colr, colg, colb, int(gradv));
+						addpixel(nx, ny-x, colr, colg, colb, int(gradv));
 						gradv = gradv/1.5f;
 					}
 #endif
 				}
 				if(pixel_mode & PMODE_FLARE)
 				{
-					flicker = random_gen()%20;
+					flicker = float(random_gen()%20);
 #ifdef OGLR
 					//Oh god, this is awful
 					lineC[clineC++] = ((float)colr)/255.0f;
@@ -1895,28 +1897,28 @@ void Renderer::render_parts()
 					cline++;
 #else
 					gradv = flicker + fabs(parts[i].vx)*17 + fabs(sim->parts[i].vy)*17;
-					blendpixel(nx, ny, colr, colg, colb, (gradv*4)>255?255:(gradv*4) );
-					blendpixel(nx+1, ny, colr, colg, colb, (gradv*2)>255?255:(gradv*2) );
-					blendpixel(nx-1, ny, colr, colg, colb, (gradv*2)>255?255:(gradv*2) );
-					blendpixel(nx, ny+1, colr, colg, colb, (gradv*2)>255?255:(gradv*2) );
-					blendpixel(nx, ny-1, colr, colg, colb, (gradv*2)>255?255:(gradv*2) );
+					blendpixel(nx, ny, colr, colg, colb, int((gradv*4)>255?255:(gradv*4)) );
+					blendpixel(nx+1, ny, colr, colg, colb,int( (gradv*2)>255?255:(gradv*2)) );
+					blendpixel(nx-1, ny, colr, colg, colb, int((gradv*2)>255?255:(gradv*2)) );
+					blendpixel(nx, ny+1, colr, colg, colb, int((gradv*2)>255?255:(gradv*2)) );
+					blendpixel(nx, ny-1, colr, colg, colb, int((gradv*2)>255?255:(gradv*2)) );
 					if (gradv>255) gradv=255;
-					blendpixel(nx+1, ny-1, colr, colg, colb, gradv);
-					blendpixel(nx-1, ny-1, colr, colg, colb, gradv);
-					blendpixel(nx+1, ny+1, colr, colg, colb, gradv);
-					blendpixel(nx-1, ny+1, colr, colg, colb, gradv);
+					blendpixel(nx+1, ny-1, colr, colg, colb, int(gradv));
+					blendpixel(nx-1, ny-1, colr, colg, colb, int(gradv));
+					blendpixel(nx+1, ny+1, colr, colg, colb, int(gradv));
+					blendpixel(nx-1, ny+1, colr, colg, colb, int(gradv));
 					for (x = 1; gradv>0.5; x++) {
-						addpixel(nx+x, ny, colr, colg, colb, gradv);
-						addpixel(nx-x, ny, colr, colg, colb, gradv);
-						addpixel(nx, ny+x, colr, colg, colb, gradv);
-						addpixel(nx, ny-x, colr, colg, colb, gradv);
+						addpixel(nx+x, ny, colr, colg, colb, int(gradv));
+						addpixel(nx-x, ny, colr, colg, colb, int(gradv));
+						addpixel(nx, ny+x, colr, colg, colb, int(gradv));
+						addpixel(nx, ny-x, colr, colg, colb, int(gradv));
 						gradv = gradv/1.2f;
 					}
 #endif
 				}
 				if(pixel_mode & PMODE_LFLARE)
 				{
-					flicker = random_gen()%20;
+					flicker = float(random_gen()%20);
 #ifdef OGLR
 					//Oh god, this is awful
 					lineC[clineC++] = ((float)colr)/255.0f;
@@ -1968,21 +1970,21 @@ void Renderer::render_parts()
 					cline++;
 #else
 					gradv = flicker + fabs(parts[i].vx)*17 + fabs(parts[i].vy)*17;
-					blendpixel(nx, ny, colr, colg, colb, (gradv*4)>255?255:(gradv*4) );
-					blendpixel(nx+1, ny, colr, colg, colb, (gradv*2)>255?255:(gradv*2) );
-					blendpixel(nx-1, ny, colr, colg, colb, (gradv*2)>255?255:(gradv*2) );
-					blendpixel(nx, ny+1, colr, colg, colb, (gradv*2)>255?255:(gradv*2) );
-					blendpixel(nx, ny-1, colr, colg, colb, (gradv*2)>255?255:(gradv*2) );
+					blendpixel(nx, ny, colr, colg, colb, int((gradv*4)>255?255:(gradv*4)) );
+					blendpixel(nx+1, ny, colr, colg, colb, int((gradv*2)>255?255:(gradv*2)) );
+					blendpixel(nx-1, ny, colr, colg, colb, int((gradv*2)>255?255:(gradv*2)) );
+					blendpixel(nx, ny+1, colr, colg, colb, int((gradv*2)>255?255:(gradv*2)) );
+					blendpixel(nx, ny-1, colr, colg, colb, int((gradv*2)>255?255:(gradv*2)) );
 					if (gradv>255) gradv=255;
-					blendpixel(nx+1, ny-1, colr, colg, colb, gradv);
-					blendpixel(nx-1, ny-1, colr, colg, colb, gradv);
-					blendpixel(nx+1, ny+1, colr, colg, colb, gradv);
-					blendpixel(nx-1, ny+1, colr, colg, colb, gradv);
+					blendpixel(nx+1, ny-1, colr, colg, colb, int(gradv));
+					blendpixel(nx-1, ny-1, colr, colg, colb, int(gradv));
+					blendpixel(nx+1, ny+1, colr, colg, colb, int(gradv));
+					blendpixel(nx-1, ny+1, colr, colg, colb, int(gradv));
 					for (x = 1; gradv>0.5; x++) {
-						addpixel(nx+x, ny, colr, colg, colb, gradv);
-						addpixel(nx-x, ny, colr, colg, colb, gradv);
-						addpixel(nx, ny+x, colr, colg, colb, gradv);
-						addpixel(nx, ny-x, colr, colg, colb, gradv);
+						addpixel(nx+x, ny, colr, colg, colb, int(gradv));
+						addpixel(nx-x, ny, colr, colg, colb, int(gradv));
+						addpixel(nx, ny+x, colr, colg, colb, int(gradv));
+						addpixel(nx, ny-x, colr, colg, colb, int(gradv));
 						gradv = gradv/1.01f;
 					}
 #endif
@@ -2322,8 +2324,8 @@ void Renderer::draw_other() // EMP effect
 		glTranslated(0, -MENUSIZE, 0);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, prevFbo);
 #else
-		int r=emp_decor*2.5, g=100+emp_decor*1.5, b=255;
-		int a=(1.0*emp_decor/110)*255;
+		int r=int(emp_decor*2.5), g=int(100+emp_decor*1.5), b=255;
+		int a=int((1.0*emp_decor/110)*255);
 		if (r>255) r=255;
 		if (g>255) g=255;
 		if (b>255) g=255;
@@ -2353,8 +2355,8 @@ void Renderer::draw_grav()
 			ca = y*(XRES/CELL)+x;
 			if(fabsf(sim->gravx[ca]) <= 0.001f && fabsf(sim->gravy[ca]) <= 0.001f)
 				continue;
-			nx = x*CELL;
-			ny = y*CELL;
+			nx = float(x*CELL);
+			ny = float(y*CELL);
 			dist = fabsf(sim->gravy[ca])+fabsf(sim->gravx[ca]);
 			for(i = 0; i < 4; i++)
 			{
@@ -2397,8 +2399,9 @@ void Renderer::draw_air()
 			}
 			else if (display_mode & DISPLAY_AIRH)
 			{
-				float ttemp = hv[y][x]+(-MIN_TEMP);
-				int caddress = restrict_flt((int)( restrict_flt(ttemp, 0.0f, MAX_TEMP+(-MIN_TEMP)) / ((MAX_TEMP+(-MIN_TEMP))/1024) ) *3, 0.0f, (1024.0f*3)-3);
+				constexpr float min_temp = MIN_TEMP;
+				constexpr float max_temp = MAX_TEMP;
+				int caddress = int(restrict_flt((hv[y][x] - min_temp) / (max_temp - min_temp), 0, 1023)) * 3;
 				c = PIXRGB((int)(color_data[caddress]*0.7f), (int)(color_data[caddress+1]*0.7f), (int)(color_data[caddress+2]*0.7f));
 				//c  = PIXRGB(clamp_flt(fabsf(vx[y][x]), 0.0f, 8.0f),//vx adds red
 				//	clamp_flt(hv[y][x], 0.0f, 1600.0f),//heat adds green

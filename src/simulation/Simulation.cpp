@@ -903,8 +903,8 @@ bool Simulation::flood_water(int x, int y, int i)
 					int oldy = (int)(parts[i].y + 0.5f);
 					pmap[y - 1][x] = pmap[oldy][oldx];
 					pmap[oldy][oldx] = 0;
-					parts[i].x = x;
-					parts[i].y = y - 1;
+					parts[i].x = float(x);
+					parts[i].y = float(y - 1);
 					return true;
 				}
 
@@ -991,7 +991,7 @@ void Simulation::SetEdgeMode(int newEdgeMode)
 void Simulation::ApplyDecoration(int x, int y, int colR_, int colG_, int colB_, int colA_, int mode)
 {
 	int rp;
-	float tr, tg, tb, ta, colR = colR_, colG = colG_, colB = colB_, colA = colA_;
+	float tr, tg, tb, ta, colR = float(colR_), colG = float(colG_), colB = float(colB_), colA = float(colA_);
 	float strength = 0.01f;
 	rp = pmap[y][x];
 	if (!rp)
@@ -999,10 +999,10 @@ void Simulation::ApplyDecoration(int x, int y, int colR_, int colG_, int colB_, 
 	if (!rp)
 		return;
 
-	ta = (parts[ID(rp)].dcolour>>24)&0xFF;
-	tr = (parts[ID(rp)].dcolour>>16)&0xFF;
-	tg = (parts[ID(rp)].dcolour>>8)&0xFF;
-	tb = (parts[ID(rp)].dcolour)&0xFF;
+	ta = float((parts[ID(rp)].dcolour>>24)&0xFF);
+	tr = float((parts[ID(rp)].dcolour>>16)&0xFF);
+	tg = float((parts[ID(rp)].dcolour>>8)&0xFF);
+	tb = float((parts[ID(rp)].dcolour)&0xFF);
 
 	ta /= 255.0f; tr /= 255.0f; tg /= 255.0f; tb /= 255.0f;
 	colR /= 255.0f; colG /= 255.0f; colB /= 255.0f; colA /= 255.0f;
@@ -1135,10 +1135,10 @@ void Simulation::ApplyDecoration(int x, int y, int colR_, int colG_, int colB_, 
 	ta *= 255.0f; tr *= 255.0f; tg *= 255.0f; tb *= 255.0f;
 	ta += .5f; tr += .5f; tg += .5f; tb += .5f;
 
-	colA_ = ta;
-	colR_ = tr;
-	colG_ = tg;
-	colB_ = tb;
+	colA_ = int(ta);
+	colR_ = int(tr);
+	colG_ = int(tg);
+	colB_ = int(tb);
 
 	if(colA_ > 255)
 		colA_ = 255;
@@ -2226,8 +2226,8 @@ void Simulation::create_arc(int sx, int sy, int dx, int dy, int midpoints, int v
 
 	for(i = 1; i <= midpoints; i++)
 	{
-		ymid[i] = ymid[i-1]+yint;
-		xmid[i] = xmid[i-1]+xint;
+		ymid[i] = ymid[i-1]+int(yint);
+		xmid[i] = xmid[i-1]+int(xint);
 	}
 
 	for(i = 0; i <= midpoints; i++)
@@ -2692,7 +2692,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 				if (parts[ID(r)].life == 0)
 				{
 					part_change_type(i, x, y, PT_GRVT);
-					parts[i].tmp = parts[ID(r)].temp - 273.15f;
+					parts[i].tmp = int(parts[ID(r)].temp - 273.15f);
 				}
 				break;
 			}
@@ -2811,21 +2811,21 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 			if (s)
 			{
 				pmap[ny][nx] = (s&~PMAPMASK)|parts[ID(s)].type;
-				parts[ID(s)].x = nx;
-				parts[ID(s)].y = ny;
+				parts[ID(s)].x = float(nx);
+				parts[ID(s)].y = float(ny);
 			}
 			else
 				pmap[ny][nx] = 0;
-			parts[ri].x = x;
-			parts[ri].y = y;
+			parts[ri].x = float(x);
+			parts[ri].y = float(y);
 			pmap[y][x] = PMAP(ri, parts[ri].type);
 			return 1;
 		}
 
 		if (ID(pmap[ny][nx]) == ri)
 			pmap[ny][nx] = 0;
-		parts[ri].x += x-nx;
-		parts[ri].y += y-ny;
+		parts[ri].x += float(x-nx);
+		parts[ri].y += float(y-ny);
 		pmap[(int)(parts[ri].y+0.5f)][(int)(parts[ri].x+0.5f)] = PMAP(ri, parts[ri].type);
 	}
 	return 1;
@@ -3016,8 +3016,8 @@ int Simulation::get_normal(int pt, int x, int y, float dx, float dy, float *nx, 
 	if ((lx == rx) && (ly == ry))
 		return 0;
 
-	ex = rx - lx;
-	ey = ry - ly;
+	ex = float(rx - lx);
+	ey = float(ry - ly);
 	r = 1.0f/hypot(ex, ey);
 	*nx =  ey * r;
 	*ny = -ex * r;
@@ -3246,9 +3246,9 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 	if((elements[t].Properties & TYPE_PART) && pretty_powder)
 	{
 		int colr, colg, colb;
-		colr = PIXR(elements[t].Colour) + sandcolour * 1.3 + RNG::Ref().between(-20, 20) + RNG::Ref().between(-15, 15);
-		colg = PIXG(elements[t].Colour) + sandcolour * 1.3 + RNG::Ref().between(-20, 20) + RNG::Ref().between(-15, 15);
-		colb = PIXB(elements[t].Colour) + sandcolour * 1.3 + RNG::Ref().between(-20, 20) + RNG::Ref().between(-15, 15);
+		colr = PIXR(elements[t].Colour) + int(sandcolour * 1.3) + RNG::Ref().between(-20, 20) + RNG::Ref().between(-15, 15);
+		colg = PIXG(elements[t].Colour) + int(sandcolour * 1.3) + RNG::Ref().between(-20, 20) + RNG::Ref().between(-15, 15);
+		colb = PIXB(elements[t].Colour) + int(sandcolour * 1.3) + RNG::Ref().between(-20, 20) + RNG::Ref().between(-15, 15);
 		colr = colr>255 ? 255 : (colr<0 ? 0 : colr);
 		colg = colg>255 ? 255 : (colg<0 ? 0 : colg);
 		colb = colb>255 ? 255 : (colb<0 ? 0 : colb);
@@ -3281,7 +3281,7 @@ void Simulation::GetGravityField(int x, int y, float particleGrav, float newtonG
 		case 2: //radial gravity
 			if (x-XCNTR != 0 || y-YCNTR != 0)
 			{
-				float pGravMult = particleGrav/sqrtf((x-XCNTR)*(x-XCNTR) + (y-YCNTR)*(y-YCNTR));
+				float pGravMult = particleGrav/sqrtf(float((x-XCNTR)*(x-XCNTR) + (y-YCNTR)*(y-YCNTR)));
 				pGravX -= pGravMult * (float)(x - XCNTR);
 				pGravY -= pGravMult * (float)(y - YCNTR);
 			}
@@ -3499,7 +3499,7 @@ void Simulation::UpdateParticles(int start, int end)
 						pGravX = pGravY = 0.0f;
 						break;
 					case 2:
-						pGravD = 0.01f - hypotf((x - XCNTR), (y - YCNTR));
+						pGravD = 0.01f - hypotf(float(x - XCNTR), float(y - YCNTR));
 						pGravX = elements[t].Gravity * ((float)(x - XCNTR) / pGravD);
 						pGravY = elements[t].Gravity * ((float)(y - YCNTR) / pGravD);
 						break;
@@ -3573,7 +3573,7 @@ void Simulation::UpdateParticles(int start, int end)
 #ifdef REALISTIC
 				if (t&&(t!=PT_HSWC||parts[i].life==10)&&(elements[t].HeatConduct*gel_scale))
 #else
-				if (t && (t!=PT_HSWC||parts[i].life==10) && RNG::Ref().chance(elements[t].HeatConduct*gel_scale, 250))
+				if (t && (t!=PT_HSWC||parts[i].life==10) && RNG::Ref().chance(int(elements[t].HeatConduct*gel_scale), 250))
 #endif
 				{
 					if (aheat_enable && !(elements[t].Properties&PROP_NOAMBHEAT))
@@ -3908,7 +3908,7 @@ void Simulation::UpdateParticles(int start, int end)
 					pt = parts[i].temp = restrict_flt(parts[i].temp, MIN_TEMP, MAX_TEMP);
 					if (t == PT_LAVA)
 					{
-						parts[i].life = restrict_flt((parts[i].temp-700)/7, 0.0f, 400.0f);
+						parts[i].life = int(restrict_flt((parts[i].temp-700)/7, 0, 400));
 						if (parts[i].ctype==PT_THRM&&parts[i].tmp>0)
 						{
 							parts[i].tmp--;
@@ -4315,8 +4315,8 @@ killed:
 						parts[ID(r)].ctype =  parts[i].type;
 						parts[ID(r)].temp = parts[i].temp;
 						parts[ID(r)].tmp2 = parts[i].life;
-						parts[ID(r)].pavg[0] = parts[i].tmp;
-						parts[ID(r)].pavg[1] = parts[i].ctype;
+						parts[ID(r)].pavg[0] = float(parts[i].tmp);
+						parts[ID(r)].pavg[1] = float(parts[i].ctype);
 						kill_part(i);
 						continue;
 					}
@@ -4453,7 +4453,7 @@ killed:
 								rt = 10;
 
 							if (t==PT_GEL)
-								rt = parts[i].tmp*0.20f+5.0f;
+								rt = int(parts[i].tmp*0.20f+5.0f);
 
 							for (j=clear_x+r; j>=0 && j>=clear_x-rt && j<clear_x+rt && j<XRES; j+=r)
 							{
@@ -4521,7 +4521,7 @@ killed:
 										pGravX = pGravY = 0.0f;
 										break;
 									case 2:
-										pGravD = 0.01f - hypotf((nx - XCNTR), (ny - YCNTR));
+										pGravD = 0.01f - hypotf(float(nx - XCNTR), float(ny - YCNTR));
 										pGravX = ptGrav * ((float)(nx - XCNTR) / pGravD);
 										pGravY = ptGrav * ((float)(ny - YCNTR) / pGravD);
 										break;
@@ -4593,7 +4593,7 @@ killed:
 											pGravX = pGravY = 0.0f;
 											break;
 										case 2:
-											pGravD = 0.01f - hypotf((nx - XCNTR), (ny - YCNTR));
+											pGravD = 0.01f - hypotf(float(nx - XCNTR), float(ny - YCNTR));
 											pGravX = ptGrav * ((float)(nx - XCNTR) / pGravD);
 											pGravY = ptGrav * ((float)(ny - YCNTR) / pGravD);
 											break;

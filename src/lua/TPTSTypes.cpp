@@ -26,7 +26,7 @@ AnyType::operator NumberType()
 	if (type == TypeNumber)
 		return NumberType(value.num);
 	else if (type == TypeFloat)
-		return NumberType(value.numf);
+		return NumberType(int(value.numf));
 	else
 		throw InvalidConversionException(type, TypeNumber);
 }
@@ -34,7 +34,7 @@ AnyType::operator NumberType()
 AnyType::operator FloatType()
 {
 	if (type == TypeNumber)
-		return FloatType(value.num);
+		return FloatType(float(value.num));
 	else if (type == TypeFloat)
 		return FloatType(value.numf);
 	else

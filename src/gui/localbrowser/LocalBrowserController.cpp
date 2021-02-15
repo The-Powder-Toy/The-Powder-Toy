@@ -59,7 +59,7 @@ void LocalBrowserController::removeSelectedC()
 			{
 				notifyStatus(String::Build("Deleting stamp [", saves[i].FromUtf8(), "] ..."));
 				Client::Ref().DeleteStamp(saves[i]);
-				notifyProgress((float(i+1)/float(saves.size())*100));
+				notifyProgress((i + 1) * 100 / saves.size());
 			}
 			return true;
 		}

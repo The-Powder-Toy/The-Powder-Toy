@@ -130,8 +130,8 @@ static int update(UPDATE_FUNC_ARGS)
 							}
 							else
 								parts[np] = sim->portalp[parts[i].tmp][randomness][nnx];
-							parts[np].x = x+rx;
-							parts[np].y = y+ry;
+							parts[np].x = float(x+rx);
+							parts[np].y = float(y+ry);
 							memset(&sim->portalp[parts[i].tmp][randomness][nnx], 0, sizeof(Particle));
 							break;
 						}

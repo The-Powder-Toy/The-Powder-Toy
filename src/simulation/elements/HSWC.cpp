@@ -80,7 +80,7 @@ static int update(UPDATE_FUNC_ARGS)
 						{
 							int newTemp = parts[ID(r)].ctype - 0x10000000;
 							if (newTemp >= MIN_TEMP && newTemp <= MAX_TEMP)
-								parts[i].temp = parts[ID(r)].ctype - 0x10000000;
+								parts[i].temp = float(parts[ID(r)].ctype - 0x10000000);
 						}
 					}
 				}

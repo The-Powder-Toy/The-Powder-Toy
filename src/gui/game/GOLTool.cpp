@@ -200,9 +200,9 @@ void GOLWindow::OnDraw()
 		auto f = xx / (float)width;
 		for (int yy = 0; yy < 16; ++yy)
 		{
-			int rr = highColour.Red * (1.f - f) + lowColour.Red * f;
-			int gg = highColour.Green * (1.f - f) + lowColour.Green * f;
-			int bb = highColour.Blue * (1.f - f) + lowColour.Blue * f;
+			auto rr = int(highColour.Red * (1.f - f) + lowColour.Red * f);
+			auto gg = int(highColour.Green * (1.f - f) + lowColour.Green * f);
+			auto bb = int(highColour.Blue * (1.f - f) + lowColour.Blue * f);
 			g->blendpixel(Position.X + xx + 30, Position.Y + yy + 67, rr, gg, bb, 255);
 		}
 	}

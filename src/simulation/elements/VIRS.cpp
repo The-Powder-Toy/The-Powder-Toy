@@ -105,7 +105,7 @@ int Element_VIRS_update(UPDATE_FUNC_ARGS)
 				}
 				else if (TYP(r) == PT_PLSM)
 				{
-					if (surround_space && RNG::Ref().chance(10 + sim->pv[(y+ry)/CELL][(x+rx)/CELL], 100))
+					if (surround_space && RNG::Ref().chance(10 + int(sim->pv[(y+ry)/CELL][(x+rx)/CELL]), 100))
 					{
 						sim->create_part(i, x, y, PT_PLSM);
 						return 1;

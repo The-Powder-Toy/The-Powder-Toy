@@ -87,7 +87,7 @@ void Gravity::grav_fft_init()
 	plan_gravy_inverse = fftwf_plan_dft_c2r_2d(yblock2, xblock2, th_gravybigt, th_gravybig, FFTW_MEASURE);
 
 	//(XRES/CELL)*(YRES/CELL)*4 is size of data array, scaling needed because FFTW calculates an unnormalized DFT
-	scaleFactor = -M_GRAV/((XRES/CELL)*(YRES/CELL)*4);
+	scaleFactor = -float(M_GRAV)/((XRES/CELL)*(YRES/CELL)*4);
 	//calculate velocity map caused by a point mass
 	for (int y = 0; y < yblock2; y++)
 	{

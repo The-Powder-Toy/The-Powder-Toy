@@ -108,8 +108,8 @@ static int update(UPDATE_FUNC_ARGS)
 				parts[i].tmp = 0;
 				parts[i].life = 50;
 				parts[i].temp = restrict_flt((MAX_TEMP/3)+otemp, MIN_TEMP, MAX_TEMP);
-				parts[i].vx = RNG::Ref().between(-10, 10);
-				parts[i].vy = RNG::Ref().between(-10, 10);
+				parts[i].vx = float(RNG::Ref().between(-10, 10));
+				parts[i].vy = float(RNG::Ref().between(-10, 10));
 			}
 			else
 			{

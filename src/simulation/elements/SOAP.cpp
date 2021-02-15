@@ -260,14 +260,14 @@ static int update(UPDATE_FUNC_ARGS)
 					continue;
 				if (TYP(r)!=PT_SOAP)
 				{
-					tr = (parts[ID(r)].dcolour>>16)&0xFF;
-					tg = (parts[ID(r)].dcolour>>8)&0xFF;
-					tb = (parts[ID(r)].dcolour)&0xFF;
-					ta = (parts[ID(r)].dcolour>>24)&0xFF;
-					nr = (tr*BLEND);
-					ng = (tg*BLEND);
-					nb = (tb*BLEND);
-					na = (ta*BLEND);
+					tr = float((parts[ID(r)].dcolour>>16)&0xFF);
+					tg = float((parts[ID(r)].dcolour>>8)&0xFF);
+					tb = float((parts[ID(r)].dcolour)&0xFF);
+					ta = float((parts[ID(r)].dcolour>>24)&0xFF);
+					nr = int(tr*BLEND);
+					ng = int(tg*BLEND);
+					nb = int(tb*BLEND);
+					na = int(ta*BLEND);
 					parts[ID(r)].dcolour = nr<<16 | ng<<8 | nb | na<<24;
 				}
 			}

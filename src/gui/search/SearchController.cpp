@@ -259,7 +259,7 @@ void SearchController::removeSelectedC()
 					c->Refresh();
 					return false;
 				}
-				notifyProgress((float(i+1)/float(saves.size())*100));
+				notifyProgress((i + 1) * 100 / saves.size());
 			}
 			c->Refresh();
 			return true;
@@ -328,7 +328,7 @@ void SearchController::unpublishSelectedC(bool publish)
 					c->Refresh();
 					return false;
 				}
-				notifyProgress((float(i+1)/float(saves.size())*100));
+				notifyProgress((i + 1) * 100 / saves.size());
 			}
 			c->Refresh();
 			return true;
@@ -356,7 +356,7 @@ void SearchController::FavouriteSelected()
 					notifyError(String::Build("Failed to favourite [", saves[i], "]: " + Client::Ref().GetLastError()));
 					return false;
 				}
-				notifyProgress((float(i+1)/float(saves.size())*100));
+				notifyProgress((i + 1) * 100 / saves.size());
 			}
 			return true;
 		}
@@ -377,7 +377,7 @@ void SearchController::FavouriteSelected()
 					notifyError(String::Build("Failed to unfavourite [", saves[i], "]: " + Client::Ref().GetLastError()));
 					return false;
 				}
-				notifyProgress((float(i+1)/float(saves.size())*100));
+				notifyProgress((i + 1) * 100 / saves.size());
 			}
 			return true;
 		}

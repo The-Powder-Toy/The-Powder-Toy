@@ -135,7 +135,7 @@ int luacon_partwrite(lua_State* l)
 		*((float*)(((unsigned char*)&luacon_sim->parts[i])+offset)) = luaL_optnumber(l, 3, 0);
 		break;
 	case CommandInterface::FormatElement:
-		luacon_sim->part_change_type(i, luacon_sim->parts[i].x, luacon_sim->parts[i].y, luaL_optinteger(l, 3, 0));
+		luacon_sim->part_change_type(i, int(luacon_sim->parts[i].x + 0.5f), int(luacon_sim->parts[i].y + 0.5f), luaL_optinteger(l, 3, 0));
 	default:
 		break;
 	}
@@ -256,7 +256,7 @@ int luacon_elementwrite(lua_State* l)
 
 	if (prop.Name == "type") // i.e. it's .type
 	{
-		luacon_sim->part_change_type(i, luacon_sim->parts[i].x+0.5f, luacon_sim->parts[i].y+0.5f, luaL_checkinteger(l, 3));
+		luacon_sim->part_change_type(i, int(luacon_sim->parts[i].x+0.5f), int(luacon_sim->parts[i].y+0.5f), luaL_checkinteger(l, 3));
 	}
 	else
 	{
@@ -591,7 +591,7 @@ int luatpt_set_pressure(lua_State* l)
 	y1 = abs(luaL_optint(l, 2, 0));
 	width = abs(luaL_optint(l, 3, XRES/CELL));
 	height = abs(luaL_optint(l, 4, YRES/CELL));
-	value = (float)luaL_optint(l, 5, 0.0f);
+	value = luaL_optnumber(l, 5, 0.0f);
 	if(value > 256.0f)
 		value = 256.0f;
 	else if(value < -256.0f)
@@ -622,7 +622,7 @@ int luatpt_set_gravity(lua_State* l)
 	y1 = abs(luaL_optint(l, 2, 0));
 	width = abs(luaL_optint(l, 3, XRES/CELL));
 	height = abs(luaL_optint(l, 4, YRES/CELL));
-	value = (float)luaL_optint(l, 5, 0.0f);
+	value = luaL_optnumber(l, 5, 0.0f);
 	if(value > 256.0f)
 		value = 256.0f;
 	else if(value < -256.0f)
@@ -809,7 +809,7 @@ int luatpt_set_property(lua_State* l)
 			return 0;
 
 		if (format == CommandInterface::FormatElement)
-			luacon_sim->part_change_type(i, luacon_sim->parts[i].x, luacon_sim->parts[i].y, t);
+			luacon_sim->part_change_type(i, int(luacon_sim->parts[i].x + 0.5f), int(luacon_sim->parts[i].y + 0.5f), t);
 		else if (format == CommandInterface::FormatFloat)
 			*((float*)(((unsigned char*)&luacon_sim->parts[i])+offset)) = f;
 		else
@@ -875,14 +875,14 @@ int luatpt_set_elecmap(lua_State* l)
 {
 	int nx, ny, acount;
 	int x1, y1, width, height;
-	float value;
+	unsigned char value;
 	acount = lua_gettop(l);
 
 	x1 = abs(luaL_optint(l, 1, 0));
 	y1 = abs(luaL_optint(l, 2, 0));
 	width = abs(luaL_optint(l, 3, XRES/CELL));
 	height = abs(luaL_optint(l, 4, YRES/CELL));
-	value = (float)luaL_optint(l, acount, 0);
+	value = luaL_optint(l, acount, 0);
 
 	if(acount==5)	//Draw rect
 	{
@@ -1369,10 +1369,10 @@ int luatpt_setfpscap(lua_State* l)
 	int acount = lua_gettop(l);
 	if (acount == 0)
 	{
-		lua_pushinteger(l, ui::Engine::Ref().FpsLimit);
+		lua_pushnumber(l, ui::Engine::Ref().FpsLimit);
 		return 1;
 	}
-	int fpscap = luaL_checkint(l, 1);
+	float fpscap = luaL_checknumber(l, 1);
 	if (fpscap < 2)
 		return luaL_error(l, "fps cap too small");
 	ui::Engine::Ref().FpsLimit = fpscap;

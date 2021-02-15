@@ -46,8 +46,8 @@ VideoBuffer::VideoBuffer(pixel * buffer, int width, int height):
 
 void VideoBuffer::Resize(float factor, bool resample)
 {
-	int newWidth = ((float)Width)*factor;
-	int newHeight = ((float)Height)*factor;
+	int newWidth = int(Width * factor);
+	int newHeight = int(Height * factor);
 	Resize(newWidth, newHeight, resample);
 }
 
@@ -61,9 +61,9 @@ void VideoBuffer::Resize(int width, int height, bool resample, bool fixedRatio)
 	if(newHeight == -1 || newWidth == -1)
 	{
 		if(newHeight == -1)
-			newHeight = ((float)Height)*((float)newWidth/(float)Width);
+			newHeight = int(float(Height) * newWidth / Width);
 		if(newWidth == -1)
-			newWidth = ((float)Width)*((float)newHeight/(float)Height);
+			newWidth = int(float(Width) * newHeight / Height);
 	}
 	else if(fixedRatio)
 	{
@@ -164,9 +164,9 @@ char * Graphics::GenerateGradient(pixel * colours, float * points, int pointcoun
 		cccpos = ccpos / (pose - poss);
 		if(cccpos > 1.0f)
 			cccpos = 1.0f;
-		newdata[(cp*3)] = PIXR(colours[i])*(1.0f-cccpos) + PIXR(colours[j])*(cccpos);
-		newdata[(cp*3)+1] = PIXG(colours[i])*(1.0f-cccpos) + PIXG(colours[j])*(cccpos);
-		newdata[(cp*3)+2] = PIXB(colours[i])*(1.0f-cccpos) + PIXB(colours[j])*(cccpos);
+		newdata[(cp*3)  ] = char(PIXR(colours[i])*(1.0f-cccpos) + PIXR(colours[j])*(cccpos));
+		newdata[(cp*3)+1] = char(PIXG(colours[i])*(1.0f-cccpos) + PIXG(colours[j])*(cccpos));
+		newdata[(cp*3)+2] = char(PIXB(colours[i])*(1.0f-cccpos) + PIXB(colours[j])*(cccpos));
 	}
 	return newdata;
 }
