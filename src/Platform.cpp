@@ -88,7 +88,9 @@ void DoRestart()
 		}
 		else
 		{
+#if !defined(RENDERER) && !defined(FONTEDITOR)
 			Client::Ref().Shutdown(); // very ugly hack; will fix soon(tm)
+#endif
 			exit(0);
 		}
 #elif defined(LIN) || defined(MACOSX)
