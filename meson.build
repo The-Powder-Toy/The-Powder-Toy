@@ -10,10 +10,6 @@ to_array = generator(
 
 cpp_compiler = meson.get_compiler('cpp')
 
-project_c_args = []
-project_cpp_args = []
-project_link_args = []
-
 conf_data = configuration_data()
 conf_data.set('CURL_STATICLIB', false)
 conf_data.set('ZLIB_WINAPI', false)
@@ -103,6 +99,9 @@ threads_dep = dependency('threads')
 zlib_dep = use_tpt_libs != 'no' ? tpt_libs.get_variable('zlib_dep') : dependency('zlib', static: uopt_static == 'system')
 sdl2_dep = use_tpt_libs != 'no' ? tpt_libs.get_variable('sdl2_dep') : dependency('sdl2', static: uopt_static == 'system')
 
+project_link_args = []
+project_c_args = []
+project_cpp_args = []
 if copt_msvc
 	if uopt_x86_sse_level >= 30
 		message('SSE3 configured to be enabled but unavailable in msvc')
@@ -112,31 +111,37 @@ if copt_msvc
 		message('local machine optimization configured to be enabled but unavailable in msvc')
 		uopt_native = false
 	endif
+	args_msvc = [
+		'/GS',
+		'-D_SCL_SECURE_NO_WARNINGS',
+	]
 	if copt_64bit
 		message('SSE explicitly configured but unavailable in msvc targeting 64-bit machines')
 	else
-		args_msvc_sse = []
 		if uopt_x86_sse_level >= 20
-			args_msvc_sse += '/arch:SSE2'
+			args_msvc += [ '/arch:SSE2' ]
 		elif uopt_x86_sse_level >= 10
-			args_msvc_sse += '/arch:SSE'
+			args_msvc += [ '/arch:SSE' ]
 		endif
-		project_c_args += args_msvc_sse
-		project_cpp_args += args_msvc_sse
 	endif
-	args_msvc = [ '/GS', '-D_SCL_SECURE_NO_WARNINGS' ]
+	if get_option('debug')
+		project_link_args += [
+			'/NODEFAULTLIB:MSVCRT',
+		]
+	else
+		args_msvc += [
+			'/Oy-',
+			'/fp:fast',
+		]
+		project_link_args += [
+			'/OPT:REF',
+			'/OPT:ICF',
+		]
+	endif
 	project_c_args += args_msvc
 	project_cpp_args += args_msvc
-	project_link_args += [
-		'/OPT:REF',
-		'/OPT:ICF',
-	]
-	if not get_option('debug')
-		args_msvc_opt = [ '/Oy-', '/fp:fast' ]
-		project_c_args += args_msvc_opt
-		project_cpp_args += args_msvc_opt
-	endif
 else
+	args_ccomp = [ '-U__STRICT_ANSI__', '-Wno-unused-result' ]
 	if copt_platform == 'mac'
 		if uopt_x86_sse_level >= 0
 			message('SSE level explicitly configured but unavailable on macosx')
@@ -147,36 +152,37 @@ else
 			uopt_native = false
 		endif
 	else
-		args_ccomp_sse = []
 		if uopt_x86_sse_level >= 30
-			args_ccomp_sse += '-msse3'
+			args_ccomp += [ '-msse3' ]
 		endif
 		if uopt_x86_sse_level >= 20
-			args_ccomp_sse += '-msse2'
+			args_ccomp += [ '-msse2' ]
 		endif
 		if uopt_x86_sse_level >= 10
-			args_ccomp_sse += '-msse'
+			args_ccomp += [ '-msse' ]
 		endif
 		if uopt_native
-			args_ccomp_sse += '-march=native'
+			args_ccomp += [ '-march=native' ]
 		endif
-		project_c_args += args_ccomp_sse
-		project_cpp_args += args_ccomp_sse
 	endif
-	project_c_args += [ '-U__STRICT_ANSI__', '-Wno-unused-result' ]
-	project_cpp_args += [ '-U__STRICT_ANSI__', '-Wno-unused-result', '-Wno-invalid-offsetof' ]
 	if not get_option('debug')
-		args_ccomp = [ '-ftree-vectorize', '-funsafe-math-optimizations', '-ffast-math', '-fomit-frame-pointer' ]
-		project_c_args += args_ccomp
-		project_cpp_args += args_ccomp
+		args_ccomp += [
+			'-ftree-vectorize',
+			'-funsafe-math-optimizations',
+			'-ffast-math',
+			'-fomit-frame-pointer',
+		]
 	endif
+	project_c_args += args_ccomp
+	project_cpp_args += args_ccomp + [ '-Wno-invalid-offsetof' ]
 endif
 
 if copt_platform == 'win'
 	other_dep = tpt_libs.get_variable('other_dep')
 	sdl2main_dep = tpt_libs.get_variable('sdl2main_dep')
-	project_c_args   += [ '-D_WIN32_WINNT=0x0501' ]
-	project_cpp_args += [ '-D_WIN32_WINNT=0x0501' ]
+	args_ccomp_win = [ '-D_WIN32_WINNT=0x0501' ]
+	project_c_args   += args_ccomp_win
+	project_cpp_args += args_ccomp_win
 	windows_mod = import('windows')
 	if uopt_static != 'none'
 		conf_data.set('CURL_STATICLIB', true)
@@ -189,7 +195,10 @@ if copt_platform == 'win'
 endif
 
 if copt_platform == 'mac' and uopt_lua == 'luajit'
-	project_link_args += [ '-pagezero_size', '10000', '-image_base', '100000000' ]
+	project_link_args += [
+		'-pagezero_size', '10000',
+		'-image_base', '100000000',
+	]
 endif
 
 project_inc = include_directories([ 'src', 'data', 'resources' ])
