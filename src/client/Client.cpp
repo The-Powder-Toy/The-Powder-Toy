@@ -17,6 +17,7 @@
 #ifdef WIN
 #define NOMINMAX
 #include <shlobj.h>
+#include <objidl.h>
 #include <shlwapi.h>
 #include <windows.h>
 #include <direct.h>
@@ -159,6 +160,11 @@ bool Client::IsFirstRun()
 bool Client::DoInstallation()
 {
 #if defined(WIN)
+	CoInitializeEx(NULL, COINIT_MULTITHREADED);
+	wchar_t programsPath[MAX_PATH];
+	IShellLinkW *shellLink = NULL;
+	IPersistFile *shellLinkPersist = NULL;
+
 	int returnval;
 	LONG rresult;
 	HKEY newkey;
@@ -293,8 +299,24 @@ bool Client::DoInstallation()
 	}
 	RegCloseKey(newkey);
 
+	if (SHGetFolderPathW(NULL, CSIDL_PROGRAMS, NULL, SHGFP_TYPE_CURRENT, programsPath) != S_OK)
+		goto finalise;
+	if (CoCreateInstance(CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER, IID_IShellLinkW, (LPVOID *)&shellLink) != S_OK)
+		goto finalise;
+	shellLink->SetPath(Platform::WinWiden(currentfilename).c_str());
+	shellLink->SetDescription(L"The Powder Toy");
+	if (shellLink->QueryInterface(IID_IPersistFile, (LPVOID *)&shellLinkPersist) != S_OK)
+		goto finalise;
+	shellLinkPersist->Save(Platform::WinWiden(Platform::WinNarrow(programsPath) + "\\The Powder Toy.lnk").c_str(), TRUE);
+
 	returnval = 1;
 	finalise:
+
+	if (shellLinkPersist)
+		shellLinkPersist->Release();
+	if (shellLink)
+		shellLink->Release();
+	CoUninitialize();
 
 	return returnval;
 #elif defined(LIN)
