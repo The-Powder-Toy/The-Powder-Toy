@@ -28,9 +28,14 @@ ByteString ExecutableName()
 {
 	ByteString ret;
 #if defined(WIN)
-	char *name = (char *)malloc(64);
+	using Char = wchar_t;
+#else
+	using Char = char;
+#endif
+#if defined(WIN)
+	wchar_t *name = (wchar_t *)malloc(sizeof(wchar_t) * 64);
 	DWORD max = 64, res;
-	while ((res = GetModuleFileName(NULL, name, max)) >= max)
+	while ((res = GetModuleFileNameW(NULL, name, max)) >= max)
 	{
 #elif defined MACOSX
 	char *fn = (char*)malloc(64),*name = (char*)malloc(PATH_MAX);
@@ -59,10 +64,10 @@ ByteString ExecutableName()
 #endif
 #ifndef MACOSX
 		max *= 2;
-		char* realloced_name = (char *)realloc(name, max);
+		Char* realloced_name = (Char *)realloc(name, sizeof(Char) * max);
 		assert(realloced_name != NULL);
 		name = realloced_name;
-		memset(name, 0, max);
+		memset(name, 0, sizeof(Char) * max);
 	}
 #endif
 	if (res <= 0)
@@ -70,7 +75,11 @@ ByteString ExecutableName()
 		free(name);
 		return "";
 	}
+#if defined(WIN)
+	ret = WinNarrow(name);
+#else
 	ret = name;
+#endif
 	free(name);
 	return ret;
 }
@@ -81,7 +90,7 @@ void DoRestart()
 	if (exename.length())
 	{
 #ifdef WIN
-		int ret = int(INT_PTR(ShellExecute(NULL, NULL, exename.c_str(), NULL, NULL, SW_SHOWNORMAL)));
+		int ret = int(INT_PTR(ShellExecuteW(NULL, NULL, WinWiden(exename).c_str(), NULL, NULL, SW_SHOWNORMAL)));
 		if (ret <= 32)
 		{
 			fprintf(stderr, "cannot restart: ShellExecute(...) failed: code %i\n", ret);
@@ -109,7 +118,7 @@ void DoRestart()
 void OpenURI(ByteString uri)
 {
 #if defined(WIN)
-	if (int(INT_PTR(ShellExecute(NULL, NULL, uri.c_str(), NULL, NULL, SW_SHOWNORMAL))) <= 32)
+	if (int(INT_PTR(ShellExecuteW(NULL, NULL, WinWiden(uri).c_str(), NULL, NULL, SW_SHOWNORMAL))) <= 32)
 	{
 		fprintf(stderr, "cannot open URI: ShellExecute(...) failed\n");
 	}
@@ -166,5 +175,37 @@ void LoadFileInResource(int name, int type, unsigned int& size, const char*& dat
 	data = static_cast<const char*>(::LockResource(rcData));
 #endif
 }
+
+#ifdef WIN
+ByteString WinNarrow(const std::wstring &source)
+{
+	int buffer_size = WideCharToMultiByte(CP_UTF8, 0, source.c_str(), source.size(), nullptr, 0, NULL, NULL);
+	if (!buffer_size)
+	{
+		return "";
+	}
+	std::string output(buffer_size, 0);
+	if (!WideCharToMultiByte(CP_UTF8, 0, source.c_str(), source.size(), &output[0], buffer_size, NULL, NULL))
+	{
+		return "";
+	}
+	return output;
+}
+
+std::wstring WinWiden(const ByteString &source)
+{
+	int buffer_size = MultiByteToWideChar(CP_UTF8, 0, source.c_str(), source.size(), nullptr, 0);
+	if (!buffer_size)
+	{
+		return L"";
+	}
+	std::wstring output(buffer_size, 0);
+	if (!MultiByteToWideChar(CP_UTF8, 0, source.c_str(), source.size(), &output[0], buffer_size))
+	{
+		return L"";
+	}
+	return output;
+}
+#endif
 
 }
