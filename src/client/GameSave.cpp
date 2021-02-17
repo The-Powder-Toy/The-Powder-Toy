@@ -1187,6 +1187,8 @@ void GameSave::readOPS(char * data, int dataLength)
 						case PT_QRTZ:
 						case PT_GLAS:
 						case PT_TUNG:
+							if (particles[newIndex].pavg[0] >= 0x8000) particles[newIndex].pavg[0] -= 0x10000;
+							if (particles[newIndex].pavg[1] >= 0x8000) particles[newIndex].pavg[1] -= 0x10000;
 							particles[newIndex].pavg[0] /= 64;
 							particles[newIndex].pavg[1] /= 64;
 							break;
