@@ -2401,7 +2401,7 @@ void Renderer::draw_air()
 			{
 				constexpr float min_temp = MIN_TEMP;
 				constexpr float max_temp = MAX_TEMP;
-				int caddress = int(restrict_flt((hv[y][x] - min_temp) / (max_temp - min_temp), 0, 1023)) * 3;
+				int caddress = int(restrict_flt((hv[y][x] - min_temp) / (max_temp - min_temp) * 1024, 0, 1023)) * 3;
 				c = PIXRGB((int)(color_data[caddress]*0.7f), (int)(color_data[caddress+1]*0.7f), (int)(color_data[caddress+2]*0.7f));
 				//c  = PIXRGB(clamp_flt(fabsf(vx[y][x]), 0.0f, 8.0f),//vx adds red
 				//	clamp_flt(hv[y][x], 0.0f, 1600.0f),//heat adds green
