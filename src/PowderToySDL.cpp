@@ -402,7 +402,7 @@ void EventProcess(SDL_Event event)
 			engine->Exit();
 		break;
 	case SDL_KEYDOWN:
-		if (event.key.keysym.mod & KMOD_GUI)
+		if (SDL_GetModState() & KMOD_GUI)
 		{
 			break;
 		}
@@ -412,13 +412,17 @@ void EventProcess(SDL_Event event)
 			engine->onKeyPress(event.key.keysym.sym, event.key.keysym.scancode, event.key.repeat, event.key.keysym.mod&KMOD_SHIFT, event.key.keysym.mod&KMOD_CTRL, event.key.keysym.mod&KMOD_ALT);
 		break;
 	case SDL_KEYUP:
-		if (event.key.keysym.mod & KMOD_GUI)
+		if (SDL_GetModState() & KMOD_GUI)
 		{
 			break;
 		}
 		engine->onKeyRelease(event.key.keysym.sym, event.key.keysym.scancode, event.key.repeat, event.key.keysym.mod&KMOD_SHIFT, event.key.keysym.mod&KMOD_CTRL, event.key.keysym.mod&KMOD_ALT);
 		break;
 	case SDL_TEXTINPUT:
+		if (SDL_GetModState() & KMOD_GUI)
+		{
+			break;
+		}
 		engine->onTextInput(ByteString(event.text.text).FromUtf8());
 		break;
 	case SDL_MOUSEWHEEL:
