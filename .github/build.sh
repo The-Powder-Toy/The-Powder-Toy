@@ -4,15 +4,21 @@ set -euo pipefail
 IFS=$'\n\t'
 
 if [ -z "${PLATFORM_SHORT-}" ]; then
-	>&2 echo "PLATFORM_SHORT not set"
+	>&2 echo "PLATFORM_SHORT not set (lin, mac, win)"
 	exit 1
 fi
-
+if [ -z "${MACHINE_SHORT-}" ]; then
+	>&2 echo "MACHINE_SHORT not set (x86_64, i686)"
+	exit 1
+fi
+if [ -z "${TOOLSET_SHORT-}" ]; then
+	>&2 echo "TOOLSET_SHORT not set (gcc, clang, mingw)"
+	exit 1
+fi
 if [ -z "${STATIC_DYNAMIC-}" ]; then
-	>&2 echo "STATIC_DYNAMIC not set"
+	>&2 echo "STATIC_DYNAMIC not set (static, dynamic)"
 	exit 1
 fi
-
 if [ -z "${RELTYPECFG-}" ]; then
 	>&2 echo "RELTYPECFG not set"
 	exit 1
@@ -23,9 +29,14 @@ if [ -z "${build_sh_init-}" ]; then
 		for i in C:/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/**/**/VC/Auxiliary/Build/vcvarsall.bat; do
 			vcvarsall_path=$i
 		done
+		if [ $MACHINE_SHORT == "x86_64" ]; then
+			x64_x86=x64
+		else
+			x64_x86=x86
+		fi
 		cat << BUILD_INIT_BAT > .github/build_init.bat
 @echo off
-call "${vcvarsall_path}" x64
+call "${vcvarsall_path}" ${x64_x86}
 bash -c 'build_sh_init=1 ./.github/build.sh'
 BUILD_INIT_BAT
 		./.github/build_init.bat

@@ -39,8 +39,32 @@ jobs:
     needs: [release]
     strategy:
       matrix:
+#               | lin-x86_64 | mac-x86_64 | win-x86_64 |  lin-i686  |  mac-i686  |  win-i686  |
+# --------------+------------+------------+------------+------------+------------+------------+
+# gcc-static    |            |            |     NO     |     NO     |     NO     |     NO     |
+# msvc-static   |     NO     |     NO     |            |     NO     |     NO     |            |
+# mingw-static  |     NO     |     NO     |     NO     |     NO     |     NO     |   NO [1]   |
+# gcc-dynamic   |            |            |     NO     |     NO     |     NO     |     NO     |
+# msvc-dynamic  |     NO     |     NO     |            |     NO     |     NO     |            |
+# mingw-dynamic |     NO     |     NO     |     NO     |     NO     |     NO     |     NO     |
+#
+# [1] I don't currently care enough about mingw to figure out how to do this.
         platform_short: [lin, mac, win]
+        toolset_short: [gcc, msvc, mingw]
+        machine_short: [x86_64, i686]
         static_dynamic: [static, dynamic]
+        exclude:
+          - toolset_short: mingw
+          - machine_short: i686
+            platform_short: lin
+          - machine_short: i686
+            platform_short: mac
+          - toolset_short: msvc
+            platform_short: lin
+          - toolset_short: msvc
+            platform_short: mac
+          - toolset_short: gcc
+            platform_short: win
         include:
           - platform_short: lin
             os: ubuntu-latest
@@ -69,7 +93,7 @@ jobs:
       - if: matrix.platform_short == 'lin' && matrix.static_dynamic != 'static'
         run: sudo apt update && sudo apt install libluajit-5.1-dev libcurl4-openssl-dev libfftw3-dev zlib1g-dev libsdl2-dev
       - run: python -m pip install meson ninja
-      - run: bash -c 'PLATFORM_SHORT=${{ matrix.platform_short }} STATIC_DYNAMIC=${{ matrix.static_dynamic }} RELTYPECFG=${{ steps.get_type.outputs.RELTYPECFG }}  ./.github/build.sh'
+      - run: bash -c 'PLATFORM_SHORT=${{ matrix.platform_short }} MACHINE_SHORT=${{ matrix.machine_short }} TOOLSET_SHORT=${{ matrix.toolset_short }} STATIC_DYNAMIC=${{ matrix.static_dynamic }} RELTYPECFG=${{ steps.get_type.outputs.RELTYPECFG }}  ./.github/build.sh'
       - uses: actions/upload-release-asset@v1
         if: steps.get_type.outputs.TYPE != 'dev' && matrix.static_dynamic == 'static'
         env:
@@ -77,10 +101,10 @@ jobs:
         with:
           upload_url: ${{ steps.get_release_info.outputs.upload_url }}
           asset_path: powder${{ matrix.suffix }}
-          asset_name: powder-${{ steps.get_type.outputs.NAME }}-${{ matrix.platform_short }}64${{ matrix.suffix }}
+          asset_name: powder-${{ steps.get_type.outputs.NAME }}-${{ matrix.machine_short }}-${{ matrix.platform_short }}-${{ matrix.toolset_short }}-${{ matrix.static_dynamic }}${{ matrix.suffix }}
           asset_content_type: application/zip
       - uses: actions/upload-artifact@v2
         if: steps.get_type.outputs.TYPE == 'dev' && matrix.static_dynamic == 'static'
         with:
           path: powder${{ matrix.suffix }}
-          name: powder-${{ steps.get_type.outputs.NAME }}-${{ matrix.static_dynamic }}-${{ matrix.platform_short }}64${{ matrix.suffix }}
+          name: powder-${{ steps.get_type.outputs.NAME }}-${{ matrix.machine_short }}-${{ matrix.platform_short }}-${{ matrix.toolset_short }}-${{ matrix.static_dynamic }}${{ matrix.suffix }}

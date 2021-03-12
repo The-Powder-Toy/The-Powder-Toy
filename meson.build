@@ -18,6 +18,24 @@ copt_x86 = host_machine.cpu_family() in [ 'x86_64', 'x86' ]
 copt_64bit = host_machine.cpu_family() in [ 'x86_64', 'aarch64' ]
 copt_msvc = cpp_compiler.get_id() in [ 'msvc' ]
 
+if cpp_compiler.get_id() in [ 'msvc' ]
+	copt_compiler = 'msvc'
+elif cpp_compiler.get_id() in [ 'gcc' ]
+	copt_compiler = 'gcc'
+else
+	warning('unsupported compiler: ' + cpp_compiler.get_id() + '; you are on your own')
+	copt_compiler = 'gcc'
+endif
+
+if host_machine.cpu_family() in [ 'x86_64' ]
+	copt_architecture = 'x86_64'
+elif host_machine.cpu_family() in [ 'x86' ]
+	copt_architecture = 'i686'
+else
+	warning('unsupported architecture: ' + host_machine.cpu_family() + '; you are on your own')
+	copt_architecture = 'i686'
+endif
+
 if host_machine.system() in [ 'linux', 'freebsd' ]
 	copt_platform = 'lin'
 elif host_machine.system() in [ 'windows' ]
@@ -25,7 +43,8 @@ elif host_machine.system() in [ 'windows' ]
 elif host_machine.system() in [ 'darwin' ]
 	copt_platform = 'mac'
 else
-	error('unsupported platform: ' + host_machine.system())
+	warning('unsupported platform: ' + host_machine.system() + '; you are on your own')
+	copt_platform = 'lin'
 endif
 
 if get_option('ogli') or get_option('oglr')
@@ -34,7 +53,7 @@ endif
 
 uopt_static = get_option('static')
 use_tpt_libs = 'no'
-tpt_libs_vtag = 'v20210103095432'
+tpt_libs_vtag = 'v20210320221332'
 if uopt_static == 'system'
 	if copt_platform == 'win'
 		error('no way to find static system libraries on windows')
@@ -47,10 +66,26 @@ else
 	endif
 endif
 if use_tpt_libs != 'no'
-	if host_machine.cpu_family() != 'x86_64'
-		error('we do not currently provide prebuilt @0@ libraries for @1@ on @2@'.format(use_tpt_libs, host_machine.system(), host_machine.cpu_family()))
+	nope = false
+	if copt_architecture == 'i686' and (copt_platform != 'win' or copt_compiler != 'msvc')
+		nope = true
 	endif
-	tpt_libs = subproject('tpt-libs-prebuilt-@0@64-@1@-@2@'.format(copt_platform, use_tpt_libs, tpt_libs_vtag))
+	if copt_architecture == 'x86_64' and (copt_platform == 'lin' or copt_platform == 'mac') and copt_compiler != 'gcc'
+		nope = true
+	endif
+	if copt_architecture == 'x86_64' and copt_platform == 'win' and copt_compiler == 'gcc'
+		nope = true
+	endif
+	quad_compiler = copt_compiler
+	if use_tpt_libs == 'dynamic' and copt_platform == 'win'
+		# DLLs should be compatible with anything, right?
+		quad_compiler = 'msvc'
+	endif
+	quad = '@0@-@1@-@2@-@3@'.format(copt_architecture, copt_platform, quad_compiler, use_tpt_libs)
+	if nope
+		error('no prebuilt @0@ libraries are currently provided'.format(quad))
+	endif
+	tpt_libs = subproject('tpt-libs-prebuilt-@0@-@1@'.format(quad, tpt_libs_vtag))
 endif
 
 uopt_native = get_option('native')
@@ -179,14 +214,15 @@ endif
 
 if copt_platform == 'win'
 	other_dep = tpt_libs.get_variable('other_dep')
-	sdl2main_dep = tpt_libs.get_variable('sdl2main_dep')
 	args_ccomp_win = [ '-D_WIN32_WINNT=0x0501' ]
 	project_c_args   += args_ccomp_win
 	project_cpp_args += args_ccomp_win
 	windows_mod = import('windows')
 	if uopt_static != 'none'
 		conf_data.set('CURL_STATICLIB', true)
-		conf_data.set('ZLIB_WINAPI', true)
+		if copt_architecture == 'x86_64'
+			conf_data.set('ZLIB_WINAPI', true)
+		endif
 	else
 		foreach input_and_output : tpt_libs.get_variable('config_dlls')
 			configure_file(input: input_and_output[0], output: input_and_output[1], copy: true)
@@ -252,7 +288,6 @@ if get_option('build_powder')
 	]
 	if copt_platform == 'win'
 		powder_deps += other_dep
-		powder_deps += sdl2main_dep
 	endif
 	executable(
 		'powder',
@@ -292,7 +327,6 @@ if get_option('build_font')
 	]
 	if copt_platform == 'win'
 		font_deps += other_dep
-		font_deps += sdl2main_dep
 	endif
 	executable(
 		'font',

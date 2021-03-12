@@ -693,6 +693,10 @@ int GuessBestScale()
 	return guess;
 }
 
+#ifdef main
+# undef main // thank you sdl
+#endif
+
 int main(int argc, char * argv[])
 {
 #if defined(_DEBUG) && defined(_MSC_VER)
