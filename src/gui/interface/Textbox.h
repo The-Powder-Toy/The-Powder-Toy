@@ -15,6 +15,9 @@ struct TextboxAction
 class Textbox : public Label
 {
 	void AfterTextChange(bool changed);
+	void InsertText(String text);
+	void StartTextEditing();
+	void StopTextEditing();
 
 public:
 	bool ReadOnly;
@@ -53,6 +56,7 @@ public:
 	void OnVKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
 	void OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
 	void OnTextInput(String text) override;
+	void OnTextEditing(String text) override;
 	void Draw(const Point& screenPos) override;
 
 protected:
@@ -67,6 +71,21 @@ protected:
 	TextboxAction actionCallback;
 	String backingText;
 	String placeHolder;
+
+	// * Cursor state to reset to before inserting actual input in StopTextEditing.
+	int selectionIndexLSave1;
+	int selectionIndexHSave1;
+	String backingTextSave1;
+	int cursorSave1;
+
+	// * Cursor state to reset to before inserting a candidate string in OnTextEditing.
+	int selectionIndexLSave2;
+	int selectionIndexHSave2;
+	String backingTextSave2;
+	int cursorSave2;
+
+	Point inputRectPosition;
+	bool textEditing;
 
 	virtual void cutSelection();
 	virtual void pasteIntoSelection();

@@ -60,6 +60,26 @@ bool forceIntegerScaling = true;
 bool resizable = false;
 
 
+void StartTextInput()
+{
+	SDL_StartTextInput();
+}
+
+void StopTextInput()
+{
+	SDL_StopTextInput();
+}
+
+void SetTextInputRect(int x, int y, int w, int h)
+{
+	SDL_Rect rect;
+	rect.x = x;
+	rect.y = y;
+	rect.w = w;
+	rect.h = h;
+	SDL_SetTextInputRect(&rect);
+}
+
 void ClipboardPush(ByteString text)
 {
 	SDL_SetClipboardText(text.c_str());
@@ -266,6 +286,13 @@ void EventProcess(SDL_Event event)
 			break;
 		}
 		engine->onTextInput(ByteString(event.text.text).FromUtf8());
+		break;
+	case SDL_TEXTEDITING:
+		if (SDL_GetModState() & KMOD_GUI)
+		{
+			break;
+		}
+		engine->onTextEditing(ByteString(event.edit.text).FromUtf8(), event.edit.start);
 		break;
 	case SDL_MOUSEWHEEL:
 	{

@@ -33,6 +33,7 @@ namespace ui
 		void onKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
 		void onKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
 		void onTextInput(String text);
+		void onTextEditing(String text, int start);
 		void onResize(int newWidth, int newHeight);
 		void onClose();
 		void onFileDrop(ByteString filename);
@@ -80,6 +81,10 @@ namespace ui
 
 		inline void SetSize(int width, int height);
 
+		void StartTextInput();
+		void StopTextInput();
+		void TextInputRect(Point position, Point size);
+
 		//void SetState(Window* state);
 		//inline State* GetState() { return state_; }
 		inline Window* GetWindow() { return state_; }
@@ -94,6 +99,8 @@ namespace ui
 		bool altFullscreen;
 		bool forceIntegerScaling = true;
 		bool resizable;
+
+		bool textInput = false;
 
 		float dt;
 		float fps;
@@ -124,6 +131,8 @@ namespace ui
 		int maxHeight;
 
 		bool momentumScroll;
+
+		String textEditingBuf;
 
 	public:
 		inline void SetMomentumScroll(bool newMomentumScroll)
