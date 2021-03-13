@@ -1,7 +1,7 @@
 #include "simulation/ElementCommon.h"
 
 static int graphics(GRAPHICS_FUNC_ARGS);
-static void create(ELEMENT_CREATE_FUNC_ARGS);
+static int update(UPDATE_FUNC_ARGS);
 
 void Element::Element_ROCK()
 {
@@ -43,31 +43,25 @@ void Element::Element_ROCK()
 	HighTemperature = 1943.15f;
 	HighTemperatureTransition = PT_LAVA;
 
+	Update = &update;
 	Graphics = &graphics;
-	Create = &create;
 }
 
 
-static int graphics(GRAPHICS_FUNC_ARGS)
+static int update(UPDATE_FUNC_ARGS)
 {
-	int z = (cpart->tmp2 - 7) * 6; // Randomized color noise based on tmp2
-	*colr += z;
-	*colg += z;
-	*colb += z;
-
-	if (cpart->temp >= 810.15) // Glows when hot, right before melting becomes bright
+	if (parts[i].tmp2 <= 0) // Randomly set tmp2 if leq 0
 	{
-		*pixel_mode |= FIRE_ADD;
-
-		*firea = int(((cpart->temp)-810.15)/45);
-		*firer = *colr;
-		*fireg = *colg;
-		*fireb = *colb;
+		parts[i].tmp2 = (rand() % 5);
 	}
 	return 0;
 }
 
-static void create(ELEMENT_CREATE_FUNC_ARGS)
+static int graphics(GRAPHICS_FUNC_ARGS)
 {
-	sim->parts[i].tmp2 = RNG::Ref().between(0, 10);
+	int z = (cpart->tmp2) * 7; // Randomized color noise based on tmp2
+	*colr += z;
+	*colg += z;
+	*colb += z;
+	return 0;
 }

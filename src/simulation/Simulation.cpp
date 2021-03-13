@@ -2787,6 +2787,8 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 	case PT_CNCT:
 		if (y < ny && (TYP(pmap[y+1][x]) == PT_CNCT || TYP(pmap[y+1][x]) == PT_ROCK)) //check below CNCT for another CNCT or ROCK
 			return 0;
+		if (y < ny && TYP(pmap[y + 1][x]) == PT_ROCK) //check below CNCT for ROCK
+			return 0;
 		break;
 	case PT_GBMB:
 		if (parts[i].life > 0)
