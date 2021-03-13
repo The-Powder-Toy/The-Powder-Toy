@@ -248,7 +248,7 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 								parts[i].tmp = 1;
 						}
 					}
-					else if (parts[i].ctype == PT_STNE && sim->pv[y / CELL][x / CELL] >= 2.0f) // Form ROCK with pressure
+					else if (parts[i].ctype == PT_STNE && sim->pv[y / CELL][x / CELL] >= 20.0f) // Form ROCK with pressure
 					{
 						parts[i].tmp2 = RNG::Ref().between(0, 10); // Provide tmp2 for color noise
 						parts[i].ctype = PT_ROCK;
