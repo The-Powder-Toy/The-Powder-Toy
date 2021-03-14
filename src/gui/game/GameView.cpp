@@ -2139,6 +2139,10 @@ void GameView::OnDraw()
 				{
 					sampleInfo << "Sulfide Ore (ROCK)";
 				}
+				else if (type == PT_GOLD && sample.particle.tmp == 47)
+				{
+					sampleInfo << "Silver (GOLD)";
+				}
 				else if ((type == PT_PIPE || type == PT_PPIP) && c->IsValidElement(ctype))
 				{
 					if (ctype == PT_LAVA && c->IsValidElement((int)sample.particle.pavg[1]))
