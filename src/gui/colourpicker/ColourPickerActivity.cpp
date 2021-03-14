@@ -261,7 +261,7 @@ void ColourPickerActivity::OnDraw()
 	{
 		for(int hue = 0; hue <= 359; hue++)
 		{
-			currx = int(restrict_flt(float(hue), 0, 359))+offsetX;
+			currx = clamp_flt(float(hue), 0, 359)+offsetX;
 			if (currx == lastx)
 				continue;
 			lastx = currx;
@@ -286,7 +286,7 @@ void ColourPickerActivity::OnDraw()
 		}
 
 	//draw color square pointer
-	int currentHueX = int(restrict_flt(float(currentHue), 0, 359));
+	int currentHueX = clamp_flt(float(currentHue), 0, 359);
 	int currentSaturationY = ((255-currentSaturation)/2);
 	g->xor_line(offsetX+currentHueX, offsetY+currentSaturationY-5, offsetX+currentHueX, offsetY+currentSaturationY-1);
 	g->xor_line(offsetX+currentHueX, offsetY+currentSaturationY+1, offsetX+currentHueX, offsetY+currentSaturationY+5);
