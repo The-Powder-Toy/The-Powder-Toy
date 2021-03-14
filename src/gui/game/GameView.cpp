@@ -2139,6 +2139,10 @@ void GameView::OnDraw()
 				{
 					sampleInfo << "Sulfide Ore (ROCK)";
 				}
+				else if (type == PT_STNE && (sample.particle.tmp == 1 || sample.particle.tmp == 2))
+				{
+					sampleInfo << "Sulfide Ore (STNE)";
+				}
 				else if (type == PT_GOLD && sample.particle.tmp == 47)
 				{
 					sampleInfo << "Silver (GOLD)";
