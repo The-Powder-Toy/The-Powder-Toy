@@ -3808,7 +3808,7 @@ void Simulation::UpdateParticles(int start, int end)
 						}
 						else if (t == PT_LAVA)
 						{
-							if (parts[i].ctype>0 && parts[i].ctype<PT_NUM && parts[i].ctype!=PT_LAVA && parts[i].ctype!=PT_LAVA && elements[parts[i].ctype].Enabled)
+							if (parts[i].ctype>0 && parts[i].ctype<PT_NUM && parts[i].ctype!=PT_LAVA && elements[parts[i].ctype].Enabled)
 							{
 								if (parts[i].ctype==PT_THRM&&pt>=elements[PT_BMTL].HighTemperature)
 									s = 0;
@@ -3819,6 +3819,13 @@ void Simulation::UpdateParticles(int start, int end)
 									// TUNG does its own melting in its update function, so HighTemperatureTransition is not LAVA so it won't be handled by the code for HighTemperatureTransition==PT_LAVA below
 									// However, the threshold is stored in HighTemperature to allow it to be changed from Lua
 									if (pt>=elements[parts[i].ctype].HighTemperature)
+										s = 0;
+								}
+								else if (parts[i].ctype == PT_ROCK) //ROCK has it's own melting, this handles the corresponding freezing points. 
+								{
+									if (parts[i].tmp == 1 && pt >= 1153.15) //Sulfide freezing temp
+										s = 0;
+									else if (pt >= 1943.15) // Normal ROCK freezing temp
 										s = 0;
 								}
 								else if (parts[i].ctype == PT_CRMC)
