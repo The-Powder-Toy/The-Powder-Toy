@@ -106,5 +106,13 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 	*colg += (rndstore % 10)- 5;
 	rndstore >>= 4;
 	*colb += (rndstore % 10) - 5;
+
+	if (cpart->tmp == 47) // Silver Color, chose 47 as Silver designator because Silver is atomic num. 47, and can't use 1 or 2
+	{
+		*colr += -20;
+		*colg += 27;
+		*colb += 176;
+	}
+
 	return 0;
 }
