@@ -3828,6 +3828,13 @@ void Simulation::UpdateParticles(int start, int end)
 									else if (pt >= 1943.15) // Normal ROCK freezing temp
 										s = 0;
 								}
+								else if (parts[i].ctype == PT_STNE) //Melting and freezing of STNE is now handled by ROCK's update function
+								{
+									if ((parts[i].tmp == 2 || parts[i].tmp == 1) && pt >= 1153.15) //Sulfide freezing temp
+										s = 0;
+									else if (pt >= 983.0f) // Normal STNE freezing temp
+										s = 0;
+								}
 								else if (parts[i].ctype == PT_CRMC)
 								{
 									float pres = std::max((pv[y/CELL][x/CELL]+pv[(y-2)/CELL][x/CELL]+pv[(y+2)/CELL][x/CELL]+pv[y/CELL][(x-2)/CELL]+pv[y/CELL][(x+2)/CELL])*2.0f, 0.0f);
@@ -5342,7 +5349,7 @@ String Simulation::BasicParticleInfo(Particle const &sample_part)
 	{
 		sampleInfo << "Molten " << ElementResolve(ctype, -1);
 	}
-	else if (type == PT_ROCK && (sample_part.tmp == 1 || sample_part.tmp == 2))
+	else if ((type == PT_ROCK || type == PT_STNE) && (sample_part.tmp == 1 || sample_part.tmp == 2))
 	{
 		sampleInfo << "Sulfide Ore";
 	}
