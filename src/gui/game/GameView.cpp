@@ -2135,6 +2135,10 @@ void GameView::OnDraw()
 				{
 					sampleInfo << "Molten " << c->ElementResolve(ctype, -1);
 				}
+				else if (type == PT_ROCK && (sample.particle.tmp == 1 || sample.particle.tmp == 2))
+				{
+					sampleInfo << "Sulfide Ore (ROCK)";
+				}
 				else if ((type == PT_PIPE || type == PT_PPIP) && c->IsValidElement(ctype))
 				{
 					if (ctype == PT_LAVA && c->IsValidElement((int)sample.particle.pavg[1]))

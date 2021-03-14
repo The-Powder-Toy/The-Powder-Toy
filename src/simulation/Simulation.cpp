@@ -5342,6 +5342,10 @@ String Simulation::BasicParticleInfo(Particle const &sample_part)
 	{
 		sampleInfo << "Molten " << ElementResolve(ctype, -1);
 	}
+	else if (type == PT_ROCK && (sample_part.tmp == 1 || sample_part.tmp == 2))
+	{
+		sampleInfo << "Sulfide Ore";
+	}
 	else if ((type == PT_PIPE || type == PT_PPIP) && ctype && IsValidElement(ctype))
 	{
 		if (ctype == PT_LAVA && pavg1int && IsValidElement(pavg1int))
