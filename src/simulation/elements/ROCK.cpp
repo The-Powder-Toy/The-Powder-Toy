@@ -55,17 +55,27 @@ static int update(UPDATE_FUNC_ARGS)
 	parts[i].pavg[0] = parts[i].pavg[1];
 	parts[i].pavg[1] = sim->pv[y / CELL][x / CELL];
 	float diff = parts[i].pavg[1] - parts[i].pavg[0];
-	if (parts[i].pavg[1] >= 50.00f && (diff > 10.00f || diff < -10.00f))
+	if (parts[i].pavg[1] >= 50.00f && (diff > 10.00f || diff < -10.00f)) //Pressure Change Breaking Point
 	{
 		if (parts[i].tmp==1 && RNG::Ref().chance(1, 500)) //1 in 500 sulfides will produce GOLD
 			sim->part_change_type(i, x, y, PT_GOLD);
+		else if (parts[i].tmp == 1 && RNG::Ref().chance(1, 50)) // Silver 10x more likely than GOLD
+		{
+			parts[i].tmp = 47;
+			sim->part_change_type(i, x, y, PT_GOLD);
+		}
 		else if (parts[i].tmp == 2 && RNG::Ref().chance(1, 10)) //1 in 10 roasted sulfides will produce GOLD
 			sim->part_change_type(i, x, y, PT_GOLD);
+		else if (parts[i].tmp == 2 && RNG::Ref().chance(1, 5)) // Silver 2x more likely than GOLD
+		{
+			parts[i].tmp = 47;
+			sim->part_change_type(i, x, y, PT_GOLD);
+		}
 		else
 			sim->part_change_type(i, x, y, PT_STNE);
 	}
 
-	if (parts[i].tmp == 1 && parts[i].temp >= 873 && RNG::Ref().chance(1, 5000)) //Allow sulfides to burn off at temperature, changing chemistry and releasing CAUS
+	if (parts[i].tmp == 1 && parts[i].temp >= 873 && RNG::Ref().chance(1, 5000)) //Allow sulfides to burn off at temperature, changing chemistry releasing CAUS and SMKE
 	{
 		if (RNG::Ref().chance(1, 15))
 		{
@@ -79,14 +89,14 @@ static int update(UPDATE_FUNC_ARGS)
 		parts[i].tmp = 2;
 	}
 
-	if (parts[i].temp >= 1943.15 && parts[i].tmp == 0)
+	if (parts[i].temp >= 1943.15 && parts[i].tmp == 0) //Melting temperatures
 	{
-		parts[i].type = PT_LAVA;
+		sim->part_change_type(i, x, y, PT_LAVA);
 		parts[i].ctype = PT_ROCK;
 	}
 	else if (parts[i].temp >= 1153.15 && (parts[i].tmp == 1 || parts[i].tmp == 2))
 	{
-		parts[i].type = PT_LAVA;
+		sim->part_change_type(i, x, y, PT_LAVA);
 		parts[i].ctype = PT_ROCK;
 		parts[i].tmp = 1;
 	}
