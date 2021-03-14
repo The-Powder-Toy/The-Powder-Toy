@@ -209,6 +209,11 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 							parts[i].tmp = 1;
 							if (RNG::Ref().chance(1, 5000))
 								parts[i].ctype = PT_GOLD;
+							else if (RNG::Ref().chance(1, 500)) // Silver 10x more likely than GOLD
+							{
+								parts[i].tmp = 47;
+								parts[i].ctype = PT_GOLD;
+							}
 						}
 
 						if (pres >= 21 && RNG::Ref().chance(1, 100000))
