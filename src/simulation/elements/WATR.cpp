@@ -84,6 +84,21 @@ static int update(UPDATE_FUNC_ARGS)
 				}
 				else if (TYP(r)==PT_ROCK && fabs(parts[i].vx)+fabs(parts[i].vy) >= 0.5 && RNG::Ref().chance(1, 1000)) // ROCK erosion
 				{
+					if (parts[ID(r)].tmp == 1) // Handles erosion of Sulfides, which have a chance to become GOLD or produce ACID
+					{
+						parts[ID(r)].tmp = 2;
+						if (RNG::Ref().chance(1, 5))
+						{
+							sim->part_change_type(i, x, y, PT_ACID);
+							parts[i].life = 60; //Weak acid, should only eat 10 particles
+						}
+						continue;
+					}
+					if (parts[ID(r)].tmp == 2 && RNG::Ref().chance(1, 50))
+					{
+						sim->part_change_type(ID(r), x + rx, y + ry, PT_GOLD);
+						continue;
+					}
 					if (RNG::Ref().chance(1,3))
 						sim->part_change_type(ID(r),x+rx,y+ry,PT_SAND);
 					else
