@@ -195,6 +195,18 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 							parts[ID(r)].ctype = PT_HEAC;
 						}
 					}
+					else if (parts[i].ctype == PT_STNE && parts[i].temp >= 1973.0f) //Allow sulfide powders to be smelted to produce metals and GLAS when high enough temp is reached
+					{
+						if (RNG::Ref().chance(1, 10)) // 1 in 10 smelted powdered sulfides will produce silver
+						{
+							parts[i].ctype = PT_GOLD;
+							parts[i].tmp = 47;
+						}
+						else if (RNG::Ref().chance(1, 15)) // 1 in 15 smelted powdered sulfides will produce GOLD
+							parts[i].ctype = PT_GOLD;
+						else //The rest becomes GLAS
+							parts[i].ctype = PT_GLAS;
+					}
 					else if (parts[i].ctype == PT_ROCK)
 					{
 						float pres = sim->pv[y / CELL][x / CELL];
@@ -230,6 +242,11 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 							{
 								if (pres >= 73 || RNG::Ref().chance(1, 8))
 									parts[i].ctype = PT_GOLD;
+								else if (RNG::Ref().chance(1, 8)) // Silver as likely than GOLD
+								{
+									parts[i].tmp = 47;
+									parts[i].ctype = PT_GOLD;
+								}
 								else
 									parts[i].ctype = PT_QRTZ;
 								break;
