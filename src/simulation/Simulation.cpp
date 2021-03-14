@@ -5346,6 +5346,10 @@ String Simulation::BasicParticleInfo(Particle const &sample_part)
 	{
 		sampleInfo << "Sulfide Ore";
 	}
+	else if (type == PT_GOLD && sample_part.tmp == 47)
+	{
+		sampleInfo << "Silver";
+	}
 	else if ((type == PT_PIPE || type == PT_PPIP) && ctype && IsValidElement(ctype))
 	{
 		if (ctype == PT_LAVA && pavg1int && IsValidElement(pavg1int))
