@@ -1,7 +1,7 @@
 #include "simulation/ElementCommon.h"
 
 static int graphics(GRAPHICS_FUNC_ARGS);
-static int update(UPDATE_FUNC_ARGS);
+int Element_ROCK_update(UPDATE_FUNC_ARGS);
 static void create(ELEMENT_CREATE_FUNC_ARGS);
 
 void Element::Element_ROCK()
@@ -44,14 +44,14 @@ void Element::Element_ROCK()
 	HighTemperature = ITH;
 	HighTemperatureTransition = ST;
 
-	Update = &update;
+	Update = &Element_ROCK_update;
 	Graphics = &graphics;
 	Create = &create;
 }
 
-static int update(UPDATE_FUNC_ARGS)
+int Element_ROCK_update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry, rt, t = parts[i].type;
+	int r, rx, ry, rt;
 	parts[i].pavg[0] = parts[i].pavg[1];
 	parts[i].pavg[1] = sim->pv[y / CELL][x / CELL];
 	float diff = parts[i].pavg[1] - parts[i].pavg[0];
@@ -59,14 +59,14 @@ static int update(UPDATE_FUNC_ARGS)
 	{
 		if (parts[i].tmp==1 && RNG::Ref().chance(1, 500)) //1 in 500 sulfides will produce GOLD
 			sim->part_change_type(i, x, y, PT_GOLD);
-		else if (parts[i].tmp == 1 && RNG::Ref().chance(1, 50)) // Silver 10x more likely than GOLD
+		else if (parts[i].tmp == 1 && RNG::Ref().chance(1, 100)) // Silver 5x more likely than GOLD
 		{
 			parts[i].tmp = 47;
 			sim->part_change_type(i, x, y, PT_GOLD);
 		}
-		else if (parts[i].tmp == 2 && RNG::Ref().chance(1, 10)) //1 in 10 roasted sulfides will produce GOLD
+		else if (parts[i].tmp == 2 && RNG::Ref().chance(1, 20)) //1 in 20 roasted sulfides will produce GOLD
 			sim->part_change_type(i, x, y, PT_GOLD);
-		else if (parts[i].tmp == 2 && RNG::Ref().chance(1, 5)) // Silver 2x more likely than GOLD
+		else if (parts[i].tmp == 2 && RNG::Ref().chance(1, 20)) // Silver
 		{
 			parts[i].tmp = 47;
 			sim->part_change_type(i, x, y, PT_GOLD);
@@ -75,7 +75,7 @@ static int update(UPDATE_FUNC_ARGS)
 			sim->part_change_type(i, x, y, PT_STNE);
 	}
 
-	if (parts[i].tmp == 1 && parts[i].temp >= 873 && RNG::Ref().chance(1, 5000)) //Allow sulfides to burn off at temperature, changing chemistry releasing CAUS and SMKE
+	if (parts[i].tmp == 1 && (parts[i].type == PT_ROCK || parts[i].type == PT_STNE) && parts[i].temp >= 873 && RNG::Ref().chance(1, 5000)) //Allow sulfides to burn off at temperature, changing chemistry releasing CAUS and SMKE. Handles ROCK and STNE
 	{
 		if (RNG::Ref().chance(1, 15))
 		{
@@ -86,20 +86,50 @@ static int update(UPDATE_FUNC_ARGS)
 		rx = RNG::Ref().chance(1, 2) - 1;
 		ry = RNG::Ref().chance(1, 2) - 1;
 		sim->create_part(-1, x + rx, y + ry, PT_SMKE);
-		parts[i].tmp = 2;
+
+		if (RNG::Ref().chance(1, 500)) //1 in 500 will directly produce GOLD
+			sim->part_change_type(i, x, y, PT_GOLD);
+		else if (RNG::Ref().chance(1, 100)) // Silver 5x more likely than GOLD
+		{
+			sim->part_change_type(i, x, y, PT_GOLD);
+			parts[i].tmp = 47;
+		}
+		else
+			parts[i].tmp = 2;
 	}
 
-	if (parts[i].temp >= 1943.15 && parts[i].tmp == 0) //Melting temperatures
+	if (parts[i].type == PT_ROCK && parts[i].temp >= 1943.15 && parts[i].tmp == 0) //Melting temperatures
 	{
 		sim->part_change_type(i, x, y, PT_LAVA);
 		parts[i].ctype = PT_ROCK;
 	}
-	else if (parts[i].temp >= 1153.15 && (parts[i].tmp == 1 || parts[i].tmp == 2))
+	else if (parts[i].type == PT_ROCK && parts[i].temp >= 1153.15 && (parts[i].tmp == 1 || parts[i].tmp == 2)) //Sulfides
 	{
 		sim->part_change_type(i, x, y, PT_LAVA);
 		parts[i].ctype = PT_ROCK;
 		parts[i].tmp = 1;
 	}
+	else if (parts[i].type == PT_STNE && parts[i].temp >= 1153.15 && (parts[i].tmp == 1 || parts[i].tmp == 2)) //Sulfide Powders
+	{
+		if (parts[i].tmp == 1)
+		{
+			if (RNG::Ref().chance(1, 15))
+			{
+				rx = RNG::Ref().chance(1, 2) - 1;
+				ry = RNG::Ref().chance(1, 2) - 1;
+				sim->create_part(-1, x + rx, y + ry, PT_CAUS);
+			}
+			rx = RNG::Ref().chance(1, 2) - 1;
+			ry = RNG::Ref().chance(1, 2) - 1;
+			sim->create_part(-1, x + rx, y + ry, PT_SMKE);
+		}
+
+		sim->part_change_type(i, x, y, PT_LAVA);
+		parts[i].ctype = PT_STNE;
+		parts[i].tmp = 2;
+	}
+	else if (parts[i].type == PT_STNE && parts[i].temp >= 983.0f && (parts[i].tmp != 1 && parts[i].tmp != 2))
+		sim->part_change_type(i, x, y, PT_LAVA);
 	return 0;
 }
 
