@@ -94,21 +94,22 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 		for (ry=-2; ry<3; ry++)
 			if (BOUNDS_CHECK && (rx || ry))
 			{
-				r = pmap[y+ry][x+rx];
+				r = pmap[y + ry][x + rx];
 				if (!r)
 					continue;
 				rt = TYP(r);
 
 				//THRM burning
-				if (rt==PT_THRM && (t==PT_FIRE || t==PT_PLSM || t==PT_LAVA))
+				if (rt == PT_THRM && (t == PT_FIRE || t == PT_PLSM || t == PT_LAVA))
 				{
 					if (RNG::Ref().chance(1, 500)) {
-						sim->part_change_type(ID(r),x+rx,y+ry,PT_LAVA);
+						sim->part_change_type(ID(r), x + rx, y + ry, PT_LAVA);
 						parts[ID(r)].ctype = PT_BMTL;
 						parts[ID(r)].temp = 3500.0f;
-						sim->pv[(y+ry)/CELL][(x+rx)/CELL] += 50.0f;
-					} else {
-						sim->part_change_type(ID(r),x+rx,y+ry,PT_LAVA);
+						sim->pv[(y + ry) / CELL][(x + rx) / CELL] += 50.0f;
+					}
+					else {
+						sim->part_change_type(ID(r), x + rx, y + ry, PT_LAVA);
 						parts[ID(r)].life = 400;
 						parts[ID(r)].ctype = PT_THRM;
 						parts[ID(r)].temp = 3500.0f;
@@ -117,16 +118,16 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 					continue;
 				}
 
-				if ((rt==PT_COAL) || (rt==PT_BCOL))
+				if ((rt == PT_COAL) || (rt == PT_BCOL))
 				{
-					if ((t==PT_FIRE || t==PT_PLSM))
+					if ((t == PT_FIRE || t == PT_PLSM))
 					{
-						if (parts[ID(r)].life>100 && RNG::Ref().chance(1, 500))
+						if (parts[ID(r)].life > 100 && RNG::Ref().chance(1, 500))
 						{
 							parts[ID(r)].life = 99;
 						}
 					}
-					else if (t==PT_LAVA)
+					else if (t == PT_LAVA)
 					{
 						if (parts[i].ctype == PT_IRON && RNG::Ref().chance(1, 500))
 						{
@@ -203,7 +204,14 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 							break;
 						}
 
-						if (pres >= 25 && RNG::Ref().chance(1, 100000))
+						if (pres >= 21 && pres <= 30 && parts[i].temp <= 1950) // Create sulfides
+						{
+							parts[i].tmp = 1;
+							if (RNG::Ref().chance(1, 5000))
+								parts[i].ctype = PT_GOLD;
+						}
+
+						if (pres >= 21 && RNG::Ref().chance(1, 100000))
 						{
 							if (pres <= 50)
 							{
@@ -241,14 +249,12 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 							}
 						}
 
-						if (parts[ID(r)].ctype == PT_GOLD && parts[ID(r)].tmp == 0 && pres >= 50 && RNG::Ref().chance(1, 10000)) // Produce GOLD veins/clusters
+						if (parts[ID(r)].ctype == PT_GOLD && pres >= 50 && RNG::Ref().chance(1, 7500)) // Produce GOLD veins/clusters. Need to revisit veins later, so they aren't all vertical. 
 						{
 							parts[i].ctype = PT_GOLD;
-							if (rx > 1 || rx < -1) // Trend veins vertical
-								parts[i].tmp = 1;
 						}
 					}
-					else if (parts[i].ctype == PT_STNE && sim->pv[y / CELL][x / CELL] >= 20.0f) // Form ROCK with pressure
+					else if (parts[i].ctype == PT_STNE && sim->pv[y / CELL][x / CELL] >= 30.0f) // Form ROCK with pressure
 					{
 						parts[i].tmp2 = RNG::Ref().between(0, 10); // Provide tmp2 for color noise
 						parts[i].ctype = PT_ROCK;
