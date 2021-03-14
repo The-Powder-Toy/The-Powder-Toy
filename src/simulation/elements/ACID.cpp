@@ -83,6 +83,8 @@ static int update(UPDATE_FUNC_ARGS)
 					{
 						if (sim->parts_avg(i, ID(r),PT_GLAS)!= PT_GLAS)//GLAS protects stuff from acid
 						{
+							if (TYP(r) == PT_ROCK && !RNG::Ref().chance(1, 100))
+								continue;
 							float newtemp = ((60.0f-(float)sim->elements[rt].Hardness))*7.0f;
 							if(newtemp < 0){
 								newtemp = 0;
