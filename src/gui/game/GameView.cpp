@@ -2137,16 +2137,28 @@ void GameView::OnDraw()
 						sampleInfo << "Molten Silver";
 					else if (ctype == PT_METL && sample.particle.tmp == 82)
 						sampleInfo << "Molten Lead";
+					else if (ctype == PT_ROCK && sample.particle.tmp == 3)
+						sampleInfo << "Molten Galena";
 					else
 						sampleInfo << "Molten " << c->ElementResolve(ctype, -1);
 				}
-				else if (type == PT_ROCK && (sample.particle.tmp == 1 || sample.particle.tmp == 2))
+				else if (type == PT_ROCK)
 				{
-					sampleInfo << "Sulfide Ore (ROCK)";
+					if (sample.particle.tmp == 1 || sample.particle.tmp == 2)
+						sampleInfo << "Sulfide Ore (ROCK)";
+					else if (sample.particle.tmp == 3)
+						sampleInfo << "Galena (ROCK)";
+					else
+						sampleInfo << c->ElementResolve(type, ctype);
 				}
-				else if (type == PT_STNE && (sample.particle.tmp == 1 || sample.particle.tmp == 2))
+				else if (type == PT_STNE)
 				{
-					sampleInfo << "Sulfide Ore (STNE)";
+					if (sample.particle.tmp == 1 || sample.particle.tmp == 2)
+						sampleInfo << "Sulfide Ore (STNE)";
+					else if (sample.particle.tmp == 3)
+						sampleInfo << "Galena (STNE)";
+					else
+						sampleInfo << c->ElementResolve(type, ctype);
 				}
 				else if (type == PT_METL && sample.particle.tmp == 82)
 				{
