@@ -2133,7 +2133,12 @@ void GameView::OnDraw()
 			{
 				if (type == PT_LAVA && c->IsValidElement(ctype))
 				{
-					sampleInfo << "Molten " << c->ElementResolve(ctype, -1);
+					if (ctype == PT_GOLD && sample.particle.tmp == 47)
+						sampleInfo << "Molten Silver";
+					else if (ctype == PT_METL && sample.particle.tmp == 82)
+						sampleInfo << "Molten Lead";
+					else
+						sampleInfo << "Molten " << c->ElementResolve(ctype, -1);
 				}
 				else if (type == PT_ROCK && (sample.particle.tmp == 1 || sample.particle.tmp == 2))
 				{
@@ -2142,6 +2147,10 @@ void GameView::OnDraw()
 				else if (type == PT_STNE && (sample.particle.tmp == 1 || sample.particle.tmp == 2))
 				{
 					sampleInfo << "Sulfide Ore (STNE)";
+				}
+				else if (type == PT_METL && sample.particle.tmp == 82)
+				{
+					sampleInfo << "Lead (METL)";
 				}
 				else if (type == PT_GOLD && sample.particle.tmp == 47)
 				{
