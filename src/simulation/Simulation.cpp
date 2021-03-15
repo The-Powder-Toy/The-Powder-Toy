@@ -3825,6 +3825,8 @@ void Simulation::UpdateParticles(int start, int end)
 								{
 									if (parts[i].tmp == 1 && pt >= 1153.15) //Sulfide freezing temp
 										s = 0;
+									else if (parts[i].tmp == 3 && pt >= 1387.15) // Galena freezing temp
+										s = 0;
 									else if (pt >= 1943.15) // Normal ROCK freezing temp
 										s = 0;
 								}
@@ -5356,12 +5358,19 @@ String Simulation::BasicParticleInfo(Particle const &sample_part)
 			sampleInfo << "Molten Silver";
 		else if (ctype == PT_METL && sample_part.tmp == 82)
 			sampleInfo << "Molten Lead";
+		else if (ctype == PT_ROCK && sample_part.tmp == 3)
+			sampleInfo << "Molten Galena";
 		else
 			sampleInfo << "Molten " << ElementResolve(ctype, -1);
 	}
-	else if ((type == PT_ROCK || type == PT_STNE) && (sample_part.tmp == 1 || sample_part.tmp == 2))
+	else if (type == PT_ROCK || type == PT_STNE)
 	{
-		sampleInfo << "Sulfide Ore";
+		if (sample_part.tmp == 1 || sample_part.tmp == 2)
+			sampleInfo << "Sulfide Ore";
+		else if (sample_part.tmp == 3)
+			sampleInfo << "Galena";
+		else
+			sampleInfo << ElementResolve(type, ctype);
 	}
 	else if (type == PT_METL && sample_part.tmp == 82)
 	{
