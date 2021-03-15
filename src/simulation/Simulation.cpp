@@ -3835,6 +3835,11 @@ void Simulation::UpdateParticles(int start, int end)
 									else if (pt >= 983.0f) // Normal STNE freezing temp
 										s = 0;
 								}
+								else if (parts[i].ctype == PT_METL) //Melting and freezing of METL is now handled by ROCK's update function
+								{
+									if (parts[i].tmp == 82 && pt >= 600.65 && pt <= elements[PT_METL].HighTemperature) //Lead freezing temp
+										s = 0;
+								}
 								else if (parts[i].ctype == PT_CRMC)
 								{
 									float pres = std::max((pv[y/CELL][x/CELL]+pv[(y-2)/CELL][x/CELL]+pv[(y+2)/CELL][x/CELL]+pv[y/CELL][(x-2)/CELL]+pv[y/CELL][(x+2)/CELL])*2.0f, 0.0f);
@@ -5347,11 +5352,20 @@ String Simulation::BasicParticleInfo(Particle const &sample_part)
 	int pavg1int = (int)sample_part.pavg[1];
 	if (type == PT_LAVA && ctype && IsValidElement(ctype))
 	{
-		sampleInfo << "Molten " << ElementResolve(ctype, -1);
+		if (ctype == PT_GOLD && sample_part.tmp == 47)
+			sampleInfo << "Molten Silver";
+		else if (ctype == PT_METL && sample_part.tmp == 82)
+			sampleInfo << "Molten Lead";
+		else
+			sampleInfo << "Molten " << ElementResolve(ctype, -1);
 	}
 	else if ((type == PT_ROCK || type == PT_STNE) && (sample_part.tmp == 1 || sample_part.tmp == 2))
 	{
 		sampleInfo << "Sulfide Ore";
+	}
+	else if (type == PT_METL && sample_part.tmp == 82)
+	{
+		sampleInfo << "Lead";
 	}
 	else if (type == PT_GOLD && sample_part.tmp == 47)
 	{
