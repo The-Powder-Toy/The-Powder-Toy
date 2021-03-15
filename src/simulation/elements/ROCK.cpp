@@ -135,6 +135,8 @@ int Element_ROCK_update(UPDATE_FUNC_ARGS)
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
+	if (cpart->tmp2 == 0)
+		cpart->tmp2 = RNG::Ref().between(0, 10);
 	int z = (cpart->tmp2 - 7) * 6; // Randomized color noise based on tmp2
 	*colr += z;
 	*colg += z;
