@@ -61,11 +61,18 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 		*colg = 208 + z - 10;
 		*colb = 144 - z - 70;
 	}
-	if (cpart->tmp == 2) // Roasted Sulfide Color
+	else if (cpart->tmp == 2) // Roasted Sulfide Color
 	{
 		*colr = 255 - z - 65;
 		*colg = 208 - z - 55;
 		*colb = 144 - z - 70;
+	}
+	else if (cpart->tmp == 3) // Galena (Lead Sulfide) Color
+	{
+		int w = (cpart->tmp2 * 2);
+		*colr = 94 + w;
+		*colg = 94 + w;
+		*colb = 100 + w;
 	}
 	return 0;
 }
