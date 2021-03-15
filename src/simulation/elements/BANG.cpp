@@ -60,6 +60,8 @@ static int update(UPDATE_FUNC_ARGS)
 						r = pmap[y+ry][x+rx];
 						if (!r)
 							continue;
+						if (TYP(r) == PT_ROCK) //Set higher power for ROCK
+							parts[i].tmp2 = 1;
 						if (TYP(r)==PT_FIRE || TYP(r)==PT_PLSM || TYP(r)==PT_SPRK || TYP(r)==PT_LIGH)
 						{
 							parts[i].tmp = 1;
@@ -86,6 +88,10 @@ static int update(UPDATE_FUNC_ARGS)
 		float otemp = parts[i].temp-273.15f;
 		//Explode!!
 		sim->pv[y/CELL][x/CELL] += 0.5f;
+		if (parts[i].tmp2 == 1) // ROCK explosion uses higher pressure (so that ROCK can be broken)
+		{
+			sim->pv[y / CELL][x / CELL] += 51.0f;
+		}
 		parts[i].tmp = 0;
 		if (RNG::Ref().chance(1, 3))
 		{
