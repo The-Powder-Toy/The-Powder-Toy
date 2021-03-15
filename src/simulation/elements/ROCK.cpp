@@ -55,7 +55,7 @@ int Element_ROCK_update(UPDATE_FUNC_ARGS)
 	parts[i].pavg[0] = parts[i].pavg[1];
 	parts[i].pavg[1] = sim->pv[y / CELL][x / CELL];
 	float diff = parts[i].pavg[1] - parts[i].pavg[0];
-	if (parts[i].pavg[1] >= 50.00f && (diff > 10.00f || diff < -10.00f)) //Pressure Change Breaking Point
+	if (parts[i].type == PT_ROCK && parts[i].pavg[1] >= 50.00f && (diff > 10.00f || diff < -10.00f)) //Pressure Change Breaking Point
 	{
 		if (parts[i].tmp==1 && RNG::Ref().chance(1, 500)) //1 in 500 sulfides will produce GOLD
 			sim->part_change_type(i, x, y, PT_GOLD);
@@ -128,8 +128,13 @@ int Element_ROCK_update(UPDATE_FUNC_ARGS)
 		parts[i].ctype = PT_STNE;
 		parts[i].tmp = 2;
 	}
-	else if (parts[i].type == PT_STNE && parts[i].temp >= 983.0f && (parts[i].tmp != 1 && parts[i].tmp != 2))
+	else if (parts[i].type == PT_STNE && parts[i].temp >= 983.0f && (parts[i].tmp != 1 && parts[i].tmp != 2)) // Regular STNE
 		sim->part_change_type(i, x, y, PT_LAVA);
+	else if (parts[i].tmp == 82 && parts[i].type == PT_METL && parts[i].temp >= 600.65f) // Lead
+	{
+		sim->part_change_type(i, x, y, PT_LAVA);
+		parts[i].ctype = PT_METL;
+	}
 	return 0;
 }
 
