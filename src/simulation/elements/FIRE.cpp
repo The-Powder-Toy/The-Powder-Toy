@@ -216,16 +216,25 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 							break;
 						}
 
-						if (pres >= 21 && pres <= 30 && parts[i].temp <= 1950) // Create sulfides
-						{
+						if (parts[i].temp <= 2100 && parts[ID(r)].temp <= 1875 && RNG::Ref().chance(1, 1000)) // Create sulfides when molten rock comes into contact with cooler material
 							parts[i].tmp = 1;
-							if (RNG::Ref().chance(1, 5000))
+
+						if (parts[i].temp <= 2000 && parts[ID(r)].temp <= 1800 && RNG::Ref().chance(1, 100000)) //Heavy metal generation when molten rock comes into contact with cooler material
+						{
+							if (RNG::Ref().chance(1, 10))
 								parts[i].ctype = PT_GOLD;
-							else if (RNG::Ref().chance(1, 500)) // Silver 10x more likely than GOLD
+							else if (RNG::Ref().chance(1, 5))
 							{
 								parts[i].tmp = 47;
 								parts[i].ctype = PT_GOLD;
 							}
+							else if (RNG::Ref().chance(1, 3))
+							{
+								parts[i].tmp = 82;
+								parts[i].ctype = PT_METL;
+							}
+							else 
+								parts[i].ctype = PT_QRTZ;
 						}
 
 						if (pres >= 21 && RNG::Ref().chance(1, 100000))
@@ -242,7 +251,7 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 							{
 								if (pres >= 73 || RNG::Ref().chance(1, 8))
 									parts[i].ctype = PT_GOLD;
-								else if (RNG::Ref().chance(1, 8)) // Silver as likely than GOLD
+								else if (RNG::Ref().chance(1, 8)) // Silver as likely as GOLD
 								{
 									parts[i].tmp = 47;
 									parts[i].ctype = PT_GOLD;
