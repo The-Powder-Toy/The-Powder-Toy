@@ -1,5 +1,8 @@
 #include "simulation/ElementCommon.h"
 
+static int graphics(GRAPHICS_FUNC_ARGS);
+int Element_ROCK_update(UPDATE_FUNC_ARGS);
+
 void Element::Element_METL()
 {
 	Identifier = "DEFAULT_PT_METL";
@@ -39,4 +42,22 @@ void Element::Element_METL()
 	LowTemperatureTransition = NT;
 	HighTemperature = 1273.0f;
 	HighTemperatureTransition = PT_LAVA;
+
+	Graphics = &graphics;
+	Update = &Element_ROCK_update;
+}
+
+static int graphics(GRAPHICS_FUNC_ARGS)
+{
+	if (cpart->tmp2 == 0)
+		cpart->tmp2 = RNG::Ref().between(0, 10);
+	int z = cpart->tmp2; // Randomized color noise based on tmp2 for lead only
+
+	if (cpart->tmp == 82) // Lead Color
+	{
+		*colr = 80 + z;
+		*colg = 80 + z;
+		*colb = 80 + z;
+	}
+	return 0;
 }
