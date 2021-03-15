@@ -216,10 +216,13 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 							break;
 						}
 
-						if (parts[i].temp <= 2100 && parts[ID(r)].temp <= 1875 && RNG::Ref().chance(1, 1000)) // Create sulfides when molten rock comes into contact with cooler material
+						if (parts[i].tmp == 0 && parts[i].temp <= 2100 && parts[ID(r)].temp <= 1875 && RNG::Ref().chance(1, 1000)) // Create sulfides when molten rock comes into contact with cooler material
 							parts[i].tmp = 1;
 
-						if (parts[i].temp <= 2000 && parts[ID(r)].temp <= 1800 && RNG::Ref().chance(1, 100000)) //Heavy metal generation when molten rock comes into contact with cooler material
+						if (parts[i].tmp == 0 && parts[i].temp <= 2000 && parts[ID(r)].temp <= 1800 && RNG::Ref().chance(1, 1000)) // Create Galena when molten rock comes into contact with cooler material
+							parts[i].tmp = 3;
+
+						if (parts [i].tmp == 1 && parts[i].temp <= 2000 && parts[ID(r)].temp <= 1800 && RNG::Ref().chance(1, 100000)) //Heavy metal generation when molten sulfide rock comes into contact with cooler material
 						{
 							if (RNG::Ref().chance(1, 10))
 								parts[i].ctype = PT_GOLD;
@@ -235,6 +238,20 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 							}
 							else 
 								parts[i].ctype = PT_QRTZ;
+						}
+
+						if (parts[i].tmp == 3 && parts[i].temp <= 2000 && parts[ID(r)].temp <= 1800 && RNG::Ref().chance(1, 100000)) //Heavy metal generation when molten Galena comes into contact with cooler material
+						{
+							if (RNG::Ref().chance(1, 10))
+							{
+								parts[i].ctype = PT_GOLD;
+								parts[i].tmp = 47;
+							}
+							else
+							{
+								parts[i].tmp = 82;
+								parts[i].ctype = PT_METL;
+							}
 						}
 
 						if (pres >= 21 && RNG::Ref().chance(1, 100000))
