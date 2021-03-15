@@ -51,19 +51,21 @@ void Element::Element_STNE()
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
+	if (cpart->tmp2 == 0)
+		cpart->tmp2 = RNG::Ref().between(0, 10);
 	int z = (cpart->tmp2 - 7) * 6; // Randomized color noise based on tmp2 for sulfides only
 
 	if (cpart->tmp == 1) // Sulfide Color
 	{
-		*colr = 255;
-		*colg = 208 + z + 30;
-		*colb = 144 - z - 30;
+		*colr = 215;
+		*colg = 208 + z - 10;
+		*colb = 144 - z - 70;
 	}
 	if (cpart->tmp == 2) // Roasted Sulfide Color
 	{
-		*colr = 255 - z - 25;
-		*colg = 208 - z - 15;
-		*colb = 144 - z - 30;
+		*colr = 255 - z - 65;
+		*colg = 208 - z - 55;
+		*colb = 144 - z - 70;
 	}
 	return 0;
 }
