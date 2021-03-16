@@ -51,50 +51,50 @@ void Element::Element_ROCK()
 
 int Element_ROCK_update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry, rt;
+	int rx, ry;
 	parts[i].pavg[0] = parts[i].pavg[1];
 	parts[i].pavg[1] = sim->pv[y / CELL][x / CELL];
 	float diff = parts[i].pavg[1] - parts[i].pavg[0];
-	if (parts[i].type == PT_ROCK && parts[i].pavg[1] >= 50.00f && (diff > 10.00f || diff < -10.00f)) //Pressure Change Breaking Point
+	if (parts[i].type == PT_ROCK && parts[i].pavg[1] >= 50.00f && (diff > 10.00f || diff < -10.00f))
 	{
-		if (parts[i].tmp == 1) //Sulfides
+		if (parts[i].tmp == 1) //Breaking Sulfides
 		{
-			if (RNG::Ref().chance(1, 500)) //1 in 500 sulfides will produce GOLD
+			if (RNG::Ref().chance(1, 500))
 				sim->part_change_type(i, x, y, PT_GOLD);
-			else if (RNG::Ref().chance(1, 100)) // Silver 5x more likely than GOLD
+			else if (RNG::Ref().chance(1, 100))
 			{
-				parts[i].tmp = 47;
+				parts[i].tmp = 47; //Set Silver
 				sim->part_change_type(i, x, y, PT_GOLD);
 			}
 		}
-		else if (parts[i].tmp == 2) //Roasted Sulfides
+		else if (parts[i].tmp == 2) //Breaking Roasted Sulfides
 		{
 			if (RNG::Ref().chance(1, 20))
 				sim->part_change_type(i, x, y, PT_GOLD);
 			else if (RNG::Ref().chance(1, 20))
 			{
-				parts[i].tmp = 47;
+				parts[i].tmp = 47; //Set Silver
 				sim->part_change_type(i, x, y, PT_GOLD);
 			}
 		}
-		else if (parts[i].tmp == 3) //Galena
+		else if (parts[i].tmp == 3) //Breaking Galena
 		{
 			if (RNG::Ref().chance(1, 20))
 			{
 				sim->part_change_type(i, x, y, PT_METL);
-				parts[i].tmp = 82;
+				parts[i].tmp = 82; //Set Lead
 			}
 			else if (RNG::Ref().chance(1, 60))
 			{
-				parts[i].tmp = 47;
+				parts[i].tmp = 47; //Set Silver
 				sim->part_change_type(i, x, y, PT_GOLD);
 			}
 		}
-		if (parts[i].type == PT_ROCK)
+		if (parts[i].type == PT_ROCK) //Only break if current part is still ROCK
 			sim->part_change_type(i, x, y, PT_STNE);
 	}
 
-	if (parts[i].tmp == 1 && (parts[i].type == PT_ROCK || parts[i].type == PT_STNE) && parts[i].temp >= 873 && RNG::Ref().chance(1, 5000)) //Allow sulfides to burn off at temperature, changing chemistry releasing CAUS and SMKE. Handles ROCK and STNE
+	if (parts[i].tmp == 1 && (parts[i].type == PT_ROCK || parts[i].type == PT_STNE) && parts[i].temp >= 873 && RNG::Ref().chance(1, 5000)) //Sulfide "Roasting" reactions
 	{
 		if (RNG::Ref().chance(1, 15))
 		{
@@ -108,16 +108,16 @@ int Element_ROCK_update(UPDATE_FUNC_ARGS)
 
 		if (RNG::Ref().chance(1, 500)) //1 in 500 will directly produce GOLD
 			sim->part_change_type(i, x, y, PT_GOLD);
-		else if (RNG::Ref().chance(1, 100)) // Silver 5x more likely than GOLD
+		else if (RNG::Ref().chance(1, 100))
 		{
 			sim->part_change_type(i, x, y, PT_GOLD);
-			parts[i].tmp = 47;
+			parts[i].tmp = 47; //Set Silver
 		}
 		else
-			parts[i].tmp = 2;
+			parts[i].tmp = 2; //Set to roasted Sulfide
 	}
-
-	if (parts[i].type == PT_ROCK && parts[i].temp >= 1943.15 && parts[i].tmp == 0) //Melting temperatures
+	
+	if (parts[i].type == PT_ROCK && parts[i].temp >= 1943.15 && parts[i].tmp == 0) /*Melting Temperatures & Melting Reactions*/
 	{
 		sim->part_change_type(i, x, y, PT_LAVA);
 		parts[i].ctype = PT_ROCK;
@@ -162,12 +162,12 @@ int Element_ROCK_update(UPDATE_FUNC_ARGS)
 			sim->create_part(-1, x + rx, y + ry, PT_CAUS);
 		}
 		sim->part_change_type(i, x, y, PT_LAVA);
-		if (RNG::Ref().chance(1, 5)) // 1 in 5 smelted particles will produce silver
+		if (RNG::Ref().chance(1, 5))
 		{
 			parts[i].ctype = PT_GOLD;
 			parts[i].tmp = 47;
 		}
-		else if (RNG::Ref().chance(1, 5)) // 1 in 2 smelted particles will produce lead
+		else if (RNG::Ref().chance(1, 5))
 		{
 			parts[i].ctype = PT_METL;
 			parts[i].tmp = 82;
@@ -175,9 +175,9 @@ int Element_ROCK_update(UPDATE_FUNC_ARGS)
 		else //The rest becomes GLAS
 			parts[i].ctype = PT_GLAS;
 	}
-	else if (parts[i].type == PT_STNE && parts[i].temp >= 983.0f && (parts[i].tmp != 1 && parts[i].tmp != 2 && parts[i].tmp != 3)) // Regular STNE
+	else if (parts[i].type == PT_STNE && parts[i].temp >= 983.0f && (parts[i].tmp != 1 && parts[i].tmp != 2 && parts[i].tmp != 3)) //Regular STNE
 		sim->part_change_type(i, x, y, PT_LAVA);
-	else if (parts[i].tmp == 82 && parts[i].type == PT_METL && parts[i].temp >= 600.65f) // Lead
+	else if (parts[i].tmp == 82 && parts[i].type == PT_METL && parts[i].temp >= 600.65f) //Lead
 	{
 		sim->part_change_type(i, x, y, PT_LAVA);
 		parts[i].ctype = PT_METL;
@@ -187,14 +187,14 @@ int Element_ROCK_update(UPDATE_FUNC_ARGS)
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
-	if (cpart->tmp2 == 0)
+	if (cpart->tmp2 == 0) //Set random tmp2 vals if they do not exist
 		cpart->tmp2 = RNG::Ref().between(0, 10);
 	int z = (cpart->tmp2 - 7) * 6; // Randomized color noise based on tmp2
 	*colr += z;
 	*colg += z;
 	*colb += z;
 
-	if (cpart->temp >= 810.15) // Glows when hot, right before melting becomes bright
+	if (cpart->temp >= 810.15) //Glows when hot, right before melting becomes bright
 	{
 		*pixel_mode |= FIRE_ADD;
 
@@ -203,19 +203,19 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 		*fireg = *colg;
 		*fireb = *colb;
 	}
-	if (cpart->tmp == 1) // Sulfide Color
+	if (cpart->tmp == 1) //Sulfide Color
 	{
 		*colr += 50;
 		*colg += 30;
 		*colb += -30;
 	}
-	else if (cpart->tmp == 2) // Roasted Sulfide Color
+	else if (cpart->tmp == 2) //Roasted Sulfide Color
 	{
 		*colr += 25;
 		*colg += 15;
 		*colb += -15;
 	}
-	else if (cpart->tmp == 3) // Galena (Lead Sulfide) Color
+	else if (cpart->tmp == 3) //Galena (Lead Sulfide) Color
 	{
 		int w = (cpart->tmp2 * 2);
 		*colr = 84 + w;
