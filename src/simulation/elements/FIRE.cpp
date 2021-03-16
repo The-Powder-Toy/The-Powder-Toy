@@ -216,6 +216,9 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 							break;
 						}
 
+						if (parts[i].temp >= 2575.15 && parts[i].tmp == 2) //Reset roasted sulfides to normal sulfides if they get hot enough
+							parts[i].tmp = 1;
+
 						if (parts[i].tmp == 0 && parts[i].temp <= 2100 && parts[ID(r)].temp <= 1875 && RNG::Ref().chance(1, 1000)) // Create sulfides when molten rock comes into contact with cooler material
 							parts[i].tmp = 1;
 
