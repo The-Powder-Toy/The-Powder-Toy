@@ -126,7 +126,6 @@ int Element_ROCK_update(UPDATE_FUNC_ARGS)
 	{
 		sim->part_change_type(i, x, y, PT_LAVA);
 		parts[i].ctype = PT_ROCK;
-		parts[i].tmp = 1;
 	}
 	else if (parts[i].type == PT_STNE && parts[i].temp >= 1153.15 && (parts[i].tmp == 1 || parts[i].tmp == 2)) //Sulfide Powders
 	{
