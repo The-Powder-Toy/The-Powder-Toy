@@ -64,7 +64,7 @@ static int update(UPDATE_FUNC_ARGS)
 						sim->part_change_type(i, x, y, PT_RFRG);
 					}
 				}
-				else if (TYP(r) != PT_ACID && TYP(r) != PT_CAUS && TYP(r) != PT_RFRG && TYP(r) != PT_RFGL && !(TYP(r) == PT_ROCK && parts[ID(r)].tmp == (1 || 2)))
+				else if (TYP(r) != PT_ACID && TYP(r) != PT_CAUS && TYP(r) != PT_RFRG && TYP(r) != PT_RFGL && !(TYP(r) == PT_ROCK && (parts[ID(r)].tmp == 1 || parts[ID(r)].tmp == 2)))
 				{
 					if ((TYP(r) != PT_CLNE && TYP(r) != PT_PCLN && RNG::Ref().chance(sim->elements[TYP(r)].Hardness, 1000)) && parts[i].life >= 50)
 					{
