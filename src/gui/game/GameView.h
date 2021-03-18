@@ -46,6 +46,7 @@ private:
 	bool ctrlBehaviour;
 	bool altBehaviour;
 	bool showHud;
+	bool showBrush;
 	bool showDebug;
 	int delayedActiveMenu;
 	bool wallBrush;
@@ -142,6 +143,8 @@ public:
 	void SetSample(SimulationSample sample);
 	void SetHudEnable(bool hudState);
 	bool GetHudEnable();
+	void SetBrushEnable(bool hudState);
+	bool GetBrushEnable();
 	void SetDebugHUD(bool mode);
 	bool GetDebugHUD();
 	bool GetPlacingSave();
