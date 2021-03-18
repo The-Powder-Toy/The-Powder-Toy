@@ -2177,6 +2177,7 @@ void LuaScriptInterface::initRendererAPI()
 		{"decorations", renderer_decorations}, //renderer_debugHUD
 		{"grid", renderer_grid},
 		{"debugHUD", renderer_debugHUD},
+		{"showBrush", renderer_showBrush},
 		{"depth3d", renderer_depth3d},
 		{"zoomEnabled", renderer_zoomEnabled},
 		{"zoomWindow", renderer_zoomWindowInfo},
@@ -2359,6 +2360,19 @@ int LuaScriptInterface::renderer_debugHUD(lua_State * l)
 	}
 	int debug = luaL_optint(l, 1, -1);
 	luacon_controller->SetDebugHUD(debug);
+	return 0;
+}
+
+int LuaScriptInterface::renderer_showBrush(lua_State * l)
+{
+	int acount = lua_gettop(l);
+	if (acount == 0)
+	{
+		lua_pushnumber(l, luacon_controller->GetBrushEnable());
+		return 1;
+	}
+	int brush = luaL_optint(l, 1, -1);
+	luacon_controller->SetBrushEnable(brush);
 	return 0;
 }
 

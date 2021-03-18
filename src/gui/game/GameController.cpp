@@ -1044,6 +1044,16 @@ bool GameController::GetHudEnable()
 	return gameView->GetHudEnable();
 }
 
+void GameController::SetBrushEnable(bool brushState)
+{
+	gameView->SetBrushEnable(brushState);
+}
+
+bool GameController::GetBrushEnable()
+{
+	return gameView->GetBrushEnable();
+}
+
 void GameController::SetDebugHUD(bool hudState)
 {
 	gameView->SetDebugHUD(hudState);

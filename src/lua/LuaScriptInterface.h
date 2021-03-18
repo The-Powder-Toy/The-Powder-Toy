@@ -119,6 +119,7 @@ class LuaScriptInterface: public CommandInterface
 	static int renderer_decorations(lua_State * l);
 	static int renderer_grid(lua_State * l);
 	static int renderer_debugHUD(lua_State * l);
+	static int renderer_showBrush(lua_State * l);
 	static int renderer_depth3d(lua_State * l);
 	static int renderer_zoomEnabled(lua_State *l);
 	static int renderer_zoomWindowInfo(lua_State *l);

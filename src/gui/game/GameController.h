@@ -104,6 +104,8 @@ public:
 	void ShowGravityGrid();
 	void SetHudEnable(bool hudState);
 	bool GetHudEnable();
+	void SetBrushEnable(bool brushState);
+	bool GetBrushEnable();
 	void SetDebugHUD(bool hudState);
 	bool GetDebugHUD();
 	void SetDebugFlags(unsigned int flags) { debugFlags = flags; }
