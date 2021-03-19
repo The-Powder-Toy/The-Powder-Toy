@@ -89,7 +89,16 @@ static int update(UPDATE_FUNC_ARGS)
 							}
 							parts[i].temp += newtemp;
 							parts[i].life--;
-							sim->kill_part(ID(r));
+							switch (rt)
+							{
+							case PT_LITH:
+								sim->part_change_type(ID(r), x + rx, y + ry, PT_H2);
+								break;
+
+							default:
+								sim->kill_part(ID(r));
+								break;
+							}
 						}
 					}
 					else if (parts[i].life<=50)

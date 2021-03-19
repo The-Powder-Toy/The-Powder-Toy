@@ -25,7 +25,7 @@ void Element::Element_LITH()
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
-	Hardness = 30;
+	Hardness = 15;
 
 	Weight = 17;
 
@@ -50,7 +50,7 @@ void Element::Element_LITH()
 /*
 
 tmp2:  carbonation factor
-life:  burn timer
+life:  burn timer above 1000, spark cooldown timer otherwise
 tmp:   hydrogenation factor
 ctype: absorbed energy
 
@@ -79,16 +79,18 @@ static int update(UPDATE_FUNC_ARGS)
 		storedEnergy = 0;
 	}
 
-	for (int rx = -1; rx <= 1; ++rx)
+	bool charged = false;
+	bool discharged = false;
+	for (int rx = -2; rx <= 2; ++rx)
 	{
-		for (int ry = -1; ry <= 1; ++ry)
+		for (int ry = -2; ry <= 2; ++ry)
 		{
 			if (BOUNDS_CHECK && (rx || ry))
 			{
 				int neighborData = pmap[y + ry][x + rx];
 				if (!neighborData)
 				{
-					if (burnTimer > 12 && RNG::Ref().chance(1, 10))
+					if (burnTimer > 1012 && RNG::Ref().chance(1, 10))
 					{
 						sim->create_part(-1, x + rx, y + ry, PT_FIRE);
 					}
@@ -103,20 +105,19 @@ static int update(UPDATE_FUNC_ARGS)
 				case PT_WATR:
 				case PT_DSTW:
 				case PT_CBNW:
-					if (burnTimer > 16)
+					if (burnTimer > 1016)
 					{
 						sim->part_change_type(ID(neighborData), x + rx, y + ry, PT_WTRV);
 						neighbor.temp = 453.65f;
 						continue;
 					}
-
 					if (hydrogenationFactor + carbonationFactor >= 10)
 					{
 						continue;
 					}
 					if (self.temp > 453.65)
 					{
-						burnTimer = 24 + (storedEnergy > 24 ? 24 : storedEnergy);
+						burnTimer = 1024 + (storedEnergy > 24 ? 24 : storedEnergy);
 						sim->part_change_type(ID(neighborData), x + rx, y + ry, PT_H2);
 						hydrogenationFactor = 10;
 					}
@@ -133,7 +134,6 @@ static int update(UPDATE_FUNC_ARGS)
 					{
 						continue;
 					}
-
 					sim->kill_part(ID(neighborData));
 					carbonationFactor += 1;
 					break;
@@ -143,32 +143,51 @@ static int update(UPDATE_FUNC_ARGS)
 					{
 						continue; // too impure to do battery things.
 					}
-					if (neighbor.ctype == PT_PSCN && neighbor.life == 4 && RNG::Ref().chance(1, 10))
+					if (neighbor.ctype == PT_PSCN && neighbor.life == 3 && !charged && !burnTimer)
 					{
-						storedEnergy += 1;
+						charged = true;
 					}
 					break;
 
 				case PT_NSCN:
-					if (neighbor.life == 0 && storedEnergy > 2)
+					if (neighbor.life == 0 && storedEnergy > 0 && !burnTimer)
 					{
 						sim->part_change_type(ID(neighborData), x + rx, y + ry, PT_SPRK);
 						neighbor.life = 4;
 						neighbor.ctype = PT_NSCN;
-						storedEnergy -= 2;
+						discharged = true;
 					}
 					break;
 
 				case PT_FIRE:
-					if (self.temp > 543.0f && RNG::Ref().chance(1,40) && hydrogenationFactor < 6)
+					if (self.temp > 543.0f && RNG::Ref().chance(1, 40) && hydrogenationFactor < 6)
 					{
-						burnTimer = 13;
+						burnTimer = 1013;
 						hydrogenationFactor += 1;
 					}
 					break;
+
+				case PT_O2:
+					if (self.temp > 893.0f && RNG::Ref().chance(1, 10))
+					{
+						sim->part_change_type(i, x, y, PT_PLSM);
+						sim->part_change_type(ID(neighborData), x + rx, y + ry, PT_PLSM);
+						sim->pv[y / CELL][x / CELL] += 4.0;
+					}						
+					return 0;
 				}
 			}
 		}
+	}
+	if (charged)
+	{
+		storedEnergy += 1;
+		burnTimer = 8;
+	}
+	if (discharged)
+	{
+		storedEnergy -= 1;
+		burnTimer = 8;
 	}
 
 	for (int trade = 0; trade < 9; ++trade)
@@ -187,14 +206,15 @@ static int update(UPDATE_FUNC_ARGS)
 			int &neighborStoredEnergy = neighbor.ctype;
 			if (storedEnergy > neighborStoredEnergy)
 			{
-				int transfer = (storedEnergy - neighborStoredEnergy) / 2;
+				int transfer = storedEnergy - neighborStoredEnergy;
+				transfer -= transfer / 2;
 				neighborStoredEnergy += transfer;
 				storedEnergy -= transfer;
 				break;
 			}
 		}
 	}
-	if (self.temp > 453.65f && burnTimer == 0)
+	if (self.temp > 453.65f && burnTimer == 1000)
 	{
 		sim->part_change_type(i, x, y, PT_LAVA);
 		if (carbonationFactor < 3)
@@ -211,7 +231,7 @@ static int update(UPDATE_FUNC_ARGS)
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
-	if (cpart->life != 0)
+	if (cpart->life >= 1000)
 	{
 		int colour = 0xFFA040;
 		*colr = PIXR(colour);
@@ -219,6 +239,13 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 		*colb = PIXB(colour);
 		*pixel_mode |= PMODE_FLARE | PMODE_GLOW;
 	}
+	else if (cpart->ctype && RNG::Ref().chance(cpart->ctype, 100))
+	{
+		int colour = 0x50A0FF;
+		*colr = PIXR(colour);
+		*colg = PIXG(colour);
+		*colb = PIXB(colour);
+		*pixel_mode |= PMODE_FLARE | PMODE_GLOW;
+	}
 	return 0;
 }
-
