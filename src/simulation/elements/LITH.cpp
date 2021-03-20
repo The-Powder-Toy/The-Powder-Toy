@@ -40,8 +40,8 @@ void Element::Element_LITH()
 	HighPressureTransition = NT;
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
-	HighTemperature = ITH;
-	HighTemperatureTransition = NT;
+	HighTemperature = 453.65f;
+	HighTemperatureTransition = PT_LAVA;
 
 	Update = &update;
 	Graphics = &graphics;
@@ -108,14 +108,14 @@ static int update(UPDATE_FUNC_ARGS)
 					if (burnTimer > 1016)
 					{
 						sim->part_change_type(ID(neighborData), x + rx, y + ry, PT_WTRV);
-						neighbor.temp = 453.65f;
+						neighbor.temp = 440.f;
 						continue;
 					}
 					if (hydrogenationFactor + carbonationFactor >= 10)
 					{
 						continue;
 					}
-					if (self.temp > 453.65)
+					if (self.temp > 440.f)
 					{
 						burnTimer = 1024 + (storedEnergy > 24 ? 24 : storedEnergy);
 						sim->part_change_type(ID(neighborData), x + rx, y + ry, PT_H2);
@@ -160,7 +160,7 @@ static int update(UPDATE_FUNC_ARGS)
 					break;
 
 				case PT_FIRE:
-					if (self.temp > 543.0f && RNG::Ref().chance(1, 40) && hydrogenationFactor < 6)
+					if (self.temp > 440.f && RNG::Ref().chance(1, 40) && hydrogenationFactor < 6)
 					{
 						burnTimer = 1013;
 						hydrogenationFactor += 1;
@@ -168,7 +168,7 @@ static int update(UPDATE_FUNC_ARGS)
 					break;
 
 				case PT_O2:
-					if (self.temp > 893.0f && RNG::Ref().chance(1, 10))
+					if (burnTimer > 1000 && RNG::Ref().chance(1, 10))
 					{
 						sim->part_change_type(i, x, y, PT_PLSM);
 						sim->part_change_type(ID(neighborData), x + rx, y + ry, PT_PLSM);
@@ -214,15 +214,17 @@ static int update(UPDATE_FUNC_ARGS)
 			}
 		}
 	}
-	if (self.temp > 453.65f && burnTimer == 1000)
+	if (self.temp > 440.f && burnTimer == 1000)
 	{
 		sim->part_change_type(i, x, y, PT_LAVA);
 		if (carbonationFactor < 3)
 		{
+			self.temp = 500.f;
 			self.ctype = PT_LITH;
 		}
 		else
 		{
+			self.temp = 2000.f;
 			self.ctype = PT_GLAS;
 		}
 	}
