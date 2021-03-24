@@ -171,15 +171,15 @@ bool Client::DoInstallation()
 	ByteString currentfilename = Platform::ExecutableName();
 	ByteString iconname = currentfilename + ",-102";
 	ByteString AppDataPath = Platform::WinNarrow(_wgetcwd(NULL, 0));
-	ByteString opencommand = "\"" + currentfilename + "\" open \"%%1\" ddir \"" + AppDataPath + "\"";
-	ByteString protocolcommand = "\"" + currentfilename + "\" ddir \"" + AppDataPath + "\" ptsave \"%%1\"";
+	ByteString opencommand = "\"" + currentfilename + "\" open \"%1\" ddir \"" + AppDataPath + "\"";
+	ByteString protocolcommand = "\"" + currentfilename + "\" ddir \"" + AppDataPath + "\" ptsave \"%1\"";
 
 	auto createKey = [](ByteString s, HKEY &k) {
 		return RegCreateKeyExW(HKEY_CURRENT_USER, Platform::WinWiden(s).c_str(), 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &k, NULL);
 	};
 	auto setValue = [](HKEY k, ByteString s) {
 		auto w = Platform::WinWiden(s);
-		return RegSetValueExW(k, NULL, 0, REG_SZ, (LPBYTE)&w[0], w.size() + 1);
+		return RegSetValueExW(k, NULL, 0, REG_SZ, (LPBYTE)&w[0], (w.size() + 1) * 2);
 	};
 
 	//Create protocol entry
