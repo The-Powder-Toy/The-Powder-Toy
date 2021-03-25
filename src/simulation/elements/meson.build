@@ -191,6 +191,7 @@ simulation_elem_ids = [
 	[ 'VSNS',   189 ],
 	[ 'ROCK',   190 ],
 	[ 'LITH',   191 ],
+	[ 'THOR',   192 ],
 ]
 
 simulation_elem_src = []

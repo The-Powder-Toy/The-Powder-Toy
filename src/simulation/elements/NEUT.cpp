@@ -93,6 +93,18 @@ static int update(UPDATE_FUNC_ARGS)
 						Element_FIRE_update(UPDATE_FUNC_SUBCALL_ARGS);
 					}
 					break;
+				case PT_THOR:
+					if (RNG::Ref().chance(1, 5000))
+					{
+						sim->create_part(ID(r), x+rx, y+ry, PT_NEUT);
+						sim->pv[y/CELL][x/CELL] += 1.0f * CFDS;
+					} else if(RNG::Ref().chance(1, 10000)){
+						sim->create_part(ID(r), x+rx, y+ry, PT_ELEC);
+					}
+					else if(RNG::Ref().chance(1, 100)){
+						parts[ID(r)].life+=30;
+					}
+					break;
 #ifdef SDEUT
 				case PT_DEUT:
 					if (RNG::Ref().chance(pressureFactor + 1 + (parts[ID(r)].life/100), 1000))
