@@ -729,6 +729,8 @@ bool Client::CheckUpdate(http::Request *updateRequest, bool checkSession)
 			//free(data);
 			if (usingAltUpdateServer && !checkSession)
 				this->messageOfTheDay = String::Build("HTTP Error ", status, " while checking for updates: ", http::StatusText(status));
+			else
+				this->messageOfTheDay = String::Build("HTTP Error ", status, " while fetching MotD");
 		}
 		else if(data.size())
 		{
