@@ -300,7 +300,7 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 							}
 						}
 
-						if (parts[ID(r)].ctype == PT_GOLD && pres >= 50 && RNG::Ref().chance(1, 7500)) // Produce GOLD veins/clusters. Need to revisit veins later, so they aren't all vertical. 
+						if (parts[ID(r)].type == PT_LAVA && parts[ID(r)].ctype == PT_GOLD && pres >= 50 && RNG::Ref().chance(1, 7500)) // Produce GOLD veins/clusters. Need to revisit veins later, so they aren't all vertical. 
 						{
 							parts[i].ctype = PT_GOLD;
 						}
