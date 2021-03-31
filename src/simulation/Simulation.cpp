@@ -2382,9 +2382,8 @@ void Simulation::init_can_move()
 		can_move[movingType][PT_FIGH] = 0;
 		//INVS behaviour varies with pressure
 		can_move[movingType][PT_INVIS] = 3;
-		//stop CNCT and ROCK from being displaced by other particles
+		//stop CNCT from being displaced by other particles
 		can_move[movingType][PT_CNCT] = 0;
-		can_move[movingType][PT_ROCK] = 0;
 		//VOID and PVOD behaviour varies with powered state and ctype
 		can_move[movingType][PT_PVOD] = 3;
 		can_move[movingType][PT_VOID] = 3;

@@ -16,7 +16,7 @@ void Element::Element_ROCK()
 	AirDrag = 0.00f * CFDS;
 	AirLoss = 0.94f;
 	Loss = 0.00f;
-	Collision = -0.0f;
+	Collision = 0.0f;
 	Gravity = 0.0f;
 	Diffusion = 0.00f;
 	HotAir = 0.000f * CFDS;
@@ -27,7 +27,7 @@ void Element::Element_ROCK()
 	Meltable = 5;
 	Hardness = 70;
 
-	Weight = 120;
+	Weight = 100;
 
 	HeatConduct = 200;
 	Description = "Rock. Solid material, CNCT can stack on top of it.";
