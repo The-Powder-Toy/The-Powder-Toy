@@ -58,32 +58,112 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 	switch (t)
 	{
 	case PT_PLSM:
-		if (parts[i].life <=1)
+		if (parts[i].life <= 1)
 		{
 			if (parts[i].ctype == PT_NBLE)
 			{
-				sim->part_change_type(i,x,y,PT_NBLE);
+				sim->part_change_type(i, x, y, PT_NBLE);
 				parts[i].life = 0;
 			}
-			else if ((parts[i].tmp&0x3) == 3){
-				sim->part_change_type(i,x,y,PT_DSTW);
+			else if ((parts[i].tmp & 0x3) == 3) {
+				sim->part_change_type(i, x, y, PT_DSTW);
 				parts[i].life = 0;
 				parts[i].ctype = PT_FIRE;
 			}
 		}
 		break;
 	case PT_FIRE:
-		if (parts[i].life <=1)
+		if (parts[i].life <= 1)
 		{
-			if ((parts[i].tmp&0x3) == 3){
-				sim->part_change_type(i,x,y,PT_DSTW);
+			if ((parts[i].tmp & 0x3) == 3) {
+				sim->part_change_type(i, x, y, PT_DSTW);
 				parts[i].life = 0;
 				parts[i].ctype = PT_FIRE;
 			}
-			else if (parts[i].temp<625)
+			else if (parts[i].temp < 625)
 			{
-				sim->part_change_type(i,x,y,PT_SMKE);
+				sim->part_change_type(i, x, y, PT_SMKE);
 				parts[i].life = RNG::Ref().between(250, 269);
+			}
+		}
+		break;
+	case PT_LAVA:
+		if (parts[i].ctype == PT_STNE)
+			{
+			if (parts[i].temp >= 1973.0f && (parts[i].tmp == 1 || parts[i].tmp == 2)) //1 in 10 smelted powdered sulfides will produce silver, 1 in 15 GOLD, the rest GLAS
+			{
+				if (RNG::Ref().chance(1, 10))
+				{
+					parts[i].ctype = PT_GOLD;
+					parts[i].tmp = 47;
+				}
+				else if (RNG::Ref().chance(1, 15))
+					parts[i].ctype = PT_GOLD;
+				else
+					parts[i].ctype = PT_GLAS;
+			}
+			else if (sim->pv[y / CELL][x / CELL] >= 30.0f) //Form ROCK with pressure
+			{
+				parts[i].tmp2 = RNG::Ref().between(0, 10); //Provide tmp2 for color noise
+				parts[i].ctype = PT_ROCK;
+				break;
+			}
+		}
+		else if (parts[i].ctype == PT_ROCK)
+		{
+			float pres = sim->pv[y / CELL][x / CELL];
+
+			if (pres <= -9) //Convert back to STNE under low pressure
+			{
+				parts[i].ctype = PT_STNE;
+				break;
+			}
+
+			if (parts[i].temp >= 2575.15 && parts[i].tmp == 2) //Reset roasted sulfides to normal sulfides if they get hot enough
+				parts[i].tmp = 1;
+
+			/*PRESSURE TRANSITIONS OF MOLTEN ROCK*/
+			if (pres >= 21 && RNG::Ref().chance(1, 10000))
+			{
+				if (pres <= 50)
+				{
+					if (RNG::Ref().chance(1, 2))
+						parts[i].ctype = PT_BRMT;
+					else
+						parts[i].ctype = PT_CNCT;
+					break;
+				}
+				else if (pres <= 75)
+				{
+					if (pres >= 73 || RNG::Ref().chance(1, 8))
+						parts[i].ctype = PT_GOLD;
+					else if (RNG::Ref().chance(1, 8))
+					{
+						parts[i].tmp = 47; //Silver
+						parts[i].ctype = PT_GOLD;
+					}
+					else
+						parts[i].ctype = PT_QRTZ;
+					break;
+				}
+				else if (pres <= 100 && parts[i].temp >= 5000)
+				{
+					if (RNG::Ref().chance(1, 5)) // 1 in 5 chance IRON to TTAN
+						parts[i].ctype = PT_TTAN;
+					else
+						parts[i].ctype = PT_IRON;
+					break;
+				}
+				else if (pres <= 255 && parts[i].temp >= 5000 && RNG::Ref().chance(1, 5))
+				{
+					if (RNG::Ref().chance(1, 5))
+						parts[i].ctype = PT_URAN;
+					else if (RNG::Ref().chance(1, 5))
+						parts[i].ctype = PT_PLUT;
+					else
+						parts[i].ctype = PT_TUNG;
+					break;
+				}
 			}
 		}
 		break;
@@ -195,120 +275,52 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 							parts[ID(r)].ctype = PT_HEAC;
 						}
 					}
-					else if (parts[i].ctype == PT_STNE && parts[i].temp >= 1973.0f) //Allow sulfide powders to be smelted to produce metals and GLAS when high enough temp is reached
-					{
-						if (RNG::Ref().chance(1, 10)) // 1 in 10 smelted powdered sulfides will produce silver
-						{
-							parts[i].ctype = PT_GOLD;
-							parts[i].tmp = 47;
-						}
-						else if (RNG::Ref().chance(1, 15)) // 1 in 15 smelted powdered sulfides will produce GOLD
-							parts[i].ctype = PT_GOLD;
-						else //The rest becomes GLAS
-							parts[i].ctype = PT_GLAS;
-					}
 					else if (parts[i].ctype == PT_ROCK)
 					{
 						float pres = sim->pv[y / CELL][x / CELL];
-						if (pres <= -9)
-						{
-							parts[i].ctype = PT_STNE;
-							break;
-						}
 
-						if (parts[i].temp >= 2575.15 && parts[i].tmp == 2) //Reset roasted sulfides to normal sulfides if they get hot enough
+						if (parts[i].tmp == 0 && parts[i].temp <= 2100 && parts[ID(r)].temp <= 1875 && RNG::Ref().chance(1, 1000)) // Create sulfides when molten rock comes into contact with much colder neighbor
 							parts[i].tmp = 1;
 
-						if (parts[i].tmp == 0 && parts[i].temp <= 2100 && parts[ID(r)].temp <= 1875 && RNG::Ref().chance(1, 1000)) // Create sulfides when molten rock comes into contact with cooler material
-							parts[i].tmp = 1;
-
-						if (parts[i].tmp == 0 && parts[i].temp <= 2000 && parts[ID(r)].temp <= 1800 && RNG::Ref().chance(1, 1000)) // Create Galena when molten rock comes into contact with cooler material
+						if (parts[i].tmp == 0 && parts[i].temp <= 2000 && parts[ID(r)].temp <= 1800 && RNG::Ref().chance(1, 1000)) // Create Galena when molten rock comes into contact with much colder neighbor
 							parts[i].tmp = 3;
 
-						if (parts [i].tmp == 1 && parts[i].temp <= 2000 && parts[ID(r)].temp <= 1800 && RNG::Ref().chance(1, 100000)) //Heavy metal generation when molten sulfide rock comes into contact with cooler material
+						if (parts [i].tmp == 1 && parts[i].temp <= 2000 && parts[ID(r)].temp <= 1800 && RNG::Ref().chance(1, 100000)) //Heavy metal generation when molten sulfide rock comes into contact with much colder neighbor
 						{
 							if (RNG::Ref().chance(1, 10))
 								parts[i].ctype = PT_GOLD;
 							else if (RNG::Ref().chance(1, 5))
 							{
-								parts[i].tmp = 47;
+								parts[i].tmp = 47; //Silver
 								parts[i].ctype = PT_GOLD;
 							}
 							else if (RNG::Ref().chance(1, 3))
 							{
-								parts[i].tmp = 82;
+								parts[i].tmp = 82; //Lead
 								parts[i].ctype = PT_METL;
 							}
 							else 
 								parts[i].ctype = PT_QRTZ;
 						}
 
-						if (parts[i].tmp == 3 && parts[i].temp <= 2000 && parts[ID(r)].temp <= 1800 && RNG::Ref().chance(1, 100000)) //Heavy metal generation when molten Galena comes into contact with cooler material
+						if (parts[i].tmp == 3 && parts[i].temp <= 2000 && parts[ID(r)].temp <= 1800 && RNG::Ref().chance(1, 100000)) //Heavy metal generation when molten Galena comes into contact with much colder neighbor
 						{
 							if (RNG::Ref().chance(1, 10))
 							{
+								parts[i].tmp = 47; //Silver
 								parts[i].ctype = PT_GOLD;
-								parts[i].tmp = 47;
 							}
 							else
 							{
-								parts[i].tmp = 82;
+								parts[i].tmp = 82; //Lead
 								parts[i].ctype = PT_METL;
 							}
 						}
 
-						if (pres >= 21 && RNG::Ref().chance(1, 100000))
-						{
-							if (pres <= 50)
-							{
-								if (RNG::Ref().chance(1, 2))
-									parts[i].ctype = PT_BRMT;
-								else
-									parts[i].ctype = PT_CNCT;
-								break;
-							}
-							else if (pres <= 75)
-							{
-								if (pres >= 73 || RNG::Ref().chance(1, 8))
-									parts[i].ctype = PT_GOLD;
-								else if (RNG::Ref().chance(1, 8)) // Silver as likely as GOLD
-								{
-									parts[i].tmp = 47;
-									parts[i].ctype = PT_GOLD;
-								}
-								else
-									parts[i].ctype = PT_QRTZ;
-								break;
-							}
-							else if (pres <= 100 && parts[i].temp >= 5000)
-							{
-								if (RNG::Ref().chance(1, 5)) // 1 in 5 chance IRON to TTAN
-									parts[i].ctype = PT_TTAN;
-								else
-									parts[i].ctype = PT_IRON;
-								break;
-							}
-							else if (pres <= 255 && parts[i].temp >= 5000 && RNG::Ref().chance(1, 5))
-							{
-								if (RNG::Ref().chance(1, 5))
-									parts[i].ctype = PT_URAN;
-								else if (RNG::Ref().chance(1, 5))
-									parts[i].ctype = PT_PLUT;
-								else
-									parts[i].ctype = PT_TUNG;
-								break;
-							}
-						}
-
-						if (parts[ID(r)].type == PT_LAVA && parts[ID(r)].ctype == PT_GOLD && pres >= 50 && RNG::Ref().chance(1, 7500)) // Produce GOLD veins/clusters. Need to revisit veins later, so they aren't all vertical. 
+						if (rt == PT_LAVA && parts[ID(r)].ctype == PT_GOLD && pres >= 50 && RNG::Ref().chance(1, 7500)) // Produce GOLD clusters. Need to revisit veins later
 						{
 							parts[i].ctype = PT_GOLD;
 						}
-					}
-					else if (parts[i].ctype == PT_STNE && sim->pv[y / CELL][x / CELL] >= 30.0f) // Form ROCK with pressure
-					{
-						parts[i].tmp2 = RNG::Ref().between(0, 10); // Provide tmp2 for color noise
-						parts[i].ctype = PT_ROCK;
 					}
 				}
 
