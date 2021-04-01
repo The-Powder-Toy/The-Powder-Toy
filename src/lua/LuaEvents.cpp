@@ -37,6 +37,16 @@ int TextInputEvent::PushToStack(lua_State * l)
 	return 1;
 }
 
+TextEditingEvent::TextEditingEvent(String text):
+	text(text)
+{}
+
+int TextEditingEvent::PushToStack(lua_State * l)
+{
+	PushString(l, text.ToUtf8());
+	return 1;
+}
+
 KeyEvent::KeyEvent(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt):
 	key(key),
 	scan(scan),

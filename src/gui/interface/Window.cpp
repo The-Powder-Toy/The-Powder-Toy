@@ -13,6 +13,7 @@ Window::Window(Point _position, Point _size):
 	Position(_position),
 	Size(_size),
 	AllowExclusiveDrawing(true),
+	DoesTextInput(false),
 	okayButton(NULL),
 	cancelButton(NULL),
 	focusedComponent_(NULL),
@@ -262,7 +263,7 @@ void Window::DoTick(float dt)
 		return;
 #endif
 
-	if (focusedComponent_ && focusedComponent_->Visible && focusedComponent_->Enabled && focusedComponent_->DoesTextInput)
+	if (DoesTextInput || (focusedComponent_ && focusedComponent_->Visible && focusedComponent_->Enabled && focusedComponent_->DoesTextInput))
 	{
 		ui::Engine::Ref().StartTextInput();
 	}

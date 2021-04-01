@@ -123,7 +123,8 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	luacon_selectedreplace(""),
 	luacon_mousedown(false),
 	currentCommand(false),
-	legacy(new TPTScriptInterface(c, m))
+	legacy(new TPTScriptInterface(c, m)),
+	textInputRefcount(0)
 {
 	luacon_model = m;
 	luacon_controller = c;
@@ -500,6 +501,9 @@ void LuaScriptInterface::initInterfaceAPI()
 		{"closeWindow", interface_closeWindow},
 		{"addComponent", interface_addComponent},
 		{"removeComponent", interface_removeComponent},
+		{"grabTextInput", interface_grabTextInput},
+		{"dropTextInput", interface_dropTextInput},
+		{"textInputRect", interface_textInputRect},
 		{NULL, NULL}
 	};
 	luaL_register(l, "interface", interfaceAPIMethods);
@@ -579,6 +583,30 @@ int LuaScriptInterface::interface_removeComponent(lua_State * l)
 			luacon_ci->grabbed_components.erase(it);
 		}
 	}
+	return 0;
+}
+
+int LuaScriptInterface::interface_grabTextInput(lua_State * l)
+{
+	luacon_ci->textInputRefcount += 1;
+	luacon_controller->GetView()->DoesTextInput = luacon_ci->textInputRefcount > 0;
+	return 0;
+}
+
+int LuaScriptInterface::interface_dropTextInput(lua_State * l)
+{
+	luacon_ci->textInputRefcount -= 1;
+	luacon_controller->GetView()->DoesTextInput = luacon_ci->textInputRefcount > 0;
+	return 0;
+}
+
+int LuaScriptInterface::interface_textInputRect(lua_State * l)
+{
+	int x = luaL_checkint(l, 1);
+	int y = luaL_checkint(l, 2);
+	int w = luaL_checkint(l, 3);
+	int h = luaL_checkint(l, 4);
+	ui::Engine::Ref().TextInputRect(ui::Point{ x, y }, ui::Point{ w, h });
 	return 0;
 }
 
@@ -3706,6 +3734,7 @@ void LuaScriptInterface::initEventAPI()
 	lua_pushinteger(l, LuaEvents::keypress); lua_setfield(l, -2, "keypress");
 	lua_pushinteger(l, LuaEvents::keyrelease); lua_setfield(l, -2, "keyrelease");
 	lua_pushinteger(l, LuaEvents::textinput); lua_setfield(l, -2, "textinput");
+	lua_pushinteger(l, LuaEvents::textediting); lua_setfield(l, -2, "textediting");
 	lua_pushinteger(l, LuaEvents::mousedown); lua_setfield(l, -2, "mousedown");
 	lua_pushinteger(l, LuaEvents::mouseup); lua_setfield(l, -2, "mouseup");
 	lua_pushinteger(l, LuaEvents::mousemove); lua_setfield(l, -2, "mousemove");

@@ -1703,6 +1703,12 @@ void GameView::DoTextInput(String text)
 		Window::DoTextInput(text);
 }
 
+void GameView::DoTextEditing(String text)
+{
+	if (c->TextEditing(text))
+		Window::DoTextEditing(text);
+}
+
 void GameView::DoKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
 	if (shift && !shiftBehaviour)

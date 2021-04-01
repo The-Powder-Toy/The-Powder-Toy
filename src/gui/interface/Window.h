@@ -35,6 +35,7 @@ namespace ui
 		void SetCancelButton(ui::Button * button) { cancelButton = button; }
 
 		bool AllowExclusiveDrawing; //false will not call draw on objects outside of bounds
+		bool DoesTextInput;
 
 		// Add Component to window
 		void AddComponent(Component* c);

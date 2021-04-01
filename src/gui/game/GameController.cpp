@@ -644,6 +644,12 @@ bool GameController::TextInput(String text)
 	return commandInterface->HandleEvent(LuaEvents::textinput, &ev);
 }
 
+bool GameController::TextEditing(String text)
+{
+	TextEditingEvent ev(text);
+	return commandInterface->HandleEvent(LuaEvents::textediting, &ev);
+}
+
 bool GameController::KeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
 	KeyEvent ev(key, scan, repeat, shift, ctrl, alt);

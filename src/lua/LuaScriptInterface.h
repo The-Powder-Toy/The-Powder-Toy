@@ -44,6 +44,7 @@ class LuaScriptInterface: public CommandInterface
 	bool luacon_mousedown;
 	bool currentCommand;
 	TPTScriptInterface * legacy;
+	int textInputRefcount;
 
 	// signs
 	static int simulation_signIndex(lua_State *l);
@@ -139,6 +140,9 @@ class LuaScriptInterface: public CommandInterface
 	static int interface_closeWindow(lua_State * l);
 	static int interface_addComponent(lua_State * l);
 	static int interface_removeComponent(lua_State * l);
+	static int interface_grabTextInput(lua_State * l);
+	static int interface_dropTextInput(lua_State * l);
+	static int interface_textInputRect(lua_State * l);
 
 	void initGraphicsAPI();
 	static int graphics_textSize(lua_State * l);
