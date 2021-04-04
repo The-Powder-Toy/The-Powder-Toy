@@ -111,6 +111,8 @@ int Element_ROCK_update(UPDATE_FUNC_ARGS)
 			sim->part_change_type(i, x, y, PT_GOLD);
 			parts[i].tmp = 47; //Silver
 		}
+		else if (RNG::Ref().chance(1, 500)) //Maybe add Cinnabar (Mercury Sulfide) later
+			sim->part_change_type(i, x, y, PT_MERC);
 		else
 			parts[i].tmp = 2; //Set to roasted Sulfide
 	}
