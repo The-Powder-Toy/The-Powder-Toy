@@ -18,3 +18,6 @@ else:
 	print('::set-output name=TYPE::dev')
 	print('::set-output name=NAME::dev')
 	print('::set-output name=RELTYPECFG::%s' % base64.b64encode(('-Dignore_updates=true').encode('utf-8')).decode('utf-8'))
+
+with open('.github/mod_id.txt') as f:
+	print('::set-output name=MOD_ID::' + f.read())

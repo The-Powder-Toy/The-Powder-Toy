@@ -49,6 +49,10 @@ jobs:
 # mingw-dynamic |     NO     |     NO     |     NO     |     NO     |     NO     |     NO     |
 #
 # [1] I don't currently care enough about mingw to figure out how to do this.
+# Please keep this matrix in sync with the other one in this file, see the ### blocks.
+#########################################################
+############# BEGIN BLOCK FOR COPYING BELOW #############
+#########################################################
         platform_short: [lin, mac, win]
         toolset_short: [gcc, msvc, mingw]
         machine_short: [x86_64, i686]
@@ -65,6 +69,9 @@ jobs:
             platform_short: mac
           - toolset_short: gcc
             platform_short: win
+#########################################################
+############## END BLOCK FOR COPYING BELOW ##############
+#########################################################
         include:
           - platform_short: lin
             os: ubuntu-latest
@@ -93,7 +100,7 @@ jobs:
       - if: matrix.platform_short == 'lin' && matrix.static_dynamic != 'static'
         run: sudo apt update && sudo apt install libluajit-5.1-dev libcurl4-openssl-dev libfftw3-dev zlib1g-dev libsdl2-dev
       - run: python -m pip install meson ninja
-      - run: bash -c 'PLATFORM_SHORT=${{ matrix.platform_short }} MACHINE_SHORT=${{ matrix.machine_short }} TOOLSET_SHORT=${{ matrix.toolset_short }} STATIC_DYNAMIC=${{ matrix.static_dynamic }} RELTYPECFG=${{ steps.get_type.outputs.RELTYPECFG }}  ./.github/build.sh'
+      - run: bash -c 'PLATFORM_SHORT=${{ matrix.platform_short }} MACHINE_SHORT=${{ matrix.machine_short }} TOOLSET_SHORT=${{ matrix.toolset_short }} STATIC_DYNAMIC=${{ matrix.static_dynamic }} RELTYPECFG=${{ steps.get_type.outputs.RELTYPECFG }} RELNAME=${{ steps.get_type.outputs.NAME }} MOD_ID=${{ steps.get_type.outputs.MOD_ID }} ./.github/build.sh'
       - uses: actions/upload-release-asset@v1
         if: steps.get_type.outputs.TYPE != 'dev' && matrix.static_dynamic == 'static'
         env:
@@ -104,7 +111,64 @@ jobs:
           asset_name: powder-${{ steps.get_type.outputs.NAME }}-${{ matrix.machine_short }}-${{ matrix.platform_short }}-${{ matrix.toolset_short }}-${{ matrix.static_dynamic }}${{ matrix.suffix }}
           asset_content_type: application/zip
       - uses: actions/upload-artifact@v2
-        if: steps.get_type.outputs.TYPE == 'dev' && matrix.static_dynamic == 'static'
+        if: matrix.static_dynamic == 'static'
         with:
           path: powder${{ matrix.suffix }}
           name: powder-${{ steps.get_type.outputs.NAME }}-${{ matrix.machine_short }}-${{ matrix.platform_short }}-${{ matrix.toolset_short }}-${{ matrix.static_dynamic }}${{ matrix.suffix }}
+  starcatcher-upload:
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: startsWith(github.ref, 'refs/tags/') # not a perfect match but get-type.py takes care of this in job build
+    strategy:
+      matrix:
+#########################################################
+############# BEGIN BLOCK COPIED FROM ABOVE #############
+#########################################################
+        platform_short: [lin, mac, win]
+        toolset_short: [gcc, msvc, mingw]
+        machine_short: [x86_64, i686]
+        static_dynamic: [static, dynamic]
+        exclude:
+          - toolset_short: mingw
+          - machine_short: i686
+            platform_short: lin
+          - machine_short: i686
+            platform_short: mac
+          - toolset_short: msvc
+            platform_short: lin
+          - toolset_short: msvc
+            platform_short: mac
+          - toolset_short: gcc
+            platform_short: win
+#########################################################
+############## END BLOCK COPIED FROM ABOVE ##############
+#########################################################
+          - static_dynamic: dynamic
+        include:
+          - platform_short: lin
+            suffix: ''
+          - platform_short: mac
+            suffix: ''
+          - platform_short: win
+            suffix: '.exe'
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+      - id: get_type
+        run: python ./.github/get-type.py ${{ github.ref }}
+      - uses: actions/download-artifact@v1
+        with:
+          name: powder-${{ steps.get_type.outputs.NAME }}-${{ matrix.machine_short }}-${{ matrix.platform_short }}-${{ matrix.toolset_short }}-${{ matrix.static_dynamic }}${{ matrix.suffix }}
+      - run: sudo apt update && sudo apt install lftp
+      - if: steps.get_type.outputs.TYPE != 'dev' && matrix.static_dynamic == 'static'
+        run: bash -c 'STARCATCHER_PUBLISH_HOSTPORT=${{ secrets.STARCATCHER_PUBLISH_HOSTPORT }} STARCATCHER_PUBLISH_USERNAME=${{ secrets.STARCATCHER_PUBLISH_USERNAME }} STARCATCHER_PUBLISH_PASSWORD=${{ secrets.STARCATCHER_PUBLISH_PASSWORD }} STARCATCHER_PUBLISH_FILENAME=powder-${{ steps.get_type.outputs.NAME }}-${{ matrix.machine_short }}-${{ matrix.platform_short }}-${{ matrix.toolset_short }}-${{ matrix.static_dynamic }}${{ matrix.suffix }} ./.github/starcatcher-publish.sh powder${{ matrix.suffix }}'
+  starcatcher-release:
+    runs-on: ubuntu-latest
+    needs: [starcatcher-upload]
+    if: startsWith(github.ref, 'refs/tags/') # not a perfect match but get-type.py takes care of this in job build
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+      - id: get_type
+        run: python ./.github/get-type.py ${{ github.ref }}
+      - run: curl "https://starcatcher.us/TPT/perform-release.lua?mod=${{ steps.get_type.outputs.MOD_ID }}&type=${{ steps.get_type.outputs.TYPE }}&name=${{ steps.get_type.outputs.NAME }}"

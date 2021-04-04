@@ -23,6 +23,14 @@ if [ -z "${RELTYPECFG-}" ]; then
 	>&2 echo "RELTYPECFG not set"
 	exit 1
 fi
+if [ -z "${RELNAME-}" ]; then
+	>&2 echo "RELNAME not set"
+	exit 1
+fi
+if [ -z "${MOD_ID-}" ]; then
+	>&2 echo "MOD_ID not set"
+	exit 1
+fi
 
 if [ -z "${build_sh_init-}" ]; then
 	if [ $PLATFORM_SHORT == "win" ]; then
@@ -46,7 +54,8 @@ BUILD_INIT_BAT
 	exit 0
 fi
 
-other_flags=
+other_flags=$'\t-Dmod_id='
+other_flags+=$MOD_ID
 bin_suffix=
 static_flag=
 if [ $STATIC_DYNAMIC == "static" ]; then
@@ -68,6 +77,10 @@ if [ $PLATFORM_SHORT == "win" ]; then
 	bin_suffix=$bin_suffix.exe
 fi
 if echo $RELTYPECFG | base64 -d | grep snapshot; then
+	other_flags+=$'\t-Dsnapshot=true\t-Dsnapshot_id='
+	other_flags+=`echo $RELNAME | cut -d '-' -f 2`
+fi
+if echo $RELTYPECFG | base64 -d | grep snapshot || [ "$MOD_ID" != "0" ]; then
 	other_flags+=$'\t-Dupdate_server=starcatcher.us/TPT'
 fi
 meson -Dbuildtype=release -Db_pie=false -Db_staticpic=false -Db_lto=true $static_flag -Dinstall_check=true $other_flags `echo $RELTYPECFG | base64 -d` build
