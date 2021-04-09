@@ -24,6 +24,8 @@
 #include "LuaTextbox.h"
 #include "LuaWindow.h"
 
+#include "LuaTCPSocket.h"
+
 #include "gui/interface/Window.h"
 #include "gui/interface/Engine.h"
 #include "gui/game/GameView.h"
@@ -60,9 +62,7 @@ extern "C"
 #endif
 #include <sys/stat.h>
 #include <dirent.h>
-#include "luasocket/luasocket.h"
 }
-#include "socket.lua.h"
 #include "eventcompat.lua.h"
 
 // idea from mniip, makes things much simpler
@@ -148,22 +148,6 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	luaL_openlibs(l);
 	luaopen_bit(l);
 
-	// load built-in luasocket and luasec
-	lua_getglobal(l, "package");
-	lua_getfield(l, -1, "preload");
-	lua_pushcfunction(l, luaopen_socket_core);
-	lua_setfield(l, -2, "socket.core");
-	if (luaL_loadbuffer(l, (const char *)socket_lua, socket_lua_size, "@[built-in socket.lua]"))
-	{
-		throw std::runtime_error(ByteString("failed to load built-in luasocket: ") + lua_tostring(l, -1));
-	}
-	lua_setfield(l, -2, "socket");
-	lua_pop(l, 2);
-	if (luaL_dostring(l, "socket = require(\"socket\")"))
-	{
-		throw std::runtime_error(ByteString("failed to load built-in luasocket: ") + lua_tostring(l, -1));
-	}
-
 	lua_pushstring(l, "Luacon_ci");
 	lua_pushlightuserdata(l, this);
 	lua_settable(l, LUA_REGISTRYINDEX);
@@ -178,6 +162,7 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	initPlatformAPI();
 	initEventAPI();
 	initHttpAPI();
+	initSocketAPI();
 
 	//Old TPT API
 	int currentElementMeta, currentElement;
@@ -4010,21 +3995,24 @@ void LuaScriptInterface::initHttpAPI()
 	lua_pushcfunction(l, http_request_gc);
 	lua_setfield(l, -2, "__gc");
 	lua_newtable(l);
-	lua_pushcfunction(l, http_request_status);
-	lua_setfield(l, -2, "status");
-	lua_pushcfunction(l, http_request_progress);
-	lua_setfield(l, -2, "progress");
-	lua_pushcfunction(l, http_request_cancel);
-	lua_setfield(l, -2, "cancel");
-	lua_pushcfunction(l, http_request_finish);
-	lua_setfield(l, -2, "finish");
-	lua_setfield(l, -2, "__index");
-	struct luaL_Reg httpAPIMethods [] = {
-		{"get", http_get},
-		{"post", http_post},
-		{NULL, NULL}
+	struct luaL_Reg httpRequestIndexMethods[] = {
+		{ "status", http_request_status },
+		{ "progress", http_request_progress },
+		{ "cancel", http_request_cancel },
+		{ "finish", http_request_finish },
+		{ NULL, NULL }
 	};
-	luaL_register(l, "http", httpAPIMethods);
+	luaL_register(l, NULL, httpRequestIndexMethods);
+	lua_setfield(l, -2, "__index");
+	lua_pop(l, 1);
+	lua_newtable(l);
+	struct luaL_Reg httpMethods[] = {
+		{ "get", http_get },
+		{ "post", http_post },
+		{ NULL, NULL }
+	};
+	luaL_register(l, NULL, httpMethods);
+	lua_setglobal(l, "http");
 }
 
 bool LuaScriptInterface::HandleEvent(LuaEvents::EventTypes eventType, Event * event)
@@ -4333,4 +4321,10 @@ LuaScriptInterface::~LuaScriptInterface() {
 	lua_close(l);
 	delete legacy;
 }
+
+void LuaScriptInterface::initSocketAPI()
+{
+	LuaTCPSocket::Open(l);
+}
+
 #endif

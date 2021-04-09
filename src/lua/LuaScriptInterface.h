@@ -186,6 +186,8 @@ class LuaScriptInterface: public CommandInterface
 	static int http_get(lua_State * l);
 	static int http_post(lua_State * l);
 
+	void initSocketAPI();
+
 	std::vector<LuaSmartRef> lua_el_func_v, lua_gr_func_v, lua_cd_func_v;
 	std::vector<int> lua_el_mode_v;
 

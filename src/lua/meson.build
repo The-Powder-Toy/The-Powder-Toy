@@ -10,11 +10,11 @@ luaconsole_files = files(
 	'LuaScriptInterface.cpp',
 	'LuaSlider.cpp',
 	'LuaSmartRef.cpp',
+	'LuaTCPSocket.cpp',
 	'LuaTextbox.cpp',
 	'LuaWindow.cpp',
 )
 
-subdir('luasocket')
 subdir('luascripts')
 
 powder_files += luaconsole_files
