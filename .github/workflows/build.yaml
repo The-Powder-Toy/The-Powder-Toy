@@ -171,4 +171,4 @@ jobs:
       - uses: actions/setup-python@v2
       - id: get_type
         run: python ./.github/get-type.py ${{ github.ref }}
-      - run: curl "https://starcatcher.us/TPT/perform-release.lua?mod=${{ steps.get_type.outputs.MOD_ID }}&type=${{ steps.get_type.outputs.TYPE }}&name=${{ steps.get_type.outputs.NAME }}"
+      - run: curl "https://starcatcher.us/TPT/perform-release.lua?mod=${{ steps.get_type.outputs.MOD_ID }}&type=${{ steps.get_type.outputs.TYPE }}&name=${{ steps.get_type.outputs.NAME }}&commit=${{ github.sha }}" | grep "Release complete"
