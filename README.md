@@ -37,6 +37,20 @@ Thanks
 * mniip
 * LBPHacker
 
+Libraries and other assets used
+===========================================================================
+
+* [BSON](https://github.com/interactive-matter/bson-c)
+* [bzip2](http://www.bzip.org/)
+* [FFTW](http://fftw.org/)
+* [JsonCpp](https://github.com/open-source-parsers/jsoncpp)
+* [libcurl](https://curl.se/libcurl/)
+* [Lua](https://www.lua.org/)
+* [LuaJIT](https://luajit.org/)
+* [LuaSocket](http://w3.impa.br/~diego/software/luasocket/)
+* [Mallangche](https://github.com/JammPark/Mallangche)
+* [SDL](https://libsdl.org/)
+* [zlib](https://www.zlib.net/)
 
 Instructions
 ===========================================================================
