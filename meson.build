@@ -20,7 +20,7 @@ copt_msvc = cpp_compiler.get_id() in [ 'msvc' ]
 
 if cpp_compiler.get_id() in [ 'msvc' ]
 	copt_compiler = 'msvc'
-elif cpp_compiler.get_id() in [ 'gcc' ]
+elif cpp_compiler.get_id() in [ 'gcc', 'clang' ]
 	copt_compiler = 'gcc'
 else
 	warning('unsupported compiler: ' + cpp_compiler.get_id() + '; you are on your own')
@@ -53,7 +53,7 @@ endif
 
 uopt_static = get_option('static')
 use_tpt_libs = 'no'
-tpt_libs_vtag = 'v20210320221332'
+tpt_libs_vtag = 'v20210409104352'
 if uopt_static == 'system'
 	if copt_platform == 'win'
 		error('no way to find static system libraries on windows')
@@ -207,6 +207,10 @@ else
 			'-ffast-math',
 			'-fomit-frame-pointer',
 		]
+	endif
+	if copt_platform == 'mac'
+		args_ccomp += [ '-mmacosx-version-min=10.9' ]
+		project_link_args += [ '-mmacosx-version-min=10.9' ]
 	endif
 	project_c_args += args_ccomp
 	project_cpp_args += args_ccomp + [ '-Wno-invalid-offsetof' ]
