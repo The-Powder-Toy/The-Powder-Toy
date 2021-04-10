@@ -208,9 +208,12 @@ else
 			'-fomit-frame-pointer',
 		]
 	endif
-	if copt_platform == 'mac'
+	if copt_platform == 'mac' and uopt_static == 'prebuilt'
 		args_ccomp += [ '-mmacosx-version-min=10.9' ]
 		project_link_args += [ '-mmacosx-version-min=10.9' ]
+	endif
+	if copt_platform == 'lin' and not get_option('b_pie') and get_option('workaround_gcc_no_pie') # nice one, meson
+		project_link_args += [ '-no-pie' ]
 	endif
 	project_c_args += args_ccomp
 	project_cpp_args += args_ccomp + [ '-Wno-invalid-offsetof' ]
