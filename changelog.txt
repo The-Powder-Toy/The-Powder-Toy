@@ -1,0 +1,5 @@
+# This file is used by the starcatcher.us snapshot server to pull changelogs
+# It may also be used by mod owners using the starcatcher update server to write changelogs for their mods
+# Erase and replace the changelog for every release, do not just append changes to the end
+
+Fix issue where Linux version couldn't be launched from some file managers
