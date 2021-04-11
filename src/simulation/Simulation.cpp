@@ -556,6 +556,7 @@ void Simulation::Restore(const Snapshot & snap)
 		parts[i].type = 0;
 	std::copy(snap.Particles.begin(), snap.Particles.end(), parts);
 	parts_lastActiveIndex = NPART-1;
+	air->RecalculateBlockAirMaps();
 	RecalcFreeParticles(false);
 	std::copy(snap.PortalParticles.begin(), snap.PortalParticles.end(), &portalp[0][0][0]);
 	std::copy(snap.WirelessData.begin(), snap.WirelessData.end(), &wireless[0][0]);
