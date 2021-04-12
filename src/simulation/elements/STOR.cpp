@@ -53,7 +53,7 @@ void Element::Element_STOR()
 static int update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry, np, rx1, ry1;
-	if (!sim->IsValidElement(parts[i].tmp))
+	if (!sim->IsElementOrNone(parts[i].tmp))
 		parts[i].tmp = 0;
 	if(parts[i].life && !parts[i].tmp)
 		parts[i].life--;

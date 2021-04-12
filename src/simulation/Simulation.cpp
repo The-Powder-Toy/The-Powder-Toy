@@ -3651,16 +3651,16 @@ void Simulation::UpdateParticles(int start, int end)
 
 					ctemph = ctempl = pt;
 					// change boiling point with pressure
-					if (((elements[t].Properties&TYPE_LIQUID) && IsValidElement(elements[t].HighTemperatureTransition) && (elements[elements[t].HighTemperatureTransition].Properties&TYPE_GAS))
+					if (((elements[t].Properties&TYPE_LIQUID) && IsElementOrNone(elements[t].HighTemperatureTransition) && (elements[elements[t].HighTemperatureTransition].Properties&TYPE_GAS))
 					        || t==PT_LNTG || t==PT_SLTW)
 						ctemph -= 2.0f*pv[y/CELL][x/CELL];
-					else if (((elements[t].Properties&TYPE_GAS) && IsValidElement(elements[t].LowTemperatureTransition) && (elements[elements[t].LowTemperatureTransition].Properties&TYPE_LIQUID))
+					else if (((elements[t].Properties&TYPE_GAS) && IsElementOrNone(elements[t].LowTemperatureTransition) && (elements[elements[t].LowTemperatureTransition].Properties&TYPE_LIQUID))
 					         || t==PT_WTRV)
 						ctempl -= 2.0f*pv[y/CELL][x/CELL];
 					s = 1;
 
 					//A fix for ice with ctype = 0
-					if ((t==PT_ICEI || t==PT_SNOW) && (!parts[i].ctype || !IsValidElement(parts[i].ctype) || parts[i].ctype==PT_ICEI || parts[i].ctype==PT_SNOW))
+					if ((t==PT_ICEI || t==PT_SNOW) && (!IsElement(parts[i].ctype) || parts[i].ctype==PT_ICEI || parts[i].ctype==PT_SNOW))
 						parts[i].ctype = PT_WATR;
 
 					if (elements[t].HighTemperatureTransition>-1 && ctemph>=elements[t].HighTemperature)
@@ -5317,9 +5317,7 @@ String Simulation::ElementResolve(int type, int ctype)
 		return SerialiseGOLRule(ctype);
 	}
 	else if (type >= 0 && type < PT_NUM)
-	{
 		return elements[type].Name;
-	}
 	return "Empty";
 }
 
@@ -5329,13 +5327,13 @@ String Simulation::BasicParticleInfo(Particle const &sample_part)
 	int type = sample_part.type;
 	int ctype = sample_part.ctype;
 	int pavg1int = (int)sample_part.pavg[1];
-	if (type == PT_LAVA && ctype && IsValidElement(ctype))
+	if (type == PT_LAVA && IsElement(ctype))
 	{
 		sampleInfo << "Molten " << ElementResolve(ctype, -1);
 	}
-	else if ((type == PT_PIPE || type == PT_PPIP) && ctype && IsValidElement(ctype))
+	else if ((type == PT_PIPE || type == PT_PPIP) && IsElement(ctype))
 	{
-		if (ctype == PT_LAVA && pavg1int && IsValidElement(pavg1int))
+		if (ctype == PT_LAVA && IsElement(pavg1int))
 		{
 			sampleInfo << ElementResolve(type, -1) << " with molten " << ElementResolve(pavg1int, -1);
 		}

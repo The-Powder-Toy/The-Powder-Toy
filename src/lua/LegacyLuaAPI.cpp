@@ -171,7 +171,7 @@ int luacon_transitionread(lua_State* l)
 	lua_rawget(l, 1);
 	int i = lua_tointeger (l, lua_gettop(l));
 	lua_pop(l, 1);
-	if (!luacon_sim->IsValidElement(i))
+	if (!luacon_sim->IsElement(i))
 	{
 		return luaL_error(l, "Invalid index");
 	}
@@ -194,7 +194,7 @@ int luacon_transitionwrite(lua_State* l)
 	lua_rawget(l, 1);
 	int i = lua_tointeger (l, lua_gettop(l));
 	lua_pop(l, 1);
-	if (!luacon_sim->IsValidElement(i))
+	if (!luacon_sim->IsElement(i))
 	{
 		return luaL_error(l, "Invalid index");
 	}
@@ -202,7 +202,7 @@ int luacon_transitionwrite(lua_State* l)
 	if (prop.Type == StructProperty::TransitionType)
 	{
 		int type = luaL_checkinteger(l, 3);
-		if (!luacon_sim->IsValidElement(type) && type != NT && type != ST)
+		if (!luacon_sim->IsElementOrNone(type) && type != NT && type != ST)
 		{
 			return luaL_error(l, "Invalid element");
 		}
@@ -226,7 +226,7 @@ int luacon_elementread(lua_State* l)
 	lua_rawget(l, 1);
 	int i = lua_tointeger (l, lua_gettop(l));
 	lua_pop(l, 1);
-	if (!luacon_sim->IsValidElement(i))
+	if (!luacon_sim->IsElement(i))
 	{
 		return luaL_error(l, "Invalid index");
 	}
@@ -249,7 +249,7 @@ int luacon_elementwrite(lua_State* l)
 	lua_rawget(l, 1);
 	int i = lua_tointeger (l, lua_gettop(l));
 	lua_pop(l, 1);
-	if (!luacon_sim->IsValidElement(i))
+	if (!luacon_sim->IsElement(i))
 	{
 		return luaL_error(l, "Invalid index");
 	}
@@ -302,7 +302,7 @@ int luatpt_getelement(lua_State *l)
 	if (lua_isnumber(l, 1))
 	{
 		t = luaL_optint(l, 1, 1);
-		if (!luacon_sim->IsValidElement(t))
+		if (!luacon_sim->IsElementOrNone(t))
 		{
 			return luaL_error(l, "Unrecognised element number '%d'", t);
 		}
@@ -343,11 +343,11 @@ int luacon_elementReplacement(UPDATE_FUNC_ARGS)
 
 int luatpt_element_func(lua_State *l)
 {
-	if(lua_isfunction(l, 1))
+	if (lua_isfunction(l, 1))
 	{
 		int element = luaL_optint(l, 2, 0);
 		int replace = luaL_optint(l, 3, 0);
-		if (luacon_sim->IsValidElement(element))
+		if (luacon_sim->IsElement(element))
 		{
 			lua_el_func[element].Assign(l, 1);
 			if (replace == 2)
@@ -363,10 +363,10 @@ int luatpt_element_func(lua_State *l)
 			return luaL_error(l, "Invalid element");
 		}
 	}
-	else if(lua_isnil(l, 1))
+	else if (lua_isnil(l, 1))
 	{
 		int element = luaL_optint(l, 2, 0);
-		if (luacon_sim->IsValidElement(element))
+		if (luacon_sim->IsElement(element))
 		{
 			lua_el_func[element].Clear();
 			lua_el_mode[element] = 0;
@@ -427,7 +427,7 @@ int luatpt_graphics_func(lua_State *l)
 	if(lua_isfunction(l, 1))
 	{
 		int element = luaL_optint(l, 2, 0);
-		if (luacon_sim->IsValidElement(element))
+		if (luacon_sim->IsElement(element))
 		{
 			lua_gr_func[element].Assign(l, 1);
 			luacon_ren->graphicscache[element].isready = 0;
@@ -441,7 +441,7 @@ int luatpt_graphics_func(lua_State *l)
 	else if (lua_isnil(l, 1))
 	{
 		int element = luaL_optint(l, 2, 0);
-		if (luacon_sim->IsValidElement(element))
+		if (luacon_sim->IsElement(element))
 		{
 			lua_gr_func[element].Clear();
 			luacon_ren->graphicscache[element].isready = 0;
@@ -497,10 +497,10 @@ int luatpt_create(lua_State* l)
 	y = abs(luaL_optint(l, 2, 0));
 	if(x < XRES && y < YRES)
 	{
-		if(lua_isnumber(l, 3))
+		if (lua_isnumber(l, 3))
 		{
 			t = luaL_optint(l, 3, 0);
-			if (!luacon_sim->IsValidElement(t))
+			if (!luacon_sim->IsElement(t))
 			{
 				return luaL_error(l, "Unrecognised element number '%d'", t);
 			}
@@ -730,7 +730,7 @@ int luatpt_set_property(lua_State* l)
 		else
 			t = luaL_optint(l, 2, 0);
 
-		if (!strcmp(prop, "type") && !luacon_sim->IsValidElement(t))
+		if (!strcmp(prop, "type") && !luacon_sim->IsElementOrNone(t))
 			return luaL_error(l, "Unrecognised element number '%d'", t);
 	}
 	else if (lua_isstring(l, 2))

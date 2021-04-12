@@ -2,4 +2,6 @@
 # It may also be used by mod owners using the starcatcher update server to write changelogs for their mods
 # Erase and replace the changelog for every release, do not just append changes to the end
 
-Fix issue where Linux version couldn't be launched from some file managers
+Fix air being able to go through walls for a frame after undoing
+Show NONE in {ctype} signs instead of 0 when an element has no ctype
+Fix some legacy lua api functions allowing you to set properties on element 0

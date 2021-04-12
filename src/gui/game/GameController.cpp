@@ -943,7 +943,7 @@ void GameController::Update()
 		if (activeTool->GetIdentifier().BeginsWith("DEFAULT_PT_"))
 		{
 			int sr = activeTool->GetToolID();
-			if (sr && sim->IsValidElement(sr))
+			if (sr && sim->IsElementOrNone(sr))
 				rightSelected = sr;
 		}
 
@@ -1562,9 +1562,9 @@ void GameController::ReloadSim()
 
 bool GameController::IsValidElement(int type)
 {
-	if(gameModel && gameModel->GetSimulation())
+	if (gameModel && gameModel->GetSimulation())
 	{
-		return (type && gameModel->GetSimulation()->IsValidElement(type));
+		return (type && gameModel->GetSimulation()->IsElement(type));
 	}
 	else
 		return false;

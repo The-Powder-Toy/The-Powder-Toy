@@ -75,7 +75,7 @@ static int update(UPDATE_FUNC_ARGS)
 	}
 	else
 	{
-		int restrictElement = sim->IsValidElement(parts[i].tmp) ? parts[i].tmp : 0;
+		int restrictElement = sim->IsElement(parts[i].tmp) ? parts[i].tmp : 0;
 		for (rx=-1; rx<2; rx++)
 			for (ry=-1; ry<2; ry++)
 				if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES)
