@@ -17,8 +17,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
       - id: get_type
-        run: python ./.github/get-type.py ${{ github.ref }}
+        run: python3 ./.github/get-type.py ${{ github.ref }}
       - id: create_release
         if: steps.get_type.outputs.TYPE != 'dev'
         uses: actions/create-release@v1
@@ -85,8 +87,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
       - id: get_type
-        run: python ./.github/get-type.py ${{ github.ref }}
+        run: python3 ./.github/get-type.py ${{ github.ref }}
       - uses: actions/download-artifact@v1
         with:
           name: release_url
@@ -94,12 +98,14 @@ jobs:
         if: steps.get_type.outputs.TYPE != 'dev'
         run: bash -c "./.github/get-release-info.sh" ## gg github, this is terrible
       - if: matrix.platform_short == 'mac'
+        uses: Homebrew/actions/setup-homebrew@master
+      - if: matrix.platform_short == 'mac'
         run: brew install pkg-config
       - if: matrix.platform_short == 'mac' && matrix.static_dynamic != 'static'
         run: brew install luajit curl fftw zlib sdl2
       - if: matrix.platform_short == 'lin' && matrix.static_dynamic != 'static'
         run: sudo apt update && sudo apt install libluajit-5.1-dev libcurl4-openssl-dev libfftw3-dev zlib1g-dev libsdl2-dev
-      - run: python -m pip install meson ninja
+      - run: python3 -m pip install meson ninja
       - run: bash -c 'PLATFORM_SHORT=${{ matrix.platform_short }} MACHINE_SHORT=${{ matrix.machine_short }} TOOLSET_SHORT=${{ matrix.toolset_short }} STATIC_DYNAMIC=${{ matrix.static_dynamic }} RELTYPECFG=${{ steps.get_type.outputs.RELTYPECFG }} RELNAME=${{ steps.get_type.outputs.NAME }} MOD_ID=${{ steps.get_type.outputs.MOD_ID }} ./.github/build.sh'
       - uses: actions/upload-release-asset@v1
         if: steps.get_type.outputs.TYPE != 'dev' && matrix.static_dynamic == 'static'
@@ -154,8 +160,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
       - id: get_type
-        run: python ./.github/get-type.py ${{ github.ref }}
+        run: python3 ./.github/get-type.py ${{ github.ref }}
       - uses: actions/download-artifact@v1
         with:
           name: powder-${{ steps.get_type.outputs.NAME }}-${{ matrix.machine_short }}-${{ matrix.platform_short }}-${{ matrix.toolset_short }}-${{ matrix.static_dynamic }}${{ matrix.suffix }}
@@ -169,6 +177,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
       - id: get_type
-        run: python ./.github/get-type.py ${{ github.ref }}
+        run: python3 ./.github/get-type.py ${{ github.ref }}
       - run: curl "https://starcatcher.us/TPT/perform-release.lua?mod=${{ steps.get_type.outputs.MOD_ID }}&type=${{ steps.get_type.outputs.TYPE }}&name=${{ steps.get_type.outputs.NAME }}&commit=${{ github.sha }}" | grep "Release complete"
