@@ -106,7 +106,15 @@ jobs:
       - if: matrix.platform_short == 'lin' && matrix.static_dynamic != 'static'
         run: sudo apt update && sudo apt install libluajit-5.1-dev libcurl4-openssl-dev libfftw3-dev zlib1g-dev libsdl2-dev
       - run: python3 -m pip install meson ninja
-      - run: bash -c 'PLATFORM_SHORT=${{ matrix.platform_short }} MACHINE_SHORT=${{ matrix.machine_short }} TOOLSET_SHORT=${{ matrix.toolset_short }} STATIC_DYNAMIC=${{ matrix.static_dynamic }} RELTYPECFG=${{ steps.get_type.outputs.RELTYPECFG }} RELNAME=${{ steps.get_type.outputs.NAME }} MOD_ID=${{ steps.get_type.outputs.MOD_ID }} ./.github/build.sh'
+      - run: bash -c './.github/build.sh'
+        env:
+          PLATFORM_SHORT: ${{ matrix.platform_short }}
+          MACHINE_SHORT: ${{ matrix.machine_short }}
+          TOOLSET_SHORT: ${{ matrix.toolset_short }}
+          STATIC_DYNAMIC: ${{ matrix.static_dynamic }}
+          RELTYPECFG: ${{ steps.get_type.outputs.RELTYPECFG }}
+          RELNAME: ${{ steps.get_type.outputs.NAME }}
+          MOD_ID: ${{ steps.get_type.outputs.MOD_ID }}
       - uses: actions/upload-release-asset@v1
         if: steps.get_type.outputs.TYPE != 'dev' && matrix.static_dynamic == 'static'
         env:
@@ -169,7 +177,12 @@ jobs:
           name: powder-${{ steps.get_type.outputs.NAME }}-${{ matrix.machine_short }}-${{ matrix.platform_short }}-${{ matrix.toolset_short }}-${{ matrix.static_dynamic }}${{ matrix.suffix }}
       - run: sudo apt update && sudo apt install lftp
       - if: steps.get_type.outputs.TYPE != 'dev' && matrix.static_dynamic == 'static'
-        run: bash -c 'STARCATCHER_PUBLISH_HOSTPORT=${{ secrets.STARCATCHER_PUBLISH_HOSTPORT }} STARCATCHER_PUBLISH_USERNAME=${{ secrets.STARCATCHER_PUBLISH_USERNAME }} STARCATCHER_PUBLISH_PASSWORD=${{ secrets.STARCATCHER_PUBLISH_PASSWORD }} STARCATCHER_PUBLISH_FILENAME=powder-${{ steps.get_type.outputs.NAME }}-${{ matrix.machine_short }}-${{ matrix.platform_short }}-${{ matrix.toolset_short }}-${{ matrix.static_dynamic }}${{ matrix.suffix }} ./.github/starcatcher-publish.sh powder${{ matrix.suffix }}'
+        run: bash -c './.github/starcatcher-publish.sh powder${{ matrix.suffix }}'
+        env:
+          STARCATCHER_PUBLISH_HOSTPORT: ${{ secrets.STARCATCHER_PUBLISH_HOSTPORT }}
+          STARCATCHER_PUBLISH_USERNAME: ${{ secrets.STARCATCHER_PUBLISH_USERNAME }}
+          STARCATCHER_PUBLISH_PASSWORD: ${{ secrets.STARCATCHER_PUBLISH_PASSWORD }}
+          STARCATCHER_PUBLISH_FILENAME: powder-${{ steps.get_type.outputs.NAME }}-${{ matrix.machine_short }}-${{ matrix.platform_short }}-${{ matrix.toolset_short }}-${{ matrix.static_dynamic }}${{ matrix.suffix }}
   starcatcher-release:
     runs-on: ubuntu-latest
     needs: [starcatcher-upload]
