@@ -19,12 +19,12 @@ if [ -z "${STATIC_DYNAMIC-}" ]; then
 	>&2 echo "STATIC_DYNAMIC not set (static, dynamic)"
 	exit 1
 fi
-if [ -z "${RELTYPECFG-}" ]; then
-	>&2 echo "RELTYPECFG not set"
-	exit 1
-fi
 if [ -z "${RELNAME-}" ]; then
 	>&2 echo "RELNAME not set"
+	exit 1
+fi
+if [ -z "${RELTYPE-}" ]; then
+	>&2 echo "RELTYPE not set"
 	exit 1
 fi
 if [ -z "${MOD_ID-}" ]; then
@@ -76,14 +76,25 @@ fi
 if [ $PLATFORM_SHORT == "win" ]; then
 	bin_suffix=$bin_suffix.exe
 fi
-if echo $RELTYPECFG | base64 -d | grep snapshot; then
+if [ "$RELTYPE" == "snapshot" ]; then
 	other_flags+=$'\t-Dsnapshot=true\t-Dsnapshot_id='
-	other_flags+=`echo $RELNAME | cut -d '-' -f 2`
+	other_flags+=`echo $RELNAME | cut -d '-' -f 2` # $RELNAME is snapshot-X
 fi
-if echo $RELTYPECFG | base64 -d | grep snapshot || [ "$MOD_ID" != "0" ]; then
+if [ "$RELTYPE" == "snapshot" ] && [ "$MOD_ID" != "0" ]; then
+	>&2 echo "mods and snapshots do not mix"
+	exit 1
+fi
+if [ "$RELTYPE" == "stable" ] && [ "$MOD_ID" != "0" ]; then
+	other_flags+=$'\t-Dsnapshot_id='
+	other_flags+=`echo $RELNAME | cut -d '.' -f 3` # $RELNAME is vX.Y.Z
+fi
+if [ "$RELTYPE" == "snapshot" ] || [ "$MOD_ID" != "0" ]; then
 	other_flags+=$'\t-Dupdate_server=starcatcher.us/TPT'
 fi
-meson -Dbuildtype=release -Db_pie=false -Db_staticpic=false -Db_lto=true $static_flag -Dinstall_check=true $other_flags `echo $RELTYPECFG | base64 -d` build
+if [ "$RELTYPE" != "dev" ]; then
+	other_flags+=$'\t-Dignore_updates=false'
+fi
+meson -Dbuildtype=release -Db_pie=false -Db_staticpic=false -Db_lto=true $static_flag -Dinstall_check=true $other_flags build
 cd build
 ninja
 if [ $PLATFORM_SHORT == "lin" ] || [ $PLATFORM_SHORT == "mac" ]; then

@@ -112,8 +112,8 @@ jobs:
           MACHINE_SHORT: ${{ matrix.machine_short }}
           TOOLSET_SHORT: ${{ matrix.toolset_short }}
           STATIC_DYNAMIC: ${{ matrix.static_dynamic }}
-          RELTYPECFG: ${{ steps.get_type.outputs.RELTYPECFG }}
           RELNAME: ${{ steps.get_type.outputs.NAME }}
+          RELTYPE: ${{ steps.get_type.outputs.TYPE }}
           MOD_ID: ${{ steps.get_type.outputs.MOD_ID }}
       - uses: actions/upload-release-asset@v1
         if: steps.get_type.outputs.TYPE != 'dev' && matrix.static_dynamic == 'static'
