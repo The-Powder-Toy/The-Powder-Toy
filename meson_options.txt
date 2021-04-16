@@ -42,46 +42,11 @@ option(
 	description: 'Snapshot build'
 )
 option(
-	'version_major',
-	type: 'integer',
-	min: 0,
-	value: 95,
-	description: 'Major version'
-)
-option(
-	'version_minor',
-	type: 'integer',
-	min: 0,
-	value: 0,
-	description: 'Minor version'
-)
-option(
-	'version_build',
-	type: 'integer',
-	min: 0,
-	value: 345,
-	description: 'Build number'
-)
-option(
 	'snapshot_id',
 	type: 'integer',
 	min: 0,
 	value: 199,
 	description: 'Snapshot ID, only relevant if \'snapshot\' is true'
-)
-option(
-	'future_major',
-	type: 'integer',
-	min: 0,
-	value: 96,
-	description: 'Future major version, used for debugging and in snapshots, only relevant if at least one of \'snapshot\', \'beta\', or \'debug\' is true, or if \'mod_id\' is set'
-)
-option(
-	'future_minor',
-	type: 'integer',
-	min: 0,
-	value: 0,
-	description: 'Future minor version, similar to \'future_major\''
 )
 option(
 	'mod_id',
