@@ -133,6 +133,14 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	luacon_ren = m->GetRenderer();
 	luacon_ci = this;
 
+	for (auto moving = 0; moving < PT_NUM; ++moving)
+	{
+		for (auto into = 0; into < PT_NUM; ++into)
+		{
+			custom_can_move[moving][into] = 0;
+		}
+	}
+
 	//New TPT API
 	l = luaL_newstate();
 	tpt_lua_setmainthread(l);
@@ -381,6 +389,21 @@ tpt.partsdata = nil");
 	if (luaL_loadbuffer(l, (const char *)eventcompat_lua, eventcompat_lua_size, "@[built-in eventcompat.lua]") || lua_pcall(l, 0, 0, 0))
 	{
 		throw std::runtime_error(ByteString("failed to load built-in eventcompat: ") + lua_tostring(l, -1));
+	}
+}
+
+void LuaScriptInterface::custom_init_can_move()
+{
+	luacon_sim->init_can_move();
+	for (auto moving = 0; moving < PT_NUM; ++moving)
+	{
+		for (auto into = 0; into < PT_NUM; ++into)
+		{
+			if (custom_can_move[moving][into] & 0x80)
+			{
+				luacon_sim->can_move[moving][into] = custom_can_move[moving][into] & 0x7F;
+			}
+		}
 	}
 }
 
@@ -1957,7 +1980,9 @@ int LuaScriptInterface::simulation_canMove(lua_State * l)
 	}
 	else
 	{
-		luacon_sim->can_move[movingElement][destinationElement] = luaL_checkint(l, 3);
+		int setting = luaL_checkint(l, 3) & 0x7F;
+		luacon_ci->custom_can_move[movingElement][destinationElement] = setting | 0x80;
+		luacon_sim->can_move[movingElement][destinationElement] = setting;
 		return 0;
 	}
 }
@@ -2711,7 +2736,14 @@ int LuaScriptInterface::elements_loadDefault(lua_State * l)
 	}
 
 	luacon_model->BuildMenus();
-	luacon_sim->init_can_move();
+	for (auto moving = 0; moving < PT_NUM; ++moving)
+	{
+		for (auto into = 0; into < PT_NUM; ++into)
+		{
+			luacon_ci->custom_can_move[moving][into] = 0;
+		}
+	}
+	luacon_ci->custom_init_can_move();
 	std::fill(luacon_ren->graphicscache, luacon_ren->graphicscache+PT_NUM, gcache_item());
 	return 0;
 }
@@ -2779,6 +2811,13 @@ int LuaScriptInterface::elements_allocate(lua_State * l)
 		lua_setfield(l, -2, identifier.c_str());
 		lua_pop(l, 1);
 	}
+
+	for (auto elem = 0; elem < PT_NUM; ++elem)
+	{
+		luacon_ci->custom_can_move[elem][newID] = 0;
+		luacon_ci->custom_can_move[newID][elem] = 0;
+	}
+	luacon_ci->custom_init_can_move();
 
 	lua_pushinteger(l, newID);
 	return 1;
@@ -2987,7 +3026,7 @@ int LuaScriptInterface::elements_element(lua_State * l)
 		lua_pop(l, 1);
 
 		luacon_model->BuildMenus();
-		luacon_sim->init_can_move();
+		luacon_ci->custom_init_can_move();
 		luacon_ren->graphicscache[id].isready = 0;
 
 		return 0;
@@ -3054,7 +3093,7 @@ int LuaScriptInterface::elements_property(lua_State * l)
 			}
 
 			luacon_model->BuildMenus();
-			luacon_sim->init_can_move();
+			luacon_ci->custom_init_can_move();
 			luacon_ren->graphicscache[id].isready = 0;
 		}
 		else if (propertyName == "Update")

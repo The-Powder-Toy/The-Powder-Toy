@@ -8,6 +8,7 @@
 #include "CommandInterface.h"
 #include "lua/LuaEvents.h"
 #include "simulation/StructProperty.h"
+#include "simulation/ElementDefs.h"
 
 #include <map>
 
@@ -199,6 +200,9 @@ public:
 	lua_State *l;
 	std::map<LuaComponent *, LuaSmartRef> grabbed_components;
 	LuaScriptInterface(GameController * c, GameModel * m);
+
+	char custom_can_move[PT_NUM][PT_NUM];
+	void custom_init_can_move();
 
 	void OnTick() override;
 	bool HandleEvent(LuaEvents::EventTypes eventType, Event * event) override;
