@@ -4719,9 +4719,6 @@ void Simulation::RecalcFreeParticles(bool do_life_dec)
 					continue;
 				}
 
-				if (elementRecount)
-					elementCount[t]++;
-
 				unsigned int elem_properties = elements[t].Properties;
 				if (parts[i].life>0 && (elem_properties&PROP_LIFE_DEC) && !(inBounds && bmap[y/CELL][x/CELL] == WL_STASIS && emap[y/CELL][x/CELL]<8))
 				{
@@ -4741,6 +4738,9 @@ void Simulation::RecalcFreeParticles(bool do_life_dec)
 					continue;
 				}
 			}
+
+			if (elementRecount)
+				elementCount[t]++;
 		}
 		else
 		{
