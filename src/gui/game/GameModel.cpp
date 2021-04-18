@@ -136,7 +136,7 @@ GameModel::GameModel():
 	undoHistoryLimit = Client::Ref().GetPrefInteger("Simulation.UndoHistoryLimit", 5);
 	// cap due to memory usage (this is about 3.4GB of RAM)
 	if (undoHistoryLimit > 200)
-		undoHistoryLimit = 200;
+		SetUndoHistoryLimit(200);
 
 	mouseClickRequired = Client::Ref().GetPrefBool("MouseClickRequired", false);
 	includePressure = Client::Ref().GetPrefBool("Simulation.IncludePressure", true);
@@ -157,23 +157,14 @@ GameModel::~GameModel()
 	Client::Ref().SetPref("Renderer.Decorations", (bool)ren->decorations_enable);
 	Client::Ref().SetPref("Renderer.DebugMode", ren->debugLines); //These two should always be equivalent, even though they are different things
 
-	Client::Ref().SetPref("Simulation.EdgeMode", edgeMode);
 	Client::Ref().SetPref("Simulation.NewtonianGravity", sim->grav->IsEnabled());
 	Client::Ref().SetPref("Simulation.AmbientHeat", sim->aheat_enable);
 	Client::Ref().SetPref("Simulation.PrettyPowder", sim->pretty_powder);
-	Client::Ref().SetPref("Simulation.DecoSpace", sim->deco_space);
 
 	Client::Ref().SetPref("Decoration.Red", (int)colour.Red);
 	Client::Ref().SetPref("Decoration.Green", (int)colour.Green);
 	Client::Ref().SetPref("Decoration.Blue", (int)colour.Blue);
 	Client::Ref().SetPref("Decoration.Alpha", (int)colour.Alpha);
-
-	Client::Ref().SetPref("Simulation.UndoHistoryLimit", undoHistoryLimit);
-
-	Client::Ref().SetPref("MouseClickRequired", mouseClickRequired);
-	Client::Ref().SetPref("Simulation.IncludePressure", includePressure);
-
-	Favorite::Ref().SaveFavoritesToPrefs();
 
 	for (size_t i = 0; i < menuList.size(); i++)
 	{
@@ -577,6 +568,7 @@ unsigned int GameModel::GetUndoHistoryLimit()
 void GameModel::SetUndoHistoryLimit(unsigned int undoHistoryLimit_)
 {
 	undoHistoryLimit = undoHistoryLimit_;
+	Client::Ref().SetPref("Simulation.UndoHistoryLimit", undoHistoryLimit);
 }
 
 void GameModel::SetVote(int direction)

@@ -1463,6 +1463,7 @@ int luatpt_setwindowsize(lua_State* l)
 	//   > maybe bind the maximum allowed scale to screen size somehow
 	if (scale < 1 || scale > 10) scale = 1;
 	if (kiosk!=1) kiosk = 0;
+	Client::Ref().SetPref("Scale", scale);
 	ui::Engine::Ref().SetScale(scale);
 	ui::Engine::Ref().SetFullscreen(kiosk);
 	return 0;

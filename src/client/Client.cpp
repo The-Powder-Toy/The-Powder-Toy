@@ -1970,6 +1970,7 @@ void Client::SetPref(ByteString prop, Json::Value value)
 			preferences[split.Before()] = SetPrefHelper(preferences[split.Before()], split.After(), value);
 		else
 			preferences[prop] = value;
+		WritePrefs();
 	}
 	catch (std::exception & e)
 	{

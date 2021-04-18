@@ -1003,7 +1003,6 @@ int main(int argc, char * argv[])
 	}
 #endif
 
-	Client::Ref().SetPref("Scale", ui::Engine::Ref().GetScale());
 	ui::Engine::Ref().CloseWindow();
 	delete gameController;
 	delete ui::Engine::Ref().g;

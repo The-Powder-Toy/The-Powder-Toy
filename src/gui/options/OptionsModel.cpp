@@ -85,6 +85,7 @@ int OptionsModel::GetEdgeMode()
 }
 void OptionsModel::SetEdgeMode(int edgeMode)
 {
+	Client::Ref().SetPref("Simulation.EdgeMode", edgeMode);
 	gModel->SetEdgeMode(edgeMode);
 	notifySettingsChanged();
 }
@@ -175,6 +176,7 @@ int OptionsModel::GetDecoSpace()
 }
 void OptionsModel::SetDecoSpace(int decoSpace)
 {
+	Client::Ref().SetPref("Simulation.DecoSpace", decoSpace);
 	gModel->SetDecoSpace(decoSpace);
 	notifySettingsChanged();
 }
