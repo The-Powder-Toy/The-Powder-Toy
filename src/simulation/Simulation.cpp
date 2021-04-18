@@ -545,6 +545,7 @@ Snapshot * Simulation::CreateSnapshot()
 void Simulation::Restore(const Snapshot & snap)
 {
 	parts_lastActiveIndex = NPART-1;
+	std::fill(elementCount, elementCount+PT_NUM, 0);
 	elementRecount = true;
 	force_stacking_check = true;
 
@@ -4710,6 +4711,9 @@ void Simulation::RecalcFreeParticles(bool do_life_dec)
 			lastPartUsed = i;
 			NUM_PARTS ++;
 
+			if (elementRecount && t >= 0 && t < PT_NUM && elements[t].Enabled)
+				elementCount[t]++;
+
 			//decrease particle life
 			if (do_life_dec && (!sys_pause || framerender))
 			{
@@ -4738,9 +4742,6 @@ void Simulation::RecalcFreeParticles(bool do_life_dec)
 					continue;
 				}
 			}
-
-			if (elementRecount)
-				elementCount[t]++;
 		}
 		else
 		{
@@ -4764,7 +4765,7 @@ void Simulation::RecalcFreeParticles(bool do_life_dec)
 			parts[lastPartUnused].life = parts_lastActiveIndex+1;
 	}
 	parts_lastActiveIndex = lastPartUsed;
-	if (elementRecount && (!sys_pause || framerender))
+	if (elementRecount)
 		elementRecount = false;
 }
 
