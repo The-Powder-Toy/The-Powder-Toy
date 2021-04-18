@@ -181,18 +181,19 @@ void OptionsModel::SetDecoSpace(int decoSpace)
 
 bool OptionsModel::GetShowAvatars()
 {
-	return Client::Ref().GetPrefBool("ShowAvatars", true);
+	return ui::Engine::Ref().ShowAvatars;
 }
 
 void OptionsModel::SetShowAvatars(bool state)
 {
+	ui::Engine::Ref().ShowAvatars = state;
 	Client::Ref().SetPref("ShowAvatars", state);
 	notifySettingsChanged();
 }
 
 bool OptionsModel::GetMouseClickRequired()
 {
-	return Client::Ref().GetPrefBool("MouseClickRequired", false);
+	return gModel->GetMouseClickRequired();
 }
 
 void OptionsModel::SetMouseClickRequired(bool mouseClickRequired)
@@ -204,7 +205,7 @@ void OptionsModel::SetMouseClickRequired(bool mouseClickRequired)
 
 bool OptionsModel::GetIncludePressure()
 {
-	return Client::Ref().GetPrefBool("Simulation.IncludePressure", true);
+	return gModel->GetIncludePressure();
 }
 
 void OptionsModel::SetIncludePressure(bool includePressure)
@@ -216,7 +217,7 @@ void OptionsModel::SetIncludePressure(bool includePressure)
 
 bool OptionsModel::GetPerfectCircle()
 {
-	return Client::Ref().GetPrefBool("PerfectCircleBrush", true);
+	return gModel->GetPerfectCircle();
 }
 
 void OptionsModel::SetPerfectCircle(bool perfectCircle)
@@ -228,23 +229,24 @@ void OptionsModel::SetPerfectCircle(bool perfectCircle)
 
 bool OptionsModel::GetMomentumScroll()
 {
-	return Client::Ref().GetPrefBool("MomentumScroll", true);
+	return ui::Engine::Ref().MomentumScroll;
 }
 
 void OptionsModel::SetMomentumScroll(bool state)
 {
 	Client::Ref().SetPref("MomentumScroll", state);
-	ui::Engine::Ref().SetMomentumScroll(state);
+	ui::Engine::Ref().MomentumScroll = state;
 	notifySettingsChanged();
 }
 
 bool OptionsModel::GetAutoDrawLimit()
 {
-	return Client::Ref().GetPrefBool("AutoDrawLimit", false);
+	return ui::Engine::Ref().AutoDrawingFrequencyLimit;
 }
 
 void OptionsModel::SetAutoDrawLimit(bool state)
 {
+	ui::Engine::Ref().AutoDrawingFrequencyLimit = state;
 	Client::Ref().SetPref("AutoDrawLimit", state);
 	notifySettingsChanged();
 }

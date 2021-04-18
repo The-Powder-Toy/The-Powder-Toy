@@ -216,6 +216,10 @@ public:
 	bool GetIncludePressure();
 	void SetIncludePressure(bool includePressure);
 	void SetPerfectCircle(bool perfectCircle);
+	inline bool GetPerfectCircle() const
+	{
+		return perfectCircle;
+	}
 
 	std::vector<Notification*> GetNotifications();
 	void AddNotification(Notification * notification);
