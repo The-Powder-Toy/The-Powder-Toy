@@ -940,6 +940,7 @@ Client::~Client()
 void Client::SetAuthUser(User user)
 {
 	authUser = user;
+	WritePrefs();
 	notifyAuthUserChanged();
 }
 
