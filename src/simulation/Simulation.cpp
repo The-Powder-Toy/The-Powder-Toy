@@ -3830,14 +3830,14 @@ void Simulation::UpdateParticles(int start, int end)
 									else if (pt >= 1943.15) // Normal ROCK freezing temp
 										s = 0;
 								}
-								else if (parts[i].ctype == PT_STNE) //Melting and freezing of STNE is now handled by ROCK's update function
+								else if (parts[i].ctype == PT_STNE) //Melting and freezing of STNE is now handled by ROCK's update function for powdered ROCK variations, normal temps unchanged
 								{
 									if ((parts[i].tmp == 2 || parts[i].tmp == 1) && pt >= 1153.15) //Sulfide freezing temp
 										s = 0;
 									else if (pt >= 983.0f) // Normal STNE freezing temp
 										s = 0;
 								}
-								else if (parts[i].ctype == PT_METL) //Melting and freezing of METL is now handled by ROCK's update function
+								else if (parts[i].ctype == PT_METL) //Melting and freezing of METL with tmp=82 is now handled by ROCK's update function, normal temps unchanged
 								{
 									if (parts[i].tmp == 82 && pt >= 600.65 && pt <= elements[PT_METL].HighTemperature) //Lead freezing temp
 										s = 0;
