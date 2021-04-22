@@ -5354,31 +5354,7 @@ String Simulation::BasicParticleInfo(Particle const &sample_part)
 	int pavg1int = (int)sample_part.pavg[1];
 	if (type == PT_LAVA && ctype && IsValidElement(ctype))
 	{
-		if (ctype == PT_GOLD && sample_part.tmp == 47)
-			sampleInfo << "Molten Silver";
-		else if (ctype == PT_METL && sample_part.tmp == 82)
-			sampleInfo << "Molten Lead";
-		else if (ctype == PT_ROCK && sample_part.tmp == 3)
-			sampleInfo << "Molten Galena";
-		else
 			sampleInfo << "Molten " << ElementResolve(ctype, -1);
-	}
-	else if (type == PT_ROCK || type == PT_STNE)
-	{
-		if (sample_part.tmp == 1 || sample_part.tmp == 2)
-			sampleInfo << "Sulfide Ore";
-		else if (sample_part.tmp == 3)
-			sampleInfo << "Galena";
-		else
-			sampleInfo << ElementResolve(type, ctype);
-	}
-	else if (type == PT_METL && sample_part.tmp == 82)
-	{
-		sampleInfo << "Lead";
-	}
-	else if (type == PT_GOLD && sample_part.tmp == 47)
-	{
-		sampleInfo << "Silver";
 	}
 	else if ((type == PT_PIPE || type == PT_PPIP) && ctype && IsValidElement(ctype))
 	{
