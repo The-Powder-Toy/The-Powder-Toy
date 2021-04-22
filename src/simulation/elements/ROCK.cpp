@@ -123,12 +123,7 @@ int Element_ROCK_update(UPDATE_FUNC_ARGS)
 		sim->part_change_type(i, x, y, PT_LAVA);
 		parts[i].ctype = PT_ROCK;
 	}
-	else if (parts[i].type == PT_ROCK && parts[i].temp >= 1153.15 && (parts[i].tmp == 1 || parts[i].tmp == 2)) //Sulfides
-	{
-		sim->part_change_type(i, x, y, PT_LAVA);
-		parts[i].ctype = PT_ROCK;
-	}
-	else if (parts[i].type == PT_STNE && parts[i].temp >= 1153.15 && (parts[i].tmp == 1 || parts[i].tmp == 2)) //Sulfide Powders
+	else if ((parts[i].type == PT_ROCK || parts[i].type == PT_STNE) && parts[i].temp >= 1153.15 && (parts[i].tmp == 1 || parts[i].tmp == 2)) //Sulfides, solid and powdered
 	{
 		if (parts[i].tmp == 1)
 		{
@@ -137,11 +132,11 @@ int Element_ROCK_update(UPDATE_FUNC_ARGS)
 				sim->create_part(-1, x + RNG::Ref().chance(1, 3) - 2, y + RNG::Ref().chance(1, 3) - 2, PT_CAUS);
 			}
 			sim->create_part(-1, x + RNG::Ref().chance(1, 3) - 2, y + RNG::Ref().chance(1, 3) - 2, PT_SMKE);
+			if (parts[i].type == PT_STNE)
+				parts[i].tmp = 2; //Powder must be in roasted state when melted
 		}
-
+		parts[i].ctype = parts[i].type; //Allows handling STNE and ROCK melting
 		sim->part_change_type(i, x, y, PT_LAVA);
-		parts[i].ctype = PT_STNE;
-		parts[i].tmp = 2; //It must be in the "roasted" form regardless of pre-melting state
 	}
 	else if (parts[i].type == PT_ROCK && parts[i].temp >= 1387.15 && parts[i].tmp == 3) //Galena
 	{
@@ -169,9 +164,9 @@ int Element_ROCK_update(UPDATE_FUNC_ARGS)
 		else
 			parts[i].ctype = PT_GLAS;
 	}
-	else if (parts[i].type == PT_STNE && parts[i].temp >= 983.0f && (parts[i].tmp != 1 && parts[i].tmp != 2 && parts[i].tmp != 3)) //Regular STNE, no change
+	else if (parts[i].type == PT_STNE && parts[i].temp >= 983.0f && (parts[i].tmp != 1 && parts[i].tmp != 2 && parts[i].tmp != 3)) //Regular STNE, no change. Handled here to also handle broken ROCK forms based on tmp which occur at higher temps
 		sim->part_change_type(i, x, y, PT_LAVA);
-	else if (parts[i].tmp == 82 && parts[i].type == PT_METL && parts[i].temp >= 600.65f) //Lead (Regular METL is higher melting temp, so no change or transition required here)
+	else if (parts[i].tmp == 82 && parts[i].type == PT_METL && parts[i].temp >= 600.65f) //Lead
 	{
 		sim->part_change_type(i, x, y, PT_LAVA);
 		parts[i].ctype = PT_METL;
