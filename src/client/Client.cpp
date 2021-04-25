@@ -1207,26 +1207,17 @@ std::vector<unsigned char> Client::GetSaveData(int saveID, int saveDate)
 LoginStatus Client::Login(ByteString username, ByteString password, User & user)
 {
 	lastError = "";
-	char passwordHash[33];
-	char totalHash[33];
 
 	user.UserID = 0;
 	user.Username = "";
 	user.SessionID = "";
 	user.SessionKey = "";
 
-	//Doop
-	md5_ascii(passwordHash, (const unsigned char *)password.c_str(), password.length());
-	passwordHash[32] = 0;
-	ByteString total = ByteString::Build(username, "-", passwordHash);
-	md5_ascii(totalHash, (const unsigned char *)(total.c_str()), total.size());
-	totalHash[32] = 0;
-
 	ByteString data;
 	int dataStatus;
-	data = http::Request::Simple(SCHEME SERVER "/Login.json", &dataStatus, {
-		{ "Username", username },
-		{ "Hash", totalHash },
+	data = http::Request::Simple("https://" SERVER "/Login.json", &dataStatus, {
+		{ "name", username },
+		{ "pass", password },
 	});
 
 	RequestStatus ret = ParseServerReturn(data, dataStatus, true);
@@ -1238,6 +1229,7 @@ LoginStatus Client::Login(ByteString username, ByteString password, User & user)
 			Json::Value objDocument;
 			dataStream >> objDocument;
 
+			ByteString usernameTemp = objDocument["Username"].asString();
 			int userIDTemp = objDocument["UserID"].asInt();
 			ByteString sessionIDTemp = objDocument["SessionID"].asString();
 			ByteString sessionKeyTemp = objDocument["SessionKey"].asString();
@@ -1253,7 +1245,7 @@ LoginStatus Client::Login(ByteString username, ByteString password, User & user)
 				AddServerNotification(item);
 			}
 
-			user.Username = username;
+			user.Username = usernameTemp;
 			user.UserID = userIDTemp;
 			user.SessionID = sessionIDTemp;
 			user.SessionKey = sessionKeyTemp;
