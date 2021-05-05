@@ -96,6 +96,19 @@ static int update(UPDATE_FUNC_ARGS)
 		tary = (int)sim->player.legs[3];
 		parts[i].tmp2 = 1;
 	}
+	else
+	{
+		playerst fighRand[MAX_FIGHTERS];
+		std::copy(std::begin(sim->fighters), std::end(sim->fighters), std::begin(fighRand));
+		std::random_shuffle(&fighRand[0], &fighRand[sim->fighcount - 1]);
+		if (&fighRand[0] != figh && ((pow((float)figh->legs[2] - x, 2) + pow((float)figh->legs[3] - y, 2)) <=
+			pow((float)fighRand[0].legs[2] - x, 2) + pow((float)fighRand[0].legs[3] - y, 2)))
+		{
+			tarx = (int)fighRand[0].legs[2];
+			tary = (int)fighRand[0].legs[3];
+			parts[i].tmp2 = 1;
+		}
+	}
 
 	switch (parts[i].tmp2)
 	{
