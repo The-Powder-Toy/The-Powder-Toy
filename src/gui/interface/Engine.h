@@ -136,7 +136,6 @@ namespace ui
 
 	public:
 		bool MomentumScroll = true;
-		bool AutoDrawingFrequencyLimit = false;
 		bool ShowAvatars = true;
 	};
 

@@ -241,18 +241,6 @@ void OptionsModel::SetMomentumScroll(bool state)
 	notifySettingsChanged();
 }
 
-bool OptionsModel::GetAutoDrawLimit()
-{
-	return ui::Engine::Ref().AutoDrawingFrequencyLimit;
-}
-
-void OptionsModel::SetAutoDrawLimit(bool state)
-{
-	ui::Engine::Ref().AutoDrawingFrequencyLimit = state;
-	Client::Ref().SetPref("AutoDrawLimit", state);
-	notifySettingsChanged();
-}
-
 void OptionsModel::notifySettingsChanged()
 {
 	for (size_t i = 0; i < observers.size(); i++)

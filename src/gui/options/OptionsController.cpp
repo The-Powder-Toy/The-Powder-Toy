@@ -117,11 +117,6 @@ void OptionsController::SetMomentumScroll(bool momentumScroll)
 	model->SetMomentumScroll(momentumScroll);
 }
 
-void OptionsController::SetAutoDrawLimit(bool autoDrawLimit)
-{
-	model->SetAutoDrawLimit(autoDrawLimit);
-}
-
 void OptionsController::Exit()
 {
 	view->CloseActiveWindow();
