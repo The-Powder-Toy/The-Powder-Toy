@@ -49,7 +49,7 @@ int Simulation::Load(GameSave * save, bool includePressure)
 
 int Simulation::Load(GameSave * save, bool includePressure, int fullX, int fullY)
 {
-	int x, y, r;
+	int x, y;
 
 	if (!save)
 		return 1;
@@ -96,31 +96,100 @@ int Simulation::Load(GameSave * save, bool includePressure, int fullX, int fullY
 		}
 	}
 
+	int r;
+	bool doFullScan = false;
+	for (unsigned int n = 0; n < NPART && n < save->particlesCount; n++)
+	{
+		Particle *tempPart = &save->particles[n];
+		tempPart->x += (float)fullX;
+		tempPart->y += (float)fullY;
+		int x = int(tempPart->x + 0.5f);
+		int y = int(tempPart->y + 0.5f);
+
+		// Check various scenarios where we are unable to spawn the element, and set type to 0 to block spawning later
+		if (!InBounds(x, y))
+		{
+			tempPart->type = 0;
+			continue;
+		}
+
+		int type = tempPart->type;
+		if (type < 0 && type >= PT_NUM)
+		{
+			tempPart->type = 0;
+			continue;
+		}
+		// Ensure we can spawn this element
+		if ((player.spwn == 1 && tempPart->type==PT_STKM) || (player2.spwn == 1 && tempPart->type==PT_STKM2))
+		{
+			tempPart->type = 0;
+			continue;
+		}
+		if ((tempPart->type == PT_SPAWN || tempPart->type == PT_SPAWN2) && elementCount[type])
+		{
+			tempPart->type = 0;
+			continue;
+		}
+		bool Element_FIGH_CanAlloc(Simulation *sim);
+		if (tempPart->type == PT_FIGH && !Element_FIGH_CanAlloc(this))
+		{
+			tempPart->type = 0;
+			continue;
+		}
+		if (!elements[type].Enabled)
+		{
+			tempPart->type = 0;
+			continue;
+		}
+
+		if ((r = pmap[y][x]))
+		{
+			// Particle already exists in this location. Set pmap to 0, then kill it and all stacked particles in the loop below
+			pmap[y][x] = 0;
+			doFullScan = true;
+		}
+		else if ((r = photons[y][x]))
+		{
+			// Particle already exists in this location. Set photons to 0, then kill it and all stacked particles in the loop below
+			photons[y][x] = 0;
+			doFullScan = true;
+		}
+	}
+
+	if (doFullScan)
+	{
+		// Loop through particles to find particles in need of being killed
+		for (int i = 0; i <= parts_lastActiveIndex; i++) {
+			if (parts[i].type)
+			{
+				int x = int(parts[i].x + 0.5f);
+				int y = int(parts[i].y + 0.5f);
+				if (elements[parts[i].type].Properties & TYPE_ENERGY)
+				{
+					if (!photons[y][x])
+						kill_part(i);
+				}
+				else
+				{
+					if (!pmap[y][x])
+						kill_part(i);
+				}
+			}
+		}
+	}
+
 	int i;
 	// Map of soap particles loaded into this save, old ID -> new ID
 	std::map<unsigned int, unsigned int> soapList;
 	for (int n = 0; n < NPART && n < save->particlesCount; n++)
 	{
 		Particle tempPart = save->particles[n];
-		tempPart.x += (float)fullX;
-		tempPart.y += (float)fullY;
 		x = int(tempPart.x + 0.5f);
 		y = int(tempPart.y + 0.5f);
 
-		if (tempPart.type >= 0 && tempPart.type < PT_NUM)
+		if (tempPart.type > 0 && tempPart.type < PT_NUM)
 			tempPart.type = partMap[tempPart.type];
 		else
-			continue;
-
-		// Ensure we can spawn this element
-		if ((player.spwn == 1 && tempPart.type==PT_STKM) || (player2.spwn == 1 && tempPart.type==PT_STKM2))
-			continue;
-		if ((tempPart.type == PT_SPAWN && elementCount[PT_SPAWN]) || (tempPart.type == PT_SPAWN2 && elementCount[PT_SPAWN2]))
-			continue;
-		bool Element_FIGH_CanAlloc(Simulation *sim);
-		if (tempPart.type == PT_FIGH && !Element_FIGH_CanAlloc(this))
-			continue;
-		if (!elements[tempPart.type].Enabled)
 			continue;
 
 		// These store type in ctype, but are special because they store extra information in the bits after type
@@ -149,39 +218,16 @@ int Simulation::Load(GameSave * save, bool includePressure, int fullX, int fullY
 			tempPart.tmp2 = partMap[tempPart.tmp2];
 		}
 
-		//Replace existing
-		if ((r = pmap[y][x]))
-		{
-			elementCount[parts[ID(r)].type]--;
-			parts[ID(r)] = tempPart;
-			i = ID(r);
-			elementCount[tempPart.type]++;
-			// * pmap will be repopulated a bit later by RecalcFreeParticles;
-			//   until then, remove the entry so the next new particle at the
-			//   same position doesn't overwrite the one we've just copied
-			pmap[y][x] = 0;
-		}
-		else if ((r = photons[y][x]))
-		{
-			elementCount[parts[ID(r)].type]--;
-			parts[ID(r)] = tempPart;
-			i = ID(r);
-			elementCount[tempPart.type]++;
-			// * same as with pmap above
-			photons[y][x] = 0;
-		}
-		//Allocate new particle
-		else
-		{
-			if (pfree == -1)
-				break;
-			i = pfree;
-			pfree = parts[i].life;
-			if (i > parts_lastActiveIndex)
-				parts_lastActiveIndex = i;
-			parts[i] = tempPart;
-			elementCount[tempPart.type]++;
-		}
+		// Allocate particle (this location is guaranteed to be empty due to "full scan" logic above)
+		if (pfree == -1)
+			break;
+		i = pfree;
+		pfree = parts[i].life;
+		if (i > parts_lastActiveIndex)
+			parts_lastActiveIndex = i;
+		parts[i] = tempPart;
+		elementCount[tempPart.type]++;
+
 
 		void Element_STKM_init_legs(Simulation * sim, playerst *playerp, int i);
 		switch (parts[i].type)
