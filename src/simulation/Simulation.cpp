@@ -49,8 +49,6 @@ int Simulation::Load(GameSave * save, bool includePressure)
 
 int Simulation::Load(GameSave * save, bool includePressure, int fullX, int fullY)
 {
-	int x, y;
-
 	if (!save)
 		return 1;
 	try
@@ -98,7 +96,7 @@ int Simulation::Load(GameSave * save, bool includePressure, int fullX, int fullY
 
 	int r;
 	bool doFullScan = false;
-	for (unsigned int n = 0; n < NPART && n < save->particlesCount; n++)
+	for (int n = 0; n < NPART && n < save->particlesCount; n++)
 	{
 		Particle *tempPart = &save->particles[n];
 		tempPart->x += (float)fullX;
@@ -184,9 +182,6 @@ int Simulation::Load(GameSave * save, bool includePressure, int fullX, int fullY
 	for (int n = 0; n < NPART && n < save->particlesCount; n++)
 	{
 		Particle tempPart = save->particles[n];
-		x = int(tempPart.x + 0.5f);
-		y = int(tempPart.y + 0.5f);
-
 		if (tempPart.type > 0 && tempPart.type < PT_NUM)
 			tempPart.type = partMap[tempPart.type];
 		else
@@ -1698,7 +1693,7 @@ int Simulation::CreateParts(int positionX, int positionY, int c, Brush * cBrush,
 			if (newlife > 55)
 				newlife = 55;
 			c = PMAP(newlife, c);
-			lightningRecreate = currentTick+newlife/4;
+			lightningRecreate = currentTick + std::max(newlife / 4, 1);
 			return CreatePartFlags(positionX, positionY, c, flags);
 		}
 		else if (c == PT_TESC)
@@ -1739,7 +1734,7 @@ int Simulation::CreateParts(int x, int y, int rx, int ry, int c, int flags)
 		if (newlife > 55)
 			newlife = 55;
 		c = PMAP(newlife, c);
-		lightningRecreate = currentTick+newlife/4;
+		lightningRecreate = currentTick + std::max(newlife / 4, 1);
 		rx = ry = 0;
 	}
 	else if (c == PT_TESC)
