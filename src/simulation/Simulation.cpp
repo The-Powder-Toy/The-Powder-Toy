@@ -4947,15 +4947,18 @@ void Simulation::SimulateGoL()
 						{
 							// * 0x200000: No need to look for colours, they'll be set later anyway.
 							int i = create_part(-1, x, y, PT_LIFE, golnumToCreate | 0x200000);
-							int xx = (createFromEntry >> 24) & 3;
-							int yy = (createFromEntry >> 26) & 3;
-							if (xx == 3) xx = -1;
-							if (yy == 3) yy = -1;
-							int ax = ((x - xx + XRES - 3 * CELL) % (XRES - 2 * CELL)) + CELL;
-							int ay = ((y - yy + YRES - 3 * CELL) % (YRES - 2 * CELL)) + CELL;
-							auto &sample = parts[ID(pmap[ay][ax])];
-							parts[i].dcolour = sample.dcolour;
-							parts[i].tmp = sample.tmp;
+							if (i >= 0)
+							{
+								int xx = (createFromEntry >> 24) & 3;
+								int yy = (createFromEntry >> 26) & 3;
+								if (xx == 3) xx = -1;
+								if (yy == 3) yy = -1;
+								int ax = ((x - xx + XRES - 3 * CELL) % (XRES - 2 * CELL)) + CELL;
+								int ay = ((y - yy + YRES - 3 * CELL) % (YRES - 2 * CELL)) + CELL;
+								auto &sample = parts[ID(pmap[ay][ax])];
+								parts[i].dcolour = sample.dcolour;
+								parts[i].tmp = sample.tmp;
+							}
 						}
 					}
 				}
