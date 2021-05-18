@@ -31,7 +31,7 @@ Thanks
 * Felix Wallin
 * Lieuwe Mosch
 * Anthony Boot
-* Matthew "me4502"
+* Me4502
 * MaksProg
 * jacob1
 * mniip
