@@ -5,7 +5,7 @@ std::vector<StructProperty> const &Particle::GetProperties()
 {
 	static std::vector<StructProperty> properties = {
 		{ "type"   , StructProperty::ParticleType, (intptr_t)(offsetof(Particle, type   )) },
-		{ "life"   , StructProperty::ParticleType, (intptr_t)(offsetof(Particle, life   )) },
+		{ "life"   , StructProperty::Integer     , (intptr_t)(offsetof(Particle, life   )) },
 		{ "ctype"  , StructProperty::ParticleType, (intptr_t)(offsetof(Particle, ctype  )) },
 		{ "x"      , StructProperty::Float       , (intptr_t)(offsetof(Particle, x      )) },
 		{ "y"      , StructProperty::Float       , (intptr_t)(offsetof(Particle, y      )) },

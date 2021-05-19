@@ -108,31 +108,43 @@ void PropertyWindow::SetProperty()
 						//#C0FFEE
 						v = value.Substr(1).ToNumber<unsigned int>(Format::Hex());
 					}
-					else if (value.length() > 1 && value.BeginsWith("B") && value.Contains("/"))
-					{
-						v = ParseGOLString(value);
-						if (v == -1)
-						{
-							class InvalidGOLString : public std::exception
-							{
-							};
-							throw InvalidGOLString();
-						}
-					}
 					else
 					{
+						// Try to parse as particle name
 						v = sim->GetParticleType(value.ToUtf8());
-						if (v == -1)
+
+						// Try to parse special GoL rules
+						if (v == -1 && properties[property->GetOption().second].Name == "ctype")
 						{
-							for (auto *elementTool : tool->gameModel->GetMenuList()[SC_LIFE]->GetToolList())
+							if (value.length() > 1 && value.BeginsWith("B") && value.Contains("/"))
 							{
-								if (elementTool && elementTool->GetName() == value)
+								v = ParseGOLString(value);
+								if (v == -1)
 								{
-									v = ID(elementTool->GetToolID());
-									break;
+									class InvalidGOLString : public std::exception
+									{
+									};
+									throw InvalidGOLString();
+								}
+							}
+							else
+							{
+								v = sim->GetParticleType(value.ToUtf8());
+								if (v == -1)
+								{
+									for (auto *elementTool : tool->gameModel->GetMenuList()[SC_LIFE]->GetToolList())
+									{
+										if (elementTool && elementTool->GetName() == value)
+										{
+											v = ID(elementTool->GetToolID());
+											break;
+										}
+									}
 								}
 							}
 						}
+
+						// Parse as plain number
 						if (v == -1)
 						{
 							v = value.ToNumber<int>();
