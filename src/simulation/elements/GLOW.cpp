@@ -74,6 +74,8 @@ static int update(UPDATE_FUNC_ARGS)
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
+
+	*firea = int(restrict_flt(64.0f+cpart->ctype, 0, 255));
 	*firer = int(restrict_flt(cpart->temp-(275.13f+32.0f), 0, 128)/50.0f);
 	*fireg = int(restrict_flt(float(cpart->ctype), 0, 128)/50.0f);
 	*fireb = int(restrict_flt(float(cpart->tmp), 0, 128)/50.0f);
@@ -83,5 +85,7 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 	*colb = int(restrict_flt(64.0f+cpart->tmp, 0, 255));
 
 	*pixel_mode |= FIRE_ADD;
+	*pixel_mode |= PMODE_GLOW | PMODE_ADD;
+	*pixel_mode &= ~PMODE_FLAT;
 	return 0;
 }
