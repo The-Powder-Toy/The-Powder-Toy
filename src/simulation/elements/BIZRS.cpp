@@ -35,6 +35,8 @@ void Element::Element_BIZRS()
 
 	Properties = TYPE_SOLID;
 
+	CtypeSpec = RSPEC_STORAGE_TYPE_WAVELENGTH;
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;

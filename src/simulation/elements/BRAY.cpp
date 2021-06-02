@@ -34,6 +34,7 @@ void Element::Element_BRAY()
 	Properties = TYPE_SOLID|PROP_LIFE_DEC|PROP_LIFE_KILL;
 
 	LifeSpec = RSPEC_STORAGE_TYPE_NUMBER | RSPEC_BEHAVIOUR_DEC | RSPEC_BEHAVIOUR_ZERO_KILL;
+	CtypeSpec = RSPEC_STORAGE_TYPE_WAVELENGTH;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

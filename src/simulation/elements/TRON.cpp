@@ -41,6 +41,7 @@ void Element::Element_TRON()
 	Properties = TYPE_SOLID|PROP_LIFE_DEC|PROP_LIFE_KILL;
 
 	LifeSpec = RSPEC_STORAGE_TYPE_NUMBER | RSPEC_BEHAVIOUR_DEC | RSPEC_BEHAVIOUR_ZERO_KILL;
+	Tmp2Spec = RSPEC_STORAGE_TYPE_NUMBER;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

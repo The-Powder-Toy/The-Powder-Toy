@@ -35,6 +35,8 @@ void Element::Element_BIZRG()
 
 	Properties = TYPE_GAS;
 
+	CtypeSpec = RSPEC_STORAGE_TYPE_WAVELENGTH;
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;

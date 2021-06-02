@@ -33,6 +33,8 @@ void Element::Element_LCRY()
 	Description = "Liquid Crystal. Changes colour when charged. (PSCN Charges, NSCN Discharges)";
 
 	Properties = TYPE_SOLID;
+	
+	Tmp2Spec = RSPEC_STORAGE_TYPE_NUMBER;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

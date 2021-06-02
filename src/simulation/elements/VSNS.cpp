@@ -34,6 +34,8 @@ void Element::Element_VSNS()
 
 	Properties = TYPE_SOLID;
 
+	Tmp2Spec = RSPEC_STORAGE_TYPE_NUMBER;
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;

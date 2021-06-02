@@ -34,6 +34,8 @@ void Element::Element_VIRS()
 	Description = "Virus. Turns everything it touches into virus.";
 
 	Properties = TYPE_LIQUID|PROP_DEADLY;
+	
+	Tmp2Spec = RSPEC_STORAGE_TYPE_ELEMENT;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

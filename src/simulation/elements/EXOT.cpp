@@ -34,6 +34,8 @@ void Element::Element_EXOT()
 	Description = "Exotic matter. Explodes with excess exposure to electrons. Has many other odd reactions.";
 
 	Properties = TYPE_LIQUID|PROP_NEUTPASS;
+	
+	Tmp2Spec = RSPEC_STORAGE_TYPE_NUMBER;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

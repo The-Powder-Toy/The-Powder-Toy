@@ -37,6 +37,7 @@ void Element::Element_SOAP()
 	Properties = TYPE_LIQUID|PROP_NEUTPENETRATE|PROP_LIFE_DEC;
 
 	LifeSpec = RSPEC_STORAGE_TYPE_NUMBER | RSPEC_BEHAVIOUR_DEC;
+	Tmp2Spec = RSPEC_STORAGE_TYPE_NUMBER;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

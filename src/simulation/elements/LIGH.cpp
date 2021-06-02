@@ -35,6 +35,8 @@ void Element::Element_LIGH()
 	Description = "Lightning. Change the brush size to set the size of the lightning.";
 
 	Properties = TYPE_SOLID;
+	
+	Tmp2Spec = RSPEC_STORAGE_TYPE_NUMBER;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

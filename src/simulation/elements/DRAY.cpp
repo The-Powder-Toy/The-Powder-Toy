@@ -32,6 +32,8 @@ void Element::Element_DRAY()
 	Description = "Duplicator ray. Replicates a line of particles in front of it.";
 
 	Properties = TYPE_SOLID;
+	
+	Tmp2Spec = RSPEC_STORAGE_TYPE_NUMBER;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

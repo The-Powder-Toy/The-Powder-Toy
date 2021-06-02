@@ -34,6 +34,8 @@ void Element::Element_BIZR()
 
 	Properties = TYPE_LIQUID;
 
+	CtypeSpec = RSPEC_STORAGE_TYPE_WAVELENGTH;
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
