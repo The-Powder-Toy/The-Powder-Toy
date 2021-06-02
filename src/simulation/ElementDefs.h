@@ -10,6 +10,15 @@
 #define O_MAX_TEMP 3500
 #define O_MIN_TEMP -273
 
+#define RSPEC_STORAGE_TYPE_NUMBER			0x0001  //Register stores an untyped number
+#define RSPEC_STORAGE_TYPE_ELEMENT			0x0002  //Register stores a number that refers to an element type
+#define RSPEC_STORAGE_TYPE_ELEMENT_PACKED	0x0004  //Register stores an element type packaged into the lower bits with ancilliary data in higher bits.
+#define RSPEC_STORAGE_TYPE					0x00FF
+#define RSPEC_BEHAVIOUR_DEC					0x0100	//The register value will be decremented to zero on every frame
+#define RSPEC_BEHAVIOUR_ZERO_KILL			0x0200  //A particle with a zero value will be killed
+#define RSPEC_BEHAVIOUR_DEC_ZERO_KILL		0x0400  //A particle will be killed when the value of this register is decremented to zero from RSPEC_BEHAVIOUR_DEC
+#define RSPEC_BEHAVIOUR						0xFF00
+
 #define TYPE_PART			0x00001  //1 Powders
 #define TYPE_LIQUID			0x00002  //2 Liquids
 #define TYPE_SOLID			0x00004  //4 Solids

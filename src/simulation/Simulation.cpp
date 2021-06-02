@@ -4713,6 +4713,28 @@ int Simulation::GetParticleType(ByteString type)
 	return -1;
 }
 
+bool Simulation::ApplyIntegerRegisterBehaviour(int i, int &reg, int registerSpec) {
+	//unsigned int elem_properties = elements[t].Properties;
+	if (reg>0 && (registerSpec&RSPEC_BEHAVIOUR_DEC))
+	{
+		// automatically decrease life
+		reg--;
+		if (reg<=0 && (registerSpec&(RSPEC_BEHAVIOUR_DEC_ZERO_KILL|RSPEC_BEHAVIOUR_ZERO_KILL)))
+		{
+			// kill on change to no life
+			kill_part(i);
+			return true;
+		}
+	}
+	else if (reg<=0 && (registerSpec&RSPEC_BEHAVIOUR_ZERO_KILL))
+	{
+		// kill if no life
+		kill_part(i);
+		return true;
+	}
+	return false;
+}
+
 void Simulation::RecalcFreeParticles(bool do_life_dec)
 {
 	int x, y, t;
@@ -4764,23 +4786,15 @@ void Simulation::RecalcFreeParticles(bool do_life_dec)
 					continue;
 				}
 
-				unsigned int elem_properties = elements[t].Properties;
-				if (parts[i].life>0 && (elem_properties&PROP_LIFE_DEC) && !(inBounds && bmap[y/CELL][x/CELL] == WL_STASIS && emap[y/CELL][x/CELL]<8))
-				{
-					// automatically decrease life
-					parts[i].life--;
-					if (parts[i].life<=0 && (elem_properties&(PROP_LIFE_KILL_DEC|PROP_LIFE_KILL)))
-					{
-						// kill on change to no life
-						kill_part(i);
+				if(!(inBounds && bmap[y/CELL][x/CELL] == WL_STASIS && emap[y/CELL][x/CELL]<8)) {
+					if(ApplyIntegerRegisterBehaviour(i, parts[i].life, elements[t].LifeSpec))
 						continue;
-					}
-				}
-				else if (parts[i].life<=0 && (elem_properties&PROP_LIFE_KILL) && !(inBounds && bmap[y/CELL][x/CELL] == WL_STASIS && emap[y/CELL][x/CELL]<8))
-				{
-					// kill if no life
-					kill_part(i);
-					continue;
+					if(ApplyIntegerRegisterBehaviour(i, parts[i].ctype, elements[t].CtypeSpec))
+						continue;
+					if(ApplyIntegerRegisterBehaviour(i, parts[i].tmp, elements[t].TmpSpec))
+						continue;
+					if(ApplyIntegerRegisterBehaviour(i, parts[i].tmp2, elements[t].Tmp2Spec))
+						continue;
 				}
 			}
 		}

@@ -59,6 +59,11 @@ public:
 
 	bool (*CtypeDraw) (CTYPEDRAW_FUNC_ARGS);
 
+	int LifeSpec = 0;
+	int CtypeSpec = 0;
+	int TmpSpec = 0;
+	int Tmp2Spec = 0;
+
 	VideoBuffer * (*IconGenerator)(int, int, int);
 
 	Particle DefaultProperties;

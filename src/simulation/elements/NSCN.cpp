@@ -31,6 +31,8 @@ void Element::Element_NSCN()
 	Description = "N-Type Silicon, Will not transfer current to P-Type Silicon.";
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC;
+	
+	LifeSpec = RSPEC_STORAGE_TYPE_NUMBER | RSPEC_BEHAVIOUR_DEC;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

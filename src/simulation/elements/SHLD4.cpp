@@ -33,6 +33,8 @@ void Element::Element_SHLD4()
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 
+	LifeSpec = RSPEC_STORAGE_TYPE_NUMBER | RSPEC_BEHAVIOUR_DEC;
+
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = 40.0f;
