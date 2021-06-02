@@ -818,47 +818,6 @@ int luatpt_set_property(lua_State* l)
 	return 0;
 }
 
-int luatpt_set_wallmap(lua_State* l)
-{
-	int nx, ny, acount;
-	int x1, y1, width, height, wallType;
-	acount = lua_gettop(l);
-
-	x1 = abs(luaL_optint(l, 1, 0));
-	y1 = abs(luaL_optint(l, 2, 0));
-	width = abs(luaL_optint(l, 3, XRES/CELL));
-	height = abs(luaL_optint(l, 4, YRES/CELL));
-	wallType = luaL_optint(l, acount, 0);
-	if (wallType < 0 || wallType >= UI_WALLCOUNT)
-		return luaL_error(l, "Unrecognised wall number %d", wallType);
-
-	if (acount == 5)	//Draw rect
-	{
-		if(x1 > (XRES/CELL))
-			x1 = (XRES/CELL);
-		if(y1 > (YRES/CELL))
-			y1 = (YRES/CELL);
-		if(x1+width > (XRES/CELL))
-			width = (XRES/CELL)-x1;
-		if(y1+height > (YRES/CELL))
-			height = (YRES/CELL)-y1;
-		for (nx = x1; nx<x1+width; nx++)
-			for (ny = y1; ny<y1+height; ny++)
-			{
-				luacon_sim->bmap[ny][nx] = wallType;
-			}
-	}
-	else	//Set point
-	{
-		if(x1 > (XRES/CELL))
-			x1 = (XRES/CELL);
-		if(y1 > (YRES/CELL))
-			y1 = (YRES/CELL);
-		luacon_sim->bmap[y1][x1] = wallType;
-	}
-	return 0;
-}
-
 int luatpt_get_wallmap(lua_State* l)
 {
 	int x1 = abs(luaL_optint(l, 1, 0));
@@ -869,6 +828,54 @@ int luatpt_get_wallmap(lua_State* l)
 
 	lua_pushinteger(l, luacon_sim->bmap[y1][x1]);
 	return 1;
+}
+
+int luatpt_set_wallmap(lua_State* l)
+{
+	int args = lua_gettop(l);
+	int x = luaL_optint(l, 1, 0);
+	int y = luaL_optint(l, 2, 0);
+	int w = luaL_optint(l, 3, 0);
+	int h = luaL_optint(l, 4, 0);
+	float fvx = float(luaL_optnumber(l, 5, 0));
+	float fvy = float(luaL_optnumber(l, 6, 0));
+
+	// * Absolute nonsense; combined with the optional arguments above, this evaluates calls
+	//   like tpt.set_wallmap(5) to x = 5, y = 0, wallType = 5, but I dare not fix
+	//   because Compatibility(tm). -- LBPHacker
+	int wallType = luaL_optint(l, args, 0);
+	if (wallType < 0 || wallType >= UI_WALLCOUNT)
+	{
+		return luaL_error(l, "Unrecognised wall number %d", wallType);
+	}
+
+	bool setFv = args >= 7;
+	if (args < 5)
+	{
+		w = 1;
+		h = 1;
+	}
+	if (x < 0              ) x = 0              ;
+	if (y < 0              ) y = 0              ;
+	if (x > XRES / CELL    ) x = XRES / CELL    ;
+	if (y > YRES / CELL    ) y = YRES / CELL    ;
+	if (w < 0              ) w = 0              ;
+	if (h < 0              ) h = 0              ;
+	if (w > XRES / CELL - x) w = XRES / CELL - x;
+	if (h > YRES / CELL - y) h = YRES / CELL - y;
+	for (int yy = y; yy < y + h; ++yy)
+	{
+		for (int xx = x; xx < x + w; ++xx)
+		{
+			luacon_sim->bmap[yy][xx] = wallType;
+			if (setFv)
+			{
+				luacon_sim->fvx[yy][xx] = fvx;
+				luacon_sim->fvy[yy][xx] = fvy;
+			}
+		}
+	}
+	return 0;
 }
 
 int luatpt_set_elecmap(lua_State* l)

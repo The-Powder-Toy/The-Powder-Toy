@@ -6,12 +6,12 @@
 
 struct PreviewModelException: public std::exception
 {
-	String message;
+	ByteString message;
 public:
-	PreviewModelException(String message_): message(message_) {}
+	PreviewModelException(String message_): message(message_.ToUtf8()) {}
 	const char * what() const throw() override
 	{
-		return message.ToUtf8().c_str();
+		return message.c_str();
 	}
 	~PreviewModelException() throw() {}
 };

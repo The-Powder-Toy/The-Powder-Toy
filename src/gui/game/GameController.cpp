@@ -549,6 +549,7 @@ void GameController::CopyRegion(ui::Point point1, ui::Point point2)
 void GameController::CutRegion(ui::Point point1, ui::Point point2)
 {
 	CopyRegion(point1, point2);
+	HistorySnapshot();
 	gameModel->GetSimulation()->clear_area(point1.X, point1.Y, point2.X-point1.X, point2.Y-point1.Y);
 }
 
