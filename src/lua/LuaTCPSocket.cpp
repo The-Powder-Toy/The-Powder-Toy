@@ -205,7 +205,7 @@ namespace LuaTCPSocket
 			CURLcode res = CURLE_OK;
 			if (!tcps->writeClosed)
 			{
-				curl_easy_send(tcps->easy, &data[writtenTotal], len - writtenTotal, &writtenNow);
+				res = curl_easy_send(tcps->easy, &data[writtenTotal], len - writtenTotal, &writtenNow);
 			}
 			writtenTotal += writtenNow;
 			if (writtenTotal >= len)
