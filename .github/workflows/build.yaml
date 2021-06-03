@@ -14,6 +14,9 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+      can_publish: ${{ steps.starcatcher_check.outputs.can_publish }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -31,11 +34,11 @@ jobs:
           release_name: ${{ steps.get_type.outputs.NAME }}
           draft: true
           prerelease: false
-      - run: echo "${{ steps.create_release.outputs.upload_url }}" > release_url.txt
-      - uses: actions/upload-artifact@v1
-        with:
-          name: release_url
-          path: release_url.txt
+      - id: starcatcher_check
+        if: steps.get_type.outputs.TYPE != 'dev'
+        run: bash -c './.github/starcatcher-check.sh'
+        env:
+          STARCATCHER_PUBLISH_HOSTPORT: ${{ secrets.STARCATCHER_PUBLISH_HOSTPORT }}
   build:
     runs-on: ${{ matrix.os }}
     needs: [release]
@@ -91,12 +94,6 @@ jobs:
           python-version: '3.8'
       - id: get_type
         run: python3 ./.github/get-type.py ${{ github.ref }}
-      - uses: actions/download-artifact@v1
-        with:
-          name: release_url
-      - id: get_release_info
-        if: steps.get_type.outputs.TYPE != 'dev'
-        run: bash -c "./.github/get-release-info.sh" ## gg github, this is terrible
       - if: matrix.platform_short == 'mac'
         uses: Homebrew/actions/setup-homebrew@master
       - if: matrix.platform_short == 'mac'
@@ -120,7 +117,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.get_release_info.outputs.upload_url }}
+          upload_url: ${{ needs.release.outputs.upload_url }}
           asset_path: powder${{ matrix.suffix }}
           asset_name: powder-${{ steps.get_type.outputs.NAME }}-${{ matrix.machine_short }}-${{ matrix.platform_short }}-${{ matrix.toolset_short }}-${{ matrix.static_dynamic }}${{ matrix.suffix }}
           asset_content_type: application/zip
@@ -131,8 +128,8 @@ jobs:
           name: powder-${{ steps.get_type.outputs.NAME }}-${{ matrix.machine_short }}-${{ matrix.platform_short }}-${{ matrix.toolset_short }}-${{ matrix.static_dynamic }}${{ matrix.suffix }}
   starcatcher-upload:
     runs-on: ubuntu-latest
-    needs: [build]
-    if: startsWith(github.ref, 'refs/tags/') # not a perfect match but get-type.py takes care of this in job build
+    needs: [build, release]
+    if: needs.release.outputs.can_publish == 'yes' && startsWith(github.ref, 'refs/tags/') # not a perfect match but get-type.py takes care of this in job build
     strategy:
       matrix:
 #########################################################
@@ -185,8 +182,8 @@ jobs:
           STARCATCHER_PUBLISH_FILENAME: powder-${{ steps.get_type.outputs.NAME }}-${{ matrix.machine_short }}-${{ matrix.platform_short }}-${{ matrix.toolset_short }}-${{ matrix.static_dynamic }}${{ matrix.suffix }}
   starcatcher-release:
     runs-on: ubuntu-latest
-    needs: [starcatcher-upload]
-    if: startsWith(github.ref, 'refs/tags/') # not a perfect match but get-type.py takes care of this in job build
+    needs: [starcatcher-upload, release]
+    if: needs.release.outputs.can_publish == 'yes' && startsWith(github.ref, 'refs/tags/') # not a perfect match but get-type.py takes care of this in job build
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
