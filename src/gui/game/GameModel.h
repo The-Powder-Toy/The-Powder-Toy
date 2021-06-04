@@ -113,7 +113,7 @@ public:
 
 	void SetEdgeMode(int edgeMode);
 	int GetEdgeMode();
-	void SetAmbientAirTemperature(float edgeMode);
+	void SetAmbientAirTemperature(float ambientAirTemp);
 	float GetAmbientAirTemperature();
 	void SetDecoSpace(int decoSpace);
 	int GetDecoSpace();
