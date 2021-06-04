@@ -47,6 +47,11 @@ void OptionsController::SetAirMode(int airMode)
 	model->SetAirMode(airMode);
 }
 
+void OptionsController::SetAmbientAirTemperature(float ambientAirTemp)
+{
+	model->SetAmbientAirTemperature(ambientAirTemp);
+}
+
 void OptionsController::SetEdgeMode(int edgeMode)
 {
 	model->SetEdgeMode(edgeMode);

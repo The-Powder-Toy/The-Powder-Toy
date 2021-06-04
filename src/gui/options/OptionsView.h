@@ -8,7 +8,8 @@ namespace ui
 {
 	class Checkbox;
 	class DropDown;
-	class DropDown;
+	class Textbox;
+	class Button;
 }
 
 class OptionsModel;
@@ -21,6 +22,8 @@ class OptionsView: public ui::Window
 	ui::Checkbox * newtonianGravity;
 	ui::Checkbox * waterEqualisation;
 	ui::DropDown * airMode;
+	ui::Textbox * ambientAirTemp;
+	ui::Button * ambientAirTempPreview;
 	ui::DropDown * gravityMode;
 	ui::DropDown * edgeMode;
 	ui::DropDown * scale;
@@ -36,6 +39,9 @@ class OptionsView: public ui::Window
 	ui::Checkbox * includePressure;
 	ui::Checkbox * perfectCirclePressure;
 	ui::ScrollPanel * scrollPanel;
+	bool ambientAirTempPreviewValid;
+	float ambientAirTempPreviewValue;
+	void UpdateAmbientAirTempPreview();
 public:
 	OptionsView();
 	void NotifySettingsChanged(OptionsModel * sender);

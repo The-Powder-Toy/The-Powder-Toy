@@ -22,6 +22,7 @@ public:
 	void SetWaterEqualisation(bool state);
 	void SetGravityMode(int gravityMode);
 	void SetAirMode(int airMode);
+	void SetAmbientAirTemperature(float ambientAirTemp);
 	void SetEdgeMode(int edgeMode);
 	void SetFullscreen(bool fullscreen);
 	void SetAltFullscreen(bool altFullscreen);

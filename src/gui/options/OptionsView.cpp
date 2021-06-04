@@ -1,5 +1,6 @@
 #include "OptionsView.h"
 
+#include "simulation/ElementDefs.h"
 #include "OptionsController.h"
 #include "OptionsModel.h"
 
@@ -20,11 +21,14 @@
 #include "gui/interface/DropDown.h"
 #include "gui/interface/Engine.h"
 #include "gui/interface/Checkbox.h"
+#include "gui/interface/Textbox.h"
 
 #include "graphics/Graphics.h"
 
 OptionsView::OptionsView():
-	ui::Window(ui::Point(-1, -1), ui::Point(320, 340)){
+	ui::Window(ui::Point(-1, -1), ui::Point(320, 340)),
+	ambientAirTempPreviewValid(false)
+	{
 
 	auto autowidth = [this](ui::Component *c) {
 		c->Size.X = Size.X - c->Position.X - 12;
@@ -115,6 +119,41 @@ OptionsView::OptionsView():
 	airMode->SetActionCallback({ [this] { c->SetAirMode(airMode->GetOption().second); } });
 
 	tempLabel = new ui::Label(ui::Point(8, currentY), ui::Point(Size.X-96, 16), "Air Simulation Mode");
+	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	scrollPanel->AddChild(tempLabel);
+
+	currentY+=20;
+	ambientAirTemp = new ui::Textbox(ui::Point(Size.X-95, currentY), ui::Point(60, 16));
+	ambientAirTemp->SetActionCallback({ [this] {
+		float temp;
+		try
+		{
+			void ParseFloatProperty(String value, float &out);
+			ParseFloatProperty(ambientAirTemp->GetText(), temp);
+			ambientAirTempPreviewValid = true;
+		}
+		catch (const std::exception &ex)
+		{
+			ambientAirTempPreviewValid = false;
+		}
+		if (!(MIN_TEMP <= temp && MAX_TEMP >= temp))
+		{
+			ambientAirTempPreviewValid = false;
+		}
+		if (ambientAirTempPreviewValid)
+		{
+			ambientAirTempPreviewValue = temp;
+			c->SetAmbientAirTemperature(ambientAirTempPreviewValue);
+		}
+		UpdateAmbientAirTempPreview();
+	} });
+	scrollPanel->AddChild(ambientAirTemp);
+
+	ambientAirTempPreview = new ui::Button(ui::Point(Size.X-31, currentY), ui::Point(16, 16), "", "Preview");
+	scrollPanel->AddChild(ambientAirTempPreview);
+
+	tempLabel = new ui::Label(ui::Point(8, currentY), ui::Point(Size.X-96, 16), "Ambient Air Temperature");
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	scrollPanel->AddChild(tempLabel);
@@ -330,6 +369,23 @@ OptionsView::OptionsView():
 	scrollPanel->InnerSize = ui::Point(Size.X, currentY);
 }
 
+void OptionsView::UpdateAmbientAirTempPreview()
+{
+	if (ambientAirTempPreviewValid)
+	{
+		int HeatToColour(float temp);
+		int c = HeatToColour(ambientAirTempPreviewValue);
+		ambientAirTempPreview->Appearance.BackgroundInactive = ui::Colour(PIXR(c), PIXG(c), PIXB(c));
+		ambientAirTempPreview->SetText("");
+	}
+	else
+	{
+		ambientAirTempPreview->Appearance.BackgroundInactive = ui::Colour(0, 0, 0);
+		ambientAirTempPreview->SetText("?");
+	}
+	ambientAirTempPreview->Appearance.BackgroundHover = ambientAirTempPreview->Appearance.BackgroundInactive;
+}
+
 void OptionsView::NotifySettingsChanged(OptionsModel * sender)
 {
 	heatSimulation->SetChecked(sender->GetHeatSimulation());
@@ -337,6 +393,30 @@ void OptionsView::NotifySettingsChanged(OptionsModel * sender)
 	newtonianGravity->SetChecked(sender->GetNewtonianGravity());
 	waterEqualisation->SetChecked(sender->GetWaterEqualisation());
 	airMode->SetOption(sender->GetAirMode());
+	if (!ambientAirTempPreviewValid)
+	{
+		// * ambientAirTempPreviewValid is initially false (see constructor). Thus, when
+		//   NotifySettingsChanged is first called when the view is registered as an
+		//   observer, this block executes. Once this happens, NotifySettingsChanged is
+		//   only ever called when some setting is changed by the user in OptionsView.
+		//   This means either a change that doesn't involve the ambientAirTemp Textbox,
+		//   or one that does involve it. The latter case can only happen if the action
+		//   callback of the Textbox called OptionsController::SetAmbientAirTemperature,
+		//   which in turn implies that ambientAirTempPreviewValid is already true.
+		// * What this all boils down to is that this block is only ever run on two
+		//   occasions: when OptionsView is initialized and when the user decides to
+		//   cancel changing the ambient temperature via the ambientAirTemp Textbox,
+		//   and hasn't yet succeeded. What we want to avoid is SetText being called
+		//   on the Textbox while the user is actively editing its contents, so this
+		//   works out perfectly.
+		// * Rather twisted. I blame the MVC pattern TPT uses. -- LBPHacker
+		ambientAirTempPreviewValid = true;
+		ambientAirTempPreviewValue = sender->GetAmbientAirTemperature();
+		UpdateAmbientAirTempPreview();
+		StringBuilder sb;
+		sb << Format::Precision(2) << ambientAirTempPreviewValue;
+		ambientAirTemp->SetText(sb.Build());
+	}
 	gravityMode->SetOption(sender->GetGravityMode());
 	decoSpace->SetOption(sender->GetDecoSpace());
 	edgeMode->SetOption(sender->GetEdgeMode());

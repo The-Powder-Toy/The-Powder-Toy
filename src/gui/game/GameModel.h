@@ -78,6 +78,7 @@ private:
 	ui::Colour colour;
 
 	int edgeMode;
+	float ambientAirTemp;
 	int decoSpace;
 
 	String infoTip;
@@ -112,6 +113,8 @@ public:
 
 	void SetEdgeMode(int edgeMode);
 	int GetEdgeMode();
+	void SetAmbientAirTemperature(float edgeMode);
+	float GetAmbientAirTemperature();
 	void SetDecoSpace(int decoSpace);
 	int GetDecoSpace();
 

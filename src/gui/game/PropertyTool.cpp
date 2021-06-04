@@ -23,6 +23,27 @@
 
 #include <iostream>
 
+void ParseFloatProperty(String value, float &out)
+{
+	if (value.EndsWith("C"))
+	{
+		float v = value.SubstrFromEnd(1).ToNumber<float>();
+		out = v + 273.15;
+	}
+	else if(value.EndsWith("F"))
+	{
+		float v = value.SubstrFromEnd(1).ToNumber<float>();
+		out = (v-32.0f)*5/9+273.15f;
+	}
+	else
+	{
+		out = value.ToNumber<float>();
+	}
+#ifdef DEBUG
+	std::cout << "Got float value " << out << std::endl;
+#endif
+}
+
 class PropertyWindow: public ui::Window
 {
 public:
@@ -189,23 +210,7 @@ void PropertyWindow::SetProperty()
 				}
 				case StructProperty::Float:
 				{
-					if (value.EndsWith("C"))
-					{
-						float v = value.SubstrFromEnd(1).ToNumber<float>();
-						tool->propValue.Float = v + 273.15;
-					}
-					else if(value.EndsWith("F"))
-					{
-						float v = value.SubstrFromEnd(1).ToNumber<float>();
-						tool->propValue.Float = (v-32.0f)*5/9+273.15f;
-					}
-					else
-					{
-						tool->propValue.Float = value.ToNumber<float>();
-					}
-#ifdef DEBUG
-					std::cout << "Got float value " << tool->propValue.Float << std::endl;
-#endif
+					ParseFloatProperty(value, tool->propValue.Float);
 				}
 					break;
 				default:

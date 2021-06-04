@@ -90,6 +90,17 @@ void OptionsModel::SetEdgeMode(int edgeMode)
 	notifySettingsChanged();
 }
 
+float OptionsModel::GetAmbientAirTemperature()
+{
+	return gModel->GetSimulation()->air->ambientAirTemp;
+}
+void OptionsModel::SetAmbientAirTemperature(float ambientAirTemp)
+{
+	Client::Ref().SetPref("Simulation.AmbientAirTemp", ambientAirTemp);
+	gModel->SetAmbientAirTemperature(ambientAirTemp);
+	notifySettingsChanged();
+}
+
 int OptionsModel::GetGravityMode()
 {
 	return sim->gravityMode;

@@ -28,6 +28,8 @@ public:
 	void SetShowAvatars(bool state);
 	int GetAirMode();
 	void SetAirMode(int airMode);
+	float GetAmbientAirTemperature();
+	void SetAmbientAirTemperature(float ambientAirTemp);
 	int GetEdgeMode();
 	void SetEdgeMode(int edgeMode);
 	int GetGravityMode();

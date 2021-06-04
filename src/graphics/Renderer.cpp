@@ -2368,6 +2368,14 @@ void Renderer::draw_grav()
 	}
 }
 
+int HeatToColour(float temp)
+{
+	constexpr float min_temp = MIN_TEMP;
+	constexpr float max_temp = MAX_TEMP;
+	int caddress = int(restrict_flt((temp - min_temp) / (max_temp - min_temp) * 1024, 0, 1023)) * 3;
+	return PIXRGB((int)(color_data[caddress]*0.7f), (int)(color_data[caddress+1]*0.7f), (int)(color_data[caddress+2]*0.7f));
+}
+
 void Renderer::draw_air()
 {
 	if(!sim->aheat_enable && (display_mode & DISPLAY_AIRH))
@@ -2399,10 +2407,7 @@ void Renderer::draw_air()
 			}
 			else if (display_mode & DISPLAY_AIRH)
 			{
-				constexpr float min_temp = MIN_TEMP;
-				constexpr float max_temp = MAX_TEMP;
-				int caddress = int(restrict_flt((hv[y][x] - min_temp) / (max_temp - min_temp) * 1024, 0, 1023)) * 3;
-				c = PIXRGB((int)(color_data[caddress]*0.7f), (int)(color_data[caddress+1]*0.7f), (int)(color_data[caddress+2]*0.7f));
+				c = HeatToColour(hv[y][x]);
 				//c  = PIXRGB(clamp_flt(fabsf(vx[y][x]), 0.0f, 8.0f),//vx adds red
 				//	clamp_flt(hv[y][x], 0.0f, 1600.0f),//heat adds green
 				//	clamp_flt(fabsf(vy[y][x]), 0.0f, 8.0f));//vy adds blue
