@@ -1831,7 +1831,8 @@ int LuaScriptInterface::simulation_getSaveID(lua_State *l)
 	if (tempSave)
 	{
 		lua_pushinteger(l, tempSave->GetID());
-		return 1;
+		lua_pushinteger(l, tempSave->Version);
+		return 2;
 	}
 	return 0;
 }
