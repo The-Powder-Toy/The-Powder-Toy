@@ -7,6 +7,8 @@ simulation_tool_ids = [
 	[ 'NGRV', 5 ],
 	[ 'MIX',  6 ],
 	[ 'CYCL', 7 ],
+	[ 'AMBM', 8 ],
+	[ 'AMBP', 9 ],
 ]
 
 simulation_tool_src = []
