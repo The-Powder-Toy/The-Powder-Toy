@@ -833,6 +833,8 @@ int luatpt_get_wallmap(lua_State* l)
 int luatpt_set_wallmap(lua_State* l)
 {
 	int args = lua_gettop(l);
+	if (args < 3 || args > 7 || args % 2 != 1)
+		return luaL_error(l, "Incorrect numbner of arguments");
 	int x = luaL_optint(l, 1, 0);
 	int y = luaL_optint(l, 2, 0);
 	int w = luaL_optint(l, 3, 0);
@@ -840,16 +842,13 @@ int luatpt_set_wallmap(lua_State* l)
 	float fvx = float(luaL_optnumber(l, 5, 0));
 	float fvy = float(luaL_optnumber(l, 6, 0));
 
-	// * Absolute nonsense; combined with the optional arguments above, this evaluates calls
-	//   like tpt.set_wallmap(5) to x = 5, y = 0, wallType = 5, but I dare not fix
-	//   because Compatibility(tm). -- LBPHacker
 	int wallType = luaL_optint(l, args, 0);
 	if (wallType < 0 || wallType >= UI_WALLCOUNT)
 	{
 		return luaL_error(l, "Unrecognised wall number %d", wallType);
 	}
 
-	bool setFv = args >= 7;
+	bool setFv = args == 7;
 	if (args < 5)
 	{
 		w = 1;
@@ -859,8 +858,6 @@ int luatpt_set_wallmap(lua_State* l)
 	if (y < 0              ) y = 0              ;
 	if (x > XRES / CELL    ) x = XRES / CELL    ;
 	if (y > YRES / CELL    ) y = YRES / CELL    ;
-	if (w < 0              ) w = 0              ;
-	if (h < 0              ) h = 0              ;
 	if (w > XRES / CELL - x) w = XRES / CELL - x;
 	if (h > YRES / CELL - y) h = YRES / CELL - y;
 	for (int yy = y; yy < y + h; ++yy)
