@@ -163,7 +163,7 @@ void CalculateMousePosition(int *x, int *y)
 #ifdef OGLI
 void blit()
 {
-	SDL_GL_SwapBuffers();
+	SDL_GL_SwapWindow(sdl_window);
 }
 #else
 void blit(pixel * vid)
