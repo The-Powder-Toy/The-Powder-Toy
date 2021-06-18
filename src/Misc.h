@@ -1,6 +1,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 #include "Config.h"
+#include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <vector>
@@ -43,9 +44,12 @@ inline unsigned clamp_flt(float f, float min, float max)
 
 inline float restrict_flt(float f, float min, float max)
 {
-	if (f<min)
+	// Fix crash in certain cases when f is nan
+	if (!std::isfinite(f))
 		return min;
-	if (f>max)
+	if (f < min)
+		return min;
+	if (f > max)
 		return max;
 	return f;
 }
