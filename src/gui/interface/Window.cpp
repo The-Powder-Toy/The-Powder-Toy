@@ -119,7 +119,14 @@ bool Window::IsFocused(const Component* c) const
 
 void Window::FocusComponent(Component* c)
 {
-	this->focusedComponent_ = c;
+	if (focusedComponent_ != c)
+	{
+		if (focusedComponent_)
+			focusedComponent_->OnDefocus();
+		this->focusedComponent_ = c;
+		if (c)
+			c->OnFocus();
+	}
 }
 
 void Window::MakeActiveWindow()

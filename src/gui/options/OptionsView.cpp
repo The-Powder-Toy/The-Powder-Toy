@@ -26,8 +26,7 @@
 #include "graphics/Graphics.h"
 
 OptionsView::OptionsView():
-	ui::Window(ui::Point(-1, -1), ui::Point(320, 340)),
-	ambientAirTempPreviewValid(false)
+	ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 	{
 
 	auto autowidth = [this](ui::Component *c) {
@@ -126,28 +125,11 @@ OptionsView::OptionsView():
 	currentY+=20;
 	ambientAirTemp = new ui::Textbox(ui::Point(Size.X-95, currentY), ui::Point(60, 16));
 	ambientAirTemp->SetActionCallback({ [this] {
-		float temp;
-		try
-		{
-			void ParseFloatProperty(String value, float &out);
-			ParseFloatProperty(ambientAirTemp->GetText(), temp);
-			ambientAirTempPreviewValid = true;
-		}
-		catch (const std::exception &ex)
-		{
-			ambientAirTempPreviewValid = false;
-		}
-		if (!(MIN_TEMP <= temp && MAX_TEMP >= temp))
-		{
-			ambientAirTempPreviewValid = false;
-		}
-		if (ambientAirTempPreviewValid)
-		{
-			ambientAirTempPreviewValue = temp;
-			c->SetAmbientAirTemperature(ambientAirTempPreviewValue);
-		}
-		UpdateAmbientAirTempPreview();
+		UpdateAirTemp(ambientAirTemp->GetText(), false);
 	} });
+	ambientAirTemp->SetDefocusCallback({ [this] {
+		UpdateAirTemp(ambientAirTemp->GetText(), true);
+	}});
 	scrollPanel->AddChild(ambientAirTemp);
 
 	ambientAirTempPreview = new ui::Button(ui::Point(Size.X-31, currentY), ui::Point(16, 16), "", "Preview");
@@ -369,12 +351,12 @@ OptionsView::OptionsView():
 	scrollPanel->InnerSize = ui::Point(Size.X, currentY);
 }
 
-void OptionsView::UpdateAmbientAirTempPreview()
+void OptionsView::UpdateAmbientAirTempPreview(float airTemp, bool isValid)
 {
-	if (ambientAirTempPreviewValid)
+	if (isValid)
 	{
 		int HeatToColour(float temp);
-		int c = HeatToColour(ambientAirTempPreviewValue);
+		int c = HeatToColour(airTemp);
 		ambientAirTempPreview->Appearance.BackgroundInactive = ui::Colour(PIXR(c), PIXG(c), PIXB(c));
 		ambientAirTempPreview->SetText("");
 	}
@@ -386,6 +368,55 @@ void OptionsView::UpdateAmbientAirTempPreview()
 	ambientAirTempPreview->Appearance.BackgroundHover = ambientAirTempPreview->Appearance.BackgroundInactive;
 }
 
+void OptionsView::UpdateAirTemp(String temp, bool isDefocus)
+{
+	// Parse air temp and determine validity
+	float airTemp;
+	bool isValid;
+	try
+	{
+		void ParseFloatProperty(String value, float &out);
+		ParseFloatProperty(temp, airTemp);
+		isValid = true;
+	}
+	catch (const std::exception &ex)
+	{
+		isValid = false;
+	}
+
+	// While defocusing, correct out of range temperatures and empty textboxes
+	if (isDefocus)
+	{
+		if (temp.empty())
+		{
+			isValid = true;
+			airTemp = R_TEMP + 273.15;
+		}
+		else if (!isValid)
+			return;
+		else if (airTemp < MIN_TEMP)
+			airTemp = MIN_TEMP;
+		else if (airTemp > MAX_TEMP)
+			airTemp = MAX_TEMP;
+		else
+			return;
+
+		// Update textbox with the new value
+		StringBuilder sb;
+		sb << Format::Precision(2) << airTemp;
+		ambientAirTemp->SetText(sb.Build());
+	}
+	// Out of range temperatures are invalid, preview should go away
+	else if (airTemp < MIN_TEMP || airTemp > MAX_TEMP)
+		isValid = false;
+
+	// If valid, set temp
+	if (isValid)
+		c->SetAmbientAirTemperature(airTemp);
+
+	UpdateAmbientAirTempPreview(airTemp, isValid);
+}
+
 void OptionsView::NotifySettingsChanged(OptionsModel * sender)
 {
 	heatSimulation->SetChecked(sender->GetHeatSimulation());
@@ -393,28 +424,14 @@ void OptionsView::NotifySettingsChanged(OptionsModel * sender)
 	newtonianGravity->SetChecked(sender->GetNewtonianGravity());
 	waterEqualisation->SetChecked(sender->GetWaterEqualisation());
 	airMode->SetOption(sender->GetAirMode());
-	if (!ambientAirTempPreviewValid)
+	// Initialize air temp and preview only when the options menu is opened, and not when user is actively editing the textbox
+	if (!initializedAirTempPreview)
 	{
-		// * ambientAirTempPreviewValid is initially false (see constructor). Thus, when
-		//   NotifySettingsChanged is first called when the view is registered as an
-		//   observer, this block executes. Once this happens, NotifySettingsChanged is
-		//   only ever called when some setting is changed by the user in OptionsView.
-		//   This means either a change that doesn't involve the ambientAirTemp Textbox,
-		//   or one that does involve it. The latter case can only happen if the action
-		//   callback of the Textbox called OptionsController::SetAmbientAirTemperature,
-		//   which in turn implies that ambientAirTempPreviewValid is already true.
-		// * What this all boils down to is that this block is only ever run on two
-		//   occasions: when OptionsView is initialized and when the user decides to
-		//   cancel changing the ambient temperature via the ambientAirTemp Textbox,
-		//   and hasn't yet succeeded. What we want to avoid is SetText being called
-		//   on the Textbox while the user is actively editing its contents, so this
-		//   works out perfectly.
-		// * Rather twisted. I blame the MVC pattern TPT uses. -- LBPHacker
-		ambientAirTempPreviewValid = true;
-		ambientAirTempPreviewValue = sender->GetAmbientAirTemperature();
-		UpdateAmbientAirTempPreview();
+		initializedAirTempPreview = true;
+		float airTemp = sender->GetAmbientAirTemperature();
+		UpdateAmbientAirTempPreview(airTemp, true);
 		StringBuilder sb;
-		sb << Format::Precision(2) << ambientAirTempPreviewValue;
+		sb << Format::Precision(2) << airTemp;
 		ambientAirTemp->SetText(sb.Build());
 	}
 	gravityMode->SetOption(sender->GetGravityMode());

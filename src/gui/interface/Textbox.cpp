@@ -604,6 +604,12 @@ void Textbox::OnMouseMoved(int localx, int localy, int dx, int dy)
 	Label::OnMouseMoved(localx, localy, dx, dy);
 }
 
+void Textbox::OnDefocus()
+{
+	if (defocusCallback.callback)
+		defocusCallback.callback();
+}
+
 void Textbox::Draw(const Point& screenPos)
 {
 	Label::Draw(screenPos);

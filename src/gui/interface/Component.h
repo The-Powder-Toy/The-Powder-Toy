@@ -207,5 +207,8 @@ namespace ui
 
 		virtual void OnTextInput(String text);
 		virtual void OnTextEditing(String text);
+
+		virtual void OnFocus();
+		virtual void OnDefocus();
 	};
 }

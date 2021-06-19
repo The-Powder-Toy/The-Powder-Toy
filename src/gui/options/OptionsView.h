@@ -1,6 +1,7 @@
 #ifndef OPTIONSVIEW_H_
 #define OPTIONSVIEW_H_
 
+#include "common/String.h"
 #include "gui/interface/Window.h"
 #include "gui/interface/ScrollPanel.h"
 
@@ -39,9 +40,9 @@ class OptionsView: public ui::Window
 	ui::Checkbox * includePressure;
 	ui::Checkbox * perfectCirclePressure;
 	ui::ScrollPanel * scrollPanel;
-	bool ambientAirTempPreviewValid;
-	float ambientAirTempPreviewValue;
-	void UpdateAmbientAirTempPreview();
+	bool initializedAirTempPreview = false;
+	void UpdateAmbientAirTempPreview(float airTemp, bool isValid);
+	void UpdateAirTemp(String temp, bool isDefocus);
 public:
 	OptionsView();
 	void NotifySettingsChanged(OptionsModel * sender);
