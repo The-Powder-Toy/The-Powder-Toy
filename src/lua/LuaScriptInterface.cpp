@@ -1935,7 +1935,7 @@ int LuaScriptInterface::simulation_ambientAirTemp(lua_State * l)
 		lua_pushnumber(l, luacon_sim->air->ambientAirTemp);
 		return 1;
 	}
-	float ambientAirTemp = luaL_optnumber(l, 1, 295.15f);
+	float ambientAirTemp = restrict_flt(luaL_optnumber(l, 1, R_TEMP + 273.15f), MIN_TEMP, MAX_TEMP);
 	luacon_model->SetAmbientAirTemperature(ambientAirTemp);
 	return 0;
 }
