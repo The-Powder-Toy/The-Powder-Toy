@@ -30,6 +30,10 @@ public:
 
 	virtual int Command(String command);
 	virtual String FormatCommand(String command);
+	void SetLastError(String err)
+	{
+		lastError = err;
+	}
 	String GetLastError();
 	virtual ~CommandInterface();
 };

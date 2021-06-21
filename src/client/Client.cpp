@@ -46,6 +46,10 @@
 #include "client/http/Request.h"
 #include "client/http/RequestManager.h"
 
+#ifdef LUACONSOLE
+# include "lua/LuaScriptInterface.h"
+#endif
+
 
 extern "C"
 {
@@ -1477,8 +1481,11 @@ SaveFile * Client::LoadSaveFile(ByteString filename)
 		GameSave * tempSave = new GameSave(ReadFile(filename));
 		file->SetGameSave(tempSave);
 	}
-	catch (ParseException & e)
+	catch (const ParseException &e)
 	{
+#ifdef LUACONSOLE
+		luacon_ci->SetLastError(ByteString(e.what()).FromUtf8());
+#endif
 		std::cerr << "Client: Invalid save file '" << filename << "': " << e.what() << std::endl;
 		file->SetLoadingError(ByteString(e.what()).FromUtf8());
 	}

@@ -216,5 +216,6 @@ public:
 	virtual ~LuaScriptInterface();
 };
 
+extern LuaScriptInterface *luacon_ci;
 
 #endif /* LUASCRIPTINTERFACE_H_ */

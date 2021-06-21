@@ -1741,6 +1741,7 @@ int LuaScriptInterface::simulation_saveStamp(lua_State * l)
 int LuaScriptInterface::simulation_loadStamp(lua_State * l)
 {
 	int i = -1;
+	int pushed = 1;
 	SaveFile * tempfile = NULL;
 	int x = luaL_optint(l,2,0);
 	int y = luaL_optint(l,3,0);
@@ -1772,12 +1773,20 @@ int LuaScriptInterface::simulation_loadStamp(lua_State * l)
 			}
 		}
 		else
+		{
+			pushed = 2;
 			lua_pushnil(l);
+			lua_pushstring(l, luacon_ci->GetLastError().ToUtf8().c_str());
+		}
 		delete tempfile;
 	}
 	else
+	{
+		pushed = 2;
 		lua_pushnil(l);
-	return 1;
+		lua_pushliteral(l, "Failed to read file");
+	}
+	return pushed;
 }
 
 int LuaScriptInterface::simulation_deleteStamp(lua_State * l)

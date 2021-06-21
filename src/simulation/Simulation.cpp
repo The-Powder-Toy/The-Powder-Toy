@@ -55,8 +55,11 @@ int Simulation::Load(GameSave * save, bool includePressure, int fullX, int fullY
 	{
 		save->Expand();
 	}
-	catch (ParseException &)
+	catch (const ParseException &e)
 	{
+#ifdef LUACONSOLE
+		luacon_ci->SetLastError(ByteString(e.what()).FromUtf8());
+#endif
 		return 1;
 	}
 
