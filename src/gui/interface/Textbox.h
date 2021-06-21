@@ -12,9 +12,17 @@ struct TextboxAction
 	std::function<void ()> change;
 };
 
+struct TextboxDefocusAction
+{
+	std::function<void ()> callback;
+};
+
 class Textbox : public Label
 {
 	void AfterTextChange(bool changed);
+	void InsertText(String text);
+	void StartTextEditing();
+	void StopTextEditing();
 
 public:
 	bool ReadOnly;
@@ -31,6 +39,7 @@ public:
 	void SetHidden(bool hidden);
 	bool GetHidden() { return masked; }
 	void SetActionCallback(TextboxAction action) { actionCallback = action; }
+	void SetDefocusCallback(TextboxDefocusAction action) { defocusCallback = action; }
 
 	void SetLimit(size_t limit);
 	size_t GetLimit();
@@ -53,6 +62,8 @@ public:
 	void OnVKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
 	void OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
 	void OnTextInput(String text) override;
+	void OnTextEditing(String text) override;
+	void OnDefocus() override;
 	void Draw(const Point& screenPos) override;
 
 protected:
@@ -65,8 +76,24 @@ protected:
 	bool masked, border;
 	int cursor, cursorPositionX, cursorPositionY;
 	TextboxAction actionCallback;
+	TextboxDefocusAction defocusCallback;
 	String backingText;
 	String placeHolder;
+
+	// * Cursor state to reset to before inserting actual input in StopTextEditing.
+	int selectionIndexLSave1;
+	int selectionIndexHSave1;
+	String backingTextSave1;
+	int cursorSave1;
+
+	// * Cursor state to reset to before inserting a candidate string in OnTextEditing.
+	int selectionIndexLSave2;
+	int selectionIndexHSave2;
+	String backingTextSave2;
+	int cursorSave2;
+
+	Point inputRectPosition;
+	bool textEditing;
 
 	virtual void cutSelection();
 	virtual void pasteIntoSelection();

@@ -1,0 +1,6 @@
+[wrap-file]
+directory = tpt-libs-prebuilt-i686-win-msvc-dynamic-v20210409104352
+
+source_url = https://github.com/The-Powder-Toy/tpt-libs/releases/download/v20210409104352/tpt-libs-prebuilt-i686-win-msvc-dynamic-v20210409104352.zip
+source_filename = tpt-libs-prebuilt-i686-win-msvc-dynamic-v20210409104352.zip
+source_hash = 540560540220d43e80a516e4b081959725abecf5fc4526bfe82135b93c5dadc6

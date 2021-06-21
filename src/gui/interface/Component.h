@@ -29,6 +29,7 @@ namespace ui
 		ui::Point iconPosition;
 		ui::ContextMenu * menu;
 		Graphics * GetGraphics();
+
 	public:
 		Component(Window* parent_state);
 		Component(Point position, Point size);
@@ -45,6 +46,7 @@ namespace ui
 		Point Size;
 		bool Enabled;
 		bool Visible;
+		bool DoesTextInput;
 
 		ui::Appearance Appearance;
 		//virtual void SetAppearance(ui::Appearance);
@@ -204,5 +206,9 @@ namespace ui
 		virtual void OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
 
 		virtual void OnTextInput(String text);
+		virtual void OnTextEditing(String text);
+
+		virtual void OnFocus();
+		virtual void OnDefocus();
 	};
 }

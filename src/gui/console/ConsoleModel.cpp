@@ -48,6 +48,7 @@ void ConsoleModel::AddLastCommand(ConsoleCommand command)
 	if(previousCommands.size()>25)
 		previousCommands.pop_front();
 	currentCommandIndex = previousCommands.size();
+	Client::Ref().SetPref("Console.History", std::vector<Json::Value>(previousCommands.begin(), previousCommands.end()));
 	notifyPreviousCommandsChanged();
 }
 
@@ -71,8 +72,3 @@ void ConsoleModel::notifyCurrentCommandChanged()
 		observers[i]->NotifyCurrentCommandChanged(this);
 	}
 }
-
-ConsoleModel::~ConsoleModel() {
-	Client::Ref().SetPref("Console.History", std::vector<Json::Value>(previousCommands.begin(), previousCommands.end()));
-}
-

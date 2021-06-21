@@ -172,6 +172,7 @@ GameView::GameView():
 	ctrlBehaviour(false),
 	altBehaviour(false),
 	showHud(true),
+	showBrush(true),
 	showDebug(false),
 	delayedActiveMenu(-1),
 	wallBrush(false),
@@ -458,6 +459,16 @@ void GameView::SetHudEnable(bool hudState)
 bool GameView::GetHudEnable()
 {
 	return showHud;
+}
+
+void GameView::SetBrushEnable(bool brushState)
+{
+	showBrush = brushState;
+}
+
+bool GameView::GetBrushEnable()
+{
+	return showBrush;
 }
 
 void GameView::SetDebugHUD(bool mode)
@@ -1271,8 +1282,6 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 	switch(scan)
 	{
 	case SDL_SCANCODE_GRAVE:
-		SDL_StopTextInput();
-		SDL_StartTextInput();
 		c->ShowConsole();
 		break;
 	case SDL_SCANCODE_SPACE: //Space
@@ -1694,6 +1703,12 @@ void GameView::DoTextInput(String text)
 		Window::DoTextInput(text);
 }
 
+void GameView::DoTextEditing(String text)
+{
+	if (c->TextEditing(text))
+		Window::DoTextEditing(text);
+}
+
 void GameView::DoKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
 	if (shift && !shiftBehaviour)
@@ -1940,7 +1955,7 @@ void GameView::OnDraw()
 		ren->clearScreen(1.0f);
 		ren->RenderBegin();
 		ren->SetSample(c->PointTranslate(currentMouse).X, c->PointTranslate(currentMouse).Y);
-		if (selectMode == SelectNone && (!zoomEnabled || zoomCursorFixed) && activeBrush && (isMouseDown || (currentMouse.X >= 0 && currentMouse.X < XRES && currentMouse.Y >= 0 && currentMouse.Y < YRES)))
+		if (showBrush && selectMode == SelectNone && (!zoomEnabled || zoomCursorFixed) && activeBrush && (isMouseDown || (currentMouse.X >= 0 && currentMouse.X < XRES && currentMouse.Y >= 0 && currentMouse.Y < YRES)))
 		{
 			ui::Point finalCurrentMouse = c->PointTranslate(currentMouse);
 			ui::Point initialDrawPoint = drawPoint1;
@@ -2165,9 +2180,9 @@ void GameView::OnDraw()
 					if (wavelengthGfx)
 						sampleInfo << " (" << ctype << ")";
 					// Some elements store extra LIFE info in upper bits of ctype, instead of tmp/tmp2
-					else if (type == PT_CRAY || type == PT_DRAY || type == PT_CONV)
+					else if (type == PT_CRAY || type == PT_DRAY || type == PT_CONV || type == PT_LDTC)
 						sampleInfo << " (" << c->ElementResolve(TYP(ctype), ID(ctype)) << ")";
-					else if (type == PT_CLNE || type == PT_BCLN || type == PT_PCLN || type == PT_PBCN)
+					else if (type == PT_CLNE || type == PT_BCLN || type == PT_PCLN || type == PT_PBCN || type == PT_DTEC)
 						sampleInfo << " (" << c->ElementResolve(ctype, sample.particle.tmp) << ")";
 					else if (c->IsValidElement(ctype))
 						sampleInfo << " (" << c->ElementResolve(ctype, -1) << ")";
@@ -2176,7 +2191,7 @@ void GameView::OnDraw()
 				}
 				sampleInfo << ", Temp: " << (sample.particle.temp - 273.15f) << " C";
 				sampleInfo << ", Life: " << sample.particle.life;
-				if (sample.particle.type != PT_RFRG && sample.particle.type != PT_RFGL)
+				if (sample.particle.type != PT_RFRG && sample.particle.type != PT_RFGL && sample.particle.type != PT_LIFE)
 				{
 					if (sample.particle.type == PT_CONV)
 					{
@@ -2193,7 +2208,7 @@ void GameView::OnDraw()
 				}
 
 				// only elements that use .tmp2 show it in the debug HUD
-				if (type == PT_CRAY || type == PT_DRAY || type == PT_EXOT || type == PT_LIGH || type == PT_SOAP || type == PT_TRON || type == PT_VIBR || type == PT_VIRS || type == PT_WARP || type == PT_LCRY || type == PT_CBNW || type == PT_TSNS || type == PT_DTEC || type == PT_LSNS || type == PT_PSTN || type == PT_LDTC)
+				if (type == PT_CRAY || type == PT_DRAY || type == PT_EXOT || type == PT_LIGH || type == PT_SOAP || type == PT_TRON || type == PT_VIBR || type == PT_VIRS || type == PT_WARP || type == PT_LCRY || type == PT_CBNW || type == PT_TSNS || type == PT_DTEC || type == PT_LSNS || type == PT_PSTN || type == PT_LDTC || type == PT_VSNS)
 					sampleInfo << ", Tmp2: " << sample.particle.tmp2;
 
 				sampleInfo << ", Pressure: " << sample.AirPressure;
@@ -2331,7 +2346,7 @@ void GameView::OnDraw()
 	}
 
 	//Introduction text
-	if(introText)
+	if(introText && showHud)
 	{
 		g->fillrect(0, 0, WINDOWW, WINDOWH, 0, 0, 0, introText>51?102:introText*2);
 		g->drawtext(16, 20, introTextMessage, 255, 255, 255, introText>51?255:introText*5);

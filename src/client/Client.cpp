@@ -171,15 +171,15 @@ bool Client::DoInstallation()
 	ByteString currentfilename = Platform::ExecutableName();
 	ByteString iconname = currentfilename + ",-102";
 	ByteString AppDataPath = Platform::WinNarrow(_wgetcwd(NULL, 0));
-	ByteString opencommand = "\"" + currentfilename + "\" open \"%%1\" ddir \"" + AppDataPath + "\"";
-	ByteString protocolcommand = "\"" + currentfilename + "\" ddir \"" + AppDataPath + "\" ptsave \"%%1\"";
+	ByteString opencommand = "\"" + currentfilename + "\" open \"%1\" ddir \"" + AppDataPath + "\"";
+	ByteString protocolcommand = "\"" + currentfilename + "\" ddir \"" + AppDataPath + "\" ptsave \"%1\"";
 
 	auto createKey = [](ByteString s, HKEY &k) {
 		return RegCreateKeyExW(HKEY_CURRENT_USER, Platform::WinWiden(s).c_str(), 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &k, NULL);
 	};
 	auto setValue = [](HKEY k, ByteString s) {
 		auto w = Platform::WinWiden(s);
-		return RegSetValueExW(k, NULL, 0, REG_SZ, (LPBYTE)&w[0], w.size() + 1);
+		return RegSetValueExW(k, NULL, 0, REG_SZ, (LPBYTE)&w[0], (w.size() + 1) * 2);
 	};
 
 	//Create protocol entry
@@ -729,6 +729,8 @@ bool Client::CheckUpdate(http::Request *updateRequest, bool checkSession)
 			//free(data);
 			if (usingAltUpdateServer && !checkSession)
 				this->messageOfTheDay = String::Build("HTTP Error ", status, " while checking for updates: ", http::StatusText(status));
+			else
+				this->messageOfTheDay = String::Build("HTTP Error ", status, " while fetching MotD");
 		}
 		else if(data.size())
 		{
@@ -938,6 +940,7 @@ Client::~Client()
 void Client::SetAuthUser(User user)
 {
 	authUser = user;
+	WritePrefs();
 	notifyAuthUserChanged();
 }
 
@@ -1204,26 +1207,17 @@ std::vector<unsigned char> Client::GetSaveData(int saveID, int saveDate)
 LoginStatus Client::Login(ByteString username, ByteString password, User & user)
 {
 	lastError = "";
-	char passwordHash[33];
-	char totalHash[33];
 
 	user.UserID = 0;
 	user.Username = "";
 	user.SessionID = "";
 	user.SessionKey = "";
 
-	//Doop
-	md5_ascii(passwordHash, (const unsigned char *)password.c_str(), password.length());
-	passwordHash[32] = 0;
-	ByteString total = ByteString::Build(username, "-", passwordHash);
-	md5_ascii(totalHash, (const unsigned char *)(total.c_str()), total.size());
-	totalHash[32] = 0;
-
 	ByteString data;
 	int dataStatus;
-	data = http::Request::Simple(SCHEME SERVER "/Login.json", &dataStatus, {
-		{ "Username", username },
-		{ "Hash", totalHash },
+	data = http::Request::Simple("https://" SERVER "/Login.json", &dataStatus, {
+		{ "name", username },
+		{ "pass", password },
 	});
 
 	RequestStatus ret = ParseServerReturn(data, dataStatus, true);
@@ -1235,6 +1229,7 @@ LoginStatus Client::Login(ByteString username, ByteString password, User & user)
 			Json::Value objDocument;
 			dataStream >> objDocument;
 
+			ByteString usernameTemp = objDocument["Username"].asString();
 			int userIDTemp = objDocument["UserID"].asInt();
 			ByteString sessionIDTemp = objDocument["SessionID"].asString();
 			ByteString sessionKeyTemp = objDocument["SessionKey"].asString();
@@ -1250,7 +1245,7 @@ LoginStatus Client::Login(ByteString username, ByteString password, User & user)
 				AddServerNotification(item);
 			}
 
-			user.Username = username;
+			user.Username = usernameTemp;
 			user.UserID = userIDTemp;
 			user.SessionID = sessionIDTemp;
 			user.SessionKey = sessionKeyTemp;
@@ -1968,6 +1963,7 @@ void Client::SetPref(ByteString prop, Json::Value value)
 			preferences[split.Before()] = SetPrefHelper(preferences[split.Before()], split.After(), value);
 		else
 			preferences[prop] = value;
+		WritePrefs();
 	}
 	catch (std::exception & e)
 	{

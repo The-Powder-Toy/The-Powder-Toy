@@ -78,6 +78,7 @@ private:
 	ui::Colour colour;
 
 	int edgeMode;
+	float ambientAirTemp;
 	int decoSpace;
 
 	String infoTip;
@@ -112,6 +113,8 @@ public:
 
 	void SetEdgeMode(int edgeMode);
 	int GetEdgeMode();
+	void SetAmbientAirTemperature(float ambientAirTemp);
+	float GetAmbientAirTemperature();
 	void SetDecoSpace(int decoSpace);
 	int GetDecoSpace();
 
@@ -216,6 +219,10 @@ public:
 	bool GetIncludePressure();
 	void SetIncludePressure(bool includePressure);
 	void SetPerfectCircle(bool perfectCircle);
+	inline bool GetPerfectCircle() const
+	{
+		return perfectCircle;
+	}
 
 	std::vector<Notification*> GetNotifications();
 	void AddNotification(Notification * notification);

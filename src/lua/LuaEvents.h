@@ -29,6 +29,16 @@ public:
 	int PushToStack(lua_State * l) override;
 };
 
+class TextEditingEvent : public Event
+{
+	String text;
+
+public:
+	TextEditingEvent(String text);
+
+	int PushToStack(lua_State * l) override;
+};
+
 class KeyEvent : public Event
 {
 	int key;
@@ -119,6 +129,7 @@ public:
 		keypress,
 		keyrelease,
 		textinput,
+		textediting,
 		mousedown,
 		mouseup,
 		mousemove,

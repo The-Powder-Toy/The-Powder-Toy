@@ -549,6 +549,7 @@ void GameController::CopyRegion(ui::Point point1, ui::Point point2)
 void GameController::CutRegion(ui::Point point1, ui::Point point2)
 {
 	CopyRegion(point1, point2);
+	HistorySnapshot();
 	gameModel->GetSimulation()->clear_area(point1.X, point1.Y, point2.X-point1.X, point2.Y-point1.Y);
 }
 
@@ -642,6 +643,12 @@ bool GameController::TextInput(String text)
 {
 	TextInputEvent ev(text);
 	return commandInterface->HandleEvent(LuaEvents::textinput, &ev);
+}
+
+bool GameController::TextEditing(String text)
+{
+	TextEditingEvent ev(text);
+	return commandInterface->HandleEvent(LuaEvents::textediting, &ev);
 }
 
 bool GameController::KeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
@@ -937,7 +944,7 @@ void GameController::Update()
 		if (activeTool->GetIdentifier().BeginsWith("DEFAULT_PT_"))
 		{
 			int sr = activeTool->GetToolID();
-			if (sr && sim->IsValidElement(sr))
+			if (sr && sim->IsElementOrNone(sr))
 				rightSelected = sr;
 		}
 
@@ -1042,6 +1049,16 @@ void GameController::SetHudEnable(bool hudState)
 bool GameController::GetHudEnable()
 {
 	return gameView->GetHudEnable();
+}
+
+void GameController::SetBrushEnable(bool brushState)
+{
+	gameView->SetBrushEnable(brushState);
+}
+
+bool GameController::GetBrushEnable()
+{
+	return gameView->GetBrushEnable();
 }
 
 void GameController::SetDebugHUD(bool hudState)
@@ -1370,7 +1387,7 @@ void GameController::OpenOptions()
 {
 	options = new OptionsController(gameModel, [this] {
 		gameModel->UpdateQuickOptions();
-		Client::Ref().WritePrefs();
+		Client::Ref().WritePrefs(); // * I don't think there's a reason for this but I'm too lazy to check. -- LBPHacker
 	});
 	ui::Engine::Ref().ShowWindow(options->GetView());
 
@@ -1514,6 +1531,9 @@ void GameController::ClearSim()
 
 String GameController::ElementResolve(int type, int ctype)
 {
+	// "NONE" should never be displayed in the HUD
+	if (!type)
+		return "";
 	if (gameModel && gameModel->GetSimulation())
 	{
 		return gameModel->GetSimulation()->ElementResolve(type, ctype);
@@ -1546,9 +1566,9 @@ void GameController::ReloadSim()
 
 bool GameController::IsValidElement(int type)
 {
-	if(gameModel && gameModel->GetSimulation())
+	if (gameModel && gameModel->GetSimulation())
 	{
-		return (type && gameModel->GetSimulation()->IsValidElement(type));
+		return (type && gameModel->GetSimulation()->IsElement(type));
 	}
 	else
 		return false;

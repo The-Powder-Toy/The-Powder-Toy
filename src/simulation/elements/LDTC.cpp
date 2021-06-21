@@ -44,7 +44,7 @@ void Element::Element_LDTC()
 	HighTemperatureTransition = NT;
 
 	Update = &update;
-	CtypeDraw = &Element::ctypeDrawVInTmp;
+	CtypeDraw = &Element::ctypeDrawVInCtype;
 }
 
 constexpr int FLAG_INVERT_FILTER =  0x1;
@@ -123,7 +123,7 @@ static int update(UPDATE_FUNC_ARGS)
 
 					// If ctype isn't set (no type restriction), or ctype matches what we found
 					// Can use .tmp2 flag to invert this
-					bool matchesCtype = parts[i].ctype == TYP(rr) && (ctype != PT_LIFE || parts[ID(rr)].ctype == ctypeExtra);
+					bool matchesCtype = ctype == TYP(rr) && (ctype != PT_LIFE || parts[ID(rr)].ctype == ctypeExtra);
 					bool matchesFilter = !ctype || (invertFilter ^ (int)matchesCtype);
 					if (!matchesFilter)
 					{

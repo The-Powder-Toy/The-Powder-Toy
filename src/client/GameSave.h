@@ -96,6 +96,7 @@ public:
 	bool paused;
 	int gravityMode;
 	int airMode;
+	float ambientAirTemp;
 	int edgeMode;
 
 	//Signs
@@ -149,6 +150,7 @@ private:
 	void CheckBsonFieldUser(bson_iterator iter, const char *field, unsigned char **data, unsigned int *fieldLen);
 	void CheckBsonFieldBool(bson_iterator iter, const char *field, bool *flag);
 	void CheckBsonFieldInt(bson_iterator iter, const char *field, int *setting);
+	void CheckBsonFieldFloat(bson_iterator iter, const char *field, float *setting);
 	template <typename T> T ** Allocate2DArray(int blockWidth, int blockHeight, T defaultVal);
 	template <typename T> void Deallocate2DArray(T ***array, int blockHeight);
 	void dealloc();

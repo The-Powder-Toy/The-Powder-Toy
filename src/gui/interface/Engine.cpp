@@ -35,8 +35,7 @@ Engine::Engine():
 	mousexp_(0),
 	mouseyp_(0),
 	maxWidth(0),
-	maxHeight(0),
-	momentumScroll(false)
+	maxHeight(0)
 {
 }
 
@@ -260,8 +259,38 @@ void Engine::onKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl,
 
 void Engine::onTextInput(String text)
 {
-	if (state_ && !ignoreEvents)
-		state_->DoTextInput(text);
+	if (textInput)
+	{
+		if (state_ && !ignoreEvents)
+			state_->DoTextInput(text);
+	}
+}
+
+void Engine::onTextEditing(String text, int start)
+{
+	if (textInput)
+	{
+		// * SDL sends the candidate string in packets of some arbitrary size,
+		//   leaving it up to the user to assemble these packets into the
+		//   complete candidate string. The start parameter tells us which
+		//   portion of the candidate string the current packet spans.
+		// * Sadly, there's no documented way to tell the first or last packet
+		//   apart from the rest. While there's also no documented guarantee
+		//   that the packets come in order and that there are no gaps or
+		//   overlaps between them, the implementation on the SDL side seems to
+		//   ensure this. So what we do is just append whatever packet we get
+		//   to a buffer, which we reset every time a "first-y looking" packet
+		//   arrives. We also forward a textediting event on every packet,
+		//   which is redundant, but should be okay, as textediting events are
+		//   not supposed to have an effect on the actual text being edited.
+		if (start == 0)
+		{
+			textEditingBuf.clear();
+		}
+		textEditingBuf.append(text);
+		if (state_ && !ignoreEvents)
+			state_->DoTextEditing(textEditingBuf);
+	}
 }
 
 void Engine::onMouseClick(int x, int y, unsigned button)
@@ -317,4 +346,29 @@ void Engine::onFileDrop(ByteString filename)
 {
 	if (state_)
 		state_->DoFileDrop(filename);
+}
+
+void Engine::StartTextInput()
+{
+	if (textInput)
+	{
+		return;
+	}
+	textInput = true;
+	::StartTextInput();
+}
+
+void Engine::StopTextInput()
+{
+	if (!textInput)
+	{
+		return;
+	}
+	::StopTextInput();
+	textInput = false;
+}
+
+void Engine::TextInputRect(Point position, Point size)
+{
+	::SetTextInputRect(position.X * Scale, position.Y * Scale, size.X * Scale, size.Y * Scale);
 }

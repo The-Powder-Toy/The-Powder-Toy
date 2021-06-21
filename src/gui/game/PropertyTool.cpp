@@ -23,6 +23,27 @@
 
 #include <iostream>
 
+void ParseFloatProperty(String value, float &out)
+{
+	if (value.EndsWith("C"))
+	{
+		float v = value.SubstrFromEnd(1).ToNumber<float>();
+		out = v + 273.15;
+	}
+	else if(value.EndsWith("F"))
+	{
+		float v = value.SubstrFromEnd(1).ToNumber<float>();
+		out = (v-32.0f)*5/9+273.15f;
+	}
+	else
+	{
+		out = value.ToNumber<float>();
+	}
+#ifdef DEBUG
+	std::cout << "Got float value " << out << std::endl;
+#endif
+}
+
 class PropertyWindow: public ui::Window
 {
 public:
@@ -108,31 +129,43 @@ void PropertyWindow::SetProperty()
 						//#C0FFEE
 						v = value.Substr(1).ToNumber<unsigned int>(Format::Hex());
 					}
-					else if (value.length() > 1 && value.BeginsWith("B") && value.Contains("/"))
-					{
-						v = ParseGOLString(value);
-						if (v == -1)
-						{
-							class InvalidGOLString : public std::exception
-							{
-							};
-							throw InvalidGOLString();
-						}
-					}
 					else
 					{
+						// Try to parse as particle name
 						v = sim->GetParticleType(value.ToUtf8());
-						if (v == -1)
+
+						// Try to parse special GoL rules
+						if (v == -1 && properties[property->GetOption().second].Name == "ctype")
 						{
-							for (auto *elementTool : tool->gameModel->GetMenuList()[SC_LIFE]->GetToolList())
+							if (value.length() > 1 && value.BeginsWith("B") && value.Contains("/"))
 							{
-								if (elementTool && elementTool->GetName() == value)
+								v = ParseGOLString(value);
+								if (v == -1)
 								{
-									v = ID(elementTool->GetToolID());
-									break;
+									class InvalidGOLString : public std::exception
+									{
+									};
+									throw InvalidGOLString();
+								}
+							}
+							else
+							{
+								v = sim->GetParticleType(value.ToUtf8());
+								if (v == -1)
+								{
+									for (auto *elementTool : tool->gameModel->GetMenuList()[SC_LIFE]->GetToolList())
+									{
+										if (elementTool && elementTool->GetName() == value)
+										{
+											v = ID(elementTool->GetToolID());
+											break;
+										}
+									}
 								}
 							}
 						}
+
+						// Parse as plain number
 						if (v == -1)
 						{
 							v = value.ToNumber<int>();
@@ -177,23 +210,7 @@ void PropertyWindow::SetProperty()
 				}
 				case StructProperty::Float:
 				{
-					if (value.EndsWith("C"))
-					{
-						float v = value.SubstrFromEnd(1).ToNumber<float>();
-						tool->propValue.Float = v + 273.15;
-					}
-					else if(value.EndsWith("F"))
-					{
-						float v = value.SubstrFromEnd(1).ToNumber<float>();
-						tool->propValue.Float = (v-32.0f)*5/9+273.15f;
-					}
-					else
-					{
-						tool->propValue.Float = value.ToNumber<float>();
-					}
-#ifdef DEBUG
-					std::cout << "Got float value " << tool->propValue.Float << std::endl;
-#endif
+					ParseFloatProperty(value, tool->propValue.Float);
 				}
 					break;
 				default:

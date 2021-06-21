@@ -85,7 +85,19 @@ int OptionsModel::GetEdgeMode()
 }
 void OptionsModel::SetEdgeMode(int edgeMode)
 {
+	Client::Ref().SetPref("Simulation.EdgeMode", edgeMode);
 	gModel->SetEdgeMode(edgeMode);
+	notifySettingsChanged();
+}
+
+float OptionsModel::GetAmbientAirTemperature()
+{
+	return gModel->GetSimulation()->air->ambientAirTemp;
+}
+void OptionsModel::SetAmbientAirTemperature(float ambientAirTemp)
+{
+	Client::Ref().SetPref("Simulation.AmbientAirTemp", ambientAirTemp);
+	gModel->SetAmbientAirTemperature(ambientAirTemp);
 	notifySettingsChanged();
 }
 
@@ -175,24 +187,26 @@ int OptionsModel::GetDecoSpace()
 }
 void OptionsModel::SetDecoSpace(int decoSpace)
 {
+	Client::Ref().SetPref("Simulation.DecoSpace", decoSpace);
 	gModel->SetDecoSpace(decoSpace);
 	notifySettingsChanged();
 }
 
 bool OptionsModel::GetShowAvatars()
 {
-	return Client::Ref().GetPrefBool("ShowAvatars", true);
+	return ui::Engine::Ref().ShowAvatars;
 }
 
 void OptionsModel::SetShowAvatars(bool state)
 {
+	ui::Engine::Ref().ShowAvatars = state;
 	Client::Ref().SetPref("ShowAvatars", state);
 	notifySettingsChanged();
 }
 
 bool OptionsModel::GetMouseClickRequired()
 {
-	return Client::Ref().GetPrefBool("MouseClickRequired", false);
+	return gModel->GetMouseClickRequired();
 }
 
 void OptionsModel::SetMouseClickRequired(bool mouseClickRequired)
@@ -204,7 +218,7 @@ void OptionsModel::SetMouseClickRequired(bool mouseClickRequired)
 
 bool OptionsModel::GetIncludePressure()
 {
-	return Client::Ref().GetPrefBool("Simulation.IncludePressure", true);
+	return gModel->GetIncludePressure();
 }
 
 void OptionsModel::SetIncludePressure(bool includePressure)
@@ -216,7 +230,7 @@ void OptionsModel::SetIncludePressure(bool includePressure)
 
 bool OptionsModel::GetPerfectCircle()
 {
-	return Client::Ref().GetPrefBool("PerfectCircleBrush", true);
+	return gModel->GetPerfectCircle();
 }
 
 void OptionsModel::SetPerfectCircle(bool perfectCircle)
@@ -228,24 +242,13 @@ void OptionsModel::SetPerfectCircle(bool perfectCircle)
 
 bool OptionsModel::GetMomentumScroll()
 {
-	return Client::Ref().GetPrefBool("MomentumScroll", true);
+	return ui::Engine::Ref().MomentumScroll;
 }
 
 void OptionsModel::SetMomentumScroll(bool state)
 {
 	Client::Ref().SetPref("MomentumScroll", state);
-	ui::Engine::Ref().SetMomentumScroll(state);
-	notifySettingsChanged();
-}
-
-bool OptionsModel::GetAutoDrawLimit()
-{
-	return Client::Ref().GetPrefBool("AutoDrawLimit", false);
-}
-
-void OptionsModel::SetAutoDrawLimit(bool state)
-{
-	Client::Ref().SetPref("AutoDrawLimit", state);
+	ui::Engine::Ref().MomentumScroll = state;
 	notifySettingsChanged();
 }
 

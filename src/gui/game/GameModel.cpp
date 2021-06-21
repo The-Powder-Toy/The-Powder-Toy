@@ -50,6 +50,7 @@ GameModel::GameModel():
 	colourSelector(false),
 	colour(255, 0, 0, 255),
 	edgeMode(0),
+	ambientAirTemp(R_TEMP + 273.15f),
 	decoSpace(0)
 {
 	sim = new Simulation();
@@ -95,6 +96,15 @@ GameModel::GameModel():
 	//Load config into simulation
 	edgeMode = Client::Ref().GetPrefInteger("Simulation.EdgeMode", 0);
 	sim->SetEdgeMode(edgeMode);
+	ambientAirTemp = R_TEMP + 273.15;
+	{
+		auto temp = Client::Ref().GetPrefNumber("Simulation.AmbientAirTemp", ambientAirTemp);
+		if (MIN_TEMP <= temp && MAX_TEMP >= temp)
+		{
+			ambientAirTemp = temp;
+		}
+	}
+	sim->air->ambientAirTemp = ambientAirTemp;
 	decoSpace = Client::Ref().GetPrefInteger("Simulation.DecoSpace", 0);
 	sim->SetDecoSpace(decoSpace);
 	int ngrav_enable = Client::Ref().GetPrefInteger("Simulation.NewtonianGravity", 0);
@@ -136,10 +146,12 @@ GameModel::GameModel():
 	undoHistoryLimit = Client::Ref().GetPrefInteger("Simulation.UndoHistoryLimit", 5);
 	// cap due to memory usage (this is about 3.4GB of RAM)
 	if (undoHistoryLimit > 200)
-		undoHistoryLimit = 200;
+		SetUndoHistoryLimit(200);
 
 	mouseClickRequired = Client::Ref().GetPrefBool("MouseClickRequired", false);
 	includePressure = Client::Ref().GetPrefBool("Simulation.IncludePressure", true);
+
+	ClearSimulation();
 }
 
 GameModel::~GameModel()
@@ -157,23 +169,14 @@ GameModel::~GameModel()
 	Client::Ref().SetPref("Renderer.Decorations", (bool)ren->decorations_enable);
 	Client::Ref().SetPref("Renderer.DebugMode", ren->debugLines); //These two should always be equivalent, even though they are different things
 
-	Client::Ref().SetPref("Simulation.EdgeMode", edgeMode);
 	Client::Ref().SetPref("Simulation.NewtonianGravity", sim->grav->IsEnabled());
 	Client::Ref().SetPref("Simulation.AmbientHeat", sim->aheat_enable);
 	Client::Ref().SetPref("Simulation.PrettyPowder", sim->pretty_powder);
-	Client::Ref().SetPref("Simulation.DecoSpace", sim->deco_space);
 
 	Client::Ref().SetPref("Decoration.Red", (int)colour.Red);
 	Client::Ref().SetPref("Decoration.Green", (int)colour.Green);
 	Client::Ref().SetPref("Decoration.Blue", (int)colour.Blue);
 	Client::Ref().SetPref("Decoration.Alpha", (int)colour.Alpha);
-
-	Client::Ref().SetPref("Simulation.UndoHistoryLimit", undoHistoryLimit);
-
-	Client::Ref().SetPref("MouseClickRequired", mouseClickRequired);
-	Client::Ref().SetPref("Simulation.IncludePressure", includePressure);
-
-	Favorite::Ref().SaveFavoritesToPrefs();
 
 	for (size_t i = 0; i < menuList.size(); i++)
 	{
@@ -528,6 +531,17 @@ int GameModel::GetEdgeMode()
 	return this->edgeMode;
 }
 
+void GameModel::SetAmbientAirTemperature(float ambientAirTemp)
+{
+	this->ambientAirTemp = ambientAirTemp;
+	sim->air->ambientAirTemp = ambientAirTemp;
+}
+
+float GameModel::GetAmbientAirTemperature()
+{
+	return this->ambientAirTemp;
+}
+
 void GameModel::SetDecoSpace(int decoSpace)
 {
 	sim->SetDecoSpace(decoSpace);
@@ -577,6 +591,7 @@ unsigned int GameModel::GetUndoHistoryLimit()
 void GameModel::SetUndoHistoryLimit(unsigned int undoHistoryLimit_)
 {
 	undoHistoryLimit = undoHistoryLimit_;
+	Client::Ref().SetPref("Simulation.UndoHistoryLimit", undoHistoryLimit);
 }
 
 void GameModel::SetVote(int direction)
@@ -743,6 +758,7 @@ void GameModel::SetSave(SaveInfo * newSave, bool invertIncludePressure)
 		SetPaused(saveData->paused | GetPaused());
 		sim->gravityMode = saveData->gravityMode;
 		sim->air->airMode = saveData->airMode;
+		sim->air->ambientAirTemp = saveData->ambientAirTemp;
 		sim->edgeMode = saveData->edgeMode;
 		sim->legacy_enable = saveData->legacyEnable;
 		sim->water_equal_test = saveData->waterEEnabled;
@@ -804,6 +820,7 @@ void GameModel::SetSaveFile(SaveFile * newSave, bool invertIncludePressure)
 		SetPaused(saveData->paused | GetPaused());
 		sim->gravityMode = saveData->gravityMode;
 		sim->air->airMode = saveData->airMode;
+		sim->air->ambientAirTemp = saveData->ambientAirTemp;
 		sim->edgeMode = saveData->edgeMode;
 		sim->legacy_enable = saveData->legacyEnable;
 		sim->water_equal_test = saveData->waterEEnabled;
@@ -1119,6 +1136,7 @@ void GameModel::ClearSimulation()
 	sim->legacy_enable = false;
 	sim->water_equal_test = false;
 	sim->SetEdgeMode(edgeMode);
+	sim->air->ambientAirTemp = ambientAirTemp;
 
 	sim->clear_sim();
 	ren->ClearAccumulation();

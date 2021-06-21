@@ -13,6 +13,7 @@ Window::Window(Point _position, Point _size):
 	Position(_position),
 	Size(_size),
 	AllowExclusiveDrawing(true),
+	DoesTextInput(false),
 	okayButton(NULL),
 	cancelButton(NULL),
 	focusedComponent_(NULL),
@@ -118,7 +119,14 @@ bool Window::IsFocused(const Component* c) const
 
 void Window::FocusComponent(Component* c)
 {
-	this->focusedComponent_ = c;
+	if (focusedComponent_ != c)
+	{
+		if (focusedComponent_)
+			focusedComponent_->OnDefocus();
+		this->focusedComponent_ = c;
+		if (c)
+			c->OnFocus();
+	}
 }
 
 void Window::MakeActiveWindow()
@@ -261,6 +269,16 @@ void Window::DoTick(float dt)
 	if (debugMode)
 		return;
 #endif
+
+	if (DoesTextInput || (focusedComponent_ && focusedComponent_->Visible && focusedComponent_->Enabled && focusedComponent_->DoesTextInput))
+	{
+		ui::Engine::Ref().StartTextInput();
+	}
+	else
+	{
+		ui::Engine::Ref().StopTextInput();
+	}
+
 	//on mouse hover
 	for (int i = Components.size() - 1; i >= 0 && !halt; --i)
 	{
@@ -434,6 +452,21 @@ void Window::DoTextInput(String text)
 	if (destruct)
 		finalise();
 }
+
+void Window::DoTextEditing(String text)
+{
+	if (focusedComponent_ != NULL)
+	{
+		if (focusedComponent_->Enabled && focusedComponent_->Visible)
+			focusedComponent_->OnTextEditing(text);
+	}
+
+	if (!stop)
+		OnTextEditing(text);
+	if (destruct)
+		finalise();
+}
+
 
 void Window::DoMouseDown(int x_, int y_, unsigned button)
 {

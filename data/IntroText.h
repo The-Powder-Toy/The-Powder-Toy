@@ -2,7 +2,7 @@
 #include "Config.h"
 
 const char *const introTextData =
-	"\blThe Powder Toy - Version " MTOS(SAVE_VERSION) "." MTOS(MINOR_VERSION) " - https://powdertoy.co.uk, irc.freenode.net #powder\n"
+	"\blThe Powder Toy - Version " MTOS(SAVE_VERSION) "." MTOS(MINOR_VERSION) " - https://powdertoy.co.uk, irc.libera.chat #powder\n"
 	"\xEE\x81\xA9\xEE\x81\xA9\xEE\x81\xA9\xEE\x81\xA9\xEE\x81\xA9\xEE\x81\xA9\xEE\x81\xA9\xEE\x81\xA9\xEE\x81\xA9\xEE\x81\xA9\xEE\x81\xA9\xEE\x81\xA9\xEE\x81\xA9\xEE\x81\xA9\xEE\x81\xA9\xEE\x81\xA9\xEE\x81\xA9\xEE\x81\xA9\xEE\x81\xA9\n"
 	"\n"
 	"\bgControl+C/V/X are Copy, Paste and cut respectively.\n"
@@ -23,7 +23,7 @@ const char *const introTextData =
 	"\n"
 	"Contributors: \bgStanislaw K Skowronek (Designed the original Powder Toy),\n"
 	"\bgSimon Robertshaw, Skresanov Savely, cracker64, Catelite, Bryan Hoyle, Nathan Cousins, jacksonmj,\n"
-	"\bgFelix Wallin, Lieuwe Mosch, Anthony Boot, Matthew \"me4502\", MaksProg, jacob1, mniip, LBPHacker\n"
+	"\bgFelix Wallin, Lieuwe Mosch, Anthony Boot, Me4502, MaksProg, jacob1, mniip, LBPHacker\n"
 	"\n"
 #ifndef BETA
 	"\bgTo use online features such as saving, you need to register at: \brhttps://powdertoy.co.uk/Register.html\n"
@@ -31,31 +31,31 @@ const char *const introTextData =
 	"\brThis is a BETA, you cannot save things publicly. If you are planning on publishing any saves, use the release version\n"
 #endif
 	"\n"
-	"\bt" MTOS(SAVE_VERSION) "." MTOS(MINOR_VERSION) "." MTOS(BUILD_NUM) " " IDENT_PLATFORM " "
+	"\bt" MTOS(SAVE_VERSION) "." MTOS(MINOR_VERSION) "." MTOS(BUILD_NUM) " " IDENT_PLATFORM
 #ifdef SNAPSHOT
-	"SNAPSHOT " MTOS(SNAPSHOT_ID) " "
+	" SNAPSHOT " MTOS(SNAPSHOT_ID)
 #elif MOD_ID > 0
-	"MODVER " MTOS(SNAPSHOT_ID) " "
+	" MODVER " MTOS(SNAPSHOT_ID)
 #endif
 #ifdef X86
-	"X86 "
+	" X86"
 #endif
 #ifdef X86_SSE
-	"X86_SSE "
+	" X86_SSE"
 #endif
 #ifdef X86_SSE2
-	"X86_SSE2 "
+	" X86_SSE2"
 #endif
 #ifdef X86_SSE3
-	"X86_SSE3 "
+	" X86_SSE3"
 #endif
 #ifdef LUACONSOLE
-	"LUACONSOLE "
+	" LUACONSOLE"
 #endif
 #ifdef GRAVFFT
-	"GRAVFFT "
+	" GRAVFFT"
 #endif
 #ifdef REALISTIC
-	"REALISTIC"
+	" REALISTIC"
 #endif
 	;

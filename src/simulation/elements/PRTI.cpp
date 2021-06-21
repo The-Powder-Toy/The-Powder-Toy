@@ -94,7 +94,7 @@ static int update(UPDATE_FUNC_ARGS)
 				{
 					if (TYP(r) == PT_STOR)
 					{
-						if (sim->IsValidElement(parts[ID(r)].tmp) && (sim->elements[parts[ID(r)].tmp].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY)))
+						if (sim->IsElement(parts[ID(r)].tmp) && (sim->elements[parts[ID(r)].tmp].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY)))
 						{
 							// STOR uses same format as PIPE, so we can use this function to do the transfer
 							Element_PIPE_transfer_pipe_to_part(sim, parts+(ID(r)), &sim->portalp[parts[i].tmp][count][nnx], true);

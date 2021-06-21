@@ -16,6 +16,7 @@
 #include "gui/interface/CopyTextButton.h"
 #include "gui/interface/Label.h"
 #include "gui/interface/Textbox.h"
+#include "gui/interface/Engine.h"
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/interface/Point.h"
 #include "gui/interface/Window.h"
@@ -45,7 +46,7 @@ PreviewView::PreviewView():
 	commentBoxHeight(20),
 	commentHelpText(false)
 {
-	showAvatars = Client::Ref().GetPrefBool("ShowAvatars", true);
+	showAvatars = ui::Engine::Ref().ShowAvatars;
 
 	favButton = new ui::Button(ui::Point(50, Size.Y-19), ui::Point(51, 19), "Fav");
 	favButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;

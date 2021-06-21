@@ -30,12 +30,14 @@ void Favorite::AddFavorite(ByteString identifier)
 	if (!IsFavorite(identifier))
 	{
 		favoritesList.push_back(identifier);
+		SaveFavoritesToPrefs();
 	}
 }
 
 void Favorite::RemoveFavorite(ByteString identifier)
 {
 	favoritesList.erase(std::remove(favoritesList.begin(), favoritesList.end(), identifier), favoritesList.end());
+	SaveFavoritesToPrefs();
 }
 
 void Favorite::SaveFavoritesToPrefs()

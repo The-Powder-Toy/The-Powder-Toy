@@ -134,7 +134,10 @@ public:
 	int eval_move(int pt, int nx, int ny, unsigned *rr);
 	void init_can_move();
 	bool IsWallBlocking(int x, int y, int type);
-	bool IsValidElement(int type) {
+	bool IsElement(int type) {
+		return (type > 0 && type < PT_NUM && elements[type].Enabled);
+	}
+	bool IsElementOrNone(int type) {
 		return (type >= 0 && type < PT_NUM && elements[type].Enabled);
 	}
 	void create_cherenkov_photon(int pp);

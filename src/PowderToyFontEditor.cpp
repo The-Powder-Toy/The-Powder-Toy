@@ -60,6 +60,26 @@ bool forceIntegerScaling = true;
 bool resizable = false;
 
 
+void StartTextInput()
+{
+	SDL_StartTextInput();
+}
+
+void StopTextInput()
+{
+	SDL_StopTextInput();
+}
+
+void SetTextInputRect(int x, int y, int w, int h)
+{
+	SDL_Rect rect;
+	rect.x = x;
+	rect.y = y;
+	rect.w = w;
+	rect.h = h;
+	SDL_SetTextInputRect(&rect);
+}
+
 void ClipboardPush(ByteString text)
 {
 	SDL_SetClipboardText(text.c_str());
@@ -267,6 +287,13 @@ void EventProcess(SDL_Event event)
 		}
 		engine->onTextInput(ByteString(event.text.text).FromUtf8());
 		break;
+	case SDL_TEXTEDITING:
+		if (SDL_GetModState() & KMOD_GUI)
+		{
+			break;
+		}
+		engine->onTextEditing(ByteString(event.edit.text).FromUtf8(), event.edit.start);
+		break;
 	case SDL_MOUSEWHEEL:
 	{
 		int x = event.wheel.x;
@@ -430,6 +457,10 @@ void EngineProcess()
 #endif
 }
 
+#ifdef main
+# undef main // thank you sdl
+#endif
+
 int main(int argc, char * argv[])
 {
 	currentWidth = WINDOWW;
@@ -484,6 +515,17 @@ int main(int argc, char * argv[])
 	ui::Engine::Ref().CloseWindow();
 	delete gameController;
 	delete ui::Engine::Ref().g;
+	if (SDL_GetWindowFlags(sdl_window) & SDL_WINDOW_OPENGL)
+	{
+		// * nvidia-460 egl registers callbacks with x11 that end up being called
+		//   after egl is unloaded unless we grab it here and release it after
+		//   sdl closes the display. this is an nvidia driver weirdness but
+		//   technically an sdl bug. glfw has this fixed:
+		//   https://github.com/glfw/glfw/commit/9e6c0c747be838d1f3dc38c2924a47a42416c081
+		SDL_GL_LoadLibrary(NULL);
+		SDL_QuitSubSystem(SDL_INIT_VIDEO);
+		SDL_GL_UnloadLibrary();
+	}
 	SDL_Quit();
 	return 0;
 }

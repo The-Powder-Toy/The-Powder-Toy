@@ -19,7 +19,8 @@ Component::Component(Window* parent_state):
 	Position(Point(0,0)),
 	Size(Point(0,0)),
 	Enabled(true),
-	Visible(true)
+	Visible(true),
+	DoesTextInput(false)
 {
 
 }
@@ -35,7 +36,8 @@ Component::Component(Point position, Point size):
 	Position(position),
 	Size(size),
 	Enabled(true),
-	Visible(true)
+	Visible(true),
+	DoesTextInput(false)
 {
 
 }
@@ -51,7 +53,8 @@ Component::Component():
 	Position(Point(0,0)),
 	Size(Point(0,0)),
 	Enabled(true),
-	Visible(true)
+	Visible(true),
+	DoesTextInput(false)
 {
 
 }
@@ -201,6 +204,10 @@ void Component::OnTextInput(String text)
 {
 }
 
+void Component::OnTextEditing(String text)
+{
+}
+
 void Component::OnMouseClick(int localx, int localy, unsigned button)
 {
 }
@@ -243,6 +250,16 @@ void Component::OnMouseWheel(int localx, int localy, int d)
 
 void Component::OnMouseWheelInside(int localx, int localy, int d)
 {
+}
+
+void Component::OnFocus()
+{
+
+}
+
+void Component::OnDefocus()
+{
+
 }
 
 Component::~Component()

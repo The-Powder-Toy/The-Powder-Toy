@@ -385,7 +385,7 @@ void Air::RecalculateBlockAirMaps()
 Air::Air(Simulation & simulation):
 	sim(simulation),
 	airMode(0),
-	ambientAirTemp(295.15f)
+	ambientAirTemp(R_TEMP + 273.15f)
 {
 	//Simulation should do this.
 	make_kernel();

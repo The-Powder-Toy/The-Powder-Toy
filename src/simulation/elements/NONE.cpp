@@ -5,7 +5,7 @@ static VideoBuffer *iconGen(int wallID, int width, int height);
 void Element::Element_NONE()
 {
 	Identifier = "DEFAULT_PT_NONE";
-	Name = "";
+	Name = "NONE";
 	Colour = PIXPACK(0x000000);
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;

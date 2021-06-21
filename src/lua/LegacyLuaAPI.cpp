@@ -171,7 +171,7 @@ int luacon_transitionread(lua_State* l)
 	lua_rawget(l, 1);
 	int i = lua_tointeger (l, lua_gettop(l));
 	lua_pop(l, 1);
-	if (!luacon_sim->IsValidElement(i))
+	if (!luacon_sim->IsElement(i))
 	{
 		return luaL_error(l, "Invalid index");
 	}
@@ -194,7 +194,7 @@ int luacon_transitionwrite(lua_State* l)
 	lua_rawget(l, 1);
 	int i = lua_tointeger (l, lua_gettop(l));
 	lua_pop(l, 1);
-	if (!luacon_sim->IsValidElement(i))
+	if (!luacon_sim->IsElement(i))
 	{
 		return luaL_error(l, "Invalid index");
 	}
@@ -202,7 +202,7 @@ int luacon_transitionwrite(lua_State* l)
 	if (prop.Type == StructProperty::TransitionType)
 	{
 		int type = luaL_checkinteger(l, 3);
-		if (!luacon_sim->IsValidElement(type) && type != NT && type != ST)
+		if (!luacon_sim->IsElementOrNone(type) && type != NT && type != ST)
 		{
 			return luaL_error(l, "Invalid element");
 		}
@@ -226,7 +226,7 @@ int luacon_elementread(lua_State* l)
 	lua_rawget(l, 1);
 	int i = lua_tointeger (l, lua_gettop(l));
 	lua_pop(l, 1);
-	if (!luacon_sim->IsValidElement(i))
+	if (!luacon_sim->IsElement(i))
 	{
 		return luaL_error(l, "Invalid index");
 	}
@@ -249,7 +249,7 @@ int luacon_elementwrite(lua_State* l)
 	lua_rawget(l, 1);
 	int i = lua_tointeger (l, lua_gettop(l));
 	lua_pop(l, 1);
-	if (!luacon_sim->IsValidElement(i))
+	if (!luacon_sim->IsElement(i))
 	{
 		return luaL_error(l, "Invalid index");
 	}
@@ -302,7 +302,7 @@ int luatpt_getelement(lua_State *l)
 	if (lua_isnumber(l, 1))
 	{
 		t = luaL_optint(l, 1, 1);
-		if (!luacon_sim->IsValidElement(t))
+		if (!luacon_sim->IsElementOrNone(t))
 		{
 			return luaL_error(l, "Unrecognised element number '%d'", t);
 		}
@@ -343,11 +343,11 @@ int luacon_elementReplacement(UPDATE_FUNC_ARGS)
 
 int luatpt_element_func(lua_State *l)
 {
-	if(lua_isfunction(l, 1))
+	if (lua_isfunction(l, 1))
 	{
 		int element = luaL_optint(l, 2, 0);
 		int replace = luaL_optint(l, 3, 0);
-		if (luacon_sim->IsValidElement(element))
+		if (luacon_sim->IsElement(element))
 		{
 			lua_el_func[element].Assign(l, 1);
 			if (replace == 2)
@@ -363,10 +363,10 @@ int luatpt_element_func(lua_State *l)
 			return luaL_error(l, "Invalid element");
 		}
 	}
-	else if(lua_isnil(l, 1))
+	else if (lua_isnil(l, 1))
 	{
 		int element = luaL_optint(l, 2, 0);
-		if (luacon_sim->IsValidElement(element))
+		if (luacon_sim->IsElement(element))
 		{
 			lua_el_func[element].Clear();
 			lua_el_mode[element] = 0;
@@ -427,7 +427,7 @@ int luatpt_graphics_func(lua_State *l)
 	if(lua_isfunction(l, 1))
 	{
 		int element = luaL_optint(l, 2, 0);
-		if (luacon_sim->IsValidElement(element))
+		if (luacon_sim->IsElement(element))
 		{
 			lua_gr_func[element].Assign(l, 1);
 			luacon_ren->graphicscache[element].isready = 0;
@@ -441,7 +441,7 @@ int luatpt_graphics_func(lua_State *l)
 	else if (lua_isnil(l, 1))
 	{
 		int element = luaL_optint(l, 2, 0);
-		if (luacon_sim->IsValidElement(element))
+		if (luacon_sim->IsElement(element))
 		{
 			lua_gr_func[element].Clear();
 			luacon_ren->graphicscache[element].isready = 0;
@@ -497,10 +497,10 @@ int luatpt_create(lua_State* l)
 	y = abs(luaL_optint(l, 2, 0));
 	if(x < XRES && y < YRES)
 	{
-		if(lua_isnumber(l, 3))
+		if (lua_isnumber(l, 3))
 		{
 			t = luaL_optint(l, 3, 0);
-			if (!luacon_sim->IsValidElement(t))
+			if (!luacon_sim->IsElement(t))
 			{
 				return luaL_error(l, "Unrecognised element number '%d'", t);
 			}
@@ -730,7 +730,7 @@ int luatpt_set_property(lua_State* l)
 		else
 			t = luaL_optint(l, 2, 0);
 
-		if (!strcmp(prop, "type") && !luacon_sim->IsValidElement(t))
+		if (!strcmp(prop, "type") && !luacon_sim->IsElementOrNone(t))
 			return luaL_error(l, "Unrecognised element number '%d'", t);
 	}
 	else if (lua_isstring(l, 2))
@@ -818,47 +818,6 @@ int luatpt_set_property(lua_State* l)
 	return 0;
 }
 
-int luatpt_set_wallmap(lua_State* l)
-{
-	int nx, ny, acount;
-	int x1, y1, width, height, wallType;
-	acount = lua_gettop(l);
-
-	x1 = abs(luaL_optint(l, 1, 0));
-	y1 = abs(luaL_optint(l, 2, 0));
-	width = abs(luaL_optint(l, 3, XRES/CELL));
-	height = abs(luaL_optint(l, 4, YRES/CELL));
-	wallType = luaL_optint(l, acount, 0);
-	if (wallType < 0 || wallType >= UI_WALLCOUNT)
-		return luaL_error(l, "Unrecognised wall number %d", wallType);
-
-	if (acount == 5)	//Draw rect
-	{
-		if(x1 > (XRES/CELL))
-			x1 = (XRES/CELL);
-		if(y1 > (YRES/CELL))
-			y1 = (YRES/CELL);
-		if(x1+width > (XRES/CELL))
-			width = (XRES/CELL)-x1;
-		if(y1+height > (YRES/CELL))
-			height = (YRES/CELL)-y1;
-		for (nx = x1; nx<x1+width; nx++)
-			for (ny = y1; ny<y1+height; ny++)
-			{
-				luacon_sim->bmap[ny][nx] = wallType;
-			}
-	}
-	else	//Set point
-	{
-		if(x1 > (XRES/CELL))
-			x1 = (XRES/CELL);
-		if(y1 > (YRES/CELL))
-			y1 = (YRES/CELL);
-		luacon_sim->bmap[y1][x1] = wallType;
-	}
-	return 0;
-}
-
 int luatpt_get_wallmap(lua_State* l)
 {
 	int x1 = abs(luaL_optint(l, 1, 0));
@@ -869,6 +828,51 @@ int luatpt_get_wallmap(lua_State* l)
 
 	lua_pushinteger(l, luacon_sim->bmap[y1][x1]);
 	return 1;
+}
+
+int luatpt_set_wallmap(lua_State* l)
+{
+	int args = lua_gettop(l);
+	if (args < 3 || args > 7 || args % 2 != 1)
+		return luaL_error(l, "Incorrect numbner of arguments");
+	int x = luaL_optint(l, 1, 0);
+	int y = luaL_optint(l, 2, 0);
+	int w = luaL_optint(l, 3, 0);
+	int h = luaL_optint(l, 4, 0);
+	float fvx = float(luaL_optnumber(l, 5, 0));
+	float fvy = float(luaL_optnumber(l, 6, 0));
+
+	int wallType = luaL_optint(l, args, 0);
+	if (wallType < 0 || wallType >= UI_WALLCOUNT)
+	{
+		return luaL_error(l, "Unrecognised wall number %d", wallType);
+	}
+
+	bool setFv = args == 7;
+	if (args < 5)
+	{
+		w = 1;
+		h = 1;
+	}
+	if (x < 0              ) x = 0              ;
+	if (y < 0              ) y = 0              ;
+	if (x > XRES / CELL    ) x = XRES / CELL    ;
+	if (y > YRES / CELL    ) y = YRES / CELL    ;
+	if (w > XRES / CELL - x) w = XRES / CELL - x;
+	if (h > YRES / CELL - y) h = YRES / CELL - y;
+	for (int yy = y; yy < y + h; ++yy)
+	{
+		for (int xx = x; xx < x + w; ++xx)
+		{
+			luacon_sim->bmap[yy][xx] = wallType;
+			if (setFv)
+			{
+				luacon_sim->fvx[yy][xx] = fvx;
+				luacon_sim->fvy[yy][xx] = fvy;
+			}
+		}
+	}
+	return 0;
 }
 
 int luatpt_set_elecmap(lua_State* l)
@@ -1463,6 +1467,7 @@ int luatpt_setwindowsize(lua_State* l)
 	//   > maybe bind the maximum allowed scale to screen size somehow
 	if (scale < 1 || scale > 10) scale = 1;
 	if (kiosk!=1) kiosk = 0;
+	Client::Ref().SetPref("Scale", scale);
 	ui::Engine::Ref().SetScale(scale);
 	ui::Engine::Ref().SetFullscreen(kiosk);
 	return 0;

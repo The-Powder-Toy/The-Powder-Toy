@@ -101,7 +101,6 @@ private:
 		notifyProgress(-1);
 
 		Client::Ref().SetPref("version.update", true);
-		Client::Ref().WritePrefs();
 		if (update_start(res, uncompressedLength))
 		{
 			Client::Ref().SetPref("version.update", false);

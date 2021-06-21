@@ -1,0 +1,3 @@
+# This file is used by the starcatcher.us update server to pull changelogs for mod releases
+# Erase and replace the changelog for every release, do not just append changes to the end
+# Lines starting with # and empty lines are ignored

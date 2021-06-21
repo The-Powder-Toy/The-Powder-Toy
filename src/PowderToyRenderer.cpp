@@ -54,12 +54,8 @@ void writeFile(ByteString filename, std::vector<char> & fileData)
 	}
 }
 
-// * On windows, sdl2 (which gets included somewhere along the way) defines
-//   main away to some identifier which sdl2main calls. The renderer is not
-//   linked against sdl2main, so we get an undefined reference to main. This
-//   can be fixed by removing the macro.
 #ifdef main
-# undef main
+# undef main // thank you sdl
 #endif
 
 int main(int argc, char *argv[])

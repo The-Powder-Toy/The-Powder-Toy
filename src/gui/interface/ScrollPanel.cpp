@@ -45,7 +45,7 @@ void ScrollPanel::XOnMouseWheelInside(int localx, int localy, int d)
 {
 	if (!d)
 		return;
-	if (ui::Engine::Ref().GetMomentumScroll())
+	if (ui::Engine::Ref().MomentumScroll)
 		yScrollVel -= d * 2;
 	else
 		yScrollVel -= d * 20;
@@ -143,7 +143,7 @@ void ScrollPanel::XTick(float dt)
 	offsetX += xScrollVel;
 
 
-	if (ui::Engine::Ref().GetMomentumScroll())
+	if (ui::Engine::Ref().MomentumScroll)
 	{
 		if (yScrollVel > -0.5f && yScrollVel < 0.5)
 			yScrollVel = 0;
