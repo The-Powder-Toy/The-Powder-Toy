@@ -26,7 +26,7 @@ void Element::Element_ROCK()
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 5;
-	Hardness = 70;
+	Hardness = 1;
 
 	Weight = 100;
 

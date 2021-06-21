@@ -89,7 +89,7 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 		break;
 	case PT_LAVA:
 		if (parts[i].ctype == PT_STNE)
-			{
+		{
 			if (parts[i].temp >= 1973.0f && (parts[i].tmp == 1 || parts[i].tmp == 2)) //1 in 10 smelted powdered sulfides will produce silver, 1 in 15 GOLD, the rest GLAS
 			{
 				if (RNG::Ref().chance(1, 10))
@@ -106,7 +106,6 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 			{
 				parts[i].tmp2 = RNG::Ref().between(0, 10); //Provide tmp2 for color noise
 				parts[i].ctype = PT_ROCK;
-				break;
 			}
 		}
 		else if (parts[i].ctype == PT_ROCK)
@@ -131,7 +130,6 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 						parts[i].ctype = PT_BRMT;
 					else
 						parts[i].ctype = PT_CNCT;
-					break;
 				}
 				else if (pres <= 75)
 				{
@@ -144,7 +142,6 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 					}
 					else
 						parts[i].ctype = PT_QRTZ;
-					break;
 				}
 				else if (pres <= 100 && parts[i].temp >= 5000)
 				{
@@ -152,7 +149,6 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 						parts[i].ctype = PT_TTAN;
 					else
 						parts[i].ctype = PT_IRON;
-					break;
 				}
 				else if (pres <= 255 && parts[i].temp >= 5000 && RNG::Ref().chance(1, 5))
 				{
@@ -162,7 +158,6 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 						parts[i].ctype = PT_PLUT;
 					else
 						parts[i].ctype = PT_TUNG;
-					break;
 				}
 			}
 		}

@@ -2830,8 +2830,6 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 	case PT_CNCT:
 		if (y < ny && (TYP(pmap[y+1][x]) == PT_CNCT || TYP(pmap[y+1][x]) == PT_ROCK)) //check below CNCT for another CNCT or ROCK
 			return 0;
-		if (y < ny && TYP(pmap[y + 1][x]) == PT_ROCK) //check below CNCT for ROCK
-			return 0;
 		break;
 	case PT_GBMB:
 		if (parts[i].life > 0)
@@ -3882,7 +3880,7 @@ void Simulation::UpdateParticles(int start, int end)
 								}
 								else if (parts[i].ctype == PT_METL) //Melting and freezing of METL with tmp=82 is now handled by ROCK's update function, normal temps unchanged
 								{
-									if (parts[i].tmp == 82 && pt >= 600.65 && pt <= elements[PT_METL].HighTemperature) //Lead freezing temp
+									if (parts[i].tmp == 82 && pt >= 600.65) //Lead freezing temp
 										s = 0;
 								}
 								else if (parts[i].ctype == PT_CRMC)
@@ -3974,13 +3972,13 @@ void Simulation::UpdateParticles(int start, int end)
 					pt = parts[i].temp = restrict_flt(parts[i].temp, MIN_TEMP, MAX_TEMP);
 					if (t == PT_LAVA)
 					{
-						parts[i].life = int(restrict_flt((parts[i].temp-700)/7, 0, 400));
-						if (parts[i].ctype==PT_THRM&&parts[i].tmp>0)
+						parts[i].life = int(restrict_flt((parts[i].temp-700)/7, 10, 400));
+						if (parts[i].ctype == PT_THRM && parts[i].tmp > 0)
 						{
 							parts[i].tmp--;
 							parts[i].temp = 3500;
 						}
-						if (parts[i].ctype==PT_PLUT&&parts[i].tmp>0)
+						else if (parts[i].ctype == PT_PLUT && parts[i].tmp > 0)
 						{
 							parts[i].tmp--;
 							parts[i].temp = MAX_TEMP;
@@ -5398,7 +5396,7 @@ String Simulation::BasicParticleInfo(Particle const &sample_part)
 	int pavg1int = (int)sample_part.pavg[1];
 	if (type == PT_LAVA && IsElement(ctype))
 	{
-			sampleInfo << "Molten " << ElementResolve(ctype, -1);
+		sampleInfo << "Molten " << ElementResolve(ctype, -1);
 	}
 	else if ((type == PT_PIPE || type == PT_PPIP) && IsElement(ctype))
 	{
