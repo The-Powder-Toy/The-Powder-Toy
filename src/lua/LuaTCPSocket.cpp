@@ -227,7 +227,7 @@ namespace LuaTCPSocket
 				Reset(tcps);
 				lua_pushnil(l);
 				lua_pushliteral(l, "closed");
-				lua_pushinteger(l, writtenTotal);
+				lua_pushinteger(l, writtenTotal + begin);
 				return 3;
 			}
 			if (res == CURLE_AGAIN)
@@ -242,11 +242,11 @@ namespace LuaTCPSocket
 				}
 				lua_pushnil(l);
 				lua_pushliteral(l, "timeout");
-				lua_pushinteger(l, writtenTotal);
+				lua_pushinteger(l, writtenTotal + begin);
 				return 3;
 			}
 		}
-		lua_pushinteger(l, writtenTotal);
+		lua_pushinteger(l, writtenTotal + begin);
 		return 1;
 	}
 
