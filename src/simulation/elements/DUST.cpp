@@ -40,6 +40,4 @@ void Element::Element_DUST()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-
-	Graphics = NULL; // it this needed?
 }
