@@ -205,7 +205,7 @@ namespace LuaTCPSocket
 			CURLcode res = CURLE_OK;
 			if (!tcps->writeClosed)
 			{
-				res = curl_easy_send(tcps->easy, &data[writtenTotal], len - writtenTotal, &writtenNow);
+				res = curl_easy_send(tcps->easy, &data[0] + writtenTotal, len - writtenTotal, &writtenNow);
 			}
 			writtenTotal += writtenNow;
 			if (writtenTotal >= len)
@@ -299,7 +299,7 @@ namespace LuaTCPSocket
 			}
 			else
 			{
-				res = curl_easy_recv(tcps->easy, &tcps->recvBuf[readTotal], len - readTotal, &readNow);
+				res = curl_easy_recv(tcps->easy, &tcps->recvBuf[0] + readTotal, len - readTotal, &readNow);
 			}
 			readTotal += readNow;
 			returning = readTotal;
@@ -410,8 +410,8 @@ namespace LuaTCPSocket
 		//   of view of an "*l" pattern). Handling this edge case in a special,
 		//   sub-quadratic way isn't worth the effort.
 		std::copy(
-			&tcps->recvBuf[readTotal - tcps->stashedLen],
-			&tcps->recvBuf[readTotal],
+			&tcps->recvBuf[0] + readTotal - tcps->stashedLen,
+			&tcps->recvBuf[0] + readTotal,
 			&tcps->recvBuf[0]
 		);
 		return retn;
