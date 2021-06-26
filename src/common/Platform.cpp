@@ -10,6 +10,7 @@
 #ifdef WIN
 #define NOMINMAX
 #include <direct.h>
+#include <io.h>
 #include <shlobj.h>
 #include <shlwapi.h>
 #include <windows.h>
@@ -28,7 +29,7 @@
 namespace Platform
 {
 
-std::string GetCwd()
+ByteString GetCwd()
 {
 	char cwdTemp[PATH_MAX];
 	getcwd(cwdTemp, PATH_MAX);
@@ -187,7 +188,7 @@ void LoadFileInResource(int name, int type, unsigned int& size, const char*& dat
 #endif
 }
 
-bool Stat(std::string filename)
+bool Stat(ByteString filename)
 {
 #ifdef WIN
 	struct _stat s;
@@ -205,7 +206,7 @@ bool Stat(std::string filename)
 	}
 }
 
-bool FileExists(std::string filename)
+bool FileExists(ByteString filename)
 {
 #ifdef WIN
 	struct _stat s;
@@ -230,7 +231,7 @@ bool FileExists(std::string filename)
 	}
 }
 
-bool DirectoryExists(std::string directory)
+bool DirectoryExists(ByteString directory)
 {
 #ifdef WIN
 	struct _stat s;
@@ -255,12 +256,12 @@ bool DirectoryExists(std::string directory)
 	}
 }
 
-bool DeleteFile(std::string filename)
+bool DeleteFile(ByteString filename)
 {
 	return std::remove(filename.c_str()) == 0;
 }
 
-bool DeleteDirectory(std::string folder)
+bool DeleteDirectory(ByteString folder)
 {
 #ifdef WIN
 	return _rmdir(folder.c_str()) == 0;
@@ -269,7 +270,7 @@ bool DeleteDirectory(std::string folder)
 #endif
 }
 
-bool MakeDirectory(std::string dir)
+bool MakeDirectory(ByteString dir)
 {
 #ifdef WIN
 	return _mkdir(dir.c_str()) == 0;

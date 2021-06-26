@@ -10,7 +10,7 @@
 
 namespace Platform
 {
-	std::string GetCwd();
+	ByteString GetCwd();
 	ByteString ExecutableName();
 	void DoRestart();
 
@@ -21,23 +21,23 @@ namespace Platform
 
 	void LoadFileInResource(int name, int type, unsigned int& size, const char*& data);
 
-	bool Stat(std::string filename);
-	bool FileExists(std::string filename);
-	bool DirectoryExists(std::string directory);
+	bool Stat(ByteString filename);
+	bool FileExists(ByteString filename);
+	bool DirectoryExists(ByteString directory);
 	/**
 	 * @return true on success
 	 */
-	bool DeleteFile(std::string filename);
+	bool DeleteFile(ByteString filename);
 
 	/**
 	 * @return true on success
 	 */
-	bool DeleteDirectory(std::string folder);
+	bool DeleteDirectory(ByteString folder);
 
 	/**
 	 * @return true on success
 	 */
-	bool MakeDirectory(std::string dir);
+	bool MakeDirectory(ByteString dir);
 	std::vector<ByteString> DirectorySearch(ByteString directory, ByteString search, std::vector<ByteString> extensions);
 
 #ifdef WIN
