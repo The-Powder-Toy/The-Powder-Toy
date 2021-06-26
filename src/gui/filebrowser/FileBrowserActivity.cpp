@@ -2,22 +2,23 @@
 
 #include <algorithm>
 
-#include "gui/interface/Label.h"
-#include "gui/interface/Textbox.h"
-#include "gui/interface/ScrollPanel.h"
-#include "gui/interface/SaveButton.h"
-#include "gui/interface/ProgressBar.h"
+#include "Platform.h"
 
 #include "client/Client.h"
 #include "client/SaveFile.h"
 #include "client/GameSave.h"
-
 #include "gui/Style.h"
 #include "tasks/Task.h"
 
 #include "gui/dialogues/TextPrompt.h"
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/dialogues/ErrorMessage.h"
+#include "gui/interface/Label.h"
+#include "gui/interface/Textbox.h"
+#include "gui/interface/ScrollPanel.h"
+#include "gui/interface/SaveButton.h"
+#include "gui/interface/ProgressBar.h"
+
 
 #include "graphics/Graphics.h"
 
@@ -40,7 +41,7 @@ class LoadFilesTask: public Task
 
 	bool doWork() override
 	{
-		std::vector<ByteString> files = Client::Ref().DirectorySearch(directory, search, ".cps");
+		std::vector<ByteString> files = Platform::DirectorySearch(directory, search, { ".cps" });
 		std::sort(files.rbegin(), files.rend(), [](ByteString a, ByteString b) { return a.ToLower() < b.ToLower(); });
 
 		notifyProgress(-1);

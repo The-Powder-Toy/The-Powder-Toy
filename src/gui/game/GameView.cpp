@@ -7,6 +7,7 @@
 #include "Misc.h"
 #include "Favorite.h"
 #include "Format.h"
+#include "Platform.h"
 
 #include "Notification.h"
 #include "Brush.h"
@@ -912,8 +913,8 @@ int GameView::Record(bool record)
 		{
 			time_t startTime = time(NULL);
 			recordingFolder = startTime;
-			Client::Ref().MakeDirectory("recordings");
-			Client::Ref().MakeDirectory(ByteString::Build("recordings", PATH_SEP, recordingFolder).c_str());
+			Platform::MakeDirectory("recordings");
+			Platform::MakeDirectory(ByteString::Build("recordings", PATH_SEP, recordingFolder).c_str());
 			recording = true;
 		}
 	}

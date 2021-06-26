@@ -4,8 +4,12 @@
 #include <cstring>
 #include <cstdio>
 #include <cassert>
+#include <dirent.h>
+#include <sys/stat.h>
+
 #ifdef WIN
 #define NOMINMAX
+#include <direct.h>
 #include <shlobj.h>
 #include <shlwapi.h>
 #include <windows.h>
@@ -23,6 +27,13 @@
 
 namespace Platform
 {
+
+std::string GetCwd()
+{
+	char cwdTemp[PATH_MAX];
+	getcwd(cwdTemp, PATH_MAX);
+	return cwdTemp;
+}
 
 ByteString ExecutableName()
 {
@@ -175,6 +186,174 @@ void LoadFileInResource(int name, int type, unsigned int& size, const char*& dat
 	data = static_cast<const char*>(::LockResource(rcData));
 #endif
 }
+
+bool Stat(std::string filename)
+{
+#ifdef WIN
+	struct _stat s;
+	if (_stat(filename.c_str(), &s) == 0)
+#else
+	struct stat s;
+	if (stat(filename.c_str(), &s) == 0)
+#endif
+	{
+		return true; // Something exists, be it a file, directory, link, etc.
+	}
+	else
+	{
+		return false; // Doesn't exist
+	}
+}
+
+bool FileExists(std::string filename)
+{
+#ifdef WIN
+	struct _stat s;
+	if (_stat(filename.c_str(), &s) == 0)
+#else
+	struct stat s;
+	if (stat(filename.c_str(), &s) == 0)
+#endif
+	{
+		if(s.st_mode & S_IFREG)
+		{
+			return true; // Is file
+		}
+		else
+		{
+			return false; // Is directory or something else
+		}
+	}
+	else
+	{
+		return false; // Doesn't exist
+	}
+}
+
+bool DirectoryExists(std::string directory)
+{
+#ifdef WIN
+	struct _stat s;
+	if (_stat(directory.c_str(), &s) == 0)
+#else
+	struct stat s;
+	if (stat(directory.c_str(), &s) == 0)
+#endif
+	{
+		if(s.st_mode & S_IFDIR)
+		{
+			return true; // Is directory
+		}
+		else
+		{
+			return false; // Is file or something else
+		}
+	}
+	else
+	{
+		return false; // Doesn't exist
+	}
+}
+
+bool DeleteFile(std::string filename)
+{
+	return std::remove(filename.c_str()) == 0;
+}
+
+bool DeleteDirectory(std::string folder)
+{
+#ifdef WIN
+	return _rmdir(folder.c_str()) == 0;
+#else
+	return rmdir(folder.c_str()) == 0;
+#endif
+}
+
+bool MakeDirectory(std::string dir)
+{
+#ifdef WIN
+	return _mkdir(dir.c_str()) == 0;
+#else
+	return mkdir(dir.c_str(), 0755) == 0;
+#endif
+}
+
+// Returns a list of all files in a directory matching a search
+// search - list of search terms. extensions - list of extensions to also match
+std::vector<ByteString> DirectorySearch(ByteString directory, ByteString search, std::vector<ByteString> extensions)
+{
+	//Get full file listing
+	//Normalise directory string, ensure / or \ is present
+	if (*directory.rbegin() != '/' && *directory.rbegin() != '\\')
+		directory += PATH_SEP;
+	std::vector<ByteString> directoryList;
+#if defined(WIN) && !defined(__GNUC__)
+	//Windows
+	struct _wfinddata_t currentFile;
+	intptr_t findFileHandle;
+	ByteString fileMatch = directory + "*.*";
+	findFileHandle = _wfindfirst(Platform::WinWiden(fileMatch).c_str(), &currentFile);
+	if (findFileHandle == -1L)
+	{
+#ifdef DEBUG
+		printf("Unable to open directory: %s\n", directory.c_str());
+#endif
+		return std::vector<ByteString>();
+	}
+	do
+	{
+		ByteString currentFileName = Platform::WinNarrow(currentFile.name);
+		if (currentFileName.length()>4)
+			directoryList.push_back(directory+currentFileName);
+	}
+	while (_wfindnext(findFileHandle, &currentFile) == 0);
+	_findclose(findFileHandle);
+#else
+	//Linux or MinGW
+	struct dirent * directoryEntry;
+	DIR *directoryHandle = opendir(directory.c_str());
+	if (!directoryHandle)
+	{
+#ifdef DEBUG
+		printf("Unable to open directory: %s\n", directory.c_str());
+#endif
+		return std::vector<ByteString>();
+	}
+	while ((directoryEntry = readdir(directoryHandle)))
+	{
+		ByteString currentFileName = ByteString(directoryEntry->d_name);
+		if (currentFileName.length()>4)
+			directoryList.push_back(directory+currentFileName);
+	}
+	closedir(directoryHandle);
+#endif
+
+	std::vector<ByteString> searchResults;
+	for (std::vector<ByteString>::iterator iter = directoryList.begin(), end = directoryList.end(); iter != end; ++iter)
+	{
+		ByteString filename = *iter, tempfilename = *iter;
+		bool extensionMatch = !extensions.size();
+		for (std::vector<ByteString>::iterator extIter = extensions.begin(), extEnd = extensions.end(); extIter != extEnd; ++extIter)
+		{
+			if (filename.EndsWith(*extIter))
+			{
+				extensionMatch = true;
+				tempfilename = filename.SubstrFromEnd(0, (*extIter).size()).ToUpper();
+				break;
+			}
+		}
+		bool searchMatch = !search.size();
+		if (search.size() && tempfilename.Contains(search))
+			searchMatch = true;
+
+		if (searchMatch && extensionMatch)
+			searchResults.push_back(filename);
+	}
+
+	//Filter results
+	return searchResults;
+}
+
 
 #ifdef WIN
 ByteString WinNarrow(const std::wstring &source)

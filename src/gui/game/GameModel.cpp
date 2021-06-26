@@ -13,6 +13,7 @@
 #include "Menu.h"
 #include "Favorite.h"
 #include "Notification.h"
+#include "Platform.h"
 
 #include "client/Client.h"
 #include "client/GameSave.h"
@@ -475,7 +476,7 @@ void GameModel::BuildBrushList()
 	brushList.push_back(new TriangleBrush(ui::Point(4, 4)));
 
 	//Load more from brushes folder
-	std::vector<ByteString> brushFiles = Client::Ref().DirectorySearch(BRUSH_DIR, "", ".ptb");
+	std::vector<ByteString> brushFiles = Platform::DirectorySearch(BRUSH_DIR, "", { ".ptb" });
 	for (size_t i = 0; i < brushFiles.size(); i++)
 	{
 		std::vector<unsigned char> brushData = Client::Ref().ReadFile(brushFiles[i]);

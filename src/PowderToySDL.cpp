@@ -38,6 +38,7 @@
 
 #include "Format.h"
 #include "Misc.h"
+#include "Platform.h"
 
 #include "graphics/Graphics.h"
 
@@ -910,12 +911,12 @@ int main(int argc, char * argv[])
 #ifdef DEBUG
 			std::cout << "Loading " << arguments["open"] << std::endl;
 #endif
-			if(Client::Ref().FileExists(arguments["open"]))
+			if (Platform::FileExists(arguments["open"]))
 			{
 				try
 				{
 					std::vector<unsigned char> gameSaveData = Client::Ref().ReadFile(arguments["open"]);
-					if(!gameSaveData.size())
+					if (!gameSaveData.size())
 					{
 						new ErrorMessage("Error", "Could not read file");
 					}
@@ -929,7 +930,7 @@ int main(int argc, char * argv[])
 					}
 
 				}
-				catch(std::exception & e)
+				catch (std::exception & e)
 				{
 					new ErrorMessage("Error", "Could not open save file:\n" + ByteString(e.what()).FromUtf8()) ;
 				}
@@ -940,7 +941,7 @@ int main(int argc, char * argv[])
 			}
 		}
 
-		if(arguments["ptsave"].length())
+		if (arguments["ptsave"].length())
 		{
 			engine->g->fillrect((engine->GetWidth()/2)-101, (engine->GetHeight()/2)-26, 202, 52, 0, 0, 0, 210);
 			engine->g->drawrect((engine->GetWidth()/2)-100, (engine->GetHeight()/2)-25, 200, 50, 255, 255, 255, 180);

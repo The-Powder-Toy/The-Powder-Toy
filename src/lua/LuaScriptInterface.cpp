@@ -394,7 +394,7 @@ void LuaScriptInterface::custom_init_can_move()
 
 void LuaScriptInterface::Init()
 {
-	if(Client::Ref().FileExists("autorun.lua"))
+	if (Platform::FileExists("autorun.lua"))
 	{
 		lua_State *l = luacon_ci->l;
 		if(luaL_loadfile(l, "autorun.lua") || lua_pcall(l, 0, 0, 0))
@@ -3525,23 +3525,8 @@ int LuaScriptInterface::fileSystem_exists(lua_State * l)
 {
 	const char * filename = luaL_checkstring(l, 1);
 
-	bool exists = false;
-#ifdef WIN
-	struct _stat s;
-	if(_stat(filename, &s) == 0)
-#else
-	struct stat s;
-	if(stat(filename, &s) == 0)
-#endif
-	{
-		exists = true;
-	}
-	else
-	{
-		exists = false;
-	}
-
-	lua_pushboolean(l, exists);
+	bool ret = Platform::Stat(filename);
+	lua_pushboolean(l, ret);
 	return 1;
 }
 
@@ -3549,61 +3534,17 @@ int LuaScriptInterface::fileSystem_isFile(lua_State * l)
 {
 	const char * filename = luaL_checkstring(l, 1);
 
-	bool isFile = false;
-#ifdef WIN
-	struct _stat s;
-	if(_stat(filename, &s) == 0)
-#else
-	struct stat s;
-	if(stat(filename, &s) == 0)
-#endif
-	{
-		if(s.st_mode & S_IFREG)
-		{
-			isFile = true; //Is file
-		}
-		else
-		{
-			isFile = false; //Is directory or something else
-		}
-	}
-	else
-	{
-		isFile = false; //Doesn't exist
-	}
-
-	lua_pushboolean(l, isFile);
+	bool ret = Platform::FileExists(filename);
+	lua_pushboolean(l, ret);
 	return 1;
 }
 
 int LuaScriptInterface::fileSystem_isDirectory(lua_State * l)
 {
-	const char * filename = luaL_checkstring(l, 1);
+	const char * dirname = luaL_checkstring(l, 1);
 
-	bool isDir = false;
-#ifdef WIN
-	struct _stat s;
-	if(_stat(filename, &s) == 0)
-#else
-	struct stat s;
-	if(stat(filename, &s) == 0)
-#endif
-	{
-		if(s.st_mode & S_IFDIR)
-		{
-			isDir = true; //Is directory
-		}
-		else
-		{
-			isDir = false; //Is file or something else
-		}
-	}
-	else
-	{
-		isDir = false; //Doesn't exist
-	}
-
-	lua_pushboolean(l, isDir);
+	bool ret = Platform::DirectoryExists(dirname);
+	lua_pushboolean(l, ret);
 	return 1;
 }
 
@@ -3612,22 +3553,17 @@ int LuaScriptInterface::fileSystem_makeDirectory(lua_State * l)
 	const char * dirname = luaL_checkstring(l, 1);
 
 	int ret = 0;
-	ret = Client::Ref().MakeDirectory(dirname);
+	ret = Platform::MakeDirectory(dirname);
 	lua_pushboolean(l, ret == 0);
 	return 1;
 }
 
 int LuaScriptInterface::fileSystem_removeDirectory(lua_State * l)
 {
-	const char * filename = luaL_checkstring(l, 1);
+	const char * directory = luaL_checkstring(l, 1);
 
-	int ret = 0;
-#ifdef WIN
-	ret = _rmdir(filename);
-#else
-	ret = rmdir(filename);
-#endif
-	lua_pushboolean(l, ret == 0);
+	bool ret = Platform::DeleteDirectory(directory);
+	lua_pushboolean(l, ret);
 	return 1;
 }
 
@@ -3635,13 +3571,8 @@ int LuaScriptInterface::fileSystem_removeFile(lua_State * l)
 {
 	const char * filename = luaL_checkstring(l, 1);
 
-	int ret = 0;
-#ifdef WIN
-	ret = _unlink(filename);
-#else
-	ret = unlink(filename);
-#endif
-	lua_pushboolean(l, ret == 0);
+	bool ret = Platform::DeleteFile(filename);
+	lua_pushboolean(l, ret);
 	return 1;
 }
 
