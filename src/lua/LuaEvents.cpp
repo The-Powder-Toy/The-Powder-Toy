@@ -2,7 +2,7 @@
 #ifdef LUACONSOLE
 # include "LuaCompat.h"
 # include "LuaScriptInterface.h"
-# include "Platform.h"
+# include "common/Platform.h"
 # include "gui/interface/Engine.h"
 #endif
 

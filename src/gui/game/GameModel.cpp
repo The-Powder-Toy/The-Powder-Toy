@@ -1,40 +1,37 @@
 #include "GameModel.h"
 
-#include "GameView.h"
-#include "GameController.h"
+#include <iostream>
+#include <algorithm>
 
-#include "simulation/ToolClasses.h"
-#include "EllipseBrush.h"
-#include "TriangleBrush.h"
 #include "BitmapBrush.h"
-#include "QuickOptions.h"
-#include "GameModelException.h"
-#include "Format.h"
-#include "Menu.h"
+#include "EllipseBrush.h"
 #include "Favorite.h"
+#include "Format.h"
+#include "GameController.h"
+#include "GameModelException.h"
+#include "GameView.h"
+#include "Menu.h"
 #include "Notification.h"
-#include "Platform.h"
+#include "TriangleBrush.h"
+#include "QuickOptions.h"
 
 #include "client/Client.h"
 #include "client/GameSave.h"
 #include "client/SaveFile.h"
 #include "client/SaveInfo.h"
-
+#include "common/Platform.h"
 #include "graphics/Renderer.h"
-
 #include "simulation/Air.h"
+#include "simulation/GOLString.h"
+#include "simulation/Gravity.h"
 #include "simulation/Simulation.h"
 #include "simulation/Snapshot.h"
-#include "simulation/Gravity.h"
-#include "simulation/ElementGraphics.h"
 #include "simulation/ElementClasses.h"
-#include "simulation/GOLString.h"
+#include "simulation/ElementGraphics.h"
+#include "simulation/ToolClasses.h"
 
 #include "gui/game/DecorationTool.h"
 #include "gui/interface/Engine.h"
-
-#include <iostream>
-#include <algorithm>
 
 GameModel::GameModel():
 	clipboard(NULL),

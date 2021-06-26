@@ -2,18 +2,17 @@
 
 #include "bzip2/bzlib.h"
 
-#include "gui/dialogues/ConfirmPrompt.h"
-#include "gui/interface/Engine.h"
+#include "Config.h"
+#include "Update.h"
 
+#include "client/Client.h"
+#include "common/Platform.h"
 #include "tasks/Task.h"
 #include "tasks/TaskWindow.h"
 
-#include "client/Client.h"
 #include "client/http/Request.h"
-
-#include "Update.h"
-#include "Config.h"
-#include "Platform.h"
+#include "gui/dialogues/ConfirmPrompt.h"
+#include "gui/interface/Engine.h"
 
 class UpdateDownloadTask : public Task
 {

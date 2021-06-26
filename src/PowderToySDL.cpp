@@ -38,22 +38,21 @@
 
 #include "Format.h"
 #include "Misc.h"
-#include "Platform.h"
 
-#include "graphics/Graphics.h"
-
-#include "client/SaveInfo.h"
+#include "client/Client.h"
 #include "client/GameSave.h"
 #include "client/SaveFile.h"
-#include "client/Client.h"
+#include "client/SaveInfo.h"
+#include "common/Platform.h"
+#include "graphics/Graphics.h"
+#include "gui/Style.h"
 
 #include "gui/game/GameController.h"
 #include "gui/game/GameView.h"
-#include "gui/dialogues/ErrorMessage.h"
 #include "gui/dialogues/ConfirmPrompt.h"
-#include "gui/interface/Keys.h"
-#include "gui/Style.h"
+#include "gui/dialogues/ErrorMessage.h"
 #include "gui/interface/Engine.h"
+#include "gui/interface/Keys.h"
 
 #define INCLUDE_SYSWM
 #include "SDLCompat.h"

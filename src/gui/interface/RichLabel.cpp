@@ -3,15 +3,14 @@
 #include <vector>
 #include <exception>
 
-#include "Platform.h"
-
-#include "gui/interface/Point.h"
-#include "gui/interface/Component.h"
-
-#include "graphics/Graphics.h"
-#include "graphics/FontReader.h"
-
 #include "Colour.h"
+
+#include "common/Platform.h"
+#include "graphics/FontReader.h"
+#include "graphics/Graphics.h"
+
+#include "gui/interface/Component.h"
+#include "gui/interface/Point.h"
 
 using namespace ui;
 

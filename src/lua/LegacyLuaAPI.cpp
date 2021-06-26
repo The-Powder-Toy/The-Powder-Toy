@@ -5,32 +5,30 @@
 #include <algorithm>
 #include <locale>
 
-#include "client/http/Request.h"
-#include "client/Client.h"
-
 #include "Format.h"
-#include "LuaScriptInterface.h"
 #include "LuaScriptHelper.h"
+#include "LuaScriptInterface.h"
 #include "LuaSmartRef.h"
-#include "Platform.h"
 #include "PowderToy.h"
 
+#include "client/Client.h"
+#include "common/Platform.h"
+#include "graphics/Graphics.h"
+#include "graphics/Renderer.h"
+#include "simulation/ElementCommon.h"
+#include "simulation/Gravity.h"
+#include "simulation/Simulation.h"
+#include "simulation/SimulationData.h"
+
+#include "client/http/Request.h"
+#include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/dialogues/InformationMessage.h"
 #include "gui/dialogues/TextPrompt.h"
-#include "gui/dialogues/ConfirmPrompt.h"
-#include "gui/game/GameModel.h"
 #include "gui/game/GameController.h"
-#include "gui/interface/Keys.h"
+#include "gui/game/GameModel.h"
 #include "gui/interface/Engine.h"
-
-#include "simulation/Simulation.h"
-#include "simulation/Gravity.h"
-#include "simulation/SimulationData.h"
-#include "simulation/ElementCommon.h"
-
-#include "graphics/Graphics.h"
-#include "graphics/Renderer.h"
+#include "gui/interface/Keys.h"
 
 std::map<ByteString, StructProperty> legacyPropNames;
 std::map<ByteString, StructProperty> legacyTransitionNames;

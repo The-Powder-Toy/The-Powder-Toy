@@ -23,7 +23,7 @@
 #include <errno.h>
 #endif
 
-#include "Platform.h"
+#include "common/Platform.h"
 
 // returns 1 on failure, 0 on success
 int update_start(char *data, unsigned int len)

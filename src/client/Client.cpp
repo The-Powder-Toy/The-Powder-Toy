@@ -26,30 +26,27 @@
 #include <unistd.h>
 #endif
 
-#include "common/String.h"
+#include "ClientListener.h"
 #include "Config.h"
 #include "Format.h"
 #include "MD5.h"
-#include "Platform.h"
 #include "Update.h"
 
-#include "ClientListener.h"
-
-#include "graphics/Graphics.h"
-
-#include "gui/preview/Comment.h"
-
-#include "client/SaveInfo.h"
-#include "client/SaveFile.h"
 #include "client/GameSave.h"
+#include "client/SaveFile.h"
+#include "client/SaveInfo.h"
 #include "client/UserInfo.h"
-#include "client/http/Request.h"
-#include "client/http/RequestManager.h"
+#include "common/Platform.h"
+#include "common/String.h"
+#include "graphics/Graphics.h"
 
 #ifdef LUACONSOLE
 # include "lua/LuaScriptInterface.h"
 #endif
 
+#include "client/http/Request.h"
+#include "client/http/RequestManager.h"
+#include "gui/preview/Comment.h"
 
 extern "C"
 {

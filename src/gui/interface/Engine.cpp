@@ -1,17 +1,16 @@
-#include "gui/interface/Engine.h"
-
-#include "Window.h"
+#include "Engine.h"
 
 #include <cmath>
 #include <cstring>
 
-#include "gui/dialogues/ConfirmPrompt.h"
+#include "Config.h"
+#include "PowderToy.h"
+#include "Window.h"
 
+#include "common/Platform.h"
 #include "graphics/Graphics.h"
 
-#include "Config.h"
-#include "Platform.h"
-#include "PowderToy.h"
+#include "gui/dialogues/ConfirmPrompt.h"
 
 using namespace ui;
 

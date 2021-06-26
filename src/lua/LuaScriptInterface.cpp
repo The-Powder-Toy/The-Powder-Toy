@@ -8,10 +8,6 @@
 #include <algorithm>
 
 #include "Format.h"
-#include "Platform.h"
-#include "PowderToy.h"
-
-#include "TPTScriptInterface.h"
 #include "LuaScriptHelper.h"
 #include "LuaLuna.h"
 #include "LuaBit.h"
@@ -23,9 +19,25 @@
 #include "LuaSlider.h"
 #include "LuaTextbox.h"
 #include "LuaWindow.h"
-
 #include "LuaTCPSocket.h"
+#include "PowderToy.h"
+#include "TPTScriptInterface.h"
 
+#include "client/Client.h"
+#include "client/GameSave.h"
+#include "client/SaveFile.h"
+#include "client/SaveInfo.h"
+#include "common/Platform.h"
+#include "graphics/Graphics.h"
+#include "graphics/Renderer.h"
+#include "simulation/Air.h"
+#include "simulation/ElementCommon.h"
+#include "simulation/ElementClasses.h"
+#include "simulation/ElementGraphics.h"
+#include "simulation/Simulation.h"
+#include "simulation/ToolClasses.h"
+
+#include "client/http/Request.h"
 #include "gui/interface/Window.h"
 #include "gui/interface/Engine.h"
 #include "gui/game/GameView.h"
@@ -33,23 +45,6 @@
 #include "gui/game/GameModel.h"
 #include "gui/game/Tool.h"
 #include "gui/game/Brush.h"
-
-#include "simulation/Simulation.h"
-#include "simulation/ElementGraphics.h"
-#include "simulation/ElementCommon.h"
-#include "simulation/Air.h"
-
-#include "simulation/ToolClasses.h"
-#include "simulation/ElementClasses.h"
-
-#include "client/GameSave.h"
-#include "client/SaveFile.h"
-#include "client/SaveInfo.h"
-#include "client/Client.h"
-#include "client/http/Request.h"
-
-#include "graphics/Graphics.h"
-#include "graphics/Renderer.h"
 
 #ifndef WIN
 #include <unistd.h>

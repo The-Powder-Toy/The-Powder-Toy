@@ -2,25 +2,22 @@
 
 #include <algorithm>
 
-#include "Platform.h"
-
 #include "client/Client.h"
-#include "client/SaveFile.h"
 #include "client/GameSave.h"
+#include "client/SaveFile.h"
+#include "common/Platform.h"
+#include "graphics/Graphics.h"
 #include "gui/Style.h"
 #include "tasks/Task.h"
 
-#include "gui/dialogues/TextPrompt.h"
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/dialogues/ErrorMessage.h"
+#include "gui/dialogues/TextPrompt.h"
 #include "gui/interface/Label.h"
-#include "gui/interface/Textbox.h"
-#include "gui/interface/ScrollPanel.h"
-#include "gui/interface/SaveButton.h"
 #include "gui/interface/ProgressBar.h"
-
-
-#include "graphics/Graphics.h"
+#include "gui/interface/SaveButton.h"
+#include "gui/interface/ScrollPanel.h"
+#include "gui/interface/Textbox.h"
 
 //Currently, reading is done on another thread, we can't render outside the main thread due to some bullshit with OpenGL
 class LoadFilesTask: public Task
