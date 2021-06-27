@@ -17,6 +17,8 @@ namespace http
 
 	void RequestManager::Shutdown()
 	{
+		if (rt_shutting_down)
+			return;
 		{
 			std::lock_guard<std::mutex> g(rt_mutex);
 			rt_shutting_down = true;
