@@ -7,7 +7,7 @@ void Element::Element_LITH()
 {
 	Identifier = "DEFAULT_PT_LITH";
 	Name = "LITH";
-	Colour = PIXPACK(0xC0C0C0);
+	Colour = PIXPACK(0xC5C5BB);
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;
