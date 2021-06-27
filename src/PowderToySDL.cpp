@@ -738,32 +738,34 @@ int main(int argc, char * argv[])
 		return 1;
 	}
 
+	Platform::originalCwd = Platform::GetCwd();
+
 	std::map<ByteString, ByteString> arguments = readArguments(argc, argv);
 
-	if(arguments["ddir"].length())
+	if (arguments["ddir"].length())
 	{
 #ifdef WIN
 		int failure = _chdir(arguments["ddir"].c_str());
 #else
 		int failure = chdir(arguments["ddir"].c_str());
 #endif
-		if (failure)
-		{
+		if (!failure)
+			Platform::sharedCwd = Platform::GetCwd();
+		else
 			perror("failed to chdir to requested ddir");
-		}
 	}
 	else
 	{
+		char *ddir = SDL_GetPrefPath(NULL, "The Powder Toy");
 #ifdef WIN
 		struct _stat s;
-		if(_stat("powder.pref", &s) != 0)
+		if (_stat("powder.pref", &s) != 0)
 #else
 		struct stat s;
-		if(stat("powder.pref", &s) != 0)
+		if (stat("powder.pref", &s) != 0)
 #endif
 		{
-			char *ddir = SDL_GetPrefPath(NULL, "The Powder Toy");
-			if(ddir)
+			if (ddir)
 			{
 #ifdef WIN
 				int failure = _chdir(ddir);
@@ -773,9 +775,16 @@ int main(int argc, char * argv[])
 				if (failure)
 				{
 					perror("failed to chdir to default ddir");
+					SDL_free(ddir);
+					ddir = nullptr;
 				}
-				SDL_free(ddir);
 			}
+		}
+
+		if (ddir)
+		{
+			Platform::sharedCwd = ddir;
+			SDL_free(ddir);
 		}
 	}
 

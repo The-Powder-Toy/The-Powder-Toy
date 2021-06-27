@@ -2,22 +2,19 @@
 
 #include <cstdio>
 #include <cstring>
-#ifdef WIN
-#include <direct.h>
-#define getcwd _getcwd
-#else
-#include <unistd.h>
-#endif
 #include "SDLCompat.h"
 
 #include "OptionsController.h"
 #include "OptionsModel.h"
 
+#include "client/Client.h"
 #include "common/Platform.h"
 #include "graphics/Graphics.h"
 #include "gui/Style.h"
 #include "simulation/ElementDefs.h"
 
+#include "gui/dialogues/ConfirmPrompt.h"
+#include "gui/dialogues/InformationMessage.h"
 #include "gui/interface/Button.h"
 #include "gui/interface/Checkbox.h"
 #include "gui/interface/DropDown.h"
@@ -305,8 +302,6 @@ OptionsView::OptionsView():
 	scrollPanel->AddChild(tempLabel);
 	scrollPanel->AddChild(perfectCirclePressure);
 
-	//perfectCirclePressure
-
 	currentY+=20;
 	decoSpace = new ui::DropDown(ui::Point(8, currentY), ui::Point(60, 16));
 	decoSpace->SetActionCallback({ [this] { c->SetDecoSpace(decoSpace->GetOption().second); } });
@@ -324,23 +319,25 @@ OptionsView::OptionsView():
 	currentY+=20;
 	ui::Button * dataFolderButton = new ui::Button(ui::Point(8, currentY), ui::Point(90, 16), "Open Data Folder");
 	dataFolderButton->SetActionCallback({ [] {
-		auto *cwd = getcwd(NULL, 0);
-		if (cwd)
-		{
+		ByteString cwd = Platform::GetCwd();
+		if (!cwd.empty())
 			Platform::OpenURI(cwd);
-		}
 		else
-		{
 			fprintf(stderr, "cannot open data folder: getcwd(...) failed\n");
-		}
 	} });
 	scrollPanel->AddChild(dataFolderButton);
 
-	tempLabel = new ui::Label(ui::Point(dataFolderButton->Position.X+dataFolderButton->Size.X+3, currentY), ui::Point(1, 16), "\bg- Open the data and preferences folder");
-	autowidth(tempLabel);
-	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
-	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-	scrollPanel->AddChild(tempLabel);
+	ui::Button * migrationButton = new ui::Button(ui::Point(Size.X - 178, currentY), ui::Point(163, 16), "Migrate to shared data directory");
+	migrationButton->SetActionCallback({ [] {
+		ByteString from = Platform::originalCwd;
+		ByteString to = Platform::sharedCwd;
+		new ConfirmPrompt("Do Migration?", "This will migrate all stamps, saves, and scripts from\n\bt" + from.FromUtf8() + "\bw\nto the shared data directory at\n\bt" + to.FromUtf8() + "\bw\n\n" +
+			 "Files that already exist will not be overwritten.", { [=] () {
+				 String ret = Platform::DoMigration(from, to);
+				new InformationMessage("Migration Complete", ret, false);
+			 } });
+	} });
+	scrollPanel->AddChild(migrationButton);
 
 	ui::Button * tempButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(Size.X, 16), "OK");
 	tempButton->SetActionCallback({ [this] { c->Exit(); } });

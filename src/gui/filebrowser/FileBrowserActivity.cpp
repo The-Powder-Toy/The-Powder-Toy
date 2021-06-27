@@ -44,10 +44,10 @@ class LoadFilesTask: public Task
 		notifyProgress(-1);
 		for(std::vector<ByteString>::iterator iter = files.begin(), end = files.end(); iter != end; ++iter)
 		{
-			SaveFile * saveFile = new SaveFile(*iter);
+			SaveFile * saveFile = new SaveFile(directory + *iter);
 			try
 			{
-				std::vector<unsigned char> data = Client::Ref().ReadFile(*iter);
+				std::vector<unsigned char> data = Client::Ref().ReadFile(directory + *iter);
 				GameSave * tempSave = new GameSave(data);
 				saveFile->SetGameSave(tempSave);
 				saveFiles.push_back(saveFile);

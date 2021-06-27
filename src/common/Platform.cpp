@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <cassert>
 #include <dirent.h>
+#include <fstream>
 #include <sys/stat.h>
 
 #ifdef WIN
@@ -29,11 +30,13 @@
 namespace Platform
 {
 
+std::string originalCwd;
+std::string sharedCwd;
+
 ByteString GetCwd()
 {
-	char cwdTemp[PATH_MAX];
-	getcwd(cwdTemp, PATH_MAX);
-	return cwdTemp;
+	char *cwd = getcwd(NULL, 0);
+	return cwd == nullptr ? "" : cwd;
 }
 
 ByteString ExecutableName()
@@ -324,10 +327,12 @@ std::vector<ByteString> DirectorySearch(ByteString directory, ByteString search,
 	{
 		ByteString currentFileName = ByteString(directoryEntry->d_name);
 		if (currentFileName.length()>4)
-			directoryList.push_back(directory+currentFileName);
+			directoryList.push_back(currentFileName);
 	}
 	closedir(directoryHandle);
 #endif
+
+	search = search.ToLower();
 
 	std::vector<ByteString> searchResults;
 	for (std::vector<ByteString>::iterator iter = directoryList.begin(), end = directoryList.end(); iter != end; ++iter)
@@ -339,7 +344,7 @@ std::vector<ByteString> DirectorySearch(ByteString directory, ByteString search,
 			if (filename.EndsWith(*extIter))
 			{
 				extensionMatch = true;
-				tempfilename = filename.SubstrFromEnd(0, (*extIter).size()).ToUpper();
+				tempfilename = filename.SubstrFromEnd(0, (*extIter).size()).ToLower();
 				break;
 			}
 		}
@@ -355,6 +360,138 @@ std::vector<ByteString> DirectorySearch(ByteString directory, ByteString search,
 	return searchResults;
 }
 
+String DoMigration(ByteString fromDir, ByteString toDir)
+{
+	if (fromDir.at(fromDir.length() - 1) != '/')
+		fromDir = fromDir + '/';
+	if (toDir.at(toDir.length() - 1) != '/')
+		toDir = toDir + '/';
+
+	std::ofstream logFile(fromDir + "/migrationlog.txt", std::ios::out);
+	logFile << "Running migration of data from " << fromDir + " to " << toDir << std::endl;
+
+	// Get lists of files to migrate
+	auto stamps = DirectorySearch(fromDir + "stamps", "", { ".stm" });
+	auto saves = DirectorySearch(fromDir + "Saves", "", { ".cps", ".stm" });
+	auto scripts = DirectorySearch(fromDir + "scripts", "", { ".lua", ".txt" });
+	auto downloadedScripts = DirectorySearch(fromDir + "scripts/downloaded", "", { ".lua" });
+	bool hasScriptinfo = FileExists(toDir + "scripts/downloaded/scriptinfo");
+	auto screenshots = DirectorySearch(fromDir, "powdertoy-", { ".png" });
+	bool hasAutorun = FileExists(fromDir + "autorun.lua");
+	bool hasPref = FileExists(fromDir + "powder.pref");
+
+	if (stamps.empty() && saves.empty() && scripts.empty() && downloadedScripts.empty() && screenshots.empty() && !hasAutorun && !hasPref)
+	{
+		logFile << "Nothing to migrate.";
+		return "Nothing to migrate. This button is used to migrate data from pre-96.0 TPT installations to the shared directory";
+	}
+
+	StringBuilder result;
+	std::stack<ByteString> dirsToDelete;
+
+	// Migrate a list of files
+	auto migrateList = [&](std::vector<ByteString> list, ByteString directory, String niceName) {
+		result << '\n' << niceName << ": ";
+		if (!list.empty() && !directory.empty())
+			MakeDirectory(toDir + directory);
+		int migratedCount = 0, failedCount = 0;
+		for (auto &item : list)
+		{
+			std::string from = fromDir + directory + "/" + item;
+			std::string to = toDir + directory + "/" + item;
+			if (!FileExists(to))
+			{
+				if (rename(from.c_str(), to.c_str()))
+				{
+					failedCount++;
+					logFile << "failed to move " << from << " to " << to << std::endl;
+				}
+				else
+				{
+					migratedCount++;
+					logFile << "moved " << from << " to " << to << std::endl;
+				}
+			}
+			else
+			{
+				logFile << "skipping " << from << "(already exists)" << std::endl;
+			}
+		}
+
+		dirsToDelete.push(directory);
+		result << "\bt" << migratedCount << " migratated\x0E, \br" << failedCount << " failed\x0E";
+		int duplicates = list.size() - migratedCount - failedCount;
+		if (duplicates)
+			result << ", " << list.size() - migratedCount - failedCount << " skipped (duplicate)";
+	};
+
+	// Migrate a single file
+	auto migrateFile = [&fromDir, &toDir, &result, &logFile](ByteString filename) {
+		ByteString from = fromDir + filename;
+		ByteString to = toDir + filename;
+		if (!FileExists(to))
+		{
+			if (rename(from.c_str(), to.c_str()))
+			{
+				logFile << "failed to move " << from << " to " << to << std::endl;
+				result << "\n\br" << filename.FromUtf8() << " migration failed\x0E";
+			}
+			else
+			{
+				logFile << "moved " << from << " to " << to << std::endl;
+				result << '\n' << filename.FromUtf8() << " migrated";
+			}
+		}
+		else
+		{
+			logFile << "skipping " << from << "(already exists)" << std::endl;
+			result << '\n' << filename.FromUtf8() << " skipped (already exists)";
+		}
+
+		if (!DeleteFile(fromDir + filename)) {
+			logFile << "failed to delete " << filename << std::endl;
+		}
+	};
+
+	// Do actual migration
+	DeleteFile(fromDir + "stamps/stamps.def");
+	migrateList(stamps, "stamps", "Stamps");
+	migrateList(saves, "Saves", "Saves");
+	if (!scripts.empty())
+		migrateList(scripts, "scripts", "Scripts");
+	if (!hasScriptinfo && !downloadedScripts.empty())
+	{
+		migrateList(downloadedScripts, "scripts/downloaded", "Downloaded scripts");
+		migrateFile("scripts/downloaded/scriptinfo");
+	}
+	if (!screenshots.empty())
+		migrateList(screenshots, "", "Screenshots");
+	if (hasAutorun)
+		migrateFile("autorun.lua");
+	if (hasPref)
+		migrateFile("powder.pref");
+
+	// Delete leftover directories
+	while (!dirsToDelete.empty())
+	{
+		ByteString toDelete = dirsToDelete.top();
+		if (!DeleteDirectory(fromDir + toDelete)) {
+			logFile << "failed to delete " << toDelete << std::endl;
+		}
+		dirsToDelete.pop();
+	}
+
+	// chdir into the new directory
+	chdir(toDir.c_str());
+
+	if (scripts.size())
+		Client::Ref().RescanStamps();
+
+	logFile << std::endl << std::endl << "Migration complete. Results: " << result.Build().ToUtf8();
+	logFile.close();
+
+	return result.Build();
+}
 
 #ifdef WIN
 ByteString WinNarrow(const std::wstring &source)
