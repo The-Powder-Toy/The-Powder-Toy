@@ -1406,7 +1406,7 @@ int LuaScriptInterface::simulation_floodParts(lua_State * l)
 	int cm = luaL_optint(l,4,-1);
 	int flags = luaL_optint(l,5,luacon_sim->replaceModeFlags);
 	
-	if (x < CELL || x >= XRES-CELL || y < CELL || y >= YRES-CELL)
+	if (x < 0 || x >= XRES || y < 0 || y >= YRES)
 		return luaL_error(l, "coordinates out of range (%d,%d)", x, y);
 	
 	int ret = luacon_sim->FloodParts(x, y, c, cm, flags);
@@ -1421,6 +1421,9 @@ int LuaScriptInterface::simulation_createWalls(lua_State * l)
 	int rx = luaL_optint(l,3,0);
 	int ry = luaL_optint(l,4,0);
 	int c = luaL_optint(l,5,8);
+
+	if (x < 0 || x >= XRES || y < 0 || y >= YRES)
+		return luaL_error(l, "coordinates out of range (%d,%d)", x, y);
 	if (c < 0 || c >= UI_WALLCOUNT)
 		return luaL_error(l, "Unrecognised wall id '%d'", c);
 
@@ -1438,6 +1441,9 @@ int LuaScriptInterface::simulation_createWallLine(lua_State * l)
 	int rx = luaL_optint(l,5,0);
 	int ry = luaL_optint(l,6,0);
 	int c = luaL_optint(l,7,8);
+
+	if (x1 < 0 || x2 < 0 || x1 >= XRES || x2 >= XRES || y1 < 0 || y2 < 0 || y1 >= YRES || y2 >= YRES)
+		return luaL_error(l, "coordinates out of range (%d,%d),(%d,%d)", x1, y1, x2, y2);
 	if (c < 0 || c >= UI_WALLCOUNT)
 		return luaL_error(l, "Unrecognised wall id '%d'", c);
 
@@ -1452,6 +1458,9 @@ int LuaScriptInterface::simulation_createWallBox(lua_State * l)
 	int x2 = luaL_optint(l,3,-1);
 	int y2 = luaL_optint(l,4,-1);
 	int c = luaL_optint(l,5,8);
+
+	if (x1 < 0 || x2 < 0 || x1 >= XRES || x2 >= XRES || y1 < 0 || y2 < 0 || y1 >= YRES || y2 >= YRES)
+		return luaL_error(l, "coordinates out of range (%d,%d),(%d,%d)", x1, y1, x2, y2);
 	if (c < 0 || c >= UI_WALLCOUNT)
 		return luaL_error(l, "Unrecognised wall id '%d'", c);
 
@@ -1465,6 +1474,8 @@ int LuaScriptInterface::simulation_floodWalls(lua_State * l)
 	int y = luaL_optint(l,2,-1);
 	int c = luaL_optint(l,3,8);
 	int bm = luaL_optint(l,4,-1);
+	if (x < 0 || x >= XRES || y < 0 || y >= YRES)
+		return luaL_error(l, "coordinates out of range (%d,%d)", x, y);
 	if (c < 0 || c >= UI_WALLCOUNT)
 		return luaL_error(l, "Unrecognised wall id '%d'", c);
 	if (c == WL_STREAM)
@@ -1517,6 +1528,9 @@ int LuaScriptInterface::simulation_toolLine(lua_State * l)
 	int tool = luaL_optint(l,7,0);
 	int brush = luaL_optint(l,8,CIRCLE_BRUSH);
 	float strength = luaL_optnumber(l,9,1.0f);
+	
+	if (x1 < 0 || x2 < 0 || x1 >= XRES || x2 >= XRES || y1 < 0 || y2 < 0 || y1 >= YRES || y2 >= YRES)
+		return luaL_error(l, "coordinates out of range (%d,%d),(%d,%d)", x1, y1, x2, y2);
 	if (tool < 0 || tool >= (int)luacon_sim->tools.size()+1)
 		return luaL_error(l, "Invalid tool id '%d'", tool);
 
@@ -1546,6 +1560,8 @@ int LuaScriptInterface::simulation_toolBox(lua_State * l)
 	int y1 = luaL_optint(l,2,-1);
 	int x2 = luaL_optint(l,3,-1);
 	int y2 = luaL_optint(l,4,-1);
+	if (x1 < 0 || x2 < 0 || x1 >= XRES || x2 >= XRES || y1 < 0 || y2 < 0 || y1 >= YRES || y2 >= YRES)
+		return luaL_error(l, "coordinates out of range (%d,%d),(%d,%d)", x1, y1, x2, y2);
 	int tool = luaL_optint(l,5,0);
 	float strength = luaL_optnumber(l,6,1.0f);
 	if (tool == (int)luacon_sim->tools.size())
@@ -1599,6 +1615,9 @@ int LuaScriptInterface::simulation_decoLine(lua_State * l)
 	int tool = luaL_optint(l,11,DECO_DRAW);
 	int brush = luaL_optint(l,12,CIRCLE_BRUSH);
 
+	if (x1 < 0 || x2 < 0 || x1 >= XRES || x2 >= XRES || y1 < 0 || y2 < 0 || y1 >= YRES || y2 >= YRES)
+		return luaL_error(l, "coordinates out of range (%d,%d),(%d,%d)", x1, y1, x2, y2);
+
 	std::vector<Brush*> brushList = luacon_model->GetBrushList();
 	if (brush < 0 || brush >= (int)brushList.size())
 		return luaL_error(l, "Invalid brush id '%d'", brush);
@@ -1621,6 +1640,9 @@ int LuaScriptInterface::simulation_decoBox(lua_State * l)
 	int b = luaL_optint(l,7,255);
 	int a = luaL_optint(l,8,255);
 	int tool = luaL_optint(l,9,0);
+
+	if (x1 < 0 || x2 < 0 || x1 >= XRES || x2 >= XRES || y1 < 0 || y2 < 0 || y1 >= YRES || y2 >= YRES)
+		return luaL_error(l, "coordinates out of range (%d,%d),(%d,%d)", x1, y1, x2, y2);
 
 	luacon_sim->ApplyDecorationBox(x1, y1, x2, y2, r, g, b, a, tool);
 	return 0;
