@@ -91,7 +91,7 @@ static void hygn_reactions(int hygn1_id, UPDATE_FUNC_ARGS)
 
 					parts[ID(r)].temp += 1000.0f;
 					parts[hygn1_id].temp += 1000.0f;
-					sim->pv[y / CELL][x / CELL] += 10.0f;
+					sim->pv[(y + ry) / CELL][(x + rx) / CELL] += 10.0f;
 
 					int j = sim->create_part(-3, x + rx, y + ry, PT_PHOT);
 					if (j > -1)
@@ -188,7 +188,7 @@ static int update(UPDATE_FUNC_ARGS)
 					switch (rt)
 					{
 					case PT_GAS: // GAS + > 2 pressure + >= 200 C -> INSL
-						if (parts[ID(r)].temp >= 200.0f + 273.15f && sim->pv[y / CELL][x / CELL] > 2.0f)
+						if (parts[ID(r)].temp >= 200.0f + 273.15f && sim->pv[(y + ry) / CELL][(x + rx) / CELL] > 2.0f)
 						{
 							sim->part_change_type(ID(r), x + rx, y + ry, PT_INSL);
 							parts[i].temp += 60.0f; // Other part is INSL, adding temp is useless
@@ -196,7 +196,7 @@ static int update(UPDATE_FUNC_ARGS)
 						break;
 
 					case PT_BREC: // BREL + > 1000 C + > 50 pressure -> EXOT
-						if (parts[ID(r)].temp > 1000.0f + 273.15f && sim->pv[y / CELL][x / CELL] > 50.0f)
+						if (parts[ID(r)].temp > 1000.0f + 273.15f && sim->pv[(y + ry) / CELL][(x + rx) / CELL] > 50.0f)
 						{
 							sim->part_change_type(ID(r), x + rx, y + ry, PT_EXOT);
 							parts[ID(r)].temp -= 30.0f;
