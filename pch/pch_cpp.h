@@ -1,7 +1,6 @@
 #include "Config.h"
 
 #include "common/Format.h"
-#include "common/Platform.h"
 #include "common/Singleton.h"
 #include "common/String.h"
 #include "common/tpt-compat.h"
