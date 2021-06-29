@@ -1,12 +1,12 @@
 #include "Config.h"
 
 #include "common/Format.h"
+#include "common/Platform.h"
 #include "common/Singleton.h"
 #include "common/String.h"
 #include "common/tpt-compat.h"
 #include "common/tpt-inline.h"
 #include "common/tpt-minmax.h"
-#include "common/tpt-rand.h"
 #include "common/tpt-rand.h"
 
 #include <algorithm>
@@ -56,7 +56,6 @@
 
 #include <errno.h>
 #include <fcntl.h>
-#include <fftw3.h>
 #include <float.h>
 #include <math.h>
 #include <stdint.h>
@@ -82,7 +81,14 @@
 # include <winsock.h>
 #endif
 
+#ifdef GRAVFFT
+#include <fftw3.h>
+#endif
+
+#ifndef NOHTTP
 #include <curl/curl.h>
+#endif
+
 #include <bson/BSON.h>
 #include <json/json-forwards.h>
 #include <json/json.h>

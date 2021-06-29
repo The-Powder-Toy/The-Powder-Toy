@@ -484,8 +484,10 @@ String DoMigration(ByteString fromDir, ByteString toDir)
 	// chdir into the new directory
 	chdir(toDir.c_str());
 
+#if !defined(RENDERER) && !defined(FONTEDITOR)
 	if (scripts.size())
 		Client::Ref().RescanStamps();
+#endif
 
 	logFile << std::endl << std::endl << "Migration complete. Results: " << result.Build().ToUtf8();
 	logFile.close();
