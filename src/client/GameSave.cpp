@@ -2051,12 +2051,6 @@ void GameSave::readPSv(char * saveDataChar, int dataLength)
 	minimumMinorVersion = minor;\
 }
 
-// restrict the minimum version this save can be rendered with
-#define RESTRICTRENDERVERSION(major, minor) if ((major) > blameSimon_major || (((major) == blameSimon_major && (minor) > blameSimon_minor))) {\
-	blameSimon_major = major;\
-	blameSimon_minor = minor;\
-}
-
 char * GameSave::serialiseOPS(unsigned int & dataLength)
 {
 	int blockX, blockY, blockW, blockH, fullX, fullY, fullW, fullH;
@@ -2065,8 +2059,6 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 	// when building, this number may be increased depending on what elements are used
 	// or what properties are detected
 	int minimumMajorVersion = 90, minimumMinorVersion = 2;
-	// blame simon for always being slow updating the renderer
-	int blameSimon_major = 92, blameSimon_minor = 0;
 
 	//Get coords in blocks
 	blockX = 0;//orig_x0/CELL;
@@ -2248,7 +2240,6 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 					partsData[partsDataLen++] = particles[i].type >> 8;
 					fieldDesc |= 1 << 14;
 					RESTRICTVERSION(93, 0);
-					RESTRICTRENDERVERSION(93, 0);
 				}
 
 				//Extra Temperature (2nd byte optional, 1st required), 1 to 2 bytes
@@ -2556,8 +2547,6 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 	bson_append_start_object(&b, "minimumVersion");
 	bson_append_int(&b, "major", minimumMajorVersion);
 	bson_append_int(&b, "minor", minimumMinorVersion);
-	bson_append_int(&b, "rendermajor", blameSimon_major);
-	bson_append_int(&b, "renderminor", blameSimon_minor);
 	bson_append_finish_object(&b);
 
 
