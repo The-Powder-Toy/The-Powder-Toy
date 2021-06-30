@@ -79,7 +79,7 @@ jobs:
 #########################################################
         include:
           - platform_short: lin
-            os: ubuntu-latest
+            os: ubuntu-20.04
             suffix: ''
           - platform_short: mac
             os: macos-latest
