@@ -76,6 +76,14 @@ fi
 if [ $PLATFORM_SHORT == "win" ]; then
 	bin_suffix=$bin_suffix.exe
 fi
+stable_or_beta="n"
+if [ "$RELTYPE" == "beta" ]; then
+	other_flags+=$'\t-Dbeta=true'
+	stable_or_beta="y"
+fi
+if [ "$RELTYPE" == "stable" ]; then
+	stable_or_beta="y"
+fi
 if [ "$RELTYPE" == "snapshot" ]; then
 	other_flags+=$'\t-Dsnapshot=true\t-Dsnapshot_id='
 	other_flags+=`echo $RELNAME | cut -d '-' -f 2` # $RELNAME is snapshot-X
@@ -84,7 +92,8 @@ if [ "$RELTYPE" == "snapshot" ] && [ "$MOD_ID" != "0" ]; then
 	>&2 echo "mods and snapshots do not mix"
 	exit 1
 fi
-if [ "$RELTYPE" == "stable" ] && [ "$MOD_ID" != "0" ]; then
+if [ "$stable_or_beta" == "y" ] && [ "$MOD_ID" != "0" ]; then
+	# mods and snapshots both check their snapshot_id against whatever version starcatcher.us/TPT has
 	other_flags+=$'\t-Dsnapshot_id='
 	other_flags+=`echo $RELNAME | cut -d '.' -f 3` # $RELNAME is vX.Y.Z
 fi
