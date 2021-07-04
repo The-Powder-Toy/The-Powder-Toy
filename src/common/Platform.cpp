@@ -307,8 +307,8 @@ std::vector<ByteString> DirectorySearch(ByteString directory, ByteString search,
 	do
 	{
 		ByteString currentFileName = Platform::WinNarrow(currentFile.name);
-		if (currentFileName.length()>4)
-			directoryList.push_back(directory+currentFileName);
+		if (currentFileName.length() > 4)
+			directoryList.push_back(currentFileName);
 	}
 	while (_wfindnext(findFileHandle, &currentFile) == 0);
 	_findclose(findFileHandle);

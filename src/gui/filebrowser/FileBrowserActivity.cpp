@@ -48,6 +48,8 @@ class LoadFilesTask: public Task
 			try
 			{
 				std::vector<unsigned char> data = Client::Ref().ReadFile(directory + *iter);
+				if (data.empty())
+					continue;
 				GameSave * tempSave = new GameSave(data);
 				saveFile->SetGameSave(tempSave);
 				saveFiles.push_back(saveFile);
