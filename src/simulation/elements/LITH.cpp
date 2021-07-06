@@ -112,7 +112,7 @@ static int update(UPDATE_FUNC_ARGS)
 					}
 					if (self.temp > 440.f)
 					{
-						burnTimer = 1024 + (storedEnergy > 24 ? 24 : storedEnergy);
+						burnTimer = 1024 + (storedEnergy > 24 ? 96 : storedEnergy * 4);
 						sim->part_change_type(ID(neighborData), x + rx, y + ry, PT_H2);
 						hydrogenationFactor = 10;
 					}
