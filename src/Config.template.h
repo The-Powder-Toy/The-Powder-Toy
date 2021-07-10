@@ -42,7 +42,7 @@
 //VersionInfoStart
 #define SAVE_VERSION 96
 #define MINOR_VERSION 0
-#define BUILD_NUM 347
+#define BUILD_NUM 348
 #mesondefine SNAPSHOT_ID
 #mesondefine MOD_ID
 #define FUTURE_SAVE_VERSION 96
