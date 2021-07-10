@@ -59,11 +59,6 @@ its hydroxide, and also has basic li-ion battery-like behavior.
 It absorbs CO2 like its hydroxide form, but can only be converted into GLAS
 after having absorbed CO2.
 
-If LITH comes in contact with water, it will consume 1 WATR, increment tmp,
-and heat itself up by 400K. At 1000K it bursts into flames and sets tmp to 10
-if still in contact with WATR, setting its life to 24 and insta-boiling
-water in its immediate vincity.
-
 */
 
 static int update(UPDATE_FUNC_ARGS)
