@@ -4852,6 +4852,10 @@ void Simulation::SimulateGoL()
 						//   this a bit awkward.
 						int ax = ((x + xx + XRES - 3 * CELL) % (XRES - 2 * CELL)) + CELL;
 						int ay = ((y + yy + YRES - 3 * CELL) % (YRES - 2 * CELL)) + CELL;
+						if (pmap[ay][ax] && TYP(pmap[ay][ax]) != PT_LIFE)
+						{
+							continue;
+						}
 						unsigned int (&neighbourList)[5] = gol[ay][ax];
 						// * Bump overall neighbour counter (bits 30..28) for the entire list.
 						neighbourList[0] += 1U << 28;
