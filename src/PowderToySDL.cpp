@@ -201,12 +201,6 @@ void SDLOpen()
 			desktopWidth = rect.w;
 			desktopHeight = rect.h;
 		}
-
-		SDL_DisplayMode displayMode;
-		if (!SDL_GetCurrentDisplayMode(displayIndex, &displayMode) && displayMode.refresh_rate >= 60)
-		{
-			ui::Engine::Ref().SetDrawingFrequencyLimit(displayMode.refresh_rate);
-		}
 	}
 
 #ifdef WIN
