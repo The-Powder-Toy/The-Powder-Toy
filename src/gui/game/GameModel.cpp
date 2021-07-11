@@ -476,7 +476,7 @@ void GameModel::BuildBrushList()
 	std::vector<ByteString> brushFiles = Platform::DirectorySearch(BRUSH_DIR, "", { ".ptb" });
 	for (size_t i = 0; i < brushFiles.size(); i++)
 	{
-		std::vector<unsigned char> brushData = Client::Ref().ReadFile(brushFiles[i]);
+		std::vector<unsigned char> brushData = Client::Ref().ReadFile(BRUSH_DIR + ByteString(PATH_SEP) + brushFiles[i]);
 		if(!brushData.size())
 		{
 			std::cout << "Brushes: Skipping " << brushFiles[i] << ". Could not open" << std::endl;

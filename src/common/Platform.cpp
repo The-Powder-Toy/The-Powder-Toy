@@ -299,9 +299,6 @@ std::vector<ByteString> DirectorySearch(ByteString directory, ByteString search,
 	findFileHandle = _wfindfirst(Platform::WinWiden(fileMatch).c_str(), &currentFile);
 	if (findFileHandle == -1L)
 	{
-#ifdef DEBUG
-		printf("Unable to open directory: %s\n", directory.c_str());
-#endif
 		return std::vector<ByteString>();
 	}
 	do
@@ -318,9 +315,6 @@ std::vector<ByteString> DirectorySearch(ByteString directory, ByteString search,
 	DIR *directoryHandle = opendir(directory.c_str());
 	if (!directoryHandle)
 	{
-#ifdef DEBUG
-		printf("Unable to open directory: %s\n", directory.c_str());
-#endif
 		return std::vector<ByteString>();
 	}
 	while ((directoryEntry = readdir(directoryHandle)))
