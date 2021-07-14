@@ -2821,14 +2821,14 @@ int LuaScriptInterface::elements_allocate(lua_State * l)
 		lua_pushinteger(l, newID);
 		lua_setfield(l, -2, identifier.c_str());
 		lua_pop(l, 1);
-	}
 
-	for (auto elem = 0; elem < PT_NUM; ++elem)
-	{
-		luacon_ci->custom_can_move[elem][newID] = 0;
-		luacon_ci->custom_can_move[newID][elem] = 0;
+		for (auto elem = 0; elem < PT_NUM; ++elem)
+		{
+			luacon_ci->custom_can_move[elem][newID] = 0;
+			luacon_ci->custom_can_move[newID][elem] = 0;
+		}
+		luacon_ci->custom_init_can_move();
 	}
-	luacon_ci->custom_init_can_move();
 
 	lua_pushinteger(l, newID);
 	return 1;
