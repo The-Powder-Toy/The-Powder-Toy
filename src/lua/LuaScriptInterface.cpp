@@ -2827,6 +2827,7 @@ int LuaScriptInterface::elements_allocate(lua_State * l)
 			luacon_ci->custom_can_move[elem][newID] = 0;
 			luacon_ci->custom_can_move[newID][elem] = 0;
 		}
+		luacon_model->BuildMenus();
 		luacon_ci->custom_init_can_move();
 	}
 
