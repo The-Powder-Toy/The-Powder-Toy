@@ -60,7 +60,7 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 	bool renderDeco = !ren->blackDecorations;
 	if (ruleset >= 0 && ruleset < NGOL)
 	{
-		if (!renderDeco)
+		if (!renderDeco || !ren->decorations_enable)
 		{
 			colour1 = builtinGol[ruleset].colour;
 			colour2 = builtinGol[ruleset].colour2;

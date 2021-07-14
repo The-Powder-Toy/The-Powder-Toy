@@ -1335,7 +1335,8 @@ void GameSave::readOPS(char * data, int dataLength)
 							if (particles[newIndex].ctype >= 0 && particles[newIndex].ctype < NGOL)
 							{
 								particles[newIndex].tmp2 = particles[newIndex].tmp;
-								particles[newIndex].dcolour = builtinGol[particles[newIndex].ctype].colour;
+								if (!particles[newIndex].dcolour)
+									particles[newIndex].dcolour = builtinGol[particles[newIndex].ctype].colour;
 								particles[newIndex].tmp = builtinGol[particles[newIndex].ctype].colour2;
 							}
 						}
@@ -1902,7 +1903,8 @@ void GameSave::readPSv(char * saveDataChar, int dataLength)
 				particles[i-1].tmp = 0;
 				if (particles[i-1].ctype >= 0 && particles[i-1].ctype < NGOL)
 				{
-					particles[i-1].dcolour = builtinGol[particles[i-1].ctype].colour;
+					if (!particles[i-1].dcolour)
+						particles[i-1].dcolour = builtinGol[particles[i-1].ctype].colour;
 					particles[i-1].tmp = builtinGol[particles[i-1].ctype].colour2;
 				}
 			}
