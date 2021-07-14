@@ -1,18 +1,18 @@
 #include "Tool.h"
 
-#include "simulation/GOLString.h"
-
 #include "client/Client.h"
 #include "common/tpt-rand.h"
+#include "simulation/GOLString.h"
+#include "simulation/Simulation.h"
 
 #include "gui/Style.h"
-#include "gui/game/GameModel.h"
-#include "gui/interface/Window.h"
 #include "gui/interface/Button.h"
 #include "gui/interface/Label.h"
 #include "gui/interface/Textbox.h"
-#include "gui/dialogues/ErrorMessage.h"
+#include "gui/interface/Window.h"
 #include "gui/colourpicker/ColourPickerActivity.h"
+#include "gui/dialogues/ErrorMessage.h"
+#include "gui/game/GameModel.h"
 
 #include "graphics/Graphics.h"
 
@@ -64,6 +64,7 @@ toolSelection(toolSelection)
 	nameField = new ui::Textbox(ui::Point(8, 25), ui::Point(Size.X-16, 16), "", "[name]");
 	nameField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	nameField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	nameField->SetLimit(7);
 	AddComponent(nameField);
 	FocusComponent(nameField);
 
@@ -143,6 +144,11 @@ void GOLWindow::Validate()
 	if (rule == -1)
 	{
 		new ErrorMessage("Could not add GOL type", "Invalid rule provided");
+		return;
+	}
+	if (sim->GetCustomGOLByRule(rule))
+	{
+		new ErrorMessage("Could not add GOL type", "This Custom GoL rule already exists");
 		return;
 	}
 	ruleString = SerialiseGOLRule(rule); // * Make it canonical.
