@@ -3853,17 +3853,17 @@ void Simulation::UpdateParticles(int start, int end)
 						}
 						else if (t == PT_LAVA)
 						{
-							if (parts[i].ctype>0 && parts[i].ctype<PT_NUM && parts[i].ctype!=PT_LAVA && parts[i].ctype!=PT_LAVA && elements[parts[i].ctype].Enabled)
+							if (parts[i].ctype > 0 && parts[i].ctype < PT_NUM && parts[i].ctype != PT_LAVA && elements[parts[i].ctype].Enabled)
 							{
-								if (parts[i].ctype==PT_THRM&&pt>=elements[PT_BMTL].HighTemperature)
+								if (parts[i].ctype == PT_THRM && pt >= elements[PT_BMTL].HighTemperature)
 									s = 0;
-								else if ((parts[i].ctype==PT_VIBR || parts[i].ctype==PT_BVBR) && pt>=273.15f)
+								else if ((parts[i].ctype == PT_VIBR || parts[i].ctype == PT_BVBR) && pt >= 273.15f)
 									s = 0;
-								else if (parts[i].ctype==PT_TUNG)
+								else if (parts[i].ctype == PT_TUNG)
 								{
 									// TUNG does its own melting in its update function, so HighTemperatureTransition is not LAVA so it won't be handled by the code for HighTemperatureTransition==PT_LAVA below
 									// However, the threshold is stored in HighTemperature to allow it to be changed from Lua
-									if (pt>=elements[parts[i].ctype].HighTemperature)
+									if (pt >= elements[parts[i].ctype].HighTemperature)
 										s = 0;
 								}
 								else if (parts[i].ctype == PT_CRMC)
@@ -3947,6 +3947,7 @@ void Simulation::UpdateParticles(int start, int end)
 							else if (parts[i].ctype == PT_SAND) parts[i].ctype = PT_GLAS;
 							else if (parts[i].ctype == PT_BGLA) parts[i].ctype = PT_GLAS;
 							else if (parts[i].ctype == PT_PQRT) parts[i].ctype = PT_QRTZ;
+							else if (parts[i].ctype == PT_LITH && parts[i].tmp2 > 3) parts[i].ctype = PT_GLAS;
 							parts[i].life = RNG::Ref().between(240, 359);
 						}
 						transitionOccurred = true;
