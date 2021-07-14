@@ -2174,14 +2174,16 @@ void GameView::OnDraw()
 				else
 				{
 					sampleInfo << c->ElementResolve(type, ctype);
-					if (wavelengthGfx)
-						sampleInfo << " (" << ctype << ")";
+					if (wavelengthGfx || type == PT_EMBR || type == PT_PRTI || type == PT_PRTO)
+					{
+						// Do nothing, ctype is meaningless for these elements
+					}
 					// Some elements store extra LIFE info in upper bits of ctype, instead of tmp/tmp2
 					else if (type == PT_CRAY || type == PT_DRAY || type == PT_CONV || type == PT_LDTC)
 						sampleInfo << " (" << c->ElementResolve(TYP(ctype), ID(ctype)) << ")";
 					else if (type == PT_CLNE || type == PT_BCLN || type == PT_PCLN || type == PT_PBCN || type == PT_DTEC)
 						sampleInfo << " (" << c->ElementResolve(ctype, sample.particle.tmp) << ")";
-					else if (c->IsValidElement(ctype))
+					else if (c->IsValidElement(ctype) && type != PT_GLOW && type != PT_WIRE && type != PT_SOAP && type != PT_LITH)
 						sampleInfo << " (" << c->ElementResolve(ctype, 0) << ")";
 					else if (ctype)
 						sampleInfo << " (" << ctype << ")";
