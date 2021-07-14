@@ -66,7 +66,10 @@ static int update(UPDATE_FUNC_ARGS)
 					return 1;
 				}
 			}
-	parts[i].ctype = int(sim->pv[y/CELL][x/CELL]*16);
+	int ctype = int(sim->pv[y/CELL][x/CELL]*16);
+	if (ctype < 0)
+		ctype = 0;
+	parts[i].ctype = ctype;
 	parts[i].tmp = abs((int)((sim->vx[y/CELL][x/CELL]+sim->vy[y/CELL][x/CELL])*16.0f)) + abs((int)((parts[i].vx+parts[i].vy)*64.0f));
 
 	return 0;
