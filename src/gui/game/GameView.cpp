@@ -2107,7 +2107,7 @@ void GameView::OnDraw()
 					break;
 				}
 				startY -= 14;
-				g->fillrect(startX-3, startY-3, Graphics::textwidth(message)+6, 14, 0, 0, 0, 100);
+				g->fillrect(startX-3, startY-3, Graphics::textwidth(message)+6, 14, 0, 0, 0, std::min(100, alpha));
 				g->drawtext(startX, startY, message, 255, 255, 255, alpha);
 				(*iter).second -= 3;
 			}
