@@ -53,7 +53,7 @@ public:
 	Simulation *sim;
 	std::vector<StructProperty> properties;
 	PropertyWindow(PropertyTool *tool_, Simulation *sim);
-	void SetProperty();
+	void SetProperty(bool warn);
 	void OnDraw() override;
 	void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
 	void OnTryExit(ExitMethod method) override;
@@ -81,7 +81,7 @@ sim(sim_)
 		if (textField->GetText().length())
 		{
 			CloseActiveWindow();
-			SetProperty();
+			SetProperty(true);
 			SelfDestruct();
 		}
 	} });
@@ -103,11 +103,12 @@ sim(sim_)
 	textField->SetText(Client::Ref().GetPrefString("Prop.Value", ""));
 	AddComponent(textField);
 	FocusComponent(textField);
+	SetProperty(false);
 
 	MakeActiveWindow();
 }
 
-void PropertyWindow::SetProperty()
+void PropertyWindow::SetProperty(bool warn)
 {
 	if(property->GetOption().second!=-1 && textField->GetText().length() > 0)
 	{
@@ -174,7 +175,9 @@ void PropertyWindow::SetProperty()
 
 					if (properties[property->GetOption().second].Name == "type" && (v < 0 || v >= PT_NUM || !sim->elements[v].Enabled))
 					{
-						new ErrorMessage("Could not set property", "Invalid particle type");
+						tool->validProperty = false;
+						if (warn)
+							new ErrorMessage("Could not set property", "Invalid particle type");
 						return;
 					}
 
@@ -183,6 +186,7 @@ void PropertyWindow::SetProperty()
 #endif
 
 					tool->propValue.Integer = v;
+					tool->validProperty = true;
 					break;
 				}
 				case StructProperty::UInteger:
@@ -206,6 +210,7 @@ void PropertyWindow::SetProperty()
 					std::cout << "Got uint value " << v << std::endl;
 #endif
 					tool->propValue.UInteger = v;
+					tool->validProperty = true;
 					break;
 				}
 				case StructProperty::Float:
@@ -214,19 +219,28 @@ void PropertyWindow::SetProperty()
 				}
 					break;
 				default:
-					new ErrorMessage("Could not set property", "Invalid property");
+					tool->validProperty = false;
+					if (warn)
+						new ErrorMessage("Could not set property", "Invalid property");
 					return;
 			}
 			tool->propOffset = properties[property->GetOption().second].Offset;
 			tool->propType = properties[property->GetOption().second].Type;
 			tool->changeType = properties[property->GetOption().second].Name == "type";
+			tool->validProperty = true;
 		} catch (const std::exception& ex) {
-			new ErrorMessage("Could not set property", "Invalid value provided");
+			tool->validProperty = false;
+			if (warn)
+				new ErrorMessage("Could not set property", "Invalid value provided");
 			return;
 		}
-		Client::Ref().SetPref("Prop.Type", property->GetOption().second);
-		Client::Ref().SetPrefUnicode("Prop.Value", textField->GetText());
+		if (tool->validProperty) {
+			Client::Ref().SetPref("Prop.Type", property->GetOption().second);
+			Client::Ref().SetPrefUnicode("Prop.Value", textField->GetText());
+		}
 	}
+	else
+		tool->validProperty = false;
 }
 
 void PropertyWindow::OnTryExit(ExitMethod method)
@@ -258,7 +272,7 @@ void PropertyTool::OpenWindow(Simulation *sim)
 
 void PropertyTool::SetProperty(Simulation *sim, ui::Point position)
 {
-	if(position.X<0 || position.X>XRES || position.Y<0 || position.Y>YRES)
+	if(position.X<0 || position.X>XRES || position.Y<0 || position.Y>YRES || !validProperty)
 		return;
 	int i = sim->pmap[position.Y][position.X];
 	if(!i)
