@@ -393,5 +393,6 @@ void PropertyTool::DrawRect(Simulation *sim, Brush *cBrush, ui::Point position, 
 
 void PropertyTool::DrawFill(Simulation *sim, Brush *cBrush, ui::Point position)
 {
-	sim->flood_prop(position.X, position.Y, propOffset, propValue, propType);
+	if (validProperty)
+		sim->flood_prop(position.X, position.Y, propOffset, propValue, propType);
 }
