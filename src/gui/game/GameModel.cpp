@@ -94,7 +94,7 @@ GameModel::GameModel():
 	//Load config into simulation
 	edgeMode = Client::Ref().GetPrefInteger("Simulation.EdgeMode", 0);
 	sim->SetEdgeMode(edgeMode);
-	ambientAirTemp = R_TEMP + 273.15;
+	ambientAirTemp = float(R_TEMP) + 273.15f;
 	{
 		auto temp = Client::Ref().GetPrefNumber("Simulation.AmbientAirTemp", ambientAirTemp);
 		if (MIN_TEMP <= temp && MAX_TEMP >= temp)

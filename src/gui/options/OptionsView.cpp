@@ -387,7 +387,7 @@ void OptionsView::UpdateAirTemp(String temp, bool isDefocus)
 		if (temp.empty())
 		{
 			isValid = true;
-			airTemp = R_TEMP + 273.15;
+			airTemp = float(R_TEMP) + 273.15f;
 		}
 		else if (!isValid)
 			return;

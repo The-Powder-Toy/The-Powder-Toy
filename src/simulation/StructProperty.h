@@ -16,7 +16,6 @@ struct StructProperty
 		Float,
 		BString,
 		String,
-		Char,
 		UChar,
 		Removed
 	};
@@ -34,7 +33,7 @@ struct StructProperty
 
 	StructProperty():
 	Name(""),
-	Type(Char),
+	Type(Integer),
 	Offset(0)
 	{
 
