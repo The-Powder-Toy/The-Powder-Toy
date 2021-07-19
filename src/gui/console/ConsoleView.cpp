@@ -83,17 +83,31 @@ void ConsoleView::NotifyPreviousCommandsChanged(ConsoleModel * sender)
 		{
 			if(currentY <= 0)
 				break;
+
+			int logHeight = 16;
+			
 			ui::Label * tempLabel = new ui::Label(ui::Point(Size.X/2, currentY), ui::Point(Size.X/2, 16), commands[i].ReturnValue);
+			tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignTop;
+			tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+
+			tempLabel->SetMultiline(true);
+			tempLabel->SetMaxLineCount(5);
+			tempLabel->AutoHeight();
+			//if (tempLabel->Size.Y > 16*5) //5 line height cap			
+			//	tempLabel->Size.Y = 16 * 5;					
+			logHeight = tempLabel->Size.Y;
+			tempLabel->Position.Y -= logHeight;
+			
+			commandList.push_back(tempLabel);
+			AddComponent(tempLabel);
+			tempLabel = new ui::Label(ui::Point(0, currentY - logHeight), ui::Point(Size.X/2, 16), commands[i].Command);
 			tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 			tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 			commandList.push_back(tempLabel);
 			AddComponent(tempLabel);
-			tempLabel = new ui::Label(ui::Point(0, currentY), ui::Point(Size.X/2, 16), commands[i].Command);
-			tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-			tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
-			commandList.push_back(tempLabel);
-			AddComponent(tempLabel);
-			currentY-=16;
+
+			
+			currentY-=logHeight;
 		}
 }
 

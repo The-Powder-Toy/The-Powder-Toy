@@ -18,6 +18,7 @@ Label::Label(Point position, Point size, String labelText):
 	selectionIndexL(textWrapper.IndexBegin()),
 	selectionIndexH(textWrapper.IndexBegin()),
 	multiline(false),
+	maxLineCount(-1),
 	selecting(false),
 	autoHeight(size.Y==-1?true:false)
 {
@@ -38,6 +39,15 @@ void Label::SetMultiline(bool status)
 	updateSelection();
 	TextPosition(displayTextWrapper.WrappedText());
 }
+
+void Label::SetMaxLineCount(int count)
+{
+	maxLineCount = count;
+	updateTextWrapper();
+	updateSelection();
+	TextPosition(displayTextWrapper.WrappedText());
+}
+
 
 void Label::SetText(String newText)
 {
@@ -67,10 +77,18 @@ void Label::updateTextWrapper()
 		multiline,
 		Size.X - Appearance.Margin.Left - Appearance.Margin.Right
 	);
+	if (maxLineCount > 0 && lines > maxLineCount)
+	{
+		TextWrapper::Index cutoff = textWrapper.Point2Index(0, maxLineCount * FONT_H);
+		displayText = (text.substr(0, cutoff.raw_index)) + String("...");		 
+
+		lines = maxLineCount;
+	}
+	
 	if (autoHeight)
 	{
 		Size.Y = lines * FONT_H + 3;
-	}
+	}	
 }
 
 String Label::GetText()

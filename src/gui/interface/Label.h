@@ -30,6 +30,7 @@ namespace ui
 		bool multiline;
 		bool selecting;
 		bool autoHeight;
+		int  maxLineCount;
 
 		void updateTextWrapper();
 		void updateSelection();
@@ -46,6 +47,7 @@ namespace ui
 		virtual ~Label();
 
 		void SetMultiline(bool status);
+		void SetMaxLineCount(int count);
 
 		virtual void SetText(String text);
 		virtual void SetDisplayText(String text);
