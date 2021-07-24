@@ -146,12 +146,6 @@ GameController::~GameController()
 	{
 		delete *iter;
 	}
-	//deleted here because it refuses to be deleted when deleted from gameModel even with the same code
-	std::deque<Snapshot*> history = gameModel->GetHistory();
-	for(std::deque<Snapshot*>::iterator iter = history.begin(), end = history.end(); iter != end; ++iter)
-	{
-		delete *iter;
-	}
 	std::vector<QuickOption*> quickOptions = gameModel->GetQuickOptions();
 	for(std::vector<QuickOption*>::iterator iter = quickOptions.begin(), end = quickOptions.end(); iter != end; ++iter)
 	{
@@ -171,75 +165,44 @@ GameController::~GameController()
 
 void GameController::HistoryRestore()
 {
-	std::deque<Snapshot*> history = gameModel->GetHistory();
-	if (!history.size())
-		return;
-	unsigned int historyPosition = gameModel->GetHistoryPosition();
-	unsigned int newHistoryPosition = std::max((int)historyPosition-1, 0);
-	// When undoing, save the current state as a final redo
-	// This way ctrl+y will always bring you back to the point right before your last ctrl+z
-	if (historyPosition == history.size())
+	if (!gameModel->HistoryCanRestore())
 	{
-		Snapshot * newSnap = gameModel->GetSimulation()->CreateSnapshot();
-		if (newSnap)
-			newSnap->Authors = Client::Ref().GetAuthorInfo();
-		delete gameModel->GetRedoHistory();
-		gameModel->SetRedoHistory(newSnap);
+		return;
 	}
-	Snapshot * snap = history[newHistoryPosition];
-	gameModel->GetSimulation()->Restore(*snap);
-	Client::Ref().OverwriteAuthorInfo(snap->Authors);
-	gameModel->SetHistory(history);
-	gameModel->SetHistoryPosition(newHistoryPosition);
+	// * When undoing for the first time since the last call to HistorySnapshot, save the current state.
+	//   Ctrl+Y needs this in order to bring you back to the point right before your last Ctrl+Z, because
+	//   the last history entry is what this Ctrl+Z brings you back to, not the current state.
+	if (!beforeRestore)
+	{
+		beforeRestore = gameModel->GetSimulation()->CreateSnapshot();
+		beforeRestore->Authors = Client::Ref().GetAuthorInfo();
+	}
+	gameModel->HistoryRestore();
+	auto &current = *gameModel->HistoryCurrent();
+	gameModel->GetSimulation()->Restore(current);
+	Client::Ref().OverwriteAuthorInfo(current.Authors);
 }
 
 void GameController::HistorySnapshot()
 {
-	std::deque<Snapshot*> history = gameModel->GetHistory();
-	unsigned int historyPosition = gameModel->GetHistoryPosition();
-	Snapshot * newSnap = gameModel->GetSimulation()->CreateSnapshot();
-	if (newSnap)
-	{
-		newSnap->Authors = Client::Ref().GetAuthorInfo();
-		while (historyPosition < history.size())
-		{
-			Snapshot * snap = history.back();
-			history.pop_back();
-			delete snap;
-		}
-		if (history.size() >= gameModel->GetUndoHistoryLimit())
-		{
-			Snapshot * snap = history.front();
-			history.pop_front();
-			delete snap;
-			if (historyPosition > history.size())
-				historyPosition--;
-		}
-		history.push_back(newSnap);
-		gameModel->SetHistory(history);
-		gameModel->SetHistoryPosition(std::min((size_t)historyPosition+1, history.size()));
-		delete gameModel->GetRedoHistory();
-		gameModel->SetRedoHistory(NULL);
-	}
+	beforeRestore.reset();
+	gameModel->HistoryPush(gameModel->GetSimulation()->CreateSnapshot());
 }
 
 void GameController::HistoryForward()
 {
-	std::deque<Snapshot*> history = gameModel->GetHistory();
-	if (!history.size())
+	if (!gameModel->HistoryCanForward())
+	{
 		return;
-	unsigned int historyPosition = gameModel->GetHistoryPosition();
-	unsigned int newHistoryPosition = std::min((size_t)historyPosition+1, history.size());
-	Snapshot *snap;
-	if (newHistoryPosition == history.size())
-		snap = gameModel->GetRedoHistory();
-	else
-		snap = history[newHistoryPosition];
-	if (!snap)
-		return;
-	gameModel->GetSimulation()->Restore(*snap);
-	Client::Ref().OverwriteAuthorInfo(snap->Authors);
-	gameModel->SetHistoryPosition(newHistoryPosition);
+	}
+	gameModel->HistoryForward();
+	auto &current = gameModel->HistoryCurrent() ? *gameModel->HistoryCurrent() : *beforeRestore;
+	gameModel->GetSimulation()->Restore(current);
+	Client::Ref().OverwriteAuthorInfo(current.Authors);
+	if (&current == beforeRestore.get())
+	{
+		beforeRestore.reset();
+	}
 }
 
 GameView * GameController::GetView()

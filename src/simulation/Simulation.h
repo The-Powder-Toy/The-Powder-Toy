@@ -6,6 +6,7 @@
 #include <cstddef>
 #include <vector>
 #include <array>
+#include <memory>
 
 #include "Particle.h"
 #include "Stickman.h"
@@ -121,8 +122,8 @@ public:
 	void SaveSimOptions(GameSave * gameSave);
 	SimulationSample GetSample(int x, int y);
 
-	Snapshot * CreateSnapshot();
-	void Restore(const Snapshot & snap);
+	std::unique_ptr<Snapshot> CreateSnapshot();
+	void Restore(const Snapshot &snap);
 
 	int is_blocking(int t, int x, int y);
 	int is_boundary(int pt, int x, int y);

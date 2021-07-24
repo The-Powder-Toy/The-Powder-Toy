@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <utility>
+#include <memory>
 
 #include "client/ClientListener.h"
 
@@ -20,6 +21,7 @@ class SaveFile;
 class Notification;
 class GameModel;
 class GameView;
+class Snapshot;
 class OptionsController;
 class LocalBrowserController;
 class SearchController;
@@ -51,6 +53,7 @@ private:
 	OptionsController * options;
 	CommandInterface * commandInterface;
 	std::vector<DebugInfo*> debugInfo;
+	std::unique_ptr<Snapshot> beforeRestore;
 	unsigned int debugFlags;
 	
 	void OpenSaveDone();

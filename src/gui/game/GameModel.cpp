@@ -20,6 +20,7 @@
 #include "client/SaveFile.h"
 #include "client/SaveInfo.h"
 #include "common/Platform.h"
+#include "common/tpt-compat.h"
 #include "graphics/Renderer.h"
 #include "simulation/Air.h"
 #include "simulation/GOLString.h"
@@ -42,7 +43,6 @@ GameModel::GameModel():
 	currentFile(NULL),
 	currentUser(0, ""),
 	toolStrength(1.0f),
-	redoHistory(NULL),
 	historyPosition(0),
 	activeColourPreset(0),
 	colourSelector(false),
@@ -196,7 +196,6 @@ GameModel::~GameModel()
 	delete clipboard;
 	delete currentSave;
 	delete currentFile;
-	delete redoHistory;
 	//if(activeTools)
 	//	delete[] activeTools;
 }
@@ -551,34 +550,51 @@ int GameModel::GetDecoSpace()
 	return this->decoSpace;
 }
 
-std::deque<Snapshot*> GameModel::GetHistory()
+const Snapshot *GameModel::HistoryCurrent() const
 {
-	return history;
+	if (historyPosition > history.size())
+	{
+		return nullptr;
+	}
+	return historyCurrent.get();
 }
 
-unsigned int GameModel::GetHistoryPosition()
+bool GameModel::HistoryCanRestore() const
 {
-	return historyPosition;
+	return historyPosition > 0U;
 }
 
-void GameModel::SetHistory(std::deque<Snapshot*> newHistory)
+void GameModel::HistoryRestore()
 {
-	history = newHistory;
+	historyPosition -= 1U;
+	historyCurrent = std::make_unique<Snapshot>(*history[historyPosition]);
 }
 
-void GameModel::SetHistoryPosition(unsigned int newHistoryPosition)
+bool GameModel::HistoryCanForward() const
 {
-	historyPosition = newHistoryPosition;
+	return historyPosition < history.size();
 }
 
-Snapshot * GameModel::GetRedoHistory()
+void GameModel::HistoryForward()
 {
-	return redoHistory;
+	historyPosition += 1U;
+	historyCurrent = historyPosition < history.size() ? std::make_unique<Snapshot>(*history[historyPosition]) : nullptr;
 }
 
-void GameModel::SetRedoHistory(Snapshot * redo)
+void GameModel::HistoryPush(std::unique_ptr<Snapshot> last)
 {
-	redoHistory = redo;
+	while (historyPosition < history.size())
+	{
+		history.pop_back();
+	}
+	history.push_back(std::move(last));
+	historyPosition += 1U;
+	historyCurrent.reset();
+	while (undoHistoryLimit < history.size())
+	{
+		history.pop_front();
+		historyPosition -= 1U;
+	}
 }
 
 unsigned int GameModel::GetUndoHistoryLimit()
