@@ -185,6 +185,8 @@ void GameController::HistoryRestore()
 
 void GameController::HistorySnapshot()
 {
+	// * Calling HistorySnapshot means the user decided to use the current state and
+	//   forfeit the option to go back to whatever they Ctrl+Z'd their way back from.
 	beforeRestore.reset();
 	gameModel->HistoryPush(gameModel->GetSimulation()->CreateSnapshot());
 }
@@ -196,6 +198,8 @@ void GameController::HistoryForward()
 		return;
 	}
 	gameModel->HistoryForward();
+	// * If gameModel has nothing more to give, we've Ctrl+Y'd our way back to the original
+	//   state; restore this instead, then get rid of it.
 	auto &current = gameModel->HistoryCurrent() ? *gameModel->HistoryCurrent() : *beforeRestore;
 	gameModel->GetSimulation()->Restore(current);
 	Client::Ref().OverwriteAuthorInfo(current.Authors);

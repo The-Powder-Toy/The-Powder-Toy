@@ -22,6 +22,7 @@ class SaveFile;
 class Simulation;
 class Renderer;
 class Snapshot;
+struct SnapshotDelta;
 class GameSave;
 
 class ToolSelection
@@ -31,6 +32,14 @@ public:
 	{
 		ToolPrimary, ToolSecondary, ToolTertiary
 	};
+};
+
+struct HistoryEntry
+{
+	std::unique_ptr<Snapshot> snap;
+	std::unique_ptr<SnapshotDelta> delta;
+
+	~HistoryEntry();
 };
 
 class GameModel
@@ -65,7 +74,7 @@ private:
 	Tool * regularToolset[4];
 	User currentUser;
 	float toolStrength;
-	std::deque<std::unique_ptr<Snapshot>> history;
+	std::deque<HistoryEntry> history;
 	std::unique_ptr<Snapshot> historyCurrent;
 	unsigned int historyPosition;
 	unsigned int undoHistoryLimit;
