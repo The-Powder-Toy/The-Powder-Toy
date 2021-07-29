@@ -52,14 +52,14 @@ ColourPickerActivity::ColourPickerActivity(ui::Colour initialColour, OnPicked on
 	};
 
 
-	hSlider = new ui::Slider(ui::Point(0,134), ui::Point(Size.X,17), 359); 
+	hSlider = new ui::Slider(ui::Point(0,134), ui::Point(Size.X,17), 359);
 	hSlider->SetActionCallback({ colourChangeSlider });
 	AddComponent(hSlider);
-	
+
 	sSlider = new ui::Slider(ui::Point(0, 134 + 17), ui::Point(Size.X, 17), 255);
 	sSlider->SetActionCallback({ colourChangeSlider });
 	AddComponent(sSlider);
-	
+
 	vSlider = new ui::Slider(ui::Point(0, 134 + 34), ui::Point(Size.X, 17), 255);
 	vSlider->SetActionCallback({ colourChangeSlider });
 	AddComponent(vSlider);
@@ -107,7 +107,7 @@ ColourPickerActivity::ColourPickerActivity(ui::Colour initialColour, OnPicked on
 	SetOkayButton(doneButton);
 
 	RGB_to_HSV(initialColour.Red, initialColour.Green, initialColour.Blue, &currentHue, &currentSaturation, &currentValue);
-	currentAlpha = initialColour.Alpha;	
+	currentAlpha = initialColour.Alpha;
 	UpdateTextboxes(initialColour.Red, initialColour.Green, initialColour.Blue, initialColour.Alpha);
 	UpdateSliders();
 }
@@ -126,21 +126,19 @@ void ColourPickerActivity::UpdateSliders()
 	hSlider->SetValue(currentHue);
 	sSlider->SetValue(currentSaturation);
 	vSlider->SetValue(currentValue);
-		
+
 	int r, g, b;
-	
+
 	//Value gradient
 	HSV_to_RGB(currentHue, currentSaturation, 255, &r, &g, &b);
 	vSlider->SetColour(ui::Colour(0, 0, 0), ui::Colour(r, g, b));
 
 	//Saturation gradient
-	HSV_to_RGB(currentHue, 255, currentValue, &r, &g, &b);
-
-	int whiteGradient = 0;
 	if (currentValue != 0)
-	
-	sSlider->SetColour(ui::Colour(currentValue, currentValue, currentValue), ui::Colour(r, g, b));
-
+	{
+		HSV_to_RGB(currentHue, 255, currentValue, &r, &g, &b);
+		sSlider->SetColour(ui::Colour(currentValue, currentValue, currentValue), ui::Colour(r, g, b));
+	}
 }
 
 void ColourPickerActivity::OnTryExit(ExitMethod method)
@@ -233,7 +231,7 @@ void ColourPickerActivity::OnMouseUp(int x, int y, unsigned button)
 			currentHue = 359;
 		if(currentHue < 0)
 			currentHue = 0;
-	}	
+	}
 }
 
 void ColourPickerActivity::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
@@ -262,8 +260,6 @@ void ColourPickerActivity::OnDraw()
 
 	g->drawrect(Position.X+4, Position.Y+4, 258, 130, 180, 180, 180, 255);
 
-	//g->drawrect(Position.X+4, Position.Y+4+4+128, 258, 12, 180, 180, 180, 255);
-
 
 	int offsetX = Position.X+5;
 	int offsetY = Position.Y+5;
@@ -286,22 +282,22 @@ void ColourPickerActivity::OnDraw()
 			g->blendpixel(currx, (saturation/2)+offsetY, cr, cg, cb, currentAlpha);
 		}
 	}
-		
+
 	//Draw hue bar gradient
-	for (int rx = 0; rx < (hSlider->Size.X) - 10; rx++)
+	auto gradientWidth = hSlider->Size.X - 10;
+	for (int rx = 0; rx < gradientWidth; rx++)
 	{
 		int red, green, blue;
-
-		int hue = ((float)rx / (float)hSlider->Size.X) * 359.f ; 
-
-		
+		int hue = rx * 360 / gradientWidth;
 		HSV_to_RGB(hue, currentSaturation, currentValue, &red, &green, &blue);
-		
 		for (int ry = 0; ry < (hSlider->Size.Y / 2) - 1; ry++)
+		{
 			g->blendpixel(
 				rx + offsetX + hSlider->Position.X,
 				ry + offsetY + hSlider->Position.Y,
-				red,green,blue,currentAlpha);
+				red, green, blue, currentAlpha
+			);
+		}
 	}
 
 	//draw color square pointer

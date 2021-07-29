@@ -23,8 +23,7 @@ class ColourPickerActivity : public WindowActivity
 	int currentAlpha;
 
 	bool mouseDown;
-	//bool valueMouseDown;
-	
+
 	ui::Slider* hSlider;
 	ui::Slider* sSlider;
 	ui::Slider* vSlider;
