@@ -110,8 +110,10 @@ sim(sim_)
 
 void PropertyWindow::SetProperty(bool warn)
 {
+	tool->validProperty = false;
 	if(property->GetOption().second!=-1 && textField->GetText().length() > 0)
 	{
+		tool->validProperty = true;
 		String value = textField->GetText().ToUpper();
 		try {
 			switch(properties[property->GetOption().second].Type)
@@ -186,7 +188,6 @@ void PropertyWindow::SetProperty(bool warn)
 #endif
 
 					tool->propValue.Integer = v;
-					tool->validProperty = true;
 					break;
 				}
 				case StructProperty::UInteger:
@@ -210,7 +211,6 @@ void PropertyWindow::SetProperty(bool warn)
 					std::cout << "Got uint value " << v << std::endl;
 #endif
 					tool->propValue.UInteger = v;
-					tool->validProperty = true;
 					break;
 				}
 				case StructProperty::Float:
@@ -227,20 +227,15 @@ void PropertyWindow::SetProperty(bool warn)
 			tool->propOffset = properties[property->GetOption().second].Offset;
 			tool->propType = properties[property->GetOption().second].Type;
 			tool->changeType = properties[property->GetOption().second].Name == "type";
-			tool->validProperty = true;
 		} catch (const std::exception& ex) {
 			tool->validProperty = false;
 			if (warn)
 				new ErrorMessage("Could not set property", "Invalid value provided");
 			return;
 		}
-		if (tool->validProperty) {
-			Client::Ref().SetPref("Prop.Type", property->GetOption().second);
-			Client::Ref().SetPrefUnicode("Prop.Value", textField->GetText());
-		}
+		Client::Ref().SetPref("Prop.Type", property->GetOption().second);
+		Client::Ref().SetPrefUnicode("Prop.Value", textField->GetText());
 	}
-	else
-		tool->validProperty = false;
 }
 
 void PropertyWindow::OnTryExit(ExitMethod method)
