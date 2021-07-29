@@ -10,6 +10,7 @@ namespace ui
 {
 	class Textbox;
 	class Label;
+	class Slider;
 }
 
 class ColourPickerActivity : public WindowActivity
@@ -22,7 +23,10 @@ class ColourPickerActivity : public WindowActivity
 	int currentAlpha;
 
 	bool mouseDown;
-	bool valueMouseDown;
+
+	ui::Slider* hSlider;
+	ui::Slider* sSlider;
+	ui::Slider* vSlider;
 
 	ui::Textbox * rValue;
 	ui::Textbox * gValue;
@@ -33,6 +37,7 @@ class ColourPickerActivity : public WindowActivity
 	OnPicked onPicked;
 
 	void UpdateTextboxes(int r, int g, int b, int a);
+	void UpdateSliders();
 public:
 	ColourPickerActivity(ui::Colour initialColour, OnPicked onPicked = nullptr);
 	virtual ~ColourPickerActivity() = default;
