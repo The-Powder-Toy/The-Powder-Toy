@@ -192,6 +192,10 @@ simulation_elem_ids = [
 	[ 'ROCK',   190 ],
 	[ 'LITH',   191 ],
 	[ 'THOR',   192 ],
+	[ 'NIH',   193 ],
+	[ 'NIHM',   194 ],
+	[ 'GGOO',   195 ],
+	[ 'RGOO',   196 ],
 ]
 
 simulation_elem_src = []
