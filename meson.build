@@ -76,16 +76,15 @@ if use_tpt_libs != 'no'
 	if copt_architecture == 'x86_64' and copt_platform == 'win' and copt_compiler == 'gcc'
 		nope = true
 	endif
+	if nope
+		error('no prebuilt @0@-@1@-@2@-@3@ libraries are currently provided'.format(copt_architecture, copt_platform, copt_compiler, use_tpt_libs))
+	endif
 	quad_compiler = copt_compiler
 	if use_tpt_libs == 'dynamic' and copt_platform == 'win'
 		# DLLs should be compatible with anything, right?
 		quad_compiler = 'msvc'
 	endif
-	quad = '@0@-@1@-@2@-@3@'.format(copt_architecture, copt_platform, quad_compiler, use_tpt_libs)
-	if nope
-		error('no prebuilt @0@ libraries are currently provided'.format(quad))
-	endif
-	tpt_libs = subproject('tpt-libs-prebuilt-@0@-@1@'.format(quad, tpt_libs_vtag))
+	tpt_libs = subproject('tpt-libs-prebuilt-@0@-@1@-@2@-@3@-@4@'.format(copt_architecture, copt_platform, quad_compiler, use_tpt_libs, tpt_libs_vtag))
 endif
 
 uopt_native = get_option('native')
