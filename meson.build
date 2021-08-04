@@ -175,7 +175,7 @@ if copt_msvc
 	project_c_args += args_msvc
 	project_cpp_args += args_msvc
 else
-	args_ccomp = [ '-U__STRICT_ANSI__', '-Wno-unused-result' ]
+	args_ccomp = [ '-Wno-unused-result' ]
 	if copt_platform == 'mac'
 		if uopt_x86_sse_level >= 0
 			message('SSE level explicitly configured but unavailable on macosx')
