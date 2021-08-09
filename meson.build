@@ -234,6 +234,10 @@ if copt_platform == 'win'
 			configure_file(input: input_and_output[0], output: input_and_output[1], copy: true)
 		endforeach
 	endif
+elif copt_platform == 'lin'
+	if uopt_static != 'none'
+		project_link_args = [ '-static-libgcc', '-static-libstdc++' ]
+	endif
 endif
 
 if copt_platform == 'mac' and uopt_lua == 'luajit'

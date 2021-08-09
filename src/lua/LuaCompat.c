@@ -19,11 +19,13 @@ void tpt_lua_getmainthread(lua_State *L)
 
 #else
 
+# ifndef lua_pushglobaltable // * Thank you moonjit
 // Implement function added in lua 5.2 that we now use
 void lua_pushglobaltable(lua_State *L)
 {
 	lua_pushvalue(L, LUA_GLOBALSINDEX);
 }
+# endif
 
 void tpt_lua_setmainthread(lua_State *L)
 {
