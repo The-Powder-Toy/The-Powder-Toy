@@ -130,8 +130,6 @@ namespace ui
 		int maxWidth;
 		int maxHeight;
 
-		bool momentumScroll;
-
 		String textEditingBuf;
 
 	public:

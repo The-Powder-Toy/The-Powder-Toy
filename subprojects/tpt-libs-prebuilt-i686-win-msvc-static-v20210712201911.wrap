@@ -1,6 +1,0 @@
-[wrap-file]
-directory = tpt-libs-prebuilt-i686-win-msvc-static-v20210712201911
-
-source_url = https://github.com/The-Powder-Toy/tpt-libs/releases/download/v20210712201911/tpt-libs-prebuilt-i686-win-msvc-static-v20210712201911.zip
-source_filename = tpt-libs-prebuilt-i686-win-msvc-static-v20210712201911.zip
-source_hash = 0f8064b4fdf5ae99197231c3a2172fd3f6564dab24c999e2e7cb084534e827bc
