@@ -30,7 +30,7 @@ void Element::Element_ABTR()
 
 	Weight = 100;
 
-	HeatConduct = 0;
+	HeatConduct = 1;
 	Description = "Ablator. Useful for short bursts of heat resistance";
 
 	Properties = TYPE_SOLID;
@@ -41,8 +41,8 @@ void Element::Element_ABTR()
 	HighPressureTransition = NT;
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
-	HighTemperature = 9950.0f;
-	HighTemperatureTransition = PT_CO2;
+	HighTemperature = ITH;
+	HighTemperatureTransition = NT;
 
 	Update = &update;
 	Graphics = &graphics;
@@ -72,6 +72,7 @@ static int update(UPDATE_FUNC_ARGS)
 			r = pmap[y+ry][x+rx];
 			if (TYP(r)==PT_FIRE || TYP(r)==PT_PLSM)
 			{
+				parts[i].life--;
 				if (RNG::Ref().chance(parts[i].temp, 10000))
 				{
 					sim->part_change_type(i, x, y, PT_CO2);
