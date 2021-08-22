@@ -73,10 +73,13 @@ static int update(UPDATE_FUNC_ARGS)
 			if (TYP(r)==PT_FIRE || TYP(r)==PT_PLSM)
 			{
 				parts[i].life--;
-				if (RNG::Ref().chance(parts[i].temp, 10000))
+				if (parts[i].life == 0)
 				{
-					sim->part_change_type(i, x, y, PT_CO2);
-					return 1;
+					if (RNG::Ref().chance(parts[i].temp, 10000))
+					{
+						sim->part_change_type(i, x, y, PT_CO2);
+						return 1;
+					}
 				}
 			}
 		}
