@@ -111,14 +111,14 @@ static int update(UPDATE_FUNC_ARGS)
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
-	*colr -= cpart->life*15;
-	*colg -= cpart->life*15;
-	*colb -= cpart->life*15;
-	if (*colr<=50)
-		*colr = 50;
-	if (*colg<=50)
-		*colg = 50;
-	if (*colb<=20)
-		*colb = 20;
+	*colr += cpart->life*15;
+	*colg += cpart->life*15;
+	*colb += cpart->life*15;
+	if (*colr<=61)
+		*colr = 61;
+	if (*colg<=61)
+		*colg = 61;
+	if (*colb<=61)
+		*colb = 61;
 	return 0;
 }
