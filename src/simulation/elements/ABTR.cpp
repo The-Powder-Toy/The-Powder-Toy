@@ -92,7 +92,7 @@ static int update(UPDATE_FUNC_ARGS)
 			r = pmap[y+ry][x+rx];
 			if (!r)
 				continue;
-			if (TYP(r)==PT_SPNG&&(parts[i].life>parts[ID(r)].life)&&parts[i].life>0)//diffusion
+			if (TYP(r)==PT_ABTR&&(parts[i].life>parts[ID(r)].life)&&parts[i].life>0)//diffusion
 			{
 				tmp = parts[i].life - parts[ID(r)].life;
 				if (tmp ==1)
