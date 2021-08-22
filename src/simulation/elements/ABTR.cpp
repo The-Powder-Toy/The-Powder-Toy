@@ -22,7 +22,7 @@ void Element::Element_ABTR()
 	HotAir = 0.000f  * CFDS;
 	Falldown = 0;
 
-	Flammable = 20;
+	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 30;
