@@ -30,7 +30,7 @@ void Element::Element_ABTR()
 
 	Weight = 100;
 
-	HeatConduct = 0;
+	HeatConduct = 1;
 	Description = "Ablator. Useful for short bursts of heat resistance";
 
 	Properties = TYPE_SOLID;
