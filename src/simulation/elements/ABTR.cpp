@@ -26,6 +26,7 @@ void Element::Element_ABTR()
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 30;
+	DefaultProperties.life == 100;
 
 	Weight = 100;
 
