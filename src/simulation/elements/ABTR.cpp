@@ -70,11 +70,11 @@ static int update(UPDATE_FUNC_ARGS)
 				}
 			}
 			r = pmap[y+ry][x+rx];
-			if (TYP(r)==PT_FIRE)
+			if (TYP(r)==PT_FIRE || TYP(r)==PT_PLSM)
 			{
 				if (RNG::Ref().chance(parts[i].temp, 10000))
 				{
-					sim->part_change_type(i, x, y, PT_FIRE);
+					sim->part_change_type(i, x, y, PT_CO2);
 					return 1;
 				}
 			}
