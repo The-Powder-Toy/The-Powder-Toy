@@ -96,13 +96,11 @@ static int update(UPDATE_FUNC_ARGS)
 				{
 					parts[ID(r)].life ++;
 					parts[i].life --;
-					trade = 9;
 				}
 				else if (tmp>0)
 				{
 					parts[ID(r)].life += tmp/2;
 					parts[i].life -= tmp/2;
-					trade = 9;
 				}
 			}
 		}
