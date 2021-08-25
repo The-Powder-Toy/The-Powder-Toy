@@ -49,7 +49,7 @@ void Element::Element_NIH()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	parts[i].temp = parts[i].temp *= 1.1f;
+	parts[i].temp *= 1.1f;
 
 	if (RNG::Ref().chance(1, 100) && RNG::Ref().chance(int(5.0f * sim->pv[y / CELL][x / CELL]), 100))
 	{

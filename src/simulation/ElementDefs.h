@@ -5,7 +5,7 @@
 //#include "Simulation.h"
 
 #define R_TEMP 22
-#define MAX_TEMP 9999
+#define MAX_TEMP 1000000
 #define MIN_TEMP 0
 #define O_MAX_TEMP 3500
 #define O_MIN_TEMP -273

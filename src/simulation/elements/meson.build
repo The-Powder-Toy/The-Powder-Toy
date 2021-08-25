@@ -196,6 +196,9 @@ simulation_elem_ids = [
 	[ 'NIHM',   194 ],
 	[ 'GGOO',   195 ],
 	[ 'RGOO',   196 ],
+        [ 'BLD',   197 ],
+	[ 'DT',   198 ],
+	[ 'LUNG',   199 ],
 ]
 
 simulation_elem_src = []
