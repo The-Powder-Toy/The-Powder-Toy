@@ -28,7 +28,7 @@ void Element::Element_BLD()
 	Hardness = 20;
 
 	Weight = 35;
-
+	DefaultProperties.life = 500;
 	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
 	HeatConduct = 29;
 	Description = "Blood. Absorbs oxygen and transfers it to other living pixels.";
@@ -55,46 +55,58 @@ static int update(UPDATE_FUNC_ARGS)
     rx =  RNG::Ref().between(-2, 2);
     ry =  RNG::Ref().between(-2, 2);
 
-    // O2 use by blood itself
-    if (RNG::Ref().chance(1, 200)){
+    // O2 use by blood itself (made very slow for somewhat accuracy)
+    if (RNG::Ref().chance(1, 1000)){
 
 		if (parts[i].tmp > 0){
         	parts[i].tmp -= 1;
+			parts[i].tmp2 += 1;
 		}
-
-		parts[i].tmp2 += 1;
     }
 
     
     if (BOUNDS_CHECK && (rx || ry))
     {
         r = pmap[y+ry][x+rx];
-        if (!r)
-            return 0;
-
-		// Oxygen collection
-        if (parts[i].tmp < 10 && TYP(r) == PT_O2){
-            parts[i].tmp += 5;
-            sim->part_change_type(ID(r), x, y, PT_NONE);
-        }
-		// Diffusion into surrounding blood
-		else if (TYP(r) == PT_BLD){
-
-			int ir = ID(r);
-
-			if (parts[i].tmp > parts[ir].tmp){
-				parts[i].tmp--;
-				parts[ir].tmp++;
+        if (r){
+			// Oxygen collection
+			if (parts[i].tmp < 10 && TYP(r) == PT_O2){
+				parts[i].tmp += 5;
+				sim->part_change_type(ID(r), x, y, PT_NONE);
 			}
-			if (parts[i].tmp2 > parts[ir].tmp2){
-				parts[i].tmp2--;
-				parts[ir].tmp2++;
+			// Diffusion into surrounding blood
+			else if (TYP(r) == PT_BLD){
+
+				int ir = ID(r);
+
+				if (parts[i].tmp > parts[ir].tmp){
+					parts[i].tmp--;
+					parts[ir].tmp++;
+				}
+				if (parts[i].tmp2 > parts[ir].tmp2){
+					parts[i].tmp2--;
+					parts[ir].tmp2++;
+				}
 			}
 		}
     }
 
+	// Health management
+	if (RNG::Ref().chance(1, 100)){
+		// Damage check
+		if (parts[i].tmp2 > 9 || parts[i].tmp < 1){
+			parts[i].life--;
+		}
+		// Otherwise heal
+		else{
+			if (parts[i].life < 500){
+				parts[i].life++;
+			}
+		}
+	}
+
 	// Death check
-	if (parts[i].tmp2 > 9){
+	if (parts[i].life < 1){
 		sim->part_change_type(i, x, y, PT_DT);
 	}
 
