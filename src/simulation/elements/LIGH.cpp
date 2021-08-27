@@ -3,7 +3,7 @@
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
 static void create(ELEMENT_CREATE_FUNC_ARGS);
-static void create_line_par(Simulation * sim, int x1, int y1, int x2, int y2, int c, float temp, int life, int tmp, int tmp2);
+static void create_line_par(Simulation * sim, int x1, int y1, int x2, int y2, int c, float temp, int life, int tmp, int tmp2, int i);
 
 void Element::Element_LIGH()
 {
@@ -55,18 +55,17 @@ constexpr float LIGHTING_POWER = 0.65f;
 static int update(UPDATE_FUNC_ARGS)
 {
 	/*
-	 *
 	 * tmp2:
-	 * -1 - part will be removed
-	 * 0 - "branches" of the lightning
-	 * 1 - bending
+	 * 0 - bending
+	 * 1 - bending (particle order deferred)
 	 * 2 - branching
-	 * 3 - transfer spark or make destruction
+	 * 3 - branching (particle order deferred)
 	 * 4 - first pixel
+	 * 5+  normal segment. Starts at 8, counts down and is removed at 5
 	 *
-	 * life - "thickness" of lighting (but anyway one pixel)
+	 * life - power of lightning, influences reaction strength and segment length
 	 *
-	 * tmp - angle of lighting, measured in degrees anticlockwise from the positive x direction
+	 * tmp - angle of lighting, measured in degrees counterclockwise from the positive x direction
 	 *
 	*/
 	int r,rx,ry,rt, multipler, powderful;
@@ -154,21 +153,19 @@ static int update(UPDATE_FUNC_ARGS)
 				sim->pv[y/CELL][x/CELL] += powderful/400;
 				if (sim->elements[TYP(r)].HeatConduct) parts[ID(r)].temp = restrict_flt(parts[ID(r)].temp+powderful/1.3, MIN_TEMP, MAX_TEMP);
 			}
-	if (parts[i].tmp2==3)
+	// Deferred branch or bend; or in removal countdown stage
+	if (parts[i].tmp2 == 1 || parts[i].tmp2 == 3 || parts[i].tmp2 >= 6)
 	{
-		parts[i].tmp2=0;
-		return 1;
+		// Probably set via console, make sure it doesn't stick around forever
+		if (parts[i].tmp2 >= 9)
+			parts[i].tmp2 = 7;
+		else
+			parts[i].tmp2--;
+		return 0;
 	}
-	else if (parts[i].tmp2<=-1)
+	if (parts[i].tmp2 == 5 || parts[i].life <= 1)
 	{
 		sim->kill_part(i);
-		return 1;
-	}
-	else if (parts[i].tmp2<=0 || parts[i].life<=1)
-	{
-		if (parts[i].tmp2>0)
-			parts[i].tmp2=0;
-		parts[i].tmp2--;
 		return 1;
 	}
 
@@ -176,20 +173,20 @@ static int update(UPDATE_FUNC_ARGS)
 	multipler = int(parts[i].life * 1.5) + RNG::Ref().between(0, parts[i].life);
 	rx=int(cos(angle*M_PI/180)*multipler);
 	ry=int(-sin(angle*M_PI/180)*multipler);
-	create_line_par(sim, x, y, x+rx, y+ry, PT_LIGH, parts[i].temp, parts[i].life, int(angle), parts[i].tmp2);
-	if (parts[i].tmp2==2)// && pNear==-1)
+	create_line_par(sim, x, y, x+rx, y+ry, PT_LIGH, parts[i].temp, parts[i].life, int(angle), parts[i].tmp2, i);
+	if (parts[i].tmp2 == 2)// && pNear == -1)
 	{
 		angle2 = float(((int)angle + RNG::Ref().between(-100, 100)) % 360);
 		rx=int(cos(angle2*M_PI/180)*multipler);
 		ry=int(-sin(angle2*M_PI/180)*multipler);
-		create_line_par(sim, x, y, x+rx, y+ry, PT_LIGH, parts[i].temp, parts[i].life, int(angle2), parts[i].tmp2);
+		create_line_par(sim, x, y, x+rx, y+ry, PT_LIGH, parts[i].temp, parts[i].life, int(angle2), parts[i].tmp2, i);
 	}
 
-	parts[i].tmp2=-1;
+	parts[i].tmp2 = 7;
 	return 1;
 }
 
-static bool create_LIGH(Simulation * sim, int x, int y, int c, float temp, int life, int tmp, int tmp2, bool last)
+static bool create_LIGH(Simulation * sim, int x, int y, int c, float temp, int life, int tmp, int tmp2, bool last, int i)
 {
 	int p = sim->create_part(-1, x, y,c);
 	if (p != -1)
@@ -198,13 +195,24 @@ static bool create_LIGH(Simulation * sim, int x, int y, int c, float temp, int l
 		sim->parts[p].tmp = tmp;
 		if (last)
 		{
-			sim->parts[p].tmp2 = 1 + (RNG::Ref().between(0, 199) > tmp2*tmp2/10+60);
-			sim->parts[p].life = (int)(life/1.5 - RNG::Ref().between(0, 1));
+			int nextSegmentLife = (int)(life/1.5 - RNG::Ref().between(0, 1));
+			sim->parts[p].life = nextSegmentLife;
+			if (nextSegmentLife > 1)
+			{
+				// Decide whether to branch or to bend
+				bool doBranch = RNG::Ref().chance(7, 10);
+				sim->parts[p].tmp2 = (doBranch ? 2 : 0) + (p > i && tmp2 != 4 ? 1 : 0);
+			}
+			// Not enough energy to continue
+			else
+			{
+				sim->parts[p].tmp2 = 7 + (p > i ? 1 : 0);
+			}
 		}
 		else
 		{
 			sim->parts[p].life = life;
-			sim->parts[p].tmp2 = 0;
+			sim->parts[p].tmp2 = 7 + (p > i ? 1 : 0);
 		}
 	}
 	else if (x >= 0 && x < XRES && y >= 0 && y < YRES)
@@ -217,7 +225,7 @@ static bool create_LIGH(Simulation * sim, int x, int y, int c, float temp, int l
 	return false;
 }
 
-static void create_line_par(Simulation * sim, int x1, int y1, int x2, int y2, int c, float temp, int life, int tmp, int tmp2)
+static void create_line_par(Simulation * sim, int x1, int y1, int x2, int y2, int c, float temp, int life, int tmp, int tmp2, int i)
 {
 	bool reverseXY = abs(y2-y1) > abs(x2-x1), back = false;
 	int x, y, dx, dy, Ystep;
@@ -247,9 +255,9 @@ static void create_line_par(Simulation * sim, int x1, int y1, int x2, int y2, in
 		{
 			bool ret;
 			if (reverseXY)
-				ret = create_LIGH(sim, y, x, c, temp, life, tmp, tmp2,x==x2);
+				ret = create_LIGH(sim, y, x, c, temp, life, tmp, tmp2,x==x2, i);
 			else
-				ret = create_LIGH(sim, x, y, c, temp, life, tmp, tmp2,x==x2);
+				ret = create_LIGH(sim, x, y, c, temp, life, tmp, tmp2,x==x2, i);
 			if (ret)
 				return;
 
@@ -267,9 +275,9 @@ static void create_line_par(Simulation * sim, int x1, int y1, int x2, int y2, in
 		{
 			bool ret;
 			if (reverseXY)
-				ret = create_LIGH(sim, y, x, c, temp, life, tmp, tmp2,x==x2);
+				ret = create_LIGH(sim, y, x, c, temp, life, tmp, tmp2,x==x2, i);
 			else
-				ret = create_LIGH(sim, x, y, c, temp, life, tmp, tmp2,x==x2);
+				ret = create_LIGH(sim, x, y, c, temp, life, tmp, tmp2,x==x2, i);
 			if (ret)
 				return;
 
