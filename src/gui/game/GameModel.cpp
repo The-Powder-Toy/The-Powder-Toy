@@ -1640,26 +1640,20 @@ void GameModel::SetPerfectCircle(bool perfectCircle)
 	}
 }
 
-void GameModel::RemoveCustomGOLType(const ByteString &identifier)
+bool GameModel::RemoveCustomGOLType(const ByteString &identifier)
 {
+	bool removedAny = false;
 	auto customGOLTypes = Client::Ref().GetPrefByteStringArray("CustomGOL.Types");
 	Json::Value newCustomGOLTypes(Json::arrayValue);
 	for (auto gol : customGOLTypes)
 	{
 		auto parts = gol.PartitionBy(' ');
-		bool remove = false;
-		if (parts.size())
-		{
-			if ("DEFAULT_PT_LIFECUST_" + parts[0] == identifier)
-			{
-				remove = true;
-			}
-		}
-		if (!remove)
-		{
+		if (parts.size() && "DEFAULT_PT_LIFECUST_" + parts[0] == identifier)
+			removedAny = true;
+		else
 			newCustomGOLTypes.append(gol);
-		}
 	}
 	Client::Ref().SetPref("CustomGOL.Types", newCustomGOLTypes);
 	BuildMenus();
+	return removedAny;
 }

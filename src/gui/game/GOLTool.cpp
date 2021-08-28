@@ -156,33 +156,10 @@ void GOLWindow::Validate()
 	Client::Ref().SetPrefUnicode("CustomGOL.Name", nameString);
 	Client::Ref().SetPrefUnicode("CustomGOL.Rule", ruleString);
 
-	auto customGOLTypes = Client::Ref().GetPrefByteStringArray("CustomGOL.Types");
-	Json::Value newCustomGOLTypes(Json::arrayValue);
-	bool nameTaken = false;
-	for (auto gol : customGOLTypes)
-	{
-		auto parts = gol.FromUtf8().PartitionBy(' ');
-		if (parts.size())
-		{
-			if (parts[0] == nameString)
-			{
-				nameTaken = true;
-			}
-		}
-		newCustomGOLTypes.append(gol);
-	}
-	if (nameTaken)
-	{
-		new ErrorMessage("Could not add GOL type", "Name already taken");
-		return;
-	}
+	auto color1 = (((highColour.Red << 8) | highColour.Green) << 8) | highColour.Blue;
+	auto color2 = (((lowColour.Red << 8) | lowColour.Green) << 8) | lowColour.Blue;
+	AddCustomGol(ruleString, nameString, color1, color2);
 
-	StringBuilder sb;
-	auto colour1 = (((highColour.Red << 8) | highColour.Green) << 8) | highColour.Blue;
-	auto colour2 = (((lowColour.Red << 8) | lowColour.Green) << 8) | lowColour.Blue;
-	sb << nameString << " " << ruleString << " " << colour1 << " " << colour2;
-	newCustomGOLTypes.append(sb.Build().ToUtf8());
-	Client::Ref().SetPref("CustomGOL.Types", newCustomGOLTypes);
 	tool->gameModel->SelectNextIdentifier = "DEFAULT_PT_LIFECUST_" + nameString.ToAscii();
 	tool->gameModel->SelectNextTool = toolSelection;
 }

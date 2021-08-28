@@ -34,6 +34,7 @@
 #include "simulation/ElementCommon.h"
 #include "simulation/ElementClasses.h"
 #include "simulation/ElementGraphics.h"
+#include "simulation/GOLString.h"
 #include "simulation/Simulation.h"
 #include "simulation/ToolClasses.h"
 
@@ -217,6 +218,7 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 		{"get_clipboard", &platform_clipboardCopy},
 		{"set_clipboard", &platform_clipboardPaste},
 		{"setdrawcap", &luatpt_setdrawcap},
+		{"perfectCircleBrush", &luatpt_perfectCircle},
 		{NULL,NULL}
 	};
 
@@ -822,6 +824,7 @@ void LuaScriptInterface::initSimulationAPI()
 		{"decoBox", simulation_decoBox},
 		{"decoColor", simulation_decoColor},
 		{"decoColour", simulation_decoColor},
+		{"floodDeco", simulation_floodDeco},
 		{"clearSim", simulation_clearSim},
 		{"clearRect", simulation_clearRect},
 		{"resetTemp", simulation_resetTemp},
@@ -852,6 +855,10 @@ void LuaScriptInterface::initSimulationAPI()
 		{"framerender", simulation_framerender},
 		{"gspeed", simulation_gspeed},
 		{"takeSnapshot", simulation_takeSnapshot},
+		{"replaceModeFlags", simulation_replaceModeFlags},
+		{"listCustomGol", simulation_listCustomGol},
+		{"addCustomGol", simulation_addCustomGol},
+		{"removeCustomGol", simulation_removeCustomGol},
 		{NULL, NULL}
 	};
 	luaL_register(l, "simulation", simulationAPIMethods);
@@ -1684,6 +1691,24 @@ int LuaScriptInterface::simulation_decoColor(lua_State * l)
 	return 0;
 }
 
+int LuaScriptInterface::simulation_floodDeco(lua_State * l)
+{
+	int x = luaL_checkinteger(l, 1);
+	int y = luaL_checkinteger(l, 2);
+	int r = luaL_checkinteger(l, 3);
+	int g = luaL_checkinteger(l, 4);
+	int b = luaL_checkinteger(l, 5);
+	int a = luaL_checkinteger(l, 6);
+
+	if (x < 0 || x >= XRES || y < 0 || y >= YRES)
+		return luaL_error(l, "coordinates out of range (%d,%d)", x, y);
+
+	// hilariously broken, intersects with console and all Lua graphics
+	pixel loc = luacon_ren->vid[x + y * WINDOWW];
+	luacon_sim->ApplyDecorationFill(luacon_ren, x, y, r, g, b, a, PIXR(loc), PIXG(loc), PIXB(loc));
+	return 0;
+}
+
 int LuaScriptInterface::simulation_clearSim(lua_State * l)
 {
 	luacon_controller->ClearSim();
@@ -2242,6 +2267,86 @@ int LuaScriptInterface::simulation_takeSnapshot(lua_State * l)
 {
 	luacon_controller->HistorySnapshot();
 	return 0;
+}
+
+int LuaScriptInterface::simulation_replaceModeFlags(lua_State *l)
+{
+	if (lua_gettop(l) == 0)
+	{
+		lua_pushinteger(l, luacon_controller->GetReplaceModeFlags());
+		return 1;
+	}
+	unsigned int flags = luaL_checkinteger(l, 1);
+	if (flags & ~(REPLACE_MODE | SPECIFIC_DELETE))
+		return luaL_error(l, "Invalid flags");
+	if ((flags & REPLACE_MODE) && (flags & SPECIFIC_DELETE))
+		return luaL_error(l, "Cannot set replace mode and specific delete at the same time");
+	luacon_controller->SetReplaceModeFlags(flags);
+	return 0;
+}
+
+int LuaScriptInterface::simulation_listCustomGol(lua_State *l)
+{
+	int i = 0;
+	lua_newtable(l);
+	for (auto &cgol : luacon_sim->GetCustomGol())
+	{
+		lua_newtable(l);
+		lua_pushstring(l, cgol.nameString.ToUtf8().c_str());
+		lua_setfield(l, -2, "name");
+		lua_pushstring(l, cgol.ruleString.ToUtf8().c_str());
+		lua_setfield(l, -2, "rulestr");
+		lua_pushnumber(l, cgol.rule);
+		lua_setfield(l, -2, "rule");
+		lua_pushnumber(l, cgol.colour1);
+		lua_setfield(l, -2, "color1");
+		lua_pushnumber(l, cgol.colour2);
+		lua_setfield(l, -2, "color2");
+		lua_rawseti(l, -2, ++i);
+	}
+	return 1;
+}
+
+int LuaScriptInterface::simulation_addCustomGol(lua_State *l)
+{
+	int rule;
+	String ruleString;
+	if (lua_isnumber(l, 1))
+	{
+		rule = luaL_checkinteger(l, 1);
+		ruleString = SerialiseGOLRule(rule);
+		rule = ParseGOLString(ruleString);
+	}
+	else
+	{
+		ruleString = ByteString(luaL_checkstring(l, 1)).FromUtf8();
+		rule = ParseGOLString(ruleString);
+	}
+	String nameString = ByteString(luaL_checkstring(l, 2)).FromUtf8();
+	unsigned int color1 = luaL_checkinteger(l, 3);
+	unsigned int color2 = luaL_checkinteger(l, 4);
+
+	if (nameString.empty() || !ValidateGOLName(nameString))
+		return luaL_error(l, "Invalid name provided");
+	if (rule == -1)
+		return luaL_error(l, "Invalid rule provided");
+	if (luacon_sim->GetCustomGOLByRule(rule))
+		return luaL_error(l, "This Custom GoL rule already exists");
+
+	if (!AddCustomGol(ruleString, nameString, color1, color2))
+		return luaL_error(l, "Duplicate name, cannot add");
+	luacon_model->BuildMenus();
+	return 0;
+}
+
+int LuaScriptInterface::simulation_removeCustomGol(lua_State *l)
+{
+	ByteString nameString = luaL_checkstring(l, 1);
+	bool removedAny = luacon_model->RemoveCustomGOLType("DEFAULT_PT_LIFECUST_" + nameString);
+	if (removedAny)
+		luacon_model->BuildMenus();
+	lua_pushboolean(l, removedAny);
+	return 1;
 }
 
 //// Begin Renderer API

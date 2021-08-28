@@ -238,7 +238,7 @@ public:
 	void AddNotification(Notification * notification);
 	void RemoveNotification(Notification * notification);
 
-	void RemoveCustomGOLType(const ByteString &identifier);
+	bool RemoveCustomGOLType(const ByteString &identifier);
 
 	ByteString SelectNextIdentifier;
 	int SelectNextTool;

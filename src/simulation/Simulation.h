@@ -241,6 +241,7 @@ private:
 
 public:
 	const CustomGOLData *GetCustomGOLByRule(int rule) const;
+	const std::vector<CustomGOLData> GetCustomGol() { return customGol; }
 	void SetCustomGOL(std::vector<CustomGOLData> newCustomGol);
 
 private:

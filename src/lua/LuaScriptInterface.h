@@ -84,6 +84,7 @@ class LuaScriptInterface: public CommandInterface
 	static int simulation_decoLine(lua_State * l);
 	static int simulation_decoBox(lua_State * l);
 	static int simulation_decoColor(lua_State * l);
+	static int simulation_floodDeco(lua_State * l);
 	static int simulation_clearSim(lua_State * l);
 	static int simulation_clearRect(lua_State * l);
 	static int simulation_resetTemp(lua_State * l);
@@ -112,6 +113,11 @@ class LuaScriptInterface: public CommandInterface
 	static int simulation_framerender(lua_State * l);
 	static int simulation_gspeed(lua_State * l);
 	static int simulation_takeSnapshot(lua_State *l);
+	static int simulation_replaceModeFlags(lua_State *l);
+	static int simulation_listCustomGol(lua_State *l);
+	static int simulation_addCustomGol(lua_State *l);
+	static int simulation_removeCustomGol(lua_State *l);
+
 
 	//Renderer
 	void initRendererAPI();
