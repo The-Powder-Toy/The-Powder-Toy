@@ -158,7 +158,11 @@ void GOLWindow::Validate()
 
 	auto color1 = (((highColour.Red << 8) | highColour.Green) << 8) | highColour.Blue;
 	auto color2 = (((lowColour.Red << 8) | lowColour.Green) << 8) | lowColour.Blue;
-	AddCustomGol(ruleString, nameString, color1, color2);
+	if (!AddCustomGol(ruleString, nameString, color1, color2))
+	{
+		new ErrorMessage("Could not add GOL type", "Name already taken");
+		return;
+	}
 
 	tool->gameModel->SelectNextIdentifier = "DEFAULT_PT_LIFECUST_" + nameString.ToAscii();
 	tool->gameModel->SelectNextTool = toolSelection;
