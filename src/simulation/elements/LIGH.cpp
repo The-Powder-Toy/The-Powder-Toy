@@ -66,8 +66,7 @@ static int update(UPDATE_FUNC_ARGS)
 	 * life - power of lightning, influences reaction strength and segment length
 	 *
 	 * tmp - angle of lighting, measured in degrees counterclockwise from the positive x direction
-	 *
-	*/
+	 */
 	int r,rx,ry,rt, multipler, powderful;
 	float angle, angle2=-1;
 	powderful = int(parts[i].temp*(1+parts[i].life/40)*LIGHTING_POWER);
@@ -154,7 +153,7 @@ static int update(UPDATE_FUNC_ARGS)
 				if (sim->elements[TYP(r)].HeatConduct) parts[ID(r)].temp = restrict_flt(parts[ID(r)].temp+powderful/1.3, MIN_TEMP, MAX_TEMP);
 			}
 	// Deferred branch or bend; or in removal countdown stage
-	if (parts[i].tmp2 == 1 || parts[i].tmp2 == 3 || parts[i].tmp2 >= 6)
+	if (parts[i].tmp2 == 1 || parts[i].tmp2 == 3 || (parts[i].tmp2 >= 6 && parts[i].tmp2 <= 8))
 	{
 		// Probably set via console, make sure it doesn't stick around forever
 		if (parts[i].tmp2 >= 9)
@@ -168,7 +167,6 @@ static int update(UPDATE_FUNC_ARGS)
 		sim->kill_part(i);
 		return 1;
 	}
-
 	angle = float((parts[i].tmp + RNG::Ref().between(-30, 30)) % 360);
 	multipler = int(parts[i].life * 1.5) + RNG::Ref().between(0, parts[i].life);
 	rx=int(cos(angle*M_PI/180)*multipler);
@@ -183,7 +181,7 @@ static int update(UPDATE_FUNC_ARGS)
 	}
 
 	parts[i].tmp2 = 7;
-	return 1;
+	return 0;
 }
 
 static bool create_LIGH(Simulation * sim, int x, int y, int c, float temp, int life, int tmp, int tmp2, bool last, int i)
