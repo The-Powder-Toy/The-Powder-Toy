@@ -41,12 +41,12 @@
 
 //VersionInfoStart
 #define SAVE_VERSION 96
-#define MINOR_VERSION 1
-#define BUILD_NUM 349
+#define MINOR_VERSION 2
+#define BUILD_NUM 350
 #mesondefine SNAPSHOT_ID
 #mesondefine MOD_ID
 #define FUTURE_SAVE_VERSION 96
-#define FUTURE_MINOR_VERSION 0
+#define FUTURE_MINOR_VERSION 2
 
 #if !(defined(SNAPSHOT) || defined(BETA) || defined(DEBUG) || MOD_ID > 0)
 #undef FUTURE_SAVE_VERSION
