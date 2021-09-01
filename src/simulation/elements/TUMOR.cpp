@@ -72,7 +72,7 @@ static int update(UPDATE_FUNC_ARGS)
         if (r) {
 			if (RNG::Ref().chance(1, 2)){
 				// Diffuse among tumor
-				if (sim->elements[TYP(r)].Properties & TYPE_BIO && TYP(r) == PT_TUMOR){
+				if (TYP(r) == PT_TUMOR){
 					int ir = ID(r);
 
 					if (parts[i].bio.o2 > parts[ir].bio.o2){
@@ -84,7 +84,19 @@ static int update(UPDATE_FUNC_ARGS)
 						parts[ir].bio.co2++;
 					}
 				}
-				// steal from meat
+				// steal o2 from bio, offload co2 to bio
+				if (sim->elements[TYP(r)].Properties & TYPE_BIO){
+					int ir = ID(r);
+					
+					if (parts[ir].bio.o2 > 1){
+						parts[i].bio.o2++;
+						parts[ir].bio.o2--;
+					}
+					if (parts[i].bio.co2 > 0){
+						parts[i].bio.co2--;
+						parts[ir].bio.co2++;
+					}
+				}
 			}
         }
     }
