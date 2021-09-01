@@ -7,7 +7,7 @@ void Element::Element_TUMOR()
 {
 	Identifier = "DEFAULT_PT_TUMOR";
 	Name = "TUMR";
-	Colour = PIXPACK(0x990022);
+	Colour = PIXPACK(0x770000);
 	MenuVisible = 1;
 	MenuSection = SC_BIO;
 	Enabled = 1;
@@ -29,7 +29,7 @@ void Element::Element_TUMOR()
 
 	Weight = 150;
 
-	DefaultProperties.bio.health = 100;
+	DefaultProperties.bio.health = 150; // In real life, cancer survives better than regular tissue (citation: HeLa)
 	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
 	HeatConduct = 29;
 	Description = "Tumor. Caused by bombarding biology with neutrons";
@@ -56,12 +56,12 @@ static int update(UPDATE_FUNC_ARGS)
     rx =  RNG::Ref().between(-2, 2);
     ry =  RNG::Ref().between(-2, 2);
 
-    // O2 use by meat itself
-    if (RNG::Ref().chance(1, 150)){
+    // O2 use by tumor itself (Increased due to increased biological activity)
+    if (RNG::Ref().chance(1, 100)){
 
 		if (parts[i].bio.o2 > 0){
         	parts[i].bio.o2 -= 1;
-            parts[i].bio.co2 += 1;
+                parts[i].bio.co2 += 1;
 		}
     }
 
@@ -84,7 +84,7 @@ static int update(UPDATE_FUNC_ARGS)
 						parts[ir].bio.co2++;
 					}
 				}
-				// steal o2 from bio, offload co2 to bio
+				// steal o2 from bio, offload co2 to bio (tumor is greedy)
 				if (sim->elements[TYP(r)].Properties & TYPE_BIO){
 					int ir = ID(r);
 					
@@ -95,6 +95,13 @@ static int update(UPDATE_FUNC_ARGS)
 					if (parts[i].bio.co2 > 0){
 						parts[i].bio.co2--;
 						parts[ir].bio.co2++;
+					}
+				}
+				if (RNG::Ref().chance(1, 50){
+					// convert biology to tumor (grow)
+					if (sim->elements[TYP(r)].Properties & TYPE_BIO && TYP(r) != PT_TUMOR){
+						int ir = ID(r);
+						sim->part_change_type(ir, parts[ir].x, parts[ir].y, PT_TUMOR);
 					}
 				}
 			}
@@ -114,7 +121,8 @@ static int update(UPDATE_FUNC_ARGS)
 		}
 		// Otherwise heal
 		else{
-            if (parts[i].bio.health < 100){
+			// Tumors aren't the most healthy to start with.
+                        if (parts[i].bio.health < 200){ 
 				parts[i].bio.health++;
 			}
 		}
