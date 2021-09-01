@@ -196,7 +196,7 @@ simulation_elem_ids = [
 	[ 'NIHM',   194 ],
 	[ 'GGOO',   195 ],
 	[ 'RGOO',   196 ],
-    [ 'BLD',   197 ],
+	[ 'BLD',   197 ],
 	[ 'DT',   198 ],
 	[ 'LUNG',   199 ],
 	[ 'MEAT',   200 ],
@@ -204,6 +204,7 @@ simulation_elem_ids = [
 	[ 'SKINE',   202 ],
 	[ 'SKIND',   203 ],
 	[ 'SKINS',   204 ],
+	[ 'TUMOR',   205 ],
 ]
 
 simulation_elem_src = []
