@@ -2147,6 +2147,10 @@ void GameView::OnDraw()
 				{
 					sampleInfo << "Molten " << c->ElementResolve(ctype, 0);
 				}
+				else if (c->IsBio(type))
+				{
+					sampleInfo << c->ElementResolve(type, 0) << ", O2: " << sample.particle.bio.o2 << ", CO2: " << sample.particle.bio.co2 << ", Health: " << sample.particle.bio.health;
+				}
 				else if ((type == PT_PIPE || type == PT_PPIP) && c->IsValidElement(ctype))
 				{
 					if (ctype == PT_LAVA && c->IsValidElement((int)sample.particle.pavg[1]))
@@ -2189,7 +2193,9 @@ void GameView::OnDraw()
 						sampleInfo << " (" << ctype << ")";
 				}
 				sampleInfo << ", Temp: " << (sample.particle.temp - 273.15f) << " C";
-				sampleInfo << ", Life: " << sample.particle.life;
+				if (type != PT_BVES){ // BVES uses special life (tmp5)
+					sampleInfo << ", Life: " << sample.particle.life;
+				}
 				if (sample.particle.type != PT_RFRG && sample.particle.type != PT_RFGL && sample.particle.type != PT_LIFE)
 				{
 					if (sample.particle.type == PT_CONV)

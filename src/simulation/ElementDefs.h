@@ -5,7 +5,7 @@
 //#include "Simulation.h"
 
 #define R_TEMP 22
-#define MAX_TEMP 1000000
+#define MAX_TEMP 9999
 #define MIN_TEMP 0
 #define O_MAX_TEMP 3500
 #define O_MIN_TEMP -273
@@ -31,6 +31,7 @@
 #define PROP_SPARKSETTLE	0x20000  //2^17 Allow Sparks/Embers to settle
 #define PROP_NOAMBHEAT		0x40000  //2^18 Don't transfer or receive heat from ambient heat.
 #define PROP_NOCTYPEDRAW	0x100000 // 2^20 When this element is drawn upon with, do not set ctype (like BCLN for CLNE)
+#define TYPE_BIO            0x200000 // 2^21 Flag for biological materials
 
 #define FLAG_STAGNANT	0x1
 #define FLAG_SKIPMOVE  0x2 // skip movement for one frame, only implemented for PHOT

@@ -1341,6 +1341,10 @@ void GameSave::readOPS(char * data, int dataLength)
 							}
 						}
 					}
+
+					// TODO: Make this actually save and load properly
+					particles[newIndex].bio.health = 100;
+
 					//note: PSv was used in version 77.0 and every version before, add something in PSv too if the element is that old
 					newIndex++;
 					partsCount++;
@@ -1848,6 +1852,7 @@ void GameSave::readPSv(char * saveDataChar, int dataLength)
 		int gnum = 0;
 		i = particleIDMap[j];
 		ty = data[pty+j];
+
 		if (i && (ty==PT_CLNE || (ty==PT_PCLN && ver>=43) || (ty==PT_BCLN && ver>=44) || (ty==PT_SPRK && ver>=21) || (ty==PT_LAVA && ver>=34) || (ty==PT_PIPE && ver>=43) || (ty==PT_LIFE && ver>=51) || (ty==PT_PBCN && ver>=52) || (ty==PT_WIRE && ver>=55) || (ty==PT_STOR && ver>=59) || (ty==PT_CONV && ver>=60)))
 		{
 			if (p >= dataLength)

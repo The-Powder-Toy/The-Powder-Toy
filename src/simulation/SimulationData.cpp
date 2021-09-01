@@ -88,6 +88,7 @@ std::vector<menu_section> LoadMenus()
 		{0xE050, String("Powders"), 0, 1},
 		{0xE051, String("Solids"), 0, 1},
 		{0xE046, String("Radioactive"), 0, 1},
+		{0xE04C, String("Biology"), 0, 1},
 		{0xE04C, String("Special"), 0, 1},
 		{0xE052, String("Game Of Life"), 0, 1},
 		{0xE057, String("Tools"), 0, 1},

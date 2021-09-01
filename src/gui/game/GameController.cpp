@@ -1522,6 +1522,10 @@ void GameController::ClearSim()
 	gameModel->ClearSimulation();
 }
 
+bool GameController::IsBio(int id){
+	return gameModel->GetSimulation()->elements[id].Properties & TYPE_BIO;
+}
+
 String GameController::ElementResolve(int type, int ctype)
 {
 	// "NONE" should never be displayed in the HUD

@@ -153,6 +153,7 @@ public:
 	bool MouseInZoom(ui::Point position);
 	ui::Point PointTranslate(ui::Point point);
 	ui::Point NormaliseBlockCoord(ui::Point point);
+	bool IsBio(int id); 
 	String ElementResolve(int type, int ctype);
 	String BasicParticleInfo(Particle const &sample_part);
 	bool IsValidElement(int type);

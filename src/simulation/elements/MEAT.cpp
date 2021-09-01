@@ -9,7 +9,7 @@ void Element::Element_MEAT()
 	Name = "MEAT";
 	Colour = PIXPACK(0x990022);
 	MenuVisible = 1;
-	MenuSection = SC_SOLIDS;
+	MenuSection = SC_BIO;
 	Enabled = 1;
 
 	Advection = 0.0f;
@@ -29,12 +29,12 @@ void Element::Element_MEAT()
 
 	Weight = 150;
 
-    DefaultProperties.life = 100;
+	DefaultProperties.bio.health = 100;
 	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
 	HeatConduct = 29;
 	Description = "Meat. Basic biological material.";
 
-	Properties = TYPE_SOLID|PROP_NEUTPENETRATE;
+	Properties = TYPE_SOLID|PROP_NEUTPENETRATE|TYPE_BIO;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
@@ -59,9 +59,9 @@ static int update(UPDATE_FUNC_ARGS)
     // O2 use by meat itself
     if (RNG::Ref().chance(1, 150)){
 
-		if (parts[i].tmp > 0){
-        	parts[i].tmp -= 1;
-            parts[i].tmp2 += 1;
+		if (parts[i].bio.o2 > 0){
+        	parts[i].bio.o2 -= 1;
+            parts[i].bio.co2 += 1;
 		}
     }
 
@@ -70,55 +70,45 @@ static int update(UPDATE_FUNC_ARGS)
     {
         r = pmap[y+ry][x+rx];
         if (r) {
-            // Blood interactions
-            if (TYP(r) == PT_BLD){
+			if (RNG::Ref().chance(1, 2)){
+				// Diffuse among bio
+				if (sim->elements[TYP(r)].Properties & TYPE_BIO && TYP(r) != PT_BLD){
+					int ir = ID(r);
 
-                int ir = ID(r);
-
-                // Give CO2
-                if (parts[ir].tmp2 < 10 && parts[i].tmp2 > 0){
-                    parts[ir].tmp2 += 1;
-                    parts[i].tmp2 -= 1;
-                }
-
-                // Take O2
-                if (parts[ir].tmp > 0 && parts[i].tmp < 10){
-                    parts[i].tmp++;
-                    parts[ir].tmp--;
-                }
-            }
-            // Diffuse among self
-            else if (TYP(r) == PT_MEAT){
-                int ir = ID(r);
-
-                if (parts[i].tmp > parts[ir].tmp){
-                    parts[i].tmp--;
-                    parts[ir].tmp++;
-                }
-                if (parts[i].tmp2 > parts[ir].tmp2){
-                    parts[i].tmp2--;
-                    parts[ir].tmp2++;
-                }
-            }
+					if (parts[i].bio.o2 > parts[ir].bio.o2){
+						parts[i].bio.o2--;
+						parts[ir].bio.o2++;
+					}
+					if (parts[i].bio.co2 > parts[ir].bio.co2){
+						parts[i].bio.co2--;
+						parts[ir].bio.co2++;
+					}
+				}
+			}
         }
     }
 
 	// Health management
 	if (RNG::Ref().chance(1, 50)){
+		// Temp check
+		if (parts[i].temp > 323.15){
+			int damage = (parts[i].temp - 315) / 5;
+			parts[i].bio.health -= damage;
+		}
 		// Damage check
-		if (parts[i].tmp2 > 9 || parts[i].tmp < 1){
-			parts[i].life--;
+		if (parts[i].bio.co2 > MAX_CO2 || parts[i].bio.o2 < 1){
+			parts[i].bio.health--;
 		}
 		// Otherwise heal
 		else{
-            if (parts[i].life < 100){
-				parts[i].life++;
+            if (parts[i].bio.health < 100){
+				parts[i].bio.health++;
 			}
 		}
 	}
 
 	// Death check
-	if (parts[i].life < 1){
+	if (parts[i].bio.health < 1){
 		sim->part_change_type(i, x, y, PT_DT);
 	}
 
@@ -128,16 +118,20 @@ static int update(UPDATE_FUNC_ARGS)
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
     // Oxygen
-    int o = cpart->tmp;
+    int o = cpart->bio.o2;
 
     // C02
-    int c = cpart->tmp2;
+    int c = cpart->bio.co2;
 
-	int q = cpart->tmp;
-	*colr = (int)fmax(20 * o, 100);
+	*colr = (int)fmax(7 * o, 100);
 	*colg = 0;
-	*colb = (int)fmax(10 * o, 30);
+	*colb = (int)fmax(3 * o, 30);
 	*pixel_mode |= PMODE_BLUR;
+
+	// Life mix
+	*colr = int(*colr * (cpart->bio.health) / 100.0f);
+	*colg = int(*colg * (cpart->bio.health) / 100.0f);
+	*colb = int(*colb * (cpart->bio.health) / 100.0f);
 
 	return 0;
 }

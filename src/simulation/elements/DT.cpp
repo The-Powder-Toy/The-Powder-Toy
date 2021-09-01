@@ -6,7 +6,7 @@ void Element::Element_DT()
 	Name = "DT";
 	Colour = PIXPACK(0x554040);
 	MenuVisible = 1;
-	MenuSection = SC_POWDERS;
+	MenuSection = SC_BIO;
 	Enabled = 1;
 
 	Advection = 0.7f;

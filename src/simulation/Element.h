@@ -80,3 +80,6 @@ public:
 };
 
 #endif
+
+#define MAX_O2 30
+#define MAX_CO2 30
