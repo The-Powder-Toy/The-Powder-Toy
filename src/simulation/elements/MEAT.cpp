@@ -2,6 +2,7 @@
 
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
+static void create(ELEMENT_CREATE_FUNC_ARGS);
 
 void Element::Element_MEAT()
 {
@@ -84,6 +85,15 @@ static int update(UPDATE_FUNC_ARGS)
 						parts[ir].bio.co2++;
 					}
 				}
+				if (sim->elements[TYP(r)].Properties & PROP_RADIOACTIVE || sim->elements[TYP(r)].MenuSection & SC_NUCLEAR){
+					rad++;
+					if (RNG::Ref().chance(rad, 10000)){
+						sim->part_change_type(i, x, y, PT_TUMOR);
+					}
+					if (RNG::Ref().chance(1, 3)){
+						parts[i].bio.health--;
+						max_health--;
+				}
 			}
         }
     }
@@ -101,7 +111,7 @@ static int update(UPDATE_FUNC_ARGS)
 		}
 		// Otherwise heal
 		else{
-            if (parts[i].bio.health < 100){
+			if (parts[i].bio.health < max_health){
 				parts[i].bio.health++;
 			}
 		}
@@ -114,6 +124,11 @@ static int update(UPDATE_FUNC_ARGS)
 
 	return 0;
 }
+
+static void create(ELEMENT_CREATE_FUNC_ARGS)
+{
+	int rad = 0;
+	int max_health = 100;
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
