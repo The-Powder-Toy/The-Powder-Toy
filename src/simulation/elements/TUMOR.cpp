@@ -97,7 +97,7 @@ static int update(UPDATE_FUNC_ARGS)
 						parts[ir].bio.co2++;
 					}
 				}
-				if (RNG::Ref().chance(1, 50){
+				if (RNG::Ref().chance(1, 50)){
 					// convert biology to tumor (grow)
 					if (sim->elements[TYP(r)].Properties & TYPE_BIO && TYP(r) != PT_TUMOR){
 						int ir = ID(r);
