@@ -71,8 +71,8 @@ static int update(UPDATE_FUNC_ARGS)
         r = pmap[y+ry][x+rx];
         if (r) {
 			if (RNG::Ref().chance(1, 2)){
-				// Diffuse among bio
-				if (sim->elements[TYP(r)].Properties & TYPE_BIO && TYP(r) != PT_BLD){
+				// Diffuse among tumor
+				if (sim->elements[TYP(r)].Properties & TYPE_BIO && TYP(r) == PT_TUMOR){
 					int ir = ID(r);
 
 					if (parts[i].bio.o2 > parts[ir].bio.o2){
@@ -84,6 +84,7 @@ static int update(UPDATE_FUNC_ARGS)
 						parts[ir].bio.co2++;
 					}
 				}
+				// steal from meat
 			}
         }
     }
