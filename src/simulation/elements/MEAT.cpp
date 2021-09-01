@@ -2,7 +2,6 @@
 
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
-static void create(ELEMENT_CREATE_FUNC_ARGS);
 
 void Element::Element_MEAT()
 {
@@ -32,6 +31,8 @@ void Element::Element_MEAT()
 
 	DefaultProperties.bio.health = 100;
 	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
+	DefaultProperties.tmp = 100; // max health
+	DefaultProperties.tmp2 = 0; // Radiation damage
 	HeatConduct = 29;
 	Description = "Meat. Basic biological material.";
 
@@ -53,6 +54,8 @@ void Element::Element_MEAT()
 static int update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry;
+	int rad = parts[i].tmp;
+	int max_health = parts[i].tmp2;
 
     rx =  RNG::Ref().between(-2, 2);
     ry =  RNG::Ref().between(-2, 2);
@@ -93,6 +96,7 @@ static int update(UPDATE_FUNC_ARGS)
 					if (RNG::Ref().chance(1, 3)){
 						parts[i].bio.health--;
 						max_health--;
+					}
 				}
 			}
         }
@@ -125,10 +129,6 @@ static int update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-static void create(ELEMENT_CREATE_FUNC_ARGS)
-{
-	int rad = 0;
-	int max_health = 100;
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
