@@ -144,8 +144,8 @@ static int graphics(GRAPHICS_FUNC_ARGS)
     // C02
     int c = cpart->bio.co2;
 
-	*colr = (int)fmax(7 * o, 77);
-	*colg = 62;
+	*colr = (int)fmax(3 * o, 77);
+	*colg = (int)fmax(3 * o, 62);
 	*colb = (int)fmax(3 * o, 62);
 	*pixel_mode |= PMODE_BLUR;
 
