@@ -32,7 +32,7 @@ void Element::Element_TUMOR()
 	DefaultProperties.bio.health = 150; // In real life, cancer survives better than regular tissue (citation: HeLa)
 	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
 	HeatConduct = 29;
-	Description = "Tumor. Caused by bombarding biology with neutrons";
+	Description = "Tumor. Certain death/blobification for biology";
 
 	Properties = TYPE_SOLID|PROP_NEUTPENETRATE|TYPE_BIO;
 
