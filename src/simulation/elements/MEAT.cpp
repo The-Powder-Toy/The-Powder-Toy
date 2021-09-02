@@ -88,16 +88,6 @@ static int update(UPDATE_FUNC_ARGS)
 						parts[ir].bio.co2++;
 					}
 				}
-				if (sim->elements[TYP(r)].Properties & PROP_RADIOACTIVE || sim->elements[TYP(r)].MenuSection & SC_NUCLEAR){
-					parts[i].tmp2++;
-					if (RNG::Ref().chance(parts[i].tmp2, 10000)){
-						sim->part_change_type(i, x, y, PT_TUMOR);
-					}
-					if (RNG::Ref().chance(1, 3)){
-						parts[i].bio.health--;
-						parts[i].tmp--;
-					}
-				}
 			}
         }
     }
