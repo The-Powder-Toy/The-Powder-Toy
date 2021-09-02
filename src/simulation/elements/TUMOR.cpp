@@ -97,6 +97,10 @@ static int update(UPDATE_FUNC_ARGS)
 						parts[ir].bio.co2++;
 					}
 				}
+				if (TYP(r) == PT_BLD && RNG::Ref().chance(1, 1000)){
+					int ir = ID(r);
+					parts[ir].ctype = PT_TUMOR;
+				}
 			}
         }
     }
