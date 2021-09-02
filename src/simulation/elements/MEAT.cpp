@@ -90,12 +90,12 @@ static int update(UPDATE_FUNC_ARGS)
 				}
 				if (sim->elements[TYP(r)].Properties & PROP_RADIOACTIVE || sim->elements[TYP(r)].MenuSection & SC_NUCLEAR){
 					rad++;
-					if (RNG::Ref().chance(rad, 10000)){
+					if (RNG::Ref().chance(parts[i].tmp2, 10000)){
 						sim->part_change_type(i, x, y, PT_TUMOR);
 					}
 					if (RNG::Ref().chance(1, 3)){
 						parts[i].bio.health--;
-						max_health--;
+						parts[i].tmp--;
 					}
 				}
 			}
@@ -115,7 +115,7 @@ static int update(UPDATE_FUNC_ARGS)
 		}
 		// Otherwise heal
 		else{
-			if (parts[i].bio.health < max_health){
+			if (parts[i].bio.health < parts[i].tmp){
 				parts[i].bio.health++;
 			}
 		}
