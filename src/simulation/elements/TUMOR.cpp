@@ -7,7 +7,7 @@ void Element::Element_TUMOR()
 {
 	Identifier = "DEFAULT_PT_TUMOR";
 	Name = "TUMR";
-	Colour = PIXPACK(0x770000);
+	Colour = PIXPACK(0x554040);
 	MenuVisible = 1;
 	MenuSection = SC_BIO;
 	Enabled = 1;
@@ -144,9 +144,9 @@ static int graphics(GRAPHICS_FUNC_ARGS)
     // C02
     int c = cpart->bio.co2;
 
-	*colr = (int)fmax(7 * o, 100);
-	*colg = 0;
-	*colb = (int)fmax(3 * o, 30);
+	*colr = (int)fmax(7 * o, 77);
+	*colg = 62;
+	*colb = (int)fmax(3 * o, 62);
 	*pixel_mode |= PMODE_BLUR;
 
 	// Life mix
