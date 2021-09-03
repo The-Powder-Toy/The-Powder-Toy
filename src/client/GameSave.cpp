@@ -1083,7 +1083,11 @@ void GameSave::readOPS(char * data, int dataLength)
 					else
 					{
 						//1 Byte room temp offset
-						tempTemp = (char)partsData[i++];
+						tempTemp = partsData[i++];
+						if (tempTemp >= 0x80)
+						{
+							tempTemp -= 0x100;
+						}
 						particles[newIndex].temp = tempTemp+294.15f;
 					}
 
