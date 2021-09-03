@@ -240,7 +240,7 @@ void SDLSetScreen(int scale_, bool resizable_, bool fullscreen_, bool altFullscr
 	// Recreate the window when toggling fullscreen, due to occasional issues
 	// Also recreate it when enabling resizable windows, to fix bugs on windows,
 	//  see https://github.com/jacob1/The-Powder-Toy/issues/24
-	if (changingFullscreen || (changingResizable && resizable && !fullscreen))
+	if (changingFullscreen || altFullscreen || (changingResizable && resizable && !fullscreen))
 	{
 		RecreateWindow();
 		return;
