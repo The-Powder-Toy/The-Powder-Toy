@@ -136,6 +136,7 @@ int LuaWindow::addComponent(lua_State * l)
 			it->first->owner_ref = it->second;
 		}
 		window->AddComponent(luaComponent->GetComponent());
+		luaComponent->SetParentWindow(this);
 	}
 	return 0;
 }
@@ -168,6 +169,7 @@ int LuaWindow::removeComponent(lua_State * l)
 			it->second.Clear();
 			it->first->owner_ref = it->second;
 			grabbed_components.erase(it);
+			luaComponent->SetParentWindow(nullptr);
 		}
 	}
 	return 0;
@@ -485,6 +487,17 @@ int LuaWindow::onKeyRelease(lua_State * l)
 	return onKeyReleaseFunction.CheckAndAssignArg1(l);
 }
 
+void LuaWindow::ClearRef(LuaComponent *luaComponent)
+{
+	auto it = grabbed_components.find(luaComponent);
+	if (it != grabbed_components.end())
+	{
+		window->RemoveComponent(luaComponent->GetComponent());
+		it->second.Clear();
+		it->first->owner_ref = it->second;
+		grabbed_components.erase(it);
+	}
+}
 
 LuaWindow::~LuaWindow()
 {

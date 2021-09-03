@@ -4,6 +4,7 @@
 #include "LuaComponent.h"
 
 #include "LuaScriptInterface.h"
+#include "LuaWindow.h"
 
 #include "gui/interface/Component.h"
 #include "gui/interface/Window.h"
@@ -83,6 +84,9 @@ int LuaComponent::visible(lua_State * l)
 
 LuaComponent::~LuaComponent()
 {
+	if (parent)
+		parent->ClearRef(this);
+
 	if (component)
 	{
 		if (component->GetParentWindow())

@@ -161,6 +161,7 @@ GameController::~GameController()
 	{
 		delete gameView;
 	}
+	delete commandInterface;
 }
 
 void GameController::HistoryRestore()

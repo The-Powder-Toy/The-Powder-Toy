@@ -75,6 +75,8 @@ public:
 	static Luna<LuaWindow>::RegType methods[];
 
 	ui::Window * GetWindow() { return window; }
+	void ClearRef(LuaComponent *luaComponent);
+
 	LuaWindow(lua_State * l);
 	~LuaWindow();
 };

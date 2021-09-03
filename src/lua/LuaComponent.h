@@ -9,6 +9,7 @@ namespace ui
 }
 
 class LuaScriptInterface;
+class LuaWindow;
 
 class LuaComponentCallback : public LuaSmartRef
 {
@@ -22,6 +23,8 @@ class LuaComponent
 protected:
 	ui::Component * component;
 	lua_State * l;
+	LuaWindow * parent = nullptr;
+
 	int position(lua_State * l);
 	int size(lua_State * l);
 	int visible(lua_State * l);
@@ -30,6 +33,7 @@ public:
 	int owner_ref;
 
 	ui::Component * GetComponent() { return component; }
+	void SetParentWindow(LuaWindow *parent) { this->parent = parent; }
 	LuaComponent(lua_State * l);
 	~LuaComponent();
 };
