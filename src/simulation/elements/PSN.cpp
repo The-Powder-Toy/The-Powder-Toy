@@ -17,7 +17,7 @@ void Element::Element_PSN()
 	AirDrag = 0.01f * CFDS;
 	AirLoss = 0.10; // sludge
 	Loss = 0.5;
-	Collision = 0.001f
+	Collision = 0.001f;
 	Gravity = 0.1f;
 	Diffusion = 0.00f;
 	HotAir = 0.000f  * CFDS;
@@ -56,7 +56,7 @@ static int update(UPDATE_FUNC_ARGS)
     rx =  RNG::Ref().between(-2, 2);
     ry =  RNG::Ref().between(-2, 2);
 	r = pmap[y+ry][x+rx];
-	int ir == ID(r);
+	int ir = ID(r);
 	if (sim->elements[TYP(r)].Properties & TYPE_BIO){
 		parts[ir].health -= parts[i].tmp;
 		parts[i].life--;
