@@ -8,7 +8,7 @@ void Element::Element_PSN()
 {
 	Identifier = "DEFAULT_PT_PSN";
 	Name = "PSN";
-	Colour = PIXPACK(0x000099);
+	Colour = PIXPACK(0x009900);
 	MenuVisible = 1;
 	MenuSection = SC_BIO;
 	Enabled = 1;
