@@ -72,15 +72,15 @@ static int update(UPDATE_FUNC_ARGS)
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
     // Oxygen
-    int o = cpart->bio.o2;
+    int o = cpart->tmp;
 
     // C02
     int c = cpart->bio.co2;
 
 	int q = cpart->bio.o2;
-	*colr = (int)fmax(9 * o, 75);
-	*colg = 0;
-	*colb = 8 * c;
+	*colr = 0;
+	*colg = (int)fmax(9 * o, 75);;
+	*colb = 0;
 	*pixel_mode |= PMODE_BLUR;
 
 	//*colr = int(*colr * (cpart->bio.health) / 100.0f);
