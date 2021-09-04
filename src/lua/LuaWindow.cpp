@@ -492,7 +492,6 @@ void LuaWindow::ClearRef(LuaComponent *luaComponent)
 	auto it = grabbed_components.find(luaComponent);
 	if (it != grabbed_components.end())
 	{
-		window->RemoveComponent(luaComponent->GetComponent());
 		it->second.Clear();
 		it->first->owner_ref = it->second;
 		grabbed_components.erase(it);
