@@ -117,7 +117,7 @@ static int update(UPDATE_FUNC_ARGS)
 		if (parts[i].bio.co2 > MAX_CO2 || parts[i].bio.o2 < 1){
 			parts[i].bio.health--;
 		}
-		// Otherwise heal
+		// Otherwise heal (Why make it not use O2 to heal?)
 		else{
 			if (parts[i].bio.health < 500){
 				parts[i].bio.health++;
