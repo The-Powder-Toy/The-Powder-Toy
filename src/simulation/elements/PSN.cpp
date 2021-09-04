@@ -58,7 +58,7 @@ static int update(UPDATE_FUNC_ARGS)
 	r = pmap[y+ry][x+rx];
 	int ir = ID(r);
 	if (sim->elements[TYP(r)].Properties & TYPE_BIO){
-		parts[ir].health -= parts[i].tmp;
+		parts[ir].bio.health -= parts[i].tmp;
 		parts[i].life--;
 	}
     
