@@ -6,8 +6,8 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 
 void Element::Element_PSN()
 {
-	Identifier = "DEFAULT_PT_PSN"
-	Name = "PSN"
+	Identifier = "DEFAULT_PT_PSN";
+	Name = "PSN";
 	Colour = PIXPACK(0x990000);
 	MenuVisible = 1;
 	MenuSection = SC_BIO;
