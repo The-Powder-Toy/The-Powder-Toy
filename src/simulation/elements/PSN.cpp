@@ -25,14 +25,14 @@ void Element::Element_PSN()
 	DefaultProperties.tmp = 5; // Potency
 	DefaultProperties.life = 500; // Will be able to poison 500 times
 
-	Flammable = 1
+	Flammable = 1;
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 100; //sludge is resistant to acid
 
-	Weight = 75
-	HeatConduct = 1
-	Description = "Poison. Cytotoxic sludge that kills tissue."
+	Weight = 75;
+	HeatConduct = 1;
+	Description = "Poison. Cytotoxic sludge that kills tissue.";
 
 	Properties = TYPE_LIQUID|PROP_NEUTPENETRATE;
 
@@ -56,7 +56,7 @@ static int update(UPDATE_FUNC_ARGS)
     rx =  RNG::Ref().between(-2, 2);
     ry =  RNG::Ref().between(-2, 2);
 	r = pmap[y+ry][x+rx];
-	ir == ID(r);
+	int ir == ID(r);
 	if (sim->elements[TYP(r)].Properties & TYPE_BIO){
 		parts[ir].health -= parts[i].tmp;
 		parts[i].life--;
