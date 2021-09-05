@@ -487,6 +487,8 @@ int main(int argc, char * argv[])
 
 	SDLOpen();
 
+	StopTextInput();
+
 	ui::Engine::Ref().g = new Graphics();
 	ui::Engine::Ref().Scale = scale;
 	ui::Engine::Ref().SetResizable(resizable);
