@@ -117,7 +117,7 @@ static int update(UPDATE_FUNC_ARGS)
 		if (parts[i].bio.co2 > MAX_CO2 || parts[i].bio.o2 < 1){
 			parts[i].bio.health--;
 		}
-		// Otherwise heal
+		// Otherwise heal (Why make it not use O2 to heal?)
 		else{
 			if (parts[i].bio.health < 500){
 				parts[i].bio.health++;
@@ -128,6 +128,16 @@ static int update(UPDATE_FUNC_ARGS)
 	// Death check
 	if (parts[i].bio.health < 1){
 		sim->part_change_type(i, x, y, PT_DT);
+	}
+	//Metastasis code
+	if (parts[i].ctype == PT_TUMOR){
+		if (RNG::Ref().chance(1, 100)){
+		// convert biology to tumor (grow)
+			if (sim->elements[TYP(r)].Properties & TYPE_BIO && TYP(r) != PT_TUMOR){
+				int ir = ID(r);
+				sim->part_change_type(ir, parts[ir].x, parts[ir].y, PT_TUMOR);
+			}
+		}
 	}
 
 	return 0;

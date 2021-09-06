@@ -3,11 +3,11 @@
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
 
-void Element::Element_MEAT()
+void Element::Element_TUMOR()
 {
-	Identifier = "DEFAULT_PT_MEAT";
-	Name = "MEAT";
-	Colour = PIXPACK(0x990022);
+	Identifier = "DEFAULT_PT_TUMOR";
+	Name = "TUMR";
+	Colour = PIXPACK(0x554040);
 	MenuVisible = 1;
 	MenuSection = SC_BIO;
 	Enabled = 1;
@@ -29,12 +29,10 @@ void Element::Element_MEAT()
 
 	Weight = 150;
 
-	DefaultProperties.bio.health = 100;
+	DefaultProperties.bio.health = 150; // In real life, cancer survives better than regular tissue (citation: HeLa)
 	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
-	DefaultProperties.tmp = 100; // max health
-	DefaultProperties.tmp2 = 0; // Radiation damage
 	HeatConduct = 29;
-	Description = "Meat. Basic biological material.";
+	Description = "Tumor. Certain death/blobification for biology";
 
 	Properties = TYPE_SOLID|PROP_NEUTPENETRATE|TYPE_BIO;
 
@@ -54,18 +52,16 @@ void Element::Element_MEAT()
 static int update(UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry;
-	int rad = parts[i].tmp;
-	int max_health = parts[i].tmp2;
 
     rx =  RNG::Ref().between(-2, 2);
     ry =  RNG::Ref().between(-2, 2);
 
-    // O2 use by meat itself
-    if (RNG::Ref().chance(1, 150)){
+    // O2 use by tumor itself (Increased due to increased biological activity)
+    if (RNG::Ref().chance(1, 100)){
 
 		if (parts[i].bio.o2 > 0){
         	parts[i].bio.o2 -= 1;
-            parts[i].bio.co2 += 1;
+                parts[i].bio.co2 += 1;
 		}
     }
 
@@ -75,8 +71,8 @@ static int update(UPDATE_FUNC_ARGS)
         r = pmap[y+ry][x+rx];
         if (r) {
 			if (RNG::Ref().chance(1, 2)){
-				// Diffuse among bio
-				if (sim->elements[TYP(r)].Properties & TYPE_BIO && TYP(r) != PT_BLD){
+				// Diffuse among tumor
+				if (TYP(r) == PT_TUMOR){
 					int ir = ID(r);
 
 					if (parts[i].bio.o2 > parts[ir].bio.o2){
@@ -88,9 +84,33 @@ static int update(UPDATE_FUNC_ARGS)
 						parts[ir].bio.co2++;
 					}
 				}
+				// steal o2 from bio, offload co2 to bio (tumor is greedy)
+				if (sim->elements[TYP(r)].Properties & TYPE_BIO){
+					int ir = ID(r);
+					
+					if (parts[ir].bio.o2 > 1){
+						parts[i].bio.o2++;
+						parts[ir].bio.o2--;
+					}
+					if (parts[i].bio.co2 > 0){
+						parts[i].bio.co2--;
+						parts[ir].bio.co2++;
+					}
+				}
+				if (TYP(r) == PT_BLD && RNG::Ref().chance(1, 1000)){
+					int ir = ID(r);
+					parts[ir].ctype = PT_TUMOR;
+				}
 			}
         }
     }
+	if (RNG::Ref().chance(1, 100)){
+		// convert biology to tumor (grow)
+		if (sim->elements[TYP(r)].Properties & TYPE_BIO && TYP(r) != PT_TUMOR){
+			int ir = ID(r);
+			sim->part_change_type(ir, parts[ir].x, parts[ir].y, PT_TUMOR);
+		}
+	}
 
 	// Health management
 	if (RNG::Ref().chance(1, 50)){
@@ -105,7 +125,8 @@ static int update(UPDATE_FUNC_ARGS)
 		}
 		// Otherwise heal
 		else{
-			if (parts[i].bio.health < parts[i].tmp){
+			// Tumors aren't the most healthy to start with.
+                        if (parts[i].bio.health < 200){ 
 				parts[i].bio.health++;
 			}
 		}
@@ -119,7 +140,6 @@ static int update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
     // Oxygen
@@ -128,9 +148,9 @@ static int graphics(GRAPHICS_FUNC_ARGS)
     // C02
     int c = cpart->bio.co2;
 
-	*colr = (int)fmax(7 * o, 100);
-	*colg = 0;
-	*colb = (int)fmax(3 * o, 30);
+	*colr = (int)fmax(3 * o, 77);
+	*colg = (int)fmax(3 * o, 62);
+	*colb = (int)fmax(3 * o, 62);
 	*pixel_mode |= PMODE_BLUR;
 
 	// Life mix
