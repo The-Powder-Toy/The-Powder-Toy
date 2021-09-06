@@ -91,7 +91,6 @@ static int update(UPDATE_FUNC_ARGS)
 			}
 			//Radiation damage is back, maybe.
 			if (sim->elements[TYP(r)].MenuSection == SC_NUCLEAR || sim->elements[TYP(er)].MenuSection == SC_NUCLEAR){
-				parts[i].bio.maxHealth--;
 				parts[i].bio.radDamage++;
 				if (RNG::Ref().chance(parts[i].bio.radDamage, 100000)){
 					sim->part_change_type(i, x, y, PT_TUMOR);
