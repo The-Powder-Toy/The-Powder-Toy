@@ -31,7 +31,7 @@ void Element::Element_MEAT()
 
 	DefaultProperties.bio.health = 100;
 	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
-	DefaultProperties.maxHealth = 100;
+	DefaultProperties.bio.maxHealth = 100;
 	HeatConduct = 29;
 	Description = "Meat. Basic biological material.";
 
