@@ -89,6 +89,15 @@ static int update(UPDATE_FUNC_ARGS)
 					}
 				}
 			}
+			//Radiation damage is back, maybe.
+			if (sim->elements[TYP(r)].Properties & PROP_RADIOACTIVE){
+				parts[i].bio.maxHealth--;
+				parts[i].bio.radDamage++;
+				if (RNG::Ref().chance(1, 100)){
+					sim->part_change_type(i, x, y, PT_TUMOR);
+					return 0;
+				}
+			}
         }
     }
 
@@ -115,6 +124,7 @@ static int update(UPDATE_FUNC_ARGS)
 	if (parts[i].bio.health < 1){
 		sim->part_change_type(i, x, y, PT_DT);
 	}
+	
 
 	return 0;
 }
