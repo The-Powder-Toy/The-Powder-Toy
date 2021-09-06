@@ -72,6 +72,7 @@ static int update(UPDATE_FUNC_ARGS)
     if (BOUNDS_CHECK && (rx || ry))
     {
         r = pmap[y+ry][x+rx];
+		er = sim->photons[y][x];
         if (r) {
 			if (RNG::Ref().chance(1, 2)){
 				// Diffuse among bio
@@ -89,10 +90,10 @@ static int update(UPDATE_FUNC_ARGS)
 				}
 			}
 			//Radiation damage is back, maybe.
-			if (sim->elements[TYP(r)].MenuSection == SC_NUCLEAR){
+			if (sim->elements[TYP(r)].MenuSection == SC_NUCLEAR || sim->elements[TYP(er)].MenuSection == SC_NUCLEAR){
 				parts[i].bio.maxHealth--;
 				parts[i].bio.radDamage++;
-				if (RNG::Ref().chance(parts[i].bio.radDamage, 10000)){
+				if (RNG::Ref().chance(parts[i].bio.radDamage, 100000)){
 					sim->part_change_type(i, x, y, PT_TUMOR);
 					return 0;
 				}
