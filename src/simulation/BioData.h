@@ -5,4 +5,6 @@ struct BioData
     int o2;
     int co2;
     int health;
+    int radDamage;
+    int maxHealth;
 };
