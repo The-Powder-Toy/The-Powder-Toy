@@ -72,7 +72,7 @@ static int update(UPDATE_FUNC_ARGS)
     if (BOUNDS_CHECK && (rx || ry))
     {
         r = pmap[y+ry][x+rx];
-		er = sim->photons[y][x];
+		int er = sim->photons[y][x];
         if (r) {
 			if (RNG::Ref().chance(1, 2)){
 				// Diffuse among bio
