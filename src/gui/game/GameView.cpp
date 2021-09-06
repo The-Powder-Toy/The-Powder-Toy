@@ -2149,7 +2149,7 @@ void GameView::OnDraw()
 				}
 				else if (c->IsBio(type))
 				{
-					sampleInfo << c->ElementResolve(type, 0) << ", O2: " << sample.particle.bio.o2 << ", CO2: " << sample.particle.bio.co2 << ", Health: " << sample.particle.bio.health << ", Max Health: " << sample.particle.bio.maxHealth << ", Radiation Damage: " << sample.particle.bio.radDamage;
+					sampleInfo << c->ElementResolve(type, 0) << ", O2: " << sample.particle.bio.o2 << ", CO2: " << sample.particle.bio.co2 << ", Health: " << sample.particle.bio.health << "\nMax Health: " << sample.particle.bio.maxHealth << ", Radiation Damage: " << sample.particle.bio.radDamage;
 				}
 				else if ((type == PT_PIPE || type == PT_PPIP) && c->IsValidElement(ctype))
 				{
