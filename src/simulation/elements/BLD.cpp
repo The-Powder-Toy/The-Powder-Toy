@@ -102,8 +102,9 @@ static int update(UPDATE_FUNC_ARGS)
 					parts[ir].bio.co2--;
 				}
 				// Kill foreign biological objects (Immune system), weakened with damage.
-				if (t != PT_LUNG && t != PT_MEAT && t != PT_BLD && t != PT_SKINS && t!= PT_SKIND && t != PT_SKINE){
-					if (RNG::Ref().chance(parts[i].bio.health, 1000)){
+				if (t == PT_TUMOR){
+					// Real world immune system is bad at handling cancer
+					if (RNG::Ref().chance(parts[i].bio.health, 10000)){
 						sim->kill_part(ir);
 					}
 				}
