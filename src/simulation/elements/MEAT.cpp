@@ -31,8 +31,7 @@ void Element::Element_MEAT()
 
 	DefaultProperties.bio.health = 100;
 	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
-	DefaultProperties.tmp = 100; // max health
-	DefaultProperties.tmp2 = 0; // Radiation damage
+	DefaultProperties.maxHealth = 100;
 	HeatConduct = 29;
 	Description = "Meat. Basic biological material.";
 
@@ -93,7 +92,7 @@ static int update(UPDATE_FUNC_ARGS)
 			if (sim->elements[TYP(r)].Properties & PROP_RADIOACTIVE){
 				parts[i].bio.maxHealth--;
 				parts[i].bio.radDamage++;
-				if (RNG::Ref().chance(1, 100)){
+				if (RNG::Ref().chance(parts[i].bio.radDamage, 10000)){
 					sim->part_change_type(i, x, y, PT_TUMOR);
 					return 0;
 				}
