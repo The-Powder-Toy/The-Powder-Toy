@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+    <g transform="scale(1)">
+        <use xlink:href="#bezel" mask="url(#screen-cutout)" />
+        <use xlink:href="#screen" transform="translate(3, 6)" mask="url(#screen-mask)"/>
+    </g>
+
+    <defs>
+
+        <mask id="screen-cutout">
+            <rect width="100" height="100%" fill="white" />
+            <use xlink:href="#screen-rect" transform="translate(3,6)" fill="black" />
+        </mask>
+
+        <mask id="screen-mask">
+            <use xlink:href="#screen-rect" fill="white" />
+        </mask>
+
+        <rect id="screen-rect" width="26" height="18" rx="1" ry="1" />
+
+        <svg id="bezel">
+
+            <rect id="bottom" x="2" y="5" width="28" height="22" rx="2" ry="2" fill="url(#edge-gradient)" />
+            <rect id="front" x="2" y="5" width="28" height="20" rx="2" ry="2" fill="#deddda"/>
+
+            <defs>
+
+                 <linearGradient id="edge-gradient">
+
+                    <stop offset="0.000000" stop-color="rgb(119,118,123)"/>
+                    <stop offset="0.046875" stop-color="rgb(192,191,188)"/>
+                    <stop offset="0.093750" stop-color="rgb(154,153,150)"/>
+                    <stop offset="0.906250" stop-color="rgb(154,153,150)"/>
+                    <stop offset="0.953125" stop-color="rgb(192,191,188)"/>
+                    <stop offset="1.000000" stop-color="rgb(119,118,123)"/>
+
+                </linearGradient>
+
+            </defs>
+
+        </svg>
+
+        <svg id="screen">
+
+            <rect id="background" width="100%" height="100%" fill="#241F31"/>
+
+            <image id="raster" x="1" y="1" width="22" height="14" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAQCAYAAAAMJL+VAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAB0UlEQVQ4jbXUu05UQRwG8N85LAuLSswmooGseDfBxkQrTeyJIWphw0toZecjWOkT+AJ2FjZaWJIYI2IM63oJIOEOu9x22TMW5yxsqDSsXzKZ2z/zXWYy/GdEECLBEMbwBMOtHShgEJfQh4RQZX2CDxt8RB1lVDCPKUIgJsqB4xjBfZxFFKGI07hxoCVpsFnl9wZTMb9yLO2xiC1pv4wcAvbSIRdxB9cQ5zMrDzCQqS7TnGPlPauzlNep5inkudDL1RPsJpTWmdwhTg/3uhXRs1LwsJ/Bk3RdwaMWW6Z+FROEH4QiSUzYIqoQzaQlzW7WFqlO8f2n8HlT/DjNQqi9DY4VcSbLq7ftcJnfZpq/XHZBCbazVs/Wq5im+U6YeSU+N53eZOgomiGEckiSp8EhmR1CjPMY3Z91AIk0pnaSoU4SNKTPph27aD1TTXQdgaDn0DxgBfsO6tliJzHXRrDwhuST1OrfYi+rr0sTOEAIhFBEK6LnL7g3zPVxcrccWA5tfZ2QkMxn6iYJC0S7xCWiUZTQpVarqTe+tBG8fMdkgfEKN8fou0xjM/3UunuoL7A9x+wS3yqsVVhbJl9PM7g9wEiDU3c19avVdvQWvv5DGkfAH1PC+QLcT9lrAAAAAElFTkSuQmCC"/>
+
+            <g id="buttons">
+
+                <use x="1" y="16" xlink:href="#button-small" />
+                <use x="3" y="16" xlink:href="#button-small" />
+                <use x="5" y="16" xlink:href="#button-medium" />
+                <use x="9" y="16" xlink:href="#button-wide" />
+                <use x="16" y="16" xlink:href="#button-medium" />
+                <use x="20" y="16" xlink:href="#button-small" />
+                <use x="22" y="16" xlink:href="#button-small" />
+
+                <use x="24" y="1" xlink:href="#button-small" />
+                <use x="24" y="4" xlink:href="#button-small" />
+                <use x="24" y="7" xlink:href="#button-small" />
+                <use x="24" y="10" xlink:href="#button-small" />
+                <use x="24" y="13" xlink:href="#button-small" />
+                <use x="24" y="16" xlink:href="#button-small" />
+
+            </g>
+
+            <defs>
+
+                <svg id="button-small">
+                    <use xlink:href="#button" />
+                </svg>
+
+                <svg id="button-medium">
+                    <use xlink:href="#button" transform="scale(3,1)" />
+                </svg>
+
+                <svg id="button-wide">
+                    <use xlink:href="#button" transform="scale(6,1)" />
+                </svg>
+
+                <rect id="button" width="1" height="1" fill="rgb(222, 221, 218)" />
+
+            </defs>
+
+        </svg>
+
+    </defs>
+
+</svg>

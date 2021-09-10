@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+    <use xlink:href="#squircle" fill="black" style="filter:url(#drop-shadow)" />
+    <!-- <use xlink:href="#squircle" fill="black" style="filter:url(#inner-glow)" /> -->
+
+    <g mask="url(#clipping-mask)">
+        <use xlink:href="#contents"/>
+    </g>
+
+    <defs>
+
+        <path id="squircle" d="M14.656,3.125L11.168,3.138C10.861,3.138 10.555,3.138 10.248,3.139C9.99,3.141 9.732,3.144 9.474,3.151C8.911,3.166 8.344,3.199 7.788,3.299C7.224,3.4 6.699,3.565 6.186,3.825C5.682,4.081 5.221,4.416 4.822,4.814C4.422,5.213 4.087,5.673 3.83,6.175C3.569,6.687 3.404,7.211 3.302,7.774C3.202,8.329 3.169,8.894 3.154,9.455C3.147,9.712 3.144,9.97 3.143,10.227C3.141,10.533 3.125,10.913 3.125,11.219L3.125,17.344L3.141,20.857C3.141,21.163 3.141,21.469 3.143,21.775C3.144,22.033 3.147,22.291 3.154,22.549C3.169,23.111 3.202,23.677 3.302,24.233C3.404,24.796 3.569,25.321 3.83,25.833C4.087,26.336 4.422,26.797 4.822,27.196C5.221,27.595 5.682,27.93 6.186,28.186C6.699,28.447 7.224,28.612 7.789,28.714C8.345,28.813 8.912,28.846 9.474,28.862C9.732,28.869 9.99,28.872 10.248,28.873C10.555,28.875 10.861,28.875 11.168,28.875L20.864,28.875C21.17,28.875 21.476,28.875 21.781,28.873C22.039,28.872 22.297,28.869 22.554,28.862C23.116,28.846 23.682,28.813 24.237,28.713C24.8,28.612 25.324,28.447 25.836,28.186C26.338,27.93 26.799,27.595 27.198,27.196C27.596,26.797 27.931,26.336 28.187,25.833C28.447,25.321 28.613,24.796 28.714,24.232C28.814,23.677 28.847,23.11 28.862,22.549C28.869,22.291 28.872,22.033 28.873,21.775C28.875,21.469 28.875,21.163 28.875,20.857L28.875,11.145C28.875,10.839 28.875,10.533 28.873,10.227C28.872,9.97 28.869,9.712 28.862,9.455C28.847,8.894 28.814,8.328 28.714,7.773C28.613,7.211 28.447,6.687 28.187,6.175C27.931,5.673 27.596,5.213 27.198,4.814C26.799,4.416 26.339,4.081 25.836,3.826C25.324,3.565 24.8,3.4 24.236,3.299C23.681,3.199 23.115,3.166 22.554,3.151C22.297,3.144 22.039,3.141 21.781,3.139C21.476,3.138 21.17,3.138 20.864,3.138L17.312,3.125L14.656,3.125Z" />
+
+        <mask id="clipping-mask">
+            <use xlink:href="#squircle" fill="white" />
+        </mask>
+
+        <filter id="drop-shadow">
+            <feOffset result="offOut" in="SourceGraphic" dx="0" dy="0.3" />
+            <feGaussianBlur result="blurOut" in="offOut" stdDeviation=".3" />
+            <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
+        </filter>
+
+        <!-- I haven't figured out the upper-edge glow, yet. -->
+        <!-- <filter id="inner-glow">
+            <feFlood result="floodFill" flood-color="white"/>
+            <feOffset result="offOut" in="floodFill" dx="0" dy="0.3" />
+            <feGaussianBlur result="blurOut" in="offOut" stdDeviation="1"/>
+            <feBlend in="SourceGraphic" in2="blurOut" mode="lighten" />
+            <feComposite operator="atop" in2="SourceGraphic"/>
+        </filter> -->
+
+        <svg
+            id="contents"
+            width="100%"
+            height="100%"
+            viewBox="0 0 32 32">
+
+            <!-- This rectanglee is the background of the contents below.
+            It's magenta to make it clearer in the preview, but you'll probably want to change it. -->
+            <rect id="background" width="100%" height="100%" fill="magenta"/>
+
+            <!-- Put whatever you want here.
+            You can change the vewBox size above, but the cropping and scaling
+            will only work correctly if the width and height are identical (i.e. square). -->
+
+        </svg>
+
+    </defs>
+
+</svg>

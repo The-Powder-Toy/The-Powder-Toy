@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+    <use xlink:href="#bezel" mask="url(#screen-cutout)" />
+    <use xlink:href="#screen" transform="translate(3, 6)" mask="url(#screen-mask)"/>
+
+    <defs>
+
+        <mask id="screen-cutout">
+            <rect width="100" height="100%" fill="white" />
+            <use xlink:href="#screen-rect" transform="translate(3,6)" fill="black" />
+        </mask>
+
+        <mask id="screen-mask">
+            <use xlink:href="#screen-rect" fill="white" />
+        </mask>
+
+        <rect id="screen-rect" width="26" height="18" rx="1" ry="1" />
+
+        <svg id="bezel">
+
+            <rect id="bottom" x="2" y="5" width="28" height="22" rx="2" ry="2" fill="url(#edge-gradient)" />
+            <rect id="front" x="2" y="5" width="28" height="20" rx="2" ry="2" fill="#deddda"/>
+
+            <defs>
+
+                 <linearGradient id="edge-gradient">
+
+                    <stop offset="0.000000" stop-color="rgb(119,118,123)"/>
+                    <stop offset="0.046875" stop-color="rgb(192,191,188)"/>
+                    <stop offset="0.093750" stop-color="rgb(154,153,150)"/>
+                    <stop offset="0.906250" stop-color="rgb(154,153,150)"/>
+                    <stop offset="0.953125" stop-color="rgb(192,191,188)"/>
+                    <stop offset="1.000000" stop-color="rgb(119,118,123)"/>
+
+                </linearGradient>
+
+            </defs>
+
+        </svg>
+
+        <svg id="screen">
+
+            <rect id="background" width="100%" height="100%" fill="#241F31"/>
+
+            <g id="viewport" transform="translate(1,1)" mask="url(#viewport-mask)">
+
+                <use xlink:href="#fireballs" transform="translate(0,-4) scale(0.6875)" style="filter:url(#displacementFilter);" />
+
+            </g>
+
+            <g id="buttons">
+
+                <use x="1" y="16" xlink:href="#button-small" />
+                <use x="3" y="16" xlink:href="#button-small" />
+                <use x="5" y="16" xlink:href="#button-medium" />
+                <use x="9" y="16" xlink:href="#button-wide" />
+                <use x="16" y="16" xlink:href="#button-medium" />
+                <use x="20" y="16" xlink:href="#button-small" />
+                <use x="22" y="16" xlink:href="#button-small" />
+
+                <use x="24" y="1" xlink:href="#button-small" />
+                <use x="24" y="4" xlink:href="#button-small" />
+                <use x="24" y="7" xlink:href="#button-small" />
+                <use x="24" y="10" xlink:href="#button-small" />
+                <use x="24" y="13" xlink:href="#button-small" />
+                <use x="24" y="16" xlink:href="#button-small" />
+
+            </g>
+
+            <defs>
+
+                <svg id="button-small">
+                    <use xlink:href="#button" />
+                </svg>
+
+                <svg id="button-medium">
+                    <use xlink:href="#button" transform="scale(3,1)" />
+                </svg>
+
+                <svg id="button-wide">
+                    <use xlink:href="#button" transform="scale(6,1)" />
+                </svg>
+
+                <rect id="button" width="1" height="1" fill="rgb(222, 221, 218)" />
+
+                <mask id="viewport-mask">
+                    <rect id="viewport-rect" width="22" height="14" fill="white" />
+                </mask>
+
+                <svg
+                    id="fireballs"
+                    width="100%"
+                    height="100%"
+                    viewBox="0 0 32 32" >
+
+
+                    <!-- Each fireball is an instance with a transform using whole numbers. -->
+                    <!-- This nested scaling makes it easier to mentally visualize the picture. -->
+
+                    <use xlink:href="#fireball"
+
+                        id="left"
+                        transform="
+                            translate(9 17)
+                            scale(7)
+                        " />
+
+                    <use xlink:href="#fireball"
+
+                        id="top"
+                        transform="
+                            translate(15 12)
+                            scale(8)
+                        " />
+
+                    <use xlink:href="#fireball"
+
+                        id="right"
+                        transform="
+                            translate(23 15)
+                            scale(5)
+                        " />
+
+                    <use xlink:href="#fireball"
+
+                        id="bottom"
+                        transform="
+                            translate(17 20)
+                            scale(7)
+                        " />
+
+                    <use xlink:href="#fireball"
+
+                        id="center-left"
+                        transform="
+                            translate(13 15)
+                            scale(10)
+                        " />
+
+                    <use xlink:href="#fireball"
+
+                        id="center-right"
+                        transform="
+                            translate(19 17)
+                            scale(11)
+                        "/>
+
+                    <defs>
+
+                        <radialGradient id="radial" cx="0" cy="0" r="0.5" gradientTransform="translate(0.5 0.5)">
+
+                            <!-- The gradient colors are based on simple ratios of red and yellow. -->
+                            <!-- For more realism, though, they could hypothetically
+                                follow blackbody radiation color temperatures -->
+
+                            <stop offset="0.00" stop-color="#FFF" stop-opacity="1.00" />
+                            <stop offset="0.18" stop-color="#FFB" stop-opacity="0.98" />
+                            <stop offset="0.37" stop-color="#FF0" stop-opacity="0.93" />
+                            <stop offset="0.57" stop-color="#F80" stop-opacity="0.80" />
+                            <stop offset="0.68" stop-color="#F00" stop-opacity="0.48" />
+                            <stop offset="0.86" stop-color="#F00" stop-opacity="0.14" />
+                            <stop offset="1.00" stop-color="#F00" stop-opacity="0.00" />
+
+                        </radialGradient>
+
+                        <filter id="displacementFilter">
+                            <feTurbulence type="turbulence" baseFrequency="1"
+                                numOctaves="99" result="turbulence"/>
+                            <feDisplacementMap in2="turbulence" in="SourceGraphic"
+                                scale="1.5" xChannelSelector="R" yChannelSelector="G"/>
+                        </filter>
+
+                        <ellipse id="fireball" cx="0" cy="0" rx="1.5" ry="1.25" fill="url(#radial)" style="mix-blend-mode:lighten;"/>
+
+                    </defs>
+
+                </svg>
+
+            </defs>
+
+        </svg>
+
+    </defs>
+
+</svg>

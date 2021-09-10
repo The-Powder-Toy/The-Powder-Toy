@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+    <g mask="url(#clipping-mask)">
+        <!-- The contents of the viewport should be scaled to size here -->
+        <use xlink:href="#contents" width="100%" height="100%"/>
+    </g>
+
+    <use xlink:href="#edge-overlay"/>
+
+    <defs>
+
+        <rect id="outline" x="3" y="3" width="26" height="26" rx="2" ry="2" />
+
+        <mask id="clipping-mask">
+            <use xlink:href="#outline" fill="white" />
+        </mask>
+
+        <svg id="edge-overlay">
+
+            <use xlink:href="#outline" fill="url(#edge-gradient)" mask="url(#edge-mask)" style="mix-blend-mode:multiply;"/>
+
+            <defs>
+
+                <mask id="edge-mask">
+
+                    <use xlink:href="#outline" fill="white" />
+                    <use xlink:href="#outline" y="-1" fill="black" />
+
+                </mask>
+
+                <linearGradient id="edge-gradient">
+
+                    <stop offset="0.00" stop-color="rgb(119,118,123)"/>
+                    <stop offset="0.04" stop-color="rgb(192,191,188)"/>
+                    <stop offset="0.08" stop-color="rgb(154,153,150)"/>
+                    <stop offset="0.92" stop-color="rgb(154,153,150)"/>
+                    <stop offset="0.96" stop-color="rgb(192,191,188)"/>
+                    <stop offset="1.00" stop-color="rgb(119,118,123)"/>
+
+                </linearGradient>
+
+            </defs>
+
+        </svg>
+
+        <svg
+            id="contents"
+            width="100%"
+            height="100%"
+            viewBox="0 0 32 32">
+
+            <rect id="background" width="100%" height="100%" fill="#241F31" />
+            <ellipse id="fireball" cx="13" cy="32" rx="100%" ry="100%" fill="url(#radial)" style="filter:url(#displacementFilter);mix-blend-mode:lighten;"/>
+
+            <defs>
+
+                <radialGradient id="radial" cx="0" cy="0" r="0.5" gradientTransform="translate(0.5 0.5)">
+                    <stop offset="0.00" stop-color="#FFF" stop-opacity="1.00" />
+                    <stop offset="0.10" stop-color="#FFB" stop-opacity="1.00" />
+                    <stop offset="0.30" stop-color="#FF0" stop-opacity="0.80" />
+                    <stop offset="0.50" stop-color="#F80" stop-opacity="0.70" />
+                    <stop offset="0.60" stop-color="#F00" stop-opacity="0.50" />
+                    <stop offset="0.70" stop-color="#F00" stop-opacity="0.10" />
+                    <stop offset="0.80" stop-color="#F00" stop-opacity="0.00" />
+                </radialGradient>
+
+                <filter id="displacementFilter">
+                    <feTurbulence type="turbulence" baseFrequency=".1"
+                        numOctaves="7" result="turbulence"/>
+                    <feDisplacementMap in2="turbulence" in="SourceGraphic"
+                        scale="12" xChannelSelector="R" yChannelSelector="G"/>
+                </filter>
+
+            </defs>
+
+        </svg>
+
+    </defs>
+
+</svg>

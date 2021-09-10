@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+    <g mask="url(#clipping-mask)">
+        <!-- The contents of the viewport should be scaled to size, centered, and cropped to landscape -->
+        <use xlink:href="#contents" y="-2" width="100%"/>
+    </g>
+
+    <use xlink:href="#edge-overlay"/>
+
+    <defs>
+
+        <rect id="outline" x="2" y="4" width="28" height="24" rx="2" ry="2" />
+
+        <mask id="clipping-mask">
+            <use xlink:href="#outline" fill="white" />
+        </mask>
+
+        <svg id="edge-overlay">
+
+            <use xlink:href="#outline" fill="url(#edge-gradient)" mask="url(#edge-mask)" style="mix-blend-mode:multiply;"/>
+
+            <defs>
+
+                <mask id="edge-mask">
+
+                    <use xlink:href="#outline" fill="white" />
+                    <use xlink:href="#outline" y="-1" fill="black" />
+
+                </mask>
+
+                <linearGradient id="edge-gradient">
+
+                    <!-- Note that the gradient stops are fractions
+                    that line up with the pixel grid at 32px x 32px.
+                    Here the gradient is 28px long (the width of "outline"),
+                    with 2px at either end for the curved corners. -->
+                    <stop offset="0.000000" stop-color="rgb(119,118,123)"/>
+                    <stop offset="0.046875" stop-color="rgb(192,191,188)"/>
+                    <stop offset="0.093750" stop-color="rgb(154,153,150)"/>
+                    <stop offset="0.906250" stop-color="rgb(154,153,150)"/>
+                    <stop offset="0.953125" stop-color="rgb(192,191,188)"/>
+                    <stop offset="1.000000" stop-color="rgb(119,118,123)"/>
+
+                </linearGradient>
+
+            </defs>
+
+        </svg>
+
+        <svg
+            id="contents"
+            width="100%"
+            height="100%"
+            viewBox="0 0 32 32">
+
+            <!-- This rectanglee is the background of the contents below.
+            It's magenta to make it clearer in the preview, but you'll probably want to change it. -->
+            <rect id="background" width="100%" height="100%" fill="magenta" />
+
+            <!-- Put whatever you want here.
+            You can change the vewBox size above, but the cropping and scaling
+            will only work correctly if the width and height are identical (i.e. square). -->
+
+        </svg>
+
+    </defs>
+
+</svg>

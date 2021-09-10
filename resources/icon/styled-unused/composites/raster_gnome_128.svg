@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+    <g transform="scale(1)">
+        <use xlink:href="#bezel" mask="url(#screen-cutout)" />
+        <use xlink:href="#screen" transform="translate(3, 6)" mask="url(#screen-mask)"/>
+    </g>
+
+    <defs>
+
+        <mask id="screen-cutout">
+            <rect width="100" height="100%" fill="white" />
+            <use xlink:href="#screen-rect" transform="translate(3,6)" fill="black" />
+        </mask>
+
+        <mask id="screen-mask">
+            <use xlink:href="#screen-rect" fill="white" />
+        </mask>
+
+        <rect id="screen-rect" width="26" height="18" rx="1" ry="1" />
+
+        <svg id="bezel">
+
+            <rect id="bottom" x="2" y="5" width="28" height="22" rx="2" ry="2" fill="url(#edge-gradient)" />
+            <rect id="front" x="2" y="5" width="28" height="20" rx="2" ry="2" fill="#deddda"/>
+
+            <defs>
+
+                 <linearGradient id="edge-gradient">
+
+                    <stop offset="0.000000" stop-color="rgb(119,118,123)"/>
+                    <stop offset="0.046875" stop-color="rgb(192,191,188)"/>
+                    <stop offset="0.093750" stop-color="rgb(154,153,150)"/>
+                    <stop offset="0.906250" stop-color="rgb(154,153,150)"/>
+                    <stop offset="0.953125" stop-color="rgb(192,191,188)"/>
+                    <stop offset="1.000000" stop-color="rgb(119,118,123)"/>
+
+                </linearGradient>
+
+            </defs>
+
+        </svg>
+
+        <svg id="screen">
+
+            <rect id="background" width="100%" height="100%" fill="#241F31"/>
+
+            <image id="raster" x="1" y="1" width="22" height="14" xlink:href="data:image/png;base64,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"/>
+
+            <g id="buttons">
+
+                <use x="1" y="16" xlink:href="#button-small" />
+                <use x="3" y="16" xlink:href="#button-small" />
+                <use x="5" y="16" xlink:href="#button-medium" />
+                <use x="9" y="16" xlink:href="#button-wide" />
+                <use x="16" y="16" xlink:href="#button-medium" />
+                <use x="20" y="16" xlink:href="#button-small" />
+                <use x="22" y="16" xlink:href="#button-small" />
+
+                <use x="24" y="1" xlink:href="#button-small" />
+                <use x="24" y="4" xlink:href="#button-small" />
+                <use x="24" y="7" xlink:href="#button-small" />
+                <use x="24" y="10" xlink:href="#button-small" />
+                <use x="24" y="13" xlink:href="#button-small" />
+                <use x="24" y="16" xlink:href="#button-small" />
+
+            </g>
+
+            <defs>
+
+                <svg id="button-small">
+                    <use xlink:href="#button" />
+                </svg>
+
+                <svg id="button-medium">
+                    <use xlink:href="#button" transform="scale(3,1)" />
+                </svg>
+
+                <svg id="button-wide">
+                    <use xlink:href="#button" transform="scale(6,1)" />
+                </svg>
+
+                <rect id="button" width="1" height="1" fill="rgb(222, 221, 218)" />
+
+            </defs>
+
+        </svg>
+
+    </defs>
+
+</svg>
