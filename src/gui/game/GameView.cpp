@@ -2150,7 +2150,8 @@ void GameView::OnDraw()
 				else if (c->IsBio(type))
 				{
 					sampleInfo << c->ElementResolve(type, 0) << ", O2: " << sample.particle.bio.o2 << ", CO2: " << sample.particle.bio.co2 << ", Health: " << sample.particle.bio.health;
-					sampleInfo << "\n" << "Max Health: " << sample.particle.bio.maxHealth << ", Radiation Damage: " << sample.particle.bio.radDamage;
+					sampleInfo << "\n"; //If this doesn't work, I'm going to give up and just have it not display the stuff below.
+					sampleInfo << "Max Health: " << sample.particle.bio.maxHealth << ", Radiation Damage: " << sample.particle.bio.radDamage;
 				}
 				else if ((type == PT_PIPE || type == PT_PPIP) && c->IsValidElement(ctype))
 				{
