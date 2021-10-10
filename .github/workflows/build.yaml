@@ -21,7 +21,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
-          python-version: '3.8'
+          python-version: '3.10'
       - id: get_type
         run: python3 ./.github/get-type.py ${{ github.ref }}
       - id: create_release
@@ -91,7 +91,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
-          python-version: '3.8'
+          python-version: '3.10'
       - id: get_type
         run: python3 ./.github/get-type.py ${{ github.ref }}
       - if: matrix.platform_short == 'mac'
@@ -166,7 +166,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
-          python-version: '3.8'
+          python-version: '3.10'
       - id: get_type
         run: python3 ./.github/get-type.py ${{ github.ref }}
       - uses: actions/download-artifact@v1
@@ -188,7 +188,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
-          python-version: '3.8'
+          python-version: '3.10'
       - id: get_type
         run: python3 ./.github/get-type.py ${{ github.ref }}
       - run: curl "https://starcatcher.us/TPT/perform-release.lua?mod=${{ steps.get_type.outputs.MOD_ID }}&type=${{ steps.get_type.outputs.TYPE }}&name=${{ steps.get_type.outputs.NAME }}&commit=${{ github.sha }}" | grep "Release complete"

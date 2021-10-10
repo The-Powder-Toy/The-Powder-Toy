@@ -20,7 +20,6 @@
 #include "client/SaveFile.h"
 #include "client/SaveInfo.h"
 #include "common/Platform.h"
-#include "common/tpt-compat.h"
 #include "graphics/Renderer.h"
 #include "simulation/Air.h"
 #include "simulation/GOLString.h"

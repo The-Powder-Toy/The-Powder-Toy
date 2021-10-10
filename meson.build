@@ -1,5 +1,5 @@
 project('the-powder-toy', [ 'c', 'cpp' ], version: 'the.cake.is.a.lie', default_options: [
-	'cpp_std=c++11',
+	'cpp_std=c++17',
 ])
 
 to_array = generator(

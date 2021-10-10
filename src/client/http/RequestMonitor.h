@@ -47,7 +47,7 @@ namespace http
 			request->Start();
 		}
 
-		virtual void OnResponse(typename std::result_of<decltype(&R::Finish)(R)>::type v) = 0;
+		virtual void OnResponse(typename std::invoke_result<decltype(&R::Finish), R>::type v) = 0;
 	};
 }
 
