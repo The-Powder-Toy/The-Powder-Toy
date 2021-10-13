@@ -90,4 +90,4 @@ screenshot_*
 *.opensdf
 *.sdf
 /font/
-
+compile_commands.json
