@@ -148,6 +148,8 @@ if copt_msvc
 	args_msvc = [
 		'/GS',
 		'-D_SCL_SECURE_NO_WARNINGS',
+		'-DUNICODE',
+		'-D_UNICODE',
 	]
 	if copt_64bit
 		message('SSE explicitly configured but unavailable in msvc targeting 64-bit machines')
@@ -300,7 +302,6 @@ if get_option('build_powder')
 		include_directories: [ project_inc, powder_inc ],
 		c_args: project_c_args,
 		cpp_args: project_cpp_args,
-		cpp_pch: 'pch/pch_cpp.h',
 		gui_app: true,
 		link_args: project_link_args,
 		dependencies: powder_deps,
@@ -318,7 +319,6 @@ if get_option('build_render')
 		include_directories: [ project_inc, render_inc ],
 		c_args: project_c_args,
 		cpp_args: project_cpp_args,
-		cpp_pch: 'pch/pch_cpp.h',
 		link_args: project_link_args,
 		dependencies: render_deps,
 	)
@@ -339,7 +339,6 @@ if get_option('build_font')
 		include_directories: [ project_inc, font_inc ],
 		c_args: project_c_args,
 		cpp_args: project_cpp_args,
-		cpp_pch: 'pch/pch_cpp.h',
 		gui_app: true,
 		link_args: project_link_args,
 		dependencies: font_deps,

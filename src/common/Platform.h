@@ -27,7 +27,7 @@ namespace Platform
 	/**
 	 * @return true on success
 	 */
-	bool DeleteFile(ByteString filename);
+	bool RemoveFile(ByteString filename);
 
 	/**
 	 * @return true on success

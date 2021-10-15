@@ -14,6 +14,7 @@
 #include <io.h>
 #include <shlobj.h>
 #include <shlwapi.h>
+#include <shellapi.h>
 #include <windows.h>
 #else
 #include <unistd.h>
@@ -259,7 +260,7 @@ bool DirectoryExists(ByteString directory)
 	}
 }
 
-bool DeleteFile(ByteString filename)
+bool RemoveFile(ByteString filename)
 {
 	return std::remove(filename.c_str()) == 0;
 }
@@ -442,13 +443,13 @@ String DoMigration(ByteString fromDir, ByteString toDir)
 			result << '\n' << filename.FromUtf8() << " skipped (already exists)";
 		}
 
-		if (!DeleteFile(fromDir + filename)) {
+		if (!RemoveFile(fromDir + filename)) {
 			logFile << "failed to delete " << filename << std::endl;
 		}
 	};
 
 	// Do actual migration
-	DeleteFile(fromDir + "stamps/stamps.def");
+	RemoveFile(fromDir + "stamps/stamps.def");
 	migrateList(stamps, "stamps", "Stamps");
 	migrateList(saves, "Saves", "Saves");
 	if (!scripts.empty())

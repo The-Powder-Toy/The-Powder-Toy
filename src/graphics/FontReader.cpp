@@ -3,6 +3,8 @@
 #include "bzip2/bz2wrap.h"
 #include "font.bz2.h"
 
+#include <array>
+
 unsigned char *font_data = nullptr;
 unsigned int *font_ptrs = nullptr;
 unsigned int (*font_ranges)[2] = nullptr;

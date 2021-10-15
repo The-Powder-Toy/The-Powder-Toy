@@ -41,7 +41,7 @@ int update_start(char *data, unsigned int len)
 		updName = exeName.substr(0, exeName.length() - 4);
 	updName = updName + "_upd.exe";
 
-	if (!MoveFile(exeName.c_str(), updName.c_str()))
+	if (!MoveFile(Platform::WinWiden(exeName).c_str(), Platform::WinWiden(updName).c_str()))
 		return 1;
 
 	f = fopen(exeName.c_str(), "wb");
@@ -50,14 +50,14 @@ int update_start(char *data, unsigned int len)
 	if (fwrite(data, 1, len, f) != len)
 	{
 		fclose(f);
-		DeleteFile(exeName.c_str());
+		Platform::RemoveFile(exeName);
 		return 1;
 	}
 	fclose(f);
 
-	if ((uintptr_t)ShellExecute(NULL, "open", exeName.c_str(), NULL, NULL, SW_SHOWNORMAL) <= 32)
+	if ((uintptr_t)ShellExecute(NULL, L"open", Platform::WinWiden(exeName).c_str(), NULL, NULL, SW_SHOWNORMAL) <= 32)
 	{
-		DeleteFile(exeName.c_str());
+		Platform::RemoveFile(exeName);
 		return 1;
 	}
 
@@ -114,7 +114,7 @@ int update_finish()
 	printf("Update: Temp EXE name: %s\n", updName.c_str());
 #endif
 
-	while (!DeleteFile(updName.c_str()))
+	while (!Platform::RemoveFile(updName))
 	{
 		err = GetLastError();
 		if (err == ERROR_FILE_NOT_FOUND)
@@ -128,7 +128,7 @@ int update_finish()
 			if (extension == ".exe")
 				updName = exeName.substr(0, exeName.length() - 4);
 			updName = updName + "_update.exe";
-			DeleteFile(updName.c_str());
+			Platform::RemoveFile(updName);
 			return 0;
 		}
 		Sleep(500);

@@ -16,6 +16,7 @@
 #include "simulation/ElementClasses.h"
 
 #include "common/tpt-minmax.h"
+#include "common/tpt-compat.h"
 
 GameSave::GameSave(const GameSave & save):
     majorVersion(save.majorVersion),
