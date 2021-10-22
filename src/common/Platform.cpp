@@ -9,20 +9,22 @@
 #include <sys/stat.h>
 
 #ifdef WIN
-#define NOMINMAX
-#include <direct.h>
-#include <io.h>
-#include <shlobj.h>
-#include <shlwapi.h>
-#include <shellapi.h>
-#include <windows.h>
+# ifndef NOMINMAX
+#  define NOMINMAX
+# endif
+# include <direct.h>
+# include <io.h>
+# include <shlobj.h>
+# include <shlwapi.h>
+# include <shellapi.h>
+# include <windows.h>
 #else
-#include <unistd.h>
-#include <ctime>
-#include <sys/time.h>
+# include <unistd.h>
+# include <ctime>
+# include <sys/time.h>
 #endif
 #ifdef MACOSX
-#include <mach-o/dyld.h>
+# include <mach-o/dyld.h>
 #endif
 
 #include "Misc.h"

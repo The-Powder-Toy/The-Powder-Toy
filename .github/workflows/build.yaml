@@ -48,13 +48,13 @@ jobs:
 # --------------+------------+------------+------------+------------+------------+------------+
 # gcc-static    |            |            |     NO     |     NO     |     NO     |     NO     |
 # msvc-static   |     NO     |     NO     |            |     NO     |     NO     |            |
-# mingw-static  |     NO     |     NO     |     NO     |     NO     |     NO     |   NO [1]   |
+# mingw-static  |     NO     |     NO     |            |     NO     |     NO     |     NO     |
 # gcc-dynamic   |            |            |     NO     |     NO     |     NO     |     NO     |
 # msvc-dynamic  |     NO     |     NO     |            |     NO     |     NO     |            |
-# mingw-dynamic |     NO     |     NO     |     NO     |     NO     |     NO     |     NO     |
+# mingw-dynamic |     NO     |     NO     |            |     NO     |     NO     |     NO     |
 #
-# [1] I don't currently care enough about mingw to figure out how to do this.
 # Please keep this matrix in sync with the other one in this file, see the ### blocks.
+# The only difference should be that the second matrix has all mingw cells disabled; we don't publish mingw builds on starcatcher.
 #########################################################
 ############# BEGIN BLOCK FOR COPYING BELOW #############
 #########################################################
@@ -64,6 +64,11 @@ jobs:
         static_dynamic: [static, dynamic]
         exclude:
           - toolset_short: mingw
+            machine_short: i686  # remove this line after copying the matrix below
+          - toolset_short: mingw # remove this line after copying the matrix below
+            platform_short: lin  # remove this line after copying the matrix below
+          - toolset_short: mingw # remove this line after copying the matrix below
+            platform_short: mac  # remove this line after copying the matrix below
           - machine_short: i686
             platform_short: lin
           - machine_short: i686
@@ -82,10 +87,10 @@ jobs:
             os: ubuntu-18.04
             suffix: ''
           - platform_short: mac
-            os: macos-latest
+            os: macos-10.15
             suffix: ''
           - platform_short: win
-            os: windows-latest
+            os: windows-2019
             suffix: '.exe'
     steps:
       - uses: actions/checkout@v2

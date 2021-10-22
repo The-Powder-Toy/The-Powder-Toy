@@ -15,15 +15,17 @@
 #endif
 
 #ifdef WIN
-#define NOMINMAX
-#include <shlobj.h>
-#include <objidl.h>
-#include <shlwapi.h>
-#include <windows.h>
-#include <direct.h>
+# ifndef NOMINMAX
+#  define NOMINMAX
+# endif
+# include <shlobj.h>
+# include <objidl.h>
+# include <shlwapi.h>
+# include <windows.h>
+# include <direct.h>
 #else
-#include <sys/stat.h>
-#include <unistd.h>
+# include <sys/stat.h>
+# include <unistd.h>
 #endif
 
 #include "ClientListener.h"
