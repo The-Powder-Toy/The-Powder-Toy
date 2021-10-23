@@ -4,39 +4,62 @@
 #ifdef __MINGW32__
 # include <cstddef>
 
-template<class Type>
-class ThreadLocal
+class ThreadLocalCommon
 {
-	static void Ctor(Type *type)
-	{
-		new (type) Type();
-	}
+	ThreadLocalCommon(const ThreadLocalCommon &other) = delete;
+	ThreadLocalCommon &operator =(const ThreadLocalCommon &other) = delete;
 
-	static void Dtor(Type *type)
-	{
-		type->~Type();
-	}
-
-	size_t size = sizeof(Type);
-	void (*ctor)(Type *) = Ctor;
-	void (*dtor)(Type *) = Dtor;
+protected:
+	size_t size;
+	void (*ctor)(void *);
+	void (*dtor)(void *);
 	size_t padding;
 
+	void *Get() const;
+
 public:
-	Type *operator &()
+	ThreadLocalCommon() = default;
+
+	static constexpr size_t Alignment = 0x20;
+};
+// * If this fails, add or remove padding fields, possibly change Alignment to a larger power of 2.
+static_assert(sizeof(ThreadLocalCommon) == ThreadLocalCommon::Alignment, "fix me");
+
+template<class Type>
+class ThreadLocal : public ThreadLocalCommon
+{
+	static void Ctor(void *type)
 	{
-		static_assert(sizeof(ThreadLocal<Type>) == 0x20, "fix me");
-		void *ThreadLocalGet(void *opaque);
-		return reinterpret_cast<Type *>(ThreadLocalGet(reinterpret_cast<void *>(this)));
+		new(type) Type();
 	}
 
-	operator Type &()
+	static void Dtor(void *type)
+	{
+		reinterpret_cast<Type *>(type)->~Type();
+	}
+
+public:
+	ThreadLocal()
+	{
+		// * If this fails, you're out of luck.
+		static_assert(sizeof(ThreadLocal<Type>) == sizeof(ThreadLocalCommon), "fix me");
+		size = sizeof(Type);
+		ctor = Ctor;
+		dtor = Dtor;
+	}
+
+	Type *operator &() const
+	{
+		return reinterpret_cast<Type *>(Get());
+	}
+
+	operator Type &() const
 	{
 		return *(this->operator &());
 	}
 };
 
-# define THREAD_LOCAL(Type, tl) ThreadLocal<Type> tl __attribute__((section("tpt_tls"))) __attribute__((aligned(0x20)))
+# define THREAD_LOCAL(Type, tl) const ThreadLocal<Type> tl __attribute__((section("tpt_tls"), aligned(ThreadLocalCommon::Alignment)))
 #else
 # define THREAD_LOCAL(Type, tl) thread_local Type tl
 #endif
