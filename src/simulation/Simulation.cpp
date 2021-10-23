@@ -4441,7 +4441,7 @@ killed:
 				// Checking stagnant is cool, but then it doesn't update when you change it later.
 				if (water_equal_test && elements[t].Falldown == 2 && RNG::Ref().chance(1, 200))
 				{
-					if (!flood_water(x, y, i))
+					if (flood_water(x, y, i))
 						goto movedone;
 				}
 				// liquids and powders
