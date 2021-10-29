@@ -1,16 +1,18 @@
+/*
+
 #include "simulation/ElementCommon.h"
 
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
 
-void Element::Element_BLD()
+void Element::Element_BACT()
 {
-	Identifier = "DEFAULT_PT_BLD";
-	Name = "BLD";
+	Identifier = "DEFAULT_PT_BACT";
+	Name = "BACT";
 	Colour = PIXPACK(0x990000);
 	MenuVisible = 1;
 	MenuSection = SC_BIO;
-	Enabled = 1;
+	Enabled = 0;
 
 	Advection = 0.6f;
 	AirDrag = 0.01f * CFDS;
@@ -31,7 +33,7 @@ void Element::Element_BLD()
 	DefaultProperties.bio.health = 500;
 	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
 	HeatConduct = 29;
-	Description = "Blood. Absorbs oxygen and transfers it to other living pixels.";
+	Description = "Bacteria. Infects living things (genes stored in tmp) (WIP).";
 
 	Properties = TYPE_LIQUID|PROP_NEUTPENETRATE|TYPE_BIO;
 
@@ -72,13 +74,14 @@ static int update(UPDATE_FUNC_ARGS)
 		int t = TYP(r);
 		int ir = ID(r);
 
-        if (r){
+		if (r){
 			// Oxygen collection
 			if (parts[i].bio.o2 < 10 && t == PT_O2){
 				parts[i].bio.o2 += 5;
 				sim->part_change_type(ID(r), x, y, PT_NONE);
 			}
 			// Diffusion into surrounding blood
+			/*
 			else if (t == PT_BLD){
 				if (parts[i].bio.o2 > parts[ir].bio.o2){
 					parts[i].bio.o2--;
@@ -89,7 +92,9 @@ static int update(UPDATE_FUNC_ARGS)
 					parts[ir].bio.co2++;
 				}
 			}
+			*\
 			// Transfer to biological tissues
+			
 			else if (sim->elements[t].Properties & TYPE_BIO){
 				// Give oxygen
 				if (t != PT_LUNG && parts[i].bio.o2 > 0 && parts[ir].bio.o2 < MAX_O2){
@@ -110,7 +115,7 @@ static int update(UPDATE_FUNC_ARGS)
 				}
 			}
 		}
-    }
+	}
 
 	// Health management
 	if (RNG::Ref().chance(1, 100)){
@@ -124,10 +129,11 @@ static int update(UPDATE_FUNC_ARGS)
 		if (parts[i].bio.co2 > MAX_CO2 || parts[i].bio.o2 < 1){
 			parts[i].bio.health--;
 		}
-		// Otherwise heal (Why make it not use O2 to heal?)
+		// Otherwise heal
 		else{
-			if (parts[i].bio.health < 500){
+			if (parts[i].bio.health < 500 && parts[i].bio.o2 > 1){
 				parts[i].bio.health++;
+				parts[i].bio.o2--;
 			}
 		}
 	}
@@ -136,16 +142,7 @@ static int update(UPDATE_FUNC_ARGS)
 	if (parts[i].bio.health < 1){
 		sim->part_change_type(i, x, y, PT_DT);
 	}
-	//Metastasis code
-	if (parts[i].ctype == PT_TUMOR){
-		if (RNG::Ref().chance(1, 100)){
-		// convert biology to tumor (grow)
-			if (sim->elements[TYP(r)].Properties & TYPE_BIO && TYP(r) != PT_TUMOR){
-				int ir = ID(r);
-				sim->part_change_type(ir, parts[ir].x, parts[ir].y, PT_TUMOR);
-			}
-		}
-	}
+
 
 	return 0;
 }
@@ -170,3 +167,19 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 
 	return 0;
 }
+
+int evaluateGenes(int gene, int genome)
+{
+	if (gene == 1)
+	{
+		geneValue = genome % 256;
+		return geneValue;
+	}
+}
+
+int modifyGenes(int gene, int newValue, int genome)
+{
+	
+}
+
+*/

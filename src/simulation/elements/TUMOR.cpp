@@ -109,6 +109,8 @@ static int update(UPDATE_FUNC_ARGS)
 		if (sim->elements[TYP(r)].Properties & TYPE_BIO && TYP(r) != PT_TUMOR){
 			int ir = ID(r);
 			sim->part_change_type(ir, parts[ir].x, parts[ir].y, PT_TUMOR);
+			parts[i].bio.o2--;
+			parts[i].bio.co2++;
 		}
 	}
 

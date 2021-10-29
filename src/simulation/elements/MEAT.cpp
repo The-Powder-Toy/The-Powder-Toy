@@ -31,8 +31,7 @@ void Element::Element_MEAT()
 
 	DefaultProperties.bio.health = 100;
 	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
-	DefaultProperties.tmp = 100; // max health
-	DefaultProperties.tmp2 = 0; // Radiation damage
+	DefaultProperties.bio.maxHealth = 100;
 	HeatConduct = 29;
 	Description = "Meat. Basic biological material.";
 
@@ -73,6 +72,7 @@ static int update(UPDATE_FUNC_ARGS)
     if (BOUNDS_CHECK && (rx || ry))
     {
         r = pmap[y+ry][x+rx];
+		int er = sim->photons[y][x];
         if (r) {
 			if (RNG::Ref().chance(1, 2)){
 				// Diffuse among bio
@@ -87,6 +87,14 @@ static int update(UPDATE_FUNC_ARGS)
 						parts[i].bio.co2--;
 						parts[ir].bio.co2++;
 					}
+				}
+			}
+			//Radiation damage is back, maybe.
+			if (sim->elements[TYP(r)].MenuSection == SC_NUCLEAR || sim->elements[TYP(er)].MenuSection == SC_NUCLEAR){
+				parts[i].bio.radDamage++;
+				if (RNG::Ref().chance(parts[i].bio.radDamage, 100000)){
+					sim->part_change_type(i, x, y, PT_TUMOR);
+					return 0;
 				}
 			}
         }
@@ -115,6 +123,7 @@ static int update(UPDATE_FUNC_ARGS)
 	if (parts[i].bio.health < 1){
 		sim->part_change_type(i, x, y, PT_DT);
 	}
+	
 
 	return 0;
 }
