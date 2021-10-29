@@ -89,6 +89,10 @@ static int update(UPDATE_FUNC_ARGS)
 					else
 						sim->part_change_type(ID(r),x+rx,y+ry,PT_STNE);
 				}
+				else if (TYP(r) == PT_WOOD && parts[ID(r)].tmp < 650 && RNG::Ref().chance(1, 10)) // Wood Weathering  
+				{
+					parts[ID(r)].tmp++;
+				}
 			}
 	return 0;
 }
