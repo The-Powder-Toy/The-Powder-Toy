@@ -1,6 +1,7 @@
 #include "simulation/ElementCommon.h"
 
 static int graphics(GRAPHICS_FUNC_ARGS);
+int Element_ROCK_update(UPDATE_FUNC_ARGS);
 static void create(ELEMENT_CREATE_FUNC_ARGS);
 
 void Element::Element_ROCK()
@@ -40,11 +41,50 @@ void Element::Element_ROCK()
 	HighPressureTransition = PT_STNE;
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
-	HighTemperature = 1943.15f;
-	HighTemperatureTransition = PT_LAVA;
+	HighTemperature = ITH;
+	HighTemperatureTransition = ST;
 
+	Update = &Element_ROCK_update;
 	Graphics = &graphics;
 	Create = &create;
+}
+
+int Element_ROCK_update(UPDATE_FUNC_ARGS)
+{
+	int rx, ry;
+	parts[i].pavg[0] = parts[i].pavg[1];
+	parts[i].pavg[1] = sim->pv[y / CELL][x / CELL];
+	float diff = parts[i].pavg[1] - parts[i].pavg[0];
+	
+	if (parts[i].tmp == 1 && parts[i].type == PT_ROCK && parts[i].temp >= 873 && RNG::Ref().chance(1, 5000)) //Sulfurized ROCK Heat Reactions
+	{
+		if (RNG::Ref().chance(1, 15))
+		{
+			sim->create_part(-1, x + RNG::Ref().chance(1, 3) - 2, y + RNG::Ref().chance(1, 3) - 2, PT_CAUS);
+		}
+		sim->create_part(-1, x + RNG::Ref().chance(1, 3) - 2, y + RNG::Ref().chance(1, 3) - 2, PT_SMKE);
+
+		if (RNG::Ref().chance(1, 250))
+			sim->part_change_type(i, x, y, PT_METL);
+		else if (RNG::Ref().chance(1, 500))
+			sim->part_change_type(i, x, y, PT_GOLD);
+		else if (RNG::Ref().chance(1, 750)) 
+			sim->part_change_type(i, x, y, PT_MERC);
+	}
+
+
+	/*SPECIAL HIGH TEMP TRANSITIONS*/
+	if (parts[i].type == PT_ROCK && parts[i].temp >= 1943.15 && parts[i].tmp == 0) //ROCK
+	{
+		sim->part_change_type(i, x, y, PT_LAVA);
+		parts[i].ctype = PT_ROCK;
+	}
+	else if (parts[i].type == PT_ROCK && parts[i].temp >= 1153.15 && parts[i].tmp == 1) //Sulfurized ROCK, Lower Melting Temp
+	{
+		parts[i].ctype = PT_ROCK;
+		sim->part_change_type(i, x, y, PT_LAVA);
+	}
+	return 0;
 }
 
 
@@ -63,6 +103,12 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 		*firer = *colr;
 		*fireg = *colg;
 		*fireb = *colb;
+	}
+	if (cpart->tmp == 1) //Yellow Color Shift (Sulfurized ROCK Reactions)
+	{
+		*colr += 50;
+		*colg += 30;
+		*colb += -30;
 	}
 	return 0;
 }

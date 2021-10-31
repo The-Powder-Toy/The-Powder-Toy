@@ -90,6 +90,17 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 	case PT_LAVA:
 		if (parts[i].ctype == PT_ROCK)
 		{
+			if (parts[i].tmp ==1 && parts[i].temp < 1153.15) //Freezing temp of sulfurized ROCK
+			{
+				sim->part_change_type(i, x, y, PT_ROCK);
+				parts[i].ctype = PT_NONE;
+			}
+			else if (parts[i].temp < 1943.15 && parts[i].tmp != 1) //Freezing temp ROCK
+			{
+				sim->part_change_type(i, x, y, PT_ROCK);
+				parts[i].ctype = PT_NONE;
+			}
+
 			float pres = sim->pv[y / CELL][x / CELL];
 			if (pres <= -9)
 			{
