@@ -90,12 +90,12 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 	case PT_LAVA:
 		if (parts[i].ctype == PT_ROCK)
 		{
-			if (parts[i].tmp ==1 && parts[i].temp < 1153.15) //Freezing temp of sulfurized ROCK
+			if (parts[i].tmp == 2 && parts[i].temp < 1153.15) //Freezing temp of sulfurized ROCK
 			{
 				sim->part_change_type(i, x, y, PT_ROCK);
 				parts[i].ctype = PT_NONE;
 			}
-			else if (parts[i].temp < 1943.15 && parts[i].tmp != 1) //Freezing temp ROCK
+			else if (parts[i].temp < 1943.15 && parts[i].tmp != 2) //Freezing temp ROCK
 			{
 				sim->part_change_type(i, x, y, PT_ROCK);
 				parts[i].ctype = PT_NONE;
@@ -255,12 +255,17 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 							parts[ID(r)].ctype = PT_HEAC;
 						}
 					}
-					else if (parts[i].ctype == PT_ROCK && rt == PT_LAVA && parts[ID(r)].ctype == PT_GOLD && parts[ID(r)].tmp == 0 &&
-						sim->pv[y / CELL][x / CELL] >= 50 && RNG::Ref().chance(1, 10000)) // Produce GOLD veins/clusters
+					else if (parts[i].ctype == PT_ROCK)
 					{
-						parts[i].ctype = PT_GOLD;
-						if (rx > 1 || rx < -1) // Trend veins vertical
-							parts[i].tmp = 1;
+						if (parts[i].tmp == 0 && parts[i].temp >= 2000 && parts[ID(r)].temp <= 1875 && RNG::Ref().chance(1, 1000)) // Create sulfurized ROCK when molten rock comes into contact with much colder neighbor
+							parts[i].tmp = 2;
+
+						if (parts[i].ctype == PT_ROCK && rt == PT_LAVA && parts[ID(r)].ctype == PT_GOLD && parts[ID(r)].tmp == 0 && sim->pv[y / CELL][x / CELL] >= 50 && RNG::Ref().chance(1, 10000)) // Produce GOLD veins/clusters
+						{
+							parts[i].ctype = PT_GOLD;
+							if (rx > 1 || rx < -1) // Trend veins vertical
+								parts[i].tmp = 1;
+						}
 					}
 				}
 

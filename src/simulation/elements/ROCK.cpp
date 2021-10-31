@@ -51,12 +51,7 @@ void Element::Element_ROCK()
 
 int Element_ROCK_update(UPDATE_FUNC_ARGS)
 {
-	int rx, ry;
-	parts[i].pavg[0] = parts[i].pavg[1];
-	parts[i].pavg[1] = sim->pv[y / CELL][x / CELL];
-	float diff = parts[i].pavg[1] - parts[i].pavg[0];
-	
-	if (parts[i].tmp == 1 && parts[i].type == PT_ROCK && parts[i].temp >= 873 && RNG::Ref().chance(1, 5000)) //Sulfurized ROCK Heat Reactions
+	if (parts[i].tmp == 2 && parts[i].type == PT_ROCK && parts[i].temp >= 873 && RNG::Ref().chance(1, 5000)) //Sulfurized ROCK Heat Reactions
 	{
 		if (RNG::Ref().chance(1, 15))
 		{
@@ -74,12 +69,12 @@ int Element_ROCK_update(UPDATE_FUNC_ARGS)
 
 
 	/*SPECIAL HIGH TEMP TRANSITIONS*/
-	if (parts[i].type == PT_ROCK && parts[i].temp >= 1943.15 && parts[i].tmp == 0) //ROCK
+	if (parts[i].type == PT_ROCK && parts[i].temp >= 1943.15 && parts[i].tmp != 2) //ROCK
 	{
 		sim->part_change_type(i, x, y, PT_LAVA);
 		parts[i].ctype = PT_ROCK;
 	}
-	else if (parts[i].type == PT_ROCK && parts[i].temp >= 1153.15 && parts[i].tmp == 1) //Sulfurized ROCK, Lower Melting Temp
+	else if (parts[i].type == PT_ROCK && parts[i].temp >= 1153.15 && parts[i].tmp == 2) //Sulfurized ROCK, Lower Melting Temp
 	{
 		parts[i].ctype = PT_ROCK;
 		sim->part_change_type(i, x, y, PT_LAVA);
@@ -104,7 +99,7 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 		*fireg = *colg;
 		*fireb = *colb;
 	}
-	if (cpart->tmp == 1) //Yellow Color Shift (Sulfurized ROCK Reactions)
+	if (cpart->tmp == 2) //Yellow Color Shift (Sulfurized ROCK Reactions)
 	{
 		*colr += 50;
 		*colg += 30;
