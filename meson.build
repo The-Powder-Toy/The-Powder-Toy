@@ -206,7 +206,7 @@ else
 			'-D_UNICODE',
 		]
 		if uopt_static != 'none'
-			project_link_args = [ '-static', '-static-libgcc', '-static-libstdc++' ]
+			project_link_args += [ '-static', '-static-libgcc', '-static-libstdc++' ]
 		endif
 	endif
 	if not get_option('debug')
@@ -246,7 +246,7 @@ if copt_platform == 'win'
 	endif
 elif copt_platform == 'lin'
 	if uopt_static != 'none'
-		project_link_args = [ '-static-libgcc', '-static-libstdc++' ]
+		project_link_args += [ '-static-libgcc', '-static-libstdc++' ]
 	endif
 endif
 
