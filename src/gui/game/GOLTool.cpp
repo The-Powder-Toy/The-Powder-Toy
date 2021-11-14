@@ -24,19 +24,19 @@ public:
 	ui::Colour highColour, lowColour;
 	ui::Button *highColourButton, *lowColourButton;
 	ui::Textbox *nameField, *ruleField;
-	GOLTool * tool;
+	GameModel * gameModel;
 	Simulation *sim;
 	int toolSelection;
-	GOLWindow(GOLTool *tool_, Simulation *sim, int toolSelection, int rule, int colour1, int colour2);
+	GOLWindow(GameModel *gameModel, Simulation *sim, int toolSelection, int rule, int colour1, int colour2);
 	void Validate();
 	void OnDraw() override;
 	void OnTryExit(ExitMethod method) override;
 	virtual ~GOLWindow() {}
 };
 
-GOLWindow::GOLWindow(GOLTool * tool_, Simulation *sim_, int toolSelection, int rule, int colour1, int colour2):
+GOLWindow::GOLWindow(GameModel * gameModel_, Simulation *sim_, int toolSelection, int rule, int colour1, int colour2):
 ui::Window(ui::Point(-1, -1), ui::Point(200, 108)),
-tool(tool_),
+gameModel(gameModel_),
 sim(sim_),
 toolSelection(toolSelection)
 {
@@ -131,7 +131,6 @@ void GOLWindow::UpdateGradient()
 
 void GOLWindow::Validate()
 {
-	tool->selectGOLType.clear();
 	auto nameString = nameField->GetText();
 	auto ruleString = ruleField->GetText();
 	if (!ValidateGOLName(nameString))
@@ -164,8 +163,8 @@ void GOLWindow::Validate()
 		return;
 	}
 
-	tool->gameModel->SelectNextIdentifier = "DEFAULT_PT_LIFECUST_" + nameString.ToAscii();
-	tool->gameModel->SelectNextTool = toolSelection;
+	gameModel->SelectNextIdentifier = "DEFAULT_PT_LIFECUST_" + nameString.ToAscii();
+	gameModel->SelectNextTool = toolSelection;
 }
 
 void GOLWindow::OnTryExit(ExitMethod method)
@@ -197,5 +196,5 @@ void GOLWindow::OnDraw()
 
 void GOLTool::OpenWindow(Simulation *sim, int toolSelection, int rule, int colour1, int colour2)
 {
-	new GOLWindow(this, sim, toolSelection, rule, colour1, colour2);
+	new GOLWindow(gameModel, sim, toolSelection, rule, colour1, colour2);
 }

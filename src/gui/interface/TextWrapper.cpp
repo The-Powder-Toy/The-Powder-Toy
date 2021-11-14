@@ -231,8 +231,7 @@ namespace ui
 				return it;
 			};
 
-			auto next = find_next_nonempty(curr);
-			while (next != end)
+			while (true)
 			{
 				if (curr->pos_y + FONT_H > y)
 				{
@@ -243,6 +242,14 @@ namespace ui
 						// the previous iteration
 						return curr->index;
 					}
+				}
+				auto next = find_next_nonempty(curr);
+				if (next == end)
+				{
+					break;
+				}
+				if (curr->pos_y + FONT_H > y)
+				{
 					if (curr->pos_x + curr->width / 2 <= x && next->pos_x + next->width / 2 > x)
 					{
 						// if x is to the right of the vertical bisector of the current region
@@ -257,7 +264,6 @@ namespace ui
 					}
 				}
 				curr = next;
-				next = find_next_nonempty(next);
 			}
 		}
 		return IndexEnd();

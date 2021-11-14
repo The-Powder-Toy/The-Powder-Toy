@@ -28,6 +28,7 @@
 #include "client/GameSave.h"
 #include "common/tpt-minmax.h"
 #include "common/tpt-rand.h"
+#include "common/tpt-thread-local.h"
 #include "gui/game/Brush.h"
 
 #ifdef LUACONSOLE
@@ -41,15 +42,16 @@ extern int Element_LOLZ_lolz[XRES/9][YRES/9];
 extern int Element_LOVE_RuleTable[9][9];
 extern int Element_LOVE_love[XRES/9][YRES/9];
 
-int Simulation::Load(GameSave * save, bool includePressure)
+int Simulation::Load(const GameSave * save, bool includePressure)
 {
 	return Load(save, includePressure, 0, 0);
 }
 
-int Simulation::Load(GameSave * save, bool includePressure, int fullX, int fullY)
+int Simulation::Load(const GameSave * originalSave, bool includePressure, int fullX, int fullY)
 {
-	if (!save)
+	if (!originalSave)
 		return 1;
+	auto save = std::unique_ptr<GameSave>(new GameSave(*originalSave));
 	try
 	{
 		save->Expand();
@@ -76,9 +78,8 @@ int Simulation::Load(GameSave * save, bool includePressure, int fullX, int fullY
 	}
 	if(save->palette.size())
 	{
-		for(std::vector<GameSave::PaletteItem>::iterator iter = save->palette.begin(), end = save->palette.end(); iter != end; ++iter)
+		for(auto &pi : save->palette)
 		{
-			GameSave::PaletteItem pi = *iter;
 			if (pi.second > 0 && pi.second < PT_NUM)
 			{
 				int myId = 0;
@@ -666,7 +667,7 @@ bool Simulation::FloodFillPmapCheck(int x, int y, int type)
 CoordStack& Simulation::getCoordStackSingleton()
 {
 	// Future-proofing in case Simulation is later multithreaded
-	thread_local CoordStack cs;
+	static THREAD_LOCAL(CoordStack, cs);
 	return cs;
 }
 
@@ -4439,7 +4440,7 @@ killed:
 				// Checking stagnant is cool, but then it doesn't update when you change it later.
 				if (water_equal_test && elements[t].Falldown == 2 && RNG::Ref().chance(1, 200))
 				{
-					if (!flood_water(x, y, i))
+					if (flood_water(x, y, i))
 						goto movedone;
 				}
 				// liquids and powders
@@ -5355,7 +5356,7 @@ void Simulation::SetCustomGOL(std::vector<CustomGOLData> newCustomGol)
 	customGol = newCustomGol;
 }
 
-String Simulation::ElementResolve(int type, int ctype)
+String Simulation::ElementResolve(int type, int ctype) const
 {
 	if (type == PT_LIFE)
 	{
@@ -5375,7 +5376,7 @@ String Simulation::ElementResolve(int type, int ctype)
 	return "Empty";
 }
 
-String Simulation::BasicParticleInfo(Particle const &sample_part)
+String Simulation::BasicParticleInfo(Particle const &sample_part) const
 {
 	StringBuilder sampleInfo;
 	int type = sample_part.type;

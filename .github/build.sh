@@ -33,7 +33,7 @@ if [ -z "${MOD_ID-}" ]; then
 fi
 
 if [ -z "${build_sh_init-}" ]; then
-	if [ $PLATFORM_SHORT == "win" ]; then
+	if [ $TOOLSET_SHORT == "msvc" ]; then
 		for i in C:/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/**/**/VC/Auxiliary/Build/vcvarsall.bat; do
 			vcvarsall_path=$i
 		done
@@ -103,7 +103,12 @@ fi
 if [ "$RELTYPE" != "dev" ]; then
 	other_flags+=$'\t-Dignore_updates=false'
 fi
-meson -Dbuildtype=release -Db_pie=false -Db_staticpic=false -Db_lto=true $static_flag -Dinstall_check=true $other_flags build
+lto_flag=-Db_lto=true
+if [ $TOOLSET_SHORT == "mingw" ]; then
+	# This simply doesn't work with MinGW. I have no idea why and I also don't care.
+	lto_flag=
+fi
+meson -Dbuildtype=release -Db_pie=false -Db_staticpic=false $lto_flag $static_flag -Dinstall_check=true $other_flags build
 cd build
 ninja
 if [ $PLATFORM_SHORT == "lin" ] || [ $PLATFORM_SHORT == "mac" ]; then

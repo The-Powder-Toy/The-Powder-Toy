@@ -3697,7 +3697,7 @@ int LuaScriptInterface::fileSystem_removeFile(lua_State * l)
 {
 	const char * filename = luaL_checkstring(l, 1);
 
-	bool ret = Platform::DeleteFile(filename);
+	bool ret = Platform::RemoveFile(filename);
 	lua_pushboolean(l, ret);
 	return 1;
 }
