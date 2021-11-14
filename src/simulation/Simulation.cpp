@@ -26,6 +26,7 @@
 #include "graphics/Renderer.h"
 
 #include "client/GameSave.h"
+#include "common/tpt-compat.h"
 #include "common/tpt-minmax.h"
 #include "common/tpt-rand.h"
 #include "common/tpt-thread-local.h"
