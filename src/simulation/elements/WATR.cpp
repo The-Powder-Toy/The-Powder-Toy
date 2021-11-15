@@ -89,6 +89,8 @@ static int update(UPDATE_FUNC_ARGS)
 					else
 						sim->part_change_type(ID(r),x+rx,y+ry,PT_STNE);
 				}
+				else if (TYP(r) == PT_LAVA && (parts[ID(r)].ctype == PT_STNE || parts[ID(r)].ctype == PT_NONE || parts[ID(r)].ctype == PT_ROCK)) //For ROCK Reaction, "picks up" random valuable element from LAVA to deposit when in contact with ROCK
+					parts[i].tmp = 1;
 			}
 	return 0;
 }

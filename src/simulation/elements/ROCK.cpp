@@ -51,13 +51,43 @@ void Element::Element_ROCK()
 
 int Element_ROCK_update(UPDATE_FUNC_ARGS)
 {
+
+	int r, rx, ry;
+	for (rx = -2; rx < 3; rx++)
+		for (ry = -2; ry < 3; ry++)
+			if (BOUNDS_CHECK && (rx || ry))
+			{
+				r = pmap[y + ry][x + rx];
+				if (!r)
+					continue;
+				if ((TYP(r) == PT_WATR || TYP(r) == PT_WTRV) && parts[ID(r)].tmp == 1 && parts[i].tmp != 2) //WATR and WTRV Reactions
+				{
+					if (RNG::Ref().chance(1, 5000))
+					{
+						sim->part_change_type(i, x, y, PT_GOLD);
+						parts[ID(r)].tmp = 0;
+					}
+					else if (RNG::Ref().chance(1, 1000))
+					{
+						sim->part_change_type(i, x, y, PT_QRTZ);
+						parts[ID(r)].tmp = 0;
+					}
+					else if (RNG::Ref().chance(1, 500))
+					{
+						parts[i].tmp = 2; //Set to ROCK State 2 (Reactive)
+						parts[ID(r)].tmp = 0;
+					}
+				}
+			}
+
+
+
 	if (parts[i].tmp == 2 && parts[i].type == PT_ROCK && parts[i].temp >= 873 && RNG::Ref().chance(1, 5000)) //ROCK State 2 (Reactive) Heat Reactions
 	{
-		if (RNG::Ref().chance(1, 15))
-		{
+		if (RNG::Ref().chance(1, 50))
 			sim->create_part(-1, x + RNG::Ref().chance(1, 3) - 2, y + RNG::Ref().chance(1, 3) - 2, PT_CAUS);
-		}
-		sim->create_part(-1, x + RNG::Ref().chance(1, 3) - 2, y + RNG::Ref().chance(1, 3) - 2, PT_SMKE);
+		else if (RNG::Ref().chance(1, 15))
+			sim->create_part(-1, x + RNG::Ref().chance(1, 3) - 2, y + RNG::Ref().chance(1, 3) - 2, PT_SMKE);
 
 		if (RNG::Ref().chance(1, 250))
 			sim->part_change_type(i, x, y, PT_METL);

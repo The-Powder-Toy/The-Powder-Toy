@@ -62,6 +62,8 @@ static int update(UPDATE_FUNC_ARGS)
 					parts[i].life = 4;
 					parts[i].ctype = PT_WATR;
 				}
+				if (TYP(r) == PT_LAVA && (parts[ID(r)].ctype == PT_STNE || parts[ID(r)].ctype == PT_NONE || parts[ID(r)].ctype == PT_ROCK)) //For ROCK Reaction, "picks up" random valuable element from LAVA to deposit when in contact with ROCK
+					parts[i].tmp = 1;
 			}
 	if(parts[i].temp>1273&&parts[i].ctype==PT_FIRE)
 		parts[i].temp-=parts[i].temp/1000;
