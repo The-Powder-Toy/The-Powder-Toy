@@ -196,4 +196,4 @@ jobs:
           python-version: '3.8'
       - id: get_type
         run: python3 ./.github/get-type.py ${{ github.ref }}
-      - run: ./.github/starcatcher-publish.sh "https://starcatcher.us/TPT/perform-release.lua?mod=${{ steps.get_type.outputs.MOD_ID }}&type=${{ steps.get_type.outputs.TYPE }}&name=${{ steps.get_type.outputs.NAME }}&commit=${{ github.sha }}"
+      - run: ./.github/starcatcher-release.sh "https://starcatcher.us/TPT/perform-release.lua?mod=${{ steps.get_type.outputs.MOD_ID }}&type=${{ steps.get_type.outputs.TYPE }}&name=${{ steps.get_type.outputs.NAME }}&commit=${{ github.sha }}"
