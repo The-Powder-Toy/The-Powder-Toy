@@ -456,11 +456,11 @@ FontEditor::FontEditor(ByteString target, ByteString source):
 					for(int i = 0; i < tgtFontWidths[p.first]; i++)
 						same = same && tgtFontPixels[p.first][j][i] == srcFontPixels[p.first][j][i];
 			if(!same)
-				std::cout << "U+" << std::hex << p.first << " is present in both files and is different!" << std::endl;
+				std::cout << "U+" << std::hex << (unsigned int)p.first << " is present in both files and is different!" << std::endl;
 		}
 		else
 		{
-			std::cout << "Adding U+" << std::hex << p.first << " to the target" << std::endl;
+			std::cout << "Adding U+" << std::hex << (unsigned int)p.first << " to the target" << std::endl;
 			tgtFontWidths[p.first] = srcFontWidths[p.first];
 			tgtFontPixels[p.first] = p.second;
 		}

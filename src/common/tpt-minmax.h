@@ -16,27 +16,16 @@
 #ifndef TPT_MINMAX_H
 #define TPT_MINMAX_H
 
+#include <algorithm>
+
 #ifdef _MSC_VER
-// less than VS2013. Untested since I don't use VS2012 anymore
-# if _MSC_VER < 1800
-#  define fmin min
-#  define fminf min
-#  define fmax max
-#  define fmaxf max
-# else
-// >= VS2013
-#  include <algorithm>
-#  define NOMINMAX
-#  ifdef min
-#   undef min
-#  endif
-#  ifdef max
-#   undef max
-#  endif
+# define NOMINMAX
+# ifdef min
+#  undef min
 # endif
-#else
-// not using visual studio, std::min and std::max are normal
-# include <algorithm>
+# ifdef max
+#  undef max
+# endif
 #endif
 
 #endif
