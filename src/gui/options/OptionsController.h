@@ -21,6 +21,8 @@ public:
 	void SetNewtonianGravity(bool state);
 	void SetWaterEqualisation(bool state);
 	void SetGravityMode(int gravityMode);
+	void SetCustomGravityX(float x);
+	void SetCustomGravityY(float y);
 	void SetAirMode(int airMode);
 	void SetAmbientAirTemperature(float ambientAirTemp);
 	void SetEdgeMode(int edgeMode);

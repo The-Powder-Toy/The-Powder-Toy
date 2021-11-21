@@ -545,6 +545,8 @@ void Simulation::SaveSimOptions(GameSave * gameSave)
 	if (!gameSave)
 		return;
 	gameSave->gravityMode = gravityMode;
+	gameSave->customGravityX = customGravityX;
+	gameSave->customGravityY = customGravityY;
 	gameSave->airMode = air->airMode;
 	gameSave->ambientAirTemp = air->ambientAirTemp;
 	gameSave->edgeMode = edgeMode;
@@ -3339,6 +3341,11 @@ void Simulation::GetGravityField(int x, int y, float particleGrav, float newtonG
 				pGravX -= pGravMult * (float)(x - XCNTR);
 				pGravY -= pGravMult * (float)(y - YCNTR);
 			}
+			break;
+		case 3: //custom gravity
+			pGravX += particleGrav * customGravityX;
+			pGravY += particleGrav * customGravityY;
+			break;
 	}
 }
 
@@ -3559,6 +3566,10 @@ void Simulation::UpdateParticles(int start, int end)
 						pGravX = elements[t].Gravity * ((float)(x - XCNTR) / pGravD);
 						pGravY = elements[t].Gravity * ((float)(y - YCNTR) / pGravD);
 						break;
+					case 3:
+						pGravX = elements[t].Gravity * customGravityX;
+						pGravY = elements[t].Gravity * customGravityY;
+						break;
 					}
 				}
 				if (elements[t].NewtonianGravity)
@@ -3613,13 +3624,42 @@ void Simulation::UpdateParticles(int start, int end)
 
 			if (!legacy_enable)
 			{
-				if (y-2 >= 0 && y-2 < YRES && (elements[t].Properties&TYPE_LIQUID) && (t!=PT_GEL || gel_scale > (1 + RNG::Ref().between(0, 254)))) {//some heat convection for liquids
-					r = pmap[y-2][x];
-					if (!(!r || parts[i].type != TYP(r))) {
-						if (parts[i].temp>parts[ID(r)].temp) {
-							swappage = parts[i].temp;
-							parts[i].temp = parts[ID(r)].temp;
-							parts[ID(r)].temp = swappage;
+				if (pGravX != 0 || pGravY != 0)
+				{
+					float convX = x;
+					float convY = y;
+					// Calculate offset from gravity
+					switch (gravityMode)
+					{
+						default:
+						case 0:
+							convY -= 2.0f;
+						break;
+						case 1:
+						break;
+						case 2:
+							pGravD = 0.01f - hypotf(float(x - XCNTR), float(y - YCNTR));
+							convX -= 2.0f * ((float)(x - XCNTR) / pGravD);
+							convY -= 2.0f * ((float)(y - YCNTR) / pGravD);
+						break;
+						case 3:
+							convX -= 2.0f * customGravityX;
+							convY -= 2.0f * customGravityY;
+						break;
+					}
+					if (elements[t].NewtonianGravity)
+					{
+						convX -= gravx[(y/CELL)*(XRES/CELL)+(x/CELL)];
+						convY -= gravy[(y/CELL)*(XRES/CELL)+(x/CELL)];
+					}
+					if ((int)convX >= 0 && (int)convX < XRES && (int)convY >= 0 && (int)convY < YRES && (elements[t].Properties&TYPE_LIQUID) && (t!=PT_GEL || gel_scale > (1 + RNG::Ref().between(0, 254)))) {//some heat convection for liquids
+						r = pmap[(int)convY][(int)convX];
+						if (!(!r || parts[i].type != TYP(r))) {
+							if (parts[i].temp>parts[ID(r)].temp) {
+								swappage = parts[i].temp;
+								parts[i].temp = parts[ID(r)].temp;
+								parts[ID(r)].temp = swappage;
+							}
 						}
 					}
 				}
@@ -4565,6 +4605,10 @@ killed:
 										pGravX = ptGrav * ((float)(nx - XCNTR) / pGravD);
 										pGravY = ptGrav * ((float)(ny - YCNTR) / pGravD);
 										break;
+									case 3:
+										pGravX = ptGrav * customGravityX;
+										pGravY = ptGrav * customGravityY;
+										break;
 								}
 								pGravX += gravx[(ny/CELL)*(XRES/CELL)+(nx/CELL)];
 								pGravY += gravy[(ny/CELL)*(XRES/CELL)+(nx/CELL)];
@@ -4636,6 +4680,10 @@ killed:
 											pGravD = 0.01f - hypotf(float(nx - XCNTR), float(ny - YCNTR));
 											pGravX = ptGrav * ((float)(nx - XCNTR) / pGravD);
 											pGravY = ptGrav * ((float)(ny - YCNTR) / pGravD);
+											break;
+										case 3:
+											pGravX = ptGrav * customGravityX;
+											pGravY = ptGrav * customGravityY;
 											break;
 									}
 									pGravX += gravx[(ny/CELL)*(XRES/CELL)+(nx/CELL)];
@@ -5272,6 +5320,8 @@ Simulation::Simulation():
 	GSPEED(1),
 	edgeMode(0),
 	gravityMode(0),
+	customGravityX(0),
+	customGravityY(0),
 	legacy_enable(0),
 	aheat_enable(0),
 	water_equal_test(0),

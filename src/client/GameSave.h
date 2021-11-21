@@ -95,6 +95,8 @@ public:
 	bool aheatEnable;
 	bool paused;
 	int gravityMode;
+	float customGravityX;
+	float customGravityY;
 	int airMode;
 	float ambientAirTemp;
 	int edgeMode;

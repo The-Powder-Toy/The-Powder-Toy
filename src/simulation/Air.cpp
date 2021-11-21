@@ -115,11 +115,45 @@ void Air::update_airh(void)
 				dh += AIR_VADV*(1.0f-tx)*ty*((bmap_blockairh[j+1][i]&0x8) ? odh : hv[j+1][i]);
 				dh += AIR_VADV*tx*ty*((bmap_blockairh[j+1][i+1]&0x8) ? odh : hv[j+1][i+1]);
 			}
-			if(!sim.gravityMode)
-			{ //Vertical gravity only for the time being
-				float airdiff = hv[y-1][x]-hv[y][x];
-				if(airdiff>0 && !(bmap_blockairh[y-1][x]&0x8))
-					vy[y][x] -= airdiff/5000.0f;
+			// Calculate offset from gravity
+			float convGravX, convGravY, convGravD;
+			switch (sim.gravityMode)
+			{
+				default:
+				case 0:
+					convGravX = 0.0f;
+					convGravY = -1.0f;
+				break;
+				case 1:
+					convGravX = convGravY = 0.0f;
+				break;
+				case 2:
+					convGravD = 0.01f - hypotf(float(x - (XCNTR/CELL)), float(y - (YCNTR/CELL)));
+					convGravX = -1.0f * ((float)(x - (XCNTR/CELL)) / convGravD);
+					convGravY = -1.0f * ((float)(y - (YCNTR/CELL)) / convGravD);
+				break;
+				case 3:
+					convGravX = -1.0f * sim.customGravityX;
+					convGravY = -1.0f * sim.customGravityY;
+				break;
+			}
+			convGravX -= sim.gravx[y*(XRES/CELL)+x];
+			convGravY -= sim.gravy[y*(XRES/CELL)+x];
+			int convX = x, convY = y;
+			if (convGravX > 0.0f) convX++;
+			else if (convGravX < 0.0f) convX--;
+			if (convGravY > 0.0f) convY++;
+			else if (convGravY < 0.0f) convY--;
+			if (convX >= 0 && convX < (XRES/CELL) && convY >= 0 && convY < (YRES/CELL) && !(bmap_blockairh[convY][convX] & 0x8))
+			{
+				float tempDiff = hv[convY][convX] - hv[y][x];
+				if(tempDiff > 0)
+				{
+					if (convGravX != 0.0f)
+						vx[y][x] += (tempDiff / 5000.0f) * convGravX;
+					if (convGravY != 0.0f)
+						vy[y][x] += (tempDiff / 5000.0f) * convGravY;
+				}
 			}
 			ohv[y][x] = dh;
 		}

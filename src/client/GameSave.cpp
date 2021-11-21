@@ -26,6 +26,8 @@ GameSave::GameSave(const GameSave & save):
 	aheatEnable(save.aheatEnable),
 	paused(save.paused),
 	gravityMode(save.gravityMode),
+	customGravityX(save.customGravityX),
+	customGravityY(save.customGravityY),
 	airMode(save.airMode),
 	ambientAirTemp(save.ambientAirTemp),
 	edgeMode(save.edgeMode),
@@ -174,6 +176,8 @@ void GameSave::InitVars()
 	aheatEnable = false;
 	paused = false;
 	gravityMode = 0;
+	customGravityX = 0.0f;
+	customGravityY = 0.0f;
 	airMode = 0;
 	ambientAirTemp = R_TEMP + 273.15f;
 	edgeMode = 0;
@@ -702,6 +706,8 @@ void GameSave::readOPS(char * data, int dataLength)
 		CheckBsonFieldBool(iter, "waterEEnabled", &waterEEnabled);
 		CheckBsonFieldBool(iter, "paused", &paused);
 		CheckBsonFieldInt(iter, "gravityMode", &gravityMode);
+		CheckBsonFieldFloat(iter, "customGravityX", &customGravityX);
+		CheckBsonFieldFloat(iter, "customGravityY", &customGravityY);
 		CheckBsonFieldInt(iter, "airMode", &airMode);
 		CheckBsonFieldFloat(iter, "ambientAirTemp", &ambientAirTemp);
 		CheckBsonFieldInt(iter, "edgeMode", &edgeMode);
@@ -2614,6 +2620,18 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 	bson_append_string(&b, "platform", IDENT_PLATFORM);
 	bson_append_string(&b, "builtType", IDENT_BUILD);
 	bson_append_finish_object(&b);
+	if (fabsf(ambientAirTemp - (R_TEMP + 273.15f)) > 0.0001f)
+	{
+		bson_append_double(&b, "ambientAirTemp", double(ambientAirTemp));
+		RESTRICTVERSION(96, 0);
+	}
+	if (gravityMode == 3)
+	{
+		bson_append_double(&b, "customGravityX", double(customGravityX));
+		bson_append_double(&b, "customGravityY", double(customGravityY));
+		if (!(SAVE_VERSION < 97)) //Allow saves to be opened until version set
+			RESTRICTVERSION(97, 0);
+	}
 	bson_append_start_object(&b, "minimumVersion");
 	bson_append_int(&b, "major", minimumMajorVersion);
 	bson_append_int(&b, "minor", minimumMinorVersion);
@@ -2627,11 +2645,6 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 	bson_append_bool(&b, "paused", paused);
 	bson_append_int(&b, "gravityMode", gravityMode);
 	bson_append_int(&b, "airMode", airMode);
-	if (fabsf(ambientAirTemp - (R_TEMP + 273.15f)) > 0.0001f)
-	{
-		bson_append_double(&b, "ambientAirTemp", double(ambientAirTemp));
-		RESTRICTVERSION(96, 0);
-	}
 	bson_append_int(&b, "edgeMode", edgeMode);
 
 	if (stkm.hasData())
