@@ -580,7 +580,7 @@ void GameSave::CheckBsonFieldFloat(bson_iterator iter, const char *field, float 
 	{
 		if (bson_iterator_type(&iter) == BSON_DOUBLE)
 		{
-			*setting = float(bson_iterator_int(&iter));
+			*setting = float(bson_iterator_double(&iter));
 		}
 		else
 		{
