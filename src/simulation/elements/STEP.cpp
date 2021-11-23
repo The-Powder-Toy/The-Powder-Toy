@@ -1,10 +1,10 @@
 #include "simulation/ElementCommon.h"
 
-void Element::Element_STEX()
+void Element::Element_STEP()
 {
-	Identifier = "DEFAULT_PT_STEX";
-	Name = "STEX";
-	Colour = PIXPACK(0xD7C0D0);
+	Identifier = "DEFAULT_PT_STEP";
+	Name = "STEP";
+	Colour = PIXPACK(0xD7C9D9);
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;
@@ -29,12 +29,12 @@ void Element::Element_STEX()
 	HeatConduct = 234;
 	Description = "Strong Explosive, as it's name suggest, it is a strong explosive.";
 
-	Properties = TYPE_SOLID;
+	Properties = TYPE_PART;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
-	HighPressure = 248.7f;
-	HighPressureTransition = PT_STEP;
+	HighPressure = IPH;
+	HighPressureTransition = NT;
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 3532.72f;

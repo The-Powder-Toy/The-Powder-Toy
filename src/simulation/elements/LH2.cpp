@@ -8,7 +8,7 @@ void Element::Element_LH2()
 	Name = "LHYG";
 	Colour = PIXPACK(0x5070FF);
 	MenuVisible = 1;
-	MenuSection = SC_GAS;
+	MenuSection = SC_LIQUID;
 	Enabled = 1;
 
 	Advection = 0.65f;
@@ -22,7 +22,7 @@ void Element::Element_LH2()
 	Falldown = 2;
 
 	Flammable = 0;
-	Explosive = 0;
+	Explosive = 7;
 	Meltable = 0;
 	Hardness = 0;
 
@@ -37,8 +37,8 @@ void Element::Element_LH2()
 	LowPressureTransition = NT;
 	HighPressure = IPH;
 	HighPressureTransition = NT;
-	LowTemperature = NT;
-	LowTemperatureTransition = NT;
+	LowTemperature = 261.23;
+	LowTemperatureTransition = PT_SH2;
 	HighTemperature = 20.29f;
 	HighTemperatureTransition = PT_H2;
 
