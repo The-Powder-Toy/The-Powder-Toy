@@ -2,24 +2,24 @@
 
 static int update(UPDATE_FUNC_ARGS);
 
-void Element::Element_H2()
+void Element::Element_LH2()
 {
-	Identifier = "DEFAULT_PT_H2";
-	Name = "HYGN";
+	Identifier = "DEFAULT_PT_LH2";
+	Name = "LHYG";
 	Colour = PIXPACK(0x5070FF);
 	MenuVisible = 1;
 	MenuSection = SC_GAS;
 	Enabled = 1;
 
-	Advection = 2.0f;
+	Advection = 0.65f;
 	AirDrag = 0.00f * CFDS;
-	AirLoss = 0.99f;
-	Loss = 0.30f;
-	Collision = -0.10f;
-	Gravity = 0.00f;
-	Diffusion = 3.00f;
+	AirLoss = 0.981f;
+	Loss = 0.953f;
+	Collision = 0.0f;
+	Gravity = 0.1f;
+	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
-	Falldown = 0;
+	Falldown = 2;
 
 	Flammable = 0;
 	Explosive = 0;
@@ -29,18 +29,18 @@ void Element::Element_H2()
 	Weight = 1;
 
 	HeatConduct = 251;
-	Description = "Hydrogen. Combusts with OXYG to make WATR. Undergoes fusion at high temperature and pressure.";
+	Description = "Liquid Hydrogen. Any temperature above -252.87 turns it back into a gas";
 
-	Properties = TYPE_GAS;
+	Properties = TYPE_LIQUID;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = IPH;
 	HighPressureTransition = NT;
-	LowTemperature = 252.87f;
-	LowTemperatureTransition = PT_LH2;
-	HighTemperature = ITH;
-	HighTemperatureTransition = NT;
+	LowTemperature = NT;
+	LowTemperatureTransition = NT;
+	HighTemperature = 20.29f;
+	HighTemperatureTransition = PT_H2;
 
 	Update = &update;
 }
