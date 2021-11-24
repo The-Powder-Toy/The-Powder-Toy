@@ -6,7 +6,7 @@ void Element::Element_LH2()
 {
 	Identifier = "DEFAULT_PT_LH2";
 	Name = "LHYG";
-	Colour = PIXPACK(0x5070FF);
+	Colour = PIXPACK(0x5070BB);
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;
 	Enabled = 1;
@@ -28,8 +28,9 @@ void Element::Element_LH2()
 
 	Weight = 1;
 
+	DefaultProperties.temp = 32.29f;
 	HeatConduct = 251;
-	Description = "Liquid Hydrogen. Any temperature above -252.87 turns it back into a gas";
+	Description = "Liquid Hydrogen. Any temperature above -240.86 turns it back into a gas";
 
 	Properties = TYPE_LIQUID;
 
@@ -37,9 +38,9 @@ void Element::Element_LH2()
 	LowPressureTransition = NT;
 	HighPressure = IPH;
 	HighPressureTransition = NT;
-	LowTemperature = 261.23;
+	LowTemperature = 261.23f;
 	LowTemperatureTransition = PT_SH2;
-	HighTemperature = 20.29f;
+	HighTemperature = 32.28f;
 	HighTemperatureTransition = PT_H2;
 
 	Update = &update;

@@ -6,20 +6,20 @@ void Element::Element_SH2()
 {
 	Identifier = "DEFAULT_PT_SH2";
 	Name = "SHYG";
-	Colour = PIXPACK(0x5070FF);
+	Colour = PIXPACK(0x5070AF);
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
 	Enabled = 1;
 
-	Advection = 0.65f;
+	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
-	AirLoss = 0.981f;
-	Loss = 0.953f;
+	AirLoss = 0.90f;
+	Loss = 0.0f;
 	Collision = 0.0f;
-	Gravity = 0.1f;
+	Gravity = 0.0f;
 	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
-	Falldown = 2;
+	Falldown = 0;
 
 	Flammable = 0;
 	Explosive = 57.9;
@@ -28,19 +28,20 @@ void Element::Element_SH2()
 
 	Weight = 1;
 
+	DefaultProperties.temp = 11.88f;
 	HeatConduct = 251;
-	Description = "Liquid Hydrogen. Any temperature above -252.87 turns it back into a gas";
+	Description = "Solid Hydrogen. Any temperature above -261.27C turns it back into a liquid.";
 
-	Properties = TYPE_LIQUID;
+	Properties = TYPE_SOLID;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
-	HighPressure = IPH;
-	HighPressureTransition = NT;
+	HighPressure = 62.6f;
+	HighPressureTransition = PT_PH2;
 	LowTemperature = NT;
 	LowTemperatureTransition = NT;
-	HighTemperature = 20.29f;
-	HighTemperatureTransition = PT_H2;
+	HighTemperature = 11.87f;
+	HighTemperatureTransition = PT_LH2;
 
 	Update = &update;
 }
