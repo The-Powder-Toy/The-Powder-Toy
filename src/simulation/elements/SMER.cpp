@@ -28,6 +28,7 @@ void Element::Element_SMER()
 
 	Weight = 91;
 
+	DefaultProperties.temp = 234.33f;
 	HeatConduct = 251;
 	Description = "Solid Mercury. Conductive and absorbs neutrons, turns back to MERC when above -38.83C.";
 
@@ -39,7 +40,7 @@ void Element::Element_SMER()
 	HighPressureTransition = NT;
 	LowTemperature = ITH;
 	LowTemperatureTransition = NT;
-	HighTemperature = 234.32f;
+	HighTemperature = 234.31f;
 	HighTemperatureTransition = PT_MERC;
 
 	DefaultProperties.tmp = 10;

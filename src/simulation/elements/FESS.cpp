@@ -1,9 +1,9 @@
 #include "simulation/ElementCommon.h"
 
-void Element::Element_SO2()
+void Element::Element_FESS()
 {
-	Identifier = "DEFAULT_PT_SO2";
-	Name = "SOXY";
+	Identifier = "DEFAULT_PT_FESS";
+	Name = "SDO2";
 	Colour = PIXPACK(0x80A0AF);
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;

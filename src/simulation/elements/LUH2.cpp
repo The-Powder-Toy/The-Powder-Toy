@@ -2,9 +2,9 @@
 
 static int update(UPDATE_FUNC_ARGS);
 
-void Element::Element_LH2()
+void Element::Element_LUH2()
 {
-	Identifier = "DEFAULT_PT_LH2";
+	Identifier = "DEFAULT_PT_LUH2";
 	Name = "LHYG";
 	Colour = PIXPACK(0x5070BB);
 	MenuVisible = 1;
