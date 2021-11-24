@@ -3,7 +3,7 @@
 void Element::Element_TVKY()
 {
 	Identifier = "DEFAULT_PT_TVKY";
-	Name = "SDO2";
+	Name = "SOXY";
 	Colour = PIXPACK(0x80A0AF);
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
