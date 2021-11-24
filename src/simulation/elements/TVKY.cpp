@@ -1,8 +1,8 @@
 #include "simulation/ElementCommon.h"
 
-void Element::Element_FESS()
+void Element::Element_TVKY()
 {
-	Identifier = "DEFAULT_PT_FESS";
+	Identifier = "DEFAULT_PT_TVKY";
 	Name = "SDO2";
 	Colour = PIXPACK(0x80A0AF);
 	MenuVisible = 1;

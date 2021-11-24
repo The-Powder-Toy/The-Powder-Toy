@@ -41,7 +41,7 @@ void Element::Element_SH2()
 	LowTemperature = NT;
 	LowTemperatureTransition = NT;
 	HighTemperature = 11.87f;
-	HighTemperatureTransition = PT_LUH2;
+	HighTemperatureTransition = PT_RIVO;
 
 	Update = &update;
 }

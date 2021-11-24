@@ -38,7 +38,7 @@ void Element::Element_H2()
 	HighPressure = IPH;
 	HighPressureTransition = NT;
 	LowTemperature = 240.86f;
-	LowTemperatureTransition = PT_LUH2;
+	LowTemperatureTransition = PT_RIVO;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
