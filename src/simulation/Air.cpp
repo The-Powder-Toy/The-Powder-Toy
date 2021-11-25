@@ -116,29 +116,8 @@ void Air::update_airh(void)
 				dh += AIR_VADV*tx*ty*((bmap_blockairh[j+1][i+1]&0x8) ? odh : hv[j+1][i+1]);
 			}
 			// Calculate offset from gravity
-			float convGravX, convGravY, convGravD;
-			switch (sim.gravityMode)
-			{
-				default:
-				case 0:
-					convGravX = 0.0f;
-					convGravY = -1.0f;
-				break;
-				case 1:
-					convGravX = convGravY = 0.0f;
-				break;
-				case 2:
-					convGravD = 0.01f - hypotf(float(x - (XCNTR/CELL)), float(y - (YCNTR/CELL)));
-					convGravX = -1.0f * ((float)(x - (XCNTR/CELL)) / convGravD);
-					convGravY = -1.0f * ((float)(y - (YCNTR/CELL)) / convGravD);
-				break;
-				case 3:
-					convGravX = -1.0f * sim.customGravityX;
-					convGravY = -1.0f * sim.customGravityY;
-				break;
-			}
-			convGravX -= sim.gravx[y*(XRES/CELL)+x];
-			convGravY -= sim.gravy[y*(XRES/CELL)+x];
+			float convGravX, convGravY;
+			sim.GetGravityField(x*CELL, y*CELL, -1.0f, -1.0f, convGravX, convGravY);
 			int convX = x, convY = y;
 			if (convGravX > 0.0f) convX++;
 			else if (convGravX < 0.0f) convX--;

@@ -2836,8 +2836,18 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 		}
 		break;
 	case PT_CNCT:
-		if (y < ny && (TYP(pmap[y+1][x]) == PT_CNCT || TYP(pmap[y+1][x]) == PT_ROCK)) //check below CNCT for another CNCT or ROCK
-			return 0;
+		{
+			float offsetX, offsetY; // Calculate offset from gravity
+			GetGravityField(x, y, 1.0f, 1.0f, offsetX, offsetY);
+			if (offsetX > 0.0f) offsetX = 1.0f;
+			else if (offsetX < 0.0f) offsetX = -1.0f;
+			if (offsetY > 0.0f) offsetY = 1.0f;
+			else if (offsetY < 0.0f) offsetY = -1.0f;
+			if (((nx - x) * offsetX > 0 || offsetX == 0.0f) && // Check direction based on gravity
+				((ny - y) * offsetY > 0 || offsetY == 0.0f) &&
+				(TYP(pmap[y+(int)offsetY][x+(int)offsetX]) == PT_CNCT || TYP(pmap[y+(int)offsetY][x+(int)offsetX]) == PT_ROCK)) //check below CNCT for another CNCT or ROCK
+				return 0;
+		}
 		break;
 	case PT_GBMB:
 		if (parts[i].life > 0)
@@ -3626,32 +3636,11 @@ void Simulation::UpdateParticles(int start, int end)
 			{
 				if (pGravX != 0 || pGravY != 0)
 				{
-					float convX = x;
-					float convY = y;
 					// Calculate offset from gravity
-					switch (gravityMode)
-					{
-						default:
-						case 0:
-							convY -= 2.0f;
-						break;
-						case 1:
-						break;
-						case 2:
-							pGravD = 0.01f - hypotf(float(x - XCNTR), float(y - YCNTR));
-							convX -= 2.0f * ((float)(x - XCNTR) / pGravD);
-							convY -= 2.0f * ((float)(y - YCNTR) / pGravD);
-						break;
-						case 3:
-							convX -= 2.0f * customGravityX;
-							convY -= 2.0f * customGravityY;
-						break;
-					}
-					if (elements[t].NewtonianGravity)
-					{
-						convX -= gravx[(y/CELL)*(XRES/CELL)+(x/CELL)];
-						convY -= gravy[(y/CELL)*(XRES/CELL)+(x/CELL)];
-					}
+					float convX, convY;
+					GetGravityField(x, y, -2.0f, -2.0f, convX, convY);
+					convX += x;
+					convY += y;
 					if ((int)convX >= 0 && (int)convX < XRES && (int)convY >= 0 && (int)convY < YRES && (elements[t].Properties&TYPE_LIQUID) && (t!=PT_GEL || gel_scale > (1 + RNG::Ref().between(0, 254)))) {//some heat convection for liquids
 						r = pmap[(int)convY][(int)convX];
 						if (!(!r || parts[i].type != TYP(r))) {
