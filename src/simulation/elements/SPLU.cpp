@@ -37,7 +37,7 @@ void Element::Element_SPLU()
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
-	HighPressure = 245.9;
+	HighPressure = 245.9f;
 	HighPressureTransition = PT_PLUT;
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
