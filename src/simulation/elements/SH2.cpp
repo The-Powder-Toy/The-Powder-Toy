@@ -59,7 +59,7 @@ static int update(UPDATE_FUNC_ARGS)
 				rt = TYP(r);
 				if (sim->pv[y/CELL][x/CELL] > 8.0f && rt == PT_DESL) // This will not work. DESL turns to fire above 5.0 pressure
 				{
-					sim->part_change_type(ID(r),x+rx,y+ry,PT_WATR);
+					sim->part_change_type(ID(r),x+rx,y+ry,PT_ICE);
 					sim->part_change_type(i,x,y,PT_OIL);
 					return 1;
 				}
