@@ -2,7 +2,7 @@
 
 static int update(UPDATE_FUNC_ARGS);
 
-void Element::Element_RIVO()
+void Element::Element_RIVO();
 {
 	Identifier = "DEFAULT_PT_RIVO";
 	Name = "LHYG";
