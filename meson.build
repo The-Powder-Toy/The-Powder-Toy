@@ -3,9 +3,9 @@ project('the-powder-toy', [ 'c', 'cpp' ], version: 'the.cake.is.a.lie', default_
 ])
 
 to_array = generator(
-	import('python').find_installation('python3'),
+	executable('toarray', sources: 'data/ToArray.cpp'),
 	output: [ '@PLAINNAME@.cpp', '@PLAINNAME@.h' ],
-	arguments: [ join_paths(meson.current_source_dir(), 'to_array.py'), '@BUILD_DIR@', '@OUTPUT0@', '@OUTPUT1@', '@INPUT@', '@EXTRA_ARGS@' ]
+	arguments: [ '@OUTPUT0@', '@OUTPUT1@', '@INPUT@', '@EXTRA_ARGS@' ]
 )
 
 cpp_compiler = meson.get_compiler('cpp')
