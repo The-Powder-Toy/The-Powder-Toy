@@ -95,6 +95,7 @@ String SerialiseGOLRule(int rule)
 	return golName.Build();
 }
 
+#ifndef RENDERER
 bool AddCustomGol(String ruleString, String nameString, unsigned int highColor, unsigned int lowColor)
 {
 	auto customGOLTypes = Client::Ref().GetPrefByteStringArray("CustomGOL.Types");
@@ -121,3 +122,4 @@ bool AddCustomGol(String ruleString, String nameString, unsigned int highColor, 
 	Client::Ref().SetPref("CustomGOL.Types", newCustomGOLTypes);
 	return true;
 }
+#endif
