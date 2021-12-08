@@ -91,3 +91,4 @@ screenshot_*
 *.sdf
 /font/
 compile_commands.json
+ignore/
