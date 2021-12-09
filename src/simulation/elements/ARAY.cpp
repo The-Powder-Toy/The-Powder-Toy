@@ -150,8 +150,8 @@ static int update(UPDATE_FUNC_ARGS)
 											{
 												parts[np].temp = parts[r].temp;
 												parts[np].life = parts[r].tmp2;
-												parts[np].tmp = int(parts[r].pavg[0]);
-												parts[np].ctype = int(parts[r].pavg[1]);
+												parts[np].tmp = parts[r].tmp3;
+												parts[np].ctype = parts[r].tmp4;
 												parts[r].tmp = 0;
 												parts[r].life = 10;
 												break;

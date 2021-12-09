@@ -49,17 +49,17 @@ void Element::Element_GLAS()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	parts[i].pavg[0] = parts[i].pavg[1];
-	parts[i].pavg[1] = sim->pv[y/CELL][x/CELL];
-	float diff = parts[i].pavg[1] - parts[i].pavg[0];
-	if (diff > 0.25f || diff < -0.25f)
+	auto press = sim->pv[y/CELL][x/CELL] * 64;
+	float diff = press - parts[i].tmp3;
+	if (diff > 16 || diff < -16)
 	{
 		sim->part_change_type(i,x,y,PT_BGLA);
 	}
+	parts[i].tmp3 = press;
 	return 0;
 }
 
 static void create(ELEMENT_CREATE_FUNC_ARGS)
 {
-	sim->parts[i].pavg[1] = sim->pv[y/CELL][x/CELL];
+	sim->parts[i].tmp3 = sim->pv[y/CELL][x/CELL] * 64;
 }

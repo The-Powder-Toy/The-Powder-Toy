@@ -11,7 +11,8 @@ struct Particle
 	int life, ctype;
 	float x, y, vx, vy;
 	float temp;
-	float pavg[2];
+	int tmp3;
+	int tmp4;
 	int flags;
 	int tmp;
 	int tmp2;

@@ -44,7 +44,7 @@ void Element::Element_VIRS()
 	HighTemperature = 673.0f;
 	HighTemperatureTransition = PT_VRSG;
 
-	DefaultProperties.pavg[1] = 250;
+	DefaultProperties.tmp4 = 250;
 
 	Update = &Element_VIRS_update;
 	Graphics = &graphics;
@@ -52,27 +52,27 @@ void Element::Element_VIRS()
 
 int Element_VIRS_update(UPDATE_FUNC_ARGS)
 {
-	//pavg[0] measures how many frames until it is cured (0 if still actively spreading and not being cured)
-	//pavg[1] measures how many frames until it dies
+	//tmp3 measures how many frames until it is cured (0 if still actively spreading and not being cured)
+	//tmp4 measures how many frames until it dies
 	int r, rx, ry, rndstore = RNG::Ref().gen();
-	if (parts[i].pavg[0])
+	if (parts[i].tmp3)
 	{
-		parts[i].pavg[0] -= (rndstore & 0x1) ? 0:1;
+		parts[i].tmp3 -= (rndstore & 0x1) ? 0:1;
 		//has been cured, so change back into the original element
-		if (!parts[i].pavg[0])
+		if (!parts[i].tmp3)
 		{
 			sim->part_change_type(i,x,y,parts[i].tmp2);
 			parts[i].tmp2 = 0;
-			parts[i].pavg[0] = 0;
-			parts[i].pavg[1] = 0;
+			parts[i].tmp3 = 0;
+			parts[i].tmp4 = 0;
 		}
 		return 0;
 		//cured virus is never in below code
 	}
-	//decrease pavg[1] so it slowly dies
-	if (parts[i].pavg[1])
+	//decrease tmp4 so it slowly dies
+	if (parts[i].tmp4)
 	{
-		if (!(rndstore & 0x7) && --parts[i].pavg[1] <= 0)
+		if (!(rndstore & 0x7) && --parts[i].tmp4 <= 0)
 		{
 			sim->kill_part(i);
 			return 1;
@@ -90,15 +90,15 @@ int Element_VIRS_update(UPDATE_FUNC_ARGS)
 					continue;
 
 				//spread "being cured" state
-				if (parts[ID(r)].pavg[0] && (TYP(r) == PT_VIRS || TYP(r) == PT_VRSS || TYP(r) == PT_VRSG))
+				if (parts[ID(r)].tmp3 && (TYP(r) == PT_VIRS || TYP(r) == PT_VRSS || TYP(r) == PT_VRSG))
 				{
-					parts[i].pavg[0] = parts[ID(r)].pavg[0] + ((rndstore & 0x3) ? 2:1);
+					parts[i].tmp3 = parts[ID(r)].tmp3 + ((rndstore & 0x3) ? 2:1);
 					return 0;
 				}
 				//soap cures virus
 				else if (TYP(r) == PT_SOAP)
 				{
-					parts[i].pavg[0] += 10;
+					parts[i].tmp3 += 10;
 					if (!(rndstore & 0x3))
 						sim->kill_part(ID(r));
 					return 0;
@@ -117,11 +117,11 @@ int Element_VIRS_update(UPDATE_FUNC_ARGS)
 					if (!(rndstore & 0x7))
 					{
 						parts[ID(r)].tmp2 = TYP(r);
-						parts[ID(r)].pavg[0] = 0;
-						if (parts[i].pavg[1])
-							parts[ID(r)].pavg[1] = parts[i].pavg[1] + 1;
+						parts[ID(r)].tmp3 = 0;
+						if (parts[i].tmp4)
+							parts[ID(r)].tmp4 = parts[i].tmp4 + 1;
 						else
-							parts[ID(r)].pavg[1] = 0;
+							parts[ID(r)].tmp4 = 0;
 						if (parts[ID(r)].temp < 305.0f)
 							sim->part_change_type(ID(r), x+rx, y+ry, PT_VRSS);
 						else if (parts[ID(r)].temp > 673.0f)
@@ -134,7 +134,7 @@ int Element_VIRS_update(UPDATE_FUNC_ARGS)
 				//protons make VIRS last forever
 				else if (TYP(sim->photons[y+ry][x+rx]) == PT_PROT)
 				{
-					parts[i].pavg[1] = 0;
+					parts[i].tmp4 = 0;
 				}
 			}
 			//reset rndstore only once, halfway through

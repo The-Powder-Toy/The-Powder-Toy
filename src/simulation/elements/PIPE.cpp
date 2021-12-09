@@ -355,10 +355,8 @@ int Element_PIPE_graphics(GRAPHICS_FUNC_ARGS)
 			tpart.type = t;
 			tpart.temp = cpart->temp;
 			tpart.life = cpart->tmp2;
-			tpart.tmp = int(cpart->pavg[0]);
-			tpart.ctype = int(cpart->pavg[1]);
-			if (t == PT_PHOT && tpart.ctype == 0x40000000)
-				tpart.ctype = 0x3FFFFFFF;
+			tpart.tmp = cpart->tmp3;
+			tpart.ctype = cpart->tmp4;
 
 			*colr = PIXR(ren->sim->elements[t].Colour);
 			*colg = PIXG(ren->sim->elements[t].Colour);
@@ -418,16 +416,14 @@ void Element_PIPE_transfer_pipe_to_part(Simulation * sim, Particle *pipe, Partic
 	}
 	part->temp = pipe->temp;
 	part->life = pipe->tmp2;
-	part->tmp = int(pipe->pavg[0]);
-	part->ctype = int(pipe->pavg[1]);
+	part->tmp = pipe->tmp3;
+	part->ctype = pipe->tmp4;
 
 	if (!(sim->elements[part->type].Properties & TYPE_ENERGY))
 	{
 		part->vx = 0.0f;
 		part->vy = 0.0f;
 	}
-	else if (part->type == PT_PHOT && part->ctype == 0x40000000)
-		part->ctype = 0x3FFFFFFF;
 	part->tmp2 = 0;
 	part->flags = 0;
 	part->dcolour = 0;
@@ -438,8 +434,8 @@ static void transfer_part_to_pipe(Particle *part, Particle *pipe)
 	pipe->ctype = part->type;
 	pipe->temp = part->temp;
 	pipe->tmp2 = part->life;
-	pipe->pavg[0] = float(part->tmp);
-	pipe->pavg[1] = float(part->ctype);
+	pipe->tmp3 = part->tmp;
+	pipe->tmp4 = part->ctype;
 }
 
 static void transfer_pipe_to_pipe(Particle *src, Particle *dest, bool STOR)
@@ -457,8 +453,8 @@ static void transfer_pipe_to_pipe(Particle *src, Particle *dest, bool STOR)
 	}
 	dest->temp = src->temp;
 	dest->tmp2 = src->tmp2;
-	dest->pavg[0] = src->pavg[0];
-	dest->pavg[1] = src->pavg[1];
+	dest->tmp3 = src->tmp3;
+	dest->tmp4 = src->tmp4;
 }
 
 static void pushParticle(Simulation * sim, int i, int count, int original)

@@ -71,8 +71,8 @@ static int update(UPDATE_FUNC_ARGS)
 					parts[i].tmp = parts[ID(r)].type;
 					parts[i].temp = parts[ID(r)].temp;
 					parts[i].tmp2 = parts[ID(r)].life;
-					parts[i].pavg[0] = float(parts[ID(r)].tmp);
-					parts[i].pavg[1] = float(parts[ID(r)].ctype);
+					parts[i].tmp3 = parts[ID(r)].tmp;
+					parts[i].tmp4 = parts[ID(r)].ctype;
 					sim->kill_part(ID(r));
 				}
 				if(parts[i].tmp && TYP(r)==PT_SPRK && parts[ID(r)].ctype==PT_PSCN && parts[ID(r)].life>0 && parts[ID(r)].life<4)
@@ -84,8 +84,8 @@ static int update(UPDATE_FUNC_ARGS)
 							{
 								parts[np].temp = parts[i].temp;
 								parts[np].life = parts[i].tmp2;
-								parts[np].tmp = int(parts[i].pavg[0]);
-								parts[np].ctype = int(parts[i].pavg[1]);
+								parts[np].tmp = parts[i].tmp3;
+								parts[np].ctype = parts[i].tmp4;
 								parts[i].tmp = 0;
 								parts[i].life = 10;
 								break;
