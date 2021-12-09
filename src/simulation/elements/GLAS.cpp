@@ -49,8 +49,8 @@ void Element::Element_GLAS()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	auto press = sim->pv[y/CELL][x/CELL] * 64;
-	float diff = press - parts[i].tmp3;
+	auto press = int(sim->pv[y/CELL][x/CELL] * 64);
+	auto diff = press - parts[i].tmp3;
 	if (diff > 16 || diff < -16)
 	{
 		sim->part_change_type(i,x,y,PT_BGLA);
@@ -61,5 +61,5 @@ static int update(UPDATE_FUNC_ARGS)
 
 static void create(ELEMENT_CREATE_FUNC_ARGS)
 {
-	sim->parts[i].tmp3 = sim->pv[y/CELL][x/CELL] * 64;
+	sim->parts[i].tmp3 = int(sim->pv[y/CELL][x/CELL] * 64);
 }

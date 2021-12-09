@@ -26,7 +26,7 @@ namespace ui
 		std::vector<wrap_record> records;
 
 		int word_begins_at = -1; // this is a pointer into records; we're not currently in a word
-		int word_width;
+		int word_width = 0;
 		int lines = 1;
 		int char_width;
 		int clear_count = 0;

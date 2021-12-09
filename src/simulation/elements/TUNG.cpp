@@ -95,8 +95,8 @@ static int update(UPDATE_FUNC_ARGS)
 		parts[i].vy += RNG::Ref().between(-50, 50);
 		return 1;
 	}
-	auto press = sim->pv[y/CELL][x/CELL] * 64;
-	float diff = press - parts[i].tmp3;
+	auto press = int(sim->pv[y/CELL][x/CELL] * 64);
+	auto diff = press - parts[i].tmp3;
 	if (diff > 32 || diff < -32)
 	{
 		sim->part_change_type(i,x,y,PT_BRMT);
@@ -132,5 +132,5 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 
 static void create(ELEMENT_CREATE_FUNC_ARGS)
 {
-	sim->parts[i].tmp3 = sim->pv[y/CELL][x/CELL] * 64;
+	sim->parts[i].tmp3 = int(sim->pv[y/CELL][x/CELL] * 64);
 }

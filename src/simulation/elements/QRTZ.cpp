@@ -54,7 +54,7 @@ int Element_QRTZ_update(UPDATE_FUNC_ARGS)
 	int r, tmp, trade, rx, ry, np, t = parts[i].type;
 	if (t == PT_QRTZ)
 	{
-		auto press = sim->pv[y/CELL][x/CELL] * 64;
+		auto press = int(sim->pv[y/CELL][x/CELL] * 64);
 		auto diffTolerance = parts[i].temp * 1.0666f;
 		if (press - parts[i].tmp3 > diffTolerance || press - parts[i].tmp3 < -diffTolerance)
 		{
@@ -161,5 +161,5 @@ int Element_QRTZ_graphics(GRAPHICS_FUNC_ARGS)
 static void create(ELEMENT_CREATE_FUNC_ARGS)
 {
 	sim->parts[i].tmp2 = RNG::Ref().between(0, 10);
-	sim->parts[i].tmp3 = sim->pv[y/CELL][x/CELL] * 64;
+	sim->parts[i].tmp3 = int(sim->pv[y/CELL][x/CELL] * 64);
 }

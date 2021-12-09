@@ -2253,7 +2253,7 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 				partsData[partsDataLen++] = particles[i].type;
 
 				//Location of the field descriptor
-				int fieldDesc3Loc;
+				int fieldDesc3Loc = 0;
 				int fieldDescLoc = partsDataLen++;
 				partsDataLen++;
 
