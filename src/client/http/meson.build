@@ -4,7 +4,12 @@ client_files += files(
 	'GetUserInfoRequest.cpp',
 	'ImageRequest.cpp',
 	'Request.cpp',
-	'RequestManager.cpp',
 	'SaveUserInfoRequest.cpp',
 	'ThumbnailRequest.cpp',
 )
+
+if uopt_http
+	client_files += files(
+		'RequestManager.cpp',
+	)
+endif

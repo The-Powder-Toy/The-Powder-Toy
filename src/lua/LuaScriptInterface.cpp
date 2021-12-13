@@ -158,7 +158,9 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	initPlatformAPI();
 	initEventAPI();
 	initHttpAPI();
+#ifndef NOHTTP
 	initSocketAPI();
+#endif
 
 	//Old TPT API
 	int currentElementMeta, currentElement;
@@ -4388,9 +4390,11 @@ LuaScriptInterface::~LuaScriptInterface() {
 	delete legacy;
 }
 
+#ifndef NOHTTP
 void LuaScriptInterface::initSocketAPI()
 {
 	LuaTCPSocket::Open(l);
 }
+#endif
 
 #endif
