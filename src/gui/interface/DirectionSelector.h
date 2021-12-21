@@ -24,7 +24,7 @@ class DirectionSelector : public ui::Component
 	std::vector<ui::Point> snapPoints;
 
 	bool autoReturn;
-	
+
 	ui::Colour backgroundColor;
 	ui::Colour foregroundColor;
 	ui::Colour borderColor;
@@ -34,8 +34,12 @@ class DirectionSelector : public ui::Component
 	std::function<void(float x, float y)> changeCallback;
 
 	bool mouseDown;
+	bool mouseHover;
+	bool altDown;
 
 	ui::Point offset;
+
+	void CheckHovering(int x, int y);
 
 public:
 	DirectionSelector(ui::Point position, float radius);
@@ -44,9 +48,12 @@ public:
 	void SetSnapPoints(int newRadius, int points);
 	void ClearSnapPoints();
 
+	inline void EnableSnapPoints() { useSnapPoints = true; }
+	inline void DisableSnapPoints() { useSnapPoints = false; }
+
 	inline void EnableAutoReturn() { autoReturn = true; }
 	inline void DisableAutoReturn() { autoReturn = false; }
-	
+
 	inline void SetBackgroundColor(ui::Colour color) { backgroundColor = color; }
 	inline void SetForegroundColor(ui::Colour color) { foregroundColor = color; }
 	inline void SetBorderColor(ui::Colour color) { borderColor = color; }
@@ -64,6 +71,8 @@ public:
 	void OnMouseMoved(int x, int y, int dx, int dy) override;
 	void OnMouseClick(int x, int y, unsigned int button) override;
 	void OnMouseUp(int x, int y, unsigned button) override;
+	inline void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override { altDown = alt; }
+	inline void OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override { altDown = alt; }
 
 	inline void SetUpdateCallback(std::function<void(float x, float y)> callback) { updateCallback = callback; }
 	inline void SetChangeCallback(std::function<void(float x, float y)> callback) { changeCallback = callback; }

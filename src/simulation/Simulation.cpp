@@ -2837,15 +2837,16 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 		break;
 	case PT_CNCT:
 		{
-			float offsetX, offsetY; // Calculate offset from gravity
-			GetGravityField(x, y, 1.0f, 1.0f, offsetX, offsetY);
-			if (offsetX > 0.0f) offsetX = 1.0f;
-			else if (offsetX < 0.0f) offsetX = -1.0f;
-			if (offsetY > 0.0f) offsetY = 1.0f;
-			else if (offsetY < 0.0f) offsetY = -1.0f;
-			if (((nx - x) * offsetX > 0 || offsetX == 0.0f) && // Check direction based on gravity
-				((ny - y) * offsetY > 0 || offsetY == 0.0f) &&
-				(TYP(pmap[y+(int)offsetY][x+(int)offsetX]) == PT_CNCT || TYP(pmap[y+(int)offsetY][x+(int)offsetX]) == PT_ROCK)) //check below CNCT for another CNCT or ROCK
+			float cnctGravX, cnctGravY; // Calculate offset from gravity
+			GetGravityField(x, y, elements[PT_CNCT].Gravity, elements[PT_CNCT].Gravity, cnctGravX, cnctGravY);
+			int offsetX = 0, offsetY = 0;
+			if (cnctGravX > 0.0f) offsetX++;
+			else if (cnctGravX < 0.0f) offsetX--;
+			if (cnctGravY > 0.0f) offsetY++;
+			else if (cnctGravY < 0.0f) offsetY--;
+			if ((offsetX != 0) != (offsetY != 0) && // Is this a different position (avoid diagonals, doesn't work well)
+				((nx - x) * offsetX > 0 || (ny - y) * offsetY > 0) && // Is the destination particle below the moving particle
+				(TYP(pmap[y+offsetY][x+offsetX]) == PT_CNCT || TYP(pmap[y+offsetY][x+offsetX]) == PT_ROCK)) //check below CNCT for another CNCT or ROCK
 				return 0;
 		}
 		break;
@@ -3637,12 +3638,12 @@ void Simulation::UpdateParticles(int start, int end)
 				if (pGravX != 0 || pGravY != 0)
 				{
 					// Calculate offset from gravity
-					float convX, convY;
-					GetGravityField(x, y, -2.0f, -2.0f, convX, convY);
-					convX += x;
-					convY += y;
-					if ((int)convX >= 0 && (int)convX < XRES && (int)convY >= 0 && (int)convY < YRES && (elements[t].Properties&TYPE_LIQUID) && (t!=PT_GEL || gel_scale > (1 + RNG::Ref().between(0, 254)))) {//some heat convection for liquids
-						r = pmap[(int)convY][(int)convX];
+					float convGravX, convGravY;
+					GetGravityField(x, y, -2.0f, -2.0f, convGravX, convGravY);
+					int offsetX = std::round(convGravX + x);
+					int offsetY = std::round(convGravY + y);
+					if (offsetX >= 0 && offsetX < XRES && offsetY >= 0 && offsetY < YRES && (elements[t].Properties&TYPE_LIQUID) && (t!=PT_GEL || gel_scale > (1 + RNG::Ref().between(0, 254)))) {//some heat convection for liquids
+						r = pmap[offsetY][offsetX];
 						if (!(!r || parts[i].type != TYP(r))) {
 							if (parts[i].temp>parts[ID(r)].temp) {
 								swappage = parts[i].temp;

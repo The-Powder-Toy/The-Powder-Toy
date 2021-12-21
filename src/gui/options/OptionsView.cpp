@@ -190,17 +190,26 @@ OptionsView::OptionsView():
 
 				labelX->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 				labelX->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+				StringBuilder temp;
+				temp << "X:" << std::round(x * 10) / 10;
+				labelX->SetText(temp.Build());
 				AddComponent(labelX);
 
 				labelY->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 				labelY->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+				temp = StringBuilder();
+				temp << "Y:" << std::round(y * 10) / 10;
+				labelY->SetText(temp.Build());
 				AddComponent(labelY);
 
 				labelTotal->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 				labelTotal->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+				temp = StringBuilder();
+				temp << "Total:" << std::round(std::hypot(x, y) * 10) / 10;
+				labelTotal->SetText(temp.Build());
 				AddComponent(labelTotal);
 
-				gravityDirection->SetSnapPoints(5, 4);
+				gravityDirection->SetValues(x / 1.5f, y / 1.5f);
 				gravityDirection->SetUpdateCallback([this](float x, float y) {
 					StringBuilder temp;
 					temp << "X:" << std::round(x * 15) / 10;
@@ -214,7 +223,7 @@ OptionsView::OptionsView():
 					temp << "Total:" << std::round(gravityDirection->GetTotalValue() * 15) / 10;
 					labelTotal->SetText(temp.Build());
 				});
-				gravityDirection->SetValues(x, y);
+				gravityDirection->SetSnapPoints(5, 4);
 				AddComponent(gravityDirection);
 
 				ui::Button * okayButton = new ui::Button(ui::Point(0, Size.Y - 17), ui::Point(Size.X, 17), "OK");
@@ -527,8 +536,8 @@ void OptionsView::NotifySettingsChanged(OptionsModel * sender)
 		ambientAirTemp->SetText(sb.Build());
 	}
 	gravityMode->SetOption(sender->GetGravityMode());
-	customGravityX = sender->GetCustomGravityX() / 1.5;
-	customGravityY = sender->GetCustomGravityY() / 1.5;
+	customGravityX = sender->GetCustomGravityX();
+	customGravityY = sender->GetCustomGravityY();
 	decoSpace->SetOption(sender->GetDecoSpace());
 	edgeMode->SetOption(sender->GetEdgeMode());
 	scale->SetOption(sender->GetScale());

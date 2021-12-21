@@ -11,7 +11,6 @@ namespace ui
 	class DropDown;
 	class Textbox;
 	class Button;
-	class DirectionSelector;
 }
 
 class OptionsModel;

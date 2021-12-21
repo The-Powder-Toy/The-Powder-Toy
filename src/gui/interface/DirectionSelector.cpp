@@ -7,18 +7,27 @@ DirectionSelector::DirectionSelector(ui::Point position, float radius):
 	radius(radius),
 	maxRadius(radius - (radius / 4)),
 	useSnapPoints(false),
+	snapPointRadius(0),
+	snapPoints(std::vector<ui::Point>()),
 	autoReturn(false),
 	backgroundColor(ui::Colour(0, 0, 0, 63)),
-	foregroundColor(ui::Colour(31, 31, 31, 127)),
+	foregroundColor(ui::Colour(63, 63, 63, 127)),
 	borderColor(ui::Colour(255, 255, 255)),
 	snapPointColor(ui::Colour(63, 63, 63, 127)),
 	updateCallback(nullptr),
 	changeCallback(nullptr),
 	mouseDown(false),
+	mouseHover(false),
+	altDown(false),
 	offset(ui::Point(0, 0))
 	{
 		
 	}
+
+void DirectionSelector::CheckHovering(int x, int y)
+{
+	mouseHover = std::hypot((offset.X + radius) - x, (offset.Y + radius) - y) < radius / 4;
+}
 
 void DirectionSelector::SetSnapPoints(int newRadius, int points)
 {
@@ -74,14 +83,13 @@ void DirectionSelector::SetPosition(float x, float y)
 		offset.Y = y;
 	}
 
-	if (useSnapPoints)
+	if (useSnapPoints && !altDown)
 	{
-		std::vector<ui::Point>::iterator i;
-		for (i = snapPoints.begin(); i < snapPoints.end(); i++)
-			if (std::hypot(i->X - offset.X, i->Y - offset.Y) <= snapPointRadius)
+		for (const ui::Point& i : snapPoints)
+			if (std::hypot(i.X - offset.X, i.Y - offset.Y) <= snapPointRadius)
 			{
-				offset.X = i->X;
-				offset.Y = i->Y;
+				offset.X = i.X;
+				offset.Y = i.Y;
 			}
 	}
 	if (updateCallback)
@@ -101,19 +109,15 @@ void DirectionSelector::Draw(const ui::Point& screenPos)
 	g->fillcircle(center.X, center.Y, radius, radius, backgroundColor.Red, backgroundColor.Green, backgroundColor.Blue, backgroundColor.Alpha);
 	g->drawcircle(center.X, center.Y, radius, radius, borderColor.Red, borderColor.Green, borderColor.Blue, borderColor.Alpha);
 
-	if (useSnapPoints)
-	{
-		std::vector<ui::Point>::iterator i;
-		for (i = snapPoints.begin(); i < snapPoints.end(); i++)
-			g->fillrect(
-				(center.X + i->X) - (radius / 30),
-				(center.Y + i->Y) - (radius / 30),
-				radius / 10, radius / 10,
-				snapPointColor.Red, snapPointColor.Green, snapPointColor.Blue, snapPointColor.Green
-			);
-	}
+	for (const ui::Point& i : snapPoints)
+		g->fillrect(
+			(center.X + i.X) - (radius / 30),
+			(center.Y + i.Y) - (radius / 30),
+			radius / 10, radius / 10,
+			snapPointColor.Red, snapPointColor.Green, snapPointColor.Blue, altDown ? (int)(snapPointColor.Alpha / 2) : snapPointColor.Alpha
+		);
 
-	g->fillcircle(center.X + offset.X, center.Y + offset.Y, radius / 4, radius / 4, foregroundColor.Red, foregroundColor.Green, foregroundColor.Blue, foregroundColor.Alpha);
+	g->fillcircle(center.X + offset.X, center.Y + offset.Y, radius / 4, radius / 4, foregroundColor.Red, foregroundColor.Green, foregroundColor.Blue, mouseHover ? std::min((int)(foregroundColor.Alpha * 1.5f), 255) : foregroundColor.Alpha);
 	g->drawcircle(center.X + offset.X, center.Y + offset.Y, radius / 4, radius / 4, borderColor.Red, borderColor.Green, borderColor.Blue, borderColor.Alpha);
 }
 
@@ -121,12 +125,14 @@ void DirectionSelector::OnMouseMoved(int x, int y, int dx, int dy)
 {
 	if (mouseDown)
 		SetPositionAbs(x, y);
+	CheckHovering(x, y);
 }
 
 void DirectionSelector::OnMouseClick(int x, int y, unsigned button)
 {
 	mouseDown = true;
 	SetPositionAbs(x, y);
+	CheckHovering(x, y);
 }
 
 void DirectionSelector::OnMouseUp(int x, int y, unsigned button)
@@ -134,6 +140,7 @@ void DirectionSelector::OnMouseUp(int x, int y, unsigned button)
 	mouseDown = false;
 	if (autoReturn)
 		SetPosition(0, 0);
+	CheckHovering(x - Position.X, y - Position.Y);
 
 	if (changeCallback)
 		changeCallback(GetXValue(), GetYValue());

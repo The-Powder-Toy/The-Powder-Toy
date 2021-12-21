@@ -2629,8 +2629,7 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 	{
 		bson_append_double(&b, "customGravityX", double(customGravityX));
 		bson_append_double(&b, "customGravityY", double(customGravityY));
-		if (!(SAVE_VERSION < 97)) //Allow saves to be opened until version set
-			RESTRICTVERSION(97, 0);
+		RESTRICTVERSION(97, 0);
 	}
 	bson_append_start_object(&b, "minimumVersion");
 	bson_append_int(&b, "major", minimumMajorVersion);
