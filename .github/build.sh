@@ -69,11 +69,11 @@ if [ $PLATFORM_SHORT == "lin" ]; then
 	# pthread_create, thanks to weak symbols in libstdc++.so (or something). See
 	# https://gcc.gnu.org/legacy-ml/gcc-help/2017-03/msg00081.html
 	other_flags+=$'\t-Db_asneeded=false\t-Dcpp_link_args=-Wl,--no-as-needed'
-	if [ $STATIC_DYNAMIC == "static" ]; then
+	if [ $STATIC_DYNAMIC == "static" ] && [ $TOOLSET_SHORT == "gcc" ]; then
 		other_flags+=$'\t-Dbuild_render=true\t-Dbuild_font=true'
 	fi
 fi
-if [ $PLATFORM_SHORT == "win" ]; then
+if [ $TOOLSET_SHORT == "mingw" ]; then
 	bin_suffix=$bin_suffix.exe
 fi
 stable_or_beta="n"
@@ -107,6 +107,9 @@ lto_flag=-Db_lto=true
 if [ $TOOLSET_SHORT == "mingw" ]; then
 	# This simply doesn't work with MinGW. I have no idea why and I also don't care.
 	lto_flag=
+	if [ $PLATFORM_SHORT == "lin" ]; then
+		other_flags+=$'\t--cross-file=.github/mingw-ghactions.ini'
+	fi
 fi
 meson -Dbuildtype=release -Db_pie=false -Db_staticpic=false $lto_flag $static_flag -Dinstall_check=true $other_flags build
 cd build

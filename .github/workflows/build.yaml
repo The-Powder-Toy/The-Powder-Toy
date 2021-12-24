@@ -48,10 +48,10 @@ jobs:
 # --------------+------------+------------+------------+------------+------------+------------+
 # gcc-static    |            |            |     NO     |     NO     |     NO     |     NO     |
 # msvc-static   |     NO     |     NO     |            |     NO     |     NO     |            |
-# mingw-static  |     NO     |     NO     |            |     NO     |     NO     |     NO     |
+# mingw-static  |            |     NO     |            |     NO     |     NO     |     NO     |
 # gcc-dynamic   |            |            |     NO     |     NO     |     NO     |     NO     |
 # msvc-dynamic  |     NO     |     NO     |            |     NO     |     NO     |            |
-# mingw-dynamic |     NO     |     NO     |            |     NO     |     NO     |     NO     |
+# mingw-dynamic |            |     NO     |            |     NO     |     NO     |     NO     |
 #
 # Please keep this matrix in sync with the other one in this file, see the ### blocks.
 # The only difference should be that the second matrix has all mingw cells disabled; we don't publish mingw builds on starcatcher.
@@ -65,8 +65,6 @@ jobs:
         exclude:
           - toolset_short: mingw
             machine_short: i686  # remove this line after copying the matrix below
-          - toolset_short: mingw # remove this line after copying the matrix below
-            platform_short: lin  # remove this line after copying the matrix below
           - toolset_short: mingw # remove this line after copying the matrix below
             platform_short: mac  # remove this line after copying the matrix below
           - machine_short: i686
@@ -92,6 +90,10 @@ jobs:
           - platform_short: win
             os: windows-2019
             suffix: '.exe'
+          - platform_short: lin
+            toolset_short: mingw
+            os: ubuntu-20.04
+            suffix: '.exe'
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -99,6 +101,8 @@ jobs:
           python-version: '3.10'
       - id: get_type
         run: python3 ./.github/get-type.py ${{ github.ref }}
+      - if: matrix.platform_short == 'lin' && matrix.toolset_short == 'mingw'
+        run: sudo apt update && sudo apt install g++-mingw-w64-x86-64
       - if: matrix.platform_short == 'mac'
         uses: Homebrew/actions/setup-homebrew@master
       - if: matrix.platform_short == 'mac'
