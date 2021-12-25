@@ -1354,6 +1354,19 @@ void GameSave::readOPS(char * data, int dataLength)
 							}
 						}
 					}
+					if (PressureInTmp3(particles[newIndex].type))
+					{
+						// pavg[1] used to be saved as a u16, which PressureInTmp3 elements then treated as
+						// an i16. tmp3 is now saved as a u32, or as a u16 if it's small enough. PressureInTmp3
+						// elements will never use the upper 16 bits, and should still treat the lower 16 bits
+						// as an i16, so they need sign extension.
+						auto tmp3 = (unsigned int)(particles[newIndex].tmp3);
+						if (tmp3 & 0x8000U)
+						{
+							tmp3 |= 0xFFFF0000U;
+							particles[newIndex].tmp3 = int(tmp3);
+						}
+					}
 					//note: PSv was used in version 77.0 and every version before, add something in PSv too if the element is that old
 					newIndex++;
 					partsCount++;
@@ -2262,10 +2275,14 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 				if ((tmp3 || tmp4) && (!PressureInTmp3(particles[i].type) || hasPressure))
 				{
 					fieldDesc |= 1 << 13;
-					if ((tmp3 >> 16) || (tmp4 >> 16))
+					// The tmp3 of PressureInTmp3 elements is okay to truncate because the loading code
+					// sign extends it anyway, expecting the value to not be higher in magnitude than
+					// 256 (max pressure value) * 64 (tmp3 multiplicative bias).
+					if (((tmp3 >> 16) || (tmp4 >> 16)) && !PressureInTmp3(particles[i].type))
 					{
 						fieldDesc |= 1 << 15;
 						fieldDesc |= 1 << 16;
+						RESTRICTVERSION(97, 0);
 					}
 				}
 
@@ -2294,7 +2311,6 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 
 				if (fieldDesc & (1 << 15))
 				{
-					RESTRICTVERSION(97, 0);
 					fieldDesc3Loc = partsDataLen++;
 				}
 
