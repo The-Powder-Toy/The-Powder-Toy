@@ -51,34 +51,33 @@ void Element::Element_WARP()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	int trade, r, rx, ry;
-	if (parts[i].tmp2>2000)
+	if (parts[i].tmp2 > 2000)
 	{
 		parts[i].temp = 10000;
-		sim->pv[y/CELL][x/CELL] += (parts[i].tmp2/5000) * CFDS;
+		sim->pv[y/CELL][x/CELL] += (parts[i].tmp2 / 5000) * CFDS;
 		if (RNG::Ref().chance(1, 50))
 			sim->create_part(-3, x, y, PT_ELEC);
 	}
-	for ( trade = 0; trade<5; trade ++)
+	for (int trade = 0; trade < 5; trade ++)
 	{
-		rx = RNG::Ref().between(-1, 1);
-		ry = RNG::Ref().between(-1, 1);
+		int rx = RNG::Ref().between(-1, 1);
+		int ry = RNG::Ref().between(-1, 1);
 		if (BOUNDS_CHECK && (rx || ry))
 		{
-			r = pmap[y+ry][x+rx];
+			int r = pmap[y + ry][x + rx];
 			if (!r)
 				continue;
-			if (TYP(r)!=PT_WARP&&TYP(r)!=PT_STKM&&TYP(r)!=PT_STKM2&&TYP(r)!=PT_DMND&&TYP(r)!=PT_CLNE&&TYP(r)!=PT_BCLN&&TYP(r)!=PT_PCLN)
+			if (TYP(r) != PT_WARP && TYP(r) != PT_STKM && TYP(r) != PT_STKM2 && TYP(r) != PT_DMND && TYP(r) != PT_CLNE && TYP(r) != PT_BCLN && TYP(r) != PT_PCLN)
 			{
 				parts[i].x = parts[ID(r)].x;
 				parts[i].y = parts[ID(r)].y;
 				parts[ID(r)].x = float(x);
 				parts[ID(r)].y = float(y);
-				parts[ID(r)].vx = RNG::Ref().chance(-2, 1) + 0.5f;
+				parts[ID(r)].vx = RNG::Ref().between(-2, 1) + 0.5f;
 				parts[ID(r)].vy = float(RNG::Ref().between(-2, 1));
 				parts[i].life += 4;
 				pmap[y][x] = r;
-				pmap[y+ry][x+rx] = PMAP(i, parts[i].type);
+				pmap[y + ry][x + rx] = PMAP(i, parts[i].type);
 				trade = 5;
 			}
 		}
