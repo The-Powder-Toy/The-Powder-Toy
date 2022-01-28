@@ -4382,6 +4382,10 @@ LuaScriptInterface::~LuaScriptInterface() {
 		component_and_ref.second.Clear();
 		component_and_ref.first->owner_ref = component_and_ref.second;
 	}
+	luaChangeTypeHandlers.clear();
+	luaCreateAllowedHandlers.clear();
+	luaCreateHandlers.clear();
+	luaCtypeDrawHandlers.clear();
 	lua_el_mode_v.clear();
 	lua_el_func_v.clear();
 	lua_gr_func_v.clear();
