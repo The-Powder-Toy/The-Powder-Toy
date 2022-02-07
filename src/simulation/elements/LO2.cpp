@@ -36,8 +36,8 @@ void Element::Element_LO2()
 	LowPressureTransition = NT;
 	HighPressure = IPH;
 	HighPressureTransition = NT;
-	LowTemperature = ITL;
-	LowTemperatureTransition = NT;
+	LowTemperature = 218.42f;
+	LowTemperatureTransition = PT_TVKY;
 	HighTemperature = 90.1f;
 	HighTemperatureTransition = PT_O2;
 }

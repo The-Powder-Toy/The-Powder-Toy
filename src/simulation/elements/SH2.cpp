@@ -2,45 +2,46 @@
 
 static int update(UPDATE_FUNC_ARGS);
 
-void Element::Element_H2()
+void Element::Element_SH2()
 {
-	Identifier = "DEFAULT_PT_H2";
-	Name = "HYGN";
-	Colour = PIXPACK(0x5070FF);
+	Identifier = "DEFAULT_PT_SH2";
+	Name = "SHYG";
+	Colour = PIXPACK(0x5070AF);
 	MenuVisible = 1;
-	MenuSection = SC_GAS;
+	MenuSection = SC_SOLIDS;
 	Enabled = 1;
 
-	Advection = 2.0f;
+	Advection = 0.0f;
 	AirDrag = 0.00f * CFDS;
-	AirLoss = 0.99f;
-	Loss = 0.30f;
-	Collision = -0.10f;
-	Gravity = 0.00f;
-	Diffusion = 3.00f;
+	AirLoss = 0.90f;
+	Loss = 0.0f;
+	Collision = 0.0f;
+	Gravity = 0.0f;
+	Diffusion = 0.00f;
 	HotAir = 0.000f	* CFDS;
 	Falldown = 0;
 
 	Flammable = 0;
-	Explosive = 0;
+	Explosive = 57.9;
 	Meltable = 0;
 	Hardness = 0;
 
 	Weight = 1;
 
+	DefaultProperties.temp = 11.88f;
 	HeatConduct = 251;
-	Description = "Hydrogen. Combusts with OXYG to make WATR. Undergoes fusion at high temperature and pressure.";
+	Description = "Solid Hydrogen. Any temperature above -261.27C turns it back into a liquid.";
 
-	Properties = TYPE_GAS;
+	Properties = TYPE_SOLID;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
-	HighPressure = IPH;
-	HighPressureTransition = NT;
-	LowTemperature = 240.86f;
-	LowTemperatureTransition = PT_RIVO;
-	HighTemperature = ITH;
-	HighTemperatureTransition = NT;
+	HighPressure = 62.6f;
+	HighPressureTransition = PT_PH2;
+	LowTemperature = NT;
+	LowTemperatureTransition = NT;
+	HighTemperature = 11.87f;
+	HighTemperatureTransition = PT_RIVO;
 
 	Update = &update;
 }
@@ -58,7 +59,7 @@ static int update(UPDATE_FUNC_ARGS)
 				rt = TYP(r);
 				if (sim->pv[y/CELL][x/CELL] > 8.0f && rt == PT_DESL) // This will not work. DESL turns to fire above 5.0 pressure
 				{
-					sim->part_change_type(ID(r),x+rx,y+ry,PT_WATR);
+					sim->part_change_type(ID(r),x+rx,y+ry,PT_ICE);
 					sim->part_change_type(i,x,y,PT_OIL);
 					return 1;
 				}
