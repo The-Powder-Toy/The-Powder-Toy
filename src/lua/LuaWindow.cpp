@@ -494,6 +494,7 @@ void LuaWindow::ClearRef(LuaComponent *luaComponent)
 	{
 		it->second.Clear();
 		it->first->owner_ref = it->second;
+		it->first->SetParentWindow(nullptr);
 		grabbed_components.erase(it);
 	}
 }
@@ -505,6 +506,7 @@ LuaWindow::~LuaWindow()
 		window->RemoveComponent(component_and_ref.first->GetComponent());
 		component_and_ref.second.Clear();
 		component_and_ref.first->owner_ref = component_and_ref.second;
+		component_and_ref.first->SetParentWindow(nullptr);
 	}
 	window->CloseActiveWindow();
 	delete window;
