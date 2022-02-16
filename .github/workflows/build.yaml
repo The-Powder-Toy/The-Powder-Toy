@@ -44,14 +44,17 @@ jobs:
     needs: [release]
     strategy:
       matrix:
-#               | lin-x86_64 | mac-x86_64 | win-x86_64 |  lin-i686  |  mac-i686  |  win-i686  |
-# --------------+------------+------------+------------+------------+------------+------------+
-# gcc-static    |            |            |     NO     |     NO     |     NO     |     NO     |
-# msvc-static   |     NO     |     NO     |            |     NO     |     NO     |            |
-# mingw-static  |            |     NO     |            |     NO     |     NO     |     NO     |
-# gcc-dynamic   |            |            |     NO     |     NO     |     NO     |     NO     |
-# msvc-dynamic  |     NO     |     NO     |            |     NO     |     NO     |            |
-# mingw-dynamic |            |     NO     |            |     NO     |     NO     |     NO     |
+#               | lin-x86_64 | mac-x86_64 | win-x86_64 |  lin-i686  |  mac-i686  |  win-i686  |  lin-arm64 |  mac-arm64 |  win-arm64 
+# --------------+------------+------------+------------+------------+------------+------------+------------+------------+------------
+# gcc-static    |            |            |     NO     |     NO     |     NO     |     NO     |     NO     |            |     NO     
+# msvc-static   |     NO     |     NO     |            |     NO     |     NO     |            |     NO     |     NO     |     NO     
+# mingw-static  |            |     NO     |            |     NO     |     NO     |     NO     |     NO     |     NO     |     NO     
+# gcc-dynamic   |            |            |     NO     |     NO     |     NO     |     NO     |     NO     |   NO [1]   |     NO     
+# msvc-dynamic  |     NO     |     NO     |            |     NO     |     NO     |            |     NO     |     NO     |     NO     
+# mingw-dynamic |            |     NO     |            |     NO     |     NO     |     NO     |     NO     |     NO     |     NO     
+#
+# [1] This is only required for development on ARM Macs. We have no access to such devices, so someone will
+#     have to help us figure out how to get dynamic libraries.
 #
 # Please keep this matrix in sync with the other one in this file, see the ### blocks.
 # The only difference should be that the second matrix has all mingw cells disabled; we don't publish mingw builds on starcatcher.
@@ -60,7 +63,7 @@ jobs:
 #########################################################
         platform_short: [lin, mac, win]
         toolset_short: [gcc, msvc, mingw]
-        machine_short: [x86_64, i686]
+        machine_short: [x86_64, i686, arm64]
         static_dynamic: [static, dynamic]
         exclude:
           - toolset_short: mingw
@@ -77,6 +80,13 @@ jobs:
             platform_short: mac
           - toolset_short: gcc
             platform_short: win
+          - platform_short: lin
+            machine_short: arm64
+          - platform_short: win
+            machine_short: arm64
+          - platform_short: mac # see [1]
+            static_dynamic: dynamic
+            machine_short: arm64
 #########################################################
 ############## END BLOCK FOR COPYING BELOW ##############
 #########################################################
@@ -85,7 +95,7 @@ jobs:
             os: ubuntu-18.04
             suffix: ''
           - platform_short: mac
-            os: macos-10.15
+            os: macos-11.0
             suffix: ''
           - platform_short: win
             os: windows-2019
@@ -146,7 +156,7 @@ jobs:
 #########################################################
         platform_short: [lin, mac, win]
         toolset_short: [gcc, msvc, mingw]
-        machine_short: [x86_64, i686]
+        machine_short: [x86_64, i686, arm64]
         static_dynamic: [static, dynamic]
         exclude:
           - toolset_short: mingw
@@ -160,6 +170,13 @@ jobs:
             platform_short: mac
           - toolset_short: gcc
             platform_short: win
+          - platform_short: lin
+            machine_short: arm64
+          - platform_short: win
+            machine_short: arm64
+          - platform_short: mac # see [1]
+            static_dynamic: dynamic
+            machine_short: arm64
 #########################################################
 ############## END BLOCK COPIED FROM ABOVE ##############
 #########################################################

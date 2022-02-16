@@ -111,7 +111,17 @@ if [ $TOOLSET_SHORT == "mingw" ]; then
 		other_flags+=$'\t--cross-file=.github/mingw-ghactions.ini'
 	fi
 fi
-meson -Dbuildtype=release -Db_pie=false -Db_staticpic=false $lto_flag $static_flag -Dinstall_check=true $other_flags build
+if [ $PLATFORM_SHORT == "mac" ]; then
+	macosx_version_min=10.9
+	if [ $MACHINE_SHORT == "arm64" ]; then
+		macosx_version_min=10.15
+		other_flags+=$'\t--cross-file=.github/macaa64-ghactions.ini'
+	fi
+	export CFLAGS=-mmacosx-version-min=$macosx_version_min
+	export CXXFLAGS=-mmacosx-version-min=$macosx_version_min
+	export LDFLAGS=-mmacosx-version-min=$macosx_version_min
+fi
+meson -Dbuildtype=release -Db_pie=false -Dworkaround_gcc_no_pie=true -Db_staticpic=false $lto_flag $static_flag -Dinstall_check=true $other_flags build
 cd build
 ninja
 if [ $PLATFORM_SHORT == "lin" ] || [ $PLATFORM_SHORT == "mac" ]; then
