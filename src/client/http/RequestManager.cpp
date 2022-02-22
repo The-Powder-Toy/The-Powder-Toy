@@ -46,7 +46,7 @@ namespace http
 
 		proxy = Proxy;
 
-		user_agent = ByteString::Build("PowderToy/", SAVE_VERSION, ".", MINOR_VERSION, " (", IDENT_PLATFORM, "; ", IDENT_BUILD, "; M", MOD_ID, ") TPTPP/", SAVE_VERSION, ".", MINOR_VERSION, ".", BUILD_NUM, IDENT_RELTYPE, ".", SNAPSHOT_ID);
+		user_agent = "PowderToy/" MTOS(SAVE_VERSION) "." MTOS(MINOR_VERSION) " (" IDENT_PLATFORM "; " IDENT_BUILD "; M" MTOS(MOD_ID) "; " IDENT ") TPTPP/" MTOS(SAVE_VERSION) "." MTOS(MINOR_VERSION) "." MTOS(BUILD_NUM) IDENT_RELTYPE "." MTOS(SNAPSHOT_ID);
 
 		worker_thread = std::thread([this]() { Worker(); });
 		initialized = true;

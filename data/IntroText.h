@@ -31,7 +31,7 @@ const char *const introTextData =
 	"\brThis is a BETA, you cannot save things publicly. If you are planning on publishing any saves, use the release version\n"
 #endif
 	"\n"
-	"\bt" MTOS(SAVE_VERSION) "." MTOS(MINOR_VERSION) "." MTOS(BUILD_NUM) " " IDENT_PLATFORM
+	"\bt" MTOS(SAVE_VERSION) "." MTOS(MINOR_VERSION) "." MTOS(BUILD_NUM) " " IDENT
 #ifdef SNAPSHOT
 	" SNAPSHOT " MTOS(SNAPSHOT_ID)
 #elif MOD_ID > 0

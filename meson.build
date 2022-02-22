@@ -301,6 +301,7 @@ conf_data.set('SNAPSHOT_ID', get_option('snapshot_id'))
 conf_data.set('SERVER', '"' + get_option('server') + '"')
 conf_data.set('STATICSERVER', '"' + get_option('static_server') + '"')
 conf_data.set('IDENT_PLATFORM', '"' + copt_identplatform + '"')
+conf_data.set('IDENT', '"@0@-@1@-@2@"'.format(copt_architecture, copt_platform, copt_compiler).to_upper())
 
 if get_option('update_server') != ''
 	conf_data.set('UPDATESERVER', '"' + get_option('update_server') + '"')

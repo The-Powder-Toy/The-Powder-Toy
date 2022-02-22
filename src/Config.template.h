@@ -31,6 +31,7 @@
 #mesondefine STATICSERVER
 #mesondefine UPDATESERVER
 #mesondefine IDENT_PLATFORM
+#mesondefine IDENT
 
 #ifdef WIN
 # define PATH_SEP "\\"

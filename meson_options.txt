@@ -45,7 +45,7 @@ option(
 	'snapshot_id',
 	type: 'integer',
 	min: 0,
-	value: 199,
+	value: 0,
 	description: 'Snapshot ID, only relevant if \'snapshot\' is true'
 )
 option(
