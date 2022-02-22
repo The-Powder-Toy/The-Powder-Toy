@@ -2863,9 +2863,14 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 
 		if (ID(pmap[ny][nx]) == ri)
 			pmap[ny][nx] = 0;
-		parts[ri].x += float(x-nx);
-		parts[ri].y += float(y-ny);
-		pmap[(int)(parts[ri].y+0.5f)][(int)(parts[ri].x+0.5f)] = PMAP(ri, parts[ri].type);
+		parts[ri].x += float(x - nx);
+		parts[ri].y += float(y - ny);
+		int rx = int(parts[ri].x + 0.5f);
+		int ry = int(parts[ri].y + 0.5f);
+		// This check will never fail unless the pmap array has already been corrupted via another bug
+		// In that case, r's position is inaccurate (not actually at nx/ny) and rx/ry may be out of bounds
+		if (InBounds(rx, ry))
+			pmap[ry][rx] = PMAP(ri, parts[ri].type);
 	}
 	return 1;
 }
