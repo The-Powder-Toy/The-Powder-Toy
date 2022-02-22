@@ -234,22 +234,6 @@ static int update(UPDATE_FUNC_ARGS)
 			parts[i].ctype = 1;
 			parts[i].life = 10;
 		}
-		for (rx=-2; rx<3; rx++)
-			for (ry=-2; ry<3; ry++)
-				if (BOUNDS_CHECK && (rx || ry))
-				{
-					r = pmap[y+ry][x+rx];
-					if (!r)
-						continue;
-					if (TYP(r) == PT_OIL)
-					{
-						float ax, ay;
-						ax = (parts[i].vx*0.5f + parts[ID(r)].vx)/2;
-						ay = ((parts[i].vy-0.1f)*0.5f + parts[ID(r)].vy)/2;
-						parts[i].vx = parts[ID(r)].vx = ax;
-						parts[i].vy = parts[ID(r)].vy = ay;
-					}
-				}
 	}
 	for (rx=-2; rx<3; rx++)
 		for (ry=-2; ry<3; ry++)

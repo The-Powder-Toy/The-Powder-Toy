@@ -2487,6 +2487,8 @@ void Simulation::init_can_move()
 	can_move[PT_THDR][PT_THDR] = 2;
 	can_move[PT_EMBR][PT_EMBR] = 2;
 	can_move[PT_TRON][PT_SWCH] = 3;
+	can_move[PT_SOAP][PT_OIL] = 0;
+	can_move[PT_OIL][PT_SOAP] = 1;
 }
 
 /*
@@ -2810,6 +2812,14 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 			parts[ID(r)].tmp += 20;
 			kill_part(i);
 			return 0;
+		}
+		break;
+	// SOAP slowly floats up inside OIL
+	case PT_SOAP:
+		if (parts[i].type == PT_OIL)
+		{
+			if (RNG::Ref().chance(19, 20) || std::abs(parts[i].x - nx) > 3 || std::abs(parts[i].y - ny) > 3)
+				return 0;
 		}
 		break;
 	}
