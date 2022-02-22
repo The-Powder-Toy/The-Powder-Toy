@@ -269,6 +269,16 @@ endif
 
 project_inc = include_directories([ 'src', 'data', 'resources' ])
 
+if copt_platform == 'win'
+	copt_identplatform = copt_64bit ? 'WIN64' : 'WIN32'
+elif copt_platform == 'lin'
+	copt_identplatform = copt_64bit ? 'LIN64' : 'LIN32'
+elif copt_platform == 'mac'
+	copt_identplatform = copt_architecture == 'arm64' ? 'MACOSARM' : 'MACOSX'
+else
+	copt_identplatform = 'UNKNOWN'
+endif
+
 conf_data.set('LIN', copt_platform == 'lin')
 conf_data.set('WIN', copt_platform == 'win')
 conf_data.set('MACOSX', copt_platform == 'mac')
@@ -290,6 +300,8 @@ conf_data.set('SNAPSHOT', get_option('snapshot'))
 conf_data.set('SNAPSHOT_ID', get_option('snapshot_id'))
 conf_data.set('SERVER', '"' + get_option('server') + '"')
 conf_data.set('STATICSERVER', '"' + get_option('static_server') + '"')
+conf_data.set('IDENT_PLATFORM', '"' + copt_identplatform + '"')
+
 if get_option('update_server') != ''
 	conf_data.set('UPDATESERVER', '"' + get_option('update_server') + '"')
 else

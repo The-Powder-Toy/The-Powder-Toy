@@ -30,6 +30,7 @@
 #mesondefine SERVER
 #mesondefine STATICSERVER
 #mesondefine UPDATESERVER
+#mesondefine IDENT_PLATFORM
 
 #ifdef WIN
 # define PATH_SEP "\\"
@@ -64,24 +65,6 @@
 #define IDENT_RELTYPE "B"
 #else
 #define IDENT_RELTYPE "R"
-#endif
-
-#if defined(WIN)
-#if defined(_64BIT)
-#define IDENT_PLATFORM "WIN64"
-#else
-#define IDENT_PLATFORM "WIN32"
-#endif
-#elif defined(LIN)
-#if defined(_64BIT)
-#define IDENT_PLATFORM "LIN64"
-#else
-#define IDENT_PLATFORM "LIN32"
-#endif
-#elif defined(MACOSX)
-#define IDENT_PLATFORM "MACOSX"
-#else
-#define IDENT_PLATFORM "UNKNOWN"
 #endif
 
 #if defined(X86_SSE3)
