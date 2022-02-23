@@ -52,10 +52,8 @@ int luacon_transitionwrite(lua_State* l);
 //tpt. api
 int luatpt_getelement(lua_State *l);
 
-int luacon_graphicsReplacement(GRAPHICS_FUNC_ARGS, int i);
 int luatpt_graphics_func(lua_State *l);
 
-int luacon_elementReplacement(UPDATE_FUNC_ARGS);
 int luatpt_element_func(lua_State *l);
 
 int luatpt_error(lua_State* l);

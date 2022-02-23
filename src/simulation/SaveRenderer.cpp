@@ -33,6 +33,12 @@ SaveRenderer::SaveRenderer(){
 #endif
 }
 
+void SaveRenderer::Flush(int begin, int end)
+{
+	std::lock_guard<std::mutex> gx(renderMutex);
+	std::fill(ren->graphicscache + begin, ren->graphicscache + end, gcache_item());
+}
+
 VideoBuffer * SaveRenderer::Render(GameSave * save, bool decorations, bool fire, Renderer *renderModeSource)
 {
 	std::lock_guard<std::mutex> gx(renderMutex);

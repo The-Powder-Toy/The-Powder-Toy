@@ -317,28 +317,6 @@ int luatpt_getelement(lua_State *l)
 	return 1;
 }
 
-int luacon_elementReplacement(UPDATE_FUNC_ARGS)
-{
-	int retval = 0, callret;
-	if (lua_el_func[parts[i].type])
-	{
-		lua_rawgeti(luacon_ci->l, LUA_REGISTRYINDEX, lua_el_func[parts[i].type]);
-		lua_pushinteger(luacon_ci->l, i);
-		lua_pushinteger(luacon_ci->l, x);
-		lua_pushinteger(luacon_ci->l, y);
-		lua_pushinteger(luacon_ci->l, surround_space);
-		lua_pushinteger(luacon_ci->l, nt);
-		callret = lua_pcall(luacon_ci->l, 5, 1, 0);
-		if (callret)
-			luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
-		if(lua_isboolean(luacon_ci->l, -1)){
-			retval = lua_toboolean(luacon_ci->l, -1);
-		}
-		lua_pop(luacon_ci->l, 1);
-	}
-	return retval;
-}
-
 int luatpt_element_func(lua_State *l)
 {
 	if (lua_isfunction(l, 1))
@@ -377,47 +355,6 @@ int luatpt_element_func(lua_State *l)
 	else
 		return luaL_error(l, "Not a function");
 	return 0;
-}
-
-int luacon_graphicsReplacement(GRAPHICS_FUNC_ARGS, int i)
-{
-	int cache = 0, callret;
-	lua_rawgeti(luacon_ci->l, LUA_REGISTRYINDEX, lua_gr_func[cpart->type]);
-	lua_pushinteger(luacon_ci->l, i);
-	lua_pushinteger(luacon_ci->l, *colr);
-	lua_pushinteger(luacon_ci->l, *colg);
-	lua_pushinteger(luacon_ci->l, *colb);
-	callret = lua_pcall(luacon_ci->l, 4, 10, 0);
-	if (callret)
-	{
-		luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
-		lua_pop(luacon_ci->l, 1);
-	}
-	else
-	{
-		bool valid = true;
-		for (int i = -10; i < 0; i++)
-			if (!lua_isnumber(luacon_ci->l, i) && !lua_isnil(luacon_ci->l, i))
-			{
-				valid = false;
-				break;
-			}
-		if (valid)
-		{
-			cache = luaL_optint(luacon_ci->l, -10, 0);
-			*pixel_mode = luaL_optint(luacon_ci->l, -9, *pixel_mode);
-			*cola = luaL_optint(luacon_ci->l, -8, *cola);
-			*colr = luaL_optint(luacon_ci->l, -7, *colr);
-			*colg = luaL_optint(luacon_ci->l, -6, *colg);
-			*colb = luaL_optint(luacon_ci->l, -5, *colb);
-			*firea = luaL_optint(luacon_ci->l, -4, *firea);
-			*firer = luaL_optint(luacon_ci->l, -3, *firer);
-			*fireg = luaL_optint(luacon_ci->l, -2, *fireg);
-			*fireb = luaL_optint(luacon_ci->l, -1, *fireb);
-		}
-		lua_pop(luacon_ci->l, 10);
-	}
-	return cache;
 }
 
 int luatpt_graphics_func(lua_State *l)
