@@ -228,10 +228,12 @@ else
 		project_link_args += [ '-mmacosx-version-min=10.9' ]
 	endif
 	if not get_option('b_pie') and get_option('workaround_gcc_no_pie') # nice one, meson
-		if cpp_compiler.get_id() in [ 'clang' ]
-			project_link_args += [ '-Wl,-no_pie' ]
-		else
-			project_link_args += [ '-no-pie' ]
+		if copt_architecture != 'arm64' # no position independent executable for arm64
+			if cpp_compiler.get_id() in [ 'clang' ]
+				project_link_args += [ '-Wl,-no_pie' ]
+			else
+				project_link_args += [ '-no-pie' ]
+			endif
 		endif
 	endif
 	project_c_args += args_ccomp
