@@ -1109,7 +1109,7 @@ int LuaScriptInterface::simulation_partProperty(lua_State * l)
 		}
 	}
 
-	auto &properties = Particle::GetProperties();
+	auto &properties = Particle::GetProperties(true);
 	auto prop = properties.end();
 
 	//Get field

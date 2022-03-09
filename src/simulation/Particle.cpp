@@ -1,8 +1,10 @@
 #include <cstddef>
 #include "Particle.h"
 
-std::vector<StructProperty> const &Particle::GetProperties()
+std::vector<StructProperty> const &Particle::GetProperties(bool includeAliases)
 {
+	static std::vector<StructProperty> propertiesWithAlias;
+	
 	static std::vector<StructProperty> properties = {
 		{ "type"   , StructProperty::ParticleType, (intptr_t)(offsetof(Particle, type   )) },
 		{ "life"   , StructProperty::Integer     , (intptr_t)(offsetof(Particle, life   )) },
@@ -19,5 +21,19 @@ std::vector<StructProperty> const &Particle::GetProperties()
 		{ "tmp4"   , StructProperty::Integer     , (intptr_t)(offsetof(Particle, tmp4   )) },
 		{ "dcolour", StructProperty::UInteger    , (intptr_t)(offsetof(Particle, dcolour)) },
 	};
-	return properties;
+
+	if (propertiesWithAlias.size() == 0)
+	{
+		static std::vector<StructProperty> aliases = {
+			{ "pavg0"  , StructProperty::Integer     , (intptr_t)(offsetof(Particle, tmp3	)) },	
+			{ "pavg1"  , StructProperty::Integer     , (intptr_t)(offsetof(Particle, tmp4	)) },	
+			{ "dcolor" , StructProperty::UInteger    , (intptr_t)(offsetof(Particle, dcolour)) },
+		};
+
+		propertiesWithAlias.reserve(properties.size() + aliases.size());
+		propertiesWithAlias.insert (propertiesWithAlias.end(), properties.begin(), properties.end());
+		propertiesWithAlias.insert (propertiesWithAlias.end(), aliases.begin(), aliases.end());
+	}
+
+	return includeAliases ? propertiesWithAlias : properties;
 }

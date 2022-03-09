@@ -94,12 +94,12 @@ int CommandInterface::GetPropertyOffset(ByteString key, FormatType & format)
 		offset = offsetof(Particle, dcolour);
 		format = FormatInt;
 	}
-	else if (!key.compare("tmp3"))
+	else if (!key.compare("tmp3") || !key.compare("pavg0"))
 	{
 		offset = offsetof(Particle, tmp3);
 		format = FormatInt;
 	}
-	else if (!key.compare("tmp4"))
+	else if (!key.compare("tmp4") || !key.compare("pavg1"))
 	{
 		offset = offsetof(Particle, tmp4);
 		format = FormatInt;
