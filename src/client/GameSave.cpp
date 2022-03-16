@@ -646,6 +646,9 @@ void GameSave::readOPS(char * data, int dataLength)
 	if (inputData[5] != CELL)
 		throw ParseException(ParseException::InvalidDimensions, "Incorrect CELL size");
 
+	if (blockW <= 0 || blockH <= 0)
+		throw ParseException(ParseException::InvalidDimensions, "Save too small");
+
 	//Too large/off screen
 	if (blockX+blockW > XRES/CELL || blockY+blockH > YRES/CELL)
 		throw ParseException(ParseException::InvalidDimensions, "Save too large");
