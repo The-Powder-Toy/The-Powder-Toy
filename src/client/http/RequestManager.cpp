@@ -51,7 +51,7 @@ namespace http
 			IDENT_PLATFORM
 			"; " IDENT_BUILD
 			"; M" MTOS(MOD_ID)
-			// "; " IDENT
+			"; " IDENT
 			") TPTPP/" MTOS(SAVE_VERSION) "." MTOS(MINOR_VERSION) "." MTOS(BUILD_NUM) IDENT_RELTYPE "." MTOS(SNAPSHOT_ID);
 
 		worker_thread = std::thread([this]() { Worker(); });
