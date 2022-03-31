@@ -2949,16 +2949,16 @@ int LuaScriptInterface::elements_allocate(lua_State * l)
 
 static int luaUpdateWrapper(UPDATE_FUNC_ARGS)
 {
+	auto *builtinUpdate = GetElements()[parts[i].type].Update;
+	if (builtinUpdate && lua_el_mode[parts[i].type] == 1)
+	{
+		if (builtinUpdate(UPDATE_FUNC_SUBCALL_ARGS))
+			return 1;
+		x = (int)(parts[i].x+0.5f);
+		y = (int)(parts[i].y+0.5f);
+	}
 	if (lua_el_func[parts[i].type])
 	{
-		auto *builtinUpdate = GetElements()[parts[i].type].Update;
-		if (builtinUpdate && lua_el_mode[parts[i].type] == 1)
-		{
-			if (builtinUpdate(UPDATE_FUNC_SUBCALL_ARGS))
-				return 1;
-			x = (int)(parts[i].x+0.5f);
-			y = (int)(parts[i].y+0.5f);
-		}
 		int retval = 0, callret;
 		lua_rawgeti(luacon_ci->l, LUA_REGISTRYINDEX, lua_el_func[parts[i].type]);
 		lua_pushinteger(luacon_ci->l, i);
@@ -2979,13 +2979,13 @@ static int luaUpdateWrapper(UPDATE_FUNC_ARGS)
 		}
 		x = (int)(parts[i].x+0.5f);
 		y = (int)(parts[i].y+0.5f);
-		if (builtinUpdate && lua_el_mode[parts[i].type] == 3)
-		{
-			if (builtinUpdate(UPDATE_FUNC_SUBCALL_ARGS))
-				return 1;
-			x = (int)(parts[i].x+0.5f);
-			y = (int)(parts[i].y+0.5f);
-		}
+	}
+	if (builtinUpdate && lua_el_mode[parts[i].type] == 3)
+	{
+		if (builtinUpdate(UPDATE_FUNC_SUBCALL_ARGS))
+			return 1;
+		x = (int)(parts[i].x+0.5f);
+		y = (int)(parts[i].y+0.5f);
 	}
 	return 0;
 }
