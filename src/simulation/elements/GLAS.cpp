@@ -51,12 +51,50 @@ static int update(UPDATE_FUNC_ARGS)
 {
 	auto press = int(sim->pv[y/CELL][x/CELL] * 64);
 	auto diff = press - parts[i].tmp3;
-	if (diff > 16 || diff < -16)
-	{
-		sim->part_change_type(i,x,y,PT_BGLA);
+
+	// Determine whether the GLAS is chemically strengthened via life setting.
+	if (parts[i].life > 0) {
+		// determined to be strengthened GLAS, increase the pressure by which it shatters
+		// set to 160 because that's a value where the effect is noticable. the 3x increase didn't do much
+		if (diff > 160 || diff < -160)
+		{
+			sim->part_change_type(i, x, y, PT_BGLA);
+		}
 	}
+	else {
+		// regular ol' GLAS
+		if (diff > 16 || diff < -16)
+		{
+			sim->part_change_type(i, x, y, PT_BGLA);
+		}
+	}
+	
+	// allow it to update
 	parts[i].tmp3 = press;
+
+	// use the code snippet from IRON corroding to determine chemical strengthening
+	int r, rx, ry;
+	for (rx = -1; rx < 2; rx++)
+		for (ry = -1; ry < 2; ry++)
+			if (BOUNDS_CHECK && (rx || ry))
+			{
+				r = pmap[y + ry][x + rx];
+				switch TYP(r)
+				{
+				case PT_LAVA:
+					// if GLASS comes into contact with molten SALT, then set it to be strengthened
+					if (parts[ID(r)].ctype == PT_SALT)
+						goto succ;
+					break;
+				default:
+					break;
+				}
+			}
 	return 0;
+	succ:
+		parts[i].life = 10;
+		return 0;
+	
 }
 
 static void create(ELEMENT_CREATE_FUNC_ARGS)
