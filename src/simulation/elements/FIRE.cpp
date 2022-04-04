@@ -130,8 +130,7 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 						parts[i].ctype = PT_TUNG;
 				}
 			}
-		}
-		else if ((parts[i].ctype == PT_STNE || !parts[i].ctype) && sim->pv[y / CELL][x / CELL] >= 30.0f && (parts[i].temp > 1943.15f || sim->pv[y / CELL][x / CELL] < 120.0f)) // Form ROCK with pressure, if it will stay molten or not immediately break
+		}else if ((parts[i].ctype == PT_STNE || !parts[i].ctype) && sim->pv[y / CELL][x / CELL] >= 30.0f && (parts[i].temp > 1943.15f || sim->pv[y / CELL][x / CELL] < 120.0f)) // Form ROCK with pressure, if it will stay molten or not immediately break
 		{
 			parts[i].tmp2 = RNG::Ref().between(0, 10); // Provide tmp2 for color noise
 			parts[i].ctype = PT_ROCK;
@@ -250,6 +249,9 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 						parts[i].ctype = PT_GOLD;
 						if (rx > 1 || rx < -1) // Trend veins vertical
 							parts[i].tmp = 1;
+					}
+					else if (parts[i].ctype == PT_SALT && rt == PT_GLAS) {
+						parts[ID(r)].life = 10;
 					}
 				}
 

@@ -71,29 +71,7 @@ static int update(UPDATE_FUNC_ARGS)
 	
 	// allow it to update
 	parts[i].tmp3 = press;
-
-	// use the code snippet from IRON corroding to determine chemical strengthening
-	int r, rx, ry;
-	for (rx = -1; rx < 2; rx++)
-		for (ry = -1; ry < 2; ry++)
-			if (BOUNDS_CHECK && (rx || ry))
-			{
-				r = pmap[y + ry][x + rx];
-				switch TYP(r)
-				{
-				case PT_LAVA:
-					// if GLASS comes into contact with molten SALT, then set it to be strengthened
-					if (parts[ID(r)].ctype == PT_SALT)
-						goto succ;
-					break;
-				default:
-					break;
-				}
-			}
 	return 0;
-	succ:
-		parts[i].life = 10;
-		return 0;
 	
 }
 
