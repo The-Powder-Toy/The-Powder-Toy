@@ -53,7 +53,8 @@ static int update(UPDATE_FUNC_ARGS)
 	auto diff = press - parts[i].tmp3;
 
 	// Determine whether the GLAS is chemically strengthened via life setting.
-	if (parts[i].life > 0) {
+	if (parts[i].life > 0) 
+	{
 		// determined to be strengthened GLAS, increase the pressure by which it shatters
 		// set to 160 because that's a value where the effect is noticable. the 3x increase didn't do much
 		if (diff > 160 || diff < -160)
@@ -61,7 +62,8 @@ static int update(UPDATE_FUNC_ARGS)
 			sim->part_change_type(i, x, y, PT_BGLA);
 		}
 	}
-	else {
+	else 
+	{
 		// regular ol' GLAS
 		if (diff > 16 || diff < -16)
 		{
