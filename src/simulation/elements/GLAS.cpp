@@ -71,7 +71,6 @@ static int update(UPDATE_FUNC_ARGS)
 		}
 	}
 	
-	// allow it to update
 	parts[i].tmp3 = press;
 	return 0;
 	
