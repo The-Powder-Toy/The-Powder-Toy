@@ -70,7 +70,7 @@ endif
 
 tpt_libs_vtag = get_option('tpt_libs_vtag')
 if tpt_libs_vtag == ''
-	tpt_libs_vtag = 'v20220217170412'
+	tpt_libs_vtag = 'v20220410083352'
 endif
 if use_tpt_libs != 'no'
 	nope = false
@@ -141,6 +141,7 @@ endif
 threads_dep = dependency('threads')
 zlib_dep = use_tpt_libs != 'no' ? tpt_libs.get_variable('zlib_dep') : dependency('zlib', static: uopt_static == 'system')
 sdl2_dep = use_tpt_libs != 'no' ? tpt_libs.get_variable('sdl2_dep') : dependency('sdl2', static: uopt_static == 'system')
+sdl2main_dep = use_tpt_libs != 'no' ? tpt_libs.get_variable('sdl2main_dep') : []
 
 project_link_args = []
 project_c_args = []
@@ -326,6 +327,7 @@ if get_option('build_powder')
 		threads_dep,
 		zlib_dep,
 		sdl2_dep,
+		sdl2main_dep,
 		lua_opt_dep,
 		curl_opt_dep,
 		fftw_opt_dep,
@@ -366,6 +368,7 @@ if get_option('build_font')
 		threads_dep,
 		zlib_dep,
 		sdl2_dep,
+		sdl2main_dep,
 	]
 	if copt_platform == 'win'
 		font_deps += other_dep

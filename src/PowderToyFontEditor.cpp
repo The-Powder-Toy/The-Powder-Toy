@@ -230,6 +230,7 @@ void RecreateWindow()
 		SDL_RenderSetIntegerScale(sdl_renderer, SDL_TRUE);
 	sdl_texture = SDL_CreateTexture(sdl_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, WINDOWW, WINDOWH);
 	SDL_RaiseWindow(sdl_window);
+	SDL_SetHint(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, "1");
 	//Uncomment this to enable resizing
 	//SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
 	//SDL_SetWindowResizable(sdl_window, SDL_TRUE);
@@ -456,10 +457,6 @@ void EngineProcess()
 	std::cout << "Breaking out of EngineProcess" << std::endl;
 #endif
 }
-
-#ifdef main
-# undef main // thank you sdl
-#endif
 
 int main(int argc, char * argv[])
 {

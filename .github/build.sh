@@ -34,7 +34,7 @@ fi
 
 if [ -z "${build_sh_init-}" ]; then
 	if [ $TOOLSET_SHORT == "msvc" ]; then
-		for i in C:/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/**/**/VC/Auxiliary/Build/vcvarsall.bat; do
+		for i in C:/Program\ Files*/Microsoft\ Visual\ Studio/**/**/VC/Auxiliary/Build/vcvarsall.bat; do
 			vcvarsall_path=$i
 		done
 		if [ $MACHINE_SHORT == "x86_64" ]; then

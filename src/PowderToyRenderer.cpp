@@ -54,10 +54,6 @@ void writeFile(ByteString filename, std::vector<char> & fileData)
 	}
 }
 
-#ifdef main
-# undef main // thank you sdl
-#endif
-
 int main(int argc, char *argv[])
 {
 	ByteString outputPrefix, inputFilename;
