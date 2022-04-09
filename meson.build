@@ -10,35 +10,32 @@ to_array = generator(
 )
 
 cpp_compiler = meson.get_compiler('cpp')
-
-conf_data = configuration_data()
-conf_data.set('CURL_STATICLIB', false)
-conf_data.set('ZLIB_WINAPI', false)
-
-copt_x86 = host_machine.cpu_family() in [ 'x86_64', 'x86' ]
-copt_64bit = host_machine.cpu_family() in [ 'x86_64', 'aarch64' ]
-copt_msvc = cpp_compiler.get_id() in [ 'msvc' ]
-
+copt_x86 = false
+copt_64bit = false
+copt_msvc = false
 if cpp_compiler.get_id() in [ 'msvc' ]
 	copt_compiler = 'msvc'
+	copt_msvc = true
 elif cpp_compiler.get_id() in [ 'gcc', 'clang' ]
 	copt_compiler = 'gcc'
 else
 	warning('unsupported compiler: ' + cpp_compiler.get_id() + '; you are on your own')
 	copt_compiler = 'gcc'
 endif
-
 if host_machine.cpu_family() in [ 'x86_64' ]
 	copt_architecture = 'x86_64'
+	copt_x86 = true
+	copt_64bit = true
 elif host_machine.cpu_family() in [ 'x86' ]
 	copt_architecture = 'i686'
+	copt_x86 = true
 elif host_machine.cpu_family() in [ 'aarch64' ]
 	copt_architecture = 'arm64'
+	copt_64bit = true
 else
 	warning('unsupported architecture: ' + host_machine.cpu_family() + '; you are on your own')
 	copt_architecture = 'i686'
 endif
-
 if host_machine.system() in [ 'linux', 'freebsd' ]
 	copt_platform = 'lin'
 elif host_machine.system() in [ 'windows' ]
@@ -49,14 +46,8 @@ else
 	warning('unsupported platform: ' + host_machine.system() + '; you are on your own')
 	copt_platform = 'lin'
 endif
-
-if get_option('ogli') or get_option('oglr')
-	error('OpenGL features are currently unavailable')
-endif
-
 uopt_static = get_option('static')
 use_tpt_libs = 'no'
-tpt_libs_vtag = 'v20220217170412'
 if uopt_static == 'system'
 	if copt_platform == 'win'
 		error('no way to find static system libraries on windows')
@@ -67,6 +58,19 @@ else
 	if copt_platform == 'win'
 		use_tpt_libs = 'dynamic'
 	endif
+endif
+
+conf_data = configuration_data()
+conf_data.set('CURL_STATICLIB', false)
+conf_data.set('ZLIB_WINAPI', false)
+
+if get_option('ogli') or get_option('oglr')
+	error('OpenGL features are currently unavailable')
+endif
+
+tpt_libs_vtag = get_option('tpt_libs_vtag')
+if tpt_libs_vtag == ''
+	tpt_libs_vtag = 'v20220217170412'
 endif
 if use_tpt_libs != 'no'
 	nope = false

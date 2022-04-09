@@ -7,6 +7,7 @@ on:
     tags:
       - 'v*.*'
       - 'snapshot-*'
+      - 'tptlibsdev-*'
   pull_request:
     branches:
       - '*'
@@ -43,6 +44,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     needs: [release]
     strategy:
+      fail-fast: false
       matrix:
 #               | lin-x86_64 | mac-x86_64 | win-x86_64 |  lin-i686  |  mac-i686  |  win-i686  |  lin-arm64 |  mac-arm64 |  win-arm64 
 # --------------+------------+------------+------------+------------+------------+------------+------------+------------+------------
@@ -61,9 +63,9 @@ jobs:
 #########################################################
 ############# BEGIN BLOCK FOR COPYING BELOW #############
 #########################################################
+        machine_short: [x86_64, i686, arm64]
         platform_short: [lin, mac, win]
         toolset_short: [gcc, msvc, mingw]
-        machine_short: [x86_64, i686, arm64]
         static_dynamic: [static, dynamic]
         exclude:
           - toolset_short: mingw
@@ -114,9 +116,7 @@ jobs:
       - if: matrix.platform_short == 'lin' && matrix.toolset_short == 'mingw'
         run: sudo apt update && sudo apt install g++-mingw-w64-x86-64
       - if: matrix.platform_short == 'mac'
-        uses: Homebrew/actions/setup-homebrew@master
-      - if: matrix.platform_short == 'mac'
-        run: brew install pkg-config
+        run: brew install pkg-config coreutils
       - if: matrix.platform_short == 'mac' && matrix.static_dynamic != 'static'
         run: brew install luajit curl fftw zlib sdl2
       - if: matrix.platform_short == 'lin' && matrix.static_dynamic != 'static'
@@ -150,13 +150,14 @@ jobs:
     needs: [build, release]
     if: needs.release.outputs.can_publish == 'yes' && startsWith(github.ref, 'refs/tags/') # not a perfect match but get-type.py takes care of this in job build
     strategy:
+      fail-fast: false
       matrix:
 #########################################################
 ############# BEGIN BLOCK COPIED FROM ABOVE #############
 #########################################################
+        machine_short: [x86_64, i686, arm64]
         platform_short: [lin, mac, win]
         toolset_short: [gcc, msvc, mingw]
-        machine_short: [x86_64, i686, arm64]
         static_dynamic: [static, dynamic]
         exclude:
           - toolset_short: mingw

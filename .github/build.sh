@@ -121,6 +121,21 @@ if [ $PLATFORM_SHORT == "mac" ]; then
 	export CXXFLAGS=-mmacosx-version-min=$macosx_version_min
 	export LDFLAGS=-mmacosx-version-min=$macosx_version_min
 fi
+if [ "$RELTYPE" == "tptlibsdev" ]; then
+	tptlibsbranch=`echo $RELNAME | cut -d '-' -f 2-` # $RELNAME is tptlibsdev-BRANCH
+	git clone https://github.com/$GITHUB_REPOSITORY_OWNER/tpt-libs --branch $tptlibsbranch
+	cd tpt-libs
+	if [ ! -d patches/$MACHINE_SHORT-$PLATFORM_SHORT-$TOOLSET_SHORT-$STATIC_DYNAMIC ]; then
+		cd ..
+		echo "no prebuilt libraries for this configuration" > powder$bin_suffix
+		exit 0
+	fi
+	VTAG=v00000000000000 ./build.sh
+	cd ../subprojects
+	7z x ../tpt-libs/temp/libraries.zip
+	other_flags+=$'\t-Dtpt_libs_vtag=v00000000000000'
+	cd ..
+fi
 meson -Dbuildtype=release -Db_pie=false -Dworkaround_gcc_no_pie=true -Db_staticpic=false $lto_flag $static_flag -Dinstall_check=true $other_flags build
 cd build
 ninja

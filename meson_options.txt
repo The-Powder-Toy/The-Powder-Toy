@@ -136,3 +136,9 @@ option(
 	value: true,
 	description: 'Pass -no-pie to gcc manually to work around meson\'s -Db_pie=false doing nothing'
 )
+option(
+	'tpt_libs_vtag',
+	type: 'string',
+	value: '',
+	description: 'tpt-libs vtag override, not useful outside tpt-libs development'
+)
