@@ -411,7 +411,7 @@ bool Client::DoInstallation()
 	unlink("powdertoy-tpt-open.desktop");
 	unlink("powdertoy-tpt-ptsave.desktop");
 	return !success;
-#elif defined MACOSX
+#else
 	return false;
 #endif
 }

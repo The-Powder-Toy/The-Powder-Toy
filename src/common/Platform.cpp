@@ -47,7 +47,7 @@ ByteString ExecutableName()
 	ByteString ret;
 #if defined(WIN)
 	using Char = wchar_t;
-#elif defined(LIN)
+#else
 	using Char = char;
 #endif
 #if defined(WIN)
@@ -115,9 +115,9 @@ void DoRestart()
 		}
 		else
 		{
-#if !defined(RENDERER) && !defined(FONTEDITOR)
+# if !defined(RENDERER) && !defined(FONTEDITOR)
 			Client::Ref().Shutdown(); // very ugly hack; will fix soon(tm)
-#endif
+# endif
 			exit(0);
 		}
 #elif defined(LIN) || defined(MACOSX)

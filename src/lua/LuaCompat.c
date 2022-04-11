@@ -8,6 +8,19 @@ int luaL_typerror (lua_State *L, int narg, const char *tname)
 	return luaL_argerror(L, narg, msg);
 }
 
+void luaL_register (lua_State *L,
+                    const char *libname,
+                    const luaL_Reg *l)
+{
+	if (libname)
+	{
+		lua_newtable(L);
+		lua_pushvalue(L, -1);
+		lua_setglobal(L, libname);
+	}
+	luaL_setfuncs(L, l, 0);
+}
+
 void tpt_lua_setmainthread(lua_State *L)
 {
 }

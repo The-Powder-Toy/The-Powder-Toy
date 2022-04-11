@@ -4,11 +4,11 @@ set -euo pipefail
 IFS=$'\n\t'
 
 if [ -z "${PLATFORM_SHORT-}" ]; then
-	>&2 echo "PLATFORM_SHORT not set (lin, mac, win)"
+	>&2 echo "PLATFORM_SHORT not set (lin, mac, win, and)"
 	exit 1
 fi
 if [ -z "${MACHINE_SHORT-}" ]; then
-	>&2 echo "MACHINE_SHORT not set (x86_64, i686)"
+	>&2 echo "MACHINE_SHORT not set (x86_64, i686, arm64, arm)"
 	exit 1
 fi
 if [ -z "${TOOLSET_SHORT-}" ]; then
@@ -54,9 +54,14 @@ BUILD_INIT_BAT
 	exit 0
 fi
 
+if [ -d build ]; then
+	rm -r build
+fi
+
 other_flags=$'\t-Dmod_id='
 other_flags+=$MOD_ID
 bin_suffix=
+bin_prefix=
 static_flag=
 if [ $STATIC_DYNAMIC == "static" ]; then
 	static_flag=-Dstatic=prebuilt
@@ -75,6 +80,9 @@ if [ $PLATFORM_SHORT == "lin" ]; then
 fi
 if [ $TOOLSET_SHORT == "mingw" ]; then
 	bin_suffix=$bin_suffix.exe
+fi
+if [ $PLATFORM_SHORT == "and" ]; then
+	bin_suffix=$bin_suffix.apk
 fi
 stable_or_beta="n"
 if [ "$RELTYPE" == "beta" ]; then
@@ -121,25 +129,78 @@ if [ $PLATFORM_SHORT == "mac" ]; then
 	export CXXFLAGS=-mmacosx-version-min=$macosx_version_min
 	export LDFLAGS=-mmacosx-version-min=$macosx_version_min
 fi
+powder_bin=${bin_prefix}powder$bin_suffix
 if [ "$RELTYPE" == "tptlibsdev" ]; then
+	if [ -z "${GITHUB_REPOSITORY_OWNER-}" ]; then
+		>&2 echo "GITHUB_REPOSITORY_OWNER not set (whose tpt-libs to clone?)"
+		exit 1
+	fi
 	tptlibsbranch=`echo $RELNAME | cut -d '-' -f 2-` # $RELNAME is tptlibsdev-BRANCH
-	git clone https://github.com/$GITHUB_REPOSITORY_OWNER/tpt-libs --branch $tptlibsbranch
+	if [ ! -d tpt-libs ]; then
+		git clone https://github.com/$GITHUB_REPOSITORY_OWNER/tpt-libs --branch $tptlibsbranch
+	fi
 	cd tpt-libs
-	if [ ! -d patches/$MACHINE_SHORT-$PLATFORM_SHORT-$TOOLSET_SHORT-$STATIC_DYNAMIC ]; then
+	quad=$MACHINE_SHORT-$PLATFORM_SHORT-$TOOLSET_SHORT-$STATIC_DYNAMIC
+	if [ ! -d patches/$quad ]; then
 		cd ..
-		echo "no prebuilt libraries for this configuration" > powder$bin_suffix
+		echo "no prebuilt libraries for this configuration" > $powder_bin
 		exit 0
 	fi
-	VTAG=v00000000000000 ./build.sh
-	cd ../subprojects
-	7z x ../tpt-libs/temp/libraries.zip
-	other_flags+=$'\t-Dtpt_libs_vtag=v00000000000000'
+	tpt_libs_vtag=v00000000000000
+	if [ ! -f .ok ]; then
+		VTAG=$tpt_libs_vtag ./build.sh
+		touch .ok
+		cd ../subprojects
+		if [ -d tpt-libs-prebuilt-$quad-$tpt_libs_vtag ]; then
+			rm -r tpt-libs-prebuilt-$quad-$tpt_libs_vtag
+		fi
+		7z x ../tpt-libs/temp/libraries.zip
+	fi
 	cd ..
+	other_flags+=$'\t-Dtpt_libs_vtag='
+	other_flags+=$tpt_libs_vtag
+fi
+if [ $PLATFORM_SHORT == "and" ]; then
+	other_flags+=$'\t--cross-file='
+	if [ $MACHINE_SHORT == "x86_64" ]; then
+		other_flags+=android/cross/x86_64.ini
+	fi
+	if [ $MACHINE_SHORT == "i686" ]; then
+		other_flags+=android/cross/x86.ini
+	fi
+	if [ $MACHINE_SHORT == "arm64" ]; then
+		other_flags+=android/cross/arm64-v8a.ini
+	fi
+	if [ $MACHINE_SHORT == "arm" ]; then
+		other_flags+=android/cross/armeabi-v7a.ini
+	fi
+	other_flags+=$'\t--cross-file=.github/android-ghactions.ini'
+	if [ -z "${JAVA_HOME_8_X64-}" ]; then
+		>&2 echo "JAVA_HOME_8_X64 not set (where is jdk?)"
+		exit 1
+	fi
+	cat << BUILD_INIT_BAT > .github/jdk.ini
+[properties]
+java_runtime_jar = '$JAVA_HOME_8_X64/jre/lib/rt.jar'
+
+[binaries]
+javac = '$JAVA_HOME_8_X64/bin/javac'
+jar = '$JAVA_HOME_8_X64/bin/jar'
+BUILD_INIT_BAT
+	other_flags+=$'\t--cross-file=.github/jdk.ini'
+	other_flags+=$'\t-Dhttp=false'
 fi
 meson -Dbuildtype=release -Db_pie=false -Dworkaround_gcc_no_pie=true -Db_staticpic=false $lto_flag $static_flag -Dinstall_check=true $other_flags build
 cd build
 ninja
-if [ $PLATFORM_SHORT == "lin" ] || [ $PLATFORM_SHORT == "mac" ]; then
-	strip powder$bin_suffix
+if [ $PLATFORM_SHORT == "and" ]; then
+	$ANDROID_SDK_ROOT/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-strip libpowder.so
+elif [ $PLATFORM_SHORT != "win" ]; then
+	strip $powder_bin
 fi
-cp powder$bin_suffix ..
+if [ $PLATFORM_SHORT == "and" ]; then
+	$JAVA_HOME_8_X64/bin/keytool -genkeypair -keystore keystore.jks -alias androidkey -validity 10000 -keyalg RSA -keysize 2048 -keypass bagelsbagels -storepass bagelsbagels -dname "CN=nobody"
+	meson configure -Dandroid_keystore=`readlink -f keystore.jks`
+	ANDROID_KEYSTORE_PASS=bagelsbagels ninja powder.apk
+fi
+cp $powder_bin ..

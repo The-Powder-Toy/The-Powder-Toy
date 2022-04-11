@@ -140,5 +140,17 @@ option(
 	'tpt_libs_vtag',
 	type: 'string',
 	value: '',
-	description: 'tpt-libs vtag override, not useful outside tpt-libs development'
+	description: 'tpt-libs vtag override, only used for tpt-libs development'
+)
+option(
+	'android_keystore',
+	type: 'string',
+	value: '',
+	description: 'Path to Java keystore for signing an APK, only used for Android development'
+)
+option(
+	'android_keyalias',
+	type: 'string',
+	value: 'androidkey',
+	description: 'Signing key alias for signing an APK, only used for Android development'
 )
