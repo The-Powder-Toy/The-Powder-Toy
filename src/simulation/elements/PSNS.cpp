@@ -51,7 +51,6 @@ static int update(UPDATE_FUNC_ARGS)
 	int r, rx, ry, rt;
 	if ((parts[i].tmp == 0 && sim->pv[y/CELL][x/CELL] > parts[i].temp-273.15f) || (parts[i].tmp == 2 && sim->pv[y/CELL][x/CELL] < parts[i].temp-273.15f))
 	{
-		parts[i].life = 0;
 		for (rx = -2; rx <= 2; rx++)
 			for (ry = -2; ry <= 2; ry++)
 				if (BOUNDS_CHECK && (rx || ry))
@@ -73,7 +72,6 @@ static int update(UPDATE_FUNC_ARGS)
 	}
 	if (parts[i].tmp == 1)
 	{
-		parts[i].life = 0;
 		bool setFilt = true;
 		float photonWl = sim->pv[y / CELL][x / CELL];
 		if (setFilt)
