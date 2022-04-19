@@ -176,8 +176,8 @@ jobs:
 #########################################################
 ############# BEGIN BLOCK COPIED FROM ABOVE #############
 #########################################################
-        machine_short: [x86_64, i686, arm64]
-        platform_short: [lin, mac, win]
+        machine_short: [x86_64, i686, arm64, arm]
+        platform_short: [lin, mac, win, and]
         toolset_short: [gcc, msvc, mingw]
         static_dynamic: [static, dynamic]
         exclude:
