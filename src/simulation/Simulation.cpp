@@ -4318,18 +4318,6 @@ killed:
 							}
 						}
 					}
-					if (TYP(r))
-						parts[i].ctype &= elements[TYP(r)].PhotonReflectWavelengths;
-
-					if (TYP(r) == PT_LITH)//Changes wavelength to reflect the stored charge in LITH
-					{
-						if (parts[ID(r)].ctype <= 25)
-							parts[i].ctype = 0xFF000000;
-						else if (parts[ID(r)].ctype > 25 && parts[ID(r)].ctype <= 75)
-							parts[i].ctype = 0x0007C000;
-						else if (parts[ID(r)].ctype > 75)
-							parts[i].ctype = 0x0000FF00;
-					}
 				}
 				if (stagnant)//FLAG_STAGNANT set, was reflected on previous frame
 				{
@@ -4361,6 +4349,23 @@ killed:
 						parts[ID(r)].tmp4 = parts[i].ctype;
 						kill_part(i);
 						continue;
+					}
+
+					if (t == PT_PHOT)
+					{
+						if (TYP(r) == PT_LITH)//Changes wavelength to reflect the stored charge in LITH
+						{
+							if (parts[ID(r)].ctype <= 25)
+								parts[i].ctype &= 0xFF000000;
+							else if (parts[ID(r)].ctype > 25 && parts[ID(r)].ctype <= 75)
+								parts[i].ctype &= 0x0007C000;
+							else if (parts[ID(r)].ctype > 75)
+								parts[i].ctype &= 0x0000FF00;
+						}
+						else
+						{
+							parts[i].ctype &= elements[TYP(r)].PhotonReflectWavelengths;
+						}
 					}
 
 					if (get_normal_interp(t, parts[i].x, parts[i].y, parts[i].vx, parts[i].vy, &nrx, &nry))
