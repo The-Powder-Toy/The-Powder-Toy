@@ -98,15 +98,6 @@ static int update(UPDATE_FUNC_ARGS)
 					if (parts[i].life)
 						parts[i].life++; //Delay death
 				}
-				else if (TYP(r) == PT_LITH)//Changes wavelength to reflect the stored charge in LITH
-				{
-					if (parts[ID(r)].ctype <= 25)
-						parts[i].ctype = 0xFF000000;
-					else if (parts[ID(r)].ctype > 25 && parts[ID(r)].ctype <= 75)
-						parts[i].ctype = 0x0007C000;
-					else if (parts[ID(r)].ctype > 75)
-						parts[i].ctype = 0x0000FF00;
-				}
 				else if(TYP(r) == PT_BGLA && !ry && !rx)//if on BGLA
 				{
 					float a = RNG::Ref().between(-50, 50) * 0.001f;
