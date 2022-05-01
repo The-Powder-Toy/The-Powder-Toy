@@ -48,6 +48,31 @@ void Element::Element_PTNM()
 	Create = &create;
 }
 
+static void wtrv_reactions(int wtrv1_id, UPDATE_FUNC_ARGS)
+{
+	for (int rx = -1; rx <= 1; rx++)
+	{
+		for (int ry = -1; ry <= 1; ry++)
+		{
+			if (BOUNDS_CHECK && (rx || ry))
+			{
+				int r = pmap[y + ry][x + rx];
+				if (!r || ID(r) == wtrv1_id)
+					continue;
+				int rt = TYP(r);
+
+				// WTRV + BCOL -> OIL
+				if (rt == PT_BCOL && parts[ID(r)].temp > 200.0f + 273.15f && parts[wtrv1_id].temp > 200.0f + 273.15f && sim->pv[(y + ry) / CELL][(x + rx) / CELL] > 7.f)
+				{
+					sim->part_change_type(ID(r), x + rx, y + ry, PT_OIL);
+					sim->kill_part(wtrv1_id);
+					return;
+				}
+			}
+		}
+	}
+}
+
 static void hygn_reactions(int hygn1_id, UPDATE_FUNC_ARGS)
 {
 	for (int rx = -1; rx <= 1; rx++)
@@ -116,6 +141,7 @@ static void hygn_reactions(int hygn1_id, UPDATE_FUNC_ARGS)
 static int update(UPDATE_FUNC_ARGS)
 {
 	int hygn1_id = -1; // Id of a hydrogen particle for hydrogen multi-particle reactions
+	int wtrv1_id = -1; // same but wtrv
 
 	// Fast conduction (like GOLD)
 	if (!parts[i].life)
@@ -150,6 +176,9 @@ static int update(UPDATE_FUNC_ARGS)
 
 				if (rt == PT_H2 && hygn1_id < 0)
 					hygn1_id = ID(r);
+
+				if (rt == PT_WTRV && wtrv1_id < 0)
+					wtrv1_id = ID(r);
 
 				// These reactions will occur instantly in contact with PTNM
 				// --------------------------------------------------------
@@ -217,6 +246,12 @@ static int update(UPDATE_FUNC_ARGS)
 	if (hygn1_id >= 0)
 	{
 		hygn_reactions(hygn1_id, UPDATE_FUNC_SUBCALL_ARGS);
+	}
+
+	// WTRV reactions
+	if (wtrv1_id >= 0)
+	{
+		wtrv_reactions(wtrv1_id, UPDATE_FUNC_SUBCALL_ARGS);
 	}
 
 	return 0;
