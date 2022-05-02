@@ -4353,21 +4353,15 @@ killed:
 
 					if (t == PT_PHOT)
 					{
-						if (TYP(r) == PT_LITH)//Changes wavelength to reflect the stored charge in LITH
+						auto mask = elements[TYP(r)].PhotonReflectWavelengths;
+						if (TYP(r) == PT_LITH)
 						{
-							if (parts[ID(r)].ctype <= 30)
-								parts[i].ctype &= 0xFF000000;
-							else if (parts[ID(r)].ctype > 30 && parts[ID(r)].ctype <= 60)
-								parts[i].ctype &= 0x0000FF00;
-							else if (parts[ID(r)].ctype > 60 && parts[ID(r)].ctype <= 90)
-								parts[i].ctype &= 0x0000003E;
-							else if (parts[ID(r)].ctype > 90)
-								parts[i].ctype &= 0x00FF0000;
+							int wl_bin = parts[ID(r)].ctype / 4;
+							if (wl_bin < 0) wl_bin = 0;
+							if (wl_bin > 25) wl_bin = 25;
+							mask = (0x1F << wl_bin);
 						}
-						else
-						{
-							parts[i].ctype &= elements[TYP(r)].PhotonReflectWavelengths;
-						}
+						parts[i].ctype &= mask;
 					}
 
 					if (get_normal_interp(t, parts[i].x, parts[i].y, parts[i].vx, parts[i].vy, &nrx, &nry))
