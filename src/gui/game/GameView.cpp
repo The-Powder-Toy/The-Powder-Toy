@@ -193,7 +193,9 @@ GameView::GameView():
 	introTextMessage(ByteString(introTextData).FromUtf8()),
 
 	doScreenshot(false),
-	screenshotIndex(0),
+	screenshotIndex(1),
+	lastScreenshotTime(0),
+	recordingIndex(0),
 	recording(false),
 	recordingFolder(0),
 	currentPoint(ui::Point(0, 0)),
@@ -889,9 +891,53 @@ void GameView::NotifyBrushChanged(GameModel * sender)
 	activeBrush = sender->GetBrush();
 }
 
-void GameView::screenshot()
+ByteString GameView::TakeScreenshot(int captureUI, int fileType)
 {
-	doScreenshot = true;
+	VideoBuffer *screenshot;
+	std::vector<char> data;
+	time_t screenshotTime = time(nullptr);
+	std::string extension;
+
+	if (captureUI)
+		screenshot = new VideoBuffer(ren->DumpFrame());
+	else
+		screenshot = new VideoBuffer(ui::Engine::Ref().g->DumpFrame());
+
+	if (fileType == 1)
+	{
+		data = format::VideoBufferToBMP(screenshot);
+		extension = ".bmp";
+	}
+	else if (fileType == 2)
+	{
+		data = format::VideoBufferToPPM(screenshot);
+		extension = ".ppm";
+	}
+	else
+	{
+		data = format::VideoBufferToPNG(screenshot);
+		extension = ".png";
+	}
+
+	// Optional suffix to distinguish screenshots taken at the exact same time
+	ByteString suffix = "";
+	if (screenshotTime == lastScreenshotTime)
+	{
+		screenshotIndex++;
+		suffix = ByteString::Build(" (", screenshotIndex, ")");
+	}
+	else
+	{
+		screenshotIndex = 1;
+	}
+	std::string date = format::UnixtimeToDate(screenshotTime, "%Y-%m-%d %H.%M.%S");
+	ByteString filename = ByteString::Build("screenshot ", date, suffix, extension);
+
+	Client::Ref().WriteFile(data, filename);
+	doScreenshot = false;
+	lastScreenshotTime = screenshotTime;
+
+	return filename;
 }
 
 int GameView::Record(bool record)
@@ -912,6 +958,7 @@ int GameView::Record(bool record)
 			Platform::MakeDirectory("recordings");
 			Platform::MakeDirectory(ByteString::Build("recordings", PATH_SEP, recordingFolder).c_str());
 			recording = true;
+			recordingIndex = 0;
 		}
 	}
 	return recordingFolder;
@@ -1328,7 +1375,7 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 				c->SetActiveTool(0, "DEFAULT_UI_PROPERTY");
 		}
 		else
-			screenshot();
+			doScreenshot = true;
 		break;
 	case SDL_SCANCODE_F3:
 		SetDebugHUD(!GetDebugHUD());
@@ -2088,15 +2135,9 @@ void GameView::OnDraw()
 
 		ren->RenderEnd();
 
-		if(doScreenshot)
+		if (doScreenshot)
 		{
-			VideoBuffer screenshot(ren->DumpFrame());
-			std::vector<char> data = format::VideoBufferToPNG(screenshot);
-
-			ByteString filename = ByteString::Build("screenshot_", Format::Width(screenshotIndex++, 6), ".png");
-
-			Client::Ref().WriteFile(data, filename);
-			doScreenshot = false;
+			TakeScreenshot(0, 0);
 		}
 
 		if(recording)
@@ -2104,7 +2145,7 @@ void GameView::OnDraw()
 			VideoBuffer screenshot(ren->DumpFrame());
 			std::vector<char> data = format::VideoBufferToPPM(screenshot);
 
-			ByteString filename = ByteString::Build("recordings", PATH_SEP, recordingFolder, PATH_SEP, "frame_", Format::Width(screenshotIndex++, 6), ".ppm");
+			ByteString filename = ByteString::Build("recordings", PATH_SEP, recordingFolder, PATH_SEP, "frame_", Format::Width(recordingIndex++, 6), ".ppm");
 
 			Client::Ref().WriteFile(data, filename);
 		}

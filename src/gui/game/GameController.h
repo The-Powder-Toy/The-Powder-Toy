@@ -160,6 +160,7 @@ public:
 	String BasicParticleInfo(Particle const &sample_part);
 	bool IsValidElement(int type);
 	String WallName(int type);
+	ByteString TakeScreenshot(int captureUI, int fileType);
 	int Record(bool record);
 
 	void ResetAir();

@@ -373,7 +373,7 @@ String DoMigration(ByteString fromDir, ByteString toDir)
 	auto scripts = DirectorySearch(fromDir + "scripts", "", { ".lua", ".txt" });
 	auto downloadedScripts = DirectorySearch(fromDir + "scripts/downloaded", "", { ".lua" });
 	bool hasScriptinfo = FileExists(toDir + "scripts/downloaded/scriptinfo");
-	auto screenshots = DirectorySearch(fromDir, "powdertoy-", { ".png" });
+	auto screenshots = DirectorySearch(fromDir, "screenshot", { ".png" });
 	bool hasAutorun = FileExists(fromDir + "autorun.lua");
 	bool hasPref = FileExists(fromDir + "powder.pref");
 
