@@ -8,7 +8,7 @@ void Element::Element_EMBR()
 	Identifier = "DEFAULT_PT_EMBR";
 	Name = "EMBR";
 	Colour = PIXPACK(0xFFF288);
-	MenuVisible = 0;
+	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;
 
