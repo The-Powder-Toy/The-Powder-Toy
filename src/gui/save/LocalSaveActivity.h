@@ -4,6 +4,7 @@
 #include "client/SaveFile.h"
 
 #include <functional>
+#include <memory>
 
 namespace ui
 {
