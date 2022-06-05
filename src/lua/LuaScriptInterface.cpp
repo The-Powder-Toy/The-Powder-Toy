@@ -216,8 +216,6 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 		{"screenshot",&luatpt_screenshot},
 		{"record",&luatpt_record},
 		{"element",&luatpt_getelement},
-		{"element_func",&luatpt_element_func},
-		{"graphics_func",&luatpt_graphics_func},
 		{"get_clipboard", &platform_clipboardCopy},
 		{"set_clipboard", &platform_clipboardPaste},
 		{"setdrawcap", &luatpt_setdrawcap},

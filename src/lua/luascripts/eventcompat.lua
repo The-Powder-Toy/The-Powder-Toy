@@ -21,9 +21,10 @@ local function print_deprecation_warnings()
 	print("\""..table.concat(deprecated, "\", \"").."\"")
 end
 
+tpt.DEPRECATION_WARNINGS = false
 local function deprecationwarning()
-	-- no warning for now
-	--[[local calling_file_info = debug.getinfo(3, "S")
+	if not tpt.DEPRECATION_WARNINGS then return end
+	local calling_file_info = debug.getinfo(3, "S")
 	if calling_file_info then
 		calling_file_info = calling_file_info["short_src"]
 
@@ -34,7 +35,7 @@ local function deprecationwarning()
 				event.register(event.tick, print_deprecation_warnings)
 			end
 		end
-	end]]
+	end
 end
 
 
@@ -223,3 +224,18 @@ function tpt.unregister_keypress(f)
 	registered_keypresses[f] = nil
 end
 tpt.unregister_keyevent = tpt.unregister_keypress
+
+
+function tpt.element_func(f, element, replace)
+	deprecationwarning()
+
+	if f == nil then f = false end
+	elem.property(element, "Update", f, replace)
+end
+
+function tpt.graphics_func(f, element)
+	deprecationwarning()
+
+	if f == nil then f = false end
+	elem.property(element, "Graphics", f)
+end
