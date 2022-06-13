@@ -332,22 +332,17 @@ std::map<ByteString, ByteString> readArguments(int argc, char * argv[])
 	arguments["open"] = "";
 	arguments["ddir"] = "";
 	arguments["ptsave"] = "";
-	arguments["font"] = "";
 
 	for (int i=1; i<argc; i++)
 	{
-		if (!strncmp(argv[i], "scale:", 6) && argv[i]+6)
+		if (!strncmp(argv[i], "scale:", 6) && argv[i][6])
 		{
-			arguments["scale"] = argv[i]+6;
-		}
-		if (!strncmp(argv[i], "font:", 5) && argv[i]+5)
-		{
-			arguments["font"] = argv[i]+5;
+			arguments["scale"] = &argv[i][6];
 		}
 		else if (!strncmp(argv[i], "proxy:", 6))
 		{
-			if(argv[i]+6)
-				arguments["proxy"] = argv[i]+6;
+			if(argv[i][6])
+				arguments["proxy"] = &argv[i][6];
 			else
 				arguments["proxy"] = "false";
 		}
