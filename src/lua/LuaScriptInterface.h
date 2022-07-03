@@ -63,6 +63,7 @@ class LuaScriptInterface: public CommandInterface
 	static int simulation_partPosition(lua_State * l);
 	static int simulation_partID(lua_State * l);
 	static int simulation_partKill(lua_State * l);
+	static int simulation_partExists(lua_State * l);
 	static int simulation_pressure(lua_State * l);
 	static int simulation_velocityX(lua_State * l);
 	static int simulation_velocityY(lua_State * l);
@@ -140,6 +141,7 @@ class LuaScriptInterface: public CommandInterface
 	static int elements_property(lua_State * l);
 	static int elements_loadDefault(lua_State * l);
 	static int elements_free(lua_State * l);
+	static int elements_exists(lua_State * l);
 
 	//Interface
 	void initInterfaceAPI();
