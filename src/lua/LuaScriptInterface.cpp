@@ -1031,7 +1031,11 @@ int LuaScriptInterface::simulation_partCreate(lua_State * l)
 	}
 	int type = lua_tointeger(l, 4);
 	int v = -1;
-	if (ID(type))
+	if (lua_gettop(l) >= 5)
+	{
+		v = lua_tointeger(l, 5);
+	}
+	else if (ID(type))
 	{
 		v = ID(type);
 		type = TYP(type);
