@@ -1,6 +1,4 @@
 #include "simulation/ElementCommon.h"
-//Temp particle used for graphics
-Particle tpart;
 
 int Element_PIPE_update(UPDATE_FUNC_ARGS);
 int Element_PIPE_graphics(GRAPHICS_FUNC_ARGS);
@@ -55,8 +53,6 @@ void Element::Element_PIPE()
 
 	Update = &Element_PIPE_update;
 	Graphics = &Element_PIPE_graphics;
-
-	memset(&tpart, 0, sizeof(Particle));
 }
 
 // 0x000000FF element
@@ -374,24 +370,31 @@ int Element_PIPE_graphics(GRAPHICS_FUNC_ARGS)
 		}
 		else
 		{
-			//Emulate the graphics of stored particle
-			tpart.type = t;
-			tpart.temp = cpart->temp;
-			tpart.life = cpart->tmp2;
-			tpart.tmp = cpart->tmp3;
-			tpart.ctype = cpart->tmp4;
+			// Temp particle used for graphics.
+			Particle tpart = *cpart;
+
+			// Emulate the graphics of stored particle.
+			memset(cpart, 0, sizeof(Particle));
+			cpart->type = t;
+			cpart->temp = tpart.temp;
+			cpart->life = tpart.tmp2;
+			cpart->tmp = tpart.tmp3;
+			cpart->ctype = tpart.tmp4;
 
 			*colr = PIXR(ren->sim->elements[t].Colour);
 			*colg = PIXG(ren->sim->elements[t].Colour);
 			*colb = PIXB(ren->sim->elements[t].Colour);
 			if (ren->sim->elements[t].Graphics)
 			{
-				(*(ren->sim->elements[t].Graphics))(ren, &tpart, nx, ny, pixel_mode, cola, colr, colg, colb, firea, firer, fireg, fireb);
+				(*(ren->sim->elements[t].Graphics))(ren, cpart, nx, ny, pixel_mode, cola, colr, colg, colb, firea, firer, fireg, fireb);
 			}
 			else
 			{
-				Element::defaultGraphics(ren, &tpart, nx, ny, pixel_mode, cola, colr, colg, colb, firea, firer, fireg, fireb);
+				Element::defaultGraphics(ren, cpart, nx, ny, pixel_mode, cola, colr, colg, colb, firea, firer, fireg, fireb);
 			}
+
+			// Restore original particle data.
+			*cpart = tpart;
 		}
 		//*colr = PIXR(elements[t].pcolors);
 		//*colg = PIXG(elements[t].pcolors);
