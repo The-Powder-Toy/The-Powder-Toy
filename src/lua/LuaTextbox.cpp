@@ -77,7 +77,7 @@ int LuaTextbox::text(lua_State * l)
 	int args = lua_gettop(l);
 	if(args)
 	{
-		textbox->SetText(ByteString(lua_tostring(l, 1)).FromUtf8());
+		textbox->SetText(ByteString(luaL_checkstring(l, 1)).FromUtf8());
 		return 0;
 	}
 	else

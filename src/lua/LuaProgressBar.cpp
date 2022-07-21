@@ -53,7 +53,7 @@ int LuaProgressBar::status(lua_State * l)
 	int args = lua_gettop(l);
 	if(args)
 	{
-		progressBar->SetStatus(ByteString(lua_tostring(l, 1)).FromUtf8());
+		progressBar->SetStatus(ByteString(luaL_checkstring(l, 1)).FromUtf8());
 		return 0;
 	}
 	else

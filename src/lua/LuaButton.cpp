@@ -62,8 +62,7 @@ int LuaButton::text(lua_State * l)
 	int args = lua_gettop(l);
 	if(args)
 	{
-		luaL_checktype(l, 1, LUA_TSTRING);
-		button->SetText(ByteString(lua_tostring(l, 1)).FromUtf8());
+		button->SetText(ByteString(luaL_checkstring(l, 1)).FromUtf8());
 		return 0;
 	}
 	else

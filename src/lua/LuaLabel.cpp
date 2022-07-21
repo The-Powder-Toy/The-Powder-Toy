@@ -37,7 +37,7 @@ int LuaLabel::text(lua_State * l)
 	int args = lua_gettop(l);
 	if(args)
 	{
-		label->SetText(ByteString(lua_tostring(l, 1)).FromUtf8());
+		label->SetText(ByteString(luaL_checkstring(l, 1)).FromUtf8());
 		return 0;
 	}
 	else

@@ -60,7 +60,7 @@ int LuaCheckbox::text(lua_State * l)
 	int args = lua_gettop(l);
 	if(args)
 	{
-		checkbox->SetText(ByteString(lua_tostring(l, 1)).FromUtf8());
+		checkbox->SetText(ByteString(luaL_checkstring(l, 1)).FromUtf8());
 		return 0;
 	}
 	else
