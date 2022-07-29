@@ -3335,28 +3335,40 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 
 void Simulation::GetGravityField(int x, int y, float particleGrav, float newtonGrav, float & pGravX, float & pGravY)
 {
-	pGravX = newtonGrav*gravx[(y/CELL)*(XRES/CELL)+(x/CELL)];
-	pGravY = newtonGrav*gravy[(y/CELL)*(XRES/CELL)+(x/CELL)];
 	switch (gravityMode)
 	{
-		default:
-		case 0: //normal, vertical gravity
-			pGravY += particleGrav;
-			break;
-		case 1: //no gravity
-			break;
-		case 2: //radial gravity
-			if (x-XCNTR != 0 || y-YCNTR != 0)
+	default:
+	case 0: //normal, vertical gravity
+		pGravX = 0;
+		pGravY = particleGrav;
+		break;
+	case 1: //no gravity
+		pGravX = 0;
+		pGravY = 0;
+		break;
+	case 2: //radial gravity
+		{
+			pGravX = 0;
+			pGravY = 0;
+			auto dx = x-XCNTR;
+			auto dy = y-YCNTR;
+			if (dx || dy)
 			{
-				float pGravMult = particleGrav/sqrtf(float((x-XCNTR)*(x-XCNTR) + (y-YCNTR)*(y-YCNTR)));
-				pGravX -= pGravMult * (float)(x - XCNTR);
-				pGravY -= pGravMult * (float)(y - YCNTR);
+				auto pGravD = 0.01f - hypotf(dx, dy);
+				pGravX = particleGrav * (dx / pGravD);
+				pGravY = particleGrav * (dy / pGravD);
 			}
-			break;
-		case 3: //custom gravity
-			pGravX += particleGrav * customGravityX;
-			pGravY += particleGrav * customGravityY;
-			break;
+		}
+		break;
+	case 3: //custom gravity
+		pGravX = particleGrav * customGravityX;
+		pGravY = particleGrav * customGravityY;
+		break;
+	}
+	if (newtonGrav)
+	{
+		pGravX += newtonGrav*gravx[(y/CELL)*(XRES/CELL)+(x/CELL)];
+		pGravY += newtonGrav*gravy[(y/CELL)*(XRES/CELL)+(x/CELL)];
 	}
 }
 
@@ -3485,7 +3497,6 @@ void Simulation::UpdateParticles(int start, int end)
 	int h_count = 0;
 	int surround[8];
 	int surround_hconduct[8];
-	float pGravX, pGravY, pGravD;
 	bool transitionOccurred;
 
 	//the main particle loop function, goes over all particles.
@@ -3556,39 +3567,10 @@ void Simulation::UpdateParticles(int start, int end)
 				}
 			}
 
-			pGravX = pGravY = 0;
-			if (!(elements[t].Properties & TYPE_SOLID))
+			float pGravX = 0, pGravY = 0;
+			if (!(elements[t].Properties & TYPE_SOLID) && (elements[t].Gravity || elements[t].NewtonianGravity))
 			{
-				if (elements[t].Gravity)
-				{
-					//Gravity mode by Moach
-					switch (gravityMode)
-					{
-					default:
-					case 0:
-						pGravX = 0.0f;
-						pGravY = elements[t].Gravity;
-						break;
-					case 1:
-						pGravX = pGravY = 0.0f;
-						break;
-					case 2:
-						pGravD = 0.01f - hypotf(float(x - XCNTR), float(y - YCNTR));
-						pGravX = elements[t].Gravity * ((float)(x - XCNTR) / pGravD);
-						pGravY = elements[t].Gravity * ((float)(y - YCNTR) / pGravD);
-						break;
-					case 3:
-						pGravX = elements[t].Gravity * customGravityX;
-						pGravY = elements[t].Gravity * customGravityY;
-						break;
-					}
-				}
-				if (elements[t].NewtonianGravity)
-				{
-					//Get some gravity from the gravity map
-					pGravX += elements[t].NewtonianGravity * gravx[(y/CELL)*(XRES/CELL)+(x/CELL)];
-					pGravY += elements[t].NewtonianGravity * gravy[(y/CELL)*(XRES/CELL)+(x/CELL)];
-				}
+				GetGravityField(x, y, elements[t].Gravity, elements[t].NewtonianGravity, pGravX, pGravY);
 			}
 
 			//velocity updates for the particle
@@ -3635,14 +3617,13 @@ void Simulation::UpdateParticles(int start, int end)
 
 			if (!legacy_enable)
 			{
-				if (pGravX != 0 || pGravY != 0)
+				if ((elements[t].Properties&TYPE_LIQUID) && (t!=PT_GEL || gel_scale > (1 + RNG::Ref().between(0, 254))))
 				{
-					// Calculate offset from gravity
 					float convGravX, convGravY;
 					GetGravityField(x, y, -2.0f, -2.0f, convGravX, convGravY);
 					int offsetX = std::round(convGravX + x);
 					int offsetY = std::round(convGravY + y);
-					if (offsetX >= 0 && offsetX < XRES && offsetY >= 0 && offsetY < YRES && (elements[t].Properties&TYPE_LIQUID) && (t!=PT_GEL || gel_scale > (1 + RNG::Ref().between(0, 254)))) {//some heat convection for liquids
+					if ((offsetX != x || offsetY != y) && offsetX >= 0 && offsetX < XRES && offsetY >= 0 && offsetY < YRES) {//some heat convection for liquids
 						r = pmap[offsetY][offsetX];
 						if (!(!r || parts[i].type != TYP(r))) {
 							if (parts[i].temp>parts[ID(r)].temp) {
@@ -4580,28 +4561,7 @@ killed:
 							for (j=0;j<rt;j++)
 							{
 								// Calculate overall gravity direction
-								switch (gravityMode)
-								{
-									default:
-									case 0:
-										pGravX = 0.0f;
-										pGravY = ptGrav;
-										break;
-									case 1:
-										pGravX = pGravY = 0.0f;
-										break;
-									case 2:
-										pGravD = 0.01f - hypotf(float(nx - XCNTR), float(ny - YCNTR));
-										pGravX = ptGrav * ((float)(nx - XCNTR) / pGravD);
-										pGravY = ptGrav * ((float)(ny - YCNTR) / pGravD);
-										break;
-									case 3:
-										pGravX = ptGrav * customGravityX;
-										pGravY = ptGrav * customGravityY;
-										break;
-								}
-								pGravX += gravx[(ny/CELL)*(XRES/CELL)+(nx/CELL)];
-								pGravY += gravy[(ny/CELL)*(XRES/CELL)+(nx/CELL)];
+								GetGravityField(nx, ny, ptGrav, 1.0f, pGravX, pGravY);
 								// Scale gravity vector so that the largest component is 1 pixel
 								if (fabsf(pGravY)>fabsf(pGravX))
 									mv = fabsf(pGravY);
@@ -4656,28 +4616,7 @@ killed:
 								for (j=0;j<rt;j++)
 								{
 									// Calculate overall gravity direction
-									switch (gravityMode)
-									{
-										default:
-										case 0:
-											pGravX = 0.0f;
-											pGravY = ptGrav;
-											break;
-										case 1:
-											pGravX = pGravY = 0.0f;
-											break;
-										case 2:
-											pGravD = 0.01f - hypotf(float(nx - XCNTR), float(ny - YCNTR));
-											pGravX = ptGrav * ((float)(nx - XCNTR) / pGravD);
-											pGravY = ptGrav * ((float)(ny - YCNTR) / pGravD);
-											break;
-										case 3:
-											pGravX = ptGrav * customGravityX;
-											pGravY = ptGrav * customGravityY;
-											break;
-									}
-									pGravX += gravx[(ny/CELL)*(XRES/CELL)+(nx/CELL)];
-									pGravY += gravy[(ny/CELL)*(XRES/CELL)+(nx/CELL)];
+									GetGravityField(nx, ny, ptGrav, 1.0f, pGravX, pGravY);
 									// Scale gravity vector so that the largest component is 1 pixel
 									if (fabsf(pGravY)>fabsf(pGravX))
 										mv = fabsf(pGravY);

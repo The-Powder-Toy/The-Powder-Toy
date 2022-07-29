@@ -115,26 +115,18 @@ void Air::update_airh(void)
 				dh += AIR_VADV*(1.0f-tx)*ty*((bmap_blockairh[j+1][i]&0x8) ? odh : hv[j+1][i]);
 				dh += AIR_VADV*tx*ty*((bmap_blockairh[j+1][i+1]&0x8) ? odh : hv[j+1][i+1]);
 			}
-			// Calculate offset from gravity
-			float convGravX, convGravY;
-			sim.GetGravityField(x*CELL, y*CELL, -1.0f, -1.0f, convGravX, convGravY);
-			int convX = x, convY = y;
-			if (convGravX > 0.0f) convX++;
-			else if (convGravX < 0.0f) convX--;
-			if (convGravY > 0.0f) convY++;
-			else if (convGravY < 0.0f) convY--;
-			if (convX >= 0 && convX < (XRES/CELL) && convY >= 0 && convY < (YRES/CELL) && !(bmap_blockairh[convY][convX] & 0x8))
+			ohv[y][x] = dh;
+			if (x>=2 && x<XRES/CELL-2 && y>=2 && y<YRES/CELL-2)
 			{
-				float tempDiff = hv[convY][convX] - hv[y][x];
-				if(tempDiff > 0)
+				float convGravX, convGravY;
+				sim.GetGravityField(x*CELL, y*CELL, -1.0f, -1.0f, convGravX, convGravY);
+				auto weight = ((hv[y][x] - hv[y][x-1]) * convGravX + (hv[y][x] - hv[y-1][x]) * convGravY) / 5000.0f;
+				if (weight > 0 && !(bmap_blockairh[y-1][x]&0x8))
 				{
-					if (convGravX != 0.0f)
-						vx[y][x] += (tempDiff / 5000.0f) * convGravX;
-					if (convGravY != 0.0f)
-						vy[y][x] += (tempDiff / 5000.0f) * convGravY;
+					vx[y][x] += weight * convGravX;
+					vy[y][x] += weight * convGravY;
 				}
 			}
-			ohv[y][x] = dh;
 		}
 	}
 	memcpy(hv, ohv, sizeof(hv));

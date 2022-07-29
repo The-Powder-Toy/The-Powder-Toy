@@ -2620,11 +2620,6 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 	bson_append_string(&b, "platform", IDENT_PLATFORM);
 	bson_append_string(&b, "builtType", IDENT_BUILD);
 	bson_append_finish_object(&b);
-	if (fabsf(ambientAirTemp - (R_TEMP + 273.15f)) > 0.0001f)
-	{
-		bson_append_double(&b, "ambientAirTemp", double(ambientAirTemp));
-		RESTRICTVERSION(96, 0);
-	}
 	if (gravityMode == 3)
 	{
 		bson_append_double(&b, "customGravityX", double(customGravityX));
@@ -2644,6 +2639,11 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 	bson_append_bool(&b, "paused", paused);
 	bson_append_int(&b, "gravityMode", gravityMode);
 	bson_append_int(&b, "airMode", airMode);
+	if (fabsf(ambientAirTemp - (R_TEMP + 273.15f)) > 0.0001f)
+	{
+		bson_append_double(&b, "ambientAirTemp", double(ambientAirTemp));
+		RESTRICTVERSION(96, 0);
+	}
 	bson_append_int(&b, "edgeMode", edgeMode);
 
 	if (stkm.hasData())
