@@ -161,6 +161,7 @@ if [ "$RELTYPE" == "tptlibsdev" ]; then
 	other_flags+=$tpt_libs_vtag
 fi
 if [ $PLATFORM_SHORT == "and" ]; then
+	ANDROIDPLATFORM=android-30 # this should come from tpt-libs, see https://github.com/The-Powder-Toy/tpt-libs/issues/2
 	other_flags+=$'\t--cross-file='
 	if [ $MACHINE_SHORT == "x86_64" ]; then
 		other_flags+=android/cross/x86_64.ini
@@ -174,19 +175,46 @@ if [ $PLATFORM_SHORT == "and" ]; then
 	if [ $MACHINE_SHORT == "arm" ]; then
 		other_flags+=android/cross/armeabi-v7a.ini
 	fi
-	other_flags+=$'\t--cross-file=.github/android-ghactions.ini'
 	if [ -z "${JAVA_HOME_8_X64-}" ]; then
-		>&2 echo "JAVA_HOME_8_X64 not set (where is jdk?)"
+		>&2 echo "JAVA_HOME_8_X64 not set (where is your java sdk?)"
 		exit 1
 	fi
-	cat << BUILD_INIT_BAT > .github/jdk.ini
+	if [ -z "${ANDROID_SDK_ROOT-}" ]; then
+		>&2 echo "ANDROID_SDK_ROOT not set (where is your android sdk?)"
+		exit 1
+	fi
+	if [ -z "${ANDROID_NDK_LATEST_HOME-}" ]; then
+		>&2 echo "ANDROID_NDK_LATEST_HOME not set (where is your android ndk?)"
+		exit 1
+	fi
+	cat << ANDROID_INI > .github/android-ghactions.ini
+[constants]
+andriod_ndk_toolchain_bin = '$ANDROID_NDK_LATEST_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin'
+andriod_sdk_build_tools = '$ANDROID_SDK_ROOT/build-tools/32.0.0'
+
+[properties]
+android_platform_jar = '$ANDROID_SDK_ROOT/platforms/$ANDROIDPLATFORM/android.jar'
+
+[binaries]
+# android_ndk_toolchain_prefix comes from the correct cross-file in ./android/cross
+c = andriod_ndk_toolchain_bin / (android_ndk_toolchain_prefix + 'clang')
+cpp = andriod_ndk_toolchain_bin / (android_ndk_toolchain_prefix + 'clang++')
+strip = andriod_ndk_toolchain_bin / 'llvm-strip'
+d8 = andriod_sdk_build_tools / 'd8'
+aapt = andriod_sdk_build_tools / 'aapt'
+aapt2 = andriod_sdk_build_tools / 'aapt2'
+zipalign = andriod_sdk_build_tools / 'zipalign'
+apksigner = andriod_sdk_build_tools / 'apksigner'
+ANDROID_INI
+	other_flags+=$'\t--cross-file=.github/android-ghactions.ini'
+	cat << JDK_INI > .github/jdk.ini
 [properties]
 java_runtime_jar = '$JAVA_HOME_8_X64/jre/lib/rt.jar'
 
 [binaries]
 javac = '$JAVA_HOME_8_X64/bin/javac'
 jar = '$JAVA_HOME_8_X64/bin/jar'
-BUILD_INIT_BAT
+JDK_INI
 	other_flags+=$'\t--cross-file=.github/jdk.ini'
 	other_flags+=$'\t-Dhttp=false'
 fi
@@ -194,7 +222,7 @@ meson -Dbuildtype=release -Db_pie=false -Dworkaround_gcc_no_pie=true -Db_staticp
 cd build
 ninja
 if [ $PLATFORM_SHORT == "and" ]; then
-	$ANDROID_SDK_ROOT/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-strip libpowder.so
+	$ANDROID_NDK_LATEST_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-strip libpowder.so
 elif [ $PLATFORM_SHORT != "win" ]; then
 	strip $powder_bin
 fi
