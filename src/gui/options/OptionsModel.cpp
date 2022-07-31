@@ -111,6 +111,28 @@ void OptionsModel::SetGravityMode(int gravityMode)
 	notifySettingsChanged();
 }
 
+float OptionsModel::GetCustomGravityX()
+{
+	return sim->customGravityX;
+}
+
+void OptionsModel::SetCustomGravityX(float x)
+{
+	sim->customGravityX = x;
+	notifySettingsChanged();
+}
+
+float OptionsModel::GetCustomGravityY()
+{
+	return sim->customGravityY;
+}
+
+void OptionsModel::SetCustomGravityY(float y)
+{
+	sim->customGravityY = y;
+	notifySettingsChanged();
+}
+
 int OptionsModel::GetScale()
 {
 	return ui::Engine::Ref().GetScale();

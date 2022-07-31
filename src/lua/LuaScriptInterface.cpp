@@ -842,6 +842,7 @@ void LuaScriptInterface::initSimulationAPI()
 		{"gravityGrid", simulation_gravityGrid},
 		{"edgeMode", simulation_edgeMode},
 		{"gravityMode", simulation_gravityMode},
+		{"customGravity", simulation_customGravity},
 		{"airMode", simulation_airMode},
 		{"waterEqualisation", simulation_waterEqualisation},
 		{"waterEqualization", simulation_waterEqualisation},
@@ -1961,6 +1962,26 @@ int LuaScriptInterface::simulation_gravityMode(lua_State * l)
 	}
 	int gravityMode = luaL_optint(l, 1, 0);
 	luacon_sim->gravityMode = gravityMode;
+	return 0;
+}
+
+int LuaScriptInterface::simulation_customGravity(lua_State * l)
+{
+	int acount = lua_gettop(l);
+	if (acount == 0)
+	{
+		lua_pushnumber(l, luacon_sim->customGravityX);
+		lua_pushnumber(l, luacon_sim->customGravityY);
+		return 2;
+	}
+	else if (acount == 1)
+	{
+		luacon_sim->customGravityX = 0.0f;
+		luacon_sim->customGravityY = luaL_optnumber(l, 1, 0.0f);
+		return 0;
+	}
+	luacon_sim->customGravityX = luaL_optnumber(l, 1, 0.0f);
+	luacon_sim->customGravityY = luaL_optnumber(l, 2, 0.0f);
 	return 0;
 }
 

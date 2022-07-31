@@ -101,6 +101,7 @@ class LuaScriptInterface: public CommandInterface
 	static int simulation_gravityGrid(lua_State * l);
 	static int simulation_edgeMode(lua_State * l);
 	static int simulation_gravityMode(lua_State * l);
+	static int simulation_customGravity(lua_State * l);
 	static int simulation_airMode(lua_State * l);
 	static int simulation_waterEqualisation(lua_State * l);
 	static int simulation_ambientAirTemp(lua_State * l);

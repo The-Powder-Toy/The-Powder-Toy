@@ -954,6 +954,8 @@ void GameModel::SetSave(SaveInfo * newSave, bool invertIncludePressure)
 		GameSave * saveData = currentSave->GetGameSave();
 		SetPaused(saveData->paused | GetPaused());
 		sim->gravityMode = saveData->gravityMode;
+		sim->customGravityX = saveData->customGravityX;
+		sim->customGravityY = saveData->customGravityY;
 		sim->air->airMode = saveData->airMode;
 		sim->air->ambientAirTemp = saveData->ambientAirTemp;
 		sim->edgeMode = saveData->edgeMode;
@@ -1016,6 +1018,8 @@ void GameModel::SetSaveFile(SaveFile * newSave, bool invertIncludePressure)
 		GameSave * saveData = newSave->GetGameSave();
 		SetPaused(saveData->paused | GetPaused());
 		sim->gravityMode = saveData->gravityMode;
+		sim->customGravityX = saveData->customGravityX;
+		sim->customGravityY = saveData->customGravityY;
 		sim->air->airMode = saveData->airMode;
 		sim->air->ambientAirTemp = saveData->ambientAirTemp;
 		sim->edgeMode = saveData->edgeMode;
@@ -1329,6 +1333,8 @@ void GameModel::ClearSimulation()
 {
 	//Load defaults
 	sim->gravityMode = 0;
+	sim->customGravityX = 0.0f;
+	sim->customGravityY = 0.0f;
 	sim->air->airMode = 0;
 	sim->legacy_enable = false;
 	sim->water_equal_test = false;

@@ -42,6 +42,16 @@ void OptionsController::SetGravityMode(int gravityMode)
 	model->SetGravityMode(gravityMode);
 }
 
+void OptionsController::SetCustomGravityX(float x)
+{
+	model->SetCustomGravityX(x);
+}
+
+void OptionsController::SetCustomGravityY(float y)
+{
+	model->SetCustomGravityY(y);
+}
+
 void OptionsController::SetAirMode(int airMode)
 {
 	model->SetAirMode(airMode);

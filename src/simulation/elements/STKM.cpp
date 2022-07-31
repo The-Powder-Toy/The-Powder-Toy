@@ -155,6 +155,10 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 				gvy = ((float)(parts[i].y - YCNTR) / gravd);
 			}
 			break;
+		case 3:
+			gvx = sim->customGravityX;
+			gvy = sim->customGravityY;
+			break;
 	}
 
 	gvx += sim->gravx[((int)parts[i].y/CELL)*(XRES/CELL)+((int)parts[i].x/CELL)];

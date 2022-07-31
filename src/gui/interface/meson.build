@@ -5,6 +5,7 @@ gui_files += files(
 	'Component.cpp',
 	'ContextMenu.cpp',
 	'CopyTextButton.cpp',
+	'DirectionSelector.cpp',
 	'DropDown.cpp',
 	'Engine.cpp',
 	'Label.cpp',
