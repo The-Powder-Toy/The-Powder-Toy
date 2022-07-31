@@ -30,8 +30,12 @@ class DirectionSelector : public ui::Component
 	ui::Colour borderColor;
 	ui::Colour snapPointColor;
 
-	std::function<void(float x, float y)> updateCallback;
-	std::function<void(float x, float y)> changeCallback;
+public:
+	using DirectionSelectorCallback = std::function<void(float x, float y)>;
+
+private:
+	DirectionSelectorCallback updateCallback;
+	DirectionSelectorCallback changeCallback;
 
 	bool mouseDown;
 	bool mouseHover;
@@ -74,8 +78,8 @@ public:
 	inline void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override { altDown = alt; }
 	inline void OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override { altDown = alt; }
 
-	inline void SetUpdateCallback(std::function<void(float x, float y)> callback) { updateCallback = callback; }
-	inline void SetChangeCallback(std::function<void(float x, float y)> callback) { changeCallback = callback; }
+	inline void SetUpdateCallback(DirectionSelectorCallback callback) { updateCallback = callback; }
+	inline void SetChangeCallback(DirectionSelectorCallback callback) { changeCallback = callback; }
 };
 
 } /* namespace ui */

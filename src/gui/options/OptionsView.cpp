@@ -164,9 +164,7 @@ OptionsView::OptionsView():
 		}
 
 		ui::DirectionSelector * gravityDirection;
-		ui::Label * labelX;
-		ui::Label * labelY;
-		ui::Label * labelTotal;
+		ui::Label * labelValues;
 
 		OptionsController * c;
 
@@ -174,12 +172,9 @@ OptionsView::OptionsView():
 		GravityWindow(ui::Point position, int radius, float x, float y, OptionsController * c_):
 			ui::Window(position, ui::Point((radius * 2) + 20, (radius * 2) + 75)),
 			gravityDirection(new ui::DirectionSelector(ui::Point(10, 32), radius)),
-			labelX(new ui::Label(ui::Point(0, (radius * 2) + 37), ui::Point(radius / 3, 16), "X:")),
-			labelY(new ui::Label(ui::Point((radius * 2) / 3, (radius * 2) + 37), ui::Point((radius * 2) / 3, 16), "Y:")),
-			labelTotal(new ui::Label(ui::Point((radius * 4) / 3, (radius * 2) + 37), ui::Point((radius * 2) / 3, 16), "Total:")),
 			c(c_)
 			{
-				ui::Label * tempLabel = new ui::Label(ui::Point(4, 1), ui::Point(Size.X-8, 22), "Custom Gravity");
+				ui::Label * tempLabel = new ui::Label(ui::Point(4, 1), ui::Point(Size.X - 8, 22), "Custom Gravity");
 				tempLabel->SetTextColour(style::Colour::InformationTitle);
 				tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 				tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
@@ -188,42 +183,20 @@ OptionsView::OptionsView():
 				Separator * tempSeparator = new Separator(ui::Point(0, 22), ui::Point(Size.X, 1));
 				AddComponent(tempSeparator);
 
-				labelX->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
-				labelX->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-				StringBuilder temp;
-				temp << "X:" << std::round(x * 10) / 10;
-				labelX->SetText(temp.Build());
-				AddComponent(labelX);
+				labelValues = new ui::Label(ui::Point(0, (radius * 2) + 37), ui::Point(Size.X, 16), String::Build(	"X:", std::round(x * 10.0f) / 10,
+																													" Y:", std::round(y * 10.0f) / 10,
+																													" Total:", std::round(std::hypot(x, y) * 10.0f) / 10));
+				labelValues->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
+				labelValues->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+				AddComponent(labelValues);
 
-				labelY->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
-				labelY->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-				temp = StringBuilder();
-				temp << "Y:" << std::round(y * 10) / 10;
-				labelY->SetText(temp.Build());
-				AddComponent(labelY);
-
-				labelTotal->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
-				labelTotal->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-				temp = StringBuilder();
-				temp << "Total:" << std::round(std::hypot(x, y) * 10) / 10;
-				labelTotal->SetText(temp.Build());
-				AddComponent(labelTotal);
-
-				gravityDirection->SetValues(x / 1.5f, y / 1.5f);
+				gravityDirection->SetValues(x / 2.0f, y / 2.0f);
 				gravityDirection->SetUpdateCallback([this](float x, float y) {
-					StringBuilder temp;
-					temp << "X:" << std::round(x * 15) / 10;
-					labelX->SetText(temp.Build());
-					temp = StringBuilder();
-
-					temp << "Y:" << std::round(y * 15) / 10;
-					labelY->SetText(temp.Build());
-					temp = StringBuilder();
-
-					temp << "Total:" << std::round(gravityDirection->GetTotalValue() * 15) / 10;
-					labelTotal->SetText(temp.Build());
+					labelValues->SetText(String::Build(	"X:", std::round(x * 20.0f) / 10,
+														" Y:", std::round(y * 20.0f) / 10,
+														" Total:", std::round(gravityDirection->GetTotalValue() * 20.0f) / 10));
 				});
-				gravityDirection->SetSnapPoints(5, 4);
+				gravityDirection->SetSnapPoints(5, 5);
 				AddComponent(gravityDirection);
 
 				ui::Button * okayButton = new ui::Button(ui::Point(0, Size.Y - 17), ui::Point(Size.X, 17), "OK");
@@ -231,8 +204,8 @@ OptionsView::OptionsView():
 				okayButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 				okayButton->Appearance.BorderInactive = ui::Colour(200, 200, 200);
 				okayButton->SetActionCallback({ [this] {
-					c->SetCustomGravityX(gravityDirection->GetXValue() * 1.5f);
-					c->SetCustomGravityY(gravityDirection->GetYValue() * 1.5f);
+					c->SetCustomGravityX(gravityDirection->GetXValue() * 2.0f);
+					c->SetCustomGravityY(gravityDirection->GetYValue() * 2.0f);
 					CloseActiveWindow();
 					SelfDestruct();
 				} });

@@ -36,10 +36,11 @@ void DirectionSelector::SetSnapPoints(int newRadius, int points)
 	snapPoints.push_back(ui::Point(0, 0));
 	for (int i = 1; i < points; i++)
 	{
-		snapPoints.push_back(ui::Point(0, (radius / points) * i));
-		snapPoints.push_back(ui::Point(0, -1 * (radius / points) * i));
-		snapPoints.push_back(ui::Point(-1 * (radius / points) * i, 0));
-		snapPoints.push_back(ui::Point((radius / points) * i, 0));
+		int dist = ((float)i / (float)(points - 1)) * maxRadius;
+		snapPoints.push_back(ui::Point(0, dist));
+		snapPoints.push_back(ui::Point(0, -1 * dist));
+		snapPoints.push_back(ui::Point(-1 * dist, 0));
+		snapPoints.push_back(ui::Point(dist, 0));
 	}
 	useSnapPoints = true;
 }
