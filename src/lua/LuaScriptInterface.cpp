@@ -20,6 +20,7 @@
 #include "LuaTextbox.h"
 #include "LuaWindow.h"
 #include "LuaTCPSocket.h"
+#include "LuaSDLKeys.h"
 #include "PowderToy.h"
 #include "TPTScriptInterface.h"
 
@@ -516,6 +517,7 @@ void LuaScriptInterface::initInterfaceAPI()
 
 	//Ren shortcut
 	lua_getglobal(l, "interface");
+	initLuaSDLKeys(l);
 	lua_setglobal(l, "ui");
 
 	Luna<LuaWindow>::Register(l);
