@@ -15,7 +15,7 @@
 
 #include <iostream>
 #if defined(LIN)
-#include "icon.h"
+# include "powder-128.png.h"
 #endif
 #include <stdexcept>
 
@@ -157,9 +157,14 @@ int SDLOpen()
 	SendMessage(WindowHandle, WM_SETICON, ICON_BIG, (LPARAM)hIconBig);
 #endif
 #ifdef LIN
-	SDL_Surface *icon = SDL_CreateRGBSurfaceFrom((void*)app_icon, 128, 128, 32, 512, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
-	SDL_SetWindowIcon(sdl_window, icon);
-	SDL_FreeSurface(icon);
+	std::vector<pixel> imageData;
+	int imgw, imgh;
+	if (PngDataToPixels(imageData, imgw, imgh, reinterpret_cast<const char *>(icon_png), icon_png_size, false))
+	{
+		SDL_Surface *icon = SDL_CreateRGBSurfaceFrom(&imageData[0], imgw, imgh, 32, imgw * sizeof(pixel), 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
+		SDL_SetWindowIcon(sdl_window, icon);
+		SDL_FreeSurface(icon);
+	}
 #endif
 
 	return 0;
@@ -289,11 +294,11 @@ void EventProcess(SDL_Event event)
 		break;
 	case SDL_MOUSEWHEEL:
 	{
-		int x = event.wheel.x;
+		// int x = event.wheel.x;
 		int y = event.wheel.y;
 		if (event.wheel.direction == SDL_MOUSEWHEEL_FLIPPED)
 		{
-			x *= -1;
+			// x *= -1;
 			y *= -1;
 		}
 

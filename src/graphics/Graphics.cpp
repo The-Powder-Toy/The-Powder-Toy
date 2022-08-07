@@ -6,11 +6,14 @@
 #include <cstring>
 
 #include <bzlib.h>
+#include "common/Platform.h"
 
 #include "FontReader.h"
 #ifdef HIGH_QUALITY_RESAMPLE
 #include "resampler/resampler.h"
 #endif
+
+#include <png.h>
 
 VideoBuffer::VideoBuffer(int width, int height):
 	Width(width),
@@ -184,115 +187,6 @@ char * Graphics::GenerateGradient(pixel * colours, float * points, int pointcoun
 		newdata[(cp*3)+2] = char(PIXB(colours[i])*(1.0f-cccpos) + PIXB(colours[j])*(cccpos));
 	}
 	return newdata;
-}
-
-void *Graphics::ptif_pack(pixel *src, int w, int h, int *result_size){
-	int i = 0, datalen = (w*h)*3, cx = 0, cy = 0;
-	unsigned char *red_chan = (unsigned char*)calloc(1, w*h);
-	unsigned char *green_chan = (unsigned char*)calloc(1, w*h);
-	unsigned char *blue_chan = (unsigned char*)calloc(1, w*h);
-	unsigned char *data = (unsigned char*)malloc(((w*h)*3)+8);
-	unsigned char *result = (unsigned char*)malloc(((w*h)*3)+8);
-
-	for(cx = 0; cx<w; cx++){
-		for(cy = 0; cy<h; cy++){
-			red_chan[w*(cy)+(cx)] = PIXR(src[w*(cy)+(cx)]);
-			green_chan[w*(cy)+(cx)] = PIXG(src[w*(cy)+(cx)]);
-			blue_chan[w*(cy)+(cx)] = PIXB(src[w*(cy)+(cx)]);
-		}
-	}
-
-	memcpy(data, red_chan, w*h);
-	memcpy(data+(w*h), green_chan, w*h);
-	memcpy(data+((w*h)*2), blue_chan, w*h);
-	free(red_chan);
-	free(green_chan);
-	free(blue_chan);
-
-	result[0] = 'P';
-	result[1] = 'T';
-	result[2] = 'i';
-	result[3] = 1;
-	result[4] = w;
-	result[5] = w>>8;
-	result[6] = h;
-	result[7] = h>>8;
-
-	i -= 8;
-
-	if(BZ2_bzBuffToBuffCompress((char *)(result+8), (unsigned *)&i, (char *)data, datalen, 9, 0, 0) != 0){
-		free(data);
-		free(result);
-		return NULL;
-	}
-
-	*result_size = i+8;
-	free(data);
-	return result;
-}
-
-pixel *Graphics::ptif_unpack(void *datain, int size, int *w, int *h){
-	int width, height, i, cx, cy, resCode;
-	unsigned char *red_chan;
-	unsigned char *green_chan;
-	unsigned char *blue_chan;
-	unsigned char *data = (unsigned char*)datain;
-	unsigned char *undata;
-	pixel *result;
-	if(size<16){
-		printf("Image empty\n");
-		return NULL;
-	}
-	if(!(data[0]=='P' && data[1]=='T' && data[2]=='i')){
-		printf("Image header invalid\n");
-		return NULL;
-	}
-	width = data[4]|(data[5]<<8);
-	height = data[6]|(data[7]<<8);
-
-	i = (width*height)*3;
-	undata = (unsigned char*)calloc(1, (width*height)*3);
-	red_chan = (unsigned char*)calloc(1, width*height);
-	green_chan = (unsigned char*)calloc(1, width*height);
-	blue_chan = (unsigned char *)calloc(1, width*height);
-	result = (pixel *)calloc(width*height, PIXELSIZE);
-
-	resCode = BZ2_bzBuffToBuffDecompress((char *)undata, (unsigned *)&i, (char *)(data+8), size-8, 0, 0);
-	if (resCode){
-		printf("Decompression failure, %d\n", resCode);
-		free(red_chan);
-		free(green_chan);
-		free(blue_chan);
-		free(undata);
-		free(result);
-		return NULL;
-	}
-	if(i != (width*height)*3){
-		printf("Result buffer size mismatch, %d != %d\n", i, (width*height)*3);
-		free(red_chan);
-		free(green_chan);
-		free(blue_chan);
-		free(undata);
-		free(result);
-		return NULL;
-	}
-	memcpy(red_chan, undata, width*height);
-	memcpy(green_chan, undata+(width*height), width*height);
-	memcpy(blue_chan, undata+((width*height)*2), width*height);
-
-	for(cx = 0; cx<width; cx++){
-		for(cy = 0; cy<height; cy++){
-			result[width*(cy)+(cx)] = PIXRGB(red_chan[width*(cy)+(cx)], green_chan[width*(cy)+(cx)], blue_chan[width*(cy)+(cx)]);
-		}
-	}
-
-	*w = width;
-	*h = height;
-	free(red_chan);
-	free(green_chan);
-	free(blue_chan);
-	free(undata);
-	return result;
 }
 
 pixel *Graphics::resample_img_nn(pixel * src, int sw, int sh, int rw, int rh)
@@ -1100,4 +994,152 @@ void Graphics::SetClipRect(int &x, int &y, int &w, int &h)
 	clipy1 = newY;
 	clipx2 = newX + newW;
 	clipy2 = newY + newH;
+}
+
+bool VideoBuffer::WritePNG(const ByteString &path) const
+{
+	std::vector<png_const_bytep> rowPointers(Height);
+	for (auto y = 0; y < Height; ++y)
+	{
+		rowPointers[y] = (png_const_bytep)&Buffer[y * Width];
+	}
+#ifdef WIN
+	FILE *f = _wfopen(Platform::WinWiden(path).c_str(), L"wb");
+#else
+	FILE *f = fopen(path.c_str(), "wb");
+#endif
+	if (!f)
+	{
+		std::cerr << "WritePNG: fopen failed" << std::endl;
+		return false;
+	}
+	png_structp png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+	if (!png)
+	{
+		std::cerr << "WritePNG: png_create_write_struct failed" << std::endl;
+		fclose(f);
+		return false;
+	}
+	png_infop info = png_create_info_struct(png);
+	if (!info)
+	{
+		std::cerr << "WritePNG: png_create_info_struct failed" << std::endl;
+		png_destroy_write_struct(&png, (png_infopp)NULL);
+		fclose(f);
+		return false;
+	}
+	if (setjmp(png_jmpbuf(png)))
+	{
+		// libpng longjmp'd here in its infinite widsom, clean up and return
+		std::cerr << "WritePNG: longjmp from within libpng" << std::endl;
+		png_destroy_write_struct(&png, &info);
+		fclose(f);
+		return false;
+	}
+	png_init_io(png, f);
+	png_set_IHDR(png, info, Width, Height, 8, PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
+	png_write_info(png, info);
+	png_set_filler(png, 0, PNG_FILLER_AFTER);
+	png_set_bgr(png);
+	png_write_image(png, (png_bytepp)&rowPointers[0]);
+	png_write_end(png, NULL);
+	png_destroy_write_struct(&png, &info);
+	fclose(f);
+	return true;
+}
+
+bool PngDataToPixels(std::vector<pixel> &imageData, int &imgw, int &imgh, const char *pngData, size_t pngDataSize, bool addBackground)
+{
+	std::vector<png_const_bytep> rowPointers;
+	struct InMemoryFile
+	{
+		png_const_bytep data;
+		size_t size;
+		size_t cursor;
+	} imf{ (png_const_bytep)pngData, pngDataSize, 0 };
+	png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+	if (!png)
+	{
+		std::cerr << "pngDataToPixels: png_create_read_struct failed" << std::endl;
+		return false;
+	}
+	png_infop info = png_create_info_struct(png);
+	if (!info)
+	{
+		std::cerr << "pngDataToPixels: png_create_info_struct failed" << std::endl;
+		png_destroy_read_struct(&png, (png_infopp)NULL, (png_infopp)NULL);
+		return false;
+	}
+	if (setjmp(png_jmpbuf(png)))
+	{
+		// libpng longjmp'd here in its infinite widsom, clean up and return
+		std::cerr << "pngDataToPixels: longjmp from within libpng" << std::endl;
+		png_destroy_read_struct(&png, &info, (png_infopp)NULL);
+		return false;
+	}
+	png_set_read_fn(png, (png_voidp)&imf, [](png_structp png, png_bytep data, size_t length) -> void {
+		auto ud = png_get_io_ptr(png);
+		auto &imf = *(InMemoryFile *)ud;
+		if (length + imf.cursor > imf.size)
+		{
+			png_error(png, "pngDataToPixels: libpng tried to read beyond the buffer");
+		}
+		std::copy(imf.data + imf.cursor, imf.data + imf.cursor + length, data);
+		imf.cursor += length;
+	});
+	png_set_user_limits(png, 1000, 1000);
+	png_read_info(png, info);
+	imgw = png_get_image_width(png, info);
+	imgh = png_get_image_height(png, info);
+	int bitDepth = png_get_bit_depth(png, info);
+	int colorType = png_get_color_type(png, info);
+	imageData.resize(imgw * imgh);
+	rowPointers.resize(imgh);
+	for (auto y = 0; y < imgh; ++y)
+	{
+		rowPointers[y] = (png_const_bytep)&imageData[y * imgw];
+	}
+	if (setjmp(png_jmpbuf(png)))
+	{
+		// libpng longjmp'd here in its infinite widsom, clean up and return
+		std::cerr << "pngDataToPixels: longjmp from within libpng" << std::endl;
+		png_destroy_read_struct(&png, &info, (png_infopp)NULL);
+		return false;
+	}
+	if (addBackground)
+	{
+		png_set_filler(png, 0, PNG_FILLER_AFTER);
+	}
+	png_set_bgr(png);
+	if (colorType == PNG_COLOR_TYPE_PALETTE)
+	{
+		png_set_palette_to_rgb(png);
+	}
+	if (colorType == PNG_COLOR_TYPE_GRAY && bitDepth < 8)
+	{
+		png_set_expand_gray_1_2_4_to_8(png);
+	}
+	if (png_get_valid(png, info, PNG_INFO_tRNS))
+	{
+		png_set_tRNS_to_alpha(png);
+	}
+	if (bitDepth == 16)
+	{
+		png_set_scale_16(png);
+	}
+	if (colorType == PNG_COLOR_TYPE_GRAY || colorType == PNG_COLOR_TYPE_GRAY_ALPHA)
+	{
+		png_set_gray_to_rgb(png);
+	}
+	if (addBackground)
+	{
+		png_color_16 defaultBackground;
+		defaultBackground.red = 0;
+		defaultBackground.green = 0;
+		defaultBackground.blue = 0;
+		png_set_background(png, &defaultBackground, PNG_BACKGROUND_GAMMA_SCREEN, 0, 1.0);
+	}
+	png_read_image(png, (png_bytepp)&rowPointers[0]);
+	png_destroy_read_struct(&png, &info, (png_infopp)NULL);
+	return true;
 }

@@ -171,6 +171,7 @@ fftw_dep = enable_gravfft ? dependency('fftw3f', static: is_static) : []
 
 threads_dep = dependency('threads')
 zlib_dep = dependency('zlib', static: is_static)
+png_dep = dependency('libpng16', static: is_static)
 sdl2_dep = dependency('sdl2', static: is_static)
 bzip2_dep = dependency('bzip2', static: is_static)
 json_dep = dependency('jsoncpp', static: is_static)
@@ -349,6 +350,7 @@ if get_option('build_powder')
 	powder_deps = [
 		threads_dep,
 		zlib_dep,
+		png_dep,
 		sdl2_dep,
 		lua_dep,
 		curl_dep,
@@ -387,14 +389,19 @@ if get_option('build_render')
 		zlib_dep,
 		bzip2_dep,
 		json_dep,
+		png_dep,
 	]
+	render_link_args = project_link_args
+	if host_platform == 'linux' and is_static
+		render_link_args += [ '-static' ]
+	endif
 	executable(
 		'render',
 		sources: render_files,
 		include_directories: [ project_inc, render_inc ],
 		c_args: project_c_args,
 		cpp_args: project_cpp_args,
-		link_args: project_link_args,
+		link_args: render_link_args,
 		dependencies: render_deps,
 	)
 endif
@@ -403,6 +410,7 @@ if get_option('build_font')
 	font_deps = [
 		threads_dep,
 		zlib_dep,
+		png_dep,
 		sdl2_dep,
 		bzip2_dep,
 		json_dep,

@@ -6,7 +6,7 @@
 #include "Component.h"
 #include "graphics/Graphics.h"
 #include "gui/interface/Colour.h"
-#include "client/http/AvatarRequest.h"
+#include "client/http/ImageRequest.h"
 #include "client/http/RequestMonitor.h"
 
 #include <memory>
@@ -14,7 +14,7 @@
 
 namespace ui
 {
-class AvatarButton : public Component, public http::RequestMonitor<http::AvatarRequest>
+class AvatarButton : public Component, public http::RequestMonitor<http::ImageRequest>
 {
 	std::unique_ptr<VideoBuffer> avatar;
 	ByteString name;

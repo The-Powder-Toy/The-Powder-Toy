@@ -4,6 +4,8 @@
 #include "graphics/Graphics.h"
 #include "Config.h"
 
+#include <iostream>
+
 namespace http
 {
 	ImageRequest::ImageRequest(ByteString url, int width, int height) :
@@ -29,11 +31,10 @@ namespace http
 		if (data.size())
 		{
 			int imgw, imgh;
-			pixel *imageData = Graphics::ptif_unpack(&data[0], data.size(), &imgw, &imgh);
-			if (imageData)
+			std::vector<pixel> imageData;
+			if (PngDataToPixels(imageData, imgw, imgh, data.data(), data.size(), true))
 			{
-				vb = std::unique_ptr<VideoBuffer>(new VideoBuffer(imageData, imgw, imgh));
-				free(imageData);
+				vb = std::unique_ptr<VideoBuffer>(new VideoBuffer(imageData.data(), imgw, imgh));
 			}
 			else
 			{

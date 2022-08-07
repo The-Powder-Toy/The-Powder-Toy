@@ -207,7 +207,7 @@ bool PreviewModel::ParseSaveInfo(ByteString &saveInfoResponse)
 {
 	delete saveInfo;
 
-	try
+	try // how does this differ from Client::GetSave?
 	{
 		std::istringstream dataStream(saveInfoResponse);
 		Json::Value objDocument;

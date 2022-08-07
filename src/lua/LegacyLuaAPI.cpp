@@ -1323,8 +1323,12 @@ int luatpt_screenshot(lua_State* l)
 	int fileType = luaL_optint(l, 2, 0);
 
 	ByteString filename = luacon_controller->TakeScreenshot(captureUI, fileType);
-	tpt_lua_pushByteString(l, filename);
-	return 1;
+	if (filename.size())
+	{
+		tpt_lua_pushByteString(l, filename);
+		return 1;
+	}
+	return 0;
 }
 
 int luatpt_record(lua_State* l)

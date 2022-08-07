@@ -5,7 +5,8 @@
 #include <iostream>
 
 const int curl_multi_wait_timeout_ms = 100;
-const long curl_max_host_connections = 6;
+const long curl_max_host_connections = 1;
+const long curl_max_concurrent_streams = 1;
 
 namespace http
 {
@@ -42,6 +43,9 @@ namespace http
 		if (multi)
 		{
 			curl_multi_setopt(multi, CURLMOPT_MAX_HOST_CONNECTIONS, curl_max_host_connections);
+#if defined(CURL_AT_LEAST_VERSION) && CURL_AT_LEAST_VERSION(7, 67, 0)
+			curl_multi_setopt(multi, CURLMOPT_MAX_CONCURRENT_STREAMS, curl_max_concurrent_streams);
+#endif
 		}
 
 		proxy = newProxy;

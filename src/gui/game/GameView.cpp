@@ -36,6 +36,7 @@
 #include "gui/interface/Engine.h"
 
 #include <cstring>
+#include <iostream>
 
 #ifdef GetUserName
 # undef GetUserName // dammit windows
@@ -898,49 +899,67 @@ void GameView::NotifyBrushChanged(GameModel * sender)
 
 ByteString GameView::TakeScreenshot(int captureUI, int fileType)
 {
-	VideoBuffer *screenshot;
-	std::vector<char> data;
-	time_t screenshotTime = time(nullptr);
-	std::string extension;
-
+	std::unique_ptr<VideoBuffer> screenshot;
 	if (captureUI)
-		screenshot = new VideoBuffer(ren->DumpFrame());
+	{
+		screenshot = std::make_unique<VideoBuffer>(ren->DumpFrame());
+	}
 	else
-		screenshot = new VideoBuffer(ui::Engine::Ref().g->DumpFrame());
+	{
+		screenshot = std::make_unique<VideoBuffer>(ui::Engine::Ref().g->DumpFrame());
+	}
+
+	ByteString filename;
+	{
+		// Optional suffix to distinguish screenshots taken at the exact same time
+		ByteString suffix = "";
+		time_t screenshotTime = time(nullptr);
+		if (screenshotTime == lastScreenshotTime)
+		{
+			screenshotIndex++;
+			suffix = ByteString::Build(" (", screenshotIndex, ")");
+		}
+		else
+		{
+			screenshotIndex = 1;
+		}
+		lastScreenshotTime = screenshotTime;
+		std::string date = format::UnixtimeToDate(screenshotTime, "%Y-%m-%d %H.%M.%S");
+		filename = ByteString::Build("screenshot ", date, suffix);
+	}
 
 	if (fileType == 1)
 	{
-		data = format::VideoBufferToBMP(screenshot);
-		extension = ".bmp";
+		filename += ".bmp";
+		// We should be able to simply use SDL_PIXELFORMAT_XRGB8888 here with a bit depth of 32 to convert RGBA data to RGB data,
+		// and save the resulting surface directly. However, ubuntu-18.04 ships SDL2 so old that it doesn't have
+		// SDL_PIXELFORMAT_XRGB8888, so we first create an RGBA surface and then convert it.
+		auto *rgbaSurface = SDL_CreateRGBSurfaceWithFormatFrom(screenshot->Buffer, screenshot->Width, screenshot->Height, 32, screenshot->Width * sizeof(pixel), SDL_PIXELFORMAT_ARGB8888);
+		auto *rgbSurface = SDL_ConvertSurfaceFormat(rgbaSurface, SDL_PIXELFORMAT_RGB888, 0);
+		if (!rgbSurface || SDL_SaveBMP(rgbSurface, filename.c_str()))
+		{
+			std::cerr << "SDL_SaveBMP failed: " << SDL_GetError() << std::endl;
+			filename = "";
+		}
+		SDL_FreeSurface(rgbSurface);
+		SDL_FreeSurface(rgbaSurface);
 	}
 	else if (fileType == 2)
 	{
-		data = format::VideoBufferToPPM(screenshot);
-		extension = ".ppm";
+		filename += ".ppm";
+		if (!Platform::WriteFile(format::VideoBufferToPPM(*screenshot), filename))
+		{
+			filename = "";
+		}
 	}
 	else
 	{
-		data = format::VideoBufferToPNG(screenshot);
-		extension = ".png";
+		filename += ".png";
+		if (!screenshot->WritePNG(filename))
+		{
+			filename = "";
+		}
 	}
-
-	// Optional suffix to distinguish screenshots taken at the exact same time
-	ByteString suffix = "";
-	if (screenshotTime == lastScreenshotTime)
-	{
-		screenshotIndex++;
-		suffix = ByteString::Build(" (", screenshotIndex, ")");
-	}
-	else
-	{
-		screenshotIndex = 1;
-	}
-	std::string date = format::UnixtimeToDate(screenshotTime, "%Y-%m-%d %H.%M.%S");
-	ByteString filename = ByteString::Build("screenshot ", date, suffix, extension);
-
-	Platform::WriteFile(data, filename);
-	doScreenshot = false;
-	lastScreenshotTime = screenshotTime;
 
 	return filename;
 }
@@ -2155,6 +2174,7 @@ void GameView::OnDraw()
 
 		if (doScreenshot)
 		{
+			doScreenshot = false;
 			TakeScreenshot(0, 0);
 		}
 

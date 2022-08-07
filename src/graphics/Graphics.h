@@ -66,6 +66,7 @@ public:
 	~VideoBuffer();
 
 	void CopyData(pixel * buffer, int width, int height, int pitch);
+	bool WritePNG(const ByteString &path) const;
 };
 
 class Graphics
@@ -83,8 +84,6 @@ public:
 	static char * GenerateGradient(pixel * colours, float * points, int pointcount, int size);
 
 	//PTIF methods
-	static void *ptif_pack(pixel *src, int w, int h, int *result_size);
-	static pixel *ptif_unpack(void *datain, int size, int *w, int *h);
 	static pixel *resample_img_nn(pixel *src, int sw, int sh, int rw, int rh);
 	static pixel *resample_img(pixel *src, int sw, int sh, int rw, int rh);
 	static pixel *rescale_img(pixel *src, int sw, int sh, int *qw, int *qh, int f);
@@ -136,5 +135,7 @@ public:
 
 	void SetClipRect(int &x, int &y, int &w, int &h);
 };
+
+bool PngDataToPixels(std::vector<pixel> &imageData, int &imgw, int &imgh, const char *pngData, size_t pngDataSize, bool addBackground);
 
 #endif

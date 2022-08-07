@@ -22,64 +22,40 @@ int GetModifiers() { return 0; }
 void SetCursorEnabled(int enabled) {}
 unsigned int GetTicks() { return 0; }
 
-void readFile(ByteString filename, std::vector<char> & storage)
+static bool ReadFile(std::vector<char> &fileData, ByteString filename)
 {
-	std::ifstream fileStream;
-	fileStream.open(filename.c_str(), std::ios::binary);
-	if(fileStream.is_open())
+	std::ifstream f(filename, std::ios::binary);
+	if (f) f.seekg(0, std::ios::end);
+	if (f) fileData.resize(f.tellg());
+	if (f) f.seekg(0);
+	if (f) f.read(&fileData[0], fileData.size());
+	if (!f)
 	{
-		fileStream.seekg(0, std::ios::end);
-		size_t fileSize = fileStream.tellg();
-		fileStream.seekg(0);
-
-		unsigned char * tempData = new unsigned char[fileSize];
-		fileStream.read((char *)tempData, fileSize);
-		fileStream.close();
-
-		std::vector<unsigned char> fileData;
-		storage.clear();
-		storage.insert(storage.end(), tempData, tempData+fileSize);
-		delete[] tempData;
+		std::cerr << "ReadFile: " << filename << ": " << strerror(errno) << std::endl;
+		return false;
 	}
-}
-
-void writeFile(ByteString filename, std::vector<char> & fileData)
-{
-	std::ofstream fileStream;
-	fileStream.open(filename.c_str(), std::ios::binary);
-	if(fileStream.is_open())
-	{
-		fileStream.write(&fileData[0], fileData.size());
-		fileStream.close();
-	}
+	return true;
 }
 
 int main(int argc, char *argv[])
 {
-	ByteString outputPrefix, inputFilename;
-	std::vector<char> inputFile;
-	ByteString ppmFilename, ptiFilename, ptiSmallFilename, pngFilename, pngSmallFilename;
-	std::vector<char> ppmFile, ptiFile, ptiSmallFile, pngFile, pngSmallFile;
-
 	if (!argv[1] || !argv[2]) {
 		std::cout << "Usage: " << argv[0] << " <inputFilename> <outputPrefix>" << std::endl;
 		return 1;
 	}
-	inputFilename = argv[1];
-	outputPrefix = argv[2];
+	auto inputFilename = ByteString(argv[1]);
+	auto outputFilename = ByteString(argv[2]) + ".png";
 
-	ppmFilename = outputPrefix+".ppm";
-	ptiFilename = outputPrefix+".pti";
-	ptiSmallFilename = outputPrefix+"-small.pti";
-	pngFilename = outputPrefix+".png";
-	pngSmallFilename = outputPrefix+"-small.png";
-
-	readFile(inputFilename, inputFile);
+	std::vector<char> fileData;
+	if (!ReadFile(fileData, inputFilename))
+	{
+		return 1;
+	}
 
 	GameSave * gameSave = NULL;
 	try
 	{
-		gameSave = new GameSave(inputFile);
+		gameSave = new GameSave(fileData);
 	}
 	catch (ParseException &e)
 	{
@@ -119,19 +95,5 @@ int main(int argc, char *argv[])
 	ren->RenderEnd();
 
 	VideoBuffer screenBuffer = ren->DumpFrame();
-	//ppmFile = format::VideoBufferToPPM(screenBuffer);
-	ptiFile = format::VideoBufferToPTI(screenBuffer);
-	pngFile = format::VideoBufferToPNG(screenBuffer);
-
-	screenBuffer.Resize(1.0f/3.0f, true);
-	ptiSmallFile = format::VideoBufferToPTI(screenBuffer);
-	pngSmallFile = format::VideoBufferToPNG(screenBuffer);
-
-
-
-	//writeFile(ppmFilename, ppmFile);
-	writeFile(ptiFilename, ptiFile);
-	writeFile(ptiSmallFilename, ptiSmallFile);
-	writeFile(pngFilename, pngFile);
-	writeFile(pngSmallFilename, pngSmallFile);
+	screenBuffer.WritePNG(outputFilename);
 }

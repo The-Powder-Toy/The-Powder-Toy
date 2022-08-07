@@ -26,10 +26,12 @@ void AvatarButton::OnResponse(std::unique_ptr<VideoBuffer> Avatar)
 
 void AvatarButton::Tick(float dt)
 {
-	if(!avatar && !tried && name.size() > 0)
+	if(!avatar && !tried)
 	{
 		tried = true;
-		RequestSetup(name, Size.X, Size.Y);
+		// TODO: Currently a very expensive-to-call endpoint; skips the cache server. If we call it too quickly, we get banned as
+		// an anti-DoS measure. This is why concurrent connections / connection multiplexing have been temporarily disabled.
+		RequestSetup(SCHEME SERVER "/Mini/GetAvatarPng.php?Username=" + name, Size.X, Size.Y);
 		RequestStart();
 	}
 
