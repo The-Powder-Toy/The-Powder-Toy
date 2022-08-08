@@ -144,6 +144,9 @@ class LuaScriptInterface: public CommandInterface
 	static int elements_free(lua_State * l);
 	static int elements_exists(lua_State * l);
 
+	static void GetDefaultProperties(lua_State * l, int id);
+	static void SetDefaultProperties(lua_State * l, int id, int stackPos);
+
 	//Interface
 	void initInterfaceAPI();
 	static int interface_showWindow(lua_State * l);

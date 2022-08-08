@@ -21,3 +21,13 @@ std::vector<StructProperty> const &Particle::GetProperties()
 	};
 	return properties;
 }
+
+std::vector<StructPropertyAlias> const &Particle::GetPropertyAliases()
+{
+	static std::vector<StructPropertyAlias> aliases = {
+		{ "pavg0" , "tmp3"    },
+		{ "pavg1" , "tmp4"    },
+		{ "dcolor", "dcolour" },
+	};
+	return aliases;
+}

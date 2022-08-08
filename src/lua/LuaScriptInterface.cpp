@@ -916,6 +916,11 @@ void LuaScriptInterface::initSimulationAPI()
 			lua_pushinteger(l, particlePropertiesCount++);
 			lua_setfield(l, -2, ("FIELD_" + prop.Name.ToUpper()).c_str());
 		}
+		for (auto &alias : Particle::GetPropertyAliases())
+		{
+			lua_getfield(l, -1, ("FIELD_" + alias.to.ToUpper()).c_str());
+			lua_setfield(l, -2, ("FIELD_" + alias.from.ToUpper()).c_str());
+		}
 	}
 
 	lua_newtable(l);
@@ -1129,6 +1134,13 @@ int LuaScriptInterface::simulation_partProperty(lua_State * l)
 	else if (lua_type(l, 2) == LUA_TSTRING)
 	{
 		ByteString fieldName = lua_tostring(l, 2);
+		for (auto &alias : Particle::GetPropertyAliases())
+		{
+			if (fieldName == alias.from)
+			{
+				fieldName = alias.to;
+			}
+		}
 		prop = std::find_if(properties.begin(), properties.end(), [&fieldName](StructProperty const &p) {
 			return p.Name == fieldName;
 		});
@@ -3259,19 +3271,7 @@ int LuaScriptInterface::elements_element(lua_State * l)
 		lua_pop(l, 1);
 
 		lua_getfield(l, -1, "DefaultProperties");
-		if (lua_type(l, -1) == LUA_TTABLE)
-		{
-			for (auto &prop : Particle::GetProperties())
-			{
-				lua_getfield(l, -1, prop.Name.c_str());
-				if (lua_type(l, -1) != LUA_TNIL)
-				{
-					auto propertyAddress = reinterpret_cast<intptr_t>((reinterpret_cast<unsigned char*>(&luacon_sim->elements[id].DefaultProperties)) + prop.Offset);
-					LuaSetProperty(l, prop, propertyAddress, -1);
-				}
-				lua_pop(l, 1);
-			}
-		}
+		SetDefaultProperties(l, id, -1);
 		lua_pop(l, 1);
 
 		luacon_model->BuildMenus();
@@ -3295,17 +3295,54 @@ int LuaScriptInterface::elements_element(lua_State * l)
 		lua_pushstring(l, luacon_sim->elements[id].Identifier.c_str());
 		lua_setfield(l, -2, "Identifier");
 
-		lua_newtable(l);
-		int tableIdx = lua_gettop(l);
-		for (auto &prop : Particle::GetProperties())
-		{
-			auto propertyAddress = reinterpret_cast<intptr_t>((reinterpret_cast<unsigned char*>(&luacon_sim->elements[id].DefaultProperties)) + prop.Offset);
-			LuaGetProperty(l, prop, propertyAddress);
-			lua_setfield(l, tableIdx, prop.Name.c_str());
-		}
+		GetDefaultProperties(l, id);
 		lua_setfield(l, -2, "DefaultProperties");
 
 		return 1;
+	}
+}
+
+void LuaScriptInterface::GetDefaultProperties(lua_State * l, int id)
+{
+	lua_newtable(l);
+	for (auto &prop : Particle::GetProperties())
+	{
+		auto propertyAddress = reinterpret_cast<intptr_t>((reinterpret_cast<unsigned char*>(&luacon_sim->elements[id].DefaultProperties)) + prop.Offset);
+		LuaGetProperty(l, prop, propertyAddress);
+		lua_setfield(l, -2, prop.Name.c_str());
+	}
+	for (auto &alias : Particle::GetPropertyAliases())
+	{
+		lua_getfield(l, -1, alias.to.c_str());
+		lua_setfield(l, -2, alias.from.c_str());
+	}
+}
+
+void LuaScriptInterface::SetDefaultProperties(lua_State * l, int id, int stackPos)
+{
+	if (lua_type(l, stackPos) == LUA_TTABLE)
+	{
+		for (auto &prop : Particle::GetProperties())
+		{
+			lua_getfield(l, stackPos, prop.Name.c_str());
+			if (lua_type(l, -1) == LUA_TNIL)
+			{
+				for (auto &alias : Particle::GetPropertyAliases())
+				{
+					if (alias.to == prop.Name)
+					{
+						lua_pop(l, 1);
+						lua_getfield(l, stackPos, alias.from.c_str());
+					}
+				}
+			}
+			if (lua_type(l, -1) != LUA_TNIL)
+			{
+				auto propertyAddress = reinterpret_cast<intptr_t>((reinterpret_cast<unsigned char*>(&luacon_sim->elements[id].DefaultProperties)) + prop.Offset);
+				LuaSetProperty(l, prop, propertyAddress, -1);
+			}
+			lua_pop(l, 1);
+		}
 	}
 }
 
@@ -3444,17 +3481,7 @@ int LuaScriptInterface::elements_property(lua_State * l)
 		}
 		else if (propertyName == "DefaultProperties")
 		{
-			luaL_checktype(l, 3, LUA_TTABLE);
-			for (auto &prop : Particle::GetProperties())
-			{
-				lua_getfield(l, -1, prop.Name.c_str());
-				if (lua_type(l, -1) != LUA_TNIL)
-				{
-					auto propertyAddress = reinterpret_cast<intptr_t>((reinterpret_cast<unsigned char*>(&luacon_sim->elements[id].DefaultProperties)) + prop.Offset);
-					LuaSetProperty(l, prop, propertyAddress, -1);
-				}
-				lua_pop(l, 1);
-			}
+			SetDefaultProperties(l, id, 3);
 		}
 		else
 		{
@@ -3477,14 +3504,7 @@ int LuaScriptInterface::elements_property(lua_State * l)
 		}
 		else if (propertyName == "DefaultProperties")
 		{
-			lua_newtable(l);
-			int tableIdx = lua_gettop(l);
-			for (auto &prop : Particle::GetProperties())
-			{
-				auto propertyAddress = reinterpret_cast<intptr_t>((reinterpret_cast<unsigned char*>(&luacon_sim->elements[id].DefaultProperties)) + prop.Offset);
-				LuaGetProperty(l, prop, propertyAddress);
-				lua_setfield(l, tableIdx, prop.Name.c_str());
-			}
+			GetDefaultProperties(l, id);
 			return 1;
 		}
 		else

@@ -39,70 +39,37 @@ void CommandInterface::Log(LogType type, String message)
 int CommandInterface::GetPropertyOffset(ByteString key, FormatType & format)
 {
 	int offset = -1;
-	if (!key.compare("type"))
+	for (auto &alias : Particle::GetPropertyAliases())
 	{
-		offset = offsetof(Particle, type);
-		format = FormatElement;
+		if (key == alias.from)
+		{
+			key = alias.to;
+		}
 	}
-	else if (!key.compare("life"))
+	for (auto &prop : Particle::GetProperties())
 	{
-		offset = offsetof(Particle, life);
-		format = FormatInt;
-	}
-	else if (!key.compare("ctype"))
-	{
-		offset = offsetof(Particle, ctype);
-		format = FormatInt;
-	}
-	else if (!key.compare("temp"))
-	{
-		offset = offsetof(Particle, temp);
-		format = FormatFloat;
-	}
-	else if (!key.compare("tmp2"))
-	{
-		offset = offsetof(Particle, tmp2);
-		format = FormatInt;
-	}
-	else if (!key.compare("tmp"))
-	{
-		offset = offsetof(Particle, tmp);
-		format = FormatInt;
-	}
-	else if (!key.compare("vy"))
-	{
-		offset = offsetof(Particle, vy);
-		format = FormatFloat;
-	}
-	else if (!key.compare("vx"))
-	{
-		offset = offsetof(Particle, vx);
-		format = FormatFloat;
-	}
-	else if (!key.compare("x"))
-	{
-		offset = offsetof(Particle, x);
-		format = FormatFloat;
-	}
-	else if (!key.compare("y"))
-	{
-		offset = offsetof(Particle, y);
-		format = FormatFloat;
-	}
-	else if (!key.compare("dcolor") || !key.compare("dcolour"))
-	{
-		offset = offsetof(Particle, dcolour);
-		format = FormatInt;
-	}
-	else if (!key.compare("tmp3"))
-	{
-		offset = offsetof(Particle, tmp3);
-		format = FormatInt;
-	}
-	else if (!key.compare("tmp4"))
-	{
-		offset = offsetof(Particle, tmp4);
-		format = FormatInt;
+		if (key == prop.Name)
+		{
+			offset = prop.Offset;
+			switch (prop.Type)
+			{
+			case StructProperty::ParticleType:
+				format = (key == "type") ? FormatElement : FormatInt; // FormatElement is tightly coupled with "type"
+				break;
+
+			case StructProperty::Integer:
+			case StructProperty::UInteger:
+				format = FormatInt;
+				break;
+
+			case StructProperty::Float:
+				format = FormatFloat;
+				break;
+
+			default:
+				break;
+			}
+		}
 	}
 	return offset;
 }

@@ -46,4 +46,9 @@ union PropertyValue {
 	float Float;
 };
 
+struct StructPropertyAlias
+{
+	ByteString from, to;
+};
+
 #endif
