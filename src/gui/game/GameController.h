@@ -58,6 +58,13 @@ private:
 	
 	void OpenSaveDone();
 public:
+	enum MouseupReason
+	{
+		mouseUpNormal,
+		mouseUpBlur,
+		mouseUpDrawEnd,
+	};
+
 	bool HasDone;
 	GameController();
 	~GameController();
@@ -68,7 +75,7 @@ public:
 
 	bool MouseMove(int x, int y, int dx, int dy);
 	bool MouseDown(int x, int y, unsigned button);
-	bool MouseUp(int x, int y, unsigned button, char type);
+	bool MouseUp(int x, int y, unsigned button, MouseupReason reason);
 	bool MouseWheel(int x, int y, int d);
 	bool TextInput(String text);
 	bool TextEditing(String text);

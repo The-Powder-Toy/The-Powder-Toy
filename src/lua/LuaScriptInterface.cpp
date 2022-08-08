@@ -518,6 +518,9 @@ void LuaScriptInterface::initInterfaceAPI()
 	//Ren shortcut
 	lua_getglobal(l, "interface");
 	initLuaSDLKeys(l);
+	lua_pushinteger(l, GameController::mouseUpNormal); lua_setfield(l, -2, "MOUSE_UP_NORMAL");
+	lua_pushinteger(l, GameController::mouseUpBlur); lua_setfield(l, -2, "MOUSE_UP_BLUR");
+	lua_pushinteger(l, GameController::mouseUpDrawEnd); lua_setfield(l, -2, "MOUSE_UP_DRAW_END");
 	lua_setglobal(l, "ui");
 
 	Luna<LuaWindow>::Register(l);
