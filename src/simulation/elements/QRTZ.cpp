@@ -104,6 +104,10 @@ int Element_QRTZ_update(UPDATE_FUNC_ARGS)
 						{
 							parts[np].temp = parts[i].temp;
 							parts[np].tmp2 = parts[i].tmp2;
+							if (RNG::Ref().chance(1, 2))
+							{
+								parts[np].tmp2 = std::clamp(parts[np].tmp2 + RNG::Ref().between(-1, 1), 0, 10);
+							}
 							parts[i].tmp--;
 							if (t == PT_PQRT)
 							{
