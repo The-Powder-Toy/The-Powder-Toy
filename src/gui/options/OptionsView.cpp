@@ -171,7 +171,7 @@ OptionsView::OptionsView():
 	public:
 		GravityWindow(ui::Point position, int radius, float x, float y, OptionsController * c_):
 			ui::Window(position, ui::Point((radius * 2) + 20, (radius * 2) + 75)),
-			gravityDirection(new ui::DirectionSelector(ui::Point(10, 32), radius)),
+			gravityDirection(new ui::DirectionSelector(ui::Point(10, 32), (float)radius)),
 			c(c_)
 			{
 				ui::Label * tempLabel = new ui::Label(ui::Point(4, 1), ui::Point(Size.X - 8, 22), "Custom Gravity");

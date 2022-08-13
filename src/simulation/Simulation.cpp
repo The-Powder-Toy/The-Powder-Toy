@@ -3333,7 +3333,7 @@ void Simulation::GetGravityField(int x, int y, float particleGrav, float newtonG
 			auto dy = y-YCNTR;
 			if (dx || dy)
 			{
-				auto pGravD = 0.01f - hypotf(dx, dy);
+				auto pGravD = 0.01f - hypotf((float)dx, (float)dy);
 				pGravX = particleGrav * (dx / pGravD);
 				pGravY = particleGrav * (dy / pGravD);
 			}
@@ -3596,8 +3596,8 @@ void Simulation::UpdateParticles(int start, int end)
 				{
 					float convGravX, convGravY;
 					GetGravityField(x, y, -2.0f, -2.0f, convGravX, convGravY);
-					int offsetX = std::round(convGravX + x);
-					int offsetY = std::round(convGravY + y);
+					int offsetX = (int)(std::round(convGravX + x));
+					int offsetY = (int)(std::round(convGravY + y));
 					if ((offsetX != x || offsetY != y) && offsetX >= 0 && offsetX < XRES && offsetY >= 0 && offsetY < YRES) {//some heat convection for liquids
 						r = pmap[offsetY][offsetX];
 						if (!(!r || parts[i].type != TYP(r))) {
