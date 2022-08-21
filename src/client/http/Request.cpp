@@ -77,10 +77,10 @@ namespace http
 #endif
 	}
 
-	void Request::AddHeader(ByteString name, ByteString value)
+	void Request::AddHeader(ByteString header)
 	{
 #ifndef NOHTTP
-		headers = curl_slist_append(headers, (name + ": " + value).c_str());
+		headers = curl_slist_append(headers, header.c_str());
 #endif
 	}
 
@@ -131,17 +131,32 @@ namespace http
 		{
 			if (session.size())
 			{
-				AddHeader("X-Auth-User-Id", ID);
-				AddHeader("X-Auth-Session-Key", session);
+				AddHeader("X-Auth-User-Id: " + ID);
+				AddHeader("X-Auth-Session-Key: " + session);
 			}
 			else
 			{
-				AddHeader("X-Auth-User", ID);
+				AddHeader("X-Auth-User: " + ID);
 			}
 		}
 	}
 
 #ifndef NOHTTP
+	size_t Request::HeaderDataHandler(char *ptr, size_t size, size_t count, void *userdata)
+	{
+		Request *req = (Request *)userdata;
+		auto actual_size = size * count;
+		if (actual_size >= 2 && ptr[actual_size - 2] == '\r' && ptr[actual_size - 1] == '\n')
+		{
+			if (actual_size > 2) // don't include header list terminator (but include the status line)
+			{
+				req->response_headers.push_back(ByteString(ptr, ptr + actual_size - 2));
+			}
+			return actual_size;
+		}
+		return 0;
+	}
+
 	size_t Request::WriteDataHandler(char *ptr, size_t size, size_t count, void *userdata)
 	{
 		Request *req = (Request *)userdata;
@@ -231,6 +246,9 @@ namespace http
 			curl_easy_setopt(easy, CURLOPT_PRIVATE, (void *)this);
 			curl_easy_setopt(easy, CURLOPT_USERAGENT, user_agent.c_str());
 
+			curl_easy_setopt(easy, CURLOPT_HEADERDATA, (void *)this);
+			curl_easy_setopt(easy, CURLOPT_HEADERFUNCTION, Request::HeaderDataHandler);
+
 			curl_easy_setopt(easy, CURLOPT_WRITEDATA, (void *)this);
 			curl_easy_setopt(easy, CURLOPT_WRITEFUNCTION, Request::WriteDataHandler);
 		}
@@ -245,7 +263,7 @@ namespace http
 
 
 	// finish the request (if called before the request is done, this will block)
-	ByteString Request::Finish(int *status_out)
+	ByteString Request::Finish(int *status_out, std::vector<ByteString> *headers_out)
 	{
 #ifndef NOHTTP
 		if (CheckCanceled())
@@ -262,6 +280,10 @@ namespace http
 			if (status_out)
 			{
 				*status_out = status;
+			}
+			if (headers_out)
+			{
+				*headers_out = std::move(response_headers);
 			}
 			response_out = std::move(response_body);
 		}

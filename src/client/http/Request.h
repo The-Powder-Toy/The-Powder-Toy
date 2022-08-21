@@ -31,6 +31,7 @@ namespace http
 	{
 #ifndef NOHTTP
 		ByteString uri;
+		std::vector<ByteString> response_headers;
 		ByteString response_body;
 
 		CURL *easy;
@@ -58,19 +59,20 @@ namespace http
 
 		std::condition_variable done_cv;
 
-		static size_t WriteDataHandler(char * ptr, size_t size, size_t count, void * userdata);
+		static size_t HeaderDataHandler(char *ptr, size_t size, size_t count, void *userdata);
+		static size_t WriteDataHandler(char *ptr, size_t size, size_t count, void *userdata);
 #endif
 
 	public:
 		Request(ByteString uri);
 		virtual ~Request();
 
-		void AddHeader(ByteString name, ByteString value);
+		void AddHeader(ByteString header);
 		void AddPostData(std::map<ByteString, ByteString> data);
 		void AuthHeaders(ByteString ID, ByteString session);
 
 		void Start();
-		ByteString Finish(int *status);
+		ByteString Finish(int *status, std::vector<ByteString> *headers = nullptr);
 		void Cancel();
 
 		void CheckProgress(int *total, int *done);

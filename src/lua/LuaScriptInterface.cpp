@@ -4048,13 +4048,13 @@ class RequestHandle
 	bool dead;
 
 public:
-	RequestHandle(ByteString &uri, bool isPost, std::map<ByteString, ByteString> &post_data, std::map<ByteString, ByteString> &headers)
+	RequestHandle(ByteString &uri, bool isPost, std::map<ByteString, ByteString> &post_data, std::vector<ByteString> &headers)
 	{
 		dead = false;
 		request = new http::Request(uri);
 		for (auto &header : headers)
 		{
-			request->AddHeader(header.first, header.second);
+			request->AddHeader(header);
 		}
 		if (isPost)
 			request->AddPostData(post_data);
@@ -4096,14 +4096,14 @@ public:
 		}
 	}
 
-	ByteString Finish(int *status_out)
+	ByteString Finish(int &status_out, std::vector<ByteString> &headers)
 	{
 		ByteString data;
 		if (!dead)
 		{
 			if (request->CheckDone())
 			{
-				data = request->Finish(status_out);
+				data = request->Finish(&status_out, &headers);
 				dead = true;
 			}
 		}
@@ -4166,10 +4166,17 @@ static int http_request_finish(lua_State *l)
 	if (!rh->Dead())
 	{
 		int status_out;
-		ByteString data = rh->Finish(&status_out);
+		std::vector<ByteString> headers;
+		ByteString data = rh->Finish(status_out, headers);
 		lua_pushlstring(l, data.c_str(), data.size());
 		lua_pushinteger(l, status_out);
-		return 2;
+		lua_newtable(l);
+		for (auto i = 0; i < int(headers.size()); ++i)
+		{
+			lua_pushlstring(l, headers[i].data(), headers[i].size());
+			lua_rawseti(l, -2, i + 1);
+		}
+		return 3;
 	}
 	return 0;
 }
@@ -4192,15 +4199,30 @@ static int http_request(lua_State *l, bool isPost)
 		}
 	}
 
-	std::map<ByteString, ByteString> headers;
-	if (lua_istable(l, isPost ? 3 : 2))
+	std::vector<ByteString> headers;
+	auto headersIndex = isPost ? 3 : 2;
+	if (lua_istable(l, headersIndex))
 	{
-		lua_pushnil(l);
-		while (lua_next(l, isPost ? 3 : 2))
+		auto size = lua_objlen(l, headersIndex);
+		if (size)
 		{
-			lua_pushvalue(l, -2);
-			headers.emplace(lua_tostring(l, -1), lua_tostring(l, -2));
-			lua_pop(l, 2);
+			for (auto i = 0U; i < size; ++i)
+			{
+				lua_rawgeti(l, headersIndex, i + 1);
+				headers.push_back(lua_tostring(l, -1));
+				lua_pop(l, 1);
+			}
+		}
+		else
+		{
+			// old dictionary format
+			lua_pushnil(l);
+			while (lua_next(l, headersIndex))
+			{
+				lua_pushvalue(l, -2);
+				headers.push_back(lua_tostring(l, -1) + ByteString(": ") + lua_tostring(l, -2));
+				lua_pop(l, 2);
+			}
 		}
 	}
 	auto *rh = (RequestHandle *)lua_newuserdata(l, sizeof(RequestHandle));
