@@ -26,7 +26,7 @@ LuaLabel::LuaLabel(lua_State * l) :
 	int posY = luaL_optinteger(l, 2, 0);
 	int sizeX = luaL_optinteger(l, 3, 10);
 	int sizeY = luaL_optinteger(l, 4, 10);
-	String text = ByteString(luaL_optstring(l, 5, "")).FromUtf8();
+	String text = tpt_lua_optString(l, 5, "");
 
 	label = new ui::Label(ui::Point(posX, posY), ui::Point(sizeX, sizeY), text);
 	component = label;
@@ -37,12 +37,12 @@ int LuaLabel::text(lua_State * l)
 	int args = lua_gettop(l);
 	if(args)
 	{
-		label->SetText(ByteString(luaL_checkstring(l, 1)).FromUtf8());
+		label->SetText(tpt_lua_checkString(l, 1));
 		return 0;
 	}
 	else
 	{
-		lua_pushstring(l, label->GetText().ToUtf8().c_str());
+		tpt_lua_pushString(l, label->GetText());
 		return 1;
 	}
 }

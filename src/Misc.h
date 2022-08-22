@@ -4,6 +4,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
+#include <cstddef>
 #include <vector>
 
 //Linear interpolation
@@ -99,5 +100,15 @@ vector2d v2d_new(float x, float y);
 
 extern vector2d v2d_zero;
 extern matrix2d m2d_identity;
+
+class ByteString;
+
+bool byteStringEqualsString(const ByteString &str, const char *data, size_t size);
+template<size_t N>
+// TODO: use std::literals::string_literals::operator""s if we get rid of ByteString
+bool byteStringEqualsLiteral(const ByteString &str, const char (&lit)[N])
+{
+	return byteStringEqualsString(str, lit, N - 1U);
+}
 
 #endif

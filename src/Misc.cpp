@@ -8,6 +8,7 @@
 #include <cmath>
 
 #include "common/tpt-minmax.h"
+#include "common/String.h"
 
 const static char hex[] = "0123456789ABCDEF";
 void strcaturl(char *dst, char *src)
@@ -218,3 +219,8 @@ void membwand(void * destv, void * srcv, size_t destsize, size_t srcsize)
 
 vector2d v2d_zero = {0,0};
 matrix2d m2d_identity = {1,0,0,1};
+
+bool byteStringEqualsString(const ByteString &str, const char *data, size_t size)
+{
+	return str.size() == size && !memcmp(str.data(), data, size);
+}

@@ -95,7 +95,7 @@ LuaSmartRef *tptPart = nullptr;
 
 int atPanic(lua_State *l)
 {
-	throw std::runtime_error("Unprotected lua panic: " + ByteString(lua_tostring(l, -1)));
+	throw std::runtime_error("Unprotected lua panic: " + tpt_lua_toByteString(l, -1));
 }
 
 int TptIndexClosure(lua_State *l)
@@ -146,7 +146,7 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	luaL_openlibs(l);
 	luaopen_bit(l);
 
-	lua_pushstring(l, "Luacon_ci");
+	lua_pushliteral(l, "Luacon_ci");
 	lua_pushlightuserdata(l, this);
 	lua_settable(l, LUA_REGISTRYINDEX);
 
@@ -265,7 +265,7 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	lua_pushlightuserdata(l, parts);
 	lua_setfield(l, tptProperties, "partsdata");
 
-	luaL_dostring (l, "ffi = require(\"ffi\")\n\
+	tpt_lua_dostring (l, "ffi = require(\"ffi\")\n\
 ffi.cdef[[\n\
 typedef struct { int type; int life, ctype; float x, y, vx, vy; float temp; int tmp3; int tmp4; int flags; int tmp; int tmp2; unsigned int dcolour; } particle;\n\
 ]]\n\
@@ -273,7 +273,7 @@ tpt.parts = ffi.cast(\"particle *\", tpt.partsdata)\n\
 ffi = nil\n\
 tpt.partsdata = nil");
 	//Since ffi is REALLY REALLY dangrous, we'll remove it from the environment completely (TODO)
-	//lua_pushstring(l, "parts");
+	//lua_pushliteral(l, "parts");
 	//tptPartsCData = lua_gettable(l, tptProperties);
 #else
 	lua_newtable(l);
@@ -372,7 +372,7 @@ tpt.partsdata = nil");
 	ui::Engine::Ref().LastTick(Platform::GetTime());
 	if (luaL_loadbuffer(l, (const char *)eventcompat_lua, eventcompat_lua_size, "@[built-in eventcompat.lua]") || lua_pcall(l, 0, 0, 0))
 	{
-		throw std::runtime_error(ByteString("failed to load built-in eventcompat: ") + lua_tostring(l, -1));
+		throw std::runtime_error(ByteString("failed to load built-in eventcompat: ") + tpt_lua_toByteString(l, -1));
 	}
 }
 
@@ -410,26 +410,26 @@ void LuaScriptInterface::SetWindow(ui::Window * window)
 
 int LuaScriptInterface::tpt_index(lua_State *l)
 {
-	ByteString key = luaL_checkstring(l, 2);
-	if (!key.compare("mousex"))
+	ByteString key = tpt_lua_checkByteString(l, 2);
+	if (byteStringEqualsLiteral(key, "mousex"))
 		return lua_pushnumber(l, c->GetView()->GetMousePosition().X), 1;
-	else if (!key.compare("mousey"))
+	else if (byteStringEqualsLiteral(key, "mousey"))
 		return lua_pushnumber(l, c->GetView()->GetMousePosition().Y), 1;
-	else if (!key.compare("selectedl"))
-		return lua_pushstring(l, m->GetActiveTool(0)->GetIdentifier().c_str()), 1;
-	else if (!key.compare("selectedr"))
-		return lua_pushstring(l, m->GetActiveTool(1)->GetIdentifier().c_str()), 1;
-	else if (!key.compare("selecteda"))
-		return lua_pushstring(l, m->GetActiveTool(2)->GetIdentifier().c_str()), 1;
-	else if (!key.compare("selectedreplace"))
-		return lua_pushstring(l, m->GetActiveTool(3)->GetIdentifier().c_str()), 1;
-	else if (!key.compare("brushx"))
+	else if (byteStringEqualsLiteral(key, "selectedl"))
+		return tpt_lua_pushByteString(l, m->GetActiveTool(0)->GetIdentifier()), 1;
+	else if (byteStringEqualsLiteral(key, "selectedr"))
+		return tpt_lua_pushByteString(l, m->GetActiveTool(1)->GetIdentifier()), 1;
+	else if (byteStringEqualsLiteral(key, "selecteda"))
+		return tpt_lua_pushByteString(l, m->GetActiveTool(2)->GetIdentifier()), 1;
+	else if (byteStringEqualsLiteral(key, "selectedreplace"))
+		return tpt_lua_pushByteString(l, m->GetActiveTool(3)->GetIdentifier()), 1;
+	else if (byteStringEqualsLiteral(key, "brushx"))
 		return lua_pushnumber(l, m->GetBrush()->GetRadius().X), 1;
-	else if (!key.compare("brushy"))
+	else if (byteStringEqualsLiteral(key, "brushy"))
 		return lua_pushnumber(l, m->GetBrush()->GetRadius().Y), 1;
-	else if (!key.compare("brushID"))
+	else if (byteStringEqualsLiteral(key, "brushID"))
 		return lua_pushnumber(l, m->GetBrushID()), 1;
-	else if (!key.compare("decoSpace"))
+	else if (byteStringEqualsLiteral(key, "decoSpace"))
 		return lua_pushnumber(l, m->GetDecoSpace()), 1;
 
 	//if not a special key, return the value in the table
@@ -438,40 +438,40 @@ int LuaScriptInterface::tpt_index(lua_State *l)
 
 int LuaScriptInterface::tpt_newIndex(lua_State *l)
 {
-	ByteString key = luaL_checkstring(l, 2);
-	if (!key.compare("selectedl"))
+	ByteString key = tpt_lua_checkByteString(l, 2);
+	if (byteStringEqualsLiteral(key, "selectedl"))
 	{
-		Tool *t = m->GetToolFromIdentifier(luaL_checkstring(l, 3));
+		Tool *t = m->GetToolFromIdentifier(tpt_lua_checkByteString(l, 3));
 		if (t)
 			c->SetActiveTool(0, t);
 		else
 			luaL_error(l, "Invalid tool identifier: %s", lua_tostring(l, 3));
 	}
-	else if (!key.compare("selectedr"))
+	else if (byteStringEqualsLiteral(key, "selectedr"))
 	{
-		Tool *t = m->GetToolFromIdentifier(luaL_checkstring(l, 3));
+		Tool *t = m->GetToolFromIdentifier(tpt_lua_checkByteString(l, 3));
 		if (t)
 			c->SetActiveTool(1, t);
 		else
 			luaL_error(l, "Invalid tool identifier: %s", lua_tostring(l, 3));
 	}
-	else if (!key.compare("selecteda"))
+	else if (byteStringEqualsLiteral(key, "selecteda"))
 	{
-		Tool *t = m->GetToolFromIdentifier(luaL_checkstring(l, 3));
+		Tool *t = m->GetToolFromIdentifier(tpt_lua_checkByteString(l, 3));
 		if (t)
 			c->SetActiveTool(2, t);
 		else
 			luaL_error(l, "Invalid tool identifier: %s", lua_tostring(l, 3));
 	}
-	else if (!key.compare("selectedreplace"))
+	else if (byteStringEqualsLiteral(key, "selectedreplace"))
 	{
-		Tool *t = m->GetToolFromIdentifier(luaL_checkstring(l, 3));
+		Tool *t = m->GetToolFromIdentifier(tpt_lua_checkByteString(l, 3));
 		if( t)
 			c->SetActiveTool(3, t);
 		else
 			luaL_error(l, "Invalid tool identifier: %s", lua_tostring(l, 3));
 	}
-	else if (!key.compare("brushx"))
+	else if (byteStringEqualsLiteral(key, "brushx"))
 	{
 		int brushx = luaL_checkinteger(l, 3);
 		if (brushx < 0 || brushx >= XRES)
@@ -479,7 +479,7 @@ int LuaScriptInterface::tpt_newIndex(lua_State *l)
 
 		c->SetBrushSize(ui::Point(brushx, m->GetBrush()->GetRadius().Y));
 	}
-	else if (!key.compare("brushy"))
+	else if (byteStringEqualsLiteral(key, "brushy"))
 	{
 		int brushy = luaL_checkinteger(l, 3);
 		if (brushy < 0 || brushy >= YRES)
@@ -487,9 +487,9 @@ int LuaScriptInterface::tpt_newIndex(lua_State *l)
 
 		c->SetBrushSize(ui::Point(m->GetBrush()->GetRadius().X, brushy));
 	}
-	else if (!key.compare("brushID"))
+	else if (byteStringEqualsLiteral(key, "brushID"))
 		m->SetBrushID(luaL_checkinteger(l, 3));
-	else if (!key.compare("decoSpace"))
+	else if (byteStringEqualsLiteral(key, "decoSpace"))
 		m->SetDecoSpace(luaL_checkinteger(l, 3));
 	else
 	{
@@ -642,10 +642,10 @@ int LuaScriptInterface::interface_closeWindow(lua_State * l)
 
 int LuaScriptInterface::simulation_signIndex(lua_State *l)
 {
-	ByteString key = luaL_checkstring(l, 2);
+	ByteString key = tpt_lua_checkByteString(l, 2);
 
 	//Get Raw Index value for element. Maybe there is a way to get the sign index some other way?
-	lua_pushstring(l, "id");
+	lua_pushliteral(l, "id");
 	lua_rawget(l, 1);
 	int id = lua_tointeger(l, lua_gettop(l))-1;
 
@@ -660,35 +660,35 @@ int LuaScriptInterface::simulation_signIndex(lua_State *l)
 	}
 
 	int x, y, w, h;
-	if (!key.compare("text"))
-		return lua_pushstring(l, luacon_sim->signs[id].text.ToUtf8().c_str()), 1;
-	else if (!key.compare("displayText"))
-		return lua_pushstring(l, luacon_sim->signs[id].getDisplayText(luacon_sim, x, y, w, h, false).ToUtf8().c_str()), 1;
-	else if (!key.compare("justification"))
+	if (byteStringEqualsLiteral(key, "text"))
+		return tpt_lua_pushString(l, luacon_sim->signs[id].text), 1;
+	else if (byteStringEqualsLiteral(key, "displayText"))
+		return tpt_lua_pushString(l, luacon_sim->signs[id].getDisplayText(luacon_sim, x, y, w, h, false)), 1;
+	else if (byteStringEqualsLiteral(key, "justification"))
 		return lua_pushnumber(l, (int)luacon_sim->signs[id].ju), 1;
-	else if (!key.compare("x"))
+	else if (byteStringEqualsLiteral(key, "x"))
 		return lua_pushnumber(l, luacon_sim->signs[id].x), 1;
-	else if (!key.compare("y"))
+	else if (byteStringEqualsLiteral(key, "y"))
 		return lua_pushnumber(l, luacon_sim->signs[id].y), 1;
-	else if (!key.compare("screenX"))
+	else if (byteStringEqualsLiteral(key, "screenX"))
 	{
 		luacon_sim->signs[id].getDisplayText(luacon_sim, x, y, w, h);
 		lua_pushnumber(l, x);
 		return 1;
 	}
-	else if (!key.compare("screenY"))
+	else if (byteStringEqualsLiteral(key, "screenY"))
 	{
 		luacon_sim->signs[id].getDisplayText(luacon_sim, x, y, w, h);
 		lua_pushnumber(l, y);
 		return 1;
 	}
-	else if (!key.compare("width"))
+	else if (byteStringEqualsLiteral(key, "width"))
 	{
 		luacon_sim->signs[id].getDisplayText(luacon_sim, x, y, w, h);
 		lua_pushnumber(l, w);
 		return 1;
 	}
-	else if (!key.compare("height"))
+	else if (byteStringEqualsLiteral(key, "height"))
 	{
 		luacon_sim->signs[id].getDisplayText(luacon_sim, x, y, w, h);
 		lua_pushnumber(l, h);
@@ -700,10 +700,10 @@ int LuaScriptInterface::simulation_signIndex(lua_State *l)
 
 int LuaScriptInterface::simulation_signNewIndex(lua_State *l)
 {
-	ByteString key = luaL_checkstring(l, 2);
+	ByteString key = tpt_lua_checkByteString(l, 2);
 
 	//Get Raw Index value for element. Maybe there is a way to get the sign index some other way?
-	lua_pushstring(l, "id");
+	lua_pushliteral(l, "id");
 	lua_rawget(l, 1);
 	int id = lua_tointeger(l, lua_gettop(l))-1;
 
@@ -717,17 +717,17 @@ int LuaScriptInterface::simulation_signNewIndex(lua_State *l)
 		luaL_error(l, "Sign doesn't exist");
 	}
 
-	if (!key.compare("text"))
+	if (byteStringEqualsLiteral(key, "text"))
 	{
-		const char *temp = luaL_checkstring(l, 3);
-		String cleaned = format::CleanString(ByteString(temp).FromUtf8(), false, true, true).Substr(0, 45);
+		auto temp = tpt_lua_checkString(l, 3);
+		String cleaned = format::CleanString(temp, false, true, true).Substr(0, 45);
 		if (!cleaned.empty())
 			luacon_sim->signs[id].text = cleaned;
 		else
 			luaL_error(l, "Text is empty");
 		return 0;
 	}
-	else if (!key.compare("justification"))
+	else if (byteStringEqualsLiteral(key, "justification"))
 	{
 		int ju = luaL_checkinteger(l, 3);
 		if (ju >= 0 && ju <= 3)
@@ -736,7 +736,7 @@ int LuaScriptInterface::simulation_signNewIndex(lua_State *l)
 			luaL_error(l, "Invalid justification");
 		return 0;
 	}
-	else if (!key.compare("x"))
+	else if (byteStringEqualsLiteral(key, "x"))
 	{
 		int x = luaL_checkinteger(l, 3);
 		if (x >= 0 && x < XRES)
@@ -745,7 +745,7 @@ int LuaScriptInterface::simulation_signNewIndex(lua_State *l)
 			luaL_error(l, "Invalid X coordinate");
 		return 0;
 	}
-	else if (!key.compare("y"))
+	else if (byteStringEqualsLiteral(key, "y"))
 	{
 		int y = luaL_checkinteger(l, 3);
 		if (y >= 0 && y < YRES)
@@ -754,7 +754,11 @@ int LuaScriptInterface::simulation_signNewIndex(lua_State *l)
 			luaL_error(l, "Invalid Y coordinate");
 		return 0;
 	}
-	else if (!key.compare("displayText") || !key.compare("screenX") || !key.compare("screenY") || !key.compare("width") || !key.compare("height"))
+	else if (byteStringEqualsLiteral(key, "displayText") ||
+	         byteStringEqualsLiteral(key, "screenX") ||
+	         byteStringEqualsLiteral(key, "screenY") ||
+	         byteStringEqualsLiteral(key, "width") ||
+	         byteStringEqualsLiteral(key, "height"))
 	{
 		luaL_error(l, "That property can't be directly set");
 	}
@@ -767,7 +771,7 @@ int LuaScriptInterface::simulation_newsign(lua_State *l)
 	if (luacon_sim->signs.size() >= MAXSIGNS)
 		return lua_pushnil(l), 1;
 
-	String text = format::CleanString(ByteString(luaL_checkstring(l, 1)).FromUtf8(), false, true, true).Substr(0, 45);
+	String text = format::CleanString(tpt_lua_checkString(l, 1), false, true, true).Substr(0, 45);
 	int x = luaL_checkinteger(l, 2);
 	int y = luaL_checkinteger(l, 3);
 	int ju = luaL_optinteger(l, 4, 1);
@@ -1136,7 +1140,7 @@ int LuaScriptInterface::simulation_partProperty(lua_State * l)
 	}
 	else if (lua_type(l, 2) == LUA_TSTRING)
 	{
-		ByteString fieldName = lua_tostring(l, 2);
+		ByteString fieldName = tpt_lua_toByteString(l, 2);
 		for (auto &alias : Particle::GetPropertyAliases())
 		{
 			if (fieldName == alias.from)
@@ -1807,7 +1811,7 @@ int LuaScriptInterface::simulation_saveStamp(lua_State * l)
 	int w = luaL_optint(l,3,XRES-1);
 	int h = luaL_optint(l,4,YRES-1);
 	ByteString name = luacon_controller->StampRegion(ui::Point(x, y), ui::Point(x+w, y+h));
-	lua_pushstring(l, name.c_str());
+	tpt_lua_pushByteString(l, name);
 	return 1;
 }
 
@@ -1820,7 +1824,7 @@ int LuaScriptInterface::simulation_loadStamp(lua_State * l)
 	int y = luaL_optint(l,3,0);
 	if (lua_isstring(l, 1)) //Load from 10 char name, or full filename
 	{
-		const char * filename = luaL_optstring(l, 1, "");
+		auto filename = tpt_lua_optByteString(l, 1, "");
 		tempfile = Client::Ref().GetStamp(filename);
 	}
 	if ((!tempfile || !tempfile->GetGameSave()) && lua_isnumber(l, 1)) //Load from stamp ID
@@ -1849,7 +1853,7 @@ int LuaScriptInterface::simulation_loadStamp(lua_State * l)
 		{
 			pushed = 2;
 			lua_pushnil(l);
-			lua_pushstring(l, luacon_ci->GetLastError().ToUtf8().c_str());
+			tpt_lua_pushString(l, luacon_ci->GetLastError());
 		}
 		delete tempfile;
 	}
@@ -1869,12 +1873,12 @@ int LuaScriptInterface::simulation_deleteStamp(lua_State * l)
 
 	if (lua_isstring(l, 1)) //note: lua_isstring returns true on numbers too
 	{
-		const char * filename = luaL_optstring(l, 1, "");
-		for (std::vector<ByteString>::const_iterator iterator = stamps.begin(), end = stamps.end(); iterator != end; ++iterator)
+		auto filename = tpt_lua_optByteString(l, 1, "");
+		for (auto &stamp : stamps)
 		{
-			if (*iterator == filename)
+			if (stamp == filename)
 			{
-				Client::Ref().DeleteStamp(*iterator);
+				Client::Ref().DeleteStamp(stamp);
 				return 0;
 			}
 		}
@@ -2343,9 +2347,9 @@ int LuaScriptInterface::simulation_listCustomGol(lua_State *l)
 	for (auto &cgol : luacon_sim->GetCustomGol())
 	{
 		lua_newtable(l);
-		lua_pushstring(l, cgol.nameString.ToUtf8().c_str());
+		tpt_lua_pushString(l, cgol.nameString);
 		lua_setfield(l, -2, "name");
-		lua_pushstring(l, cgol.ruleString.ToUtf8().c_str());
+		tpt_lua_pushString(l, cgol.ruleString);
 		lua_setfield(l, -2, "rulestr");
 		lua_pushnumber(l, cgol.rule);
 		lua_setfield(l, -2, "rule");
@@ -2370,10 +2374,10 @@ int LuaScriptInterface::simulation_addCustomGol(lua_State *l)
 	}
 	else
 	{
-		ruleString = ByteString(luaL_checkstring(l, 1)).FromUtf8();
+		ruleString = tpt_lua_checkString(l, 1);
 		rule = ParseGOLString(ruleString);
 	}
-	String nameString = ByteString(luaL_checkstring(l, 2)).FromUtf8();
+	String nameString = tpt_lua_checkString(l, 2);
 	unsigned int color1 = luaL_checkinteger(l, 3);
 	unsigned int color2 = luaL_checkinteger(l, 4);
 
@@ -2392,7 +2396,7 @@ int LuaScriptInterface::simulation_addCustomGol(lua_State *l)
 
 int LuaScriptInterface::simulation_removeCustomGol(lua_State *l)
 {
-	ByteString nameString = luaL_checkstring(l, 1);
+	ByteString nameString = tpt_lua_checkByteString(l, 1);
 	bool removedAny = luacon_model->RemoveCustomGOLType("DEFAULT_PT_LIFECUST_" + nameString);
 	if (removedAny)
 		luacon_model->BuildMenus();
@@ -2792,14 +2796,12 @@ void LuaScriptInterface::LuaGetProperty(lua_State* l, StructProperty property, i
 			break;
 		case StructProperty::BString:
 		{
-			ByteString byteStringProperty = *((ByteString*)propertyAddress);
-			lua_pushstring(l, byteStringProperty.c_str());
+			tpt_lua_pushByteString(l, *((ByteString*)propertyAddress));
 			break;
 		}
 		case StructProperty::String:
 		{
-			ByteString byteStringProperty = (*((String*)propertyAddress)).ToUtf8();
-			lua_pushstring(l, byteStringProperty.c_str());
+			tpt_lua_pushString(l, *((String*)propertyAddress));
 			break;
 		}
 		case StructProperty::Colour:
@@ -2842,10 +2844,10 @@ void LuaScriptInterface::LuaSetProperty(lua_State* l, StructProperty property, i
 			*((unsigned char*)propertyAddress) = int32_truncate(luaL_checknumber(l, stackPos));
 			break;
 		case StructProperty::BString:
-			*((ByteString*)propertyAddress) = ByteString(luaL_checkstring(l, stackPos));
+			*((ByteString*)propertyAddress) = tpt_lua_checkByteString(l, stackPos);
 			break;
 		case StructProperty::String:
-			*((String*)propertyAddress) = ByteString(luaL_checkstring(l, stackPos)).FromUtf8();
+			*((String*)propertyAddress) = tpt_lua_checkString(l, stackPos);
 			break;
 		case StructProperty::Colour:
 #if PIXELSIZE == 4
@@ -2922,11 +2924,10 @@ int LuaScriptInterface::elements_loadDefault(lua_State * l)
 
 int LuaScriptInterface::elements_allocate(lua_State * l)
 {
-	ByteString group, id, identifier;
 	luaL_checktype(l, 1, LUA_TSTRING);
 	luaL_checktype(l, 2, LUA_TSTRING);
-	group = ByteString(lua_tostring(l, 1)).ToUpper();
-	id = ByteString(lua_tostring(l, 2)).ToUpper();
+	auto group = tpt_lua_toByteString(l, 1).ToUpper();
+	auto id = tpt_lua_toByteString(l, 2).ToUpper();
 
 	if (id.Contains("_"))
 	{
@@ -2941,7 +2942,7 @@ int LuaScriptInterface::elements_allocate(lua_State * l)
 		return luaL_error(l, "You cannot create elements in the 'DEFAULT' group.");
 	}
 
-	identifier = group + "_PT_" + id;
+	auto identifier = group + "_PT_" + id;
 
 	for(int i = 0; i < PT_NUM; i++)
 	{
@@ -3295,7 +3296,7 @@ int LuaScriptInterface::elements_element(lua_State * l)
 			lua_setfield(l, -2, prop.Name.c_str());
 		}
 
-		lua_pushstring(l, luacon_sim->elements[id].Identifier.c_str());
+		tpt_lua_pushByteString(l, luacon_sim->elements[id].Identifier);
 		lua_setfield(l, -2, "Identifier");
 
 		GetDefaultProperties(l, id);
@@ -3356,7 +3357,7 @@ int LuaScriptInterface::elements_property(lua_State * l)
 	{
 		return luaL_error(l, "Invalid element");
 	}
-	ByteString propertyName(luaL_checklstring(l, 2, NULL));
+	ByteString propertyName = tpt_lua_checkByteString(l, 2);
 
 	auto &properties = Element::GetProperties();
 	auto prop = std::find_if(properties.begin(), properties.end(), [&propertyName](StructProperty const &p) {
@@ -3502,7 +3503,7 @@ int LuaScriptInterface::elements_property(lua_State * l)
 		}
 		else if (propertyName == "Identifier")
 		{
-			lua_pushstring(l, luacon_sim->elements[id].Identifier.c_str());
+			tpt_lua_pushByteString(l, luacon_sim->elements[id].Identifier);
 			return 1;
 		}
 		else if (propertyName == "DefaultProperties")
@@ -3576,8 +3577,8 @@ void LuaScriptInterface::initGraphicsAPI()
 int LuaScriptInterface::graphics_textSize(lua_State * l)
 {
 	int width, height;
-	const char* text = luaL_optstring(l, 1, "");
-	Graphics::textsize(ByteString(text).FromUtf8(), width, height);
+	auto text = tpt_lua_optString(l, 1, "");
+	Graphics::textsize(text, width, height);
 
 	lua_pushinteger(l, width);
 	lua_pushinteger(l, height);
@@ -3588,7 +3589,7 @@ int LuaScriptInterface::graphics_drawText(lua_State * l)
 {
 	int x = lua_tointeger(l, 1);
 	int y = lua_tointeger(l, 2);
-	const char * text = luaL_optstring(l, 3, "");
+	auto text = tpt_lua_optString(l, 3, "");
 	int r = luaL_optint(l, 4, 255);
 	int g = luaL_optint(l, 5, 255);
 	int b = luaL_optint(l, 6, 255);
@@ -3603,7 +3604,7 @@ int LuaScriptInterface::graphics_drawText(lua_State * l)
 	if (a<0) a = 0;
 	else if (a>255) a = 255;
 
-	luacon_g->drawtext(x, y, ByteString(text).FromUtf8(), r, g, b, a);
+	luacon_g->drawtext(x, y, text, r, g, b, a);
 	return 0;
 }
 
@@ -3781,7 +3782,7 @@ void LuaScriptInterface::initFileSystemAPI()
 
 int LuaScriptInterface::fileSystem_list(lua_State * l)
 {
-	const char * directoryName = luaL_checkstring(l, 1);
+	auto directoryName = tpt_lua_checkByteString(l, 1);
 
 	int index = 1;
 	lua_newtable(l);
@@ -3789,7 +3790,8 @@ int LuaScriptInterface::fileSystem_list(lua_State * l)
 	DIR * directory;
 	struct dirent * entry;
 
-	directory = opendir(directoryName);
+	// FIXME: winapi
+	directory = opendir(directoryName.c_str());
 	if (directory != NULL)
 	{
 		while ((entry = readdir(directory)))
@@ -3812,7 +3814,7 @@ int LuaScriptInterface::fileSystem_list(lua_State * l)
 
 int LuaScriptInterface::fileSystem_exists(lua_State * l)
 {
-	const char * filename = luaL_checkstring(l, 1);
+	auto filename = tpt_lua_checkByteString(l, 1);
 
 	bool ret = Platform::Stat(filename);
 	lua_pushboolean(l, ret);
@@ -3821,7 +3823,7 @@ int LuaScriptInterface::fileSystem_exists(lua_State * l)
 
 int LuaScriptInterface::fileSystem_isFile(lua_State * l)
 {
-	const char * filename = luaL_checkstring(l, 1);
+	auto filename = tpt_lua_checkByteString(l, 1);
 
 	bool ret = Platform::FileExists(filename);
 	lua_pushboolean(l, ret);
@@ -3830,7 +3832,7 @@ int LuaScriptInterface::fileSystem_isFile(lua_State * l)
 
 int LuaScriptInterface::fileSystem_isDirectory(lua_State * l)
 {
-	const char * dirname = luaL_checkstring(l, 1);
+	auto dirname = tpt_lua_checkByteString(l, 1);
 
 	bool ret = Platform::DirectoryExists(dirname);
 	lua_pushboolean(l, ret);
@@ -3839,7 +3841,7 @@ int LuaScriptInterface::fileSystem_isDirectory(lua_State * l)
 
 int LuaScriptInterface::fileSystem_makeDirectory(lua_State * l)
 {
-	const char * dirname = luaL_checkstring(l, 1);
+	auto dirname = tpt_lua_checkByteString(l, 1);
 
 	int ret = 0;
 	ret = Platform::MakeDirectory(dirname);
@@ -3849,7 +3851,7 @@ int LuaScriptInterface::fileSystem_makeDirectory(lua_State * l)
 
 int LuaScriptInterface::fileSystem_removeDirectory(lua_State * l)
 {
-	const char * directory = luaL_checkstring(l, 1);
+	auto directory = tpt_lua_checkByteString(l, 1);
 
 	bool ret = Platform::DeleteDirectory(directory);
 	lua_pushboolean(l, ret);
@@ -3858,7 +3860,7 @@ int LuaScriptInterface::fileSystem_removeDirectory(lua_State * l)
 
 int LuaScriptInterface::fileSystem_removeFile(lua_State * l)
 {
-	const char * filename = luaL_checkstring(l, 1);
+	auto filename = tpt_lua_checkByteString(l, 1);
 
 	bool ret = Platform::RemoveFile(filename);
 	lua_pushboolean(l, ret);
@@ -3867,11 +3869,12 @@ int LuaScriptInterface::fileSystem_removeFile(lua_State * l)
 
 int LuaScriptInterface::fileSystem_move(lua_State * l)
 {
-	const char * filename = luaL_checkstring(l, 1);
-	const char * newFilename = luaL_checkstring(l, 2);
+	auto filename = tpt_lua_checkByteString(l, 1);
+	auto newFilename = tpt_lua_checkByteString(l, 2);
 	int ret = 0;
 
-	ret = rename(filename, newFilename);
+	// FIXME: winapi
+	ret = rename(filename.c_str(), newFilename.c_str());
 
 	lua_pushboolean(l, ret == 0);
 	return 1;
@@ -3879,12 +3882,13 @@ int LuaScriptInterface::fileSystem_move(lua_State * l)
 
 int LuaScriptInterface::fileSystem_copy(lua_State * l)
 {
-	const char * filename = luaL_checkstring(l, 1);
-	const char * newFilename = luaL_checkstring(l, 2);
+	auto filename = tpt_lua_checkByteString(l, 1);
+	auto newFilename = tpt_lua_checkByteString(l, 2);
 	int ret = 0;
 
 	try
 	{
+		// FIXME: winapi
 		std::ifstream source(filename, std::ios::binary);
 		std::ofstream dest(newFilename, std::ios::binary);
 		source.exceptions(std::ifstream::failbit | std::ifstream::badbit);
@@ -3933,25 +3937,25 @@ void LuaScriptInterface::initPlatformAPI()
 
 int LuaScriptInterface::platform_platform(lua_State * l)
 {
-	lua_pushstring(l, IDENT_PLATFORM);
+	lua_pushliteral(l, IDENT_PLATFORM);
 	return 1;
 }
 
 int LuaScriptInterface::platform_ident(lua_State * l)
 {
-	lua_pushstring(l, IDENT);
+	lua_pushliteral(l, IDENT);
 	return 1;
 }
 
 int LuaScriptInterface::platform_build(lua_State * l)
 {
-	lua_pushstring(l, IDENT_BUILD);
+	lua_pushliteral(l, IDENT_BUILD);
 	return 1;
 }
 
 int LuaScriptInterface::platform_releaseType(lua_State * l)
 {
-	lua_pushstring(l, IDENT_RELTYPE);
+	lua_pushliteral(l, IDENT_RELTYPE);
 	return 1;
 }
 
@@ -3959,7 +3963,7 @@ int LuaScriptInterface::platform_exeName(lua_State * l)
 {
 	ByteString name = Platform::ExecutableName();
 	if (name.length())
-		lua_pushstring(l, name.c_str());
+		tpt_lua_pushByteString(l, name);
 	else
 		luaL_error(l, "Error, could not get executable name");
 	return 1;
@@ -3973,21 +3977,21 @@ int LuaScriptInterface::platform_restart(lua_State * l)
 
 int LuaScriptInterface::platform_openLink(lua_State * l)
 {
-	const char * uri = luaL_checkstring(l, 1);
+	auto uri = tpt_lua_checkByteString(l, 1);
 	Platform::OpenURI(uri);
 	return 0;
 }
 
 int LuaScriptInterface::platform_clipboardCopy(lua_State * l)
 {
-	lua_pushstring(l, ClipboardPull().c_str());
+	tpt_lua_pushByteString(l, ClipboardPull());
 	return 1;
 }
 
 int LuaScriptInterface::platform_clipboardPaste(lua_State * l)
 {
 	luaL_checktype(l, 1, LUA_TSTRING);
-	ClipboardPush(luaL_optstring(l, 1, ""));
+	ClipboardPush(tpt_lua_optByteString(l, 1, ""));
 	return 0;
 }
 
@@ -4022,7 +4026,6 @@ void LuaScriptInterface::initEventAPI()
 
 int LuaScriptInterface::event_register(lua_State * l)
 {
-	//ByteString eventname = luaL_checkstring(l, 1);
 	int eventName = luaL_checkinteger(l, 1);
 	luaL_checktype(l, 2, LUA_TFUNCTION);
 	return LuaEvents::RegisterEventHook(l, ByteString::Build("tptevents-", eventName));
@@ -4030,7 +4033,6 @@ int LuaScriptInterface::event_register(lua_State * l)
 
 int LuaScriptInterface::event_unregister(lua_State * l)
 {
-	//ByteString eventname = luaL_checkstring(l, 1);
 	int eventName = luaL_checkinteger(l, 1);
 	luaL_checktype(l, 2, LUA_TFUNCTION);
 	return LuaEvents::UnregisterEventHook(l, ByteString::Build("tptevents-", eventName));
@@ -4183,7 +4185,7 @@ static int http_request_finish(lua_State *l)
 
 static int http_request(lua_State *l, bool isPost)
 {
-	ByteString uri(luaL_checkstring(l, 1));
+	ByteString uri = tpt_lua_checkByteString(l, 1);
 	std::map<ByteString, ByteString> post_data;
 	if (isPost)
 	{
@@ -4193,7 +4195,7 @@ static int http_request(lua_State *l, bool isPost)
 			while (lua_next(l, 2))
 			{
 				lua_pushvalue(l, -2);
-				post_data.emplace(lua_tostring(l, -1), lua_tostring(l, -2));
+				post_data.emplace(tpt_lua_toByteString(l, -1), tpt_lua_toByteString(l, -2));
 				lua_pop(l, 2);
 			}
 		}
@@ -4209,7 +4211,7 @@ static int http_request(lua_State *l, bool isPost)
 			for (auto i = 0U; i < size; ++i)
 			{
 				lua_rawgeti(l, headersIndex, i + 1);
-				headers.push_back(lua_tostring(l, -1));
+				headers.push_back(tpt_lua_toByteString(l, -1));
 				lua_pop(l, 1);
 			}
 		}
@@ -4220,7 +4222,7 @@ static int http_request(lua_State *l, bool isPost)
 			while (lua_next(l, headersIndex))
 			{
 				lua_pushvalue(l, -2);
-				headers.push_back(lua_tostring(l, -1) + ByteString(": ") + lua_tostring(l, -2));
+				headers.push_back(tpt_lua_toByteString(l, -1) + ByteString(": ") + tpt_lua_toByteString(l, -2));
 				lua_pop(l, 2);
 			}
 		}
@@ -4311,12 +4313,12 @@ int LuaScriptInterface::Command(String command)
 		lastCode += command;
 		ByteString tmp = ("return " + lastCode).ToUtf8();
 		ui::Engine::Ref().LastTick(Platform::GetTime());
-		luaL_loadbuffer(l, tmp.c_str(), tmp.length(), "@console");
+		luaL_loadbuffer(l, tmp.data(), tmp.size(), "@console");
 		if (lua_type(l, -1) != LUA_TFUNCTION)
 		{
 			lua_pop(l, 1);
 			ByteString lastCodeUtf8 = lastCode.ToUtf8();
-			luaL_loadbuffer(l, lastCodeUtf8.c_str(), lastCodeUtf8.length(), "@console");
+			luaL_loadbuffer(l, lastCodeUtf8.data(), lastCodeUtf8.size(), "@console");
 		}
 		if (lua_type(l, -1) != LUA_TFUNCTION)
 		{
@@ -4339,9 +4341,9 @@ int LuaScriptInterface::Command(String command)
 				{
 					luaL_tostring(l, level);
 					if (text.length())
-						text += ", " + ByteString(luaL_optstring(l, -1, "")).FromUtf8();
+						text += ", " + tpt_lua_optString(l, -1, "");
 					else
-						text = ByteString(luaL_optstring(l, -1, "")).FromUtf8();
+						text = tpt_lua_optString(l, -1, "");
 					lua_pop(l, 1);
 				}
 				if (text.length())
@@ -4591,5 +4593,78 @@ void LuaScriptInterface::initSocketAPI()
 	LuaTCPSocket::Open(l);
 }
 #endif
+
+void tpt_lua_pushByteString(lua_State *L, const ByteString &str)
+{
+	lua_pushlstring(L, str.data(), str.size());
+}
+
+void tpt_lua_pushString(lua_State *L, const String &str)
+{
+	tpt_lua_pushByteString(L, str.ToUtf8());
+}
+
+ByteString tpt_lua_toByteString(lua_State *L, int index)
+{
+	size_t size;
+	if (auto *data = lua_tolstring(L, index, &size))
+	{
+		return ByteString(data, size);
+	}
+	return {};
+}
+
+String tpt_lua_toString(lua_State *L, int index, bool ignoreError)
+{
+	return tpt_lua_toByteString(L, index).FromUtf8(ignoreError);
+}
+
+ByteString tpt_lua_checkByteString(lua_State *L, int index)
+{
+	size_t size;
+	if (auto *data = luaL_checklstring(L, index, &size))
+	{
+		return ByteString(data, size);
+	}
+	return {};
+}
+
+String tpt_lua_checkString(lua_State *L, int index, bool ignoreError)
+{
+	return tpt_lua_checkByteString(L, index).FromUtf8(ignoreError);
+}
+
+ByteString tpt_lua_optByteString(lua_State *L, int index, ByteString defaultValue)
+{
+	if (lua_isnoneornil(L, index))
+	{
+		return defaultValue;
+	}
+	return tpt_lua_checkByteString(L, index);
+}
+
+String tpt_lua_optString(lua_State *L, int index, String defaultValue, bool ignoreError)
+{
+	if (lua_isnoneornil(L, index))
+	{
+		return defaultValue;
+	}
+	return tpt_lua_checkString(L, index, ignoreError);
+}
+
+int tpt_lua_loadstring(lua_State *L, const ByteString &str)
+{
+	return luaL_loadbuffer(L, str.data(), str.size(), str.data());
+}
+
+int tpt_lua_dostring(lua_State *L, const ByteString &str)
+{
+	return tpt_lua_loadstring(L, str) || lua_pcall(L, 0, LUA_MULTRET, 0);
+}
+
+bool tpt_lua_equalsString(lua_State *L, int index, const char *data, size_t size)
+{
+	return lua_isstring(L, index) && lua_objlen(L, index) == size && !memcmp(lua_tostring(L, index), data, size);
+}
 
 #endif

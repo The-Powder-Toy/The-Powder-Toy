@@ -23,7 +23,7 @@ void Event::PushBoolean(lua_State * l, bool flag)
 void Event::PushString(lua_State * l, ByteString str)
 {
 #ifdef LUACONSOLE
-	lua_pushstring(l, str.c_str());
+	tpt_lua_pushByteString(l, str);
 #endif
 }
 
@@ -137,13 +137,13 @@ int LuaEvents::RegisterEventHook(lua_State *l, ByteString eventName)
 {
 	if (lua_isfunction(l, 2))
 	{
-		lua_pushstring(l, eventName.c_str());
+		tpt_lua_pushByteString(l, eventName);
 		lua_rawget(l, LUA_REGISTRYINDEX);
 		if (!lua_istable(l, -1))
 		{
 			lua_pop(l, 1);
 			lua_newtable(l);
-			lua_pushstring(l, eventName.c_str());
+			tpt_lua_pushByteString(l, eventName);
 			lua_pushvalue(l, -2);
 			lua_rawset(l, LUA_REGISTRYINDEX);
 		}
@@ -159,13 +159,13 @@ int LuaEvents::UnregisterEventHook(lua_State *l, ByteString eventName)
 {
 	if (lua_isfunction(l, 2))
 	{
-		lua_pushstring(l, eventName.c_str());
+		tpt_lua_pushByteString(l, eventName);
 		lua_rawget(l, LUA_REGISTRYINDEX);
 		if (!lua_istable(l, -1))
 		{
 			lua_pop(l, -1);
 			lua_newtable(l);
-			lua_pushstring(l, eventName.c_str());
+			tpt_lua_pushByteString(l, eventName);
 			lua_pushvalue(l, -2);
 			lua_rawset(l, LUA_REGISTRYINDEX);
 		}
@@ -196,13 +196,13 @@ bool LuaEvents::HandleEvent(LuaScriptInterface *luacon_ci, Event *event, ByteStr
 	ui::Engine::Ref().LastTick(Platform::GetTime());
 	bool cont = true;
 	lua_State* l = luacon_ci->l;
-	lua_pushstring(l, eventName.c_str());
+	tpt_lua_pushByteString(l, eventName);
 	lua_rawget(l, LUA_REGISTRYINDEX);
 	if (!lua_istable(l, -1))
 	{
 		lua_pop(l, 1);
 		lua_newtable(l);
-		lua_pushstring(l, eventName.c_str());
+		tpt_lua_pushByteString(l, eventName);
 		lua_pushvalue(l, -2);
 		lua_rawset(l, LUA_REGISTRYINDEX);
 	}
@@ -245,7 +245,7 @@ bool LuaEvents::HandleEvent(LuaScriptInterface *luacon_ci, Event *event, ByteStr
 String LuaEvents::luacon_geterror(LuaScriptInterface * luacon_ci)
 {
 	luaL_tostring(luacon_ci->l, -1);
-	String err = ByteString(luaL_optstring(luacon_ci->l, -1, "failed to execute")).FromUtf8();
+	String err = tpt_lua_optString(luacon_ci->l, -1, "failed to execute");
 	lua_pop(luacon_ci->l, 1);
 	return err;
 }

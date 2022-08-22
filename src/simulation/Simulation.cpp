@@ -4626,18 +4626,18 @@ movedone:
 
 int Simulation::GetParticleType(ByteString type)
 {
-	char * txt = (char*)type.c_str();
+	type = type.ToUpper();
 
 	// alternative names for some elements
-	if (!strcasecmp(txt, "C4"))
+	if (byteStringEqualsLiteral(type, "C4"))
 		return PT_PLEX;
-	else if (!strcasecmp(txt, "C5"))
+	else if (byteStringEqualsLiteral(type, "C5"))
 		return PT_C5;
-	else if (!strcasecmp(txt, "NONE"))
+	else if (byteStringEqualsLiteral(type, "NONE"))
 		return PT_NONE;
 	for (int i = 1; i < PT_NUM; i++)
 	{
-		if (!strcasecmp(txt, elements[i].Name.ToUtf8().c_str()) && elements[i].Name.size() && elements[i].Enabled)
+		if (elements[i].Name.size() && elements[i].Enabled && type == elements[i].Name.ToUtf8().ToUpper())
 		{
 			return i;
 		}

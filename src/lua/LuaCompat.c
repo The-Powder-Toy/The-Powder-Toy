@@ -60,7 +60,8 @@ int luaL_tostring(lua_State *L, int n)
 	switch (lua_type(L, n))
 	{
 		case LUA_TNUMBER:
-			lua_pushstring(L, lua_tostring(L, n));
+			lua_tostring(L, n);
+			lua_pushvalue(L, n);
 			break;
 		case LUA_TSTRING:
 			lua_pushvalue(L, n);

@@ -17,6 +17,9 @@
 # include <time.h>
 #endif
 
+#include "LuaScriptInterface.h"
+#include "Misc.h"
+
 void SetupCurlEasyCiphers(CURL *easy);
 
 namespace LuaTCPSocket
@@ -264,11 +267,11 @@ namespace LuaTCPSocket
 			readLine,
 		} pattern = readN;
 		size_t len = 4096;
-		if (lua_isstring(l, 2) && !strcmp(lua_tostring(l, 2), "*a"))
+		if (tpt_lua_equalsLiteral(l, 2, "*a"))
 		{
 			pattern = readAll;
 		}
-		else if (lua_isstring(l, 2) && !strcmp(lua_tostring(l, 2), "*l"))
+		else if (tpt_lua_equalsLiteral(l, 2, "*l"))
 		{
 			pattern = readLine;
 		}
@@ -459,7 +462,7 @@ namespace LuaTCPSocket
 				//   the hostnames.
 				curl_easy_setopt(tcps->easy, CURLOPT_ERRORBUFFER, tcps->errorBuf);
 				curl_easy_setopt(tcps->easy, CURLOPT_CONNECT_ONLY, 1L);
-				ByteString address = luaL_checkstring(l, 2);
+				ByteString address = tpt_lua_checkByteString(l, 2);
 				curl_easy_setopt(tcps->easy, CURLOPT_PORT, long(luaL_checkinteger(l, 3)));
 				curl_easy_setopt(tcps->easy, CURLOPT_NOSIGNAL, 1L);
 				curl_easy_setopt(tcps->easy, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0);
@@ -582,18 +585,18 @@ namespace LuaTCPSocket
 	static int SetOption(lua_State *l)
 	{
 		auto *tcps = (TCPSocket *)luaL_checkudata(l, 1, "TCPSocket");
-		auto *option = luaL_checkstring(l, 2);
-		if (!strcmp(option, "keepalive"))
+		auto option = tpt_lua_checkByteString(l, 2);
+		if (byteStringEqualsLiteral(option, "keepalive"))
 		{
 			curl_easy_setopt(tcps->easy, CURLOPT_TCP_KEEPALIVE, long(lua_toboolean(l, 3)));
 			return 0;
 		}
-		else if (!strcmp(option, "tcp-nodelay"))
+		else if (byteStringEqualsLiteral(option, "tcp-nodelay"))
 		{
 			curl_easy_setopt(tcps->easy, CURLOPT_TCP_NODELAY, long(lua_toboolean(l, 3)));
 			return 0;
 		}
-		else if (!strcmp(option, "verify-peer"))
+		else if (byteStringEqualsLiteral(option, "verify-peer"))
 		{
 			curl_easy_setopt(tcps->easy, CURLOPT_SSL_VERIFYPEER, long(lua_toboolean(l, 3)));
 			return 0;
@@ -604,18 +607,18 @@ namespace LuaTCPSocket
 	static int Shutdown(lua_State *l)
 	{
 		auto *tcps = (TCPSocket *)luaL_checkudata(l, 1, "TCPSocket");
-		auto *direction = luaL_optstring(l, 2, "both");
-		if (!strcmp(direction, "receive"))
+		auto direction = tpt_lua_optByteString(l, 2, "both");
+		if (byteStringEqualsLiteral(direction, "receive"))
 		{
 			tcps->readClosed = true;
 			return 0;
 		}
-		else if (!strcmp(direction, "send"))
+		else if (byteStringEqualsLiteral(direction, "send"))
 		{
 			tcps->writeClosed = true;
 			return 0;
 		}
-		else if (!strcmp(direction, "both"))
+		else if (byteStringEqualsLiteral(direction, "both"))
 		{
 			tcps->readClosed = true;
 			tcps->writeClosed = true;

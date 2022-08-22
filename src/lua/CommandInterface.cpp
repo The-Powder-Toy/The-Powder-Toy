@@ -6,8 +6,8 @@
 #include <strings.h>
 #endif
 
+#include "Misc.h"
 #include "gui/game/GameModel.h"
-
 #include "simulation/Particle.h"
 
 CommandInterface::CommandInterface(GameController * c, GameModel * m) {
@@ -54,7 +54,7 @@ int CommandInterface::GetPropertyOffset(ByteString key, FormatType & format)
 			switch (prop.Type)
 			{
 			case StructProperty::ParticleType:
-				format = (key == "type") ? FormatElement : FormatInt; // FormatElement is tightly coupled with "type"
+				format = byteStringEqualsLiteral(key, "type") ? FormatElement : FormatInt; // FormatElement is tightly coupled with "type"
 				break;
 
 			case StructProperty::Integer:
@@ -81,4 +81,3 @@ String CommandInterface::GetLastError()
 
 CommandInterface::~CommandInterface() {
 }
-
