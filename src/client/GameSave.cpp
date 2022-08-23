@@ -2619,6 +2619,7 @@ char * GameSave::serialiseOPS(unsigned int & dataLength)
 	bson_append_string(&b, "releaseType", IDENT_RELTYPE);
 	bson_append_string(&b, "platform", IDENT_PLATFORM);
 	bson_append_string(&b, "builtType", IDENT_BUILD);
+	bson_append_string(&b, "ident", IDENT);
 	bson_append_finish_object(&b);
 	if (gravityMode == 3)
 	{

@@ -1,6 +1,7 @@
+#include "client/http/Request.h" // includes curl.h, needs to come first to silence a warning on windows
+
 #include "UpdateActivity.h"
 
-#include "client/http/Request.h"
 #include "bzip2/bzlib.h"
 
 #include "Config.h"

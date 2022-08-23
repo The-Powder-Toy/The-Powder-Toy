@@ -1,6 +1,0 @@
-[wrap-file]
-directory = tpt-libs-prebuilt-x86_64-mac-gcc-static-v20220414193335
-
-source_url = https://github.com/The-Powder-Toy/tpt-libs/releases/download/v20220414193335/tpt-libs-prebuilt-x86_64-mac-gcc-static-v20220414193335.zip
-source_filename = tpt-libs-prebuilt-x86_64-mac-gcc-static-v20220414193335.zip
-source_hash = 92cf4a7e9260a7706af6de681bcb422e7cdf002d8fd699f6bf41248c5a0e8561

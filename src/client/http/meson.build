@@ -8,7 +8,7 @@ client_files += files(
 	'ThumbnailRequest.cpp',
 )
 
-if uopt_http
+if enable_http
 	client_files += files(
 		'RequestManager.cpp',
 	)

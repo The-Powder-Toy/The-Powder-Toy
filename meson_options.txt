@@ -58,16 +58,9 @@ option(
 option(
 	'lua',
 	type: 'combo',
-	choices: [ 'none', 'lua5.1', 'lua5.2', 'luajit' ],
-	value: 'luajit',
+	choices: [ 'none', 'lua5.1', 'lua5.2', 'luajit', 'auto' ],
+	value: 'auto',
 	description: 'Lua library to use'
-)
-option(
-	'ssl',
-	type: 'combo',
-	choices: [ 'openssl' ],
-	value: 'openssl',
-	description: 'SSL library to use'
 )
 option(
 	'x86_sse',
@@ -75,24 +68,6 @@ option(
 	choices: [ 'none', 'sse', 'sse2', 'sse3', 'auto' ],
 	value: 'auto',
 	description: 'Enable SSE (available only on x86)'
-)
-option(
-	'native',
-	type: 'boolean',
-	value: false,
-	description: 'Build with optimizations specific to the local machine, may not run on other machines, overrides \'x86_sse\''
-)
-option(
-	'ogli',
-	type: 'boolean',
-	value: false,
-	description: 'Enable OpenGL interface rendering (currently defunct)'
-)
-option(
-	'oglr',
-	type: 'boolean',
-	value: false,
-	description: 'Enable OpenGL particle rendering (currently defunct)'
 )
 option(
 	'build_powder',

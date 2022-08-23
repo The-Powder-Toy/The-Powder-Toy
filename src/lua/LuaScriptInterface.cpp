@@ -1,6 +1,8 @@
 #include "Config.h"
 #ifdef LUACONSOLE
 
+#include "client/http/Request.h" // includes curl.h, needs to come first to silence a warning on windows
+
 #include "LuaScriptInterface.h"
 
 #include <vector>
@@ -40,7 +42,6 @@
 #include "simulation/ToolClasses.h"
 #include "simulation/SaveRenderer.h"
 
-#include "client/http/Request.h"
 #include "gui/interface/Window.h"
 #include "gui/interface/Engine.h"
 #include "gui/game/GameView.h"

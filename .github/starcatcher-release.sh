@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
-curl $1 > perform_release
+curl "https://starcatcher.us/TPT/perform-release.lua?mod=$MOD_ID&type=$RELEASE_TYPE&name=$RELEASE_NAME&commit=$GITHUB_SHA" > perform_release
 if ! grep "Release complete" < perform_release > /dev/null; then
 	cat perform_release
 	exit 1

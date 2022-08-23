@@ -1,234 +1,298 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 IFS=$'\n\t'
 
-if [ -z "${PLATFORM_SHORT-}" ]; then
-	>&2 echo "PLATFORM_SHORT not set (lin, mac, win, and)"
+if [[ -z ${BSH_BUILD_PLATFORM-} ]]; then
+	>&2 echo "BSH_BUILD_PLATFORM not set"
 	exit 1
 fi
-if [ -z "${MACHINE_SHORT-}" ]; then
-	>&2 echo "MACHINE_SHORT not set (x86_64, i686, arm64, arm)"
+if [[ -z ${BSH_HOST_ARCH-} ]]; then
+	>&2 echo "BSH_HOST_ARCH not set"
 	exit 1
 fi
-if [ -z "${TOOLSET_SHORT-}" ]; then
-	>&2 echo "TOOLSET_SHORT not set (gcc, clang, mingw)"
+if [[ -z ${BSH_HOST_PLATFORM-} ]]; then
+	>&2 echo "BSH_HOST_PLATFORM not set"
 	exit 1
 fi
-if [ -z "${STATIC_DYNAMIC-}" ]; then
-	>&2 echo "STATIC_DYNAMIC not set (static, dynamic)"
+if [[ -z ${BSH_HOST_LIBC-} ]]; then
+	>&2 echo "BSH_HOST_LIBC not set"
 	exit 1
 fi
-if [ -z "${RELNAME-}" ]; then
-	>&2 echo "RELNAME not set"
+if [[ -z ${BSH_STATIC_DYNAMIC-} ]]; then
+	>&2 echo "BSH_STATIC_DYNAMIC not set"
 	exit 1
 fi
-if [ -z "${RELTYPE-}" ]; then
-	>&2 echo "RELTYPE not set"
+if [[ -z ${BSH_DEBUG_RELEASE-} ]]; then
+	>&2 echo "BSH_DEBUG_RELEASE not set"
 	exit 1
 fi
-if [ -z "${MOD_ID-}" ]; then
+if [[ -z ${RELEASE_NAME-} ]]; then
+	>&2 echo "RELEASE_NAME not set"
+	exit 1
+fi
+if [[ -z ${RELEASE_TYPE-} ]]; then
+	>&2 echo "RELEASE_TYPE not set"
+	exit 1
+fi
+if [[ -z ${MOD_ID-} ]]; then
 	>&2 echo "MOD_ID not set"
 	exit 1
 fi
-
-if [ -z "${build_sh_init-}" ]; then
-	if [ $TOOLSET_SHORT == "msvc" ]; then
-		for i in C:/Program\ Files*/Microsoft\ Visual\ Studio/**/**/VC/Auxiliary/Build/vcvarsall.bat; do
-			vcvarsall_path=$i
-		done
-		if [ $MACHINE_SHORT == "x86_64" ]; then
-			x64_x86=x64
-		else
-			x64_x86=x86
-		fi
-		cat << BUILD_INIT_BAT > .github/build_init.bat
-@echo off
-call "${vcvarsall_path}" ${x64_x86}
-bash -c 'build_sh_init=1 ./.github/build.sh'
-BUILD_INIT_BAT
-		./.github/build_init.bat
-	else
-		build_sh_init=1 ./.github/build.sh
-	fi
-	exit 0
+if [[ -z ${ASSET_PATH-} ]]; then
+	>&2 echo "ASSET_PATH not set"
+	exit 1
+fi
+if [[ -z ${SEPARATE_DEBUG-} ]]; then
+	>&2 echo "SEPARATE_DEBUG not set"
+	exit 1
+fi
+if [[ -z ${DEBUG_ASSET_PATH-} ]]; then
+	>&2 echo "DEBUG_ASSET_PATH not set"
+	exit 1
 fi
 
-if [ -d build ]; then
+case $BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC-$BSH_STATIC_DYNAMIC in
+x86_64-linux-gnu-static) ;;
+x86_64-linux-gnu-dynamic) ;;
+x86_64-windows-mingw-static) ;;
+x86_64-windows-mingw-dynamic) ;;
+x86_64-windows-msvc-static) ;;
+x86_64-windows-msvc-dynamic) ;;
+x86-windows-msvc-static) ;;
+x86-windows-msvc-dynamic) ;;
+x86_64-darwin-macos-static) ;;
+x86_64-darwin-macos-dynamic) ;;
+aarch64-darwin-macos-static) ;;
+aarch64-darwin-macos-dynamic) ;;
+x86-android-bionic-static) ;;
+x86_64-android-bionic-static) ;;
+arm-android-bionic-static) ;;
+aarch64-android-bionic-static) ;;
+*) >&2 echo "configuration $BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC-$BSH_STATIC_DYNAMIC is not supported" && exit 1;;
+esac
+
+if [[ $BSH_HOST_PLATFORM == android ]]; then
+	android_platform=android-30
+	if [[ -z "${JAVA_HOME_8_X64-}" ]]; then
+		>&2 echo "JAVA_HOME_8_X64 not set"
+		exit 1
+	fi
+	if [[ -z "${ANDROID_SDK_ROOT-}" ]]; then
+		>&2 echo "ANDROID_SDK_ROOT not set"
+		exit 1
+	fi
+	if [[ -z "${ANDROID_NDK_LATEST_HOME-}" ]]; then
+		>&2 echo "ANDROID_NDK_LATEST_HOME not set"
+		exit 1
+	fi
+fi
+
+if [[ $BSH_HOST_PLATFORM-$BSH_HOST_LIBC == windows-msvc ]]; then
+	case $BSH_HOST_ARCH in
+	x86_64) vs_env_arch=x64;;
+	x86)    vs_env_arch=x86;;
+	esac
+	. ./.github/vs-env.sh $vs_env_arch
+elif [[ $BSH_HOST_PLATFORM == darwin ]]; then
+	# may need export SDKROOT=$(xcrun --show-sdk-path --sdk macosx11.1)
+	CC=clang
+	CXX=clang++
+	if [[ $BSH_HOST_ARCH == aarch64 ]]; then
+		export MACOSX_DEPLOYMENT_TARGET=11.0
+		CC+=" -arch arm64"
+		CXX+=" -arch arm64"
+	else
+		export MACOSX_DEPLOYMENT_TARGET=10.9
+		CC+=" -arch x86_64"
+		CXX+=" -arch x86_64"
+	fi
+	export CC
+	export CXX
+elif [[ $BSH_HOST_PLATFORM == android ]]; then
+	case $BSH_HOST_ARCH in
+	x86_64)  android_toolchain_prefix=x86_64-linux-android    ; android_system_version=21; android_arch_abi=x86_64     ;;
+	x86)     android_toolchain_prefix=i686-linux-android      ; android_system_version=19; android_arch_abi=x86        ;;
+	aarch64) android_toolchain_prefix=aarch64-linux-android   ; android_system_version=21; android_arch_abi=arm64-v8a  ;;
+	arm)     android_toolchain_prefix=armv7a-linux-androideabi; android_system_version=19; android_arch_abi=armeabi-v7a;;
+	esac
+	android_toolchain_dir=$ANDROID_NDK_LATEST_HOME/toolchains/llvm/prebuilt/linux-x86_64
+	CC=$android_toolchain_dir/bin/$android_toolchain_prefix$android_system_version-clang
+	CXX=$android_toolchain_dir/bin/$android_toolchain_prefix$android_system_version-clang++
+	LD=$android_toolchain_dir/bin/$android_toolchain_prefix-ld
+	AR=$android_toolchain_dir/bin/llvm-ar
+	echo $AR
+	CC+=" -fPIC"
+	CXX+=" -fPIC"
+	LD+=" -fPIC"
+	export CC
+	export CXX
+	export LD
+	export AR
+else
+	export CC=gcc
+	export CXX=g++
+fi
+
+if [[ -d build ]]; then
 	rm -r build
 fi
 
-other_flags=$'\t-Dmod_id='
-other_flags+=$MOD_ID
-bin_suffix=
-bin_prefix=
-static_flag=
-if [ $STATIC_DYNAMIC == "static" ]; then
-	static_flag=-Dstatic=prebuilt
-	if [ $PLATFORM_SHORT == "win" ]; then
-		other_flags+=$'\t-Db_vscrt=static_from_buildtype'
+meson_configure=meson
+if [[ $BSH_DEBUG_RELEASE == release ]]; then
+	meson_configure+=$'\t'-Dbuildtype=debugoptimized
+fi
+meson_configure+=$'\t'-Db_strip=false
+meson_configure+=$'\t'-Db_pie=false
+if [[ $BSH_HOST_PLATFORM-$BSH_HOST_LIBC != windows-msvc ]]; then
+	meson_configure+=$'\t'-Dc_args=[\'-ffunction-sections\',\'-fdata-sections\']
+	meson_configure+=$'\t'-Dcpp_args=[\'-ffunction-sections\',\'-fdata-sections\']
+	if [[ $BSH_HOST_PLATFORM == darwin ]]; then
+		meson_configure+=$'\t'-Dc_link_args=[\'-Wl,-dead_strip\']
+		meson_configure+=$'\t'-Dcpp_link_args=[\'-Wl,-dead_strip\']
+	else
+		meson_configure+=$'\t'-Dc_link_args=[\'-Wl,--gc-sections\']
+		meson_configure+=$'\t'-Dcpp_link_args=[\'-Wl,--gc-sections\']
 	fi
 fi
-if [ $PLATFORM_SHORT == "lin" ]; then
-	# We use gcc on lin; sadly, gcc + lto + libstdc++ + pthread = undefined reference to
-	# pthread_create, thanks to weak symbols in libstdc++.so (or something). See
-	# https://gcc.gnu.org/legacy-ml/gcc-help/2017-03/msg00081.html
-	other_flags+=$'\t-Db_asneeded=false\t-Dcpp_link_args=-Wl,--no-as-needed'
-	if [ $STATIC_DYNAMIC == "static" ] && [ $TOOLSET_SHORT == "gcc" ]; then
-		other_flags+=$'\t-Dbuild_render=true\t-Dbuild_font=true'
+meson_configure+=$'\t'-Dworkaround_gcc_no_pie=true
+meson_configure+=$'\t'-Db_staticpic=false
+meson_configure+=$'\t'-Dinstall_check=true
+meson_configure+=$'\t'-Dmod_id=$MOD_ID
+if [[ $BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC-$BSH_STATIC_DYNAMIC == x86_64-linux-gnu-static ]]; then
+	meson_configure+=$'\t'-Dbuild_render=true
+	meson_configure+=$'\t'-Dbuild_font=true
+fi
+if [[ $BSH_STATIC_DYNAMIC == static ]]; then
+	meson_configure+=$'\t'-Dstatic=prebuilt
+	if [[ $BSH_HOST_PLATFORM == windows ]]; then
+		meson_configure+=$'\t'-Db_vscrt=static_from_buildtype
 	fi
 fi
-if [ $TOOLSET_SHORT == "mingw" ]; then
-	bin_suffix=$bin_suffix.exe
+stable_or_beta=no
+if [[ $RELEASE_TYPE == beta ]]; then
+	meson_configure+=$'\t'-Dbeta=true
+	stable_or_beta=yes
 fi
-if [ $PLATFORM_SHORT == "and" ]; then
-	bin_suffix=$bin_suffix.apk
+if [[ $RELEASE_TYPE == stable ]]; then
+	stable_or_beta=yes
 fi
-stable_or_beta="n"
-if [ "$RELTYPE" == "beta" ]; then
-	other_flags+=$'\t-Dbeta=true'
-	stable_or_beta="y"
+if [[ $RELEASE_TYPE == snapshot ]]; then
+	meson_configure+=$'\t'-Dsnapshot=true
+	meson_configure+=$'\t'-Dsnapshot_id=$(echo $RELEASE_NAME | cut -d '-' -f 2) # $RELEASE_NAME is snapshot-X
 fi
-if [ "$RELTYPE" == "stable" ]; then
-	stable_or_beta="y"
-fi
-if [ "$RELTYPE" == "snapshot" ]; then
-	other_flags+=$'\t-Dsnapshot=true\t-Dsnapshot_id='
-	other_flags+=`echo $RELNAME | cut -d '-' -f 2` # $RELNAME is snapshot-X
-fi
-if [ "$RELTYPE" == "snapshot" ] && [ "$MOD_ID" != "0" ]; then
+if [[ $RELEASE_TYPE == snapshot ]] && [[ $MOD_ID != 0 ]]; then
 	>&2 echo "mods and snapshots do not mix"
 	exit 1
 fi
-if [ "$stable_or_beta" == "y" ] && [ "$MOD_ID" != "0" ]; then
+if [[ $stable_or_beta == yes ]] && [[ $MOD_ID != 0 ]]; then
 	# mods and snapshots both check their snapshot_id against whatever version starcatcher.us/TPT has
-	other_flags+=$'\t-Dsnapshot_id='
-	other_flags+=`echo $RELNAME | cut -d '.' -f 3` # $RELNAME is vX.Y.Z
+	meson_configure+=$'\t'-Dsnapshot_id=$(echo $RELEASE_NAME | cut -d '.' -f 3) # $RELEASE_NAME is vX.Y.Z
 fi
-if [ "$RELTYPE" == "snapshot" ] || [ "$MOD_ID" != "0" ]; then
-	other_flags+=$'\t-Dupdate_server=starcatcher.us/TPT'
+if [[ $RELEASE_TYPE == snapshot ]] || [[ $MOD_ID != 0 ]]; then
+	meson_configure+=$'\t'-Dupdate_server=starcatcher.us/TPT
 fi
-if [ "$RELTYPE" != "dev" ]; then
-	other_flags+=$'\t-Dignore_updates=false'
+if [[ $RELEASE_TYPE != dev ]]; then
+	meson_configure+=$'\t'-Dignore_updates=false
 fi
-lto_flag=-Db_lto=true
-if [ $TOOLSET_SHORT == "mingw" ]; then
-	# This simply doesn't work with MinGW. I have no idea why and I also don't care.
-	lto_flag=
-	if [ $PLATFORM_SHORT == "lin" ]; then
-		other_flags+=$'\t--cross-file=.github/mingw-ghactions.ini'
+if [[ $BSH_HOST_PLATFORM-$BSH_HOST_LIBC == windows-mingw ]]; then
+	if [[ $BSH_HOST_PLATFORM == linux ]]; then
+		meson_configure+=$'\t'--cross-file=.github/mingw-ghactions.ini
+	fi
+else
+	# LTO simply doesn't work with MinGW. I have no idea why and I also don't care.
+	meson_configure+=$'\t'-Db_lto=true
+fi
+if [[ $BSH_HOST_PLATFORM == darwin ]]; then
+	export MACOSX_DEPLOYMENT_TARGET=10.9
+	if [[ $BSH_HOST_ARCH == aarch64 ]]; then
+		export MACOSX_DEPLOYMENT_TARGET=11.0
+		meson_configure+=$'\t'--cross-file=.github/macaa64-ghactions.ini
 	fi
 fi
-if [ $PLATFORM_SHORT == "mac" ]; then
-	macosx_version_min=10.9
-	if [ $MACHINE_SHORT == "arm64" ]; then
-		macosx_version_min=10.15
-		other_flags+=$'\t--cross-file=.github/macaa64-ghactions.ini'
-	fi
-	export CFLAGS=-mmacosx-version-min=$macosx_version_min
-	export CXXFLAGS=-mmacosx-version-min=$macosx_version_min
-	export LDFLAGS=-mmacosx-version-min=$macosx_version_min
-fi
-powder_bin=${bin_prefix}powder$bin_suffix
-if [ "$RELTYPE" == "tptlibsdev" ]; then
-	if [ -z "${GITHUB_REPOSITORY_OWNER-}" ]; then
-		>&2 echo "GITHUB_REPOSITORY_OWNER not set (whose tpt-libs to clone?)"
+if [[ $RELEASE_TYPE == tptlibsdev ]] && ([[ $BSH_HOST_PLATFORM == windows ]] || [[ $BSH_STATIC_DYNAMIC == static ]]); then
+	if [[ -z "${GITHUB_REPOSITORY_OWNER-}" ]]; then
+		>&2 echo "GITHUB_REPOSITORY_OWNER not set"
 		exit 1
 	fi
-	tptlibsbranch=`echo $RELNAME | cut -d '-' -f 2-` # $RELNAME is tptlibsdev-BRANCH
-	if [ ! -d tpt-libs ]; then
-		git clone https://github.com/$GITHUB_REPOSITORY_OWNER/tpt-libs --branch $tptlibsbranch
-	fi
-	cd tpt-libs
-	quad=$MACHINE_SHORT-$PLATFORM_SHORT-$TOOLSET_SHORT-$STATIC_DYNAMIC
-	if [ ! -d patches/$quad ]; then
-		cd ..
-		echo "no prebuilt libraries for this configuration" > $powder_bin
+	if [[ "$BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC-$BSH_STATIC_DYNAMIC $BSH_BUILD_PLATFORM" == "x86_64-windows-mingw-dynamic linux" ]]; then
+		>&2 echo "this configuration is not supported in tptlibsdev mode"
+		touch $ASSET_PATH
 		exit 0
 	fi
+	tptlibsbranch=$(echo $RELEASE_NAME | cut -d '-' -f 2-) # $RELEASE_NAME is tptlibsdev-BRANCH
+	if [[ ! -d build-tpt-libs/tpt-libs ]]; then
+		mkdir -p build-tpt-libs
+		cd build-tpt-libs
+		git clone https://github.com/$GITHUB_REPOSITORY_OWNER/tpt-libs --branch $tptlibsbranch --depth 1
+		cd ..
+	fi
 	tpt_libs_vtag=v00000000000000
-	if [ ! -f .ok ]; then
-		VTAG=$tpt_libs_vtag ./build.sh
+	if [[ ! -f build-tpt-libs/tpt-libs/.ok ]]; then
+		cd build-tpt-libs/tpt-libs
+		BSH_VTAG=$tpt_libs_vtag ./build.sh
 		touch .ok
-		cd ../subprojects
-		if [ -d tpt-libs-prebuilt-$quad-$tpt_libs_vtag ]; then
-			rm -r tpt-libs-prebuilt-$quad-$tpt_libs_vtag
-		fi
-		7z x ../tpt-libs/temp/libraries.zip
+		cd ../../subprojects
+		for i in tpt-libs-prebuilt-*; do
+			if [[ -d $i ]]; then
+				rm -r $i
+			fi
+		done
+		7z x ../build-tpt-libs/tpt-libs/temp/libraries.zip
+		cd ..
 	fi
-	cd ..
-	other_flags+=$'\t-Dtpt_libs_vtag='
-	other_flags+=$tpt_libs_vtag
+	meson_configure+=$'\t'-Dtpt_libs_vtag=$tpt_libs_vtag
 fi
-if [ $PLATFORM_SHORT == "and" ]; then
-	ANDROIDPLATFORM=android-30 # this should come from tpt-libs, see https://github.com/The-Powder-Toy/tpt-libs/issues/2
-	other_flags+=$'\t--cross-file='
-	if [ $MACHINE_SHORT == "x86_64" ]; then
-		other_flags+=android/cross/x86_64.ini
-	fi
-	if [ $MACHINE_SHORT == "i686" ]; then
-		other_flags+=android/cross/x86.ini
-	fi
-	if [ $MACHINE_SHORT == "arm64" ]; then
-		other_flags+=android/cross/arm64-v8a.ini
-	fi
-	if [ $MACHINE_SHORT == "arm" ]; then
-		other_flags+=android/cross/armeabi-v7a.ini
-	fi
-	if [ -z "${JAVA_HOME_8_X64-}" ]; then
-		>&2 echo "JAVA_HOME_8_X64 not set (where is your java sdk?)"
-		exit 1
-	fi
-	if [ -z "${ANDROID_SDK_ROOT-}" ]; then
-		>&2 echo "ANDROID_SDK_ROOT not set (where is your android sdk?)"
-		exit 1
-	fi
-	if [ -z "${ANDROID_NDK_LATEST_HOME-}" ]; then
-		>&2 echo "ANDROID_NDK_LATEST_HOME not set (where is your android ndk?)"
-		exit 1
-	fi
+if [[ $BSH_HOST_PLATFORM == android ]]; then
+	android_platform=android-30
+	meson_configure+=$'\t'--cross-file=android/cross/$BSH_HOST_ARCH.ini
 	cat << ANDROID_INI > .github/android-ghactions.ini
 [constants]
 andriod_ndk_toolchain_bin = '$ANDROID_NDK_LATEST_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin'
 andriod_sdk_build_tools = '$ANDROID_SDK_ROOT/build-tools/32.0.0'
 
 [properties]
-android_platform_jar = '$ANDROID_SDK_ROOT/platforms/$ANDROIDPLATFORM/android.jar'
+# android_ndk_toolchain_prefix comes from the correct cross-file in ./android/cross
+android_ndk_toolchain_prefix = android_ndk_toolchain_prefix
+android_platform = '$android_platform'
+android_platform_jar = '$ANDROID_SDK_ROOT/platforms/' + android_platform + '/android.jar'
+java_runtime_jar = '$JAVA_HOME_8_X64/jre/lib/rt.jar'
 
 [binaries]
 # android_ndk_toolchain_prefix comes from the correct cross-file in ./android/cross
 c = andriod_ndk_toolchain_bin / (android_ndk_toolchain_prefix + 'clang')
 cpp = andriod_ndk_toolchain_bin / (android_ndk_toolchain_prefix + 'clang++')
 strip = andriod_ndk_toolchain_bin / 'llvm-strip'
+javac = '$JAVA_HOME_8_X64/bin/javac'
+jar = '$JAVA_HOME_8_X64/bin/jar'
 d8 = andriod_sdk_build_tools / 'd8'
 aapt = andriod_sdk_build_tools / 'aapt'
 aapt2 = andriod_sdk_build_tools / 'aapt2'
 zipalign = andriod_sdk_build_tools / 'zipalign'
 apksigner = andriod_sdk_build_tools / 'apksigner'
 ANDROID_INI
-	other_flags+=$'\t--cross-file=.github/android-ghactions.ini'
-	cat << JDK_INI > .github/jdk.ini
-[properties]
-java_runtime_jar = '$JAVA_HOME_8_X64/jre/lib/rt.jar'
-
-[binaries]
-javac = '$JAVA_HOME_8_X64/bin/javac'
-jar = '$JAVA_HOME_8_X64/bin/jar'
-JDK_INI
-	other_flags+=$'\t--cross-file=.github/jdk.ini'
-	other_flags+=$'\t-Dhttp=false'
+	meson_configure+=$'\t'--cross-file=.github/android-ghactions.ini
+	meson_configure+=$'\t'-Dhttp=false
 fi
-meson -Dbuildtype=release -Db_pie=false -Dworkaround_gcc_no_pie=true -Db_staticpic=false $lto_flag $static_flag -Dinstall_check=true $other_flags build
+$meson_configure build
 cd build
-ninja
-if [ $PLATFORM_SHORT == "and" ]; then
-	$ANDROID_NDK_LATEST_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-strip libpowder.so
-elif [ $PLATFORM_SHORT != "win" ]; then
-	strip $powder_bin
+ninja -v
+strip=strip
+objcopy=objcopy
+strip_target=$ASSET_PATH
+if [[ $BSH_HOST_PLATFORM == android ]]; then
+	strip=$ANDROID_NDK_LATEST_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-$strip
+	objcopy=$ANDROID_NDK_LATEST_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-$objcopy
+	strip_target=libpowder.so
 fi
-if [ $PLATFORM_SHORT == "and" ]; then
+if [[ $SEPARATE_DEBUG == yes ]] && [[ $BSH_HOST_PLATFORM-$BSH_HOST_LIBC != windows-msvc ]]; then
+	$objcopy --only-keep-debug $strip_target $DEBUG_ASSET_PATH
+	$strip --strip-debug --strip-unneeded $strip_target
+	$objcopy --add-gnu-debuglink $DEBUG_ASSET_PATH $strip_target
+fi
+if [[ $BSH_HOST_PLATFORM == android ]]; then
 	$JAVA_HOME_8_X64/bin/keytool -genkeypair -keystore keystore.jks -alias androidkey -validity 10000 -keyalg RSA -keysize 2048 -keypass bagelsbagels -storepass bagelsbagels -dname "CN=nobody"
-	meson configure -Dandroid_keystore=`readlink -f keystore.jks`
-	ANDROID_KEYSTORE_PASS=bagelsbagels ninja powder.apk
+	meson configure -Dandroid_keystore=$(realpath keystore.jks)
+	ANDROID_KEYSTORE_PASS=bagelsbagels ninja android/powder.apk
+	mv android/powder.apk powder.apk
 fi
-cp $powder_bin ..

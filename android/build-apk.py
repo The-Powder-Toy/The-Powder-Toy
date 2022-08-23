@@ -23,11 +23,11 @@ import sys
 	*resources,
 ) = sys.argv
 
-if tpt_arch == 'i686':
+if tpt_arch == 'x86':
 	android_arch = 'x86'
 if tpt_arch == 'arm':
 	android_arch = 'armeabi-v7a'
-if tpt_arch == 'arm64':
+if tpt_arch == 'aarch64':
 	android_arch = 'arm64-v8a'
 if tpt_arch == 'x86_64':
 	android_arch = 'x86_64'

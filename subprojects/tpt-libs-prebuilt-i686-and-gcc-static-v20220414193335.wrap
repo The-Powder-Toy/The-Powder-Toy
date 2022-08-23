@@ -1,6 +1,0 @@
-[wrap-file]
-directory = tpt-libs-prebuilt-i686-and-gcc-static-v20220414193335
-
-source_url = https://github.com/The-Powder-Toy/tpt-libs/releases/download/v20220414193335/tpt-libs-prebuilt-i686-and-gcc-static-v20220414193335.zip
-source_filename = tpt-libs-prebuilt-i686-and-gcc-static-v20220414193335.zip
-source_hash = 469c8d4d3b4be42fc51232c89c8729286c98008fc84e6cd29417d3799a77b339

@@ -13,7 +13,7 @@ luaconsole_files = files(
 	'LuaTextbox.cpp',
 	'LuaWindow.cpp',
 )
-if uopt_http
+if enable_http
 	luaconsole_files += files(
 		'LuaTCPSocket.cpp',
 	)

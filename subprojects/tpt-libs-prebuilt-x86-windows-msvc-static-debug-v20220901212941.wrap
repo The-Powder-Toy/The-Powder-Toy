@@ -1,0 +1,6 @@
+[wrap-file]
+directory = tpt-libs-prebuilt-x86-windows-msvc-static-debug-v20220901212941
+
+source_url = https://github.com/The-Powder-Toy/tpt-libs/releases/download/v20220901212941/tpt-libs-prebuilt-x86-windows-msvc-static-debug-v20220901212941.zip
+source_filename = tpt-libs-prebuilt-x86-windows-msvc-static-debug-v20220901212941.zip
+source_hash = fb307b0c2e007fc6cdf7e1ec3f30868cb2e458b62b1519ccf122a9747f94cc19

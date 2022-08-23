@@ -13,248 +13,118 @@ on:
       - '*'
 
 jobs:
-  release:
+  prepare:
     runs-on: ubuntu-latest
     outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
-      can_publish: ${{ steps.starcatcher_check.outputs.can_publish }}
+      release_upload_url: ${{ steps.create_release.outputs.upload_url }}
+      do_release: ${{ steps.prepare.outputs.do_release }}
+      matrix: ${{ steps.prepare.outputs.matrix }}
+      release_type: ${{ steps.prepare.outputs.release_type }}
+      release_name: ${{ steps.prepare.outputs.release_name }}
+      mod_id: ${{ steps.prepare.outputs.mod_id }}
+      do_publish: ${{ steps.prepare.outputs.do_publish }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
           python-version: '3.10'
-      - id: get_type
-        run: python3 ./.github/get-type.py ${{ github.ref }}
-      - id: create_release
-        if: steps.get_type.outputs.TYPE != 'dev'
+      - id: prepare
+        run: python ./.github/prepare.py
+        env:
+          PUBLISH_HOSTPORT: ${{ secrets.STARCATCHER_PUBLISH_HOSTPORT }}
+          GITHUB_REF: ${{ github.ref }}
+      - if: steps.prepare.outputs.do_release == 'yes'
+        id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
-          release_name: ${{ steps.get_type.outputs.NAME }}
+          release_name: ${{ steps.prepare.outputs.release_name }}
           draft: true
           prerelease: false
-      - id: starcatcher_check
-        if: steps.get_type.outputs.TYPE != 'dev'
-        run: bash -c './.github/starcatcher-check.sh'
-        env:
-          STARCATCHER_PUBLISH_HOSTPORT: ${{ secrets.STARCATCHER_PUBLISH_HOSTPORT }}
   build:
-    runs-on: ${{ matrix.os }}
-    needs: [release]
+    runs-on: ${{ matrix.runs_on }}
+    needs: [prepare]
     strategy:
       fail-fast: false
-      matrix:
-#                |          x86_64           |           i686            |           arm64           |            arm                  
-#                |  lin |  mac |  win |  and |  lin |  mac |  win |  and |  lin |  mac |  win |  and |  lin |  mac |  win |  and 
-# ---------------+------+------+------+------+------+------+------+------+------+------+------+------+------+------+------+------
-#          gcc   |      |      |  NO  |      |  NO  |  NO  |  NO  |      |  NO  |      |  NO  |      |  NO  |  NO  |  NO  |      
-# static   msvc  |  NO  |  NO  |      |  NO  |  NO  |  NO  |      |  NO  |  NO  |  NO  |  NO  |  NO  |  NO  |  NO  |  NO  |  NO  
-#          mingw |      |  NO  |      |  NO  |  NO  |  NO  |  NO  |  NO  |  NO  |  NO  |  NO  |  NO  |  NO  |  NO  |  NO  |  NO  
-#          gcc   |      |      |  NO  |  NO  |  NO  |  NO  |  NO  |  NO  |  NO  |NO [1]|  NO  |  NO  |  NO  |  NO  |  NO  |  NO  
-# dynamic  msvc  |  NO  |  NO  |      |  NO  |  NO  |  NO  |      |  NO  |  NO  |  NO  |  NO  |  NO  |  NO  |  NO  |  NO  |  NO  
-#          mingw |      |  NO  |      |  NO  |  NO  |  NO  |  NO  |  NO  |  NO  |  NO  |  NO  |  NO  |  NO  |  NO  |  NO  |  NO  
-#
-# [1] This is only required for development on ARM Macs. We have no access to such devices, so someone will
-#     have to help us figure out how to get dynamic libraries.
-#
-# Please keep this matrix in sync with the other one in this file, see the ### blocks.
-# The only difference should be that the second matrix has all mingw cells disabled; we don't publish mingw builds on starcatcher.
-#########################################################
-############# BEGIN BLOCK FOR COPYING BELOW #############
-#########################################################
-        machine_short: [x86_64, i686, arm64, arm]
-        platform_short: [lin, mac, win, and]
-        toolset_short: [gcc, msvc, mingw]
-        static_dynamic: [static, dynamic]
-        exclude:
-          - toolset_short: mingw
-            machine_short: i686  # remove this line after copying the matrix below
-          - toolset_short: mingw # remove this line after copying the matrix below
-            platform_short: mac  # remove this line after copying the matrix below
-          - machine_short: i686
-            platform_short: lin
-          - machine_short: i686
-            platform_short: mac
-          - toolset_short: msvc
-            platform_short: lin
-          - toolset_short: msvc
-            platform_short: mac
-          - toolset_short: gcc
-            platform_short: win
-          - platform_short: lin
-            machine_short: arm64
-          - platform_short: win
-            machine_short: arm64
-          - platform_short: mac # see [1]
-            static_dynamic: dynamic
-            machine_short: arm64
-          - platform_short: and
-            static_dynamic: dynamic
-          - platform_short: and
-            toolset_short: msvc
-          - platform_short: and
-            toolset_short: mingw
-          - platform_short: lin
-            machine_short: arm
-          - platform_short: win
-            machine_short: arm
-          - platform_short: mac
-            machine_short: arm
-#########################################################
-############## END BLOCK FOR COPYING BELOW ##############
-#########################################################
-        include:
-          - platform_short: lin
-            os: ubuntu-18.04
-            prefix: ''
-            suffix: ''
-          - platform_short: mac
-            os: macos-11.0
-            prefix: ''
-            suffix: ''
-          - platform_short: win
-            os: windows-2019
-            prefix: ''
-            suffix: '.exe'
-          - platform_short: lin
-            toolset_short: mingw
-            os: ubuntu-20.04
-            prefix: ''
-            suffix: '.exe'
-          - platform_short: and
-            os: ubuntu-18.04
-            prefix: ''
-            suffix: '.apk'
+      matrix: ${{ fromJSON(needs.prepare.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
           python-version: '3.10'
-      - id: get_type
-        run: python3 ./.github/get-type.py ${{ github.ref }}
-      - if: matrix.platform_short == 'lin' && matrix.toolset_short == 'mingw'
-        run: sudo apt update && sudo apt install g++-mingw-w64-x86-64
-      - if: matrix.platform_short == 'mac'
-        run: brew install pkg-config coreutils
-      - if: matrix.platform_short == 'mac' && matrix.static_dynamic != 'static'
+      - run: python -m pip install meson ninja
+      - if: matrix.bsh_build_platform == 'darwin'
+        run: brew install pkg-config coreutils binutils bash
+      - if: matrix.bsh_build_platform == 'darwin' && matrix.bsh_static_dynamic != 'static'
         run: brew install luajit curl fftw zlib sdl2
-      - if: matrix.platform_short == 'lin' && matrix.static_dynamic != 'static'
+      - if: matrix.bsh_build_platform == 'linux' && matrix.bsh_host_libc == 'mingw'
+        run: sudo apt update && sudo apt install g++-mingw-w64-x86-64
+      - if: matrix.bsh_build_platform == 'linux' && matrix.bsh_static_dynamic != 'static'
         run: sudo apt update && sudo apt install libluajit-5.1-dev libcurl4-openssl-dev libfftw3-dev zlib1g-dev libsdl2-dev
-      - run: python3 -m pip install meson ninja
+      - if: matrix.bsh_build_platform == 'linux' && matrix.bsh_static_dynamic == 'static'
+        run: sudo apt update && sudo apt install libc6-dev libc6-dev-i386
       - run: bash -c './.github/build.sh'
         env:
-          PLATFORM_SHORT: ${{ matrix.platform_short }}
-          MACHINE_SHORT: ${{ matrix.machine_short }}
-          TOOLSET_SHORT: ${{ matrix.toolset_short }}
-          STATIC_DYNAMIC: ${{ matrix.static_dynamic }}
-          RELNAME: ${{ steps.get_type.outputs.NAME }}
-          RELTYPE: ${{ steps.get_type.outputs.TYPE }}
-          MOD_ID: ${{ steps.get_type.outputs.MOD_ID }}
-      - uses: actions/upload-release-asset@v1
-        if: steps.get_type.outputs.TYPE != 'dev' && matrix.static_dynamic == 'static'
+          BSH_HOST_ARCH: ${{ matrix.bsh_host_arch }}
+          BSH_HOST_PLATFORM: ${{ matrix.bsh_host_platform }}
+          BSH_HOST_LIBC: ${{ matrix.bsh_host_libc }}
+          BSH_STATIC_DYNAMIC: ${{ matrix.bsh_static_dynamic }}
+          BSH_BUILD_PLATFORM: ${{ matrix.bsh_build_platform }}
+          BSH_DEBUG_RELEASE: ${{ matrix.bsh_debug_release }}
+          RELEASE_NAME: ${{ needs.prepare.outputs.release_name }}
+          RELEASE_TYPE: ${{ needs.prepare.outputs.release_type }}
+          MOD_ID: ${{ needs.prepare.outputs.mod_id }}
+          ASSET_PATH: ${{ matrix.asset_path }}
+          DEBUG_ASSET_PATH: ${{ matrix.debug_asset_path }}
+          SEPARATE_DEBUG: ${{ matrix.separate_debug }}
+      - uses: actions/upload-release-asset@v1 # TODO-NTL: ship licenses
+        if: needs.prepare.outputs.do_release == 'yes' && matrix.publish == 'yes'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ needs.release.outputs.upload_url }}
-          asset_path: ${{ matrix.prefix }}powder${{ matrix.suffix }}
-          asset_name: ${{ matrix.prefix }}powder-${{ steps.get_type.outputs.NAME }}-${{ matrix.machine_short }}-${{ matrix.platform_short }}-${{ matrix.toolset_short }}-${{ matrix.static_dynamic }}${{ matrix.suffix }}
-          asset_content_type: application/zip
-      - uses: actions/upload-artifact@v2
-        if: matrix.static_dynamic == 'static'
-        with:
-          path: ${{ matrix.prefix }}powder${{ matrix.suffix }}
-          name: ${{ matrix.prefix }}powder-${{ steps.get_type.outputs.NAME }}-${{ matrix.machine_short }}-${{ matrix.platform_short }}-${{ matrix.toolset_short }}-${{ matrix.static_dynamic }}${{ matrix.suffix }}
-  starcatcher-publish:
-    runs-on: ubuntu-latest
-    needs: [build, release]
-    if: needs.release.outputs.can_publish == 'yes' && startsWith(github.ref, 'refs/tags/') # not a perfect match but get-type.py takes care of this in job build
-    strategy:
-      fail-fast: false
-      matrix:
-#########################################################
-############# BEGIN BLOCK COPIED FROM ABOVE #############
-#########################################################
-        machine_short: [x86_64, i686, arm64, arm]
-        platform_short: [lin, mac, win, and]
-        toolset_short: [gcc, msvc, mingw]
-        static_dynamic: [static, dynamic]
-        exclude:
-          - toolset_short: mingw
-          - machine_short: i686
-            platform_short: lin
-          - machine_short: i686
-            platform_short: mac
-          - toolset_short: msvc
-            platform_short: lin
-          - toolset_short: msvc
-            platform_short: mac
-          - toolset_short: gcc
-            platform_short: win
-          - platform_short: lin
-            machine_short: arm64
-          - platform_short: win
-            machine_short: arm64
-          - platform_short: mac # see [1]
-            static_dynamic: dynamic
-            machine_short: arm64
-          - platform_short: and
-            static_dynamic: dynamic
-          - platform_short: and
-            toolset_short: msvc
-          - platform_short: and
-            toolset_short: mingw
-          - platform_short: lin
-            machine_short: arm
-          - platform_short: win
-            machine_short: arm
-          - platform_short: mac
-            machine_short: arm
-#########################################################
-############## END BLOCK COPIED FROM ABOVE ##############
-#########################################################
-          - static_dynamic: dynamic
-        include:
-          - platform_short: lin
-            prefix: ''
-            suffix: ''
-          - platform_short: mac
-            prefix: ''
-            suffix: ''
-          - platform_short: win
-            prefix: ''
-            suffix: '.exe'
-          - platform_short: and
-            prefix: ''
-            suffix: '.apk'
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: '3.10'
-      - id: get_type
-        run: python3 ./.github/get-type.py ${{ github.ref }}
-      - uses: actions/download-artifact@v1
-        with:
-          name: ${{ matrix.prefix }}powder-${{ steps.get_type.outputs.NAME }}-${{ matrix.machine_short }}-${{ matrix.platform_short }}-${{ matrix.toolset_short }}-${{ matrix.static_dynamic }}${{ matrix.suffix }}
-      - run: sudo apt update && sudo apt install lftp
-      - if: steps.get_type.outputs.TYPE != 'dev' && matrix.static_dynamic == 'static'
-        run: bash -c './.github/starcatcher-publish.sh ${{ matrix.prefix }}powder${{ matrix.suffix }}'
+          upload_url: ${{ needs.prepare.outputs.release_upload_url }}
+          asset_path: build/${{ matrix.asset_path }}
+          asset_name: ${{ matrix.asset_name }}
+      - uses: actions/upload-release-asset@v1
+        if: needs.prepare.outputs.do_release == 'yes' && matrix.publish == 'yes' && matrix.separate_debug == 'yes'
         env:
-          STARCATCHER_PUBLISH_HOSTPORT: ${{ secrets.STARCATCHER_PUBLISH_HOSTPORT }}
-          STARCATCHER_PUBLISH_USERNAME: ${{ secrets.STARCATCHER_PUBLISH_USERNAME }}
-          STARCATCHER_PUBLISH_PASSWORD: ${{ secrets.STARCATCHER_PUBLISH_PASSWORD }}
-          STARCATCHER_PUBLISH_FILENAME: ${{ matrix.prefix }}powder-${{ steps.get_type.outputs.NAME }}-${{ matrix.machine_short }}-${{ matrix.platform_short }}-${{ matrix.toolset_short }}-${{ matrix.static_dynamic }}${{ matrix.suffix }}
-  starcatcher-release:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.prepare.outputs.release_upload_url }}
+          asset_path: build/${{ matrix.debug_asset_path }}
+          asset_name: ${{ matrix.debug_asset_name }}
+      - uses: actions/upload-artifact@v2
+        if: matrix.artifact == 'yes'
+        with:
+          path: build/${{ matrix.asset_path }}
+          name: ${{ matrix.asset_name }}
+      - uses: actions/upload-artifact@v2
+        if: matrix.artifact == 'yes' && matrix.separate_debug == 'yes'
+        with:
+          path: build/${{ matrix.debug_asset_path }}
+          name: ${{ matrix.debug_asset_name }}
+      - if: needs.prepare.outputs.do_publish == 'yes' && matrix.publish == 'yes'
+        run: sudo apt update && sudo apt install lftp && bash -c './.github/starcatcher-publish.sh
+        env:
+          ASSET_PATH: build/${{ matrix.asset_path }}
+          PUBLISH_HOSTPORT: ${{ secrets.STARCATCHER_PUBLISH_HOSTPORT }}
+          PUBLISH_USERNAME: ${{ secrets.STARCATCHER_PUBLISH_USERNAME }}
+          PUBLISH_PASSWORD: ${{ secrets.STARCATCHER_PUBLISH_PASSWORD }}
+          PUBLISH_FILENAME: ${{ matrix.starcatcher_name }}
+  publish:
     runs-on: ubuntu-latest
-    needs: [starcatcher-publish, release]
-    if: needs.release.outputs.can_publish == 'yes' && startsWith(github.ref, 'refs/tags/') # not a perfect match but get-type.py takes care of this in job build
+    needs: [build, prepare]
+    if: needs.prepare.outputs.do_publish == 'yes'
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
           python-version: '3.10'
-      - id: get_type
-        run: python3 ./.github/get-type.py ${{ github.ref }}
-      - run: ./.github/starcatcher-release.sh "https://starcatcher.us/TPT/perform-release.lua?mod=${{ steps.get_type.outputs.MOD_ID }}&type=${{ steps.get_type.outputs.TYPE }}&name=${{ steps.get_type.outputs.NAME }}&commit=${{ github.sha }}"
+      - run: ./.github/starcatcher-release.sh
+        env:
+          RELEASE_NAME: ${{ needs.prepare.outputs.release_name }}
+          RELEASE_TYPE: ${{ needs.prepare.outputs.release_type }}
+          MOD_ID: ${{ needs.prepare.outputs.mod_id }}
+          GITHUB_SHA: ${{ github.sha }}

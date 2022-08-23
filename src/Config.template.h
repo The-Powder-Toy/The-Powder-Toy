@@ -15,7 +15,6 @@
 #mesondefine IGNORE_UPDATES
 #mesondefine LIN
 #mesondefine AND
-#mesondefine NATIVE
 #mesondefine NO_INSTALL_CHECK
 #mesondefine OGLI
 #mesondefine OGLR

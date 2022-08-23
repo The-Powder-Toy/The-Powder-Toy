@@ -1,5 +1,7 @@
 #include "Client.h"
 
+#include "client/http/Request.h" // includes curl.h, needs to come first to silence a warning on windows
+
 #include <cstdlib>
 #include <vector>
 #include <map>
@@ -45,7 +47,6 @@
 # include "lua/LuaScriptInterface.h"
 #endif
 
-#include "client/http/Request.h"
 #include "client/http/RequestManager.h"
 #include "gui/preview/Comment.h"
 

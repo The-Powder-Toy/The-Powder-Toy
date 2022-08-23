@@ -2,27 +2,24 @@
 #define REQUEST_H
 #include "Config.h"
 
-#include "Config.h"
+#ifndef NOHTTP
+# include <curl/curl.h>
+# include "common/tpt-minmax.h" // for MSVC, ensures windows.h doesn't cause compile errors by defining min/max
+# include <mutex>
+# include <condition_variable>
+# if defined(CURL_AT_LEAST_VERSION) && CURL_AT_LEAST_VERSION(7, 55, 0)
+#  define REQUEST_USE_CURL_OFFSET_T
+# endif
+# if defined(CURL_AT_LEAST_VERSION) && CURL_AT_LEAST_VERSION(7, 56, 0)
+#  define REQUEST_USE_CURL_MIMEPOST
+# endif
+# if defined(CURL_AT_LEAST_VERSION) && CURL_AT_LEAST_VERSION(7, 61, 0)
+#  define REQUEST_USE_CURL_TLSV13CL
+# endif
+#endif
+
 #include <map>
 #include "common/String.h"
-#ifndef NOHTTP
-#include "common/tpt-minmax.h" // for MSVC, ensures windows.h doesn't cause compile errors by defining min/max
-#include <mutex>
-#include <condition_variable>
-#include <curl/curl.h>
-
-#if defined(CURL_AT_LEAST_VERSION) && CURL_AT_LEAST_VERSION(7, 55, 0)
-# define REQUEST_USE_CURL_OFFSET_T
-#endif
-
-#if defined(CURL_AT_LEAST_VERSION) && CURL_AT_LEAST_VERSION(7, 56, 0)
-# define REQUEST_USE_CURL_MIMEPOST
-#endif
-
-#if defined(CURL_AT_LEAST_VERSION) && CURL_AT_LEAST_VERSION(7, 61, 0)
-# define REQUEST_USE_CURL_TLSV13CL
-#endif
-#endif
 
 namespace http
 {

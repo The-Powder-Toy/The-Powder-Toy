@@ -1,5 +1,8 @@
 #include "Config.h"
 #ifdef LUACONSOLE
+
+#include "client/http/Request.h" // includes curl.h, needs to come first to silence a warning on windows
+
 #include <iomanip>
 #include <vector>
 #include <algorithm>
@@ -20,7 +23,6 @@
 #include "simulation/Simulation.h"
 #include "simulation/SimulationData.h"
 
-#include "client/http/Request.h"
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/dialogues/InformationMessage.h"

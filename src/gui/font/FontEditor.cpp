@@ -186,8 +186,8 @@ void FontEditor::PackData(
 	fontPtrs.clear();
 	fontRanges.clear();
 	bool first = true;
-	String::value_type rangeStart;
-	String::value_type prev;
+	String::value_type rangeStart = 0;
+	String::value_type prev = 0;
 	for(std::map<String::value_type, unsigned char>::const_iterator it = fontWidths.begin(); it != fontWidths.end(); it++)
 	{
 		String::value_type ch = it->first;
