@@ -15,13 +15,21 @@ namespace ui {
 
 class DirectionSelector : public ui::Component
 {
-	const float radius;
-	const float maxRadius;
+	const float scale;
+	const int radius;
+	const int handleRadius;
 
 	bool useSnapPoints;
 	int snapPointRadius;
+	int snapPointEffectRadius;
 
-	std::vector<ui::Point> snapPoints;
+	struct Value
+	{
+		ui::Point offset;
+		float xValue;
+		float yValue;
+	};
+	std::vector<Value> snapPoints;
 
 	bool autoReturn;
 
@@ -41,15 +49,18 @@ private:
 	bool mouseHover;
 	bool altDown;
 
-	ui::Point offset;
+	Value value;
 
 	void CheckHovering(int x, int y);
 
+	Value GravityValueToValue(float x, float y);
+	Value PositionToValue(ui::Point position);
+
 public:
-	DirectionSelector(ui::Point position, float radius);
+	DirectionSelector(ui::Point position, float scale, int radius, int handleRadius, int snapPointRadius, int snapPointEffectRadius);
 	virtual ~DirectionSelector() = default;
 
-	void SetSnapPoints(int newRadius, int points);
+	void SetSnapPoints(int newSnapPointEffectRadius, int points, float maxMagnitude);
 	void ClearSnapPoints();
 
 	inline void EnableSnapPoints() { useSnapPoints = true; }
@@ -65,10 +76,9 @@ public:
 
 	float GetXValue();
 	float GetYValue();
-	float GetTotalValue();
 
-	void SetPositionAbs(float absx, float absy);
-	void SetPosition(float x, float y);
+	void SetPositionAbs(ui::Point position);
+	void SetPosition(ui::Point position);
 	void SetValues(float x, float y);
 
 	void Draw(const ui::Point& screenPos) override;

@@ -169,9 +169,9 @@ OptionsView::OptionsView():
 		OptionsController * c;
 
 	public:
-		GravityWindow(ui::Point position, int radius, float x, float y, OptionsController * c_):
-			ui::Window(position, ui::Point((radius * 2) + 20, (radius * 2) + 75)),
-			gravityDirection(new ui::DirectionSelector(ui::Point(10, 32), radius)),
+		GravityWindow(ui::Point position, float scale, int radius, float x, float y, OptionsController * c_):
+			ui::Window(position, ui::Point((radius * 5 / 2) + 20, (radius * 5 / 2) + 75)),
+			gravityDirection(new ui::DirectionSelector(ui::Point(10, 32), scale, radius, radius / 4, 2, 5)),
 			c(c_)
 			{
 				ui::Label * tempLabel = new ui::Label(ui::Point(4, 1), ui::Point(Size.X - 8, 22), "Custom Gravity");
@@ -183,20 +183,16 @@ OptionsView::OptionsView():
 				Separator * tempSeparator = new Separator(ui::Point(0, 22), ui::Point(Size.X, 1));
 				AddComponent(tempSeparator);
 
-				labelValues = new ui::Label(ui::Point(0, (radius * 2) + 37), ui::Point(Size.X, 16), String::Build(	"X:", std::round(x * 10.0f) / 10,
-																													" Y:", std::round(y * 10.0f) / 10,
-																													" Total:", std::round(std::hypot(x, y) * 10.0f) / 10));
+				labelValues = new ui::Label(ui::Point(0, (radius * 5 / 2) + 37), ui::Point(Size.X, 16), String::Build(Format::Precision(1), "X:", x, " Y:", y, " Total:", std::hypot(x, y)));
 				labelValues->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 				labelValues->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 				AddComponent(labelValues);
 
-				gravityDirection->SetValues(x / 2.0f, y / 2.0f);
+				gravityDirection->SetValues(x, y);
 				gravityDirection->SetUpdateCallback([this](float x, float y) {
-					labelValues->SetText(String::Build(	"X:", std::round(x * 20.0f) / 10,
-														" Y:", std::round(y * 20.0f) / 10,
-														" Total:", std::round(gravityDirection->GetTotalValue() * 20.0f) / 10));
+					labelValues->SetText(String::Build(Format::Precision(1), "X:", x, " Y:", y, " Total:", std::hypot(x, y)));
 				});
-				gravityDirection->SetSnapPoints(5, 5);
+				gravityDirection->SetSnapPoints(5, 5, 2);
 				AddComponent(gravityDirection);
 
 				ui::Button * okayButton = new ui::Button(ui::Point(0, Size.Y - 17), ui::Point(Size.X, 17), "OK");
@@ -204,8 +200,8 @@ OptionsView::OptionsView():
 				okayButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 				okayButton->Appearance.BorderInactive = ui::Colour(200, 200, 200);
 				okayButton->SetActionCallback({ [this] {
-					c->SetCustomGravityX(gravityDirection->GetXValue() * 2.0f);
-					c->SetCustomGravityY(gravityDirection->GetYValue() * 2.0f);
+					c->SetCustomGravityX(gravityDirection->GetXValue());
+					c->SetCustomGravityY(gravityDirection->GetYValue());
 					CloseActiveWindow();
 					SelfDestruct();
 				} });
@@ -219,7 +215,7 @@ OptionsView::OptionsView():
 	gravityMode->SetActionCallback({ [this] {
 		c->SetGravityMode(gravityMode->GetOption().second);
 		if (gravityMode->GetOption().second == 3)
-			new GravityWindow(ui::Point(-1, -1), 50, customGravityX, customGravityY, c);
+			new GravityWindow(ui::Point(-1, -1), 0.05f, 40, customGravityX, customGravityY, c);
 	} });
 
 	tempLabel = new ui::Label(ui::Point(8, currentY), ui::Point(Size.X-96, 16), "Gravity Simulation Mode");

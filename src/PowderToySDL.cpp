@@ -446,11 +446,11 @@ void EventProcess(SDL_Event event)
 		break;
 	case SDL_MOUSEWHEEL:
 	{
-		int x = event.wheel.x;
+		// int x = event.wheel.x;
 		int y = event.wheel.y;
 		if (event.wheel.direction == SDL_MOUSEWHEEL_FLIPPED)
 		{
-			x *= -1;
+			// x *= -1;
 			y *= -1;
 		}
 

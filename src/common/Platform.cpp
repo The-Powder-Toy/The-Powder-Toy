@@ -46,11 +46,6 @@ ByteString ExecutableName()
 {
 	ByteString ret;
 #if defined(WIN)
-	using Char = wchar_t;
-#else
-	using Char = char;
-#endif
-#if defined(WIN)
 	wchar_t *name = (wchar_t *)malloc(sizeof(wchar_t) * 64);
 	DWORD max = 64, res;
 	while ((res = GetModuleFileNameW(NULL, name, max)) >= max)
@@ -81,6 +76,11 @@ ByteString ExecutableName()
 	{
 #endif
 #ifndef MACOSX
+#if defined(WIN)
+		using Char = wchar_t;
+#else
+		using Char = char;
+#endif
 		max *= 2;
 		Char* realloced_name = (Char *)realloc(name, sizeof(Char) * max);
 		assert(realloced_name != NULL);
