@@ -36,12 +36,27 @@ VideoBuffer::VideoBuffer(VideoBuffer * old):
 	std::copy(old->Buffer, old->Buffer+(old->Width*old->Height), Buffer);
 };
 
-VideoBuffer::VideoBuffer(pixel * buffer, int width, int height):
+VideoBuffer::VideoBuffer(pixel * buffer, int width, int height, int pitch):
 	Width(width),
 	Height(height)
 {
 	Buffer = new pixel[width*height];
-	std::copy(buffer, buffer+(width*height), Buffer);
+	CopyData(buffer, width, height, pitch ? pitch : width);
+}
+
+void VideoBuffer::CopyData(pixel * buffer, int width, int height, int pitch)
+{
+	for (auto y = 0; y < height; ++y)
+	{
+		std::copy(buffer + y * pitch, buffer + y * pitch + width, Buffer + y * width);
+	}
+}
+
+void VideoBuffer::Crop(int width, int height, int x, int y)
+{
+	CopyData(Buffer + y * Width + x, width, height, Width);
+	Width = width;
+	Height = height;
 }
 
 void VideoBuffer::Resize(float factor, bool resample)

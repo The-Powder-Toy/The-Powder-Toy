@@ -32,6 +32,16 @@ bool ThumbnailRendererTask::doWork()
 			int scale = scaleX > scaleY ? scaleX : scaleY;
 			int newWidth = thumbnail->Width / scale, newHeight = thumbnail->Height / scale;
 			thumbnail->Resize(newWidth, newHeight, true);
+			newWidth = thumbnail->Width;
+			newHeight = thumbnail->Height;
+			if (newWidth > Width || newHeight > Height)
+			{
+				auto croppedWidth = newWidth > Width ? Width : newWidth;
+				auto croppedHeight = newHeight > Height ? Height : newHeight;
+				thumbnail->Crop(croppedWidth, croppedHeight, (newWidth - croppedWidth) / 2, (newHeight - croppedHeight) / 2);
+				newWidth = thumbnail->Width;
+				newHeight = thumbnail->Height;
+			}
 			Width = newWidth;
 			Height = newHeight;
 		}

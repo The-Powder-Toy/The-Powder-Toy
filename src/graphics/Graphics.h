@@ -19,10 +19,11 @@ public:
 
 	VideoBuffer(const VideoBuffer & old);
 	VideoBuffer(VideoBuffer * old);
-	VideoBuffer(pixel * buffer, int width, int height);
+	VideoBuffer(pixel * buffer, int width, int height, int pitch = 0);
 	VideoBuffer(int width, int height);
 	void Resize(float factor, bool resample = false);
 	void Resize(int width, int height, bool resample = false, bool fixedRatio = true);
+	void Crop(int width, int height, int x, int y);
 	TPT_INLINE void BlendPixel(int x, int y, int r, int g, int b, int a)
 	{
 	#ifdef PIX32OGL
@@ -85,6 +86,8 @@ public:
 	int BlendCharacter(int x, int y, String::value_type c, int r, int g, int b, int a);
 	int AddCharacter(int x, int y, String::value_type c, int r, int g, int b, int a);
 	~VideoBuffer();
+
+	void CopyData(pixel * buffer, int width, int height, int pitch);
 };
 
 class Graphics
