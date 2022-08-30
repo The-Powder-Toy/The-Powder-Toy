@@ -8,7 +8,6 @@
 #include <ctime>
 #include <cstdio>
 #include <fstream>
-#include <dirent.h>
 
 #ifdef MACOSX
 # include "common/macosx.h"
@@ -49,16 +48,6 @@
 #include "client/http/Request.h"
 #include "client/http/RequestManager.h"
 #include "gui/preview/Comment.h"
-
-extern "C"
-{
-#if defined(WIN) && !defined(__GNUC__)
-#include <io.h>
-#else
-#include <dirent.h>
-#endif
-}
-
 
 Client::Client():
 	messageOfTheDay("Fetching the message of the day..."),
@@ -991,22 +980,13 @@ void Client::updateStamps()
 
 void Client::RescanStamps()
 {
-	DIR * directory;
-	struct dirent * entry;
-	directory = opendir("stamps");
-	if (directory != NULL)
+	stampIDs.clear();
+	for (auto &stamp : Platform::DirectorySearch("stamps", "", { ".stm" }))
 	{
-		stampIDs.clear();
-		while ((entry = readdir(directory)))
-		{
-			ByteString name = entry->d_name;
-			if(name != ".." && name != "." && name.EndsWith(".stm") && name.size() == 14)
-				stampIDs.push_front(name.Substr(0, 10));
-		}
-		closedir(directory);
-		stampIDs.sort(std::greater<ByteString>());
-		updateStamps();
+		stampIDs.push_front(stamp.Substr(0, 10));
 	}
+	stampIDs.sort(std::greater<ByteString>());
+	updateStamps();
 }
 
 int Client::GetStampsCount()

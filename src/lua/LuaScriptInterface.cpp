@@ -59,7 +59,6 @@ extern "C"
 #include <direct.h>
 #endif
 #include <sys/stat.h>
-#include <dirent.h>
 }
 #include "eventcompat.lua.h"
 
@@ -3783,32 +3782,17 @@ void LuaScriptInterface::initFileSystemAPI()
 int LuaScriptInterface::fileSystem_list(lua_State * l)
 {
 	auto directoryName = tpt_lua_checkByteString(l, 1);
-
-	int index = 1;
 	lua_newtable(l);
-
-	DIR * directory;
-	struct dirent * entry;
-
-	// FIXME: winapi
-	directory = opendir(directoryName.c_str());
-	if (directory != NULL)
+	int index = 0;
+	for (auto &name : Platform::DirectorySearch(directoryName, "", {}))
 	{
-		while ((entry = readdir(directory)))
+		if (name != "." && name != "..")
 		{
-			if(strncmp(entry->d_name, "..", 3) && strncmp(entry->d_name, ".", 2))
-			{
-				lua_pushstring(l, entry->d_name);
-				lua_rawseti(l, -2, index++);
-			}
+			index += 1;
+			lua_pushstring(l, name.c_str());
+			lua_rawseti(l, -2, index);
 		}
-		closedir(directory);
 	}
-	else
-	{
-		lua_pushnil(l);
-	}
-
 	return 1;
 }
 

@@ -4,7 +4,6 @@
 #include <cstring>
 #include <cstdio>
 #include <cassert>
-#include <dirent.h>
 #include <fstream>
 #include <sys/stat.h>
 
@@ -22,6 +21,7 @@
 # include <unistd.h>
 # include <ctime>
 # include <sys/time.h>
+# include <dirent.h>
 #endif
 #ifdef MACOSX
 # include <mach-o/dyld.h>
@@ -291,11 +291,10 @@ std::vector<ByteString> DirectorySearch(ByteString directory, ByteString search,
 {
 	//Get full file listing
 	//Normalise directory string, ensure / or \ is present
-	if (*directory.rbegin() != '/' && *directory.rbegin() != '\\')
+	if (!directory.size() || (directory.back() != '/' && directory.back() != '\\'))
 		directory += PATH_SEP;
 	std::vector<ByteString> directoryList;
-#if defined(WIN) && !defined(__GNUC__)
-	//Windows
+#ifdef WIN
 	struct _wfinddata_t currentFile;
 	intptr_t findFileHandle;
 	ByteString fileMatch = directory + "*.*";
@@ -306,14 +305,11 @@ std::vector<ByteString> DirectorySearch(ByteString directory, ByteString search,
 	}
 	do
 	{
-		ByteString currentFileName = Platform::WinNarrow(currentFile.name);
-		if (currentFileName.length() > 4)
-			directoryList.push_back(currentFileName);
+		directoryList.push_back(Platform::WinNarrow(currentFile.name));
 	}
 	while (_wfindnext(findFileHandle, &currentFile) == 0);
 	_findclose(findFileHandle);
 #else
-	//Linux or MinGW
 	struct dirent * directoryEntry;
 	DIR *directoryHandle = opendir(directory.c_str());
 	if (!directoryHandle)
@@ -322,9 +318,7 @@ std::vector<ByteString> DirectorySearch(ByteString directory, ByteString search,
 	}
 	while ((directoryEntry = readdir(directoryHandle)))
 	{
-		ByteString currentFileName = ByteString(directoryEntry->d_name);
-		if (currentFileName.length()>4)
-			directoryList.push_back(currentFileName);
+		directoryList.push_back(ByteString(directoryEntry->d_name));
 	}
 	closedir(directoryHandle);
 #endif
@@ -336,12 +330,12 @@ std::vector<ByteString> DirectorySearch(ByteString directory, ByteString search,
 	{
 		ByteString filename = *iter, tempfilename = *iter;
 		bool extensionMatch = !extensions.size();
-		for (std::vector<ByteString>::iterator extIter = extensions.begin(), extEnd = extensions.end(); extIter != extEnd; ++extIter)
+		for (auto &extension : extensions)
 		{
-			if (filename.EndsWith(*extIter))
+			if (filename.size() >= extension.size() && filename.EndsWith(extension))
 			{
 				extensionMatch = true;
-				tempfilename = filename.SubstrFromEnd(0, (*extIter).size()).ToLower();
+				tempfilename = filename.SubstrFromEnd(0, extension.size()).ToLower();
 				break;
 			}
 		}
