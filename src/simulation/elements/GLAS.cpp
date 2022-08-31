@@ -57,7 +57,7 @@ static int update(UPDATE_FUNC_ARGS)
 	{
 		// determined to be strengthened GLAS, increase the pressure by which it shatters
 		// set to 160 because that's a value where the effect is noticable. the 3x increase didn't do much
-		if (diff > 160 || diff < -160)
+		if (diff > 16 * parts[i].life || diff < -16 * parts[i].life) // max = 240, min = 16.
 		{
 			sim->part_change_type(i, x, y, PT_BGLA);
 		}

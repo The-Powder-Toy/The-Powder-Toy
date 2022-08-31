@@ -253,7 +253,8 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 					}
 					else if (parts[i].ctype == PT_SALT && rt == PT_GLAS) 
 					{
-						parts[ID(r)].life = 10;
+						if (RNG::Ref().chance(1, 100) && parts[ID(r)].life < 15)
+						parts[ID(r)].life += 1;
 					}
 				}
 
