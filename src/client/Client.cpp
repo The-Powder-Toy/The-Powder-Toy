@@ -983,7 +983,10 @@ void Client::RescanStamps()
 	stampIDs.clear();
 	for (auto &stamp : Platform::DirectorySearch("stamps", "", { ".stm" }))
 	{
-		stampIDs.push_front(stamp.Substr(0, 10));
+		if (stamp.size() == 14)
+		{
+			stampIDs.push_front(stamp.Substr(0, 10));
+		}
 	}
 	stampIDs.sort(std::greater<ByteString>());
 	updateStamps();
