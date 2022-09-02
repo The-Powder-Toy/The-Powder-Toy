@@ -164,27 +164,27 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 	gvx += sim->gravx[((int)parts[i].y/CELL)*(XRES/CELL)+((int)parts[i].x/CELL)];
 	gvy += sim->gravy[((int)parts[i].y/CELL)*(XRES/CELL)+((int)parts[i].x/CELL)];
 
-	float rbx = gvx;
-	float rby = gvy;
+	float mvx = gvx;
+	float mvy = gvy;
 	bool rbLowGrav = false;
-	float tmp = fabsf(rbx) > fabsf(rby)?fabsf(rbx):fabsf(rby);
+	float tmp = fabsf(mvx) > fabsf(mvy)?fabsf(mvx):fabsf(mvy);
 	if (tmp < 0.001f)
 	{
 		rbLowGrav = true;
-		rbx = -parts[i].vx;
-		rby = -parts[i].vy;
-		tmp = fabsf(rbx) > fabsf(rby)?fabsf(rbx):fabsf(rby);
+		mvx = -parts[i].vx;
+		mvy = -parts[i].vy;
+		tmp = fabsf(mvx) > fabsf(mvy)?fabsf(mvx):fabsf(mvy);
 	}
 	if (tmp < 0.001f)
 	{
-		rbx = 0;
-		rby = 1.0f;
+		mvx = 0;
+		mvy = 1.0f;
 		tmp = 1.0f;
 	}
 	else
-		tmp = 1.0f/sqrtf(rbx*rbx+rby*rby);
-	rbx *= tmp;// scale to a unit vector
-	rby *= tmp;
+		tmp = 1.0f/sqrtf(mvx*mvx+mvy*mvy);
+	mvx *= tmp;// scale to a unit vector
+	mvy *= tmp;
 	if (rbLowGrav)
 	{
 		rocketBootsHeadEffectV = rocketBootsHeadEffect;
@@ -249,10 +249,10 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 		{
 			if (INBOND(playerp->legs[4], playerp->legs[5]) && !sim->eval_move(t, int(playerp->legs[4]), int(playerp->legs[5]), NULL))
 			{
-				playerp->accs[2] = -3*gvy-3*gvx;
-				playerp->accs[3] = 3*gvx-3*gvy;
-				playerp->accs[0] = -gvy;
-				playerp->accs[1] = gvx;
+				playerp->accs[2] = -3*mvy-3*mvx;
+				playerp->accs[3] = 3*mvx-3*mvy;
+				playerp->accs[0] = -mvy;
+				playerp->accs[1] = mvx;
 				moved = true;
 			}
 		}
@@ -260,21 +260,21 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 		{
 			if (INBOND(playerp->legs[12], playerp->legs[13]) && !sim->eval_move(t, int(playerp->legs[12]), int(playerp->legs[13]), NULL))
 			{
-				playerp->accs[6] = -3*gvy-3*gvx;
-				playerp->accs[7] = 3*gvx-3*gvy;
-				playerp->accs[0] = -gvy;
-				playerp->accs[1] = gvx;
+				playerp->accs[6] = -3*mvy-3*mvx;
+				playerp->accs[7] = 3*mvx-3*mvy;
+				playerp->accs[0] = -mvy;
+				playerp->accs[1] = mvx;
 				moved = true;
 			}
 		}
 		if (!moved && playerp->rocketBoots)
 		{
-			parts[i].vx -= rocketBootsHeadEffect*rby;
-			parts[i].vy += rocketBootsHeadEffect*rbx;
-			playerp->accs[2] -= rocketBootsFeetEffect*rby;
-			playerp->accs[6] -= rocketBootsFeetEffect*rby;
-			playerp->accs[3] += rocketBootsFeetEffect*rbx;
-			playerp->accs[7] += rocketBootsFeetEffect*rbx;
+			parts[i].vx -= rocketBootsHeadEffect*mvy;
+			parts[i].vy += rocketBootsHeadEffect*mvx;
+			playerp->accs[2] -= rocketBootsFeetEffect*mvy;
+			playerp->accs[6] -= rocketBootsFeetEffect*mvy;
+			playerp->accs[3] += rocketBootsFeetEffect*mvx;
+			playerp->accs[7] += rocketBootsFeetEffect*mvx;
 			for (int leg=0; leg<2; leg++)
 			{
 				if (leg==1 && (((int)(playerp->comm)&0x02) == 0x02))
@@ -283,8 +283,8 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 				int np = sim->create_part(-1, footX, footY, PT_PLSM);
 				if (np>=0)
 				{
-					parts[np].vx = parts[i].vx+rby*25;
-					parts[np].vy = parts[i].vy-rbx*25;
+					parts[np].vx = parts[i].vx+mvy*25;
+					parts[np].vy = parts[i].vy-mvx*25;
 					parts[np].life += 30;
 				}
 			}
@@ -299,10 +299,10 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 		{
 			if (INBOND(playerp->legs[4], playerp->legs[5]) && !sim->eval_move(t, int(playerp->legs[4]), int(playerp->legs[5]), NULL))
 			{
-				playerp->accs[2] = 3*gvy-3*gvx;
-				playerp->accs[3] = -3*gvx-3*gvy;
-				playerp->accs[0] = gvy;
-				playerp->accs[1] = -gvx;
+				playerp->accs[2] = 3*mvy-3*mvx;
+				playerp->accs[3] = -3*mvx-3*mvy;
+				playerp->accs[0] = mvy;
+				playerp->accs[1] = -mvx;
 				moved = true;
 			}
 		}
@@ -310,21 +310,21 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 		{
 			if (INBOND(playerp->legs[12], playerp->legs[13]) && !sim->eval_move(t, int(playerp->legs[12]), int(playerp->legs[13]), NULL))
 			{
-				playerp->accs[6] = 3*gvy-3*gvx;
-				playerp->accs[7] = -3*gvx-3*gvy;
-				playerp->accs[0] = gvy;
-				playerp->accs[1] = -gvx;
+				playerp->accs[6] = 3*mvy-3*mvx;
+				playerp->accs[7] = -3*mvx-3*mvy;
+				playerp->accs[0] = mvy;
+				playerp->accs[1] = -mvx;
 				moved = true;
 			}
 		}
 		if (!moved && playerp->rocketBoots)
 		{
-			parts[i].vx += rocketBootsHeadEffect*rby;
-			parts[i].vy -= rocketBootsHeadEffect*rbx;
-			playerp->accs[2] += rocketBootsFeetEffect*rby;
-			playerp->accs[6] += rocketBootsFeetEffect*rby;
-			playerp->accs[3] -= rocketBootsFeetEffect*rbx;
-			playerp->accs[7] -= rocketBootsFeetEffect*rbx;
+			parts[i].vx += rocketBootsHeadEffect*mvy;
+			parts[i].vy -= rocketBootsHeadEffect*mvx;
+			playerp->accs[2] += rocketBootsFeetEffect*mvy;
+			playerp->accs[6] += rocketBootsFeetEffect*mvy;
+			playerp->accs[3] -= rocketBootsFeetEffect*mvx;
+			playerp->accs[7] -= rocketBootsFeetEffect*mvx;
 			for (int leg=0; leg<2; leg++)
 			{
 				if (leg==0 && (((int)(playerp->comm)&0x01) == 0x01))
@@ -333,8 +333,8 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 				int np = sim->create_part(-1, footX, footY, PT_PLSM);
 				if (np>=0)
 				{
-					parts[np].vx = parts[i].vx-rby*25;
-					parts[np].vy = parts[i].vy+rbx*25;
+					parts[np].vx = parts[i].vx-mvy*25;
+					parts[np].vy = parts[i].vy+mvx*25;
 					parts[np].life += 30;
 				}
 			}
@@ -356,20 +356,20 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 	{
 		if (playerp->rocketBoots)
 		{
-			parts[i].vx -= rocketBootsHeadEffectV*rbx;
-			parts[i].vy -= rocketBootsHeadEffectV*rby;
-			playerp->accs[2] -= rocketBootsFeetEffectV*rbx;
-			playerp->accs[6] -= rocketBootsFeetEffectV*rbx;
-			playerp->accs[3] -= rocketBootsFeetEffectV*rby;
-			playerp->accs[7] -= rocketBootsFeetEffectV*rby;
+			parts[i].vx -= rocketBootsHeadEffectV*mvx;
+			parts[i].vy -= rocketBootsHeadEffectV*mvy;
+			playerp->accs[2] -= rocketBootsFeetEffectV*mvx;
+			playerp->accs[6] -= rocketBootsFeetEffectV*mvx;
+			playerp->accs[3] -= rocketBootsFeetEffectV*mvy;
+			playerp->accs[7] -= rocketBootsFeetEffectV*mvy;
 			for (int leg=0; leg<2; leg++)
 			{
 				int footX = int(playerp->legs[leg*8+4]), footY = int(playerp->legs[leg*8+5]);
 				int np = sim->create_part(-1, footX, footY+1, PT_PLSM);
 				if (np>=0)
 				{
-					parts[np].vx = parts[i].vx+rbx*30;
-					parts[np].vy = parts[i].vy+rby*30;
+					parts[np].vx = parts[i].vx+mvx*30;
+					parts[np].vy = parts[i].vy+mvy*30;
 					parts[np].life += 10;
 				}
 			}
@@ -377,12 +377,12 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 		else if ((INBOND(playerp->legs[4], playerp->legs[5]) && !sim->eval_move(t, int(playerp->legs[4]), int(playerp->legs[5]), NULL)) ||
 				 (INBOND(playerp->legs[12], playerp->legs[13]) && !sim->eval_move(t, int(playerp->legs[12]), int(playerp->legs[13]), NULL)))
 		{
-			parts[i].vx -= 4*gvx;
-			parts[i].vy -= 4*gvy;
-			playerp->accs[2] -= gvx;
-			playerp->accs[6] -= gvx;
-			playerp->accs[3] -= gvy;
-			playerp->accs[7] -= gvy;
+			parts[i].vx -= 4*mvx;
+			parts[i].vy -= 4*mvy;
+			playerp->accs[2] -= mvx;
+			playerp->accs[6] -= mvx;
+			playerp->accs[3] -= mvy;
+			playerp->accs[7] -= mvy;
 		}
 	}
 
@@ -496,7 +496,7 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 					int angle;
 					int power = 100;
 					if (gvx!=0 || gvy!=0)
-						angle = int(atan2(gvx, gvy)*180.0f/M_PI);
+						angle = int(atan2(mvx, mvy)*180.0f/M_PI);
 					else
 						angle = RNG::Ref().between(0, 359);
 					if (((int)playerp->pcomm)&0x01)
@@ -512,8 +512,8 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 				}
 				else if (!playerp->fan)
 				{
-					parts[np].vx -= -gvy*(5*((((int)playerp->pcomm)&0x02) == 0x02) - 5*(((int)(playerp->pcomm)&0x01) == 0x01));
-					parts[np].vy -= gvx*(5*((((int)playerp->pcomm)&0x02) == 0x02) - 5*(((int)(playerp->pcomm)&0x01) == 0x01));
+					parts[np].vx -= -mvy*(5*((((int)playerp->pcomm)&0x02) == 0x02) - 5*(((int)(playerp->pcomm)&0x01) == 0x01));
+					parts[np].vy -= mvx*(5*((((int)playerp->pcomm)&0x02) == 0x02) - 5*(((int)(playerp->pcomm)&0x01) == 0x01));
 					parts[i].vx -= (sim->elements[(int)playerp->elem].Weight*parts[np].vx)/1000;
 				}
 				playerp->frames = 0;
