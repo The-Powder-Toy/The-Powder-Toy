@@ -49,31 +49,45 @@ void Element::Element_GLAS()
 
 static int update(UPDATE_FUNC_ARGS)
 {
+	// GLAS strengthening reaction becomes increasingly difficult as it happens, .life increments by 1 every 120, 240 and 360 frames when .life is < 100, >100 but <200 and finally >200 respectively.
+	if (parts[i].life < 100)
+	{
+		if (parts[i].tmp4 >= 120)
+		{
+			parts[i].tmp4 = 0;
+			parts[i].life += 1;
+		}
+	}
+	else if (parts[i].life >= 100 && parts[i].life < 200)
+	{
+		if (parts[i].tmp4 >= 240)
+		{
+			parts[i].tmp4 = 0;
+			parts[i].life += 1;
+		}
+	}
+	else if (parts[i].life >= 200)
+	{
+		if (parts[i].tmp4 >= 360)
+		{
+			parts[i].tmp4 = 0;
+			parts[i].life += 1;
+		}
+	}
+	if (parts[i].life < 16)// Compatibilty stuff
+	{
+		parts[i].life = 16;
+	}
 	auto press = int(sim->pv[y/CELL][x/CELL] * 64);
 	auto diff = press - parts[i].tmp3;
 
-	// Determine whether the GLAS is chemically strengthened via life setting.
-	if (parts[i].life > 0) 
-	{
-		// determined to be strengthened GLAS, increase the pressure by which it shatters
-		// set to 160 because that's a value where the effect is noticable. the 3x increase didn't do much
-		if (diff > 16 * parts[i].life || diff < -16 * parts[i].life) // max = 240, min = 16.
+	// Determine whether the GLAS is chemically strengthened via .life setting. (250 = Max., 16 = Min.)
+		if (diff > parts[i].life || diff < -1*(parts[i].life))
 		{
 			sim->part_change_type(i, x, y, PT_BGLA);
 		}
-	}
-	else 
-	{
-		// regular ol' GLAS
-		if (diff > 16 || diff < -16)
-		{
-			sim->part_change_type(i, x, y, PT_BGLA);
-		}
-	}
-	
 	parts[i].tmp3 = press;
 	return 0;
-	
 }
 
 static void create(ELEMENT_CREATE_FUNC_ARGS)
