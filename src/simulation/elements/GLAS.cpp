@@ -49,30 +49,10 @@ void Element::Element_GLAS()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	// GLAS strengthening reaction becomes increasingly difficult as it happens, .life increments by 1 every 120, 240 and 360 frames when .life is < 100, >100 but <200 and finally >200 respectively.
-	if (parts[i].life < 100)
+	if (parts[i].tmp4 >= 120) // To make life increments not so random but still way more controllable (1 for every 120 frames).
 	{
-		if (parts[i].tmp4 >= 120)
-		{
-			parts[i].tmp4 = 0;
-			parts[i].life += 1;
-		}
-	}
-	else if (parts[i].life >= 100 && parts[i].life < 200)
-	{
-		if (parts[i].tmp4 >= 240)
-		{
-			parts[i].tmp4 = 0;
-			parts[i].life += 1;
-		}
-	}
-	else if (parts[i].life >= 200)
-	{
-		if (parts[i].tmp4 >= 360)
-		{
-			parts[i].tmp4 = 0;
-			parts[i].life += 1;
-		}
+		parts[i].tmp4 = 0;
+		parts[i].life += 1;
 	}
 	if (parts[i].life < 16)// Compatibilty stuff
 	{
