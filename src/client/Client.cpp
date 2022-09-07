@@ -701,7 +701,7 @@ RequestStatus Client::ExecVote(int saveID, int direction)
 		ByteString userIDText = ByteString::Build(authUser.UserID);
 		data = http::Request::SimpleAuth(SCHEME SERVER "/Vote.api", &dataStatus, userIDText, authUser.SessionID, {
 			{ "ID", saveIDText },
-			{ "Action", direction == 1 ? "Up" : "Down" },
+			{ "Action", direction ? (direction == 1 ? "Up" : "Down") : "Reset" },
 		});
 	}
 	else
