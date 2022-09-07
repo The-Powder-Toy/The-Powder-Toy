@@ -486,16 +486,16 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 		if (Client::Ref().GetAuthUser().UserID)
 			favButton->Enabled = true;
 	}
-	if (!sender->GetSavesLoaded() || favButton->GetToggleState())
+	ownButton->Enabled = true;
+	sortButton->Enabled = true;
+	if (!Client::Ref().GetAuthUser().UserID || favButton->GetToggleState())
+	{
+		ownButton->Enabled = false;
+	}
+	if (!sender->GetSavesLoaded())
 	{
 		ownButton->Enabled = false;
 		sortButton->Enabled = false;
-	}
-	else
-	{
-		if (Client::Ref().GetAuthUser().UserID)
-			ownButton->Enabled = true;
-		sortButton->Enabled = true;
 	}
 	if (!saves.size())
 	{
