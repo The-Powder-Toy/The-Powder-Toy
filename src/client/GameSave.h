@@ -117,9 +117,7 @@ public:
 	GameSave();
 	GameSave(const GameSave & save);
 	GameSave(int width, int height);
-	GameSave(char * data, int dataSize);
 	GameSave(std::vector<char> data);
-	GameSave(std::vector<unsigned char> data);
 	~GameSave();
 	void setSize(int width, int height);
 	char * Serialise(unsigned int & dataSize);

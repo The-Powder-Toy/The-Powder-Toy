@@ -301,7 +301,7 @@ void PreviewModel::Update()
 		if (status == 200 && ret.size())
 		{
 			delete saveData;
-			saveData = new std::vector<unsigned char>(ret.begin(), ret.end());
+			saveData = new std::vector<char>(ret.begin(), ret.end());
 			if (saveInfo && saveData)
 				OnSaveReady();
 		}

@@ -165,27 +165,6 @@ VideoBuffer * SaveRenderer::Render(GameSave * save, bool decorations, bool fire,
 	return tempThumb;
 }
 
-VideoBuffer * SaveRenderer::Render(unsigned char * saveData, int dataSize, bool decorations, bool fire)
-{
-	std::lock_guard<std::mutex> g(renderMutex);
-
-	GameSave * tempSave;
-	try {
-		tempSave = new GameSave((char*)saveData, dataSize);
-	} catch (std::exception & e) {
-
-		//Todo: make this look a little less shit
-		VideoBuffer * buffer = new VideoBuffer(64, 64);
-		buffer->BlendCharacter(32, 32, 'x', 255, 255, 255, 255);
-
-		return buffer;
-	}
-	VideoBuffer * thumb = Render(tempSave, decorations, fire);
-	delete tempSave;
-
-	return thumb;
-}
-
 SaveRenderer::~SaveRenderer()
 {
 }

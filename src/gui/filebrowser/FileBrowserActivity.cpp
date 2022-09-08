@@ -47,10 +47,10 @@ class LoadFilesTask: public Task
 			SaveFile * saveFile = new SaveFile(directory + *iter);
 			try
 			{
-				std::vector<unsigned char> data = Client::Ref().ReadFile(directory + *iter);
-				if (data.empty())
+				std::vector<char> data;
+				if (!Client::Ref().ReadFile(data, directory + *iter))
 					continue;
-				GameSave * tempSave = new GameSave(data);
+				GameSave * tempSave = new GameSave(std::move(data));
 				saveFile->SetGameSave(tempSave);
 				saveFiles.push_back(saveFile);
 

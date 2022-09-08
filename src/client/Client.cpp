@@ -406,86 +406,6 @@ bool Client::DoInstallation()
 #endif
 }
 
-bool Client::WriteFile(std::vector<unsigned char> fileData, ByteString filename)
-{
-	bool saveError = false;
-	try
-	{
-		std::ofstream fileStream;
-		fileStream.open(filename, std::ios::binary);
-		if(fileStream.is_open())
-		{
-			fileStream.write((char*)&fileData[0], fileData.size());
-			fileStream.close();
-		}
-		else
-			saveError = true;
-	}
-	catch (std::exception & e)
-	{
-		std::cerr << "WriteFile:" << e.what() << std::endl;
-		saveError = true;
-	}
-	return saveError;
-}
-
-bool Client::WriteFile(std::vector<char> fileData, ByteString filename)
-{
-	bool saveError = false;
-	try
-	{
-		std::ofstream fileStream;
-		fileStream.open(filename, std::ios::binary);
-		if(fileStream.is_open())
-		{
-			fileStream.write(&fileData[0], fileData.size());
-			fileStream.close();
-		}
-		else
-			saveError = true;
-	}
-	catch (std::exception & e)
-	{
-		std::cerr << "WriteFile:" << e.what() << std::endl;
-		saveError = true;
-	}
-	return saveError;
-}
-
-std::vector<unsigned char> Client::ReadFile(ByteString filename)
-{
-	try
-	{
-		std::ifstream fileStream;
-		fileStream.open(filename, std::ios::binary);
-		if(fileStream.is_open())
-		{
-			fileStream.seekg(0, std::ios::end);
-			size_t fileSize = fileStream.tellg();
-			fileStream.seekg(0);
-
-			unsigned char * tempData = new unsigned char[fileSize];
-			fileStream.read((char *)tempData, fileSize);
-			fileStream.close();
-
-			std::vector<unsigned char> fileData;
-			fileData.insert(fileData.end(), tempData, tempData+fileSize);
-			delete[] tempData;
-
-			return fileData;
-		}
-		else
-		{
-			return std::vector<unsigned char>();
-		}
-	}
-	catch(std::exception & e)
-	{
-		std::cerr << "Readfile: " << e.what() << std::endl;
-		throw;
-	}
-}
-
 void Client::SetMessageOfTheDay(String message)
 {
 	messageOfTheDay = message;
@@ -1042,7 +962,7 @@ RequestStatus Client::ExecVote(int saveID, int direction)
 	return ret;
 }
 
-std::vector<unsigned char> Client::GetSaveData(int saveID, int saveDate)
+std::vector<char> Client::GetSaveData(int saveID, int saveDate)
 {
 	lastError = "";
 	int dataStatus;
@@ -1059,9 +979,9 @@ std::vector<unsigned char> Client::GetSaveData(int saveID, int saveDate)
 	ParseServerReturn(data, dataStatus, false);
 	if (data.size() && dataStatus == 200)
 	{
-		return std::vector<unsigned char>(data.begin(), data.end());
+		return std::vector<char>(data.begin(), data.end());
 	}
-	return std::vector<unsigned char>();
+	return {};
 }
 
 LoginStatus Client::Login(ByteString username, ByteString password, User & user)
@@ -1329,21 +1249,39 @@ SaveInfo * Client::GetSave(int saveID, int saveDate)
 
 SaveFile * Client::LoadSaveFile(ByteString filename)
 {
-	if (!Platform::FileExists(filename))
-		return nullptr;
-	SaveFile * file = new SaveFile(filename);
-	try
+	ByteString err;
+	SaveFile *file = nullptr;
+	if (Platform::FileExists(filename))
 	{
-		GameSave * tempSave = new GameSave(ReadFile(filename));
-		file->SetGameSave(tempSave);
+		file = new SaveFile(filename);
+		try
+		{
+			std::vector<char> data;
+			if (ReadFile(data, filename))
+			{
+				file->SetGameSave(new GameSave(std::move(data)));
+			}
+			else
+			{
+				err = "failed to open";
+			}
+		}
+		catch (const ParseException &e)
+		{
+			err = e.what();
+		}
 	}
-	catch (const ParseException &e)
+	else
 	{
+		err = "does not exist";
+	}
+	if (err.size())
+	{
+		std::cerr << "Client: " << filename << ": " << err << std::endl;
+		file->SetLoadingError(err.FromUtf8());
 #ifdef LUACONSOLE
-		luacon_ci->SetLastError(ByteString(e.what()).FromUtf8());
+		luacon_ci->SetLastError(err.FromUtf8());
 #endif
-		std::cerr << "Client: Invalid save file '" << filename << "': " << e.what() << std::endl;
-		file->SetLoadingError(ByteString(e.what()).FromUtf8());
 	}
 	return file;
 }
@@ -1854,4 +1792,31 @@ void Client::SetPref(ByteString prop, std::vector<Json::Value> value)
 void Client::SetPrefUnicode(ByteString prop, String value)
 {
 	SetPref(prop, value.ToUtf8());
+}
+
+bool Client::ReadFile(std::vector<char> &fileData, ByteString filename)
+{
+	std::ifstream f(filename, std::ios::binary);
+	if (f) f.seekg(0, std::ios::end);
+	if (f) fileData.resize(f.tellg());
+	if (f) f.seekg(0);
+	if (f) f.read(&fileData[0], fileData.size());
+	if (!f)
+	{
+		std::cerr << "ReadFile: " << filename << ": " << strerror(errno) << std::endl;
+		return false;
+	}
+	return true;
+}
+
+bool Client::WriteFile(std::vector<char> fileData, ByteString filename)
+{
+	std::ofstream f(filename, std::ios::binary);
+	if (f) f.write(&fileData[0], fileData.size());
+	if (!f)
+	{
+		std::cerr << "WriteFile: " << filename << ": " << strerror(errno) << std::endl;
+		return false;
+	}
+	return true;
 }

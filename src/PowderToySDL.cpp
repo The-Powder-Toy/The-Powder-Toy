@@ -916,15 +916,15 @@ int main(int argc, char * argv[])
 			{
 				try
 				{
-					std::vector<unsigned char> gameSaveData = Client::Ref().ReadFile(arguments["open"]);
-					if (!gameSaveData.size())
+					std::vector<char> gameSaveData;
+					if (!Client::Ref().ReadFile(gameSaveData, arguments["open"]))
 					{
 						new ErrorMessage("Error", "Could not read file");
 					}
 					else
 					{
 						SaveFile * newFile = new SaveFile(arguments["open"]);
-						GameSave * newSave = new GameSave(gameSaveData);
+						GameSave * newSave = new GameSave(std::move(gameSaveData));
 						newFile->SetGameSave(newSave);
 						gameController->LoadSaveFile(newFile);
 						delete newFile;
@@ -976,10 +976,10 @@ int main(int argc, char * argv[])
 				SaveInfo * newSave = Client::Ref().GetSave(saveId, 0);
 				if (!newSave)
 					throw std::runtime_error("Could not load save info");
-				std::vector<unsigned char> saveData = Client::Ref().GetSaveData(saveId, 0);
+				auto saveData = Client::Ref().GetSaveData(saveId, 0);
 				if (!saveData.size())
 					throw std::runtime_error(("Could not load save\n" + Client::Ref().GetLastError()).ToUtf8());
-				GameSave * newGameSave = new GameSave(saveData);
+				GameSave * newGameSave = new GameSave(std::move(saveData));
 				newSave->SetGameSave(newGameSave);
 
 				gameController->LoadSave(newSave);

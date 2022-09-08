@@ -104,8 +104,6 @@ public:
 
 	bool DoInstallation();
 
-	std::vector<unsigned char> ReadFile(ByteString filename);
-
 	void AddServerNotification(std::pair<String, ByteString> notification);
 	std::vector<std::pair<String, ByteString> > GetServerNotifications();
 
@@ -115,7 +113,7 @@ public:
 	void Initialise(ByteString proxyString, bool disableNetwork);
 	bool IsFirstRun();
 
-	bool WriteFile(std::vector<unsigned char> fileData, ByteString filename);
+	bool ReadFile(std::vector<char> &fileData, ByteString filename);
 	bool WriteFile(std::vector<char> fileData, ByteString filename);
 
 	void AddListener(ClientListener * listener);
@@ -136,7 +134,7 @@ public:
 
 	RequestStatus AddComment(int saveID, String comment);
 
-	std::vector<unsigned char> GetSaveData(int saveID, int saveDate);
+	std::vector<char> GetSaveData(int saveID, int saveDate);
 
 	LoginStatus Login(ByteString username, ByteString password, User & user);
 	std::vector<SaveInfo*> * SearchSaves(int start, int count, String query, ByteString sort, ByteString category, int & resultCount);

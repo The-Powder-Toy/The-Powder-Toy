@@ -5,7 +5,7 @@
 
 #include "common/tpt-minmax.h"
 
-BitmapBrush::BitmapBrush(std::vector<unsigned char> newBitmap, ui::Point rectSize_):
+BitmapBrush::BitmapBrush(unsigned char *newBitmap, ui::Point rectSize_):
 	Brush(ui::Point(0, 0)),
 	origSize(0, 0)
 {

@@ -19,7 +19,7 @@ class PreviewModel
 	bool canOpen;
 	std::vector<PreviewView*> observers;
 	SaveInfo * saveInfo;
-	std::vector<unsigned char> * saveData;
+	std::vector<char> * saveData;
 	std::vector<SaveComment*> * saveComments;
 	void notifySaveChanged();
 	void notifySaveCommentsChanged();

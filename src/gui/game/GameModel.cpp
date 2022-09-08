@@ -481,8 +481,8 @@ void GameModel::BuildBrushList()
 	std::vector<ByteString> brushFiles = Platform::DirectorySearch(BRUSH_DIR, "", { ".ptb" });
 	for (size_t i = 0; i < brushFiles.size(); i++)
 	{
-		std::vector<unsigned char> brushData = Client::Ref().ReadFile(BRUSH_DIR + ByteString(PATH_SEP) + brushFiles[i]);
-		if(!brushData.size())
+		std::vector<char> brushData;
+		if (!Client::Ref().ReadFile(brushData, BRUSH_DIR + ByteString(PATH_SEP) + brushFiles[i]))
 		{
 			std::cout << "Brushes: Skipping " << brushFiles[i] << ". Could not open" << std::endl;
 			continue;
@@ -493,7 +493,7 @@ void GameModel::BuildBrushList()
 			std::cout << "Brushes: Skipping " << brushFiles[i] << ". Invalid bitmap size" << std::endl;
 			continue;
 		}
-		brushList.push_back(new BitmapBrush(brushData, ui::Point(dimension, dimension)));
+		brushList.push_back(new BitmapBrush(reinterpret_cast<unsigned char *>(&brushData[0]), ui::Point(dimension, dimension)));
 	}
 
 	if (hasStoredRadius && (size_t)currentBrush < brushList.size())

@@ -17,7 +17,7 @@ protected:
 	ui::Point origSize;
 	unsigned char * origBitmap;
 public:
-	BitmapBrush(std::vector<unsigned char> newBitmap, ui::Point rectSize);
+	BitmapBrush(unsigned char *newBitmap, ui::Point rectSize);
 	void GenerateBitmap() override;
 	virtual ~BitmapBrush();
 };
