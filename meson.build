@@ -98,7 +98,7 @@ conf_data.set('ZLIB_WINAPI', false)
 x86_sse_level_str = get_option('x86_sse')
 if x86_sse_level_str == 'auto'
 	x86_sse_level = 20
-	if not is_x86 or not is_64bit or host_platform == 'darwin'
+	if not is_x86 or not is_64bit or host_platform == 'darwin' or (is_64bit and is_msvc)
 		x86_sse_level = 0
 	endif
 elif x86_sse_level_str == 'sse3'
@@ -329,22 +329,32 @@ conf_data.set('MOD_ID', get_option('mod_id'))
 conf_data.set('DEBUG', is_debug)
 conf_data.set('SNAPSHOT', get_option('snapshot'))
 conf_data.set('SNAPSHOT_ID', get_option('snapshot_id'))
-conf_data.set('SERVER', '"' + get_option('server') + '"')
-conf_data.set('STATICSERVER', '"' + get_option('static_server') + '"')
-conf_data.set('IDENT_PLATFORM', '"' + ident_platform + '"')
+conf_data.set('SERVER', '"@0@"'.format(get_option('server')))
+conf_data.set('STATICSERVER', '"@0@"'.format(get_option('static_server')))
+conf_data.set('IDENT_PLATFORM', '"@0@"'.format(ident_platform))
 conf_data.set('IDENT', '"@0@-@1@-@2@"'.format(host_arch, host_platform, host_libc).to_upper())
+conf_data.set('APPNAME', get_option('app_name'))
+conf_data.set('APPCOMMENT', get_option('app_comment'))
+conf_data.set('APPEXE', get_option('app_exe'))
+conf_data.set('APPID', get_option('app_id'))
+conf_data.set('APPDATA', get_option('app_data'))
+conf_data.set('APPVENDOR', get_option('app_vendor'))
 
 if get_option('update_server') != ''
-	conf_data.set('UPDATESERVER', '"' + get_option('update_server') + '"')
+	conf_data.set('UPDATESERVER', '"@0@"'.format(get_option('update_server')))
 else
 	conf_data.set('UPDATESERVER', false)
 endif
 
-resources_files = []
+data_files = []
 
 subdir('src')
 subdir('data')
 subdir('resources')
+
+powder_files += data_files
+render_files += data_files
+font_files += data_files
 
 if get_option('build_powder')
 	powder_deps = [

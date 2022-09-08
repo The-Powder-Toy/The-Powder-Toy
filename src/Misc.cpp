@@ -1,7 +1,6 @@
 #include "Misc.h"
 
 #include "Config.h"
-#include "icondoc.h"
 
 #include <cstring>
 #include <sys/types.h>

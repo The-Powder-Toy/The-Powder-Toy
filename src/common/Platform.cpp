@@ -38,8 +38,23 @@ std::string sharedCwd;
 
 ByteString GetCwd()
 {
-	char *cwd = getcwd(NULL, 0);
-	return cwd == nullptr ? "" : cwd;
+	ByteString cwd;
+#if defined(WIN)
+	wchar_t *cwdPtr = _wgetcwd(NULL, 0);
+	if (cwdPtr)
+	{
+		cwd = WinNarrow(cwdPtr);
+	}
+	free(cwdPtr);
+#else
+	char *cwdPtr = getcwd(NULL, 0);
+	if (cwdPtr)
+	{
+		cwd = cwdPtr;
+	}
+	free(cwdPtr);
+#endif
+	return cwd;
 }
 
 ByteString ExecutableName()

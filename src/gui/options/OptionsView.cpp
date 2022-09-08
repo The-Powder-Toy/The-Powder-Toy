@@ -396,7 +396,7 @@ OptionsView::OptionsView():
 		if (!cwd.empty())
 			Platform::OpenURI(cwd);
 		else
-			fprintf(stderr, "cannot open data folder: getcwd(...) failed\n");
+			fprintf(stderr, "cannot open data folder: Platform::GetCwd(...) failed\n");
 	} });
 	scrollPanel->AddChild(dataFolderButton);
 

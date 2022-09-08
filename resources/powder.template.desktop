@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=@APPNAME@
+Type=Application
+Comment=@APPCOMMENT@
+MimeType=application/vnd.powdertoy.save;x-scheme-handler/ptsave;
+Categories=Game;Simulation;
+Exec=@APPEXE@ %u
+Icon=@APPEXE@

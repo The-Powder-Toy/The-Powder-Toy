@@ -32,6 +32,12 @@
 #mesondefine UPDATESERVER
 #mesondefine IDENT_PLATFORM
 #mesondefine IDENT
+#define APPNAME "@APPNAME@"
+#define APPCOMMENT "@APPCOMMENT@"
+#define APPEXE "@APPEXE@"
+#define APPID "@APPID@"
+#define APPDATA "@APPDATA@"
+#define APPVENDOR "@APPVENDOR@"
 
 #ifdef WIN
 # define PATH_SEP "\\"

@@ -277,7 +277,7 @@ bool RecreateWindow()
 		SDL_DestroyWindow(sdl_window);
 	}
 
-	sdl_window = SDL_CreateWindow("The Powder Toy", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOWW * scale, WINDOWH * scale,
+	sdl_window = SDL_CreateWindow(APPNAME, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOWW * scale, WINDOWH * scale,
 	                              flags);
 	if (!sdl_window)
 	{
@@ -366,6 +366,10 @@ std::map<ByteString, ByteString> readArguments(int argc, char * argv[])
 		{
 			arguments["scripts"] = "true";
 		}
+		else if (!strncmp(argv[i], "file:", 5) && strlen(argv[i]) >= 7)
+		{
+			arguments["open"] = format::URLDecode(argv[i] + 7); // skip "file://"
+		}
 		else if (!strncmp(argv[i], "open", 5) && i+1<argc)
 		{
 			arguments["open"] = argv[i+1];
@@ -375,6 +379,11 @@ std::map<ByteString, ByteString> readArguments(int argc, char * argv[])
 		{
 			arguments["ddir"] = argv[i+1];
 			i++;
+		}
+		else if (!strncmp(argv[i], "ptsave:", 7) && strlen(argv[i]) >= 8)
+		{
+			arguments["ptsave"] = argv[i];
+			break;
 		}
 		else if (!strncmp(argv[i], "ptsave", 7) && i+1<argc)
 		{
@@ -746,7 +755,7 @@ int main(int argc, char * argv[])
 	}
 	else
 	{
-		char *ddir = SDL_GetPrefPath(NULL, "The Powder Toy");
+		char *ddir = SDL_GetPrefPath(NULL, APPDATA);
 #ifdef WIN
 		struct _stat s;
 		if (_stat("powder.pref", &s) != 0)

@@ -2,7 +2,7 @@
 #include "Config.h"
 
 const char *const introTextData =
-	"\blThe Powder Toy - Version " MTOS(SAVE_VERSION) "." MTOS(MINOR_VERSION) " - https://powdertoy.co.uk, irc.libera.chat #powder\n"
+	"\bl" APPNAME " - Version " MTOS(SAVE_VERSION) "." MTOS(MINOR_VERSION) " - https://powdertoy.co.uk, irc.libera.chat #powder\n"
 	"\xEE\x81\xA9\xEE\x81\xA9\xEE\x81\xA9\xEE\x81\xA9\xEE\x81\xA9\xEE\x81\xA9\xEE\x81\xA9\xEE\x81\xA9\xEE\x81\xA9\xEE\x81\xA9\xEE\x81\xA9\xEE\x81\xA9\xEE\x81\xA9\xEE\x81\xA9\xEE\x81\xA9\xEE\x81\xA9\xEE\x81\xA9\xEE\x81\xA9\xEE\x81\xA9\n"
 	"\n"
 	"\bgControl+C/V/X are Copy, Paste and cut respectively.\n"
