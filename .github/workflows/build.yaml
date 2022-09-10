@@ -18,7 +18,8 @@ jobs:
     outputs:
       release_upload_url: ${{ steps.create_release.outputs.upload_url }}
       do_release: ${{ steps.prepare.outputs.do_release }}
-      matrix: ${{ steps.prepare.outputs.matrix }}
+      build_matrix: ${{ steps.prepare.outputs.build_matrix }}
+      publish_matrix: ${{ steps.prepare.outputs.publish_matrix }}
       release_type: ${{ steps.prepare.outputs.release_type }}
       release_name: ${{ steps.prepare.outputs.release_name }}
       mod_id: ${{ steps.prepare.outputs.mod_id }}
@@ -48,7 +49,7 @@ jobs:
     needs: [prepare]
     strategy:
       fail-fast: false
-      matrix: ${{ fromJSON(needs.prepare.outputs.matrix) }}
+      matrix: ${{ fromJSON(needs.prepare.outputs.build_matrix) }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -105,23 +106,32 @@ jobs:
         with:
           path: build/${{ matrix.debug_asset_path }}
           name: ${{ matrix.debug_asset_name }}
-      - if: needs.prepare.outputs.do_publish == 'yes' && matrix.publish == 'yes'
-        run: sudo apt update && sudo apt install lftp && bash -c './.github/starcatcher-publish.sh
-        env:
-          ASSET_PATH: build/${{ matrix.asset_path }}
-          PUBLISH_HOSTPORT: ${{ secrets.STARCATCHER_PUBLISH_HOSTPORT }}
-          PUBLISH_USERNAME: ${{ secrets.STARCATCHER_PUBLISH_USERNAME }}
-          PUBLISH_PASSWORD: ${{ secrets.STARCATCHER_PUBLISH_PASSWORD }}
-          PUBLISH_FILENAME: ${{ matrix.starcatcher_name }}
   publish:
     runs-on: ubuntu-latest
     needs: [build, prepare]
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.prepare.outputs.publish_matrix) }}
     if: needs.prepare.outputs.do_publish == 'yes'
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/download-artifact@v1
         with:
-          python-version: '3.10'
+          name: ${{ matrix.asset_name }}
+      - run: mv ${{ matrix.asset_name }}/${{ matrix.asset_path }} ${{ matrix.starcatcher_name }}
+      - run: sudo apt update && sudo apt install lftp && bash -c './.github/starcatcher-publish.sh'
+        env:
+          PUBLISH_HOSTPORT: ${{ secrets.STARCATCHER_PUBLISH_HOSTPORT }}
+          PUBLISH_USERNAME: ${{ secrets.STARCATCHER_PUBLISH_USERNAME }}
+          PUBLISH_PASSWORD: ${{ secrets.STARCATCHER_PUBLISH_PASSWORD }}
+          PUBLISH_DIRECTORY: ${{ secrets.STARCATCHER_PUBLISH_DIRECTORY }}
+          PUBLISH_FILENAME: ${{ matrix.starcatcher_name }}
+  release:
+    runs-on: ubuntu-latest
+    needs: [build, publish, prepare]
+    if: needs.prepare.outputs.do_publish == 'yes'
+    steps:
+      - uses: actions/checkout@v2
       - run: ./.github/starcatcher-release.sh
         env:
           RELEASE_NAME: ${{ needs.prepare.outputs.release_name }}
