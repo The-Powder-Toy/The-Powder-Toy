@@ -11,21 +11,26 @@ match_stable     = re.fullmatch(r'refs/tags/v([0-9]+)\.([0-9]+)\.([0-9]+)', ref)
 match_beta       = re.fullmatch(r'refs/tags/v([0-9]+)\.([0-9]+)\.([0-9]+)b', ref)
 match_snapshot   = re.fullmatch(r'refs/tags/snapshot-([0-9]+)', ref)
 match_tptlibsdev = re.fullmatch(r'refs/heads/tptlibsdev-(.*)', ref)
+do_release       = False
 if match_stable:
 	release_type = 'stable'
 	release_name = 'v%s.%s.%s' % (match_stable.group(1), match_stable.group(2), match_stable.group(3))
+	do_release = True
 elif match_beta:
 	release_type = 'beta'
 	release_name = 'v%s.%s.%sb' % (match_beta.group(1), match_beta.group(2), match_beta.group(3))
+	do_release = True
 elif match_snapshot:
 	release_type = 'snapshot'
 	release_name = 'snapshot-%s' % match_snapshot.group(1)
+	do_release = True
 elif match_tptlibsdev:
 	release_type = 'tptlibsdev'
 	release_name = 'tptlibsdev-%s' % match_tptlibsdev.group(1)
 else:
 	release_type = 'dev'
 	release_name = 'dev'
+do_publish = publish_hostport and do_release
 
 print('::set-output name=release_type::' + release_type)
 print('::set-output name=release_name::' + release_name)
@@ -94,5 +99,5 @@ for bsh_host_arch, bsh_host_platform, bsh_host_libc, bsh_static_dynamic, bsh_bui
 
 print('::set-output name=build_matrix::' + json.dumps({ 'include': build_matrix }))
 print('::set-output name=publish_matrix::' + json.dumps({ 'include': publish_matrix }))
-print('::set-output name=do_release::' + (ref.startswith('refs/tags/v') and 'yes' or 'no'))
-print('::set-output name=do_publish::' + ((publish_hostport and (match_stable or match_beta or match_snapshot)) and 'yes' or 'no'))
+print('::set-output name=do_release::' + (do_release and 'yes' or 'no'))
+print('::set-output name=do_publish::' + (do_publish and 'yes' or 'no'))
