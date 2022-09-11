@@ -276,7 +276,16 @@ ANDROID_INI
 fi
 $meson_configure build
 cd build
-ninja -v
+if [[ $BSH_BUILD_PLATFORM == windows ]]; then
+	set +e
+	ninja -v -d keeprsp
+	ninja_code=$?
+	set -e
+	cat powder.exe.rsp
+	[[ $ninja_code == 0 ]];
+else
+	ninja -v
+fi
 strip=strip
 objcopy=objcopy
 strip_target=$ASSET_PATH

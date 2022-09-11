@@ -182,10 +182,12 @@ if is_msvc
 		args_msvc += [
 			'/Oy-',
 			'/fp:fast',
+			'/GL',
 		]
 		project_link_args += [
 			'/OPT:REF',
 			'/OPT:ICF',
+			'/LTCG',
 		]
 	endif
 	project_c_args += args_msvc
