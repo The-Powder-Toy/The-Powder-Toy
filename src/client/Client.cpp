@@ -1031,7 +1031,10 @@ SaveFile * Client::LoadSaveFile(ByteString filename)
 	if (err.size())
 	{
 		std::cerr << "Client: " << filename << ": " << err << std::endl;
-		file->SetLoadingError(err.FromUtf8());
+		if (file)
+		{
+			file->SetLoadingError(err.FromUtf8());
+		}
 #ifdef LUACONSOLE
 		luacon_ci->SetLastError(err.FromUtf8());
 #endif
