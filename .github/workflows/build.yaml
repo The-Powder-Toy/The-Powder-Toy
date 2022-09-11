@@ -88,6 +88,7 @@ jobs:
           upload_url: ${{ needs.prepare.outputs.release_upload_url }}
           asset_path: build/${{ matrix.asset_path }}
           asset_name: ${{ matrix.asset_name }}
+          asset_content_type: application/zip
       - uses: actions/upload-release-asset@v1
         if: needs.prepare.outputs.do_release == 'yes' && matrix.publish == 'yes' && matrix.separate_debug == 'yes'
         env:
@@ -96,6 +97,7 @@ jobs:
           upload_url: ${{ needs.prepare.outputs.release_upload_url }}
           asset_path: build/${{ matrix.debug_asset_path }}
           asset_name: ${{ matrix.debug_asset_name }}
+          asset_content_type: application/zip
       - uses: actions/upload-artifact@v2
         if: matrix.artifact == 'yes'
         with:
