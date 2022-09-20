@@ -84,10 +84,6 @@ namespace http
 	};
 
 	String StatusText(int code);
-
-	extern const long timeout;
-	extern ByteString proxy;
-	extern ByteString user_agent;
 }
 
 #endif // REQUEST_H

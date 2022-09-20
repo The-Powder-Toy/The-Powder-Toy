@@ -4,6 +4,11 @@ set -euo pipefail
 shopt -s globstar
 IFS=$'\n\t'
 
+if [[ -z ${1-} ]] || [[ -z ${2-} ]] || [[ -z ${3-} ]]; then
+	>&2 echo "usage: ./update-wraps.sh OWNER REPO TAG"
+	exit 1
+fi
+
 owner=$1
 repo=$2
 tag=$3

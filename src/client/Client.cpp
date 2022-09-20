@@ -104,7 +104,7 @@ Client::Client():
 		firstRun = true;
 }
 
-void Client::Initialise(ByteString proxyString, bool disableNetwork)
+void Client::Initialise(ByteString proxy, ByteString cafile, ByteString capath, bool disableNetwork)
 {
 #if !defined(FONTEDITOR) && !defined(RENDERER)
 	if (GetPrefBool("version.update", false))
@@ -116,7 +116,7 @@ void Client::Initialise(ByteString proxyString, bool disableNetwork)
 
 #ifndef NOHTTP
 	if (!disableNetwork)
-		http::RequestManager::Ref().Initialise(proxyString);
+		http::RequestManager::Ref().Initialise(proxy, cafile, capath);
 #endif
 
 	//Read stamps library

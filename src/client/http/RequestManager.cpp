@@ -11,6 +11,8 @@ namespace http
 {
 	const long timeout = 15;
 	ByteString proxy;
+	ByteString cafile;
+	ByteString capath;
 	ByteString user_agent;
 
 	void RequestManager::Shutdown()
@@ -33,7 +35,7 @@ namespace http
 		}
 	}
 
-	void RequestManager::Initialise(ByteString Proxy)
+	void RequestManager::Initialise(ByteString newProxy, ByteString newCafile, ByteString newCapath)
 	{
 		curl_global_init(CURL_GLOBAL_DEFAULT);
 		multi = curl_multi_init();
@@ -42,7 +44,9 @@ namespace http
 			curl_multi_setopt(multi, CURLMOPT_MAX_HOST_CONNECTIONS, curl_max_host_connections);
 		}
 
-		proxy = Proxy;
+		proxy = newProxy;
+		cafile = newCafile;
+		capath = newCapath;
 
 		user_agent =
 			"PowderToy/" MTOS(SAVE_VERSION) "." MTOS(MINOR_VERSION) " ("

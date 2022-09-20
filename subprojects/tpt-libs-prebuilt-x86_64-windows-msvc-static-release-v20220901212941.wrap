@@ -1,6 +1,0 @@
-[wrap-file]
-directory = tpt-libs-prebuilt-x86_64-windows-msvc-static-release-v20220901212941
-
-source_url = https://github.com/The-Powder-Toy/tpt-libs/releases/download/v20220901212941/tpt-libs-prebuilt-x86_64-windows-msvc-static-release-v20220901212941.zip
-source_filename = tpt-libs-prebuilt-x86_64-windows-msvc-static-release-v20220901212941.zip
-source_hash = afa4b34d61c7ddbd6a2345beec10c107e6462fe6cafecf9e630e34d33b2ca91b

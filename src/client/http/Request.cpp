@@ -242,6 +242,14 @@ namespace http
 			{
 				curl_easy_setopt(easy, CURLOPT_PROXY, proxy.c_str());
 			}
+			if (cafile.size())
+			{
+				curl_easy_setopt(easy, CURLOPT_CAINFO, cafile.c_str());
+			}
+			if (capath.size())
+			{
+				curl_easy_setopt(easy, CURLOPT_CAPATH, capath.c_str());
+			}
 
 			curl_easy_setopt(easy, CURLOPT_PRIVATE, (void *)this);
 			curl_easy_setopt(easy, CURLOPT_USERAGENT, user_agent.c_str());

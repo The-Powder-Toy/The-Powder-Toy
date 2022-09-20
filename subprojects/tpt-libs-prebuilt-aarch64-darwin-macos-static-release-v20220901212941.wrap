@@ -1,6 +1,0 @@
-[wrap-file]
-directory = tpt-libs-prebuilt-aarch64-darwin-macos-static-release-v20220901212941
-
-source_url = https://github.com/The-Powder-Toy/tpt-libs/releases/download/v20220901212941/tpt-libs-prebuilt-aarch64-darwin-macos-static-release-v20220901212941.zip
-source_filename = tpt-libs-prebuilt-aarch64-darwin-macos-static-release-v20220901212941.zip
-source_hash = c910019bbcb765236a0e26faa0e4974000411f0ca4b470d529efeb7c4c8cd008

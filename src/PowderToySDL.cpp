@@ -324,6 +324,8 @@ std::map<ByteString, ByteString> readArguments(int argc, char * argv[])
 	//Defaults
 	arguments["scale"] = "";
 	arguments["proxy"] = "";
+	arguments["cafile"] = "";
+	arguments["capath"] = "";
 	arguments["nohud"] = "false"; //the nohud, sound, and scripts commands currently do nothing.
 	arguments["sound"] = "false";
 	arguments["kiosk"] = "false";
@@ -345,6 +347,20 @@ std::map<ByteString, ByteString> readArguments(int argc, char * argv[])
 				arguments["proxy"] = &argv[i][6];
 			else
 				arguments["proxy"] = "false";
+		}
+		else if (!strncmp(argv[i], "cafile:", 7))
+		{
+			if(argv[i][7])
+				arguments["cafile"] = &argv[i][7];
+			else
+				arguments["cafile"] = "false";
+		}
+		else if (!strncmp(argv[i], "capath:", 7))
+		{
+			if(argv[i][7])
+				arguments["capath"] = &argv[i][7];
+			else
+				arguments["capath"] = "false";
 		}
 		else if (!strncmp(argv[i], "nohud", 5))
 		{
@@ -818,34 +834,32 @@ int main(int argc, char * argv[])
 		Client::Ref().SetPref("Scale", scale);
 	}
 
-	ByteString proxyString = "";
-	if(arguments["proxy"].length())
-	{
-		if(arguments["proxy"] == "false")
+	auto clientConfig = [](ByteString cmdlineValue, ByteString configName, ByteString defaultValue) {
+		ByteString value;
+		if (cmdlineValue.length())
 		{
-			proxyString = "";
-			Client::Ref().SetPref("Proxy", "");
+			value = cmdlineValue;
+			if (value == "false")
+			{
+				value = defaultValue;
+			}
+			Client::Ref().SetPref(configName, value);
 		}
 		else
 		{
-			proxyString = (arguments["proxy"]);
-			Client::Ref().SetPref("Proxy", arguments["proxy"]);
+			value = Client::Ref().GetPrefByteString(configName, defaultValue);
 		}
-	}
-	else
-	{
-		auto proxyPref = Client::Ref().GetPrefByteString("Proxy", "");
-		if (proxyPref.length())
-		{
-			proxyString = proxyPref;
-		}
-	}
+		return value;
+	};
+	ByteString proxyString = clientConfig(arguments["proxy"], "Proxy", "");
+	ByteString cafileString = clientConfig(arguments["cafile"], "CAFile", "");
+	ByteString capathString = clientConfig(arguments["capath"], "CAPath", "");
 
 	bool disableNetwork = false;
 	if (arguments.find("disable-network") != arguments.end())
 		disableNetwork = true;
 
-	Client::Ref().Initialise(proxyString, disableNetwork);
+	Client::Ref().Initialise(proxyString, cafileString, capathString, disableNetwork);
 
 	// TODO: maybe bind the maximum allowed scale to screen size somehow
 	if(scale < 1 || scale > SCALE_MAXIMUM)

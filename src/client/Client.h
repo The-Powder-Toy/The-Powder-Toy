@@ -110,7 +110,7 @@ public:
 	void SetMessageOfTheDay(String message);
 	String GetMessageOfTheDay();
 
-	void Initialise(ByteString proxyString, bool disableNetwork);
+	void Initialise(ByteString proxy, ByteString cafile, ByteString capath, bool disableNetwork);
 	bool IsFirstRun();
 
 	bool ReadFile(std::vector<char> &fileData, ByteString filename);

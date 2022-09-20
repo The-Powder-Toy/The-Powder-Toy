@@ -44,7 +44,7 @@ namespace http
 		RequestManager() { }
 		~RequestManager() { }
 
-		void Initialise(ByteString proxy);
+		void Initialise(ByteString newProxy, ByteString newCafile, ByteString newCapath);
 		void Shutdown();
 
 		friend class Request;
@@ -52,6 +52,8 @@ namespace http
 
 	extern const long timeout;
 	extern ByteString proxy;
+	extern ByteString cafile;
+	extern ByteString capath;
 	extern ByteString user_agent;
 }
 
