@@ -263,6 +263,11 @@ bool Client::CheckUpdate(http::Request *updateRequest, bool checkSession)
 		int status;
 		ByteString data = updateRequest->Finish(&status);
 
+		if (checkSession && status == 618)
+		{
+			AddServerNotification({ "Failed to load SSL certificates", SCHEME "powdertoy.co.uk/FAQ.html" });
+		}
+
 		if (status != 200)
 		{
 			//free(data);

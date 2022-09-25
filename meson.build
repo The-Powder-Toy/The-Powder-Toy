@@ -114,9 +114,7 @@ endif
 lua_variant = get_option('lua')
 if lua_variant == 'auto'
 	lua_variant = 'luajit'
-	# TODO: sometimes luajit is not available
 endif
-# TODO: check UNICODE on windows
 if lua_variant == 'none'
 	lua_dep = []
 elif lua_variant == 'lua5.1' or lua_variant == 'lua5.2'
@@ -153,7 +151,7 @@ fftw_dep = enable_gravfft ? dependency('fftw3f', static: is_static) : []
 
 threads_dep = dependency('threads')
 zlib_dep = dependency('zlib', static: is_static)
-sdl2_dep = dependency('sdl2', static: is_static) # TODO: check UNICODE on windows
+sdl2_dep = dependency('sdl2', static: is_static)
 
 project_link_args = []
 project_c_args = []
