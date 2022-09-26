@@ -238,7 +238,11 @@ else
 		if not get_option('b_pie') and get_option('workaround_gcc_no_pie') # nice one, meson
 			if host_arch != 'aarch64' # no position independent executable for aarch64
 				if c_compiler.get_id() in [ 'clang' ]
-					project_link_args += [ '-Wl,-no_pie' ]
+					if host_platform == 'darwin'
+						project_link_args += [ '-Wl,-no_pie' ]
+					else
+						project_link_args += [ '-Wl,-no-pie' ]
+					endif
 				else
 					project_link_args += [ '-no-pie' ]
 				endif
