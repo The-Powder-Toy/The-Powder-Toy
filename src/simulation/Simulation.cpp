@@ -3081,6 +3081,10 @@ int Simulation::get_normal_interp(int pt, float x0, float y0, float dx, float dy
 	for (i=0; i<NORMAL_INTERP; i++) {
 		x = (int)(x0 + 0.5f);
 		y = (int)(y0 + 0.5f);
+		if (x < 0 || y < 0 || x >= XRES || y >= YRES)
+		{
+			return 0;
+		}
 		if (is_boundary(pt, x, y))
 			break;
 		x0 += dx;
