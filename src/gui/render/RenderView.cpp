@@ -168,7 +168,7 @@ void RenderView::OnDraw()
 		ren->RenderBegin();
 		ren->RenderEnd();
 	}
-	g->drawtext(2, YRES - 10,"Rendereroptions", 200, 200, 200, 255);
+	g->drawtext(2, YRES - 10, "Renderer options", 200, 200, 200, 255);
 	g->draw_line(0, YRES, XRES - 1, YRES, 200, 200, 200, 255);
 	g->draw_line(0, YRES, 0, YRES + 39, 200, 200, 200, 255);
 	g->draw_line(line1, YRES, line1, WINDOWH, 200, 200, 200, 255);
