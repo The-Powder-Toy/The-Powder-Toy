@@ -168,7 +168,7 @@ void RenderView::OnDraw()
 		ren->RenderBegin();
 		ren->RenderEnd();
 	}
-	g->drawtext(2, YRES - 10, "Renderer options", 200, 200, 200, 255);
+	g->drawtext(2, YRES - 10,"Rendereroptions", 200, 200, 200, 255);
 	g->draw_line(0, YRES, XRES - 1, YRES, 200, 200, 200, 255);
 	g->draw_line(0, YRES, 0, YRES + 39, 200, 200, 200, 255);
 	g->draw_line(line1, YRES, line1, WINDOWH, 200, 200, 200, 255);
@@ -176,7 +176,7 @@ void RenderView::OnDraw()
 	g->draw_line(line3, YRES, line3, WINDOWH, 200, 200, 200, 255);
 	g->draw_line(line4, YRES, line4, WINDOWH, 200, 200, 200, 255);
 	g->draw_line(XRES, 0, XRES, WINDOWH, 255, 255, 255, 255);
-	g->draw_line(0, YRES + 39, XRES - 1, YRES + 39, 200, 200, 200, 255);
+	g->draw_line(0,YRES + 39, XRES - 1, YRES + 39, 200, 200, 200, 255);
 	if (toolTipPresence && toolTip.length())
 	{
 		g->drawtext(6, Size.Y - MENUSIZE - 12, toolTip, 255, 255, 255, toolTipPresence > 51 ? 255 : toolTipPresence * 5);
