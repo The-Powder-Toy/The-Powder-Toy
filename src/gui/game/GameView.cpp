@@ -933,7 +933,7 @@ ByteString GameView::TakeScreenshot(int captureUI, int fileType)
 	std::string date = format::UnixtimeToDate(screenshotTime, "%Y-%m-%d %H.%M.%S");
 	ByteString filename = ByteString::Build("screenshot ", date, suffix, extension);
 
-	Client::Ref().WriteFile(data, filename);
+	Platform::WriteFile(data, filename);
 	doScreenshot = false;
 	lastScreenshotTime = screenshotTime;
 
@@ -2147,7 +2147,7 @@ void GameView::OnDraw()
 
 			ByteString filename = ByteString::Build("recordings", PATH_SEP, recordingFolder, PATH_SEP, "frame_", Format::Width(recordingIndex++, 6), ".ppm");
 
-			Client::Ref().WriteFile(data, filename);
+			Platform::WriteFile(data, filename);
 		}
 
 		if (logEntries.size())

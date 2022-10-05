@@ -5,8 +5,6 @@
 
 #include "common/tpt-minmax.h"
 
-#include "client/Client.h"
-
 using namespace ui;
 
 ScrollPanel::ScrollPanel(Point position, Point size):

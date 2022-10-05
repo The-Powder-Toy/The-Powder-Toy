@@ -115,7 +115,7 @@ void LocalSaveActivity::saveWrite(ByteString finalFilename)
 	std::vector<char> saveData = gameSave->Serialise();
 	if (saveData.size() == 0)
 		new ErrorMessage("Error", "Unable to serialize game data.");
-	else if (!Client::Ref().WriteFile(saveData, finalFilename))
+	else if (!Platform::WriteFile(saveData, finalFilename))
 		new ErrorMessage("Error", "Unable to write save file.");
 	else
 	{

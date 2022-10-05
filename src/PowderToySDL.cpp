@@ -940,7 +940,7 @@ int main(int argc, char * argv[])
 				try
 				{
 					std::vector<char> gameSaveData;
-					if (!Client::Ref().ReadFile(gameSaveData, arguments["open"]))
+					if (!Platform::ReadFile(gameSaveData, arguments["open"]))
 					{
 						new ErrorMessage("Error", "Could not read file");
 					}

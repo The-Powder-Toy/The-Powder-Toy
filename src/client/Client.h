@@ -113,9 +113,6 @@ public:
 	void Initialise(ByteString proxy, ByteString cafile, ByteString capath, bool disableNetwork);
 	bool IsFirstRun();
 
-	bool ReadFile(std::vector<char> &fileData, ByteString filename);
-	bool WriteFile(std::vector<char> fileData, ByteString filename);
-
 	void AddListener(ClientListener * listener);
 	void RemoveListener(ClientListener * listener);
 

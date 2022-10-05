@@ -34,7 +34,6 @@
 #include "client/SaveInfo.h"
 #include "client/GameSave.h"
 #include "client/SaveFile.h"
-#include "client/Client.h"
 
 #include "gui/game/GameController.h"
 #include "gui/game/GameView.h"

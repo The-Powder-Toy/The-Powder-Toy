@@ -2,7 +2,6 @@
 
 #include <algorithm>
 
-#include "client/Client.h"
 #include "client/GameSave.h"
 #include "client/SaveFile.h"
 #include "common/Platform.h"
@@ -48,7 +47,7 @@ class LoadFilesTask: public Task
 			try
 			{
 				std::vector<char> data;
-				if (!Client::Ref().ReadFile(data, directory + *iter))
+				if (!Platform::ReadFile(data, directory + *iter))
 					continue;
 				GameSave * tempSave = new GameSave(std::move(data));
 				saveFile->SetGameSave(tempSave);

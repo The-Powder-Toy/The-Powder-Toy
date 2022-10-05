@@ -4,7 +4,6 @@
 #include "Button.h"
 #include "AvatarButton.h"
 #include "Format.h"
-#include "client/Client.h"
 #include "graphics/Graphics.h"
 #include "ContextMenu.h"
 #include "Keys.h"

@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <cassert>
 #include <fstream>
+#include <iostream>
 #include <sys/stat.h>
 
 #ifdef WIN
@@ -545,5 +546,32 @@ std::wstring WinWiden(const ByteString &source)
 	return output;
 }
 #endif
+
+bool ReadFile(std::vector<char> &fileData, ByteString filename)
+{
+	std::ifstream f(filename, std::ios::binary);
+	if (f) f.seekg(0, std::ios::end);
+	if (f) fileData.resize(f.tellg());
+	if (f) f.seekg(0);
+	if (f) f.read(&fileData[0], fileData.size());
+	if (!f)
+	{
+		std::cerr << "ReadFile: " << filename << ": " << strerror(errno) << std::endl;
+		return false;
+	}
+	return true;
+}
+
+bool WriteFile(std::vector<char> fileData, ByteString filename)
+{
+	std::ofstream f(filename, std::ios::binary);
+	if (f) f.write(&fileData[0], fileData.size());
+	if (!f)
+	{
+		std::cerr << "WriteFile: " << filename << ": " << strerror(errno) << std::endl;
+		return false;
+	}
+	return true;
+}
 
 }

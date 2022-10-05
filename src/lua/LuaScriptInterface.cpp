@@ -3880,7 +3880,7 @@ int LuaScriptInterface::fileSystem_copy(lua_State * l)
 	auto filename = tpt_lua_checkByteString(l, 1);
 	auto newFilename = tpt_lua_checkByteString(l, 2);
 	std::vector<char> fileData;
-	lua_pushboolean(l, Client::Ref().ReadFile(fileData, filename) && Client::Ref().WriteFile(fileData, newFilename));
+	lua_pushboolean(l, Platform::ReadFile(fileData, filename) && Platform::WriteFile(fileData, newFilename));
 	return 1;
 }
 

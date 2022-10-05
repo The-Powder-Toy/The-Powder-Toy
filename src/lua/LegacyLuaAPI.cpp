@@ -1281,7 +1281,7 @@ int luatpt_getscript(lua_State* l)
 	{
 		return 0;
 	}
-	if (!Client::Ref().WriteFile(std::vector<char>(scriptData.begin(), scriptData.end()), filename))
+	if (!Platform::WriteFile(std::vector<char>(scriptData.begin(), scriptData.end()), filename))
 	{
 		return luaL_error(l, "Unable to write to file");
 	}

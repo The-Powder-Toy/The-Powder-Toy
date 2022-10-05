@@ -8,7 +8,6 @@
 #include "OptionsController.h"
 #include "OptionsModel.h"
 
-#include "client/Client.h"
 #include "common/Platform.h"
 #include "graphics/Graphics.h"
 #include "gui/Style.h"

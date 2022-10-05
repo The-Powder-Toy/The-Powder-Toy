@@ -42,6 +42,9 @@ namespace Platform
 	std::vector<ByteString> DirectorySearch(ByteString directory, ByteString search, std::vector<ByteString> extensions);
 	String DoMigration(ByteString fromDir, ByteString toDir);
 
+	bool ReadFile(std::vector<char> &fileData, ByteString filename);
+	bool WriteFile(std::vector<char> fileData, ByteString filename);
+
 #ifdef WIN
 	ByteString WinNarrow(const std::wstring &source);
 	std::wstring WinWiden(const ByteString &source);
