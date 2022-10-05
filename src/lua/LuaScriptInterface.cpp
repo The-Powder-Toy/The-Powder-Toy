@@ -308,11 +308,11 @@ tpt.partsdata = nil");
 	tptElements = lua_gettop(l);
 	for (int i = 1; i < PT_NUM; i++)
 	{
+		tpt_lua_pushString(l, luacon_sim->elements[i].Name.ToLower());
 		lua_newtable(l);
 		currentElement = lua_gettop(l);
 		lua_pushinteger(l, i);
 		lua_setfield(l, currentElement, "id");
-
 		lua_newtable(l);
 		currentElementMeta = lua_gettop(l);
 		lua_pushcfunction(l, luacon_elementwrite);
@@ -320,8 +320,7 @@ tpt.partsdata = nil");
 		lua_pushcfunction(l, luacon_elementread);
 		lua_setfield(l, currentElementMeta, "__index");
 		lua_setmetatable(l, currentElement);
-
-		lua_setfield(l, tptElements, luacon_sim->elements[i].Name.ToUtf8().ToLower().c_str());
+		lua_settable(l, tptElements);
 	}
 	lua_setfield(l, tptProperties, "el");
 
@@ -329,6 +328,7 @@ tpt.partsdata = nil");
 	tptElementTransitions = lua_gettop(l);
 	for (int i = 1; i < PT_NUM; i++)
 	{
+		tpt_lua_pushString(l, luacon_sim->elements[i].Name.ToLower());
 		lua_newtable(l);
 		currentElement = lua_gettop(l);
 		lua_newtable(l);
@@ -340,8 +340,7 @@ tpt.partsdata = nil");
 		lua_pushcfunction(l, luacon_transitionread);
 		lua_setfield(l, currentElementMeta, "__index");
 		lua_setmetatable(l, currentElement);
-
-		lua_setfield(l, tptElementTransitions, luacon_sim->elements[i].Name.ToUtf8().ToLower().c_str());
+		lua_settable(l, tptElementTransitions);
 	}
 	lua_setfield(l, tptProperties, "eltransition");
 
@@ -920,13 +919,16 @@ void LuaScriptInterface::initSimulationAPI()
 		int particlePropertiesCount = 0;
 		for (auto &prop : Particle::GetProperties())
 		{
+			tpt_lua_pushByteString(l, "FIELD_" + prop.Name.ToUpper());
 			lua_pushinteger(l, particlePropertiesCount++);
-			lua_setfield(l, -2, ("FIELD_" + prop.Name.ToUpper()).c_str());
+			lua_settable(l, -3);
 		}
 		for (auto &alias : Particle::GetPropertyAliases())
 		{
-			lua_getfield(l, -1, ("FIELD_" + alias.to.ToUpper()).c_str());
-			lua_setfield(l, -2, ("FIELD_" + alias.from.ToUpper()).c_str());
+			tpt_lua_pushByteString(l, "FIELD_" + alias.from.ToUpper());
+			tpt_lua_pushByteString(l, "FIELD_" + alias.to.ToUpper());
+			lua_gettable(l, -3);
+			lua_settable(l, -3);
 		}
 	}
 
@@ -2764,13 +2766,15 @@ void LuaScriptInterface::initElementsAPI()
 	{
 		if(luacon_sim->elements[i].Enabled)
 		{
+			tpt_lua_pushByteString(l, luacon_sim->elements[i].Identifier);
 			lua_pushinteger(l, i);
-			lua_setfield(l, -2, luacon_sim->elements[i].Identifier.c_str());
+			lua_settable(l, -3);
 			ByteString realIdentifier = ByteString::Build("DEFAULT_PT_", luacon_sim->elements[i].Name.ToUtf8());
 			if (i != 0 && i != PT_NBHL && i != PT_NWHL && luacon_sim->elements[i].Identifier != realIdentifier)
 			{
+				tpt_lua_pushByteString(l, realIdentifier);
 				lua_pushinteger(l, i);
-				lua_setfield(l, -2, realIdentifier.c_str());
+				lua_settable(l, -3);
 			}
 		}
 	}
@@ -2872,8 +2876,9 @@ int LuaScriptInterface::elements_loadDefault(lua_State * l)
 			return luaL_error(l, "Invalid element");
 
 		lua_getglobal(l, "elements");
+		tpt_lua_pushByteString(l, luacon_sim->elements[id].Identifier);
 		lua_pushnil(l);
-		lua_setfield(l, -2, luacon_sim->elements[id].Identifier.c_str());
+		lua_settable(l, -3);
 
 		auto const &elementList = GetElements();
 		if (id < (int)elementList.size())
@@ -2881,8 +2886,9 @@ int LuaScriptInterface::elements_loadDefault(lua_State * l)
 		else
 			luacon_sim->elements[id] = Element();
 
+		tpt_lua_pushByteString(l, luacon_sim->elements[id].Identifier);
 		lua_pushinteger(l, id);
-		lua_setfield(l, -2, luacon_sim->elements[id].Identifier.c_str());
+		lua_settable(l, -3);
 		lua_pop(l, 1);
 	}
 	else
@@ -2980,8 +2986,9 @@ int LuaScriptInterface::elements_allocate(lua_State * l)
 		luacon_sim->elements[newID].Identifier = identifier;
 
 		lua_getglobal(l, "elements");
+		tpt_lua_pushByteString(l, identifier);
 		lua_pushinteger(l, newID);
-		lua_setfield(l, -2, identifier.c_str());
+		lua_settable(l, -3);
 		lua_pop(l, 1);
 
 		for (auto elem = 0; elem < PT_NUM; ++elem)
@@ -3185,7 +3192,8 @@ int LuaScriptInterface::elements_element(lua_State * l)
 		//Write values from native data to a table
 		for (auto &prop : Element::GetProperties())
 		{
-			lua_getfield(l, -1, prop.Name.c_str());
+			tpt_lua_pushByteString(l, prop.Name);
+			lua_gettable(l, -2);
 			if (lua_type(l, -1) != LUA_TNIL)
 			{
 				intptr_t propertyAddress = (intptr_t)(((unsigned char*)&luacon_sim->elements[id]) + prop.Offset);
@@ -3275,7 +3283,7 @@ int LuaScriptInterface::elements_element(lua_State * l)
 		lua_pop(l, 1);
 
 		lua_getfield(l, -1, "DefaultProperties");
-		SetDefaultProperties(l, id, -1);
+		SetDefaultProperties(l, id, lua_gettop(l));
 		lua_pop(l, 1);
 
 		luacon_model->BuildMenus();
@@ -3291,9 +3299,10 @@ int LuaScriptInterface::elements_element(lua_State * l)
 		lua_newtable(l);
 		for (auto &prop : Element::GetProperties())
 		{
+			tpt_lua_pushByteString(l, prop.Name);
 			intptr_t propertyAddress = (intptr_t)(((unsigned char*)&luacon_sim->elements[id]) + prop.Offset);
 			LuaGetProperty(l, prop, propertyAddress);
-			lua_setfield(l, -2, prop.Name.c_str());
+			lua_settable(l, -3);
 		}
 
 		tpt_lua_pushByteString(l, luacon_sim->elements[id].Identifier);
@@ -3312,13 +3321,16 @@ void LuaScriptInterface::GetDefaultProperties(lua_State * l, int id)
 	for (auto &prop : Particle::GetProperties())
 	{
 		auto propertyAddress = reinterpret_cast<intptr_t>((reinterpret_cast<unsigned char*>(&luacon_sim->elements[id].DefaultProperties)) + prop.Offset);
+		tpt_lua_pushByteString(l, prop.Name);
 		LuaGetProperty(l, prop, propertyAddress);
-		lua_setfield(l, -2, prop.Name.c_str());
+		lua_settable(l, -3);
 	}
 	for (auto &alias : Particle::GetPropertyAliases())
 	{
-		lua_getfield(l, -1, alias.to.c_str());
-		lua_setfield(l, -2, alias.from.c_str());
+		tpt_lua_pushByteString(l, alias.from);
+		tpt_lua_pushByteString(l, alias.to);
+		lua_gettable(l, -3);
+		lua_settable(l, -3);
 	}
 }
 
@@ -3328,7 +3340,8 @@ void LuaScriptInterface::SetDefaultProperties(lua_State * l, int id, int stackPo
 	{
 		for (auto &prop : Particle::GetProperties())
 		{
-			lua_getfield(l, stackPos, prop.Name.c_str());
+			tpt_lua_pushByteString(l, prop.Name);
+			lua_gettable(l, stackPos);
 			if (lua_type(l, -1) == LUA_TNIL)
 			{
 				for (auto &alias : Particle::GetPropertyAliases())
@@ -3336,7 +3349,8 @@ void LuaScriptInterface::SetDefaultProperties(lua_State * l, int id, int stackPo
 					if (alias.to == prop.Name)
 					{
 						lua_pop(l, 1);
-						lua_getfield(l, stackPos, alias.from.c_str());
+						tpt_lua_pushByteString(l, alias.from);
+						lua_gettable(l, stackPos);
 					}
 				}
 			}
@@ -3536,8 +3550,9 @@ int LuaScriptInterface::elements_free(lua_State * l)
 	luacon_model->BuildMenus();
 
 	lua_getglobal(l, "elements");
+	tpt_lua_pushByteString(l, identifier);
 	lua_pushnil(l);
-	lua_setfield(l, -2, identifier.c_str());
+	lua_settable(l, -3);
 	lua_pop(l, 1);
 
 	return 0;
@@ -3790,7 +3805,7 @@ int LuaScriptInterface::fileSystem_list(lua_State * l)
 		if (name != "." && name != "..")
 		{
 			index += 1;
-			lua_pushstring(l, name.c_str());
+			tpt_lua_pushByteString(l, name);
 			lua_rawseti(l, -2, index);
 		}
 	}
@@ -3846,9 +3861,7 @@ int LuaScriptInterface::fileSystem_removeDirectory(lua_State * l)
 int LuaScriptInterface::fileSystem_removeFile(lua_State * l)
 {
 	auto filename = tpt_lua_checkByteString(l, 1);
-
-	bool ret = Platform::RemoveFile(filename);
-	lua_pushboolean(l, ret);
+	lua_pushboolean(l, Platform::RemoveFile(filename));
 	return 1;
 }
 
@@ -3856,12 +3869,7 @@ int LuaScriptInterface::fileSystem_move(lua_State * l)
 {
 	auto filename = tpt_lua_checkByteString(l, 1);
 	auto newFilename = tpt_lua_checkByteString(l, 2);
-	int ret = 0;
-
-	// FIXME: winapi
-	ret = rename(filename.c_str(), newFilename.c_str());
-
-	lua_pushboolean(l, ret == 0);
+	lua_pushboolean(l, Platform::RenameFile(filename, newFilename));
 	return 1;
 }
 
@@ -3869,32 +3877,8 @@ int LuaScriptInterface::fileSystem_copy(lua_State * l)
 {
 	auto filename = tpt_lua_checkByteString(l, 1);
 	auto newFilename = tpt_lua_checkByteString(l, 2);
-	int ret = 0;
-
-	try
-	{
-		// FIXME: winapi
-		std::ifstream source(filename, std::ios::binary);
-		std::ofstream dest(newFilename, std::ios::binary);
-		source.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-		dest.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-
-		std::istreambuf_iterator<char> begin_source(source);
-		std::istreambuf_iterator<char> end_source;
-		std::ostreambuf_iterator<char> begin_dest(dest);
-		std::copy(begin_source, end_source, begin_dest);
-
-		source.close();
-		dest.close();
-
-		ret = 0;
-	}
-	catch (std::exception & e)
-	{
-		ret = 1;
-	}
-
-	lua_pushboolean(l, ret == 0);
+	std::vector<char> fileData;
+	lua_pushboolean(l, Client::Ref().ReadFile(fileData, filename) && Client::Ref().WriteFile(fileData, newFilename));
 	return 1;
 }
 
@@ -4155,7 +4139,7 @@ static int http_request_finish(lua_State *l)
 		int status_out;
 		std::vector<ByteString> headers;
 		ByteString data = rh->Finish(status_out, headers);
-		lua_pushlstring(l, data.c_str(), data.size());
+		lua_pushlstring(l, &data[0], data.size());
 		lua_pushinteger(l, status_out);
 		lua_newtable(l);
 		for (auto i = 0; i < int(headers.size()); ++i)

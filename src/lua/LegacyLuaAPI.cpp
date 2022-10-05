@@ -1277,33 +1277,14 @@ int luatpt_getscript(lua_State* l)
 		return luaL_error(l, "Invalid Script ID");
 	}
 
-	// FIXME: winapi
-	FILE *outputfile = fopen(filename.c_str(), "r");
-	if (outputfile)
+	if (Platform::FileExists(filename) && confirmPrompt && !ConfirmPrompt::Blocking("File already exists, overwrite?", filename.FromUtf8(), "Overwrite"))
 	{
-		fclose(outputfile);
-		outputfile = NULL;
-		if (!confirmPrompt || ConfirmPrompt::Blocking("File already exists, overwrite?", filename.FromUtf8(), "Overwrite"))
-		{
-			outputfile = fopen(filename.c_str(), "wb");
-		}
-		else
-		{
-			return 0;
-		}
+		return 0;
 	}
-	else
-	{
-		outputfile = fopen(filename.c_str(), "wb");
-	}
-	if (!outputfile)
+	if (!Client::Ref().WriteFile(std::vector<char>(scriptData.begin(), scriptData.end()), filename))
 	{
 		return luaL_error(l, "Unable to write to file");
 	}
-
-	fputs(scriptData.c_str(), outputfile);
-	fclose(outputfile);
-	outputfile = NULL;
 	if (runScript)
 	{
 		tpt_lua_dostring(l, ByteString::Build("dofile('", filename, "')"));

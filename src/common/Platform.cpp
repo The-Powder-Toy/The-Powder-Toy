@@ -279,13 +279,26 @@ bool DirectoryExists(ByteString directory)
 
 bool RemoveFile(ByteString filename)
 {
-	return std::remove(filename.c_str()) == 0;
+#ifdef WIN
+	return _wremove(WinWiden(filename).c_str()) == 0;
+#else
+	return remove(filename.c_str()) == 0;
+#endif
+}
+
+bool RenameFile(ByteString filename, ByteString newFilename)
+{
+#ifdef WIN
+	return _wrename(WinWiden(filename).c_str(), WinWiden(newFilename).c_str()) == 0;
+#else
+	return rename(filename.c_str(), newFilename.c_str()) == 0;
+#endif
 }
 
 bool DeleteDirectory(ByteString folder)
 {
 #ifdef WIN
-	return _rmdir(folder.c_str()) == 0;
+	return _wrmdir(WinWiden(folder).c_str()) == 0;
 #else
 	return rmdir(folder.c_str()) == 0;
 #endif
@@ -294,7 +307,7 @@ bool DeleteDirectory(ByteString folder)
 bool MakeDirectory(ByteString dir)
 {
 #ifdef WIN
-	return _mkdir(dir.c_str()) == 0;
+	return _wmkdir(WinWiden(dir).c_str()) == 0;
 #else
 	return mkdir(dir.c_str(), 0755) == 0;
 #endif
